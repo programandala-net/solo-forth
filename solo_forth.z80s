@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506212132
+; Version A-00-201506220041
 
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
@@ -1772,9 +1772,12 @@ l60c0h:
 
   pop hl
 zero_less_.hl: ; XXX entry not used yet
-  ; XXX Ace Forth uses `rld` with the high part, what needs 8T
-  ; and 2 bytes instead of 11T and 1 byte.
-  add hl,hl
+  if size_optimization?
+    add hl,hl ; 11t, 1 byte
+  else
+    ; [Idea from Ace Forth.]
+    rl h ; 8t, 2 bytes
+  endif
 true_if_cy:
   jp c,true_pfa
   jp false_pfa
@@ -1782,7 +1785,7 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0','>'
 
-  ; Taken from DZX-Forth.
+  ; [Taken from DZX-Forth.]
 
   pop de
   ld hl,0
@@ -1965,40 +1968,19 @@ fetch.hl:
   pop hl ; address
 two_fetch.hl
 
-  ld e,(hl) ; T07  1
-  inc hl    ; T06  1
-  ld d,(hl) ; T07  1
-  inc hl    ; T06  1
-  ld a,(hl) ; T07  1
-  inc hl    ; T06  1
-  ld h,(hl) ; T07  1
-  ld l,a    ; T04  1
-  ex de,hl  ; T04  1
-  jp push_de_hl ; T10  3
-            ; T11  0 push de
-            ; T11  0 push hl
-            ; T86 12 TOTAL
-  ; Faster and shorter than the code of C/PM fig-Forth 1.1g
-  ; (T94 14):
-
-  if 0
-
-  EXX         ; T04  1 ; save IP
-  POP HL      ; T10  1 ; addr
-  LD  C,(HL)  ; T07  1
-  INC HL      ; T06  1
-  LD  B,(HL)  ; T07  1 ; dH
-  INC HL      ; T06  1
-  LD  E,(HL)  ; T07  1
-  INC HL      ; T06  1
-  LD  D,(HL)  ; T07  1 ; dL
-  PUSH  DE    ; T11  1 ; (S2)<--dL
-  PUSH  BC    ; T11  1 ; (S1)<--dH
-  EXX         ; T04  1 ; restore IP
-  _jp_next    ; T08  2 ; jp (ix)
-              ; T94 14
-
-  endif
+  ld e,(hl)     ; 07t  1
+  inc hl        ; 06t  1
+  ld d,(hl)     ; 07t  1
+  inc hl        ; 06t  1
+  ld a,(hl)     ; 07t  1
+  inc hl        ; 06t  1
+  ld h,(hl)     ; 07t  1
+  ld l,a        ; 04t  1
+  ex de,hl      ; 04t  1
+  jp push_de_hl ; 10t  3
+                ; 11t  0 push de
+                ; 11t  0 push hl
+                ; 86t 12 TOTAL
 
 ; ----------------------------------------------
   _code_header two_store_,'2','!'
@@ -2118,10 +2100,9 @@ do_label:
   dw constant_
   dw paren_semicolon_code_
 do_variable:
-  ; XXX TODO check the execution time, compare with `do_two_variable`
   inc de  ; de=pfa
-  ex de,hl
-  jp push_hl
+  push de
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header user_,'USE','R'
@@ -2135,10 +2116,10 @@ do_user:
   ex de,hl
   ld e,(hl)
   ld d,0x00
-  ld hl,(user_variables_pointer)   ; T20
+  ld hl,(user_variables_pointer)   ; 20t
   ; XXX This is faster, but makes the access to the pointer non-standard:
 ;user_variables_pointer: equ $+1
-; ld hl,user_variables   ; T10
+; ld hl,user_variables   ; 10t
   add hl,de   ; hl= address of the user variable
   jp push_hl
 
@@ -2978,7 +2959,6 @@ dot_quote.interpreting:
 ; ----------------------------------------------
   _colon_header expect_,'EXPEC','T'
 
-  ;dw lit_,0,border_ ; XXX INFORMER
   dw over_,plus_,over_ ; ( a a+len a )
   dw paren_do_
 expect.do: ; ( a )
@@ -3049,57 +3029,16 @@ expect.loop: ; ( a )
 
 ; x  ( -- )
 
-; This is pseudonym for the "null" or
-; dictionary entry for a name of one
-; character of ascii null. It is the
-; execution proceedure to terminate
-; interpretation of a line of text from the
-; terminal or within a disk buffer, as both
-; buffers always have a null at the end.
+; This is pseudonym for the "null" or dictionary entry for a
+; name of one character of ascii null. It is the execution
+; proceedure to terminate interpretation of a line of text from
+; the terminal or within a disk buffer, as both buffers always
+; have a null at the end.
 
 ; }doc
 
-if 0 ; XXX OLD -- original version
-
-  ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
-  dw blk_,fetch_ ; input stream from disk?
-  dw zero_branch_,x.from_terminal
-  ; From disk.
-  dw one_,blk_,plus_store_ ; next disk buffer
-  dw in_,off_ ; clear `in`, preparing parsing of input text
-  dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer?
-  dw zero_branch_,x.end
-  ; The last buffer, the end of the text block.
-  dw question_exec_ ; error if not executing
-  ; Discard the address of `?stack` after `execute` in the interpretation loop.
-  ; XXX TODO save duplicated code:
-  ; XXX FIXME why `rdrop` bombs out here?
-  dw from_r_,drop_
-  dw branch_,x.end
-x.from_terminal:
-  ; XXX FIXME why `rdrop` bombs out here?
-  dw from_r_,drop_
-
-  ; The top item on the return stack was
-  ; thrown away.  At the end of 'x', the
-  ; interpreter will not continue to execute
-  ; the `?stack` instruction, but will return
-  ; to the next higher level of nesting and
-  ; execute the next word after `interpret` in
-  ; the Forth loop.  This is when the familiar
-  ; "ok" message is displayed on the terminal,
-  ; prompting the operator for the next  line
-  ; of commands.
-
-x.end:
-  dw semicolon_s_
-
-else ; XXX NEW -- simpler and faster flow
-
-  ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.exit ; if not, branch
-
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
   dw in_,off_ ; clear `in`, preparing parsing of input text
@@ -3110,7 +3049,6 @@ else ; XXX NEW -- simpler and faster flow
   dw question_branch_,x.end ; if not, branch
   ; Last block of the screen.
   dw question_exec_ ; error if not executing
-
 x.exit:
 
   ; The top item on the return stack is thrown away.  The interpreter
@@ -3120,15 +3058,10 @@ x.exit:
   ; loop.  This is when the familiar "ok" message is displayed on the
   ; terminal, prompting the operator for the next line of commands.
 
-  ; XXX FIXME why `rdrop` bombs out here?
-  ;dw from_r_,drop_
-  ; XXX solved?
   dw r_drop_
 
 x.end:
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_header fill_,'FIL','L'
@@ -3397,7 +3330,6 @@ if fig_find?
   dw here_,context_,fetch_,fetch_
   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
   dw paren_find_
-  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER ; XXX FIXME never gets here
   ;dw to_r_,to_r_,dup_,dot_,from_r_,dup_,dot_,from_r_,dup_,dot_ ; XXX INFORMER
   ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
@@ -3598,9 +3530,6 @@ header.continue:
 
   ; XXX TODO -- rewrite after Forth-83 and Forth-94.
 
-  ; XXX FIXME -- the system crashes when `create` is used in a
-  ; definition.
-
   dw header_,smudge_
   dw paren_semicolon_code_
 do_create:
@@ -3713,48 +3642,6 @@ compare_strings_case_sensitive:
   dec de
   jp compare_strings_case_sensitive
 
-if 0 ; XXX TODO
-
-  _code_header s_equals_,'S','='
-
-  ; Version from Z88 CamelForth
-
-  ; S=    c-addr1 c-addr2 u -- n   string compare
-  ;             n<0: s1<s2, n=0: s1=s2, n>0: s1>s2
-
-  ; XXX FIXME -- crash!
-
-  ; push bc ; XXX FIXME why this?! It's in both CamelForht and Z88 CamelForth.
-  exx
-  pop bc      ; count
-  pop hl      ; addr2
-  pop de      ; addr1
-  ld a,b      ; test for count=0
-  or c
-  jr z,s_equals_.match     ; by definition, match!
-s_equals_.do:
-  ld a,(de)
-  inc de
-  cpi
-  jr nz,s_equals_.diff     ; char mismatch: exit
-  jp pe,s_equals_.do     ; count not exhausted
-s_equals_.match: ; count exhausted & no mismatch found
-  exx
-  ld bc,0         ; bc=0000  (s1=s2)
-  jr s_equals_.end
-s_equals_.diff:  ; mismatch!  undo last 'cpi' increment
-  dec hl          ; point at mismatch char
-  cp (hl)         ; set cy if char1 < char2
-  sbc a,a         ; propagate cy thru A
-  exx
-  ld b,a          ; bc=FFFF if cy (s1<s2)
-  or 1            ; bc=0001 if ncy (s1>s2)
-  ld c,a
-s_equals_.end:
-  _jp_next
-
-endif
-
 ; ----------------------------------------------
   _code_header search_,'SEARC','H'
 
@@ -3848,13 +3735,14 @@ endif
 ; ----------------------------------------------
   _colon_header c_literal_,'CLITERA','L',immediate
 
+  ; XXX TODO -- `interpret` needs the old method of `literal`
+
   if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,c_literal.end
     dw compile_,c_lit_,c_comma_
 c_literal.end:
   else ; XXX NEW
-    ; XXX FIXME -- `interpret` needs the old method of `literal`
     dw question_comp_
     dw compile_,c_lit_,comma_
   endif
@@ -3863,13 +3751,14 @@ c_literal.end:
 ; ----------------------------------------------
   _colon_header literal_,'LITERA','L',immediate
 
+  ; XXX TODO -- `interpret` needs the old method of `literal`
+
   if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,literal.end
     dw compile_,lit_,comma_
 literal.end:
   else ; XXX NEW
-    ; XXX FIXME -- `interpret` needs the old method of `literal`
     dw question_comp_
     dw compile_,lit_,comma_
   endif
@@ -3878,6 +3767,8 @@ literal.end:
 ; ----------------------------------------------
   _colon_header two_literal_,'2LITERA','L',immediate
 
+  ; XXX TODO -- `interpret` needs the old method of `literal`
+
   if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,two_literal.end
@@ -3885,7 +3776,6 @@ literal.end:
 two_literal.end:
   else ; XXX NEW
     ; XXX TODO -- dlit
-    ; XXX FIXME -- `interpret` needs the old method of `literal`
     dw question_comp_
     dw swap_,literal_,literal_
   endif
@@ -4187,9 +4077,30 @@ d_plus_minus.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header min_,'MI','N'
+  _code_header umax_,'UMA','X'
 
-  ; XXX TODO Rewrite in Z80, after DZX-Forth.
+  ; umax  ( u1 u2 -- u1 | u2 )
+
+  pop de
+  pop hl
+  call compare_de_hl_unsigned
+  jp max.1
+
+; ----------------------------------------------
+  _code_header umin_,'UMI','N'
+
+  ; umin  ( u1 u2 -- u1 | u2 )
+
+  pop de
+  pop hl
+  call compare_de_hl_unsigned
+  jp max.2
+
+; ----------------------------------------------
+
+if 0 ; XXX OLD
+
+  _colon_header min_,'MI','N'
 
   dw two_dup_
   dw greater_than_
@@ -4199,10 +4110,22 @@ min.end:
   dw drop_
   dw semicolon_s_
 
-; ----------------------------------------------
-  _colon_header max_,'MA','X'
+else
 
-  ; XXX TODO Rewrite in Z80, after DZX-Forth.
+  _code_header min_,'MI','N'
+
+  pop de
+  pop hl
+  call compare_de_hl_signed
+  jp max.2
+
+endif
+
+; ----------------------------------------------
+
+if 0 ; XXX OLD
+
+  _colon_header max_,'MA','X'
 
   dw two_dup_
   dw less_than_
@@ -4211,6 +4134,23 @@ min.end:
 max.end:
   dw drop_
   dw semicolon_s_
+
+else
+
+  _code_header max_,'MA','X'
+
+  pop de
+max.de:
+  pop hl
+  call compare_de_hl_signed
+max.1:
+  ccf
+max.2:
+  jp c,push_hl
+  ex de,hl
+  jp push_hl
+
+endif
 
 ; ----------------------------------------------
   _colon_header m_star_,'M','*'
@@ -4452,8 +4392,7 @@ branch_destination_0x71E5:
   dw zero_branch_,block.begin ; until
   dw dup_,prev_,store_ ; store the buffer address in `prev`
 block.end:
-  ; XXX TODO optimize with `rdrop`?
-  dw from_r_,drop_
+  dw r_drop_
   dw two_plus_ ; get the address where data begin
   dw semicolon_s_
 
@@ -5251,11 +5190,7 @@ do_two_constant:
   dw two_constant_
   dw paren_semicolon_code_
 do_two_variable:
-  ; XXX TODO optimize to share code with `do_variable`.
-  ; XXX TODO check the execution time, compare with `do_variable`
-  inc de  ; de=pfa
-  push de
-  _jp_next
+  jp do_variable
 
 ; ----------------------------------------------
   _colon_header u_dot_r_,'U.','R'
