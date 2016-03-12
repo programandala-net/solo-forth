@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510212210
+version_release:  equ 201510220228
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -1650,6 +1650,22 @@ push_l: ; XXX TMP -- not used yet
   jp push_hl
 
 ; ----------------------------------------------
+  _code_header two_lit_,'2LIT'
+
+  ; XXX FIXME -- crash if not compiling
+  ; XXX TODO -- implement compile-only flag?
+  ; -- document the issue?
+
+  ld a,(bc)
+  ld l,a
+  inc bc
+  ld a,(bc)
+  ld h,a
+  inc bc
+  push hl
+  jp lit_pfa
+
+; ----------------------------------------------
   _code_header lit_,'LIT'
 
   ; XXX FIXME -- crash if not compiling
@@ -1657,11 +1673,11 @@ push_l: ; XXX TMP -- not used yet
   ; -- document the issue?
 
   ld a,(bc)
-  inc bc
   ld l,a
-  ld a,(bc)
   inc bc
+  ld a,(bc)
   ld h,a
+  inc bc
   jp push_hl
 
 ; ----------------------------------------------
@@ -4387,6 +4403,7 @@ endif
   _code_header zero_equals_,'0='
 
   pop hl
+zero_equals.hl:
   ld a,l
   or h
   jp z,true_pfa
@@ -7695,7 +7712,7 @@ search.string_1_addr equ $+1
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header s_literal_,'SLITERAL',immediate
+  _colon_header s_literal_,'SLITERAL',immediate+compile_only
 
   ; ----
   ; : sliteral  ( ca len -- )  compile slit s,  ; immediate
@@ -7720,7 +7737,7 @@ search.string_1_addr equ $+1
   ; XXX TODO -- `interpret` needs the old method of `literal`
   ; XXX TODO -- move to the library?
 
-  if 1 ; XXX OLD
+  if 0 ; XXX OLD
     dw compiling_question_
     dw zero_branch_,c_literal.end
     dw compile_,c_lit_,c_comma_
@@ -7729,6 +7746,26 @@ c_literal.end:
     dw compile_,c_lit_,comma_
   endif
   dw semicolon_s_
+
+; ----------------------------------------------
+  _code_header char_question_,'CHAR?'
+
+  ; Credits:
+  ; Word adapted from DZX-Forth.
+
+; doc{
+;
+; char?  ( n -- f )
+;
+; Is _n_ an 8-bit number?
+;
+; }doc
+
+  ; XXX TODO -- use with `interpret` or `literal`?
+
+  pop hl
+  ld l,h
+  jp zero_equals.hl
 
 ; ----------------------------------------------
   _colon_header literal_,'LITERAL',immediate+compile_only
@@ -7745,12 +7782,13 @@ c_literal.end:
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
-  if 1 ; XXX OLD
+  if 0 ; XXX OLD
     dw compiling_question_
     dw zero_branch_,literal.end
     dw compile_,lit_,comma_
 literal.end:
   else ; XXX NEW
+    ; XXX TODO -- 8-bit (`cliteral`) and 16-bit, after DZX-Forth
     dw compile_,lit_,comma_
   endif
   dw semicolon_s_
@@ -7768,14 +7806,14 @@ literal.end:
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
-  if 1 ; XXX OLD
+  if 0 ; XXX OLD
     dw compiling_question_
     dw zero_branch_,two_literal.end
     dw swap_,literal_,literal_
 two_literal.end:
   else ; XXX NEW
-    ; XXX TODO -- dlit
-    dw swap_,literal_,literal_
+    dw compile_,two_lit_
+    dw swap_,comma_,comma_
   endif
   dw semicolon_s_
 
@@ -7902,7 +7940,7 @@ if find_name_version!=3 ; XXX TMP
   dw zero_branch_,interpret.execute
 else
 
-  ; XXX UNDER DEVELOPMENT
+  ; XXX UNDER DEVELOPMENT -- finished, not fully testest
 
   ; Found ( cfa b )
   dw dup_,compile_only_question_ ; ( cfa b compile-only? )
@@ -7946,8 +7984,11 @@ endif
 ; _chk 'interpret -- after number' ; XXX INFORMER
   dw dpl_,fetch_,zero_less_than_ ; single number?
   dw question_branch_,interpret.16bit_number
+
 ; _brk 'interpret -- 32bit_number' ; XXX INFORMER
   ; decimal point detected, so it's a double, 32-bit, number
+  dw compiling_question_
+  dw zero_branch_,interpret.begin
   dw two_literal_
   dw branch_,interpret.begin
 
@@ -7958,7 +7999,11 @@ interpret.16bit_number:
   ; of `number?`:
   ; dw drop_ ; discard high order part of the double number
 
-  ; XXX TODO use `c_literal` for 8-bit values.
+  ; XXX TODO use `c_literal` for 8-bit values or do it in
+  ; `literal`?
+
+  dw compiling_question_
+  dw zero_branch_,interpret.begin
   dw literal_
 
   dw branch_,interpret.begin ; repeat
@@ -8054,7 +8099,7 @@ do_vocabulary:
 
   dw blk_,off_
   dw left_bracket_
-quit.do:
+quit.begin:
   dw rp0_,fetch_,rp_store_
 
 ; _brk 'quit -- before query' ; XXX INFORMER
@@ -8078,7 +8123,7 @@ quit.do:
   ; `(load)` finishes and restores `blk` from the return stack!
 
   dw compiling_question_
-  dw question_branch_,quit.do
+  dw question_branch_,quit.begin
 
   dw paren_dot_quote_
   _string 'ok'
@@ -8086,7 +8131,7 @@ quit.do:
 ;  _echo 'In quit after ok:' ; XXX INFORMER
 ;  dw hex_,dot_s_,decimal_ ; XXX INFORMER
 
-  dw branch_,quit.do
+  dw branch_,quit.begin
 
 ; ----------------------------------------------
   _colon_header paren_defer_,'(DEFER)'

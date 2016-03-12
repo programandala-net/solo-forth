@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510212210
+\ Last modified: 201510220229
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -6379,8 +6379,9 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   parse-name drop c@ postpone literal  ; immediate
   \ Parse a name and return the code of the its first
   \ character.
-  \ Note: This word depends on the fig-Forth's `literal`.
-  \ XXX TODO change when `literal` is updated.
+  
+  \ XXX FIXME -- This word depends on the old fig-Forth's
+  \ state-smart `literal`.
 
   \ }}} =======================================================
   \ Data structures {{{
