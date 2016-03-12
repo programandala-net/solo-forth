@@ -414,4 +414,10 @@ words.
 
 Convert `boot` to a deferred word.
 
+// }}}
+== Sample games ==
+// {{{
 
+.2015-10-05:
+
+Finish adapt tt.

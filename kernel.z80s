@@ -18,7 +18,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509270345
+version_release:  equ 201510052046
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -417,6 +417,15 @@ _code_alias_header: macro _base_label,_name,_is_immediate,_alias
 
   _header _base_label,_name,_is_immediate
   dw _alias##pfa ; code field
+
+; XXX TODO
+; _raw_code_alias_header: macro _base_label,_name,_is_immediate,_alias
+
+;   ; Special macro used to create alias of code words that don't
+;   ; have a parameter field, e.g. `noop`.
+
+;   _header _base_label,_name,_is_immediate
+;   dw _alias ; code field
 
 ;_base_label##pfa: equ _alias##pfa ; XXX TODO
 
@@ -5701,12 +5710,42 @@ source.tib:
   jp push_hl
 
 ; ----------------------------------------------
+
+; XXX TODO
+;  _raw_code_alias_header chars_,'CHARS',immediate,noop_
+
+  _code_header chars_,'CHARS',immediate
+
+; doc{
+;
+; chars  ( n1 -- n2 )
+;
+; _n2_ is the size in address units of _n1_ characters.
+; 
+; In Solo Forth, this word does nothing.
+;
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
+  _jp_next
+
+; ----------------------------------------------
   _code_alias_header cells_,'CELLS',,two_star_
 
+; doc{
+;
+; cells  ( n1 -- n2 )
+;
+; _n2_ is the size in address units of _n1_ cells.
+; 
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
 ; ----------------------------------------------
   _constant_header cell_,'CELL'
 
-  dw 0x0002
+  dw cell
 
 ; ----------------------------------------------
   _code_header two_slash_,'2/'
@@ -6538,6 +6577,22 @@ type.end:
 
   _code_header minus_trailing_,'-TRAILING'
 
+; doc{
+;
+; -trailing  ( ca1 len1 -- ca1 len2 )
+;
+; Adjust the length of a string to suppress the trailing blanks.
+;
+; If _len_ is greater  than zero, _len2_ is  equal to _len1_
+; less the number of spaces  at the end of  the character string
+; specified by _ca1 len1_. If _len1_ is zero or the entire
+; string consists of spaces, _len2_ is zero.
+;
+; Standard: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Forth-94 (STRING), Forth-2012 (STRING).
+;
+; }doc
+
   pop de
   pop hl
   push hl
@@ -6555,6 +6610,21 @@ minus_trailing.begin:
   jp nz,push_hl
   dec hl ; new length
   jp minus_trailing.begin ; repeat
+
+; ----------------------------------------------
+  _colon_header minus_leading_,'-LEADING'
+
+; doc{
+;
+; -leading  ( ca1 len1 -- ca2 len2 )
+;
+; Adjust the start and length of a string to suppress the
+; leading blanks.
+;
+; }doc
+
+  dw b_l_,skip_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header paren_dot_quote_,'(.")'

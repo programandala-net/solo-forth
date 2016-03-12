@@ -10,7 +10,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510032120
+\ Last modified: 201510052251
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -108,7 +108,7 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ 2dup undefined?  if  reneeded  else  2drop  then  ;
   \ undefined?  if  parsed-name 2@ reneeded  then  ;
 
-  2dup save-string undefined?
+  2dup save-string -trailing -leading undefined?
     \ a copy of the string is used because `undefined?`
     \ converts it to uppercase
   if  reneeded  else  2drop  then  ;
@@ -2711,6 +2711,15 @@ need -rot
 : between  ( n1|u1 n2|u2 n3|u3 -- f )
   over - -rot - u< 0=  ;
 
+( u<= u>= <= >= 0>= 0<= )
+
+: u<=  ( u1 u2 -- f )  u> 0=  ;
+: u>=  ( u1 u2 -- f )  u< 0=  ;
+: <=   ( n1 n2 -- f )  > 0=   ;
+: >=   ( n1 n2 -- f )  < 0=   ;
+: 0>=  ( n1 n2 -- f )  0< 0=  ;
+: 0<=  ( n1 n2 -- f )  0> 0=  ;
+
 ( d0= d0< d< du< dmin dmax )
 
   \ Credits:
@@ -3725,7 +3734,7 @@ need case
 
   \ Main code
 
-: (decode)  ( pfa --- )
+: (decode)  ( pfa -- )
 
   \ Decode the definition at the given pfa.
 
@@ -4364,6 +4373,18 @@ code !p  ( c ca -- )
 \ : u.r  ( n1 n2 -- )  >r 0 r> du.r  ;
 : du.  ( d -- )  0 du.r space  ;
 
+( d= d<> )
+
+  \ XXX TODO -- rewrite in Z80
+
+: d<>  ( d1 d2 -- f )
+  rot <> if  2drop true exit  then  <>  ;
+: d=  ( d1 d2 -- f )  d<> 0=  ;
+
+  \ XXX OLD
+  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
+  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
 ( d- )
 
 need z80-asm
@@ -4621,6 +4642,7 @@ width !
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO create the leave stack; create the leave stack
   \ pointer as a user variable
 
@@ -4643,6 +4665,7 @@ code l>  ( -- x ) ( L: x -- )
 
 ( do )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO adapt from hForth
 hex
  
@@ -4733,6 +4756,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
   \ Draft by Rod Pemberton
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO
 
 : (do)  ( n1 n2 -- )  2>r  ;
@@ -4791,6 +4815,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \ From:
   \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO
 
 variable ?do?
@@ -4894,6 +4919,21 @@ code j'  ( -- x )
 
   end-code
 
+( k' )
+
+code k'
+  \ ( -- x )
+  \ ( R: loop-sys1 loop-sys2 loop-sys3 -- loop-sys1 loop-sys2 loop-sys3 )
+
+  \ Return a copy of the second next-outer loop limit.
+
+  2A c, rp ,      \ ld hl,(return_stack_pointer)
+  11 c, 5 cells , \ ld de,5*cell
+  19 c,           \ add hl,de
+  C3 c, fetchhl , \ jp fetchhl
+
+  end-code
+
 ( for step )
 
   \ Credits:
@@ -4955,7 +4995,7 @@ code (step)  ( R: n -- n' )
   \ Start of a `for step` loop, that will iterate _u+1_ times,
   \ starting with _u_ and ending with 0.
   \
-  \ The current value of the index can be retrieved with `i`.a
+  \ The current value of the index can be retrieved with `i`.
   \
   \ }doc
 
@@ -5080,6 +5120,7 @@ code (step)  ( R: n -- n' )
   \ Credits:
   \ Code from v.Forth.
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO adapt
 
 : dov  compile (do) csp @ !csp here 3  ;
@@ -5440,7 +5481,7 @@ code ms88  ( u -- )
 
 need z80-asm  need call-cfa  need execute-hl
 
-code pause ( u --- )
+code pause ( u -- )
   \ u = number of ticks
   de pop  bc push
   begin
@@ -5464,7 +5505,7 @@ need z80-asm  need call-cfa
 
 defer (wait)  ' noop ' (wait) defer!
 
-code pause ( u --- )
+code pause ( u -- )
   \ u = number of ticks
   de pop  bc push
   begin
@@ -5486,7 +5527,7 @@ code pause ( u --- )
 
 need z80-asm  need execute-hl
 
-code pause ( u --- )
+code pause ( u -- )
   \ u = number of ticks
   de pop  bc push
   begin
@@ -5511,7 +5552,7 @@ need z80-asm  need execute-hl
 
 variable (wait)  ' noop (wait) !
 
-code pause ( u --- )
+code pause ( u -- )
   \ u = number of ticks
   de pop  bc push
   begin
@@ -5534,7 +5575,7 @@ need z80-asm
 
 variable (wait)  ' noop (wait) !
 
-code pause ( u --- )
+code pause ( u -- )
   \ u = number of ticks
   de pop  bc push
   begin
@@ -5564,7 +5605,7 @@ code pause ( u --- )
 
 need z80-asm
 
-code just-pause ( u --- )
+code just-pause ( u -- )
   \ u = number of ticks
   de pop  bc push
   begin
@@ -5647,6 +5688,11 @@ code just-pause ( u --- )
 
 : wid-of  ( "name" -- wid )  ' cfa>pfa  ;
 
+( set-current get-current )
+
+: get-current  ( -- wid )  current @  ;
+: set-current  ( wid -- )  current !  ;
+
 ( search-wordlist )
 
 : search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
@@ -5684,6 +5730,20 @@ code just-pause ( u --- )
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
 : randomize  ( n -- )  seed !  ;
+
+( random-tt )
+
+  \ Credits:
+  \
+  \ Code from tt.pfe  Tetris for terminals, redone in
+  \ ANSI-Forth.  Written 05Apr94 by Dirk Uwe Zoller, e-mail duz
+  \ AT roxi DOT rz DOT fht-mannheim DOT de.
+
+[defined] seed ?\ 23670 constant seed  \ system variable
+
+: random-tt   ( n -- 0..n-1 ) 
+    seed @ 13 * $07FFF and
+    dup seed !  swap mod ;
 
 ( random-b )
 
@@ -6394,14 +6454,19 @@ code c@a+  ( -- c )
   \ }}} =======================================================
   \ Common heap {{{
 
-.( heap 0)
+( heap )
 
   \ An implementation of the Forth-94 Memory-Allocation Word
   \ Set.
 
-  \ Adapted from code written by Gordon Charlton, 1994:
+  \ XXX TODO use top of memory instead of dictionary space?
+  \ problem: memory banks could not be used at the same time.
   \
-  \ XXX TODO adapt
+  \ XXX TODO use a memory bank instead of dictionary space?
+  \ problem: only words below 0xC000 could manipulate the heap.
+ 
+  \ Credits:
+  \ Adapted from code written by Gordon Charlton, 1994:
 
   \ This is freeware, copyright Gordon Charlton, 12th of
   \ September 1994.  Copy and distribute it. Use it. Don't mess
@@ -6424,18 +6489,18 @@ code c@a+  ( -- c )
 
   \      5, Altering the size of allocated heap space.
 
-  \ The ANS word set consists of three words, ALLOCATE, FREE,
-  \ and RESIZE which give the minimum functionality required to
-  \ use the heap. These are given in areas 3, 4 and 5
-  \ respectively.
+  \ The ANS word set consists of three words, `allocate`,
+  \ `free`, and `resize` which give the minimum functionality
+  \ required to use the heap. These are given in areas 3, 4 and
+  \ 5 respectively.
 
   \ The heap is maintained as a doubly linked ordered circular
   \ list of nodes with an additional field noting the size of
   \ each node and whether it is in use. The size of the heap is
-  \ specified by the constant HEAPSIZE. The constant HYSTERESIS
-  \ controls the amount of spare space that is added to an
-  \ allocation, to reduce the need for block moves during
-  \ resizing.
+  \ specified by the constant `heapsize`. the constant
+  \ `hysteresis` controls the amount of spare space that is
+  \ added to an allocation, to reduce the need for block moves
+  \ during resizing.
 
   \ Initially there is only one node, the size of the heap.
   \ Aditional nodes are created by dividing an existing node
@@ -6458,44 +6523,35 @@ code c@a+  ( -- c )
   \ disregarded without a separate test.
 
 also forth definitions
-vocabulary heap-voc  heap-voc definitions
+need wid-of  need set-current
+vocabulary heap-voc  wid-of heap-voc constant heap-wordlist
+also heap-voc definitions
 
   \ **1** General Purpose Extensions
 
-: unique (  )  VARIABLE  ;
-
-  \ Defining word. Each child returns a different non-zero
-  \ number. The standard introduces the need for unique
-  \ identifiers in the form of IORs and THROW codes, but
-  \ provides no means for generating them. This does the trick.
-
-0 1 2 UM/MOD NIP 1- CONSTANT maxpos
+0 1 2 um/mod nip 1- constant maxpos
+  \ XXX TODO use `environment?` instead when available
 
   \ The largest positive single length integer.
 
   \ **2** Heap Creation
 
-  \ ANSI Heap  ---  Constants
+  \ ANSI Heap  --  Constants
 
-256 CELLS CONSTANT heapsize
+256 cells constant heapsize
 
   \ Number of address units of data space that the heap
   \ occupies.
 
-4 CELLS 1- CONSTANT hysteresis
+4 cells 1- constant hysteresis
 
   \ Node lengths are rounded up according to the value of
-  \ HYSTERESIS to reduce the number of block moves during
-  \ RESIZE operations. The value of this constant must be one
+  \ `hysteresis` to reduce the number of block moves during
+  \ `resize` operations. The value of this constant must be one
   \ less than a power of two and at least equal to one less
   \ than the size of a cell.
 
-unique allocationerror
-
-  \ Indicates there is less contiguous heap space available
-  \ than required.
-
-3 CELLS CONSTANT headsize
+3 cells constant headsize
 
   \ A node on the heap consists of a three cell head followed
   \ by a variable length data space. The first cell in the head
@@ -6506,19 +6562,19 @@ unique allocationerror
   \ circular list. There is no special notation to indicate an
   \ empty list, as this situation cannot occur.
 
-: adjustsize ( n -- n)  headsize +  hysteresis OR  1+  ;
+: adjustsize ( n -- n)  headsize +  hysteresis or  1+  ;
 
   \ The amount of space that is requested for a node needs
   \ adjusting to include the length of the head, and to
   \ incorporate the hysteresis.
 
-0 adjustsize CONSTANT overhead
+0 adjustsize constant overhead
 
   \ The size of the smallest possible node.
 
-  \ ANSI Heap  ---  Structure
+  \ ANSI Heap  --  Structure
 
-CREATE sentinel  HERE CELL+ ,  maxpos ,  0 ,  0 ,
+create sentinel  here cell+ ,  maxpos ,  0 ,  0 ,
 
   \ A dummy node used to speed up searching the heap. The
   \ search, which is for a node larger than or equal to the
@@ -6528,71 +6584,74 @@ CREATE sentinel  HERE CELL+ ,  maxpos ,  0 ,  0 ,
   \ the previous node (ie the sentinel) should be. This is a
   \ special value that indicates the search has failed.
 
-CREATE heap  heapsize ALLOT
+create heap  heapsize allot
 
-  \ The heap is as described in HEADSIZE.
+  \ The heap is as described in `headsize`.
 
-VARIABLE nextnode  -->
+variable nextnode  -->
 
-  \ Searching is done using a "nextfit" algorithm. NEXTNODE
+  \ Searching is done using a "nextfit" algorithm. `nextnode`
   \ points to the most recently allocated node to indicate
   \ where the next search is to start from.
 
-.( heap 1)
+( heap )
 
-: >size ( addr -- addr)  CELL+  ;
+: >size ( addr1 -- addr2)  cell+  ;
 
   \ Move from the "next" cell in the node head to the "size"
   \ cell. Within the word set nodes are referred to by the
   \ address of the "next" cell.  Externally they are referred
   \ to by the address of the start of the data field.
 
-: >prev ( addr -- addr)  2 CELLS +  ;
+: >prev ( addr1 -- addr2)  [ 2 cells ] literal +  ;
 
   \ Move from the "next" cell to the "previous" cell.
 
-: init-heap (  )  heap DUP nextnode !
-  DUP DUP !
-  DUP heapsize  OVER >size !
+: init-heap (  )
+  heap dup nextnode !
+  dup dup !
+  dup heapsize  over >size !
   >prev !  ;
 
   \ Initially the heap contains only one node, which is the
   \ same size as the heap. Both the "next" cell and the
-  \ "previous" cell point to the "next" cell, as does NEXTNODE.
+  \ "previous" cell point to the "next" cell, as does
+  \ `nextnode`.
 
 init-heap
 
   \ **3** Heap Allocation
 
-  \ ANSI Heap  ---  List Searching
+  \ ANSI Heap  --  List Searching
 
 : attach ( addr)
-  >prev @  DUP sentinel ROT !  sentinel >prev !  ;
+  >prev @  dup sentinel rot !  sentinel >prev !  ;
 
   \ The sentinel is joined into the nodelist. The "next" field
-  \ of the node preceding the one specified (addr) is set to
+  \ of the node preceding the one specified (_addr_) is set to
   \ point to the sentinel, and the "prev" field of the sentinel
   \ to point to the node that points to the sentinel.
 
 : search  ( addr size -- addr|0)
-  >R BEGIN 2@ SWAP R@ < INVERT UNTIL
-  R> DROP  >prev @  ;
+  >r begin 2@ swap R@ < invert until
+  r> drop  >prev @  ;
 
-  \ Search the nodelist, starting at the node specified (addr),
-  \ for a free node larger than or equal to the specified size.
-  \ Return the address of the first node that matches, or zero
-  \ for no match. The heap structure is set up to make this a
-  \ near optimal search loop. The "size" field is next to the
-  \ "next" field so that both can be collected in a single
-  \ operation (2@). Nodes in use have negated sizes so they
-  \ never match the search. The "previous" field is included to
-  \ allow the search to overshoot the match by one node and
-  \ then link back outside the loop, rather than remembering
-  \ the address of the node just examined. The sentinel removes
-  \ the need for a separate test for failure. SEARCH assumes
-  \ the sentinel is in place.
+  \ Search the nodelist, starting at the node specified
+  \ (_addr_), for a free node larger than or equal to the
+  \ specified _size_.  Return the address of the first node
+  \ that matches, or zero for no match. The heap structure is
+  \ set up to make this a near optimal search loop. The "size"
+  \ field is next to the "next" field so that both can be
+  \ collected in a single operation (2@). Nodes in use have
+  \ negated sizes so they never match the search. The
+  \ "previous" field is included to allow the search to
+  \ overshoot the match by one node and then link back outside
+  \ the loop, rather than remembering the address of the node
+  \ just examined. The sentinel removes the need for a separate
+  \ test for failure. `search` assumes the sentinel is in
+  \ place.
 
-: detach ( addr)  DUP >prev @ !  ;
+: detach ( addr)  dup >prev @ !  ;
 
   \ Remake the link from the node prior to the one specified to
   \ the one specified. This will remove the sentinel if it is
@@ -6600,30 +6659,30 @@ init-heap
 
 -->
 
-.( heap 2)
+( heap )
 
 : findspace ( size -- addr|0)  nextnode @
-           DUP      attach
-           DUP ROT  search
-           SWAP     detach  ;
+           dup      attach
+           dup rot  search
+           swap     detach  ;
 
   \ Search the nodelist for a node larger or equal to that
   \ specified. Return the address of a suitable node, or zero
   \ if none found. The search starts at the node pointed to by
-  \ NEXTNODE, the sentinal temporarily attached, the search
+  \ `nextnode`, the sentinal temporarily attached, the search
   \ proceeded with and the sentinel detached.
 
 
-  \ ANSI Heap  ---  Head Creation
+  \ ANSI Heap  --  Head Creation
 
-: fits ( size addr -- flag)  >size @ SWAP -  overhead  <  ;
+: fits ( size addr -- flag)  >size @ swap -  overhead  <  ;
 
-  \ Returns TRUE if the size of the node specified is the same
-  \ as the specified size, or larger than it by less than the
-  \ size of the smallest possible node. Returns FALSE
+  \ Returns `true` if the size of the node specified is the
+  \ same as the specified size, or larger than it by less than
+  \ the size of the smallest possible node. Returns `false`
   \ otherwise.
 
-: togglesize ( addr)  >size DUP @  NEGATE SWAP !  ;
+: togglesize ( addr)  >size dup @  negate swap !  ;
 
   \ Negate the contents of the "size" field of the specified
   \ node. If the node was available it is marked as in use, and
@@ -6635,30 +6694,30 @@ init-heap
   \ searches of the node list.
 
 : sizes! ( size addr -- addr)
-  2DUP + >R  >size 2DUP @ SWAP -
-  R@ >size !   SWAP NEGATE SWAP !  R>  ;
+  2dup + >r  >size 2dup @ swap -
+  R@ >size !   swap negate swap !  r>  ;
 
-  \ Given a free node (addr), reduce its size to that specified
-  \ and mark it as in use. Start to construct a new node within
-  \ the specified node beyond its new length, by storing the
-  \ length of the remainder of the node in the size field of
-  \ the new node. Return the address of the partially
+  \ Given a free node (_addr_), reduce its size to that
+  \ specified and mark it as in use. Start to construct a new
+  \ node within the specified node beyond its new length, by
+  \ storing the length of the remainder of the node in the size
+  \ field of the new node. Return the address of the partially
   \ constructed node.
 
 : links! ( addr1 addr2)
-  2DUP SWAP @  2DUP  SWAP !  >prev !
-  2DUP >prev !   SWAP !  ;
+  2dup swap @  2dup  swap !  >prev !
+  2dup >prev !   swap !  ;
 
 
-  \ Addr1 is an existing node. Addr2 is the address of a new
-  \ node just above the existing node. Break the links from the
-  \ existing node to the next node and from the next node to
-  \ the existing node and join the new node to them.
+  \ _Addr1_ is an existing node. _Addr2_ is the address of a
+  \ new node just above the existing node. Break the links from
+  \ the existing node to the next node and from the next node
+  \ to the existing node and join the new node to them.
 
 
-  \ ANSI heap  ---  Node Construction  ALLOCATE
+  \ ANSI heap  --  Node Construction  ALLOCATE
 
-: newnode ( size addr)  TUCK sizes!  links!  ;
+: newnode ( size addr)  tuck sizes!  links!  ;
 
   \ Given a free node at addr split it into an in-use node of
   \ the specified size and a new free node above the in-use
@@ -6666,124 +6725,124 @@ init-heap
 
 -->
 
-.( heap 3)
+( heap )
 
 : makenode ( size addr)
-  2DUP fits IF  togglesize DROP  ELSE  newnode  THEN  ;
+  2dup fits if  togglesize drop  else  newnode  then  ;
 
   \ Given a free node at addr make an in-use node of the
   \ specified size and free the remainder, if there is any
   \ usable space left.
 
-: set-current  ( wid -- )  current !  ; \ XXX TMP
-FORTH-WORDLIST SET-CURRENT
-: ALLOCATE ( u -- addr ior)
-  DUP 0< IF  allocationerror
-       ELSE  adjustsize
-       DUP findspace
-       DUP IF  DUP next!
-         TUCK makenode
+forth-wordlist set-current
+: allocate ( u -- addr ior)
+  dup 0< if  -59  \ `allocate` error code
+       else  adjustsize
+       dup findspace
+       dup if  dup next!
+         tuck makenode
          headsize +  0
-         ELSE  DROP allocationerror
-         THEN
-       THEN  ;
-MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
+         else  drop -59  \ `allocate` error code
+         then
+       then  ;
+heap-wordlist set-current  -->
 
-  \ Make an in-use node with a data field at least u address
+  \ Make an in-use node with a data field at least _u_ address
   \ units long.  Return the address of the data field and an
   \ ior of 0 to indicate success.  If the space is not
-  \ available return any old number and an ior equal to the
-  \ constant ALLOCATIONERROR. The standard specifies that the
-  \ argument to ALLOCATE is unsigned. As the implementation
-  \ uses the sign bit of the size field for its own purposes
-  \ any request for an amount of space greater than MAXPOS must
-  \ fail. As this would be a request for half the addressable
-  \ memory or more this is not unreasonable.
+  \ available return any old number and the standard ior.  The
+  \ standard specifies that the argument to `allocate` is
+  \ unsigned. As the implementation uses the sign bit of the
+  \ size field for its own purposes any request for an amount
+  \ of space greater than `maxpos` must fail. As this would be
+  \ a request for half the addressable memory or more this is
+  \ not unreasonable.
 
-.( heap 4)
+( heap )
 
   \ **4** Releasing Space
 
-  \ ANSI heap  ---  Head Destruction
+  \ ANSI heap  --  Head Destruction
 
-: mergesizes ( addr addr)
-  >size @ SWAP >size +!  ;
+: mergesizes ( addr1 addr2)
+  >size @ swap >size +!  ;
 
-  \ Make the size field of the node at addr1 equal to the sum
+  \ Make the size field of the node at _addr1_ equal to the sum
   \ of the sizes of the two specified nodes. In usage the node
-  \ at addr2 will be the one immediately above addr1.
+  \ at _addr2_ will be the one immediately above _addr1_.
 
-: mergelinks ( addr addr)
-  @ 2DUP SWAP !  >prev !  ;
+: mergelinks ( addr1 addr2)
+  @ 2dup swap !  >prev !  ;
 
-  \ The node at addr2 is removed from the node list. As with
-  \ MERGESIZES the node at addr2 will be immediately above that
-  \ at addr1. Destroy the link from node1 to node2 and relink
-  \ node1 to the node above node2. Destroy the backward link
-  \ from the node above node2 and relink it to node1.
+  \ The node at _addr2_ is removed from the node list. As with
+  \ `mergesizes` the node at _addr2_ will be immediately above
+  \ that at _addr1_. Destroy the link from node1 to node2 and
+  \ relink node1 to the node above node2. Destroy the backward
+  \ link from the node above node2 and relink it to node1.
 
 : jiggle (  )
   nextnode @ @  >prev @  next!  ;
 
   \ There is a possibility when a node is removed from the node
-  \ list that NEXTNODE may point to it. This is cured by making
-  \ it point to the node prior to the one removed. We do not
-  \ want to alter the pointer if it does not point to the
+  \ list that `nextnode` may point to it. This is cured by
+  \ making it point to the node prior to the one removed. We do
+  \ not want to alter the pointer if it does not point to the
   \ removed node as that could be detrimental to the efficiency
   \ of the nextfit search algorithm. Rather than testing for
   \ this condition we jiggle the pointer about a bit to settle
   \ it into a linked node. This is done for reasons of
-  \ programmer amusement. Specifically NEXTNODE is set to point
-  \ to the node pointed to by the "previous" field of the node
-  \ pointed to in the "next" field of the node pointed to by
-  \ NEXTNODE. Ordinarily this is a no-op (ie I am my father's
-  \ son) but when the node has had its links merged it sets
-  \ NEXTNODE to point to the node prior to the node it pointed
-  \ to (ie when I died my father adopted my son, so now my son
-  \ is my father's son).
+  \ programmer amusement. Specifically `nextnode` is set to
+  \ point to the node pointed to by the "previous" field of the
+  \ node pointed to in the "next" field of the node pointed to
+  \ by `nextnode`. Ordinarily this is a no-op (ie I am my
+  \ father's son) but when the node has had its links merged it
+  \ sets `nextnode` to point to the node prior to the node it
+  \ pointed to (ie when I died my father adopted my son, so now
+  \ my son is my father's son).
 
 : merge ( addr)
-  DUP @ 2DUP mergesizes
+  dup @ 2dup mergesizes
        mergelinks  jiggle  ;
 
   \ Combine the node specified with the node above it. Merge
   \ the sizes, merge the lengths and jiggle.
 
 
-  \ ANSI Heap  ---  Node Removal    FREE
+  \ ANSI Heap  --  Node Removal
 
-: ?merge ( addr1 addr2)  >size @
-  0> IF
-    DUP DUP @
-    U< IF  DUP merge  THEN
-  THEN  DROP  ;  -->
+: ?merge ( addr1 addr2)
+  >size @ 0> if
+    dup dup @
+    u< if  dup merge  then
+  then  drop  ;  -->
 
-  \ Merge the node at addr1 with the one above it on two
-  \ conditions, firstly that the node at addr2 is free, and
+  \ Merge the node at _addr1_ with the one above it on two
+  \ conditions, firstly that the node at _addr2_ is free, and
   \ secondly that the node pointed to by the next field in
-  \ addr1 is actually above addr1 (ie that it does not wrap
-  \ around because it is the topmost node). In usage addr2 will
-  \ be either addr1 or the node above it. In each instance the
-  \ other affected node (either the node above addr1 or addr1)
-  \ is known to be free, so no test is needed for this.
+  \ _addr1_ is actually above _addr1_ (ie that it does not wrap
+  \ around because it is the topmost node). In usage _addr2_
+  \ will be either _addr1_ or the node above it. In each
+  \ instance the other affected node (either the node above
+  \ _addr1_ or _addr1_) is known to be free, so no test is
+  \ needed for this.
 
-.( heap 5)
+( heap )
 
-: ?mergenext ( addr)  DUP @ ?merge  ;
+: ?mergenext ( addr)  dup @ ?merge  ;
 
   \ Merge the node following the specified node with the
   \ specified node, if following node is free.
 
-: ?mergeprev ( addr)  >prev @ DUP ?merge  ;
+: ?mergeprev ( addr)  >prev @ dup ?merge  ;
 
   \ Merge the specified node with the one preceding it, if the
   \ preceding node is free.
 
-FORTH-WORDLIST SET-CURRENT
-: FREE ( addr -- ior)
-  headsize -  DUP togglesize  DUP ?mergenext  ?mergeprev  0  ;
+forth-wordlist set-current
+: free ( addr -- ior)
+  headsize -  dup togglesize  dup ?mergenext  ?mergeprev  0  ;
 
-MEMORY-ALLOC-WORDLIST SET-CURRENT
+heap-wordlist set-current
 
   \ Mark the specified in-use word as free, and merge with any
   \ adjacent free space. As this is a standard word addr is the
@@ -6794,42 +6853,42 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT
 
   \ **5** Resizing Allocated Space
 
-  \ ANSI Heap  ---  Node Repairing
+  \ ANSI Heap  --  Node Repairing
 
-VARIABLE stash
+variable stash
 
-  \ The RESIZE algorithm is simplified and made faster by
-  \ assuming that it will always succeed. STASH holds the
+  \ the `resize` algorithm is simplified and made faster by
+  \ assuming that it will always succeed. `stash` holds the
   \ minimum information required to make good when it fails.
 
 : savelink ( addr)  @ stash !  ;
 
-  \ Saves the contents of the >NEXT field of the node being
-  \ RESIZEd in STASH (above).
+  \ saves the contents of the `>next` field of the node being
+  \ `resize`d in `stash` (above).
 
-: restorelink ( addr)  stash @  SWAP !  ;
+: restorelink ( addr)  stash @  swap !  ;
 
-  \ Converse operation to SAVELINK (above).
+  \ Converse operation to `savelink` (above).
 
-: fixprev ( addr)  DUP >prev @ !  ;
+: fixprev ( addr)  dup >prev @ !  ;
 
-  \ The >NEXT field of the node prior to the node being RESIZEd
-  \ should point to the node being RESIZEd. It may very well do
-  \ already, but this makes sure.
+  \ The `>next` field of the node prior to the node being
+  \ `resize`d should point to the node being `resize`d. it may
+  \ very well do already, but this makes sure.
 
-: fixnext ( addr)  DUP @ >prev !  ;
+: fixnext ( addr)  dup @ >prev !  ;
 
-  \ The >PREV field of the node after the node resized may need
-  \ correcting.  This corrects it whether it needs it or not.
-  \ (Its quicker just to do it than to check first.)
+  \ The `>prev` field of the node after the node resized may
+  \ need correcting.  This corrects it whether it needs it or
+  \ not.  (Its quicker just to do it than to check first.)
 
-: fixlinks ( addr)  DUP fixprev  DUP fixnext  @ fixnext  ;
+: fixlinks ( addr)  dup fixprev  dup fixnext  @ fixnext  ;
 
-  \ RESIZE may very well merge its argument node with the
+  \ `resize` may very well merge its argument node with the
   \ previous one. It may very well merge that with the next
   \ one. This means we need to fix the previous one, the next
   \ one and the one after next. To extend the metaphor started
-  \ in the description of JIGGLE (above), not only did I die,
+  \ in the description of `jiggle` (above), not only did I die,
   \ but my father did too. This brings my grandfather into the
   \ picture as guardian of my son. Now to confound things we
   \ have all come back to life. I still remember who my son is,
@@ -6844,126 +6903,127 @@ VARIABLE stash
 
 -->
 
-.( heap 6)
+( heap )
 
 : fixsize ( addr)
-  DUP >size @ 0>
-  IF  DUP @  2DUP <
-      IF    OVER - SWAP >size !  ELSE  2DROP  THEN
-  ELSE  DROP  THEN  ;
+  dup >size @ 0>
+  if  dup @  2dup <
+      if    over - swap >size !  else  2drop  then
+  else  drop  then  ;
 
   \ Reconstruct the size field of a node from the address of
-  \ the head and the contents of the >NEXT field provided that
-  \ the node is free and it is not the topmost node in the heap
-  \ (ie there is no wraparound). Both these conditions need to
-  \ be true for the node to have been merged with its
+  \ the head and the contents of the `>next` field provided
+  \ that the node is free and it is not the topmost node in the
+  \ heap (ie there is no wraparound). Both these conditions
+  \ need to be true for the node to have been merged with its
   \ successor.
 
-: fixsizes ( addr)  DUP fixsize  >prev @ fixsize  ;
+: fixsizes ( addr)  dup fixsize  >prev @ fixsize  ;
 
   \ The two nodes whose size fields may need repairing are the
-  \ one passed as an argument to RESIZE (damaged by ?MERGENEXT)
-  \ and its predecessor (damaged by ?MERGEPREV).
+  \ one passed as an argument to `resize` (damaged by
+  \ `?mergenext`) and its predecessor (damaged by `?mergeprev`).
 
 : repair ( addr)
-  DUP restorelink
-  DUP fixlinks  DUP fixsizes
+  dup restorelink
+  dup fixlinks  dup fixsizes
   togglesize  ;
 
-  \ Make good the damage done by RESIZE. Restore the >next
+  \ Make good the damage done by `resize`. Restore the `>next`
   \ field, fix the links, fix the size fields and mark the node
   \ as in-use. Note that this may not restore the system to
-  \ exactly how it was. In particular the pointer NEXTNODE may
-  \ have moved back one or two nodes by virtue of having been
-  \ JIGGLEd about if it happened to be pointing to the wrong
-  \ node. This is not serious, so I have chosen to ignore it.
+  \ exactly how it was. In particular the pointer `nextnode`
+  \ may have moved back one or two nodes by virtue of having
+  \ been `jiggle`d about if it happened to be pointing to the
+  \ wrong node. This is not serious, so I have chosen to ignore
+  \ it.
 
 
-  \ ANSI Heap  ---  Node Movement
+  \ ANSI Heap  --  Node Movement
 
 : toobig? ( addr size -- flag)
-  SWAP  >size @  >  ;
+  swap  >size @  >  ;
 
-  \ Flag is true if the node at addr is smaller than the
+  \ _Flag_ is true if the node at _addr_ is smaller than the
   \ specified size.
 
 -->
 
-.( heap 7)
+( heap )
 
 : copynode ( addr1 addr2)
-  OVER >size @  headsize -
-  ROT  headsize + ROT ROT MOVE  ;
+  over >size @  headsize -
+  rot  headsize + rot rot move  ;
 
-  \ Move the contents of the data field of the node at addr1 to
-  \ the data field at addr2. Assumes addr2 is large enough. It
-  \ will be.
+  \ Move the contents of the data field of the node at _addr1_
+  \ to the data field at _addr2_. Assumes _addr2_ is large
+  \ enough. It will be.
 
 : enlarge ( addr1 size -- addr2 ior)
-  OVER  ?mergeprev
-  ALLOCATE DUP >R
-  IF  SWAP repair  ELSE  TUCK copynode  THEN  R>  ;
+  over  ?mergeprev
+  allocate dup >r
+  if  swap repair  else  tuck copynode  then  r>  ;
 
   \ Make a new node of the size specified. Copy the data field
-  \ of addr1 to the new node. Merge the node at addr1 with the
-  \ one preceding it, if possible. This last behaviour is to
-  \ finish off removing the node at addr1. The word ADJUST
-  \ (below) starts removing the node. The node is removed
-  \ before allocation to increase the probability of ALLOCATE
-  \ succeeding. The address returned by ENLARGE is that
-  \ returned by ALLOCATE, which is that of the data field, not
-  \ the head. If the allocation fails repair the damage done by
-  \ removing the node at addr1.
+  \ of _addr1_ to the new node. Merge the node at addr1 with
+  \ the one preceding it, if possible. This last behaviour is
+  \ to finish off removing the node at _addr1_. The word
+  \ `adjust` (below) starts removing the node. The node is
+  \ removed before allocation to increase the probability of
+  \ `allocate` succeeding. The address returned by `enlarge` is
+  \ that returned by `allocate`, which is that of the data
+  \ field, not the head. If the allocation fails repair the
+  \ damage done by removing the node at _addr1_.
 
 
-  \ ANSI Heap  ---  Node Restructuring  RESIZE
+  \ ANSI Heap  --  Node Restructuring
 
 : adjust ( addr1 size1 -- addr2 size2)
-  adjustsize >R
+  adjustsize >r
   headsize -
-  DUP savelink
-  DUP togglesize
-  DUP ?mergenext R>  ;
+  dup savelink
+  dup togglesize
+  dup ?mergenext r>  ;
 
-  \ Addr1 points to the data field of a node, not the "next"
-  \ field. This needs correcting. Size1 also needs adjusting as
-  \ per ADJUSTSIZE. In addition it is easier to work with free
-  \ nodes than live ones as the size field is correct, and, as
-  \ we intend to change the nodes size we will inevitably want
-  \ to muck about with the next node, if its free, so lets
-  \ merge with it straight away. Sufficient information is
-  \ first saved to put the heap back as it was, if necessary.
-  \ Now we are ready to get down to business.
+  \ _Addr1_ points to the data field of a node, not the "next"
+  \ field. This needs correcting. _Size1_ also needs adjusting
+  \ as per `adjustsize`. In addition it is easier to work with
+  \ free nodes than live ones as the size field is correct,
+  \ and, as we intend to change the nodes size we will
+  \ inevitably want to muck about with the next node, if its
+  \ free, so lets merge with it straight away. Sufficient
+  \ information is first saved to put the heap back as it was,
+  \ if necessary.  Now we are ready to get down to business.
 
 -->
 
-.( heap 8)
+( heap )
 
-FORTH-WORDLIST SET-CURRENT
+forth-wordlist set-current
 
-: RESIZE ( addr1 u -- addr2 ior)
-  DUP 0<  IF  DROP allocationerror
-          ELSE  adjust  2DUP toobig?
-                IF enlarge
-                ELSE  OVER makenode headsize +  0  THEN
-          THEN  ;
+: resize ( addr1 u -- addr2 ior)
+  dup 0<  if  drop -61  \ `resize` error code
+          else  adjust  2dup toobig?
+                if enlarge
+                else  over makenode headsize +  0  then
+          then  ;
 
-  \ Resize the node at addr1 to the specified size. Return the
-  \ address of the resized node (addr2) along with an ior of
-  \ zero if successful and ALLOCATIONERROR if not. Addr2 may be
-  \ the same as, or different to, addr1.  If ior is non-zero
-  \ then addr2 is not meaningful. Being a standard word the
+  \ Resize the node at _addr1_ to the specified size. Return
+  \ the address of the resized node _addr2_ along with an _ior_
+  \ of zero if successful and -61 if not. _Addr2_ may be the
+  \ same as, or different to, _addr1_.  If _ior_ is non-zero
+  \ then _addr2_ is not meaningful. Being a standard word the
   \ arguments need adjusting to the internal representation on
   \ entry, and back again on exit. If after the first merge the
   \ requested size is still too large to reuse the specified
   \ node then it is moved to a larger node and the specified
   \ node released. If, on the other hand the request is not too
   \ big for the node, then we remake the node at the right
-  \ length, and free any space at the top using MAKENODE, which
-  \ has just the right functionality. In this case the ior is
-  \ zero. As this is a standard word it takes an unsigned size
-  \ argument, but excessive requests fail automatically, as
-  \ with ALLOCATE.
+  \ length, and free any space at the top using `makenode`,
+  \ which has just the right functionality.  In this case the
+  \ ior is zero. As this is a standard word it takes an
+  \ unsigned size argument, but excessive requests fail
+  \ automatically, as with `allocate`.
 
   \ }}} =======================================================
   \ Leo Brodie's DOER ... MAKE construct {{{
@@ -7719,6 +7779,473 @@ need frames@
   begin   -craft scroll  faster farther .info  continue?
   while   rudder .craft .stars  delay
   repeat  game-over  ;
+
+  \ }}} =======================================================
+  \ Sample game: tt (Tetris for terminals) {{{
+
+( tt )
+
+  \ tt (Tetris for terminals) is a port of a game written in
+  \ Forth-94 by Dirk Uwe Zoller in 1994.
+
+  \ Credits:
+
+  \ ----------------------------------------------------------
+  \ tt.pfe  Tetris for terminals, redone in ANSI-Forth.
+  \
+  \ Written 05Apr94 by Dirk Uwe Zoller, e-mail duz AT roxi DOT
+  \ rz DOT fht-mannheim DOT de.
+  \
+  \ Look&feel stolen from Mike Taylor's "TETRIS FOR TERMINALS".
+  \
+  \ Please copy and share this program, modify it for your
+  \ system and improve it as you like. But don't remove this
+  \ notice.
+  \
+  \ Thank you.
+  \ ----------------------------------------------------------
+
+only forth also definitions
+
+  \ XXX TODO
+  \ [defined] forget-tt [if] forget-tt [then] marker forget-tt
+  \ [defined] extensions [if] extensions also [then]
+
+need random  s"  j " needed  s"  >= " needed  s"  <= " needed
+need value  need d<>  need d=  need case  need ms  need frames@
+
+[defined] >body ?\  : >body  ( cfa -- pfa )  cfa>pfa  ;
+
+vocabulary tetris  also tetris definitions  decimal
+
+bl bl 2constant empty
+  \ an empty position of the pit
+
+variable wiping
+  \ if true, wipe brick, else draw brick
+
+2 constant col0  2 constant row0
+  \ position of the pit, not including the frame
+
+10 constant wide  10 constant deep
+  \ size of pit in stones, not including the frame
+
+char 5  value left-key  char 8  value right-key
+char 7  value rot-key   bl  value drop-key
+char P  value pause-key 12  value refresh-key
+char Q  value quit-key  -->
+
+( tt )
+
+variable score
+variable pieces
+variable levels
+variable delay
+
+variable brick-row  variable brick-col
+  \ where the brick is
+
+  \ Access pairs of characters in memory:
+
+: 2c@  ( a -- c1 c2 )  dup 1+ c@ swap c@  ;
+: 2c!  ( c1 c2 a -- )  dup >r c! r> 1+ c!  ;
+
+  \ Drawing primitives:
+
+: 2emit  ( c1 c2 -- )   emit emit  ;
+
+: position  ( row col -- )
+  \ cursor to the position in the pit
+  2* col0 + swap row0 + at-xy  ;
+
+: stone  ( c1 c2 -- )
+  \ draw or undraw these two characters
+  wiping @ if  2drop 2 spaces  else  2emit  then  ;
+
+-->
+
+( tt )
+
+  \ Define the pit where bricks fall into:
+
+wide deep * 2 * constant /pit
+create 'pit /pit allot
+: pit  ( col row -- a )  'pit rot wide * rot + 2* +  ;
+
+: empty-pit  ( -- )  'pit /pit blank  ;
+
+  \ Displaying:
+
+: draw-bottom  ( -- )
+  \ redraw the bottom of the pit
+  deep -1 position  [char] + dup stone
+  wide 0 do  [char] = dup stone  loop
+  [char] + dup stone  ;
+
+: draw-frame  ( -- )
+  \ draw the border of the pit
+  deep 0 do   i -1   position [char] | dup stone
+              i wide position [char] | dup stone
+  loop  draw-bottom  ;  -->
+
+( tt )
+
+: bottom-msg  ( addr cnt -- )
+  \ output a message in the bottom of the pit
+  deep over 2/ wide swap - 2/ position type  ;
+
+: draw-line  ( line -- )
+  \ XXX FIXME
+  dup 0 position  wide 0 do  dup i pit 2c@ 2emit  loop  drop  ;
+
+: draw-pit  ( -- )
+  \ draw the contents of the pit
+  deep 0 do  i draw-line  loop  ;
+
+: show-key  ( c -- )
+  \ visualization of that character
+  \ XXX TODO adapt
+  dup bl <
+  if    [char] @ or  [char] ^ emit  emit  space
+  else  [char] ' emit  emit  [char] ' emit  then  ;
+
+-->
+
+( tt )
+
+: show-help  ( -- )
+  \ display some explanations
+  page
+  \  <------------------------------>
+  ." TETRIS FOR TERMINALS" cr cr
+  ." Use keys:" cr
+  left-key  show-key    ."  Move left" cr
+  rot-key  show-key     ."  Rotate" cr
+  right-key  show-key   ."  Move right" cr
+  drop-key  show-key    ."  Drop" cr
+  pause-key  show-key   ."  Pause" cr
+  refresh-key  show-key ."  Refresh" cr
+  quit-key  show-key    ."  Quit" cr cr
+  \  <------------------------------>
+  ." Original ANS Forth code written" cr
+  ." by Dirk Uwe Zoller, 1994." cr
+  ." Ported to Solo Forth" cr
+  ." by Marcos Cruz, 2015." cr  ; -->
+
+( tt )
+
+: score-labels ( -- )
+  0 0 at-xy ." Score:"
+  0 11 at-xy ." Pieces:"
+  0 22 at-xy ." Levels:"  ;
+
+: update-score  ( -- )
+  \ display current score
+  0 6 at-xy score @ 3 .r
+  0 18 at-xy pieces @ 3 .r
+  0 29 at-xy levels @ 3 .r  ;
+
+: refresh  ( --)  page draw-frame draw-pit update-score  ;
+  \ redraw everything on screen
+
+  \ Define shapes of bricks:
+
+  \ XXX OLD -- original code
+  \ : def-brick  ( "name" -- )
+  \   create
+  \   4 0 do
+  \     ' execute  0 do  dup i chars + c@ c,  loop drop
+  \     refill drop
+  \   loop
+  \   does>  ( pfa )  rot 4 * rot + 2* +  ;
+
+: brick:  ( ca1 len1 ca2 len2 ca3 len3 ca4 len4 "name" -- )
+  create  4 0 do
+            0 do  dup i chars + c@ c,  loop drop
+          loop
+  does>  ( pfa )  rot 4 * rot + 2* +  ;  -->
+
+( tt )
+
+s"         "
+s"   ##    "
+s" ######  "
+s"         " brick: brick1  
+
+s"         "
+s"         "
+s" <><><><>"
+s"         " brick: brick2  
+
+s"         "
+s"   {}    "
+s"   {}{}{}"
+s"         " brick: brick3  
+
+-->
+
+( tt )
+
+s"         "
+s"     ()  "
+s" ()()()  "
+s"         " brick: brick4  
+
+s"         "
+s"   [][]  "
+s"   [][]  "
+s"         " brick: brick5  
+
+s"         "
+s"   @@@@  "
+s" @@@@    "
+s"         " brick: brick6  
+
+-->
+
+( tt )
+
+s"         "
+s" %%%%    "
+s"   %%%%  "
+s"         " brick: brick7  
+
+  \ this brick is actually in use:
+
+s"         "
+s"         "
+s"         "
+s"         " brick: brick   
+
+s"         "
+s"         "
+s"         "
+s"         " brick: scratch  
+
+-->
+
+( tt )
+
+create bricks  ' brick1 ,  ' brick2 ,  ' brick3 ,  ' brick4 ,
+               ' brick5 ,  ' brick6 ,  ' brick7 ,
+
+create brick-val 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
+
+: is-brick  ( brick -- )
+  \ activate a shape of brick
+  >body ['] brick >body 32 cmove  ;
+
+: new-brick  ( -- )
+  \ select a new brick by random, count it
+  1 pieces +!  7 random
+  bricks over cells + @ is-brick
+  brick-val swap chars + c@ score +!  ;
+
+: rotleft  ( -- )
+  4 0 do 4 0 do
+    j i brick 2c@  3 i - j scratch 2c!
+  loop loop
+  ['] scratch is-brick  ;
+
+-->
+
+( tt )
+
+
+: rotright  4 0 do 4 0 do
+        j i brick 2c@  i 3 j - scratch 2c!
+    loop loop
+    ['] scratch is-brick  ;
+
+: draw-brick  ( row col -- )
+  4 0 do 4 0 do
+    j i brick 2c@  empty d<>
+    if  over j + over i +  position
+        j i brick 2c@  stone
+    then
+  loop loop  2drop  ;
+
+: show-brick  ( row col -- )  wiping off draw-brick  ;
+: hide-brick  ( row col -- )  wiping on  draw-brick  ;
+
+-->
+
+( tt )
+
+: put-brick  ( row col -- )
+  \ put the brick into the pit
+  4 0 do 4 0 do
+      j i brick 2c@  empty d<>
+      if  over j +  over i +  pit
+          j i brick 2c@  rot 2c!
+      then
+  loop loop  2drop  ;
+
+: remove-brick  ( row col -- )
+  \ remove the brick from that position
+  4 0 do  4 0 do
+    j i brick 2c@  empty d<>
+    if  over j + over i + pit empty rot 2c!  then
+  loop  loop  2drop  ;
+
+-->
+
+( tt )
+
+: test-brick  ( row col -- f )
+  \ could the brick be there?
+  4 0 do 4 0 do
+    j i brick 2c@ empty d<>
+    if  over j +  over i +
+        over dup 0< swap deep >= or
+        over dup 0< swap wide >= or
+        2swap pit 2c@  empty d<>
+        or or if  unloop unloop 2drop false  exit  then
+    then
+  loop loop  2drop true  ;
+
+-->
+
+( tt )
+
+
+: move-brick  ( rows cols -- f )
+  \ try to move the brick
+  brick-row @ brick-col @ remove-brick
+  swap brick-row @ + swap brick-col @ + 2dup test-brick
+  if    brick-row @ brick-col @ hide-brick
+        2dup brick-col ! brick-row !
+        2dup show-brick put-brick  true
+  else  2drop brick-row @ brick-col @ put-brick  false
+  then  ;
+
+-->
+
+( tt )
+
+: rotate-brick  ( f1 --- f2 )
+  \ f1 = left/right
+  \ f2 = success
+  brick-row @ brick-col @ remove-brick
+  dup if  rotright  else  rotleft  then
+  brick-row @ brick-col @ test-brick
+  over if  rotleft  else  rotright  then
+  if  brick-row @ brick-col @ hide-brick
+      if  rotright  else  rotleft  then
+      brick-row @ brick-col @ put-brick
+      brick-row @ brick-col @ show-brick  true
+  else  drop false  then  ;
+
+-->
+
+( tt )
+
+: insert-brick  ( row col -- f )
+  \ introduce a new brick
+  2dup test-brick
+  if  2dup brick-col ! brick-row !
+      2dup put-brick  draw-brick  true
+  else  false  then  ;
+
+: drop-brick  ( -- )  begin  1 0 move-brick 0=  until  ;
+  \ move brick down fast
+
+: move-line  ( from to -- )
+    over 0 pit  over 0 pit  wide 2*  cmove  draw-line
+    dup 0 pit  wide 2*  blank  draw-line  ;
+
+: line-full  ( line-no -- f )
+    true  wide 0
+    do  over i pit 2c@ empty d=
+        if  drop false  exhaust  then
+    loop nip  ;
+
+-->
+
+( tt )
+
+: remove-lines  ( -- )
+  deep deep
+  begin
+    swap
+    begin
+      1- dup 0< if  2drop exit  then  dup line-full
+    while
+      1 levels +!  10 score +!
+    repeat
+    swap 1-
+    2dup <> if  2dup move-line  then
+  again  ;
+
+-->
+
+( tt )
+
+: interaction  ( -- f )
+  case  key upper
+    left-key      of  0 -1 move-brick drop  endof
+    right-key     of  0  1 move-brick drop  endof
+    rot-key       of  0 rotate-brick drop  endof
+    drop-key      of  drop-brick  endof
+    pause-key     of  S"  paused " bottom-msg  key drop
+                      draw-bottom  endof
+    refresh-key   of  refresh  endof
+    quit-key      of  false exit  endof
+  endcase  true  ;
+
+: initialize  ( -- )
+  \ prepare for playing
+  frames@ s>d randomize empty-pit refresh
+  0 score !  0 pieces !  0 levels !  100 delay !  ;
+
+-->
+
+( tt )
+
+: adjust-delay  ( -- )
+  \ make it faster with increasing score
+  levels @
+  dup  50 < if  100 over -  else
+  dup 100 < if   62 over 4 / -  else
+  dup 500 < if   31 over 16 / -  else  0  then then then
+  delay !  drop  ;
+
+-->
+
+( tt )
+
+: play-game  ( -- )
+  \ play one tetris game
+  begin
+    new-brick  -1 3 insert-brick
+  while
+    begin
+      4 0 do
+        35 13 at-xy  delay @ ms key?
+        if  interaction 0= if  unloop exit  then  then
+      loop
+      1 0 move-brick 0=
+    until
+    remove-lines  update-score  adjust-delay
+  repeat  ;
+
+-->
+
+( tt )
+
+also forth definitions
+
+: tt  ( -- )
+  \ play the tetris game
+  show-help initialize
+  s"  Press any key " bottom-msg key drop draw-bottom
+  begin
+    play-game
+    s"  Again? " bottom-msg key upper [char] Y =
+  while  initialize  repeat
+  0 23 at-xy cr  ;
+
+only forth definitions
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{
