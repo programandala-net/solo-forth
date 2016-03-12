@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201602170320
+\ Last modified: 201602180233
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -2328,7 +2328,7 @@ code plot  ( xc yc -- )
 
   \ Credits:
   \
-  \ Author of the original code: JosÃ© Manuel Lazo.
+  \ Author of the original code: José Manuel Lazo.
   \ Published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -2354,7 +2354,7 @@ code set-pixel  ( xc yc -- )
 
   \ Credits:
   \
-  \ Based on code written by JosÃ© Manuel Lazo,
+  \ Based on code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -2378,7 +2378,7 @@ code reset-pixel  ( xc yc -- )
 
   \ Credits:
   \
-  \ Based on code written by JosÃ© Manuel Lazo,
+  \ Based on code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -2783,7 +2783,7 @@ code inverted  ( -- )
 
   \ Credits:
   \
-  \ Code adapted from a routine written by Juan JosÃ© Rivas,
+  \ Code adapted from a routine written by Juan José Rivas,
   \ published on Microhobby, issue 150 (1987-06), page 9:
   \ http://microhobby.org/numero150.htm
   \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg
@@ -2834,7 +2834,7 @@ code scroll-1px-right  ( -- )
 
   \ Credits:
   \
-  \ Code adapted from a routine written by IvÃ¡n Sansa,
+  \ Code adapted from a routine written by Iván Sansa,
   \ published on Microhobby, issue 122 (1987-03), page 7:
   \ http://microhobby.org/numero122.htm
   \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg
@@ -3127,7 +3127,7 @@ current ! previous
   \
   \ Code inspired by the article
   \ "Las posibilidades sonoras del 128 K",
-  \ written by Juan JosÃ© Rosado Recio,
+  \ written by Juan José Rosado Recio,
   \ published on Microhobby, issue 147 (1987-10), page 24:
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
@@ -3182,7 +3182,7 @@ code play  ( a -- )
   \ Credits:
   \
   \ `waves` and `shoot` are
-  \ adapted from code written by Juan JosÃ© Ruiz,
+  \ adapted from code written by Juan José Ruiz,
   \ published on Microhobby, issue 139 (1987-07), page 7:
   \ http://microhobby.org/numero139.htm
   \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
@@ -3198,7 +3198,7 @@ create shoot  ( -- a )
   \ Credits:
   \
   \ `helicopter` and `train` are
-  \ adapted from code written by JosÃ© Ãngel MartÃ­n,
+  \ adapted from code written by José Ángel Martín,
   \ published on Microhobby, issue 172 (1988-09), page 22:
   \ http://microhobby.org/numero172.htm
   \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
@@ -3217,7 +3217,7 @@ create train  ( -- a )
 
   \ Credits:
   \
-  \ Data extracted a program written by Juan JosÃ© Rosado Recio,
+  \ Data extracted a program written by Juan José Rosado Recio,
   \ published on Microhobby, issue 147 (1987-10), page 24:
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
@@ -3301,7 +3301,7 @@ code bleep  ( duration pitch -- )
 
   \ Credits:
   \
-  \ Author of the original code: Ãlvaro Corredor Lanas.
+  \ Author of the original code: Álvaro Corredor Lanas.
   \ Published on Microhobby, issue 126 (1987), page 7:
   \ http://microhobby.org/numero126.htm
   \ http://microhobby.speccy.cz/mhf/126/MH126_07.jpg
@@ -3364,7 +3364,7 @@ code white-noise  ( u -- )
 
   \ Credits:
   \
-  \ Author of the original code: LÃ­der Software.
+  \ Author of the original code: Líder Software.
   \ Published on Microhobby, issue 142 (1987-09), page 7:
   \ http://microhobby.org/numero142.htm
   \ http://microhobby.speccy.cz/mhf/142/MH142_07.jpg
@@ -6044,6 +6044,8 @@ variable decode-address  \ in the word being decoded
 
   \ Main code
 
+  \ XXX TODO -- pause with `nuf?`
+
 : (decode)  ( pfa -- )
 
   \ Decode the definition at the given pfa.
@@ -6231,11 +6233,12 @@ need .line
   l/scr 0 do
     cr i 2 .r space i scr @ .line
     break-key? ?leave
+    nuf? ?leave
   loop cr  ;
 
 ( index .index )
 
-need .line
+need .line  need nuf?
 
 : .index  ( n -- )  cr dup 3 .r space 0 swap .line  ;
   \ Print the first line of the block _n_.
@@ -6252,13 +6255,12 @@ need .line
   \ }doc
 
   1+ swap do
-    cr i 3 .r space 0 i .line
-    break-key? ?leave
+    cr i 3 .r space 0 i .line  nuf? ?leave
   loop  ;
 
 ( index-like )
 
-need .index
+need .index  need nuf?
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -6280,7 +6282,7 @@ need .index
   parse-name 2swap
   1+ swap do
     0 i line>string 2over contains if  i .index  then
-    break-key? ?leave
+    nuf? ?leave
   loop  2drop  ;
 
 ( index-ilike )
@@ -6308,7 +6310,7 @@ need .index
   2swap 1+ swap do
     save-string  0 i line>string save-string 2dup uppers
     2over contains if  i .index  then
-    break-key? ?leave
+    nuf? ?leave
   loop  2drop  ;
 
   \ Note: The parsed string is re-saved to the circular string
@@ -6316,19 +6318,23 @@ need .index
   \ overwritten by the strings of the index lines, because the
   \ circular string buffer is small.
 
+
+
 ( words wordlist-words )
 
   \ Credits:
   \
   \ Code adapted from Spectrum Forth-83.
 
-  \ XXX TODO -- pause with the space bar
+need trail  need name>link  need tab  need nuf?
 
-need trail  need name>link  need tab
+[defined] more-words?
+?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
+     \ A common factor of `words` and `words-like`.
 
 : words  ( -- )
   trail
-  begin  dup 0<> break-key? 0= and  while
+  begin  more-words?  while
     dup .name tab  name>link @n
   repeat drop  ;
 
@@ -6342,17 +6348,21 @@ need trail  need name>link  need tab
   \
   \ Code adapted from pForth.
 
-need trail  need name>link  need tab
+need trail  need name>link  need tab  need nuf?
+
+[defined] more-words?
+?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
+     \ A common factor of `words` and `words-like`.
 
 [defined] contains
-  ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
-     \ Does the string _ca1 len1_ contains the string _ca2
-     \ len2?_
+?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
+   \ Does the string _ca1 len1_ contains the string _ca2
+   \ len2?_
 
 : words-like  ( "name" -- )
   \ Print all words (from the `context` vocabulary) containing a substring.
   parse-name 2dup uppers trail  ( ca len nt )
-  begin  dup 0<> break-key? 0= and  while
+  begin  more-words?  while
     dup >r
     name>string 2over contains if  r@ .name tab  then
     r> name>link @n
@@ -6521,6 +6531,32 @@ need marker
  \   BEGIN DUP @ , CELL+ @ ?DUP 0= UNTIL ( wid last na's )
  \   ['] _MARKER : REVEAL COMPILE, ( * ) , , ;
 
+( ~~ )
+
+  \ 2016-02-18: First version.
+
+variable ~~?    ~~? on      \ active?
+variable ~~x    ~~x off     \ x coordinate
+variable ~~y    ~~y off     \ y coordinate
+variable ~~key  ~~key off   \ quit key, or zero if no pause
+
+: ((~~))  ( nt blk -- )
+  ~~x @ ~~y @ at-xy ." Block " . .name .s 
+  ~~key @ ?dup 0= ?exit  key = if  quit  then  ;
+  \ Execute the debugging code: show the block and the name
+  \ of the word `~~` was compiled into. If `~~key` is 
+  \ zero, exit; else wait for a key and quit if it equals
+  \ the contents of `~~key`.
+
+: (~~)  ( nt blk -- )  ~~? @ if  ((~~))  else  2drop  then  ;
+  \ Execute the debugging code, if active.
+
+: ~~  ( -- )
+  latest postpone literal  blk @ postpone literal
+  postpone (~~)  ; immediate compile-only
+  \ Compile debugging code.
+  \ This word was inspired by Gforth's `~~`.
+
 ( assert( )
 
   \ Credits:
@@ -6606,7 +6642,7 @@ variable assert-level ( -- a )
   else blk @ >in @ 2 then
   ;
 
---> 
+-->
 ( save-input restore-input )
 
 : restore-input ( xn ... x1 n -- f )
@@ -8348,7 +8384,7 @@ need aborted?
   \ aborted?  ( c -- f )
   \
   \ If no key is pressed return _false_.  If a key is pressed,
-  \ discard it and wait for a second key. Ther return _true_ if
+  \ discard it and wait for a second key. Then return _true_ if
   \ it's _c_, else return _false_.
 
   \ Usage example:
@@ -10739,7 +10775,7 @@ need rng-benchmark
 
   \ Credits:
   \
-  \ Adapted from code written by JosÃ© Manuel Lazo,
+  \ Adapted from code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -12918,9 +12954,9 @@ forth-wordlist set-current
 
   \ Inspired by:
   \
-  \ Gestor de memoria dinÃ¡mica (version 1)
+  \ Gestor de memoria dinámica (version 1)
   \ By Javier Gil
-  \ From his book _IntroducciÃ³n a Forth_ (2007-01)
+  \ From his book _Introducción a Forth_ (2007-01)
 
   \ 2015-11-18: Start.
   \ 2015-11-21: Changes.
@@ -15327,14 +15363,17 @@ need reset-frames  need frames@
   2dup d. ." frames (" 50 m/ nip . ." s) "  ;
   \ print the result _d_
 
-: }bench.  ( -- )  }bench bench.  ;
+: }bench.  ( -- )  frames@ bench.  ;
   \ stop timing and print the result
 
   \ XXX OLD
   \ : sec.  ( n -- )  s>d <# # # [char] . hold #s #> type  ;
 
-: benched  ( xt n -- )
-  bench{ 0 do  dup execute  loop  }bench. drop  ; 
+: benched  ( xt n -- d )
+  bench{ 0 do  dup execute  loop  }bench rot drop  ;
+
+: benched.  ( xt n -- )
+  bench{ 0 do  dup execute  loop  }bench. drop  ;
 
 exit
 

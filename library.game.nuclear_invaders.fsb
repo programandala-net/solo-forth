@@ -2,7 +2,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Version 0.0.0+201602170319
+\ Version 0.0.0+201602172208
 
 \ Description
 
@@ -32,17 +32,73 @@
 
 only forth definitions
 
-need roll       need inkey
-need bleep      need beep>bleep
-need os-chars   need os-udg
-need 2/         need abort"
-
-need benched
+need roll       need inkey    need bleep  need beep>bleep
+need os-chars   need os-udg   need 2/     need abort"
+need value      need case     need random
+need columns    need rows
 
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
 
+need benched    need ~~
+13 ~~key !
+  \ XXX TMP -- during the development
+
 : debug-point  ( -- )  depth abort" depth is not zero"  ;
-\ XXX TMP for debugging
+  \ XXX TMP for debugging
+
+-->
+
+( Screen and colors) debug-point
+
+16384 constant sys-screen  6912 constant /sys-screen
+                           6144 constant /sys-screen-bitmap
+  \ Address and size of the screen.
+
+22528 constant attributes  768 constant /attributes
+  \ Address and size of the screen attributes.
+
+0 constant black    1 constant blue   2 constant red
+3 constant magenta  4 constant green  5 constant cyan
+6 constant yellow   7 constant white
+
+: papery   ( color -- paper-attribute )           8 *  ;
+: brighty  ( attribute -- brighty-attribute )  64 and  ;
+: flashy   ( attribute -- flashy-attribute )  128 and  ;
+
+              black constant arena-color
+                red constant brick-color
+     yellow brighty constant container-color
+
+: init-colors  ( -- )
+  0 paper 7 ink 0 flash 0 bright 0 inverse 1 border  ;
+  \ XXX TMP
+
+-->
+
+( Keyboard) debug-point
+
+'z' value left-key
+'x' value right-key
+13  value fire-key
+
+: .key  ( c -- )
+  case
+    13 of  ." Enter"  endof
+    bl of  ." Space"  endof
+    dup emit  \ default
+  endcase  ;
+  \ Print the name of the key that produces char _c_.
+
+: wait  ( -- )  begin  inkey  until  ;
+  \ Wait until any key is pressed.
+
+: fire?  ( -- f )  inkey fire-key =  ;
+  \ Is the fire key pressed?
+
+13 constant enter-key
+: enter-key?  ( -- f )  inkey enter-key =  ;
+: wait-for-enter  ( -- )  begin  enter-key?  until  ;
+  \ Wait until the EnterEnter  key is pressed.
 
 -->
 
@@ -61,20 +117,13 @@ variable invader-type \ element of table  (0..8)
 
 -->
 
-( clear-arena at-yx pause ) debug-point
-
-: at-yx  ( y x -- )  swap at-xy  ;
-  \ XXX TMP -- compatibility layer for the original code
+( beep pause ) debug-point
 
 : beep  ( n1 n2 -- )  beep>bleep bleep  ;
   \ XXX TMP -- compatibility layer for the original code
 
-: clear-arena  ( -- )
-  0 2 at-xy 608 spaces  ;
-  \ Clear screen except the status bars.
-
-: pause  ( n -- )
-  0 do  200 0 do  loop  loop  ;
+: pause  ( n -- )  0 do  200 0 do  loop  loop  ;
+  \ XXX TODO -- adjust
 
 -->
 
@@ -84,10 +133,6 @@ variable invader-type \ element of table  (0..8)
 : .score  ( -- )  score @ 3 1 (.score)  ;
 : .record  ( -- )  record @ 14 1 (.score)  ;
 : update-score  ( n -- )  score +! .score  ;
-
-: rnd  ( -- n )  15403 c@ 31 and  ;
-  \ Return a random number _n_ (0..31).
-  \ XXX TODO
 
 -->
 
@@ -120,23 +165,37 @@ udg-set os-udg !
 
 -->
 
-( graphic text mode )
+( graphic-font rom-font font! font@ )
 
-udg-set 'a' scans * -  constant graphic
+udg-set 'a' scans * -  constant graphic-font
   \ Address of a presumed font whose char `a` is the first UDG
   \ of the game.  This way the original code will work without
   \ change.
   \ XXX TMP -- compatibility layer for the original code
 
-15360 constant text
+15360 constant rom-font
   \ Address of the ROM charset (char 0).
 
-: mode  ( a -- )  os-chars !  ;
-  \ Set the charset to address _a_ (the bitmap of char 0).
+: font!  ( a -- )  os-chars !  ;
+  \ Set the current charset to address _a_
+  \ (the bitmap of char 0).
+: font@  ( -- a )  os-chars @  ;
+  \ Fetch the address _a_ of the current charset
+  \ (the bitmap of char 0).
 
   \ Usage examples:
-  \   graphic mode  \ print UDG instead of `a`..`}`
-  \   text mode     \ ROM charset 0..127, plus UDG 128..255
+  \   graphic-font font!  \ print UDG instead of `a`..`}`
+  \   rom-font font!      \ ROM charset 0..127, plus UDG 128..255
+
+
+warnings @  warnings off
+variable ~~font
+: ~~(  font@ ~~font ! rom-font font!  ;
+: ~~)  ~~font @ font!  ;
+: ~~  ( -- )
+  postpone ~~( postpone ~~  postpone ~~)  ; immediate
+warnings !
+  \ XXX TMP
 
 -->
 
@@ -161,12 +220,14 @@ udg-set 'a' scans * -  constant graphic
 
 : 2sprite  ( n0..n7 c "name" -- )  dup constant 2sprite!  ;
 
+: .2sprite  ( c -- )  dup emit 1+ emit  ;
+
 -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
-  \ "ab",  30 points invader, sprite 2
+  \ "ab",  30 points invader, frame 2
 0000000110000000
 0000001111000000
 0000011111100000
@@ -180,10 +241,10 @@ char a 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
-  \ "cd",  30 points invader, sprite 1
+  \ "cd",  30 points invader, frame 1
 0000000110000000
 0000001111000000
 0000011111100000
@@ -193,14 +254,14 @@ binary
 0000010110100000
 0000101001010000
 
-char c 2sprite!
+char c 2sprite invader-3
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
-  \ "ef",  20 points invader, position 2
+  \ "ef",  20 points invader, frame 2
 0000100000100000
 0010010001001000
 0010111111101000
@@ -214,10 +275,10 @@ char e 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
-  \ "gh",  20 points invader, position 1
+  \ "gh",  20 points invader, frame 1
 0000100000100000
 0000010001000000
 0000111111100000
@@ -227,14 +288,14 @@ binary
 0010100000101000
 0000011011000000
 
-char g 2sprite!
+char g 2sprite invader-2
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
-  \ "ij",  10 points invader, position 2
+  \ "ij",  10 points invader, frame 2
 0000001111000000
 0001111111111000
 0011111111111100
@@ -248,10 +309,10 @@ char i 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
-  \ "kl",  10 points invader, position 1
+  \ "kl",  10 points invader, frame 1
 0000001111000000
 0001111111111000
 0011111111111100
@@ -261,11 +322,11 @@ binary
 0000110110110000
 0011000000001100
 
-char k 2sprite!
+char k 2sprite invader-1
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "mn", tank
@@ -282,7 +343,7 @@ char m 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "op", ufo
@@ -299,7 +360,7 @@ char o 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "qr", explosion, frame 2 (for invaders)
@@ -316,7 +377,7 @@ char q 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "s", char 115, projectile
@@ -333,7 +394,7 @@ char s sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "tu", explosion, frame 1 (for the UFO)
@@ -350,7 +411,7 @@ char t 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "v", brick
@@ -367,7 +428,7 @@ char v sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "w", horizontal rule
@@ -384,7 +445,7 @@ char w sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "xy", top of container
@@ -401,7 +462,7 @@ char x 2sprite!
 
 decimal  -->
 
-( graphics ) debug-point
+( sprites ) debug-point
 
 binary
   \ "z{", bottom of container
@@ -418,48 +479,111 @@ char z 2sprite!
 
 decimal  -->
 
-( instructions ) debug-point
+( sprites ) debug-point
 
-: wait  ( -- )  begin  inkey  until  ;
+binary
+  \ "|", blank
+00000000
+00000000
+00000000
+00000000
+00000000
+00000000
+00000000
+00000000
 
-: instructions  ( -- )
-  cls
-   8 1 at-xy ." nuclear invaders"
-   4 6 at-xy ." controls: left  = z"
-  14 7 at-xy           ." right = x"
-  14 8 at-xy           ." fire  = enter"
-  6 14 at-xy ." *press key to start*"
-  6 21 at-xy ." c scainet soft, 2013"
-  wait 9 pause  ;
+char | sprite blank-char
+
+decimal  -->
+
+( centered center-type )
+
+: centered  ( len -- column )  columns swap - 2/  ;
+  \ Convert a string length to the column required
+  \ to print the string centered.
+
+: center-type  ( ca len row -- )
+  over centered swap at-xy type  ;
+  \ Print string _ca len_ centered on the given row.
 
 -->
 
-( presentation ) debug-point
+( instructions ) debug-point
 
-: presentation  ( -- )
-  cls
-  ."  score<1>   hi-score   score<2>"
-  .score .record
-  14  5 at-xy ." play"
-   8  7 at-xy ." nuclear invaders"
-   5 10 at-xy ." *score advance table*"
-   9 12 at-xy ." op =? mystery"
-   9 14 at-xy ." cd =30 points"
-   9 16 at-xy ." gh =20 points"
-   9 18 at-xy ." kl=10 points"
-   4 22 at-xy ." mnmn" 13 spaces ." credit 00"
-  wait clear-arena  -->
+: title  ( -- )  s" NUCLEAR INVADERS" 0 center-type  ;
 
-( presentation ) debug-point
+: (c)  ( -- )  127 emit  ;
+  \ Print the copyright symbol.
 
-   1 21 at-xy ." wwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
-   2 22 at-xy ." 3"
-   9 11 at-xy ." play player<1>"
+: copyright  ( row -- )
+  1 over    at-xy (c) ."  2013 Dancresp (Scainet Soft)"
+  1 over 1+ at-xy (c) ."  2016 Marcos Cruz"
+  8 swap 2+ at-xy           ." (programandala.net)"  ;
+  \ Print the copyright starting at _row_.
 
+: controls  ( row -- )
+   4 over    at-xy ." Controls: left  = " left-key .key
+  14 over 1+ at-xy           ." right = " right-key .key
+  14 swap 2+ at-xy           ." fire  = " fire-key .key  ;
+  \ Print the controls starting at _row_.
+
+  -->
+
+( instructions ) debug-point
+
+: score-table-item  ( ca1 len1 ca2 len2 -- )
+  graphic-font font! type rom-font font! ."  = " type  ;
+  \ Print an item of the score table, with sprite string _ca2
+  \ len2_ and description _ca1 len1_
+
+: score-table  ( row -- )
+   9 over     at-xy s" 10 points" s" kl" score-table-item
+   9 over 2+  at-xy s" 20 points" s" gh" score-table-item
+   9 over 4 + at-xy s" 30 points" s" cd" score-table-item
+   9 swap 6 + at-xy s" bonus"     s" op" score-table-item  ;
+   \ Print the score table starting at the given row.
+
+: start-options  ( row -- )
+  >r s" Press SPACE to change controls" r@    center-type
+     s" Press ENTER to start"           r> 1+ center-type  ;
+  \ Print the menu options starting at the given row.
+
+: instructions  ( -- )
+  cls  title  3 score-table  12 controls
+              17 start-options 21 copyright
+  wait-for-enter 9 pause  ;
+
+-->
+
+( arena ) debug-point
+
+: clear-arena  ( -- )
+  rom-font font!  0 2 at-xy 608 spaces  graphic-font font!  ;
+  \ Clear the arena (the whole screen except the status bars).
+
+: score-bar  ( -- )
+  ."  SCORE<1>    RECORD    SCORE<2>"  .score .record  ;
+  \ XXX TODO score 2 is not used in the original
+
+: blinking-score  ( -- )
   10 0 do
-   3  1 at-xy 4 spaces  3 pause
-   3  1 at-xy ." 0000" 3 pause
+    3 1 at-xy 4 spaces 3 pause
+    3 1 at-xy ." 0000" 3 pause
   loop  ;
+
+-->
+
+( arena ) debug-point
+
+: status-bar  ( -- )
+   2 22 at-xy lifes ?
+  21 22 at-xy ." credit 00"
+  graphic-font font!
+  1 21 at-xy ." wwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+  4 22 at-xy ." mnmn"  rom-font font!  ;
+  \ XXX TODO credit is not used in the original
+
+: arena  ( -- )  ~~ init-colors cls score-bar status-bar  ;
 
 -->
 
@@ -542,7 +666,7 @@ here 1+ s" vz{z{z{z{z{" s, constant containers-bottom
 
 variable containers-x
 
-: containers  ( -- )
+: containers  ( -- ) ~~
   15 phase @ - containers-x !
   bricks phase @ 2* 2+ 2dup
   containers-x @ containers-bottom-y  at-xy type
@@ -561,14 +685,15 @@ variable containers-x
 
 ( init ) debug-point
 
-: init-game  ( -- )  3 lifes !  2 phase !  score off  ;
+: init-game  ( -- )
+  3 lifes !  2 phase !  score off  arena  ;
 
 : init-invaders-data  ( -- )
   default-invaders-data invaders-data /invaders-data move  ;
 
 : init-ufo  ( -- )  -200 ufo-x !  ;
 
-: init-invaders  ( -- )
+: init-invaders  ( -- )  ~~
   init-invaders-data  0 invader-type !  30 invaders !
   init-ufo  ;
 
@@ -578,19 +703,17 @@ variable containers-x
 
 ( init ) debug-point
 
-: .2sprite  ( c -- )  dup emit 1+ emit  ;
-
-: parade  ( -- )
-  99 dup 103 dup 107 dup
+: parade  ( -- )  ~~
+  invader-3 dup invader-2 dup invader-3 dup
   3 13 do
      1 i at-xy dup .2sprite
     29 i at-xy     .2sprite
   -2 +loop  ;
-  \ XXX TODO -- more legible
+  \ Show the invaders at their initial positions.
 
-: init-arena  ( -- )  clear-arena containers parade  ;
+: init-arena  ( -- )  ~~ clear-arena containers parade  ;
 
-: init-round  ( -- )  init-arena init-invaders init-tank  ;
+: init-round  ( -- )  ~~ init-arena init-invaders init-tank  ;
 
 -->
 
@@ -603,9 +726,10 @@ variable containers-x
 : tank-limit  ( column -- column' )
   tank-max-x min tank-min-x max  ;
 
-: move-tank  ( -- )
-  tank-x @  inkey 'x' = abs +  inkey 'z' = +  tank-limit
-  dup tank-x !
+: move-tank  ( -- )  ~~
+  tank-x @  inkey right-key = abs +
+            inkey left-key  =     +
+  tank-limit dup tank-x !
   1- tank-y at-xy ."  mn " ;
 
 -->
@@ -622,36 +746,39 @@ variable containers-x
 : .invader-frame  ( -- )  invader-frame .2sprite  ;
   \ Print the frame of the invader.
 
-: .invader  ( n -- )
+: .invader  ( n -- )  ~~
     dup at-invader 0> if  space  then
     .invader-frame 0< if  space  then  ;
   \ Print the current invader.
   \ _n_ is its x increment (1 or -1).
+  \ XXX FIXME -- graphic spaces
 
-: move-active-invader  ( -- )
+: move-active-invader  ( -- )  ~~
+
   1 invader-type @ 5 < 0= ?negate  ( 1 | -1 )
+    \ XXX TODO simpler, no `0=`
+
   dup invader-x +!  .invader
   invader-x @ dup 14 phase @ -  =
   if  drop 1  else  15 phase @ + =  then  ;  -->
+  \ XXX FIXME -- must return a flag
 
 ( move-invader ) debug-point
 
-: move-inactive-invader  ( -- )
-  rnd  26 invaders @ 5 < 16 * -  >
-  if  invader-active on  then  ;
+: move-inactive-invader  ( -- )  ~~
+  32 random  26 invaders @ 5 < 16 * -  > invader-active !  ;
 
-: next-invader  ( -- )
+: next-invader  ( -- )  ~~
   invader-type @ [ invader-types 1- ] literal =
   if  invader-type off  else  1 invader-type +!  then  ;
+  \ XXX FIXME
 
-: (move-invader)  ( -- f )
+: (move-invader)  ( -- )  ~~
   invader-active @ if    move-active-invader
-                   else  move-inactive-invader false  then  ;
+                   else  move-inactive-invader  then  ;
 
-: move-invader  ( -- f )
-  invader-lifes @ if     (move-invader)
-                  else   false
-                  then   next-invader  ;
+: move-invader  ( -- )  ~~
+  invader-lifes @ if  (move-invader)  then   next-invader  ;
 
 -->
 
@@ -666,19 +793,19 @@ variable containers-x
 : at-ufo  ( -- )  ufo-x @ ufo-y at-xy  ;
   \ Set the cursor position at the coordinates of the UFO.
 
-: -ufo  ( -- )  at-ufo 3 spaces init-ufo  ;
+: -ufo  ( -- )  at-ufo ." |||" init-ufo  ;
   \ Delete and init the UFO.
 
 : ufo-lost?  ( -- f )  ufo-x @ ufo-max-x >  ;
   \ Is the UFO lost?
 
-: flying-ufo  ( -- )  1 ufo-x +! at-ufo ."  op"  ;
+: flying-ufo  ( -- )  1 ufo-x +! at-ufo ." |op"  ;
   \ Update the position of the UFO and show it.
 
 : (ufo)  ( -- )  ufo-lost?  if  -ufo  else  flying-ufo  then  ;
   \ Manage the UFO.
 
-: ufo  ( -- )
+: ufo  ( -- )  ~~
   ufo-invisible? if  1 ufo-x +!  else  (ufo)  then  ;
   \ Manage the UFO, if it's visible.
 
@@ -692,7 +819,7 @@ variable containers-x
 
 : ufo-explosion  ( -- )  ufo-in-fire ufo-bang  ;
 
-: ufo-points  ( -- n )  rnd 12 / 1+ 50 *  ;
+: ufo-points  ( -- n )  32 random 12 / 1+ 50 *  ;
   \ Random points for impacting the UFO.
 
 : ufo-bonus  ( -- )
@@ -739,14 +866,18 @@ variable containers-x
   score @ 1- invader-type !
     \ XXX TODO -- check the original
 
-  invader-y @ invader-x @ dup 15 < abs +
-  2dup at-yx ." qr"  10 100 beep at-yx 2 spaces
+  invader-x @ dup 15 < abs + invader-y @
+  2dup at-xy ." qr"  10 100 beep at-xy 2 spaces
+  \ XXX FIXME -- graphic spaces
 
   -1 invader-lifes +!
   invader-lifes @ if
     invader-active off
     shoot-x @ 15 < abs 29 * invader-x !  at-invader
+
     shoot-x @ 15 < if  space  then
+      \ XXX FIXME -- graphic spaces
+
     invader-char @ .2sprite
   then  r> invader-type !  ;
   \ Manage the impact.
@@ -777,8 +908,6 @@ variable containers-x
 : .projectile  ( -- )  shoot-x @ shoot-y @ at-xy 115 emit  ;
   \ Show the projectile.
 
-: fire?  ( -- f )  inkey 13 =  ;
-
 : fire  ( -- )
   tank-x @ shoot-x ! [ tank-y 1- ] literal shoot-y !  ;
   \ The tank fires.
@@ -798,7 +927,7 @@ variable containers-x
 : shooted?  ( -- )  shoot-y @  ;
   \ Has the tank already shooted?
 
-: shoot  ( -- )
+: shoot  ( -- )  ~~
   shooted? if  shooted exit  then
   fire? if  fire  then  ;
   \ Manage the shoot.
@@ -815,21 +944,24 @@ variable containers-x
 
 ( alive game-over next-phase ) debug-point
 
-: .lifes  ( n -- )
-  22 tuck at-xy . dup 2* 2+ 22 at-xy 2 spaces  ;
+22 constant lifes-row
+
+: -life-icon  ( -- )
+  lifes @ 2* 2+ lifes-row at-xy 2 spaces  ;
+  \ Delete the last lifes icon.
+  \ XXX FIXME -- graphic spaces
+
+: .lifes  ( -- )  lifes-row lifes tuck at-xy .  ;
+  \ Print number of lifes.
+
+: dead  ( -- )  -1 lifes +!  .lifes -life-icon  ;
+  \ One life lost.
 
 : .game-over  ( -- )  11 17 at-xy ." GAME  OVER"  ;
 
 : game-over  ( -- )  .game-over  check-record  ;
 
-: tune  ( -- )  100 200 do  i 20 beep  -5 +loop  ;
-
-: the-end?  ( -- f )
-  tune  30 pause
-  lifes @ 1- dup 0>
-  if  .lifes  else  game-over  then  dup lifes ! 0= ;
-
-: next-phase  ( -- )
+: next-phase  ( -- )  ~~
   invaders @ ?exit
   phase @ 5 < abs +! 100 pause init-round  ;
 
@@ -837,24 +969,32 @@ variable containers-x
 
 ( run ) debug-point
 
-: round  ( -- )
+: tune  ( -- )  100 200 do  i 20 beep  -5 +loop  ;
+
+: (round)  ( -- )
   init-round
   begin   2 pause
           move-tank shoot ufo next-phase move-invader
-  until  ;
+          invader-lifes @ 0=  \ XXX TMP
+  until   tune  30 pause  dead  ;
+  \ XXX FIXME -- crash -- something is printed out of screen
+
+: round  ( -- )  graphic-font font! (round)  rom-font font!  ;
+  \ : round  ( -- )  (round)  ;  \ XXX TMP
 
 : game  ( -- )
-  init-game begin  round the-end?  until  200 pause  ;
+  init-game
+  begin  round  lifes @ 0=  until
+  game-over  200 pause  ;
 
-: run  ( -- )
-  instructions begin  presentation game  again  ;
+: run  ( -- )  begin  instructions game  again  ;
 
 -->
 
 ( Debugging tools)
 
-: g0  ( -- )  text mode  0 0 at-xy  ;
-: g1  ( -- )  graphic mode  ;
+: g0  ( -- )  rom-font font!  0 0 at-xy  ;
+: g1  ( -- )  graphic-font font!  ;
 : g  ( xt -- )  g1 execute g0  ;
 : cg  ( xt -- )  cls g1 execute g0  ;
 
@@ -865,10 +1005,12 @@ init-game init-invaders init-tank
 
   \ This is mainly a compilation of the git commit comments.
 
-  \ 2016-02-14: Started changing the layout of the original
+  \ 2016-02-14:
+  \
+  \ Started changing the layout of the original
   \ source code.
   \
-
+  \ 2016-02-15:
   \
   \ Change the layout of the source code.
   \ - Convert the source to lowercase.
@@ -878,6 +1020,8 @@ init-game init-invaders init-tank
   \ - Split lines at 63 columns.
   \ - Add block titles.
   \
+  \ 2016-02-16:
+  \
   \ Adapt graphics and data; start factoring.
   \ - Convert the graphics to binary numbers.
   \ - Implement words to define the graphics.
@@ -886,11 +1030,22 @@ init-game init-invaders init-tank
   \ - Adapt ACE Forth's `pick`.
   \ - Optimize some code idioms.
   \
-  \ 2016-02-16:
+  \ 2016-02-17:
   \
-  \ Factor code.
+  \ Factor code, improve data, accelerate printing.
   \ - Factor the shoot manager.
   \ - Factor the invaders' manager.
+  \ - Make the printing of containers faster.
   \ - Improve the invaders' data manipulation.
+  \
+  \ Finish the initial version of the game screens.
+  \ - Convert the last `at-yx` to `at-xy`.
+  \ - Add first words to support color.
+  \ - Factor, modify and combine the presentation and
+  \   instructions screens.
+  \ - Name the main sprites.
+  \ - Improve the logic of the game round loop.
+  \ - Factor the arena screen.
+  \ - Factor the printing of lifes.
 
 \ vim: filetype=soloforth

@@ -19,12 +19,12 @@ version_minor:                equ 1
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 3
+  version_release_candidate:  equ 5
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9ED8  ; build 20160218
+  version_build_low_part:     equ 0x9EDA  ; build 20160218
 endif
 
 ; This file was last modified: 201602170321

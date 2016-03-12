@@ -4411,14 +4411,14 @@ variable_pfa	EQU 06E31H
 variable_xtp	EQU 0C69EH
 version_	EQU 07846H
 version_build_high_part EQU 00133H
-version_build_low_part EQU 09ED8H
+version_build_low_part EQU 09EDAH
 version_lfa	EQU 0CF2BH
 version_major	EQU 00000H
 version_minor	EQU 00001H
 version_nt	EQU 0CF2DH
 version_patch	EQU 00000H
 version_pfa	EQU 07849H
-version_release_candidate EQU 00003H
+version_release_candidate EQU 00005H
 version_xtp	EQU 0CF29H
 voc_link.init_value EQU 05E0CH
 voc_link_	EQU 06EF0H
