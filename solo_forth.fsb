@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509181936
+\ Last modified: 201509182220
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -109,13 +109,13 @@ variable last-locatable  scr/disk last-locatable ! -->
 \ Error #01: Not a word nor a number.
 \ Error #02: Stack empty.
   \ XXX not used:
-\ Error #03: Dictionary full.
+\ Error #03: Dictionary overflow.
 \ Error #04: Warning: Is not unique.
 \ Error #05: Word not found.
   \ XXX not used:
 \ Error #06: Out of disk range
-\ Error #07: Full stack.
-\ Error #08:
+\ Error #07: Stack overflow.
+\ Error #08: Stack imbalance.
 \ Error #09: Trying to load from screen 0.
 \ Error #10:
 \ Error #11:
@@ -4719,6 +4719,29 @@ defer (value)
   create  swap , ,
   does>   ( pfa )  dup @ swap cell+ @ !  ;
 
+( c@+ )
+
+need z80-asm
+
+  \ Credits:
+  \ Code adapted from Pygmy Forth.
+
+  \ XXX TODO -- try
+
+code  c@+  ( ca - ca+1 c )
+
+    \ Fetches the byte at _ca_ a and increments the address.
+    \ This is handy for stepping through byte arrays.
+
+  de pop
+  de ftap
+  de incp
+  0 h ld#
+  a l ld
+  pushhlde jp
+
+  end-code
+
   \ }}} =======================================================
   \ Multitask {{{
 
@@ -5042,8 +5065,24 @@ code just-pause ( u --- )
 ( search-wordlist )
 
 : search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
-  >r 2dup uppers save-counted-string r>
-  @ (find) dup ?exit  nip  ;
+  >r 2dup uppers r>
+  @ (find-name) dup ?exit  nip  ;
+
+  \ doc{
+  \
+  \ search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
+  \
+  \ Find the definition identified by the string _ca len_ in
+  \ the word list identified by _wid_. If the definition is not
+  \ found, return zero. If the definition is found, return its
+  \ _cfa_ and one (1) if the definition is immediate, minus-one
+  \ (-1) otherwise.
+  \
+  \ The search is case-insensitive.
+  \
+  \ Standard: Forth 94, Forth 2012.
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Random number generators {{{
@@ -5526,13 +5565,20 @@ only forth definitions also assembler
 : endm  ( -- )  end-asm postpone ;  ;  immediate
 
 
-\ For dumping code to screen
-: <<  ( -- a depth )  here depth ;
-: >>  ( a depth -- )
+  \ For dumping code to screen
 
-  DEPTH 1- - ABORT bad stack CR BASE @ PUSH HEX
-  DUP 4 U.R SPACE  HERE OVER - FOR C@+ 3 U.R NEXT DROP
-  POP BASE !  SPACE   ;
+  \ Credits:
+  \ Code adapted from Pygmy Forth.
+
+  \ XXX TODO finish adapt
+
+need @c+  need for
+
+: <<  ( -- a depth )  here depth  ;
+: >>  ( a depth -- )
+  depth 1- - 8 ?error cr base @ >r hex
+  dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
+  r> base !  space   ;
 
 
 decimal only forth
