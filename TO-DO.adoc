@@ -8,9 +8,8 @@
 == Urgent ==
 // {{{
 
-.2015-09-24:
+Fix `ior>error`.
 
-Fix: `>number` and `number?`, after CamelForth or DZX-Forth or pForth!
 
 // }}}
 == Inner ==
@@ -77,10 +76,6 @@ Fix: problem when compiler security is off.
 | pfa>lfa          |           |                     | body>link
 | pfa>nfa          |           |                     | body>name
 |===
-
-== 2015-09-21 ==
-
-Fix: `>number` does not allow "." in any position.
 
 // }}}
 == Documentation ==

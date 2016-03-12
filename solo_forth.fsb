@@ -10,7 +10,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201509250221
+\ Last modified: 201509250513
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -415,6 +415,79 @@ cr .( 15)
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{
+
+( fill-bench )
+
+  \ 2015-09-25: Benchmark three implementations of `fill`:
+  \
+  \ `fill` is the original implementation from Abersoft Forth
+  \ `fill2` is a modified version
+  \ `fill88` is the code adapted from Z88 CamelForth
+
+need frames@  need frames0  need rnd
+
+defer (fill)
+
+: (fill-bench)  ( n cfa -- )
+  ['] (fill) defer!
+  frames0  0
+  do  16384 6144 rnd (fill)  loop
+  \ do  16384 1 rnd (fill)  loop
+  \ do  16384 0 rnd (fill)  loop
+  \ do  16384 2048 rnd (fill)  loop
+  frames@ cr d.
+  key drop
+  ;
+
+: fill-bench  ( n -- )
+  dup ['] fill (fill-bench)
+  dup ['] fill2 (fill-bench)
+      ['] fill88 (fill-bench)  ;
+
+  \ Kernel code: `16384 6144 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill fill2 fill88
+  \       ---- ----- ------
+  \ 00010   10    10      5
+  \ 00100  491   522    252 
+  \ 01000 4909  5218   2524
+ 
+  \ Kernel code: `16384 1 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill fill2 fill88
+  \       ---- ----- ------
+  \ 00010    1     0      0
+  \ 00100    9     8      8
+  \ 01000   85    84     84
+  \ 05000  425   423    422
+  \ 10000  850   846    845
+ 
+  \ Kernel code: `16384 0 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill fill2 fill88
+  \       ---- ----- ------
+  \ 00010    1     0      0
+  \ 00100    8     8      8
+  \ 01000   84    83     84
+  \ 05000  421   418    421
+  \ 10000  842   837    842
+
+  \ Kernel code: `16384 2048 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill  fill2 fill88
+  \       ----- ----- ------
+  \ 00010    17    18      9
+  \ 00100   169   180     89
+  \ 01000  1693  1795    898
+  \ 30000 50770 53863  26933
 
 ( /-test )
 
