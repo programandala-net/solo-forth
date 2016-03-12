@@ -1,5 +1,5 @@
 = Solo Forth TO-DO
-:revdate: 2015-11-11
+:revdate: 2015-11-14
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -62,9 +62,43 @@ pfa is also the id used in search order and returned by `wordlist`.
 A word `pfa>vlfa` would be helpful.
 
 // }}}
+== Local variables ==
+// {{{
+
+Examples from Forth Dimensions:
+
+----
+                                         Vo   N   Pag Note
+--------------------------------------   --   -   --- ----
+Turning the Stack into Local Variables   03   6   185 :) interesting, implement!
+Anonymous Variables                      06   1   033 :) interesting, implement!
+Local Definitions                        06   6   016 :( `privatize` is simpler
+Letter "Stack Your Locals"               07   5   005 :( modification of Vo06N6
+Local Variables                          09   4   009 :( complete but complex
+Letters "Local Variables"                09   5   005
+Letters "Code for Local Variables"       10   1   006 Implemented
+Headless Local Variables and Constants   10   1   019
+Letters "Local Variables Revisited"      10   5   005
+Local Variables and Arguments            11   1   013 Seen
+Local Variables - Another Technique      11   1   018 Seen
+Prefix Frame Operators                   11   1   023
+----
+
+// }}}
 == Control structures ==
 // {{{
 
+.2015-11-14:
+
+`-if`, `-while` and `-until` after cmForth: check negative numbers.
+
+.2015-11-14:
+
+Forth Dimensions v06n1p26: `it endit` control structure. 
+
+.2015-11-13:
+
+Idea: `0exit`. Useful for `?\`, `?(`.
 
 .2015-10-25:
 

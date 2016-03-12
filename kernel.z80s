@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151113
+  ; Version:        20151115
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B49
+version_low_part:   equ 0x7B4B
   
-  ; Last modified:  201511130228
+  ; Last modified:  201511150503
 
 ; ==============================================================
 ; Author and license
@@ -124,7 +124,7 @@ version_low_part:   equ 0x7B49
 ; ca len   = string                                       2 cells
 
 ; d        = 32-bit signed double number                  2 cells
-; d|du     = 32-bit signed or unsigned double number      2 cells
+; d|ud     = 32-bit signed or unsigned double number      2 cells
 ; +d       = 32-bit non-negative double number            2 cells
 ; ud       = 32-bit unsigned double number                2 cells
 ; xd       = 32-bit unspecified number                    2 cells
@@ -1944,6 +1944,8 @@ question_csb_.enough:
 ; ----------------------------------------------
   _colon_header backward_mark_,'<MARK'
 
+  ; XXX TODO convert to an alias
+
 ; doc{
 ;
 ; <mark  ( -- dest )  \ Forth-83, "backward-mark"
@@ -1959,6 +1961,8 @@ question_csb_.enough:
 
 ; ----------------------------------------------
   _colon_header backward_resolve_,'<RESOLVE'
+
+  ; XXX TODO convert to an alias
 
 ; doc{
 ;
@@ -2392,7 +2396,7 @@ digit.test_value:
 ;    over c@
 ;    dup [char] $ = if  drop 1 /string 16  exit  then
 ;    dup [char] % = if  drop 1 /string  2  exit  then
-;        [char] # = if  1 /string 10  exit  then
+;        [char] # = if       1 /string 10  exit  then
 ;   then
 ;   base @  ;
 ; ----
@@ -3073,7 +3077,7 @@ scan.nothing:
 
 ; doc{
 ;
-; skip  ( ca1 len1 c -- ca2 len2 )
+; skip  ( ca1 len1 c -- ca2 len2 | ca1 len1 )
 ;
 ; Skip over leading occurences of the character _c_ in the string
 ; _ca1 len1_.  Leave the address of the first non-matching
@@ -4308,7 +4312,7 @@ endif
 
 ; doc{
 ;
-; 2>r  ( -- x1 x2 ) ( R: x1 x2 -- )
+; 2>r  ( x1 x2 -- ) ( R: -- x1 x2 )
 ;
 ; }doc
 
@@ -5392,11 +5396,16 @@ endif
 ; ----------------------------------------------
   _user_variable_header csp_,'CSP'
 
+  ; XXX TODO ordinary variable?
+
 ; doc{
 ;
 ; csp  ( -- a )
 ;
-; User variable that holds XXX TODO
+; User variable that holds the current data stack position saved
+; by `!csp`.
+;
+; Standard: fig-Forth.
 ;
 ; }doc
 
@@ -6103,6 +6112,16 @@ to_name.begin_1:
 ; ----------------------------------------------
   _colon_header store_csp_,'!CSP'
 
+; doc{
+;
+; !csp  ( -- )
+;
+; Save the the current data stack position.
+;
+; Standard: fig-Forth.
+;
+; }doc
+
   dw sp_fetch_,csp_,store_
   dw semicolon_s_
 
@@ -6165,7 +6184,21 @@ to_name.begin_1:
 ; ----------------------------------------------
   _colon_header question_csp_,'?CSP'
 
+; doc{
+;
+; ?csp  ( -- )
+;
+; Issue error "definition unbalanced" if the current data stack
+; position does not match the value saved by `!csp`.
+;
+; // XXX TODO and `checking` is not zero.
+; 
+; Standard: fig-Forth.
+;
+; }doc
+
   dw sp_fetch_,csp_,fetch_,not_equals_
+  ; dw checking(s)_,fetch_,and_ ; XXX TODO ?
   _question_throw error.definition_not_finished
   dw semicolon_s_
 
@@ -7089,7 +7122,7 @@ fill.done:
 ; : parse  ( c "text<c>" -- ca len )
 ;   stream 2dup 2>r rot scan
 ;   dup if  char-  then
-;   2r> rot - >in +!
+;   2r> rot - parsed
 ;   tuck -  ;
 ; ----
 ;
@@ -7357,6 +7390,54 @@ error.message:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header paren_header_,'(HEADER)'
+
+; doc{
+;
+; (header)  ( ca len -- )
+;
+; Create a dictionary header with the name _ca len_, with its
+; code field pointing to its parameter field.
+;
+; }doc
+
+  dw dup_,zero_equals_
+  _question_throw error.zero_length_name
+
+  dw warnings_,fetch_
+  dw zero_branch_,paren_header.continue
+
+  ; `warnings` is on
+  dw two_dup_,current_,fetch_,search_wordlist_
+  dw zero_branch_,paren_header.continue
+  ; the word is not unique in `current`
+  ; ( ca len cfa )
+  dw to_name_,id_dot_
+  _literal error.not_unique
+  dw dot_throw_ ; XXX TMP -- `warning`?
+
+paren_header.continue:
+
+  ; ( ca len )
+
+  dw width_,fetch_,min_
+  dw tuck_ ; ( len ca len )
+  dw names_bank_
+  dw here_,comma_np_ ; store a pointer to the cfa
+  dw latest_,comma_np_ ; link field
+  ; Now `np` contains the address of the nfa.
+  dw np_fetch_
+  dw dup_,to_r_
+  dw place_ ; store the name
+  dw from_r_,count_,uppers_
+
+  dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
+  dw hide_
+  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
+  dw here_,two_plus_,comma_ ; compile the pfa into code field
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header header_,'HEADER'
 
 ; doc{
@@ -7368,47 +7449,8 @@ error.message:
 ;
 ; }doc
 
-  ; XXX Note: This version checks wether the word is unique only when
-  ; `warnings` is on, and by searching only `current`.
-
   dw parse_name_  ; ( ca len )
-  dw dup_,zero_equals_
-  _question_throw error.zero_length_name
-
-  dw warnings_,fetch_
-  dw zero_branch_,header.continue
-
-  ; `warnings` is on
-  dw two_dup_,current_,fetch_,search_wordlist_
-  dw zero_branch_,header.continue
-  ; the word is not unique in `current`
-  ; ( ca len cfa )
-  dw to_name_,id_dot_
-  _literal error.not_unique
-  dw dot_throw_ ; XXX TMP -- `warning`?
-
-header.continue:
-
-  ; ( ca len )
-
-  ; dw two_dup_,uppers_ ; XXX OLD -- this modifies the input buffer!
-
-  ; XXX TODO error if name is too long? (see lina)
-  dw width_,fetch_,min_
-  dw tuck_ ; ( len ca len )
-  dw names_bank_
-  dw here_,comma_np_ ; store a pointer to the cfa
-  dw latest_,comma_np_ ; link field
-  ; Now `np` contains the address of the nfa.
-  dw np_fetch_
-  dw dup_,to_r_ ; XXX NEW
-  dw place_ ; store the name
-  dw from_r_,count_,uppers_ ; XXX NEW
-
-  dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
-  dw hide_
-  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
-  dw here_,two_plus_,comma_ ; compile the pfa into code field
+  dw paren_header_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8009,6 +8051,7 @@ do_vocabulary:
   _colon_header wordlist_,'WORDLIST'
 
   ; XXX UNDER DEVELOPMENT
+  ; XXX FIXME
 
   dw colon_no_name_,paren_vocabulary_,semicolon_,to_body_
   dw semicolon_s_
@@ -8023,8 +8066,18 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header paren_,'(',immediate
 
+; doc{
+;
+; (  ( f "text<paren>" -- )
+;
+; Parse until a right paren is found. 
+; The number of parsed
+; characters may be zero to the number of characters in the
+; parse area.
+;
+; }doc
+
   _literal ')'
-  ; XXX TODO use `skip`?
   dw parse_,two_drop_
   dw semicolon_s_
 
@@ -10185,22 +10238,12 @@ if 1
   ; It is already on the disk.
 
   dw depth_,dup_
-
-if 0
-  ; unsigned depth without space
-  dw s_to_d_,less_hash_
-  _literal '>'
-  dw hold_,hash_s_
-  _literal '<'
-  dw hold_,hash_greater_,type_
-else
-  ; signed depth, better for debugging
   _literal '<'
   dw emit_
-  dw dot_
+  _literal 0
+  dw dot_r_
   _literal '>'
   dw emit_
-endif
 
   dw space_
   _literal 1

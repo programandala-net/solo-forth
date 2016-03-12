@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511130228
+\ Last modified: 201511152206
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -543,6 +543,13 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
   jpnext
 
   end-code
+
+( 2rot )
+
+need roll
+
+: 2rot  ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
+  5 roll 5 roll  ;
 
 ( swapped )
 
@@ -3314,8 +3321,62 @@ need z80-asm
   \
   \ Store a byte to memory and decrement the address by n.
 
+( c@test-bits c!toggle-bits )
+
+  \ XXX TODO possible names:
+  \ c@test-bits     cand@    c@and   c@mask?    c@test?  c@set?
+  \ c!set-bits      cor!     c!or    c!mask     c!set
+  \ c!reset-bits                     c!unmask   c!reset
+  \ c!toggle-bits   cxor!    c!xor   c!toggle   c!toggle
+
+  \ Credits:
+  \ Words inspired by MPE PowerForth for TiniARM.
+
+need z80-asm  need [if]
+
+  \ XXX OLD -- `c@test-bits?` is in the kernel
+  \ [needed] c@test-bits? [if]
+  \ code c@test-bits?  ( b ca -- wf )
+  \   hl pop  de pop  e a ld  m and
+  \   ' true >body jpnz  ' false >body jp  end-code  ;s  [then]
+  \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
+  \   \ _true_ if the result is non-zero or _false_ if the result
+  \   \ is zero.
+
+  \ XXX FIXME
+
+  \ XXX INFORMER
+  \ cr needed-word 2@ .s char < emit type char > emit cr
+
+[needed] c@test-bits [if]
+code c@test-bits  ( b1 ca -- b2 )
+  hl pop  de pop  e a ld  m and  pusha jp  end-code  ;s  [then]
+  \ Test the bits at _ca_ specified by the bitmask _b1_.
+  \ Return the result _b2_. The bits sets in _b2_ are those
+  \ set in both _b1_ and the contents of _ca_.
+
+  \ XXX OLD -- `c!set-bits` is in the kernel
+  \ [needed] c!set-bits [if]
+  \ code c!set-bits  ( b ca -- )
+  \   hl pop  de pop  e a ld  m or  a m ld  jpnext
+  \   end-code  ;s  [then]
+  \   \ Set the bits at _ca_ specified by the bitmask _b_.
+
+  \ XXX OLD -- `c!reset-bits` is in the kernel
+  \ [needed] c!reset-bits [if]
+  \ code c!reset-bits  ( b ca -- )
+  \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
+  \   end-code  ;s  [then]
+  \   \ Reset the bits at _ca_ specified by the bitmask _b_.
+
+[needed] c!toggle-bits [if]
+code c!toggle-bits  ( b ca -- )
+  hl pop  de pop  m a ld  e xor  a m ld  jpnext
+  end-code  ;s  [then]
+  \ Invert the bits at _ca_ specified by the bitmask _b_.
+
   \ }}} =======================================================
-  \ Operators {{{
+  \ Single-cell operators {{{
 
 ( under+ )  \ ==operators==
 
@@ -3376,229 +3437,6 @@ need -rot
 [unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  ;s
 [unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  ;s
 [unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
-
-( ud* )
-
-  \ Credits:
-  \ Code from Z88 CamelForth.
-
-: ud*  ( ud1 d2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
-
-( d* )
-
-  \ Credits:
-  \ Code by Wil Baden, published on Forth Dimensions
-  \ (volume 19, number 6, page 33, 1998-04).
-
-  \ This implementation uses 30 bytes.
-
-: d*  ( d1 d2 -- d3 )
-  >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
-  2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
-  r> * swap r> * + +  ; ( d1*d2 ) ( R: )
-
-  \ Alternative implementation.
-  \
-  \ Credits:
-  \ Adapted from code written by Robert L. Smith,
-  \ published on Forth Dimensions (volume 4, number 1, page 3).
-  \
-  \ This implementation uses 36 bytes and is 5% slower.
-  \
-  \ : d*  ( d1 d2 -- d3 )
-  \  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
-
-( m* )
-
-  \ Credits:
-  \ Code by Robert L. Smith, published on Forth Dimensions
-  \ (volume 4, number 1, page 3).
-
-  \ XXX TODO benchmark with the version in the kernel
-
-need d*
-: m*  ( n1 n2 -- d )
-  >r s>d r> s>d d* ;
-
-( m+ )
-
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
-need z80-asm
-
-code m+  ( d1 n -- d2 )
-  exx     \ save Forth IP
-  bc pop  \ n
-  de pop  \ d1 hi cell
-  hl pop  \ d1 lo cell
-  bc addp  hl push
-  cy if  de inc  then  de push
-  exx      \ restore Forth IP
-  jpnext
-  end-code
-
-  \ doc{
-  \
-  \ m+  ( d1|ud1 n -- d2|ud2 )
-  \
-  \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
-  \
-  \ Standard: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
-  \
-  \ }doc
-
-( d0= d0< d< du< )
-
-  \ Credits:
-  \ Code from DZX-Forth.
-
-[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  ;s
-
-[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; ;s
-
-need [if]
-
-[needed] d< [if]
-
-need 2nip
-
-: d<  ( d1 d2 -- f )
-  rot 2dup = if  2drop u< exit  then  2nip >  ;  ;s
-
-[then]
-
-[needed] u< [if]
-
-: du<  ( ud1 ud2 -- f )
-  rot swap 2dup
-  u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;  ;s
-
-[then]
-
-( dmin dmax )
-
-  \ Credits:
-  \ Code from DZX-Forth.
-
-need [if]
-
-[needed] dmin [if]
-: dmin  ( d1 d2 -- d1 | d2 )
-  2over 2over d< 0= if  2swap  then  2drop  ;  ;s  [then]
-
-[needed] dmax [if]
-: dmax  ( d1 d2 -- d1 | d2 )
-  2over 2over d< if  2swap  then  2drop  ;  [then]
-
-( d= d<> )
-
-  \ XXX TODO -- rewrite in Z80
-
-: d<>  ( d1 d2 -- f )
-  rot <> if  2drop true exit  then  <>  ;
-: d=  ( d1 d2 -- f )  d<> 0=  ;
-
-  \ XXX OLD
-  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
-  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
-
-( d- )
-
-need z80-asm
-
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
-code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
-
-  de pop          \ DE=d2hi
-  exx
-  de pop          \ DE'=d2lo
-  exx
-  hl pop          \ HL=d1hi,DE=d2hi
-  exx
-  hl pop          \ HL'=d1lo
-  de subp
-  hl push         \ 2OS=d1lo-d2lo
-  exx
-  de sbcp         \ HL=d1hi-d2hi-cy
-  pushhl jp
-  end-code
-
-( tum* tum/ t+ t- )
-
-  \ Credits:
-  \ Code by Wil Baden, published on Forth Dimensions
-  \ (volume 19, number 6, page 34, 1998-04).
-
-  \ XXX TODO -- test
-
-need d+  need d-
-
-: +carry  ( n1 n2 -- n1+n2 carry )  0 tuck d+  ;
-: -borrow  ( n1 n2 -- n1-n2 borrow )  0 tuck d-  ;
-
-: tum*  ( d n -- t )  2>r  r@ um*  0 2r>  um* d+  ;
-  \ Triple unsigned mixed multiply.
-
-: tum/  ( t n -- d )  dup >r um/mod r> swap >r um/mod nip r>  ;
-  \ Triple unsigned mixed division.
-
-: t+  ( t1 t2 -- t3 )
-  >r rot >r  >r swap >r +carry  0 r> r> +carry d+ r> r> + +  ;
-  \ Triple add.
-
-: t-  ( t1 t2 -- t3 )
-  >r rot >r  >r swap >r -borrow
-  s>d r> r> -borrow d+ r> r> - +  ;
-  \ Triple substract.
-
-( du/mod )
-
-  \ Credits:
-  \ Code by Wil Baden, published on Forth Dimensions
-  \ (volume 19, number 6, page 34, 1998-04).
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO -- d2*
-
-need tum*  need t+  need t-  need tum/  need d2*
-
-: normalize-divisor  ( d1 -- d1' shift )
-  0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
-
-  \ XXX TODO rename as `ud/mod`?
-  \ XXX TODO stack comments
-
-: du/mod  ( ud1 ud2 -- rem quot )
-
-  ?dup 0= if
-    \ there is a leading zero "digit" in divisor
-    >r  0 r@ um/mod  r> swap >r  um/mod  0 swap r>  exit
-  then
-
-  normalize-divisor dup >r rot rot 2>r
-  1 swap lshift tum*
-    \ normalize divisor and dividend
-
-
-  dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
-    \ guess leading "digit" of quotient
-
-  2r@  rot dup >r  tum*  t-
-    \ multiply divisor by trial quot and substract from
-    \ dividend
-
-  dup 0< if  r> 1-  2r@  rot >r  0 t+
-    \ if negative, decrement quot and add to dividend
-
-    dup 0< if  r> 1-  2r@  rot >r  0 t+  then
-    \ if still negative, do it one more time
-
-  then  ;
-  \ Double unsigned divide with remainder.
 
 ( lshift )
 
@@ -3717,6 +3555,29 @@ code 2/  ( x1 -- x2 )
   \ Forth-2012 (CORE).
   \
   \ }doc
+
+( sqrt )
+
+  \ Credits:
+  \ Original code by Wil Baden, published on
+  \ Forth Dimensions 18/5 p. 27 (1997-01).
+
+need d2*  need 2/
+
+[defined] cell-bits ?\ 16 constant cell-bits
+
+: (sqrt)  ( radicand -- remainder root )
+  0 0                           ( radicand remainder root )
+  [ cell-bits 2/ ] literal 0 do
+    >r d2* d2* r>               \ shift remainder left 2 bits
+    2*                          \ shift root left 1 bit
+    2dup 2* u> if               \ check for next bit of root
+      >r r@ 2* - 1- r>          \ reduce remainder
+      1+                        \ add a bit to root
+    then
+  loop  cr .s rot drop  ;
+
+: sqrt  ( radicand -- root )  (sqrt) nip  ;
 
 ( sm/rem )
 
@@ -3850,59 +3711,346 @@ variable (any?)
   \ Is any _x1..xn_ equal to _x0_?
   dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
-( c@test-bits c!toggle-bits )
+  \ }}} =======================================================
+  \ Double-cell operators {{{
 
-  \ XXX TODO possible names:
-  \ c@test-bits     cand@    c@and   c@mask?    c@test?  c@set?
-  \ c!set-bits      cor!     c!or    c!mask     c!set
-  \ c!reset-bits                     c!unmask   c!reset
-  \ c!toggle-bits   cxor!    c!xor   c!toggle   c!toggle
+( ud* )
 
   \ Credits:
-  \ Words inspired by MPE PowerForth for TiniARM.
+  \ Code from Z88 CamelForth.
 
-need z80-asm  need [if]
+: ud*  ( ud1 d2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
 
-  \ XXX OLD -- `c@test-bits?` is in the kernel
-  \ [needed] c@test-bits? [if]
-  \ code c@test-bits?  ( b ca -- wf )
-  \   hl pop  de pop  e a ld  m and
-  \   ' true >body jpnz  ' false >body jp  end-code  ;s  [then]
-  \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
-  \   \ _true_ if the result is non-zero or _false_ if the result
-  \   \ is zero.
+( d* )
 
-  \ XXX FIXME
+  \ Credits:
+  \ Code by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 33, 1998-04).
 
-  \ XXX INFORMER
-  \ cr needed-word 2@ .s char < emit type char > emit cr
+  \ This implementation uses 30 bytes.
 
-[needed] c@test-bits [if]
-code c@test-bits  ( b1 ca -- b2 )
-  hl pop  de pop  e a ld  m and  pusha jp  end-code  ;s  [then]
-  \ Test the bits at _ca_ specified by the bitmask _b1_.
-  \ Return the result _b2_. The bits sets in _b2_ are those
-  \ set in both _b1_ and the contents of _ca_.
+: d*  ( d1 d2 -- d3 )
+  >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
+  2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
+  r> * swap r> * + +  ; ( d1*d2 ) ( R: )
 
-  \ XXX OLD -- `c!set-bits` is in the kernel
-  \ [needed] c!set-bits [if]
-  \ code c!set-bits  ( b ca -- )
-  \   hl pop  de pop  e a ld  m or  a m ld  jpnext
-  \   end-code  ;s  [then]
-  \   \ Set the bits at _ca_ specified by the bitmask _b_.
+  \ Alternative implementation.
+  \
+  \ Credits:
+  \ Adapted from code written by Robert L. Smith,
+  \ published on Forth Dimensions (volume 4, number 1, page 3).
+  \
+  \ This implementation uses 36 bytes and is 5% slower.
+  \
+  \ : d*  ( d1 d2 -- d3 )
+  \  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
 
-  \ XXX OLD -- `c!reset-bits` is in the kernel
-  \ [needed] c!reset-bits [if]
-  \ code c!reset-bits  ( b ca -- )
-  \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
-  \   end-code  ;s  [then]
-  \   \ Reset the bits at _ca_ specified by the bitmask _b_.
+( du/mod )
 
-[needed] c!toggle-bits [if]
-code c!toggle-bits  ( b ca -- )
-  hl pop  de pop  m a ld  e xor  a m ld  jpnext
-  end-code  ;s  [then]
-  \ Invert the bits at _ca_ specified by the bitmask _b_.
+  \ Credits:
+  \ Code by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 34, 1998-04).
+
+need tum*  need t+  need t-  need tum/  need d2*
+
+: normalize-divisor  ( d1 -- d1' shift )
+  0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
+
+  \ XXX TODO rename as `ud/mod`?
+  \ XXX TODO stack comments
+
+: du/mod  ( ud1 ud2 -- rem quot )
+
+  ?dup 0= if
+    \ there is a leading zero "digit" in divisor
+    >r  0 r@ um/mod  r> swap >r  um/mod  0 swap r>  exit
+  then
+
+  normalize-divisor dup >r rot rot 2>r
+  1 swap lshift tum*
+    \ normalize divisor and dividend
+
+
+  dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
+    \ guess leading "digit" of quotient
+
+  2r@  rot dup >r  tum*  t-
+    \ multiply divisor by trial quot and substract from
+    \ dividend
+
+  dup 0< if  r> 1-  2r@  rot >r  0 t+
+    \ if negative, decrement quot and add to dividend
+
+    dup 0< if  r> 1-  2r@  rot >r  0 t+  then
+    \ if still negative, do it one more time
+
+  then  ;
+  \ Double unsigned divide with remainder.
+
+( d0= d0< d< du< )
+
+  \ Credits:
+  \ Code from DZX-Forth.
+
+[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  ;s
+
+[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; ;s
+
+need [if]
+
+[needed] d< [if]
+
+need 2nip
+
+: d<  ( d1 d2 -- f )
+  rot 2dup = if  2drop u< exit  then  2nip >  ;  ;s
+
+[then]
+
+[needed] du< [if]
+
+  \ XXX TODO rewrite in Z80
+
+: du<  ( ud1 ud2 -- f )
+  rot swap 2dup
+  u<  if  2drop 2drop -1 exit  then
+  -   if  2drop 0 exit  then  u<  ;  ;s
+
+[then]
+
+( dmin dmax )
+
+  \ Credits:
+  \ Code from DZX-Forth.
+
+need [if]
+
+[needed] dmin [if]
+: dmin  ( d1 d2 -- d1 | d2 )
+  2over 2over d< 0= if  2swap  then  2drop  ;  ;s  [then]
+
+[needed] dmax [if]
+: dmax  ( d1 d2 -- d1 | d2 )
+  2over 2over d< if  2swap  then  2drop  ;  [then]
+
+( d= d<> )
+
+  \ XXX TODO -- rewrite in Z80
+
+: d<>  ( d1 d2 -- f )
+  rot <> if  2drop true exit  then  <>  ;
+: d=  ( d1 d2 -- f )  d<> 0=  ;
+
+  \ XXX OLD
+  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
+  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
+( d- )
+
+need z80-asm
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
+
+  de pop          \ DE=d2hi
+  exx
+  de pop          \ DE'=d2lo
+  exx
+  hl pop          \ HL=d1hi,DE=d2hi
+  exx
+  hl pop          \ HL'=d1lo
+  de subp
+  hl push         \ 2OS=d1lo-d2lo
+  exx
+  de sbcp         \ HL=d1hi-d2hi-cy
+  pushhl jp
+  end-code
+
+( d2* d2/ )
+
+  \ Credits:
+  \ Code converted to Z80 from the 8080 version
+  \ of DZX-Forth.
+
+need [if]
+
+[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+
+  D1 c, E1 c,
+    \ pop de / pop hl
+  29 c,  CB c, 13 c,  CB c, 12 c,
+    \ add hl,hl
+    \ rl e
+    \ rl d
+  EB c, C3 c, pushhlde ,
+    \ ex de,hl jp pushhlde
+
+  end-code  [then]
+
+[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+
+  E1 c, D1 c,
+    \ pop hl / pop de
+  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
+    \ sra h  /  rr h /  rr l
+  CB c, 1A c,  CB c, 1B c,
+    \ rr d /  rr e
+  EB c, C3 c, pushhlde ,
+    \ ex de,hl jp pushhlde
+
+  end-code  [then]
+
+( d2* d2/ )
+
+  \ Credits:
+  \ Code converted to Z80 from the 8080 version
+  \ of DZX-Forth.
+
+need [if]  need z80-asm
+
+[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+
+  de pop  hl pop
+  hl addp  e rl  d rl
+                              \ alternatives:
+  exde  pushhlde jp           \ smaller but slower
+  \ hl push  de push  jpnext  \ faster but bigger
+
+  end-code  [then]
+
+[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+
+  hl pop  de pop
+  h sra  l rr  d rr  e rr
+
+                              \ alternatives:
+  pushhlde jp                 \ smaller but slower
+  \ hl push  de push  jpnext  \ faster but bigger
+
+  end-code  [then]
+
+( m* )
+
+  \ Credits:
+  \ Code by Robert L. Smith, published on Forth Dimensions
+  \ (volume 4, number 1, page 3).
+
+  \ XXX TODO benchmark with the version in the kernel
+
+need d*
+: m*  ( n1 n2 -- d )
+  >r s>d r> s>d d* ;
+
+( m+ )
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+need z80-asm
+
+code m+  ( d1 n -- d2 )
+  exx     \ save Forth IP
+  bc pop  \ n
+  de pop  \ d1 hi cell
+  hl pop  \ d1 lo cell
+  bc addp  hl push
+  cy if  de inc  then  de push
+  exx      \ restore Forth IP
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ m+  ( d1|ud1 n -- d2|ud2 )
+  \
+  \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
+  \
+  \ Standard: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
+  \
+  \ }doc
+
+( dsqrt )
+
+  \ Credits:
+  \ Original code by Wil Baden, published on
+  \ Forth Dimensions 18/5 p. 29 (1997-01).
+
+need q2*  need d2*  need d<  need m+  need d- need 2rot
+need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
+
+  \ XXX FIXME wrong results
+  \
+  \ It worked fine, but something got wrong
+  \ Perhaps because of some wrong dependency?
+  \ maybe `d<`?
+  \
+  \ It works in Gforth
+
+: (dsqrt)  ( radicand . -- remainder . root . )
+  0. 0.             ( radicand . remainder . root . )
+  cell-bits 0 do    ( radicand . remainder . root . )
+    cr .s  key drop  \ XXX INFORMER
+    2>r q2* q2* 2r>  d2*
+    2over 2over d2* 2swap
+      cr .s ." d< ?"  \ XXX INFORMER
+      d< if
+      cr .s ." d<"  \ XXX INFORMER
+      2dup 2>r d2* d- -1 m+ 2r>  1 m+
+    then
+  loop  cr .s 2rot 2drop  ;
+
+: dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
+
+  \ }}} =======================================================
+  \ Triple-cell operators {{{
+
+( tum* tum/ t+ t- )
+
+  \ Credits:
+  \ Code by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 34, 1998-04).
+
+  \ XXX TODO -- test
+
+need d+  need d-
+
+: +carry  ( n1 n2 -- n1+n2 carry )  0 tuck d+  ;
+: -borrow  ( n1 n2 -- n1-n2 borrow )  0 tuck d-  ;
+
+: tum*  ( d n -- t )  2>r  r@ um*  0 2r>  um* d+  ;
+  \ Triple unsigned mixed multiply.
+
+: tum/  ( t n -- d )  dup >r um/mod r> swap >r um/mod nip r>  ;
+  \ Triple unsigned mixed division.
+
+: t+  ( t1 t2 -- t3 )
+  >r rot >r  >r swap >r +carry  0 r> r> +carry d+ r> r> + +  ;
+  \ Triple add.
+
+: t-  ( t1 t2 -- t3 )
+  >r rot >r  >r swap >r -borrow
+  s>d r> r> -borrow d+ r> r> - +  ;
+  \ Triple substract.
+
+  \ }}} =======================================================
+  \ Quadruple-cell operators {{{
+
+( q2* )
+
+  \ Credits:
+  \ Original code by Wil Baden, published on
+  \ Forth Dimensions 18/5 p. 29 (1997-01).
+
+need d2*
+
+: q2*  ( n . . . -- 2n . . . )
+  d2* >r >r
+  dup 0< if     d2* r> 1+ r>
+         else   d2* r> r>
+         then  ;
+
 
   \ }}} =======================================================
   \ Compilation {{{
@@ -4055,7 +4203,7 @@ need c!toggle-bits
 : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;
   \ If _x1_ not equals _x2_ throw an error -22 (control
   \ structure mismatch).
-  
+
 ( privatize )
 
   \ Usage example:
@@ -4778,27 +4926,28 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-: ?load  ( scr f -)  if  dup load  then  drop  ;
+: ?load  ( block f -)  if  dup load  then  drop  ;
 
   \ Credits:
   \ Code from Pygmy Forth.
   \
   \ doc{
   \
-  \ ?load  ( u f -- )
+  \ ?load  ( block f -- )
   \
-  \ Load block _u_ if flag _f_ is true.
+  \ Load block _block_ if flag _f_ is true, else do nothing.
   \
   \ }doc
 
 
-: thru  ( u1 u2 -- )  1+ swap do  i load  loop  ;
+: thru  ( block1 block2 -- )  1+ swap do  i load  loop  ;
 
   \ doc{
   \
-  \ thru ( u1 u1 -- )
+  \ thru ( block1 block2 -- )
   \
-  \ Load consecutively the blocks from u1 through u2.
+  \ Load consecutively the blocks from _block1_ through
+  \ _block2_.
   \
   \ Standard: Forth-79 (Reference Word Set), Forth-83
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
@@ -4806,41 +4955,42 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-: +load  ( u -- )  blk @ + load  ;
+: +load  ( block -- )  blk @ + load  ;
 
-: +thru  ( u1 u2 -- )  1+ swap do  i +load  loop  ;
+: +thru  ( block1 block2 -- )  1+ swap do  i +load  loop  ;
 
   \ Credits:
   \ `thru`, `+load` and `+thru` from Afera.
 
-: loads  ( u "name" -- )  create ,  does>  ( pfa )  @ load  ;
+: loads  ( block "name" -- )
+  create ,  does>  ( pfa )  @ load  ;
 
   \ doc{
   \
-  \ loads  ( u "name" -- )
+  \ loads  ( block "name" -- )
   \
   \ Define a word "name" which, when executed, will  load
-  \ block _u_.
+  \ block _block_.
   \
   \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
   \ }doc
 
-: reload  ( -- )  scr @ load  ;
+: reload  ( -- )  empty-buffers  scr @ load  ;
 
 ;s
 
-: loads  ( u n -- )  bounds do  i load  loop  drop  ;
+: loads  ( block n -- )  bounds do  i load  loop  drop  ;
 
   \ Credits:
   \ Word from MMSFORTH.
 
   \ doc{
   \
-  \ loads  ( u n -- )
+  \ loads  ( block n -- )
   \
-  \ Load _n_ block starting from block _u_.
+  \ Load _n_ block starting from block _block_.
   \
   \ }doc
 
@@ -5049,7 +5199,7 @@ need break-key?  need 16hex.
 
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  
+
   \ Copyright (C) 2015 Marcos Cruz (programandala.net)
 
   \ You may do whatever you want with this work, so long as you
@@ -5362,8 +5512,10 @@ need [if]
   \ Credits:
   \ Code from Afera. Original algorithm from v.Forth.
 
-: .depth  ( n -- )
-  s>d <# [char] > hold #s [char] < hold #> type space  ;
+  \ 2015-11-13: Modified `.depth` to print a signed number,
+  \ better for debugging.
+
+: .depth  ( n -- )  [char] < emit 0 .r [char] > space  ;
 
 : .s   ( -- )
   depth dup .depth
@@ -5617,19 +5769,15 @@ variable assert-level ( -- a )
   \ }}} =======================================================
   \ Control structures {{{
 
-( -if -while -until )  \ ==controlstructures==
+( 0if 0while 0until )  \ ==controlstructures==
 
-  \ Credits:
-  \ Names after an article by Richard Astle in
-  \ Forth Dimensions 17/4 p. 36 (1995-11).
-
-: -if  ( f -- )
+: 0if  ( f -- )
   postpone ?branch >mark  ; immediate compile-only
 
-: -while  ( f -- )
-  postpone if  ; immediate compile-only
+: 0while  ( f -- )
+  postpone 0if  ; immediate compile-only
 
-: -until  ( f -- )
+: 0until  ( f -- )
   postpone ?branch <resolve  ; immediate compile-only
 
 ( retry )
@@ -6494,7 +6642,7 @@ code (step)  ( R: n -- n' )
 : of
   \ Compilation: ( -- orig )
   \ Run-time: ( x1 x2 -- )
-  postpone over postpone = postpone if  postpone drop
+  postpone over  postpone =  postpone if  postpone drop
   ; immediate compile-only
 
 : endof  ( orig1 -- orig2 )
@@ -6506,7 +6654,47 @@ code (step)  ( R: n -- n' )
   postpone drop  begin  ?dup  while  [compile] then  repeat
   ; immediate compile-only
 
-( case )
+( case )  \ baden-case )
+
+  \ An alternative `case` structure that makes any
+  \ calculation easier.
+
+  \ 2015-11-15
+
+  \ Credits:
+  \
+  \ Adapted and modified from code written by Wil Baden,
+  \ published on Forth Dimensions (volume 8, number 5, page 29,
+  \ 1987-01).
+
+  \ XXX TODO rename, avoid standard names: `case`, `of`,
+  \ `endof`.
+
+defer case  ( n -- n n )  ' dup ' case defer!
+defer othercase  ( n -- )  ' drop ' othercase defer!
+
+: of  ( n f -- )
+  postpone if  postpone drop  ; immediate compile-only
+
+: endof  ( n f -- )
+  postpone exit  postpone then  ; immediate compile-only  ;s
+
+  \ Usage example
+
+  \ ----
+  \ : say0 ." nul"  ;
+  \ : say1 ." unu"  ;
+  \ : say2 ." du"  ;
+  \ : say-other ." alia"  ;
+
+  \ : test  ( n -- )
+  \   case 0 = of  say0  endof
+  \   case 1 = of  say1  endof
+  \   case 2 = of  say2  endof
+  \            othercase say-other  ;
+  \ ----
+
+( case )  \ eforth-case )
 
   \ Credits:
   \ Code adapted and modified from eForth.
@@ -6532,13 +6720,13 @@ code (step)  ( R: n -- n' )
   ( Run-time: x -- )
   postpone drop (endcase)  ; immediate compile-only
 
-( case )
+( case )  \ 94-doc-case )
 
   \ Credits:
   \ Code copied from the example provided in the Forth-94
   \ documentation.
 
-  \ This version uses 56 bytes.
+  \ This version uses 54 bytes.
 
 0 constant case  immediate compile-only
   \ init count of ofs
@@ -6564,7 +6752,7 @@ code (step)  ( R: n -- n' )
   postpone drop  \ discard case value
   0 do  postpone then  loop  ; immediate compile-only
 
-( case )
+( case )  \ abersoft-case )
 
   \ Credits:
   \ This is the `case` provided by Abersoft Forth,
@@ -6889,14 +7077,100 @@ cr  128            dup 3 .r  select-test
   \ Usage example:
   \
   \ ----
-  \ : zx0 ." nulo"  ;
-  \ : zx1 ." unu"  ;
-  \ : zx2 ." du"  ;
+  \ : say0 ." nul"  ;
+  \ : say1 ." unu"  ;
+  \ : say2 ." du"  ;
 
-  \ case: zx  ( n -- )  zx0 zx1 zx2  ;
+  \ case: say  ( n -- )  say0 say1 say2  ;
 
-  \ 0 zx cr 1 zx cr 2 zx cr
+  \ 0 say cr 1 say cr 2 say cr
   \ ----
+
+( cases: )
+
+  \ `cases:` structure, alternative to the standard `case`.
+  \ It saves space, but is slower.
+
+  \ 2015-11-15
+
+  \ Credits:
+  \
+  \ Adapted, renamed and commented from code written by Dan
+  \ Lerner, published on Forth Dimensions (volume 3, number 6,
+  \ page 189, 1982-03).
+
+  \ 109 bytes used
+
+: cases:  ( "name" -- orig 0 )
+  create >mark 0
+  does>  ( selector -- ) ( selector pfa )
+    true rot rot dup  ( true selector pfa pfa )
+    cell+ swap @   ( true selector pfa+2 options )
+    0 do  ( true selector a )
+      2dup @ =  ( true selector a f )
+      if    dup cell+ perform
+            2>r 0= 2r>  ( false selector a )  exhaust
+      else  cell+ cell+  then
+   loop  ( true selector a | false selector a )
+   rot if  perform  else  drop  then  drop  ;
+
+  \ doc{
+  \
+  \ cases:  ( "name" -- orig 0 )
+  \
+  \ Define a `cases:` structure "name", built as an array of
+  \ pairs (value and associated vector).
+  \
+
+  \ Usage example:
+  \
+  \ ----
+  \ : say10     ." dek"  ;
+  \ : say100    ." cent" ;
+  \ : say1000   ." mil"  ;
+  \ : say-other  ." alia" ;
+  \
+  \ cases: say  ( n -- )
+  \     10 case>  say10
+  \    100 case>  say100
+  \   1000 case>  say1000
+  \        other> say-other
+  \
+  \ 10 say  100 say  1000 say  1001 say
+  \ ----
+  \
+  \ }doc
+
+: case>  ( orig counter selector "name" -- orig counter' )
+  , ' compile, 1+  ;
+
+  \ doc{
+  \
+  \ case>  ( orig counter selector "name" -- orig counter' )
+  \
+  \ Compile an option into a `cases:` structure. The given
+  \ _selector_ will cause the word "name" to be executed.
+  \
+  \ See `cases:` for an usage example.
+  \
+  \ }doc
+
+: other>  ( orig counter "name" -- )  ' compile, swap !  ;
+
+  \ XXX TODO -- rename? `anycase>`, `othercase>`...
+
+  \ doc{
+  \
+  \ other>  ( orig counter "name" -- )
+  \
+  \ Compile the default option of a `cases:` to be the word
+  \ "name" . This must be the last option of the structure and
+  \ is mandatory.  When no default action is required, `other>
+  \ noop` can be used.
+  \
+  \ See `cases:` for an usage example.
+  \
+  \ }doc
 
 ( options[ )
 
@@ -6909,6 +7183,8 @@ cr  128            dup 3 .r  select-test
   \ assembler code.
 
   \ XXX TODO alternative version `coptions[`
+
+  \ 166 bytes used.
 
 variable (default-option)
   \ default option cfa
@@ -6954,6 +7230,33 @@ variable #options
   compile (options)           \ compile run time handler
   >mark >mark >mark  ( a1 a2 a3 )
   postpone [  ; immediate compile-only
+
+  \ doc{
+  \
+  \ options[  ( -- )
+  \
+  \ Start an `options[` structure.
+
+  \ Usage example:
+  \
+  \ ----
+  \ : say10     ." dek"  ;
+  \ : say100    ." cent" ;
+  \ : say1000   ." mil"  ;
+  \ : say-other  ." alia" ;
+  \
+  \ : say  ( n )
+  \   options[
+  \     10 option  say10
+  \    100 option  say100
+  \   1000 option  say1000
+  \        default-option say-other
+  \   ]options  ;
+  \
+  \ 10 say  100 say  1000 say  1001 say
+  \ ----
+  \
+  \ }doc
 
 : option  ( x "name" -- )
   \ Compile an option _x_ and the cfa of its action "name".
@@ -7640,6 +7943,132 @@ variable (value)  ['] @ (value) !
   \
   \ }doc
 
+( link@ link, )
+
+  \ 2015-01-15
+
+  \ Credits:
+  \
+  \ Code written after the description by Rick VanNorman,
+  \ published on Forth Dimensions (volume 20, number 3, pages
+  \ 19..22, 1998-09).
+
+defer link@  ( node1 -- node2 )
+  ' @ ' link@ defer!
+  \ Fetch the linked list node _node_ is pointing to.
+
+: link,  ( node -- )  here over @ , swap !  ;
+  \ Create a new linked list node, pointing to _node_.
+
+( [switch switch] )
+
+  \ 2015-01-15
+
+  \ Credits:
+  \
+  \ Original code by Rick VanNorman, published on Forth
+  \ Dimensions (volume 20, number 3, pages 19..22, 1998-09).
+
+need link@  need link,
+
+: switcher  ( i*x n head -- j*x )
+  dup cell+ @ >r  \ save default cfa
+  begin  link@ ?dup while  ( n a )
+    2dup cell+ @ = if   \ match
+      nip cell+ cell+ perform  r> drop exit
+    then
+  repeat  r> execute  ;
+  \ Search the linked list from its _head_ for a match to the
+  \ value _n_. If a match is found, discard _n_ and execute the
+  \ associated matched cfa. If no match is found, leave _n_ on
+  \ the stack and execute the default cfa.
+
+: :switch  ( cfa "name" -- a )
+  create  >mark swap ,
+  does>  ( n -- )  ( n pfa ) switcher  ;
+  \ Create a code switch whose default behaviour is given by
+  \ _cfa_. Leave the address of the head of its list on the
+  \ stack.
+
+: <switch  ( head cfa n -- head )
+  2 pick link,  , ,  ;
+  \ Define a new clause to execute _cfa_ when the key _n_
+  \ is matched.
+
+-->
+
+( [switch switch] )
+
+: [switch  ( "name1" "name2" -- head )
+  create  >mark ' ,
+  does>  ( n -- )  ( n pfa ) switcher  ;
+  \ Define a new switch "name1" with its default behaviour
+  \ "name2". The head of the switch is left on the stack for
+  \ defining clauses.
+
+: [+switch  ( "name" -- head )  ' >body  ;
+  \ Leave the head of the given switch "name", for clauses to
+  \ append to.
+
+: switch]  ( head -- )  drop  ;
+  \ Discard the switch head from the stack.
+  \ Used after defining clauses.
+
+: runs  ( head n "name" -- )  ' swap <switch  ;
+  \ Associate the cfa of "name" to clause _n_ of switch _head_.
+
+;s
+
+  \ XXX TODO -- `run:`
+
+: run:  ( head n "text<;>" -- )
+  :noname [char] ; parse evaluate postpone ; ( cfa )
+  swap >switch  ;
+
+( [switch-test ) \ without syntactic sugar
+
+: one    ( -- )  ." unu " ;
+: two    ( -- )  ." du "  ;
+: three  ( -- )  ." tri "  ;
+: many   ( n -- )  . ." is too much! "  ;
+
+' many :switch numbers
+  \ `many` is the default behaviour of the new switch `numbers`
+
+  ' one   1 <switch
+  ' two   2 <switch
+  ' three 3 <switch  drop
+
+cr 1 numbers 2 numbers 3 numbers 4 numbers
+
+' numbers >body  :noname  ." kvar "  ; 4 <switch drop
+  \ add a new clause for the number 4
+
+cr 1 numbers 2 numbers 3 numbers 4 numbers
+
+-->
+
+( [switch-test ) \ with syntactic sugar
+
+[switch sugar-numbers many
+  1 runs one
+  2 runs two
+  3 runs three
+switch]
+
+cr 1 sugar-numbers 2 sugar-numbers
+   3 sugar-numbers 4 sugar-numbers
+
+: four  ." kvar "  ;
+
+[+switch sugar-numbers
+  4 runs four
+switch]
+  \ add a new clause for the number 4
+
+cr 1 sugar-numbers 2 sugar-numbers
+   3 sugar-numbers 4 sugar-numbers
+
 ( user )
 
   \ XXX TODO -- improved version, that uses the first free
@@ -7673,6 +8102,217 @@ variable (value)  ['] @ (value) !
   up fthl \ ld hl,(user_variables_pointer) \ XXX FIXME
   de addp  \ hl= address of the user variable
   pushhl jp end-asm
+
+( 1array ) \ noble-arrays
+
+  \ Toolset for one- and two-dimensional arrays by Julian V.
+  \ Noble
+
+  \ 2015-11-15
+
+  \ ---------------------------------------------------
+  \ (c) Copyright 2001 Julian V. Noble. \
+  \ Permission is granted by the author to \
+  \ use this software for any application pro- \
+  \ vided this copyright notice is preserved. \
+  \ ---------------------------------------------------
+
+  \ ...........................................................
+  \ References:
+  \
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
+
+  \ ...........................................................
+  \ Description:
+
+  \ Well, as I am sure everyone knows to the point of hurling
+  \ (regurgitating) by now, I chose a format that looks
+  \ somewhat like Fortran. I could not use the right
+  \ parenthesis, ) , because it was taken as the closure for a
+  \ parenthesized comment. Could not use the [ ]'s because they
+  \ also have a definite meaning (turn compiler off and on by
+  \ switching STATE).  So I was left with what I could do using
+  \ curly braces { and }.
+
+  \ Now why did I want an array notation that looks like
+  \ Fortran? There were several reasons:
+
+  \ 1. I wanted (at that time) to sell Forth to the Fortran
+  \ community.  (Silly me! But I was young then.)
+
+  \ 2. I wanted a notation that unequivocally said "I am an
+  \ array!" I had already written a number of linear equations
+  \ and other matrix ops programs and kept running into the
+  \ problems of
+
+  \  a. different constructors for each data type;
+  \
+  \  b. reading the program when it was done.
+
+  \ 3. I wanted something that would be completely transparent,
+  \ would permit address arithmetic, and would not require tons
+  \ of comments to be maintainable.
+
+  \ Eventually I hit on the Forthish solution of defining an
+  \ array with a header that contained its size and its data
+  \ size. Then I wrote a de-referencing operator that would dig
+  \ into the header and calculate the address of the datum
+  \ being indexed. The notation for this was
+
+  \ v{ I } ( -- adr of v[I] )
+
+  \ The left curly brace in an array's name was simply
+  \ syntactic sugar.  But at some point I realized that by
+  \ naming 2-dimensional arrays something like M{{ (2 curly
+  \ braces) I could have the name say "I am a 2-dimensional
+  \ array." Then one dereferences such by saying
+
+  \ m{{ i j }}
+
+  \ --that is, the 2-dim dereferencing operator expects a base
+  \ address and two indices and produces the correct address of
+  \ the I,Jth element.
+
+  \ For those who want it, go to my home page (under
+  \ construction) then to the link "Computational Methods in
+  \ the Physical Sciences", and thence to "Forth system and
+  \ example programs". There you can find the file arrays.f
+  \ that does all of this stuff. I have bounds checking in that
+  \ version because it was intended for student use.  Experts
+  \ can delete that stuff.
+
+  \ ...........................................................
+  \ Implementation:
+
+  \ words for 1-dimensional arrays
+
+need <=
+
+: long ; immediate
+
+: 1array ( len #bytes/datum --) \ ( #b len data ...)
+  create 2dup , , * allot ;
+
+: _len ( base_addr -- len)  cell+ @ ;
+  \ determine length of an array
+
+: } ( base_adr indx -- adr[indx] )
+  over _len over <= over 0< or #-272 ?throw
+    \ #-272 = array index out of range
+  over @ * + cell+ cell+ ;
+
+( 2array ) \ noble-arrays
+
+  \ words for 2-dimensional arrays
+
+need 1array
+
+: wide ; immediate
+
+: 2array ( hgt wid data_size --) \ ( wid #b len data ...)
+  create >r tuck , ( wid hgt)
+  r@ , * dup , r> * allot ;
+
+: }} ( base_adr m n -- adr[m,n] ) \ data stored row-wise
+  2>r cell+ dup cell- @
+  r> * r> + ( base_adr+cell m+n*w)
+  } ;
+
+  \ ...........................................................
+  \ Usage examples:
+
+  \ 20 long 2 floats 1array a{
+  \   \ complex vector
+  \
+  \ 20 long 20 wide 1 floats 2array m{{
+  \   \ real matrix
+  \
+  \ 20 long 1 cells 1array irow{
+  \   \ single-length, integer-valued vector
+  \
+  \ m{{ i j }} ( -- adr[m_ij] )
+  \   \ to dereference
+
+( array ato ) \ wong-arrays )
+
+  \ One-dimensional arrays by Leo Wong
+
+  \ 2015-11-15
+
+  \ ...........................................................
+  \ References:
+
+  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+
+  \ ...........................................................
+  \ Description:
+
+  \ This approach is unique in having no proponents. It is part
+  \ of Flight, a Forth scripting language. Several Flight
+  \ programs can be found by Googling comp.lang.forth. In
+  \ conformance with the design goals of Flight, bounds
+  \ checking is included.
+
+  \ ...........................................................
+  \ Main idea:
+
+  \ Treat arrays like values.
+
+    \ \ Example of use:
+    \ 4 array bar
+    \ 10 0 ato bar 20 1 ato bar 30 2 ato bar 40 3 ato bar
+
+    \ 3 bar .
+    \ 0 bar .
+    \ 123 3 ato bar
+    \ 3 bar .
+    \ 1 3 +ato bar
+    \ 3 bar .
+
+  \ Note that as in most Forth numerical arguments go before:
+
+    \ 1 3 +ato bar NOT: 1 +ato 3 bar
+
+  \ This approach can be extended to different-sized data
+  \ (including strings) and 2 or more dimensions by having
+  \ their own versions of array array> ato +ato. A Flight
+  \ scripter would not be expected to implement these words.
+
+  \ ...........................................................
+  \ Sample implementation:
+
+need within
+
+: array>  ( n 'array -- a )
+  2dup @ 0 swap within 0= #-272 ?throw
+    \ #-272 = array index out of range
+  cell+ swap cells +  ;
+  \ if in range, return element address, else abort
+
+: array  ( n "name" -- ) 
+  create dup , cells allot
+  does> ( n -- x ) ( n pfa ) array> @  ;
+  \ define array
+
+: (ato)  ( x n array -- )  >body array> !  ;
+  \ store to array
+
+: ato  ( x n "name" -- )
+  compiling?  if    postpone ['] postpone (ato)
+              else  ' (ato)  then ; immediate
+  \ store to array
+  \ usage: x n ato <name>
+
+: (+ato)  ( x n array -- )  >body array> +!  ;
+  \ add to array
+
+: +ato  ( n "name" -- )
+  compiling? if    postpone ['] postpone (+ato)
+             else  ' (+ato)  then  ; immediate
+  \ add to array
 
 ( xstack )
 
@@ -7768,9 +8408,82 @@ need xstack
   \ followed by a list of the items; TOS is the right-most item.
 
   \ }}} =======================================================
+  \ Environmental queries {{{
+
+( environment? )
+
+need wid-of
+
+vocabulary environment ( -- )
+wid-of environment constant environment-wordlist ( -- wid )
+  \ Wordlist that is searched by environmental queries.
+
+: environment? ( ca len -- false | i*x true )
+  environment-wordlist search-wordlist
+  if  execute true  else  false  then  ;
+
+also environment definitions
+
+8 constant address-unit-bits ( -- n )
+  \ Size of one address unit, in bits.
+
+255 constant max-char ( -- u )
+  \ Maximum value of any character in the character set.
+
+255 constant /counted-string ( -- n )
+  \ Maximum size of a counted string, in characters.
+
+  \ XXX TODO
+address-unit-bits cells 2* 2+ constant /hold ( -- n )
+  \ Size of the pictured numeric string output buffer, in
+  \ characters.
+
+  \ XXX TODO calculate
+84 constant /pad ( -- n )
+  \ Size of the scratch area pointed to by `pad`, in
+  \ characters.
+
+1 -3 mod 0< constant floored ( -- f )
+  \ True if `/` etc. perform floored division
+
+-->
+
+( environment? )
+
+32767 constant max-n ( -- n )
+  \ Largest usable signed integer.
+
+-1 constant max-u ( -- u )
+  \ Largest usable unsigned integer.
+
+-1 max-n 2constant max-d ( -- d )
+  \ Largest usable signed double.
+
+-1. 2constant max-ud ( -- ud )
+  \ Largest usable unsigned double.
+
+  \ XXX TODO -- calculate
+$50 constant return-stack-cells ( -- n )
+  \ : return-stack-cells ( -- n )
+    \ [ forthstart 6 cells + ] literal @ cell / ;
+    \ Maximum size of the return stack, in cells.
+
+  \ XXX TODO -- calculate
+$50 constant stack-cells ( -- n )
+  \ : stack-cells ( -- n )
+    \ [ forthstart 4 cells + ] literal @ cell / ;
+    \ Maximum size of the data stack, in cells.
+
+  \ XXX TODO -- add "#locals" when needed
+
+forth definitions  previous
+
+  \ }}} =======================================================
   \ Multitask {{{
 
 ( jiffy! jiffy@ -jiffy )
+
+  \ Note: This code is specific for G+DOS.
 
   \ Credits:
   \ Idea inspired by an article by Paul King, published in
@@ -7796,10 +8509,222 @@ need !dosvar  need @dosvar
   \ }}} =======================================================
   \ Locals {{{
 
+( local restore-local )
+
+  \ A simple solution to use an ordinary variable as local,
+  \ saving its current value on the return stack and restoring
+  \ it at the end.
+
+  \ 2015-11-14
+
+  \ Credits:
+  \
+  \ Original code by Henning Hanseng, published on Forth
+  \ Dimensions 9/5 p. 6 (1988-01).
+
+: restore-local  ( -- )  ( R: a x -- )  2r> swap !  ;
+  \ a = address of a variable
+  \ x = its original value
+  \ Restore variable address and value.
+
+: local  ( a0 -- )  ( R: a1 -- a0 x pfa a1 )
+  \ a0 = address of a variable
+  \ x = its current value
+  \ a1 = return address
+  \ pfa = pfa of `restore-local`
+  r> swap                     \ save top return address
+  dup @ 2>r                   \ save variable address and value
+  ['] restore-local >body >r  \ force exit via `restore-local`
+  >r  ;                       \ restore top return address
+
+  \ Usage example:
+  \
+  \ variable v
+  \ 1 v !  v ?  \ default value
+  \ : test  ( -- )
+  \   v local
+  \   v ?  1887 v !  v ?  ;
+  \ v ?  \ default value
+
+( local restore-local )
+
+  \ A simple solution to use an ordinary variable or value as
+  \ local, saving its current value on the return stack and
+  \ restoring it at the end.
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-11-14: Start.
+
+  \ Credits:
+  \
+  \ Original code by Michael Barr, published on Forth
+  \ Dimensions 10/1 p. 6 (1988-05).
+
+code (restore-local)
+  \ XXX TODO
+  jpnext
+  end-code
+
+: restore-local
+  (restore-local)  ;
+
+code (local)  ( a0 -- )  ( R: a1 -- a0 x pfa a1 )
+  \ a0 = address of a variable
+  \ x = its current value
+  \ a1 = return address
+  \ pfa = pfa of `restore-local`
+  \ XXX TODO
+  jpnext
+  end-code
+
+: local  ( "name" -- )
+  ' >body postpone literal postpone (local)
+  ; immediate compile-only
+
+  \ Usage example:
+  \
+  \ variable v
+  \ 1 v !  v ?  \ default value
+  \ : test  ( -- )
+  \   v local
+  \   v ?  1887 v !  v ?  ;
+  \ v ?  \ default value
+
+( arguments results )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-11-14: Start.
+
+  \ Credits:
+  \ Original code by Marc Perkel, published on
+  \ Forth Dimensions 3/6 p. 6 (1982-03).
+
+need 2/
+
+variable >args
+  \ address of the current arguments in the data stack
+variable arg-action
+  \ id of the argument action (fetch, store or add)
+
+: arg:  ( n "name" -- )
+  create  ,
+  does>  ( a -- x ) ( x a -- )
+    \ ( a pfa | x a pfa )
+    @ >args @ swap -
+    arg-action @ ?dup if    0< if  +!  else  !  then
+                      else  @
+                      then  arg-action off  ;
+  \ create a new argument
+
+$00 arg: s0 $02 arg: s1 $04 arg: s2 $06 arg: s3 $08 arg: s4
+$0A arg: s5 $0C arg: s6 $0E arg: s7 $0A arg: s8 $0C arg: s9
+
+: to  ( -- )  1 arg-action !  ;
+  \ set the store action
+
+: +to  ( -- )  -1 arg-action !  ;
+  \ set the add action
+
+-->
+
+( arguments results )
+
+  \ XXX OLD -- original
+  \ : arguments  ( n -- )
+  \   r> >args @ >r >r  \ save the contents of `>args`
+  \   cells sp@ + dup >args ! 12 - sp@ swap -
+  \   2/ 0 do  0  loop  arg-action !  ;
+
+  : arguments  ( n -- )
+  r> >args @ >r >r        \ save `>args`
+  cells sp@ + dup >args ! 12 - sp@ swap -
+  2/ 0 do  0  loop  arg-action !  ;
+
+: results  ( n -- )
+  cells >args @ swap - sp@ -
+  2/ 0 do drop loop
+  r> r> >args ! >r  ;     \ restore `>args`
+
+-->
+
+( arguments results )
+
+  \ test
+
+: test  ( n1 n2 n3 -- )
+  cr ." check 1" .s \ XXX INFORMER
+  3 arguments
+  cr ." check 2" .s \ XXX INFORMER
+  s0 s1 s2 * * to s4
+  s0 s1 s2 + + to s5
+  s5 to s2
+  s4 to s1
+  cr ." check 3" .s \ XXX INFORMER
+  2 results
+  cr ." check 4" .s \ XXX INFORMER
+  ;
+
+( create-anon anon +anon n>anon )
+
+  \ Anonymous variables.
+
+  \ 2015-11-14
+
+  \ Credits:
+  \
+  \ Adapted, modified, improved and commented from original
+  \ code written by Leonard Morgenstern, published on Forth
+  \ Dimensions 6/1 p. 33 (1984-05).
+
+variable (anon)  ( -- a )
+  \ cfa of the latest anonymous variable.
+
+: create-anon  ( -- )
+  here (anon) !
+  [ (anon) body> @ ] literal compile, 0 ,  ;
+  \ Create a new anonymous variable.  `(anon)` is used to get
+  \ and compile the cfa executed by all variables.
+
+: anon  ( Compilation: -- ) ( Run-time: -- a )
+  (anon) @
+  compiling? if  compile,  else  execute  then  ; immediate
+  \ Current anonymous variable (first cell),
+  \ equivalent to `0 +anon`.
+
+: +anon  ( Compilation:  n -- ) ( Run-time: -- )
+  cells (anon) @ execute +
+  compiling? if  postpone literal  then ; immediate
+  \ Current anonymous variable (cell _n_, first is 0).
+
+: n>anon  ( x1..xn n -- )
+  cells postpone anon swap bounds do  i !  cell +loop  ;
+  \ Store the given _n_ cells into the current anonymous
+  \ variable.
+
+  \ Usage example:
+
+  \ create-anon 5 cells allot
+  \
+  \ : test
+  \   400 300 200 100 000  5 n>anon
+  \   anon ?          \ prints 0
+  \   123 anon !
+  \   anon ?          \ prints 123
+  \   [ 2 ] +anon ?   \ prints 200
+  \   555 [ 2 ] +anon !
+  \   [ 2 ] +anon ?   \ prints 555
+  \   ;
+
 ( { } )
 
   \ XXX UNDER DEVELOPMENT
-  \ XXX TODO `(local)`
+  \ XXX TODO -- this depends on `(local)` and `refill`
+
+  \ XXX TODO -- an alternative implementation with string
+  \ comparisons is in the Forth-2012 documentation, but a
+  \ dictionary search seems a better option.
 
   \ Credits:
   \ Code adapted from pForth.
@@ -7840,16 +8765,18 @@ variable loc-done
 
 : {  ( <local-declaration}> -- )
   loc-done off  loc-temp-mode off  loc-comment-mode off
-  begin  bl word count  dup 0>
-         \ make sure we are not at the end of a line
-    if  over c@
-      case
+  begin
+    parse-name dup 0>  \ not at the end of a line?
+    if
+      over c@ case
         \ handle special characters
+
         [char] }  of  loc-done on          2drop  endof
         [char] |  of  loc-temp-mode on     2drop  endof
         [char] -  of  loc-comment-mode on  2drop  endof
         [char] )  of  ." { ... ) imbalance!" cr abort  endof
-        [char] \  of  postpone \  2drop endof
+        [char] \  of  postpone \
+                      2drop endof
 
         -->
 
@@ -7863,10 +8790,14 @@ variable loc-done
           \ otherwise take value from stack
           (local)
         then  r>
+
       endcase
+
     else  2drop refill 0=
           abort" end of input while defining local variables!"
+
     then  loc-done @
+
   until  0 0 (local)  ; immediate  privatize
 
 ( {}-tests )
@@ -7923,7 +8854,7 @@ variable loc-done
   \ : ms  ( u -- )  20 /mod pause 0 ?do 10 0
   \   do loop loop  ;
 
-  \ Version from DZX-Forth:
+  \ Version from DZX-Forth (for 8080):
   \ code ms  ( u -- )  hex
   \   d1 c,         \ pop de
   \   here          \ ms1:
@@ -8167,6 +9098,31 @@ code just-pause ( u -- )
   bc pop  jpnext
   end-code
 
+( leapy-year? )
+
+  \ 2015-11-15
+
+  \ Credits:
+  \
+  \ Code written by Wil Baden, published on Forth Dimensions
+  \ (volume 8, number 5, page 31, 1987-01).
+
+  \ XXX TODO -- adapt when baden-case is modified
+
+: leapy-year?  ( n -- f )
+  dup 400 mod 0= if  drop true   exit then
+  dup 100 mod 0= if  drop false  exit then
+        4 mod 0= if       false  exit then
+  false  ;
+
+need baden-case
+
+: leapy-year?  ( n -- f )
+  case 400 mod 0= of  true   endof
+  case 100 mod 0= of  false  endof
+  case   4 mod 0= of  true   endof
+  othercase false  ;
+
   \ }}} =======================================================
   \ Vocabularies {{{
 
@@ -8242,8 +9198,11 @@ need body>name
   \ Code of `wid-of` adapted from eForth's `widof`.
 
 : wid>  ( wid -- cfa )  body>  ;
+  \ Convert a _wid_ to the _cfa_ of its vocabulary.
+  \ XXX TODO confirm this description
 
 : >wid  ( cfa -- wid )  >body  ;
+  \ Convert the _cfa_ of a vocabulary to its _wid_.
 
 : wid-of  ( "name" -- wid )  ' >wid  ;
 
@@ -12101,7 +13060,7 @@ need frames@  need reset-frames  defer (number-base)
   dup ['] number-base-3 (number-base-bench)
       ['] number-base-4 (number-base-bench) ;
 
-  \ 2015-10-09 
+  \ 2015-10-09
   \
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
@@ -12609,7 +13568,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
 
 ( constant-bench )
 
-need reset-frames
+need reset-frames  need frames@
 
 0 constant const1
 
@@ -12625,7 +13584,7 @@ need reset-frames
 
 ( literal-bench )
 
-need reset-frames
+need reset-frames  need frames@
 
 : bench1  ( n -- )
   reset-frames 0 do  cell negate drop  loop
@@ -12643,7 +13602,7 @@ need reset-frames
 
 ( 0-bench false-bench )
 
-need reset-frames
+need reset-frames  need frames@
 
   \ This bench compares `0` (implemented as a `cconstant`) and
   \ `false` (written in assembler).
@@ -12697,11 +13656,198 @@ need bench  need marque
   \ baden-d*  4920 (98 seconds)
   \ smith-d*  5189 (103 seconds) (105%)
 
+( case-benchs )
+
+  \ Comparison of case-like structures.
+  \ 
+  \ 2015-11-14: `case` (4 versions), `case:`, `options[` and
+  \ `cases:`.
+
+need bench
+
+warnings off
+
+: .used  ( u -- )  unused - cr u. ." B used " ;
+
+32767 constant iterations
+
+defer (case-bench)  ( -- )
+
+: case-bench  ( n cfa -- )
+  cr ." ..."
+  ['] (case-bench) defer!
+  bench
+  iterations 0 do  i %11 and (case-bench)  loop
+  marque  ;
+
+-->
+
+( case-benchs )
+
+cr .( case)
+unused need case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+cr .( eForth case)
+unused need eforth-case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+-->
+
+( case-benchs )
+
+cr .( case from the Forth-94 docs)
+unused need eforth-case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+cr .( Abersoft Forth case)
+unused need eforth-case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+-->
+
+( case-benchs )
+
+  \ Note: the `case:` structure is more specific than the other
+  \ structures: it lacks a default option and its argument is
+  \ positional.
+
+cr .( case:)
+unused need case: .used  unused
+case:  case:-example  ( n -- )  noop  noop  noop  noop ;
+.used .( by its example)  ' case:-example case-bench
+
+cr .( options[)
+unused need options[ .used  unused
+: options[-example  ( n -- )
+  options[
+    0 option noop  1 option noop  2 option noop
+      default-option noop
+  ]options  ;
+.used .( by its example)  ' options[-example case-bench
+
+-->
+
+( case-benchs )
+
+cr .( cases:)
+unused need cases: .used  unused
+cases: cases:-example  ( n -- )
+  0 case> noop  1 case> noop  2 case> noop  other> noop
+.used .( by its example)  ' cases:-example case-bench
+
+cr .( baden-case)
+unused need baden-case .used  unused
+: baden-case-example  ( n -- )
+  case 0 = of  noop  endof
+  case 1 = of  noop  endof
+  case 2 = of  noop  endof
+           othercase noop  ;
+.used .( by its example)  ' baden-case-example case-bench
+
+-->
+
+( case-benchs )
+
+cr .( baden-case-like)
+unused .used  unused
+: baden-case-like-example  ( n -- )
+  dup 0 = if drop  noop  exit then
+  dup 1 = if drop  noop  exit then
+      2 = if       noop  exit then
+  noop  ;
+.used .( by its example)  ' baden-case-like-example case-bench
+
+cr .( vannorman-switch)
+unused need [switch .used  unused
+[switch vannorman-switch-example drop
+  0 runs noop  1 runs noop  2 runs noop
+switch]
+.used .( by its example)  ' vannorman-switch-example case-bench
+
+
+  \                        Bytes used            Speed (3)
+  \                        --------------------- --------------
+  \ Structure              Code (1)  Example (2) Frames Seconds
+  \ ---------              --------- ----------- ------ -------
+  \ case (7)               48       62          1365   27
+  \ eforth-case (8)        54       62          1366   27
+  \ 94-doc-case (6)        54       62          1365   27
+  \ abersoft-case (5)      64       62          1365   27
+  \ case: (4)              21       12           823   16
+  \ options[ (9)          166       24          3627   72
+  \ cases: (10)           109       18          3155   63
+  \ baden-case (11)        18       56          1472   29
+  \ baden-case (12)        36       56          1472   29
+  \ baden-case (13)         0       50          1353   27
+  \ vannorman-switch (14) 124       24          3573   71
+
+  \ (1) Bytes used by the compilation of the structure's code.
+  \
+  \ (2) Bytes used by the tested example: a structure with
+  \ three options plus default, that execute a `noop`.
+  \
+  \ (3) For 32767 iterations with parameter 0..3. One system
+  \ frame is 20 ms.
+
+  \ (4) A port of F83's `case:`. It is more specific than the
+  \ other structures: it lacks a default option and its
+  \ argument is positional.
+  \
+  \ (5) Eaker/Forth-94 `case` of Abersoft Forth, but with
+  \ compiler security removed.
+  \
+  \ (6) Eaker/Forth-94 `case` copied from the Forth-94
+  \ documentation.
+  \
+  \ (7) Eaker/Forth-94 `case` of eForth, with a little
+  \ simplification. This is the default `case` used in Solo
+  \ Forth.
+  \
+  \ (8) Eaker/Forth-94 `case` of eForth.
+  \
+  \ (9) A port of IsForth's `case:`.
+  \
+  \ (10) A port of a structure written by Dan Lerner, published
+  \ on Forth Dimensions (volume 3, number 6, page 189,
+  \ 1982-03).
+  \
+  \ (11) "Ultimate CASE Statement", written by Wil Baden,
+  \ published on Forth Dimensions (volume 8, number 5, page 29,
+  \ 1987-01).
+  \
+  \ (12) The same "Ultimate CASE Statement", by Wil Baden, with
+  \ two syntactic sugar words added: `endof` and `othercase`.
+  \
+  \ (13) The same "Ultimate CASE Statement", by Wil Baden,
+  \ emulated with standard words. This is a bit faster because,
+  \ without the syntactic sugar definitions, one `dup` and two
+  \ `drop` are saved.
+  \
+  \ (14) Code by Rick VanNorman, published on Forth Dimensions
+  \ (volume 20, number 3, pages 19..22, 1998-09).
+
 ( misc-benchs )
 
   \ Some misc speed benchs.
 
-need bench  need -if
+need bench  need 0if
 
 : bench1  ( n -- )
   begin  ?dup if  1 - else exit then  again  ;
@@ -12713,10 +13859,10 @@ need bench  need -if
   begin  dup 0= if  drop exit then 1-  again  ;
 
 : bench2a  ( n -- )
-  begin  dup -if  drop exit then 1-  again  ;
+  begin  dup 0if  drop exit then 1-  again  ;
 
 : bench3  ( n -- )
-  begin  ?dup -if  exit then 1-  again  ;
+  begin  ?dup 0if  exit then 1-  again  ;
 
 
 : misc-benchs  ( -- )
@@ -12729,7 +13875,7 @@ need bench  need -if
   \ bench1   655 (`1 -`)
   \ bench1a  576 (`1-`)
   \ bench2   320 (`0= if`: 100%)
-  \ bench2a  245 (`-if`:    76%)
+  \ bench2a  245 (`0if`:    76%)
   \ bench3   528
 
   \ }}} =======================================================
@@ -13037,7 +14183,7 @@ code if'-test  ( -- )
 ( System error codes #-271..#-285 )
 
 \ #-271 immediate word not allowed in this structure
-\ #-272
+\ #-272 array index out of range
 \ #-273
 \ #-274
 \ #-275
