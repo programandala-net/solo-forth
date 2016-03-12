@@ -247,10 +247,12 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 
 library.complete.for_gplusdos.fsb: \
 	library.main.fsb \
+	library.game.nuclear_invaders.fsb \
 	library.error_codes.gplusdos.fsb \
 	library.error_codes.os.fsb
 	cat \
 		library.main.fsb \
+		library.game.nuclear_invaders.fsb \
 		library.error_codes.gplusdos.fsb \
 		library.error_codes.os.fsb \
 		> library.complete.for_gplusdos.fsb
@@ -261,11 +263,13 @@ solo_forth_disk_2.mgt: library.complete.for_gplusdos.fsb
 
 library.complete.for_plus3dos.fsb: \
 	library.main.fsb \
+	library.game.nuclear_invaders.fsb \
 	library.error_codes.plus3dos.fsb \
 	library.error_codes.os.fsb
 	cat \
 		library.main.fsb \
 		library.error_codes.plus3dos.fsb \
+		library.game.nuclear_invaders.fsb \
 		library.error_codes.os.fsb \
 		> library.complete.for_plus3dos.fsb
 
@@ -331,3 +335,6 @@ backup:
 # 2015-11-12: Fixed the load address of the font drivers; they
 # were missing because of the recent use of `bin2code`, required
 # to build +3DOS disk images.
+#
+# 2016-02-15: Added Nuclear Invaders to the library, an
+# game under development for Solo Forth, in order to try it.

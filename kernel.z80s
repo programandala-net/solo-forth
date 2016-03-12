@@ -19,20 +19,20 @@ version_minor:                equ 1
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 2
+  version_release_candidate:  equ 3
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9E65  ; build 20160101
+  version_build_low_part:     equ 0x9ED8  ; build 20160218
 endif
 
-; This file was last modified: 201601010402
+; This file was last modified: 201602170321
 
 ; ==============================================================
 ; Author and license
 
-; Copyright (C) 2015 Marcos Cruz (programandala.net)
+; Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
 ; You may do whatever you want with this work, so long as you
 ; retain all copyright notices, all credit notices, and this
@@ -2054,7 +2054,7 @@ bank.e:
 ; ----
 ; : ?csb  ( len -- )
 ;   dup unused-csb >  \ not enough free space?
-;   if  csb-size >csb !  then  negate >csb +!
+;   if  csb-size >csb !  then  negate >csb +!  ;
 ; ----
 ; }doc
 
@@ -6801,7 +6801,7 @@ minus_trailing.begin:
 
 ; doc{
 ;
-; -leading  ( ca1 len1 -- ca2 len2 )
+; -leading  ( ca len -- ca' len' )
 ;
 ; Adjust the start and length of a string to suppress the
 ; leading blanks.
@@ -7158,6 +7158,12 @@ accept.end:
 
   ; XXX NEW
   ; XXX TODO -- try, check, complete
+
+; : refill ( -- f )
+;   loading?
+;   if    1 blk +!  >in off
+;   else  query
+;   then  true  ;
 
   dw loading_question_ ; input stream from disk?
   dw zero_branch_,refill.terminal ; if not, branch
@@ -7540,7 +7546,7 @@ parse.end:
 ;   stream                 ( ca0 len0 )
 ;   dup >r   -leading      ( ca1 len1 ) ( R: len0 )
 ;   over >r  bl scan       ( ca2 len2 ) ( R: len0 ca1 )
-;   dup if char- then      \ skip trailing delimiter
+;   dup if  char-  then    \ skip trailing delimiter
 ;   r> r> rot -  parsed    \ update `>in`
 ;   tuck -                 ( ca len )
 ;   2dup parsed-name 2!  ;
@@ -9077,7 +9083,7 @@ endif
   _string "Solo Forth\rVersion "
   dw dot_version_
   dw paren_dot_quote_
-  _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  _string "\r\x7F 2015,2016 Marcos Cruz\r(programandala.net)\r"
 
   dw unused_,u_dot_
   dw paren_dot_quote_
@@ -10706,15 +10712,14 @@ if.do:
 ;
 ; }doc
 
-  dw compile_,branch_
-  dw forward_mark_
+  dw compile_,branch_,forward_mark_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate+compile_only
 
   dw ahead_
-  dw swap_
+  dw swap_ ; XXX TODO `cs-swap`
   dw then_
   dw exit_
 
@@ -11592,8 +11597,12 @@ color:
   dw create_,two_comma_
   dw paren_semicolon_code_
 do_two_constant:
+if 0 ; itc
   inc de    ; de=pfa
   ex de,hl  ; hl=pfa
+else
+  pop hl
+endif
   jp two_fetch.hl
 
 ; ----------------------------------------------

@@ -1,9 +1,9 @@
-= Solo Forth Acknowledgments
+= Acknowledgments
 
-Solo Forth started with the code of Abersoft Forth, that was
-first studied and much improved
-(http://programandala.net/en.program.afera.html) and finally
-fully disassembled
+Solo Forth started with the code of Abersoft Forth, which was first
+studied and much improved
+(http://programandala.net/en.program.afera.html) and finally fully
+disassembled
 (http://programandala.net/en.program.abersoft_forth.html).
 
 Solo Forth was made possible thanks to code, documentation, ideas and
@@ -17,7 +17,7 @@ alphabetical order:
 - CamelForth (for Z80), by Bradford J. Rodriguez, 1994-1995.
 - CP/M fig-Forth 1.1g (for Z80 CP/M), adaptative version by EHR et
   al., 1980-1984.
-- DX-Forth (version 4.x for CP/M) , by Ed, 2013-2015.
+- DX-Forth (version 4.x for CP/M), by Ed, 2013-2015.
 - DZX-Forth (for ZX Spectrum +3e), by Marcos Cruz, 2014-2015 (under
   development).
 - eForth (for DOS), by Bill Muench, 1989-1997.

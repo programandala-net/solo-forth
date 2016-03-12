@@ -1,6 +1,6 @@
 ( Solo Forth library )
 
-\ Copyright (C) 2015 Marcos Cruz (programandala.net)
+\ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201601010137
+\ Last modified: 201602170320
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -507,11 +507,12 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
     \ ld e,l
     \ ld d,h
 
+  bc tstp
     \ ld a,b
     \ or c
-  bc tstp
-    \ jp z,roll.end
+
   0000 jpz |mark 0 unresolved !
+    \ jp z,roll.end
 
   hl decp  hl decp  lddr
     \ dec hl
@@ -1335,6 +1336,11 @@ code fzx-emit  ( c -- )
 ( s= )  \ ==strings==
 
 : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+
+( sconstant )
+
+: sconstant  ( ca len "name" -- )
+  here >r s, r> count 2constant  ;
 
 ( s\" )
 
@@ -2176,7 +2182,7 @@ need os-chars  need os-udg
 
 : udg-ocr  ( n -- )
   \ Set `ocr` to work with the first _n_ chars of the UDG
-  \ charset pointed by the system variable UDG.
+  \ set pointed by the system variable UDG.
   os-udg @ ocr-charset !
   128 ocr-first !
   ocr-chars !  ;
@@ -3265,16 +3271,14 @@ create water-drop  ( -- a )
   \
   \ Code modified from Abersoft Forth.
 
-code bleep  ( n1 n2 -- )
-  \ Produce a tone in the noise maker.
-  \ n1 = duration
-  \ n2 = pitch
+code bleep  ( duration pitch -- )
   E1 c, D1 c, C5 c,   \ pop hl / pop de / push bc
   CD c, 03B5 ,        \ call rom_beeper
   C1 c,               \ pop bc
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   jpnext              \ jp (ix)
   end-code
+  \ Produce a tone in the noise maker.
 
 ( beep>bleep )
 
@@ -3284,11 +3288,12 @@ code bleep  ( n1 n2 -- )
 
   \ XXX TODO test
 
-: beep>bleep  ( freq duration -- n1 n2 )
-  \ n1 = duration
-  \ n2 = pitch
+: beep>bleep  ( frequency duration1 -- duration2 pitch )
   over 1000 */ swap
   4375 100 rot */ 30 -  ;
+  \ Convert the parameters of the original ZX Spectrum's `beep`
+  \ command _frequency duration_ to those required by Solo
+  \ Forth's `bleep`.
 
 ( laser-gun )
 
@@ -3503,6 +3508,8 @@ need z80-asm
 
   \ Note: these words are too specific for the TED editor.
 
+need 1+!  need 1-!
+
 : c@+  ( ca -- c )  dup @ c@ swap 1+!  ;
 : c!+  ( c ca -- )  tuck @ c! 1+!  ;
 : -c@  ( ca -- c )  dup 1-! @ c@  ;
@@ -3648,7 +3655,7 @@ code c!toggle-bits  ( b ca -- )
   \ and return its address _a_.
 
 : allotted  ( n -- a )  here swap allot ;
-  \ Reserve a zone of _n_ bytes in the dictionary, erase it
+  \ Reserve a zone of _n_ bytes in the dictionary
   \ and return its address _a_.
 
   \ }}} =======================================================
@@ -6207,18 +6214,8 @@ variable decode-address  \ in the word being decoded
   cr ." Keys: space=more, q=quit, other=deeper." cr  ;
 
 : decode  ( "name" -- )
-  decode-usage
-
-  \ XXX OLD -- defined  ( "name" -- x 0 | xt 1 | xt -1 )
-  \ defined if  >body  0 decode-level !  (decode)
-  \         else  drop  -13 throw  then  ;
-
-  \ XXX OLD -- defined  ( "name" -- ca len false | xt b true )
-  \ defined 0= -13 ?throw
-  \ drop >body  0 decode-level !  (decode)  ;
-
-  \ XXX NEW -- defined  ( "name" -- nt | 0 )
   defined dup 0= -13 ?throw
+  decode-usage
   name>body  0 decode-level !  (decode)  ;
 
 ( list )
@@ -6441,6 +6438,26 @@ need marker
   \ allocation and search order pointers to the state they had
   \ just prior to the definition of "name".
 
+( marker )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2016-01-01: example taken from m3forth
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
+
+: MARKER ( "name" -- )
+  here
+  get-current ,
+  get-order dup , 0 ?do dup , @ , loop
+  create ,
+  does> @ dup \ only
+  dup @ set-current cell+
+  dup @ >r r@ cells 2* + 1 cells - r@ 0
+  ?do dup dup @ swap cell+ @ over ! swap 2 cells - loop
+  drop r> set-order
+  dp !
+  ;
+
 ( marker )  \ first approach
 
   \ XXX UNDER DEVELOPMENT
@@ -6508,7 +6525,7 @@ need marker
 
   \ Credits:
   \
-  \ Code from Gforth.
+  \ Code and documentation from Gforth.
 
   \ It is a good idea to make your programs self-checking, in
   \ particular, if you use an assumption (e.g., that a certain
@@ -6573,6 +6590,35 @@ variable assert-level ( -- a )
 : ) ( -- )  postpone (endassert) ; immediate
     \ end an assertion
 
+( save-input restore-input )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ 2016-01-01: Code copied from m3Forth:
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
+
+: save-input ( -- xn ... x1 n )
+  source-id 0>
+  if tib #tib @ 2dup c/l 2 + allocate throw dup >r swap cmove
+     r> to tib  >in @
+     source-id file-position throw
+     5
+  else blk @ >in @ 2 then
+  ;
+
+--> 
+( save-input restore-input )
+
+: restore-input ( xn ... x1 n -- f )
+  source-id 0>
+  if dup 5 <> if 0 ?do drop loop -1 exit then
+     drop source-id reposition-file ?dup
+     if >r 2drop drop r> exit then
+     >in ! #tib ! to tib false
+  else dup 2 <> if 0 ?do drop loop -1 exit then
+     drop >in ! blk ! false
+  then
+  ;
 ( extend size system turnkey )
 
   \ XXX WARNING -- Since name fields are saved in a memory
@@ -9306,21 +9352,21 @@ need xstack
 
 : xover  ( X: x1 x2 -- x1 x2 x1 )  1 xpick >x  ;
 
-( x2@ 2>x 2x> x2drop x2dup )
+( 2x@ 2>x 2x> 2xdrop 2xdup )
 
   \ xstack double-number operations
 
 need xstack  need x@  need >x  need xpick  need xover
 
-: x2@  ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )  x@ 1 xpick swap  ;
+: 2x@  ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )  x@ 1 xpick swap  ;
 
 : 2>x  ( x1 x2 -- ) ( X: -- x1 x2 )  swap >x >x  ;
 
 : 2x>  ( -- x1 x2 ) ( X: x1 x2 -- )  x> x> swap  ;
 
-: x2drop  ( X: x1 x2 -- )  [ -2 cells ] literal xp+!  ;
+: 2xdrop  ( X: x1 x2 -- )  [ -2 cells ] literal xp+!  ;
 
-: x2dup  ( X: x1 x2 -- x1 x2 x1 x2 )  xover xover  ;
+: 2xdup  ( X: x1 x2 -- x1 x2 x1 x2 )  xover xover  ;
 
 ( xdepth .x )
 
@@ -9340,7 +9386,7 @@ need xstack
   \ Display a list of the items in the xstack; TOS is the right-most item.
 : .x  ( -- )  xdepth dup xdepth. if  (.x)  then  ;
   \ Display the number of items on the current xstack,
-  \ followed by a list of the items; TOS is the right-most item.
+  \ followed by a list of the items, if any; TOS is the right-most item.
 
   \ }}} =======================================================
   \ Environmental queries {{{
@@ -10306,7 +10352,7 @@ need body>name
 : order@  ( a -- u*wid u )
   dup @ dup if    >r cell+  recurse  r> swap 1+ exit
             then  nip  ;
-  \ XXX TODO use the actual number of vocs in context, 
+  \ XXX TODO use the actual number of vocs in context,
   \ not a trailing zero
 
 : get-order  ( -- u*wid u )  context order@ ;
@@ -11033,7 +11079,7 @@ jw-rng-benchmark
   \ Credits:
   \
   \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
-  \ Joe Wingbermuehle 
+  \ Joe Wingbermuehle
 
 need os-seed
 
@@ -13822,7 +13868,7 @@ rows 2 / constant craft-y
   \ }}} =======================================================
   \ Sample game: tt (Tetris for terminals) {{{
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
   \ tt (Tetris for terminals) is an improved port of a game
   \ written in Forth-94 by Dirk Uwe Zoller in 1994.
@@ -13871,7 +13917,7 @@ variable wiping
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
   \ c1 = left key
   \ c2 = right key
@@ -13910,7 +13956,7 @@ variable wiping
   [char] 6 [char] 7 [char] 8 [char] 9  bl edit-char  ;  -->
   \ Sinclair 2 joystick.
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 6 constant max-keyset
   \ Maximum number of the keyset (first is zero).
@@ -13929,7 +13975,7 @@ positional-case: keyset>keys  ( n -- c1 c2 c3 c4 c5 c6 )
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 begin-stringtable keyset>name  ( n -- ca len )
   s" Cursor        " s,
@@ -13945,7 +13991,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 0 value quit-key  0 value pause-key  0 value drop-key
 0 value rot-key   0 value right-key  0 value left-key
@@ -13967,7 +14013,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 variable score
 variable pieces
@@ -13995,7 +14041,7 @@ variable brick-row  variable brick-col
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 wide deep * 2 * constant /pit
   \ Size of the pit in memory.
@@ -14021,7 +14067,7 @@ create 'pit /pit allot
   loop  draw-bottom  ;  -->
   \ Draw the frame of the pit.
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 : bottom-msg  ( addr cnt -- )
   deep over 2/ wide swap - 2/ position 1 flash type 0 flash  ;
@@ -14052,7 +14098,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 : show-keys  ( -- )
   \ display the game keys
@@ -14068,7 +14114,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 : (show-help)  ( -- )
   0 0 at-xy
@@ -14091,7 +14137,7 @@ end-stringtable
   while  change-keyset  repeat  ;  -->
   \ Display some explanations and change the keyset.
 
-.( tt ) blk @ . 
+.( tt ) blk @ .
 
 23 constant score-row
 
@@ -14118,15 +14164,13 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ . key drop 
-
-  \ XXX FIXME -- crash!
+.( tt ) blk @ . key drop
 
 .s key drop
 
 : brick:  ( ca1 len1 ca2 len2 ca3 len3 ca4 len4 "name" -- )
   create  4 0 do
-            0 do  dup i chars + c@ c,  loop drop
+            0 ?do  dup i chars + c@ c,  loop drop
           loop
   does>  ( x1 x2 -- a ) ( pfa )  rot 4 * rot + 2* +  ;
   \ Define the shape of a brick.
@@ -14134,6 +14178,8 @@ end-stringtable
   \ XXX TODO stack notation of `does>`
 
 s"         " 2constant empty-brick-row .s key drop
+
+  \ XXX FIXME -- crash! -- never reaches the next `key drop`
 
 empty-brick-row
 s"   ##    "
@@ -14146,7 +14192,7 @@ empty-brick-row
 s"   {}    "
 s"   {}{}{}"  empty-brick-row  brick: brick3  .s key drop -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 empty-brick-row
 s"     ()  "
@@ -14169,7 +14215,7 @@ empty-brick-row 2dup 2dup 2dup brick: brick
 
 empty-brick-row 2dup 2dup 2dup brick: scratch  -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 create bricks  ' brick1 ,  ' brick2 ,  ' brick3 ,  ' brick4 ,
                ' brick5 ,  ' brick6 ,  ' brick7 ,
@@ -14196,7 +14242,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
   ['] scratch is-brick  ;  -->
   \ Rotate the current brick left.
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 
 : rotate-right  ( -- )
@@ -14221,7 +14267,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : put-brick  ( row col -- )
   4 0 do 4 0 do
@@ -14241,7 +14287,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : test-brick  ( row col -- f )
   4 0 do 4 0 do
@@ -14257,7 +14303,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 
 : move-brick  ( rows cols -- f )
@@ -14272,7 +14318,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : rotate-brick  ( f1 -- f2 )
   \ f1 = rotate right?, else rotate left
@@ -14290,7 +14336,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : insert-brick  ( row col -- f )
   2dup test-brick
@@ -14314,7 +14360,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : adjust-delay  ( -- )
   levels @
@@ -14326,7 +14372,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : new-level  ( -- )  1 levels +!  10 score +!  adjust-delay  ;
 
@@ -14344,7 +14390,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : interaction  ( -- f )
   case  key upper
@@ -14365,7 +14411,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 : play-game  ( -- )
   begin
@@ -14384,7 +14430,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-.( tt ) blk @ . key drop 
+.( tt ) blk @ . key drop
 
 also forth definitions
 
@@ -15260,7 +15306,7 @@ variable racket2-delay
   \ Forth, in order to choose between different implementation
   \ options, are in "Development benchamarks" section.
 
-( bench{ }bench }bench. bench. )
+( bench{ }bench }bench. bench. benched )
 
   \ Credits:
   \
@@ -15287,6 +15333,9 @@ need reset-frames  need frames@
   \ XXX OLD
   \ : sec.  ( n -- )  s>d <# # # [char] . hold #s #> type  ;
 
+: benched  ( xt n -- )
+  bench{ 0 do  dup execute  loop  }bench. drop  ; 
+
 exit
 
   \ System-dependent timing routines.
@@ -15294,8 +15343,8 @@ exit
 
   \ Original code.
 
-  \ This is the ForthCMP/ZEN/ANS version,
-  \ output doubles are seconds since midnight.
+  \ This is the ForthCMP/ZEN/ANS version.
+  \ Output doubles are seconds since midnight.
 
 : t>b  ( sec min hour -- d )  60 * +  60 um*  rot s>d d+  ;
 
@@ -15590,7 +15639,7 @@ need vector-loop-benchmark
   \ the development of Solo Forth in order to decide between
   \ different implementation options.
   \
-  \ Generic benchmarks are in the "Benchamarks" section.
+  \ Generic benchmarks are in the "Benchmarks" section.
 
 ( number-base-bench )
 
@@ -16344,6 +16393,30 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
   \ (4): shared with the numbers, integrating the common factor
 
   \ 1 frame = 50th of second
+
+( constant-bench )
+
+  \ 2016-02-16: New version.
+
+need bench{ need }bench.
+
+3 constant const1
+
+: bench1  ( n -- )
+  bench{ 0 do  const1 drop  loop }bench.  ;
+
+: bench2  ( n -- )
+  bench{ 0 do  3 drop  loop }bench.  ;
+
+: constant-bench  ( n -- )  dup cr bench1 cr bench2  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \                       bench1 bench2
+  \                       ------ ------
+  \  1000                      6      5
+  \ 52000                    307    284
+  \ 65535                    386    358
 
 ( constant-bench )
 
@@ -17209,7 +17282,903 @@ blk @ 1+ blk @ 2+ thru
   ;
 
 
-  \ vim: filetype=soloforth:fileencoding=utf-8
+  \ vim: filetype=soloforth
+( Nuclear Invaders )
+
+  \ XXX UNDER DEVELOPMENT
+
+\ Version 0.0.0+201602170319
+
+\ Description
+
+\ This game is a ZX Spectrum port (for Solo Forth:
+\ http://programandala.net/en.program.solo_forth.html) of a
+\ game written by Dancresp in 2013 for Jupiter ACE
+\ (http://www.zonadepruebas.com/viewtopic.php?t=4231).
+
+  \ This version:
+\ Copyright (C) 2016 Marcos Cruz (programandala.net)
+
+  \ Original version by Dancresp:
+\ Copyright (C) 2013 Scainet Soft
+
+\ License
+
+\ You may do whatever you want with this work, so long as you
+\ retain the copyright/authorship/acknowledgment/credit
+\ notice(s) and this license in all redistributed copies and
+\ derived works.  There is no warranty.
+
+  \ History: see at the end of the file.
+
+-->
+
+( Requirements)
+
+only forth definitions
+
+need roll       need inkey
+need bleep      need beep>bleep
+need os-chars   need os-udg
+need 2/         need abort"
+
+need benched
+
+[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+
+: debug-point  ( -- )  depth abort" depth is not zero"  ;
+\ XXX TMP for debugging
+
+-->
+
+( Variables) debug-point
+
+variable tank-x       \ coordinate (column)
+variable shoot-x      \ coordinate (column)
+variable shoot-y      \ coordinate (row), 0 if no shoot
+variable ufo-x        \ coordinate (column)
+variable lifes        \ counter (0..3)
+variable phase        \ counter (2..5)
+variable score        \ counter
+variable record       \ max score
+variable invaders     \ counter
+variable invader-type \ element of table  (0..8)
+
+-->
+
+( clear-arena at-yx pause ) debug-point
+
+: at-yx  ( y x -- )  swap at-xy  ;
+  \ XXX TMP -- compatibility layer for the original code
+
+: beep  ( n1 n2 -- )  beep>bleep bleep  ;
+  \ XXX TMP -- compatibility layer for the original code
+
+: clear-arena  ( -- )
+  0 2 at-xy 608 spaces  ;
+  \ Clear screen except the status bars.
+
+: pause  ( n -- )
+  0 do  200 0 do  loop  loop  ;
+
+-->
+
+( .score .record update-score  ) debug-point
+
+: (.score)  ( n x y -- )  at-xy s>d <# # # # #> type  ;
+: .score  ( -- )  score @ 3 1 (.score)  ;
+: .record  ( -- )  record @ 14 1 (.score)  ;
+: update-score  ( n -- )  score +! .score  ;
+
+: rnd  ( -- n )  15403 c@ 31 and  ;
+  \ Return a random number _n_ (0..31).
+  \ XXX TODO
+
+-->
+
+( udg-set >udg >scan scan! ) debug-point
+
+          27 constant udgs   \ number of UDGs
+           8 constant scans  \ scans per UDG
+udgs scans * constant /udgs  \ size of the UDG set
+
+create udg-set /udgs allot
+
+: .udgs  ( -- )  cr udgs 0 do  i 'a' + emit  loop
+                 cr udgs 0 do  i 128 + emit  loop  ;
+  \ Print all game UDGs.
+  \ XXX TMP -- for debugging
+
+udg-set os-udg !
+  \ Point system UDG to the game UDG set.
+  \ Solo Forth will use this set for chars 128..255.
+
+: >udg  ( c -- a )  'a' - scans * udg-set +  ;
+  \ Convert UDG char _c_ to the address _a_ of its bitmap.
+
+: >scan  ( n c -- a )  >udg +  ;
+  \ Convert scan number _n_ of UDG char _c_ to its address _a_.
+
+: scan!  ( c b n -- c )  rot >scan c!  ;
+  \ Store scan _b_ into scan number _n_ of char _c_,
+  \ and return _c_ back for further processing.
+
+-->
+
+( graphic text mode )
+
+udg-set 'a' scans * -  constant graphic
+  \ Address of a presumed font whose char `a` is the first UDG
+  \ of the game.  This way the original code will work without
+  \ change.
+  \ XXX TMP -- compatibility layer for the original code
+
+15360 constant text
+  \ Address of the ROM charset (char 0).
+
+: mode  ( a -- )  os-chars !  ;
+  \ Set the charset to address _a_ (the bitmap of char 0).
+
+  \ Usage examples:
+  \   graphic mode  \ print UDG instead of `a`..`}`
+  \   text mode     \ ROM charset 0..127, plus UDG 128..255
+
+-->
+
+( sprite! 2sprite! ) debug-point
+
+: sprite!  ( n0..n7 c -- )
+  scans 0 do
+    dup scans 1+ i - roll i scan!
+  loop  drop  ;
+  \ Store a 1x1 UDG sprite into char _c_.
+
+: sprite  ( n0..n7 c "name" -- )  dup constant sprite!  ;
+
+: 2sprite!  ( n0..n7 c -- )
+  scans 0 do
+    dup scans 1+ i - pick flip i scan! 1+  \ first UDG
+    dup scans 1+ i - roll      i scan! 1-  \ second UDG
+  loop  drop  ;
+  \ Store a 2x1 UDG sprite into chars _c_ and _c_+1.
+  \ Scans _n0..n7_ are 16-bit: high part is char _c_,
+  \ and low part is the next char.
+
+: 2sprite  ( n0..n7 c "name" -- )  dup constant 2sprite!  ;
+
+-->
+
+( graphics ) debug-point
+
+binary
+  \ "ab",  30 points invader, sprite 2
+0000000110000000
+0000001111000000
+0000011111100000
+0000110110110000
+0000111111110000
+0000010110100000
+0000100000010000
+0000010000100000
+
+char a 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "cd",  30 points invader, sprite 1
+0000000110000000
+0000001111000000
+0000011111100000
+0000110110110000
+0000111111110000
+0000001001000000
+0000010110100000
+0000101001010000
+
+char c 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "ef",  20 points invader, position 2
+0000100000100000
+0010010001001000
+0010111111101000
+0011101110111000
+0011111111111000
+0001111111110000
+0000100000100000
+0001000000010000
+
+char e 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "gh",  20 points invader, position 1
+0000100000100000
+0000010001000000
+0000111111100000
+0001101110110000
+0011111111111000
+0011111111111000
+0010100000101000
+0000011011000000
+
+char g 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "ij",  10 points invader, position 2
+0000001111000000
+0001111111111000
+0011111111111100
+0011100110011100
+0011111111111100
+0000111001110000
+0001100110011000
+0000110000110000
+
+char i 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "kl",  10 points invader, position 1
+0000001111000000
+0001111111111000
+0011111111111100
+0011100110011100
+0011111111111100
+0000011001100000
+0000110110110000
+0011000000001100
+
+char k 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "mn", tank
+0000000100000000
+0000001110000000
+0000001110000000
+0111111111111100
+1111111111111110
+1111111111111110
+1111111111111110
+1111111111111110
+
+char m 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "op", ufo
+0000000000000000
+0000011111100000
+0001111111111000
+0011111111111100
+0110110110110110
+1111111111111111
+0011100110011100
+0001000000001000
+
+char o 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "qr", explosion, frame 2 (for invaders)
+0000010001000000
+0010001010001000
+0001000000010000
+0000100000100000
+0110000000001100
+0000010000100000
+0001001010010000
+0010010001001000
+
+char q 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "s", char 115, projectile
+00000000
+00000001
+00000001
+00000001
+00000001
+00000001
+00000000
+00000000
+
+char s sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "tu", explosion, frame 1 (for the UFO)
+0000000000000010
+0010000001100100
+0100011111110000
+0000111111111010
+0001111011011001
+0100110011110000
+1000011111000100
+0010001100010010
+
+char t 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "v", brick
+11111011
+11111011
+11111011
+00000000
+11011111
+11011111
+11011111
+00000000
+
+char v sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "w", horizontal rule
+00000000
+00000000
+00000000
+00000000
+00000000
+00000000
+11111111
+00000000
+
+char w sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "xy", top of container
+0000001111100000
+0001110000011100
+0010001111100010
+0010000000000010
+0010000111000010
+0010001111100010
+0010000111000010
+0010000010000010
+
+char x 2sprite!
+
+decimal  -->
+
+( graphics ) debug-point
+
+binary
+  \ "z{", bottom of container
+0010010101010010
+0010111101111010
+0010111000111010
+0010011000110010
+0010000000000010
+0001110000011100
+0000001111100000
+0000000000000000
+
+char z 2sprite!
+
+decimal  -->
+
+( instructions ) debug-point
+
+: wait  ( -- )  begin  inkey  until  ;
+
+: instructions  ( -- )
+  cls
+   8 1 at-xy ." nuclear invaders"
+   4 6 at-xy ." controls: left  = z"
+  14 7 at-xy           ." right = x"
+  14 8 at-xy           ." fire  = enter"
+  6 14 at-xy ." *press key to start*"
+  6 21 at-xy ." c scainet soft, 2013"
+  wait 9 pause  ;
+
+-->
+
+( presentation ) debug-point
+
+: presentation  ( -- )
+  cls
+  ."  score<1>   hi-score   score<2>"
+  .score .record
+  14  5 at-xy ." play"
+   8  7 at-xy ." nuclear invaders"
+   5 10 at-xy ." *score advance table*"
+   9 12 at-xy ." op =? mystery"
+   9 14 at-xy ." cd =30 points"
+   9 16 at-xy ." gh =20 points"
+   9 18 at-xy ." kl=10 points"
+   4 22 at-xy ." mnmn" 13 spaces ." credit 00"
+  wait clear-arena  -->
+
+( presentation ) debug-point
+
+   1 21 at-xy ." wwwwwwwwwwwwwwwwwwwwwwwwwwwwww"
+   2 22 at-xy ." 3"
+   9 11 at-xy ." play player<1>"
+
+  10 0 do
+   3  1 at-xy 4 spaces  3 pause
+   3  1 at-xy ." 0000" 3 pause
+  loop  ;
+
+-->
+
+( invaders-data ) debug-point
+
+  \ Invaders data is stored in a table.
+  \ which has the following structure:
+  \
+  \ +0 = lifes (0..3)
+  \ +2 = active? (0..1)
+  \ +4 = y coordinate (row)
+  \ +6 = x coordinate (column)
+  \ +8 = main graphic (character)
+
+  \ The `invader` variable points to the data of the current
+  \ invader in the table.
+
+      9 constant invader-types
+8 cells constant /invader-type
+
+create default-invaders-data
+  \ Default invaders data table.
+  \ This is used to restore the actual data table
+  \ before a new game.
+
+here
+
+  \ lifes    active?   y      x     character
+    3 ,     0 ,      5 ,   0 ,  'c' ,
+    3 ,     0 ,      7 ,   0 ,  'g' ,
+    3 ,     0 ,      9 ,   0 ,  'g' ,
+    3 ,     0 ,     11 ,   0 ,  'k' ,
+    3 ,     0 ,      5 ,  29 ,  'c' ,
+    3 ,     0 ,      7 ,  29 ,  'g' ,
+    3 ,     0 ,      9 ,  29 ,  'g' ,
+    3 ,     0 ,     11 ,  29 ,  'k' ,
+    3 ,     0 ,     13 ,  29 ,  'k' ,
+
+here swap - constant /invaders-data
+  \ Space occupied by the invaders data.
+
+-->
+
+( invaders-data ) debug-point
+
+create invaders-data  /invaders-data allot
+  \ Current invaders data.
+
+: 'invader   ( -- a )  invader-type @ invaders-data +  ;
+  \ Data address _a_ of the current invader type.
+
+: invader-lifes   ( -- a )  'invader            ;
+: invader-active  ( -- a )  'invader cell+      ;
+: invader-y       ( -- a )  'invader [ 2 cells ] literal +  ;
+: invader-x       ( -- a )  'invader [ 3 cells ] literal +  ;
+: invader-char    ( -- a )  'invader [ 4 cells ] literal +  ;
+
+-->
+
+( containers ) debug-point
+
+: brick  ( -- )  ." v"  ;
+
+here 1+ s" vvvvvvvvvvvv" s, constant bricks
+  \ Compile a string of bricks and save the address
+  \ of its first char.
+
+here 1+ s" vxyxyxyxyxy" s, constant containers-top
+here 1+ s" vz{z{z{z{z{" s, constant containers-bottom
+  \ Compile strings which hold a brick followed by nuclear
+  \ containers (top and bottom parts) and save the addresses of
+  \ their first char.
+
+-->
+
+( containers ) debug-point
+
+ 4 constant containers-top-y
+15 constant containers-bottom-y
+
+variable containers-x
+
+: containers  ( -- )
+  15 phase @ - containers-x !
+  bricks phase @ 2* 2+ 2dup
+  containers-x @ containers-bottom-y  at-xy type
+  containers-x @ containers-top-y     at-xy type
+  phase @ 2* 1+  containers-x @
+  containers-top-y [ containers-bottom-y 2- ] literal do
+    2dup 2dup
+    i 1+ at-xy containers-bottom swap type brick
+    i    at-xy containers-top    swap type brick
+  -2 +loop  2drop  ;
+  \ Draw the nuclear containers.
+
+  \ XXX benchmark:  6102 frames / 1000 executions
+
+-->
+
+( init ) debug-point
+
+: init-game  ( -- )  3 lifes !  2 phase !  score off  ;
+
+: init-invaders-data  ( -- )
+  default-invaders-data invaders-data /invaders-data move  ;
+
+: init-ufo  ( -- )  -200 ufo-x !  ;
+
+: init-invaders  ( -- )
+  init-invaders-data  0 invader-type !  30 invaders !
+  init-ufo  ;
+
+: init-tank  ( -- )  3 tank-x !  shoot-y off  ;
+
+-->
+
+( init ) debug-point
+
+: .2sprite  ( c -- )  dup emit 1+ emit  ;
+
+: parade  ( -- )
+  99 dup 103 dup 107 dup
+  3 13 do
+     1 i at-xy dup .2sprite
+    29 i at-xy     .2sprite
+  -2 +loop  ;
+  \ XXX TODO -- more legible
+
+: init-arena  ( -- )  clear-arena containers parade  ;
+
+: init-round  ( -- )  init-arena init-invaders init-tank  ;
+
+-->
+
+( move-tank ) debug-point
+
+20 constant tank-y      \ coordinate (row)
+ 3 constant tank-min-x
+27 constant tank-max-x
+
+: tank-limit  ( column -- column' )
+  tank-max-x min tank-min-x max  ;
+
+: move-tank  ( -- )
+  tank-x @  inkey 'x' = abs +  inkey 'z' = +  tank-limit
+  dup tank-x !
+  1- tank-y at-xy ."  mn " ;
+
+-->
+
+( move-invader ) debug-point
+
+: at-invader  ( -- )  invader-x @ invader-y @ at-xy  ;
+  \ Set the cursor position at the coordinates of the invader.
+
+: invader-frame  ( -- c )
+  invader-char @ invader-x @ 2 mod 0> 2* +  ;
+  \ Frame of the invader.
+
+: .invader-frame  ( -- )  invader-frame .2sprite  ;
+  \ Print the frame of the invader.
+
+: .invader  ( n -- )
+    dup at-invader 0> if  space  then
+    .invader-frame 0< if  space  then  ;
+  \ Print the current invader.
+  \ _n_ is its x increment (1 or -1).
+
+: move-active-invader  ( -- )
+  1 invader-type @ 5 < 0= ?negate  ( 1 | -1 )
+  dup invader-x +!  .invader
+  invader-x @ dup 14 phase @ -  =
+  if  drop 1  else  15 phase @ + =  then  ;  -->
+
+( move-invader ) debug-point
+
+: move-inactive-invader  ( -- )
+  rnd  26 invaders @ 5 < 16 * -  >
+  if  invader-active on  then  ;
+
+: next-invader  ( -- )
+  invader-type @ [ invader-types 1- ] literal =
+  if  invader-type off  else  1 invader-type +!  then  ;
+
+: (move-invader)  ( -- f )
+  invader-active @ if    move-active-invader
+                   else  move-inactive-invader false  then  ;
+
+: move-invader  ( -- f )
+  invader-lifes @ if     (move-invader)
+                  else   false
+                  then   next-invader  ;
+
+-->
+
+( ufo ) debug-point
+
+ 3 constant ufo-y       \ coordinate (row)
+27 constant ufo-max-x   \ coordinate (column)
+
+: ufo-invisible?  ( -- f )  ufo-x @ 0<  ;
+  \ Is the UFO invisible?
+
+: at-ufo  ( -- )  ufo-x @ ufo-y at-xy  ;
+  \ Set the cursor position at the coordinates of the UFO.
+
+: -ufo  ( -- )  at-ufo 3 spaces init-ufo  ;
+  \ Delete and init the UFO.
+
+: ufo-lost?  ( -- f )  ufo-x @ ufo-max-x >  ;
+  \ Is the UFO lost?
+
+: flying-ufo  ( -- )  1 ufo-x +! at-ufo ."  op"  ;
+  \ Update the position of the UFO and show it.
+
+: (ufo)  ( -- )  ufo-lost?  if  -ufo  else  flying-ufo  then  ;
+  \ Manage the UFO.
+
+: ufo  ( -- )
+  ufo-invisible? if  1 ufo-x +!  else  (ufo)  then  ;
+  \ Manage the UFO, if it's visible.
+
+-->
+
+( ufo-impacted ) debug-point
+
+: ufo-bang  ( -- )  18 12 do  i 15 beep  loop  ;
+
+: ufo-in-fire  ( -- )  ufo-x @ 1+ ufo-y at-xy ." tu"  ;
+
+: ufo-explosion  ( -- )  ufo-in-fire ufo-bang  ;
+
+: ufo-points  ( -- n )  rnd 12 / 1+ 50 *  ;
+  \ Random points for impacting the UFO.
+
+: ufo-bonus  ( -- )
+  ufo-points dup ufo-x @ 1+ 3 at-xy .  update-score  ;
+  \ Update the score with the UFO bonus.
+
+: ufo-impacted  ( -- )
+  ufo-explosion ufo-bonus 20 pause -ufo  ;
+
+-->
+
+( invader-impacted ) debug-point
+
+: invader-points  ( -- n )
+  shoot-y @ 3 - 2/          \ depending on the row
+  shoot-x @ 15 > abs 5 * +  \ add 5 when x>15  -- XXX why?
+  shoot-y @
+  dup 5 = if  drop 30
+          else  10 > 10 * 20 +  then  ;
+  \ Points for impacting an invader.
+
+: invader-bonus  ( -- )  invader-points  update-score  ;
+  \ Update the score with the invader bonus.
+
+: invader-explosion  ( -- )
+  ;
+  \ XXX TODO
+
+: invader-impacted  ( -- )
+  -1 invaders +!  invader-explosion invader-bonus  ;
+
+-->
+
+( impact ) debug-point
+
+  \ XXX TODO -- factor
+
+: (impact)  ( -- )
+  shoot-y @ ufo-y = if  ufo-impacted exit  then
+  invader-impacted
+
+  invader-type @ >r
+
+  score @ 1- invader-type !
+    \ XXX TODO -- check the original
+
+  invader-y @ invader-x @ dup 15 < abs +
+  2dup at-yx ." qr"  10 100 beep at-yx 2 spaces
+
+  -1 invader-lifes +!
+  invader-lifes @ if
+    invader-active off
+    shoot-x @ 15 < abs 29 * invader-x !  at-invader
+    shoot-x @ 15 < if  space  then
+    invader-char @ .2sprite
+  then  r> invader-type !  ;
+  \ Manage the impact.
+
+-->
+
+( impact ) debug-point
+
+: impact  ( -- )
+  shoot-y @ 15 < if  (impact)  then  shoot-y off  ;
+  \ Manage the impact, if the projectil is high enough.
+
+: missed?  ( -- )
+  9216 shoot-y @ 32 * + shoot-x @ + c@ bl =  ;
+  \ Did the projectile missed the target?
+  \ XXX TODO adapt
+  \ XXX TODO reverse the logic: keep the target char
+
+: impact?  ( -- f )
+  missed? if  false  else  impact true  then  ;
+  \ Did the projectil impacted?
+  \ If so, do manage the impact.
+
+-->
+
+( shoot ) debug-point
+
+: .projectile  ( -- )  shoot-x @ shoot-y @ at-xy 115 emit  ;
+  \ Show the projectile.
+
+: fire?  ( -- f )  inkey 13 =  ;
+
+: fire  ( -- )
+  tank-x @ shoot-x ! [ tank-y 1- ] literal shoot-y !  ;
+  \ The tank fires.
+
+: -projectile  ( -- )  shoot-x @ shoot-y @ at-xy space  ;
+  \ Delete the projectile.
+
+: projectile-lost?  ( -- f )  shoot-y @ 5 <  ;
+  \ Is the projectile lost?
+
+: shooted  ( -- )
+  -projectile projectile-lost?
+  if    shoot-y off
+  else  -2 shoot-y +! impact? ?exit  .projectile  then  ;
+  \ Manage the projectile.
+
+: shooted?  ( -- )  shoot-y @  ;
+  \ Has the tank already shooted?
+
+: shoot  ( -- )
+  shooted? if  shooted exit  then
+  fire? if  fire  then  ;
+  \ Manage the shoot.
+
+-->
+
+( new-record? new-record check-record ) debug-point
+
+: new-record?   ( -- f )  score @ record @ >  ;
+: new-record    ( -- f )  score @ record !  ;
+: check-record  ( -- )  new-record? if  new-record  then  ;
+
+-->
+
+( alive game-over next-phase ) debug-point
+
+: .lifes  ( n -- )
+  22 tuck at-xy . dup 2* 2+ 22 at-xy 2 spaces  ;
+
+: .game-over  ( -- )  11 17 at-xy ." GAME  OVER"  ;
+
+: game-over  ( -- )  .game-over  check-record  ;
+
+: tune  ( -- )  100 200 do  i 20 beep  -5 +loop  ;
+
+: the-end?  ( -- f )
+  tune  30 pause
+  lifes @ 1- dup 0>
+  if  .lifes  else  game-over  then  dup lifes ! 0= ;
+
+: next-phase  ( -- )
+  invaders @ ?exit
+  phase @ 5 < abs +! 100 pause init-round  ;
+
+-->
+
+( run ) debug-point
+
+: round  ( -- )
+  init-round
+  begin   2 pause
+          move-tank shoot ufo next-phase move-invader
+  until  ;
+
+: game  ( -- )
+  init-game begin  round the-end?  until  200 pause  ;
+
+: run  ( -- )
+  instructions begin  presentation game  again  ;
+
+-->
+
+( Debugging tools)
+
+: g0  ( -- )  text mode  0 0 at-xy  ;
+: g1  ( -- )  graphic mode  ;
+: g  ( xt -- )  g1 execute g0  ;
+: cg  ( xt -- )  cls g1 execute g0  ;
+
+init-game init-invaders init-tank
+
+  \ ==========================================================
+  \ History
+
+  \ This is mainly a compilation of the git commit comments.
+
+  \ 2016-02-14: Started changing the layout of the original
+  \ source code.
+  \
+
+  \
+  \ Change the layout of the source code.
+  \ - Convert the source to lowercase.
+  \ - Rename Spanish words to English.
+  \ - Rename variables using meaningful names.
+  \ - Indent the word definitions and the control structures.
+  \ - Split lines at 63 columns.
+  \ - Add block titles.
+  \
+  \ Adapt graphics and data; start factoring.
+  \ - Convert the graphics to binary numbers.
+  \ - Implement words to define the graphics.
+  \ - Adapt the invaders' data.
+  \ - Factorize some words.
+  \ - Adapt ACE Forth's `pick`.
+  \ - Optimize some code idioms.
+  \
+  \ 2016-02-16:
+  \
+  \ Factor code.
+  \ - Factor the shoot manager.
+  \ - Factor the invaders' manager.
+  \ - Improve the invaders' data manipulation.
+
+\ vim: filetype=soloforth
 ( G+DOS error codes #-1000..#-1014 )
 
   \ G+DOS Error codes and messages.
