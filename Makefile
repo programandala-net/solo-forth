@@ -41,6 +41,11 @@ VPATH = ./
 
 MAKEFLAGS = --no-print-directory
 
+kernel_source_file = solo_forth.z80s
+disk_source_file = solo_forth.fsb
+#kernel_source_file = solo_forth.z80s.201506290300.z80s
+#disk_source_file = solo_forth.fsb.201506290224.fsb
+
 .ONESHELL:
 
 ################################################################
@@ -71,9 +76,9 @@ solo_forth.bas.tap: solo_forth.bas
 # choose the filename used in the TAP file header; it uses the name of the
 # target file.
 
-solo_forth.bin.tap: solo_forth.z80s
+solo_forth.bin.tap: $(kernel_source_file)
 	pasmo -v --tap \
-		solo_forth.z80s \
+		$(kernel_source_file) \
 		forth.bin \
 		solo_forth.symbols.z80s
 	mv forth.bin solo_forth.bin.tap
@@ -100,9 +105,11 @@ solo_forth_disk_1.mgt: solo_forth.bas.tap solo_forth.bin.tap
 # editor, in order to write Forth programs, and then use `mkmgt` to
 # convert it to a fake MGT disk image, as shown:
 
-solo_forth_disk_2.mgt: solo_forth.fsb
-	fsb2mgt solo_forth.fsb ;\
-	mv solo_forth.mgt solo_forth_disk_2.mgt
+mgt_file = $(basename $(disk_source_file) ).mgt
+
+solo_forth_disk_2.mgt: $(disk_source_file)
+	fsb2mgt $(disk_source_file) ;\
+	mv $(mgt_file) solo_forth_disk_2.mgt
 
 ################################################################
 # Tests
@@ -145,4 +152,9 @@ backup:
 # Change history
 
 # 2015-06-02: Start.
+#
 # 2015-06-17: Backup recipe improved.
+#
+# 2015-06-29: Improvement: The source filenames are
+# configurable. This makes it easier to try old versions, for
+# debugging.

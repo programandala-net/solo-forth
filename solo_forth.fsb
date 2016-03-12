@@ -543,7 +543,7 @@ require hex.  require ascii-type
 : dump  ( a len -- )
   7 + -8 and 8 / 0
   \ XXX TODO use `?do` instead of `if` when available
-  2dup - if
+  2dup <> if
     do
       cr dup hex.
       8 0 do  i over + @ flip hex.  2 +loop
@@ -561,7 +561,7 @@ require hex.  require ascii-type
 
 forth definitions decimal
 
-variable decode-level    \ depth of nesting
+variable decode-level  decode-level off \ depth of nesting
 variable decode-address  \ in the word being decoded
 
 : indent  ( -- )
@@ -641,13 +641,6 @@ variable decode-address  \ in the word being decoded
      \  <------------------------------>
   cr ." Keys: space=more, q=quit, other=deeper." cr  ;
 
-  \ XXX OLD -- for fig-Forth `find`:
-\ : decode  ( "name" -- )
-\   decode-usage
-\   find if    drop  0 decode-level !  (decode)
-\        else  5 error  then  ;
-
-  \ XXX NEW -- for the modern `find`:
 : decode  ( "name" -- )
   decode-usage
   defined if  cfa>pfa  0 decode-level !  (decode)

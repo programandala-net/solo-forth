@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506291419
+; Version A-00-201506291636
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -3164,7 +3164,7 @@ do_constant:
 ;
 ; }doc
 
-  dw create_,one_,allot_
+  dw create_,cell_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5800,6 +5800,22 @@ flush.do:
 ; ----------------------------------------------
   _colon_header paren_load_,'(LOAD)'
 
+; doc{
+;
+; (load)  ( i*x u -- j*x )
+;
+; XXX FIXME wrong description: not the screen _u_ is stored in
+; `blk`, but the correspondent disk block.
+;
+; Store _u_ in `blk` (thus making block _u_ the input source and
+; setting the input buffer to encompass its contents), set `>in`
+; to zero, and interpret.  Other stack effects are due to the
+; words loaded.
+;
+; An error is issued if _u_ is zero or `blk` is zero.
+;
+; }doc
+
   dw dup_,zero_,equals_
   _question_error loading_from_screen_0_error
   dw to_in_,off_
@@ -5814,6 +5830,9 @@ flush.do:
 ;
 ; load  ( i*x u -- j*x )  \ Forth-79 (uncontrolled word
 ; definition from the Reference Word Set)
+;
+; XXX FIXME  wrong description: not the screen _u_ is stored in
+; `blk`, but the correspondent disk block.
 ;
 ; Store _u_ in `blk` (thus making block _u_ the input source and
 ; setting the input buffer to encompass its contents), set `>in`
@@ -5835,7 +5854,10 @@ flush.do:
 
 ; doc{
 ;
-; load  ( i*x u -- j*x )  \ ANS Forth
+; load  ( u -- )
+;
+; XXX FIXME  wrong description: not the screen _u_ is stored in
+; `blk`, but the correspondent disk block.
 ;
 ; Save the current input-source specification. Store _u_ in
 ; `blk` (thus making block _u_ the input source and setting the
@@ -6599,7 +6621,8 @@ do_two_constant:
 ;
 ; }doc
 
-  dw create_,two_,allot_
+  dw create_
+  dw lit_,cell*2,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
