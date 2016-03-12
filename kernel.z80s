@@ -27,7 +27,7 @@ if 1
   version_build_low_part:     equ 0x7BB6  ; build 20151222
 endif
 
-; This file was last modified: 201512220204
+; This file was last modified: 201512230356
 
 ; ==============================================================
 ; Author and license
@@ -8345,6 +8345,9 @@ do_vocabulary:
 
   dw colon_no_name_,paren_vocabulary_,semicolon_,to_body_
   dw exit_
+
+; XXX TODO simpler:
+; : wordlist  ( -- wid )  here 0 ,  ;
 
 ; ----------------------------------------------
   _colon_header get_current_,'GET-CURRENT'

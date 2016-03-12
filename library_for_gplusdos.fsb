@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512220204
+\ Last modified: 201512221418
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -41,7 +41,7 @@
 
 ( contains delimited located )
 
-  \ This block must be at a fixed location.
+  \ This block must be at a permanent location.
 
   \ XXX TMP
   \ XXX INFORMER
@@ -57,7 +57,6 @@
   \ Does the string ca1 len1 contains the string ca2 len2?
   \
   \ }doc
-
 
 variable default-first-locatable  variable first-locatable
 variable last-locatable  blk/disk 1- last-locatable !
@@ -90,10 +89,9 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ located  ( ca len -- block | false )
   \
-  \ Locate the first block whose header contains the string
-  \ _ca len_ (surrounded by spaces), and return its number. If
-  \ not found, return _false_.
-  \ The search is case-sensitive.
+  \ Locate the first block whose header contains the string _ca
+  \ len_ (but surrounded by spaces), and return its number. If
+  \ not found, return _false_.  The search is case-sensitive.
   \
   \ }doc
 
@@ -266,6 +264,7 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
 ( abort" )
 
   \ Credits:
+  \
   \ Code adapted from DZX-Forth.
 
   \ XXX TODO use `error`, by modifying `throw`
@@ -401,6 +400,7 @@ s" Standard error codes" locate msg-scr !
 ( word )
 
   \ Credits:
+  \
   \ Code from Z88 CamelForth.
 
 : word  ( c "<c...>text<c>" -- ca )
@@ -441,6 +441,7 @@ s" Standard error codes" locate msg-scr !
 ( -rot )  \ ==datastack==
 
   \ Credits:
+  \
   \ Code adapted from Afera.
 
 code -rot  ( x1 x2 x3 -- x3 x1 x2 )
@@ -455,6 +456,7 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 ( 2nip )
 
   \ Credits:
+  \
   \ Code from Afera; original code from DZX-Forth.
 
 code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
@@ -476,6 +478,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   \ }doc
 
   \ Credits:
+  \
   \ Code adapted from DZX-Forth.
 
 need z80-asm
@@ -541,6 +544,31 @@ code 4drop  ( x1 x2 x3 x4 -- )
     \ pop hl
   jpnext  end-code
 
+( 3dup )
+
+code 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+  D9 c,
+    \ exx
+  C1 c,  D1 c,  E1 c,
+    \ pop bc
+    \ pop de
+    \ pop hl
+  E5 c,  D5 c,  C5 c,
+    \ push hl
+    \ push de
+    \ push bc
+  E5 c,  D5 c,  C5 c,
+    \ push hl
+    \ push de
+    \ push bc
+  D9 c,
+    \ exx
+  jpnext  end-code
+
+exit  \ slow and smaller version:
+
+: 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
+
 ( 2rot )
 
 need roll
@@ -551,6 +579,7 @@ need roll
 ( swapped )
 
   \ Credits:
+  \
   \ Adapted from code written by Sam Suan Chen, published
   \ on Forth Dimensions (volume 6, number 6, page 9, 1985-03).
 
@@ -651,12 +680,14 @@ need n>r
 ( rdepth r'@ )
 
   \ Credits:
+  \
   \ `rdepth` from Afera.
 
 [unneeded] rdepth
 ?\ : rdepth  ( -- n )  rp@ rp0 @ - -2 /  ;
 
   \ Credits:
+  \
   \ `r'@` from Wil Baden.
 
 [unneeded] r'@ dup
@@ -678,6 +709,26 @@ need n>r
 
 
   \ }}} =======================================================
+  \ System variables {{{
+
+( os-chars os-chans os-seed os-frames os-udg )
+
+[unneeded] os-chars    ?\ 23606 constant os-chars
+  \ address of the font (characters 32..127)
+
+[unneeded] os-chans    ?\ 23631 constant os-chans
+  \ address of the channels
+
+[unneeded] os-seed     ?\ 23670 constant os-seed
+  \ seed of the random number generator
+
+[unneeded] os-frames   ?\ 23672 constant os-frames
+  \ 24-bit counter of frames (1 frame = 20 ms)
+
+[unneeded] os-udg      ?\ 23675 constant os-udg
+  \ address of the User Defined Graphics (characters 128..255)
+
+  \ }}} =======================================================
   \ Screen modes {{{
 
 ( columns rows )  \ ==screenmodes==
@@ -688,23 +739,17 @@ need value
 
 ( mode32 )
 
-need columns  need rows
-
-[defined] sys-chans ?\ 23631 constant sys-chans
-  \ System variable that holds the address of the channels.
-
-[defined] sys-chars ?\ 23606 constant sys-chars
-  \ System variable that holds the address of the font.
+need columns  need rows  need os-chars  need os-chans
 
 : mode-output  ( a -- )
   \ Associate the output
   \ routine at _a_ to the system channels "K", "S" and "P".
-  sys-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
+  os-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
 
 : set-mode  ( a1 a2 -- )
   \ Set the system font to _a1_ and associate the output
   \ routine at _a2_ to the system channels.
-  sys-chars !  mode-output  ;
+  os-chars !  mode-output  ;
 
 : mode32  ( -- )
   [ latest name> ] literal current-mode !
@@ -721,6 +766,7 @@ need columns  need rows
 ( mode42 )
 
   \ Credits:
+  \
   \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
   \ Published on Microhobby, issue 66 (1986-02), page 24:
   \ http://microhobby.org/numero066.htm
@@ -760,6 +806,7 @@ drive!
 ( mode64 )
 
   \ Credits:
+  \
   \ Author of the original code: Andrew Owen.
   \ Published on the World of Spectrum forum:
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
@@ -829,6 +876,7 @@ code (mode64-emit)  ( -- )
   \ Top row is always zero and not stored.
 
   \ Credits:
+  \
   \ Author of the font: Andrew Owen.
   \ Published on the World of Spectrum forum:
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
@@ -960,6 +1008,7 @@ constant fzx-y  constant fzx-x  constant fzx-flags
 need z80-asm  need scroll-1px-up
 
   \ Credits:
+  \
   \ This code is a modified version of
   \ FZX driver - Copyright (c) 2013 Einar Saukas
   \ http://www.worldofspectrum.org/infoseekid.cgi?id=0028171
@@ -1354,6 +1403,7 @@ only forth definitions  need char>string   need search-wordlist
 ( +place )
 
   \ Credits:
+  \
   \ Code from Afera.
 
 : +place  ( ca1 len1 ca2 )
@@ -1364,6 +1414,7 @@ only forth definitions  need char>string   need search-wordlist
 ( s+ )
 
   \ Credits:
+  \
   \ Code adapted from Afera.
 
 [defined] lengths
@@ -1384,6 +1435,7 @@ only forth definitions  need char>string   need search-wordlist
 ( s' )
 
   \ Credits:
+  \
   \ Code from Afera.
 
   \ doc{
@@ -1398,6 +1450,7 @@ only forth definitions  need char>string   need search-wordlist
 ( begin-stringtable end-stringtable )
 
   \ Credits:
+  \
   \ Code adapted from Forth Foundation Library (stt module).
   \ XXX TODO Published under LGPL ?
 
@@ -1444,6 +1497,7 @@ only forth definitions  need char>string   need search-wordlist
 ( hunt )
 
   \ Credits:
+  \
   \ Code from Wil Baden's Charscan library (2003-02-17),
   \ public domain.
 
@@ -1473,6 +1527,7 @@ need under+
   \ Count spaces in a string.
 
   \ Credits:
+  \
   \ Code improved from:
   \ http://forth.sourceforge.net/mirror/comus/index.html
 
@@ -1488,6 +1543,7 @@ need under+
 ( /name first-name trim last-name )
 
   \ Credits:
+  \
   \ Code from Galope.
 
 : /name  ( ca1 len1 -- ca2 len2 ca3 len3 )
@@ -1515,6 +1571,7 @@ need under+
 need s=  need [if]
 
   \ Credits:
+  \
   \ Code adapted from Galope (module
   \ string-prefix-question.fs).
 
@@ -1523,6 +1580,7 @@ need s=  need [if]
 [then]
 
   \ Credits:
+  \
   \ Code from Galope (module string-suffix-question.fs).
 
 [needed] suffix? [if]
@@ -1534,6 +1592,7 @@ need s=  need [if]
 ( -prefix )
 
   \ Credits:
+  \
   \ Code from Galope (module minus-prefix.fs).
 
 need string-prefix?
@@ -1546,6 +1605,7 @@ need string-prefix?
 ( -suffix )
 
   \ Credits:
+  \
   \ Code from Galope (module minus-suffix.fs).
 
 need string-suffix?
@@ -1558,16 +1618,19 @@ need string-suffix?
 ( ud>str d>str chop )
 
   \ Credits:
+  \
   \ Code from Galope (module ud-to-str.fs).
 
 : ud>str  ( ud -- ca len )  <# #s #>  ;
 
   \ Credits:
+  \
   \ Code from Galope (module d-to-str.fs).
 
 : d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
 
   \ Credits:
+  \
   \ Code from Galope (module chop.fs).
 
 : chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
@@ -1592,6 +1655,7 @@ need string-suffix?
   \ XXX UNDER DEVELOPMENT
   \
   \ Credits:
+  \
   \ Code adapted from the Forth-2012 documentation.
 
 s" /counted-string" environment? 0= [if] 256 [then]
@@ -1719,6 +1783,7 @@ variable tab-stop  8 tab-stop !
 ( ud.r ud. )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
 : ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
@@ -1845,12 +1910,10 @@ variable print-width
 
 ( udg! udg: )  \ ==graphics==
 
-[defined] sys-udg ?\  23675 constant sys-udg
-  \ System variable that holds the address of the User Defined
-  \ Graphics.
+need os-udg
 
 : udg!  ( b0..b7 c -- )
-  128 - 8 * sys-udg @ + dup 7 + do  i c!  -1 +loop  ;
+  128 - 8 * os-udg @ + dup 7 + do  i c!  -1 +loop  ;
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
@@ -1903,6 +1966,7 @@ code hires-emit-udg  ( x y b -- )
 need z80-asm  need (pixel-addr)
 
   \ Credits:
+  \
   \ Code Adapted from "SMOOTH MOVE",
   \ written by Simon N.  Goodwin,
   \ published on Todospectrum, issue 2 (1984-10), page 16.
@@ -1950,6 +2014,7 @@ create (hires-emit)  ( -- )
 ( ocr )
 
   \ Credits:
+  \
   \ Adapted from anonymous code published on Todospectrum,
   \ issue 19 (1986-03), page 65.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
@@ -2061,24 +2126,19 @@ variable ocr-chars
   \
   \ }doc
 
-[defined] sys-chars ?\ 23606 constant sys-chars
-  \ System variable that holds the address of the font.
+need os-chars  need os-udg
 
 : ascii-ocr  ( -- )
   \ Set `ocr` to work with the ASCII charset pointed by the
   \ system variable CHARS.
-  sys-chars @ 256 + ocr-charset !
+  os-chars @ 256 + ocr-charset !
   32 ocr-first !
   95 ocr-chars !  ;
-
-[defined] sys-udg ?\  23675 constant sys-udg
-  \ System variable that holds the address of the User Defined
-  \ Graphics.
 
 : udg-ocr  ( n -- )
   \ Set `ocr` to work with the first _n_ chars of the UDG
   \ charset pointed by the system variable UDG.
-  sys-udg @ ocr-charset !
+  os-udg @ ocr-charset !
   128 ocr-first !
   ocr-chars !  ;
 
@@ -2222,6 +2282,7 @@ code plot  ( xc yc -- )
   \ Set a pixel without changing the color attributes.
 
   \ Credits:
+  \
   \ Author of the original code: José Manuel Lazo.
   \ Published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
@@ -2247,6 +2308,7 @@ code set-pixel  ( xc yc -- )
   \ Reset a pixel without changing the color attributes.
 
   \ Credits:
+  \
   \ Based on code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
@@ -2270,6 +2332,7 @@ code reset-pixel  ( xc yc -- )
   \ Toggle a pixel without changing the color attributes.
 
   \ Credits:
+  \
   \ Based on code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
@@ -2313,6 +2376,7 @@ code test-pixel  ( xc yc -- f )
 ( rdraw )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83's `DRAW`.
 
 need z80-asm
@@ -2348,6 +2412,7 @@ code rdraw  ( x y -- )
 ( adraw ) \ from Abersoft Forth
 
   \ Credits:
+  \
   \ Code adapted from Abersoft Forth's `DRAW`.
 
 need plot
@@ -2622,6 +2687,7 @@ code circle  ( x y radius -- )
   \ ink in a loop.
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Pablo Ariza,
   \ published on Microhobby Especial, issue 7 (1987-12), page 46:
   \ <http://microhobby.org/mhes7.htm>.
@@ -2649,6 +2715,7 @@ code fade  ( -- )
   \ Invert the pixels of the whole screen.
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Javier Granadino,
   \ published on Microhobby, issue 133 (1987-06), page 7:
   \ http://microhobby.org/numero133.htm
@@ -2671,6 +2738,7 @@ code inverted  ( -- )
   \ effect and then restore the original.
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Juan José Rivas,
   \ published on Microhobby, issue 150 (1987-06), page 9:
   \ http://microhobby.org/numero150.htm
@@ -2696,6 +2764,7 @@ code water  ( -- )
   \ of the bitmap.
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Anselmo Moreno Lorente,
   \ published on Microhobby, issue 121 (1987-03), page 7:
   \ http://microhobby.org/numero121.htm
@@ -2724,6 +2793,7 @@ code clsx  ( -- )
 ( scroll-1px-right )
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published on Microhobby, issue 197 (1990-03), page 24:
   \ http://microhobby.org/numero197.htm
@@ -2753,6 +2823,7 @@ code scroll-1px-right  ( -- )
 ( scroll-1px-up )
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Iván Sansa,
   \ published on Microhobby, issue 122 (1987-03), page 7:
   \ http://microhobby.org/numero122.htm
@@ -2789,6 +2860,7 @@ code scroll-1px-up  ( -- )
 ( xy-scroll )
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published on Microhobby, issue 197 (1990-03), page 24:
   \ http://microhobby.org/numero197.htm
@@ -2820,6 +2892,7 @@ code xy-scroll  ( -- )
 ( horizontal-curtain )
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Alejandro Mora,
   \ published on Microhobby, issue 128 (1987-05), page 7:
   \ http://microhobby.org/numero128.htm
@@ -2852,6 +2925,7 @@ code horizontal-curtain  ( b -- )
 ( vertical-curtain )
 
   \ Credits:
+  \
   \ Code adapted from a routine written by Alejandro Mora,
   \ published on Microhobby, issue 128 (1987-05), page 7:
   \ http://microhobby.org/numero128.htm
@@ -2887,6 +2961,7 @@ code vertical-curtain  ( b -- )
 ( pixels )
 
   \ Credits:
+  \
   \ Original code written by Juan Antonio Paz,
   \ published on Microhobby, issue 170 (1988-05), page 21:
   \ http://microhobby.org/numero170.htm
@@ -2938,6 +3013,7 @@ code pixels  ( -- u )
 ( !sound vol shutup noise )  \ ==sound128==
 
   \ Credits:
+  \
   \ Code from Spectrum Forth-83.
 
   \ XXX TODO finish, document and test
@@ -2964,6 +3040,7 @@ need ms  vocabulary music  current @  also music definitions
 need roll
 
   \ Credits:
+  \
   \ Code from Spectrum Forth-83.
 
   \ XXX TODO finish, document and test
@@ -2989,6 +3066,7 @@ variable len  variable tempo  variable octave  variable volume
 ( music )
 
   \ Credits:
+  \
   \ Code from Spectrum Forth-83.
 
   \ XXX TODO finish, document and test
@@ -3067,6 +3145,7 @@ code play  ( a -- )
   \ Sounds to be played with `play`.
 
   \ Credits:
+  \
   \ `waves` and `shoot` are
   \ adapted from code written by Juan José Ruiz,
   \ published on Microhobby, issue 139 (1987-07), page 7:
@@ -3082,6 +3161,7 @@ create shoot  ( -- a )
   71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c,
 
   \ Credits:
+  \
   \ `helicopter` and `train` are
   \ adapted from code written by José Ángel Martín,
   \ published on Microhobby, issue 172 (1988-09), page 22:
@@ -3148,6 +3228,7 @@ create water-drop  ( -- a )
 ( bleep )  \ ==sound48==
 
   \ Credits:
+  \
   \ Code modified from Abersoft Forth.
 
 code bleep  ( n1 n2 -- )
@@ -3164,6 +3245,7 @@ code bleep  ( n1 n2 -- )
 ( beep>bleep )
 
   \ Credits:
+  \
   \ Code from v.Forth.
 
   \ XXX TODO test
@@ -3179,6 +3261,7 @@ code bleep  ( n1 n2 -- )
   \ Laser gun sound for ZX Spectrum 48K.
 
   \ Credits:
+  \
   \ Author of the original code: Álvaro Corredor Lanas.
   \ Published on Microhobby, issue 126 (1987), page 7:
   \ http://microhobby.org/numero126.htm
@@ -3202,6 +3285,7 @@ code laser-gun  ( -- )
   \ White noise for ZX Spectrum 48K.
 
   \ Credits:
+  \
   \ Author of the original code: Ricardo Serral Wigge.
   \ Published on Microhobby, issue 125 (1987), page 26:
   \ http://microhobby.org/numero125.htm
@@ -3240,6 +3324,7 @@ code white-noise  ( u -- )
   \ Ambulance sound for ZX Spectrum 48K.
 
   \ Credits:
+  \
   \ Author of the original code: Líder Software.
   \ Published on Microhobby, issue 142 (1987-09), page 7:
   \ http://microhobby.org/numero142.htm
@@ -3295,6 +3380,7 @@ need z80-asm
 ?\ code c@+  ( ca - ca+1 c )
 
   \ Credits:
+  \
   \ Code adapted from Pygmy Forth.
 
   \ First version
@@ -3377,6 +3463,7 @@ need z80-asm
   \ XXX UNDER DEVELOPMENT -- 2015-10-25
 
   \ Credits:
+  \
   \ Words from the TED editor.
   \ http://dxforth.netbay.com.au/ted.html
 
@@ -3392,6 +3479,7 @@ need z80-asm
   \ XXX UNDER DEVELOPMENT -- 2015-10-25
 
   \ Credits:
+  \
   \ Words written after cmForth.
 
   \ XXX Note: the original descriptions didn't include stack
@@ -3472,6 +3560,7 @@ need lshift
   \ c!toggle-bits   cxor!    c!xor   c!toggle   c!toggle
 
   \ Credits:
+  \
   \ Words inspired by MPE PowerForth for TiniARM.
 
 need z80-asm  need [if]
@@ -3568,6 +3657,7 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
 ( within between )
 
   \ Credits:
+  \
   \ Code from DZX-Forth.
 
 [unneeded] within
@@ -3610,6 +3700,7 @@ need -rot
   \ }doc
 
   \ Credits:
+  \
   \ http://dxforth.netbay.com.au/between.html
 
 ( polarity )
@@ -3650,6 +3741,7 @@ code polarity  ( n -- -1 | 0 | 1 )
 need z80-asm
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
   \ 16 bytes used
@@ -3671,6 +3763,7 @@ code lshift  ( x1 u -- x2 )
 ( lshift )
 
   \ Credits:
+  \
   \ Code adapted from DZX-Forth.
 
   \ This version is smaller (13 bytes used) but slower (169%
@@ -3694,6 +3787,7 @@ code lshift  ( x1 u -- x2 )
 need z80-asm
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
   \ 19 bytes used
@@ -3717,6 +3811,7 @@ code rshift  ( x1 u -- x2 )
 ( rshift )
 
   \ Credits:
+  \
   \ Code adapted from DZX-Forth.
 
   \ This version is smaller (16 bytes used) but slower (133%
@@ -3737,6 +3832,7 @@ code rshift  ( x1 u -- x2 )
 ( 2/ )
 
   \ Credits:
+  \
   \ Code from Spectrum Forth-83.
   \ Documentation partly based on lina.
 
@@ -3766,6 +3862,7 @@ code 2/  ( x1 -- x2 )
 ( sqrt )
 
   \ Credits:
+  \
   \ Original code by Wil Baden, published on
   \ Forth Dimensions 18/5 p. 27 (1997-01).
 
@@ -3789,6 +3886,7 @@ need d2*  need 2/
 ( sm/rem )
 
   \ Credits:
+  \
   \ Code from Z88 CamelForth.
 
 : sm/rem  ( d1 n1 -- n2 n3 )
@@ -3829,6 +3927,7 @@ need d2*  need 2/
   \ Symmetric-division operators
 
   \ Credits:
+  \
   \ Forth-94 documentation.
 
 : /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
@@ -3844,6 +3943,7 @@ need d2*  need 2/
 ( fm/mod )
 
   \ Credits:
+  \
   \ Code from Z88 CamelForth.
 
 : fm/mod  ( d1 n1 -- n2 n3 )
@@ -3893,6 +3993,7 @@ need d2*  need 2/
 need fm/mod
 
   \ Credits:
+  \
   \ Forth-94 documentation.
 
 : /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
@@ -3908,6 +4009,7 @@ need fm/mod
 ( any? )
 
   \ Credits:
+  \
   \ Code from F83.
 
 need roll
@@ -3933,6 +4035,7 @@ variable (any?)
 ( ud* )
 
   \ Credits:
+  \
   \ Code from Z88 CamelForth.
 
 : ud*  ( ud1 u2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
@@ -3941,6 +4044,7 @@ variable (any?)
 
   \
   \ Credits:
+  \
   \ Code from DX-Forth 4.13.
 
   \ This implementation uses 30 bytes.
@@ -3953,6 +4057,7 @@ variable (any?)
   \ Alternative implementation.
   \
   \ Credits:
+  \
   \ Adapted from code written by Robert L. Smith,
   \ published on Forth Dimensions (volume 4, number 1, page 3).
   \
@@ -3966,6 +4071,7 @@ variable (any?)
   \ Alternative implementation.
 
   \ Credits:
+  \
   \ Code by Wil Baden, published on Forth Dimensions
   \ (volume 19, number 6, page 33, 1998-04).
 
@@ -3980,10 +4086,11 @@ variable (any?)
 ( du/mod )
 
   \ Credits:
+  \
   \ Code by Wil Baden, published on Forth Dimensions
   \ (volume 19, number 6, page 34, 1998-04).
 
-need tum*  need t+  need t-  need tum/  need d2*
+need tum*  need t+  need t-  need tum/  need d2*  need lshift
 
 : normalize-divisor  ( d1 -- d1' shift )
   0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
@@ -3991,7 +4098,7 @@ need tum*  need t+  need t-  need tum/  need d2*
   \ XXX TODO rename as `ud/mod`?
   \ XXX TODO stack comments
 
-: du/mod  ( ud1 ud2 -- rem quot )
+: du/mod  ( ud1 ud2 -- ud3 ud4 )
 
   ?dup 0= if
     \ there is a leading zero "digit" in divisor
@@ -4001,7 +4108,6 @@ need tum*  need t+  need t-  need tum/  need d2*
   normalize-divisor dup >r rot rot 2>r
   1 swap lshift tum*
     \ normalize divisor and dividend
-
 
   dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
     \ guess leading "digit" of quotient
@@ -4016,12 +4122,19 @@ need tum*  need t+  need t-  need tum/  need d2*
     dup 0< if  r> 1-  2r@  rot >r  0 t+  then
     \ if still negative, do it one more time
 
-  then  ;
-  \ Double unsigned divide with remainder.
+  then
+
+  r> 2r> 2drop  1 r>  rot >r  lshift tum/  r> 0  ;
+    \ undo nurmalization of dividend to get remainder
+
+  \ Double unsigned divide with remainder.  Given a dividend
+  \ _ud1_ and a divisor _ud2_, return remainder _ud3_ and
+  \ quotient _ud4_.
 
 ( d0= d0< d< du< )
 
   \ Credits:
+  \
   \ Code from DZX-Forth.
 
 [unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  exit
@@ -4053,6 +4166,7 @@ need 2nip
 ( dmin dmax )
 
   \ Credits:
+  \
   \ Code from DZX-Forth.
 
 need [if]
@@ -4069,11 +4183,12 @@ need [if]
 
   \ XXX TODO -- rewrite in Z80
 
-: d<>  ( d1 d2 -- f )
-  rot <> if  2drop true exit  then  <>  ;
+: d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
+
 : d=  ( d1 d2 -- f )  d<> 0=  ;
 
   \ XXX OLD
+  \ XXX TODO benchmark
   \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
   \ : d<>  ( d1 d2 -- f )  d= 0=  ;
 
@@ -4082,6 +4197,7 @@ need [if]
 need z80-asm
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
 code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
@@ -4103,6 +4219,7 @@ code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
 ( d2* d2/ )
 
   \ Credits:
+  \
   \ Code converted to Z80 from the 8080 version
   \ of DZX-Forth.
 
@@ -4137,6 +4254,7 @@ need [if]
 ( d2* d2/ )
 
   \ Credits:
+  \
   \ Code converted to Z80 from the 8080 version
   \ of DZX-Forth.
 
@@ -4163,9 +4281,28 @@ need [if]  need z80-asm
 
   end-code  [then]
 
+( dxor dor dand )
+
+  \ Credits:
+  \
+  \ Code written by Everett F. Carter, published on Forth
+  \ Dimensions (volume 16, number 2, page 17, 1994-08).
+
+need -rot
+
+[unneeded] dxor
+?\  : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
+
+[unneeded] dor
+?\  : dor  ( d1 d2 -- d3 )  rot or -rot or swap  ;
+
+[unneeded] dand
+?\  : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
+
 ( m* )
 
   \ Credits:
+  \
   \ Code by Robert L. Smith, published on Forth Dimensions
   \ (volume 4, number 1, page 3).
 
@@ -4179,6 +4316,7 @@ need d*
 ( m+ )
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
 need z80-asm
@@ -4228,6 +4366,7 @@ need -rot
 ( dsqrt )
 
   \ Credits:
+  \
   \ Original code by Wil Baden, published on
   \ Forth Dimensions 18/5 p. 29 (1997-01).
 
@@ -4263,14 +4402,16 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
 ( tum* tum/ t+ t- )
 
   \ Credits:
+  \
   \ Code by Wil Baden, published on Forth Dimensions
   \ (volume 19, number 6, page 34, 1998-04).
 
   \ XXX TODO -- test
 
-need d+  need d-
+need d-
 
 : +carry  ( n1 n2 -- n1+n2 carry )  0 tuck d+  ;
+
 : -borrow  ( n1 n2 -- n1-n2 borrow )  0 tuck d-  ;
 
 : tum*  ( d n -- t )  2>r  r@ um*  0 2r>  um* d+  ;
@@ -4294,6 +4435,7 @@ need d+  need d-
 ( q2* )
 
   \ Credits:
+  \
   \ Original code by Wil Baden, published on
   \ Forth Dimensions 18/5 p. 29 (1997-01).
 
@@ -4496,6 +4638,7 @@ need >>link
 ( privatize )
 
   \ Credits:
+  \
   \ Code adapted from pForth.
 
   \ ____
@@ -4545,6 +4688,7 @@ variable private-start  variable private-stop
 ( begin-module: begin-module public private end-module )
 
   \ Credits:
+  \
   \ Code adapted and modified from Galope.
 
 need get-order  need wordlist
@@ -5133,7 +5277,7 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-( update flush continued ?load thru +load +thru reload )
+( update flush thru )
 
 : update  ( -- )
   disk-buffer @ $8000 or disk-buffer !  ;
@@ -5152,7 +5296,8 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-: flush  ( -- )  save-buffers empty-buffers  ;
+[unneeded] flush
+?\  : flush  ( -- )  save-buffers empty-buffers  ;
 
   \ doc{
   \
@@ -5163,36 +5308,11 @@ code c!dosvar  ( b n -- )
   \
   \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
-  \ }doc
-
-: continued  ( u -- )  ?loading (load)  ;
-
-  \ doc{
-  \
-  \ continued  ( u -- )
-  \
-  \ Continue interpretation at block _u_.
-  \
-  \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
-  \ B. Uncontrolled Reference Words).
   \
   \ }doc
 
-: ?load  ( block f -)  if  dup load  then  drop  ;
-
-  \ Credits:
-  \ Code from Pygmy Forth.
-  \
-  \ doc{
-  \
-  \ ?load  ( block f -- )
-  \
-  \ Load block _block_ if flag _f_ is true, else do nothing.
-  \
-  \ }doc
-
-
-: thru  ( block1 block2 -- )  1+ swap do  i load  loop  ;
+[unneeded] thru
+?\  : thru  ( block1 block2 -- )  1+ swap do  i load  loop  ;
 
   \ doc{
   \
@@ -5207,42 +5327,84 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-: +load  ( block -- )  blk @ + load  ;
+( continued ?load reload loads +load +thru loader )
 
-: +thru  ( block1 block2 -- )  1+ swap do  i +load  loop  ;
-
-  \ Credits:
-  \ `thru`, `+load` and `+thru` from Afera.
-
-: loads  ( block "name" -- )
-  create ,  does>  ( pfa )  @ load  ;
+[unneeded] continued
+?\  : continued  ( u -- )  ?loading (load)  ;
 
   \ doc{
   \
-  \ loads  ( block "name" -- )
+  \ continued  ( u -- )
   \
-  \ Define a word "name" which, when executed, will  load
-  \ block _block_.
+  \ Continue interpretation at block _u_.
   \
   \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
   \ }doc
 
-: reload  ( -- )  empty-buffers  scr @ load  ;
-
-exit
-
-: loads  ( block n -- )  bounds do  i load  loop  drop  ;
+[unneeded] ?load
+?\  : ?load  ( block f -- )  if  dup load  then  drop  ;
 
   \ Credits:
+  \
+  \ Code from Pygmy Forth.
+  \
+  \ doc{
+  \
+  \ ?load  ( block f -- )
+  \
+  \ Load block _block_ if flag _f_ is true, else do nothing.
+  \
+  \ }doc
+
+[unneeded] reload
+?\  : reload  ( -- )  empty-buffers  scr @ load  ;
+
+  \ doc{
+  \
+  \ reload  ( -- )
+  \
+  \ Load the most recently loader or listed block.
+  \
+  \ }doc
+
+[unneeded] loads
+?\  : loads  ( block n -- )  bounds ?do  i load  loop  ;
+
+  \ Credits:
+  \
   \ Word from MMSFORTH.
 
   \ doc{
   \
   \ loads  ( block n -- )
   \
-  \ Load _n_ block starting from block _block_.
+  \ Load _n_ blocks starting from block _block_.
+  \
+  \ }doc
+
+[unneeded] +load  [unneeded] +thru  and
+?\  : +load  ( n -- )  blk @ + load  ;
+
+[unneeded] +thru
+?\  : +thru  ( n1 n2 -- )  1+ swap do  i +load  loop  ;
+
+
+[unneeded] loader ?exit
+
+: loader  ( block "name" -- )
+  create ,  does>  ( pfa )  @ load  ;
+
+  \ doc{
+  \
+  \ loader  ( block "name" -- )
+  \
+  \ Define a word "name" which, when executed, will  load block
+  \ _block_.
+  \
+  \ Origin: `loads`, found on Forth-79 (Reference Word Set) and
+  \ Forth-83 (Appendix B. Uncontrolled Reference Words).
   \
   \ }doc
 
@@ -5284,6 +5446,7 @@ exit
   \ XXX UNDER DEVELOPMENT
 
   \ Credits:
+  \
   \ Code adapted from Afera.
 
   \ XXX TODO finish adapting the code
@@ -5452,6 +5615,7 @@ variable old-voc-link
 ( bin. dec. hex. )
 
   \ Credits:
+  \
   \ Code modified from eForth.
 
 [defined] base.
@@ -5467,6 +5631,7 @@ variable old-voc-link
 ( 8hex. 16hex. 32hex. <hex hex> )
 
   \ Credits:
+  \
   \ Code adapted from lina.
 
 [defined] base'  ?\ variable base'
@@ -5485,6 +5650,7 @@ variable old-voc-link
 ( binary 8bin. 16bin. 32bin. <bin bin> )
 
   \ Credits:
+  \
   \ Code inspired by lina.
 
 [defined] base'  ?\ variable base'
@@ -5790,6 +5956,7 @@ need .index
 ( words wordlist-words )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
   \ XXX TODO -- pause with the space bar
@@ -5809,6 +5976,7 @@ need trail  need name>link  need tab
 ( words-like )
 
   \ Credits:
+  \
   \ Code adapted from pForth.
 
 need trail  need name>link  need tab
@@ -5850,6 +6018,7 @@ need [if]
 ( .s u.s )
 
   \ Credits:
+  \
   \ Code from Afera. Original algorithm from v.Forth.
 
   \ 2015-11-13: Modified `.depth` to print a signed number,
@@ -5872,6 +6041,7 @@ need [if]
 need marker
 
   \ Credits:
+  \
   \ Code adapted from Wil Baden.
 
   \ XXX TODO test
@@ -5971,6 +6141,7 @@ need marker
 ( assert( )
 
   \ Credits:
+  \
   \ Code from Gforth.
 
   \ It is a good idea to make your programs self-checking, in
@@ -6261,6 +6432,7 @@ code -exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
 ( retry )
 
   \ Credits:
+  \
   \ Code of `retry` from an article by Richard Astle in
   \ Forth Dimensions 17/4 p. 36 (1995-11).
 
@@ -6275,6 +6447,7 @@ code -exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
 ( base-execute )
 
   \ Credits:
+  \
   \ Word from Gforth.
 
 : base-execute  ( xt n -- )  base @ >r execute r> base !  ;
@@ -6295,6 +6468,7 @@ need alias need pick  need roll
   \ XXX UNDER DEVELOPMENT 2015-10-26
 
   \ Credits:
+  \
   \ http://dxforth.netbay.com.au/cfsext.html
 
   \ Control-flow stack extension words. Sample implementation.
@@ -6363,6 +6537,7 @@ need alias need pick  need roll
   \ XXX UNDER DEVELOPMENT
   \
   \ Credits:
+  \
   \ Code from hForth.
 
   \ cs-pick
@@ -6422,6 +6597,7 @@ need alias need pick  need roll
   \ XXX UNDER DEVELOPMENT 2015-10-26
 
   \ Credits:
+  \
   \ http://dxforth.netbay.com.au/cfsext.html
 
 need cs-push  need cs-pop
@@ -6450,6 +6626,7 @@ need cs-push  need cs-pop
   \ XXX first version
 
   \ Credits:
+  \
   \ `(times)` was inspired by cmForth's `repeats`.
 
   \ XXX TODO
@@ -6485,6 +6662,7 @@ need cs-push  need cs-pop
   \ Immediate words are not allowed.
 
   \ Credits:
+  \
   \ `(times)` was inspired by cmForth's `repeats`.
 
 : (times)  ( n -- )
@@ -6514,6 +6692,7 @@ need cs-push  need cs-pop
   \ No check is done during compilation.
 
   \ Credits:
+  \
   \ `(times)` was inspired by cmForth's `repeats`.
 
 : (times)  ( n -- )
@@ -6560,6 +6739,7 @@ need dfor
 ( ?? )
 
   \ Credits:
+  \
   \ Original code by Neil Bawd, presented at FORML 1986.
 
   \ The original code was written two ways:
@@ -6696,6 +6876,7 @@ code k'
 ( for step )
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth. Modified to do the check
   \ before decrementing the index.
 
@@ -6856,6 +7037,7 @@ code (step)  ( R: n -- n' )
 ( case )
 
   \ Credits:
+  \
   \ Code adapted and modified from eForth.
 
   \ This version uses 48 bytes.
@@ -6920,6 +7102,7 @@ defer othercase  ( n -- )  ' drop ' othercase defer!
 ( case )  \ eforth-case )
 
   \ Credits:
+  \
   \ Code adapted and modified from eForth.
 
   \ This version uses 54 bytes.
@@ -6946,6 +7129,7 @@ defer othercase  ( n -- )  ' drop ' othercase defer!
 ( case )  \ 94-doc-case )
 
   \ Credits:
+  \
   \ Code copied from the example provided in the Forth-94
   \ documentation.
 
@@ -6977,6 +7161,7 @@ defer othercase  ( n -- )  ' drop ' othercase defer!
 ( case )  \ abersoft-case )
 
   \ Credits:
+  \
   \ This is the `case` provided by Abersoft Forth,
   \ translated from the Z80 disassembly, modified (compiler
   \ security has been removed) and commented.
@@ -7009,6 +7194,7 @@ defer othercase  ( n -- )  ' drop ' othercase defer!
 ( between-of )
 
   \ Credits:
+  \
   \ Code from Galope.
 
 need between
@@ -7032,6 +7218,7 @@ need between
 ( less-of )
 
   \ Credits:
+  \
   \ Code from Galope.
 
 [defined] nup ?\  : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
@@ -7055,6 +7242,7 @@ need between
 ( greater-of )
 
   \ Credits:
+  \
   \ Code from Galope.
 
 [defined] nup ?\  : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
@@ -7078,6 +7266,7 @@ need between
 ( within-of )
 
   \ Credits:
+  \
   \ Code from Galope.
 
 need within
@@ -7123,6 +7312,7 @@ need any?
 ( default-of )
 
   \ Credits:
+  \
   \ Code from Galope.  Originally based on code by Mark Willis
   \ posted to <lang.comp.forth>:
   \ Message-ID:
@@ -7144,6 +7334,7 @@ need any?
 ( or-of )
 
   \ Credits:
+  \
   \ Code from Galope.
 
 : (or-of)  ( x1 x2 x3 -- x1 x1 | x1 x1' )
@@ -7170,6 +7361,7 @@ need any?
   \ #-22 control structure mismatch
 
   \ Credits:
+  \
   \ Code adapted from Galope.
   \ Original code from:
   \ http://dxforth.netbay.com.au/miser.html
@@ -7285,7 +7477,7 @@ cr  128            dup 3 .r  select-test
 
 : create:  ( "name" -- )  create hide ]  ;
   \ Create a word that will return the address of its pfa.
-  \
+
   \ Credits:
   \
   \ The idea for this word was borrowed from CP/M-volksForth
@@ -7294,6 +7486,7 @@ cr  128            dup 3 .r  select-test
 ( positional-case: )
 
   \ Credits:
+  \
   \ Code adapted from F83's `case:`.
 
 need create:
@@ -7454,6 +7647,7 @@ need create:
 ( options[ )
 
   \ Credits:
+  \
   \ `options[` is a port of IsForth's `case:`.
 
   \ Note: in the original IsForth code the word `(options`)
@@ -7553,6 +7747,7 @@ variable #options
 ( executions )
 
   \ Credits:
+  \
   \ Code from Galope (module times.fs).
 
 : executions  ( xt n -- )
@@ -7567,6 +7762,7 @@ variable #options
   \ Dijkstra Guarded Command Control Structures
 
   \ Credits:
+  \
   \ Adapted from:
   \ Dijkstra Guarded Command Control Structures
   \ M. Edward Borasky, 1996-08-03
@@ -7609,6 +7805,7 @@ need cs-roll
   \ Dijkstra Guarded Command Control Structures
 
   \ Credits:
+  \
   \ Adapted from:
   \ Dijkstra Guarded Command Control Structures
   \ M. Edward Borasky, 1996-08-03
@@ -7646,6 +7843,7 @@ need cs-pick  need cs-roll
   \ XXX TODO -- accept
 
   \ Credits:
+  \
   \ Code adapted from eForth.
 
   \ XXX TODO show cursor
@@ -7760,6 +7958,7 @@ need aborted?
 ( inkey )
 
   \ Credits:
+  \
   \ Code adapted and modified from Abersoft Forth's `inkey`.
 
 need z80-asm
@@ -7844,6 +8043,7 @@ code key??  ( -- f )
 ( y/n? y/n yes? no? )
 
   \ Credits:
+  \
   \ Code adapted from Afera.
 
 need value
@@ -8082,6 +8282,7 @@ code !p  ( c ca -- )
 ( b# d# h# )  ==numberconversion==
 
   \ Credits:
+  \
   \ Code adapted from eForth.
 
   \ XXX TODO -- finish the conversion
@@ -8100,6 +8301,7 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
 ( c# )
 
   \ Credits:
+  \
   \ Code inspired by eForth.
 
 : c#  ( "name" -- c )
@@ -8114,6 +8316,7 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
 ( associative: )  \ ==datastructures==
 
   \ Credits:
+  \
   \ Code adapted from F83.
 
 need -rot
@@ -8152,6 +8355,7 @@ need -rot
 ( associative-list )
 
   \ Credits:
+  \
   \ Based on code written by Wil Baden, published in:
   \ Forth Dimensions Volume XVII number 4 page 11.
 
@@ -8257,6 +8461,7 @@ need words  need abort"
   \ `to`. This could be useful in special cases.
 
   \ Credits:
+  \
   \ Code inspired by lina.
 
 variable (value)  ['] @ (value) !
@@ -8680,6 +8885,7 @@ need within
 ( xstack )
 
   \ Credits:
+  \
   \ Code adapted from Galope (xstack module).
 
   \ Creation and core manipulation of xstacks
@@ -8849,6 +9055,7 @@ forth definitions  previous
   \ Note: This code is specific for G+DOS.
 
   \ Credits:
+  \
   \ Idea inspired by an article by Paul King, published in
   \ Format, vol. 2 no. 3 (1988-10).
   \ XXX TODO link to the WoS archive ftp, when available
@@ -8961,6 +9168,7 @@ code (local)  ( a0 -- )  ( R: a1 -- a0 x pfa a1 )
   \ 2015-11-14: Start.
 
   \ Credits:
+  \
   \ Original code by Marc Perkel, published on
   \ Forth Dimensions 3/6 p. 6 (1982-03).
 
@@ -9090,6 +9298,7 @@ variable (anon)  ( -- a )
   \ dictionary search seems a better option.
 
   \ Credits:
+  \
   \ Code adapted from pForth.
 
   \ ____
@@ -9180,12 +9389,12 @@ variable loc-done
 
 ( ms )  \ ==time==
 
-[defined] sys-frames ?\ 23672 constant sys-frames
+need os-frames
 
 : ms  ( u -- )
   \ Wait _u_ ms (miliseconds), with 20 ms precision.
-  20 / sys-frames @ +
-  begin  dup sys-frames @ u<  until drop  ;
+  20 / os-frames @ +
+  begin  dup os-frames @ u<  until drop  ;
 
   \ doc{
   \
@@ -9305,14 +9514,14 @@ code ms88  ( u -- )
 
 ( frames@ frames! reset-frames )
 
-[defined] sys-frames ?\ 23672 constant sys-frames
+need os-frames
 
 : frames@  ( -- d )
-  sys-frames @ [ sys-frames 2+ ] literal c@  ;
+  os-frames @ [ os-frames 2+ ] literal c@  ;
   \ System frames counter (incremented every 20 ms).
 
 : frames!  ( d -- )
-  [ sys-frames 2+ ] literal c! sys-frames !  ;
+  [ os-frames 2+ ] literal c! os-frames !  ;
   \ Set the system frames counter.
 
 : reset-frames  ( -- )  0. frames!  ;
@@ -9321,6 +9530,7 @@ code ms88  ( u -- )
 ( pause )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
   \ Variant: `(wait)` is a user variable, and it's executed
@@ -9344,6 +9554,7 @@ code pause ( u -- )
 ( pause )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
   \ Variant: `(wait)` is a deferred word.
@@ -9367,6 +9578,7 @@ code pause ( u -- )
 ( pause )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
   \ Variant: `(wait)` is a user variable, but it's current
@@ -9393,6 +9605,7 @@ code pause ( u -- )
   \ Variant: `(wait)` is a variable.
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
 need z80-asm  need execute-hl
@@ -9448,6 +9661,7 @@ code pause ( u -- )
 ( just-pause )
 
   \ Credits:
+  \
   \ Code adapted from Spectrum Forth-83.
 
 need z80-asm
@@ -9614,6 +9828,7 @@ need get-time  need get-date
 ( .context .current order vocs )  \ ==vocabularies==
 
   \ Credits:
+  \
   \ Code adapted from F83.
 
 need body>name
@@ -9656,6 +9871,7 @@ need body>name
 ( wid-of wid> >wid )
 
   \ Credits:
+  \
   \ Code of `wid-of` adapted from eForth's `widof`.
 
 : wid>  ( wid -- xt )  body>  ;
@@ -9727,60 +9943,157 @@ need body>name
   \ }}} =======================================================
   \ Random number generators {{{
 
-( seed randomize )  \ ==rng==
+( randomize randomize0 )  \ ==rng==
 
-23670 constant seed  \ system variable
+need os-seed
 
-: randomize  ( n -- )  seed !  ;
+[needed] randomize dup ?\ : randomize  ( n -- )  os-seed !  ;
+  ?exit
+  \ Set the seed of the random number generator.
 
-exit
+need os-frames
 
-  \ XXX TODO alternative
-
-[defined] sys-frames  ?\ 23672 constant sys-frames
-  \ system variable
-
-: randomize  ( n -- )
-  ?dup 0=  if  sys-frames @  then  seed !  ;
+: randomize0  ( n -- )
+  ?dup 0=  if  os-frames @  then  os-seed !  ;
+  \ Set the seed of the random number generator;
+  \ if _n_ is zero use the system frames counter instead.
 
 ( rnd random )  \ ==rng==
 
   \ Credits:
+  \
   \ Code adapted from Leo Brodie's _Starting Forth_.
 
-need seed
+need os-seed
 
-: rnd  ( -- n )  seed @ 31421 * 6927 + dup seed !  ;
+: rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
-( sf83-random )
+( random-range )
 
-need seed
+need random
 
-3 seed !
+: random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
+  \ Return a random number from _n1_ (min) to _n2_ (max).
 
-: sf83-random  ( n -- 0..n-1 )
-  seed @ 743 * 43 + dup seed ! um* swap drop  ;
+( rng-bench )
+
+  \ Random number generator benchmark
+
+need set-pixel  need bench{  need pixels  need u%  need 3dup
+
+256 192 * constant #pixels
+  \ number of pixels of the screen
+
+defer rng  ( n -- 0..n-1 )
+
+: pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
+  \ Print _u_ pixels as a percentage of the screen.
+
+: pixels.  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
+  \ Print _u_ as the number of pixels.
+
+: origin.  ( ca len -- )  ." Code: " type  ;
+
+: fill-screen  ( -- )
+  #pixels 0 do  256 rng 193 rng set-pixel  loop  ;
+  \ Fill the screen with random pixels.
+
+: (rng-bench)  ( -- d )  bench{ fill-screen }bench  ;
+  \ Do the current RNG benchmark and return its result.
+
+: result.  ( ca len d -- )
+  2>r pixels >r  origin. cr  r> pixels. cr  2r> bench.  ;
+  \ Calculate and print the result of the benchmark.
+  \ _d_ is the time in frames; _ca len_ is the title.
+
+: init-rng  ( xt -- )  ['] rng defer! page  ;
+
+: wait  ( -- )  key drop  ;
+
+-->
+
+( rng-bench )
+
+: rng-bench1  ( ca len xt -- )
+  init-rng (rng-bench) result. wait  ;
+  \ Do the RNG basic benchmark for _xt_ with title _ca len_:
+  \ one single cycle of 49152 random pixels.
+
+variable cycles
+
+: .cycles  ( -- )
+  cycles ?  s" cycles" cycles @ 1 = + type  ;
+  \ Print the number of cycles.
+
+: signal  ( -- )  cycles @ %111 and border  ;
+  \ Change the border color according to the current count
+  \ of cycles, just to show that the benchmark is running.
+
+: rng-bench+  ( ca len xt -- )
+  init-rng  -1 cycles !  bench{
+  0 begin   signal  1 cycles +!
+            fill-screen pixels tuck =  until  drop
+  }bench  0 border  result. .cycles  wait  ;
+  \ Do the RNG extended benchmark for _xt_ with title _ca len_:
+  \ as many cycles of 49152 random pixels as required, until
+  \ the number of pixels doesn't change.
+
+: rng-bench  ( ca len xt -- )
+  3dup rng-bench1 rng-bench+  ;
+  \ Do the RNG basic and extended benchmarks for _xt_ with
+  \ title _ca len_:
+
+( every-random )
+
+need rng-bench  need +thru
+
+1 11 +thru
+
+ace-rng-bench
+dx-rng-bench
+g-rng-bench
+jer-rng-bench
+jml-rng-bench
+lb-rng-bench
+lina-rng-bench
+sf83-rng-bench
+tt-rng-bench
+v-rng-bench
+
+( ace-random )
+
+  \ Credits:
+  \
+  \ Adapted from ACE Forth, after the Jupiter ACE manual.
+  \ Also used by Abersoft Forth in its bundled game
+  \ "Bertie".
+
+need os-seed
+
+: ace-rnd  ( -- n )
+  os-seed @ 75 um* 75. d+ 2dup u< - - 1- dup os-seed !  ;
+
+: ace-random  ( n1 -- n2 )  ace-rnd um* nip  ;
 
 need rng-bench
 
-: sf83-rng-bench  ( -- )
-  s" Spectrum Forth-83" ['] sf83-random rng-bench ;
+: ace-rng-bench  ( -- )
+  s" Jupiter ACE manual" ['] ace-random rng-bench ;
 
 ( dx-random )
 
-  \ Minimum standard random number generator
-  \ Multiply doubles. Signed or unsigned.
+  \ Credits:
+  \
+  \ Code from DX-Forth 4.13.
 
-  \ LCS generator using Turbo-C algorithm
-
-2variable seed  1. seed 2!
+2variable dx-seed  1. dx-seed 2!
 
 need d*
 
 : dx-rnd ( -- u )
-  seed 2@ $15A4E35. d* 1. d+ tuck seed 2! ;
+  dx-seed 2@ $15A4E35. d* 1. d+ tuck dx-seed 2! ;
   \ Get random number
 
 : dx-random ( u -- 0..u-1 )  dx-rnd um* nip ;
@@ -9791,32 +10104,16 @@ need rng-bench
 : dx-rng-bench  ( -- )
   s" DX-Forth" ['] dx-random rng-bench ;
 
-( lb-random )
-
-  \ Credits:
-  \ Code adapted from Leo Brodie's code and Gforth.
-
-need seed
-
-: lb-rnd  ( -- n )  seed @ 31421 * 6927 + dup seed !  ;
-
-: lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
-
-need rng-bench
-
-: lb-rng-bench  ( -- )
-  s" Leo Brodie" ['] lb-random rng-bench ;
-
 ( g-random )
-
-need seed  need ud*
 
   \ Credits:
   \
   \ Adapted from Gforth.
 
+need os-seed  need ud*
+
 : g-rnd  ( -- n )
-  272958469. seed @ ud* d>s 1+ dup seed ! ;
+  272958469. os-seed @ ud* d>s 1+ dup os-seed ! ;
 
 : g-random  ( n1 -- n2 )  g-rnd um* nip ;
 
@@ -9825,31 +10122,195 @@ need rng-bench
 : g-rng-bench  ( -- )
   s" Gforth" ['] g-random rng-bench ;
 
-( random-range )
+( jer-random )
 
-need random
+  \ Credits:
+  \
+  \ Random number generator by J. E. Rickenbacker, published on
+  \ Forth Dimensions volume 2, number 2, page 34.
 
-: random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
-  \ Return a random number from _n1_ (min) to _n2_ (max).
+need os-seed
+
+: jer-rnd  ( -- n )
+  os-seed @ 259 * 3 + 32767 and dup os-seed !  ;
+
+: jer-random ( n1 -- n2 )
+  jer-rnd 32767 */  ;
+  \ Return a random number _n2_ (0 <= n2 < n1).
+
+  \ XXX Note: patterns
+
+need rng-bench
+
+: jer-rng-bench  ( -- )
+  s" J. E. Rickenbacker" ['] jer-random rng-bench ;
+
+( jml-random )
+
+  \ Credits:
+  \
+  \ Adapted from code written by José Manuel Lazo,
+  \ published on Microhobby, issue 85 (1986-07), page 24:
+  \ http://microhobby.org/numero085.htm
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
+
+need z80-asm  need os-seed
+
+code jml-rnd  ( -- u )
+
+  os-seed fthl  hl push
+  hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
+  de pop  de addp  0029 de ldp#  de addp
+  os-seed sthl
+  pushhl jp
+  end-code
+
+: jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
+
+need rng-bench
+
+: jml-rng-bench  ( -- )
+  s" J.M. Lazo" ['] jml-random rng-bench ;
+
+( lb-random )
+
+  \ Credits:
+  \
+  \ Code adapted from Leo Brodie's _Starting Forth_.
+
+need os-seed
+
+: lb-rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
+
+: lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
+
+need rng-bench
+
+: lb-rng-bench  ( -- )
+  s" Leo Brodie" ['] lb-random rng-bench ;
+
+( lcm-random )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \
+  \ Adapted from code written by Everett F. Carter, published
+  \ on Forth Dimensions (volume 16, number 2, page 17,
+  \ 1994-08).
+
+need d*  need du/mod  need 2nip
+
+2variable 2seed
+
+2147483647. 2constant max32
+
+  \ Linear Congruential Method, the "minimal standard
+  \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
+  \ pp. 1192-1201
+: lcm-rnd  ( -- d )
+  \ XXX FIXME -- it always returns 0
+  2seed 2@ 16807. d*
+  max32 du/mod  2nip
+  2dup 2seed 2!  ;
+
+  \ \ Original code:
+  \ : lcm-rnd  ( -- d )
+  \   2seed 2@ 16807. umd*
+  \   max32 umd/mod
+  \   2drop 2seed 2!  ;
+
+: lcm-random  ( n1 -- n2 )  lcm-rnd d>s um* nip  ;
+
+need rng-bench
+
+: lcm-rng-bench  ( -- )
+  s" LCM" ['] lcm-random rng-bench  ;
+
+( lina-random )
+
+need os-seed
+
+: lina-rnd  ( -- n )
+  os-seed @ 107465 * 234567 + dup os-seed ! ;
+
+: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
+
+need rng-bench
+
+: lina-rng-bench  ( -- )
+  s" lina" ['] lina-random rng-bench ;
+
+( sf83-random )
+
+  \ Credits:
+  \
+  \ Code from Spectrum Forth-83.
+
+need os-seed  3 os-seed !
+
+: sf83-random  ( n -- 0..n-1 )
+  os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
+
+need rng-bench
+
+: sf83-rng-bench  ( -- )
+  s" Spectrum Forth-83" ['] sf83-random rng-bench ;
 
 ( tt-random )
 
   \ Credits:
   \
-  \ Code from tt.pfe  Tetris for terminals, redone in
-  \ ANSI-Forth.  Written 05Apr94 by Dirk Uwe Zoller, e-mail duz
-  \ AT roxi DOT rz DOT fht-mannheim DOT de.
+  \ Code from tt.pfe, Tetris for terminals, redone in
+  \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
 
-need seed
+need os-seed
 
 : tt-random   ( n -- 0..n-1 )
-    seed @ 13 * $7FFF and
-    dup seed !  swap mod ;
+    os-seed @ 13 * $7FFF and
+    dup os-seed !  swap mod ;
 
 need rng-bench
 
 : tt-rng-bench  ( -- )
   s" Tetris for terminals" ['] tt-random rng-bench ;
+
+( v-random )
+
+  \ Credits:
+  \
+  \ Code from v.Forth.
+
+need os-frames
+
+: v-random  ( n1 -- n2 )
+  1+ 8195 os-frames @ um* 1. d+
+  16383 um/mod drop
+  \ dup os-seed !
+  swap mod  ;
+
+need rng-bench
+
+: v-rng-bench  ( -- )
+  s" vForth" ['] v-random rng-bench ;
+
+( z88-random )
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+need ud*  need os-seed
+
+: z88-random  ( u1 -- u2 )
+  1103515245. \ 20077 16838
+  os-seed @ ud* 12345. d+ over os-seed !
+  rot ud/mod 2drop  ;
+
+need rng-bench
+
+: z88-rng-bench  ( -- )
+  s" Z88 CamelForth" ['] z88-random rng-bench ;
 
 ( random-byte )
 
@@ -9861,159 +10322,9 @@ code random-byte  ( -- b )
 need bench{
 
 : random-byte-test  ( -- )
-  ['] random-byte ['] random defer!  cls  bench{ pixels
-  do  random random 192 min set-pixel  loop  }bench
+  ['] random-byte ['] rng defer!  cls  bench{ pixels
+  do  rng rng 192 min set-pixel  loop  }bench.
   ." Z80 R register" cr key drop ;
-
-( a-random )
-
-  \ Credits:
-  \ Adapted from ACE Forth, after the Jupiter ACE manual.
-  \ Also used by Abersoft Forth in its bundled game
-  \ "Bertie".
-
-need seed
-
-: a-rnd  ( -- n )
-  seed @ 75 um* 75. d+ 2dup u< - - 1- dup seed !  ;
-
-: a-random  ( n1 -- n2 )  a-rnd um* nip  ;
-
-need rng-bench
-
-: a-rng-bench  ( -- )
-  s" Jupiter ACE manual" ['] a-random rng-bench ;
-
-( v-random )
-
-  \ Credits:
-  \ Code from v.Forth.
-
-  \ XXX TODO adapt and try
-
-  \ need seed
-
-[defined] sys-frames ?\ 23672 constant sys-frames
-
-: v-random  ( n1 -- n2 )
-  1+ 8195 sys-frames @ um* 1. d+
-  16383 um/mod drop
-  \ dup seed !
-  swap mod  ;
-
-need rng-bench
-
-: v-rng-bench  ( -- )
-  s" vForth" ['] v-random rng-bench ;
-
-( lina-random )
-
-need seed
-
-: lina-rnd  ( -- n )  seed @ 107465 * 234567 + dup seed ! ;
-
-: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
-
-need rng-bench
-
-: lina-rng-bench  ( -- )
-  s" lina" ['] lina-random rng-bench ;
-
-( l-random )
-
-  \ Credits:
-  \ Adapted from code written by José Manuel Lazo,
-  \ published on Microhobby, issue 85 (1986-07), page 24:
-  \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
-
-need seed
-
-code l-rnd  ( -- u )
-
-  seed fthl  hl push
-  hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
-  de pop  de addp  0029 de ldp#  de addp
-  seed sthl
-  pushhl jp
-  end-code
-
-: l-random  ( n -- 0..n-1 )  l-rnd um* nip  ;
-
-  \ XXX Note: patterns
-need rng-bench
-: l-rng-bench  ( -- )
-  s" J.M. Lazo" ['] l-random rng-bench ;
-
-( z88-random )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
-need ud*  need seed
-
-  \ XXX TODO adapt.
-
-: z88-random  ( u1 -- u2 )
-  1103515245. \ 20077 16838
-  seed @ ud* 12345. d+ over seed !
-  rot ud/mod 2drop  ;
-
-need rng-bench
-
-: z88-rng-bench  ( -- )
-  s" Z88 CamelForth" ['] z88-random rng-bench ;
-
-( r-random )
-
-  \ Credits:
-
-  \ Random number generator by J. E. Rickenbacker, published on
-  \ Forth Dimensions volume 2, number 2, page 34.
-
-need seed
-
-: rnd  ( -- n )
-  seed @ 259 * 3 + 32767 and dup seed !  ;
-
-: r-random ( n1 -- n2 )
-  rnd 32767 */  ;
-  \ Return a random number _n2_ (0 <= n2 < n1).
-
-  \ XXX Note: patterns
-
-need rng-bench
-
-: r-rng-bench  ( -- )
-  s" Rickenbacker" ['] r-random rng-bench ;
-
-( rng-bench )
-
-  \ Random number generator benchmark
-
-need set-pixel  need bench{  need pixels  need u%
-
-256 192 * constant #pixels
-  \ number of pixels of the screen
-
-defer rng  ( n -- 0..n-1 )
-
-: pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
-  \ Print _u_ pixels as a percentage.
-
-: pixels.  ( u -- )
-  dup u. ." pixels (" %pixels ." )"  ;
-  \ Print _u_ as the number of pixels.
-
-: rng-bench  ( ca len xt -- )
-  ['] rng defer!  cls  bench{
-  #pixels 0 do  256 rng 193 rng set-pixel  loop  frames@ 2>r
-  pixels >r  ." Code: " type cr  r> pixels. cr  2r> bench.
-  key drop  ;
-  \ Do the RNG benchmark using _xt_;
-  \ print title _ca len_ before the results.
 
   \ }}} =======================================================
   \ Deferred words {{{
@@ -10021,6 +10332,7 @@ defer rng  ( n -- 0..n-1 )
 ( defers action-of )  \ ==deferredwords==
 
   \ Credits:
+  \
   \ Code adapted from the Afera library.
 
 : defers  ( "name" -- )  ' defer@ compile,  ; immediate
@@ -10038,6 +10350,7 @@ defer rng  ( n -- 0..n-1 )
 ( <is> [is] is  )
 
   \ Credits:
+  \
   \ Code adapted from the Afera library.
 
 : <is>  ( xt "name" -- )  ' defer!  ;
@@ -10102,7 +10415,9 @@ defer rng  ( n -- 0..n-1 )
   \ same attributes.
 need alias
 : synonym2  ( "newname" "oldname" -- )
-  parse-name nextname ' alias  ;
+  parse-name nextname ' dup >r alias
+  r> >name dup immediate? if  immediate  then
+               compile-only? if  compile-only  then  ;
 
   \ doc{
   \
@@ -10154,7 +10469,7 @@ code call  ( a -- )
 
 only forth definitions
 
-need ?pairs
+need ?pairs  need -rot  need 3dup
 
 : 8*   ( n1 -- n2 )  2* 2* 2*  ;
 
@@ -10235,8 +10550,6 @@ DD constant ix-op  FD constant iy-op
 
 ( z80-asm -- defining words for z80 instructions)
 
-need -rot
-
 : ma  ( 8b "name" -- )
   \ Index registers with register.
   create c, does>  ( disp rphl -- )
@@ -10304,10 +10617,6 @@ D7 m1 prt  \ rst 0x16
 -->
 
 ( z80-asm -- index register opcodes)
-
-need -rot
-[defined] 3dup
-?\ : 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
 
 86 ma addx 8E ma adcx 96 ma subx 9E ma sbcx A6 ma andx
 AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
@@ -10502,6 +10811,7 @@ current !  previous
   \ For dumping assembled code to screen.
 
   \ Credits:
+  \
   \ Code adapted from Pygmy Forth.
 
   \ XXX TODO finish adapt
@@ -10552,6 +10862,7 @@ macro call-xt  ( xt -- )
   \ Address register store and fetch words.
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
   \ Note by Gary Lancaster in the Z88 CamelForth source file:
@@ -10580,6 +10891,7 @@ code a@  ( -- a )
 ( !a @a )
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
 need a!
@@ -10609,6 +10921,7 @@ code @a  ( -- u )
 ( c!a c@a )
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
 need a!
@@ -10632,6 +10945,7 @@ code c@a  ( -- c )
 ( !a+ @a+ )
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
 need a!
@@ -10656,6 +10970,7 @@ code @a+  ( -- u )      \ Fetch cell at `a` with increment.
 ( c!a+ c@a+ )
 
   \ Credits:
+  \
   \ Code adapted from Z88 CamelForth.
 
 need a!
@@ -10694,6 +11009,7 @@ code c@a+  ( -- c )
   \ problem: only words below 0xC000 could manipulate the heap.
 
   \ Credits:
+  \
   \ Adapted from code written by Gordon Charlton, 1994:
 
   \ This is freeware, copyright Gordon Charlton, 12th of
@@ -11428,6 +11744,7 @@ need reserve  need alias
 ( doer )
 
   \ Credits:
+  \
   \ Code adapted from PFE.
   \ Original code by Leo Brodie, 1983,
   \ published on _Thinking Forth_, Appendix A. Public domain.
@@ -11722,6 +12039,7 @@ code ftan  ( F: r1 -- r2 )
   \ rewritten.
 
   \ Credits:
+  \
   \ Specforth Editor V1.1
   \ Copyright 1983 by Artic Computing Ltd.
   \ Written by Chris A. Thornton, 1983
@@ -11987,7 +12305,7 @@ variable parsecs    variable record  record off
 
 : char>a  ( c -- a )  8 * charset +  ;
 
-: udg>a  ( c -- a )  128 - 8 * sys-udg @ +  ;
+: udg>a  ( c -- a )  128 - 8 * os-udg @ +  ;
 
 : char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove  ;
 
@@ -12803,6 +13121,7 @@ only forth definitions
   \ XXX UNDER DEVELOPMENT
 
   \ Credits:
+  \
   \ Code converted from hForth
 
   \ -----------------------------------------------------------
@@ -12937,6 +13256,7 @@ mode64 page
   \ XXX -- works in Gforth, but freezes here.
 
   \ Credits:
+  \
   \ Code adapted from kForth. Original Credits:
 
   \ ____
@@ -13191,6 +13511,7 @@ create board  squares allot
   \ XXX TODO slow the rackets
 
   \ Credits:
+  \
   \ Code adapted from IsForth (version 1.23v).
 
   \ ____
@@ -13647,7 +13968,7 @@ variable racket2-delay
   \ Forth, in order to choose between differen implementation
   \ options, are in "Development benchamarks" section.
 
-( bench{ }bench )
+( bench{ }bench }bench. bench. )
 
   \ Code adapted from:
   \ Forth Dimensions Volume XVII number 4 page 11.
@@ -13659,20 +13980,22 @@ need reset-frames  need frames@
 : bench{  ( -- )  reset-frames  ;
   \ start timing
 
-  \ XXX OLD
-  \ : sec.  ( n -- )  s>d <# # # [char] . hold #s #> type  ;
+: }bench  ( -- d )  frames@ ;
+  \ stop timing
 
 : bench.  ( d -- )
   2dup d. ." frames (" 50 m/ nip . ." s) " cr  ;
-  \ print the result _d_ of a bench
+  \ print the result _d_
 
-: }bench  ( -- )
-  frames@ bench.  ;
-  \ stop timing and pring the result
+: }bench.  ( -- )  }bench bench.  ;
+  \ stop timing and print the result
 
+  \ XXX OLD
+  \ : sec.  ( n -- )  s>d <# # # [char] . hold #s #> type  ;
 exit
 
   \ System-dependent timing routines.
+  \ XXX UNDER DEVELOPMENT
 
   \ Original code.
 
@@ -13714,7 +14037,7 @@ need bench{
 
 : byte-magazine-benchmark  ( -- )
   ." 1000 iterations" cr
-  bench{ 100 0 do  do-prime  loop }bench  ;
+  bench{ 100 0 do  do-prime  loop }bench.  ;
 
   .( To run the BYTE Magazine benchmark type:) cr
   .(   byte-magazine-benchmark)
@@ -13752,7 +14075,7 @@ need bench{
 ( interface-age-benchmark )
 
 : interface-age-benchmark  ( -- )
-  bench{ 5000 (interface-age-benchmark) }bench  ;
+  bench{ 5000 (interface-age-benchmark) }bench.  ;
 
   .( To run the interface age benchmark type:) cr
   .(   interface-age-benchmark  )
@@ -13820,15 +14143,15 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 1000 constant reps  \ repetitions
 
 : bench0  ( -- )  \ benchmark loop0
-  bench{ 0 begin  loop0 1+ dup reps =  until  drop }bench
+  bench{ 0 begin  loop0 1+ dup reps =  until  drop }bench.
   ." Vector No-Op" cr ;
 
 : bench1 ( -- ) \ benchmark loop1
-  bench{ 0 begin  loop1 1+ dup reps =  until  drop }bench
+  bench{ 0 begin  loop1 1+ dup reps =  until  drop }bench.
   ." Vector +    " cr ;
 
 : bench2 ( -- ) \ benchmark loop2 )
-  bench{ 0 begin  loop2 1+ dup reps =  until  drop }bench
+  bench{ 0 begin  loop2 1+ dup reps =  until  drop }bench.
   ." Vector *    " cr ;
 
 -->
@@ -13836,11 +14159,11 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 ( vector-loop-benchmark )
 
 : bench3 ( -- )  \ benchmark loop3
-  bench{ 0 begin  loop3 1+ dup reps =  until  drop }bench
+  bench{ 0 begin  loop3 1+ dup reps =  until  drop }bench.
   ." Vector /    " cr ;
 
 : bench4 ( -- ) \ benchmark loop4
-  bench{ 0 begin  loop4 1+ dup reps =  until  drop }bench
+  bench{ 0 begin  loop4 1+ dup reps =  until  drop }bench.
   ." Vector */   " cr ;
 
 : vector-loop-benchmark  ( -- )
@@ -13853,8 +14176,6 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
   \ Code adapted from:
   \ Forth Dimensions Volume XVII number 4 page 11.
-
-  .( hola)
 
 exit
 
@@ -14147,10 +14468,10 @@ need frames@  need reset-frames
 need bench{
 
 : um/mod-bench  ( n -- )
-  bench{  0 do  i s>d i um/mod 2drop  loop  }bench  ;
+  bench{  0 do  i s>d i um/mod 2drop  loop  }bench.  ;
 
 : um/mod-bench88  ( n -- )
-  bench{  0 do  i s>d i um/mod88 2drop  loop  }bench  ;
+  bench{  0 do  i s>d i um/mod88 2drop  loop  }bench.  ;
 
 : um/mod-bench  ( n -- )
   dup cr ." Abersoft Forth  U/MOD ..." um/mod-bench
@@ -14178,13 +14499,13 @@ need bench{
 need bench{
 
 : a-m/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod drop 2drop  loop  }bench  ;
+  bench{  0 do  i s>d i ud/mod drop 2drop  loop  }bench.  ;
 
 : z1-ud/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod881 drop 2drop  loop  }bench  ;
+  bench{  0 do  i s>d i ud/mod881 drop 2drop  loop  }bench.  ;
 
 : z2-ud/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod882 drop 2drop  loop  }bench  ;
+  bench{  0 do  i s>d i ud/mod882 drop 2drop  loop  }bench.  ;
 
 : run  ( n -- )
   dup cr ." Abersoft Forth  M/MOD ..." a-m/mod
@@ -14386,7 +14707,7 @@ need bench{ warnings off bench{ : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
-: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; }bench
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; }bench.
 
   \ Benchmark: interpretation of many source blocks from disk.
 
@@ -14433,7 +14754,7 @@ b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load b load
-b load b load b load b load b load b load b load b load }bench
+b load b load b load b load b load b load b load b load }bench.
 
   \ Benchmark: interpretation of many source blocks from disk.
 
@@ -14724,9 +15045,9 @@ need bench{
 
 : d*-benchs  ( -- )
   page
-  32767 dup bench{ baden-d*-bench }bench
-        dup bench{ smith-d*-bench }bench
-            bench{ dx-d*-bench }bench  ;
+  32767 dup bench{ baden-d*-bench }bench.
+        dup bench{ smith-d*-bench }bench.
+            bench{ dx-d*-bench }bench.  ;
 
   \ 2015-11-09: baden-d*, smith-d*
 
@@ -14767,7 +15088,7 @@ defer (case-bench)  ( -- )
   ['] (case-bench) defer!
   bench{
   iterations 0 do  i %11 and (case-bench)  loop
-  }bench  ;
+  }bench.  ;
 
 -->
 
@@ -14956,9 +15277,9 @@ need bench{  need 0if
 
 
 : misc-benchs  ( -- )
-  32767 dup bench{ bench1 }bench
-        dup bench{ bench2 }bench
-            bench{ bench3 }bench  ;
+  32767 dup bench{ bench1 }bench.
+        dup bench{ bench2 }bench.
+            bench{ bench3 }bench.  ;
 
   \ Bench    Frames for 32767 iterations
   \ -----   ---------------------------
@@ -14975,7 +15296,7 @@ need bench{  need 0if
 need bench{
 
 : 2swap-bench  ( -- )
-  32767 0 bench{ 2dup do  2swap  loop  }bench 2drop  ;
+  32767 0 bench{ 2dup do  2swap  loop  }bench. 2drop  ;
 
   \ Code                          Frames for 32767 iterations
   \ -----                         ---------------------------
@@ -14989,10 +15310,10 @@ need bench{
 need bench{
 
 : dnegate-bench  ( -- )
-  32767 0 bench{ 2dup do  dnegate  loop  }bench 2drop  ;
+  32767 0 bench{ 2dup do  dnegate  loop  }bench. 2drop  ;
 
 : dnegate-bench2  ( -- )
-  32767 0 bench{ 2dup do  dnegate2  loop  }bench 2drop  ;
+  32767 0 bench{ 2dup do  dnegate2  loop  }bench. 2drop  ;
 
   \ Code                          Frames for 32767 iterations
   \ -----                         ---------------------------
@@ -15021,7 +15342,7 @@ need bench{
 defer #spaces
 
 : #spaces-bench  ( n -- )
-  cr bench{  0 do  0 32767 #spaces drop  loop  }bench  ;
+  cr bench{  0 do  0 32767 #spaces drop  loop  }bench.  ;
 
 : run  ( n -- )
   dup ['] #spaces1 ['] #spaces defer! ." 1..." #spaces-bench
@@ -15046,19 +15367,20 @@ need bench{
 
 32767 0 2constant range
 
-: forth-83-do  ( -- )  bench{  range do83  loop83  }bench  ;
+: forth-83-do  ( -- )  bench{  range do83  loop83  }bench.  ;
 
-: forth-79-do  ( -- )  bench{  range do  loop  }bench  ;
+: forth-79-do  ( -- )  bench{  range do  loop  }bench.  ;
 
 : forth-83-i  ( -- )
-  bench{  range do83  i83 drop  loop83  }bench  ;
+  bench{  range do83  i83 drop  loop83  }bench.  ;
 
-: forth-79-i  ( -- )  bench{  range do  i drop  loop  }bench  ;
+: forth-79-i  ( -- )
+  bench{  range do  i drop  loop  }bench.  ;
 
 : forth-83-+loop  ( -- )
-  bench{  range do83  2 +loop83  }bench  ;
+  bench{  range do83  2 +loop83  }bench.  ;
 
-: forth-79-+loop  ( -- )  bench{  range do  2 +loop  }bench  ;
+: forth-79-+loop  ( -- )  bench{  range do  2 +loop  }bench.  ;
 
 : do-bench  ( -- )
   forth-83-do forth-79-do
@@ -15082,9 +15404,9 @@ need bench{
 need bench{
 
 : e  ( n -- )
-  bench{ 0 ?do  home 128 emit  loop  }bench  ;
+  bench{ 0 ?do  home 128 emit  loop  }bench.  ;
 : eu  ( n -- )
-  bench{ 0 ?do  home 128 emit-udg  loop  }bench  ;
+  bench{ 0 ?do  home 128 emit-udg  loop  }bench.  ;
 
   \             Frames (20 ms)
   \             -----------------------
@@ -15236,6 +15558,7 @@ code if'-test  ( -- )
 ( exception-test )
 
   \ Credits:
+  \
   \ Code from MPE Forth for TiniARM User Manual.
 
 : could-fail  ( -- c )
@@ -15446,7 +15769,7 @@ code if'-test  ( -- )
 \ #-285
 
 
-  \ vim: filetype=soloforth
+  \ vim: filetype=soloforth:fileencoding=utf-8
 ( G+DOS error codes #-1000..#-1014 )
 
   \ G+DOS Error codes and messages.

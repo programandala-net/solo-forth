@@ -27,3 +27,13 @@ _ Developed from 2015-12-18.
 - New: `0.r` and `0d.r` to print numbers without a trailing blank.
 - New: `m*/`.
 - New: `pixels`.
+- Improved: `bench{`.
+- New: `3dup` written in Z80 (formerly it was included in the
+  assembler, and was written in Forth).
+- Change: `loads`, a defining word found on Forth-79 (Reference Word
+  Set) and Forth-83 (Appendix B. Uncontrolled Reference Words) is
+  renamed to `loader`.
+- New: `loads`, from MMSForth.
+- New: `dxor`, `dor`, `dand`.
+- Fixed: `du/mod`.
+- New: `synonym`.
