@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511050203
+\ Last modified: 201511052125
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -77,7 +77,7 @@ code zx2  jpnext  end-code
 
 
 variable default-first-locatable  variable first-locatable
-17 dup default-first-locatable !  first-locatable !
+18 dup default-first-locatable !  first-locatable !
 variable last-locatable  blk/disk 1- last-locatable !
   \ Variables that define the range of screens to be searched
   \ by `located` and its descendants.
@@ -277,108 +277,9 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ }doc
 
   \ }}} =======================================================
-  \ Exceptions {{{
-
-( abort" )
-
-  \ Credits:
-  \ Code adapted from DZX-Forth.
-
-  \ XXX TODO use `error`, by modifying `throw`
-
-[defined] abort-message ?\ 2variable abort-message
-
-: (abort")  ( n -- )
-  r> count rot if  abort-message 2! -2 throw  then + >r  ;
-
-: abort"  ( Compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate compile-only
-
-( error>ordinal error>line )
-
-: error>ordinal  ( -n1 -- +n2 )
-  \ Convert an error code to its ordinal position in the
-  \ library.
-  \ -n1 =  -90..-1        \ Standard error codes
-  \        -285..-256     \ Solo Forth error codes
-  \        -1024..-1000   \ G+DOS error codes
-  \ +n2 =  1..146
-
-  \ XXX TODO  add OS codes
-
-  abs
-  dup 256 < ?exit
-  dup 1000 < if  [ 255 091 - ] literal - exit  then
-  [ 1000 286 - 255 091 - + ] literal -   ;
-
-: error>line  ( n1 -- n2 )
-  error>ordinal dup >r
-  begin
-    dup dup 16 / - r@ <>  while  1+
-  repeat  rdrop  ;
-
-\ msg-scr (.throw) \
-
-need error>line  need .line
-
-variable msg-scr
-s" Standard error codes" locate msg-scr !
-  \ XXX TODO rename!
-
-  \ doc{
-  \
-  \ msg-scr  ( -- a )
-  \
-  \ Variable that holds the screen that holds the error
-  \ messages.
-  \
-  \ }doc
-
-: (.throw)  ( n -- )
-  msg-scr @
-  if  error>line msg-scr @ .line space  else  .throw#  then  ;
-
-' (.throw) ' .throw defer!
-
-  \ doc{
-  \
-  \ (.throw)  ( n -- )
-  \
-  \ Extended behaviour of the deferred word `.throw`:
-  \ Print the text of throw error _n_.  The variable `msg-scr`
-  \ contains the number of the first screen where messages are
-  \ hold. If it contains zero, only the error number is printer.
-  \
-  \ }doc
-
-( ?compiling ?executing )
-
-[unneeded] ?compiling
-?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
-
-  \ doc{
-  \
-  \ ?compiling  ( -- )
-  \
-  \ Issue an error if not compiling.
-  \
-  \ }doc
-
-[unneeded] ?executing
-?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
-
-  \ doc{
-  \
-  \ ?executing  ( -- )
-  \
-  \ Issue an error if not executing.
-  \
-  \ }doc
-
-  \ }}} =======================================================
   \ Error codes {{{
 
-( Standard error codes -01..-15 )  \ scr 4
+( Standard error codes -01..-15 )  \ scr 5
 
 \ #-01 ABORT
 \ #-02 ABORT"
@@ -608,6 +509,105 @@ s" Standard error codes" locate msg-scr !
 \ #-1154 OS:
 
   \ }}} =======================================================
+  \ Exceptions {{{
+
+( abort" )
+
+  \ Credits:
+  \ Code adapted from DZX-Forth.
+
+  \ XXX TODO use `error`, by modifying `throw`
+
+[defined] abort-message ?\ 2variable abort-message
+
+: (abort")  ( n -- )
+  r> count rot if  abort-message 2! -2 throw  then + >r  ;
+
+: abort"  ( Compilation: "ccc<quote>" -- )
+  postpone (abort") ,"  ; immediate compile-only
+
+( error>ordinal error>line )
+
+: error>ordinal  ( -n1 -- +n2 )
+  \ Convert an error code to its ordinal position in the
+  \ library.
+  \ -n1 =  -90..-1        \ Standard error codes
+  \        -285..-256     \ Solo Forth error codes
+  \        -1024..-1000   \ G+DOS error codes
+  \ +n2 =  1..146
+
+  \ XXX TODO  add OS codes
+
+  abs
+  dup 256 < ?exit
+  dup 1000 < if  [ 255 091 - ] literal - exit  then
+  [ 1000 286 - 255 091 - + ] literal -   ;
+
+: error>line  ( n1 -- n2 )
+  error>ordinal dup >r
+  begin
+    dup dup 16 / - r@ <>  while  1+
+  repeat  rdrop  ;
+
+\ msg-scr (.throw) \
+
+need error>line  need .line
+
+variable msg-scr
+s" Standard error codes" locate msg-scr !
+  \ XXX TODO rename!
+
+  \ doc{
+  \
+  \ msg-scr  ( -- a )
+  \
+  \ Variable that holds the screen that holds the error
+  \ messages.
+  \
+  \ }doc
+
+: (.throw)  ( n -- )
+  msg-scr @
+  if  error>line msg-scr @ .line space  else  .throw#  then  ;
+
+' (.throw) ' .throw defer!
+
+  \ doc{
+  \
+  \ (.throw)  ( n -- )
+  \
+  \ Extended behaviour of the deferred word `.throw`:
+  \ Print the text of throw error _n_.  The variable `msg-scr`
+  \ contains the number of the first screen where messages are
+  \ hold. If it contains zero, only the error number is printer.
+  \
+  \ }doc
+
+( ?compiling ?executing )
+
+[unneeded] ?compiling
+?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
+
+  \ doc{
+  \
+  \ ?compiling  ( -- )
+  \
+  \ Issue an error if not compiling.
+  \
+  \ }doc
+
+[unneeded] ?executing
+?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
+
+  \ doc{
+  \
+  \ ?executing  ( -- )
+  \
+  \ Issue an error if not executing.
+  \
+  \ }doc
+
+  \ }}} =======================================================
   \ Parsing {{{
 
 ( parse-line )  \ ==parsing==
@@ -633,13 +633,12 @@ need /string
 
 ( evaluate )
 
-  \ XXX TODO
+  \ XXX UNDER DEVELOPMENT
 
   \ XXX Gforth:
-
 : execute-parsing  ( ca len cfa -- )
   >in @ >r >in off
-  source >r >r
+  source >r >r ;
 
 : evaluate  ( ca len -- )  ['] interpret execute-parsing  ;
 
@@ -5224,7 +5223,7 @@ need break-key?  need .index
   \ overwritten by the strings of the index lines, because the
   \ circular string buffer is small.
 
-( words )
+( words wordlist-words )
 
   \ Credits:
   \ Code adapted from Spectrum Forth-83.
@@ -5240,6 +5239,11 @@ need break-key?  need trail  need name>link
   begin  dup 0<> break-key? 0= and  while
     dup id. tab  name>link @n
   repeat drop  ;
+
+[needed] wordlist-words  ?\ ;s
+
+need >order
+: wordlist-words  ( wid -- )  >order  words  previous  ;
 
 ( words-like )
 
@@ -5490,6 +5494,57 @@ variable assert-level ( -- a )
 
 : ) ( -- )  postpone (endassert) ; immediate
     \ end an assertion
+
+( extend size system turnkey )
+
+  \ XXX OLD
+  \
+  \ XXX WARNING -- Since name field addresses are saved in a
+  \ memory bank, the best way to save a modified Forth system
+  \ is to make a snapshot with the ZX Spectrum emulator;
+  \ otherwise a multipart saving and loading would be needed.
+  \ Anyway, these words are meant to save a Forth program that
+  \ does not need to search the dictionary.
+  \
+  \ XXX TODO -- Study how to save and load the names bank, even
+  \ after assembling the kernel.
+
+: extend  ( -- )
+
+  \ Change the `cold` start parameters to extend the system to
+  \ its current state.
+
+  \ XXX TODO -- update this word!
+
+  latest 6 +origin !  \ top most word in `forth` vocabulary
+  here 24 +origin !   \ `dp` init value
+  \ XXX TODO -- change also the names pointer
+  \ `voc-link` init value:
+  [ ' forth >body 8 + ] literal 26 +origin !  ;
+
+  \ size  ( -- u )
+  \
+  \ Size of the system.
+
+: size  ( -- u )  here 0 +origin -  ;
+
+  \ system  ( -- a len )
+  \
+  \ Prepare the system in order to save a copy.  Return its
+  \ start address and length, to be used as parameters for
+  \ saving the system to disk.
+
+: system  ( -- a len )  extend  0 +origin size 10 +  ;
+
+  \ turnkey  ( cfa -- a len )
+  \
+  \ Prepare the system in order to save a copy that will
+  \ execute the given cfa after the ordinary boot process.
+  \ Return its start address and length, to be used as
+  \ parameters for saving the system to disk.
+
+: turnkey  ( cfa -- a len )  boot defer! system  ;
+
 
   \ }}} =======================================================
   \ Control structures {{{
@@ -7242,71 +7297,19 @@ code !p  ( c ca -- )
   C1 c,           \ pop bc
   jpnext          \ jp (ix)
 
-  End-code
-
-  \ }}} =======================================================
-  \ Turnkey {{{
-
-( extend size system turnkey )  \ ==turnkey==
-
-  \ XXX OLD
-  \
-  \ XXX WARNING -- Since name field addresses are saved in a
-  \ memory bank, the best way to save a modified Forth system
-  \ is to make a snapshot with the ZX Spectrum emulator;
-  \ otherwise a multipart saving and loading would be needed.
-  \ Anyway, these words are meant to save a Forth program, not
-  \ the Forth system.
-  \
-  \ XXX TODO -- Study how to save and load the names bank, even
-  \ after assembling the kernel.
-
-: extend  ( -- )
-
-  \ Change the `cold` start parameters to extend the system to
-  \ its current state.
-
-  latest 6 +origin !  \ top most word in `forth` vocabulary
-  here 22 +origin !  \ `fence` init value \ XXX OLD obsolete
-  here 24 +origin !   \ `dp` init value
-  \ XXX TODO -- update also the names pointer
-  \ `voc-link` init value:
-  [ ' forth >body 8 + ] literal 26 +origin !  ;
-
-  \ size  ( -- u )
-  \
-  \ Size of the system.
-
-: size  ( -- u )  here 0 +origin -  ;
-
-  \ system  ( -- a len )
-  \
-  \ Prepare the system in order to save a copy.  Return its
-  \ start address and length, to be used as parameters for
-  \ saving the system to disk.
-
-: system  ( -- a len )  extend  0 +origin size 10 +  ;
-
-  \ turnkey  ( cfa -- a len )
-  \
-  \ Prepare the system in order to save a copy that will
-  \ execute the given cfa after the ordinary boot process.
-  \ Return its start address and length, to be used as
-  \ parameters for saving the system to disk.
-
-: turnkey  ( cfa -- a len )  boot defer! system  ;
+  end-code
 
   \ }}} =======================================================
   \ Double numbers {{{
 
-( du.r u.r du. )  \ ==doublenumbers==
+( ud.r ud. )  \ ==doublenumbers==
 
   \ Credits:
   \ Code adapted from Spectrum Forth-83.
 
-: du.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
-\ : u.r  ( n1 n2 -- )  >r 0 r> du.r  ;
-: du.  ( d -- )  0 du.r space  ;
+: ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+  \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
+: ud.  ( d -- )  0 ud.r space  ;
 
 ( d= d<> )
 
@@ -7415,6 +7418,31 @@ need -rot
   \ 200 unzx .   \ prints 1
   \ 30 unzx .    \ prints 2
   \ ----
+
+( associative-list )
+
+  \ Credits:
+  \ Based on code written by Wil Baden, published in:
+  \ Forth Dimensions Volume XVII number 4 page 11.
+
+  \ XXX UNDER DEVELOPMENT
+
+need set-current  need >order  need abort"
+need words
+
+: associative-list  ( "name" -- )  wordlist constant  ;
+
+: entry  ( ca len wid "name" -- )
+  current @ >r current !  create  s,  r> current !
+  does>  ( -- ca len )  ( pfa ) count  ;
+
+: item?  ( ca len -- 0 | cfa )
+  search-wordlist dup if  drop  then  ;
+
+: item  ( ca1 len1 wid -- ca2 len2 )
+  item? dup 0= abort" Not an item." execute  ;
+
+: items  ( wid -- )  >order words previous  ;
 
 ( begin-structure +field field: 2field: cfield: )
 
@@ -8121,16 +8149,23 @@ need body>name
   \
   \ }doc
 
-( wid-of )
+( wid-of wid> >wid )
 
   \ Credits:
   \ Code of `wid-of` adapted from eForth's `widof`.
 
-  \ : wid>voc  ( wid -- cfa )  @ >body  ; \ XXX TODO
+: wid>  ( wid -- cfa )  body>  ;
 
-: voc>wid  ( cfa -- wid )  >body  ;
+: >wid  ( cfa -- wid )  >body  ;
 
-: wid-of  ( "name" -- wid )  ' voc>wid  ;
+: wid-of  ( "name" -- wid )  ' >wid  ;
+
+( wordlist )
+
+  \ XXX TODO -- already written in the kernel
+
+: wordlist  ( -- wid )
+  ;
 
 ( set-current get-current trail >order )
 
@@ -8165,31 +8200,6 @@ need body>name
 
   \ Credits:
   \ Word from Gforth.
-
-( search-wordlist )
-
-  \ XXX -- still in the kernel because `header` uses it.
-  \ XXX TODO -- update to the final version of `(find-name)`.
-
-: search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
-  >r 2dup uppers r>
-  @ (find-name) dup ?exit  nip  ;
-
-  \ doc{
-  \
-  \ search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
-  \
-  \ Find the definition identified by the string _ca len_ in
-  \ the word list identified by _wid_. If the definition is not
-  \ found, return zero. If the definition is found, return its
-  \ _cfa_ and one (1) if the definition is immediate, minus-one
-  \ (-1) otherwise.
-  \
-  \ The search is case-insensitive.
-  \
-  \ Standard: Forth-94, Forth-2012.
-  \
-  \ }doc
 
   \ }}} =======================================================
   \ Random number generators {{{
@@ -11718,6 +11728,225 @@ rows 1- cconstant racket2-y
   \ XXX TODO -- show debug info
 
   keypress  again  ;
+
+  \ }}} =======================================================
+  \ Benchmarks {{{
+
+( bench marque )
+
+  \ Code adapted from:
+  \ Forth Dimensions Volume XVII number 4 page 11.
+
+  \ System-dependent timing routines.
+
+  \ Output are seconds.
+
+need frames0  need frames@
+
+: bench  ( -- )  frames0  ;
+  \ start timing
+
+: marque  ( -- )
+  frames@ 2dup d. ." frames (" 50 m/ . ." s) "  ;
+  \ stop timing and show the seconds
+
+;s
+
+  \ System-dependent timing routines.
+
+  \ Original code.
+
+  \ This is the ForthCMP/ZEN/ANS version,
+  \ output doubles are seconds since midnight.
+
+: gettime  ( -- sec min hour )  time&date 2drop drop  ;
+
+: t>b  ( sec min hour -- d )  60 * +  60 um*  rot s>d d+  ;
+
+: bench  ( -- d )  cr gettime t>b 2dup d.  ;
+  \ start timing
+
+: marque  ( d -- )  gettime t>b 2dup d. d- dnegate d.   ;
+  \ stop timing
+
+( byte-magazine-benchmark )
+
+  \ Code adapted from:
+  \ Forth Dimensions Volume XVII number 4 page 11.
+
+need bench  need marque
+
+8190 constant size  variable bflags size allot
+
+: c<- ( a b -- ) swap c!  ;
+
+: do-prime  ( -- )
+  bflags size 1 fill  0
+  size 0 do   bflags i + c@ if
+                i 2* 3 + dup i + bflags +
+                begin   dup size bflags +  u<
+                while   dup 0 c<- over +
+                repeat  drop drop 1+
+              then
+  loop  u. ." PRIMES" cr  ;
+
+-->
+
+( byte-magazine-benchmark )
+
+: byte-magazine-benchmark  ( -- )
+  ." 1000 iterations" cr
+  bench 100 0 do  do-prime  loop marque  ;
+
+  .( To run the BYTE Magazine benchmark type:) cr
+  .(   byte-magazine-benchmark)
+
+( interface-age-benchmark )
+
+  \ Code adapted from:
+  \ Forth Dimensions Volume XVII number 4 page 11.
+
+  \ Interface Age Benchmark, 1985-11-16.
+  \ This is the Interface Age benchmark
+  \ program described in Appendix D of the
+  \ forthCMP Manual.
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX FIXME crash because Forth-83 `leave` is not fully implemented
+
+need bench  need marque
+
+: (interface-age-benchmark)  ( n -- )
+  dup 2/ 1+ swap cr
+  1 do
+    dup i 1 rot 2 do
+      drop dup 0 i um/mod dup
+      0=  if  drop drop 1 leave  then
+      1 = if    drop 1
+          else  dup 0= if  drop 0 leave  then
+                0< 0= if  1  then
+          then
+    loop  if  .  else  drop  then
+  loop  drop cr  ;
+
+-->
+
+( interface-age-benchmark )
+
+: interface-age-benchmark  ( -- )
+  bench 5000 (interface-age-benchmark) marque  ;
+
+  .( To run the interface age benchmark type:) cr
+  .(   interface-age-benchmark  )
+
+( vector-loop-benchmark )
+
+  \ Code adapted from:
+  \ Forth Dimensions Volume XVII number 4 page 11.
+
+  \ M. Edward Borasky, 1995-07-30
+
+  \ Uses BEGIN ... UNTIL loops; all tested Forth have them
+  \ Some small Forth are missing DO ... LOOP or FOR ... NEXT
+
+need bench  need marque
+
+1000 constant vsize  \ vector size
+
+: vector  ( n -- )
+  \ make an array
+  \ compiling, reserve memory
+  create  cells allot
+  \ executing, compute address
+  does>  ( index -- address )  ( index pfa ) swap cells +  ;
+
+vsize vector vec1  vsize vector vec2  vsize vector vec3
+
+: vecload  ( -- )  \ put some stuff into the vectors
+  0 begin
+     dup vec1 dup !               \ vec1 gets its own address
+     dup vec2 dup negate swap !   \ vec2 gets negated address
+     1+ dup vsize =
+  until  drop  ;
+
+: loop0  ( -- )  \ null loop
+  0 begin  1+ dup vsize =  until  drop  ;
+
+-->
+
+( vector-loop-benchmark )
+
+: loop1  ( -- )  \ vector add
+  0 begin
+     dup vec1 @ over vec2 @ + over vec3 !  1+ dup vsize =
+  until  drop  ;
+
+: loop2 ( -- )  \ vector multiply
+  \ XXX FIXME crash!
+  0 begin
+     dup vec1 @ over vec2 @ * over vec3 !  1+ dup vsize =
+  until  drop  ;
+
+: loop3 ( -- ) \ vector divide
+  0 begin  dup vec1 @ over vec2 @ / over vec3 !  until  drop  ;
+
+: loop4 ( -- )  \ vector scale
+  0 begin
+     dup vec1 @ 10000 10000 */ over vec2 !  1+ dup vsize =
+  until  drop  ;
+
+-->
+
+( vector-loop-benchmark )
+
+1000 constant reps  \ repetitions
+
+: bench0  ( -- )  \ benchmark loop0
+  bench 0 begin  loop0 1+ dup reps =  until  drop marque
+  ." Vector No-Op" cr ;
+
+: bench1 ( -- ) \ benchmark loop1
+  bench 0 begin  loop1 1+ dup reps =  until  drop marque
+  ." Vector +    " cr ;
+
+: bench2 ( -- ) \ benchmark loop2 )
+  bench 0 begin  loop2 1+ dup reps =  until  drop marque
+  ." Vector *    " cr ;
+
+-->
+
+( vector-loop-benchmark )
+
+: bench3 ( -- )  \ benchmark loop3
+  bench 0 begin  loop3 1+ dup reps =  until  drop marque
+  ." Vector /    " cr ;
+
+: bench4 ( -- ) \ benchmark loop4
+  bench 0 begin  loop4 1+ dup reps =  until  drop marque
+  ." Vector */   " cr ;
+
+: vector-loop-benchmark  ( -- )
+  vecload  cr bench0 bench1 bench2 bench3 bench4  ;
+
+  .( To run the vector benchmarks type:) cr
+  .(   vector-loop-benchmark )
+
+( all-benchmarks )
+
+  \ Code adapted from:
+  \ Forth Dimensions Volume XVII number 4 page 11.
+
+need byte-magazine-benchmark
+need interface-age-benchmark 
+need vector-loop-benchmark 
+
+: all-benchmarks  ( -- )
+  byte-magazine-benchmark
+  interface-age-benchmark
+  vector-loop-benchmark  ;
+
+  .( To run all benchmarks type:) cr
+  .(   all-benchmarks)
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{

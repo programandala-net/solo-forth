@@ -15,7 +15,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B41
   
-  ; Last modified:  201511050203
+  ; Last modified:  201511052125
 
 ; ==============================================================
 ; Author and license
@@ -4747,7 +4747,7 @@ do_colon.end: ; XXX TMP for debugging
   dw false
 
 ; ----------------------------------------------
-  _colon_header noname_,':NONAME',immediate
+  _colon_header colon_no_name_,':NONAME',immediate
 
 
 ; doc{
@@ -7971,6 +7971,23 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header paren_vocabulary_,'(VOCABULARY)'
+
+; doc{
+;
+; (vocabulary)  ( -- )
+;
+; Create a the parameter field of a vocabulary just created.
+;
+; }doc
+
+  dw zero_,comma_ ; space for the nfa of the latest word defined in the vocabulary
+  dw here_ ; address of vocabulary link
+  dw voc_link_,fetch_,comma_ ; compile the current content of `voc-link`
+  dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header vocabulary_,'VOCABULARY'
 
 ; doc{
@@ -7983,19 +8000,20 @@ endif
 ;
 ; }doc
 
-  dw create_
-  dw zero_,comma_ ; space for the nfa of the latest word defined in the vocabulary
-  dw here_ ; address of vocabulary link
-  dw voc_link_,fetch_,comma_ ; compile the current content of `voc-link`
-  dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-
+  dw create_,paren_vocabulary_
   dw paren_semicolon_code_
-
 do_vocabulary:
   call do_does
-
   ; The next words are to be executed when the vocabulary is invoked.
   dw context_,store_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header wordlist_,'WORDLIST'
+
+  ; XXX UNDER DEVELOPMENT
+
+  dw colon_no_name_,paren_vocabulary_,semicolon_,to_body_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8373,7 +8391,7 @@ if 0
 endif
 
 ; ----------------------------------------------
-  _code_header dabs_,'DABS'
+  _code_header d_abs_,'DABS'
 
 ; doc{
 ;
@@ -8498,7 +8516,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header m_slash_,'M/'
+  _defer_header m_slash_,'M/',,s_m_slash_rem_
 
 ; doc{
 ;
@@ -8521,10 +8539,6 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- convert it to a deferred word
-
-  dw branch_,s_m_slash_rem_pfa ; XXX TMP
-
 ; ----------------------------------------------
   _colon_header s_m_slash_rem_,'SM/REM'
 
@@ -8543,34 +8557,53 @@ endif
 ;
 ; Standard: Forth-94, Forth-2012.
 
+; }doc
+
+  ; XXX Note: This implementation, from Z88 CamelForth, is
+  ; slower than Abersoft Forth's, but works better.
+
+; : sm/rem  ( d1 n1 -- n2 n3 )
+;   \ symmetric signed division
+;   2dup xor >r  \  sign of quotient
+;   over >r      \  sign of remainder
+;   abs >r dabs r> um/mod
+;   swap r> ?negate
+;   swap r> ?negate  ;
+
+  dw two_dup_,xor_,to_r_
+  dw over_,to_r_
+  dw abs_,to_r_,d_abs_,from_r_,u_m_slash_mod_
+  dw swap_,from_r_,question_negate_
+  dw swap_,from_r_,question_negate_
+  dw semicolon_s_
+
+if 0
+
+  _colon_header s_m_slash_rem2_,'SM/REM2'  ; XXX TMP
+
+  ; Credits:
+  ; Code from Abersoft Forth's `m/`.
+
+  ; XXX Note: This implementation, from Abersoft Forth, is
+  ; faster than Z88 CamelForth's, but has bugs.
+
 ; ----
-; : m/  ( d n1 -- n2 n3 )
+; : sm/rem  ( d n1 -- n2 n3 )
 ;   over >r >r dabs r@ abs u/mod
 ;   r> r@ xor ?negate swap
 ;   r> ?negate swap  ;
 ; ----
 
-; }doc
-
-  ; Credits:
-  ; Code from Abersoft Forth's `m/`.
+  ; XXX FIXME
+  ; 16777216. 50 m/  ( -- -1 -1 )
 
   dw over_,to_r_,to_r_
-  dw dabs_,r_fetch_,abs_,u_slash_mod_
+  dw d_abs_,r_fetch_,abs_,u_slash_mod_
   dw from_r_,r_fetch_,xor_,question_negate_,swap_
   dw from_r_,question_negate_,swap_
   dw semicolon_s_
 
-  ; XXX Note: The following implementation, from Z88 CamelForth,
-  ; is slower:
-
-  ; : sm/rem  ( d1 n1 -- n2 n3 )
-  ;   \ symmetric signed division
-  ;   2dup xor >r  \  sign of quotient
-  ;   over >r      \  sign of remainder
-  ;   abs >r dabs r> um/mod
-  ;   swap r> ?negate
-  ;   swap r> ?negate  ;
+endif
 
 ; ----------------------------------------------
   _colon_header star_,'*'
@@ -9134,12 +9167,12 @@ block.end:
 ;
 ; ----
 ; : read-block  ( n -- )
-;   <disk transfer-block  ;
+;   disk> transfer-block  ;
 ; ----
 ;
 ; }doc
 
-  dw from_disk_,transfer_block_
+  dw read_mode_,transfer_block_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9158,7 +9191,7 @@ block.end:
 ;
 ; }doc
 
-  dw to_disk_,transfer_block_
+  dw write_mode_,transfer_block_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9171,7 +9204,7 @@ block.end:
 ; The block-level disk read-write linkage.
 ; Transfer block _n_ to or from disk.
 ; The read or write mode must be previously set
-; by `>disk` or `<disk`.
+; by `>disk` or `disk>`.
 ;
 ; }doc
 
@@ -9203,7 +9236,7 @@ block.end:
 ; The sector-level disk read-write linkage.
 ; Transfer sector _x_ to or from disk.
 ; The read or write mode must be previously set
-; by `>disk` or `<disk`.
+; by `>disk` or `disk>`.
 ;
 ; x = sector to read or write
 ;     high byte = track 0..79, +128 if side 1
@@ -9229,13 +9262,14 @@ transfer_sector.command:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header paren_disk_,'(DISK)'
+  _colon_header transfer_mode_,'TRANSFER-MODE'
 
 ; doc{
 ;
-; (disk)  ( b -- )
+; transfer-mode  ( b -- )
 ; 
-; Set the given mode for `transfer-sector`.
+; Set read or write mode for `transfer-sector` and
+; `transfer-block`.
 ;
 ; b = 0x44 (read) or 0x45 (write)
 ;
@@ -9246,33 +9280,33 @@ transfer_sector.command:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header to_disk_,'>DISK'
+  _colon_header write_mode_,'WRITE-MODE'
 
 ; doc{
 ;
-; >disk  ( -- )
+; write-mode  ( -- )
 ;
-; Set the write mode for `transfer-sector`.
+; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
 ; }doc
 
   _literal 0x45 ; G+DOS write sector command
-  dw paren_disk_
+  dw transfer_mode_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header from_disk_,'<DISK'
+  _colon_header read_mode_,'READ-MODE'
 
 ; doc{
 ;
-; <disk  ( -- )
+; read-mode  ( -- )
 ;
-; Set the read mode for `transfer-sector`.
+; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
 ; }doc
 
   _literal 0x44 ; G+DOS read sector command
-  dw paren_disk_
+  dw transfer_mode_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -10043,7 +10077,7 @@ hash_s.begin:
   ; Save the high order part of d under d,
   ; to be used by `sign` to add a "-" sign to a negative number:
   dw swap_,over_
-  dw dabs_ ; convert d to its absolute value
+  dw d_abs_ ; convert d to its absolute value
   ; Convert the absolute value to ASCII text with proper sign:
   dw less_hash_
   dw hash_s_
