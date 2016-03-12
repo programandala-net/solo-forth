@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510210207
+\ Last modified: 201510212210
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,12 +33,12 @@
 
 ( ) \ scr 1 -- testing load screen
 
-2 load need frames0 need frames@
+  2 load 268 load
+  frames0
 
-frames0
-199 load
+  210 load 292 load 175 load 183 load 280 172 load 169 load
+  170 load 173 load 174 load
   \ case
-235 load 144 load 151 load 226 load 142 load 140 load 143 load
   \ z80-asm
   \ decode
   \ break-key?
@@ -46,7 +46,9 @@ frames0
   \ ascii-type
   \ hex.
   \ dump
-frames@ cr ." Frames " d. cr
+  \ wdump
+
+  frames@ cr ." Frames " d. cr
 
   \ }}} =======================================================
   \ Need {{{
@@ -299,7 +301,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 : error>ordinal  ( -n1 -- +n2 )
   \ Convert an error code to its ordinal position in the
   \ library.
-  \ -n1 =  -90..-1        \ Forth-2012 error codes
+  \ -n1 =  -90..-1        \ Standard error codes
   \        -285..-256     \ Solo Forth error codes
   \        -1024..-1000   \ G+DOS error codes
   \ +n2 =  1..146
@@ -4480,7 +4482,7 @@ variable old-voc-link
 [unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
 [unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
 
-[unneded] dec.  [defined] dec.  or
+[unneeded] dec.  [defined] dec.  or
   \ XXX TMP -- `dec.` is in the kernel
   ?\  create dec.  ( n -- )  10 c, base.
 
@@ -4674,8 +4676,14 @@ need case
 
 : decode  ( "name" -- )
   decode-usage
-  defined if  cfa>pfa  0 decode-level !  (decode)
-          else  drop  -13 error  then  ;
+
+  \ XXX OLD -- defined  ( "name" -- x 0 | cfa 1 | cfa -1 )
+  \ defined if  cfa>pfa  0 decode-level !  (decode)
+  \         else  drop  -13 throw  then  ;
+
+  \ XXX NEW -- defined  ( "name" -- ca len false | cfa b true )
+  defined 0= -13 ?throw
+  drop cfa>pfa  0 decode-level !  (decode)  ;
 
 ( list )
 
@@ -5025,7 +5033,8 @@ variable assert-level ( -- a )
 
   \ Equivalent to `0= if`, but faster.
 
-: unless  ( f -- )  postpone ?branch >mark 2  ; immediate
+: unless  ( f -- )
+  postpone ?branch >mark 2  ; immediate compile-only
 
   \ XXX TODO Alternative for when compiler security is removed:
   \ : unless  ( f -- )  postpone ?branch >mark  ; immediate
@@ -5062,30 +5071,37 @@ variable assert-level ( -- a )
 
   \ XXX OLD -- even simpler:
 
-  \ : ??  ( f -- )  0= if  r> cell+ >r  then  ;
+  \ : ??  ( f -- )  0= if  r> cell+ >r  then  ; compile-only
 
   \ XXX OLD -- with `state` check:
 
   \ : (??)  ( f -- )  0= if  r> cell+ >r  then  ;
-  \ : ??  ( -- )  ?compiling postpone (??)  ; immediate
+  \ : ??  ( -- )
+  \   ?compiling postpone (??)  ; immediate compile-only
 
   \ Complete version, after a comment by Anton Ertl in
   \ comp.lang.forth, 2015-10-19.
 
+  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \   postpone if
+  \   defined ( x 0 | cfa 1 | cfa -1 )
+  \   dup 0= -13 ?throw
+  \   1 = if  execute  else  compile,  then
+  \   postpone then
+  \   ;  immediate compile-only
+
 : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
   postpone if
-  parse-name find-name  ( x 0 | cfa 1 | cfa -1 )
-  dup 0= -13 ?throw
-  1 = if  execute  else  compile,  then
+  defined ( ca len false | cfa b true )
+  0= -13 ?throw
+  immediate?  if  execute  else  compile,  then
   postpone then
-  ;  immediate
-
-  \ XXX TODO -- add `compile-only` when available
+  ;  immediate compile-only
 
 ( don't )
 
 : don't  ( n1 n2 -- | n1 n2 )
-  2dup = if  2drop unnest unnest  then  ;
+  2dup = if  2drop unnest unnest  then  ; compile-only
 
   \ doc{
   \
@@ -5450,7 +5466,7 @@ code (step)  ( R: n -- n' )
 
   end-code
 
-: for  ( n -- )  postpone >r <mark  ; immediate
+: for  ( n -- )  postpone >r <mark  ; immediate compile-only
 
   \ doc{
   \
@@ -5463,7 +5479,8 @@ code (step)  ( R: n -- n' )
   \
   \ }doc
 
-: step  ( -- )  postpone (step) <resolve  ; immediate
+: step  ( -- )
+  postpone (step) <resolve  ; immediate compile-only
 
   \ doc{
   \
@@ -5489,7 +5506,8 @@ code (step)  ( R: n -- n' )
   \ Code copied from the example provided in the Forth-94
   \ documentation.
 
-0 constant case immediate  \ init count of ofs
+0 constant case  immediate compile-only
+  \ init count of ofs
 
 : of
   \ Compilation: ( #of -- orig #of+1 )
@@ -5498,19 +5516,19 @@ code (step)  ( R: n -- n' )
   postpone over  postpone =   \ copy and test case value
   postpone if                 \ add orig to control flow stack
   postpone drop               \ discards case value if =
-  r>  ; immediate
+  r>  ; immediate compile-only
 
 : endof
   \ Compilation: ( orig1 #of -- orig2 #of )
   \ Run-time: ( -- )
-  >r  postpone else  r>  ; immediate
+  >r  postpone else  r>  ; immediate compile-only
 
 : endcase
   \ Compilation:  ( orig1..orign #of -- )
-  \ Run-time: ( -- )
+  \ Run-time: ( x -- )
   \ XXX TODO use `?do` when available
   postpone drop  \ discard case value
-  0 do  postpone then  loop  ; immediate
+  0 do  postpone then  loop  ; immediate compile-only
 
 ( between-of )
 
@@ -5524,7 +5542,7 @@ need between
 
 : between-of  ( Compilation: -- of-sys )
               ( Run-time: x1 x2 x3 -- | x1 )
-  postpone (between-of) postpone of  ;  immediate
+  postpone (between-of) postpone of  ;  immediate compile-only
 
   \ Usage example:
 
@@ -5547,7 +5565,7 @@ need between
 
 : less-of  ( Compilation: -- of-sys )
            ( Run-time: x1 x2 -- | x1 )
-  postpone (less-of) postpone of  ;  immediate
+  postpone (less-of) postpone of  ;  immediate compile-only
 
   \ Usage example:
 
@@ -5570,7 +5588,7 @@ need between
 
 : greater-of  ( Compilation: -- of-sys )
               ( Run-time: x1 x2 -- | x1 )
-  postpone (greater-of) postpone of  ; immediate
+  postpone (greater-of) postpone of  ; immediate compile-only
 
   \ Usage example:
 
@@ -5593,7 +5611,7 @@ need within
 
 : within-of  ( Compilation: -- of-sys )
              ( Run-time: x1 x2 x3 -- | x1 )
-  postpone (within-of) postpone of  ; immediate
+  postpone (within-of) postpone of  ; immediate compile-only
 
   \ XXX TODO confirm the ranges in the example:
 
@@ -5615,7 +5633,8 @@ need within
   \ <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
   \ Date: Fri, 24 Jan 2014 02:08:22 -0800 (PST)
 
-: default-of  ( -- )  postpone dup postpone of  ; immediate
+: default-of  ( -- )
+  postpone dup postpone of  ; immediate compile-only
 
   \ Usage example:
 
@@ -5636,7 +5655,7 @@ need within
 
 : or-of  ( Compilation: -- of-sys )
          ( Run-time: x1 x2 x3 -- | x1 )
-  postpone (or-of) postpone of  ; immediate
+  postpone (or-of) postpone of  ; immediate compile-only
 
   \ Usage example:
 
@@ -5820,7 +5839,7 @@ variable #options
   #options off                \ number of options is 0 so far
   compile (options)           \ compile run time handler
   >mark >mark >mark  ( a1 a2 a3 )
-  postpone [  ; immediate
+  postpone [  ; immediate compile-only
 
 : option  ( x "name" -- )
   \ Compile an option _x_ and the cfa of its action "name".
@@ -6391,7 +6410,7 @@ need -rot
   \ made, then the number of entries, ie max index + 1 is
   \ returned.  This is the inverse of an array.
 
-( begin-structure end-structure +field field: 2field: cfield: )
+( begin-structure +field field: 2field: cfield: )
 
   \ Forth-2012.
 
@@ -7363,7 +7382,7 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- words for defining the z80 instructions)
+( z80-asm -- defining words for z80 instructions)
 
 : m1  ( 8b "name" -- )
   \ 1-byte opcode without parameters.
@@ -7391,7 +7410,7 @@ DD constant ix-op  FD constant iy-op
 
   -->
 
-( z80-asm -- words for defining the z80 instructions)
+( z80-asm -- defining words for z80 instructions)
 
 : m7  ( 8b "name" -- )
   \ Bit manipulation of registers.
@@ -7413,7 +7432,7 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- words for defining the z80 instructions)
+( z80-asm -- defining words for z80 instructions)
 
 need -rot
 
@@ -8903,7 +8922,7 @@ also forth
   begin
     03FF r# @ <
     \ XXX FIXME -- `00 error` ?
-    if  top pad here c/l 1+ cmove #-270 error  then  1line
+    if  top pad here c/l 1+ cmove #-270 throw  then  1line
   until  ;
   \ Search for a match to the string at `pad`, from the cursor
   \ position until the end of screen.  If no match found issue
@@ -8971,7 +8990,7 @@ only forth definitions decimal
   \ }}} =======================================================
   \ Sample game: Siderator 2 {{{
 
-.( siderator )
+( siderator )
 
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO -- less stars!

@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510210235
+version_release:  equ 201510212210
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -232,7 +232,8 @@ paren_dot_quote: equ true
   ; XXX TODO
   ; XXX TMP
 
-find_name_version: equ 2
+find_name_version: equ 3
+  ; XXX UNDER DEVELOPMENT (version 3)
   ; There are 4 versions of `find-name`, with different output.
   ; The currently used version is 2.
   ; the new version is 3, needed to implement the compile-only
@@ -358,12 +359,13 @@ border_port:  equ 0xFE
 ; ----------------------------------------------
 ; Header macros
 
-immediate: equ 1 ; used as optional parameter
+immediate:    equ precedence_mask
+compile_only: equ compile_only_mask
 
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa \ XXX OLD
 
-_header: macro _base_label,_name,_is_immediate
+_header: macro _base_label,_name,_flags
 
   ; In dictionary:
 
@@ -383,10 +385,11 @@ _header: macro _base_label,_name,_is_immediate
   _base_label##nfa: ; name field address
 
   ; Length byte with optional precedence bit:
-  if nul _is_immediate
+
+  if nul _flags
     db _address_after_name-_name_address
   else
-    db _address_after_name-_name_address+precedence_mask
+    db _address_after_name-_name_address+_flags
   endif
 
   _name_address: equ $
@@ -407,84 +410,84 @@ _header: macro _base_label,_name,_is_immediate
 
   endm
 
-_code_header: macro _base_label,_name,_is_immediate
+_code_header: macro _base_label,_name,_flags
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw _base_label##pfa ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_code_alias_header: macro _base_label,_name,_is_immediate,_alias
+_code_alias_header: macro _base_label,_name,_flags,_alias
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw _alias##pfa ; code field
 
 ; XXX TODO
-; _raw_code_alias_header: macro _base_label,_name,_is_immediate,_alias
+; _raw_code_alias_header: macro _base_label,_name,_flags,_alias
 
 ;   ; Special macro used to create alias of code words that don't
 ;   ; have a parameter field, e.g. `noop`.
 
-;   _header _base_label,_name,_is_immediate
+;   _header _base_label,_name,_flags
 ;   dw _alias ; code field
 
 ;_base_label##pfa: equ _alias##pfa ; XXX TODO
 
   endm
 
-_colon_header: macro _base_label,_name,_is_immediate
+_colon_header: macro _base_label,_name,_flags
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw do_colon ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_user_variable_header: macro _base_label,_name,_is_immediate
+_user_variable_header: macro _base_label,_name,_flags
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw do_user ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_does_header: macro _base_label,_name,_is_immediate,_runtime_routine
+_does_header: macro _base_label,_name,_flags,_runtime_routine
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
 
   dw _runtime_routine ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_constant_header: macro _base_label,_name,_is_immediate
+_constant_header: macro _base_label,_name,_flags
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw do_constant ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_c_constant_header: macro _base_label,_name,_is_immediate
+_c_constant_header: macro _base_label,_name,_flags
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw do_c_constant ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_variable_header: macro _base_label,_name,_is_immediate
+_variable_header: macro _base_label,_name,_flags
 
-  _header _base_label,_name,_is_immediate
+  _header _base_label,_name,_flags
   dw do_create ; code field
   _base_label##pfa: ; parameter field address
 
   endm
 
-_two_variable_header: macro _base_label,_name,_is_immediate
+_two_variable_header: macro _base_label,_name,_flags
 
-  _variable_header _base_label,_name,_is_immediate
+  _variable_header _base_label,_name,_flags
 
   endm
 
@@ -1625,7 +1628,7 @@ endif
   ; XXX WARNING -- state-smart
 
   dw parse_ ; ( ca len )
-  dw compiling_question
+  dw compiling_question_
   dw zero_branch_,parse_string.interpreting
   ; compiling
   dw s_literal_
@@ -2733,6 +2736,42 @@ paren_find_name.ip_backup: equ $+1
 endif
 
 ; ----------------------------------------------
+if find_name_version=3
+
+  _colon_header compile_only_question_,'COMPILE-ONLY?'
+
+; doc{
+;
+; compile-only?  ( b -- wf )
+;
+; Does the length byte _b_ of a word belongs to a compile-only
+; word?
+;
+; }doc
+
+  _literal compile_only_mask
+  dw and_,zero_not_equals_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _colon_header immediate_question_,'IMMEDIATE?'
+
+; doc{
+;
+; immediate?  ( b -- wf )
+;
+; Does the length byte _b_ of a word belongs to an immediate
+; word?
+;
+; }doc
+
+  _literal precedence_mask
+  dw and_,zero_not_equals_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
 
 ; doc{
@@ -3016,7 +3055,7 @@ find_name.do:
   ; valid vocabulary in the search order
   dw fetch_ ; ( ca len nfa )
 ;  _chk 'find-name -- before (find-name)' ; XXX INFORMER
-  dw paren_find_name2_,question_dup_ ; ( ca len 0 | cfa b true true ) word found?
+  dw paren_find_name_,question_dup_ ; ( ca len 0 | cfa b true true ) word found?
   dw zero_branch_,find_name.loop
 ;  _chk 'find-name -- found' ; XXX INFORMER
   dw unloop_,exit_
@@ -4774,7 +4813,6 @@ store.de_into_hl_pointer:
 ; ----------------------------------------------
   _colon_header colon_,':',immediate
 
-  dw question_executing_
   dw store_csp_
   dw header_,right_bracket_
   dw paren_semicolon_code_
@@ -4799,7 +4837,6 @@ do_colon.end: ; XXX TMP for debugging
 
   ; XXX TODO move to the disk? problem: do_colon
 
-  dw question_executing_
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
@@ -4808,7 +4845,7 @@ do_colon.end: ; XXX TMP for debugging
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header semicolon_,';',immediate
+  _colon_header semicolon_,';',immediate+compile_only
 
   dw question_csp_
   dw compile_,semicolon_s_
@@ -5654,7 +5691,7 @@ two_comma.allot:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header compile_comma_,'COMPILE,'
+  _colon_header compile_comma_,'COMPILE,',compile_only
 
 ; doc{
 ;
@@ -5662,7 +5699,9 @@ two_comma.allot:
 ;
 ; }doc
 
-  dw question_compiling_,comma_
+  ; XXX TODO alias
+
+  dw comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6153,7 +6192,7 @@ cfa_to_nfa.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header compiling_question,'COMPILING?'
+  _colon_header compiling_question_,'COMPILING?'
 
 ; doc{
 ;
@@ -6172,6 +6211,8 @@ cfa_to_nfa.begin_1:
 ; ----------------------------------------------
   _colon_header question_compiling_,'?COMPILING'
 
+  ; XXX TODO move to the library
+
 ; doc{
 ;
 ; ?compiling  ( -- )
@@ -6183,12 +6224,12 @@ cfa_to_nfa.begin_1:
 ;
 ; }doc
 
-  dw compiling_question,zero_equals_
+  dw compiling_question_,zero_equals_
   _question_throw error.compilation_only
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header executing_question,'EXECUTING?'
+  _colon_header executing_question_,'EXECUTING?'
 
 ; doc{
 ;
@@ -6205,7 +6246,16 @@ cfa_to_nfa.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
+if 0 ; XXX OLD  -- not needed
+
   _colon_header question_executing_,'?EXECUTING'
+
+  ; XXX TODO use a bit in the length byte instead?, say
+  ; `execute-only`? But there's no free bit. The "smudge" bit
+  ; and `smudge` may be substituted with `reveal`, that stores
+  ; the length byte into its place...
+
+  ; XXX TODO move to the library
 
 ; doc{
 ;
@@ -6218,9 +6268,11 @@ cfa_to_nfa.begin_1:
 ;
 ; }doc
 
-  dw compiling_question
+  dw compiling_question_
   _question_throw error.execution_only
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
 if 1
@@ -6253,7 +6305,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header compile_,'COMPILE'
+  _colon_header compile_,'COMPILE',compile_only
 
 ; doc{
 ;
@@ -6264,7 +6316,6 @@ endif
 ;
 ; }doc
 
-  dw question_compiling_
   dw from_r_,dup_,cell_plus_,to_r_,fetch_,compile_comma_
   dw semicolon_s_
 
@@ -6283,6 +6334,14 @@ endif
 ;
 ; }doc
 
+if find_name_version=0 or find_name_version=1 ; XXX TMP
+
+  .error 'Code missing in `postpone`'
+
+endif
+
+if find_name_version=2 ; XXX TMP
+
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   dw dup_,question_defined_ ; error if not found
   dw zero_less_than_ ; non-immediate word?
@@ -6292,6 +6351,23 @@ endif
 postpone.end:
   dw compile_comma_
   dw semicolon_s_
+
+endif
+
+if find_name_version=3 ; XXX TMP
+
+  dw defined_ ; ( ca len false | cfa b true )
+  dw question_defined_ ; error if not found
+  ; ( cfa b )
+  dw immediate_question_
+  dw question_branch_,postpone.end
+  ; Non-immediate word.
+  dw compile_,compile_ ; compile `compile`
+postpone.end:
+  dw compile_comma_ ; compile cfa
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header left_bracket_,'[',immediate
@@ -6590,7 +6666,7 @@ if 0 ; XXX OLD
 
   _literal '"'
   dw parse_ ; ( ca len )
-  dw compiling_question
+  dw compiling_question_
   dw zero_branch_,dot_quote.interpreting
   ; Compiling.
   dw compile_,paren_dot_quote_,s_comma_
@@ -6868,7 +6944,7 @@ accept.end:
   dw last_block_question_
   dw question_branch_,next_block.end ; if not, branch
   ; Last block of the screen.
-  dw question_executing_ ; error if not executing ; XXX TODO -- why this?
+  ; dw question_executing_ ; error if not executing ; XXX OLD -- why this?
 next_block.end:
   dw semicolon_s_
 
@@ -7246,8 +7322,13 @@ uppers.do:
   ; XXX TODO -- this may be moved to the library, but it's
   ; needed by `needed`.
 
+if find_name_version=3
+  dw find_name_,nip_,nip_,zero_equals_
+  dw semicolon_s_
+else
   dw find_name_,nip_,zero_equals_
   dw semicolon_s_
+endif
 
 ; ----------------------------------------------
   _code_header place_,'place'
@@ -7624,7 +7705,7 @@ search.string_1_addr equ $+1
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header c_literal_,'CLITERAL',immediate
+  _colon_header c_literal_,'CLITERAL',immediate+compile_only
 
 ; doc{
 ;
@@ -7640,18 +7721,17 @@ search.string_1_addr equ $+1
   ; XXX TODO -- move to the library?
 
   if 1 ; XXX OLD
-    dw compiling_question
+    dw compiling_question_
     dw zero_branch_,c_literal.end
     dw compile_,c_lit_,c_comma_
 c_literal.end:
   else ; XXX NEW
-    dw question_compiling_
     dw compile_,c_lit_,comma_
   endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header literal_,'LITERAL',immediate
+  _colon_header literal_,'LITERAL',immediate+compile_only
 
 ; doc{
 ;
@@ -7666,18 +7746,17 @@ c_literal.end:
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw compiling_question
+    dw compiling_question_
     dw zero_branch_,literal.end
     dw compile_,lit_,comma_
 literal.end:
   else ; XXX NEW
-    dw question_compiling_
     dw compile_,lit_,comma_
   endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header two_literal_,'2LITERAL',immediate
+  _colon_header two_literal_,'2LITERAL',immediate+compile_only
 
 ; doc{
 ;
@@ -7690,13 +7769,12 @@ literal.end:
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw compiling_question
+    dw compiling_question_
     dw zero_branch_,two_literal.end
     dw swap_,literal_,literal_
 two_literal.end:
   else ; XXX NEW
     ; XXX TODO -- dlit
-    dw question_compiling_
     dw swap_,literal_,literal_
   endif
   dw semicolon_s_
@@ -7814,7 +7892,7 @@ if find_name_version!=3 ; XXX TMP
   ; Found ( cfa 1 | cfa -1 )
   ; Immediate word:     ( cfa  1 )
   ; Non-immediate word: ( cfa -1 )
-  dw compiling_question
+  dw compiling_question_
   ; ( cfa 1 state | cfa -1 state )
   ; Compiling an immediate word:     ( cfa  1 -1 )
   ; Compiling a non-immediate word:  ( cfa -1 -1 )
@@ -7827,18 +7905,16 @@ else
   ; XXX UNDER DEVELOPMENT
 
   ; Found ( cfa b )
-  dw dup_ 
-  _literal compile_only_mask_
-  dw and_,zero_not_equals_ ; ( cfa b compile-only? )
-  dw executing_question ; ( cfa b compile-only? executing? )
+  dw dup_,compile_only_question_ ; ( cfa b compile-only? )
+  dw executing_question_ ; ( cfa b compile-only? executing? )
   dw and_ ; executing a compile-only word?
   _literal -14
   dw question_throw_ ; is so, throw error -14
 
   ; ( cfa b )
-  _literal precedence_mask_
+  _literal precedence_mask
   dw and_,zero_equals_ ; ( cfa b non-immediate? )
-  dw compiling_question ; ( cfa b non-immediate? compiling? )
+  dw compiling_question_ ; ( cfa b non-immediate? compiling? )
   dw and_ ; compiling a non-immediate word?
   dw zero_branch_,interpret.execute ; else, execute it
 
@@ -8001,7 +8077,7 @@ quit.do:
   ; incremented at the end of `interpret`? The reason is
   ; `(load)` finishes and restores `blk` from the return stack!
 
-  dw compiling_question
+  dw compiling_question_
   dw question_branch_,quit.do
 
   dw paren_dot_quote_
@@ -9517,8 +9593,7 @@ if find_name_version=0 ; XXX TMP
 ;
 ; }doc
 
-  dw parse_name_  ; ( ca1 len1 )
-  dw find_name_
+  dw parse_name_,find_name_ 
   dw semicolon_s_
 
 endif
@@ -9531,8 +9606,7 @@ if find_name_version=1 ; XXX TMP
 ;
 ; }doc
 
-  dw parse_name_  ; ( ca1 len1 )
-  dw find_name_
+  dw parse_name_,find_name_ 
   dw semicolon_s_
 
 endif
@@ -9556,8 +9630,30 @@ if find_name_version=2 ; XXX TMP
 ;
 ; }doc
 
-  dw parse_name_  ; ( ca1 len1 )
-  dw find_name_   ; ( x 0 | cfa 1 | cfa -1 )
+  dw parse_name_,find_name_ 
+  dw semicolon_s_
+
+endif
+
+if find_name_version=3 ; XXX TMP
+
+; doc{
+;
+; defined  ( "name" -- ca len false | cfa b true )
+;
+; Parse "name" and find its definition.  If the definition is
+; not found after searching all the vocabularies in the search
+; order, return _ca len_ and _false_.  If the definition is found,
+; return its _cfa_, its length byte _b_ and _true_.
+;
+; ----
+; : defined  ( "name" -- ca len false | cfa b true )
+;   parse-name find-name  ;
+; ----
+;
+; }doc
+
+  dw parse_name_,find_name_ 
   dw semicolon_s_
 
 endif
@@ -9647,6 +9743,23 @@ if find_name_version=2 ; XXX TMP
 
 endif
 
+if find_name_version=3 ; XXX TMP
+
+; doc{
+;
+; [defined]  ( "name" -- wf )
+;
+; ----
+; : [defined]  ( "name" -- wf )
+;   defined nip 0<>  ; immediate
+; ----
+;
+; }doc
+
+  dw defined_,nip_,nip_
+  dw semicolon_s_
+
+endif
 ; ----------------------------------------------
   _colon_header bracket_undefined_,'[UNDEFINED]',immediate
 
@@ -9683,8 +9796,18 @@ endif
 ;
 ; }doc
 
+if find_name_version=3
+
+  dw defined_,question_defined_
+  dw drop_
+  dw semicolon_s_
+
+else
+
   dw defined_,question_defined_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header bracket_tick_,"[']",immediate
@@ -9706,7 +9829,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header begin_,'BEGIN',immediate
+  _colon_header begin_,'BEGIN',immediate+compile_only
 
 ; doc{
 ;
@@ -9718,7 +9841,6 @@ endif
 ;
 ; }doc
 
-  dw question_compiling_ ; error if not compiling
   dw backward_mark_ ; address to compute the backward branch
 if 1 ; fig_compiler_security
   dw one_ ; error checking number
@@ -9726,9 +9848,8 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header then_,'THEN',immediate
+  _colon_header then_,'THEN',immediate+compile_only
 
-  dw question_compiling_ ; error if not compiling
 if 1 ; fig_compiler_security
   dw two_,question_pairs_ ; check for nesting error
 endif
