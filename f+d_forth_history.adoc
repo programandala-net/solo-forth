@@ -111,3 +111,12 @@ instead of the pfa.
 Fix: there was an old relative branch calculation in `then`.
 
 Fix: `cliteral`, recently implemented, used `comma`!
+
+Fix: `+buf` used `clit` for the new `b/buf 4 + `, that is greater than
+0xFF! Now the blocks in disk work fine.
+
+Change: The first six user variables, unused, are moved to the end of
+the space. All the related pointers are apdated. Conditional
+compilation is used, just in case. The final goal is to reorganize the
+parameter area, removing all unnecessary fig-Forth stuff.
+

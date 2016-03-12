@@ -3114,6 +3114,7 @@ paren_line_lfa:
 paren_line_cfa:
   defw do_colon
 paren_line_pfa:
+  ; XXX FIXME -- `C/L` should be used instead of the compiled literals (0x0040):
   defw to_r_cfa
   defw lit_cfa,0x0040
   defw b_slash_buf_cfa

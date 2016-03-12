@@ -10,4 +10,7 @@ compilation of sources.
 
 Fix `exit`, `?exit`, `rdrop`...
 
+Fix: `begin` structures produce compilation errors in screens, but not
+in the terminal!
 
+Still strange problems with the stacks. 

@@ -70,6 +70,16 @@
 \ Error #30:
 \ Error #31:
 
+( debug ) \ scr 6
+
+: zx  ( -- )
+  cls
+  begin   1
+          cr depth . sp@ u.
+          key drop
+  again ;
+  \ ?terminal until  ;
+
 ( -rot )
 
   \ 2015-06-05: Copied from the Afera library
@@ -205,6 +215,104 @@ decimal  -->
     8 + loop
   else  2drop  then  drop  ;
 
-  \ XXX TMP -- a new syntax file will be needed:
-  \ vim: filetype=abersoftforthafera
+( decode -- variables, indentation and pause control )
 
+  \ 2015-06-05: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html).
+
+forth definitions decimal
+
+0 variable decode-level    \ depth of nesting
+0 variable decode-address  \ in the word being decoded
+
+: indent  ( -- )
+  cr decode-address @ u. decode-level @ 2 * spaces  ;
+
+: indent+  ( -- )  1 decode-level +! indent ;
+
+-->
+
+( decode -- special cases )
+
+: decode-compile  ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
+
+: decode-literal  ( a1 -- a2 )  2+ dup @ .  ;
+
+: decode-branch  ( a1 -- a2 )
+  decode-literal  ."  \ to " dup dup @ + u.  ;
+
+: decode-dot-quote  ( a1 -- a2 )
+  2+ dup count type  dup c@ + 1 -  ;
+
+-->
+
+( decode -- special cases dispatcher )
+
+: decode-special  ( a1 -- a1 | a2 )
+  dup @
+  case
+    [ ' compile pfa>cfa ] literal of  decode-compile    endof
+    [ ' lit     pfa>cfa ] literal of  decode-literal    endof
+    [ ' branch  pfa>cfa ] literal of  decode-branch     endof
+    [ ' 0branch pfa>cfa ] literal of  decode-branch     endof
+    [ ' (loop)  pfa>cfa ] literal of  decode-branch     endof
+    [ ' (+loop) pfa>cfa ] literal of  decode-branch     endof
+    [ ' (.")    pfa>cfa ] literal of  decode-dot-quote  endof
+  endcase  ; 
+
+-->
+
+( decode -- checks of the main code )
+
+: decode-end?  ( cfa -- f )
+  \ is the given cfa the end of a definition?
+  dup  ' ;s pfa>cfa =  swap ' (;code) pfa>cfa =  or  ;
+
+: colon-pfa?  ( pfa -- f )
+  \ is the given pfa a colon definition?
+  pfa>cfa @ ' : pfa>cfa @ =  ;
+
+-->
+
+( decode -- main code )
+
+: (decode)  ( pfa --- )
+
+  \ decode the definition at the given pfa.
+
+  dup colon-pfa? if
+    dup pfa>nfa decode-address ! indent  ." : " dup pfa>nfa id.
+    begin   ( pfa+n ) dup decode-address !
+            dup @ dup ( pfa+n cfa cfa ) decode-end? 0=
+            \ ( pfa+n cfa f )
+    while  \ high level & not end of colon definition
+      \ ( pfa+n cfa )
+      ( pfa+n cfa ) 2+ ( pfa+n pfa' ) dup indent+  pfa>nfa id.
+      key case  [char] q  of  sp! quit  endof \ q
+                      bl  of  drop      endof \ space
+                                 swap recurse \ default
+          endcase  decode-special
+      2+  -1 decode-level +!
+    repeat  indent 2+ pfa>nfa id. \ show the last word
+  else  ." Not a colon definition."  then  drop  ;  -->
+
+( decode -- interface )
+
+: decode-usage  ( -- )
+     \  <------------------------------>
+  cr ." Keys: space=more, q=quit, other=deeper." cr  ;
+
+: decode  ( "name" -- )
+  decode-usage
+  -find if    drop 0 decode-level ! (decode)
+        else  ." Not found"  then  ;
+
+( index )
+
+: index  ( n1 n2 -- )
+  1+ swap do
+    cr i 3 .r space 0 i .line
+    ?terminal if leave then
+  loop  ;
+
+  \ vim: filetype=fplusdforth
