@@ -195,6 +195,7 @@ Other options:
 | set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
 
 | at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
+| at-xy      | ?at        | gat-xy          | ?gat            | ghome
 | at         | at@        | at-pixel        | at-pixel@       | home-pixel
 | at         | at@        | graphic-at      | graphic-at@     | graphic-home
 | at         | at@        | xy-at           | xy-at@          | xy-home
@@ -219,6 +220,19 @@ characters, unlike the implementation by Andy Jenkinson.
 .2015-09-08:
 
 Fix: `bye` resets the system when `mode42` is on. Move `mode32` to the
-kernel and set it before going back to BASIC.
+kernel and set it before going back to BASIC. Restore the previous
+mode after a warm entry.
+
+.2015-09-11:
+
+Idea: screen modes table?
+
+- 0: 32 cpl original (ROM routines)
+- 1: 32 cpl improved (bold, italic).
+- 3: 36 cpl
+- 4: 42 cpl
+- 5: 51 cpl
+- 6: 64 cpl
+
 
 

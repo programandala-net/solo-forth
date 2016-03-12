@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509110058
+\ Last modified: 201509111730
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -31,10 +31,29 @@
 
 ( ) \ scr 1 -- testing load screen
 
-3 load
-require decode
-require dump
-decode dump
+  \ XXX TMP
+
+[defined] require  ?\ 2 load
+require source  require /string  require place
+
+: text  ( "text<eol>" -- )
+  pad c/l 1+ blank
+  source span @ c/l
+  cr ." before min min: <" .s ." >"
+  min min
+  cr ." after min min: <" .s ." >"
+  >in @ span @ min
+  cr ." >in: <" .s ." >"
+  /string
+  cr ." after /string: <" .s ." >"
+  
+  \ dup >r
+  \ pad place
+  \ r> >in +!
+  ;
+
+  \ dup cr ." span: " . ."  >in:" >in ?
+  \ cr ." after /string: <" .s ." >"
 
   \ }}} =======================================================
   \ Require {{{
@@ -68,16 +87,16 @@ variable last-locatable  scr/disk last-locatable !
 
 ( require ) \ scr 3
 
-: ?located  ( screen | false -- )  dup 0= 29 ?error ;
+: ?located  ( screen | false -- )  dup 0= 29 ?error  ;
 
 : from  ( "name" -- )  locate ?located first-locatable !  ;
   \ Locate the given _name_ and set its screen the first one
   \ `require` will search from.
 
-: do-required  ( ca len -- )  located ?located load  ;
+: rerequired  ( ca len -- )  located ?located load  ;
 
-: do-require  ( "name" -- )
-  parse-name save-string do-required  ;
+: rerequire  ( "name" -- )
+  parse-name save-string rerequired  ;
 
 : required  ( ca len -- )
 
@@ -87,12 +106,12 @@ variable last-locatable  scr/disk last-locatable !
 
   \ XXX OLD
   \ 2dup undefined?
-  \   if  2dup do-required  then
+  \   if  2dup rerequired  then
   \ 2dup undefined? warnings @ and
   \   if  type 28 warning exit  then  2drop  ;
 
   \ XXX TMP
-  2dup undefined?  if  do-required  else  2drop  then  ;
+  2dup undefined?  if  rerequired  else  2drop  then  ;
 
 : require  ( "name" -- )
   parse-name save-string required  ;
@@ -292,7 +311,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
 
 ( n>r )  \ ==returnstack==
 
-require z80-asm 
+require z80-asm
 
 code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
 
@@ -340,21 +359,28 @@ require n>r
 [defined] sys-chans ?\ 23631 constant sys-chans
 [defined] sys-chars ?\ 23606 constant sys-chars
 
-: channels!  ( a -- )
+: mode-output  ( a -- )
   \ Associate the output
   \ routine at _a_ to the system channels "K", "S" and "P".
   sys-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
 
 : set-mode  ( a1 a2 -- )
   \ Set the system font to _a1_ and associate the output
-  \ routine at _a2_ to the system channels "K", "S" and "P".
-  sys-chars !  channels!  ;
+  \ routine at _a2_ to the system channels.
+  sys-chars !  mode-output  ;
 
+variable current-mode
+  \ cfa of the current screen mode
 
-: mode32  ( -- ) 
+: mode32  ( -- )
+  [ latest nfa>cfa ] literal current-mode !
   2548 15360 set-mode
   ['] (mode32-at-xy) ['] at-xy defer!  ;
-  \ Set the default printing mode, 32 cpl and the ROM font.
+  \ Set the default printing mode: the 32 cpl ROM routine, the
+  \ ROM font, and the special code for `at-xy` (required to
+  \ use the whole screen).
+
+' mode32 current-mode !
 
 ( mode42 )
 
@@ -364,7 +390,7 @@ require n>r
   \ http://microhobby.org/numero066.htm
   \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
 
-  \ XXX TMP
+  \ XXX TODO -- integrate the driver
 
 require mode32  require <file-as-is
 
@@ -374,8 +400,15 @@ s" ea5aky.f42" <file-as-is ?error
 drive!
   \ Load the driver and the font.
 
-: mode42  ( -- )  63900 [ 64600 256 - ] literal set-mode ;
-  \ Set the 42 cpl printing mode.
+[defined] (at-xy)
+?\ : (at-xy)  ( col row -- )  22 emit swap emit emit  ;
+
+: mode42  ( -- )
+  [ latest nfa>cfa ] literal current-mode !
+  63900 [ 64600 256 - ] literal set-mode
+  ['] (at-xy) ['] at-xy defer!  ;
+  \ Set the 42 cpl printing mode: the driver, the font
+  \ and `at-xy`.
 
 ( mode64 )
 
@@ -386,8 +419,9 @@ drive!
   \ Modified and adapted to Solo Forth by Marcos Cruz.
 
   \ XXX OLD temporary first version
-  \ The driver and the font are in a disk file
-  \ that is loaded at 60000.
+  \ First the driver and the font were in a disk file
+  \ that is loaded at 60000. Later the font was compiled
+  \ into the dictionary.
 
 require mode32  require <file-as-is  require 4x8font
 
@@ -396,20 +430,25 @@ s" 4x8fd.tap" <file-as-is ?error
 drive!
   \ Load the driver and the font.
 
-: (mode64-at-xy)  ( col row -- )  22 emit swap emit emit  ;
+[defined] (at-xy)
+?\ : (at-xy)  ( col row -- )  22 emit swap emit emit  ;
 
 : mode64  ( -- )
+  [ latest nfa>cfa ] literal current-mode !
   60000 4x8font set-mode
-  ['] (mode64-at-xy) ['] at-xy defer!  ;
-  \ Set the 64 cpl printing mode.
+  ['] (at-xy) ['] at-xy defer!  ;
+  \ Set the 64 cpl printing mode: the driver, the font
+  \ and `at-xy`.
 
 ( mode64 )
 
   \ XXX NEW
-  \ XXX TODO
+  \ XXX TODO -- integrate the driver
+
 
 require z80-asm
 
+  \ XXX TODO use common variables for all modes
 create mode64-at-flag 0 c,
 create mode64-column 0 c,
 create mode64-row 0 c,
@@ -427,7 +466,8 @@ code (mode64-emit)  ( -- )
 
   end-code
 
-: mode64  ( -- )  mode64-chars @ (mode64-emit) set-mode ;
+: mode64  ( -- )  (mode64-emit) mode64-chars @ set-mode
+  ['] (at-xy) ['] at-xy defer!  ;
 
 ( 4x8font )
 
@@ -436,7 +476,7 @@ code (mode64-emit)  ( -- )
   \ Top row is always zero and not stored.
 
   \ Credits:
-  \ Author of this 4x8 font: Andrew Owen.
+  \ Author of the font: Andrew Owen.
   \ Published in the World of Spectrum forum:
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
 
@@ -507,7 +547,7 @@ decimal
 
 ( spectrum-mode )
 
-  \ XXX TMP
+  \ XXX OLD
 
 : spectrum-mode  ( -- )
   \ Set the Spectrum printing mode. This is the default.
@@ -2217,10 +2257,19 @@ code ambulance  ( n -- )
 
 : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
-( source )
+( source command )
 
 : source  ( -- a len )  \ ANS Forth
   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+
+require source  require /string
+
+: command  ( "text<eol>" -- ca len )
+  source span @ min c/l min  >in @ span @ min /string
+  dup >in +! save-string  ;
+  \ Get the text string until the end of line.
+  \ Note: this is possibly useful factor of the editor's
+  \ `text`.
 
   \ }}} =======================================================
   \ Operators {{{
@@ -2428,7 +2477,7 @@ hex
 
 decimal
 
-: --hook-codes-- ;
+: --hook-codes--  ;
 
 ( ior>error ?dos-error )
 
@@ -3040,7 +3089,7 @@ require break-key?  require hex.  require ascii-type
 ( decode )
 
   \ Credits:
-  \ Code adapted and improved from Afera.
+  \ Code adapted and improved from Afera's `DECODE`.
 
   \ Variables, indentation and pause control
 
@@ -3223,7 +3272,12 @@ require break-key?
 
 ( where )
 
+  ; XXX FIXME -- terminal input errors are not managed;
+  ; the screen of the last error is shown insted
+
 : where  ( -- )
+  \ Print screen and line numbers and a picture of where the
+  \ last error occurred.
   error-pos 2@  ( n1 n2 )
   \ n1 = value of `in` when the error happened
   \ n2 = value of `blk` when the error happened
@@ -3351,8 +3405,8 @@ require break-key?
 
 code call  ( a -- )
   \ Call a machine code subroutine.
- 
-  E1 c,               \ pop hl 
+
+  E1 c,               \ pop hl
   C5 c,               \ push bc
   CD c, >mark         \ call call_hl
   C1 c,               \ pop bc
@@ -3726,7 +3780,7 @@ width !
   \ doc{
   \
   \ don't  ( n1 n2 -- | n1 n2 )
-  \ 
+  \
   \ If _n1_ equals _n2_, remove them and exit the definition
   \ that called `don't`, else leave the _n1_ and _n2_ on the
   \ stack.
@@ -3749,11 +3803,11 @@ width !
 : (?do) 2dup = if 2drop r> drop then  ;
   \ exit the calling word
 
-: (loop) ;
+: (loop)  ;
   ( increments index -2nd item- on return stack)
   ( calculates flag for until )
 
-: (+loop) ;
+: (+loop)  ;
 
 : do      postpone (do) postpone begin
   ; immediate
@@ -3771,10 +3825,10 @@ width !
 
   \ : unloop
   \   ( removes 2nd and 3rd return stack items )
-  \   ( 1st return stack item is itc saved ip for unloop ) ;
-  \ : i ( gets 2nd return stack item to data stack ) ;
-  \ : j ( gets 4th ... ) ;
-  \ : k ( gets 6th ... ) ;
+  \   ( 1st return stack item is itc saved ip for unloop )  ;
+  \ : i ( gets 2nd return stack item to data stack )  ;
+  \ : j ( gets 4th ... )  ;
+  \ : k ( gets 6th ... )  ;
 
 ( ?do )
 
@@ -3804,8 +3858,8 @@ width !
 
 variable ?do?
 
-: exchange ( x1 addr -- x2 ) dup @ rot rot ! ;
-: 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0= ;
+: exchange ( x1 addr -- x2 ) dup @ rot rot !  ;
+: 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0=  ;
 
 : do
   postpone 2>r 0 ?do? exchange here
@@ -3829,21 +3883,21 @@ variable ?do?
 
 variable ?do?
 
-: 2dup= ( x1 x2 -- x1 x2 flag ) 2dup = ;
+: 2dup= ( x1 x2 -- x1 x2 flag ) 2dup =  ;
 
 : do
-  ?do? @ ?do? off [compile] (do) here 0 , ; immediate
+  ?do? @ ?do? off [compile] (do) here 0 ,  ; immediate
 
 : ?do
   postpone 2dup= postpone if postpone do ?do? on
   ; immediate
 
 : complete-?do ( x dest | x -- )
-  ?do? @ if postpone then then ?do? ! ;
+  ?do? @ if postpone then then ?do? !  ;
 
-: loop postpone (loop) , complete-?do ; immediate
+: loop postpone (loop) , complete-?do  ; immediate
 
-: +loop postpone (+loop) , complete-?do ; immediate
+: +loop postpone (+loop) , complete-?do  ; immediate
 
 ( j )
 
@@ -4195,7 +4249,7 @@ variable to-message
   create ,  does>  to-message @ if  !  else  @  then  from  ;
 
 ( value )
-  
+
   \ XXX TMP
 
   \ `value` with non-parsing `to` -- version with `execute`
@@ -4619,7 +4673,7 @@ require -rot
   \ XXX NEW
   create c, does>  ( disp rphl bit -- )
     ( disp rphl bit pfa )
-    CB c, c@ rot drop rot c, swap 8* + c, ;
+    CB c, c@ rot drop rot c, swap 8* + c,  ;
 
 -->
 
@@ -4915,7 +4969,7 @@ code a@  ( -- a )
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-do-require a!
+rerequire a!
 
 code !a  ( u -- )
   \ Store cell at `a`.
@@ -4940,7 +4994,7 @@ code @a  ( -- u )
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-do-require a!
+rerequire a!
 
 code c!a  ( c -- )
   \ Store char at `a`.
@@ -4963,7 +5017,7 @@ code c@a  ( -- c )
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-do-require a!
+rerequire a!
 
 code !a+  ( u -- )
   \ Store cell at `a` with increment.
@@ -4987,7 +5041,7 @@ code @a+  ( -- u )      \ Fetch cell at `a` with increment.
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-do-require a!
+rerequire a!
 
 code c!a+  ( c -- )
   \ Store char at `a` with increment.
@@ -5581,6 +5635,223 @@ FORTH-WORDLIST SET-CURRENT
   \ with ALLOCATE.
 
   \ }}} =======================================================
+  \ Specforth editor {{{
+
+( editor )
+
+  \ This is the editor included with Specforth (also known as
+  \ Artic Forth), a fig-Forth for ZX Spectrum. It has been
+  \ modified in order to adapt it to Solo Forth.
+  \
+  \ Descriptions and stack comments have been added after the
+  \ Specforth manual, the Abersoft Forth manual and the book
+  \ _Systems Guide to fig-Forth_. The word `copy` has been
+  \ adapted from Abersoft Forth. The word `text` has been
+  \ rewritten.
+
+  \ Credits:
+  \ Specforth Editor V1.1
+  \ Copyright 1983 by Artic Computing Ltd.
+  \ Written by Chris A. Thornton, 1983
+  \ Modified by Marcos Cruz, 2015
+
+only forth definitions
+
+require list  require update  require flush  require place
+require command
+
+vocabulary editor  also editor definitions  hex
+
+  \ XXX OLD
+  \ XXX FIXME `1 text`, used by two words, corrupts the system.
+  \ How to get the text till the end of the line?
+  \ : text  ( c "text<c>" -- )
+  \  here c/l 1+ blank word pad c/l 1+ cmove  ;
+  \ Parse a text string delimited by character _c_ and store it
+  \ into `pad`, blank-filling the remainder of `pad` to `c/l`
+  \ characters.
+
+: text  ( "text<eol>" -- )
+  pad c/l 1+ blank  command  pad place  ;
+  \ Get the text string until end of line and store it
+  \ into `pad` as a counted string, blank-filling the remainder
+  \ of `pad` to `c/l` characters.
+
+: line  ( n -- a )
+  dup FFF0 and 17 ?error scr @ (line) drop  ;
+  \ Leave address _a_ of the beginning of line _n_ in the
+  \ current screen buffer.  The screen number is in `scr`.
+  \ Read the disk block from  disk if it is not already in the
+  \ disk buffer.
+
+: #locate  ( -- n1 n2 )  r# @ c/l /mod  ;
+  \ From the cursor pointer `r#` compute the line number _n2_
+  \ and the character offset _n1_ in line number _n2_.
+
+: #lead  ( -- a n )  #locate line swap  ;
+  \ From the cursor pointer `r#` compute the line address _a_
+  \ in the screen buffer and the offset from _a_ to the cursor
+  \ location _n_.
+
+: #lag  ( -- a n )  #lead dup >r + c/l r> -  ;
+  \ a = cursor address
+  \ n = count after cursor till end of line
+
+: -move  ( a n -- )  line c/l cmove update  ;
+  \ Move a line of text from _a_ to line _n_ of current screen.
+
+: h  ( n -- )  line pad 1+ c/l dup pad c! cmove  ;
+  \ Hold line _n_ at `pad` (used by system more often than by
+  \ user).
+
+-->
+
+( editor )
+
+: e  ( n -- )  line c/l blank update  ;
+  \ Erase line _n_ with blanks.
+
+: s  ( n -- )  dup 1 - 0E do i line i 1+ -move -1 +loop e  ;
+  \ Spread at line _n_. Line _n_ and following lines are are
+  \ moved down one line. Line _n_ becomes blank. Line 15 is
+  \ lost.
+
+: d  ( n -- )  dup h 0F dup rot do i 1+ line i -move loop e  ;
+  \ Delete line _n_ but hold it in `pad`. Line 15 becomes free
+  \ as all statements move up one line.
+
+: m  ( n -- )
+  r# +! cr space #lead type [char] _ emit
+  #lag type #locate . drop  ;
+  \ Move the cursor by _n_ characters. The position of the
+  \ cursor on its line is shown by a "_" (underline).
+
+: t  ( n -- )  dup c/l * r# ! dup h 0 m  ;
+  \ Type line _n_ and save in `pad`.
+
+: l  ( n -- )  scr @ list 0 m  ;
+  \ List the current screen.
+
+: r  ( n -- )  pad 1+ swap -move  ;
+  \ Replace line _n_ with text in `pad`.
+
+: p  ( n "text<eol>"  -- )  text r  ;
+  \ Put "text" on line _n_.
+
+: i  ( n -- )  dup s r  ;
+  \ Insert text from `pad` at line _n_, moving the old line _n_
+  \ down. Line 15 is lost.
+
+: top  ( -- )  0 r# !  ;
+  \ Position the cursor at the start of the screen.
+
+-->
+
+( editor )
+
+: clear  ( n -- )
+  scr !  10 0 do [ also forth ] i [ previous ] e loop  ;
+  \ Clear screen _n_ with blanks and select for editing.
+
+: -text  ( a1 len1 a2 -- f )
+  swap ?dup if
+    over + swap do
+      dup c@ [ also forth ] i [ previous ] c@ -
+      if  0= exhaust  else 1+  then
+    loop  else  drop 0=  then  ;
+  \ Return a non-zero _f_ if string _a1 len1_ exactly
+  \ match string _a2 len1_, else return a false flag.
+
+-->
+
+( editor )
+
+also forth
+: match  ( a1 len1 a2 len2 -- tf n3 | ff n4 )
+  >r >r 2dup r> r> 2swap over + swap
+  do
+    2dup i -text
+    if  >r 2drop r> - i swap - 0 swap 0 0 exhaust  then
+  loop
+  2drop swap 0= swap ;  previous
+  \ Match the string _a len2_ with all strings contained in the
+  \ string _a1 len1_ If found leaves _n3_ bytes until the end
+  \ of the matching string, else leaves _n4_ bytes to end of
+  \ line.
+
+: 1line  ( -- f )  #lag pad count match r# +!  ;
+  \ Scan the cursor line for a match to `pad` text. Return flag
+  \ and update the cursor `r#` to the end of matching text, or
+  \ to the start of the next line if no match is found.
+
+: find  ( -- )
+  begin
+    03FF r# @ <
+    if  top pad here c/l 1+ cmove 0 error  then  1line
+  until  ;
+  \ Search for a match to the string at `pad`, from the cursor
+  \ position until the end of screen.  If no match found issue
+  \ an error message and reposition the cursor at the top of
+  \ the screen.
+
+-->
+
+( editor )
+
+: delete  ( n -- )
+  >r #lag + r@ - #lag r@ negate r# +! #lead + swap cmove
+  r> blank  ;
+  \ Delete _n_ characters prior to the cursor.
+
+: n  ( -- )  find 0 m  ;
+  \ Find the next occurrence of the string found by an `f`
+  \ command.
+
+: f  ( "text<eol>" -- )  text n  ;
+  \ Search forward from the current cursor position until
+  \ string "text" is found. The cursor is left at the end of
+  \ the string and the cursor line is printed. If the string is
+  \ not found and error message is given and the cursor
+  \ repositioned to the top of the screen.
+
+: b  ( -- )  pad c@ negate m  ;
+  \ Used after `f` to backup the cursor by the length of the
+  \ most recent text.
+
+: x  ( "text<eol>" -- )  text find pad c@ delete 0 m  ;
+  \ Find and delete the next occurrence of the string "text".
+
+: till  ( "text<eol>" -- )
+  #lead + text 1line 0= 0 ?error #lead + swap - delete 0 m  ;
+  \ Delete on the cursor line from the cursor till the end of
+  \ string "text".
+
+-->
+
+( editor )
+
+: (c)  ( ca len -- )
+  #lag rot over min >r r@ r# +! r@ - >r
+  dup here r@ cmove here #lead + r> cmove r> cmove 0 m
+  update  ;
+  \ Copy the string _ca len_ to the cursor line at the cursor
+  \ position.
+
+: c  ( "text<eol>" -- )
+  text pad count dup if  (c)  else  2drop  then  ;
+  \ Copy in "text" to the cursor line at the cursor position.
+
+also forth
+: copy  ( n1 n2 -- )
+  b/scr * swap b/scr * b/scr over + swap
+  do
+    dup i block 2- ! 1+ update 
+  loop  drop flush  ;  previous
+  \ Copy screen _n1_ to screen _n2_.
+
+only forth definitions decimal
+
+  \ }}} =======================================================
   \ Sample game: Siderator 2 {{{
 
 .( siderator )
@@ -5639,7 +5910,7 @@ char 5 constant left-key  char 8 constant right-key
 15360 constant charset  \ ROM charset
 : char>a  ( c -- a )  8 * charset +  ;
 : udg>a  ( c -- a )  128 - 8 * udg +  ;
-: char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove ;
+: char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove  ;
 
 128 constant star0-udg  char * star0-udg char>udg
 
