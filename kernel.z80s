@@ -19,7 +19,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B54
   
-  ; Last modified:  201511240311
+  ; Last modified:  201511242208
 
 ; ==============================================================
 ; Author and license
@@ -1585,7 +1585,7 @@ forth_vocabulary_link:
 ; list is initially the compilation word list and is part of the
 ; initial search order.
 ;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; }doc
 
@@ -4520,7 +4520,8 @@ true_if_cy:
 ;
 ; Negate _n1_, giving its arithmetic inverse _n2_.
 ;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-79 (Required word set), Forth-83 (Required
+; word set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -4541,25 +4542,67 @@ true_if_cy:
 ;
 ; Negate _d1_, giving its arithmetic inverse _d2_.
 ;
-; Standard: Forth-94, Forth-2012.
-;
+; Standard: Forth-79 (Required word set), Forth-83 (Required
+; word set), Forth-94 (CORE), Forth-2012 (CORE).
+; 
 ; }doc
 
-  pop hl
-  pop de
-  sub a
-  sub e
-  ld e,a
-  ld a,0x00
-  sbc a,d
-  ld d,a
-  ld a,0x00
-  sbc a,l
-  ld l,a
-  ld a,0x00
-  sbc a,h
-  ld h,a
-  jp push_hlde
+if 0
+
+  ; Credits:
+  ; Code from Abersoft Forth, also found in White Lightning.
+
+  ; XXX TODO optimize?
+
+                                                ; T   B
+                                                ; --- --
+  pop hl      ; high part                       ;  10 01
+  pop de      ; low part                        ;  10 01
+  sub a       ; zero                            ;  04 01
+  sub e       ; two's complement to carry       ;  04 01
+  ld e,a                                        ;  04 01
+  ld a,0x00                                     ;  07 02
+  sbc a,d     ; two's complement with carry     ;  04 01
+  ld d,a                                        ;  04 01
+  ld a,0x00                                     ;  07 02
+  sbc a,l     ; two's complement with carry     ;  04 01
+  ld l,a                                        ;  04 01
+  ld a,0x00                                     ;  07 02
+  sbc a,h     ; two's complement with carry     ;  04 01
+  ld h,a                                        ;  04 01
+  jp push_hlde                                  ;  10 03
+                                                ;  11 00 push de
+                                                ;  11 00 push hl
+                                                ; --- --
+                                                ; 109 20
+
+else
+
+  ; Credits:
+  ; Code from Spectrum Forth-83.
+  ;
+  ; Comparison to the Abersoft Forth version:
+  ; Speed: 1.04
+  ; Size:  -1
+
+                                                ; T   B
+                                                ; --- --
+  pop     hl        ; high part                 ;  10 01
+  pop     de        ; low part                  ;  10 01
+  push    hl        ; save copy                 ;  11 01
+  ld      hl,0x0000                             ;  10 03
+  and     a                                     ;  04 01
+  sbc     hl,de     ; hl = negated low part     ;  15 02
+  pop     de        ; high part                 ;  10 01
+  push    hl        ; negated low part          ;  11 01
+  ld      hl,0x0000                             ;  10 03
+  sbc     hl,de     ; hl = negated high part    ;  15 02
+  jp push_hl                                    ;  10 03
+                                                ;  11 00 push hl
+                                                ; --- --
+                                                ; 127 19
+
+endif
 
 ; ----------------------------------------------
   _code_header nip_,'NIP'
@@ -5907,7 +5950,7 @@ question_dup.end:
 ;
 ; }doc
 
-  dw current_,fetch_,fetch_
+  dw get_current_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7611,7 +7654,7 @@ error.message:
   dw zero_branch_,header_comma.continue
 
   ; `warnings` is on
-  dw two_dup_,current_,fetch_,search_wordlist_
+  dw two_dup_,get_current_,search_wordlist_
   dw zero_branch_,header_comma.continue
   ; the word is not unique in `current`
   ; ( ca len cfa )
@@ -7634,7 +7677,7 @@ header_comma.continue:
   dw place_ ; store the name
   dw from_r_,count_,uppers_
 
-  dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
+  dw np_fetch_,get_current_,store_ ; update contents of `latest` in the current vocabulary
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
   dw here_,two_plus_,comma_ ; compile the pfa into code field
@@ -8274,10 +8317,69 @@ do_vocabulary:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header get_current_,'GET-CURRENT'
+
+; doc{
+;
+; get-current  ( -- wid )
+; 
+; Return _wid_, the identifier of the compilation word list.
+; 
+; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+
+; ----
+; : get-current  ( -- wid )
+;   current @  ;
+; ----
+
+; }doc
+
+  dw current_,fetch_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header set_current_,'SET-CURRENT'
+
+; doc{
+;
+; set-current  ( wid -- )
+;
+; Set the compilation word list to the word list identified by
+; _wid_.
+;
+; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+
+; ----
+; : set-current  ( wid -- )
+;   current !  ;
+; ----
+
+; }doc
+
+  dw current_,store_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header definitions_,'DEFINITIONS'
 
-  dw context_,fetch_
-  dw current_,store_
+; doc{
+;
+; definitions  ( -- )
+;
+; Make the compilation word list the same as the first  word
+; list in the search order. The  names of subsequent definitions
+; will be placed in the compilation word list. Subsequent
+; changes in the search  order will not affect the compilation
+; word list.
+
+; ----
+; : definitions  ( -- )
+;   context @ set-current  ;
+; ----
+
+; }doc
+
+  dw context_,fetch_,set_current_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8415,8 +8517,16 @@ quit.begin:
 ; ----------------------------------------------
   _two_constant_header version_,'VERSION'
 
-  dw version_high_part
-  dw version_low_part
+; doc{
+;
+; version  ( -- d )
+;
+; Return the Solo Forth version number _d_.  The version number
+; is the release date in the ISO format YYYYMMDD.
+;
+; }doc
+
+  dw version_high_part,version_low_part
 
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
@@ -8424,6 +8534,8 @@ quit.begin:
 ; doc{
 ;
 ; greeting  ( -- )
+;
+; Print the boot message.
 ;
 ; }doc
 
@@ -8455,6 +8567,8 @@ quit.begin:
 ; ----------------------------------------------
   _variable_header previous_mode_,'PREVIOUS-MODE'
 
+  ; XXX TODO -- convert to a deferred word?
+
 ; doc{
 ;
 ; previous-mode  ( -- a )
@@ -8470,6 +8584,8 @@ quit.begin:
 
 ; ----------------------------------------------
   _variable_header current_mode_,'CURRENT-MODE'
+
+  ; XXX TODO -- convert to a deferred word?
 
 ; doc{
 ;
@@ -8646,6 +8762,7 @@ question_negate.hl:
 ; : ?dnegate  ( d1 n -- d1|d2 )
 ;   0< if  dnegate  then  ;
 ; ----
+
 ; }doc
 
   pop hl
@@ -10751,8 +10868,7 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _colon_header bye_,'BYE'
 
-  dw current_mode_
-  dw fetch_
+  dw current_mode_,fetch_
   dw previous_mode_,store_
   dw default_mode_
   dw paren_bye_
@@ -10768,24 +10884,32 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _code_header two_swap_,'2SWAP'
 
-  ; Credits:
-  ; Code from DZX-Forth.
+; doc{
+;
+; 2swap  ( x1 x2 x3 x4 -- x3 x4 x1 x2 )
+;
+; }doc
 
-  pop hl
-  pop de
-  ex (sp),hl
-  push hl
-  ld hl,5
-  add hl,sp
-  ld a,(hl)
-  ld (hl),d
-  ld d,a
-  dec hl
-  ld a,(hl)
-  ld (hl),e
-  ld e,a
-  pop hl
-  jp push_hlde
+  ; Credits:
+  ; Code adapted from Z88 CamelForth
+
+                      ; T   B
+                      ; --- --
+  exx                 ;  04 01
+  pop hl  ; hl'=x4    ;  10 01
+  pop de  ; de'=x3    ;  10 01
+  exx                 ;  04 01
+  pop hl  ; hl=x2     ;  10 01
+  pop de  ; de=x1     ;  10 01
+  exx                 ;  04 01
+  push de ; x3        ;  11 01
+  push hl ; x4        ;  11 01
+  exx                 ;  04 01
+  jp push_hlde        ;  10 03
+                      ;  11 00 push de
+                      ;  11 00 push hl
+                      ; --- --
+                      ; 110 13 TOTAL
 
 ; ----------------------------------------------
   _variable_header limit_,'LIMIT'
@@ -10821,6 +10945,7 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _colon_header where_,'WHERE'
 
+  ; XXX TMP -- needed only during the development
   ; XXX TODO -- remove; already copied to the disk
 
   dw error_pos_,two_fetch_ ; XXX NEW
@@ -10888,7 +11013,7 @@ at_pfa.last_line:
 ;
 ; at-xy ( col row -- )
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
 ; }doc
 
@@ -10975,31 +11100,31 @@ border.end:
   _code_header overprint_,'OVERPRINT'
 
   ld a,over_char
-  jp color
+  jr color
 
 ; ----------------------------------------------
   _code_header flash_,'FLASH'
 
   ld a,flash_char
-  jp color
+  jr color
 
 ; ----------------------------------------------
   _code_header inverse_,'INVERSE'
 
   ld a,inverse_char
-  jp color
+  jr color
 
 ; ----------------------------------------------
   _code_header bright_,'BRIGHT'
 
   ld a,bright_char
-  jp color
+  jr color
 
 ; ----------------------------------------------
   _code_header paper_,'PAPER'
 
   ld a,paper_char
-  jp color
+  jr color
 
 ; ----------------------------------------------
   _code_header ink_,'INK'
@@ -11170,7 +11295,7 @@ endif
 ; remainder of the execution semantics are given by `throw`.
 ;
 ; Standard: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
-;
+
 ;----
 ; : catch  ( xt -- exception# | 0 )
 ;   sp@ >r          ( cfa ) \ save data stack pointer
@@ -11198,44 +11323,44 @@ endif
 ; ----------------------------------------------
   _colon_header throw_,'THROW'
 
-  ; XXX UNDER DEVELOPMENT
-
-if 0
-
-  ; Version from eForth:
-
-; throw  ( err# -- err# )
-; reset system to current local error frame an update error flag.
-
-  dw catcher_,fetch_,rp_store_        ; restore return stack
-  dw from_r_,catcher_,store_          ; restore exception frame
-  dw from_r_,swap_,to_r_,sp_store_    ; restore data stack
-  dw drop_,from_r_
-  dw semicolon_s_
-
-endif
-
-if 0
-
-  ; Version from hForth and MPE Forth for TiniARM.
+  ; Credits:
+  ; Code from DZX-Forth.
   ; Comments from MPE Forth for TiniARM.
 
-  ; : throw  ( ??? exception# -- ??? exception# )
-  ;   ?dup if           ( exc# )
-  ;     catcher @ rp!   ( exc# )      \ restore previous return stack
-  ;     r> catcher !    ( exc# )      \ restore previous catcher
-  ;     r> swap >r      ( saved-sp ) ( R: exc# )
-  ;     sp! drop r>     ( exc# )      \ restore stack
-  ;     \ Return to the caller of `catch` because return stack is
-  ;     \ restored to the state that existed when `catch` began
-  ;     \ execution.
-  ;   then  ;
+; doc{
+;
+; throw  ( n -- )
 
-  dw question_dup_,zero_branch_,throw.end
-  dw catcher_,fetch_,rp_store_          ; restore previous return stack
-  dw from_r_,catcher_,store_            ; restore previous exception frame
-  dw from_r_,swap_,to_r_
-  dw sp_store_,drop_,from_r_            ; restore data stack
+; Standard: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
+
+; ----
+; : throw  ( n -- )
+;   ?dup if
+;     catcher @ ?dup 0=   \ no catcher?
+;     if  error  then     \ `error` does not return
+;     rp!                 \ restore previous return stack
+;     r> catcher !        ( n )  \ restore previous catcher
+;     r> swap >r          ( saved-sp ) ( R: n ) 
+;     sp! drop r>         ( n )  \ restore stack
+;     \ Return to the caller of `catch` because return stack is
+;     \ restored to the state that existed when `catch` began
+;     \ execution.
+;   then  ;
+; ----
+
+; }doc
+
+  dw question_dup_
+  dw zero_branch_,throw.end
+  dw catcher_,fetch_,question_dup_  ; catcher?
+  dw question_branch_,throw.catcher ; if so, branch
+  dw error_ ; no return from `error`.
+
+throw.catcher:
+  dw rp_store_                ; restore previous return stack
+  dw from_r_,catcher_,store_  ; ( n )  restore previous catcher
+  dw from_r_,swap_,to_r_      ; ( saved-sp ) ( R: n ) 
+  dw sp_store_,drop_,from_r_  ; ( n )  restore stack
 
   ; Return to the caller of `catch` because return stack is
   ; restored to the state that existed when `catch` began
@@ -11243,39 +11368,6 @@ if 0
 
 throw.end:
   dw semicolon_s_
-
-endif
-
-if 1
-
-  ; Version from DZX-Forth:
-
-  ; XXX TODO -- Comments from MPE Forth for TiniARM.
-
-; throw  ( n -- )
-; ?dup if
-;   catcher @ ?dup 0= if  error  then
-;   rp! r> catcher ! r> swap >r sp! drop r>
-; then  ;
-
-  dw question_dup_
-  dw zero_branch_,throw.end
-  dw catcher_,fetch_
-  dw question_dup_,zero_equals_
-  dw zero_branch_,throw.catcher
-  dw error_
-  ; No return from `error`.
-
-throw.catcher:
-  dw rp_store_
-  dw from_r_,catcher_,store_
-  dw from_r_,swap_,to_r_
-  dw sp_store_
-  dw drop_,from_r_
-throw.end:
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header paren_abort_,'(ABORT)'

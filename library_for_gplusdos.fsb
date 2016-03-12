@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511240343
+\ Last modified: 201511242208
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -4373,8 +4373,7 @@ variable private-start  variable private-stop
   \ Credits:
   \ Code adapted and modified from Galope.
 
-need get-order  need get-current  need wordlist  need >order
-need set-current
+need get-order  need wordlist  need >order
 
   \ Inner words
 
@@ -8032,7 +8031,7 @@ need -rot
 
   \ XXX UNDER DEVELOPMENT
 
-need set-current  need >order  need abort"
+need >order  need abort"
 need words
 
 : associative-list  ( "name" -- )  wordlist constant  ;
@@ -8289,8 +8288,6 @@ cr 1 sugar-numbers 2 sugar-numbers
   \ XXX UNDER DEVELOPMENT
 
   \ 2015-11-16: Start.
-
-need get-current  need set-current
 
 : n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
   \ Convert _n_ to a code string of two bytes.
@@ -9416,8 +9413,6 @@ need body>name
 
   \ XXX TODO move to the kernel
 
-need get-current  need set-current
-
 get-current also root definitions
 
 : (set-order)  ( widn..wid1 n -- )
@@ -9461,15 +9456,7 @@ previous set-current
 
 : wid-of  ( "name" -- wid )  ' >wid  ;
 
-( set-current get-current trail >order )
-
-  \ XXX TODO move to the kernel?
-[unneeded] get-current
-?\ : get-current  ( -- wid )  current @  ;
-
-  \ XXX TODO move to the kernel?
-[unneeded] set-current
-?\ : set-current  ( wid -- )  current !  ;
+( swap-current trail >order )
 
 [unneeded] trail
 ?\ : trail  ( -- nfa )  context @ @  ;
@@ -9498,10 +9485,7 @@ previous set-current
   \ Credits:
   \ Word from Gforth.
 
-( swap-current )
-
-need get-current  need set-current
-
+[unneeded] swap-current ?\ ;s
 : swap-current  ( wid1 -- wid2 )
   get-current swap set-current  ;
 
@@ -9690,21 +9674,16 @@ need random-n
 : code-alias?  ( cfa -- wf )  @ dup body> @ =  ;
   \ Is _cfa_ a word created by `code-alias` or `code`?
 
-: defer-alias  ( cfa "name" -- )  defer latest name> defer!  ;
+: defer-alias  ( cfa "name" -- )
+  defer latest name> defer!  ;
   \ Create a deferred word _name_ that executes _cfa_.
 
-: (code-alias)  ( a "name" -- )
-  header reveal latest name> !  ;
-  \ Create a code word that executes the code at _a_.
-
-: code-alias  ( cfa "name" -- )  @ (code-alias)  ;
+: code-alias  ( cfa "name" -- )
+  @ header reveal latest name> !  ;
   \ Create a code word that executes the code pointed by _cfa_.
 
 : alias  ( cfa "name" -- )
-  dup code? if  code-alias exit  then
-  dup code-alias? if  @ (code-alias) exit  then
-  \ XXX TODO -- why `@ (code-alias)` instead `code-alias`?
-  defer-alias  ;
+  dup code-alias? if  code-alias exit  then  defer-alias  ;
 
   \ doc{
   \
@@ -9725,6 +9704,7 @@ need random-n
   \ in the Forth-2012 documentation, and improved with
   \ `compile-only?`.
 
+  \ XXX FIXME -- `' newname` would not work fine
 : synonym  ( "newname" "oldname" -- )
   create immediate
     hide ' , reveal
@@ -9734,8 +9714,10 @@ need random-n
    immediate? executing? or
    if  execute  else  compile,  then  ;
 
-  \ XXX TODO -- consult this sentence of the description: "when
-  \ looking up _oldname_, _newname_ shall not be found."
+  \ XXX TODO -- new approach
+need alias
+: synonym2  ( "newname" "oldname" -- )
+  parse-name nextname ' alias  ;
 
   \ doc{
   \
@@ -10377,7 +10359,7 @@ code c@a+  ( -- c )
   \ disregarded without a separate test.
 
 also forth definitions
-need wid-of  need set-current
+need wid-of
 vocabulary heap-voc  wid-of heap-voc constant heap-wordlist
 also heap-voc definitions
 
@@ -14490,8 +14472,72 @@ need bench  need 0if
   \ bench2a  245 (`0if`:    76%)
   \ bench3   528
 
+( 2swap-bench )
+
+  \ 2015-11-24
+
+need bench
+
+: 2swap-bench  ( -- )
+  32767 0 bench 2dup do  2swap  loop  marque 2drop  ;
+
+  \ Code                          Frames for 32767 iterations
+  \ -----                         ---------------------------
+  \ From DZX-Forth                271 (5 s) (1.00)
+  \ Adapted from Z88 CamelForth   243 (4 s) (0.89)
+
+( dnegate-bench )
+
+  \ 2015-11-24
+
+need bench
+
+: dnegate-bench  ( -- )
+  32767 0 bench 2dup do  dnegate  loop  marque 2drop  ;
+
+: dnegate-bench2  ( -- )
+  32767 0 bench 2dup do  dnegate2  loop  marque 2drop  ;
+
+  \ Code                          Frames for 32767 iterations
+  \ -----                         ---------------------------
+  \ From Abersoft Forth           243 (4 s) (1.00)
+  \ From Spectrum Forth-83        253 (5 s) (1.04)
+
   \ }}} =======================================================
   \ Development tests {{{
+
+( alias-test synonym-test )
+
+  \ 2015-11-24
+
+need alias need synonym
+
+' literal alias literal-a
+' border alias border-a
+' if alias if-a
+
+synonym border-s border
+synonym literal-s literal
+synonym if-s if
+
+  \ XXX TMP -- alternative `synonym` that uses `alias`
+synonym2 border-s2 border
+synonym2 literal-s2 literal
+synonym2 if-s2 if
+
+  \ : ifa if-a ." yes" then ;   \ "then" error #-4
+  \ : ifs if-s ." yes" then ;   \ ok
+  \ : ifs2 if-s2 ." yes" then ;   \ "then" error #-4
+  \
+  \ 1 literal     \ error -14 \ ok
+  \ 1 literal-a   \ no error
+  \ 1 literal-s   \ error -14 \ ok
+  \ 1 literal-s2  \ no error
+  \
+  \ : zx [ 1 ] literal ;      \ ok
+  \ : zx [ 1 ] literal-a ;    \ error #-264
+  \ : zx [ 1 ] literal-s ;    \ no error \ ok
+  \ : zx [ 1 ] literal-s2 ;   \ error #-264
 
 ( until-test )
 
