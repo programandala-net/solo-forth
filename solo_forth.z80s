@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506290300
+; Version A-00-201506291419
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -118,7 +118,7 @@
 ; form the glossary.
 
 ; ----------------------------------------------
-; Stack comment conventions
+; Stack notation
 
 ; a        = address
 ; ca       = character-aligned address
@@ -145,6 +145,28 @@
 ; lfa      = address of link field
 ; nfa      = address of name field
 ; pfa      = address of parameter field
+
+; ----------------------------------------------
+; Parsed text notation
+
+; XXX TODO
+
+; <char>          the delimiting character marking the end of the
+;                 string being parsed
+; <chars>         zero or more consecutive occurrences of the
+;                 character char
+; <space>         a delimiting space character
+; <spaces>        zero or more consecutive occurrences of the
+;                 character space
+; <quote>         a delimiting double quote
+; <paren>         a delimiting right parenthesis
+; <eol>           an implied delimiter marking the end of a line
+; ccc             a parsed sequence of arbitrary characters,
+;                 excluding the delimiter character
+; text            same as ccc
+; name            a token delimited by space, equivalent to
+;                 ccc<space> or ccc<eol>
+
 
 ; ----------------------------------------------
 ; Word attributes
@@ -503,16 +525,12 @@ _number: macro _n
       if _n=2
         dw two_
       else
-        if _n=3
-          dw three_
+        if _n>=0 && _n<=255
+          dw c_lit_
+          db _n
         else
-          if _n>=0 && _n<=255
-            dw c_lit_
-            db _n
-          else
-            dw lit_
-            dw _n
-          endif
+          dw lit_
+          dw _n
         endif
       endif
     endif
@@ -1477,19 +1495,22 @@ endif
 
   dw compile_,paren_question_do83_
   dw forward_mark_
-  dw three_
+  dw c_lit_
+  db 3
   dw semicolon_s_
 
   _colon_header do83_,'DO83',immediate
 
   dw compile_,paren_do83_
   dw forward_mark_
-  dw three_
+  dw c_lit_
+  db 3
   dw semicolon_s_
 
   _colon_header loop83_,'LOOP83',immediate
 
-  dw three_
+  dw c_lit_
+  db 3
   dw question_pairs_
   dw compile_,paren_loop83_
   dw forward_resolve_
@@ -2118,7 +2139,8 @@ endif
 ; ----------------------------------------------
   _colon_header printer_,'PRINTER'
 
-  dw three_
+  dw c_lit_
+  db 3
   dw chan_
   dw semicolon_s_
 
@@ -3124,7 +3146,25 @@ do_constant:
 ; ----------------------------------------------
   _colon_header variable_,'VARIABLE'
 
-  dw create_,comma_
+; doc{
+;
+; variable ( "name" -- )  \ ANS Forth
+;
+; Parse _name_.  Create a definition for _name_ with the
+; execution semantics defined below. Reserve one cell of data
+; space.
+;
+;    _name_ is referred to as a variable.
+;
+;          name Execution: ( -- a )
+;
+;    _a_ is the address of the reserved cell. A program is
+;    responsible for initializing the contents of the reserved
+;    cell.
+;
+; }doc
+
+  dw create_,one_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3175,11 +3215,6 @@ do_user:
   _constant_header two_,'2'
 
   dw 0x0002
-
-; ----------------------------------------------
-  _constant_header three_,'3' ; XXX TODO remove
-
-  dw 0x0003
 
 ; ----------------------------------------------
   _code_header false_,'FALSE'
@@ -5763,14 +5798,8 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header continued_,'CONTINUED'
+  _colon_header paren_load_,'(LOAD)'
 
-  ; XXX FIXME this does strange things when executed from the
-  ; command line, because `blk` is not restored.
-  ; it works fine in a screen.
-  ; as a temporary solution, `?loading` is used:
-
-  dw question_loading_
   dw dup_,zero_,equals_
   _question_error loading_from_screen_0_error
   dw to_in_,off_
@@ -5779,11 +5808,52 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header continued_,'CONTINUED'
+
+; doc{
+;
+; load  ( i*x u -- j*x )  \ Forth-79 (uncontrolled word
+; definition from the Reference Word Set)
+;
+; Store _u_ in `blk` (thus making block _u_ the input source and
+; setting the input buffer to encompass its contents), set `>in`
+; to zero, and interpret.  Other stack effects are due to the
+; words loaded.
+;
+; An error is issued if _u_ is zero or `blk` is zero.
+;
+; }doc
+
+; XXX TODO : An ambiguous condition exists if _u_ or is not a
+; valid block number.
+
+  dw question_loading_,paren_load_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header load_,'LOAD'
+
+; doc{
+;
+; load  ( i*x u -- j*x )  \ ANS Forth
+;
+; Save the current input-source specification. Store _u_ in
+; `blk` (thus making block _u_ the input source and setting the
+; input buffer to encompass its contents), set `>in` to zero,
+; and interpret. When the parse area is exhausted, restore the
+; prior input source specification. Other stack effects are due
+; to the words loaded.
+;
+; An error is issued if _u_ is zero.
+;
+; }doc
+
+; XXX TODO : An ambiguous condition exists if _u_ or is not a
+; valid block number.
 
   dw blk_,fetch_,to_r_
   dw to_in_,fetch_,to_r_
-  dw continued_
+  dw paren_load_
   dw from_r_,to_in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
@@ -5899,13 +5969,15 @@ flush.do:
   dw compile_,paren_do_
 do.common:
   dw backward_mark_
-  dw three_
+  dw c_lit_
+  db 3
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header loop_,'LOOP',immediate
 
-  dw three_
+  dw c_lit_
+  db 3
   dw question_pairs_
   dw compile_,paren_loop_
   dw backward_resolve_
@@ -5914,7 +5986,8 @@ do.common:
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate
 
-  dw three_
+  dw c_lit_
+  db 3
   dw question_pairs_
   dw compile_,paren_plus_loop_
   dw backward_resolve_
@@ -6328,7 +6401,8 @@ list.loop:
   dw paren_do_
 index.do:
   dw cr_,i_
-  dw three_
+  dw c_lit_
+  db 3
   dw dot_r_,space_
   dw zero_,i_,dot_line_
   dw question_terminal_
@@ -6507,7 +6581,25 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header two_variable_,'2VARIABLE'
 
-  dw create_,comma_,comma_
+; doc{
+;
+; 2variable ( "name" -- )  \ ANS Forth
+;
+; Parse _name_.  Create a definition for _name_ with the
+; execution semantics defined below. Reserve two consecutive
+; cells of data space.
+;
+;    _name_ is referred to as a two-variable.
+;
+;          name Execution: ( -- a )
+;
+;    _a_ is the address of the first (lowes address) cell of two
+;    consecutive cells. A program is responsible for
+;    initializing the contents.
+;
+; }doc
+
+  dw create_,two_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------

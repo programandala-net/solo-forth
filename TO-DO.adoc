@@ -105,3 +105,4 @@ Fix: Something went wrong after the massive of the `_number` macro:
 
 .2015-06-29:
 
+Fix: the loading screen causes an error, maybe after the changes in `continued`.

@@ -22,10 +22,12 @@
 \ this notice are preserved.  This file is offered as-is,
 \ without any warranty.
 
-( ) \ scr 1
+( ) \ scr 1 -- testing load screen
 
-  .( hola)
-  7 continued
+3 load
+require decode
+require dump
+decode dump
 
 ( debugging ) \ scr 2
 
@@ -44,7 +46,7 @@
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
   \ Does the string ca1 len1 contains the string ca2 len2?
 
-scr/disk 1 2variable locatable
+2variable locatable  scr/disk 1 locatable 2!
 
 : located  ( ca len -- screen | false )
   locatable 2@ do
@@ -488,7 +490,7 @@ end-code
   \ 2015-06-20: Adapted from lina (Copyright (c) 2000-2004
   \ Albert van der Horst, The Netherlands).
 
-[defined] base'  ?\ 0 variable base'
+[defined] base'  ?\ variable base'
 
 [defined] (d.)
 ?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
@@ -505,7 +507,7 @@ end-code
 
   \ 2015-06-22
 
-[defined] base'  ?\ 0 variable base'
+[defined] base'  ?\ variable base'
 
 base @ decimal
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
@@ -559,8 +561,8 @@ require hex.  require ascii-type
 
 forth definitions decimal
 
-0 variable decode-level    \ depth of nesting
-0 variable decode-address  \ in the word being decoded
+variable decode-level    \ depth of nesting
+variable decode-address  \ in the word being decoded
 
 : indent  ( -- )
   cr decode-address @ u. decode-level @ 2 * spaces  ;
