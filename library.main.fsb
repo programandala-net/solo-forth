@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511152206
+\ Last modified: 201511160232
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -8069,10 +8069,36 @@ switch]
 cr 1 sugar-numbers 2 sugar-numbers
    3 sugar-numbers 4 sugar-numbers
 
+( switch )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-11-16: Start.
+
+need get-current  need set-current
+
+: n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
+  \ Convert _n_ to a code string of two bytes.
+
+: switch:  ( "name" -- )  wordlist constant  ;
+  \ Create a new switch "name".
+
+: switch  ( n switch -- )
+  swap n>code-string rot search-wordlist if  execute  then  ;
+  \ Execute the switch _switch_ for the key _n_.
+
+  \ XXX FIXME -- runtime: screen garbage and stack underflow!
+: :clause  ( n switch -- )
+  get-current >r set-current
+  n>code-string next-name 2! :
+  r> set-current  ;
+  \ Start the definition of a switch clause _n_ for switch
+  \ _switch_.
+
 ( user )
 
-  \ XXX TODO -- improved version, that uses the first free
-  \ offset.
+  \ XXX UNDER DEVELOPMENT -- improved version, which uses the
+  \ first free offset.
 
   \ doc{
   \
@@ -9133,7 +9159,9 @@ need baden-case
 
 need body>name
 
-: .context  ( -- )  \ XXX FIXME
+  \ XXX FIXME -- this fails with wordlists, because they don't
+  \ have a name
+: .context  ( -- )
   context #vocs 0 do
     dup @ ?dup if  body>name id.  then  cell+
   loop drop  ;
@@ -9205,13 +9233,6 @@ need body>name
   \ Convert the _cfa_ of a vocabulary to its _wid_.
 
 : wid-of  ( "name" -- wid )  ' >wid  ;
-
-( wordlist )
-
-  \ XXX TODO -- already written in the kernel
-
-: wordlist  ( -- wid )
-  ;
 
 ( set-current get-current trail >order )
 

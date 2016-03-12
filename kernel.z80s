@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151115
+  ; Version:        20151116
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B4B
+version_low_part:   equ 0x7B4C
   
-  ; Last modified:  201511150503
+  ; Last modified:  201511160219
 
 ; ==============================================================
 ; Author and license
@@ -1449,13 +1449,17 @@ endif
 ;
 ; Duplicate the vocabulary at the top of the search order.
 ;
+; ----
+; : also  ( -- )
+;   context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
+; ----
+;
 ; }doc
 
   ; Credits:
   ; Code adapted from F83.
 
-; : also  ( -- )
-;   context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
+  ; XXX TODO -- check the limit
 
   dw context_,dup_,cell_plus_
   dw lit_,(max_search_order-cell)*cell
@@ -4769,7 +4773,7 @@ store.de_into_hl_pointer:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header colon_,':',immediate
+  _colon_header colon_,':'
 
   ; XXX TODO -- `(:)` or `DOCOLON` constants to access
   ; `do_colon`.
@@ -7153,6 +7157,21 @@ parse.end:
   dw 0,0
 
 ; ----------------------------------------------
+  _two_variable_header next_name_,'NEXT-NAME'
+
+; doc{
+;
+; next-name  ( -- a )
+;
+; A double variable that may hold the address and length of a
+; name to be used by the next defining word.  When the length of
+; the string is zero, the stream is parsed for a name as usual.
+;
+; }doc
+
+  dw 0,0
+
+; ----------------------------------------------
   _colon_header parse_name_,'PARSE-NAME'
 
 ; doc{
@@ -7442,14 +7461,32 @@ paren_header.continue:
 
 ; doc{
 ;
-; header  ( "name" -- )
+; header  ( "name" | -- )
+
+; Create a dictionary header with its code field pointing to its
+; parameter field.
 ;
-; Create a dictionary header for "name", with its code field
-; pointing to its parameter field.
-;
+; The double variable `next-name` may hold a string to be used
+; as the name.  If its length is zero, "name" is parsed from the
+; stream as usual.
+
+; ----
+; : header  ( "name" | -- )
+;   next-name 2@
+;   dup if    next-name off 
+;       else  2drop parse-name  then  (header)  ;
+; ----
+
 ; }doc
 
-  dw parse_name_  ; ( ca len )
+  dw next_name_,two_fetch_
+  dw dup_
+  dw zero_branch_,header.parse_name
+  dw next_name_,off_
+  dw branch_,header.end
+header.parse_name
+  dw two_drop_,parse_name_
+header.end
   dw paren_header_
   dw semicolon_s_
 
@@ -7843,12 +7880,8 @@ interpret_table.0:
 
 interpret.begin:
 
-;  _chk 'interpret -- begin' ; XXX INFORMER
   dw question_stack_
-
   dw parse_name_  ; ( ca len )
-;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
-;  dw cr_ ; XXX INFORMER
   dw dup_ ; end of stream?
   dw zero_branch_,interpret.end ; if so, finish
 
@@ -8016,14 +8049,20 @@ endif
 ;
 ; (vocabulary)  ( -- )
 ;
-; Create a the parameter field of a vocabulary just created.
+; Create the parameter field of a vocabulary or word list just created.
+; 
+; ----
+; : (vocabulary)  ( -- )
+;   0 ,  here voc-link @ , voc-link !  ;
+; ----
 ;
 ; }doc
 
-  dw zero_,comma_ ; space for the nfa of the latest word defined in the vocabulary
-  dw here_ ; address of vocabulary link
-  dw voc_link_,fetch_,comma_ ; compile the current content of `voc-link`
-  dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
+  _literal 0
+  dw comma_                   ; nfa of the latest word defined in the vocabulary
+  dw here_                    ; new contents of vocabulary link
+  dw voc_link_,fetch_,comma_  ; compile the previous contents of `voc-link`
+  dw voc_link_,store_         ; update `voc-link`
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8036,7 +8075,12 @@ endif
 ; Create a vocabulary with the parsed "name" as its name. The
 ; run-time efect of `name` is to replace `context`, the top
 ; vocabulary in the search order.
-;
+; 
+; ----
+; : vocabulary  ( "name" -- )
+;   create  (vocabulary)
+;   does>   ( -- )  ( pfa ) context !  ;
+; ----
 ; }doc
 
   dw create_,paren_vocabulary_
@@ -8050,8 +8094,14 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header wordlist_,'WORDLIST'
 
-  ; XXX UNDER DEVELOPMENT
-  ; XXX FIXME
+; doc{
+;
+; wordlist  ( -- wid )
+; 
+; : wordlist ( -- wid )
+;   :noname  (vocabulary)  postpone ;  >body  ;
+;
+; }doc
 
   dw colon_no_name_,paren_vocabulary_,semicolon_,to_body_
   dw semicolon_s_
