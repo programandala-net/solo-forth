@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510260147
+\ Last modified: 201510270330
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -819,12 +819,20 @@ code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
 
 need n>r
 
-( rdepth )
+( rdepth r'@ )
 
   \ Credits:
-  \ Code from Afera.
+  \ `rdepth` from Afera.
 
-: rdepth  ( -- n )  rp@ rp0 @ - -2 /  ;
+[unneeded] rdepth
+?\ : rdepth  ( -- n )  rp@ rp0 @ - -2 /  ;
+
+  \ Credits:
+  \ `r'@` from Wil Baden.
+
+[unneeded] r'@ dup
+?\ : r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
+?\   r> 2r@ drop swap >r  ;
 
   \ }}} =======================================================
   \ User variables {{{
@@ -3831,81 +3839,55 @@ variable (any?)
   \ Is any number _n1..nn_ equal to _n0_?
   dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
-( test-bits set-bits reset-bits )
+( c@test-bits )
+
+  \ XXX TODO possible names:
+  \ c@test-bits     cand@    c@and   c@mask?    c@test?  c@set?
+  \ c!set-bits      cor!     c!or    c!mask     c!set
+  \ c!reset-bits                     c!unmask   c!reset
+  \ c!toggle-bits   cxor!    c!xor   c!toggle   c!toggle
 
   \ Credits:
   \ Words inspired by MPE PowerForth for TiniARM.
 
 need z80-asm  need [if]
 
-[needed] test-bits [if]
-code test-bits  ( b ca -- wf )
-  hl pop  de pop  e a ld  m and
-  ' true >body jpnz  ' false >body jp
-  end-code  ;s  [then]
-  \ AND the bitmask _b_ with the contents of _ca_ and return
-  \ _true_ if the result is non-zero or _false_ if the result
-  \ is zero. Byte operation.
-
-[needed] set-bits [if]
-code set-bits  ( b ca -- )
-  hl pop  de pop  e a ld  m or  a m ld  jpnext
-  end-code  ;s  [then]
-  \ Apply the bitmask _b_ ORred with the contents of _ca_. Byte
-  \ operation.
-
-[needed] reset-bits [if]
-code reset-bits  ( b ca -- )
-  hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
-  end-code  ;s  [then]
-  \ Apply the bitmask _b_ inverted and ANDed with the contents
-  \ of _ca_. Byte operation.
-
-  \ XXX `toggle-bits` is in the kernel
-  \ [needed] toggle-bits [if]
-  \ code toggle-bits  ( b ca -- )
-  \   hl pop  de pop  m a ld  e xor  a m ld  jpnext
-  \   end-code  ;s  [then]
-  \   \ Invert the bits at _ca_ specified by the bitmask _b_. Byte
-  \   \ operation.
-
-( c!test-bits c!set-bits c!reset-bits )
-
-  \ Credits:
-  \ Words inspired by MPE PowerForth for TiniARM.
-
-need z80-asm  need [if]
+  \ XXX OLD -- `c@test-bits?` is in the kernel
+  \ [needed] c@test-bits? [if]
+  \ code c@test-bits?  ( b ca -- wf )
+  \   hl pop  de pop  e a ld  m and
+  \   ' true >body jpnz  ' false >body jp  end-code  ;s  [then]
+  \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
+  \   \ _true_ if the result is non-zero or _false_ if the result
+  \   \ is zero.
 
 [needed] c@test-bits [if]
-code c@test-bits  ( b ca -- wf )
-  hl pop  de pop  e a ld  m and
-  ' true >body jpnz  ' false >body jp
-  end-code  ;s  [then]
-  \ AND the bitmask _b_ with the contents of _ca_ and return
-  \ _true_ if the result is non-zero or _false_ if the result
-  \ is zero. Byte operation.
+code c@test-bits  ( b1 ca -- b2 )
+  hl pop  de pop  e a ld  m and  pusha jp  end-code  ;s  [then]
+  \ Test the bits at _ca_ specified by the bitmask _b1_.
+  \ Return the result _b2_. The bits sets in _b2_ are those
+  \ set in both _b1_ and the contents of _ca_.
 
-[needed] c!set-bits [if]
-code c!set-bits  ( b ca -- )
-  hl pop  de pop  e a ld  m or  a m ld  jpnext
-  end-code  ;s  [then]
-  \ Apply the bitmask _b_ ORred with the contents of _ca_. Byte
-  \ operation.
+  \ XXX OLD -- `c!set-bits` is in the kernel
+  \ [needed] c!set-bits [if]
+  \ code c!set-bits  ( b ca -- )
+  \   hl pop  de pop  e a ld  m or  a m ld  jpnext
+  \   end-code  ;s  [then]
+  \   \ Set the bits at _ca_ specified by the bitmask _b_.
 
-[needed] c!reset-bits [if]
-code c!reset-bits  ( b ca -- )
-  hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
-  end-code  ;s  [then]
-  \ Apply the bitmask _b_ inverted and ANDed with the contents
-  \ of _ca_. Byte operation.
+  \ XXX OLD -- `c!reset-bits` is in the kernel
+  \ [needed] c!reset-bits [if]
+  \ code c!reset-bits  ( b ca -- )
+  \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
+  \   end-code  ;s  [then]
+  \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
-  \ XXX `toggle-bits` is in the kernel
+  \ XXX OLD -- `c!toggle-bits` is in the kernel
   \ [needed] c!toggle-bits [if]
   \ code c!toggle-bits  ( b ca -- )
   \   hl pop  de pop  m a ld  e xor  a m ld  jpnext
   \   end-code  ;s  [then]
-  \   \ Invert the bits at _ca_ specified by the bitmask _b_. Byte
-  \   \ operation.
+  \   \ Invert the bits at _ca_ specified by the bitmask _b_.
 
   \ }}} =======================================================
   \ Compilation {{{
@@ -5183,6 +5165,20 @@ need break-key?  need trail  need name>link
   depth dup .depth
   if  sp@ 2- s0 @ 2- do i @ u. -2 +loop  then  ;
 
+( possibly anew )
+
+need marker
+
+  \ Credits:
+  \ Code adapted from Wil Baden.
+
+  \ XXX TODO test
+
+: possibly  ( "name" -- )
+  defined ?dup if  name> execute  then  ;
+
+: anew  ( "name" -- )  >in @  possibly  >in !  marker  ;
+
 ( marker ) \ second approach
 
   \ XXX UNDER DEVELOPMENT
@@ -5228,7 +5224,6 @@ need break-key?  need trail  need name>link
   \ allocation and search order pointers to the state they had
   \ just prior to the definition of "name".
 
-
 ( marker )  \ first approach
 
   \ XXX UNDER DEVELOPMENT
@@ -5272,6 +5267,25 @@ need break-key?  need trail  need name>link
   \ everything defined after it, restoring all dictionary
   \ allocation and search order pointers to the state they had
   \ just prior to the definition of "name".
+
+( marker )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Code from eForth, for reference.
+
+ \ : _MARKER ( -- ) ( R: dfa -- ) \ ???
+ \   R> 2@ ( * ) DUP @ FOLLOWER !  DUP CONTEXT
+ \   BEGIN >R CELL+ DUP @ DUP R@ ! WHILE R> CELL+ REPEAT ( search order )
+ \   CELL+ DUP 2@ CURRENT 2!  CELL+ DUP @ ( cur wid & head )
+ \   BEGIN >R  CELL+ DUP @ R@ !  R> CELL+ @ ?DUP 0= UNTIL ( wid last na's )
+ \   R> 2DROP ( * ) DP 2! ; COMPILE-ONLY
+
+ \ : MARKER ( "name" -- ) \ ???
+ \   ALIGN DP 2@ ( * ) FOLLOWER @ ,  CONTEXT
+ \   BEGIN DUP @ DUP , WHILE CELL+ REPEAT  DROP ( search order )
+ \   CURRENT 2@ , DUP , ( cur wid & head )
+ \   BEGIN DUP @ , CELL+ @ ?DUP 0= UNTIL ( wid last na's )
+ \   ['] _MARKER : REVEAL COMPILE, ( * ) , , ;
 
 ( assert( )
 
@@ -5355,6 +5369,15 @@ variable assert-level ( -- a )
   \ : unless  ( f -- )
   \   postpone ?branch >mark  ; immediate compile-only
 
+( base-execute )
+
+  \ Credits:
+  \ Word from Gforth.
+
+: base-execute  ( cfa n -- )  base @ >r execute r> base !  ;
+  \ Execute _cfa_ with the content of `base` being _n_
+  \ and restoring the original `base` afterwards.
+
 ( cs-pick cs-roll cs-drop cs-mark cs-test cs-push cs-pop )
 
   \ XXX UNDER DEVELOPMENT 2015-10-26
@@ -5423,6 +5446,65 @@ variable assert-level ( -- a )
   \ start Forth with control flow base set to a safe value
   : cold ( -- ) ... !cfs ;
 
+( cs-pick cs-roll )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ Credits:
+  \ Code from hForth.
+
+  \ cs-pick
+  \
+  \    Execution: ( C: destu ... orig0|dest0 -- destu ... orig0|dest0 destu )
+  \    ( S: u -- )
+  \  Interpretation: Interpretation semantics for this word are undefined.
+
+  \    Remove u.  Copy destu to the top of the control-flow
+  \    stack.  An ambiguous condition exists if there are less
+  \    than u+1 items, each of which shall be an orig or dest,
+  \    on the control-flow stack before CS-PICK is executed.
+  \
+  \    If the control-flow stack is implemented using the data
+  \    stack, u shall be the topmost item on the data stack.
+
+: cs-pick
+  ( destu ... orig0|dest0 u -- destu ... orig0|dest0 destu )
+  dup 2* 1+ pick    \ check destu; dest type is 0
+  if -22 throw then    \ control structure mismatch
+  dup >r  0 swap    \ destu ... orig0|dest0 0 u  r: u
+  1+ 0 do i 2* 1+ pick or loop
+    \ dest type is 0; orig type is 1
+  1 invert and if -22 throw then  \ ored types should be 0
+  r> 2* 1+ pick 0
+  bal 1+ to bal ; compile-only
+
+  \ cs-roll
+  \    Execution: ( C: origu|destu origu-1|destu-1 ... orig0|dest0 --
+  \        origu-1|destu-1 ... orig0|dest0 origu|destu )
+  \    ( S: u -- )
+
+  \  Interpretation: Interpretation semantics for this word are
+  \  undefined.
+  \
+  \    Remove u.  Rotate u+1 elements on top of the control-flow
+  \    stack so that origu|destu is on top of the control-flow
+  \    stack.  An ambiguous condition exists if there are less
+  \    than u+1 items, each of which shall be an orig or dest,
+  \    on the control-flow stack before CS-ROLL is executed.
+  \
+  \    If the control-flow stack is implemented using the data
+  \    stack, u shall be the topmost item on the data stack.
+
+: cs-roll
+  \ ( origu|destu origu-1|destu-1 ... orig0|dest0 u
+  \    -- origu-1|destu-1 ... orig0|dest0 origu|destu )
+  dup >r  0 swap    \ destu ... orig0|dest0 0 u  r: u
+  1+ 0 do i 2* 1+ pick or loop
+    \ dest type is 0; orig type is 1
+  1 invert and if -22 throw then  \ ored types should be 0
+  r@ 2* 1+ roll
+  r> 2* 1+ roll ; compile-only
+
 ( begincase )
 
   \ XXX UNDER DEVELOPMENT 2015-10-26
@@ -5457,7 +5539,7 @@ need cs-push  need cs-pop
   \ Credits:
   \ `(times)` was inspired by cmForth's `repeats`.
 
-  \ XXX TODO  
+  \ XXX TODO
   \ code (times)  ( n -- )
   \   \ ld h,b
   \   \ ld l,c
@@ -5498,7 +5580,7 @@ need cs-push  need cs-pop
   \ XXX TODO ?do
 
 : times  ( Compilation: "name" -- ) ( Run-time: n -- )
-  postpone (times) 
+  postpone (times)
   defined ( nfa | 0 ) ?dup 0= -13 ?throw
   name>immediate? ( cfa f )  -271 ?throw  compile,
   ; immediate compile-only
@@ -7045,13 +7127,14 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
 
 ( c# )
 
-: c#  ( "name" -- c )
-  parse-name drop c@ postpone literal  ; immediate
-  \ Parse a name and return the code of the its first
-  \ character.
+  \ Credits:
+  \ Code inspired by eForth.
 
-  \ XXX FIXME -- This word depends on the old fig-Forth's
-  \ state-smart `literal`.
+: c#  ( "name" -- c )
+  parse-name drop c@
+  compiling? if  postpone literal  then  ; immediate
+  \ Parse a name and return the code of the its first
+  \ character. This is an alternative to `char` and `[char]`.
 
   \ }}} =======================================================
   \ Data structures {{{
@@ -7723,10 +7806,10 @@ code just-pause ( u -- )
 
 need body>name
 
-: .context  ( -- )  context #vocs 0 do
-  \ XXX FIXME
-                      dup @ ?dup if  body>name id.  then  cell+
-                    loop drop  ;
+: .context  ( -- )  \ XXX FIXME
+  context #vocs 0 do
+    dup @ ?dup if  body>name id.  then  cell+
+  loop drop  ;
   \ Display the search order currently in effect.
 
 : .current  ( -- )  current @ body>name id.  ;
@@ -7793,9 +7876,7 @@ need body>name
 
 : wid-of  ( "name" -- wid )  ' voc>wid  ;
 
-
-
-( set-current get-current trail )
+( set-current get-current trail >order )
 
 [unneeded] get-current
 ?\ : get-current  ( -- wid )  current @  ;
@@ -7814,6 +7895,20 @@ need body>name
   \ `context` vocabulary.
   \
   \ }doc
+
+[unneeded] >order
+?\ : >order  ( wid -- )  also context !  ;
+
+  \ doc{
+  \
+  \ >order  ( wid -- )
+  \
+  \ Push _wid_ on the search order.
+  \
+  \ }doc
+
+  \ Credits:
+  \ Word from Gforth.
 
 ( search-wordlist )
 

@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510252147
+version_release:  equ 201510270320
 
 ; ==============================================================
 ; Author and license
@@ -777,16 +777,16 @@ return_stack_pointer:
 default_color_attribute:
   dw 4 ; low byte: green paper, black ink; high byte: no mask
 
-  ; XXX TODO
-if 0 ; show_version
-version_status_variable:
-  dw version_status
-version_branch_variable:
-  dw version_branch
-version_release_variable:
-  dw version_release mod 0xFFFF
-  dw version_release / 0xFFFF
-endif
+  ; XXX OLD
+; if 1 ; show_version
+; version_status_variable:
+;   dw version_status
+; version_branch_variable:
+;   dw version_branch
+; version_release_variable:
+;   dw version_release mod 0xFFFF
+;   dw version_release / 0xFFFF
+; endif
 
   ; User variables default values
 
@@ -4444,11 +4444,30 @@ endif
   _jp_next
 
 ; ----------------------------------------------
+  _code_header c_fetch_test_bits_question_,'C@TEST-BITS?'
+
+; doc{
+;
+; c!test-bits?  ( b ca -- wf )
+;
+; Test the bits at _ca_ specified by the bitmask _b_.
+; Return _true_ if the result is non-zero, else return _false_.
+;
+; }doc
+
+  pop hl ; address
+  pop de ; e = bitmask
+  ld a,e
+  and (hl)
+  jp nz,true_pfa
+  jp false_pfa
+
+; ----------------------------------------------
   _code_header c_store_toggle_bits_,'C!TOGGLE-BITS'
 
 ; doc{
 ;
-; toggle  ( b ca -- )
+; c!toggle-bits  ( b ca -- )
 ;
 ; Invert the bits at _ca_ specified by the bitmask _b_.
 ;
@@ -4458,6 +4477,43 @@ endif
   pop de ; e = bitmask
   ld a,(hl)
   xor e
+  ld (hl),a
+  _jp_next
+
+; ----------------------------------------------
+  _code_header c_store_set_bits_,'C!SET-BITS'
+
+; doc{
+;
+; c!set-bits  ( b ca -- )
+;
+; Set the bits at _ca_ specified by the bitmask _b_.
+;
+; }doc
+
+  pop hl ; address
+  pop de ; e = bitmask
+  ld a,e
+  or (hl)
+  ld (hl),a
+  _jp_next
+
+; ----------------------------------------------
+  _code_header c_store_reset_bits_,'C!RESET-BITS'
+
+; doc{
+;
+; c!reset-bits  ( b ca -- )
+;
+; Reset the bits at _ca_ specified by the bitmask _b_.
+;
+; }doc
+
+  pop hl ; address
+  pop de ; e = bitmask
+  ld a,e
+  cpl
+  and (hl)
   ld (hl),a
   _jp_next
 
@@ -7682,15 +7738,69 @@ interpret.end:
   db immediate_mask
 
 ; ----------------------------------------------
+  _colon_header lex_question_,'LEX?'
+
+; doc{
+;
+; lex?  ( nfa b -- )
+; 
+; Test the bits at _nfa_ specified by the bitmask _b_.
+; Return _true_ if the result is non-zero, else return _false_.
+;
+; }doc
+
+if 1
+
+  _names_bank
+  dw swap_,c_fetch_test_bits_question_
+  _default_bank
+  dw semicolon_s_
+
+else  ; XXX TMP alternative without `c@test-bits?`
+
+  dw swap_,c_fetch_n_,and_,zero_not_equals_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _colon_header lex_store_,'LEX!'
+
+; doc{
+;
+; lex!  ( b nfa -- )
+; 
+; Set the bits of the mask _b_ in the length byte of _nfa_.
+;
+; }doc
+
+  ; Credits:
+  ; Word adapted from eForth.
+
+  _names_bank
+  dw c_store_set_bits_
+  _default_bank
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header set_latest_lex_,'SET-LATEST-LEX'
+
+; doc{
+;
+; set-latest-lex  ( b -- )
+; 
+; Set the bits of the mask _b_ in the length byte of the latest
+; defined word.
+;
+; }doc
+
+  dw latest_,lex_store_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
 
-  dw immediate_mask_
-immediate.do:
-  dw latest_
-  ; XXX TODO factor `toggle-names'?
-  _names_bank
-  dw c_store_toggle_bits_ ; XXX FIXME -- set_bits_
-  _default_bank
+  dw immediate_mask_,set_latest_lex_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7704,11 +7814,7 @@ immediate.do:
 ;
 ; }doc
 
-  ; XXX TODO better name?
-
-  dw c_fetch_n_
-  dw immediate_mask_
-  dw and_,zero_not_equals_
+  dw immediate_mask_,lex_question_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7738,8 +7844,8 @@ immediate.do:
 ; ----------------------------------------------
   _colon_header compile_only_,'COMPILE-ONLY'
 
-  dw compile_only_mask_
-  dw branch_,immediate.do
+  dw compile_only_mask_,set_latest_lex_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header compile_only_question_,'COMPILE-ONLY?'
@@ -7752,11 +7858,7 @@ immediate.do:
 ;
 ; }doc
 
-  ; XXX TODO better name?
-
-  dw c_fetch_n_
-  dw compile_only_mask_
-  dw and_,zero_not_equals_
+  dw compile_only_mask_,lex_question_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7916,50 +8018,7 @@ quit.begin:
 ; ----------------------------------------------
   _two_constant_header version_,'VERSION'
 
-  ; XXX UNDER DEVELOPMENT
-  ; XXX TMP
-
-  dw 0,0
-
-if 0
-
-  ; XXX TODO -- No way to manipulate a 32-bit number in Pasmo
-
-  ; version_release:  equ 2015102500
-
-  dw (version_release >> 16) ; wrong result: 0 instead of 30748
-  dw (version_release and 0xFFFF) ; right result: 1572
-  
-  dw (version_release / 0xFFFF) ; wrong result: 0 instead of 30748
-  dw (version_release mod 0xFFFF) ; right result: 1572
-
-  dw (2015102500 / 0xFFFF) ; wrong result: 0 instead of 30748
-  ; dw (version_release / 0xFFFF) ; wrong result: 0 instead of 30748
-  dw version_release ; right result: 1572
-
-endif
-
-; ----------------------------------------------
-if 0 ; show_version
-
-  _colon_header dot_version_,'.VERSION'
-
-  ; XXX UNDER DEVELOPMENT
-  ; XXX TMP
-
-  dw lit_,version_status_variable,fetch_,emit_
-  _literal '-'
-  dw emit_
-  dw lit_,version_branch_variable,fetch_
-  dw s_to_d_,less_hash_,hash_,hash_,hash_greater_,type_
-  _literal '-'
-  dw emit_
-  dw lit_,version_release_variable,two_fetch_
-  ; XXX TODO use `du.` when available (it's in the library disk)
-  dw less_hash_,hash_s_,hash_greater_,type_
-  dw semicolon_s_
-
-endif
+  dw 307,31475 ; = 20151027
 
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
@@ -7970,15 +8029,12 @@ endif
 ;
 ; }doc
 
-;  _chk 'greeting -- start' ; XXX INFORMER
-if 0 ; show_version
-  ; XXX TODO
+if 1 ; show_version
   dw paren_dot_quote_
-;  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
   _string "Solo Forth\rVersion "
-  ; XXX TMP show the version and the free dictionary memory:
-  dw dot_version_,cr_
-;  _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  dw version_,d_dot_
+  dw paren_dot_quote_
+  _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
 else
   dw paren_dot_quote_
   _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
