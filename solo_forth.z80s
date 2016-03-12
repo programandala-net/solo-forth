@@ -3,7 +3,7 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506180207
+; Version A-00-2015061930
 ; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
 ; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
@@ -87,12 +87,15 @@ blocks_per_screen:                equ 0x02
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
 
+length_bit:           equ 7
+length_bit_mask:      equ 1 shl length_bit
 precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
 
 max_word_length:                equ 0x1F
+max_word_length_bit_mask:       equ max_word_length
 
 ; ----------------------------------------------
 ; Config
@@ -100,6 +103,12 @@ max_word_length:                equ 0x1F
   ; XXX experimental
   ; When true, some code pieces are more compact but slower.
 size_optimization?              equ false
+
+  ; XXX experimental
+  ; When true, the original fig-Forth name field is used.
+  ; When false, the last letter of the name does not have the
+  ; sign bit set.
+fig_name_field?                 equ true
 
 ; ----------------------------------------------
 ; Character codes
@@ -175,19 +184,18 @@ previous_nfa defl 0 ; link to previous Forth word
 _header: macro label,name_but_last_letter,last_letter,is_immediate
 
   this_nfa: defl $ ; link address for next word
-  bits: defl 0x80
+  bits: defl length_bit_mask
   if not nul is_immediate
     ; set immediate bit
     bits: defl bits | precedence_bit_mask
   endif
-  ;  local _first ; address of the first char of the name
-  ;  local _next  ; address after the last char of the name
-  ;db _next-_first+bits    ; count and flags byte
   label##nfa: ; name field address
   db label##lfa-label##nfa-1+bits ; count and flags byte
-  ;  _first:
-  db name_but_last_letter,last_letter+0x80 ; name field
-  ;  _next:
+  if fig_name_field?
+    db name_but_last_letter,last_letter+length_bit_mask ; name field
+  else
+    db name_but_last_letter,last_letter ; name field
+  endif
   label##lfa: ; link field address
   dw previous_nfa ; link field
   label: ; code field address
@@ -319,6 +327,22 @@ _jump_z: macro _address
   endif
   endm
 
+_border: macro _color ; XXX TMP for debugging
+  local _pause0
+  push af
+  push bc
+  ld a,_color
+  out(0xFE),a
+  ld b,0
+  _pause0:
+  dec bc
+  ld a,b
+  or c
+  jr nz,_pause0
+  pop bc
+  pop af
+  endm
+
 ; ==============================================================
 ; Entry points
 
@@ -380,6 +404,9 @@ voc_link_init_value:
   dw forth_vocabulary_link
 
 default_user_variables_end:
+
+ip_backup: ; temporary copy of Forth IP
+  dw 0
 
 ; ==============================================================
 ; User variables
@@ -668,6 +695,10 @@ l5f65h:
   ld l,h
   jp pushhl
 
+  _code_header paren_find_,'(FIND',')'
+
+if fig_name_field?
+
 ; doc{
 ;
 ; (FIND)  ( ca nfa --- pfa b tf | ff )
@@ -680,13 +711,12 @@ l5f65h:
 ;
 ; }doc
 
-  _code_header paren_find_,'(FIND',')'
-
   ; XXX TODO optimize speed with absolute jumps?
   ; XXX TODO -- return cfa instead of pfa
   ; XXX TODO -- always return two elements, after Forth-94
   pop de ; nfa
 paren_find.begin:
+  ; (sp) = string address
   ; de = nfa
   pop hl ; string address
   push hl ; save for next iteration
@@ -694,36 +724,38 @@ paren_find.begin:
   xor (hl) ; filter deviations
   and 0x3F ; mask msb and precedence bit
   jr nz,paren_find.skip_name_field ; lengths differ
-l5f7dh:
+paren_find.compare_next_char:
   inc hl ; next character in string
   inc de ; next character in name field
   ld a,(de)
   xor (hl) ; filter deviations
   add a,a
-  jr nz,l5f9ah ; no match
-  jr nc,l5f7dh ; match so far, loop agn
-  ld hl,0x0005 ; string matches
+  jr nz,paren_find.not_a_match ; no match
+  jr nc,paren_find.compare_next_char ; match so far, loop again
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ld hl,0x0005 ; offset from lfa-1 to pfa
   add hl,de
   ex (sp),hl ; pfa to stack
-l5f8bh:
+paren_find.search_for_length_byte:
   dec de ; position de on nfa
   ld a,(de)
   or a ; msb=1?; if so, length byte
-  jp p,l5f8bh ; no, try next char
+  jp p,paren_find.search_for_length_byte ; no, try next char
   ld e,a ; length byte
   ld d,0x00
   ld hl,true
   jp pushde ; name field found, return
-l5f9ah:
+paren_find.not_a_match:
   ; Above name field not a match, try next one
-  jr c,l5fa2h ; carry = end of name field
+  jr c,paren_find.name_field_skipped ; carry = end of name field
 paren_find.skip_name_field:
   ; Find end of name field
   inc de
   ld a,(de)
   or a ; msb=1?
   jp p,paren_find.skip_name_field ; no, loop
-l5fa2h:
+paren_find.name_field_skipped:
   inc de ; lfa
   ex de,hl
   ld e,(hl)
@@ -735,6 +767,113 @@ l5fa2h:
   ; No match found, return
   pop hl ; drop string address
   jp false_pfa
+
+else
+
+; doc{
+;
+; (FIND)  ( ca nfa --- pfa b tf | ff )
+;
+; Search the dictionary starting at the name field address
+; _nfa_, matching to the text at _ca_. If a match is found,
+; return parameter field address _pfa_, length byte of name
+; field _b_ and a boolean true.  Otherwise return only a boolean
+; false.
+;
+; }doc
+
+  _new_paren_find
+
+endif
+
+  _code_header new_paren_find_,'N(FIND',')' ; XXX TMP
+
+_new_paren_find: macro
+
+  ; XXX FIXME
+
+  ; XXX TODO -- return cfa instead of pfa
+  ; XXX TODO -- always return two elements, after Forth-94
+
+  ld (ip_backup),bc ; save Forth IP
+  pop de ; nfa
+  pop hl ; string address
+  ld (new_paren_find.string_address),hl
+new_paren_find.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (new_paren_find.nfa_backup),de ; save for later
+new_paren_find.string_address: equ $+1
+  ld hl,0 ; string address
+  ld a,(de) ; nfa length byte
+  ld c,a    ; save for later
+
+  if 0 ; XXX OLD -- original method
+    xor (hl) ; filter deviations ; XXX what?
+    and 0x3F ; mask msb and precedence bit ; XXX what?
+  else
+    and max_word_length_bit_mask  ; actual length
+    ld (60001),a ; XXX INFORMER ; nfa length byte: 4 or 5 !?
+    cp (hl)
+    ld a,(hl) ; XXX INFORMER
+    ld (60000),a ; XXX INFORMER ; string length: 5
+  endif
+
+  ;_border 3 ; XXX INFORMER
+  jr nz,new_paren_find.not_a_match ; lengths differ
+  ; Lengths match.
+  _border 6 ; XXX INFORMER
+
+  ld a,c ; length byte
+  and max_word_length_bit_mask  ; actual length
+  ld b,a
+new_paren_find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  cp (hl)
+  jr nz,new_paren_find.not_a_match ; no match
+  djnz new_paren_find.compare_next_char ; match so far, loop again
+
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ; c = length byte of the name field
+  ld hl,5 ; offset from lfa-1 to pfa
+  add hl,de
+  push hl ; pfa
+  ld e,c ; length byte
+  ld d,0
+  ld hl,true
+  ld bc,(ip_backup) ; restore Forth IP
+  _border 4 ; XXX INFORMER
+  jp pushde
+
+new_paren_find.not_a_match:
+  ; Not a match, try next one.
+  ;_border 1 ; XXX INFORMER
+new_paren_find.nfa_backup: equ $+1
+  ld hl,0 ; nfa
+  ld a,c ; length byte
+  and max_word_length_bit_mask  ; actual length
+  ld c,a ; actual length
+  inc c ; plus the length byte
+  ld b,0
+  add hl,bc ; hl = lfa
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld a,d
+  or e ; end of dictionary?
+  jp nz,new_paren_find.begin ; if not, continue
+
+  ; No match found, return.
+  ld bc,(ip_backup) ; restore Forth IP
+  ;_border 2 ; XXX INFORMER
+  jp false_pfa
+
+  endm
+
+  _new_paren_find
 
 ; doc{
 
@@ -2030,14 +2169,32 @@ question_dup.end:
 
   _colon_header traverse_,'TRAVERS','E'
 
-  dw swap_
+if fig_name_field?
+
+  ; TRAVERSE  ( a1 n --- a2 )
+
+  dw swap_ ; ( n a )
 traverse.begin:
-  dw over_,plus_
+  dw over_,plus_ ; ( n a' )
   dw c_lit_
   db 0x7F
   dw over_,c_fetch_,less_than_
   dw zero_branch_,traverse.begin ; until
   dw swap_,drop_
+
+else
+
+  ; TRAVERSE  ( a1 --- a2 )
+
+traverse.begin:
+  dw one_minus_,dup_,c_fetch_ ; ( a c )
+  dw c_lit_
+  db length_bit_mask
+  dw and_ ; 
+  dw zero_branch_,traverse.begin ; until
+
+endif
+
   dw semicolon_s_
 
   _colon_header latest_,'LATES','T'
@@ -2060,21 +2217,38 @@ traverse.begin:
 
   _colon_header pfa_to_nfa_,'PFA>NF','A'
 
+if fig_name_field?
   dw c_lit_
   db 0x05
-  dw minus_
-  dw lit_,-1,traverse_
+  dw minus_,lit_,-1,traverse_
+else
+  dw c_lit_
+  db 0x05
+  dw minus_,lit_,traverse_
+endif
   dw semicolon_s_
 
   _colon_header cfa_to_nfa_,'CFA>NF','A'
 
+if fig_name_field?
   dw three_,minus_
   dw lit_,-1,traverse_
+else
+  dw three_,minus_,traverse_
+endif
   dw semicolon_s_
 
   _colon_header nfa_to_lfa_,'NFA>LF','A'
 
+if fig_name_field?
   dw one_,traverse_,one_plus_
+else
+  ; XXX TODO
+  dw dup_,c_fetch_
+  dw c_lit_
+  db 0x1F
+  dw and_,plus_,one_plus_
+endif
   dw semicolon_s_
 
   _colon_header nfa_to_cfa_,'NFA>CF','A'
@@ -2713,6 +2887,8 @@ branch_destination_0x6B2A:
 
   _colon_header id_dot_,'ID','.'
 
+if fig_name_field?
+
   dw pad_
   dw c_lit_
   db max_word_length+1
@@ -2722,7 +2898,7 @@ branch_destination_0x6B2A:
   dw dup_,nfa_to_lfa_,over_ ; ( nfa lfa nfa )
   dw minus_ ; ( nfa len+1 )
   dw pad_,swap_,cmove_
-  dw pad_,count_ ; ( pad len+0x80+n )
+  dw pad_,count_ ; ( pad len+length_bit_mask+n )
   dw c_lit_
   db max_word_length
   dw and_ ; ( pad len )
@@ -2739,6 +2915,17 @@ else ; XXX NEW
 endif
   dw type_,space_
   dw semicolon_s_
+
+else ; XXX NEW -- name field without end bit in the last char
+
+  dw count_
+  dw c_lit_
+  db max_word_length_bit_mask
+  dw and_
+  dw type_,space_
+  dw semicolon_s_
+
+endif
 
   ; XXX OLD -- original version of `create`
   ; XXX TODO -- rewrite after Forth-83 and Forth-94.
@@ -2761,7 +2948,7 @@ create.continue:
   dw toggle_
   dw here_,one_,minus_
   dw c_lit_
-  db 0x80 ; XXX TODO document
+  db length_bit_mask ; XXX TODO document
   dw toggle_
   dw latest_,comma_
   dw current_,fetch_,store_
@@ -2797,7 +2984,7 @@ code.continue:
   dw toggle_
   dw here_,one_,minus_
   dw c_lit_
-  db 0x80 ; XXX TODO document
+  db length_bit_mask ; XXX TODO document
   dw toggle_
   dw latest_,comma_
   dw current_,fetch_,store_

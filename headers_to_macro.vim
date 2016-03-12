@@ -1,3 +1,7 @@
+" headers_to_macro.vim
+" This file is part of the development of Solo Forth.
+" This file converts the headers to macros.
+"
 " 2015-06-18
 
 

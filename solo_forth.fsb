@@ -64,13 +64,16 @@
 
 ( debugging ) \ scr 2
 
-  \ 2015-06-11
-  \ XXX FIXME this issues error 7 (full stack) compiling test2,
-  \ and execution of test1 freezes the system.
+  \ 2015-06-18: Testing the new `(find)`, still buggy.
 
-: test1 1 . ;
+0 variable s 32 allot
+0 variable nfa 32 allot
+here
+  4 128 + c, char h c, char o c, char l c, char a c,
+constant w
+bl text hola pad s 32 cmove
+s w n(find)
 
-: test2 2 . ;
 
 ( require ) \ scr 3
 
