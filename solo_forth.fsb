@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509122258
+\ Last modified: 201509140054
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,8 +33,8 @@
 
   \ XXX TMP
 
-[defined] require  ?\ 2 load
-require source  require /string  require place
+[defined] need  ?\ 2 load
+need source  need /string
 
 : text  ( "text<eol>" -- )
   pad c/l 1+ blank
@@ -56,9 +56,9 @@ require source  require /string  require place
   \ cr ." after /string: <" .s ." >"
 
   \ }}} =======================================================
-  \ Require {{{
+  \ Need {{{
 
-( require ) \ scr 2
+( need ) \ scr 2
 
   \ This screen must be at a fixed location.
 
@@ -85,7 +85,7 @@ variable last-locatable  scr/disk last-locatable !
 
 -->
 
-( require ) \ scr 3
+( need ) \ scr 3
 
 : ?located  ( screen | false -- )  dup 0= 29 ?error  ;
 
@@ -93,12 +93,11 @@ variable last-locatable  scr/disk last-locatable !
   \ Locate the given _name_ and set its screen the first one
   \ `require` will search from.
 
-: rerequired  ( ca len -- )  located ?located load  ;
+: reneeded  ( ca len -- )  located ?located load  ;
 
-: rerequire  ( "name" -- )
-  parse-name save-string rerequired  ;
+: reneed  ( "name" -- )  parse-name save-string reneeded  ;
 
-: required  ( ca len -- )
+: needed  ( ca len -- )
 
   \ XXX FIXME usually the final check fails because the saved
   \ string has been overwritten. the only solution is to store
@@ -106,15 +105,14 @@ variable last-locatable  scr/disk last-locatable !
 
   \ XXX OLD
   \ 2dup undefined?
-  \   if  2dup rerequired  then
+  \   if  2dup reneeded  then
   \ 2dup undefined? warnings @ and
   \   if  type 28 warning exit  then  2drop  ;
 
   \ XXX TMP
-  2dup undefined?  if  rerequired  else  2drop  then  ;
+  2dup undefined?  if  reneeded  else  2drop  then  ;
 
-: require  ( "name" -- )
-  parse-name save-string required  ;
+: need  ( "name" -- )  parse-name save-string needed  ;
 
   \ }}} =======================================================
   \ Error messages {{{
@@ -136,7 +134,7 @@ variable last-locatable  scr/disk last-locatable !
 \ Error #11:
 \ Error #12:
 \ Error #13:
-\ Error #14:
+\ Error #14: Wrong digit.
 \ Error #15: Deferred word is uninitialized.
 
 ( Error messages 16..30 )  \ scr 5
@@ -224,24 +222,159 @@ variable last-locatable  scr/disk last-locatable !
   \ XXX useless:
 \ G+DOS error #31: CHANNEL used
 
+  \ }}} =======================================================
+  \ Parsing {{{
+
+( evaluate )
+
+  \ XXX TODO
+
+  \ XXX Gforth:
+
+: evaluate  ( ca len -- )  ['] interprent execute-parsing  ;
+
+( parse-char )
+
+: parse-char  ( "c"  -- c )  stream c@ 0 parsed  ;
+  \ Parse the next char in the input stream and return its
+  \ code.
+  \
+  \ Note: `0 parsed` increments `>in` because `parsed` adds 1
+  \ to its parameter (to include the delimiter).
 
   \ }}} =======================================================
   \ Strings {{{
 
-( place +place )  \ ==strings==
+( s\" )  \ ==strings==
+
+only forth definitions
+need wid-of  need parse-char
+vocabulary escaped-voc
+wid-of escaped-voc constant escaped-wordlist
+also escaped-voc definitions
+
+  \ The `escaped-voc` contains the words whose names are
+  \ characters that must be escaped after a backslash. Their
+  \ execution returns the new character(s) on the stack (the
+  \ first one at the top) and the count.
+  \
+  \ Most of the escaped chars are translated to one char, so
+  \ they are defined as double constants.
+
+7 1 2constant a  8 1 2constant b  27 1 2constant e
+  \ \a = backspace
+  \ \b = alert
+  \ \e = escape
+12 1 2constant f  10 1 2constant l  13 1 2constant n
+  \ \f = form feed
+  \ \l = line feed
+  \ \n = new line (implementation dependent)
+char " 1 2constant q  13 1 2constant r  9 1 2constant t
+  \ \q = double quote
+  \ \r = carriage return
+  \ \t = horizontal tab
+11 1 2constant v  0 1 2constant z
+  \ \v = vertical tab
+  \ \z = null character
+char " 1 2constant "  char \ 1 2constant \
+  \ \" = double quote
+  \ \\ = backslash
+
+: m  ( -- c1 c2 2 )  10 13 2  ;
+  \ \m = carriage return and line feed
+
+: (x)  ( "c" -- n )  parse-char upper 16 digit 0= 14 ?error  ;
+  \ Parse an hex digit and convert it to a number.
+
+: x  ( "cc" -- c 1 )  (x) 16 * (x) + 1  ;
+  \ \x = hex character code
+  \ Parse the 8-bit hex number of a character code.
+
+-->
+
+( s\" )
+
+only forth definitions
+
+need char>string   need search-wordlist
+need chars>string  need s+
+
+: unescape-char  ( c -- c1..cn n )
+  dup char>string escaped-wordlist search-wordlist
+  if  nip execute  else  [char] \ 2  then  ;
+  \ Translate a escaped char to a number of chars and their
+  \ count.
+  \ c1..cn = chars to make the string with
+  \          (_c1_ is the last one)
+  \ n = number of chars
+
+: (s\")  ( "text<quote>"  -- ca len )
+  pad 0  \ empty string to start with
+  begin  parse-char dup [char] " <>  while  \ not finished?
+    dup [char] \ =  \ possibly escaped char?
+    if    drop parse-char unescape-char
+    else  1  then  chars>string s+
+  repeat  drop  ;
+  \ Parse a text string delimited by a double quote, using the
+  \ translation rules described by Forth 2012's `s\"`, and
+  \ returning the string _ca len_ in the circular string
+  \ buffer.
+
+: s\"  ( "text<quote>"  - ca len )  \ Forth 2012
+  (s\")  comp? if  postpone sliteral  then  ; immediate
+
+( char>string chars>string )
+
+: char>string  ( c -- ca len )  1 allocate-string tuck c! 1  ;
+  \ Convert the char _c_ to a string _ca len_ in the circular
+  \ string buffer.
+
+: chars>string  ( c1..cn n -- ca len )
+  dup if 
+    dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
+    bounds do  i c!  loop  2r>
+  else  pad swap  then  ;
+  \ Convert _n_ chars to a string _ca len_ in the circular
+  \ string buffer.
+  \ c1..cn = chars to make the string with
+  \          (_c1_ is the last one)
+  \ n = number of chars
+
+( +place )
 
   \ Credits:
   \ Code from Afera.
-  \ http://programandala.net/en.program.afera.html
-
-: place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
 
 : +place  ( ca1 len1 ca2 )
   2dup c@ + over c!  dup c@ 1+ + smove  ;
+  \ Add the string _ca1 len1_ to the end of the counted string
+  \ _ca2_.  
+
+( s+ )
+
+  \ Credits:
+  \ Code adapted from Afera.
+
+[defined] lengths
+?\ : lengths   2over nip over  ;
+   ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
+
+: s+  ( ca1 len1 ca2 len2 -- ca3 len3 )
+
+  \ Append the string _ca2 len2_ to the end of string _ca1
+  \ len1_ returning the string _ca3 len3_ in the circular
+  \ string buffer.
+
+  lengths + >r           ( ca1 len2 ca2 len2 ) ( r: len3 )
+  r@ allocate-string >r  ( r: len3 ca3 )
+  2 pick r@ +            ( ca1 len1 ca2 len2 len1+ca3 )
+  smove                  ( ca1 len1 )  \ 2nd string to buffer
+  r@ smove               \  1st string to buffer
+  r> r>  ;
 
 ( /string )
 
-require -rot
+need -rot
 
   \ Credits:
   \ Code from DZX-Forth.
@@ -263,7 +396,6 @@ require -rot
 
   \ Credits:
   \ Code from Afera.
-  \ http://programandala.net/en.program.afera.html
 
   \ doc{
   \
@@ -311,7 +443,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
 
 ( n>r )  \ ==returnstack==
 
-require z80-asm
+need z80-asm
 
 code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
 
@@ -329,11 +461,11 @@ code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
 
   end-code
 
-require nr>
+need nr>
 
 ( nr> )
 
-require z80-asm
+need z80-asm
 
 code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
 
@@ -349,7 +481,7 @@ code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
   pushhl jp
   end-code
 
-require n>r
+need n>r
 
 ( rdepth )
 
@@ -399,7 +531,7 @@ variable current-mode
 
   \ XXX TODO -- integrate the driver
 
-require mode32  require <file-as-is
+need mode32  need <file-as-is
 
 drive@ 1 drive!
 s" print-42" <file-as-is ?error
@@ -430,7 +562,7 @@ drive!
   \ that is loaded at 60000. Later the font was compiled
   \ into the dictionary.
 
-require mode32  require <file-as-is  require 4x8font
+need mode32  need <file-as-is  need 4x8font
 
 drive@ 1 drive!
 s" 4x8fd.tap" <file-as-is ?error
@@ -453,7 +585,7 @@ drive!
   \ XXX TODO -- integrate the driver
 
 
-require z80-asm
+need z80-asm
 
   \ XXX TODO use common variables for all modes
 create mode64-at-flag 0 c,
@@ -567,7 +699,7 @@ decimal
 
   \ XXX TMP for debugging
 
-require fzx-emit  require <file
+need fzx-emit  need <file
 
 create font  2048 allot
 1 drive!  font 0 s" lettra.fzx" <file
@@ -582,7 +714,7 @@ cr
 
 ( fzx-mode )
 
-require fzx-emit
+need fzx-emit
 
   \ XXX TODO -- finish -- the text input words in the kernel
   \ need some changes before this mode can work fine, and the
@@ -622,7 +754,7 @@ constant fzx-y  constant fzx-x  constant fzx-flags
 
 ( fzx-emit )
 
-require z80-asm  require scroll-1px-up
+need z80-asm  need scroll-1px-up
 
   \ Credits:
   \ This code is a modified version of
@@ -926,7 +1058,7 @@ code fzx-emit  ( c -- )
 
 ( xy-emit-udg )
 
-require (xy-emit)  require z80-asm
+need (xy-emit)  need z80-asm
 
 code xy-emit-udg  ( x y b -- )
 
@@ -947,7 +1079,7 @@ code xy-emit-udg  ( x y b -- )
 
 \ (xy-emit) \
 
-require z80-asm  require (pixel-addr)
+need z80-asm  need (pixel-addr)
 
   \ Credits:
   \ Code Adapted from "SMOOTH MOVE",
@@ -999,7 +1131,7 @@ create (xy-emit)  ( -- )
   \ issue 19 (1986-03), page 65.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-require z80-asm require ocr-chars
+need z80-asm need ocr-chars
 
 code ocr  ( col line -- n )
 
@@ -1124,7 +1256,7 @@ variable ocr-chars
 
 ( pixel-addr )
 
-require (pixel-addr)
+need (pixel-addr)
 
   \ XXX TODO use z80-asm
 
@@ -1170,7 +1302,7 @@ create (pixel-addr)  ( -- a )
 
 ( (pixel-addr) )
 
-require z80-asm
+need z80-asm
 
 create (pixel-addr)  ( -- a )
 
@@ -1234,7 +1366,7 @@ create (pixel-addr)  ( -- a )
 
 ( plot )
 
-require (pixel-addr)
+need (pixel-addr)
 
 code plot  ( xc yc -- )
 
@@ -1265,7 +1397,7 @@ code plot  ( xc yc -- )
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
-require (pixel-addr)  require z80-asm
+need (pixel-addr)  need z80-asm
 
 code set-pixel  ( xc yc -- )
 
@@ -1290,7 +1422,7 @@ code set-pixel  ( xc yc -- )
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
-require (pixel-addr)  require z80-asm
+need (pixel-addr)  need z80-asm
 
 code reset-pixel  ( xc yc -- )
 
@@ -1313,7 +1445,7 @@ code reset-pixel  ( xc yc -- )
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
-require (pixel-addr)  require z80-asm
+need (pixel-addr)  need z80-asm
 
 code toggle-pixel  ( xc yc -- )
 
@@ -1328,7 +1460,7 @@ code toggle-pixel  ( xc yc -- )
 
 ( pixel? )
 
-require (pixel-addr)  require z80-asm
+need (pixel-addr)  need z80-asm
 
 code pixel?  ( xc yc -- f )
   hl pop  de pop  bc push
@@ -1353,7 +1485,7 @@ code pixel?  ( xc yc -- f )
   \ Credits:
   \ Code adapted from Spectrum Forth-83's `DRAW`.
 
-require z80-asm
+need z80-asm
 
 code rdraw  ( x y -- )
 
@@ -1388,7 +1520,7 @@ code rdraw  ( x y -- )
   \ Credits:
   \ Code adapted from Abersoft Forth's `DRAW`.
 
-require plot
+need plot
 
 2variable x1  2variable incx  2variable y1  2variable incy
 
@@ -1418,7 +1550,7 @@ require plot
 
 ( attr )
 
-require z80-asm require (attr-addr)
+need z80-asm need (attr-addr)
 
 code attr ( col line -- b )
 
@@ -1437,7 +1569,7 @@ code attr ( col line -- b )
 
 ( attr-addr )
 
-require z80-asm require (attr-addr)
+need z80-asm need (attr-addr)
 
 code attr-addr ( col line -- a )
 
@@ -1455,7 +1587,7 @@ code attr-addr ( col line -- a )
 
 \ (attr-addr) \
 
-require z80-asm
+need z80-asm
 
 create (attr-addr)  ( -- a )
 
@@ -1501,7 +1633,7 @@ create (attr-addr)  ( -- a )
 
   \ XXX TODO
 
-require z80-asm
+need z80-asm
 
 create circle-plot  ( -- a )
   asm
@@ -1664,7 +1796,7 @@ code circle  ( x y radius -- )
   \ published in Microhobby Especial, issue 7 (1987-12), page 46:
   \ <http://microhobby.org/mhes7.htm>.
 
-require z80-asm
+need z80-asm
 
 code fade  ( -- )
   bc push
@@ -1692,7 +1824,7 @@ code fade  ( -- )
   \ http://microhobby.org/numero133.htm
   \ http://microhobby.speccy.cz/mhf/133/MH133_07.jpg
 
-require z80-asm
+need z80-asm
 
 code inverted  ( -- )
 
@@ -1714,7 +1846,7 @@ code inverted  ( -- )
   \ http://microhobby.org/numero150.htm
   \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg
 
-require z80-asm
+need z80-asm
 
 code water  ( -- )
 
@@ -1739,7 +1871,7 @@ code water  ( -- )
   \ http://microhobby.org/numero121.htm
   \ http://microhobby.speccy.cz/mhf/121/MH121_07.jpg
 
-require z80-asm
+need z80-asm
 
 code clsx  ( -- )
 
@@ -1769,7 +1901,7 @@ code clsx  ( -- )
 
   \ XXX FIXME
 
-require z80-asm
+need z80-asm
 
 code scroll-1px-right  ( -- )
 
@@ -1796,7 +1928,7 @@ code scroll-1px-right  ( -- )
   \ http://microhobby.org/numero122.htm
   \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg
 
-require z80-asm
+need z80-asm
 
 create (scroll-1px-up)  ( -- a )
 
@@ -1834,7 +1966,7 @@ code scroll-1px-up  ( -- )
 
   \ XXX FIXME
 
-require z80-asm
+need z80-asm
 
 code xy-scroll  ( -- )
 
@@ -1863,7 +1995,7 @@ code xy-scroll  ( -- )
   \ http://microhobby.org/numero128.htm
   \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg
 
-require z80-asm
+need z80-asm
 
 code horizontal-curtain  ( b -- )
 
@@ -1895,7 +2027,7 @@ code horizontal-curtain  ( b -- )
   \ http://microhobby.org/numero128.htm
   \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg
 
-require z80-asm
+need z80-asm
 
 code vertical-curtain  ( b -- )
 
@@ -1932,7 +2064,7 @@ code vertical-curtain  ( b -- )
 
   \ XXX TODO finish, document and test
 
-require !p
+need !p
 
 [defined] sound-register-port
   ?\ 65533 constant sound-register-port
@@ -1950,7 +2082,7 @@ require !p
 
 ( music )
 
-require ms  vocabulary music  current @  also music definitions
+need ms  vocabulary music  current @  also music definitions
 
   \ Credits:
   \ Code from Spectrum Forth-83.
@@ -2002,7 +2134,7 @@ current ! previous
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
-require !p
+need !p
 
 [defined] sound-register-port
   ?\ 65533 constant sound-register-port
@@ -2024,7 +2156,7 @@ require !p
 
   \ Z80 version of the previous `play`.
 
-require z80-asm
+need z80-asm
 
 [defined] sound-register-port
 ?\ 65533 constant sound-register-port
@@ -2096,7 +2228,7 @@ create train  ( -- a )
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
-require sound:  hex
+need sound:  hex
 
 00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18 sound: aplausse
 1B 00 09 00 00 00 1F C8 10 10 10 00 6B 10 sound: hammer
@@ -2175,7 +2307,7 @@ code bleep  ( n1 n2 -- )
   \ http://microhobby.org/numero126.htm
   \ http://microhobby.speccy.cz/mhf/126/MH126_07.jpg
 
-require z80-asm
+need z80-asm
 
 code laser-gun  ( -- )
   bc push
@@ -2202,7 +2334,7 @@ code laser-gun  ( -- )
   \ duration of 768 sample bytes, thus equivalent to `768
   \ white-noise`.
 
-require z80-asm
+need z80-asm
 
 code white-noise  ( u -- )
 
@@ -2236,7 +2368,7 @@ code white-noise  ( u -- )
   \ http://microhobby.org/numero142.htm
   \ http://microhobby.speccy.cz/mhf/142/MH142_07.jpg
 
-require z80-asm
+need z80-asm
 
 code ambulance  ( n -- )
 
@@ -2264,12 +2396,13 @@ code ambulance  ( n -- )
 
 : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
-( source command )
+( command )
 
-: source  ( -- a len )  \ ANS Forth
-  blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+  \ XXX OLD -- 2015-09-13: moved to kernel
+  \ : source  ( -- a len )  \ ANS Forth
+  \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
-require source  require /string
+need source  need /string
 
 : command  ( "text<eol>" -- ca len )
   source span @ min c/l min  >in @ span @ min /string
@@ -2293,7 +2426,7 @@ require source  require /string
 : within  ( n1|u1 n2|u2 n3|u3 -- f )
   over - >r - r> u<  ;
 
-require -rot
+need -rot
 
 : between  ( n1|u1 n2|u2 n3|u3 -- f )
   over - -rot - u< 0=  ;
@@ -2517,7 +2650,7 @@ decimal
 
 ( drive@ drive! )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 code drive@  ( -- n )
   \ Get the current drive (1 or 2).
@@ -2540,7 +2673,7 @@ code drive!  ( n -- )
 
 ( -file )
 
-require z80-asm  require ufia  require --hook-codes--
+need z80-asm  need ufia  need --hook-codes--
 
 code (-file)  ( -- ior )
 
@@ -2554,7 +2687,7 @@ code (-file)  ( -- ior )
   jpnext
   end-code
 
-require ior>error
+need ior>error
 
 : -file  ( ca len -- f n )
   \ Delete a disk file.
@@ -2565,7 +2698,7 @@ require ior>error
 
 ( -filename filename! >ufia filename>ufia )
 
-require ufia  require drive@
+need ufia  need drive@
 
 10 constant /filename  \ max filename length
 
@@ -2593,8 +2726,8 @@ require ufia  require drive@
 
 ( >file )
 
-require z80-asm  require ufia  require --hook-codes--
-require >ufia  require ior>error
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need ior>error
 
 code (>file)  ( -- ior )
 
@@ -2621,8 +2754,8 @@ code (>file)  ( -- ior )
 
 ( <file )
 
-require z80-asm  require ufia  require --hook-codes--
-require >ufia  require ior>error
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need ior>error
 
 code (<file)  ( -- ior )
 
@@ -2666,8 +2799,8 @@ code (<file)  ( -- ior )
 
 ( <file-as-is )
 
-require z80-asm  require ufia  require --hook-codes--
-require >ufia  require ior>error
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need ior>error
 
 code (<file-as-is)  ( -- ior )
 
@@ -2701,7 +2834,7 @@ code (<file-as-is)  ( -- ior )
 
 ( file? )
 
-require ufia  require filename!  require --hook-codes--
+need ufia  need filename!  need --hook-codes--
 
 code (file?)  ( -- f )
 
@@ -2720,8 +2853,8 @@ code (file?)  ( -- f )
 
 ( cat acat wcat wacat )
 
-require z80-asm  require ufia  require --hook-codes--
-require filename>ufia
+need z80-asm  need ufia  need --hook-codes--
+need filename>ufia
 
   \ G+DOS addresses (in its own paged memory).
 [defined] ufia1  ?\ hex 3E01 constant ufia1 decimal
@@ -2770,7 +2903,7 @@ code (cat)  ( n -- )
 
 ( @dos )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 code @dos  ( a -- n )
   \ Fetch the content of +D memory address.
@@ -2787,7 +2920,7 @@ code @dos  ( a -- n )
 
 ( c@dos )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 code c@dos  ( a -- b )
   \ Fetch the content of +D memory address.
@@ -2804,7 +2937,7 @@ code c@dos  ( a -- b )
 
 ( c!dos )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 code c!dos  ( b a -- )
   \ Store b into the +D memory address a.
@@ -2820,7 +2953,7 @@ code c!dos  ( b a -- )
 
 ( !dos )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 code !dos  ( n a -- )
   \ Store n into the +D memory address a.
@@ -2836,7 +2969,7 @@ code !dos  ( n a -- )
 
 ( @dosvar )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -2858,7 +2991,7 @@ code @dosvar  ( n1 -- n2 )
 
 ( c@dosvar )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -2888,7 +3021,7 @@ code c@dosvar  ( n -- b )
 
 ( !dosvar )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -2908,7 +3041,7 @@ code !dosvar  ( n1 n2 -- )
 
 ( c!dosvar )
 
-require z80-asm  require --hook-codes--
+need z80-asm  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -3076,7 +3209,7 @@ base !
 
 ( dump )
 
-require break-key?  require hex.  require ascii-type
+need break-key?  need hex.  need ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
@@ -3133,7 +3266,7 @@ variable decode-address  \ in the word being decoded
 
   \ Special cases dispatcher
 
-require case
+need case
 
 : decode-special  ( a1 -- a1 | a2 )
   dup @
@@ -3202,7 +3335,7 @@ require case
 
 ( list )
 
-require break-key?
+need break-key?
 
 : list  ( n -- )
 
@@ -3229,7 +3362,7 @@ code break-key?  ( -- f )
 
 ( index .index )
 
-require break-key?
+need break-key?
 
 : .index  ( n -- )  cr dup 3 .r space 0 swap .line  ;
   \ Print the first line of the screen _n_.
@@ -3252,7 +3385,7 @@ require break-key?
 
 ( index-like )
 
-require break-key?  require .index
+need break-key?  need .index
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -3279,7 +3412,7 @@ require break-key?  require .index
 
 ( index-ilike )
 
-require break-key?  require .index
+need break-key?  need .index
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -3315,7 +3448,7 @@ require break-key?  require .index
   \ Credits:
   \ Code adapted from Spectrum Forth-83.
 
-require break-key?
+need break-key?
 
 [defined] tab ?\  : tab  ( -- )  6 emit  ;
 
@@ -3330,7 +3463,7 @@ require break-key?
   \ Credits:
   \ Code adapted from pForth.
 
-require break-key?
+need break-key?
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -3498,12 +3631,38 @@ code call  ( a -- )
   \ }}} =======================================================
   \ Keyboard {{{
 
-( inkey )  \ ==keyboard==
+( xaccept )  \ ==keyboard==
+
+  \ XXX TODO -- accept
+
+  \ Credits:
+  \ Code adapted from eForth.
+
+  \ XXX TODO show cursor
+  \
+  \ XXX TODO compare with the kernel version and move the best
+  \ version to the kernel (probably this one)
+
+: xaccept ( ca len -- len )
+  over + over ( bot eot cur )
+  begin xkey dup 13 <> \ not carriage return?
+  while
+    dup 12 =  \ delete?
+    if    drop  >r over r@ < dup  \ any chars?
+          if  8 dup emit  bl emit  emit  then  r> +
+    else  \ printable
+          >r  2dup <>  \ more?
+          if r@ over c!  char+  r@ emit
+          then r> drop
+    then
+  repeat  drop nip swap -  ;
+
+( inkey )
 
   \ Credits:
   \ Code adapted and modified from Abersoft Forth's `inkey`.
 
-require z80-asm
+need z80-asm
 
 code inkey  ( -- c | 0 )
 
@@ -3534,7 +3693,7 @@ code inkey  ( -- c | 0 )
 
 ( inkey )
 
-require z80-asm
+need z80-asm
 
 code inkey  ( -- c | 0 )
 
@@ -3567,7 +3726,7 @@ code inkey  ( -- c | 0 )
   \ An alternative to `key?` that works also when the system
   \ interrupts are off. Variant with relative jumps.
 
-require z80-asm
+need z80-asm
 
 code key??  ( -- f )
 
@@ -3592,7 +3751,7 @@ code key??  ( -- f )
   \ An alternative to `key?` that works also when the system
   \ interrupts are off. Faster variant with absolute jumps.
 
-require z80-asm
+need z80-asm
 
 code key??  ( -- f )
 
@@ -3717,7 +3876,7 @@ code !p  ( c ca -- )
 
 ( >number )  ==numberconversion==
 
-require /string
+need /string
 
   \ Credits:
   \ Code from DZX-Forth.
@@ -3838,7 +3997,7 @@ width ! decimal
   \ XXX FIXME it does not work anymore after the changes in the
   \ system.
 
-require c>hex
+need c>hex
 
 hex width @  1 width !
 
@@ -3865,7 +4024,7 @@ width ! decimal
   \   The Netherlands
   \   Published under GPL
 
-require c>hex
+need c>hex
 
 hex  width @ 2 width !
 
@@ -3894,7 +4053,7 @@ width ! decimal
 
   \ XXX TODO
 
-require c>hex
+need c>hex
 
 width @  1 width !
 
@@ -4327,7 +4486,7 @@ code (step)  ( R: n -- n' )
 
   \ XXX TMP
 
-require case:
+need case:
 
 : zx0 ." zero"  ;
 : zx1 ." one"  ;
@@ -4345,7 +4504,7 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
   \ Credits:
   \ Code adapted from F83.
 
-require -rot
+need -rot
 
 : associative:  ( n -- )
   \ Create a table lookup word.
@@ -4516,7 +4675,7 @@ defer (value)
   \ Variant: `(wait)` is a user variable, and it's executed
   \ to get its current adress.
 
-require z80-asm  require call-cfa  require execute-hl
+need z80-asm  need call-cfa  need execute-hl
 
 code pause ( u --- )
   \ u = number of ticks
@@ -4538,7 +4697,7 @@ code pause ( u --- )
 
   \ Variant: `(wait)` is a deferred word.
 
-require z80-asm  require call-cfa
+need z80-asm  need call-cfa
 
 defer (wait)  ' noop ' (wait) defer!
 
@@ -4562,7 +4721,7 @@ code pause ( u --- )
   \ Variant: `(wait)` is a user variable, but it's current
   \ address is compiled, what is wrong.
 
-require z80-asm  require execute-hl
+need z80-asm  need execute-hl
 
 code pause ( u --- )
   \ u = number of ticks
@@ -4585,7 +4744,7 @@ code pause ( u --- )
   \ Credits:
   \ Code adapted from Spectrum Forth-83.
 
-require z80-asm  require execute-hl
+need z80-asm  need execute-hl
 
 variable (wait)  ' noop (wait) !
 
@@ -4608,7 +4767,7 @@ code pause ( u --- )
   \ Variant: `(wait)` is a variable and the calling is not
   \ factored.
 
-require z80-asm
+need z80-asm
 
 variable (wait)  ' noop (wait) !
 
@@ -4640,7 +4799,7 @@ code pause ( u --- )
   \ Credits:
   \ Code adapted from Spectrum Forth-83.
 
-require z80-asm
+need z80-asm
 
 code just-pause ( u --- )
   \ u = number of ticks
@@ -4717,6 +4876,18 @@ code just-pause ( u --- )
   \
   \ }doc
 
+( wid-of )
+
+  \ Credits:
+  \ Code adapted from eForth's `widof`.
+
+: wid-of  ( "name" -- wid )  ' cfa>pfa  ;
+
+( search-wordlist )
+
+: search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
+  >r 2dup uppers save-counted-string r>
+  @ (find) dup ?exit  nip  ;
 
   \ }}} =======================================================
   \ Random number generators {{{
@@ -4814,19 +4985,19 @@ code random-n  ( -- x )
 
 ( random-test random-b-test random-n-test )
 
-require set-pixel
+need set-pixel
 
-require random
+need random
 
 : random-test  ( n -- )
   cls  0 do  256 random 193 random set-pixel  loop  ;
 
-require random-b
+need random-b
 
 : random-b-test  ( n -- )
   cls  0 do  random-b random-b 192 min set-pixel  loop  ;
 
-require random-n
+need random-n
 
 : random-n-test  ( n -- )
   cls
@@ -4962,7 +5133,7 @@ DD constant ix-op  FD constant iy-op
 
 ( z80-asm -- words for defining the z80 instructions)
 
-require -rot
+need -rot
 
 : ma  ( 8b "name" -- )
   \ Index registers with register.
@@ -5032,7 +5203,7 @@ D7 m1 prt  \ rst 0x16
 
 ( z80-asm -- index register opcodes)
 
-require -rot
+need -rot
 [defined] 3dup
 ?\ : 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
 
@@ -5235,7 +5406,7 @@ macro call-cfa  ( cfa -- )
   \ XXX TMP for debugging
   \ XXX OLD
 
-require z80-asm  require dump
+need z80-asm  need dump
 
 code until-test  ( -- )
   begin
@@ -5250,7 +5421,7 @@ code until-test  ( -- )
   \ XXX TMP for debugging
   \ XXX OLD
 
-require z80-asm  require dump
+need z80-asm  need dump
 
 code if'-test  ( -- )
 
@@ -5308,7 +5479,7 @@ code a@  ( -- a )
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-rerequire a!
+need a!
 
 code !a  ( u -- )
   \ Store cell at `a`.
@@ -5333,7 +5504,7 @@ code @a  ( -- u )
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-rerequire a!
+need a!
 
 code c!a  ( c -- )
   \ Store char at `a`.
@@ -5356,7 +5527,7 @@ code c@a  ( -- c )
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-rerequire a!
+need a!
 
 code !a+  ( u -- )
   \ Store cell at `a` with increment.
@@ -5380,7 +5551,7 @@ code @a+  ( -- u )      \ Fetch cell at `a` with increment.
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-rerequire a!
+need a!
 
 code c!a+  ( c -- )
   \ Store char at `a` with increment.
@@ -5996,8 +6167,8 @@ FORTH-WORDLIST SET-CURRENT
 
 only forth definitions
 
-require list  require update  require flush  require place
-require command
+need list  need update  need flush
+need command
 
 vocabulary editor  also editor definitions  hex
 
@@ -6214,7 +6385,7 @@ only forth definitions decimal
 
 only forth definitions
 
-require rnd  require udg:  require inkey  require break-key?
+need rnd  need udg:  need inkey  need break-key?
 
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
 
@@ -6303,7 +6474,7 @@ binary
 
 ( siderator )
 
-require between
+need between
 
   \ Stars
 
@@ -6353,7 +6524,7 @@ require between
 
   \ End
 
-require j  require ocr
+need j  need ocr
 
 : blast-delay  ( -- )  32 0  do  loop  ;
 : (blast)  ( -- )
@@ -6420,7 +6591,7 @@ require j  require ocr
 
   \ Init
 
-require frames@
+need frames@
 
 : init-colors  ( -- )
   0 paper 7 ink 0 flash 0 bright 0 inverse 0 border  ;

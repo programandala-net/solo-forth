@@ -273,3 +273,7 @@ From the Spectrum Forth-83 manual:
 .2015-09-13:
 
 `rp` should be a user variable?
+
+Fix: `s"`, `s\"`, `(`... all crash the system when the end delimiter is mising.
+This didn't happen with Abersoft Forth. The reason is the change of
+the zero char terminator to the zero string.

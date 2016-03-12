@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509122257
+version_release:  equ 201509140054
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -184,8 +184,8 @@ size_optimization: equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-  ; XXX TODO -- not used yet
-fig_parsing: equ false
+; fig_parsing: equ true ; XXX harcoded flag, else label problems
+  ; XXX FIXME -- crash when false!
   ; true = the fig-Forth parsing method is used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
@@ -1532,7 +1532,7 @@ question_csb_.enough:
 ; dup 1+ string-allocate dup >r $! r>
 
   dw dup_,one_plus_,allocate_string_
-  dw dup_,to_r_,dollar_store_,from_r_
+  dw dup_,to_r_,place_,from_r_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1849,6 +1849,9 @@ digit.test_value:
 ; the definition is immediate, also return one (1); otherwise
 ; also return minus-one (-1).
 ;
+; The search is case-sensitive: only words in uppercase are
+; found.
+;
 ; }doc
 
   ld e,names_bank
@@ -1942,6 +1945,8 @@ paren_find.nfa_backup: equ $+1
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
 
+if 1 ; fig_parsing
+
 ; doc{
 ;
 ; scan  ( ca c -- ca len )
@@ -1970,8 +1975,49 @@ scan.begin:
   pop bc ; restore Forth IP
   jp push_hl
 
+else
+
+; doc{
+;
+; scan  ( ca1 len1 c -- ca2 len2 )
+; 
+; XXX TODO
+; c = ascii delimiting character
+; ca1 = text address
+; len1 = length of the parsed text
+;
+; }doc
+
+  pop de
+  ld l,c
+  ld h,b
+  pop bc
+  ex (sp),hl
+scan.begin:
+  ld a,c
+  or b ; exhausted?
+  jr z,scan.end ; if so, exit
+  ld a,e
+  cp (hl) ; delimiter?
+  jr z,scan.end ; if so, exit
+  inc hl
+  dec bc
+  jp scan.begin ; again
+
+scan.end:
+  ex (sp),hl ; hl = Forth IP ; push ca2
+scan.3:
+  push bc ; len2
+  ld c,l
+  ld b,h ; restore Forth IP
+  _jp_next
+
+endif
+
 ; ----------------------------------------------
   _code_header skip_,'SKIP'
+
+if 1 ; fig_parsing
 
 ; doc{
 ;
@@ -1987,6 +2033,32 @@ skip.begin:
   jp nz,push_hl
   inc hl
   jp skip.begin ; again
+
+else
+
+; doc{
+;
+; skip  ( ca1 len1 c -- ca2 len2 )
+;
+; }doc
+
+  pop de
+  ld l,c
+  ld h,b
+  pop bc ; len1
+  ex (sp),hl ; hl=ca1 ; save Forth IP
+skip.begin:
+  ld a,c
+  or b ; exhausted?
+  jr z,scan.end ; if so, exit
+  ld a,e
+  cp (hl) ; delimiter?
+  jr nz,scan.end ; if not, exit
+  inc hl
+  dec bc
+  jp skip.begin ; again
+
+endif
 
 ; ----------------------------------------------
   _code_header chan_,'CHAN'
@@ -3877,6 +3949,30 @@ endif
   dw bytes_per_terminal_input_buffer
 
 ; ----------------------------------------------
+  _colon_header source_,'SOURCE'
+
+
+; doc{
+;
+; source  ( -- ca len )  \ ANS Forth
+;
+; ----
+; : source  ( -- ca len )
+;   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+; ----
+; }doc
+
+  dw blk_,fetch_,question_dup_
+  dw zero_branch_,source.tib
+  ; disk block
+  dw block_,b_slash_buf_
+  dw exit_
+source.tib:
+  ; terminal input buffer
+  dw tib_,number_tib_,fetch_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header recurse_,'RECURSE',immediate
 
 ; doc{
@@ -4803,82 +4899,6 @@ accept.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header expect_,'EXPECT'
-
-; doc{
-;
-; expect  ( ca len -- )  \ Forth-83
-;
-; Transfer characters from the terminal to address _ca_, until a
-; "return" or _len_ characters have been received.
-;
-; The transfer begins at addr proceeding towards higher
-; addresses one byte per character until either a "return" is
-; received or until _len_ characters have been transferred.
-
-; No more than _len_ characters will be stored.  The "return" is
-; not stored into memory.  No characters are received or
-; transferred if _len_ is zero.  All characters actually
-; received and stored into memory will be displayed, with the
-; "return" displaying as a space.
-
-; ; }doc
-
-  dw span_,off_
-  dw question_dup_
-  dw zero_branch_,expect.end
-
-  dw bounds_,tuck_ ; ( ca ca+len ca )
-  dw paren_do_
-expect.do: ; ( ca )
-  dw xkey_,dup_ ; ( ca c c )
-
-  _literal delete_char
-  dw equals_ ; delete key?
-  dw zero_branch_,expect.maybe_carriage_return
-  ; Delete key ( ca c )
-  dw drop_
-  dw dup_,i_,equals_ ; cursor at the start position?
-  dw abs_ ; XXX TODO -- because true=-1 -- simplify
-  dw dup_ ; ( ca f f )
-  dw from_r_,two_minus_,plus_,to_r_ ; update the index
-  dw question_branch_,expect.loop ; nothing to delete
-  ; dw b_l_,i_,c_store_ ; update the buffer ; XXX OLD
-  _literal backspace_char
-  dw branch_,expect.emit
-
-expect.maybe_carriage_return: ; ( ca c )
-  dw dup_
-  _literal carriage_return_char
-  dw equals_ ; carriage return?
-  dw zero_branch_,expect.control_char
-  ; Carriage return ( ca c )
-  dw exhaust_
-  dw drop_,b_l_
-  dw branch_,expect.emit
-
-expect.control_char: ; ( ca c )
-  dw dup_,b_l_,less_than_ ; control char?
-  dw zero_branch_,expect.ordinary_key
-  ; Control char ( ca c )
-  dw drop_
-  dw branch_,expect.do
-
-expect.ordinary_key: ; ( ca c )
-  dw dup_
-expect.store: ; ( ca c c | ca c 0 )
-  dw i_,c_store_
-expect.emit: ; ( ca c )
-  dw emit_
-
-expect.loop: ; ( ca )
-  dw i_,over_,minus_,span_,store_ ; update `span`
-  dw paren_loop_,expect.do
-expect.end:
-  dw drop_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header query_,'QUERY'
 
 ; doc{
@@ -4906,13 +4926,7 @@ expect.end:
   dw tib_,dup_
   dw number_tib_,fetch_
   dw two_dup_,blank_ ; clean the input buffer
-if 1 ; accept instead of expect
-  ; XXX NEW
   dw accept_,space_
-else
-  ; XXX OLD
-  dw expect_,span_,fetch_
-endif
   dw plus_,stream_end_
   dw to_in_,off_
   dw semicolon_s_
@@ -5026,6 +5040,8 @@ fill.end:
 ; ----------------------------------------------
   _colon_header stream_,'STREAM'
 
+if 1 ; fig_parsing
+
 ; doc{
 ;
 ; stream  ( -- ca )
@@ -5044,6 +5060,47 @@ stream.end:
   dw to_in_,fetch_,plus_
   dw semicolon_s_
 
+else
+
+; doc{
+;
+; stream  ( -- ca len )
+;
+; ca len = source from the current parsing position
+;
+; }doc
+
+  dw source_,to_in_,fetch_,slash_string_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _code_header slash_string_,'/STRING'
+
+; doc{
+;
+; /string  ( ca1 len1 n -- ca2 len2 )  \ Forth 2012
+;
+; ----
+; : /string  ( ca1 len1 n -- ca2 len2 )  rot over + -rot -  ;
+
+; \ Alternative definition:
+; : /string  ( ca1 len1 n -- ca2 len2 )  \ dup >r - swap r> + swap  ;
+; ----
+;
+; }doc
+
+
+  pop de                  ; n
+  pop hl                  ; len1
+  and a                   ; cy=0
+  sbc hl,de               ; hl=len2
+  ex (sp),hl              ; (sp)=len2 hl=ca1
+  add hl,de               ; hl=ca2
+  ex (sp),hl              ; (sp)=ca2 hl=len2
+  jp push_hl
+
 ; ----------------------------------------------
   _colon_header parsed_,'PARSED'
 
@@ -5061,6 +5118,8 @@ stream.end:
 ; ----------------------------------------------
   _colon_header parse_,'PARSE'
 
+if 1 ; fig_parsing
+
 ; doc{
 ;
 ; parse  ( c "text<c>" -- ca len )  \ ANS Forth
@@ -5077,6 +5136,13 @@ stream.end:
   dw stream_,swap_,scan_,dup_,parsed_
   dw semicolon_s_
 
+else
+
+  dw stream_,rot_,scan_,dup_,parsed_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header parse_name_,'PARSE-NAME'
 
@@ -5086,6 +5152,8 @@ stream.end:
 ;
 ; }word
 
+if 1 ; fig_parsing
+
   dw stream_,dup_,to_r_ ; ( ca1 )
   dw b_l_,skip_ ; ( ca2 )
   dw dup_,from_r_,minus_,to_in_,plus_store_
@@ -5093,6 +5161,16 @@ stream.end:
   dw b_l_,scan_ ; ( ca len )
   dw dup_,parsed_
   dw semicolon_s_
+
+else
+
+  dw stream_,b_l_,skip_ ; ( ca2 len2 )
+  dw dup_,parsed_
+  dw b_l_,scan_ ; ( ca len )
+  dw dup_,parsed_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header word_,'WORD'
@@ -5110,6 +5188,8 @@ stream.end:
 ; byte), and with one blank at the end.
 ;
 ; }doc
+
+if 1 ; fig_parsing
 
 ; XXX FIXME
 ; `0 word` crashes the system. how to parse till the end of
@@ -5134,7 +5214,17 @@ if  0
   ; dw cr_,dot_s_,cr_ ; XXX INFORMER
   ; dw key_,drop_ ; XXX INFORMER
 endif
-  dw dup_,one_plus_,to_in_,plus_store_
+  dw dup_,parsed_
+
+else
+
+  dw to_r_,stream_ ; ( ca1 len1 )
+  dw r_fetch_,skip_ ; ( ca2 len2 )
+  dw dup_,parsed_
+  dw from_r_,scan_ ; ( ca3 len3 )
+  dw dup_,parsed_
+
+endif
 
   dw here_
   _literal max_word_length+2
@@ -5158,6 +5248,7 @@ endif
   endif
 
   dw semicolon_s_
+
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
 
@@ -5319,23 +5410,26 @@ uppers.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header dollar_store_,'$!'
+  _code_header place_,'place'
 
-  ; [Code from DZX-Forth's `packed`.]
+  ; Credits:
+  ; Z80 code from DZX-Forth's `packed`.
 
 ; doc{
 ;
-; $!  ( ca1 len1 ca2 -- )
+; place  ( ca1 len1 ca2 -- )
 ;
 ; Store the string _ca1 len1_ as a counted string at _ca2_.  The
 ; source and destination strings are permitted to overlap.
 ;
 ; An ambiguous condition exists if _len1_ is greater than 255 or
 ; the buffer at _ca2_ is less than _len1_+1 characters.
+; 
+; ----
+; : place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
+; ----
 ;
 ; }doc
-
-  ; XXX TODO rename? `s!`, `packed`, `pack`, `uncount`...
 
   exx
   pop de      ; de=ca2
@@ -5365,6 +5459,8 @@ uppers.do:
 ; is immediate, also return one (1); otherwise also return
 ; minus-one (-1).
 ;
+; The search is case-insensitive.
+;
 ; }doc
 
   ; : find  ( ca --- ca 0 | cfa 1 | cfa -1 )
@@ -5373,6 +5469,7 @@ uppers.do:
   ;     if  @ (find) ?dup if  unloop exit  then  then
   ;   loop  false  ;
 
+  dw dup_,count_,uppers_
   dw hash_vocs_,zero_,paren_do_
 find.do:
   dw context_,i_,cells_,plus_,fetch_
@@ -5406,11 +5503,11 @@ find.loop:
 
   ; XXX TODO factor
 
+  ; dw two_dup_,uppers_  ; XXX OLD
   dw find_dollar_
   _literal max_word_length+2
   dw erase_ ; make sure there will be a null at the end
-  dw find_dollar_,dollar_store_
-  dw find_dollar_,count_,uppers_
+  dw find_dollar_,place_
   dw find_dollar_,find_
   dw semicolon_s_
 
@@ -5496,6 +5593,9 @@ error.end:
   ;
   ; but that would make the compilation slower.
   ; i think it can be left to the programmer.
+  ;
+  ; XXX TODO -- 2015-09-13: check only when `warnings` is on,
+  ; and check only `current`!
 
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
@@ -5526,7 +5626,7 @@ header.continue:
   dw here_,comma_np_ ; store a pointer to the cfa
   dw latest_,comma_np_ ; link field
   ; Now `np` contains the address of the nfa.
-  dw np_fetch_,dollar_store_ ; store the name
+  dw np_fetch_,place_ ; store the name
   dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
   dw smudge_ ; set the smudge bit and page the default bank
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
@@ -7015,7 +7115,7 @@ else ; XXX NEW
 
 endif
 
-  dw dup_,count_,uppers_  ; uppercase ( ca2 )
+  ; dw dup_,count_,uppers_  ; uppercase ( ca2 ) ; XXX OLD
   ;dw cr_,dot_s_,lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw find_
   ;dw cr_,dot_s_,lit_,4,border_,key_,drop_ ; XXX INFORMER
@@ -7467,7 +7567,7 @@ if 1
   dw sp_fetch_,two_minus_,sp0_,fetch_,two_minus_
   dw paren_do_
 dot_s.do:
-  dw i_,fetch_,u_dot_ ; XXX TMP `u.`
+  dw i_,fetch_,dot_ ; XXX TMP `u.`
   dw lit_,-2
   dw paren_plus_loop_,dot_s.do
 dot_s.end:
@@ -7879,7 +7979,7 @@ color:
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
 
-  dw two_variable_
+  dw create_,comma_,comma_
   dw paren_semicolon_code_
 do_two_constant:
   inc de    ; de=pfa
