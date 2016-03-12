@@ -16,7 +16,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509222242
+version_release:  equ 201509231811
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -9550,7 +9550,6 @@ read_write_sector_command:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 0 ; XXX OLD
   _colon_header paren_load_,'(LOAD)'
 
 ; doc{
@@ -9561,6 +9560,8 @@ if 0 ; XXX OLD
 ; making screen _u_ the input source and setting the input
 ; buffer to encompass its contents), set `>in` to zero, and
 ; interpret.  Other stack effects are due to the words loaded.
+
+; This word is a common factor of `load` and `continued`.
 
 ; ----
 ; : (load)  ( u -- )
@@ -9601,8 +9602,6 @@ paren_load.do
 
 endif
 
-endif
-
 ; ----------------------------------------------
   _colon_header load_,'LOAD'
 
@@ -9623,23 +9622,18 @@ endif
 ; : load  ( u -- )
 ;   dup 0= 9 ?error  dup scr !
 ;   blk @ >r  >in @ >r
-;   b/scr * blk !  >in off  interpret
+;   (load)
 ;   r> >in !  r> blk !  ;
 ; ----
 ;
 ; }doc
 
-;  _chk 'load -- start' ; XXX INFORMER
   dw dup_,zero_equals_
   _question_error error.loading_from_screen_0
   dw dup_,scr_,store_
   dw blk_,fetch_,to_r_
   dw to_in_,fetch_,to_r_
-  dw b_slash_scr_,star_
-;  _chk 'load -- before blk !' ; XXX INFORMER
-  dw blk_,store_
-  dw to_in_,off_,interpret_
-;  _chk 'load -- after interpret' ; XXX INFORMER
+  dw paren_load_
   dw from_r_,to_in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
