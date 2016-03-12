@@ -1,0 +1,25 @@
+= Solo Forth
+:author: Marcos Cruz (programandala.net)
+:revdate: 2016-03-12
+
+== Description
+
+Solo Forth is a DTCfootnote:[Directe Threaded Code.] Forth system
+under development for ZX Spectrum 128 with G+DOS.
+
+This Forth system was first called "F+D Forth". On 2015-06-06 it was
+renamed to "Solo Forth.
+
+== Git repository
+
+The Git repository of Solo Forth was created from development backups
+on 2016-03-12.
+
+== Status
+
+The development started on 2015-05-30.  As of 2016-03-12 it's under
+active development, almost beta state, very usable and stable.
+
+Later versions of Solo Forth include alternative unfinished code to
+make it run also on ZX Spectrum +3 with +3DOS. It may eventually run
+also on ZX Spectrum +3e, with IDEDOS or ResiDOS.
