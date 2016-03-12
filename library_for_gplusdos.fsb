@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512040307
+\ Last modified: 201512150315
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -1455,6 +1455,27 @@ only forth definitions  need char>string   need search-wordlist
   \
   \ }doc
 
+( #spaces )
+
+need under+
+
+: #spaces  ( ca len -- +n )
+  0 rot rot  0 do  count bl = under+  loop  drop abs  ;
+  \ Count spaces in a string.
+
+  \ Credits:
+  \ Code improved from:
+  \ http://forth.sourceforge.net/mirror/comus/index.html
+
+( #chars )
+
+  \ XXX UNDER DEVELOPMENT
+
+: #chars  ( ca len c -- +n )
+  0 2swap 0 do
+    ( c count ca ) count over = under+  loop  2drop abs  ;
+  \ Count spaces in a string.
+
 ( /name first-name trim last-name )
 
   \ Credits:
@@ -1638,6 +1659,17 @@ wid-of replaces-voc constant wid-subst
   \ }}} =======================================================
   \ Printing {{{
 
+( tabulate tab-stop )
+
+need column
+
+  \ 2015-12-14
+  \ XXX FIXME
+
+variable tab-stop  8 tab-stop !
+
+: tabulate  ( -- )  column 1+ tab-stop @ tuck mod - spaces  ;
+
 ( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
 
  6 constant 'tab'
@@ -1681,7 +1713,9 @@ wid-of replaces-voc constant wid-subst
   \ Code adapted from Spectrum Forth-83.
 
 : ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+
   \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
+
 : ud.  ( d -- )  0 ud.r space  ;
 
 ( print )
@@ -3314,6 +3348,9 @@ need z80-asm
   \ instruction pushes an array of data on the data stack below
   \ the address on top.
 
+  \ XXX TODO alternative found -- which one is cmForth?
+  : @+ ( a inc -- value a+inc )  + dup @ swap  ;
+
   \ @-  ( n a -- x n a' )
   \
   \ Fetch data from memory pointed to by the top item on the
@@ -3327,6 +3364,9 @@ need z80-asm
   \ Pop the second item on the data stack and store it in the
   \ memory pointed to by the address on top of the stack.  The
   \ address is then incremented by n.
+
+  \ XXX TODO alternative found -- which one is cmForth?
+  : !+  ( value a inc -- a+inc )  + tuck !  ;
 
   \ !-  ( n x a -- a' )
   \
@@ -3421,9 +3461,13 @@ code c!toggle-bits  ( b ca -- )
   end-code  exit  [then]
   \ Invert the bits at _ca_ specified by the bitmask _b_.
 
-( reserve )
+( reserve alloted )
 
 : reserve  ( n -- a )  here tuck over erase allot  ;
+  \ Reserve a zone of _n_ bytes in the dictionary, erase it
+  \ and return its address _a_.
+
+: allotted  ( n -- a )  here swap allot ;
   \ Reserve a zone of _n_ bytes in the dictionary, erase it
   \ and return its address _a_.
 
@@ -3432,7 +3476,37 @@ code c!toggle-bits  ( b ca -- )
 
 ( under+ )  \ ==operators==
 
-: under+  ( n1 n2 n3 -- n4 n3 )  >r + r>  ;
+code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  D9 c,           \ exx
+  D1 c,           \ pop de
+  C1 c,           \ pop bc
+  E1 c,           \ pop hl
+  19 c,           \ add hl,de
+  E5 c,           \ push hl
+  C5 c,           \ push bc
+  D9 c,           \ exx
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  \
+  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ Origin: Comus.
+  \
+  \ ----
+  \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )  rot + swap  ;
+  \ ----
+  \
+  \ }doc
+
+  \ XXX TODO -- variants:
+
+  \ : +under  ( n1 n2 x -- n1+n2 x )  >r + r>  ;
+  \
+  \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
+  \ After PFE's `(under+)`
 
 ( within between )
 
@@ -3760,8 +3834,9 @@ need roll
 variable (any?)
 
 : any?  ( x0 x1..xn n -- f )
+  dup 1+ roll (any?) !
+  0 swap 0 do  swap (any?) @ = or  loop  ;
   \ Is any _x1..xn_ equal to _x0_?
-  dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
   \ }}} =======================================================
   \ Double-cell operators {{{
@@ -5176,7 +5251,7 @@ code (tape)  ( n -- )
   \ Load a file from tape.
   \ ca1      = destination
   \ len1     = length (or zero if unspecified)
-  \ ca2 len2 = filename (len2 is zero if unspecified) 
+  \ ca2 len2 = filename (len2 is zero if unspecified)
 
 : >tape  ( ca1 len1 ca2 len2 -- )
   tape-filename! tape-length! tape-start!  0 (tape)  ;
@@ -6907,7 +6982,7 @@ code (step)  ( R: n -- n' )
   \ An alternative `case` structure that makes any
   \ calculation easier.
 
-  \ 2015-11-15
+  \ 2015-11-14
 
   \ Credits:
   \
@@ -7312,23 +7387,25 @@ cr  128            dup 3 .r  select-test
 : create:  ( "name" -- )  create hide ]  ;
   \ Create a word that will return the address of its pfa.
   \
+  \ Credits:
+  \
   \ The idea for this word was borrowed from CP/M-volksForth
   \ 3.80a.
 
-( case: )
+( positional-case: )
 
   \ Credits:
-  \ Code adapted from F83.
+  \ Code adapted from F83's `case:`.
 
 need create:
 
-: case:  ( "name" -- )
-  \ Create a positional case word.
+: positional-case:  ( "name" -- )
   create:
   does>   ( n -- )
           \ Execute the n-th word compiled.
           ( n pfa ) swap cells + perform  ;
-  \ A positional case statement.  At runtime, the n-th word is
+  \ Create a positional case word "name"
+  \ At runtime, the n-th word is
   \ executed, depending upon the value on the stack. No
   \ range checking.
 
@@ -7339,17 +7416,62 @@ need create:
   \ : say1 ." unu"  ;
   \ : say2 ." du"  ;
 
-  \ case: say  ( n -- )  say0 say1 say2  ;
+  \ positional-case: say  ( n -- )  say0 say1 say2  ;
 
   \ 0 say cr 1 say cr 2 say cr
   \ ----
+
+( associative-case: )
+
+  \ Credits:
+  \
+  \ Code adapted from Pygmy Forth's `case:`
+
+need create:
+
+: associative-case: ( "name" -- )
+  create:
+  does> ( n -- ) ( n pfa ) cell+  \ move past `lit`
+  begin   2dup @ dup 0= >r  ( n a n n')
+          =  r> or  0= ( n a f )
+  while   ( n a )  [ 3 cells ] literal +  \ no match
+  repeat  nip cell+ perform  ;
+
+  \ doc{
+
+  \ associative-case: ( "name" -- )
+  \
+  \ Create an associative case definition "name":
+  \ `name  ( i*x n -- j*x )`.
+
+  \ Usage example:
+
+  \ ----
+  \ : red       ." red"  ;
+  \ : blue      ." blue"  ;
+  \ : orange    ." orange"  ;
+  \ : pink      ." pink"  ;
+  \ : black     ." black"  ;
+  \
+  \ associative-case: color  ( n -- )
+  \   7 red  12 blue  472 orange  15 pink  0 black  ;
+  \
+  \ 7 color cr  472 color cr  3000 color cr
+  \ ----
+
+  \ _n_ for default must be 0 and the default pair must be
+  \ last.  Numbers can be in any order except 0 must be last.
+  \ An actual zero or a no match causes the default to be
+  \ executed.  Numbers can't be constants.
+
+  \ }doc
 
 ( cases: )
 
   \ `cases:` structure, alternative to the standard `case`.
   \ It saves space, but is slower.
 
-  \ 2015-11-15
+  \ 2015-11-14
 
   \ Credits:
   \
@@ -9450,13 +9572,15 @@ code just-pause ( u -- )
   \ Code written by Wil Baden, published on Forth Dimensions
   \ (volume 8, number 5, page 31, 1987-01).
 
-  \ XXX TODO -- adapt when baden-case is modified
-
 : leapy-year?  ( n -- f )
-  dup 400 mod 0= if  drop true   exit then
-  dup 100 mod 0= if  drop false  exit then
-        4 mod 0= if       false  exit then
+  dup 400 mod 0= if  drop true   exit  then
+  dup 100 mod 0= if  drop false  exit  then
+        4 mod 0= if       false  exit  then
   false  ;
+
+exit
+
+  \ Alternative.
 
 need baden-case
 
@@ -9465,6 +9589,126 @@ need baden-case
   case 100 mod 0= of  false  endof
   case   4 mod 0= of  true   endof
   othercase false  ;
+
+( set-date get-date )
+
+create (date)  1 c,  1 c,  2016 ,
+  \ day, month, year
+
+: get-date  ( -- day month year )
+  (date) c@
+  [ (date) 1+ ] literal c@
+  [ (date) 2+ ] literal @  ;
+
+  \ doc{
+  \
+  \ get-date  ( -- day month year )
+  \
+  \ Get the current date. The default date is 2016-01-01. It
+  \ can be changed with `set-date`. The date is not updated by
+  \ the system.
+  \
+  \ }doc
+
+: set-date  ( day month year -- )
+  [ (date) 2+ ] literal !
+  [ (date) 1+ ] literal c!
+  (date) !  ;
+
+  \ doc{
+  \
+  \ set-date  ( day month year -- )
+  \
+  \ Set the current date. The default date is 2016-01-01. It
+  \ can be fetch with `get-date`. The date is not updated by
+  \ the system.
+  \
+  \ }doc
+
+( set-time get-time reset-time )
+
+need frames@  need frames!  need m+  need alias  need ud*
+
+: get-time  ( -- second minute hour )
+  frames@ 50 um/mod nip s>d   ( sec . )
+          60 um/mod s>d       ( sec min . )
+          60 um/mod           ( sec min hour )  ;
+
+  \ doc{
+  \
+  \ get-time  ( -- second minute hour )
+  \
+  \ Return the current time.
+  \
+  \ The system doesn't have an actual clock. The system frames
+  \ counter is used instead. It is increased by the interrupts
+  \ routine every 20th ms. The counter is a 24-bit value, so
+  \ its maximum is $FFF ticks of 20 ms (5592 minutes, 93
+  \ hours), then it starts again from zero.
+  \
+  \ }doc
+
+: set-time  ( second minute hour -- )
+  3600 um*  rot 60 * m+  rot m+  ( seconds )
+  50. ud* frames!  ;
+
+  \ doc{
+  \
+  \ set-time  ( second minute hour -- )
+  \
+  \ Set the current time. See `get-time`.
+  \
+  \ }doc
+
+' reset-frames alias reset-time  ( -- )
+
+  \ doc{
+  \
+  \ reset-time  ( -- )
+  \
+  \ Reset the current time to 00:00:00. See `get-time`.
+  \
+  \ }doc
+
+( .time .system-time .date .system-date .time&date time&date )
+
+  \ XXX TODO document
+
+need get-time  need get-date
+
+: .00  ( n -- )  s>d <# # # #> type  ;
+: .0000  ( n -- )  s>d <# # # # # #> type  ;
+
+: .time  ( second minute hour -- )
+  .00 ':' emit .00 ':' emit .00  ;
+
+: .system-time  ( -- )  get-time .time  ;
+
+: .date  ( day month year -- )
+  .0000 '-' emit .00 '-' emit .00  ;
+
+: .system-date  ( -- )  get-date  .date  ;
+
+: .time&date  ( second minute hour day month year -- )
+  .date 'T' emit .time  ;
+
+: time&date  ( -- second minute hour day month year )
+  get-time get-date  ;
+
+  \ doc{
+  \
+  \ time&date  ( -- second minute hour day month year )
+  \
+  \ Return the current time and date: second (0..59), minute
+  \ (0..59), hour (0..23), day (1..31), month (1..12) and year
+  \ (e.g., 2016).
+  \
+  \ See: `get-time`, `get-date`, `set-time`, `set-date`.
+  \
+  \ Standard: Forth-94 (FACILITY EXT), Forth-201 (FACILITY
+  \ EXT).
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Vocabularies {{{
@@ -9701,6 +9945,22 @@ code random-n  ( -- x )
   ud* 12345 0 d+ over seed !
   rot ud/mod 2drop  ;
 
+( rickenbacker-random )
+
+  \ Credits:
+
+  \ Random number generator by J. E. Rickenbacker, published on
+  \ Forth Dimensions volume 2, number 2, page 34.
+
+[defined] seed ?\ 23670 constant seed  \ system variable
+
+: (random)  ( -- n )
+  seed @ 259 * 3 + 32767 and dup seed !  ;
+
+: random ( n1 -- n2 )
+  (random) 32767 */  ;
+  \ Return a random number _n2_ (0 <= n2 < n1).
+
 ( random-test random-b-test random-n-test )
 
 need set-pixel
@@ -9720,8 +9980,12 @@ need random-n
 : random-n-test  ( n -- )
   cls
   0 do  random-n 255 and
-        random-n 255 and 192 umin set-pixel
-  loop  ;
+        random-n 255 and 192 umin set-pixel  loop  ;
+
+need rickenbacker-random
+
+: r-random-test  ( n -- )
+  cls  0 do  256 random 193 random set-pixel  loop  ;
 
   \ }}} =======================================================
   \ Deferred words {{{
@@ -9805,6 +10069,9 @@ need random-n
    if  execute  else  compile,  then  ;
 
   \ XXX TODO -- new approach
+  \ XXX FIXME
+  \ does not work yet, because the synonym does not keep the
+  \ same attributes.
 need alias
 : synonym2  ( "newname" "oldname" -- )
   parse-name nextname ' alias  ;
@@ -11915,9 +12182,9 @@ only forth also definitions
   \ XXX TODO
   \ marker forget-tt
 
-need random  need j  need >=  need <=  need 2/
-need value  need d<>  need d=  need case  need ms  need frames@
-need yes?  need begin-stringtable  need case:  need tab
+need random  need j  need >=  need <=  need 2/  need value
+need d<>  need d=  need case  need ms  need frames@  need yes?
+need begin-stringtable  need positional-case:  need tab
 
 [defined] >body ?\  : >body  ( cfa -- pfa )  >body  ;
 
@@ -11985,7 +12252,7 @@ variable wiping
 variable keyset
   \ Number of the current keyset.
 
-case: keyset>keys  ( n -- c1 c2 c3 c4 c5 c6 )
+positional-case: keyset>keys  ( n -- c1 c2 c3 c4 c5 c6 )
   actual-cursor-keys
   dvorak-keys
   spanish-dvorak-keys
@@ -12499,7 +12766,7 @@ only forth definitions
 
 only forth definitions
 
-need don't  need ms  need mode64
+need don't  need ms  need mode64  need alloted
 
 vocabulary hanoi  also hanoi definitions
 
@@ -12545,11 +12812,9 @@ create PegStacks  30 chars allot
 
 ( hanoi )
 
-: ?allot  ( n -- )  here swap allot ;
-
 : maketab  ( n1..nn n -- XXX ) \ XXX TODO stack effect
   create
-    dup ?allot over 1- + swap 0
+    dup alloted over 1- + swap 0
     2dup <> if    do  dup >r c! r> 1-  loop
             else  2drop
             then  drop
@@ -13350,14 +13615,12 @@ exit
   \ This is the ForthCMP/ZEN/ANS version,
   \ output doubles are seconds since midnight.
 
-: gettime  ( -- sec min hour )  time&date 2drop drop  ;
-
 : t>b  ( sec min hour -- d )  60 * +  60 um*  rot s>d d+  ;
 
-: bench  ( -- d )  cr gettime t>b 2dup d.  ;
+: bench  ( -- d )  cr get-time t>b 2dup d.  ;
   \ start timing
 
-: marque  ( d -- )  gettime t>b 2dup d. d- dnegate d.   ;
+: marque  ( d -- )  get-time t>b 2dup d. d- dnegate d.   ;
   \ stop timing
 
 ( byte-magazine-benchmark )
@@ -14364,6 +14627,8 @@ need bench  need marque
   \
   \ 2015-11-14: `case` (4 versions), `case:`, `options[` and
   \ `cases:`.
+  \ 2015-12-14: Updated the comments: `case:` has been renamed
+  \ to `positional-case:`.
 
 need bench
 
@@ -14426,14 +14691,15 @@ unused need eforth-case .used  unused
 
 ( case-benchs )
 
-  \ Note: the `case:` structure is more specific than the other
-  \ structures: it lacks a default option and its argument is
-  \ positional.
+  \ Note: the `positional-case:` structure is more specific
+  \ than the other structures: it lacks a default option and
+  \ its argument is positional.
 
-cr .( case:)
-unused need case: .used  unused
-case:  case:-example  ( n -- )  noop  noop  noop  noop ;
-.used .( by its example)  ' case:-example case-bench
+cr .( positional-case:)
+unused need positional-case: .used  unused
+positional-case:  positional-case:-example  ( n -- )
+  noop  noop  noop  noop ;
+.used .( by its example)  ' positional-case:-example case-bench
 
 cr .( options[)
 unused need options[ .used  unused
@@ -14492,7 +14758,7 @@ switch]
   \ eforth-case (8)        54       62          1366   27
   \ 94-doc-case (6)        54       62          1365   27
   \ abersoft-case (5)      64       62          1365   27
-  \ case: (4)              21       12           823   16
+  \ positional-case: (4)   21       12           823   16
   \ options[ (9)          166       24          3627   72
   \ cases: (10)           109       18          3155   63
   \ baden-case (11)        18       56          1472   29
@@ -14610,6 +14876,45 @@ need bench
   \ -----                         ---------------------------
   \ From Abersoft Forth           243 (4 s) (1.00)
   \ From Spectrum Forth-83        253 (5 s) (1.04)
+
+( #spaces-bench )
+
+need under+
+
+: #spaces1  ( ca len -- +n )
+  0 rot rot  0 do  count bl = 1 and under+  loop  drop ;
+  \ From:
+  \ http://forth.sourceforge.net/mirror/comus/index.html
+
+: #spaces2  ( ca len -- +n )
+  0 rot rot  bounds do  i c@ bl = +  loop  abs  ;
+  \ First variant.
+
+: #spaces3  ( ca len -- +n )
+  0 rot rot  0 do  count bl = under+  loop  drop abs  ;
+  \ Second variant, the fastest one.
+
+need bench
+
+defer #spaces
+
+: #spaces-bench  ( n -- )
+  cr bench  0 do  0 32767 #spaces drop  loop  marque  ;
+
+: run  ( n -- )
+  dup ['] #spaces1 ['] #spaces defer! ." 1..." #spaces-bench
+  dup ['] #spaces2 ['] #spaces defer! ." 2..." #spaces-bench
+      ['] #spaces3 ['] #spaces defer! ." 3..." #spaces-bench  ;
+
+  \         Frames by iterations
+  \         --------------------
+  \ Version 10 iterations 100 iterations
+  \ ------- ------------- --------------
+  \ 1                 123           1231
+  \ 2                 103           1036
+  \ 3                  95            951
+
+  \ Note: 1 frame = 50th of second
 
   \ }}} =======================================================
   \ Development tests {{{

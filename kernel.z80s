@@ -12,14 +12,13 @@
 ; ==============================================================
 ; Version
 
-  ; Note: Version numbers use the ISO date format
-  ; "YYYYMMDD[HH[MM]]".
+  ; Version numbers are a ISO date format "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151204
+  ; Version:        20151215
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7BA4
+version_low_part:   equ 0x7BAF
 
-  ; Last modified:  201512040308
+  ; Last modified:  201512150410
 
 ; ==============================================================
 ; Author and license
@@ -223,6 +222,13 @@ size_optimization: equ false
 ; old_loops: equ true
   ; true = pre-Forth-83 do-loops
   ; false = post-Forth-83 do-loops
+
+  ; XXX UNDER DEVELOPMENT
+  ; XXX NEW -- experimental, 2015-12-15
+  ; XXX FIXME -- bugs
+new_source: equ false
+  ; true = new, modern method to manage the input sources
+  ; false = classic method, only with `tib`, `blk`, etc.
 
 ; ==============================================================
 ; Symbols
@@ -2906,6 +2912,14 @@ char_question.not:
 ;
 ; }doc
 
+  ; XXX TODO --
+  ; in comp.lang.forth, thread "description of Forth-2012's
+  ; `synonym`", there are some suggestions:
+  ; 
+  ; found  ( ca len -- nfa | 0 ) \ Albert van der Horst
+  ; find-name-in ( ca len wid -- nfa | 0 ) \ Bernd Paysan
+  ; search-name  ( ca len wid -- nfa | 0 ) \ Mathias Trute, amforth
+
   ld (find_name_from.ip_backup),bc ; save the Forth IP
 
   call bank.names ; page the memory bank in
@@ -4429,24 +4443,6 @@ true_if_cy:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header under_plus_,'UNDER+'
-
-; under+  ( n1 n2 n3 -- n4 n2 )
-
-  ; XXX NEW
-  ; XXX TODO move to the library
-
-  exx
-  pop de
-  pop bc
-  pop hl
-  add hl,de
-  push hl
-  push bc
-  exx
-  _jp_next
-
-; ----------------------------------------------
   _code_header d_plus_,'D+'
 
 ; doc{
@@ -5490,7 +5486,7 @@ endif
 ;
 ; context  ( -- a )
 ;
-; User variable that holds XXX TODO
+; User variable that holds... XXX TODO
 ;
 ; }doc
 
@@ -5513,9 +5509,11 @@ endif
 
 ; doc{
 ;
-; tib  ( -- ca )  \ ANS-Forth
+; tib  ( -- ca )
 ;
 ; Address of the terminal input buffer.
+;
+; Standard: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
 ;
 ; }doc
 
@@ -5529,7 +5527,7 @@ endif
 ;
 ; /tib  ( -- n )
 ;
-; Size of the terminal input buffer.
+; Maximum size of the terminal input buffer.
 ;
 ; See `tib` and `#tib`.
 ;
@@ -5540,11 +5538,51 @@ endif
 ; ----------------------------------------------
   _variable_header number_tib_,'#TIB'
 
+; doc{
+;
+; #tib  ( -- a )
+;
+; _a_ is the address of a cell containing the number of
+; characters in the terminal input buffer.
+; 
+; Standard: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
+;
+; }doc
+
   dw bytes_per_terminal_input_buffer
+
+; ----------------------------------------------
+  _two_variable_header input_buffer_,'INPUT-BUFFER'
+
+  ; XXX NEW -- experimental, 2015-12-15
+
+  dw 0 ; len
+  dw 0 ; address
 
 ; ----------------------------------------------
   _colon_header source_,'SOURCE'
 
+if new_source
+
+  ; XXX NEW -- experimental, 2015-12-15
+
+; doc{
+;
+; source  ( -- ca len )
+;
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; ----
+; : source  ( -- ca len )
+;   input-buffer 2@  ;
+; ----
+;
+; }doc
+
+  dw input_buffer_,two_fetch_
+  dw exit_
+
+else  ; XXX OLD
 
 ; doc{
 ;
@@ -5569,6 +5607,8 @@ source.tib:
   ; XXX TODO `span @` only?, `#tib @` only?
   dw tib_,number_tib_,fetch_,span_,fetch_,min_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header recurse_,'RECURSE',immediate+compile_only
@@ -6962,12 +7002,14 @@ accept.end:
 ;
 ; query  ( -- )
 ;
-; XXX TODO description
+; XXX TODO description in Forth-94:
 ;
 ; Make the user input device the input source. Receive input
 ; into the terminal input buffer, replacing any previous
 ; contents. Make the result, whose address is returned by `tib`,
 ; the input buffer. Set `>in` to zero.
+;
+; XXX OLD -- old descriptions:
 ;
 ; Input 80 characters of text (or until a "return") from the
 ; operators terminal. Text is positioned at the address
@@ -6987,18 +7029,36 @@ accept.end:
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer
   dw accept_,number_tib_,store_,space_
-  dw blk_,off_
+if new_source
+  dw terminal_to_source_
+else
+  dw blk_,off_ ; XXX TODO needed?
   dw to_in_,off_
+endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header source_id_,'SOURCE-ID'
+  _constant_header source_id_,'SOURCE-ID'
 
-  ; XXX UNDER DEVELOPMENT
+  ; XXX TODO -- move `value` to the kernel for this?
 
-  dw blk_,fetch_
+; doc{
+;
+; source-id  ( -- 0 | -1 )
+;
+; Identifies the input source as follows:
+;
+; |===
+; | 0  | User input device
+; | -1 | String via `evaluate`
+; |===
+;
+; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; }doc
 
-  dw exit_
+source_id_value:
+  dw 0
 
 ; ----------------------------------------------
   _colon_header refill_,'REFILL'
@@ -7052,6 +7112,13 @@ refill.end:
 ;   THEN
 ;   DUP IF  >R 'SOURCE 2!  0 >IN ! R>  THEN ;
 
+; From hForth
+;
+;   : refill  ( f )
+;     source-id true = if  0 exit  then
+;		  memtop [ size-of-pad chars ] literal - dup
+;		  size-of-pad accept sourcevar 2!
+;		  >in off  true  ;
 
 ; ----------------------------------------------
   _code_header fill_,'FILL'
@@ -7168,13 +7235,7 @@ fill.done:
 ; }doc
 
   dw source_,to_in_,fetch_,slash_string_
-
-  ; XXX TMP -- needed when no space is typed at the end
-  ; XXX OLD -- not necessary anymore, I don't understand why
-  ; I added this
-  ; _literal 0
-  ; dw max_
-
+  ; dw two_dup_,cr_,type_  ; XXX INFORMER
   dw exit_
 
 ; ----------------------------------------------
@@ -8026,6 +8087,154 @@ two_literal.end:
   dw throw_
 
 ; ----------------------------------------------
+
+  ; XXX NEW -- experimental, 2015-12-15
+  ; this word is more generic than the standard `save-input`
+
+if 0 ; XXX OLD
+
+  _colon_header nest_source_,'NEST-SOURCE'
+
+; doc{
+;
+; save-source  ( -- x1..xn n )
+;
+; }doc
+
+  dw depth_,to_r_
+  dw source_
+  dw source_id_
+  dw to_in_,fetch_
+  dw blk_,fetch_
+  dw number_tib_,fetch_
+  dw span_,fetch_
+  dw depth_,from_r_,minus_
+  dw exit_
+
+else
+
+  _colon_header nest_source_,'NEST-SOURCE',compile_only
+
+; doc{
+;
+; save-source  ( R: -- x1..xn n )
+;
+; }doc
+
+  dw from_r_ ; save the return address
+  dw source_,two_to_r_
+  dw source_id_,to_r_
+  dw to_in_,fetch_,to_r_
+  dw blk_,fetch_,to_r_
+  dw number_tib_,fetch_,to_r_
+  dw span_,fetch_,to_r_ ; XXX TMP
+  _literal 7
+  dw to_r_
+  dw to_r_ ; restore the return address
+  dw exit_
+
+endif
+
+; ----------------------------------------------
+
+  ; XXX NEW -- experimental, 2015-12-15
+  ; this word is more generic than the standard `restore-input`
+
+if 0 ; XXX OLD
+
+  _colon_header unnest_source_,'UNNEST-SOURCE'
+
+; doc{
+;
+; restore-source  ( x1..xn n -- )
+;
+; }doc
+
+  dw drop_
+  dw span_,store_
+  dw number_tib_,store_
+  dw blk_,store_
+  dw to_in_,store_
+  _literal source_id_value
+  dw store_
+  dw input_buffer_,two_store_
+  dw exit_
+
+else
+
+  _colon_header unnest_source_,'UNNEST-SOURCE',compile_only
+
+; doc{
+;
+; restore-source  ( R: x1..xn n -- )
+;
+; }doc
+
+  dw from_r_ ; save the return address
+  dw r_drop_
+  dw from_r_,span_,store_
+  dw from_r_,number_tib_,store_
+  dw from_r_,blk_,store_
+  dw from_r_,to_in_,store_
+  dw from_r_
+  _literal source_id_value
+  dw store_
+  dw two_from_r_,input_buffer_,two_store_
+  dw to_r_ ; restore the return address
+  dw exit_
+
+endif
+
+; ----------------------------------------------
+  _colon_header set_source_,'SET-SOURCE'
+
+  ; XXX NEW -- experimental, 2015-12-15
+
+; doc{
+;
+; set-source  ( ca len -- )
+;
+; }doc
+
+  ; XXX TODO make the string the current input buffer, how?
+  ;
+  ; - make `tib` configurable?
+  ;
+  ; - create a generic `input-buffer` variable, returned by
+  ; `source`?
+
+  dw input_buffer_
+  dw two_store_
+  dw to_in_,off_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header evaluate_,'EVALUATE'
+
+; doc{
+;
+; evaluate  ( i*x ca len -- j*x )
+;
+; Save the current input source specification. Store minus-one
+; (-1) in `source-id`. Make the  string
+; described by _ca len_ both the input source and input
+; buffer,  set `>in` to zero,  and interpret.  When the  parse
+; area  is  empty, restore the prior input source
+; specification.
+;
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
+  ; XXX UNDER DEVELOPMENT
+
+  dw nest_source_ 
+  dw string_to_source_
+  dw interpret_
+  dw unnest_source_
+  dw exit_
+
+; ----------------------------------------------
   _variable_header interpret_table_,'INTERPRET-TABLE'
 
 ; doc{
@@ -8418,7 +8627,13 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header quit_,'QUIT'
 
+if new_source
+  dw terminal_to_source_
+else
   dw blk_,off_
+  _literal source_id_value
+  dw off_
+endif
   dw left_bracket_
 quit.begin:
   dw rp0_,fetch_,rp_store_
@@ -9792,11 +10007,62 @@ endif
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header string_to_source_,'STRING>SOURCE'
+
+; doc{
+;
+; string-source  ( ca len -- )
+;
+; }doc
+
+  ; XXX NEW -- experimental, 2015-12-15
+
+  dw blk_,off_
+  _literal source_id_value
+  dw on_
+  dw set_source_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header terminal_to_source_,'TERMINAL>SOURCE'
+
+; doc{
+;
+; terminal-source  ( -- )
+;
+; }doc
+
+  ; XXX NEW -- experimental, 2015-12-15
+
+  dw blk_,off_
+  _literal source_id_value
+  dw off_
+  dw tib_,number_tib_,set_source_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header block_to_source_,'BLOCK>SOURCE'
+
+; doc{
+;
+; block-source  ( +n -- )
+;
+; }doc
+
+  ; XXX NEW -- experimental, 2015-12-15
+
+  dw dup_,blk_,store_
+  dw block_,set_source_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header paren_load_,'(LOAD)'
 
 ; doc{
 ;
 ; (load)  ( u -- )
+;
+; XXX TODO -- update
 ;
 ; Store the first disk block of screen _u_ into `blk` (thus
 ; making screen _u_ the input source and setting the input
@@ -9812,8 +10078,12 @@ endif
 ;
 ; }doc
 
+if new_source
+  dw block_to_source_
+else
   dw blk_,store_
   dw to_in_,off_
+endif
   dw interpret_
   dw exit_
 
@@ -9848,13 +10118,23 @@ endif
   dw dup_,zero_equals_
   _question_throw error.loading_from_screen_0
   dw dup_,scr_,store_
+
+if new_source
+  dw nest_source_
+else
   dw blk_,fetch_,to_r_
   dw to_in_,fetch_,to_r_
-;  _chk 'load -- before (load)' ; XXX INFORMER
+endif
+
   dw paren_load_
-;  _chk 'load -- after (load)' ; XXX INFORMER
+
+if new_source
+  dw unnest_source_
+else
   dw from_r_,to_in_,store_
   dw from_r_,blk_,store_
+endif
+
   dw exit_
 
 ; ----------------------------------------------

@@ -259,7 +259,6 @@ It seems more versatile to create different words to switch the modes
 on and provide a common user interface to row, column, cpl, window...
 
 // }}}
-//
 == Keyboard ==
 // {{{
 
@@ -462,9 +461,12 @@ words.
 
 Finish adapt tt.
 // }}}
-
 == Other ==
 // {{{
 
 Use `warning` as an example of `?branch`, in my message to clf.
+
+.2015-12-14
+
+Update the date with interrupts.
 
