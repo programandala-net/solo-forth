@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-20150622258
+; Version A-00-201506230016
 
 ; Latest important changes (in chronological order)
 ; - new format for the name field, without end bit.
@@ -17,8 +17,9 @@
 ; - `compare`, `search`.
 ; - `count` in Z80.
 ; - New versions of `0>`, `<` and `>`.
-; - `parse`
-; - fix: `id.`
+; - `parse`.
+; - fix: `id.`.
+; - improvement: `."`.
 
 ; ==============================================================
 ; Aknowledgments
@@ -3275,8 +3276,7 @@ else
   dw comp_question_
   dw zero_branch_,dot_quote.interpreting
   ; Compiling.
-  dw compile_,paren_dot_quote_
-  dw s_literal_
+  dw compile_,paren_dot_quote_,s_comma_
   dw semicolon_s_
 dot_quote.interpreting:
   dw type_
