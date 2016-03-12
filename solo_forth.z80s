@@ -3,9 +3,10 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506190124
+; Version A-00-201506190326
 ; Latest important changes (in chronological order)
 ; - new: new format for the name field, without end bit.
+; - change: first steps to implement a modern `find`.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -97,18 +98,18 @@ max_word_length_bit_mask:       equ max_word_length
 ; Config
 
   ; XXX experimental
-  ; When true, some code pieces are more compact but slower.
 size_optimization?              equ false
+  ; true = some code pieces are more compact but slower.
+  ; false = normal, faster code.
+
+fig_name_field?                 equ false
+  ; true = the original fig-Forth name field is used.
+  ; false = the last letter of the name does not have the sign bit set.
 
   ; XXX TODO -- unfinished
-  ;
-  ; When true, the original fig-Forth name field is used.
-  ;
-  ; When false, the last letter of the name does not have the
-  ; sign bit set. But the system still bombs out at the first
-  ; command.
-  ;
-fig_name_field?                 equ false
+fig_find?                       equ true
+  ; true = the original fig-Forth `find` is used.
+  ; false = `find` works after Forth-83 and Forth-94.
 
 ; ----------------------------------------------
 ; Character codes
@@ -261,32 +262,6 @@ _variable_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immed
 
   endm
 
-;_header: macro label,name,immediate
-
-  ; XXX TODO -- Future version, with new header format. Copied from DZX-Forth. Adapt it.
-  ; name        = name string
-  ; immediate   = _immediate or nothing
-
-;  ; the name field
-;  this_nfa: defl $ ; link address for next word
-;  bits: defl 0x80
-;  if not nul immediate
-;    ; set immediate bit
-;    bits: defl bits | precedence_bit_mask
-;  endif
-;  local _first ; address of the first char of the name
-;  local _next  ; address after the last char of the name
-;  db _next-_first+bits    ; count and flags byte
-;  _first:
-;  db name
-;  db last_letter+0x80
-;  _next:
-;  dw previous_nfa ; the link field
-;
-;  previous_nfa: defl this_nfa
-
-;endm
-
 ; ----------------------------------------------
 ; Strings
 
@@ -367,7 +342,6 @@ _border_wait: macro _color
   jr z,_wait
   pop af
   endm
-
 
 ; ==============================================================
 ; Entry points
@@ -839,27 +813,13 @@ paren_find.begin:
   ; de = nfa
   ld (paren_find.nfa_backup),de ; save for later
 paren_find.string_address: equ $+1
-  ;_border 3 ; XXX INFORMER
-  ;_border 6 ; XXX INFORMER
   ld hl,0 ; string address
   ld a,(de) ; name field length byte
   ld c,a    ; save for later
-
-  if 1 ; XXX OLD -- original method
-    xor (hl) ; filter deviations ; XXX what?
-    and 0x3F ; mask msb and precedence bit ; XXX what?
-  else
-    and max_word_length_bit_mask  ; actual length
-    ld (60001),a ; XXX INFORMER ; nfa length byte: 4 or 5 !?
-    cp (hl)
-    ld a,(hl) ; XXX INFORMER
-    ld (60000),a ; XXX INFORMER ; string length: 5
-  endif
-
+  and max_word_length_bit_mask  ; actual length
+  cp (hl)
   jr nz,paren_find.not_a_match ; lengths differ
   ; Lengths match.
-  ;_border 6 ; XXX INFORMER
-
   ld a,c ; name field length byte
   and max_word_length_bit_mask  ; actual length
   ld b,a
@@ -881,12 +841,10 @@ paren_find.compare_next_char:
   ld d,0
   ld hl,true
   ld bc,(ip_backup) ; restore Forth IP
-  ;_border_wait 4 ; XXX INFORMER
   jp pushde
 
 paren_find.not_a_match:
   ; Not a match, try next one.
-  ;_border 1 ; XXX INFORMER
 paren_find.nfa_backup: equ $+1
   ld hl,0 ; nfa
   ld a,c ; length byte
@@ -904,104 +862,9 @@ paren_find.nfa_backup: equ $+1
 
   ; No match found, return.
   ld bc,(ip_backup) ; restore Forth IP
-  ;_border 2 ; XXX INFORMER
   jp false_pfa
 
-
 endif
-
-; ; ----------------------------------------------
-;   _code_header new_paren_find_,'N(FIND',')' ; XXX TMP
-
-; _new_paren_find: macro
-
-;   ; XXX FIXME -- strange things happen
-
-;   ; XXX TODO -- return cfa instead of pfa
-;   ; XXX TODO -- always return two elements, after Forth-94
-
-;   ld (ip_backup),bc ; save Forth IP
-;   pop de ; nfa
-;   pop hl ; string address
-;   ld (new_paren_find.string_address),hl
-; new_paren_find.begin:
-;   ; Compare the string with a new word.
-;   ; de = nfa
-;   ld (new_paren_find.nfa_backup),de ; save for later
-; new_paren_find.string_address: equ $+1
-;   ;_border 3 ; XXX INFORMER
-;   ;_border 6 ; XXX INFORMER
-;   ld hl,0 ; string address
-;   ld a,(de) ; name field length byte
-;   ld c,a    ; save for later
-
-;   if 1 ; XXX OLD -- original method
-;     xor (hl) ; filter deviations ; XXX what?
-;     and 0x3F ; mask msb and precedence bit ; XXX what?
-;   else
-;     and max_word_length_bit_mask  ; actual length
-;     ld (60001),a ; XXX INFORMER ; nfa length byte: 4 or 5 !?
-;     cp (hl)
-;     ld a,(hl) ; XXX INFORMER
-;     ld (60000),a ; XXX INFORMER ; string length: 5
-;   endif
-
-;   jr nz,new_paren_find.not_a_match ; lengths differ
-;   ; Lengths match.
-;   ;_border 6 ; XXX INFORMER
-
-;   ld a,c ; name field length byte
-;   and max_word_length_bit_mask  ; actual length
-;   ld b,a
-; new_paren_find.compare_next_char:
-;   inc hl ; next character in string
-;   inc de ; next character in name field
-;   ld a,(de)
-;   cp (hl)
-;   jr nz,new_paren_find.not_a_match ; no match
-;   djnz new_paren_find.compare_next_char ; match so far, loop again
-
-;   ; The string matches.
-;   ; de = address of the last char of the name field
-;   ; c = name field length byte
-;   ld hl,5 ; offset from lfa-1 to pfa
-;   add hl,de
-;   push hl ; pfa
-;   ld e,c ; length byte
-;   ld d,0
-;   ld hl,true
-; ;  ld bc,(ip_backup) ; restore Forth IP
-; ip_backup: equ $+1
-;   ld bc,0 ; restore Forth IP
-;   _border_wait 4 ; XXX INFORMER
-;   jp pushde
-
-; new_paren_find.not_a_match:
-;   ; Not a match, try next one.
-;   ;_border 1 ; XXX INFORMER
-; new_paren_find.nfa_backup: equ $+1
-;   ld hl,0 ; nfa
-;   ld a,c ; length byte
-;   and max_word_length_bit_mask  ; actual length
-;   ld c,a ; actual length
-;   inc c ; plus the length byte
-;   ld b,0
-;   add hl,bc ; hl = lfa
-;   ld e,(hl)
-;   inc hl
-;   ld d,(hl)
-;   ld a,d
-;   or e ; end of dictionary?
-;   jp nz,new_paren_find.begin ; if not, continue
-
-;   ; No match found, return.
-;   ld bc,(ip_backup) ; restore Forth IP
-;   _border 2 ; XXX INFORMER
-;   jp false_pfa
-
-;   endm
-
-;   _new_paren_find
 
 ; doc{
 
@@ -1112,7 +975,7 @@ enclose.end:
 
 ; Send the character b to the current channel.
 ;
-; This word is copied from `TOCH`, from Lennart Benschop's Spectrum
+; Copied from `TOCH`, from Lennart Benschop's Spectrum
 ; Forth-83.
 
 ; }doc
@@ -1269,7 +1132,6 @@ key.limit:
 ; ----------------------------------------------
   _colon_header cr_,'C','R'
 
-  ; From Spectrum Forth-83.
   dw c_lit_
   db carriage_return_char
   dw emit_
@@ -1767,25 +1629,6 @@ fetch.hl:
   pop hl ; address
 two_fetch.hl
 
-if 0 ; XXX OLD -- Abersoft Forth
-
-  inc hl    ; T06  1
-  inc hl    ; T06  1 ; high part
-  ld e,(hl) ; T07  1
-  inc hl    ; T06  1
-  ld d,(hl) ; T07  1
-  push de   ; T11  1
-  dec hl    ; T06  1
-  dec hl    ; T06  1
-  ld d,(hl) ; T07  1
-  dec hl    ; T06  1
-  ld e,(hl) ; T07  1
-  push de   ; T11  1
-  _jp_next  ; T08  2
-            ;T104 14 TOTAL
-
-else ; XXX NEW -- From DZX-Forth
-
   ld e,(hl) ; T07  1
   inc hl    ; T06  1
   ld d,(hl) ; T07  1
@@ -1799,8 +1642,6 @@ else ; XXX NEW -- From DZX-Forth
             ; T11  0 push de
             ; T11  0 push hl
             ; T86 12 TOTAL
-
-endif
 
   if 0 ; XXX TODO -- study this alternative from C/PM fig-Forth 1.1g
 
@@ -1865,7 +1706,7 @@ store.de_into_hl_pointer:
   dw store_csp_
   dw current_,fetch_
   dw context_,store_
-  dw create_
+  dw header_
   dw right_bracket_
   dw paren_semicolon_code_
 do_colon:
@@ -1897,8 +1738,7 @@ do_colon:
 ; ----------------------------------------------
   _colon_header constant_,'CONSTAN','T'
 
-  dw create_
-  dw smudge_
+  dw header_,smudge_
   dw comma_
   dw paren_semicolon_code_
 do_constant:
@@ -1917,8 +1757,8 @@ do_constant:
   dw paren_semicolon_code_
 do_variable:
   inc de  ; de=pfa
-  push de
-  _jp_next
+  ex de,hl
+  jp pushhl
 
 ; ----------------------------------------------
   _colon_header user_,'USE','R'
@@ -2591,16 +2431,19 @@ question_error.end:
 ; ----------------------------------------------
   _colon_header builds_,'<BUILD','S'
 
+  ; XXX OLD
+  ; XXX TODO remove this, and check `does>`
+  ; XXX TODO adapt `vocabulary`
   dw zero_,constant_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header does_,'DOES','>'
 
+  ; XXX TODO -- check
+
   dw from_r_
-  dw latest_
-  dw nfa_to_pfa_
-  dw store_
+  dw latest_,nfa_to_pfa_,store_
   dw paren_semicolon_code_
 do_does:
   ld hl,(return_stack_pointer)
@@ -3092,6 +2935,9 @@ defined_question.end:
 ; }doc
 
 ; ----------------------------------------------
+
+if fig_find?
+
   _colon_header find_,'FIN','D'
 
   ; XXX TODO -- return cfa instead of pfa
@@ -3104,6 +2950,87 @@ defined_question.end:
   dw here_,latest_,paren_find_
 find.end:
   dw semicolon_s_
+
+
+else ; XXX NEW -- modern `find`
+
+  _code_header find_,'FIN','D'
+
+; doc{
+;
+; FIND  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
+;
+; }doc
+
+  ld (ip_backup),bc ; save Forth IP
+  pop de ; nfa
+  pop hl ; string address
+  ld (find.string_address),hl
+
+find.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (find.nfa_backup),de ; save for later
+find.string_address: equ $+1
+  ld hl,0 ; string address
+  ld a,(de) ; name field length byte
+  ld c,a    ; save for later
+  and max_word_length_bit_mask  ; actual length
+  cp (hl)
+  jr nz,find.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+  ld a,c ; name field length byte
+  and max_word_length_bit_mask  ; actual length
+  ld b,a
+find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  cp (hl)
+  jr nz,find.not_a_match ; no match
+  djnz find.compare_next_char ; match so far, loop again
+
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ; c = name field length byte
+  inc de ; de = lfa
+  inc de
+  inc de ; de = cfa
+  ld hl,1 ; 1=non-immediate word
+  ld a,c ; name field length byte
+  ld bc,(ip_backup) ; restore Forth IP
+  and precedence_bit_mask ; immediate word?
+  jp z,pushde
+  ; immediate word
+  dec hl
+  dec hl ; hl = -1 = immediate word
+  jp pushde
+
+find.not_a_match:
+  ; Not a match, try next one.
+find.nfa_backup: equ $+1
+  ld hl,0 ; nfa
+  ld a,c ; length byte
+  and max_word_length_bit_mask  ; actual length
+  ld c,a ; actual length
+  inc c ; plus the length byte
+  ld b,0
+  add hl,bc ; hl = lfa
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld a,d
+  or e ; end of dictionary?
+  jp nz,find.begin ; if not, continue
+
+  ; No match found, return.
+  ld bc,(ip_backup) ; restore Forth IP
+  ld de,(find.string_address)
+  ld hl,false
+  jp pushde
+
+endif
 
 ; ----------------------------------------------
   _colon_header paren_abort_,'(ABORT',')'
@@ -3182,19 +3109,26 @@ endif
  
   ; XXX NEW
   ; XXX TMP -- this is a copy of the original `create`.
-  ; XXX TODO -- accept an xt as parameter
+  ; XXX TODO -- accept an xt as parameter?
 
-  dw find_
-  dw zero_branch_,header.continue
-  ; The word is not unique.
-  dw drop_,pfa_to_nfa_,id_dot_
+  if fig_find?
+    dw find_
+    dw zero_branch_,header.continue
+    ; The word is not unique.
+    dw drop_,pfa_to_nfa_
+  else
+    dw defined_,nip_
+    dw zero_branch_,header.continue
+    ; The word is not unique.
+    dw cfa_to_nfa_
+  endif
+  dw id_dot_
   dw c_lit_
   db 0x04
   dw message_
 header.continue:
   dw here_
-  dw dup_,c_fetch_,width_,fetch_,min_
-  dw one_plus_,allot_
+  dw dup_,c_fetch_,width_,fetch_,min_,one_plus_,allot_ ; allocate space for name field
   dw dup_
   dw c_lit_
   db name_bound_bit_mask+smudge_bit_mask
@@ -3215,36 +3149,14 @@ header.continue:
 ; ----------------------------------------------
   _colon_header create_,'CREAT','E'
   
-  ; XXX OLD -- original version of `create`
   ; XXX TODO -- rewrite after Forth-83 and Forth-94.
 
-  dw find_
-  dw zero_branch_,create.continue
-  ; The word is not unique.
-  dw drop_,pfa_to_nfa_,id_dot_
-  dw c_lit_
-  db 0x04
-  dw message_
-create.continue:
-  dw here_
-  dw dup_,c_fetch_,width_,fetch_,min_
-  dw one_plus_,allot_
-  dw dup_
-  dw c_lit_
-  db name_bound_bit_mask+smudge_bit_mask
-  dw toggle_
-  if fig_name_field?
-    ; Toggle the name bound bit in the last character of the
-    ; name, as a delimiter to the name field.
-    dw here_,one_minus_
-    dw c_lit_
-    db name_bound_bit_mask
-    dw toggle_
-  endif
-  dw latest_,comma_ ; compile the nfa of the last word in the link field
-  dw current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
-  dw here_,two_plus_,comma_ ; compile the pfa into code field.
-  dw semicolon_s_
+  dw header_,smudge_
+  dw paren_semicolon_code_
+do_create:
+  inc de  ; de=pfa
+  ex de,hl
+  jp pushhl
 
 ; ----------------------------------------------
   _does_header assembler_,'ASSEMBLE','R'
@@ -3260,31 +3172,7 @@ assembler_vocabulary_link:
 ; ----------------------------------------------
   _colon_header code_,'COD','E'
 
-  dw find_
-  dw zero_branch_,code.continue
-  ; The word is not unique.
-  dw drop_,pfa_to_nfa_,id_dot_
-  dw c_lit_
-  db 0x04
-  dw message_
-code.continue:
-  dw here_
-  dw dup_,c_fetch_,width_,fetch_,min_,one_plus_,allot_ ; allocate space for name field
-  dw dup_
-  dw c_lit_
-  db name_bound_bit_mask+smudge_bit_mask
-  dw toggle_
-  if fig_name_field?
-    ; Toggle the name bound bit in the last character of the
-    ; name, as a delimiter to the name field.
-    dw here_,one_minus_
-    dw c_lit_
-    db name_bound_bit_mask
-    dw toggle_
-  endif
-  dw latest_,comma_ ; compile the nfa of the last word in the link field
-  dw current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
-  dw here_,two_plus_,comma_ ; compile the pfa into code field.
+  dw header_
   dw base_,fetch_,hex_ ; save the current `base`
   dw context_,fetch_ ; save the current `context`
   dw assembler_
@@ -3399,10 +3287,15 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE',']',immediate
 
+if fig_find?
   dw find_,zero_equals_
   dw one_,question_error_
   dw drop_,pfa_to_cfa_,comma_
+else
+  dw tick_,comma_
+endif
   dw semicolon_s_
+
 
 ; ----------------------------------------------
   _colon_header c_literal_,'CLITERA','L',immediate
@@ -3478,6 +3371,8 @@ two_literal.end:
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
 
+if fig_find?
+
 interpret.begin:
   dw find_ ; found?
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
@@ -3523,6 +3418,46 @@ interpret.number_done: ; then
 interpret.again:
   dw branch_,interpret.begin
 
+else ; XXX NEW -- version with modern `find`
+
+interpret.begin:
+
+  dw question_stack_
+  dw find_,question_dup_ ; found?
+  dw zero_branch_,interpret.word_not_found
+
+  ; Found ( cfa 1 | cfa -1 )
+  dw state_,fetch_,zero_not_equals_ ; compiling?
+  dw equals_ ; compiling and immediate word?
+  dw zero_branch_,interpret.execute
+
+  ; Compiling and not immediate  ( cfa )
+  dw comma_ ; compile the word
+  dw branch_,interpret.begin
+
+interpret.execute:
+  dw execute_
+  dw branch_,interpret.begin
+
+interpret.word_not_found:
+  ; try to convert the text to a number
+  ; ( ca )
+  dw number_
+  dw dpl_,fetch_,one_plus_ ; is there a decimal point?
+  dw zero_branch_,interpret.16bit_number
+  ; decimal point detected, so it's a double, 32-bit, number
+  dw two_literal_
+  dw branch_,interpret.begin
+
+interpret.16bit_number:
+  ; no decimal point, so it's a 16-bit number
+  dw drop_ ; discard high order part of the double number
+  ; XXX TODO use `c_literal` for 8-bit values.
+  dw literal_
+  dw branch_,interpret.begin
+
+endif
+
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIAT','E'
 
@@ -3535,7 +3470,7 @@ interpret.again:
 ; ----------------------------------------------
   _colon_header vocabulary_,'VOCABULAR','Y'
 
-  dw builds_
+  dw builds_ ; XXX TODO convert; see DZX-Forth
   dw lit_,0xA081 ; Dummy name field.
   dw comma_
   dw current_,fetch_,pfa_to_cfa_
@@ -4107,12 +4042,57 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+
+if not fig_find?
+
+  _colon_header defined_,'DEFINE','D'
+
+  dw b_l_,word_,find_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _colon_header question_defined_,'?DEFINE','D'
+
+  ; From DZX-Forth.
+
+  dw c_lit_
+  db 0x05
+  dw question_error_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header bracket_defined_,'[DEFINED',']',immediate
+
+if fig_find?
+  dw find_,dup_
+  dw zero_branch_,bracket_defined.end
+  dw nip_,nip_
+bracket_defined.end:
+else
+  dw defined_,nip_
+endif
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header bracket_undefined_,'[UNDEFINED',']',immediate
+
+  dw bracket_defined_,zero_equals_
+  dw semicolon_s_
+
+
+; ----------------------------------------------
   _colon_header tick_,'',"'"
 
+if fig_find?
   dw find_
   dw zero_equals_,one_,question_error_
   ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
   dw drop_,pfa_to_cfa_
+else
+  dw defined_,question_defined_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4712,7 +4692,7 @@ color:
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTAN','T'
 
-  dw create_,smudge_
+  dw header_,smudge_
   dw here_,two_store_
   dw c_lit_
   db 0x04
@@ -4855,21 +4835,6 @@ l8128h:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header bracket_defined_,'[DEFINED',']',immediate
-
-  dw find_,dup_
-  dw zero_branch_,bracket_defined.end
-  dw nip_,nip_
-bracket_defined.end:
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header bracket_undefined_,'[UNDEFINED',']',immediate
-
-  dw bracket_defined_,zero_equals_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header question_next_screen_,'?--','>',immediate
 
   dw zero_branch_,question_next_screen.end
@@ -4893,15 +4858,16 @@ question_backslash.end:
   dw in_,plus_store_
   dw semicolon_s_
 
-; doc{
-; : .(  ( 'ccc<paren>' -- )
-;   [CHAR] ) TEXT PAD COUNT TYPE  ; IMMEDIATE
-; }doc
 
 nfa_of_top_most_word_in_forth_voc:
 
 ; ----------------------------------------------
   _colon_header dot_paren_,'.','(',immediate
+
+; doc{
+; : .(  ( 'ccc<paren>' -- )
+;   [CHAR] ) TEXT PAD COUNT TYPE  ; IMMEDIATE
+; }doc
 
   dw c_lit_
   db ')'

@@ -749,6 +749,30 @@ hex  width @ 2 width !
 
 width ! decimal
 
+( #... #..... ) \ hex prefixes
+
+  \ Inspired by code from:
+  \   lina
+  \   Copyright (c) 2000-2004 Albert van der Horst,
+  \   The Netherlands
+  \   Published under GPL
+
+  \ XXX TODO
+
+width @  1 width !
+
+: #...  ( -- n )
+  \ leave decimal number
+  here 2 + c@ c>hex 10 * here 3 + c@ c>hex +
+  [compile] literal  ; immediate
+
+: #.....  ( -- n )
+  \ leave 16-bit decimal number
+  0 here 6 + here 2 + do 10 * i c@ c>hex + loop
+  [compile] literal  ; immediate
+
+width ! decimal
+
 ( [false] [true] )
 
   \ 2015-06-17: Copied from the Afera library

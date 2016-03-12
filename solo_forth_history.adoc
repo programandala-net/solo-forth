@@ -295,6 +295,42 @@ Fix: `?exit`.
 
 Improvement: faster and smaller `2@` and `2over`, `do_two_constant`.
 
+----
+if 0 ; XXX OLD -- From Abersoft Forth
+
+  inc hl    ; T06  1
+  inc hl    ; T06  1 ; high part
+  ld e,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld d,(hl) ; T07  1
+  push de   ; T11  1
+  dec hl    ; T06  1
+  dec hl    ; T06  1
+  ld d,(hl) ; T07  1
+  dec hl    ; T06  1
+  ld e,(hl) ; T07  1
+  push de   ; T11  1
+  _jp_next  ; T08  2
+            ;T104 14 TOTAL
+
+else ; XXX NEW -- From DZX-Forth
+
+  ld e,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld d,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld a,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld h,(hl) ; T07  1
+  ld l,a    ; T04  1
+  ex de,hl  ; T04  1
+  jp pushde ; T10  3
+            ; T11  0 push de
+            ; T11  0 push hl
+            ; T86 12 TOTAL
+----
+
+
 New: `2r@`.
 
 Change: First changes to modify the format of the name field, removing
@@ -310,3 +346,188 @@ Improvement: `nip` used in `/` and `*/`.
 Improvement: The new format of name fields is finished and working.
 The old format can be selected with conditional compilation, just in
 case, until the system is fully tested.
+
+Some things, like `id.`, are simpler now:
+
+----
+  _colon_header id_dot_,'ID','.'
+
+if fig_name_field?
+
+  dw pad_
+  dw c_lit_
+  db max_word_length+1
+  dw c_lit_
+  db 0x5F ; XXX why this char?
+  dw fill_
+  dw dup_,nfa_to_lfa_,over_ ; ( nfa lfa nfa )
+  dw minus_ ; ( nfa len+1 )
+  dw pad_,swap_,cmove_
+  dw pad_,count_ ; ( pad len+name_bound_bit_mask+n )
+  dw c_lit_
+  db max_word_length
+  dw and_ ; ( pad len )
+  dw two_dup_,plus_,one_minus_ ; address of the last char ( pad len pad+len-1 )
+if 0 ; XXX OLD
+  dw dup_,fetch_
+  dw lit_,0xFF7F,and_
+  dw swap_,store_
+else ; XXX NEW
+  dw dup_,c_fetch_
+  dw c_lit_
+  db 0x7F
+  dw and_,swap_,c_store_
+endif
+  dw type_,space_
+  dw semicolon_s_
+
+else ; XXX NEW -- name field without end bit in the last char
+
+  dw count_
+  dw c_lit_
+  db max_word_length_bit_mask
+  dw and_
+  dw type_,space_
+  dw semicolon_s_
+
+endif
+----
+
+The main change is `(find)`:
+
+----
+  _code_header paren_find_,'(FIND',')'
+
+; (FIND)  ( ca nfa --- pfa b tf | ff )
+
+if fig_name_field?
+
+  ; XXX TODO optimize speed with absolute jumps?
+  ; XXX TODO -- return cfa instead of pfa
+  ; XXX TODO -- always return two elements, after Forth-94
+  pop de ; nfa
+paren_find.begin:
+  ; (sp) = string address
+  ; de = nfa
+  pop hl ; string address
+  push hl ; save for next iteration
+  ld a,(de) ; length byte
+  xor (hl) ; filter deviations
+  and 0x3F ; mask msb and precedence bit
+  jr nz,paren_find.skip_name_field ; lengths differ
+paren_find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  xor (hl) ; filter deviations
+  add a,a
+  jr nz,paren_find.not_a_match ; no match
+  jr nc,paren_find.compare_next_char ; match so far, loop again
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ld hl,0x0005 ; offset from lfa-1 to pfa
+  add hl,de
+  ex (sp),hl ; pfa to stack
+paren_find.search_for_length_byte:
+  dec de ; position de on nfa
+  ld a,(de)
+  or a ; msb=1?; if so, length byte
+  jp p,paren_find.search_for_length_byte ; no, try next char
+  ld e,a ; length byte
+  ld d,0x00
+  ld hl,true
+  jp pushde ; name field found, return
+paren_find.not_a_match:
+  ; Above name field not a match, try next one
+  jr c,paren_find.name_field_skipped ; carry = end of name field
+paren_find.skip_name_field:
+  ; Find end of name field
+  inc de
+  ld a,(de)
+  or a ; msb=1?
+  jp p,paren_find.skip_name_field ; no, loop
+paren_find.name_field_skipped:
+  inc de ; lfa
+  ex de,hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld a,d
+  or e ; end of dictionary?
+  jp nz,paren_find.begin ; if not, continue
+  ; No match found, return
+  pop hl ; drop string address
+  jp false_pfa
+
+else
+
+  ld (ip_backup),bc ; save Forth IP
+  pop de ; nfa
+  pop hl ; string address
+  ld (paren_find.string_address),hl
+paren_find.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (paren_find.nfa_backup),de ; save for later
+paren_find.string_address: equ $+1
+  ld hl,0 ; string address
+  ld a,(de) ; name field length byte
+  ld c,a    ; save for later
+  and max_word_length_bit_mask  ; actual length
+  cp (hl)
+  jr nz,paren_find.not_a_match ; lengths differ
+  ; Lengths match.
+  ld a,c ; name field length byte
+  and max_word_length_bit_mask  ; actual length
+  ld b,a
+paren_find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  cp (hl)
+  jr nz,paren_find.not_a_match ; no match
+  djnz paren_find.compare_next_char ; match so far, loop again
+
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ; c = name field length byte
+  ld hl,5 ; offset from lfa-1 to pfa
+  add hl,de
+  push hl ; pfa
+  ld e,c ; length byte
+  ld d,0
+  ld hl,true
+  ld bc,(ip_backup) ; restore Forth IP
+  jp pushde
+
+paren_find.not_a_match:
+  ; Not a match, try next one.
+paren_find.nfa_backup: equ $+1
+  ld hl,0 ; nfa
+  ld a,c ; length byte
+  and max_word_length_bit_mask  ; actual length
+  ld c,a ; actual length
+  inc c ; plus the length byte
+  ld b,0
+  add hl,bc ; hl = lfa
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld a,d
+  or e ; end of dictionary?
+  jp nz,paren_find.begin ; if not, continue
+
+  ; No match found, return.
+  ld bc,(ip_backup) ; restore Forth IP
+  jp false_pfa
+
+endif
+----
+
+Change: The new word `header` substitutes `create`. `create` is
+changed after Forth-94. Its role in fig-Forth was already taken by
+`code`.
+
+Change: First steps to implement a modern version of `find`, after
+Forth-83 and Forth-94.
+

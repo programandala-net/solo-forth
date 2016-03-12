@@ -77,5 +77,6 @@ New:
 - Improve `parse-name` with case conversion and move it to the kernel.
 
 
-.2015-06-18:
+.2015-06-19:
 
+The new `find` is finished, but the system must be adapted with conditional compilation.
