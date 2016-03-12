@@ -10,7 +10,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201509262233
+\ Last modified: 201510032120
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -32,21 +32,20 @@
 
 ( ) \ scr 1 -- testing load screen
 
-: number?   ( ca len -- 0 | n 1 | d 2 )
+2 load need frames0 need frames@
 
-	dup 0= if 2drop 0 exit then   \ any chars?
-
-	over c@ [char] - = \ minus sign at the start?
-	dup >r  abs /string
-
-	dpl on  0 0 2swap >number dup
-	if
-		1 = swap c@ [char] . =  and
-		if    r@ if  dnegate  then  dpl off  2
-		else  2drop 0  then
-	else
-		2drop drop r@ if  negate  then  1
-	then  rdrop  ;
+frames0
+199 load
+  \ case
+235 load 144 load 151 load 226 load 142 load 140 load 143 load
+  \ z80-asm
+  \ decode
+  \ break-key?
+  \ rnd
+  \ ascii-type
+  \ hex.
+  \ dump
+frames@ cr ." Frames " d. cr
 
   \ }}} =======================================================
   \ Need {{{
@@ -245,7 +244,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-269 relative jump too long
 \ #-270 text not found
 
-( System error codes -271..-286 )
+( System error codes -271..-285 )
 
 \ #-271
 \ #-272
@@ -256,12 +255,12 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-277
 \ #-278
 \ #-279
+\ #-280
 \ #-281
 \ #-282
 \ #-283
 \ #-284
 \ #-285
-\ #-286
 
 ( G+DOS error codes -1000..-1014 )
 
@@ -402,6 +401,24 @@ variable last-locatable  scr/disk 1- last-locatable !
   if    2drop rdrop false
   else  r> if negate then  true
   then  r> base !  ;
+
+( number? )
+
+: number?   ( ca len -- 0 | n 1 | d 2 )
+
+  dup 0= if 2drop 0 exit then   \ any chars?
+
+  over c@ [char] - = \ minus sign at the start?
+  dup >r  abs /string
+
+  dpl on  0 0 2swap >number dup
+  if
+    1 = swap c@ [char] . =  and
+    if    r@ if  dnegate  then  dpl off  2
+    else  2drop 0  then
+  else
+    2drop drop r@ if  negate  then  1
+  then  rdrop  ;
 
 ( error>line error>ordinal )
 
@@ -717,8 +734,7 @@ need n>r
   \ ROM font, and the special code for `at-xy` (required to
   \ use the whole screen).
 
-' mode32  dup current-mode !
-' bye cfa>pfa !  \ patch `bye` to execute `mode32`
+' mode32 ' default-mode defer!
 
 ( mode42 )
 
@@ -802,6 +818,8 @@ create mode64-at-flag 0 c,
 create mode64-column 0 c,
 create mode64-row 0 c,
 variable mode64-chars
+
+  \ XXX TODO (mode64-home)
 
 code (mode64-emit)  ( -- )
 
@@ -2921,6 +2939,7 @@ ufia 5 +  constant nstr2 \ file name
 ufia 15 + constant hd00  \ file type
 ufia 16 + constant hd0b  \ file length
 ufia 18 + constant hd0d  \ file start address
+
   \ XXX OLD -- not needed
   \ ufia 20 + constant hd0f  \ BASIC length without variables
   \ ufia 22 + constant hd11  \ BASIC autorun line
@@ -2929,10 +2948,8 @@ char d device c! \ "d" or "D"
 2 sstr1 c! \ stream 2
 1 dstr1 c! \ drive 1
 
-  \ These variables hold a copy of the HD0B and HD0D UFIA
-  \ fields. They are used by `(<DISK)`.
-variable file-length
-variable file-address
+variable file-length  \ copy of `hd0b` used by `(<file)`
+variable file-address \ copy of `hd0d` used by `(<file)`
 
 ( File types and directory descriptions)
 
@@ -2943,12 +2960,12 @@ variable file-address
 
   \ Directory descriptions
 
-  01 constant basic-file      02 constant data-array
-  03 constant string-array    04 constant code-file
-  05 constant snapshot-48k    06 constant microdrive-file
-  07 constant screens$-file   08 constant special-file
-  09 constant snapshot-128k   10 constant opentype-file
-  11 constant execute-file
+01 constant basic-file-dir      02 constant data-array-dir
+03 constant string-array-dir    04 constant code-file-dir
+05 constant snapshot-48k-dir    06 constant microdrive-file-dir
+07 constant screens$-file-dir   08 constant special-file-dir
+09 constant snapshot-128k-dir   10 constant opentype-file-dir
+11 constant execute-file-dir
 
 ( --hook-codes-- )
 
@@ -2975,24 +2992,19 @@ decimal
   \ ior = the AF register returned by a DOS command:
   \     bit 0     = set: error
   \     bits 8-14 = error code
-  \     bit 15    = set: ZX Spectrum error; unset: DOS error
+  \     bit 15    = set: OS error; unset: DOS error
   \ f = error?
-  \ n = error number:
-  \     n>999 = DOS error number
-  \     n>1127 = OS error number
-
-  \ XXX OLD
-  \ dup 128 and       \ ZX Spectrum error?
-  \ \ XXX FIXME -- BASIC errors are not properly calculated
-  \ if  negate  else  31 +  then   ;
-
-  1000 +  ;
+  \ n = error number: 1000..1031: G+DOS error number
+  \                   1128..1154: OS error number
+  dup 1 and negate swap   \ calculate f
+  flip %11111111 and      \ upper 8 bits of ior
+  1000 + negate  ;
 
 : ?dos-error  ( ior -- )
   \ ior = the AF register returned by a DOS command:
   \   bit 0     = set: error
   \   bits 8-14 = error code
-  \   bit 15    = set: ZX Spectrum error; unset: DOS error
+  \   bit 15    = set: OS error; unset: DOS error
   ior>error ?error  ;
 
 ( drive@ drive! )
@@ -3169,7 +3181,8 @@ code (<file-as-is)  ( -- ior )
       \ Then load the file data.
 
   then  bc pop  next ix ldp#  af push
-        \ restore the Forth registers and save the ior
+        \ Restore the Forth registers and save the ior.
+
   jpnext  end-code
 
 : <file-as-is  ( ca len -- f n )
@@ -3412,21 +3425,23 @@ code c!dosvar  ( b n -- )
 ( update flush continued ?load thru +load +thru )
 
 : update  ( -- )
+  disk-buffer @
+  [ base @ hex ] 8000 [ base ! ] or
+  disk-buffer !  ;
 
   \ doc{
   \
   \ update  ( -- )
   \
-  \ Mark the most recently referenced block as altered. The
-  \ block will subsequently be transferred automatically to
-  \ disk should its buffer be required for storage of a
-  \ different block.
+  \ Mark the current block buffer as modified.  The block will
+  \ subsequently be transferred automatically to disk should
+  \ its buffer be required for storage of a different block, or
+  \ upon execution of `flush` or `save-buffers`.
+  \
+  \ Standard: Forth-83 (Required Word Set), Forth-94 (BLOCK),
+  \ Forth-2012 (BLOCK).
   \
   \ }doc
-
-  disk-buffer @
-  [ base @ hex ] 8000 [ base ! ] or
-  disk-buffer !  ;
 
 : flush  ( -- )  save-buffers empty-buffers  ;
 
@@ -3437,6 +3452,8 @@ code c!dosvar  ( b n -- )
   \ Perform the function of `save-buffers`, then unassign all
   \ block buffers.
   \
+  \ Standard: Forth-83 (Required Word Set), Forth-94 (BLOCK),
+  \ Forth-2012 (BLOCK).
   \ }doc
 
 : continued  ( u -- )  ?loading (load)  ;
@@ -3454,6 +3471,9 @@ code c!dosvar  ( b n -- )
 
 : ?load  ( scr f -)  if  dup load  then  drop  ;
 
+  \ Credits:
+  \ Code from Pygmy Forth.
+  \
   \ doc{
   \
   \ ?load  ( u f -- )
@@ -3462,15 +3482,40 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-  \ Credits:
-  \ `?load` from Pygmy Forth.
 
 : thru  ( u1 u2 -- )  1+ swap do  i load  loop  ;
-: +load  ( n -- )  blk @ b/scr / + load  ;
+
+  \ doc{
+  \
+  \ thru ( u1 u1 -- )
+  \
+  \ Load consecutively the screens from u1 through u2.
+  \ 
+  \ Standard: Forth-79 (Reference Word Set), Forth-83
+  \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
+  \ Forth-2012 (BLOCK EXT).
+  \
+  \ }doc
+
+: +load  ( u -- )  blk @ b/scr / + load  ;
 : +thru  ( u1 u2 -- )  1+ swap do  i +load  loop  ;
 
   \ Credits:
   \ `thru`, `+load` and `+thru` from Afera.
+
+: loads  ( u "name" -- )  create ,  does>  ( pfa )  @ load  ;
+
+  \ doc{
+  \
+  \ loads  ( u "name" -- )
+  \ 
+  \ Define a word "name" which, when executed, will  load
+  \ screen _u_.
+  \
+  \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
+  \ B. Uncontrolled Reference Words).
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Tape files {{{
@@ -4610,9 +4655,9 @@ hex
   \
   \ 0x8000 is the maximum negative.
 
-: do	  ( n1|u1 n2|u2 -- )
-  ?comp  0 rakevar !  0			\ ?do-orig is 0 for do
-  postpone (do)  here  bal+	\ do-dest
+: do    ( n1|u1 n2|u2 -- )
+  ?compiling  0 rakevar !  0      \ ?do-orig is 0 for do
+  postpone (do)  here  bal+  \ do-dest
   ; immediate
 
   \ doc{
@@ -4621,15 +4666,15 @@ hex
   \
   \ Compilation: ( C: -- do-sys )
   \
-  \	Run-time: ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
+  \  Run-time: ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \
-  \	Start a DO-LOOP structure in a colon definition. Place do-sys
-  \	on control-flow stack, which will be resolved by `loop` or
-  \	`+loop`.
+  \  Start a DO-LOOP structure in a colon definition. Place do-sys
+  \  on control-flow stack, which will be resolved by `loop` or
+  \  `+loop`.
   \
-  \	Standard: Forth-94, Forth-2012
+  \  Standard: Forth-94, Forth-2012
   \
-  \	}doc
+  \  }doc
 
 code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
 
@@ -4656,7 +4701,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
     \ next2 jp  \ $nexthl
     end-code
 
-: loop  ?comp postpone (loop) rake  ; immediate
+: loop  ?compiling postpone (loop) rake  ; immediate
 
   \ loop
   \
@@ -4667,7 +4712,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \
   \ Standard: Forth-83, Forth-94, Forth-2012.
 
-: +loop  ?comp postpone (+loop) rake  ; immediate
+: +loop  ?compiling postpone (+loop) rake  ; immediate
 
   \ +loop
   \
@@ -4974,7 +5019,7 @@ code (step)  ( R: n -- n' )
 : case
   \ Compilation: ( -- a case-id )
   \ Runtime: ( x -- )
-  ?comp csp @ !csp 4  ; immediate
+  ?compiling csp @ !csp 4  ; immediate
 
 : of
   \ Compilation: ( case-id -- of-id )
@@ -5115,81 +5160,12 @@ need -rot
 
   \ Standard: Forth-94.
 
-  \ Credits:
-  \ Code adapted from Afera.
-
 : value  ( n "name"  -- )  constant  ;
 
 : to  ( Interpretation: n "name" -- )
       ( Compilation: "name" -- )
   ' cfa>pfa compiling? if    postpone literal postpone !
                   else  !  then  ; immediate
-
-( value 2value to )
-
-  \ Standard: Forth-2012.
-
-  \ XXX NEW -- second version
-
-: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
-: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
-
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' cfa>pfa dup 1+ swap c@
-  compiling? if  swap postpone literal
-                 if  postpone 2!  else  postpone !  then  exit
-             then
-  if  2!  else  !  then
-  ; immediate
-
-( value 2value to )  \ XXX TMP
-
-  \ Standard: Forth-2012 without `2value`
-
-: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
-
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' cfa>pfa dup 1+ swap c@
-  compiling? if  swap postpone literal
-                 if  postpone 2!  else  postpone !  then  exit
-             then
-  if  2!  else  !  then
-  ; immediate
-
-( value 2value to )
-
-  \ XXX OLD -- first version
-
-  \ Standard: Forth-2012.
-
-: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
-: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
-
-: !value  ( n|d pfa -- )  dup c@ if  1+ 2! exit  then  1+ !  ;
-
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' cfa>pfa
-  compiling? if  postpone literal  postpone !value  exit  then
-  !value  ; immediate
-
-( value 2value to ) \ XXX TMP
-
-  \ XXX OLD -- first version
-
-  \ Standard: Forth-2012.
-
-: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
-
-: !value  ( n|d pfa -- )  dup c@ if  1+ 2! exit  then  1+ !  ;
-
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' cfa>pfa
-  compiling? if  postpone literal  postpone !value  exit  then
-  !value  ; immediate
 
 ( 2value 2to )
 
@@ -5203,58 +5179,30 @@ need -rot
   ' cfa>pfa compiling? if    postpone literal postpone 2!
                   else  2!  then  ; immediate
 
+( value 2value to )
+
+  \ Standard: Forth-2012.
+
+  \ This Forth-2012 implementation of `to` is provided as an
+  \ alternative, but it's bigger and slower than the Forth-94
+  \ `to` and the non-standard `2to`.
+
+: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
+: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' cfa>pfa dup 1+ swap c@
+  compiling? if  swap postpone literal
+                 if  postpone 2!  else  postpone !  then  exit
+             then
+  if  2!  else  !  then
+  ; immediate
+
 ( value to )
 
-  \ Alternative non-standard implementation of `value` with
-  \ non-parsing `to` -- version with flag.
-
-  \ Note: this version of is 3.6 times slower than the Forth-94
-  \ and Forth-2012 implementations (for compiled `to`).
-
-  \ Credits:
-  \ Code modified from lina.
-
-variable to-message  to-message off
-: to    ( -- )  to-message on  ;
-: value  ( n "name" -- )
-  create ,
-  does>  to-message @ if  !  else  @  then  to-message off  ;
-
-( value to )
-
-  \ Alternative non-standard implementation of `value` with
-  \ non-parsing `to` -- version with flag.
-
-  \ Note: this version of is 3.6 times slower than the Forth-94
-  \ and Forth-2012 implementations (for compiled `to`).
-
-  \ Credits:
-  \ Code from lina.
-
-variable to-message
-: from  ( -- )  to-message off  ;  from
-: to    ( -- )  to-message on  ;
-: value  ( n "name" -- )
-  create ,  does>  to-message @ if  !  else  @  then  from  ;
-
-( value )
-
   \ Non-standard implementation of `value` with non-parsing
-  \ `to` -- version with `perform` and `from`
-
-  \ Credits:
-  \ Code inspired by lina.
-
-variable (value)
-: from  ( -- )  ['] @ (value) !  ;  from
-: to    ( -- )  ['] ! (value) !  ;
-: value  ( n "name" -- )
-  create ,  does>   (value) perform  from  ;
-
-( value )
-
-  \ Non-standard implementation of `value` with non-parsing
-  \ `to` -- version with `perform`
+  \ `to`. This could be useful in special cases.
 
   \ Credits:
   \ Code inspired by lina.
@@ -5264,41 +5212,23 @@ variable (value)  ['] @ (value) !
 : value  ( n "name" -- )
   create ,  does>   (value) perform  ['] @ (value) !  ;
 
-( value )
-
-  \ Non-standard implementation of `value` with non-parsing
-  \ `to` -- version with `defer`
-
-  \ Credits:
-  \ Code inspired by lina.
-
-defer (value)
-['] @ ['] (value) defer!
-: to    ( -- )  ['] ! ['] (value) defer!  ;
-: value  ( n "name" -- )
-  create ,  does>  (value)  ['] @ ['] (value) defer!  ;
-
-( value )
-
-  \ Non-standard implementation of `value` with non-parsing
-  \ `to` -- version with `defer` and `from`.
-
-  \ Credits:
-  \ Code inspired by lina.
-
-defer (value)
-: from  ( -- )  ['] @ ['] (value) defer!  ;  from
-: to    ( -- )  ['] ! ['] (value) defer!  ;
-: value  ( n "name" -- )
-  create ,  does>  (value) from  ;
-
 ( set )
-
-  \ From: Forth-83 (Appendix B. Uncontrolled Reference Words).
 
 : set  ( x a "name" -- )
   create  swap , ,
   does>   ( pfa )  dup @ swap cell+ @ !  ;
+
+  \ doc{
+  \
+  \ set  ( x a "name" -- )
+  \
+  \ Define a word "name" which, when executed, will  cause  the
+  \ value _x_  to be stored at _a_.
+  \
+  \ Standard: Forth-79 (Reference Word Set); Forth-83 (Appendix
+  \ B.  Uncontrolled Reference Words).
+  \
+  \ }doc
 
 ( user )
 
@@ -5365,10 +5295,18 @@ need !dosvar  need @dosvar
 
 [defined] sys-frames ?\ 23672 constant sys-frames
 
-: ms  ( n -- )
-  \ Wait n ms (miliseconds), with 20 ms precision.
+: ms  ( u -- )
+  \ Wait _u_ ms (miliseconds), with 20 ms precision.
   20 / sys-frames @ +
   begin  dup sys-frames @ u<  until drop  ;
+
+  \ doc{
+  \
+  \ ms  ( u -- )
+  \
+  \ Standard: Forth-94 (FACILITY EXT) Forth-202 (FACILITY EXT).
+  \
+  \ }doc
 
   \ XXX TODO
   \ Adapt this better version from v.Forth:
@@ -5422,6 +5360,60 @@ need !dosvar  need @dosvar
   \   1B c,         \ dec de
   \   c3 c, ,       \ jp ms1
   \ end-code
+
+( ms88 )
+
+  \ XXX TODO 
+  \ XXX version of `ms` adapted from Z88 CamelForth
+  \ XXX UNDER DEVELOPMENT
+
+  \ Original:
+  \
+    \ defw PAUSE  ; allow other tasks to run
+  \ .stMS:
+    \ defw stMS+2
+    \ ld l,10    ; only run other tasks every 10ms
+  \ .reMS:
+    \ ld a,b
+    \ or c
+    \ jr z,endMS
+    \ push bc
+    \ ld bc,133
+  \ .reMS2:
+    \ dec bc
+    \ ld a,b
+    \ or c
+    \ jr nz,reMS2
+    \ pop bc
+    \ dec bc
+    \ dec l
+    \ jr nz,reMS
+    \ ld de,stMS
+    \ jp PAUSE  ; allow other tasks to run
+  \ .endMS  pop bc          ; get new TOS
+    \ jp EXIT
+
+need z80-asm
+code ms88  ( u -- )
+  de pop
+    \ ld l,10    ; only run other tasks every 10ms
+  begin \ .reMS:
+
+  d a ld
+  e or nz if
+
+    de push \ push bc
+    #133 de ldp#
+    begin  \ .reMS2:
+      dec decp  d a ld  e or
+    z until \ jr nz,reMS2
+    de pop \ pop bc
+    de decp  l dec
+ z until \ jr nz,reMS
+    \ ld de,stMS
+    \ jp PAUSE  ; allow other tasks to run
+  \ .endMS
+  then  jpnext  end-code
 
 ( frames@ frames! frames0 )
 
@@ -6972,6 +6964,69 @@ FORTH-WORDLIST SET-CURRENT
   \ zero. As this is a standard word it takes an unsigned size
   \ argument, but excessive requests fail automatically, as
   \ with ALLOCATE.
+
+  \ }}} =======================================================
+  \ Leo Brodie's DOER ... MAKE construct {{{
+
+( doer )
+
+  \ Credits:
+  \ Code adapted from PFE.
+  \ Original code by Leo Brodie, 1983,
+  \ published in _Thinking Forth_, Appendix A. Public domain.
+ 
+: doer-noop ;
+
+: doer  ( "name" -- )
+  \ Define a word whose behaviour is vectorable.
+  create  ['] doer-noop cfa>pfa ,
+  does>  ( pfa ) @ >r ;
+
+: (make)
+  \ Stuff the address of further code into the parameter field
+  \ of a doer word.
+  r> dup cell+ dup cell+
+    ( a1 a2 a2 )
+    \ a1 = address of an optional continuation after `;and`,
+    \      or zero
+    \ a2 = address of the doer word
+    \ a3 = address of the code to associate the doer word with
+  swap @ cfa>pfa !
+    \ Get the pfa of the doer word and store the code address
+    \ into it.
+  @ ?dup if  >r  then ;
+    \ Manage the optional continuation after `;and`.
+
+variable >;and
+  \ Hold the address of optional continuation pointer.
+
+: make
+  \ Used interpretively:
+  \   make doer-name forth-code ;
+  \ Or inside a definition:
+  \   : definition  make doer-name forth-code  ;
+  compiling? if     postpone (make)  here >;and ! 0 ,
+             else   here ' cfa>pfa ! ]  then  ; immediate
+
+: ;and  ( -- )  postpone exit  here >;and @ !  ; immediate
+  \ Allow continuation of the "making" definition.
+
+: undo  ( "name" -- )  ['] doer-noop cfa>pfa  ' cfa>pfa ! ;
+  \ Make the doer word "name" safe to execute.
+
+( doer-test )
+
+need doer
+
+doer test
+  .( Test 1: ) test
+make test  cr ." test 2" ;
+  .( Test 2: ) test
+: change    make test ." test 3" ;and  test ;
+change
+  .( Test 3: ) test
+undo test
+  .( Test 4: ) test
 
   \ }}} =======================================================
   \ Floating point after Spectrum Forth-83 {{{

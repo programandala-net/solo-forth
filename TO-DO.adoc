@@ -373,25 +373,20 @@ Solve `;s` vs `exit`. Compare CamelForth, DZX-Forth...
 
 .2015-08-26:
 
-New: `cvalue`, `2value`.
+New: `cvalue`.
 
 .2015-09-12:
 
-Ideas from Forth-79:
 ____
 
 ROTATE         n1 n2 -- n3
+
      Rotate  the value n1 left n2 bits if n2 is positive, right  n2
      bits  if n2 is negative.  Bits shifted out of one end  of  the
      cell are shifted back in at the opposite end.
-
-
-SET            n addr --
-     A defining word used  in the form:
-          n  addr  SET  <name>
-
-     Defines  a  word <name> which, when executed, will  cause  the
-     value  n  to be stored at address.
+  
+  \ Standard: Forth-79 (Reference Word Set); Forth-83 (Appendix
+  \ B.  Uncontrolled Reference Words).
 ____
 
 Implement a configurable case mode for `search` and `compare`? See how
@@ -399,8 +394,7 @@ Z88 CamelForth does it.
 
 .2015-09-13:
 
-`rp` should be a user variable?
-
+`rp` should be a user variable
 
 .2015-09-21:
 

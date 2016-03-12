@@ -18,7 +18,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509262233
+version_release:  equ 201509270345
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -206,7 +206,6 @@ size_optimization: equ false
   ; false = normal, faster code.
 
 ; fig_parsing: equ true ; XXX harcoded flag, else label problems
-  ; XXX FIXME -- crash when false!
   ; true = the fig-Forth parsing method is used.
   ; false = parsing is modified after Forth-83 and Forth-94.
 
@@ -1658,6 +1657,7 @@ push_l: ; XXX TMP -- not used yet
 
   ; XXX FIXME -- crash if not compiling
   ; XXX TODO -- implement compile-only flag?
+  ; -- document the issue?
 
   ld a,(bc)
   inc bc
@@ -2840,7 +2840,7 @@ paren_find_name.ip_backup: equ $+1
 ;   ; _z80_border 4 ; XXX INFORMER
   jp push_hlde
 
-if 0 ; XXX TODO -- remove, it's in the library
+if 1 ; XXX TODO -- remove, it's in the library
 
 ; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
@@ -3299,9 +3299,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_emit_,'(EMIT)'
-
-; XXX TODO -- rename to `(mode32-emit)`
+  _code_header paren_mode32_emit_,'(MODE32-EMIT)'
 
 ; doc{
 ;
@@ -3340,12 +3338,12 @@ if 0
   ld hl,(sys_chars)
   push hl
   cp 128
-  jr c,paren_emit.print_a
+  jr c,paren_mode32_emit.print_a
   sub 96
   ld hl,(sys_udg)
   dec h
   ld (sys_chars),hl
-paren_emit.print_a
+paren_mode32_emit.print_a
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
   pop hl
@@ -3367,14 +3365,14 @@ if 0
 
   ld a,l
   cp 128 ; control or ASCII character?
-  jp nc,paren_emit.print_udg ; is not, jump
+  jp nc,paren_mode32_emit.print_udg ; is not, jump
 
   ; use the ROM routine to print a control or ASCII character
   rst 0x10
   pop bc
   _jp_next
 
-paren_emit.print_udg:
+paren_mode32_emit.print_udg:
   ; hl = UDG code (128..255)
   sub 128
   ld l,a ; hl = UDG index code (0..127)
@@ -3386,12 +3384,12 @@ paren_emit.print_udg:
   ex de,hl ; de = char address in the font
   ld hl,(sys_df_cc) ; current screen address
   ld b,8 ; char scans
-paren_emit.print_udg_scan
+paren_mode32_emit.print_udg_scan
   ld a,(de) ; get UDG scan
   ld (hl),a ; put it on the screen
   inc de ; address of next scan of the UDG
   inc h ; address of next pixel row on the screen
-  djnz paren_emit.print_udg_scan
+  djnz paren_mode32_emit.print_udg_scan
 
   ; Update
   ld de,(sys_s_posn)
@@ -3402,19 +3400,19 @@ paren_emit.print_udg_scan
   inc e
   ld a,e
   cp 32 ; last col?
-  jp c,paren_emit.update2 ; if not, jump
+  jp c,paren_mode32_emit.update2 ; if not, jump
   ; last col
   ld e,0
   inc d
   ld a,d
   cp 23 ; last row?
-  jp c,paren_emit.update2 ; if not, jump
+  jp c,paren_mode32_emit.update2 ; if not, jump
   ; last row
   call 0x0DFE ; ROM scroll routine
   ; XXX FIXME wrong coords after the scroll
   ld de, 0x1400
 
-paren_emit.update2:
+paren_mode32_emit.update2:
   push de
   ld a,d
   and 0x07
@@ -3451,14 +3449,14 @@ if 1
 
   ld a,l
   cp 128 ; control or ASCII character?
-  jp nc,paren_emit.print_udg ; if not, jump
+  jp nc,paren_mode32_emit.print_udg ; if not, jump
 
   ; use the ROM routine to print a control or ASCII character
   rst 0x10
   pop bc
   _jp_next
 
-paren_emit.print_udg:
+paren_mode32_emit.print_udg:
   ; a = UDG code (128..255)
   ; h = 0
   sub 128
@@ -3486,7 +3484,7 @@ if old_defer
 
 ; XXX TODO -- Add multitasker's `pause` when available.
 
-  dw paren_emit_
+  dw paren_mode32_emit_
   ; XXX OLD
 ;  dw one_,hash_emit_,plus_store_
 ;  dw semicolon_s_
@@ -3495,7 +3493,7 @@ else
 
   _code_header emit_,'EMIT'
 
-  ld hl,paren_emit_
+  ld hl,paren_mode32_emit_
   jp next2
 
 endif
@@ -6989,7 +6987,7 @@ fill.done:
   _code_header blank_,'BLANK'
 
   exx
-  ld e,space_char
+  ld a,space_char
   jp fill.a
 
 ; ----------------------------------------------
@@ -7225,7 +7223,7 @@ else ; XXX NEW
 ;   tuck -  ;              ( ca len )
 ; ----
 
-; }word
+; }doc
 
   dw stream_              ; ( ca len )
 ; _brk 'parse-name -- after stream' ; XXX INFORMER
@@ -7877,9 +7875,9 @@ endif
 ;   abs
 ;   dup 256 < ?exit
 ;   dup 1000 < if  [ 256 091 - ] literal - exit  then
-;   [ 1000 286 - 255 091 - + ] literal -   ;
+;   [ 1000 286 - 256 091 - + ] literal -   ;
 
-  ; XXX TODO -- add OS error codes
+  ; XXX TODO -- add OS error codes (1128..1154)
 
   dw abs_,dup_
   _literal 256
@@ -7890,7 +7888,7 @@ endif
   _literal 256-91
   dw minus_,exit_
 error_to_ordinal.g_plus_dos:
-  _literal (1000-286)+(255-91)
+  _literal (1000-286)+(256-91)
   dw minus_
   dw semicolon_s_
 
@@ -7974,6 +7972,8 @@ error.end:
 
 ; header  ( "name" -- )
 
+if 0 ; XXX OLD
+
   ; XXX TODO -- 2015-09-13: check only when `warnings` is on,
   ; and check only `current`!
   ;
@@ -8050,6 +8050,63 @@ endif
   dw here_,two_plus_,comma_ ; compile the pfa into code field
 ;  _brk 'header -- end' ; XXX INFORMER
   dw semicolon_s_
+
+else
+
+; XXX NEW -- smarter and faster
+
+  ; XXX Note: This version checks wether the word is unique only when
+  ; `warnings` is on, and by searching only `current`.
+  
+  dw parse_name_  ; ( ca len )
+  dw dup_,zero_equals_
+  _question_error error.zero_length_name
+
+  dw warnings_,fetch_
+  dw zero_branch_,header.continue
+
+  ; `warnings` is on
+  dw two_dup_,current_,fetch_,search_wordlist_
+  dw zero_branch_,header.continue
+  ; the word is not unique in `current`
+  ; ( ca len cfa )
+  dw cfa_to_nfa_,id_dot_
+  _literal error.not_unique
+  dw message_ ; XXX TMP -- `warning`?
+
+header.continue:
+
+  ; ( ca len )
+
+if 0 ; fig_parsing
+  .error 'fig parsing is incompatible with the new version of `header`'
+else
+
+  dw two_dup_,uppers_ ; XXX FIXME -- do this modifies the buffer?
+
+endif
+
+
+  ; XXX TODO error if name is too long? (see lina)
+  dw width_,fetch_,min_
+if 0 ; fig_parsing
+  dw save_string_
+endif
+  dw tuck_ ; ( len ca len )
+  _names_bank
+  dw here_,comma_np_ ; store a pointer to the cfa
+  dw latest_,comma_np_ ; link field
+  ; Now `np` contains the address of the nfa.
+  dw np_fetch_
+  dw place_ ; store the name
+  dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
+  dw smudge_ ; set the smudge bit and page the default bank
+  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
+  dw here_,two_plus_,comma_ ; compile the pfa into code field
+  dw semicolon_s_
+
+
+endif
 
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
@@ -8928,11 +8985,10 @@ endif
 ; }doc
 
   dw display_
-  dw previous_mode_,fetch_
-  _brk 'warm -- before execute'
-  dw execute_ ; XXX FIXME
-  dw page_,abort_
-  dw semicolon_s_
+  dw previous_mode_,perform_
+  dw page_ ; note: this must be after changing the screen mode
+  dw abort_
+  ; dw semicolon_s_ ; XXX OLD -- `warm` never returns
 
 warm_start:
   call common_start
@@ -10852,18 +10908,15 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_home_,'(HOME)'
-;  _code_header home_,'HOME'
+  _code_header paren_mode32_home_,'(MODE32-HOME)'
 
 ; doc{
 ;
-; (home)  ( -- )
+; (mode32-home)  ( -- )
 ;
-; Defaust behaviour of `home`.
+; Behaviour of `home` in `mode32`.
 ;
 ; }doc
-
-  ; XXX TODO rename to `(home-mode32)`
 
 if 0
 
@@ -10920,12 +10973,12 @@ if old_defer
 ;
 ; }doc
 
-  dw paren_home_
+  dw paren_mode32_home_
 else
 
   _code_header home_,'HOME'
 
-  ld hl,paren_home_
+  ld hl,paren_mode32_home_
   jp next2
 
 endif
@@ -11047,13 +11100,18 @@ system_stack_pointer: equ $+1
 ;
 ; }doc
 
+  ; XXX TODO -- this is a new-format deferred word, mark it as
+  ; such with the future macro.
+
   ld hl,noop_
   jp next2
 
 ; ----------------------------------------------
   _colon_header bye_,'BYE'
 
-  dw current_mode_,fetch_,previous_mode_,store_
+  dw current_mode_
+  dw fetch_
+  dw previous_mode_,store_
   dw default_mode_
   dw paren_bye_
   ; `(bye)` never returns
@@ -11141,11 +11199,11 @@ where.do_it:
   dw not_equals_ ; not the last row?
   dw zero_branch_,at_pfa.last_line
   ; not the last row
-  dw lit_,22,paren_emit_,paren_emit_,paren_emit_
+  dw lit_,22,paren_mode32_emit_,paren_mode32_emit_,paren_mode32_emit_
   dw semicolon_s_ ; XXX TODO exit_
 
 at_pfa.last_line:
-  dw one_minus_,dup_,paren_emit_,paren_emit_,zero_,paren_emit_
+  dw one_minus_,dup_,paren_mode32_emit_,paren_mode32_emit_,zero_,paren_mode32_emit_
   dw cr_
   dw dup_
   dw lit_,sys_df_cc ; address in display file of print position
