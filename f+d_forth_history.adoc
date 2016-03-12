@@ -99,3 +99,15 @@ format), some error messages are reorganized (and updated in the main
 source).
 
 New: `-rot` in the blocks disk.
+
+New: `recurse`.
+
+Change: `pfa` is renamed as `nfa>pfa`; the rest of the family is
+renamed with the prefix "pfa>". This is a first step before
+reorganizing the headers to make them faster, probably moving the lfa
+before the nfa, and also modifying `'` and `[']` to return the cfa
+instead of the pfa.
+
+Fix: there was an old relative branch calculation in `then`.
+
+Fix: `cliteral`, recently implemented, used `comma`!

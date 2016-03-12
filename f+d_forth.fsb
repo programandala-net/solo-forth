@@ -182,11 +182,11 @@ create bleep
 hex
 
 : stype  ( ca len -- )
-  0 2dup - if
-    do
-      dup c@ 7f and dup bl < if  drop [char] .  then  emit 1+
+  dup if
+    bounds do
+      i c@ 7f and dup bl < if  drop [char] .  then  emit
     loop
-  else  2drop  then  drop  ;
+  else  2drop  then  ;
 
 decimal  -->
 

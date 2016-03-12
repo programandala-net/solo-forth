@@ -18,6 +18,9 @@ bytes_per_terminal_input_buffer:  equ 0x50
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
 
+false                             equ 0
+true                              equ 1
+
 precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
@@ -1914,7 +1917,7 @@ recurse_lfa:
 recurse_:
   dw do_colon
 recurse_pfa:
-  dw latest_,pfa_,cfa_,comma_
+  dw latest_,nfa_to_pfa_,pfa_to_cfa_,comma_
   dw semicolon_s_
 
 one_plus_nfa:
@@ -2048,7 +2051,7 @@ not_equals_pfa:
   ld a,h
   or l
   jp z,pushhl
-  inc hl
+  ld hl,true
   jp pushhl
 
 equals_nfa:
@@ -2197,36 +2200,37 @@ latest_pfa:
   dw current_,fetch_,fetch_
   dw semicolon_s_
 
-lfa_nfa:
-  db 0x03+0x80,'LF','A'+0x80
-lfa_lfa:
+pfa_to_lfa_nfa:
+  db 0x07+0x80,'PFA>LF','A'+0x80
+pfa_to_lfa_lfa:
   dw latest_nfa
-lfa_:
+pfa_to_lfa_:
   dw do_colon
-lfa_pfa:
+pfa_to_lfa_pfa:
   dw c_lit_
   db 0x04
   dw minus_
   dw semicolon_s_
 
-cfa_nfa:
-  db 0x03+0x80,'CF','A'+0x80
-cfa_lfa:
-  dw lfa_nfa
-cfa_:
+pfa_to_cfa_nfa:
+  db 0x07+0x80,'PFA>CF','A'+0x80
+pfa_to_cfa_lfa:
+  dw pfa_to_lfa_nfa
+pfa_to_cfa_:
   dw do_colon
-cfa_pfa:
+pfa_to_cfa_pfa:
   dw two_
   dw minus_
   dw semicolon_s_
 
-nfa_nfa:
-  db 0x03+0x80,'NF','A'+0x80
-nfa_lfa:
-  dw cfa_nfa
-nfa_:
+pfa_to_nfa_nfa:
+  db 0x07+0x80,'PFA>NF','A'+0x80
+pfa_to_nfa_lfa:
+  dw pfa_to_cfa_nfa
+pfa_to_nfa_:
   dw do_colon
-nfa_pfa:
+pfa_to_nfa_pfa:
+  ; XXX TODO optimize
   dw c_lit_
   db 0x05
   dw minus_
@@ -2234,13 +2238,13 @@ nfa_pfa:
   dw traverse_
   dw semicolon_s_
 
-pfa_nfa:
-  db 0x03+0x80,'PF','A'+0x80
-pfa_lfa:
-  dw nfa_nfa
-pfa_:
+nfa_to_pfa_nfa:
+  db 0x07+0x80,'NFA>PF','A'+0x80
+nfa_to_pfa_lfa:
+  dw pfa_to_nfa_nfa
+nfa_to_pfa_:
   dw do_colon
-pfa_pfa:
+nfa_to_pfa_pfa:
   dw one_
   dw traverse_
   dw c_lit_
@@ -2251,7 +2255,7 @@ pfa_pfa:
 store_csp_nfa:
   db 0x04+0x80,'!CS','P'+0x80
 store_csp_lfa:
-  dw pfa_nfa
+  dw nfa_to_pfa_nfa
 store_csp_:
   dw do_colon
 store_csp_pfa:
@@ -2428,8 +2432,8 @@ paren_semicolon_code_:
 paren_semicolon_code_pfa:
   dw from_r_
   dw latest_
-  dw pfa_
-  dw cfa_
+  dw nfa_to_pfa_
+  dw pfa_to_cfa_
   dw store_
   dw semicolon_s_
 
@@ -2466,7 +2470,7 @@ does_:
 does_pfa:
   dw from_r_
   dw latest_
-  dw pfa_
+  dw nfa_to_pfa_
   dw store_
   dw paren_semicolon_code_
 do_does:
@@ -2960,12 +2964,11 @@ minus_find_pfa:
   dw context_,fetch_,fetch_
   dw paren_find_
   dw dup_,zero_equals_ ; found?
-  dw zero_branch_minus_find.end,
+  dw zero_branch_,minus_find.end
   ; The word was not found in the context vocabulary,
   ; try again in the current vocabulary.
   ; XXX TODO -- remove this?
-  dw drop_
-  dw here_,latest_,paren_find_
+  dw drop_,here_,latest_,paren_find_
 minus_find.end:
   dw semicolon_s_
 
@@ -3018,8 +3021,8 @@ id_dot_pfa:
   db 0x5F
   dw fill_
   dw dup_
-  dw pfa_
-  dw lfa_
+  dw nfa_to_pfa_
+  dw pfa_to_lfa_
   dw over_
   dw minus_
   dw pad_
@@ -3054,7 +3057,7 @@ create_pfa:
   dw minus_find_
   dw zero_branch_,create.continue
   ; The word is not unique.
-  dw drop_,nfa_,id_dot_
+  dw drop_,pfa_to_nfa_,id_dot_
   dw c_lit_
   db 0x04
   dw message_,space_
@@ -3084,7 +3087,7 @@ bracket_compile_:
 bracket_compile_pfa:
   dw minus_find_,zero_equals_
   dw one_,question_error_
-  dw drop_,cfa_,comma_
+  dw drop_,pfa_to_cfa_,comma_
   dw semicolon_s_
 
 c_literal_nfa:
@@ -3097,7 +3100,7 @@ c_literal_pfa:
   if 1 ; XXX OLD 
     dw state_,fetch_
     dw zero_branch_,c_literal.end
-    dw compile_,c_lit_,comma_
+    dw compile_,c_lit_,c_comma_
 c_literal.end:
   else ; XXX NEW
     ; XXX FIXME -- `interpret` needs the old method of `literal`
@@ -3192,10 +3195,10 @@ interpret_pfa:
   dw zero_branch_,branch_destination_0x6C7F ; if
   dw state_,fetch_,less_than_
   dw zero_branch_,branch_destination_0x6C75 ; if
-  dw cfa_,comma_
+  dw pfa_to_cfa_,comma_
   dw branch_,branch_destination_0x6C79 ; else
 branch_destination_0x6C75:
-  dw cfa_
+  dw pfa_to_cfa_
   dw execute_ ; then
 branch_destination_0x6C79:
   dw question_stack_
@@ -3240,7 +3243,7 @@ vocabulary_pfa:
   dw builds_
   dw lit_,0xA081 ; Dummy name field.
   dw comma_
-  dw current_,fetch_,cfa_
+  dw current_,fetch_,pfa_to_cfa_
   dw comma_
   dw here_
   dw voc_link_,fetch_
@@ -3360,7 +3363,7 @@ warm_pfa:
 
 cold_start:
   xor a
-  ld (iy+sys_df_sz_offset),a
+  ; ld (iy+sys_df_sz_offset),a ; XXX TMP
   ld (printer_channel_or_zero),a
   ld ix,(user_pointer_value)
   ld hl,(init_s0_value)
@@ -3707,6 +3710,17 @@ hash_buff_:
 hash_buff_pfa:
   dw 0x0008
 
+; doc{
+
+; +BUF  ( a1 -- a2 f )
+
+;   Advance the disk buffer address _a1_ to the address of the next
+;   buffer _a2_.  Boolean _f_ is false when _a2_ is the buffer
+;   presently pointed to by the variable `prev`.
+
+; }doc
+
+
 plus_buf_nfa:
   db 0x04+0x80,'+BU','F'+0x80
 plus_buf_lfa:
@@ -3716,16 +3730,13 @@ plus_buf_:
 plus_buf_pfa:
   dw c_lit_
   db total_bytes_per_buffer
-  dw plus_
-  dw dup_
-  dw limit_
-  dw equals_
+  dw plus_ ; a2
+  dw dup_,limit_,equals_ ; a2 = limit?
   dw zero_branch_,plus_buf.continue
+  ; a2 is out of bounds
   dw drop_,first_
 plus_buf.continue:
-  dw dup_
-  dw prev_,fetch_
-  dw minus_ ; XXX TODO use not equals
+  dw dup_,prev_,fetch_,not_equals_
   dw semicolon_s_
 
 update_nfa:
@@ -3770,6 +3781,17 @@ dr0_pfa:
   ; dw store_
   dw semicolon_s_
 
+; doc{
+
+; : BUFFER  ( n -- a )
+
+; Obtain the next block buffer and assign it to block _n_.   If the
+; contents of the buffer were marked as updated, it is written to the
+; disk.  The block _n_ is not read from the disk.  The address left on
+; stack is the first cell in the buffer for data storage.
+
+; }doc
+
 buffer_nfa:
   db 0x06+0x80,'BUFFE','R'+0x80
 buffer_lfa:
@@ -3778,32 +3800,23 @@ buffer_:
   dw do_colon
 buffer_pfa:
   dw use_,fetch_
-  dw dup_
-  dw to_r_
-branch_destination_0x716F:
+  dw dup_,to_r_
+buffer.begin:
   dw plus_buf_
-  dw zero_branch_,branch_destination_0x716F
-  dw use_
-  dw store_
+  dw zero_branch_,buffer.begin ; until
+  dw use_,store_
   dw r_fetch_,fetch_
-  dw zero_less_than_
-  dw zero_branch_,branch_destination_0x7195
-  dw r_fetch_
-  dw two_plus_
-  dw r_fetch_
-  dw fetch_
-  dw lit_,0x7FFF
-  dw and_
-  dw zero_
-  dw read_write_
-branch_destination_0x7195:
-  dw r_fetch_
-  dw store_
-  dw r_fetch_
-  dw prev_
-  dw store_
-  dw from_r_
-  dw two_plus_
+  dw zero_less_than_ ; updated?
+  dw zero_branch_,buffer.end
+  ; The buffer was updated, it must be saved to disk.
+  dw r_fetch_,two_plus_ ; first cell of data in the buffer
+  dw r_fetch_,fetch_
+  dw lit_,0x7FFF,and_ ; discard the update bit, leave the block number
+  dw zero_,read_write_ ; write
+buffer.end:
+  dw r_fetch_,store_
+  dw r_fetch_,prev_,store_
+  dw from_r_,two_plus_ ; first cell of data in the buffer
   dw semicolon_s_
 
 block_nfa:
@@ -3922,6 +3935,7 @@ read_write_pfa:
   db 0x45
   dw swap_,minus_
   dw lit_,read_write_sector_command,c_store_
+  dw over_,dot_ ; XXX INFORMER
   dw block_to_sector_
   dw paren_read_write_
   dw semicolon_s_
@@ -3954,15 +3968,11 @@ flush_lfa:
 flush_:
   dw do_colon
 flush_pfa:
-  dw hash_buff_
-  dw one_plus_
-  dw zero_
+  dw hash_buff_,one_plus_,zero_
   dw paren_do_
-branch_destination_0x7255:
-  dw zero_
-  dw buffer_
-  dw drop_
-  dw paren_loop_,branch_destination_0x7255
+flush.do:
+  dw zero_,buffer_,drop_
+  dw paren_loop_,flush.do ; loop
   dw semicolon_s_
 
 load_nfa:
@@ -4056,13 +4066,8 @@ then_:
   dw do_colon
 then_pfa:
   dw question_comp_
-  dw two_
-  dw question_pairs_
-  dw here_
-  dw over_
-  dw minus_
-  dw swap_
-  dw store_
+  dw two_,question_pairs_
+  dw here_,swap_,store_
   dw semicolon_s_
 
 do_nfa:
@@ -4084,8 +4089,7 @@ loop_lfa:
 loop_:
   dw do_colon
 loop_pfa:
-  dw three_
-  dw question_pairs_
+  dw three_,question_pairs_
   dw compile_,paren_loop_
   dw back_
   dw semicolon_s_
@@ -4155,8 +4159,7 @@ if_:
 if_pfa:
   dw compile_,zero_branch_
   dw here_
-  dw zero_
-  dw comma_
+  dw zero_,comma_
   dw two_
   dw semicolon_s_
 
@@ -4170,8 +4173,7 @@ unless_:
 unless_pfa:
   dw compile_,question_branch_
   dw here_
-  dw zero_
-  dw comma_
+  dw zero_,comma_
   dw two_
   dw semicolon_s_
 
@@ -4186,8 +4188,7 @@ else_pfa:
   dw question_pairs_
   dw compile_,branch_
   dw here_
-  dw zero_
-  dw comma_
+  dw zero_,comma_
   dw swap_
   dw two_
   dw then_
@@ -4401,7 +4402,7 @@ words.begin:
   dw zero_,out_,store_
 words.continue:
   dw dup_,id_dot_
-  dw pfa_,lfa_,fetch_
+  dw nfa_to_pfa_,pfa_to_lfa_,fetch_
   dw dup_,zero_equals_,question_terminal_,or_
   dw zero_branch_,words.begin ; until
   dw drop_
@@ -4590,10 +4591,10 @@ forget_pfa:
   db 0x15
   dw question_error_
   dw dup_
-  dw nfa_
+  dw pfa_to_nfa_
   dw dp_
   dw store_
-  dw lfa_,fetch_
+  dw pfa_to_lfa_,fetch_
   dw current_,fetch_
   dw store_
   dw semicolon_s_
@@ -5248,8 +5249,7 @@ of_pfa:
   dw compile_,equals_
   dw compile_,zero_branch_
   dw here_
-  dw zero_
-  dw comma_
+  dw zero_,comma_
   dw compile_,drop_
   dw c_lit_
   db 0x05
@@ -5267,8 +5267,7 @@ endof_pfa:
   dw question_pairs_
   dw compile_,branch_
   dw here_
-  dw zero_
-  dw comma_
+  dw zero_,comma_
   dw swap_
   dw two_
   dw then_
