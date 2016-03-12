@@ -3,7 +3,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508151713
+version_release:  equ 201508151841
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -206,10 +206,6 @@ fig_compiler_security?: equ true
   ; XXX TODO
 show_version?: equ false
 
-new_read_write?: equ true
-  ; false : 33308 bytes free
-  ; true :  33301 bytes free
-
 ; ==============================================================
 ; Symbols
 
@@ -219,9 +215,11 @@ new_read_write?: equ true
 origin:                           equ 0x5E00
 
 false:                            equ 0
-true:                             equ 1
+true:                             equ -1
 if true=(-1)
-  ; XXX FIXME still there are problems when true=-1
+  ; XXX FIXME
+  ; There were problems when true=-1, but it seems they have
+  ; disappeared after switching to the one buffer method.
   .warning TRUE is -1
 endif
 
@@ -232,14 +230,13 @@ cells_per_return_stack:           equ 0x50
 
 bytes_per_terminal_input_buffer:  equ 0x50
 
+buffers:                          equ 0x01
 if ans_forth_block_size?
-  buffers:                          equ 0x01
-  data_bytes_per_buffer:            equ 0x0400
-  blocks_per_screen:                equ 0x01
+  data_bytes_per_buffer:          equ 0x0400
+  blocks_per_screen:              equ 0x01
 else
-  buffers:                          equ 0x01 ; XXX NEW 1 buffer instead of 2
-  data_bytes_per_buffer:            equ 0x0200
-  blocks_per_screen:                equ 0x02
+  data_bytes_per_buffer:          equ 0x0200
+  blocks_per_screen:              equ 0x02
 endif
 total_bytes_per_buffer:           equ 2+data_bytes_per_buffer+3
 
@@ -518,7 +515,6 @@ _two_variable_header: macro _base_label,_name,_is_immediate
   _base_label##pfa: ; parameter field address
 
   endm
-
 
 ; ----------------------------------------------
 ; Literals
@@ -846,11 +842,7 @@ endif
 
 csb:
 unused_csb:
-  if csb_size<256
-    dw csb_size
-  else
-    db csb_size
-  endif
+  dw csb_size ; unused space in the buffer
 csb0:
   ds csb_size
 csb_total_size: equ $-csb
@@ -877,12 +869,21 @@ return_stack_limit: equ $+cell
 return_stack_bottom:
 
 ; ----------------------------------------------
-; Disk buffers
+; Disk buffer
+
+buffer_block_id_mask: equ 0x7FFF
+
+; A block id is the number of the associated block, with the
+; sign bit indicating, when it's set, that the buffer has been
+; modified.
 
 disk_buffer:
-dw 0x7FFF ; block number
-ds data_bytes_per_buffer
-db space_char,0,space_char ; null word
+
+dw buffer_block_id_mask     ; Block id used when the  buffer
+                            ; is not associated with a block.
+ds data_bytes_per_buffer    ; Actual content of the block,
+                            ; a disk sector.
+db space_char,0,space_char  ; Null word, required by the parsing words.
 
 ; ==============================================================
 ; Misc routines
@@ -1477,13 +1478,8 @@ bank.e:
 ;
 ; }doc
 
-  if csb_size<256
-    ld a,(unused_csb)
-    jp push_a
-  else
-    ld hl,(unused_csb)
-    jp push_hl
-  endif
+  ld hl,(unused_csb)
+  jp push_hl
 
 ; ----------------------------------------------
   _constant_header csb0_,'CSB0'
@@ -1510,7 +1506,9 @@ bank.e:
   dw dup_,lit_,unused_csb,fetch_,greater_than_
   dw zero_branch_,question_csb_.enough
   ; not enough space; reset the pointer
-  dw lit_,csb_size,lit_,unused_csb,store_
+  _literal csb_size
+  dw lit_,unused_csb,store_
+
 question_csb_.enough:
   dw negate_,lit_,unused_csb,plus_store_
   dw semicolon_s_
@@ -6364,7 +6362,7 @@ message.number_only:
 ;
 ; }doc
 
-  dw lit_,0x7FFF,disk_buffer_,store_
+  dw lit_,buffer_block_id_mask,disk_buffer_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6407,7 +6405,7 @@ message.number_only:
 ;
 ; }doc
 
-  _literal 0x7FFF
+  _literal buffer_block_id_mask
   dw and_
   dw semicolon_s_
 
@@ -6439,7 +6437,7 @@ message.number_only:
 
   dw dup_,zero_less_than_ ; updated?
   dw zero_branch_,free_buffer.not_updated
-  dw block_number_,buffer_data_,swap_,write_block_
+  dw block_number_,write_buffer_
   dw branch_,free_buffer.end
 free_buffer.not_updated:
   dw drop_
@@ -6484,7 +6482,7 @@ buffer.end:
 ; block _n_. If the block is not already in memory, it is
 ; transferred from disk to which ever buffer was least recently
 ; written. If the block occupying that buffer has been marked as
-; updated, it is rewritten to disc before block _n_ is read into
+; updated, it is rewritten to disk before block _n_ is read into
 ; the buffer.
 ;
 ; }doc
@@ -6494,7 +6492,7 @@ buffer.end:
   dw drop_
   dw branch_,block.end
 block.not_equals:
-  dw save_buffers_,dup_,buffer_data_,swap_,read_block_
+  dw save_buffers_,dup_,read_buffer_
   dw disk_buffer_,store_
 block.end:
   dw buffer_data_
@@ -6525,6 +6523,14 @@ block.end:
 
 ; doc{
 ;
+; block>sector  ( n1 -- n2 )
+;
+; Convert the disk block _n1_ to the disk sector _n2_,
+; where:
+;
+; n2 (high byte) = track 0..79, +128 if side 1
+;    (low byte)  = sector 1..10
+;
 ; ----
 ; : block>sector  ( block -- sector )
 ;   \ sector (high byte) = track 0..79, +128 if side 1
@@ -6550,8 +6556,6 @@ block.end:
   dw star_,plus_,flip_,or_
   dw semicolon_s_
 
-if 1 ; new_read_write? ; XXX NEW
-
 ; ----------------------------------------------
   _colon_header read_block_,'READ-BLOCK'
 
@@ -6568,6 +6572,20 @@ if 1 ; new_read_write? ; XXX NEW
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header read_buffer_,'READ-BUFFER'
+
+; doc{
+;
+; read-buffer  ( n -- )
+;
+; Read disk block _n_ to the disk buffer.
+;
+; }doc
+
+  dw buffer_data_,swap_,read_block_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header write_block_,'WRITE-BLOCK'
 
 ; doc{
@@ -6580,6 +6598,20 @@ if 1 ; new_read_write? ; XXX NEW
 
   _literal 0x45 ; G+DOS command to write a disk sector
   dw transfer_block_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header write_buffer_,'WRITE-BUFFER'
+
+; doc{
+;
+; write-buffer  ( n -- )
+;
+; Write the disk buffer to disk block _n_.
+;
+; }doc
+
+  dw buffer_data_,swap_,write_block_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6623,65 +6655,6 @@ read_write_sector_command:
   ld ix,next
   _jp_next
 
-else ; XXX OLD
-
-; ----------------------------------------------
-  _colon_header read_write_,'R/W'
-
-; doc{
-;
-; r/w  ( a block wf -- )
-;
-; The disk read-write linkage. _a_ specifies the source or
-; destination block buffer, _block_ is the sequential number of
-; the referenced block; and _wf_ is a flag: false=write,
-; true=read.  `r/w` determines the location on mass storage,
-; performs the read-write and performs any error checking.
-;
-; }doc
-
-  _literal 0x45
-  dw swap_
-if true=1
-  dw minus_
-else
-  dw plus_
-endif
-  dw lit_,read_write_sector_command,c_store_
-  dw block_to_sector_
-  dw paren_read_write_
-  dw semicolon_s_
-
-paren_read_write_:
-
-  ; Headerless word with the low level code of `R/W`.
-
-  ; ( a sector -- )
-  ; sector (high byte) = track 0..79, +128 if side 1
-  ;        (low byte)   = sector 1..10
-
-  dw paren_read_write_pfa ; code field
-paren_read_write_pfa:
-  pop de ; d = track 0..79, +128 if side 1
-         ; e = sector 1..10
-  pop ix ; address
-  push bc ; save the Forth IP
-  ld a,2 ; drive ; XXX TMP
-  rst 8 ; G+DOS hook
-read_write_sector_command:
-  ; G+DOS command already patched:
-  db 0x44 ; 0x44 = read ; 0x45 = write
-  pop bc ; restore the Forth IP
-  ld ix,next
-  _jp_next
-
-endif
-
-; ----------------------------------------------
-  _colon_header save_buffer_,'SAVE-BUFFER'
-  ; XXX TODO
-  dw semicolon_s_
-
 ; ----------------------------------------------
   _colon_header save_buffers_,'SAVE-BUFFERS'
 
@@ -6689,15 +6662,21 @@ endif
 ;
 ; save-buffers  ( -- )  \ ANS Forth
 ;
-; Transfer the contents of each updated block buffer to disk.
-; Mark all buffers as unmodified.
+; If the disk buffer has been modified, transfer its contents to
+; disk and mark it as unmodified.
+;
+; ----
+; : save-buffers ( -- )
+;   updated? 0= ?exit \ exit if not updated
+;   buffer-block dup write-buffer  disk-buffer !  ;
+; ----
 ;
 ; }doc
 
   dw updated_question_,zero_equals_ ; not updated?
   dw question_exit_ ; exit if not updated
   ; Updated
-  dw buffer_block_,dup_,buffer_data_,write_block_
+  dw buffer_block_,dup_,write_buffer_
   dw disk_buffer_,store_
   dw semicolon_s_
 
@@ -6721,15 +6700,20 @@ endif
 ; to zero, and interpret.  Other stack effects are due to the
 ; words loaded.
 ;
-; An error is issued if _u_ is zero is zero.
+; An error is issued if _u_ is zero.
+;
+; ----
+; : (load)  ( i*x u -- j*x )
+;   dup 0= 9 ?error
+;   b/scr * blk !  >in off  interpret  ;
+; ----
 ;
 ; }doc
 
-  dw dup_,zero_,equals_
+  dw dup_,zero_equals_
   _question_error error.loading_from_screen_0
-  dw to_in_,off_
   dw b_slash_scr_,star_,blk_,store_
-  dw interpret_
+  dw to_in_,off_,interpret_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6744,6 +6728,11 @@ endif
 ; setting the input buffer to encompass its contents), set `>in`
 ; to zero, and interpret.  Other stack effects are due to the
 ; words loaded.
+;
+; ----
+; : continued  ( -- )
+;   ?loading (load)  ;
+; ----
 ;
 ; }doc
 
@@ -6766,6 +6755,13 @@ endif
 ;
 ; An error is issued if _u_ is zero.
 ;
+; ----
+; : load  ( n -- )
+;   blk @ >r  >in @ >r
+;   (load)
+;   r> >in !  r> blk !  ;
+; ----
+;
 ; }doc
 
   dw blk_,fetch_,to_r_
@@ -6782,7 +6778,13 @@ endif
 ;
 ; -->  ( -- )  \ "next-screen"
 ;
-; Continue interpretation with the next disc screen.
+; Continue interpretation with the next disk screen.
+;
+; ----
+; : -->  ( -- )
+;   ?loading  >in off
+;   b/scr blk @ over mod - blk +!  ; immediate
+; ----
 ;
 ; }doc
 
