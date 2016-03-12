@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506271830
+; Version A-00-201506272203
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -17,6 +17,8 @@
 ; - change: new header macros, with complete names
 ; - first alternative code to store name fields in memory bank
 ; - fix: `(find)`
+; - fix: `cfa>nfa` (for name fields in bank)
+; - fix: `nfa>string` (for name fields in bank)
 
 ; ==============================================================
 ; Aknowledgments
@@ -348,8 +350,8 @@ _header: macro _base_label,_name,_is_immediate
     ; In memory bank:
 
     org np
-    _base_label##to_cfa:
-      dw _base_label ; pointer to cfa
+    _base_label##cfap: 
+      dw _base_label ; code field address pointer
     _base_label##lfa: ; link field address
       dw previous_nfa ; link field
     _base_label##nfa: ; name field address
@@ -1446,7 +1448,7 @@ paren_find.compare_next_char:
   ; The string matches.
   ; c = name field length byte
   ld hl,(paren_find.nfa_backup)
-  ld (0xfffa),hl ; XXX INFORMER ; nfa, ok
+;  ld (0xfffa),hl ; XXX INFORMER ; nfa, ok
   dec hl
   dec hl ; lfa
   dec hl ; high part of the pointer to cfa
@@ -1454,7 +1456,7 @@ paren_find.compare_next_char:
   dec hl ; low part of the pointer to cfa
   ld e,(hl) ; de = cfa
 
-  ld (0xfffc),de ; XXX INFORMER ; cfa, ok
+;  ld (0xfffc),de ; XXX INFORMER ; cfa, ok
 
   ld hl,1 ; 1=immediate word
   ld a,c ; name field length byte
@@ -2125,7 +2127,7 @@ key.limit:
   exx
   pop bc
   pop de
-move.do
+move.do:
   pop hl
   call move_block
   exx
@@ -2320,7 +2322,7 @@ endif
 
 if 1 ; names_in_memory_bank?
 
-  _colon_header comma_np_,',np'
+  _colon_header comma_np_,',NP'
 
 ; doc{
 ;
@@ -3420,31 +3422,34 @@ if 1 ; names_in_memory_bank?
   ld b,0
   ld hl, np0-4
 
-cfa_to_nfa.begin
+cfa_to_nfa.begin_0:
+  ; hl = address of the cfa pointer
+  inc hl
+cfa_to_nfa.begin_1:
   inc hl
   inc hl
   inc hl
-  inc hl ; nfa
-  ld a,(hl) ; length and flags
-  and max_word_length_bit_mask ; only length
-  ld c,a
-  add hl,bc ; point to cfa
+  ld a,(hl) ; name field byte length
+  and max_word_length_bit_mask ; name length
+  ld c,a ; name length
+  inc c  ; plus the length byte
+  add hl,bc ; point to the cfa pointer
 
   ld a,(hl) ; low byte of cfa
   cp e ; equal?
+  jr nz,cfa_to_nfa.begin_0 ; not equal
   inc hl
-  jr nz,cfa_to_nfa.begin ; not equal
   ld a,(hl) ; high byte of cfa
   cp d ; equal?
-  jr nz,cfa_to_nfa.begin ; not equal
+  jr nz,cfa_to_nfa.begin_1 ; not equal
   ; cfa found
-  ld c,4
-  add hl,bc
-  pop bc ; restore Forth IP
+  ld c,3
+  add hl,bc ; nfa
 
   ld e,default_bank
   call bank.e ; page the default memory bank
 
+  pop bc ; restore Forth IP
   jp push_hl
 
 else
@@ -3498,8 +3503,6 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header nfa_to_string_,'NFA>STRING'
-
 ; doc{
 ;
 ; nfa>string  ( nfa -- ca len )
@@ -3507,6 +3510,8 @@ endif
 ; }doc
 
 if 1 ; names_in_memory_bank?
+
+  _colon_header nfa_to_string_,'NFA>STRING'
 
   _names_bank
   dw count_
@@ -3517,6 +3522,8 @@ if 1 ; names_in_memory_bank?
   dw semicolon_s_
 
 else
+
+  _code_header nfa_to_string_,'NFA>STRING'
 
   ; [From DZX-Forth.]
 
@@ -3916,7 +3923,7 @@ fill.e:
   ld h,b ; the Forth IP
   pop bc ; count
   ex (sp),hl ; save the Forth IP
-fill.do
+fill.do:
   ld a,b
   or c
   _jump_z fill.end
@@ -4144,7 +4151,7 @@ paren_number.begin: ; begin
   dw zero_branch_,paren_number.decimal_point_done
   ; DPL is not -1, a decimal point was encountered
   dw one_,dpl_,plus_store_ ; increment DPL, one more digit to right of decimal point
-paren_number.decimal_point_done
+paren_number.decimal_point_done:
   dw from_r_ ; pop addr1+1 back to convert the next digit
   dw branch_,paren_number.begin ; repeat
 paren_number.end:
@@ -5554,20 +5561,18 @@ if not fig_find?
   dw b_l_,word_
   dw here_,dup_,count_ ; ( ca ca+1 len )
 
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In defined the string is: ' ; XXX INFORMER
-  ; dw two_dup_,type_ ; XXX INFORMER
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'and the stack: ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
+;  dw cr_,paren_dot_quote_ ; XXX INFORMER
+;  _string 'In defined before find:' ; XXX INFORMER
+;  dw cr_,two_dup_,type_ ; XXX INFORMER
+;  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  ;dw key_,drop_ ; XXX INFORMER
 
   dw uppers_,find_
 
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In defined after find: ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
+;  dw cr_,paren_dot_quote_ ; XXX INFORMER
+;  _string 'In defined after find:' ; XXX INFORMER
+;  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  ;dw key_,drop_ ; XXX INFORMER
 
   dw semicolon_s_
 
