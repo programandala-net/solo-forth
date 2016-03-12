@@ -154,3 +154,10 @@ Change: optimizations in the definitions, thanks to the new words:
 Also `2dup` instead of `over over`, an oversight of Abersoft Forth.
 
 Improvement: Some operators are (re)written, using Z80 code from DZX-Forth.
+
+
+.2015-06-08:
+
+Improvement: faster `blanks` and `erase`, with Z80 jumps into `fill`.
+
+Improvement: the branches of `x` (the null word) are optimized, and `rdrop` used.

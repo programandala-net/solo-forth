@@ -41,4 +41,12 @@ Define `rp`, like in Afera:
 
 Write a version of `screen` that recognizes the UDG.
 
-Fix: `17 load` corrupts the system.
+Fix: `load` corrupts the system, even with empty screens.
+
+Change: move key to the blocks, as `mode-key` or similar, and use a
+simpler `key` (`akey` from Afera).
+
+.2015-06-08:
+
+Fix: `load` corrupts the system, even with empty screens. The reason is 
+

@@ -1,5 +1,7 @@
 ; Solo Forth
 
+; Version A-00-2015060800
+
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
@@ -19,9 +21,9 @@
   ; 1983: Abersoft Forth
   ;
   ; Abersoft Forth (for ZX Spectrum) was implemented by John Jones Steele and
-  ; edited by Melbourne House in 1983. It is an implementation of Z80 fig-Forth
-  ; 1.1, with ZX Spectrum specific features and some extensions beyond the
-  ; fig-Forth model.
+  ; edited by Melbourne House in 1983. It's a tape and RAM disk implementation
+  ; of Z80 fig-Forth 1.1, with ZX Spectrum specific features and some
+  ; extensions beyond the fig-Forth model.
   ;
   ; 1979: fig-Forth 1.1
   ;
@@ -1716,8 +1718,7 @@ colon_pfa:
   dw question_exec_
   dw store_csp_
   dw current_,fetch_
-  dw context_
-  dw store_
+  dw context_,store_
   dw create_
   dw right_bracket_
   dw paren_semicolon_code_
@@ -2164,7 +2165,7 @@ recurse_lfa:
 recurse_:
   dw do_colon
 recurse_pfa:
-  dw latest_,nfa_to_pfa_,pfa_to_cfa_,comma_
+  dw latest_,nfa_to_cfa_,comma_
   dw semicolon_s_
 
 one_plus_nfa:
@@ -2480,10 +2481,7 @@ pfa_to_cfa_nfa:
 pfa_to_cfa_lfa:
   dw pfa_to_lfa_nfa
 pfa_to_cfa_:
-  dw do_colon
-pfa_to_cfa_pfa:
-  dw two_minus_
-  dw semicolon_s_
+  dw two_minus_pfa
 
 pfa_to_nfa_nfa:
   db 0x07+0x80,'PFA>NF','A'+0x80
@@ -2496,22 +2494,38 @@ pfa_to_nfa_pfa:
   dw c_lit_
   db 0x05
   dw minus_
-  dw lit_,0xFFFF
+  dw lit_,-1
   dw traverse_
+  dw semicolon_s_
+
+nfa_to_lfa_nfa:
+  db 0x07+0x80,'NFA>LF','A'+0x80
+nfa_to_lfa_lfa:
+  dw pfa_to_nfa_nfa
+nfa_to_lfa_:
+  dw do_colon
+nfa_to_lfa_pfa:
+  dw one_,traverse_,one_plus_
+  dw semicolon_s_
+
+nfa_to_cfa_nfa:
+  db 0x07+0x80,'NFA>CF','A'+0x80
+nfa_to_cfa_lfa:
+  dw nfa_to_lfa_nfa
+nfa_to_cfa_:
+  dw do_colon
+nfa_to_cfa_pfa:
+  dw nfa_to_lfa_,two_plus_
   dw semicolon_s_
 
 nfa_to_pfa_nfa:
   db 0x07+0x80,'NFA>PF','A'+0x80
 nfa_to_pfa_lfa:
-  dw pfa_to_nfa_nfa
+  dw nfa_to_cfa_nfa
 nfa_to_pfa_:
   dw do_colon
 nfa_to_pfa_pfa:
-  dw one_
-  dw traverse_
-  dw c_lit_
-  db 0x05
-  dw plus_
+  dw nfa_to_cfa_,two_plus_
   dw semicolon_s_
 
 store_csp_nfa:
@@ -2577,7 +2591,7 @@ question_pairs_lfa:
 question_pairs_:
   dw do_colon
 question_pairs_pfa:
-  dw minus_
+  dw not_equals_
   dw c_lit_
   db 0x13
   dw question_error_
@@ -2617,11 +2631,7 @@ compile_:
   dw do_colon
 compile_pfa:
   dw question_comp_
-  dw from_r_
-  dw dup_
-  dw two_plus_
-  dw to_r_,fetch_
-  dw comma_
+  dw from_r_,dup_,two_plus_,to_r_,fetch_,comma_
   dw semicolon_s_
 
 left_bracket_nfa:
@@ -2692,11 +2702,7 @@ paren_semicolon_code_lfa:
 paren_semicolon_code_:
   dw do_colon
 paren_semicolon_code_pfa:
-  dw from_r_
-  dw latest_
-  dw nfa_to_pfa_
-  dw pfa_to_cfa_
-  dw store_
+  dw from_r_,latest_,nfa_to_cfa_,store_
   dw semicolon_s_
 
 semicolon_code_nfa:
@@ -2948,57 +2954,71 @@ query_pfa:
   dw in_,off_
   dw semicolon_s_
 
-onezeroword_nfa:
+; doc{
+
+; x  ( -- )
+
+; This is pseudonym for the "null" or
+; dictionary entry for a name of one
+; character of ascii null. It is the
+; execution proceedure to terminate
+; interpretation of a line of text from the
+; terminal or within a disk buffer, as both
+; buffers always have a null at the end.
+
+; }doc
+
+x_nfa:
   db 0x01+0x80+precedence_bit_mask,'',0x80
-onezeroword_lfa:
+x_lfa:
   dw query_nfa
-onezeroword_:
+x_:
   dw do_colon
-onezeroword_pfa:
-  dw blk_,fetch_
-  dw zero_branch_,branch_destination_0x6959
-  dw one_
-  dw blk_
-  dw plus_store_
+x_pfa:
+  dw blk_,fetch_ ; from disk?
+  dw zero_branch_,x.from_terminal
+  ; From disk.
+  dw one_,blk_,plus_store_ ; next disk buffer
   dw in_,off_
-  dw blk_,fetch_
-  dw b_slash_scr_
-  dw one_minus_
-  dw and_
-  dw zero_equals_
-  dw zero_branch_,branch_destination_0x6955
-  dw question_exec_
+  dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer?
+  dw zero_branch_,x.end
+  ; The last buffer, the end of the text block.
+  dw question_exec_ ; error if not executing
+  ; Discard the top address on the return stack, which is the
+  ;	address of `?stack` after `execute` in the interpretation loop.
+  ; XXX FIXME why `rdrop` bombs out here?
   dw from_r_,drop_
-branch_destination_0x6955:
-  dw branch_,branch_destination_0x695D
-branch_destination_0x6959:
+  dw branch_,x.end
+x.from_terminal:
+  ; XXX FIXME why `rdrop` bombs out here?
   dw from_r_,drop_
-branch_destination_0x695D:
+x.end:
   dw semicolon_s_
 
 fill_nfa:
   db 0x04+0x80,'FIL','L'+0x80
 fill_lfa:
-  dw onezeroword_nfa
+  dw x_nfa
 fill_:
   dw fill_pfa
 fill_pfa:
+  pop de
+fill.e:
   ld l,c
   ld h,b
-  pop de
   pop bc
   ex (sp),hl
   ex de,hl
-l696eh:
+fill.do
   ld a,b
   or c
-  jr z,l6978h
+  jp z,fill.end
   ld a,l
   ld (de),a
   inc de
   dec bc
-  jr l696eh
-l6978h:
+  jp fill.do
+fill.end:
   pop bc
   _jp_next
 
@@ -3007,21 +3027,20 @@ erase_nfa:
 erase_lfa:
   dw fill_nfa
 erase_:
-  dw do_colon
+  dw erase_pfa
 erase_pfa:
-  dw zero_,fill_
-  dw semicolon_s_
+  ld e,0
+  jp fill.e
 
 blanks_nfa:
   db 0x06+0x80,'BLANK','S'+0x80
 blanks_lfa:
   dw erase_nfa
 blanks_:
-  dw do_colon
+  dw blanks_pfa
 blanks_pfa:
-  dw b_l_
-  dw fill_
-  dw semicolon_s_
+  ld e,b_l_
+  jp fill.e
 
 hold_nfa:
   db 0x04+0x80,'HOL','D'+0x80
@@ -3054,34 +3073,34 @@ word_lfa:
 word_:
   dw do_colon
 word_pfa:
-  dw blk_,fetch_
-  dw zero_branch_,branch_destination_0x69E3
+  dw blk_,fetch_ ; from disk?
+  ; XXX TODO optimize with `?dup` here instead of repeating `blk @` later
+  dw zero_branch_,word.from_terminal
+  ; from disk
   dw blk_,fetch_,block_
-  dw branch_,branch_destination_0x69E7
-branch_destination_0x69E3:
+  dw branch_,word.from_address
+word.from_terminal:
   dw tib_,fetch_
-branch_destination_0x69E7:
-  dw in_,fetch_
-  dw plus_
-  dw swap_
-  dw enclose_
+word.from_address:
+  dw in_,fetch_,plus_,swap_,enclose_
   dw here_
   dw c_lit_
   db 0x22
   dw blanks_
-  dw in_
-  dw plus_store_
-  dw over_
-  dw minus_
-  dw to_r_
-  dw r_fetch_
-  dw here_
-  dw c_store_
-  dw plus_
-  dw here_
-  dw one_plus_
-  dw from_r_
-  dw cmove_
+  dw in_,plus_store_
+  dw over_,minus_
+  ;dw dup_,dot_ ; XXX INFORMER
+  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+  dw to_r_ ; length
+  dw r_fetch_,here_,c_store_ ; set the length byte
+  dw plus_ ; from
+  dw here_,one_plus_ ; destination
+  dw from_r_ ; count
+  dw cmove_ ; move
+  ; XXX FIXME blank 1-char strings are parsed from empty screens!
+  ; they are converted to 0 by `number` and the stack gets full!
+  ;dw lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
+  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
 paren_number_nfa:
@@ -3197,7 +3216,7 @@ uppers_:
 uppers_pfa:
   pop de
   pop hl
-uppers_pfa.do:
+uppers.do:
   ld a,d
   or e
   jp z,next
@@ -3206,7 +3225,7 @@ uppers_pfa.do:
   ld (hl),a
   inc hl
   dec de
-  jp uppers_pfa.do
+  jp uppers.do
 
 minus_find_nfa:
   db 0x05+0x80,'-FIN','D'+0x80
@@ -3275,8 +3294,7 @@ id_dot_pfa:
   db 0x5F ; XXX why this char?
   dw fill_
   dw dup_
-  dw nfa_to_pfa_
-  dw pfa_to_lfa_
+  dw nfa_to_lfa_
   dw over_
   dw minus_
   dw pad_
@@ -3285,7 +3303,7 @@ id_dot_pfa:
   dw pad_
   dw count_
   dw c_lit_
-  db 0x1F
+  db 0x1F ; max word length
   dw and_
   dw two_dup_
   dw plus_
@@ -3440,36 +3458,46 @@ interpret_lfa:
   dw question_stack_nfa
 interpret_:
   dw do_colon
-branch_destination_0x6C5D:
 interpret_pfa:
-  dw minus_find_ ; begin
-  dw zero_branch_,branch_destination_0x6C7F ; if
-  dw state_,fetch_,less_than_
-  dw zero_branch_,branch_destination_0x6C75 ; if
-  dw pfa_to_cfa_,comma_
-  dw branch_,branch_destination_0x6C79 ; else
-branch_destination_0x6C75:
+interpret.begin:
+  dw minus_find_
+  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
+  dw zero_branch_,interpret.word_not_found ; if
+  dw state_,fetch_,less_than_ ; compile the word?
+  dw zero_branch_,interpret.execute_the_word ; if
+  dw pfa_to_cfa_,comma_ ; compile the word
+  dw branch_,interpret.word_done
+interpret.execute_the_word: ; else
   dw pfa_to_cfa_
-  dw execute_ ; then
-branch_destination_0x6C79:
+  dw execute_
+interpret.word_done: ; then
   dw question_stack_
-  dw branch_,branch_destination_0x6C99 ; else
-branch_destination_0x6C7F:
-  dw here_
-  dw number_
-  dw dpl_,fetch_
-  dw one_plus_
-  dw zero_branch_,branch_destination_0x6C93 ; if
+  dw branch_,interpret.again
+interpret.word_not_found: ; else
+  ; word not found, try to convert the text to a number
+  ; XXX FIXME the flow gets here for every space of an empty screen!
+  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
+  dw here_,number_
+  dw dpl_,fetch_,one_plus_ ; is there a decimal point?
+  dw zero_branch_,interpret.16bit_number ; if
+  ; decimal point detected, so it's a double, 32-bit, number
   dw two_literal_
-  dw branch_,branch_destination_0x6C97 ; else
-branch_destination_0x6C93:
-  dw drop_
-  ; XXX TODO use `c_literal` for 8 bit values.
-  dw literal_ ; then
-branch_destination_0x6C97:
-  dw question_stack_ ; then
-branch_destination_0x6C99:
-  dw branch_,branch_destination_0x6C5D ; again
+  dw branch_,interpret.number_done
+interpret.16bit_number: ; else
+  ; no decimal point, so it's a 16-bit number
+  dw drop_ ; discard high order part of the double number
+  ; XXX TODO use `c_literal` for 8-bit values.
+  dw literal_
+interpret.number_done: ; then
+  ; XXX FIXME an empty screen causes numbers to
+  ; be pushed on the stack! see `word`
+  ;dw lit_,4,border_ ; XXX INFORMER
+  dw question_stack_
+  ;dw depth_,dot_ ; XXX INFORMER
+  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
+
+interpret.again:
+  dw branch_,interpret.begin
 
 immediate_nfa:
   db 0x09+0x80,'IMMEDIAT','E'+0x80
@@ -4237,9 +4265,24 @@ load_lfa:
 load_:
   dw do_colon
 load_pfa:
+if 1 ; XXX OLD
+  dw dup_,zero_,equals_
+  dw c_lit_
+  db 0x09
+  dw question_error_
+  dw blk_,fetch_,to_r_
+  dw in_,fetch_,to_r_
+  dw in_,off_
+  dw b_slash_scr_,star_,blk_,store_
+  ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
+  dw interpret_
+  ;dw lit_,7,border_,key_,drop_ ; XXX INFORMER
+else ; XXX NEW
+  ; XXX no difference, this is not the cause of the new problems with `load`.
   dw blk_,fetch_,to_r_
   dw in_,fetch_,to_r_
   dw continued_
+endif
   dw from_r_,in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
@@ -4508,7 +4551,7 @@ sign_pfa:
   dw zero_less_than_
   dw zero_branch_,branch_destination_0x7457
   dw c_lit_
-  db 0x2D
+  db '-'
   dw hold_
 branch_destination_0x7457:
   dw semicolon_s_
@@ -4520,20 +4563,17 @@ hash_lfa:
 hash_:
   dw do_colon
 hash_pfa:
-  dw base_,fetch_
-  dw m_slash_mod_
-  dw rot_
+  dw base_,fetch_,m_slash_mod_,rot_
   dw c_lit_
   db 0x09
-  dw over_
-  dw less_than_
-  dw zero_branch_,branch_destination_0x7479
+  dw over_,less_than_
+  dw zero_branch_,hash.digit
   dw c_lit_
   db 0x07
   dw plus_
-branch_destination_0x7479:
+hash.digit:
   dw c_lit_
-  db 0x30
+  db '0'
   dw plus_
   dw hold_
   dw semicolon_s_
@@ -4637,7 +4677,7 @@ words_pfa:
 words.begin:
   dw out_,fetch_
   dw c_lit_
-  db 0x1F
+  db 0x1F ; max word length
   dw c_lit_
   db 0x08
   dw minus_
@@ -4646,7 +4686,7 @@ words.begin:
   dw cr_,out_,off_
 words.continue:
   dw dup_,id_dot_
-  dw nfa_to_pfa_,pfa_to_lfa_,fetch_
+  dw nfa_to_lfa_,fetch_
   dw dup_,zero_equals_,question_terminal_,or_
   dw zero_branch_,words.begin ; until
   dw drop_

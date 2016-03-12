@@ -311,12 +311,13 @@ create bleep
 
 : [then]  ( -- )  ; immediate
 
-( bs h. stype )
+( bs hexa. stype )
 
 : bs  ( -- )  8 emit  ;
 
-: h.  ( n -- )
-  \ Print n in hexadecimal with four digits.
+: hexa.  ( n -- )
+  \ Print _n_ in hexadecimal
+  \ (regarded as an address, with four digits).
   base @ hex swap s>d <# # # # # #> type space base !  ;
 
 hex
@@ -336,9 +337,9 @@ decimal  -->
   7 + -8 and 8 / 0
   2dup - if
     do
-      cr dup h.
+      cr dup hexa.
       8 0 do
-        i over + @ cswap h.
+        i over + @ cswap hexa.
       2 +loop
       dup bs 8 stype
       ?terminal if  leave  then
@@ -436,6 +437,23 @@ forth definitions decimal
   decode-usage
   -find if    drop 0 decode-level ! (decode)
         else  ." Not found"  then  ;
+
+( words )
+
+  \ From Spectrum Forth-83.
+
+  \ [defined] tab ?\  : tab  ( -- )  6 emit  ;
+: tab  ( -- )  6 emit  ;
+
+: words  ( -- )
+  context @ @
+  begin
+    dup ?terminal 0= and
+  while  tab
+    dup  u. space
+    dup id. space
+    nfa>lfa @
+  repeat drop ;
 
 ( index )
 
