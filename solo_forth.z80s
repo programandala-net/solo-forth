@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507010225
+; Version A-00-201507011219
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -29,7 +29,8 @@
 ; - change: all code for `fig_find?` is removed.
 ; - change: new method for the null word.
 ; - new versions of `expect`, `query`; new: `span`.
-; - Fix: `word` caused `s"`, `.(`, `."` to include the first space.
+; - fix: `word` caused `s"`, `.(`, `."` to include the first space.
+; - fix: vocabularies.
 
 ; ==============================================================
 ; Acknowledgments
@@ -271,8 +272,19 @@ max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
 
-dummy_name_field: equ 0xA081 ; original
-;dummy_name_field: equ 0xA000 ; XXX TODO needed for the name fields in bank?
+; The dummy name field is used to create a dummy header
+; in the parameter field of vocabularies, as part of the
+; vocabulary chaining. It contains one space,
+; so it will never be matched by `find`.
+if 1 ; names_in_memory_bank?
+  ; No "name bound bit" needed in this header format,
+  ; just the lenght (0x01) and a space (0x20).
+  dummy_name_field: equ 0x2001
+else
+  ; The "name bound bit" is needed in the original header format,
+  ; lenght (0x01 + 0x80) and a space (0x20 + 0x80).
+  dummy_name_field: equ 0xA081 ; original
+endif
 
 null_word: equ 0x2000 ; a null followed by a blank
 
@@ -3623,6 +3635,9 @@ do_user:
   jp push_hl
 
 ; ----------------------------------------------
+  _code_alias_header cell_minus_,'CELL-',,two_minus_
+
+; ----------------------------------------------
   _code_alias_header cell_plus_,'CELL+',,two_plus_
 
 ; ----------------------------------------------
@@ -4284,9 +4299,13 @@ postpone.end:
   dw c_lit_
   db smudge_bit_mask
   ; XXX TODO factor `toggle-names'?
+if 1 ; names_in_memory_bank?
   _names_bank
   dw toggle_
   _default_bank
+else
+  dw toggle_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5203,9 +5222,9 @@ uppers.do:
   dw question_branch_,find.end
   ; not found, try with the current vocabulary
   dw latest_,paren_find_
-  dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
-  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
-  dw lit_,7,border_ ; XXX INFORMER
+;  dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
+;  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,7,border_ ; XXX INFORMER
 
 find.end:
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
@@ -5311,7 +5330,7 @@ if 1 ; names_in_memory_bank?
     ; `here`.
 
   dw here_,count_
-  ; XXX TODO error if name is too long (see lina)
+  ; XXX TODO error if name is too long (see lina)?
   dw width_,fetch_,min_
   dw save_string_,tuck_ ; ( len ca len )
   _names_bank
@@ -5320,8 +5339,8 @@ if 1 ; names_in_memory_bank?
   ; Now `np` contains the address of the nfa.
   dw np_fetch_,dollar_store_ ; store the name
   dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
+  dw smudge_ ; set the smudge bit and page the default bank
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
-  _default_bank
   dw here_,two_plus_,comma_ ; compile the pfa into code field
   dw semicolon_s_
 
@@ -5353,33 +5372,25 @@ do_create:
 
 ; ----------------------------------------------
 
-if 0 ; 1 ; names_in_memory_bank?
-
-  ; XXX FIXME
-
   _does_header assembler_,'ASSEMBLER'
 
   dw do_vocabulary
-assembler_vocabulary_latest:
-  dw forth_vocabulary_dummy_nfa
-assembler_vocabulary_dummy_nfa:
-  dw dummy_name_field
-assembler_vocabulary_link:
-  dw forth_vocabulary_link
 
+  ; Dummy header.
+if 1 ; names_in_memory_bank?
+  assembler_vocabulary_dummy_lfa:
+    dw forth_vocabulary_dummy_nfa ; link field
+  assembler_vocabulary_dummy_nfa:
+    dw dummy_name_field ; name field
 else
+  assembler_vocabulary_dummy_nfa:
+    dw dummy_name_field ; name field
+  assembler_vocabulary_dummy_lfa:
+    dw forth_vocabulary_dummy_nfa ; link field
+endif
 
-  _does_header assembler_,'ASSEMBLER'
-
-  dw do_vocabulary
-assembler_vocabulary_dummy_nfa:
-  dw dummy_name_field
-assembler_vocabulary_latest:
-  dw forth_vocabulary_dummy_nfa
 assembler_vocabulary_link:
   dw forth_vocabulary_link
-
-endif
 
 ; ----------------------------------------------
   _colon_header code_,'CODE'
@@ -5735,16 +5746,13 @@ interpret.16bit_number:
   ; `does>`.
   dw builds_ ; XXX TODO convert; see DZX-Forth
 
-if 0 ; 1 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
   
-  ; XXX FIXME
-
-  ; Fetch the parameter field address pointing to the last word
-  ; and store its code field address in the second cell in
-  ; parameter field.
-  dw current_,fetch_,pfa_to_cfa_,comma_
   ;A dummy header at vocabulary intersection.
-  dw lit_,dummy_name_field,comma_
+  dw current_,fetch_ ; address of the dummy lfa in the `current` vocabulary
+  dw lfa_to_nfa_ ; get its correspondent nfa in the dummy header
+  dw comma_ ; use it as link field of the dummy header in the new vocabulary
+  dw lit_,dummy_name_field,comma_ ; name field
 
   dw here_ ; address of vocabulary link
   ; Fetch the user variable `voc-link` and insert it in the dictionary.
@@ -5755,7 +5763,7 @@ if 0 ; 1 ; names_in_memory_bank?
 
   ; The next words are to be executed when the vocabulary invoked.
 do_vocabulary:
-  dw two_plus_,context_,store_
+  dw context_,store_
 
 else
 
@@ -5765,7 +5773,14 @@ else
   ; Fetch the parameter field address pointing to the last word
   ; and store its code field address in the second cell in
   ; parameter field.
-  dw current_,fetch_,pfa_to_cfa_,comma_
+  ; XXX FIXME That description is wrong; the content of
+  ; `current` is an address in the pf of the vocabulary,
+  ; and it seems `pfa>cfa` is used just instead of `2-`,
+  ; according to the original header structure.
+  ; XXX TODO fix it in _Sistems guide to fig-Forth_
+  ;dw current_,fetch_,pfa_to_cfa_,comma_
+  ; XXX NEW
+  dw current_,fetch_,lfa_to_nfa_,comma_
 
   dw here_ ; address of vocabulary link
 
@@ -5780,41 +5795,32 @@ do_vocabulary:
   ; When the vocabulary is invoked, the second cell in its parameter field
   ; will be stored into the variable `context`.  The next
   ; dictionary search will begin with that vocabulary.
-  dw two_plus_,context_,store_
+  dw cell_plus_,context_,store_
 
 endif
 
   dw semicolon_s_
 
 ; ----------------------------------------------
-
-if 0 ; 1 ; names_in_memory_bank?
-
-  ; XXX FIXME
-
   _does_header forth_,'FORTH'
 
   dw do_vocabulary
-forth_vocabulary_latest:
-  dw nfa_of_top_most_word_in_forth_voc
-forth_vocabulary_dummy_nfa:
-  dw dummy_name_field
-forth_vocabulary_link:
-  dw 0x0000
 
+  ; Dummy header.
+if 1 ; names_in_memory_bank?
+  forth_vocabulary_dummy_lfa:
+    dw nfa_of_top_most_word_in_forth_voc ; link field
+  forth_vocabulary_dummy_nfa:
+    dw dummy_name_field ; name field
 else
+  forth_vocabulary_dummy_nfa:
+    dw dummy_name_field ; name field
+  forth_vocabulary_dummy_lfa:
+    dw nfa_of_top_most_word_in_forth_voc ; link field
+endif
 
-  _does_header forth_,'FORTH'
-
-  dw do_vocabulary
-forth_vocabulary_dummy_nfa:
-  dw dummy_name_field
-forth_vocabulary_latest:
-  dw nfa_of_top_most_word_in_forth_voc
 forth_vocabulary_link:
   dw 0x0000
-
-endif
 
 ; ----------------------------------------------
   _colon_header definitions_,'DEFINITIONS'
@@ -5900,7 +5906,7 @@ warm_start_phony_:
   db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
   dw lit_,top_most_word_in_forth_voc,fetch_
-  dw lit_,forth_vocabulary_latest,store_
+  dw lit_,forth_vocabulary_dummy_lfa,store_
   dw abort_
 
 cold_start:
@@ -6884,13 +6890,10 @@ endif
 words.begin:
   dw out_,fetch_
   dw c_lit_
-  db 0x1F ; max word length
-  dw c_lit_
-  db 0x08
-  dw minus_
+  db max_word_length-8
   dw greater_than_
   dw zero_branch_,words.continue
-  dw cr_,out_,off_
+  dw cr_
 words.continue:
   dw dup_,id_dot_
   dw nfa_to_lfa_,fetch_n_
