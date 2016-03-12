@@ -6,19 +6,12 @@
 ; XXX UNDER DEVELOPMENT
 
 ; ==============================================================
-; XXX WARNING
-
-; This file source is for the Pasmo assembler.  As of now this
-; is the file used for the project, and <solo_forth.for_as.z80s>
-; (for GNU binutils) is not updated.
-
-; ==============================================================
 ; Version
 
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510062144
+version_release:  equ 201510100325
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -1441,7 +1434,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; }doc
 
-; [Code adapted from F83.]
+  ; Credits:
+  ; Code adapted from F83.
 
 ; : also  ( -- )
 ;   context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
@@ -1589,7 +1583,9 @@ endif
 ; ----------------------------------------------
   _colon_header s_lit_,'SLIT'
 
+  ; ----
   ; : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
+  ; ----
 
   dw r_fetch_,count_,dup_,one_plus_
   dw from_r_,plus_,to_r_
@@ -1763,13 +1759,13 @@ question_csb_.enough:
 
 ; doc{
 ;
-; string-allocate  ( len -- ca )
+; allocate-string  ( len -- ca )
 
 ; Allocate _len_ chars in the circular string buffer and return
 ; the address _ca_ of the allocated space.
 
 ; ----
-; : string-allocate  ( len -- ca )
+; : allocate-string  ( len -- ca )
 ;   ?csb csb0 unused-csb +  ;
 ; ----
 
@@ -2012,7 +2008,8 @@ question_csb_.enough:
 ; ----------------------------------------------
   _code_header paren_do_,'(DO)'
 
-  ; [Code from CP/M fig-Forth 1.1g.]
+  ; Credits:
+  ; Code from CP/M fig-Forth 1.1g.
 
   exx                           ; 04t 01b
   pop de                        ; 10t 01b
@@ -2171,44 +2168,43 @@ digit.test_value:
 
 ; ----
 ; : number-base  ( ca len -- ca' len' n )
-;   over c@ [char] $ = if  1 /string 16  exit  then
-;   over c@ [char] % = if  1 /string  2  exit  then
-;   over c@ [char] # = if  1 /string 10  exit  then
-;   base @  ;
+;  over c@
+;  dup [char] $ = if  drop 1 /string 16  exit  then
+;  dup [char] % = if  drop 1 /string  2  exit  then
+;      [char] # = if  1 /string 10  exit  then  base @  ; 
 ; ----
 
 ; }doc
 
+  ; XXX FIXME -- check len=0?
+
 number_base.try_hex:
-;  _chk 'number-base -- start' ; XXX INFORMER
   dw over_,c_fetch_
+  dw dup_
   _literal '$'
-;  _chk 'number-base -- $?' ; XXX INFORMER
   dw equals_,zero_branch_,number_base.try_binary
+  dw drop_
   _literal 1
   dw slash_string_
   _literal 16
   dw exit_
 number_base.try_binary:
-  dw over_,c_fetch_
+  dw dup_
   _literal '%'
-;  _chk 'number-base -- %?' ; XXX INFORMER
   dw equals_,zero_branch_,number_base.try_decimal
+  dw drop_
   _literal 1
   dw slash_string_
   _literal 2
   dw exit_
 number_base.try_decimal:
-  dw over_,c_fetch_
   _literal '#'
-;  _chk 'number-base -- #?' ; XXX INFORMER
   dw equals_,zero_branch_,number_base.current
   _literal 1
   dw slash_string_
   _literal 10
   dw exit_
 number_base.current:
-;  _chk 'number-base -- current' ; XXX INFORMER
   dw base_,fetch_
   dw semicolon_s_
 
@@ -3118,7 +3114,8 @@ skip.end:
 ;
 ; }doc
 ;
-; [Code from Spectrum Forth-83.]
+  ; Credits:
+  ; Code from Spectrum Forth-83.
 
   pop hl
   push bc
@@ -3140,7 +3137,8 @@ skip.end:
 
 if 0
 
-  ; [Code from Spectrum Forth-83's `TOCH`.]
+  ; Credits:
+  ; Code from Spectrum Forth-83's `TOCH`.
 
 
   ; XXX default printing system, with the ZX Spectrum charset
@@ -3714,7 +3712,8 @@ move.do:
 ;
 ; }doc
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
 if 1 ; original_u_m_star
 
@@ -4150,7 +4149,8 @@ endif
 ;
 ; }doc
 
-  ; [Code adapted from DZX-Forth.]
+  ; Credits:
+  ; Code adapted from DZX-Forth.
 
   ; XXX TODO move to the library
 
@@ -4412,7 +4412,8 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0>'
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   pop de
   ld hl,0
@@ -4439,7 +4440,8 @@ true_if_cy:
 
 if 1
 
-  ; [Code adapted from Z88 CamelForth.]
+  ; Credits:
+  ; Code adapted from Z88 CamelForth.
 
                         ;  t  B
                         ;  -- --
@@ -4463,7 +4465,8 @@ endif
 
 if 0 ; XXX OLD
 
-; [Code from fig-Forth 1.1g.]
+  ; Credits:
+  ; Code from fig-Forth 1.1g.
 
   ; XXX FIXME
   ;
@@ -4492,7 +4495,8 @@ endif
 
 if 0 ; XXX OLD
 
-  ; [Code from Abersoft Forth.]
+  ; Credits:
+  ; Code from Abersoft Forth.
 
                 ;  t  B
                 ;  -- --
@@ -4797,7 +4801,8 @@ do_colon.end: ; XXX TMP for debugging
 ; ----------------------------------------------
   _colon_header noname_,':NONAME',immediate
 
-  ; [Code from the Afera library.]
+  ; Credits:
+  ; Code from the Afera library.
 
   ; XXX TODO move to the disk? problem: do_colon
 
@@ -5266,21 +5271,16 @@ endif
   db 0x16
 
 ; ----------------------------------------------
-  _user_variable_header r_hash_,'R#'
+  _user_variable_header catcher_,'CATCHER'
 
 ; doc{
 ;
-; r#  ( -- a )
+; catcher  ( -- a )
 ;
-; A user variable which may contain the location of an editing
-; cursor or other file related function. Used by the editor.
+; A user variable that holds the return stack pointer for error
+; handling. Used by `throw`.
 ; 
-; Standard: fig-Forth.
-;
 ; }doc
-
-  ; XXX OLD
-  ; XXX TODO -- move to the editor?
 
   db 0x18
 
@@ -5421,7 +5421,8 @@ endif
 ;
 ; ----
 ; : source  ( -- ca len )
-;   blk @ ?dup if  block b/buf  else  tib #tib @ span @ min then  ;
+;   blk @ ?dup if  block b/buf exit  then
+;   tib #tib @ span @ min  ;
 ; ----
 ;
 ; Standard: Forth-94.
@@ -5431,14 +5432,11 @@ endif
   dw blk_,fetch_,question_dup_
   dw zero_branch_,source.tib
   ; disk block
-  dw block_,b_slash_buf_
-; _chk 'source -- after block b/buf' ; XXX INFORMER
-  dw exit_
+  dw block_,b_slash_buf_,exit_
 source.tib:
   ; terminal input buffer
   ; XXX TODO `span @` only?, `#tib @` only?
   dw tib_,number_tib_,fetch_,span_,fetch_,min_
-  ;dw tib_,number_tib_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5514,8 +5512,9 @@ source.tib:
 ;
 ; }doc
 
-  ; [Code from DZX-Forth. Documentation partly based on lina
-  ; ciforth.]
+  ; Credits:
+  ; Code from DZX-Forth.
+  ; Documentation partly based on lina.
 
   pop hl
   add hl,hl
@@ -5577,8 +5576,9 @@ source.tib:
 ;
 ; }doc
 
-  ; [Code from Spectrum Forth-83. Documentation partly based on lina
-  ; ciforth.]
+  ; Credits:
+  ; Code from Spectrum Forth-83.
+  ; Documentation partly based on lina.
 
   pop hl
   sra h
@@ -6113,6 +6113,24 @@ cfa_to_nfa.begin_1:
 ; ----------------------------------------------
   _colon_header question_error_,'?ERROR'
 
+; doc{
+;
+; ?error  ( wf n -- )
+;
+; Issue error _n_ if the boolean flag _wf_ is `true.
+; 
+; }doc
+
+if 1 ; exception_wordset
+
+  ; dw swap_,zero_not_equals_ ; XXX OLD
+  dw and_,throw_
+  dw semicolon_s_
+
+else
+
+  ; XXX OLD -- fig-Forth
+
   dw swap_
   dw zero_branch_,question_error.no_error
   dw error_
@@ -6121,6 +6139,8 @@ cfa_to_nfa.begin_1:
 question_error.no_error:
   dw drop_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header compiling_question,'COMPILING?'
@@ -6453,8 +6473,34 @@ minus_trailing.begin:
   dw type_
   dw semicolon_s_
 
+if 0 ; XXX OLD
+
+  ; This version allows `."` in interpretation mode.
+  ; This version needs 4 more bytes.
+
 ; ----------------------------------------------
   _colon_header dot_quote_,'."',immediate
+
+; doc{
+;
+; ."
+;
+; Interpretation: ( "text<quote>" -- )
+;
+; Parse "text" delimited by a double-quote and display it.
+;
+; Compilation: ( "text<quote>" -- )
+;
+; Parse "text" delimited by a double-quote. Append the run-time
+; semantics given below to the current definition.
+;
+;       Run-time: ( -- )
+;
+; Display "text".
+;
+; Standard: Forth-79, Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
 
   _literal '"'
   dw parse_ ; ( ca len )
@@ -6466,6 +6512,70 @@ minus_trailing.begin:
 dot_quote.interpreting:
   dw type_
   dw semicolon_s_
+
+else
+
+  ; This version causes an error when `."` is used in
+  ; interpretation mode.
+  ; This version saves 4 bytes.
+
+; ----------------------------------------------
+  _colon_header comma_quote_,',"'
+
+; doc{
+;
+; ,"  ( "text<quote>" -- )
+;
+; Parse "text" delimited by a double-quote and compile the
+; string.
+;
+; ----
+; : ,"  ( -- )
+;   [char] " parse s,  ;
+; ----
+;
+; }doc
+
+  ; Credits:
+  ; Code adapted from DZX-Forth.
+
+  _literal '"'   
+  dw parse_,s_comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header dot_quote_,'."',immediate
+
+; doc{
+;
+; ." 
+;
+; Compilation: ( "text<quote>" -- )
+;
+; Parse "text" delimited by a double-quote. Append the run-time
+; semantics given below to the current definition.
+;
+;       Run-time: ( -- )
+;
+; Display "text".
+;
+; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Forth-2012 (CORE).
+;
+; ----
+; : ."  ( "text<quote> -- )
+;   compile (.") ,"  ;  immediate
+; ----
+;
+; }doc
+
+  ; Credits:
+  ; Code adapted from DZX-Forth.
+
+  dw compile_,paren_dot_quote_,comma_quote_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _variable_header span_,'SPAN'
@@ -7088,24 +7198,51 @@ uppers.do:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header paren_abort_,'(ABORT)'
-
-  dw abort_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _variable_header error_number_,'ERROR#'
+
+  ; XXX TODO -- useful? remove? user variable?
+
+; doc{
+;
+; error# ( -- a )
+;
+; Variable that holds the number of the last error issued by
+; `error`.
+;
+; }doc
 
   dw 0
 
 ; ----------------------------------------------
   _two_variable_header error_pos_,'ERROR-POS'
 
-  dw 0,0
+; doc{
+;
+; error-pos ( -- a )
+;
+; Double variable that holds the position of the last error
+; issued by `error`:
+;
+; - high part = value of `blk`
+; - low part = value of `>in`
+;
+; }doc
+
+  dw 0 ; value of `blk`
+  dw 0 ; value of `>in`
 
 ; ----------------------------------------------
   _colon_header error_to_ordinal_,'ERROR>ORDINAL'
 
+  ; XXX TODO defer and move to the library?
+
+; doc{
+;
+; error>ordinal  ( n1 -- +n2 )
+;
+; Convert an error code _n1_ to its ordinal number _+n2_.
+;
+; ----
 ; : error>ordinal  ( n1 -- +n2 )
 ;   \ Convert an error code to its ordinal position in the
 ;   \ library.
@@ -7117,8 +7254,15 @@ uppers.do:
 ;   dup 256 < ?exit
 ;   dup 1000 < if  [ 256 091 - ] literal - exit  then
 ;   [ 1000 286 - 256 091 - + ] literal -   ;
+; ----
+;
+; }doc
 
   ; XXX TODO -- add OS error codes (1128..1154)
+
+;   dup 1000 < if  [ 256 091 - ] literal - exit  then
+
+if 1 ; XXX OLD
 
   dw abs_,dup_
   _literal 256
@@ -7133,27 +7277,72 @@ error_to_ordinal.g_plus_dos:
   dw minus_
   dw semicolon_s_
 
+else
+
+  ; XXX UNDER DEVELOPMENT
+
+; ----
+; : error>ordinal  ( n1 -- +n2 )
+;   \ Convert an error code to its ordinal position in the
+;   \ library.
+;   \ n1 =  -90..-1        \ Standard error codes
+;   \       -285..-256     \ System error codes
+;   \       -1024..-1000   \ G+DOS error codes
+;   \ +n2 = 1..146
+;   abs
+;   dup 256 < ?exit
+;   dup 1128 < if  [ 1000 286 - 256 091 - + ] literal - exit then
+;   [ 1128 1025 - 1000 286 - 256 091 - + + ] literal -   ;
+; ----
+
+  ; XXX TODO:
+
+  dw abs_,dup_
+  _literal 256
+  dw less_than_,question_exit_
+  dw dup_
+  _literal 1000
+  dw less_than_,zero_branch_,error_to_ordinal.g_plus_dos
+  _literal 256-91
+  dw minus_,exit_
+error_to_ordinal.g_plus_dos:
+  _literal (1000-286)+(256-91)
+  dw minus_,exit_
+
+
+  dw minus_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header error_to_line_,'ERROR>LINE'
+
+  ; XXX TODO defer and move to the library
+
+if 0 ; XXX OLD -- buggy
 
 ; doc{
 ;
 ; error>line  ( n1 -- n2 )
 ;
-; Convert an error number to its correspondent line offset. This
-; is used in order to skip the first line of screens and use
-; them as screen headers as usual.
-;
+; Convert an error number _n1_ to its correspondent line offset
+; _n2_. This is used in order to skip the first line of the
+; screens that hold the error messages and use them as screen
+; headers as usual.
+
+; ----
 ; : error>line  ( n1 -- n2 )
 ;   error>ordinal dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
-;
+; ----
+
 ; }doc
 
-; XXX TODO -- consult in clf, if a calculation can be used
-; instead of a loop; I didn't success.
+; XXX FIXME -- this does not work fine yet
 
   dw error_to_ordinal_
-  dw dup_,one_plus_,one_,paren_do_
+  dw one_minus_
+  dw dup_,one_plus_,zero_,paren_do_
 error_to_number.do
   dw i_
   _literal 16
@@ -7161,9 +7350,97 @@ error_to_number.do
   dw paren_loop_,error_to_number.do
   dw semicolon_s_
 
+else
+
+; doc{
+;
+; error>line  ( n1 -- n2 )
+;
+; Convert an error number _n1_ to its correspondent line offset
+; _n2_. This is used in order to skip the first line of the
+; screens that contain the error messages and use them as
+; screen headers.
+
+; ----
+; : error>line  ( n1 -- n2 )
+;   dup >r
+;   begin
+;     dup dup 16 / - r@ <>  while  1+ 
+;   repeat  rdrop  ;
+; ----
+
+; }doc
+
+  dw error_to_ordinal_
+  dw dup_,to_r_
+error_to_number.begin
+  dw dup_,dup_
+  _literal 16
+  dw slash_,minus_,r_fetch_,not_equals_
+  dw zero_branch_,error_to_number.end
+  dw one_plus_
+  dw branch_,error_to_number.begin
+error_to_number.end
+  dw r_drop_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header error_,'ERROR'
 
+if 1 ; exception_wordset
+
+; doc{
+;
+; error  ( n -- )
+;
+; Save the error number into `error-number`, and the current
+; block and line into `error-pos`, to be used by `where`.  Issue
+; error _n_ and restart the system.
+
+; ----
+; : error  ( n -- )
+;   dup error-number !
+;   >in @ blk @ error-pos 2!
+;   dup -1 = if  (abort)  then
+;   dup -2 = if  abort-message 2@ type (abort)  then
+;   parsed-name 2@ type ." ? " message  (abort)  ;
+; ----
+
+; }doc
+
+  dw dup_,error_number_,store_ ; save the error number
+  dw to_in_,fetch_,blk_,fetch_,error_pos_,two_store_
+
+  dw dup_
+  _literal -1
+  dw equals_
+  dw question_branch_,paren_abort_pfa
+  ; No return from `(abort)`.
+
+  dw dup_
+  _literal -2
+  dw equals_
+  dw zero_branch_,error.message
+  dw space_,abort_message_,two_fetch_,type_,paren_abort_
+  ; No return from `(abort)`.
+
+error.message:
+  dw parsed_name_,two_fetch_,type_ ; last parsed word
+  dw paren_dot_quote_
+  _string '? '
+  dw message_,paren_abort_
+  ; No return from `(abort)`.
+
+  ; XXX FIXME -- the end of `error` will not be recognized by
+  ; `decode`.
+
+  _two_variable_header abort_message_,"ABORT-MESSAGE"
+
+  dw 0,0
+
+else
 
 ; doc{
 ;
@@ -7174,11 +7451,21 @@ error_to_number.do
 ; line into `error-pos`, to be used by `where`.
 ;
 ; This word is a modified version of fig-Forth's `error`.
-;
+
+; ----
+; : error  ( n -- )
+;   dup error-number !
+;   >in @ blk @ error-pos 2!
+;   parsed-name 2@ type ." ? " message
+;   sp0 @ sp!  quit  ;
+; ----
+
 ; }doc
 
 
   dw dup_,error_number_,store_ ; save the error number
+  dw to_in_,fetch_,blk_,fetch_,error_pos_,two_store_
+
   ; XXX OLD
   ; XXX TODO
 ;  dw warnings_,fetch_,zero_less_than_ ; custom error routine?
@@ -7190,13 +7477,9 @@ error.message:
   _string '? '
   dw message_
   dw sp0_,fetch_,sp_store_
-  dw blk_,fetch_,question_dup_
-  dw zero_branch_,error.end
-  dw to_in_,fetch_
-  dw swap_
-  dw error_pos_,two_store_
-error.end:
   dw quit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header id_dot_,'ID.'
@@ -7342,7 +7625,8 @@ compare_strings_case_sensitive:
   ;   DE = len
   ; Output:
   ;   Z = match?
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
   ld a,e
   or d
   ret z
@@ -7438,7 +7722,9 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header s_literal_,'SLITERAL',immediate
 
+  ; ----
   ; : sliteral  ( ca len -- )  compile slit s,  ; immediate
+  ; ----
 
   dw compile_,s_lit_,s_comma_
   dw semicolon_s_
@@ -7643,6 +7929,7 @@ endif
 ; _chk 'interpret -- before number' ; XXX INFORMER
 
   dw number_question_ ; is it a number?
+;  _chk 'interpret -- after number?' ; XXX INFORMER
   dw zero_equals_
   _question_error error.not_understood ; error if not
 
@@ -7974,16 +8261,6 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header abort_,'ABORT'
-
-
-;  _brk 'abort -- start' ; XXX INFORMER
-  dw sp0_,fetch_,sp_store_
-  dw boot_ 
-;  _brk 'abort -- before quit' ; XXX INFORMER
-  dw quit_
-
-; ----------------------------------------------
 if old_defer
   _does_header boot_,'BOOT',,do_defer
 
@@ -8059,7 +8336,7 @@ endif
   dw previous_mode_,perform_
   dw page_ ; note: this must be after changing the screen mode
   dw abort_
-  ; dw semicolon_s_ ; XXX OLD -- `warm` never returns
+  ; No return from `abort`.
 
 warm_start:
   call common_start
@@ -8107,6 +8384,8 @@ endif
 
   dw display_,colors0_,page_,greeting_
 
+;  _brk 'cold -- before abort' ; XXX INFORMER
+
   dw abort_
 
 cold_start:
@@ -8137,8 +8416,12 @@ common_start:
 ;
 ; d>s  ( d -- n )
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
 ;
+; ----
+; : d>s  ( d -- n )
+;   drop  ;
+; ----
 ; }doc
 
 ; ----------------------------------------------
@@ -8150,8 +8433,11 @@ common_start:
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+;
 ; ----
-; : s>d  ( n -- d )  dup 0<  ;
+; : s>d  ( n -- d )
+;   dup 0<  ;
 ; ----
 ;
 ; }doc
@@ -8163,30 +8449,6 @@ common_start:
   jp p,push_hlde ; jump if positive
   dec hl
   jp push_hlde
-
-; ; ----------------------------------------------
-;   _code_header plus_minus_,'+-'
-
-; ; doc{
-; ;
-; ; +-  ( n1 n2 -- n1|n3 )
-; ; 
-; ; If _n2_ is negative, change the sign of _n1_, leaving it as
-; ; _n3_.
-; ;
-; ; Standard: fig-Forth.
-
-; ; ----
-; ; : +-  ( n1 f -- n1|n2 )
-; ;   0< if  negate  then  ;
-; ; ----
-
-; ; }doc
-
-;   pop hl
-;   bit 7,h
-;   jp nz,negate_pfa
-;   _jp_next
 
 ; ----------------------------------------------
   _code_header question_negate_,'?NEGATE'
@@ -8209,30 +8471,6 @@ question_negate.hl:
   bit 7,h
   jp nz,negate_pfa
   _jp_next
-
-; ; ----------------------------------------------
-;   _code_header d_plus_minus_,'D+-'
-
-; ; doc{
-; ;
-; ; d+-  ( d1 n -- d1|d2 )
-; ; 
-; ; If _n_ is negative, change the sign of _d1_, leaving it as
-; ; _d2_.
-; ;
-; ; Standard: fig-Forth.
-
-; ; ----
-; ; : d+-  ( d1 n -- d2 )
-; ;   0< if  negate  then  ;
-; ; ----
-
-; ; }doc
-
-;   pop hl
-;   bit 7,h
-;   jp nz,d_negate_pfa
-;   _jp_next
 
 ; ----------------------------------------------
   _code_header question_d_negate_,'?DNEGATE'
@@ -8315,7 +8553,8 @@ endif
 ;
 ; }doc
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   pop de
   pop hl
@@ -8331,7 +8570,8 @@ endif
 ;
 ; }doc
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   pop de
   pop hl
@@ -8341,7 +8581,8 @@ endif
 ; ----------------------------------------------
   _code_header min_,'MIN'
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   pop de
   pop hl
@@ -8351,7 +8592,8 @@ endif
 ; ----------------------------------------------
   _code_header max_,'MAX'
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   pop de
 max.de:
@@ -8746,6 +8988,8 @@ endif
 ; ----------------------------------------------
   _colon_header message_,'MESSAGE'
 
+  ; XXX TODO move to the library?
+
 ; doc{
 ;
 ; message  ( n -- )
@@ -8754,8 +8998,13 @@ endif
 
   dw msg_scr_,fetch_
   dw zero_branch_,message.number_only
-  dw error_to_line_,msg_scr_,fetch_,dot_line_,space_
-  dw semicolon_s_
+;  _chk 'message -- before error>line' ; XXX INFORMER
+  dw error_to_line_
+;  _chk 'message -- after error>line' ; XXX INFORMER
+  dw msg_scr_,fetch_,dot_line_
+;  _chk 'message -- after .line' ; XXX INFORMER
+  dw space_
+  dw exit_
 
 message.number_only:
   dw paren_dot_quote_
@@ -10147,7 +10396,7 @@ system_stack_pointer: equ $+1
   dw previous_mode_,store_
   dw default_mode_
   dw paren_bye_
-  ; `(bye)` never returns
+  ; No return from `(bye)`.
 
 ; ----------------------------------------------
   _code_header two_drop_,'2DROP'
@@ -10159,7 +10408,8 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _code_header two_swap_,'2SWAP'
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   pop hl
   pop de
@@ -10188,8 +10438,6 @@ system_stack_pointer: equ $+1
   _colon_header where_,'WHERE'
 
   ; XXX TODO -- remove; already copied to the disk
-  ; XXX FIXME -- terminal input errors are not managed;
-  ; the screen of the last error is shown insted
 
   dw error_pos_,two_fetch_ ; XXX NEW
   dw dup_
@@ -10225,7 +10473,8 @@ where.do_it:
 
 ; }doc
 
-; [Code adapted from Spectrum Forth-83.]
+  ; Credits:
+  ; Code adapted from Spectrum Forth-83.
 
   dw dup_
   _literal 23
@@ -10537,6 +10786,172 @@ else
 
 endif
 
+
+; ----------------------------------------------
+if 1 ; exception_wordset
+  _colon_header catch_,'CATCH'
+
+  ; XXX UNDER DEVELOPMENT
+
+; doc{
+
+; catch  ( cfa -- 0 | err# )
+
+; Push an exception frame on the exception stack and then
+; execute _cfa_ (as with `execute`) in such a way that control
+; can be transferred to a point just after `catch` if `throw` is
+; executed during the execution of _cfa_.
+;
+; If the execution of _cfa_ completes normally (i.e., the
+; exception frame pushed by this `catch` is not popped by an
+; execution of `throw`) pop the exception frame and return zero
+; on top of the data stack, above whatever stack items would
+; have been returned by the execution of _cfa_. Otherwise, the
+; remainder of the execution semantics are given by `throw`.
+;
+; Standard: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
+;
+; }doc
+
+  dw sp_fetch_,to_r_,catcher_,fetch_,to_r_  ; save error frame
+  dw rp_fetch_,catcher_,store_
+  dw execute_
+  dw from_r_,catcher_,store_  ; restore error frame
+  dw from_r_,drop_
+  _literal 0  ; no error
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+if 1 ; exception_wordset
+  _colon_header throw_,'THROW'
+
+  ; XXX UNDER DEVELOPMENT
+
+if 0
+
+  ; Version from eForth:
+
+; throw  ( err# -- err# )
+; reset system to current local error frame an update error flag.
+
+  dw catcher_,fetch_,rp_store_        ; restore return stack
+  dw from_r_,catcher_,store_          ; restore exception frame
+  dw from_r_,swap_,to_r_,sp_store_    ; restore data stack
+  dw drop_,from_r_
+  dw semicolon_s_
+
+endif
+
+if 0
+
+  ; Version from hForth:
+  
+  dw question_dup_,zero_branch_,throw.end
+  dw catcher_,fetch_,rp_store_          ; restore return stack
+  dw from_r_,catcher_,store_            ; restore exception frame
+  dw from_r_,swap_,to_r_,sp_store_      ; restore data stack
+  dw drop_,from_r_
+  ; dw tickinit_io,execute  ; XXX OLD -- hForth specific
+throw.end:
+  dw semicolon_s_
+
+endif
+
+if 1
+
+  ; Version from DZX-Forth:
+
+; throw  ( n -- )
+; ?dup if
+;   catcher @ ?dup 0= if  error  then
+;   rp! r> catcher ! r> swap >r sp! drop r>
+; then  ;
+
+  dw question_dup_
+  dw zero_branch_,throw.end
+  dw catcher_,fetch_
+  dw question_dup_,zero_equals_
+  dw zero_branch_,throw.catcher
+  dw error_
+  ; No return from `error`.
+
+throw.catcher:
+  dw rp_store_
+  dw from_r_,catcher_,store_
+  dw from_r_,swap_,to_r_
+  dw sp_store_
+  dw drop_,from_r_
+throw.end:
+  dw semicolon_s_
+
+endif
+
+
+endif
+
+; ----------------------------------------------
+
+if 1 ; exception_wordset
+
+  ; XXX UNDER DEVELOPMENT
+
+  _colon_header paren_abort_,'(ABORT)'
+
+  dw sp0_,fetch_,sp_store_
+  dw boot_ 
+  dw quit_
+
+  _colon_header abort_,'ABORT'
+
+  _literal -1
+  dw throw_
+  dw semicolon_s_
+
+else
+
+  _colon_header paren_abort_,'(ABORT)'
+
+  dw abort_
+  dw semicolon_s_
+
+  _colon_header abort_,'ABORT'
+
+  dw sp0_,fetch_,sp_store_
+  dw boot_ 
+  dw quit_
+  
+endif
+
+; ----------------------------------------------
+if 0
+
+  _colon_header abort_quote_,'ABORT"'
+
+  ; XXX UNDER DEVELOPMENT
+
+  ; eForth:
+
+  dw  zero_branch_,abort_quote.no_error
+  dw  dostr,throw_    ; pass error string
+abort_quote.no_error:
+  dw  dostr,drop_
+
+  dw semicolon_s_
+
+  ; hForth:
+
+  dw  squote,dolit,rot,compilecomma
+  dw  iff,dolit,abortqmsg,compilecomma ; if is immediate
+  dw  dolit,twostore,compilecomma
+  dw  dolit,-2,literal     ; literal is immediate
+  dw  dolit,throw,compilecomma
+  dw  elsee,dolit,twodrop,compilecomma ; else and then are
+  dw  thenn,exit       ; immediate
+
+endif
+
 ; ----------------------------------------------
   _colon_header char_,'CHAR'
 
@@ -10553,7 +10968,7 @@ endif
   _colon_header s_quote_,'S"',immediate
 
   ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
-  ;  [char] " (s)  ; immediate
+  ;  [char] " parse-string  ; immediate
 
   _literal '"'
   dw parse_string_

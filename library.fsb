@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510070414
+\ Last modified: 201510100251
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -73,7 +73,7 @@ variable last-locatable  scr/disk 1- last-locatable !
   last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over
-      contains if  2drop i unloop exit  then
+    contains if  2drop i unloop exit  then
     \ break-key? ?exhaust \ XXX TODO not in the kernel
   loop  2drop false  ;
 
@@ -268,7 +268,6 @@ variable last-locatable  scr/disk 1- last-locatable !
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
-
 \ #-1000 G+DOS: Nonsense in G+DOS
 \ #-1001 G+DOS: Nonsense in GNOS
 \ #-1002 G+DOS: Statement end error
@@ -289,7 +288,6 @@ variable last-locatable  scr/disk 1- last-locatable !
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
-
 \ #-1015 G+DOS: Code error
 \ #-1016 G+DOS: Pupil set
 \ #-1017 G+DOS: Invalid code
@@ -352,6 +350,56 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ }}} =======================================================
   \ Code under development {{{
 
+( csliteral cslit )
+
+  \ XXX TODO test
+  \ XXX TODO move to the strings section
+
+: cslit  ( -- ca len )  r@ dup c@ 1+ r> + >r  ;
+: csliteral  ( ca len -- )  compile cslit s,  ; immediate
+
+( abort" )
+
+  \ Version adapted from DZX-Forth:
+
+2variable abort-message
+
+: (abort")  ( n -- )
+  r> count rot if  abort-message 2! -2 throw  then + >r  ;
+
+: abort"  ( compilation: "ccc<quote>" -- )
+  postpone (abort") ,"  ; immediate
+
+( abort" )
+
+  \ Version adapted from hForth:
+
+2variable abort-message
+
+: (abort")  ( ca len -- )  abort-message 2! -2 throw  ;
+
+: abort"  ( x "text<quote>" -- )
+  postpone s"
+  postpone rot   ( ca len x )
+  postpone if    postpone (abort")
+  postpone else  postpone 2drop  postpone then
+  ;  immediate
+
+( abort" )
+
+  \  Version adapted from Gforth:
+
+need csliteral
+
+variable abort-message
+
+: (abort")  ( ca len -- )  abort-message ! -2 throw  ;
+
+: abort"  ( n "text<quote>" -- )
+  postpone if
+  [char] " parse postpone csliteral postpone (abort")
+  postpone  then  ; immediate
+
 ( err>ord err>lin )
 
   \ XXX TMP -- `err>ord` tests `error>ordinal`
@@ -361,16 +409,52 @@ variable last-locatable  scr/disk 1- last-locatable !
   286 256 do  i . i error>ordinal ."  -> " . cr  loop
   1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
 
-  \ XXX FIXME -- this is a fixed version of `error>line`,
-  \ under development
+  \ XXX UNDER DEVELOPMENT
+  \ -- this is a fixed version of `error>line`,
 
 : err>lin  ( n1 -- n2 )
   error>ordinal dup 1+ 1
   do  cr i . ." 16 mod . "  i 16 mod .
     i 16 mod 0=  dup if ."  skip "  then
-                 abs + ." count:" dup . 
+                 abs + ." count:" dup .
     key drop
   loop  ;
+
+( e>l )
+
+  \ XXX UNDER DEVELOPMENT
+  \ this is a fixed version of `error>line`,
+
+  \ try 3
+
+: e>l  ( n1 -- n2 )
+  dup >r \ save goal
+  begin
+    cr .s key drop
+    dup dup 16 / - r@ <> while
+    1+ 
+  repeat  rdrop  ;
+
+    \ \ try 2
+
+  \ : e>l  ( n1 -- n2 )
+    \ >r \ n1 = goal
+    \ 1 \ n2 = result
+    \ 1 \ n3 = counter
+    \ begin  over r@ <>  while
+    \   cr .s key drop
+    \   ( n2 n3 )
+    \   dup >r 16 mod 0= abs + 1+ r> 1+
+    \ repeat  drop rdrop  ;
+
+    \ \ try 1
+
+  \ : e>l  ( n1 -- n2 )
+    \ 1 begin  2dup >  while
+    \   cr .s key drop
+    \   ( n1 n2 )
+    \   dup >r 16 mod 0= abs + r> 1+
+    \ repeat  drop  ;
 
 ( number? )
 
@@ -383,7 +467,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 
 
 : number?  ( ca len -- n tf | ff )
-  
+
   base @ >r  number-base base !
   0 0 2swap
   sign? >r  >number nip
@@ -396,7 +480,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 : number?  ( ca len -- n tf | ff )
 
   \ first version
-  
+
   base @ >r  number-base base !
   0 0 2swap
   sign? >r  >number nip
@@ -422,7 +506,7 @@ variable last-locatable  scr/disk 1- last-locatable !
     2drop drop r@ if  negate  then  1
   then  rdrop  ;
 
-( number? ) 
+( number? )
 
   \ Credits:
   \ Code from DZX-Forth.
@@ -506,11 +590,11 @@ variable last-locatable  scr/disk 1- last-locatable !
   bl over count + c!  ;       \ append trailing blank
 
   \  doc{
-  \ 
+  \
   \  word  ( c "<c...>text<c>" -- ca )
-  \ 
+  \
   \  c = delimiter char
-  \ 
+  \
   \  Skip leading _c_ delimiters from the input stream.  Parse
   \  the next text characters from the input stream, until a
   \  delimiter _c_ is found, storing the packed character
@@ -518,9 +602,9 @@ variable last-locatable  scr/disk 1- last-locatable !
   \  character count in the first byte), and with one blank at
   \  the end.  byte), and with one blank at the end (not
   \  included in the count).
-  \ 
+  \
   \  Standard: Forth-94.
-  \ 
+  \
   \  }doc
 
   \ }}} =======================================================
@@ -534,10 +618,10 @@ vocabulary escaped-voc
 wid-of escaped-voc constant escaped-wordlist
 also escaped-voc definitions
 
-  \ The `escaped-voc` contains the words whose names are
-  \ characters that must be escaped after a backslash. Their
-  \ execution returns the new character(s) on the stack (the
-  \ first one at the top) and the count.
+  \ The `escaped-voc` vocabulary contains the words whose names
+  \ are characters that must be escaped after a backslash.
+  \ Their execution returns the new character(s) on the stack
+  \ (the first one at the top) and the count.
   \
   \ Most of the escaped chars are translated to one char, so
   \ they are defined as double constants.
@@ -602,8 +686,16 @@ need chars>string  need s+
   \ returning the string _ca len_ in the circular string
   \ buffer.
 
-: s\"  ( "text<quote>"  - ca len )  \ Forth-2012
+: s\"  ( "text<quote>"  - ca len )
   (s\")  compiling? if  postpone sliteral  then  ; immediate
+
+  \ XXX TODO documentation
+
+  \ doc{
+  \
+  \ s\"  ( "text<quote>"  - ca len )
+  \
+  \ }doc
 
 ( char>string chars>string )
 
@@ -652,7 +744,6 @@ need chars>string  need s+
   \ len1_ returning the string _ca3 len3_ in the circular
   \ string buffer.
 
-
 ( s' )
 
   \ Credits:
@@ -665,7 +756,7 @@ need chars>string  need s+
   \ }doc
 
 : s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
-  [char] ' (s)  ; immediate
+  [char] ' parse-string  ; immediate
 
 ( begin-stringtable end-stringtable )
 
@@ -702,7 +793,7 @@ need chars>string  need s+
   \ end-stringtable
   \ 0 esperanto-number type
   \ 3 esperanto-number type
-  
+
   \ }}} =======================================================
   \ Data stack {{{
 
@@ -806,7 +897,10 @@ need n>r
 ( mode32 )  \ ==screenmodes==
 
 [defined] sys-chans ?\ 23631 constant sys-chans
+  \ System variable that holds the address of the channels.
+
 [defined] sys-chars ?\ 23606 constant sys-chars
+  \ System variable that holds the address of the font.
 
 : mode-output  ( a -- )
   \ Associate the output
@@ -1371,12 +1465,12 @@ code fzx-emit  ( c -- )
 
 ( udg! udg: )  \ ==graphics==
 
-[defined] udg
-  ?\  : udg  ( -- a )  23675 @  ;
-      \ Address of the User Defined Graphics.
+[defined] sys-udg ?\  23675 constant sys-udg
+  \ System variable that holds the address of the User Defined
+  \ Graphics.
 
 : udg!  ( b0..b7 c -- )
-  128 - 8 * udg + 1 - dup 8 + do  i c!  -1 +loop  ;
+  128 - 8 * sys-udg @ + 1 - dup 8 + do  i c!  -1 +loop  ;
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
@@ -1392,7 +1486,7 @@ code fzx-emit  ( c -- )
   \ doc{
   \
   \ udg:  ( b0..b7 c "name" -- )
-  \ 
+  \
   \ Create a constant called "name" for the UDG char _c_.
   \ Store the given 8 bytes into the UDG char _c_.
   \ b0 = first (top) scan
@@ -1579,23 +1673,30 @@ variable ocr-chars
   \ ocr-chars  ( -- a )
   \
   \ Variable that holds the number of chars used by `ocr`, from
-  \ address pointed by `ocr-charset`. By default it contais
+  \ the address pointed by `ocr-charset`. By default it contais
   \ 0x5F, the number of printable ASCII chars in the ROM
   \ charset.
   \
   \ }doc
 
+[defined] sys-chars ?\ 23606 constant sys-chars
+  \ System variable that holds the address of the font.
+
 : ascii-ocr  ( -- )
   \ Set `ocr` to work with the ASCII charset pointed by the
   \ system variable CHARS.
-  23606 @ 256 + ocr-charset !
+  sys-chars @ 256 + ocr-charset !
   32 ocr-first !
   95 ocr-chars !  ;
+
+[defined] sys-udg ?\  23675 constant sys-udg
+  \ System variable that holds the address of the User Defined
+  \ Graphics.
 
 : udg-ocr  ( n -- )
   \ Set `ocr` to work with the first _n_ chars of the UDG
   \ charset pointed by the system variable UDG.
-  23675 @ ocr-charset !
+  sys-udg @ ocr-charset !
   128 ocr-first !
   ocr-chars !  ;
 
@@ -2796,13 +2897,27 @@ code c@+  ( ca - ca+1 c )
   \ Credits:
   \ Code from DZX-Forth.
 
-: within  ( n1|u1 n2|u2 n3|u3 -- f )
-  over - >r - r> u<  ;
+: within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
+
+  \ doc{
+  \
+  \ within  ( n1|u1 n2|u2 n3|u3 -- f )
+  \
+  \ Perform a comparison of a test value n1|u1 with a lower
+  \ limit n2|u2 and an upper limit n3|u3, returning true if
+  \ either (n2|u2 < n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <
+  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 <= n1|u1 or n1|u1 <
+  \ n3|u3)) is true, returning false otherwise. An ambiguous
+  \ condition exists if n1|u1, n2|u2, and n3|u3 are not all the
+  \ same type.
+  \
+  \ Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
 
 need -rot
 
-: between  ( n1|u1 n2|u2 n3|u3 -- f )
-  over - -rot - u< 0=  ;
+: between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
 ( u<= u>= <= >= 0>= 0<= )
 
@@ -2856,7 +2971,7 @@ code lshift  ( x1 u -- x2 )
 
 ( rshift )
 
-  \ XXX TODO
+  \ XXX UNDER DEVELOPMENT
 
 need z80-asm
 
@@ -2875,13 +2990,13 @@ code rshift  ( x1 u -- x2 )
 
   \ XXX FIXME
 
-  exx 
+  exx
   bc pop
   c b ld
   hl pop
 
   b inc  ahead
-  
+
   for  h srl  l rr  >relsesolve  step
   pushhl jp
 
@@ -2912,6 +3027,31 @@ code rshift  ( x1 u -- x2 )
   swap r> ?negate
   swap r> ?negate  ;
 
+  \ doc{
+  \
+  \ sm/rem  ( d1 n1 -- n2 n3 )
+
+  \ Divide d1 by n1, giving the symmetric quotient n3 and the
+  \ remainder n2. Input and output stack arguments are signed.
+  \ An ambiguous condition exists if n1 is zero or if the
+  \ quotient lies outside the range of a single-cell signed
+  \ integer.
+
+  \ Standard: Forth-94 (CORE), Forth-2012 (CORE).
+
+  \ [caption="Symmetric Division Example"]
+  \
+  \ |===
+  \ | Dividend  | Divisor | Remainder | Quotient
+
+  \ >|       10  >|      7  >|        3  >|        1
+  \ >|      -10  >|      7  >|       -3  >|       -1
+  \ >|       10  >|     -7  >|        3  >|       -1
+  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |===
+
+  \ }doc
+
 ( /-rem /- -rem */-rem */- )
 
   \ Symmetric-division operators
@@ -2931,23 +3071,6 @@ code rshift  ( x1 u -- x2 )
 
 ( fm/mod )
 
-  \ doc{
-  \
-  \ fm/mod  ( d1 n1 -- n2 n3 )
-  \
-  \ Floored division:
-  \
-  \   d1 = n3*n1+n2
-  \   n1>n2>=0 or 0>=n2>n1
-  \
-  \ Divide _d1_ by _n1_, giving the floored quotient _n3_ and
-  \ the remainder _n2_. Input and output stack arguments are
-  \ signed.
-  \
-  \ Standard: Forth-94.
-  \
-  \ }doc
-
   \ Credits:
   \ Code from Z88 CamelForth.
 
@@ -2961,16 +3084,35 @@ code rshift  ( x1 u -- x2 )
     swap 1-             \ decrement quotient
   else r> drop then  ;
 
-  \ From the Forth-94 documentation:
+  \ doc{
+  \
+  \ fm/mod  ( d1 n1 -- n2 n3 )
+  \
+  \ Floored division:
+  \
+  \ ----
+  \   d1 = n3*n1+n2
+  \   n1>n2>=0 or 0>=n2>n1
+  \ ----
+  \
+  \ Divide _d1_ by _n1_, giving the floored quotient _n3_ and
+  \ the remainder _n2_. Input and output stack arguments are
+  \ signed.
+  \
+  \ Standard: Forth-94 (CORE), Forth-2012 (CORE).
 
-     \ Table 3.3 - Floored Division Example
+  \ [caption="Floored Division Example"]
+  \
+  \ |===
+  \ | Dividend  | Divisor | Remainder | Quotient
 
-     \ Dividend        Divisor Remainder       Quotient
-     \ --------        ------- ---------       --------
-     \ 10                 7       3                1
-     \ -10                7       4               -2
-     \ 10                -7      -4               -2
-     \ -10               -7      -3                1
+  \ >|       10  >|      7  >|        3  >|        1
+  \ >|      -10  >|      7  >|        4  >|       -2
+  \ >|       10  >|     -7  >|       -4  >|       -2
+  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |===
+  \
+  \ }doc
 
 ( /_mod /_ _mod */_mod */_ )
 
@@ -3592,7 +3734,7 @@ code c!dosvar  ( b n -- )
   \ thru ( u1 u1 -- )
   \
   \ Load consecutively the screens from u1 through u2.
-  \ 
+  \
   \ Standard: Forth-79 (Reference Word Set), Forth-83
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
   \ Forth-2012 (BLOCK EXT).
@@ -3610,7 +3752,7 @@ code c!dosvar  ( b n -- )
   \ doc{
   \
   \ loads  ( u "name" -- )
-  \ 
+  \
   \ Define a word "name" which, when executed, will  load
   \ screen _u_.
   \
@@ -3687,6 +3829,17 @@ variable old-voc-link
          0 constant [false] immediate
 [false] 0= constant [true]  immediate
 
+( bin. dec. hex. )
+
+  \ Credits:
+  \ Code modified from eForth.
+
+: base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+
+create bin.  ( n -- )   2 c, base.
+create dec.  ( n -- )  10 c, base.
+create hex.  ( n -- )  16 c, base.
+
 ( 8hex. 16hex. 32hex. <hex hex> )
 
   \ Credits:
@@ -3737,7 +3890,7 @@ variable old-voc-link
 
 ( dump )
 
-need break-key?  need hex.  need ascii-type
+need break-key?  need 16hex.  need ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
@@ -3746,8 +3899,8 @@ need break-key?  need hex.  need ascii-type
   \ XXX TODO use `?do` instead of `if` when available
   2dup <> if
     do
-      cr dup hex.
-      8 0 do  i over + @ flip hex.  2 +loop
+      cr dup 16hex.
+      8 0 do  i over + @ flip 16hex.  2 +loop
       \ 16 0 do  i over + c@ hexb.  loop
       dup bs 8 ascii-type
       break-key? if  exhaust  then
@@ -3777,15 +3930,15 @@ variable decode-address  \ in the word being decoded
 
   \ Special cases
 
-: decode-compile    ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
+: decode-compile   ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
 
-: decode-literal    ( a1 -- a2 )  2+ dup @ .  ;
+: decode-literal   ( a1 -- a2 )  2+ dup @ .  ;
 
-: decode-cliteral   ( a1 -- a2 )  2+ dup c@ . 1-  ;
+: decode-cliteral  ( a1 -- a2 )  2+ dup c@ . 1-  ;
 
-: decode-branch     ( a1 -- a2 )  2+ dup @ u.  ;
+: decode-branch    ( a1 -- a2 )  2+ dup @ u.  ;
 
-: decode-dot-quote  ( a1 -- a2 )
+: decode-sliteral  ( a1 -- a2 )
   2+ dup count type  dup c@ + 1 -  ;
 
 -->
@@ -3802,12 +3955,13 @@ need case
     ['] compile   of  decode-compile    endof
     ['] lit       of  decode-literal    endof
     ['] clit      of  decode-cliteral   endof
+    ['] slit      of  decode-sliteral   endof
     ['] branch    of  decode-branch     endof
     ['] 0branch   of  decode-branch     endof
     ['] ?branch   of  decode-branch     endof
     ['] (loop)    of  decode-branch     endof
     ['] (+loop)   of  decode-branch     endof
-    ['] (.")      of  decode-dot-quote  endof
+    ['] (.")      of  decode-sliteral   endof
   endcase  ;  -->
 
 ( decode )
@@ -4019,7 +4173,7 @@ need break-key?
   \ Print screen and line numbers and a picture of where the
   \ last error occurred.
   error-pos 2@  ( n1 n2 )
-  \ n1 = value of `in` when the error happened
+  \ n1 = value of `>in` when the error happened
   \ n2 = value of `blk` when the error happened
   dup if
     dup b/scr / dup scr !
@@ -4044,9 +4198,9 @@ need break-key?
   depth dup .depth
   if  sp@ 2- s0 @ 2- do i @ u. -2 +loop  then  ;
 
-( marker ) \ 2nd approach
+( marker ) \ second approach
 
-  \ XXX TODO
+  \ XXX UNDER DEVELOPMENT
 
   \ XXX TODO -- add user variables pointer
   \ XXX TODO -- add order
@@ -4075,6 +4229,8 @@ need break-key?
   \ Restore the data preserved by a marker word.
   set-order 0 do  2@ !  loop  ;
 
+-->
+
 ( marker )
 
 : n,  ( x1..xn n -- )  0 do  ,  loop  ;
@@ -4088,9 +4244,9 @@ need break-key?
   \ just prior to the definition of "name".
 
 
-( marker )
+( marker )  \ first approach
 
-  \ XXX TODO
+  \ XXX UNDER DEVELOPMENT
 
   \ XXX TODO -- add user variables pointer
   \ XXX TODO -- add order
@@ -4117,6 +4273,8 @@ need break-key?
 : marker!  ( a -- )
   \ Restore the data preserved by a marker word.
   dup @ dup voc-link !  cell+ dup @ np!  cell+ @ dp !  ;
+
+-->
 
 ( marker )
 
@@ -4197,32 +4355,6 @@ variable assert-level ( -- a )
 
 : ) ( -- )  postpone (endassert) ; immediate
     \ end an assertion
-
-  \ }}} =======================================================
-  \ Misc {{{
-
-  \ XXX TODO -- move to other sections
-
-( source )  \ ==misc==
-
-: source  ( -- ca len )  \ Forth-94
-  \ XXX TODO
-  blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
-
-( call )
-
-code call  ( a -- )
-  \ Call a machine code subroutine.
-
-  E1 c,               \ pop hl
-  C5 c,               \ push bc
-  CD c, >mark         \ call call_hl
-  C1 c,               \ pop bc
-  DD c, 21 c, next ,  \ ld ix,next
-  jpnext              \ jp next
-  >resolve            \ call_hl:
-  E9 c,               \ jp (hl)
-  end-code
 
   \ }}} =======================================================
   \ Keyboard {{{
@@ -4561,17 +4693,6 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   \ Note: This word depends on the fig-Forth's `literal`.
   \ XXX TODO change when `literal` is updated.
 
-( bin. dec. hex. )
-
-  \ Credits:
-  \ Code copied from eForth and modified.
-
-: base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
-
-create bin.  ( n -- )   2 c, base.
-create dec.  ( n -- )  10 c, base.
-create hex.  ( n -- )  16 c, base.
-
   \ }}} =======================================================
   \ Control structures {{{
 
@@ -4634,7 +4755,7 @@ code l>  ( -- x ) ( L: x -- )
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO adapt from hForth
 hex
- 
+
 : (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
   >r 8000 + r> over - swap r> swap >r swap >r >r ;
 
@@ -5014,12 +5135,147 @@ code (step)  ( R: n -- n' )
   postpone drop  \ discard case value
   0 do  postpone then  loop  ; immediate
 
+( between-of )
+
+  \ Credits:
+  \ Code from Galope.
+
+s"  between " needed
+
+: (between-of)  ( x1 x2 x3 -- x1 x1 | x1 x1' )
+  2>r dup dup 2r> between 0= if  invert  then  ;
+
+: between-of  ( Compilation: -- of-sys )
+              ( Run-time: x1 x2 x3 -- | x1 )
+  postpone (between-of) postpone of  ;  immediate
+
+  \ Usage example:
+
+  \ : test  ( x -- )
+  \   case
+  \     1 of  ." one"  endof
+  \     2 5 between-of  ." between two and five"  endof
+  \     6 of  ." six"  endof
+  \   endcase  ;
+
+( less-of )
+
+  \ Credits:
+  \ Code from Galope.
+
+[defined] nup ?\  : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
+
+: (less-of)  ( x1 x2 -- x1 x1 | x1 x1' )
+  nup nup >= if  invert  then  ;
+
+: less-of  ( Compilation: -- of-sys )
+           ( Run-time: x1 x2 -- | x1 )
+  postpone (less-of) postpone of  ;  immediate
+
+  \ Usage example:
+
+  \ : test  ( x -- )
+  \   case
+  \     10 of  ." ten!"  endof
+  \     15 less-of  ." less than 15"  endof
+  \     ." greater than 14"
+  \   endcase  ;
+
+( greater-of )
+
+  \ Credits:
+  \ Code from Galope.
+
+[defined] nup ?\  : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
+
+: (greater-of)  ( x1 x2 -- x1 x1 | x1 x1' )
+  nup nup <= if  invert  then  ;
+
+: greater-of  ( Compilation: -- of-sys )
+              ( Run-time: x1 x2 -- | x1 )
+  postpone (greater-of) postpone of  ; immediate
+
+  \ Usage example:
+
+  \ : test  ( x -- )
+  \   case
+  \     10 of  ." ten!"  endof
+  \     15 greater-of  ." greater than 15"  endof
+  \     ." less than 10 or 11..15"
+  \   endcase  ;
+
+( within-of )
+
+  \ Credits:
+  \ Code from Galope.
+
+s"  within " needed
+
+: (within-of)  ( x1 x2 x3 -- x1 x1 | x1 x1' )
+  2>r dup dup 2r> within 0= if  invert  then  ;
+
+: within-of  ( Compilation: -- of-sys )
+             ( Run-time: x1 x2 x3 -- | x1 )
+  postpone (within-of) postpone of  ; immediate
+
+  \ XXX TODO confirm the ranges in the example:
+
+  \ Usage example:
+
+  \ : test  ( x -- )
+  \   case
+  \     1 of  ." one"  endof
+  \     2 5 within-of  ." within two and five"  endof
+  \     6 of  ." six"  endof
+  \   endcase  ;
+
+( default-of )
+
+  \ Credits:
+  \ Code from Galope.  Originally based on code by Mark Willis
+  \ posted to <lang.comp.forth>:
+  \ Message-ID:
+  \ <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
+  \ Date: Fri, 24 Jan 2014 02:08:22 -0800 (PST)
+
+: default-of  ( -- )  postpone dup postpone of  ; immediate
+
+  \ Usage example:
+
+  \ : test  ( x -- )
+  \   case
+  \     1 of  ." one"  endof
+  \     2 of  ." two"  endof
+  \     default-of  ." other"  endof
+  \   endcase  ;
+
+( or-of )
+
+  \ Credits:
+  \ Code from Galope.
+
+: (or-of)  ( x1 x2 x3 -- x1 x1 | x1 x1' )
+  2>r dup dup dup r> = swap r> = or 0= if  invert  then  ;
+
+: or-of  ( Compilation: -- of-sys )
+         ( Run-time: x1 x2 x3 -- | x1 )
+  postpone (or-of) postpone of  ; immediate
+
+  \ Usage example:
+
+  \ : test  ( x -- )
+  \   case
+  \     1 of  ." one"  endof
+  \     2 3 or-of  ." two or three"  endof
+  \     4 of  ." four"  endof
+  \   endcase  ;
+
 ( case )  \ fig-Forth version with compiler security
 
   \ This is the fig-Forth `case` provided by Abersoft Forth,
   \ translated from the Z80 disassembly, adapted and commented.
   \
-  \ Note: this version only works when the compiler security
+  \ Note: this version works only when the compiler security
   \ check config option is activated in the kernel.
 
 : case
@@ -5031,9 +5287,8 @@ code (step)  ( R: n -- n' )
   \ Compilation: ( case-id -- of-id )
   \ Run-time: ( x -- )
   \ Note: `postpone 0branch >mark` is used instead of `postpone
-  \ if` because `if` leaves its id on the stack when compiler
+  \ if` because `if` leaves its own id on the stack when compiler
   \ security is activated.
-  \ XXX TODO use `if` when compiler security is removed.
   4 ?pairs
   postpone over  postpone =  postpone 0branch >mark
   postpone drop 5  ; immediate
@@ -5184,7 +5439,16 @@ need -rot
 : 2to  ( Interpretation: d "name" -- )
        ( Compilation: "name" -- )
   ' cfa>pfa compiling? if    postpone literal postpone 2!
-                  else  2!  then  ; immediate
+                       else  2!  then  ; immediate
+
+( cvalue cto )
+
+: cvalue  ( b "name"  -- )  cconstant  ;
+
+: cto  ( Interpretation: b "name" -- )
+       ( Compilation: "name" -- )
+  ' cfa>pfa compiling? if    postpone literal postpone c!
+                       else  c!  then  ; immediate
 
 ( value 2value to )
 
@@ -5370,7 +5634,7 @@ need !dosvar  need @dosvar
 
 ( ms88 )
 
-  \ XXX TODO 
+  \ XXX TODO
   \ XXX version of `ms` adapted from Z88 CamelForth
   \ XXX UNDER DEVELOPMENT
 
@@ -5707,7 +5971,7 @@ code just-pause ( u -- )
 
 [defined] seed ?\ 23670 constant seed  \ system variable
 
-: random-tt   ( n -- 0..n-1 ) 
+: random-tt   ( n -- 0..n-1 )
     seed @ 13 * $07FFF and
     dup seed !  swap mod ;
 
@@ -5776,6 +6040,8 @@ code random-n  ( -- x )
   end-code
 
 ( z88random )
+
+  \ XXX UNDER DEVELOPMENT
 
   \ Credits:
   \ Code adapted from Z88 CamelForth.
@@ -5846,6 +6112,21 @@ need random-n
 
   \ }}} =======================================================
   \ Assembler {{{
+
+( call )
+
+code call  ( a -- )
+  \ Call a machine code subroutine.
+
+  E1 c,               \ pop hl
+  C5 c,               \ push bc
+  CD c, >mark         \ call call_hl
+  C1 c,               \ pop bc
+  DD c, 21 c, next ,  \ ld ix,next
+  jpnext              \ jp next
+  >resolve            \ call_hl:
+  E9 c,               \ jp (hl)
+  end-code
 
 ( z80-asm )
 
@@ -6430,7 +6711,7 @@ code c@a+  ( -- c )
   \
   \ XXX TODO use a memory bank instead of dictionary space?
   \ problem: only words below 0xC000 could manipulate the heap.
- 
+
   \ Credits:
   \ Adapted from code written by Gordon Charlton, 1994:
 
@@ -7000,7 +7281,7 @@ forth-wordlist set-current
   \ Code adapted from PFE.
   \ Original code by Leo Brodie, 1983,
   \ published in _Thinking Forth_, Appendix A. Public domain.
- 
+
 : doer-noop ;
 
 : doer  ( "name" -- )
@@ -7062,7 +7343,7 @@ undo test
   \ }}} =======================================================
   \ Floating point using the ROM calculator {{{
 
-  \ XXX TODO
+  \ XXX UNDER DEVELOPMENT
 
   \ The ROM calculator is used to implement most words of the
   \ Forth-2012 FLOATING and FLOATING EXT word sets, and some
@@ -7321,6 +7602,9 @@ vocabulary editor  also editor definitions  hex
   \ Read the disk block from  disk if it is not already in the
   \ disk buffer.
 
+variable r#
+  \ Location of the editing cursor.
+
 : #locate  ( -- n1 n2 )  r# @ c/l /mod  ;
   \ From the cursor pointer `r#` compute the line number _n2_
   \ and the character offset _n1_ in line number _n2_.
@@ -7412,8 +7696,8 @@ also forth
   loop
   2drop swap 0= swap ;  previous
   \ Match the string _a len2_ with all strings contained in the
-  \ string _a1 len1_ If found leaves _n3_ bytes until the end
-  \ of the matching string, else leaves _n4_ bytes to end of
+  \ string _a1 len1_. If found leave _n3_ bytes until the end
+  \ of the matching string, else leave _n4_ bytes to end of
   \ line.
 
 : 1line  ( -- f )  #lag pad count match r# +!  ;
@@ -7513,14 +7797,16 @@ only forth definitions decimal
 
   \ The craft's autodestruction creates a new star.
 
-only forth definitions
+only forth definitions  decimal
 
-need rnd  need udg:  need inkey  need break-key?
+need random  need randomize  need udg:  need inkey
+need break-key?  need between  need ocr  need frames@
+s"  j " needed
 
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
 
 vocabulary siderator
-also siderator definitions  decimal
+also siderator definitions
 
 -->
 
@@ -7540,7 +7826,7 @@ char 5 constant left-key  char 8 constant right-key
 
   \ Common words:
 
-: at  ( line col -- )  swap at-xy  ;
+: at  ( row col -- )  swap at-xy  ;
 : pause  ( -- )  begin  inkey  until  ;  -->
 
 ( siderator )
@@ -7549,7 +7835,7 @@ char 5 constant left-key  char 8 constant right-key
 
 15360 constant charset  \ ROM charset
 : char>a  ( c -- a )  8 * charset +  ;
-: udg>a  ( c -- a )  128 - 8 * udg +  ;
+: udg>a  ( c -- a )  128 - 8 * sys-udg @ +  ;
 : char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove  ;
 
 128 constant star0-udg  char * star0-udg char>udg
@@ -7604,8 +7890,6 @@ binary
 
 ( siderator )
 
-need between
-
   \ Stars
 
 4 constant #stars
@@ -7653,8 +7937,6 @@ need between
 ( siderator )
 
   \ End
-
-need j  need ocr
 
 : blast-delay  ( -- )  32 0  do  loop  ;
 : (blast)  ( -- )
@@ -7720,8 +8002,6 @@ need j  need ocr
 ( siderator )
 
   \ Init
-
-need frames@
 
 : init-colors  ( -- )
   0 paper 7 ink 0 flash 0 bright 0 inverse 0 border  ;
@@ -7871,7 +8151,7 @@ begin-stringtable keyset>name  ( n -- ca len )
   s" Sinclair 2    " s,
   s" Cursor digits " s,
   s" QWERTY        " s,
-end-stringtable 
+end-stringtable
 
 : keyset-name  ( -- ca len )  keyset @ keyset>name  ;
 
@@ -8066,10 +8346,10 @@ s"         " 2constant empty-brick-row
 
 empty-brick-row
 s"   ##    "
-s" ######  "  empty-brick-row  brick: brick1  
+s" ######  "  empty-brick-row  brick: brick1
 
 empty-brick-row 2dup
-s" <><><><>"  empty-brick-row  brick: brick2  
+s" <><><><>"  empty-brick-row  brick: brick2
 
 empty-brick-row
 s"   {}    "
@@ -8079,21 +8359,21 @@ s"   {}{}{}"  empty-brick-row  brick: brick3  -->
 
 empty-brick-row
 s"     ()  "
-s" ()()()  "  empty-brick-row brick: brick4  
+s" ()()()  "  empty-brick-row brick: brick4
 
 empty-brick-row
 s"   [][]  "
-s"   [][]  "  empty-brick-row brick: brick5  
+s"   [][]  "  empty-brick-row brick: brick5
 
 empty-brick-row
 s"   @@@@  "
-s" @@@@    "  empty-brick-row brick: brick6  
+s" @@@@    "  empty-brick-row brick: brick6
 
 empty-brick-row
 s" %%%%    "
-s"   %%%%  "  empty-brick-row brick: brick7  
+s"   %%%%  "  empty-brick-row brick: brick7
 
-empty-brick-row 2dup 2dup 2dup brick: brick   
+empty-brick-row 2dup 2dup 2dup brick: brick
   \ brick actually in use
 
 empty-brick-row 2dup 2dup 2dup brick: scratch  -->
@@ -8334,7 +8614,184 @@ cr start-message
 only forth definitions
 
   \ }}} =======================================================
+  \ Sample game: Towers of Hanoi {{{
+
+( hanoi )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \ Code converted from hForth
+
+  \ -----------------------------------------------------------
+  \ hanoi.4th
+  \
+  \ Towers of Hanoi puzzle
+  \
+  \ From a posting to comp.lang.forth, 30 May 2002, by Marcel
+  \ Hendrix and Brad Eckert. According  to Marcel Hendrix, the
+  \ code for the HANOI algorithm was originally posted to clf
+  \ by Raul Deluth Miller in 1994.
+  \
+  \ -----------------------------------------------------------
+  \ kForth includes and defs  (2002-05-30  K. Myneni)
+  \ -----------------------------------------------------------
+
+  \ include strings
+  \ include ansi
+
+  \ -----------------------------------------------------------
+
+only forth definitions
+
+need don't  need ms  need mode64
+
+vocabulary hanoi  also hanoi definitions
+
+variable slowness  1000 slowness !
+  \ ms delay between screen updates
+
+create PegSPS  3 cells allot
+  \ pointers for three disk stacks
+
+: PegSP     ( peg -- addr ) cells PegSPS + ;
+: PUSH      ( c peg -- )    PegSP tuck @ c!  1 chars swap +! ;
+: POP       ( peg -- c )    PegSP -1 chars over +!  @ c@ ;
+
+create PegStacks  30 chars allot
+  \ stack area for up to 10 disks
+
+: PegStack  ( peg -- addr )   10 * PegStacks + ;
+: PegClr    ( peg -- )        dup PegStack  swap PegSP ! ;
+: PegDepth  ( peg -- depth )  dup PegSP @  swap PegStack - ;
+  \ not needed
+
+-->
+
+( hanoi )
+
+: ShowDisk  ( level diameter peg -- )
+  22 * 10 + over -  rot 10 swap - at-xy
+  2* [char] * emits ;
+
+: ShowPeg   ( peg -- )
+  dup >r PegStack
+  BEGIN   r@ PegSP @ over <>
+  WHILE   dup r@ PegStack - over c@  ( addr level diameter )
+          r@ ShowDisk  char+
+  REPEAT  drop r> drop ;
+
+-->
+
+( hanoi )
+
+
+: ?allot  ( n -- )  here swap allot ;
+
+: maketab  ( n1..nn n -- XXX )
+  create
+    dup ?allot over 1- + swap 0
+    2dup <> if    do  dup >r c! r> 1-  loop
+            else  2drop
+            then  drop
+  does>  + c@ ;  -->
+
+( hanoi )
+
+: base3 [ decimal ] 3 base ! ;
+base3  00 02 01 12 00 10 21 20  decimal 8 maketab TO!
+base3  00 21 12 20 00 02 10 01  decimal 8 maketab FRO!
+
+: ShowPegs  ( -- )
+  page  3 0 do  i showpeg  loop  slowness @ ms
+  key? if key drop 0 11 at-xy ." Stopped" cr abort then ;
+
+: MoveRing  ( ring -- ring )
+  dup to! 3 / pop  over fro! 3 mod push ShowPegs ;
+
+: tower ( depth direction -- depth direction )
+  swap 1- swap over
+  IF    to!  recurse  to! MoveRing fro! recurse  fro!
+  ELSE  MoveRing
+  THEN  swap 1+ swap ;
+
+-->
+
+( hanoi )
+
+: run  ( depth -- )
+
+  3 0 DO i PegClr LOOP
+    \ clear the pegs
+
+  dup BEGIN ?dup WHILE 1- dup 0 push REPEAT
+    \ stack up some disks
+
+  showpegs 1 tower 2drop
+    \ move them
+
+  0 11 at-xy ;
+
+mode64 page
+  \  <-------------------------->
+  .( Towers of Hanoi) cr
+  .( Type 'n run' to play where) cr
+  .( 'n' is the number of disks.) cr
+  \  <-------------------------->
+
+  \ }}} =======================================================
   \ Development benchmarks and tests {{{
+
+( number-base-bench )
+
+: number-base-1  ( ca len -- ca' len' n )
+  \ This is the current version defined in the kernel.
+  over c@ [char] $ = if  1 /string 16  exit  then
+  over c@ [char] % = if  1 /string  2  exit  then
+  over c@ [char] # = if  1 /string 10  exit  then  base @  ;
+
+: number-base-2  ( ca len -- ca' len' n )
+  over c@ >r
+  r@ [char] $ = if  1 /string 16  rdrop exit  then
+  r@ [char] % = if  1 /string  2  rdrop exit  then
+  r> [char] # = if  1 /string 10  exit  then  base @  ;
+
+: number-base-3  ( ca len -- ca' len' n )
+  over c@
+  dup >r [char] $ = if  1 /string 16  rdrop exit  then
+      r@ [char] % = if  1 /string  2  rdrop exit  then
+      r> [char] # = if  1 /string 10  exit  then  base @  ;
+
+-->
+
+( number-base-bench )
+
+: number-base-4  ( ca len -- ca' len' n )
+  over c@
+  dup [char] $ = if  drop 1 /string 16  exit  then
+  dup [char] % = if  drop 1 /string  2  exit  then
+      [char] # = if  1 /string 10  exit  then  base @  ; 
+
+need frames@  need frames0  defer (number-base)
+
+: (number-base-bench)  ( n cfa -- )
+  ['] (number-base) defer!
+  frames0  0 do  s" 000" (number-base) drop 2drop  loop
+  frames@ d. cr  ;
+
+: number-base-bench  ( n -- )
+  dup ['] number-base-1 (number-base-bench) 
+  dup ['] number-base-2 (number-base-bench) 
+  dup ['] number-base-3 (number-base-bench) 
+      ['] number-base-4 (number-base-bench) ;
+  
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \          1    2    3    4
+  \       ---- ---- ---- ----
+  \ 01000   73   75   74   69
+  \ 10000  732  744  736  686
+  \ 32000 2343 2382 2367 2194
 
 ( fill-bench )
 
@@ -8356,8 +8813,7 @@ defer (fill)
   \ do  16384 0 rnd (fill)  loop
   \ do  16384 2048 rnd (fill)  loop
   frames@ cr d.
-  key drop
-  ;
+  key drop  ;
 
 : fill-bench  ( n -- )
   dup ['] fill (fill-bench)
@@ -8371,9 +8827,9 @@ defer (fill)
   \       fill fill2 fill88
   \       ---- ----- ------
   \ 00010   10    10      5
-  \ 00100  491   522    252 
+  \ 00100  491   522    252
   \ 01000 4909  5218   2524
- 
+
   \ Kernel code: `16384 1 rnd (fill)`
   \
   \ Times Frames (1 frame = 50th of second)
@@ -8385,7 +8841,7 @@ defer (fill)
   \ 01000   85    84     84
   \ 05000  425   423    422
   \ 10000  850   846    845
- 
+
   \ Kernel code: `16384 0 rnd (fill)`
   \
   \ Times Frames (1 frame = 50th of second)
@@ -8408,7 +8864,7 @@ defer (fill)
   \ 00100   169   180     89
   \ 01000  1693  1795    898
   \ 30000 50770 53863  26933
-                       
+
 ( value-bench )
 
 need frames@  need frames0
