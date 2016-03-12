@@ -7,11 +7,11 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506230119
+; Version A-00-201506231814
 
 ; Latest important changes (in chronological order)
 ; - new format for the name field, without end bit.
-; - modern `find`, after Forth-83 and Forth-94
+; - modern `find`, after Forth-83 and ANS Forth
 ; - basic string support.
 ; - `<mark`, `<resolve`, `>mark` and `>resolve`.
 ; - `compare`, `search`.
@@ -25,47 +25,78 @@
 ; ==============================================================
 ; Aknowledgments
 
-; Solo Forth started with the code of Abersoft Forth, that was
-; first studied and much improved
-; (http://programandala.net/en.program.afera.html) and finally
-; fully disassembled
-; (http://programandala.net/en.program.abersoft_forth.html).
-
-; Solo Forth was made possible thanks to code, documentation,
-; ideas and inspiration from the following Forth systems
-; (acknowledgment notes are included in the source, at the
-; correspondent places):
-
-; Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele
-; 1983.
-;
-; Afera (library for Abersoft Forth), by Marcos Cruz, 2015.
-;
-; CP/M fig-Forth 1.1g (for Z80 CP/M), adaptative version by EHR
-; et al., 1980-1984.
-;
-; DZX-Forth (for ZX Spectrum +3e), by Marcos Cruz, 2014 (under
-; development).
-;
-; eForth (for MS-DOS), by Bill Muench, 1989-1997.
-;
-; lina ciforth (for x86 Linux), by Albert van der Horst,
-; 2000-2004.
-;
-; Spectrum Forth-83 (for ZX Spectrum 48K/128K), by Lennart
-; Benschop, 1988.
-;
-; v.Forth (for ZX Spectrum 48K/128K), by Matteo Vitturi,
-; 1990-2015.
+; See the file <AKNOWLEDGMENTS.adoc>.
 
 ; ==============================================================
 ; License
 
 ; Copying and distribution of this file, with or without
 ; modification, are permitted in any medium without royalty
-; provided the copyright notice, the aknowledgments list and
+; provided the copyright notice, the aknowledgments file and
 ; this notice are preserved.  This file is offered as-is,
 ; without any warranty.
+
+; ==============================================================
+; Description
+
+; ----------------------------------------------
+; Forth Registers
+
+; Forth Z80  Forth preservation rules
+; ----- ---  ------------------------
+; IP    BC   Interpretive pointer.
+;            Should be preserved across Forth words.
+; SP    SP   Data stack pointer.
+;            Should be used only as data stack across Forth words.
+;            May be used within Forth words if restored before `next`.
+;       DE   Input only when pushde called.
+;       HL   Input only when pushhl called.
+;       IX   Address of `next`.
+;            May be used within Forth words if restored before `next`.
+
+; ----------------------------------------------
+; Stack comment conventions:
+;
+; a       = address
+; aa      = cell-aligned address
+; ca      = character-aligned address
+; fa      = float-aligned address
+; ff      = false flag (0)
+; f       = flag (false is 0; true is any other value)
+; wf      = well-formed flag (false is 0; true is 1)
+; c       = 8-bit character
+; u       = 16-bit unsigned number
+; len     = 16-bit unsigned number, length of memory zone or string
+; ca len  = string
+; n       = 16-bit signed number
+; x       = 16-bit signed or unsigned number
+; d       = 32-bit signed double number
+; ud      = 32-bit unsigned double number
+; xd      = 32-bit signed or unsigned number
+; cfa     = address of code field
+; lfa     = address of link field
+; nfa     = address of name field
+; pfa     = address of parameter field
+; tf      = true flag (1)
+
+; ----------------------------------------------
+; Header structure
+
+; nfa db length+flags     ; Bits:      76543210
+                          ; Bit names: BPSLLLLL
+                          ; Legend:
+                          ;   B: Name bound bit, always 1.
+                          ;   P: Precedence bit.
+                          ;      0 = non-immediate word
+                          ;      1 = immediate word
+                          ;   S: Smudge bit:
+                          ;      0 = definition finished
+                          ;      1 = definition not finished
+                          ;   LLLLL: name length.
+;     ds length           ; name
+; lfa dw previous_nfa
+; cfa dw code_address
+; pfa    ...              ; data or code
 
 ; ==============================================================
 ; Symbols
@@ -155,11 +186,11 @@ fig_name_field?                 equ false
 
 fig_find?                       equ false
   ; true = the fig-Forth `find` is used.
-  ; false = `find` works after Forth-83 and Forth-94.
+  ; false = `find` works after Forth-83 and ANS Forth.
 
 fig_parsing?                    equ false
   ; true = the fig-Forth parsing words are used.
-  ; false = parsing is modified after Forth-83 and Forth-94.
+  ; false = parsing is modified after Forth-83 and ANS Forth.
 
 ; ----------------------------------------------
 ; Character codes
@@ -689,7 +720,7 @@ next2:
 
 ; doc{
 ;
-; (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+; (s) ( compilation: c "text<c>" -- ) ( run-time:  -- ca len )
 ;
 ; }doc
 
@@ -1648,20 +1679,61 @@ key.limit:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header cmove_,'CMOV','E'
+  _code_header cmove_up_,'CMOVE','>'
 
-  ld l,c
-  ld h,b
+  exx
   pop bc
   pop de
-  ex (sp),hl
-  ld a,b
-  or c
-  jr z,cmove.end
-  ldir
-cmove.end:
-  pop bc
+  pop hl
+  ld a,c
+  or b
+  jr z,cmove_up.end
+  add hl,bc
+  dec hl
+  ex de,hl
+  add hl,bc
+  dec hl
+  ex de,hl
+  lddr
+cmove_up.end:
+  exx
   _jp_next
+
+; ----------------------------------------------
+  _code_header cmove_,'CMOV','E'
+
+if 0 ; XXX OLD
+
+  ld l,c          ; 04t 01b
+  ld h,b          ; 04t 01b
+  pop bc          ; 10t 01b
+  pop de          ; 10t 01b
+  ex (sp),hl      ; 19t 01b
+  ld a,b          ; 04t 01b
+  or c            ; 04t 01b
+  jr z,cmove.end  ; 07t 02b / 12t
+  ldir            ;     02b ; 21t/01t
+cmove.end:
+  pop bc          ; 10t 01b
+                  ; 62t 12b TOTAL
+  _jp_next
+
+else ; XXX NEW
+
+  exx             ; 04t 01b
+  pop bc          ; 10t 01b
+  pop de          ; 10t 01b
+  pop hl          ; 10t 01b
+  ld a,b          ; 04t 01b
+  or c            ; 04t 01b
+  jr z,cmove.end  ; 07t 02b / 12t
+  ldir            ;     02b ; 21t/01t
+cmove.end:
+  exx             ; 04t 01b
+                  ; 52t 11b TOTAL
+  _jp_next
+
+endif
 
 ; ----------------------------------------------
   _code_header u_star_,'U','*'
@@ -2524,6 +2596,12 @@ do_user:
 ; ----------------------------------------------
   _colon_header recurse_,'RECURS','E',immediate
 
+; doc{
+;
+; recurse  ( -- )  \ ANS Forth
+;
+; }doc
+
   dw latest_,nfa_to_cfa_,comma_
   dw semicolon_s_
 
@@ -3319,9 +3397,9 @@ stream.end:
 
 ; doc{
 ;
-; parse  ( c "ccc<c>" -- ca len )  \ Forth-94
+; parse  ( c "text<c>" -- ca len )  \ ANS Forth
 ;
-; Parse _ccc_ delimited by the delimiter char _c_.
+; Parse _text_ delimited by the delimiter char _c_.
 ;
 ; ca = address of the parsed string, within the input buffer
 ; len = length of the parsed string
@@ -3331,7 +3409,24 @@ stream.end:
 ; }doc
 
   dw stream_,scan_
-  ;dw two_dup_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
+  dw dup_,one_plus_,to_in_,plus_store_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header parse_word_,'PARSE-WOR','D'
+
+; doc{
+;
+; parse-word  ( "<spaces>name"  -- ca len )
+;
+; }word
+
+  dw b_l_,b_l_,stream_,dup_,to_r_ ; ( c c ca1 )
+  dw skip_ ; ( ca2 )
+  dw dup_,from_r_,minus_,to_in_,plus_store_
+  ; XXX TODO factor of `parse`?:
+  dw scan_ ; ( ca3 len )
+  ; XXX TODO factor of `parse`?:
   dw dup_,one_plus_,to_in_,plus_store_
   dw semicolon_s_
 
@@ -3340,17 +3435,16 @@ stream.end:
 
 ; doc{
 ;
-; word  ( c  -- )  \ fig-Forth
+; word  ( c "<c...>text<c>" -- )  \ fig-Forth
+; 
+; c = delimiter char
 ;
-; Read the next text characters from the input stream being
-; interpreted, until a delimiter _c_ is found, storing the
-; packed character string beginning at the dictionary buffer
-; `here`.  `word` leaves the character count in the first byte,
-; the characters, and ends with two or more blanks. Leading
-; occurrences of c are ignored.  If `blk` is zero text is taken
-; from the terminal input buffer, otherwise from the disk block
-; stored in `blk`.
-
+; Skip leading _c_ delimiters from the input stream.  Parse the
+; next text characters from the input stream, until a delimiter
+; _c_ is found, storing the packed character string beginning at
+; `here`, as a counted string (the character count in the first
+; byte), and with two or more blanks at the end. 
+;
 ; }doc
 
 if 1 ; XXX OLD -- original version with `enclose`
@@ -3372,17 +3466,18 @@ if 1 ; XXX OLD -- original version with `enclose`
   dw cmove_ ; move the word
 
 else ; XXX NEW -- modern version with `skip parse`
+  
+  ; XXX TMP -- code copied to `xword` for debugging
 
-  ; XXX FIXME -- strange problems
+  dw dup_ ; ( c c )
+  dw stream_ ; ( c c a1 )
+  dw dup_,to_r_
+  dw skip_ ; ( c a2 )
+  dw dup_,from_r_,minus_,to_in_,plus_store_
+  ; XXX TODO factor of `parse`:
+  dw scan_ ; ( a3 len )
+  dw dup_,one_plus_,to_in_,plus_store_
 
-  dw lit_,1,border_,key_,drop_ ; XXX INFORMER
-  dw stream_
-  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  dw skip_
-  dw lit_,3,border_,key_,drop_ ; XXX INFORMER
-  dw parse_
-  dw lit_,4,border_,key_,drop_ ; XXX INFORMER
-  dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
   dw here_
   dw c_lit_
   db max_word_length+3
@@ -3392,6 +3487,7 @@ else ; XXX NEW -- modern version with `skip parse`
   dw here_,one_plus_ ; destination
   dw swap_ ; count
   dw cmove_ ; move the word
+  dw semicolon_s_
 
 endif
 
@@ -3410,7 +3506,31 @@ endif
 
   dw semicolon_s_
 
+  _colon_header xword_,'XWOR','D'
 
+  ; XXX FIXME -- strange problems
+
+  dw dup_ ; ( c c )
+  dw stream_ ; ( c c a1 )
+  dw dup_,to_r_
+  dw skip_ ; ( c a2 )
+  dw dup_,from_r_,minus_,to_in_,plus_store_
+  ; XXX TODO factor of `parse`:
+  dw scan_ ; ( a3 len )
+  dw dup_,one_plus_,to_in_,plus_store_
+  dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
+
+  dw here_
+  dw c_lit_
+  db max_word_length+3
+  dw blank_
+
+  dw dup_,here_,c_store_ ; count byte
+  dw here_,one_plus_ ; destination
+  dw swap_ ; count
+  dw cmove_ ; move the word
+  dw here_,count_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER',')'
@@ -3568,6 +3688,40 @@ if fig_find?
 endif
 
 ; ----------------------------------------------
+  _code_header dollar_store_,'$','!'
+
+  ; [Code from DZX-Forth's `packed`.]
+
+; doc{
+;
+; PACKED  ( ca1 len1 ca2 -- ca2 )
+;            2dup 2>r 1+ swap move 2r> tuck c!
+;
+; Store the string ca1 len1 as a counted string at ca2 leaving
+; the destination address on the stack.  The source and destination
+; strings are permitted to overlap.  An ambiguous condition exists
+; if len is greater than 255 or the buffer at ca2 is less than len+1
+; characters.
+;
+; }doc
+
+  ; XXX TODO
+
+  exx
+  pop de      ; de=ca2
+  pop bc      ; bc=len1
+  pop hl      ; hl=ca1
+  push bc
+  push de
+  inc  de
+  ; call move_block
+  pop hl
+  pop de
+  ld (hl),e
+  exx
+  jp push_hl
+
+; ----------------------------------------------
 
 if fig_find?
 
@@ -3610,6 +3764,17 @@ else ; XXX NEW -- modern `find`
   dw context_,fetch_,fetch_,paren_find_
   dw semicolon_s_
 
+  _colon_header found_,'FOUN','D'
+
+; doc{
+;
+; found  ( ca len --- ca 0 | cfa 1 | cfa -1 )
+;
+; }doc
+
+  dw find_
+  dw semicolon_s_
+
 endif
 
 ; ----------------------------------------------
@@ -3633,9 +3798,7 @@ endif
 
   dw dup_,error_number_,store_ ; save the error number
   dw warning_,fetch_,zero_less_than_
-  ; XXX TODO optimize: jump directly to parent_abort_
-  dw zero_branch_,error.message
-  dw paren_abort_
+  dw question_branch_,paren_abort_pfa
 
 error.message:
   dw here_,count_,type_ ; last parsed word
@@ -3744,7 +3907,7 @@ header.continue:
 ; ----------------------------------------------
   _colon_header create_,'CREAT','E'
 
-  ; XXX TODO -- rewrite after Forth-83 and Forth-94.
+  ; XXX TODO -- rewrite after Forth-83 and ANS Forth.
 
   dw header_,smudge_
   dw paren_semicolon_code_
@@ -4956,7 +5119,7 @@ emits_.end:
 
 ; }doc
 
-  ; XXX TODO convert to Forth-94
+  ; XXX TODO convert to ANS Forth
 
   dw rot_,zero_less_than_
   dw zero_branch_,sign.end
@@ -5038,7 +5201,7 @@ hash_s.begin:
 
 ; ----------------------------------------------
 
-if 0
+if 1
 
   _colon_header dot_s_,'.','S'
 
@@ -5465,7 +5628,7 @@ l8128h:
 ; ----------------------------------------------
   _colon_header s_quote_,'S','"',immediate
 
-  ; : s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
+  ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
   ;  [char] " (s)  ; immediate
 
   dw c_lit_
@@ -5504,7 +5667,7 @@ nfa_of_top_most_word_in_forth_voc:
 
 ; doc{
 ;
-; .(  ( 'ccc<paren>' -- )  \ immediate
+; .(  ( 'text<paren>' -- )  \ immediate
 ;
 ; }doc
 
@@ -5528,3 +5691,4 @@ end cold_entry
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,7,border_,key_,drop_ ; XXX INFORMER
 
+  ;dw two_dup_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER

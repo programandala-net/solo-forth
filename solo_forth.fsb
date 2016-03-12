@@ -1,4 +1,6 @@
-( Solo Forth blocks file )
+( Solo Forth library )
+
+\ Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
@@ -7,48 +9,18 @@
 \ and the skeleton to build applications in Solo Forth.
 
 \ ------------------------------------------------------------
-\ Author and acknowledgements
+\ Acknowledgements
 
-\ 2015: Solo Forth
-\
-\ Marcos Cruz (programandala.net)
-\ http://programandala.net/en.program.solo_forth.html
+\ See the file <AKNOWLEDGMENTS.adoc>.
 
-  \ Solo Forth started with the code of Abersoft Forth (for ZX
-  \ Spectrum), that was first studied, patched and improved
-  \ (http://programandala.net/en.program.afera.html) and
-  \ finally fully disassembled
-  \ (http://programandala.net/en.program.abersoft_forth.html).
-  \
-  \ 1983: Abersoft Forth
-  \
-  \ Abersoft Forth (for ZX Spectrum) was implemented by John
-  \ Jones Steele and edited by Melbourne House in 1983. It is
-  \ an implementation of Z80 fig-Forth 1.1, with ZX Spectrum
-  \ specific features and some extensions beyond the fig-Forth
-  \ model.
-  \
-  \ 1979: fig-Forth 1.1
-  \
-  \ All publications of the FORTH Interest Group are public
-  \ domain.  They may be further distributed by the inclusion
-  \ of this credit notice:
+\ ------------------------------------------------------------
+\ License
 
-  \               This publication has been made available by:
-
-  \               FORTH Interest Group
-  \               P.O. Box 1105
-  \               San Carlos, Ca. 94070
-
-  \ Aknowledgments:
-
-  \ Solo Forth has copied, adapted and implemented ideas, code
-  \ and documentation from the following Forth systems
-  \ (aknowledgment notes are properly included in the sources):
-
-  \ Spectrum Forth-83, by Lennart Benschop (1988,2015)
-  \ v.Forth, by Matteo Vitturi (1990-2015)
-  \ lina ciforth, by Albert van der Horst (2000-2004)
+\ Copying and distribution of this file, with or without
+\ modification, are permitted in any medium without royalty
+\ provided the copyright notice, the aknowledgments file and
+\ this notice are preserved.  This file is offered as-is,
+\ without any warranty.
 
 ( ) \ scr 1
 
@@ -69,17 +41,18 @@
 
   \ XXX TODO
 
-: CONTAINS
-  0 pad !   BL pad $C+
-  pad $+!   BL pad $C+   pad @ - OVER + SWAP
-  do   i pad $@ cora   0= if -1 unloop exit then   loop   0 ;
+: contains  ( ca1 len1 ca2 len2 -- f )
+  \ Does ca1 len1 contains ca2 len12
+  search nip nip  ;
+
+scr/disk 1 2variable locatable
 
 : located  ( ca len -- screen | false )
-  scr/disk 1 do
+  locatable 2@ do
     0 i (line) 2over contains if  2drop i unloop exit  then
   loop  2drop false  ;
 
-: locate  ( "name" -- screen | false )  bl word located  ;
+: locate  ( "name" -- screen | false )  parse-word located  ;
 
   \ Make sure the given word is defined.
 
@@ -89,7 +62,7 @@
   2dup undefined? if  2dup (required)  then
   2dup undefined? if  type 24 message exit  then  2drop  ;
 
-: require  ( "name" -- )  bl word here count required  ;
+: require  ( "name" -- )  parse-word required  ;
 
 ( Error messages 1..15 ) \ scr 4
 
@@ -162,10 +135,10 @@
 
 ( cmove> )
 
-code cmove>  ( ca1 ca2 len -- )  \ Forth-94
+code cmove>  ( ca1 ca2 len -- )  \ ANS Forth
 
-  \ 2015-06-17: Copied from the Afera Library.  Originally
-  \ adapted from Lennart Benschop's Spectrum Forth-83.
+  \ 2015-06-17: Copied from Afera.  Originally
+  \ adapted from Spectrum Forth-83.
 
   \ exx / pop bc / pop de / pop hl
   d9 c,  c1 c,  d1 c,  e1 c,
@@ -189,23 +162,24 @@ code cmove>  ( ca1 ca2 len -- )  \ Forth-94
 
 require cmove>
 
-: move  ( a1 a2 len -- )  \ Forth-94
+: move  ( a1 a2 len -- )  \ ANS Forth
 
-  \ 2015-06-17: Copied from the Afera Library.
-  \ Originally copied from Phil Burk's pForth (v19).
+  \ 2015-06-17: Copied from Afera.
+  \ Original code from pForth.
 
   >r 2dup - 0< if  r> cmove>  else  r> cmove  then  ;
 
 ( parse-name place +place /string )
 
-  \ 2015-06-17: Copied from the Afera Library.
+  \ 2015-06-17: Copied from Afera.
 
 require move
 
   \ XXX OLD -- 2015-06-20: `text` modified in the kernel to do
   \ this:
   \ : parse-text  ( c "ccc<c>" -- ca len )  text pad count  ;
-: parse-name  ( "name" -- ca len )  bl parse-text  ;
+  \ XXX OLD -- 2015-06-23: `parse-word` in the kernel:
+  \ : parse-name  ( "name" -- ca len )  bl parse-text  ;
 
   \ XXX OLD -- 2015-06-20: Moved to the kernel:
   \ : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
@@ -221,22 +195,22 @@ require move
 
 ( s' )
 
-  \ 2015-06-17: Copied from the Afera Library.
+  \ 2015-06-17: Basic string support words copied from Afera.
+  \
+  \ 2015-06-20: All words but `s'` are moved to the kernel.
 
-  \ XXX OLD -- 2015-06-20: Moved to the kernel:
-  \ : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
-  \   state @ if    compile slit word here c@ 1+ allot
-  \           else  parse-text  then  ;
-
-  \ : s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
-  \   [char] " (s)  ; immediate
+  \ doc{
+  \
+  \ s'  ( compilation: "text<'>" -- ) ( run-time:  -- ca len )
+  \
+  \ }doc
 
 : s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
   [char] ' (s)  ; immediate
 
 ( -rot )
 
-  \ 2015-06-05: Copied from the Afera library
+  \ 2015-06-05: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
 
 code -rot  ( x1 x2 x3 -- x3 x1 x2 )
@@ -286,7 +260,7 @@ code pixel  ( x y -- n a )
 
 ( point )
 
-  \ 2015-06-04: Copied from the Afera library
+  \ 2015-06-04: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
@@ -316,7 +290,7 @@ code point  ( x y -- )
 
 ( plot )
 
-  \ 2015-06-05: Copied from the Afera library
+  \ 2015-06-05: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
@@ -455,7 +429,7 @@ code bleep
 
 ( [if] [else] [then] )
 
-  \ 2015-06-04: Copied from the Afera library
+  \ 2015-06-04: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
 
 require s=  require parse-name  require s"
@@ -546,7 +520,7 @@ require hex.  require ascii-type
 
 ( decode -- variables, indentation and pause control )
 
-  \ 2015-06-05: Copied from the Afera library
+  \ 2015-06-05: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
   \ 2015-06-19: New: `?branch`.
 
@@ -709,7 +683,7 @@ end-code
 
 ( .s )
 
-  \ 2015-06-22: Copied from the Afera library. The algorithm
+  \ 2015-06-22: Copied from Afera. The algorithm
   \ was taken from v.Forth.
 
 : .S   ( -- )
@@ -869,7 +843,7 @@ width ! decimal
 
 ( [false] [true] )
 
-  \ 2015-06-17: Copied from the Afera library
+  \ 2015-06-17: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
 
          0 constant [false] immediate
@@ -877,7 +851,7 @@ width ! decimal
 
 ( ms )
 
-  \ 2015-06-10: Copied from the Afera library
+  \ 2015-06-10: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
 
 [defined] sys-frames ?\ 23672 constant sys-frames
@@ -906,7 +880,7 @@ width ! decimal
 
 ( time@ time! time0 )
 
-  \ 2015-06-10: Copied from the Afera library
+  \ 2015-06-10: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
 
 [defined] sys-frames ?\ 23672 constant sys-frames
