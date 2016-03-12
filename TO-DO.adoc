@@ -81,7 +81,13 @@ Fix:
 123 16384 2!  ? [ rubbish ] MSG # 2
 ----
 
+.2015-06-23:
+
 Fix:
 
-----
-char 
+`require`.
+
+Fix:
+
+`continued` does strange things, when used in the command line.
+

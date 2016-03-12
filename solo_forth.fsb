@@ -158,22 +158,9 @@ code cmove>  ( ca1 ca2 len -- )  \ ANS Forth
 
   end-code
 
-( move )
-
-require cmove>
-
-: move  ( a1 a2 len -- )  \ ANS Forth
-
-  \ 2015-06-17: Copied from Afera.
-  \ Original code from pForth.
-
-  >r 2dup - 0< if  r> cmove>  else  r> cmove  then  ;
-
 ( parse-name place +place /string )
 
   \ 2015-06-17: Copied from Afera.
-
-require move
 
   \ XXX OLD -- 2015-06-20: `text` modified in the kernel to do
   \ this:
@@ -432,7 +419,7 @@ code bleep
   \ 2015-06-04: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
 
-require s=  require parse-name  require s"
+require s=  require parse-name  \ XXX TODO update
 
 : [else]  ( "..." -- )
 

@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506231814
+; Version A-00-201506232002
 
 ; Latest important changes (in chronological order)
 ; - new format for the name field, without end bit.
@@ -55,15 +55,16 @@
 ;            May be used within Forth words if restored before `next`.
 
 ; ----------------------------------------------
-; Stack comment conventions:
-;
+; Stack comment conventions
+
 ; a       = address
-; aa      = cell-aligned address
 ; ca      = character-aligned address
-; fa      = float-aligned address
-; ff      = false flag (0)
+
 ; f       = flag (false is 0; true is any other value)
+; tf      = true flag (1)
+; ff      = false flag (0)
 ; wf      = well-formed flag (false is 0; true is 1)
+
 ; c       = 8-bit character
 ; u       = 16-bit unsigned number
 ; len     = 16-bit unsigned number, length of memory zone or string
@@ -73,30 +74,30 @@
 ; d       = 32-bit signed double number
 ; ud      = 32-bit unsigned double number
 ; xd      = 32-bit signed or unsigned number
+
 ; cfa     = address of code field
 ; lfa     = address of link field
 ; nfa     = address of name field
 ; pfa     = address of parameter field
-; tf      = true flag (1)
 
 ; ----------------------------------------------
 ; Header structure
 
-; nfa db length+flags     ; Bits:      76543210
-                          ; Bit names: BPSLLLLL
-                          ; Legend:
-                          ;   B: Name bound bit, always 1.
-                          ;   P: Precedence bit.
-                          ;      0 = non-immediate word
-                          ;      1 = immediate word
-                          ;   S: Smudge bit:
-                          ;      0 = definition finished
-                          ;      1 = definition not finished
-                          ;   LLLLL: name length.
-;     ds length           ; name
-; lfa dw previous_nfa
-; cfa dw code_address
-; pfa    ...              ; data or code
+; nfa: db length+flags     ; Bits:      76543210
+                           ; Bit names: BPSLLLLL
+                           ; Legend:
+                           ;   B: Name bound bit, always 1.
+                           ;   P: Precedence bit.
+                           ;      0 = non-immediate word
+                           ;      1 = immediate word
+                           ;   S: Smudge bit:
+                           ;      0 = definition completed
+                           ;      1 = definition not completed
+                           ;   LLLLL: name length (0..31).
+;      ds length           ; name
+; lfa: dw previous_nfa
+; cfa: dw code_address
+; pfa:    ...              ; data or code
 
 ; ==============================================================
 ; Symbols
@@ -627,6 +628,11 @@ limit:
 ; ==============================================================
 ; Misc routines
 
+; [Taken from DZX-Forth.]
+
+; ----------------------------------------------
+; Compare de and hl
+
 compare_de_hl_unsigned:
 
   ; Input:  de, hl
@@ -634,7 +640,6 @@ compare_de_hl_unsigned:
   ;  flag C if hl < de
   ;  flag Z if hl = de
 
-  ; Taken from DZX-Forth.
 
   ld a,h
   cp d
@@ -648,8 +653,6 @@ compare_de_hl_signed:
   ; Input:  de, hl
   ; Output: flag C if hl < de
 
-  ; Taken from DZX-Forth.
-
   ld a,h
   xor d
   jp p,compare_de_hl_unsigned
@@ -657,6 +660,70 @@ compare_de_hl_signed:
   or a
   ret p
   scf
+  ret
+
+; ----------------------------------------------
+; Move block
+
+move_block:
+
+  ; Input:
+  ; hl = source
+  ; de = destination
+  ; bc = count
+
+  ; If bc is greater than zero, copy the contents of bc consecutive address
+  ; units at hl to the bc consecutive address units at de. After the move
+  ; completes, the bc consecutive address units at de contain exactly what the
+  ; bc consecutive address units at hl contained before the move.
+
+  call compare_de_hl_unsigned
+  jp c,move_block_downwards
+
+; ----------------------------------------------
+; Move block upwards
+
+move_block_upwards:
+
+  ; Input:
+  ; hl = source
+  ; de = destination
+  ; bc = count
+
+  ; If bc is greater than zero, copy bc consecutive characters from the data
+  ; space starting at hl to that starting at de, proceeding
+  ; character-by-character from lower addresses to higher addresses.
+
+  ld a,c
+  or b
+  ret z
+  ldir
+  ret
+
+; ----------------------------------------------
+; Move block downwards
+
+  ; Input:
+  ; hl = source
+  ; de = destination
+  ; bc = count
+
+  ; If bc is greater than zero, copy bc consecutive characters from the data
+  ; space starting at hl to that starting at de, proceeding
+  ; character-by-character from higher addresses to lower addresses.
+
+move_block_downwards:
+
+  ld a,c
+  or b
+  ret z
+  add hl,bc
+  dec hl
+  ex de,hl
+  add hl,bc
+  dec hl
+  ex de,hl
+  lddr
   ret
 
 ; ==============================================================
@@ -672,7 +739,6 @@ next:
   ; Execute the word pointed by the bc register.
   ; Forth: W  <-- (IP)
   ; Z80:   hl <-- (bc)
-  ;ld (60000),bc ; XXX INFORMER
   ld a,(bc)
   ld l,a
   inc bc ; inc IP
@@ -692,14 +758,6 @@ next2:
   ex de,hl
   ; hl = (cfa)
   ; de = cfa+1 = pfa-1
-
-  ; XXX INFORMER
-  ; ld a,h
-  ; cp l
-  ; jr nz,next3
-  ; _border_wait 2
-;  jp cold_start
-;next3:
 
   jp (hl)
 
@@ -1685,55 +1743,31 @@ key.limit:
   pop bc
   pop de
   pop hl
-  ld a,c
-  or b
-  jr z,cmove_up.end
-  add hl,bc
-  dec hl
-  ex de,hl
-  add hl,bc
-  dec hl
-  ex de,hl
-  lddr
-cmove_up.end:
+  call move_block_downwards
   exx
   _jp_next
 
 ; ----------------------------------------------
   _code_header cmove_,'CMOV','E'
 
-if 0 ; XXX OLD
-
-  ld l,c          ; 04t 01b
-  ld h,b          ; 04t 01b
-  pop bc          ; 10t 01b
-  pop de          ; 10t 01b
-  ex (sp),hl      ; 19t 01b
-  ld a,b          ; 04t 01b
-  or c            ; 04t 01b
-  jr z,cmove.end  ; 07t 02b / 12t
-  ldir            ;     02b ; 21t/01t
-cmove.end:
-  pop bc          ; 10t 01b
-                  ; 62t 12b TOTAL
+  exx
+  pop bc
+  pop de
+  pop hl
+  call move_block_upwards
+  exx
   _jp_next
 
-else ; XXX NEW
+; ----------------------------------------------
+  _code_header move_,'MOV','E'
 
-  exx             ; 04t 01b
-  pop bc          ; 10t 01b
-  pop de          ; 10t 01b
-  pop hl          ; 10t 01b
-  ld a,b          ; 04t 01b
-  or c            ; 04t 01b
-  jr z,cmove.end  ; 07t 02b / 12t
-  ldir            ;     02b ; 21t/01t
-cmove.end:
-  exx             ; 04t 01b
-                  ; 52t 11b TOTAL
+  exx
+  pop bc
+  pop de
+  pop hl
+  call move_block
+  exx
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _code_header u_star_,'U','*'
@@ -3152,26 +3186,26 @@ type.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header minus_trailing_,'-TRAILIN','G'
 
+  _code_header minus_trailing_,'-TRAILIN','G'
 
-  ; XXX TODO Rewrite in Z80, if shorter.
-
-  dw dup_,zero_
-  dw paren_do_
-minus_trailing.do:
-  dw two_dup_,plus_
-  dw one_minus_
-  dw c_fetch_,b_l_,not_equals_
-  dw zero_branch_,minus_trailing.space
-  ; not a space
-  dw leave_
-  dw branch_,minus_trailing.loop
-minus_trailing.space:
-  dw one_minus_
-minus_trailing.loop:
-  dw paren_loop_,minus_trailing.do
-  dw semicolon_s_
+  pop de
+  pop hl
+  push hl
+  add hl,de
+  ex de,hl
+  ; de = address after the string
+  ; hl = length of the string
+minus_trailing.begin:
+  ld a,l
+  or h ; exhausted?
+  jp z,push_hl
+  dec de ; next char
+  ld a,(de)
+  cp ' ' ; space?
+  jp nz,push_hl
+  dec hl ; new length
+  jp minus_trailing.begin ; repeat
 
 ; ----------------------------------------------
   _colon_header paren_dot_quote_,'(."',')'
@@ -3421,6 +3455,8 @@ stream.end:
 ;
 ; }word
 
+  ; XXX TODO case insensitive!
+
   dw b_l_,b_l_,stream_,dup_,to_r_ ; ( c c ca1 )
   dw skip_ ; ( ca2 )
   dw dup_,from_r_,minus_,to_in_,plus_store_
@@ -3603,7 +3639,11 @@ number.end:
 ; ----------------------------------------------
   _code_header upper_,'UPPE','R'
 
-  ; uppers  ( c -- c' )
+; doc{
+;
+; upper  ( c -- c' )
+;
+; }doc
 
   pop hl
   ld a,l
@@ -3623,7 +3663,11 @@ upper.a:
 ; ----------------------------------------------
   _code_header uppers_,'UPPER','S'
 
-  ; uppers  ( ca len -- )
+; doc{
+;
+; uppers  ( ca len -- )
+;
+; }doc
 
   pop de
   pop hl
@@ -3666,8 +3710,11 @@ if fig_find?
 endif
 
 ; ----------------------------------------------
-if fig_find?
   _colon_header defined_question_,'DEFINED','?'
+
+; defined?  ( ca len -- wf )
+
+if fig_find?
 
   ; XXX TODO -- not finished
   dw context_find_,dup_
@@ -3675,16 +3722,30 @@ if fig_find?
   dw two_drop_
 defined_question.end:
   dw semicolon_s_
+
+else
+
+  dw found_,nip_,zero_not_equals_
+  dw semicolon_s_
+
 endif
 
 ; ----------------------------------------------
+  _colon_header undefined_question_,'UNDEFINED','?'
+
+; undefined?  ( ca len -- wf )
 
 if fig_find?
-  _colon_header undefined_question_,'UNDEFINED','?'
 
   ; XXX TODO -- not finished
   dw defined_question_,zero_equals_
   dw semicolon_s_
+
+else
+
+  dw defined_question_,zero_equals_
+  dw semicolon_s_
+
 endif
 
 ; ----------------------------------------------
@@ -3694,32 +3755,28 @@ endif
 
 ; doc{
 ;
-; PACKED  ( ca1 len1 ca2 -- ca2 )
-;            2dup 2>r 1+ swap move 2r> tuck c!
+; $!  ( ca1 len1 ca2 -- )
 ;
-; Store the string ca1 len1 as a counted string at ca2 leaving
-; the destination address on the stack.  The source and destination
-; strings are permitted to overlap.  An ambiguous condition exists
-; if len is greater than 255 or the buffer at ca2 is less than len+1
-; characters.
+; Store the string ca1 len1 as a counted string at ca2.  The
+; source and destination strings are permitted to overlap.  An
+; ambiguous condition exists if len is greater than 255 or the
+; buffer at ca2 is less than len1+1 characters.
 ;
 ; }doc
 
-  ; XXX TODO
-
   exx
   pop de      ; de=ca2
-  pop bc      ; bc=len1
+  pop bc      ; c=len1
   pop hl      ; hl=ca1
-  push bc
-  push de
+  push bc     ; len1
+  push de     ; ca2
   inc  de
-  ; call move_block
-  pop hl
-  pop de
+  call move_block
+  pop hl      ; ca2
+  pop de      ; e=len1
   ld (hl),e
   exx
-  jp push_hl
+  _jp_next
 
 ; ----------------------------------------------
 
@@ -3764,6 +3821,16 @@ else ; XXX NEW -- modern `find`
   dw context_,fetch_,fetch_,paren_find_
   dw semicolon_s_
 
+; ----------------------------------------------
+  _variable_header find_dollar_,'FIND','$'
+
+  ; XXX TODO use an unused address above `pad` instead
+  ; XXX TODO rename as `word$`?
+  ; XXX TODO use also in `word`?
+
+  ds max_word_length+2
+
+; ----------------------------------------------
   _colon_header found_,'FOUN','D'
 
 ; doc{
@@ -3772,7 +3839,15 @@ else ; XXX NEW -- modern `find`
 ;
 ; }doc
 
-  dw find_
+  ; XXX TODO factor
+
+  dw find_dollar_
+  dw c_lit_
+  db max_word_length+2
+  dw erase_ ; make sure there will be a null at the end
+  dw find_dollar_,dollar_store_
+  dw find_dollar_,count_,uppers_
+  dw find_dollar_,find_
   dw semicolon_s_
 
 endif
@@ -4898,7 +4973,7 @@ if not fig_find?
 ;
 ; }doc
 
-  ; XXX TODO -- adapt to the new parsing method?
+  ; XXX TODO -- adapt to the new parsing method
 
   dw b_l_,word_
   dw here_,dup_,count_,uppers_,find_
