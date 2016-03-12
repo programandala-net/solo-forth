@@ -118,7 +118,4 @@ TOS is non-zero, else skip it.
 
 .2015-06-26:
 
-Fix: 
-Something gets wrong after modifing the header
-macros to use a complete name as parameter.
-The values of the header symbols change some bytes.
+Fix: `plot` and `point`.

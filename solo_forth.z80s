@@ -7,13 +7,15 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506260122
+; Version A-00-201506260242
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
 ; - circular string buffer
 ; - fix: `require`
 ; - fix: `emits`
+; - change: new header macros, with complete names
+; - first alternative code to store name fields in memory bank
 
 ; ==============================================================
 ; Aknowledgments
@@ -153,6 +155,12 @@ max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
 
+if names_in_memory_bank?
+
+  names_bank: equ 1
+
+endif
+
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
 ; etc are not used, because they coincide with the first line of
@@ -272,15 +280,90 @@ bank1_port:        equ 0x7FFD
 immediate: equ 1 ; used as optional parameter
 previous_nfa: defl 0 ; link to previous Forth word
 
-; XXX FIXME Something gets wrong after modifing the header
-; macros to use a complete name as parameter.
+_header: macro _base_label,_name,_is_immediate
 
-;include solo_forth.header_macros.old.z80s ; XXX TMP
-include solo_forth.header_macros.old_but_one.z80s ; XXX TMP
-;include solo_forth.header_macros.new.z80s ; XXX TMP
+  this_nfa: defl $ ; link address for next word
+  flags: defl name_bound_bit_mask
+    if not nul _is_immediate
+      flags: defl flags | precedence_bit_mask ; add precedence bit
+    endif
+  _base_label##nfa: ; name field address
+    db _base_label##lfa-_base_label##nfa-1+flags ; length and flags byte
+    db _name ; name field
+  _base_label##lfa: ; link field address
+    dw previous_nfa ; link field
+  _base_label: ; code field address
+
+  previous_nfa: defl this_nfa
+
+endm
+
+_code_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw _base_label##pfa ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_code_alias_header: macro _base_label,_name,_is_immediate,_alias
+
+  _header _base_label,_name,_is_immediate
+  dw _alias##pfa ; code field
+
+  endm
+
+_colon_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_colon ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_user_variable_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_user ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_does_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_does ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_constant_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_constant ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_variable_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_create ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_two_variable_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_create ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
 
 ; ----------------------------------------------
-; Literals 
+; Literals
 
 _string: macro text
 
@@ -722,7 +805,7 @@ next2:
 ; Dictionary
 
 ; ----------------------------------------------
-  _colon_header s_lit_,'SLI','T'
+  _colon_header s_lit_,'SLIT'
 
   ; : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
 
@@ -731,7 +814,7 @@ next2:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_s_,'(S',')'
+  _colon_header paren_s_,'(S)'
 
 ; doc{
 ;
@@ -754,7 +837,7 @@ paren_s.interpreting:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header c_lit_,'CLI','T'
+  _code_header c_lit_,'CLIT'
 
   ld a,(bc)
   inc bc
@@ -765,7 +848,7 @@ push_l: ; XXX TMP -- not used yet
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header lit_,'LI','T'
+  _code_header lit_,'LIT'
 
   ; XXX FIXME -- crash if not compiling
   ; XXX TODO -- implement compile-only flag?
@@ -779,7 +862,7 @@ push_l: ; XXX TMP -- not used yet
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header bank_,'BAN','K'
+  _code_header bank_,'BANK'
 
 ; doc{
 ;
@@ -804,7 +887,7 @@ bank.e:
   ret ; XXX TODO reti?
 
 ; ----------------------------------------------
-  _code_header csb_unused_,'CSB-UNUSE','D'
+  _code_header csb_unused_,'CSB-UNUSED'
 
 ; doc{
 ;
@@ -821,7 +904,7 @@ bank.e:
   endif
 
 ; ----------------------------------------------
-  _constant_header csb0_,'CSB','0'
+  _constant_header csb0_,'CSB0'
 
 ; doc{
 ;
@@ -832,7 +915,7 @@ bank.e:
   dw csb0
 
 ; ----------------------------------------------
-  _colon_header question_csb_,'?CS','B'
+  _colon_header question_csb_,'?CSB'
 
 ; doc{
 ;
@@ -851,7 +934,7 @@ question_csb_.enough:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header string_allocate_,'STRING-ALLOCAT','E'
+  _colon_header string_allocate_,'STRING-ALLOCATE'
 
 ; doc{
 ;
@@ -864,7 +947,7 @@ question_csb_.enough:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header save_string_,'SAVE-STRIN','G'
+  _colon_header save_string_,'SAVE-STRING'
 
 ; doc{
 ;
@@ -878,7 +961,7 @@ question_csb_.enough:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header save_counted_string_,'SAVE-COUNTED-STRIN','G'
+  _colon_header save_counted_string_,'SAVE-COUNTED-STRING'
 
 ; doc{
 ;
@@ -891,7 +974,7 @@ question_csb_.enough:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header empty_csb_,'EMPTY-','CSB'
+  _colon_header empty_csb_,'EMPTY-CSB'
 
 ; doc{
 ;
@@ -910,7 +993,7 @@ question_csb_.enough:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header execute_,'EXECUT','E'
+  _code_header execute_,'EXECUTE'
 
 ; doc{
 ;
@@ -922,7 +1005,7 @@ question_csb_.enough:
   jp next2
 
 ; ----------------------------------------------
-  _code_header perform_,'PERFOR','M'
+  _code_header perform_,'PERFORM'
 
 ; doc{
 ;
@@ -943,31 +1026,31 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header forward_mark_,'>MAR','K'
+  _colon_header forward_mark_,'>MARK'
 
   dw here_,zero_,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header forward_resolve_,'>RESOLV','E'
+  _colon_header forward_resolve_,'>RESOLVE'
 
   dw here_,swap_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header backward_mark_,'<MAR','K'
+  _colon_header backward_mark_,'<MARK'
 
   dw here_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header backward_resolve_,'<RESOLV','E'
+  _colon_header backward_resolve_,'<RESOLVE'
 
   dw comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header branch_,'BRANC','H'
+  _code_header branch_,'BRANCH'
 
   ld h,b
   ld l,c
@@ -977,7 +1060,7 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header zero_branch_,'0BRANC','H'
+  _code_header zero_branch_,'0BRANCH'
 
   pop hl
   ld a,l
@@ -988,7 +1071,7 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header question_branch_,'?BRANC','H'
+  _code_header question_branch_,'?BRANCH'
 
   pop hl
   ld a,l
@@ -999,12 +1082,11 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_loop_,'(LOOP',')'
+  _code_header paren_loop_,'(LOOP)'
 
   ; XXX NOTE:
   ;
-  ;
-  ; This code is from Abersoft Fort.  Its the same code used in
+  ; This code is from Abersoft Fort.  It's the same code used in
   ; `(+loop)` in fig-Forth 1.1g.  The author of Abersoft Forth
   ; used it to write `(loop)` and wrote `(+loop)` with a simple
   ; call to it, what saves code.
@@ -1055,14 +1137,14 @@ l5ef2h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_plus_loop_,'(+LOOP',')'
+  _code_header paren_plus_loop_,'(+LOOP)'
 
   pop de
   jp paren_loop.step_in_de
 
 ; ----------------------------------------------
 
-  _colon_header paren_question_do,'(?DO',')'
+  _colon_header paren_question_do,'(?DO)'
 
   ; XXX TODO -- first draft, just copied from DZX-Forth
 
@@ -1076,7 +1158,7 @@ paren_question.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header paren_do_,'(DO',')'
+  _code_header paren_do_,'(DO)'
 
   ; [Code from CP/M fig-Forth 1.1g.]
 
@@ -1098,33 +1180,40 @@ paren_question.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_alias_header i_,'','I',,r_fetch_
+  _code_alias_header i_,'I',,r_fetch_
 
 ; ----------------------------------------------
-  _code_header digit_,'DIGI','T'
+  _code_header digit_,'DIGIT'
 
-  pop hl
-  pop de
-  ld a,e
-  sub 0x30
-  jp m,l5f65h
-  cp 0x0A
-  jp m,l5f5ah
-  sub 0x07
-  cp 0x0A
-  jp m,l5f65h
-l5f5ah:
-  cp l
-  jp p,l5f65h
-  ld e,a
-  ld hl,0x0001
+; doc{
+;
+; digit  ( c n1 --- n2 tf | ff )  \ fig-Forth
+;
+; Convert the ascii character _c_ (using base _n1_) to its
+; binary equivalent n2, accompanied by a true flag. If the
+; conversion is invalid, leave only a false flag.
+;
+; }doc
+
+  pop hl  ; l=base
+  pop de  ; e=character
+  ld a,e  ; character
+  sub '0' ; >="0"
+  jp c,false_pfa ; <"0" is invalid
+  cp 0x0A ; >"9"?
+  jp m,digit.test_value ; no, test value
+  sub 0x07 ; gap between "9" & "A", now "A"=0x0A
+  cp 0x0A ; >="A"?
+  jp c,false_pfa ; characters between "9" & "A" are invalid
+digit.test_value:
+  cp l ; <base?
+  jp nc,false_pfa ; no, invalid
+  ld e,a ; converted digit
+  ld hl,0x0001 ; true ; XXX TODO change when true=-1
   jp push_de_hl
-l5f65h:
-  ld l,h
-  jp push_hl
 
 ; ----------------------------------------------
-  _code_header paren_find_,'(FIND',')'
+  _code_header paren_find_,'(FIND)'
 
 if fig_find?
 
@@ -1197,7 +1286,9 @@ paren_find.nfa_backup: equ $+1
   ld bc,(ip_backup) ; restore Forth IP
   jp false_pfa
 
-else
+endif
+
+if ! fig_find? && ! names_in_memory_bank?
 
 ; doc{
 ;
@@ -1279,8 +1370,99 @@ paren_find.nfa_backup: equ $+1
 
 endif
 
+if ! fig_find? && names_in_memory_bank?
+
+  ; XXX TODO adapt to the new data format in the memory bank
+
+; doc{
+;
+; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
+;
+; }doc
+
+  ; XXX Note: this version uses the new format name field,
+  ; and is used by the new version of `find`, written after
+  ; Forth-83.
+
+  ld e,names_bank
+  call bank.e ; page the memory bank
+
+  ld (ip_backup),bc ; save Forth IP
+  pop de ; nfa
+  pop hl ; string address
+  ld (paren_find.string_address),hl
+
+paren_find.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (paren_find.nfa_backup),de ; save for later
+paren_find.string_address: equ $+1
+  ld hl,0 ; string address
+  ld a,(de) ; name field length byte
+  ld c,a    ; save for later
+  and max_word_length_bit_mask  ; actual length
+  cp (hl)
+  jr nz,paren_find.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+  ld a,c ; name field length byte
+  and max_word_length_bit_mask  ; actual length
+  ld b,a
+paren_find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  cp (hl)
+  jr nz,paren_find.not_a_match ; no match
+  djnz paren_find.compare_next_char ; match so far, loop again
+
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ; c = name field length byte
+  inc de ; de = lfa
+  inc de
+  inc de ; de = cfa
+  ld hl,1 ; 1=immediate word
+  ld a,c ; name field length byte
+  ld bc,(ip_backup) ; restore Forth IP
+  and precedence_bit_mask ; immediate word?
+  jp nz,paren_find.end
+  ; non-immediate word
+  dec hl
+  dec hl ; -1 = non-immediate word
+  jp paren_find.end
+
+paren_find.not_a_match:
+  ; Not a match, try next one.
+paren_find.nfa_backup: equ $+1
+  ld hl,0 ; nfa
+  ld a,c ; length byte
+  and max_word_length_bit_mask  ; actual length
+  ld c,a ; actual length
+  inc c ; plus the length byte
+  ld b,0
+  add hl,bc ; hl = lfa
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld a,d
+  or e ; end of dictionary?
+  jp nz,paren_find.begin ; if not, continue
+
+  ; No match found, return.
+  ld bc,(ip_backup) ; restore Forth IP
+  ld de,(paren_find.string_address)
+  ld hl,false
+
+paren_find.end:
+  ld e,default_bank
+  call bank.e ; page the default memory bank
+  jp push_de_hl
+
+endif
+
 ; ----------------------------------------------
-  _code_header scan_,'SCA','N'
+  _code_header scan_,'SCAN'
 
 if false ; XXX From DXZ-Forth, for ANS Forth parsing
 
@@ -1383,7 +1565,7 @@ scan.end:
 endif
 
 ; ----------------------------------------------
-  _code_header skip_,'SKI','P'
+  _code_header skip_,'SKIP'
 
 if 0 ; XXX From DXZ-Forth, for ANS Forth parsing
 
@@ -1443,7 +1625,7 @@ skip.begin:
 endif
 
 ; ----------------------------------------------
-  _code_header enclose_,'ENCLOS','E'
+  _code_header enclose_,'ENCLOSE'
 
   ; XXX OLD
 
@@ -1528,7 +1710,7 @@ enclose.end:
 
 
 ; ----------------------------------------------
-  _code_header paren_parse_,'(PARSE',')'
+  _code_header paren_parse_,'(PARSE)'
 
 if 1 ; XXX NEW
 
@@ -1598,7 +1780,7 @@ paren_parse.scan:
 endif
 
 ; ----------------------------------------------
-  _code_header chan_,'CHA','N'
+  _code_header chan_,'CHAN'
 
 ; doc{
 ;
@@ -1616,14 +1798,14 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header emit_,'EMI','T'
+  _colon_header emit_,'EMIT'
 
   dw paren_emit_
   dw one_,out_,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header paren_emit_,'(EMIT',')'
+  _code_header paren_emit_,'(EMIT)'
 
 ; doc{
 ;
@@ -1642,20 +1824,20 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header printer_,'PRINTE','R'
+  _colon_header printer_,'PRINTER'
 
   _number 3
   dw chan_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header display_,'DISPLA','Y'
+  _colon_header display_,'DISPLAY'
 
   dw two_,chan_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header key_,'KE','Y'
+  _code_header key_,'KEY'
 
   ; XXX TODO simplify, no Spectrum modes
 
@@ -1776,7 +1958,7 @@ key.limit:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header question_terminal_,'?TERMINA','L'
+  _code_header question_terminal_,'?TERMINAL'
 
   call rom_break_key
   jp nc,true_pfa
@@ -1786,7 +1968,7 @@ key.limit:
   jp false_pfa
 
 ; ----------------------------------------------
-  _colon_header cr_,'C','R'
+  _colon_header cr_,'CR'
 
   dw c_lit_
   db carriage_return_char
@@ -1795,7 +1977,7 @@ key.limit:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header cmove_up_,'CMOVE','>'
+  _code_header cmove_up_,'CMOVE>'
 
   exx
   pop bc
@@ -1806,7 +1988,7 @@ key.limit:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header cmove_,'CMOV','E'
+  _code_header cmove_,'CMOVE'
 
   exx
   pop bc
@@ -1817,7 +1999,7 @@ key.limit:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header move_,'MOV','E'
+  _code_header move_,'MOVE'
 
 ; doc{
 ;
@@ -1835,7 +2017,7 @@ move.do
   _jp_next
 
 ; ----------------------------------------------
-  _code_header smove_,'SMOV','E'
+  _code_header smove_,'SMOVE'
 
 ; doc{
 ;
@@ -1849,7 +2031,7 @@ move.do
   jr move.do
 
 ; ----------------------------------------------
-  _code_header u_star_,'U','*'
+  _code_header u_star_,'U*'
 
   pop de
   pop hl
@@ -1887,7 +2069,7 @@ l6079h:
   ret
 
 ; ----------------------------------------------
-  _code_header u_slash_mod_,'U/MO','D'
+  _code_header u_slash_mod_,'U/MOD'
 
   ld hl,0x0004
   add hl,sp
@@ -1942,7 +2124,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header and_,'AN','D'
+  _code_header and_,'AND'
 
   pop de
   pop hl
@@ -1955,7 +2137,7 @@ l60c0h:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header or_,'O','R'
+  _code_header or_,'OR'
 
   pop de
   pop hl
@@ -1968,7 +2150,7 @@ l60c0h:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header xor_,'XO','R'
+  _code_header xor_,'XOR'
 
   pop de
   pop hl
@@ -1981,14 +2163,14 @@ l60c0h:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header sp_fetch_,'SP','@'
+  _code_header sp_fetch_,'SP@'
 
   ld hl,0x0000
   add hl,sp
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header sp_store_,'SP','!'
+  _code_header sp_store_,'SP!'
 
   ld hl,(user_variables_pointer)
   ld a,(hl)
@@ -1999,18 +2181,18 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header rp_,'R','P'
+  _constant_header rp_,'RP'
 
   dw return_stack_pointer
 
 ; ----------------------------------------------
-  _code_header rp_fetch_,'RP','@'
+  _code_header rp_fetch_,'RP@'
 
   ld hl,(return_stack_pointer)
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header rp_store_,'RP','!'
+  _code_header rp_store_,'RP!'
 
   ld hl,(user_variables_pointer)
   inc hl
@@ -2023,7 +2205,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header semicolon_s_,';','S'
+  _code_header semicolon_s_,';S'
 
   ld hl,(return_stack_pointer)
   ld c,(hl)
@@ -2034,7 +2216,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header pick_,'PIC','K'
+  _code_header pick_,'PICK'
 
   pop hl
   add hl,hl
@@ -2042,10 +2224,10 @@ l60c0h:
   jp fetch.hl
 
 ; ----------------------------------------------
-  _code_alias_header unloop_,'UNLOO','P',,two_r_drop_
+  _code_alias_header unloop_,'UNLOOP',,two_r_drop_
 
 ; ----------------------------------------------
-  _code_header leave_,'LEAV','E'
+  _code_header leave_,'LEAVE'
 
 ; doc{
 ;
@@ -2073,7 +2255,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header to_r_,'>','R'
+  _code_header to_r_,'>R'
 
   pop de
   ld hl,(return_stack_pointer)
@@ -2085,7 +2267,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header from_r_,'R','>'
+  _code_header from_r_,'R>'
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -2097,7 +2279,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header two_r_drop_,'2RDRO','P'
+  _code_header two_r_drop_,'2RDROP'
 
   ld hl,(return_stack_pointer)
   ld de,cell*2
@@ -2106,7 +2288,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header r_drop_,'RDRO','P'
+  _code_header r_drop_,'RDROP'
 
   ld hl,(return_stack_pointer)
   inc hl
@@ -2115,7 +2297,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header two_to_r_,'2>','R'
+  _code_header two_to_r_,'2>R'
 
 ; 2>r  ( -- x1 x2 ) ( R: x1 x2 -- )
 
@@ -2126,7 +2308,7 @@ l60c0h:
   jp two_store.into_hl_pointer
 
 ; ----------------------------------------------
-  _code_header two_from_r_,'2R','>'
+  _code_header two_from_r_,'2R>'
 
 ; 2r>  ( -- x1 x2 ) ( R: x1 x2 -- )
 
@@ -2138,13 +2320,13 @@ l60c0h:
   jp two_fetch_pfa
 
 ; ----------------------------------------------
-  _code_header two_r_fetch_,'2R','@'
+  _code_header two_r_fetch_,'2R@'
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
 
 ; ----------------------------------------------
-  _code_header r_fetch_,'R','@'
+  _code_header r_fetch_,'R@'
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -2154,7 +2336,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header zero_equals_,'0','='
+  _code_header zero_equals_,'0='
 
   pop hl
   ld a,l
@@ -2163,7 +2345,7 @@ l60c0h:
   jp false_pfa
 
 ; ----------------------------------------------
-  _code_header zero_not_equals_,'0<','>'
+  _code_header zero_not_equals_,'0<>'
 
   pop hl
   ld a,l
@@ -2172,7 +2354,7 @@ l60c0h:
   jp true_pfa
 
 ; ----------------------------------------------
-  _code_header zero_less_than_,'0','<'
+  _code_header zero_less_than_,'0<'
 
   pop hl
 zero_less_.hl: ; XXX entry not used yet
@@ -2187,7 +2369,7 @@ true_if_cy:
   jp false_pfa
 
 ; ----------------------------------------------
-  _code_header zero_greater_than_,'0','>'
+  _code_header zero_greater_than_,'0>'
 
   ; [Taken from DZX-Forth.]
 
@@ -2196,7 +2378,7 @@ true_if_cy:
   jp is_de_less_than_hl
 
 ; ----------------------------------------------
-  _code_header plus_,'','+'
+  _code_header plus_,'+'
 
   pop de
   pop hl
@@ -2204,7 +2386,7 @@ true_if_cy:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header d_plus_,'D','+'
+  _code_header d_plus_,'D+'
 
   ; XXX TODO move to the disk
 
@@ -2242,7 +2424,7 @@ if 0 ; XXX TODO study this alternative from fig-Forth 1.1g
 endif
 
 ; ----------------------------------------------
-  _code_header negate_,'NEGAT','E'
+  _code_header negate_,'NEGATE'
 
   pop de
   ld hl,0x0000
@@ -2251,7 +2433,7 @@ endif
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header dnegate_,'DNEGAT','E'
+  _code_header dnegate_,'DNEGATE'
 
   ; XXX TODO move to the disk
 
@@ -2273,14 +2455,14 @@ endif
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header nip_,'NI','P'
+  _code_header nip_,'NIP'
 
   pop hl
   pop de
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header tuck_,'TUC','K'
+  _code_header tuck_,'TUCK'
 
   pop hl
   pop de
@@ -2288,7 +2470,7 @@ endif
   jp push_de_hl
 
 ; ----------------------------------------------
-  _code_header over_,'OVE','R'
+  _code_header over_,'OVER'
 
   pop de
   pop hl
@@ -2296,27 +2478,27 @@ endif
   jp push_de_hl
 
 ; ----------------------------------------------
-  _code_header drop_,'DRO','P'
+  _code_header drop_,'DROP'
 
   pop hl
   _jp_next
 
 ; ----------------------------------------------
-  _code_header swap_,'SWA','P'
+  _code_header swap_,'SWAP'
 
   pop hl
   ex (sp),hl
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header dup_,'DU','P'
+  _code_header dup_,'DUP'
 
   pop hl
   push hl
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header two_dup_,'2DU','P'
+  _code_header two_dup_,'2DUP'
 
   pop hl
   pop de
@@ -2325,7 +2507,7 @@ endif
   jp push_de_hl
 
 ; ----------------------------------------------
-  _code_header plus_store_,'+','!'
+  _code_header plus_store_,'+!'
 
   pop hl ; variable address
   pop de ; number
@@ -2339,7 +2521,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header off_,'OF','F'
+  _code_header off_,'OFF'
 
   pop hl
   ld (hl),0
@@ -2348,7 +2530,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header on_,'O','N'
+  _code_header on_,'ON'
 
   ; XXX TODO -- update when true=-1
   pop hl
@@ -2358,7 +2540,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header toggle_,'TOGGL','E'
+  _code_header toggle_,'TOGGLE'
 
   pop de ; e = bit pattern
   pop hl ; address
@@ -2368,7 +2550,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header fetch_,'','@'
+  _code_header fetch_,'@'
 
   pop hl
 fetch.hl:
@@ -2379,7 +2561,7 @@ fetch.hl:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_fetch_,'C','@'
+  _code_header c_fetch_,'C@'
 
   pop hl
   ld l,(hl)
@@ -2387,7 +2569,7 @@ fetch.hl:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header two_fetch_,'2','@'
+  _code_header two_fetch_,'2@'
 
   pop hl ; address
 two_fetch.hl:
@@ -2406,7 +2588,7 @@ two_fetch.hl:
                 ; 86t 12 TOTAL
 
 ; ----------------------------------------------
-  _code_header two_store_,'2','!'
+  _code_header two_store_,'2!'
 
   pop hl
 two_store.into_hl_pointer:
@@ -2426,7 +2608,7 @@ two_store.into_hl_pointer:
   endif
 
 ; ----------------------------------------------
-  _code_header store_,'','!'
+  _code_header store_,'!'
 
   pop hl
 store.into_hl_pointer:
@@ -2438,7 +2620,7 @@ store.de_into_hl_pointer:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_store_,'C','!'
+  _code_header c_store_,'C!'
 
   pop hl
   pop de
@@ -2446,7 +2628,7 @@ store.de_into_hl_pointer:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header colon_,'',':',immediate
+  _colon_header colon_,':',immediate
 
   dw question_exec_
   dw store_csp_
@@ -2466,7 +2648,7 @@ do_colon:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header noname_,':NONAM','E',immediate
+  _colon_header noname_,':NONAME',immediate
 
   ; [Code from the Afera library.]
 
@@ -2482,7 +2664,7 @@ do_colon:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header semicolon_,'',';',immediate
+  _colon_header semicolon_,';',immediate
 
   dw question_csp_
   dw compile_,semicolon_s_
@@ -2493,16 +2675,16 @@ do_colon:
 ; ----------------------------------------------
 
 if 0 ; XXX OLD
-  _colon_header noop_,'NOO','P'
+  _colon_header noop_,'NOOP'
   dw semicolon_s_
 else ; XXX NEW -- save 2 bytes
   ; XXX TODO test it
-  _header noop_,'NOO','P'
+  _header noop_,'NOOP'
   dw next ; code field
 endif
 
 ; ----------------------------------------------
-  _colon_header constant_,'CONSTAN','T'
+  _colon_header constant_,'CONSTANT'
 
   dw create_,comma_
   dw paren_semicolon_code_
@@ -2512,19 +2694,19 @@ do_constant:
   jp fetch.hl
 
 ; ----------------------------------------------
-  _colon_header label_,'LABE','L'
+  _colon_header label_,'LABEL'
 
   dw create_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header variable_,'VARIABL','E'
+  _colon_header variable_,'VARIABLE'
 
   dw create_,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header user_,'USE','R'
+  _colon_header user_,'USER'
 
   ; XXX TODO -- Use only one byte for storage,
   ; but defining `cconstant` only for this does not seem a good idea.
@@ -2543,7 +2725,7 @@ do_user:
   jp push_hl
 
 ; ----------------------------------------------
-  _constant_header msg_scr_,'MSG-SC','R'
+  _constant_header msg_scr_,'MSG-SCR'
 
 ; doc{
 ; msg-scr  ( -- n )  \  Constant: Screen where the error messages start.
@@ -2554,186 +2736,186 @@ do_user:
   dw 0x0004
 
 ; ----------------------------------------------
-  _constant_header zero_,'','0'
+  _constant_header zero_,'0'
 
   dw 0x0000
 
 ; ----------------------------------------------
-  _constant_header one_,'','1'
+  _constant_header one_,'1'
 
   dw 0x0001
 
 ; ----------------------------------------------
-  _constant_header two_,'','2'
+  _constant_header two_,'2'
 
   dw 0x0002
 
 ; ----------------------------------------------
-  _constant_header three_,'','3'
+  _constant_header three_,'3'
 
   dw 0x0003
 
 ; ----------------------------------------------
-  _code_header false_,'FALS','E'
+  _code_header false_,'FALSE'
 
   ld hl,false
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header true_,'TRU','E'
+  _code_header true_,'TRUE'
 
   ld hl,true
   jp push_hl
 
 ; ----------------------------------------------
-  _constant_header b_l_,'B','L'
+  _constant_header b_l_,'BL'
 
   dw space_char
 
 ; ----------------------------------------------
-  _constant_header c_slash_l_,'C/','L'
+  _constant_header c_slash_l_,'C/L'
 
   dw characters_per_line
 
 ; ----------------------------------------------
-  _constant_header first_,'FIRS','T'
+  _constant_header first_,'FIRST'
 
   dw first_buffer
 
 ; ----------------------------------------------
-  _constant_header limit_,'LIMI','T'
+  _constant_header limit_,'LIMIT'
 
   dw limit
 
 ; ----------------------------------------------
-  _constant_header b_slash_buf_,'B/BU','F'
+  _constant_header b_slash_buf_,'B/BUF'
 
   dw data_bytes_per_buffer
 
 ; ----------------------------------------------
-  _constant_header b_slash_scr_,'B/SC','R'
+  _constant_header b_slash_scr_,'B/SCR'
 
   dw blocks_per_screen
 
 ; ----------------------------------------------
-  _constant_header scr_slash_disk_,'SCR/DIS','K'
+  _constant_header scr_slash_disk_,'SCR/DISK'
 
   dw screens_per_disk
 
 ; ----------------------------------------------
-  _colon_header plus_origin_,'+ORIGI','N'
+  _colon_header plus_origin_,'+ORIGIN'
 
   dw lit_,origin
   dw plus_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _user_variable_header s0_,'S','0'
+  _user_variable_header s0_,'S0'
 
   db 0x00
 
 ; ----------------------------------------------
-  _user_variable_header r0_,'R','0'
+  _user_variable_header r0_,'R0'
 
   db 0x02
 
 ; ----------------------------------------------
-  _user_variable_header tib_,'TI','B'
+  _user_variable_header tib_,'TIB'
 
   db 0x04
 
 ; ----------------------------------------------
-  _user_variable_header width_,'WIDT','H'
+  _user_variable_header width_,'WIDTH'
 
   db 0x06
 
 ; ----------------------------------------------
-  _user_variable_header warning_,'WARNIN','G'
+  _user_variable_header warning_,'WARNING'
 
   db 0x08
 
 ; ----------------------------------------------
-  _user_variable_header fence_,'FENC','E'
+  _user_variable_header fence_,'FENCE'
 
   db 0x0A
 
 ; ----------------------------------------------
-  _user_variable_header dp_,'D','P'
+  _user_variable_header dp_,'DP'
 
   db 0x0C
 
 ; ----------------------------------------------
-  _user_variable_header voc_link_,'VOC-LIN','K'
+  _user_variable_header voc_link_,'VOC-LINK'
 
   db 0x0E
 
 ; ----------------------------------------------
-  _user_variable_header blk_,'BL','K'
+  _user_variable_header blk_,'BLK'
 
   db 0x10
 
 ; ----------------------------------------------
-  _user_variable_header to_in_,'>I','N'
+  _user_variable_header to_in_,'>IN'
 
   db 0x12
 
 ; ----------------------------------------------
-  _user_variable_header out_,'OU','T'
+  _user_variable_header out_,'OUT'
 
   db 0x14
 
 ; ----------------------------------------------
-  _user_variable_header scr_,'SC','R' ; XXX OLD ? used by `list`
+  _user_variable_header scr_,'SCR' ; XXX OLD ? used by `list`
 
   db 0x16
 
 ; ----------------------------------------------
-  _user_variable_header context_,'CONTEX','T'
+  _user_variable_header context_,'CONTEXT'
 
   db 0x1A
 
 ; ----------------------------------------------
-  _user_variable_header current_,'CURREN','T'
+  _user_variable_header current_,'CURRENT'
 
   db 0x1C
 
 ; ----------------------------------------------
-  _user_variable_header state_,'STAT','E'
+  _user_variable_header state_,'STATE'
 
   db 0x1E
 
 ; ----------------------------------------------
-  _user_variable_header base_,'BAS','E'
+  _user_variable_header base_,'BASE'
 
   db 0x20
 
 ; ----------------------------------------------
-  _user_variable_header dpl_,'DP','L'
+  _user_variable_header dpl_,'DPL'
 
   db 0x22
 
 ; ----------------------------------------------
-  _user_variable_header fld_,'FL','D'
+  _user_variable_header fld_,'FLD'
 
   db 0x24
 
 ; ----------------------------------------------
-  _user_variable_header csp_,'CS','P'
+  _user_variable_header csp_,'CSP'
 
   db 0x26
 
 ; ----------------------------------------------
-  _user_variable_header r_hash_,'R','#'
+  _user_variable_header r_hash_,'R#'
 
   db 0x28
 
 ; ----------------------------------------------
-  _user_variable_header hld_,'HL','D'
+  _user_variable_header hld_,'HLD'
 
   db 0x2A
 
 ; ----------------------------------------------
-  _colon_header recurse_,'RECURS','E',immediate
+  _colon_header recurse_,'RECURSE',immediate
 
 ; doc{
 ;
@@ -2745,14 +2927,14 @@ do_user:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header one_plus_,'1','+'
+  _code_header one_plus_,'1+'
 
   pop hl
   inc hl
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header two_plus_,'2','+'
+  _code_header two_plus_,'2+'
 
   pop hl
   inc hl
@@ -2760,17 +2942,17 @@ do_user:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_alias_header cell_plus_,'CELL','+',,two_plus_
+  _code_alias_header cell_plus_,'CELL+',,two_plus_
 
 ; ----------------------------------------------
-  _code_header one_minus_,'1','-'
+  _code_header one_minus_,'1-'
 
   pop hl
   dec hl
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header two_minus_,'2','-'
+  _code_header two_minus_,'2-'
 
   pop hl
   dec hl
@@ -2778,7 +2960,7 @@ do_user:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header two_star_,'2','*'
+  _code_header two_star_,'2*'
 
   ; XXX TODO See comments in lina ciforth documentation.
 
@@ -2787,15 +2969,15 @@ do_user:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_alias_header cells_,'CELL','S',,two_star_
+  _code_alias_header cells_,'CELLS',,two_star_
 
 ; ----------------------------------------------
-  _constant_header cell_,'CEL','L'
+  _constant_header cell_,'CELL'
 
   dw 0x0002
 
 ; ----------------------------------------------
-  _code_header two_slash_,'2','/'
+  _code_header two_slash_,'2/'
 
   ; [From DZX-Forth.]
   ; XXX FIXME With negative numbers `2/` is not the same than `2 /`.
@@ -2818,19 +3000,19 @@ sra_hl.1:
   ret
 
 ; ----------------------------------------------
-  _colon_header here_,'HER','E'
+  _colon_header here_,'HERE'
 
   dw dp_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header allot_,'ALLO','T'
+  _colon_header allot_,'ALLOT'
 
   dw dp_,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header s_comma_,'s',','
+  _colon_header s_comma_,'s,'
 
 ; doc{
 ; s,  ( ca len -- )
@@ -2840,19 +3022,19 @@ sra_hl.1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header comma_,'',','
+  _colon_header comma_,','
 
   dw here_,store_,two_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header c_comma_,'C',','
+  _colon_header c_comma_,'C,'
 
   dw here_,c_store_,one_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header minus_,'','-'
+  _code_header minus_,'-'
 
   pop de
   pop hl
@@ -2861,7 +3043,7 @@ sra_hl.1:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header not_equals_,'<','>'
+  _code_header not_equals_,'<>'
 
   pop de
   pop hl
@@ -2871,7 +3053,7 @@ false_if_z: ; XXX entry not used yet
   jp true_pfa
 
 ; ----------------------------------------------
-  _code_header equals_,'','='
+  _code_header equals_,'='
 
   pop de
   pop hl
@@ -2881,7 +3063,7 @@ true_if_z: ; XXX entry not used yet
   jp false_pfa
 
 ; ----------------------------------------------
-  _code_header less_than_,'','<'
+  _code_header less_than_,'<'
 
   pop de
   pop hl
@@ -2895,7 +3077,7 @@ is_de_less_than_hl:
   endif
 
 ; ----------------------------------------------
-  _code_header u_greater_than_,'U','>'
+  _code_header u_greater_than_,'U>'
 
   pop hl
 u_greater_than.hl:
@@ -2903,7 +3085,7 @@ u_greater_than.hl:
   jp u_less_than.de_hl
 
 ; ----------------------------------------------
-  _code_header u_less_than_,'U','<'
+  _code_header u_less_than_,'U<'
 
   pop de
   pop hl
@@ -2917,14 +3099,14 @@ u_less_than.de_hl:
   endif
 
 ; ----------------------------------------------
-  _code_header greater_than_,'','>'
+  _code_header greater_than_,'>'
 
   pop hl
   pop de
   jp is_de_less_than_hl
 
 ; ----------------------------------------------
-  _code_header rot_,'RO','T'
+  _code_header rot_,'ROT'
 
   pop de
   pop hl
@@ -2932,14 +3114,14 @@ u_less_than.de_hl:
   jp push_de_hl
 
 ; ----------------------------------------------
-  _colon_header space_,'SPAC','E'
+  _colon_header space_,'SPACE'
 
   dw b_l_
   dw emit_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_dup_,'?DU','P'
+  _colon_header question_dup_,'?DUP'
 
   dw dup_
   dw zero_branch_,question_dup.end
@@ -2949,7 +3131,7 @@ question_dup.end:
 
 ; ----------------------------------------------
 
-  _code_header lfa_to_nfa_,'LFA>NF','A'
+  _code_header lfa_to_nfa_,'LFA>NFA'
 
   pop hl
 lfa_to_nfa.do:
@@ -2959,13 +3141,13 @@ lfa_to_nfa.do:
   jp push_hl
 
 ; ----------------------------------------------
-  _colon_header latest_,'LATES','T'
+  _colon_header latest_,'LATEST'
 
   dw current_,fetch_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header pfa_to_lfa_,'PFA>LF','A'
+  _colon_header pfa_to_lfa_,'PFA>LFA'
 
   dw c_lit_
   db 0x04
@@ -2973,28 +3155,71 @@ lfa_to_nfa.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_alias_header pfa_to_cfa_,'PFA>CF','A',,two_minus_
+  _code_alias_header pfa_to_cfa_,'PFA>CFA',,two_minus_
 
 ; ----------------------------------------------
-  _code_alias_header cfa_to_pfa_,'CFA>PF','A',,two_plus_
+  _code_alias_header cfa_to_pfa_,'CFA>PFA',,two_plus_
 
 ; ----------------------------------------------
-  _code_alias_header cfa_to_lfa_,'CFA>LF','A',,two_minus_
+  _code_alias_header cfa_to_lfa_,'CFA>LFA',,two_minus_
 
 ; ----------------------------------------------
-  _colon_header pfa_to_nfa_,'PFA>NF','A'
+  _colon_header pfa_to_nfa_,'PFA>NFA'
 
   dw pfa_to_lfa_,lfa_to_nfa_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header cfa_to_nfa_,'CFA>NF','A'
+
+if names_in_memory_bank?
+
+  _code_header cfa_to_nfa_,'CFA>NFA'
+
+  ld e,names_bank
+  call bank.e ; page the memory bank
+  pop de ; cfa
+  push bc ; save Forth IP
+  ld b,0
+  ld hl, np0-4
+
+cfa_to_nfa.begin
+  inc hl
+  inc hl
+  inc hl
+  inc hl ; nfa
+  ld a,(hl) ; length and flags
+  and max_word_length_bit_mask ; only length
+  ld c,a
+  add hl,bc ; point to cfa
+
+  ld a,(hl) ; low byte of cfa
+  cp e ; equal?
+  inc hl
+  jr nz,cfa_to_nfa.next ; not equal
+  ld a,(hl) ; high byte of cfa
+  cp d ; equal?
+  jr nz,cfa_to_nfa.next ; not equal
+  ; cfa found
+  ld c,4
+  add hl,bc
+  pop bc ; restore Forth IP
+
+  ld e,default_bank
+  call bank.e ; page the default memory bank
+
+  jp pushhl
+
+else
+
+  _colon_header cfa_to_nfa_,'CFA>NFA'
 
   dw cfa_to_lfa_,lfa_to_nfa_
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
-  _colon_header nfa_to_lfa_,'NFA>LF','A'
+  _colon_header nfa_to_lfa_,'NFA>LFA'
 
   dw dup_,c_fetch_
   dw c_lit_
@@ -3003,25 +3228,38 @@ lfa_to_nfa.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header nfa_to_cfa_,'NFA>CF','A'
+  _colon_header nfa_to_cfa_,'NFA>CFA'
 
   dw nfa_to_lfa_,two_plus_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header nfa_to_pfa_,'NFA>PF','A'
+  _colon_header nfa_to_pfa_,'NFA>PFA'
 
   dw nfa_to_cfa_,cfa_to_pfa_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header nfa_to_string_,'NFA>STRIN','G'
+  _code_header nfa_to_string_,'NFA>STRING'
 
 ; doc{
+;
 ; nfa>string  ( nfa -- ca len )
+;
 ; }doc
 
-  ; From DZX-Forth.
+if names_in_memory_bank?
+
+  _number names_bank
+  dw bank_
+  dw count_,save_string_
+  _number default_bank
+  dw bank_
+  dw semicolon_s_
+
+else
+
+  ; [From DZX-Forth.]
 
   pop de
   ld a,(de)
@@ -3031,14 +3269,16 @@ lfa_to_nfa.do:
   ld l,a
   jp push_de_hl
 
+endif
+
 ; ----------------------------------------------
-  _colon_header store_csp_,'!CS','P'
+  _colon_header store_csp_,'!CSP'
 
   dw sp_fetch_,csp_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_error_,'?ERRO','R'
+  _colon_header question_error_,'?ERROR'
 
   dw swap_
   dw zero_branch_,question_error.no_error
@@ -3050,61 +3290,61 @@ question_error.no_error:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header comp_question_,'COMP','?'
+  _colon_header comp_question_,'COMP?'
 
   dw state_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_comp_,'?COM','P'
+  _colon_header question_comp_,'?COMP'
 
   dw comp_question_,zero_equals_
   _question_error compilation_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_exec_,'?EXE','C'
+  _colon_header question_exec_,'?EXEC'
 
   dw comp_question_
   _question_error execution_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_pairs_,'?PAIR','S'
+  _colon_header question_pairs_,'?PAIRS'
 
   dw not_equals_
   _question_error conditionals_not_paired_error
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_csp_,'?CS','P'
+  _colon_header question_csp_,'?CSP'
 
   dw sp_fetch_,csp_,fetch_,not_equals_
   _question_error definition_not_finished_error
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_loading_,'?LOADIN','G'
+  _colon_header question_loading_,'?LOADING'
 
   dw blk_,fetch_,zero_equals_
   _question_error loading_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header compile_,'COMPIL','E'
+  _colon_header compile_,'COMPILE'
 
   dw question_comp_
   dw from_r_,dup_,two_plus_,to_r_,fetch_,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header left_bracket_,'','[',immediate
+  _colon_header left_bracket_,'[',immediate
 
   dw state_,off_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header right_bracket_,'',']'
+  _colon_header right_bracket_,']'
 
 if fig_find?
 
@@ -3124,7 +3364,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header smudge_,'SMUDG','E'
+  _colon_header smudge_,'SMUDGE'
 
   dw latest_
   dw c_lit_
@@ -3133,7 +3373,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header hex_,'HE','X'
+  _colon_header hex_,'HEX'
 
   dw c_lit_
   db 0x10
@@ -3141,7 +3381,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header decimal_,'DECIMA','L'
+  _colon_header decimal_,'DECIMAL'
 
   dw c_lit_
   db 0x0A
@@ -3149,13 +3389,13 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_semicolon_code_,'(;CODE',')'
+  _colon_header paren_semicolon_code_,'(;CODE)'
 
   dw from_r_,latest_,nfa_to_cfa_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header semicolon_code_,';COD','E',immediate
+  _colon_header semicolon_code_,';CODE',immediate
 
   dw question_csp_
   dw compile_,paren_semicolon_code_
@@ -3163,7 +3403,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header builds_,'<BUILD','S'
+  _colon_header builds_,'<BUILDS'
 
   ; XXX OLD
   ; XXX TODO remove this, and check `does>`
@@ -3172,7 +3412,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header does_,'DOES','>'
+  _colon_header does_,'DOES>'
 
   ; XXX TODO -- check
 
@@ -3201,7 +3441,7 @@ do_does:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header count_,'COUN','T'
+  _code_header count_,'COUNT'
 
   ; Code from DZX-Forth.
 
@@ -3212,13 +3452,13 @@ do_does:
   jp push_a
 
 ; ----------------------------------------------
-  _colon_header bounds_,'BOUND','S'
+  _colon_header bounds_,'BOUNDS'
 
   dw over_,plus_,swap_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header type_,'TYP','E'
+  _colon_header type_,'TYPE'
 
   ; XXX TODO Rewrite in Z80, after the ROM routine.
 
@@ -3239,7 +3479,7 @@ type.end:
 
 ; ----------------------------------------------
 
-  _code_header minus_trailing_,'-TRAILIN','G'
+  _code_header minus_trailing_,'-TRAILING'
 
   pop de
   pop hl
@@ -3260,7 +3500,7 @@ minus_trailing.begin:
   jp minus_trailing.begin ; repeat
 
 ; ----------------------------------------------
-  _colon_header paren_dot_quote_,'(."',')'
+  _colon_header paren_dot_quote_,'(.")'
 
   dw r_fetch_,count_,dup_,one_plus_
   dw from_r_,plus_,to_r_
@@ -3268,7 +3508,7 @@ minus_trailing.begin:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dot_quote_,'.','"',immediate
+  _colon_header dot_quote_,'."',immediate
 
 if 0 ; XXX OLD
 
@@ -3302,7 +3542,7 @@ dot_quote.interpreting:
 endif
 
 ; ----------------------------------------------
-  _colon_header expect_,'EXPEC','T'
+  _colon_header expect_,'EXPECT'
 
   dw over_,plus_,over_ ; ( a a+len a )
   dw paren_do_
@@ -3358,7 +3598,7 @@ expect.loop: ; ( a )
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header query_,'QUER','Y'
+  _colon_header query_,'QUERY'
 
   dw tib_,fetch_
   dw c_lit_
@@ -3368,7 +3608,7 @@ expect.loop: ; ( a )
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header x_,'',0,immediate
+  _colon_header x_,0,immediate
 
 ; doc{
 
@@ -3376,7 +3616,7 @@ expect.loop: ; ( a )
 
 ; This is pseudonym for the "null" or dictionary entry for a
 ; name of one character of ascii null. It is the execution
-; proceedure to terminate interpretation of a line of text from
+; procedure to terminate interpretation of a line of text from
 ; the terminal or within a disk buffer, as both buffers always
 ; have a null at the end.
 
@@ -3409,7 +3649,7 @@ x.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header fill_,'FIL','L'
+  _code_header fill_,'FILL'
 
   pop de ; e = char
 fill.e:
@@ -3430,26 +3670,26 @@ fill.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header erase_,'ERAS','E'
+  _code_header erase_,'ERASE'
 
   ld e,0
   jp fill.e
 
 ; ----------------------------------------------
-  _code_header blank_,'BLAN','K'
+  _code_header blank_,'BLANK'
 
   ld e,space_char
   jp fill.e
 
 ; ----------------------------------------------
-  _colon_header hold_,'HOL','D'
+  _colon_header hold_,'HOLD'
 
   dw lit_,-1,hld_,plus_store_ ; decrement `hld`
   dw hld_,fetch_,c_store_ ; store character into `pad`
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header pad_,'PA','D'
+  _colon_header pad_,'PAD'
 
   dw here_
   dw c_lit_
@@ -3458,7 +3698,7 @@ fill.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header stream_,'STREA','M'
+  _colon_header stream_,'STREAM'
 
 ; doc{
 ;
@@ -3479,7 +3719,7 @@ stream.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header parse_,'PARS','E'
+  _colon_header parse_,'PARSE'
 
 ; doc{
 ;
@@ -3499,7 +3739,7 @@ stream.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header parse_word_,'PARSE-WOR','D'
+  _colon_header parse_word_,'PARSE-WORD'
 
 ; doc{
 ;
@@ -3519,7 +3759,7 @@ stream.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header word_,'WOR','D'
+  _colon_header word_,'WORD'
 
 ; doc{
 ;
@@ -3594,7 +3834,7 @@ endif
 
   dw semicolon_s_
 
-  _colon_header xword_,'XWOR','D'
+  _colon_header xword_,'XWORD'
 
   ; XXX FIXME -- strange problems
 
@@ -3621,7 +3861,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_number_,'(NUMBER',')'
+  _colon_header paren_number_,'(NUMBER)'
 
 paren_number.begin: ; begin
   dw one_plus_ ; address of the next digit
@@ -3647,7 +3887,7 @@ paren_number.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header number_,'NUMBE','R'
+  _colon_header number_,'NUMBER'
 
   dw zero_,zero_,rot_ ; two zeros, initial value of the double number
   ;dw dup_,count_,swap_,dot_,dot_ ; XXX INFORMER
@@ -3689,7 +3929,7 @@ number.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header upper_,'UPPE','R'
+  _code_header upper_,'UPPER'
 
 ; doc{
 ;
@@ -3713,7 +3953,7 @@ upper.a:
   ret
 
 ; ----------------------------------------------
-  _code_header uppers_,'UPPER','S'
+  _code_header uppers_,'UPPERS'
 
 ; doc{
 ;
@@ -3737,7 +3977,7 @@ uppers.do:
 ; ----------------------------------------------
 if fig_find?
 
-  _colon_header context_find_,'CONTEXT-FIN','D'
+  _colon_header context_find_,'CONTEXT-FIND'
 
 ; doc{
 ;
@@ -3762,7 +4002,7 @@ if fig_find?
 endif
 
 ; ----------------------------------------------
-  _colon_header defined_question_,'DEFINED','?'
+  _colon_header defined_question_,'DEFINED?'
 
 ; defined?  ( ca len -- wf )
 
@@ -3783,7 +4023,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header undefined_question_,'UNDEFINED','?'
+  _colon_header undefined_question_,'UNDEFINED?'
 
 ; undefined?  ( ca len -- wf )
 
@@ -3801,7 +4041,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _code_header dollar_store_,'$','!'
+  _code_header dollar_store_,'$!'
 
   ; [Code from DZX-Forth's `packed`.]
 
@@ -3834,7 +4074,7 @@ endif
 
 if fig_find?
 
-  _colon_header find_,'FIN','D'
+  _colon_header find_,'FIND'
 
 ; doc{
 ;
@@ -3862,7 +4102,7 @@ find.end:
 
 else ; XXX NEW -- modern `find`
 
-  _colon_header find_,'FIN','D'
+  _colon_header find_,'FIND'
 
 ; doc{
 ;
@@ -3874,7 +4114,7 @@ else ; XXX NEW -- modern `find`
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _variable_header find_dollar_,'FIND','$'
+  _variable_header find_dollar_,'FIND$'
 
   ; XXX TODO use an unused address above `pad` instead
   ; XXX TODO rename as `word$`?
@@ -3883,7 +4123,7 @@ else ; XXX NEW -- modern `find`
   ds max_word_length+2
 
 ; ----------------------------------------------
-  _colon_header found_,'FOUN','D'
+  _colon_header found_,'FOUND'
 
 ; doc{
 ;
@@ -3905,23 +4145,23 @@ else ; XXX NEW -- modern `find`
 endif
 
 ; ----------------------------------------------
-  _colon_header paren_abort_,'(ABORT',')'
+  _colon_header paren_abort_,'(ABORT)'
 
   dw abort_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _variable_header error_number_,'ERROR','#'
+  _variable_header error_number_,'ERROR#'
 
   dw 0
 
 ; ----------------------------------------------
-  _two_variable_header error_pos_,'ERROR-PO','S'
+  _two_variable_header error_pos_,'ERROR-POS'
 
   dw 0,0
 
 ; ----------------------------------------------
-  _colon_header error_,'ERRO','R'
+  _colon_header error_,'ERROR'
 
   dw dup_,error_number_,store_ ; save the error number
   dw warning_,fetch_,zero_less_than_
@@ -3944,13 +4184,13 @@ error.end:
   dw quit_
 
 ; ----------------------------------------------
-  _colon_header id_dot_,'ID','.'
+  _colon_header id_dot_,'ID.'
 
   dw nfa_to_string_,type_,space_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header header_,'HEADE','R'
+  _colon_header header_,'HEADER'
 
 ; header  ( "name" -- )
 
@@ -3991,7 +4231,7 @@ header.continue:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header create_,'CREAT','E'
+  _colon_header create_,'CREATE'
 
   ; XXX TODO -- rewrite after Forth-83 and ANS Forth.
 
@@ -4003,7 +4243,7 @@ do_create:
   _jp_next
 
 ; ----------------------------------------------
-  _does_header assembler_,'ASSEMBLE','R'
+  _does_header assembler_,'ASSEMBLER'
 
   dw do_vocabulary
 assembler_vocabulary_dummy_nfa:
@@ -4014,7 +4254,7 @@ assembler_vocabulary_link:
   dw forth_vocabulary_link
 
 ; ----------------------------------------------
-  _colon_header code_,'COD','E'
+  _colon_header code_,'CODE'
 
   dw header_
   dw base_,fetch_,hex_ ; save the current `base`
@@ -4024,7 +4264,7 @@ assembler_vocabulary_link:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header end_code_,'END-COD','E'
+  _colon_header end_code_,'END-CODE'
 
   dw question_csp_
   dw context_,store_ ; restore `context`
@@ -4033,7 +4273,7 @@ assembler_vocabulary_link:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header compare_,'COMPAR','E'
+  _code_header compare_,'COMPARE'
 
   ; ANS Forth
   ; Adapted from DZX-Forth
@@ -4108,7 +4348,7 @@ compare_strings_case_sensitive:
   jp compare_strings_case_sensitive
 
 ; ----------------------------------------------
-  _code_header search_,'SEARC','H'
+  _code_header search_,'SEARCH'
 
   ; search  ( ca1 len1 ca2 len2 -- ca3 len3 -1 | ca1 len1 0 )
 
@@ -4178,7 +4418,7 @@ search.string_1_addr equ $+1
   jp search.end
 
 ; ----------------------------------------------
-  _colon_header bracket_compile_,'[COMPILE',']',immediate
+  _colon_header bracket_compile_,'[COMPILE]',immediate
 
 if fig_find?
   dw find_,zero_equals_
@@ -4190,7 +4430,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header s_literal_,'SLITERA','L',immediate
+  _colon_header s_literal_,'SLITERAL',immediate
 
   ; : sliteral  ( ca len -- )  compile slit s,  ; immediate
 
@@ -4198,7 +4438,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header c_literal_,'CLITERA','L',immediate
+  _colon_header c_literal_,'CLITERAL',immediate
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
@@ -4214,7 +4454,7 @@ c_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header literal_,'LITERA','L',immediate
+  _colon_header literal_,'LITERAL',immediate
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
@@ -4230,7 +4470,7 @@ literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header two_literal_,'2LITERA','L',immediate
+  _colon_header two_literal_,'2LITERAL',immediate
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
@@ -4247,13 +4487,13 @@ two_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header depth_,'DEPT','H'
+  _colon_header depth_,'DEPTH'
 
   dw sp_fetch_,s0_,fetch_,minus_,lit_,-2,slash_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_stack_,'?STAC','K'
+  _colon_header question_stack_,'?STACK'
 
   dw sp_fetch_
   dw s0_,fetch_
@@ -4266,7 +4506,7 @@ two_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header interpret_,'INTERPRE','T'
+  _colon_header interpret_,'INTERPRET'
 
 ; XXX TODO -- In order to change the behaviour of `literal`, `2literal`
 ; and `cliteral` (make them give an error in interpretation mode),
@@ -4400,7 +4640,7 @@ interpret.16bit_number:
 endif
 
 ; ----------------------------------------------
-  _colon_header immediate_,'IMMEDIAT','E'
+  _colon_header immediate_,'IMMEDIATE'
 
   dw latest_
   dw c_lit_
@@ -4409,7 +4649,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header vocabulary_,'VOCABULAR','Y'
+  _colon_header vocabulary_,'VOCABULARY'
 
   dw builds_ ; XXX TODO convert; see DZX-Forth
   dw lit_,0xA081,comma_ ; dummy name field
@@ -4423,7 +4663,7 @@ do_vocabulary:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _does_header forth_,'FORT','H'
+  _does_header forth_,'FORTH'
 
   dw do_vocabulary
 forth_vocabulary_dummy_nfa:
@@ -4434,14 +4674,14 @@ forth_vocabulary_link:
   dw 0x0000
 
 ; ----------------------------------------------
-  _colon_header definitions_,'DEFINITION','S'
+  _colon_header definitions_,'DEFINITIONS'
 
   dw context_,fetch_
   dw current_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_,'','(',immediate
+  _colon_header paren_,'(',immediate
 
   dw c_lit_
   db ')'
@@ -4454,7 +4694,7 @@ forth_vocabulary_link:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header quit_,'QUI','T'
+  _colon_header quit_,'QUIT'
 
   dw blk_,off_
   dw left_bracket_
@@ -4469,14 +4709,14 @@ quit.do:
   dw branch_,quit.do
 
 ; ----------------------------------------------
-  _colon_header greeting_,'GREETIN','G'
+  _colon_header greeting_,'GREETING'
 
   dw paren_dot_quote_
   _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header abort_,'ABOR','T'
+  _colon_header abort_,'ABORT'
 
   dw sp_store_
   dw decimal_
@@ -4489,12 +4729,12 @@ boot:
   dw quit_
 
 ; ----------------------------------------------
-  _constant_header boot_,'BOO','T'
+  _constant_header boot_,'BOOT'
 
   dw boot
 
 ; ----------------------------------------------
-  _colon_header warm_,'WAR','M'
+  _colon_header warm_,'WARM'
 
   dw empty_buffers_
   dw abort_
@@ -4505,7 +4745,7 @@ warm_start_phony_:
   dw warm_
 
 ; ----------------------------------------------
-  _colon_header cold_,'COL','D'
+  _colon_header cold_,'COLD'
 
   dw empty_buffers_
   dw empty_csb_
@@ -4536,7 +4776,7 @@ common_start:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header s_to_d_,'S>','D'
+  _code_header s_to_d_,'S>D'
 
   ld hl,0
   pop de
@@ -4547,7 +4787,7 @@ common_start:
   jp push_de_hl
 
 ; ----------------------------------------------
-  _colon_header plus_minus_,'+','-'
+  _colon_header plus_minus_,'+-'
 
   dw zero_less_than_
   dw zero_branch_,plus_minus.end
@@ -4556,7 +4796,7 @@ plus_minus.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header d_plus_minus_,'D+','-'
+  _colon_header d_plus_minus_,'D+-'
 
   dw zero_less_than_
   dw zero_branch_,d_plus_minus.end
@@ -4565,21 +4805,21 @@ d_plus_minus.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header abs_,'AB','S'
+  _colon_header abs_,'ABS'
 
   dw dup_
   dw plus_minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dabs_,'DAB','S'
+  _colon_header dabs_,'DABS'
 
   dw dup_
   dw d_plus_minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header umax_,'UMA','X'
+  _code_header umax_,'UMAX'
 
   ; umax  ( u1 u2 -- u1 | u2 )
 
@@ -4589,7 +4829,7 @@ d_plus_minus.end:
   jp max.1
 
 ; ----------------------------------------------
-  _code_header umin_,'UMI','N'
+  _code_header umin_,'UMIN'
 
   ; umin  ( u1 u2 -- u1 | u2 )
 
@@ -4599,7 +4839,7 @@ d_plus_minus.end:
   jp max.2
 
 ; ----------------------------------------------
-  _code_header min_,'MI','N'
+  _code_header min_,'MIN'
 
   pop de
   pop hl
@@ -4607,7 +4847,7 @@ d_plus_minus.end:
   jp max.2
 
 ; ----------------------------------------------
-  _code_header max_,'MA','X'
+  _code_header max_,'MAX'
 
   pop de
 max.de:
@@ -4621,7 +4861,7 @@ max.2:
   jp push_hl
 
 ; ----------------------------------------------
-  _colon_header m_star_,'M','*'
+  _colon_header m_star_,'M*'
 
   dw two_dup_
   dw xor_,to_r_
@@ -4631,7 +4871,7 @@ max.2:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header m_slash_,'M','/'
+  _colon_header m_slash_,'M/'
 
   dw over_
   dw to_r_
@@ -4651,45 +4891,45 @@ max.2:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header star_,'','*'
+  _colon_header star_,'*'
 
   dw m_star_,drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header slash_mod_,'/MO','D'
+  _colon_header slash_mod_,'/MOD'
 
   dw to_r_,s_to_d_
   dw from_r_,m_slash_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header slash_,'','/'
+  _colon_header slash_,'/'
 
   dw slash_mod_,nip_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header mod_,'MO','D'
+  _colon_header mod_,'MOD'
 
   dw slash_mod_,drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header star_slash_mod_,'*/MO','D'
+  _colon_header star_slash_mod_,'*/MOD'
 
   dw to_r_,m_star_
   dw from_r_,m_slash_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header star_slash_,'*','/'
+  _colon_header star_slash_,'*/'
 
   dw star_slash_mod_,nip_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header m_slash_mod_,'M/MO','D'
+  _colon_header m_slash_mod_,'M/MOD'
 
   dw to_r_,zero_,r_fetch_
   dw u_slash_mod_
@@ -4698,7 +4938,7 @@ max.2:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_line_,'(LINE',')'
+  _colon_header paren_line_,'(LINE)'
 
   dw to_r_
   dw c_slash_l_,b_slash_buf_,star_slash_mod_
@@ -4707,13 +4947,13 @@ max.2:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dot_line_,'.LIN','E'
+  _colon_header dot_line_,'.LINE'
 
   dw paren_line_,minus_trailing_,type_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header message_,'MESSAG','E'
+  _colon_header message_,'MESSAGE'
 
   dw warning_,fetch_
   dw zero_branch_,message.number_only
@@ -4728,22 +4968,22 @@ message.number_only:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _variable_header use_,'US','E'
+  _variable_header use_,'USE'
 
   dw first_buffer
 
 ; ----------------------------------------------
-  _variable_header prev_,'PRE','V'
+  _variable_header prev_,'PREV'
 
   dw first_buffer
 
 ; ----------------------------------------------
-  _constant_header hash_buff_,'#BUF','F'
+  _constant_header hash_buff_,'#BUFF'
 
   dw buffers
 
 ; ----------------------------------------------
-  _colon_header plus_buf_,'+BU','F'
+  _colon_header plus_buf_,'+BUF'
 
 ; doc{
 
@@ -4765,7 +5005,7 @@ plus_buf.continue:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header update_,'UPDAT','E'
+  _colon_header update_,'UPDATE'
 
   dw prev_,fetch_,fetch_
   dw lit_,0x8000,or_
@@ -4773,7 +5013,7 @@ plus_buf.continue:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header empty_buffers_,'EMPTY-BUFFER','S'
+  _colon_header empty_buffers_,'EMPTY-BUFFERS'
 
   dw first_,limit_,over_,minus_,erase_
   dw limit_,first_
@@ -4785,7 +5025,7 @@ empty_buffers.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header buffer_,'BUFFE','R'
+  _colon_header buffer_,'BUFFER'
 
 ; doc{
 
@@ -4820,7 +5060,7 @@ buffer.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header block_,'BLOC','K'
+  _colon_header block_,'BLOCK'
 
   dw to_r_
   dw prev_,fetch_ ; most recently accessed buffer
@@ -4851,7 +5091,7 @@ block.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header c_swap_,'FLI','P'
+  _code_header c_swap_,'FLIP'
 
 ; doc{
 ;
@@ -4870,7 +5110,7 @@ block.end:
   jp push_hl
 
 ; ----------------------------------------------
-  _colon_header block_to_sector_,'BLOCK>SECTO','R'
+  _colon_header block_to_sector_,'BLOCK>SECTOR'
 
 ; doc{
 
@@ -4902,7 +5142,7 @@ block.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header read_write_,'R/','W'
+  _colon_header read_write_,'R/W'
 
   dw c_lit_
   db 0x45
@@ -4933,7 +5173,7 @@ read_write_sector_command:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header flush_,'FLUS','H'
+  _colon_header flush_,'FLUSH'
 
   ; XXX TODO -- move to the disk?
 
@@ -4945,7 +5185,7 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header continued_,'CONTINUE','D'
+  _colon_header continued_,'CONTINUED'
 
   dw dup_,zero_,equals_
   _question_error loading_from_screen_0_error
@@ -4955,7 +5195,7 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header load_,'LOA','D'
+  _colon_header load_,'LOAD'
 
   dw blk_,fetch_,to_r_
   dw to_in_,fetch_,to_r_
@@ -4965,7 +5205,7 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header next_screen_,'--','>',immediate
+  _colon_header next_screen_,'-->',immediate
 
   dw question_loading_
   dw to_in_,off_
@@ -4977,7 +5217,7 @@ flush.do:
 
 if not fig_find?
 
-  _colon_header defined_,'DEFINE','D'
+  _colon_header defined_,'DEFINED'
 
 ; doc{
 ;
@@ -4994,7 +5234,7 @@ if not fig_find?
 endif
 
 ; ----------------------------------------------
-  _colon_header question_defined_,'?DEFINE','D'
+  _colon_header question_defined_,'?DEFINED'
 
   ; From DZX-Forth.
 
@@ -5003,7 +5243,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header bracket_defined_,'[DEFINED',']',immediate
+  _colon_header bracket_defined_,'[DEFINED]',immediate
 
 if fig_find?
   dw find_,dup_
@@ -5016,13 +5256,13 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header bracket_undefined_,'[UNDEFINED',']',immediate
+  _colon_header bracket_undefined_,'[UNDEFINED]',immediate
 
   dw bracket_defined_,zero_equals_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header tick_,'',"'"
+  _colon_header tick_,"'"
 
 if fig_find?
   dw find_
@@ -5036,13 +5276,13 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header bracket_tick_,"['",']',immediate
+  _colon_header bracket_tick_,"[']",immediate
 
   dw tick_,literal_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header begin_,'BEGI','N',immediate
+  _colon_header begin_,'BEGIN',immediate
 
 ; doc{
 ;
@@ -5060,7 +5300,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header then_,'THE','N',immediate
+  _colon_header then_,'THEN',immediate
 
   dw question_comp_ ; error if not compiling
   dw two_,question_pairs_ ; check for nesting error
@@ -5068,7 +5308,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header do_,'D','O',immediate
+  _colon_header do_,'DO',immediate
 
   dw compile_,paren_do_
   dw backward_mark_
@@ -5076,7 +5316,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header loop_,'LOO','P',immediate
+  _colon_header loop_,'LOOP',immediate
 
   _number 3
   dw question_pairs_
@@ -5085,8 +5325,8 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header plus_loop_,'+LOO','P',immediate
-  
+  _colon_header plus_loop_,'+LOOP',immediate
+
   _number 3
   dw question_pairs_
   dw compile_,paren_plus_loop_
@@ -5094,7 +5334,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header until_,'UNTI','L',immediate
+  _colon_header until_,'UNTIL',immediate
 
   dw one_,question_pairs_
   dw compile_,zero_branch_
@@ -5102,7 +5342,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header again_,'AGAI','N',immediate
+  _colon_header again_,'AGAIN',immediate
 
 ; doc{
 ;
@@ -5119,7 +5359,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header repeat_,'REPEA','T',immediate
+  _colon_header repeat_,'REPEAT',immediate
 
 ; doc{
 ;
@@ -5138,7 +5378,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header if_,'I','F',immediate
+  _colon_header if_,'IF',immediate
 
   dw compile_,zero_branch_
 if.do:
@@ -5147,7 +5387,7 @@ if.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header unless_,'UNLES','S',immediate
+  _colon_header unless_,'UNLESS',immediate
 
   ; Equivalent to `0= if`, but faster.
 
@@ -5155,7 +5395,7 @@ if.do:
   dw branch_,if.do
 
 ; ----------------------------------------------
-  _colon_header else_,'ELS','E',immediate
+  _colon_header else_,'ELSE',immediate
 
   dw two_
   dw question_pairs_
@@ -5168,20 +5408,20 @@ if.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header while_,'WHIL','E',immediate
+  _colon_header while_,'WHILE',immediate
 
   dw if_
   dw two_plus_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header spaces_,'SPACE','S'
+  _colon_header spaces_,'SPACES'
 
   dw b_l_,emits_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header emits_,'EMIT','S'
+  _colon_header emits_,'EMITS'
 
   ; emits  ( u c -- )
 
@@ -5198,7 +5438,7 @@ emits_.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header less_hash_,'<','#'
+  _colon_header less_hash_,'<#'
 
   dw pad_
   dw hld_
@@ -5206,7 +5446,7 @@ emits_.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header hash_greater_,'#','>'
+  _colon_header hash_greater_,'#>'
 
   dw drop_
   dw drop_
@@ -5217,7 +5457,7 @@ emits_.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header sign_,'SIG','N'
+  _colon_header sign_,'SIGN'
 
 ; doc{
 
@@ -5241,7 +5481,7 @@ sign.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header hash_,'','#'
+  _colon_header hash_,'#'
 
 ; doc{
 ;
@@ -5275,7 +5515,7 @@ hash.digit:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header hash_s_,'#','S'
+  _colon_header hash_s_,'#S'
 
 hash_s.begin:
   dw hash_,two_dup_,or_
@@ -5283,7 +5523,7 @@ hash_s.begin:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header d_dot_r_,'D.','R'
+  _colon_header d_dot_r_,'D.R'
 
 ; doc{
 ;
@@ -5307,13 +5547,13 @@ hash_s.begin:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dot_r_,'.','R'
+  _colon_header dot_r_,'.R'
 
   dw to_r_,s_to_d_,from_r_,d_dot_r_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header d_dot_,'D','.'
+  _colon_header d_dot_,'D.'
 
 ; doc{
 ;
@@ -5328,7 +5568,7 @@ hash_s.begin:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dot_,'','.'
+  _colon_header dot_,'.'
 
 ; doc{
 ;
@@ -5343,13 +5583,13 @@ hash_s.begin:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_,'','?'
+  _colon_header question_,'?'
 
   dw fetch_,dot_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header u_dot_,'U','.'
+  _colon_header u_dot_,'U.'
 
   dw zero_,d_dot_
   dw semicolon_s_
@@ -5358,7 +5598,7 @@ hash_s.begin:
 
 if 1
 
-  _colon_header dot_s_,'.','S'
+  _colon_header dot_s_,'.S'
 
   ; XXX TMP -- only during the development, then remove
   ; It is already on the disk.
@@ -5384,7 +5624,7 @@ dot_s.end:
 endif
 
 ; ----------------------------------------------
-  _colon_header words_,'WORD','S'
+  _colon_header words_,'WORDS'
 
   ; XXX TODO move to the disk
   dw c_lit_
@@ -5410,7 +5650,7 @@ words.continue:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header list_,'LIS','T'
+  _colon_header list_,'LIST'
 
 
   ; XXX TODO move to the disk
@@ -5439,7 +5679,7 @@ list.loop:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header page_,'PAG','E'
+  _code_header page_,'PAGE'
 
   push bc
   call rom_cl_all
@@ -5448,21 +5688,21 @@ list.loop:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header bye_,'BY','E'
+  _code_header bye_,'BYE'
 
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
   rst 0x08
   db 0x08 ; "STOP" BASIC error
 
 ; ----------------------------------------------
-  _code_header two_drop_,'2DRO','P'
+  _code_header two_drop_,'2DROP'
 
   pop hl
   pop hl
   _jp_next
 
 ; ----------------------------------------------
-  _code_header two_swap_,'2SWA','P'
+  _code_header two_swap_,'2SWAP'
 
   ; [Code from DZX-Forth.]
 
@@ -5483,14 +5723,14 @@ list.loop:
   jp push_de_hl
 
 ; ----------------------------------------------
-  _colon_header unused_,'UNUSE','D'
+  _colon_header unused_,'UNUSED'
 
   ; XXX TMP
   dw zero_,here_,minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header index_,'INDE','X'
+  _colon_header index_,'INDEX'
 
   ; XXX TODO -- remove, already copied to the disk
 
@@ -5510,7 +5750,7 @@ index.loop:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header where_,'WHER','E'
+  _colon_header where_,'WHERE'
 
   ; XXX TODO -- remove; already copied to the disk
 
@@ -5535,22 +5775,22 @@ where.do_it:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _constant_header next_,'NEX','T'
+  _constant_header next_,'NEXT'
 
   dw next
 
 ; ----------------------------------------------
-  _constant_header pushhl_,'PUSHH','L'
+  _constant_header pushhl_,'PUSHHL'
 
   dw push_hl
 
 ; ----------------------------------------------
-  _constant_header pushde_,'PUSHD','E'
+  _constant_header pushde_,'PUSHDE'
 
   dw push_de_hl
 
 ; ----------------------------------------------
-  _colon_header at_,'A','T'
+  _colon_header at_,'AT'
 
 ; doc{
 
@@ -5588,7 +5828,7 @@ at_pfa.last_line:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header border_,'BORDE','R'
+  _code_header border_,'BORDER'
 
   pop hl
   ld a,l
@@ -5596,37 +5836,37 @@ at_pfa.last_line:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header gover_,'GOVE','R'
+  _code_header gover_,'GOVER'
 
   ld a,over_char
   jp color
 
 ; ----------------------------------------------
-  _code_header flash_,'FLAS','H'
+  _code_header flash_,'FLASH'
 
   ld a,flash_char
   jp color
 
 ; ----------------------------------------------
-  _code_header inverse_,'INVERS','E'
+  _code_header inverse_,'INVERSE'
 
   ld a,inverse_char
   jp color
 
 ; ----------------------------------------------
-  _code_header bright_,'BRIGH','T'
+  _code_header bright_,'BRIGHT'
 
   ld a,bright_char
   jp color
 
 ; ----------------------------------------------
-  _code_header paper_,'PAPE','R'
+  _code_header paper_,'PAPER'
 
   ld a,paper_char
   jp color
 
 ; ----------------------------------------------
-  _code_header ink_,'IN','K'
+  _code_header ink_,'INK'
 
   ld a,ink_char
 
@@ -5643,7 +5883,7 @@ color:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header j_,'','J'
+  _code_header j_,'J'
 
   ld hl,(return_stack_pointer)
   ld de,cell*2
@@ -5655,7 +5895,7 @@ color:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header two_constant_,'2CONSTAN','T'
+  _colon_header two_constant_,'2CONSTANT'
 
   dw two_variable_
   dw paren_semicolon_code_
@@ -5665,38 +5905,38 @@ do_two_constant:
   jp two_fetch.hl
 
 ; ----------------------------------------------
-  _colon_header two_variable_,'2VARIABL','E'
+  _colon_header two_variable_,'2VARIABLE'
 
   dw create_,comma_,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header u_dot_r_,'U.','R'
+  _colon_header u_dot_r_,'U.R'
 
   dw to_r_,zero_,from_r_,d_dot_r_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header two_over_,'2OVE','R'
+  _code_header two_over_,'2OVER'
 
   ld hl,4
   add hl,sp
   jp two_fetch.hl
 
 ; ----------------------------------------------
-  _colon_header exit_,'EXI','T'
+  _colon_header exit_,'EXIT'
 
   dw r_drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_exit_,'?EXI','T'
+  _colon_header question_exit_,'?EXIT'
 
   dw question_branch_,exit_pfa
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header case_,'CAS','E',immediate
+  _colon_header case_,'CASE',immediate
   ; XXX TODO move to the disk?
 
   dw question_comp_
@@ -5706,7 +5946,7 @@ do_two_constant:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header of_,'O','F',immediate
+  _colon_header of_,'OF',immediate
 
   dw c_lit_
   db 0x04
@@ -5721,7 +5961,7 @@ do_two_constant:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header endof_,'ENDO','F',immediate
+  _colon_header endof_,'ENDOF',immediate
 
   dw c_lit_
   db 0x05
@@ -5736,7 +5976,7 @@ do_two_constant:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header endcase_,'ENDCAS','E',immediate
+  _colon_header endcase_,'ENDCASE',immediate
 
   dw c_lit_
   db 0x04
@@ -5752,7 +5992,7 @@ endcase.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header inkey_,'INKE','Y'
+  _code_header inkey_,'INKEY'
   ; XXX TODO move to the disk
 
   push bc
@@ -5771,7 +6011,7 @@ l8128h:
   jp push_hl
 
 ; ----------------------------------------------
-  _colon_header char_,'CHA','R'
+  _colon_header char_,'CHAR'
 
   if 0 ; XXX OLD
     dw b_l_,word_,here_,one_plus_,c_fetch_
@@ -5781,13 +6021,13 @@ l8128h:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header bracket_char_,'[CHAR',']',immediate
+  _colon_header bracket_char_,'[CHAR]',immediate
 
   dw char_,literal_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header s_quote_,'S','"',immediate
+  _colon_header s_quote_,'S"',immediate
 
   ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
   ;  [char] " (s)  ; immediate
@@ -5798,19 +6038,19 @@ l8128h:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_next_screen_,'?--','>',immediate
+  _colon_header question_next_screen_,'?-->',immediate
 
   dw zero_branch_,question_next_screen.end
   dw next_screen_
 question_next_screen.end:
   dw semicolon_s_
-  
+
   ; XXX TODO a good place to use `??` instead of a branch:
 ;  dw question_question_,next_screen_
 ;  dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_backslash_,'?','\',immediate
+  _colon_header question_backslash_,'?\',immediate
 
   dw zero_branch_,question_backslash.end
   dw backslash_
@@ -5818,7 +6058,7 @@ question_backslash.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header backslash_,'','\',immediate
+  _colon_header backslash_,'\',immediate
 
   dw to_in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_
@@ -5828,7 +6068,7 @@ question_backslash.end:
 nfa_of_top_most_word_in_forth_voc:
 
 ; ----------------------------------------------
-  _colon_header dot_paren_,'.','(',immediate
+  _colon_header dot_paren_,'.(',immediate
 
 ; doc{
 ;
@@ -5887,5 +6127,5 @@ endif
 ; Number  Times compiled (not including error numbers)
 ; 0       20
 ; 1       11
-; 2       11 
+; 2       11
 ; 3       6
