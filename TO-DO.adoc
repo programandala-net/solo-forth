@@ -102,7 +102,7 @@ Idea: `0exit`. Useful for `?\`, `?(`.
 
 .2015-10-25:
 
-From cmForth:
+Ideas from cmForth:
 
 ____
 
@@ -116,11 +116,6 @@ REPEATS      Repeat the next instruction if the count on top of the
 return stack is not zero.  The count is also decremented.  If count is
 zero, pop the return stack and continue executing the following
 instruction.  REPEATS is  compiled by        TIMES or OF(.
-
-cmForth does not support the traditional DO-LOOP structures in most
-Forth systems.  The FOR-NEXT loop is a more efficient loop structure
-with one decrementing counter.  The DO-LOOP structure can be
-synthesized with much execution overhead.
 
 The REPEATS instruction is used frequently to implement complicated
 math operations, like shifts, multiply, divide and square root, from
@@ -172,10 +167,6 @@ Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 
 Fix: `transfer-block` changes the current drive to 2!
 
-.2015-09-25:
-
-Try 1024-byte blocks. Also `-->` will need changes.
-
 // }}}
 == Graphics ==
 // {{{
@@ -186,7 +177,7 @@ Fix: `attr`.
 
 .2015-09-01:
 
-Options for text and graphic cursor words.
+Possible names for text and graphic cursor words.
 
 |===
 | set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
@@ -213,10 +204,13 @@ Options for text and graphic cursor words.
 | set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
 |===
 
-So far (2015-09-15) the best is:
+So far (2015-09-15) the best are:
 
 |===
+| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
+
 | at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-gxy          | gxy             | ghome
 |===
 
 .2015-09-05:
@@ -431,11 +425,11 @@ ROTATE         n1 n2 -- n3
 ____
 
 Implement a configurable case mode for `search` and `compare`? See how
-Z88 CamelForth does it.
+Z88 CamelForth does it. Also DX-Forth has this feature.
 
 .2015-09-13:
 
-`rp` should be a user variable
+`rp` should be a user variable.
 
 .2015-09-21:
 
@@ -448,11 +442,6 @@ Z88 CamelForth does it.
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
 
-.2015-09-23:
-
-Create a `_deferred_header` macro for the new format of deferred
-words.
-
 // }}}
 == Sample games ==
 // {{{
@@ -460,11 +449,10 @@ words.
 .2015-10-05:
 
 Finish adapt tt.
+
 // }}}
 == Other ==
 // {{{
-
-Use `warning` as an example of `?branch`, in my message to clf.
 
 .2015-12-14
 

@@ -14926,6 +14926,44 @@ defer #spaces
 
   \ Note: 1 frame = 50th of second
 
+( do-bench )
+
+  \ 2015-12-17
+
+need bench
+
+32767 0 2constant range
+
+: forth-83-do  ( -- )  bench  range do83  loop83  marque  ;
+
+: forth-79-do  ( -- )  bench  range do  loop  marque  ;
+
+: forth-83-i  ( -- )
+  bench  range do83  i83 drop  loop83  marque  ;
+
+: forth-79-i  ( -- )  bench  range do  i drop  loop  marque  ;
+
+: forth-83-+loop  ( -- )
+  bench  range do83  2 +loop83  marque  ;
+
+: forth-79-+loop  ( -- )  bench  range do  2 +loop  marque  ;
+
+: do-bench  ( -- )
+  forth-83-do forth-79-do
+  forth-83-i forth-79-i
+  forth-83-+loop forth-79-+loop  ;
+
+  \           Frames by 32767 iterations
+  \           --------------------------
+  \ Bench     Forth-79  Forth-83
+  \ --------  --------  --------
+  \ loop           143       109
+  \ i              264       458
+  \ +loop          108        97
+
+  \ Note: 1 frame = 50th of second
+
+
   \ }}} =======================================================
   \ Development tests {{{
 
