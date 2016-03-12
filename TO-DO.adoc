@@ -215,3 +215,10 @@ Name for graphic fill: `flood`.
 There's an example how to change and restore a channel in print-42, by
 Ricardo Serral Wigge. Beside, it supports many (all?) control
 characters, unlike the implementation by Andy Jenkinson.
+
+.2015-09-08:
+
+Fix: `bye` resets the system when `mode42` is on. Move `mode32` to the
+kernel and set it before going back to BASIC.
+
+

@@ -23,6 +23,7 @@ rom_cl_sc_all:        equ 0x0DFE
 rom_cl_scroll:        equ 0x0E00 ; scroll the number of lines in the B register
 rom_cls:              equ 0x0D6B ; CLS
 rom_cls_lower:        equ 0x0D6E 
+rom_co_temp_5:        equ 0x2211
 rom_copy_line:        equ 0x0EF4
 rom_draw:             equ 0x24BA ; point of the draw_line routine
 rom_find_int1:        equ 0x1E94

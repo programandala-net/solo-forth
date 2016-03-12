@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509071818
+\ Last modified: 201509101717
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -48,10 +48,15 @@ decode dump
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
   \ Does the string ca1 len1 contains the string ca2 len2?
 
-2variable locatable  scr/disk 1 locatable 2!
+variable default-first-locatable
+variable first-locatable
+  8 dup default-first-locatable !  first-locatable !
+variable last-locatable  scr/disk last-locatable !
 
 : located  ( ca len -- screen | false )
-  locatable 2@ do
+  last-locatable @ 1+  first-locatable @
+  default-first-locatable @  first-locatable !
+  do
     0 i (line) 2over contains if  2drop i unloop exit  then
     \ break-key? ?exhaust
   loop  2drop false  ;
@@ -63,8 +68,13 @@ decode dump
 
 ( require ) \ scr 3
 
-: do-required  ( ca len -- )
-  located dup 0= 29 ?error load  ;
+: ?located  ( screen | false -- )  dup 0= 29 ?error ;
+
+: from  ( "name" -- )  locate ?located first-locatable !  ;
+  \ Locate the given _name_ and set its screen the first one
+  \ `require` will search from.
+
+: do-required  ( ca len -- )  located ?located load  ;
 
 : do-require  ( "name" -- )
   parse-name save-string do-required  ;
@@ -81,7 +91,7 @@ decode dump
   \ 2dup undefined? warnings @ and
   \   if  type 28 warning exit  then  2drop  ;
 
-  \ XXX NEW
+  \ XXX TMP
   2dup undefined?  if  do-required  else  2drop  then  ;
 
 : require  ( "name" -- )
@@ -199,7 +209,7 @@ decode dump
   \ }}} =======================================================
   \ Strings {{{
 
-( place +place )
+( place +place )  \ ==strings==
 
   \ [Code from Afera.]
 
@@ -243,7 +253,7 @@ require -rot
   \ }}} =======================================================
   \ Data stack {{{
 
-( -rot )
+( -rot )  \ ==datastack==
 
   \ [Code adapted from Afera.]
 
@@ -273,86 +283,469 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   \ }}} =======================================================
   \ Return stack {{{
 
-( n>r nr> )
+( n>r )  \ ==returnstack==
 
-  \ XXX TODO
+require z80-asm 
 
-code n>r  ( x0..xn n -- ) ( R: -- x0..xn n )
+code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
 
-  \ exx
-  \ pop bc
-  \ ld (count),bc
-  \ do:
-  \ ld a,b
-  \ or c
-  \ jp z,end
-  \ pop de
-  \ dec hl
-  \ ld (hl),d
-  \ dec hl
-  \ ld (hl),e
-  \ jp do
-  \ count: equ $+1
-  \ ld hl,0
-  \ ld (rp),hl
-  \ end:
-  \ exx
-  \ jpnext
+  exx
+
+  bc pop  0000 bc stp  here 2- 0 unresolved !
+  rp hl ftp
+  begin  bc tstp  nz while
+    de pop  hl decp  d m ld  hl decp  e m ld  bc decp
+  repeat
+  0000 de ldp# here 2- 0 unresolved @ !
+  hl decp  d m ld  hl decp  e m ld
+
+  rp hl stp  exx  jpnext
 
   end-code
 
-code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
+require nr>
 
-  \ exx
-  \ ld hl,(rp)
-  \ ld b,(hl)
-  \ inc hl
-  \ ld c,(hl)
-  \ inc hl
-  \ do:
-  \ ld a,b
-  \ or c
-  \ jp z,end
-  \ ld e,(hl)
-  \ inc hl
-  \ ld d,(hl)
-  \ inc hl
-  \ push de
-  \ jp do
+( nr> )
 
+require z80-asm
+
+  \ XXX FIXME
+
+code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
+
+  exx
+  rp hl ftp
+  m c ld  hl incp  m b ld  hl incp
+  0000 bc stp  here 2- 0 unresolved !
+  begin  bc tstp  nz while
+    m e ld  hl incp  m d ld  hl incp  de push  bc decp
+  repeat
+  rp hl stp  exx
+  0000 hl ldp# here 2- 0 unresolved @ !
+  pushhl jp
   end-code
+
+require n>r
 
   \ }}} =======================================================
   \ Screen modes {{{
 
-( mode32 mode42 )
+( mode32 )  \ ==screenmodes==
 
 [defined] sys-chans ?\ 23631 constant sys-chans
 [defined] sys-chars ?\ 23606 constant sys-chars
 
-
-: (mode)  ( a1 a2 -- )
-  \ Set the system font to _a1_ and associate the output
-  \ routine at _a2_ to the system channels "K", "S" and "P".
-  sys-chars !
+: channels!  ( a -- )
+  \ Associate the output
+  \ routine at _a_ to the system channels "K", "S" and "P".
   sys-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
 
+: set-mode  ( a1 a2 -- )
+  \ Set the system font to _a1_ and associate the output
+  \ routine at _a2_ to the system channels "K", "S" and "P".
+  sys-chars !  channels!  ;
 
-: mode32  ( -- )  2548 15360 (mode) ;
+
+: mode32  ( -- )  2548 15360 set-mode ;
   \ Set the default printing mode, 32 cpl and the ROM font.
 
-: mode42  ( -- )  63900 [ 64600 256 - ] literal (mode) ;
+( mode42 )
+
+require mode32  require <file-as-is
+
+drive@ 1 drive!
+s" print-42" <file-as-is ?error
+s" ea5aky.f42" <file-as-is ?error
+drive!
+  \ Load the driver and the font.
+
+: mode42  ( -- )  63900 [ 64600 256 - ] literal set-mode ;
   \ Set the 42 cpl printing mode.
 
-  \ [Author of the 42 cpl printing code: Ricardo Serral Wigge.
+  \ Credits:
+  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
   \ Published in Microhobby, issue 66 (1986-02), page 24:
   \ http://microhobby.org/numero066.htm
-  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+( mode64 )
+
+require mode32  require <file-as-is
+
+drive@ 1 drive!
+s" 4x8fd.tap" <file-as-is ?error
+drive!
+  \ Load the driver and the font.
+
+variable mode64-driver  mode64-driver off
+
+: mode64  ( -- )  60000 channels! ;
+  \ Set the 64 cpl printing mode.
+
+  \ Credits:
+  \ Author of the 4x8 font driver: Andrew Owen.
+  \ Published in the World of Spectrum forum:
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \ Modified and adapted to Solo Forth by Marcos Cruz.
+
+( spectrum-mode )
+
+  \ XXX TMP
+
+: spectrum-mode  ( -- )
+  \ Set the Spectrum printing mode. This is the default.
+  ['] (emit) ['] emit defer!
+  ['] (at-xy) ['] at-xy defer!
+  ['] (home) ['] home defer!
+  ['] (cr) ['] cr defer!  ;
+
+( fzx-test )
+
+  \ XXX TMP for debugging
+
+require fzx-emit  require <file
+
+create font  2048 allot
+1 drive!  font 0 s" lettra.fzx" <file
+font fzx-font !
+: zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
+
+cr .( fzx-emit is ready ) cr
+' (fzx-emit) cfa>pfa hex
+cr .( Code start:   ) dup u.
+cr .( Code length:  ) ' fzx-emit swap - u.
+cr
+
+( fzx-mode )
+
+require zx-emit
+
+  \ XXX TODO -- finish -- the text input words in the kernel
+  \ need some changes before this mode can work fine, and the
+  \ FZX driver as well.
+
+: fzx-at-xy  ( xc yc -- )  fzx-y c! fzx-x c!  ;
+: fzx-cr  ( -- )  13 fzx-emit  ;
+  \ : fzx-home  ( -- )  0 fzx-x !  ;  \ XXX TODO
+: fzx-home  ( -- )  0 191 fzx-at-xy  ;
+
+: fzx-mode  ( -- )
+  \ Set the FZX printing mode.
+  ['] fzx-emit ['] emit defer!
+  ['] fzx-at-xy ['] at-xy defer!
+  ['] fzx-home ['] home defer!
+  ['] fzx-cr ['] cr defer!  ;
+
+( fzx-emit )
+
+create fzx-font 60000 ,  \ font address
+
+0 constant margin  \ XXX TODO -- make it a variable
+
+  \ XXX TODO make variable limits, therefore creating windows
+
+create fzx-variables
+  here 0 c, \ fzx-flags
+    \ 0 = expecting a regular character
+    \ 1 = expecting the column
+    \ 2 = expecting the line
+  here margin c, \ fzx-x (margin)
+  here 191 c,  \ fzx-y
+
+constant fzx-y  constant fzx-x  constant fzx-flags
+
+-->
+
+( fzx-emit )
+
+require z80-asm  require scroll-1px-up
+
+  \ Credits:
+  \ This code is a modified version of
+  \ FZX driver - Copyright (c) 2013 Einar Saukas
+  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0028171
+
+  \ XXX TODO -- make the top left position 0,0 instead of 0,191
+
+  \ XXX TODO -- implement backspace -- the width of the latest
+  \ character must be stored.
+
+create (fzx-emit)  ( -- )
+
+  asm
+
+  \ Input:
+  \  A = character to print
+
+  fzx-flags hl ldp#  \ initial address of local variables
+  m dec  \ check fzx-flags value by decrementing it
+
+  p' if'  \ not expecting a regular character
+
+    nz if  \ not expecting the column
+      \ expecting the line
+      \ GET_LIN:
+      cpl  C0 add#  \ now A = 191 - char
+      hl incp
+    then
+    \ GET_COL:
+    hl incp  a m ld  ret
+
+  then'
+
+-->
+
+( fzx-emit )
+
+  \ expecting a regular character
+  \ CHK_AT:
+
+  16 cp#  z if  02 m ld#  ret  then
+    \ 'AT' character?  if so, change `fzx-flags` to expect a
+    \ line value next time, then return
+
+  \ CHK_CR:
+  m inc  \ increment fzx-flags to restore previous value (0)
+  hl incp  \ point to fzx-x XXX why?
+  fzx-font bc ftp  bc push  ix pop
+    \ now IX = font addresss
+
+  0D cp#  0 jpz here 2- 0 unresolved !
+    \ carriage return? if so, jump to NEWLINE
+
+  \ CHK_CHAR:
+  a dec  2 ix cpx
+    \ now A = char - 1
+    \ compare with lastchar of the font
+
+-->
+
+( fzx-emit )
+
+  cy if  \ jr nc, UNDEF_CHAR
+
+    1F sub#  \ now A = char - 32
+
+    cy if  \ jr nc, PRINT_CHAR
+
+  2swap  \ exchange the two `if`, because they are not nested
+
+  then
+
+  \ UNDEF_CHAR:
+
+  char ? 20 - a ld#  \ print '?' instead of invalid character
+
+    then
+
+-->
+
+( fzx-emit )
+
+  \ PRINT_CHAR:
+
+  a inc
+    \ now A = char - 31
+  a l ld  0 h ld#  hl de ldp  hl addp  de addp
+    \ now HL = (char - 31) * 3
+  bc addp
+    \ now HL references offset/kern in char table
+  m e ld  hl incp  m a ld  3F and#  a d ld
+    \ now DE = offset
+  m xor  rlca  rlca  a c ld
+    \ now C = kern
+-->
+
+( fzx-emit )
+
+  hl push  de addp  hl decp
+    \ now HL = char definition address
+  exsp
+    \ now HL references offset/kern in char table
+  hl incp
+    \ now HL references shift/width in char table
+  a xor  rld
+    \ now A = char shift
+  af push  rld
+    \ now A = (width - 1)
+  0 sta  here 2- 1 unresolved !
+    \ store the width at width1
+
+  08 cp#  \ check if char width is larger than 8 bits
+  rld  \ restore char shift/width
+
+-->
+
+( fzx-emit )
+
+
+  000E de ldp#  nc if  234E de ldp#  then
+    \ if cy, DE holds the instruction `0 c ld#`
+    \ if nc, DE holds the instructions `m c ld` and `hl incp`
+  \ NARROW_CHAR:
+  0 de stp  here 2- 2 unresolved !
+    \ modify the code at SMC to handle narrow/large chars;
+    \ save the address of the patched address,
+    \ to be resolved later at SMC
+
+  hl incp  m a ld
+    \ now HL references next char offset
+    \ now A = LSB of next char offset
+  l add  a e ld
+    \ now E = LSB of next char definition address
+-->
+
+( fzx-emit )
+
+
+  fzx-x hl ldp#  m a ld  c sub
+    \ move left number of pixels specified by kern
+  cy if  a xor  then
+    \ stop moving if it would fall outside screen
+  \ ON_SCREEN:
+  a m ld  0 fta  here 2- 3 unresolved !
+    \ now A = (width - 1)
+    \ fetch the width at width1
+  m add
+    \ now A = (width - 1) + column
+  0 callc here 2- 4 unresolved !  \ newline callc
+    \ if char width won't fit then move to new line
+
+-->
+
+( fzx-emit )
+
+  fzx-x bc ftp
+  01 a ld#
+  00 ix subx  \ now A = 1 - height
+  b add  \ now A = fzx-y - height + 1
+
+  \ XXX OLD
+  \ 0C86 jpnc  \ call routine REPORT-5 ("Out of screen")
+  nc if  \ end of screen
+    \ XXX OLD
+    hl pop  hl pop  ret  \ restore the stack and exit
+    \ XXX NEW
+    \ 0 ix b ftx  \ height of the font
+    \ begin  (scroll-1px-up) call  step
+  then
+
+  af pop  BF add#
+    \ now A = shift
+    \ now A = range 0..191
+
+  \ XXX TODO -- adapt this call to the Forth word
+  22AA 2+ call  exaf
+    \ call (PIXEL-ADDr) + 2 to calculate screen address
+    \ now A' = (col % 8)
+  here jr >relmark 5 unresolved !  \ jr CHK_LOOP
+
+-->
+
+( fzx-emit )
+
+  \ MAIN_LOOP:
+
+  begin  \ main loop
+
+    m d ld  \ now D = 1st byte from char definition grid
+    hl incp  \ next character definition
+    \ SMC:
+    2 unresolved @ >resolve
+      \ resolve the command that patches here
+    m c ld  hl incp
+      \ either `0 c ld#` or `m c ld  hl incp`;
+      \ now C = 2nd byte from char definition or zero
+
+    a xor  exsp  exaf
+      \ now A = zero (since there's no 3rd byte)
+      \ now HL = screen address
+      \ now A = (col % 8), A' = 0
+    nz if
+      a b ld  exaf
+        \ now B = (col % 8)
+        \ now A = 0, A' = (col % 8)
+  \ ROTATE_PIXELS:
+      begin  d srl  c rr  rra  step
+        \ rotate pixels
+        \ rotate right char definition grid in D,C,A
+    then
+
+-->
+
+( fzx-emit )
+
+  \ NO_ROTATE:
+
+    l inc  l inc   m or  a m ld  \ put A on screen
+    l dec  c a ld  m or  a m ld  \ put C on screen
+    l dec  d a ld  m or  a m ld  \ put D on screen
+    h inc  \ move screen address by 1 pixel down
+
+    h a ld  07 and#
+    z if  l a ld  20 add#  a l ld
+      nc if  h a ld  08 sub#  a h ld  then
+    then \ CHK_LOOP:
+
+    5 unresolved @ here >relresolve
+-->
+
+( fzx-emit )
+
+  \ CHK_LOOP:
+
+    exsp  \ now HL = char definition address
+    l a ld
+    e cp  \ check if reached next char definition address
+  z until  \ loop otherwise (to MAIN_LOOP)
+
+  hl pop  \ discard screen address from stack
+  fzx-x hl ldp#
+  m a ld  \ now A = column
+\ WIDTH1:
+  here 1+ dup 1 unresolved @ ! 3 unresolved @ !
+    \ resolve the commands that store and fetch the width
+  00 add#  \ now A = column + (width - 1)
+  scf
+  01 ix adcx  \ now A = column + width + tracking
+-->
+
+( fzx-emit )
+
+  cy if
+    \ outside the screen
+
+  \ NEWLINE:
+    0 unresolved @ >resolve  4 unresolved @ >resolve
+      \ resolve the jumps here
+    margin m ld#  \ move to initial column at left margin
+    hl incp
+    m a ld  \ now A = line
+    00 ix subx  \ now A = line - height
+  then
+
+  \ EXIT:
+  a m ld  \ move down a few pixels specified by height
+  ret
+
+  end-asm
+
+-->
+
+( fzx-emit )
+
+code fzx-emit  ( c -- )
+
+  hl pop  bc push
+  l a ld  ' (fzx-emit) cfa>pfa call
+  bc pop  next ix ldp#  jpnext
+
+  end-code
 
   \ }}} =======================================================
   \ Graphics {{{
 
-( udg! udg: )
+( udg! udg: )  \ ==graphics==
 
 [defined] udg
   ?\  : udg  ( -- a )  23675 @  ;
@@ -1350,367 +1743,9 @@ code vertical-curtain  ( b -- )
   bc pop  jpnext  end-code
 
   \ }}} =======================================================
-  \ Spectrum printing mode {{{
+  \ Sound 128 {{{
 
-( spectrum-mode )
-
-: spectrum-mode  ( -- )
-  \ Set the Spectrum printing mode. This is the default.
-  ['] (emit) ['] emit defer!
-  ['] (at-xy) ['] at-xy defer!
-  ['] (home) ['] home defer!
-  ['] (cr) ['] cr defer!  ;
-
-  \ }}} =======================================================
-  \ FZX printing mode {{{
-
-( fzx-test )
-
-  \ XXX TMP for debugging
-
-require fzx-emit  require <file
-
-create font  2048 allot
-1 drive!  font 0 s" lettra.fzx" <file
-font fzx-font !
-: zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
-
-cr .( fzx-emit is ready ) cr
-' (fzx-emit) cfa>pfa hex
-cr .( Code start:   ) dup u.
-cr .( Code length:  ) ' fzx-emit swap - u.
-cr
-
-( fzx-mode )
-
-require zx-emit
-
-  \ XXX TODO -- finish -- the text input words in the kernel
-  \ need some changes before this mode can work fine, and the
-  \ FZX driver as well.
-
-: fzx-at-xy  ( xc yc -- )  fzx-y c! fzx-x c!  ;
-: fzx-cr  ( -- )  13 fzx-emit  ;
-  \ : fzx-home  ( -- )  0 fzx-x !  ;  \ XXX TODO
-: fzx-home  ( -- )  0 191 fzx-at-xy  ;
-
-: fzx-mode  ( -- )
-  \ Set the FZX printing mode.
-  ['] fzx-emit ['] emit defer!
-  ['] fzx-at-xy ['] at-xy defer!
-  ['] fzx-home ['] home defer!
-  ['] fzx-cr ['] cr defer!  ;
-
-( fzx-emit )
-
-create fzx-font 60000 ,  \ font address
-
-0 constant margin  \ XXX TODO -- make it a variable
-
-  \ XXX TODO make variable limits, therefore creating windows
-
-create fzx-variables
-  here 0 c, \ fzx-flags
-    \ 0 = expecting a regular character
-    \ 1 = expecting the column
-    \ 2 = expecting the line
-  here margin c, \ fzx-x (margin)
-  here 191 c,  \ fzx-y
-
-constant fzx-y  constant fzx-x  constant fzx-flags
-
--->
-
-( fzx-emit )
-
-require z80-asm  require scroll-1px-up
-
-  \ Credits:
-  \ This code is a modified version of
-  \ FZX driver - Copyright (c) 2013 Einar Saukas
-  \ http://www.worldofspectrum.org/infoseekid.cgi?id=0028171
-
-  \ XXX TODO -- make the top left position 0,0 instead of 0,191
-
-  \ XXX TODO -- implement backspace -- the width of the latest
-  \ character must be stored.
-
-create (fzx-emit)  ( -- )
-
-  asm
-
-  \ Input:
-  \  A = character to print
-
-  fzx-flags hl ldp#  \ initial address of local variables
-  m dec  \ check fzx-flags value by decrementing it
-
-  p' if'  \ not expecting a regular character
-
-    nz if  \ not expecting the column
-      \ expecting the line
-      \ GET_LIN:
-      cpl  C0 add#  \ now A = 191 - char
-      hl incp
-    then
-    \ GET_COL:
-    hl incp  a m ld  ret
-
-  then'
-
--->
-
-( fzx-emit )
-
-  \ expecting a regular character
-  \ CHK_AT:
-
-  16 cp#  z if  02 m ld#  ret  then
-    \ 'AT' character?  if so, change `fzx-flags` to expect a
-    \ line value next time, then return
-
-  \ CHK_CR:
-  m inc  \ increment fzx-flags to restore previous value (0)
-  hl incp  \ point to fzx-x XXX why?
-  fzx-font bc ftp  bc push  ix pop
-    \ now IX = font addresss
-
-  0D cp#  0 jpz here 2- 0 unresolved !
-    \ carriage return? if so, jump to NEWLINE
-
-  \ CHK_CHAR:
-  a dec  2 ix cpx
-    \ now A = char - 1
-    \ compare with lastchar of the font
-
--->
-
-( fzx-emit )
-
-  cy if  \ jr nc, UNDEF_CHAR
-
-    1F sub#  \ now A = char - 32
-
-    cy if  \ jr nc, PRINT_CHAR
-
-  2swap  \ exchange the two `if`, because they are not nested
-
-  then
-
-  \ UNDEF_CHAR:
-
-  char ? 20 - a ld#  \ print '?' instead of invalid character
-
-    then
-
--->
-
-( fzx-emit )
-
-  \ PRINT_CHAR:
-
-  a inc
-    \ now A = char - 31
-  a l ld  0 h ld#  hl de ldp  hl addp  de addp
-    \ now HL = (char - 31) * 3
-  bc addp
-    \ now HL references offset/kern in char table
-  m e ld  hl incp  m a ld  3F and#  a d ld
-    \ now DE = offset
-  m xor  rlca  rlca  a c ld
-    \ now C = kern
--->
-
-( fzx-emit )
-
-  hl push  de addp  hl decp
-    \ now HL = char definition address
-  exsp
-    \ now HL references offset/kern in char table
-  hl incp
-    \ now HL references shift/width in char table
-  a xor  rld
-    \ now A = char shift
-  af push  rld
-    \ now A = (width - 1)
-  0 sta  here 2- 1 unresolved !
-    \ store the width at width1
-
-  08 cp#  \ check if char width is larger than 8 bits
-  rld  \ restore char shift/width
-
--->
-
-( fzx-emit )
-
-
-  000E de ldp#  nc if  234E de ldp#  then
-    \ if cy, DE holds the instruction `0 c ld#`
-    \ if nc, DE holds the instructions `m c ld` and `hl incp`
-  \ NARROW_CHAR:
-  0 de stp  here 2- 2 unresolved !
-    \ modify the code at SMC to handle narrow/large chars;
-    \ save the address of the patched address,
-    \ to be resolved later at SMC
-
-  hl incp  m a ld
-    \ now HL references next char offset
-    \ now A = LSB of next char offset
-  l add  a e ld
-    \ now E = LSB of next char definition address
--->
-
-( fzx-emit )
-
-
-  fzx-x hl ldp#  m a ld  c sub
-    \ move left number of pixels specified by kern
-  cy if  a xor  then
-    \ stop moving if it would fall outside screen
-  \ ON_SCREEN:
-  a m ld  0 fta  here 2- 3 unresolved !
-    \ now A = (width - 1)
-    \ fetch the width at width1
-  m add
-    \ now A = (width - 1) + column
-  0 callc here 2- 4 unresolved !  \ newline callc
-    \ if char width won't fit then move to new line
-
--->
-
-( fzx-emit )
-
-  fzx-x bc ftp
-  01 a ld#
-  00 ix subx  \ now A = 1 - height
-  b add  \ now A = fzx-y - height + 1
-
-  \ XXX OLD
-  \ 0C86 jpnc  \ call routine REPORT-5 ("Out of screen")
-  nc if  \ end of screen
-    \ XXX OLD
-    hl pop  hl pop  ret  \ restore the stack and exit
-    \ XXX NEW
-    \ 0 ix b ftx  \ height of the font
-    \ begin  (scroll-1px-up) call  step
-  then
-
-  af pop  BF add#
-    \ now A = shift
-    \ now A = range 0..191
-
-  \ XXX TODO -- adapt this call to the Forth word
-  22AA 2+ call  exaf
-    \ call (PIXEL-ADDr) + 2 to calculate screen address
-    \ now A' = (col % 8)
-  here jr >relmark 5 unresolved !  \ jr CHK_LOOP
-
--->
-
-( fzx-emit )
-
-  \ MAIN_LOOP:
-
-  begin  \ main loop
-
-    m d ld  \ now D = 1st byte from char definition grid
-    hl incp  \ next character definition
-    \ SMC:
-    2 unresolved @ >resolve
-      \ resolve the command that patches here
-    m c ld  hl incp
-      \ either `0 c ld#` or `m c ld  hl incp`;
-      \ now C = 2nd byte from char definition or zero
-
-    a xor  exsp  exaf
-      \ now A = zero (since there's no 3rd byte)
-      \ now HL = screen address
-      \ now A = (col % 8), A' = 0
-    nz if
-      a b ld  exaf
-        \ now B = (col % 8)
-        \ now A = 0, A' = (col % 8)
-  \ ROTATE_PIXELS:
-      begin  d srl  c rr  rra  step
-        \ rotate pixels
-        \ rotate right char definition grid in D,C,A
-    then
-
--->
-
-( fzx-emit )
-
-  \ NO_ROTATE:
-
-    l inc  l inc   m or  a m ld  \ put A on screen
-    l dec  c a ld  m or  a m ld  \ put C on screen
-    l dec  d a ld  m or  a m ld  \ put D on screen
-    h inc  \ move screen address by 1 pixel down
-
-    h a ld  07 and#
-    z if  l a ld  20 add#  a l ld
-      nc if  h a ld  08 sub#  a h ld  then
-    then \ CHK_LOOP:
-
-    5 unresolved @ here >relresolve
--->
-
-( fzx-emit )
-
-  \ CHK_LOOP:
-
-    exsp  \ now HL = char definition address
-    l a ld
-    e cp  \ check if reached next char definition address
-  z until  \ loop otherwise (to MAIN_LOOP)
-
-  hl pop  \ discard screen address from stack
-  fzx-x hl ldp#
-  m a ld  \ now A = column
-\ WIDTH1:
-  here 1+ dup 1 unresolved @ ! 3 unresolved @ !
-    \ resolve the commands that store and fetch the width
-  00 add#  \ now A = column + (width - 1)
-  scf
-  01 ix adcx  \ now A = column + width + tracking
--->
-
-( fzx-emit )
-
-  cy if
-    \ outside the screen
-
-  \ NEWLINE:
-    0 unresolved @ >resolve  4 unresolved @ >resolve
-      \ resolve the jumps here
-    margin m ld#  \ move to initial column at left margin
-    hl incp
-    m a ld  \ now A = line
-    00 ix subx  \ now A = line - height
-  then
-
-  \ EXIT:
-  a m ld  \ move down a few pixels specified by height
-  ret
-
-  end-asm
-
--->
-
-( fzx-emit )
-
-code fzx-emit  ( c -- )
-
-  hl pop  bc push
-  l a ld  ' (fzx-emit) cfa>pfa call
-  bc pop  next ix ldp#  jpnext
-
-  end-code
-
-  \ }}} =======================================================
-  \ Sound 128K {{{
-
-( !sound vol shutup noise )
+( !sound vol shutup noise )  \ ==sound128==
 
   \ [Code from Spectrum Forth-83.]
   \ XXX TODO finish, document and test
@@ -1911,9 +1946,9 @@ create water-drop  ( -- a )
   71 c, 23 c, 23 c, 22 c, 90 c, 0 c, 0 c,
 
   \ }}} =======================================================
-  \ Sound 48K {{{
+  \ Sound 48 {{{
 
-( bleep )
+( bleep )  \ ==sound48==
 
   \ [Code modified from Abersoft Forth.]
 
@@ -2029,7 +2064,7 @@ code ambulance  ( n -- )
   \ }}} =======================================================
   \ Memory access {{{
 
-( exchange )
+( exchange )  \  ==memoryaccess==
 
 : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
@@ -2041,7 +2076,7 @@ code ambulance  ( n -- )
   \ }}} =======================================================
   \ Operators {{{
 
-( under+ )
+( under+ )  \ ==operators==
 
 : under+  ( n1 n2 n3 -- n4 n3 )  >r + r>  ;
 
@@ -2156,7 +2191,7 @@ code rshift  ( x1 u -- x2 )
   \ }}} =======================================================
   \ Conditional compilation {{{
 
-( [if] [else] [then] )
+( [if] [else] [then] )  \ ==conditionalcompilation==
 
 [defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
 
@@ -2179,7 +2214,7 @@ code rshift  ( x1 u -- x2 )
   \ }}} =======================================================
   \ G+DOS {{{
 
-( ufia )
+( ufia )  \ ==g+dos==
 
 24 constant /ufia  create ufia  /ufia allot  ufia /ufia erase
 
@@ -2398,6 +2433,9 @@ code (<file)  ( -- ior )
       \ in the command are used by default instead
       \ of those stored in the file header.
 
+  \ XXX TODO make the file address optional
+  \ XXX TODO make the file length optional
+
     bc tstp z if  hd0b bc ftp  then  hldbk hook
       \ If the length is zero, use the
       \ length of the file header
@@ -2414,6 +2452,41 @@ code (<file)  ( -- ior )
   \ f         = error?
   \ n         = error
   >ufia (<file) ior>error  ;
+
+( <file-as-is )
+
+require z80-asm  require ufia  require --hook-codes--
+require >ufia  require ior>error
+
+code (<file-as-is)  ( -- ior )
+
+  \ Load a file from disk, using the data hold in UFIA, the
+  \ file header and the parameters specified by the high level
+  \ command.
+
+  bc push  \ save the Forth IP
+
+  ufia ix ldp#  hgfile hook \ get the file
+  nc if \ no error?  -- load the file header:
+
+    hd00 de ldp#  9 b ld# \ destination and count
+    begin  lbyte hook  de stap  de incp  step
+      \ Load the file header.
+
+    hd0d de ftp  hd0b bc ftp  hldbk hook
+      \ Use the address and length from the header.
+      \ Then load the file data.
+
+  then  bc pop  next ix ldp#  af push
+        \ restore the Forth registers and save the ior
+  jpnext  end-code
+
+: <file-as-is  ( ca len -- f n )
+  \ Load a file from disk.
+  \ ca len  = filename
+  \ f       = error?
+  \ n       = error
+  0 0 2swap >ufia (<file-as-is) ior>error  ;
 
 ( file? )
 
@@ -2645,7 +2718,7 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Disk blocks {{{
 
-( update flush )
+( update flush )  \ ==diskblocks==
 
 : update  ( -- )
 
@@ -2683,7 +2756,7 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Tools {{{
 
-( transient[ )
+( transient[ )  \ ==tools==
 
   \ XXX TODO -- Finish.
 
@@ -2926,7 +2999,7 @@ require break-key?
   cr ." Scr # " .
   l/scr 0 do
     cr i 2 .r space i scr @ .line
-    break-key? if  exhaust  then
+    break-key? ?exhaust
   loop cr  ;
 
 ( break-key? )
@@ -2936,8 +3009,8 @@ code break-key?  ( -- f )
   \ Is the Break key pressed?
 
   CD c, 1F54 ,              \ call rom_break_key
-  D2 c, ' true cfa>pfa ,    \ jp nc,next
-  C3 c, ' false cfa>pfa ,   \ jp z,next
+  D2 c, ' true cfa>pfa ,    \ jp nc,true
+  C3 c, ' false cfa>pfa ,   \ jp false
 
   end-code
 
@@ -3104,9 +3177,11 @@ require break-key?
   \ just prior to the definition of "name".
 
   \ }}} =======================================================
-  \ XXX Misc {{{
+  \ Misc {{{
 
-( source )
+  \ XXX TODO -- move to other sections
+
+( source )  \ ==misc==
 
 : source  ( -- ca len )  \ ANS Forth
   \ XXX TODO
@@ -3130,7 +3205,7 @@ code call  ( a -- )
   \ }}} =======================================================
   \ Keyboard {{{
 
-( inkey )
+( inkey )  \ ==keyboard==
 
 require z80-asm
 
@@ -3193,7 +3268,7 @@ code inkey|255  ( -- c | 255 )
   \ }}} =======================================================
   \ Hardware {{{
 
-( @p )
+( @p )  \ ==hardware==
 
 code @p  ( ca -- c )
 
@@ -3229,7 +3304,7 @@ code !p  ( c ca -- )
   \ }}} =======================================================
   \ Turnkey {{{
 
-( extend size system turnkey )
+( extend size system turnkey )  \ ==turnkey==
 
   \ XXX OLD
   \
@@ -3281,7 +3356,7 @@ code !p  ( c ca -- )
   \ }}} =======================================================
   \ Double numbers {{{
 
-( du.r u.r du. )
+( du.r u.r du. )  \ ==doublenumbers==
 
   \ [Code adapted from Spectrum Forth-83.]
 
@@ -3292,7 +3367,7 @@ code !p  ( c ca -- )
   \ }}} =======================================================
   \ Number conversion and notation {{{
 
-( >number )
+( >number )  ==numberconversion==
 
 require /string
 
@@ -3476,6 +3551,25 @@ width !
 
   \ }}} =======================================================
   \ Control structures {{{
+
+( don't )  \ ==controlstructures==
+
+: don't  ( n1 n2 -- | n1 n2 )
+  2dup = if  2drop unnest unnest  then  ;
+
+  \ doc{
+  \
+  \ don't  ( n1 n2 -- | n1 n2 )
+  \ 
+  \ If _n1_ equals _n2_, remove them and exit the definition
+  \ that called `don't`, else leave the _n1_ and _n2_ on the
+  \ stack.
+  \
+  \ This word is intended to be used before `do`, as an
+  \ alternative to `?do`, when the do-loop structure is
+  \ factored in its own word.
+  \
+  \ }doc
 
 ( ?do )
 
@@ -3856,7 +3950,24 @@ code (step)  ( R: n -- n' )
   \ executed, depending upon the value on the stack. No error
   \ checking.
 
-( associative: )
+( test-case: )
+
+  \ XXX TMP
+
+require case:
+
+: zx0 ." zero"  ;
+: zx1 ." one"  ;
+: zx2 ." two"  ;
+
+case: zx  ( n -- )  zx0 zx1 zx2  ;
+
+3 associative: unzx  ( value -- n )  ' zx0 , ' zx1 , ' zx2 ,
+
+  \ }}} =======================================================
+  \ Data structures {{{
+
+( associative: )  \ ==datastructures==
 
   \ [Code adapted from F83.]
 
@@ -3880,25 +3991,73 @@ require -rot
   \ made, then the number of entries, ie max index + 1 is
   \ returned.  This is the inverse of an array.
 
-( test-case: )
+( value )
+
+  \ `value` with parsing and state-smart `to`
+
+  \ This implementation conforms to ANS Forth.
+  \ ANS Forth explicitly requires that `to` must parse.
+
+  \ Adapted from Afera.
+  \ http://programandala.net/en.program.afera.html
+
+: value  ( n "name"  -- )  constant  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' cfa>pfa comp? if    postpone literal postpone !
+                  else  !  then  ; immediate
+
+( value )
 
   \ XXX TMP
 
-require case:
+  \ `value` with non-parsing `to` -- version with flag
 
-: zx0 ." zero"  ;
-: zx1 ." one"  ;
-: zx2 ." two"  ;
+  \ This non-parsing alternative implementation is adapted from
+  \ lina: Copyright (c) 2000-2004 Albert van der Horst, The
+  \ Netherlands
 
-case: zx  ( n -- )  zx0 zx1 zx2  ;
+variable to-message
+: from  ( -- )  to-message off  ;  from
+: to    ( -- )  to-message on  ;
+: value  ( n "name" -- )
+  create ,  does>  to-message @ if  !  else  @  then  from  ;
 
-3 associative: unzx  ( value -- n )  ' zx0 , ' zx1 , ' zx2 ,
+( value )
+  
+  \ XXX TMP
 
+  \ `value` with non-parsing `to` -- version with `execute`
+
+  \ This non-parsing alternative implementation is a modified
+  \ version of the lina implementation above.
+
+variable (value)
+: from  ( -- )  ['] @ (value) !  ;  from
+: to    ( -- )  ['] ! (value) !  ;
+: value  ( n "name" -- )
+  create ,  does>   (value) @ execute  from  ;
+
+( value )
+
+  \ XXX TMP
+
+  \ `value` with non-parsing `to` -- version with `defer`
+
+  \ This non-parsing alternative implementation is a modified
+  \ version of the lina implementation above.
+
+defer (value)
+: from  ( -- )  ['] @ ['] (value) defer!  ;  from
+: to    ( -- )  ['] ! ['] (value) defer!  ;
+: value  ( n "name" -- )
+  create ,  does>  (value) from  ;
 
   \ }}} =======================================================
   \ Time {{{
 
-( ms )
+( ms )  \ ==time==
 
 [defined] sys-frames ?\ 23672 constant sys-frames
 
@@ -3978,7 +4137,7 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
   \ }}} =======================================================
   \ Vocabularies {{{
 
-( .context .current order vocs )
+( .context .current order vocs )  \ ==vocabularies==
 
   \ [Code adapted from F83.]
 
@@ -4044,18 +4203,23 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
   \ }}} =======================================================
   \ Random number generator {{{
 
-( seed rnd random randomize )
+( seed rnd random randomize random-byte )  \ ==rng==
 
   \ [Code adapted from Leo Brodie's code and Gforth.]
 
-[defined] seed
-?\ 23670 constant seed  \ system variable
+[defined] seed ?\ 23670 constant seed  \ system variable
 
 : rnd  ( -- n )  seed @ 31421 * 6927 + dup seed !  ;
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
 : randomize  ( n -- )  seed !  ;
+
+code random-byte  ( -- b )
+  \ XXX FIXME this returns patterns; see `random-byte-test`
+  ED c, 5F c,     \ ld a,r
+  C3 c, pusha ,   \ jp pusha
+  end-code
 
 ( ace-rnd )
 
@@ -4119,17 +4283,20 @@ code xrnd  ( -- x )
   ud* 12345 0 d+ over seed !
   rot ud/mod 2drop  ;
 
-( random-test )
+( random-test random-byte-test )
 
-require random  require set-pixel
+require random  require random-byte  require set-pixel
 
 : random-test  ( n -- )
   0 do  256 random 193 random set-pixel  loop  ;
 
+: random-byte-test  ( n -- )
+  0 do  random-byte random-byte 192 min set-pixel  loop  ;
+
   \ }}} =======================================================
   \ Deferred words {{{
 
-( defers action-of )
+( defers action-of )  \ ==deferredwords==
 
   \ [Code adapted from the Afera library.]
 
@@ -4524,9 +4691,9 @@ code if'-test  ( -- )
 ' if'-test cfa>pfa dup here swap - dump
 
   \ }}} =======================================================
-  \ The address register {{{
+  \ Address register {{{
 
-( a! a@ )
+( a! a@ )  \ ==addressregister==
 
   \ Address register store and fetch words.
 
@@ -4807,9 +4974,9 @@ VARIABLE nextnode  -->
   \ Move from the "next" cell to the "previous" cell.
 
 : init-heap (  )  heap DUP nextnode !
-      DUP DUP !
-      DUP heapsize  OVER >size !
-      >prev !  ;
+  DUP DUP !
+  DUP heapsize  OVER >size !
+  >prev !  ;
 
   \ Initially the heap contains only one node, which is the
   \ same size as the heap. Both the "next" cell and the
@@ -4821,9 +4988,8 @@ init-heap
 
   \ ANSI Heap  ---  List Searching
 
-: attach ( addr)  >prev @
-      DUP sentinel ROT !
-      sentinel >prev !  ;
+: attach ( addr)
+  >prev @  DUP sentinel ROT !  sentinel >prev !  ;
 
   \ The sentinel is joined into the nodelist. The "next" field
   \ of the node preceding the one specified (addr) is set to
@@ -4831,8 +4997,8 @@ init-heap
   \ to point to the node that points to the sentinel.
 
 : search  ( addr size -- addr|0)
-    >R BEGIN 2@ SWAP R@ < INVERT UNTIL
-    R> DROP  >prev @  ;
+  >R BEGIN 2@ SWAP R@ < INVERT UNTIL
+  R> DROP  >prev @  ;
 
   \ Search the nodelist, starting at the node specified (addr),
   \ for a free node larger than or equal to the specified size.
@@ -4890,10 +5056,9 @@ init-heap
   \ Make the specified node the starting node for future
   \ searches of the node list.
 
-: sizes! ( size addr -- addr)  2DUP + >R
-           >size 2DUP @ SWAP -
-           R@ >size !
-           SWAP NEGATE SWAP !  R>  ;
+: sizes! ( size addr -- addr)
+  2DUP + >R  >size 2DUP @ SWAP -
+  R@ >size !   SWAP NEGATE SWAP !  R>  ;
 
   \ Given a free node (addr), reduce its size to that specified
   \ and mark it as in use. Start to construct a new node within
@@ -4902,8 +5067,9 @@ init-heap
   \ the new node. Return the address of the partially
   \ constructed node.
 
-: links! ( addr1 addr2)  2DUP SWAP @  2DUP  SWAP !  >prev !
-              2DUP >prev !   SWAP !  ;
+: links! ( addr1 addr2)
+  2DUP SWAP @  2DUP  SWAP !  >prev !
+  2DUP >prev !   SWAP !  ;
 
 
   \ Addr1 is an existing node. Addr2 is the address of a new
@@ -4924,9 +5090,8 @@ init-heap
 
 ( heap )
 
-: makenode ( size addr)  2DUP fits IF  togglesize DROP
-         ELSE  newnode
-         THEN  ;
+: makenode ( size addr)
+  2DUP fits IF  togglesize DROP  ELSE  newnode  THEN  ;
 
   \ Given a free node at addr make an in-use node of the
   \ specified size and free the remainder, if there is any
@@ -4934,15 +5099,15 @@ init-heap
 
 FORTH-WORDLIST SET-CURRENT
 : ALLOCATE ( u -- addr ior)
-    DUP 0< IF  allocationerror
-         ELSE  adjustsize
-         DUP findspace
-         DUP IF  DUP next!
-           TUCK makenode
-           headsize +  0
-           ELSE  DROP allocationerror
-           THEN
-         THEN  ;
+  DUP 0< IF  allocationerror
+       ELSE  adjustsize
+       DUP findspace
+       DUP IF  DUP next!
+         TUCK makenode
+         headsize +  0
+         ELSE  DROP allocationerror
+         THEN
+       THEN  ;
 MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
 
   \ Make an in-use node with a data field at least u address
@@ -4963,15 +5128,14 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
   \ ANSI heap  ---  Head Destruction
 
 : mergesizes ( addr addr)
-       >size @ SWAP >size +!  ;
+  >size @ SWAP >size +!  ;
 
   \ Make the size field of the node at addr1 equal to the sum
   \ of the sizes of the two specified nodes. In usage the node
   \ at addr2 will be the one immediately above addr1.
 
 : mergelinks ( addr addr)
-       @ 2DUP SWAP !
-       >prev !  ;
+  @ 2DUP SWAP !  >prev !  ;
 
   \ The node at addr2 is removed from the node list. As with
   \ MERGESIZES the node at addr2 will be immediately above that
@@ -4980,7 +5144,7 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
   \ from the node above node2 and relink it to node1.
 
 : jiggle (  )
-   nextnode @ @  >prev @  next!  ;
+  nextnode @ @  >prev @  next!  ;
 
   \ There is a possibility when a node is removed from the node
   \ list that NEXTNODE may point to it. This is cured by making
@@ -5010,10 +5174,10 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
   \ ANSI Heap  ---  Node Removal    FREE
 
 : ?merge ( addr1 addr2)  >size @
-       0> IF  DUP DUP @
-        U< IF  DUP merge
-           THEN
-          THEN  DROP ;  -->
+  0> IF
+    DUP DUP @
+    U< IF  DUP merge  THEN
+  THEN  DROP  ;  -->
 
   \ Merge the node at addr1 with the one above it on two
   \ conditions, firstly that the node at addr2 is free, and
@@ -5037,10 +5201,9 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
   \ preceding node is free.
 
 FORTH-WORDLIST SET-CURRENT
-: FREE ( addr -- ior)  headsize -
-         DUP togglesize
-         DUP ?mergenext
-         ?mergeprev  0  ;
+: FREE ( addr -- ior)
+  headsize -  DUP togglesize  DUP ?mergenext  ?mergeprev  0  ;
+
 MEMORY-ALLOC-WORDLIST SET-CURRENT
 
   \ Mark the specified in-use word as free, and merge with any
@@ -5104,13 +5267,11 @@ VARIABLE stash
 
 ( heap )
 
-: fixsize ( addr)  DUP >size @ 0>
-       IF  DUP @  2DUP <
-           IF  OVER - SWAP >size !
-         ELSE 2DROP
-         THEN
-     ELSE  DROP
-     THEN  ;
+: fixsize ( addr)
+  DUP >size @ 0>
+  IF  DUP @  2DUP <
+      IF    OVER - SWAP >size !  ELSE  2DROP  THEN
+  ELSE  DROP  THEN  ;
 
   \ Reconstruct the size field of a node from the address of
   \ the head and the contents of the >NEXT field provided that
@@ -5125,9 +5286,10 @@ VARIABLE stash
   \ one passed as an argument to RESIZE (damaged by ?MERGENEXT)
   \ and its predecessor (damaged by ?MERGEPREV).
 
-: repair ( addr)  DUP restorelink
-      DUP fixlinks  DUP fixsizes
-      togglesize  ;
+: repair ( addr)
+  DUP restorelink
+  DUP fixlinks  DUP fixsizes
+  togglesize  ;
 
   \ Make good the damage done by RESIZE. Restore the >next
   \ field, fix the links, fix the size fields and mark the node
@@ -5141,7 +5303,7 @@ VARIABLE stash
   \ ANSI Heap  ---  Node Movement
 
 : toobig? ( addr size -- flag)
-    SWAP  >size @  >  ;
+  SWAP  >size @  >  ;
 
   \ Flag is true if the node at addr is smaller than the
   \ specified size.
@@ -5151,19 +5313,17 @@ VARIABLE stash
 ( heap )
 
 : copynode ( addr1 addr2)
-       OVER >size @  headsize -
-       ROT  headsize + ROT ROT MOVE  ;
+  OVER >size @  headsize -
+  ROT  headsize + ROT ROT MOVE  ;
 
   \ Move the contents of the data field of the node at addr1 to
   \ the data field at addr2. Assumes addr2 is large enough. It
   \ will be.
 
 : enlarge ( addr1 size -- addr2 ior)
-    OVER  ?mergeprev
-    ALLOCATE DUP >R
-    IF  SWAP repair
-  ELSE  TUCK copynode
-  THEN R>  ;
+  OVER  ?mergeprev
+  ALLOCATE DUP >R
+  IF  SWAP repair  ELSE  TUCK copynode  THEN  R>  ;
 
   \ Make a new node of the size specified. Copy the data field
   \ of addr1 to the new node. Merge the node at addr1 with the
@@ -5179,11 +5339,12 @@ VARIABLE stash
 
   \ ANSI Heap  ---  Node Restructuring  RESIZE
 
-: adjust ( addr1 size1 -- addr2 size2)  adjustsize >R
-              headsize -
-              DUP savelink
-              DUP togglesize
-              DUP ?mergenext R>  ;
+: adjust ( addr1 size1 -- addr2 size2)
+  adjustsize >R
+  headsize -
+  DUP savelink
+  DUP togglesize
+  DUP ?mergenext R>  ;
 
   \ Addr1 points to the data field of a node, not the "next"
   \ field. This needs correcting. Size1 also needs adjusting as

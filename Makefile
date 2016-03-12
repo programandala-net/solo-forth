@@ -100,10 +100,20 @@ solo_forth.bas.tap: solo_forth.bas
 # user will use disk 1 for customized versions of the Forth
 # system, Forth turnkey applications, graphics and data files.
 
-solo_forth_disk_1.mgt: solo_forth.bas.tap solo_forth.bin.tap
+sys/4x8fd.tap: _draft/4x8_font_driver/4x8fd.z80s
+	cd sys ; \
+	pasmo --tap \
+		../_draft/4x8_font_driver/4x8fd.z80s \
+		4x8fd.tap
+
+solo_forth_disk_1.mgt: \
+		sys/4x8fd.tap \
+		solo_forth.bas.tap \
+		solo_forth.bin.tap
 	mkmgt  solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
 		sys/ea5aky-font42.tap \
+		sys/4x8fd.tap \
 		sys/print-42-bin.tap \
 		solo_forth.bas.tap \
 		fzx/*.fzx \

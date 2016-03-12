@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509071819
+version_release:  equ 201509080423
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -2304,12 +2304,12 @@ decode_char.begin:
 
   ; XXX TODO use bit 5 of (iy+1)
 
-if 1
+if 1 ; XXX OLD
 
   ; XXX -- This version works only when the system interrupts
   ; are on.
 
-if 0
+if 1
   ld a,(sys_last_k)
   and a
 else
@@ -2318,7 +2318,9 @@ endif
   jp z,false_pfa
   jp true_pfa
 
-else
+endif
+
+if 0 ; XXX OLD
 
   ; XXX -- This version works also when the system interrupts are off.
 
@@ -2350,6 +2352,11 @@ endif
 ; }doc
 
 if 1
+  call wait_for_a_key
+  jp push_a
+endif
+
+if 0 ; XXX OLD
 
 key.begin:
 if 0
@@ -2363,7 +2370,9 @@ endif
   ld (hl),0
   jp push_a
 
-else
+endif
+
+if 0 ; XXX OLD
 
 ; XXX -- This version works also when the system interrupts are off.
 ; XXX TODO -- Add multitasker's `pause` when available.
@@ -2416,20 +2425,14 @@ endif
 
   push bc
 
-xkey.new_key:
-  xor a
-  ld (sys_last_k),a
-
   ; Print cursor:
   ld a,(cursor_char_pfa) ; cursor char code
   rst 0x10
   ld a,backspace_char
   rst 0x10
 
-xkey.wait_for_key:
-  ld a,(sys_last_k)
-  and a
-  jr z,xkey.wait_for_key
+xkey.new_key:
+  call wait_for_a_key
   ; a = pressed key code
 
   cp caps_char ; toggle caps lock?
@@ -2486,6 +2489,19 @@ xkey.end:
 
   pop bc
   jp push_hl
+
+wait_for_a_key:
+  ; call delete_last_key ; XXX OLD -- not ANS Forth
+wait_for_a_key.begin:
+  ld a,(sys_last_k)
+  and a
+  jr z,wait_for_a_key.begin
+delete_last_key:
+  push af
+  xor a
+  ld (sys_last_k),a
+  pop af
+  ret
 
 ; ----------------------------------------------
   _colon_header paren_cr_,'(CR)'
@@ -3015,7 +3031,7 @@ roll.end:
 ; }doc
 
   pop hl
-  ld h,a
+  ld a,h
   or l
   jp nz,exhaust_pfa
   _jp_next
@@ -7052,15 +7068,6 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header do_not_,"DON'T",immediate
-
-  ; XXX TODO
-
-  dw two_dup_,equals_,question_exit_
-  dw two_drop_,r_drop_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header do_,'DO',immediate
 
   dw compile_,paren_do_
@@ -7893,6 +7900,11 @@ if 1 ; fig_exit?
 
   dw r_drop_
   dw semicolon_s_
+
+; ----------------------------------------------
+  _code_alias_header unnest_,'UNNEST',,r_drop_
+
+  ; XXX NEW -- experimental
 
 ; ----------------------------------------------
   _colon_header question_exit_,'?EXIT'
