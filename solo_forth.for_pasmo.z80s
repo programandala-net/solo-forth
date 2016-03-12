@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509140054
+version_release:  equ 201509141337
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -1949,11 +1949,11 @@ if 1 ; fig_parsing
 
 ; doc{
 ;
-; scan  ( ca c -- ca len )
+; scan  ( ca1 c -- ca1 len1 )
 ;
-; c = ascii delimiting character
-; ca = text address
-; len = length of the parsed text
+; ca1 = text address
+; c = character to search for
+; len1 = length of the string until the matched character
 ;
 ; }doc
 
@@ -1975,41 +1975,49 @@ scan.begin:
   pop bc ; restore Forth IP
   jp push_hl
 
-else
+endif
+
+if 1
+
+  _code_header scanx_,'SCANX' ; XXX TMP
+
+  ; XXX TODO
 
 ; doc{
 ;
-; scan  ( ca1 len1 c -- ca2 len2 )
+; scan  ( ca1 len1 c -- ca1 len2 )
 ; 
 ; XXX TODO
-; c = ascii delimiting character
-; ca1 = text address
-; len1 = length of the parsed text
+; ca1 len1 = string to search
+; c = char searched for
+; len2 = length of the searched string until the match
+;        or until the end of the string
 ;
 ; }doc
 
-  pop de
-  ld l,c
-  ld h,b
-  pop bc
-  ex (sp),hl
-scan.begin:
+  ld de,0 ; len2
+  exx
+  pop de ; E = char searched for
+  pop bc ; len1
+  pop hl ; ca1
+  push hl
+scanx.begin:
   ld a,c
   or b ; exhausted?
-  jr z,scan.end ; if so, exit
+  jr z,scanx.end ; if so, exit
   ld a,e
   cp (hl) ; delimiter?
-  jr z,scan.end ; if so, exit
+  jr z,scanx.end ; if so, exit
   inc hl
   dec bc
-  jp scan.begin ; again
+  exx
+  inc de ; count
+  exx
+  jr scanx.begin ; again
 
-scan.end:
-  ex (sp),hl ; hl = Forth IP ; push ca2
-scan.3:
-  push bc ; len2
-  ld c,l
-  ld b,h ; restore Forth IP
+scanx.end:
+  exx
+  push de ; len2
   _jp_next
 
 endif
@@ -2034,7 +2042,13 @@ skip.begin:
   inc hl
   jp skip.begin ; again
 
-else
+endif
+
+if 1
+
+  ; XXX TODO
+
+  _code_header skipx_,'SKIPX' ; XXX TMP
 
 ; doc{
 ;
@@ -2047,16 +2061,23 @@ else
   ld h,b
   pop bc ; len1
   ex (sp),hl ; hl=ca1 ; save Forth IP
-skip.begin:
+skipx.begin:
   ld a,c
   or b ; exhausted?
-  jr z,scan.end ; if so, exit
+  jr z,skipx.end ; if so, exit
   ld a,e
   cp (hl) ; delimiter?
-  jr nz,scan.end ; if not, exit
+  jr nz,skipx.end ; if not, exit
   inc hl
   dec bc
-  jp skip.begin ; again
+  jp skipx.begin ; again
+
+skipx.end:
+  ex (sp),hl ; HL = Forth IP ; push ca1
+  push bc ; len2
+  ld c,l
+  ld b,h ; restore Forth IP
+  _jp_next
 
 endif
 
@@ -5060,7 +5081,11 @@ stream.end:
   dw to_in_,fetch_,plus_
   dw semicolon_s_
 
-else
+endif
+
+if 1
+
+  _colon_header streamx_,'STREAMX'
 
 ; doc{
 ;
@@ -5116,9 +5141,9 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header parse_,'PARSE'
-
 if 1 ; fig_parsing
+
+  _colon_header parse_,'PARSE'
 
 ; doc{
 ;
@@ -5136,14 +5161,20 @@ if 1 ; fig_parsing
   dw stream_,swap_,scan_,dup_,parsed_
   dw semicolon_s_
 
-else
+endif
 
-  dw stream_,rot_,scan_,dup_,parsed_
+if 1
+
+  _colon_header parsex_,'PARSEX' ; XXX TMP
+
+  dw streamx_,rot_,scanx_,dup_,parsed_
   dw semicolon_s_
 
 endif
 
 ; ----------------------------------------------
+if 1 ; fig_parsing
+
   _colon_header parse_name_,'PARSE-NAME'
 
 ; doc{
@@ -5151,8 +5182,6 @@ endif
 ; parse-name  ( "name"  -- ca len )
 ;
 ; }word
-
-if 1 ; fig_parsing
 
   dw stream_,dup_,to_r_ ; ( ca1 )
   dw b_l_,skip_ ; ( ca2 )
@@ -5162,17 +5191,23 @@ if 1 ; fig_parsing
   dw dup_,parsed_
   dw semicolon_s_
 
-else
+endif
 
-  dw stream_,b_l_,skip_ ; ( ca2 len2 )
+if 1
+
+  _colon_header parse_namex_,'PARSE-NAMEX' ; XXX TMP
+
+  dw streamx_,b_l_,skipx_ ; ( ca2 len2 )
   dw dup_,parsed_
-  dw b_l_,scan_ ; ( ca len )
+  dw b_l_,scanx_ ; ( ca len )
   dw dup_,parsed_
   dw semicolon_s_
 
 endif
 
 ; ----------------------------------------------
+if 1 ; fig_parsing
+
   _colon_header word_,'WORD'
 
 ; doc{
@@ -5188,8 +5223,6 @@ endif
 ; byte), and with one blank at the end.
 ;
 ; }doc
-
-if 1 ; fig_parsing
 
 ; XXX FIXME
 ; `0 word` crashes the system. how to parse till the end of
@@ -5216,15 +5249,42 @@ if  0
 endif
   dw dup_,parsed_
 
-else
+  dw here_
+  _literal max_word_length+2
+  dw blank_
 
-  dw to_r_,stream_ ; ( ca1 len1 )
-  dw r_fetch_,skip_ ; ( ca2 len2 )
-  dw dup_,parsed_
-  dw from_r_,scan_ ; ( ca3 len3 )
-  dw dup_,parsed_
+  dw dup_,here_,c_store_ ; count byte
+  dw here_,one_plus_ ; destination
+  dw swap_ ; count
+  dw cmove_ ; move the word
+  dw here_
 
-endif
+  if 0 ; XXX OLD
+    ;dw space_ ; XXX INFORMER
+    ;dw depth_,dot_ ; XXX INFORMER
+    ;_echo 'blk ' ; XXX INFORMER
+    ;dw blk_,fetch_,dot_ ; XXX INFORMER
+    ;_echo 'in ' ; XXX INFORMER
+    ;dw in_,fetch_,dot_ ; XXX INFORMER
+    ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
+    ;dw key_,drop_ ; XXX INFORMER
+  endif
+
+  dw semicolon_s_
+
+endif 
+
+if 1
+
+  _colon_header wordx_,'WORDX' ; XXX TMP
+
+  dw dup_,to_r_ ; save the delimiter
+  dw streamx_ ; ( ca1 len1 )
+  dw over_,to_r_ ; save the start of the string
+  dw rot_,skipx_ ; ( ca2 len2 )
+  dw over_,from_r_,minus_,to_in_,plus_store_
+  dw from_r_,scanx_ ; ( ca2 len3 )
+  dw dup_,parsed_
 
   dw here_
   _literal max_word_length+2
@@ -5248,6 +5308,8 @@ endif
   endif
 
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
