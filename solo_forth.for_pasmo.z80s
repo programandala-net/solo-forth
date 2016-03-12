@@ -3,6 +3,8 @@
 ; A Forth system for ZX Spectrum 128K and G+DOS.
 ; http://programandala.net/en.program.solo_forth.html
 
+; XXX UNDER DEVELOPMENT
+
 ; ==============================================================
 ; XXX WARNING
 
@@ -16,7 +18,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509231811
+version_release:  equ 201509250221
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -314,38 +316,22 @@ charset_address:  equ 0xFFFF-charset_size+1
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.
 
-; XXX TODO change the order
-
-error.not_understood:               equ 01
-error.stack_empty:                  equ 02
-error.dictionary_full:              equ 03 ; not used
-error.not_unique:                   equ 04
-error.not_found:                    equ 05
-error.out_of_disk_range:            equ 06
-error.full_stack:                   equ 07
-error.stack_unbalanced:             equ 08
-error.loading_from_screen_0:        equ 09
-error.number_10:                    equ 10 ; free
-error.number_11:                    equ 11 ; free
-error.number_12:                    equ 12 ; free
-error.number_13:                    equ 13 ; free
-error.number_14:                    equ 14 ; free
-error.deferred_word_uninitialized:  equ 15
-error.assertion_failed:             equ 16
-error.compilation_only:             equ 17
-error.execution_only:               equ 18
-error.conditionals_not_paired:      equ 19
-error.definition_not_finished:      equ 20
-error.protected_dictionary:         equ 21
-error.loading_only:                 equ 22
-error.off_current_editing_screen:   equ 23
-error.declare_vocabulary:           equ 24
-error.unsupported_tape_operation:   equ 25
-error.unsupported_disk_operation:   equ 26
-error.source_file_needed:           equ 27
-error.not_present_though_required:  equ 28
-error.required_but_not_located:     equ 29
-error.relative_jump_too_long:       equ 30
+error.stack_overflow:               equ -003 ; XXX old = 07
+error.stack_underflow:              equ -004 ; XXX old = 02
+error.not_found:                    equ -013 ; XXX old = 05
+error.compilation_only:             equ -014 ; XXX old = 17
+error.conditionals_not_paired:      equ -022 ; XXX old = 19
+error.not_understood:               equ -256 ; XXX old = 01
+error.not_unique:                   equ -257 ; XXX old = 04
+error.stack_unbalanced:             equ -258 ; XXX old = 08
+error.loading_from_screen_0:        equ -259 ; XXX old = 09
+error.wrong_digit:                  equ -260 ; XXX old = 14
+error.deferred_word_uninitialized:  equ -261 ; XXX old = 15
+error.assertion_failed:             equ -262 ; XXX old = 16
+error.execution_only:               equ -263 ; XXX old = 18
+error.definition_not_finished:      equ -264 ; XXX old = 20
+error.loading_only:                 equ -265 ; XXX old = 22
+error.off_current_editing_screen:   equ -266 ; XXX old = 23
 
 ; ----------------------------------------------
 ; ZX Spectrum
@@ -355,10 +341,10 @@ include inc/zx_spectrum_rom_routines.z80s
 include inc/zx_spectrum_system_variables.z80s
 include inc/zx_spectrum_system_variables_offsets.z80s
 
-sys_screen:                 equ 0x4000
+sys_screen:                 equ 0x4000 ; address
 sys_screen_size:            equ 0x1B00
 sys_screen_bitmap_size:     equ 0x1800
-sys_screen_attributes:      equ 0x5800
+sys_screen_attributes:      equ 0x5800 ; address
 sys_screen_attributes_size: equ 0x0300
 
 bank1_port:   equ 0x7FFD
@@ -368,7 +354,7 @@ border_port:  equ 0xFE
 ; Macros
 
 ; ----------------------------------------------
-; Header
+; Header macros
 
 immediate: equ 1 ; used as optional parameter
 
@@ -492,7 +478,7 @@ _two_variable_header: macro _base_label,_name,_is_immediate
   endm
 
 ; ----------------------------------------------
-; Literals
+; Literals macros
 
 _string: macro text
 
@@ -531,7 +517,7 @@ _literal: macro _n
   endm
 
 ; ----------------------------------------------
-; Jumps
+; Jumps macros
 
 _jp_next: macro
 
@@ -566,7 +552,7 @@ _jump_z: macro _address
   endm
 
 ; ----------------------------------------------
-; Code
+; Code macros
 
 _compare_de_hl_unsigned: macro
 
@@ -589,10 +575,10 @@ _compare_de_hl_unsigned: macro
   endm
 
 ; ----------------------------------------------
-; Bank
+; Memory bank macros
 
 _bank: macro _n
-  _literal _n
+  _literal (_n)
   dw bank_
   endm
 
@@ -605,20 +591,20 @@ _default_bank: macro
   endm
 
 ; ----------------------------------------------
-; Error messages
+; Error messages macros
 
 _question_error: macro _error
-  _literal _error
+  _literal (_error)
   dw question_error_
   endm
 
 _message: macro _error
-  _literal _error
+  _literal (_error)
   dw message_
   endm
 
 ; ----------------------------------------------
-; Debug
+; Debug macros
 
 debugging: equ 1
 
@@ -690,6 +676,13 @@ _chk: macro _message
     dw base_,fetch_,to_r_,hex_
     dw cr_,dot_s_
     dw from_r_,base_,store_
+  endif
+  endm
+
+_prompt: macro _message
+  if debugging
+    _echo _message
+    dw key_,drop_
   endif
   endm
 
@@ -1485,7 +1478,19 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; ----------------------------------------------
   _colon_header minus_order_,'-ORDER'
 
-; : -order  ( -- )  context [ #vocs cells ] literal erase  ;
+; doc{
+;
+; -order  ( -- )
+; 
+; Erase the search order.
+;
+; ----
+; : -order  ( -- )
+;   context [ #vocs cells ] literal erase  ;
+; ----
+;
+; }doc
+
 
   dw context_,lit_,max_search_order*cell,erase_
   dw semicolon_s_
@@ -1497,12 +1502,12 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; only  ( -- )
 ;
-; Set the search order to the minimum search order: Erase the
-; search order and forces the `root` vocabulary to be the first
-; and second.
+; Set the search order to the minimum search order: Forces the
+; `root` vocabulary to be the first and second.
 
 ; ----
-; : only  ( -- )  -order root also  ;
+; : only  ( -- )
+;   -order root also  ;
 ; ----
 
 ; }doc
@@ -1520,13 +1525,16 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; Remove the most recently referenced vocabulary from the search
 ; order.
 ;
-; }doc
-
-; [Code adapted from F83.]
-
+; ----
 ; : previous  ( -- )
 ;   context dup cell+ swap [ #vocs 2- cells dup ] literal cmove
 ;   context literal + off  ;
+; ----
+;
+; }doc
+
+  ; Credits:
+  ; Code adapted from F83.
 
   dw context_,dup_,cell_plus_,swap_
   dw lit_,(max_search_order-cell)*cell,cmove_
@@ -1543,11 +1551,15 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; Change the search order such that only the vocabulary at the
 ; top of the search order will be searched.
 ;
+; ----
+; : seal  ( -- )
+;   context @ -order context !  ;
+; ----
+
 ; }doc
 
-; [Code adapted from F83.]
-
-; : seal  ( -- )  context @ -order context !  ;
+  ; Credits:
+  ; Code adapted from F83.
 
   dw context_,fetch_,minus_order_,context_,store_
   dw semicolon_s_
@@ -2189,8 +2201,10 @@ digit.test_value:
 ; }doc
 
 number_base.try_hex:
+;  _chk 'number-base -- start' ; XXX INFORMER
   dw over_,c_fetch_
   _literal '$'
+;  _chk 'number-base -- $?' ; XXX INFORMER
   dw equals_,zero_branch_,number_base.try_binary
   _literal 1
   dw slash_string_
@@ -2199,6 +2213,7 @@ number_base.try_hex:
 number_base.try_binary:
   dw over_,c_fetch_
   _literal '%'
+;  _chk 'number-base -- %?' ; XXX INFORMER
   dw equals_,zero_branch_,number_base.try_decimal
   _literal 1
   dw slash_string_
@@ -2207,17 +2222,22 @@ number_base.try_binary:
 number_base.try_decimal:
   dw over_,c_fetch_
   _literal '#'
+;  _chk 'number-base -- #?' ; XXX INFORMER
   dw equals_,zero_branch_,number_base.current
   _literal 1
   dw slash_string_
   _literal 10
   dw exit_
 number_base.current:
+;  _chk 'number-base -- current' ; XXX INFORMER
   dw base_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 0 ; XXX  TODO
+if 0 
+  
+  ; XXX  TODO ?
+
   _colon_header to_number88_,'>NUMBER88'
 
   ; XXX TMP -- version from Z88 CamelForth
@@ -2289,7 +2309,7 @@ endif
 ; ----------------------------------------------
   _colon_header to_number_,'>NUMBER'
 
-if 0 ; XXX OLD -- original version from DZX-Forth
+if 1 ; XXX OLD -- original version from DZX-Forth
 
 ; doc{
 ;
@@ -2314,9 +2334,7 @@ if 0 ; XXX OLD -- original version from DZX-Forth
 
 ; ----
 ; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
-;
-;   begin
-;     dup  while
+;   begin  dup  while
 ;     over c@ base @ digit? while
 ;        >r 2swap r> swap base @ um* drop rot base @
 ;        um* d+ 2swap 1 /string 1 dpl +!
@@ -2352,9 +2370,11 @@ to_number.end:
   ; then
   dw semicolon_s_
 
-else
+endif
 
-  ; XXX TMP -- modified version with number prefixes
+if 0
+
+  ; XXX TMP -- modified non-standard version with number prefixes
   ;
   ; XXX FIXME
 
@@ -2381,8 +2401,6 @@ else
 
 ; ----
 ; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
-;
-;   number-base >r
 ;   begin
 ;     dup  while
 ;     over c@ r@ digit? while
@@ -2390,7 +2408,7 @@ else
 ;        r@ um* drop rot
 ;        r@ um* d+ 2swap
 ;        1 /string 1 dpl +!
-;   repeat then  rdrop  ;
+;   repeat then  ;
 ; ----
 
 ;
@@ -2399,7 +2417,7 @@ else
   ; Credits:
   ; Code from DZX-Forth.
 
-  dw number_base_,to_r_
+;  _brk '>number -- start' ; XXX INFORMER
 to_number.begin: ; begin
 ;  _brk_type '>number -- begin' ; XXX INFORMER
   dw dup_
@@ -2422,13 +2440,63 @@ to_number.begin: ; begin
   dw branch_,to_number.begin  ; repeat
 to_number.end:
   ; then
-  dw r_drop_ ; base
   dw semicolon_s_
 
 endif
 
+if 0
+
+; XXX -- Code from CamelForth for the Zilog Z80.
+
+; doc{
+;
+; >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )
+
+; _ud2_ is the unsigned result of converting the characters
+; within the string specified by _ca1 len1_ into digits, using
+; the number in `base`, and adding each into _ud1_ after
+; multiplying _ud1_ by the number in `base`. Conversion
+; continues left-to-right until a character that is not
+; convertible, including any "+" or "-", is encountered or the
+; string is entirely converted. _ca2_ is the location of the
+; first unconverted character or the first character past the
+; end of the string if the string was entirely converted. _len2_
+; is the number of unconverted characters in the string.
+
+; XXX TODO -- check:
+; An ambiguous condition exists if _ud2_ overflows during the
+; conversion.
+
+; Standard: Forth-94, Forth-2012.
+
+; ----
+; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
+;   begin  dup  while
+;     over c@ base @ digit? 0= if drop exit then
+;     >r 2swap base @ ud*
+;     r> m+ 2swap
+;     1 /string
+;   repeat  ;
+; ----
+
+;
+; }doc
+
+; Credits:
+; Code from CamelForth for the Zilog Z80.
+
+
+endif
+
 ; ----------------------------------------------
+if 0
+
   _colon_header number_question_,'NUMBER?'
+
+  ; XXX -- adapted from DZX-Forth
+
+  ; XXX TODO -- benchmark and compare with the version from
+  ; pForth; `interpret` must be adapted for each of them.
 
 ; doc{
 ;
@@ -2445,19 +2513,37 @@ endif
 
 ; ----
 ; : number?  ( ca len -- d tf | ff )
+;   base @ >r  number-base base !
 ;   over c@ [char] - =  \ minus sign?
 ;   over 0> and         \ and len>0?
 ;   dup >r
-;   1 and /string
-;   over c@ [char] . > and  \ XXX FIXME
+;   abs /string
+;   \ over c@ [char] . > and  \ XXX FIXME -- why check this?
 ;   0 0 2swap ?dup if
 ;     >number dpl on
 ;     dup if  1- over c@ [char] . - or dpl off  then
 ;     while then
 ;     r> 2drop 2drop false
 ;   else
-;     drop r> if  dnegate  then  true
-;   then  ;
+;     drop r> ?dnegate true
+;   then  r> base !  ;
+; ----
+
+; XXX NEW
+; XXX TODO
+; ----
+; : number?  ( ca len -- d tf | ff )
+;   dup 0= if  2drop false exit  then
+;   base @ >r  number-base base !
+;   sign? >r
+;   0 0 2swap ?dup if
+;     >number dpl on
+;     dup if  1- over c@ [char] . - or dpl off  then
+;     while then
+;     r> 2drop 2drop false
+;   else
+;     drop r> ?dnegate true
+;   then  r> base !  ;
 ; ----
 
 ;
@@ -2466,23 +2552,17 @@ endif
   ; Credits:
   ; Code modified from DZX-Forth.
 
-  dw over_,c_fetch_
-  _literal '-'
-  dw equals_
-  dw over_,zero_greater_than_
-  dw and_
-  dw dup_,to_r_
-  dw one_,and_
-  dw slash_string_
+  dw dup_
+  dw question_branch_,number_question.not_empty
+  dw two_drop_,false_,exit_
 
-  ; XXX OLD -- check incompatible with radix prefix
-  ; dw over_,c_fetch_
-  ;_literal '.'
-  ; dw greater_than_,and_
+number_question.not_empty:
+  dw base_,fetch_,to_r_
+  dw number_base_,base_,store_
 
-  dw zero_,zero_
-  dw two_swap_
-  dw question_dup_
+  dw sign_question_,to_r_
+
+  dw zero_,zero_,two_swap_,question_dup_
   dw zero_branch_,number_question.2
   dw to_number_
   dw dpl_,on_
@@ -2501,12 +2581,225 @@ number_question.2:
   dw false_
   dw branch_,number_question.end
 number_question.3:
-  dw drop_,from_r_
-  dw zero_branch_,number_question.4
-  dw d_negate_
+  dw drop_,from_r_,question_d_negate_
 number_question.4:
   dw true_
 number_question.end:
+  dw from_r_,base_,store_
+;  _echo 'number? -- end' ; XXX INFORMER
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+if 1
+
+  ; XXX NEW -- alternative code adapted from pForth
+  ;
+  ; XXX UNDER DEVELOPMENT
+
+  ; XXX TODO -- benchmark and compare with the version from
+  ; DZX-Forth; `interpret` must be adapted for each of them.
+
+  _colon_header number_question_,'NUMBER?'
+
+; : number?   ( ca len -- 0 | n 1 | d 2 )
+;   dup 0= if 2drop 0 exit then   \ 
+;   string? >r
+;   dpl on  0 0 2swap >number dup
+;   if
+;     1 = swap c@ [char] . =  and
+;     if    r@ ?dnegate  dpl off  2
+;     else  2drop 0  then
+;   else
+;     2drop drop r@ ?negate  then  1
+;   then  rdrop  ;
+
+  dw dup_
+  dw question_branch_,p_number_question.not_empty
+  dw two_drop_
+  _literal 0
+  dw exit_
+
+p_number_question.not_empty:
+
+  dw base_,fetch_,to_r_
+  dw number_base_,base_,store_
+
+  dw sign_question_,to_r_
+  dw dpl_,on_
+  _literal 0
+  _literal 0
+  dw two_swap_,to_number_
+  dw dup_ ; are there non-recognized chars?
+  dw zero_branch_,p_number_question.single
+
+  ; the conversion was not completed,
+  ; so it may be because of the final period that
+  ; indicates it's a double number
+
+  _literal 1
+  dw equals_ ; only one character left?
+  dw swap_,c_fetch_
+  _literal '.'
+  dw equals_,and_ ; and is it a period?
+  dw zero_branch_,p_number_question.failed_conversion
+
+p_number_question.double:
+  ; double number
+  dw r_fetch_,question_d_negate_
+  dw dpl_,off_
+  _literal 2
+  dw branch_,p_number_question.end
+
+p_number_question.failed_conversion:
+  dw two_drop_
+  _literal 0
+  dw branch_,p_number_question.end
+
+p_number_question.single:
+  ; single number
+  dw two_drop_,drop_
+  dw r_fetch_,question_negate_
+  _literal 1
+
+p_number_question.end:
+  dw r_drop_               ; discard the sign flag
+  dw from_r_,base_,store_  ; restore `base`
+  dw semicolon_s_
+
+endif
+
+if 0
+
+  _colon_header p_number_question_,'P.NUMBER?'
+
+; : number?   ( ca len -- 0 | n 1 | d 2 )
+;   dup 0= if 2drop 0 exit then   \ 
+;   string? >r
+;   dpl on  0 0 2swap >number dup
+;   if
+;     1 = swap c@ [char] . =  and
+;     if    r@ ?dnegate  dpl off  2
+;     else  2drop 0  then
+;   else
+;     2drop drop r@ ?negate  then  1
+;   then  rdrop  ;
+
+  dw dup_
+  dw question_branch_,p_number_question.not_empty
+  dw two_drop_
+  _literal 0
+  dw exit_
+
+p_number_question.not_empty:
+  dw sign_question_,to_r_
+  dw dpl_,on_
+  _literal 0
+  _literal 0
+  dw two_swap_,to_number_
+  dw dup_ ; are there non-recognized chars?
+  dw zero_branch_,p_number_question.single
+
+  ; the conversion was not completed,
+  ; so it may be because of the final period that
+  ; indicates it's a double number
+
+  _literal 1
+  dw equals_ ; only one character left?
+  dw swap_,c_fetch_
+  _literal '.'
+  dw equals_,and_ ; and is it a period?
+  dw zero_branch_,p_number_question.failed_conversion
+
+p_number_question.double:
+  ; double number
+  dw r_fetch_,question_d_negate_
+  dw dpl_,off_
+  _literal 2
+  dw branch_,p_number_question.end
+
+p_number_question.failed_conversion:
+  dw two_drop_
+  _literal 0
+  dw branch_,p_number_question.end
+
+p_number_question.single:
+  ; single number
+  dw two_drop_,drop_
+  dw r_fetch_,question_negate_
+  _literal 1
+
+p_number_question.end:
+  dw r_drop_ ; sign flag
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+if 1
+
+  _colon_header c_number_question_,'C.NUMBER?'
+
+  ; XXX NEW -- alternative code adapted from CamelForth's `?number`
+
+  ; XXX UNDER DEVELOPMENT
+
+; : number?  ( ca len -- n tf | ff )
+  
+;   base @ >r  number-base base !
+;   0 0 2swap
+;   sign? >r  >number nip
+;   if    2drop rdrop false
+;   else  r> if negate then  true
+;   then  r> base !  ;
+
+
+  dw base_,fetch_,to_r_
+  dw number_base_,base_,store_
+  _literal 0
+  _literal 0
+  dw two_swap_
+  dw sign_question_
+  dw to_r_,to_number_,nip_
+  dw zero_branch_,c_number_question.ok
+;  _echo 'c.number? -- fail' ; XXX INFORMER
+  dw two_drop_,r_drop_,false_
+  dw branch_,c_number_question.end
+c_number_question.ok:
+;  _echo 'c.number? -- ok' ; XXX INFORMER
+  dw from_r_
+  dw zero_branch_,c_number_question.true
+  dw negate_
+c_number_question.true:
+  dw true_
+c_number_question.end:
+;  _brk 'c.number? -- end' ; XXX INFORMER
+  dw from_r_,base_,store_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _colon_header sign_question_,'SIGN?'
+
+; : sign?  ( ca len -- ca' len' f )
+;   \ get optional sign
+;   \ ca len = number
+;   \ ca' len' = number without the minus sign
+;   \ f = negative number?
+;   over c@ [char] - = dup >r abs /string r>  ;
+
+  ; Credits:
+  ; Code adapted from CamelForth.
+
+;  _prompt 'sign? -- start' ; XXX INFORMER
+  dw over_,c_fetch_
+  _literal '-'
+;  _prompt 'sign? -- before =' ; XXX INFORMER
+  dw equals_,dup_,to_r_,abs_
+  dw slash_string_,from_r_
+;  _prompt 'sign? -- end' ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3824,25 +4117,29 @@ u_m_star.4:
 endif
 
 ; ----------------------------------------------
-  _code_header u_slash_mod_,'U/MOD' ; XXX OLD
+  _code_header u_slash_mod_,'U/MOD'
+  
+ ; XXX OLD
 
 ; doc{
 ;
 ; u/mod ( ud u1 -- u2 u3 )
 ;
 ; Divide _ud_ by _u1_, giving the quotient _u3_ and the
-; remainder _u2_.  All values and arithmetic are unsigned. An
-; ambiguous condition exists if u1 is zero or if the quotient
-; lies outside the range of a single-cell unsigned integer.
+; remainder _u2_.  All values and arithmetic are unsigned.
+;
+; Standard: Forth-79.
 ;
 ; }doc
 
-; XXX FIXME -- This word, whose code is taken from Abersoft
-; forth, has a bug that affects `(line)`, used by `message`, and
-; other words that use it: `*/mod`, `mod` and `/mod`, with
-; certain negative values, return different values in Abersoft
-; Forth and other Forth systems that have been tested (some of
-; them are fig-Forth).
+  ; Credits:
+  ; Code from Abersoft Forth.
+
+; XXX FIXME -- This word, has a bug that affects `(line)`, used
+; by `message`, and other words that use it: `*/mod`, `mod` and
+; `/mod`, with certain negative values, return different values
+; in Abersoft Forth and other Forth systems that have been
+; tested (some of them are fig-Forth).
 
   ld hl,0x0004
   add hl,sp
@@ -3977,6 +4274,14 @@ l60c0h:
 ; ----------------------------------------------
   _constant_header np_,'NP'
 
+; doc{
+;
+; np  ( -- a )
+;
+; Address of the stack pointer.
+;
+; }doc
+
   dw names_pointer
 
 ; ----------------------------------------------
@@ -3986,6 +4291,14 @@ l60c0h:
 
 ; ----------------------------------------------
   _code_header np_fetch_,'NP@'
+
+; doc{
+;
+; np@  ( -- a )
+;
+; Fetch the content of the names pointer.
+;
+; }doc
 
   ld hl,(names_pointer)
   jp push_hl
@@ -4018,6 +4331,14 @@ l60c0h:
 ; ----------------------------------------------
   _code_header sp_fetch_,'SP@'
 
+; doc{
+;
+; sp@  ( -- a )
+;
+; Fetch the content of the stack pointer.
+;
+; }doc
+
   ld hl,0x0000
   add hl,sp
   jp push_hl
@@ -4040,10 +4361,28 @@ l60c0h:
 ; ----------------------------------------------
   _constant_header rp_,'RP'
 
+  ; XXX TODO -- convert to user variable
+
+; doc{
+;
+; rp  ( -- a )
+;
+; Address of the return stack pointer.
+;
+; }doc
+
   dw return_stack_pointer
 
 ; ----------------------------------------------
   _code_header rp_fetch_,'RP@'
+
+; doc{
+;
+; rp@  ( -- a )
+;
+; Fetch the content of the return stack pointer.
+;
+; }doc
 
   ld hl,(return_stack_pointer)
   jp push_hl
@@ -4497,14 +4836,36 @@ endif
 ; ----------------------------------------------
   _code_header negate_,'NEGATE'
 
+; doc{
+;
+; negate  ( n1 -- n2 )
+;
+; Negate _n1_, giving its arithmetic inverse _n2_.
+;
+; Standard: Forth-94, Forth-2012.
+;
+; }doc
+
   pop de
-  ld hl,0x0000
-  and a
-  sbc hl,de
+                ; t  B
+  ld hl,0x0000  ; 10 03
+  and a         ; 04 01
+  sbc hl,de     ; 15 02
+                ; 29 06 total
   jp push_hl
 
 ; ----------------------------------------------
   _code_header d_negate_,'DNEGATE'
+
+; doc{
+;
+; dnegate  ( d1 -- d2 )
+;
+; Negate _d1_, giving its arithmetic inverse _d2_.
+;
+; Standard: Forth-94, Forth-2012.
+;
+; }doc
 
   pop hl
   pop de
@@ -7685,6 +8046,34 @@ endif
   dw 0,0
 
 ; ----------------------------------------------
+  _colon_header error_to_ordinal_,'ERROR>ORDINAL'
+
+; : error>ordinal  ( -n1 -- +n2 )
+;   \ Convert an error code to its ordinal position in the
+;   \ library.
+;   \ -n1 =  -90..-1        \ Forth-2012 error codes
+;   \        -285..-256     \ Solo Forth error codes
+;   \        -1024..-1000   \ G+DOS error codes
+;   \ +n2 =  1..146
+;   abs
+;   dup 256 < ?exit
+;   dup 1000 < if  [ 255 091 - ] literal - exit  then
+;   [ 1000 286 - 255 091 - + ] literal -   ;
+
+  dw abs_,dup_
+  _literal 256
+  dw less_than_,question_exit_
+  dw dup_
+  _literal 1000
+  dw less_than_,zero_branch_,error_to_ordinal.g_plus_dos
+  _literal 255-91
+  dw minus_,exit_
+error_to_ordinal.g_plus_dos:
+  _literal (1000-286)+(255-91)
+  dw minus_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header error_to_line_,'ERROR>LINE'
 
 ; doc{
@@ -7696,13 +8085,14 @@ endif
 ; them as screen headers as usual.
 ;
 ; : error>line  ( n1 -- n2 )
-;   dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
+;   error>ordinal dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
 ;
 ; }doc
 
 ; XXX TODO -- consult in clf, if a calculation can be used
 ; instead of a loop; I didn't success.
 
+  dw error_to_ordinal_
   dw dup_,one_plus_,one_,paren_do_
 error_to_number.do
   dw i_
@@ -8117,11 +8507,11 @@ two_literal.end:
   dw sp_fetch_
   dw sp0_,fetch_
   dw swap_,less_than_
-  _question_error error.stack_empty
+  _question_error error.stack_underflow
   dw sp_fetch_
   dw lit_,data_stack_limit
   dw less_than_
-  _question_error error.full_stack
+  _question_error error.stack_overflow
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8299,7 +8689,11 @@ endif
   dw branch_,interpret.begin
 
 interpret.16bit_number:
-  dw drop_ ; discard high order part of the double number
+
+  ; XXX TMP -- this is not needed with the pForth version
+  ; of `number?`:
+  ; dw drop_ ; discard high order part of the double number
+
   ; XXX TODO use `c_literal` for 8-bit values.
   dw literal_
 
@@ -8421,6 +8815,7 @@ endif
 
   dw comp_question_
   dw question_branch_,quit.do
+
   dw paren_dot_quote_
   _string 'ok'
 
@@ -8601,6 +8996,7 @@ endif
 ;
 ; }doc
 
+;  _chk 'greeting -- start' ; XXX INFORMER
 if show_version
   ; XXX TODO
   dw paren_dot_quote_
@@ -8623,20 +9019,89 @@ endif
   _colon_header abort_,'ABORT'
 
 
+;  _brk 'abort -- start' ; XXX INFORMER
   dw sp0_,fetch_,sp_store_
-boot:
-  dw noop_ ; patched by `turnkey` ; XXX OLD
+  dw boot_ 
+;  _brk 'abort -- before quit' ; XXX INFORMER
   dw quit_
 
 ; ----------------------------------------------
-  _constant_header boot_,'BOOT'
+if old_defer
+  _does_header boot_,'BOOT',,do_defer
 
-  dw boot
+; doc{
+;
+; boot  ( -- )
+;
+; A deferrer word executed by `abort`. By default it does
+; nothing. It is changed by `turnkey`.
+;
+; }doc
+
+  dw noop_
+
+else
+  _code_header boot_,'BOOT'
+
+; doc{
+;
+; boot  ( -- )
+;
+; A deferrer word executed by `abort`. By default it does
+; nothing. It is changed by `turnkey`.
+;
+; }doc
+
+  ld hl,noop_
+  jp next2
+
+endif
+
+; ----------------------------------------------
+  _variable_header previous_mode_,'PREVIOUS-MODE'
+
+; doc{
+;
+; previous-mode  ( -- a )
+;
+; Variable that holds the cfa of the word that activates the
+; screen mode that was active before executing `bye`.  It's
+; updated by `bye`, and used by `warm` to restore the current
+; mode.
+;
+; }doc
+
+  dw noop_
+
+; ----------------------------------------------
+  _variable_header current_mode_,'CURRENT-MODE'
+
+; doc{
+;
+; current-mode  ( -- a )
+;
+; Variable that holds the cfa of the word that activates the
+; current screen mode. It's set to `noop` until the first mode
+; change is done.
+;
+; }doc
+
+  dw noop_
 
 ; ----------------------------------------------
   _colon_header warm_,'WARM'
 
-  dw display_,page_,abort_
+; doc{
+;
+; warm  ( -- )
+;
+; }doc
+
+  dw display_
+  dw previous_mode_,fetch_
+  _brk 'warm -- before execute'
+  dw execute_ ; XXX FIXME
+  dw page_,abort_
   dw semicolon_s_
 
 warm_start:
@@ -8645,6 +9110,12 @@ warm_start:
 
 ; ----------------------------------------------
   _colon_header cold_,'COLD'
+
+; doc{
+;
+; cold  ( -- )
+;
+; }doc
 
   ; Init the names pointer.
   dw lit_,names_pointer_init_value,fetch_
@@ -8691,6 +9162,8 @@ common_start:
 
   ; Common operations done by warm_start and cold_start.
 
+  ; (SP) = cfa of `cold` or `warm`
+
   im 1 ; interrupt mode 1
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
   ld (system_stack_pointer),sp ; save the system stack pointer
@@ -8734,43 +9207,100 @@ common_start:
   dec hl
   jp push_hlde
 
+; ; ----------------------------------------------
+;   _code_header plus_minus_,'+-'
+
+; ; doc{
+; ;
+; ; +-  ( n1 n2 -- n1|n3 )
+; ; 
+; ; If _n2_ is negative, change the sign of _n1_, leaving it as
+; ; _n3_.
+; ;
+; ; Standard: fig-Forth.
+
+; ; ----
+; ; : +-  ( n1 f -- n1|n2 )
+; ;   0< if  negate  then  ;
+; ; ----
+
+; ; }doc
+
+;   pop hl
+;   bit 7,h
+;   jp nz,negate_pfa
+;   _jp_next
+
 ; ----------------------------------------------
-  _colon_header question_negate_,'?NEGATE'
+  _code_header question_negate_,'?NEGATE'
 
 ; doc{
 ;
-; ?negate  ( n1 n2 -- n3 )
+; ?negate  ( n1 n2 -- n1|n3 )
 ;
-; Apply the sign of n2 to n1, which is left as n3.
-;
+; If _n2_ is negative, negate _n1_, giving its arithmetic
+; inverse _n3_.
+
+; ----
+; : ?negate  ( n1 n2 -- n1|n3 )
+;   0< if  negate  then  ;
+; ----
 ; }doc
 
-  dw zero_less_than_
-  dw zero_branch_,plus_minus.end
-  dw negate_
-plus_minus.end:
-  dw semicolon_s_
+  pop hl
+question_negate.hl:
+  bit 7,h
+  jp nz,negate_pfa
+  _jp_next
+
+; ; ----------------------------------------------
+;   _code_header d_plus_minus_,'D+-'
+
+; ; doc{
+; ;
+; ; d+-  ( d1 n -- d1|d2 )
+; ; 
+; ; If _n_ is negative, change the sign of _d1_, leaving it as
+; ; _d2_.
+; ;
+; ; Standard: fig-Forth.
+
+; ; ----
+; ; : d+-  ( d1 n -- d2 )
+; ;   0< if  negate  then  ;
+; ; ----
+
+; ; }doc
+
+;   pop hl
+;   bit 7,h
+;   jp nz,d_negate_pfa
+;   _jp_next
 
 ; ----------------------------------------------
-  _colon_header question_d_negate_,'?DNEGATE'
+  _code_header question_d_negate_,'?DNEGATE'
 
 ; doc{
 ;
-; ?dnegate  ( d1 n -- d2 )
+; ?dnegate  ( d1 n -- d1|d2 )
 ;
-; Apply the sign of _n_ to the double number _d1_, leaving it as
+; If _n_ is negative, negate _d1_, giving its arithmetic inverse
 ; _d2_.
-;
+
+; ----
+; : ?dnegate  ( d1 n -- d1|d2 )
+;   0< if  dnegate  then  ;
+; ----
 ; }doc
 
-  dw zero_less_than_
-  dw zero_branch_,d_plus_minus.end
-  dw d_negate_
-d_plus_minus.end:
-  dw semicolon_s_
+  pop hl
+question_d_negate.hl:
+  bit 7,h
+  jp nz,d_negate_pfa
+  _jp_next
 
 ; ----------------------------------------------
-  _colon_header abs_,'ABS'
+  _code_header abs_,'ABS'
 
 ; doc{
 ;
@@ -8785,24 +9315,22 @@ d_plus_minus.end:
 
 ; }doc
 
-if 1
+  pop hl
+  push hl
+  jp question_negate.hl
 
-  ; XXX -- from Abersoft Forth; same code in Z88 CamelForth
+if 0
 
-  dw dup_,question_negate_
-  dw semicolon_s_
-
-else
-
-  ; XXX TODO -- from DZX-Forth
+  ; XXX TODO ? -- from DZX-Forth
 
   pop hl
   call abs_hl
   jp push_hl
+
 endif
 
 ; ----------------------------------------------
-  _colon_header dabs_,'DABS'
+  _code_header dabs_,'DABS'
 
 ; doc{
 ;
@@ -8811,16 +9339,15 @@ endif
 ; Leave the absolute value _ud_ of a double number _d_.
 
 ; ----
-; : dabs  ( n -- u )
+; : dabs  ( d -- ud )
 ;   dup ?dnegate  ;
 ; ----
 
 ; }doc
 
-  ; XXX -- from Abersoft Forth; same code in Z88 CamelForth
-
-  dw dup_,question_d_negate_
-  dw semicolon_s_
+  pop hl
+  push hl
+  jp question_d_negate.hl
 
 ; ----------------------------------------------
   _code_header umax_,'UMAX'
@@ -8934,16 +9461,22 @@ endif
 ; remainder _n2_ and signed quotient _n3_ from a double number
 ; dividend and divisor _n1_.
 ;
-; By default it does a symmetric division (see `sm/rem`).
+; This word is deferred and by default it's set to execute
+; `sm/rem`, so it does a symmetric division (the  remainder
+; takes its sign from the dividend).  It can be set to execute
+; `fm/mod` instead.
 ;
-; The  remainder takes its sign from the dividend.
+; This word is executed by all other division operators.
+; Therefore setting it to execute either `sm/rem` or `fm/mod`
+; will change the behaviour of all division operators.
 ;
 ; Standard: fig-Forth.
 ;
-; ---- }doc
+; }doc
 
   ; XXX TMP
   ; XXX TODO -- better faster defer with Z80 jp
+  ; XXX TODO -- convert it to a deferred word
 
   ; dw branch_,s_m_slash_rem_pfa ; XXX TMP
   dw s_m_slash_rem_ ; XXX TMP
@@ -9032,7 +9565,7 @@ endif
 
 ; doc{
 ;
-; /mod  ( n1 n2 -- rem quot )
+; /mod  ( n1 n2 -- n3 n4 )
 ;
 ; Divide  _n1_ by _n2_ and leave the remainder _n3_ and quotient
 ; _n4_.  _n3_ has the same sign as _n1_.
@@ -9053,6 +9586,21 @@ endif
 ; ----------------------------------------------
   _colon_header mod_,'MOD'
 
+; doc{
+;
+; mod  ( n1 n2 -- n3 )
+;
+;   Divide _n1_ by _n2_, giving the single-cell remainder _n3_.
+
+; Standard: fig-Forth, Forth-79, Forth-94, Forth-2012.
+
+; ----
+; : mod  ( n1 n2 -- n3 )
+;   /mod drop  ;
+; ----
+
+; }doc
+
   dw slash_mod_,drop_
   dw semicolon_s_
 
@@ -9071,17 +9619,51 @@ endif
 ; ----------------------------------------------
   _colon_header m_slash_mod_,'M/MOD'
 
+; doc{
+;
+; m/mod  ( ud1 u2 -- u3 ud4 )
+;
+; An unsigned mixed magnitude math operation which leaves a
+; double quotient _ud4_ and remainder _u3_, from a double
+; dividend _ud1_ and single divisor _u2_.
+;
+; Standard: fig-Forth.
+;
+; : m/mod  ( ud1 u2 -- u3 ud4 )
+;   >r 0 r@ u/mod r> swap >r u/mod r>  ;
+;
+; }doc
+
+  ; Credits:
+  ; Code from Abersoft Forth.
+
   dw to_r_,zero_,r_fetch_
   dw u_slash_mod_
   dw from_r_,swap_
   dw to_r_,u_slash_mod_,from_r_
   dw semicolon_s_
 
-
 ; ----------------------------------------------
   _colon_header u_m_slash_mod_,'UM/MOD'
 
+; doc{
+;
+; um/mod  ( ud u1 -- u2 u3 )
+
+; Divide _ud_ by _u1_, giving the quotient _u3_ and the
+; remainder _u2_.  All values and arithmetic are unsigned.
+
+; Standard: Forth-94, Forth-2012.
+
+; ----
+; : um/mod  ( ud u1 -- u2 u3 )
+;   m/mod d>s  ;
+; ----
+
+; }doc
+
   ; XXX TMP -- temporary solution
+  ; XXX TODO -- definitive
 
   dw m_slash_mod_,d_to_s_
   dw semicolon_s_
@@ -9141,7 +9723,7 @@ endif
 
 message.number_only:
   dw paren_dot_quote_
-  _string 'Msg # '
+  _string 'Msg #'
   dw base_,fetch_,swap_,decimal_,dot_,base_,store_
   dw semicolon_s_
 
@@ -9573,8 +10155,10 @@ read_write_sector_command:
 if 1
 
   dw b_slash_scr_,star_,blk_,store_
-  dw to_in_,off_,interpret_
-; _brk '(load) -- after interpret' ; XXX INFORMER
+  dw to_in_,off_
+;  _chk '(load) -- before interpret' ; XXX INFORMER
+  dw interpret_
+;  _chk '(load) -- after interpret' ; XXX INFORMER
   dw semicolon_s_
 
 else
@@ -9633,7 +10217,9 @@ endif
   dw dup_,scr_,store_
   dw blk_,fetch_,to_r_
   dw to_in_,fetch_,to_r_
+;  _chk 'load -- before (load)' ; XXX INFORMER
   dw paren_load_
+;  _chk 'load -- after (load)' ; XXX INFORMER
   dw from_r_,to_in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
@@ -10431,7 +11017,7 @@ page.display
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header bye_,'BYE'
+  _code_header paren_bye_,'(BYE)'
 
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
 
@@ -10454,6 +11040,31 @@ system_stack_pointer: equ $+1
   ; Exit to BASIC:
   rst 0x08
   db 0x08 ; "STOP" BASIC error
+
+; ----------------------------------------------
+  _code_header default_mode_,'DEFAULT-MODE'
+
+
+; doc{
+;
+; default-mode  ( -- )
+; 
+; Activate the default screen mode. It's set to `noop` until the
+; first mode change is done. Then it's vectored to `mode32`.
+; It's used by `bye`.
+;
+; }doc
+
+  ld hl,noop_
+  jp next2
+
+; ----------------------------------------------
+  _colon_header bye_,'BYE'
+
+  dw current_mode_,fetch_,previous_mode_,store_
+  dw default_mode_
+  dw paren_bye_
+  ; `(bye)` never returns
 
 ; ----------------------------------------------
   _code_header two_drop_,'2DROP'

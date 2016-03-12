@@ -1,11 +1,16 @@
 = Solo Forth TO-DO
 :revdate: 2015-09-19
 
-1. Run a ZX Spectrum emulator to emulater a ZX Spectrum 128 with the +D disk interface.
-2. "Insert" the file <solo_forth_disk_1.mgt> as disk 1 of the +D disk interface.
-
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
+
+// }}}
+== Urgent ==
+// {{{
+
+.2015-09-24:
+
+Fix: `>number` and `number?`, after CamelForth or DZX-Forth or pForth!
 
 // }}}
 == Inner ==
@@ -265,6 +270,11 @@ New:
 Change: `parsed` to `>in +!` and choose a new name for `1+ ; parsed` or
 write as is.
 
+.2015-09-23:
+
+Fix: `where` shows the offending word uppercased. This means somewhere the
+original address hold in `parsed-word` is used by `uppers`.
+
 // }}}
 == Errors ==
 // {{{
@@ -385,14 +395,6 @@ ____
 Implement a configurable case mode for `search` and `compare`? See how
 Z88 CamelForth does it.
 
-From the Spectrum Forth-83 manual:
-
-----
-: unat  ( -- row col )
-  24 23689 c@ -
-  33 23688 c@ - dup 32 = if  drop 1+ 0  then ;
-----
-
 .2015-09-13:
 
 `rp` should be a user variable?
@@ -408,3 +410,12 @@ From the Spectrum Forth-83 manual:
 
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
+
+.2015-09-23:
+
+Create a `_deferred_header` macro for the new format of deferred
+words.
+
+Convert `boot` to a deferred word.
+
+

@@ -8,7 +8,9 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509231811
+  \ XXX UNDER DEVELOPMENT
+
+\ Last modified: 201509250221
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -29,6 +31,22 @@
   \ http://programandala.net/en.program.solo_forth.history.html
 
 ( ) \ scr 1 -- testing load screen
+
+: number?   ( ca len -- 0 | n 1 | d 2 )
+
+	dup 0= if 2drop 0 exit then   \ any chars?
+
+	over c@ [char] - = \ minus sign at the start?
+	dup >r  abs /string
+
+	dpl on  0 0 2swap >number dup
+	if
+		1 = swap c@ [char] . =  and
+		if    r@ if  dnegate  then  dpl off  2
+		else  2drop 0  then
+	else
+		2drop drop r@ if  negate  then  1
+	then  rdrop  ;
 
   \ }}} =======================================================
   \ Need {{{
@@ -64,7 +82,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 
 ( need ) \ scr 3
 
-: ?located  ( screen | false -- )  dup 0= 29 ?error  ;
+: ?located  ( screen | false -- )  dup 0= #-268 ?error  ;
 
 : from  ( "name" -- )  locate ?located first-locatable !  ;
   \ Locate the given _name_ and set its screen the first one
@@ -100,111 +118,300 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ }}} =======================================================
   \ Error messages {{{
 
-( Error messages 1..15 ) \ scr 4
+( Error messages -01..-15 )  \ scr 4
 
-\ Error #01: Not a word nor a number.
-\ Error #02: Stack empty.
-  \ XXX not used:
-\ Error #03: Dictionary overflow.
-\ Error #04: Warning: Is not unique.
-\ Error #05: Word not found.
-  \ XXX not used:
-\ Error #06: Out of disk range
-\ Error #07: Stack overflow.
-\ Error #08: Stack imbalance.
-\ Error #09: Trying to load from screen 0.
-\ Error #10:
-\ Error #11:
-\ Error #12:
-\ Error #13:
-\ Error #14: Wrong digit.
-\ Error #15: Deferred word is uninitialized.
+\ #-01 ABORT
+\ #-02 ABORT"
+\ #-03 stack overflow [XXX ex 07]
+\ #-04 stack underflow [XXX ex 02]
+\ #-05 return stack overflow
+\ #-06 return stack underflow
+\ #-07 do-loops nested too deeply during execution
+\ #-08 dictionary overflow [XXX ex 03]
+\ #-09 invalid memory address
+\ #-10 division by zero
+\ #-11 result out of range
+\ #-12 argument type mismatch
+\ #-13 undefined word [XXX ex 05]
+\ #-14 interpreting a compile-only word [XXX ex 17]
+\ #-15 invalid FORGET
 
-( Error messages 16..30 )  \ scr 5
+( Error messages -16..-30 )
 
-\ Error #16: Assertion failed.
-\ Error #17: Compilation only, use in definition.
-\ Error #18: Execution only.
-\ Error #19: Conditionals not paired.
-\ Error #20: Definition not finished.
-\ Error #21:
-\ Error #22: Use only when loading.
-\ Error #23: Off current editing screen.
-\ Error #24:
-  \ XXX TMP -- not used yet:
-\ Error #25: Unsupported tape operation.
-  \ XXX TMP -- not used yet:
-\ Error #26: Unsupported disk operation.
-\ Error #27: Source file needed.
-\ Error #28: Warning: Not present, though required.
-\ Error #29: Required, but not located.
-  \ Assembler:
-\ Error #30: Relative jump too long.
+\ #-16 attempt to use zero-length string as a name
+\ #-17 pictured numeric output string overflow
+\ #-18 parsed string overflow
+\ #-19 definition name too long
+\ #-20 write to a read-only location
+\ #-21 unsupported operation
+\ #-22 control structure mismatch [XXX ex 19]
+\ #-23 address alignment exception
+\ #-24 invalid numeric argument
+\ #-25 return stack imbalance
+\ #-26 loop parameters unavailable
+\ #-27 invalid recursion
+\ #-28 user interrupt
+\ #-29 compiler nesting
+\ #-30 obsolescent feature
 
-( Error messages 31..46 )  \ scr 6
+( Error messages -31..-45 )
+
+\ #-31 >BODY used on non-CREATEd definition
+\ #-32 invalid name argument
+\ #-33 block read exception
+\ #-34 block write exception
+\ #-35 invalid block number
+\ #-36 invalid file position
+\ #-37 file I/O exception
+\ #-38 non-existent file
+\ #-39 unexpected end of file
+\ #-40 invalid BASE for floating point conversion
+\ #-41 loss of precision
+\ #-42 floating-point divide by zero
+\ #-43 floating-point result out of range
+\ #-44 floating-point stack overflow
+\ #-45 floating-point stack underflow
+
+( Error messages -46..-60 )
+
+\ #-46 floating-point invalid argument
+\ #-47 compilation word list deleted
+\ #-48 invalid POSTPONE
+\ #-49 search-order overflow
+\ #-50 search-order underflow
+\ #-51 compilation word list changed
+\ #-52 control-flow stack overflow
+\ #-53 exception stack overflow
+\ #-54 floating-point underflow
+\ #-55 floating-point unidentified fault
+\ #-56 QUIT
+\ #-57 exception in sending or receiving a character
+\ #-58 [IF], [ELSE], or [THEN] exception
+\ #-59 ALLOCATE
+\ #-60 FREE
+
+( Error messages -61..-75 )
+
+\ #-61 RESIZE
+\ #-62 CLOSE-FILE
+\ #-63 CREATE-FILE
+\ #-64 DELETE-FILE
+\ #-65 FILE-POSITION
+\ #-66 FILE-SIZE
+\ #-67 FILE-STATUS
+\ #-68 FLUSH-FILE
+\ #-69 OPEN-FILE
+\ #-70 READ-FILE
+\ #-71 READ-LINE
+\ #-72 RENAME-FILE
+\ #-73 REPOSITION-FILE
+\ #-74 RESIZE-FILE
+\ #-75 WRITE-FILE
+
+( Error messages -76..-79 )
+
+\ #-76 WRITE-LINE
+\ #-77 malformed xchar
+\ #-78 SUBSTITUTE
+\ #-79 REPLACES
+\ #-80
+\ #-81
+\ #-82
+\ #-83
+\ #-84
+\ #-85
+\ #-86
+\ #-87
+\ #-88
+\ #-89
+\ #-90
+
+  \ }}} =======================================================
+  \ Solo Forth error codes {{{
+
+( Error messages -256..-268 )
+
+\ #-256 not a word nor a number [XXX ex 01]
+\ #-257 warning: is not unique [XXX ex 04]
+\ #-258 stack imbalance [XXX ex 08]
+\ #-259 trying to load from screen 0 [XXX ex 09]
+\ #-260 wrong digit [XXX ex 14]
+\ #-261 deferred word is uninitialized [XXX ex 15]
+\ #-262 assertion failed [XXX ex 16]
+\ #-263 execution only [XXX ex 18]
+\ #-264 definition not finished [XXX ex 20]
+\ #-265 loading only [XXX ex 22]
+\ #-266 off current editing screen [XXX ex 23]
+\ #-267 warning: not present, though required [XXX ex 28]
+\ #-268 required, but not located [XXX ex 29]
+\ #-269 relative jump too long [XXX ex 30]
+
+( Error messages -270..-285 )
+
+\ #-270 text not found
+\ #-271
+\ #-272
+\ #-273
+\ #-274
+\ #-275
+\ #-276
+\ #-277
+\ #-278
+\ #-279
+\ #-281
+\ #-282
+\ #-283
+\ #-284
+\ #-285
+
+  \ }}} =======================================================
+  \ G+DOS error codes {{{
+
+( Error messages -1000..-1014 )
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
 
-  \ XXX useless:
-\ G+DOS error #00: Nonsense in G+DOS
-  \ XXX useless:
-\ G+DOS error #01: Nonsense in GNOS
-  \ XXX useless:
-\ G+DOS error #02: Statement end error
-  \ XXX useless:
-\ G+DOS error #03: Break requested
-\ G+DOS error #04: Sector error
-\ G+DOS error #05: Format data lost
-\ G+DOS error #06: Check disk in drive
-  \ XXX useless:
-\ G+DOS error #07: No +SYS file
-\ G+DOS error #08: Invalid file name
-  \ XXX useless:
-\ G+DOS error #09: Invalid station
-\ G+DOS error #10: Invalid device
-  \ XXX useless:
-\ G+DOS error #11: Variable not found
-\ G+DOS error #12: Verify failed
-\ G+DOS error #13: Wrong file type
-  \ XXX useless:
-\ G+DOS error #14: Merge error
+\ #-1000 G+DOS: Nonsense in G+DOS
+\ #-1001 G+DOS: Nonsense in GNOS
+\ #-1002 G+DOS: Statement end error
+\ #-1003 G+DOS: Break requested
+\ #-1004 G+DOS: Sector error
+\ #-1005 G+DOS: Format data lost
+\ #-1006 G+DOS: Check disk in drive
+\ #-1007 G+DOS: No +SYS file
+\ #-1008 G+DOS: Invalid file name
+\ #-1009 G+DOS: Invalid station
+\ #-1010 G+DOS: Invalid device
+\ #-1011 G+DOS: Variable not found
+\ #-1012 G+DOS: Verify failed
+\ #-1013 G+DOS: Wrong file type
+\ #-1014 G+DOS: Merge error
 
-( Error messages 47..62 )  \ scr 7
+( Error messages -1015..-1029 )
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
 
-\ G+DOS error #15: Code error
-  \ XXX useless:
-\ G+DOS error #16: Pupil set
-\ G+DOS error #17: Invalid code
-\ G+DOS error #18: Reading a write file
-\ G+DOS error #19: Writing a read file
-  \ XXX useless:
-\ G+DOS error #20: O.K. G+DOS
-  \ XXX useless:
-\ G+DOS error #21: Network off
-\ G+DOS error #22: Wrong drive
-\ G+DOS error #23: Disk write protected
-\ G+DOS error #24: Not enough space on disk
-\ G+DOS error #25: Directory full
-\ G+DOS error #26: File not found
-\ G+DOS error #27: End of file
-\ G+DOS error #28: File name used
-  \ XXX useless:
-\ G+DOS error #29: No G+DOS loaded
+\ #-1015 G+DOS: Code error
+\ #-1016 G+DOS: Pupil set
+\ #-1017 G+DOS: Invalid code
+\ #-1018 G+DOS: Reading a write file
+\ #-1019 G+DOS: Writing a read file
+\ #-1020 G+DOS: O.K. G+DOS
+\ #-1021 G+DOS: Network off
+\ #-1022 G+DOS: Wrong drive
+\ #-1023 G+DOS: Disk write protected
+\ #-1024 G+DOS: Not enough space on disk
+\ #-1025 G+DOS: Directory full
+\ #-1026 G+DOS: File not found
+\ #-1027 G+DOS: End of file
+\ #-1028 G+DOS: File name used
+\ #-1029 G+DOS: No G+DOS loaded
 
-( Error messages 63..78 )  \ scr 7
+( Error messages -1030..-1031 )
 
-  \ G+DOS Error codes and messages.
-  \ Some of them are useless for this implementation.
+\ #-1030 G+DOS: STREAM used
+\ #-1031 G+DOS: CHANNEL used
 
-  \ XXX useless:
-\ G+DOS error #30: STREAM used
-  \ XXX useless:
-\ G+DOS error #31: CHANNEL used
+  \ }}} =======================================================
+  \ Code under development {{{
 
+( test )
+cr .( 01)
+cr .( 02)
+cr .( 03)
+cr .( 04)
+cr .( 05)
+cr .( 06)
+cr .( 07)
+cr .( 08)
+cr .( 09)
+cr .( 10)
+cr .( 11)
+cr .( 12)
+cr .( 13)
+cr .( 14)
+cr .( 15)
+
+( number? )
+
+: sign?  ( ca len -- ca' len' f )
+  \ get optional sign
+  \ ca len = number
+  \ ca' len' = number without the minus sign
+  \ f = negative number?
+  over c@ [char] - = dup >r abs /string r>  ;
+
+
+: number?  ( ca len -- n tf | ff )
+  
+  base @ >r  number-base base !
+  0 0 2swap
+  sign? >r  >number nip
+  if    2drop rdrop false
+  else  r> if negate then  true
+  then  r> base !  ;
+
+( number? )
+
+: number?  ( ca len -- n tf | ff )
+
+  \ first version
+  
+  base @ >r  number-base base !
+  0 0 2swap
+  sign? >r  >number nip
+  if    2drop rdrop false
+  else  r> if negate then  true
+  then  r> base !  ;
+
+( XXX )
+
+  \ XXX TODO -- new versions under development, adapted to
+  \ Forth-2012 codes
+
+: error>ordinal  ( -n1 -- +n2 )
+  \ Convert an error code to its ordinal position in the
+  \ library.
+  \ -n1 =  -90..-1        \ Forth-2012 error codes
+  \        -285..-256     \ Solo Forth error codes
+  \        -1024..-1000   \ G+DOS error codes
+  \ +n2 =  1..146
+
+  \ XXX TODE -- this word is finished and already in the
+  \ kernel, but it should be a library option, using a defered
+  \ word in `message`.
+
+  abs
+  dup 256 < if  exit  then
+  dup 1000 < if  [ 255 091 - ] literal - exit  then
+  [ 1000 286 - 255 091 - + ] literal -   ;
+
+: error>line  ( -n1 -- +n2 )
+  error>ordinal  dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
+
+: ior>error  ( ior -- f n )
+
+  \ XXX TODO -- adapt to Forth-2012 codes
+
+  \ Convert a DOS ior to a Forth error number.
+
+  \ ior = the AF register returned by a DOS command:
+  \     bit 0     = set: error
+  \     bits 8-14 = error code
+  \     bit 15    = set: ZX Spectrum error; unset: DOS error
+  \ f = error?
+  \ n = error number:
+  \     n<0  = ZX Spectrum error number (negative)
+  \     n>99 = DOS error number (plus 100)
+
+  dup 1 and negate  \ error?
+  swap 255 /        \ error code
+                    \ XXX TODO `flip 255 and` instead
+  dup 128 and       \ ZX Spectrum error?
+  \ XXX FIXME -- BASIC errors are not properly calculated
+  if  negate  else  31 +  then   ;
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{
@@ -356,7 +563,8 @@ char " 1 2constant "  char \ 1 2constant \
 : m  ( -- c1 c2 2 )  10 13 2  ;
   \ \m = carriage return and line feed
 
-: (x)  ( "c" -- n )  parse-char upper 16 digit? 0= 14 ?error  ;
+: (x)  ( "c" -- n )
+  parse-char upper 16 digit? 0= #-260 ?error  ;
   \ Parse an hex digit and convert it to a number.
 
 : x  ( "cc" -- c 1 )  (x) 16 * (x) + 1  ;
@@ -574,9 +782,6 @@ need n>r
   \ routine at _a2_ to the system channels.
   sys-chars !  mode-output  ;
 
-variable current-mode
-  \ cfa of the word that activates the current screen mode
-
 : mode32  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   2548 15360 set-mode
@@ -586,7 +791,8 @@ variable current-mode
   \ ROM font, and the special code for `at-xy` (required to
   \ use the whole screen).
 
-' mode32 current-mode !
+' mode32  dup current-mode !
+' bye cfa>pfa !  \ patch `bye` to execute `mode32`
 
 ( mode42 )
 
@@ -2826,6 +3032,8 @@ decimal
   \     n<0  = ZX Spectrum error number (negative)
   \     n>99 = DOS error number (plus 100)
 
+  \ XXX TODO -- adapt to Forth-2012 codes
+
   dup 1 and negate  \ error?
   swap 255 /        \ error code
                     \ XXX TODO `flip 255 and` instead
@@ -3556,7 +3764,7 @@ need case
 : decode  ( "name" -- )
   decode-usage
   defined if  cfa>pfa  0 decode-level !  (decode)
-          else  drop  5 error  then  ;
+          else  drop  -13 error  then  ;
 
 ( list )
 
@@ -3890,7 +4098,7 @@ variable assert-level ( -- a )
 
 : assert( ( -- )  postpone assert1( ; immediate
 
-: (endassert) ( f -- )  0= 16 ?error ;
+: (endassert) ( f -- )  0= #-262 ?error ;
 
 : ) ( -- )  postpone (endassert) ; immediate
     \ end an assertion
@@ -4150,7 +4358,7 @@ code !p  ( c ca -- )
   \ Return its start address and length, to be used as
   \ parameters for saving the system to disk.
 
-: turnkey  ( cfa -- a len )  boot ! system  ;
+: turnkey  ( cfa -- a len )  boot defer! system  ;
 
   \ }}} =======================================================
   \ Double numbers {{{
@@ -5587,7 +5795,7 @@ DD constant ix-op  FD constant iy-op
 : ix  ( -- rphl )  ix-op c, hl  ;
 : iy  ( -- rphl )  iy-op c, hl  ;
 
-: ?page  ( n -- n )  dup 80 + FF swap u< 1E ?error  ;
+: ?page  ( n -- n )  dup 80 + FF swap u< #-269 ?error  ;
   \ Branch too long?
 
 -->
@@ -5709,6 +5917,8 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 
 CF m4 hook \ rst 0x08
 D7 m1 prt  \ rst 0x16
+
+-->
 
 ( z80-asm -- index register opcodes)
 
@@ -5882,8 +6092,6 @@ decimal only forth
 
 ( calc end-calc )
 
-  \ 
-
 need z80-asm
 
 current @  also assembler definitions
@@ -5913,7 +6121,7 @@ need @c+  need for
 
 : <<  ( -- a depth )  here depth  ;
 : >>  ( a depth -- )
-  depth 1- - 8 ?error cr base @ >r hex
+  depth 1- - #-258 ?error cr base @ >r hex
   dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
   r> base !  space   ;
 
@@ -6951,7 +7159,7 @@ vocabulary editor  also editor definitions  hex
   \ of `pad` to `c/l` characters.
 
 : line  ( n -- a )
-  dup FFF0 and 17 ?error scr @ (line) drop  ;
+  dup FFF0 and #-266 ?error scr @ (line) drop  ;
   \ Leave address _a_ of the beginning of line _n_ in the
   \ current screen buffer.  The screen number is in `scr`.
   \ Read the disk block from  disk if it is not already in the
@@ -7060,7 +7268,8 @@ also forth
 : find  ( -- )
   begin
     03FF r# @ <
-    if  top pad here c/l 1+ cmove 0 error  then  1line
+    \ XXX FIXME -- `00 error` ?
+    if  top pad here c/l 1+ cmove #-270 error  then  1line
   until  ;
   \ Search for a match to the string at `pad`, from the cursor
   \ position until the end of screen.  If no match found issue
@@ -7095,7 +7304,8 @@ also forth
   \ Find and delete the next occurrence of the string "text".
 
 : till  ( "text<eol>" -- )
-  #lead + text 1line 0= 0 ?error #lead + swap - delete 0 m  ;
+  #lead + text 1line 0= #-270 ?error
+  #lead + swap - delete 0 m  ;
   \ Delete on the cursor line from the cursor till the end of
   \ string "text".
 
