@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506251840
+; Version A-00-201506251911
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -189,6 +189,13 @@ fig_parsing?                    equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
+  ; XXX TODO
+names_in_memory_bank?           equ false
+  ; true = name fields and link fields are stored in a memory
+  ; bank page, saving dictionary space.
+  ; false = name fields and link fields are stored in the
+  ; dictionary.
+
 ; ----------------------------------------------
 ; Character codes
 
@@ -240,6 +247,7 @@ rom_stack_fetch:                 equ 0x2BF1
 sys_errnr:         equ 0x5C3A ; IY index
 
 sys_attr_p:        equ 0x5C8D
+sys_bankm:         equ 0x5B5C
 sys_coordx:        equ 0x5C7D
 sys_coordy:        equ 0x5C7E
 sys_df_cc:         equ 0x5C84
@@ -253,6 +261,11 @@ sys_scr_ct:        equ 0x5C8C
 sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
 sys_t_addr:        equ 0x5C74
 sys_udg:           equ 0x5C7B
+
+; ----------------------------------------------
+; Ports
+
+bank1_port:        equ 0x7FFD
 
 ; ==============================================================
 ; Macros
@@ -839,6 +852,27 @@ push_l: ; XXX TMP -- not used yet
   inc bc
   ld h,a
   jp push_hl
+
+; ----------------------------------------------
+  _code_header bank_,'BAN','K'
+
+; doc{
+;
+; bank  ( n -- )
+;
+; Page memory bank _n_ at 0xC000..0xFFFF.
+;
+; }doc
+
+  di
+  pop de ; e = bank
+  ld a,(sys_bankm) ; get the saved status of BANKM
+  and 0xF8 ; erase bits 0-2
+  or e ; modify bits 0-2
+  ld (sys_bankm),a ; update BANKM
+  out (bank1_port),a ; page the bank
+  ei
+  _jp_next
 
 ; ----------------------------------------------
   _code_header csb_unused_,'CSB-UNUSE','D'
