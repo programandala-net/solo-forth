@@ -120,3 +120,4 @@ the space. All the related pointers are apdated. Conditional
 compilation is used, just in case. The final goal is to reorganize the
 parameter area, removing all unnecessary fig-Forth stuff.
 
+Change: Entry points are moved to the start (new origin).

@@ -315,4 +315,36 @@ forth definitions decimal
     ?terminal if leave then
   loop  ;
 
+( extend system )
+
+: extend  ( -- )
+
+  \ Change the `cold` start parameters to extend the system to
+  \ its current state.
+
+  \ This word should be used especially when system words have
+  \ been patched with new words.  otherwise `cold` would delete
+  \ the new words and the system would crash when their space
+  \ would be overwritten.
+
+  latest 12 +origin !  here 28 +origin !  here 30 +origin !
+  here fence !  ' forth 8 + 32 +origin !  ;
+
+  \ system  ( -- a len )
+  \
+  \ Prepare the system in order to save a copy.  Return its
+  \ start address and length, to be used as parameters for the
+  \ tape or disk saving commands.
+
+: system  ( -- a len )  extend  0 +origin size 10 + ;
+
+  \ turnkey  ( cfa -- a len )
+  \
+  \ Prepare the system in order to save a copy that will
+  \ execute the given cfa after the ordinary boot process.
+  \ return its start address and length, to be used as
+  \ parameters for the tape or disk saving commands.
+
+: turnkey  ( cfa -- a len )  boot ! system  ;
+
   \ vim: filetype=fplusdforth

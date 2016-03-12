@@ -2,12 +2,12 @@
 ; By Marcos Cruz (programandala.net), 2015
 ; http://programandala.net/en.program.f+d_forth.html
 
-  org 0x5E00
-
   ; ----------------------------------------------------------------
   ; Symbols
 
   ; Forth
+
+origin:                           equ 0x5E00
 
 data_bytes_per_buffer:            equ 0x0200
 total_bytes_per_buffer:           equ data_bytes_per_buffer+4
@@ -112,11 +112,20 @@ _string: macro text
 
 endm
 
+  ; ----------------------------------------------------------------
+  ; Entry points
+
+  org origin
+
+cold_entry:
+  jp cold_start
+warm_entry:
+  jp warm_start
 
   ; ----------------------------------------------------------------
   ; User variables
 
-user_variables_origin:
+user_variables:
 
   old_origin? equ 0
 
@@ -185,62 +194,13 @@ hld_value: ; +0x2A
   endif
 
   ; ----------------------------------------------------------------
-  ; Parameter area
+  ; User variables default values
 
-origin:
+  ; The first eight user variables have default values.  They are used
+  ; by `cold` to overwrite the correspondent user variables.  They must
+  ; be in the same order than user variables.
 
-  ; Entry points
-cold_entry:
-  nop
-  jp cold_start
-warm_entry:
-  nop
-  jp warm_start
-
-fig_release:
-  db 0x01
-fig_revision:
-  db 0x01
-fig_user_version:
-  ; XXX FIXME -- It should be 0x41 ("A").
-  db 0x00
-
-fig_implementation_attributes:
-  ; Location: 0x0B +ORIGIN
-  db 0x0E
-  ; Bits:      76543210
-  ; Bit names: ...WIEBA
-  ; 0x0E =     00001110
-  ; Legend:
-  ;   W: 0 = above sufficient
-  ;      1 = other differences exist
-  ;   I: Interpreter:
-  ;      0 = pre-incrementing
-  ;      1 = post-incrementing
-  ;   E: Address must be even:
-  ;      0 = yes
-  ;      1 = no
-  ;   B: High byte @:
-  ;      0 = low address
-  ;      1 = high address
-  ;   A: CPU address:
-  ;      0 = byte
-  ;      1 = word
-
-top_most_word_in_forth_voc:
-  dw nfa_of_top_most_word_in_forth_voc
-backspace_char:
-  dw 0x000C
-
-init_user_pointer_value:
-  dw user_pointer_value
-
-  ; ----------------------------------------------------------------
-  ; User variables init values
-
-  ; These are the default values of the first eight user variables.
-  ; They are used by `cold` to overwrite them.  They must be in the
-  ; same order than user variables.
+default_user_variables_start:
 
 init_s0_value:
   dw data_stack_bottom
@@ -259,8 +219,24 @@ init_dp_value:
 init_voc_link_value:
   dw forth_vocabulary_link
 
+default_user_variables_end:
+
+  ; ----------------------------------------------------------------
+  ; Parameter area
+
+top_most_word_in_forth_voc:
+  ; Location: 0x0C +ORIGIN
+  dw nfa_of_top_most_word_in_forth_voc
+backspace_char:
+  ; Location: 0x0D +ORIGIN
+  dw 0x000C
+
+init_user_pointer_value:
+  ; Location: 0x0E +ORIGIN ?
+  dw user_pointer_value
+
 user_pointer_value:
-  dw user_variables_origin
+  dw user_variables
 return_pointer_value:
   dw return_stack_bottom
 
@@ -1225,6 +1201,7 @@ zero_equals_lfa:
 zero_equals_:
   dw zero_equals_pfa
 zero_equals_pfa:
+  ; XXX TODO update if `true` is changed to -1:
   pop hl
   ld a,l
   or h
@@ -3413,15 +3390,10 @@ cold_pfa:
   dw empty_buffers_
   dw first_,dup_,use_,store_,prev_,store_
   dw dr0_
-  dw lit_,init_s0_value
-  dw lit_,user_pointer_value,fetch_
-  if old_origin?
+  dw lit_,default_user_variables_start ; from
+  dw lit_,user_pointer_value,fetch_ ; to
   dw c_lit_
-  db 0x06 ; XXX TODO -- avoid this gap
-  dw plus_
-  endif
-  dw c_lit_
-  db 0x10 ; 0x08 user variables are set to their default values
+  db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
   dw lit_,top_most_word_in_forth_voc
   dw fetch_
@@ -4574,9 +4546,7 @@ size_:
   dw do_colon
 size_pfa:
   ; XXX TODO update for the new map, count from org.
-  dw here_
-  dw zero_,plus_origin_
-  dw minus_
+  dw here_,zero_,plus_origin_,minus_
   dw semicolon_s_
 
 unused_nfa:
