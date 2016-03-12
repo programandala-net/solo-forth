@@ -1,6 +1,5 @@
 _header: macro _base_label,_name,_is_immediate
 
-    this_nfa: defl $ ; link address for next word
     flags: defl name_bound_bit_mask
       if not nul _is_immediate
         flags: defl flags | precedence_bit_mask ; add precedence bit
@@ -12,7 +11,7 @@ _header: macro _base_label,_name,_is_immediate
       dw previous_nfa ; link field
     _base_label: ; code field address
 
-  previous_nfa: defl this_nfa
+  previous_nfa: defl _base_label##nfa
 
   endm
 

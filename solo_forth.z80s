@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506261829
+; Version A-00-201506262133
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -50,35 +50,9 @@
 ;            May be used within Forth words if restored before `next`.
 
 ; ----------------------------------------------
-; Stack comment conventions
-
-; a       = address
-; ca      = character-aligned address
-
-; f       = flag (false is 0; true is any other value)
-; tf      = true flag (1)
-; ff      = false flag (0)
-; wf      = well-formed flag (false is 0; true is 1)
-
-; c       = 8-bit character
-; u       = 16-bit unsigned number
-; len     = 16-bit unsigned number, length of memory zone or string
-; ca len  = string
-; n       = 16-bit signed number
-; x       = 16-bit signed or unsigned number
-; d       = 32-bit signed double number
-; ud      = 32-bit unsigned double number
-; xd      = 32-bit signed or unsigned number
-
-; cfa     = address of code field
-; lfa     = address of link field
-; nfa     = address of name field
-; pfa     = address of parameter field
-
-; ----------------------------------------------
 ; Default header structure
 
-; The whole headers is created in the dictionary:
+; The whole header is created in the dictionary:
 
 ; nfa: db length+flags     ; Bits:      76543210
                            ; Bit names: BPSLLLLL
@@ -121,24 +95,50 @@
 ; cfa: dw code_address
 ; pfa:    ...              ; data or code
 
+; ----------------------------------------------
+; Stack comment conventions
+
+; a       = address
+; ca      = character-aligned address
+
+; f       = flag (false is 0; true is any other value)
+; tf      = true flag (1)
+; ff      = false flag (0)
+; wf      = well-formed flag (false is 0; true is 1)
+
+; c       = 8-bit character
+; u       = 16-bit unsigned number
+; len     = 16-bit unsigned number, length of memory zone or string
+; ca len  = string
+; n       = 16-bit signed number
+; x       = 16-bit signed or unsigned number
+; d       = 32-bit signed double number
+; ud      = 32-bit unsigned double number
+; xd      = 32-bit signed or unsigned number
+
+; cfa     = address of code field
+; lfa     = address of link field
+; nfa     = address of name field
+; pfa     = address of parameter field
+
 ; ==============================================================
 ; Configuration
 
   ; XXX experimental
-size_optimization_option              equ false
+size_optimization?              equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-fig_find_option                       equ false
+fig_find?                       equ false
   ; true = the fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and ANS Forth.
 
-fig_parsing_option                    equ false
+fig_parsing?                    equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
   ; XXX TODO
-names_in_memory_bank_option           equ false
+names_in_memory_bank?           equ true
   ; true = name fields and link fields are stored in a memory
   ; bank page, saving dictionary space.
   ; false = name fields and link fields are stored in the
@@ -308,8 +308,12 @@ bank1_port:        equ 0x7FFD
 immediate: equ 1 ; used as optional parameter
 previous_nfa: defl 0 ; link to previous Forth word
 
-;include solo_forth.header_macro.default.z80s
-include solo_forth.header_macro.bank.z80s
+;if names_in_memory_bank_?
+
+  include solo_forth.header_macro.bank.z80s
+;  include solo_forth.header_macro.default.z80s
+
+;endif
 
 _code_header: macro _base_label,_name,_is_immediate
 
@@ -426,7 +430,7 @@ _jp_next: macro
 ; Create relative or absolute jumps, depending on the configured optimization
 
 _jump: macro _address
-  if size_optimization_option
+  if size_optimization?
     jr _address
   else
     jp _address
@@ -434,7 +438,7 @@ _jump: macro _address
   endm
 
 _jump_nc: macro _address
-  if size_optimization_option
+  if size_optimization?
     jr nc,_address
   else
     jp nc,_address
@@ -442,7 +446,7 @@ _jump_nc: macro _address
   endm
 
 _jump_z: macro _address
-  if size_optimization_option
+  if size_optimization?
     jr z,_address
   else
     jp z,_address
@@ -581,7 +585,7 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-;if names_in_memory_bank_option
+;if names_in_memory_bank?
 
   ; XXX TODO
 
@@ -904,6 +908,10 @@ push_l: ; XXX TMP -- not used yet
   call bank.e
   _jp_next
 
+bank.default:
+  ; XXX TODO
+bank.names:
+  ; XXX TODO
 bank.e:
   ret ; XXX TMP for debugging
   di
@@ -1244,7 +1252,7 @@ digit.test_value:
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
 
-if fig_find_option ; XXX OLD
+if fig_find? ; XXX OLD
 
 ; doc{
 ;
@@ -1315,10 +1323,12 @@ paren_find.nfa_backup: equ $+1
   ld bc,(ip_backup) ; restore Forth IP
   jp false_pfa
 
-endif
+else
 
-if ! fig_find_option && ! names_in_memory_bank_option
-
+if ! fig_find? 
+  
+if ! names_in_memory_bank?
+  
 ; doc{
 ;
 ; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
@@ -1342,14 +1352,14 @@ paren_find.string_address: equ $+1
   ld hl,0 ; string address
   ld a,(de) ; name field length byte
   ld c,a    ; save for later
-  and max_word_length_bit_mask  ; actual length
+  and max_word_length_bit_mask  ; length
   cp (hl)
   jr nz,paren_find.not_a_match ; lengths differ
 
   ; Lengths match, compare the characters.
-  ld a,c ; name field length byte
-  and max_word_length_bit_mask  ; actual length
-  ld b,a
+  ;ld a,c ; name field length byte
+  ;and max_word_length_bit_mask  ; length
+  ld b,a ; length
 paren_find.compare_next_char:
   inc hl ; next character in string
   inc de ; next character in name field
@@ -1397,11 +1407,9 @@ paren_find.nfa_backup: equ $+1
   ld hl,false
   jp push_de_hl
 
-endif
+else
 
-if ! fig_find_option && names_in_memory_bank_option
-
-  ; XXX TODO adapt to the new data format in the memory bank
+  ; XXX TODO finish adapt to the new data format in the memory bank
 
 ; doc{
 ;
@@ -1409,9 +1417,8 @@ if ! fig_find_option && names_in_memory_bank_option
 ;
 ; }doc
 
-  ; XXX Note: this version uses the new format name field,
-  ; and is used by the new version of `find`, written after
-  ; Forth-83.
+  ; XXX Note: this version uses the name fields stored in a
+  ; memory bank, with a different format.
 
   ld e,names_bank
   call bank.e ; page the memory bank
@@ -1420,6 +1427,9 @@ if ! fig_find_option && names_in_memory_bank_option
   pop de ; nfa
   pop hl ; string address
   ld (paren_find.string_address),hl
+
+  ; XXX FIXME the string searched for must be in the string
+  ; buffer, below 0xC000!
 
 paren_find.begin:
   ; Compare the string with a new word.
@@ -1434,9 +1444,7 @@ paren_find.string_address: equ $+1
   jr nz,paren_find.not_a_match ; lengths differ
 
   ; Lengths match, compare the characters.
-  ld a,c ; name field length byte
-  and max_word_length_bit_mask  ; actual length
-  ld b,a
+  ld b,a ; length
 paren_find.compare_next_char:
   inc hl ; next character in string
   inc de ; next character in name field
@@ -1448,45 +1456,55 @@ paren_find.compare_next_char:
   ; The string matches.
   ; de = address of the last char of the name field
   ; c = name field length byte
-  inc de ; de = lfa
-  inc de
-  inc de ; de = cfa
+  ex de,hl
+  dec hl
+  dec hl
+  ld d,(hl)
+  dec hl
+  ld e,(hl) ; de = cfa
   ld hl,1 ; 1=immediate word
   ld a,c ; name field length byte
   ld bc,(ip_backup) ; restore Forth IP
   and precedence_bit_mask ; immediate word?
+
+  .warning 'pasmo was here'
+  ; XXX FIXME why Pasmo says this symbol is undefined?:
   jp nz,paren_find.end
+  ; XXX the error happens because of the if structure: when I
+  ; remove it, the same error happens in other place
+
   ; non-immediate word
   dec hl
   dec hl ; -1 = non-immediate word
-  jp paren_find.end
+
+paren_find.end:
+  ; de = ca | cfa
+  ; hl = -1 | 0 | 1
+  ld e,default_bank
+  call bank.e ; page the default memory bank
+  jp push_de_hl
 
 paren_find.not_a_match:
   ; Not a match, try next one.
 paren_find.nfa_backup: equ $+1
   ld hl,0 ; nfa
-  ld a,c ; length byte
-  and max_word_length_bit_mask  ; actual length
-  ld c,a ; actual length
-  inc c ; plus the length byte
-  ld b,0
-  add hl,bc ; hl = lfa
+  dec hl
+  dec hl ; hl = lfa
   ld e,(hl)
   inc hl
   ld d,(hl)
   ld a,d
   or e ; end of dictionary?
   jp nz,paren_find.begin ; if not, continue
-
-  ; No match found, return.
+  ; End of dictionary, no match found, return.
   ld bc,(ip_backup) ; restore Forth IP
   ld de,(paren_find.string_address)
-  ld hl,false
+  ld hl,0
+  jp paren_find.end
 
-paren_find.end:
-  ld e,default_bank
-  call bank.e ; page the default memory bank
-  jp push_de_hl
+endif
+
+endif
 
 endif
 
@@ -2192,7 +2210,7 @@ l60c0h:
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header rp_fetch_,'NP@'
+  _code_header np_fetch_,'NP@'
 
   ld hl,(names_pointer)
   jp push_hl
@@ -2415,7 +2433,7 @@ l60c0h:
 
   pop hl
 zero_less_.hl: ; XXX entry not used yet
-  if size_optimization_option
+  if size_optimization?
     add hl,hl ; 11t, 1 byte
   else
     ; [Idea from Ace Forth.]
@@ -2654,7 +2672,7 @@ two_store.into_hl_pointer:
   inc hl
   ld (hl),d
   inc hl
-  if size_optimization_option
+  if size_optimization?
     jp store.into_hl_pointer
   else
     pop de
@@ -3161,7 +3179,7 @@ true_if_z: ; XXX entry not used yet
   pop hl
 is_de_less_than_hl:
   call compare_de_hl_signed
-  if size_optimization_option
+  if size_optimization?
     jp true_if_cy
   else
     jp c,true_pfa
@@ -3183,7 +3201,7 @@ u_greater_than.hl:
   pop hl
 u_less_than.de_hl:
   call compare_de_hl_unsigned
-  if size_optimization_option
+  if size_optimization?
     jp true_if_cy
   else
     jp c,true_pfa
@@ -3223,14 +3241,21 @@ question_dup.end:
 
 ; ----------------------------------------------
 
-  _code_header lfa_to_nfa_,'LFA>NFA'
+if names_in_memory_bank?
 
+  _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_minus_
+
+else
+
+  _code_header lfa_to_nfa_,'LFA>NFA'
   pop hl
 lfa_to_nfa.do:
   dec hl
   bit name_bound_bit,(hl)
   jp z,lfa_to_nfa.do
   jp push_hl
+
+endif
 
 ; ----------------------------------------------
   _colon_header latest_,'LATEST'
@@ -3241,10 +3266,18 @@ lfa_to_nfa.do:
 ; ----------------------------------------------
   _colon_header pfa_to_lfa_,'PFA>LFA'
 
+if names_in_memory_bank?
+
+  dw pfa_to_cfa_,cfa_to_nfa_
+
+else
+
   dw c_lit_
   db 0x04
   dw minus_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_alias_header pfa_to_cfa_,'PFA>CFA',,two_minus_
@@ -3254,25 +3287,46 @@ lfa_to_nfa.do:
 
 ; ----------------------------------------------
 
-if ! names_in_memory_bank_option
+if names_in_memory_bank?
+
+  _colon_header cfa_to_lfa_,'CFA>LFA'
+  dw cfa_to_nfa_,nfa_to_lfa_
+
+else
+
   _code_alias_header cfa_to_lfa_,'CFA>LFA',,two_minus_
+
 endif
 
 ; ----------------------------------------------
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
+if names_in_memory_bank?
+
+  dw pfa_to_cfa_,cfa_to_nfa_
+  dw semicolon_s_
+
+else
+
   dw pfa_to_lfa_,lfa_to_nfa_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
 
 ; doc{
 ;
 ; cfa>nfa  ( cfa -- nfa )
+; 
+; Warning: No check is done where cfa belongs to a definition
+; created with `:noname`.
 ;
 ; }doc
 
-if names_in_memory_bank_option
+; XXX FIXME -- return 0 if cfa has no name associated
+
+if names_in_memory_bank?
 
   _code_header cfa_to_nfa_,'CFA>NFA'
 
@@ -3320,6 +3374,13 @@ else
 endif
 
 ; ----------------------------------------------
+
+if names_in_memory_bank?
+
+  _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus
+
+else
+
   _colon_header nfa_to_lfa_,'NFA>LFA'
 
   dw dup_,c_fetch_
@@ -3328,11 +3389,24 @@ endif
   dw and_,plus_,one_plus_
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
 
+if names_in_memory_bank?
+
+  _number 4
+  dw minus_,fetch_
+  dw semicolon_s_
+
+else
+
   dw nfa_to_lfa_,two_plus_
   dw semicolon_s_
+
+endif
+
 
 ; ----------------------------------------------
   _colon_header nfa_to_pfa_,'NFA>PFA'
@@ -3349,10 +3423,13 @@ endif
 ;
 ; }doc
 
-if names_in_memory_bank_option
+if names_in_memory_bank?
 
   _names_bank
-  dw count_,save_string_
+  dw count_
+  _number max_word_length_bit_mask
+  dw and_
+  dw save_string_
   _default_bank
   dw semicolon_s_
 
@@ -3445,7 +3522,7 @@ question_error.no_error:
 ; ----------------------------------------------
   _colon_header right_bracket_,']'
 
-if fig_find_option
+if fig_find?
 
   ; Note: Setting `state` to 0xC0 for "compiling state" will force
   ; non-immediate words to be compiled and immediate words to be executed. See
@@ -4074,7 +4151,7 @@ uppers.do:
   jp uppers.do
 
 ; ----------------------------------------------
-if fig_find_option
+if fig_find?
 
   _colon_header context_find_,'CONTEXT-FIND'
 
@@ -4105,7 +4182,7 @@ endif
 
 ; defined?  ( ca len -- wf )
 
-if fig_find_option
+if fig_find?
 
   ; XXX TODO -- not finished
   dw context_find_,dup_
@@ -4126,7 +4203,7 @@ endif
 
 ; undefined?  ( ca len -- wf )
 
-if fig_find_option
+if fig_find?
 
   ; XXX TODO -- not finished
   dw defined_question_,zero_equals_
@@ -4171,7 +4248,7 @@ endif
 
 ; ----------------------------------------------
 
-if fig_find_option ; XXX OLD
+if fig_find? ; XXX OLD
 
   _colon_header find_,'FIND'
 
@@ -4297,7 +4374,7 @@ error.end:
   ; XXX TMP -- this is a copy of the original `create`.
   ; XXX TODO -- accept an xt as parameter?
 
-  if fig_find_option ; XXX OLD
+  if fig_find? ; XXX OLD
 
     dw find_ ; ( pfa b tf | ff )
     dw zero_branch_,header.continue
@@ -4318,7 +4395,7 @@ error.end:
   _message not_unique_error
 header.continue:
 
-if names_in_memory_bank_option ; XXX NEW
+if names_in_memory_bank? ; XXX NEW
 
     ; XXX TODO
 
@@ -4540,7 +4617,7 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
-if fig_find_option
+if fig_find?
   dw find_,zero_equals_
   _question_error not_found_error
   dw drop_,pfa_to_cfa_,comma_
@@ -4632,7 +4709,7 @@ two_literal.end:
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
 
-if fig_find_option
+if fig_find?
 
 ; doc{
 ;
@@ -5335,7 +5412,7 @@ flush.do:
 
 ; ----------------------------------------------
 
-if not fig_find_option
+if not fig_find?
 
   _colon_header defined_,'DEFINED'
 
@@ -5365,7 +5442,7 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
-if fig_find_option
+if fig_find?
   dw find_,dup_
   dw zero_branch_,bracket_defined.end
   dw nip_,nip_
@@ -5384,7 +5461,7 @@ endif
 ; ----------------------------------------------
   _colon_header tick_,"'"
 
-if fig_find_option
+if fig_find?
   dw find_
   dw zero_equals_
   _question_error not_found_error
@@ -6206,7 +6283,7 @@ dictionary_pointer_after_cold:
 ; ==============================================================
 ; Name and link fields
 
-if names_in_memory_bank_option
+if names_in_memory_bank?
 
   ; XXX TODO
 

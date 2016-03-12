@@ -72,7 +72,7 @@ solo_forth.bas.tap: solo_forth.bas
 # target file.
 
 solo_forth.bin.tap: solo_forth.z80s
-	pasmo --tap \
+	pasmo -v -1 --tap \
 		solo_forth.z80s \
 		forth.bin \
 		solo_forth.symbols.z80s ; \

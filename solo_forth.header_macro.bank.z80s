@@ -1,7 +1,7 @@
-  _header: macro _base_label,_name
+  _header: macro _base_label,_name,_is_immediate
 
     ; In dictionary:
-  
+
     _base_label: ; code field address
     local _dp_backup
     local _name_address
@@ -15,9 +15,12 @@
       dw _base_label ; pointer to cfa
     _base_label##lfa: ; link field address
       dw previous_nfa ; link field
-    this_nfa: defl $ ; link address for next word
     _base_label##nfa: ; name field address
-      db _address_after_name-_name_address ; length
+    flags: defl name_bound_bit_mask
+      if not nul _is_immediate
+        flags: defl flags | precedence_bit_mask ; add precedence bit
+      endif
+      db _address_after_name-_name_address+flags ; length
     _name_address: equ $
       db _name ; name field
     _address_after_name: equ $
@@ -30,6 +33,6 @@
     ; In dictionary:
     org _dp_backup
 
-    previous_nfa: defl this_nfa
+    previous_nfa: defl _base_label##nfa
 
   endm
