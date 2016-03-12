@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507210234
+; Version A-00-2015072202
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -46,6 +46,8 @@
 ; routine.
 ; - first changes to implement a Latin 1 charset.
 ; - fix: `error>line`.
+; - change: `?terminal` does not check the Edit key.
+; - change: `sp!` and `rp!` use TOS.
 
 ; ==============================================================
 ; Acknowledgments
@@ -360,37 +362,37 @@ for_structure_check_number:     equ 6
 
 ; XXX TODO change the order
 
-not_understood_error:               equ 01
-stack_empty_error:                  equ 02
-dictionary_full_error:              equ 03 ; not used
-not_unique_error:                   equ 04
-not_found_error:                    equ 05
-out_of_disk_range_error:            equ 06
-full_stack_error:                   equ 07
-number_08_error:                    equ 08 ; free
-loading_from_screen_0_error:        equ 09
-number_10_error:                    equ 10 ; free
-number_11_error:                    equ 11 ; free
-number_12_error:                    equ 12 ; free
-number_13_error:                    equ 13 ; free
-number_14_error:                    equ 14 ; free
-deferred_word_uninitialized_error:  equ 15
-compilation_only_error:             equ 17
-execution_only_error:               equ 18
-conditionals_not_paired_error:      equ 19
-definition_not_finished_error:      equ 20
-protected_dictionary_error:         equ 21
-loading_only_error:                 equ 22
-off_current_editing_screen_error:   equ 23
-declare_vocabulary_error:           equ 24
-unsupported_tape_operation_error:   equ 25
-unsupported_disk_operation_error:   equ 26
-source_file_needed_error:           equ 27
-not_present_though_required_error:  equ 28
-required_but_not_located_error:     equ 29
-branch_too_long_error:              equ 30
-number_31_error:                    equ 31 ; free
-number_33_error:                    equ 32 ; free
+error.not_understood:               equ 01
+error.stack_empty:                  equ 02
+error.dictionary_full:              equ 03 ; not used
+error.not_unique:                   equ 04
+error.not_found:                    equ 05
+error.out_of_disk_range:            equ 06
+error.full_stack:                   equ 07
+error.number_08:                    equ 08 ; free
+error.loading_from_screen_0:        equ 09
+error.number_10:                    equ 10 ; free
+error.number_11:                    equ 11 ; free
+error.number_12:                    equ 12 ; free
+error.number_13:                    equ 13 ; free
+error.number_14:                    equ 14 ; free
+error.deferred_word_uninitialized:  equ 15
+error.compilation_only:             equ 17
+error.execution_only:               equ 18
+error.conditionals_not_paired:      equ 19
+error.definition_not_finished:      equ 20
+error.protected_dictionary:         equ 21
+error.loading_only:                 equ 22
+error.off_current_editing_screen:   equ 23
+error.declare_vocabulary:           equ 24
+error.unsupported_tape_operation:   equ 25
+error.unsupported_disk_operation:   equ 26
+error.source_file_needed:           equ 27
+error.not_present_though_required:  equ 28
+error.required_but_not_located:     equ 29
+error.branch_too_long:              equ 30
+error.number_31:                    equ 31 ; free
+error.number_33:                    equ 32 ; free
 
 ; ----------------------------------------------
 ; Character codes
@@ -499,7 +501,7 @@ _header: macro _base_label,_name,_is_immediate
     ; In memory bank:
 
     org np
-    _base_label##cfap: 
+    _base_label##cfap:
       dw _base_label ; code field address pointer
     _base_label##lfa: ; link field address
       dw previous_nfa ; link field
@@ -1383,7 +1385,7 @@ question_csb_.enough:
 ; doc{
 ;
 ; >resolve  ( orig -- )  \ Forth-83, C, "forward-resolve"
-; 
+;
 ; Resolve a forward branch by placing the address of the current
 ; dictionary pointer into the space compiled by `>mark`.
 ;
@@ -1416,7 +1418,7 @@ question_csb_.enough:
 ; doc{
 ;
 ; <resolve  ( dest -- )  \ Forth-83, C, "backward-resolve"
-; 
+;
 ; Resolve a backward branch.  Compile a branch address using
 ; _dest_, the address left by `<mark`,  as the destination
 ; address.  Used at the source of a backward branch after either
@@ -1432,7 +1434,7 @@ question_csb_.enough:
   _code_header branch_,'BRANCH'
 
 ; doc{
-; 
+;
 ; branch  ( -- )  \ ANS Forth
 ;
 ; The run-time procedure to branch unconditionally. An in-line
@@ -1452,7 +1454,7 @@ question_csb_.enough:
   _code_header zero_branch_,'0BRANCH'
 
 ; doc{
-; 
+;
 ; 0branch  ( f -- )  \ fig-Forth
 ;
 ; A run-time procedure to branch conditionally. If  _f_ on stack
@@ -1473,13 +1475,13 @@ question_csb_.enough:
   _code_header question_branch_,'?BRANCH'
 
 ; doc{
-; 
+;
 ; ?branch  ( f -- )
 ;
 ; A run-time procedure to branch conditionally. If  _f_ on stack
 ; is not zero, the following in-line address is copied to IP to
 ; branch forward or backward.
-; 
+;
 ; Note: This is not Forth-83's `?branch`: Forth-83's `?branch`
 ; does the same than fig-Forth's `0branch`: the branch is done
 ; when the flag is zero. Solo Forth includes fig-Forth's
@@ -1578,7 +1580,7 @@ paren_question.end:
   dw semicolon_s_
 
 endif
-  
+
 ; ----------------------------------------------
   _code_header paren_do_,'(DO)'
 
@@ -1623,7 +1625,7 @@ endif
 paren_do83.de_hl
   ; de = limit
   ; hl = initial value
-  push hl ; initial value  ( initial ) 
+  push hl ; initial value  ( initial )
   ld hl,(return_stack_pointer)
   dec hl
   ld (hl),d
@@ -1962,7 +1964,7 @@ paren_find.nfa_backup: equ $+1
 
 
 else
-  
+
 ; doc{
 ;
 ; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
@@ -2485,6 +2487,14 @@ endif
 ; ----------------------------------------------
   _code_header key_,'KEY'
 
+; doc{
+;
+; key  ( -- c )
+;
+; Leave the ASCII value of the next terminal key struck.
+;
+; }doc
+
   ; XXX TODO simplify, no Spectrum modes
 
   push bc
@@ -2627,20 +2637,40 @@ key_translation_table:
 ; ----------------------------------------------
   _code_header question_terminal_,'?TERMINAL'
 
+; doc{
+;
+; ?terminal  ( -- f )  \ fig-Forth
+;
+; Perform a test of the terminal keyboard for actuation of the
+; Break key. A true flag indicates actuation.
+;
+; }doc
+
+  ; XXX TODO make this independent from the ROM, when the
+  ; interrupts will be handled by Forth.
+
   call rom_break_key
   jp nc,true_pfa
-  ld a,(sys_last_k)
-  cp edit_char
-  jp z,true_pfa
+  ; XXX OLD -- Abersoft Forth checked also Caps Shift + 1:
+  ; ld a,(sys_last_k)
+  ; cp edit_char
+  ; jp z,true_pfa
   jp false_pfa
 
 ; ----------------------------------------------
   _colon_header cr_,'CR'
 
+; doc{
+;
+; cr  ( -- )
+;
+; Transmit a carriage return to the selected output device.
+;
+; }doc
+
   dw c_lit_
   db carriage_return_char
-  dw emit_
-  dw out_,off_
+  dw emit_,out_,off_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3014,13 +3044,23 @@ endif
 ; ----------------------------------------------
   _code_header sp_store_,'SP!'
 
-  ; XXX TODO -- modify after Gforth
+; doc{
+;
+; sp!  ( a -- )
+;
+; Store _a_ into the stack pointer.
+;
+; }doc
 
+if 0 ; XXX OLD
   ld hl,(user_variables_pointer)
   ld a,(hl)
   inc hl
   ld h,(hl)
   ld l,a
+else
+  pop hl
+endif
   ld sp,hl
   _jp_next
 
@@ -3038,8 +3078,15 @@ endif
 ; ----------------------------------------------
   _code_header rp_store_,'RP!'
 
-  ; XXX TODO -- modify after Gforth
+; doc{
+;
+; rp!  ( a -- )
+;
+; Store _a_ into the return stack pointer.
+;
+; }doc
 
+if 0 ; XXX OLD
   ld hl,(user_variables_pointer)
   inc hl
   inc hl ; hl=address of r0
@@ -3047,6 +3094,9 @@ endif
   inc hl
   ld h,(hl)
   ld l,a
+else
+  pop hl
+endif
   ld (return_stack_pointer),hl
   _jp_next
 
@@ -3054,7 +3104,7 @@ endif
   _code_header semicolon_s_,';S'
 
 ; doc{
-; 
+;
 ; ;s  ( -- )  \ fig-Forth
 ;
 ; Return execution to the calling definition.  Unnest one level.
@@ -3089,7 +3139,7 @@ endif
 ; doc{
 ;
 ; unloop  ( -- ) ( R: x1 x2 -- )  \ ANS Forth, C
-; 
+;
 ; x1 = loop index
 ; x2 = loop limit
 ;
@@ -4211,7 +4261,7 @@ endif
 ; doc{
 ;
 ; cfa>nfa  ( cfa -- nfa )
-; 
+;
 ; Warning: No check is done where cfa belongs to a definition
 ; created with `:noname`.
 ;
@@ -4565,35 +4615,35 @@ question_error.no_error:
   _colon_header question_comp_,'?COMP'
 
   dw comp_question_,zero_equals_
-  _question_error compilation_only_error
+  _question_error error.compilation_only
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_exec_,'?EXEC'
 
   dw comp_question_
-  _question_error execution_only_error
+  _question_error error.execution_only
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_pairs_,'?PAIRS'
 
   dw not_equals_
-  _question_error conditionals_not_paired_error
+  _question_error error.conditionals_not_paired
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_csp_,'?CSP'
 
   dw sp_fetch_,csp_,fetch_,not_equals_
-  _question_error definition_not_finished_error
+  _question_error error.definition_not_finished
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_loading_,'?LOADING'
 
   dw blk_,fetch_,zero_equals_
-  _question_error loading_only_error
+  _question_error error.loading_only
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4978,7 +5028,7 @@ if 0 ; XXX OLD fig-Forth version
 ;
 ; Transfer characters from the terminal to address _ca_, until a
 ; "return" or the count of characters have been received.
-; 
+;
 ; XXX TODO
 ; fig-Forth: One or more nulls are added at the end of the text.
 ; Solo Forth: a null word is added at the end of the text.
@@ -5061,11 +5111,11 @@ else ; XXX NEW Forth-83 version
 ;
 ; Transfer characters from the terminal to address _ca_, until a
 ; "return" or _len_ characters have been received.
-; 
+;
 ; The transfer
 ; begins at addr proceeding towards higher addresses one byte
 ; per character until either a "return" is received or until +n
-; characters have been transferred.  
+; characters have been transferred.
 
 ; No more than _len_ characters
 ; will be stored.  The "return" is not stored into memory.  No
@@ -5350,7 +5400,7 @@ if 0 ; XXX OLD -- original version with `enclose`
   ; n1 = byte offset to the first non-delimiter character
   ; n2 = byte offset to the first delimiter after the text
   ; n3 = byte offset to the first character not included
-  
+
   ;dw stream,true_,paren_parse_ ; XXX OLD -- abandoned idea
 
   ; XXX TODO use a factor of `s,` instead, without `allot`:
@@ -5469,7 +5519,7 @@ number.begin:
   dw c_lit_
   db '.'
   dw not_equals_ ; not a decimal point?
-  _question_error not_understood_error ; error if not
+  _question_error error.not_understood ; error if not
   ; Decimal point found, set `dpl` to zero next time.
   dw zero_
   dw branch_,number.begin ; repeat
@@ -5701,7 +5751,7 @@ error.message:
   dw paren_dot_quote_
   _string '? '
   dw error_to_line_,message_
-  dw sp_store_
+  dw sp0_,fetch_,sp_store_
   dw blk_,fetch_,question_dup_
   dw zero_branch_,error.end
   dw to_in_,fetch_
@@ -5732,7 +5782,7 @@ error.end:
   dw cfa_to_nfa_
 
   dw id_dot_
-  _message not_unique_error
+  _message error.not_unique
 header.continue:
 
 if 1 ; names_in_memory_bank?
@@ -6095,11 +6145,11 @@ two_literal.end:
   dw sp_fetch_
   dw sp0_,fetch_
   dw swap_,less_than_
-  _question_error stack_empty_error
+  _question_error error.stack_empty
   dw sp_fetch_
   dw lit_,data_stack_limit
   dw less_than_
-  _question_error full_stack_error
+  _question_error error.full_stack
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6214,7 +6264,7 @@ else
 endif
 
 if 1 ; names_in_memory_bank?
-  
+
   ;A dummy header at vocabulary intersection.
   dw current_,fetch_ ; address of the dummy lfa in the `current` vocabulary
   dw lfa_to_nfa_ ; get its correspondent nfa in the dummy header
@@ -6332,7 +6382,7 @@ forth_vocabulary_link:
   dw blk_,off_
   dw left_bracket_
 quit.do:
-  dw rp_store_
+  dw rp0_,fetch_,rp_store_
   dw cr_,query_
   dw interpret_
   dw comp_question_
@@ -6351,7 +6401,7 @@ quit.do:
 ; ----------------------------------------------
   _colon_header abort_,'ABORT'
 
-  dw sp_store_
+  dw sp0_,fetch_,sp_store_
   dw decimal_
   ;dw lit_,4,border_ ; XXX INFORMER
   dw question_stack_
@@ -6661,7 +6711,7 @@ plus_buf.continue:
 ; doc{
 ;
 ; stream-end  ( ca -- )
-; 
+;
 ; Store the null word (a null character) at the given address,
 ; surrounded by spaces. This marks the end of a input stream.
 ;
@@ -6873,7 +6923,7 @@ flush.do:
 ; }doc
 
   dw dup_,zero_,equals_
-  _question_error loading_from_screen_0_error
+  _question_error error.loading_from_screen_0
   dw to_in_,off_
   dw b_slash_scr_,star_,blk_,store_
   dw interpret_
@@ -6982,7 +7032,7 @@ endif
   ; From DZX-Forth.
 
   dw zero_equals_
-  _question_error not_found_error
+  _question_error error.not_found
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7184,7 +7234,7 @@ else
 ; doc{
 ;
 ; repeat  ( compilation: a1 n1 a2 n2 -- )
-; 
+;
 ; a1 = address of `begin` to branch to
 ; n1 = `begin` check number
 ; a2 = address of the branch of `while` to resolve
@@ -7252,7 +7302,7 @@ endif
   if 0 ; whiles?
     dw one_,hash_whiles_,plus_store_
   endif
-  dw semicolon_s_ 
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header spaces_,'SPACES'
@@ -7770,7 +7820,7 @@ else ; XXX NEW
 endif
   ld  a,c  ; line
   rrca
-  rrca 
+  rrca
   rrca  ; multiply by 0x20
   and  0xE0  ; %11100000
   xor  b ; combine with column (0x00..0x1F)
@@ -7904,7 +7954,7 @@ do_two_constant:
   _colon_header exit_,'EXIT'
 
 ; doc{
-; 
+;
 ; exit  ( -- ) ( R: a -- )  \ ANS Forth
 ;
 ; Return control to the calling definition, specified by the
@@ -7924,12 +7974,12 @@ do_two_constant:
   _colon_header question_exit_,'?EXIT'
 
 ; doc{
-; 
+;
 ; ?exit  ( f -- ) ( R: a | -- a | )
 ;
 ; If _f_ is non-zero, return control to the calling definition,
 ; specified by the address on the return stack.
-; 
+;
 ; `?exit` is not intended to be used within a do-loop. Use `if
 ; unloop exit then` instead.
 ;
@@ -8096,7 +8146,7 @@ dictionary_pointer_after_cold:
 if 1 ; names_in_memory_bank?
 
 move_name_fields_to_memory_bank:
-  
+
   ; Move the name fields, assembled in ordinary memory, to the
   ; names bank. This routine is needed only once, therefore its
   ; call is patched with `noop` at the end; the routine itself

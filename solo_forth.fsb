@@ -1245,24 +1245,88 @@ code j'  ( -- x )
   \ }}} =======================================================
   \ Vocabularies {{{
 
-( also  only )
+( F83 also only )
 
-  \ 2015-04-17
+  \ XXX TODO This code from F83 seems simpler to adapt than the
+  \ code from the Forth-83 Standard.
 
-  \ Copied from the FORTH-83 Standard,
-  \ a publication of the FORTH Standars Team (1983-03)
+  \ Code adapted from F83.
+  \ 2015-07-22: Start.
+
+4 constant #vocs
+
+vocabulary root  root definitions
+  \ A small vocabulary for controlling search order.
+
+: also  ( -- )  context dup cell+ #vocs 2- cells cmove>  ;
+   \ Add another vocabulary to the search order.
+
+: only  ( -- )
+  ['] root cfa>pfa
+  context #vocs 1- cells 2dup erase + !  root  ;
+  \ Erase the search order and forces the `root` vocabulary to
+  \ be the first and last.
+  \
+  \ XXX TODO simplify? simply erase and then `root also` ;
+
+: seal  ( "name" -- )
+  ' cfa>pfa  context #vocs cells erase  context !  ;
+  \ Change the search order such that only the `name`
+  \ vocabulary will be searched. Used for turn-key
+  \ applications.
+  \
+  \ XXX TODO change after Gforth.
+
+: previous  ( -- )
+  context dup cell+ swap #vocs 2- cells cmove
+  context #vocs 2- cells + off  ;
+  \ The inverse of `also`: remove the most recently referenced
+  \ vocabulary from the search order.
+
+( f83 also only )
+
+  \ We initialize the `root` vocabulary with a few definitions
+  \ that allow us to do vocabulary related things.
+
+: forth  ( -- )  forth  ;
+: definitions  ( -- )  definitions  ;
+
+: order  ( -- )
+  cr ." context: "
+  context  #vocs 0 do
+    dup @ ?dup if  cfa>nfa id.  then  cell+
+  loop drop
+  cr ." current: " current @ cfa>nfa id.  ;
+  \ Display the search order currently in effect.  Also display
+  \ the `current` vocabulary, which is were definitions are
+  \ placed.
+
+: vocs  ( -- )
+  voc-link @ begin  dup #threads cells - cfa>nfa id.
+  @ dup 0= until  drop  ;
+  \ List all of the vocabularies that have been defined so
+  \ far, in the order of their definition.
+
+only forth also definitions
+
+( Forth-83 also only )
+
+  \ Copied from the FORTH-83 Standard, a publication of the
+  \ FORTH Standars Team (1983-03)
   \
   \ Original code by William F. Ragsdale, 1982-06-12.
   \
-  \ XXX TODO adapt
+  \ 2015-04-17: Start.
+
+  \ 2015-07-22: This code from seems harder to adapt
+  \ than the code from F83.
 
   \ note the systems -FIND searches 1 to 5 vocabs in CONTEXT
 
-vocabulary only    only definitions
+vocabulary only  only definitions
 
-: also  ( -- )
+: also  ( -- )  context dup cell+ 6 cmove>  ;
   \ Slide transient into resident.
-  context dup cell+ 6 cmove>  ;
 
   \ Alter run time of ONLY from usual vocabulary.
 
@@ -1270,9 +1334,8 @@ here cell+
   ] does>  context 8 erase  dup context !  context 8 + !
            also  exit [  ' only cfa !
 
-  \ Make NULL word.
-
 : x  ( -- )  exit  ;  hex a080 decimal ' x nfa !  immediate
+  \ Make NULL word.
 
 : forth        ( -- )  forth  ;
 : definitions  ( -- )  definitions  ;
@@ -1683,12 +1746,7 @@ decimal
   \ }}} =======================================================
   \ The address register {{{
 
-( address-register )
-
-  \ Original code from Z88 CamelForth by Gary Lancaster.
-
-  \ 2015-07-20: Start. Adapted the defining words.
-  \ 2015-07-21: Start. Adapted the assembler.
+( a-register )
 
   \ Address register store and fetch words.
   \
@@ -1697,13 +1755,18 @@ decimal
   \ useful improvement in loops, and in many cases also results
   \ in cleaner-looking code.
 
+  \ Original code from Z88 CamelForth by Gary Lancaster.
+
+  \ 2015-07-20: Start. Adapted the defining words.
+  \ 2015-07-21: Start. Adapted the assembler.
+
 hex
 
 variable a
 
 code a!  ( a -- )
   \ Set the address register.
-  E1 c,                 \ push hl
+  E1 c,                 \ pop hl
   22 c, a ,             \ ld (a),hl
   DD c, E9 c,           \ jp (ix)
 end-code
@@ -1714,7 +1777,7 @@ code a@  ( -- a )
   C3 c, pushhl ,        \ jp pushhl
 end-code  -->
 
-.( a-register )
+( a-register )
 
 code !a  ( u -- )
   \ Store cell at `a`.
@@ -1734,7 +1797,7 @@ code @a  ( -- u )
   C3 c, pushhl ,        \ jp pushhl
 end-code  -->
 
-.( a-register )
+( a-register )
 
 code c!a  ( c -- )
   \ Store char at `a`.
@@ -1752,7 +1815,7 @@ code c@a  ( -- c )
   C3 c, pushhl ,        \ jp pushhl
 end-code  -->
 
-.( a-register )
+( a-register )
 
 code !a+  ( u -- )
   \ Store cell at `a` with increment.
@@ -1773,7 +1836,7 @@ code @a+  ( -- u )
   D5 c,  DD c, E9 c,    \ push de  jp (ix)
 end-code  -->
 
-.( a-register )
+( a-register )
 
 code c!a+  ( c -- )
   \ Store char at `a` with increment.
