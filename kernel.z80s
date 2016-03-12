@@ -19,7 +19,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B48
   
-  ; Last modified:  201511121900
+  ; Last modified:  201511122020
 
 ; ==============================================================
 ; Author and license
@@ -7742,6 +7742,7 @@ two_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
+if 0
   _variable_header numbers_execution_table_,'NUMBERS-EXECUTION-TABLE'
 
   dw two_literal_     ; compiling a 2-cell number
@@ -7750,19 +7751,22 @@ numbers_execution_table.0:
   dw not_understood_  ; not a number: error
   dw 0                ; interpreting a 2-cell number: do nothing
   dw 0                ; interpreting a 1-cell number: do nothing
-  
+endif
+
 ; ----------------------------------------------
   _colon_header not_understood_,'NOT-UNDERSTOOD'
 
   _literal error.not_understood
   dw throw_
 
-if 1 ; table_interpret ; XXX NEW
-
+; ----------------------------------------------
   _colon_header compilation_only_,'COMPILATION-ONLY'
 
   _literal error.compilation_only
   dw throw_
+
+; ----------------------------------------------
+if 0 ; interpret ; XXX NEW
 
   _variable_header interpret_execution_table_,'INTERPRET-EXECUTION-TABLE'
 
@@ -7785,6 +7789,28 @@ interpret_execution_table.0
 endif
 
 ; ----------------------------------------------
+  _variable_header interpret_table_,'INTERPRET-TABLE'
+
+                        ; compiling...
+  dw execute_           ; ...immediate and compile-only word
+  dw compile_comma_     ; ...compile-only word
+  dw execute_           ; ...immediate word
+  dw compile_comma_     ; ...ordinary word
+  dw two_literal_       ; ...2-cell number
+  dw literal_           ; ...1-cell number
+
+interpret_table.0:
+  dw not_understood_    ; not a number (error)
+
+                        ; intepreting...
+  dw 0                  ; ...1-cell number (do nothing)
+  dw 0                  ; ...2-cell number (do nothing)
+  dw execute_           ; ...ordinary word
+  dw execute_           ; ...immediate word
+  dw compilation_only_  ; ...compile-only word (error)
+  dw compilation_only_  ; ...immediate and compile-only word (error)
+
+; ----------------------------------------------
   _colon_header interpret_,'INTERPRET'
 
 ; doc{
@@ -7800,14 +7826,60 @@ endif
 ;
 ; }doc
 
+if 1 ; interpret XXX version with one table
+
+  ; XXX UNDER DEVELOPMENT
+
 interpret.begin:
 
 ;  _chk 'interpret -- begin' ; XXX INFORMER
   dw question_stack_
 
-if 1 ; table_interpret ; XXX NEW
+  dw parse_name_  ; ( ca len )
+;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
+;  dw cr_ ; XXX INFORMER
+  dw dup_ ; end of stream?
+  dw zero_branch_,interpret.end ; if so, finish
 
-  ; XXX UNDER DEVELOPMENT
+  dw find_name_ ; ( nfa | 0 )
+  dw question_dup_ ; found?
+  dw zero_branch_,interpret.word_not_found
+
+  ; Word found
+  ; ( nfa )
+  dw dup_,from_name_,swap_  ; ( cfa nfa )
+  dw dup_,immediate_question_
+  dw swap_,compile_only_question_,two_star_
+  dw plus_,abs_ ; ( cfa +n )
+  _literal 3
+  dw plus_ ; adjust the table index
+
+interpret.do_it:
+  ; ( +n )
+  ; Execute element _+n_ of `interpret-table`,
+  ; depending on `state`.
+  dw compiling_question_,question_negate_,cells_
+  _literal interpret_table.0
+  dw plus_,perform_
+  dw branch_,interpret.begin
+
+interpret.word_not_found:
+  dw parsed_name_,two_fetch_ ; ( ca len )
+  dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
+  dw branch_,interpret.do_it
+
+interpret.end:
+  dw two_drop_
+  dw semicolon_s_
+
+endif
+
+if 0 ; interpret XXX OLD -- combined version with two tables
+
+interpret.begin:
+
+;  _chk 'interpret -- begin' ; XXX INFORMER
+  dw question_stack_
 
   dw parse_name_  ; ( ca len )
 ;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
@@ -7833,7 +7905,30 @@ if 1 ; table_interpret ; XXX NEW
   dw plus_,perform_
   dw branch_,interpret.begin
 
-else ; XXX OLD
+interpret.word_not_found:
+
+  dw parsed_name_,two_fetch_
+  ; try to convert the text to a number
+  ; ( ca len )
+  dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
+  dw compiling_question_,question_negate_  ; ( d -2 | n -1 | 0 | n 1 | d 2 )
+  dw cells_
+  _literal numbers_execution_table.0 ; middle of the table
+  dw plus_,perform_
+  dw branch_,interpret.begin ; repeat
+
+interpret.end:
+  dw two_drop_
+  dw semicolon_s_
+
+endif
+
+if 0 ; interpret XXX OLD -- combined version: table only for numbers
+
+interpret.begin:
+
+;  _chk 'interpret -- begin' ; XXX INFORMER
+  dw question_stack_
 
   dw parse_name_  ; ( ca len )
 ;  _brk_type 'interpret -- after parse-name' ; XXX INFORMER
@@ -7878,8 +7973,6 @@ interpret.execute:
   dw execute_
   dw branch_,interpret.begin
 
-endif
-
 interpret.word_not_found:
 
   dw parsed_name_,two_fetch_
@@ -7895,6 +7988,8 @@ interpret.word_not_found:
 interpret.end:
   dw two_drop_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _c_constant_header immediate_mask_,'IMMEDIATE-MASK'

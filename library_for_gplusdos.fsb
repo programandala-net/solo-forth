@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511121900
+\ Last modified: 201511122020
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -12518,9 +12518,13 @@ defer num?
   \
   \ How `interpret`
   \ interprets numbers   Bytes free  Frames
-  \ ------------------  ----------  -------------
-  \ branches                 32766     500 (1.00)
-  \ execution table          32770     497 (0.99)
+  \ ------------------   ----------  -------------
+  \ branches (1)              32766     500 (1.00)
+  \ execution table (1)       32770     497 (0.99)
+  \ execution table (2)       32761     498 (0.99)
+
+  \ (1): before implementing an execution table for words
+  \ (2): shared with the words, integrating the common factor
 
   \ 1 frame = 50th of second
 
@@ -12549,10 +12553,14 @@ defer num?
   \ 2015-11-12
   \
   \ How `interpret`
-  \ compiles numbers  Bytes free  Frames
-  \ ----------------  ----------  ------------
-  \ branches               32766     510 (1.00)
-  \ execution table        32770     507 (0.99)
+  \ compiles numbers    Bytes free  Frames
+  \ ----------------    ----------  ------------
+  \ branches (1)             32766     510 (1.00)
+  \ execution table (1)      32770     507 (0.99)
+  \ execution table (2)      32761     508 (0.99)
+
+  \ (1): before implementing an execution table for words
+  \ (2): shared with the words, integrating the common factor
 
   \ 1 frame = 50th of second
 
@@ -12581,10 +12589,19 @@ noop noop noop noop noop noop noop noop noop noop noop noop
   \ 2015-11-12
   \
   \ How `interpret`
-  \ interprets words    Bytes free  Frames
-  \ ------------------  ----------  -------------
-  \ branches                 32770     192 (1.00)
-  \ execution table          32746     190 (0.98)
+  \ interprets words               Bytes free  Frames
+  \ ------------------             ----------  -------------
+  \ branches (0)                        32770     192 (1.00)
+  \ independent table (1)               32746     190 (0.98)
+  \ combined table (2)                  32747     190 (0.98)
+  \ combined table (3)                  32753     192 (1.00)
+  \ combined table (4)                  32761     190 (0.98)
+
+  \ (0): after implementing an execution table for numbers
+  \ (1): separate from the numbers table
+  \ (2): shared with the numbers
+  \ (3): shared with the numbers, using a common factor
+  \ (4): shared with the numbers, integrating the common factor
 
   \ 1 frame = 50th of second
 
@@ -12613,10 +12630,19 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
   \ 2015-11-12
   \
   \ How `interpret`
-  \ compiles words      Bytes free  Frames
-  \ ------------------  ----------  -------------
-  \ branches                 32770     199 (1.00)
-  \ execution table          32746     198 (0.99)
+  \ compiles words                 Bytes free  Frames
+  \ ------------------             ----------  -------------
+  \ branches (0)                        32770     199 (1.00)
+  \ independent table (1)               32746     198 (0.98)
+  \ combined table (2)                  32747     198 (0.99)
+  \ combined table (3)                  32753     200 (1.00)
+  \ combined table (4)                  32761     198 (0.98)
+
+  \ (0): after implementing an execution table for numbers
+  \ (1): separate from the numbers table
+  \ (2): shared with the numbers
+  \ (3): shared with the numbers, using a common factor
+  \ (4): shared with the numbers, integrating the common factor
 
   \ 1 frame = 50th of second
 
