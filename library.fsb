@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510270330
+\ Last modified: 201510282359
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -3882,12 +3882,11 @@ code c@test-bits  ( b1 ca -- b2 )
   \   end-code  ;s  [then]
   \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
-  \ XXX OLD -- `c!toggle-bits` is in the kernel
-  \ [needed] c!toggle-bits [if]
-  \ code c!toggle-bits  ( b ca -- )
-  \   hl pop  de pop  m a ld  e xor  a m ld  jpnext
-  \   end-code  ;s  [then]
-  \   \ Invert the bits at _ca_ specified by the bitmask _b_.
+[needed] c!toggle-bits [if]
+code c!toggle-bits  ( b ca -- )
+  hl pop  de pop  m a ld  e xor  a m ld  jpnext
+  end-code  ;s  [then]
+  \ Invert the bits at _ca_ specified by the bitmask _b_.
 
   \ }}} =======================================================
   \ Compilation {{{
@@ -3998,17 +3997,104 @@ need s=
   \
   \ }doc
 
-( behead )
+( smudge smudged )
 
-  \ XXX FIXME this is not a good idea, because `>name` will
-  \ fail!
 
-: behead  ( nfa -- )  0 swap c!n  ;
-  \ Store zero at _nfa_, thus making the definition impossible
-  \ to find.
+: smudged  ( nfa -- )
+  smudge-mask swap names-bank c!toggle-bits default-bank  ;
 
-: behead  ( nfa -- )
-  dup c@n smudge-mask c!set-bits swap c!n  ;
+  \ doc{
+  \
+  \ smudged  ( nfa -- )
+  \
+  \ Toggle the "smudge bit" of the given name field address.
+  \
+  \ This word is obsolete. `hided` and `revealed` are used
+  \ instead.
+  \
+  \ }doc
+
+ : smudge  ( -- )  latest smudged  ;
+  
+  \ doc{
+  \
+  \ smudge  ( -- )
+  \
+  \ Toggle the "smudge bit" of the latest definition's name
+  \ field.  This prevents an uncompleted definition from being
+  \ found during dictionary searches, until compiling is
+  \ completed without error.
+  \
+  \ This word is obsolete. `hide` and `reveal` are used
+  \ instead.
+  \
+  \ Standard: fig-Forth.
+  \
+  \ }doc
+
+( privatize )
+
+  \ Usage example:
+  \
+  \ ----
+  \ private{
+  \
+  \ : hello  ( -- )  ." hello"  ;
+  \
+  \ }private
+  \
+  \ : salute  ( -- )  hello  ;
+  \
+  \ privatize
+  \
+  \ salute  \ ok!
+  \ hello   \ error!
+  \ ----
+
+  \ Credits:
+  \
+  \ The idea for this code was taken from an article by Deway
+  \ Val Schorre, _Structured programming by adding modules to
+  \ FORTH_, published in Forth Dimensions 2/5 page 132
+  \ (1981-01). The following original code is for fig-Forth.
+  \ I added stack effects and comments:
+
+  \ : INTERNAL  ( -- nfa )  CURRENT @ @  ;
+  \   \ Start the definition of internal words of the module.
+  \   \ Return the nfa of the latest word created in the
+  \   \ `current` vocabulary.
+  \
+  \ : EXTERNAL  ( -- nfa )  HERE  ;
+  \   \ Start the definition of external words of the module.
+  \   \ Return the nfa of the next word to be defined.
+  \
+  \ : MODULE  ( nfa1 nfa2 -- )  PFA LFA !  ;
+  \   \ End the module.
+  \   \ Link the first external word to the word before the
+  \   \ first internal word, thus making the internal words
+  \   \ invisible.
+
+  \ The names have been changed after an analogous code from
+  \ pForth, for clarity.
+
+need >>link
+
+: private{  ( -- nfa )  latest  ;
+  \ Start private definitions.
+  \ Return the nfa of the latest word created in the
+  \ `current` vocabulary.
+
+: }private  ( -- cfap )  np@  ;
+  \ End private definitions.
+  \ Return the cfap (code field address pointer) of the first
+  \ word to be defined as public, that is, the current value
+  \ of the names pointer.
+
+: privatize  ( nfa cfap -- )  >>link !n  ;
+  \ Hide all words between `private{` and `}private`:
+  \ Link the first public word to the word before the
+  \ first private word, thus making the internal words
+  \ invisible.
 
 ( privatize )
 
@@ -4023,7 +4109,8 @@ need s=
   \ Privatize words that are only needed within the file
   \ and do not need to be exported.
 
-  \ Usage:
+  \ Usage example:
+  \
   \    private{
   \    \ everything between private{ and }private
   \    \ will become private.
@@ -4031,33 +4118,34 @@ need s=
   \    : moo ;
   \    }private
   \    : goo   foo moo ;  \ can use foo and moo
-  \    privatize          \ behead foo and moo
+  \    privatize          \ hide foo and moo
   \    ' foo              \ will fail
 
   \ Copyright 1996 Phil Burk
-  \
-  \ 19970701 PLB Use unsigned compares for machines with
-  \ "negative" addresses.
   \ ____
 
-need abort"  need name<name  need behead
+  \ This version needs 
+
+need abort"  need name<name
 
 variable private-start  variable private-stop
 
 : private{  ( -- )
   latest private-start !  private-stop off  ;
+  \ Start private definitions.
 
 : }private  ( -- )
   private-stop @ abort" Extra }private"
   latest private-stop !  ;
+  \ End private definitions.
 
 : privatize  ( -- )
-  \ Hide all words between `private{` and `}private`.
   private-start @ 0= abort" Missing private{"
   private-stop @ dup 0= abort" Missing }private"
   begin   dup private-start @ u>
-  while   dup (smudge) name<name
+  while   dup hide name<name
   repeat  drop  private-start off  private-stop off  ;
+  \ Hide all words between `private{` and `}private`.
 
   \ }}} =======================================================
   \ G+DOS {{{
@@ -6502,7 +6590,8 @@ cr  128            dup 3 .r  select-test
 
 ( case: )
 
-  \ XXX TODO document -- adapted from F83?
+  \ Credits:
+  \ Code adapted from F83.
 
 : case:  ( "name" -- )
   \ Create a positional case word.
@@ -6511,22 +6600,20 @@ cr  128            dup 3 .r  select-test
           \ Execute the n-th word compiled.
           ( n pfa ) swap cells + perform  ;
   \ A positional case statement.  At runtime, the n-th word is
-  \ executed, depending upon the value on the stack. No error
-  \ checking.
+  \ executed, depending upon the value on the stack. No
+  \ range checking.
 
-( test-case: )
+  \ Usage example:
+  \
+  \ ----
+  \ : zx0 ." nulo"  ;
+  \ : zx1 ." unu"  ;
+  \ : zx2 ." du"  ;
 
-  \ XXX TMP
+  \ case: zx  ( n -- )  zx0 zx1 zx2  ;
 
-need case:
-
-: zx0 ." zero"  ;
-: zx1 ." one"  ;
-: zx2 ." two"  ;
-
-case: zx  ( n -- )  zx0 zx1 zx2  ;
-
-3 associative: unzx  ( value -- n )  ' zx0 , ' zx1 , ' zx2 ,
+  \ 0 zx cr 1 zx cr 2 zx cr
+  \ ----
 
 ( options[ )
 
@@ -7164,6 +7251,19 @@ need -rot
   \ made, then the number of entries, ie max index + 1 is
   \ returned.  This is the inverse of an array.
 
+  \ Usage example:
+ 
+  \ ----
+  \
+  \ 1000 constant zx1  200 constant zx2  30 constant zx3
+  \
+  \ 3 associative: unzx  ( value -- n )  zx1 , zx2 , zx3 ,
+  \
+  \ 1000 unzx .  \ prints 0
+  \ 200 unzx .   \ prints 1
+  \ 30 unzx .    \ prints 2
+  \ ----
+
 ( begin-structure +field field: 2field: cfield: )
 
   \ Forth-2012.
@@ -7182,9 +7282,13 @@ need -rot
 
 : end-structure  ( struct-sys n -- )  swap !  ;
 
-( buffer: )
+( buffer: cvariable )
 
-: buffer:  ( u "name" -- )  create allot  ;
+[unneeded] buffer:
+?\ : buffer:  ( u "name" -- )  create allot  ;
+
+[unneeded] cvariable
+?\ : cvariable  ( "name"  -- )  create 1 allot  ;
 
 ( value to )
 
@@ -8120,7 +8224,7 @@ need random-n
   \ Create a deferred word _name_ that executes _cfa_.
 
 : (code-alias)  ( a "name" -- )
-  header smudge latest name> !  ;
+  header reveal latest name> !  ;
   \ Create a code word that executes the code at _a_.
 
 : code-alias  ( cfa "name" -- )  @ (code-alias)  ;
@@ -8150,7 +8254,7 @@ need random-n
 
 : synonym  ( "newname" "oldname" -- )
   create immediate
-    smudge ' , smudge
+    hide ' , reveal
   does>  ( -- )
    ( pfa ) @ ( cfa ) dup >name dup ( cfa nfa nfa )
    compile-only? executing? and -14 ?throw
@@ -10715,7 +10819,7 @@ vocabulary hanoi  also hanoi definitions
 variable slowness  1000 slowness !
   \ ms delay between screen updates
 
-create PegSPS  3 cells allot
+create PegSPS  pegs cells allot
   \ pointers for three disk stacks
 
 : PegSP     ( peg -- addr ) cells PegSPS + ;
@@ -10726,58 +10830,64 @@ create PegStacks  30 chars allot
   \ stack area for up to 10 disks
 
 : PegStack  ( peg -- addr )   10 * PegStacks + ;
-: PegClr    ( peg -- )        dup PegStack  swap PegSP ! ;
-: PegDepth  ( peg -- depth )  dup PegSP @  swap PegStack - ;
-  \ not needed
+
+: clear-peg    ( peg -- )  dup PegStack  swap PegSP ! ;
+: clear-pegs  ( -- )  pegs 0 do  i clear-peg  loop  ;
+
+  \ : PegDepth  ( peg -- depth )  dup PegSP @  swap PegStack - ;
+  \ XXX OLD not needed
 
 -->
 
 ( hanoi )
 
-: ShowDisk  ( level diameter peg -- )
+: show-disk  ( level diameter peg -- )
   22 * 10 + over -  rot 10 swap - at-xy
   2* [char] * emits ;
 
-: ShowPeg   ( peg -- )
+: show-peg   ( peg -- )
   dup >r PegStack
   BEGIN   r@ PegSP @ over <>
   WHILE   dup r@ PegStack - over c@  ( addr level diameter )
-          r@ ShowDisk  char+
+          r@ show-disk  char+
   REPEAT  drop r> drop ;
 
 -->
 
 ( hanoi )
 
-
 : ?allot  ( n -- )  here swap allot ;
 
-: maketab  ( n1..nn n -- XXX )
+: maketab  ( n1..nn n -- XXX ) \ XXX TODO stack effect
   create
     dup ?allot over 1- + swap 0
     2dup <> if    do  dup >r c! r> 1-  loop
             else  2drop
             then  drop
-  does>  + c@ ;  -->
+  does>  + c@ ;
+
+#3 base !
+00 02 01 12 00 10 21 20  #8 maketab TO!
+00 21 12 20 00 02 10 01  #8 maketab FRO!
+decimal
+    
+-->
 
 ( hanoi )
 
-: base3 [ decimal ] 3 base ! ;
+: finished  ( -- )  key drop 0 11 at-xy ." Stopped" cr abort  ;
 
-base3  00 02 01 12 00 10 21 20  decimal 8 maketab TO!
-base3  00 21 12 20 00 02 10 01  decimal 8 maketab FRO!
+: show-pegs  ( -- )
+  page  pegs 0 do  i show-peg  loop  slowness @ ms
+  key? if  finished  then ;
 
-: ShowPegs  ( -- )
-  page  3 0 do  i showpeg  loop  slowness @ ms
-  key? if key drop 0 11 at-xy ." Stopped" cr abort then ;
-
-: MoveRing  ( ring -- ring )
-  dup to! 3 / pop  over fro! 3 mod push ShowPegs ;
+: move-ring  ( ring -- ring )
+  dup to! 3 / pop  over fro! 3 mod push show-pegs ;
 
 : tower ( depth direction -- depth direction )
   swap 1- swap over
-  IF    to!  recurse  to! MoveRing fro! recurse  fro!
-  ELSE  MoveRing
+  IF    to!  recurse  to! move-ring fro! recurse  fro!
+  ELSE  move-ring
   THEN  swap 1+ swap ;
 
 -->
@@ -10786,13 +10896,12 @@ base3  00 21 12 20 00 02 10 01  decimal 8 maketab FRO!
 
 : run  ( depth -- )
 
-  3 0 DO i PegClr LOOP
-    \ clear the pegs
+  clear-pegs
 
   dup BEGIN ?dup WHILE 1- dup 0 push REPEAT
     \ stack up some disks
 
-  showpegs 1 tower 2drop
+  show-pegs 1 tower 2drop
     \ move them
 
   0 11 at-xy ;

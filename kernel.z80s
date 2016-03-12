@@ -8,10 +8,16 @@
 ; ==============================================================
 ; Version
 
-; XXX TODO
-version_status:   equ 'A'
-version_branch:   equ 00
-version_release:  equ 201510270320
+; Note: Version numbers use the ISO date format.
+
+; Public version (stored as a Forth double-cell number):
+; 20151029
+
+public_version_high_part:  equ 0x0133
+public_version_low_part:   equ 0x7AF5
+
+; Internal development version:
+; 201510290411
 
 ; ==============================================================
 ; Author and license
@@ -263,7 +269,7 @@ valid_word_length_mask:           equ word_length_mask or smudge_mask
 
 csb_size:                         equ 256 ; bytes, size of the circular string buffer
 
-; Memory banks
+; Memory banks (0xC000..0xFFFF)
 
 default_bank:                     equ 0
 names_bank:                       equ 1
@@ -574,22 +580,6 @@ _compare_de_hl_unsigned: macro
   endm
 
 ; ----------------------------------------------
-; Memory bank macros
-
-_bank: macro _n
-  _literal (_n)
-  dw bank_
-  endm
-
-_names_bank: macro
-  _bank names_bank
-  endm
-
-_default_bank: macro
-  _bank default_bank
-  endm
-
-; ----------------------------------------------
 ; Error messages macros
 
 _question_throw: macro _error
@@ -776,17 +766,6 @@ return_stack_pointer:
 
 default_color_attribute:
   dw 4 ; low byte: green paper, black ink; high byte: no mask
-
-  ; XXX OLD
-; if 1 ; show_version
-; version_status_variable:
-;   dw version_status
-; version_branch_variable:
-;   dw version_branch
-; version_release_variable:
-;   dw version_release mod 0xFFFF
-;   dw version_release / 0xFFFF
-; endif
 
   ; User variables default values
 
@@ -1288,7 +1267,7 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; ----------------------------------------------
   _colon_header end_code_,'END-CODE'
 
-  dw end_asm_,smudge_
+  dw end_asm_,reveal_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1667,6 +1646,34 @@ push_l: ; XXX TMP -- not used yet
   jp push_hl
 
 ; ----------------------------------------------
+  _code_header default_bank_,'DEFAULT-BANK'
+
+; doc{
+;
+; default-bank  ( -- )
+;
+; Page the default memory bank in at 0xC000..0xFFFF.
+;
+; }doc
+
+  call bank.default
+  _jp_next
+
+; ----------------------------------------------
+  _code_header names_bank_,'NAMES-BANK'
+
+; doc{
+;
+; names-bank  ( -- )
+;
+; Page the names memory bank in at 0xC000..0xFFFF.
+;
+; }doc
+
+  call bank.names
+  _jp_next
+
+; ----------------------------------------------
   _code_header bank_,'BANK'
 
 ; doc{
@@ -1681,13 +1688,14 @@ push_l: ; XXX TMP -- not used yet
   call bank.e
   _jp_next
 
-bank.default:
-  ; XXX TODO ?
 bank.names:
-  ; XXX TODO ?
+  ld e,names_bank
+  jr bank.e
+bank.default:
+  ld e,default_bank
 bank.e:
   ld a,(sys_bankm) ; get the saved status of BANKM
-  and 0xF8 ; erase bits 0-2
+  and %11111000 ; erase bits 0-2
   or e ; modify bits 0-2
   di
   ld (sys_bankm),a ; update BANKM
@@ -2664,8 +2672,7 @@ char_question.not:
 
   ld (find_name_from.ip_backup),bc ; save the Forth IP
 
-  ld e,names_bank
-  call bank.e ; page the memory bank in
+  call bank.names ; page the memory bank in
 
   pop hl ; nfa
   pop bc ; C=len, B is supposed to be 0
@@ -2731,8 +2738,7 @@ find_name_from.end:
   ; If no match found:
   ;   hl = false
   exx
-  ld e,default_bank
-  call bank.e ; page the default memory bank in
+  call bank.default ; page the default memory bank in
   exx
 find_name_from.ip_backup: equ $+1
   ld bc,0x0000 ; restore the Forth IP
@@ -4463,24 +4469,6 @@ endif
   jp false_pfa
 
 ; ----------------------------------------------
-  _code_header c_store_toggle_bits_,'C!TOGGLE-BITS'
-
-; doc{
-;
-; c!toggle-bits  ( b ca -- )
-;
-; Invert the bits at _ca_ specified by the bitmask _b_.
-;
-; }doc
-
-  pop hl ; address
-  pop de ; e = bitmask
-  ld a,(hl)
-  xor e
-  ld (hl),a
-  _jp_next
-
-; ----------------------------------------------
   _code_header c_store_set_bits_,'C!SET-BITS'
 
 ; doc{
@@ -4599,6 +4587,9 @@ store.de_into_hl_pointer:
 ; ----------------------------------------------
   _colon_header colon_,':',immediate
 
+  ; XXX TODO -- `(:)` or `DOCOLON` constants to access
+  ; `do_colon`.
+
   dw store_csp_
   dw header_,right_bracket_
   dw paren_semicolon_code_
@@ -4616,27 +4607,71 @@ do_colon.end: ; XXX TMP for debugging
   _jp_next
 
 ; ----------------------------------------------
+  _variable_header noname_question_,'NONAME?'
+
+; doc{
+;
+; noname?  ( -- a )
+; 
+; A variable that holds a flag: was the word being defined
+; created by `:noname`? This flag is set by `:noname` and reset
+; by `;`.
+;
+; }doc
+
+; Credits:
+; The idea for this variable was taken from hForth.
+
+  dw false
+
+; ----------------------------------------------
   _colon_header noname_,':NONAME',immediate
+
+
+; doc{
+;
+; :noname  ( -- xt )
+; 
+; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; 
+; }doc
+
 
   ; Credits:
   ; Code from the Afera library.
 
-  ; XXX TODO move to the library
+  ; XXX TODO move to the library?
+  ; first `do_colon` must be defined as a constant
 
-  dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
   dw lit_,do_colon,comma_ ; create the code field
+  dw noname_question_,on_
   dw right_bracket_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header semicolon_,';',immediate+compile_only
 
+; doc{
+;
+; ;  ( -- )
+; 
+; ----
+; : ;  ( -- )
+;   ?csb postpone ;s
+;   postpone [
+;   noname? @  noname? off  ?exit
+;   reveal  ;
+; }doc
+
   dw question_csp_
   dw compile_,semicolon_s_
-  dw smudge_
   dw left_bracket_
+  dw noname_question_,fetch_
+  dw noname_question_,off_
+  dw question_exit_
+  dw reveal_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4669,16 +4704,6 @@ do_constant:
   inc de    ; de=pfa
   ex de,hl  ; hl=pfa
   jp fetch.hl
-
-; ----------------------------------------------
-  ; _colon_header c_variable_,'CVARIABLE'
-
-  ; XXX OLD -- this can be done with `create name n c,`
-
-  ; dw create_
-  ; _literal 1
-  ; dw allot_
-  ; dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header variable_,'VARIABLE'
@@ -5671,6 +5696,7 @@ question_dup.end:
   _code_alias_header to_body_,'>BODY',,two_plus_
 
 ; ----------------------------------------------
+  _code_header to_name_,'>NAME'
 
 ; doc{
 ;
@@ -5684,10 +5710,7 @@ question_dup.end:
 
 ; XXX FIXME -- make it return 0 if cfa has no name associated
 
-  _code_header to_name_,'>NAME'
-
-  ld e,names_bank
-  call bank.e ; page the memory bank in
+  call bank.names ; page the memory bank in
   pop de ; cfa
   push bc ; save Forth IP
   ld b,0
@@ -5718,8 +5741,7 @@ to_name.begin_1:
   inc hl
   inc hl ; nfa
 
-  ld e,default_bank
-  call bank.e ; page the default memory bank
+  call bank.default ; page the default memory bank
 
   pop bc ; restore Forth IP
   jp push_hl
@@ -5736,9 +5758,7 @@ to_name.begin_1:
 ;
 ; }doc
 
-  ; XXX 11 bytes
-  dw bank_,c_store_
-  _default_bank
+  dw bank_,c_store_,default_bank_
   dw semicolon_s_
 
   ; XXX TODO -- faster version:
@@ -5748,8 +5768,7 @@ to_name.begin_1:
   ; pop hl
   ; ld l,(hl)
   ; ld h,0
-  ; ld e,default_bank
-  ; call bank.e
+  ; call bank.default
   ; jp pushhl
 
 ; ----------------------------------------------
@@ -5763,9 +5782,7 @@ to_name.begin_1:
 ;
 ; }doc
 
-  ; XXX 11 bytes
-  dw bank_,store_
-  _default_bank
+  dw bank_,store_,default_bank_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5779,20 +5796,17 @@ to_name.begin_1:
 ;
 ; }doc
 
-  ; XXX 11 bytes
-  dw bank_,c_fetch_
-  _default_bank
+  dw bank_,c_fetch_,default_bank_
   dw semicolon_s_
 
-  ; XXX TODO -- 15 bytes -- faster version:
+  ; XXX TODO -- faster version:
   ; pop de
   ; c_fetch_bank.e:
   ; call bank.e
   ; pop hl
   ; ld l,(hl)
   ; ld h,0
-  ; ld e,default_bank
-  ; call bank.e
+  ; call bank.default
   ; jp pushhl
 
 ; ----------------------------------------------
@@ -5806,12 +5820,10 @@ to_name.begin_1:
 ;
 ; }doc
 
-  ; XXX 11 bytes
-  dw bank_,fetch_
-  _default_bank
+  dw bank_,fetch_,default_bank_
   dw semicolon_s_
 
-  ; XXX TODO -- 17 bytes -- faster version:
+  ; XXX TODO -- faster version:
   ; pop de
   ; fetch_bank.e
   ; call bank.e
@@ -5820,8 +5832,7 @@ to_name.begin_1:
   ; inc hl
   ; ld h,(hl)
   ; ld l,a
-  ; ld e,default_bank
-  ; call bank.e
+  ; call bank.default
   ; jp pushhl
 
 ; ----------------------------------------------
@@ -5918,12 +5929,12 @@ to_name.begin_1:
 
   _colon_header name_to_string_,'NAME>STRING'
 
-  _names_bank
+  dw names_bank_
   dw count_
   _literal word_length_mask
   dw and_
   dw save_string_
-  _default_bank
+  dw default_bank_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6072,30 +6083,105 @@ postpone.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_smudge_,'(SMUDGE)'
+  _colon_header revealed_,'REVEALED'
 
-  ; XXX TODO -- use `hide` and `reveal` instead?
+; doc{
+;
+; revealed  ( nfa -- )
+; 
+; Reveal the definition _nfa_ by resetting its smudge bit.
+;
+; }doc
+
+  dw smudge_mask_,swap_
+  dw names_bank_,c_store_reset_bits_,default_bank_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header reveal_,'REVEAL'
+
+; doc{
+;
+; reveal  ( -- )
+; 
+; Reveal the latest definition by resetting its smudge bit.
+;
+; }doc
+
+  dw latest_,revealed_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header hided_,'HIDED'
+
+; doc{
+;
+; hided  ( nfa -- )
+; 
+; Hide the definition _nfa_ by setting its smudge bit.
+;
+; }doc
+
+  dw smudge_mask_,swap_
+  dw names_bank_,c_store_set_bits_,default_bank_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header hide_,'HIDE'
+
+; doc{
+;
+; hide  ( -- )
+; 
+; Hide the latest definition by setting its smudge bit.
+;
+; }doc
+
+  dw latest_,hided_
+  dw semicolon_s_
+
+if 0 ; XXX OLD
+
+; ----------------------------------------------
+  _code_header c_store_toggle_bits_,'C!TOGGLE-BITS'
+
+; doc{
+;
+; c!toggle-bits  ( b ca -- )
+;
+; Invert the bits at _ca_ specified by the bitmask _b_.
+;
+; }doc
+
+  pop hl ; address
+  pop de ; e = bitmask
+  ld a,(hl)
+  xor e
+  ld (hl),a
+  _jp_next
+
+; ----------------------------------------------
+  _colon_header smudged_,'SMUDGED'
+
+  ; XXX OLD
   ; XXX TODO move to the library
 
 ; doc{
 ;
-; (smudge)  ( nfa -- )
+; smudged  ( nfa -- )
 ;
 ; Toggle the "smudge bit" of the given name field address.
 ;
 ; }doc
 
   dw smudge_mask_,swap_
-  ; XXX TODO factor `toggle-names'?
-  _names_bank
-  dw c_store_toggle_bits_
-  _default_bank
+  dw names_bank_,c_store_toggle_bits_,default_bank_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header smudge_,'SMUDGE'
 
-  ; XXX TODO -- use `hide` and `reveal` instead?
+  ; XXX OLD
   ; XXX TODO move to the library
 
 ; doc{
@@ -6111,89 +6197,11 @@ postpone.end:
 ;
 ; }doc
 
-  dw latest_,paren_smudge_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header latest_bits_,'LATEST-BITS'
-
-  ; XXX UNDER DEVELOPMENT
-  ; XXX TODO better name! `smudge-it`?
-
-; doc{
-;
-; reveal  ( cfa -- )
-;
-; Execute _cfa_ ( b ca -- ) to modify the lenght byte of the
-; latest definition with the _b_ bitmask.
-;
-; }doc
-
-  dw smudge_mask_,latest_
-  _names_bank
-  dw rot_,execute_
-  _default_bank
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header reveal_,'REVEAL'
-
-  ; XXX UNDER DEVELOPMENT
-
-; doc{
-;
-; reveal  ( -- )
-;
-; Reset the "smudge bit" of the latest definition's name field.
-;
-; }doc
-
-if 0
-
-  dw smudge_mask_
-  dw latest_
-  _names_bank
-  ; dw reset_bits_ ; XXX TODO -- from the library
-  _default_bank
-  dw semicolon_s_
-
-else
-
-  ; _literal reset_bits_ ; XXX TODO
-  dw latest_bits_
+  dw latest_,smudged_
   dw semicolon_s_
 
 endif
 
-; ----------------------------------------------
-  _colon_header hide_,'HIDE'
-
-  ; XXX UNDER DEVELOPMENT
-
-; doc{
-;
-; hide  ( -- )
-;
-; Set the "smudge bit" of the latest definition's name field.
-;
-; }doc
-
-if 0
-
-  dw smudge_mask_
-  dw latest_
-  _names_bank
-  ; dw set_bits_ ; XXX TODO -- from the library
-  _default_bank
-  dw semicolon_s_
-
-else
-
-  ; _literal set_bits_ ; XXX TODO
-  dw latest_bits_
-  dw semicolon_s_
-
-endif
 ; ----------------------------------------------
   _c_constant_header smudge_mask_,'SMUDGE-MASK'
 
@@ -6257,7 +6265,7 @@ endif
 
   dw question_csp_
   dw compile_,paren_semicolon_code_
-  dw left_bracket_,smudge_
+  dw left_bracket_,reveal_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6594,6 +6602,10 @@ acceptx.begin:
 ; Standard: Forth-94, Forth-2012.
 ;
 ; }doc
+
+  ; XXX FIXME -- sometimes seems the text is not updated
+  ; internally after deleting a char, but it looks right on the
+  ; screen
 
   dw span_,off_
   dw question_dup_
@@ -7274,14 +7286,14 @@ header.continue:
   ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
-  _names_bank
+  dw names_bank_
   dw here_,comma_np_ ; store a pointer to the cfa
   dw latest_,comma_np_ ; link field
   ; Now `np` contains the address of the nfa.
   dw np_fetch_
   dw place_ ; store the name
   dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
-  dw smudge_ ; set the smudge bit and page the default bank
+  dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
   dw here_,two_plus_,comma_ ; compile the pfa into code field
   dw semicolon_s_
@@ -7292,7 +7304,7 @@ header.continue:
   ; XXX TODO factor `header smudge` to `visible-header`? it's
   ; used also by `defer`.
 
-  dw header_,smudge_
+  dw header_,reveal_
   dw paren_semicolon_code_
 do_create:
   inc de  ; de=pfa
@@ -7751,9 +7763,9 @@ interpret.end:
 
 if 1
 
-  _names_bank
+  dw names_bank_
   dw swap_,c_fetch_test_bits_question_
-  _default_bank
+  dw default_bank_
   dw semicolon_s_
 
 else  ; XXX TMP alternative without `c@test-bits?`
@@ -7777,9 +7789,7 @@ endif
   ; Credits:
   ; Word adapted from eForth.
 
-  _names_bank
-  dw c_store_set_bits_
-  _default_bank
+  dw names_bank_,c_store_set_bits_,default_bank_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7971,7 +7981,7 @@ quit.begin:
 ;
 ; }doc
 
-  dw header_,smudge_
+  dw header_,reveal_
   _literal 0x21 ; Z80 opcode for `ld hl,NN`
   dw c_comma_
   _literal paren_defer_ ; default cfa to execute
@@ -8018,7 +8028,8 @@ quit.begin:
 ; ----------------------------------------------
   _two_constant_header version_,'VERSION'
 
-  dw 307,31475 ; = 20151027
+  dw public_version_high_part
+  dw public_version_low_part
 
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
@@ -10748,14 +10759,12 @@ move_name_fields_to_memory_bank:
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the data to the screen
-  ld e,names_bank
-  call bank.e
+  call bank.names
   ld hl,sys_screen ; origin
   ld de,names_bank_address ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the name fields to the bank
-  ld e,default_bank
-  call bank.e
+  call bank.default
 
   ; Remove the call to this routine:
   ld hl,only_first_cold ; address of the call to this routine
