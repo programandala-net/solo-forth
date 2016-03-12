@@ -85,7 +85,7 @@ decode dump
 \ Error #12:
 \ Error #13:
 \ Error #14:
-\ Error #15:
+\ Error #15: Deferred word is uninitialized.
 
 ( Error messages 17..31 )  \ scr 5
 
@@ -262,8 +262,11 @@ code point  ( x y -- )
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
-  \ XXX FIXME 2015-06-25: now it prints 8 pixels to the right,
+  \ XXX FIXME 2015-06-25: now it prints 7 pixels to the right,
   \ why?
+  \
+  \ XXX 2015-07-04: Note: `point` uses the right coordinates:
+  \ `0 175 plot 7 175 point .` prints "1".
 
 require pixel-addr
 
@@ -423,7 +426,7 @@ code bleep  ( n1 n2 -- )
 
 : d0=  ( d -- f )  or 0=  ;
 
-: d0<  ( d -- f )  swap drop 0<  ;
+: d0<  ( d -- f )  nip 0<  ;
 
 ; d<  ( d1 d2 -- f )
   rot 2dup = if  2drop u< exit  then  2nip >  ;
@@ -955,19 +958,19 @@ width ! decimal
   \ XXX TODO
   \ Adapth this better version from v.Forth:
   \
-  \ CODE MS
-  \  POP DE|
-  \  BEGIN,
-  \   LDI A'| 171 N,
-  \   BEGIN,
-  \    NOP
-  \    DEC A'|
-  \   -UNTIL,
-  \   DECX DE|
-  \   LD A'| D|
-  \  ORA E|
-  \  -UNTIL,
-  \ NEXT C;
+  \ code ms
+  \  pop de
+  \  begin,
+  \   ldi a'| 171 n,
+  \   begin,
+  \    nop
+  \    dec a'|
+  \   -until,
+  \   decx de|
+  \   ld a'| d|
+  \  ora e|
+  \  -until,
+  \ next c;
 
 ( time@ time! time0 )
 
@@ -1015,7 +1018,6 @@ code i'  ( R: n x -- n x ) ( -- n )
   \
   \ Original code by William F. Ragsdale, 1982-06-12.
   \
-  \
   \ XXX TODO adapt
 
   \ note the systems -FIND searches 1 to 5 vocabs in CONTEXT
@@ -1024,11 +1026,11 @@ vocabulary only    only definitions
 
 : also  ( -- )
   \ Slide transient into resident.
-  context dup 2+ 6 cmove>  ;
+  context dup cell+ 6 cmove>  ;
 
   \ Alter run time of ONLY from usual vocabulary.
 
-here 2+
+here cell+
   ] does>  context 8 erase  dup context !  context 8 + !
            also  exit [  ' only cfa !
 
@@ -1067,6 +1069,98 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   C3 c, pushde ,  \ jp pushde
 
 end-code
+
+( seed rnd random randomize )
+
+  \ [Code adapted from Leo Brodie's code and Gforth.]
+
+23672 constant seed  \ address of system variable
+
+: rnd  ( -- n )  seed @ 31421 * 6927 + dup seed !  ;
+
+: random  ( n -- 0..n-1 )  rnd um* nip  ;
+
+: randomize  ( n -- )  seed !  ;
+
+  \ From vForth
+  \ XXX TODO adapt and try
+  \ : vrnd  ( n1 -- n2 )
+  \   1+ 8195 23672 @ um* 1 0 d+
+  \   16383 u/ drop dup sys-seed !
+  \   swap mod ;
+
+( defer defer@ defer! defers action-of )
+
+  \ [Code adapted from the Afera library.]
+
+: (defer)  ( -- )
+  \ Default behaviour of an uninitialized deferred word: error.
+  15 error ;
+
+: defer  ( "name" -- )
+  \ Create a deferred word.
+  postpone : postpone (defer) postpone ;  ;
+
+: defer@  ( cfa1 -- cfa2 )
+  \ Return the cfa of the word currently associated with a deferred word.
+  \ cfa1 = cfa of the deferred word
+  \ cfa2 = cfa of the word it's associated with
+  cfa>pfa @  ;
+
+: defer!  ( cfa1 cfa2 -- )  cfa>pfa !  ;
+
+: defers  ( "name" -- )
+  \ Compile the present contents of the deferred word "name"
+  \ into the current definition. I.e. this produces static
+  \ binding as if "name" was not deferred.
+  ' defer@ ,  ; immediate
+
+: action-of  ( Interpretation: "name" -- cfa )
+             ( Compilation:    "name" -- )
+             ( Runtime:        -- cfa )
+  \ Return the code field address of a deferred word.
+  ' comp? if    postpone literal postpone defer@ 
+          else  defer@  then  ; immediate
+
+( <is> [is] is  )
+
+  \ [Code adapted from the Afera library.]
+
+: <is>  ( cfa "name" -- )  ' defer!  ;
+
+: [is]  ( cfa "name" -- )
+  ' postpone literal postpone defer!  ; immediate
+
+: is  ( cfa "name" -- )
+  comp? if  postpone [is]  else  <is>  then  ; immediate
+
+( Symmetric-division operators )
+
+  \ [From the ANS Forth documentation.]
+ 
+: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
+
+: /-  (  n1 n2 -- n3 )  /-rem nip  ;
+
+: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
+
+: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
+
+: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
+
+( Floored-division operators )
+
+  \ [From the ANS Forth documentation.]
+
+: /_mod  ( n1 n2 -- n3 n4)  >r s>d r> fm/mod  ;
+
+: /_  ( n1 n2 -- n3)  /_mod nip  ;
+
+: _mod  ( n1 n2 -- n3)  /_mod drop  ;
+
+: */_mod  ( n1 n2 n3 -- n4 n5)  >r m* r> fm/mod  ;
+
+: */_  ( n1 n2 n3 -- n4 )   */_mod nip ;
 
 ( heap )
 

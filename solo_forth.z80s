@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507021556
+; Version A-00-201507041843
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -37,6 +37,10 @@
 ; Forth-83.
 ; - first working version with `create...does>` (`vocabulary`
 ; and vocabularies adapted).
+; - `um*` instead of `u*`.
+; - `defer` and `rnd` in the library.
+; - first changes to implement multiple `while` in `begin`.
+; - first changes to implement multiple `sm/rem` and `fm/mod`.
 
 ; ==============================================================
 ; Acknowledgments
@@ -197,6 +201,12 @@
 ; ==============================================================
 ; Configuration
 
+  ; XXX FIXME Pasmo gives strange errors (symbols not found)
+  ; when some config flags are used in nested `if`. A literal
+  ; flag (0/1) is used instead, with the flag name in a comment;
+  ; it is changed with a text substitution.  Some Vim mappings
+  ; are created to turn them on on an off.
+
   ; XXX experimental
 size_optimization?: equ false
   ; true = some code pieces are more compact but slower.
@@ -218,11 +228,6 @@ fig_parsing?: equ false
   ; false = name fields and link fields are stored in the
   ; dictionary.
 
-  ; XXX FIXME Pasmo gives strange errors (symbols not found)
-  ; when this config flag is used in nested `if`. A literal flag
-  ; (0/1) is used instead, with the flag name in a comment; it
-  ; is changed with a text substitution, and Vim mappings
-  ; are created to turn it on an off.
 ;fig_does?: equ true
   ; true = the fig-Forth `<builds does>` pair is used
   ; false = the modern `create does>` pair is used
@@ -242,6 +247,12 @@ fig_null_word?: equ false
   ; thus making the null word to be parsed normally as any other
   ; word. this new method is compatible with the original
   ; fig-Forth parsing words.
+
+  ; XXX TODO
+;whiles?: equ true
+  ;  true = a `while` counter is used, so any number of `while`
+  ;  can be used in a `begin` structure.
+  ;  false = no change to the standard structure.
 
 ; ==============================================================
 ; Symbols
@@ -325,7 +336,7 @@ number_11_error:                    equ 11 ; free
 number_12_error:                    equ 12 ; free
 number_13_error:                    equ 13 ; free
 number_14_error:                    equ 14 ; free
-number_15_error:                    equ 15 ; free
+deferred_word_uninitialized_error:  equ 15
 compilation_only_error:             equ 17
 execution_only_error:               equ 18
 conditionals_not_paired_error:      equ 19
@@ -997,6 +1008,49 @@ move_block_downwards:
   dec hl
   ex de,hl
   lddr
+  ret
+
+; ----------------------------------------------
+; Multiplication primitives
+
+; AHL <- A * DE
+
+a_multiplied_by_de_to_ahl:
+  ld hl,0
+  ld c,8
+a_multiplied_by_de_to_ahl.1:
+  add hl,hl
+  rla
+  jp nc,a_multiplied_by_de_to_ahl.2
+  add hl,de
+  adc a,0
+a_multiplied_by_de_to_ahl.2:
+  dec c
+  jp nz,a_multiplied_by_de_to_ahl.1
+  ret
+
+; Unsigned 16*16 multiply, 32-bit result
+
+; HLDE <- HL * DE
+
+hl_multiplied_by_de_to_hlde_unsigned:
+  push bc ; save Forth IP
+  ld b,h
+  ld a,l
+  call a_multiplied_by_de_to_ahl
+  push hl
+  ld h,a
+  ld a,b
+  ld b,h
+  call a_multiplied_by_de_to_ahl
+  pop de
+  ld c,d
+  add hl,bc
+  adc a,0
+  ld d,l
+  ld l,h
+  ld h,a
+  pop bc ; restore Forth IP
   ret
 
 ; ==============================================================
@@ -2592,7 +2646,36 @@ move.do:
   jp move.do
 
 ; ----------------------------------------------
+  _code_header u_m_star_,'UM*'
+
+; doc{
+;
+; um*  ( u1 u2 -- ud )  \ ANS Forth
+;
+; Multiply _u1_ by _u2_, giving the unsigned double-cell product
+; _ud_.  All values and arithmetic are unsigned.
+;
+; }doc
+
+  ; [Code from DZX-Forth.]
+
+  pop de
+  pop hl
+  call hl_multiplied_by_de_to_hlde_unsigned
+  jp push_de_hl
+
+if 0 ; XXX OLD -- substituted by `um*`
+
+; ----------------------------------------------
   _code_header u_star_,'U*'
+
+; doc{
+;
+; u*  ( u1 u2 -- ud )  \ fig-Forth
+;
+; Leave the unsigned double number product of two unsigned numbers.
+;
+; }doc
 
   pop de
   pop hl
@@ -2629,8 +2712,28 @@ l6079h:
   jr nz,l6072h
   ret
 
+endif
+
 ; ----------------------------------------------
-  _code_header u_slash_mod_,'U/MOD'
+  _code_header u_slash_mod_,'U/MOD' ; XXX OLD
+
+; doc{
+;
+; u/mod ( ud u1 -- u2 u3 )
+;
+; Divide _ud_ by _u1_, giving the quotient _u3_ and the
+; remainder _u2_.  All values and arithmetic are unsigned. An
+; ambiguous condition exists if u1 is zero or if the quotient
+; lies outside the range of a single-cell unsigned integer.
+;
+; }doc
+
+; XXX FIXME -- This word, whose code is taken from Abersoft
+; forth, has a bug that affects `(line)`, used by `message`, and
+; other words that use it: `*/mod`, `mod` and `/mod`, with
+; certain negative values, return different values in Abersoft
+; Forth and other Forth systems that have been tested (some of
+; them are fig-Forth).
 
   ld hl,0x0004
   add hl,sp
@@ -2683,6 +2786,85 @@ l60c0h:
   push hl
   push de
   _jp_next
+
+if 0 ; XXX TODO
+
+; ----------------------------------------------
+  _code_header s_m_slash_rem_,'SM/REM'
+
+; doc{
+;
+; sm/rem  ( d1 n1 -- n2 n3 )  \ ANS Forth,  "s-m-slash-rem"
+;
+; Symmetric division:
+;
+;   d1 = n3*n1+n2, sign(n2)=sign(d1) or 0.
+;
+; Divide _d1_ by _n1_, giving the symmetric quotient _n3_ and
+; the remainder _n2_. Input and output stack arguments are
+; signed.
+;
+; }doc
+
+; XXX TODO check: An ambiguous condition exists if n1 is zero or
+; if the quotient lies outside the range of a single-cell signed
+; integer.
+
+; [Code from DZX-Forth.]
+
+  ld l,c
+  ld h,b
+  pop bc
+  pop de
+  ex (sp),hl
+  ex de,hl
+s_m_slash_rem_.1:
+  call msm
+  jp msm.2
+
+; ----------------------------------------------
+  _code_header fm_slash_mod_,'FM/MOD'
+
+; doc{
+;
+; fm/mod  ( d1 n1 -- n2 n3 )  \ ANS Forth,  "f-m-slash-mod"
+;
+; Floored division:
+;
+;   d1 = n3*n1+n2, n1>n2>=0 or 0>=n2>n1.
+;
+; Divide _d1_ by _n1_, giving the floored quotient _n3_ and
+; the remainder _n2_. Input and output stack arguments are
+; signed.
+;
+; }doc
+
+; XXX TODO check: An ambiguous condition exists if n1 is zero or
+; if the quotient lies outside the range of a single-cell signed
+; integer.
+
+; [Code from DZX-Forth.]
+
+  ld l,c
+  ld h,b
+  pop bc
+  pop de
+  ex (sp),hl
+  ex de,hl
+fm_slash_mod.1:
+  call msm
+  ld a,d
+  or e
+  jp z,msm.2    ; skip if remainder = 0
+  dec hl    ; floor
+  push hl
+  ex de,hl
+  add hl,bc
+  ex de,hl
+  pop hl
+  jp msm.2
+
+endif
 
 ; ----------------------------------------------
   _code_header and_,'AND'
@@ -3519,11 +3701,15 @@ do_user:
 
 ; XXX TODO in Forth-83 this word is a constant; in ANS Forth
 ; it's obsolete.
+  ; XXX TODO normal variable
+
 
   db 0x04
 
 ; ----------------------------------------------
   _user_variable_header width_,'WIDTH'
+
+  ; XXX TODO normal variable
 
   db 0x06
 
@@ -3537,33 +3723,44 @@ do_user:
 
   ; XXX TODO why this is a user variable?
   ; XXX OLD -- obsolescent word
+  ; XXX TODO normal variable
+
   db 0x0A
 
 ; ----------------------------------------------
   _user_variable_header dp_,'DP'
 
   ; XXX TODO why this is a user variable?
+  ; XXX TODO normal variable
+
   db 0x0C
 
 ; ----------------------------------------------
   _user_variable_header voc_link_,'VOC-LINK'
 
   ; XXX TODO why this is a user variable?
+  ; XXX TODO normal variable
+
   db 0x0E
 
 ; ----------------------------------------------
   _user_variable_header blk_,'BLK'
+
+  ; XXX TODO normal variable
 
   db 0x10
 
 ; ----------------------------------------------
   _user_variable_header to_in_,'>IN'
 
+  ; XXX TODO normal variable
+
   db 0x12
 
 ; ----------------------------------------------
   _user_variable_header out_,'OUT'
 
+  ; XXX TODO In Forth 83 it's a user variable too, but it's called `#out`.
   db 0x14
 
 ; ----------------------------------------------
@@ -5091,10 +5288,10 @@ paren_number.begin: ; begin
   dw base_,fetch_,digit_ ; convert the digit
   dw zero_branch_,paren_number.end ; while
   dw swap_ ; get the high order part of d1 to the top.
-  dw base_,fetch_,u_star_ ; multiply by base value
+  dw base_,fetch_,u_m_star_ ; multiply by base value
   dw drop_ ; drop the high order part of the product
   dw rot_ ; move the low order part of d1 to top of stack
-  dw base_,fetch_,u_star_ ; multiply by base value
+  dw base_,fetch_,u_m_star_ ; multiply by base value
   dw d_plus_ ; accumulate result into d1
   dw dpl_,fetch_,one_plus_ ; is DPL other than -1?
   dw zero_branch_,paren_number.decimal_point_done
@@ -6123,7 +6320,7 @@ max.2:
   dw two_dup_
   dw xor_,to_r_
   dw abs_
-  dw swap_,abs_,u_star_
+  dw swap_,abs_,u_m_star_
   dw from_r_,d_plus_minus_
   dw semicolon_s_
 
@@ -6641,6 +6838,10 @@ endif
 ; }doc
 
   dw question_comp_ ; error if not compiling
+  if 0 ; whiles?
+    dw hash_whiles_,fetch_  ; save the previous content of `#whiles`
+    dw hash_whiles_,off_
+  endif
   dw backward_mark_ ; address to compute the backward branch
   dw one_ ; error checking number
   dw semicolon_s_
@@ -6719,9 +6920,50 @@ do.common:
 ; ----------------------------------------------
   _colon_header repeat_,'REPEAT',immediate
 
+if 0 ; whiles?
+
+; doc{
+;
+; repeat  ( compilation: a1 n1 a2 n2 | a1 n1 a2 n2 ... a3 n2 | a1 n1 -- )
+;
+; a1 = address of `begin` to branch to
+; n2 = `begin` check number
+; a2 = address of the first branch of `while` to resolve
+; n2 = `while` check number
+; a3 = address of the last branch of `while` to resolve
+;
+; Compile `branch` to jump back to `begin`.  Resolve also  the
+; branching offset required by `while`.
+;
+; }doc
+
+  ; XXX TODO
+
+  dw again_ ; unconditional branch back to `begin`
+  if 0 ; whiles?
+    dw hash_whiles_,fetch_
+    dw dup_,zero_equals_,question_exit_
+    dw zero_,paren_do_
+repeat.resolve_while:
+    dw then_
+    dw paren_loop_,repeat.resolve_while
+    dw hash_whiles_,store_  ; restore the previous content of `#whiles`
+  else
+    ; dw two_minus_ ; restore 2 to be checked by `then` ; XXX OLD -- unnecessary
+    dw then_ ; resolve the forward branching needed by `while`
+  endif
+  dw semicolon_s_
+
+else
+
 ; doc{
 ;
 ; repeat  ( compilation: a1 n1 a2 n2 -- )
+; 
+; a1 = address of `begin` to branch to
+; n1 = `begin` check number
+; a2 = address of the branch of `while` to resolve
+; n2 = `while` check number
 ;
 ; Compile `branch` to jump back to `begin`.  Resolve also  the
 ; branching offset required by `while`.
@@ -6731,8 +6973,9 @@ do.common:
   dw two_to_r_
   dw again_ ; unconditional branch back to `begin`
   dw two_from_r_
-  dw two_minus_
+  ; dw two_minus_ ; restore 2 to be checked by `then` ; XXX OLD -- unnecessary
   dw then_ ; resolve the forward branching needed by `while`
+  endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6768,11 +7011,23 @@ if.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
+if 0 ; whiles?
+
+  _variable_header hash_whiles_,'#WHILES'
+
+  dw 0
+
+endif
+
+; ----------------------------------------------
   _colon_header while_,'WHILE',immediate
 
   dw if_
-  dw two_plus_
-  dw semicolon_s_
+  ; dw two_plus_ ; leave 4 to be checked by `repeat` ; XXX OLD -- unnecessary
+  if 0 ; whiles?
+    dw one_,hash_whiles_,plus_store_
+  endif
+  dw semicolon_s_ 
 
 ; ----------------------------------------------
   _colon_header spaces_,'SPACES'
@@ -7364,7 +7619,11 @@ do_two_constant:
 
 ; ----------------------------------------------
   _colon_header case_,'CASE',immediate
+
   ; XXX TODO move to the disk?
+  ;
+  ; XXX TODO use the simpler code from the ANS Forth
+  ; documentation.
 
   dw question_comp_
   dw csp_,fetch_,store_csp_
