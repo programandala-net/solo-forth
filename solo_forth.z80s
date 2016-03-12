@@ -94,6 +94,43 @@ smudge_bit_mask:      equ 1 shl smudge_bit
 max_word_length:                equ 0x1F
 max_word_length_bit_mask:       equ max_word_length
 
+; Error messages are in the disk, starting from the screen
+; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
+; etc are not used, because they coincide with the first line of
+; screens.
+
+not_understood_error:               equ 01
+stack_empty_error:                  equ 02
+dictionary_full_error:              equ 03 ; not used
+not_unique_error:                   equ 04
+not_found_error:                    equ 05
+out_of_disk_range_error:            equ 06
+full_stack_error:                   equ 07
+number_08_error:                    equ 08 ; free
+loading_from_screen_0_error:        equ 09
+number_10_error:                    equ 10 ; free
+number_11_error:                    equ 11 ; free
+number_12_error:                    equ 12 ; free
+number_13_error:                    equ 13 ; free
+number_14_error:                    equ 14 ; free
+number_15_error:                    equ 15 ; free
+
+compilation_only_error:             equ 17
+execution_only_error:               equ 18
+conditionals_not_paired_error:      equ 19
+definition_not_finished_error:      equ 20
+protected_dictionary_error:         equ 21
+loading_only_error:                 equ 22
+off_current_editing_screen_error:   equ 23
+declare_vocabulary_error:           equ 24
+unsupported_tape_operation_error:   equ 25
+unsupported_disk_operation_error:   equ 26
+source_file_needed_error:           equ 27
+not_present_though_required_error:  equ 28
+required_but_not_located_error:     equ 29
+number_30_error:                    equ 30 ; free
+number_31_error:                    equ 31 ; free
+
 ; ----------------------------------------------
 ; Config
 
@@ -107,7 +144,7 @@ fig_name_field?                 equ false
   ; false = the last letter of the name does not have the sign bit set.
 
   ; XXX TODO -- unfinished
-fig_find?                       equ true
+fig_find?                       equ false
   ; true = the original fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and Forth-94.
 
@@ -311,6 +348,36 @@ _jump_z: macro _address
   endm
 
 ; ----------------------------------------------
+; Error messages
+
+_error_code: macro _error
+  if _error=1
+    dw one_
+  else
+    if _error=2
+      dw two_
+    else
+      if _error=3
+        dw three_
+      else
+        dw c_lit_
+        db _error
+      endif
+    endif
+  endif
+  endm
+
+_question_error: macro _error
+  _error_code _error
+  dw question_error_
+  endm
+
+_message: macro _error
+  _error_code _error
+  dw message_
+  endm
+
+; ----------------------------------------------
 ; Debug
 
 _border: macro _color
@@ -439,7 +506,7 @@ scr_value: ; +0x16
   dw 0x0000
   ; +0x18 ; not used (formerly `offset`)
   dw 0x0000
-context_value: ; +0x1A
+context_value: ; +0x1A ; XXX TODO use more space, for `order`
   dw 0x0000
 current_value: ; +0x1C
   dw 0x0000
@@ -2323,45 +2390,35 @@ question_error.end:
   _colon_header question_comp_,'?COM','P'
 
   dw state_,fetch_,zero_equals_
-  dw c_lit_
-  db 0x11
-  dw question_error_
+  _question_error compilation_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_exec_,'?EXE','C'
 
   dw state_,fetch_
-  dw c_lit_
-  db 0x12
-  dw question_error_
+  _question_error execution_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_pairs_,'?PAIR','S'
 
   dw not_equals_
-  dw c_lit_
-  db 0x13
-  dw question_error_
+  _question_error conditionals_not_paired_error
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_csp_,'?CS','P'
 
   dw sp_fetch_,csp_,fetch_,not_equals_
-  dw c_lit_
-  db 0x14
-  dw question_error_
+  _question_error definition_not_finished_error
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_loading_,'?LOADIN','G'
 
   dw blk_,fetch_,zero_equals_
-  dw c_lit_
-  db 0x16
-  dw question_error_
+  _question_error loading_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2833,7 +2890,7 @@ number.begin:
   dw c_lit_
   db '.'
   dw not_equals_ ; not a decimal point?
-  dw one_,question_error_ ; error if not
+  _question_error not_understood_error ; error if not
   ; Decimal point found, set `dpl` to zero next time.
   dw zero_
   dw branch_,number.begin ; repeat
@@ -3123,11 +3180,10 @@ endif
     dw cfa_to_nfa_
   endif
   dw id_dot_
-  dw c_lit_
-  db 0x04
-  dw message_
+  _message not_unique_error
 header.continue:
   dw here_
+  ; XXX TODO error if name is too long (see lina)
   dw dup_,c_fetch_,width_,fetch_,min_,one_plus_,allot_ ; allocate space for name field
   dw dup_
   dw c_lit_
@@ -3289,7 +3345,7 @@ endif
 
 if fig_find?
   dw find_,zero_equals_
-  dw one_,question_error_
+  _question_error not_found_error
   dw drop_,pfa_to_cfa_,comma_
 else
   dw tick_,comma_
@@ -3355,13 +3411,11 @@ two_literal.end:
   dw sp_fetch_
   dw s0_,fetch_
   dw swap_,less_than_
-  dw two_,question_error_
+  _question_error stack_empty_error
   dw sp_fetch_
   dw lit_,data_stack_limit
   dw less_than_
-  dw c_lit_
-  db 0x07
-  dw question_error_
+  _question_error full_stack_error
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3422,8 +3476,10 @@ else ; XXX NEW -- version with modern `find`
 
 interpret.begin:
 
+  ; XXX TODO -- finish
+
   dw question_stack_
-  dw find_,question_dup_ ; found?
+  dw defined_,question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
   ; Found ( cfa 1 | cfa -1 )
@@ -3766,20 +3822,15 @@ max.end:
   _colon_header message_,'MESSAG','E'
 
   dw warning_,fetch_
-  dw zero_branch_,branch_destination_0x6FB3
-  dw question_dup_
-  dw zero_branch_,branch_destination_0x6FAF
-  dw msg_scr_
-  dw dot_line_
-  dw space_
-branch_destination_0x6FAF:
-  dw branch_,branch_destination_0x6FBE
-branch_destination_0x6FB3:
+  dw zero_branch_,message.number_only
+  dw msg_scr_,dot_line_,space_
+  dw semicolon_s_
+
+message.number_only:
   dw paren_dot_quote_
   _string 'MSG # '
   ; XXX TODO force decimal base
   dw dot_
-branch_destination_0x6FBE:
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4002,9 +4053,7 @@ flush.do:
   _colon_header continued_,'CONTINUE','D'
 
   dw dup_,zero_,equals_
-  dw c_lit_
-  db 0x09
-  dw question_error_
+  _question_error loading_from_screen_0_error
   dw in_,off_
   dw b_slash_scr_,star_,blk_,store_
   dw interpret_
@@ -4015,9 +4064,7 @@ flush.do:
 
 if 0 ; XXX OLD
   dw dup_,zero_,equals_
-  dw c_lit_
-  db 0x09
-  dw question_error_
+  _question_error loading_from_screen_0_error
   dw blk_,fetch_,to_r_
   dw in_,fetch_,to_r_
   dw in_,off_
@@ -4057,9 +4104,7 @@ endif
 
   ; From DZX-Forth.
 
-  dw c_lit_
-  db 0x05
-  dw question_error_
+  _question_error not_found_error
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4087,7 +4132,8 @@ endif
 
 if fig_find?
   dw find_
-  dw zero_equals_,one_,question_error_
+  dw zero_equals_
+  _question_error not_found_error
   ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
   dw drop_,pfa_to_cfa_
 else
@@ -4424,12 +4470,11 @@ list.loop:
 ; ----------------------------------------------
   _colon_header line_,'LIN','E'
 
+  ; XXX TODO use 0xF0
   dw dup_
   dw lit_,0xFFF0
-  dw and_ ; make sure line is between 0 and 15.
-  dw c_lit_
-  db 0x17
-  dw question_error_ ; if not, issue an error message
+  dw and_ ; line between 0 and 15?
+  _question_error off_current_editing_screen_error ; if not, error
   dw scr_,fetch_ ; screen number
   dw paren_line_ ; address of the n'th line in the screen buffer
   dw drop_ ; discard the character count left by `(line)`
