@@ -3,13 +3,12 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506170056
+; Version A-00-201506130121
 ; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
 ; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
 ; - `enclose` modified to save a `swap` in `word`.
 ; - fix: now `enclose` uses a 16-bit offset counter.
-; - fix: `on` and `off`.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -90,7 +89,7 @@ precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
 
-max_word_length:                equ 0x1F
+width:                equ 0x1F
 
 ; ----------------------------------------------
 ; Config
@@ -255,7 +254,7 @@ tib_init_value:
   dw terminal_input_buffer
 width_init_value:
   ; Location: `0x12 +origin`
-  dw max_word_length
+  dw width
 warning_init_value:
   ; Location: `0x14 +origin`
   dw 0x0000
@@ -622,7 +621,6 @@ paren_find_:
   dw paren_find_pfa
 paren_find_pfa:
   ; XXX TODO optimize speed with absolute jumps?
-  ; XXX TODO -- return cfa instead of pfa
   pop de
 l5f75h:
   pop hl
@@ -1618,9 +1616,7 @@ off_:
   dw off_pfa
 off_pfa:
   pop hl
-  ld (hl),0
-  inc hl
-  ld (hl),0
+  ld (hl),false
   _jp_next
 
 on_nfa:
@@ -1630,11 +1626,8 @@ on_lfa:
 on_:
   dw on_pfa
 on_pfa:
-  ; XXX TODO -- update when true=-1
   pop hl
-  ld (hl),1
-  inc hl
-  ld (hl),0
+  ld (hl),true
   _jp_next
 
 toggle_nfa:
@@ -2946,57 +2939,65 @@ expect_:
   dw do_colon
 expect_pfa:
   ;dw lit_,0,border_ ; XXX INFORMER
-  dw over_,plus_,over_ ; ( a a+len a )
+  dw over_
+  dw plus_
+  dw over_
   dw paren_do_
-expect.do: ; ( a )
-  dw key_,dup_ ; ( a c c )
+expect.do:
+  dw key_,dup_
   dw c_lit_
   db delete_char
-  dw equals_ ; delete key?
-  dw zero_branch_,expect.not_the_delete_key
+  dw equals_
+  dw zero_branch_,expect.not_the_delete_key ; if
 
   ; XXX FIXME This word has a bug in Abersoft Forth.  Sometimes, after using
   ; the delete key, the typed word is not recognized.  Maybe the `noop` the
   ; author used to patch the original bell?
-  ;
-  ; XXX TODO The `noop` and related `branch` were removed. Waiting for the code
-  ; to fail...
 
-  ; Delete key ( a c )
+  ; Delete key
+  ;dw lit_,1,border_ ; XXX INFORMER
   dw drop_
-  dw dup_,i_,equals_ ; cursor at the start position?
-  dw dup_ ; ( a f f ) ; XXX why this?
+  dw dup_
+  dw i_,equals_
+  dw dup_
   dw from_r_,two_minus_,plus_,to_r_
-  dw question_branch_,expect.loop ; nothing to delete
+  dw zero_branch_,expect.backspace ; if
+  ; XXX OLD -- bell was here
+  dw noop_
+  dw noop_
+  dw branch_,expect.loop ; else
+
+expect.backspace:
   dw c_lit_
   db backspace_char
   dw branch_,expect.emit
 
-expect.not_the_delete_key: ; ( a c )
+expect.not_the_delete_key:
   dw dup_
   dw c_lit_
   db carriage_return_char
   dw equals_ ; carriage return?
   dw zero_branch_,expect.ordinary_key
-
-  ; Carriage return ( a c )
+  ; carriage return
+  ;dw lit_,2,border_ ; XXX INFORMER
   dw leave_
   dw drop_,b_l_,zero_
   dw branch_,expect.store
 
-expect.ordinary_key: ; ( a c )
+expect.ordinary_key:
   dw dup_
 
-expect.store: ; ( a c c | a c 0 )
+expect.store:
   dw i_,c_store_
   dw i_,one_plus_,off_
 
-expect.emit: ; ( a c )
+expect.emit:
   dw emit_
 
-expect.loop: ; ( a )
+expect.loop:
   dw paren_loop_,expect.do
   dw drop_
+  ;dw lit_,7,border_ ; XXX INFORMER
   dw semicolon_s_
 
 query_nfa:
@@ -3034,10 +3035,6 @@ x_lfa:
 x_:
   dw do_colon
 x_pfa:
-
-if 1 ; XXX OLD -- original version
-
-  ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.from_terminal
   ; From disk.
@@ -3068,41 +3065,6 @@ x.from_terminal:
 
 x.end:
   dw semicolon_s_
-
-else ; XXX NEW -- simpler and faster flow
-
-  ; XXX FIXME -- why the system crashes when loading?
-
-  dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
-  dw blk_,fetch_ ; input stream from disk?
-  dw zero_branch_,x.exit ; if not, branch
-
-  ; From disk.
-  dw one_,blk_,plus_store_ ; next disk buffer
-  dw in_,off_ ; clear `in`, preparing parsing of input text
-  ;dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer? ; XXX OLD 
-  dw blk_,fetch_,one_,and_ ; last block of the screen?
-  dw zero_branch_,x.end ; if not, branch
-
-  ; Last block of the screen
-  dw question_exec_ ; error if not executing
-
-x.exit:
-
-  ; The top item on the return stack is thrown away.  The interpreter
-  ; will not continue to execute the `?stack` instruction that follows
-  ; `execute` in `interpret`, but will return to the next higher level
-  ; of nesting and execute the next word after `interpret` in the Forth
-  ; loop.  This is when the familiar "ok" message is displayed on the
-  ; terminal, prompting the operator for the next  line of commands.
-
-  ; XXX FIXME why `rdrop` bombs out here?
-  dw from_r_,drop_
-
-x.end:
-  dw semicolon_s_
-
-endif
 
 fill_nfa:
   db 0x04+0x80,'FIL','L'+0x80
@@ -3182,11 +3144,9 @@ word_:
 word_pfa:
   dw blk_,fetch_ ; from disk?
   ; XXX TODO optimize with `?dup` here instead of repeating `blk @` later
-  ;dw question_dup_ ; XXX NEW
   dw zero_branch_,word.from_terminal
   ; from disk
-  dw blk_,fetch_
-  dw block_
+  dw blk_,fetch_,block_
   dw branch_,word.from_address
 word.from_terminal:
   dw tib_,fetch_
@@ -3195,30 +3155,22 @@ word.from_address:
 
   dw here_
   dw c_lit_
-  db max_word_length+3
-  dw blanks_
+  db width+3
+  dw blanks_ ; XXX original
   dw in_,plus_store_
   dw over_,minus_
+  ;dw dup_,dot_ ; XXX INFORMER
+  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw to_r_ ; length
   dw r_fetch_,here_,c_store_ ; set the length byte
   dw plus_ ; from
   dw here_,one_plus_ ; destination
   dw from_r_ ; count
   dw cmove_ ; move
-
-  if 0 ; XXX INFORMER
-  dw space_ ; XXX INFORMER
-  ;dw depth_,dot_ ; XXX INFORMER
-  dw paren_dot_quote_ ; XXX INFORMER
-  _string 'blk ' ; XXX INFORMER
-  dw blk_,fetch_,dot_ ; XXX INFORMER
-  dw paren_dot_quote_ ; XXX INFORMER
-  _string 'in ' ; XXX INFORMER
-  dw in_,fetch_,dot_ ; XXX INFORMER
-  dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
-  ;dw key_,drop_ ; XXX INFORMER
-  endif
-
+  ; XXX FIXME blank 1-char strings are parsed from empty screens!
+  ; they are converted to 0 by `number` and the stack gets full!
+  dw space_,depth_,dot_,lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
+  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
 paren_number_nfa:
@@ -3345,7 +3297,6 @@ minus_find_lfa:
 minus_find_:
   dw do_colon
 minus_find_pfa:
-  ; XXX TODO -- return cfa instead of pfa
   dw b_l_,word_
   dw here_,count_,uppers_
   dw here_,context_,fetch_,fetch_,paren_find_
@@ -3400,29 +3351,33 @@ id_dot_:
 id_dot_pfa:
   dw pad_
   dw c_lit_
-  db max_word_length+1
+  db 0x20
   dw c_lit_
   db 0x5F ; XXX why this char?
   dw fill_
-  dw dup_,nfa_to_lfa_,over_ ; ( nfa lfa nfa )
-  dw minus_ ; ( nfa len+1 )
-  dw pad_,swap_,cmove_
-  dw pad_,count_ ; ( pad len+0x80+n )
+  dw dup_
+  dw nfa_to_lfa_
+  dw over_
+  dw minus_
+  dw pad_
+  dw swap_
+  dw cmove_
+  dw pad_
+  dw count_
   dw c_lit_
-  db max_word_length
-  dw and_ ; ( pad len )
-  dw two_dup_,plus_,one_minus_ ; address of the last char ( pad len pad+len-1 )
-if 0 ; XXX OLD
-  dw dup_,fetch_
-  dw lit_,0xFF7F,and_
-  dw swap_,store_
-else ; XXX NEW
-  dw dup_,c_fetch_
-  dw c_lit_
-  db 0x7F
-  dw and_,swap_,c_store_
-endif
-  dw type_,space_
+  db 0x1F ; max word length
+  dw and_
+  dw two_dup_
+  dw plus_
+  dw one_minus_
+  dw dup_
+  dw fetch_
+  dw lit_,0xFF7F
+  dw and_
+  dw swap_
+  dw store_
+  dw type_
+  dw space_
   dw semicolon_s_
 
 create_nfa:
@@ -3581,13 +3536,10 @@ interpret.begin:
 
   dw state_,fetch_,less_than_ ; compile the word?
   dw zero_branch_,interpret.execute_the_word ; if
-  ;_string '[In interpret before comma]' ; XXX INFORMER
   dw pfa_to_cfa_,comma_ ; compile the word
   dw branch_,interpret.word_done
 interpret.execute_the_word: ; else
   dw pfa_to_cfa_
-  ;dw paren_dot_quote_ ; XXX INFORMER
-  ;_string '[In interpret before execute]' ; XXX INFORMER
   dw execute_
 interpret.word_done: ; then
   dw question_stack_
@@ -4058,7 +4010,6 @@ branch_destination_0x6FAF:
 branch_destination_0x6FB3:
   dw paren_dot_quote_
   _string 'MSG # '
-  ; XXX TODO force decimal base
   dw dot_
 branch_destination_0x6FBE:
   dw semicolon_s_
@@ -4230,7 +4181,7 @@ branch_destination_0x71E5:
   dw zero_branch_,block.begin ; until
   dw dup_,prev_,store_ ; store the buffer address in `prev`
 block.end:
-  ; XXX TODO optimize with `rdrop`?
+  ; XXX TODO optimive with `rdrop`?
   dw from_r_,drop_
   dw two_plus_ ; get the address where data begin
   dw semicolon_s_
@@ -4405,7 +4356,6 @@ tick_:
 tick_pfa:
   dw minus_find_
   dw zero_equals_,one_,question_error_
-  ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
   dw drop_,pfa_to_cfa_
   dw semicolon_s_
 

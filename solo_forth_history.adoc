@@ -249,3 +249,18 @@ The code has been rewritten to use a pair register as offset counter.
 
 There's a second bug: something fails when the parsing of the screen
 passes from the first to the second disk block.
+
+Some experimental changes to the null word, with simpler and faster
+flow.
+
+.2015-06-17:
+
+Modification in `expect`; the code that manages the delete key wasted some bytes.
+
+Fix: `on` and `off` changed only the first part of the value! That was
+the reason the second block of screens was not parsed: `in` was not
+properly set to zero in the null word.
+
+.2015-06-18:
+
+Improvement: One byte saved in `id.`.

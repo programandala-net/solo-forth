@@ -20,8 +20,6 @@ during the execution of a word. When a word stacks several numbers,
 they can corrupt the zone below the stack before `?stack` detects the
 overflow.
 
-Often the stack gets full during compilation of screens. [Already solved?]
-
 .2015-06-06:
 
 Save the error code, in case `warning` is -1.
@@ -39,9 +37,6 @@ Define `rp`, like in Afera:
 
 Write a version of `screen` that recognizes the UDG.
 
-Fix: `load` corrupts the system, even with empty screens. (Already solved
-by rewritting `enclose`?).
-
 Change: move key to the blocks, as `mode-key` or similar, and use a
 simpler `key` (`akey` from Afera).
 
@@ -58,10 +53,20 @@ Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
     LIT PKEY (KEY) !    \ Set default handler for KEY.
     >S ;                \ And initialize screen output.
 
-Fix: in 128, typing graphics T and U prints the new tokens.
+Fix?: in 128, typing graphics T and U prints the new tokens.
 
 New: A printing routine instead the ROM routines, with two fonts: for
 chars 0..127 and for chars 128..255.
 
-Fix: A second bug related to parsing: something fails when the parsing
-of the screen passes from the first to the second disk block.
+.2015-06-17:
+
+Change the header format:
+
+lfa   dw nfa
+nfa   db len+bits,"name"
+cfa   dw a
+pfa   ...
+
+Then write a macro to create the link field and the name field.
+
+

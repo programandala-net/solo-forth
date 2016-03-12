@@ -150,15 +150,21 @@
 
 ( debug ) \ scr 7 for debugging
 
-              depth u.
-              depth u.
-              depth u.
-              depth u.
-depth u.
-depth u.
-depth u.
-depth u.
-
+ .( line 1 ) depth u.
+ .( line 2 ) depth u.
+ .( line 3 ) depth u.
+ .( line 4 ) depth u.
+ .( line 5 ) depth u.
+ .( line 6 ) depth u.
+ .( line 7 ) depth u.
+ .( line 8 ) depth u.
+ .( line 9 ) depth u.
+ .( line 10 ) depth u.
+ .( line 11 ) depth u.
+ .( line 12 ) depth u.
+ .( line 13 ) depth u.
+ .( line 14 ) depth u.
+ .( line 15 ) depth u.
 
 ( -rot )
 
@@ -546,11 +552,11 @@ forth definitions decimal
   dup fence @ u<           \ Below `fence`?
   21 ?error                \ If so, issue an error.
   dup  ( cfa cfa )
-  cfa>nfa dp store         \ Update the dictionary pointer.
-  cfa>lfa  @ current @ !   \ Update the `current` vocabulary.
+  cfa>nfa dp !             \ Update the dictionary pointer.
+  cfa>lfa @ current @ !    \ Update the `current` vocabulary.
   ;
 
-( extend system )
+( extend system turnkey )
 
 : extend  ( -- )
 

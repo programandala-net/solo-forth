@@ -107,14 +107,15 @@ solo_forth_disk_2.mgt: solo_forth.fsb
 
 .PHONY: backup
 backup:
-	tar -czf backups/$$(date +%Y%m%d%H%M)_solo_forth.tgz \
+	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.txz \
 		Makefile \
 		*.adoc \
-		*.fsb \
-		*.bas \
-		*.z80s
+		solo_forth*.fsb \
+		solo_forth*.bas \
+		solo_forth*.z80s
 
 ################################################################
 # Change history
 
 # 2015-06-02: Start.
+# 2015-06-17: Backup recipe improved.
