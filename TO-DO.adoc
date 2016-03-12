@@ -188,9 +188,11 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 
 .2015-08-12:
 
-Fix: `cold` does not restores the dictionary.
-
 Change: remove the control structure checking (`?pairs`). (now it's
 conditionally compiled in the kernel)
 
 Change: make the vocabulary links point to the pfa of the vocabularies?
+
+Fix: `cold` must reset the search order.
+
+New: `cvariable`, `cconstant`.

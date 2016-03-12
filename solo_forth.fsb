@@ -703,6 +703,8 @@ base !
 
 ( dump )
 
+require break-key?
+
 require hex.  require ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
@@ -716,7 +718,7 @@ require hex.  require ascii-type
       8 0 do  i over + @ flip hex.  2 +loop
       \ 16 0 do  i over + c@ hexb.  loop
       dup bs 8 ascii-type
-      ?terminal if  exhaust  then
+      break-key? if  exhaust  then
     8 + loop
   else  2drop  then  drop  ;
 
@@ -838,32 +840,50 @@ require case
   cr ." Scr # " .
   l/scr 0 do
     cr i 2 .r space i scr @ .line
-    ?terminal if  exhaust  then
+    break-key? if  exhaust  then
   loop cr  ;
 
+( break-key? )
+
+code break-key?  ( -- f )
+
+  \ Is the Break key pressed?
+  
+  CD c, 1F54 ,              \ call rom_break_key
+  D2 c, ' true cfa>pfa ,    \ jp nc,next
+  C3 c, ' false cfa>pfa ,   \ jp z,next
+
+  end-code
+
 ( index )
+
+require break-key?
 
 : index  ( n1 n2 -- )
   1+ swap do
     cr i 3 .r space 0 i .line
-    ?terminal if  exhaust  then
+    break-key? if  exhaust  then
   loop  ;
 
 ( words )
 
   \ [Code adapted from Spectrum Forth-83.]
 
+require break-key?
+
 [defined] tab ?\  : tab  ( -- )  6 emit  ;
 
 : words  ( -- )
   trail
-  begin  dup 0<> ?terminal 0= and  while
+  begin  dup 0<> break-key? 0= and  while
     dup id. tab  nfa>lfa @n
   repeat drop ;
 
 ( words-like )
 
   \ [Code adapted from pForth.]
+
+require break-key?
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -877,7 +897,7 @@ require case
 : words-like  ( "name" -- )
   \ Print all words containing substring.
   parse-name 2dup uppers trail  ( ca len nfa )
-  begin  dup 0<> ?terminal 0= and  while
+  begin  dup 0<> break-key? 0= and  while
     dup >r
     nfa>string 2over 2swap contains if  r@ id. tab  then
     r> nfa>lfa @n

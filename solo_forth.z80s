@@ -1,4 +1,5 @@
 ; Solo Forth
+; Version A-00-201508122129
 
 ; A disk-based Forth for ZX Spectrum,
 ; intended for cross-development of ZX Spectrum programs.
@@ -6,22 +7,11 @@
 
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
-; ==============================================================
-; Version A-00-201508122023
-
-; Latest important changes (in chronological order)
-; - change: `?terminal` does not check the Edit key.
-; - change: `sp!` and `rp!` use TOS.
-; - change: the names bank option is definitive.
-; - fix: 'c!n` did `c@n` instead!
-; - new: ` `fetchhl'. 'fetchhl,', 'next,', 'pushhl,', 'pushde,'.
-; - new: `compile,`
-; - moved `end-code` and `asm` to the `assembler` vocabulary;
-; - new: `end-asm`, `parsed` (factored).
-; - change: `word` returns an address.
-; - change: `defined` uses `parse-word` (`word` is not used
-; anymore).
-; - fixes (see 2015-08-11 in the history)
+; Copying and distribution of this file, with or without
+; modification, are permitted in any medium without royalty
+; provided the copyright notice, the aknowledgments file and
+; this notice are preserved.  This file is offered as-is,
+; without any warranty.
 
 ; ==============================================================
 ; Acknowledgments
@@ -29,15 +19,10 @@
 ; See the file <ACKNOWLEDGMENTS.adoc>.
 
 ; ==============================================================
-; License
+; History
 
-; XXX TODO
-
-; Copying and distribution of this file, with or without
-; modification, are permitted in any medium without royalty
-; provided the copyright notice, the aknowledgments file and
-; this notice are preserved.  This file is offered as-is,
-; without any warranty.
+; See
+; http://programandala.net/en.program.solo_forth.history.html
 
 ; ==============================================================
 ; Description
@@ -85,7 +70,7 @@
 ; Glossary
 
 ; The description of Forth words is included in this source.
-; The markers `doc{` and `}doc` to delimitate the comments that
+; The markers `doc{` and `}doc` delimitate the comments that
 ; form the glossary.
 
 ; ----------------------------------------------
@@ -384,7 +369,6 @@ space_char:                 equ 0x20
 
 rom_beeper:                      equ 0x03B5
 rom_border_0x2297:               equ 0x2297
-rom_break_key:                   equ 0x1F54
 rom_chan_open:                   equ 0x1601
 rom_cl_all:                      equ 0x0DAF
 rom_find_int1:                   equ 0x1E94
@@ -857,7 +841,7 @@ current_value: ; +0x1C
 state_value: ; +0x1E
   dw 0x0000
 base_value: ; +0x20
-  dw 0x0000
+  dw 0x000A
 dpl_value: ; +0x22
   dw 0x0000
 fld_value: ; +0x24
@@ -1158,6 +1142,15 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; ----------------------------------------------
   _variable_header abase_,'ABASE'
 
+; doc{
+;
+; abase  ( -- a )
+;
+; A variable used to save the current value of `base` in
+; assembler definitions.
+;
+; }doc
+
   dw 0
 
 ; ----------------------------------------------
@@ -1167,7 +1160,7 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; asm  ( -- )
 ;
-; Enter assembler mode.
+; Enter the assembler mode.
 ;
 ; }doc
 
@@ -2898,29 +2891,6 @@ key_translation_table:
   db 0 ; end of data
 
 ; ----------------------------------------------
-  _code_header question_terminal_,'?TERMINAL'
-
-; doc{
-;
-; ?terminal  ( -- f )  \ fig-Forth
-;
-; Perform a test of the terminal keyboard for actuation of the
-; Break key. A true flag indicates actuation.
-;
-; }doc
-
-  ; XXX TODO make this independent from the ROM, when the
-  ; interrupts will be handled by Forth.
-
-  call rom_break_key
-  jp nc,true_pfa
-  ; XXX OLD -- Abersoft Forth checked also Caps Shift + 1:
-  ; ld a,(sys_last_k)
-  ; cp edit_char
-  ; jp z,true_pfa
-  jp false_pfa
-
-; ----------------------------------------------
   _colon_header cr_,'CR'
 
 ; doc{
@@ -4168,7 +4138,7 @@ endif
   db 0x14
 
 ; ----------------------------------------------
-  _user_variable_header scr_,'SCR' ; XXX OLD ? used by `list`
+  _user_variable_header scr_,'SCR' ; XXX OLD -- used by `list`
 
   db 0x16
 
@@ -5365,7 +5335,6 @@ expect.loop: ; ( ca )
   dw paren_loop_,expect.do
 expect.end:
   dw drop_
-  ;dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
   dw semicolon_s_
 
 endif
@@ -6382,7 +6351,7 @@ two_literal.end:
 ;
 ; ?stack  ( -- )  \ fig-Forth
 ;
-; Issue an error message is the stack is out of bounds.
+; Issue an error message if the stack is out of bounds.
 ;
 ; }doc
 
@@ -6634,6 +6603,9 @@ else
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
 endif
+
+  ; Restore the search order.
+  dw only_,forth_,definitions_
 
   dw page_,greeting_
   dw abort_
@@ -7687,7 +7659,10 @@ hash_s.begin:
   dw swap_,over_
   dw dabs_ ; convert d to its absolute value
   ; Convert the absolute value to ASCII text with proper sign:
-  dw less_hash_,hash_s_,sign_,hash_greater_
+  dw less_hash_
+  dw hash_s_
+  dw sign_
+  dw hash_greater_
   dw from_r_ ; retrieve n
   dw over_,minus_,spaces_ ; fill the output field with preceding blanks
   dw type_ ; type out the number
@@ -7770,34 +7745,6 @@ dot_s.end:
 
 endif
 
-if 0 ; XXX OLD
-
-; ----------------------------------------------
-  _colon_header words_,'WORDS'
-
-  dw trail_,question_dup_,zero_equals_ ; no word?
-  dw question_exit_ ; if so, exit
-  dw c_lit_
-  db 0x80
-  dw out_,store_
-words.begin: ; ( nfa )
-  dw out_,fetch_
-  dw c_lit_
-  db max_word_length-8
-  dw greater_than_
-  dw zero_branch_,words.continue
-  dw cr_
-words.continue: ; ( nfa )
-  dw dup_,id_dot_ ; print word
-  dw nfa_to_lfa_
-  dw fetch_n_
-  dw dup_,zero_equals_,question_terminal_,or_
-  dw zero_branch_,words.begin ; until
-  dw drop_
-  dw semicolon_s_
-
-endif
-
 ; ----------------------------------------------
   _code_header page_,'PAGE'
 
@@ -7853,27 +7800,6 @@ endif
 
   ; XXX TMP
   dw zero_,here_,minus_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header index_,'INDEX'
-
-  ; XXX TODO -- remove, already copied to the disk
-
-  dw one_plus_
-  dw swap_
-  dw paren_do_
-index.do:
-  dw cr_,i_
-  dw c_lit_
-  db 3
-  dw dot_r_,space_
-  dw zero_,i_,dot_line_
-  dw question_terminal_
-  dw zero_branch_,index.loop
-  dw exhaust_
-index.loop:
-  dw paren_loop_,index.do
   dw semicolon_s_
 
 ; ----------------------------------------------
