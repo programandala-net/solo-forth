@@ -129,6 +129,18 @@
   again ;
   \ ?terminal until  ;
 
+( debug ) \ scr 7 for debugging
+
+              depth u.
+              depth u.
+              depth u.
+              depth u.
+depth u.
+depth u.
+depth u.
+depth u.
+
+
 ( -rot )
 
   \ 2015-06-05: Copied from the Afera library
@@ -185,11 +197,12 @@ create plot  ( x y -- )
   e1 c,           \ pop hl
   c1 c,           \ pop bc
   40 05 + c,      \ ld b,l
-  dd c, e5 c,     \ push ix
+  \ dd c, e5 c,     \ push ix ; XXX OLD
   cd c, 22e5 ,    \ call 0x22e5 ; plot-sub
-  dd c, e1 c,     \ pop ix
+  \ dd c, e1 c,     \ pop ix ; XXX OLD
   d9 c,           \ exx
   \ c3 c, next ,  \ jp next ; XXX OLD
+  dd c, 21 c, next ,  \ ld ix,next ; restore ix
   dd c, e9 c,     \ jp (ix)
 
   smudge decimal

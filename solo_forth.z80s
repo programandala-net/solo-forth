@@ -1,11 +1,14 @@
 ; Solo Forth
 
-; Version A-00-2015060800
+; A disk-based Forth for ZX Spectrum,
+; focused on development of ZX Spectrum programs.
+
+; Version A-00-2015060821
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Author and acknowledgements
 
   ; 2015: Solo Forth
@@ -14,7 +17,7 @@
   ; http://programandala.net/en.program.solo_forth.html
   ;
   ; Solo Forth started with the code of Abersoft Forth (for ZX Spectrum), that
-  ; was first studied, patched and improved
+  ; was first studied and much improved
   ; (http://programandala.net/en.program.afera.html) and finally fully
   ; disassembled (http://programandala.net/en.program.abersoft_forth.html).
   ;
@@ -31,25 +34,30 @@
   ; be further distributed by the inclusion of this credit notice:
 
   ;               This publication has been made available by:
-  
+
   ;               FORTH Interest Group
   ;               P.O. Box 1105
   ;               San Carlos, Ca. 94070
 
   ; Aknowledgments:
-  
+
   ; Solo Forth has copied, adapted and implemented ideas, code and
-  ; documentation from the following Forth systems (aknowledgment notes are
-  ; properly included in the sources):
+  ; documentation from the following Forth systems (acknowledgment notes are
+  ; properly included in the correspondent sources):
 
   ; Spectrum Forth-83, by Lennart Benschop (1988,2015)
   ; v.Forth, by Matteo Vitturi (1990-2015)
   ; lina ciforth, by Albert van der Horst (2000-2004)
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
+  ; License
+
+  ; XXX TODO
+
+  ; ============================================================
   ; Symbols
 
-  ; ............................
+  ; --------------------------------------------
   ; Forth
 
 origin:                           equ 0x5E00
@@ -64,6 +72,7 @@ cells_per_return_stack:           equ 0x50
 
 bytes_per_terminal_input_buffer:  equ 0x50
 
+buffers:                          equ 0x02
 data_bytes_per_buffer:            equ 0x0200
 total_bytes_per_buffer:           equ data_bytes_per_buffer+4
 blocks_per_screen:                equ 0x02
@@ -75,19 +84,19 @@ precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
 
-  ; ............................
+  ; --------------------------------------------
   ; Config
 
   ; XXX experimental
   ; The original code used IX as the user variables pointers,
-  ; but it's more useful to use to jump to next.
+  ; but it seems more useful holding the address of `next` in it.
 user_variables_pointer_in_ix?   equ false
 
   ; XXX experimental
   ; When true, some code pieces are more compact but slower.
 size_optimization?              equ false
 
-  ; ............................
+  ; --------------------------------------------
   ; Character codes
 
 caps_char:                  equ 0x06 ; toggle caps lock
@@ -107,7 +116,7 @@ over_char:                  equ 0x15
 at_char:                    equ 0x16
 tab_char:                   equ 0x17 ; tab (screen only)
 
-  ; ............................
+  ; --------------------------------------------
   ; ROM  routines
 
 rom_beeper:                      equ 0x03B5
@@ -127,7 +136,7 @@ rom_sa_all:                      equ 0x075A
 rom_set_permanent_colors_0x1CAD  equ 0x1CAD
 rom_stack_fetch:                 equ 0x2BF1
 
-  ; ............................
+  ; --------------------------------------------
   ; System variables
 
   ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
@@ -153,7 +162,7 @@ sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
 sys_t_addr:        equ 0x5C74
 sys_udg:           equ 0x5C7B
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Macros
 
 _header: macro name,immediate
@@ -203,7 +212,7 @@ _jp_next: macro
 
   endm
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Entry points
 
   org origin
@@ -215,7 +224,7 @@ warm_entry:
   ; Location: `0x03 +origin`
   jp warm_start
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Parameter area
 
 top_most_word_in_forth_voc:
@@ -270,7 +279,7 @@ voc_link_init_value:
 
 default_user_variables_end:
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; User variables
 
 user_variables:
@@ -299,7 +308,7 @@ out_value: ; +0x14
   dw 0x0000
 scr_value: ; +0x16
   dw 0x0000
-offset_value: ; +0x18 ; XXX OLD
+  ; +0x18 ; not used (formerly `offset`)
   dw 0x0000
 context_value: ; +0x1A
   dw 0x0000
@@ -332,25 +341,37 @@ hld_value: ; +0x2A
   dw 0x0000
   dw 0x0000
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Stacks and buffers
+
+  ; --------------------------------------------
+  ; Data stack
 
 data_stack_limit: equ $+cell
   defs cells_per_data_stack*cell
 data_stack_bottom:
 
+  ; --------------------------------------------
+  ; Terminal input buffer
+
 terminal_input_buffer:
   defs bytes_per_terminal_input_buffer
+
+  ; --------------------------------------------
+  ; Return stack
 
 return_stack_limit: equ $+cell
   defs cells_per_return_stack*cell
 return_stack_bottom:
 
+  ; --------------------------------------------
+  ; Disk buffers
+
 first_buffer:
   defs blocks_per_screen*total_bytes_per_buffer
 limit:
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Misc routines
 
   ; Taken from DZX-Forth
@@ -368,8 +389,8 @@ compare_de_hl_unsigned:
   cp e
   ret
 
-  ; ----------------------------------------------------------------
-  ; Interpreter
+  ; ============================================================
+  ; Inner interpreter
 
 pushde:
   push de
@@ -402,7 +423,7 @@ next2:
   ; de = cfa+1 = pfa-1
   jp (hl)
 
-  ; ----------------------------------------------------------------
+  ; ============================================================
   ; Dictionary
 
 c_lit_nfa:
@@ -1570,8 +1591,8 @@ plus_store_lfa:
 plus_store_:
   dw plus_store_pfa
 plus_store_pfa:
-  pop hl
-  pop de
+  pop hl ; variable address
+  pop de ; number
   ld a,(hl)
   add a,e
   ld (hl),a
@@ -1610,8 +1631,8 @@ toggle_lfa:
 toggle_:
   dw toggle_pfa
 toggle_pfa:
-  pop de
-  pop hl
+  pop de ; e = bit pattern
+  pop hl ; address
   ld a,(hl)
   xor e
   ld (hl),a
@@ -1624,6 +1645,7 @@ fetch_lfa:
 fetch_:
   dw fetch_pfa
 fetch_pfa:
+  ; XXX TODO optimize? maybe `jp pushhl` can be used?
   pop hl
   ld e,(hl)
   inc hl
@@ -1650,9 +1672,9 @@ two_fetch_lfa:
 two_fetch_:
   dw two_fetch_pfa
 two_fetch_pfa:
-  pop hl
+  pop hl ; address
   inc hl
-  inc hl
+  inc hl ; high part
   ld e,(hl)
   inc hl
   ld d,(hl)
@@ -1663,6 +1685,24 @@ two_fetch_pfa:
   dec hl
   ld e,(hl)
   push de
+
+  if 0 ; XXX TODO -- study this alternative from C/PM fig-Forth 1.1g
+
+  EXX     ;/ SAVE IP
+  POP HL    ;  (HL)<--ADDR
+  LD  C,(HL)
+  INC HL
+  LD  B,(HL)    ;/ (BC)<--dH
+  INC HL
+  LD  E,(HL)
+  INC HL
+  LD  D,(HL)    ;  (DE)<--dL
+  PUSH  DE    ;  (S2)<--dL
+  PUSH  BC    ;/ (S1)<--dH
+  EXX     ;/ RESTORE IP
+
+  endif
+
   _jp_next
 
 store_nfa:
@@ -2070,19 +2110,10 @@ scr_:
 scr_pfa:
   db 0x16
 
-offset_nfa:
-  db 0x06+0x80,'OFFSE','T'+0x80
-offset_lfa:
-  dw scr_nfa
-offset_:
-  dw do_user
-offset_pfa:
-  db 0x18
-
 context_nfa:
   db 0x07+0x80,'CONTEX','T'+0x80
 context_lfa:
-  dw offset_nfa
+  dw scr_nfa
 context_:
   dw do_user
 context_pfa:
@@ -2315,29 +2346,57 @@ less_than_lfa:
 less_than_:
   dw less_than_pfa
 less_than_pfa:
-  pop de
-  pop hl
+  pop de ; n2
+  pop hl ; n1
   ld a,d
-  xor h
-  jp m,l6559h
-  and a
+  xor h ; one of them negative?
+  jp m,less_than.wich_negative ; if so, determine which
+  ; no one is negative
+  and a ; clear carry
   sbc hl,de
-l6559h:
+
+less_than.wich_negative:
+
+  if 0 ; XXX OLD
+
+  ; Original version from Abersoft Forth,
+  ; badly optimized because of the two 'ld
+  ; hl' and two `jp pushhl`.
+
   inc h
-  dec h
-  jp m,l6564h
-  ld hl,0x0000
+  dec h ; h negative?
+  jp m,less_than.true
+  ld hl,false
   jp pushhl
-l6564h:
-  ld hl,0x0001
+less_than.true:
+  ld hl,true
   jp pushhl
+
+  else ; XXX NEW
+
+  ; Version from CP/M fig-Forth 1.1g,
+  ; with additional improvement for speed:
+
+  ; bit 7,h ; h negative?
+  ; ld hl,false
+  ; jp z,pushhl
+  ; inc l ; true ; XXX TODO -- change to `dec hl` when true=-1
+  ; jp pushhl
+
+  ; Optimized for space:
+
+  bit 7,h ; h negative?
+  jp z,false_pfa
+  jp true_pfa
+
+  endif
 
 u_less_than_nfa:
   db 0x02+0x80,'U','<'+0x80
 u_less_than_lfa:
   dw less_than_nfa
 
-if 0 ; XXX OLD -- original
+if 1 ; XXX OLD -- original
 
 u_less_than_:
   dw do_colon
@@ -2434,9 +2493,9 @@ question_dup_:
   dw do_colon
 question_dup_pfa:
   dw dup_
-  dw zero_branch_,branch_destination_0x65C6
+  dw zero_branch_,question_dup.end
   dw dup_
-branch_destination_0x65C6:
+question_dup.end:
   dw semicolon_s_
 
 traverse_nfa:
@@ -2496,8 +2555,7 @@ pfa_to_nfa_pfa:
   dw c_lit_
   db 0x05
   dw minus_
-  dw lit_,-1
-  dw traverse_
+  dw lit_,-1,traverse_
   dw semicolon_s_
 
 nfa_to_lfa_nfa:
@@ -2537,9 +2595,7 @@ store_csp_lfa:
 store_csp_:
   dw do_colon
 store_csp_pfa:
-  dw sp_fetch_
-  dw csp_
-  dw store_
+  dw sp_fetch_,csp_,store_
   dw semicolon_s_
 
 question_error_nfa:
@@ -2653,10 +2709,14 @@ right_bracket_lfa:
 right_bracket_:
   dw do_colon
 right_bracket_pfa:
+
+  ; Note: Setting `state` to 0xC0 for "compiling state" will force
+  ; non-immediate words to be compiled and immediate words to be executed. See
+  ; note in `interpret` for more details.
+
   dw c_lit_
   db 0xC0
-  dw state_
-  dw store_
+  dw state_,store_
   dw semicolon_s_
 
 smudge_nfa:
@@ -2667,7 +2727,8 @@ smudge_:
   dw do_colon
 smudge_pfa:
   dw latest_
-  dw lit_,smudge_bit_mask
+  dw c_lit_
+  db smudge_bit_mask
   dw toggle_
   dw semicolon_s_
 
@@ -2680,8 +2741,7 @@ hex_:
 hex_pfa:
   dw c_lit_
   db 0x10
-  dw base_
-  dw store_
+  dw base_,store_
   dw semicolon_s_
 
 decimal_nfa:
@@ -2693,8 +2753,7 @@ decimal_:
 decimal_pfa:
   dw c_lit_
   db 0x0A
-  dw base_
-  dw store_
+  dw base_,store_
   dw semicolon_s_
 
 paren_semicolon_code_nfa:
@@ -2716,8 +2775,7 @@ semicolon_code_:
 semicolon_code_pfa:
   dw question_csp_
   dw compile_,paren_semicolon_code_
-  dw left_bracket_
-  dw smudge_
+  dw left_bracket_,smudge_
   dw semicolon_s_
 
 builds_nfa:
@@ -2764,10 +2822,8 @@ count_lfa:
 count_:
   dw do_colon
 count_pfa:
-  dw dup_
-  dw one_plus_
-  dw swap_
-  dw c_fetch_
+  ; XXX TODO -- rewrite in Z80
+  dw dup_,one_plus_,swap_,c_fetch_
   dw semicolon_s_
 
 bounds_nfa:
@@ -2777,9 +2833,7 @@ bounds_lfa:
 bounds_:
   dw do_colon
 bounds_pfa:
-  dw over_
-  dw plus_
-  dw swap_
+  dw over_,plus_,swap_
   dw semicolon_s_
 
 type_nfa:
@@ -2794,9 +2848,7 @@ type_pfa:
   dw bounds_
   dw paren_do_
 type.do:
-  dw i_
-  dw c_fetch_
-  dw emit_
+  dw i_,c_fetch_,emit_
   dw paren_loop_,type.do ; loop
   dw branch_,type.end
 type.empty_string:
@@ -2813,19 +2865,18 @@ minus_trailing_:
 minus_trailing_pfa:
   dw dup_,zero_
   dw paren_do_
-branch_destination_0x681C:
+minus_trailing.do:
   dw two_dup_,plus_
   dw one_minus_
-  dw c_fetch_
-  dw b_l_
-  dw minus_
-  dw zero_branch_,branch_destination_0x6836
+  dw c_fetch_,b_l_,not_equals_
+  dw zero_branch_,minus_trailing.space
+  ; not a space
   dw leave_
-  dw branch_,branch_destination_0x683A
-branch_destination_0x6836:
+  dw branch_,minus_trailing.loop
+minus_trailing.space:
   dw one_minus_
-branch_destination_0x683A:
-  dw paren_loop_,branch_destination_0x681C
+minus_trailing.loop:
+  dw paren_loop_,minus_trailing.do
   dw semicolon_s_
 
 paren_dot_quote_nfa:
@@ -2835,13 +2886,8 @@ paren_dot_quote_lfa:
 paren_dot_quote_:
   dw do_colon
 paren_dot_quote_pfa:
-  dw r_fetch_
-  dw count_
-  dw dup_
-  dw one_plus_
-  dw from_r_
-  dw plus_
-  dw to_r_
+  dw r_fetch_,count_,dup_,one_plus_
+  dw from_r_,plus_,to_r_
   dw type_
   dw semicolon_s_
 
@@ -2853,22 +2899,16 @@ dot_quote_:
   dw do_colon
 dot_quote_pfa:
   dw c_lit_
-  db 0x22
-  dw state_,fetch_
-  dw zero_branch_,branch_destination_0x6880
+  db '"'
+  dw state_,fetch_ ; compiling?
+  dw zero_branch_,dot_quote.interpreting
+  ; compiling
   dw compile_,paren_dot_quote_
-  dw word_
-  dw here_
-  dw c_fetch_
-  dw one_plus_
-  dw allot_
-  dw branch_,branch_destination_0x6888
-branch_destination_0x6880:
-  dw word_
-  dw here_
-  dw count_
-  dw type_
-branch_destination_0x6888:
+  dw word_,here_,c_fetch_,one_plus_,allot_
+  dw semicolon_s_
+dot_quote.interpreting:
+  dw word_,here_,count_,type_
+dot_quote.end:
   dw semicolon_s_
 
 expect_nfa:
@@ -2975,23 +3015,34 @@ x_lfa:
 x_:
   dw do_colon
 x_pfa:
-  dw blk_,fetch_ ; from disk?
+  dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.from_terminal
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
-  dw in_,off_
+  dw in_,off_ ; clear `in`, preparing parsing of input text
   dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer?
   dw zero_branch_,x.end
   ; The last buffer, the end of the text block.
   dw question_exec_ ; error if not executing
-  ; Discard the top address on the return stack, which is the
-  ; address of `?stack` after `execute` in the interpretation loop.
+  ; Discard the address of `?stack` after `execute` in the interpretation loop.
   ; XXX FIXME why `rdrop` bombs out here?
   dw from_r_,drop_
   dw branch_,x.end
 x.from_terminal:
   ; XXX FIXME why `rdrop` bombs out here?
   dw from_r_,drop_
+
+  ; The top item on the return stack was
+  ; thrown away.  At the end of 'x', the
+  ; interpreter will not continue to execute
+  ; the `?stack` instruction, but will return
+  ; to the next higher level of nesting and
+  ; execute the next word after `interpret` in
+  ; the Forth loop.  This is when the familiar
+  ; "ok" message is displayed on the terminal,
+  ; prompting the operator for the next  line
+  ; of commands.
+
 x.end:
   dw semicolon_s_
 
@@ -3098,8 +3149,8 @@ word.from_address:
   dw cmove_ ; move
   ; XXX FIXME blank 1-char strings are parsed from empty screens!
   ; they are converted to 0 by `number` and the stack gets full!
-  dw lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
-  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+  ;dw lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
+  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
 paren_number_nfa:
@@ -3108,34 +3159,28 @@ paren_number_lfa:
   dw word_nfa
 paren_number_:
   dw do_colon
-branch_destination_0x6A22:
 paren_number_pfa:
-  dw one_plus_
-  dw dup_
-  dw to_r_
-  dw c_fetch_
-  dw base_,fetch_
-  dw digit_
-  dw zero_branch_,branch_destination_0x6A5E
-  dw swap_
-  dw base_,fetch_
-  dw u_star_
-  dw drop_
-  dw rot_
-  dw base_,fetch_
-  dw u_star_
-  dw d_plus_
-  dw dpl_,fetch_
-  dw one_plus_
-  dw zero_branch_,branch_destination_0x6A58
-  dw one_
-  dw dpl_
-  dw plus_store_
-branch_destination_0x6A58:
-  dw from_r_
-  dw branch_,branch_destination_0x6A22
-branch_destination_0x6A5E:
-  dw from_r_
+paren_number.begin: ; begin
+  dw one_plus_ ; address of the next digit
+  dw dup_,to_r_ ; save the address
+  dw c_fetch_ ; get the digit
+  dw base_,fetch_,digit_ ; convert the digit
+  dw zero_branch_,paren_number.end ; while
+  dw swap_ ; get the high order part of d1 to the top.
+  dw base_,fetch_,u_star_ ; multiply by base value
+  dw drop_ ; drop the high order part of the product
+  dw rot_ ; move the low order part of d1 to top of stack
+  dw base_,fetch_,u_star_ ; multiply by base value
+  dw d_plus_ ; accumulate result into d1
+  dw dpl_,fetch_,one_plus_ ; is DPL other than -1?
+  dw zero_branch_,paren_number.decimal_point_done
+  ; DPL is not -1, a decimal point was encountered
+  dw one_,dpl_,plus_store_ ; increment DPL, one more digit to right of decimal point
+paren_number.decimal_point_done
+  dw from_r_ ; pop addr1+1 back to convert the next digit
+  dw branch_,paren_number.begin ; repeat
+paren_number.end:
+  dw from_r_ ; address of the first non-convertable digit, a2.
   dw semicolon_s_
 
 number_nfa:
@@ -3365,7 +3410,7 @@ c_literal_lfa:
 c_literal_:
   dw do_colon
 c_literal_pfa:
-  if 1 ; XXX OLD 
+  if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,c_literal.end
     dw compile_,c_lit_,c_comma_
@@ -3384,7 +3429,7 @@ literal_lfa:
 literal_:
   dw do_colon
 literal_pfa:
-  if 1 ; XXX OLD 
+  if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,literal.end
     dw compile_,lit_,comma_
@@ -3403,7 +3448,7 @@ two_literal_lfa:
 two_literal_:
   dw do_colon
 two_literal_pfa:
-  if 1 ; XXX OLD 
+  if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,two_literal.end
     dw swap_,literal_,literal_
@@ -3457,9 +3502,18 @@ interpret_:
   dw do_colon
 interpret_pfa:
 interpret.begin:
-  dw minus_find_
+  dw minus_find_ ; found?
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found ; if
+
+  ; Note: `state` holds 0xC0 when compiling.  The text interpreter compares the
+  ; value stored in `state` with the value in the length byte of the definition
+  ; found in the dictionary.  If the definition is an immediate word, its
+  ; length byte is greater than 0xC0 because of the precedence and the sign
+  ; bits are both set.  Setting `state` to 0xC0 will force non-immediate words
+  ; to be compiled and immediate words to be executed, thus entering into the
+  ; "compiling state".
+
   dw state_,fetch_,less_than_ ; compile the word?
   dw zero_branch_,interpret.execute_the_word ; if
   dw pfa_to_cfa_,comma_ ; compile the word
@@ -3933,12 +3987,6 @@ message_pfa:
   dw question_dup_
   dw zero_branch_,branch_destination_0x6FAF
   dw msg_scr_
-  ; XXX OLD
-  ; dw offset_
-  ; dw fetch_
-  ; dw b_slash_scr_
-  ; dw slash_
-  ; dw minus_
   dw dot_line_
   dw space_
 branch_destination_0x6FAF:
@@ -3975,7 +4023,7 @@ hash_buff_lfa:
 hash_buff_:
   dw do_constant
 hash_buff_pfa:
-  dw 0x0008
+  dw buffers
 
 ; doc{
 
@@ -4024,8 +4072,7 @@ empty_buffers_:
   dw do_colon
 empty_buffers_pfa:
   dw first_,limit_,over_,minus_,erase_
-  dw limit_
-  dw first_
+  dw limit_,first_
   dw paren_do_
 empty_buffers.do:
   dw lit_,0x7FFF,i_,store_
@@ -4040,10 +4087,7 @@ dr0_lfa:
 dr0_:
   dw do_colon
 dr0_pfa:
-  ; XXX OLD
-  ; dw zero_
-  ; dw offset_
-  ; dw store_
+  ; XXX OLD -- not used
   dw semicolon_s_
 
 ; doc{
@@ -4067,6 +4111,7 @@ buffer_pfa:
   dw use_,fetch_
   dw dup_,to_r_
 buffer.begin:
+  ; XXX NOTE: `+buf` won't work if single buffer
   dw plus_buf_
   dw zero_branch_,buffer.begin ; until
   dw use_,store_
@@ -4091,10 +4136,6 @@ block_lfa:
 block_:
   dw do_colon
 block_pfa:
-  ; XXX OLD
-  ; dw offset_
-  ; dw fetch_
-  ; dw plus_
   dw to_r_
   dw prev_,fetch_
   dw dup_
@@ -4218,11 +4259,11 @@ read_write_sector_command:
   ; Patched by `R/W`:
   ;   0x45 = write
   ;   0x44 = read
-  db 0x45
+  db 0x44
   pop ix
   pop bc
   _jp_next
-  
+
 flush_nfa:
   db 0x05+0x80,'FLUS','H'+0x80
 flush_lfa:
@@ -4771,15 +4812,11 @@ text_lfa:
 text_:
   dw do_colon
 text_pfa:
-  dw here_
-  dw c_slash_l_
-  dw one_plus_
-  dw blanks_
+  dw here_,c_slash_l_,one_plus_,blanks_ ; fill the word buffer with blanks
   dw word_
-  dw here_
-  dw pad_
-  dw c_slash_l_
-  dw one_plus_
+  dw here_ ; origin
+  dw pad_ ; destination
+  dw c_slash_l_,one_plus_ ; count
   dw cmove_
   dw semicolon_s_
 
@@ -4792,13 +4829,13 @@ line_:
 line_pfa:
   dw dup_
   dw lit_,0xFFF0
-  dw and_
+  dw and_ ; make sure line is between 0 and 15.
   dw c_lit_
   db 0x17
-  dw question_error_
-  dw scr_,fetch_
-  dw paren_line_
-  dw drop_
+  dw question_error_ ; if not, issue an error message
+  dw scr_,fetch_ ; screen number
+  dw paren_line_ ; address of the n'th line in the screen buffer
+  dw drop_ ; discard the character count left by `(line)`
   dw semicolon_s_
 
 two_drop_nfa:
@@ -4996,7 +5033,7 @@ p_store_pfa:
   out (c),a
   pop bc
   _jp_next
- 
+
   ; XXX TODO -- move to the blocks disk and optimize
 screen_nfa:
   db 0x06+0x80,'SCREE','N'+0x80
@@ -5113,6 +5150,7 @@ ink_pfa:
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
+  ; XXX TODO move to the blocks disk
 flash_nfa:
   db 0x05+0x80,'FLAS','H'+0x80
 flash_lfa:
@@ -5140,6 +5178,7 @@ branch_destination_0x7DF2:
 branch_destination_0x7E04:
   dw semicolon_s_
 
+  ; XXX TODO move to the blocks disk
 bright_nfa:
   db 0x06+0x80,'BRIGH','T'+0x80
 bright_lfa:
@@ -5167,6 +5206,7 @@ branch_destination_0x7E2B:
 branch_destination_0x7E3D:
   dw semicolon_s_
 
+  ; XXX TODO move to the blocks disk
 gover_nfa:
   db 0x05+0x80,'GOVE','R'+0x80
 gover_lfa:
@@ -5193,6 +5233,7 @@ branch_destination_0x7E61:
 branch_destination_0x7E73:
   dw semicolon_s_
 
+  ; XXX TODO move to the blocks disk
 inverse_nfa:
   db 0x07+0x80,'INVERS','E'+0x80
 inverse_lfa:
@@ -5220,6 +5261,7 @@ branch_destination_0x7E9B:
 branch_destination_0x7EAD:
   dw semicolon_s_
 
+  ; XXX TODO move to the blocks disk
 i_tick_nfa:
   db 0x02+0x80,'I',"'"+0x80
 i_tick_lfa:
@@ -5462,11 +5504,7 @@ char_lfa:
 char_:
   dw do_colon
 char_pfa:
-  dw b_l_
-  dw word_
-  dw here_
-  dw one_plus_
-  dw c_fetch_
+  dw b_l_,word_,here_,one_plus_,c_fetch_
   dw semicolon_s_
 
 bracket_char_nfa:
@@ -5476,8 +5514,7 @@ bracket_char_lfa:
 bracket_char_:
   dw do_colon
 bracket_char_pfa:
-  dw char_
-  dw literal_
+  dw char_,literal_
   dw semicolon_s_
 
 backslash_nfa:
@@ -5514,8 +5551,8 @@ dot_paren_pfa:
 dictionary_pointer_after_cold:
 
 end cold_entry
-  
-  ; ----------------------------------------------------------------
+
+  ; ============================================================
   ; Debug tools
 
   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
