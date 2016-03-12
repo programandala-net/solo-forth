@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506281159
+; Version A-00-201506281214
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -21,11 +21,11 @@
 ; - fix: `nfa>string` (for name fields in bank)
 ; - fix: `nfa>cfa`  (for name fields in bank)
 ; - fix: `words`  (for name fields in bank)
-; - change: `_number` used instead of all `c_lit_` and `lit_`.
-;   crash!
+; - change: `_number` macro used for all `lit_` and `c_lit_`,
+;   beside a needed exception.
 
 ; ==============================================================
-; Aknowledgments
+; Acknowledgments
 
 ; See the file <ACKNOWLEDGMENTS.adoc>.
 
@@ -1168,7 +1168,7 @@ question_csb_.enough:
 ;
 ; }doc
 
-;  dw question_comp_
+  dw question_comp_
   dw here_
   _number 0
   dw comma_
@@ -1189,7 +1189,7 @@ question_csb_.enough:
 ;
 ; }doc
 
-;  dw question_comp_
+  dw question_comp_
   dw here_,swap_,store_
   dw semicolon_s_
 
@@ -1205,7 +1205,7 @@ question_csb_.enough:
 ;
 ; }doc
 
-;  dw question_comp_
+  dw question_comp_
   dw here_
   dw semicolon_s_
 
@@ -1222,7 +1222,7 @@ question_csb_.enough:
 ;
 ; }doc
 
-;  dw question_comp_
+  dw question_comp_
   dw comma_
   dw semicolon_s_
 
@@ -5267,7 +5267,8 @@ warm_start_phony_:
   ; XXX TODO -- restore `np`
   dw first_,dup_,use_,store_,prev_,store_
   _number default_user_variables_start ; from
-  _number user_variables_pointer,fetch_ ; to
+  _number user_variables_pointer
+  dw fetch_ ; to
   _number default_user_variables_end-default_user_variables_start ; length
   dw cmove_
   _number top_most_word_in_forth_voc
@@ -5670,7 +5671,8 @@ block.end:
 
   _number 0x45
   dw swap_,minus_
-  dw lit_,read_write_sector_command,c_store_
+  dw lit_,read_write_sector_command
+  dw c_store_
   dw block_to_sector_
   dw paren_read_write_
   dw semicolon_s_
