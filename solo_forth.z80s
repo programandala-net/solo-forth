@@ -3,7 +3,7 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506221410
+; Version A-00-201506221734
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
 ; - change: new, modern `find`, after Forth-83 and Forth-94
@@ -12,6 +12,7 @@
 ; - `<mark`, `<resolve`, `>mark` and `>resolve`.
 ; - `compare`, `search`.
 ; - `count` in Z80.
+; - New versions of `0>`, `<` and `>`.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -597,8 +598,7 @@ compare_de_hl_unsigned:
   ;  flag C if hl < de
   ;  flag Z if hl = de
 
-  ; Taken from DZX-Forth
-  ; (http://programandala.net/en.program.dzx-forth.html)
+  ; Taken from DZX-Forth.
 
   ld a,h
   cp d
@@ -607,8 +607,24 @@ compare_de_hl_unsigned:
   cp e
   ret
 
+compare_de_hl_signed:
+
+  ; Input:  de, hl
+  ; Output: flag C if hl < de
+  
+  ; Taken from DZX-Forth.
+
+  ld a,h
+  xor d
+  jp p,compare_de_hl_unsigned
+  ld a,h
+  or a
+  ret p
+  scf
+  ret
+
 ; ==============================================================
-; Inner interpreter
+; :Inner interpreter
 
 push_de_hl:
   push de
@@ -1733,10 +1749,21 @@ l60c0h:
 
   pop hl
 zero_less_.hl: ; XXX entry not used yet
+  ; XXX Ace Forth uses `rld` with the high part, what needs 8T
+  ; and 2 bytes instead of 11T and 1 byte.
   add hl,hl
 true_if_cy:
   jp c,true_pfa
   jp false_pfa
+
+; ----------------------------------------------
+  _code_header zero_greater_than_,'0','>'
+
+  ; Taken from DZX-Forth.
+
+  pop de
+  ld hl,0
+  jp is_de_less_than_hl
 
 ; ----------------------------------------------
   _code_header plus_,'','+'
@@ -2422,6 +2449,21 @@ true_if_z: ; XXX entry not used yet
 ; ----------------------------------------------
   _code_header less_than_,'','<'
 
+if 1 ; XXX NEW -- from DZX-Forth
+  
+  pop de
+  pop hl
+is_de_less_than_hl:
+  call compare_de_hl_signed
+  if size_optimization?
+    jp true_if_cy
+  else
+    jp c,true_pfa
+    jp false_pfa
+  endif
+
+else ; XXX OLD
+
   pop de ; n2
   pop hl ; n1
   ld a,d
@@ -2435,9 +2477,8 @@ less_than.wich_negative:
 
   if 0 ; XXX OLD
 
-  ; Original version from Abersoft Forth,
-  ; badly optimized because of the two 'ld
-  ; hl' and two `jp push_hl`.
+  ; Original version from Abersoft Forth, badly optimized
+  ; because of the two 'ld hl' and two `jp push_hl`.
 
   inc h
   dec h ; h negative?
@@ -2467,9 +2508,12 @@ less_than.true:
 
   endif
 
-if 1 ; XXX OLD -- original
+endif
 
 ; ----------------------------------------------
+
+if 1 ; XXX OLD -- original
+
   _colon_header u_less_than_,'U','<'
 
   dw two_dup_
@@ -2488,7 +2532,6 @@ branch_destination_0x6589:
 
 else
 
-; ----------------------------------------------
   _code_header u_less_than_,'U','<'
 
   ; XXX NEW -- from DZX-Forth
@@ -2508,27 +2551,11 @@ u_less_than.de_hl:
 endif
 
 ; ----------------------------------------------
-  _colon_header greater_than_,'','>'
+  _code_header greater_than_,'','>'
 
-  dw swap_
-  dw less_than_
-  dw semicolon_s_
-
-; ----------------------------------------------
-
-; XXX TMP -- written in the disk instead
-; minus_rot_nfa:
-;   db 0x04+0x80,'-RO','T'+0x80
-; minus_rot_lfa:
-;   dw greater_than_nfa
-; minus_rot_:
-;   dw minus_rot_pfa
-; minus_rot_pfa:
-;   pop hl
-;   pop de
-;   ex (sp),hl
-;   ex de,hl
-;   jp push_de_hl
+  pop hl
+  pop de
+  jp is_de_less_than_hl
 
 ; ----------------------------------------------
   _code_header rot_,'RO','T'
