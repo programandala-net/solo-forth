@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511172215
+\ Last modified: 201511182052
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -3321,6 +3321,20 @@ need z80-asm
   \
   \ Store a byte to memory and decrement the address by n.
 
+( bit? set-bit reset-bit )
+
+: bit>mask  ( n -- b )  1 swap lshift  ;
+  \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
+
+: bit? ( b n -- f )  bit>mask and 0<> ;
+  \ Is bit _n_ of _b_ set?
+
+: set-bit ( b1 n -- b2 )  bit>mask or ;
+  \ Set bit _n_ of _b1_, returning the result _b2_.
+
+: reset-bit ( b1 n -- b2 )  bit>mask invert and ;
+  \ Reset bit _n_ of _b1_, returning the result _b2_.
+
 ( c@test-bits c!toggle-bits )
 
   \ XXX TODO possible names:
@@ -3374,6 +3388,12 @@ code c!toggle-bits  ( b ca -- )
   hl pop  de pop  m a ld  e xor  a m ld  jpnext
   end-code  ;s  [then]
   \ Invert the bits at _ca_ specified by the bitmask _b_.
+
+( reserve )
+
+: reserve  ( n -- a )  here tuck over erase allot  ;
+  \ Reserve a zone of _n_ bytes in the dictionary, erase it
+  \ and return its address _a_.
 
   \ }}} =======================================================
   \ Single-cell operators {{{
@@ -8318,7 +8338,7 @@ need within
   cell+ swap cells +  ;
   \ if in range, return element address, else abort
 
-: array  ( n "name" -- ) 
+: array  ( n "name" -- )
   create dup , cells allot
   does> ( n -- x ) ( n pfa ) array> @  ;
   \ define array
@@ -10634,6 +10654,163 @@ forth-wordlist set-current
   \ ior is zero. As this is a standard word it takes an
   \ unsigned size argument, but excessive requests fail
   \ automatically, as with `allocate`.
+
+( create-heap )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Inspired by:
+  \
+  \ Gestor de memoria dinámica (version 1)
+  \ By Javier Gil
+  \ From his book _Introducción a Forth_ (2007-01)
+
+need value  need set-bit  need reset-bit  need bit?
+need reserve
+
+8 constant address-unit-bits
+16 value /chunk \ bytes per chunk
+
+: groups ( n1 n2 -- n3 )  /mod swap 0<> abs +  ;
+  \ Return the number _n3_ of groups of _n2_ elements, needed
+  \ to hold _n1_ elements.
+
+: bytes>chunks ( n1 -- n2 )  /chunk groups  ;
+  \ Return the chunks _n2_ required to allocate _n1_ bytes.
+
+: chunks>bytes ( n1 -- n2 )  address-unit-bits groups  ;
+  \ Return the bytes _n2_ required for a bitmap of _n1_ chunks.
+
+: create-heap ( n "name" -- )
+  create  bytes>chunks dup ,              \ chunks
+          0 ,                             \ free chunks
+          dup chunks>bytes reserve drop   \ bitmap
+              /chunk * allot  ;           \ data space
+  \ Create a new heap "name" to hold _n_ bytes.
+
+-->
+
+( create-heap )
+
+value heap  ( -- a )
+  \ Address of the current heap.
+
+  \ XXX TODO
+
+' heap alias heap-chunks  ( -- a )
+  \ Address that holds the number of chunks of the current
+  \ heap.
+
+: heap-unused-chunks  ( -- a )  heap cell+  ;
+  \ Address that holds the number of unused chunks of the
+  \ current heap.
+
+: heap-map  ( -- a )  heap-unused-chunks cell+  ;
+  \ Address of the current heap's map.
+
+: /heap-map  ( -- n )  heap-chunks @ chunks>bytes  ;
+  \ Number of bytes of the current heap's map.
+
+: heap-data  ( -- a ) heap-map /heap-map +  ;  -->
+  \ Address of the current heap's data space.
+
+( create-heap )
+
+: (mapbit)  ( n1 -- n2 a2 )
+  heap-map address-unit-bits /mod rot +  ;
+  \ n1 = number of bit in the bitmap
+  \ a2 = address of the correspondent byte
+  \ n2 = number of bit in the byte at _a2_
+
+: mapbit ( n1 -- a2 b n2 )  (mapbit) dup @ rot  ;
+  \ n1 = number of bit in the bitmap
+  \ a2 = address of the correspondent byte
+  \ b =  correspondent byte
+  \ n2 = number of bit in _b_
+
+: used-chunk? ( n -- f )  (mapbit) @ swap bit?  ;
+  \ Is chunk _n_ used?
+
+: use-chunk ( n -- )  mapbit set-bit swap !  ;
+  \ Mark chunk _n_ as used.
+
+: free-chunk ( n -- )  mapbit reset-bit swap !  ;
+  \ Mark chunk _n_ as free.
+
+-->
+
+( create-heap )
+
+: allocated>chunks  ( a -- n )  cell- @  ;
+  \ Convert the address _a_ of an allocated space in the
+  \ current heap to its number of chunks.
+
+: allocated>index  ( a -- n )  heap-data - /chunk /  ;
+  \ Convert the address _a_ of an allocated space in the
+  \ current heap to its index _n_ in the map of the heap
+  \ chunks.
+
+: allocated>map  ( a -- n1 n2 )
+  dup allocated>index swap allocated>chunks  ;
+  \ Convert the address _a_ of an allocated space in the
+  \ current heap to its index _n1_ in the map of heap chunks
+  \ and the number _n2_ of ocuppied chunks.
+
+: free  ( a -- )
+  allocated>map dup >r
+  bounds do  i free-chunk  loop
+  r> heap-unused-chunks +!  ;
+  \ Free the allocated space at _a_ from the current heap.
+
+: .heap ( -- )
+  heap-chunks @ 0 do
+    i used-chunk? if  [char] x  else  [char] -  then  emit
+  loop  ;
+  \ Print the map of the current heap. Occupied chunks are
+  \ marked with a "x"; free chunks are marked with a "-".
+
+-->
+
+( create-heap )
+
+: locate-chunks  ( n1 -- n2 wior )
+  \ XXX TODO
+  -59
+  ;
+  \ Locate _n1_ consecutive free chunks in the current heap.
+  \ If succesful, return the first chunk _n2_ of them, else
+  \ return zero.
+
+: (allocate)  ( n1 n2 -- a 0 )
+  ( chunks first-chunk )
+  dup chunk>address >r
+  
+  r> 0  ;
+  \ Allocate _n1_ chunks starting from chunk _n2_ 
+
+: allocate  ( n -- a wior )
+  bytes>chunks dup locate-chunks dup ?exit  (allocate)  ;
+
+( create-heap )
+
+  \ XXX OLD -- original by Javier Gil
+  \ XXX TODO understand, rewrite, factor, make it legible
+
+: allocate ( n heap -- 0 | a )
+  swap cell+ bytes>chunks swap  dup @  0 swap
+  0 do
+    over cell+ i used-chunk?
+    if  drop 0
+    else
+      1+ rot 2dup = if
+        drop 2dup over @ chunks>bytes  rot cell+ + swap i swap
+        - 1+ /chunk * + -rot
+        rot 2dup ! cell+ -rot  swap cell+ swap
+        i swap - 1+ i 1+ swap do  dup i use-chunk  loop  drop
+        unloop exit
+      else  -rot  then
+    then
+  loop  drop 2drop 0  ;
 
   \ }}} =======================================================
   \ Leo Brodie's DOER ... MAKE construct {{{
@@ -13816,7 +13993,7 @@ need bench  need marque
 ( case-benchs )
 
   \ Comparison of case-like structures.
-  \ 
+  \
   \ 2015-11-14: `case` (4 versions), `case:`, `options[` and
   \ `cases:`.
 

@@ -19,7 +19,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B4D
   
-  ; Last modified:  201511172215
+  ; Last modified:  201511172232
 
 ; ==============================================================
 ; Author and license
@@ -7171,10 +7171,6 @@ parse.end:
 
   dw 0,0
 
-if 0 ; nextname
-
-  ; XXX NEW -- This alternative was inspired by Gforth.
-  
 ; ----------------------------------------------
   _defer_header header_,'HEADER',,input_stream_header_
 
@@ -7183,7 +7179,7 @@ if 0 ; nextname
 
 ; doc{
 ;
-; ?name-to-short ( ca len -- )
+; ?name-too-short ( ca len -- )
 ;
 ; }doc
 
@@ -7248,67 +7244,23 @@ if 0 ; nextname
 ; : nextname  ( ca len -- )
 ;   nextname-string 2!
 ;   ['] nextname-header ['] header defer!  ;
+;
+; The next defined word will have the name _ca len_; the
+; defining word will leave the input stream alone. `nextname`
+; works with any defining word.
+;
 ; ----
 ;
 ; }doc
+
+  ; Credits:
+  ; This word is borrowed from Gforth.
 
   dw nextname_string_,two_store_
   _literal nextname_header_
   _literal header_
   dw defer_store_ ; change the default behaviour of `header`
   dw semicolon_s_
-
-else
-
-; ----------------------------------------------
-  _colon_header question_name_too_short_,'?NAME-TOO-SHORT'
-
-; doc{
-;
-; ?name-to-short ( ca len -- )
-;
-; }doc
-
-  dw dup_,zero_equals_
-  _question_throw -16 ; attempt to use zero-length string as a name
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header header_,'HEADER'
-
-; doc{
-;
-; header  ( "name" | -- )
-
-; Create a dictionary header with its code field pointing to its
-; parameter field.
-;
-; The double variable `next-name` may hold a string to be used
-; as the name.  If its length is zero, "name" is parsed from the
-; stream as usual.
-
-; ----
-; : header  ( "name" | -- )
-;   nextname-string 2@
-;   dup if    nextname-string off 
-;       else  2drop parse-name  then  header,  ;
-; ----
-
-; }doc
-
-  dw nextname_string_,two_fetch_
-  dw dup_
-  dw zero_branch_,header.parse_name
-  dw nextname_string_,off_
-  dw branch_,header.end
-header.parse_name
-  dw two_drop_,parse_name_
-header.end
-  dw question_name_too_short_
-  dw header_comma_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header parse_name_,'PARSE-NAME'

@@ -219,7 +219,6 @@ So far (2015-09-15) the best is:
 | at-xy      | xy         | at-coords       | coords          | home-coords
 |===
 
-
 .2015-09-05:
 
 Name for graphic fill: `flood`.
