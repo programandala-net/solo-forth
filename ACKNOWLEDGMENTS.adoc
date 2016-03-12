@@ -29,7 +29,9 @@ alphabetical order:
 - IsForth (version 1.23b for Linux), by Mark Manning, c. 2001-2012.
 - kForth (for Linux, v1.5.2), by  Krishna Myneni, 1999-2010.
 - lina (for x86 Linux), by Albert van der Horst, 2000-2004.
-- MPE Forth for TiniARM, by MicroProcessor Engineering Limited, 1996-2004.
+- lpForth (for Linux), by Jih-tung Pai, 1999-2001.
+- MPE Forth for TiniARM, by MicroProcessor Engineering Limited,
+  1996-2004.
 - PFE (Portable Forth Environment), by Dirk Zoller and Guido U.
   Draheim, 1993-2009.
 - pForth (a portable ANS-like Forth written in ANSI C), by Phil Burk,
@@ -39,6 +41,7 @@ alphabetical order:
   1988.
 - v.Forth (for ZX Spectrum 48K/128K with Interface 1), by Matteo
   Vitturi, 1990-2015.
-- Z88 CamelForth (for Cambridge Z88), by Garry Lancaster, 2001.
+- volksFORTH 3.80a (for C/PM), by Forth Gesellschaft e.V., 1985-2006.
+- Z88 CamelForth 3.04 (for Cambridge Z88), by Garry Lancaster, 2001.
 
 Specific credits and acknowledgment notes are included in the source.

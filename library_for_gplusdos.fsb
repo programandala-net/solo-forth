@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511230218
+\ Last modified: 201511240343
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -9396,7 +9396,7 @@ need body>name
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
-( get-order set-order )
+( get-order )
 
   \ XXX TODO use the actual number of vocs in context, not
   \ the maximum
@@ -9409,6 +9409,17 @@ need body>name
   \ Get the search order.
   #vocs ?dup if  (get-order)  then  #vocs  ;
 
+( set-order )
+
+  \ XXX TODO use the actual number of vocs in context, not
+  \ the maximum
+
+  \ XXX TODO move to the kernel
+
+need get-current  need set-current
+
+get-current also root definitions
+
 : (set-order)  ( widn..wid1 n -- )
   \ Do set a search order.
   0 do  context i cells + !  loop  ;
@@ -9418,6 +9429,7 @@ need body>name
   dup -1 =  if  drop only exit  then  -order
   ?dup if  (set-order)  then  ;
 
+previous set-current
 
   \ doc{
   \
@@ -9451,9 +9463,11 @@ need body>name
 
 ( set-current get-current trail >order )
 
+  \ XXX TODO move to the kernel?
 [unneeded] get-current
 ?\ : get-current  ( -- wid )  current @  ;
 
+  \ XXX TODO move to the kernel?
 [unneeded] set-current
 ?\ : set-current  ( wid -- )  current !  ;
 
@@ -9469,6 +9483,7 @@ need body>name
   \
   \ }doc
 
+  \ XXX TODO move to the kernel?
 [unneeded] >order
 ?\ : >order  ( wid -- )  also context !  ;
 
@@ -12707,36 +12722,53 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ XXX UNDER DEVELOPMENT
 
+  \ 2015-11-24: Changes.
+
   \ Credits:
-  \ Code from Leo Brodie's _Starting Forth_.
-  \ ANSized by Benjamin Hoyt in 1997
+  \
+  \ Based on code from Leo Brodie's _Starting Forth_, ANSized
+  \ by Benjamin Hoyt in 1997.
 
-create board  9 allot
+9 constant squares
 
-: square  ( square# -- addr )  board + ;
-: clear   board  9 erase ;  clear
-: bar   ." | " ;
-: dashes   cr  9 0 do  [char] - emit  loop cr ;
+1 constant player-x  2 constant player-o
 
-: .box  ( square# -- )
-  square c@  dup 0=
-  if    2 spaces
-  else  dup 1 = if ." x " else ." o " then
-  then  drop ;
+create board  squares allot
+
+: clear  ( -- )  board squares erase  ;  clear
+
+: >square  ( square -- ca )  board +  ;
+: square@  ( square -- c )  >square c@  ;
+: square!  ( c square -- )  >square c!  ;
+
+: bar  ( -- )  ." | "  ;
+: dashes  ( -- )  cr  9 0 do  '-' emit  loop cr  ;
+
+: .player-mark  ( player -- )
+  player-x = if ." x " else ." o " then  ;
+
+: .box-contents  ( n -- )
+  ?dup if  .player-mark  else  2 spaces  then  ;
+
+: .box  ( square -- )  square@  .box-contents  ;
 
 -->
 
 ( toe )
 
 : display  ( -- )
-  cr  9 0 do
-    i if  i 3 mod  0= if  dashes  else  bar  then  then  i .box
-  loop  cr quit ;
+  home
+  squares 0 do
+    i if    i 3 mod  0= if  dashes  else  bar  then
+      then  i .box
+  loop  cr  ;
 
-: play  ( player square# -- )  1-  0 max  8 min  square c! ;
+: limited  ( square -- square' )  0 max squares min  ;
 
-: x!  ( square# -- )   1 swap  play  display ;
-: o!  ( square# -- )  -1 swap  play  display ;
+: play  ( square player -- )  swap 1- limited square! ;
+
+: x  ( square -- )  player-x play  display ;
+: o  ( square -- )  player-o play  display ;
 
   \ }}} =======================================================
   \ Sample game: Pong {{{
@@ -13690,6 +13722,37 @@ need frames@  need reset-frames
   \ hForth A = 33784      hForth, with absolute jumps
   \ Z88 R    = 33786      Z88 CamelForth, with relative jumps
   \ Z88 A    = 33784      Z88 CamelForth, with absolute jumps
+
+( um/mod-bench )
+
+  \ 2015-11-24
+
+need bench
+
+: um/mod-bench  ( n -- )
+  bench  0 do  i s>d i um/mod 2drop  loop  marque  ;
+
+: um/mod-bench88  ( n -- )
+  bench  0 do  i s>d i um/mod88 2drop  loop  marque  ;
+
+: um/mod-bench  ( n -- )
+  dup cr ." Abersoft Forth  U/MOD ..." um/mod-bench
+      cr ." Z88 CamelForth UM/MOD ..." um/mod-bench88  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \          AF      Z88
+  \       ----- --------------
+  \ 00100     6        5
+  \ 01000    59       42 (71%)
+  \ 10000   587      428 (72%)
+  \ 20000  1157      875 (75%)
+  \ 32000  1881     1372 (72%)
+
+  \            Bytes free Code from
+  \            ---------- ---------
+  \ AF         32689      Abersoft Forth
+  \ Z88        32707      Z88 CamelForth
 
 ( number? )
 

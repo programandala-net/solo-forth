@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151123
+  ; Version:        20151124
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B53
+version_low_part:   equ 0x7B54
   
-  ; Last modified:  201511230248
+  ; Last modified:  201511240311
 
 ; ==============================================================
 ; Author and license
@@ -3362,7 +3362,27 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _variable_header decode_table_,'DECODE-TABLE'
+  _variable_header key_translation_table_,'KEY-TRANSLATION-TABLE'
+
+; doc{
+;
+; key-translation-table  ( -- a )
+; 
+; A variable that holds the address of the current key
+; translation table, used by `key`.
+;
+; The table consists of pairs of characters. The first one is
+; the character that has to be translated and the second one is
+; its translation. The table is finished with a zero.
+;
+; The default table makes it possible to access the following
+; chars with Symbol Shift: '[', ']', '~', '|', '\', '{' and '}'. 
+;
+; }doc
+
+  dw default_key_translation_table
+
+default_key_translation_table:
 
 ;  dw 0 ; no chained table ; XXX TODO
               ; Symbol Shift + Letter --> new char
@@ -3378,55 +3398,26 @@ endif
   ; "I" 172 (0xAC) "AT"   --> 127 (0x7F) "(C)" ; XXX TODO
 
 ; ----------------------------------------------
-  _code_header decode_char_,'DECODE-CHAR'
+  _code_header translate_char_,'TRANSLATE-CHAR'
 
 ; doc{
 ;
-; decode-char  ( c1 -- c2 )
+; translate-char  ( c1 -- c1 | c2 )
+; 
+; Translate char _c1_ using the current keyboard decoding table,
+; pointed by `key-translation-table`.
 ;
 ; }doc
 
-if 0 ; XXX TMP
-
-  ; 33697 bytes free
-
-  pop de
-  call decode_char.e
-  ld h,0
-  ld l,e
-  jp push_hl
-
-decode_char.a:
-  push de
-  ld e,a
-  call decode_char.e
-  ld a,e
-  pop de
-  ret
-
-decode_char.e:
-  ld hl,decode_table_pfa-1
-decode_char.begin:
-  inc hl
-  ld a,(hl)
-  and a ; end of table?
-  ret z
-  cp e
-  inc hl
-  jr nz,decode_char.begin
-  ld e,(hl)
-  ret
-
-else
-
   pop de
   ld a,e
-  call decode_char.a
+  call translate_char.a
   jp push_a
 
-decode_char.a:
-  ld hl,decode_table_pfa-1
-decode_char.begin:
+translate_char.a:
+  ld hl,(key_translation_table_pfa)
+  dec hl
+translate_char.begin:
   inc hl    ; next record of the table
   ld e,(hl) ; char that must be translated, or zero
   inc e     ; is it...
@@ -3434,65 +3425,42 @@ decode_char.begin:
   ret z
   cp e      ; match?
   inc hl    ; point to the char transalation
-  jr nz,decode_char.begin ; no match yet, continue
+  jr nz,translate_char.begin ; no match yet, continue
   ; match
   ld a,(hl) ; translate char
   ret
-
-endif
-
-if 0 ; XXX OLD
-
-  pop de
-  ld hl,decode_table_pfa-1
-
-decode_char.begin:
-  inc hl
-  ld a,(hl)
-  and a ; end of table?
-  jr z,decode_char.end
-  cp e
-  inc hl
-  jr nz,decode_char.begin
-
-  ld e,(hl)
-decode_char.end:
-  push de
-  _jp_next
-
-endif
 
 if 0 ; XXX UNDER DEVELOPMENT
 
   ; improved version with support for chained tables
 
 ; ----------------------------------------------
-  _colon_header decode_char_,'DECODE-CHAR'
+  _colon_header translate_char_,'TRANSLATE-CHAR'
 
 ; doc{
 ;
-; decode-char  ( c1 -- c2 )
+; translate-char  ( c1 -- c2 )
 ;
 ; }doc
 
   ; XXX TODO  
 
-  dw decode_table_
+  dw key_translation_table_
   dw fetch_
   dw question_dup_
   dw zero_
 
-decode_char.do_it
+translate_char.do_it
   dw cell_plus_
-  dw paren_decode_char_
+  dw paren_translate_char_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header paren_decode_char_,'(DECODE-CHAR)'
+  _code_header paren_translate_char_,'(TRANSLATE-CHAR)'
 
 ; doc{
 ;
-; (decode-char)  ( c1 ca -- c1 false | c2 true )
+; (translate-char)  ( c1 ca -- c1 false | c2 true )
 ;
 ; }doc
 
@@ -3501,18 +3469,18 @@ decode_char.do_it
   push de ; keep c1 on the stack, as default
   dec hl
 
-decode_char.begin:
+translate_char.begin:
   inc hl
   ld a,(hl)
   and a ; end of table?
   jp z,false_pfa ; no match found
   cp e
   inc hl
-  jr nz,decode_char.begin
+  jr nz,translate_char.begin
 
   ; match found
   ld e,(hl)
-decode_char.end:
+translate_char.end:
   pop hl  ; discard c1
   push de
   jp true_pfa
@@ -3538,7 +3506,7 @@ endif
   ; xor a
   ; ld (sys_last_k),a ; delete the last key
   ; push hl
-  ; jp decode_char_
+  ; jp translate_char_
 
 ; ----------------------------------------------
   _code_header key_question_,'KEY?'
@@ -3586,7 +3554,7 @@ endif
 
 if 1
   call wait_for_a_key
-  call decode_char.a ; XXX TODO
+  call translate_char.a ; XXX TODO
   jp push_a
 endif
 
@@ -3669,7 +3637,7 @@ xkey.new_key:
 
 xkey.translate:
   ; Translate some chars
-  call decode_char.a ; XXX TMP
+  call translate_char.a ; XXX TMP
   ld l,a
   ld h,0x00
 
@@ -3915,9 +3883,6 @@ u_m_star.4:
 endif
 
 ; ----------------------------------------------
-
-if 1 ; XXX OLD
-
   _code_header u_m_slash_mod_,'UM/MOD'
 
 ; doc{
@@ -3927,109 +3892,14 @@ if 1 ; XXX OLD
 ; Divide _ud_ by _u1_, giving the quotient _u3_ and the
 ; remainder _u2_.  All values and arithmetic are unsigned.
 ;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
   ; Credits:
-  ; Code from Abersoft Forth.
-  ; The original word was called `u/mod`, from Forth-79.
+  ;
+  ; Code adapted from Z88 CamelForth.
 
-; XXX FIXME -- This word, has a bug that affects `line>string`, used
-; by `message`, and other words that use it: `*/mod`, `mod` and
-; `/mod`, with certain negative values, return different values
-; in Abersoft Forth and other Forth systems that have been
-; tested (some of them are fig-Forth).
-
-  ld hl,0x0004
-  add hl,sp
-  ld e,(hl)
-  ld (hl),c
-  inc hl
-  ld d,(hl)
-  ld (hl),b
-  pop bc
-  pop hl
-  ld a,l
-  sub c
-  ld a,h
-  sbc a,b
-  jr c,l60a0h
-  ld hl,0xFFFF
-  ld de,0xFFFF
-  jr l60c0h
-l60a0h:
-  ld a,0x10
-l60a2h:
-  add hl,hl
-  rla
-  ex de,hl
-  add hl,hl
-  jr nc,l60aah
-  inc de
-  and a
-l60aah:
-  ex de,hl
-  rra
-  push af
-  jr nc,l60b4h
-  and l
-  sbc hl,bc
-  jr l60bbh
-l60b4h:
-  and a
-  sbc hl,bc
-  jr nc,l60bbh
-  add hl,bc
-  dec de
-l60bbh:
-  inc de
-  pop af
-  dec a
-  jr nz,l60a2h
-l60c0h:
-  pop bc
-  push hl
-  push de
-  _jp_next
-
-endif
-
-if 0 ; XXX OLD
-
-  _colon_header u_m_slash_mod_,'UM/MOD'
-
-; doc{
-;
-; um/mod  ( ud u1 -- u2 u3 )
-
-; Divide _ud_ by _u1_, giving the quotient _u3_ and the
-; remainder _u2_.  All values and arithmetic are unsigned.
-
-; Standard: Forth-94, Forth-2012.
-
-; ----
-; : um/mod  ( ud u1 -- u2 u3 )
-;   m/mod d>s  ;
-; ----
-
-; }doc
-
-  ; XXX TMP -- temporary solution
-  ; XXX OLD -- can not work anymore, because now `ud/mod` calls this!
-
-  dw u_d_slash_mod_,d_to_s_
-  dw semicolon_s_
-
-endif
-
-if 0 ; XXX NEW
-
-  _code_header u_m_slash_mod_,'UM/MOD'
-
-  ; XXX TODO -- adapt this code, taken from Z88 CamelForth
-
-  push bc
   exx
   pop bc      ; BC = divisor
   pop hl      ; HLDE = dividend
@@ -4064,13 +3934,10 @@ u_m_slash_mod.4:
   ld a,e
   cpl
   ld c,a
-  push hl     ; push remainder
-  push bc
+  push hl     ; remainder
+  push bc     ; quotient
   exx
-  pop bc      ; quotient remains in TOS
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _code_header and_,'AND'
@@ -7082,6 +6949,8 @@ accept.end:
 ;
 ; }doc
 
+  ; XXX TODO move to the library
+
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer
   dw accept_,number_tib_,store_,space_
@@ -7237,6 +7106,18 @@ fill.done:
 ; ----------------------------------------------
   _colon_header pad_,'PAD'
 
+; doc{
+;
+; pad  ( -- ca )
+;
+; Return the address of a transient region that can be used to
+; hold data for intermediate processing.
+;
+; Standard: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT),
+; Forth-2012 (CORE EXT).
+;
+; }doc
+
   dw here_
   _literal 0x44
   dw plus_
@@ -7274,7 +7155,7 @@ fill.done:
 ; The resulting character string _ca2 len2_ begins at _ca1_ plus
 ; _n_ characters and is _len1_ minus _n_ characters long.
 ;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (STRING), Forth-2012 (STRING).
 ;
 
 ; ----
@@ -7331,7 +7212,7 @@ fill.done:
 ;
 ; If the parse area was empty, the resulting string has a zero length.
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; ----
 ; : parse  ( c "text<c>" -- ca len )
@@ -7483,11 +7364,12 @@ parse.end:
 ; ----
 ; : parse-name  ( "name"  -- ca len )
 ;   stream                 ( ca0 len0 )
-;   dup >r   bl skip       ( ca1 len1 ) ( R: len0 )
+;   dup >r   -leading      ( ca1 len1 ) ( R: len0 )
 ;   over >r  bl scan       ( ca2 len2 ) ( R: len0 ca1 )
 ;   dup if char- then      \ skip trailing delimiter
-;   r> r> rot -   >in +!   \ update `>in`
-;   tuck -  ;              ( ca len )
+;   r> r> rot -  parsed    \ update `>in`
+;   tuck -                 ( ca len )
+;   2dup parsed-name 2!  ;
 ; ----
 
 ; }doc
@@ -8417,6 +8299,34 @@ do_vocabulary:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header dot_ok_,'.OK'
+
+; doc{
+;
+; .ok  ( -- )
+; 
+; Print "ok". This is the default behaviour of `ok`, the word
+; called by `quit` after interpreting a command.
+;
+; }doc
+
+  dw paren_dot_quote_
+  _string 'ok'
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _defer_header ok_,'OK',,dot_ok_
+
+; doc{
+;
+; ok  ( -- )
+; 
+; A deferred word called by `quit` after interpreting a command.
+; Its default behaviour is the word `.ok`.
+;
+; }doc
+
+; ----------------------------------------------
   _colon_header quit_,'QUIT'
 
   dw blk_,off_
@@ -8427,8 +8337,7 @@ quit.begin:
   dw interpret_
   dw compiling_question_
   dw question_branch_,quit.begin
-  dw paren_dot_quote_
-  _string 'ok'
+  dw ok_
   dw branch_,quit.begin
 
 ; ----------------------------------------------
@@ -10886,7 +10795,7 @@ system_stack_pointer: equ $+1
 ; limit  ( -- a )
 ;
 ; Variable that holds the address above the highest address
-; usable by the dictionary.
+; usable by the region addressed by `here`.
 ;
 ; }doc
 
@@ -10895,7 +10804,17 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _colon_header unused_,'UNUSED'
 
-  ; XXX TODO -- adapt when the common heap is implemented
+; doc{
+;
+; unused ( -- u )
+;
+; Return the amount of space remaining in the region addressed
+; by `here`, in address units.
+;
+; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; }doc
+
   dw limit_,fetch_,here_,minus_
   dw semicolon_s_
 
