@@ -1,4 +1,4 @@
-= Solo Forth Aknowledgments
+= Solo Forth Acknowledgments
 
 Solo Forth started with the code of Abersoft Forth, that was
 first studied and much improved

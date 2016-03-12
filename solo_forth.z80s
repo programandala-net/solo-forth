@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506270120
+; Version A-00-201506271409
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -20,10 +20,12 @@
 ; ==============================================================
 ; Aknowledgments
 
-; See the file <AKNOWLEDGMENTS.adoc>.
+; See the file <ACKNOWLEDGMENTS.adoc>.
 
 ; ==============================================================
 ; License
+
+; XXX TODO
 
 ; Copying and distribution of this file, with or without
 ; modification, are permitted in any medium without royalty
@@ -324,7 +326,7 @@ _header: macro _base_label,_name,_is_immediate
     flags: defl flags | precedence_bit_mask ; add precedence bit
   endif
 
-  if 0 ; names_in_memory_bank?
+  if 1 ; names_in_memory_bank?
 
     ; In dictionary:
 
@@ -644,7 +646,7 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   ; XXX TODO
 
@@ -1383,7 +1385,7 @@ paren_find.nfa_backup: equ $+1
 
 else
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   ; XXX FIXME -- does not find words?
 
@@ -2270,10 +2272,15 @@ l60c0h:
   jp push_hl
 
 ; ----------------------------------------------
+
+if 1 ; names_in_memory_bank?
+
   _code_header np_fetch_,'NP@'
 
   ld hl,(names_pointer)
   jp push_hl
+
+endif
 
 ; ----------------------------------------------
   _code_header sp_fetch_,'SP@'
@@ -2294,11 +2301,19 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
+
+if 1 ; names_in_memory_bank?
+
   _constant_header np_,'NP'
 
   dw names_pointer
 
+endif
+
 ; ----------------------------------------------
+
+if 1 ; names_in_memory_bank?
+
   _colon_header comma_np_,',np'
 
 ; doc{
@@ -2314,6 +2329,8 @@ l60c0h:
 
   dw np_fetch_,store_,two_,np_,plus_store_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _constant_header rp_,'RP'
@@ -3301,7 +3318,7 @@ question_dup.end:
 
 ; ----------------------------------------------
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_minus_
 
@@ -3326,7 +3343,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_lfa_,'PFA>LFA'
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   dw pfa_to_cfa_,cfa_to_nfa_
 
@@ -3347,7 +3364,7 @@ endif
 
 ; ----------------------------------------------
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   _colon_header cfa_to_lfa_,'CFA>LFA'
   dw cfa_to_nfa_,nfa_to_lfa_
@@ -3361,7 +3378,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   dw pfa_to_cfa_,cfa_to_nfa_
   dw semicolon_s_
@@ -3386,7 +3403,7 @@ endif
 
 ; XXX FIXME -- return 0 if cfa has no name associated
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   _code_header cfa_to_nfa_,'CFA>NFA'
 
@@ -3435,7 +3452,7 @@ endif
 
 ; ----------------------------------------------
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus_
 
@@ -3454,7 +3471,7 @@ endif
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   _number 4
   dw minus_,fetch_
@@ -3483,7 +3500,7 @@ endif
 ;
 ; }doc
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   _names_bank
   dw count_
@@ -4056,7 +4073,7 @@ else ; XXX NEW -- modern version with `skip parse`
 endif
 
   if 0 ; XXX INFORMER
-    dw space_ ; XXX INFORMER
+    ;dw space_ ; XXX INFORMER
     ;dw depth_,dot_ ; XXX INFORMER
     ;dw paren_dot_quote_ ; XXX INFORMER
     ;_string 'blk ' ; XXX INFORMER
@@ -4064,7 +4081,7 @@ endif
     ;dw paren_dot_quote_ ; XXX INFORMER
     ;_string 'in ' ; XXX INFORMER
     ;dw in_,fetch_,dot_ ; XXX INFORMER
-    dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
+    ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
     ;dw key_,drop_ ; XXX INFORMER
   endif
 
@@ -4082,7 +4099,7 @@ endif
   ; XXX TODO factor of `parse`:
   dw scan_ ; ( a3 len )
   dw dup_,one_plus_,to_in_,plus_store_
-  dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
+  ;dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
 
   dw here_
   dw c_lit_
@@ -4093,7 +4110,7 @@ endif
   dw here_,one_plus_ ; destination
   dw swap_ ; count
   dw cmove_ ; move the word
-  dw here_,count_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
+  ;dw here_,count_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4347,6 +4364,14 @@ else ; XXX NEW -- modern `find`
 ; }doc
 
   dw context_,fetch_,fetch_
+  ;dw paren_dot_quote_ ; XXX INFORMER
+  ;_string 'In find, nfa is:' ; XXX INFORMER
+  ;dw dup_,hex_,u_dot_,decimal_ ; XXX INFORMER ;
+    ; Result:
+    ;   0x86D3 with default system, why one less than `dot_paren_`? It works, though.
+    ;   0xCD87 with bank system, exactly `dot_paren_nfa`, but it
+    ;   doesn't work.
+
   ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw paren_find_
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
@@ -4355,7 +4380,7 @@ else ; XXX NEW -- modern `find`
 ; ----------------------------------------------
   _variable_header find_dollar_,'FIND$'
 
-  ; XXX TODO use an unused address above `pad` instead
+  ; XXX TODO use an unused address above `pad` instead?
   ; XXX TODO rename as `word$`?
   ; XXX TODO use also in `word`?
 
@@ -4458,7 +4483,7 @@ error.end:
   _message not_unique_error
 header.continue:
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
     ; XXX TODO
 
@@ -4861,9 +4886,9 @@ interpret.begin:
   dw question_stack_
   ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw defined_
-  if 0 ; names_in_memory_bank?
-    dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
-  endif
+  ;if 1 ; names_in_memory_bank?
+    ;dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
+  ;endif
   dw question_dup_ ; found?
   ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found
@@ -4880,7 +4905,7 @@ interpret.begin:
 
 interpret.execute:
   ; Executing or immediate ( cfa )
-  if 0 ; names_in_memory_bank?
+  if 1 ; names_in_memory_bank?
     dw drop_ ; XXX TMP for debugging
   else
     dw execute_
@@ -4888,7 +4913,7 @@ interpret.execute:
   dw branch_,interpret.begin
 
 interpret.word_not_found:
-  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
+  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   ; try to convert the text to a number
   ; ( ca )
   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
@@ -6357,7 +6382,7 @@ dictionary_pointer_after_cold:
 ; ==============================================================
 ; Name and link fields
 
-if 0 ; names_in_memory_bank?
+if 1 ; names_in_memory_bank?
 
   ; XXX TODO
 
