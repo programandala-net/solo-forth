@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506260311
+; Version A-00-201506261829
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -76,7 +76,9 @@
 ; pfa     = address of parameter field
 
 ; ----------------------------------------------
-; Header structure
+; Default header structure
+
+; The whole headers is created in the dictionary:
 
 ; nfa: db length+flags     ; Bits:      76543210
                            ; Bit names: BPSLLLLL
@@ -94,24 +96,49 @@
 ; cfa: dw code_address
 ; pfa:    ...              ; data or code
 
+; ----------------------------------------------
+; Improved header structure (experimental, unfinished)
+
+; The name and link fields are created in a memory bank:
+
+; cfap: dw cfa             ; Pointer to cfa in main memory.
+; lfa: dw previous_nfa
+; nfa: db length+flags     ; Bits:      76543210
+                           ; Bit names: BPSLLLLL
+                           ; Legend:
+                           ;   B: Name bound bit, always 1.
+                           ;   P: Precedence bit.
+                           ;      0 = non-immediate word
+                           ;      1 = immediate word
+                           ;   S: Smudge bit:
+                           ;      0 = definition completed
+                           ;      1 = definition not completed
+                           ;   LLLLL: name length (0..31).
+;      ds length           ; name
+
+; The code and parameter fields are created in the dictionary:
+
+; cfa: dw code_address
+; pfa:    ...              ; data or code
+
 ; ==============================================================
 ; Configuration
 
   ; XXX experimental
-size_optimization?              equ false
+size_optimization_option              equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-fig_find?                       equ false
+fig_find_option                       equ false
   ; true = the fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and ANS Forth.
 
-fig_parsing?                    equ false
+fig_parsing_option                    equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
   ; XXX TODO
-names_in_memory_bank?           equ false
+names_in_memory_bank_option           equ false
   ; true = name fields and link fields are stored in a memory
   ; bank page, saving dictionary space.
   ; false = name fields and link fields are stored in the
@@ -155,11 +182,12 @@ max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
 
-if names_in_memory_bank?
+; Memory banks
 
-  names_bank: equ 1
+default_bank: equ 2
+names_bank:   equ 2 ; XXX TMP for debugging
 
-endif
+np0: equ 0xC000 ; names pointers
 
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
@@ -280,23 +308,8 @@ bank1_port:        equ 0x7FFD
 immediate: equ 1 ; used as optional parameter
 previous_nfa: defl 0 ; link to previous Forth word
 
-_header: macro _base_label,_name,_is_immediate
-
-  this_nfa: defl $ ; link address for next word
-  flags: defl name_bound_bit_mask
-    if not nul _is_immediate
-      flags: defl flags | precedence_bit_mask ; add precedence bit
-    endif
-  _base_label##nfa: ; name field address
-    db _base_label##lfa-_base_label##nfa-1+flags ; length and flags byte
-    db _name ; name field
-  _base_label##lfa: ; link field address
-    dw previous_nfa ; link field
-  _base_label: ; code field address
-
-  previous_nfa: defl this_nfa
-
-endm
+;include solo_forth.header_macro.default.z80s
+include solo_forth.header_macro.bank.z80s
 
 _code_header: macro _base_label,_name,_is_immediate
 
@@ -413,7 +426,7 @@ _jp_next: macro
 ; Create relative or absolute jumps, depending on the configured optimization
 
 _jump: macro _address
-  if size_optimization?
+  if size_optimization_option
     jr _address
   else
     jp _address
@@ -421,7 +434,7 @@ _jump: macro _address
   endm
 
 _jump_nc: macro _address
-  if size_optimization?
+  if size_optimization_option
     jr nc,_address
   else
     jp nc,_address
@@ -429,11 +442,27 @@ _jump_nc: macro _address
   endm
 
 _jump_z: macro _address
-  if size_optimization?
+  if size_optimization_option
     jr z,_address
   else
     jp z,_address
   endif
+  endm
+
+; ----------------------------------------------
+; Bank
+
+_bank: macro _n
+  _number _n
+  dw macro_
+  endm
+
+_names_bank: macro
+  _bank names_bank
+  endm
+
+_default_bank: macro
+  _bank default_bank
   endm
 
 ; ----------------------------------------------
@@ -552,12 +581,15 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-if names_in_memory_bank?
+;if names_in_memory_bank_option
 
+  ; XXX TODO
+
+  np: defl np0+1
 names_pointer:
-  dw np0+1
+  dw np
 
-endif
+;endif
 
 ; ==============================================================
 ; User variables
@@ -873,6 +905,7 @@ push_l: ; XXX TMP -- not used yet
   _jp_next
 
 bank.e:
+  ret ; XXX TMP for debugging
   di
   ld a,(sys_bankm) ; get the saved status of BANKM
   and 0xF8 ; erase bits 0-2
@@ -1211,7 +1244,7 @@ digit.test_value:
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
 
-if fig_find?
+if fig_find_option ; XXX OLD
 
 ; doc{
 ;
@@ -1284,7 +1317,7 @@ paren_find.nfa_backup: equ $+1
 
 endif
 
-if ! fig_find? && ! names_in_memory_bank?
+if ! fig_find_option && ! names_in_memory_bank_option
 
 ; doc{
 ;
@@ -1366,7 +1399,7 @@ paren_find.nfa_backup: equ $+1
 
 endif
 
-if ! fig_find? && names_in_memory_bank?
+if ! fig_find_option && names_in_memory_bank_option
 
   ; XXX TODO adapt to the new data format in the memory bank
 
@@ -2159,6 +2192,12 @@ l60c0h:
   jp push_hl
 
 ; ----------------------------------------------
+  _code_header rp_fetch_,'NP@'
+
+  ld hl,(names_pointer)
+  jp push_hl
+
+; ----------------------------------------------
   _code_header sp_fetch_,'SP@'
 
   ld hl,0x0000
@@ -2175,6 +2214,28 @@ l60c0h:
   ld l,a
   ld sp,hl
   _jp_next
+
+; ----------------------------------------------
+  _constant_header np_,'NP'
+
+  dw names_pointer
+
+; ----------------------------------------------
+  _colon_header comma_np_,',np'
+
+; doc{
+;
+; ,np  ( x -- )
+;
+; Store _x_ into the next available names memory cell, advancing
+; the names pointer.
+;
+; Note: The names memory is supposed to be paged in.
+;
+; }doc
+
+  dw np_fetch_,store_,two_,np_,plus_store_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _constant_header rp_,'RP'
@@ -2354,7 +2415,7 @@ l60c0h:
 
   pop hl
 zero_less_.hl: ; XXX entry not used yet
-  if size_optimization?
+  if size_optimization_option
     add hl,hl ; 11t, 1 byte
   else
     ; [Idea from Ace Forth.]
@@ -2593,7 +2654,7 @@ two_store.into_hl_pointer:
   inc hl
   ld (hl),d
   inc hl
-  if size_optimization?
+  if size_optimization_option
     jp store.into_hl_pointer
   else
     pop de
@@ -2810,11 +2871,19 @@ do_user:
   dw semicolon_s_
 
 ; ----------------------------------------------
+; XXX TODO
+;  _user_variable_header np0_,'NP0'
+
+;  db 0x00
+
+; ----------------------------------------------
+; XXX TODO rename to SP0
   _user_variable_header s0_,'S0'
 
   db 0x00
 
 ; ----------------------------------------------
+; XXX TODO rename to RP0
   _user_variable_header r0_,'R0'
 
   db 0x02
@@ -3092,7 +3161,7 @@ true_if_z: ; XXX entry not used yet
   pop hl
 is_de_less_than_hl:
   call compare_de_hl_signed
-  if size_optimization?
+  if size_optimization_option
     jp true_if_cy
   else
     jp c,true_pfa
@@ -3114,7 +3183,7 @@ u_greater_than.hl:
   pop hl
 u_less_than.de_hl:
   call compare_de_hl_unsigned
-  if size_optimization?
+  if size_optimization_option
     jp true_if_cy
   else
     jp c,true_pfa
@@ -3184,7 +3253,10 @@ lfa_to_nfa.do:
   _code_alias_header cfa_to_pfa_,'CFA>PFA',,two_plus_
 
 ; ----------------------------------------------
+
+if ! names_in_memory_bank_option
   _code_alias_header cfa_to_lfa_,'CFA>LFA',,two_minus_
+endif
 
 ; ----------------------------------------------
   _colon_header pfa_to_nfa_,'PFA>NFA'
@@ -3194,7 +3266,13 @@ lfa_to_nfa.do:
 
 ; ----------------------------------------------
 
-if names_in_memory_bank?
+; doc{
+;
+; cfa>nfa  ( cfa -- nfa )
+;
+; }doc
+
+if names_in_memory_bank_option
 
   _code_header cfa_to_nfa_,'CFA>NFA'
 
@@ -3271,13 +3349,11 @@ endif
 ;
 ; }doc
 
-if names_in_memory_bank?
+if names_in_memory_bank_option
 
-  _number names_bank
-  dw bank_
+  _names_bank
   dw count_,save_string_
-  _number default_bank
-  dw bank_
+  _default_bank
   dw semicolon_s_
 
 else
@@ -3369,7 +3445,7 @@ question_error.no_error:
 ; ----------------------------------------------
   _colon_header right_bracket_,']'
 
-if fig_find?
+if fig_find_option
 
   ; Note: Setting `state` to 0xC0 for "compiling state" will force
   ; non-immediate words to be compiled and immediate words to be executed. See
@@ -3998,7 +4074,7 @@ uppers.do:
   jp uppers.do
 
 ; ----------------------------------------------
-if fig_find?
+if fig_find_option
 
   _colon_header context_find_,'CONTEXT-FIND'
 
@@ -4029,7 +4105,7 @@ endif
 
 ; defined?  ( ca len -- wf )
 
-if fig_find?
+if fig_find_option
 
   ; XXX TODO -- not finished
   dw context_find_,dup_
@@ -4050,7 +4126,7 @@ endif
 
 ; undefined?  ( ca len -- wf )
 
-if fig_find?
+if fig_find_option
 
   ; XXX TODO -- not finished
   dw defined_question_,zero_equals_
@@ -4095,7 +4171,7 @@ endif
 
 ; ----------------------------------------------
 
-if fig_find?
+if fig_find_option ; XXX OLD
 
   _colon_header find_,'FIND'
 
@@ -4221,14 +4297,14 @@ error.end:
   ; XXX TMP -- this is a copy of the original `create`.
   ; XXX TODO -- accept an xt as parameter?
 
-  if fig_find?
+  if fig_find_option ; XXX OLD
 
     dw find_ ; ( pfa b tf | ff )
     dw zero_branch_,header.continue
     ; The word is not unique.
     dw drop_,pfa_to_nfa_
 
-  else
+  else ; XXX NEW
 
     dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
     dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
@@ -4241,6 +4317,24 @@ error.end:
   dw id_dot_
   _message not_unique_error
 header.continue:
+
+if names_in_memory_bank_option ; XXX NEW
+
+    ; XXX TODO
+
+  dw here_,count_,save_string_
+  _names_bank
+  dw here_,comma_np_ ; store a pointer to the cfa
+  dw latest_,comma_np_ ; link field
+  dw tuck_ ; save the name length for later
+  dw np_fetch_,dollar_store_ ; store the name
+  dw np_,plus_store_ ; update the names pointer
+  _default_bank
+  dw here_,two_plus_,comma_ ; compile the pfa into code field
+  dw semicolon_s_
+
+else ; XXX OLD
+
   dw here_
   ; XXX TODO error if name is too long (see lina)
   dw dup_,c_fetch_,width_,fetch_,min_,one_plus_,allot_ ; allocate space for name field
@@ -4253,10 +4347,13 @@ header.continue:
   dw here_,two_plus_,comma_ ; compile the pfa into code field.
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
 
   ; XXX TODO -- rewrite after Forth-83 and ANS Forth.
+  ; XXX TODO -- check if already done.
 
   dw header_,smudge_
   dw paren_semicolon_code_
@@ -4443,7 +4540,7 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
-if fig_find?
+if fig_find_option
   dw find_,zero_equals_
   _question_error not_found_error
   dw drop_,pfa_to_cfa_,comma_
@@ -4535,7 +4632,7 @@ two_literal.end:
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
 
-if fig_find?
+if fig_find_option
 
 ; doc{
 ;
@@ -5238,7 +5335,7 @@ flush.do:
 
 ; ----------------------------------------------
 
-if not fig_find?
+if not fig_find_option
 
   _colon_header defined_,'DEFINED'
 
@@ -5268,7 +5365,7 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
-if fig_find?
+if fig_find_option
   dw find_,dup_
   dw zero_branch_,bracket_defined.end
   dw nip_,nip_
@@ -5287,7 +5384,7 @@ endif
 ; ----------------------------------------------
   _colon_header tick_,"'"
 
-if fig_find?
+if fig_find_option
   dw find_
   dw zero_equals_
   _question_error not_found_error
@@ -6106,28 +6203,23 @@ nfa_of_top_most_word_in_forth_voc:
 
 dictionary_pointer_after_cold:
 
-end cold_entry
-
 ; ==============================================================
-;
+; Name and link fields
 
-if names_in_memory_bank?
+if names_in_memory_bank_option
 
   ; XXX TODO
 
-
-  np0: equ 0xC000 ; names pointers
-
   org np0
 
-  db 0 ; this null byte is needed by the algorithm used in `cfa>nfa`
-
-  ; Structure of an entry:
-  ; dw cfa ; pointer to the cfa of the word, in the main memory
-  ; dw nfa ; pointer to the nfa of the next word, or zero
-  ; db lenght+flags,"name; ; name field
+  db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
 
 endif
+
+; ==============================================================
+; End
+
+end cold_entry
 
 ; ==============================================================
 ; Debug tools

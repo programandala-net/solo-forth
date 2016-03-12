@@ -103,6 +103,23 @@ solo_forth_disk_2.mgt: solo_forth.fsb
 	mv solo_forth.mgt solo_forth_disk_2.mgt
 
 ################################################################
+# Tests
+
+test: test_bank_with_pasmo
+
+.PHONY: test_bank_with_pasmo
+test_bank_with_pasmo:
+	pasmo \
+		_test/bank_test.pasmo.asm \
+		_test/bank_test.pasmo.bin \
+		_test/bank_test.pasmo.symbols.asm
+	
+.PHONY: test_bank_with_z80asm
+test_bank_with_z80asm:
+	z80asm -s \
+		_test/bank_test.z80asm.asm
+
+################################################################
 # Backup
 
 .PHONY: backup

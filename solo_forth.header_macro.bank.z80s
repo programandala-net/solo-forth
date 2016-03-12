@@ -1,0 +1,35 @@
+  _header: macro _base_label,_name
+
+    ; In dictionary:
+  
+    _base_label: ; code field address
+    local _dp_backup
+    local _name_address
+    local _address_after_name
+    _dp_backup: equ $
+
+    ; In memory bank:
+
+    org np
+    _base_label##to_cfa:
+      dw _base_label ; pointer to cfa
+    _base_label##lfa: ; link field address
+      dw previous_nfa ; link field
+    this_nfa: defl $ ; link address for next word
+    _base_label##nfa: ; name field address
+      db _address_after_name-_name_address ; length
+    _name_address: equ $
+      db _name ; name field
+    _address_after_name: equ $
+    np: defl $
+
+    ; Update the names pointer:
+    org names_pointer
+    dw np
+
+    ; In dictionary:
+    org _dp_backup
+
+    previous_nfa: defl this_nfa
+
+  endm
