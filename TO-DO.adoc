@@ -60,12 +60,6 @@ This error happens in all fig-Forth systems:
 New: `??`. A control structure than executes the next compiled word if
 TOS is non-zero, else skip it.
 
-.2015-06-28:
-
-Fix: Something went wrong after the massive of the `_number` macro:
-`.` does not print well; `require` gives error 0!...  The problem is
-`_number -1`! Why? I wrote the autor of Pasmo. (He helped).
-
 .2015-06-30:
 
 New: command history, stored in the names bank.
@@ -172,6 +166,8 @@ Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 
 .2015-08-26:
 
-Finish `sound:`.
-
 New: `cvalue`, `2value`.
+
+.2015-08-31:
+
+Fix: `transfer-block` changes the current drive to 2!

@@ -8,6 +8,8 @@
 \ This file is the library of Solo Forth,
 \ and the skeleton to build applications in Solo Forth.
 
+\ Last modified: 201508310402
+
 \ ------------------------------------------------------------
 \ Acknowledgements
 
@@ -16,11 +18,14 @@
 \ ------------------------------------------------------------
 \ License
 
-\ Copying and distribution of this file, with or without
-\ modification, are permitted in any medium without royalty
-\ provided the copyright notice, the aknowledgments file and
-\ this notice are preserved.  This file is offered as-is,
-\ without any warranty.
+  \ Copying and distribution of this
+  \ file, with or without modification,
+  \ are permitted in any medium without
+  \ royalty provided the copyright
+  \ notice, the aknowledgments file and
+  \ this notice are preserved.  This file
+  \ is offered as-is, without any
+  \ warranty.
 
   \ ------------------------------------------------------------
   \ History
@@ -68,15 +73,19 @@ decode dump
   parse-name save-string do-required  ;
 
 : required  ( ca len -- )
-  
+
   \ XXX FIXME usually the final check
   \ fails because the saved string has
   \ been overwritten
 
-  2dup undefined?
-    if  2dup do-required  then
-  2dup undefined? warnings @ and
-    if  type 28 warning exit  then  2drop  ;
+  \ XXX OLD
+  \ 2dup undefined?
+  \   if  2dup do-required  then
+  \ 2dup undefined? warnings @ and
+  \   if  type 28 warning exit  then  2drop  ;
+ 
+  \ XXX NEW 
+  2dup undefined?  if  do-required  else  2drop  then  ;
 
 : require  ( "name" -- )
   parse-name save-string required  ;
@@ -86,17 +95,17 @@ decode dump
 
 ( Error messages 1..15 ) \ scr 4
 
-\ Error #1: Not a word nor a number.
-\ Error #2: Stack empty.
-  \ #03 not used:
-\ Error #3: Dictionary full.
-\ Error #4: Warning: Is not unique.
-\ Error #5: Word not found.
-  \ #06 not used:
-\ Error #6: Out of disk range
-\ Error #7: Full stack.
-\ Error #8:
-\ Error #9: Trying to load from screen 0.
+\ Error #01: Not a word nor a number.
+\ Error #02: Stack empty.
+  \ XXX not used:
+\ Error #03: Dictionary full.
+\ Error #04: Warning: Is not unique.
+\ Error #05: Word not found.
+  \ XXX not used:
+\ Error #06: Out of disk range
+\ Error #07: Full stack.
+\ Error #08:
+\ Error #09: Trying to load from screen 0.
 \ Error #10:
 \ Error #11:
 \ Error #12:
@@ -123,7 +132,72 @@ decode dump
 \ Error #28: Warning: Not present, though required.
 \ Error #29: Required, but not located.
   \ Assembler:
-\ Error #30: Branch too long.
+\ Error #30: Relative jump too long.
+
+( Error messages 31..46 )  \ scr 6
+
+  \ G+DOS Error codes and messages.
+  \ Some of them are useless for this implementation.
+
+  \ XXX useless:
+\ G+DOS error #00: Nonsense in G+DOS
+  \ XXX useless:
+\ G+DOS error #01: Nonsense in GNOS
+  \ XXX useless:
+\ G+DOS error #02: Statement end error
+  \ XXX useless:
+\ G+DOS error #03: Break requested
+\ G+DOS error #04: Sector error
+\ G+DOS error #05: Format data lost
+\ G+DOS error #06: Check disk in drive
+  \ XXX useless:
+\ G+DOS error #07: No +SYS file
+\ G+DOS error #08: Invalid file name
+  \ XXX useless:
+\ G+DOS error #09: Invalid station
+\ G+DOS error #10: Invalid device
+  \ XXX useless:
+\ G+DOS error #11: Variable not found
+\ G+DOS error #12: Verify failed
+\ G+DOS error #13: Wrong file type
+  \ XXX useless:
+\ G+DOS error #14: Merge error
+
+( Error messages 47..62 )  \ scr 7
+
+  \ G+DOS Error codes and messages.
+  \ Some of them are useless for this implementation.
+
+\ G+DOS error #15: Code error
+  \ XXX useless:
+\ G+DOS error #16: Pupil set
+\ G+DOS error #17: Invalid code
+\ G+DOS error #18: Reading a write file
+\ G+DOS error #19: Writing a read file
+  \ XXX useless:
+\ G+DOS error #20: O.K. G+DOS
+  \ XXX useless:
+\ G+DOS error #21: Network off
+\ G+DOS error #22: Wrong drive
+\ G+DOS error #23: Disk write protected
+\ G+DOS error #24: Not enough space on disk
+\ G+DOS error #25: Directory full
+\ G+DOS error #26: File not found
+\ G+DOS error #27: End of file
+\ G+DOS error #28: File name used
+  \ XXX useless:
+\ G+DOS error #29: No G+DOS loaded
+
+( Error messages 63..78 )  \ scr 7
+
+  \ G+DOS Error codes and messages.
+  \ Some of them are useless for this implementation.
+
+  \ XXX useless:
+\ G+DOS error #30: STREAM used
+  \ XXX useless:
+\ G+DOS error #31: CHANNEL used
+
 
   \ }}} =======================================================
   \ Strings {{{
@@ -502,9 +576,9 @@ code set-pixel  ( xc yc -- )
   hl pop  de pop  bc push
   l b ld  e c ld  pixel-add call
   a b ld  b inc  1 a ld#
-  <mark  a rrc  djnz
+  begin  a rrc  step
   m or  a m ld  \ combine pixel with byte in the screen
-  bc pop  next,
+  bc pop  jpnext
 
   end-code
 
@@ -524,9 +598,9 @@ code reset-pixel  ( xc yc -- )
   hl pop  de pop  bc push
   l b ld  e c ld  pixel-add call
   a b ld  b inc  1 a ld#
-  <mark  a rrc  djnz
+  begin  a rrc  step
   cpl  m and  a m ld  \ combine pixel with byte in the screen
-  bc pop  next,
+  bc pop  jpnext
 
   end-code
 
@@ -546,9 +620,9 @@ code toggle-pixel  ( xc yc -- )
   hl pop  de pop  bc push
   l b ld  e c ld  pixel-add call
   a b ld  b inc  1 a ld#
-  <mark  a rrc  djnz
+  begin  a rrc  step
   m xor  a m ld  \ combine pixel with byte in the screen
-  bc pop  next,
+  bc pop  jpnext
 
   end-code
 
@@ -567,7 +641,7 @@ code pixel?  ( xc yc -- f )
   \ hl = screen address
   \ a = pixel position in hl
   a b ld  b inc  m a ld
-  here  rlca djnz \ rotate to bit 0
+  begin  rlca  step \ rotate to bit 0
   bc pop  \ restore the Forth IP
   1 and#  \ pixel?
   ' true cfa>pfa jpnz
@@ -689,8 +763,6 @@ code attr ( line col -- b )
   end-code
 
 ( attr-addr )
-
-require z80-asm
 
 create attr-addr  ( -- a )
 
@@ -934,7 +1006,7 @@ code fade  ( -- )
   bc push
   8 b ld#
   \ do:
-  <mark  5AFF hl ldp#  halt  halt
+  begin  5AFF hl ldp#  halt  halt
     begin
       m a ld  a d ld  07 and#  nz if  a dec  then
       a e ld  a d ld  38 and#  nz if  8 sub#  then
@@ -942,8 +1014,8 @@ code fade  ( -- )
       a m ld  hl decp  h a ld
       58 cp#
     cy until
-  djnz \ loop
-  bc pop  next,
+  step
+  bc pop  jpnext
   end-code
 
 ( inverted )
@@ -960,7 +1032,7 @@ require z80-asm
 code inverted  ( -- )
   
   4000 hl ldp#
-  <mark   m a ld  cpl  a m ld
+  begin   m a ld  cpl  a m ld
           hl incp  h a ld  58 cp#
           jrnz
   jpnext
@@ -982,9 +1054,9 @@ code water  ( -- )
 
   bc push 
   20 b ld#
-  <mark    57FF hl ldp#
-            <mark   m rrc  hl decp  6 h bit  jrnz
-            djnz
+  begin    57FF hl ldp#
+            begin   m rrc  hl decp  6 h bit  z until
+            step
 
   bc pop  jpnext
 
@@ -1007,23 +1079,144 @@ code clsx  ( -- )
   bc push
 
   6 b ld#
-  <mark   bc push  57FF hl ldp#
-          <mark   20 c ld#  a and
-                  <mark   nop  m sla
+  begin   bc push  57FF hl ldp#
+          begin   20 c ld#  a and
+                  begin   nop  m sla
                           nop  m rlc
                           nop  m sla
-                          nop  hl decp  c dec  jrnz
-                  3F a ld#  h cp  jrnz
-          bc pop  djnz
+                          nop  hl decp  c dec  z until
+                  3F a ld#  h cp  z until
+          bc pop  step
 
   bc pop  jpnext
 
   end-code
-  
+
+( right-scroll-1 )
+
+  \ [Code adapted from a routine written by Antonio Adolfo Sanz,
+  \ published in Microhobby, issue 197 (1990-03), page 24:
+  \ http://microhobby.org/numero197.htm
+  \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg]
+
+  \ XXX FIXME
+
+require z80-asm
+
+code right-scroll-1  ( -- )
+
+  bc push
+
+  4000 hl ldp#  \ screen bitmap address
+  C0 c ld#  \ pixel rows
+  begin
+          m srl  hl incp  \ first char column
+          1F b ld#  \ remaining columns
+          begin   m rr  hl incp  step
+          c dec
+          z until
+
+  bc pop  end-code
+
+( xy-scroll )
+
+  \ [Code adapted from a routine written by Antonio Adolfo Sanz,
+  \ published in Microhobby, issue 197 (1990-03), page 24:
+  \ http://microhobby.org/numero197.htm
+  \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg]
+
+  \ XXX FIXME
+
+require z80-asm
+
+code xy-scroll  ( -- )
+
+  bc push
+
+  08 b ld#
+  begin
+
+    4000 hl ldp#  \ screen bitmap address
+    begin
+
+      m srl  hl incp
+      m sla  hl incp
+      58 a ld#  h cp
+      z until
+
+    step
+
+  bc pop  end-code
+
+( horizontal-curtain )
+
+  \ [Code adapted from a routine written by Alejandro Mora,
+  \ published in Microhobby, issue 128 (1987-05), page 7:
+  \ http://microhobby.org/numero128.htm
+  \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg]
+
+require z80-asm
+
+code horizontal-curtain  ( b -- )
+
+  \ Wash the screen with the given color
+  \ attribute _b_ from the top and bottom
+  \ rows to the middle.
+
+  de pop  bc push
+
+  e a ld  5800 de ldp#  5AFF hl ldp#
+  0C b ld#
+  begin   bc push  20 b ld#
+          begin   a m ld  de stap
+                  bc push  02 b ld#
+                  begin bc push  FF b ld#  begin  step
+                        bc pop  step
+                  bc pop  de incp  hl decp  step
+          bc pop  step
+
+  bc pop  jpnext
+
+  end-code
+
+( vertical-curtain )
+
+  \ [Code adapted from a routine written by Alejandro Mora,
+  \ published in Microhobby, issue 128 (1987-05), page 7:
+  \ http://microhobby.org/numero128.htm
+  \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg]
+
+require z80-asm
+
+code vertical-curtain  ( b -- )
+
+  \ Wash the screen with the given color
+  \ attribute _b_ from the left and right
+  \ columns to the middle.
+
+  \ b = color attribute
+
+  \ XXX FIXME crash!
+
+  de pop  bc push
+
+  e a ld  5800 de ldp#  5AFF hl ldp#  10 b ld#
+  begin   bc push  18 b ld#  de push  hl push
+          begin   a m ld  de stap  bc push  02 b ld#
+                  begin   bc push  FF b ld#  begin  step
+                          bc pop  step
+                  20 b ld#
+                  begin  de incp  hl decp  step
+                  bc pop  step
+
+          hl pop  de pop  bc pop  de incp  hl decp  step
+
+  bc pop  jpnext  end-code
+
   \ }}} =======================================================
   \ Sound 128K {{{
 
-( sound vol shutup noise )
+( !sound vol shutup noise )
 
   \ [Code from Spectrum Forth-83.]
   \ XXX TODO finish, document and test
@@ -1035,14 +1228,14 @@ require !p
 [defined] sound-write-port
   ?\ 49149 constant sound-write-port
 
-: sound  ( b1 b2 -- )
+: !sound  ( b1 b2 -- )
   \ b1 = sound datum
   \ b2 = sound register number (0..13)
   sound-register-port !p sound-write-port !p  ;
 
-: vol  ( n1 n2 -- )  8 + sound  ;
-: shutup  ( -- )  -1 7 sound  ;
-: noise  ( -- )  7 7 sound  ;
+: vol  ( n1 n2 -- )  8 + !sound  ;
+: shutup  ( -- )  -1 7 !sound  ;  \ XXX FIXME 
+: noise  ( -- )  7 7 !sound  ;
 
 ( music )
 
@@ -1053,12 +1246,12 @@ require ms  vocabulary music  current @  also music definitions
 
 : freq
   2* 109.375 3 roll  um/mod nip 256 /mod 2 pick
-  1+ sound  swap sound  ;
+  1+ !sound  swap !sound  ;
 
 variable len  variable tempo  variable octave  variable volume
 2 len !  200 tempo !  8 octave !  15 volume ! 1 15 vol
 
-: tones  ( -- )  56 7 sound  ;
+: tones  ( -- )  56 7 !sound  ;
 
 : note  ( n "name" -- )
   create  ,
@@ -1085,37 +1278,7 @@ variable len  variable tempo  variable octave  variable volume
 
 current ! previous
 
-( waves shoot helicopter train )
-
-  \ [`waves` and `shoot` are
-  \ adapted from code written by Juan José Ruiz,
-  \ published in Microhobby, issue 139 (1987-07), page 7:
-  \ http://microhobby.org/numero139.htm
-  \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg]
-
-create waves  ( -- a )
-  0 c,  0 c,  0 c,  0 c,  0 c,  0 c,  7 c,
-  71 c,  20 c,  20 c,  20 c,  0 c,  38 c,  14 c,  
- 
-create shoot  ( -- a )
-  10 c,  0 c,  177 c,  0 c,  191 c,  0 c,  31 c,
-  71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c, 
-
-  \ [`helicopter` and `train` are
-  \ adapted from code written by José Ángel Martín,
-  \ published in Microhobby, issue 172 (1988-09), page 22:
-  \ http://microhobby.org/numero172.htm
-  \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg]
-
-create helicopter  ( -- a )
-  200 c,  15 c,  200 c,  15 c,  200 c,  15 c,  0 c,
-  7 c, 23 c,  23 c,  23 c,  255 c,  1 c,  12 c,  
-
-create train  ( -- a )
-  100 c,  120 c,  48 c,  97 c,  12 c,  200 c,  55 c,
-  15 c,  9 c,  11 c,  55 c,  180 c,  4 c,  8 c,  
-
-( play )
+( play sound: )
 
   \ Code inspired by the article
   \ "Las posibilidades sonoras del 128 K",
@@ -1134,7 +1297,7 @@ require !p
 : play  ( a -- )
   \ a = address of a table with 14 bytes
   14 0 do
-    i sound-register-port !p  c@ sound-write-port !p 1+
+    i sound-register-port !p  dup c@ sound-write-port !p 1+
   loop  drop  ;
 
   \ XXX TODO
@@ -1164,18 +1327,52 @@ code play  ( a -- )
   0E b ld#  00 e ld#
     \ b = loop counter
     \ e = register number
-  <mark   bc push
+  begin   bc push
           e a ld  sound-register-port bc ldp#  a outbc
             \ select the register
           m a ld  sound-write-port bc ldp#  a outbc
             \ store the datum
           hl incp  e inc  bc pop  \ next
-  djnz
+  step
 
-  bc pop  next,
+  bc pop  jpnext
   end-code
 
+( waves shoot helicopter train )
+
+  \ Sounds to be played with `play`.
+
+  \ [`waves` and `shoot` are
+  \ adapted from code written by Juan José Ruiz,
+  \ published in Microhobby, issue 139 (1987-07), page 7:
+  \ http://microhobby.org/numero139.htm
+  \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg]
+
+create waves  ( -- a )
+  0 c,  0 c,  0 c,  0 c,  0 c,  0 c,  7 c,
+  71 c,  20 c,  20 c,  20 c,  0 c,  38 c,  14 c,  
+ 
+create shoot  ( -- a )
+  10 c,  0 c,  177 c,  0 c,  191 c,  0 c,  31 c,
+  71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c, 
+
+  \ [`helicopter` and `train` are
+  \ adapted from code written by José Ángel Martín,
+  \ published in Microhobby, issue 172 (1988-09), page 22:
+  \ http://microhobby.org/numero172.htm
+  \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg]
+
+create helicopter  ( -- a )
+  200 c,  15 c,  200 c,  15 c,  200 c,  15 c,  0 c,
+  7 c, 23 c,  23 c,  23 c,  255 c,  1 c,  12 c,  
+
+create train  ( -- a )
+  100 c,  120 c,  48 c,  97 c,  12 c,  200 c,  55 c,
+  15 c,  9 c,  11 c,  55 c,  180 c,  4 c,  8 c,  
+
 ( sound effects )
+
+  \ Sounds to be played with `play`.
 
   \ Data extracted a program written by Juan José Rosado Recio,
   \ published in Microhobby, issue 147 (1987-10), page 24:
@@ -1199,6 +1396,25 @@ FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound: bell3
 24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound: waterdrop
 
   decimal
+
+( rain water-drops )
+
+  \ Sounds to be played with `play`.
+
+  \ Data extracted from a program written by Carlos Ventura,
+  \ published in Microhobby, issue 198 (1990-05), page 16:
+  \ http://microhobby.org/numero198.htm
+  \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
+
+  \ XXX this effects not sound fine, but the data is right
+
+create rain  ( -- a )
+  44 c, 24 c, 6 c, 6 c, 7 c, 3 c, 3 c,
+  5 c, 44 c, 6 c, 3 c, 5 c, 3 c, 3 c,
+
+create water-drop  ( -- a )
+  20 c, 83 c, 94 c, 39 c, 0 c, 8 c, 31 c,
+  71 c, 23 c, 23 c, 22 c, 90 c, 0 c, 0 c,
 
   \ }}} =======================================================
   \ Sound 48K {{{
@@ -1244,11 +1460,11 @@ code laser-gun  ( -- )
   bc push
   5 b ld#
   0500 hl ldp#
-  <mark   0001 de ldp#
-          hl push  03B5 call  hl pop
+  begin   0001 de ldp#
+          hl push  03B5 call  hl pop  \ ROM beeper
           0010 de ldp#  de subp
           jrnz
-  bc pop  next ix ldp#  next,
+  bc pop  next ix ldp#  jpnext
   end-code
 
 ( white-noise )
@@ -1276,14 +1492,43 @@ code white-noise  ( u -- )
   5C48 fta  a sra  a sra  a sra  07 and#  a d ld
     \ d = border color (in bits 0-2)
 
-  <mark   m e ld  hl incp  bc decp  bc push
+  begin   m e ld  hl incp  bc decp  bc push
           08 b ld#  \ bit counter
-          <mark   e a ld  10 and#  e rl  d or  FE out  \ beep
-                  djnz
+          begin   e a ld  10 and#  e rl  d or  FE out  \ beep
+                  step
           bc pop  c a ld  b or
           jrnz
 
   bc pop  jpnext \ restore the Forth IP and go next
+
+  end-code
+
+( ambulance )
+
+  \ Ambulance sound for ZX Spectrum 48K.
+  \ Author of the original code: Líder Software.
+  \ Published in Microhobby, issue 142 (1987-09), page 7:
+  \ http://microhobby.org/numero142.htm
+  \ http://microhobby.speccy.cz/mhf/142/MH142_07.jpg
+
+require z80-asm
+
+code ambulance  ( n -- )
+
+  \ n = times
+
+  de pop  bc push  e b ld
+
+  begin   bc push  0320 hl ldp#  000A de ldp#
+          <mark   hl push
+                  03B5 call  \ ROM beeper
+                  hl pop  hl decp
+                  h a ld  l or
+                  jrnz
+          bc pop
+          step
+
+  bc pop  next ix ldp#  jpnext
 
   end-code
 
@@ -1440,13 +1685,12 @@ code rshift  ( x1 u -- x2 )
   \ }}} =======================================================
   \ G+DOS {{{
 
-( ufia ) 
+( ufia )
 
-24 constant /ufia
-create ufia  /ufia allot  ufia /ufia erase
+24 constant /ufia  create ufia  /ufia allot  ufia /ufia erase
 
-  \ Note: The original field names are used, except `DEVICE`,
-  \ whose original name is "LSTR1".
+  \ Note: The original field names are used, except `device`,
+  \ whose original name is "lstr1".
 
 ufia      constant dstr1 \ drive: 1 or 2
 ufia 1+   constant fstr1 \ program number
@@ -1458,16 +1702,17 @@ ufia 15 + constant hd00  \ file type
 ufia 16 + constant hd0b  \ file length
 ufia 18 + constant hd0d  \ file start address
   \ XXX OLD -- not needed
-  \ UFIA 20 + CONSTANT HD0F  \ BASIC length without variables
-  \ UFIA 22 + CONSTANT HD11  \ BASIC autorun line
+  \ ufia 20 + constant hd0f  \ BASIC length without variables
+  \ ufia 22 + constant hd11  \ BASIC autorun line
 
 char d device c! \ "d" or "D"
 2 sstr1 c! \ stream 2
+1 dstr1 c! \ drive 1
 
   \ These variables hold a copy of the HD0B and HD0D UFIA
   \ fields. They are used by `(<DISK)`.
-0 variable file-length
-0 variable file-address
+variable file-length
+variable file-address
 
 ( File types and directory descriptions)
 
@@ -1489,55 +1734,19 @@ char d device c! \ "d" or "D"
 
 hex
 
-33 constant hxfer 34 constant ofsm  35 constant hofle
-36 constant sbyt  37 constant hsvbk 38 constant cfsm
-39 constant pntp  3A constant cops  3B constant hgfle
-3C constant lbyt  3D constant hldbk 3E constant wsad
-3F constant sad   40 constant rest  41 constant heraz
-42 constant cops2 43 constant pcat  44 constant hrsad
-45 constant hwsad 46 constant otfoc 47 constant patch
+33 constant hxfer  34 constant ofsm  35 constant hofile
+36 constant sbyte  37 constant hsvbk 38 constant cfsm
+39 constant pntp   3A constant cops  3B constant hgfile
+3C constant lbyte  3D constant hldbk 3E constant wsad
+3F constant sad    40 constant rest  41 constant heraz
+42 constant cops2  43 constant pcat  44 constant hrsad
+45 constant hwsad  46 constant otfoc 47 constant patch
 
 decimal
 
-: --hook-codes--  ( -- )  noop  ;
+: --hook-codes-- ;
 
 ( ior>error ?dos-error )
-
-  \ G+DOS Error codes and messages.
-  \ Most of them are useless for this implementation.
-
-  \ 0x00  'Nonsense in G+DOS'
-  \ 0x01  'Nonsense in GNOS'
-  \ 0x02  'Statement END error'
-  \ 0x03  'BREAK requested'
-  \ 0x04  ',SECTOR error'
-  \ 0x05  'FORMAT data lost'
-  \ 0x06  'CHECK DISC in drive'
-  \ 0x07  'No "+ SYS " file'
-  \ 0x08  'Invalid FILE NAME'
-  \ 0x09  'Invalid STATION'
-  \ 0x0A  'Invalid DEVICE'
-  \ 0x0B  'VARIABLE not found'
-  \ 0x0C  'VERIFY failed'
-  \ 0x0D  'Wrong FILE type'
-  \ 0x0E  'MERGE error'
-  \ 0x0F  'CODE error'
-  \ 0x10  'PUPIL set'
-  \ 0x11  'Invalid CODE'
-  \ 0x12  'Reading a WRITE file'
-  \ 0x13  'Writing a READ file'
-  \ 0x14  'O.K. G+DOS'
-  \ 0x15  'Network OFF'
-  \ 0x16  'Wrong DRIVE'
-  \ 0x17  'Disc WRITE protected'
-  \ 0x18  'Not enough SPACE on disc'
-  \ 0x19  'Directory FULL'
-  \ 0x1A  'File NOT FOUND'
-  \ 0x1B  'END of file'
-  \ 0x1C  'File NAME used'
-  \ 0x1D  'NO G+DOS loaded'
-  \ 0x1E  'STREAM used'
-  \ 0x1F  'CHANNEL used'
 
 : ior>error  ( ior -- f n )
 
@@ -1552,10 +1761,12 @@ decimal
   \     n<0  = ZX Spectrum error number (negative)
   \     n>99 = DOS error number (plus 100)
 
-  dup 1 and    \ error?
-  swap 255 /   \ error code
-  dup 128 and  \ ZX Spectrum error?
-  if  negate  else  100 +  then   ;
+  dup 1 and negate  \ error?
+  swap 255 /        \ error code
+                    \ XXX TODO `flip 255 and` instead
+  dup 128 and       \ ZX Spectrum error?
+  \ XXX FIXME -- BASIC errors are not properly calculated
+  if  negate  else  31 +  then   ;
 
 : ?dos-error  ( ior -- )
   \ ior = the AF register returned by a DOS command:
@@ -1572,26 +1783,45 @@ code drive@  ( -- n )
   \ Get the current drive (1 or 2).
   bc push  ix push  \ save the Forth registers
   patch hook
-  \ 3E01 fta  \ XXX OLD
   3ACE fta  \ XXX NEW
   \ XXX TODO check this method:
   \ bit 0 of 3DD1
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
-  0 h ld#  a l ld  pushhl jp  end-code
+  pusha jp  end-code
 
 code drive!  ( n -- )
   \ Set the current drive (1 or 2).
   hl pop
   bc push  ix push  \ save the Forth registers
-  \ XXX OLD
-  \ HL PUSH
-  \ PATCH HOOK  HL POP  L A LD  3E01 STA
-  \ E7 OUT  \ page +D out
-  \ XXX NEW
-  l a ld  21 hook
-  ix pop  bc pop  \ restore the Forth registers
+  l a ld  21 hook   \ select drive in a
+  ix pop  bc pop    \ restore the Forth registers
   jpnext  end-code
+
+( -file )
+
+require z80-asm  require ufia  require --hook-codes--
+
+code (-file)  ( -- ior )
+
+  \ Delete a disk file using the data hold in UFIA.
+
+  bc push  ix push  \ save the Forth registers
+  ufia ix ldp#
+  heraz hook \ erase the file
+  ix pop  bc pop  \ restore the Forth registers
+  af push
+  jpnext
+  end-code
+
+require ior>error
+
+: -file  ( ca len -- f n )
+  \ Delete a disk file.
+  \ ca len  = filename
+  \ f       = error?
+  \ n       = error
+  filename>ufia (-file) ior>error  ;
 
 ( -filename filename! >ufia filename>ufia )
 
@@ -1617,11 +1847,14 @@ require ufia  require drive@
   dup hd0d !  file-address !
   drive@ dstr1 c!  ;
 
+1 drive!  \ default
+
 : filename>ufia  ( ca len -- )  0 0 2swap >ufia  ;
 
-( >file? >file )
+( >file )
 
-require z80-asm  require ufia
+require z80-asm  require ufia  require --hook-codes--
+require >ufia  require ior>error
 
 code (>file)  ( -- ior )
 
@@ -1629,20 +1862,16 @@ code (>file)  ( -- ior )
 
   bc push  ix push  \ save the Forth registers
   ufia ix ldp#
-  hofle hook \ open the file and create its header
+  hofile hook \ open the file and create its header
   nc if \ no error?
-    hd0d de ldp \ start
-    hd0b bc ldp \ length
+    hd0d de ftp  hd0b bc ftp  \ de=start, bc=length
     hsvbk hook \ save to file
     nc if  cfsm hook  then  \ close the file if no error
   then  ix pop  bc pop  \ restore the Forth registers
   af push  \ ior
-  jpnext
-  end-code  -->
+  jpnext end-code
 
-( >file? >file )
-
-: >file?  ( ca1 len1 ca2 len2 -- f n )
+: >file  ( a1 len1 ca2 len2 -- f n )
   \ Save a file to disk.
   \ a1 len1   = memory region to save
   \ ca2 len2  = filename
@@ -1650,15 +1879,10 @@ code (>file)  ( -- ior )
   \ n         = error
   >ufia (>file) ior>error  ;
 
-: >file  ( ca1 len1 ca2 len2 -- )
-  \ Save a file to disk.
-  \ a1 len1   = memory region to save
-  \ ca2 len2  = filename
-  >file? ?error  ;
-
-( <file? <file )
+( <file )
 
 require z80-asm  require ufia  require --hook-codes--
+require >ufia  require ior>error
 
 code (<file)  ( -- ior )
 
@@ -1668,42 +1892,28 @@ code (<file)  ( -- ior )
 
   bc push  ix push  \ save the Forth registers
 
-  ufia ix ldp#  hgfle hook \ get the file
+  ufia ix ldp#  hgfile hook \ get the file
   nc if \ no error?  -- load the file header:
 
-    \ Load the file header
-    hd00 de ldp# 9 b ld# \ destination and count
-    begin
-      lbyt hook \ load byte and store it in A
-      de stap  de incp  \ update destination and count
-    dsz
+    hd00 de ldp#  9 b ld# \ destination and count
+    begin  lbyte hook  de stap  de incp  step
+      \ Load the file header.
 
--->
+    file-address de ftp  file-length bc ftp
+      \ The start address and length specified
+      \ in the command are used by default instead
+      \ of those stored in the file header.
 
-( <file? <file )
+    bc tstp z if  hd0b bc ftp  then  hldbk hook
+      \ If the length is zero, use the
+      \ length of the file header
+      \ instead.  Then load the file data.
 
-    \ The start address and lenght specified
-    \ in the command are used by default instead
-    \ of those stored in the file header.
-    file-address de ldp
-    file-length bc ldp
+  then  ix pop  bc pop  af push 
+        \ restore the Forth registers and save the ior
+  jpnext  end-code
 
-    bc tstp  \ is the lenght zero?
-    \ If so, use the lenght of the file header instead:
-    z if  hd0b bc ldp  then
-
-    \ Load the file data
-    hldbk hook
-
-  then
-
-  ix pop  bc pop  \ restore the Forth registers
-  af push  \ ior
-  jpnext
-
-end-code
-
-: <file?  ( a1 len1 ca2 len2 -- f n )
+: <file  ( a1 len1 ca2 len2 -- f n )
   \ Load a file from disk.
   \ a1 len1   = memory region to load
   \ ca2 len2  = filename
@@ -1711,104 +1921,91 @@ end-code
   \ n         = error
   >ufia (<file) ior>error  ;
 
-: <file  ( a1 len1 ca2 len2 -- )
-  \ Load a file from disk.
-  \ a1 len1   = memory region to load
-  \ ca2 len2  = filename
-  <file? ?error  ;
-
-( -file? -file )
-
-require z80-asm  require ufia  require --hook-codes--
-
-code (-file)  ( -- ior )
-
-  \ Delete a disk file using the data hold in UFIA.
-
-  bc push  ix push  \ save the Forth registers
-  ufia ix ldp#
-  heraz hook \ erase the file
-  ix pop  bc pop  \ restore the Forth registers
-  af push
-  jpnext
-  end-code
-
-: -file?  ( ca len -- f n )
-  \ Delete a disk file.
-  \ ca len  = filename
-  \ f       = error?
-  \ n       = error
-  filename>ufia (-file) ior>error  ;
-
-: -file  ( ca len -- )
-  \ Delete a disk file.
-  \ ca len = filename
-  -file? ?error  ;
-
 ( file? )
 
 require ufia  require filename!  require --hook-codes--
 
 code (file?)  ( -- f )
 
-  \ XXX FIXME this changes the current drive to 2! why?
-
   bc push  ix push  \ save the Forth registers
   patch hook
-  nstr2 ix ldp#  1146 call
+  nstr2 ix ldp#
+  1146 call  \ FIND_FILE
+  168E call  \ BORD_REST = restore the border
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
-  0 hl ldp#  pushhl jpnz
-  hl incp    pushhl jp
+  ' true cfa>pfa jpz
+  ' false cfa>pfa jp
   end-code
 
 : file?  ( ca len -- f )  filename! (file?)  ;
 
-( cat acat )
+( cat acat wcat wacat )
 
 require z80-asm  require ufia  require --hook-codes--
 require filename>ufia
 
-  \ G+DOS addresses (in it own paged memory).
-hex 3E01 constant ufia1 decimal
+  \ G+DOS addresses (in its own paged memory).
+[defined] ufia1  ?\ hex 3E01 constant ufia1 decimal
   \ 3E1A constant ufia2
 
 code (cat)  ( n -- )
 
-  af pop
-  bc push  ix push  \ save the Forth registers
-  af push  patch hook
+  \ n = cat type: 2=compact; 4=detailed
 
-  \ Copy Forth UFIA to G+DOS UFIA1.
+  hl pop  bc push  ix push  exx
+    \ Get the parameter in hl' and save the Forth registers
+
+  patch hook
+
   ufia hl ldp#  ufia1 de ldp#  /ufia bc ldp#  ldir
+    \ Copy Forth UFIA to G+DOS UFIA1.
 
-  hl pop  l a ld  \ cat type: 2=compact;4=detailed
-  24B5 call \ CAT_RUN
-  168E call \ BORD_REST = restore the border
+  exx  l a ld  24B5 call  168E call
+    \ 24B5 = CAT_RUN (input: cat type in the a register)
+    \ 168E = BORD_REST (restore the border)
 
-  E7 out  \ page +D out
-  ix pop  bc pop  jpnext  end-code
+  E7 out  ix pop  bc pop  jpnext  end-code
+    \ page +D out
     \ restore the Forth registers and exit
 
-  \ cat  ( ca len -- )
-  \
+: wcat  ( ca len -- )  filename>ufia  4 (cat)  ;
   \ Show a disk catologue using the given wild-card filename.
   \ See the +D manual for wild-card syntax.
-  \
-  \ The catalogue can be printed out on a printer by storing
-  \ the number 3 into SSTR1 (a field of UFIA that holds the
-  \ stream number to use) before doing `CAT`. The default value
-  \ is 2 (screen) and should be restored. Example:
-  \
-  \   3 sstr1 c! s" forth?.*" cat 2 sstr c!
 
-: cat  ( ca len -- )  filename>ufia  4 (cat)  ;
+: wacat  ( ca len -- )  filename>ufia  2 (cat)  ;  decimal
+  \ A variant of `wcat` that shows an abbreviated catalogue.
+  \ See the +D manual for wild-card syntax.
 
-  \ acat  ( ca len -- )
-  \
+: cat  ( ca len -- )  s" *" wcat  ;
+  \ Show a complete disk catologue. 
+
+: acat  ( ca len -- )  s" *" wacat ;  decimal
   \ A variant of `cat` that shows an abbreviated catalogue.
 
-: acat  ( ca len -- )  filename>ufia  2 (cat)  ;  decimal
+  \ The disk catalogues can be printed out on a printer by
+  \ storing the number 3 into SSTR1 (a field of UFIA that holds
+  \ the stream number to use) before doing `CAT`. The default
+  \ value is 2 (screen) and should be restored. Example:
+  \
+  \   3 sstr1 c! s" forth?.*" wcat 2 sstr c!
+
+( @dos )
+
+require z80-asm  require --hook-codes--
+
+code @dos  ( a -- n )
+  \ Fetch the content of +D memory address.
+  hl pop
+  bc push  ix push  \ save the Forth registers
+  hl push
+  patch hook
+  hl pop m e ld  hl incp  m d ld
+  E7 out  \ page +D out
+  ix pop  bc pop  \ restore the Forth registers
+  de push
+  jpnext
+  end-code
 
 ( c@dos )
 
@@ -1821,27 +2018,10 @@ code c@dos  ( a -- b )
   hl push
   patch hook
   hl pop
-  (hl) a ld 0 h ld#  a l ld
+  m a ld
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
-  pushhl jp
-  end-code
-
-( @dos )
-
-require z80-asm  require --hook-codes--
-
-code @dos  ( a -- n )
-  \ Fetch the content of +D memory address.
-  hl pop
-  bc push  ix push  \ save the Forth registers
-  hl push
-  patch hook
-  hl pop (hl) e ld  hl incp  (hl) d ld
-  E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
-  de push
-  jpnext
+  pusha jp
   end-code
 
 ( c!dos )
@@ -1854,7 +2034,7 @@ code c!dos  ( b a -- )
   bc push  ix push  \ save the Forth registers
   de push hl push
   patch hook
-  hl pop  de pop  e (hl) ld
+  hl pop  de pop  e m ld
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
   jpnext
@@ -1870,30 +2050,9 @@ code !dos  ( n a -- )
   bc push  ix push  \ save the Forth registers
   de push  hl push
   patch hook
-  hl pop  de pop  e (hl) ld  hl incp  d (hl) ld
+  hl pop  de pop  e m ld  hl incp  d m ld
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
-  jpnext
-  end-code
-
-( c@dosvar )
-
-require z80-asm  require --hook-codes--
-
-[defined] dos-vars ?\ 8192 constant dos-vars
-  \ Address of the G+DOS vars in its own memory.
-
-code c@dosvar  ( n -- b )
-  \ Fetch the content of G+DOS variable n.
-  hl pop
-  bc push  ix push  \ save the Forth registers
-  hl push
-  patch hook
-  hl pop  dos-vars de ldp#  de addp
-  (hl) a ld 0 d ld#  a e ld
-  E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
-  de push
   jpnext
   end-code
 
@@ -1912,10 +2071,60 @@ code @dosvar  ( n1 -- n2 )
   hl push
   patch hook
   hl pop  dos-vars de ldp#  de addp
-  (hl) e ld  hl incp  (hl) d ld
+  m e ld  hl incp  m d ld
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
   de push
+  jpnext
+  end-code
+
+( c@dosvar )
+
+require z80-asm  require --hook-codes--
+
+[defined] dos-vars ?\ 8192 constant dos-vars
+  \ Address of the G+DOS vars in its own memory.
+
+code c@dosvar  ( n -- b )
+  \ Fetch the content of G+DOS variable n.
+  hl pop
+  bc push  ix push  \ save the Forth registers
+  hl push
+  patch hook
+  hl pop  dos-vars de ldp#  de addp
+
+  \ XXX OLD
+  \ m a ld 0 d ld#  a e ld
+  \ E7 out  \ page +D out
+  \ ix pop  bc pop  \ restore the Forth registers
+  \ de push
+  \ jpnext
+
+  \ XXX NEW
+  m a ld
+  E7 out  \ page +D out
+  ix pop  bc pop  \ restore the Forth registers
+  pusha jp
+
+  end-code
+
+( !dosvar )
+
+require z80-asm  require --hook-codes--
+
+[defined] dos-vars ?\ 8192 constant dos-vars
+  \ Address of the G+DOS vars in its own memory.
+
+code !dosvar  ( n1 n2 -- )
+  \ Store n1 into the G+DOS variable n2.
+  hl pop  de pop
+  bc push  ix push  \ save the Forth registers
+  de push  hl push
+  patch hook
+  hl pop  dos-vars de ldp#  de addp  de pop
+  e m ld  hl incp  d m ld
+  E7 out  \ page +D out
+  ix pop  bc pop  \ restore the Forth registers
   jpnext
   end-code
 
@@ -1933,27 +2142,7 @@ code c!dosvar  ( b n -- )
   de push hl push
   patch hook
   hl pop  dos-vars de ldp#  de addp  de pop
-  e (hl) ld
-  E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
-  jpnext
-  end-code
-
-( !dosvar )
-
-require z80-asm  require --hook-codes--
-
-[defined] dos-vars ?\ 8192 constant dos-vars
-  \ Address of the G+DOS vars in its own memory.
-
-code !dosvar  ( n1 n2 -- )
-  \ Store n1 into the G+DOS variable n2.
-  hl pop  de pop
-  bc push  ix push  \ save the Forth registers
-  de push  hl push
-  patch hook
-  hl pop  dos-vars de ldp#  de addp  de pop
-  e (hl) ld  hl incp  d (hl) ld
+  e m ld
   E7 out  \ page +D out
   ix pop  bc pop  \ restore the Forth registers
   jpnext
@@ -2319,14 +2508,20 @@ require break-key?
     here c@ - spaces [char] ^ emit
   else  2drop  then  ;
 
-( .s )
+( .s u.s )
 
-  \ [Code from Afera. Origital algorithm from v.Forth.]
+  \ [Code from Afera. Original algorithm from v.Forth.]
+
+: .depth  ( n -- )
+  s>d <# [char] > hold #s [char] < hold #> type space  ;
 
 : .s   ( -- )
-  depth
-  dup s>d <# [char] > hold #s [char] < hold #> type space
+  depth dup .depth
   if  sp@ 2- s0 @ 2- do i @ . -2 +loop  then  ;
+
+: u.s   ( -- )
+  depth dup .depth
+  if  sp@ 2- s0 @ 2- do i @ u. -2 +loop  then  ;
 
 ( marker ) \ 2nd approach
 
@@ -2623,8 +2818,8 @@ decimal
 
 ( '. ) \ character prefix
 
-  \ XXX FIXME it seems it does not work anymory after the
-  \ changes in the system.
+  \ XXX FIXME it does not work anymore after the changes in the
+  \ system.
 
   \ Original code from:
   \   lina
@@ -2648,6 +2843,9 @@ width ! decimal
   \   The Netherlands
   \   Published under GPL
 
+  \ XXX FIXME it does not work anymore after the changes in the
+  \ system.
+
 require c>hex
 
 hex width @  1 width !
@@ -2666,8 +2864,8 @@ width ! decimal
 
 ( 0x.. 0x.... )  \ hex prefixes
 
-  \ XXX FIXME it seems it does not work anymory after the
-  \ changes in the system.
+  \ XXX FIXME it does not work anymore after the changes in the
+  \ system.
 
   \ Original code from:
   \   lina
@@ -2693,8 +2891,8 @@ width ! decimal
 
 ( #... #..... ) \ hex prefixes
 
-  \ XXX FIXME it seems it does not work anymory after the
-  \ changes in the system.
+  \ XXX FIXME it does not work anymore after the changes in the
+  \ system.
 
   \ Inspired by code from:
   \   lina
@@ -2933,7 +3131,7 @@ code (step)  ( R: n -- n' )
     \ inc hl
     \ ld (return_stack_pointer),hl
     \ ; skip branch offset and jump to next
-  03 c, 03 c, next,
+  03 c, 03 c, jpnext
     \ inc bc
     \ inc bc
     \ jp next
@@ -3249,28 +3447,44 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
 
 ( get-order set-order )
 
-  \ XXX TODO
-  \ XXX FIXME
+  \ XXX TODO use the actual number of vocs in context, not
+  \ the maximum
 
-variable #order  \ number of vocs in the current search order
-
-: (get-order)  ( -- widn..wid1 n)
+: (get-order)  ( n -- widn..wid1 n)
   \ Do get the search order.
-  \ XXX TODO use `?do` when available
-  0 swap do  context i cells + @  -1 +loop  ;
+  1- -1 swap do  context i cells + @  -1 +loop  ;
 
 : get-order  ( -- 0 | widn..wid1 n)
   \ Get the search order.
-  #order @ ?dup if  (get-order)  then  #order @  ;
+  #vocs ?dup if  (get-order)  then  #vocs  ;
 
 : (set-order)  ( widn..wid1 n -- )
-  \ Do set the search order.
+  \ Do set a search order.
   0 do  context i cells + !  loop  ;
 
 : set-order  ( -1 | 0 | widn..wid1 n -- )
-  \ Set the search order.
+  \ Set a search order.
+  -order
   dup -1 =  if  drop only exit  then
-  dup #order ! ?dup if  (set-order)  then  ;
+  ?dup if  (set-order)  then  ;
+
+
+  \ doc{
+  \
+  \ set-order  ( -1 | 0 | widn..wid1 n -- )
+  \
+  \ Set the search order to the word lists identified by
+  \ _widn..wid1_. Subsequently, word list _wid1_ will be
+  \ searched first, and word list _widn_ searched last. If _n_
+  \ is zero, empty the search order. If _n_ is minus one, set
+  \ the search order to the implementation-defined minimum
+  \ search order.
+  \
+  \ This word is defined in ANS Forth but its implementation in
+  \ Solo Forth is not fully ANS Forth compliant.
+  \
+  \ }doc
+
 
   \ }}} =======================================================
   \ Random number generator {{{
@@ -3315,8 +3529,21 @@ code xrnd  ( -- x )
   hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
   de pop  de addp  d# 41 de ldp#  de addp
   seed hl stp
-  next,
+  jpnext
   end-code
+
+( z88random )
+
+  \ [Code adapted from Z88 CamelForth.]
+
+[defined] seed
+?\ 23670 constant seed  \ system variable
+
+  \ XXX TODO Adapt.
+: z88random  ( u1 -- u2 )
+  20077 16838 seed @
+  ud* 12345 0 d+ over seed !
+  rot ud/mod 2drop  ;
 
 ( random-test )
 
@@ -3595,19 +3822,28 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : >relmark  ( -- dest )  here 1-  ;
   \ Forward relative mark.
+
 : >relresolve  ( orig dest -- ) over - ?page swap c!  ;
   \ Forward relative resolve.
 
 : then  ( orig cs-id -- )  0A ?pairs >relmark >relresolve  ;
+
 : if  ( op -- orig cs-id )  , >relmark 0A  ;
+
 : else  ( orig cs-id -- cs-id ) \ XXX TODO document
   0A ?pairs 18 if rot swap then 0A  ;
+
 : begin  (  -- dest cs-id )  <mark 0B  ;
+
 : while  (  op -- orig cs-id )  if 2+  ;
+
 : until  (  dest cs-id op -- )
   , 0B ?pairs 1- >relmark swap >relresolve  ;
-: again  (  dest cs-id -- )  18 until  ;
-: dsz    ( dest cs-id -- )  10 until  ;
+
+: again  (  dest cs-id -- )  18 until  ;  \ compile `jr`
+
+: step    ( dest cs-id -- )  10 until  ;  \ compile `djnz`
+
 : repeat  (  dest cs-id1 orig cs-id2 )  2swap again 2- then  ;
 
 -->
@@ -3617,13 +3853,21 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
   \ XXX TODO document
 
 : then'  (  orig cs-id -- )  08 ?pairs >resolve  ;
+
 : if'  (  op -- orig cs-id )  c, >mark 08  ;
+
 : else'  (  cs-id -- cs-id )
   08 ?pairs C3 if' rot swap then' 08  ;
+  \ C3 = opcode of `jp`
+
 : begin'  (  -- dest cs-id )  <mark 09  ;
+
 : while'  (  op -- orig cs-id )  if' 2+  ;
+
 : until'  (  cs-id op -- )  c, 09 ?pairs <resolve  ;
+
 : again'  (  cs-id -- )  C3 until'  ;
+
 : repeat'  (  dest cs-id1 orig cs-id2 )
   2swap again' 2- then'  ;
 
@@ -3649,23 +3893,7 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
 ( z80-asm -- definining words)
 
-variable abase  \ backup of `base`
-
 only forth definitions also assembler
-
-  \ XXX OLD
-
-  \ : asm  ( -- )  base @ abase ! hex  also assembler  ;
-  \   \ Start the assembler mode.
-
-  \ : end-asm  ( -- )  abase @ base !  previous  ;
-  \   \ End the assembler mode.
-
-  \ : code  ( "name" -- )  header !csp asm  ;
-  \   \ Start a code definition.
-
-  \ : end-code  ( -- )  ?csp end-asm smudge  ;
-  \   \ End a code definition
 
 : macro  ( "name" -- )  asm postpone :  ;
 : endm  ( -- )  postpone ;  ;

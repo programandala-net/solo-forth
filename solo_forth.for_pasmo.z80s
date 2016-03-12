@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508280231
+version_release:  equ 201508310402
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -334,9 +334,7 @@ error.unsupported_disk_operation:   equ 26
 error.source_file_needed:           equ 27
 error.not_present_though_required:  equ 28
 error.required_but_not_located:     equ 29
-error.branch_too_long:              equ 30
-error.number_31:                    equ 31 ; free
-error.number_33:                    equ 32 ; free
+error.relative_jump_too_long:       equ 30
 
 ; ----------------------------------------------
 ; ZX Spectrum
@@ -1126,6 +1124,11 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   ; ; not needed
   
   ; dw next2
+
+; ----------------------------------------------
+  _constant_header pusha_,'PUSHA'
+
+  dw push_a
 
 ; ----------------------------------------------
   _constant_header pushhl_,'PUSHHL'
