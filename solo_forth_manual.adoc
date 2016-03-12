@@ -1428,13 +1428,13 @@ Leave the bit-value logical or of two 16 bit values.
 A user variable that contains a value incremented by `EMIT`. The user
 may alter and examine `OUT` to control display formatting.
 
-`OUTP`  ( n1 n2 -- )
-
-Present _n1_ to output port _n2_.
-
 `OVER`  ( n1 n2  -- n1 n2 n1 )
 
 Copy the second stack value, placing it as the new top.
+
+`P!`  ( n u -- )
+
+Present _n_ to output port _u_.
 
 `PAD`  (  -- addr )
 

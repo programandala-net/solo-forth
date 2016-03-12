@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506221449
+; Version A-00-201506221842
 
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
@@ -154,7 +154,7 @@ fig_find?                       equ false
   ; true = the fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and Forth-94.
 
-fig_parsing?                    equ false
+fig_parsing?                    equ true
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and Forth-94.
 
@@ -684,13 +684,15 @@ next2:
 ; ----------------------------------------------
   _colon_header paren_s_,'(S',')'
 
-if fig_parsing?
+if 0 ; XXX OLD
+
+  ; XXX FIXME empty strings get one length, because of `word`.
 
   ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
   ;  state @ if    compile slit word here c@ 1+ allot
-  ;          else  parse-text  then  ;
+  ;          else  text  then  ;
 
-  dw state_,fetch_
+  dw comp_question_
   dw zero_branch_,paren_s.interpreting
   ; compiling
   dw compile_,s_lit_,word_
@@ -702,20 +704,18 @@ paren_s.interpreting:
 
 else
 
-  ; XXX FIXME
-
   ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
-  ;  scan state @ if    compile slit word here c@ 1+ allot
-  ;               else  parse-text  then  ;
+  ;  parse comp? if    sliteral
+  ;              else  tuck pad swap cmove pad swap then  ;
 
-  dw scan_ ; ( ca len )
-  dw state_,fetch_
+  dw parse_ ; ( ca len )
+  dw comp_question_
   dw zero_branch_,paren_s.interpreting
   ; compiling
   dw s_literal_
   dw semicolon_s_
 paren_s.interpreting:
-  dw pad_,rot_,cmove_
+  dw tuck_,pad_,swap_,cmove_,pad_,swap_
   dw semicolon_s_
 
 endif
@@ -2541,7 +2541,7 @@ do_user:
   db 0x14
 
 ; ----------------------------------------------
-  _user_variable_header scr_,'SC','R'
+  _user_variable_header scr_,'SC','R' ; XXX OLD ? used by `list`
 
   db 0x16
 
@@ -2680,9 +2680,11 @@ sra_hl.1:
 ; ----------------------------------------------
   _colon_header s_comma_,'s',','
 
-  ; : s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
+; doc{
+; s,  ( ca len -- )
+; }doc
 
-  dw swap_,here_,rot_,cmove_,one_plus_,allot_
+  dw dup_,c_comma_,tuck_,here_,swap_,cmove_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3003,16 +3005,22 @@ question_error.no_error:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header comp_question_,'COMP','?'
+
+  dw state_,fetch_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header question_comp_,'?COM','P'
 
-  dw state_,fetch_,zero_equals_
+  dw comp_question_,zero_equals_
   _question_error compilation_only_error
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_exec_,'?EXE','C'
 
-  dw state_,fetch_
+  dw comp_question_
   _question_error execution_only_error
   dw semicolon_s_
 
@@ -3221,7 +3229,7 @@ minus_trailing.loop:
 
   dw c_lit_
   db '"'
-  dw state_,fetch_ ; compiling?
+  dw comp_question_ ; compiling?
   dw zero_branch_,dot_quote.interpreting
   ; compiling
   dw compile_,paren_dot_quote_
@@ -3390,6 +3398,27 @@ fill.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header stream_,'STREA','M'
+
+; doc{
+;
+; stream  ( -- ca )
+;
+; ca = current parsing position in the stream source
+;
+; }doc
+
+  dw blk_,fetch_,question_dup_ ; from disk?
+  dw zero_branch_,stream.terminal
+  dw block_ ; from disk
+  dw branch_,stream.end
+stream.terminal:
+  dw tib_,fetch_ ; from terminal
+stream.end:
+  dw to_in_,fetch_,plus_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header parse_,'PARS','E'
 
 ; doc{
@@ -3398,81 +3427,67 @@ fill.end:
 ;
 ; Parse _ccc_ delimited by the delimiter char _c_.
 ;
-; _ca_ is the address (within the input buffer) and _len_ is the
-; length of the parsed string. If the parse area was empty, the
-; resulting string has a zero length.
+; ca = address of the parsed string, within the input buffer
+; len = length of the parsed string
+; 
+; If the parse area was empty, the resulting string has a zero length.
 ;
 ; }doc
 
-  ; XXX FIXME empty parsed strings return a length of one;
-  ; all other cases seem to work fine
-
-  dw blk_,fetch_,question_dup_ ; from disk?
-  dw zero_branch_,parse.from_terminal
-
-  ; Parse from disk.
-  dw block_
-  dw branch_,parse.from_address
-parse.from_terminal:
-  ; Parse from the terminal.
-  dw tib_,fetch_
-
-parse.from_address:
-  dw to_in_,fetch_,plus_
-  dw cr_,dup_,u_dot_ ; XXX INFORMER
-
-if fig_parsing?
-  dw false_,paren_parse_ ; ( ca n1 n2 n3 )
-  ;dw cr_,two_,pick_,dot_,over_,dot_,dup_,dot_ ; XXX INFORMER
-  dw to_in_,plus_store_
-  dw nip_
-else
-  dw scan_ ; ( ca len )
-  ;dw cr_,over_,u_dot_,dup_,dot_ ; XXX INFORMER
+  dw stream_,scan_
   dw dup_,one_plus_,to_in_,plus_store_
-endif
-
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header word_,'WOR','D'
 
-  dw blk_,fetch_,question_dup_ ; from disk?
-  dw zero_branch_,word.from_terminal
-  ; from disk
-  dw block_
-  dw branch_,word.from_address
-word.from_terminal:
-  dw tib_,fetch_
-word.from_address:
-  dw to_in_,fetch_,plus_,enclose_ ; XXX OLD
-  ;dw to_in_,fetch_,plus_,true_,paren_parse_ ; XXX NEW XXX TODO
+; doc{
+;
+; word  ( c  -- )  \ fig-Forth
+;
+; Read the next text characters from the input stream being
+; interpreted, until a delimiter _c_ is found, storing the
+; packed character string beginning at the dictionary buffer
+; `here`.  `word` leaves the character count in the first byte,
+; the characters, and ends with two or more blanks. Leading
+; occurrences of c are ignored.  If `blk` is zero text is taken
+; from the terminal input buffer, otherwise from the disk block
+; stored in `blk`.
 
+; }doc
+
+  dw stream_,enclose_
+  ;dw stream,true_,paren_parse_ ; XXX NEW XXX TODO ?
+
+  ; XXX TODO use a factor of `s,` instead, without allot
   dw here_
   dw c_lit_
   db max_word_length+3
   dw blank_
   dw to_in_,plus_store_
-  dw over_,minus_
-  dw to_r_ ; length
+  dw over_,minus_,to_r_ ; length
   dw r_fetch_,here_,c_store_ ; set the length byte
   dw plus_ ; from
   dw here_,one_plus_ ; destination
   dw from_r_ ; count
   dw cmove_ ; move the word
 
-  ;dw space_ ; XXX INFORMER
-  ;dw depth_,dot_ ; XXX INFORMER
-  ;dw paren_dot_quote_ ; XXX INFORMER
-  ;_string 'blk ' ; XXX INFORMER
-  ;dw blk_,fetch_,dot_ ; XXX INFORMER
-  ;dw paren_dot_quote_ ; XXX INFORMER
-  ;_string 'in ' ; XXX INFORMER
-  ;dw to_in_,fetch_,dot_ ; XXX INFORMER
-  ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
-  ;dw key_,drop_ ; XXX INFORMER
+  if 1 ; XXX INFORMER
+    dw space_ ; XXX INFORMER
+    ;dw depth_,dot_ ; XXX INFORMER
+    ;dw paren_dot_quote_ ; XXX INFORMER
+    ;_string 'blk ' ; XXX INFORMER
+    ;dw blk_,fetch_,dot_ ; XXX INFORMER
+    ;dw paren_dot_quote_ ; XXX INFORMER
+    ;_string 'in ' ; XXX INFORMER
+    ;dw in_,fetch_,dot_ ; XXX INFORMER
+    dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
+    ;dw key_,drop_ ; XXX INFORMER
+  endif
 
   dw semicolon_s_
+
+
 
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER',')'
@@ -4010,7 +4025,7 @@ endif
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw state_,fetch_
+    dw comp_question_
     dw zero_branch_,c_literal.end
     dw compile_,c_lit_,c_comma_
 c_literal.end:
@@ -4026,7 +4041,7 @@ c_literal.end:
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw state_,fetch_
+    dw comp_question_
     dw zero_branch_,literal.end
     dw compile_,lit_,comma_
 literal.end:
@@ -4042,7 +4057,7 @@ literal.end:
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw state_,fetch_
+    dw comp_question_
     dw zero_branch_,two_literal.end
     dw swap_,literal_,literal_
 two_literal.end:
@@ -4105,6 +4120,7 @@ interpret.execute_the_word: ; else
   dw pfa_to_cfa_
   dw execute_
 interpret.word_done: ; then
+  dw lit_,1,border_ ; XXX INFORMER
   dw question_stack_
   dw branch_,interpret.again
 interpret.word_not_found: ; else
@@ -4121,6 +4137,7 @@ interpret.16bit_number: ; else
   ; XXX TODO use `c_literal` for 8-bit values.
   dw literal_
 interpret.number_done: ; then
+  dw lit_,2,border_ ; XXX INFORMER
   dw question_stack_
 
 interpret.again:
@@ -4132,6 +4149,7 @@ interpret.begin:
 
   ; XXX TODO -- finish
 
+  dw lit_,3,border_ ; XXX INFORMER
   dw question_stack_
   dw defined_,question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
@@ -4223,7 +4241,12 @@ forth_vocabulary_link:
 
   dw c_lit_
   db ')'
-  dw word_ ; XXX FIXME use `parse` when available
+  if 0 ; XXX OLD
+    dw word_
+  else
+    ; XXX TODO use `skip`?
+    dw parse_,two_drop_
+  endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4235,7 +4258,7 @@ quit.do:
   dw rp_store_
   dw cr_,query_
   dw interpret_
-  dw state_,fetch_
+  dw comp_question_
   dw question_branch_,quit.do
   dw paren_dot_quote_
   _string 'ok'
@@ -4253,8 +4276,9 @@ quit.do:
 
   dw sp_store_
   dw decimal_
+  dw lit_,4,border_ ; XXX INFORMER
   dw question_stack_
-  dw page_,greeting_ ; XXX TODO use cls0 instead?
+  dw page_,greeting_
   dw forth_,definitions_
 boot:
   dw noop_ ; patched by `turnkey`
@@ -4296,7 +4320,9 @@ cold_start_phony_:
   dw cold_
 
 common_start:
+
   ; Common operations done by warm_start and cold_start.
+
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
@@ -4307,13 +4333,12 @@ common_start:
 ; ----------------------------------------------
   _code_header s_to_d_,'S>','D'
 
+  ld hl,0
   pop de
-  ld hl,0x0000
   ld a,d
-  and 0x80
-  jr z,l6e1dh
+  or a
+  jp p,push_de_hl ; jump if positive
   dec hl
-l6e1dh:
   jp push_de_hl
 
 ; ----------------------------------------------
@@ -4396,11 +4421,8 @@ max.2:
   dw two_dup_
   dw xor_,to_r_
   dw abs_
-  dw swap_
-  dw abs_
-  dw u_star_
-  dw from_r_
-  dw d_plus_minus_
+  dw swap_,abs_,u_star_
+  dw from_r_,d_plus_minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4426,17 +4448,14 @@ max.2:
 ; ----------------------------------------------
   _colon_header star_,'','*'
 
-  dw m_star_
-  dw drop_
+  dw m_star_,drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header slash_mod_,'/MO','D'
 
-  dw to_r_
-  dw s_to_d_
-  dw from_r_
-  dw m_slash_
+  dw to_r_,s_to_d_
+  dw from_r_,m_slash_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4448,17 +4467,14 @@ max.2:
 ; ----------------------------------------------
   _colon_header mod_,'MO','D'
 
-  dw slash_mod_
-  dw drop_
+  dw slash_mod_,drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header star_slash_mod_,'*/MO','D'
 
-  dw to_r_
-  dw m_star_
-  dw from_r_
-  dw m_slash_
+  dw to_r_,m_star_
+  dw from_r_,m_slash_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4714,6 +4730,8 @@ read_write_sector_command:
 ; ----------------------------------------------
   _colon_header flush_,'FLUS','H'
 
+  ; XXX TODO -- move to the disk?
+
   dw hash_buff_,one_plus_,zero_
   dw paren_do_
 flush.do:
@@ -4755,6 +4773,8 @@ flush.do:
 if not fig_find?
 
   _colon_header defined_,'DEFINE','D'
+
+  ; XXX TODO -- adapt to the new parsing method?
 
   dw b_l_,word_
   dw here_,dup_,count_,uppers_,find_
@@ -5204,35 +5224,23 @@ index.loop:
   _colon_header where_,'WHER','E'
 
   ; XXX TODO -- remove; already copied to the disk
+  ; XXX TODO -- in disk version: return if zero
 
   dw error_pos_,two_fetch_ ; XXX NEW
-  ; XXX TODO return if zero
   dw dup_
-  dw b_slash_scr_
-  dw slash_
-  dw dup_
-  dw scr_
-  dw store_
+  dw question_branch_,where.do_it
+  dw two_drop_
+  dw semicolon_s_
+
+where.do_it:
+  dw dup_,b_slash_scr_,slash_
   dw paren_dot_quote_
   _string 'Scr # '
-  dw decimal_
-  dw dot_
-  dw swap_
-  dw c_slash_l_
-  dw slash_mod_
-  dw c_slash_l_
-  dw star_
-  dw rot_
-  dw block_
-  dw plus_
-  dw cr_
-  dw c_slash_l_
-  dw type_
-  dw cr_
-  dw here_
-  dw c_fetch_
-  dw minus_
-  dw spaces_
+  dw decimal_,dot_
+  dw swap_,c_slash_l_,slash_mod_,c_slash_l_,star_
+  dw rot_,block_,plus_
+  dw c_slash_l_,cr_,type_,cr_
+  dw here_,c_fetch_,minus_,spaces_
   dw c_lit_
   db '^'
   dw emit_
@@ -5252,53 +5260,6 @@ index.loop:
   _constant_header pushde_,'PUSHD','E'
 
   dw push_de_hl
-
-; ----------------------------------------------
-  _code_header p_fetch_,'P','@'
-
-  ; XXX TODO move to the disk
-  pop hl
-  push bc
-  ld c,l
-  ld b,h
-  in a,(c)
-  pop bc
-  ld h,0x00
-  ld l,a
-  jp push_hl
-
-; ----------------------------------------------
-  _code_header p_store_,'P','!'
-
-  ; XXX TODO move to the disk
-  pop hl
-  pop de
-  push bc
-  ld c,l
-  ld b,h
-  ld a,e
-  out (c),a
-  pop bc
-  _jp_next
-
-; ----------------------------------------------
-  _code_header screen_,'SCREE','N'
-
-  ; XXX TODO -- move to the disk and optimize
-
-  pop hl
-  pop de
-  push bc
-  ld c,e
-  ld b,l
-  call rom_s_scrn_s_0x2538
-  call rom_stack_fetch
-  ld a,(de)
-  ld h,0x00
-  ld l,a
-  pop bc
-  ld ix,next ; restore ; XXX TODO -- check if necessary after those ROM routines
-  jp push_hl
 
 ; ----------------------------------------------
   _colon_header at_,'A','T'
@@ -5586,7 +5547,11 @@ nfa_of_top_most_word_in_forth_voc:
 
   dw c_lit_
   db ')'
-  dw text_,type_
+  if 0 ; XXX OLD
+    dw text_,type_
+  else
+    dw parse_,type_
+  endif
   dw semicolon_s_
 
 dictionary_pointer_after_cold:

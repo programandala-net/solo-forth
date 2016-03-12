@@ -77,3 +77,7 @@ Fix: Crash:
 : zx blabla ;
 : zx ;
 ----
+
+Fix: something is wrong after the parsing changes, even deactivating
+them with `fig_parsing?`:  `21 load` halts at the middle of a word, in
+line 8.

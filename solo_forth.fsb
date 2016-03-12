@@ -413,6 +413,29 @@ code attr ( line col -- )
 
   end-code
 
+( screen )
+
+  \ XXX TODO -- write and optimize
+
+code screen ( row col -- f )
+
+  \ pop hl
+  \ pop de
+  \ push bc
+  \ ld c,e
+  \ ld b,l
+  \ call rom_s_scrn_s_0x2538
+  \ call rom_stack_fetch
+  \ ld a,(de)
+  \ ld h,0x00
+  \ ld l,a
+  \ pop bc
+  \ ; XXX TODO -- check if necessary after those ROM routines:
+  \ ld ix,next ; restore
+  \ jp push_hl
+
+end-code
+
 ( bleep )
 
   \ 2015-06-04: Abersoft Forth's `bleep`.
@@ -645,6 +668,40 @@ forth definitions decimal
   ." Scr # " decimal . cr
   swap c/l /mod c/l * rot block + c/l type cr
   here c@ - spaces char ^ emit  ;
+
+( p@ )
+
+code p@  ( u -- n )
+
+  \ Return the value read from port _u_.
+
+  E1 c,           \ pop hl
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 78 c,     \ in a,(c)
+  C1 c,           \ pop bc
+  26 c, 00 c,     \ ld h,0x00
+  68 07 + c,      \ ld l,a
+  C3 c, pushhl ,  \ jp pushhl
+end-code
+
+( p! )
+
+code p!  ( n u -- )
+
+  \ Present _n_ to output port _u_.
+ 
+  E1 c,           \ pop hl
+  D1 c,           \ pop de
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  78 03 + c,      \ ld a,e
+  ED c, 79 c,     \ out (c),a
+  C1 c,           \ pop bc
+  DD c, E9 c,     \ jp (ix)
+end-code
 
 ( forget )
 
