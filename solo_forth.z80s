@@ -187,21 +187,17 @@ top_most_word_in_forth_voc:
   ; Location: `0x06 +origin`
   dw nfa_of_top_most_word_in_forth_voc
 
-user_variables_pointer_init_value:
-  ; Location: `0x08 +origin`
-  ; XXX TODO check if this is right, should it be `user_variables`?:
-  dw user_variables_pointer
+; XXX OLD -- not used, not needed
+; user_variables_pointer_init_value:
+;   ; Location: `0x08 +origin`
+;   dw user_variables_pointer
 
-  ; XXX TODO move to the end and update the `+origin` used in the blocks
-  if user_variables_pointer_in_ix?
 user_variables_pointer:
-  endif
-  ; Location: `0x0A +origin`
+  ; Location: `0x08 +origin`
   dw user_variables
 
-  ; XXX TODO move to the end and update the `+origin` used in the blocks
 return_stack_pointer:
-  ; Location: `0x0C +origin`
+  ; Location: `0x0A +origin`
   dw return_stack_bottom
 
   ; User variables default values
@@ -213,28 +209,28 @@ return_stack_pointer:
 default_user_variables_start:
 
 s0_init_value:
-  ; Location: `0x0E +origin`
+  ; Location: `0x0C +origin`
   dw data_stack_bottom
 r0_init_value:
-  ; Location: `0x10 +origin`
+  ; Location: `0x0E +origin`
   dw return_stack_bottom
 tib_init_value:
-  ; Location: `0x12 +origin`
+  ; Location: `0x10 +origin`
   dw terminal_input_buffer
 width_init_value:
-  ; Location: `0x14 +origin`
+  ; Location: `0x12 +origin`
   dw 0x001F
 warning_init_value:
-  ; Location: `0x16 +origin`
+  ; Location: `0x14 +origin`
   dw 0x0000
 fence_init_value:
-  ; Location: `0x18 +origin`
+  ; Location: `0x16 +origin`
   dw dictionary_pointer_after_cold
 dp_init_value:
-  ; Location: `0x1A +origin`
+  ; Location: `0x18 +origin`
   dw dictionary_pointer_after_cold
 voc_link_init_value:
-  ; Location: `0x1C +origin`
+  ; Location: `0x1A +origin`
   dw forth_vocabulary_link
 
 default_user_variables_end:
@@ -675,9 +671,11 @@ to_chan_:
   dw to_chan_pfa
 to_chan_pfa:
   pop hl
+  ; push ix ;  XXX TMP not needed
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   ld a,l
   rst 0x10
+  ; pop ix ;  XXX TMP not needed
   _jp_next
 
 emit_nfa:
@@ -1707,8 +1705,10 @@ do_user:
 
   else ; XXX NEW -- experimental
 
-user_variables_pointer: equ $+1
-    ld hl,user_variables   ; T10
+    ld hl,(user_variables_pointer)   ; T20
+    ; XXX This is faster, but makes the access to the pointer non-standard:
+;user_variables_pointer: equ $+1
+;    ld hl,user_variables   ; T10
 
   endif
 
@@ -3471,7 +3471,7 @@ abort_pfa:
   dw page_,greeting_ ; XXX TODO use cls0 instead
   dw forth_,definitions_
 boot:
-  dw noop_ ; to be patched by `turnkey`
+  dw noop_ ; patched by `turnkey`
   dw quit_
 
 boot_nfa:
@@ -3483,16 +3483,21 @@ boot_:
 boot_pfa:
   dw boot
 
-warm_start:
+common_start:
+  ; Common operations done by warm_start and cold_start.
+  pop bc ; get the return address, that holds the cfa of `cold` or `warm`
+  xor a
+  ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
   if user_variables_pointer_in_ix?
     ld ix,(user_variables_pointer)
   else
     ld ix,next
   endif
-  ld hl,(s0_init_value)
-  ld sp,hl
-  ld bc,warm_start_phony_
+  ld sp,(s0_init_value)
   _jp_next
+
+warm_start:
+  call common_start
 warm_start_phony_:
   dw warm_
 
@@ -3507,18 +3512,7 @@ warm_pfa:
   dw abort_
 
 cold_start:
-  xor a
-  ld (iy+sys_df_sz_offset),a
-  ld (printer_channel_or_zero),a
-  if user_variables_pointer_in_ix?
-    ld ix,(user_variables_pointer)
-  else
-    ld ix,next
-  endif
-  ld hl,(s0_init_value)
-  ld sp,hl
-  ld bc,cold_start_phony_
-  _jp_next
+  call common_start
 cold_start_phony_:
   dw cold_
 
@@ -3531,7 +3525,7 @@ cold_:
 cold_pfa:
   dw empty_buffers_
   dw first_,dup_,use_,store_,prev_,store_
-  dw dr0_
+  dw dr0_ ; XXX TODO -- change
   dw lit_,default_user_variables_start ; from
   dw lit_,user_variables_pointer,fetch_ ; to
   dw c_lit_
@@ -4897,27 +4891,23 @@ at_:
   dw do_colon
 at_pfa:
 
-  dw swap_
-  dw dup_
-  dw lit_,23
+  dw swap_,dup_
+  dw c_lit_
+  db 23
   dw not_equals_ ; not the last line?
   dw zero_branch_,at_pfa.last_line
-
+  ; not the last line
   dw lit_,22,to_chan_,to_chan_,to_chan_
-  dw exit_
+  dw semicolon_s_
 
 at_pfa.last_line:
-  dw one_minus_
-  dw to_chan_
-  dw to_chan_
-  dw zero_
-  dw to_chan_
+  dw one_minus_,dup_,to_chan_,to_chan_,zero_,to_chan_
   dw cr_
-
   dw dup_
   dw lit_,sys_df_cc ; address in display file of print position
   dw plus_store_
-  dw lit_,33
+  dw c_lit_
+  db 33
   dw swap_
   dw minus_
   dw lit_,sys_s_posn ; 33 minus column number for print position
@@ -4959,32 +4949,10 @@ paper_pfa:
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
-  ; XXX TODO -- move to the blocks disk
-attr_nfa:
-  db 0x04+0x80,'ATT','R'+0x80
-attr_lfa:
-  dw paper_nfa
-attr_:
-  dw attr_pfa
-attr_pfa:
-  pop hl
-  pop de
-  push bc
-  push ix
-  ld c,e
-  ld b,l
-  call rom_s_attr_s_0x2583
-  call rom_find_int1
-  ld h,0x00
-  ld l,a
-  pop ix
-  pop bc
-  jp pushhl
-
 ink_nfa:
   db 0x03+0x80,'IN','K'+0x80
 ink_lfa:
-  dw attr_nfa
+  dw paper_nfa
 ink_:
   dw ink_pfa
 ink_pfa:
@@ -5413,7 +5381,6 @@ end cold_entry
   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER

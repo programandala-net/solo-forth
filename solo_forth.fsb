@@ -189,7 +189,86 @@ create plot  ( x y -- )
   cd c, 22e5 ,    \ call 0x22e5 ; plot-sub
   dd c, e1 c,     \ pop ix
   d9 c,           \ exx
-  c3 c, next ,    \ jp next
+  c3 c, next ,    \ jp next ; XXX TODO jp (ix)
+
+  smudge decimal
+
+( draw )
+
+  \ Version of Spectrum Forth-83:
+
+  \ CODE DRAW
+  \   H POP
+  \   B POP
+  \   D PUSH
+  \   1 E LD#
+  \   7 B BIT
+  \   NZ IF
+  \     C A LD
+  \     NEG
+  \     -1 E LD#
+  \     A C LD
+  \   THEN
+  \   1 D LD#
+  \   L B LD
+  \   7 H BIT
+  \   NZ IF
+  \     B A LD NEG
+  \     -1 D LD#
+  \     A B LD
+  \   THEN
+  \   24BA CALL
+  \   D POP
+  \   JPIX ;C
+
+( attr )
+
+create attr ( line col -- )  hex
+
+  \ Version of Abersoft Forth
+
+  \ pop hl
+  \ pop de
+  \ push bc
+  \ push ix
+  \ ld c,e
+  \ ld b,l
+  \ call rom_s_attr_s_0x2583
+  \ call rom_find_int1
+  \ ld h,0x00
+  \ ld l,a
+  \ pop ix
+  \ pop bc
+
+  \ Improved version of the ROM routine at 0x2583
+
+  \ ; b=col->d
+  \ ; c=line->e
+  
+  E1 c, \ pop hl ; l = col
+  D1 c, \ pop de ; e = line
+  50 05 + c, \ ld d,l ; d = col
+
+  78 02 + c, \ ld a,d  ; line to a 0x00..0x17   (max 00010111)
+  0F c, 0F c, 0F c, \ rrca | rrca | rrca  ; rotate bits left
+  50 07 + c, \ ld d,a ; store in d as an intermediate value.
+
+  E6 c, E0 c, \ and 0xE0 ; pick up bits 11100000 (was 00011100)
+  A8 02 + c, \ xor d ; combine with column 0x00..0x1F
+  68 07 + c, \ ld l,a ; low byte now correct.
+
+  -->
+
+( attr )
+
+  78 02 + c, \ ld a,d ; bring back intermediate result from d
+  E6 c, 03 c, \ and 0x03 ; mask to give correct third of screen
+  EE c, 58 c, \ xor 0x58 ; combine with base address.
+  60 07 + c, \ ld h,a ; high byte correct.
+  6E c, \ ld l,(hl) ; pick up the colour attribute.
+  26 c, 00 c, \ ld h,0
+ 
+  c3 c, pushhl , \ jp pushhl
 
   smudge decimal
 
@@ -204,7 +283,7 @@ create bleep
   cd c, 03b5          \ call rom_beeper
   dd c, e1 c,         \ pop ix
   c1 c,               \ pop bc
-  c3 c, next ,        \ jp next
+  c3 c, next ,        \ jp next ; XXX TODO jp (ix)
   smudge decimal
 
 ( [if] [else] [then] )
@@ -372,10 +451,10 @@ forth definitions decimal
   \ its current state.
 
   latest 6 +origin !  \ top most word in `forth` vocabulary
-  here 24  +origin !  \ `fence` init value
-  here 26 +origin !   \ `dp` init value
+  here 22  +origin !  \ `fence` init value
+  here 24 +origin !   \ `dp` init value
   here fence !
-  ['] forth 8 + 28 +origin !  ;  \ `voc-link` init value
+  ['] forth 8 + 26 +origin !  ;  \ `voc-link` init value
 
   \ system  ( -- a len )
   \

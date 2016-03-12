@@ -139,3 +139,7 @@ originally used as the user variables pointer, in order to hold
 `next`. This way jumps to `next` are faster and save one byte per jump
 (52 bytes saved).
 
+Change: `user_variables_pointer_init_value` is removed. The fig-Forth
+model uses it in `cold`, but it's not needed because the memory map is
+not calculated during the cold start.  In fact it is not used by
+Abersoft Forth.
