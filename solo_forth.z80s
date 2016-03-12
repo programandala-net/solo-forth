@@ -3,7 +3,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508150335
+version_release:  equ 201508150442
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -879,11 +879,12 @@ return_stack_bottom:
 ; ----------------------------------------------
 ; Disk buffers
 
+; XXX TODO use a repeat macro
 first_buffer:
 if buffers=1
   dw 0x7FFF ; block number
   ds data_bytes_per_buffer
-  db space_char,0,space_char
+  db space_char,0,space_char ; null word
 else
   ; ds blocks_per_screen*total_bytes_per_buffer ; XXX OLD
   ds buffers*total_bytes_per_buffer
@@ -3621,10 +3622,14 @@ do_user:
 ; ----------------------------------------------
   _constant_header first_,'FIRST'
 
+  ; XXX TODO rename after implementing one buffer only
+
   dw first_buffer
 
 ; ----------------------------------------------
   _constant_header limit_,'LIMIT'
+
+  ; XXX TODO remove after implementing one buffer only
 
   dw limit
 
@@ -6314,15 +6319,21 @@ message.number_only:
 ; ----------------------------------------------
   _variable_header use_,'USE'
 
+  ; XXX TODO remove after implementing one buffer only
+
   dw first_buffer
 
 ; ----------------------------------------------
   _variable_header prev_,'PREV'
 
+  ; XXX TODO remove after implementing one buffer only
+
   dw first_buffer
 
 ; ----------------------------------------------
   _constant_header buffers_,'BUFFERS'
+
+  ; XXX TODO remove after implementing one buffer only
 
 ; doc{
 ;
@@ -6335,7 +6346,7 @@ message.number_only:
   dw buffers
 
 ; ----------------------------------------------
-; XXX TODO remove this word when there's only one buffer
+; XXX TODO remove after implementing one buffer only
   _colon_header plus_buf_,'+BUF'
 
 ; doc{
@@ -6362,7 +6373,7 @@ plus_buf.continue:
 
 ; doc{
 ;
-; update  ( -- )  \ fig-Forth
+; update  ( -- )  \ ANS-Forth
 ;
 ; Mark the most recently referenced block (pointed to by `prev`) as
 ; altered. The block will subsequently be transferred automatically to
@@ -6388,6 +6399,23 @@ endif
 
   dw semicolon_s_
 
+if buffers=1
+; ----------------------------------------------
+  _colon_header updated_question_,'UPDATED?'
+
+; doc{
+;
+; updated?  ( -- f )
+;
+; Is the current disk buffer marked as modified?
+;
+; }doc
+
+  dw first_,fetch_,zero_less_than_
+
+endif
+
+
 ; ----------------------------------------------
   _colon_header stream_end_,'STREAM-END'
 
@@ -6408,6 +6436,21 @@ endif
 ; ----------------------------------------------
   _colon_header empty_buffers_,'EMPTY-BUFFERS'
 
+if buffers=1
+
+; doc{
+;
+; empty-buffers  ( -- )
+; 
+; Unassign all block buffers. Do not transfer the contents of
+; any updated block to mass storage.
+;
+; }doc
+
+  dw lit_,0x7FFF,first_,store_
+
+else
+
 ; doc{
 ;
 ; empty-buffers  ( -- )
@@ -6417,12 +6460,6 @@ endif
 ; blanks.
 ;
 ; }doc
-
-if buffers=1
-
-  dw lit_,0x7FFF,first_,store_
-
-else
 
   dw first_,limit_,over_,minus_,blank_ 
   dw limit_,first_
@@ -6492,9 +6529,7 @@ endif
 ;
 ; }doc
 
-if buffers=1
-
-  ; XXX TODO
+if buffers=1 ; XXX NEW
 
   dw first_,fetch_ ; current block assigned to the buffer
   dw two_dup_,block_number_,equals_
@@ -6508,7 +6543,7 @@ buffer.end:
   dw first_,cell_plus_ ; first cell of data in the buffer
   dw semicolon_s_
 
-else
+else ; XXX OLD
 
   dw use_,fetch_
   dw dup_,to_r_
@@ -6553,6 +6588,20 @@ endif
 ;
 ; }doc
 
+if buffers=1
+
+  dw dup_,first_,fetch_,block_number_,equals_
+  dw zero_branch_,block.not_equals
+  dw drop_
+  dw branch_,block.end
+block.not_equals:
+  dw save_buffers_,first_,two_dup_,store_,cell_plus_,swap_,read_block_
+block.end:
+  dw first_,cell_plus_
+  dw semicolon_s_
+
+else
+
   dw to_r_
   dw prev_,fetch_ ; most recently accessed buffer
   dw dup_,fetch_ ; its block number (bit 15, the update indicator, may be set)
@@ -6586,6 +6635,8 @@ block.end:
   dw r_drop_
   dw two_plus_ ; get the address where data begin
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header flip_,'FLIP'
@@ -6781,7 +6832,19 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- move to the disk?
+if buffers=1
+
+  dw updated_question_,zero_equals_ ; not updated?
+  dw question_exit_ ; exit if not updated
+  ; Updated
+  dw first_,first_,fetch_,block_number_,two_dup_,write_block_
+  dw swap_,store_
+  dw semicolon_s_
+
+else
+
+  ; XXX TODO -- Check. It seems this original version is not ANS
+  ; Forth compliant, because it modifies the buffers.
 
   dw buffers_,one_plus_,zero_
   dw paren_do_
@@ -6789,6 +6852,9 @@ save_buffers.do:
   dw zero_,buffer_,drop_
   dw paren_loop_,save_buffers.do ; loop
   dw semicolon_s_
+
+endif
+  
 
 ; ----------------------------------------------
   _colon_header flush_,'FLUSH'
