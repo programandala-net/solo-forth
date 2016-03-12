@@ -8,7 +8,7 @@
 \ This file is the library of Solo Forth,
 \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201508310402
+\ Last modified: 201509012207
 
 \ ------------------------------------------------------------
 \ Acknowledgements
@@ -83,8 +83,8 @@ decode dump
   \   if  2dup do-required  then
   \ 2dup undefined? warnings @ and
   \   if  type 28 warning exit  then  2drop  ;
- 
-  \ XXX NEW 
+
+  \ XXX NEW
   2dup undefined?  if  do-required  else  2drop  then  ;
 
 : require  ( "name" -- )
@@ -123,7 +123,7 @@ decode dump
 \ Error #21:
 \ Error #22: Use only when loading.
 \ Error #23: Off current editing screen.
-\ Error #24: 
+\ Error #24:
   \ XXX TMP -- not used yet:
 \ Error #25: Unsupported tape operation.
   \ XXX TMP -- not used yet:
@@ -469,6 +469,8 @@ code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
 
 require pixel-add
 
+  \ XXX TODO use z80-asm
+
 code pixel  ( xc yc -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
@@ -493,7 +495,10 @@ create pixel-add  ( -- a )
 
   \ This Z80 routine is an alternative to the "pixel-add" ROM
   \ routine (0x22AA), to let the range of the y coordinate to
-  \ be 0..191 instead of 0..175.
+  \ be 0..191 instead of 0..175. Calling this code is a bit
+  \ faster than calling the version that uses the ROM, because
+  \ the necessary jump is saved and a useless `and a` has been
+  \ removed.
 
   \ a = address of the routine
 
@@ -506,11 +511,45 @@ create pixel-add  ( -- a )
   \       note: position 0=bit 7, position 7=bit 0.
 
   asm
-  BF a ld#  b sub  a b ld
+
+  BF a ld#  b sub
     \ b= adjusted Y coordinate (0..191)
-  a and rra scf rra a and rra b xor F8 and b xor h a ld
-  c a ld 
-  \ XXX TOD0
+
+  a b ld  a and  rra  scf  rra  a and  rra
+    \ the line number from top of screen to B
+    \ clear carry (already clear) \ XXX TODO
+    \                     0xxxxxxx
+    \ set carry flag
+    \                     10xxxxxx
+    \ clear carry flag
+    \                     010xxxxx
+
+  b xor  F8 and#  b xor  a h ld
+    \
+    \ keep the top 5 bits 11111000
+    \                     010xxbbb
+    \ transfer high byte to H
+
+  c a ld
+    \ the x value 0..255
+
+  rlca rlca rlca  b xor  C7 and#
+    \ the y value
+    \ apply mask             11000111
+
+  b xor  rlca  rlca
+    \ restore unmasked bits  xxyyyxxx
+    \ rotate to              xyyyxxxx
+    \ required position      yyyxxxxx
+
+  a l ld
+    \ low byte to L
+
+  c a ld  07 and#
+    \ form the pixel position in A
+
+  ret
+
   end-asm
 
 ( pixel-add )
@@ -572,6 +611,8 @@ code plot  ( xc yc -- )
 require pixel-add  require z80-asm
 
 code set-pixel  ( xc yc -- )
+
+  \ XXX FIXME system halt?
 
   hl pop  de pop  bc push
   l b ld  e c ld  pixel-add call
@@ -827,7 +868,7 @@ code emitted? ( row col -- f )
 
 
   \ Code adapted from:
-  \ http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/ 
+  \ http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/
 
   \ x^2+y^2=r^2 represents the real variable equation of a
   \ circle which is to be plotted using a grid of discrete
@@ -1030,7 +1071,7 @@ code fade  ( -- )
 require z80-asm
 
 code inverted  ( -- )
-  
+
   4000 hl ldp#
   begin   m a ld  cpl  a m ld
           hl incp  h a ld  58 cp#
@@ -1052,7 +1093,7 @@ require z80-asm
 
 code water  ( -- )
 
-  bc push 
+  bc push
   20 b ld#
   begin    57FF hl ldp#
             begin   m rrc  hl decp  6 h bit  z until
@@ -1092,7 +1133,7 @@ code clsx  ( -- )
 
   end-code
 
-( right-scroll-1 )
+( scroll-1px-right )
 
   \ [Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published in Microhobby, issue 197 (1990-03), page 24:
@@ -1103,7 +1144,7 @@ code clsx  ( -- )
 
 require z80-asm
 
-code right-scroll-1  ( -- )
+code scroll-1px-right  ( -- )
 
   bc push
 
@@ -1116,7 +1157,44 @@ code right-scroll-1  ( -- )
           c dec
           z until
 
-  bc pop  end-code
+  bc pop jpnext
+
+  end-code
+
+( scroll-1px-up )
+
+  \ [Code adapted from a routine written by Iván Sansa,
+  \ published in Microhobby, issue 122 (1987-03), page 7:
+  \ http://microhobby.org/numero122.htm
+  \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg]
+
+require z80-asm
+
+create (scroll-1px-up)  ( -- )
+
+  \ Scroll the whole screen one pixel up.
+  \ This is the Z80 routine that can be called from code words.
+
+  asm
+
+  4000 hl ldp#  BF b ld#
+
+  begin
+    bc push  hl de ldp  h inc  h a ld  F8 and#  h cp
+    z if    8 b ld#  b sub  rra  rra  rra  a h ld  0020 bc ldp#
+            bc addp  h a ld  rla  rla  rla  a h ld
+    then    hl push  0020 bc ldp#  ldir  hl pop  bc pop
+  step
+
+  end-asm
+
+code scroll-1px-up  ( -- )
+
+  \ Scroll the whole screen one pixel up.
+
+  bc push  \ Forth IP
+  ' (scroll-1px-up) cfa>pfa call
+  bc pop  jpnext  end-code
 
 ( xy-scroll )
 
@@ -1214,6 +1292,336 @@ code vertical-curtain  ( b -- )
   bc pop  jpnext  end-code
 
   \ }}} =======================================================
+  \ FZX fonts {{{
+
+  \ FZX driver - Copyright (c) 2013 Einar Saukas
+  \
+  \ Converted for Solo Forth
+  \ by Marcos Cruz (programandala.net)
+
+  \ 2015-08-31: Start.
+
+( fzx-test )
+
+  \ XXX TMP for debugging
+
+require fzx-emit  require <file
+
+create font  2048 allot
+1 drive!  font 0 s" lettra.fzx" <file
+font fzx-font !
+: zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
+
+cr .( fzx-emit is ready ) cr
+' (fzx-emit) cfa>pfa hex
+cr .( Code start:   ) dup u.
+cr .( Code length:  ) ' fzx-emit swap - u.
+cr
+
+  \ require defer!  ' fzx-emit ' emit defer!
+
+( fzx-emit )
+
+create fzx-font 60000 ,  \ font address
+
+0 constant margin  \ XXX TODO -- make it a variable
+
+create fzx-variables
+  here 0 c, \ fzx-flags
+    \ 0 = expecting a regular character
+    \ 1 = expecting the column
+    \ 2 = expecting the line
+  here margin c, \ fzx-x (margin)
+  here 191 c,  \ fzx-y
+
+constant fzx-y  constant fzx-x  constant fzx-flags
+
+6 cells allocate-string
+  \ Temporary space to store unresolved addresses during
+  \ compilation. `pad` can not be used because it's transient
+  \ and changes during the compilation. The circular string
+  \ buffer is used.
+  \
+  \ XXX TODO -- use the heap instead, when implemented
+
+: unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
+  \ Return the address of the _n_ unresolved address.  Note:
+  \ The address returned by `allocate-string` is directly
+  \ compiled into this `unresolved`. This saves a definition.
+  \ `dup` and `drop` are used to pass the compiler security
+  \ that checks the stack is balanced at the end of the
+  \ definition.
+
+-->
+
+( fzx-emit )
+
+require z80-asm  require scroll-1px-up
+
+create (fzx-emit)  ( -- )
+
+  asm
+
+  \ Input:
+  \  A = character to print
+
+  fzx-flags hl ldp#  \ initial address of local variables
+  m dec  \ check fzx-flags value by decrementing it
+
+  p' if'  \ not expecting a regular character
+
+    nz if  \ not expecting the column
+      \ expecting the line
+      \ GET_LIN:
+      cpl  C0 add#  \ now A = 191 - char
+      hl incp
+    then
+    \ GET_COL:
+    hl incp  a m ld
+    ret
+
+  then'
+
+-->
+
+( fzx-emit )
+
+  \ expecting a regular character
+  \ CHK_AT:
+
+  16 cp#  z if  02 m ld#  ret  then
+    \ 'AT' character?  if so, change fzx-flags to expect line
+    \ value next time and return
+
+  \ CHK_CR:
+  m inc  \ increment fzx-flags to restore previous value (0)
+  hl incp  \ point to fzx-x XXX why?
+  fzx-font bc ftp  bc push  ix pop  \ IX = font addresss
+
+  0D cp#  \ carriage return?
+  0 jpz here 2- 0 unresolved ! \ to NEWLINE
+
+  \ CHK_CHAR:
+  a dec  \ now A = char - 1
+  2 ix cpx  \ compare with lastchar of the font
+
+-->
+
+( fzx-emit )
+
+  cy if  \ jr nc, UNDEF_CHAR
+
+    1F sub#  \ now A = char - 32
+
+    cy if  \ jr nc, PRINT_CHAR
+
+  2swap  \ exchange the two `if`, because they are not nested
+
+  then
+
+  \ UNDEF_CHAR:
+
+  char ? 20 - a ld#  \ print '?' instead of invalid character
+
+    then
+
+-->
+
+( fzx-emit )
+
+  \ PRINT_CHAR:
+
+  a inc  \ now A = char - 31
+  a l ld  0 h ld#
+  hl de ldp
+  hl addp
+  de addp  \ now HL = (char - 31) * 3
+  bc addp  \ now HL references offset/kern in char table
+  m e ld  hl incp  m a ld  3F and#  a d ld  \ now DE = offset
+  m xor
+  rlca  rlca
+  a c ld  \ now C = kern
+-->
+
+( fzx-emit )
+
+  hl push
+  de addp
+  hl decp  \ now HL = char definition address
+  exsp  \ now HL references offset/kern in char table
+  hl incp  \ now HL references shift/width in char table
+  a xor
+  rld  \ now A = char shift
+  af push
+  rld  \ now A = (width - 1)
+  0 sta  here 2- 1 unresolved !
+    \ store the width at width1
+
+  08 cp#  \ check if char width is larger than 8 bits
+  rld  \ restore char shift/width
+-->
+
+( fzx-emit )
+
+
+  000E de ldp#  \ same as "0 c ld#"
+  nc if
+    234E de ldp#  \ same as "m c ld" and "hl incp"
+  then
+  \ NARROW_CHAR:
+  0 de stp  here 2- 2 unresolved !
+    \ modify the code at SMC to handle narrow/large chars;
+    \ save the address of the patched address,
+    \ to be resolved later at SMC
+
+  hl incp  \ now HL references next char offset
+  m a ld  \ now A = LSB of next char offset
+  l add
+  a e ld  \ now E = LSB of next char definition address
+-->
+
+( fzx-emit )
+
+
+  fzx-x hl ldp#
+  m a ld
+  c sub  \ move left number of pixels specified by kern
+  cy if  a xor  then
+    \ stop moving if it would fall outside screen
+  \ ON_SCREEN:
+  a m ld
+
+  0 fta  here 2- 3 unresolved !  \ now A = (width - 1)
+    \ fetch the width at width1
+  m add  \ now A = (width - 1) + column
+  0 callc here 2- 4 unresolved ! \ newline callc
+    \ if char width won't fit then move to new line \ XXX TODO
+
+-->
+
+( fzx-emit )
+
+  fzx-x bc ftp
+  01 a ld#
+  00 ix subx  \ now A = 1 - height
+  b add  \ now A = fzx-y - height + 1
+
+  \ XXX TODO -- adapt this error
+  \ 0C86 jpnc  \ call routine REPORT-5 ("Out of screen")
+  \ XXX FIXME halt?
+  retnc  \ XXX NEW
+
+  af pop  \ now A = shift
+
+  BF add#  \ range 0-191
+
+  \ XXX TODO -- adapt this call to the Forth word
+  22AA 2+ call
+    \ call PIXEL-ADD + 2 to calculate screen address
+  exaf  \ now A' = (col % 8)
+  here jr >relmark 5 unresolved !  \ to CHK_LOOP
+
+-->
+
+( fzx-emit )
+
+  \ MAIN_LOOP:
+
+  begin  \ main loop
+
+    m d ld  \ now D = 1st byte from char definition grid
+    hl incp  \ next character definition
+    \ SMC:
+    2 unresolved @ >resolve
+      \ resolve the command that patches here
+    m c ld  hl incp
+      \ either `0 c ld#` or `m c ld  hl incp`;
+      \ now C = 2nd byte from char definition or zero
+
+    a xor  \ now A = zero (since there's no 3rd byte)
+    exsp  \ now HL = screen address
+    exaf  \ now A = (col % 8), A' = 0
+    nz if
+      a b ld  \ now B = (col % 8)
+      exaf    \ now A = 0, A' = (col % 8)
+  \ ROTATE_PIXELS:
+      begin  d srl  c rr  rra  step
+        \ rotate pixels
+        \ rotate right char definition grid in D,C,A
+    then
+
+-->
+
+( fzx-emit )
+
+  \ NO_ROTATE:
+
+    l inc  l inc   m or  a m ld  \ put A on screen
+    l dec  c a ld  m or  a m ld  \ put C on screen
+    l dec  d a ld  m or  a m ld  \ put D on screen
+    h inc  \ move screen address by 1 pixel down
+
+    h a ld  07 and#
+    z if  l a ld  20 add#  a l ld
+      nc if  h a ld  08 sub#  a h ld  then
+    then \ CHK_LOOP:
+
+    5 unresolved @ here >relresolve
+-->
+
+( fzx-emit )
+
+  \ CHK_LOOP:
+
+    exsp  \ now HL = char definition address
+    l a ld
+    e cp  \ check if reached next char definition address
+  z until  \ loop otherwise (to MAIN_LOOP)
+
+  hl pop  \ discard screen address from stack
+  fzx-x hl ldp#
+  m a ld  \ now A = column
+\ WIDTH1:
+  here 1+ dup 1 unresolved @ ! 3 unresolved @ !
+    \ resolve the commands that store and fetch the width
+  00 add#  \ now A = column + (width - 1)
+  scf
+  01 ix adcx  \ now A = column + width + tracking
+-->
+
+( fzx-emit )
+
+  cy if
+    \ outside the screen
+
+  \ NEWLINE:
+    0 unresolved @ >resolve  4 unresolved @ >resolve
+      \ resolve the jumps here
+    margin m ld#  \ move to initial column at left margin
+    hl incp
+    m a ld  \ now A = line
+    00 ix subx  \ now A = line - height
+  then
+
+  \ EXIT:
+  a m ld  \ move down a few pixels specified by height
+  ret
+
+  end-asm
+
+-->
+
+( fzx-emit )
+
+code fzx-emit  ( c -- )
+
+  hl pop  bc push  ix push
+  l a ld  ' (fzx-emit) cfa>pfa call
+  ix pop  bc pop  jpnext
+
+  end-code
+
+  \ }}} =======================================================
   \ Sound 128K {{{
 
 ( !sound vol shutup noise )
@@ -1234,7 +1642,7 @@ require !p
   sound-register-port !p sound-write-port !p  ;
 
 : vol  ( n1 n2 -- )  8 + !sound  ;
-: shutup  ( -- )  -1 7 !sound  ;  \ XXX FIXME 
+: shutup  ( -- )  -1 7 !sound  ;  \ XXX FIXME
 : noise  ( -- )  7 7 !sound  ;
 
 ( music )
@@ -1350,11 +1758,11 @@ code play  ( a -- )
 
 create waves  ( -- a )
   0 c,  0 c,  0 c,  0 c,  0 c,  0 c,  7 c,
-  71 c,  20 c,  20 c,  20 c,  0 c,  38 c,  14 c,  
- 
+  71 c,  20 c,  20 c,  20 c,  0 c,  38 c,  14 c,
+
 create shoot  ( -- a )
   10 c,  0 c,  177 c,  0 c,  191 c,  0 c,  31 c,
-  71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c, 
+  71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c,
 
   \ [`helicopter` and `train` are
   \ adapted from code written by José Ángel Martín,
@@ -1364,11 +1772,11 @@ create shoot  ( -- a )
 
 create helicopter  ( -- a )
   200 c,  15 c,  200 c,  15 c,  200 c,  15 c,  0 c,
-  7 c, 23 c,  23 c,  23 c,  255 c,  1 c,  12 c,  
+  7 c, 23 c,  23 c,  23 c,  255 c,  1 c,  12 c,
 
 create train  ( -- a )
   100 c,  120 c,  48 c,  97 c,  12 c,  200 c,  55 c,
-  15 c,  9 c,  11 c,  55 c,  180 c,  4 c,  8 c,  
+  15 c,  9 c,  11 c,  55 c,  180 c,  4 c,  8 c,
 
 ( sound effects )
 
@@ -1406,7 +1814,7 @@ FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound: bell3
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-  \ XXX this effects not sound fine, but the data is right
+  \ XXX this effects don't sound fine, but the data is right
 
 create rain  ( -- a )
   44 c, 24 c, 6 c, 6 c, 7 c, 3 c, 3 c,
@@ -1909,7 +2317,7 @@ code (<file)  ( -- ior )
       \ length of the file header
       \ instead.  Then load the file data.
 
-  then  ix pop  bc pop  af push 
+  then  ix pop  bc pop  af push
         \ restore the Forth registers and save the ior
   jpnext  end-code
 
@@ -1978,7 +2386,7 @@ code (cat)  ( n -- )
   \ See the +D manual for wild-card syntax.
 
 : cat  ( ca len -- )  s" *" wcat  ;
-  \ Show a complete disk catologue. 
+  \ Show a complete disk catologue.
 
 : acat  ( ca len -- )  s" *" wacat ;  decimal
   \ A variant of `cat` that shows an abbreviated catalogue.
@@ -2153,7 +2561,7 @@ code c!dosvar  ( b n -- )
 
 ( update flush )
 
-: update  ( -- ) 
+: update  ( -- )
 
   \ doc{
   \
@@ -2440,7 +2848,7 @@ require break-key?
 code break-key?  ( -- f )
 
   \ Is the Break key pressed?
-  
+
   CD c, 1F54 ,              \ call rom_break_key
   D2 c, ' true cfa>pfa ,    \ jp nc,next
   C3 c, ' false cfa>pfa ,   \ jp z,next
@@ -2525,7 +2933,7 @@ require break-key?
 
 ( marker ) \ 2nd approach
 
-  \ XXX TODO 
+  \ XXX TODO
 
   \ XXX TODO -- add user variables pointer
   \ XXX TODO -- add order
@@ -2547,7 +2955,7 @@ require break-key?
   \ Get the data a marker word must preserve.
   \ n = number of data cells on the stack
   depth >r
-  here np@ voc-link @ 
+  here np@ voc-link @
   depth r> - get-every-latest  ;
 
 : marker!  ( a -- )
@@ -2569,7 +2977,7 @@ require break-key?
 
 ( marker )
 
-  \ XXX TODO 
+  \ XXX TODO
 
   \ XXX TODO -- add user variables pointer
   \ XXX TODO -- add order
@@ -2590,7 +2998,7 @@ require break-key?
 : marker@  ( -- x1..xn1 n1 nfa1..nfan2 n2 )
   \ Get the data a marker word must preserve.
   \ n = number of data cells on the stack
-  depth >r  here np@ voc-link @ 
+  depth >r  here np@ voc-link @
   depth r> - get-every-latest  ;
 
 : marker!  ( a -- )
@@ -2608,21 +3016,6 @@ require break-key?
   \ everything defined after it, restoring all dictionary
   \ allocation and search order pointers to the state they had
   \ just prior to the definition of "name".
-
-( forget )
-
-  \ XXX OLD -- obsolescent word
-
-: forget  ( "name" -- )
-  current @ context @ <>   \ Compare `current` with `context`.
-  24 ?error                \ If not the same, issue an error.
-  '                        \ Locate "name", return its cfa.
-  dup fence @ u<           \ Below `fence`?
-  21 ?error                \ If so, issue an error.
-  dup  ( cfa cfa )
-  cfa>nfa dp !             \ Update the dictionary pointer.
-  cfa>lfa @ current @ !    \ Update the `current` vocabulary.
-  ;
 
   \ }}} =======================================================
   \ XXX Misc {{{
@@ -2695,7 +3088,6 @@ code !p  ( c ca -- )
   here 22 +origin !  \ `fence` init value \ XXX OLD obsolete
   here 24 +origin !   \ `dp` init value
   \ XXX TODO -- update also the names pointer
-  here fence ! \ XXX OLD obsolete
   \ `voc-link` init value:
   [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
 
@@ -2931,34 +3323,34 @@ width !
 : (do)  ( n1 n2 -- )  2>r  ;
 
 : (?do) 2dup = if 2drop r> drop then  ;
-  \ exit the calling word 
+  \ exit the calling word
 
-: (loop) ; 
-  ( increments index -2nd item- on return stack) 
+: (loop) ;
+  ( increments index -2nd item- on return stack)
   ( calculates flag for until )
 
-: (+loop) ; 
+: (+loop) ;
 
 : do      postpone (do) postpone begin
-  ; immediate 
+  ; immediate
 
 : ?do     postpone (?do) postpone (do) postpone begin
-  ; immediate 
+  ; immediate
 
 : loop    postpone (loop) postpone until postpone unloop
-  ; immediate 
+  ; immediate
 
 : +loop   postpone (+loop) postpone until postpone unloop
-  ; immediate 
+  ; immediate
 
 
 
-  \ : unloop 
-  \   ( removes 2nd and 3rd return stack items ) 
-  \   ( 1st return stack item is itc saved ip for unloop ) ; 
-  \ : i ( gets 2nd return stack item to data stack ) ; 
-  \ : j ( gets 4th ... ) ; 
-  \ : k ( gets 6th ... ) ; 
+  \ : unloop
+  \   ( removes 2nd and 3rd return stack items )
+  \   ( 1st return stack item is itc saved ip for unloop ) ;
+  \ : i ( gets 2nd return stack item to data stack ) ;
+  \ : j ( gets 4th ... ) ;
+  \ : k ( gets 6th ... ) ;
 
 ( ?do )
 
@@ -2967,17 +3359,17 @@ width !
 
   \ Draft by Elisabeth Rather.
 
-: do ( -- flag addr) 
-    postpone (do) 0  postpone begin ;  immediate 
+: do ( -- flag addr)
+    postpone (do) 0  postpone begin ;  immediate
 
-: ?do ( -- addr1 flag addr2) 
+: ?do ( -- addr1 flag addr2)
     postpone (?do) postpone begin
-    postpone (do) 1  postpone begin ;  immediate 
+    postpone (do) 1  postpone begin ;  immediate
 
   \ ...where (DO) and (?DO) are the run-time actions. (?DO)
   \ contains a forward branch which compile-time LOOP or +LOOP
   \ must resolve.   (BEGIN) leaves on the compile-time stack an
-  \ address for LOOP or +LOOP to branch back to, and a flag. 
+  \ address for LOOP or +LOOP to branch back to, and a flag.
 
 ( ?do )
 
@@ -2986,23 +3378,23 @@ width !
 
   \ XXX TODO
 
-variable ?do? 
+variable ?do?
 
-: exchange ( x1 addr -- x2 ) dup @ rot rot ! ; 
-: 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0= ; 
+: exchange ( x1 addr -- x2 ) dup @ rot rot ! ;
+: 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0= ;
 
 : do
   postpone 2>r 0 ?do? exchange here
-  ; immediate 
+  ; immediate
 : ?do
   postpone 2dup<> postpone if postpone do ?do? on
-  ; immediate 
+  ; immediate
 : loop
   postpone (loop) , ?do? exchange if postpone then then
-  ; immediate 
+  ; immediate
 : +loop
   postpone (+loop) , ?do? exchange if postpone then then
-  ; immediate 
+  ; immediate
 
 ( ?do )
 
@@ -3011,23 +3403,23 @@ variable ?do?
 
   \ XXX TODO
 
-variable ?do? 
+variable ?do?
 
-: 2dup= ( x1 x2 -- x1 x2 flag ) 2dup = ; 
+: 2dup= ( x1 x2 -- x1 x2 flag ) 2dup = ;
 
 : do
-  ?do? @ ?do? off [compile] (do) here 0 , ; immediate 
+  ?do? @ ?do? off [compile] (do) here 0 , ; immediate
 
 : ?do
   postpone 2dup= postpone if postpone do ?do? on
-  ; immediate 
+  ; immediate
 
 : complete-?do ( x dest | x -- )
-  ?do? @ if postpone then then ?do? ! ; 
+  ?do? @ if postpone then then ?do? ! ;
 
-: loop postpone (loop) , complete-?do ; immediate 
+: loop postpone (loop) , complete-?do ; immediate
 
-: +loop postpone (+loop) , complete-?do ; immediate 
+: +loop postpone (+loop) , complete-?do ; immediate
 
 ( j )
 
@@ -3095,13 +3487,13 @@ code j'  ( -- x )
 code (step)  ( R: n -- n' )
 
   \ doc{
-  \ 
+  \
   \ (step)
   \
   \ The run-time procedure compiled by `step`.
   \
   \ Run-time:    ( R: u -- u' )
-  \ 
+  \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
   \ loop index and continue execution at the beginning of the
@@ -3145,7 +3537,7 @@ code (step)  ( R: n -- n' )
   \ for  Compilation: ( R: -- dest ) Run-time:    ( u -- )
   \
   \ Start of a `for step` loop, that will iterate _u+1_ times,
-  \ starting with _u_ and ending with 0. 
+  \ starting with _u_ and ending with 0.
   \
   \ The current value of the index can be retrieved with `i`.a
   \
@@ -3154,7 +3546,7 @@ code (step)  ( R: n -- n' )
 : step  ( -- )  postpone (step) <resolve  ; immediate
 
   \ doc{
-  \ 
+  \
   \ step
   \
   \ Compilation: ( dest -- )
@@ -3163,7 +3555,7 @@ code (step)  ( R: n -- n' )
   \ definition. Resolve the destination of `for`.
   \
   \ Run-time:    ( R: u -- u' )
-  \ 
+  \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
   \ loop index and continue execution at the beginning of the
@@ -3183,8 +3575,8 @@ code (step)  ( R: n -- n' )
   \ Run-time: ( x -- )
   1+ >r
   postpone over  postpone =   \ copy and test case value
-  postpone if                 \ add orig to control flow stack 
-  postpone drop               \ discards case value if = 
+  postpone if                 \ add orig to control flow stack
+  postpone drop               \ discards case value if =
   r>  ; immediate
 
 : endof
@@ -3196,7 +3588,7 @@ code (step)  ( R: n -- n' )
   \ Compilation:  ( orig1..orign #of -- )
   \ Run-time: ( -- )
   \ XXX TODO use `?do` when available
-  postpone drop  \ discard case value 
+  postpone drop  \ discard case value
   0 do  postpone then  loop  ; immediate
 
 ( case )  \ fig-Forth version with compiler security
@@ -3464,8 +3856,7 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
 
 : set-order  ( -1 | 0 | widn..wid1 n -- )
   \ Set a search order.
-  -order
-  dup -1 =  if  drop only exit  then
+  dup -1 =  if  drop only exit  then  -order
   ?dup if  (set-order)  then  ;
 
 
@@ -3559,20 +3950,12 @@ require random  require set-pixel
 
   \ [Code adapted from the Afera library.]
 
-: (defer)  ( -- )  15 error  ;
-  \ Default behaviour of an uninitialized deferred word: error.
+  \ XXX OLD -- moved to the kernel
+  \ : (defer)  ( -- )  15 error  ;
+  \   \ Default behaviour of an uninitialized deferred word: error.
 
-  \ XXX OLD  -- this method creates an additonal nesting level,
-  \ what may cause trouble in same cases.
-  \ : defer  ( "name" -- )
-  \   postpone : postpone (defer) postpone ;  ;
+  \ : defer  ( "name" -- )  create ['] (defer) , does> @ execute  ;
   \   \ Create a deferred word.
-
-  \ XXX TODO -- new approach, with a code word and a low-level jump
-
-  \ XXX TODO  -- check nesting level
-: defer  ( "name" -- )  create ['] (defer) , does> @ execute  ;
-  \ Create a deferred word.
 
 : defer@  ( cfa1 -- cfa2 )  cfa>pfa @  ;
   \ Return the cfa of the word currently associated with a
@@ -3644,8 +4027,8 @@ DD constant ix-op  FD constant iy-op
 : ix  ( -- rphl )  ix-op c, hl  ;
 : iy  ( -- rphl )  iy-op c, hl  ;
 
-  \ Branch too long?
 : ?page  ( n -- n )  dup 80 + FF swap u< 1E ?error  ;
+  \ Branch too long?
 
 -->
 
@@ -3719,20 +4102,20 @@ require -rot
 ( z80-asm -- opcodes)
 
 00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
-08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca
-10 m9 djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl
-27 m1 daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta
-37 m1 scf 38 m9 jrc 3A m5 fta 3F m1 ccf 76 m1 halt 80 m2 add
-88 m2 adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz
-C3 m5 jp C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz
-CD m5 call CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc
-D6 m4 sub# D9 m1 exx DA m5 jpc DB m4 in 40 m3 inbc 0DE m4 sbc#
-E2 m5 jppo E3 m1 exsp E6 m4 and# E9 m1 jphl EA m5 jppe
-EB m1 exde EE m4 xor# F2 m5 jpp F3 m1 di  F6 m4 or# F9 m1 ldsp
-FA m5 jpm FB m1 ei FE m4 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl
-18 m6 rr 20 m6 sla  28 m6 sra 38 m6 srl  40 m7 bit 80 m7 res
-C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
-47ED m8 ldia 56ED m8 im1 5EED m8 im2 B1ED m8 cpir         -->
+08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca 10 m9
+djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl 27 m1
+daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta 37 m1
+scf 38 m9 jrc 3A m5 fta 3F m1 ccf 76 m1 halt 80 m2 add 88 m2
+adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz C3 m5 jp
+C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz CD m5 call
+CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc D6 m4 sub# D9 m1
+exx DA m5 jpc DB m4 in 40 m3 inbc 0DE m4 sbc# E2 m5 jppo E3 m1
+exsp E6 m4 and# E9 m1 jphl EA m5 jppe EB m1 exde EE m4 xor# F2
+m5 jpp F3 m1 di  F6 m4 or# F9 m1 ldsp FA m5 jpm FB m1 ei FE m4
+cp# 00 m6 rlc 08 m6 rrc 10 m6 rl 18 m6 rr 20 m6 sla  28 m6 sra
+38 m6 srl  40 m7 bit 80 m7 res C0 m7 set B0ED m8 ldir B8ED m8
+lddr 44ED m8 neg 57ED m8 ldai 47ED m8 ldia 56ED m8 im1 5EED m8
+im2 B1ED m8 cpir 6FED m8 rld -->
 
 ( z80-asm -- opcodes)
 
@@ -3761,7 +4144,7 @@ D7 m1 prt  \ rst 0x16
 ( z80-asm -- index register opcodes)
 
 require -rot
-[defined] 3dup 
+[defined] 3dup
 ?\ : 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
 
 86 ma addx 8E ma adcx 96 ma subx 9E ma sbcx A6 ma andx
@@ -3820,13 +4203,17 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
   \ XXX TODO document
 
-: >relmark  ( -- dest )  here 1-  ;
-  \ Forward relative mark.
+: >relmark  ( -- orig )  here 1-  ;
+  \ Leave the origin address of a forward relative branch
+  \ just compiled, to be resolved by `>relresolve`.
 
-: >relresolve  ( orig dest -- ) over - ?page swap c!  ;
-  \ Forward relative resolve.
+: >relresolve  ( orig dest -- )  1- over - ?page swap c!  ;
+  \ Resolve a forward relative branch.
 
-: then  ( orig cs-id -- )  0A ?pairs >relmark >relresolve  ;
+: <relresolve  ( dest orig -- )  1- swap >relresolve  ;
+  \ Resolve a backward relative branch.
+
+: then  ( orig cs-id -- )  0A ?pairs here >relresolve  ;
 
 : if  ( op -- orig cs-id )  , >relmark 0A  ;
 
@@ -3837,8 +4224,8 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : while  (  op -- orig cs-id )  if 2+  ;
 
-: until  (  dest cs-id op -- )
-  , 0B ?pairs 1- >relmark swap >relresolve  ;
+: until  (  dest cs-id op -- )  , 0B ?pairs here <relresolve  ;
+  \ , 0B ?pairs 1- here swap >relresolve  ; \ XXX OLD
 
 : again  (  dest cs-id -- )  18 until  ;  \ compile `jr`
 
@@ -3852,9 +4239,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
   \ XXX TODO document
 
-: then'  (  orig cs-id -- )  08 ?pairs >resolve  ;
-
 : if'  (  op -- orig cs-id )  c, >mark 08  ;
+
+: then'  (  orig cs-id -- )  08 ?pairs >resolve  ;
 
 : else'  (  cs-id -- cs-id )
   08 ?pairs C3 if' rot swap then' 08  ;
@@ -3899,6 +4286,48 @@ only forth definitions also assembler
 : endm  ( -- )  postpone ;  ;
 
 decimal only forth
+
+( until-test )
+
+  \ XXX TMP for debugging
+  \ XXX OLD
+
+require z80-asm  require dump
+
+code until-test  ( -- )
+  begin
+    nop
+  z until  jpnext
+  end-code
+
+' until-test cfa>pfa 5 dump
+
+( if'-test )
+
+  \ XXX TMP for debugging
+  \ XXX OLD
+
+require z80-asm  require dump
+
+code if'-test  ( -- )
+
+  .( here is ) here u.
+
+  p' if'  \ not expecting a regular character
+
+    nz if  \ not expecting the column
+      \ expecting the line
+      \ GET_LIN:
+      cpl  C0 add#  \ now A = 191 - char
+      hl incp
+    then
+    \ GET_COL:
+    hl incp  a m ld
+    ret
+
+  then'  end-code
+
+' if'-test cfa>pfa dup here swap - dump
 
   \ }}} =======================================================
   \ The address register {{{

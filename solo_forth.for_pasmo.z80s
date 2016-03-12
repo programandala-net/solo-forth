@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508310402
+version_release:  equ 201509012207
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -2037,14 +2037,14 @@ skip.begin:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header emit_,'EMIT'
+  _does_header emit_,'EMIT',,do_defer
 
 ; XXX TODO -- Add multitasker's `pause` when available.
-; XXX TODO -- defer
 
   dw paren_emit_
-  dw one_,out_,plus_store_
-  dw semicolon_s_
+  ; XXX OLD
+;  dw one_,out_,plus_store_
+;  dw semicolon_s_
 
 ; ----------------------------------------------
   _code_header paren_emit_,'(EMIT)'
@@ -2301,7 +2301,7 @@ xkey.end:
   jp push_hl
 
 ; ----------------------------------------------
-  _colon_header cr_,'CR'
+  _does_header cr_,'CR',,do_defer
 
 ; doc{
 ;
@@ -2311,8 +2311,13 @@ xkey.end:
 ;
 ; }doc
 
+  dw paren_cr_
+
+; ----------------------------------------------
+  _colon_header paren_cr_,'(CR)'
+
   _literal carriage_return_char
-  dw emit_,out_,off_
+  dw emit_,out_,off_ ; XXX OLD
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3185,6 +3190,8 @@ fetch.hl:
   ld d,(hl)
   push de
   _jp_next
+
+  ; XXX TODO faster or smaller with `jp pushhl`?
 
 ; ----------------------------------------------
   _code_header c_fetch_,'C@'
@@ -4365,9 +4372,6 @@ postpone.end:
 
   dw question_csp_
   dw compile_,paren_semicolon_code_
-if 1 ; assembler_core_in_kernel
-  dw asm_
-endif
   dw left_bracket_,smudge_
   dw semicolon_s_
 
@@ -5721,6 +5725,39 @@ quit.do:
   _string 'ok'
   dw branch_,quit.do
 
+; ----------------------------------------------
+  _colon_header paren_defer_,'(DEFER)'
+
+; doc{
+;
+; (defer)  ( -- )
+;
+; Default behaviour of an uninitialized deferred word: error.
+;
+; }doc
+
+  _literal error.deferred_word_uninitialized
+  dw error_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header defer_,'DEFER'
+
+; doc{
+;
+; defer  ( "name" -- )
+;
+; }doc
+
+  dw create_
+  _literal paren_defer_
+  dw comma_
+  dw paren_semicolon_code_
+do_defer:
+  call do_does
+  dw fetch_,execute_
+  dw semicolon_s_
+
 if show_version
 
 ; ----------------------------------------------
@@ -6172,7 +6209,7 @@ max.2:
 
 message.number_only:
   dw paren_dot_quote_
-  _string 'MSG # '
+  _string 'Msg # '
   dw base_,fetch_,swap_,decimal_,dot_,base_,store_
   dw semicolon_s_
 
@@ -6522,6 +6559,8 @@ endif
 ; b = G+DOS command to read or write a sector
 ;
 ; }doc
+
+  ; XXX TODO restore the current drive
 
   dw lit_,read_write_sector_command,c_store_
   dw block_to_sector_

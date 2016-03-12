@@ -171,3 +171,18 @@ New: `cvalue`, `2value`.
 .2015-08-31:
 
 Fix: `transfer-block` changes the current drive to 2!
+
+Problem: a szx snapshot does not preserve the mounted disks, and even
+worse, it does not preserve G+DOS!
+
+Of course the +D own snapshots can be used to save the status of a
+game, but this means programs have to be started manually, typing
+`run` in BASIC to load G+DOS, and then loading the snapshot file.
+
+.2015-09-01:
+
+Fix: `s" string` (pressing Enter without typing the closing quote)
+crashes the system. This didn't happen in Abersoft Forth: the string
+was left on the stack.
+
+

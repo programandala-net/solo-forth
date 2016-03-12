@@ -104,7 +104,7 @@ solo_forth_disk_1.mgt: solo_forth.bas.tap solo_forth.bin.tap
 	mkmgt  solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
 		solo_forth.bas.tap \
-		_tests/luna.scr \
+		fzx/*.fzx \
 		solo_forth.bin.tap
 
 # Disk 2 (for drive 2) contains the source blocks of the Forth
