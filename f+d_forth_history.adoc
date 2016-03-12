@@ -58,4 +58,6 @@ Change: stacks and buffers are moved to the bottom of the memory map,
 before the interpreter. They must be below 0xC000 in order to use the
 memory banks.
 
-Change: `r` renamed as `r@`.
+Change: `r` renamed as `r@`; the Z80 Z80 code of `i` is moved to `r@`,
+and the cfa of `i` is pointed to the pfa of `r@`. This is logical and
+faster (formerly `r` was a colon word that called `i`).
