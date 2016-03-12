@@ -261,6 +261,24 @@ Fix: `on` and `off` changed only the first part of the value! That was
 the reason the second block of screens was not parsed: `in` was not
 properly set to zero in the null word.
 
-.2015-06-18:
-
 Improvement: One byte saved in `id.`.
+
+Fix: typo in number in `pixel`. Now the new `point` and `plot` work
+with Y coordinate range 0..191.
+
+New: the strings module of the Afera library is included in the disk.
+
+New: `code` (based on `create`, that will be rewritten), `end-code`,
+`assembler` (empty vocabulary).
+
+New: `[defined]`, `[undefined]`, `?-->` and `?\` are included in the
+kernel, copied from the Afera library. They are essential to manage
+the disk screens.
+
+Improvement: `2swap` is rewritten is Z80, copying the code from
+DZX-Forth.
+
+Change: `size` is moved to the disk. It's needed only by `system`.
+
+Change: `-find` is renamed as `find`, and factored out with
+`context-find`, in order to implement `defined?`, needed by `required`.

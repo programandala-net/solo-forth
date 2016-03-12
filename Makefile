@@ -107,7 +107,7 @@ solo_forth_disk_2.mgt: solo_forth.fsb
 
 .PHONY: backup
 backup:
-	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.txz \
+	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
 		Makefile \
 		*.adoc \
 		solo_forth*.fsb \

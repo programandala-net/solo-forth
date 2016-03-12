@@ -62,11 +62,18 @@ chars 0..127 and for chars 128..255.
 
 Change the header format:
 
+----
 lfa   dw nfa
 nfa   db len+bits,"name"
 cfa   dw a
 pfa   ...
+----
 
 Then write a macro to create the link field and the name field.
+
+New:
+- Case-sensitive mode.
+- Create words in lowercase.
+- Improve `parse-name` with case conversion and move it to the kernel.
 
 

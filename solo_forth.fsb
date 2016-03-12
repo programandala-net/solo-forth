@@ -82,19 +82,28 @@
 
   \ XXX TODO
 
-: located  ( ca len -- screen | false)
-  780 6 do
+: CONTAINS
+  0 pad !   BL pad $C+
+  pad $+!   BL pad $C+   pad @ - OVER + SWAP
+  do   i pad $@ cora   0= if -1 unloop exit then   loop   0 ;
+
+: located  ( ca len -- screen | false )
+  780 1 do
     0 i (line) 2over contains if  2drop i unloop exit  then
   loop  2drop false  ;
+
 : locate  ( "name" -- screen | false )  bl word located  ;
 
   \ Make sure the given word is defined.
+
 : (required)  ( ca len -- )
-  located dup 0= x ?error load  ;
+  located dup 0= 29 ?error load  ;
+
 : required  ( ca len -- )
   \ XXX TODO finish
   2dup undefined? if  2dup (required)  then
-  2dup undefined? if  etype 24 message exit  then 2drop  ;
+  2dup undefined? if  type 24 message exit  then 2drop  ;
+
 : require  ( "name" -- )  bl word required  ;
 
 ( Error messages 1..15 ) \ scr 4
@@ -132,9 +141,8 @@
 \ Error #25: Unsupported tape operation.
 \ Error #26: Unsupported disk operation.
 \ Error #27: Source file needed.
-  \ XXX Copied from lina's error #24:
 \ Error #28: Warning: Not present, though required.
-\ Error #29:
+\ Error #29: Required, but not located.
 \ Error #30:
 \ Error #31:
 
@@ -166,20 +174,91 @@
  .( line 14 ) depth u.
  .( line 15 ) depth u.
 
+( cmove> )
+
+code cmove>  ( ca1 ca2 len -- )  \ Forth-94
+
+  \ 2015-06-17: Copied from the Afera Library.  Originally
+  \ adapted from Lennart Benschop's Spectrum Forth-83.
+
+  \ exx / pop bc / pop de / pop hl
+  d9 c,  c1 c,  d1 c,  e1 c,
+
+  \ ld a,c / or b / jr z,end
+  79 c, b0 c, 28 c, 8 c,
+
+  09 c,         \ add hl,bc
+  2b c,         \ dec hl
+  eb c,         \ ex de,hl
+  09 c,         \ add hl,bc
+  2b c,         \ dec hl
+  eb c,         \ ex de,hl
+  ed c, b8 c,   \ lddr
+  \ end:
+  d9 c, dd c, e9 c,     \ exx / jp (ix)
+
+  end-code
+
+( move )
+
+require cmove>
+
+: move  ( a1 a2 len -- )  \ Forth-94
+
+  \ 2015-06-17: Copied from the Afera Library.
+  \ Originally copied from Phil Burk's pForth (v19).
+
+  >r 2dup - 0< if  r> cmove>  else  r> cmove  then  ;
+
+( parse-text parse-name s, sliteral place +place /string )
+
+  \ 2015-06-17: Copied from the Afera Library.
+
+require move
+
+: parse-text  ( c "ccc<c>" -- ca len )  text pad count  ;
+: parse-name  ( "name" -- ca len )  bl parse-text  ;
+
+: slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
+: s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
+: sliteral  ( ca len -- )  compile slit s,  ; immediate
+
+: place  ( ca1 len1 ca2 )  2dup c! 1+ swap move  ;
+: +place  ( ca1 len1 ca2 )
+  2dup c@ + over c!  dup c@ 1+ + swap move  ;
+
+: /string  ( ca1 len1 n -- ca2 len2 )
+  dup >r - swap r> + swap  ;
+
+( s" s' )
+
+  \ 2015-06-17: Copied from the Afera Library.
+
+require slit  require parse-text
+
+: (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+  state @ if    compile slit word here c@ 1+ allot
+          else  parse-text  then  ;
+
+: s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
+  [char] " (s)  ; immediate
+
+: s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
+  [char] ' (s)  ; immediate
+
 ( -rot )
 
   \ 2015-06-05: Copied from the Afera library
   \ (http://programandala.net/en.program.afera.html).
 
-create -rot  ( x1 x2 x3 -- x3 x1 x2 )
+code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
-  hex
   E1 c, D1 c,     \ pop hl / pop de
   E3 c,           \ ex (sp),hl
   EB c,           \ ex de,hl
   C3 c, pushde ,  \ jp pushde
 
-  smudge decimal
+  end-code
 
 ( pixel )
 
@@ -195,11 +274,12 @@ hex  0 variable (pixel) -2 allot
   \ Output:
   \   hl = address of the pixel byte in the screen bitmap
   \   a = position of the pixel in the byte address 0..7
-  3E c, 191 c,  \ ld a,191
+  3E c, BF c,  \ ld a,191 ; max Y coordinate
   90 00 + c,    \ sub b
   C3 c, 22B0 ,  \ jp 0x22B0 ; and return
+  decimal
 
-create pixel  ( x y -- n a )
+code pixel  ( x y -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
   \ y = 0..191
@@ -213,8 +293,7 @@ create pixel  ( x y -- n a )
   C1 c,             \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
   C3 c, pushde ,    \ jp pushde
-  DD c, E9 c,       \ jp (ix)
-  smudge decimal
+  end-code
 
 ( point )
 
@@ -222,10 +301,9 @@ create pixel  ( x y -- n a )
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
-  \ XXX TODO require pixel
+require pixel
 
-create point  ( x y -- )
-  hex
+code point  ( x y -- )
   E1 c, D1 c, C5 c,   \ pop hl / pop de / push bc
   \ l = y coordinate
   \ e = x coordinate
@@ -245,7 +323,7 @@ create point  ( x y -- )
   26 c, 00 c,  68 07 + c,  \ ld h,0 / ld l,a
   C1 c,               \ pop bc
   C3 c, pushhl ,      \ jp pushhl
-  smudge decimal
+  end-code
 
 ( plot )
 
@@ -253,17 +331,15 @@ create point  ( x y -- )
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
-  \ XXX TODO require pixel
+require pixel
 
-create plot  ( x y -- )
-
-  hex
+code plot  ( x y -- )
 
   D9 c,           \ exx
   E1 c,           \ pop hl
   C1 c,           \ pop bc
   40 05 + c,      \ ld b,l
-  ED c, 43, 5C7D ,  \ ld (0x5C7D),bc ; update COORDS
+  ED c, 43 , 5C7D ,  \ ld (0x5C7D),bc ; update COORDS
   CD c, (pixel) ,    \ call (pixel)
   \ hl = screen address
   \ a = pixel position in hl
@@ -272,9 +348,11 @@ create plot  ( x y -- )
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   DD c, E9 c,     \ jp (ix)
 
-  smudge decimal
+  end-code
 
 ( draw )
+
+  \ XXX TODO
 
   \ Version of Spectrum Forth-83:
 
@@ -304,7 +382,7 @@ create plot  ( x y -- )
 
 ( attr )
 
-create attr ( line col -- )  hex
+code attr ( line col -- )
 
   \ Version of Abersoft Forth
 
@@ -322,9 +400,6 @@ create attr ( line col -- )  hex
   \ pop bc
 
   \ Improved version of the ROM routine at 0x2583
-
-  \ ; b=col->d
-  \ ; c=line->e
 
   E1 c, \ pop hl ; l = col
   D1 c, \ pop de ; e = line
@@ -351,29 +426,27 @@ create attr ( line col -- )  hex
 
   C3 c, pushhl , \ jp pushhl
 
-  smudge decimal
+  end-code
 
 ( bleep )
 
   \ 2015-06-04: Abersoft Forth's `bleep`.
 
-create bleep
-  hex
+code bleep
   E1 c, D1 c, C5 c,   \ pop hl / pop de / push bc
   DD c, E5 c,         \ push ix
   CD c, 03B5          \ call rom_beeper
   DD c, E1 c,         \ pop ix
   C1 c,               \ pop bc
-  \ C3 c, next ,        \ jp next ; XXX OLD
   DD c, E9 c,         \ jp (ix)
-  smudge decimal
+  end-code
 
 ( [if] [else] [then] )
 
   \ 2015-06-04: Copied from the Afera library
   \ (http://programandala.net/en.program.afera.html).
 
-  require s=  require parse-name  require s"
+require s=  require parse-name  require s"
 
 : [else]  ( "..." -- )
 
@@ -412,6 +485,8 @@ hex
 decimal  -->
 
 ( dump )
+
+require bs  require hexa.  require stype
 
 : dump  ( a len -- )
   7 + -8 and 8 / 0
@@ -462,13 +537,13 @@ forth definitions decimal
 : decode-special  ( a1 -- a1 | a2 )
   dup @
   case
-    ['] compile of  decode-compile    endof
-    ['] lit of  decode-literal    endof
-    ['] branch of  decode-branch     endof
-    ['] 0branch of  decode-branch     endof
-    ['] (loop) of  decode-branch     endof
-    ['] (+loop) of  decode-branch     endof
-    ['] (.") of  decode-dot-quote  endof
+    ['] compile   of  decode-compile    endof
+    ['] lit       of  decode-literal    endof
+    ['] branch    of  decode-branch     endof
+    ['] 0branch   of  decode-branch     endof
+    ['] (loop)    of  decode-branch     endof
+    ['] (+loop)   of  decode-branch     endof
+    ['] (.")      of  decode-dot-quote  endof
   endcase  ;
 
 -->
@@ -476,11 +551,11 @@ forth definitions decimal
 ( decode -- checks of the main code )
 
 : decode-end?  ( cfa -- f )
-  \ is the given cfa the end of a definition?
+  \ Is the given cfa the end of a definition?
   dup  ['] ;s =  swap ['] (;code) =  or  ;
 
 : colon-pfa?  ( pfa -- f )
-  \ is the given pfa a colon definition?
+  \ Is the given pfa a colon definition?
   pfa>cfa @ ['] : @ =  ;
 
 -->
@@ -489,7 +564,7 @@ forth definitions decimal
 
 : (decode)  ( pfa --- )
 
-  \ decode the definition at the given pfa.
+  \ Decode the definition at the given pfa.
 
   dup colon-pfa? if
     dup pfa>nfa decode-address ! indent  ." : " dup pfa>nfa id.
@@ -556,7 +631,7 @@ forth definitions decimal
   cfa>lfa @ current @ !    \ Update the `current` vocabulary.
   ;
 
-( extend system turnkey )
+( extend size system turnkey )
 
 : extend  ( -- )
 
@@ -569,6 +644,10 @@ forth definitions decimal
   here fence !
   \ `voc-link` init value:
   [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
+
+: size  ( -- u )
+  \ Size of the system.
+  here 0 +origin -  ;
 
   \ system  ( -- a len )
   \
@@ -598,8 +677,8 @@ forth definitions decimal
 hex
 
 : c>hex  ( c -- n )
-  \ convert a character to its hexadecimal value.
-  30 - dup 9 > if 7 - then  ;
+  \ Convert a character to its hexadecimal value.
+  30 - dup 9 > if  7 -  then  ;
 
 decimal
 
@@ -663,17 +742,49 @@ hex  width @ 2 width !
 
 width ! decimal
 
-( Time extensions )
+( [false] [true] )
+
+  \ 2015-06-17: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html).
+
+         0 constant [false] immediate
+[false] 0= constant [true]  immediate
+
+( ms )
 
   \ 2015-06-10: Copied from the Afera library
   \ (http://programandala.net/en.program.afera.html).
 
-23672 constant sys-frames
+[defined] sys-frames ?\ 23672 constant sys-frames
 
 : ms  ( n -- )
   \ Wait n ms (miliseconds), with 20 ms precision.
   20 / sys-frames @ +
   begin  dup sys-frames @ u<  until drop  ;
+
+  \ XXX TODO
+  \ Adapth this better version from v.Forth:
+  \
+  \ CODE MS
+  \  POP DE|
+  \  BEGIN,
+  \   LDI A'| 171 N,
+  \   BEGIN,
+  \    NOP
+  \    DEC A'|
+  \   -UNTIL,
+  \   DECX DE|
+  \   LD A'| D|
+  \  ORA E|
+  \  -UNTIL,
+  \ NEXT C;
+
+( time@ time! time0 )
+
+  \ 2015-06-10: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html).
+
+[defined] sys-frames ?\ 23672 constant sys-frames
 
 : time@  ( -- d )
   \ System frames counter (incremented every 20 ms).

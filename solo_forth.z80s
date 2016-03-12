@@ -3,13 +3,14 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506170056
+; Version A-00-201506181825
 ; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
 ; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
 ; - `enclose` modified to save a `swap` in `word`.
 ; - fix: now `enclose` uses a 16-bit offset counter.
 ; - fix: `on` and `off`.
+; - new: `code`, `end-code`, `assembler`.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -118,6 +119,7 @@ inverse_char:               equ 0x14
 over_char:                  equ 0x15
 at_char:                    equ 0x16
 tab_char:                   equ 0x17 ; tab (screen only)
+space_char:                 equ 0x20
 
 ; ----------------------------------------------
 ; ROM  routines
@@ -166,14 +168,10 @@ sys_udg:           equ 0x5C7B
 ; ==============================================================
 ; Macros
 
-_header: macro name,immediate
+previous_nfa defl 0 ; link to previous Forth word
 
-  ; XXX TODO -- Copied from DZX-Forth. Adapt it.
+_header: macro label,name_but_last_letter,last_letter,immediate
 
-  ; name        = name string
-  ; immediate   = _immediate or nothing
-
-  ; the name field
   this_nfa: defl $ ; link address for next word
   bits: defl 0x80
   if not nul immediate
@@ -193,6 +191,32 @@ _header: macro name,immediate
 
 endm
 
+;_header: macro label,name,immediate
+
+  ; XXX TODO -- Future version, with new header format. Copied from DZX-Forth. Adapt it.
+  ; name        = name string
+  ; immediate   = _immediate or nothing
+
+;  ; the name field
+;  this_nfa: defl $ ; link address for next word
+;  bits: defl 0x80
+;  if not nul immediate
+;    ; set immediate bit
+;    bits: defl bits | precedence_bit_mask
+;  endif
+;  local _first ; address of the first char of the name
+;  local _next  ; address after the last char of the name
+;  db _next-_first+bits    ; count and flags byte
+;  _first:
+;  db name
+;  db last_letter+0x80
+;  _next:
+;  dw previous_nfa ; the link field
+;
+;  previous_nfa: defl this_nfa
+
+;endm
+
 _string: macro text
 
   local _first ; address of the first char of the name
@@ -207,6 +231,32 @@ _jp_next: macro
 
   jp (ix)
 
+  endm
+
+; Create relative or absolute jumps, depending on the configured optimization
+
+_jump: macro _address
+  if size_optimization?
+    jr _address
+  else
+    jp _address
+  endif
+  endm
+
+_jump_nc: macro _address
+  if size_optimization?
+    jr nc,_address
+  else
+    jp nc,_address
+  endif
+  endm
+
+_jump_z: macro _address
+  if size_optimization?
+    jr z,_address
+  else
+    jp z,_address
+  endif
   endm
 
 ; ==============================================================
@@ -614,6 +664,18 @@ l5f65h:
   ld l,h
   jp pushhl
 
+; doc{
+;
+; (FIND)  ( a1 nfa --- pfa b tf | ff )
+;
+; Search the dictionary starting at the name field address
+; _nfa_, matching to the text at _a1_. If a match is found,
+; return parameter field address _pfa_, length byte of name
+; field _b_ and a boolean true.  Otherwise return only a boolean
+; false.
+;
+; }doc
+
 paren_find_nfa:
   db 0x06+0x80,'(FIND',')'+0x80
 paren_find_lfa:
@@ -906,7 +968,7 @@ key_pfa:
   call rom_chan_open
 
   ; flash on
-  ld a,0x12
+  ld a,flash_char
   rst 0x10
   ld a,0x01
   rst 0x10
@@ -918,7 +980,7 @@ key.new_key:
 key.cursor_char: equ $+1
   ld a,'L'
   rst 0x10
-  ld a,0x08
+  ld a,backspace_char
   rst 0x10
 key.wait_for_key:
   ld a,(sys_last_k)
@@ -926,9 +988,9 @@ key.wait_for_key:
   jr z,key.wait_for_key
   ; a = pressed key code
 
-  cp 0x06 ; caps?
+  cp caps_char ; toggle caps lock?
   jr nz,key.graphic_mode
-  ; caps
+  ; toggle caps lock
   ld hl,sys_flags2
   ld a,0x08
   xor (hl)
@@ -947,7 +1009,7 @@ key.cursor_c:
   jr key.new_key
 
 key.graphic_mode:
-  cp 0x0F ; change graphics mode?
+  cp graphics_char ; change graphics mode?
   jr nz,key.left_bracket
   ; graphics
   ld a,0x02
@@ -1002,15 +1064,15 @@ key.limit:
   ld h,0x00
 
   ; flash off
-  ld a,0x12
+  ld a,flash_char
   rst 0x10
   ld a,0x00
   rst 0x10
 
   ; delete the cursor
-  ld a,0x20
+  ld a,space_char
   rst 0x10
-  ld a,0x08
+  ld a,backspace_char
   rst 0x10
 
   pop bc
@@ -1947,7 +2009,7 @@ b_l_lfa:
 b_l_:
   dw do_constant
 b_l_pfa:
-  dw 0x0020
+  dw space_char
 
 c_slash_l_nfa:
   db 0x03+0x80,'C/','L'+0x80
@@ -3310,7 +3372,7 @@ upperc_pfa:
   jp pushhl
 
 upperc.a:
-  ; Convert the char in the 'a' register to uppercase.
+  ; Convert the ASCII char in the 'a' register to uppercase.
   cp 'a'
   ret c
   cp 'z'+1
@@ -3338,30 +3400,89 @@ uppers.do:
   dec de
   jp uppers.do
 
-minus_find_nfa:
-  db 0x05+0x80,'-FIN','D'+0x80
-minus_find_lfa:
+; doc{
+;
+; CONTEXT-FIND  ( "name" -- pfa b tf | ff )
+;
+; Accept the next text word (delimited by blanks) in the input stream to
+; `here`, and search the `context` vocabulary for a matching entry.  If found,
+; leave the dictionary entry's parameter field address, its length byte, and a
+; boolean true.  Otherwise, leave only a boolean false.
+;
+; }doc
+
+context_find_nfa:
+  db 0x0C+0x80,'CONTEXT-FIN','D'+0x80
+context_find_lfa:
   dw uppers_nfa
-minus_find_:
+context_find_:
   dw do_colon
-minus_find_pfa:
+context_find_pfa:
   ; XXX TODO -- return cfa instead of pfa
   dw b_l_,word_
   dw here_,count_,uppers_
   dw here_,context_,fetch_,fetch_,paren_find_
-  dw dup_,zero_equals_ ; found?
-  dw zero_branch_,minus_find.end
+  dw semicolon_s_
+
+defined_question_nfa:
+  db 0x08+0x80,'DEFINED','?'+0x80
+defined_question_lfa:
+  dw context_find_nfa
+defined_question_:
+  dw do_colon
+defined_question_pfa:
+  ; XXX TODO -- not finished
+  dw context_find_,dup_
+  dw zero_branch_,defined_question.end
+  dw two_drop_
+defined_question.end:
+  dw semicolon_s_
+
+undefined_question_nfa:
+  db 0x0A+0x80,'UNDEFINED','?'+0x80
+undefined_question_lfa:
+  dw defined_question_nfa
+undefined_question_:
+  dw do_colon
+undefined_question_pfa:
+  ; XXX TODO -- not finished
+  dw defined_question_,zero_equals_
+  dw semicolon_s_
+
+; doc{
+;
+; FIND  ( "name" --- pfa b tf | ff )
+;
+; Accept the next text word (delimited by blanks) in the input
+; stream to `here`, and search the `context` and then `current`
+; vocabularies for a matching entry.  If found, leave the
+; dictionary entry's parameter field address, its length byte,
+; and a boolean true.  Otherwise, leave only a boolean false.
+;
+; }doc
+
+find_nfa:
+  db 0x04+0x80,'FIN','D'+0x80
+find_lfa:
+  dw undefined_question_nfa
+find_:
+  dw do_colon
+find_pfa:
+  ; XXX TODO -- return cfa instead of pfa
+  dw context_find_,question_dup_
+  ; XXX TODO -- optimize with `?exit' here instead of a branch
+  dw question_branch_,find.end
   ; The word was not found in the context vocabulary,
   ; try again in the current vocabulary.
   ; XXX TODO -- remove this?
-  dw drop_,here_,latest_,paren_find_
-minus_find.end:
+  dw here_,latest_,paren_find_
+find.end:
   dw semicolon_s_
 
 paren_abort_nfa:
   db 0x07+0x80,'(ABORT',')'+0x80
 paren_abort_lfa:
-  dw minus_find_nfa
+  dw find_nfa
 paren_abort_:
   dw do_colon
 paren_abort_pfa:
@@ -3425,6 +3546,8 @@ endif
   dw type_,space_
   dw semicolon_s_
 
+  ; XXX OLD -- original version of `create`
+  ; XXX TODO -- rewrite after Forth-83 and Forth-94.
 create_nfa:
   db 0x06+0x80,'CREAT','E'+0x80
 create_lfa:
@@ -3432,7 +3555,7 @@ create_lfa:
 create_:
   dw do_colon
 create_pfa:
-  dw minus_find_
+  dw find_
   dw zero_branch_,create.continue
   ; The word is not unique.
   dw drop_,pfa_to_nfa_,id_dot_
@@ -3456,14 +3579,176 @@ create.continue:
   dw here_,two_plus_,comma_
   dw semicolon_s_
 
+assembler_nfa:
+  defb 0x09+0x80,"ASSEMBLE","R"+0x80
+assembler_lfa:
+  defw create_nfa
+assembler_:
+  defw do_does
+assembler_pfa:
+  defw do_vocabulary
+assembler_vocabulary_dummy_nfa:
+  defw 0xA081 ; Dummy name field.
+assembler_vocabulary_latest:
+  defw forth_vocabulary_dummy_nfa
+assembler_vocabulary_link:
+  defw forth_vocabulary_link
+
+code_nfa:
+  db 0x04+0x80,'COD','E'+0x80
+code_lfa:
+  dw assembler_nfa
+code_:
+  dw do_colon
+code_pfa:
+  dw find_
+  dw zero_branch_,code.continue
+  ; The word is not unique.
+  dw drop_,pfa_to_nfa_,id_dot_
+  dw c_lit_
+  db 0x04
+  dw message_,space_
+code.continue:
+  dw here_
+  dw dup_,c_fetch_,width_,fetch_,min_
+  dw one_plus_,allot_
+  dw dup_
+  dw c_lit_
+  db 0xA0 ; XXX TODO document
+  dw toggle_
+  dw here_,one_,minus_
+  dw c_lit_
+  db 0x80 ; XXX TODO document
+  dw toggle_
+  dw latest_,comma_
+  dw current_,fetch_,store_
+  dw here_,two_plus_,comma_
+  dw base_,fetch_,hex_
+  dw context_,fetch_,assembler_
+  dw store_csp_
+  dw semicolon_s_
+
+end_code_nfa:
+  db 0x08+0x80,'END-COD','E'+0x80
+end_code_lfa:
+  dw code_nfa
+end_code_:
+  dw do_colon
+end_code_pfa:
+  dw question_csp_
+  dw context_,store_
+  dw base_,store_
+  dw smudge_
+  dw semicolon_s_
+
+compare_nfa:
+  db 0x07+0x80,'COMPAR','E'+0x80
+compare_lfa:
+  dw end_code_nfa
+compare_:
+  dw compare_pfa
+compare_pfa:
+  pop de      ; de = len2
+  pop hl      ; hl = ca2
+  ex (sp),hl  ; hl = len1
+  ld a,d
+  cp h
+  jr nz,compare_.1
+  ld a,e
+  cp l
+compare_.1:
+  jr c,compare_.2
+  ex de,hl
+compare_.2:
+  ; de = smaller len
+  ld l,c
+  ld h,b ; hl = Forth IP
+  pop bc ; ca2
+  ex (sp),hl ; hl = ca1 ; save Forth IP
+  push af ; save carry flag
+compare_.compare_strings: equ $+1 ; XXX not used yet
+  call compare_strings_case_sensitive
+  jr z,compare_.4
+  pop bc ; useless carry flag
+compare_.3:
+  pop bc ; restore Forth IP
+  jp c,one_
+  jp z,false_
+  ; jp true_ ; XXX TODO
+  ; XXX TMP -- until true=-1:
+  ld hl,-1
+  jp pushhl
+
+compare_.4:
+  pop af ; restore flags
+  jr compare_.3
+
+compare_strings_case_sensitive:
+  ; Copied from DZX-Forth.
+  ; Used by 'compare' and 'search'.
+  ; Input:
+  ;   HL = a1
+  ;   BC = a2
+  ;   DE = len
+  ; Output:
+  ;   Z = match?
+  ld a,e
+  or d
+  ret z
+  ld a,(bc)
+  cp (hl)
+  ret nz
+  inc hl
+  inc bc
+  dec de
+  jp compare_strings_case_sensitive
+
+if 0 ; XXX TODO
+
+  ; Version from Z88 CamelForth
+
+  ; S=    c-addr1 c-addr2 u -- n   string compare
+  ;             n<0: s1<s2, n=0: s1=s2, n>0: s1>s2
+
+  ; push bc ; XXX FIXME why this?! It's in both CamelForht and Z88 CamelForth.
+  exx
+  pop bc      ; count
+  pop hl      ; addr2
+  pop de      ; addr1
+  ld a,b      ; test for count=0
+  or c
+  jr z,compare.match     ; by definition, match!
+compare.do:  
+  ld a,(de)
+  inc de
+  cpi
+  jr nz,compare.diff     ; char mismatch: exit
+  jp pe,compare.do     ; count not exhausted
+compare.match: ; count exhausted & no mismatch found
+  exx
+  ld bc,0         ; bc=0000  (s1=s2)
+  jr compare.end
+compare.diff:  ; mismatch!  undo last 'cpi' increment
+  dec hl          ; point at mismatch char
+  cp (hl)         ; set cy if char1 < char2
+  sbc a,a         ; propagate cy thru A
+  exx
+  ld b,a          ; bc=FFFF if cy (s1<s2)
+  or 1            ; bc=0001 if ncy (s1>s2)
+  ld c,a
+compare.end:
+  _jp_next
+
+endif
+
 bracket_compile_nfa:
   db 0x09+0x80+precedence_bit_mask,'[COMPILE',']'+0x80
 bracket_compile_lfa:
-  dw create_nfa
+  dw compare_nfa
 bracket_compile_:
   dw do_colon
 bracket_compile_pfa:
-  dw minus_find_,zero_equals_
+  dw find_,zero_equals_
   dw one_,question_error_
   dw drop_,pfa_to_cfa_,comma_
   dw semicolon_s_
@@ -3567,7 +3852,7 @@ interpret_:
   dw do_colon
 interpret_pfa:
 interpret.begin:
-  dw minus_find_ ; found?
+  dw find_ ; found?
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found ; if
 
@@ -4403,7 +4688,7 @@ tick_lfa:
 tick_:
   dw do_colon
 tick_pfa:
-  dw minus_find_
+  dw find_
   dw zero_equals_,one_,question_error_
   ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
   dw drop_,pfa_to_cfa_
@@ -4893,29 +5178,29 @@ two_swap_nfa:
 two_swap_lfa:
   dw two_drop_nfa
 two_swap_:
-  dw do_colon
+  dw two_swap_pfa
 two_swap_pfa:
-  dw rot_
-  dw to_r_
-  dw rot_
-  dw from_r_
-  dw semicolon_s_
-
-size_nfa:
-  db 0x04+0x80,'SIZ','E'+0x80
-size_lfa:
-  dw two_swap_nfa
-size_:
-  dw do_colon
-size_pfa:
-  ; XXX TODO update for the new map, count from org.
-  dw here_,zero_,plus_origin_,minus_
-  dw semicolon_s_
+  ; Copied from DZX-Forth.
+  pop hl
+  pop de
+  ex (sp),hl
+  push hl
+  ld hl,5
+  add hl,sp
+  ld a,(hl)
+  ld (hl),d
+  ld d,a
+  dec hl
+  ld a,(hl)
+  ld (hl),e
+  ld e,a
+  pop hl
+  jp pushde
 
 unused_nfa:
   db 0x06+0x80,'UNUSE','D'+0x80
 unused_lfa:
-  dw size_nfa
+  dw two_swap_nfa
 unused_:
   dw do_colon
 unused_pfa:
@@ -5190,6 +5475,7 @@ color:
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
+  ; XXX TODO move to the disk
 i_tick_nfa:
   db 0x02+0x80,'I',"'"+0x80
 i_tick_lfa:
@@ -5324,6 +5610,7 @@ question_exit_pfa:
   jp nz,r_drop_pfa
   _jp_next
 
+  ; XXX TODO move to the disk?
 case_nfa:
   db 0x04+0x80+precedence_bit_mask,'CAS','E'+0x80
 case_lfa:
@@ -5403,6 +5690,7 @@ branch_destination_0x8106:
   dw store_
   dw semicolon_s_
 
+  ; XXX TODO move to the disk
 inkey_nfa:
   db 0x05+0x80,'INKE','Y'+0x80
 inkey_lfa:
@@ -5445,10 +5733,57 @@ bracket_char_pfa:
   dw char_,literal_
   dw semicolon_s_
 
+bracket_defined_nfa:
+  db 0x09+0x80+precedence_bit_mask,'[DEFINED',']'+0x80
+bracket_defined_lfa:
+  dw bracket_char_nfa
+bracket_defined_:
+  dw do_colon
+bracket_defined_pfa:
+  dw find_,dup_
+  dw zero_branch_,bracket_defined.end
+  dw nip_,nip_
+bracket_defined.end:
+  dw semicolon_s_
+
+bracket_undefined_nfa:
+  db 0x0B+0x80+precedence_bit_mask,'[UNDEFINED',']'+0x80
+bracket_undefined_lfa:
+  dw bracket_defined_nfa
+bracket_undefined_:
+  dw do_colon
+bracket_undefined_pfa:
+  dw bracket_defined_,zero_equals_
+  dw semicolon_s_
+
+question_next_screen_nfa:
+  db 0x04+0x80+precedence_bit_mask,'?--','>'+0x80
+question_next_screen_lfa:
+  dw bracket_undefined_nfa
+question_next_screen_:
+  dw do_colon
+question_next_screen_pfa:
+  dw zero_branch_,question_next_screen.end
+  dw next_screen_
+question_next_screen.end:
+  dw semicolon_s_
+
+question_backslash_nfa:
+  db 0x02+0x80+precedence_bit_mask,'?','\'+0x80
+question_backslash_lfa:
+  dw question_next_screen_nfa
+question_backslash_:
+  dw do_colon
+question_backslash_pfa:
+  dw zero_branch_,question_backslash.end
+  dw backslash_
+question_backslash.end:
+  dw semicolon_s_
+
 backslash_nfa:
   db 0x01+0x80+precedence_bit_mask,'','\'+0x80
 backslash_lfa:
-  dw bracket_char_nfa
+  dw question_backslash_nfa
 backslash_:
   dw do_colon
 backslash_pfa:
