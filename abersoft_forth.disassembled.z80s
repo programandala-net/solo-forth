@@ -6,7 +6,7 @@
 
 data_stack_bottom:  equ 0xCB40
 first_buffer: equ 0xCBE0
-precedence_bit: equ 0x40
+precedence_bit_mask: equ 0x40
 ram_disc_bottom:  equ 0xD000
 ram_disc_top: equ 0xFBFF
 rom_beeper: equ 0x03B5
@@ -24,6 +24,7 @@ rom_s_attr_s_2583:  equ 0x2583
 rom_s_scrn_s_2538:  equ 0x2538
 rom_sa_all: equ 0x075A
 rom_stack_fetch:  equ 0x2BF1
+smudge_bit_mask: equ 0x20
 sys_attr_p: equ 0x5C8D
 sys_coordx: equ 0x5C7D
 sys_coordy: equ 0x5C7E
@@ -1106,7 +1107,7 @@ two_store_pfa:
   jp next
 
 colon_nfa:
-  defb 0x01+0x80+precedence_bit,":"+0x80
+  defb 0x01+0x80+precedence_bit_mask,":"+0x80
 colon_lfa:
   defw two_store_nfa
 colon_cfa:
@@ -1134,7 +1135,7 @@ do_colon:
   jp next
 
 semicolon_nfa:
-  defb 0x01+0x80+precedence_bit,";"+0x80
+  defb 0x01+0x80+precedence_bit_mask,";"+0x80
 semicolon_lfa:
   defw colon_nfa
 semicolon_cfa:
@@ -1889,7 +1890,7 @@ compile_pfa:
   defw semicolon_s_cfa
 
 left_bracket_nfa:
-  defb 0x01+0x80+precedence_bit,"["+0x80
+  defb 0x01+0x80+precedence_bit_mask,"["+0x80
 left_bracket_lfa:
   defw compile_nfa
 left_bracket_cfa:
@@ -1920,7 +1921,7 @@ smudge_cfa:
   defw do_colon
 smudge_pfa:
   defw latest_cfa
-  defw lit_cfa,0x0020
+  defw lit_cfa,smudge_bit_mask
   defw toggle_cfa
   defw semicolon_s_cfa
 
@@ -1963,7 +1964,7 @@ paren_semicolon_code_pfa:
   defw semicolon_s_cfa
 
 semicolon_code_nfa:
-  defb 0x05+0x80+precedence_bit,";COD","E"+0x80
+  defb 0x05+0x80+precedence_bit_mask,";COD","E"+0x80
 semicolon_code_lfa:
   defw paren_semicolon_code_nfa
 semicolon_code_cfa:
@@ -2098,7 +2099,7 @@ paren_dot_quote_pfa:
   defw semicolon_s_cfa
 
 dot_quote_nfa:
-  defb 0x02+0x80+precedence_bit,".",'"'+0x80
+  defb 0x02+0x80+precedence_bit_mask,".",'"'+0x80
 dot_quote_lfa:
   defw paren_dot_quote_nfa
 dot_quote_cfa:
@@ -2203,7 +2204,7 @@ query_pfa:
   defw semicolon_s_cfa
 
 onezeroword_nfa:
-  defb 0x01+0x80+precedence_bit,0x80
+  defb 0x01+0x80+precedence_bit_mask,0x80
 onezeroword_lfa:
   defw query_nfa
 onezeroword_cfa:
@@ -2581,7 +2582,7 @@ branch_destination_0x6B95:
   defw semicolon_s_cfa
 
 bracket_compile_nfa:
-  defb 0x09+0x80+precedence_bit,"[COMPILE","]"+0x80
+  defb 0x09+0x80+precedence_bit_mask,"[COMPILE","]"+0x80
 bracket_compile_lfa:
   defw create_nfa
 bracket_compile_cfa:
@@ -2597,7 +2598,7 @@ bracket_compile_pfa:
   defw semicolon_s_cfa
 
 literal_nfa:
-  defb 0x07+0x80+precedence_bit,"LITERA","L"+0x80
+  defb 0x07+0x80+precedence_bit_mask,"LITERA","L"+0x80
 literal_lfa:
   defw bracket_compile_nfa
 literal_cfa:
@@ -2613,7 +2614,7 @@ branch_destination_0x6C03:
   defw semicolon_s_cfa
 
 dliteral_nfa:
-  defb 0x08+0x80+precedence_bit,"DLITERA","L"+0x80
+  defb 0x08+0x80+precedence_bit_mask,"DLITERA","L"+0x80
 dliteral_lfa:
   defw literal_nfa
 dliteral_cfa:
@@ -2731,7 +2732,7 @@ do_vocabulary:
   defw semicolon_s_cfa
 
 forth_nfa:
-  defb 0x05+0x80+precedence_bit,"FORT","H"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"FORT","H"+0x80
 forth_lfa:
   defw vocabulary_nfa
 forth_cfa:
@@ -2759,7 +2760,7 @@ definitions_pfa:
   defw semicolon_s_cfa
 
 paren_nfa:
-  defb 0x01+0x80+precedence_bit,"("+0x80
+  defb 0x01+0x80+precedence_bit_mask,"("+0x80
 paren_lfa:
   defw definitions_nfa
 paren_cfa:
@@ -3612,7 +3613,7 @@ load_pfa:
   defw semicolon_s_cfa
 
 next_screen_nfa:
-  defb 0x03+0x80+precedence_bit,"--",">"+0x80
+  defb 0x03+0x80+precedence_bit_mask,"--",">"+0x80
 next_screen_lfa:
   defw load_nfa
 next_screen_cfa:
@@ -3633,7 +3634,7 @@ next_screen_pfa:
   defw semicolon_s_cfa
 
 tick_nfa:
-  defb 0x01+0x80+precedence_bit,"'"+0x80
+  defb 0x01+0x80+precedence_bit_mask,"'"+0x80
 tick_lfa:
   defw next_screen_nfa
 tick_cfa:
@@ -3660,7 +3661,7 @@ back_pfa:
   defw semicolon_s_cfa
 
 begin_nfa:
-  defb 0x05+0x80+precedence_bit,"BEGI","N"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"BEGI","N"+0x80
 begin_lfa:
   defw back_nfa
 begin_cfa:
@@ -3672,7 +3673,7 @@ begin_pfa:
   defw semicolon_s_cfa
 
 endif_nfa:
-  defb 0x05+0x80+precedence_bit,"ENDI","F"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"ENDI","F"+0x80
 endif_lfa:
   defw begin_nfa
 endif_cfa:
@@ -3689,7 +3690,7 @@ endif_pfa:
   defw semicolon_s_cfa
 
 then_nfa:
-  defb 0x04+0x80+precedence_bit,"THE","N"+0x80
+  defb 0x04+0x80+precedence_bit_mask,"THE","N"+0x80
 then_lfa:
   defw endif_nfa
 then_cfa:
@@ -3699,7 +3700,7 @@ then_pfa:
   defw semicolon_s_cfa
 
 do_nfa:
-  defb 0x02+0x80+precedence_bit,"D","O"+0x80
+  defb 0x02+0x80+precedence_bit_mask,"D","O"+0x80
 do_lfa:
   defw then_nfa
 do_cfa:
@@ -3712,7 +3713,7 @@ do_pfa:
   defw semicolon_s_cfa
 
 loop_nfa:
-  defb 0x04+0x80+precedence_bit,"LOO","P"+0x80
+  defb 0x04+0x80+precedence_bit_mask,"LOO","P"+0x80
 loop_lfa:
   defw do_nfa
 loop_cfa:
@@ -3726,7 +3727,7 @@ loop_pfa:
   defw semicolon_s_cfa
 
 plus_loop_nfa:
-  defb 0x05+0x80+precedence_bit,"+LOO","P"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"+LOO","P"+0x80
 plus_loop_lfa:
   defw loop_nfa
 plus_loop_cfa:
@@ -3740,7 +3741,7 @@ plus_loop_pfa:
   defw semicolon_s_cfa
 
 until_nfa:
-  defb 0x05+0x80+precedence_bit,"UNTI","L"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"UNTI","L"+0x80
 until_lfa:
   defw plus_loop_nfa
 until_cfa:
@@ -3754,7 +3755,7 @@ until_pfa:
   defw semicolon_s_cfa
 
 end_nfa:
-  defb 0x03+0x80+precedence_bit,"EN","D"+0x80
+  defb 0x03+0x80+precedence_bit_mask,"EN","D"+0x80
 end_lfa:
   defw until_nfa
 end_cfa:
@@ -3764,7 +3765,7 @@ end_pfa:
   defw semicolon_s_cfa
 
 again_nfa:
-  defb 0x05+0x80+precedence_bit,"AGAI","N"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"AGAI","N"+0x80
 again_lfa:
   defw end_nfa
 again_cfa:
@@ -3778,7 +3779,7 @@ again_pfa:
   defw semicolon_s_cfa
 
 repeat_nfa:
-  defb 0x06+0x80+precedence_bit,"REPEA","T"+0x80
+  defb 0x06+0x80+precedence_bit_mask,"REPEA","T"+0x80
 repeat_lfa:
   defw again_nfa
 repeat_cfa:
@@ -3795,7 +3796,7 @@ repeat_pfa:
   defw semicolon_s_cfa
 
 if_nfa:
-  defb 0x02+0x80+precedence_bit,"I","F"+0x80
+  defb 0x02+0x80+precedence_bit_mask,"I","F"+0x80
 if_lfa:
   defw repeat_nfa
 if_cfa:
@@ -3810,7 +3811,7 @@ if_pfa:
   defw semicolon_s_cfa
 
 else_nfa:
-  defb 0x04+0x80+precedence_bit,"ELS","E"+0x80
+  defb 0x04+0x80+precedence_bit_mask,"ELS","E"+0x80
 else_lfa:
   defw if_nfa
 else_cfa:
@@ -3830,7 +3831,7 @@ else_pfa:
   defw semicolon_s_cfa
 
 while_nfa:
-  defb 0x05+0x80+precedence_bit,"WHIL","E"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"WHIL","E"+0x80
 while_lfa:
   defw else_nfa
 while_cfa:
@@ -4405,7 +4406,7 @@ branch_destination_0x7795:
   defw semicolon_s_cfa
 
 editor_nfa:
-  defb 0x06+0x80+precedence_bit,"EDITO","R"+0x80
+  defb 0x06+0x80+precedence_bit_mask,"EDITO","R"+0x80
 editor_lfa:
   defw triad_nfa
 editor_cfa:
@@ -5719,7 +5720,7 @@ branch_destination_0x8048:
   defw semicolon_s_cfa
 
 case_nfa:
-  defb 0x04+0x80+precedence_bit,"CAS","E"+0x80
+  defb 0x04+0x80+precedence_bit_mask,"CAS","E"+0x80
 case_lfa:
   defw draw_nfa
 case_cfa:
@@ -5733,7 +5734,7 @@ case_pfa:
   defw semicolon_s_cfa
 
 of_nfa:
-  defb 0x02+0x80+precedence_bit,"O","F"+0x80
+  defb 0x02+0x80+precedence_bit_mask,"O","F"+0x80
 of_lfa:
   defw case_nfa
 of_cfa:
@@ -5756,7 +5757,7 @@ of_pfa:
   defw semicolon_s_cfa
 
 endof_nfa:
-  defb 0x05+0x80+precedence_bit,"ENDO","F"+0x80
+  defb 0x05+0x80+precedence_bit_mask,"ENDO","F"+0x80
 endof_lfa:
   defw of_nfa
 endof_cfa:
@@ -5776,7 +5777,7 @@ endof_pfa:
   defw semicolon_s_cfa
 
 endcase_nfa:
-  defb 0x07+0x80+precedence_bit,"ENDCAS","E"+0x80
+  defb 0x07+0x80+precedence_bit_mask,"ENDCAS","E"+0x80
 endcase_lfa:
   defw endof_nfa
 endcase_cfa:

@@ -1,0 +1,48 @@
+= F+D Forth history
+
+.2015-06-02:
+
+Start, based on the disassembled code of Abersoft Forth
+(http://programandala.net/en.program.abersoft_forth.html).
+
+First changes:
+
+Some fig-Forth words are renamed with their modern forms: `vlist` as
+`words`, `-dup` as `?dup`, `minus` as `negate`, `dminus` as
+`dnegate`, `s->d` as `s>d`, `mon` to `bye`, `free` as `unused`.
+
+Old synonyms are removed: `end` and `endif`.
+
+The editor is removed.
+
+`branch` and `back` are modified to do absolute branches.  The
+branches are converted with a simple substitution, thanks to the
+comments prepared by the disassembling of Abersoft Forth.
+
+New words, from the Afera library: `\`, `.(`, `char` and `[char]`,
+`2-`, `1-`, `2*`.
+
+`2+` and `1+` are converted to Z80.
+
+`forth` is not immediate any more.
+
+`'` is converted to non-immediate; new immediate version: `[']`.
+
+.2015-06-03:
+
+`dliteral` is renamed as `2literal`.
+
+`verify` is removed. The rest of tape related words will be removed.
+They will be defined in the blocks library.
+
+New: `upperc` and `uppers`.
+
+Improvement: `-find` is made case insensitive.
+
+`key` is documented.
+
+Removed: `udg`, `init-disc`, `.cpu`.
+
+New: `<>`.
+
+Improvement: the lower part of the screen can be used.
