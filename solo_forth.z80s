@@ -4978,6 +4978,8 @@ interpret.execute:
   ; Executing or immediate ( cfa )
   ; dw drop_ ; XXX TMP for debugging
 ;  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
+  _XXX 'about to execute cfa '
+  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
   dw execute_
 ;  dw lit_,7,border_ ; XXX INFORMER
   dw branch_,interpret.begin
