@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510170313
+version_release:  equ 201510210235
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -100,8 +100,8 @@ version_release:  equ 201510170313
 ; ca       = character-aligned address                    1 cell
 
 ; f        = flag (false is 0; true is any other value)   1 cell
-; tf       = true flag (-1)                               1 cell
-; ff       = false flag (0)                               1 cell
+; true     = true flag (-1)                               1 cell
+; false    = false flag (0)                               1 cell
 ; wf       = well-formed flag (false is 0; true is -1)    1 cell
 
 ; b        = 8-bit byte                                   1 cell
@@ -232,6 +232,12 @@ paren_dot_quote: equ true
   ; XXX TODO
   ; XXX TMP
 
+find_name_version: equ 2
+  ; There are 4 versions of `find-name`, with different output.
+  ; The currently used version is 2.
+  ; the new version is 3, needed to implement the compile-only
+  ; check in `interpret`.
+
 ; ==============================================================
 ; Symbols
 
@@ -274,10 +280,12 @@ lines_per_screen:                 equ 0x10
 max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
 bytes_per_user_variables:         equ 0x40
 
-smudge_bit:       equ 5
-smudge_mask:      equ 1 << smudge_bit
-precedence_bit:   equ 6
-precedence_mask:  equ 1 << precedence_bit
+smudge_bit:         equ 5
+smudge_mask:        equ 1 << smudge_bit
+precedence_bit:     equ 6
+precedence_mask:    equ 1 << precedence_bit
+compile_only_bit:   equ 7
+compile_only_mask:  equ 1 << compile_only_bit
 
 max_word_length:            equ 0x1F
 max_word_length_mask:       equ max_word_length
@@ -2136,7 +2144,7 @@ paren_loop.end:
 
 ; doc{
 ;
-; digit?  ( c n -- u tf | ff )
+; digit?  ( c n -- u true | false )
 ;
 ; Convert the ascii character _c_ (using base _n_) to its binary
 ; equivalent _u_, accompanied by a true flag. If the conversion
@@ -2507,6 +2515,119 @@ endif
 ; ----------------------------------------------
   _code_header paren_find_name_,'(FIND-NAME)'
 
+if find_name_version=3
+
+  ; XXX UNDER DEVELOPMENT -- version after eForth, required to
+  ; check the compile-only bit in `interpret`.
+
+; doc{
+;
+; (find-name)  ( ca len nfa -- ca len false | cfa b true )
+;
+; Find the definition named in the string at _ca len_, starting
+; at _nfa_. If the definition is not found, return _ca len_ and
+; _false_.  If the definition is found, return its _cfa_, its
+; length byte _b_ and _true_.
+;
+; The search is case-sensitive.
+;
+; }doc
+
+  ld (paren_find_name.ip_backup),bc ; save the Forth IP
+
+  ld e,names_bank
+  call bank.e ; page the memory bank in
+
+  pop de ; nfa
+  pop bc ; C=len, B is supposed to be 0
+  ld a,c
+  ld (paren_find_name.string_length),a
+  pop hl ; ca
+  ld (paren_find_name.string_address),hl
+
+  ; XXX FIXME the string searched for must be in the string
+  ; buffer, below 0xC000! This is not a problem now, during the
+  ; development, because the dictionary is small.
+
+paren_find_name.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (paren_find_name.nfa_backup),de ; save the nfa for later
+paren_find_name.string_address: equ $+1
+  ld hl,0x0000 ; string address
+  ld a,(de) ; length byte of the name field
+  ld (paren_find_name.length_byte_backup),a ; save it for later
+  and valid_word_length_mask  ; mask the length and the smudge bit
+paren_find_name.string_length: equ $+1
+  ld c,0x00 ; length of the string
+  cp c ; same length?
+  jr nz,paren_find_name.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+paren_find_name.compare_next_char:
+  inc de
+  ld a,(de)
+  cpi
+  jr nz,paren_find_name.not_a_match ; mismatch
+  jp pe, paren_find_name.compare_next_char ; count not exhausted
+
+  ; The string matches.
+  ld hl,(paren_find_name.nfa_backup)
+  dec hl
+  dec hl ; lfa
+  dec hl ; high part of the pointer to cfa
+  ld d,(hl)
+  dec hl ; low part of the pointer to cfa
+  ld e,(hl) ; de = cfa
+  push de
+
+  ld d,0
+paren_find_name.length_byte_backup: equ $+1
+  ld e,0 ; name field length byte
+  ld hl,true
+  jr paren_find_name.end
+
+paren_find_name.not_a_match:
+  ; Not a match, try the next word.
+paren_find_name.nfa_backup: equ $+1
+  ld hl,0x0000 ; nfa
+  dec hl ; high address of lfa
+  ld d,(hl) ; high part of the next nfa
+  dec hl ; low address of lfa
+  ld e,(hl) ; low part of the next nfa
+  ld a,d
+  or e ; end of dictionary? (next nfa=0)
+  jp nz,paren_find_name.begin ; if not, continue
+
+  ; End of dictionary, no match found.
+  ld hl,(paren_find_name.string_address)
+  push hl
+  ld a,(paren_find_name.string_length)
+  ld e,a ; de = string length (d is already 0)
+  ld hl,false
+
+paren_find_name.end:
+  ; If match found:
+  ;   (sp) = cfa
+  ;   de = length byte
+  ;   hl = true
+  ; If no match found:
+  ;   (sp) = ca
+  ;   de = len
+  ;   hl = false
+  exx
+  ld e,default_bank
+  call bank.e ; page the default memory bank in
+  exx
+paren_find_name.ip_backup: equ $+1
+  ld bc,0x0000 ; restore the Forth IP
+;   ; _z80_border 4 ; XXX INFORMER
+  jp push_hlde
+
+else
+
+  ; `(find-name)` for versions 0..2 of `find-name`
+
 ; doc{
 ;
 ; (find-name)  ( ca len nfa -- x 0 | cfa 1 | cfa -1 )
@@ -2609,6 +2730,8 @@ paren_find_name.ip_backup: equ $+1
 ;   ; _z80_border 4 ; XXX INFORMER
   jp push_hlde
 
+endif
+
 ; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
 
@@ -2636,10 +2759,28 @@ paren_find_name.ip_backup: equ $+1
   ; XXX -- can not be moved to the library because `header` uses
   ; it.
 
+if find_name_version!=3
+
   dw to_r_,two_dup_,uppers_,from_r_
   dw fetch_,paren_find_name_
   dw dup_,question_exit_,nip_
   dw semicolon_s_
+
+else
+
+  ; XXX UNDER DEVELOPMENT
+
+  dw to_r_,two_dup_,uppers_,from_r_
+  dw fetch_,paren_find_name_  ; ( ca len false | cfa b true )
+  dw zero_branch_,search_wordlist.not_found
+  _literal precedence_mask
+  dw and_,zero_equals_ ; ( cfa non-immediate? )
+  ; XXX TODO -- finish the calculation b > 1|-1
+search_wordlist.not_found:
+  dw two_drop_,false_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
@@ -2651,8 +2792,6 @@ paren_find_name.ip_backup: equ $+1
 
   ; XXX TODO first, benchmark
 
-find_name_version: equ 2 ; XXX TMP
-
   ; XXX TMP
 if find_name_version=0
   .warning '`find-name` version is 0'
@@ -2662,6 +2801,9 @@ if find_name_version=1
 endif
 if find_name_version=2
   .warning '`find-name` version is 2'
+endif
+if find_name_version=3
+  .warning '`find-name` version is 3'
 endif
 
 if find_name_version=0 ; XXX TMP
@@ -2793,7 +2935,7 @@ if find_name_version=2 ; XXX TMP
 ; The search is case-insensitive.
 
 ; ----
-; : find-name  ( ca len -- 0 | cfa 1 | cfa -1 )
+; : find-name  ( ca len -- x 0 | cfa 1 | cfa -1 )
 ;   2dup uppers
 ;   #vocs 0 do
 ;     context i cells + @  ?dup
@@ -2829,6 +2971,59 @@ find_name.loop:
   dw paren_loop_,find_name.do
 ;  _chk 'find-name -- not found' ; XXX INFORMER
   dw drop_,false_
+  dw semicolon_s_
+
+endif
+
+if find_name_version=3 ; XXX NEW
+
+; doc{
+
+; find-name  ( ca len -- ca len false | cfa b true )
+;
+; Find the definition identified by the string _ca len_ in the
+; current search order. If the definition is not found after
+; searching all the vocabularies in the search order, return the
+; undefined cell _x_ and zero.  If the definition is found,
+; return its _cfa_. If the definition is immediate, also return
+; one (1); otherwise also return minus-one (-1).
+;
+; The search is case-insensitive.
+
+; ----
+; : find-name  ( ca len -- x 0 | cfa 1 | cfa -1 )
+;   2dup uppers
+;   #vocs 0 do
+;     context i cells + @  ?dup
+;     if  @ (find-name) ?dup
+;         if  unloop exit  then
+;     then
+;   loop  false  ;
+; ----
+
+; }doc
+
+;  _chk_type 'find-name -- start' ; XXX INFORMER
+  dw two_dup_,uppers_
+;  _brk_type 'find-name -- after uppers' ; XXX INFORMER
+  dw hash_vocs_,zero_,paren_do_
+find_name.do:
+  ; ( ca len )
+  dw context_,i_,cells_,plus_,fetch_
+  dw question_dup_ ; a vocabulary in the search order?
+  dw zero_branch_,find_name.loop ; if not, next
+  ; ( ca len wid )
+  ; valid vocabulary in the search order
+  dw fetch_ ; ( ca len nfa )
+;  _chk 'find-name -- before (find-name)' ; XXX INFORMER
+  dw paren_find_name2_,question_dup_ ; ( ca len 0 | cfa b true true ) word found?
+  dw zero_branch_,find_name.loop
+;  _chk 'find-name -- found' ; XXX INFORMER
+  dw unloop_,exit_
+find_name.loop:
+  dw paren_loop_,find_name.do
+;  _chk 'find-name -- not found' ; XXX INFORMER
+  dw false_
   dw semicolon_s_
 
 endif
@@ -3921,7 +4116,6 @@ else
   semicolon_s_ equ exit_
 endif
 
-
 ; doc{
 ;
 ; ;s  ( -- )
@@ -4453,7 +4647,7 @@ endif
 ;
 ; off  ( a -- )
 ; 
-; Store `false` at _a_.
+; Store _false_ at _a_.
 ;
 ; }doc
 
@@ -4470,7 +4664,7 @@ endif
 ;
 ; on  ( a -- )
 ; 
-; Store `true` at _a_.
+; Store _true_ at _a_.
 ;
 ; }doc
 
@@ -4797,7 +4991,7 @@ endif
 
 ; doc{
 ;
-; false  ( -- ff )
+; false  ( -- false )
 ;
 ; }doc
 
@@ -4809,7 +5003,7 @@ endif
 
 ; doc{
 ;
-; true  ( -- tf )
+; true  ( -- true )
 ;
 ; }doc
 
@@ -5994,6 +6188,23 @@ cfa_to_nfa.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header executing_question,'EXECUTING?'
+
+; doc{
+;
+; executing?  ( -- wf )
+;
+; ----
+; : executing?  ( -- wf )
+;   state @ 0=  ;
+; ----
+;
+; }doc
+
+  dw state_,fetch_,zero_equals_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header question_executing_,'?EXECUTING'
 
 ; doc{
@@ -7024,6 +7235,21 @@ uppers.do:
   jp uppers.do
 
 ; ----------------------------------------------
+  _colon_header undefined_question_,'UNDEFINED?'
+
+; doc{
+;
+; undefined?  ( ca len -- wf )
+;
+; }doc
+
+  ; XXX TODO -- this may be moved to the library, but it's
+  ; needed by `needed`.
+
+  dw find_name_,nip_,zero_equals_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _code_header place_,'place'
 
   ; Credits:
@@ -7558,18 +7784,33 @@ if find_name_version=2 ; XXX TMP
   dw two_dup_ ; keep a copy of the string
   dw find_name_ ; ( ca len x 0 | ca len cfa 1 | ca len cfa -1 )
 endif
+if find_name_version=3 ; XXX TMP
+  dw find_name_ ; ( ca len false | cfa b true )
+endif
+
 ;  _chk 'interpret -- after find-name' ; XXX INFORMER
+if find_name_version!=3 ; XXX TMP
   dw question_dup_ ; found?
+endif
   dw zero_branch_,interpret.word_not_found
 if find_name_version=0 ; XXX TMP
   ; ( ca len cfa 1 | ca len cfa -1 )
   dw two_swap_,two_drop_ ; XXX TODO `2nip`
+  ; ( cfa 1 | cfa -1 )
+endif
+if find_name_version=1 ; XXX TMP
+  ; ( cfa 1 | cfa -1 )
 endif
 if find_name_version=2 ; XXX TMP
   ; ( ca len cfa 1 | ca len cfa -1 )
   dw two_swap_,two_drop_ ; XXX TODO `2nip`
+  ; ( cfa 1 | cfa -1 )
+endif
+if find_name_version=3 ; XXX TMP
+  ; ( cfa b )
 endif
 
+if find_name_version!=3 ; XXX TMP
   ; Found ( cfa 1 | cfa -1 )
   ; Immediate word:     ( cfa  1 )
   ; Non-immediate word: ( cfa -1 )
@@ -7581,6 +7822,27 @@ endif
   ; Executing a non-immediate word:  ( cfa -1  0 )
   dw equals_ ; compiling a non-immediate word?
   dw zero_branch_,interpret.execute
+else
+
+  ; XXX UNDER DEVELOPMENT
+
+  ; Found ( cfa b )
+  dw dup_ 
+  _literal compile_only_mask_
+  dw and_,zero_not_equals_ ; ( cfa b compile-only? )
+  dw executing_question ; ( cfa b compile-only? executing? )
+  dw and_ ; executing a compile-only word?
+  _literal -14
+  dw question_throw_ ; is so, throw error -14
+
+  ; ( cfa b )
+  _literal precedence_mask_
+  dw and_,zero_equals_ ; ( cfa b non-immediate? )
+  dw compiling_question ; ( cfa b non-immediate? compiling? )
+  dw and_ ; compiling a non-immediate word?
+  dw zero_branch_,interpret.execute ; else, execute it
+
+endif
 
   ; Compiling a non-immediate word  ( cfa )
   dw compile_comma_
@@ -7654,12 +7916,19 @@ endif
   _colon_header immediate_,'IMMEDIATE'
 
   _literal precedence_mask
+immediate.do:
   dw latest_
   ; XXX TODO factor `toggle-names'?
   _names_bank
   dw toggle_bits_
   _default_bank
   dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header compile_only_,'COMPILE-ONLY'
+
+  _literal compile_only_mask
+  dw branch_,immediate.do
 
 ; ----------------------------------------------
   _colon_header vocabulary_,'VOCABULARY'
@@ -8645,6 +8914,13 @@ endif
 ;   dw drop_
 ;   dw semicolon_s_
 
+
+; ----------------------------------------------
+  _colon_header dec_dot_,'DEC.'
+
+  dw base_,fetch_,swap_,decimal_,dot_,base_,store_
+  dw semicolon_s_
+
 ; ----------------------------------------------
   _colon_header dot_throw_hash_,'.THROW#'
 
@@ -8658,7 +8934,7 @@ endif
 
   dw paren_dot_quote_
   _string 'Exception #'
-  dw base_,fetch_,swap_,decimal_,dot_,base_,store_
+  dw dec_dot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8670,6 +8946,9 @@ if old_defer
 
 else
   _code_header dot_throw_,'.THROW'
+
+  ; Credits:
+  ; Name from MPE Forth for TiniARM.
 
 ; doc{
 ;
@@ -8684,6 +8963,29 @@ else
   jp next2
 
 endif
+
+; ----------------------------------------------
+  _colon_header dot_warning_hash_,'.WARNING#'
+
+; doc{
+;
+; .warning#  ( n -- )
+;
+; Print the warning _n_.
+;
+; }doc
+
+  ; XXX TODO -- not used yet
+
+  dw warnings_,fetch_
+  dw question_branch_,dot_warning_hash.do
+  dw drop_,exit_
+
+dot_warning_hash.do:
+  dw paren_dot_quote_
+  _string 'Warning #'
+  dw dec_dot_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header updated_question_,'UPDATED?'
@@ -9178,13 +9480,16 @@ read_write_sector_command:
 ; -->  ( -- )  \ "next-screen"
 ;
 ; Continue interpretation with the next disk screen.
-;
+; 
+; Standard: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Controlled Reference Words).
+
 ; ----
 ; : -->  ( -- )
 ;   ?loading  >in off
 ;   b/scr blk @ over mod - blk +!  ; immediate
 ; ----
-;
+
 ; }doc
 
 ; XXX TODO -- if there were one block per screen, the
@@ -10644,6 +10949,19 @@ endif
 ; ----------------------------------------------
   _colon_header question_next_screen_,'?-->',immediate
 
+; doc{
+;
+; ?-->  ( f -- )
+;  
+; If _f_ is not false, continue interpretation on the next
+; sequential screen.  parse area. This word is used for
+; conditional compilation.  This word is used for conditional
+; compilation.
+;
+; }doc
+
+  ; XXX TODO move to the library?
+
   dw zero_branch_,question_next_screen.end
   dw next_screen_
 question_next_screen.end:
@@ -10658,12 +10976,14 @@ question_next_screen.end:
 
 ; doc{
 ;
-; ?\  ( f "ccc<eol> -- )
+; ?\  ( f "text" -- )
 ;
 ; If _f_ is not false, parse and discard the rest of the parse
-; area. This word is used for conditional compilation.
+; area.  This word is used for conditional compilation.
 ;
 ; }doc
+
+  ; XXX TODO move to the library?
 
   dw zero_branch_,question_backslash.end
   dw backslash_
@@ -10675,9 +10995,11 @@ question_backslash.end:
 
 ; doc{
 ;
-; \  ( -- )
+; \  ( "text" -- )
 ;
-; Discard the rest of the parse area.
+; Parse and discard the rest of the parse area.
+;
+; Standard: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
 ;
 ; }doc
 

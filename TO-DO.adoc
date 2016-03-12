@@ -312,6 +312,10 @@ Note: To convert an exception code in the range -257 to -511 to its
 corresponding DOS error code, use: 255 AND
 ____
 
+.2015-10-18:
+
+`.warning`
+
 // }}}
 == Files ==
 // {{{

@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510170313
+\ Last modified: 201510210207
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -51,11 +51,11 @@ frames@ cr ." Frames " d. cr
   \ }}} =======================================================
   \ Need {{{
 
-( need ) \ scr 2
+  \ This section contains `need` and all related words that
+
+( contains delimited located )
 
   \ This screen must be at a fixed location.
-
-: reload  ( -- )  scr @ load  ;
 
   \ XXX TMP
   \ XXX INFORMER
@@ -63,7 +63,15 @@ frames@ cr ." Frames " d. cr
   \ 2over -trailing cr type ." ?" cr .s key drop search nip nip ;
 
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
+
+  \ doc{
+  \
+  \ contains ( ca1 len1 ca2 len2 -- f )
+  \
   \ Does the string ca1 len1 contains the string ca2 len2?
+  \
+  \ }doc
+
 
 variable default-first-locatable  variable first-locatable
 17 dup default-first-locatable !  first-locatable !
@@ -74,7 +82,17 @@ variable last-locatable  scr/disk 1- last-locatable !
 : delimited  ( ca1 len1 -- ca2 len2 )
   dup 2+ dup allocate-string swap  ( ca1 len1 ca2 len2 )
   2dup blank  2dup 2>r drop char+ smove 2r>  ;
-  \ Add a leading space and trailing space to the given string.
+
+  \ doc{
+  \
+  \ delimited   ( ca1 len1 -- ca2 len2 )
+  \
+  \ Add a leading space and trailing space to the string _ca1
+  \ len1_, returning the result _ca2 len2_ in the circular
+  \ string buffer.
+  \
+  \ }doc
+
 
 : located  ( ca len -- screen | false )
   delimited  last-locatable @ 1+  first-locatable @
@@ -84,32 +102,134 @@ variable last-locatable  scr/disk 1- last-locatable !
     \ break-key? ?exhaust
     \ XXX TODO -- `break-key?` is not in the kernel
   loop  2drop false  ;
-  \ Locate the screen that contains the name _ca len_
-  \ (delimited with spaces at both sides) in its first line.
-  \ If not found, return zero. The search is case-sensitive.
 
-: ?located  ( screen | false -- )  dup 0= #-268 ?throw  ;  -->
+  \ doc{
+  \
+  \ located  ( ca len -- screen | false )
+  \
+  \ Locate the first screen whose header contains the string
+  \ _ca len_ (surrounded by spaces), and return its number. If
+  \ not found, return _false_.
+  \ The search is case-sensitive.
+  \
+  \ }doc
 
-( need ) \ scr 3
+-->
+
+( ?located locate from reneeded reneed )
+
+: ?located  ( screen | false -- )  dup 0= #-268 ?throw  ;
+
+  \ doc{
+  \
+  \ ?located ( f -- )
+  \
+  \ If f is zero, throw an exception -268.
+  \
+  \ }doc
 
 : locate  ( "name" -- screen | false )
   parse-name save-string located  ;
 
+  \ doc{
+  \
+  \ locate  ( "name" -- screen | false )
+  \
+  \ Locate the first screen whose header contains "name"
+  \ (surrounded by spaces), and return its number. If not
+  \ found, return _false_.
+  \ The search is case-sensitive.
+  \
+  \ }doc
+
 : from  ( "name" -- )  locate ?located first-locatable !  ;
-  \ Locate the given _name_ and set its screen the first one
-  \ `located` will search from.
+
+  \ doc{
+  \
+  \ from  ( "name" -- )
+  \
+  \ Locate the first screen whose header contains "name"
+  \ (surrounded by spaces), and set it the first one `located`
+  \ will search from. If not found, throw an exception -268.
+  \
+  \ This word is intended to prevent undesired matches clashes
+  \ during the execution of `need` and related words. "name" is
+  \ supposed to be a conventional marker. Usage examples:
+
+  \ ----
+  \ ( x )
+  \
+  \ : x  ( -- )  ." Wrong x!" ;
+  \
+  \ ( use-x )
+  \
+  \ from ==data-structures== need x
+  \ 
+  \ ( y )  ==data-structures==
+  \
+  \ : y ." Y data structure; ;
+  \
+  \ ( x )
+  \
+  \ : x ." X data structure; ;
+  \
+  \ ----
+
+  \ }doc
 
 : reneeded  ( ca len -- )  located ?located load  ;
 
+  \ doc{
+  \
+  \ reneeded  ( ca len -- )
+  \
+  \ Locate the first screen whose header contains the string
+  \ _ca len_ (surrounded by spaces), and load it. If not found,
+  \ throw an exception -268.
+  \
+  \ }doc
+
 : reneed  ( "name" -- )  parse-name save-string reneeded  ;
+
+  \ doc{
+  \
+  \ reneed  ( ca len -- )
+  \
+  \ Locate the first screen whose header contains "name"
+  \ (surrounded by spaces), and load it.
+  \
+  \ }doc
+
+-->
+
+( needed-word [needed] [unneeded] needed need )
 
 2variable needed-word
 
-: [needed]  ( "name" -- f )
-  parse-name needed-word 2@  compare 0=  ; immediate
+: [needed]  ( "name" -- wf )
+  parse-name needed-word 2@ 2dup or 
+  if  compare 0=  exit  then  2drop 2drop true   ; immediate
 
-: [unneeded]  ( "name" -- f )
+  \ doc{
+  \
+  \ [needed]  ( "name" -- wf )
+  \
+  \ Is "name" the needed word specified by the last execution
+  \ of `need` or `needed`?
+  \
+  \ }doc
+
+: [unneeded]  ( "name" -- wf )
   postpone [needed] 0=  ; immediate
+
+  \ doc{
+  \
+  \ [unneeded]  ( "name" -- wf )
+  \
+  \ Is "name" different than the needed word specified by the
+  \ last execution of `need` or `needed`?
+  \
+  \ }doc
 
 : needed  ( ca len -- )
 
@@ -133,7 +253,103 @@ variable last-locatable  scr/disk 1- last-locatable !
     \ converts it to uppercase
   if  reneeded  else  2drop  then  2r> needed-word 2!  ;
 
+  \ doc{
+  \
+  \ needed  ( ca len -- )
+  \
+  \ If the string _ca len_ is not the name of a word found in
+  \ the current search order, locate the first screen of the
+  \ library where "name" is included in the screen header
+  \ (surrounded by spaces), and load it.
+  \
+  \ }doc
+
 : need  ( "name" -- )  parse-name save-string needed  ;
+
+  \ doc{
+  \
+  \ need  ( "name" -- )
+  \
+  \ If "name" is not found in the current search order, locate
+  \ the first screen of the library where "name" is included is
+  \ the screen header (surrounded by spaces), and load it.
+  \
+  \ }doc
+
+  \ }}} =======================================================
+  \ Exceptions {{{
+
+( abort" )
+
+  \ Credits:
+  \ Code adapted from DZX-Forth.
+
+  \ XXX TODO use `error`, by modifying `throw`
+
+[defined] abort-message ?\ 2variable abort-message
+
+: (abort")  ( n -- )
+  r> count rot if  abort-message 2! -2 throw  then + >r  ;
+
+: abort"  ( compilation: "ccc<quote>" -- )
+  postpone (abort") ,"  ; immediate
+
+( error>ordinal error>line )
+
+: error>ordinal  ( -n1 -- +n2 )
+  \ Convert an error code to its ordinal position in the
+  \ library.
+  \ -n1 =  -90..-1        \ Forth-2012 error codes
+  \        -285..-256     \ Solo Forth error codes
+  \        -1024..-1000   \ G+DOS error codes
+  \ +n2 =  1..146
+
+  \ XXX TODO  add OS codes
+
+  abs
+  dup 256 < ?exit
+  dup 1000 < if  [ 255 091 - ] literal - exit  then
+  [ 1000 286 - 255 091 - + ] literal -   ;
+
+: error>line  ( n1 -- n2 )
+  error>ordinal dup >r
+  begin
+    dup dup 16 / - r@ <>  while  1+
+  repeat  rdrop  ;
+
+\ msg-scr (.throw) \
+
+need error>line  need .line
+
+variable msg-scr  blk @ b/scr msg-scr !
+  \ XXX TODO rename!
+  \ XXX FIXME the calculation with `b/scr` is not safe
+
+  \ doc{
+  \
+  \ msg-scr  ( -- a )
+  \
+  \ Variable that holds the screen that holds the error
+  \ messages.
+  \
+  \ }doc
+
+: (.throw)  ( n -- )
+  msg-scr @
+  if  error>line msg-scr @ .line space  else  .throw#  then  ;
+
+' (.throw) ' .throw defer!
+
+  \ doc{
+  \
+  \ (.throw)  ( n -- )
+  \
+  \ Extended behaviour of the deferred word `.throw`:
+  \ Print the text of throw error _n_.  The variable `msg-scr`
+  \ contains the number of the first screen where messages are
+  \ hold. If it contains zero, only the error number is printer.
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Error codes {{{
@@ -370,11 +586,36 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ }}} =======================================================
   \ Parsing {{{
 
+( parse-line )  ==parsing==
+
+  \ XXX OLD -- 2015-09-13: moved to kernel
+  \ : source  ( -- a len )  \ Forth-94
+  \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+
+need /string
+
+: parse-line  ( "text<eol>" -- ca len )
+  source span @ min c/l min  >in @ span @ min /string
+  dup >in +! save-string  ;
+
+  \ doc{
+  \
+  \ parse-line  ( "text<eol>" -- ca len )
+  \
+  \ Get the text string until the end of line.  Note: this is a
+  \ factor of the editor's `text`.
+  \
+  \ }doc
+
 ( evaluate )
 
   \ XXX TODO
 
   \ XXX Gforth:
+
+: execute-parsing  ( ca len cfa -- )
+  >in @ >r >in off
+  source >r >r
 
 : evaluate  ( ca len -- )  ['] interpret execute-parsing  ;
 
@@ -417,12 +658,9 @@ variable last-locatable  scr/disk 1- last-locatable !
   \
   \  }doc
 
-( defined? undefined? )
+( defined? )
 
-: defined?  ( ca len -- wf )  find-name nip 0<>  ;
-  \ XXX FIXME -- this works only with version 2 of `find-name`
-
-; undefined?  ( ca len -- wf )  defined? 0=  ;
+: defined?  ( ca len -- wf )  undefined? 0=  ;
 
   \ }}} =======================================================
   \ Data stack {{{
@@ -495,7 +733,7 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
     \ or c
   bc tstp
     \ jp z,roll.end
-  0000 jpz |mark 0 unresolved ! 
+  0000 jpz |mark 0 unresolved !
 
   hl decp  hl decp  lddr
     \ dec hl
@@ -1143,7 +1381,11 @@ code fzx-emit  ( c -- )
   \ }}} =======================================================
   \ Strings {{{
 
-( s\" )  \ ==strings==
+( s= )  \ ==strings==
+
+: s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+
+( s\" )
 
 only forth definitions
 need wid-of  need parse-char
@@ -1380,33 +1622,26 @@ need chars>string  need s+
   \ Get the last name from a string.
   \ A name is a substring separated by spaces.
 
-( prefix? )
+( prefix? suffix? )
 
-[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+need s=  need [if]
 
   \ Credits:
-  \ Code adapted from Gforth (module
+  \ Code adapted from Galope (module
   \ string-prefix-question.fs).
 
-: prefix?  ( ca1 len1 ca2 len2 -- f )
-  tuck 2>r min 2r> s=  ;
-
-( suffix? )
+[needed] prefix? [if]
+: prefix?  ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> s=  ;
+[then]
 
   \ Credits:
   \ Code from Galope (module string-suffix-question.fs).
 
-require ./fourth.fs
-
-[defined] fourth
-?\ : fourth  ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 )  3 pick  ;
-  \ Copy fourth element on the stack onto top of stack.
-
-[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
-
+[needed] suffix? [if]
 : suffix? ( ca1 len1 ca2 len2 -- wf )
   \ Is string _ca2 len2_ the end of string _ca1 len1_?
-  2swap dup fourth - /string s=  ;
+  2swap dup 3 pick - /string s=  ;
+[then]
 
 ( -prefix )
 
@@ -2974,39 +3209,37 @@ code ambulance  ( n -- )
 
 ( exchange )  \  ==memoryaccess==
 
-: exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
+[unneeded] exchange
+?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
-( command )
 
-  \ XXX OLD -- 2015-09-13: moved to kernel
-  \ : source  ( -- a len )  \ Forth-94
-  \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
-
-need source  need /string
-
-: command  ( "text<eol>" -- ca len )
-  source span @ min c/l min  >in @ span @ min /string
-  dup >in +! save-string  ;
-  \ Get the text string until the end of line.
-  \ Note: this is possibly useful factor of the editor's
-  \ `text`.
-
-( c@+ )
+( c+! c@+ )
 
 need z80-asm
 
+[unneeded] c+! dup
+?\  code c+!  ( b ca -- )
+?\    hl pop  de pop  e a ld  m a add  a m ld  jpnext  end-code
+
+  \ doc{
+  \
+  \ code c+!  ( b ca - )
+  \
+  \ Add _b_ to the 8-bit number at _ca_
+  \
+  \ }doc
+
+[unneeded] c@+ dup
+?\ code c@+  ( ca - ca+1 c )
+
   \ Credits:
   \ Code adapted from Pygmy Forth.
-
-code c@+  ( ca - ca+1 c )
 
   \ First version
   \ de pop  de ftap  de incp  0 h ld# a l ld  pushhlde jp
 
   \ Second version
-  hl pop  m a ld  hl incp  hl push  pusha jp
-
-  end-code
+?\  hl pop  m a ld  hl incp  hl push  pusha jp  end-code
 
   \ doc{
   \
@@ -3014,6 +3247,66 @@ code c@+  ( ca - ca+1 c )
   \
   \ Fetch the byte at _ca_ a and increments the address.
   \ This is handy for stepping through byte arrays.
+  \
+  \ }doc
+
+( 1+! 1-! )
+
+need z80-asm  need [if]
+
+[needed] 1+! [if]
+code 1+!  ( a -- )
+  hl pop  m e ld  hl incp  m d ld  de incp
+  d m ld  hl decp  e m ld  jpnext
+end-code
+[then]
+
+  \ doc{
+  \
+  \ 1+!  ( a - )
+  \
+  \ Increment the cell number at _a_.
+  \
+  \ }doc
+
+[needed] 1-! [if]
+code 1-!  ( a -- )
+  hl pop  m e ld  hl incp  m d ld  de decp
+  d m ld  hl decp  e m ld  jpnext
+end-code
+[then]
+
+  \ doc{
+  \
+  \ 1-!  ( a - )
+  \
+  \ Decrement the cell number at _a_.
+  \
+  \ }doc
+
+( c1+! c1-! )
+
+need z80-asm
+
+[unneeded] c1+!
+?\  code c1+!  ( ca -- )  hl pop  m inc  jpnext  end-code
+
+  \ doc{
+  \
+  \ c1+!  ( ca - )
+  \
+  \ Increment the 8-bit number at _ca_.
+  \
+  \ }doc
+
+[unneeded] c1-!
+?\  code c1-!  ( ca -- )  hl pop  m dec  jpnext  end-code
+
+  \ doc{
+  \
+  \ c1-!  ( ca - )
+  \
+  \ Decrement the 8-bit number at _ca_.
   \
   \ }doc
 
@@ -3345,7 +3638,7 @@ code test-bits  ( b ca -- wf )
   ' true cfa>pfa jpnz  ' false cfa>pfa jp
   end-code  ;s  [then]
   \ AND the bitmask _b_ with the contents of _ca_ and return
-  \ `true` if the result is non-zero or `false` if the result
+  \ _true_ if the result is non-zero or _false_ if the result
   \ is zero. Byte operation.
 
 [needed] set-bits [if]
@@ -3371,75 +3664,11 @@ code reset-bits  ( b ca -- )
   \   \ operation.
 
   \ }}} =======================================================
-  \ Exceptions {{{
-
-( abort" )
-
-  \ Credits:
-  \ Code adapted from DZX-Forth.
-
-  \ XXX TODO use `error`, by modifying `throw`
-
-[defined] abort-message ?\ 2variable abort-message
-
-: (abort")  ( n -- )
-  r> count rot if  abort-message 2! -2 throw  then + >r  ;
-
-: abort"  ( compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate
-
-( error>ordinal error>line )
-
-: error>ordinal  ( -n1 -- +n2 )
-  \ Convert an error code to its ordinal position in the
-  \ library.
-  \ -n1 =  -90..-1        \ Forth-2012 error codes
-  \        -285..-256     \ Solo Forth error codes
-  \        -1024..-1000   \ G+DOS error codes
-  \ +n2 =  1..146
-  
-  \ XXX TODO  add OS codes
-
-  abs
-  dup 256 < ?exit
-  dup 1000 < if  [ 255 091 - ] literal - exit  then
-  [ 1000 286 - 255 091 - + ] literal -   ;
-
-: error>line  ( n1 -- n2 )
-  error>ordinal dup >r
-  begin
-    dup dup 16 / - r@ <>  while  1+ 
-  repeat  rdrop  ;
-
-\ msg-scr (.throw) \
-
-need error>line  need .line
-
-variable msg-scr  \ XXX TODO rename!
-
-: (.throw)  ( n -- )
-  msg-scr @
-  if  error>line msg-scr @ .line space  else  .throw#  then  ;
-
-' (.throw) ' .throw defer! 
-
-  \ doc{
-  \
-  \ (.throw)  ( n -- )
-  \ 
-  \ Extended behaviour of the deferred word `.throw`:
-  \ Print the text of throw error _n_.  The variable `msg-scr`
-  \ contains the number of the first screen where messages are
-  \ hold. If it contains zero, only the error number is printer.
-  \
-  \ }doc
-
-  \ }}} =======================================================
   \ Compilation {{{
 
-( [if] [else] [then] )  \ ==conditionalcompilation==
+( [if] [else] [then] )  \ ==compilation==
 
-[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+need s=
 
 : [else]  ( "..." -- )
 
@@ -3456,6 +3685,33 @@ variable msg-scr  \ XXX TODO rename!
 : [if]  ( "..." -- )  0= if postpone [else] then  ; immediate
 
 : [then]  ( -- )  ; immediate
+
+( ?--> ?\ )
+
+  \ XXX TMP -- still in the kernel
+
+: ?-->  ( f -- )  if  postpone -->  then  ; immediate
+  
+  \ doc{
+  \
+  \ ?-->  ( f -- )
+  \
+  \ If _f_ is not false, continue interpretation on the next
+  \ sequential screen.  parse area. This word is used for
+  \ conditional compilation.
+  \
+  \ }doc
+
+: ?\  ( f "text<eol>" -- )  if  postpone \  then  ; immediate
+
+  \ doc{
+  \
+  \ ?\  ( f "ccc" -- )
+  \
+  \ If _f_ is not false, parse and discard the rest of the
+  \ parse area. This word is used for conditional compilation.
+  \
+  \ }doc
 
 ( nfa<nfa )
 
@@ -4019,7 +4275,7 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Disk blocks {{{
 
-( update flush continued ?load thru +load +thru )
+( update flush continued ?load thru +load +thru reload )
 
 : update  ( -- )
   disk-buffer @
@@ -4113,6 +4369,8 @@ code c!dosvar  ( b n -- )
   \ B. Uncontrolled Reference Words).
   \
   \ }doc
+
+: reload  ( -- )  scr @ load  ;
 
 ( .line )
 
@@ -4216,11 +4474,15 @@ variable old-voc-link
   \ Credits:
   \ Code modified from eForth.
 
-: base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+[defined] base.
+?\  : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
 
-create bin.  ( n -- )   2 c, base.
-create dec.  ( n -- )  10 c, base.
-create hex.  ( n -- )  16 c, base.
+[unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
+[unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
+
+[unneded] dec.  [defined] dec.  or
+  \ XXX TMP -- `dec.` is in the kernel
+  ?\  create dec.  ( n -- )  10 c, base.
 
 ( 8hex. 16hex. 32hex. <hex hex> )
 
@@ -4802,9 +5064,23 @@ variable assert-level ( -- a )
 
   \ : ??  ( f -- )  0= if  r> cell+ >r  then  ;
 
-: (??)  ( f -- )  0= if  r> cell+ >r  then  ;
-: ??  ( -- )  ?compiling postpone (??)  ; immediate
+  \ XXX OLD -- with `state` check:
 
+  \ : (??)  ( f -- )  0= if  r> cell+ >r  then  ;
+  \ : ??  ( -- )  ?compiling postpone (??)  ; immediate
+
+  \ Complete version, after a comment by Anton Ertl in
+  \ comp.lang.forth, 2015-10-19.
+
+: ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  postpone if
+  parse-name find-name  ( x 0 | cfa 1 | cfa -1 )
+  dup 0= -13 ?throw
+  1 = if  execute  else  compile,  then
+  postpone then
+  ;  immediate
+
+  \ XXX TODO -- add `compile-only` when available
 
 ( don't )
 
@@ -5754,13 +6030,13 @@ char Y value "y"  char N value "n"
 
 : no?  ( -- f )  y/n "n" =  ;
   \ Wait for a valid key press for a "y/n" question
-  \ and return `true` if it's the current letter for "no",
-  \ else return `false`.
+  \ and return _true_ if it's the current letter for "no",
+  \ else return _false_.
 
 : yes?  ( -- f )  y/n "y" =  ;
   \ Wait for a valid key press for a "y/n" question
-  \ and return `true` if it's the current letter for "yes",
-  \ else return `false`.
+  \ and return _true_ if it's the current letter for "yes",
+  \ else return _false_.
 
 
 ( Keyboard rows ports)
@@ -5792,6 +6068,8 @@ char Y value "y"  char N value "n"
 
 : k@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
   \ Fech a key definition from an element of the keys table:
+
+  \ XXX TODO wrote `k@` in Z80.
 
 -->
 
@@ -5867,7 +6145,11 @@ k-c k, k-v k, k-0 k, k-9 k, k-8 k, k-7 k, k-6 k, k-p k, k-o k,
 k-i k, k-u k, k-y k, k-en k, k-l k, k-k k, k-j k, k-h k,
 k-sp k, k-ss k, k-m k, k-n k, k-b k,
 
-( pressed? )
+( pressed pressed? )
+
+need [if]
+
+[needed] pressed? [needed] pressed  or [if]
 
 need @p
 
@@ -5876,7 +6158,9 @@ need @p
   \ n1 = key bitmask
   \ n2 = keyboard row port
 
-( pressed )
+[then]
+
+[needed] pressed [if]
 
 need pressed?  need k-table  need k@  need /k
 
@@ -5888,6 +6172,8 @@ need pressed?  need k-table  need k@  need /k
   \ from the keys table that happens to be pressed.
   \ n1 = key bitmask
   \ n2 = keyboard row port
+
+[then]
 
 ( only-one-pressed )
 
@@ -5906,6 +6192,7 @@ need pressed?  need k-table  need k@  need /k
   then
   /k +loop
   k-pressed 2@ 2dup + if  1  else  2drop 0  then  ;
+
   \ Return the key identifier of the key pressed,
   \ if there's only one key pressed.
   \ n1 = key bitmask
@@ -6103,6 +6390,24 @@ need -rot
   \ found, the index to that value is returned.  If no match is
   \ made, then the number of entries, ie max index + 1 is
   \ returned.  This is the inverse of an array.
+
+( begin-structure end-structure +field field: 2field: cfield: )
+
+  \ Forth-2012.
+
+: begin-structure  ( "name" -- struct-sys 0 )
+  create  >mark 0
+  does>   ( -- n )  ( pfa ) @   ;
+
+: +field  ( n1 n2 "name" -- n3 )
+  create  over , +
+  does>   ( a -- a' )  ( a pfa ) @ +  ;
+
+: field:    ( n1 "name" -- n2 )  cell +field  ;
+: 2field:   ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
+: cfield:   ( n1 "name" -- n2 )  [ 1 chars ] literal +field  ;
+
+: end-structure  ( struct-sys n -- )  swap !  ;
 
 ( buffer: )
 
@@ -6788,9 +7093,15 @@ code just-pause ( u -- )
 ( wid-of )
 
   \ Credits:
-  \ Code adapted from eForth's `widof`.
+  \ Code of `wid-of` adapted from eForth's `widof`.
 
-: wid-of  ( "name" -- wid )  ' cfa>pfa  ;
+  \ : wid>voc  ( wid -- cfa )  @ cfa>pfa  ; \ XXX TODO
+
+: voc>wid  ( cfa -- wid )  cfa>pfa  ;
+
+: wid-of  ( "name" -- wid )  ' voc>wid  ;
+
+
 
 ( set-current get-current )
 
@@ -7808,9 +8119,9 @@ init-heap
 
 : fits ( size addr -- flag)  >size @ swap -  overhead  <  ;
 
-  \ Returns `true` if the size of the node specified is the
+  \ Returns _true_ if the size of the node specified is the
   \ same as the specified size, or larger than it by less than
-  \ the size of the smallest possible node. Returns `false`
+  \ the size of the smallest possible node. Returns _false_
   \ otherwise.
 
 : togglesize ( addr)  >size dup @  negate swap !  ;
@@ -8459,8 +8770,7 @@ code ftan  ( F: r1 -- r2 )
 
 only forth definitions
 
-need list  need update  need flush
-need command
+need list  need update  need flush  need parse-line
 
 vocabulary editor  also editor definitions  hex
 
@@ -8474,7 +8784,7 @@ vocabulary editor  also editor definitions  hex
   \ characters.
 
 : text  ( "text<eol>" -- )
-  pad c/l 1+ blank  command  pad place  ;
+  pad c/l 1+ blank  parse-line  pad place  ;
   \ Get the text string until end of line and store it
   \ into `pad` as a counted string, blank-filling the remainder
   \ of `pad` to `c/l` characters.
@@ -8572,7 +8882,7 @@ variable r#
 ( editor )
 
 also forth
-: match  ( a1 len1 a2 len2 -- tf n3 | ff n4 )
+: match  ( a1 len1 a2 len2 -- true n3 | false n4 )
   >r >r 2dup r> r> 2swap over + swap
   do
     2dup i -text
@@ -9651,10 +9961,9 @@ mode64 page
   \ http://www.albany.net/~hello/
   \ ____
 
-need ms
+need ms  need c+!
 
 1 CHARS CONSTANT /Char
-: C+!  ( char c-addr -- )  DUP >R  C@ +  R> C! ;
 
   \ the universal pattern
 32 CONSTANT How-Deep  24 CONSTANT How-Wide
