@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510162300
+\ Last modified: 201510170313
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -368,98 +368,6 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-1154 OS:
 
   \ }}} =======================================================
-  \ Code under development {{{
-
-( csliteral cslit )
-
-  \ XXX TODO test
-  \ XXX TODO move to the strings section
-
-: cslit  ( -- ca len )  r@ dup c@ 1+ r> + >r  ;
-: csliteral  ( ca len -- )  compile cslit s,  ; immediate
-
-( err>ord err>lin )
-
-  \ XXX TMP -- `err>ord` tests `error>ordinal`
-
-: err>ord  ( -- )
-  91 1 do  i . i error>ordinal ."  -> " . cr  loop
-  286 256 do  i . i error>ordinal ."  -> " . cr  loop
-  1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
-
-  \ XXX UNDER DEVELOPMENT
-  \ -- this is a fixed version of `error>line`,
-
-: err>lin  ( n1 -- n2 )
-  error>ordinal dup 1+ 1
-  do  cr i . ." 16 mod . "  i 16 mod .
-    i 16 mod 0=  dup if ."  skip "  then
-                 abs + ." count:" dup .
-    key drop
-  loop  ;
-
-( e>l )
-
-  \ XXX UNDER DEVELOPMENT
-  \ this is a fixed version of `error>line`,
-
-  \ try 3
-
-: e>l  ( n1 -- n2 )
-  dup >r \ save goal
-  begin
-    cr .s key drop
-    dup dup 16 / - r@ <> while
-    1+
-  repeat  rdrop  ;
-
-    \ \ try 2
-
-  \ : e>l  ( n1 -- n2 )
-    \ >r \ n1 = goal
-    \ 1 \ n2 = result
-    \ 1 \ n3 = counter
-    \ begin  over r@ <>  while
-    \   cr .s key drop
-    \   ( n2 n3 )
-    \   dup >r 16 mod 0= abs + 1+ r> 1+
-    \ repeat  drop rdrop  ;
-
-    \ \ try 1
-
-  \ : e>l  ( n1 -- n2 )
-    \ 1 begin  2dup >  while
-    \   cr .s key drop
-    \   ( n1 n2 )
-    \   dup >r 16 mod 0= abs + r> 1+
-    \ repeat  drop  ;
-
-( error>line error>ordinal )
-
-  \ XXX TODO -- new versions under development, adapted to
-  \ Forth-2012 codes
-
-: error>ordinal  ( -n1 -- +n2 )
-  \ Convert an error code to its ordinal position in the
-  \ library.
-  \ -n1 =  -90..-1        \ Forth-2012 error codes
-  \        -285..-256     \ Solo Forth error codes
-  \        -1024..-1000   \ G+DOS error codes
-  \ +n2 =  1..146
-
-  \ XXX TODE -- this word is finished and already in the
-  \ kernel, but it should be a library option, using a defered
-  \ word in `message`.
-
-  abs
-  dup 256 < if  exit  then
-  dup 1000 < if  [ 255 091 - ] literal - exit  then
-  [ 1000 286 - 255 091 - + ] literal -   ;
-
-: error>line  ( -n1 -- +n2 )
-  error>ordinal  dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
-
-  \ }}} =======================================================
   \ Parsing {{{
 
 ( evaluate )
@@ -508,6 +416,13 @@ variable last-locatable  scr/disk 1- last-locatable !
   \  Standard: Forth-94.
   \
   \  }doc
+
+( defined? undefined? )
+
+: defined?  ( ca len -- wf )  find-name nip 0<>  ;
+  \ XXX FIXME -- this works only with version 2 of `find-name`
+
+; undefined?  ( ca len -- wf )  defined? 0=  ;
 
   \ }}} =======================================================
   \ Data stack {{{
@@ -1412,6 +1327,13 @@ need chars>string  need s+
   \ 0 esperanto-number type
   \ 3 esperanto-number type
 
+( csliteral cslit )
+
+  \ XXX TODO test
+
+: cslit  ( -- ca len )  r@ dup c@ 1+ r> + >r  ;
+: csliteral  ( ca -- )  compile cslit s,  ; immediate
+
 ( hunt )
 
 : hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
@@ -1710,7 +1632,7 @@ need z80-asm  need (hires-emit)
 
 code hires-emit-udg  ( x y b -- )
 
-  \ Display the used graphic character _b_ (0..255) at graphic
+  \ Display the user graphic character _b_ (0..255) at graphic
   \ coordinates _x y_. The system variable "UDG" is supossed to
   \ hold the address of a graphic charset (the address of the
   \ char 0 bitmap).
@@ -3466,6 +3388,52 @@ code reset-bits  ( b ca -- )
 : abort"  ( compilation: "ccc<quote>" -- )
   postpone (abort") ,"  ; immediate
 
+( error>ordinal error>line )
+
+: error>ordinal  ( -n1 -- +n2 )
+  \ Convert an error code to its ordinal position in the
+  \ library.
+  \ -n1 =  -90..-1        \ Forth-2012 error codes
+  \        -285..-256     \ Solo Forth error codes
+  \        -1024..-1000   \ G+DOS error codes
+  \ +n2 =  1..146
+  
+  \ XXX TODO  add OS codes
+
+  abs
+  dup 256 < ?exit
+  dup 1000 < if  [ 255 091 - ] literal - exit  then
+  [ 1000 286 - 255 091 - + ] literal -   ;
+
+: error>line  ( n1 -- n2 )
+  error>ordinal dup >r
+  begin
+    dup dup 16 / - r@ <>  while  1+ 
+  repeat  rdrop  ;
+
+\ msg-scr (.throw) \
+
+need error>line  need .line
+
+variable msg-scr  \ XXX TODO rename!
+
+: (.throw)  ( n -- )
+  msg-scr @
+  if  error>line msg-scr @ .line space  else  .throw#  then  ;
+
+' (.throw) ' .throw defer! 
+
+  \ doc{
+  \
+  \ (.throw)  ( n -- )
+  \ 
+  \ Extended behaviour of the deferred word `.throw`:
+  \ Print the text of throw error _n_.  The variable `msg-scr`
+  \ contains the number of the first screen where messages are
+  \ hold. If it contains zero, only the error number is printer.
+  \
+  \ }doc
+
   \ }}} =======================================================
   \ Compilation {{{
 
@@ -4146,6 +4114,35 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
+( .line )
+
+  \ XXX TODO -- `line>string` is in the kernel because
+  \ `located` uses it.
+  \
+  \ : line>string  ( n1 n2 -- ca len )
+  \   >r c/l b/buf */mod
+  \   r> b/scr * +
+  \   block + c/l  ;
+
+  \ doc{
+  \
+  \ line>string  ( n1 n2 -- ca len )
+  \
+  \ Convert the line number _n1_ and the screen number _n2_ to
+  \ a string in the disk buffer containing the data.
+  \
+  \ }doc
+
+: .line  ( n1 n2 -- )  line>string -trailing type  ;
+
+  \ doc{
+  \
+  \ .line  ( n1 n2 -- )
+  \
+  \ Print line _n1_ from screen _n2_, without trailing spaces.
+  \
+  \ }doc
+
   \ }}} =======================================================
   \ Tape files {{{
 
@@ -4420,7 +4417,7 @@ need case
 
 ( list )
 
-need break-key?
+need break-key?  need .line
 
 : list  ( n -- )
 
@@ -4447,7 +4444,7 @@ code break-key?  ( -- f )
 
 ( index .index )
 
-need break-key?
+need break-key?  need .line
 
 : .index  ( n -- )  cr dup 3 .r space 0 swap .line  ;
   \ Print the first line of the screen _n_.
@@ -6801,6 +6798,8 @@ code just-pause ( u -- )
 : set-current  ( wid -- )  current !  ;
 
 ( search-wordlist )
+
+  \ XXX -- still in the kernel not because `header` uses it.
 
 : search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
   >r 2dup uppers r>
@@ -9847,7 +9846,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ ____
 
 need columns  need rows  need udg:  need rnd
-need ??  need pressed?  need break-key?
+need ??  need pressed?  need break-key?  need hires-emit-udg
 
 0 cconstant black  7 cconstant white
 
@@ -9856,7 +9855,7 @@ need ??  need pressed?  need break-key?
   \ variable speed
   \ Delay in milliseconds.
 
-100 constant ball-delay0
+8 constant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
 variable ball-delay
   \ XXX NEW
@@ -9914,7 +9913,7 @@ rows 1- constant racket2-y
 %11111111
 %11111111
 %01111110
-%00111100 129 udg: ball
+%00111100 128 udg: (ball)  0 cconstant ball \ XXX TMP
 
   \ XXX TODO -- frames
 
@@ -9925,7 +9924,7 @@ rows 1- constant racket2-y
   \ %11111111
   \ %11111111
   \ %01111110
-  \ %00111100 129 udg: ball0
+  \ %00111100 128 udg: ball0
 
   \ %00111100
   \ %01111110
@@ -9971,11 +9970,15 @@ rows 1- constant racket2-y
 
 : init-screen  ( -- )  restore-screen white ink  ;
 
-: at-ball  ( -- )  x @ y @ at-xy  ;
+  \ : at-ball  ( -- )  x @ y @ at-xy  ;
+  \ : show-ball  ( -- )  at-ball ball emit  ;
 
-: show-ball  ( -- )  at-ball ball emit  ;
+: at-ball  ( -- )  x @ y @  ;
 
-: erase-ball  ( -- )  at-ball space  ;
+: show-ball  ( -- )  at-ball ball hires-emit-udg  ;
+
+  \ : erase-ball  ( -- )  at-ball space  ;
+: erase-ball  ( -- )  at-ball ball hires-emit-udg space  ;
 
 : show-racket  ( a -- )  racket-size racket-color fill  ;
 
@@ -10012,10 +10015,10 @@ rows 1- constant racket2-y
 : erase-racket2  ( -- )  23264 racket2-x @ + erase-racket  ;
   \ Erase racket of player 2.
 
-: change-x  ( -- )  direction 2 toggle  ;
+: change-x  ( -- )  2 direction toggle-bits  ;
   \ Change the x direction of the ball.
 
-: change-y  ( -- )  direction 1 toggle  ;
+: change-y  ( -- )  1 direction toggle-bits  ;
   \ Change the y direction of the ball.
 
 : faster  ( -- )
@@ -10029,15 +10032,18 @@ rows 1- constant racket2-y
 
 : ball-moving-right?  ( -- f )  direction @ 2 and  ;
 : ball-moving-down?  ( -- f )  direction @ 1 and  ;
-: ball-at-last-column?  ( -- wf )  x @ columns 1- =  ;
-: ball-at-first-column?  ( -- wf )  x @ 0=  ;
-: ball-at-second-last-row?  ( -- wf )  y @ rows 2- =  ;
-: ball-at-second-row?  ( -- wf )  y @ 1 =  ;
+  \ : ball-at-right?  ( -- wf )  x @ columns 1- =  ;
+: ball-at-right?  ( -- wf )  x @ 248 =  ;
+: ball-at-left?  ( -- wf )  x @ 0=  ;
+  \ : ball-at-bottom?  ( -- wf )  y @ rows 2- =  ;
+: ball-at-bottom?  ( -- wf )  y @ 15 =  ;
+  \ : ball-at-top?  ( -- wf )  y @ 1 =  ;
+: ball-at-top?  ( -- wf )  y @ 183 =  ;
 
 : move-x  ( -- )
   ball-moving-right?
-  if    ball-at-last-column? if  change-x  else  1 x +!  then
-  else  ball-at-first-column? if  change-x  else  -1 x +!  then
+  if    ball-at-right? if  change-x  else  1 x +!  then
+  else  ball-at-left? if  change-x  else  -1 x +!  then
   then  ;
 
 -->
@@ -10045,7 +10051,8 @@ rows 1- constant racket2-y
 ( pong )
 
 : reset-ball  ( -- )
-  columns 2/ x !  rows 2/ y !  rnd 3 and direction !  ;
+  \ columns 2/ x !  rows 2/ y !  rnd 3 and direction !  ;
+  128 x !  95 y !  rnd 3 and direction !  ;
   \ Initialize/reset ball position.
 
 : score-player1  ( -- )  1 points1 +! print-point1  ;
@@ -10054,25 +10061,33 @@ rows 1- constant racket2-y
 : score-player2  ( -- )  1 points2 +! print-point2  ;
   \ Increase player 2's points by one.
 
+[defined] 8* ?\ : 8*  ( n1 -- n2 )  2* 2* 2*  ;
+
+  \ : hit-racket1?  ( -- wf )
+  \   x @ racket1-x @ 1- >
+  \   x @ racket1-x @ racket-size + <  and  ;
 : hit-racket1?  ( -- wf )
-  x @ racket1-x @ 1- >
-  x @ racket1-x @ racket-size + <  and  ;
+  x @ racket1-x @ 8* 1- >
+  x @ racket1-x @ 8* racket-size 8* + <  and  ;
   \ Is racket1 hit by the ball?
   \ Is racket1-x <= x < racket1-x + racket-size?
 
+  \ : hit-racket2?  ( -- wf )
+  \   x @ racket2-x @ 1- >
+  \   x @ racket2-x @ racket-size + <  and  ;
 : hit-racket2?  ( -- wf )
-  x @ racket2-x @ 1- >
-  x @ racket2-x @ racket-size + <  and  ;
+  x @ racket2-x @ 8* 1- >
+  x @ racket2-x @ 8* racket-size 8* + <  and  ;
   \ Is racket2 hit by the ball?
   \ Is racket2-x <= x < racket2-x + racket-size?
 
-: hit-racket?  ( a -- wf )
-  \ XXX NEW -- alternative
-  \ XXX TODO try
-  \ a = address that holds the x coordinate of a racket
-  @ x @ swap  ( ball-x pad-x )
-  2dup 1- > >r
-  racket-size + <  r> and  ;
+  \ : hit-racket?  ( a -- wf )
+  \   \ XXX NEW -- alternative
+  \   \ XXX TODO try
+  \   \ a = address that holds the x coordinate of a racket
+  \   @ x @ swap  ( ball-x pad-x )
+  \   2dup 1- > >r
+  \   racket-size + <  r> and  ;
 
 -->
 
@@ -10080,12 +10095,12 @@ rows 1- constant racket2-y
 
 : move-y  ( -- )
   ball-moving-down? if
-    ball-at-second-last-row? if
+    ball-at-bottom? if
       hit-racket2?
       if change-y  else  score-player1 reset-ball  then
     else  1 y +!  then
   else
-    ball-at-second-row? if
+    ball-at-top? if
       hit-racket1?
       if  change-y  else  score-player2 reset-ball  then
     else  -1 y +!  then
@@ -10096,8 +10111,9 @@ rows 1- constant racket2-y
 ( pong )
 
 : move-ball ( -- )
-  -1 ball-delay +!  ball-delay @ ?exit
-  ball-delay0 ball-delay !
+  \ XXX TODO
+  \ -1 ball-delay +!  ball-delay @ ?exit
+  \ ball-delay0 ball-delay !
   erase-ball move-x move-y show-ball  ;  -->
 
 ( pong )
@@ -10569,4 +10585,12 @@ defer num?
   \ 01000  4165
   \ 10000 41649
 
+( err>ord )
+
+  \ XXX TMP -- `err>ord` tests `error>ordinal`
+
+: err>ord  ( -- )
+  91 1 do  i . i error>ordinal ."  -> " . cr  loop
+  286 256 do  i . i error>ordinal ."  -> " . cr  loop
+  1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
   \ vim: filetype=soloforth
