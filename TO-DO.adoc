@@ -10,6 +10,8 @@
 
 .2015-11-12:
 
+Bug:
+
 The stack depth becomes -2 at the end of a compiled block, when
 compiler security is off and the block has been compiled with a nested
 `need`.
@@ -23,20 +25,12 @@ I got no clue yet!
 
 .2015-11-12:
 
-Use an execution table to compile the numbers in `interpret`.
+`+bal`, `-bal` or similar, to change `csp`:
 
-First idea:
-
-0:: error
-1:: compile or push 16-bit number
-2:: compile or push 32-bit number
-
-0:: error
-1:: compile 16-bit number
-2:: compile 32-bit number
-3:: error
-4:: push 16-bit number
-5:: push 32-bit number
+----
+: [+csp]  ( -- )  [ cell negate ] literal csp +!  ; immediate compile-only
+: [-csp]  ( -- )  cell csp +!  ; immediate compile-only
+----
 
 .2015-11-10:
 

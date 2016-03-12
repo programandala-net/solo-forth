@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511122020
+\ Last modified: 201511130153
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -31,7 +31,7 @@
   \ See
   \ http://programandala.net/en.program.solo_forth.history.html
 
-( ) \ scr 1 -- testing load screen
+( ) \ scr 1 -- testing load block
 
   \ XXX FIXME
 
@@ -58,7 +58,7 @@ code zx2  jpnext  end-code
 
 ( contains delimited located )
 
-  \ This screen must be at a fixed location.
+  \ This block must be at a fixed location.
 
   \ XXX TMP
   \ XXX INFORMER
@@ -78,7 +78,7 @@ code zx2  jpnext  end-code
 
 variable default-first-locatable  variable first-locatable
 variable last-locatable  blk/disk 1- last-locatable !
-  \ Variables that define the range of screens to be searched
+  \ Variables that define the range of blocks to be searched
   \ by `located` and its descendants.
 
 : delimited  ( ca1 len1 -- ca2 len2 )
@@ -95,7 +95,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
-: located  ( ca len -- screen | false )
+: located  ( ca len -- block | false )
   delimited  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over
@@ -106,9 +106,9 @@ variable last-locatable  blk/disk 1- last-locatable !
 
   \ doc{
   \
-  \ located  ( ca len -- screen | false )
+  \ located  ( ca len -- block | false )
   \
-  \ Locate the first screen whose header contains the string
+  \ Locate the first block whose header contains the string
   \ _ca len_ (surrounded by spaces), and return its number. If
   \ not found, return _false_.
   \ The search is case-sensitive.
@@ -119,7 +119,7 @@ variable last-locatable  blk/disk 1- last-locatable !
 
 ( ?located locate from reneeded reneed )
 
-: ?located  ( screen | false -- )  dup 0= #-268 ?throw  ;
+: ?located  ( block | 0 -- )  dup 0= #-268 ?throw  ;
 
   \ doc{
   \
@@ -129,14 +129,14 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
-: locate  ( "name" -- screen | false )
+: locate  ( "name" -- block | false )
   parse-name save-string located  ;
 
   \ doc{
   \
-  \ locate  ( "name" -- screen | false )
+  \ locate  ( "name" -- block | false )
   \
-  \ Locate the first screen whose header contains "name"
+  \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and return its number. If not
   \ found, return _false_.
   \ The search is case-sensitive.
@@ -149,7 +149,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ from  ( "name" -- )
   \
-  \ Locate the first screen whose header contains "name"
+  \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and set it the first one `located`
   \ will search from. If not found, throw an exception -268.
   \
@@ -184,7 +184,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ reneeded  ( ca len -- )
   \
-  \ Locate the first screen whose header contains the string
+  \ Locate the first block whose header contains the string
   \ _ca len_ (surrounded by spaces), and load it. If not found,
   \ throw an exception -268.
   \
@@ -196,7 +196,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ reneed  ( ca len -- )
   \
-  \ Locate the first screen whose header contains "name"
+  \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and load it.
   \
   \ }doc
@@ -250,7 +250,6 @@ variable last-locatable  blk/disk 1- last-locatable !
 
   needed-word 2@ 2>r
   -trailing -leading save-string 2dup needed-word 2!
-  \ 2dup type  \ XXX INFORMER
   2dup undefined?
   if  reneeded  else  2drop  then  2r> needed-word 2!  ;
 
@@ -259,8 +258,8 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ needed  ( ca len -- )
   \
   \ If the string _ca len_ is not the name of a word found in
-  \ the current search order, locate the first screen of the
-  \ library where "name" is included in the screen header
+  \ the current search order, locate the first block of the
+  \ library where "name" is included in the block header
   \ (surrounded by spaces), and load it.
   \
   \ }doc
@@ -272,8 +271,8 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ need  ( "name" -- )
   \
   \ If "name" is not found in the current search order, locate
-  \ the first screen of the library where "name" is included is
-  \ the screen header (surrounded by spaces), and load it.
+  \ the first block of the library where "name" is included is
+  \ the block header (surrounded by spaces), and load it.
   \
   \ }doc
 
@@ -332,7 +331,7 @@ s" Standard error codes" locate msg-scr !
   \
   \ msg-scr  ( -- a )
   \
-  \ Variable that holds the screen that holds the error
+  \ Variable that holds the block that holds the error
   \ messages.
   \
   \ }doc
@@ -349,7 +348,7 @@ s" Standard error codes" locate msg-scr !
   \
   \ Extended behaviour of the deferred word `.throw`:
   \ Print the text of throw error _n_.  The variable `msg-scr`
-  \ contains the number of the first screen where messages are
+  \ contains the number of the first block where messages are
   \ hold. If it contains zero, only the error number is printer.
   \
   \ }doc
@@ -3346,7 +3345,7 @@ need z80-asm
   \
   \ }doc
 
-[needed] between  ?\ ;s
+[needed] between  ?\ exit
 need -rot
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
@@ -3847,7 +3846,7 @@ need roll
 
 variable (any?)
 
-: any?  ( x0 x1..xn x -- f )
+: any?  ( x0 x1..xn n -- f )
   \ Is any _x1..xn_ equal to _x0_?
   dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
@@ -3938,7 +3937,7 @@ need s=
   \ ?-->  ( f -- )
   \
   \ If _f_ is not false, continue interpretation on the next
-  \ sequential screen.  parse area. This word is used for
+  \ sequential block.  parse area. This word is used for
   \ conditional compilation.
   \
   \ }doc
@@ -4051,6 +4050,12 @@ need c!toggle-bits
   \
   \ }doc
 
+( ?pairs )
+
+: ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;
+  \ If _x1_ not equals _x2_ throw an error -22 (control
+  \ structure mismatch).
+  
 ( privatize )
 
   \ Usage example:
@@ -4766,7 +4771,7 @@ code c!dosvar  ( b n -- )
   \
   \ continued  ( u -- )
   \
-  \ Continue interpretation at screen _u_.
+  \ Continue interpretation at block _u_.
   \
   \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
@@ -4782,7 +4787,7 @@ code c!dosvar  ( b n -- )
   \
   \ ?load  ( u f -- )
   \
-  \ Load screen _u_ if flag _f_ is true.
+  \ Load block _u_ if flag _f_ is true.
   \
   \ }doc
 
@@ -4793,7 +4798,7 @@ code c!dosvar  ( b n -- )
   \
   \ thru ( u1 u1 -- )
   \
-  \ Load consecutively the screens from u1 through u2.
+  \ Load consecutively the blocks from u1 through u2.
   \
   \ Standard: Forth-79 (Reference Word Set), Forth-83
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
@@ -4815,7 +4820,7 @@ code c!dosvar  ( b n -- )
   \ loads  ( u "name" -- )
   \
   \ Define a word "name" which, when executed, will  load
-  \ screen _u_.
+  \ block _u_.
   \
   \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
@@ -4835,7 +4840,7 @@ code c!dosvar  ( b n -- )
   \
   \ loads  ( u n -- )
   \
-  \ Load _n_ screen starting from screen _u_.
+  \ Load _n_ block starting from block _u_.
   \
   \ }doc
 
@@ -4852,7 +4857,7 @@ code c!dosvar  ( b n -- )
   \
   \ line>string  ( n1 n2 -- ca len )
   \
-  \ Convert the line number _n1_ and the screen number _n2_ to
+  \ Convert the line number _n1_ and the block number _n2_ to
   \ a string in the disk buffer containing the data.
   \
   \ }doc
@@ -4863,7 +4868,7 @@ code c!dosvar  ( b n -- )
   \
   \ .line  ( n1 n2 -- )
   \
-  \ Print line _n1_ from screen _n2_, without trailing spaces.
+  \ Print line _n1_ from block _n2_, without trailing spaces.
   \
   \ Standard: fig-Forth.
   \
@@ -5182,7 +5187,7 @@ need break-key?  need .line
 
 : list  ( n -- )
 
-  \ List screen number _n_.
+  \ List block number _n_.
 
   dup scr !
   cr ." Scr # " .
@@ -5208,7 +5213,7 @@ code break-key?  ( -- f )
 need break-key?  need .line
 
 : .index  ( n -- )  cr dup 3 .r space 0 swap .line  ;
-  \ Print the first line of the screen _n_.
+  \ Print the first line of the block _n_.
 
 : index  ( n1 n2 -- )
 
@@ -5216,7 +5221,7 @@ need break-key?  need .line
   \
   \ index  ( n1 n2 -- )
   \
-  \ Print the first line of each screen over the range from
+  \ Print the first line of each block over the range from
   \ _n1_ to _n2_.
   \
   \ }doc
@@ -5241,7 +5246,7 @@ need break-key?  need .index
   \
   \ index-like  ( n1 n2 "name" -- )
   \
-  \ Print the first line of each screen over the range from
+  \ Print the first line of each block over the range from
   \ _n1_ to _n2_, as long as the string "name" is included in
   \ the line. The string comparison is case-sensitive.
   \
@@ -5268,7 +5273,7 @@ need break-key?  need .index
   \
   \ index-ilike  ( n1 n2 "name" -- )
   \
-  \ Print the first line of each screen over the range from
+  \ Print the first line of each block over the range from
   \ _n1_ to _n2_, as long as the string "name" is included in
   \ the line. The string comparison is case-insensitive.
   \
@@ -5335,12 +5340,12 @@ need break-key?  need trail  need name>link
 ( where )
 
   \ XXX FIXME -- terminal input errors are not managed;
-  \ the screen of the last error is shown insted
+  \ the block of the last error is shown insted
 
 need [if]
 
 : where  ( -- )
-  \ Print screen and line numbers and a picture of where the
+  \ Print block and line numbers and a picture of where the
   \ last error occurred.
   error-pos 2@  ( n1 n2 )
   \ n1 = value of `>in` when the error happened
@@ -5619,25 +5624,13 @@ variable assert-level ( -- a )
   \ Forth Dimensions 17/4 p. 36 (1995-11).
 
 : -if  ( f -- )
-  postpone ?branch >mark 2  ; immediate compile-only
-
-  \ XXX TODO Alternative for when compiler security is removed:
-  \ : -if  ( f -- )
-  \   postpone ?branch >mark  ; immediate compile-only
+  postpone ?branch >mark  ; immediate compile-only
 
 : -while  ( f -- )
-  postpone if 2+  ; immediate compile-only
-
-  \ XXX TODO Alternative for when compiler security is removed:
-  \ : -while  ( f -- )
-  \   postpone if  ; immediate compile-only
+  postpone if  ; immediate compile-only
 
 : -until  ( f -- )
-  1 ?pairs postpone ?branch <resolve  ; immediate compile-only
-
-  \ XXX TODO Alternative for when compiler security is removed:
-  \ : -until  ( f -- )
-  \   postpone ?branch <resolve  ; immediate compile-only
+  postpone ?branch <resolve  ; immediate compile-only
 
 ( retry )
 
@@ -5646,10 +5639,8 @@ variable assert-level ( -- a )
   \ Forth Dimensions 17/4 p. 36 (1995-11).
 
 : retry  ( -- )
-  latest name> >body 1 postpone again
+  latest name> >body postpone again
   ; immediate compile-only
-
-  \ XXX TODO -- remove `1` when compiler security is disabled
 
 : ?retry  ( run-time: f -- )
   postpone if  postpone retry  postpone then
@@ -6573,49 +6564,9 @@ code (step)  ( R: n -- n' )
 ( case )
 
   \ Credits:
-  \ This is the fig-Forth `case` provided by Abersoft Forth,
-  \ translated from the Z80 disassembly, adapted and commented.
-  \
-  \ Note: this version works only when the compiler security
-  \ check config option is activated in the kernel.
-
-  \ This version uses 110 bytes.
-
-: case
-  \ Compilation: ( -- a case-id )
-  \ Runtime: ( x -- )
-  csp @ !csp 4  ; immediate compile-only
-
-: of
-  \ Compilation: ( case-id -- of-id )
-  \ Run-time: ( x -- )
-  \ Note: `postpone 0branch >mark` is used instead of `postpone
-  \ if` because `if` leaves its own id on the stack when compiler
-  \ security is activated.
-  4 ?pairs
-  postpone over  postpone =  postpone 0branch >mark
-  postpone drop 5  ; immediate compile-only
-
-: endof
-  \ Compilation: ( of-id -- case-id )
-  \ Run-time: ( -- )
-  5 ?pairs  postpone branch >mark
-            swap 2  postpone then  4  ; immediate compile-only
-
-: endcase
-  \ Compilation: ( a orig1..orign case-id -- 3
-  \ Run-time: ( x -- )
-  4 ?pairs
-  postpone drop
-  begin  sp@ csp @ <>  while  2 postpone then  repeat
-  csp !  ;  immediate compile-only
-
-( case )
-
-  \ Credits:
   \ This is the `case` provided by Abersoft Forth,
-  \ translated from the Z80 disassembly, modified (no compiler
-  \ security checks) and commented.
+  \ translated from the Z80 disassembly, modified (compiler
+  \ security has been removed) and commented.
 
   \ This version uses 64 bytes.
 
@@ -7030,12 +6981,8 @@ variable #options
 
   \ Dijkstra Guarded Command Control Structures
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ XXX FIXME -- this can not work when compiler security is on
-
   \ Credits:
-  \ Modified from:
+  \ Adapted from:
   \ Dijkstra Guarded Command Control Structures
   \ M. Edward Borasky, 1996-08-03
   \ Listing in "Towards a Discipline of ANS Forth Programming"
@@ -7070,18 +7017,15 @@ need cs-roll
   -22 postpone literal postpone throw
     \ 'control structure mismatch'
   r> 0 do  postpone then  loop  ; immediate compile-only
+  \ end a conditional
   \ XXX TODO use `?do` when available
 
 ( {do do} do> |do| )
 
   \ Dijkstra Guarded Command Control Structures
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ XXX FIXME -- this can not work when compiler security is on
-
   \ Credits:
-  \ Modified from:
+  \ Adapted from:
   \ Dijkstra Guarded Command Control Structures
   \ M. Edward Borasky, 1996-08-03
   \ Listing in "Towards a Discipline of ANS Forth Programming"
@@ -7108,6 +7052,7 @@ need cs-pick  need cs-roll
   postpone again \ resolve dest
   postpone then \ resolve orig
   ; immediate compile-only
+  \ end a loop
 
   \ }}} =======================================================
   \ Keyboard {{{
@@ -7151,7 +7096,7 @@ code inkey  ( -- c | 0 )
   \ keyboard and updates the related system variables.
 
   \ XXX FIXME -- Some times this word returns zero when the key
-  \ is pressed; the version on the previous screen works fine.
+  \ is pressed; the version on the previous block works fine.
   \ Anyway this version is smaller and can be useful.
 
   a xor
@@ -7300,7 +7245,7 @@ char Y value "y"  char N value "n"
   \ every key in `k-table`, 3 or 4.
   \
   \ The application must define `/k` before loading this
-  \ screen.
+  \ block.
 
   \ ............................................
   \ Method 1: smaller but slower
@@ -8611,6 +8556,8 @@ code call  ( a -- )
 
 only forth definitions
 
+need ?pairs
+
 : 8*   ( n1 -- n2 )  2* 2* 2*  ;
 
 : z80-asm  ( -- )  assembler  ;
@@ -8924,8 +8871,8 @@ A0 m2 and  B0 m2 or  A8 m2 xor
   \ Return the address of the _n_ unresolved address.  Note:
   \ The address returned by `allocate-string` is directly
   \ compiled into `unresolved`. This saves a definition.  `dup`
-  \ and `drop` are used to pass the compiler security that
-  \ checks the stack is balanced at the end of the definition.
+  \ and `drop` are used to pass the stack check at the end of
+  \ the definition.
 
 only forth definitions also assembler
 
@@ -10031,7 +9978,7 @@ vocabulary editor  also editor definitions  hex
 : line  ( n -- a )
   dup FFF0 and #-266 ?throw scr @ line>string drop  ;
   \ Leave address _a_ of the beginning of line _n_ in the
-  \ current screen buffer.  The screen number is in `scr`.
+  \ current block buffer.  The block number is in `scr`.
   \ Read the disk block from  disk if it is not already in the
   \ disk buffer.
 
@@ -10044,7 +9991,7 @@ variable r#
 
 : #lead  ( -- a n )  #locate line swap  ;
   \ From the cursor pointer `r#` compute the line address _a_
-  \ in the screen buffer and the offset from _a_ to the cursor
+  \ in the block buffer and the offset from _a_ to the cursor
   \ location _n_.
 
 : #lag  ( -- a n )  #lead dup >r + c/l r> -  ;
@@ -10052,7 +9999,7 @@ variable r#
   \ n = count after cursor till end of line
 
 : -move  ( a n -- )  line c/l cmove update  ;
-  \ Move a line of text from _a_ to line _n_ of current screen.
+  \ Move a line of text from _a_ to line _n_ of current block.
 
 : h  ( n -- )  line pad 1+ c/l dup pad c! cmove  ;
   \ Hold line _n_ at `pad` (used by system more often than by
@@ -10084,7 +10031,7 @@ variable r#
   \ Type line _n_ and save in `pad`.
 
 : l  ( n -- )  scr @ list 0 m  ;
-  \ List the current screen.
+  \ List the current block.
 
 : r  ( n -- )  pad 1+ swap -move  ;
   \ Replace line _n_ with text in `pad`.
@@ -10097,7 +10044,7 @@ variable r#
   \ down. Line 15 is lost.
 
 : top  ( -- )  0 r# !  ;
-  \ Position the cursor at the start of the screen.
+  \ Position the cursor at the start of the block.
 
 -->
 
@@ -10105,7 +10052,7 @@ variable r#
 
 : clear  ( n -- )
   scr !  10 0 do [ also forth ] i [ previous ] e loop  ;
-  \ Clear screen _n_ with blanks and select for editing.
+  \ Clear block _n_ with blanks and select for editing.
 
   \ XXX TODO -- rewrite with `search`
 : -text  ( a1 len1 a2 -- f )
@@ -10146,9 +10093,9 @@ also forth
     if  top pad here c/l 1+ cmove #-270 throw  then  1line
   until  ;
   \ Search for a match to the string at `pad`, from the cursor
-  \ position until the end of screen.  If no match found issue
+  \ position until the end of block.  If no match found issue
   \ an error message and reposition the cursor at the top of
-  \ the screen.
+  \ the block.
 
 -->
 
@@ -10168,7 +10115,7 @@ also forth
   \ string "text" is found. The cursor is left at the end of
   \ the string and the cursor line is printed. If the string is
   \ not found and error message is given and the cursor
-  \ repositioned to the top of the screen.
+  \ repositioned to the top of the block.
 
 : b  ( -- )  pad c@ negate m  ;
   \ Used after `f` to backup the cursor by the length of the
@@ -10202,11 +10149,10 @@ also forth
 
 : copy  ( n1 n2 -- )
   swap block cell- ! update save-buffers  ;
-  \ Copy screen _n1_ to screen _n2_.
+  \ Copy block _n1_ to block _n2_.
 
 only forth definitions decimal
 
-  \ Copy screen _n1_ to screen _n2_.
   \ }}} =======================================================
   \ Sample game: Siderator 2 {{{
 
@@ -12464,7 +12410,7 @@ defer num?
 
   frames@ cr .( Frames ) d. cr
 
-  \ Benchmark: Locate and load 16 times empty screen #457.
+  \ Benchmark: Locate and load 16 times empty block #457.
 
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
@@ -13058,14 +13004,14 @@ code if'-test  ( -- )
 \ #-256 not a word nor a number
 \ #-257 warning: is not unique
 \ #-258 stack imbalance
-\ #-259 trying to load from screen 0
+\ #-259 trying to load from block 0
 \ #-260 wrong digit
 \ #-261 deferred word is uninitialized
 \ #-262 assertion failed
 \ #-263 execution only
 \ #-264 definition not finished
 \ #-265 loading only
-\ #-266 off current editing screen
+\ #-266 off current editing block
 \ #-267 warning: not present, though required
 \ #-268 required, but not located
 \ #-269 relative jump too long

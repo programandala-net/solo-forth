@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151112
+  ; Version:        20151113
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B48
+version_low_part:   equ 0x7B49
   
-  ; Last modified:  201511122020
+  ; Last modified:  201511130153
 
 ; ==============================================================
 ; Author and license
@@ -217,13 +217,6 @@ size_optimization: equ false
 ; fig_exit: equ true
   ; true = fig-Forth `;s` is used
   ; false = Forth-83 and Forth-94 `exit` is used ; XXX FIXME
-
-  ; XXX TODO remove compiler security
-  ; XXX FIXME there are problems when compiler security is off
-  ; (see the to-do file)
-fig_compiler_security: equ true
-  ; true = fig-Forth `?pairs' is used
-  ; false = no checking during compilation of control structures
 
   ; XXX the flag is harcoded in the code
   ; XXX OLD
@@ -615,6 +608,15 @@ _message: macro _error
 ; Debug macros
 
 debugging: equ 1
+
+_z80_just_border: macro _color
+  if debugging
+    push af
+    ld a,_color
+    out(0xFE),a
+    pop af
+  endif
+  endm
 
 _z80_border: macro _color
   if debugging
@@ -1256,7 +1258,14 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa
 
 ; ----------------------------------------------
+
+if 1 ; abase
+
   _variable_header abase_,'ABASE'
+
+  ; XXX TODO use the return stack instead?
+  ; but after removing `abase` the system crashes during the
+  ; loading of `base64`.
 
 ; doc{
 ;
@@ -1268,6 +1277,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; }doc
 
   dw 0
+
+endif
 
 ; ----------------------------------------------
   _colon_header end_asm_,'END-ASM'
@@ -1282,7 +1293,12 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
   dw question_csp_
   dw previous_ ; restore the search order ; XXX TODO better
+if 1 ; abase
   dw abase_,fetch_,base_,store_ ; restore `base`
+else
+  dw from_r_,base_,store_ ; restore `base`
+endif
+
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1420,7 +1436,11 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   ; Idea taken from Coos Haak's Z80 Forth assembler.
 
   dw store_csp_
+if 1 ; abase
   dw base_,fetch_,abase_,store_ ; save the current base
+else
+  dw base_,fetch_,to_r_ ; save the current base
+endif
   dw hex_
   dw also_,assembler_ ; XXX TODO better
   dw semicolon_s_
@@ -6148,16 +6168,6 @@ to_name.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 1
-  ; XXX TODO -- remove when the security is removed
-  _colon_header question_pairs_,'?PAIRS'
-
-  dw not_equals_
-  _question_throw error.conditionals_not_paired
-  dw semicolon_s_
-endif
-
-; ----------------------------------------------
   _colon_header question_csp_,'?CSP'
 
   dw sp_fetch_,csp_,fetch_,not_equals_
@@ -6753,7 +6763,7 @@ acceptx.begin:
 
   ; XXX FIXME -- sometimes it seems the text is not updated
   ; internally after deleting a char, but it looks right on the
-  ; screen
+  ; screen. it seems it happens with the left key. not sure.
 
   dw span_,off_
   dw question_dup_
@@ -7742,18 +7752,6 @@ two_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 0
-  _variable_header numbers_execution_table_,'NUMBERS-EXECUTION-TABLE'
-
-  dw two_literal_     ; compiling a 2-cell number
-  dw literal_         ; compiling a 1-cell number
-numbers_execution_table.0:
-  dw not_understood_  ; not a number: error
-  dw 0                ; interpreting a 2-cell number: do nothing
-  dw 0                ; interpreting a 1-cell number: do nothing
-endif
-
-; ----------------------------------------------
   _colon_header not_understood_,'NOT-UNDERSTOOD'
 
   _literal error.not_understood
@@ -7766,30 +7764,19 @@ endif
   dw throw_
 
 ; ----------------------------------------------
-if 0 ; interpret ; XXX NEW
-
-  _variable_header interpret_execution_table_,'INTERPRET-EXECUTION-TABLE'
-
-  ;                cells
-  ; ordinary     = +01
-  ; immediate    = +01
-  ; compile-only = +02
-
-  dw execute_           ; compiling an immediate and compile-only word
-  dw compile_comma_     ; compiling a compile-only word
-  dw execute_           ; compiling an immediate word
-  dw compile_comma_     ; compiling an ordinary word
-interpret_execution_table.0
-  dw 0                  ; not used
-  dw execute_           ; interpreting an ordinary word
-  dw execute_           ; interpreting an immediate word
-  dw compilation_only_  ; interpreting a compile-only word
-  dw compilation_only_  ; interpreting an immediate and compile-only word
-
-endif
-
-; ----------------------------------------------
   _variable_header interpret_table_,'INTERPRET-TABLE'
+
+; doc{
+;
+; interpret-table  ( -- a )
+;
+; Return the address of the execution table used by `interpret`.
+; The table contains 13 vectors.  The behaviour of the Forth
+; text interpreter can be changed by replacing these vectors.
+; See the kernel source for details on the position and function
+; of the vectors.
+;
+; }doc
 
                         ; compiling...
   dw execute_           ; ...immediate and compile-only word
@@ -7802,7 +7789,7 @@ endif
 interpret_table.0:
   dw not_understood_    ; not a number (error)
 
-                        ; intepreting...
+                        ; interpreting...
   dw 0                  ; ...1-cell number (do nothing)
   dw 0                  ; ...2-cell number (do nothing)
   dw execute_           ; ...ordinary word
@@ -7817,18 +7804,14 @@ interpret_table.0:
 ;
 ; interpret  ( -- )
 ;
-; The outer text interpreter which sequentially executes or
-; compiles text from the input stream (terminal or disk)
-; depending on `state`. if the word name cannot be found after a
-; search of the `context` search order it is converted to a
-; number according to the current `base`.  That also failing, an
-; error message echoing the name with a "?" will be given.
+; The text interpreter which sequentially executes or compiles
+; text from the input stream (terminal or disk) depending on
+; `state`. if the word name cannot be found after a search of
+; the `context` search order it is converted to a number
+; according to the current `base`.  That also failing, an error
+; message will be given.
 ;
 ; }doc
-
-if 1 ; interpret XXX version with one table
-
-  ; XXX UNDER DEVELOPMENT
 
 interpret.begin:
 
@@ -7871,125 +7854,6 @@ interpret.word_not_found:
 interpret.end:
   dw two_drop_
   dw semicolon_s_
-
-endif
-
-if 0 ; interpret XXX OLD -- combined version with two tables
-
-interpret.begin:
-
-;  _chk 'interpret -- begin' ; XXX INFORMER
-  dw question_stack_
-
-  dw parse_name_  ; ( ca len )
-;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
-;  dw cr_ ; XXX INFORMER
-  dw dup_ ; end of stream?
-  dw zero_branch_,interpret.end ; if so, finish
-
-  dw find_name_ ; ( nfa | 0 )
-  dw question_dup_ ; found?
-  dw zero_branch_,interpret.word_not_found
-
-  ; Found ( nfa )
-  dw dup_,from_name_,swap_  ; ( cfa nfa )
-  dw dup_,immediate_question_
-  dw swap_,compile_only_question_,two_star_
-  dw plus_,abs_ ; ( cfa +n )
-  dw one_plus_ ; adjust the index
-  dw compiling_question_,question_negate_ ; (cfa n )
-;  _chk 'interpret -- index' ; XXX INFORMER
-;  dw cr_ ; XXX INFORMER
-  dw cells_
-  _literal interpret_execution_table.0
-  dw plus_,perform_
-  dw branch_,interpret.begin
-
-interpret.word_not_found:
-
-  dw parsed_name_,two_fetch_
-  ; try to convert the text to a number
-  ; ( ca len )
-  dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
-  dw compiling_question_,question_negate_  ; ( d -2 | n -1 | 0 | n 1 | d 2 )
-  dw cells_
-  _literal numbers_execution_table.0 ; middle of the table
-  dw plus_,perform_
-  dw branch_,interpret.begin ; repeat
-
-interpret.end:
-  dw two_drop_
-  dw semicolon_s_
-
-endif
-
-if 0 ; interpret XXX OLD -- combined version: table only for numbers
-
-interpret.begin:
-
-;  _chk 'interpret -- begin' ; XXX INFORMER
-  dw question_stack_
-
-  dw parse_name_  ; ( ca len )
-;  _brk_type 'interpret -- after parse-name' ; XXX INFORMER
-
-  dw dup_ ; end of stream?
-  dw zero_branch_,interpret.end ; if so, finish
-
-; _chk 'interpret -- before find-name' ; XXX INFORMER
-  dw find_name_ ; ( nfa | 0 )
-;  _brk 'interpret -- after find-name' ; XXX INFORMER
-  dw question_dup_ ; found?
-
-  dw zero_branch_,interpret.word_not_found
-
-  ; word found
-
-;  _chk 'interpret -- word found' ; XXX INFORMER
-
-  ; Found ( nfa )
-  dw dup_,compile_only_question_,executing_question_, and_
-  ; executing a compile-only word?
-  _literal -14
-  dw question_throw_ ; is so, throw error -14
-
-  ; ( nfa )
-;  dw dup_,cr_,id_dot_  ; XXX INFORMER
-  dw dup_,from_name_  ; ( nfa cfa )
-  dw swap_,immediate_question_,zero_equals_ ; ( cfa non-immediate? )
-  dw compiling_question_ ; ( nfa non-immediate? compiling? )
-  dw and_ ; compiling a non-immediate word?
-  dw zero_branch_,interpret.execute ; else, execute it
-
-;  _brk 'interpret -- compiling' ; XXX INFORMER
-
-  ; Compiling a non-immediate word  ( cfa )
-  dw compile_comma_
-  dw branch_,interpret.begin
-
-interpret.execute:
-;  _brk 'interpret -- executing' ; XXX INFORMER
-  ; Executing or immediate ( cfa )
-  dw execute_
-  dw branch_,interpret.begin
-
-interpret.word_not_found:
-
-  dw parsed_name_,two_fetch_
-  ; try to convert the text to a number
-  ; ( ca len )
-  dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
-  dw compiling_question_,question_negate_  ; ( d -2 | n -1 | 0 | n 1 | d 2 )
-  dw cells_
-  _literal numbers_execution_table.0 ; middle of the table
-  dw plus_,perform_
-  dw branch_,interpret.begin ; repeat
-
-interpret.end:
-  dw two_drop_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _c_constant_header immediate_mask_,'IMMEDIATE-MASK'
@@ -9813,18 +9677,13 @@ endif
 ; }doc
 
   dw backward_mark_ ; address to compute the backward branch
-if fig_compiler_security
-  _literal 1 ; error checking number
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header then_,'THEN',immediate+compile_only
 
-if fig_compiler_security
-  _literal 2 ; error checking number
-  dw question_pairs_ ; check for nesting error
-endif
+  ; XXX TODO use an alias
+
   dw forward_resolve_
   dw semicolon_s_
 
@@ -9865,9 +9724,6 @@ endif
 
   dw compile_,paren_question_do_
   dw backward_mark_
-if fig_compiler_security
-  _literal 3 ; error checking number
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9904,9 +9760,6 @@ endif
 
   dw compile_,paren_question_do83_
   dw forward_mark_
-if fig_compiler_security
-  _literal 3 ; error checking number
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9925,9 +9778,6 @@ endif
   dw compile_,paren_do_
 do.common: ; XXX OLD not used
   dw backward_mark_
-if fig_compiler_security
-  _literal 3 ; error checking number
-endif
   dw semicolon_s_
 
 ;;else
@@ -9950,9 +9800,6 @@ endif
   dw compile_,paren_do83_
 do.common83: ; XXX OLD not used
   dw forward_mark_
-if fig_compiler_security
-  _literal 3 ; error checking number
-endif
   dw semicolon_s_
 
 ;;endif
@@ -9975,10 +9822,6 @@ endif
 ;
 ; }doc
 
-if fig_compiler_security
-  _literal 3 ; error checking number
-  dw question_pairs_
-endif
   dw compile_,paren_loop_
   dw backward_resolve_
   dw semicolon_s_
@@ -10000,10 +9843,6 @@ endif
 ;
 ; }doc
 
-if fig_compiler_security
-  _literal 3 ; error checking number
-  dw question_pairs_
-endif
   dw compile_,paren_loop83_
   dw forward_resolve_
   dw semicolon_s_
@@ -10033,10 +9872,6 @@ endif
 ;
 ; }doc
 
-if fig_compiler_security
-  _literal 3 ; error checking number
-  dw question_pairs_
-endif
   dw compile_,paren_plus_loop_
   dw backward_resolve_
   dw semicolon_s_
@@ -10058,10 +9893,6 @@ endif
 ;
 ; }doc
 
-if fig_compiler_security
-  _literal 3 ; error checking number
-  dw question_pairs_
-endif
   dw compile_,paren_plus_loop83_
   dw forward_resolve_
   dw semicolon_s_
@@ -10071,10 +9902,6 @@ endif
 ; ----------------------------------------------
   _colon_header until_,'UNTIL',immediate+compile_only
 
-if fig_compiler_security
-  _literal 1 ; error checking number
-  dw question_pairs_
-endif
   dw compile_,zero_branch_
   dw backward_resolve_
   dw semicolon_s_
@@ -10091,43 +9918,12 @@ endif
 ;
 ; }doc
 
-if fig_compiler_security
-  _literal 1 ; error checking number
-  dw question_pairs_ ; check n for error
-endif
   dw compile_,branch_
   dw backward_resolve_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header repeat_,'REPEAT',immediate+compile_only
-
-if fig_compiler_security
-
-; doc{
-;
-; repeat
-;
-;   Compilation: ( a1 n1 a2 n2 -- )
-;
-; a1 = address of `begin` to branch to
-; n1 = `begin` check number
-; a2 = address of the branch of `while` to resolve
-; n2 = `while` check number
-;
-; Compile `branch` to jump back to `begin`.  Resolve also  the
-; branching offset required by `while`.
-;
-; }doc
-
-  dw two_to_r_
-  dw again_ ; unconditional branch back to `begin`
-  dw two_from_r_
-  dw two_minus_ ; restore 2 to be checked by `then`
-  dw then_ ; resolve the forward branching needed by `while`
-  dw semicolon_s_
-
-else
 
 ; doc{
 ;
@@ -10144,8 +9940,6 @@ else
   dw then_ ; resolve the forward branching needed by `while`
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
   _colon_header if_,'IF',immediate+compile_only
 
@@ -10158,9 +9952,6 @@ endif
   dw compile_,zero_branch_
 if.do:
   dw forward_mark_
-if fig_compiler_security
-  _literal 2 ; error checking number
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -10182,43 +9973,17 @@ endif
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate+compile_only
 
-if fig_compiler_security
-
-  dw two_ ; error checking number
-  dw question_pairs_
   dw ahead_
   dw swap_
-  dw two_ ; error checking number
-  dw then_
-  dw two_ ; error checking number
-  dw semicolon_s_
-
-else
-
-  dw ahead_
   dw then_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header while_,'WHILE',immediate+compile_only
 
-if fig_compiler_security
-
   dw if_
-  dw two_plus_ ; leave 4 to be checked by `repeat`
+  dw swap_ ; XXX TODO `cs-swap`
   dw semicolon_s_
-
-else
-
-  ; XXX UNDER DEVELOPMENT
-
-  dw if_
-  dw swap_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header spaces_,'SPACES'
