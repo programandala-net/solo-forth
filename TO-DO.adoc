@@ -21,3 +21,23 @@ they can corrupt the zone below the stack before `?stack` detects the
 overflow.
 
 Often the stack gets full during compilation of screens.
+
+
+.2015-06-06:
+
+Save the error code, in case `warning` is -1.
+
+Make `where` to use values saved somewhere, not on the stack?
+
+Strange: why `exit` works in Abersoft Forth, and not in Solo Forth. Example:
+
+----
+  : zx  ( f -- )  if  exit  then  ." hello!"  ;
+----
+
+Anyway, DZX-Forth implements `exit` simple as `compile (exit)`, and
+`exit` is the word called by `;`. Compare both implementations.
+
+Define `rp`, like in Afera:
+
+  HEX  5E68 CONSTANT RP  DECIMAL

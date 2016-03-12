@@ -126,3 +126,16 @@ Change: Entry points are moved to the start (new origin).
 
 New: `msg-scr`, idea from lina ciforth, useful to customize the
 organization of the screens on disk.
+
+.2015-06-07:
+
+Change: faster and smaller versions of `ink` and `paper`, from the Afera library.
+This saves 264 bytes!
+
+New: constants `true` and `false`; primitives `on` and `off`.
+
+Change: conditional compilation flag to free the IX register,
+originally used as the user variables pointer, in order to hold
+`next`. This way jumps to `next` are faster and save one byte per jump
+(52 bytes saved).
+

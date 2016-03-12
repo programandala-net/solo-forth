@@ -72,23 +72,26 @@ precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
 
+user_variables_pointer_in_ix?   equ false ; XXX NEW -- experimental
+
   ; ROM  routines
 
-rom_beeper:         equ 0x03B5
-rom_border_2297:    equ 0x2297
-rom_break_key:      equ 0x1F54
-rom_chan_open:      equ 0x1601
-rom_cl_all:         equ 0x0DAF
-rom_find_int1:      equ 0x1E94
-rom_key_decode:     equ 0x0333
-rom_key_scan:       equ 0x028E
-rom_key_test:       equ 0x031E
-rom_plot_22df:      equ 0x22DF
-rom_point_sub_22ce: equ 0x22CE
-rom_s_attr_s_2583:  equ 0x2583
-rom_s_scrn_s_2538:  equ 0x2538
-rom_sa_all:         equ 0x075A
-rom_stack_fetch:    equ 0x2BF1
+rom_beeper:                      equ 0x03B5
+rom_border_0x2297:               equ 0x2297
+rom_break_key:                   equ 0x1F54
+rom_chan_open:                   equ 0x1601
+rom_cl_all:                      equ 0x0DAF
+rom_find_int1:                   equ 0x1E94
+rom_key_decode:                  equ 0x0333
+rom_key_scan:                    equ 0x028E
+rom_key_test:                    equ 0x031E
+rom_plot_0x22DF:                 equ 0x22DF
+rom_point_sub_0x22CE:            equ 0x22CE
+rom_s_attr_s_0x2583:             equ 0x2583
+rom_s_scrn_s_0x2538:             equ 0x2538
+rom_sa_all:                      equ 0x075A
+rom_set_permanent_colors_0x1CAD  equ 0x1CAD
+rom_stack_fetch:                 equ 0x2BF1
 
   ; System variables
 
@@ -155,6 +158,16 @@ _string: macro text
 
 endm
 
+_jp_next: macro
+
+  if user_variables_pointer_in_ix?
+    jp next
+  else
+    jp (ix)
+  endif
+
+  endm
+
   ; ----------------------------------------------------------------
   ; Entry points
 
@@ -174,15 +187,20 @@ top_most_word_in_forth_voc:
   ; Location: `0x06 +origin`
   dw nfa_of_top_most_word_in_forth_voc
 
-user_pointer_init_value:
+user_variables_pointer_init_value:
   ; Location: `0x08 +origin`
-  dw user_pointer_value
+  ; XXX TODO check if this is right, should it be `user_variables`?:
+  dw user_variables_pointer
 
-user_pointer_value:
+  ; XXX TODO move to the end and update the `+origin` used in the blocks
+  if user_variables_pointer_in_ix?
+user_variables_pointer:
+  endif
   ; Location: `0x0A +origin`
   dw user_variables
 
-return_pointer_value:
+  ; XXX TODO move to the end and update the `+origin` used in the blocks
+return_stack_pointer:
   ; Location: `0x0C +origin`
   dw return_stack_bottom
 
@@ -387,7 +405,7 @@ branch_pfa:
   ld c,(hl)
   inc hl
   ld b,(hl)
-  jp next
+  _jp_next
 
 zero_branch_nfa:
   db 0x07+0x80,'0BRANC','H'+0x80
@@ -402,7 +420,7 @@ zero_branch_pfa:
   jp z,branch_pfa
   inc bc
   inc bc
-  jp next
+  _jp_next
 
   ; XXX NEW
 question_branch_nfa:
@@ -418,7 +436,7 @@ question_branch_pfa:
   jp nz,branch_pfa
   inc bc
   inc bc
-  jp next
+  _jp_next
 
 paren_loop_nfa:
   db 0x06+0x80,'(LOOP',')'+0x80
@@ -429,7 +447,7 @@ paren_loop_:
 paren_loop_pfa:
   ld de,0x0001
 paren_loop.step_in_de:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   ld a,(hl)
   add a,e
   ld (hl),a
@@ -458,10 +476,10 @@ l5eedh:
 l5ef2h:
   jp m,branch_pfa
   inc hl
-  ld (return_pointer_value),hl
+  ld (return_stack_pointer),hl
   inc bc
   inc bc
-  jp next
+  _jp_next
 
 paren_plus_loop_nfa:
   db 0x07+0x80,'(+LOOP',')'+0x80
@@ -480,12 +498,12 @@ paren_do_lfa:
 paren_do_:
   dw paren_do_pfa
 paren_do_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   dec hl
   dec hl
   dec hl
   dec hl
-  ld (return_pointer_value),hl
+  ld (return_stack_pointer),hl
   pop de
   ld (hl),e
   inc hl
@@ -495,7 +513,7 @@ paren_do_pfa:
   ld (hl),e
   inc hl
   ld (hl),d
-  jp next
+  _jp_next
 
 i_nfa:
   db 0x01+0x80,'','I'+0x80
@@ -616,7 +634,7 @@ l5fc6h:
   push de
   dec e
   push de
-  jp next
+  _jp_next
 l5fdch:
   ld a,d
   inc hl
@@ -629,13 +647,13 @@ l5fdch:
   ld d,0x00
   push de
   push de
-  jp next
+  _jp_next
 l5fedh:
   ld d,0x00
   push de
   inc e
   push de
-  jp next
+  _jp_next
 
 ; doc{
 
@@ -660,7 +678,7 @@ to_chan_pfa:
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   ld a,l
   rst 0x10
-  jp next
+  _jp_next
 
 emit_nfa:
   db 0x04+0x80,'EMI','T'+0x80
@@ -702,7 +720,7 @@ paren_emit_pfa:
 paren_emit.end:
   pop hl
   pop bc
-  jp next
+  _jp_next
 
 key_nfa:
   db 0x03+0x80,'KE','Y'+0x80
@@ -876,7 +894,7 @@ cr_pfa:
   rst 0x10
 cr.end:
   pop bc
-  jp next
+  _jp_next
 
 cmove_nfa:
   db 0x05+0x80,'CMOV','E'+0x80
@@ -896,7 +914,7 @@ cmove_pfa:
   ldir
 l6046h:
   pop bc
-  jp next
+  _jp_next
 
 u_star_nfa:
   db 0x02+0x80,'U','*'+0x80
@@ -997,7 +1015,7 @@ l60c0h:
   pop bc
   push hl
   push de
-  jp next
+  _jp_next
 
 and_nfa:
   db 0x03+0x80,'AN','D'+0x80
@@ -1068,15 +1086,29 @@ sp_store_lfa:
 sp_store_:
   dw sp_store_pfa
 sp_store_pfa:
-  ; XXX OLD
-  ld e,(ix+0x00)
-  ld d,(ix+0x01)
-  ex de,hl
-  ; XXX NEW
-  ;ld l,(ix+0x00)
-  ;ld h,(ix+0x01)
+
+  if user_variables_pointer_in_ix? ; XXX OLD -- original method
+
+    ; XXX OLD
+    ld e,(ix+0x00) ; T19
+    ld d,(ix+0x01) ; T19
+    ex de,hl       ; T04
+    ; XXX NEW
+    ;ld l,(ix+0x00) ; T19
+    ;ld h,(ix+0x01) ; T19
+
+  else ; XXX NEW -- experimental
+
+    ld hl,(user_variables_pointer)  ; T20 ; hl=address of s0
+    ld a,(hl)                       ; T07
+    inc hl                          ; T06
+    ld h,(hl)                       ; T07
+    ld l,a                          ; T04
+
+  endif
+
   ld sp,hl
-  jp next
+  _jp_next
 
 rp_fetch_nfa:
   db 0x03+0x80,'RP','@'+0x80
@@ -1085,7 +1117,7 @@ rp_fetch_lfa:
 rp_fetch_:
   dw rp_fetch_pfa
 rp_fetch_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   jp pushhl
 
 rp_store_nfa:
@@ -1095,15 +1127,32 @@ rp_store_lfa:
 rp_store_:
   dw rp_store_pfa
 rp_store_pfa:
-  ; XXX OLD
-  ld e,(ix+0x02)
-  ld d,(ix+0x03)
-  ex de,hl
-  ; XXX NEW
-  ;ld l,(ix+0x02)
-  ;ld h,(ix+0x03)
-  ld (return_pointer_value),hl
-  jp next
+
+  if user_variables_pointer_in_ix? ; XXX OLD -- original method
+
+    ; XXX OLD
+    ld e,(ix+0x02)
+    ld d,(ix+0x03)
+    ex de,hl
+    ; XXX NEW
+    ;ld l,(ix+0x02)
+    ;ld h,(ix+0x03)
+
+  else ; XXX NEW -- experimental
+
+    ld hl,(user_variables_pointer)
+    inc hl
+    inc hl ; hl=address of r0
+    ld a,(hl)
+    inc hl
+    ld h,(hl)
+    ld l,a
+
+  endif
+
+  ld (return_stack_pointer),hl
+
+  _jp_next
 
 semicolon_s_nfa:
   db 0x02+0x80,';','S'+0x80
@@ -1112,13 +1161,13 @@ semicolon_s_lfa:
 semicolon_s_:
   dw semicolon_s_pfa
 semicolon_s_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   ld c,(hl)
   inc hl
   ld b,(hl)
   inc hl
-  ld (return_pointer_value),hl
-  jp next
+  ld (return_stack_pointer),hl
+  _jp_next
 
 unloop_nfa:
   db 0x06+0x80,'UNLOO','P'+0x80
@@ -1134,7 +1183,7 @@ leave_lfa:
 leave_:
   dw leave_pfa
 leave_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
   ld d,(hl)
@@ -1142,7 +1191,7 @@ leave_pfa:
   ld (hl),e
   inc hl
   ld (hl),d
-  jp next
+  _jp_next
 
 to_r_nfa:
   db 0x02+0x80,'>','R'+0x80
@@ -1152,13 +1201,13 @@ to_r_:
   dw to_r_pfa
 to_r_pfa:
   pop de
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   dec hl
   ld (hl),d
   dec hl
   ld (hl),e
-  ld (return_pointer_value),hl
-  jp next
+  ld (return_stack_pointer),hl
+  _jp_next
 
 from_r_nfa:
   db 0x02+0x80,'R','>'+0x80
@@ -1167,14 +1216,14 @@ from_r_lfa:
 from_r_:
   dw from_r_pfa
 from_r_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
   ld d,(hl)
   inc hl
-  ld (return_pointer_value),hl
+  ld (return_stack_pointer),hl
   push de
-  jp next
+  _jp_next
 
 two_r_drop_nfa:
   db 0x06+0x80,'2RDRO','P'+0x80
@@ -1183,13 +1232,13 @@ two_r_drop_lfa:
 two_r_drop_:
   dw two_r_drop_pfa
 two_r_drop_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   inc hl
   inc hl
   inc hl
   inc hl
-  ld (return_pointer_value),hl
-  jp next
+  ld (return_stack_pointer),hl
+  _jp_next
 
 r_drop_nfa:
   db 0x05+0x80,'RDRO','P'+0x80
@@ -1199,11 +1248,11 @@ r_drop_:
   dw two_r_drop_pfa
 r_drop_pfa:
   ; XXX FIXME
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   inc hl
   inc hl
-  ld (return_pointer_value),hl
-  jp next
+  ld (return_stack_pointer),hl
+  _jp_next
 
 r_fetch_nfa:
   db 0x02+0x80,'R','@'+0x80
@@ -1212,12 +1261,12 @@ r_fetch_lfa:
 r_fetch_:
   dw r_fetch_pfa
 r_fetch_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
   ld d,(hl)
   push de
-  jp next
+  _jp_next
 
 zero_equals_nfa:
   db 0x02+0x80,'0','='+0x80
@@ -1367,7 +1416,7 @@ drop_:
   dw drop_pfa
 drop_pfa:
   pop hl
-  jp next
+  _jp_next
 
 swap_nfa:
   db 0x04+0x80,'SWA','P'+0x80
@@ -1420,12 +1469,34 @@ plus_store_pfa:
   ld a,(hl)
   adc a,d
   ld (hl),a
-  jp next
+  _jp_next
+
+off_nfa:
+  db 0x03+0x80,'OF','F'+0x80
+off_lfa:
+  dw plus_store_nfa
+off_:
+  dw off_pfa
+off_pfa:
+  pop hl
+  ld (hl),false
+  _jp_next
+
+on_nfa:
+  db 0x02+0x80,'O','N'+0x80
+on_lfa:
+  dw off_nfa
+on_:
+  dw on_pfa
+on_pfa:
+  pop hl
+  ld (hl),true
+  _jp_next
 
 toggle_nfa:
   db 0x06+0x80,'TOGGL','E'+0x80
 toggle_lfa:
-  dw plus_store_nfa
+  dw on_nfa
 toggle_:
   dw toggle_pfa
 toggle_pfa:
@@ -1434,7 +1505,7 @@ toggle_pfa:
   ld a,(hl)
   xor e
   ld (hl),a
-  jp next
+  _jp_next
 
 fetch_nfa:
   db 0x01+0x80,'','@'+0x80
@@ -1448,7 +1519,7 @@ fetch_pfa:
   inc hl
   ld d,(hl)
   push de
-  jp next
+  _jp_next
 
 c_fetch_nfa:
   db 0x02+0x80,'C','@'+0x80
@@ -1482,7 +1553,7 @@ two_fetch_pfa:
   dec hl
   ld e,(hl)
   push de
-  jp next
+  _jp_next
 
 store_nfa:
   db 0x01+0x80,'','!'+0x80
@@ -1496,7 +1567,7 @@ store_pfa:
   ld (hl),e
   inc hl
   ld (hl),d
-  jp next
+  _jp_next
 
 c_store_nfa:
   db 0x02+0x80,'C','!'+0x80
@@ -1508,7 +1579,7 @@ c_store_pfa:
   pop hl
   pop de
   ld (hl),e
-  jp next
+  _jp_next
 
 two_store_nfa:
   db 0x02+0x80,'2','!'+0x80
@@ -1527,7 +1598,7 @@ two_store_pfa:
   ld (hl),e
   inc hl
   ld (hl),d
-  jp next
+  _jp_next
 
 colon_nfa:
   db 0x01+0x80+precedence_bit_mask,'',':'+0x80
@@ -1545,16 +1616,16 @@ colon_pfa:
   dw right_bracket_
   dw paren_semicolon_code_
 do_colon:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   dec hl
   ld (hl),b
   dec hl
   ld (hl),c
-  ld (return_pointer_value),hl ; save the updated IP
+  ld (return_stack_pointer),hl ; save the updated IP
   inc de ; de=pfa
   ld c,e
   ld b,d ; bc=pfa
-  jp next
+  _jp_next
 
 semicolon_nfa:
   db 0x01+0x80+precedence_bit_mask,'',';'+0x80
@@ -1596,7 +1667,7 @@ do_constant:
   inc hl
   ld d,(hl) ; de=value
   push de
-  jp next
+  _jp_next
 
 variable_nfa:
   db 0x08+0x80,'VARIABL','E'+0x80
@@ -1610,7 +1681,7 @@ variable_pfa:
 do_variable:
   inc de  ; de=pfa
   push de
-  jp next
+  _jp_next
 
 user_nfa:
   db 0x04+0x80,'USE','R'+0x80
@@ -1625,11 +1696,22 @@ user_pfa:
   dw paren_semicolon_code_
 do_user:
   inc de      ; de=pfa
-  ex de,hl
-  ld e,(hl)
+  ex de,hl    ; T04
+  ld e,(hl)   ; T07
   ld d,0x00
-  push ix     ; user variable pointer
-  pop hl
+
+  if user_variables_pointer_in_ix? ; XXX OLD -- original method
+
+    push ix   ; T15 ; user variable pointer
+    pop hl    ; T10
+
+  else ; XXX NEW -- experimental
+
+user_variables_pointer: equ $+1
+    ld hl,user_variables   ; T10
+
+  endif
+
   add hl,de   ; hl= address of the user variable
   jp pushhl
 
@@ -1684,10 +1766,28 @@ three_:
 three_pfa:
   dw 0x0003
 
+false_nfa:
+  db 0x05+0x80,'FALS','E'+0x80
+false_lfa:
+  dw three_nfa
+false_:
+  dw do_constant
+false_pfa:
+  dw false
+
+true_nfa:
+  db 0x04+0x80,'TRU','E'+0x80
+true_lfa:
+  dw false_nfa
+true_:
+  dw do_constant
+true_pfa:
+  dw true
+
 b_l_nfa:
   db 0x02+0x80,'B','L'+0x80
 b_l_lfa:
-  dw three_nfa
+  dw true_nfa
 b_l_:
   dw do_constant
 b_l_pfa:
@@ -2513,12 +2613,12 @@ does_pfa:
   dw store_
   dw paren_semicolon_code_
 do_does:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   dec hl
   ld (hl),b
   dec hl
   ld (hl),c
-  ld (return_pointer_value),hl
+  ld (return_stack_pointer),hl
   inc de      ; de=pfa
   ex de,hl
   ld c,(hl)
@@ -2748,13 +2848,11 @@ onezeroword_pfa:
   dw zero_equals_
   dw zero_branch_,branch_destination_0x6955
   dw question_exec_
-  dw from_r_
-  dw drop_
+  dw from_r_,drop_
 branch_destination_0x6955:
   dw branch_,branch_destination_0x695D
 branch_destination_0x6959:
-  dw from_r_
-  dw drop_
+  dw from_r_,drop_
 branch_destination_0x695D:
   dw semicolon_s_
 
@@ -2782,7 +2880,7 @@ l696eh:
   jr l696eh
 l6978h:
   pop bc
-  jp next
+  _jp_next
 
 erase_nfa:
   db 0x05+0x80,'ERAS','E'+0x80
@@ -3212,7 +3310,6 @@ question_stack_pfa:
   dw c_lit_
   db 0x07
   dw question_error_
-  dw lit_,7,border_ ; XXX INFORMER
   dw semicolon_s_
 
 ; XXX TODO -- In order to change the behaviour of `literal`, `2literal`
@@ -3371,7 +3468,7 @@ abort_pfa:
   dw sp_store_
   dw decimal_
   dw question_stack_
-  dw cls_,greeting_ ; XXX TODO use cls0 instead
+  dw page_,greeting_ ; XXX TODO use cls0 instead
   dw forth_,definitions_
 boot:
   dw noop_ ; to be patched by `turnkey`
@@ -3387,11 +3484,15 @@ boot_pfa:
   dw boot
 
 warm_start:
-  ld bc,warm_start_phony_
-  ld ix,(user_pointer_value)
+  if user_variables_pointer_in_ix?
+    ld ix,(user_variables_pointer)
+  else
+    ld ix,next
+  endif
   ld hl,(s0_init_value)
   ld sp,hl
-  jp next
+  ld bc,warm_start_phony_
+  _jp_next
 warm_start_phony_:
   dw warm_
 
@@ -3407,13 +3508,17 @@ warm_pfa:
 
 cold_start:
   xor a
-  ; ld (iy+sys_df_sz_offset),a ; XXX TMP
+  ld (iy+sys_df_sz_offset),a
   ld (printer_channel_or_zero),a
-  ld ix,(user_pointer_value)
+  if user_variables_pointer_in_ix?
+    ld ix,(user_variables_pointer)
+  else
+    ld ix,next
+  endif
   ld hl,(s0_init_value)
   ld sp,hl
   ld bc,cold_start_phony_
-  jp next
+  _jp_next
 cold_start_phony_:
   dw cold_
 
@@ -3428,7 +3533,7 @@ cold_pfa:
   dw first_,dup_,use_,store_,prev_,store_
   dw dr0_
   dw lit_,default_user_variables_start ; from
-  dw lit_,user_pointer_value,fetch_ ; to
+  dw lit_,user_variables_pointer,fetch_ ; to
   dw c_lit_
   db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
@@ -3894,8 +3999,7 @@ branch_destination_0x71E5:
   dw prev_
   dw store_
 branch_destination_0x71FD:
-  dw from_r_
-  dw drop_
+  dw from_r_,drop_
   dw two_plus_
   dw semicolon_s_
 
@@ -3987,7 +4091,7 @@ read_write_sector_command:
   db 0x45
   pop ix
   pop bc
-  jp next
+  _jp_next
   
 flush_nfa:
   db 0x05+0x80,'FLUS','H'+0x80
@@ -4051,6 +4155,7 @@ tick_pfa:
   dw minus_find_
   dw zero_equals_,one_,question_error_
   dw drop_
+  ; XXX TODO add `pfa>cfa` here, like v.Forth
   dw semicolon_s_
 
 bracket_tick_nfa:
@@ -4060,8 +4165,7 @@ bracket_tick_lfa:
 bracket_tick_:
   dw do_colon
 bracket_tick_pfa:
-  dw tick_
-  dw literal_
+  dw tick_,literal_
   dw semicolon_s_
 
 back_nfa:
@@ -4479,37 +4583,37 @@ link_pfa:
   ld a,0x03
 link.end:
   ld (printer_channel_or_zero),a
-  jp next
+  _jp_next
 
-cls_nfa:
-  db 0x03+0x80,'CL','S'+0x80
-cls_lfa:
+page_nfa:
+  db 0x04+0x80,'PAG','E'+0x80
+page_lfa:
   dw link_nfa
-cls_:
-  dw cls_pfa
-cls_pfa:
+page_:
+  dw page_pfa
+page_pfa:
   push bc
-  ; XXX TODO -- why open the channel?
-  ld a,0x02
-  call rom_chan_open
+  ; XXX OLD -- why open the channel?
+  ;ld a,0x02
+  ;call rom_chan_open
   call rom_cl_all
-  ; XXX TODO -- why open the channel?
-  ld a,0x02
-  call rom_chan_open
+  ; XXX OLD -- why open the channel?
+  ;ld a,0x02
+  ;call rom_chan_open
   ; XXX TODO check the status of the printer
   pop bc
-  jp next
+  _jp_next
 
 bye_nfa:
   db 0x03+0x80,'BY','E'+0x80
 bye_lfa:
-  dw cls_nfa
+  dw page_nfa
 bye_:
   dw bye_pfa
 bye_pfa:
   ld (iy+sys_df_sz_offset),0x02
   rst 0x08
-  db 0x08
+  db 0x08 ; "STOP" BASIC error
 
 text_nfa:
   db 0x04+0x80,'TEX','T'+0x80
@@ -4557,7 +4661,7 @@ two_drop_:
 two_drop_pfa:
   pop hl
   pop hl
-  jp next
+  _jp_next
 
 two_swap_nfa:
   db 0x05+0x80,'2SWA','P'+0x80
@@ -4748,8 +4852,9 @@ p_store_pfa:
   ld a,e
   out (c),a
   pop bc
-  jp next
+  _jp_next
 
+  ; XXX TODO -- move to the blocks disk
 screen_nfa:
   db 0x06+0x80,'SCREE','N'+0x80
 screen_lfa:
@@ -4763,7 +4868,7 @@ screen_pfa:
   push ix
   ld c,e
   ld b,l
-  call rom_s_scrn_s_2538
+  call rom_s_scrn_s_0x2538
   call rom_stack_fetch
   ld a,(de)
   ld h,0x00
@@ -4771,14 +4876,6 @@ screen_pfa:
   pop ix
   pop bc
   jp pushhl
-
-at_nfa:
-  db 0x02+0x80,'A','T'+0x80
-at_lfa:
-  dw screen_nfa
-at_:
-  dw do_colon
-at_pfa:
 
 ; doc{
 
@@ -4791,6 +4888,14 @@ at_pfa:
 ; be written if needed.
 
 ; }doc
+
+at_nfa:
+  db 0x02+0x80,'A','T'+0x80
+at_lfa:
+  dw screen_nfa
+at_:
+  dw do_colon
+at_pfa:
 
   dw swap_
   dw dup_
@@ -4826,87 +4931,35 @@ border_lfa:
 border_:
   dw border_pfa
 border_pfa:
-  pop hl
-  push bc
-  ld a,l
-  call rom_border_2297
-  pop bc
-  jp next
+  if false ; XXX OLD -- original
+    pop hl
+    push bc
+    ld a,l
+    call rom_border_0x2297
+    pop bc
+  else ; XXX NEW
+    pop hl
+    ld a,l
+    out(0xFE),a
+  endif
+  _jp_next
 
 paper_nfa:
   db 0x05+0x80,'PAPE','R'+0x80
 paper_lfa:
   dw border_nfa
 paper_:
-  dw do_colon
+  dw paper_pfa
 paper_pfa:
-  dw abs_
-  dw dup_
-  dw c_lit_
-  db 0x09
-  dw greater_than_
-  dw zero_branch_,branch_destination_0x7C5F
-  dw drop_
-  dw branch_,branch_destination_0x7CE5
-branch_destination_0x7C5F:
-  dw dup_
-  dw c_lit_
-  db 0x09
-  dw equals_
-  dw zero_branch_,branch_destination_0x7C83
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0x80
-  dw or_
-  dw lit_,sys_p_flag
-  dw c_store_
-  dw drop_
-  dw branch_,branch_destination_0x7CE5
-branch_destination_0x7C83:
-  dw dup_
-  dw c_lit_
-  db 0x08
-  dw equals_
-  dw zero_branch_,branch_destination_0x7CA7
-  dw lit_,sys_mask_p
-  dw c_fetch_
-  dw c_lit_
-  db 0x38
-  dw or_
-  dw lit_,sys_mask_p
-  dw c_store_
-  dw drop_
-  dw branch_,branch_destination_0x7CE5
-branch_destination_0x7CA7:
-  dw c_lit_
-  db 0x08
-  dw star_
-  dw lit_,sys_attr_p
-  dw c_fetch_
-  dw c_lit_
-  db 0xC7
-  dw and_
-  dw or_
-  dw lit_,sys_attr_p
-  dw c_store_
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0x7F
-  dw and_
-  dw lit_,sys_p_flag
-  dw store_
-  dw lit_,sys_mask_p
-  dw c_fetch_
-  dw c_lit_
-  db 0xC7
-  dw and_
-  dw lit_,sys_mask_p
-  dw store_
-branch_destination_0x7CE5:
-  dw semicolon_s_
+  ld a,0x11
+  rst 0x10
+  pop hl
+  ld a,l
+  rst 0x10
+  call rom_set_permanent_colors_0x1CAD
+  _jp_next
 
+  ; XXX TODO -- move to the blocks disk
 attr_nfa:
   db 0x04+0x80,'ATT','R'+0x80
 attr_lfa:
@@ -4920,7 +4973,7 @@ attr_pfa:
   push ix
   ld c,e
   ld b,l
-  call rom_s_attr_s_2583
+  call rom_s_attr_s_0x2583
   call rom_find_int1
   ld h,0x00
   ld l,a
@@ -4933,71 +4986,15 @@ ink_nfa:
 ink_lfa:
   dw attr_nfa
 ink_:
-  dw do_colon
+  dw ink_pfa
 ink_pfa:
-  dw abs_
-  dw dup_
-  dw c_lit_
-  db 0x09
-  dw greater_than_
-  dw zero_branch_,branch_destination_0x7D4C
-  dw drop_
-  dw branch_,branch_destination_0x7DCC
-branch_destination_0x7D4C:
-  dw dup_
-  dw c_lit_
-  db 0x09
-  dw equals_
-  dw zero_branch_,branch_destination_0x7D70
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0x20
-  dw or_
-  dw lit_,sys_p_flag
-  dw c_store_
-  dw drop_
-  dw branch_,branch_destination_0x7DCC
-branch_destination_0x7D70:
-  dw dup_
-  dw c_lit_
-  db 0x08
-  dw equals_
-  dw zero_branch_,branch_destination_0x7D94
-  dw lit_,sys_mask_p
-  dw c_fetch_
-  dw c_lit_
-  db 0x07
-  dw or_
-  dw lit_,sys_mask_p
-  dw c_store_
-  dw drop_
-  dw branch_,branch_destination_0x7DCC
-branch_destination_0x7D94:
-  dw lit_,sys_attr_p
-  dw c_fetch_
-  dw c_lit_
-  db 0xF8
-  dw and_
-  dw or_
-  dw lit_,sys_attr_p
-  dw c_store_
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0xDF
-  dw and_
-  dw lit_,sys_p_flag
-  dw store_
-  dw lit_,sys_mask_p
-  dw c_fetch_
-  dw c_lit_
-  db 0xF8
-  dw and_
-  dw lit_,sys_mask_p
-  dw store_
-branch_destination_0x7DCC:
-  dw semicolon_s_
+  ld a,0x10
+  rst 0x10
+  pop hl
+  ld a,l
+  rst 0x10
+  call rom_set_permanent_colors_0x1CAD
+  _jp_next
 
 flash_nfa:
   db 0x05+0x80,'FLAS','H'+0x80
@@ -5113,14 +5110,14 @@ i_tick_lfa:
 i_tick_:
   dw i_tick_pfa
 i_tick_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   inc hl
   inc hl
   ld e,(hl)
   inc hl
   ld d,(hl)
   push de
-  jp next
+  _jp_next
 
 j_nfa:
   db 0x01+0x80,'','J'+0x80
@@ -5129,7 +5126,7 @@ j_lfa:
 j_:
   dw j_pfa
 j_pfa:
-  ld hl,(return_pointer_value)
+  ld hl,(return_stack_pointer)
   inc hl
   inc hl
   inc hl
@@ -5138,7 +5135,7 @@ j_pfa:
   inc hl
   ld d,(hl)
   push de
-  jp next
+  _jp_next
 
 two_constant_nfa:
   db 0x09+0x80,'2CONSTAN','T'+0x80
@@ -5171,7 +5168,7 @@ do_two_constant:
   dec hl
   ld e,(hl)
   push de
-  jp next
+  _jp_next
 
 two_variable_nfa:
   db 0x09+0x80,'2VARIABL','E'+0x80
@@ -5186,7 +5183,7 @@ do_two_variable:
   ; XXX TODO optimize to share code with `do_variable`.
   inc de  ; de=pfa
   push de
-  jp next
+  _jp_next
 
 u_dot_r_nfa:
   db 0x03+0x80,'U.','R'+0x80
@@ -5247,7 +5244,7 @@ question_exit_pfa:
   ld a,h
   or l
   jp nz,r_drop_pfa
-  jp next
+  _jp_next
 
 case_nfa:
   db 0x04+0x80+precedence_bit_mask,'CAS','E'+0x80
