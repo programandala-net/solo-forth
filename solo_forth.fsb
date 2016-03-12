@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509141337
+\ Last modified: 201509171640
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,27 +33,10 @@
 
   \ XXX TMP
 
-[defined] need  ?\ 2 load
-need source  need /string
+s" hola
+y adios"
+.s
 
-: text  ( "text<eol>" -- )
-  pad c/l 1+ blank
-  source span @ c/l
-  cr ." before min min: <" .s ." >"
-  min min
-  cr ." after min min: <" .s ." >"
-  >in @ span @ min
-  cr ." >in: <" .s ." >"
-  /string
-  cr ." after /string: <" .s ." >"
-
-  \ dup >r
-  \ pad place
-  \ r> >in +!
-  ;
-
-  \ dup cr ." span: " . ."  >in:" >in ?
-  \ cr ." after /string: <" .s ." >"
 
   \ }}} =======================================================
   \ Need {{{
@@ -139,7 +122,7 @@ variable last-locatable  scr/disk last-locatable !
 
 ( Error messages 16..30 )  \ scr 5
 
-\ Error #16:
+\ Error #16: Assertion failed.
 \ Error #17: Compilation only, use in definition.
 \ Error #18: Execution only.
 \ Error #19: Conditionals not paired.
@@ -330,7 +313,7 @@ need chars>string  need s+
   \ string buffer.
 
 : chars>string  ( c1..cn n -- ca len )
-  dup if 
+  dup if
     dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
     bounds do  i c!  loop  2r>
   else  pad swap  then  ;
@@ -348,7 +331,7 @@ need chars>string  need s+
 : +place  ( ca1 len1 ca2 )
   2dup c@ + over c!  dup c@ 1+ + smove  ;
   \ Add the string _ca1 len1_ to the end of the counted string
-  \ _ca2_.  
+  \ _ca2_.
 
 ( s+ )
 
@@ -371,26 +354,6 @@ need chars>string  need s+
   smove                  ( ca1 len1 )  \ 2nd string to buffer
   r@ smove               \  1st string to buffer
   r> r>  ;
-
-( /string )
-
-need -rot
-
-  \ Credits:
-  \ Code from DZX-Forth.
-
-: /string  ( ca1 len1 n -- ca2 len2 )
-  rot over + -rot -  ;
-  \ dup >r - swap r> + swap  ;  \ alternative definition
-
-  \ XXX TODO -- in Z80
-  \ pop de                  ; n
-  \ pop hl                  ; u1
-  \ call hl_minus_de_to_hl  ; hl=u2
-  \ ex (sp),hl              ; (sp)=u2 hl=ca1
-  \ add hl,de               ; hl=ca2
-  \ ex (sp),hl              ; (sp)=ca2 hl=u2
-  \ _push_hl_jp_next
 
 ( s' )
 
@@ -487,7 +450,7 @@ need n>r
 
   \ Credits:
   \ Code from Afera.
-  
+
 : rdepth  ( -- n )  rp@ r0 @ - -2 /  ;
 
   \ }}} =======================================================
@@ -2532,6 +2495,14 @@ code rshift  ( x1 u -- x2 )
 
   \ XXX TODO -- still needed in the kernel
 
+( any? )
+
+  \ XXX TODO -- from F83
+
+: any?  ( n1..nn n n0 -- f )
+  \ Is any number _n1..nn_ equal to _n0_?
+  ;
+
   \ }}} =======================================================
   \ Conditional compilation {{{
 
@@ -3062,7 +3033,7 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Disk blocks {{{
 
-( update flush )  \ ==diskblocks==
+( update flush continued )  \ ==diskblocks==
 
 : update  ( -- )
 
@@ -3089,6 +3060,18 @@ code c!dosvar  ( b n -- )
   \
   \ Perform the function of `save-buffers`, then unassign all
   \ block buffers.
+  \
+  \ }doc
+
+: continued  ( u -- )  ?loading (load)  ;
+
+  \ doc{
+  \
+  \ continued  ( u -- )
+  \
+  \ Continue interpretation at screen _u_.
+  \
+  \ From: Forth-83 (Appendix B. Uncontrolled Reference Words).
   \
   \ }doc
 
@@ -3602,6 +3585,74 @@ need break-key?
   \ allocation and search order pointers to the state they had
   \ just prior to the definition of "name".
 
+( assert( )
+
+  \ Credits:
+  \ Code from Gforth.
+
+  \ It is a good idea to make your programs self-checking, in
+  \ particular, if you use an assumption (e.g., that a certain
+  \ field of a data structure is never zero) that may become
+  \ wrong during maintenance.  Gforth supports assertions for
+  \ this purpose. They are used like this:
+
+  \      assert( FLAG )
+
+  \ The code between `assert(' and `)' should compute a flag,
+  \ that should be true if everything is alright and false
+  \ otherwise. It should not change anything else on the stack.
+  \ The overall stack effect of the assertion is `( -- )'. E.g.
+
+  \   assert( 1 1 + 2 = ) \ what we learn in school
+  \   assert( dup 0<> ) \ the top of stack should not be zero
+  \   assert( false ) \ this code should not be reached
+
+  \ The need for assertions is different at different times.
+  \ During debugging, we want more checking, in production we
+  \ sometimes care more for speed. Therefore, assertions can be
+  \ turned off, i.e., the assertion becomes a comment.
+  \ Depending on the importance of an assertion and the time it
+  \ takes to check it, you may want to turn off some assertions
+  \ and keep others turned on. Gforth provides several levels
+  \ of assertions for this purpose:
+
+  \ Note that the `assert-level' is evaluated at compile-time,
+  \ not at run-time. I.e., you cannot turn assertions on or off
+  \ at run-time, you have to set the `assert-level'
+  \ appropriately before compiling a piece of code. You can
+  \ compile several pieces of code at several `assert-level's
+  \ (e.g., a trusted library at level 1 and newly written code
+  \ at level 3).
+
+variable assert-level ( -- a )
+  \ specifies the highest assertions that are turned on
+
+1 assert-level !
+  \ by default all assertions above 1 are turned off
+
+: assertn ( n -- )  assert-level @ > if  postpone (  then  ;
+
+: assert0( ( -- )  0 assertn  ; immediate
+    \ important assertions that should always be turned on
+
+: assert1( ( -- )  1 assertn  ; immediate
+    \ normal assertions; turned on by default
+
+: assert2( ( -- )  2 assertn  ; immediate
+    \ debugging assertions
+
+: assert3( ( -- )  3 assertn  ; immediate
+    \ slow assertions that you may not want to turn on in
+    \ normal debugging; you would turn them on mainly for
+    \ thorough checking
+
+: assert( ( -- )  postpone assert1( ; immediate
+
+: (endassert) ( f -- )  0= 16 ?error ;
+
+: ) ( -- )  postpone (endassert) ; immediate
+    \ end an assertion
+
   \ }}} =======================================================
   \ Misc {{{
 
@@ -3871,6 +3922,29 @@ code !p  ( c ca -- )
 \ : u.r  ( n1 n2 -- )  >r 0 r> du.r  ;
 : du.  ( d -- )  0 du.r space  ;
 
+( d- )
+
+need z80-asm
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
+
+  de pop          \ DE=d2hi
+  exx
+  de pop          \ DE'=d2lo
+  exx
+  hl pop          \ HL=d1hi,DE=d2hi
+  exx
+  hl pop          \ HL'=d1lo
+  de subp
+  hl push         \ 2OS=d1lo-d2lo
+  exx
+  de sbcp         \ HL=d1hi-d2hi-cy
+  pushhl jp
+  end-code
+
   \ }}} =======================================================
   \ Number conversion and notation {{{
 
@@ -4073,7 +4147,7 @@ width !
   \ Control structures {{{
 
 ( unless )
-  
+
   \ Equivalent to `0= if`, but faster.
 
 : unless  ( f -- )  postpone ?branch >mark 2  ; immediate
@@ -4099,6 +4173,31 @@ width !
   \ factored in its own word.
   \
   \ }doc
+
+( >l >l )
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+  \ XXX TODO create the leave stack; create the leave stack
+  \ pointer as a user variable
+
+code >l  ( x -- ) ( L: -- x )
+  \ Move to leave stack.
+  de pop
+  lp hl fthl
+  e m ld  hl incp  d m ld  hl incp
+  hl lp sthl
+  jpnext
+  end-code
+
+code l>  ( -- x ) ( L: x -- )
+  \ Move from leave stack.
+  lp hl fthl
+  hl decp  m d ld  hl decp  m e ld
+  hl lp sthl
+  pushhl jp
+  next
 
 ( ?do )
 
@@ -4586,6 +4685,38 @@ defer (value)
 : to    ( -- )  ['] ! ['] (value) defer!  ;
 : value  ( n "name" -- )
   create ,  does>  (value) from  ;
+
+( set )
+
+  \ From: Forth-83 (Appendix B. Uncontrolled Reference Words).
+
+: set  ( x a "name" -- )
+  create  swap , ,
+  does>   ( pfa )  dup @ swap cell+ @ !  ;
+
+  \ }}} =======================================================
+  \ Multitask {{{
+
+( jiffy! jiffy@ -jiffy )
+
+  \ Credits:
+  \ Idea inspired by an article by Paul King, published in
+  \ Format, vol. 2 no. 3 (1988-10).
+  \ XXX TODO link to the WoS archive ftp, when available
+
+need !dosvar  need @dosvar
+
+: jiffy!  ( a -- )  16 !dosvar  ;
+  \ Set the Z80 routine to be called by G+DOS after the OS
+  \ interrupts routine, every 50th of a second.
+
+: jiffy@  ( -- a )  16 @dosvar  ;
+  \ Get the current Z80 routine that is called by G+DOS after
+  \ the OS interrupts routine, every 50th of a second.
+
+: -jiffy  ( -- )  8335 jiffy!  ;
+  \ Deactivate the jiffy call, setting its default value
+  \ (a noop routine in the RAM of the +D interface).
 
   \ }}} =======================================================
   \ Time {{{
@@ -5573,7 +5704,7 @@ code c@a+  ( -- c )
   \ }}} =======================================================
   \ Common heap {{{
 
-( heap )
+.( heap 0)
 
   \ An implementation of the ANS Forth Memory-Allocation Word
   \ Set.
@@ -5636,9 +5767,8 @@ code c@a+  ( -- c )
   \ of the size field to mark "in-use" nodes so that they are
   \ disregarded without a separate test.
 
-forth definitions
-vocabulary heap-voc
-heap-voc definitions
+also forth definitions
+vocabulary heap-voc  heap-voc definitions
 
   \ **1** General Purpose Extensions
 
@@ -5718,7 +5848,7 @@ VARIABLE nextnode  -->
   \ points to the most recently allocated node to indicate
   \ where the next search is to start from.
 
-( heap )
+.( heap 1)
 
 : >size ( addr -- addr)  CELL+  ;
 
@@ -5780,7 +5910,7 @@ init-heap
 
 -->
 
-( heap )
+.( heap 2)
 
 : findspace ( size -- addr|0)  nextnode @
            DUP      attach
@@ -5846,7 +5976,7 @@ init-heap
 
 -->
 
-( heap )
+.( heap 3)
 
 : makenode ( size addr)
   2DUP fits IF  togglesize DROP  ELSE  newnode  THEN  ;
@@ -5879,7 +6009,7 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
   \ fail. As this would be a request for half the addressable
   \ memory or more this is not unreasonable.
 
-( heap )
+.( heap 4)
 
   \ **4** Releasing Space
 
@@ -5946,7 +6076,7 @@ MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
   \ other affected node (either the node above addr1 or addr1)
   \ is known to be free, so no test is needed for this.
 
-( heap )
+.( heap 5)
 
 : ?mergenext ( addr)  DUP @ ?merge  ;
 
@@ -6023,7 +6153,7 @@ VARIABLE stash
 
 -->
 
-( heap )
+.( heap 6)
 
 : fixsize ( addr)
   DUP >size @ 0>
@@ -6068,7 +6198,7 @@ VARIABLE stash
 
 -->
 
-( heap )
+.( heap 7)
 
 : copynode ( addr1 addr2)
   OVER >size @  headsize -
@@ -6116,7 +6246,7 @@ VARIABLE stash
 
 -->
 
-( heap )
+.( heap 8)
 
 FORTH-WORDLIST SET-CURRENT
 

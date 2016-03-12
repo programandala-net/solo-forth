@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509141337
+version_release:  equ 201509171640
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -608,6 +608,24 @@ _echo: macro _txt
   _string _txt
   endm
 
+debugging: equ 0
+
+  ; check point
+_chk: macro _message
+  if debugging
+    _echo _message
+    dw cr_,hex_,dot_s_,decimal_
+  endif
+  endm
+
+  ; break point
+_brk: macro _message
+  if debugging
+    _chk _message
+    dw key_,drop_
+  endif
+  endm
+
 ; ==============================================================
 ; Entry points
 
@@ -827,7 +845,12 @@ data_stack_bottom:
 
 terminal_input_buffer:
   ds bytes_per_terminal_input_buffer
+
+if 1 ; fig_parsing
+
   ds 3 ; for the null word
+
+endif
 
 ; ----------------------------------------------
 ; Return stack
@@ -847,11 +870,13 @@ buffer_block_id_mask: equ 0x7FFF
 
 disk_buffer:
 
-dw buffer_block_id_mask     ; Block id used when the  buffer
-                            ; is not associated with a block.
-ds data_bytes_per_buffer    ; Actual content of the block,
-                            ; a disk sector.
-db space_char,0,space_char  ; Null word, required by the parsing words.
+  dw buffer_block_id_mask     ; Block id used when the  buffer
+                              ; is not associated with a block.
+  ds data_bytes_per_buffer    ; Actual content of the block,
+                              ; a disk sector.
+if 1 ; fig_parsing
+  db space_char,0,space_char  ; Null word, required by the parsing words.
+endif
 
 ; ==============================================================
 ; Misc routines
@@ -865,7 +890,7 @@ compare_de_hl_unsigned:
 
   ; Input:  de, hl
   ; Output:
-  ;  flag C if hl < de
+  ;  flag CY if hl < de
   ;  flag Z if hl = de
 
   ld a,h
@@ -878,7 +903,7 @@ compare_de_hl_unsigned:
 compare_de_hl_signed:
 
   ; Input:  de, hl
-  ; Output: flag C if hl < de
+  ; Output: flag CY if hl < de
 
   ld a,h
   xor d
@@ -1041,6 +1066,8 @@ next2_end: ; XXX TMP for debugging
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl root_pfa
 
+if 1 ; fig_parsing
+
 ; ----------------------------------------------
   _code_header root_x_,0,immediate
 
@@ -1055,6 +1082,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
   ld hl,x_ ; cfa of the actual null word
   jp next2 ; execute it
+
+endif
 
 ; ----------------------------------------------
   _colon_header root_forth_,'FORTH'
@@ -1376,21 +1405,26 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_s_,'(S)'
+  _colon_header parse_string_,'PARSE-STRING'
 
 ; doc{
 ;
-; (s) ( compilation: c "text<c>" -- ) ( run-time:  -- ca len )
+; parse-string ( compilation: c "text<c>" -- ) ( run-time:  -- ca len )
 ;
 ; }doc
 
   dw parse_ ; ( ca len )
+
+  ; XXX FIXME -- when a string 
+
+;  _brk 'In parse-string after parse' ; XXX INFORMER
+
   dw comp_question_
-  dw zero_branch_,paren_s.interpreting
+  dw zero_branch_,parse_string.interpreting
   ; compiling
   dw s_literal_
   dw semicolon_s_ ; XXX TODO exit_
-paren_s.interpreting:
+parse_string.interpreting:
   dw save_string_
   dw semicolon_s_
 
@@ -1807,21 +1841,28 @@ paren_loop.end:
 ; }doc
 
 ; ----------------------------------------------
-  _code_header digit_,'DIGIT'
+  _code_header digit_question_,'DIGIT?'
 
 ; doc{
 ;
-; digit  ( c n1 --- n2 tf | ff )  \ fig-Forth
+; digit  ( c n --- u tf | ff )  \ fig-Forth
 ;
-; Convert the ascii character _c_ (using base _n1_) to its
-; binary equivalent n2, accompanied by a true flag. If the
-; conversion is invalid, leave only a false flag.
+; Convert the ascii character _c_ (using base _n_) to its binary
+; equivalent _u_, accompanied by a true flag. If the conversion
+; is invalid, leave only a false flag.
 ;
 ; }doc
+
+; XXX Note: alternative implementation in CamelForth:
+;
+;   [ HEX ] DUP 39 > 100 AND +     \ silly looking
+;   DUP 140 > 107 AND -   30 -     \ but it works!
+;   DUP BASE @ U< ;
 
   pop hl  ; l=base
   pop de  ; e=character
   ld a,e  ; character
+  call upper.a
   sub '0' ; >="0"?
   jp c,false_pfa ; <"0" is invalid
   cp 0x0A ; >"9"?
@@ -1835,6 +1876,188 @@ digit.test_value:
   ld e,a ; converted digit
   push de
   jp true_pfa
+
+; ----------------------------------------------
+  _colon_header to_number88_,'>NUMBER88'
+
+  ; XXX TMP -- version from Z88 CamelForth
+
+  ; XXX TODO
+
+; doc{
+;
+; >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )  \ ANS Forth
+
+; ----
+; : >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )
+;   begin
+;   dup while
+;       over c@ digit?
+;       0= if exit then
+;       >r 2swap base @ ud*
+;       r> m+ 2swap
+;       1 /string
+;   repeat  ;a
+; ----
+
+to_number88.begin:
+  dw dup_
+  dw question_branch_,to_number88.end
+  dw over_,c_fetch_,digit_question_,zero_equals_
+  dw zero_branch_,to_number88.valid_digit
+  dw exit_
+to_number88.valid_digit:
+  dw to_r_,two_swap_,base_,fetch_
+  ; dw u_d_star_ ; XXX TODO
+  dw from_r_
+  ; dw m_plus_ ; XXX TODO
+  dw two_swap_
+  _literal 1
+  dw slash_string_
+  dw branch_,to_number88.begin
+to_number88.end:
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header to_number_,'>NUMBER'
+
+; doc{
+;
+; >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )  \ ANS Forth
+
+; _ud2_ is the unsigned result of converting the characters
+; within the string specified by _ca1 len1_ into digits, using
+; the number in `base`, and adding each into _ud1_ after
+; multiplying _ud1_ by the number in `base`. Conversion
+; continues left-to-right until a character that is not
+; convertible, including any "+" or "-", is encountered or the
+; string is entirely converted. _ca2_ is the location of the
+; first unconverted character or the first character past the
+; end of the string if the string was entirely converted. _len2_
+; is the number of unconverted characters in the string.
+
+; XXX TODO -- check:
+; An ambiguous condition exists if _ud2_ overflows during the
+; conversion.
+
+; ----
+; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
+;
+;   begin
+;     dup  while
+;     over c@ base @ digit while
+;        >r 2swap r> swap base @ um* drop rot base @
+;        um* d+ 2swap 1 /string 1 dpl +!
+;   repeat then  ;
+; ----
+
+;
+; }doc
+
+  ; Credits:
+  ; Code from DZX-Forth.
+
+to_number.begin: ; begin
+  dw dup_
+  dw zero_branch_,to_number.end  ; while
+;  _chk '>number -- before digit' ; XXX INFORMER
+  dw over_,c_fetch_,base_,fetch_,digit_question_
+;  _chk '>number -- after digit' ; XXX INFORMER
+  dw zero_branch_,to_number.end  ; while
+  dw to_r_
+  dw two_swap_,from_r_
+  dw swap_
+  dw base_,fetch_
+  dw u_m_star_,drop_
+  dw rot_
+  dw base_,fetch_
+  dw u_m_star_
+  dw d_plus_
+  dw two_swap_
+  dw one_,slash_string_
+;  dw one_,dpl_,plus_store_ ; XXX TODO why this?
+  dw branch_,to_number.begin  ; repeat
+to_number.end:
+  ; then
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header number_question_,'NUMBER?'
+
+; doc{
+;
+; number?  ( ca len -- d tf | ff )
+;
+; Convert the case-insensitive string _ca len_ to a double
+; number according to the current base.  If successful, return
+; double number _d_ and a true flag.  A leading '-' character
+; signifies a negative number.  If a punctuation character '.'
+; occurs at the end of the string then `dpl` is 0 otherwise it
+; is -1.  If conversion is unsuccessful or the string was empty
+; or contained blanks then a false flag is returned and `dpl` is
+; meaningless.
+
+; ----
+; : number?  ( ca len -- d tf | ff )
+;   over c@ [char] - =  \ minus sign?
+;   over 0> and         \ and len>0?
+;   dup >r
+;   1 and /string over c@ [char] . > and
+;   0 0 2swap ?dup if
+;     >number dpl on
+;     dup if  1- over c@ [char] . - or dpl off  then
+;     while then
+;     r> 2drop 2drop false
+;   else
+;     drop r> if  dnegate  then  true
+;   then  ;
+; ----
+
+;
+; }doc
+
+  ; Credits:
+  ; Code from DZX-Forth.
+
+  dw over_,c_fetch_
+  _literal '-'
+  dw equals_
+  dw over_,zero_greater_than_
+  dw and_
+  dw dup_,to_r_
+  dw one_,and_
+  dw slash_string_
+  dw over_,c_fetch_
+  _literal '.'
+  dw greater_than_,and_
+  dw zero_,zero_
+  dw two_swap_
+  dw question_dup_
+  dw zero_branch_,number_question.2
+  dw to_number_
+  dw dpl_,on_
+  dw dup_
+  dw zero_branch_,number_question.1
+  dw one_minus_
+  dw over_,c_fetch_
+  _literal '.'
+  dw minus_,or_
+  dw dpl_,off_
+number_question.1:
+  dw zero_branch_,number_question.3
+number_question.2:
+  dw from_r_
+  dw two_drop_,two_drop_
+  dw false_
+  dw branch_,number_question.end
+number_question.3:
+  dw drop_,from_r_
+  dw zero_branch_,number_question.4
+  dw d_negate_
+number_question.4:
+  dw true_
+number_question.end:
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
@@ -1867,8 +2090,8 @@ digit.test_value:
   ; development, because the dictionary is small.
 
 paren_find.begin:
-  ;_z80_border 2 ; XXX INFORMER
-  ;_z80_border 7 ; XXX INFORMER
+;  _z80_border 2 ; XXX INFORMER
+;  _z80_border 7 ; XXX INFORMER
   ; Compare the string with a new word.
   ; de = nfa
   ld (paren_find.nfa_backup),de ; save the nfa for later
@@ -1923,7 +2146,7 @@ paren_find.end:
   call bank.e ; page the default memory bank
   exx
   pop bc ; restore the Forth IP
-  ; _z80_border 4 ; XXX INFORMER
+;   _z80_border 4 ; XXX INFORMER
   jp push_hlde
 
 paren_find.not_a_match:
@@ -1975,13 +2198,12 @@ scan.begin:
   pop bc ; restore Forth IP
   jp push_hl
 
-endif
+else
 
-if 1
-
-  _code_header scanx_,'SCANX' ; XXX TMP
+if 0 ; XXX OLD
 
   ; XXX TODO
+  ; XXX FIXME
 
 ; doc{
 ;
@@ -1989,9 +2211,15 @@ if 1
 ; 
 ; XXX TODO
 ; ca1 len1 = string to search
-; c = char searched for
+; c = character searched for
 ; len2 = length of the searched string until the match
 ;        or until the end of the string
+; 
+; [Description from DZX-Forth:]
+;
+; Scan the string _ca1 len1_ for the character _c_.  Leave match
+; address _ca2_ and length remaining _len2_.  If no match occurred
+; then _len2_ is zero and _ca2_ is _ca1_+_len1_.
 ;
 ; }doc
 
@@ -2001,23 +2229,85 @@ if 1
   pop bc ; len1
   pop hl ; ca1
   push hl
-scanx.begin:
+scan.begin:
   ld a,c
   or b ; exhausted?
-  jr z,scanx.end ; if so, exit
+  jr z,scan.end ; if so, exit
   ld a,e
-  cp (hl) ; delimiter?
-  jr z,scanx.end ; if so, exit
+  cp (hl) ; character match?
+  jr z,scan.end ; if so, exit
   inc hl
   dec bc
   exx
   inc de ; count
   exx
-  jr scanx.begin ; again
+  jr scan.begin ; again
 
-scanx.end:
+scan.end:
   exx
   push de ; len2
+  _jp_next
+
+else
+
+; XXX TODO -- version with cpir
+
+; [Description from DZX-Forth:]
+
+; doc{
+;
+; scan  ( ca1 len1 c -- ca2 len2 )
+; 
+; Scan the string _ca1 len1_ for the character _c_.  Leave match
+; address _ca2_ and length remaining _len2_.  If no match occurred
+; then _len2_ is zero and _ca2_ is _ca1_+_len1_.
+;
+; }doc
+
+  exx
+  pop de ; E = char searched for
+  pop bc ; len1, count
+  ld a,c
+  or b ; empty string?
+  jr z,scan.nothing ; if so, exit
+  pop hl ; ca1
+  ld a,e ; A = char searched for
+  cpir ; scan until match or count=0
+  jr nz,scan.no_match
+  dec hl ; point to match char
+  inc bc ; adjust the count
+scan.no_match:
+  push hl
+scan.nothing:
+  push bc
+  exx
+  _jp_next
+
+endif
+
+endif
+
+if 1 ; XXX TMP -- for debugging
+
+  _code_header scanx_,'SCANX' ; XXX TMP
+
+  exx
+  pop de ; E = char searched for
+  pop bc ; len1
+  ld a,c
+  or b ; empty string?
+  jr z,scanx.nothing ; if so, exit
+  pop hl ; ca1
+  ld a,e ; A = char searched for
+  cpir ; scan until match or count=0
+  jr nz,scanx.no_match
+  dec hl ; point to match char
+  inc bc ; adjust the count
+scanx.no_match:
+  push hl
+scanx.nothing:
+  push bc
+  exx
   _jp_next
 
 endif
@@ -2042,13 +2332,7 @@ skip.begin:
   inc hl
   jp skip.begin ; again
 
-endif
-
-if 1
-
-  ; XXX TODO
-
-  _code_header skipx_,'SKIPX' ; XXX TMP
+else
 
 ; doc{
 ;
@@ -2056,27 +2340,102 @@ if 1
 ;
 ; }doc
 
+if 0 ; XXX OLD
+
   pop de
   ld l,c
   ld h,b
   pop bc ; len1
   ex (sp),hl ; hl=ca1 ; save Forth IP
-skipx.begin:
+skip.begin:
   ld a,c
   or b ; exhausted?
-  jr z,skipx.end ; if so, exit
+  jr z,skip.end ; if so, exit
   ld a,e
   cp (hl) ; delimiter?
-  jr nz,skipx.end ; if not, exit
+  jr nz,skip.end ; if not, exit
   inc hl
   dec bc
-  jp skipx.begin ; again
+  jp skip.begin ; again
 
-skipx.end:
+skip.end:
   ex (sp),hl ; HL = Forth IP ; push ca1
   push bc ; len2
   ld c,l
   ld b,h ; restore Forth IP
+  _jp_next
+
+else ; XXX NEW
+
+; [Description from DZX-Forth:]
+
+; doc{
+;
+; skip  ( ca1 len1 c -- ca2 len2 )
+;
+; Skip leading occurences of the character _c_ in the string
+; _ca1 len1_.  Leave the address of the first non-matching
+; character _ca2_ and length remaining _len2_.  If no characters were
+; skipped leave _ca1 len1_.
+;
+; }doc
+
+; Code adapted and modified from CamelForth.
+
+  exx
+  pop de ; E = char searched for
+  pop bc ; len1
+  ld a,c
+  or b ; empty string?
+  jr z,skip.end ; if so, exit
+  pop hl ; ca1
+  ld a,e ; A = char searched for
+skip.begin:
+  cpi
+  jr nz,skip.mismatch ; char mismatch, exit
+  jp pe,skip.begin ; count not exhausted
+  jr skip.done ; count 0, no mismatch
+skip.mismatch:
+  dec hl ; point at mismatch char
+  inc bc ; adjust the count
+skip.done:
+  push hl
+skip.end:
+  push bc
+  exx
+  _jp_next
+
+endif
+
+endif
+
+if 1 ; XXX TMP for debugging
+
+; Code adapted and modified from CamelForth.
+
+  _code_header skipx_,'SKIPX' ; XXX TMP
+
+  exx
+  pop de ; E = char searched for
+  pop bc ; len1
+  ld a,c
+  or b ; empty string?
+  jr z,skipx.end ; if so, exit
+  pop hl ; ca1
+  ld a,e ; A = char searched for
+skipx.begin:
+  cpi
+  jr nz,skipx.mismatch ; char mismatch, exit
+  jp pe,skipx.begin ; count not exhausted
+  jr skipx.done ; count 0, no mismatch
+skipx.mismatch:
+  dec hl ; point at mismatch char
+  inc bc ; adjust the count
+skipx.done:
+  push hl
+skipx.end:
+  push bc
+  exx
   _jp_next
 
 endif
@@ -3296,31 +3655,39 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header d_plus_,'D+'
 
-  ; [Code from Abersoft Forth.]
+; doc{
+;
+; d+  ( d1|ud1 d2|ud2 -- d3|ud3 )
+;
+; Add _d2|ud2_ to _d1|ud1_, giving the sum _d3|ud3_.
+;
+; }doc
 
-                ;  t  B
-                ;  -- --
-  ld hl,0x0006  ;  10 03
-  add hl,sp     ;  11 01
-  ld e,(hl)     ;  07 01
-  ld (hl),c     ;  07 01
-  inc hl        ;  06 01
-  ld d,(hl)     ;  07 01
-  ld (hl),b     ;  07 01
-  pop bc        ;  10 01
-  pop hl        ;  10 01
-  add hl,de     ;  11 01
-  ex de,hl      ;  04 01
-  pop hl        ;  10 01
-  adc hl,bc     ;  15 01
-  pop bc        ;  10 01
-  jp push_hlde  ;  10 03
-                ;  11    ; push de
-                ;  11    ; push hl
-                ; --- --
-                ; 157 19 TOTALS
+if 1
 
-if 0
+  ; [Code adapted from Z88 CamelForth.]
+
+                        ;  t  B
+                        ;  -- --
+  pop de                ;  10 01 ; DE=d2hi
+  exx                   ;  04 01
+  pop de                ;  10 01 ; DE'=d2lo
+  exx                   ;  04 01
+  pop hl                ;  10 01 ; HL=d1hi,DE=d2hi
+  exx                   ;  04 01
+  pop hl                ;  10 01 ; HL'=d1lo
+  add hl,de             ;  11 01
+  push hl               ;  11 01 ; 2OS=d1lo+d2lo
+  exx                   ;  04 01
+  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+cy
+  push hl               ;  11 01
+  _jp_next              ;  08 02
+                        ;  -- --
+                        ; 112 15 TOTALS
+
+endif
+
+if 0 ; XXX OLD
 
 ; [Code from fig-Forth 1.1g.]
 
@@ -3349,6 +3716,57 @@ if 0
               ;                          134 15 TOTALS
 endif
 
+if 0 ; XXX OLD
+
+  ; [Code from Abersoft Forth.]
+
+                ;  t  B
+                ;  -- --
+  ld hl,0x0006  ;  10 03
+  add hl,sp     ;  11 01
+  ld e,(hl)     ;  07 01
+  ld (hl),c     ;  07 01
+  inc hl        ;  06 01
+  ld d,(hl)     ;  07 01
+  ld (hl),b     ;  07 01
+  pop bc        ;  10 01
+  pop hl        ;  10 01
+  add hl,de     ;  11 01
+  ex de,hl      ;  04 01
+  pop hl        ;  10 01
+  adc hl,bc     ;  15 01
+  pop bc        ;  10 01
+  jp push_hlde  ;  10 03
+                ;  11    ; push de
+                ;  11    ; push hl
+                ; --- --
+                ; 157 19 TOTALS
+
+endif
+
+; ----------------------------------------------
+  _code_header invert_,'INVERT'
+
+; doc{
+;
+; invert  ( x1 -- x2 )
+; 
+; Invert all bits of _x1_ giving its logical inverse _x2_.
+;
+; }doc
+
+  ; Credits:
+  ; Code adapted from Z88 CamelForth.
+
+  pop hl
+  ld a,h
+  cpl
+  ld h,a
+  ld a,l
+  cpl
+  ld l,a
+  jp push_hl
+
 ; ----------------------------------------------
   _code_header negate_,'NEGATE'
 
@@ -3359,7 +3777,7 @@ endif
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header dnegate_,'DNEGATE'
+  _code_header d_negate_,'DNEGATE'
 
   pop hl
   pop de
@@ -3964,6 +4382,20 @@ endif
 
   dw terminal_input_buffer
 
+
+; ----------------------------------------------
+
+if 1 ; fig_parsing
+else
+
+  _constant_header slash_tib_,'/TIB'
+
+  ; XXX NEW  -- for the non-FIG parsing method
+
+  dw bytes_per_terminal_input_buffer
+
+endif
+
 ; ----------------------------------------------
   _variable_header number_tib_,'#TIB'
 
@@ -3979,18 +4411,22 @@ endif
 ;
 ; ----
 ; : source  ( -- ca len )
-;   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+;   blk @ ?dup if  block b/buf  else  tib #tib @ span @ min then  ;
 ; ----
+;
 ; }doc
 
   dw blk_,fetch_,question_dup_
   dw zero_branch_,source.tib
   ; disk block
   dw block_,b_slash_buf_
+;  _chk 'source -- after block b/buf' ; XXX INFORMER
   dw exit_
 source.tib:
   ; terminal input buffer
-  dw tib_,number_tib_,fetch_
+  ; XXX TODO `span @` only
+  dw tib_,number_tib_,fetch_,span_,fetch_,min_
+  ;dw tib_,number_tib_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4025,6 +4461,9 @@ source.tib:
 
 ; ----------------------------------------------
   _code_alias_header cell_plus_,'CELL+',,two_plus_
+
+; ----------------------------------------------
+  _code_alias_header char_minus_,'CHAR-',,one_minus_
 
 ; ----------------------------------------------
   _code_alias_header char_plus_,'CHAR+',,one_plus_
@@ -4344,6 +4783,8 @@ cfa_to_nfa.begin_1:
 ; ----------------------------------------------
 
   _code_alias_header cfap_to_lfa_,'CFAP>LFA',,two_plus_
+
+  ; XXX TODO remove? only used by `-transient`, in the library.
 
 ; ----------------------------------------------
 
@@ -4852,6 +5293,43 @@ dot_quote.interpreting:
   dw 0
 
 ; ----------------------------------------------
+  _colon_header acceptx_,'ACCEPTX'
+
+; doc{
+;
+; acceptx  ( ca1 len1 -- len2 )  \ ANS Forth
+;
+; Receive a string of at most _len1_ characters.  No characters
+; are received or transferred if _len1_ is zero.  Display
+; graphic characters as they are received.
+;
+; Input terminates when an implementation-defined line
+; terminator is received. When input terminates, nothing is
+; appended to the string or displayed on the screen.
+;
+; _len2_ is the length of the string stored at _ca1_.
+;
+; 
+;
+; }doc
+
+  ; XXX TODO
+
+  dw dup_,span_,store_
+  dw swap_,zero_ ; ( len count left )
+acceptx.begin:
+  _literal 2
+  dw pick_,over_,minus_ ; ( len a count left )
+
+  dw xkey_ ; ( ca c )
+
+  dw branch_,acceptx.begin
+
+  dw two_drop_,drop_
+
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header accept_,'ACCEPT'
 
 ; doc{
@@ -4915,8 +5393,16 @@ accept.emit: ; ( ca c )
   dw branch_,accept.begin
 
 accept.end:
+
+;   _echo 'In accept.end:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_ ; XXX INFORMER
+
   dw drop_
   dw span_,fetch_
+
+;   _echo 'In accept before the end:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_ ; XXX INFORMER
+
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4944,13 +5430,29 @@ accept.end:
 ;
 ; }doc
 
+if 1 ; fig_parsing
+
   dw tib_,dup_
   dw number_tib_,fetch_
   dw two_dup_,blank_ ; clean the input buffer
   dw accept_,space_
-  dw plus_,stream_end_
+  dw plus_
+  dw stream_end_
   dw to_in_,off_
   dw semicolon_s_
+
+else
+
+  dw tib_,slash_tib_
+  dw two_dup_,blank_ ; clean the input buffer
+  dw accept_,number_tib_,store_,space_
+  dw blk_,off_
+  dw to_in_,off_
+  dw semicolon_s_
+
+endif
+
+if 1 ; fig_parsing
 
 ; ----------------------------------------------
   _colon_header x_,0,immediate
@@ -5010,15 +5512,86 @@ x.exit:
 x.end:
   dw semicolon_s_
 
+endif
+
+; ----------------------------------------------
+  _colon_header source_id_,'SOURCE-ID'
+
+  ; XXX TODO
+
+  dw blk_,fetch_
+
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header refill_,'REFILL'
+
+  ; XXX TODO
+
+; doc{
+
+; refill  ( -- f )
+
+; }doc
+
+
+; XXX TMP -- From Z88 CamelForth (version w/o files)
+;   SOURCE-ID BLK @ OR 0= DUP
+;   IF  TIB DUP 80 ACCEPT SPACE
+; 'SOURCE 2!  0 >IN !
+;   THEN ;
+
+
+; XXX TMP -- From Z88 CamelForth (version with files)
+;X REFILL   -- f
+;   BLK @ IF  1 BLK +!                          ; for block input, use next
+;       BLK @ BLOCK PAUSE 1024 TRUE
+;   ELSE
+;   SOURCE-ID CASE
+;     0 OF  TIB DUP 80 ACCEPT SPACE TRUE  ENDOF
+;    -1 OF  FALSE  ENDOF
+;    >R
+;    INPUT-FBUF INPUT-FLEN R@ READ-LINE THROW PAUSE ; read a line
+;    IF  INPUT-FBUF SWAP TRUE  THEN   ; leave source-spec 
+;    R>
+;   ENDCASE
+;   THEN
+;   DUP IF  >R 'SOURCE 2!  0 >IN ! R>  THEN ;
+
+  ; XXX NEW
+  ; XXX TODO -- try, check, complete
+
+  dw blk_,fetch_ ; input stream from disk?
+  dw zero_branch_,refill.terminal ; if not, branch
+refill.block:
+  dw one_,blk_,plus_store_ ; next disk block
+  dw to_in_,off_
+  dw true_
+refill.terminal:
+  dw query_
+  dw true_
+  dw semicolon_s_
+
 ; ----------------------------------------------
   _code_header fill_,'FILL'
 
-  pop de ; e = char
+; doc{
+;
+; fill  ( ca len c -- )
+;
+; If _len_ is greater than zero, store _c_ in each of _len_
+; consecutive characters of memory beginning at _ca_.
+;
+; }doc
+
+  ; XXX TODO move to the library
+
+  pop de ; E = char
 fill.e:
   ld l,c
-  ld h,b ; the Forth IP
+  ld h,b ; HL = the Forth IP
   pop bc ; count
-  ex (sp),hl ; save the Forth IP
+  ex (sp),hl ; save the Forth IP, HL = address
 fill.do:
   ld a,b
   or c
@@ -5031,7 +5604,33 @@ fill.end:
   pop bc ; restore the Forth IP
   _jp_next
 
+  _code_header fill88_,'FILL88'
+
+; XXX Alternative code from Z88 CamelForth
+; XXX TODO test and benchmark
+
+  exx             ; save the Forth IP
+  pop bc
+  ld a,c          ; character
+  pop bc          ; count
+  pop de          ; address
+  or a            ; clear carry flag
+  ld hl,0xFFFF
+  adc hl,bc       ; test for count=0 or 1
+  jr nc,fill88.done  ;   no cy: count=0, skip
+  ld (de),a       ; fill first byte
+  jr z,fill88.done   ;   zero, count=1, done
+  dec bc          ; else adjust count,
+  ld h,d          ;   let HL = start adrs,
+  ld l,e
+  inc de          ;   let de = start adrs+1
+  ldir            ;   copy (HL)->(DE)
+fill88.done:
+  exx             ; restore the Forth IP
+  _jp_next
+
 ; ----------------------------------------------
+
   _code_header erase_,'ERASE'
 
   ld e,0
@@ -5081,9 +5680,31 @@ stream.end:
   dw to_in_,fetch_,plus_
   dw semicolon_s_
 
+else
+
+; doc{
+;
+; stream  ( -- ca len )
+;
+; ca len = source from the current parsing position
+;
+; }doc
+
+  dw source_,to_in_,fetch_,slash_string_
+
+  ; XXX TMP -- needed when no space is typed at the end
+  _literal 0
+  dw max_
+
+;  _chk 'stream -- end' ; XXX INFORMER
+;  dw two_dup_,cr_,cr_,type_,cr_ ; XXX INFORMER
+;  dw two_,border_,key_,drop_,zero_,border_ ; XXX INFORMER
+
+  dw semicolon_s_
+
 endif
 
-if 1
+if 1 ; XXX TMP -- for debugging
 
   _colon_header streamx_,'STREAMX'
 
@@ -5095,7 +5716,17 @@ if 1
 ;
 ; }doc
 
-  dw source_,to_in_,fetch_,slash_string_
+  dw source_
+;  _brk "streamx after source" ; XXX INFORMER
+  dw to_in_,fetch_
+;  _brk "streamx before /string" ; XXX INFORMER
+  dw slash_string_
+;  _brk "streamx end" ; XXX INFORMER
+
+  ; XXX TMP -- needed when no space is typed at the end
+  _literal 0
+  dw max_
+
   dw semicolon_s_
 
 endif
@@ -5115,7 +5746,6 @@ endif
 ; ----
 ;
 ; }doc
-
 
   pop de                  ; n
   pop hl                  ; len1
@@ -5137,13 +5767,16 @@ endif
 ;
 ; }word
 
+; XXX TODO -- change to `>in +!` and choose a new name for `1+
+; parsed` or write as is.
+
   dw one_plus_,to_in_,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 1 ; fig_parsing
-
   _colon_header parse_,'PARSE'
+
+if 1 ; fig_parsing
 
 ; doc{
 ;
@@ -5161,20 +5794,63 @@ if 1 ; fig_parsing
   dw stream_,swap_,scan_,dup_,parsed_
   dw semicolon_s_
 
+else
+
+;   stream 2dup 2>r rot scan
+;   dup if  char-  then
+;   2r> rot - >in +!
+;   tuck - ;
+
+  dw stream_,two_dup_,two_to_r_,rot_,scan_
+  dw dup_,zero_branch_,parse.end
+  dw char_minus_
+parse.end:
+  dw two_from_r_,rot_,minus_
+  dw to_in_,plus_store_
+  dw tuck_,minus_
+  dw semicolon_s_
+
 endif
 
-if 1
+if 1 ; XXX TMP -- for debugging
 
   _colon_header parsex_,'PARSEX' ; XXX TMP
 
-  dw streamx_,rot_,scanx_,dup_,parsed_
+  dw streamx_,two_dup_,two_to_r_
+  dw rot_,scanx_
+  _brk "in parsex after scanx"
+  dw dup_,zero_branch_,parsex.end
+  dw char_minus_
+  _brk "in parsex after char-"
+parsex.end:
+  dw two_from_r_,rot_,minus_
+  _brk "in parsex before updating >in"
+  dw to_in_,plus_store_
+  dw tuck_,minus_
+  _brk "in parsex before exit"
   dw semicolon_s_
 
 endif
 
 ; ----------------------------------------------
 if 1 ; fig_parsing
+else
+  _two_variable_header parsed_name_,'PARSED-NAME'
 
+; doc{
+;
+; parsed-name  ( -- a )
+;
+; A double variable that holds the address and length of the
+; most recently parsed name by `parse-name`.
+;
+; }doc
+
+  dw 0,0
+
+endif
+
+; ----------------------------------------------
   _colon_header parse_name_,'PARSE-NAME'
 
 ; doc{
@@ -5182,6 +5858,8 @@ if 1 ; fig_parsing
 ; parse-name  ( "name"  -- ca len )
 ;
 ; }word
+
+if 1 ; fig_parsing
 
   dw stream_,dup_,to_r_ ; ( ca1 )
   dw b_l_,skip_ ; ( ca2 )
@@ -5191,9 +5869,85 @@ if 1 ; fig_parsing
   dw dup_,parsed_
   dw semicolon_s_
 
+else
+
+if 0 ; XXX OLD
+
+  dw stream_,b_l_,skip_ ; ( ca2 len2 )
+;  dw two_dup_,cr_,type_  ; XXX INFORMER
+;  _brk "in parse-name after skip"  ; XXX INFORMER
+  dw dup_,parsed_
+  dw b_l_,scan_ ; ( ca len )
+;  dw two_dup_,cr_,type_  ; XXX INFORMER
+;  _brk "in parse-name after scan"  ; XXX INFORMER
+  dw dup_,parsed_
+  dw semicolon_s_
+
+else ; XXX NEW
+
+;   stream                 ( a n )
+;   dup >r   bl skip           ( a' n' )
+;   over >r  bl scan           ( a" n" )
+;   dup if char- then           \ skip trailing delimiter
+;   r> r> rot -   >in +!        \ update >in offset
+;   tuck -                      ( a' n )
+
+  dw stream_              ; ( ca len )
+;  _brk 'parse-name -- after stream' ; XXX INFORMER
+  dw dup_,to_r_           ; ( ca len ) ( R: len )
+;  _brk 'parse-name -- before skip' ; XXX INFORMER
+  dw b_l_,skip_           ; ( ca1 len1 ) ( R: len )
+;  _brk 'parse-name -- after skip' ; XXX INFORMER
+  dw over_,to_r_          ; ( ca1 len1 ) ( R: len ca1 )
+  dw b_l_,scan_           ; ( ca2 len2 ) ( R: len ca1 )
+;  _brk 'parse-name -- after scan' ; XXX INFORMER
+  dw dup_
+  dw zero_branch_,parse_name.skip
+;  _brk 'parse-name -- before char-' ; XXX INFORMER
+  dw char_minus_
+parse_name.skip:
+  dw from_r_,from_r_      ; ( ca2 len2 ca1 len )
+  dw rot_,minus_          ; ( ca2 ca1 len3 )
+;  _brk 'parse-name -- before updating >in' ; XXX INFORMER
+  dw to_in_,plus_store_   ; ( ca2 ca1 )
+  dw tuck_,minus_         ; ( ca1 len4 )
+  dw two_dup_,parsed_name_,two_store_
+;  _brk 'parse-name -- end' ; XXX INFORMER
+;  dw two_dup_,cr_,type_ ; XXX INFORMER
+  dw semicolon_s_
+
 endif
 
-if 1
+endif
+
+if 1 ; XXX TMP -- for debugging
+
+  _colon_header parse_namex_,'PARSE-NAMEX' ; XXX TMP
+
+  dw streamx_       ; ( ca len )
+;  _brk "parse-namex after streamx" ; XXX INFORMER
+  dw dup_,to_r_         ; ( ca len ) ( R: len )
+  dw b_l_,skipx_         ; ( ca1 len1 ) ( R: len )
+;  _brk "parse-namex after skipx" ; XXX INFORMER
+  dw over_,to_r_       ; ( ca1 len1 ) ( R: len ca1 )
+  dw b_l_,scanx_         ; ( ca2 len2 ) ( R: len ca1 )
+;  _brk "parse-namex after scanx" ; XXX INFORMER
+  dw dup_
+  dw zero_branch_,parse_namex.skip
+  dw char_minus_
+;  _brk "parse-namex after char-" ; XXX INFORMER
+parse_namex.skip:
+  dw from_r_,from_r_    ; ( ca2 len2 ca1 len )
+  dw rot_,minus_        ; ( ca2 ca1 len3 )
+;  _brk "parse-namex before updating >in" ; XXX INFORMER
+  dw to_in_,plus_store_  ; ( ca2 ca1 )
+  dw tuck_,minus_       ; ( ca1 len4 )
+  dw semicolon_s_
+
+else
+
+  ; XXX TMP -- for debugging
+  ; XXX OLD
 
   _colon_header parse_namex_,'PARSE-NAMEX' ; XXX TMP
 
@@ -5206,8 +5960,6 @@ if 1
 endif
 
 ; ----------------------------------------------
-if 1 ; fig_parsing
-
   _colon_header word_,'WORD'
 
 ; doc{
@@ -5224,6 +5976,8 @@ if 1 ; fig_parsing
 ;
 ; }doc
 
+if 1 ; fig_parsing
+
 ; XXX FIXME
 ; `0 word` crashes the system. how to parse till the end of
 ; line?
@@ -5231,22 +5985,18 @@ if 1 ; fig_parsing
   dw stream_ ; ( c a1 )
   dw dup_,to_r_
   dw over_,skip_ ; ( c a2 )
-if  0
-;  dw hex_
-;  _echo 'In word after skip:' ; XXX INFORMER
-;  dw cr_,dot_s_,cr_ ; XXX INFORMER
-;  dw key_,drop_ ; XXX INFORMER
-endif
+
+;   _echo 'In word after skip:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`:
   dw swap_,scan_ ; ( a2 len )
-if  0
-  ; dw hex_
-  ; _echo 'In word after scan:' ; XXX INFORMER
-  ; dw cr_,two_dup_,type_ ; XXX INFORMER
-  ; dw cr_,dot_s_,cr_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-endif
+
+;   _echo 'In word after scan:' ; XXX INFORMER
+;   dw cr_,two_dup_,type_ ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
   dw dup_,parsed_
 
   dw here_
@@ -5259,22 +6009,89 @@ endif
   dw cmove_ ; move the word
   dw here_
 
+  dw semicolon_s_
+
+else
+
   if 0 ; XXX OLD
-    ;dw space_ ; XXX INFORMER
-    ;dw depth_,dot_ ; XXX INFORMER
-    ;_echo 'blk ' ; XXX INFORMER
-    ;dw blk_,fetch_,dot_ ; XXX INFORMER
-    ;_echo 'in ' ; XXX INFORMER
-    ;dw in_,fetch_,dot_ ; XXX INFORMER
-    ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
-    ;dw key_,drop_ ; XXX INFORMER
-  endif
+
+  dw dup_,to_r_ ; save the delimiter
+
+;   _echo 'In word before stream:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
+  dw stream_ ; ( ca1 len1 )
+
+;   _echo 'In word after stream:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
+  dw over_,to_r_ ; save the start of the string
+  dw rot_
+
+;   _echo 'In word before skip:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
+  dw skip_ ; ( ca2 len2 )
+
+;   _echo 'In word after skip:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
+
+  dw over_,from_r_,minus_,to_in_,plus_store_
+  dw from_r_,scan_ ; ( ca2 len3 )
+
+;   _echo 'In word after scan:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
+  dw dup_,parsed_
+
+  dw here_
+  _literal max_word_length+2
+  dw blank_
+
+  dw dup_,here_,c_store_ ; count byte
+  dw here_,one_plus_ ; destination
+  dw swap_ ; count
+  dw cmove_ ; move the word
+  dw here_
 
   dw semicolon_s_
 
+  else ; XXX NEW after Z88 CamelForth
+
+;   dup  source >in @ /string   ( c c a n )
+;   dup >r   rot skip           ( c a' n' )
+;   over >r  rot scan           ( a" n" )
+;   dup if char- then           \ skip trailing delimiter
+;   r> r> rot -   >in +!        \ update >in offset
+;   tuck -                      ( a' n )
+;   here place                  ( )
+;   here                        ( a )
+;   bl over count + c! ;        \ append trailing blank
+
+  dw dup_,stream_       ; ( c c ca len )
+  dw dup_,to_r_         ; ( c c ca len ) ( R: len )
+  dw rot_,skip_         ; ( c ca1 len1 ) ( R: len )
+  dw over_,to_r_       ; ( c ca1 len1 ) ( R: len ca1 )
+  dw rot_,scan_         ; ( ca2 len2 ) ( R: len ca1 )
+  dw dup_
+  dw zero_branch_,word.skip
+  dw char_minus_
+word.skip:
+  dw from_r_,from_r_    ; ( ca2 len2 ca1 len )
+  dw rot_,minus_        ; ( ca2 ca1 len3 )
+  dw to_in_,plus_store_  ; ( ca2 ca1 )
+  dw tuck_,minus_       ; ( ca1 len4 )
+  dw here_,place_
+  dw here_
+  dw b_l_,over_,count_,plus_,c_store_ ; append trailing blank
+  dw semicolon_s_
+
+  endif
+
 endif 
 
-if 1
+if 1 ; XXX TMP -- for debugging
 
   _colon_header wordx_,'WORDX' ; XXX TMP
 
@@ -5296,20 +6113,53 @@ if 1
   dw cmove_ ; move the word
   dw here_
 
-  if 0 ; XXX OLD
-    ;dw space_ ; XXX INFORMER
-    ;dw depth_,dot_ ; XXX INFORMER
-    ;_echo 'blk ' ; XXX INFORMER
-    ;dw blk_,fetch_,dot_ ; XXX INFORMER
-    ;_echo 'in ' ; XXX INFORMER
-    ;dw in_,fetch_,dot_ ; XXX INFORMER
-    ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
-    ;dw key_,drop_ ; XXX INFORMER
-  endif
-
   dw semicolon_s_
 
 endif
+
+if 1 ; XXX TMP for debugging
+
+  _colon_header word88_,'WORD88' ; XXX TMP
+
+; XXX NEW after Z88 CamelForth
+
+;   dup  source >in @ /string   ( c c a n )
+;   dup >r   rot skip           ( c a' n' )
+;   over >r  rot scan           ( a" n" )
+;   dup if char- then           \ skip trailing delimiter
+;   r> r> rot -   >in +!        \ update >in offset
+;   tuck -                      ( a' n )
+;   here place                  ( )
+;   here                        ( a )
+;   bl over count + c! ;        \ append trailing blank
+
+  dw dup_,streamx_       ; ( c c ca len )
+  ;_brk "1"
+  dw dup_,to_r_         ; ( c c ca len ) ( R: len )
+  dw rot_,skipx_         ; ( c ca1 len1 ) ( R: len )
+  ;_brk "2"
+  dw over_,to_r_       ; ( c ca1 len1 ) ( R: len ca1 )
+  dw rot_,scanx_         ; ( ca2 len2 ) ( R: len ca1 )
+  ;_brk "3"
+  dw dup_
+  dw zero_branch_,word88.skip
+  ;_brk "char-"
+  dw char_minus_
+word88.skip:
+  ;_brk "4"
+  dw from_r_,from_r_    ; ( ca2 len2 ca1 len )
+  dw rot_,minus_        ; ( ca2 ca1 len3 )
+  dw to_in_,plus_store_  ; ( ca2 ca1 )
+  dw tuck_,minus_       ; ( ca1 len4 )
+  ;_brk "5"
+  dw here_,place_
+  dw here_
+  ;_brk "6"
+  dw b_l_,over_,count_,plus_,c_store_ ; append trailing blank
+  ;_brk "7"
+  dw semicolon_s_
+
+  endif
 
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
@@ -5318,7 +6168,7 @@ endif
 ;
 ; (number)  ( d1 ca1 -- d2 ca2 )  \ fig-Forth
 ;
-; Convert the ASCII text beginning at _ca1+l_ with regard to
+; Convert the text string beginning at _ca1+l_ with regard to
 ; `base`. The new value is accumulated into double number _d1_,
 ; being left as _d2_.  _ca2_ is the address of the first
 ; unconvertable digit. Used by `number`.
@@ -5326,12 +6176,15 @@ endif
 ; }doc
 
 paren_number.begin: ; begin
+  _chk '(number) -- begin' ; XXX INFORMER
   dw one_plus_ ; address of the next digit
   dw dup_,to_r_ ; save the address
   dw c_fetch_ ; get the digit
-  ;dw dot_s_,key_,drop_; XXX INFORMER
-  ;dw dup_,dup_,cr_,dot_,emit_; XXX INFORMER
-  dw base_,fetch_,digit_ ; convert the digit
+  _chk '(number) -- before digit?' ; XXX INFORMER
+;  dw dot_s_,key_,drop_; XXX INFORMER
+;  dw dup_,dup_,cr_,dot_,emit_; XXX INFORMER
+  dw base_,fetch_,digit_question_ ; convert the digit
+  _chk '(number) -- after digit?' ; XXX INFORMER
   dw zero_branch_,paren_number.end ; while
   dw swap_ ; get the high order part of d1 to the top.
   dw base_,fetch_,u_m_star_ ; multiply by base value
@@ -5348,6 +6201,7 @@ paren_number.decimal_point_done:
   dw branch_,paren_number.begin ; repeat
 paren_number.end:
   dw from_r_ ; address of the first non-convertable digit, a2.
+  _chk '(number) -- end' ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5358,15 +6212,15 @@ paren_number.end:
 ; number  ( ca  -- d )  \ fig-Forth
 ;
 ; Convert a counted character string left at _ca_, to a signed
-; .double number, using the current numeric base. If a decimal
-; point is encountered in the text, its position will be given
-; in `dpl`, but no other effect occurs. If numeric conversion is
-; not possible, an error message will be given.
+; double number _d_, using the current numeric base. If a
+; decimal point is encountered in the text, its position will be
+; given in `dpl`, but no other effect occurs. If numeric
+; conversion is not possible, an error message will be given.
 ;
 ; }doc
 
-  ;dw cr_,dup_,count_,swap_,dot_,dot_ ; XXX INFORMER
-  ;dw dup_,count_,type_ ; XXX INFORMER
+  _brk 'number -- start' ; XXX INFORMER
+;  dw dup_,count_,cr_,dot_s_,cr_,type_ ; XXX INFORMER
   dw zero_,zero_,rot_ ; two zeros, initial value of the double number
   dw dup_,one_plus_,c_fetch_ ; get the first digit
   _literal '-'
@@ -5381,11 +6235,12 @@ paren_number.end:
   ; the first digit.
   dw lit_,-1 ; initial value of `dpl`
 number.begin:
+  _chk 'number -- begin' ; XXX INFORMER
   dw dpl_,store_
   dw paren_number_ ; convert one digit after another until an invalid char occurs
   dw dup_,c_fetch_ ; get the invalid digit
-  ;dw dot_s_,key_,drop_; XXX INFORMER
-  ;dw cr_,dup_,emit_; XXX INFORMER
+;  dw dot_s_,key_,drop_; XXX INFORMER
+;  dw cr_,dup_,emit_; XXX INFORMER
   dw b_l_,equals_ ; is it a blank?
   dw question_branch_,number.a_blank
   ; The invalid digit is not a blank.
@@ -5401,7 +6256,7 @@ number.a_blank:
   dw from_r_ ; pop the flag of "-" sign back
   dw zero_branch_,number.end
   ; The first digit is a "-" sign.
-  dw dnegate_
+  dw d_negate_
 number.end:
   dw semicolon_s_
 
@@ -5615,6 +6470,20 @@ error_to_number.do
 ; ----------------------------------------------
   _colon_header error_,'ERROR'
 
+
+; doc{
+;
+; error  ( n -- )
+; 
+; Issue error message _n_ and restart the system.  Save the
+; error number into `error-number`, and the current block and
+; line into `error-pos`, to be used by `where`.
+;
+; This word is a modified version of fig-Forth `error`.
+;
+; }doc
+
+
   dw dup_,error_number_,store_ ; save the error number
   ; XXX OLD
   ; XXX TODO
@@ -5622,7 +6491,11 @@ error_to_number.do
 ;  dw question_branch_,paren_abort_pfa ; if so, branch to it
 
 error.message:
-  dw here_,count_,type_ ; last parsed word ; XXX TODO adapt to `parse-word`
+if 1 ; fig_parsing
+  dw here_,count_,type_ ; last parsed word
+else
+  dw parsed_name_,two_fetch_,type_ ; last parsed word
+endif
   dw paren_dot_quote_
   _string '? '
   dw message_
@@ -5651,13 +6524,17 @@ error.end:
   ;
   ; the only secure method is:
   ;
-  ;   get-order n>r also current @ context ! defined nr> set-order
+  ;   get-order n>r also current @ context ! defined nr>
+  ;   set-order
   ;
-  ; but that would make the compilation slower.
-  ; i think it can be left to the programmer.
+  ; but that would make the compilation slower.  i think it can
+  ; be left to the programmer.
   ;
   ; XXX TODO -- 2015-09-13: check only when `warnings` is on,
   ; and check only `current`!
+  ;
+  ; XXX TODO -- use `parse-name` directly, and, if `warnings` is
+  ; on, `search-wordlist.
 
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
@@ -5996,6 +6873,8 @@ two_literal.end:
 ;
 ; }doc
 
+if 1 ; fig_parsing
+
 interpret.begin:
 
   ; XXX TODO -- finish
@@ -6005,13 +6884,8 @@ interpret.begin:
   ; interpretation mode), `interpret` must be modified.
 
   dw question_stack_
-  ; dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
-  ;dw cr_,dot_s_ ; XXX INFORMER
-  ; _echo 'In interpret after defined ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
   dw question_dup_ ; found?
-  ; dw lit_,4,border_,dot_s_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found
 
   ; Found ( cfa 1 | cfa -1 )
@@ -6032,35 +6906,108 @@ interpret.begin:
 
 interpret.execute:
   ; Executing or immediate ( cfa )
-  ;_echo 'about to execute cfa ' ; XXX INFORMER
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-;  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
   dw execute_
-  ;dw zero_,border_ ; XXX INFORMER
   dw branch_,interpret.begin
 
 interpret.word_not_found:
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
+
+
   ; try to convert the text to a number
   ; ( ca )
-  ;_echo 'about to convert to number ' ; XXX INFORMER
-  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw number_
-  ;dw zero_,border_ ; XXX INFORMER
+
   dw dpl_,fetch_,one_plus_ ; is there a decimal point?
   dw zero_branch_,interpret.16bit_number
   ; decimal point detected, so it's a double, 32-bit, number
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw two_literal_
   dw branch_,interpret.begin
 
 interpret.16bit_number:
-  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
+
   ; no decimal point, so it's a 16-bit number
   dw drop_ ; discard high order part of the double number
   ; XXX TODO use `c_literal` for 8-bit values.
   dw literal_
   dw branch_,interpret.begin
+
+else
+
+  ; XXX NEW
+
+interpret.begin:
+
+;  _brk 'interpret -- begin'
+  dw question_stack_
+;  _brk 'interpret -- before parse-name'
+  dw parse_name_  ; ( ca len )
+;  _brk 'interpret -- after parse-name'
+;  dw two_dup_,cr_,type_ ; XXX INFORMER
+  dw dup_ ; not end of stream?
+  dw zero_branch_,interpret.end ; while
+
+  dw save_counted_string_
+
+  ; XXX TODO --
+  ; write `find-name` ( ca len -- ca len 0 | cfa 1 | cfa -1 )
+
+;  _brk 'interpret -- before find'
+  dw find_ ; ( ca 0 | cfa 1 | cfa -1 )
+;  _brk 'interpret -- after find'
+  dw question_dup_ ; found?
+  dw zero_branch_,interpret.word_not_found
+
+  ; Found ( cfa 1 | cfa -1 )
+  ; Immediate word:     ( cfa  1 )
+  ; Non-immediate word: ( cfa -1 )
+  dw comp_question_
+  ; ( cfa 1 state | cfa -1 state )
+  ; Compiling an immediate word:     ( cfa  1 -1 )
+  ; Compiling a non-immediate word:  ( cfa -1 -1 )
+  ; Executing an immediate word:     ( cfa  1  0 )
+  ; Executing a non-immediate word:  ( cfa -1  0 )
+  dw equals_ ; compiling a non-immediate word?
+  dw zero_branch_,interpret.execute
+
+  ; Compiling a non-immediate word  ( cfa )
+  dw compile_comma_
+  dw branch_,interpret.begin
+
+interpret.execute:
+  ; Executing or immediate ( cfa )
+  dw execute_
+  dw branch_,interpret.begin
+
+interpret.word_not_found:
+  ; try to convert the text to a number
+  ; ( ca )
+;  _chk 'interpret -- before number' ; XXX INFORMER
+;  dw dup_,count_,cr_,dot_s_,cr_,type_ ; XXX INFORMER
+
+  dw count_ ; XXX TMP
+  dw number_question_ ; is it a number?
+  dw zero_equals_
+  _question_error error.not_understood ; error if not
+
+;  _chk 'interpret -- after number' ; XXX INFORMER
+  dw dpl_,fetch_ ; single number?
+  dw question_branch_,interpret.16bit_number
+  ; decimal point detected, so it's a double, 32-bit, number
+  dw two_literal_
+  dw branch_,interpret.begin
+
+interpret.16bit_number:
+  dw drop_ ; discard high order part of the double number
+  dw literal_
+
+  dw branch_,interpret.begin ; repeat
+
+interpret.end:
+  _chk 'interpret -- end'
+  dw two_drop_
+  dw semicolon_s_
+
+
+endif
 
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
@@ -6124,12 +7071,29 @@ do_vocabulary:
 quit.do:
   dw rp0_,fetch_,rp_store_
   dw cr_
+
+;  _brk 'quit -- before query' ; XXX INFORMER
+
+if 1 ; fig_parsing
   dw query_
+else
+  dw refill_,drop_ ; XXX TMP
+endif
+
+;  _brk 'quit -- before interpret' ; XXX INFORMER
+
   dw interpret_
+
+;  _brk 'quit -- after interpret' ; XXX INFORMER
+
   dw comp_question_
   dw question_branch_,quit.do
   dw paren_dot_quote_
   _string 'ok'
+
+;   _echo 'In quit after ok:' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_ ; XXX INFORMER
+
   dw branch_,quit.do
 
 ; ----------------------------------------------
@@ -6348,9 +7312,11 @@ common_start:
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
+; ----
+; : s>d  ( n -- d )  dup 0<  ;
+; ----
+;
 ; }doc
-
-; dup 0<
 
   ld hl,0
   pop de
@@ -6391,7 +7357,7 @@ plus_minus.end:
 
   dw zero_less_than_
   dw zero_branch_,d_plus_minus.end
-  dw dnegate_
+  dw d_negate_
 d_plus_minus.end:
   dw semicolon_s_
 
@@ -6408,6 +7374,8 @@ d_plus_minus.end:
 
   dw dup_,plus_minus_
   dw semicolon_s_
+
+  pop hl
 
 ; ----------------------------------------------
   _colon_header dabs_,'DABS'
@@ -6669,6 +7637,8 @@ message.number_only:
   dw buffer_id_,zero_less_than_
   dw semicolon_s_
 
+if 1 ; fig_parsing
+
 ; ----------------------------------------------
   _colon_header stream_end_,'STREAM-END'
 
@@ -6685,6 +7655,8 @@ message.number_only:
   db 3,space_char,0,space_char ; string
   dw rot_,smove_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header empty_buffers_,'EMPTY-BUFFERS'
@@ -7053,18 +8025,21 @@ read_write_sector_command:
 
 ; doc{
 ;
-; (load)  ( i*x u -- j*x )
+; (load)  ( u -- )
 ;
-; Store the first disk block of screen _u_ into `blk` (thus making
-; screen _u_ the input source and setting the input buffer to
-; encompass its contents), set `>in` to zero, and interpret.
-; Other stack effects are due to the words loaded.
+; Store the first disk block of screen _u_ into `blk` (thus
+; making screen _u_ the input source and setting the input
+; buffer to encompass its contents), set `>in` to zero, and
+; interpret.  Other stack effects are due to the words loaded.
 ;
 ; An error is issued if _u_ is zero.
-;
-; ---- : (load)  ( i*x u -- j*x ) dup scr !  dup 0= 9 ?error
-; b/scr * blk !  >in off  interpret  ; ----
-;
+
+; ----
+; : (load)  ( u -- )
+;   dup scr !  dup 0= 9 ?error
+;   b/scr * blk !  >in off  interpret  ;
+; ----
+
 ; }doc
 
   dw dup_,scr_,store_
@@ -7072,29 +8047,7 @@ read_write_sector_command:
   _question_error error.loading_from_screen_0
   dw b_slash_scr_,star_,blk_,store_
   dw to_in_,off_,interpret_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header continued_,'CONTINUED'
-
-; doc{
-;
-; continued  ( i*x u -- j*x )  \ Forth-79 (uncontrolled word
-; definition from the Reference Word Set)
-;
-; Store _u_ in `blk` (thus making block _u_ the input source and
-; setting the input buffer to encompass its contents), set `>in`
-; to zero, and interpret.  Other stack effects are due to the
-; words loaded.
-;
-; ----
-; : continued  ( -- )
-;   ?loading (load)  ;
-; ----
-;
-; }doc
-
-  dw question_loading_,paren_load_
+  _brk '(load) -- after interpret' ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7164,23 +8117,29 @@ read_write_sector_command:
 
   ; XXX TODO -- adapt to the new parsing method
 
-if 1 ; XXX OLD
+if 1 ; fig_parsing
+
+;   _echo 'In defined before word ' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
 
   dw b_l_,word_ ; ( ca2 )
 
-else ; XXX NEW
+else
 
   dw parse_name_  ; ( ca1 len1 )
-  ;dw cr_,dot_s_,lit_,1,border_,key_,drop_ ; XXX INFORMER
+;  dw cr_,dot_s_,lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw save_counted_string_ ; ( ca2 )
-  ;dw cr_,dot_s_,lit_,2,border_,key_,drop_ ; XXX INFORMER
+;  dw cr_,dot_s_,lit_,2,border_,key_,drop_ ; XXX INFORMER
 
 endif
 
+;   _echo 'In defined after word ' ; XXX INFORMER
+;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+
   ; dw dup_,count_,uppers_  ; uppercase ( ca2 ) ; XXX OLD
-  ;dw cr_,dot_s_,lit_,3,border_,key_,drop_ ; XXX INFORMER
+;  dw cr_,dot_s_,lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw find_
-  ;dw cr_,dot_s_,lit_,4,border_,key_,drop_ ; XXX INFORMER
+;  dw cr_,dot_s_,lit_,4,border_,key_,drop_ ; XXX INFORMER
 
   dw semicolon_s_
 
@@ -8181,7 +9140,7 @@ endif
   ;  [char] " (s)  ; immediate
 
   _literal '"'
-  dw paren_s_
+  dw parse_string_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8301,16 +9260,16 @@ end cold_entry
 ; ==============================================================
 ; Debug tools
 
-  ;dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
-  ;dw lit_,7,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+;  dw lit_,0,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,1,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,4,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,5,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+;  dw lit_,7,border_,key_,drop_ ; XXX INFORMER
 
-  ;dw two_dup_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
+;  dw two_dup_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
 
 ; ==============================================================
 ; Development notes

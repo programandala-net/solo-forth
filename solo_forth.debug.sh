@@ -8,9 +8,9 @@
 # 0x635B next2
 
 fuse-gtk \
-   --debugger-command "break 0x635B" \
   solo_forth_disk_1.mgt  &
 
+#   --debugger-command "break 0x635B" \
     # --debugger-command "break 0x8266
   # break 0x8270
   # break 0x8275" \

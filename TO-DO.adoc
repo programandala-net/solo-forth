@@ -1,64 +1,25 @@
 = Solo Forth TO-DO
+:revdate: 2015-09-14
 
-.2015-06-06:
+// This file is part of Solo Forth
+// http://programandala.net/en.program.solo_forth.html
 
-DZX-Forth implements `exit` simple as `compile (exit)`, and
-`exit` is the word called by `;`. Compare both implementations.
-
-.2015-08-12:
-
-Solve `;s` vs `exit`. Compare CamelForth, DZX-Forth...
-
-.2015-06-07:
-
-Write a version of `screen` that recognizes the UDG.
-
-Change: move key to the blocks, as `mode-key` or similar, and use a
-simpler `key` (`akey` from Afera).
+// }}}
+== Inner ==
+// {{{
 
 .2015-06-09:
 
 In order to save compilation time, move inner words to the bottom of
 the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 
-.2015-06-10:
-
-Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
-
-  : TERMINAL ( --- )
-    LIT PKEY (KEY) !    \ Set default handler for KEY.
-    >S ;                \ And initialize screen output.
-
-New: A printing routine instead the ROM routines, with two fonts: for
-chars 0..127 and for chars 128..255.
-
-.2015-06-17:
-
-New:
-- Case-sensitive mode.
-- Create words in lowercase.
-- Improve `parse-name` with case conversion and move it to the kernel.
-
-.2015-06-20:
-
-New: `executing?` after DZX-Forth.
-
-New: `rshift` and `lshift`, from DZX-Forth.
-
 .2015-06-22:
-
-New: `within`, `between`, from DZX-Forth.
 
 This error happens in all fig-Forth systems:
 
 ----
 : test 6 literal ;  RAL ? [ rubbish ] MGS # 2
 ----
-
-.2015-06-25:
-
-New: `??`. A control structure than executes the next compiled word if
-TOS is non-zero, else skip it.
 
 .2015-06-30:
 
@@ -68,11 +29,186 @@ Change: remove double `;s` from the colon words in the kernel. Use
 `exit` instead, else the word can not be decoded. [2015-08-12: Two
 cases found and marked.]
 
+Change: compare the user variables with those of Spectrum Forth-83.
+
+.2015-07-23:
+
+Fix: the string searched for by `(find)` must be in the string buffer,
+below 0xC000! This is not a problem now, during the development,
+because the dictionary is small. A specific buffer is needed.
+
+.2015-08-12:
+
+Change: remove the control structure checking (`?pairs`). (now it's
+conditionally compiled in the kernel)
+
+Change: make the vocabulary links point to the pfa of the
+vocabularies? `vocabulary` should be adapted too. The advantage is the
+pfa is also the id used in search order and returned by `wordlist`.
+A word `pfa>vlfa` would be helpful.
+
+Improve: show the version in the greeting message.
+
+.2015-08-14:
+
+Fix: problem when compiler security is off.
+
+.2015-09-15:
+
+|===
+| Solo Forth (now) | Forth-83  | Gforth              | Solo Forth (new)
+
+| cfa>nfa          | >name     | >name               | >name
+| cfa>pfa          | >body     | >body               | >body
+| cfap>lfa         |           |                     | >>link pointer>link
+| lfa>nfa          | l>name    |                     | link>name
+| nfa>cfa          | name>     | name>int name>comp  | name>
+| nfa>lfa          | n>link    |                     | name>link
+| nfa>string       |           | name>string         | name>string
+| pfa>cfa          | body>     |                     | body>
+| pfa>lfa          |           |                     | body>link
+| pfa>nfa          |           |                     | body>name
+|===
+
+// }}}
+== Documentation ==
+// {{{
+
+.2015-07-23:
+
+Adapt the markups of Z88 CamelForth to extract the glossary from the
+source.
+
+// }}}
+== Turnkey ==
+// {{{
+
+.2015-07-23:
+
+Study how to save and load the main code and the name bank apart, in
+two files. This way `turnkey` could be used also to save a modified
+copy of the system, not just Forth programs. Simpler solution: use the
+snapshop option of the +D.
+
+.2015-08-31:
+
+Problem: a szx snapshot does not preserve the mounted disks, and even
+worse, it does not preserve G+DOS!
+
+Of course the +D own snapshots can be used to save the status of a
+game, but this means programs have to be started manually, typing
+`run` in BASIC to load G+DOS, and then loading the snapshot file.
+
+// }}}
+== Disk blocks ==
+// {{{
+
+.2015-08-15:
+
+Idea: maybe 0 could be used instead of 0x7fff to init the block number of a buffer.
+
+Idea: instead of update bit, `negate` the number. Then `abs` can be used.
+
+.2015-08-31:
+
+Fix: `transfer-block` changes the current drive to 2!
+
+// }}}
+== Graphics ==
+// {{{
+
+.2015-08-02:
+
+Fix: `attr`.
+
+.2015-09-01:
+
+Options for text and graphic cursor words.
+
+|===
+| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
+
+| at         | at@        | at-pixel        | at-pixel@       | home-pixel
+| at         | at@        | gat             | gat@            | ghome
+| at         | at@        | graphic-at      | graphic-at@     | graphic-home
+| at         | at@        | xy-at           | xy-at@          | xy-home
+| at-xy      | ?at        | gat-xy          | ?gat            | ghome
+| at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
+| at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-gxy          | gxy             | ghome
+| at-xy      | xy@        | at-coords       | coords@         | home-coords
+| at-xy      | xy@        | at-gxy          | gxy@            | ghome
+| at-xy      | xy@        | gat-xy          | gxy@            | ghome
+| cursor!    | cursor@    | gcursor!        | gcursor@        | ghome
+| cursor!    | cursor@    | graph-cursor!   | graph-cursor@   | graph-home
+| cursor!    | cursor@    | graphic-cursor! | graphic-cursor@ | graphic-home
+| cursor!    | cursor@    | xy!             | xy@             | xy-home
+| cursor!    | cursor@    | xy-cursor!      | xy-cursor@      | xy-home
+| set-cursor | get-cursor | set-coords      | get-coords      | home-coords
+| set-cursor | get-cursor | set-xy          | get-xy          | home-xy
+| set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
+|===
+
+So far (2015-09-15) the best is:
+
+|===
+| at-xy      | xy         | at-coords       | coords          | home-coords
+|===
+
+
+.2015-09-05:
+
+Name for graphic fill: `flood`.
+
+// }}}
+== Screen modes ==
+// {{{
+
+.2015-06-10:
+
+New: A printing routine instead the ROM routines, with two fonts: for
+chars 0..127 and for chars 128..255.
+
+.2015-09-05:
+
+There's an example how to change and restore a channel in print-42, by
+Ricardo Serral Wigge. Beside, it supports many (all?) control
+characters, unlike the implementation by Andy Jenkinson.
+
+.2015-09-08:
+
+Fix: `bye` resets the system when `mode42` is on. Move `mode32` to the
+kernel and set it before going back to BASIC. Restore the previous
+mode after a warm entry.
+
+.2015-09-11:
+
+Idea: screen modes table?
+
+- 0: 32 cpl original (ROM routines)
+- 1: 32 cpl improved (bold, italic).
+- 3: 36 cpl
+- 4: 42 cpl
+- 5: 51 cpl
+- 6: 64 cpl
+
+It seems more versatile to create different words to switch the modes
+on and provide a common user interface to row, column, cpl, window...
+
+// }}}
+== Keyboard ==
+// {{{
+
+.2015-06-07:
+
+Change: move key to the blocks, as `mode-key` or similar, and use a
+simpler `key` (`akey` from Afera).
+
+.2015-06-30:
+
 Change: modify `expect` after Spectrum Forth-83.
 
 Change: modify `key` after Forth-83 and ANS Forth.
-
-Change: compare the user variables with those of Spectrum Forth-83.
 
 .2015-07-05:
 
@@ -103,19 +239,83 @@ From F83:
 ----
 
 
+.2015-09-12:
+
+use bit 5 of FLAGS to detect and reset a new char.
+
+// }}}
+== Parsing ==
+// {{{
+
+.2015-06-17:
+
+New:
+- Case-sensitive mode.
+- Create words in lowercase.
+- Improve `parse-name` with case conversion.
+
+.2015-09-01:
+
+Fix: `s"`, `s\"`, `(`... all crash the system when the end delimiter is mising.
+This didn't happen with Abersoft Forth. The reason is the change of
+the zero char terminator to the zero string.
+
+This code in a screen leaves two zeros:
+
+----
+s" hola
+y adios"
+.s
+----
+
+New verions of `scan`, `skip`, `parse`, `parse-name` and `word` have
+been written, selectable with conditional compilation. Permanent
+copies of those words have the "x" suffix added, for debugging.
+
+Change: `parsed` to `>in +!` and choose a new name for `1+ ; parsed` or
+write as is.
+
+.2015-09-16:
+
+
+New: `find-name` ( ca len -- ca len 0 | cfa 1 | cfa -1 )
+
+Fix: when `fig_parsing` is off, interpretation of numbers causes error
+#1.
+
+// }}}
+== Misc new words ==
+// {{{
+
+.2015-06-06:
+
+DZX-Forth implements `exit` simple as `compile (exit)`, and
+`exit` is the word called by `;`. Compare both implementations.
+
+.2015-06-10:
+
+Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
+
+  : TERMINAL ( --- )
+    LIT PKEY (KEY) !    \ Set default handler for KEY.
+    >S ;                \ And initialize screen output.
+
+.2015-06-20:
+
+New: `executing?` after DZX-Forth.
+
+New: `rshift` and `lshift`, from DZX-Forth.
+
+.2015-06-22:
+
+New: `within`, `between`, from DZX-Forth.
+
+.2015-06-25:
+
+New: `??`. A control structure than executes the next compiled word if
+TOS is non-zero, else skip it.
+
 .2015-07-23:
-
-Study how to save and load the main code and the name bank apart, in
-two files. This way `turnkey` could be used also to save a modified
-copy of the system, not just Forth programs. Simpler solution: use the
-snapshop option of the +D.
-
-Adapt the markups of Z88 CamelForth to extract the glossary from the
-source.
-
-Fix: the string searched for by `(find)` must be in the string buffer,
-below 0xC000! This is not a problem now, during the development,
-because the dictionary is small. A specific buffer is needed.
 
 New: `lower` and `lowers`.
 
@@ -140,106 +340,13 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 
 .2015-08-12:
 
-Change: remove the control structure checking (`?pairs`). (now it's
-conditionally compiled in the kernel)
-
-Change: make the vocabulary links point to the pfa of the
-vocabularies? `vocabulary` should be adapted too. The advantage is the
-pfa is also the id used in search order and returned by `wordlist`.
-A word `pfa>vlfa` would be helpful.
-
-New: `cvariable`.
-
-Fix: `attr`.
-
-Improve: show the version in the greeting message.
-
-.2015-08-14:
-
-Fix: problem when compiler security is off.
-
-.2015-08-15:
-
-Idea: maybe 0 could be used instead of 0x7fff to init the block number of a buffer.
-
-Idea: instead of update bit, `negate` the number. Then `abs` can be used.
+Solve `;s` vs `exit`. Compare CamelForth, DZX-Forth...
 
 .2015-08-26:
 
 New: `cvalue`, `2value`.
 
-.2015-08-31:
-
-Fix: `transfer-block` changes the current drive to 2!
-
-Problem: a szx snapshot does not preserve the mounted disks, and even
-worse, it does not preserve G+DOS!
-
-Of course the +D own snapshots can be used to save the status of a
-game, but this means programs have to be started manually, typing
-`run` in BASIC to load G+DOS, and then loading the snapshot file.
-
-.2015-09-01:
-
-Fix: `s" string` (pressing Enter without typing the closing quote)
-crashes the system. This didn't happen in Abersoft Forth: the string
-was left on the stack.
-
-Idea: `where-xy` or simply `xy` to return the current cursor position.
-
-Idea: `at-pixel` to set the graphic position.
-
-Other options:
-
-|===
-| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
-
-| at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
-| at-xy      | ?at        | gat-xy          | ?gat            | ghome
-| at         | at@        | at-pixel        | at-pixel@       | home-pixel
-| at         | at@        | graphic-at      | graphic-at@     | graphic-home
-| at         | at@        | xy-at           | xy-at@          | xy-home
-| at         | at@        | gat             | gat@            | ghome
-| set-cursor | get-cursor | set-xy          | get-xy          | home-xy
-| set-cursor | get-cursor | set-coords      | get-coords      | home-coords
-| cursor!    | cursor@    | graphic-cursor! | graphic-cursor@ | graphic-home
-| cursor!    | cursor@    | graph-cursor!   | graph-cursor@   | graph-home
-| cursor!    | cursor@    | gcursor!        | gcursor@        | ghome
-| cursor!    | cursor@    | xy-cursor!      | xy-cursor@      | xy-home
-| cursor!    | cursor@    | xy!             | xy@             | xy-home
-|===
-
-.2015-09-05:
-
-Name for graphic fill: `flood`.
-
-There's an example how to change and restore a channel in print-42, by
-Ricardo Serral Wigge. Beside, it supports many (all?) control
-characters, unlike the implementation by Andy Jenkinson.
-
-.2015-09-08:
-
-Fix: `bye` resets the system when `mode42` is on. Move `mode32` to the
-kernel and set it before going back to BASIC. Restore the previous
-mode after a warm entry.
-
-.2015-09-11:
-
-Idea: screen modes table?
-
-- 0: 32 cpl original (ROM routines)
-- 1: 32 cpl improved (bold, italic).
-- 3: 36 cpl
-- 4: 42 cpl
-- 5: 51 cpl
-- 6: 64 cpl
-
-It seems more versatile to create different words to switch the modes
-on and provide a common user interface to row, column, cpl, window...
-
 .2015-09-12:
-
-use bit 5 of FLAGS to detect and reset a new char.
 
 Ideas from Forth-79:
 ____
@@ -274,6 +381,3 @@ From the Spectrum Forth-83 manual:
 
 `rp` should be a user variable?
 
-Fix: `s"`, `s\"`, `(`... all crash the system when the end delimiter is mising.
-This didn't happen with Abersoft Forth. The reason is the change of
-the zero char terminator to the zero string.
