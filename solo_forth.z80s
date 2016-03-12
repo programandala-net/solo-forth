@@ -606,6 +606,7 @@ paren_find_lfa:
 paren_find_:
   dw paren_find_pfa
 paren_find_pfa:
+  ; XXX TODO optimize speed with absolute jumps?
   pop de
 l5f75h:
   pop hl
@@ -661,8 +662,9 @@ enclose_lfa:
 enclose_:
   dw enclose_pfa
 enclose_pfa:
-  pop de
-  pop hl
+  ; XXX TODO optimize: exchange the parameters and save `swap` before calling.
+  pop de ; e  = delimiter
+  pop hl ; hl = address
   push hl
   ld a,e
   ld d,a
@@ -2888,11 +2890,9 @@ expect.do:
   dw equals_
   dw zero_branch_,expect.not_the_delete_key ; if
 
-  ; XXX FIXME This word has a bug in
-  ; Abersoft Forth.  After using the delete
-  ; key, the typed word is not recognized.
-  ; Maybe the `noop` the author used to
-  ; patch the original bell?
+  ; XXX FIXME This word has a bug in Abersoft Forth.  Sometimes, after using
+  ; the delete key, the typed word is not recognized.  Maybe the `noop` the
+  ; author used to patch the original bell?
 
   ; Delete key
   ;dw lit_,1,border_ ; XXX INFORMER
@@ -2917,14 +2917,14 @@ expect.not_the_delete_key:
   dw c_lit_
   db carriage_return_char
   dw equals_ ; carriage return?
-  dw zero_branch_,expect.not_the_enter_key
+  dw zero_branch_,expect.ordinary_key
   ; carriage return
   ;dw lit_,2,border_ ; XXX INFORMER
   dw leave_
   dw drop_,b_l_,zero_
   dw branch_,expect.store
 
-expect.not_the_enter_key:
+expect.ordinary_key:
   dw dup_
 
 expect.store:
@@ -2985,7 +2985,7 @@ x_pfa:
   ; The last buffer, the end of the text block.
   dw question_exec_ ; error if not executing
   ; Discard the top address on the return stack, which is the
-  ;	address of `?stack` after `execute` in the interpretation loop.
+  ; address of `?stack` after `execute` in the interpretation loop.
   ; XXX FIXME why `rdrop` bombs out here?
   dw from_r_,drop_
   dw branch_,x.end
@@ -3002,24 +3002,22 @@ fill_lfa:
 fill_:
   dw fill_pfa
 fill_pfa:
-  pop de
+  pop de ; e = char
 fill.e:
   ld l,c
-  ld h,b
-  pop bc
-  ex (sp),hl
-  ex de,hl
+  ld h,b ; the Forth IP
+  pop bc ; bc = count
+  ex (sp),hl ; save the Forth IP
 fill.do
   ld a,b
   or c
   jp z,fill.end
-  ld a,l
-  ld (de),a
-  inc de
+  ld (hl),e
+  inc hl
   dec bc
   jp fill.do
 fill.end:
-  pop bc
+  pop bc ; restore the Forth IP
   _jp_next
 
 erase_nfa:
@@ -3039,7 +3037,7 @@ blanks_lfa:
 blanks_:
   dw blanks_pfa
 blanks_pfa:
-  ld e,b_l_
+  ld e,' '
   jp fill.e
 
 hold_nfa:
@@ -3083,10 +3081,11 @@ word.from_terminal:
   dw tib_,fetch_
 word.from_address:
   dw in_,fetch_,plus_,swap_,enclose_
+
   dw here_
   dw c_lit_
   db 0x22
-  dw blanks_
+  dw blanks_ ; XXX original
   dw in_,plus_store_
   dw over_,minus_
   ;dw dup_,dot_ ; XXX INFORMER
@@ -3099,8 +3098,8 @@ word.from_address:
   dw cmove_ ; move
   ; XXX FIXME blank 1-char strings are parsed from empty screens!
   ; they are converted to 0 by `number` and the stack gets full!
-  ;dw lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
-  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+  dw lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
+  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
 paren_number_nfa:
@@ -3146,43 +3145,42 @@ number_lfa:
 number_:
   dw do_colon
 number_pfa:
-  dw zero_
-  dw zero_
-  dw rot_
-  dw dup_
-  dw one_plus_
-  dw c_fetch_
+  dw zero_,zero_,rot_ ; two zeros, initial value of the double number
+  dw dup_,one_plus_,c_fetch_ ; get the first digit
   dw c_lit_
-  db 0x2D
-  dw equals_
-  dw dup_
-  dw to_r_
+  db '-'
+  dw equals_ ; is it a minus sign?
+  dw dup_,to_r_ ; save the flag
+  ; XXX TODO add `abs` here when `true` is changed to `-1`
   dw plus_
-  dw lit_,0xFFFF
-branch_destination_0x6A89:
-  dw dpl_
-  dw store_
-  dw paren_number_
-  dw dup_
-  dw c_fetch_
-  dw b_l_
-  dw minus_
-  dw zero_branch_,branch_destination_0x6AAF
-  dw dup_
-  dw c_fetch_
+  ; If the first digit is "-", the flag is 1,
+  ; and addr+1 points to the second digit.
+  ; If the first digit is not "-", the flag is
+  ; 0.  addr+0 remains the same, pointing to
+  ; the first digit.
+  dw lit_,-1 ; initial value of `dpl`
+number.begin:
+  dw dpl_,store_
+  dw paren_number_ ; convert one digit after another until an invalid char occurs
+  dw dup_,c_fetch_ ; get the invalid digit
+  dw b_l_,not_equals_ ; not a blank?
+  dw zero_branch_,number.not_a_blank
+  ; The invalid digit is not a blank.
+  dw dup_,c_fetch_ ; get the invalid digit again
   dw c_lit_
-  db 0x2E
-  dw minus_ ; XXX TODO not_equals_
-  dw one_
-  dw question_error_
+  db '.'
+  dw not_equals_ ; not a decimal point?
+  dw one_,question_error_ ; error if not
+  ; Decimal point found, set `dpl` to zero next time.
   dw zero_
-  dw branch_,branch_destination_0x6A89
-branch_destination_0x6AAF:
-  dw drop_
-  dw from_r_
-  dw zero_branch_,branch_destination_0x6AB9
+  dw branch_,number.begin ; repeat
+number.not_a_blank:
+  dw drop_ ; discard address
+  dw from_r_ ; pop the flag of "-" sign back
+  dw zero_branch_,number.end
+  ; Negate the number if the first digit is a "-" sign.
   dw dnegate_
-branch_destination_0x6AB9:
+number.end:
   dw semicolon_s_
 
 upperc_nfa:
@@ -3235,9 +3233,8 @@ minus_find_:
   dw do_colon
 minus_find_pfa:
   dw b_l_,word_
-  dw here_,count_,uppers_,here_
-  dw context_,fetch_,fetch_
-  dw paren_find_
+  dw here_,count_,uppers_
+  dw here_,context_,fetch_,fetch_,paren_find_
   dw dup_,zero_equals_ ; found?
   dw zero_branch_,minus_find.end
   ; The word was not found in the context vocabulary,
@@ -3569,7 +3566,7 @@ paren_:
   dw do_colon
 paren_pfa:
   dw c_lit_
-  db 0x29
+  db ')'
   dw word_
   dw semicolon_s_
 
@@ -3584,9 +3581,7 @@ quit_pfa:
   dw left_bracket_
 quit.do:
   dw rp_store_
-  dw cr_
-  dw query_
-  dw interpret_
+  dw cr_,query_,interpret_
   dw state_,fetch_
   dw question_branch_,quit.do
   dw paren_dot_quote_
