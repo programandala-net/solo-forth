@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511160232
+\ Last modified: 201511172215
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -13422,16 +13422,152 @@ defer num?
 
   frames@ cr .( Frames ) d. cr
 
-  \ 2015-11-04
+  \ Benchmark: interpretation of many source blocks from disk.
 
-  \             512-byte buffer 1024-byte buffer
-  \            ---------------- ----------------
-  \ Frames                20960     24310 (115%)
-  \                                 24042 (114%)
-  \ Bytes free            33242     32777 (-465)
+  \ ------------------------------------------------------------
+  \ Date       Condition             Bytes free   Frames (=20ms)
+  \ ---------- --------------------- ------------ --------------
+  \ 2015-11-04 512-byte buffer       33742        20960 (1.00)
+  \            1024-byte buffer      33277 (-465) 24310 (1.15)
+  \                                               24042 (1.14)
 
-  \ 1 frame = 50th of second
+  \ This is not good for benchmarking the headers, because most
+  \ of the time is wasted locating the blocks. That's why
+  \ both methods are equally fast:
 
+  \ ------------------------------------------------------------
+  \ Date       Condition             Bytes free   Frames (=20ms)
+  \ ---------- --------------------- ------------ --------------
+  \ 2015-11-17 `next-name` (1)       32807        40530
+  \                                               40485
+  \                                               40526
+  \            `nextname` (2)        32781        40555
+  \                                               40510
+  \                                               40554
+
+  \ (1) First method: `next-name` is a double variable that may
+  \ hold a string to be used as name by the next defining word.
+  \ `header` always checks this string and, if it's not empty,
+  \ uses it instead of parsing and then emptis it.
+  \
+  \ (2) Second method (written after Gforth): `nextname` stores
+  \ a string into the double variable `nextname-string`, and
+  \ sets the deferred word `header` to `nextname-header`, which
+  \ creates the header with the string name and restores the
+  \ default action of `header`: `input-stream-header`. This
+  \ method is more versatile and, beside, words with emtpy
+  \ names can be created.
+
+( header-benchmark )
+
+  \ XXX UNDER DEVELOPMENT
+
+002 load need bench warnings off bench : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
+: w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; marque
+
+  \ Benchmark: interpretation of many source blocks from disk.
+
+  \ ------------------------------------------------------------
+  \ Date       Condition             Bytes free   Frames (=20ms)
+  \ ---------- --------------------- ------------ --------------
+  \ 2015-11-17 `next-name` (1)       32807        490 (9 s)
+  \            `next-name` (4)       32791        494 (9 s)
+  \            `nextname` (2)        32781        491 (9 s)
+  \            `nextname` (3)        32765        494 (9 s)
+
+  \ (1) First method: `next-name` is a double variable that may
+  \ hold a string to be used as name by the next defining word.
+  \ `header` always checks this string and, if it's not empty,
+  \ uses it instead of parsing and then emptis it.
+  \
+  \ (2) Second method (written after Gforth): `nextname` stores
+  \ a string into the double variable `nextname-string`, and
+  \ sets the deferred word `header` to `nextname-header`, which
+  \ creates the header with the string name and restores the
+  \ default action of `header`: `input-stream-header`. This
+  \ method is more versatile and, beside, words with emtpy
+  \ names can be created.
+  \
+  \ (3) Same as (2) but with zero-length name check.
+  \
+  \ (4) Same as (1) but with zero-length name check.
+
+( header-benchmark )
+
+  \ XXX UNDER DEVELOPMENT
+
+
+2 load need bench warnings off blk @ 1+ constant b bench b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load b load
+b load b load b load b load b load b load b load b load marque
+
+  \ Benchmark: interpretation of many source blocks from disk.
+
+  \ ------------------------------------------------------------
+  \ Date       Condition             Bytes free   Frames (=20ms)
+  \ ---------- --------------------- ------------ --------------
+  \ 2015-11-17 `next-name` (1)       32807        40530
+  \                                               40485
+  \                                               40526
+  \            `nextname` (2)        32781        40555
+  \                                               40510
+  \                                               40554
+
+  \ (1) First method: `next-name` is a double variable that may
+  \ hold a string to be used as name by the next defining word.
+  \ `header` always checks this string and, if it's not empty,
+  \ uses it instead of parsing and then emptis it.
+  \
+  \ (2) Second method (written after Gforth): `nextname` stores
+  \ a string into the double variable `nextname-string`, and
+  \ sets the deferred word `header` to `nextname-header`, which
+  \ creates the header with the string name and restores the
+  \ default action of `header`: `input-stream-header`. This
+  \ method is more versatile and, beside, words with emtpy
+  \ names can be created.
+
+( header-benchmark )
+
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
+: foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ; : foo ;
 
 ( interpret-benchmark )
 

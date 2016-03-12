@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151116
+  ; Version:        20151117
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B4C
+version_low_part:   equ 0x7B4D
   
-  ; Last modified:  201511160219
+  ; Last modified:  201511172215
 
 ; ==============================================================
 ; Author and license
@@ -7150,26 +7150,165 @@ parse.end:
 ; parsed-name  ( -- a )
 ;
 ; A double variable that holds the address and length of the
-; most recently parsed name by `parse-name`.
+; most recently name parsed by `parse-name`.
 ;
 ; }doc
 
   dw 0,0
 
 ; ----------------------------------------------
-  _two_variable_header next_name_,'NEXT-NAME'
+  _two_variable_header nextname_string_,'NEXTNAME-STRING'
 
 ; doc{
 ;
 ; next-name  ( -- a )
 ;
 ; A double variable that may hold the address and length of a
-; name to be used by the next defining word.  When the length of
-; the string is zero, the stream is parsed for a name as usual.
+; name to be used by the next defining word.  This variable is
+; set by `nextname`.
 ;
 ; }doc
 
   dw 0,0
+
+if 0 ; nextname
+
+  ; XXX NEW -- This alternative was inspired by Gforth.
+  
+; ----------------------------------------------
+  _defer_header header_,'HEADER',,input_stream_header_
+
+; ----------------------------------------------
+  _colon_header question_name_too_short_,'?NAME-TOO-SHORT'
+
+; doc{
+;
+; ?name-to-short ( ca len -- )
+;
+; }doc
+
+  dw dup_,zero_equals_
+  _question_throw -16 ; attempt to use zero-length string as a name
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header input_stream_header_,'INPUT-STREAM-HEADER'
+
+; doc{
+;
+; header  ( "name" -- )
+
+; Create a dictionary header "name" with its code field
+; pointing to its parameter field.
+
+; ----
+; : input-stream-header  ( "name" | -- )
+;   parse-name header,  ;
+; ----
+
+; }doc
+
+  dw parse_name_
+  dw question_name_too_short_
+  dw header_comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header nextname_header_,'NEXTNAME-HEADER'
+
+; doc{
+;
+; nextname-header  ( -- )
+
+; Create a dictionary header with its code field pointing to its
+; parameter field, using the name string set by `nextname`.
+
+; ----
+; : nextname-header  ( -- )
+;   nextname-string 2@ header,
+;   ['] input-stream-header ['] header defer!  ;
+; ----
+
+; }doc
+
+  dw nextname_string_,two_fetch_,header_comma_
+  _literal input_stream_header_
+  _literal header_
+  dw defer_store_ ; restore the default behaviour of `header`
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header nextname_,'NEXTNAME'
+
+; doc{
+;
+; nextname  ( ca len -- )
+; 
+; ----
+; : nextname  ( ca len -- )
+;   nextname-string 2!
+;   ['] nextname-header ['] header defer!  ;
+; ----
+;
+; }doc
+
+  dw nextname_string_,two_store_
+  _literal nextname_header_
+  _literal header_
+  dw defer_store_ ; change the default behaviour of `header`
+  dw semicolon_s_
+
+else
+
+; ----------------------------------------------
+  _colon_header question_name_too_short_,'?NAME-TOO-SHORT'
+
+; doc{
+;
+; ?name-to-short ( ca len -- )
+;
+; }doc
+
+  dw dup_,zero_equals_
+  _question_throw -16 ; attempt to use zero-length string as a name
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header header_,'HEADER'
+
+; doc{
+;
+; header  ( "name" | -- )
+
+; Create a dictionary header with its code field pointing to its
+; parameter field.
+;
+; The double variable `next-name` may hold a string to be used
+; as the name.  If its length is zero, "name" is parsed from the
+; stream as usual.
+
+; ----
+; : header  ( "name" | -- )
+;   nextname-string 2@
+;   dup if    nextname-string off 
+;       else  2drop parse-name  then  header,  ;
+; ----
+
+; }doc
+
+  dw nextname_string_,two_fetch_
+  dw dup_
+  dw zero_branch_,header.parse_name
+  dw nextname_string_,off_
+  dw branch_,header.end
+header.parse_name
+  dw two_drop_,parse_name_
+header.end
+  dw question_name_too_short_
+  dw header_comma_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header parse_name_,'PARSE-NAME'
@@ -7409,11 +7548,11 @@ error.message:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_header_,'(HEADER)'
+  _colon_header header_comma_,'HEADER,'
 
 ; doc{
 ;
-; (header)  ( ca len -- )
+; header,  ( ca len -- )
 ;
 ; Create a dictionary header with the name _ca len_, with its
 ; code field pointing to its parameter field.
@@ -7424,18 +7563,18 @@ error.message:
   _question_throw error.zero_length_name
 
   dw warnings_,fetch_
-  dw zero_branch_,paren_header.continue
+  dw zero_branch_,header_comma.continue
 
   ; `warnings` is on
   dw two_dup_,current_,fetch_,search_wordlist_
-  dw zero_branch_,paren_header.continue
+  dw zero_branch_,header_comma.continue
   ; the word is not unique in `current`
   ; ( ca len cfa )
   dw to_name_,id_dot_
   _literal error.not_unique
   dw dot_throw_ ; XXX TMP -- `warning`?
 
-paren_header.continue:
+header_comma.continue:
 
   ; ( ca len )
 
@@ -7454,40 +7593,6 @@ paren_header.continue:
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
   dw here_,two_plus_,comma_ ; compile the pfa into code field
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header header_,'HEADER'
-
-; doc{
-;
-; header  ( "name" | -- )
-
-; Create a dictionary header with its code field pointing to its
-; parameter field.
-;
-; The double variable `next-name` may hold a string to be used
-; as the name.  If its length is zero, "name" is parsed from the
-; stream as usual.
-
-; ----
-; : header  ( "name" | -- )
-;   next-name 2@
-;   dup if    next-name off 
-;       else  2drop parse-name  then  (header)  ;
-; ----
-
-; }doc
-
-  dw next_name_,two_fetch_
-  dw dup_
-  dw zero_branch_,header.parse_name
-  dw next_name_,off_
-  dw branch_,header.end
-header.parse_name
-  dw two_drop_,parse_name_
-header.end
-  dw paren_header_
   dw semicolon_s_
 
 ; ----------------------------------------------
