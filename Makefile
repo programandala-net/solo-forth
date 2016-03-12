@@ -17,8 +17,8 @@
 #   Utilities section of
 #   http://worldofspectrum.org
 
-# fsb (by Marcos Cruz)
-# 	http://programandala.net/en.program.fsb.html
+# fsb2 (by Marcos Cruz)
+# 	http://programandala.net/en.program.fsb2.html
 
 # mkmgt (by Marcos Cruz)
 # 	http://programandala.net/en.program.mkmgt.html
@@ -133,7 +133,7 @@ solo_forth_disk_1.mgt: \
 mgt_file = $(basename $(disk_source_file) ).mgt
 
 solo_forth_disk_2.mgt: $(disk_source_file)
-	fsb2mgt $(disk_source_file) ;\
+	fsb2-mgt $(disk_source_file) ;\
 	mv $(mgt_file) solo_forth_disk_2.mgt
 
 ################################################################
@@ -179,3 +179,7 @@ backup:
 # file.
 #
 # 2015-08-20: Divided in three parts: Makefile, Makefile.pasmo, Makefile.binutils.
+#
+# 2015-10-10: Substituted fsb (written in Vim) with fsb2
+# (written in Forth for Gforth). fsb was becoming too show with
+# more than 300 source screens, while fsb2 is instantaneous.

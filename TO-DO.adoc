@@ -277,6 +277,13 @@ write as is.
 Fix: `where` shows the offending word uppercased. This means somewhere the
 original address hold in `parsed-word` is used by `uppers`.
 
+.2015-10-14:
+
+Make the decimal point char configurable.
+
+Improve: Accept a decimal point at any position, else `dpl` is
+almost useless.
+
 // }}}
 == Errors ==
 // {{{

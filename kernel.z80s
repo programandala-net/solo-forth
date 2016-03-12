@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510100325
+version_release:  equ 201510142109
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -227,6 +227,11 @@ old_defer: equ false
   ; true = old version of `defer`, with `create` and `does>`
   ; false = new version of `defer`
 
+paren_dot_quote: equ true
+  ; use `(.")`? else compile `slit` and `type`
+  ; XXX TODO
+  ; XXX TMP
+
 ; ==============================================================
 ; Symbols
 
@@ -276,6 +281,7 @@ precedence_mask:  equ 1 << precedence_bit
 
 max_word_length:            equ 0x1F
 max_word_length_mask:       equ max_word_length
+valid_word_length_mask:     equ max_word_length_mask or smudge_mask
 
 csb_size:                       equ 256 ; size of the circular string buffer
 
@@ -593,7 +599,7 @@ _default_bank: macro
 
 _question_error: macro _error
   _literal (_error)
-  dw question_error_
+  dw question_throw_
   endm
 
 _message: macro _error
@@ -1583,12 +1589,21 @@ endif
 ; ----------------------------------------------
   _colon_header s_lit_,'SLIT'
 
-  ; ----
-  ; : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
-  ; ----
+; doc{
+;
+; slit  ( -- ca len )
+;
+; Return a string that is compiled after the calling word, and
+; adjust the instruction pointer to step over the inline string.
 
-  dw r_fetch_,count_,dup_,one_plus_
-  dw from_r_,plus_,to_r_
+; ----
+; : slit  ( -- ca len )
+;   r@ count dup 1+ r> + >r  ;
+; ----
+
+; }doc
+
+  dw r_fetch_,count_,dup_,one_plus_,from_r_,plus_,to_r_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2209,83 +2224,8 @@ number_base.current:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 0 
-  
-  ; XXX  TODO ?
-
-  _colon_header to_number88_,'>NUMBER88'
-
-  ; XXX TMP -- version from Z88 CamelForth
-
-  ; XXX TODO
-
-; doc{
-;
-; >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )
-
-; _ud2_ is the unsigned result of converting the characters
-; within the string specified by _ca1 len1_ into digits, using
-; the number in `base`, and adding each into _ud1_ after
-; multiplying _ud1_ by the number in `base`. Conversion
-; continues left-to-right until a character that is not
-; convertible, including any "+" or "-", is encountered or the
-; string is entirely converted. _ca2_ is the location of the
-; first unconverted character or the first character past the
-; end of the string if the string was entirely converted. _len2_
-; is the number of unconverted characters in the string.
-
-; XXX TODO -- check:
-; An ambiguous condition exists if _ud2_ overflows during the
-; conversion.
-
-; Standard: Forth-94, Forh 2012.
-
-; ----
-; : >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )
-;   base @ >r number-base base !
-;   begin  dup while
-;       over c@ base @ digit?
-;       0= if  r> base ! exit  then
-;       >r 2swap base @ ud*
-;       r> m+ 2swap
-;       1 /string
-;   repeat  r> base !  ;
-; ----
-
-; }doc
-
-  ; XXX TODO save the base in the return stack and don't change
-  ; `base`.
-
-  dw base_,fetch_,to_r_,number_base_,base_,store_
-to_number88.begin:
-;  _brk_type '>number88 -- begin' ; XXX INFORMER
-  dw dup_
-  dw zero_branch_,to_number88.end
-  dw over_,c_fetch_,base_,fetch_,digit_question_
-  dw question_branch_,to_number88.valid_digit
-  dw from_r_,base_,store_
-  dw exit_
-to_number88.valid_digit:
-  dw to_r_,two_swap_,base_,fetch_
-  ; dw u_d_star_ ; XXX TODO
-  dw from_r_
-  ; dw m_plus_ ; XXX TODO
-  dw two_swap_
-  _literal 1
-  dw slash_string_
-  dw branch_,to_number88.begin
-to_number88.end:
-  dw from_r_,base_,store_
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
   _colon_header to_number_,'>NUMBER'
 
-if 1 ; XXX OLD -- original version from DZX-Forth
-
 ; doc{
 ;
 ; >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )
@@ -2301,23 +2241,24 @@ if 1 ; XXX OLD -- original version from DZX-Forth
 ; end of the string if the string was entirely converted. _len2_
 ; is the number of unconverted characters in the string.
 
-; XXX TODO -- check:
-; An ambiguous condition exists if _ud2_ overflows during the
-; conversion.
-
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 
 ; ----
 ; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
 ;   begin  dup  while
 ;     over c@ base @ digit? while
 ;        >r 2swap r> swap base @ um* drop rot base @
-;        um* d+ 2swap 1 /string 1 dpl +!
+;        um* d+ 2swap 1 /string
+;        \ 1 dpl +! \ XXX TODO
 ;   repeat then  ;
 ; ----
 
 ;
 ; }doc
+
+; XXX TODO -- check:
+; An ambiguous condition exists if _ud2_ overflows during the
+; conversion.
 
   ; Credits:
   ; Code from DZX-Forth.
@@ -2339,354 +2280,206 @@ to_number.begin: ; begin
   dw d_plus_
   dw two_swap_
   dw one_,slash_string_
-;  dw one_,dpl_,plus_store_ ; XXX TODO why this?
+  ; dw one_,dpl_,plus_store_ ; XXX TODO why this?
   dw branch_,to_number.begin  ; repeat
 to_number.end:
   ; then
   dw semicolon_s_
 
-endif
-
-if 0
-
-; XXX -- Code from CamelForth for the Zilog Z80.
-
-; doc{
-;
-; >number  ( ud1 ca1 len1 -- ud2 ca2 len2 )
-
-; _ud2_ is the unsigned result of converting the characters
-; within the string specified by _ca1 len1_ into digits, using
-; the number in `base`, and adding each into _ud1_ after
-; multiplying _ud1_ by the number in `base`. Conversion
-; continues left-to-right until a character that is not
-; convertible, including any "+" or "-", is encountered or the
-; string is entirely converted. _ca2_ is the location of the
-; first unconverted character or the first character past the
-; end of the string if the string was entirely converted. _len2_
-; is the number of unconverted characters in the string.
-
-; XXX TODO -- check:
-; An ambiguous condition exists if _ud2_ overflows during the
-; conversion.
-
-; Standard: Forth-94, Forth-2012.
-
-; ----
-; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
-;   begin  dup  while
-;     over c@ base @ digit? 0= if drop exit then
-;     >r 2swap base @ ud*
-;     r> m+ 2swap
-;     1 /string
-;   repeat  ;
-; ----
-
-;
-; }doc
-
-; Credits:
-; Code from CamelForth for the Zilog Z80.
-
-
-  ; XXX TODO -- implement, compare, benchmark
-
-endif
-
 ; ----------------------------------------------
-if 0
-
   _colon_header number_question_,'NUMBER?'
 
-  ; XXX -- adapted from DZX-Forth
+if 0 ; XXX -- version adapted from pForth
 
-  ; XXX TODO -- benchmark and compare with the version from
-  ; pForth; `interpret` must be adapted for each of them.
+  ; XXX Note: this version ocuppies 26 bytes less than the
+  ; one, improved, inspired by fig-Forth.
 
 ; doc{
 ;
-; number?  ( ca len -- d tf | ff )
+; number?   ( ca len -- 0 | n 1 | d 2 )
 ;
-; Convert the case-insensitive string _ca len_ to a double
-; number according to the current base.  If successful, return
-; double number _d_ and a true flag.  A leading '-' character
-; signifies a negative number.  If a punctuation character '.'
-; occurs at the end of the string then `dpl` is 0 otherwise it
-; is -1.  If conversion is unsuccessful or the string was empty
-; or contained blanks then a false flag is returned and `dpl` is
-; meaningless.
+; Convert a string _ca len_ to a number. Return 0 if the
+; conversion is not possible. If the result is a single number,
+; return _n_ and 1. If the result is a double number, return _d_
+; and 2.
 
-; ----
-; : number?  ( ca len -- d tf | ff )
-;   base @ >r  number-base base !
-;   over c@ [char] - =  \ minus sign?
-;   over 0> and         \ and len>0?
-;   dup >r
-;   abs /string
-;   \ over c@ [char] . > and  \ XXX FIXME -- why check this?
-;   0 0 2swap ?dup if
-;     >number dpl on
-;     dup if  1- over c@ [char] . - or dpl off  then
-;     while then
-;     r> 2drop 2drop false
+; : number?   ( ca len -- 0 | n 1 | d 2 )
+;   dup 0= if  2drop 0 exit  then
+;   base @ >r number-base base !
+;   skip-sign? >r
+;   dpl on  0 0 2swap >number dup
+;   if
+;     1 =  \ one non-converted character left?
+;     swap c@ [char] . =  and  \ and is it '.'?
+;     if    r@ ?dnegate  dpl off  2  \ if so, it's a double number
+;     else  2drop 0  then
 ;   else
-;     drop r> ?dnegate true
-;   then  r> base !  ;
-; ----
-
-; XXX NEW
-; XXX TODO
-; ----
-; : number?  ( ca len -- d tf | ff )
-;   dup 0= if  2drop false exit  then
-;   base @ >r  number-base base !
-;   sign? >r
-;   0 0 2swap ?dup if
-;     >number dpl on
-;     dup if  1- over c@ [char] . - or dpl off  then
-;     while then
-;     r> 2drop 2drop false
-;   else
-;     drop r> ?dnegate true
-;   then  r> base !  ;
-; ----
+;     2drop d>s r@ ?negate  1
+;   then  rdrop  r> base !  ;
 
 ;
 ; }doc
 
   ; Credits:
-  ; Code modified from DZX-Forth.
+  ; Code adapted from pForth.
 
   dw dup_
   dw question_branch_,number_question.not_empty
-  dw two_drop_,false_,exit_
-
-number_question.not_empty:
-  dw base_,fetch_,to_r_
-  dw number_base_,base_,store_
-
-  dw sign_question_,to_r_
-
-  dw zero_,zero_,two_swap_,question_dup_
-  dw zero_branch_,number_question.2
-  dw to_number_
-  dw dpl_,on_
-  dw dup_
-  dw zero_branch_,number_question.1
-  dw one_minus_
-  dw over_,c_fetch_
-  _literal '.'
-  dw minus_,or_
-  dw dpl_,off_
-number_question.1:
-  dw zero_branch_,number_question.3
-number_question.2:
-  dw from_r_
-  dw two_drop_,two_drop_
-  dw false_
-  dw branch_,number_question.end
-number_question.3:
-  dw drop_,from_r_,question_d_negate_
-number_question.4:
-  dw true_
-number_question.end:
-  dw from_r_,base_,store_
-;  _echo 'number? -- end' ; XXX INFORMER
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-if 1
-
-  ; XXX NEW -- alternative code adapted from pForth
-  ;
-  ; XXX UNDER DEVELOPMENT
-
-  ; XXX TODO -- benchmark and compare with the version from
-  ; DZX-Forth; `interpret` must be adapted for each of them.
-
-  _colon_header number_question_,'NUMBER?'
-
-; : number?   ( ca len -- 0 | n 1 | d 2 )
-;   dup 0= if 2drop 0 exit then   \ 
-;   string? >r
-;   dpl on  0 0 2swap >number dup
-;   if
-;     1 = swap c@ [char] . =  and
-;     if    r@ ?dnegate  dpl off  2
-;     else  2drop 0  then
-;   else
-;     2drop drop r@ ?negate  then  1
-;   then  rdrop  ;
-
-  dw dup_
-  dw question_branch_,p_number_question.not_empty
   dw two_drop_
   _literal 0
   dw exit_
 
-p_number_question.not_empty:
+number_question.not_empty:
 
   dw base_,fetch_,to_r_
   dw number_base_,base_,store_
 
-  dw sign_question_,to_r_
+  dw skip_sign_question_,to_r_
   dw dpl_,on_
   _literal 0
   _literal 0
   dw two_swap_,to_number_
   dw dup_ ; are there non-recognized chars?
-  dw zero_branch_,p_number_question.single
+  dw zero_branch_,number_question.single
 
-  ; the conversion was not completed,
-  ; so it may be because of the final period that
-  ; indicates it's a double number
+  ; The conversion was not completed, so it may be because of
+  ; the final dot that indicates it's a double number.
 
   _literal 1
   dw equals_ ; only one character left?
   dw swap_,c_fetch_
   _literal '.'
-  dw equals_,and_ ; and is it a period?
-  dw zero_branch_,p_number_question.failed_conversion
+  dw equals_,and_ ; and is it a dot?
+  dw zero_branch_,number_question.failed_conversion
 
-p_number_question.double:
+number_question.double:
   ; double number
   dw r_fetch_,question_d_negate_
   dw dpl_,off_
   _literal 2
-  dw branch_,p_number_question.end
+  dw branch_,number_question.end
 
-p_number_question.failed_conversion:
+number_question.failed_conversion:
   dw two_drop_
   _literal 0
-  dw branch_,p_number_question.end
+  dw branch_,number_question.end
 
-p_number_question.single:
+number_question.single:
   ; single number
-  dw two_drop_,drop_
+  dw two_drop_,d_to_s_
   dw r_fetch_,question_negate_
   _literal 1
 
-p_number_question.end:
+number_question.end:
   dw r_drop_               ; discard the sign flag
   dw from_r_,base_,store_  ; restore `base`
   dw semicolon_s_
 
-endif
+else ; XXX -- improved version inspired by fig-Forth
 
-if 0
+  ; XXX UNDER DEVELOPMENT
+  ;
+  ; This new version must accept a "." at any position
+  ; and updates `dpl` accordingly.
+  ;
+  ; XXX Note: this version ocuppies 26 bytes more than the
+  ; one based on pForth.
 
-  _colon_header p_number_question_,'P.NUMBER?'
+; doc{
+;
+; number?   ( ca len -- 0 | n 1 | d 2 )
+;
+; Convert a string _ca len_ to a number. Return 0 if the
+; conversion is not possible. If the result is a single number,
+; return _n_ and 1. If the result is a double number, return _d_
+; and 2.
 
 ; : number?   ( ca len -- 0 | n 1 | d 2 )
-;   dup 0= if 2drop 0 exit then   \ 
-;   string? >r
-;   dpl on  0 0 2swap >number dup
-;   if
-;     1 = swap c@ [char] . =  and
-;     if    r@ ?dnegate  dpl off  2
-;     else  2drop 0  then
-;   else
-;     2drop drop r@ ?negate  then  1
-;   then  rdrop  ;
+;   dup 0= if  2drop 0 exit  then
+;   base @ >r  number-base base !  ( R: radix )
+;   skip-sign? >r                  ( R: radix sign )
+;   0 0 2swap  dpl on
+;   begin                          ( d ca len )
+;     >number dup
+;   while
+;     over c@ [char] . <>   \ not a decimal point?
+;     dpl @ 0< 0=  or       \ or not the first decimal point?
+;     if  2drop 2rdrop 0 exit  then
+;     dup 1- dpl !  \ update the position of the decimal point
+;     1 /string     \ skip the decimal point
+;   repeat
+;   2drop     \ discard the empty string
+;   dpl @ 0<  \ single-cell number?
+;   if    d>s r> ?negate  1   \ single-cell number
+;   else  r> ?dnegate  2      \ double-cell number
+;   then  r> base !  ;        \ restore the radix
 
-  dw dup_
-  dw question_branch_,p_number_question.not_empty
+; }doc
+
+  dw dup_,zero_equals_
+  dw zero_branch_,number_question2.not_empty
   dw two_drop_
   _literal 0
   dw exit_
 
-p_number_question.not_empty:
-  dw sign_question_,to_r_
-  dw dpl_,on_
-  _literal 0
-  _literal 0
-  dw two_swap_,to_number_
-  dw dup_ ; are there non-recognized chars?
-  dw zero_branch_,p_number_question.single
-
-  ; the conversion was not completed,
-  ; so it may be because of the final period that
-  ; indicates it's a double number
-
-  _literal 1
-  dw equals_ ; only one character left?
-  dw swap_,c_fetch_
-  _literal '.'
-  dw equals_,and_ ; and is it a period?
-  dw zero_branch_,p_number_question.failed_conversion
-
-p_number_question.double:
-  ; double number
-  dw r_fetch_,question_d_negate_
-  dw dpl_,off_
-  _literal 2
-  dw branch_,p_number_question.end
-
-p_number_question.failed_conversion:
-  dw two_drop_
-  _literal 0
-  dw branch_,p_number_question.end
-
-p_number_question.single:
-  ; single number
-  dw two_drop_,drop_
-  dw r_fetch_,question_negate_
-  _literal 1
-
-p_number_question.end:
-  dw r_drop_ ; sign flag
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-if 1
-
-  _colon_header c_number_question_,'C.NUMBER?'
-
-  ; XXX NEW -- alternative code adapted from CamelForth's `?number`
-
-  ; XXX UNDER DEVELOPMENT
-
-; : number?  ( ca len -- n tf | ff )
-  
-;   base @ >r  number-base base !
-;   0 0 2swap
-;   sign? >r  >number nip
-;   if    2drop rdrop false
-;   else  r> if negate then  true
-;   then  r> base !  ;
-
+number_question2.not_empty:
 
   dw base_,fetch_,to_r_
   dw number_base_,base_,store_
+
+  dw skip_sign_question_,to_r_
   _literal 0
   _literal 0
-  dw two_swap_
-  dw sign_question_
-  dw to_r_,to_number_,nip_
-  dw zero_branch_,c_number_question.ok
-;  _echo 'c.number? -- fail' ; XXX INFORMER
-  dw two_drop_,r_drop_,false_
-  dw branch_,c_number_question.end
-c_number_question.ok:
-;  _echo 'c.number? -- ok' ; XXX INFORMER
-  dw from_r_
-  dw zero_branch_,c_number_question.true
-  dw negate_
-c_number_question.true:
-  dw true_
-c_number_question.end:
-;  _brk 'c.number? -- end' ; XXX INFORMER
-  dw from_r_,base_,store_
+  dw two_swap_,dpl_,on_
+number_question2.begin:
+  dw to_number_
+  dw dup_ ; are there non-recognized chars?
+  dw zero_branch_,number_question2.done ; while
+
+  ; The conversion was not completed, so it may be because of
+  ; the final dot that indicates it's a double number.
+
+  dw over_,c_fetch_
+  _literal '.'
+  dw not_equals_ ; not a decimal point?
+  dw dpl_,fetch_,zero_less_than_,zero_equals_ ; not the first decimal point?
+  dw or_
+  dw zero_branch_,number_question2.decimal_point
+  dw two_drop_,two_r_drop_
+  _literal 0
+  dw exit_
+
+number_question2.decimal_point:
+  dw dup_,one_minus_,dpl_,store_ ; update the position of the decimal point
+  _literal 1
+  dw slash_string_ ; skip the decimal point
+
+  dw branch_,number_question2.begin ; repeat
+
+number_question2.done:
+  dw two_drop_ ; discard the empty string
+  dw dpl_,fetch_,zero_less_than_ ; single-cell number?
+  dw zero_branch_,number_question2.double
+
+  ; single-cell number
+  dw d_to_s_,from_r_,question_negate_
+  _literal 1
+  dw branch_,number_question2.end
+
+number_question2.double:
+  ; double-cell number
+  dw from_r_,question_d_negate_
+  _literal 2
+
+number_question2.end:
+  dw from_r_,base_,store_  ; restore `base`
+
   dw semicolon_s_
 
 endif
 
 ; ----------------------------------------------
-  _colon_header sign_question_,'SIGN?'
+  _colon_header skip_sign_question_,'SKIP-SIGN?'
 
 ; : sign?  ( ca len -- ca' len' f )
 ;   \ get optional sign
@@ -2748,7 +2541,7 @@ paren_find_name.string_address: equ $+1
   ld hl,0x0000 ; string address
   ld a,(de) ; length byte of the name field
   ld (paren_find_name.length_byte_backup),a ; save it for later
-  and max_word_length_mask  ; length
+  and valid_word_length_mask  ; mask the length and the smudge bit
 paren_find_name.string_length: equ $+1
   ld c,0x00 ; length of the string
   cp c ; same length?
@@ -3039,10 +2832,11 @@ endif
 ; doc{
 ;
 ; scan  ( ca1 len1 c -- ca2 len2 )
-;
-; Scan the string _ca1 len1_ for the character _c_.  Leave match
-; address _ca2_ and length remaining _len2_.  If no match occurred
-; then _len2_ is zero and _ca2_ is _ca1_+_len1_.
+; 
+; Scan the string _ca1 len1_ for the first occurence of
+; character _c_.  Leave match address _ca2_ and length remaining
+; _len2_.  If no match occurred then _len2_ is zero and _ca2_ is
+; _ca1+len1_.
 ;
 ; }doc
 
@@ -3072,7 +2866,7 @@ scan.nothing:
 ;
 ; skip  ( ca1 len1 c -- ca2 len2 )
 ;
-; Skip leading occurences of the character _c_ in the string
+; Skip over leading occurences of the character _c_ in the string
 ; _ca1 len1_.  Leave the address of the first non-matching
 ; character _ca2_ and length remaining _len2_.  If no characters were
 ; skipped leave _ca1 len1_.
@@ -4650,6 +4444,17 @@ endif
 ; ----------------------------------------------
   _code_header plus_store_,'+!'
 
+; doc{
+;
+; +!  ( n|u a -- )
+; 
+; Standard: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Forth-94 (CORE), Forth-2012 (CORE).
+;
+; Add _n|u_ to the single-cell number at _a_.
+;
+; }doc
+
   pop hl ; variable address
   pop de ; number
   ld a,(hl)
@@ -4664,6 +4469,14 @@ endif
 ; ----------------------------------------------
   _code_header off_,'OFF'
 
+; doc{
+;
+; off  ( a -- )
+; 
+; Store `false` at _a_.
+;
+; }doc
+
   pop hl
   ld (hl),0
   inc hl
@@ -4672,6 +4485,14 @@ endif
 
 ; ----------------------------------------------
   _code_header on_,'ON'
+
+; doc{
+;
+; on  ( a -- )
+; 
+; Store `true` at _a_.
+;
+; }doc
 
   pop hl
   ld (hl),0xFF
@@ -5508,7 +5329,8 @@ source.tib:
 ;
 ; This is the same as `1 lshift`.
 ;
-; Standard: Forth-94.
+; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5572,7 +5394,8 @@ source.tib:
 ; This is the same as `s>d 2 fm/mod swap drop`. It is not the same
 ; as `2 /`, nor is it the same as `1 rshift`.
 ;
-; Standard: Forth-94.
+; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5620,6 +5443,8 @@ source.tib:
 ;
 ; s,  ( ca len -- )
 ; 
+; Compile a string.
+;
 ; ----
 ; : s,  ( ca len -- )
 ;   dup c, tuck here swap cmove allot  ;
@@ -6111,36 +5936,26 @@ cfa_to_nfa.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_error_,'?ERROR'
+  _colon_header question_throw_,'?THROW'
 
 ; doc{
 ;
-; ?error  ( wf n -- )
+; ?throw  ( f n -- )
 ;
-; Issue error _n_ if the boolean flag _wf_ is `true.
-; 
+; Perform a `throw` of value _n_ if the boolean flag _f_ is
+; non-zero.
+;
+; ----
+; : ?throw  ( f n -- )
+;   swap if  throw  else  drop  then  ;
+; ----
+;
 ; }doc
 
-if 1 ; exception_wordset
-
-  ; dw swap_,zero_not_equals_ ; XXX OLD
-  dw and_,throw_
-  dw semicolon_s_
-
-else
-
-  ; XXX OLD -- fig-Forth
-
   dw swap_
-  dw zero_branch_,question_error.no_error
-  dw error_
-  dw semicolon_s_
-
-question_error.no_error:
+  dw question_branch_,throw_pfa
   dw drop_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header compiling_question,'COMPILING?'
@@ -6270,26 +6085,53 @@ postpone.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _constant_header smudge_mask_,'SMUDGE-MASK'
+
+  ; XXX TMP -- added for the port of pForth's `privatize` in the
+  ; library, but finally it's not needed, because `(smudge)`
+  ; toggles the bit. It may be useful anyway.
+
+  dw smudge_mask
+
+; ----------------------------------------------
+  _colon_header paren_smudge_,'(SMUDGE)'
+
+
+; doc{
+;
+; (smudge)  ( nfa -- )
+;
+; Toggle the "smudge bit" of the given name field address.
+;
+; }doc
+
+  dw smudge_mask_
+  ; XXX TODO factor `toggle-names'?
+  _names_bank
+  dw toggle_
+  _default_bank
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header smudge_,'SMUDGE'
+
+  ; XXX TODO -- use `hide` and `reveal` instead?
 
 
 ; doc{
 ;
 ; smudge  ( -- )
 ;
-; Toggle the "smudge bit" in a definitions' name field. This
-; prevents an uncompleted definition from being found during
-; dictionary searches, until compiling is completed without
-; error.
+; Toggle the "smudge bit" of the latest definition's name field.
+; This prevents an uncompleted definition from being found
+; during dictionary searches, until compiling is completed
+; without error.
+;
+; Standard: fig-Forth.
 ;
 ; }doc
 
-  dw latest_
-  _literal smudge_mask
-  ; XXX TODO factor `toggle-names'?
-  _names_bank
-  dw toggle_
-  _default_bank
+  dw latest_,paren_smudge_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6465,13 +6307,36 @@ minus_trailing.begin:
   dw b_l_,skip_
   dw semicolon_s_
 
+if 1 ; paren_dot_quote
 ; ----------------------------------------------
   _colon_header paren_dot_quote_,'(.")'
+
+; doc{
+;
+; (.")  ( -- )
+;
+; Type the compiled string that follows.
+;
+; ----
+; : (.")  ( -- ca len )
+;   r@ count dup 1+ r> + >r type  ;
+; ----
+;
+; }doc
 
   dw r_fetch_,count_ ; ( ca len )
   dw dup_,one_plus_,from_r_,plus_,to_r_ ; skip the string after return
   dw type_
+
+  ; XXX TODO -- 
+  ;   `r@ count dup 1+ r> + >r` is what `slit` does, but
+  ;   calling `slit` here can not work:
+  ;
+  ; dw s_lit_,type_ ; XXX TODO -- this alternative can not work
+
   dw semicolon_s_
+endif
+
 
 if 0 ; XXX OLD
 
@@ -6572,7 +6437,13 @@ else
   ; Credits:
   ; Code adapted from DZX-Forth.
 
+if paren_dot_quote
   dw compile_,paren_dot_quote_,comma_quote_
+else
+  ; XXX TMP -- this new method uses 1 more cell for the compiled
+  ; code
+  dw comma_quote_,compile_,type_
+endif
   dw semicolon_s_
 
 endif
@@ -6992,14 +6863,16 @@ fill.done:
 ;
 ; parsed  ( len -- )
 ;
-; Add the given _len_ plus 1 to `>in`.
+; Add the given _len_ to `>in`.
+; 
+; ----
+; : parsed  ( len -- )
+;   >in +!  ;
+; ----
 ;
-; }word
+; }doc
 
-; XXX TODO -- change to `>in +!` and choose a new name for `1+
-; parsed` or write as is.
-
-  dw one_plus_,to_in_,plus_store_
+  dw to_in_,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7034,7 +6907,7 @@ fill.done:
   dw char_minus_
 parse.end:
   dw two_from_r_,rot_,minus_
-  dw to_in_,plus_store_
+  dw parsed_
   dw tuck_,minus_
   dw semicolon_s_
 
@@ -7088,7 +6961,7 @@ parse_name.skip:
   dw from_r_,from_r_      ; ( ca2 len2 ca1 len )
   dw rot_,minus_          ; ( ca2 ca1 len3 )
 ; _brk 'parse-name -- before updating >in' ; XXX INFORMER
-  dw to_in_,plus_store_   ; ( ca2 ca1 )
+  dw parsed_              ; ( ca2 ca1 )
   dw tuck_,minus_         ; ( ca1 len4 )
   dw two_dup_,parsed_name_,two_store_
 ;  _brk_type 'parse-name -- end' ; XXX INFORMER
@@ -7389,8 +7262,6 @@ endif
 ; ----------------------------------------------
   _colon_header error_,'ERROR'
 
-if 1 ; exception_wordset
-
 ; doc{
 ;
 ; error  ( n -- )
@@ -7436,50 +7307,10 @@ error.message:
   ; XXX FIXME -- the end of `error` will not be recognized by
   ; `decode`.
 
+; ----------------------------------------------
   _two_variable_header abort_message_,"ABORT-MESSAGE"
 
   dw 0,0
-
-else
-
-; doc{
-;
-; error  ( n -- )
-;
-; Issue error message _n_ and restart the system.  Save the
-; error number into `error-number`, and the current block and
-; line into `error-pos`, to be used by `where`.
-;
-; This word is a modified version of fig-Forth's `error`.
-
-; ----
-; : error  ( n -- )
-;   dup error-number !
-;   >in @ blk @ error-pos 2!
-;   parsed-name 2@ type ." ? " message
-;   sp0 @ sp!  quit  ;
-; ----
-
-; }doc
-
-
-  dw dup_,error_number_,store_ ; save the error number
-  dw to_in_,fetch_,blk_,fetch_,error_pos_,two_store_
-
-  ; XXX OLD
-  ; XXX TODO
-;  dw warnings_,fetch_,zero_less_than_ ; custom error routine?
-;  dw question_branch_,paren_abort_pfa ; if so, branch to it
-
-error.message:
-  dw parsed_name_,two_fetch_,type_ ; last parsed word
-  dw paren_dot_quote_
-  _string '? '
-  dw message_
-  dw sp0_,fetch_,sp_store_
-  dw quit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header id_dot_,'ID.'
@@ -7541,6 +7372,9 @@ header.continue:
 
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
+
+  ; XXX TODO factor `header smudge` to `visible-header`? it's
+  ; used also by `defer`.
 
   dw header_,smudge_
   dw paren_semicolon_code_
@@ -7926,21 +7760,23 @@ if find_name_version=2 ; XXX TMP
 endif
   ; try to convert the text to a number
   ; ( ca len )
-; _chk 'interpret -- before number' ; XXX INFORMER
+;_chk 'interpret -- before number' ; XXX INFORMER
 
   dw number_question_ ; is it a number?
-;  _chk 'interpret -- after number?' ; XXX INFORMER
+;  _brk 'interpret -- after number?' ; XXX INFORMER
   dw zero_equals_
   _question_error error.not_understood ; error if not
 
 ; _chk 'interpret -- after number' ; XXX INFORMER
-  dw dpl_,fetch_ ; single number?
+  dw dpl_,fetch_,zero_less_than_ ; single number?
   dw question_branch_,interpret.16bit_number
+; _brk 'interpret -- 32bit_number' ; XXX INFORMER
   ; decimal point detected, so it's a double, 32-bit, number
   dw two_literal_
   dw branch_,interpret.begin
 
 interpret.16bit_number:
+;   _brk 'interpret -- 16bit_number' ; XXX INFORMER
 
   ; XXX TMP -- this is not needed with the pForth version
   ; of `number?`:
@@ -8154,7 +7990,7 @@ else ; XXX NEW
 ;
 ; }doc
 
-  dw header_
+  dw header_,smudge_
   _literal 0x21 ; Z80 opcode for `ld hl,NN`
   dw c_comma_
   _literal paren_defer_ ; default cfa to execute
@@ -10788,10 +10624,7 @@ endif
 
 
 ; ----------------------------------------------
-if 1 ; exception_wordset
   _colon_header catch_,'CATCH'
-
-  ; XXX UNDER DEVELOPMENT
 
 ; doc{
 
@@ -10811,20 +10644,31 @@ if 1 ; exception_wordset
 ;
 ; Standard: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
 ;
+;----
+; : catch  ( xt -- exception# | 0 )
+;   sp@ >r          ( cfa ) \ save data stack pointer
+;   catcher @ >r    ( cfa ) \ save previous catcher
+;   rp@ catcher !   ( cfa ) \ set current catcher
+;   execute         ( )     \ `execute` returns if no `throw`
+;   r> catcher !    ( )     \ restore previous catcher
+;   r> drop         ( )     \ discard saved stack pointer
+;   0  ;            ( 0 )   \ normal completion, no error
+;----
 ; }doc
 
-  dw sp_fetch_,to_r_,catcher_,fetch_,to_r_  ; save error frame
-  dw rp_fetch_,catcher_,store_
-  dw execute_
+  ; Credits:
+  ; Code from DZX-Forth and MPE Forth for TiniARM.
+
+  dw sp_fetch_,to_r_ ; save data stack pointer
+  dw catcher_,fetch_,to_r_ ; save previous catcher
+  dw rp_fetch_,catcher_,store_ ; set current catcher
+  dw execute_ ; `execute` returns if no `throw`
   dw from_r_,catcher_,store_  ; restore error frame
-  dw from_r_,drop_
-  _literal 0  ; no error
+  dw from_r_,drop_ ; discard saved stack pointer
+  _literal 0  ; normal completion, no error
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
-if 1 ; exception_wordset
   _colon_header throw_,'THROW'
 
   ; XXX UNDER DEVELOPMENT
@@ -10846,14 +10690,30 @@ endif
 
 if 0
 
-  ; Version from hForth:
+  ; Version from hForth and MPE Forth for TiniARM.
+  ; Comments from MPE Forth for TiniARM.
   
+  ; : throw  ( ??? exception# -- ??? exception# )
+  ;   ?dup if           ( exc# )
+  ;     catcher @ rp!   ( exc# )      \ restore previous return stack
+  ;     r> catcher !    ( exc# )      \ restore previous catcher
+  ;     r> swap >r      ( saved-sp ) ( R: exc# )
+  ;     sp! drop r>     ( exc# )      \ restore stack
+  ;     \ Return to the caller of `catch` because return stack is
+  ;     \ restored to the state that existed when `catch` began
+  ;     \ execution.
+  ;   then  ;
+
   dw question_dup_,zero_branch_,throw.end
-  dw catcher_,fetch_,rp_store_          ; restore return stack
-  dw from_r_,catcher_,store_            ; restore exception frame
-  dw from_r_,swap_,to_r_,sp_store_      ; restore data stack
-  dw drop_,from_r_
-  ; dw tickinit_io,execute  ; XXX OLD -- hForth specific
+  dw catcher_,fetch_,rp_store_          ; restore previous return stack
+  dw from_r_,catcher_,store_            ; restore previous exception frame
+  dw from_r_,swap_,to_r_
+  dw sp_store_,drop_,from_r_            ; restore data stack
+
+  ; Return to the caller of `catch` because return stack is
+  ; restored to the state that existed when `catch` began
+  ; execution.
+
 throw.end:
   dw semicolon_s_
 
@@ -10862,6 +10722,8 @@ endif
 if 1
 
   ; Version from DZX-Forth:
+
+  ; XXX TODO -- Comments from MPE Forth for TiniARM.
 
 ; throw  ( n -- )
 ; ?dup if
@@ -10888,69 +10750,19 @@ throw.end:
 
 endif
 
-
-endif
-
 ; ----------------------------------------------
-
-if 1 ; exception_wordset
-
-  ; XXX UNDER DEVELOPMENT
-
   _colon_header paren_abort_,'(ABORT)'
 
   dw sp0_,fetch_,sp_store_
-  dw boot_ 
+  dw boot_  ; XXX TODO -- not here?
   dw quit_
 
+; ----------------------------------------------
   _colon_header abort_,'ABORT'
 
   _literal -1
   dw throw_
   dw semicolon_s_
-
-else
-
-  _colon_header paren_abort_,'(ABORT)'
-
-  dw abort_
-  dw semicolon_s_
-
-  _colon_header abort_,'ABORT'
-
-  dw sp0_,fetch_,sp_store_
-  dw boot_ 
-  dw quit_
-  
-endif
-
-; ----------------------------------------------
-if 0
-
-  _colon_header abort_quote_,'ABORT"'
-
-  ; XXX UNDER DEVELOPMENT
-
-  ; eForth:
-
-  dw  zero_branch_,abort_quote.no_error
-  dw  dostr,throw_    ; pass error string
-abort_quote.no_error:
-  dw  dostr,drop_
-
-  dw semicolon_s_
-
-  ; hForth:
-
-  dw  squote,dolit,rot,compilecomma
-  dw  iff,dolit,abortqmsg,compilecomma ; if is immediate
-  dw  dolit,twostore,compilecomma
-  dw  dolit,-2,literal     ; literal is immediate
-  dw  dolit,throw,compilecomma
-  dw  elsee,dolit,twodrop,compilecomma ; else and then are
-  dw  thenn,exit       ; immediate
-
-endif
 
 ; ----------------------------------------------
   _colon_header char_,'CHAR'
@@ -11027,7 +10839,7 @@ backslash.loading:
   dw to_in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_
 ;  _chk '\ disk -- before updating >in' ; XXX INFORMER
-  dw to_in_,plus_store_
+  dw parsed_
   dw semicolon_s_
 
 ; ----------------------------------------------

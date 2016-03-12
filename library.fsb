@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510100251
+\ Last modified: 201510142109
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -84,7 +84,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 
 ( need ) \ scr 3
 
-: ?located  ( screen | false -- )  dup 0= #-268 ?error  ;
+: ?located  ( screen | false -- )  dup 0= #-268 ?throw  ;
 
 : from  ( "name" -- )  locate ?located first-locatable !  ;
   \ Locate the given _name_ and set its screen the first one
@@ -268,6 +268,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
+
 \ #-1000 G+DOS: Nonsense in G+DOS
 \ #-1001 G+DOS: Nonsense in GNOS
 \ #-1002 G+DOS: Statement end error
@@ -288,6 +289,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
+
 \ #-1015 G+DOS: Code error
 \ #-1016 G+DOS: Pupil set
 \ #-1017 G+DOS: Invalid code
@@ -358,48 +360,6 @@ variable last-locatable  scr/disk 1- last-locatable !
 : cslit  ( -- ca len )  r@ dup c@ 1+ r> + >r  ;
 : csliteral  ( ca len -- )  compile cslit s,  ; immediate
 
-( abort" )
-
-  \ Version adapted from DZX-Forth:
-
-2variable abort-message
-
-: (abort")  ( n -- )
-  r> count rot if  abort-message 2! -2 throw  then + >r  ;
-
-: abort"  ( compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate
-
-( abort" )
-
-  \ Version adapted from hForth:
-
-2variable abort-message
-
-: (abort")  ( ca len -- )  abort-message 2! -2 throw  ;
-
-: abort"  ( x "text<quote>" -- )
-  postpone s"
-  postpone rot   ( ca len x )
-  postpone if    postpone (abort")
-  postpone else  postpone 2drop  postpone then
-  ;  immediate
-
-( abort" )
-
-  \  Version adapted from Gforth:
-
-need csliteral
-
-variable abort-message
-
-: (abort")  ( ca len -- )  abort-message ! -2 throw  ;
-
-: abort"  ( n "text<quote>" -- )
-  postpone if
-  [char] " parse postpone csliteral postpone (abort")
-  postpone  then  ; immediate
-
 ( err>ord err>lin )
 
   \ XXX TMP -- `err>ord` tests `error>ordinal`
@@ -432,7 +392,7 @@ variable abort-message
   begin
     cr .s key drop
     dup dup 16 / - r@ <> while
-    1+ 
+    1+
   repeat  rdrop  ;
 
     \ \ try 2
@@ -567,12 +527,9 @@ variable abort-message
 
 ( parse-char )
 
-: parse-char  ( "c"  -- c )  stream c@ 0 parsed  ;
+: parse-char  ( "c"  -- c )  stream c@ 1 parsed  ;
   \ Parse the next char in the input stream and return its
   \ code.
-  \
-  \ Note: `0 parsed` increments `>in` because `parsed` adds 1
-  \ to its parameter (to include the delimiter).
 
 ( word )
 
@@ -649,7 +606,7 @@ char " 1 2constant "  char \ 1 2constant \
   \ \m = carriage return and line feed
 
 : (x)  ( "c" -- n )
-  parse-char upper 16 digit? 0= #-260 ?error  ;
+  parse-char upper 16 digit? 0= #-260 ?throw  ;
   \ Parse an hex digit and convert it to a number.
 
 : x  ( "cc" -- c 1 )  (x) 16 * (x) + 1  ;
@@ -941,8 +898,8 @@ need n>r
 need mode32  need <file-as-is
 
 drive@ 1 drive!
-s" print-42" <file-as-is ?error
-s" ea5aky.f42" <file-as-is ?error
+s" print-42" <file-as-is ?throw
+s" ea5aky.f42" <file-as-is ?throw
 drive!
   \ Load the driver and the font.
 
@@ -975,7 +932,7 @@ drive!
 need mode32  need <file-as-is  need 4x8font
 
 drive@ 1 drive!
-s" 4x8fd.tap" <file-as-is ?error
+s" 4x8fd.tap" <file-as-is ?throw
 drive!
   \ Load the driver and the font.
 
@@ -2928,6 +2885,37 @@ need -rot
 : 0>=  ( n1 n2 -- f )  0< 0=  ;
 : 0<=  ( n1 n2 -- f )  0> 0=  ;
 
+( ud* )
+
+  \ Credits:
+  \ Code from Z88 CamelForth.
+
+: ud*  ( ud1 d2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
+
+( m+ )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \ Code from Z88 CamelForth.
+
+;X M+       d n -- d         add single to double
+    head MPLUS,2,"M+",docode,0,mplusn-mplusf
+
+.mplusf ex de,hl
+        pop de          ; hi cell
+        ex (sp),hl      ; lo cell, save IP
+        add hl,bc
+        ld b,d          ; hi result in BC (TOS)
+        ld c,e
+        jr nc,mplus1
+        inc bc
+.mplus1 pop de          ; restore saved IP
+        push hl         ; push lo result
+.mplusn
+        next
+
+
 ( d0= d0< d< du< dmin dmax )
 
   \ Credits:
@@ -2988,16 +2976,16 @@ need z80-asm
 
 code rshift  ( x1 u -- x2 )
 
-  \ XXX FIXME
+  \ XXX FIXME -- crash!
 
   exx
   bc pop
   c b ld
   hl pop
 
-  b inc  ahead
+  b inc  ahead 0 unresolved !
 
-  for  h srl  l rr  >relsesolve  step
+  begin  h srl  l rr  0 unresolved @ >relresolve  step
   pushhl jp
 
   end-code
@@ -3141,8 +3129,62 @@ need fm/mod
   \ Is any number _n1..nn_ equal to _n0_?
   ;
 
+( test-bit set-bit reset-bit toggle-bit )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \ Names from MPE PowerForth for TiniARM.
+
+code test-bit  ( b ca -- f )
+
+  \ AND the mask _b_ with the contents of _ca_ and return
+  \ `true` if the result is non-zero or `false` if the result
+  \ is zero. Byte operation.
+
+  end-code
+
+code set-bit  ( b ca -- )
+
+  \ Apply the mask _b_ ORred with the contents of _ca_. Byte operation.
+
+  end-code
+
+code reset-bit  ( b ca -- )
+
+  \ Apply the mask _b_ inverted and ANDed with the contents of
+  \ _ca_. Byte operation.
+
+
+  end-code
+
+code toggle-bit  ( b ca -- )
+
+  \ Invert the bits at _ca_ specified by the mask _b_. Byte operation.
+
+
+  end-code
+
   \ }}} =======================================================
-  \ Conditional compilation {{{
+  \ Exceptions {{{
+
+( abort" )
+
+  \ Credits:
+  \ Code adapted from DZX-Forth.
+
+  \ XXX TODO use `error`, by modifying `throw`
+
+[defined] abort-message ?\ 2variable abort-message
+
+: (abort")  ( n -- )
+  r> count rot if  abort-message 2! -2 throw  then + >r  ;
+
+: abort"  ( compilation: "ccc<quote>" -- )
+  postpone (abort") ,"  ; immediate
+
+  \ }}} =======================================================
+  \ Compilation {{{
 
 ( [if] [else] [then] )  \ ==conditionalcompilation==
 
@@ -3163,6 +3205,66 @@ need fm/mod
 : [if]  ( "..." -- )  0= if postpone [else] then  ; immediate
 
 : [then]  ( -- )  ; immediate
+
+( nfa<nfa )
+
+: nfa<nfa  ( nfa1 -- nfa2 )  nfa>lfa @n  ;
+  \ Get the previous _nfa2_ from _nfa1_.
+
+( behead )
+
+: behead  ( nfa -- )  0 swap c!n  ;
+  \ Store zero at _nfa_, thus making the definition impossible
+  \ to find.
+
+( privatize )
+
+  \ Credits:
+  \ Code adapted from pForth.
+
+  \ ____
+  \
+  \ @(#) private.fth 98/01/26 1.2
+  \ PRIVATIZE
+  \
+  \ Privatize words that are only needed within the file
+  \ and do not need to be exported.
+
+  \ Usage:
+  \    private{
+  \    \ everything between private{ and }private
+  \    \ will become private.
+  \    : foo ;
+  \    : moo ;
+  \    }private
+  \    : goo   foo moo ;  \ can use foo and moo
+  \    privatize          \ behead foo and moo
+  \    ' foo              \ will fail
+
+  \ Copyright 1996 Phil Burk
+  \
+  \ 19970701 PLB Use unsigned compares for machines with
+  \ "negative" addresses.
+  \ ____
+
+need abort"  need nfa<nfa  need behead
+
+variable private-start  variable private-stop
+
+: private{  ( -- )
+  latest private-start !  private-stop off  ;
+
+: }private  ( -- )
+  private-stop @ abort" Extra }private"
+  latest private-stop !  ;
+
+: privatize  ( -- )
+  \ Hide all words between `private{` and `}private`.
+  private-start @ 0= abort" Missing private{"
+  private-stop @ dup 0= abort" Missing }private"
+  begin   dup private-start @ u>
+  while   dup (smudge) nfa<nfa
+  repeat  drop  private-start off  private-stop off  ;
 
   \ }}} =======================================================
   \ G+DOS {{{
@@ -3249,7 +3351,7 @@ decimal
   \   bit 0     = set: error
   \   bits 8-14 = error code
   \   bit 15    = set: OS error; unset: DOS error
-  ior>error ?error  ;
+  ior>error ?throw  ;
 
 ( drive@ drive! )
 
@@ -3873,7 +3975,7 @@ create hex.  ( n -- )  16 c, base.
 : <bin  ( -- )  base @ base' ! binary ; \ switch to binary
 : bin>  ( -- )  base' @ base !        ; \ and back
 
-: (dbin.)  ( d n -- )  bin{ (d.) }bin type space  ;
+: (dbin.)  ( d n -- )  <bin (d.) bin> type space  ;
 : 32bin.    ( d -- )  32 (dbin.)  ;
 : 16bin.     ( n -- )  s>d 16 (dbin.)  ;
 : 8bin.    ( b -- )  s>d 8 (dbin.)  ;
@@ -4351,7 +4453,7 @@ variable assert-level ( -- a )
 
 : assert( ( -- )  postpone assert1( ; immediate
 
-: (endassert) ( f -- )  0= #-262 ?error ;
+: (endassert) ( f -- )  0= #-262 ?throw ;
 
 : ) ( -- )  postpone (endassert) ; immediate
     \ end an assertion
@@ -5559,6 +5661,96 @@ need !dosvar  need @dosvar
   \ Deactivate the jiffy call, setting its default value
   \ (a noop routine in the RAM of the +D interface).
 
+
+
+  \ }}} =======================================================
+  \ Locals {{{
+
+( { } )
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TODO `(local)`
+
+  \ Credits:
+  \ Code adapted from pForth.
+
+  \ ____
+  \
+  \ @(#) $M$ 98/01/26 1.2 standard { v0 v1 ... vn | l0 l1 .. lm
+  \ -- } syntax based on ANSI basis words (LOCAL) and TO
+  \
+  \ Author: Phil Burk Copyright 1994 3DO, Phil Burk, Larry
+  \ Polansky, Devid Rosenboom
+  \
+  \ The pForth software code is dedicated to the public domain,
+  \ and any third party may reproduce, distribute and modify
+  \ the pForth software code or any derivative works thereof
+  \ without any compensation or license.  The pForth software
+  \ code is provided on an "as is" basis without any warranty
+  \ of any kind, including, without limitation, the implied
+  \ warranties of merchantability and fitness for a particular
+  \ purpose and their equivalents under the laws of any
+  \ jurisdiction.
+  \
+  \ MOD: PLB 2/11/00 Allow EOL and \ between { }.  ____
+
+need privatize
+
+private{
+variable loc-temp-mode
+  \ if true, declaring temporary variables
+variable loc-comment-mode
+  \ if true, in comment section
+variable loc-done
+}private
+
+-->
+
+( { } )
+
+: {  ( <local-declaration}> -- )
+  loc-done off  loc-temp-mode off  loc-comment-mode off
+  begin  bl word count  dup 0>
+         \ make sure we are not at the end of a line
+    if  over c@
+      case
+        \ handle special characters
+        [char] }  of  loc-done on          2drop  endof
+        [char] |  of  loc-temp-mode on     2drop  endof
+        [char] -  of  loc-comment-mode on  2drop  endof
+        [char] )  of  ." { ... ) imbalance!" cr abort  endof
+        [char] \  of  postpone \  2drop endof
+
+        -->
+
+( { } )
+
+        \ process name
+        >r  \ save char
+        ( addr len ) loc-comment-mode @
+        if  2drop else  loc-temp-mode @ if  compile false  then
+          \ if in temporary mode, assign local var = 0
+          \ otherwise take value from stack
+          (local)
+        then  r>
+      endcase
+    else  2drop refill 0=
+          abort" end of input while defining local variables!"
+    then  loc-done @
+  until  0 0 (local)  ; immediate  privatize
+
+( { } ) \ tests
+
+  \ tests
+
+: tlv1  { n -- }  n  dup n *  dup n *  ;
+
+: tlv2 { v1 v2 | l1 l2 -- }
+  v1 . v2 . cr
+  v1 v2 + -> l1
+  l1 . l2 . cr
+  ;
+
   \ }}} =======================================================
   \ Time {{{
 
@@ -5575,7 +5767,8 @@ need !dosvar  need @dosvar
   \
   \ ms  ( u -- )
   \
-  \ Standard: Forth-94 (FACILITY EXT) Forth-202 (FACILITY EXT).
+  \ Standard: Forth-94 (FACILITY EXT), Forth-202 (FACILITY
+  \ EXT).
   \
   \ }doc
 
@@ -6163,7 +6356,7 @@ DD constant ix-op  FD constant iy-op
 : ix  ( -- rphl )  ix-op c, hl  ;
 : iy  ( -- rphl )  iy-op c, hl  ;
 
-: ?page  ( n -- n )  dup 80 + FF swap u< #-269 ?error  ;
+: ?page  ( n -- n )  dup 80 + FF swap u< #-269 ?throw  ;
   \ Branch too long?
 
 -->
@@ -6495,7 +6688,7 @@ need @c+  need for
 
 : <<  ( -- a depth )  here depth  ;
 : >>  ( a depth -- )
-  depth 1- - #-258 ?error cr base @ >r hex
+  depth 1- - #-258 ?throw cr base @ >r hex
   dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
   r> base !  space   ;
 
@@ -7596,7 +7789,7 @@ vocabulary editor  also editor definitions  hex
   \ of `pad` to `c/l` characters.
 
 : line  ( n -- a )
-  dup FFF0 and #-266 ?error scr @ line>string drop  ;
+  dup FFF0 and #-266 ?throw scr @ line>string drop  ;
   \ Leave address _a_ of the beginning of line _n_ in the
   \ current screen buffer.  The screen number is in `scr`.
   \ Read the disk block from  disk if it is not already in the
@@ -7744,7 +7937,7 @@ also forth
   \ Find and delete the next occurrence of the string "text".
 
 : till  ( "text<eol>" -- )
-  #lead + text 1line 0= #-270 ?error
+  #lead + text 1line 0= #-270 ?throw
   #lead + swap - delete 0 m  ;
   \ Delete on the cursor line from the cursor till the end of
   \ string "text".
@@ -8770,7 +8963,7 @@ mode64 page
   over c@
   dup [char] $ = if  drop 1 /string 16  exit  then
   dup [char] % = if  drop 1 /string  2  exit  then
-      [char] # = if  1 /string 10  exit  then  base @  ; 
+      [char] # = if  1 /string 10  exit  then  base @  ;
 
 need frames@  need frames0  defer (number-base)
 
@@ -8780,11 +8973,11 @@ need frames@  need frames0  defer (number-base)
   frames@ d. cr  ;
 
 : number-base-bench  ( n -- )
-  dup ['] number-base-1 (number-base-bench) 
-  dup ['] number-base-2 (number-base-bench) 
-  dup ['] number-base-3 (number-base-bench) 
+  dup ['] number-base-1 (number-base-bench)
+  dup ['] number-base-2 (number-base-bench)
+  dup ['] number-base-3 (number-base-bench)
       ['] number-base-4 (number-base-bench) ;
-  
+
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
   \          1    2    3    4
@@ -9001,5 +9194,110 @@ need frames@  need frames0
   \ hForth A = 33784      hForth, with absolute jumps
   \ Z88 R    = 33786      Z88 CamelForth, with relative jumps
   \ Z88 A    = 33784      Z88 CamelForth, with absolute jumps
+
+( exception-test )
+
+  \ Credits:
+  \ Code from MPE Forth for TiniARM User Manual.
+
+: could-fail  ( -- c )
+  key dup [char] q =
+  if  -1 throw  then  ;
+
+: do-it  ( a b -- c )
+  2drop could-fail  ;
+
+: try-it  ( -- )
+  1 2 ['] do-it catch
+  if    ( x1 x2 )  2drop ." There was an exception" cr
+  else  ." The character was " emit cr then  ;
+
+: retry-it  ( -- )
+  begin   1 2 ['] do-it catch
+  while   ( x1 x2 ) 2drop ." Exception, keep trying" cr
+  repeat  ( c )
+  ." The character was " emit cr  ;
+
+( number? )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Improved alternative to `number?`.
+
+: solo-number?   ( ca len -- 0 | n 1 | d 2 )
+  dup 0= if  2drop 0 exit  then
+  base @ >r number-base base !
+  skip-sign? >r
+  0 0 2swap  dpl on
+  begin
+    >number dup
+  while
+    over c@ [char] . <>  \ not a decimal point?
+    dpl @ 0< 0=  or  \ or not the first decimal point?
+    if  2drop 2rdrop 0 exit  then
+    dup 1- dpl !  1 /string
+  repeat  2drop  dpl @ 0<
+  if    d>s r> ?negate  1
+  else  r> ?dnegate  2  then  r> base !  ;
+
+( number?-bench )
+
+need frames@  need frames0
+
+: empty-stack  ( -- )  sp0 @ sp!  ;
+
+defer num?
+
+: number?-bench  ( n -- )
+  frames0  0 do
+    s" " num?  s" 12345" num?   s" 12345." num?
+    s" -12345" num?  s" -12345." num?  empty-stack
+  loop  frames@ cr d.  ;
+
+: benchs  ( -- )
+  100 number?-bench 1000 number?-bench 10000 number?-bench  ;
+
+                                    \ Version of `number?`
+  \    ' number? ' num? defer! benchs  \ pForth
+  \  ' c.number? ' num? defer! benchs  \ CamelForth
+  \ ' dzx-number? ' num? defer! benchs  \ DZX-Forth
+   ' solo-number? ' num? defer! benchs  \ Solo Forth
+
+  \ Note: The CamelForth code is for single numbers only.
+  \       The DZX-Forth code is a bit obfuscated.
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       pForth CamelForth DZX-Forth Solo Forth
+  \       ------ ---------- --------- ----------
+  \ 00100    256        257       259        266
+  \ 01000   2559       2565      2594       2658
+  \ 10000  25591      25652     25933      26581
+
+( number?-bench )
+
+need frames@  need frames0
+
+: empty-stack  ( -- )  sp0 @ sp!  ;
+
+defer num?
+
+: number?-bench  ( n -- )
+  frames0  0 do
+    s" " num?  s" 123x45." num?   s" 12345.999x" num?
+    s" -12345.x" num?  s" -12345.999x" num?
+    s" -12345.000.000" num?
+    empty-stack
+  loop  frames@ cr d.  ;
+
+: benchs  ( -- )
+  100 number?-bench 1000 number?-bench 10000 number?-bench  ;
+
+' solo-number? ' num? defer! benchs
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \ 00100   416
+  \ 01000  4165
+  \ 10000 41649
 
   \ vim: filetype=soloforth
