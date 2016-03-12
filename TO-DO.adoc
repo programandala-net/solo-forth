@@ -10,6 +10,9 @@
 
 Fix `ior>error`.
 
+Confirm if `.line` is fig-Forth (`-line` is used too).
+
+Use `warning` as an example of `?branch`, in my message to clf.
 
 // }}}
 == Inner ==
@@ -119,6 +122,10 @@ Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 .2015-08-31:
 
 Fix: `transfer-block` changes the current drive to 2!
+
+.2015-09-25:
+
+Try 1024-byte blocks. Also `-->` will need changes.
 
 // }}}
 == Graphics ==

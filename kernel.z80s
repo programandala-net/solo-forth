@@ -18,7 +18,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509250513
+version_release:  equ 201509262233
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -316,22 +316,23 @@ charset_address:  equ 0xFFFF-charset_size+1
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.
 
-error.stack_overflow:               equ -003 ; XXX old = 07
-error.stack_underflow:              equ -004 ; XXX old = 02
-error.not_found:                    equ -013 ; XXX old = 05
-error.compilation_only:             equ -014 ; XXX old = 17
-error.conditionals_not_paired:      equ -022 ; XXX old = 19
-error.not_understood:               equ -256 ; XXX old = 01
-error.not_unique:                   equ -257 ; XXX old = 04
-error.stack_unbalanced:             equ -258 ; XXX old = 08
-error.loading_from_screen_0:        equ -259 ; XXX old = 09
-error.wrong_digit:                  equ -260 ; XXX old = 14
-error.deferred_word_uninitialized:  equ -261 ; XXX old = 15
-error.assertion_failed:             equ -262 ; XXX old = 16
-error.execution_only:               equ -263 ; XXX old = 18
-error.definition_not_finished:      equ -264 ; XXX old = 20
-error.loading_only:                 equ -265 ; XXX old = 22
-error.off_current_editing_screen:   equ -266 ; XXX old = 23
+error.stack_overflow:               equ -003
+error.stack_underflow:              equ -004
+error.not_found:                    equ -013
+error.compilation_only:             equ -014
+error.zero_length_name:             equ -016
+error.conditionals_not_paired:      equ -022
+error.not_understood:               equ -256
+error.not_unique:                   equ -257
+error.stack_unbalanced:             equ -258
+error.loading_from_screen_0:        equ -259
+error.wrong_digit:                  equ -260
+error.deferred_word_uninitialized:  equ -261
+error.assertion_failed:             equ -262
+error.execution_only:               equ -263
+error.definition_not_finished:      equ -264
+error.loading_only:                 equ -265
+error.off_current_editing_screen:   equ -266
 
 ; ----------------------------------------------
 ; ZX Spectrum
@@ -1631,7 +1632,7 @@ endif
   ; XXX WARNING -- state-smart
 
   dw parse_ ; ( ca len )
-  dw comp_question_
+  dw compiling_question
   dw zero_branch_,parse_string.interpreting
   ; compiling
   dw s_literal_
@@ -1987,11 +1988,13 @@ question_csb_.enough:
 
 ; doc{
 ;
-; 0branch  ( f -- )  \ fig-Forth
+; 0branch  ( f -- )
 ;
 ; A run-time procedure to branch conditionally. If  _f_ on stack
 ; is false (zero), the following in-line address is copied to IP
 ; to branch forward or  backward.
+;
+; Standard: fig-Forth.
 ;
 ; }doc
 
@@ -3180,31 +3183,6 @@ endif
 
 endif
 
-if 0 ; XXX TMP -- for debugging
-
-  _code_header scanx_,'SCANX' ; XXX TMP
-
-  exx
-  pop de ; E = char searched for
-  pop bc ; len1
-  ld a,c
-  or b ; empty string?
-  jr z,scanx.nothing ; if so, exit
-  pop hl ; ca1
-  ld a,e ; A = char searched for
-  cpir ; scan until match or count=0
-  jr nz,scanx.no_match
-  dec hl ; point to match char
-  inc bc ; adjust the count
-scanx.no_match:
-  push hl
-scanx.nothing:
-  push bc
-  exx
-  _jp_next
-
-endif
-
 ; ----------------------------------------------
   _code_header skip_,'SKIP'
 
@@ -3299,37 +3277,6 @@ skip.end:
   _jp_next
 
 endif
-
-endif
-
-if 0 ; XXX TMP for debugging
-
-; Code adapted and modified from CamelForth.
-
-  _code_header skipx_,'SKIPX' ; XXX TMP
-
-  exx
-  pop de ; E = char searched for
-  pop bc ; len1
-  ld a,c
-  or b ; empty string?
-  jr z,skipx.end ; if so, exit
-  pop hl ; ca1
-  ld a,e ; A = char searched for
-skipx.begin:
-  cpi
-  jr nz,skipx.mismatch ; char mismatch, exit
-  jp pe,skipx.begin ; count not exhausted
-  jr skipx.done ; count 0, no mismatch
-skipx.mismatch:
-  dec hl ; point at mismatch char
-  inc bc ; adjust the count
-skipx.done:
-  push hl
-skipx.end:
-  push bc
-  exx
-  _jp_next
 
 endif
 
@@ -4065,7 +4012,7 @@ endif
   ; Credits:
   ; Code from Abersoft Forth.
 
-; XXX FIXME -- This word, has a bug that affects `(line)`, used
+; XXX FIXME -- This word, has a bug that affects `line>string`, used
 ; by `message`, and other words that use it: `*/mod`, `mod` and
 ; `/mod`, with certain negative values, return different values
 ; in Abersoft Forth and other Forth systems that have been
@@ -4180,9 +4127,11 @@ l60c0h:
 
 ; doc{
 ;
-; up  ( -- a )  \ fig-Forth
+; up  ( -- a )
 ;
 ; Constant, the address of the user area pointer.
+;
+; Standard: fig-Forth.
 ;
 ; }doc
 
@@ -4343,13 +4292,15 @@ endif
 
 ; doc{
 ;
-; ;s  ( -- )  \ fig-Forth
+; ;s  ( -- )
 ;
 ; Return execution to the calling definition.  Unnest one level.
 ;
 ; It is used to stop interpretation of a screen. It is also the
 ; run-time word compiled at the end of a colon-definition which
 ; returns execution to the calling procedure.
+
+; Standard: fig-Forth.
 ;
 ; }doc
 
@@ -4902,9 +4853,11 @@ endif
 
 ; doc{
 ;
-; toggle  ( a b -- )  \ fig-Forth
+; toggle  ( a b -- )
 ;
 ; Complement the contents of _a_ by the bit pattern _b_.
+;
+; Standard: fig-Forth.
 ;
 ; }doc
 
@@ -4997,7 +4950,7 @@ store.de_into_hl_pointer:
 ; ----------------------------------------------
   _colon_header colon_,':',immediate
 
-  dw question_exec_
+  dw question_executing_
   dw store_csp_
   dw header_,right_bracket_
   dw paren_semicolon_code_
@@ -5021,7 +4974,7 @@ do_colon.end: ; XXX TMP for debugging
 
   ; XXX TODO move to the disk? problem: do_colon
 
-  dw question_exec_
+  dw question_executing_
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
@@ -5490,7 +5443,7 @@ endif
 
 ; doc{
 ;
-; r#  ( -- a )  \ fig-Forth
+; r#  ( -- a )
 ;
 ; A user variable which may contain the location of an editing
 ; cursor or other file related function. Used by the editor.
@@ -5836,7 +5789,7 @@ source.tib:
 ;
 ; }doc
 
-  dw question_comp_,comma_
+  dw question_compiling_,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6314,22 +6267,55 @@ question_error.no_error:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header comp_question_,'COMP?'
+  _colon_header compiling_question,'COMPILING?'
 
-  dw state_,fetch_
+; doc{
+;
+; compiling?  ( -- wf )
+;
+; ----
+; : compiling?  ( -- wf )
+;   state @ 0<>  ;
+; ----
+;
+; }doc
+
+  dw state_,fetch_,zero_not_equals_
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_comp_,'?COMP'
+  _colon_header question_compiling_,'?COMPILING'
 
-  dw comp_question_,zero_equals_
+; doc{
+;
+; ?compiling  ( -- )
+;
+; Issue an error if not compiling.
+; 
+; : ?compiling  ( -- )
+;   compiling? 0= -14 ?error  ;
+;
+; }doc
+
+  dw compiling_question,zero_equals_
   _question_error error.compilation_only
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_exec_,'?EXEC'
+  _colon_header question_executing_,'?EXECUTING'
 
-  dw comp_question_
+; doc{
+;
+; ?executing  ( -- )
+;
+; Issue an error if not executing.
+; 
+; : ?executing  ( -- )
+;   compiling? -263 ?error  ;
+;
+; }doc
+
+  dw compiling_question
   _question_error error.execution_only
   dw semicolon_s_
 
@@ -6366,7 +6352,7 @@ endif
 ; ----------------------------------------------
   _colon_header compile_,'COMPILE'
 
-  dw question_comp_
+  dw question_compiling_
   dw from_r_,dup_,two_plus_,to_r_,fetch_,compile_comma_
   dw semicolon_s_
 
@@ -6585,7 +6571,7 @@ minus_trailing.begin:
 
   _literal '"'
   dw parse_ ; ( ca len )
-  dw comp_question_
+  dw compiling_question
   dw zero_branch_,dot_quote.interpreting
   ; Compiling.
   dw compile_,paren_dot_quote_,s_comma_
@@ -6599,7 +6585,7 @@ dot_quote.interpreting:
 
 ; doc{
 ;
-; span  ( -- a )  \ Forth-83
+; span  ( -- a )
 ;
 ; The address of a variable containing the count of characters
 ; actually received and stored by the last execution of
@@ -6611,6 +6597,9 @@ dot_quote.interpreting:
 
 ; ----------------------------------------------
   _colon_header acceptx_,'ACCEPTX'
+
+; XXX UNDER DEVELOPMENT -- to substitute the current
+; implementation of `accept`
 
 ; doc{
 ;
@@ -6627,7 +6616,7 @@ dot_quote.interpreting:
 ; _len2_ is the length of the string stored at _ca1_.
 ;
 ;
-; Standard: Forth-94.
+; Standard: Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -6664,7 +6653,7 @@ acceptx.begin:
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; Standard: Forth-94.
+; Standard: Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -6730,7 +6719,7 @@ accept.end:
 
 ; doc{
 ;
-; query  ( -- )  \ fig-Forth
+; query  ( -- )
 ;
 ; XXX TODO description
 ;
@@ -6747,6 +6736,8 @@ accept.end:
 ; `tib`, until a "return" or the count contained in the `#tib`
 ; variable have been received. One or more nulls are added at
 ; the end of the text.
+;
+; Standard: Forth-83, Forth-94 (obsolescent).
 ;
 ; }doc
 
@@ -6811,7 +6802,7 @@ else
   dw last_block_question_
   dw question_branch_,next_block.end ; if not, branch
   ; Last block of the screen.
-  dw question_exec_ ; error if not executing ; XXX TODO -- why this?
+  dw question_executing_ ; error if not executing ; XXX TODO -- why this?
 next_block.end:
   dw semicolon_s_
 
@@ -6862,7 +6853,7 @@ if 0 ; fig_parsing
   dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
   dw question_branch_,x.exit ; if not, branch
   ; Last block of the screen.
-  dw question_exec_ ; error if not executing ; XXX TODO -- why this?
+  dw question_executing_ ; error if not executing ; XXX TODO -- why this?
 
 x.exit:
 
@@ -7076,33 +7067,6 @@ else
 
 endif
 
-if 0 ; XXX TMP -- for debugging
-
-  _colon_header streamx_,'STREAMX'
-
-; doc{
-;
-; stream  ( -- ca len )
-;
-; ca len = source from the current parsing position
-;
-; }doc
-
-  dw source_
-; _brk "streamx after source" ; XXX INFORMER
-  dw to_in_,fetch_
-; _brk "streamx before /string" ; XXX INFORMER
-  dw slash_string_
-; _brk "streamx end" ; XXX INFORMER
-
-  ; XXX TMP -- needed when no space is typed at the end
-  _literal 0
-  dw max_
-
-  dw semicolon_s_
-
-endif
-
 ; ----------------------------------------------
   _code_header slash_string_,'/STRING'
 
@@ -7192,26 +7156,6 @@ parse.end:
   dw two_from_r_,rot_,minus_
   dw to_in_,plus_store_
   dw tuck_,minus_
-  dw semicolon_s_
-
-endif
-
-if 0 ; XXX TMP -- for debugging
-
-  _colon_header parsex_,'PARSEX' ; XXX TMP
-
-  dw streamx_,two_dup_,two_to_r_
-  dw rot_,scanx_
-  _brk "in parsex after scanx"
-  dw dup_,zero_branch_,parsex.end
-  dw char_minus_
-  _brk "in parsex after char-"
-parsex.end:
-  dw two_from_r_,rot_,minus_
-  _brk "in parsex before updating >in"
-  dw to_in_,plus_store_
-  dw tuck_,minus_
-  _brk "in parsex before exit"
   dw semicolon_s_
 
 endif
@@ -7307,46 +7251,6 @@ parse_name.skip:
   dw semicolon_s_
 
 endif
-
-endif
-
-if 0 ; XXX TMP -- for debugging
-
-  _colon_header parse_namex_,'PARSE-NAMEX' ; XXX TMP
-
-  dw streamx_       ; ( ca len )
-; _brk "parse-namex after streamx" ; XXX INFORMER
-  dw dup_,to_r_         ; ( ca len ) ( R: len )
-  dw b_l_,skipx_         ; ( ca1 len1 ) ( R: len )
-; _brk "parse-namex after skipx" ; XXX INFORMER
-  dw over_,to_r_       ; ( ca1 len1 ) ( R: len ca1 )
-  dw b_l_,scanx_         ; ( ca2 len2 ) ( R: len ca1 )
-; _brk "parse-namex after scanx" ; XXX INFORMER
-  dw dup_
-  dw zero_branch_,parse_namex.skip
-  dw char_minus_
-; _brk "parse-namex after char-" ; XXX INFORMER
-parse_namex.skip:
-  dw from_r_,from_r_    ; ( ca2 len2 ca1 len )
-  dw rot_,minus_        ; ( ca2 ca1 len3 )
-; _brk "parse-namex before updating >in" ; XXX INFORMER
-  dw to_in_,plus_store_  ; ( ca2 ca1 )
-  dw tuck_,minus_       ; ( ca1 len4 )
-  dw semicolon_s_
-
-endif
-
-if 0 ; XXX TMP -- for debugging
-
-  ; XXX OLD
-
-  _colon_header parse_namex_,'PARSE-NAMEX' ; XXX TMP
-
-  dw streamx_,b_l_,skipx_ ; ( ca2 len2 )
-  dw dup_,parsed_
-  dw b_l_,scanx_ ; ( ca len )
-  dw dup_,parsed_
-  dw semicolon_s_
 
 endif
 
@@ -7477,32 +7381,6 @@ word.skip:
   dw semicolon_s_
 
   endif
-
-endif
-
-if 0 ; XXX TMP -- for debugging
-
-  _colon_header wordx_,'WORDX' ; XXX TMP
-
-  dw dup_,to_r_ ; save the delimiter
-  dw streamx_ ; ( ca1 len1 )
-  dw over_,to_r_ ; save the start of the string
-  dw rot_,skipx_ ; ( ca2 len2 )
-  dw over_,from_r_,minus_,to_in_,plus_store_
-  dw from_r_,scanx_ ; ( ca2 len3 )
-  dw dup_,parsed_
-
-  dw here_
-  _literal max_word_length+2
-  dw blank_
-
-  dw dup_,here_,c_store_ ; count byte
-  dw here_,one_plus_ ; destination
-  dw swap_ ; count
-  dw cmove_ ; move the word
-  dw here_
-
-  dw semicolon_s_
 
 endif
 
@@ -7989,17 +7867,19 @@ endif
 ; ----------------------------------------------
   _colon_header error_to_ordinal_,'ERROR>ORDINAL'
 
-; : error>ordinal  ( -n1 -- +n2 )
+; : error>ordinal  ( n1 -- +n2 )
 ;   \ Convert an error code to its ordinal position in the
 ;   \ library.
-;   \ -n1 =  -90..-1        \ Forth-2012 error codes
-;   \        -285..-256     \ Solo Forth error codes
-;   \        -1024..-1000   \ G+DOS error codes
-;   \ +n2 =  1..146
+;   \ n1 =  -90..-1        \ Standard error codes
+;   \       -285..-256     \ System error codes
+;   \       -1024..-1000   \ G+DOS error codes
+;   \ +n2 = 1..146
 ;   abs
 ;   dup 256 < ?exit
-;   dup 1000 < if  [ 255 091 - ] literal - exit  then
+;   dup 1000 < if  [ 256 091 - ] literal - exit  then
 ;   [ 1000 286 - 255 091 - + ] literal -   ;
+
+  ; XXX TODO -- add OS error codes
 
   dw abs_,dup_
   _literal 256
@@ -8007,7 +7887,7 @@ endif
   dw dup_
   _literal 1000
   dw less_than_,zero_branch_,error_to_ordinal.g_plus_dos
-  _literal 255-91
+  _literal 256-91
   dw minus_,exit_
 error_to_ordinal.g_plus_dos:
   _literal (1000-286)+(255-91)
@@ -8108,6 +7988,9 @@ error.end:
 
   ; The word is not unique.
 ;  _brk_type 'header -- not unique' ; XXX INFORMER
+  ; Note: `warnings` is already checked by `warning`,
+  ; but it has to be done here too, in order to show the
+  ; offending word or not before executing `warning`.
   dw warnings_,fetch_
   dw zero_branch_,header.no_warning
   dw cfa_to_nfa_,id_dot_
@@ -8138,6 +8021,8 @@ else
 endif
 ;  _brk_type 'header -- string' ; XXX INFORMER
 
+  dw dup_,zero_equals_
+  _question_error error.zero_length_name
 
   ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
@@ -8369,12 +8254,12 @@ search.string_1_addr equ $+1
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw comp_question_
+    dw compiling_question
     dw zero_branch_,c_literal.end
     dw compile_,c_lit_,c_comma_
 c_literal.end:
   else ; XXX NEW
-    dw question_comp_
+    dw question_compiling_
     dw compile_,c_lit_,comma_
   endif
   dw semicolon_s_
@@ -8384,21 +8269,23 @@ c_literal.end:
 
 ; doc{
 ;
-; literal  ( n -- )  \ fig-Forth
+; literal  ( n -- )
 ;
 ; If compiling, then compile the stack value _n_ as a 16-bit literal.
+; 
+; Standard: fig-Forth.
 ;
 ; }doc
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw comp_question_
+    dw compiling_question
     dw zero_branch_,literal.end
     dw compile_,lit_,comma_
 literal.end:
   else ; XXX NEW
-    dw question_comp_
+    dw question_compiling_
     dw compile_,lit_,comma_
   endif
   dw semicolon_s_
@@ -8417,13 +8304,13 @@ literal.end:
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
-    dw comp_question_
+    dw compiling_question
     dw zero_branch_,two_literal.end
     dw swap_,literal_,literal_
 two_literal.end:
   else ; XXX NEW
     ; XXX TODO -- dlit
-    dw question_comp_
+    dw question_compiling_
     dw swap_,literal_,literal_
   endif
   dw semicolon_s_
@@ -8439,9 +8326,11 @@ two_literal.end:
 
 ; doc{
 ;
-; ?stack  ( -- )  \ fig-Forth
+; ?stack  ( -- )
 ;
 ; Issue an error message if the stack is out of bounds.
+
+; Standard: fig-Forth.
 ;
 ; }doc
 
@@ -8489,7 +8378,7 @@ interpret.begin:
   ; Found ( cfa 1 | cfa -1 )
   ; Immediate word:     ( cfa  1 )
   ; Non-immediate word: ( cfa -1 )
-  dw comp_question_
+  dw compiling_question
   ; ( cfa 1 state | cfa -1 state )
   ; Compiling an immediate word:     ( cfa  1 -1 )
   ; Compiling a non-immediate word:  ( cfa -1 -1 )
@@ -8592,7 +8481,7 @@ endif
   ; Found ( cfa 1 | cfa -1 )
   ; Immediate word:     ( cfa  1 )
   ; Non-immediate word: ( cfa -1 )
-  dw comp_question_
+  dw compiling_question
   ; ( cfa 1 state | cfa -1 state )
   ; Compiling an immediate word:     ( cfa  1 -1 )
   ; Compiling a non-immediate word:  ( cfa -1 -1 )
@@ -8754,7 +8643,7 @@ endif
   ; incremented at the end of `interpret`? The reason is
   ; `(load)` finishes and restores `blk` from the return stack!
 
-  dw comp_question_
+  dw compiling_question
   dw question_branch_,quit.do
 
   dw paren_dot_quote_
@@ -9666,16 +9555,23 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_line_,'(LINE)'
-
+  _colon_header line_to_string_,'LINE>STRING'
 
 ; doc{
 ;
-; (line)  ( n1 n2 -- ca len )  \ fig-Forth
+; line>string  ( n1 n2 -- ca len )
 ;
-; Convert the line number _n1_ and the screen number _n2_ to the
-; disk buffer address containing the data.
+; Convert the line number _n1_ and the screen number _n2_ to a
+; string in the disk buffer containing the data.
 ;
+; Note: in fig-Forth, this word is called `(line)`.
+;
+; ----
+; : line>string  ( n1 n2 -- ca len )
+;   >r c/l b/buf */mod
+;   r> b/scr * +
+;   block + c/l  ;
+; ----
 ; }doc
 
   dw to_r_
@@ -9687,7 +9583,19 @@ endif
 ; ----------------------------------------------
   _colon_header dot_line_,'.LINE'
 
-  dw paren_line_,minus_trailing_,type_
+; doc{
+;
+; .line  ( n1 n2 -- )
+; 
+; Print line _n1_ from screen _n2_, without trailing spaces.
+; 
+; ----
+; : .line  ( n1 n2 -- )
+;   line>string -trailing type  ;
+; ----
+; }doc
+
+  dw line_to_string_,minus_trailing_,type_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9697,6 +9605,10 @@ endif
 ;
 ; warning  ( n -- )
 ;
+; ----
+; : warning  ( n -- )
+;   warnings @ if  message  else  drop  then  ;
+; ----
 ; }doc
 
   dw warnings_,fetch_
@@ -9733,6 +9645,10 @@ message.number_only:
 ;
 ; Is the current disk buffer marked as modified?
 ;
+; ----
+; : updated?  ( -- f )
+;   buffer-id 0<  ;
+; ----
 ; }doc
 
   dw buffer_id_,zero_less_than_
@@ -9769,6 +9685,10 @@ endif
 ; Unassign all block buffers. Do not transfer the contents of
 ; any updated block to mass storage.
 ;
+; ----
+; : empty-buffers  ( -- )
+;   $7FFF block disk-buffer !  ;
+; ----
 ; }doc
 
   dw lit_,buffer_block_id_mask,disk_buffer_,store_
@@ -9812,6 +9732,11 @@ endif
 ; Convert the disk buffer id _x_ to its associated block _n_,
 ; by removing the update bit.
 ;
+; ---
+; : block-number  ( x -- n )
+;   $7FFF and  ;
+; ---
+;
 ; }doc
 
   _literal buffer_block_id_mask
@@ -9826,6 +9751,11 @@ endif
 ; buffer-block  ( -- n )
 ;
 ; Block number associated with the disk buffer.
+;
+; ---
+; : buffer-block  ( -- n )
+;   buffer-id block-number  ;
+; ---
 ;
 ; }doc
 
@@ -9938,12 +9868,15 @@ block.end:
 ;
 ; flip  ( n1 -- n2 )
 ;
-;   Exchange the low and high bytes within n1.
+; Exchange the low and high bytes within _n1_.
+;
+; Note: This word is called `><` or `cswap` in other Forth
+; systems.
 ;
 ; }doc
 
-; [Name taken from eForth. It's called `><` or `cswap` in other
-; Forth systems.]
+; Credits:
+; The name "flip" was taken from eForth.
 
   pop hl
   ld a,h
@@ -10004,12 +9937,15 @@ block.end:
 ;
 ; Read disk block _n_ to buffer _a_.
 ;
+; ----
+; : read-block  ( a n -- )
+;   $44 transfer-block  ;
+; ----
+;
 ; }doc
 
-;  _chk 'read-block -- start' ; XXX INFORMER
   _literal 0x44 ; G+DOS command to read a disk sector
   dw transfer_block_
-;  _brk 'read-block -- end' ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -10021,9 +9957,13 @@ block.end:
 ;
 ; Read disk block _n_ to the disk buffer.
 ;
+; ----
+; : read-buffer  ( n -- )
+;   buffer-data swap read-block  ;
+; ----
+;
 ; }doc
 
-;  _chk 'read-buffer -- start' ; XXX INFORMER
   dw buffer_data_,swap_,read_block_
   dw semicolon_s_
 
@@ -10035,6 +9975,11 @@ block.end:
 ; write-block  ( a n -- )
 ;
 ; Write buffer _a_ to disk block _n_.
+;
+; ----
+; : write-block  ( a n -- )
+;   $45 transfer-block  ;
+; ----
 ;
 ; }doc
 
@@ -10050,6 +9995,11 @@ block.end:
 ; write-buffer  ( n -- )
 ;
 ; Write the disk buffer to disk block _n_.
+;
+; ----
+; : write-buffer  ( n -- )
+;   buffer-data swap write-block  ;
+; ----
 ;
 ; }doc
 
@@ -10149,39 +10099,10 @@ read_write_sector_command:
 
 ; }doc
 
-if 1
-
   dw b_slash_scr_,star_,blk_,store_
   dw to_in_,off_
-;  _chk '(load) -- before interpret' ; XXX INFORMER
   dw interpret_
-;  _chk '(load) -- after interpret' ; XXX INFORMER
   dw semicolon_s_
-
-else
-
-  ; XXX OLD -- this method can not work, because `blk` may
-  ; change during interpretation.
-
-  dw b_slash_scr_,star_
-  dw dup_,two_plus_,swap_
-  dw paren_do_
-paren_load.do
-  dw i_,blk_,store_,to_in_,off_
-;  _chk '(load) -- before interpret, blk is:' ; XXX INFORMER
-  if debugging
-;    dw cr_,blk_,question_ ; XXX INFORMER
-  endif
-  dw interpret_
-;  _chk '(load) -- after interpret, blk is:' ; XXX INFORMER
-  if debugging
-;    dw cr_,blk_,question_ ; XXX INFORMER
-  endif
-  dw paren_loop_,paren_load.do
-; _brk '(load) -- after interpret' ; XXX INFORMER
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header load_,'LOAD'
@@ -10241,18 +10162,10 @@ endif
 ; XXX TODO -- if there were one block per screen, the
 ; calculation would be a simple increment
 
-;  _chk '--> -- start, blk is:' ; XXX INFORMER
-  if debugging
-;    dw cr_,blk_,question_ ; XXX INFORMER
-  endif
   dw question_loading_
   dw to_in_,off_
   dw b_slash_scr_,blk_,fetch_,over_,mod_,minus_
   dw blk_,plus_store_
-;  _chk '--> -- end, blk is:' ; XXX INFORMER
-  if debugging
-;    dw cr_,blk_,question_ ; XXX INFORMER
-  endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -10278,7 +10191,13 @@ if find_name_version=0 ; XXX TMP
 ;
 ; defined  ( "name" -- 0 | cfa 1 | cfa -1 )
 ;
+; ----
+; : defined  ( "name" -- 0 | cfa 1 | cfa -1 )
+;   parse-name find-name  ;
+; ----
+;
 ; }doc
+
   dw parse_name_  ; ( ca1 len1 )
   dw find_name_
   dw semicolon_s_
@@ -10292,6 +10211,7 @@ if find_name_version=1 ; XXX TMP
 ; defined  ( "name" -- ca len 0 | cfa 1 | cfa -1 )
 ;
 ; }doc
+
   dw parse_name_  ; ( ca1 len1 )
   dw find_name_
   dw semicolon_s_
@@ -10303,6 +10223,17 @@ if find_name_version=2 ; XXX TMP
 ; doc{
 ;
 ; defined  ( "name" -- x 0 | cfa 1 | cfa -1 )
+;
+; Parse "name" and find its definition.  If the definition is
+; not found after searching all the vocabularies in the search
+; order, return _x_ and zero.  If the definition is found,
+; return its _cfa_. If the definition is immediate, also return
+; one (1); otherwise also return minus-one (-1).
+;
+; ----
+; : defined  ( "name" -- x 0 | cfa 1 | cfa -1 )
+;   parse-name find-name  ;
+; ----
 ;
 ; }doc
 
@@ -10324,7 +10255,8 @@ endif
 ;
 ; }doc
 
-  ; [Code from DZX-Forth.]
+  ; Credits:
+  ; Code from DZX-Forth.
 
   dw zero_equals_
   _question_error error.not_found
@@ -10333,14 +10265,15 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
+
+if find_name_version=0 ; XXX TMP
+
 ; doc{
 ;
 ; [defined]  ( "name" -- wf )
 ;
 ; }doc
 
-
-if find_name_version=0 ; XXX TMP
   dw defined_             ; ( 0 | cfa 1 | cfa -1 )
   dw zero_branch_,bracket_defined_
   dw drop_
@@ -10352,6 +10285,12 @@ bracket_defined.end:
 endif
 
 if find_name_version=1 ; XXX TMP
+
+; doc{
+;
+; [defined]  ( "name" -- wf )
+;
+; }doc
 
 if 0
   ; XXX TODO -- simplify
@@ -10376,6 +10315,17 @@ endif
 
 if find_name_version=2 ; XXX TMP
 
+; doc{
+;
+; [defined]  ( "name" -- wf )
+;
+; ----
+; : [defined]  ( "name" -- wf )
+;   defined nip 0<>  ; immediate
+; ----
+;
+; }doc
+
   dw defined_,nip_,zero_not_equals_
   dw semicolon_s_
 
@@ -10388,6 +10338,11 @@ endif
 ;
 ; [undefined]  ( "name" -- wf )
 ;
+; ----
+; : [undefined]  ( "name" -- wf )
+;   [defined] 0=  ; immediate
+; ----
+;
 ; }doc
 
   dw bracket_defined_,zero_equals_
@@ -10399,6 +10354,13 @@ endif
 ; doc{
 ;
 ; '  ( "name" -- cfa )
+; 
+; Standard: Forth-83, Forth-94, Forth-2012.
+;
+; ----
+; : '  ( "name" -- cfa )
+;   defined ?defined  ;
+; ----
 ;
 ; }doc
 
@@ -10411,6 +10373,13 @@ endif
 ; doc{
 ;
 ; [']  ( "name" -- cfa )
+;
+; Standard: Forth-83, Forth-94, Forth-2012.
+;
+; ----
+; : [']  ( "name" -- cfa )
+;   ' postpone literal  ; immediate 
+; ----
 ;
 ; }doc
 
@@ -10430,7 +10399,7 @@ endif
 ;
 ; }doc
 
-  dw question_comp_ ; error if not compiling
+  dw question_compiling_ ; error if not compiling
   dw backward_mark_ ; address to compute the backward branch
 if 1 ; fig_compiler_security
   dw one_ ; error checking number
@@ -10440,7 +10409,7 @@ endif
 ; ----------------------------------------------
   _colon_header then_,'THEN',immediate
 
-  dw question_comp_ ; error if not compiling
+  dw question_compiling_ ; error if not compiling
 if 1 ; fig_compiler_security
   dw two_,question_pairs_ ; check for nesting error
 endif
@@ -10454,7 +10423,7 @@ endif
 ;
 ; do  ( n1 n2 -- )
 ; 
-; Standard: Forth 79.
+; Standard: fig-Forth, Forth 79.
 ;
 ; }doc
 
@@ -10477,7 +10446,7 @@ endif
 ; Increment the `do-loop` index by one, terminating the loop  if
 ; the new index is equal to or greater than  the  limit.
 ;
-; Standard: Forth 79.
+; Standard: fig-Forth, Forth 79.
 ;
 ; }doc
 
@@ -10491,6 +10460,14 @@ endif
 
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate
+
+; doc{
+;
+; +loop  ( n -- )
+;
+; Standard: fig-Forth, Forth 79.
+;
+; }doc
 
 if 1 ; fig_compiler_security
   _literal 3 ; error checking number
@@ -10570,6 +10547,15 @@ endif
 
 ; ----------------------------------------------
   _colon_header ahead_,'AHEAD',immediate
+
+; doc{
+;
+; ahead  
+;   Compilation: ( -- )
+; 
+; Standard: Forth-94, Forth-2012.
+;
+; }doc
 
   dw compile_,branch_
   dw forward_mark_
@@ -10876,6 +10862,8 @@ endif
 ; Defaust behaviour of `home`.
 ;
 ; }doc
+
+  ; XXX TODO rename to `(home-mode32)`
 
 if 0
 

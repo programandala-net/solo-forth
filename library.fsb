@@ -10,7 +10,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201509250513
+\ Last modified: 201509262233
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -71,7 +71,8 @@ variable last-locatable  scr/disk 1- last-locatable !
 : located  ( ca len -- screen | false )
   last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
-  do   0 i (line) 2over contains if  2drop i unloop exit  then
+  do  0 i line>string 2over
+      contains if  2drop i unloop exit  then
     \ break-key? ?exhaust \ XXX TODO not in the kernel
   loop  2drop false  ;
 
@@ -350,14 +351,25 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ }}} =======================================================
   \ Code under development {{{
 
-( err>lin )
+( err>ord err>lin )
 
-  \ XXX FIXME -- fixed version of `error>line`
+  \ XXX TMP -- `err>ord` tests `error>ordinal`
+
+: err>ord  ( -- )
+  91 1 do  i . i error>ordinal ."  -> " . cr  loop
+  286 256 do  i . i error>ordinal ."  -> " . cr  loop
+  1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
+
+  \ XXX FIXME -- this is a fixed version of `error>line`,
+  \ under development
 
 : err>lin  ( n1 -- n2 )
   error>ordinal dup 1+ 1
-  do  cr i . ." 16 mod . " 16 mod . key drop
-    i 16 mod 0= abs +  loop  ;
+  do  cr i . ." 16 mod . "  i 16 mod .
+    i 16 mod 0=  dup if ."  skip "  then
+                 abs + ." count:" dup . 
+    key drop
+  loop  ;
 
 ( number? )
 
@@ -415,168 +427,6 @@ variable last-locatable  scr/disk 1- last-locatable !
 
 : error>line  ( -n1 -- +n2 )
   error>ordinal  dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
-
-  \ }}} =======================================================
-  \ Development benchmarks and tests {{{
-
-( fill-bench )
-
-  \ 2015-09-25: Benchmark three implementations of `fill`:
-  \
-  \ `fill` is the original implementation from Abersoft Forth
-  \ `fill2` is a modified version
-  \ `fill88` is the code adapted from Z88 CamelForth
-
-need frames@  need frames0  need rnd
-
-defer (fill)
-
-: (fill-bench)  ( n cfa -- )
-  ['] (fill) defer!
-  frames0  0
-  do  16384 6144 rnd (fill)  loop
-  \ do  16384 1 rnd (fill)  loop
-  \ do  16384 0 rnd (fill)  loop
-  \ do  16384 2048 rnd (fill)  loop
-  frames@ cr d.
-  key drop
-  ;
-
-: fill-bench  ( n -- )
-  dup ['] fill (fill-bench)
-  dup ['] fill2 (fill-bench)
-      ['] fill88 (fill-bench)  ;
-
-  \ Kernel code: `16384 6144 rnd (fill)`
-  \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \       fill fill2 fill88
-  \       ---- ----- ------
-  \ 00010   10    10      5
-  \ 00100  491   522    252 
-  \ 01000 4909  5218   2524
- 
-  \ Kernel code: `16384 1 rnd (fill)`
-  \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \       fill fill2 fill88
-  \       ---- ----- ------
-  \ 00010    1     0      0
-  \ 00100    9     8      8
-  \ 01000   85    84     84
-  \ 05000  425   423    422
-  \ 10000  850   846    845
- 
-  \ Kernel code: `16384 0 rnd (fill)`
-  \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \       fill fill2 fill88
-  \       ---- ----- ------
-  \ 00010    1     0      0
-  \ 00100    8     8      8
-  \ 01000   84    83     84
-  \ 05000  421   418    421
-  \ 10000  842   837    842
-
-  \ Kernel code: `16384 2048 rnd (fill)`
-  \
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \       fill  fill2 fill88
-  \       ----- ----- ------
-  \ 00010    17    18      9
-  \ 00100   169   180     89
-  \ 01000  1693  1795    898
-  \ 30000 50770 53863  26933
-
-( /-test )
-
-  \ 2015-09-22: This test shows that Abersoft Forth's `m/` does
-  \ a symmetric division, and so it's equivalent to Forth-94's
-  \ `sm/rem`.
-
-  \ From the Forth-94 documentation:
-
-     \ Table 3.4 - Symmetric Division Example
-
-     \ Dividend        Divisor Remainder       Quotient
-     \ --------        ------- ---------       --------
-     \ 10                 7       3                1
-     \ -10                7      -3               -1
-     \ 10                -7       3               -1
-     \ -10               -7      -3                1
-
-[defined] (/)  ?\ defer (/)
-
-: ((/-test))  ( dividend divisor -- )
-  >r s>d r> (/) swap . . space  ;
-
-: (/-test)  ( -- )
-  cr  10  7 ((/-test)) -10  7 ((/-test))
-      10 -7 ((/-test)) -10 -7 ((/-test))  ;
-
-: /-test  ( -- )
-  dup ['] m/     ['] (/) defer! (/-test)
-      ['] sm/rem ['] (/) defer! (/-test)  ;
-
-( /-bench )
-
-  \ 2015-09-22: This bench compares the execution speed of
-  \ Abersoft Forth's `m/` and Z88 CamelForth's `sm/rem`. Both
-  \ words are equivalent.  Abersoft Forth's `m/` is much
-  \ faster.
-
-need frames@  need frames0  need rnd
-
-: drnd  ( -- d )  rnd rnd  ;
-
-[defined] (/)  ?\ defer (/)
-
-: (/-bench)  ( n -- )
-  frames0  1+ 1 do  drnd i (/) 2drop  loop  frames@ cr d.  ;
-
-: /-bench  ( n -- )
-  dup ['] m/ ['] (/) defer! (/-bench)
-      ['] sm/rem ['] (/) defer! (/-bench)  ;
-
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \       m/    sm/rem
-  \       ----- ------
-  \ 00010     3      4
-  \ 00100    33     44
-  \ 01000   326    442
-
-  \ m/     = word from Abersoft Forth
-  \ sm/rem = word from Z88 Camel Forth
-
-( um*-bench )
-
-need frames@  need frames0
-
-: um*-bench  ( n -- )
-  frames0  0 do  i i um* 2drop  loop  frames@ d.  ;
-
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \       DZX   hForth R hForth A Z88 R Z88 A
-  \       ----- -------- -------- ----- -----
-  \ 00100     3        3        3     3     3
-  \ 01000    29       32       31    32    31
-  \ 10000   297      328      319   323   316
-  \ 20000   598      659      643   647   633
-  \ 32000   961     1060     1037  1037  1016
-
-  \            Bytes free Code from
-  \            ---------- ---------
-  \ DZX      = 33783      DZX-Forth
-  \ hForth R = 33787      hForth, with relative jumps
-  \ hForth A = 33784      hForth, with absolute jumps
-  \ Z88 R    = 33786      Z88 CamelForth, with relative jumps
-  \ Z88 A    = 33784      Z88 CamelForth, with absolute jumps
 
   \ }}} =======================================================
   \ Parsing {{{
@@ -678,7 +528,7 @@ need chars>string  need s+
   \ buffer.
 
 : s\"  ( "text<quote>"  - ca len )  \ Forth-2012
-  (s\")  comp? if  postpone sliteral  then  ; immediate
+  (s\")  compiling? if  postpone sliteral  then  ; immediate
 
 ( char>string chars>string )
 
@@ -2888,23 +2738,46 @@ code lshift  ( x1 u -- x2 )
 
   \ XXX TODO
 
+need z80-asm
+
+  \ XXX original code from Z88 CamelForth
+  \ .rshiff ld b,c        ; b = loop counter
+  \         pop hl        ;   NB: hi 8 bits ignored!
+  \         inc b         ; test for counter=0 case
+  \         jr rsh2
+  \ .rsh1   srl h         ; right shift HL, n times
+  \         rr l
+  \ .rsh2   djnz rsh1
+  \         ld b,h        ; result is new TOS
+  \         ld c,l
+
 code rshift  ( x1 u -- x2 )
 
-  \ Credits:
-  \ Code from DZX-Forth.
+  \ XXX FIXME
 
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  1C c,           \ inc e
-  here            \ begin:
-  1D c,           \ dec e
-  CA c, pushhl ,  \ jp z,push_hl
-  \ or a
-  \ ld a,h
-  \ call sra_hl.1 ; XXX TODO this is in the kernel
-  C3 c, ,         \ jp begin
+  exx 
+  bc pop
+  c b ld
+  hl pop
+
+  b inc  ahead
+  
+  for  h srl  l rr  >relsesolve  step
+  pushhl jp
 
   end-code
+
+  \ XXX OLD -- Code from DZX-Forth.
+  \ D1 c,           \ pop de
+  \ E1 c,           \ pop hl
+  \ 1C c,           \ inc e
+  \ here            \ begin:
+  \ 1D c,           \ dec e
+  \ CA c, pushhl ,  \ jp z,push_hl
+  \ \ or a
+  \ \ ld a,h
+  \ \ call sra_hl.1 ; XXX TODO this is in the kernel
+  \ C3 c, ,         \ jp begin
 
 ( sm/rem )
 
@@ -3913,7 +3786,7 @@ need break-key?  need .index
 
   parse-name 2swap
   1+ swap do
-    0 i (line) 2over contains if  i .index  then
+    0 i line>string 2over contains if  i .index  then
     break-key? if  exhaust  then
   loop  2drop  ;
 
@@ -3940,7 +3813,7 @@ need break-key?  need .index
 
   parse-name save-string 2dup uppers
   2swap 1+ swap do
-    save-string  0 i (line) save-string 2dup uppers
+    save-string  0 i line>string save-string 2dup uppers
     2over contains if  i .index  then
     break-key? if  exhaust  then
   loop  2drop  ;
@@ -5234,32 +5107,129 @@ need -rot
   \ made, then the number of entries, ie max index + 1 is
   \ returned.  This is the inverse of an array.
 
-( value )
+( buffer: )
 
-  \ `value` with parsing and state-smart `to`
+: buffer:  ( u "name" -- )  create allot  ;
 
-  \ This implementation conforms to Forth-94.
-  \ Forth-94 explicitly requires that `to` must parse.
+( value to )
 
-  \ Adapted from Afera.
-  \ http://programandala.net/en.program.afera.html
+  \ Standard: Forth-94.
+
+  \ Credits:
+  \ Code adapted from Afera.
 
 : value  ( n "name"  -- )  constant  ;
 
 : to  ( Interpretation: n "name" -- )
       ( Compilation: "name" -- )
-  ' cfa>pfa comp? if    postpone literal postpone !
+  ' cfa>pfa compiling? if    postpone literal postpone !
                   else  !  then  ; immediate
 
-( value )
+( value 2value to )
 
-  \ XXX TMP
+  \ Standard: Forth-2012.
 
-  \ `value` with non-parsing `to` -- version with flag
+  \ XXX NEW -- second version
 
-  \ This non-parsing alternative implementation is adapted from
-  \ lina: Copyright (c) 2000-2004 Albert van der Horst, The
-  \ Netherlands
+: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
+: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' cfa>pfa dup 1+ swap c@
+  compiling? if  swap postpone literal
+                 if  postpone 2!  else  postpone !  then  exit
+             then
+  if  2!  else  !  then
+  ; immediate
+
+( value 2value to )  \ XXX TMP
+
+  \ Standard: Forth-2012 without `2value`
+
+: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' cfa>pfa dup 1+ swap c@
+  compiling? if  swap postpone literal
+                 if  postpone 2!  else  postpone !  then  exit
+             then
+  if  2!  else  !  then
+  ; immediate
+
+( value 2value to )
+
+  \ XXX OLD -- first version
+
+  \ Standard: Forth-2012.
+
+: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
+: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
+
+: !value  ( n|d pfa -- )  dup c@ if  1+ 2! exit  then  1+ !  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' cfa>pfa
+  compiling? if  postpone literal  postpone !value  exit  then
+  !value  ; immediate
+
+( value 2value to ) \ XXX TMP
+
+  \ XXX OLD -- first version
+
+  \ Standard: Forth-2012.
+
+: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
+
+: !value  ( n|d pfa -- )  dup c@ if  1+ 2! exit  then  1+ !  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' cfa>pfa
+  compiling? if  postpone literal  postpone !value  exit  then
+  !value  ; immediate
+
+( 2value 2to )
+
+  \ Implementation of `2value` (from Forth-2012) but with
+  \ the non-standard word `2to`
+
+: 2value  ( d "name"  -- )  2constant  ;
+
+: 2to  ( Interpretation: d "name" -- )
+       ( Compilation: "name" -- )
+  ' cfa>pfa compiling? if    postpone literal postpone 2!
+                  else  2!  then  ; immediate
+
+( value to )
+
+  \ Alternative non-standard implementation of `value` with
+  \ non-parsing `to` -- version with flag.
+
+  \ Note: this version of is 3.6 times slower than the Forth-94
+  \ and Forth-2012 implementations (for compiled `to`).
+
+  \ Credits:
+  \ Code modified from lina.
+
+variable to-message  to-message off
+: to    ( -- )  to-message on  ;
+: value  ( n "name" -- )
+  create ,
+  does>  to-message @ if  !  else  @  then  to-message off  ;
+
+( value to )
+
+  \ Alternative non-standard implementation of `value` with
+  \ non-parsing `to` -- version with flag.
+
+  \ Note: this version of is 3.6 times slower than the Forth-94
+  \ and Forth-2012 implementations (for compiled `to`).
+
+  \ Credits:
+  \ Code from lina.
 
 variable to-message
 : from  ( -- )  to-message off  ;  from
@@ -5269,27 +5239,52 @@ variable to-message
 
 ( value )
 
-  \ XXX TMP
+  \ Non-standard implementation of `value` with non-parsing
+  \ `to` -- version with `perform` and `from`
 
-  \ `value` with non-parsing `to` -- version with `execute`
-
-  \ This non-parsing alternative implementation is a modified
-  \ version of the lina implementation above.
+  \ Credits:
+  \ Code inspired by lina.
 
 variable (value)
 : from  ( -- )  ['] @ (value) !  ;  from
 : to    ( -- )  ['] ! (value) !  ;
 : value  ( n "name" -- )
-  create ,  does>   (value) @ execute  from  ;
+  create ,  does>   (value) perform  from  ;
 
 ( value )
 
-  \ XXX TMP
+  \ Non-standard implementation of `value` with non-parsing
+  \ `to` -- version with `perform`
 
-  \ `value` with non-parsing `to` -- version with `defer`
+  \ Credits:
+  \ Code inspired by lina.
 
-  \ This non-parsing alternative implementation is a modified
-  \ version of the lina implementation above.
+variable (value)  ['] @ (value) !
+: to    ( -- )  ['] ! (value) !  ;
+: value  ( n "name" -- )
+  create ,  does>   (value) perform  ['] @ (value) !  ;
+
+( value )
+
+  \ Non-standard implementation of `value` with non-parsing
+  \ `to` -- version with `defer`
+
+  \ Credits:
+  \ Code inspired by lina.
+
+defer (value)
+['] @ ['] (value) defer!
+: to    ( -- )  ['] ! ['] (value) defer!  ;
+: value  ( n "name" -- )
+  create ,  does>  (value)  ['] @ ['] (value) defer!  ;
+
+( value )
+
+  \ Non-standard implementation of `value` with non-parsing
+  \ `to` -- version with `defer` and `from`.
+
+  \ Credits:
+  \ Code inspired by lina.
 
 defer (value)
 : from  ( -- )  ['] @ ['] (value) defer!  ;  from
@@ -5814,7 +5809,7 @@ need random-n
 : action-of  ( Interpretation: "name" -- cfa )
              ( Compilation:    "name" -- )
              ( Runtime:        -- cfa )
-  ' comp? if    postpone literal postpone defer@
+  ' compiling? if    postpone literal postpone defer@
           else  defer@  then  ; immediate
   \ Return the code field address of a deferred word.
 
@@ -5829,7 +5824,7 @@ need random-n
   ' postpone literal postpone defer!  ; immediate
 
 : is  ( cfa "name" -- )
-  comp? if  postpone [is]  else  <is>  then  ; immediate
+  compiling? if  postpone [is]  else  <is>  then  ; immediate
 
   \ }}} =======================================================
   \ Assembler {{{
@@ -6069,6 +6064,12 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 : <relresolve  ( dest -- )  here 1- swap relresolve  ;
   \ Resolve a backward relative branch.
 
+: ahead  ( -- orig  )  18 , >relmark  ;
+  \ Create a relative branch forward.
+  \ Leave the origin address of a forward relative branch
+  \ just compiled, to be resolved by `>relresolve`.
+  \ Note: 0x18 is the Z80 opcode for `jr`.
+
 : if  ( op -- orig cs-id )  , >relmark 0A  ;
 
 : then  ( orig cs-id -- )  0A ?pairs >relresolve  ;
@@ -6083,13 +6084,13 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : until  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
 
-: again  (  dest cs-id -- )  18 until  ;  \ compile `jr`
-
-: step    ( dest cs-id -- )  10 until  ;  \ compile `djnz`
+: again  (  dest cs-id -- )  18 until  ;
+  \ compile `jr`
 
 : repeat  (  dest cs-id1 orig cs-id2 )  2swap again 2- then  ;
 
--->
+: step    ( dest cs-id -- )  10 until  ;  -->
+  \ compile `djnz`
 
 ( z80-asm -- control structures with absolute jumps)
 
@@ -7233,7 +7234,7 @@ vocabulary editor  also editor definitions  hex
   \ of `pad` to `c/l` characters.
 
 : line  ( n -- a )
-  dup FFF0 and #-266 ?error scr @ (line) drop  ;
+  dup FFF0 and #-266 ?error scr @ line>string drop  ;
   \ Leave address _a_ of the beginning of line _n_ in the
   \ current screen buffer.  The screen number is in `scr`.
   \ Read the disk block from  disk if it is not already in the
@@ -7663,5 +7664,218 @@ need frames@
   begin   -craft scroll  faster farther .info  continue?
   while   rudder .craft .stars  delay
   repeat  game-over  ;
+
+  \ }}} =======================================================
+  \ Development benchmarks and tests {{{
+
+( fill-bench )
+
+  \ 2015-09-25: Benchmark three implementations of `fill`:
+  \
+  \ `fill` is the original implementation from Abersoft Forth
+  \ `fill2` is a modified version
+  \ `fill88` is the code adapted from Z88 CamelForth
+
+need frames@  need frames0  need rnd
+
+defer (fill)
+
+: (fill-bench)  ( n cfa -- )
+  ['] (fill) defer!
+  frames0  0
+  do  16384 6144 rnd (fill)  loop
+  \ do  16384 1 rnd (fill)  loop
+  \ do  16384 0 rnd (fill)  loop
+  \ do  16384 2048 rnd (fill)  loop
+  frames@ cr d.
+  key drop
+  ;
+
+: fill-bench  ( n -- )
+  dup ['] fill (fill-bench)
+  dup ['] fill2 (fill-bench)
+      ['] fill88 (fill-bench)  ;
+
+  \ Kernel code: `16384 6144 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill fill2 fill88
+  \       ---- ----- ------
+  \ 00010   10    10      5
+  \ 00100  491   522    252 
+  \ 01000 4909  5218   2524
+ 
+  \ Kernel code: `16384 1 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill fill2 fill88
+  \       ---- ----- ------
+  \ 00010    1     0      0
+  \ 00100    9     8      8
+  \ 01000   85    84     84
+  \ 05000  425   423    422
+  \ 10000  850   846    845
+ 
+  \ Kernel code: `16384 0 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill fill2 fill88
+  \       ---- ----- ------
+  \ 00010    1     0      0
+  \ 00100    8     8      8
+  \ 01000   84    83     84
+  \ 05000  421   418    421
+  \ 10000  842   837    842
+
+  \ Kernel code: `16384 2048 rnd (fill)`
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       fill  fill2 fill88
+  \       ----- ----- ------
+  \ 00010    17    18      9
+  \ 00100   169   180     89
+  \ 01000  1693  1795    898
+  \ 30000 50770 53863  26933
+                       
+( value-bench )
+
+need frames@  need frames0
+
+0 value v1
+
+: value-bench  ( n -- )
+  frames0  0 do  v1 drop  loop  frames@ cr d.  ;
+
+( 2value-bench )
+
+need frames@  need frames0
+
+0. 2value v2
+
+: 2value-bench  ( n -- )
+  frames0  0 do  v2 2drop  loop  frames@ cr d.  ;
+
+( to-value-bench )
+
+need frames@  need frames0
+
+0 value v1
+
+: to-value-bench  ( n -- )
+  frames0  0
+  do  0 to v1   loop
+  frames@ cr d.  ;
+
+( to-2value-bench )
+
+need frames@  need frames0
+
+0. 2value v2
+
+: to-2value-bench  ( n -- )
+  frames0  0
+  do  0. to v2   loop
+  frames@ cr d.  ;
+
+( 2to-2value-bench )
+
+need frames@  need frames0
+
+0. 2value v2
+
+: 2to-2value-bench  ( n -- )
+  frames0  0
+  do  0. 2to v2   loop
+  frames@ cr d.  ;
+
+( /-test )
+
+  \ 2015-09-22: This test shows that Abersoft Forth's `m/` does
+  \ a symmetric division, and so it's equivalent to Forth-94's
+  \ `sm/rem`.
+
+  \ From the Forth-94 documentation:
+
+     \ Table 3.4 - Symmetric Division Example
+
+     \ Dividend        Divisor Remainder       Quotient
+     \ --------        ------- ---------       --------
+     \ 10                 7       3                1
+     \ -10                7      -3               -1
+     \ 10                -7       3               -1
+     \ -10               -7      -3                1
+
+[defined] (/)  ?\ defer (/)
+
+: ((/-test))  ( dividend divisor -- )
+  >r s>d r> (/) swap . . space  ;
+
+: (/-test)  ( -- )
+  cr  10  7 ((/-test)) -10  7 ((/-test))
+      10 -7 ((/-test)) -10 -7 ((/-test))  ;
+
+: /-test  ( -- )
+  dup ['] m/     ['] (/) defer! (/-test)
+      ['] sm/rem ['] (/) defer! (/-test)  ;
+
+( /-bench )
+
+  \ 2015-09-22: This bench compares the execution speed of
+  \ Abersoft Forth's `m/` and Z88 CamelForth's `sm/rem`. Both
+  \ words are equivalent.  Abersoft Forth's `m/` is much
+  \ faster.
+
+need frames@  need frames0  need rnd
+
+: drnd  ( -- d )  rnd rnd  ;
+
+[defined] (/)  ?\ defer (/)
+
+: (/-bench)  ( n -- )
+  frames0  1+ 1 do  drnd i (/) 2drop  loop  frames@ cr d.  ;
+
+: /-bench  ( n -- )
+  dup ['] m/ ['] (/) defer! (/-bench)
+      ['] sm/rem ['] (/) defer! (/-bench)  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       m/    sm/rem
+  \       ----- ------
+  \ 00010     3      4
+  \ 00100    33     44
+  \ 01000   326    442
+
+  \ m/     = word from Abersoft Forth
+  \ sm/rem = word from Z88 Camel Forth
+
+( um*-bench )
+
+need frames@  need frames0
+
+: um*-bench  ( n -- )
+  frames0  0 do  i i um* 2drop  loop  frames@ d.  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       DZX   hForth R hForth A Z88 R Z88 A
+  \       ----- -------- -------- ----- -----
+  \ 00100     3        3        3     3     3
+  \ 01000    29       32       31    32    31
+  \ 10000   297      328      319   323   316
+  \ 20000   598      659      643   647   633
+  \ 32000   961     1060     1037  1037  1016
+
+  \            Bytes free Code from
+  \            ---------- ---------
+  \ DZX      = 33783      DZX-Forth
+  \ hForth R = 33787      hForth, with relative jumps
+  \ hForth A = 33784      hForth, with absolute jumps
+  \ Z88 R    = 33786      Z88 CamelForth, with relative jumps
+  \ Z88 A    = 33784      Z88 CamelForth, with absolute jumps
 
   \ vim: filetype=soloforth
