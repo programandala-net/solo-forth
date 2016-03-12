@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506232002
+; Version A-00-201506240056
 
 ; Latest important changes (in chronological order)
 ; - new format for the name field, without end bit.
@@ -21,6 +21,7 @@
 ; - fix: `id.`.
 ; - improvement: `."`.
 ; - `skip`, for the new version of `word`.
+; - circular string buffer
 
 ; ==============================================================
 ; Aknowledgments
@@ -134,6 +135,8 @@ smudge_bit_mask:      equ 1 shl smudge_bit
 
 max_word_length:                equ 0x1F
 max_word_length_bit_mask:       equ max_word_length
+
+csb_size:                       equ 256 ; circular string buffer
 
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
@@ -599,6 +602,20 @@ hld_value: ; +0x2A
 ; Stacks and buffers
 
 ; ----------------------------------------------
+; Circular string buffer
+
+csb:
+csb_unused:
+  if csb_size<256
+    dw csb_size
+  else
+    db csb_size
+  endif
+csb0:
+  ds csb_size
+csb_total_size: equ $-csb
+
+; ----------------------------------------------
 ; Data stack
 
 data_stack_limit: equ $+cell
@@ -789,7 +806,11 @@ next2:
   dw s_literal_
   dw semicolon_s_
 paren_s.interpreting:
-  dw tuck_,pad_,swap_,cmove_,pad_,swap_
+  if 0 ; XXX OLD -- without csb
+    dw tuck_,pad_,swap_,cmove_,pad_,swap_
+  else
+    dw save_string_
+  endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -816,6 +837,112 @@ push_l: ; XXX TMP -- not used yet
   inc bc
   ld h,a
   jp push_hl
+
+; ----------------------------------------------
+  _code_header csb_unused_,'CSB-UNUSE','D'
+
+; doc{
+;
+; csb-unused  ( -- len )
+;
+; }doc
+
+  if csb_size<256
+    ld a,(csb_unused)
+    jp push_a
+  else
+    ld hl,(csb_unused)
+    jp push_hl
+  endif
+
+; ----------------------------------------------
+  _constant_header csb0_,'CSB','0'
+
+; doc{
+;
+; csb0  ( -- a )
+;
+; }doc
+
+  dw csb0
+
+; ----------------------------------------------
+  _colon_header question_csb_,'?CS','B'
+
+; doc{
+;
+; ?csb  ( len -- )
+;
+; Make sure there's room for the given characters.
+;
+; }doc
+
+  dw dup_,lit_,csb_unused,fetch_,greater_than_
+  dw zero_branch_,question_csb_.enough
+  ; not enough space; reset the pointer
+  dw lit_,csb_size,lit_,csb_unused,store_
+question_csb_.enough:
+  dw negate_,lit_,csb_unused,plus_store_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header string_allocate_,'STRING-ALLOCAT','E'
+
+; doc{
+;
+; string-allocate  ( len -- ca )
+;
+; }doc
+
+  dw question_csb_
+  dw csb0_,csb_unused_,plus_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header save_string_,'SAVE-STRIN','G'
+
+; doc{
+;
+; save-string  ( ca1 len1 -- ca2 len1 )
+;
+; }doc
+
+  dw dup_,string_allocate_,swap_
+  dw two_dup_,two_to_r_
+  dw move_,two_from_r_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header save_counted_string_,'SAVE-COUNTED-STRIN','G'
+
+; doc{
+;
+; save-counted-string  ( ca1 len1 -- ca2 )
+;
+; }doc
+
+  dw dup_,one_plus_,string_allocate_
+  dw dup_,to_r_,dollar_store_,from_r_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header empty_csb_,'EMPTY-','CSB'
+
+; doc{
+;
+; empty-csb  ( -- )
+;
+; }doc
+
+  dw lit_,csb
+  if csb_total_size<256
+    dw c_lit_
+    db csb_total_size
+  else
+    dw lit_,csb_total_size
+  endif
+  dw erase_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _code_header execute_,'EXECUT','E'
@@ -2038,7 +2165,7 @@ l60c0h:
   _jp_next
 
 ; ----------------------------------------------
-  _header _two_to_r,'2>','R'
+  _code_header two_to_r_,'2>','R'
 
 ; 2>r  ( -- x1 x2 ) ( R: x1 x2 -- )
 
@@ -2049,7 +2176,7 @@ l60c0h:
   jp two_store.into_hl_pointer
 
 ; ----------------------------------------------
-  _header _two_from_r,'2R','>'
+  _code_header two_from_r_,'2R','>'
 
 ; 2r>  ( -- x1 x2 ) ( R: x1 x2 -- )
 
@@ -3451,7 +3578,7 @@ stream.end:
 
 ; doc{
 ;
-; parse-word  ( "<spaces>name"  -- ca len )
+; parse-word  ( "name"  -- ca len )
 ;
 ; }word
 
@@ -3464,6 +3591,7 @@ stream.end:
   dw scan_ ; ( ca3 len )
   ; XXX TODO factor of `parse`?:
   dw dup_,one_plus_,to_in_,plus_store_
+  dw two_dup_,uppers_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4497,6 +4625,7 @@ warm_start_phony_:
   _colon_header cold_,'COL','D'
 
   dw empty_buffers_
+  dw empty_csb_
   dw first_,dup_,use_,store_,prev_,store_
   dw lit_,default_user_variables_start ; from
   dw lit_,user_variables_pointer,fetch_ ; to

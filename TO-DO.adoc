@@ -91,3 +91,12 @@ Fix:
 
 `continued` does strange things, when used in the command line.
 
+Fix:
+
+`require` does strange things, because the strings are overwritten.  A
+circular buffer is needed, and a heap would be useful to implement it
+without a fixed size.
+
+Fix:
+
+`2>r` and `2r>`.
