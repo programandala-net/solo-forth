@@ -3,7 +3,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508151713
+version_release:  equ 201508150442
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -879,10 +879,17 @@ return_stack_bottom:
 ; ----------------------------------------------
 ; Disk buffers
 
-disk_buffer:
-dw 0x7FFF ; block number
-ds data_bytes_per_buffer
-db space_char,0,space_char ; null word
+; XXX TODO use a repeat macro
+first_buffer:
+if buffers=1
+  dw 0x7FFF ; block number
+  ds data_bytes_per_buffer
+  db space_char,0,space_char ; null word
+else
+  ; ds blocks_per_screen*total_bytes_per_buffer ; XXX OLD
+  ds buffers*total_bytes_per_buffer
+endif
+limit:
 
 ; ==============================================================
 ; Misc routines
@@ -3613,9 +3620,18 @@ do_user:
   dw lines_per_screen
 
 ; ----------------------------------------------
-  _constant_header disk_buffer_,'DISK-BUFFER'
+  _constant_header first_,'FIRST'
 
-  dw disk_buffer
+  ; XXX TODO rename after implementing one buffer only
+
+  dw first_buffer
+
+; ----------------------------------------------
+  _constant_header limit_,'LIMIT'
+
+  ; XXX TODO remove after implementing one buffer only
+
+  dw limit
 
 ; ----------------------------------------------
   _constant_header b_slash_buf_,'B/BUF'
@@ -5955,6 +5971,8 @@ warm_start_phony_:
 
   ; Init the disk buffers.
   dw empty_buffers_
+  dw first_,use_,store_
+  dw first_,prev_,store_
 
   ; Init the circular string buffer.
   dw empty_csb_
@@ -6026,8 +6044,6 @@ common_start:
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
 ; }doc
-
-; dup 0<
 
   ld hl,0
   pop de
@@ -6300,6 +6316,57 @@ message.number_only:
   dw dot_
   dw semicolon_s_
 
+; ----------------------------------------------
+  _variable_header use_,'USE'
+
+  ; XXX TODO remove after implementing one buffer only
+
+  dw first_buffer
+
+; ----------------------------------------------
+  _variable_header prev_,'PREV'
+
+  ; XXX TODO remove after implementing one buffer only
+
+  dw first_buffer
+
+; ----------------------------------------------
+  _constant_header buffers_,'BUFFERS'
+
+  ; XXX TODO remove after implementing one buffer only
+
+; doc{
+;
+; buffers  ( -- n )
+; 
+; Number of disk buffers.
+;
+; }doc
+
+  dw buffers
+
+; ----------------------------------------------
+; XXX TODO remove after implementing one buffer only
+  _colon_header plus_buf_,'+BUF'
+
+; doc{
+
+; +buf  ( a1 -- a2 wf )  \ fig-Forth
+
+;   Advance the disk buffer address _a1_ to the address of the next
+;   buffer _a2_.  Boolean _wf_ is false when _a2_ is the buffer
+;   presently pointed to by the variable `prev`.
+
+; }doc
+
+  dw lit_,total_bytes_per_buffer,plus_ ; a2
+  dw dup_,limit_,equals_ ; out of bounds?
+  dw zero_branch_,plus_buf.continue
+  ; a2 is out of bounds
+  dw drop_,first_ ; use the first buffer instead
+plus_buf.continue:
+  dw dup_,prev_,fetch_,not_equals_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header update_,'UPDATE'
@@ -6316,11 +6383,23 @@ message.number_only:
 
   ; XXX TODO move to the disk?
 
-  dw disk_buffer_,fetch_
+if buffers=1
+
+  dw first_,fetch_
   dw lit_,0x8000,or_
-  dw disk_buffer_,store_
+  dw first_,store_
+
+else
+
+  dw prev_,fetch_,fetch_
+  dw lit_,0x8000,or_
+  dw prev_,fetch_,store_
+
+endif
+
   dw semicolon_s_
 
+if buffers=1
 ; ----------------------------------------------
   _colon_header updated_question_,'UPDATED?'
 
@@ -6332,8 +6411,10 @@ message.number_only:
 ;
 ; }doc
 
-  dw buffer_id_,zero_less_than_
-  dw semicolon_s_
+  dw first_,fetch_,zero_less_than_
+
+endif
+
 
 ; ----------------------------------------------
   _colon_header stream_end_,'STREAM-END'
@@ -6355,6 +6436,8 @@ message.number_only:
 ; ----------------------------------------------
   _colon_header empty_buffers_,'EMPTY-BUFFERS'
 
+if buffers=1
+
 ; doc{
 ;
 ; empty-buffers  ( -- )
@@ -6364,65 +6447,48 @@ message.number_only:
 ;
 ; }doc
 
-  dw lit_,0x7FFF,disk_buffer_,store_
-  dw semicolon_s_
+  dw lit_,0x7FFF,first_,store_
 
-; ----------------------------------------------
-  _colon_header buffer_data_,'BUFFER-DATA'
+else
 
 ; doc{
 ;
-; buffer-data  ( -- a )
+; empty-buffers  ( -- )
 ; 
-; First data address of the disk buffer.
+; Unassign all block buffers. Do not transfer the contents of
+; any updated block to mass storage. All buffers are filled with
+; blanks.
 ;
 ; }doc
 
-  dw disk_buffer_,cell_plus_
+  dw first_,limit_,over_,minus_,blank_ 
+  dw limit_,first_
+  dw paren_do_
+empty_buffers.do:
+  dw lit_,0x7FFF,i_,store_
+  ; Store a null word after the end of the buffer:
+  dw i_,lit_,data_bytes_per_buffer+2,plus_,stream_end_
+  dw lit_,total_bytes_per_buffer
+  dw paren_plus_loop_,empty_buffers.do
+
+endif
+
   dw semicolon_s_
 
-; ----------------------------------------------
-  _colon_header buffer_id_,'BUFFER-ID'
-
-; doc{
-;
-; buffer-id  ( -- x )
-; 
-; Id of the disk buffer.
-;
-; }doc
-
-  dw disk_buffer_,fetch_
-  dw semicolon_s_
-
+if buffers=1
 ; ----------------------------------------------
   _colon_header block_number_,'BLOCK-NUMBER'
 
 ; doc{
 ;
-; block-number  ( x -- n )
+; block-number  ( n1 -- n2 )
 ; 
-; Convert the disk buffer id _x_ to its associated block _n_,
-; by removing the update bit.
+; Remove the update bit from the block number _n1_.
 ;
 ; }doc
 
   _literal 0x7FFF
   dw and_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header buffer_block_,'BUFFER-BLOCK'
-
-; doc{
-;
-; buffer-block  ( -- n )
-;
-; Block number associated with the disk buffer.
-;
-; }doc
-
-  dw buffer_id_,block_number_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6439,13 +6505,15 @@ message.number_only:
 
   dw dup_,zero_less_than_ ; updated?
   dw zero_branch_,free_buffer.not_updated
-  dw block_number_,buffer_data_,swap_,write_block_
+  dw block_number_,first_,cell_plus_,swap_,write_block_
   dw branch_,free_buffer.end
 free_buffer.not_updated:
   dw drop_
 free_buffer.end:
-  dw disk_buffer_,store_
+  dw first_,store_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header buffer_,'BUFFER'
@@ -6461,7 +6529,9 @@ free_buffer.end:
 ;
 ; }doc
 
-  dw buffer_id_
+if buffers=1 ; XXX NEW
+
+  dw first_,fetch_ ; current block assigned to the buffer
   dw two_dup_,block_number_,equals_
   dw zero_branch_,buffer.not_equals
   ; The requested block is the one already in the buffer.
@@ -6470,8 +6540,37 @@ free_buffer.end:
 buffer.not_equals:
   dw free_buffer_
 buffer.end:  
-  dw buffer_data_ ; first cell of data in the buffer
+  dw first_,cell_plus_ ; first cell of data in the buffer
   dw semicolon_s_
+
+else ; XXX OLD
+
+  dw use_,fetch_
+  dw dup_,to_r_
+buffer.begin:
+  ; XXX NOTE: `+buf` won't work if single buffer
+  dw plus_buf_
+  dw zero_branch_,buffer.begin ; until
+  dw use_,store_
+  dw r_fetch_,fetch_
+  dw zero_less_than_ ; updated?
+  dw zero_branch_,buffer.end
+  ; The buffer was updated, it must be saved to disk.
+  dw r_fetch_,two_plus_ ; first cell of data in the buffer
+  dw r_fetch_,fetch_
+  dw lit_,0x7FFF,and_ ; discard the update bit, leave the block number
+if 1 ; new_read_write?
+  dw write_block_
+else
+  dw false_,read_write_ ; write
+endif
+buffer.end:
+  dw r_fetch_,store_
+  dw r_fetch_,prev_,store_
+  dw from_r_,two_plus_ ; first cell of data in the buffer
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header block_,'BLOCK'
@@ -6489,16 +6588,55 @@ buffer.end:
 ;
 ; }doc
 
-  dw dup_,buffer_block_,equals_
+if buffers=1
+
+  dw dup_,first_,fetch_,block_number_,equals_
   dw zero_branch_,block.not_equals
   dw drop_
   dw branch_,block.end
 block.not_equals:
-  dw save_buffers_,dup_,buffer_data_,swap_,read_block_
-  dw disk_buffer_,store_
+  dw save_buffers_,first_,two_dup_,store_,cell_plus_,swap_,read_block_
 block.end:
-  dw buffer_data_
+  dw first_,cell_plus_
   dw semicolon_s_
+
+else
+
+  dw to_r_
+  dw prev_,fetch_ ; most recently accessed buffer
+  dw dup_,fetch_ ; its block number (bit 15, the update indicator, may be set)
+  dw r_fetch_,minus_ ; compare to the required block
+  dw two_star_ ; discard the left most bit, which is the update indicator
+  dw zero_branch_,block.end
+  ; Block number _n_ is not the previously referenced.
+  ; Prepare disk access.
+block.begin:
+  ; Scan the buffers and look for a buffer which might contain
+  ; block _n_ already.
+  dw plus_buf_,zero_equals_ ; advance a buffer
+  dw zero_branch_,branch_destination_0x71E5
+  ; This buffer is pointed to by `prev`, all buffers scanned.
+  dw drop_ ; discard the buffer address
+  dw r_fetch_,buffer_ ; find the disk sector, update the sector if necessary
+  dw dup_,r_fetch_
+if 1 ; new_read_write?
+  dw read_block_
+else
+  dw true_,read_write_ ; read one sector from the disk
+endif
+  dw two_minus_ ; backup to the buffer address of block n
+branch_destination_0x71E5:
+  dw dup_,fetch_ ; beginning address of the buffer, with a block number in it
+  dw r_fetch_,minus_ ; compare to the block number _n_
+  dw two_star_ ; discard the left most bit, with is the update indicator
+  dw question_branch_,block.begin ; until
+  dw dup_,prev_,store_ ; store the buffer address in `prev`
+block.end:
+  dw r_drop_
+  dw two_plus_ ; get the address where data begin
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header flip_,'FLIP'
@@ -6694,12 +6832,29 @@ endif
 ;
 ; }doc
 
+if buffers=1
+
   dw updated_question_,zero_equals_ ; not updated?
   dw question_exit_ ; exit if not updated
   ; Updated
-  dw buffer_block_,dup_,buffer_data_,write_block_
-  dw disk_buffer_,store_
+  dw first_,first_,fetch_,block_number_,two_dup_,write_block_
+  dw swap_,store_
   dw semicolon_s_
+
+else
+
+  ; XXX TODO -- Check. It seems this original version is not ANS
+  ; Forth compliant, because it modifies the buffers.
+
+  dw buffers_,one_plus_,zero_
+  dw paren_do_
+save_buffers.do:
+  dw zero_,buffer_,drop_
+  dw paren_loop_,save_buffers.do ; loop
+  dw semicolon_s_
+
+endif
+  
 
 ; ----------------------------------------------
   _colon_header flush_,'FLUSH'

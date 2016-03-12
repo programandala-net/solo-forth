@@ -180,11 +180,6 @@ Idea: maybe 0 could be used instead of 0x7fff to init the block number of a buff
 
 Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 
-Rename `first` to `disk-buffer`. Then factor:
+New: `d>s`.
 
-----
-: buffer-data   disk-buffer cell+ ;
-: buffer-id     disk-buffer @ ;
-: buffer-block  buffer-id block-number ;
-----
 
