@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509212208
+\ Last modified: 201509222241
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -30,12 +30,6 @@
 
 ( ) \ scr 1 -- testing load screen
 
-  \ XXX TMP
-
-s" hola
-y adios"
-.s
-
   \ }}} =======================================================
   \ Need {{{
 
@@ -52,9 +46,8 @@ y adios"
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
   \ Does the string ca1 len1 contains the string ca2 len2?
 
-variable default-first-locatable
-variable first-locatable
-  8 dup default-first-locatable !  first-locatable !
+variable default-first-locatable  variable first-locatable
+8 dup default-first-locatable !  first-locatable !
 variable last-locatable  scr/disk 1- last-locatable !
 
 : located  ( ca len -- screen | false )
@@ -212,6 +205,96 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ XXX useless:
 \ G+DOS error #31: CHANNEL used
 
+
+  \ }}} =======================================================
+  \ Development benchmarks and tests {{{
+
+( /-test )
+
+  \ 2015-09-22: This test shows that Abersoft Forth's `m/` does
+  \ a symmetric division, and so it's equivalent to Forth-94's
+  \ `sm/rem`.
+
+  \ From the Forth-94 documentation:
+
+     \ Table 3.4 - Symmetric Division Example
+
+     \ Dividend        Divisor Remainder       Quotient
+     \ --------        ------- ---------       --------
+     \ 10                 7       3                1
+     \ -10                7      -3               -1
+     \ 10                -7       3               -1
+     \ -10               -7      -3                1
+
+[defined] (/)  ?\ defer (/)
+
+: ((/-test))  ( dividend divisor -- )
+  >r s>d r> (/) swap . . space  ;
+
+: (/-test)  ( -- )
+  cr  10  7 ((/-test)) -10  7 ((/-test))
+      10 -7 ((/-test)) -10 -7 ((/-test))  ;
+
+: /-test  ( -- )
+  dup ['] m/     ['] (/) defer! (/-test)
+      ['] sm/rem ['] (/) defer! (/-test)  ;
+
+( /-bench )
+
+  \ 2015-09-22: This bench compares the execution speed of
+  \ Abersoft Forth's `m/` and Z88 CamelForth's `sm/rem`. Both
+  \ words are equivalent.  Abersoft Forth's `m/` is much
+  \ faster.
+
+need frames@  need frames0  need rnd
+
+: drnd  ( -- d )  rnd rnd  ;
+
+[defined] (/)  ?\ defer (/)
+
+: (/-bench)  ( n -- )
+  frames0  1+ 1 do  drnd i (/) 2drop  loop  frames@ cr d.  ;
+
+: /-bench  ( n -- )
+  dup ['] m/ ['] (/) defer! (/-bench)
+      ['] sm/rem ['] (/) defer! (/-bench)  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       m/    sm/rem
+  \       ----- ------
+  \ 00010     3      4
+  \ 00100    33     44
+  \ 01000   326    442
+
+  \ m/     = word from Abersoft Forth
+  \ sm/rem = word from Z88 Camel Forth
+
+( um*-bench )
+
+need frames@  need frames0
+
+: um*-bench  ( n -- )
+  frames0  0 do  i i um* 2drop  loop  frames@ d.  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       DZX   hForth R hForth A Z88 R Z88 A
+  \       ----- -------- -------- ----- -----
+  \ 00100     3        3        3     3     3
+  \ 01000    29       32       31    32    31
+  \ 10000   297      328      319   323   316
+  \ 20000   598      659      643   647   633
+  \ 32000   961     1060     1037  1037  1016
+
+  \            Bytes free Code from
+  \            ---------- ---------
+  \ DZX      = 33783      DZX-Forth
+  \ hForth R = 33787      hForth, with relative jumps
+  \ hForth A = 33784      hForth, with absolute jumps
+  \ Z88 R    = 33786      Z88 CamelForth, with relative jumps
+  \ Z88 A    = 33784      Z88 CamelForth, with absolute jumps
+
   \ }}} =======================================================
   \ Parsing {{{
 
@@ -306,11 +389,11 @@ need chars>string  need s+
     else  1  then  chars>string s+
   repeat  drop  ;
   \ Parse a text string delimited by a double quote, using the
-  \ translation rules described by Forth 2012's `s\"`, and
+  \ translation rules described by Forth-2012's `s\"`, and
   \ returning the string _ca len_ in the circular string
   \ buffer.
 
-: s\"  ( "text<quote>"  - ca len )  \ Forth 2012
+: s\"  ( "text<quote>"  - ca len )  \ Forth-2012
   (s\")  comp? if  postpone sliteral  then  ; immediate
 
 ( char>string chars>string )
@@ -461,6 +544,19 @@ need n>r
 : rdepth  ( -- n )  rp@ r0 @ - -2 /  ;
 
   \ }}} =======================================================
+  \ User variables {{{
+
+  \ XXX TODO
+
+: uallot ( n -- )  udp @ swap udp +!  ;
+  \ XXX from Gforth
+
+: user  ( "name" -- )  create cell uallot , does> @ up @ +  ;
+
+: user  ( "name" -- )  create cell uallot c, does> c@ up @ +  ;
+
+
+  \ }}} =======================================================
   \ Screen modes {{{
 
 ( mode32 )  \ ==screenmodes==
@@ -479,11 +575,12 @@ need n>r
   sys-chars !  mode-output  ;
 
 variable current-mode
-  \ cfa of the current screen mode
+  \ cfa of the word that activates the current screen mode
 
 : mode32  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   2548 15360 set-mode
+  ['] (mode32-xy) ['] xy defer!
   ['] (mode32-at-xy) ['] at-xy defer!  ;
   \ Set the default printing mode: the 32 cpl ROM routine, the
   \ ROM font, and the special code for `at-xy` (required to
@@ -501,6 +598,11 @@ variable current-mode
 
   \ XXX TODO -- integrate the driver
 
+  \ XXX TODO -- check how the UDG are printed (8 pixels width?)
+
+  \ XXX FIXME -- a pixel of the cursor is not deleted when
+  \ backspace is used on the command line
+
 need mode32  need <file-as-is
 
 drive@ 1 drive!
@@ -512,9 +614,12 @@ drive!
 [defined] (at-xy)
 ?\ : (at-xy)  ( col row -- )  22 emit swap emit emit  ;
 
+: (mode42-xy)  ( -- col row )  0 0  ;  \ XXX TODO
+
 : mode42  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   63900 [ 64600 256 - ] literal set-mode
+  ['] (mode42-xy) ['] xy defer!
   ['] (at-xy) ['] at-xy defer!  ;
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
@@ -542,9 +647,12 @@ drive!
 [defined] (at-xy)
 ?\ : (at-xy)  ( col row -- )  22 emit swap emit emit  ;
 
+: (mode64-xy)  ( -- col row )  0 0  ;  \ XXX TODO
+
 : mode64  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   60000 4x8font set-mode
+  ['] (mode64-xy) ['] xy defer!
   ['] (at-xy) ['] at-xy defer!  ;
   \ Set the 64 cpl printing mode: the driver, the font
   \ and `at-xy`.
@@ -554,10 +662,10 @@ drive!
   \ XXX NEW
   \ XXX TODO -- integrate the driver
 
-
 need z80-asm
 
-  \ XXX TODO use common variables for all modes
+  \ XXX TODO use common variables for all modes?
+
 create mode64-at-flag 0 c,
 create mode64-column 0 c,
 create mode64-row 0 c,
@@ -1025,13 +1133,30 @@ code fzx-emit  ( c -- )
       \ Address of the User Defined Graphics.
 
 : udg!  ( b0..b7 c -- )
+  128 - 8 * udg + 1 - dup 8 + do  i c!  -1 +loop  ;
+  \ doc{
+  \
+  \ udg!  ( b0..b7 c -- )
+  \
   \ Store the given 8 bytes into the UDG char _c_.
   \ b0 = first (top) scan
   \ b7 = last (bottom) scan
   \ c = 128..255
-  128 - 8 * udg + 1 - dup 8 + do  i c!  -1 +loop  ;
+  \
+  \ }doc
 
 : udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;
+  \ doc{
+  \
+  \ udg:  ( b0..b7 c "name" -- )
+  \ 
+  \ Create a constant called "name" for the UDG char _c_.
+  \ Store the given 8 bytes into the UDG char _c_.
+  \ b0 = first (top) scan
+  \ b7 = last (bottom) scan
+  \ c = 128..255
+  \
+  \ }doc
 
 ( xy-emit-udg )
 
@@ -1064,7 +1189,9 @@ need z80-asm  need (pixel-addr)
   \ published in Todospectrum, issue 2 (1984-10), page 16.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-create (xy-emit)  ( -- )
+create (xy-emit)  ( -- a )
+
+  \ XXX TODO rename all "xy-emit" to "hires-emit"
 
   \ Print a 8x8 bits char at high resolution coordinates.
 
@@ -2376,7 +2503,7 @@ code ambulance  ( n -- )
 ( command )
 
   \ XXX OLD -- 2015-09-13: moved to kernel
-  \ : source  ( -- a len )  \ ANS Forth
+  \ : source  ( -- a len )  \ Forth-94
   \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
 need source  need /string
@@ -2497,12 +2624,25 @@ code rshift  ( x1 u -- x2 )
 
   end-code
 
-( Symmetric-division operators )
+( sm/rem )
 
   \ Credits:
-  \ From the ANS Forth documentation.
+  \ Code from Z88 CamelForth.
 
-  \ XXX TODO `sm/rem` not ready yet
+: sm/rem  ( d1 n1 -- n2 n3 )
+  \ symmetric signed division
+  2dup xor >r  \  sign of quotient
+  over >r      \  sign of remainder
+  abs >r dabs r> um/mod
+  swap r> ?negate
+  swap r> ?negate  ;
+
+( /-rem /- -rem */-rem */- )
+
+  \ Symmetric-division operators
+
+  \ Credits:
+  \ Forth-94 documentation.
 
 : /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
 
@@ -2514,12 +2654,57 @@ code rshift  ( x1 u -- x2 )
 
 : */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
 
-( Floored-division operators )
+( fm/mod )
+
+  \ doc{
+  \
+  \ fm/mod  ( d1 n1 -- n2 n3 )
+  \
+  \ Floored division:
+  \
+  \   d1 = n3*n1+n2
+  \   n1>n2>=0 or 0>=n2>n1
+  \
+  \ Divide _d1_ by _n1_, giving the floored quotient _n3_ and
+  \ the remainder _n2_. Input and output stack arguments are
+  \ signed.
+  \
+  \ Standard: Forth-94.
+  \
+  \ }doc
 
   \ Credits:
-  \ From the ANS Forth documentation.
+  \ Code from Z88 CamelForth.
 
-  \ XXX TODO `fm/mod` not ready yet
+: fm/mod  ( d1 n1 -- n2 n3 )
+  \ floored signed division
+  dup >r                \ save divisor
+  sm/rem
+  over 0<> over 0< and  \ quotient<0 and remainder<>0?
+  if
+    swap r> +           \ add divisor to remainder
+    swap 1-             \ decrement quotient
+  else r> drop then  ;
+
+  \ From the Forth-94 documentation:
+
+     \ Table 3.3 - Floored Division Example
+
+     \ Dividend        Divisor Remainder       Quotient
+     \ --------        ------- ---------       --------
+     \ 10                 7       3                1
+     \ -10                7       4               -2
+     \ 10                -7      -4               -2
+     \ -10               -7      -3                1
+
+( /_mod /_ _mod */_mod */_ )
+
+  \ Floored-division operators
+
+need fm/mod
+
+  \ Credits:
+  \ Forth-94 documentation.
 
 : /_mod  ( n1 n2 -- n3 n4)  >r s>d r> fm/mod  ;
 
@@ -2530,10 +2715,6 @@ code rshift  ( x1 u -- x2 )
 : */_mod  ( n1 n2 n3 -- n4 n5)  >r m* r> fm/mod  ;
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
-
-( fig-Forth +- d+- )
-
-  \ XXX TODO -- still needed in the kernel
 
 ( any? )
 
@@ -3521,8 +3702,8 @@ need break-key?
 
 ( where )
 
-  ; XXX FIXME -- terminal input errors are not managed;
-  ; the screen of the last error is shown insted
+  \ XXX FIXME -- terminal input errors are not managed;
+  \ the screen of the last error is shown insted
 
 : where  ( -- )
   \ Print screen and line numbers and a picture of where the
@@ -3714,7 +3895,7 @@ variable assert-level ( -- a )
 
 ( source )  \ ==misc==
 
-: source  ( -- ca len )  \ ANS Forth
+: source  ( -- ca len )  \ Forth-94
   \ XXX TODO
   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
@@ -4284,7 +4465,7 @@ hex
   \	on control-flow stack, which will be resolved by `loop` or
   \	`+loop`.
   \
-  \	Standard: Forth 94, Forth 2012
+  \	Standard: Forth-94, Forth-2012
   \
   \	}doc
 
@@ -4322,7 +4503,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \ Terminate a DO|?DO ... LOOP structure. Resolve the destination
   \ of all unresolved occurences of LEAVE.
   \
-  \ Standard: Forth 83, Forth 94, Forth 2012
+  \ Standard: Forth-83, Forth-94, Forth-2012.
 
 : +loop  ?comp postpone (+loop) rake  ; immediate
 
@@ -4338,7 +4519,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \ continue execution at the beginning of the loop. Otherwise,
   \ finish the loop.
   \
-  \ Standard: Forth 83, Forth 94, Forth 2012
+  \ Standard: Forth-83, Forth-94, Forth-2012.
 
 ( ?do )
 
@@ -4591,10 +4772,10 @@ code (step)  ( R: n -- n' )
   \
   \ }doc
 
-( case )  \ ANS Forth version
+( case )  \ Forth-94 version
 
   \ Credits:
-  \ Code copied from the example provided in the ANS Forth
+  \ Code copied from the example provided in the Forth-94
   \ documentation.
 
 0 constant case immediate  \ init count of ofs
@@ -4768,8 +4949,8 @@ need -rot
 
   \ `value` with parsing and state-smart `to`
 
-  \ This implementation conforms to ANS Forth.
-  \ ANS Forth explicitly requires that `to` must parse.
+  \ This implementation conforms to Forth-94.
+  \ Forth-94 explicitly requires that `to` must parse.
 
   \ Adapted from Afera.
   \ http://programandala.net/en.program.afera.html
@@ -4849,7 +5030,7 @@ defer (value)
   \ Execution of _name_ leaves its absolute user area storage
   \ address.
   \
-  \ Standard: Forth 79, Forth 83
+  \ Standard: Forth-79, Forth-83.
   \
   \ }doc
 
@@ -5177,8 +5358,8 @@ code just-pause ( u --- )
   \ the search order to the implementation-defined minimum
   \ search order.
   \
-  \ This word is defined in ANS Forth but its implementation in
-  \ Solo Forth is not fully ANS Forth compliant.
+  \ This word is defined in Forth-94 but its implementation in
+  \ Solo Forth is not fully Forth-94 compliant.
   \
   \ }doc
 
@@ -5207,7 +5388,7 @@ code just-pause ( u --- )
   \
   \ The search is case-insensitive.
   \
-  \ Standard: Forth 94, Forth 2012.
+  \ Standard: Forth-94, Forth-2012.
   \
   \ }doc
 
@@ -5914,7 +6095,7 @@ code c@a+  ( -- c )
 
 .( heap 0)
 
-  \ An implementation of the ANS Forth Memory-Allocation Word
+  \ An implementation of the Forth-94 Memory-Allocation Word
   \ Set.
 
   \ Adapted from code written by Gordon Charlton, 1994:
