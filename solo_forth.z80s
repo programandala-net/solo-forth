@@ -3,7 +3,7 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506221406
+; Version A-00-201506221410
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
 ; - change: new, modern `find`, after Forth-83 and Forth-94
@@ -11,6 +11,7 @@
 ; - basic string support.
 ; - `<mark`, `<resolve`, `>mark` and `>resolve`.
 ; - `compare`, `search`.
+; - `count` in Z80.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -50,8 +51,8 @@
 
 ; The author of Solo Forth copied, adapted and implemented
 ; ideas, code and documentation from the following Forth systems
-; (acknowledgment notes are included in the related places of
-; the source):
+; (acknowledgment notes are included in the source, at the
+; correspondent places):
 
 ; Abersoft Forth, by John Jones Steele (1983)
 ; DZX-Forth, by Marcos Cruz, (2014-2015, under development)
@@ -153,10 +154,6 @@ fig_name_field?                 equ false
 fig_find?                       equ false
   ; true = the original fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and Forth-94.
-
-mark_and_resolve?               equ true
-  ; true = use `<mark`, `<resolve`, `>mark` and `>resolve`, after Forth-83
-  ; false = use original fig-Forth words: `back`, `here`, `0`, `,`, etc.
 
 ; ----------------------------------------------
 ; Character codes
@@ -613,10 +610,10 @@ compare_de_hl_unsigned:
 ; ==============================================================
 ; Inner interpreter
 
-pushde:
+push_de_hl:
   push de
 
-pushhl:
+push_hl:
   push hl
 
 next:
@@ -688,9 +685,11 @@ paren_s.interpreting:
 
   ld a,(bc)
   inc bc
+push_a:
   ld l,a
+push_l: ; XXX TMP -- not used yet
   ld h,0
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header lit_,'LI','T'
@@ -701,15 +700,13 @@ paren_s.interpreting:
   ld a,(bc)
   inc bc
   ld h,a
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header execute_,'EXECUT','E'
 
   pop hl
   jp next2
-
-if mark_and_resolve?
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>MAR','K'
@@ -728,8 +725,6 @@ if mark_and_resolve?
 
   dw here_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header backward_resolve_,'<RESOLV','E'
@@ -855,10 +850,10 @@ l5f5ah:
   jp p,l5f65h
   ld e,a
   ld hl,0x0001
-  jp pushde
+  jp push_de_hl
 l5f65h:
   ld l,h
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND',')'
@@ -913,7 +908,7 @@ paren_find.search_for_length_byte:
   ld e,a ; length byte
   ld d,0x00
   ld hl,true
-  jp pushde ; name field found, return
+  jp push_de_hl ; name field found, return
 paren_find.not_a_match:
   ; Above name field not a match, try next one
   jr c,paren_find.name_field_skipped ; carry = end of name field
@@ -986,7 +981,7 @@ paren_find.compare_next_char:
   ld d,0
   ld hl,true
   ld bc,(ip_backup) ; restore Forth IP
-  jp pushde
+  jp push_de_hl
 
 paren_find.not_a_match:
   ; Not a match, try next one.
@@ -1060,11 +1055,11 @@ paren_find.compare_next_char:
   ld a,c ; name field length byte
   ld bc,(ip_backup) ; restore Forth IP
   and precedence_bit_mask ; immediate word?
-  jp nz,pushde
+  jp nz,push_de_hl
   ; non-immediate word
   dec hl
   dec hl ; -1 = non-immediate word
-  jp pushde
+  jp push_de_hl
 
 paren_find.not_a_match:
   ; Not a match, try next one.
@@ -1087,7 +1082,7 @@ paren_find.nfa_backup: equ $+1
   ld bc,(ip_backup) ; restore Forth IP
   ld de,(paren_find.string_address)
   ld hl,false
-  jp pushde
+  jp push_de_hl
 
 endif
 
@@ -1409,7 +1404,7 @@ key.limit:
   rst 0x10
 
   pop bc
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header question_terminal_,'?TERMINA','L'
@@ -1469,7 +1464,7 @@ cmove.end:
   ld h,a
   pop bc
   push de
-  jp pushhl
+  jp push_hl
 sub_606dh:
   ld hl,0x0000
   ld c,0x08
@@ -1550,7 +1545,7 @@ l60c0h:
   ld a,d
   and h
   ld h,a
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header or_,'O','R'
@@ -1563,7 +1558,7 @@ l60c0h:
   ld a,d
   or h
   ld h,a
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header xor_,'XO','R'
@@ -1576,14 +1571,14 @@ l60c0h:
   ld a,d
   xor h
   ld h,a
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header sp_fetch_,'SP','@'
 
   ld hl,0x0000
   add hl,sp
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header sp_store_,'SP','!'
@@ -1605,7 +1600,7 @@ l60c0h:
   _code_header rp_fetch_,'RP','@'
 
   ld hl,(return_stack_pointer)
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header rp_store_,'RP','!'
@@ -1749,7 +1744,7 @@ true_if_cy:
   pop de
   pop hl
   add hl,de
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header d_plus_,'D','+'
@@ -1769,7 +1764,7 @@ true_if_cy:
   adc hl,bc
   pop bc
   push de
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header negate_,'NEGAT','E'
@@ -1778,7 +1773,7 @@ true_if_cy:
   ld hl,0x0000
   and a
   sbc hl,de
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header dnegate_,'DNEGAT','E'
@@ -1798,14 +1793,14 @@ true_if_cy:
   sbc a,h
   ld h,a
   push de
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header nip_,'NI','P'
 
   pop hl
   pop de
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header tuck_,'TUC','K'
@@ -1813,7 +1808,7 @@ true_if_cy:
   pop hl
   pop de
   push hl
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _code_header over_,'OVE','R'
@@ -1821,7 +1816,7 @@ true_if_cy:
   pop de
   pop hl
   push hl
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _code_header drop_,'DRO','P'
@@ -1834,14 +1829,14 @@ true_if_cy:
 
   pop hl
   ex (sp),hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header dup_,'DU','P'
 
   pop hl
   push hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header two_dup_,'2DU','P'
@@ -1850,7 +1845,7 @@ true_if_cy:
   pop de
   push de
   push hl
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _code_header plus_store_,'+','!'
@@ -1898,7 +1893,7 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header fetch_,'','@'
 
-  ; XXX TODO optimize? maybe `jp pushhl` can be used?
+  ; XXX TODO optimize? maybe `jp push_hl` can be used?
   pop hl
 fetch.hl:
   ld e,(hl)
@@ -1913,7 +1908,7 @@ fetch.hl:
   pop hl
   ld l,(hl)
   ld h,0x00
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header two_fetch_,'2','@'
@@ -1930,7 +1925,7 @@ two_fetch.hl
   ld h,(hl) ; T07  1
   ld l,a    ; T04  1
   ex de,hl  ; T04  1
-  jp pushde ; T10  3
+  jp push_de_hl ; T10  3
             ; T11  0 push de
             ; T11  0 push hl
             ; T86 12 TOTAL
@@ -2066,7 +2061,7 @@ do_label:
   ; XXX TODO check the execution time, compare with `do_two_variable`
   inc de  ; de=pfa
   ex de,hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header variable_,'VARIABL','E'
@@ -2077,7 +2072,7 @@ do_variable:
   ; XXX TODO check the execution time, compare with `do_two_variable`
   inc de  ; de=pfa
   ex de,hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header user_,'USE','R'
@@ -2096,7 +2091,7 @@ do_user:
 ;user_variables_pointer: equ $+1
 ; ld hl,user_variables   ; T10
   add hl,de   ; hl= address of the user variable
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _constant_header msg_scr_,'MSG-SC','R'
@@ -2133,13 +2128,13 @@ do_user:
   _code_header false_,'FALS','E'
 
   ld hl,false
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header true_,'TRU','E'
 
   ld hl,true
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _constant_header b_l_,'B','L'
@@ -2299,7 +2294,7 @@ do_user:
 
   pop hl
   inc hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header two_plus_,'2','+'
@@ -2307,7 +2302,7 @@ do_user:
   pop hl
   inc hl
   inc hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_alias_header cell_plus_,'CELL','+',,two_plus_
@@ -2317,7 +2312,7 @@ do_user:
 
   pop hl
   dec hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header two_minus_,'2','-'
@@ -2325,14 +2320,14 @@ do_user:
   pop hl
   dec hl
   dec hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header two_star_,'2','*'
 
   pop hl
   add hl,hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_alias_header cells_,'CELL','S',,two_star_
@@ -2349,7 +2344,7 @@ do_user:
 
   pop hl
   call sra_hl
-  jp pushhl
+  jp push_hl
 
 sra_hl:
   ld a,h   ; shift arithmetic right
@@ -2402,7 +2397,7 @@ sra_hl.1:
   pop hl
   and a
   sbc hl,de
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header not_equals_,'<','>'
@@ -2442,16 +2437,16 @@ less_than.wich_negative:
 
   ; Original version from Abersoft Forth,
   ; badly optimized because of the two 'ld
-  ; hl' and two `jp pushhl`.
+  ; hl' and two `jp push_hl`.
 
   inc h
   dec h ; h negative?
   jp m,less_than.true
   ld hl,false
-  jp pushhl
+  jp push_hl
 less_than.true:
   ld hl,true
-  jp pushhl
+  jp push_hl
 
   else ; XXX NEW
 
@@ -2460,9 +2455,9 @@ less_than.true:
 
   ; bit 7,h ; h negative?
   ; ld hl,false
-  ; jp z,pushhl
+  ; jp z,push_hl
   ; inc l ; true ; XXX TODO -- change to `dec hl` when true=-1
-  ; jp pushhl
+  ; jp push_hl
 
   ; Optimized for space:
 
@@ -2533,7 +2528,7 @@ endif
 ;   pop de
 ;   ex (sp),hl
 ;   ex de,hl
-;   jp pushde
+;   jp push_de_hl
 
 ; ----------------------------------------------
   _code_header rot_,'RO','T'
@@ -2541,7 +2536,7 @@ endif
   pop de
   pop hl
   ex (sp),hl
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _colon_header space_,'SPAC','E'
@@ -2683,7 +2678,7 @@ endif
   and max_word_length_bit_mask
   ld l,a
   ld h,0
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _colon_header store_csp_,'!CS','P'
@@ -2694,15 +2689,13 @@ endif
 ; ----------------------------------------------
   _colon_header question_error_,'?ERRO','R'
 
-  ; XXX TODO optimize the memory usage with to exit points,
-  ; instead of jumps; search for similar cases in the code
   dw swap_
   dw zero_branch_,question_error.no_error
   dw error_
-  dw branch_,question_error.end
+  dw semicolon_s_
+
 question_error.no_error:
   dw drop_
-question_error.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2848,14 +2841,18 @@ do_does:
   inc hl
   ; W was incremented in the last instruction, pointing to the parameter field.
   ; Push the first parameter on stack:
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
-  _colon_header count_,'COUN','T'
+  _code_header count_,'COUN','T'
 
-  ; XXX TODO -- rewrite in Z80
-  dw dup_,one_plus_,swap_,c_fetch_
-  dw semicolon_s_
+  ; Code from DZX-Forth.
+
+  pop de
+  ld a,(de)
+  inc de
+  push de
+  jp push_a
 
 ; ----------------------------------------------
   _colon_header bounds_,'BOUND','S'
@@ -2865,6 +2862,8 @@ do_does:
 
 ; ----------------------------------------------
   _colon_header type_,'TYP','E'
+
+  ; XXX TODO Rewrite in Z80, after the ROM routine.
 
   dw question_dup_
   dw zero_branch_,type.empty_string
@@ -2883,6 +2882,9 @@ type.end:
 
 ; ----------------------------------------------
   _colon_header minus_trailing_,'-TRAILIN','G'
+
+
+  ; XXX TODO Rewrite in Z80, if shorter.
 
   dw dup_,zero_
   dw paren_do_
@@ -3297,7 +3299,7 @@ number.end:
   ld a,l
   call upper.a
   ld l,a
-  jp pushhl
+  jp push_hl
 
 upper.a:
   ; Convert the ASCII char in the 'a' register to uppercase.
@@ -3557,7 +3559,7 @@ header.continue:
 do_create:
   inc de  ; de=pfa
   ex de,hl
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _does_header assembler_,'ASSEMBLE','R'
@@ -3638,11 +3640,11 @@ compare.no_match:
 compare.end:
   pop bc ; restore Forth IP
   ld hl,1
-  jp c,pushhl
+  jp c,push_hl
   dec hl ; 0
-  jp z,pushhl ; string1 equals string2
+  jp z,push_hl ; string1 equals string2
   dec hl ; -1
-  jp pushhl
+  jp push_hl
 
 compare_strings_case_sensitive:
   ; Copied from DZX-Forth.
@@ -4103,7 +4105,7 @@ common_start:
   jr z,l6e1dh
   dec hl
 l6e1dh:
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _colon_header plus_minus_,'+','-'
@@ -4423,7 +4425,7 @@ block.end:
   ld a,h
   ld h,l
   ld l,a
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header block_to_sector_,'BLOCK>SECTO','R'
@@ -4948,7 +4950,7 @@ list.loop:
   ld (hl),e
   ld e,a
   pop hl
-  jp pushde
+  jp push_de_hl
 
 ; ----------------------------------------------
   _colon_header unused_,'UNUSE','D'
@@ -5021,12 +5023,12 @@ index.loop:
 ; ----------------------------------------------
   _constant_header pushhl_,'PUSHH','L'
 
-  dw pushhl
+  dw push_hl
 
 ; ----------------------------------------------
   _constant_header pushde_,'PUSHD','E'
 
-  dw pushde
+  dw push_de_hl
 
 ; ----------------------------------------------
   _code_header p_fetch_,'P','@'
@@ -5040,7 +5042,7 @@ index.loop:
   pop bc
   ld h,0x00
   ld l,a
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header p_store_,'P','!'
@@ -5073,7 +5075,7 @@ index.loop:
   ld l,a
   pop bc
   ld ix,next ; restore ; XXX TODO -- check if necessary after those ROM routines
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header at_,'A','T'
@@ -5304,7 +5306,7 @@ l8128h:
   ld l,a
   ld h,0x00
   pop bc
-  jp pushhl
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header char_,'CHA','R'

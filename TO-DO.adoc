@@ -69,3 +69,9 @@ Note: `type` crashes the system when the stack is empty. This problem
 exits also in Abersoft Forth and v.Forth. Spectrum Forth-83 prints garbage and then a
 message. There's no good solution. An a priori
 check is not a good idea.
+
+.2015-06-22:
+
+Optimize the memory usage of colon words with additional exit points,
+instead of branches.
+
