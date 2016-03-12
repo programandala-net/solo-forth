@@ -145,8 +145,13 @@ From F83:
 
 .2015-07-06:
 
-Fix: 'parse-word'.
+Fix: `parse-word`.
 
-.2015-07-17:
+.2015-07-21:
 
-Loading the assembler freezes the system.
+New words in the assembler vocabulary:
+
+`next,` :: `jp (ix)`
+`pushhl` :: `jp pushhl`
+`pushde` :: `jp pushde`
+

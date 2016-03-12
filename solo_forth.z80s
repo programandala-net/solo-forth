@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507170306
+; Version A-00-201507210234
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -45,6 +45,7 @@
 ; - first draft of `emitted`, based on the S-SCREEN$ ROM
 ; routine.
 ; - first changes to implement a Latin 1 charset.
+; - fix: `error>line`.
 
 ; ==============================================================
 ; Acknowledgments
@@ -5678,18 +5679,13 @@ find.end:
 ;
 ; }doc
 
-  ; XXX FIXME -- the calculation must be more complex
-  ; dw dup_
-  ; dw c_lit_
-  ; db 16
-  ; dw slash_,plus_
-
-  ; XXX NEW -- a loop instead a calculation
-  dw dup_,zero_,paren_do_
+  dw dup_,one_plus_,one_,paren_do_
+error_to_number.do
   dw i_
   dw c_lit_
   db 16
-  dw mod_,zero_equals_,plus_,paren_loop_
+  dw mod_,zero_equals_,plus_
+  dw paren_loop_,error_to_number.do
   ; XXX TODO update when true=-1
   dw semicolon_s_
 
@@ -5794,6 +5790,10 @@ else
   _does_header assembler_,'ASSEMBLER',,do_vocabulary
 endif
 
+; XXX TODO move `assembler` and everthing related
+; to the library disk?
+
+
   ; Dummy header.
 if 1 ; names_in_memory_bank?
   assembler_vocabulary_dummy_lfa:
@@ -5840,6 +5840,8 @@ assembler_vocabulary_link:
 
 ; ----------------------------------------------
   _colon_header end_code_,'END-CODE'
+
+; XXX TODO move to the `assembler` vocabulary.
 
   dw question_csp_
   dw context_,store_ ; restore `context`
@@ -7354,6 +7356,12 @@ hash.digit:
 
 ; ----------------------------------------------
   _colon_header hash_s_,'#S'
+
+; doc{
+;
+; #S  ( d1 -- d2 )
+;
+; }doc
 
 hash_s.begin:
   dw hash_,two_dup_,or_

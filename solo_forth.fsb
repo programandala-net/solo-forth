@@ -45,6 +45,9 @@ decode dump
   \
   \ 2015-06-25: Fix. The parsed strings had to be saved in the
   \ circular string buffer.
+  \ 
+  \ 2015-07-21: Change: renamed `(required)` as `do-required`.
+  \ New: `do-require`. 
 
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
   \ Does the string ca1 len1 contains the string ca2 len2?
@@ -59,16 +62,18 @@ decode dump
 : locate  ( "name" -- screen | false )
   parse-word save-string located  ;
 
-: (required)  ( ca len -- )
   \ cr ." (required) <" 2dup type [char] > emit  \ XXX INFORMER
-  located dup 0= 29 ?error load  ;
+: do-required  ( ca len -- )  located dup 0= 29 ?error load  ;
 
 : required  ( ca len -- )
-  2dup undefined? if  2dup (required)  then
+  2dup undefined? if  2dup do-required  then
   \ cr ." required <" 2dup type [char] > emit  \ XXX INFORMER
   2dup undefined? if  type 28 message exit  then  2drop  ;
 
 : require  ( "name" -- )  parse-word save-string required  ;
+
+: do-require  ( "name" -- )
+  parse-word save-string do-required  ;
 
   \ }}} =======================================================
   \ Error messages {{{
@@ -117,9 +122,15 @@ decode dump
 
 ( debug ) \ scr 6 for debugging
 
-( debug ) \ scr 7 for debugging
+( code ) \ scr 7 for debugging
 
-  .( pantalla 7)
+forth definitions  vocabulary assembler
+
+;s
+
+  \ XXX TODO
+  \ asm code end-code next, pushhl, pushde,
+
 
   \ }}} =======================================================
   \ String operations {{{
@@ -133,11 +144,6 @@ decode dump
   \ : parse-text  ( c "ccc<c>" -- ca len )  text pad count  ;
   \ XXX OLD -- 2015-06-23: `parse-word` in the kernel:
   \ : parse-name  ( "name" -- ca len )  bl parse-text  ;
-
-  \ XXX OLD -- 2015-06-20: Moved to the kernel:
-  \ : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
-  \ : s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
-  \ : sliteral  ( ca len -- )  compile slit s,  ; immediate
 
 : place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
 : +place  ( ca1 len1 ca2 )
@@ -215,7 +221,7 @@ code pixel  ( xc yc -- n a )
   C3 c, pushde ,          \ jp pushde
   end-code
 
-( pixel-add )  \ The ROM routine
+( pixel-add )  \ The ROM routine \ XXX OLD
 
 code pixel-add  ( xc yc -- n a )
   \ Address of a pixel in the screen.
@@ -353,7 +359,7 @@ code attr ( line col -- )
 
   \ pop hl ; l = col
   \ pop de ; e = line
-  E1 c,  D1 c, 
+  E1 c,  D1 c,
   50 05 + c, \ ld d,l ; d = col
 
   78 02 + c, \ ld a,d  ; line to a 0x00..0x17   (max 00010111)
@@ -506,7 +512,7 @@ end-code
   \ [From the ANS Forth documentation.]
 
   \ XXX TODO `sm/rem` not ready yet
- 
+
 : /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
 
 : /-  (  n1 n2 -- n3 )  /-rem nip  ;
@@ -532,7 +538,7 @@ end-code
 : */_mod  ( n1 n2 n3 -- n4 n5)  >r m* r> fm/mod  ;
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip ;
-  
+
   \ }}} =======================================================
   \ Conditional compilation {{{
 
@@ -555,7 +561,7 @@ end-code
             then  ?dup 0= if  exit  then
   repeat  2drop drop  ; immediate
 
-: [if]  ( "..." -- )  0= if [compile] [else] then  ; immediate
+: [if]  ( "..." -- )  0= if postpone [else] then  ; immediate
 
 : [then]  ( -- )  ; immediate
 
@@ -898,7 +904,7 @@ end-code
 code !p  ( n u -- )
 
   \ Present _n_ to output port _u_.
- 
+
   E1 c,           \ pop hl
   D1 c,           \ pop de
   C5 c,           \ push bc
@@ -983,7 +989,7 @@ hex  width @ 1 width !
 
 : '.  ( -- n )
   \ leave ascii character; example: 'a leaves 0x41
-  here 2 + c@ [compile] literal  ; immediate
+  here 2 + c@ postpone literal  ; immediate
 
 width ! decimal
 
@@ -1000,12 +1006,12 @@ width @  1 width !
 : $..  ( -- n )
   \ leave hex number; example: $0a leaves 0x0A
   here 2 + c@ c>hex 10 * here 3 + c@ c>hex +
-  [compile] literal  ; immediate
+  postpone literal  ; immediate
 
 : $....  ( -- n )
   \ leave 16-bit hex number; example: $0aff leaves 0x0AFF
   0 here 6 + here 2 + do 10 * i c@ c>hex + loop
-  [compile] literal  ; immediate
+  postpone literal  ; immediate
 
 width ! decimal
 
@@ -1022,12 +1028,12 @@ hex  width @ 2 width !
 : 0x..  ( -- n )
   \ leave hex number; example: 0x0a
   here 3 + c@ c>hex 10 * here 4 + c@ c>hex +
-  [compile] literal  ; immediate
+  postpone literal  ; immediate
 
 : 0x....  ( -- n )
   \ leave hex number; example: 0x0aff
   0 here 7 + here 3 + do 10 * i c@ c>hex + loop
-  [compile] literal  ; immediate
+  postpone literal  ; immediate
 
 width ! decimal
 
@@ -1046,12 +1052,12 @@ width @  1 width !
 : #...  ( -- n )
   \ leave decimal number
   here 2 + c@ c>hex 10 * here 3 + c@ c>hex +
-  [compile] literal  ; immediate
+  postpone literal  ; immediate
 
 : #.....  ( -- n )
   \ leave 16-bit decimal number
   0 here 6 + here 2 + do 10 * i c@ c>hex + loop
-  [compile] literal  ; immediate
+  postpone literal  ; immediate
 
 width ! decimal
 
@@ -1137,17 +1143,17 @@ code j'  ( -- x )
 
 : ?dov
   compile 2dup  compile (do)  compile <>
-  [compile] if
+  postpone if
   2drop here swap 1 6  ; immediate
 
 : (resolve)
-  begin  sp@ csp @ -  while  2 [compile] then  repeat  csp !  ;
+  begin  sp@ csp @ -  while  2 postpone then  repeat  csp !  ;
 
 : loopv
-  [compile] loop (resolve)  ;
+  postpone loop (resolve)  ;
 
 : +loopv
-  [compile] +loop (resolve)  ;
+  postpone +loop (resolve)  ;
 
 ( compile, )
 
@@ -1340,7 +1346,7 @@ only forth also   definitions
              ( Compilation:    "name" -- )
              ( Runtime:        -- cfa )
   \ Return the code field address of a deferred word.
-  ' comp? if    postpone literal postpone defer@ 
+  ' comp? if    postpone literal postpone defer@
           else  defer@  then  ; immediate
 
 ( <is> [is] is  )
@@ -1360,24 +1366,17 @@ only forth also   definitions
 
 ( assembler )
 
-\ solo_forth.assembler.fsb
 \ Assembler for Solo Forth
 
-\ Copyright (C) 2015 Marcos Cruz (programandala.net)
 \ Copyright (C) 1988? Coos Haak
-
-\ This file is part of Solo Forth
-\ http://programandala.net/en.program.solo_forth.html
+\ Copyright (C) 2015 Marcos Cruz (programandala.net)
 
   \ This is a modified version of an assembler designed by Coos
   \ Haak for his own Forth, and used by Lennart Benschop with
   \ his Spectrum Forth-83 (1988).
 
-  \ Copying and distribution of this file, with or without
-  \ modification, are permitted in any medium without royalty
-  \ provided the copyright notice and this notice are
-  \ preserved.  This file is offered as-is, without any
-  \ warranty.
+  \ It was ported to the fig-Forth Afera library by Marcos Cruz
+  \ (2015-03).
 
   \ -----------------------------------------------------------
   \ Differences from the original version
@@ -1398,11 +1397,13 @@ only forth also   definitions
   \ `INR` --> `INC`;
   \ `DEC` --> `DECP`;
   \ `DER` --> `DEC`.
+  \ `TST` --> `TSTP`.
 
   \ The set of conditional calls and returns has been completed
-  \ (the original included only `CALLC` and `RETC`).
+  \ (the original included only the generic `CALLC` and
+  \ `RETC`).
 
-  \ Comments have been added.
+  \ Added many stack comments.
 
   \ Case insensitive.
 
@@ -1415,8 +1416,15 @@ only forth also   definitions
   \ Solo Forth.
   \
   \ 2015-07-17: First documentation of control structures.
-  \ Renamed `tst` as `tstp`.
-  
+  \ Renamed `tst` as `tstp`. Changed control structures to use
+  \ `>mark`, `>resolve`, `<mark`, `<resolve` and the new words
+  \ `>relmark` and `>relresolve`.
+  \
+  \ 2015-07-21: Fix: The hex number DE, used to define a
+  \ opcode, was mistaken as the DE register. '0DE' is used
+  \ instead. Fix: a `variable` definition had its init value.
+  \ Check: the assembler occupies 1565 bytes.
+
   \ -----------------------------------------------------------
 
 forth definitions
@@ -1428,26 +1436,29 @@ forth definitions
 ( assembler -- Registers )
 
 : [assembler]  ( -- )  assembler  ; immediate
+
 assembler definitions hex
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
 
-0 constant bc  2 constant de  4 constant hl
-6 constant sp  6 constant af                 6 constant (hl)
+  \ XXX TODO -- remove ?
+0 constant bc  2 constant de  4 constant hl  6 constant (hl)
+
+6 constant sp  6 constant af
 
 DD constant ix-op  FD constant iy-op
 
-ix-op variable xy
-: %x  ix-op xy ! ;    : %y  iy-op xy ! ;
+variable xy  ix-op xy !
+: %x  ( -- )  ix-op xy ! ;    : %y  ( -- )  iy-op xy ! ;
 
-: xy,  xy @ c, ;
+: xy,  ( -- )  xy @ c, ;
 
 : xl  xy, l ;         : xh  xy, h ;
 : ix  ix-op c, hl ;   : iy  iy-op c, hl ;
 
   \ Branch too long?
-: ?page  ( n -- ) dup 80 + FF swap u< 1E ?error  ;
+: ?page  ( n -- n )  dup 80 + FF swap u< 1E ?error  ;
 
 -->
 
@@ -1517,7 +1528,7 @@ ix-op variable xy
 88 m2 adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz
 C3 m5 jp C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz
 CD m5 call CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc
-D6 m4 sub# D9 m1 exx DA m5 jpc DB m4 in 40 m3 inbc DE m4 sbc#
+D6 m4 sub# D9 m1 exx DA m5 jpc DB m4 in 40 m3 inbc 0DE m4 sbc#
 E2 m5 jppo E3 m1 exsp E6 m4 and# E9 m1 jphl EA m5 jppe
 EB m1 exde EE m4 xor# F2 m5 jpp F3 m1 di  F6 m4 or# F9 m1 ldsp
 FA m5 jpm FB m1 ei FE m4 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl
@@ -1588,6 +1599,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : ?ret  ( op -- )  8 xor 2- c, ;
 
+  \ XXX TODO -- remove?
 : retc  ( -- )  cy' ?ret ;    : retnc  ( -- )  nc' ?ret ;
 : retz  ( -- )  z' ?ret ;     : retnz  ( -- )  nz' ?ret ;
 : retm  ( -- )  m' ?ret ;     : retp  ( -- )  p' ?ret ;
@@ -1597,27 +1609,29 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : ?call  ( a op -- )  8 xor 2+ c, , ;
 
+  \ XXX TODO -- remove?
 : callc  ( -- )  cy' ?call ;    : callnc  ( -- )  nc' ?call ;
 : callz  ( -- )  z' ?call ;     : callnz  ( -- )  nz' ?call ;
 : callm  ( -- )  m' ?call ;     : callp  ( -- )  p' ?call ;
-: callpe  ( -- )  pe' ?call ;   : callpo ( -- )  po' ?call ; 
+: callpe  ( -- )  pe' ?call ;   : callpo ( -- )  po' ?call ;
 
 -->
 
 ( assembler -- Control structures built with relative jumps)
 
   \ XXX TODO document
-  \ XXX TODO factor `over - ?page swap c!` ?
 
-: then  ( orig cs-id -- )
-  0A ?pairs here 1- over - ?page swap c! ;
-: if  ( op -- orig cs-id )  , here 1- 0A ;
+  \ Forward relative mark.
+: >relmark  ( -- orig )  here 1- ;
+: >relresolve  ( orig dest -- ) over - ?page swap c! ;
+: then  ( orig cs-id -- )  0A ?pairs >relmark >relresolve ;
+: if  ( op -- orig cs-id )  , >relmark 0A ;
 : else  ( orig cs-id -- cs-id ) \ XXX TODO document
   0A ?pairs 18 if rot swap then 0A ;
 : begin  (  -- dest cs-id )  <mark 0B ;
 : while  (  op -- orig cs-id )  if 2+ ;
 : until  (  dest cs-id op -- )
-  , 0B ?pairs 1- here 1- swap over - ?page swap c! ;
+  , 0B ?pairs 1- >relmark swap >relresolve ;
 : again  (  dest cs-id -- )  18 until ;
 : dsz    ( dest cs-id -- )  10 until ;
 : repeat  (  dest cs-id1 orig cs-id2 )  2swap again 2- then ;
@@ -1655,16 +1669,130 @@ A0 m2 and  B0 m2 or  A8 m2 xor
   \ Macro to test 16-bit register for zero:
 : tstp  ( rp -- )  dup a ld 1+ or ;
 
-forth definitions
-
-  \ Macros \ xxx todo -- test it
-: macro  ( "name" -- )  asm [compile] :  ;
-: endm  ( -- )  [compile] ;  ;
-
   \ Patch `asm` with `%x`:
 ' %x ' asm cfa>pfa !
 
+forth definitions
+
+  \ Macros \ xxx todo -- test it
+: macro  ( "name" -- )  asm postpone :  ;
+: endm  ( -- )  postpone ;  ;
+
 decimal
+
+  \ }}} =======================================================
+  \ The address register {{{
+
+( address-register )
+
+  \ Original code from Z88 CamelForth by Gary Lancaster.
+
+  \ 2015-07-20: Start. Adapted the defining words.
+  \ 2015-07-21: Start. Adapted the assembler.
+
+  \ Address register store and fetch words.
+  \
+  \ Sadly, there aren't any spare registers to make this as
+  \ efficient as it could be. However, it can still give a
+  \ useful improvement in loops, and in many cases also results
+  \ in cleaner-looking code.
+
+hex
+
+variable a
+
+code a!  ( a -- )
+  \ Set the address register.
+  E1 c,                 \ push hl
+  22 c, a ,             \ ld (a),hl
+  DD c, E9 c,           \ jp (ix)
+end-code
+
+code a@  ( -- a )
+  \ Get the address register.
+  2A c, a ,             \ ld hl,(a)
+  C3 c, pushhl ,        \ jp pushhl
+end-code  -->
+
+.( a-register )
+
+code !a  ( u -- )
+  \ Store cell at `a`.
+  D1 c,                          \ pop de
+  2A c, a ,                      \ ld hl,(a)
+  70 03 + c,  23 c,  70 04 + c,  \ ld (hl),e  inc hl  ld (hl),d
+  DD c, E9 c,                    \ jp (ix)
+end-code
+
+code @a  ( -- u )
+  \ Fetch cell at `a`.
+  2A c, a ,             \ ld hl,(a)
+  5E c,                 \ ld e,(hl)
+  23 c,                 \ inc hl
+  66 c,                 \ ld h,(hl)
+  68 03 + c,            \ ld l,e
+  C3 c, pushhl ,        \ jp pushhl
+end-code  -->
+
+.( a-register )
+
+code c!a  ( c -- )
+  \ Store char at `a`.
+  D1 c,                 \ pop de
+  2A c, a ,             \ ld hl,(a)
+  70 03 + c,            \ ld (hl),e
+  DD c, E9 c,           \ jp (ix)
+end-code
+
+code c@a  ( -- c )
+  \ Fetch char at `a`.
+  2A c, a ,             \ ld hl,(a)
+  6E c,                 \ ld l,(hl)
+  26 c, 00 c,           \ ld h,0
+  C3 c, pushhl ,        \ jp pushhl
+end-code  -->
+
+.( a-register )
+
+code !a+  ( u -- )
+  \ Store cell at `a` with increment.
+  D1 c,                 \ pop de
+  2A c, a ,             \ ld hl,(a)
+  70 03 + c,  23 c,     \ ld (hl),e  inc hl
+  70 04 + c,  23 c,     \ ld (hl),d  inc hl
+  22 c, a ,             \ ld (a),hl
+  DD c, E9 c,           \ jp (ix)
+end-code
+
+code @a+  ( -- u )
+  \ Fetch cell at `a` with increment.
+  2A c, a ,             \ ld hl,(a)
+  5E c,  23 c,          \ ld e,(hl)  inc hl
+  56 c,  23 c,          \ ld d,(hl)  inc hl
+  22 c, a ,             \ ld (a),hl
+  D5 c,  DD c, E9 c,    \ push de  jp (ix)
+end-code  -->
+
+.( a-register )
+
+code c!a+  ( c -- )
+  \ Store char at `a` with increment.
+  D1 c,                 \ pop de
+  2A c, a ,             \ ld hl,(a)
+  70 03 + c,  23 c,     \ ld (hl),e  inc hl
+  22 c, a ,             \ ld (a),hl
+  DD c, E9 c,           \ jp (ix)
+end-code
+
+code c@a+  ( -- c )
+  \ Fetch char at `a` with increment.
+  2A c, a ,             \ ld hl,(a)
+  5E c,  23 c,          \ ld e,(hl)  inc hl
+  06 c, 00 c,           \ ld d,0
+  22 c, a ,             \ ld (a),hl
+  D5 c,                 \ push de
+  DD c, E9 c,           \ jp (ix)
+end-code  decimal
 
   \ }}} =======================================================
   \ Common heap {{{

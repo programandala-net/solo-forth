@@ -25,7 +25,6 @@ listed in alphabetical order:
 - Spectrum Forth-83 (for ZX Spectrum 48K/128K), by Lennart Benschop,
   1988.
 - v.Forth (for ZX Spectrum 48K/128K with Interface 1), by Matteo Vitturi, 1990-2015.
-- Z88 CamelForth (for Cambridge Z88), by Gary Lancaster, 2001.
+- Z88 CamelForth (for Z88), by Gary Lancaster, 2001.
 
-Acknowledgment notes are included in the source, at the correspondent
-places.
+Specific acknowledgment notes are included in the source.
