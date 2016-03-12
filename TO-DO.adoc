@@ -119,6 +119,17 @@ Change: rewrote `word` to return and address, after Forth-83 or ANS Forth.
 From F83:
 
 ----
+: MAP  ( n pfa --- addr )
+  \ Given the pfa of a case word and the index n for case
+  \ selection, return the execution address selected. Abort if the
+  \ index is out of range.
+  2DUP @  \ Fetch the range from pfa.
+  U< IF  \ Is the index n within range?
+    2+ SWAP 2* +  \ Address of the execution code.
+  ELSE OUT  \ Abort if out of range.
+  THEN
+  ;
+
 : CASE:  ( n --- )
   \ A positional case statement. The range n is used for error checking.  At runtime, the nth word is executed, depending on the value on stack when executed.
   CONSTANT  \ Compile the range n as a constant.
@@ -130,3 +141,8 @@ From F83:
     PERFORM  \ Execute it.
   ;
 ----
+
+
+.2015-07-06:
+
+Fix: 'parse-word'.

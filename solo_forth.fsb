@@ -32,6 +32,9 @@ decode dump
 ( debugging ) \ scr 2
 
 
+  \ }}} =========================================================
+  \ Require {{{
+
 ( require ) \ scr 3
 
   \ This screen must be at a fixed location.
@@ -66,6 +69,9 @@ decode dump
   2dup undefined? if  type 28 message exit  then  2drop  ;
 
 : require  ( "name" -- )  parse-word save-string required  ;
+
+  \ }}} =========================================================
+  \ Error messages {{{
 
 ( Error messages 1..15 ) \ scr 4
 
@@ -114,6 +120,9 @@ decode dump
 
   .( pantalla 7)
 
+  \ }}} =========================================================
+  \ String operations {{{
+
 ( parse-name place +place /string )
 
   \ 2015-06-17: Copied from Afera.
@@ -151,6 +160,9 @@ decode dump
 : s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
   [char] ' (s)  ; immediate
 
+  \ }}} =========================================================
+  \ Stack manipulation {{{
+
 ( -rot )
 
   \ 2015-06-05: Copied from Afera
@@ -165,11 +177,29 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
   end-code
 
+( 2nip )
+
+  \ 2015-06-22: Copied from Afera; original code from
+  \ DZX-Forth.
+
+code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
+
+  E1 c,           \ pop hl
+  D1 c,           \ pop de
+  F1 c,           \ pop af
+  F1 c,           \ pop af
+  C3 c, pushde ,  \ jp pushde
+
+end-code
+
+  \ }}} =========================================================
+  \ Graphics {{{
+
 ( pixel )
 
 require pixel-addr
 
-code pixel  ( x y -- n a )
+code pixel  ( xc yc -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
   \ y = 0..191
@@ -187,7 +217,7 @@ code pixel  ( x y -- n a )
 
 ( pixel-add )  \ The ROM routine
 
-code pixel-add  ( x y -- n a )
+code pixel-add  ( xc yc -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
   \ y = 0..175
@@ -232,7 +262,7 @@ label pixel-addr  ( -- )  hex
 
 require pixel-addr
 
-code point  ( x y -- f )
+code point  ( xc yc -- f )
   E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
   \ l = y coordinate
   \ e = x coordinate
@@ -264,7 +294,7 @@ code point  ( x y -- f )
 
 require pixel-addr
 
-code plot  ( x y -- )
+code plot  ( xc yc -- )
 
   D9 c,               \ exx
   E1 c,               \ pop hl
@@ -376,6 +406,9 @@ code screen ( row col -- f )
 
 end-code
 
+  \ }}} =========================================================
+  \ Sound {{{
+
 ( bleep )
 
   \ Code modified from Abersoft Forth:
@@ -398,6 +431,9 @@ code bleep  ( n1 n2 -- )
   \ n2 = pitch
   OVER 1000 */ SWAP
   4375 100 ROT */ 30 -  ;
+
+  \ }}} =========================================================
+  \ Operators {{{
 
 ( within between )
 
@@ -467,6 +503,41 @@ code rshift  ( x1 u -- x2 )
 
 end-code
 
+( Symmetric-division operators )
+
+  \ [From the ANS Forth documentation.]
+
+  \ XXX TODO `sm/rem` not ready yet
+ 
+: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
+
+: /-  (  n1 n2 -- n3 )  /-rem nip  ;
+
+: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
+
+: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
+
+: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
+
+( Floored-division operators )
+
+  \ [From the ANS Forth documentation.]
+
+  \ XXX TODO `fm/mod` not ready yet
+
+: /_mod  ( n1 n2 -- n3 n4)  >r s>d r> fm/mod  ;
+
+: /_  ( n1 n2 -- n3)  /_mod nip  ;
+
+: _mod  ( n1 n2 -- n3)  /_mod drop  ;
+
+: */_mod  ( n1 n2 n3 -- n4 n5)  >r m* r> fm/mod  ;
+
+: */_  ( n1 n2 n3 -- n4 )   */_mod nip ;
+  
+  \ }}} =========================================================
+  \ Conditional compilation {{{
+
 ( [if] [else] [then] )
 
   \ 2015-06-04: Copied from Afera
@@ -490,6 +561,17 @@ end-code
 : [if]  ( "..." -- )  0= if [compile] [else] then  ; immediate
 
 : [then]  ( -- )  ; immediate
+
+  \ }}} =========================================================
+  \ Tools {{{
+
+( [false] [true] )
+
+  \ 2015-06-17: Copied from Afera
+  \ (http://programandala.net/en.program.afera.html).
+
+         0 constant [false] immediate
+[false] 0= constant [true]  immediate
 
 ( hex. hexb. dhex. hex{ )
 
@@ -652,7 +734,6 @@ variable decode-address  \ in the word being decoded
   defined if  cfa>pfa  0 decode-level !  (decode)
           else  drop  5 error  then  ;
 
-
 ( words )
 
   \ From Spectrum Forth-83.
@@ -660,21 +741,39 @@ variable decode-address  \ in the word being decoded
 [defined] tab ?\  : tab  ( -- )  6 emit  ;
 
 : words  ( -- )
-  context @ @
-  begin
-    dup ?terminal 0= and
-  while  tab
-    dup  u. space
-    dup id. space
-    nfa>lfa @
+  trail
+  begin  dup 0<> ?terminal 0= and  while
+    dup id. tab  nfa>lfa @n
   repeat drop ;
+
+( words-like )
+
+  \ [Code adapted from pForth.]
+
+[defined] contains
+  ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
+     \ Does the string ca1 len1 contains the string ca2 len2?
+
+[defined] tab
+  ?\  : tab  ( -- )  6 emit  ;
+
+  \ XXX FIXME
+
+: words-like  ( "name" -- )
+  \ Print all words containing substring.
+  parse-word 2dup uppers trail  ( ca len nfa )
+  begin  dup 0<> ?terminal 0= and  while
+    dup >r
+    nfa>string 2over 2swap contains if  r@ id. tab  then
+    r> nfa>lfa @n
+  repeat drop 2drop  ;
 
 ( index )
 
 : index  ( n1 n2 -- )
   1+ swap do
     cr i 3 .r space 0 i .line
-    ?terminal if leave then
+    ?terminal if  leave  then
   loop  ;
 
 ( where )
@@ -689,6 +788,34 @@ variable decode-address  \ in the word being decoded
     swap c/l /mod c/l * rot block + c/l type cr
     here c@ - spaces [char] ^ emit
   else  2drop  then  ;
+
+( .s )
+
+  \ 2015-06-22: Copied from Afera. The algorithm
+  \ was taken from v.Forth.
+
+: .s   ( -- )
+  depth
+  dup s>d <# [char] > hold #s [char] < hold #> type space
+  if  sp@ 2- s0 @ 2- do i @ . -2 +loop  then  ;
+
+( forget )
+
+  \ XXX OLD -- obsolescent word
+
+: forget  ( "name" -- )
+  current @ context @ <>   \ Compare `current` with `context`.
+  24 ?error                \ If not the same, issue an error.
+  '                        \ Locate "name", return its cfa.
+  dup fence @ u<           \ Below `fence`?
+  21 ?error                \ If so, issue an error.
+  dup  ( cfa cfa )
+  cfa>nfa dp !             \ Update the dictionary pointer.
+  cfa>lfa @ current @ !    \ Update the `current` vocabulary.
+  ;
+
+  \ }}} =========================================================
+  \ Hardware {{{
 
 ( p@ )
 
@@ -722,32 +849,11 @@ code p!  ( n u -- )
   ED c, 79 c,     \ out (c),a
   C1 c,           \ pop bc
   DD c, E9 c,     \ jp (ix)
+
 end-code
 
-( .s )
-
-  \ 2015-06-22: Copied from Afera. The algorithm
-  \ was taken from v.Forth.
-
-: .S   ( -- )
-  depth
-  dup s>d <# [char] > hold #s [char] < hold #> type space
-  if  sp@ 2- s0 @ 2- do i @ . -2 +loop  then  ;
-
-( forget )
-
-  \ XXX OLD -- obsolescent word
-
-: forget  ( "name" -- )
-  current @ context @ <>   \ Compare `current` with `context`.
-  24 ?error                \ If not the same, issue an error.
-  '                        \ Locate "name", return its cfa.
-  dup fence @ u<           \ Below `fence`?
-  21 ?error                \ If so, issue an error.
-  dup  ( cfa cfa )
-  cfa>nfa dp !             \ Update the dictionary pointer.
-  cfa>lfa @ current @ !    \ Update the `current` vocabulary.
-  ;
+  \ }}} =========================================================
+  \ Turnkey {{{
 
 ( extend size system turnkey )
 
@@ -786,6 +892,9 @@ end-code
   \ parameters for saving the system to disk.
 
 : turnkey  ( cfa -- a len )  boot ! system  ;
+
+  \ }}} =========================================================
+  \ Number notation {{{
 
 ( c>hex )
 
@@ -887,23 +996,45 @@ width @  1 width !
 
 width ! decimal
 
-( [false] [true] )
+  \ }}} =========================================================
+  \ Control structures {{{
 
-  \ 2015-06-17: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+( i' )
 
-         0 constant [false] immediate
-[false] 0= constant [true]  immediate
+code i'  ( -- x ) ( R: loop-sys -- loop-sys ) \ ANS Forth
 
-( ?vdo vdo vloop )
+  \ Return a copy of the current (innermost) loop limit.
+
+  2A c, rp ,  \ ld hl,(return_stack_pointer)
+  23 c,       \ inc hl
+  23 c,       \ inc hl
+  C3 c, fetchhl , \ jp fetchhl
+
+  end-code
+
+( j' )
+
+code j'  ( -- x )
+         ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+
+  \ Return a copy of the next-outer loop limit.
+
+  2A c, rp ,      \ ld hl,(return_stack_pointer)
+  11 c, 3 cells , \ ld de,3*cell
+  19 c,           \ add hl,de
+  C3 c, fetchhl , \ jp fetchhl
+
+  end-code
+
+( ?dov dov loopv +loopv )
 
   \ [Code from vForth.]
 
   \ XXX TODO adapt
 
-: vdo  compile (do) csp @ !csp here 3 ;
+: dov  compile (do) csp @ !csp here 3 ;
 
-: ?vdo
+: ?dov
   compile 2dup  compile (do)  compile <>
   [compile] if
   2drop here swap 1 6  ; immediate
@@ -911,22 +1042,20 @@ width ! decimal
 : (resolve)
   begin  sp@ csp @ -  while  2 [compile] then  repeat  csp !  ;
 
-: loop
+: loopv
   [compile] loop (resolve)  ;
 
-: +loop
+: +loopv
   [compile] +loop (resolve)  ;
 
-( compile, postpone )
+( compile, )
 
   \ [Code from v.Forth.]
 
 : compile,  ( cfa -- )  ?comp , ;
 
-: postpone  ( "name" -- )
-  ?comp defined dup ?defined
-  dup 0= 0 ?error
-  0< if  compile compile  then  ,  ;  immediate
+  \ }}} =========================================================
+  \ Time {{{
 
 ( ms )
 
@@ -976,23 +1105,8 @@ width ! decimal
   \ Reset the system frames counter.
   0. time!  ;
 
-( i' )
-
-code i'  ( R: n x -- n x ) ( -- n )
-
-  \ Copy the last but one value from the return stack (which
-  \ within a `DO`-`LOOP` is the loop limit).
-
-  2A c, rp ,  \ ld hl,(return_stack_pointer)
-  23 c,       \ inc hl
-  23 c,       \ inc hl
-  5E c,       \ ld e,(hl)
-  23 c,       \ inc hl
-  56 c,       \ ld d,(hl)
-  D5 c,       \ push de
-  dd c, e9 c, \ jp (ix)
-
-  end-code
+  \ }}} =========================================================
+  \ Vocabularies {{{
 
 ( also  only )
 
@@ -1040,20 +1154,8 @@ here cell+
 
 only forth also   definitions
 
-( 2nip )
-
-  \ 2015-06-22: Copied from Afera; original code from
-  \ DZX-Forth.
-
-code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
-
-  E1 c,           \ pop hl
-  D1 c,           \ pop de
-  F1 c,           \ pop af
-  F1 c,           \ pop af
-  C3 c, pushde ,  \ jp pushde
-
-end-code
+  \ }}} =========================================================
+  \ Random number generator {{{
 
 ( seed rnd random randomize )
 
@@ -1073,6 +1175,9 @@ end-code
   \   1+ 8195 23672 @ um* 1 0 d+
   \   16383 u/ drop dup sys-seed !
   \   swap mod ;
+
+  \ }}} =========================================================
+  \ Deferred words {{{
 
 ( defer defer@ defer! defers action-of )
 
@@ -1118,6 +1223,9 @@ end-code
 
 : is  ( cfa "name" -- )
   comp? if  postpone [is]  else  <is>  then  ; immediate
+
+  \ }}} =========================================================
+  \ Assembler {{{
 
 ( assembler )
 
@@ -1393,37 +1501,8 @@ forth definitions
 
 decimal
 
-( Symmetric-division operators )
-
-  \ [From the ANS Forth documentation.]
-
-  \ XXX TODO `sm/rem` not ready yet
- 
-: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
-
-: /-  (  n1 n2 -- n3 )  /-rem nip  ;
-
-: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
-
-: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
-
-: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
-
-( Floored-division operators )
-
-  \ [From the ANS Forth documentation.]
-
-  \ XXX TODO `fm/mod` not ready yet
-
-: /_mod  ( n1 n2 -- n3 n4)  >r s>d r> fm/mod  ;
-
-: /_  ( n1 n2 -- n3)  /_mod nip  ;
-
-: _mod  ( n1 n2 -- n3)  /_mod drop  ;
-
-: */_mod  ( n1 n2 n3 -- n4 n5)  >r m* r> fm/mod  ;
-
-: */_  ( n1 n2 n3 -- n4 )   */_mod nip ;
+  \ }}} =========================================================
+  \ Common heap {{{
 
 ( heap )
 

@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507051325
+; Version A-00-201507060141
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -158,13 +158,19 @@
 ; ud       = 32-bit unsigned double number
 ; xd       = 32-bit signed or unsigned number
 
-; x y      = pair of 8-bit graphic coordinates
-; line col = pair of 8-bit cursor coordinates
+; xc       = 8-bit graphic x coordinate (0..255)
+; yc       = 8-bit graphic y coordinate (0..191)
+; line     = 8-bit cursor line (0..23)
+; col      = 8-bit cursor column (0..31)
 
-; cfa      = address of code field
-; lfa      = address of link field
-; nfa      = address of name field
-; pfa      = address of parameter field
+; cfa      = code field address
+; lfa      = link field address
+; nfa      = name field address
+; pfa      = parameter field address
+; cfap     = code field address pointer
+
+; orig     = address of an nresolved forward branch
+; dest     = address of a backward branch target
 
 ; ----------------------------------------------
 ; Parsed text notation
@@ -328,6 +334,17 @@ names_bank_address: equ 0xC000 ; names pointers
 
 charset_size:     equ 224*8 ; 224 chars (0x20..0xFF) * 8 bitmap rows
 charset_address:  equ 0xFFFF-charset_size+1
+
+; Control structure check numbers
+
+; XXX TODO -- not used in the code yet
+
+begin_structure_check_number:   equ 1
+if_structure_check_number:      equ 2
+do_structure_check_number:      equ 3
+case_structure_check_number:    equ 4
+of_structure_check_number:      equ 5
+for_structure_check_number:     equ 6
 
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
@@ -1339,7 +1356,7 @@ question_csb_.enough:
 
 ; doc{
 ;
-; >mark  ( -- a )  \ Forth-83, C, "forward-mark"
+; >mark  ( -- orig )  \ Forth-83, C, "forward-mark"
 ;
 ; Compile space in the dictionary for a branch address which
 ; will later be resolved by `>resolve`.
@@ -1358,13 +1375,10 @@ question_csb_.enough:
 
 ; doc{
 ;
-; >resolve  ( a -- )  \ Forth-83, C, "forward-resolve"
-;
-; Calculate the branch address (to the current location in the
-; dictionary) using _a_ and place this branch address into the
-; space left by `>mark`.
-;
-; Used at the destination of a forward branch.
+; >resolve  ( orig -- )  \ Forth-83, C, "forward-resolve"
+; 
+; Resolve a forward branch by placing the address of the current
+; dictionary pointer into the space compiled by `>mark`.
 ;
 ; }doc
 
@@ -1377,10 +1391,11 @@ question_csb_.enough:
 
 ; doc{
 ;
-; <mark  ( -- a )  \ Forth-83, C, "backward-mark"
+; <mark  ( -- dest )  \ Forth-83, C, "backward-mark"
 ;
-; Used at the destination of a backward branch.  _a_ is
-; typically only used by `<resolve` to compile a branch address.
+; Leave the address of the current dictionary pointer, as the
+; the destination of a backward branch.  _dest_ is typically
+; only used by `<resolve` to compile a branch address.
 ;
 ; }doc
 
@@ -1393,11 +1408,12 @@ question_csb_.enough:
 
 ; doc{
 ;
-; <resolve  ( a -- )  \ Forth-83, C, "backward-resolve"
-;
-; Used at the source of a backward branch after either `branch`
-; or `?branch` or `0branch`.  Compiles a branch address using
-; _a_ as the destination address.
+; <resolve  ( dest -- )  \ Forth-83, C, "backward-resolve"
+; 
+; Resolve a backward branch.  Compile a branch address using
+; _dest_, the address left by `<mark`,  as the destination
+; address.  Used at the source of a backward branch after either
+; `branch` or `?branch` or `0branch`.
 ;
 ; }doc
 
@@ -1419,10 +1435,10 @@ question_csb_.enough:
 ; }doc
 
   ld h,b
-  ld l,c
+  ld l,c ; hl = Forth IP, containing the address to jump to
   ld c,(hl)
   inc hl
-  ld b,(hl)
+  ld b,(hl) ; bc = New Forth IP
   _jp_next
 
 ; ----------------------------------------------
@@ -1441,9 +1457,9 @@ question_csb_.enough:
   pop hl
   ld a,l
   or h
-  jp z,branch_pfa
+  jp z,branch_pfa ; branch if zero
   inc bc
-  inc bc
+  inc bc ; skip the inline branch address
   _jp_next
 
 ; ----------------------------------------------
@@ -1468,9 +1484,9 @@ question_csb_.enough:
   pop hl
   ld a,l
   or h
-  jp nz,branch_pfa
+  jp nz,branch_pfa ; branch if not zero
   inc bc
-  inc bc
+  inc bc ; skip the inline branch address
   _jp_next
 
 ; ----------------------------------------------
@@ -1501,7 +1517,7 @@ paren_loop.step_in_de:
   inc d
   dec d
   ld d,a ; de = new index
-  jp m,l5eedh
+  jp m,paren_loop.negative_step
 
   ; increment>0
   ld a,e
@@ -1509,16 +1525,17 @@ paren_loop.step_in_de:
   ld a,d
   inc hl
   sbc a,(hl)
-  jp l5ef2h
+  jp paren_loop.end
 
-l5eedh: ; increment<0
+paren_loop.negative_step:
+  ; increment<0
   ld a,(hl) ; limit-index
   sub e
   inc hl
   ld a,(hl)
   sbc a,d ; a<0?
 
-l5ef2h:
+paren_loop.end:
   jp m,branch_pfa ; loop again if a<0
   ; done, discard loop parameters
   inc hl
@@ -1798,12 +1815,9 @@ endif
 
 ; doc{
 ;
-; i  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
+; i  ( -- x ) ( R: loop-sys -- loop-sys ) \ ANS Forth
 ;
-; x1 = loop index
-; x2 = loop limit
-; 
-; Get a copy of the current (innermost) do-loop index.
+; Return a copy of the current (innermost) loop index.
 ;
 ; }doc
 
@@ -3211,11 +3225,7 @@ endif
   _code_header r_fetch_,'R@'
 
   ld hl,(return_stack_pointer)
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-  _jp_next
+  jp fetch.hl
 
 ; ----------------------------------------------
   _code_header zero_equals_,'0='
@@ -6907,6 +6917,46 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _code_header paren_step_,'(STEP)'
+
+  ld hl,(return_stack_pointer)
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  dec de
+  ld (hl),d
+  dec hl
+  ld (hl),e
+  ld a,d
+  or e
+  jp nz,branch_pfa ; loop again if not zero
+  ; done, discard loop index
+  inc hl
+  inc hl
+  ld (return_stack_pointer),hl
+  ; skip branch offset
+  inc bc
+  inc bc
+  _jp_next
+
+; ----------------------------------------------
+  _colon_header for_,'FOR',immediate
+
+  dw compile_,to_r_,backward_mark_
+  dw c_lit_
+  db 6
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header step_,'STEP',immediate
+
+  dw c_lit_
+  db 6
+  dw question_pairs_
+  dw compile_,paren_step_,backward_resolve_
+  dw semicolon_s_
+
+; ----------------------------------------------
   ; _colon_header question_do_,'?DO',immediate
 
   ; XXX TODO
@@ -7468,11 +7518,16 @@ where.do_it:
   dw push_de_hl
 
 ; ----------------------------------------------
+  _constant_header fetchhl_,'FETCHHL'
+
+  dw fetch.hl
+
+; ----------------------------------------------
   _colon_header at_,'AT'
 
 ; doc{
 
-; : at ( line col -- )
+; at ( line col -- )
 
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
@@ -7651,23 +7706,16 @@ emitted.end:
 
 ; doc{
 ;
-; j  ( -- x2 ) ( R: x1 x2 -- x1 x2 )
+; j  ( -- x ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 ) \ ANS Forth
 ;
-; x1 = loop index
-; x2 = loop limit
-;
-; Get a copy of the current (innermost) do-loop limit.
+; Return a copy of the next-outer loop index.
 ;
 ; }doc
 
   ld hl,(return_stack_pointer)
   ld de,cell*2
   add hl,de
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-  _jp_next
+  jp fetch.hl
 
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
