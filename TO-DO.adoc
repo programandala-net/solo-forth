@@ -164,6 +164,6 @@ New: `cvariable`, `cconstant`.
 
 Fix: `attr`.
 
-Fix: `border` must set a system variable, else +D does not restores it.
-
 Improve: version in the greeting message.
+
+Fix: warm reentry crashes the system.

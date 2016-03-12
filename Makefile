@@ -151,6 +151,8 @@ backup:
 		Makefile \
 		*.adoc \
 		_old/* \
+		_ideas/* \
+		_draft/* \
 		solo_forth*.fsb \
 		solo_forth*.bas \
 		solo_forth*.mgt \
@@ -161,7 +163,7 @@ backup:
 
 # 2015-06-02: Start.
 #
-# 2015-06-17: Backup recipe improved.
+# 2015-06-17: Improved backup recipe.
 #
 # 2015-06-29: Improvement: The source filenames are
 # configurable. This makes it easier to try old versions, for
@@ -170,3 +172,5 @@ backup:
 # 2015-07-22: Added the MGT disk images to the backup. Sometimes
 # it's useful to test and old version without recompiling the
 # old sources.
+#
+# 2015-08-14: Updated backup recipe.

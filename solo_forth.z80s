@@ -1,8 +1,14 @@
 ; Solo Forth
 
-branch:  equ 'A'
-version: equ 00
-release: equ 20150813 ; 0357
+; XXX TODO
+version_status:   equ 'A'
+version_branch:   equ 00
+version_release:  equ 201508140416
+
+; XXX TMP -- for debugging
+;vr_div: equ version_release/65535
+;vr_mod: equ version_release mod 65535
+;vr_mod2: equ version_release - vr_div
 
 ; A Forth for ZX Spectrum 128K and G+DOS.
 ; http://programandala.net/en.program.solo_forth.html
@@ -39,7 +45,7 @@ release: equ 20150813 ; 0357
 ; SP    SP   Data stack pointer.
 ;            Should be used only as data stack across Forth words.
 ;            May be used within Forth words if restored before exit.
-;       DE   Input only when pushde called. ; XXX TODO
+;       DE   Input only when pushhlde called. ; XXX TODO
 ;       HL   Input only when pushhl called. ; XXX TODO
 ;       IX   Address of `next`.
 ;            May be used within Forth words if restored before exit.
@@ -176,12 +182,6 @@ fig_parsing?: equ false
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
   ; XXX TODO
-;whiles?: equ true
-  ;  true = a `while` counter is used, so any number of `while`
-  ;  can be used in a `begin` structure.
-  ;  false = no change to the standard structure.
-
-  ; XXX TODO
 ;latin1_charset_in_bank?: equ false
   ; true = a 224-char Latin 1 charset is stored in the memory bank.
   ; false = the default charset is used.
@@ -196,10 +196,13 @@ ans_forth_block_size?: equ false
   ; false = Forth-83 and ANS Forth `exit` is used ; XXX FIXME
 
   ; XXX TODO try false
-fig_compiler_security?: equ false
+fig_compiler_security?: equ true
   ; true = fig-Forth `?pairs' is used
   ; false = no checking during compilation of control
   ;   structures: smaller and faster code.
+
+  ; XXX TODO
+show_version?: equ false
 
 ; ==============================================================
 ; Symbols
@@ -679,6 +682,14 @@ user_variables_pointer:
 return_stack_pointer:
   dw return_stack_bottom
 
+version_status_variable:
+  dw version_status
+version_branch_variable:
+  dw version_branch
+version_release_variable:
+  dw version_release mod 0xFFFF
+  dw version_release / 0xFFFF
+
   ; User variables default values
 
   ; The first eight user variables have default values.  They are used
@@ -1000,7 +1011,7 @@ hl_multiplied_by_de_to_hlde_unsigned:
 ; ==============================================================
 ; :Inner interpreter
 
-push_de_hl:
+push_hlde:
   push de
 
 push_hl:
@@ -1149,9 +1160,9 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw push_hl
 
 ; ----------------------------------------------
-  _constant_header pushde_,'PUSHDE'
+  _constant_header pushhlde_,'PUSHHLDE'
 
-  dw push_de_hl
+  dw push_hlde
 
 ; ----------------------------------------------
   _constant_header fetchhl_,'FETCHHL'
@@ -1191,20 +1202,20 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header pushde_comma_,'PUSHDE,'
+  _colon_header pushhlde_comma_,'PUSHHLDE,'
 
 ; doc{
 ;
-; pushde,  ( -- )
+; pushhlde,  ( -- )
 ; 
-; Compile a Z80 jump to `pushde`.
+; Compile a Z80 jump to `pushhlde`.
 ;
 ; }doc
 
   dw c_lit_
   db 0xC3 ; opcode `jp`
   dw c_comma_
-  dw lit_,push_de_hl,comma_
+  dw lit_,push_hlde,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2173,7 +2184,7 @@ paren_find.end:
   exx
   pop bc ; restore the Forth IP
   ; _border 4 ; XXX INFORMER
-  jp push_de_hl
+  jp push_hlde
 
 paren_find.not_a_match:
   ; Not a match, try next one.
@@ -2239,41 +2250,6 @@ skip.begin:
   jp nz,push_hl
   inc hl
   jp skip.begin ; again
-
-; ----------------------------------------------
-  _code_header paren_parse_,'(PARSE)'
-
-; doc{
-;
-; (parse)  ( c ca -- ca len )
-;
-; c = ascii delimiting character
-; ca = text address
-; len = length of the parsed text
-;
-; This word will not process past an ascii 'null',
-; treating it as an unconditional delimiter.
-;
-; }doc
-
-  pop de ; address
-  pop hl ; delimiter
-  push de
-  push bc ; save Forth IP
-  ld c,l ; delimiter
-  ld hl,0 ; length
-paren_parse.scan:
-  ld a,(de)
-  or a ; unconditional null delimiter?
-  jr z,paren_parse.end
-  cp c ; delimiter?
-  jr z,paren_parse.end
-  inc de
-  inc hl
-  jp paren_parse.scan
-paren_parse.end:
-  pop bc ; restore Forth IP
-  jp push_hl
 
 ; ----------------------------------------------
   _code_header chan_,'CHAN'
@@ -2373,11 +2349,11 @@ endif
   ; "I" 172 (0xAC) "AT"   --> 127 (0x7F) "(C)" ; XXX TODO
 
 ; ----------------------------------------------
-  _code_header decode_,'DECODE'
+  _code_header decode_char_,'DECODE-CHAR'
   
 ; doc{
 ;
-; decode  ( c1 -- c2 )
+; decode-char  ( c1 -- c2 )
 ;
 ; }doc
 
@@ -2385,7 +2361,7 @@ endif
 
   pop de
   ld hl,decode_table_+2 ; XXX TMP
-decode.begin:
+decode_char.begin:
   ld a,(hl)
   and a
   ld a,e
@@ -2407,7 +2383,7 @@ previous_key equ $+1
   xor a
   ld (sys_last_k),a ; delete the last key
   push hl
-  jp decode_
+  jp decode_char_
 
 ; ----------------------------------------------
   _code_header key_,'KEY'
@@ -2539,15 +2515,6 @@ xkey.end:
   pop bc
   jp push_hl
 
-  ; XXX TODO
-  ; Table structure:
-  ;   dw chained table (or zero)
-  ;   db from1,to1
-  ;   db ...
-  ;   db from-n,to-n
-  ;   db 0 ; end of data, continue at the chained table
-
-
 ; ----------------------------------------------
   _colon_header cr_,'CR'
 
@@ -2637,7 +2604,7 @@ move.do:
   pop de
   pop hl
   call hl_multiplied_by_de_to_hlde_unsigned
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _code_header u_slash_mod_,'U/MOD' ; XXX OLD
@@ -2838,7 +2805,6 @@ endif
 ; ----------------------------------------------
   _constant_header np0_,'NP0'
 
-  ; XXX TODO
   ; XXX OLD -- not used
 
   dw names_bank_address
@@ -3208,40 +3174,28 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header d_plus_,'D+'
 
-  ; XXX TODO move to the disk
+; XXX TODO move to the library.
 
-  ld hl,0x0006
-  add hl,sp
-  ld e,(hl)
-  ld (hl),c
-  inc hl
-  ld d,(hl)
-  ld (hl),b
-  pop bc
-  pop hl
-  add hl,de
-  ex de,hl
-  pop hl
-  adc hl,bc
-  pop bc
-  jp push_de_hl
-
-if 0 ; XXX TODO study this alternative from fig-Forth 1.1g
-  EXX     ;/ SAVE IP
-  POP BC    ;  (BC)<--d2H
-  POP HL    ;  (HL)<--d2L
-  POP AF    ;d (AF)<--d1H
-  POP DE    ;  (DE)<--d1L
-  PUSH  AF    ;/ (S1)<--d1H
-  ADD HL,DE   ;  (HL)<--d2L+d1L=d3L
-  EX  DE,HL   ;  (DE)<--d3L
-  POP HL    ;  (HL)<--d1H
-  ADC HL,BC   ;/ (HL)<--d1H+d2H+CARRY=d3H
-  PUSH  DE    ;  (S2)<--d3L
-  PUSH  HL    ;/ (S1)<--d3H
-  EXX     ;/ RESTORE IP
-  JNEXT
-endif
+; [Code from fig-Forth 1.1g.]
+   
+              ;                           t  B
+              ;                           -- --
+  exx         ; save ip                   04 01
+  pop bc      ; (bc)<--d2h                10 01
+  pop hl      ; (hl)<--d2l                10 01
+  pop af      ; (af)<--d1h                10 01
+  pop de      ; (de)<--d1l                10 01
+  push  af    ; (s1)<--d1h                11 01
+  add hl,de   ; (hl)<--d2l+d1l=d3l        11 01
+  ex  de,hl   ; (de)<--d3l                04 01
+  pop hl      ; (hl)<--d1h                10 01
+  adc hl,bc   ; (hl)<--d1h+d2h+carry=d3h  15 02
+  push  de    ; (s2)<--d3l                11 01
+  push  hl    ; (s1)<--d3h                11 01
+  exx         ; restore ip                04 01
+  jp_next     ;                           08 02
+              ;                          --- --
+              ;                          134 15 TOTALS
 
 ; ----------------------------------------------
   _code_header negate_,'NEGATE'
@@ -3271,8 +3225,7 @@ endif
   ld a,0x00
   sbc a,h
   ld h,a
-  push de
-  jp push_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _code_header nip_,'NIP'
@@ -3287,7 +3240,7 @@ endif
   pop hl
   pop de
   push hl
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _code_header over_,'OVER'
@@ -3295,7 +3248,7 @@ endif
   pop de
   pop hl
   push hl
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _code_header drop_,'DROP'
@@ -3324,7 +3277,7 @@ endif
   pop de
   push de
   push hl
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _code_header plus_store_,'+!'
@@ -3361,6 +3314,14 @@ endif
 
 ; ----------------------------------------------
   _code_header toggle_,'TOGGLE'
+
+; doc{
+;
+; toggle  ( a b -- )  \ fig-Forth
+;
+; Complement the contents of _a_ by the bit pattern _b_.
+;
+; }doc
 
   pop de ; e = bit pattern
   pop hl ; address
@@ -3402,7 +3363,7 @@ two_fetch.hl:
   ld h,(hl)     ; 07t  1
   ld l,a        ; 04t  1 ; hl = high part
   ex de,hl      ; 04t  1
-  jp push_de_hl ; 10t  3
+  jp push_hlde ; 10t  3
                 ; 11t  0 push de
                 ; 11t  0 push hl
                 ; 86t 12 TOTAL
@@ -3493,6 +3454,12 @@ do_colon:
 ; ----------------------------------------------
   _header noop_,'NOOP'
 
+; doc{
+;
+; noop  ( -- )
+;
+; }doc
+
   dw next ; code field
 
 ; ----------------------------------------------
@@ -3581,17 +3548,35 @@ do_user:
 ; ----------------------------------------------
   _code_header false_,'FALSE'
 
+; doc{
+;
+; false  ( -- f )
+;
+; }doc
+
   ld hl,false
   jp push_hl
 
 ; ----------------------------------------------
   _code_header true_,'TRUE'
 
+; doc{
+;
+; true  ( -- t )
+;
+; }doc
+
   ld hl,true
   jp push_hl
 
 ; ----------------------------------------------
   _constant_header b_l_,'BL'
+
+; doc{
+;
+; bl  ( -- n )
+;
+; }doc
 
   dw space_char
 
@@ -3721,6 +3706,7 @@ do_user:
   _user_variable_header out_,'OUT'
 
   ; XXX TODO In Forth 83 it's a user variable too, but it's called `#out`.
+  ; XXX TODO rename to `#emitted`
   db 0x14
 
 ; ----------------------------------------------
@@ -3771,6 +3757,7 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header r_hash_,'R#'
 
+  ; XXX OLD
   db 0x28
 
 ; ----------------------------------------------
@@ -4004,7 +3991,7 @@ u_less_than.de_hl:
   pop de
   pop hl
   ex (sp),hl
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _colon_header space_,'SPACE'
@@ -4785,7 +4772,7 @@ expect.end:
 
 ; doc{
 ;
-; query  ( -- )
+; query  ( -- )  \ fig-Forth
 ;
 ; XXX TODO description
 ;
@@ -5849,11 +5836,54 @@ quit.do:
   _string 'ok'
   dw branch_,quit.do
 
+if show_version?
+
+; ----------------------------------------------
+  _constant_header version_release_,'VERSION-RELEASE'
+
+  ; XXX TMP for debugging
+
+  dw version_release_variable
+
+; ----------------------------------------------
+  _colon_header dot_version_,'.VERSION'
+
+  ; XXX TMP
+
+  dw lit_,version_status_variable,fetch_,emit_
+  dw c_lit_
+  db '-'
+  dw emit_
+  dw lit_,version_branch_variable,fetch_
+  dw s_to_d_,less_hash_,hash_,hash_,hash_greater_,type_
+  dw c_lit_
+  db '-'
+  dw emit_
+  dw lit_,version_release_variable,two_fetch_
+  ; XXX TODO use `du.` when available (it's in the library disk)
+  dw less_hash_,hash_s_,hash_greater_,type_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
 
+if show_version?
+  dw paren_dot_quote_
+;  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  _string "Solo Forth\rVersion "
+  ; XXX TMP show the version and the free dictionary memory:
+  dw dot_version_,cr_
+;  _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+else
   dw paren_dot_quote_
   _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  ; XXX TMP show the free memory, during development only
+  dw unused_,u_dot_
+  dw paren_dot_quote_
+  _string "bytes free"
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5872,7 +5902,9 @@ boot:
 ; ----------------------------------------------
   _colon_header warm_,'WARM'
 
+  dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw empty_buffers_
+  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw abort_
 
 warm_start:
@@ -5957,14 +5989,22 @@ common_start:
   pop de
   ld a,d
   or a
-  jp p,push_de_hl ; jump if positive
+  jp p,push_hlde ; jump if positive
   dec hl
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _colon_header plus_minus_,'+-'
 
   ; XXX TODO move to the disk
+
+; doc{
+;
+; +-  ( n1 n2 -- n3 )  \ fig-Forth
+;
+; Apply the sign of n2 to n1, which is left as n3.
+;
+; }doc
 
   dw zero_less_than_
   dw zero_branch_,plus_minus.end
@@ -5976,6 +6016,15 @@ plus_minus.end:
   _colon_header d_plus_minus_,'D+-'
 
   ; XXX TODO move to the disk
+
+; doc{
+;
+; d+-  ( d1 n -- d2 )  \ fig-Forth
+;
+; Apply the sign of _n_ to the double number _d1_, leaving it as
+; _d2_.
+;
+; }doc
 
   dw zero_less_than_
   dw zero_branch_,d_plus_minus.end
@@ -6000,7 +6049,13 @@ d_plus_minus.end:
 ; ----------------------------------------------
   _code_header umax_,'UMAX'
 
-  ; umax  ( u1 u2 -- u1 | u2 )
+; doc{
+;
+; umax  ( u1 u2 -- u1 | u2 )
+;
+; }doc
+
+  ; [Code from DZX-Forth.]
 
   pop de
   pop hl
@@ -6010,7 +6065,13 @@ d_plus_minus.end:
 ; ----------------------------------------------
   _code_header umin_,'UMIN'
 
-  ; umin  ( u1 u2 -- u1 | u2 )
+; doc{
+;
+; umin  ( u1 u2 -- u1 | u2 )
+;
+; }doc
+
+  ; [Code from DZX-Forth.]
 
   pop de
   pop hl
@@ -6020,6 +6081,8 @@ d_plus_minus.end:
 ; ----------------------------------------------
   _code_header min_,'MIN'
 
+  ; [Code from DZX-Forth.]
+
   pop de
   pop hl
   call compare_de_hl_signed
@@ -6027,6 +6090,8 @@ d_plus_minus.end:
 
 ; ----------------------------------------------
   _code_header max_,'MAX'
+
+  ; [Code from DZX-Forth.]
 
   pop de
 max.de:
@@ -6042,6 +6107,15 @@ max.2:
 ; ----------------------------------------------
   _colon_header m_star_,'M*'
 
+; doc{
+;
+; m*  ( n1 n2 -- d )  \ fig-Forth
+;
+; A mixed magnitude math operation which leaves the double
+; number signed product of two signed number.
+;
+; }doc
+
   dw two_dup_
   dw xor_,to_r_
   dw abs_
@@ -6051,6 +6125,17 @@ max.2:
 
 ; ----------------------------------------------
   _colon_header m_slash_,'M/'
+
+; doc{
+;
+; m/  ( d n1 -- n2 n3 )  \ fig-Forth
+;
+; A mixed magnitude math operator which leaves the signed
+; remainder _n2_ and signed quotient _n3_ from a double number
+; dividend and divisor _n1_.  The  remainder takes its sign from
+; the dividend.
+;
+; }doc
 
   dw over_
   dw to_r_
@@ -6364,31 +6449,52 @@ block.end:
 ; ----------------------------------------------
   _colon_header read_write_,'R/W'
 
+; doc{
+;
+; r/w  ( a blk f -- )
+;
+; The fig-Forth standard disc read-write linkage. _a_ specifies
+; the source or destination block buffer, _blk_ is the
+; sequential number of the referenced block; and _f_ is a flag
+; for f=0 write and f=1 read.  `r/w` determines the location on
+; mass storage, performs the read-write and performs any error
+; checking.
+;
+; }doc
+
   dw c_lit_
   db 0x45
+  ; XXX TODO adapt when true=-1
   dw swap_,minus_
   dw lit_,read_write_sector_command,c_store_
   dw block_to_sector_
   dw paren_read_write_
   dw semicolon_s_
 
-  ; Headerless word with the low level code of `R/W`.
 paren_read_write_:
-  dw paren_read_write_pfa
+
+  ; Headerless word with the low level code of `R/W`.
+
+  ; ( a sector -- )
+  ; sector (high byte) = track 0..79, +128 if side 1
+  ;        (low byte)   = sector 1..10
+
+  dw paren_read_write_pfa ; code field
 paren_read_write_pfa:
   ld a,2 ; drive ; XXX TMP
-  pop de ; sector
+  pop de ; d = track 0..79, +128 if side 1
+         ; e = sector 1..10
   pop hl ; address
-  push bc
+  push bc ; save the Forth IP
   push hl
   pop ix ; address
-  rst 8
+  rst 8 ; G+DOS command
 read_write_sector_command:
-  ; Patched by `R/W`:
+  ; Patched by `r/w`:
   ;   0x45 = write
   ;   0x44 = read
   db 0x44
-  pop bc
+  pop bc ; restore the Forth IP
   ld ix,next
   _jp_next
 
@@ -6576,10 +6682,6 @@ endif
 ; }doc
 
   dw question_comp_ ; error if not compiling
-  if 0 ; whiles?
-    dw hash_whiles_,fetch_  ; save the previous content of `#whiles`
-    dw hash_whiles_,off_
-  endif
   dw backward_mark_ ; address to compute the backward branch
 if fig_compiler_security?
   dw one_ ; error checking number
@@ -6594,50 +6696,6 @@ if fig_compiler_security?
   dw two_,question_pairs_ ; check for nesting error
 endif
   dw forward_resolve_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _code_header paren_step_,'(STEP)'
-
-  ld hl,(return_stack_pointer)
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  dec de
-  ld (hl),d
-  dec hl
-  ld (hl),e
-  ld a,d
-  or e
-  jp nz,branch_pfa ; loop again if not zero
-  ; done, discard loop index
-  inc hl
-  inc hl
-  ld (return_stack_pointer),hl
-  ; skip branch offset
-  inc bc
-  inc bc
-  _jp_next
-
-; ----------------------------------------------
-  _colon_header for_,'FOR',immediate
-
-  dw compile_,to_r_,backward_mark_
-if fig_compiler_security?
-  dw c_lit_
-  db 6 ; error checking number
-endif
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header step_,'STEP',immediate
-
-if fig_compiler_security?
-  dw c_lit_
-  db 6 ; error checking number
-  dw question_pairs_
-endif
-  dw compile_,paren_step_,backward_resolve_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6716,42 +6774,6 @@ endif
 ; ----------------------------------------------
   _colon_header repeat_,'REPEAT',immediate
 
-if 0 ; whiles?
-
-; doc{
-;
-; repeat  ( compilation: a1 n1 a2 n2 | a1 n1 a2 n2 ... a3 n2 | a1 n1 -- )
-;
-; a1 = address of `begin` to branch to
-; n2 = `begin` check number
-; a2 = address of the first branch of `while` to resolve
-; n2 = `while` check number
-; a3 = address of the last branch of `while` to resolve
-;
-; Compile `branch` to jump back to `begin`.  Resolve also  the
-; branching offset required by `while`.
-;
-; }doc
-
-  ; XXX TODO
-
-  dw again_ ; unconditional branch back to `begin`
-  if 0 ; whiles?
-    dw hash_whiles_,fetch_
-    dw dup_,zero_equals_,question_exit_
-    dw zero_,paren_do_
-repeat.resolve_while:
-    dw then_
-    dw paren_loop_,repeat.resolve_while
-    dw hash_whiles_,store_  ; restore the previous content of `#whiles`
-  else
-    ; dw two_minus_ ; restore 2 to be checked by `then` ; XXX OLD -- unnecessary
-    dw then_ ; resolve the forward branching needed by `while`
-  endif
-  dw semicolon_s_
-
-else
-
 ; doc{
 ;
 ; repeat  ( compilation: a1 n1 a2 n2 -- )
@@ -6770,10 +6792,8 @@ else
   dw again_ ; unconditional branch back to `begin`
   dw two_from_r_
   ; dw two_minus_ ; restore 2 to be checked by `then` ; XXX OLD -- unnecessary
+  ; XXX TODO why unncessary?
   dw then_ ; resolve the forward branching needed by `while`
-
-endif
-
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6832,22 +6852,11 @@ else
 endif
 
 ; ----------------------------------------------
-if 0 ; whiles?
-
-  _variable_header hash_whiles_,'#WHILES'
-
-  dw 0
-
-endif
-
-; ----------------------------------------------
   _colon_header while_,'WHILE',immediate
 
   dw if_
   ; dw two_plus_ ; leave 4 to be checked by `repeat` ; XXX OLD -- unnecessary
-  if 0 ; whiles?
-    dw one_,hash_whiles_,plus_store_
-  endif
+  ; XXX TODO 2015-08-13: why unnecessary? why fig-Forth does not use `swap`?
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7116,7 +7125,7 @@ endif
   ld (hl),e
   ld e,a
   pop hl
-  jp push_de_hl
+  jp push_hlde
 
 ; ----------------------------------------------
   _colon_header unused_,'UNUSED'
@@ -7189,49 +7198,31 @@ at_pfa.last_line:
   dw semicolon_s_
 
 ; ----------------------------------------------
-
-if 0 ; XXX TODO -- p! is not in the kernel
-
-  _colon_header border_,'BORDER'
-
-; [Code adapted from Spectrum Forth-83.]
-
-  dw dup_,dup_,dup_
-  _number 4
-  dw less_than_
-  _number 7
-  dw and_,swap_
-  _number 8
-  dw star_,plus
-  _number sys_bordrc
-  dw c_store_
-  _number 254
-  dw store_p_
-
-endif
-
   _code_header border_,'BORDER'
 
   pop hl
   ld a,l
   out(0xFE),a
 
-; XXX TODO -- calculate the contrast ink
-;  cp 4 ; cy = dark color?
-;  ld a,0
-  
+  ; The system variable that holds the attributes of the lower
+  ; part of the screen, unnecessary in Solo Forth, must be
+  ; updated.  The reason is G+DOS, after disk operations that
+  ; make the border change, restores the border color with the
+  ; value of this system variable.  We use the border color as
+  ; paper and set a a contrast ink (black or white), to make
+  ; sure the lower part of the screen is usable after returning
+  ; to BASIC.
 
-  ; The color*8 is stored in the system variable
-  ; that holds the attributes of the lower part
-  ; of the screen. The reason is the G+DOS, after
-  ; disk operations that make the border change, restores
-  ; the border color with the value of this system variable.
-  ; A contrast ink should be set too, but it's needed
-  ; only after returning to BASIC...
+  cp 4 ; cy = dark color (0..3)?
+  ld a,7 ; white ink
+  jr c,border.end
+  xor a ; black ink
+
+border.end:
   add hl,hl
   add hl,hl
-  add hl,hl
-;  ld l,a  ; ink ; XXX TODO
+  add hl,hl ; paper
+  ld l,a  ; ink
   ld (sys_bordcr),hl
   _jp_next
 
@@ -7499,7 +7490,7 @@ else
   ld h,a
   or l
   jp nz,exit_pfa
-  jp_next
+  _jp_next
 
 endif
 

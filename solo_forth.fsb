@@ -180,7 +180,7 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
   E1 c, D1 c,     \ pop hl / pop de
   E3 c,           \ ex (sp),hl
   EB c,           \ ex de,hl
-  pushde,         \ jp pushde
+  pushhlde,       \ jp pushhlde
 
   end-code
 
@@ -194,7 +194,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   D1 c,           \ pop de
   F1 c,           \ pop af
   F1 c,           \ pop af
-  pushde,         \ jp pushde
+  pushhlde,       \ jp pushhlde
 
 end-code
 
@@ -270,7 +270,7 @@ code pixel  ( xc yc -- n a )
   CD c, pixel-addr ,      \ call pixel-addr
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
-  pushde,                 \ jp pushde
+  pushhlde,               \ jp pushhlde
   end-code
 
 ( pixel-addr )
@@ -595,6 +595,10 @@ end-code
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip ;
 
+( fig-Forth +- d+- )
+
+
+
   \ }}} =======================================================
   \ Conditional compilation {{{
 
@@ -807,9 +811,7 @@ require case
     ['] (loop)    of  decode-branch     endof
     ['] (+loop)   of  decode-branch     endof
     ['] (.")      of  decode-dot-quote  endof
-  endcase  ;
-
--->
+  endcase  ;  -->
 
 ( decode )
 
@@ -841,8 +843,8 @@ require case
     while  \ high level & not end of colon definition
       \ ( pfa+n cfa )
       ( pfa+n cfa ) 2+ ( pfa+n pfa' ) dup indent+  pfa>nfa id.
-      key case  [char] q  of  sp0 sp! quit  endof \ q
-                      bl  of  drop          endof \ space
+      key case  [char] q  of  sp0 @ sp! quit  endof \ q
+                      bl  of  drop            endof \ space
                                  swap recurse \ default
           endcase  decode-special
       2+  -1 decode-level +!
@@ -863,6 +865,8 @@ require case
           else  drop  5 error  then  ;
 
 ( list )
+
+require break-key?
 
 : list  ( n -- )
 
@@ -1157,6 +1161,17 @@ end-code
 : turnkey  ( cfa -- a len )  boot ! system  ;
 
   \ }}} =======================================================
+  \ Double numbers {{{
+
+( du.r u.r du. )
+
+  \ [Code adapted from Spectrum Forth-83.]
+
+: du.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+\ : u.r  ( n1 n2 -- )  >r 0 r> du.r ;
+: du.  ( d -- )  0 du.r space ;
+
+  \ }}} =======================================================
   \ Number conversion and notation {{{
 
 ( >number )
@@ -1368,12 +1383,94 @@ code j'  ( -- x )
 
   end-code
 
+( for step )
+
+  \ [Code adapted from Z88 CamelForth. Modified to do the check
+  \ before decrementing the index.]
+
+code (step)  ( R: n -- n' )
+
+  \ doc{
+  \ 
+  \ (step)
+  \
+  \ The run-time procedure compiled by `step`.
+  \
+  \ Run-time:    ( R: u -- u' )
+  \ 
+  \ If the loop index is zero, discard the loop parameters and
+  \ continue execution after the loop. Otherwise decrement the
+  \ loop index and continue execution at the beginning of the
+  \ loop.
+  \
+  \ }doc
+
+  2A c, rp ,
+    \ ld hl,(return_stack_pointer)
+  5E c, 23 c, 56 c,
+    \ ld e,(hl)
+    \ inc hl
+    \ ld d,(hl) ; de = loop index
+  7A c, B3 c,
+    \ ld a,d
+    \ or e ; z=already zero?
+  1B c, 72 c, 2B c, 73 c,
+    \ dec de
+    \ ld (hl),d
+    \ dec hl
+    \ ld (hl),e ; update the loop index
+  C2 c, ' branch cfa>pfa ,
+    \ jp nz,branch_pfa ; loop again if not zero
+    \ ; done, discard loop index:
+  23 c, 23 c, 22 c, rp ,
+    \ inc hl
+    \ inc hl
+    \ ld (return_stack_pointer),hl
+    \ ; skip branch offset and jump to next
+  03 c, 03 c, next,
+    \ inc bc
+    \ inc bc
+    \ jp next
+
+  end-code
+
+: for  ( n -- )  postpone >r <mark  ; immediate
+
+  \ doc{
+  \
+  \ for  Compilation: ( R: -- dest ) Run-time:    ( u -- )
+  \
+  \ Start of a `for step` loop, that will iterate _u+1_ times,
+  \ starting with _u_ and ending with 0. 
+  \
+  \ The current value of the index can be retrieved with `i`.a
+  \
+  \ }doc
+
+: step  ( -- )  postpone (step) <resolve  ; immediate
+
+  \ doc{
+  \ 
+  \ step
+  \
+  \ Compilation: ( dest -- )
+  \
+  \ Append the run-time semantics given below to the current
+  \ definition. Resolve the destination of `for`.
+  \
+  \ Run-time:    ( R: u -- u' )
+  \ 
+  \ If the loop index is zero, discard the loop parameters and
+  \ continue execution after the loop. Otherwise decrement the
+  \ loop index and continue execution at the beginning of the
+  \ loop.
+  \
+  \ }doc
+
 ( case )  \ ANS Forth version
 
   \ [Code copied from the example provided in the ANS Forth
   \ documentation].
-
-  \ XXX FIXME problems with `decode` (nesting of `case`?)
 
 0 constant case immediate  \ init count of ofs
 
@@ -1398,16 +1495,13 @@ code j'  ( -- x )
   postpone drop  \ discard case value 
   0 do  postpone then  loop  ; immediate
 
-( case )  \ Abersoft Forth version
+( case )  \ fig-Forth version with compiler security
 
-  \ This is the `case` provided by Abersoft Forth, translated
-  \ from the Z80 disassembly, adapted and commented.
+  \ This is the fig-Forth `case` provided by Abersoft Forth,
+  \ translated from the Z80 disassembly, adapted and commented.
   \
   \ Note: this version only works when the compiler security
   \ check config option is activated in the kernel.
-
-  \ XXX FIXME problems with `decode` (nesting of `case`?)
-  \ XXX TODO check if it's ANS Forth compatible
 
 : case
   \ Compilation: ( -- a case-id )
@@ -1417,37 +1511,38 @@ code j'  ( -- x )
 : of
   \ Compilation: ( case-id -- of-id )
   \ Run-time: ( x -- )
+  \ Note: `postpone 0branch >mark` is used instead of `postpone
+  \ if` because `if` leaves its id on the stack when compiler
+  \ security is activated.
+  \ XXX TODO use `if` when compiler security is removed.
   4 ?pairs
-  postpone over  postpone =  postpone if postpone drop
-  5  ; immediate
+  postpone over  postpone =  postpone 0branch >mark
+  postpone drop 5  ; immediate
 
 : endof
   \ Compilation: ( of-id -- case-id )
   \ Run-time: ( -- )
-  5 ?pairs  postpone branch  >mark
+  5 ?pairs  postpone branch >mark
             swap 2  postpone then  4  ; immediate
 
 : endcase
-  \ Compilation: ( a orig1..orign case-id -- )
+  \ Compilation: ( a orig1..orign case-id -- 3
   \ Run-time: ( x -- )
   4 ?pairs
   postpone drop
   begin  sp@ csp @ <>  while  2 postpone then  repeat
   csp !  ;  immediate
 
-( case )  \ Abersoft Forth version without compiler security
+( case )  \ fig-Forth version without compiler security
 
-  \ This is the `case` provided by Abersoft Forth, translated
-  \ from the Z80 disassembly, modified (no compiler security
-  \ checks) and commented.
-
-  \ XXX FIXME problems with `decode` (nesting of `case`?)
-  \ XXX TODO check if it's ANS Forth compatible
+  \ This is the fig-Forth `case` provided by Abersoft Forth,
+  \ translated from the Z80 disassembly, modified (no compiler
+  \ security checks) and commented.
 
 : case
   \ Compilation: ( -- a )
   \ Runtime: ( x -- )
-  ?comp csp @ !csp  ; immediate
+  csp @ !csp  ; immediate
 
 : of
   \ Compilation: ( -- )
@@ -1489,11 +1584,7 @@ code j'  ( -- x )
 : +loopv
   postpone +loop (resolve)  ;
 
-( case: associative: )
-
-  require -rot
-
-  \ [Code adapted from F83.]
+( case: )
 
 : case:  ( -- )
   \ Create a positional case word.
@@ -1504,6 +1595,12 @@ code j'  ( -- x )
   \ A positional case statement.  At runtime, the n-th word is
   \ executed, depending upon the value on the stack. No error
   \ checking.
+
+( associative: )
+
+  \ [Code adapted from F83.]
+
+require -rot
 
 : associative:  ( n -- )
   \ Create a table lookup word.
