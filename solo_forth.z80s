@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506281703
+; Version A-00-201506281710
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -25,6 +25,7 @@
 ;   beside a needed exception.
 ; - change: `_number` macro is not used, because of a Pasmo's
 ; bug; everything seems to work again.
+; - change: all code for `fig_find?` is commented out.
 
 ; ==============================================================
 ; Acknowledgments
@@ -143,7 +144,7 @@ size_optimization?              equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-fig_find?                       equ false
+;fig_find?                       equ false
   ; true = the fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and ANS Forth.
 
@@ -4499,39 +4500,39 @@ uppers.do:
 
 ; defined?  ( ca len -- wf )
 
-if fig_find?
+; if fig_find?
 
-  ; XXX TODO -- not finished
-  dw context_find_,dup_
-  dw zero_branch_,defined_question.end
-  dw two_drop_
-defined_question.end:
-  dw semicolon_s_
+;   ; XXX TODO -- not finished
+;   dw context_find_,dup_
+;   dw zero_branch_,defined_question.end
+;   dw two_drop_
+; defined_question.end:
+;   dw semicolon_s_
 
-else
+; else
 
   dw found_,nip_,zero_not_equals_
   dw semicolon_s_
 
-endif
+; endif
 
 ; ----------------------------------------------
   _colon_header undefined_question_,'UNDEFINED?'
 
 ; undefined?  ( ca len -- wf )
 
-if fig_find?
+; if fig_find?
 
-  ; XXX TODO -- not finished
+;   ; XXX TODO -- not finished
+;   dw defined_question_,zero_equals_
+;   dw semicolon_s_
+
+; else
+
   dw defined_question_,zero_equals_
   dw semicolon_s_
 
-else
-
-  dw defined_question_,zero_equals_
-  dw semicolon_s_
-
-endif
+; endif
 
 ; ----------------------------------------------
   _code_header dollar_store_,'$!'
@@ -4565,35 +4566,35 @@ endif
 
 ; ----------------------------------------------
 
-if fig_find? ; XXX OLD
+; if fig_find? ; XXX OLD
 
-  _colon_header find_,'FIND'
+;   _colon_header find_,'FIND'
 
-; doc{
-;
-; find  ( "name" --- pfa b tf | ff )
-;
-; Accept the next text word (delimited by blanks) in the input
-; stream to `here`, and search the `context` and then `current`
-; vocabularies for a matching entry.  If found, leave the
-; dictionary entry's parameter field address, its length byte,
-; and a boolean true.  Otherwise, leave only a boolean false.
-;
-; }doc
+; ; doc{
+; ;
+; ; find  ( "name" --- pfa b tf | ff )
+; ;
+; ; Accept the next text word (delimited by blanks) in the input
+; ; stream to `here`, and search the `context` and then `current`
+; ; vocabularies for a matching entry.  If found, leave the
+; ; dictionary entry's parameter field address, its length byte,
+; ; and a boolean true.  Otherwise, leave only a boolean false.
+; ;
+; ; }doc
 
-  ; XXX TODO -- return cfa instead of pfa
-  dw context_find_,question_dup_
-  ; XXX TODO -- optimize with `?exit' here instead of a branch
-  dw question_branch_,find.end
-  ; The word was not found in the context vocabulary,
-  ; try again in the current vocabulary.
-  ; XXX TODO -- remove this?
-  dw here_,latest_,paren_find_
-find.end:
-  dw semicolon_s_
+;   ; XXX TODO -- return cfa instead of pfa
+;   dw context_find_,question_dup_
+;   ; XXX TODO -- optimize with `?exit' here instead of a branch
+;   dw question_branch_,find.end
+;   ; The word was not found in the context vocabulary,
+;   ; try again in the current vocabulary.
+;   ; XXX TODO -- remove this?
+;   dw here_,latest_,paren_find_
+; find.end:
+;   dw semicolon_s_
 
 
-else ; XXX NEW -- modern `find`
+; else ; XXX NEW -- modern `find`
 
   _colon_header find_,'FIND'
 
@@ -4657,7 +4658,7 @@ else ; XXX NEW -- modern `find`
   dw find_dollar_,find_
   dw semicolon_s_
 
-endif
+; endif
 
 ; ----------------------------------------------
   _colon_header paren_abort_,'(ABORT)'
@@ -4713,14 +4714,14 @@ error.end:
   ; XXX TMP -- this is a copy of the original `create`.
   ; XXX TODO -- accept an xt as parameter?
 
-  if fig_find? ; XXX OLD
+  ; if fig_find? ; XXX OLD
 
-    dw find_ ; ( pfa b tf | ff )
-    dw zero_branch_,header.continue
-    ; The word is not unique.
-    dw drop_,pfa_to_nfa_
+  ;   dw find_ ; ( pfa b tf | ff )
+  ;   dw zero_branch_,header.continue
+  ;   ; The word is not unique.
+  ;   dw drop_,pfa_to_nfa_
 
-  else ; XXX NEW
+  ; else ; XXX NEW
 
     dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
     dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
@@ -4728,7 +4729,7 @@ error.end:
     ; The word is not unique.
     dw cfa_to_nfa_
 
-  endif
+;  endif
 
   dw id_dot_
   _message not_unique_error
@@ -4976,13 +4977,13 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
-if fig_find?
-  dw find_,zero_equals_
-  _question_error not_found_error
-  dw drop_,pfa_to_cfa_,comma_
-else
+; if fig_find?
+;   dw find_,zero_equals_
+;   _question_error not_found_error
+;   dw drop_,pfa_to_cfa_,comma_
+; else
   dw tick_,comma_
-endif
+;endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5069,69 +5070,69 @@ two_literal.end:
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
 
-if fig_find?
+; if fig_find?
 
-; doc{
-;
-; interpret  ( -- )  \ fig-Forth
-;
-; The outer text interpreter which sequentially executes or
-; compiles text from the input stream (terminal or disk)
-; depending on `state`. if the word name cannot be found after a
-; search of `context` and then `current` it is converted to a
-; number according to the current `base`.  That also failing, an
-; error message echoing the name with a "?" will be given.
-;
-; }doc
+; ; doc{
+; ;
+; ; interpret  ( -- )  \ fig-Forth
+; ;
+; ; The outer text interpreter which sequentially executes or
+; ; compiles text from the input stream (terminal or disk)
+; ; depending on `state`. if the word name cannot be found after a
+; ; search of `context` and then `current` it is converted to a
+; ; number according to the current `base`.  That also failing, an
+; ; error message echoing the name with a "?" will be given.
+; ;
+; ; }doc
 
-interpret.begin:
-  dw find_ ; found?
-  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
-  dw zero_branch_,interpret.word_not_found ; if
+; interpret.begin:
+;   dw find_ ; found?
+;   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
+;   dw zero_branch_,interpret.word_not_found ; if
 
-  ; Note:
-  ;
-  ; `state` holds 0xC0 when compiling.  The text interpreter
-  ; compares the value stored in `state` with the value in the
-  ; length byte of the definition found in the dictionary.  If
-  ; the definition is an immediate word, its length byte is
-  ; greater than 0xC0 because of the precedence and the sign
-  ; bits are both set.  Setting `state` to 0xC0 will force
-  ; non-immediate words to be compiled and immediate words to be
-  ; executed.
+;   ; Note:
+;   ;
+;   ; `state` holds 0xC0 when compiling.  The text interpreter
+;   ; compares the value stored in `state` with the value in the
+;   ; length byte of the definition found in the dictionary.  If
+;   ; the definition is an immediate word, its length byte is
+;   ; greater than 0xC0 because of the precedence and the sign
+;   ; bits are both set.  Setting `state` to 0xC0 will force
+;   ; non-immediate words to be compiled and immediate words to be
+;   ; executed.
 
-  dw state_,fetch_,less_than_ ; compile the word?
-  dw zero_branch_,interpret.execute_the_word ; if
-  dw pfa_to_cfa_,comma_ ; compile the word
-  dw branch_,interpret.word_done
-interpret.execute_the_word: ; else
-  dw pfa_to_cfa_
-  dw execute_
-interpret.word_done: ; then
-  ;dw lit_,1,border_ ; XXX INFORMER
-  dw question_stack_
-  dw branch_,interpret.again
-interpret.word_not_found: ; else
-  ; word not found, try to convert the text to a number
-  dw here_,number_
-  dw dpl_,fetch_,one_plus_ ; is there a decimal point?
-  dw zero_branch_,interpret.16bit_number ; if
-  ; decimal point detected, so it's a double, 32-bit, number
-  dw two_literal_
-  dw branch_,interpret.number_done
-interpret.16bit_number: ; else
-  ; no decimal point, so it's a 16-bit number
-  dw drop_ ; discard high order part of the double number
-  ; XXX TODO use `c_literal` for 8-bit values.
-  dw literal_
-interpret.number_done: ; then
-  ;dw lit_,2,border_ ; XXX INFORMER
-  dw question_stack_
+;   dw state_,fetch_,less_than_ ; compile the word?
+;   dw zero_branch_,interpret.execute_the_word ; if
+;   dw pfa_to_cfa_,comma_ ; compile the word
+;   dw branch_,interpret.word_done
+; interpret.execute_the_word: ; else
+;   dw pfa_to_cfa_
+;   dw execute_
+; interpret.word_done: ; then
+;   ;dw lit_,1,border_ ; XXX INFORMER
+;   dw question_stack_
+;   dw branch_,interpret.again
+; interpret.word_not_found: ; else
+;   ; word not found, try to convert the text to a number
+;   dw here_,number_
+;   dw dpl_,fetch_,one_plus_ ; is there a decimal point?
+;   dw zero_branch_,interpret.16bit_number ; if
+;   ; decimal point detected, so it's a double, 32-bit, number
+;   dw two_literal_
+;   dw branch_,interpret.number_done
+; interpret.16bit_number: ; else
+;   ; no decimal point, so it's a 16-bit number
+;   dw drop_ ; discard high order part of the double number
+;   ; XXX TODO use `c_literal` for 8-bit values.
+;   dw literal_
+; interpret.number_done: ; then
+;   ;dw lit_,2,border_ ; XXX INFORMER
+;   dw question_stack_
 
-interpret.again:
-  dw branch_,interpret.begin
+; interpret.again:
+;   dw branch_,interpret.begin
 
-else ; XXX NEW -- version with modern `find`
+; else ; XXX NEW -- version with modern `find`
 
 interpret.begin:
 
@@ -5206,7 +5207,7 @@ interpret.16bit_number:
   dw literal_
   dw branch_,interpret.begin
 
-endif
+;endif
 
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
@@ -5815,7 +5816,7 @@ flush.do:
 
 ; ----------------------------------------------
 
-if not fig_find?
+; if not fig_find?
 
   _colon_header defined_,'DEFINED'
 
@@ -5845,7 +5846,7 @@ if not fig_find?
 
   dw semicolon_s_
 
-endif
+; endif
 
 ; ----------------------------------------------
   _colon_header question_defined_,'?DEFINED'
@@ -5859,14 +5860,14 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
-if fig_find?
-  dw find_,dup_
-  dw zero_branch_,bracket_defined.end
-  dw nip_,nip_
-bracket_defined.end:
-else
+; if fig_find?
+;   dw find_,dup_
+;   dw zero_branch_,bracket_defined.end
+;   dw nip_,nip_
+; bracket_defined.end:
+; else
   dw defined_,nip_
-endif
+;endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5878,15 +5879,15 @@ endif
 ; ----------------------------------------------
   _colon_header tick_,"'"
 
-if fig_find?
-  dw find_
-  dw zero_equals_
-  _question_error not_found_error
-  ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
-  dw drop_,pfa_to_cfa_
-else
+; if fig_find?
+;   dw find_
+;   dw zero_equals_
+;   _question_error not_found_error
+;   ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
+;   dw drop_,pfa_to_cfa_
+; else
   dw defined_,question_defined_
-endif
+;endif
   dw semicolon_s_
 
 ; ----------------------------------------------

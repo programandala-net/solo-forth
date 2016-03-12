@@ -1778,7 +1778,6 @@ fetch_cfap	EQU 0C35DH
 fetch_lfa	EQU 0C35FH
 fetch_nfa	EQU 0C361H
 fetch_pfa	EQU 06AEFH
-fig_find?	EQU 00000H
 fig_parsing?	EQU 00000H
 fill.do		EQU 06FA0H
 fill.e		EQU 06F9CH
