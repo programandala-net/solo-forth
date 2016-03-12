@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507050029
+; Version A-00-201507051325
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -364,7 +364,7 @@ unsupported_disk_operation_error:   equ 26
 source_file_needed_error:           equ 27
 not_present_though_required_error:  equ 28
 required_but_not_located_error:     equ 29
-number_30_error:                    equ 30 ; free
+branch_too_long_error:              equ 30
 number_31_error:                    equ 31 ; free
 number_33_error:                    equ 32 ; free
 
@@ -3578,9 +3578,7 @@ do_constant:
 ; ----------------------------------------------
   _colon_header label_,'LABEL'
 
-  ; XXX TODO call `assembler`?
-
-  dw create_
+  dw create_,asm_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4577,6 +4575,7 @@ endif
 
   dw question_csp_
   dw compile_,paren_semicolon_code_
+  dw asm_
   dw left_bracket_,smudge_
   dw semicolon_s_
 
@@ -5681,13 +5680,31 @@ assembler_vocabulary_link:
   dw forth_vocabulary_link
 
 ; ----------------------------------------------
+  _colon_header asm_,'ASM'
+
+; doc{
+;
+; asm  ( -- )
+;
+; Enter assembler mode.
+;
+; }doc
+
+  ; [Code adapted from Coos Haak's Z80 Forth assembler.]
+
+  dw noop_ ; to be patched by the assembler
+  dw assembler_,hex_
+  dw store_csp_ ; XXX TODO needed?
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header code_,'CODE'
 
   dw header_
   dw base_,fetch_,hex_ ; save the current `base`
   dw context_,fetch_ ; save the current `context`
-  dw assembler_
   dw store_csp_
+  dw asm_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7552,12 +7569,16 @@ color:
 ;
 ; }doc
 
+  ; XXX TODO make the charset address and the chars count
+  ; configurable with another word, maybe `emitted!`.or
+  ; `set-emitted`.
+
   pop hl ; column
   pop de ; line
   push bc ; save the Forth IP
   ld b,l ; column
   ld c,e ; line
-if 0 ; XXX OLD
+if 1 ; XXX OLD -- for testing
   ld  hl,(sys_chars) ; character set (address of character 0)
   inc h ; address of character 0x20 in the character set
 else ; XXX NEW
@@ -7575,7 +7596,7 @@ endif
   xor  0x40
   ld  d,a ; high byte of top line = 64 + 8*int (line/8)
   ; de = screen address
-  ld  b,224  ; characters count
+  ld  b,224  ; characters count ; XXX TODO configure
 
 emitted.do:
   push  bc  ; save the characters count

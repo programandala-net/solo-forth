@@ -105,7 +105,7 @@ decode dump
 \ Error #27: Source file needed.
 \ Error #28: Warning: Not present, though required.
 \ Error #29: Required, but not located.
-\ Error #30:
+\ Error #30: Branch too long.
 \ Error #31:
 
 ( debug ) \ scr 6 for debugging
@@ -393,7 +393,7 @@ code bleep  ( n1 n2 -- )
 
   \ Code from v.Forth, not tested:
 
-: bleep-calc ( freq duration -- n1 n2 )
+: bleep-calc  ( freq duration -- n1 n2 )
   \ n1 = duration
   \ n2 = pitch
   OVER 1000 */ SWAP
@@ -901,7 +901,7 @@ width ! decimal
 
   \ XXX TODO adapt
 
-: vdo compile (do) csp @ !csp here 3 ;
+: vdo  compile (do) csp @ !csp here 3 ;
 
 : ?vdo
   compile 2dup  compile (do)  compile <>
@@ -921,7 +921,7 @@ width ! decimal
 
   \ [Code from v.Forth.]
 
-: compile, ( cfa -- )  ?comp , ;
+: compile,  ( cfa -- )  ?comp , ;
 
 : postpone  ( "name" -- )
   ?comp defined dup ?defined
@@ -1119,9 +1119,285 @@ end-code
 : is  ( cfa "name" -- )
   comp? if  postpone [is]  else  <is>  then  ; immediate
 
+( assembler )
+
+\ solo_forth.assembler.fsb
+\ Assembler for Solo Forth
+
+\ Copyright (C) 2015 Marcos Cruz (programandala.net)
+\ Copyright (C) 1988? Coos Haak
+
+\ This file is part of Solo Forth
+\ http://programandala.net/en.program.solo_forth.html
+
+  \ This is a modified version of an assembler designed by Coos
+  \ Haak for his own Forth, and used by Lennart Benschop with
+  \ his Spectrum Forth-83 (1988).
+
+  \ Copying and distribution of this file, with or without
+  \ modification, are permitted in any medium without royalty
+  \ provided the copyright notice and this notice are
+  \ preserved.  This file is offered as-is, without any
+  \ warranty.
+
+  \ -----------------------------------------------------------
+  \ Differences from the original version
+
+  \ Also the pair registers BC, DE and HL can be used.
+  \ Example: both `1 B LDP#` and `1 BC LDP#` are valid.
+
+  \ `(HL)` can be used instead of `M`.
+
+  \ Special mnemonic `0OUTBC` is provided.
+
+  \ The condition flag operator `NOT` is removed; the condition
+  \ flag `v` is removed. The condition flags are completed,
+  \ including their opposite versions.
+
+  \ Changed names:
+  \ `INC` --> `INCP`;
+  \ `INR` --> `INC`;
+  \ `DEC` --> `DECP`;
+  \ `DER` --> `DEC`.
+
+  \ The set of conditional calls and returns has been completed
+  \ (the original included only `CALLC` and `RETC`).
+
+  \ Comments have been added.
+
+  \ Case insensitive.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-07-04: Copied from the Afera library.
+  \
+  \ 2015-07-05: First changes to convert it from fig-Forth to
+  \ Solo Forth.
+  
+  \ -----------------------------------------------------------
+
+forth definitions
+
+: 8*  2* 2* 2* ;
+
+-->
+
+( assembler -- Registers )
+
+: [assembler]  ( -- )  assembler  ; immediate
+assembler definitions hex
+
+0 constant b   1 constant c   2 constant d   3 constant e
+4 constant h   5 constant l   6 constant m   7 constant a
+
+0 constant bc  2 constant de  4 constant hl
+6 constant sp  6 constant af                 6 constant (hl)
+
+DD constant ix-op  FD constant iy-op
+
+ix-op variable xy  : %x ix-op xy ! ; : %y iy-op xy ! ;
+
+: xy,  xy @ c, ; : xl xy, l ; : xh xy, h ;
+: ix  ix-op c, hl ; : iy iy-op c, hl ;
+
+  \ Branch too long?
+: ?page  ( n -- ) dup 80 + FF swap u< 1E ?error  ;
+
+-->
+
+( assembler -- Words for defining the z80 instructions)
+
+: m1  ( n "name" -- )
+  \ 1-byte opcode without parameters.
+  create c, does> c@ c, ;
+
+: m2  ( n "name" -- )
+  \ 1-byte opcode with register encoded in bits 0-3.
+  create c, does> c@ + c, ;
+
+: m3  ( n "name" -- )
+  \ 1-byte opcode with register encoded in bits 3-5.
+  create c, does> c@ swap 8* + c, ;
+
+: m4  ( n "name" -- )
+  \ 1-byte opcode with 1-byte parameter.
+  create c, does> c@ c, c, ;
+
+: m5  ( n "name" -- )
+  \ 1-byte opcode with 2-byte parameter.
+  create c, does> c@ c, , ;
+
+: m6  ( n "name" -- )
+  \ Rotation of registers.
+  create c, does> CB c, c@ + c, ;
+
+  -->
+
+( assembler -- Words for defining the z80 instructions)
+
+: m7  ( n "name" -- )
+  \ Bit manipulation of registers.
+  create c, does> CB c, c@ + swap 8* + c, ;
+
+: m8  ( n "name" -- )
+  \ 2-byte opcodes.
+  create , does> @ , ;
+
+: m9  ( n "name" -- )
+  \ Relative jumps.
+  create c, does> c@ c, here 1+ - ?page c, ;
+
+: ma  ( n "name" -- )
+  \ Index registers with register.
+  create c, does> xy, c@ c, c, ;
+
+: mb  ( n "name" -- )
+  \ Rotation with index registers.
+  create c, does> xy, CB c, c@ swap c, c, ;
+
+: mc  ( n "name" -- )
+  \ Bit manipulation with index registers.
+  create c, does> xy, CB c, c@ rot rot c, 8* + c, ;
+
+  -->
+
+( assembler -- Opcodes )
+
+00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
+08 m1 exaf 09 m3 addp 0A m3 ldap 0B m3 decp 0F m1 rrca
+10 m9 djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl
+27 m1 daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta
+37 m1 scf 38 m9 jrc 3A m5 lda 3F m1 ccf 76 m1 halt 80 m2 add
+88 m2 adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz
+C3 m5 jp C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz
+CD m5 call CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc
+D6 m4 sub# D9 m1 exx DA m5 jpc DB m4 in 40 m3 inbc DE m4 sbc#
+E2 m5 jppo E3 m1 exsp E6 m4 and# E9 m1 jphl EA m5 jppe
+EB m1 exde EE m4 xor# F2 m5 jpp F3 m1 di  F6 m4 or# F9 m1 ldsp
+FA m5 jpm FB m1 ei FE m4 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl
+18 m6 rr 20 m6 sla  28 m6 sra 38 m6 srl  40 m7 bit 80 m7 res
+C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
+47ED m8 ldia 56ED m8 im1 5EED m8 im2 B1ED m8 cpir         -->
+
+( assembler -- Opcodes)
+
+: 0outbc  ED c, 71 c, ;
+: jpix  IX-OP c, jphl ;
+: ldp#  ( 16b rps -- ) 8* 1+ c,  , ;
+: ldix#  ( 16b rps -- ) 8* 1+ c,  , ; \ xxx todo
+: ld#  ( 8b r -- ) 8* 06 + c, c, ;
+: ld  ( r1 r2 -- ) 8* 40 + + c, ;
+: sbcp  ED c, 8* 42 + c, ;
+: adcp  ED c, 8* 4A + c, ;
+: stp  ED c, 8* 43 + c, , ;
+: ldp  ED c, 8* 4B + c, , ;
+
+  \ Macros
+
+: clr  0 swap ldp# ;
+: mov  2dup ld 1+ swap 1+ swap ld ;
+
+  \ zx Spectrum specific
+
+CF m4 hook \ rst 8
+D7 m1 prt  \ rst 0x16
+
+-->
+
+( assembler -- Index register opcodes)
+
+86 ma )add 8E ma )adc 96 ma )sub 9E ma )sbc A6 ma )and
+AE ma )xor B6 ma )or  BE ma )cp  34 ma )inc 35 ma )dec
+06 mb )rlc 0E mb )rrc 16 mb )rl  1E mb )rr  26 mb )sla
+2E mb )sra 3E mb )srl 46 mc )bit 86 mc )res C6 mc )set
+
+: )ld  xy, swap 8* 46 + c, c, ;
+: )st  xy, swap 70 + c, c, ; : )ld# xy, 36 c, c, c, ;
+: )ldp  over 1+ over )ld 1+ )ld ;
+: )stp  over 1+ over )st 1+ )st ;
+
+-->
+
+( assembler -- Condition codes, conditional ret and call)
+
+  \ Condition codes for relative jumps
+
+20 constant z  28 constant nz 30 constant cy 38 constant nc
+
+  \ Condition codes for absolute jumps
+
+C2 constant z'  CA constant nz' D2 constant cy' DA constant nc'
+E2 constant pe' EA constant po' F2 constant m'  FA constant p'
+
+  \ Conditional ret
+
+: ?ret  8 xor 2- c, ;
+: retc  cy' ?ret ;    : retnc nc' ?ret ;
+: retz  z' ?ret ;     : retnz nz' ?ret ;
+: retm  m' ?ret ;     : retp p' ?ret ;
+: retpe  pe' ?ret ;   : retpo po' ?ret ;
+
+  \ Conditional call
+
+: ?call  8 xor 2+ c, , ;
+: callc  cy' ?call ;    : callnc nc' ?call ;
+: callz  z' ?call ;     : callnz nz' ?call ;
+: callm  m' ?call ;     : callp p' ?call ;
+: callpe  pe' ?call ;   : callpo po' ?call ; 
+
+-->
+
+( assembler -- Control structures and last opcodes)
+
+  \ Control structures created with relative jumps
+
+: then  0A ?pairs here 1- over - ?page swap c! ;
+: if  , here 1- 0A ;
+: else  0A ?pairs 18 if rot swap then 0A ;
+: until  , 0B ?pairs 1- here 1- swap over - ?page swap c! ;
+: begin  here 0B ;  : again 18 until ;
+: dsz  10 until ;   : repeat 2swap again 2- then ;
+: while  if 2+ ;
+
+  \ Control structures created with absolute jumps
+
+: then'  08 ?pairs here swap ! ;  : if' c, here 0 , 08 ;
+: else'  08 ?pairs C3 if' rot swap then' 08 ;
+: begin'  here 09 ;  : until' c, 09 ?pairs , ;
+: while'  if' 2+ ;    : again' C3 until' ;
+: repeat'  2swap again' 2- then' ;
+
+  \ Last opcodes
+
+  \ `AND`, `OR` and `XOR` are defined at the end, in order to
+  \ avoid name clashes with the Forth words that have the same
+  \ name:
+
+A0 m2 and  B0 m2 or  A8 m2 xor
+
+: subp  a and sbcp ;  : tst  dup a ld 1+ or ;
+
+-->
+
+( assembler -- Defining words)
+
+forth definitions
+
+  \ Macros \ xxx todo -- test it
+: macro  ( "name -- )  asm [compile] :  ;
+: endm  ( -- )  [compile] ;  ;
+
+  \ Patch `asm` with `%x`:
+' %x ' asm cfa>pfa !
+
+decimal
+
 ( Symmetric-division operators )
 
   \ [From the ANS Forth documentation.]
+
+  \ XXX TODO `sm/rem` not ready yet
  
 : /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
 
@@ -1136,6 +1412,8 @@ end-code
 ( Floored-division operators )
 
   \ [From the ANS Forth documentation.]
+
+  \ XXX TODO `fm/mod` not ready yet
 
 : /_mod  ( n1 n2 -- n3 n4)  >r s>d r> fm/mod  ;
 

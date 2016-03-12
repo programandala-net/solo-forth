@@ -9,9 +9,9 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ This is a modified version of an assembler designed by Coos
-\ Haak for his own Forth, and used by Lennart Benschop with his
-\ Spectrum Forth-83 (1988).
+  \ This is a modified version of an assembler designed by Coos
+  \ Haak for his own Forth, and used by Lennart Benschop with
+  \ his Spectrum Forth-83 (1988).
 
   \ Copying and distribution of this file, with or without
   \ modification, are permitted in any medium without royalty
@@ -22,12 +22,8 @@
   \ -----------------------------------------------------------
   \ Differences from the original version
 
-  \ Beside converting the code from the Forth-83 Standard to
-  \ fig-Forth, some changes were done during the conversion:
-
   \ Also the pair registers BC, DE and HL can be used.
-  \ Example: both `1 B LDP#` and `1 BC LDP#` are valid and
-  \ produce the same machine code.
+  \ Example: both `1 B LDP#` and `1 BC LDP#` are valid.
 
   \ `(HL)` can be used instead of `M`.
 
@@ -53,199 +49,203 @@
   \ -----------------------------------------------------------
   \ History
 
-  \ 2015-07-04: Copied from the  Afera library.
+  \ 2015-07-04: Copied from the Afera library.
+  \
+  \ 2015-07-05: First changes to convert it from fig-Forth to
+  \ Solo Forth.
   
   \ -----------------------------------------------------------
 
-FORTH DEFINITIONS
+forth definitions
 
 : 8* 2* 2* 2* ;
 
 -->
 
-( Registers )
+( assembler -- Registers )
 
-: [ASSEMBLER]  ( -- )  assembler  ; IMMEDIATE
-ASSEMBLER DEFINITIONS HEX
+: [assembler]  ( -- )  assembler  ; immediate
+assembler definitions hex
 
-0 CONSTANT B   1 CONSTANT C   2 CONSTANT D   3 CONSTANT E
-4 CONSTANT H   5 CONSTANT L   6 CONSTANT M   7 CONSTANT A
+0 constant b   1 constant c   2 constant d   3 constant e
+4 constant h   5 constant l   6 constant m   7 constant a
 
-0 CONSTANT BC  2 CONSTANT DE  4 CONSTANT HL
-6 CONSTANT SP  6 CONSTANT AF                 6 CONSTANT (HL)
+0 constant bc  2 constant de  4 constant hl
+6 constant sp  6 constant af                 6 constant (hl)
 
-DD CONSTANT IX-OP  FD CONSTANT IY-OP
+DD constant ix-op  FD constant iy-op
 
-IX-OP VARIABLE XY  : %X IX-OP XY ! ; : %Y IY-OP XY ! ;
+ix-op variable xy  : %x ix-op xy ! ; : %y iy-op xy ! ;
 
-: XY, XY @ C, ; : XL XY, L ; : XH XY, H ;
-: IX IX-OP C, HL ; : IY IY-OP C, HL ;
-: ?PAGE  ( n -- ) DUP 80 + FF SWAP U<
-  IF ." Branch too long" ABORT THEN ;
+: xy, xy @ c, ; : xl xy, l ; : xh xy, h ;
+: ix ix-op c, hl ; : iy iy-op c, hl ;
+
+  \ Branch too long?
+: ?page  ( n -- ) dup 80 + FF swap u< 1E ?error  ;
 
 -->
 
-( Words for defining the Z80 instructions)
+( assembler -- Words for defining the z80 instructions)
 
-: M1 ( n "name" -- )
+: m1 ( n "name" -- )
   \ 1-byte opcode without parameters.
-  <BUILDS C, DOES> C@ C, ;
+  create c, does> c@ c, ;
 
-: M2 ( n "name" -- )
+: m2 ( n "name" -- )
   \ 1-byte opcode with register encoded in bits 0-3.
-  <BUILDS C, DOES> C@ + C, ;
+  create c, does> c@ + c, ;
 
-: M3 ( n "name" -- )
+: m3 ( n "name" -- )
   \ 1-byte opcode with register encoded in bits 3-5.
-  <BUILDS C, DOES> C@ SWAP 8* + C, ;
+  create c, does> c@ swap 8* + c, ;
 
-: M4 ( n "name" -- )
+: m4 ( n "name" -- )
   \ 1-byte opcode with 1-byte parameter.
-  <BUILDS C, DOES> C@ C, C, ;
+  create c, does> c@ c, c, ;
 
-: M5 ( n "name" -- )
+: m5 ( n "name" -- )
   \ 1-byte opcode with 2-byte parameter.
-  <BUILDS C, DOES> C@ C, , ;
+  create c, does> c@ c, , ;
 
-: M6 ( n "name" -- )
+: m6 ( n "name" -- )
   \ Rotation of registers.
-  <BUILDS C, DOES> CB C, C@ + C, ;
+  create c, does> CB c, c@ + c, ;
 
   -->
 
-( Words for defining the Z80 instructions)
+( assembler -- Words for defining the z80 instructions)
 
-: M7 ( n "name" -- )
+: m7 ( n "name" -- )
   \ Bit manipulation of registers.
-  <BUILDS C, DOES> CB C, C@ + SWAP 8* + C, ;
+  create c, does> CB c, c@ + swap 8* + c, ;
 
-: M8 ( n "name" -- )
+: m8 ( n "name" -- )
   \ 2-byte opcodes.
-  <BUILDS , DOES> @ , ;
+  create , does> @ , ;
 
-: M9 ( n "name" -- )
+: m9 ( n "name" -- )
   \ Relative jumps.
-  <BUILDS C, DOES> C@ C, HERE 1+ - ?PAGE C, ;
+  create c, does> c@ c, here 1+ - ?page c, ;
 
-: MA ( n "name" -- )
+: ma ( n "name" -- )
   \ Index registers with register.
-  <BUILDS C, DOES> XY, C@ C, C, ;
+  create c, does> xy, c@ c, c, ;
 
-: MB ( n "name" -- )
+: mb ( n "name" -- )
   \ Rotation with index registers.
-  <BUILDS C, DOES> XY, CB C, C@ SWAP C, C, ;
+  create c, does> xy, CB c, c@ swap c, c, ;
 
-: MC ( n "name" -- )
+: mc ( n "name" -- )
   \ Bit manipulation with index registers.
-  <BUILDS C, DOES> XY, CB C, C@ ROT ROT C, 8* + C, ;
+  create c, does> xy, CB c, c@ rot rot c, 8* + c, ;
 
   -->
 
-( Opcodes )
+( assembler -- Opcodes )
 
-00 M1 NOP 02 M3 STAP 03 M3 INCP 04 M3 INC 05 M3 DEC 07 M1 RLCA
-08 M1 EXAF 09 M3 ADDP 0A M3 LDAP 0B M3 DECP 0F M1 RRCA
-10 M9 DJNZ 17 M1 RLA 18 M9 JR  1F M1 RRA 20 M9 JRNZ 22 M5 STHL
-27 M1 DAA 28 M9 JRZ 2A M5 LDHL 2F M1 CPL 30 M9 JRNC 32 M5 STA
-37 M1 SCF 38 M9 JRC 3A M5 LDA 3F M1 CCF 76 M1 HALT 80 M2 ADD
-88 M2 ADC 90 M2 SUB 98 M2 SBC B8 M2 CP C1 M3 POP C2 M5 JPNZ
-C3 M5 JP C5 M3 PUSH C6 M4 ADD# C7 M2 RST C9 M1 RET CA M5 JPZ
-CD M5 CALL CE M4 ADC# D2 M5 JPNC D3 M4 OUT 41 M3 OUTBC
-D6 M4 SUB# D9 M1 EXX DA M5 JPC DB M4 IN 40 M3 INBC DE M4 SBC#
-E2 M5 JPPO E3 M1 EXSP E6 M4 AND# E9 M1 JPHL EA M5 JPPE
-EB M1 EXDE EE M4 XOR# F2 M5 JPP F3 M1 DI  F6 M4 OR# F9 M1 LDSP
-FA M5 JPM FB M1 EI FE M4 CP# 00 M6 RLC 08 M6 RRC 10 M6 RL
-18 M6 RR 20 M6 SLA  28 M6 SRA 38 M6 SRL  40 M7 BIT 80 M7 RES
-C0 M7 SET B0ED M8 LDIR B8ED M8 LDDR 44ED M8 NEG 57ED M8 LDAI
-47ED M8 LDIA 56ED M8 IM1 5EED M8 IM2 B1ED M8 CPIR         -->
+00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
+08 m1 exaf 09 m3 addp 0A m3 ldap 0B m3 decp 0F m1 rrca
+10 m9 djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl
+27 m1 daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta
+37 m1 scf 38 m9 jrc 3A m5 lda 3F m1 ccf 76 m1 halt 80 m2 add
+88 m2 adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz
+C3 m5 jp C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz
+CD m5 call CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc
+D6 m4 sub# D9 m1 exx DA m5 jpc DB m4 in 40 m3 inbc DE m4 sbc#
+E2 m5 jppo E3 m1 exsp E6 m4 and# E9 m1 jphl EA m5 jppe
+EB m1 exde EE m4 xor# F2 m5 jpp F3 m1 di  F6 m4 or# F9 m1 ldsp
+FA m5 jpm FB m1 ei FE m4 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl
+18 m6 rr 20 m6 sla  28 m6 sra 38 m6 srl  40 m7 bit 80 m7 res
+C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
+47ED m8 ldia 56ED m8 im1 5EED m8 im2 B1ED m8 cpir         -->
 
-( Opcodes)
+( assembler -- Opcodes)
 
-: 0OUTBC ED C, 71 C, ;
-: JPIX IX-OP C, JPHL ;
-: LDP# ( 16b rps -- ) 8* 1+ C,  , ;
-: LDIX# ( 16b rps -- ) 8* 1+ C,  , ; \ XXX TODO
-: LD# ( 8b r -- ) 8* 06 + C, C, ;
-: LD ( r1 r2 -- ) 8* 40 + + C, ;
-: SBCP ED C, 8* 42 + C, ;
-: ADCP ED C, 8* 4A + C, ;
-: STP ED C, 8* 43 + C, , ;
-: LDP ED C, 8* 4B + C, , ;
+: 0outbc ED c, 71 c, ;
+: jpix IX-OP c, jphl ;
+: ldp# ( 16b rps -- ) 8* 1+ c,  , ;
+: ldix# ( 16b rps -- ) 8* 1+ c,  , ; \ xxx todo
+: ld# ( 8b r -- ) 8* 06 + c, c, ;
+: ld ( r1 r2 -- ) 8* 40 + + c, ;
+: sbcp ED c, 8* 42 + c, ;
+: adcp ED c, 8* 4A + c, ;
+: stp ED c, 8* 43 + c, , ;
+: ldp ED c, 8* 4B + c, , ;
 
   \ Macros
 
-: CLR  0 SWAP LDP# ;
-: MOV  2DUP LD 1+ SWAP 1+ SWAP LD ;
+: clr  0 swap ldp# ;
+: mov  2dup ld 1+ swap 1+ swap ld ;
 
-  \ ZX Spectrum specific
+  \ zx Spectrum specific
 
-CF M4 HOOK \ RST 8
-D7 M1 PRT  \ RST 0x16
-
--->
-
-( Index register opcodes)
-
-86 MA )ADD 8E MA )ADC 96 MA )SUB 9E MA )SBC A6 MA )AND
-AE MA )XOR B6 MA )OR  BE MA )CP  34 MA )INC 35 MA )DEC
-06 MB )RLC 0E MB )RRC 16 MB )RL  1E MB )RR  26 MB )SLA
-2E MB )SRA 3E MB )SRL 46 MC )BIT 86 MC )RES C6 MC )SET
-
-: )LD XY, SWAP 8* 46 + C, C, ;
-: )ST XY, SWAP 70 + C, C, ; : )LD# XY, 36 C, C, C, ;
-: )LDP OVER 1+ OVER )LD 1+ )LD ;
-: )STP OVER 1+ OVER )ST 1+ )ST ;
+CF m4 hook \ rst 8
+D7 m1 prt  \ rst 0x16
 
 -->
 
-( Condition codes, conditional RET and CALL)
+( assembler -- Index register opcodes)
+
+86 ma )add 8E ma )adc 96 ma )sub 9E ma )sbc A6 ma )and
+AE ma )xor B6 ma )or  BE ma )cp  34 ma )inc 35 ma )dec
+06 mb )rlc 0E mb )rrc 16 mb )rl  1E mb )rr  26 mb )sla
+2E mb )sra 3E mb )srl 46 mc )bit 86 mc )res C6 mc )set
+
+: )ld xy, swap 8* 46 + c, c, ;
+: )st xy, swap 70 + c, c, ; : )ld# xy, 36 c, c, c, ;
+: )ldp over 1+ over )ld 1+ )ld ;
+: )stp over 1+ over )st 1+ )st ;
+
+-->
+
+( assembler -- Condition codes, conditional ret and call)
 
   \ Condition codes for relative jumps
 
-20 CONSTANT Z  28 CONSTANT NZ 30 CONSTANT CY 38 CONSTANT NC
+20 constant z  28 constant nz 30 constant cy 38 constant nc
 
   \ Condition codes for absolute jumps
 
-C2 CONSTANT z'  CA CONSTANT nz' D2 CONSTANT cy' DA CONSTANT nc'
-E2 CONSTANT pe' EA CONSTANT po' F2 CONSTANT m'  FA CONSTANT p'
+C2 constant z'  CA constant nz' D2 constant cy' DA constant nc'
+E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
-  \ Conditional RET
+  \ Conditional ret
 
-: ?RET 8 XOR 2- C, ;
-: RETC cy' ?RET ;    : RETNC nc' ?RET ;
-: RETZ z' ?RET ;     : RETNZ nz' ?RET ;
-: RETM m' ?RET ;     : RETP p' ?RET ;
-: RETPE pe' ?RET ;   : RETPO po' ?RET ;
+: ?ret 8 xor 2- c, ;
+: retc cy' ?ret ;    : retnc nc' ?ret ;
+: retz z' ?ret ;     : retnz nz' ?ret ;
+: retm m' ?ret ;     : retp p' ?ret ;
+: retpe pe' ?ret ;   : retpo po' ?ret ;
 
-  \ Conditional CALL
+  \ Conditional call
 
-: ?CALL 8 XOR 2+ C, , ;
-: CALLC cy' ?CALL ;    : CALLNC nc' ?CALL ;
-: CALLZ z' ?CALL ;     : CALLNZ nz' ?CALL ;
-: CALLM m' ?CALL ;     : CALLP p' ?CALL ;
-: CALLPE pe' ?CALL ;   : CALLPO po' ?CALL ; 
+: ?call 8 xor 2+ c, , ;
+: callc cy' ?call ;    : callnc nc' ?call ;
+: callz z' ?call ;     : callnz nz' ?call ;
+: callm m' ?call ;     : callp p' ?call ;
+: callpe pe' ?call ;   : callpo po' ?call ; 
 
 -->
 
-( Control structures and last opcodes)
+( assembler -- Control structures and last opcodes)
 
   \ Control structures created with relative jumps
 
-: THEN 0A ?PAIRS HERE 1- OVER - ?PAGE SWAP C! ;
-: IF , HERE 1- 0A ;
-: ELSE 0A ?PAIRS 18 IF ROT SWAP THEN 0A ;
-: UNTIL , 0B ?PAIRS 1- HERE 1- SWAP OVER - ?PAGE SWAP C! ;
-: BEGIN HERE 0B ;  : AGAIN 18 UNTIL ;
-: DSZ 10 UNTIL ;   : REPEAT 2SWAP AGAIN 2- THEN ;
-: WHILE IF 2+ ;
+: then 0A ?pairs here 1- over - ?page swap c! ;
+: if , here 1- 0A ;
+: else 0A ?pairs 18 if rot swap then 0A ;
+: until , 0B ?pairs 1- here 1- swap over - ?page swap c! ;
+: begin here 0B ;  : again 18 until ;
+: dsz 10 until ;   : repeat 2swap again 2- then ;
+: while if 2+ ;
 
   \ Control structures created with absolute jumps
 
-: then' 08 ?PAIRS HERE SWAP ! ;  : if' C, HERE 0 , 08 ;
-: else' 08 ?PAIRS C3 if' ROT SWAP then' 08 ;
-: begin' HERE 09 ;  : until' C, 09 ?PAIRS , ;
+: then' 08 ?pairs here swap ! ;  : if' c, here 0 , 08 ;
+: else' 08 ?pairs C3 if' rot swap then' 08 ;
+: begin' here 09 ;  : until' c, 09 ?pairs , ;
 : while' if' 2+ ;    : again' C3 until' ;
-: repeat' 2SWAP again' 2- then' ;
+: repeat' 2swap again' 2- then' ;
 
   \ Last opcodes
 
@@ -253,43 +253,21 @@ E2 CONSTANT pe' EA CONSTANT po' F2 CONSTANT m'  FA CONSTANT p'
   \ avoid name clashes with the Forth words that have the same
   \ name:
 
-A0 M2 AND  B0 M2 OR  A8 M2 XOR
+A0 m2 and  B0 m2 or  A8 m2 xor
 
-: SUBP A AND SBCP ;  : TST DUP A LD 1+ OR ;
+: subp a and sbcp ;  : tst dup a ld 1+ or ;
 
 -->
 
-( Defining words)
+( assembler -- Defining words)
 
-: END-CODE ( -- )
-  \ End the definition of an assembler word.
-  DECIMAL ?CSP SMUDGE ;
+forth definitions
 
-: ;C ( -- ) [COMPILE] END-CODE ; IMMEDIATE
+  \ Macros \ xxx todo -- test it
+: macro ( "name -- ) assembler [compile] : ;
+: endm ( -- ) [compile] ; ;
 
-FORTH DEFINITIONS
+' %x ' asm cfa>pfa ! \ patch `asm`
 
-  \ Macros \ XXX TODO -- test it
-: MACRO ( "name -- ) [COMPILE] ASSEMBLER [COMPILE] : ;
-: ENDM ( -- ) [COMPILE] ; ;
+decimal
 
-: ASM ( -- )
-  \ Enter assembler mode.
-  [COMPILE] ASSEMBLER HEX  ASSEMBLER %X  FORTH !CSP ;
-
-: LABEL ( "name" -- )
-  \ Create a subroutine or data label.
-  VARIABLE -2 ALLOT ASM ;
-
-: CODE ( "name" -- )
-  \ Create an assembler word.
-  CREATE ASM ;
-
-  \ XXX TODO check if `(;CODE)` works in Abersoft Forth
-: ;CODE ( -- )
-  \ Add assembler code to a high level definition.
-  COMPILE (;CODE) ?CSP ASM [COMPILE] [ ; IMMEDIATE
-
-DECIMAL
-
-  \ vim: filetype=abersoftforthafera

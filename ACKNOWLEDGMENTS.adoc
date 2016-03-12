@@ -17,6 +17,7 @@ listed in alphabetial order:
 - DZX-Forth (for ZX Spectrum +3e), by Marcos Cruz, 2014 (under
   development).
 - eForth (for MS-DOS), by Bill Muench, 1989-1997.
+- F83 (for CP/M and MS-DOS), by Mike Perry and Henry Laxen, 1984.
 - lina ciforth (for x86 Linux), by Albert van der Horst, 2000-2004.
 - Spectrum Forth-83 (for ZX Spectrum 48K/128K), by Lennart Benschop,
   1988.

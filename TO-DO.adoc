@@ -114,4 +114,19 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 Change: rewrote `word` to return and address, after Forth-83 or ANS Forth.
 
+.2015-07-05:
 
+From F83:
+
+----
+: CASE:  ( n --- )
+  \ A positional case statement. The range n is used for error checking.  At runtime, the nth word is executed, depending on the value on stack when executed.
+  CONSTANT  \ Compile the range n as a constant.
+  HIDE  \ Smudge the name field as : would do.
+  ]  \ Now, use the colon compiler to compile the cases.
+     \ Compilation will be terminated by the ; command.
+  DOES>  ( index --- )  \ At runtime, use the index to find the execution address among the compiled cases and execute it.
+    MAP  \ Return the address pointing to one of the cases compiled.
+    PERFORM  \ Execute it.
+  ;
+----
