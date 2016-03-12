@@ -122,4 +122,4 @@ Fix: `plot` and `point`.
 
 .2015-06-28:
 
-Fix: execution of new words resets the machine.
+Fix: `vocabulary` needs changes after the new header format.

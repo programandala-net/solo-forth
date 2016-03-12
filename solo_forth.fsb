@@ -607,7 +607,7 @@ forth definitions decimal
   \ Decode the definition at the given pfa.
 
   dup colon-pfa? if
-    dup pfa>nfa decode-address ! indent  ." : " dup pfa>nfa id.
+    dup pfa>cfa decode-address ! indent  ." : " dup pfa>nfa id.
     begin   ( pfa+n ) dup decode-address !
             dup @ dup ( pfa+n cfa cfa ) decode-end? 0=
             \ ( pfa+n cfa f )

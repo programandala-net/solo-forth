@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506280027
+; Version A-00-201506280205
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -19,6 +19,8 @@
 ; - fix: `(find)`
 ; - fix: `cfa>nfa` (for name fields in bank)
 ; - fix: `nfa>string` (for name fields in bank)
+; - fix: `nfa>cfa`  (for name fields in bank)
+; - fix: `words`  (for name fields in bank)
 
 ; ==============================================================
 ; Aknowledgments
@@ -103,28 +105,31 @@
 ; ----------------------------------------------
 ; Stack comment conventions
 
-; a       = address
-; ca      = character-aligned address
+; a        = address
+; ca       = character-aligned address
 
-; f       = flag (false is 0; true is any other value)
-; tf      = true flag (1)
-; ff      = false flag (0)
-; wf      = well-formed flag (false is 0; true is 1)
+; f        = flag (false is 0; true is any other value)
+; tf       = true flag (1)
+; ff       = false flag (0)
+; wf       = well-formed flag (false is 0; true is 1)
 
-; c       = 8-bit character
-; u       = 16-bit unsigned number
-; len     = 16-bit unsigned number, length of memory zone or string
-; ca len  = string
-; n       = 16-bit signed number
-; x       = 16-bit signed or unsigned number
-; d       = 32-bit signed double number
-; ud      = 32-bit unsigned double number
-; xd      = 32-bit signed or unsigned number
+; c        = 8-bit character
+; u        = 16-bit unsigned number
+; len      = 16-bit unsigned number, length of memory zone or string
+; ca len   = string
+; n        = 16-bit signed number
+; x        = 16-bit signed or unsigned number
+; d        = 32-bit signed double number
+; ud       = 32-bit unsigned double number
+; xd       = 32-bit signed or unsigned number
 
-; cfa     = address of code field
-; lfa     = address of link field
-; nfa     = address of name field
-; pfa     = address of parameter field
+; x y      = pair of 8-bit graphic coordinates
+; line col = pair of 8-bit cursor coordinates
+
+; cfa      = address of code field
+; lfa      = address of link field
+; nfa      = address of name field
+; pfa      = address of parameter field
 
 ; ==============================================================
 ; Configuration
@@ -142,7 +147,7 @@ fig_parsing?                    equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
-  ; XXX FIXME Pasmo gives strang errors (symbols not found)
+  ; XXX FIXME Pasmo gives strange errors (symbols not found)
   ; when this config flag is used in nested `if`. A literal flag
   ; (0/1) is used instead, with the flag name in a comment; it
   ; is changed with a text substitution, and Vim mappings
@@ -591,8 +596,8 @@ _border_wait: macro _color
   pop af
   endm
 
-_XXX: macro _txt
-  dw paren_dot_quote_
+_echo: macro _txt
+  dw cr_,paren_dot_quote_
   _string _txt
   endm
 
@@ -996,6 +1001,7 @@ bank.default:
 bank.names:
   ; XXX TODO ?
 bank.e:
+  ; ret ; XXX TMP
   di
   ld a,(sys_bankm) ; get the saved status of BANKM
   and 0xF8 ; erase bits 0-2
@@ -1961,7 +1967,8 @@ endif
 ; ----------------------------------------------
   _colon_header display_,'DISPLAY'
 
-  dw two_,chan_
+  _number 2
+  dw chan_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2156,7 +2163,7 @@ move.do:
   exx
   pop de
   pop bc
-  jr move.do
+  jp move.do
 
 ; ----------------------------------------------
   _code_header u_star_,'U*'
@@ -2416,8 +2423,7 @@ endif
 ; proceeds normally until `loop` or `+loop` is encountered.
 ;
 ; Note: This is the fig-Forth version of `leave`, not the ANS
-; Forth version. The behaviour of the ANS Forth `leave` is
-; equivalent to `unloop exit`.
+; Forth version.
 ;
 ; }doc
 
@@ -2809,7 +2815,7 @@ store.de_into_hl_pointer:
 
   dw question_exec_
   dw store_csp_
-  dw current_,fetch_,context_,store_ ; XXX TODO why fig-Forth does this?
+  dw current_,fetch_,context_,store_ ; XXX OLD -- why fig-Forth does this?
   dw header_,right_bracket_
   dw paren_semicolon_code_
 do_colon:
@@ -3382,6 +3388,8 @@ endif
 
 ; ----------------------------------------------
 
+  ; XXX TODO remove, not needed
+
 if 1 ; names_in_memory_bank?
 
   _colon_header cfa_to_lfa_,'CFA>LFA'
@@ -3394,6 +3402,7 @@ else
 endif
 
 ; ----------------------------------------------
+
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
 if 1 ; names_in_memory_bank?
@@ -3419,7 +3428,7 @@ endif
 ;
 ; }doc
 
-; XXX FIXME -- return 0 if cfa has no name associated
+; XXX FIXME -- make it return 0 if cfa has no name associated
 
 if 1 ; names_in_memory_bank?
 
@@ -3490,12 +3499,37 @@ else
 endif
 
 ; ----------------------------------------------
+  _colon_header n_fetch_,'N@'
+
+; doc{
+;
+; n@  ( a -- x )
+;
+; Fetch from the _a_ address of the names bank.
+;
+; }doc
+
+  ; XXX 14 bytes:
+  _names_bank
+  dw fetch_
+  _default_bank
+  dw semicolon_s_
+
+  ; XXX TODO in Z80 if smaller:
+  ; ld e,names_bank
+  ; call bank.e
+  ; pop hl
+  ; ld e,default_bank
+  ; call bank.e
+  ; _jp_next
+
+; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
 
 if 1 ; names_in_memory_bank?
 
   _number 4
-  dw minus_,fetch_
+  dw minus_,n_fetch_
   dw semicolon_s_
 
 else
@@ -3507,10 +3541,17 @@ endif
 
 
 ; ----------------------------------------------
+
+if 1 ; fig_does? ; XXX OLD -- original fig-Forth version, paired with `<builds`.
+
   _colon_header nfa_to_pfa_,'NFA>PFA'
+
+  ; XXX TODO remove, not needed
 
   dw nfa_to_cfa_,cfa_to_pfa_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
 ; doc{
@@ -4538,10 +4579,14 @@ header.continue:
 
 if 1 ; names_in_memory_bank?
 
-    ; XXX TODO
+    ; XXX TODO adapt to `parse-word`; now it works because
+    ; `defined` still uses `word`, that leaves the string at
+    ; `here`.
 
-  dw here_,count_,save_string_ ; ( ca len )
-  dw tuck_ ; save the name length for later ( len ca len )
+  dw here_,count_
+  ; XXX TODO error if name is too long (see lina)
+  dw width_,fetch_,min_
+  dw save_string_,tuck_ ; ( len ca len )
   _names_bank
   dw here_,comma_np_ ; store a pointer to the cfa
   dw latest_,comma_np_ ; link field
@@ -4976,10 +5021,9 @@ interpret.begin:
 
 interpret.execute:
   ; Executing or immediate ( cfa )
-  ; dw drop_ ; XXX TMP for debugging
 ;  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  _XXX 'about to execute cfa '
-  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
+;  _echo 'about to execute cfa ' ; XXX INFORMER
+;  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
   dw execute_
 ;  dw lit_,7,border_ ; XXX INFORMER
   dw branch_,interpret.begin
@@ -6056,7 +6100,7 @@ words.begin:
   dw cr_,out_,off_
 words.continue:
   dw dup_,id_dot_
-  dw nfa_to_lfa_,fetch_
+  dw nfa_to_lfa_,n_fetch_
   dw dup_,zero_equals_,question_terminal_,or_
   dw zero_branch_,words.begin ; until
   dw drop_
@@ -6522,6 +6566,12 @@ move_name_fields_to_memory_bank:
   ldir
   ld e,default_bank
   call bank.e
+  ; Erase the default bank (not necessary)
+  ld hl,names_bank_address ; the first byte is 0
+  ld de,names_bank_address+1
+  ld bc,16384
+  ldir
+  ; Remove the call to this routine:
   ld hl,cold_start ; address of the call to this routine
   ld (hl),0 ; noop
   inc hl
