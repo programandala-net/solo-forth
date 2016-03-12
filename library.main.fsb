@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511121718
+\ Last modified: 201511121900
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -12491,26 +12491,6 @@ defer num?
 
   \ 1 frame = 50th of second
 
-( interpret-benchmark )
-
-  \ Compare different versions of `interpret`.
-
-  2 load  need reset-frames  warnings off  reset-frames
-
-  need list  need dump  need wdump  need decode
-  need life  need hanoi  need tt need siderator  need pong
-  need doer  need a!  need defer  need value  need editor
-  need case  need times  need dtimes  need for
-
-  frames@ cr .( Frames ) d. cr
-
-  \ How `interpret`
-  \ manages numbers   Bytes free  Frames
-  \ ----------------  ----------  ------
-  \ branches               32766   38888
-  \ execution table        32770   38879
-
-  \ 1 frame = 50th of second
 
 ( interpret-benchmark )
 
@@ -12573,6 +12553,70 @@ defer num?
   \ ----------------  ----------  ------------
   \ branches               32766     510 (1.00)
   \ execution table        32770     507 (0.99)
+
+  \ 1 frame = 50th of second
+
+( interpret-benchmark )
+
+  \ Compare two versions of `interpret`.
+
+  2 load  need reset-frames  reset-frames
+
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+
+  frames@ cr .( Frames ) d. cr
+
+  \ 2015-11-12
+  \
+  \ How `interpret`
+  \ interprets words    Bytes free  Frames
+  \ ------------------  ----------  -------------
+  \ branches                 32770     192 (1.00)
+  \ execution table          32746     190 (0.98)
+
+  \ 1 frame = 50th of second
+
+( interpret-benchmark )
+
+  \ Compare two versions of `interpret`.
+
+  2 load  need reset-frames  reset-frames
+
+: foo noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop ;
+
+  frames@ cr .( Frames ) d. cr
+
+  \ 2015-11-12
+  \
+  \ How `interpret`
+  \ compiles words      Bytes free  Frames
+  \ ------------------  ----------  -------------
+  \ branches                 32770     199 (1.00)
+  \ execution table          32746     198 (0.99)
 
   \ 1 frame = 50th of second
 

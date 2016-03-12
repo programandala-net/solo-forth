@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151111
+  ; Version:        20151112
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B48
   
-  ; Last modified:  201511121718
+  ; Last modified:  201511121900
 
 ; ==============================================================
 ; Author and license
@@ -237,6 +237,11 @@ paren_dot_quote: equ true
 ; old_loops: equ true
   ; true = pre-Forth-83 do-loops
   ; false = post-Forth-83 do-loops
+
+  ; XXX UNDER DEVELOPMENT
+table_interpret: equ true
+  ; true = new method: `interpret` uses an execution table
+  ; false = old method
 
 ; ==============================================================
 ; Symbols
@@ -7736,20 +7741,46 @@ two_literal.end:
   _question_throw error.stack_overflow
   dw semicolon_s_
 
-
-if 1 ; interpret_numbers_with_execution_table
-
+; ----------------------------------------------
   _variable_header numbers_execution_table_,'NUMBERS-EXECUTION-TABLE'
 
   dw two_literal_     ; compiling a 2-cell number
   dw literal_         ; compiling a 1-cell number
-  dw not_understood_  ; error
+numbers_execution_table.0:
+  dw not_understood_  ; not a number: error
   dw 0                ; interpreting a 2-cell number: do nothing
   dw 0                ; interpreting a 1-cell number: do nothing
   
+; ----------------------------------------------
   _colon_header not_understood_,'NOT-UNDERSTOOD'
+
   _literal error.not_understood
   dw throw_
+
+if 1 ; table_interpret ; XXX NEW
+
+  _colon_header compilation_only_,'COMPILATION-ONLY'
+
+  _literal error.compilation_only
+  dw throw_
+
+  _variable_header interpret_execution_table_,'INTERPRET-EXECUTION-TABLE'
+
+  ;                cells
+  ; ordinary     = +01
+  ; immediate    = +01
+  ; compile-only = +02
+
+  dw execute_           ; compiling an immediate and compile-only word
+  dw compile_comma_     ; compiling a compile-only word
+  dw execute_           ; compiling an immediate word
+  dw compile_comma_     ; compiling an ordinary word
+interpret_execution_table.0
+  dw 0                  ; not used
+  dw execute_           ; interpreting an ordinary word
+  dw execute_           ; interpreting an immediate word
+  dw compilation_only_  ; interpreting a compile-only word
+  dw compilation_only_  ; interpreting an immediate and compile-only word
 
 endif
 
@@ -7773,7 +7804,37 @@ interpret.begin:
 
 ;  _chk 'interpret -- begin' ; XXX INFORMER
   dw question_stack_
-;  _chk 'interpret -- before parse-name' ; XXX INFORMER
+
+if 1 ; table_interpret ; XXX NEW
+
+  ; XXX UNDER DEVELOPMENT
+
+  dw parse_name_  ; ( ca len )
+;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
+;  dw cr_ ; XXX INFORMER
+  dw dup_ ; end of stream?
+  dw zero_branch_,interpret.end ; if so, finish
+
+  dw find_name_ ; ( nfa | 0 )
+  dw question_dup_ ; found?
+  dw zero_branch_,interpret.word_not_found
+
+  ; Found ( nfa )
+  dw dup_,from_name_,swap_  ; ( cfa nfa )
+  dw dup_,immediate_question_
+  dw swap_,compile_only_question_,two_star_
+  dw plus_,abs_ ; ( cfa +n )
+  dw one_plus_ ; adjust the index
+  dw compiling_question_,question_negate_ ; (cfa n )
+;  _chk 'interpret -- index' ; XXX INFORMER
+;  dw cr_ ; XXX INFORMER
+  dw cells_
+  _literal interpret_execution_table.0
+  dw plus_,perform_
+  dw branch_,interpret.begin
+
+else ; XXX OLD
+
   dw parse_name_  ; ( ca len )
 ;  _brk_type 'interpret -- after parse-name' ; XXX INFORMER
 
@@ -7792,9 +7853,8 @@ interpret.begin:
 ;  _chk 'interpret -- word found' ; XXX INFORMER
 
   ; Found ( nfa )
-  dw dup_,compile_only_question_ ; ( cfa b compile-only? )
-  dw executing_question_ ; ( cfa b compile-only? executing? )
-  dw and_ ; executing a compile-only word?
+  dw dup_,compile_only_question_,executing_question_, and_
+  ; executing a compile-only word?
   _literal -14
   dw question_throw_ ; is so, throw error -14
 
@@ -7818,9 +7878,9 @@ interpret.execute:
   dw execute_
   dw branch_,interpret.begin
 
-interpret.word_not_found:
+endif
 
-if 1 ; interpret_numbers_with_execution_table
+interpret.word_not_found:
 
   dw parsed_name_,two_fetch_
   ; try to convert the text to a number
@@ -7828,59 +7888,9 @@ if 1 ; interpret_numbers_with_execution_table
   dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
   dw compiling_question_,question_negate_  ; ( d -2 | n -1 | 0 | n 1 | d 2 )
   dw cells_
-  _literal numbers_execution_table_pfa+(2*cell)
+  _literal numbers_execution_table.0 ; middle of the table
   dw plus_,perform_
   dw branch_,interpret.begin ; repeat
-
-else
-
-;  _chk 'interpret -- not found' ; XXX INFORMER
-
-;  _chk 'interpret -- before parsed-name 2@' ; XXX INFORMER
-  dw parsed_name_,two_fetch_
-;  _chk 'interpret -- after parsed-name 2@' ; XXX INFORMER
-
-  ; try to convert the text to a number
-  ; ( ca len )
-;  _chk 'interpret -- before number' ; XXX INFORMER
-
-  dw number_question_ ; is it a number?
-  ; ( 0 | n 1 | d 2 )
-  ; XXX TODO preserve and use TOS to check single/double
-  ; XXX TODO better yet: use an execution table!
-
-;  _brk 'interpret -- after number?' ; XXX INFORMER
-  dw zero_equals_
-  _question_throw error.not_understood ; error if not
-
-; _brk 'interpret -- after number' ; XXX INFORMER
-  dw dpl_,fetch_,zero_less_than_ ; single number?
-  dw question_branch_,interpret.16bit_number
-
-; _brk 'interpret -- 32bit_number' ; XXX INFORMER
-  ; decimal point detected, so it's a double, 32-bit, number
-  dw compiling_question_
-  dw zero_branch_,interpret.begin
-  dw two_literal_
-  dw branch_,interpret.begin
-
-interpret.16bit_number:
-;   _brk 'interpret -- 16bit_number' ; XXX INFORMER
-
-  ; XXX TMP -- this is not needed with the pForth version
-  ; of `number?`:
-  ; dw drop_ ; discard high order part of the double number
-
-  ; XXX TODO use `c_literal` for 8-bit values or do it in
-  ; `literal`?
-
-  dw compiling_question_
-  dw zero_branch_,interpret.begin
-  dw literal_
-
-  dw branch_,interpret.begin ; repeat
-
-endif
 
 interpret.end:
   dw two_drop_
