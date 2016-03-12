@@ -14,7 +14,9 @@
 
 \ By Marcos Cruz (programandala.net)
 
-\ 2015-08-17
+\ 2015-08-17: First version.
+\ 2015-08-17: Improvement: the first letter of the section is printed.
+\ 2015-08-18: Fix: `restore-input` returns a flag!
 
 vocabulary nm  also nm definitions
 
@@ -23,8 +25,10 @@ vocabulary nm  also nm definitions
   \ The radix is supposed to be hex.
 
 : section:  ( n1 "name1" -- )
-  create ,  does>  ( n2 "name2" -- ) ( n pfa "name" )
-    @ + address. parse-name type cr ;
+  save-input char >r restore-input throw  \ get the first letter of "name1"
+  create , r> c,  \ store _n1_ and the letter
+  does>  ( n2 "name2" -- ) ( n pfa "name" )
+    dup >r @ + address. r> cell+ c@ emit space parse-name type cr ;
   \ Create a word _name1_ for a section that starts at address _n1_.
   \ The word _name1_ will parse a symbol _name2_ whose relative
   \ value is _n2_ and will print them after converting _n2_ to
@@ -34,5 +38,5 @@ vocabulary nm  also nm definitions
 0xC000 section: d  \ data section
      0 section: a  \ unused section for absolute values
      0 section: b  \ unused bss section
-hex \ the relative values will be hex
+hex \ the relative values are in hex
 

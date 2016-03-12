@@ -10,10 +10,24 @@
 #fuse-gtk --debugger-command "br 0x6369
 #  br 0x6A6C"  solo_forth_disk_1.mgt  &
 
-# 0x7404 cold_start
-
 #  fuse-gtk --debugger-command "br 0x7474"  solo_forth_disk_1.mgt  &
 
 # 0x5E00 cold_entry
+#    --debugger-command "br 0x5E00"  \
 
-  fuse-gtk --debugger-command "br 0x5E00"  solo_forth_disk_1.mgt  &
+  fuse-gtk \
+    --debugger-command "br 0x6672" \
+    solo_forth_disk_1.mgt  &
+
+# the following formats fail:
+
+#  --debugger-command "br 0x6681" \
+#    --debugger-command "br 0x669D"  \
+#    --debugger-command "br 0x66A8" \
+#
+    # --debugger-command "commands 1
+  # br 0x6672
+  # br 0x6681
+  # br 0x66A8
+  # br 0x669D
+  # end" \

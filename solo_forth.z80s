@@ -1,4 +1,5 @@
 ; Solo Forth
+;
 
 ; *******************************************************
 ; XXX WARNING
@@ -7,6 +8,8 @@
 ; It can be assembled, but does not work fine yet.
 
 ; *******************************************************
+
+  .text
 
 ; XXX TODO
 version_status:   equ 'A'
@@ -171,37 +174,6 @@ version_release:  equ 2015081721
 ; I      Immediate. Has precedence bit set. Will execute even when compiling.
 ; U      A user variable.
 
-
-; ==============================================================
-; Sections
-
-  .text
-
-  ; XXX FIXME the binary file contains the data section right after
-  ; the text section, not at 0xC000
-
-  .data
-
-  ; .offset 0xC000 ; XXX no change
-
-  ; XXX this creates >50 K file:
-
-  ; org names_bank_address
-
-  ; XXX when first `.data` is at the end of the file, `org 0` causes
-  ; error "attempt to move org backwards", because macros already
-  ; compiled into the section:
-
-  ; org 0
-
-;start_of_bank: ; XXX TMP for debugging
-;  .ascii "start-of-bank" ; XXX TMP for debugging
-  db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
-
-  .text
-
-  ; .offset 0x5E00 ; XXX no change
-
 ; ==============================================================
 ; Configuration
 
@@ -257,7 +229,7 @@ origin:                           equ 0x5E00
 
 false:                            equ 0
 true:                             equ 1
-.if true=(-1)
+.if true==(-1)
   ; XXX FIXME
   ; There were problems when true=-1, but it seems they have
   ; disappeared after switching to the one buffer method.
@@ -293,13 +265,13 @@ lines_per_screen:                 equ 0x10
 max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
 bytes_per_user_variables:         equ 0x40
 
-precedence_bit:       equ 6
-precedence_bit_mask:  equ 1 << precedence_bit
-smudge_bit:           equ 5
-smudge_bit_mask:      equ 1 << smudge_bit
+smudge_bit:       equ 5
+smudge_mask:      equ 1 << smudge_bit
+precedence_bit:   equ 6
+precedence_mask:  equ 1 << precedence_bit
 
-max_word_length:                equ 0x1F
-max_word_length_bit_mask:       equ max_word_length
+max_word_length:            equ 0x1F
+max_word_length_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; size of the circular string buffer
 
@@ -384,6 +356,7 @@ over_char:                  equ 0x15
 at_char:                    equ 0x16
 tab_char:                   equ 0x17 ; tab (screen only)
 space_char:                 equ 0x20
+copyright_char:             equ 0x7F
 
 ; ----------------------------------------------
 ; ROM  routines
@@ -531,7 +504,13 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-np defl names_bank_address+1
+; XXX FIXME binutils bug?
+; With this `defl`, np doesn't change its value (0xC001);
+; without it, it keeps the first value assigned with `defl`
+; in the `_header` macro (0xC00A).
+; np defl names_bank_address+1
+
+np defl 0xC000 ; data_start
 
 names_pointer:
   ; First free address in the names bank,  restored by `cold`.
@@ -667,12 +646,12 @@ db space_char,0,space_char  ; Null word, required by the parsing words.
 ; ----------------------------------------------
 ; Header
 
-immediate: equ precedence_bit_mask ; used as optional parameter
+immediate: equ precedence_mask ; used as optional parameter
 
 nfa_of_the_previous_word defl 0 ; link to previous Forth word
 ; current_vocabulary defl forth_pfa \ XXX OLD
 
-_header: macro _base_label,_name,_is_immediate=0
+_header: macro _base_label,_name,_immediate=0
 
   ; In dictionary:
 
@@ -690,20 +669,18 @@ _header: macro _base_label,_name,_is_immediate=0
     dw nfa_of_the_previous_word ; link field
 \_base_label\()nfa: ; name field address
 
-  ; Length byte with optional precedence bit:
-  db _address_after_name-_name_address+\_is_immediate
+  ; Name field
+  ; XXX FIXME the length byte is compiled wrong
+  ;db _address_after_name-.-1+\_immediate ; length byte with optional precedence bit
+  ; db (_address_after_name-.-1) ; XXX TMP -- always 0xFB!
+  ;db 2 ; XXX TMP -- 2
+  ; .byte 2 ; XXX TMP -- 2
+  .byte (_address_after_name-.-1) ; XXX TMP -- always 0xFB!
+  db "\_name"
+_address_after_name defl .
 
-_name_address defl $
-  db "\_name" ; name field
-_address_after_name defl $
-np defl $ ; new value of the names pointer
-
-  ; Update the names pointer:
-  ; XXX OLD
-  ; XXX TODO
-;  .org names_pointer
-;  dw np ; overwrite names_pointer
-;  dw np ; overwrite names_pointer_init_value
+;np defl $ ; update the names pointer ; XXX does not work
+np defl . ; XXX it works, depending on strange things; the symbol is updated and also appears in the list
 
   ; In dictionary:
   
@@ -713,65 +690,65 @@ nfa_of_the_previous_word defl \_base_label\()nfa
 
   endm
 
-_code_header: macro _base_label,_name,_is_immediate=0
+_code_header: macro _base_label,_name,_immediate=0
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
   dw \_base_label\()pfa ; code field
   \_base_label\()pfa: ; parameter field address
 
   endm
 
-_code_alias_header: macro _base_label,_name,_is_immediate=0,_alias
+_code_alias_header: macro _base_label,_name,_immediate=0,_alias
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
   dw \_alias\()pfa ; code field
 
   endm
 
-_colon_header: macro _base_label,_name,_is_immediate=0
+_colon_header: macro _base_label,_name,_immediate=0
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
   dw do_colon ; code field
   \_base_label\()pfa: ; parameter field address
 
   endm
 
-_user_variable_header: macro _base_label,_name,_is_immediate=0
+_user_variable_header: macro _base_label,_name,_immediate=0
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
   dw do_user ; code field
   \_base_label\()pfa: ; parameter field address
 
   endm
 
-_does_header: macro _base_label,_name,_is_immediate=0,_runtime_routine
+_does_header: macro _base_label,_name,_immediate=0,_runtime_routine
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
 
   dw \_runtime_routine ; code field
   \_base_label\()pfa: ; parameter field address
 
   endm
 
-_constant_header: macro _base_label,_name,_is_immediate=0
+_constant_header: macro _base_label,_name,_immediate=0
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
   dw do_constant ; code field
   \_base_label\()pfa: ; parameter field address
 
   endm
 
-_variable_header: macro _base_label,_name,_is_immediate=0
+_variable_header: macro _base_label,_name,_immediate=0
 
-  _header \_base_label,"\_name",\_is_immediate
+  _header \_base_label,"\_name",\_immediate
   dw do_create ; code field
   \_base_label\()pfa: ; parameter field address
 
   endm
 
-_two_variable_header: macro _base_label,_name,_is_immediate=0
+_two_variable_header: macro _base_label,_name,_immediate=0
 
-  _variable_header \_base_label,"\_name",\_is_immediate
+  _variable_header \_base_label,"\_name",\_immediate
 
   endm
 
@@ -780,19 +757,17 @@ _two_variable_header: macro _base_label,_name,_is_immediate=0
 
 _string: macro _text
 
-  ; _string_first ; address of the first char of the name
-  ; _string_next  ; address after the last char of the name
-  db _string_next-_string_first ; length byte
-_string_first defl $
+  ; XXX FIXME binutils compiles wrong lengths
+  
+  .warning "The _string macro is obsolete"
+
+  db _string_end-$-1 ; length byte
   db "\_text"
-_string_next defl $
+_string_end defl $
 
 endm
 
 _literal: macro _n
-
-  ; Note: parenthesis are needed to prevent a strange problem of
-  ; Pasmo with signs.
 
   .if \_n==0
     dw zero_
@@ -905,6 +880,7 @@ _z80_border_wait_pause: defl $
   endm
 
 _echo: macro _txt
+  .warning "The _echo macro is obsolete"
   dw cr_,paren_dot_quote_
   _string "\_txt"
   endm
@@ -2118,7 +2094,7 @@ paren_loop83.loop:
   pop hl  ; l=base
   pop de  ; e=character
   ld a,e  ; character
-  sub '0' ; >="0"
+  sub '0' ; >="0"?
   jp c,false_pfa ; <"0" is invalid
   cp 0x0A ; >"9"?
   jp m,digit.test_value ; no, test value
@@ -2169,7 +2145,7 @@ paren_find.string_address: equ $+1
   ld hl,0 ; string address
   ld a,(de) ; length byte of the name field
   ld c,a    ; save for later
-  and max_word_length_bit_mask  ; length
+  and max_word_length_mask  ; length
   cp (hl) ; same length?
   jr nz,paren_find.not_a_match ; lengths differ
 
@@ -2198,8 +2174,8 @@ paren_find.compare_next_char:
 
   ld hl,1 ; 1=immediate word
   ld a,c ; name field length byte
-  and precedence_bit_mask ; immediate word?
-  jp nz, paren_find.end
+  and precedence_mask ; immediate word?
+  jp nz,paren_find.end
   ; non-immediate word
   dec hl
   dec hl ; -1 = non-immediate word
@@ -2897,15 +2873,7 @@ fm_slash_mod.1:
 ;
 ; }doc
 
-.if 0 ; XXX OLD
-  ld hl,(user_variables_pointer)
-  ld a,(hl)
-  inc hl
-  ld h,(hl)
-  ld l,a
-.else
   pop hl
-.endif
   ld sp,hl
   _jp_next
 
@@ -3347,7 +3315,7 @@ true_if_cy:
   _code_header on_,"ON"
 
   pop hl
-.if true=1
+.if true==1
   ld (hl),1
   inc hl
   ld (hl),0
@@ -3471,7 +3439,7 @@ do_colon:
   inc de ; de=pfa
   ld c,e
   ld b,d ; bc=pfa
-do_colon_end: ; XXX TMP for debugging
+do_colon.end: ; XXX TMP for debugging
   _jp_next
 
 ; ----------------------------------------------
@@ -4127,7 +4095,7 @@ cfa_to_nfa.begin_1:
   inc hl
   inc hl
   ld a,(hl) ; name field byte length
-  and max_word_length_bit_mask ; name length
+  and max_word_length_mask ; name length
   ld c,a ; name length
   inc c  ; plus the length byte
   add hl,bc ; point to the cfa pointer
@@ -4346,7 +4314,7 @@ cfa_to_nfa.begin_1:
 
   _names_bank
   dw count_
-  _literal max_word_length_bit_mask
+  _literal max_word_length_mask
   dw and_
   dw save_string_
   _default_bank
@@ -4472,7 +4440,7 @@ postpone.end:
 ; }doc
 
   dw latest_
-  _literal smudge_bit_mask
+  _literal smudge_mask
   ; XXX TODO factor `toggle-names'?
   _names_bank
   dw toggle_
@@ -4759,7 +4727,7 @@ expect.do: ; ( ca )
   ; Delete key ( ca c )
   dw drop_
   dw dup_,i_,equals_ ; cursor at the start position?
-.if true=(-1)
+.if true==(-1)
   ; XXX TODO simplify
   dw abs_
 .endif
@@ -5132,7 +5100,7 @@ paren_number.end:
   _literal '-'
   dw equals_ ; is it a minus sign?
   dw dup_,to_r_ ; save the flag
-.if true=(-1)
+.if true==(-1)
   dw abs_
 .endif
   dw plus_
@@ -5294,7 +5262,15 @@ find.do:
   dw question_dup_ ; a vocabulary in the search order?
   dw zero_branch_,find.loop ; if not, next
   ; valid vocabulary in the search order
-  dw fetch_,paren_find_,question_dup_ ; word found in the vocabulary?
+  dw fetch_
+  ;dw cr_,paren_dot_quote_ ; XXX INFORMER
+  ;db 7,"(find){" ; XXX INFORMER
+  ;dw cr_,dot_s_ ; XXX INFORMER
+  dw paren_find_
+  ;dw cr_,paren_dot_quote_ ; XXX INFORMER
+  ;db 7,"}(find)" ; XXX INFORMER
+  ;dw cr_,dot_s_ ; XXX INFORMER
+  dw question_dup_ ; word found in the vocabulary?
   dw zero_branch_,find.loop ; if not, try the next vocabulary
   dw unloop_,exit_
 find.loop:
@@ -5363,7 +5339,7 @@ error_to_number.do:
   dw i_
   _literal 16
   dw mod_,zero_equals_
-.if true=(-1)
+.if true==(-1)
   dw abs_
 .endif
   dw plus_
@@ -5380,7 +5356,7 @@ error_to_number.do:
 error.message:
   dw here_,count_,type_ ; last parsed word ; XXX TODO adapt to `parse-word`
   dw paren_dot_quote_
-  _string '? '
+  db 2,"? "
   dw message_
   dw sp0_,fetch_,sp_store_
   dw blk_,fetch_,question_dup_
@@ -5743,11 +5719,10 @@ interpret.begin:
   ; `2literal` and `cliteral` (make them give an error in
   ; interpretation mode), `interpret` must be modified.
 
-
   dw question_stack_
   ; dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
-  ;dw cr_,dot_s_ ; XXX INFORMER
+  ; dw cr_,dot_s_ ; XXX INFORMER
   ; _echo 'In interpret after defined ' ; XXX INFORMER
   ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
   dw question_dup_ ; found?
@@ -5759,7 +5734,7 @@ interpret.begin:
   ; Non-immediate word: ( cfa -1 )
   dw comp_question_
   ; ( cfa 1 state | cfa -1 state )
-.if true=1
+.if true==1
   ; Compiling an immediate word:     ( cfa  1 1 )
   ; Compiling a non-immediate word:  ( cfa -1 1 )
   ; Executing an immediate word:     ( cfa  1 0 )
@@ -5813,7 +5788,7 @@ interpret.16bit_number:
   _colon_header immediate_,"IMMEDIATE"
 
   dw latest_
-  _literal precedence_bit_mask
+  _literal precedence_mask
   ; XXX TODO factor `toggle-names'?
   _names_bank
   dw toggle_
@@ -5889,7 +5864,7 @@ quit.do:
   dw comp_question_
   dw question_branch_,quit.do
   dw paren_dot_quote_
-  _string 'ok'
+  db 2,"ok"
   dw branch_,quit.do
 
 .if show_version
@@ -5930,6 +5905,7 @@ quit.do:
 ; }doc
 
 .if show_version
+  ; XXX TODO
   dw paren_dot_quote_
 ;  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
   _string "Solo Forth\rVersion "
@@ -5938,11 +5914,18 @@ quit.do:
 ;  _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
 .else
   dw paren_dot_quote_
-  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  db greeting.string_0_end-$-1
+  db "Solo Forth",carriage_return_char
+  db copyright_char," 2015 Marcos Cruz",carriage_return_char
+  db "(programandala.net)",carriage_return_char
+greeting.string_0_end:
+  ; dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   ; XXX TMP show the free memory, during development only
   dw unused_,u_dot_
   dw paren_dot_quote_
-  _string "bytes free"
+  db greeting.string_1_end-$-1
+  db "bytes free"
+greeting.string_1_end:
 .endif
   dw semicolon_s_
 
@@ -6010,12 +5993,15 @@ warm_start:
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
 
-  dw only_
-  dw forth_
-  dw definitions_  ; search order
-  dw decimal_      ; base
+  dw only_,forth_,definitions_  ; search order
+  dw hex_      ; base ; XXX TMP for debugging
 
-  dw colors0_,page_,greeting_
+  dw display_,colors0_,page_,greeting_
+
+  ;dw cr_,lit_,precedence_mask,dot_,cr_ ; XXX TMP for debugging
+  ;dw lit_,smudge_mask,dot_,cr_ ; XXX TMP for debugging
+  dw cr_,lit_,root_forth_nfa,c_fetch_,dot_,cr_ ; XXX TMP for debugging
+  dw lit_,next_screen_nfa,c_fetch_,dot_,cr_ ; XXX TMP for debugging
 
   dw abort_
 
@@ -6029,13 +6015,13 @@ only_first_cold: ; XXX TMP -- temporary label
 .endif
   call common_start
   dw cold_
-  ;dw abort_ ; XXX TMP for debugging
 
 common_start:
 
   ; Common operations done by warm_start and cold_start.
 
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
+  ld sp,(s0_init_value)
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
   ld ix,next ; restore IX
@@ -6320,7 +6306,10 @@ max.2:
 
 message.number_only:
   dw paren_dot_quote_
-  _string 'MSG # '
+  ;_string "MSG # "  ; XXX FIXME compiled with length 2!
+  db message.string_end-$-1
+  db "MSG #"
+message.string_end:
   ; XXX TODO force decimal base
   dw dot_
   dw semicolon_s_
@@ -6607,7 +6596,7 @@ block.end:
   _literal 10
   dw slash_,one_,and_
 
-.if true=1 ; XXX OLD
+.if true==1 ; XXX OLD
   ; XXX TODO optimize with `7 lshift`?
   _literal 128
   dw star_,plus_
@@ -6869,13 +6858,15 @@ read_write_sector_command:
 
   ; XXX TODO -- adapt to the new parsing method
 
+  ;dw cr_,dot_s_,lit_,1,border_,key_,drop_ ; XXX INFORMER
+;  dw cr_,paren_dot_quote_ ; XXX INFORMER
+;  db 14,"start of find:" ; XXX INFORMER
+;  dw cr_,dot_s_ ; XXX INFORMER
 .if 1 ; XXX OLD
 
   dw b_l_,word_ ; ( ca2 )
 
 .else ; XXX NEW
-
-  ; XXX FIXME -- crash somewhere in `query`
 
   dw parse_name_  ; ( ca1 len1 )
   ;dw cr_,dot_s_,lit_,1,border_,key_,drop_ ; XXX INFORMER
@@ -6884,10 +6875,15 @@ read_write_sector_command:
 
 .endif
 
+  ;dw cr_,dot_s_,lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw dup_,count_,uppers_  ; uppercase ( ca2 )
   ;dw cr_,dot_s_,lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw find_
   ;dw cr_,dot_s_,lit_,4,border_,key_,drop_ ; XXX INFORMER
+  ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
+;  dw cr_,paren_dot_quote_ ; XXX INFORMER
+;  db 12,"end of find:" ; XXX INFORMER
+;  dw cr_,dot_s_ ; XXX INFORMER
 
   dw semicolon_s_
 
@@ -7532,7 +7528,10 @@ system_stack_pointer: equ $+1
 where.do_it:
   dw dup_,b_slash_scr_,slash_
   dw paren_dot_quote_
-  _string 'Scr # '
+  ;_string "Scr # " ; XXX FIXME compiled with length 2!
+  db where.string_1_end-$-1
+  db "Scr #"
+where.string_1_end:
   dw decimal_,dot_
   dw swap_,c_slash_l_,slash_mod_,c_slash_l_,star_
   dw rot_,block_,plus_
@@ -8010,7 +8009,17 @@ question_backslash.end:
   dw parse_,type_
   dw semicolon_s_
 
-latest_nfa_in_forth_voc: equ dot_paren_nfa
+; ----------------------------------------------
+  _colon_header xxx_,"x",immediate
+
+; XXX TMP -- word created only for debugging
+
+  dw semicolon_s_
+
+  .data
+;latest_nfa_in_forth_voc: equ dot_paren_nfa
+latest_nfa_in_forth_voc: equ xxx_nfa ;XXX TMP
+  .text
 
 dictionary_pointer_after_cold:
 
@@ -8063,6 +8072,15 @@ move_name_fields_to_memory_bank:
   ld (hl),0 ; nop
   ;_z80_border_wait 3 ; XXX INFORMER
   ret
+
+; ==============================================================
+; Data section
+
+  .data
+
+  db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
+
+data_start:
 
 ; ==============================================================
 ; Character set

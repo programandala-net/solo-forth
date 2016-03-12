@@ -11,6 +11,9 @@
 ################################################################
 # Requirements
 
+# GNU binutils
+#   http://gnu.org/software/binutils
+
 # Vim (by Bram Moolenaar)
 # 	http://vim.org
 
@@ -65,7 +68,7 @@ nm=$(z80)nm
 # Main
 
 .PHONY: all
-all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
+all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt symbols
 
 .PHONY: symbols
 symbols: solo_forth.symbols.abs.txt
@@ -96,12 +99,16 @@ solo_forth.bas.tap: solo_forth.bas
 ################################################################
 # The object file
 
-$(object_file): $(kernel_source_file) $(ld_script)
+$(object_file): $(kernel_source_file)
 	$(as) \
 		-z80 \
-		-aglhs=solo_forth.list.txt \
+		-agls=solo_forth.list.txt \
+		-L \
 		-o $(object_file) \
 		$(kernel_source_file)
+
+# XXX OLD
+#$(object_file): $(kernel_source_file) $(ld_script)
 
 ################################################################
 # The binary file
@@ -194,6 +201,7 @@ backup:
 		_old/* \
 		_ideas/* \
 		_draft/* \
+		_tests/* \
 		*.fs \
 		*.sh \
 		solo_forth*.fsb \

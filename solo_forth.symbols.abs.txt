@@ -1,2298 +1,2305 @@
-0000 _bank
-0000 .bss
-0000 _code_alias_header
-0000 _code_header
-0000 _colon_header
-0000 _constant_header
-0000 _default_bank
-0000 _does_header
-0000 _echo
-0000 false
-0000 _header
-0000 _jp_next
-0000 _jump
-0000 _jump_nc
-0000 _jump_z
-0000 _literal
-0000 _message
-0000 _names_bank
-0000 _question_error
-0000 _string
-0000 _two_variable_header
-0000 _user_variable_header
-0000 _variable_header
-0000 _z80_border
-0000 _z80_border_wait
-5E00 cold_entry
-5E00 .text
-5E03 warm_entry
-5E06 latest_nfa_in_root_voc.init_value
-5E08 latest_nfa_in_forth_voc.init_value
-5E0A latest_nfa_in_assembler_voc.init_value
-5E0C voc_link.init_value
-5E0E user_variables_pointer
-5E10 return_stack_pointer
-5E12 default_color_attribute
-5E14 default_user_variables_start
-5E14 s0_init_value
-5E16 r0_init_value
-5E1A width_init_value
-5E1C warning_init_value
-5E20 dp_init_value
-5E24 blk_init_value
-5E26 in_init_value
-5E28 out_init_value
-5E2A scr_init_value
-5E2C default_user_variables_end
-5E2C ip_backup
-5E2E names_pointer
-5E30 names_pointer_init_value
-5E32 s0_value
-5E32 user_variables
-5E34 r0_value
-5E38 width_value
-5E3A warning_value
-5E3E dp_value
-5E42 blk_value
-5E44 in_value
-5E46 out_value
-5E48 scr_value
-5E4A number_tib_value
-5E4C hld_value
-5E4E current_value
-5E50 state_value
-5E52 base_value
-5E54 dpl_value
-5E56 fld_value
-5E58 csp_value
-5E5A r_hash_value
-5E5C context_value
-5E72 csb
-5E72 unused_csb
-5E74 csb0
-6014 data_stack_bottom
-6014 terminal_input_buffer
-6107 disk_buffer
-6107 return_stack_bottom
-630C compare_de_hl_unsigned
-6312 compare_de_hl_signed
-631C move_block
-6322 move_block_upwards
-6328 move_block_downwards
-6334 a_multiplied_by_de_to_ahl
-6339 a_multiplied_by_de_to_ahl.1
-6341 a_multiplied_by_de_to_ahl.2
-6346 hl_multiplied_by_de_to_hlde_unsigned
-635D push_hlde
-635E push_hl
-635F next
-6365 next2
-6369 next2_end
-636A root_x_
-636C root_x_pfa
-6372 root_forth_
-6374 root_forth_pfa
-6378 root_definitions_
-637A root_definitions_pfa
-637E abase_
-6380 abase_pfa
-6382 asm_
-6384 asm_pfa
-6396 end_asm_
-6398 end_asm_pfa
-63A4 end_code_
-63A6 end_code_pfa
-63AE next_
-63B0 next_pfa
-63B2 pushhl_
-63B4 pushhl_pfa
-63B6 pushhlde_
-63B8 pushhlde_pfa
-63BA fetchhl_
-63BC fetchhl_pfa
-63BE next_comma_
-63C0 next_comma_pfa
-63C8 pushhl_comma_
-63CA pushhl_comma_pfa
-63D7 pushhlde_comma_
-63D9 pushhlde_comma_pfa
-63E6 fetchhl_comma_
-63E8 fetchhl_comma_pfa
-63F5 label_
-63F7 label_pfa
-63FD also_
-63FF also_pfa
-640D minus_order_
-640F minus_order_pfa
-6419 only_
-641B only_pfa
-6423 previous_
-6425 previous_pfa
-643F seal_
-6441 seal_pfa
-644D root_
-644F root_pfa
-6451 root_vocabulary_link
-6453 forth_
-6455 forth_pfa
-6457 forth_vocabulary_link
-6459 assembler_
-645B assembler_pfa
-645D assembler_vocabulary_link
-645F s_lit_
-6461 s_lit_pfa
-6471 paren_s_
-6473 paren_s_pfa
-647F paren_s.interpreting
-6483 c_lit_
-6485 c_lit_pfa
-6487 push_a
-6488 push_l
-648D lit_
-648F lit_pfa
-6498 bank_
-649A bank_pfa
-64A0 bank.default
-64A0 bank.e
-64A0 bank.names
-64AE unused_csb_
-64B0 unused_csb_pfa
-64B6 csb0_
-64B8 csb0_pfa
-64BA question_csb_
-64BC question_csb_pfa
-64D4 question_csb_.enough
-64DE allocate_string_
-64E0 allocate_string_pfa
-64EA save_string_
-64EC save_string_pfa
-64FC save_counted_string_
-64FE save_counted_string_pfa
-650E empty_csb_
-6510 empty_csb_pfa
-651C execute_
-651E execute_pfa
-6522 perform_
-6524 perform_pfa
-652F forward_mark_
-6531 forward_mark_pfa
-653B forward_resolve_
-653D forward_resolve_pfa
-6547 backward_mark_
-6549 backward_mark_pfa
-654F backward_resolve_
-6551 backward_resolve_pfa
-6557 branch_
-6559 branch_pfa
-6560 zero_branch_
-6562 zero_branch_pfa
-656C question_branch_
-656E question_branch_pfa
-6578 paren_loop_
-657A paren_loop_pfa
-657D paren_loop.step_in_de
-6597 paren_loop.negative_step
-659C paren_loop.end
-65A7 paren_plus_loop_
-65A9 paren_plus_loop_pfa
-65AD paren_do_
-65AF paren_do_pfa
-65C3 paren_do83_
-65C5 paren_do83_pfa
-65C7 paren_do83.de_hl
-65E8 paren_question_do83_
-65EA paren_question_do83_pfa
-65F5 question_do.equals
-65F8 question_do83_
-65FA question_do83_pfa
-6605 do83_
-6607 do83_pfa
-6612 loop83_
-6614 loop83_pfa
-6621 paren_loop83_
-6623 paren_loop83_pfa
-663A paren_loop83.loop
-6644 i_
-6646 digit_
-6648 digit_pfa
-665C digit.test_value
-6665 paren_find_
-6667 paren_find_pfa
-6672 paren_find.begin
-6677 paren_find.string_address
-6681 paren_find.compare_next_char
-669D paren_find.end
-66A8 paren_find.not_a_match
-66A9 paren_find.nfa_backup
-66BE scan_
-66C0 scan_pfa
-66CA scan.begin
-66D4 skip_
-66D6 skip_pfa
-66D8 skip.begin
-66E1 chan_
-66E3 chan_pfa
-66EC emit_
-66EE emit_pfa
-66F8 paren_emit_
-66FA paren_emit_pfa
-6703 printer_
-6705 printer_pfa
-670C display_
-670E display_pfa
-6714 key_question_
-6716 key_question_pfa
-6720 decode_table_
-6722 decode_table_pfa
-6733 decode_char_
-6735 decode_char_pfa
-6739 decode_char.begin
-673C paren_key_
-673E paren_key_pfa
-6744 paren_key_.begin
-6748 previous_key
-6757 key_
-6759 key_pfa
-675C key.begin
-676B key.end
-6776 xkey_
-6778 xkey_pfa
-6779 xkey.new_key
-6783 xkey.wait_for_key
-6796 xkey.left_bracket
-6796 xkey.translate
-679C xkey.right_bracket
-67A2 xkey.tilde
-67A8 xkey.vertical_bar
-67AE xkey.backslash
-67B4 xkey.left_curly_bracket
-67BA xkey.right_curly_bracket
-67C0 xkey.end
-67CD cr_
-67CF cr_pfa
-67DA cmove_up_
-67DC cmove_up_pfa
-67E6 cmove_
-67E8 cmove_pfa
-67F2 move_
-67F4 move_pfa
-67F7 move.do
-67FE smove_
-6800 smove_pfa
-6806 u_m_star_
-6808 u_m_star_pfa
-6810 u_slash_mod_
-6812 u_slash_mod_pfa
-682B l60a0h
-682D l60a2h
-6835 l60aah
-683F l60b4h
-6846 l60bbh
-684B l60c0h
-6850 and_
-6852 and_pfa
-685D or_
-685F or_pfa
-686A xor_
-686C xor_pfa
-6877 np_
-6879 np_pfa
-687B np0_
-687D np0_pfa
-687F np_fetch_
-6881 np_fetch_pfa
-6887 np_store_
-6889 np_store_pfa
-688F comma_np_
-6891 comma_np_pfa
-689D sp_fetch_
-689F sp_fetch_pfa
-68A6 sp_store_
-68A8 sp_store_pfa
-68AC rp_
-68AE rp_pfa
-68B0 rp_fetch_
-68B2 rp_fetch_pfa
-68B8 rp_store_
-68BA rp_store_pfa
-68C0 semicolon_s_
-68C2 semicolon_s_pfa
-68CE pick_
-68D0 pick_pfa
-68D6 unloop_
-68D8 exhaust_
-68DA exhaust_pfa
-68E6 question_exhaust_
-68E8 question_exhaust_pfa
-68F0 to_r_
-68F2 to_r_pfa
-68FF from_r_
-6901 from_r_pfa
-690E two_r_drop_
-6910 two_r_drop_pfa
-691C r_drop_
-691E r_drop_pfa
-6928 two_to_r_
-692A two_to_r_pfa
-6937 two_from_r_
-6939 two_from_r_pfa
-6947 two_r_fetch_
-6949 two_r_fetch_pfa
-694F r_fetch_
-6951 r_fetch_pfa
-6957 zero_equals_
-6959 zero_equals_pfa
-6962 zero_not_equals_
-6964 zero_not_equals_pfa
-696D zero_less_than_
-696F zero_less_than_pfa
-6970 zero_less_.hl
-6972 true_if_cy
-6978 zero_greater_than_
-697A zero_greater_than_pfa
-6981 plus_
-6983 plus_pfa
-6989 d_plus_
-698B d_plus_pfa
-699B negate_
-699D negate_pfa
-69A7 dnegate_
-69A9 dnegate_pfa
-69BD nip_
-69BF nip_pfa
-69C4 tuck_
-69C6 tuck_pfa
-69CC over_
-69CE over_pfa
-69D4 drop_
-69D6 drop_pfa
-69D9 swap_
-69DB swap_pfa
-69E0 dup_
-69E2 dup_pfa
-69E7 two_dup_
-69E9 two_dup_pfa
-69F0 plus_store_
-69F2 plus_store_pfa
-69FD off_
-69FF off_pfa
-6A07 on_
-6A09 on_pfa
-6A11 toggle_
-6A13 toggle_pfa
-6A1A fetch_
-6A1C fetch_pfa
-6A1D fetch.hl
-6A23 c_fetch_
-6A25 c_fetch_pfa
-6A2C two_fetch_
-6A2E two_fetch_pfa
-6A2F two_fetch.hl
-6A3B two_store_
-6A3D two_store_pfa
-6A3E two_store.into_hl_pointer
-6A49 store_
-6A4B store_pfa
-6A4C store.into_hl_pointer
-6A4D store.de_into_hl_pointer
-6A52 c_store_
-6A54 c_store_pfa
-6A59 colon_
-6A5B colon_pfa
-6A65 do_colon
-6A72 do_colon_end
-6A74 noname_
-6A76 noname_pfa
-6A88 semicolon_
-6A8A semicolon_pfa
-6A96 noop_
-6A98 constant_
-6A9A constant_pfa
-6AA0 do_constant
-6AA5 variable_
-6AA7 variable_pfa
-6AAF user_
-6AB1 user_pfa
-6AB5 do_user
-6AC1 msg_scr_
-6AC3 msg_scr_pfa
-6AC5 zero_
-6AC7 zero_pfa
-6AC9 one_
-6ACB one_pfa
-6ACD two_
-6ACF two_pfa
-6AD1 false_
-6AD3 false_pfa
-6AD9 true_
-6ADB true_pfa
-6AE1 b_l_
-6AE3 b_l_pfa
-6AE5 c_slash_l_
-6AE7 c_slash_l_pfa
-6AE9 l_slash_scr_
-6AEB l_slash_scr_pfa
-6AED disk_buffer_
-6AEF disk_buffer_pfa
-6AF1 b_slash_buf_
-6AF3 b_slash_buf_pfa
-6AF5 b_slash_scr_
-6AF7 b_slash_scr_pfa
-6AF9 scr_slash_disk_
-6AFB scr_slash_disk_pfa
-6AFD hash_vocs_
-6AFF hash_vocs_pfa
-6B01 plus_origin_
-6B03 plus_origin_pfa
-6B0B sp0_
-6B0D sp0_pfa
-6B0E rp0_
-6B10 rp0_pfa
-6B11 width_
-6B13 width_pfa
-6B14 warning_
-6B16 warning_pfa
-6B17 dp_
-6B19 dp_pfa
-6B1A voc_link_
-6B1C voc_link_pfa
-6B1E blk_
-6B20 blk_pfa
-6B21 to_in_
-6B23 to_in_pfa
-6B24 out_
-6B26 out_pfa
-6B27 scr_
-6B29 scr_pfa
-6B2A context_
-6B2C context_pfa
-6B2D current_
-6B2F current_pfa
-6B30 state_
-6B32 state_pfa
-6B33 base_
-6B35 base_pfa
-6B36 dpl_
-6B38 dpl_pfa
-6B39 fld_
-6B3B fld_pfa
-6B3C csp_
-6B3E csp_pfa
-6B3F r_hash_
-6B41 r_hash_pfa
-6B42 hld_
-6B44 hld_pfa
-6B45 tib_
-6B47 tib_pfa
-6B49 number_tib_
-6B4B number_tib_pfa
-6B4D recurse_
-6B4F recurse_pfa
-6B57 one_plus_
-6B59 one_plus_pfa
-6B5E two_plus_
-6B60 two_plus_pfa
-6B66 cell_minus_
-6B68 cell_plus_
-6B6A one_minus_
-6B6C one_minus_pfa
-6B71 two_minus_
-6B73 two_minus_pfa
-6B79 two_star_
-6B7B two_star_pfa
-6B80 cells_
-6B82 cell_
-6B84 cell_pfa
-6B86 two_slash_
-6B88 two_slash_pfa
-6B90 here_
-6B92 here_pfa
-6B98 allot_
-6B9A allot_pfa
-6BA0 s_comma_
-6BA2 s_comma_pfa
-6BB2 comma_
-6BB4 comma_pfa
-6BBE compile_comma_
-6BC0 compile_comma_pfa
-6BC6 c_comma_
-6BC8 c_comma_pfa
-6BD2 minus_
-6BD4 minus_pfa
-6BDC not_equals_
-6BDE not_equals_pfa
-6BE3 false_if_z
-6BE9 equals_
-6BEB equals_pfa
-6BF0 true_if_z
-6BF6 less_than_
-6BF8 less_than_pfa
-6BFA is_de_less_than_hl
-6C03 u_greater_than_
-6C05 u_greater_than_pfa
-6C06 u_greater_than.hl
-6C0A u_less_than_
-6C0C u_less_than_pfa
-6C0E u_less_than.de_hl
-6C17 greater_than_
-6C19 greater_than_pfa
-6C1E rot_
-6C20 rot_pfa
-6C26 space_
-6C28 space_pfa
-6C2E question_dup_
-6C30 question_dup_pfa
-6C38 question_dup.end
-6C3A lfa_to_nfa_
-6C3C trail_
-6C3E trail_pfa
-6C46 latest_
-6C48 latest_pfa
-6C50 pfa_to_lfa_
-6C52 pfa_to_lfa_pfa
-6C56 pfa_to_cfa_
-6C58 cfa_to_pfa_
-6C5A pfa_to_nfa_
-6C5C pfa_to_nfa_pfa
-6C62 cfa_to_nfa_
-6C64 cfa_to_nfa_pfa
-6C70 cfa_to_nfa.begin_0
-6C71 cfa_to_nfa.begin_1
-6C8F cfap_to_lfa_
-6C91 nfa_to_lfa_
-6C93 c_store_bank_
-6C95 c_store_bank_pfa
-6C9F store_bank_
-6CA1 store_bank_pfa
-6CAB c_fetch_bank_
-6CAD c_fetch_bank_pfa
-6CB7 fetch_bank_
-6CB9 fetch_bank_pfa
-6CC3 c_fetch_n_
-6CC5 c_fetch_n_pfa
-6CCB fetch_n_
-6CCD fetch_n_pfa
-6CD3 c_store_n_
-6CD5 c_store_n_pfa
-6CDB store_n_
-6CDD store_n_pfa
-6CE3 nfa_to_cfa_
-6CE5 nfa_to_cfa_pfa
-6CEE nfa_to_string_
-6CF0 nfa_to_string_pfa
-6D03 store_csp_
-6D05 store_csp_pfa
-6D0D question_error_
-6D0F question_error_pfa
-6D19 question_error.no_error
-6D1D comp_question_
-6D1F comp_question_pfa
-6D25 question_comp_
-6D27 question_comp_pfa
-6D32 question_exec_
-6D34 question_exec_pfa
-6D3D question_pairs_
-6D3F question_pairs_pfa
-6D48 question_csp_
-6D4A question_csp_pfa
-6D59 question_loading_
-6D5B question_loading_pfa
-6D68 compile_
-6D6A compile_pfa
-6D7A postpone_
-6D7C postpone_pfa
-6D8C postpone.end
-6D90 left_bracket_
-6D92 left_bracket_pfa
-6D98 right_bracket_
-6D9A right_bracket_pfa
-6DA0 smudge_
-6DA2 smudge_pfa
-6DB3 hex_
-6DB5 hex_pfa
-6DBE decimal_
-6DC0 decimal_pfa
-6DC9 paren_semicolon_code_
-6DCB paren_semicolon_code_pfa
-6DD5 semicolon_code_
-6DD7 semicolon_code_pfa
-6DE5 does_
-6DE7 does_pfa
-6DF8 do_does
-6E07 count_
-6E09 count_pfa
-6E10 bounds_
-6E12 bounds_pfa
-6E1A type_
-6E1C type_pfa
-6E26 type.do
-6E32 type.empty_string
-6E34 type.end
-6E36 minus_trailing_
-6E38 minus_trailing_pfa
-6E3D minus_trailing.begin
-6E4D paren_dot_quote_
-6E4F paren_dot_quote_pfa
-6E61 dot_quote_
-6E63 dot_quote_pfa
-6E76 dot_quote.interpreting
-6E7A span_
-6E7C span_pfa
-6E7E accept_
-6E80 accept_pfa
-6E82 expect_
-6E84 expect_pfa
-6E94 expect.do
-6EBE expect.maybe_carriage_return
-6ED3 expect.control_char
-6EE3 expect.ordinary_key
-6EE5 expect.store
-6EE9 expect.emit
-6EEB expect.loop
-6EF9 expect.end
-6EFD query_
-6EFF query_pfa
-6F1B x_
-6F1D x_pfa
-6F3D x.exit
-6F3F x.end
-6F41 fill_
-6F43 fill_pfa
-6F44 fill.e
-6F48 fill.do
-6F53 fill.end
-6F56 erase_
-6F58 erase_pfa
-6F5D blank_
-6F5F blank_pfa
-6F64 hold_
-6F66 hold_pfa
-6F76 pad_
-6F78 pad_pfa
-6F81 stream_
-6F83 stream_pfa
-6F93 stream.terminal
-6F95 stream.end
-6F9D parsed_
-6F9F parsed_pfa
-6FA7 parse_
-6FA9 parse_pfa
-6FB5 parse_name_
-6FB7 parse_name_pfa
-6FD5 word_
-6FD7 word_pfa
-7010 paren_number_
-7012 paren_number.begin
-7012 paren_number_pfa
-7048 paren_number.decimal_point_done
-704E paren_number.end
-7052 number_
-7054 number_pfa
-706F number.begin
-7094 number.a_blank
-709E number.end
-70A0 upper_
-70A2 upper_pfa
-70AB upper.a
-70B4 uppers_
-70B6 uppers_pfa
-70B8 uppers.do
-70C7 defined_question_
-70C9 defined_question_pfa
-70D1 undefined_question_
-70D3 undefined_question_pfa
-70D9 dollar_store_
-70DB dollar_store_pfa
-70EB find_
-70ED find_pfa
-70F3 find.do
-7111 find.loop
-7119 find_dollar_
-711B find_dollar_pfa
-713C found_
-713E found_pfa
-7155 paren_abort_
-7157 paren_abort_pfa
-715B error_number_
-715D error_number_pfa
-715F error_pos_
-7161 error_pos_pfa
-7165 error_to_line_
-7167 error_to_line_pfa
-716F error_to_number.do
-7180 error_
-7182 error_pfa
-7192 error.message
-71BB error.end
-71BD id_dot_
-71BF id_dot_pfa
-71C7 header_
-71C9 header_pfa
-71DE header.continue
-7214 create_
-7216 create_pfa
-721C do_create
-7220 code_
-7222 code_pfa
-722E compare_
-7230 compare_pfa
-7239 compare.lengths
-723C compare.ready
-7246 compare.match
-7249 compare.no_match
-724A compare.end
-7259 compare_strings_case_sensitive
-7265 search_
-7267 search_pfa
-727D search.1
-7289 search.string_2_len
-7295 search.match
-7298 search.end
-729E search.no_match
-72A2 search.string_1_len
-72A6 search.string_1_addr
-72AB bracket_compile_
-72AD bracket_compile_pfa
-72B3 s_literal_
-72B5 s_literal_pfa
-72BD c_literal_
-72BF c_literal_pfa
-72CB c_literal.end
-72CD literal_
-72CF literal_pfa
-72DB literal.end
-72DD two_literal_
-72DF two_literal_pfa
-72EB two_literal.end
-72ED depth_
-72EF depth_pfa
-72FF question_stack_
-7301 question_stack_pfa
-731E interpret_
-7320 interpret.begin
-7320 interpret_pfa
-733A interpret.execute
-7340 interpret.word_not_found
-7352 interpret.16bit_number
-735A immediate_
-735C immediate_pfa
-736D vocabulary_
-736F vocabulary_pfa
-7383 do_vocabulary
-738C definitions_
-738E definitions_pfa
-7398 paren_
-739A paren_pfa
-73A3 quit_
-73A5 quit_pfa
-73AB quit.do
-73C8 greeting_
-73CA greeting_pfa
-7418 abort_
-741A abort_pfa
-7420 boot
-7424 boot_
-7426 boot_pfa
-7428 warm_
-742A warm_pfa
-7430 warm_start
-7439 cold_
-743B cold_pfa
-749A cold_start
-749E only_first_cold
-74A6 common_start
-74B1 s_to_d_
-74B3 s_to_d_pfa
-74C0 plus_minus_
-74C2 plus_minus_pfa
-74CA plus_minus.end
-74CC d_plus_minus_
-74CE d_plus_minus_pfa
-74D6 d_plus_minus.end
-74D8 abs_
-74DA abs_pfa
-74E0 dabs_
-74E2 dabs_pfa
-74E8 umax_
-74EA umax_pfa
-74F2 umin_
-74F4 umin_pfa
-74FC min_
-74FE min_pfa
-7506 max_
-7508 max_pfa
-7509 max.de
-750D max.1
-750E max.2
-7515 m_star_
-7517 m_star_pfa
-752B m_slash_
-752D m_slash_pfa
-754D star_
-754F star_pfa
-7555 slash_mod_
-7557 slash_mod_pfa
-7561 slash_
-7563 slash_pfa
-7569 mod_
-756B mod_pfa
-7571 star_slash_mod_
-7573 star_slash_mod_pfa
-757D star_slash_
-757F star_slash_pfa
-7585 m_slash_mod_
-7587 m_slash_mod_pfa
-759B paren_line_
-759D paren_line_pfa
-75B5 dot_line_
-75B7 dot_line_pfa
-75BF message_
-75C1 message_pfa
-75D3 message.number_only
-75E2 update_
-75E4 update_pfa
-75F4 updated_question_
-75F6 updated_question_pfa
-75FC stream_end_
-75FE stream_end_pfa
-760A empty_buffers_
-760C empty_buffers_pfa
-7616 buffer_data_
-7618 buffer_data_pfa
-761E buffer_id_
-7620 buffer_id_pfa
-7626 block_number_
-7628 block_number_pfa
-7630 buffer_block_
-7632 buffer_block_pfa
-7638 paren_buffer_
-763A paren_buffer_pfa
-7648 free_buffer.not_updated
-764A free_buffer.end
-7650 buffer_
-7652 buffer_pfa
-7662 buffer.not_equals
-7664 buffer.end
-7668 block_
-766A block_pfa
-767A block.not_equals
-7684 block.end
-7688 flip_
-768A flip_pfa
-7691 block_to_sector_
-7693 block_to_sector_pfa
-76BD read_block_
-76BF read_block_pfa
-76C6 read_buffer_
-76C8 read_buffer_pfa
-76D0 write_block_
-76D2 write_block_pfa
-76D9 write_buffer_
-76DB write_buffer_pfa
-76E3 transfer_block_
-76E5 transfer_block_pfa
-76F1 paren_transfer_block_
-76F3 paren_transfer_block_pfa
-76FA read_write_sector_command
-7702 save_buffers_
-7704 save_buffers_pfa
-7716 flush_
-7718 flush_pfa
-771E paren_load_
-7720 paren_load_pfa
-7739 continued_
-773B continued_pfa
-7741 load_
-7743 load_pfa
-775F next_screen_
-7761 next_screen_pfa
-7779 defined_
-777B defined_pfa
-7789 question_defined_
-778B question_defined_pfa
-7794 bracket_defined_
-7796 bracket_defined_pfa
-779C bracket_undefined_
-779E bracket_undefined_pfa
-77A4 tick_
-77A6 tick_pfa
-77AC bracket_tick_
-77AE bracket_tick_pfa
-77B4 begin_
-77B6 begin_pfa
-77BE then_
-77C0 then_pfa
-77CA do_
-77CC do_pfa
-77D0 do.common
-77D7 loop_
-77D9 loop_pfa
-77E6 plus_loop_
-77E8 plus_loop_pfa
-77F5 until_
-77F7 until_pfa
-7803 again_
-7805 again_pfa
-7811 repeat_
-7813 repeat_pfa
-781D if_
-781F if_pfa
-7823 if.do
-7829 unless_
-782B unless_pfa
-7833 ahead_
-7835 ahead_pfa
-783B else_
-783D else_pfa
-7851 while_
-7853 while_pfa
-7857 spaces_
-7859 spaces_pfa
-785F emits_
-7861 emits_pfa
-7871 emits_.do
-7879 emits_.end
-787D less_hash_
-787F less_hash_pfa
-7887 hash_greater_
-7889 hash_greater_pfa
-7899 sign_
-789B sign_pfa
-78A8 sign.end
-78AA hash_
-78AC hash_pfa
-78C4 hash.digit
-78CD hash_s_
-78CF hash_s.begin
-78CF hash_s_pfa
-78DB d_dot_r_
-78DD d_dot_r_pfa
-78F9 dot_r_
-78FB dot_r_pfa
-7905 d_dot_
-7907 d_dot_pfa
-790F dot_
-7911 dot_pfa
-7917 question_
-7919 question_pfa
-791F u_dot_
-7921 u_dot_pfa
-7927 dot_s_
-7929 dot_s_pfa
-7953 dot_s.do
-7961 dot_s.end
-7963 colors0_
-7965 colors0_pfa
-797A home_
-797C home_pfa
-7984 cls_
-7986 cls_pfa
-79A7 page_
-79A9 page_pfa
-79AD bye_
-79AF bye_pfa
-79B4 system_stack_pointer
-79B8 two_drop_
-79BA two_drop_pfa
-79BE two_swap_
-79C0 two_swap_pfa
-79D3 unused_
-79D5 unused_pfa
-79DD where_
-79DF where_pfa
-79ED where.do_it
-79F6 _string_first
-79FE _string_next
-7A29 at_xy
-7A2B at_xypfa
-7A42 at_pfa.last_line
-7A67 border_
-7A69 border_pfa
-7A74 border.end
-7A7D overwrite_
-7A7F overwrite_pfa
-7A84 flash_
-7A86 flash_pfa
-7A8B inverse_
-7A8D inverse_pfa
-7A92 bright_
-7A94 bright_pfa
-7A99 paper_
-7A9B paper_pfa
-7AA0 ink_
-7AA2 ink_pfa
-7AA4 color
-7AAD emitted_
-7AAF emitted_pfa
-7AC9 emitted.do
-7AD6 emitted.match
-7AD9 emitted.scans
-7AEE emitted.next_char
-7AF8 emitted.end
-7AFE emitted_charset_
-7B00 emitted_charset_pfa
-7B02 hash_emitted_chars_
-7B04 hash_emitted_chars_pfa
-7B06 j_
-7B08 j_pfa
-7B12 two_constant_
-7B14 two_constant_pfa
-7B18 do_two_constant
-7B1D two_variable_
-7B1F two_variable_pfa
-7B29 u_dot_r_
-7B2B u_dot_r_pfa
-7B35 two_over_
-7B37 two_over_pfa
-7B3E exit_
-7B40 exit_pfa
-7B44 question_exit_
-7B46 question_exit_pfa
-7B4C char_
-7B4E char_pfa
-7B56 bracket_char_
-7B58 bracket_char_pfa
-7B5E s_quote_
-7B60 s_quote_pfa
-7B67 question_next_screen_
-7B69 question_next_screen_pfa
-7B6F question_next_screen.end
-7B71 question_backslash_
-7B73 question_backslash_pfa
-7B79 question_backslash.end
-7B7B backslash_
-7B7D backslash_pfa
-7B91 dot_paren_
-7B93 dot_paren_pfa
-7B9C dictionary_pointer_after_cold
-7B9C move_name_fields_to_memory_bank
-C000 .data
-C001 root_x_cfap
-C003 root_x_lfa
-C005 root_x_nfa
-C00A root_forth_cfap
-C00C root_forth_lfa
-C00E root_forth_nfa
-C014 root_definitions_cfap
-C016 root_definitions_lfa
-C018 latest_nfa_in_root_voc
-C018 root_definitions_nfa
-C024 abase_cfap
-C026 abase_lfa
-C028 abase_nfa
-C02E asm_cfap
-C030 asm_lfa
-C032 asm_nfa
-C036 end_asm_cfap
-C038 end_asm_lfa
-C03A end_asm_nfa
-C042 end_code_cfap
-C044 end_code_lfa
-C046 end_code_nfa
-C04F next_cfap
-C051 next_lfa
-C053 next_nfa
-C058 pushhl_cfap
-C05A pushhl_lfa
-C05C pushhl_nfa
-C063 pushhlde_cfap
-C065 pushhlde_lfa
-C067 pushhlde_nfa
-C070 fetchhl_cfap
-C072 fetchhl_lfa
-C074 fetchhl_nfa
-C07C next_comma_cfap
-C07E next_comma_lfa
-C080 next_comma_nfa
-C086 pushhl_comma_cfap
-C088 pushhl_comma_lfa
-C08A pushhl_comma_nfa
-C092 pushhlde_comma_cfap
-C094 pushhlde_comma_lfa
-C096 pushhlde_comma_nfa
-C0A0 fetchhl_comma_cfap
-C0A2 fetchhl_comma_lfa
-C0A4 fetchhl_comma_nfa
-C0A4 latest_nfa_in_assembler_voc
-C0AD label_cfap
-C0AF label_lfa
-C0B1 label_nfa
-C0B7 also_cfap
-C0B9 also_lfa
-C0BB also_nfa
-C0C0 minus_order_cfap
-C0C2 minus_order_lfa
-C0C4 minus_order_nfa
-C0CB only_cfap
-C0CD only_lfa
-C0CF only_nfa
-C0D4 previous_cfap
-C0D6 previous_lfa
-C0D8 previous_nfa
-C0E1 seal_cfap
-C0E3 seal_lfa
-C0E5 seal_nfa
-C0EA root_cfap
-C0EC root_lfa
-C0EE root_nfa
-C0F3 forth_cfap
-C0F5 forth_lfa
-C0F7 forth_nfa
-C0FD assembler_cfap
-C0FF assembler_lfa
-C101 assembler_nfa
-C10B s_lit_cfap
-C10D s_lit_lfa
-C10F s_lit_nfa
-C114 paren_s_cfap
-C116 paren_s_lfa
-C118 paren_s_nfa
-C11C c_lit_cfap
-C11E c_lit_lfa
-C120 c_lit_nfa
-C125 lit_cfap
-C127 lit_lfa
-C129 lit_nfa
-C12D bank_cfap
-C12F bank_lfa
-C131 bank_nfa
-C136 unused_csb_cfap
-C138 unused_csb_lfa
-C13A unused_csb_nfa
-C145 csb0_cfap
-C147 csb0_lfa
-C149 csb0_nfa
-C14E question_csb_cfap
-C150 question_csb_lfa
-C152 question_csb_nfa
-C157 allocate_string_cfap
-C159 allocate_string_lfa
-C15B allocate_string_nfa
-C16B save_string_cfap
-C16D save_string_lfa
-C16F save_string_nfa
-C17B save_counted_string_cfap
-C17D save_counted_string_lfa
-C17F save_counted_string_nfa
-C193 empty_csb_cfap
-C195 empty_csb_lfa
-C197 empty_csb_nfa
-C1A1 execute_cfap
-C1A3 execute_lfa
-C1A5 execute_nfa
-C1AD perform_cfap
-C1AF perform_lfa
-C1B1 perform_nfa
-C1B9 forward_mark_cfap
-C1BB forward_mark_lfa
-C1BD forward_mark_nfa
-C1C3 forward_resolve_cfap
-C1C5 forward_resolve_lfa
-C1C7 forward_resolve_nfa
-C1D0 backward_mark_cfap
-C1D2 backward_mark_lfa
-C1D4 backward_mark_nfa
-C1DA backward_resolve_cfap
-C1DC backward_resolve_lfa
-C1DE backward_resolve_nfa
-C1E7 branch_cfap
-C1E9 branch_lfa
-C1EB branch_nfa
-C1F2 zero_branch_cfap
-C1F4 zero_branch_lfa
-C1F6 zero_branch_nfa
-C1FE question_branch_cfap
-C200 question_branch_lfa
-C202 question_branch_nfa
-C20A paren_loop_cfap
-C20C paren_loop_lfa
-C20E paren_loop_nfa
-C215 paren_plus_loop_cfap
-C217 paren_plus_loop_lfa
-C219 paren_plus_loop_nfa
-C221 paren_do_cfap
-C223 paren_do_lfa
-C225 paren_do_nfa
-C22A paren_do83_cfap
-C22C paren_do83_lfa
-C22E paren_do83_nfa
-C235 paren_question_do83_cfap
-C237 paren_question_do83_lfa
-C239 paren_question_do83_nfa
-C241 question_do83_cfap
-C243 question_do83_lfa
-C245 question_do83_nfa
-C24B do83_cfap
-C24D do83_lfa
-C24F do83_nfa
-C254 loop83_cfap
-C256 loop83_lfa
-C258 loop83_nfa
-C25F paren_loop83_cfap
-C261 paren_loop83_lfa
-C263 paren_loop83_nfa
-C26C i_cfap
-C26E i_lfa
-C270 i_nfa
-C272 digit_cfap
-C274 digit_lfa
-C276 digit_nfa
-C27C paren_find_cfap
-C27E paren_find_lfa
-C280 paren_find_nfa
-C287 scan_cfap
-C289 scan_lfa
-C28B scan_nfa
-C290 skip_cfap
-C292 skip_lfa
-C294 skip_nfa
-C299 chan_cfap
-C29B chan_lfa
-C29D chan_nfa
-C2A2 emit_cfap
-C2A4 emit_lfa
-C2A6 emit_nfa
-C2AB paren_emit_cfap
-C2AD paren_emit_lfa
-C2AF paren_emit_nfa
-C2B6 printer_cfap
-C2B8 printer_lfa
-C2BA printer_nfa
-C2C2 display_cfap
-C2C4 display_lfa
-C2C6 display_nfa
-C2CE key_question_cfap
-C2D0 key_question_lfa
-C2D2 key_question_nfa
-C2D7 decode_table_cfap
-C2D9 decode_table_lfa
-C2DB decode_table_nfa
-C2E8 decode_char_cfap
-C2EA decode_char_lfa
-C2EC decode_char_nfa
-C2F8 paren_key_cfap
-C2FA paren_key_lfa
-C2FC paren_key_nfa
-C302 key_cfap
-C304 key_lfa
-C306 key_nfa
-C30A xkey_cfap
-C30C xkey_lfa
-C30E xkey_nfa
-C313 cr_cfap
-C315 cr_lfa
-C317 cr_nfa
-C31A cmove_up_cfap
-C31C cmove_up_lfa
-C31E cmove_up_nfa
-C325 cmove_cfap
-C327 cmove_lfa
-C329 cmove_nfa
-C32F move_cfap
-C331 move_lfa
-C333 move_nfa
-C338 smove_cfap
-C33A smove_lfa
-C33C smove_nfa
-C342 u_m_star_cfap
-C344 u_m_star_lfa
-C346 u_m_star_nfa
-C34A u_slash_mod_cfap
-C34C u_slash_mod_lfa
-C34E u_slash_mod_nfa
-C356 and_cfap
-C358 and_lfa
-C35A and_nfa
-C35E or_cfap
-C360 or_lfa
-C362 or_nfa
-C365 xor_cfap
-C367 xor_lfa
-C369 xor_nfa
-C36D np_cfap
-C36F np_lfa
-C371 np_nfa
-C374 np0_cfap
-C376 np0_lfa
-C378 np0_nfa
-C37C np_fetch_cfap
-C37E np_fetch_lfa
-C380 np_fetch_nfa
-C384 np_store_cfap
-C386 np_store_lfa
-C388 np_store_nfa
-C38C comma_np_cfap
-C38E comma_np_lfa
-C390 comma_np_nfa
-C394 sp_fetch_cfap
-C396 sp_fetch_lfa
-C398 sp_fetch_nfa
-C39C sp_store_cfap
-C39E sp_store_lfa
-C3A0 sp_store_nfa
-C3A4 rp_cfap
-C3A6 rp_lfa
-C3A8 rp_nfa
-C3AB rp_fetch_cfap
-C3AD rp_fetch_lfa
-C3AF rp_fetch_nfa
-C3B3 rp_store_cfap
-C3B5 rp_store_lfa
-C3B7 rp_store_nfa
-C3BB semicolon_s_cfap
-C3BD semicolon_s_lfa
-C3BF semicolon_s_nfa
-C3C2 pick_cfap
-C3C4 pick_lfa
-C3C6 pick_nfa
-C3CB unloop_cfap
-C3CD unloop_lfa
-C3CF unloop_nfa
-C3D6 exhaust_cfap
-C3D8 exhaust_lfa
-C3DA exhaust_nfa
-C3E2 question_exhaust_cfap
-C3E4 question_exhaust_lfa
-C3E6 question_exhaust_nfa
-C3EF to_r_cfap
-C3F1 to_r_lfa
-C3F3 to_r_nfa
-C3F6 from_r_cfap
-C3F8 from_r_lfa
-C3FA from_r_nfa
-C3FD two_r_drop_cfap
-C3FF two_r_drop_lfa
-C401 two_r_drop_nfa
-C408 r_drop_cfap
-C40A r_drop_lfa
-C40C r_drop_nfa
-C412 two_to_r_cfap
-C414 two_to_r_lfa
-C416 two_to_r_nfa
-C41A two_from_r_cfap
-C41C two_from_r_lfa
-C41E two_from_r_nfa
-C422 two_r_fetch_cfap
-C424 two_r_fetch_lfa
-C426 two_r_fetch_nfa
-C42A r_fetch_cfap
-C42C r_fetch_lfa
-C42E r_fetch_nfa
-C431 zero_equals_cfap
-C433 zero_equals_lfa
-C435 zero_equals_nfa
-C438 zero_not_equals_cfap
-C43A zero_not_equals_lfa
-C43C zero_not_equals_nfa
-C440 zero_less_than_cfap
-C442 zero_less_than_lfa
-C444 zero_less_than_nfa
-C447 zero_greater_than_cfap
-C449 zero_greater_than_lfa
-C44B zero_greater_than_nfa
-C44E plus_cfap
-C450 plus_lfa
-C452 plus_nfa
-C454 d_plus_cfap
-C456 d_plus_lfa
-C458 d_plus_nfa
-C45B negate_cfap
-C45D negate_lfa
-C45F negate_nfa
-C466 dnegate_cfap
-C468 dnegate_lfa
-C46A dnegate_nfa
-C472 nip_cfap
-C474 nip_lfa
-C476 nip_nfa
-C47A tuck_cfap
-C47C tuck_lfa
-C47E tuck_nfa
-C483 over_cfap
-C485 over_lfa
-C487 over_nfa
-C48C drop_cfap
-C48E drop_lfa
-C490 drop_nfa
-C495 swap_cfap
-C497 swap_lfa
-C499 swap_nfa
-C49E dup_cfap
-C4A0 dup_lfa
-C4A2 dup_nfa
-C4A6 two_dup_cfap
-C4A8 two_dup_lfa
-C4AA two_dup_nfa
-C4AF plus_store_cfap
-C4B1 plus_store_lfa
-C4B3 plus_store_nfa
-C4B6 off_cfap
-C4B8 off_lfa
-C4BA off_nfa
-C4BE on_cfap
-C4C0 on_lfa
-C4C2 on_nfa
-C4C5 toggle_cfap
-C4C7 toggle_lfa
-C4C9 toggle_nfa
-C4D0 fetch_cfap
-C4D2 fetch_lfa
-C4D4 fetch_nfa
-C4D6 c_fetch_cfap
-C4D8 c_fetch_lfa
-C4DA c_fetch_nfa
-C4DD two_fetch_cfap
-C4DF two_fetch_lfa
-C4E1 two_fetch_nfa
-C4E4 two_store_cfap
-C4E6 two_store_lfa
-C4E8 two_store_nfa
-C4EB store_cfap
-C4ED store_lfa
-C4EF store_nfa
-C4F1 c_store_cfap
-C4F3 c_store_lfa
-C4F5 c_store_nfa
-C4F8 colon_cfap
-C4FA colon_lfa
-C4FC colon_nfa
-C4FE noname_cfap
-C500 noname_lfa
-C502 noname_nfa
-C50A semicolon_cfap
-C50C semicolon_lfa
-C50E semicolon_nfa
-C510 noop_cfap
-C512 noop_lfa
-C514 noop_nfa
-C519 constant_cfap
-C51B constant_lfa
-C51D constant_nfa
-C526 variable_cfap
-C528 variable_lfa
-C52A variable_nfa
-C533 user_cfap
-C535 user_lfa
-C537 user_nfa
-C53C msg_scr_cfap
-C53E msg_scr_lfa
-C540 msg_scr_nfa
-C548 zero_cfap
-C54A zero_lfa
-C54C zero_nfa
-C54E one_cfap
-C550 one_lfa
-C552 one_nfa
-C554 two_cfap
-C556 two_lfa
-C558 two_nfa
-C55A false_cfap
-C55C false_lfa
-C55E false_nfa
-C564 true_cfap
-C566 true_lfa
-C568 true_nfa
-C56D b_l_cfap
-C56F b_l_lfa
-C571 b_l_nfa
-C574 c_slash_l_cfap
-C576 c_slash_l_lfa
-C578 c_slash_l_nfa
-C57C l_slash_scr_cfap
-C57E l_slash_scr_lfa
-C580 l_slash_scr_nfa
-C586 disk_buffer_cfap
-C588 disk_buffer_lfa
-C58A disk_buffer_nfa
-C596 b_slash_buf_cfap
-C598 b_slash_buf_lfa
-C59A b_slash_buf_nfa
-C5A0 b_slash_scr_cfap
-C5A2 b_slash_scr_lfa
-C5A4 b_slash_scr_nfa
-C5AA scr_slash_disk_cfap
-C5AC scr_slash_disk_lfa
-C5AE scr_slash_disk_nfa
-C5B7 hash_vocs_cfap
-C5B9 hash_vocs_lfa
-C5BB hash_vocs_nfa
-C5C1 plus_origin_cfap
-C5C3 plus_origin_lfa
-C5C5 plus_origin_nfa
-C5CD sp0_cfap
-C5CF sp0_lfa
-C5D1 sp0_nfa
-C5D5 rp0_cfap
-C5D7 rp0_lfa
-C5D9 rp0_nfa
-C5DD width_cfap
-C5DF width_lfa
-C5E1 width_nfa
-C5E7 warning_cfap
-C5E9 warning_lfa
-C5EB warning_nfa
-C5F3 dp_cfap
-C5F5 dp_lfa
-C5F7 dp_nfa
-C5FA voc_link_cfap
-C5FC voc_link_lfa
-C5FE voc_link_nfa
-C607 blk_cfap
-C609 blk_lfa
-C60B blk_nfa
-C60F to_in_cfap
-C611 to_in_lfa
-C613 to_in_nfa
-C617 out_cfap
-C619 out_lfa
-C61B out_nfa
-C61F scr_cfap
-C621 scr_lfa
-C623 scr_nfa
-C629 context_cfap
-C62B context_lfa
-C62D context_nfa
-C635 current_cfap
-C637 current_lfa
-C639 current_nfa
-C641 state_cfap
-C643 state_lfa
-C645 state_nfa
-C64B base_cfap
-C64D base_lfa
-C64F base_nfa
-C654 dpl_cfap
-C656 dpl_lfa
-C658 dpl_nfa
-C65C fld_cfap
-C65E fld_lfa
-C660 fld_nfa
-C664 csp_cfap
-C666 csp_lfa
-C668 csp_nfa
-C66C r_hash_cfap
-C66E r_hash_lfa
-C670 r_hash_nfa
-C673 hld_cfap
-C675 hld_lfa
-C677 hld_nfa
-C67B tib_cfap
-C67D tib_lfa
-C67F tib_nfa
-C683 number_tib_cfap
-C685 number_tib_lfa
-C687 number_tib_nfa
-C68C recurse_cfap
-C68E recurse_lfa
-C690 recurse_nfa
-C698 one_plus_cfap
-C69A one_plus_lfa
-C69C one_plus_nfa
-C69F two_plus_cfap
-C6A1 two_plus_lfa
-C6A3 two_plus_nfa
-C6A6 cell_minus_cfap
-C6A8 cell_minus_lfa
-C6AA cell_minus_nfa
-C6B0 cell_plus_cfap
-C6B2 cell_plus_lfa
-C6B4 cell_plus_nfa
-C6BA one_minus_cfap
-C6BC one_minus_lfa
-C6BE one_minus_nfa
-C6C1 two_minus_cfap
-C6C3 two_minus_lfa
-C6C5 two_minus_nfa
-C6C8 two_star_cfap
-C6CA two_star_lfa
-C6CC two_star_nfa
-C6CF cells_cfap
-C6D1 cells_lfa
-C6D3 cells_nfa
-C6D9 cell_cfap
-C6DB cell_lfa
-C6DD cell_nfa
-C6E2 two_slash_cfap
-C6E4 two_slash_lfa
-C6E6 two_slash_nfa
-C6E9 here_cfap
-C6EB here_lfa
-C6ED here_nfa
-C6F2 allot_cfap
-C6F4 allot_lfa
-C6F6 allot_nfa
-C6FC s_comma_cfap
-C6FE s_comma_lfa
-C700 s_comma_nfa
-C703 comma_cfap
-C705 comma_lfa
-C707 comma_nfa
-C709 compile_comma_cfap
-C70B compile_comma_lfa
-C70D compile_comma_nfa
-C716 c_comma_cfap
-C718 c_comma_lfa
-C71A c_comma_nfa
-C71D minus_cfap
-C71F minus_lfa
-C721 minus_nfa
-C723 not_equals_cfap
-C725 not_equals_lfa
-C727 not_equals_nfa
-C72A equals_cfap
-C72C equals_lfa
-C72E equals_nfa
-C730 less_than_cfap
-C732 less_than_lfa
-C734 less_than_nfa
-C736 u_greater_than_cfap
-C738 u_greater_than_lfa
-C73A u_greater_than_nfa
-C73D u_less_than_cfap
-C73F u_less_than_lfa
-C741 u_less_than_nfa
-C744 greater_than_cfap
-C746 greater_than_lfa
-C748 greater_than_nfa
-C74A rot_cfap
-C74C rot_lfa
-C74E rot_nfa
-C752 space_cfap
-C754 space_lfa
-C756 space_nfa
-C75C question_dup_cfap
-C75E question_dup_lfa
-C760 question_dup_nfa
-C765 lfa_to_nfa_cfap
-C767 lfa_to_nfa_lfa
-C769 lfa_to_nfa_nfa
-C771 trail_cfap
-C773 trail_lfa
-C775 trail_nfa
-C77B latest_cfap
-C77D latest_lfa
-C77F latest_nfa
-C786 pfa_to_lfa_cfap
-C788 pfa_to_lfa_lfa
-C78A pfa_to_lfa_nfa
-C792 pfa_to_cfa_cfap
-C794 pfa_to_cfa_lfa
-C796 pfa_to_cfa_nfa
-C79E cfa_to_pfa_cfap
-C7A0 cfa_to_pfa_lfa
-C7A2 cfa_to_pfa_nfa
-C7AA pfa_to_nfa_cfap
-C7AC pfa_to_nfa_lfa
-C7AE pfa_to_nfa_nfa
-C7B6 cfa_to_nfa_cfap
-C7B8 cfa_to_nfa_lfa
-C7BA cfa_to_nfa_nfa
-C7C2 cfap_to_lfa_cfap
-C7C4 cfap_to_lfa_lfa
-C7C6 cfap_to_lfa_nfa
-C7CF nfa_to_lfa_cfap
-C7D1 nfa_to_lfa_lfa
-C7D3 nfa_to_lfa_nfa
-C7DB c_store_bank_cfap
-C7DD c_store_bank_lfa
-C7DF c_store_bank_nfa
-C7E6 store_bank_cfap
-C7E8 store_bank_lfa
-C7EA store_bank_nfa
-C7F0 c_fetch_bank_cfap
-C7F2 c_fetch_bank_lfa
-C7F4 c_fetch_bank_nfa
-C7FB fetch_bank_cfap
-C7FD fetch_bank_lfa
-C7FF fetch_bank_nfa
-C805 c_fetch_n_cfap
-C807 c_fetch_n_lfa
-C809 c_fetch_n_nfa
-C80D fetch_n_cfap
-C80F fetch_n_lfa
-C811 fetch_n_nfa
-C814 c_store_n_cfap
-C816 c_store_n_lfa
-C818 c_store_n_nfa
-C81C store_n_cfap
-C81E store_n_lfa
-C820 store_n_nfa
-C823 nfa_to_cfa_cfap
-C825 nfa_to_cfa_lfa
-C827 nfa_to_cfa_nfa
-C82F nfa_to_string_cfap
-C831 nfa_to_string_lfa
-C833 nfa_to_string_nfa
-C83E store_csp_cfap
-C840 store_csp_lfa
-C842 store_csp_nfa
-C847 question_error_cfap
-C849 question_error_lfa
-C84B question_error_nfa
-C852 comp_question_cfap
-C854 comp_question_lfa
-C856 comp_question_nfa
-C85C question_comp_cfap
-C85E question_comp_lfa
-C860 question_comp_nfa
-C866 question_exec_cfap
-C868 question_exec_lfa
-C86A question_exec_nfa
-C870 question_pairs_cfap
-C872 question_pairs_lfa
-C874 question_pairs_nfa
-C87B question_csp_cfap
-C87D question_csp_lfa
-C87F question_csp_nfa
-C884 question_loading_cfap
-C886 question_loading_lfa
-C888 question_loading_nfa
-C891 compile_cfap
-C893 compile_lfa
-C895 compile_nfa
-C89D postpone_cfap
-C89F postpone_lfa
-C8A1 postpone_nfa
-C8AA left_bracket_cfap
-C8AC left_bracket_lfa
-C8AE left_bracket_nfa
-C8B0 right_bracket_cfap
-C8B2 right_bracket_lfa
-C8B4 right_bracket_nfa
-C8B6 smudge_cfap
-C8B8 smudge_lfa
-C8BA smudge_nfa
-C8C1 hex_cfap
-C8C3 hex_lfa
-C8C5 hex_nfa
-C8C9 decimal_cfap
-C8CB decimal_lfa
-C8CD decimal_nfa
-C8D5 paren_semicolon_code_cfap
-C8D7 paren_semicolon_code_lfa
-C8D9 paren_semicolon_code_nfa
-C8E1 semicolon_code_cfap
-C8E3 semicolon_code_lfa
-C8E5 semicolon_code_nfa
-C8EB does_cfap
-C8ED does_lfa
-C8EF does_nfa
-C8F5 count_cfap
-C8F7 count_lfa
-C8F9 count_nfa
-C8FF bounds_cfap
-C901 bounds_lfa
-C903 bounds_nfa
-C90A type_cfap
-C90C type_lfa
-C90E type_nfa
-C913 minus_trailing_cfap
-C915 minus_trailing_lfa
-C917 minus_trailing_nfa
-C921 paren_dot_quote_cfap
-C923 paren_dot_quote_lfa
-C925 paren_dot_quote_nfa
-C92D dot_quote_cfap
-C92F dot_quote_lfa
-C931 dot_quote_nfa
-C937 span_cfap
-C939 span_lfa
-C93B span_nfa
-C940 accept_cfap
-C942 accept_lfa
-C944 accept_nfa
-C94B expect_cfap
-C94D expect_lfa
-C94F expect_nfa
-C956 query_cfap
-C958 query_lfa
-C95A query_nfa
-C960 x_cfap
-C962 x_lfa
-C964 x_nfa
-C966 fill_cfap
-C968 fill_lfa
-C96A fill_nfa
-C96F erase_cfap
-C971 erase_lfa
-C973 erase_nfa
-C979 blank_cfap
-C97B blank_lfa
-C97D blank_nfa
-C983 hold_cfap
-C985 hold_lfa
-C987 hold_nfa
-C98C pad_cfap
-C98E pad_lfa
-C990 pad_nfa
-C994 stream_cfap
-C996 stream_lfa
-C998 stream_nfa
-C99F parsed_cfap
-C9A1 parsed_lfa
-C9A3 parsed_nfa
-C9AA parse_cfap
-C9AC parse_lfa
-C9AE parse_nfa
-C9B4 parse_name_cfap
-C9B6 parse_name_lfa
-C9B8 parse_name_nfa
-C9C3 word_cfap
-C9C5 word_lfa
-C9C7 word_nfa
-C9CC paren_number_cfap
-C9CE paren_number_lfa
-C9D0 paren_number_nfa
-C9D9 number_cfap
-C9DB number_lfa
-C9DD number_nfa
-C9E4 upper_cfap
-C9E6 upper_lfa
-C9E8 upper_nfa
-C9EE uppers_cfap
-C9F0 uppers_lfa
-C9F2 uppers_nfa
-C9F9 defined_question_cfap
-C9FB defined_question_lfa
-C9FD defined_question_nfa
-CA06 undefined_question_cfap
-CA08 undefined_question_lfa
-CA0A undefined_question_nfa
-CA15 dollar_store_cfap
-CA17 dollar_store_lfa
-CA19 dollar_store_nfa
-CA1C find_cfap
-CA1E find_lfa
-CA20 find_nfa
-CA25 find_dollar_cfap
-CA27 find_dollar_lfa
-CA29 find_dollar_nfa
-CA2F found_cfap
-CA31 found_lfa
-CA33 found_nfa
-CA39 paren_abort_cfap
-CA3B paren_abort_lfa
-CA3D paren_abort_nfa
-CA45 error_number_cfap
-CA47 error_number_lfa
-CA49 error_number_nfa
-CA50 error_pos_cfap
-CA52 error_pos_lfa
-CA54 error_pos_nfa
-CA5E error_to_line_cfap
-CA60 error_to_line_lfa
-CA62 error_to_line_nfa
-CA6D error_cfap
-CA6F error_lfa
-CA71 error_nfa
-CA77 id_dot_cfap
-CA79 id_dot_lfa
-CA7B id_dot_nfa
-CA7F header_cfap
-CA81 header_lfa
-CA83 header_nfa
-CA8A create_cfap
-CA8C create_lfa
-CA8E create_nfa
-CA95 code_cfap
-CA97 code_lfa
-CA99 code_nfa
-CA9E compare_cfap
-CAA0 compare_lfa
-CAA2 compare_nfa
-CAAA search_cfap
-CAAC search_lfa
-CAAE search_nfa
-CAB5 bracket_compile_cfap
-CAB7 bracket_compile_lfa
-CAB9 bracket_compile_nfa
-CAC3 s_literal_cfap
-CAC5 s_literal_lfa
-CAC7 s_literal_nfa
-CAD0 c_literal_cfap
-CAD2 c_literal_lfa
-CAD4 c_literal_nfa
-CADD literal_cfap
-CADF literal_lfa
-CAE1 literal_nfa
-CAE9 two_literal_cfap
-CAEB two_literal_lfa
-CAED two_literal_nfa
-CAF6 depth_cfap
-CAF8 depth_lfa
-CAFA depth_nfa
-CB00 question_stack_cfap
-CB02 question_stack_lfa
-CB04 question_stack_nfa
-CB0B interpret_cfap
-CB0D interpret_lfa
-CB0F interpret_nfa
-CB19 immediate_cfap
-CB1B immediate_lfa
-CB1D immediate_nfa
-CB27 vocabulary_cfap
-CB29 vocabulary_lfa
-CB2B vocabulary_nfa
-CB36 definitions_cfap
-CB38 definitions_lfa
-CB3A definitions_nfa
-CB46 paren_cfap
-CB48 paren_lfa
-CB4A paren_nfa
-CB4C quit_cfap
-CB4E quit_lfa
-CB50 quit_nfa
-CB55 greeting_cfap
-CB57 greeting_lfa
-CB59 greeting_nfa
-CB62 abort_cfap
-CB64 abort_lfa
-CB66 abort_nfa
-CB6C boot_cfap
-CB6E boot_lfa
-CB70 boot_nfa
-CB75 warm_cfap
-CB77 warm_lfa
-CB79 warm_nfa
-CB7E cold_cfap
-CB80 cold_lfa
-CB82 cold_nfa
-CB87 s_to_d_cfap
-CB89 s_to_d_lfa
-CB8B s_to_d_nfa
-CB8F plus_minus_cfap
-CB91 plus_minus_lfa
-CB93 plus_minus_nfa
-CB96 d_plus_minus_cfap
-CB98 d_plus_minus_lfa
-CB9A d_plus_minus_nfa
-CB9E abs_cfap
-CBA0 abs_lfa
-CBA2 abs_nfa
-CBA6 dabs_cfap
-CBA8 dabs_lfa
-CBAA dabs_nfa
-CBAF umax_cfap
-CBB1 umax_lfa
-CBB3 umax_nfa
-CBB8 umin_cfap
-CBBA umin_lfa
-CBBC umin_nfa
-CBC1 min_cfap
-CBC3 min_lfa
-CBC5 min_nfa
-CBC9 max_cfap
-CBCB max_lfa
-CBCD max_nfa
-CBD1 m_star_cfap
-CBD3 m_star_lfa
-CBD5 m_star_nfa
-CBD8 m_slash_cfap
-CBDA m_slash_lfa
-CBDC m_slash_nfa
-CBDF star_cfap
-CBE1 star_lfa
-CBE3 star_nfa
-CBE5 slash_mod_cfap
-CBE7 slash_mod_lfa
-CBE9 slash_mod_nfa
-CBEE slash_cfap
-CBF0 slash_lfa
-CBF2 slash_nfa
-CBF4 mod_cfap
-CBF6 mod_lfa
-CBF8 mod_nfa
-CBFC star_slash_mod_cfap
-CBFE star_slash_mod_lfa
-CC00 star_slash_mod_nfa
-CC06 star_slash_cfap
-CC08 star_slash_lfa
-CC0A star_slash_nfa
-CC0D m_slash_mod_cfap
-CC0F m_slash_mod_lfa
-CC11 m_slash_mod_nfa
-CC17 paren_line_cfap
-CC19 paren_line_lfa
-CC1B paren_line_nfa
-CC22 dot_line_cfap
-CC24 dot_line_lfa
-CC26 dot_line_nfa
-CC2C message_cfap
-CC2E message_lfa
-CC30 message_nfa
-CC38 update_cfap
-CC3A update_lfa
-CC3C update_nfa
-CC43 updated_question_cfap
-CC45 updated_question_lfa
-CC47 updated_question_nfa
-CC50 stream_end_cfap
-CC52 stream_end_lfa
-CC54 stream_end_nfa
-CC5F empty_buffers_cfap
-CC61 empty_buffers_lfa
-CC63 empty_buffers_nfa
-CC71 buffer_data_cfap
-CC73 buffer_data_lfa
-CC75 buffer_data_nfa
-CC81 buffer_id_cfap
-CC83 buffer_id_lfa
-CC85 buffer_id_nfa
-CC8F block_number_cfap
-CC91 block_number_lfa
-CC93 block_number_nfa
-CCA0 buffer_block_cfap
-CCA2 buffer_block_lfa
-CCA4 buffer_block_nfa
-CCB1 paren_buffer_cfap
-CCB3 paren_buffer_lfa
-CCB5 paren_buffer_nfa
-CCBE buffer_cfap
-CCC0 buffer_lfa
-CCC2 buffer_nfa
-CCC9 block_cfap
-CCCB block_lfa
-CCCD block_nfa
-CCD3 flip_cfap
-CCD5 flip_lfa
-CCD7 flip_nfa
-CCDC block_to_sector_cfap
-CCDE block_to_sector_lfa
-CCE0 block_to_sector_nfa
-CCED read_block_cfap
-CCEF read_block_lfa
-CCF1 read_block_nfa
-CCFC read_buffer_cfap
-CCFE read_buffer_lfa
-CD00 read_buffer_nfa
-CD0C write_block_cfap
-CD0E write_block_lfa
-CD10 write_block_nfa
-CD1C write_buffer_cfap
-CD1E write_buffer_lfa
-CD20 write_buffer_nfa
-CD2D transfer_block_cfap
-CD2F transfer_block_lfa
-CD31 transfer_block_nfa
-CD40 save_buffers_cfap
-CD42 save_buffers_lfa
-CD44 save_buffers_nfa
-CD51 flush_cfap
-CD53 flush_lfa
-CD55 flush_nfa
-CD5B paren_load_cfap
-CD5D paren_load_lfa
-CD5F paren_load_nfa
-CD66 continued_cfap
-CD68 continued_lfa
-CD6A continued_nfa
-CD74 load_cfap
-CD76 load_lfa
-CD78 load_nfa
-CD7D next_screen_cfap
-CD7F next_screen_lfa
-CD81 next_screen_nfa
-CD85 defined_cfap
-CD87 defined_lfa
-CD89 defined_nfa
-CD91 question_defined_cfap
-CD93 question_defined_lfa
-CD95 question_defined_nfa
-CD9E bracket_defined_cfap
-CDA0 bracket_defined_lfa
-CDA2 bracket_defined_nfa
-CDAC bracket_undefined_cfap
-CDAE bracket_undefined_lfa
-CDB0 bracket_undefined_nfa
-CDBC tick_cfap
-CDBE tick_lfa
-CDC0 tick_nfa
-CDC2 bracket_tick_cfap
-CDC4 bracket_tick_lfa
-CDC6 bracket_tick_nfa
-CDCA begin_cfap
-CDCC begin_lfa
-CDCE begin_nfa
-CDD4 then_cfap
-CDD6 then_lfa
-CDD8 then_nfa
-CDDD do_cfap
-CDDF do_lfa
-CDE1 do_nfa
-CDE4 loop_cfap
-CDE6 loop_lfa
-CDE8 loop_nfa
-CDED plus_loop_cfap
-CDEF plus_loop_lfa
-CDF1 plus_loop_nfa
-CDF7 until_cfap
-CDF9 until_lfa
-CDFB until_nfa
-CE01 again_cfap
-CE03 again_lfa
-CE05 again_nfa
-CE0B repeat_cfap
-CE0D repeat_lfa
-CE0F repeat_nfa
-CE16 if_cfap
-CE18 if_lfa
-CE1A if_nfa
-CE1D unless_cfap
-CE1F unless_lfa
-CE21 unless_nfa
-CE28 ahead_cfap
-CE2A ahead_lfa
-CE2C ahead_nfa
-CE32 else_cfap
-CE34 else_lfa
-CE36 else_nfa
-CE3B while_cfap
-CE3D while_lfa
-CE3F while_nfa
-CE45 spaces_cfap
-CE47 spaces_lfa
-CE49 spaces_nfa
-CE50 emits_cfap
-CE52 emits_lfa
-CE54 emits_nfa
-CE5A less_hash_cfap
-CE5C less_hash_lfa
-CE5E less_hash_nfa
-CE61 hash_greater_cfap
-CE63 hash_greater_lfa
-CE65 hash_greater_nfa
-CE68 sign_cfap
-CE6A sign_lfa
-CE6C sign_nfa
-CE71 hash_cfap
-CE73 hash_lfa
-CE75 hash_nfa
-CE77 hash_s_cfap
-CE79 hash_s_lfa
-CE7B hash_s_nfa
-CE7E d_dot_r_cfap
-CE80 d_dot_r_lfa
-CE82 d_dot_r_nfa
-CE86 dot_r_cfap
-CE88 dot_r_lfa
-CE8A dot_r_nfa
-CE8D d_dot_cfap
-CE8F d_dot_lfa
-CE91 d_dot_nfa
-CE94 dot_cfap
-CE96 dot_lfa
-CE98 dot_nfa
-CE9A question_cfap
-CE9C question_lfa
-CE9E question_nfa
-CEA0 u_dot_cfap
-CEA2 u_dot_lfa
-CEA4 u_dot_nfa
-CEA7 dot_s_cfap
-CEA9 dot_s_lfa
-CEAB dot_s_nfa
-CEAE colors0_cfap
-CEB0 colors0_lfa
-CEB2 colors0_nfa
-CEBA home_cfap
-CEBC home_lfa
-CEBE home_nfa
-CEC3 cls_cfap
-CEC5 cls_lfa
-CEC7 cls_nfa
-CECB page_cfap
-CECD page_lfa
-CECF page_nfa
-CED4 bye_cfap
-CED6 bye_lfa
-CED8 bye_nfa
-CEDC two_drop_cfap
-CEDE two_drop_lfa
-CEE0 two_drop_nfa
-CEE6 two_swap_cfap
-CEE8 two_swap_lfa
-CEEA two_swap_nfa
-CEF0 unused_cfap
-CEF2 unused_lfa
-CEF4 unused_nfa
-CEFB where_cfap
-CEFD where_lfa
-CEFF where_nfa
-CF05 at_xycfap
-CF07 at_xylfa
-CF09 at_xynfa
-CF0F border_cfap
-CF11 border_lfa
-CF13 border_nfa
-CF1A overwrite_cfap
-CF1C overwrite_lfa
-CF1E overwrite_nfa
-CF28 flash_cfap
-CF2A flash_lfa
-CF2C flash_nfa
-CF32 inverse_cfap
-CF34 inverse_lfa
-CF36 inverse_nfa
-CF3E bright_cfap
-CF40 bright_lfa
-CF42 bright_nfa
-CF49 paper_cfap
-CF4B paper_lfa
-CF4D paper_nfa
-CF53 ink_cfap
-CF55 ink_lfa
-CF57 ink_nfa
-CF5B emitted_cfap
-CF5D emitted_lfa
-CF5F emitted_nfa
-CF67 emitted_charset_cfap
-CF69 emitted_charset_lfa
-CF6B emitted_charset_nfa
-CF7B hash_emitted_chars_cfap
-CF7D hash_emitted_chars_lfa
-CF7F hash_emitted_chars_nfa
-CF8E j_cfap
-CF90 j_lfa
-CF92 j_nfa
-CF94 two_constant_cfap
-CF96 two_constant_lfa
-CF98 two_constant_nfa
-CFA2 two_variable_cfap
-CFA4 two_variable_lfa
-CFA6 two_variable_nfa
-CFB0 u_dot_r_cfap
-CFB2 u_dot_r_lfa
-CFB4 u_dot_r_nfa
-CFB8 two_over_cfap
-CFBA two_over_lfa
-CFBC two_over_nfa
-CFC2 exit_cfap
-CFC4 exit_lfa
-CFC6 exit_nfa
-CFCB question_exit_cfap
-CFCD question_exit_lfa
-CFCF question_exit_nfa
-CFD5 char_cfap
-CFD7 char_lfa
-CFD9 char_nfa
-CFDE bracket_char_cfap
-CFE0 bracket_char_lfa
-CFE2 bracket_char_nfa
-CFE9 s_quote_cfap
-CFEB s_quote_lfa
-CFED s_quote_nfa
-CFF3 question_next_screen_cfap
-CFF5 question_next_screen_lfa
-CFF7 question_next_screen_nfa
-CFFC question_backslash_cfap
-CFFE question_backslash_lfa
-D000 question_backslash_nfa
-D004 backslash_cfap
-D006 backslash_lfa
-D008 backslash_nfa
-D00B dot_paren_cfap
-D00D dot_paren_lfa
-D00F dot_paren_nfa
-D00F latest_nfa_in_forth_voc
-D010 _name_address
-D012 _address_after_name
+0000 a _bank
+0000 a _code_alias_header
+0000 a _code_header
+0000 a _colon_header
+0000 a _constant_header
+0000 a _default_bank
+0000 a _does_header
+0000 a _echo
+0000 a false
+0000 a _header
+0000 a _jp_next
+0000 a _jump
+0000 a _jump_nc
+0000 a _jump_z
+0000 a _literal
+0000 a _message
+0000 a _names_bank
+0000 a _question_error
+0000 a _string
+0000 a _two_variable_header
+0000 a _user_variable_header
+0000 a _variable_header
+0000 a _z80_border
+0000 a _z80_border_wait
+0000 b .bss
+5E00 t cold_entry
+5E00 t .text
+5E03 t warm_entry
+5E06 t latest_nfa_in_root_voc.init_value
+5E08 t latest_nfa_in_forth_voc.init_value
+5E0A t latest_nfa_in_assembler_voc.init_value
+5E0C t voc_link.init_value
+5E0E t user_variables_pointer
+5E10 t return_stack_pointer
+5E12 t default_color_attribute
+5E14 t default_user_variables_start
+5E14 t s0_init_value
+5E16 t r0_init_value
+5E1A t width_init_value
+5E1C t warning_init_value
+5E20 t dp_init_value
+5E24 t blk_init_value
+5E26 t in_init_value
+5E28 t out_init_value
+5E2A t scr_init_value
+5E2C t default_user_variables_end
+5E2C t ip_backup
+5E2E t names_pointer
+5E30 t names_pointer_init_value
+5E32 t s0_value
+5E32 t user_variables
+5E34 t r0_value
+5E38 t width_value
+5E3A t warning_value
+5E3E t dp_value
+5E42 t blk_value
+5E44 t in_value
+5E46 t out_value
+5E48 t scr_value
+5E4A t number_tib_value
+5E4C t hld_value
+5E4E t current_value
+5E50 t state_value
+5E52 t base_value
+5E54 t dpl_value
+5E56 t fld_value
+5E58 t csp_value
+5E5A t r_hash_value
+5E5C t context_value
+5E72 t csb
+5E72 t unused_csb
+5E74 t csb0
+6014 t data_stack_bottom
+6014 t terminal_input_buffer
+6107 t disk_buffer
+6107 t return_stack_bottom
+630C t compare_de_hl_unsigned
+6312 t compare_de_hl_signed
+631C t move_block
+6322 t move_block_upwards
+6328 t move_block_downwards
+6334 t a_multiplied_by_de_to_ahl
+6339 t a_multiplied_by_de_to_ahl.1
+6341 t a_multiplied_by_de_to_ahl.2
+6346 t hl_multiplied_by_de_to_hlde_unsigned
+635D t push_hlde
+635E t push_hl
+635F t next
+6365 t next2
+6369 t next2_end
+636A t root_x_
+636C t root_x_pfa
+6372 t root_forth_
+6374 t root_forth_pfa
+6378 t root_definitions_
+637A t root_definitions_pfa
+637E t abase_
+6380 t abase_pfa
+6382 t asm_
+6384 t asm_pfa
+6396 t end_asm_
+6398 t end_asm_pfa
+63A4 t end_code_
+63A6 t end_code_pfa
+63AE t next_
+63B0 t next_pfa
+63B2 t pushhl_
+63B4 t pushhl_pfa
+63B6 t pushhlde_
+63B8 t pushhlde_pfa
+63BA t fetchhl_
+63BC t fetchhl_pfa
+63BE t next_comma_
+63C0 t next_comma_pfa
+63C8 t pushhl_comma_
+63CA t pushhl_comma_pfa
+63D7 t pushhlde_comma_
+63D9 t pushhlde_comma_pfa
+63E6 t fetchhl_comma_
+63E8 t fetchhl_comma_pfa
+63F5 t label_
+63F7 t label_pfa
+63FD t also_
+63FF t also_pfa
+640D t minus_order_
+640F t minus_order_pfa
+6419 t only_
+641B t only_pfa
+6423 t previous_
+6425 t previous_pfa
+643F t seal_
+6441 t seal_pfa
+644D t root_
+644F t root_pfa
+6451 t root_vocabulary_link
+6453 t forth_
+6455 t forth_pfa
+6457 t forth_vocabulary_link
+6459 t assembler_
+645B t assembler_pfa
+645D t assembler_vocabulary_link
+645F t s_lit_
+6461 t s_lit_pfa
+6471 t paren_s_
+6473 t paren_s_pfa
+647F t paren_s.interpreting
+6483 t c_lit_
+6485 t c_lit_pfa
+6487 t push_a
+6488 t push_l
+648D t lit_
+648F t lit_pfa
+6498 t bank_
+649A t bank_pfa
+64A0 t bank.default
+64A0 t bank.e
+64A0 t bank.names
+64AE t unused_csb_
+64B0 t unused_csb_pfa
+64B6 t csb0_
+64B8 t csb0_pfa
+64BA t question_csb_
+64BC t question_csb_pfa
+64D4 t question_csb_.enough
+64DE t allocate_string_
+64E0 t allocate_string_pfa
+64EA t save_string_
+64EC t save_string_pfa
+64FC t save_counted_string_
+64FE t save_counted_string_pfa
+650E t empty_csb_
+6510 t empty_csb_pfa
+651C t execute_
+651E t execute_pfa
+6522 t perform_
+6524 t perform_pfa
+652F t forward_mark_
+6531 t forward_mark_pfa
+653B t forward_resolve_
+653D t forward_resolve_pfa
+6547 t backward_mark_
+6549 t backward_mark_pfa
+654F t backward_resolve_
+6551 t backward_resolve_pfa
+6557 t branch_
+6559 t branch_pfa
+6560 t zero_branch_
+6562 t zero_branch_pfa
+656C t question_branch_
+656E t question_branch_pfa
+6578 t paren_loop_
+657A t paren_loop_pfa
+657D t paren_loop.step_in_de
+6597 t paren_loop.negative_step
+659C t paren_loop.end
+65A7 t paren_plus_loop_
+65A9 t paren_plus_loop_pfa
+65AD t paren_do_
+65AF t paren_do_pfa
+65C3 t paren_do83_
+65C5 t paren_do83_pfa
+65C7 t paren_do83.de_hl
+65E8 t paren_question_do83_
+65EA t paren_question_do83_pfa
+65F5 t question_do.equals
+65F8 t question_do83_
+65FA t question_do83_pfa
+6605 t do83_
+6607 t do83_pfa
+6612 t loop83_
+6614 t loop83_pfa
+6621 t paren_loop83_
+6623 t paren_loop83_pfa
+663A t paren_loop83.loop
+6644 t i_
+6646 t digit_
+6648 t digit_pfa
+665C t digit.test_value
+6665 t paren_find_
+6667 t paren_find_pfa
+6672 t paren_find.begin
+6677 t paren_find.string_address
+6681 t paren_find.compare_next_char
+669D t paren_find.end
+66A8 t paren_find.not_a_match
+66A9 t paren_find.nfa_backup
+66BE t scan_
+66C0 t scan_pfa
+66CA t scan.begin
+66D4 t skip_
+66D6 t skip_pfa
+66D8 t skip.begin
+66E1 t chan_
+66E3 t chan_pfa
+66EC t emit_
+66EE t emit_pfa
+66F8 t paren_emit_
+66FA t paren_emit_pfa
+6703 t printer_
+6705 t printer_pfa
+670C t display_
+670E t display_pfa
+6714 t key_question_
+6716 t key_question_pfa
+6720 t decode_table_
+6722 t decode_table_pfa
+6733 t decode_char_
+6735 t decode_char_pfa
+6739 t decode_char.begin
+673C t paren_key_
+673E t paren_key_pfa
+6744 t paren_key_.begin
+6748 t previous_key
+6757 t key_
+6759 t key_pfa
+675C t key.begin
+676B t key.end
+6776 t xkey_
+6778 t xkey_pfa
+6779 t xkey.new_key
+6783 t xkey.wait_for_key
+6796 t xkey.left_bracket
+6796 t xkey.translate
+679C t xkey.right_bracket
+67A2 t xkey.tilde
+67A8 t xkey.vertical_bar
+67AE t xkey.backslash
+67B4 t xkey.left_curly_bracket
+67BA t xkey.right_curly_bracket
+67C0 t xkey.end
+67CD t cr_
+67CF t cr_pfa
+67DA t cmove_up_
+67DC t cmove_up_pfa
+67E6 t cmove_
+67E8 t cmove_pfa
+67F2 t move_
+67F4 t move_pfa
+67F7 t move.do
+67FE t smove_
+6800 t smove_pfa
+6806 t u_m_star_
+6808 t u_m_star_pfa
+6810 t u_slash_mod_
+6812 t u_slash_mod_pfa
+682B t l60a0h
+682D t l60a2h
+6835 t l60aah
+683F t l60b4h
+6846 t l60bbh
+684B t l60c0h
+6850 t and_
+6852 t and_pfa
+685D t or_
+685F t or_pfa
+686A t xor_
+686C t xor_pfa
+6877 t np_
+6879 t np_pfa
+687B t np0_
+687D t np0_pfa
+687F t np_fetch_
+6881 t np_fetch_pfa
+6887 t np_store_
+6889 t np_store_pfa
+688F t comma_np_
+6891 t comma_np_pfa
+689D t sp_fetch_
+689F t sp_fetch_pfa
+68A6 t sp_store_
+68A8 t sp_store_pfa
+68AC t rp_
+68AE t rp_pfa
+68B0 t rp_fetch_
+68B2 t rp_fetch_pfa
+68B8 t rp_store_
+68BA t rp_store_pfa
+68C0 t semicolon_s_
+68C2 t semicolon_s_pfa
+68CE t pick_
+68D0 t pick_pfa
+68D6 t unloop_
+68D8 t exhaust_
+68DA t exhaust_pfa
+68E6 t question_exhaust_
+68E8 t question_exhaust_pfa
+68F0 t to_r_
+68F2 t to_r_pfa
+68FF t from_r_
+6901 t from_r_pfa
+690E t two_r_drop_
+6910 t two_r_drop_pfa
+691C t r_drop_
+691E t r_drop_pfa
+6928 t two_to_r_
+692A t two_to_r_pfa
+6937 t two_from_r_
+6939 t two_from_r_pfa
+6947 t two_r_fetch_
+6949 t two_r_fetch_pfa
+694F t r_fetch_
+6951 t r_fetch_pfa
+6957 t zero_equals_
+6959 t zero_equals_pfa
+6962 t zero_not_equals_
+6964 t zero_not_equals_pfa
+696D t zero_less_than_
+696F t zero_less_than_pfa
+6970 t zero_less_.hl
+6972 t true_if_cy
+6978 t zero_greater_than_
+697A t zero_greater_than_pfa
+6981 t plus_
+6983 t plus_pfa
+6989 t d_plus_
+698B t d_plus_pfa
+699B t negate_
+699D t negate_pfa
+69A7 t dnegate_
+69A9 t dnegate_pfa
+69BD t nip_
+69BF t nip_pfa
+69C4 t tuck_
+69C6 t tuck_pfa
+69CC t over_
+69CE t over_pfa
+69D4 t drop_
+69D6 t drop_pfa
+69D9 t swap_
+69DB t swap_pfa
+69E0 t dup_
+69E2 t dup_pfa
+69E7 t two_dup_
+69E9 t two_dup_pfa
+69F0 t plus_store_
+69F2 t plus_store_pfa
+69FD t off_
+69FF t off_pfa
+6A07 t on_
+6A09 t on_pfa
+6A11 t toggle_
+6A13 t toggle_pfa
+6A1A t fetch_
+6A1C t fetch_pfa
+6A1D t fetch.hl
+6A23 t c_fetch_
+6A25 t c_fetch_pfa
+6A2C t two_fetch_
+6A2E t two_fetch_pfa
+6A2F t two_fetch.hl
+6A3B t two_store_
+6A3D t two_store_pfa
+6A3E t two_store.into_hl_pointer
+6A49 t store_
+6A4B t store_pfa
+6A4C t store.into_hl_pointer
+6A4D t store.de_into_hl_pointer
+6A52 t c_store_
+6A54 t c_store_pfa
+6A59 t colon_
+6A5B t colon_pfa
+6A65 t do_colon
+6A72 t do_colon.end
+6A74 t noname_
+6A76 t noname_pfa
+6A88 t semicolon_
+6A8A t semicolon_pfa
+6A96 t noop_
+6A98 t constant_
+6A9A t constant_pfa
+6AA0 t do_constant
+6AA5 t variable_
+6AA7 t variable_pfa
+6AAF t user_
+6AB1 t user_pfa
+6AB5 t do_user
+6AC1 t msg_scr_
+6AC3 t msg_scr_pfa
+6AC5 t zero_
+6AC7 t zero_pfa
+6AC9 t one_
+6ACB t one_pfa
+6ACD t two_
+6ACF t two_pfa
+6AD1 t false_
+6AD3 t false_pfa
+6AD9 t true_
+6ADB t true_pfa
+6AE1 t b_l_
+6AE3 t b_l_pfa
+6AE5 t c_slash_l_
+6AE7 t c_slash_l_pfa
+6AE9 t l_slash_scr_
+6AEB t l_slash_scr_pfa
+6AED t disk_buffer_
+6AEF t disk_buffer_pfa
+6AF1 t b_slash_buf_
+6AF3 t b_slash_buf_pfa
+6AF5 t b_slash_scr_
+6AF7 t b_slash_scr_pfa
+6AF9 t scr_slash_disk_
+6AFB t scr_slash_disk_pfa
+6AFD t hash_vocs_
+6AFF t hash_vocs_pfa
+6B01 t plus_origin_
+6B03 t plus_origin_pfa
+6B0B t sp0_
+6B0D t sp0_pfa
+6B0E t rp0_
+6B10 t rp0_pfa
+6B11 t width_
+6B13 t width_pfa
+6B14 t warning_
+6B16 t warning_pfa
+6B17 t dp_
+6B19 t dp_pfa
+6B1A t voc_link_
+6B1C t voc_link_pfa
+6B1E t blk_
+6B20 t blk_pfa
+6B21 t to_in_
+6B23 t to_in_pfa
+6B24 t out_
+6B26 t out_pfa
+6B27 t scr_
+6B29 t scr_pfa
+6B2A t context_
+6B2C t context_pfa
+6B2D t current_
+6B2F t current_pfa
+6B30 t state_
+6B32 t state_pfa
+6B33 t base_
+6B35 t base_pfa
+6B36 t dpl_
+6B38 t dpl_pfa
+6B39 t fld_
+6B3B t fld_pfa
+6B3C t csp_
+6B3E t csp_pfa
+6B3F t r_hash_
+6B41 t r_hash_pfa
+6B42 t hld_
+6B44 t hld_pfa
+6B45 t tib_
+6B47 t tib_pfa
+6B49 t number_tib_
+6B4B t number_tib_pfa
+6B4D t recurse_
+6B4F t recurse_pfa
+6B57 t one_plus_
+6B59 t one_plus_pfa
+6B5E t two_plus_
+6B60 t two_plus_pfa
+6B66 t cell_minus_
+6B68 t cell_plus_
+6B6A t one_minus_
+6B6C t one_minus_pfa
+6B71 t two_minus_
+6B73 t two_minus_pfa
+6B79 t two_star_
+6B7B t two_star_pfa
+6B80 t cells_
+6B82 t cell_
+6B84 t cell_pfa
+6B86 t two_slash_
+6B88 t two_slash_pfa
+6B90 t here_
+6B92 t here_pfa
+6B98 t allot_
+6B9A t allot_pfa
+6BA0 t s_comma_
+6BA2 t s_comma_pfa
+6BB2 t comma_
+6BB4 t comma_pfa
+6BBE t compile_comma_
+6BC0 t compile_comma_pfa
+6BC6 t c_comma_
+6BC8 t c_comma_pfa
+6BD2 t minus_
+6BD4 t minus_pfa
+6BDC t not_equals_
+6BDE t not_equals_pfa
+6BE3 t false_if_z
+6BE9 t equals_
+6BEB t equals_pfa
+6BF0 t true_if_z
+6BF6 t less_than_
+6BF8 t less_than_pfa
+6BFA t is_de_less_than_hl
+6C03 t u_greater_than_
+6C05 t u_greater_than_pfa
+6C06 t u_greater_than.hl
+6C0A t u_less_than_
+6C0C t u_less_than_pfa
+6C0E t u_less_than.de_hl
+6C17 t greater_than_
+6C19 t greater_than_pfa
+6C1E t rot_
+6C20 t rot_pfa
+6C26 t space_
+6C28 t space_pfa
+6C2E t question_dup_
+6C30 t question_dup_pfa
+6C38 t question_dup.end
+6C3A t lfa_to_nfa_
+6C3C t trail_
+6C3E t trail_pfa
+6C46 t latest_
+6C48 t latest_pfa
+6C50 t pfa_to_lfa_
+6C52 t pfa_to_lfa_pfa
+6C56 t pfa_to_cfa_
+6C58 t cfa_to_pfa_
+6C5A t pfa_to_nfa_
+6C5C t pfa_to_nfa_pfa
+6C62 t cfa_to_nfa_
+6C64 t cfa_to_nfa_pfa
+6C70 t cfa_to_nfa.begin_0
+6C71 t cfa_to_nfa.begin_1
+6C8F t cfap_to_lfa_
+6C91 t nfa_to_lfa_
+6C93 t c_store_bank_
+6C95 t c_store_bank_pfa
+6C9F t store_bank_
+6CA1 t store_bank_pfa
+6CAB t c_fetch_bank_
+6CAD t c_fetch_bank_pfa
+6CB7 t fetch_bank_
+6CB9 t fetch_bank_pfa
+6CC3 t c_fetch_n_
+6CC5 t c_fetch_n_pfa
+6CCB t fetch_n_
+6CCD t fetch_n_pfa
+6CD3 t c_store_n_
+6CD5 t c_store_n_pfa
+6CDB t store_n_
+6CDD t store_n_pfa
+6CE3 t nfa_to_cfa_
+6CE5 t nfa_to_cfa_pfa
+6CEE t nfa_to_string_
+6CF0 t nfa_to_string_pfa
+6D03 t store_csp_
+6D05 t store_csp_pfa
+6D0D t question_error_
+6D0F t question_error_pfa
+6D19 t question_error.no_error
+6D1D t comp_question_
+6D1F t comp_question_pfa
+6D25 t question_comp_
+6D27 t question_comp_pfa
+6D32 t question_exec_
+6D34 t question_exec_pfa
+6D3D t question_pairs_
+6D3F t question_pairs_pfa
+6D48 t question_csp_
+6D4A t question_csp_pfa
+6D59 t question_loading_
+6D5B t question_loading_pfa
+6D68 t compile_
+6D6A t compile_pfa
+6D7A t postpone_
+6D7C t postpone_pfa
+6D8C t postpone.end
+6D90 t left_bracket_
+6D92 t left_bracket_pfa
+6D98 t right_bracket_
+6D9A t right_bracket_pfa
+6DA0 t smudge_
+6DA2 t smudge_pfa
+6DB3 t hex_
+6DB5 t hex_pfa
+6DBE t decimal_
+6DC0 t decimal_pfa
+6DC9 t paren_semicolon_code_
+6DCB t paren_semicolon_code_pfa
+6DD5 t semicolon_code_
+6DD7 t semicolon_code_pfa
+6DE5 t does_
+6DE7 t does_pfa
+6DF8 t do_does
+6E07 t count_
+6E09 t count_pfa
+6E10 t bounds_
+6E12 t bounds_pfa
+6E1A t type_
+6E1C t type_pfa
+6E26 t type.do
+6E32 t type.empty_string
+6E34 t type.end
+6E36 t minus_trailing_
+6E38 t minus_trailing_pfa
+6E3D t minus_trailing.begin
+6E4D t paren_dot_quote_
+6E4F t paren_dot_quote_pfa
+6E61 t dot_quote_
+6E63 t dot_quote_pfa
+6E76 t dot_quote.interpreting
+6E7A t span_
+6E7C t span_pfa
+6E7E t accept_
+6E80 t accept_pfa
+6E82 t expect_
+6E84 t expect_pfa
+6E94 t expect.do
+6EBE t expect.maybe_carriage_return
+6ED3 t expect.control_char
+6EE3 t expect.ordinary_key
+6EE5 t expect.store
+6EE9 t expect.emit
+6EEB t expect.loop
+6EF9 t expect.end
+6EFD t query_
+6EFF t query_pfa
+6F1B t x_
+6F1D t x_pfa
+6F3D t x.exit
+6F3F t x.end
+6F41 t fill_
+6F43 t fill_pfa
+6F44 t fill.e
+6F48 t fill.do
+6F53 t fill.end
+6F56 t erase_
+6F58 t erase_pfa
+6F5D t blank_
+6F5F t blank_pfa
+6F64 t hold_
+6F66 t hold_pfa
+6F76 t pad_
+6F78 t pad_pfa
+6F81 t stream_
+6F83 t stream_pfa
+6F93 t stream.terminal
+6F95 t stream.end
+6F9D t parsed_
+6F9F t parsed_pfa
+6FA7 t parse_
+6FA9 t parse_pfa
+6FB5 t parse_name_
+6FB7 t parse_name_pfa
+6FD5 t word_
+6FD7 t word_pfa
+7010 t paren_number_
+7012 t paren_number.begin
+7012 t paren_number_pfa
+7048 t paren_number.decimal_point_done
+704E t paren_number.end
+7052 t number_
+7054 t number_pfa
+706F t number.begin
+7094 t number.a_blank
+709E t number.end
+70A0 t upper_
+70A2 t upper_pfa
+70AB t upper.a
+70B4 t uppers_
+70B6 t uppers_pfa
+70B8 t uppers.do
+70C7 t defined_question_
+70C9 t defined_question_pfa
+70D1 t undefined_question_
+70D3 t undefined_question_pfa
+70D9 t dollar_store_
+70DB t dollar_store_pfa
+70EB t find_
+70ED t find_pfa
+70F3 t find.do
+7111 t find.loop
+7119 t find_dollar_
+711B t find_dollar_pfa
+713C t found_
+713E t found_pfa
+7155 t paren_abort_
+7157 t paren_abort_pfa
+715B t error_number_
+715D t error_number_pfa
+715F t error_pos_
+7161 t error_pos_pfa
+7165 t error_to_line_
+7167 t error_to_line_pfa
+716F t error_to_number.do
+7180 t error_
+7182 t error_pfa
+7192 t error.message
+71B9 t error.end
+71BB t id_dot_
+71BD t id_dot_pfa
+71C5 t header_
+71C7 t header_pfa
+71DC t header.continue
+7212 t create_
+7214 t create_pfa
+721A t do_create
+721E t code_
+7220 t code_pfa
+722C t compare_
+722E t compare_pfa
+7237 t compare.lengths
+723A t compare.ready
+7244 t compare.match
+7247 t compare.no_match
+7248 t compare.end
+7257 t compare_strings_case_sensitive
+7263 t search_
+7265 t search_pfa
+727B t search.1
+7287 t search.string_2_len
+7293 t search.match
+7296 t search.end
+729C t search.no_match
+72A0 t search.string_1_len
+72A4 t search.string_1_addr
+72A9 t bracket_compile_
+72AB t bracket_compile_pfa
+72B1 t s_literal_
+72B3 t s_literal_pfa
+72BB t c_literal_
+72BD t c_literal_pfa
+72C9 t c_literal.end
+72CB t literal_
+72CD t literal_pfa
+72D9 t literal.end
+72DB t two_literal_
+72DD t two_literal_pfa
+72E9 t two_literal.end
+72EB t depth_
+72ED t depth_pfa
+72FD t question_stack_
+72FF t question_stack_pfa
+731C t interpret_
+731E t interpret.begin
+731E t interpret_pfa
+7338 t interpret.execute
+733E t interpret.word_not_found
+7350 t interpret.16bit_number
+7358 t immediate_
+735A t immediate_pfa
+736B t vocabulary_
+736D t vocabulary_pfa
+7381 t do_vocabulary
+738A t definitions_
+738C t definitions_pfa
+7396 t paren_
+7398 t paren_pfa
+73A1 t quit_
+73A3 t quit_pfa
+73A9 t quit.do
+73C4 t greeting_
+73C6 t greeting_pfa
+73FB t greeting.string_0_end
+740C t greeting.string_1_end
+740E t abort_
+7410 t abort_pfa
+7416 t boot
+741A t boot_
+741C t boot_pfa
+741E t warm_
+7420 t warm_pfa
+7426 t warm_start
+742F t cold_
+7431 t cold_pfa
+74A8 t cold_start
+74AC t only_first_cold
+74B4 t common_start
+74C3 t s_to_d_
+74C5 t s_to_d_pfa
+74D2 t plus_minus_
+74D4 t plus_minus_pfa
+74DC t plus_minus.end
+74DE t d_plus_minus_
+74E0 t d_plus_minus_pfa
+74E8 t d_plus_minus.end
+74EA t abs_
+74EC t abs_pfa
+74F2 t dabs_
+74F4 t dabs_pfa
+74FA t umax_
+74FC t umax_pfa
+7504 t umin_
+7506 t umin_pfa
+750E t min_
+7510 t min_pfa
+7518 t max_
+751A t max_pfa
+751B t max.de
+751F t max.1
+7520 t max.2
+7527 t m_star_
+7529 t m_star_pfa
+753D t m_slash_
+753F t m_slash_pfa
+755F t star_
+7561 t star_pfa
+7567 t slash_mod_
+7569 t slash_mod_pfa
+7573 t slash_
+7575 t slash_pfa
+757B t mod_
+757D t mod_pfa
+7583 t star_slash_mod_
+7585 t star_slash_mod_pfa
+758F t star_slash_
+7591 t star_slash_pfa
+7597 t m_slash_mod_
+7599 t m_slash_mod_pfa
+75AD t paren_line_
+75AF t paren_line_pfa
+75C7 t dot_line_
+75C9 t dot_line_pfa
+75D1 t message_
+75D3 t message_pfa
+75E5 t message.number_only
+75ED t message.string_end
+75F1 t update_
+75F3 t update_pfa
+7603 t updated_question_
+7605 t updated_question_pfa
+760B t stream_end_
+760D t stream_end_pfa
+7619 t empty_buffers_
+761B t empty_buffers_pfa
+7625 t buffer_data_
+7627 t buffer_data_pfa
+762D t buffer_id_
+762F t buffer_id_pfa
+7635 t block_number_
+7637 t block_number_pfa
+763F t buffer_block_
+7641 t buffer_block_pfa
+7647 t paren_buffer_
+7649 t paren_buffer_pfa
+7657 t free_buffer.not_updated
+7659 t free_buffer.end
+765F t buffer_
+7661 t buffer_pfa
+7671 t buffer.not_equals
+7673 t buffer.end
+7677 t block_
+7679 t block_pfa
+7689 t block.not_equals
+7693 t block.end
+7697 t flip_
+7699 t flip_pfa
+76A0 t block_to_sector_
+76A2 t block_to_sector_pfa
+76CC t read_block_
+76CE t read_block_pfa
+76D5 t read_buffer_
+76D7 t read_buffer_pfa
+76DF t write_block_
+76E1 t write_block_pfa
+76E8 t write_buffer_
+76EA t write_buffer_pfa
+76F2 t transfer_block_
+76F4 t transfer_block_pfa
+7700 t paren_transfer_block_
+7702 t paren_transfer_block_pfa
+7709 t read_write_sector_command
+7711 t save_buffers_
+7713 t save_buffers_pfa
+7725 t flush_
+7727 t flush_pfa
+772D t paren_load_
+772F t paren_load_pfa
+7748 t continued_
+774A t continued_pfa
+7750 t load_
+7752 t load_pfa
+776E t next_screen_
+7770 t next_screen_pfa
+7788 t defined_
+778A t defined_pfa
+7798 t question_defined_
+779A t question_defined_pfa
+77A3 t bracket_defined_
+77A5 t bracket_defined_pfa
+77AB t bracket_undefined_
+77AD t bracket_undefined_pfa
+77B3 t tick_
+77B5 t tick_pfa
+77BB t bracket_tick_
+77BD t bracket_tick_pfa
+77C3 t begin_
+77C5 t begin_pfa
+77CD t then_
+77CF t then_pfa
+77D9 t do_
+77DB t do_pfa
+77DF t do.common
+77E6 t loop_
+77E8 t loop_pfa
+77F5 t plus_loop_
+77F7 t plus_loop_pfa
+7804 t until_
+7806 t until_pfa
+7812 t again_
+7814 t again_pfa
+7820 t repeat_
+7822 t repeat_pfa
+782C t if_
+782E t if_pfa
+7832 t if.do
+7838 t unless_
+783A t unless_pfa
+7842 t ahead_
+7844 t ahead_pfa
+784A t else_
+784C t else_pfa
+7860 t while_
+7862 t while_pfa
+7866 t spaces_
+7868 t spaces_pfa
+786E t emits_
+7870 t emits_pfa
+7880 t emits_.do
+7888 t emits_.end
+788C t less_hash_
+788E t less_hash_pfa
+7896 t hash_greater_
+7898 t hash_greater_pfa
+78A8 t sign_
+78AA t sign_pfa
+78B7 t sign.end
+78B9 t hash_
+78BB t hash_pfa
+78D3 t hash.digit
+78DC t hash_s_
+78DE t hash_s.begin
+78DE t hash_s_pfa
+78EA t d_dot_r_
+78EC t d_dot_r_pfa
+7908 t dot_r_
+790A t dot_r_pfa
+7914 t d_dot_
+7916 t d_dot_pfa
+791E t dot_
+7920 t dot_pfa
+7926 t question_
+7928 t question_pfa
+792E t u_dot_
+7930 t u_dot_pfa
+7936 t dot_s_
+7938 t dot_s_pfa
+7962 t dot_s.do
+7970 t dot_s.end
+7972 t colors0_
+7974 t colors0_pfa
+7989 t home_
+798B t home_pfa
+7993 t cls_
+7995 t cls_pfa
+79B6 t page_
+79B8 t page_pfa
+79BC t bye_
+79BE t bye_pfa
+79C3 t system_stack_pointer
+79C7 t two_drop_
+79C9 t two_drop_pfa
+79CD t two_swap_
+79CF t two_swap_pfa
+79E2 t unused_
+79E4 t unused_pfa
+79EC t where_
+79EE t where_pfa
+79FC t where.do_it
+7A0A t where.string_1_end
+7A35 t at_xy
+7A37 t at_xypfa
+7A4E t at_pfa.last_line
+7A73 t border_
+7A75 t border_pfa
+7A80 t border.end
+7A89 t overwrite_
+7A8B t overwrite_pfa
+7A90 t flash_
+7A92 t flash_pfa
+7A97 t inverse_
+7A99 t inverse_pfa
+7A9E t bright_
+7AA0 t bright_pfa
+7AA5 t paper_
+7AA7 t paper_pfa
+7AAC t ink_
+7AAE t ink_pfa
+7AB0 t color
+7AB9 t emitted_
+7ABB t emitted_pfa
+7AD5 t emitted.do
+7AE2 t emitted.match
+7AE5 t emitted.scans
+7AFA t emitted.next_char
+7B04 t emitted.end
+7B0A t emitted_charset_
+7B0C t emitted_charset_pfa
+7B0E t hash_emitted_chars_
+7B10 t hash_emitted_chars_pfa
+7B12 t j_
+7B14 t j_pfa
+7B1E t two_constant_
+7B20 t two_constant_pfa
+7B24 t do_two_constant
+7B29 t two_variable_
+7B2B t two_variable_pfa
+7B35 t u_dot_r_
+7B37 t u_dot_r_pfa
+7B41 t two_over_
+7B43 t two_over_pfa
+7B4A t exit_
+7B4C t exit_pfa
+7B50 t question_exit_
+7B52 t question_exit_pfa
+7B58 t char_
+7B5A t char_pfa
+7B62 t bracket_char_
+7B64 t bracket_char_pfa
+7B6A t s_quote_
+7B6C t s_quote_pfa
+7B73 t question_next_screen_
+7B75 t question_next_screen_pfa
+7B7B t question_next_screen.end
+7B7D t question_backslash_
+7B7F t question_backslash_pfa
+7B85 t question_backslash.end
+7B87 t backslash_
+7B89 t backslash_pfa
+7B9D t dot_paren_
+7B9F t dot_paren_pfa
+7BA8 t xxx_
+7BAA t xxx_pfa
+7BAC t dictionary_pointer_after_cold
+7BAC t move_name_fields_to_memory_bank
+C000 d .data
+C000 d root_x_cfap
+C002 d root_x_lfa
+C004 d root_x_nfa
+C009 d root_forth_cfap
+C00B d root_forth_lfa
+C00D d root_forth_nfa
+C013 d root_definitions_cfap
+C015 d root_definitions_lfa
+C017 d latest_nfa_in_root_voc
+C017 d root_definitions_nfa
+C023 d abase_cfap
+C025 d abase_lfa
+C027 d abase_nfa
+C02D d asm_cfap
+C02F d asm_lfa
+C031 d asm_nfa
+C035 d end_asm_cfap
+C037 d end_asm_lfa
+C039 d end_asm_nfa
+C041 d end_code_cfap
+C043 d end_code_lfa
+C045 d end_code_nfa
+C04E d next_cfap
+C050 d next_lfa
+C052 d next_nfa
+C057 d pushhl_cfap
+C059 d pushhl_lfa
+C05B d pushhl_nfa
+C062 d pushhlde_cfap
+C064 d pushhlde_lfa
+C066 d pushhlde_nfa
+C06F d fetchhl_cfap
+C071 d fetchhl_lfa
+C073 d fetchhl_nfa
+C07B d next_comma_cfap
+C07D d next_comma_lfa
+C07F d next_comma_nfa
+C085 d pushhl_comma_cfap
+C087 d pushhl_comma_lfa
+C089 d pushhl_comma_nfa
+C091 d pushhlde_comma_cfap
+C093 d pushhlde_comma_lfa
+C095 d pushhlde_comma_nfa
+C09F d fetchhl_comma_cfap
+C0A1 d fetchhl_comma_lfa
+C0A3 d fetchhl_comma_nfa
+C0A3 d latest_nfa_in_assembler_voc
+C0AC d label_cfap
+C0AE d label_lfa
+C0B0 d label_nfa
+C0B6 d also_cfap
+C0B8 d also_lfa
+C0BA d also_nfa
+C0BF d minus_order_cfap
+C0C1 d minus_order_lfa
+C0C3 d minus_order_nfa
+C0CA d only_cfap
+C0CC d only_lfa
+C0CE d only_nfa
+C0D3 d previous_cfap
+C0D5 d previous_lfa
+C0D7 d previous_nfa
+C0E0 d seal_cfap
+C0E2 d seal_lfa
+C0E4 d seal_nfa
+C0E9 d root_cfap
+C0EB d root_lfa
+C0ED d root_nfa
+C0F2 d forth_cfap
+C0F4 d forth_lfa
+C0F6 d forth_nfa
+C0FC d assembler_cfap
+C0FE d assembler_lfa
+C100 d assembler_nfa
+C10A d s_lit_cfap
+C10C d s_lit_lfa
+C10E d s_lit_nfa
+C113 d paren_s_cfap
+C115 d paren_s_lfa
+C117 d paren_s_nfa
+C11B d c_lit_cfap
+C11D d c_lit_lfa
+C11F d c_lit_nfa
+C124 d lit_cfap
+C126 d lit_lfa
+C128 d lit_nfa
+C12C d bank_cfap
+C12E d bank_lfa
+C130 d bank_nfa
+C135 d unused_csb_cfap
+C137 d unused_csb_lfa
+C139 d unused_csb_nfa
+C144 d csb0_cfap
+C146 d csb0_lfa
+C148 d csb0_nfa
+C14D d question_csb_cfap
+C14F d question_csb_lfa
+C151 d question_csb_nfa
+C156 d allocate_string_cfap
+C158 d allocate_string_lfa
+C15A d allocate_string_nfa
+C16A d save_string_cfap
+C16C d save_string_lfa
+C16E d save_string_nfa
+C17A d save_counted_string_cfap
+C17C d save_counted_string_lfa
+C17E d save_counted_string_nfa
+C192 d empty_csb_cfap
+C194 d empty_csb_lfa
+C196 d empty_csb_nfa
+C1A0 d execute_cfap
+C1A2 d execute_lfa
+C1A4 d execute_nfa
+C1AC d perform_cfap
+C1AE d perform_lfa
+C1B0 d perform_nfa
+C1B8 d forward_mark_cfap
+C1BA d forward_mark_lfa
+C1BC d forward_mark_nfa
+C1C2 d forward_resolve_cfap
+C1C4 d forward_resolve_lfa
+C1C6 d forward_resolve_nfa
+C1CF d backward_mark_cfap
+C1D1 d backward_mark_lfa
+C1D3 d backward_mark_nfa
+C1D9 d backward_resolve_cfap
+C1DB d backward_resolve_lfa
+C1DD d backward_resolve_nfa
+C1E6 d branch_cfap
+C1E8 d branch_lfa
+C1EA d branch_nfa
+C1F1 d zero_branch_cfap
+C1F3 d zero_branch_lfa
+C1F5 d zero_branch_nfa
+C1FD d question_branch_cfap
+C1FF d question_branch_lfa
+C201 d question_branch_nfa
+C209 d paren_loop_cfap
+C20B d paren_loop_lfa
+C20D d paren_loop_nfa
+C214 d paren_plus_loop_cfap
+C216 d paren_plus_loop_lfa
+C218 d paren_plus_loop_nfa
+C220 d paren_do_cfap
+C222 d paren_do_lfa
+C224 d paren_do_nfa
+C229 d paren_do83_cfap
+C22B d paren_do83_lfa
+C22D d paren_do83_nfa
+C234 d paren_question_do83_cfap
+C236 d paren_question_do83_lfa
+C238 d paren_question_do83_nfa
+C240 d question_do83_cfap
+C242 d question_do83_lfa
+C244 d question_do83_nfa
+C24A d do83_cfap
+C24C d do83_lfa
+C24E d do83_nfa
+C253 d loop83_cfap
+C255 d loop83_lfa
+C257 d loop83_nfa
+C25E d paren_loop83_cfap
+C260 d paren_loop83_lfa
+C262 d paren_loop83_nfa
+C26B d i_cfap
+C26D d i_lfa
+C26F d i_nfa
+C271 d digit_cfap
+C273 d digit_lfa
+C275 d digit_nfa
+C27B d paren_find_cfap
+C27D d paren_find_lfa
+C27F d paren_find_nfa
+C286 d scan_cfap
+C288 d scan_lfa
+C28A d scan_nfa
+C28F d skip_cfap
+C291 d skip_lfa
+C293 d skip_nfa
+C298 d chan_cfap
+C29A d chan_lfa
+C29C d chan_nfa
+C2A1 d emit_cfap
+C2A3 d emit_lfa
+C2A5 d emit_nfa
+C2AA d paren_emit_cfap
+C2AC d paren_emit_lfa
+C2AE d paren_emit_nfa
+C2B5 d printer_cfap
+C2B7 d printer_lfa
+C2B9 d printer_nfa
+C2C1 d display_cfap
+C2C3 d display_lfa
+C2C5 d display_nfa
+C2CD d key_question_cfap
+C2CF d key_question_lfa
+C2D1 d key_question_nfa
+C2D6 d decode_table_cfap
+C2D8 d decode_table_lfa
+C2DA d decode_table_nfa
+C2E7 d decode_char_cfap
+C2E9 d decode_char_lfa
+C2EB d decode_char_nfa
+C2F7 d paren_key_cfap
+C2F9 d paren_key_lfa
+C2FB d paren_key_nfa
+C301 d key_cfap
+C303 d key_lfa
+C305 d key_nfa
+C309 d xkey_cfap
+C30B d xkey_lfa
+C30D d xkey_nfa
+C312 d cr_cfap
+C314 d cr_lfa
+C316 d cr_nfa
+C319 d cmove_up_cfap
+C31B d cmove_up_lfa
+C31D d cmove_up_nfa
+C324 d cmove_cfap
+C326 d cmove_lfa
+C328 d cmove_nfa
+C32E d move_cfap
+C330 d move_lfa
+C332 d move_nfa
+C337 d smove_cfap
+C339 d smove_lfa
+C33B d smove_nfa
+C341 d u_m_star_cfap
+C343 d u_m_star_lfa
+C345 d u_m_star_nfa
+C349 d u_slash_mod_cfap
+C34B d u_slash_mod_lfa
+C34D d u_slash_mod_nfa
+C355 d and_cfap
+C357 d and_lfa
+C359 d and_nfa
+C35D d or_cfap
+C35F d or_lfa
+C361 d or_nfa
+C364 d xor_cfap
+C366 d xor_lfa
+C368 d xor_nfa
+C36C d np_cfap
+C36E d np_lfa
+C370 d np_nfa
+C373 d np0_cfap
+C375 d np0_lfa
+C377 d np0_nfa
+C37B d np_fetch_cfap
+C37D d np_fetch_lfa
+C37F d np_fetch_nfa
+C383 d np_store_cfap
+C385 d np_store_lfa
+C387 d np_store_nfa
+C38B d comma_np_cfap
+C38D d comma_np_lfa
+C38F d comma_np_nfa
+C393 d sp_fetch_cfap
+C395 d sp_fetch_lfa
+C397 d sp_fetch_nfa
+C39B d sp_store_cfap
+C39D d sp_store_lfa
+C39F d sp_store_nfa
+C3A3 d rp_cfap
+C3A5 d rp_lfa
+C3A7 d rp_nfa
+C3AA d rp_fetch_cfap
+C3AC d rp_fetch_lfa
+C3AE d rp_fetch_nfa
+C3B2 d rp_store_cfap
+C3B4 d rp_store_lfa
+C3B6 d rp_store_nfa
+C3BA d semicolon_s_cfap
+C3BC d semicolon_s_lfa
+C3BE d semicolon_s_nfa
+C3C1 d pick_cfap
+C3C3 d pick_lfa
+C3C5 d pick_nfa
+C3CA d unloop_cfap
+C3CC d unloop_lfa
+C3CE d unloop_nfa
+C3D5 d exhaust_cfap
+C3D7 d exhaust_lfa
+C3D9 d exhaust_nfa
+C3E1 d question_exhaust_cfap
+C3E3 d question_exhaust_lfa
+C3E5 d question_exhaust_nfa
+C3EE d to_r_cfap
+C3F0 d to_r_lfa
+C3F2 d to_r_nfa
+C3F5 d from_r_cfap
+C3F7 d from_r_lfa
+C3F9 d from_r_nfa
+C3FC d two_r_drop_cfap
+C3FE d two_r_drop_lfa
+C400 d two_r_drop_nfa
+C407 d r_drop_cfap
+C409 d r_drop_lfa
+C40B d r_drop_nfa
+C411 d two_to_r_cfap
+C413 d two_to_r_lfa
+C415 d two_to_r_nfa
+C419 d two_from_r_cfap
+C41B d two_from_r_lfa
+C41D d two_from_r_nfa
+C421 d two_r_fetch_cfap
+C423 d two_r_fetch_lfa
+C425 d two_r_fetch_nfa
+C429 d r_fetch_cfap
+C42B d r_fetch_lfa
+C42D d r_fetch_nfa
+C430 d zero_equals_cfap
+C432 d zero_equals_lfa
+C434 d zero_equals_nfa
+C437 d zero_not_equals_cfap
+C439 d zero_not_equals_lfa
+C43B d zero_not_equals_nfa
+C43F d zero_less_than_cfap
+C441 d zero_less_than_lfa
+C443 d zero_less_than_nfa
+C446 d zero_greater_than_cfap
+C448 d zero_greater_than_lfa
+C44A d zero_greater_than_nfa
+C44D d plus_cfap
+C44F d plus_lfa
+C451 d plus_nfa
+C453 d d_plus_cfap
+C455 d d_plus_lfa
+C457 d d_plus_nfa
+C45A d negate_cfap
+C45C d negate_lfa
+C45E d negate_nfa
+C465 d dnegate_cfap
+C467 d dnegate_lfa
+C469 d dnegate_nfa
+C471 d nip_cfap
+C473 d nip_lfa
+C475 d nip_nfa
+C479 d tuck_cfap
+C47B d tuck_lfa
+C47D d tuck_nfa
+C482 d over_cfap
+C484 d over_lfa
+C486 d over_nfa
+C48B d drop_cfap
+C48D d drop_lfa
+C48F d drop_nfa
+C494 d swap_cfap
+C496 d swap_lfa
+C498 d swap_nfa
+C49D d dup_cfap
+C49F d dup_lfa
+C4A1 d dup_nfa
+C4A5 d two_dup_cfap
+C4A7 d two_dup_lfa
+C4A9 d two_dup_nfa
+C4AE d plus_store_cfap
+C4B0 d plus_store_lfa
+C4B2 d plus_store_nfa
+C4B5 d off_cfap
+C4B7 d off_lfa
+C4B9 d off_nfa
+C4BD d on_cfap
+C4BF d on_lfa
+C4C1 d on_nfa
+C4C4 d toggle_cfap
+C4C6 d toggle_lfa
+C4C8 d toggle_nfa
+C4CF d fetch_cfap
+C4D1 d fetch_lfa
+C4D3 d fetch_nfa
+C4D5 d c_fetch_cfap
+C4D7 d c_fetch_lfa
+C4D9 d c_fetch_nfa
+C4DC d two_fetch_cfap
+C4DE d two_fetch_lfa
+C4E0 d two_fetch_nfa
+C4E3 d two_store_cfap
+C4E5 d two_store_lfa
+C4E7 d two_store_nfa
+C4EA d store_cfap
+C4EC d store_lfa
+C4EE d store_nfa
+C4F0 d c_store_cfap
+C4F2 d c_store_lfa
+C4F4 d c_store_nfa
+C4F7 d colon_cfap
+C4F9 d colon_lfa
+C4FB d colon_nfa
+C4FD d noname_cfap
+C4FF d noname_lfa
+C501 d noname_nfa
+C509 d semicolon_cfap
+C50B d semicolon_lfa
+C50D d semicolon_nfa
+C50F d noop_cfap
+C511 d noop_lfa
+C513 d noop_nfa
+C518 d constant_cfap
+C51A d constant_lfa
+C51C d constant_nfa
+C525 d variable_cfap
+C527 d variable_lfa
+C529 d variable_nfa
+C532 d user_cfap
+C534 d user_lfa
+C536 d user_nfa
+C53B d msg_scr_cfap
+C53D d msg_scr_lfa
+C53F d msg_scr_nfa
+C547 d zero_cfap
+C549 d zero_lfa
+C54B d zero_nfa
+C54D d one_cfap
+C54F d one_lfa
+C551 d one_nfa
+C553 d two_cfap
+C555 d two_lfa
+C557 d two_nfa
+C559 d false_cfap
+C55B d false_lfa
+C55D d false_nfa
+C563 d true_cfap
+C565 d true_lfa
+C567 d true_nfa
+C56C d b_l_cfap
+C56E d b_l_lfa
+C570 d b_l_nfa
+C573 d c_slash_l_cfap
+C575 d c_slash_l_lfa
+C577 d c_slash_l_nfa
+C57B d l_slash_scr_cfap
+C57D d l_slash_scr_lfa
+C57F d l_slash_scr_nfa
+C585 d disk_buffer_cfap
+C587 d disk_buffer_lfa
+C589 d disk_buffer_nfa
+C595 d b_slash_buf_cfap
+C597 d b_slash_buf_lfa
+C599 d b_slash_buf_nfa
+C59F d b_slash_scr_cfap
+C5A1 d b_slash_scr_lfa
+C5A3 d b_slash_scr_nfa
+C5A9 d scr_slash_disk_cfap
+C5AB d scr_slash_disk_lfa
+C5AD d scr_slash_disk_nfa
+C5B6 d hash_vocs_cfap
+C5B8 d hash_vocs_lfa
+C5BA d hash_vocs_nfa
+C5C0 d plus_origin_cfap
+C5C2 d plus_origin_lfa
+C5C4 d plus_origin_nfa
+C5CC d sp0_cfap
+C5CE d sp0_lfa
+C5D0 d sp0_nfa
+C5D4 d rp0_cfap
+C5D6 d rp0_lfa
+C5D8 d rp0_nfa
+C5DC d width_cfap
+C5DE d width_lfa
+C5E0 d width_nfa
+C5E6 d warning_cfap
+C5E8 d warning_lfa
+C5EA d warning_nfa
+C5F2 d dp_cfap
+C5F4 d dp_lfa
+C5F6 d dp_nfa
+C5F9 d voc_link_cfap
+C5FB d voc_link_lfa
+C5FD d voc_link_nfa
+C606 d blk_cfap
+C608 d blk_lfa
+C60A d blk_nfa
+C60E d to_in_cfap
+C610 d to_in_lfa
+C612 d to_in_nfa
+C616 d out_cfap
+C618 d out_lfa
+C61A d out_nfa
+C61E d scr_cfap
+C620 d scr_lfa
+C622 d scr_nfa
+C628 d context_cfap
+C62A d context_lfa
+C62C d context_nfa
+C634 d current_cfap
+C636 d current_lfa
+C638 d current_nfa
+C640 d state_cfap
+C642 d state_lfa
+C644 d state_nfa
+C64A d base_cfap
+C64C d base_lfa
+C64E d base_nfa
+C653 d dpl_cfap
+C655 d dpl_lfa
+C657 d dpl_nfa
+C65B d fld_cfap
+C65D d fld_lfa
+C65F d fld_nfa
+C663 d csp_cfap
+C665 d csp_lfa
+C667 d csp_nfa
+C66B d r_hash_cfap
+C66D d r_hash_lfa
+C66F d r_hash_nfa
+C672 d hld_cfap
+C674 d hld_lfa
+C676 d hld_nfa
+C67A d tib_cfap
+C67C d tib_lfa
+C67E d tib_nfa
+C682 d number_tib_cfap
+C684 d number_tib_lfa
+C686 d number_tib_nfa
+C68B d recurse_cfap
+C68D d recurse_lfa
+C68F d recurse_nfa
+C697 d one_plus_cfap
+C699 d one_plus_lfa
+C69B d one_plus_nfa
+C69E d two_plus_cfap
+C6A0 d two_plus_lfa
+C6A2 d two_plus_nfa
+C6A5 d cell_minus_cfap
+C6A7 d cell_minus_lfa
+C6A9 d cell_minus_nfa
+C6AF d cell_plus_cfap
+C6B1 d cell_plus_lfa
+C6B3 d cell_plus_nfa
+C6B9 d one_minus_cfap
+C6BB d one_minus_lfa
+C6BD d one_minus_nfa
+C6C0 d two_minus_cfap
+C6C2 d two_minus_lfa
+C6C4 d two_minus_nfa
+C6C7 d two_star_cfap
+C6C9 d two_star_lfa
+C6CB d two_star_nfa
+C6CE d cells_cfap
+C6D0 d cells_lfa
+C6D2 d cells_nfa
+C6D8 d cell_cfap
+C6DA d cell_lfa
+C6DC d cell_nfa
+C6E1 d two_slash_cfap
+C6E3 d two_slash_lfa
+C6E5 d two_slash_nfa
+C6E8 d here_cfap
+C6EA d here_lfa
+C6EC d here_nfa
+C6F1 d allot_cfap
+C6F3 d allot_lfa
+C6F5 d allot_nfa
+C6FB d s_comma_cfap
+C6FD d s_comma_lfa
+C6FF d s_comma_nfa
+C702 d comma_cfap
+C704 d comma_lfa
+C706 d comma_nfa
+C708 d compile_comma_cfap
+C70A d compile_comma_lfa
+C70C d compile_comma_nfa
+C715 d c_comma_cfap
+C717 d c_comma_lfa
+C719 d c_comma_nfa
+C71C d minus_cfap
+C71E d minus_lfa
+C720 d minus_nfa
+C722 d not_equals_cfap
+C724 d not_equals_lfa
+C726 d not_equals_nfa
+C729 d equals_cfap
+C72B d equals_lfa
+C72D d equals_nfa
+C72F d less_than_cfap
+C731 d less_than_lfa
+C733 d less_than_nfa
+C735 d u_greater_than_cfap
+C737 d u_greater_than_lfa
+C739 d u_greater_than_nfa
+C73C d u_less_than_cfap
+C73E d u_less_than_lfa
+C740 d u_less_than_nfa
+C743 d greater_than_cfap
+C745 d greater_than_lfa
+C747 d greater_than_nfa
+C749 d rot_cfap
+C74B d rot_lfa
+C74D d rot_nfa
+C751 d space_cfap
+C753 d space_lfa
+C755 d space_nfa
+C75B d question_dup_cfap
+C75D d question_dup_lfa
+C75F d question_dup_nfa
+C764 d lfa_to_nfa_cfap
+C766 d lfa_to_nfa_lfa
+C768 d lfa_to_nfa_nfa
+C770 d trail_cfap
+C772 d trail_lfa
+C774 d trail_nfa
+C77A d latest_cfap
+C77C d latest_lfa
+C77E d latest_nfa
+C785 d pfa_to_lfa_cfap
+C787 d pfa_to_lfa_lfa
+C789 d pfa_to_lfa_nfa
+C791 d pfa_to_cfa_cfap
+C793 d pfa_to_cfa_lfa
+C795 d pfa_to_cfa_nfa
+C79D d cfa_to_pfa_cfap
+C79F d cfa_to_pfa_lfa
+C7A1 d cfa_to_pfa_nfa
+C7A9 d pfa_to_nfa_cfap
+C7AB d pfa_to_nfa_lfa
+C7AD d pfa_to_nfa_nfa
+C7B5 d cfa_to_nfa_cfap
+C7B7 d cfa_to_nfa_lfa
+C7B9 d cfa_to_nfa_nfa
+C7C1 d cfap_to_lfa_cfap
+C7C3 d cfap_to_lfa_lfa
+C7C5 d cfap_to_lfa_nfa
+C7CE d nfa_to_lfa_cfap
+C7D0 d nfa_to_lfa_lfa
+C7D2 d nfa_to_lfa_nfa
+C7DA d c_store_bank_cfap
+C7DC d c_store_bank_lfa
+C7DE d c_store_bank_nfa
+C7E5 d store_bank_cfap
+C7E7 d store_bank_lfa
+C7E9 d store_bank_nfa
+C7EF d c_fetch_bank_cfap
+C7F1 d c_fetch_bank_lfa
+C7F3 d c_fetch_bank_nfa
+C7FA d fetch_bank_cfap
+C7FC d fetch_bank_lfa
+C7FE d fetch_bank_nfa
+C804 d c_fetch_n_cfap
+C806 d c_fetch_n_lfa
+C808 d c_fetch_n_nfa
+C80C d fetch_n_cfap
+C80E d fetch_n_lfa
+C810 d fetch_n_nfa
+C813 d c_store_n_cfap
+C815 d c_store_n_lfa
+C817 d c_store_n_nfa
+C81B d store_n_cfap
+C81D d store_n_lfa
+C81F d store_n_nfa
+C822 d nfa_to_cfa_cfap
+C824 d nfa_to_cfa_lfa
+C826 d nfa_to_cfa_nfa
+C82E d nfa_to_string_cfap
+C830 d nfa_to_string_lfa
+C832 d nfa_to_string_nfa
+C83D d store_csp_cfap
+C83F d store_csp_lfa
+C841 d store_csp_nfa
+C846 d question_error_cfap
+C848 d question_error_lfa
+C84A d question_error_nfa
+C851 d comp_question_cfap
+C853 d comp_question_lfa
+C855 d comp_question_nfa
+C85B d question_comp_cfap
+C85D d question_comp_lfa
+C85F d question_comp_nfa
+C865 d question_exec_cfap
+C867 d question_exec_lfa
+C869 d question_exec_nfa
+C86F d question_pairs_cfap
+C871 d question_pairs_lfa
+C873 d question_pairs_nfa
+C87A d question_csp_cfap
+C87C d question_csp_lfa
+C87E d question_csp_nfa
+C883 d question_loading_cfap
+C885 d question_loading_lfa
+C887 d question_loading_nfa
+C890 d compile_cfap
+C892 d compile_lfa
+C894 d compile_nfa
+C89C d postpone_cfap
+C89E d postpone_lfa
+C8A0 d postpone_nfa
+C8A9 d left_bracket_cfap
+C8AB d left_bracket_lfa
+C8AD d left_bracket_nfa
+C8AF d right_bracket_cfap
+C8B1 d right_bracket_lfa
+C8B3 d right_bracket_nfa
+C8B5 d smudge_cfap
+C8B7 d smudge_lfa
+C8B9 d smudge_nfa
+C8C0 d hex_cfap
+C8C2 d hex_lfa
+C8C4 d hex_nfa
+C8C8 d decimal_cfap
+C8CA d decimal_lfa
+C8CC d decimal_nfa
+C8D4 d paren_semicolon_code_cfap
+C8D6 d paren_semicolon_code_lfa
+C8D8 d paren_semicolon_code_nfa
+C8E0 d semicolon_code_cfap
+C8E2 d semicolon_code_lfa
+C8E4 d semicolon_code_nfa
+C8EA d does_cfap
+C8EC d does_lfa
+C8EE d does_nfa
+C8F4 d count_cfap
+C8F6 d count_lfa
+C8F8 d count_nfa
+C8FE d bounds_cfap
+C900 d bounds_lfa
+C902 d bounds_nfa
+C909 d type_cfap
+C90B d type_lfa
+C90D d type_nfa
+C912 d minus_trailing_cfap
+C914 d minus_trailing_lfa
+C916 d minus_trailing_nfa
+C920 d paren_dot_quote_cfap
+C922 d paren_dot_quote_lfa
+C924 d paren_dot_quote_nfa
+C92C d dot_quote_cfap
+C92E d dot_quote_lfa
+C930 d dot_quote_nfa
+C936 d span_cfap
+C938 d span_lfa
+C93A d span_nfa
+C93F d accept_cfap
+C941 d accept_lfa
+C943 d accept_nfa
+C94A d expect_cfap
+C94C d expect_lfa
+C94E d expect_nfa
+C955 d query_cfap
+C957 d query_lfa
+C959 d query_nfa
+C95F d x_cfap
+C961 d x_lfa
+C963 d x_nfa
+C965 d fill_cfap
+C967 d fill_lfa
+C969 d fill_nfa
+C96E d erase_cfap
+C970 d erase_lfa
+C972 d erase_nfa
+C978 d blank_cfap
+C97A d blank_lfa
+C97C d blank_nfa
+C982 d hold_cfap
+C984 d hold_lfa
+C986 d hold_nfa
+C98B d pad_cfap
+C98D d pad_lfa
+C98F d pad_nfa
+C993 d stream_cfap
+C995 d stream_lfa
+C997 d stream_nfa
+C99E d parsed_cfap
+C9A0 d parsed_lfa
+C9A2 d parsed_nfa
+C9A9 d parse_cfap
+C9AB d parse_lfa
+C9AD d parse_nfa
+C9B3 d parse_name_cfap
+C9B5 d parse_name_lfa
+C9B7 d parse_name_nfa
+C9C2 d word_cfap
+C9C4 d word_lfa
+C9C6 d word_nfa
+C9CB d paren_number_cfap
+C9CD d paren_number_lfa
+C9CF d paren_number_nfa
+C9D8 d number_cfap
+C9DA d number_lfa
+C9DC d number_nfa
+C9E3 d upper_cfap
+C9E5 d upper_lfa
+C9E7 d upper_nfa
+C9ED d uppers_cfap
+C9EF d uppers_lfa
+C9F1 d uppers_nfa
+C9F8 d defined_question_cfap
+C9FA d defined_question_lfa
+C9FC d defined_question_nfa
+CA05 d undefined_question_cfap
+CA07 d undefined_question_lfa
+CA09 d undefined_question_nfa
+CA14 d dollar_store_cfap
+CA16 d dollar_store_lfa
+CA18 d dollar_store_nfa
+CA1B d find_cfap
+CA1D d find_lfa
+CA1F d find_nfa
+CA24 d find_dollar_cfap
+CA26 d find_dollar_lfa
+CA28 d find_dollar_nfa
+CA2E d found_cfap
+CA30 d found_lfa
+CA32 d found_nfa
+CA38 d paren_abort_cfap
+CA3A d paren_abort_lfa
+CA3C d paren_abort_nfa
+CA44 d error_number_cfap
+CA46 d error_number_lfa
+CA48 d error_number_nfa
+CA4F d error_pos_cfap
+CA51 d error_pos_lfa
+CA53 d error_pos_nfa
+CA5D d error_to_line_cfap
+CA5F d error_to_line_lfa
+CA61 d error_to_line_nfa
+CA6C d error_cfap
+CA6E d error_lfa
+CA70 d error_nfa
+CA76 d id_dot_cfap
+CA78 d id_dot_lfa
+CA7A d id_dot_nfa
+CA7E d header_cfap
+CA80 d header_lfa
+CA82 d header_nfa
+CA89 d create_cfap
+CA8B d create_lfa
+CA8D d create_nfa
+CA94 d code_cfap
+CA96 d code_lfa
+CA98 d code_nfa
+CA9D d compare_cfap
+CA9F d compare_lfa
+CAA1 d compare_nfa
+CAA9 d search_cfap
+CAAB d search_lfa
+CAAD d search_nfa
+CAB4 d bracket_compile_cfap
+CAB6 d bracket_compile_lfa
+CAB8 d bracket_compile_nfa
+CAC2 d s_literal_cfap
+CAC4 d s_literal_lfa
+CAC6 d s_literal_nfa
+CACF d c_literal_cfap
+CAD1 d c_literal_lfa
+CAD3 d c_literal_nfa
+CADC d literal_cfap
+CADE d literal_lfa
+CAE0 d literal_nfa
+CAE8 d two_literal_cfap
+CAEA d two_literal_lfa
+CAEC d two_literal_nfa
+CAF5 d depth_cfap
+CAF7 d depth_lfa
+CAF9 d depth_nfa
+CAFF d question_stack_cfap
+CB01 d question_stack_lfa
+CB03 d question_stack_nfa
+CB0A d interpret_cfap
+CB0C d interpret_lfa
+CB0E d interpret_nfa
+CB18 d immediate_cfap
+CB1A d immediate_lfa
+CB1C d immediate_nfa
+CB26 d vocabulary_cfap
+CB28 d vocabulary_lfa
+CB2A d vocabulary_nfa
+CB35 d definitions_cfap
+CB37 d definitions_lfa
+CB39 d definitions_nfa
+CB45 d paren_cfap
+CB47 d paren_lfa
+CB49 d paren_nfa
+CB4B d quit_cfap
+CB4D d quit_lfa
+CB4F d quit_nfa
+CB54 d greeting_cfap
+CB56 d greeting_lfa
+CB58 d greeting_nfa
+CB61 d abort_cfap
+CB63 d abort_lfa
+CB65 d abort_nfa
+CB6B d boot_cfap
+CB6D d boot_lfa
+CB6F d boot_nfa
+CB74 d warm_cfap
+CB76 d warm_lfa
+CB78 d warm_nfa
+CB7D d cold_cfap
+CB7F d cold_lfa
+CB81 d cold_nfa
+CB86 d s_to_d_cfap
+CB88 d s_to_d_lfa
+CB8A d s_to_d_nfa
+CB8E d plus_minus_cfap
+CB90 d plus_minus_lfa
+CB92 d plus_minus_nfa
+CB95 d d_plus_minus_cfap
+CB97 d d_plus_minus_lfa
+CB99 d d_plus_minus_nfa
+CB9D d abs_cfap
+CB9F d abs_lfa
+CBA1 d abs_nfa
+CBA5 d dabs_cfap
+CBA7 d dabs_lfa
+CBA9 d dabs_nfa
+CBAE d umax_cfap
+CBB0 d umax_lfa
+CBB2 d umax_nfa
+CBB7 d umin_cfap
+CBB9 d umin_lfa
+CBBB d umin_nfa
+CBC0 d min_cfap
+CBC2 d min_lfa
+CBC4 d min_nfa
+CBC8 d max_cfap
+CBCA d max_lfa
+CBCC d max_nfa
+CBD0 d m_star_cfap
+CBD2 d m_star_lfa
+CBD4 d m_star_nfa
+CBD7 d m_slash_cfap
+CBD9 d m_slash_lfa
+CBDB d m_slash_nfa
+CBDE d star_cfap
+CBE0 d star_lfa
+CBE2 d star_nfa
+CBE4 d slash_mod_cfap
+CBE6 d slash_mod_lfa
+CBE8 d slash_mod_nfa
+CBED d slash_cfap
+CBEF d slash_lfa
+CBF1 d slash_nfa
+CBF3 d mod_cfap
+CBF5 d mod_lfa
+CBF7 d mod_nfa
+CBFB d star_slash_mod_cfap
+CBFD d star_slash_mod_lfa
+CBFF d star_slash_mod_nfa
+CC05 d star_slash_cfap
+CC07 d star_slash_lfa
+CC09 d star_slash_nfa
+CC0C d m_slash_mod_cfap
+CC0E d m_slash_mod_lfa
+CC10 d m_slash_mod_nfa
+CC16 d paren_line_cfap
+CC18 d paren_line_lfa
+CC1A d paren_line_nfa
+CC21 d dot_line_cfap
+CC23 d dot_line_lfa
+CC25 d dot_line_nfa
+CC2B d message_cfap
+CC2D d message_lfa
+CC2F d message_nfa
+CC37 d update_cfap
+CC39 d update_lfa
+CC3B d update_nfa
+CC42 d updated_question_cfap
+CC44 d updated_question_lfa
+CC46 d updated_question_nfa
+CC4F d stream_end_cfap
+CC51 d stream_end_lfa
+CC53 d stream_end_nfa
+CC5E d empty_buffers_cfap
+CC60 d empty_buffers_lfa
+CC62 d empty_buffers_nfa
+CC70 d buffer_data_cfap
+CC72 d buffer_data_lfa
+CC74 d buffer_data_nfa
+CC80 d buffer_id_cfap
+CC82 d buffer_id_lfa
+CC84 d buffer_id_nfa
+CC8E d block_number_cfap
+CC90 d block_number_lfa
+CC92 d block_number_nfa
+CC9F d buffer_block_cfap
+CCA1 d buffer_block_lfa
+CCA3 d buffer_block_nfa
+CCB0 d paren_buffer_cfap
+CCB2 d paren_buffer_lfa
+CCB4 d paren_buffer_nfa
+CCBD d buffer_cfap
+CCBF d buffer_lfa
+CCC1 d buffer_nfa
+CCC8 d block_cfap
+CCCA d block_lfa
+CCCC d block_nfa
+CCD2 d flip_cfap
+CCD4 d flip_lfa
+CCD6 d flip_nfa
+CCDB d block_to_sector_cfap
+CCDD d block_to_sector_lfa
+CCDF d block_to_sector_nfa
+CCEC d read_block_cfap
+CCEE d read_block_lfa
+CCF0 d read_block_nfa
+CCFB d read_buffer_cfap
+CCFD d read_buffer_lfa
+CCFF d read_buffer_nfa
+CD0B d write_block_cfap
+CD0D d write_block_lfa
+CD0F d write_block_nfa
+CD1B d write_buffer_cfap
+CD1D d write_buffer_lfa
+CD1F d write_buffer_nfa
+CD2C d transfer_block_cfap
+CD2E d transfer_block_lfa
+CD30 d transfer_block_nfa
+CD3F d save_buffers_cfap
+CD41 d save_buffers_lfa
+CD43 d save_buffers_nfa
+CD50 d flush_cfap
+CD52 d flush_lfa
+CD54 d flush_nfa
+CD5A d paren_load_cfap
+CD5C d paren_load_lfa
+CD5E d paren_load_nfa
+CD65 d continued_cfap
+CD67 d continued_lfa
+CD69 d continued_nfa
+CD73 d load_cfap
+CD75 d load_lfa
+CD77 d load_nfa
+CD7C d next_screen_cfap
+CD7E d next_screen_lfa
+CD80 d next_screen_nfa
+CD84 d defined_cfap
+CD86 d defined_lfa
+CD88 d defined_nfa
+CD90 d question_defined_cfap
+CD92 d question_defined_lfa
+CD94 d question_defined_nfa
+CD9D d bracket_defined_cfap
+CD9F d bracket_defined_lfa
+CDA1 d bracket_defined_nfa
+CDAB d bracket_undefined_cfap
+CDAD d bracket_undefined_lfa
+CDAF d bracket_undefined_nfa
+CDBB d tick_cfap
+CDBD d tick_lfa
+CDBF d tick_nfa
+CDC1 d bracket_tick_cfap
+CDC3 d bracket_tick_lfa
+CDC5 d bracket_tick_nfa
+CDC9 d begin_cfap
+CDCB d begin_lfa
+CDCD d begin_nfa
+CDD3 d then_cfap
+CDD5 d then_lfa
+CDD7 d then_nfa
+CDDC d do_cfap
+CDDE d do_lfa
+CDE0 d do_nfa
+CDE3 d loop_cfap
+CDE5 d loop_lfa
+CDE7 d loop_nfa
+CDEC d plus_loop_cfap
+CDEE d plus_loop_lfa
+CDF0 d plus_loop_nfa
+CDF6 d until_cfap
+CDF8 d until_lfa
+CDFA d until_nfa
+CE00 d again_cfap
+CE02 d again_lfa
+CE04 d again_nfa
+CE0A d repeat_cfap
+CE0C d repeat_lfa
+CE0E d repeat_nfa
+CE15 d if_cfap
+CE17 d if_lfa
+CE19 d if_nfa
+CE1C d unless_cfap
+CE1E d unless_lfa
+CE20 d unless_nfa
+CE27 d ahead_cfap
+CE29 d ahead_lfa
+CE2B d ahead_nfa
+CE31 d else_cfap
+CE33 d else_lfa
+CE35 d else_nfa
+CE3A d while_cfap
+CE3C d while_lfa
+CE3E d while_nfa
+CE44 d spaces_cfap
+CE46 d spaces_lfa
+CE48 d spaces_nfa
+CE4F d emits_cfap
+CE51 d emits_lfa
+CE53 d emits_nfa
+CE59 d less_hash_cfap
+CE5B d less_hash_lfa
+CE5D d less_hash_nfa
+CE60 d hash_greater_cfap
+CE62 d hash_greater_lfa
+CE64 d hash_greater_nfa
+CE67 d sign_cfap
+CE69 d sign_lfa
+CE6B d sign_nfa
+CE70 d hash_cfap
+CE72 d hash_lfa
+CE74 d hash_nfa
+CE76 d hash_s_cfap
+CE78 d hash_s_lfa
+CE7A d hash_s_nfa
+CE7D d d_dot_r_cfap
+CE7F d d_dot_r_lfa
+CE81 d d_dot_r_nfa
+CE85 d dot_r_cfap
+CE87 d dot_r_lfa
+CE89 d dot_r_nfa
+CE8C d d_dot_cfap
+CE8E d d_dot_lfa
+CE90 d d_dot_nfa
+CE93 d dot_cfap
+CE95 d dot_lfa
+CE97 d dot_nfa
+CE99 d question_cfap
+CE9B d question_lfa
+CE9D d question_nfa
+CE9F d u_dot_cfap
+CEA1 d u_dot_lfa
+CEA3 d u_dot_nfa
+CEA6 d dot_s_cfap
+CEA8 d dot_s_lfa
+CEAA d dot_s_nfa
+CEAD d colors0_cfap
+CEAF d colors0_lfa
+CEB1 d colors0_nfa
+CEB9 d home_cfap
+CEBB d home_lfa
+CEBD d home_nfa
+CEC2 d cls_cfap
+CEC4 d cls_lfa
+CEC6 d cls_nfa
+CECA d page_cfap
+CECC d page_lfa
+CECE d page_nfa
+CED3 d bye_cfap
+CED5 d bye_lfa
+CED7 d bye_nfa
+CEDB d two_drop_cfap
+CEDD d two_drop_lfa
+CEDF d two_drop_nfa
+CEE5 d two_swap_cfap
+CEE7 d two_swap_lfa
+CEE9 d two_swap_nfa
+CEEF d unused_cfap
+CEF1 d unused_lfa
+CEF3 d unused_nfa
+CEFA d where_cfap
+CEFC d where_lfa
+CEFE d where_nfa
+CF04 d at_xycfap
+CF06 d at_xylfa
+CF08 d at_xynfa
+CF0E d border_cfap
+CF10 d border_lfa
+CF12 d border_nfa
+CF19 d overwrite_cfap
+CF1B d overwrite_lfa
+CF1D d overwrite_nfa
+CF27 d flash_cfap
+CF29 d flash_lfa
+CF2B d flash_nfa
+CF31 d inverse_cfap
+CF33 d inverse_lfa
+CF35 d inverse_nfa
+CF3D d bright_cfap
+CF3F d bright_lfa
+CF41 d bright_nfa
+CF48 d paper_cfap
+CF4A d paper_lfa
+CF4C d paper_nfa
+CF52 d ink_cfap
+CF54 d ink_lfa
+CF56 d ink_nfa
+CF5A d emitted_cfap
+CF5C d emitted_lfa
+CF5E d emitted_nfa
+CF66 d emitted_charset_cfap
+CF68 d emitted_charset_lfa
+CF6A d emitted_charset_nfa
+CF7A d hash_emitted_chars_cfap
+CF7C d hash_emitted_chars_lfa
+CF7E d hash_emitted_chars_nfa
+CF8D d j_cfap
+CF8F d j_lfa
+CF91 d j_nfa
+CF93 d two_constant_cfap
+CF95 d two_constant_lfa
+CF97 d two_constant_nfa
+CFA1 d two_variable_cfap
+CFA3 d two_variable_lfa
+CFA5 d two_variable_nfa
+CFAF d u_dot_r_cfap
+CFB1 d u_dot_r_lfa
+CFB3 d u_dot_r_nfa
+CFB7 d two_over_cfap
+CFB9 d two_over_lfa
+CFBB d two_over_nfa
+CFC1 d exit_cfap
+CFC3 d exit_lfa
+CFC5 d exit_nfa
+CFCA d question_exit_cfap
+CFCC d question_exit_lfa
+CFCE d question_exit_nfa
+CFD4 d char_cfap
+CFD6 d char_lfa
+CFD8 d char_nfa
+CFDD d bracket_char_cfap
+CFDF d bracket_char_lfa
+CFE1 d bracket_char_nfa
+CFE8 d s_quote_cfap
+CFEA d s_quote_lfa
+CFEC d s_quote_nfa
+CFF2 d question_next_screen_cfap
+CFF4 d question_next_screen_lfa
+CFF6 d question_next_screen_nfa
+CFFB d question_backslash_cfap
+CFFD d question_backslash_lfa
+CFFF d question_backslash_nfa
+D003 d backslash_cfap
+D005 d backslash_lfa
+D007 d backslash_nfa
+D00A d dot_paren_cfap
+D00C d dot_paren_lfa
+D00E d dot_paren_nfa
+D011 d xxx_cfap
+D013 d xxx_lfa
+D015 d latest_nfa_in_forth_voc
+D015 d xxx_nfa
+D017 d _address_after_name
+D018 d data_start
