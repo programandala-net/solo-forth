@@ -3,7 +3,7 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506181825
+; Version A-00-201506180207
 ; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
 ; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
@@ -11,6 +11,7 @@
 ; - fix: now `enclose` uses a 16-bit offset counter.
 ; - fix: `on` and `off`.
 ; - new: `code`, `end-code`, `assembler`.
+; - new: header macros, not debugged yet.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -182,15 +183,14 @@ _header: macro label,name_but_last_letter,last_letter,is_immediate
   ;  local _first ; address of the first char of the name
   ;  local _next  ; address after the last char of the name
   ;db _next-_first+bits    ; count and flags byte
-  db label##_lfa-label##_nfa+bits ; count and flags byte
+  label##nfa: ; name field address
+  db label##lfa-label##nfa-1+bits ; count and flags byte
   ;  _first:
-  label##_nfa: ; name field address
   db name_but_last_letter,last_letter+0x80 ; name field
   ;  _next:
-  label##_lfa: ; link field address
+  label##lfa: ; link field address
   dw previous_nfa ; link field
-  label##_: ; code field address
-  label##_pfa: equ $+2 ; parameter field address
+  label: ; code field address
 
   previous_nfa: defl this_nfa
 
@@ -199,7 +199,15 @@ endm
 _code_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
-  dw label##_pfa ; code field
+  dw label##pfa ; code field
+  label##pfa: ; parameter field address
+
+  endm
+
+_code_alias_header: macro label,name_but_last_letter,last_letter,immediate,alias
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw alias##pfa ; code field
 
   endm
 
@@ -207,6 +215,7 @@ _colon_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
   dw do_colon ; code field
+  label##pfa: ; parameter field address
 
   endm
 
@@ -214,6 +223,7 @@ _user_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
   dw do_user ; code field
+  label##pfa: ; parameter field address
 
   endm
 
@@ -221,6 +231,7 @@ _does_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
   dw do_does ; code field
+  label##pfa: ; parameter field address
 
   endm
 
@@ -228,6 +239,7 @@ _constant_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
   dw do_constant ; code field
+  label##pfa: ; parameter field address
 
   endm
 
@@ -235,6 +247,7 @@ _variable_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
   dw do_variable ; code field
+  label##pfa: ; parameter field address
 
   endm
 
@@ -517,7 +530,10 @@ next2:
 ; ==============================================================
 ; Dictionary
 
-  _header c_lit,'CLI','T'
+c_lit_nfa:
+  db 0x04+0x80,'CLI','T'+0x80
+c_lit_lfa:
+  dw 0x0000
 c_lit_:
   dw c_lit_pfa
 c_lit_pfa:
@@ -935,7 +951,7 @@ endif
 ; Copied from Spectrum Forth-83.
 
 chan_nfa:
-  db 0x0+0x80,'CHA','N'+0x80
+  db 0x04+0x80,'CHA','N'+0x80
 chan_lfa:
   dw enclose_nfa
 chan_:
@@ -1492,7 +1508,7 @@ r_drop_nfa:
 r_drop_lfa:
   dw two_r_drop_nfa
 r_drop_:
-  dw two_r_drop_pfa
+  dw r_drop_pfa
 r_drop_pfa:
   ld hl,(return_stack_pointer)
   inc hl
@@ -1532,7 +1548,7 @@ zero_not_equals_nfa:
 zero_not_equals_lfa:
   dw zero_equals_nfa
 zero_not_equals_:
-  dw zero_equals_pfa
+  dw zero_not_equals_pfa
 zero_not_equals_pfa:
   pop hl
   ld a,l
@@ -2509,13 +2525,12 @@ less_than.true:
 
   endif
 
+if 1 ; XXX OLD -- original
+
 u_less_than_nfa:
   db 0x02+0x80,'U','<'+0x80
 u_less_than_lfa:
   dw less_than_nfa
-
-if 1 ; XXX OLD -- original
-
 u_less_than_:
   dw do_colon
 u_less_than_pfa:
@@ -2538,6 +2553,10 @@ else
   ; XXX NEW -- from DZX-Forth
   ; XXX FIXME
 
+u_less_than_nfa:
+  db 0x02+0x80,'U','<'+0x80
+u_less_than_lfa:
+  dw less_than_nfa
 u_less_than_:
   dw u_less_than_pfa
 u_less_than_pfa:
@@ -2582,7 +2601,6 @@ greater_than_pfa:
 rot_nfa:
   db 0x03+0x80,'RO','T'+0x80
 rot_lfa:
-  ; dw minus_rot_nfa ; XXX TMP
   dw greater_than_nfa
 rot_:
   dw rot_pfa
@@ -3142,6 +3160,8 @@ query_pfa:
 
 ; }doc
 
+if 1 ; XXX OLD -- original version
+
 x_nfa:
   db 0x01+0x80+precedence_bit_mask,'',0x80
 x_lfa:
@@ -3149,9 +3169,6 @@ x_lfa:
 x_:
   dw do_colon
 x_pfa:
-
-if 1 ; XXX OLD -- original version
-
   ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.from_terminal
@@ -3186,8 +3203,15 @@ x.end:
 
 else ; XXX NEW -- simpler and faster flow
 
+x_nfa:
+  db 0x01+0x80+precedence_bit_mask,'',0x80
+x_lfa:
+  dw query_nfa
+x_:
+  dw do_colon
+x_pfa:
+  
   ; XXX FIXME -- why the system crashes when loading?
-
   dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.exit ; if not, branch
@@ -3633,7 +3657,7 @@ create.continue:
   dw semicolon_s_
 
 assembler_nfa:
-  db 0x09+0x80,"ASSEMBLE","R"+0x80
+  db 0x09+0x80,'ASSEMBLE','R'+0x80
 assembler_lfa:
   dw create_nfa
 assembler_:

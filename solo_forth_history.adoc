@@ -286,3 +286,8 @@ Change: `-find` is renamed as `find`, and factored out with
 Change: `i'` is moved to the disk.
 
 New: `rp`, required to rewrite `i'` outside the kernel.
+
+.2015-06-18:
+
+Change: Macros are used to create the headers. The symbols file
+created with macros is identical to the former one.
