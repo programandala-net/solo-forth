@@ -1,0 +1,1885 @@
+= Solo Forth Manual
+:revdate: 2015-06-19
+:toc:
+:toclevels: 3
+:numbered:
+
+// -------------------------------------------------------------
+// Change history
+
+// See at the end of the file.
+
+// -------------------------------------------------------------
+// To-do
+
+// XXX TODO complete the pronunciation notes
+// XXX TODO fig-Forth notation for "cells"
+
+// -------------------------------------------------------------
+
+== Introduction
+
+=== Starting Out
+
+// XXX TODO URL links to the books
+
+This manual is not intended to be a tutorial of Forth, there are many
+books available on the internet that do this more than adequately.
+
+For the more advanced user one useful reference work is _The Systems
+guide to fig-Forth_ by C. H. Ting.
+
+Forth is a language which combines the features of high level
+languages with the speed of machine code.
+
+The Forth interpreter interprets each line of commands by searching
+through an internal dictionary of words which it understands. It then
+acts on these words. Some of the words allow creation of new words,
+which in turn form the basis for even high level words, Eventually a
+whole program comes together, and is called by a single word. This
+gradual development allows for better checking of sections of a
+program than BASIC does.
+
+=== Setting Up
+
+To start Solo Forth on your ZX Spectrum insert the disk drive and type
+`run`.
+
+All commands may be entered in upper case or lower case.  Upper and
+lower case are toggled in the normal Spectrum manner as in the
+Graphics mode. The cursor changes to a "C", "L" or "G" respectively.
+All the keyboard symbols are available by using the symbol shift.  The
+only character not available by this method is the copyright symbol.
+
+There are now two _BREAK_ keys available in this system - the standard
+key which can be dangerous when doing cassette or printer I/O, or the
+_Caps Shift 1_ which can be safely trapped by `?TERMINAL`.
+
+=== Register Usage
+
+The programmer who wishes to use machine code routines (using `CODE`
+or `;CODE`) will require the register usage of Spectrum Forth. These
+are as follows:
+
+.Registers
+[cols="20,20,60"]
+|===
+| Forth | Z80 | Note
+
+| IP    | BC  | Must be preserved across words.
+| W     | DE  | Input only when `PUSHDE` is called.
+| SP    | SP  | Should be used only as data stack across Forth words.
+| NEXT  | IX  | User area pointer. Must be preserved across Forth words.
+|       | HL  | Input only when `PUSHHL` or `PUSHDE` are called.
+|===
+
+== Error Messages
+
+Search for "Error messages" in the <solo_forth.fsb> file.
+
+== Glossary
+
+The glossary contains all of the word definitions in this release of
+fig-Forth (with extensions for the Spectrum). The definitions are
+presented in the order of their ASCII sort.
+
+=== Glossary Notation
+
+==== Stack Notation
+
+The first line of each entry shows the name of the word and a symbolic
+description of its action on the parameter stack. The symbols indicate
+the order in which input parameters have been placed on the stack.
+Two dashes ("--") indicate the execution point; any parameters left on
+the stack are listed. In this notation, the top of the stack is to the
+right.
+
+The symbols include:
+
+.Data types
+[cols="20,50,30"]
+|===
+| Symbol | Data type | Cells on stack
+
+| f | boolean flag (0 = false, non-zero = true) | 1
+| ff | boolean false flag (=0) | 1 
+| tf | boolean true flag (=non-zero) | 1
+| c | 7 bit ASCII character | 1
+| b | 8 bit byte (i.e. high 8 bits zero) | 1
+| n | 16 bit signed integer number | 1
+| u | 16 bit unsigned integer number | 1
+| d | 32 bit signed double integer | 2
+| ud | 32 bit unsigned double integer | 2
+| addr | memory address | 1
+| cfa | code field address | 1
+| nfa | name field address | 1
+| pfa | parameter address | 1
+| lfa | link address | 1
+| i*x | any data type  | 0 or more
+| j*x | any data type  | 0 or more
+| k*x | any data type  | 0 or more
+|===
+
+Unless otherwise noted, all references to numbers are for 16 bit
+signed integers. The high byte is on top of the stack, with the sign
+in the leftmost bit. For 32 bit numbers the most significant part is
+on top.
+
+All arithmetic is implicitly 16 bit signed integer math, with error
+and underflow indication unspecified.
+
+If, in addition to using stack parameters, a definition parses text,
+that text is specified by an abbreviation from the following table, shown
+surrounded by double-quotes and placed between the before parameters
+and the -- separator in the first stack described, e.g.,
+
+----
+( before "parsed-text-abbreviaton" -- after )
+----
+
+.Parsed text abbreviations
+[cols="20,80"]
+|===
+| Abbreviaton | Description
+
+| <char>
+| the delimiting character marking the end of the string being parsed
+
+| <chars>
+| zero or more consecutive occurrences of the character char
+
+| <space>
+| a delimiting space character
+
+| <spaces>
+| zero or more consecutive occurrences of the character space
+
+| <quote>
+| a delimiting double quote
+
+| <paren>
+| a delimiting right parenthesis
+
+| <eol>
+| an implied delimiter marking the end of a line
+| ccc
+| a parsed sequence of arbitrary characters, excluding the delimiter character
+
+| name
+| a token delimited by space, equivalent to ccc<space> or ccc<eol>
+
+|===
+
+==== Attributes
+
+The capital letters on the right of the stack notation indicate
+attributes of the defined words:
+
+.Word attributes
+[cols="10,90"]
+|===
+| Attribute | Description
+
+| C | May only be used during compilation of a colon definition.
+A digit indicates number of memory addresses used.
+A plus sign indicates an undetermined number of memory addresses used.
+| E | Intended for execution only.
+| P | Immediate word.
+Has precedence bit set.
+Will execute even when compiling.
+| U | A user variable.
+|===
+
+==== Pronunciation
+
+The pronunciation of word names is given in double quotes, at the right
+of the word attributes, when it differs from English pronunciation.
+
+[#forthglossary]
+=== Forth Glossary
+
+`!`  ( n addr  -- )   "store"
+
+Store _n_ at address _addr_.
+
+`!CSP`  ( -- )
+
+Save the stack position in `CSP`. Used as part of the compiler security.
+
+`#`  ( d1  -- d2 ) 
+
+Generate from a double number _d1_, the next ASCII character which is
+placed in an output string. Result _d2_ is the quotient after division
+by `BASE`, and is maintained for further processing. Used between `<#` and
+`#>`. See `#S`.
+
+`#>`  ( d  -- addr count ) 
+
+Terminates numeric output conversions by dropping _d_, leaving the text
+address and character count suitable for `TYPE`.
+
+`#BUFF`  ( -- n )
+
+A constant returning the number of disc buffers allocated.
+
+
+`#S`  ( d1  -- d2 ) 
+
+Generates ASCII text in the text output buffer, by the use of `#`, until
+a zero double number results. Used between `<#` and `#>`.
+
+`'`  ( "name" -- pfa ) P  "tick"
+
+Used in the form: `' name`
+
+Return the parameter field address of dictionary word nnnn. As a
+compiler directive, execute a colon-definition to compile the address
+as a literal. If the word is not found after a search of `CONTEXT` and
+`CURRENT`, an appropriate error message is given.
+
+// XXX FIXME space after comma?
+`(`  ( "ccc<paren>" -- ) P
+
+Used in the form:  `( comment)`
+
+Ignore a comment that will be delimited by a right parenthesis on the
+same line. May occur during execution or in a colon-definition. A
+blank after the leading parenthesis is required.
+
+// XXX FIXME C+ ?
+`(.")`  ( -- ) C+
+
+The run-time procedure, compiled by `."` which transmits the following
+in-line text to the selected output device. See `."`.
+
+`(;CODE)`  ( -- ) C
+
+The run-time procedure, compiled by `;CODE`, that rewrites the code
+field of the most recently defined word to point to the following
+machine code sequence. See `;CODE`.
+
+`(+LOOP)`  ( n  -- ) C2
+
+The run-time procedure compiled by `+LOOP`, which increments the loop
+index by _n_ and tests for loop completion. See `+LOOP`.
+
+`(ABORT)`  ( -- )
+
+Executes after an error when `WARNING` is -1. The word normally executes
+`ABORT`, but may be altered (with care) to a user's alternative
+procedure.
+
+`(DO)`  ( -- ) C
+
+The run-time procedure compiled by `DO` which moves the loop control
+parameters to the return stack. See `DO`.
+
+`(FIND)`  ( addrl addr2 -- pfa b tf | ff )
+
+Search the dictionary starting at the name field address _addr2_,
+matching to the text at addrl. Return parameter field address, length
+byte of name field and true for a good match. If no match is found,
+only a boolean false is left.
+
+`(LINE)`  ( n1 n2 -- addr count )
+
+Convert the line number _n1_ and the screen _n2_ to the disc buffer
+address containing the data. A count of 64 indicates the full line
+text length.
+
+WARNING: This word doesn't work fine with certain values, what affects
+`MESSAGE`.  The bug is in the word `U/MOD`. See `MESSAGE` and `U/MOD`
+for more details.
+
+`(LOOP)`  ( -- ) C2
+
+The run-time procedure compiled by `LOOP` which increments the loop
+index and tests for loop completion. See `LOOP`.
+
+`(NUMBER)`  ( d1 addrl -- d2 addr2 )
+
+Convert the ASCII text beginning at _addr1_+1 with regard to `BASE`.
+The new value is accumulated into double number _d1_, being left as _d2_.
+Addr2 is the address of the first unconvertible digit. Used by
+`NUMBER`.
+
+`*`  ( n1 n2  -- n3 )
+
+Leave the signed product of two signed numbers.
+
+`*/`  ( n1 n2 n3  -- n4 )
+
+Leave the ratio _n4=n1*n2/n3_ where all are signed numbers. Retention
+of an intermediate 31 bit product permits greater accuracy than would
+be available with the sequence:  `n1 n2 * n3 /`.
+
+`*/MOD`  ( n1 n2 n3  -- n4 n5 )
+
+Leave the quotient _n5_ and remainder _n4_ of their operation
+_n1*n2/n3_. A
+31 bit intermediate product is used as for `*/`.
+
+`+`  ( n1 n2  -- n3 )
+
+Leave the sum _n3_ of _n1+n2_.
+
+`+!`  ( n addr -- )  "plus-store"
+
+Add _n_ to the value at the address.
+
+`+-`  ( n1 n2 -- n3 )
+
+Apply the sign of _n2_ to _n1_, which is left as _n3_.
+
+`+BUF`  ( addr1 -- addr2 f )
+
+Advance the disc buffer address addr1 to the address of the next
+buffer _addr2_. Boolean _f_ is false when _addr2_ is the buffer presently
+pointed to by variable `PREV`.
+
+NOTE: When _f_ is true, it's not 1.
+
+`+LOOP`  ( Run-time: n1 -- ) ( Compilation: addr n2 --- ) P,C2
+
+Used in a colon-definition in the form:  `DO... n1 +LOOP`
+
+At run-time, `+LOOP` selectively controls branching back to the
+corresponding `DO`, based on _n1_, the loop index and the loop limit. The
+signed increment _n1_ is added to the index and the total compared to
+the limit. The branch back to `DO` occurs until the new index is equal
+to or greater than the limit (_n1_>0), or until the new index is equal
+to or less than the limit (_n1_<0). Upon exiting the loop, the
+parameters are discarded and execution continues ahead.
+
+At compile time, `+LOOP` compiles the run-time word `(+LOOP)` and the
+branch offset computed from `HERE` to the address left on the stack by
+`DO`. _n2_ is used for compile time error checking.
+
+`+ORIGIN`  ( n -- addr )
+
+Leave the memory address offset _n_ bytes from the origin. This
+definition is used to access or modify the boot-up parameters at the
+origin area.
+
+`.CPU`  ( -- )
+
+Print the message "48K Spectrum".
+
+`,`  ( n -- )
+
+Store _n_ into the next available dictionary memory cell, advancing the
+dictionary pointer. (comma)
+
+`-`  ( n1 n2  -- n3 )
+
+Leave the difference _n3_ of _n1-n2_.
+
+`pass:[-->]`  ( -- ) P  "next-screen"
+
+Continue interpretation with the next disc screen.
+
+`?DUP`  ( n1 -- n1 | n1 n1 )
+
+Reproduce _n1_ only if it is non-zero.  This is usually used to copy a
+value just before `IF`, to eliminate the need for an `ELSE` part to
+drop it.
+
+`FIND`  ( -- pfa b tf | ff )
+
+// XXX FIXME "* dictionary"? Consult the original manual:
+Accept the next text word (delimited by blanks) in the input stream to
+`HERE`, and searches the `CONTEXT` and then `CURRENT` vocabularies for a
+matching entry. If found, the dictionary entry's parameter field
+address, its length byte, and a boolean true is left. Otherwise, only
+a boolean false is left.
+
+`-TRAILING`  ( addr u1 -- addr u2 )
+
+Adjust the character count _n1_ of a text string beginning address to
+suppress the output of trailing blanks.
+
+`.`  ( n -- )  "dot"
+
+Print a number from a signed 16 bit two's complement value, converted
+according to the numeric `BASE`. A trailing blank follows.
+
+`."`  ( "ccc<quote>" -- ) P,L
+
+Used in the form: `." text"`. Compile an in-line string "text"
+(delimited by the trailing double quote) with an execution procedure
+to transmit the text to the selected output device. If executed
+outside a definition, ." will immediately print the text until the
+final ". See `(.")`.
+
+`.LINE`  ( line scr -- )
+
+Print on the screen, a line of text from the RAM-disc by its line and
+screen number. Trailing blanks are suppressed.
+
+`.R`  ( n1 n2 -- )
+
+Print the number _n1_ right aligned in a field whose width is _n2_. No
+following blank is printed.
+
+`/`  ( n1 n2 -- n3 )
+
+Leave the signed quotient _n3_ of _n1/n2_.
+
+`/MOD`  ( n1 n2  -- n3 n4 )
+
+Leave the remainder _n3_ and signed quotient _n4_ of _n1/n2_. The remainder has
+the sign of the dividend.
+
+`0`  ( -- n )
+
+`1`  ( -- n )
+
+`2`  ( -- n )
+
+`3`  ( -- n )
+
+These small numbers are used so often that it is attractive to define
+them by name in the dictionary as constants.
+
+`0<`  ( n  -- f )
+
+Leave a true flag if the number is less than zero (negative),
+otherwise leave a false flag.
+
+`0=`  ( n  -- f )
+
+Leave a true flay if the number is equal to zero, otherwise leave a
+false flag.
+
+`0BRANCH` ( f -- )
+
+The run-time procedure to conditionally branch. If _f_ is false (zero),
+the following in-line parameter is used to update the interpretive pointer
+to branch ahead or back. Compiled by `IF`, `UNTIL` and `WHILE`.
+
+`1+`  ( n1  -- n2 )
+
+Increment _n1_ by 1.
+
+`2+`  ( n1 -- n2 )
+
+Increment _n1_ by 2.
+
+`2!`  ( n1 n2 addr -- )
+
+32 bit store: _n2_ (high) is stored at addr; _n1_ (low) is stored at
+_addr+2_.
+
+`2CONSTANT`  ( d "name" -- )
+
+A defining word used in the form: `d 2CONSTANT name` to create word
+`name`, with its parameter field containing _d_. When `name` is later
+executed, it will push the double value of _d_ to the stack.
+
+`2DROP`  ( d -- )
+
+Drop the double number from the stack.
+
+`2DUP`  ( n2 n1 -- n2 n1 n2 n1 )
+
+Duplicate the top two values on the stack. Equivalent to `OVER OVER`.
+
+`2OVER`  ( d1 d2 -- d1 d2 d1 )
+
+Copy the first double value _d1_ to the top of the stack.
+
+WARNING:  As Don Thomasson's _Advanced Spectrum Forth_ (1984) says
+(page 131), early versions of Abersoft Forth contained an error in the
+word `2OVER`, that hangs the system: the `>R >R` at the end of the
+definition must be `R> R>` instead.  The following command fixes the
+problem:
+
+----
+' R> CFA ' 2OVER 10 + 2DUP ! 2+ !
+----
+
+`2SWAP` ( d1 d2 -- d2 d1 )
+
+Exchange the top two double numbers on the stack.
+
+`2VARIABLE`  ( d "name" -- )
+
+A defining word used in the form: `d VARIABLE name`
+
+When VARIABLE is executed, it creates the definition `name` with its
+parameter field initialized to _d_. When `name` is later executed, the
+address of its parameter field (containing _d_) is left on the stack, so
+that a double fetch store may access this location.
+
+`:`  ( "name" -- ) P,E
+
+Used in the form called a colon-definition: `: name ... ;`
+
+Create a dictionary entry defining `name` as equivalent to the
+following sequence of Forth words ("...") until the next `;` or
+`;CODE`. The compiling process is done by the text interpreter as long
+as  `STATE` is non-zero. Other details are that the `CONTEXT`
+vocabulary is set to the `CURRENT` vocabulary and that words with the
+precedence bit set (P) are executed rather than being compiled.
+
+`;`  ( -- ) P,C
+
+Terminate a colon-definition and stop further compilation. Compiles
+the run-time `;S`.
+
+`;CODE`  ( -- ) P,C
+
+Used in the form: `: name .... ;CODE`
+
+// XXX 2015-05-02: The following description was wrong at the last but
+// one sentence. It has been fixed:
+
+Stop compilation and terminate a new defining word `name` by compiling
+`(;CODE)`. Set the `CONTEXT` vocabulary to `ASSEMBLER`, assembling to
+machine code the following mnemonics. If the `ASSEMBLER` is not
+loaded, code values may be compiled using `,` and `C,`.  When `name`
+later executes in the form: `name name2` the word `name2` will be
+created with its execution procedure given by the machine code
+following `name`. That is when `name2` is executed, it does so by
+jumping to the code after `name`.  An existing defining word must
+exist in `name` prior to `;CODE`.
+
+`;S`  ( -- ) P
+
+Stop interpretation of a screen. `;S` is also the run-time word
+compiled at the end of a colon-definition which returns execution to
+the calling procedure.
+
+`<`  ( n1 n2  -- f )
+
+Leave a true flag if _n1_ is less than _n2_; otherwise leave a false flag.
+
+`<#`  ( -- )
+
+Setup for pictured numeric output formatting using the words: `<#`,
+`#`, `#S`, `SIGN` and `#>`. The conversion is done on a double number
+producing text at `PAD`.
+
+`<BUILDS`  ( -- ) C
+
+Used within a colon-definition:  `: name <BUILDS ... DOES> ... ;`
+
+// XXX 2015-05-02: The following description was wrong at the sentence
+// sentence. It has been fixed:
+
+Each time cccc is executed, `<BUILDS` defines a new word with a
+high-level execution procedure. Executing `name` in the form:  `name
+name2` uses `<BUILDS` to create a dictionary entry for `name2` with a
+call to the `DOES>` part of `name`. When `name2` is later executed, it
+has the address of its parameter area on the stack and executes the
+words after `DOES>` in `name`. `<BUILDS` and `DOES>` allow run-time
+procedures to be written in high-level rather than in assembler code
+(as required by `;CODE`).
+
+`=`  ( nl n2  -- f )
+
+Leave a true flag if _n1_ equals _n2_; otherwise leave a false flag.
+
+`>`  ( n1 n2  -- f )
+
+Leave a true flag if _n1_ is greater than _n2_; otherwise a false flag.
+
+`>R`  ( n -- ) C
+
+Remove a number from the computation stack and place as the most
+accessible on the return stack. Use should be balanced with `R>` in
+the same definition.
+
+`?`  ( addr -- )
+
+Print the value contained at the address in free format according to
+the current base.
+
+`?BRANCH` ( f -- )
+
+The run-time procedure to conditionally branch. If _f_ is not zero,
+the following in-line parameter is used to update the interpretive
+pointer to branch ahead or back. Compiled by `UNLESS`.
+
+`?COMP`  ( -- )
+
+Issue error message if not compiling.
+
+`?CSP`  ( -- )
+
+Issue error message if stack position differs from value saved in
+`CSP`.
+
+`?ERROR`  ( f n -- )
+
+Issue an error message number _n_, if the boolean flag _f_ is true.
+
+`?EXEC`  ( -- )
+
+Issue an error message if not executing.
+
+`?LOADING`  ( -- )
+
+Issue an error message if not loading.
+
+`?PAIRS`  ( n1 n2 -- )
+
+Issue an error message if _n1_ does not equal _n2_. The message indicates
+that compiled conditionals do not match.
+
+`?STACK`  ( -- )
+
+Issue an error message if the stack is out of bounds.
+
+`?TERMINAL`  ( -- f )
+
+Perform a test of the terminal keyboard for actuation of the break
+key. A true flag indicates actuation.
+
+`@`  ( addr  -- n )
+
+Leave the 16 bit contents of address.
+
+`ABORT`  ( -- )
+
+Clear the stacks and enter the execution state. Return control to the
+keyboard, printing a message.
+
+`ABS`  ( n  -- u )
+
+Leave the absolute value of _n_ as _u_.
+
+`AGAIN`  ( Compilation: addr n  -- ) P,C2
+
+Used in a colon-definition in the form:  `BEGIN ... AGAIN`
+
+At run-time, `AGAIN` forces execution to return to corresponding
+`BEGIN`.  There is no effect on the stack. Execution cannot leave this
+loop (unless `R> DROP` is executed one level below). At compile time,
+`AGAIN` compiles `BRANCH` with an offset from `HERE` to _addr_. _n_ is
+used for compile-time error checking.
+
+`ALLOT`  ( n -- )
+
+Add the signed number to the dictionary pointer DP. May be used to
+reserve dictionary space or reorigin memory. _n_ is with regard to
+computer address type (byte or word).
+
+`AND`  ( n1 n2  -- n3 )
+
+Leave the bitwise logical and of _n1_ and _n2_ as _n3_.
+
+`AT`  ( n1 n2 -- )
+
+Move the cursor position to line _n1_, column _n2_.
+
+`ATTR` ( n1 n2 -- b )
+
+Return the attribute byte at line _n1_, column _n2_.
+
+`B/BUF`  ( -- n )
+
+This constant leaves the number of bytes per disc buffer, the byte
+count read from disc by `BLOCK`.
+
+`B/SCR`  ( -- n )
+
+This constant leaves the number of blocks per editing screen. By
+convention, an editing screen is 1024 bytes organised as 16 lines of
+64 characters each.
+
+`BACK`  ( addr -- )
+
+Calculate the backward branch offset from `HERE` to _addr_ and compile
+into the next available dictionary memory address.
+
+`BASE`  ( -- addr ) U
+
+A user variable containing the current number base used for input and
+output conversion.
+
+`BEGIN`  ( Compilation: -- addr n ) P
+
+Occurs in a colon-definition in forms:
+
+----
+BEGIN  ( code )  ( condition )  UNTIL
+BEGIN  ( code )  AGAIN
+BEGIN  ( condition )  WHILE  ( code )  REPEAT
+----
+
+At run-time, `BEGIN` marks the start of a sequence that may be
+repetitively executed. It serves as a return point from the
+corresponding `UNTIL`, `AGAIN` or `REPEAT`. When executing `UNTIL`, a
+return to `BEGIN` will occur if the top of the stack is false; for
+AGAIN and REPEAT a return to `BEGIN` always occurs.  At compile time
+`BEGIN` leaves its return address and _n_ for compiler error checking.
+
+`BL`  ( -- c )
+
+A constant that leaves the ASCII values for "blank".
+
+`BLANKS`  ( addr count -- )
+
+Fill an area of memory beginning at _addr_ with count blanks.
+
+`BLEEP`  ( n1 n2 -- )
+
+Produce a tone in the Spectrum noise maker of duration _n1_, pitch _n2_.
+
+`BLK`  ( -- addr ) U
+
+A user variable containing the block number being interpreted. If
+zero, input is being taken from the terminal input buffer.
+
+`BLOCK`  ( n  -- addr )
+
+Leave the memory address of the block buffer containing block _n_. If
+the block is not already in memory, it is transferred from microdrive
+to which ever buffer was least recently written. If the block
+occupying that buffer has been marked as updated, it is rewritten to
+microdrive before block _n_ is read into the buffer. See also `BUFFER`,
+`R/W`, `UPDATE`, `FLUSH`.
+
+`BRANCH`  ( -- ) C2
+
+The run-time procedure to unconditionally branch. An in-line offset is
+added to the interpretive pointer IP to branch ahead or back. `BRANCH`
+is compiled by `ELSE`, `AGAIN`, `REPEAT`.
+
+`BRIGHT`  ( f -- )
+
+Set the screen to bright if flag _f_ is true, else unset bright.
+
+`BORDER`  ( n -- )
+
+Set the border to colour _n_.
+
+`BUFFER`  ( n -- addr )
+
+Obtain the next memory buffer, assigning it to block _n_. If the
+contents of the buffer is marked as updated, it is written to the
+microdrive. The block is not read from the microdrive. The address
+left is the first cell within the buffer to data storage.
+
+`BYE`  ( -- )
+
+Exit to BASIC. Error 9 (stop).
+
+`C!`  ( b addr -- )
+
+Store 8 bits at address.
+
+`C/L`  ( -- n )
+
+Constant leaving the number of characters per line; used by the editor.
+
+`C,`  ( b -- )
+
+Store 8 bits of b into the next available dictionary byte, advancing
+the dictionary pointer.
+
+`C@`  ( addr -- b )
+
+Leave the 8 bit contents of memory address.
+
+`CASE` ( Compilation: -- n )
+
+Occurs in a colon definition in the form:
+
+----
+CASE
+  n OF  ...  ENDOF
+ENDCASE
+----
+
+At run-time, `CASE` marks the start of a sequence of `OF ... ENDOF`
+statements.  At compile-time `CASE` leaves _n_ for compiler error
+checking.
+
+`CFA`  ( pfa -- cfa )
+
+Convert the parameter field address of a definition to its code field
+address.
+
+`CLS` ( -- )
+
+Perform the clear-screen home-cursor function.
+
+`CMOVE`  ( addr1 addr2 u -- )
+
+Move the specified quantity of bytes _u_ beginning at address _addr1_, to
+address _addr2_. The contents of address _addr1_ is moved first,
+proceeding toward high memory.
+
+`COLD`  ( -- )
+
+The cold start procedure to adjust the dictionary pointer to the
+minimum standard and restart via ABORT. May be called from the
+terminal to remove application programs and restart.
+
+`COMPILE`  ( -- ) C2
+
+When the word containing `COMPILE` executes, the execution address of
+the word following `COMPILE` is copied (compiled) into the dictionary.
+This allows specific compilation situations to be handled in addition
+to simply compiling an execution address (which the interpreter
+already does).
+
+`CONSTANT`  ( n "name" -- )
+
+A defining word used in the form: `n CONSTANT name` to create word
+`name`, with its parameter field containing _n_. When `name` is later
+executed, it will push the value of _n_ to the stack.
+
+`CONTEXT`  ( -- addr ) U
+
+A user variable containing a pointer to the vocabulary within which
+dictionary searches will first begin.
+
+`COUNT`  ( addr1  -- addr2 n )
+
+Leave the byte address _addr2_ and byte count _n_ of a message text
+beginning at address _addr1_. It is presumed that the first byte at
+_addr1_ contains the text byte count and the actual text starts with the
+second byte. Typically `COUNT` is followed by `TYPE`.
+
+`CR`  ( -- )
+Transmit a carriage return and line feed to the selected output device.
+
+`CREATE`  ( "name" -- )
+
+A defining word used in the form: `CREATE name` by such words as
+`CODE` and `CONSTANT` to create a dictionary header for a Forth
+definition. The code field contains the address of the word's
+parameter field. The new word is created in the current vocabulary.
+
+`CSP`  (  -- addr ) U
+
+// XXX TODO continue here, removing tabs and fixing the notation
+
+A user variable temporarily storing the stack pointer position, for
+compilation error checking.
+
+// XXX `CURRENT` was missing in the original.
+// XXX TODO confirm attribute
+
+`CURRENT`  ( -- addr ) U
+
+A user variable containing a pointer to the last word defined in the
+current vocabulary. _addr_ is part of the pfa of the current vocabulary,
+and contains the nfa of the word.
+
+`D+`  ( d1 d2 -- d3 )
+
+Leave the double number sum of two double numbers.
+
+`D+-`  ( d1 n -- d2 )
+
+Apply the sign of _n_ to the double number _d1_, leaving it as _d2_.
+
+`D.`  ( d -- )  "d-dot"
+
+Print a signed double number from a 32 bit two's complement value. The
+high-order 16 bits are most accessible on the stack. Conversion is
+performed according to the current BASE. A blank follows.
+
+`D.R`  ( d n -- )
+
+Print a signed double number _d_, right aligned in a field _n_ characters
+wide.
+
+`DABS`  ( d -- ud )
+
+Leave absolute value of a double number.
+
+`DECIMAL`  ( -- )
+
+Set the numeric conversion base for decimal input-output.
+
+`DEFINITIONS`  ( -- ) LI
+
+Used in the form:  `name DEFINITIONS`, where `name` is the name of a
+vocabulary.
+
+Set the `CURRENT` vocabulary to the `CONTEXT` vocabulary. In the
+example, executing vocabulary `name` made it the `CONTEXT` vocabulary
+and executing `DEFINITIONS` made it also the `CURRENT` vocabulary.
+
+`DIGIT`  ( c n1 -- n2 tf | ff )
+
+Convert the ASCII character c (using base _n1_) to its binary equivalent
+_n2_, accompanied by a true flag. If the conversion is invalid, leaves
+only a false flag.
+
+`DLITERAL`  ( Run-time: d -- d ) ( Compilation: d --- ) P
+
+If compiling, compile a double number from the stack into a literal.
+Later execution of the definition containing the literal will push it
+to the stack. If executing, the number will remain on the stack.
+
+`DNEGATE`  ( d1 -- d2 )
+
+Convert _d1_ to its double number two's complement.
+
+`DO`  ( Run-time: n1 n2 -- ) ( Compilation: addr n --- ) P,C2
+
+Occurs in a colon-definition in forms:
+
+----
+DO ... LOOP
+DO ... n +LOOP
+----
+
+// XXX FIXME: "and B, unless A"?
+At run time, `DO` begins a sequence with repetitive execution controlled
+by a loop limit _n1_ and an index with initial value _n2_. `DO` removes
+these from the stack. Upon reaching `LOOP` the index is incremented by
+one, and B, unless A. In this case the loop parameters are discarded
+and execution continues ahead. Both _n1_ and _n2_ are determined at
+run-time and may be the result of other operations. Within a loop `I`
+will copy the current value of the index to the stack. See `I`, `LOOP`,
+`+LOOP`, `LEAVE`.
+
+When compiling with the colon-definition, `DO` compiles `(DO)`. It
+then leaves the following address _addr_, and _n_ for later error
+checking.
+
+`DOES>`  ( -- )
+
+A word which defines the run-time action within a high-level defining
+word.  `DOES>` alters the code field and first parameter of the new
+word to execute the sequence of compiled word addresses following
+`DOES>`.  Used in combination with `<BUILDS`. When the `DOES>` part
+executes it begins with the address of the first parameter of the new
+word on the stack. This allows interpretation using this area or its
+contents.  Typical uses include the Forth assembler, multidimensional
+arrays, and compiler generation.
+
+`DP`  ( -- addr ) U,L
+
+A user variable, the dictionary pointer, which contains the address of
+the next free memory above the dictionary. The value may be read by
+`HERE` and altered by `ALLOT`.
+
+`DPL`  ( -- addr ) U
+
+A user variable containing the number of digits to the right of the
+decimal on double integer input. It may also be used to hold output
+column location of a decimal point, in user generated formatting. The
+default value on single number input is -1.
+
+`DRAW`  ( n1 n2 -- )
+
+Draw a line from the current plot position to _n1_(x), _n2_(y). Any points
+drawn off the screen are ignored.
+
+`DROP`  ( n -- )
+
+Drop the number from the stack.
+
+`DUP`  ( n  -- n n )
+
+Duplicate the value on the stack.
+
+`EDITOR`  ( -- )
+The editor vocabulary.
+
+`ELSE`  ( addr1 n1 -- ) ( compilation: addr2 n2 -- ) P,C2
+
+Occurs within a colon-definition in the form:
+
+----
+( condition ) IF  ( true part )  ELSE  ( false part )  THEN
+----
+
+At run-time, `ELSE` executes after the true part following `IF`.
+`ELSE` forces execution to skip over the following part and resumes
+execution after the `THEN`. It has no stack effect.
+
+At compile-time `ELSE` compiles `BRANCH`, reserving space for a branch
+offset. It leaves the address _addr2_, and _n2_ for error testing. `ELSE`
+also resolves the pending forward branch from `IF` by calculating the
+offset from _addr1_ to `HERE`, and storing at addrl.
+
+`EMIT`  ( c -- )
+
+Transmit ASCII character c to the selected output device. `OUT` is
+incremented for each character output.
+
+`EMPTY-BUFFERS`  ( -- )
+
+// 2015-05-09: The original description is wrong. The buffers are
+// erased in this implementation of the word. Description fixed.
+//
+// Original description:
+//
+// Mark all block-buffers as empty, not necessarily affecting the
+// contents. Updated blocks are not written to the microdrive. This is
+// also an initialisation procedure before first use of the
+// microdrive.
+
+Erase the contents of all block-buffers and mark them as empty.
+Updated blocks are not written to the microdrive. This is also an
+initialisation procedure before first use of the microdrive.
+
+`ENCLOSE`  ( addr1 c -- addr1 n1 n2 n3 )
+
+The text scanning primitive used by `WORD`. From the text address
+_addr1_ and an ASCII delimiting character c, is determined the byte
+offset to the first non-delimiter character _n1_, the offset to the
+first delimiter after the text _n2_, and the offset to the first
+character not included. This procedure will not process past an ASCII
+'null", treating it as an unconditional delimiter.
+
+`ENDCASE` ( Compilation: addr n -- )
+
+Occurs in a colon definition in the form:
+
+----
+CASE
+  n OF  ...  ENDOF
+ENDCASE
+----
+
+At run-time `ENDCASE` marks the conclusion of a `CASE` statement.  At
+compile-time, `ENDCASE` computes forward branch offsets.
+
+`ENDOF`  ( Compilation: addr n -- )
+
+Used as THEN but in CASE statements.
+
+`FILL`  ( addr u b -- )
+
+Fill memory at the address _addr_ with the specified quantity _u_ of
+bytes _b_.
+
+`ERASE`  ( addr n -- )
+
+Clear to zero a region of memory, _n_ bytes long, starting at _addr_.
+
+`ERROR`  ( n -- in blk )
+
+Execute error notification and restart of systems. `WARNING` is first
+examined. If 1, the text of line _n_, relative to screen 4 is printed.
+This line number may be positive or negative, and beyond just screen
+4. If `WARNING` is 0, _n_ is just printed as a message number (RAM-disc
+installation). If `WARNING` is -1 the definition `(ABORT)` is executed,
+which executes the system `ABORT`. The user may cautiously modify this
+execution by altering `(ABORT)`. fig-Forth saves the contents of `IN` and
+`BLK` on the stack to assist in determining the location of the error.
+Final action is execution of `QUIT`.
+
+`EXECUTE`  ( addr -- )
+
+Execute the definition whose code field address is on the stack. The
+code field address is also called the compilation address.
+
+`EXIT`  ( -- ) ( R: x -- )
+
+Force the conclusion of a definition at a different place than the
+end. Must not be used when the return stack has been modified!
+
+WARNING: This word has a bug. It does `>R DROP` instead of `R> DROP`.
+Even Don Thomasson's book _Advanced Spectrum Forth_ (1984) lists this
+word with the error (page 131) without notice.  The problem can be
+fixed with the following command:
+
+----
+' R> CFA ' EXIT !
+----
+
+`EXPECT`  ( addr u -- )
+
+Transfer characters from the terminal to address _addr_, until a "return" or
+the count _u_ of characters have been received. One or more nulls are
+added at the end of the text.
+
+`FENCE`  ( -- addr ) U
+
+A user variable containing an address below which `FORGET` is not
+allowed to work. To forget below this point the user must alter the
+contents of `FENCE`.
+
+`FIRST`  ( -- n )
+
+A constant that leaves the address of the first (lowest) block buffer.
+
+`FLASH`  ( f -- )
+
+Set the screen to flash if flag _f_ is true, else unset flash.
+
+`FLD`  (  -- addr ) U
+
+A user variable for control of number output field width. Presently
+unused in fig-Forth.
+
+`FLUSH`  ( -- )
+
+Write all updated disc buffers to the microdrive.
+
+`FORGET`  ( "name" -- ) E
+
+Executed in the form:  `FORGET name`.
+
+Delete definition `name` from the dictionary with all entries
+physically following it. In fig-Forth, an error message will occur if
+the `CURRENT` and `CONTEXT` vocabularies are not currently the same.
+
+`FORTH`  ( -- ) P
+
+The name of the primary vocabulary. Execution makes `FORTH` the
+`CONTEXT` vocabulary. Until additional user vocabularies are defined,
+new user definitions become a part of `FORTH`. `FORTH` is immediate,
+so it will execute during the creation of a colon-definition to select
+this vocabulary at compile time.
+
+`FREE`  ( -- n )
+
+Return a value on the stack of the amount of store remaining in bytes.
+
+`GOVER`  ( f -- )
+
+Set the screen to overprint if flag _f_ is true, else unset overprint.
+
+`HERE`  ( -- addr )
+
+Leave the address of the next available dictionary location.
+
+`HEX`  ( -- )
+
+Set the numeric conversion base to sixteen (hexadecimal).
+
+`HI`  ( -- addr )
+
+Constant leaving the highest address of the RAM-disc.
+
+`HLD`  (  -- addr )
+
+A user variable that holds the address of the latest character of text
+during numeric output conversion.
+
+`HOLD`  ( c -- )
+
+Used between `<#` and `#>` to insert an ASCII character into a
+pictured numeric output string e.g. `46 HOLD` will place a decimal
+point ".".
+
+`I`  (  -- n ) C
+
+Used within a DO-LOOP to copy the loop index to the stack.  See R.
+
+`I'`  ( -- n )
+
+Copy the last but one value from the return stack (which within a
+`DO`-`LOOP` is the loop limit).
+
+`ID.`  ( nfa -- )
+
+Print a definition's name from its name field address.
+
+`IF`  ( Run-time: f -- ) ( Compilation: --- addr n ) P,C2
+
+Occurs in a colon-definition in the forms:
+
+----
+( condition ) IF  ( true part )  THEN
+( condition ) IF  ( true part )  ELSE  ( false part )  THEN
+----
+
+At run-time, `IF` selects execution based on a boolean flag. If _f_ is
+true (non-zero), execution continues  ahead throughout the true part.
+If _f_ is false, execution jumps to just after `ELSE` to execute the false
+part. After either part, execution resumes after `THEN`. `ELSE` and its
+false part are optional. If missing, false execution skips to just
+after `THEN`.
+
+At compile-time `IF` compiles `0BRANCH` and reserves space for an offset
+at _addr_. _addr_ and _n_ are used later for resolution of the offset and
+error testing.
+
+`IMMEDIATE`  ( -- )
+
+Mark the most recently made definition so that when encountered at
+compile time, it will be executed rather than being compiled, i.e. the
+precedence bit in its header is set. This method allows definitions to
+handle unusual compiling situations, rather than build them into the
+fundamental compiler. The user may force compilation of an immediate
+definition by preceding it with `[COMPILE]`.
+
+`IN`  (  -- addr )
+
+A user variable containing the byte offset within the current input
+text buffer (terminal or RAM-disc) from which the next text will be
+accepted. `WORD` uses and moves the value of `IN`.
+
+`INCX`  ( -- addr )
+
+A double variable  used by `DRAW`.
+
+`INCY`  ( -- addr )
+
+A double variable  used by `DRAW`.
+
+`INDEX`  ( from to -- )
+
+Print the first line of each screen over the range from, to. This is
+used to view the comment lines of an area of text on RAM-disc screens.
+
+`INK`  ( n -- )
+
+Set the ink colour to _n_ (0-9).
+
+`INKEY`  ( -- c )
+
+Leave the value of the key being pressed. If no key being pressed
+leaves hex FF (decimal 255).
+
+`P@`  ( u -- b )
+
+// XXX TODO check if the parameter is an address.
+Return the value read from port _u_.
+
+`INTERPRET`  ( -- )
+
+The outer text interpreter which sequentially executes or compiles
+text from the input stream (terminal or RAM-disc) depending on `STATE`.
+If the word name cannot be found after a search of `CONTEXT` and then
+`CURRENT` it is converted to a number according to the current base.
+That also failing, an error message echoing the name with a "?" will;
+be given. Text input will be taken according to the convention for
+`WORD`. If a decimal point is found as part of a number, a double
+number value will be left. The decimal point has no other purpose than
+to force this action. See `NUMBER`.
+
+`INVERSE`  ( f -- )
+
+Set the screen to inverse if flag _f_ is true, else unset inverse.
+
+`J`  ( -- n )
+
+Used within nested `DO` loops. Returns the index value of the outer loop.
+
+`KEY`  (  -- v )
+
+Leave the ASCII value of the next terminal key struck.
+
+`LATEST`  ( -- nfa )
+
+Leave the name field address of the topmost word in the `CURRENT`
+vocabulary.
+
+`LEAVE`  ( -- ) C
+
+Force termination of a `DO ... LOOP` at the next opportunity by
+setting the loop limit equal to the current value of the index. The
+index itself remains unchanged, and execution proceeds normally until
+`LOOP` or `+LOOP` is encountered.
+
+`LFA`  ( pfa -- lfa )
+
+Convert the parameter field address of a dictionary definition to its
+link field address.
+
+`LIMIT`  ( -- n )
+
+// XXX The original description is bad:
+// A constant leaving the address just above the highest memory address
+// used by the system.
+
+A constant leaving the address just above the highest memory available
+for the data of the last disc buffer.  It's the address of the 2 byte
+tail of the last disc buffer. All disc buffer tails contain 0.
+
+`LINE`  ( n -- addr )
+
+Leave address of line _n_ of current screen. This address will be in the
+RAM-disc buffer area.
+
+`LIST`  ( n -- )
+
+Display the ASCII text of screen _n_ on the selected output device.
+`SCR` contains the screen number during and after this process.
+
+`LIT`  ( -- n ) C2
+
+Within a colon-definition, `LIT` is automatically compiled before each
+16 bit literal number encountered in input text. Later execution of
+LIT causes the contents of the next dictionary address to be pushed to
+the stack.
+
+`LITERAL`  ( n  -- (compiling) ) P,C2
+
+If compiling, then compile the stack value _n_ as a 16 bit literal. This
+definition is immediate so that it will execute during a colon
+definition, the intended use is: `: xxx [ calculation ] LITERAL ;`.
+Compilation is suspended for the compile time calculation of a value.
+Compilation is resumed and `LITERAL` compiles this value.
+
+`LO`  ( -- addr )
+
+Constant leaving the lowest address of the RAM-disc.
+
+`LOAD`  ( n -- )
+
+Begin interpretation of screen _n_. Loading will terminate at the end
+of the screen or at `;S`. See `;S` and `pass:[-->]`.
+
+`LOOP`  ( Compilation: addr n  -- ) P,C2
+
+Occurs in a colon-definition in form: `DO ... LOOP`.  At run-time,
+`LOOP` selectively controls branching back to the corresponding `DO`
+based on the loop index and limit. The loop index is incremented by
+one and compared to the limit. The branch back to `DO` occurs until
+the index equals or exceeds the limit; at that time, the parameters
+are discarded and execution continues ahead.  At compile-time, `LOOP`
+compiles `(LOOP)` and uses _addr_ to calculate an offset to `DO`. _n_ is
+used for error testing.
+
+`M*`  ( n1 n2 -- d )
+
+A mixed magnitude math operation which leaves the double number signed
+product of two signed numbers.
+
+`M/`  ( d n1 -- n2 n3 )
+
+A mixed magnitude math operator which leaves the signed remainder _n2_
+and signed quotient _n3_, from a double number _d_ dividend and divisor
+_n1_. The remainder takes its sign from the dividend.
+
+`M/MOD`  ( ud1 u2 -- u3 ud4 )
+
+An unsigned mixed magnitude math operation which leaves a double
+quotient _ud4_ and remainder _u3_, from a double dividend _ud1_ and single
+divisor _u2_.
+
+`MAX`  ( n1 n2  -- n3 )
+
+Leave the greater of two numbers.
+
+`MESSAGE`  ( n -- )
+
+If `WARNING` is 1, print on the selected output device the text of
+line _n_ relative to screen 4 of drive 0. _n_ may be positive or
+negative. `MESSAGE` may be used to print incidental text such as
+report headers.  If `WARNING` is 0, the message will simply be
+printed as a number (RAM-disc system).
+
+WARNING: This word doesn't work fine: Odd negative numbers don't work,
+they print the content of an unknown memory zone. The problem is the
+calculation done by `(LINE)`, but the bug is in the word `U/MOD`. See
+`U/MOD` for more details.
+
+`MIN`  ( n1 n2  -- n3 )
+
+Leave the smaller of two numbers.
+
+`MOD`  ( n1 n2  -- n3 )
+
+Leave the remainder of _n1/n2_, with the same sign as _n1_.
+
+`NEGATE`  ( n1  -- n2 )
+
+Leave the two's complement of a number.
+
+`NEXT`  ( -- a )
+
+This is the inner interpreter that uses the interpretive pointer IP to
+execute compiled Forth definitions. It is not directly executed but is
+the return point for all code procedures. It acts by fetching the
+address pointed to by IP, storing this value in register W. W points
+to the code field of a definition which contains the address of the
+code which is to be executed for that definition. This address is then
+jumped to. This usage of indirect threaded code is a major contributor
+to the power, portability, and extensibility of Forth. Locations of IP
+and W are computer specific. (See earlier note on Spectrum Forth
+convention).
+
+`NFA`  ( pfa -- nfa )
+
+Convert the parameter field address of a definition to its name field
+address.
+
+`NOOP`  ( -- )
+
+A Forth no-operation.
+
+`NOT`  ( f1 -- f2 )
+
+Leave a false flag if a true flag is on the stack, else leaves a true
+flag. (Actually executes `0=`).
+
+`NUMBER`  ( addr -- d )
+
+Convert a character string left at _addr_ with a preceding count, to a
+signed double number, using the current numeric base. If a decimal
+point is encountered in the text, its position will be given in `DPL`,
+but no other effect occurs. If numeric conversion is not possible, an
+error message will be given.
+
+`OFFSET`  ( -- addr ) U
+
+A user variable which may contain a block offset for the RAM-disc. The
+contents of `OFFSET` is added to the stack number by `BLOCK`. Messages
+printed by `MESSAGE` are independent of `OFFSET`. See `BLOCK`,
+`MESSAGE`.
+
+`OR`  ( n1 n2  -- or )
+
+Leave the bit-value logical or of two 16 bit values.
+
+`OUT`  (  -- addr ) U
+
+A user variable that contains a value incremented by `EMIT`. The user
+may alter and examine `OUT` to control display formatting.
+
+`OUTP`  ( n1 n2 -- )
+
+Present _n1_ to output port _n2_.
+
+`OVER`  ( n1 n2  -- n1 n2 n1 )
+
+Copy the second stack value, placing it as the new top.
+
+`PAD`  (  -- addr )
+
+Leave the address of the text output buffer, which is a fixed offset
+above `HERE`.
+
+`PAPER`  ( n1 -- )
+
+Set the paper colour to _n1_ (0-9).
+
+`PFA`  ( nfa -- pfa )
+
+Convert the name field address of a compiled definition to its
+parameter field address.
+
+`PLOT`  ( n1 n2 -- )
+
+Set point _n1_(x),_n2_(y). If this value is off the screen, no action is
+taken.
+
+`POINT`  ( n1 n2 -- f )
+
+Return a true flag if the point _n1_(x),_n2_(y) is set, else returns a
+false flag.
+
+`PREV`  ( -- addr )
+
+A variable containing the address of the buffer most recently
+referenced. The `UPDATE` command marks this buffer to be later written
+to microdrive.
+
+`QUIT`  ( -- )
+
+Clear the return stack, stop compilation, and return control to the
+operator's terminal. No message is given.
+
+`R@`  ( -- n )
+
+Copy the top of the return stack to the computation stack.
+
+`R#`  (  -- addr ) U
+
+A user variable which may contain the location of an editing cursor or
+other file related function.
+
+`R/W`  ( addr u f -- )
+
+The fig-Forth standard disc read-write linkage. _addr_ specifies the
+source or destination block buffer. _u_ is the sequential number of
+the referenced block; and _f_ is a flag (0=write and 1=read). `R/W`
+determines the location on the microdrive, performs the read-write and
+performs any error checking.
+
+`R>`  (  -- n )
+
+Remove the top value from the return stack and leave it on the
+computation stack. See `>R` and `R`.
+
+`R0`  (  -- addr ) U  "r-zero"
+
+A user variable containing the initial location of the return stack.
+See `RP!`.
+
+`PUSHDE`  ( -- addr )
+
+`PUSHHL`  ( -- addr )
+
+// XXX 2015-05-01: This definition has been rewritten from scratch,
+// because the original was partly wrong and partly unclear.
+
+These words return the address of Forth re-entry points to be used
+after machine code in order to leave parameters on the stack.  The
+routine whose address is returned by `PUSHHL` pushes the HL register
+on the stack and then jumps to `NEXT`.  The routine whose address is
+returned by `PUSHDE` pushes the DE register on the stack and then
+continues at the address returned by `PUSHHL`, thus pushing the HL
+register and jumping to `NEXT`.
+
+`QUERY`  ( -- )
+
+Input 80 characters of text (or until a "return") from the operators
+terminal. Text is positioned at the address contained in `TIB` with
+`IN` set to zero.
+
+`REPEAT`  ( Run-time: -- ) ( Compilation: addr n  --- ) P,C2
+
+Used within a colon-definition in the form
+
+----
+BEGIN  ( condition )  WHILE  ( true part )  REPEAT
+----
+
+At run-time, `REPEAT` forces an unconditional branch back to just
+after the corresponding `BEGIN`.  At compile-time, `REPEAT` compiles
+`BRANCH` and the offset from `HERE` to _addr_. _n_ is used for error
+testing.
+
+`ROT`  ( n1 n2 n3  -- n2 n3 n1 )
+
+Rotate the top three values on the stack, bringing the third to the top.
+
+`RP@`  ( -- addr )
+
+Leave the current value in the return stack pointer register.
+
+`RP!`  ( -- )
+
+Initialize the return stack pointer from user variable `R0`.
+
+`S>D`  ( n -- d )
+
+Sign extend a single number to form a double number.
+
+`S0`  (  -- addr ) U  "s-zero"
+
+A user variable that contains the initial value for the stack pointer.
+See `SP!`.
+
+`SCR`  ( -- addr )
+
+A user variable containing the screen number most recently referenced
+by `LIST`.
+
+`SCREEN`  ( n1 n2 -- a )
+
+Return the ASCII value of the character at line _n1_, column _n2_ as long
+as that character is not a user-defined character.
+
+`SIGN`  ( n d  -- d )
+
+Store an ASCII "-" sign just before a converted numeric output string
+in the next output buffer when _n_ is negative. _n_ is discarded, but
+double number _d_ is maintained. Must be used between `<#` and `#>`.
+
+`SIZE`  ( -- n )
+
+Return the current size of the dictionary.
+
+`SMUDGE`  ( -- )
+
+Used during word definition to toggle the "smudge bit" in a
+definitions' name field. This prevents an uncompleted definition from
+being found during dictionary searches, until compiling is completed
+without error.
+
+`SP!`  ( -- )
+
+Initialize the stack pointer from `S0`.
+
+`SP@`  ( -- addr )
+
+Return the address of the stack position to the top of the stack, as
+it was before `SP@` was executed.  (e.g. `1 2 SP@ @ . . .` would type
+"2 2 1").
+
+`SPACE`  ( -- )
+
+Transmit an ASCII blank to the output device.
+
+`SPACES`  ( n -- )
+
+Transmit _n_ ASCII blanks to the output device.
+
+`STATE`  ( -- addr ),U
+
+A user variable containing the compilation state. A non-zero value
+indicates compilation.
+
+`SWAP`  ( n1 n2  -- n2 n1 )
+
+Exchange the top two values on the stack.
+
+`TEXT`  ( c "ccc<c>" -- )
+
+Accept following text to `PAD`. _c_ is the text delimiter.
+
+`THEN`  ( addr n  -- (compile) ) P,C0
+
+Occurs in a colon-definition in forms:
+
+----
+( condition ) IF  ( true part )  THEN
+( condition ) IF  ( true part )  ELSE  ( false part )  THEN
+----
+
+At run-time, `THEN` serves only as the destination of a forward branch
+from `IF` or `ELSE`. It marks the conclusion of the conditional structure.
+`THEN` is another name for `THEN`. Both names are supported in fig-Forth.
+See also `IF` and `ELSE`.  At compile-time, `THEN` computes the forward
+branch offset from _addr_ to `HERE` and stores it at _addr_. _n_ is used for
+error tests.
+
+
+`TIB`  ( -- addr ) U
+
+A user variable containing the address of the terminal input buffer.
+
+`TOGGLE`  ( addr b -- )
+
+Complement the contents of _addr_ by the bit pattern _b_.
+
+`TRAVERSE`  ( addr1 n -- addr2 )
+
+Move across the name field of a fig-Forth, variable length, name
+field. _addr1_ is the address of either the length byte or the last
+letter. If _n_=1, the motion is toward high memory; if _n_=-1, the motion is
+toward low memory. The _addr2_ resulting is address of the other end of
+the name.
+
+`TYPE`  ( addr u -- )
+
+Transmit count _u_ characters from _addr_ to the selected output device.
+
+`U<`  ( u1 u2 -- f )
+
+Leave the boolean value of an unsigned less-than comparison. Leaves a
+true flag for _u1_<_u2_, otherwise leaves 0. This function should be
+used when comparing memory addresses.
+
+`U*`  ( u1 u2 -- ud )
+
+Leave the unsigned double number product of two unsigned numbers.
+
+`U.`  ( u -- )
+
+Print an unsigned 16-bit number converted according to `BASE`. A
+trailing blank follows.
+
+`U.R`  ( u n -- )
+
+Print the unsigned number _u_ right aligned in a field whose width is
+_n_.  No following blank is printed.
+
+`U/MOD`  ( ud u1 -- u2 u3 )
+
+Leave the unsigned remainder _u2_ and unsigned quotient _u3_ from the
+unsigned double dividend _ud_ and unsigned divisor _u1_.
+
+WARNING: This word, written in Z80, has a bug that affects `(LINE)`,
+used by `MESSAGE`, and other words that use it: `*/MOD`, `MOD` and
+`/MOD`, with certain negative values, return different values in
+Abersoft Forth and other Forth systems that have been tested (some of
+them are fig-Forth).
+
+`UNLESS`  ( Run-time: f -- ) ( Compilation: --- addr n ) P
+
+Occurs in a colon-definition in the forms:
+
+----
+( condition ) UNLESS  ( false part )  THEN
+( condition ) UNLESS  ( false part )  ELSE  ( true part )  THEN
+----
+
+At run-time, `UNLESS` selects execution based on a boolean flag. If _f_ is
+true (non-zero), execution continues  ahead throughout the true part.
+If _f_ is false, execution jumps to just after `ELSE` to execute the false
+part. After either part, execution resumes after `THEN`. `ELSE` and its
+false part are optional. If missing, false execution skips to just
+after `THEN`.
+
+At compile-time `UNLESS` compiles `?BRANCH` and reserves space for an offset
+at _addr_. _addr_ and _n_ are used later for resolution of the offset and
+error testing.
+
+
+`UNTIL`  ( Run-time: f -- ) ( Compilation: addr n --- ) P,C2
+
+Occurs within a colon-definition in the form: `BEGIN ... UNTIL`.
+
+At run-time, `UNTIL` controls the conditional branch back to the
+corresponding `BEGIN`. If _f_ is false, execution returns to just after
+`BEGIN`; if true, execution continues ahead.  At compile-time, `UNTIL`
+compiles `(0BRANCH)` and an offset from `HERE` to _addr_. _n_ is used for
+error tests.
+
+`UPDATE`  ( -- )
+
+Mark the most recently referenced block (pointed to by `PREV`) as
+altered. The block will subsequently be transferred automatically to
+disk should its buffer be required for storage of a different block.
+
+`USE`  ( -- addr )
+
+A variable containing the address of the block buffer to use next, as
+the least recently written.
+
+`USER`  ( n "name" -- )
+
+A defining word used in the form: `n USER name`.  The parameter field
+of `name` contains _n_ as a fixed offset relative to the user pointer
+register `UP` for this user variable. When `name` is later executed,
+it places the sum of its offset and user area base address on the
+stack as the storage address of that particular variable.
+
+`VARIABLE`  ( n "name" -- ) E,LU
+
+A defining word used in the form: `n VARIABLE name`.  When `VARIABLE`
+is executed, it creates the definition `name` with its parameter field
+initialized to _n_. When `name` is later executed, the address of its
+parameter field (containing _n_) is left on the stack, so that a fetch
+or store may access this location.
+
+`VOC-LINK`  ( -- addr ) U
+
+A user variable containing the address of a field in the definition of
+the most recently created vocabulary. All vocabulary names are linked
+by these fields to allow control by using `FORGET` through multiple
+vocabularies.
+
+`VOCABULARY`  ( "name" -- ) E,L
+
+A defining word used in the form: `VOCABULARY name` to create a
+vocabulary definition `name`. Subsequent use of `name` will make it
+the `CONTEXT` vocabulary which is searched first by `INTERPRET`. The
+sequence `name DEFINITIONS` will also make `name` the `CURRENT` vocabulary
+into which new definitions are placed.  In fig-Forth, `name` will be so
+chained as to include all definitions of the vocabulary in which `name`
+is itself defined. All vocabularies ultimately chain to Forth. By
+convention, vocabulary names are to be declared `IMMEDIATE`. See
+`VOC-LINK`.
+
+`WARNING`  ( -- addr ) U
+
+A user variable containing a value controlling messages. If it's 1,
+disk is present, and screen 4 of drive 0 is the base location for
+messages.  If it's 0, no disk is present and messages will be
+presented by number.  If it's -1, `(ABORT)` is executed for user
+defined procedure. See `MESSAGE`, `ERROR`.
+
+`WHERE`  ( n1 n2 -- )
+
+If an error occurs during `LOAD` from disk, `ERROR` leaves these
+values on the stack. `WHERE` uses these values to show the user where
+the error occurred by printing the screen and line no.
+
+`WHILE`  ( Compilation: addr1 n1 -- addr1 n1 addr2 n2 )
+( Run-time: f -- ) P,C2
+
+Occurs in a colon-definition in the form:
+
+----
+BEGIN  ( condition )  WHILE ( true part )  REPEAT
+----
+
+At run-time, `WHILE` selects conditional execution based on boolean
+flag _f_.  If _f_ is true (non-zero), `WHILE` continues execution of
+the true part thru to `REPEAT`, which then branches back to `BEGIN`.
+If _f_ is false (zero), execution skips to just after `REPEAT`,
+exiting the structure.  At compile time, `WHILE` compiles `(BRANCH)`
+and leaves _addr2_ of the reserved offset. The stack values will be
+resolved by `REPEAT`.
+
+`WIDTH`  ( -- addr ) U
+
+In fig-Forth, a user variable containing the maximum number of letters
+saved in the compilation of a definitions' name. It must be 1 thru 31,
+with a default value of 31. The name character count and its natural
+characters are saved, up to the value in `WIDTH`. The value may be
+changed at any time within the above limits.
+
+`WORD`  ( c -- )
+
+Read the next text characters from the input stream being interpreted,
+until a delimiter c is found, storing the packed character string
+beginning at the dictionary buffer `HERE`. `WORD` leaves the character
+count in the first byte, then the characters, and ends with two or
+more blanks. Leading occurrences of c are ignored If `BLK` is zero,
+text is taken from the terminal input buffer, otherwise from the disc
+block stored in `BLK`. See `BLK`, `IN`.
+
+`WORDS`  ( -- )
+
+List the names of the definitions in the context vocabulary. The
+_BREAK_ key will terminate the listing.
+
+`X`  ( -- )
+
+This is pseudonym for the "null" or dictionary entry for a name of one
+character of ASCII null. It is the execution procedure to terminate
+interpretation of a line of text from the terminal or within a disc
+buffer, as both buffers always have a null at the end.
+
+`XOR`  ( n1 n2  -- xor )
+
+Leave the bitwise logical exclusive-or of two values.
+
+`[`  ( -- ) P
+
+Suspend compilations. The words after `[` are executed, not compiled.
+This allows calculations of compilation exceptions before resuming
+compilation with `]`. See `LITERAL`, `]`.
+
+`[COMPILE]`  ( -- ) P,C
+
+`[COMPILE]` will force the compilation of an immediate definition,
+that would otherwise execute during compilation.
+
+`]`  ( -- )
+
+Resume compilation, to the completion of a colon-definition. See `[`.
+
+== Memory Map
+
+// XXX TODO
+
+// .Memory map
+// [cols="25,15,60"]
+// |===
+// | Address | Returned by | Meaning
+
+// | 0xFFFF (65535) |  | Top of memory
+// | ... | | User defined graphics (168 bytes)
+// | 0xFF58 (65368) | `UDG` | Start of user defined graphics (168 bytes)
+// | ... | | Unused space (856 bytes)
+// | 0xFBFF (64511) | `HI` | End of screens area (RAM-disc)
+// | ... | | RAM-disc (11 KiB)
+// | 0xD000 (53248) | `LO` | Start of screens area (RAM-disc)
+// | 0xD000 (53248) | `LIMIT` | End of buffer area plus 1
+// | ... | | Disk buffers
+// | 0xCBE0 (52192) | `FIRST` | Start of buffer area (lowest buffer start)
+// | 0xCBE0 (52192) | `R0 @` | Initial location (bottom) of the return stack (that grows toward low memory)
+// | ? | `RP@` | Return stack pointer
+// | 0xCB40 (52032) | `TIB @` | Terminal input buffer
+// | 0xCB40 (52032) | `S0 @` | Initial location (bottom) of the data stack (that grows toward low memory)
+// | ? | `SP@` | Data stack pointer
+// | ... | | Free dictionary space (size returned by `FREE`)
+// | 0x819D (33181) | `PAD` | Text output buffer (address after `COLD`; it moves toward high memory, always 68 bytes above `HERE`)
+// | 0x8159 (33113) | `HERE` | `WORD` buffer
+// | 0x8159 (33113) | `HERE` | Dictionary pointer (address after `COLD`)
+// | 0x5E40 (24128) | `0 +ORIGIN` | Start of the system
+// |===
+
+
+== Acknowledgements
+
+Acknowledgements are duly made to the
+http://fig.org[Forth Interest Group]
+for parts of this compiler and manual.
+
+// -------------------------------------------------------------
+// Change history
+
+// 2015-06-19: Start, based on the Abersoft Forth Manual.

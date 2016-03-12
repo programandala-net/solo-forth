@@ -621,6 +621,17 @@ forth definitions decimal
     ?terminal if leave then
   loop  ;
 
+( where )
+
+: where  ( n1 n2 -- )
+  \ n1 = value of `in` when the error happened
+  \ n2 = disk block where the error happened
+  dup b/scr / dup scr !
+  ." Scr # " decimal . cr
+  swap c/l /mod c/l * rot block + c/l type cr
+  here c@ - spaces char ^ emit
+  quit  ;
+
 ( forget )
 
 : forget  ( "name" -- )

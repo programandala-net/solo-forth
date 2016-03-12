@@ -296,3 +296,9 @@ Fix: `?exit`.
 Improvement: faster and smaller `2@` and `2over`, `do_two_constant`.
 
 New: `2r@`.
+
+Change: First changes to modify the format of the name field, removing
+the end bit of the last char. The new format will make some things
+easier.
+
+Change: `dr0` removed.
