@@ -6,3 +6,7 @@ Move the most used words to the top of the `forth` vocabulary: `:`,
 `;`, stack words, control structures, etc.  This should speed up the
 compilation of sources.
 
+.2015-06-05:
+
+Fix `exit`, `?exit`, `rdrop`...
+

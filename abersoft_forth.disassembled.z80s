@@ -719,8 +719,7 @@ sp_store_lfa:
 sp_store_cfa:
   defw sp_store_pfa
 sp_store_pfa:
-  ; XXX FIXME -- No need to use the DE register.
-  ; XXX FIXME -- Optimize: one register is enough:
+  ; XXX FIXME -- Optimize: no need to use the DE register:
   ld e,(ix+0x06)
   ld d,(ix+0x07)
   ex de,hl
@@ -744,7 +743,7 @@ rp_store_lfa:
 rp_store_cfa:
   defw rp_store_pfa
 rp_store_pfa:
-  ; XXX FIXME -- Optimize: one register is enough:
+  ; XXX FIXME -- Optimize: no need to use the DE register:
   ld e,(ix+0x08)
   ld d,(ix+0x09)
   ex de,hl
@@ -2157,6 +2156,7 @@ branch_destination_0x689D:
   defw plus_cfa
   defw to_r_cfa
   defw zero_branch_cfa,0x000A ; to branch_destination_0x68CF
+; XXX FIXME -- These useless `noop` can be removed, they are a patch to overwrite a bell in the original fig-Forth implementation:
   defw noop_cfa
   defw noop_cfa
   defw branch_cfa,0x0032 ; to branch_destination_0x68FF
@@ -5855,4 +5855,6 @@ udg_pfa:
   defw semicolon_s_cfa
 
 dictionary_pointer_after_cold:
+
+end cold_entry
 

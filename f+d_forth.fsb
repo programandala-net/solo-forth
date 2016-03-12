@@ -1,35 +1,161 @@
-( F+D Forth blocks file)
+( F+D Forth blocks file )
 
 \ This file is the library of F+D Forth,
 \ and the skeleton to build applications in F+D Forth.
 
-( POINT )
+( ) \ scr 1
+
+( ) \ scr 2
+
+( require ) \ scr 3
+
+  \ This screen must be at a fixed location.
+
+  \ 2015-06-04: Copied from lina (Copyright (c) 2000-2004
+  \ Albert van der Horst, The Netherlands). First changes to
+  \ adapt it.
+
+  \ XXX TODO
+
+: located  ( ca len -- screen | false)
+  780 6 do
+    0 i (line) 2over contains if  2drop i unloop exit  then
+  loop  2drop false  ;
+: locate  ( "name" -- screen | false )  bl word located  ;
+
+  \ Make sure the given word is defined.
+: (required)  ( ca len -- )
+  located dup 0= x ?error load  ;
+: required  ( ca len -- )
+  \ XXX TODO finish
+  2dup undefined? if  2dup (required)  then
+  2dup undefined? if  etype 24 message exit  then 2drop  ;
+: require  ( "name" -- )  bl word required  ;
+
+( Errors ) \ scr 4
+
+( Errors )  \ scr 5
+
+( point )
 
   \ 2015-06-04: Copied from the Afera library
   \ (http://programandala.net/en.program.afera.html)
 
-CREATE POINT  ( x y -- )
-  HEX
-  E1 C, D1 C, C5 C,   \ pop hl / pop de / push bc
+create point  ( x y -- )
+  hex
+  e1 c, d1 c, c5 c,   \ pop hl / pop de / push bc
   \ l = y coordinate
   \ e = x coordinate
-  40 05 + C, 48 03 + C, \ ld b,l / ld c,e
+  40 05 + c, 48 03 + c, \ ld b,l / ld c,e
   \ b = y coordinate
   \ c = x coordinate
-  CD C, 22AA 6 + ,    \ call PIXELADD ; +6 to skip BASIC error
+  cd c, 22aa 6 + ,    \ call pixeladd ; +6 to skip BASIC error
   \ hl = screen address
   \ a = pixel position in hl
-  40 07 + C,          \ ld b,a
-  04 C,               \ inc b
-  7E C,               \ ld a,(hl)
+  40 07 + c,          \ ld b,a
+  04 c,               \ inc b
+  7e c,               \ ld a,(hl)
   \ rotate:
-  07 C,  10 C, FD C,  \ rlca / djnz rotate
-  E6 C, 01 C,         \ and 1
+  07 c,  10 c, fd c,  \ rlca / djnz rotate
+  e6 c, 01 c,         \ and 1
   \ finish:
-  26 C, 00 C,  68 07 + C,  \ ld h,0 / ld l,a
-  C1 C,               \ pop bc
-  C3 C, PUSHHL ,      \ jp pushhl
-  SMUDGE DECIMAL
+  26 c, 00 c,  68 07 + c,  \ ld h,0 / ld l,a
+  c1 c,               \ pop bc
+  c3 c, pushhl ,      \ jp pushhl
+  smudge decimal
 
+( plot )
+
+  \ 2015-06-05: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html)
+
+create plot  ( x y -- )
+
+  hex
+
+  d9 c,           \ exx
+  e1 c,           \ pop hl
+  c1 c,           \ pop bc
+  40 05 + c,      \ ld b,l
+  dd c, e5 c,     \ push ix
+  cd c, 22e5 ,    \ call 0x22e5 ; plot-sub
+  dd c, e1 c,     \ pop ix
+  d9 c,           \ exx
+  c3 c, next ,    \ jp next
+
+  smudge decimal
+
+( bleep )
+
+  \ 2015-06-04: Abersoft Forth's `bleep`.
+
+create bleep
+  hex
+  e1 c, d1 c, c5 c,   \ pop hl / pop de / push bc
+  dd c, e5 c,         \ push ix
+  cd c, 03b5          \ call rom_beeper
+  dd c, e1 c,         \ pop ix
+  c1 c,               \ pop bc
+  c3 c, next ,        \ jp next
+  smudge decimal
+
+( [if] [else] [then] )
+
+  \ 2015-06-04: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html)
+
+  require s=  require parse-name  require s"
+
+: [else]  ( "..." -- )
+
+  1 begin   parse-name 2dup swap c@ and
+    while   2dup s" [if]" s=
+            if    2drop 1+
+            else  2dup s" [else]" s=
+                  if    2drop 1- dup if  1+  then
+                  else  s" [then]" s= if  1-  then
+                  then
+            then  -dup 0= if  exit  then
+  repeat  2drop drop  ; immediate
+
+: [if]  ( "..." -- )  0= if [compile] [else] then  ; immediate
+
+: [then]  ( -- )  ; immediate
+
+( BS H. STYPE )
+
+: BS  ( -- )  8 EMIT  ;
+
+: H.  ( n -- )
+  \ Print n in hexadecimal with four digits.
+  BASE @ HEX SWAP S->D <# # # # # #> TYPE SPACE BASE !  ;
+
+HEX
+
+: STYPE  ( ca len -- )
+  0 2DUP - IF
+    DO
+      DUP C@ 7F AND DUP BL < IF  DROP [CHAR] .  THEN  EMIT 1+
+    LOOP
+  ELSE  2DROP  THEN  DROP  ;
+
+DECIMAL  -->
+
+( DUMP )
+
+: DUMP  ( a len -- )
+  7 + -8 AND 8 / 0
+  2DUP - IF
+    DO
+      CR DUP H.
+      8 0 DO
+        I OVER + @ CSWAP H.
+      2 +LOOP
+      DUP BS 8 STYPE
+      ?TERMINAL IF  LEAVE  THEN
+    8 + LOOP
+  ELSE  2DROP  THEN  DROP  ;
+
+  \ XXX TMP -- a new syntax file will be needed:
   \ vim: filetype=abersoftforthafera
 
