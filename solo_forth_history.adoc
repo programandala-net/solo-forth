@@ -236,3 +236,7 @@ removed.
 Improvement: when the IX register must be preserved because of ROM
 calls, now `ld ix,next` is used instead of `push ix` and `pop ix`;
 it's faster and easier, and uses the same memory (4 bytes).
+
+.2015-06-11:
+
+The parameters of `enclose` have been exchanged. This saves a `swap` in `word`.

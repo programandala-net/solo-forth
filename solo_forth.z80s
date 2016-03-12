@@ -3,10 +3,11 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506100204
+; Version A-00-201506112134
 ; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
 ; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
+; - `enclose` modified to save a `swap` in `word`.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -86,6 +87,8 @@ precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
+
+width:                equ 0x1F
 
 ; ----------------------------------------------
 ; Config
@@ -250,7 +253,7 @@ tib_init_value:
   dw terminal_input_buffer
 width_init_value:
   ; Location: `0x12 +origin`
-  dw 0x001F
+  dw width
 warning_init_value:
   ; Location: `0x14 +origin`
   dw 0x0000
@@ -672,49 +675,63 @@ enclose_lfa:
 enclose_:
   dw enclose_pfa
 enclose_pfa:
-  ; XXX TODO optimize: exchange the parameters and save `swap` before calling.
-  pop de ; e  = delimiter
+
+  ; XXX WARNING: the order of the parameters has been changed, to save a `swap` in `word`.
+
   pop hl ; hl = address
+  pop de ; e  = delimiter
   push hl
   ld a,e
-  ld d,a
-  ld e,0xFF
+  ld d,a  ; delimiter
+  ld e,-1 ; init char offset counter
   dec hl
-l5fc6h:
+
+enclose.skip:
+  ; Skip initial delimiters.
+  ; hl = previous 
   inc hl
   inc e
-  cp (hl)
-  jr z,l5fc6h
+  cp (hl) ; delimiter?
+  jr z,enclose.skip ; yes, loop
+
+  ; First non-delimiter found.
   ld d,0x00
-  push de
+  push de ; save offset
   ld d,a
   ld a,(hl)
-  and a
-  jr nz,l5fdch
+  and a ; is the first non-delimiter a null?
+  jr nz,enclose.scan
+
+  ; The first non-delimiter is a null.
   ld d,0x00
   inc e
-  push de
+  push de ; offset to byte following null
   dec e
-  push de
+  push de ; offset to null
   _jp_next
-l5fdch:
-  ld a,d
-  inc hl
-  inc e
-  cp (hl)
-  jr z,l5fedh
+
+enclose.scan:
+  ld a,d ; delimiter
+  inc hl ; address of next char
+  inc e ; offset to next char
+  cp (hl) ; delimiter?
+  jr z,enclose.end
   ld a,(hl)
-  and a
-  jr nz,l5fdch
+  and a ; null?
+  jr nz,enclose.scan
+
+  ; Final null found.
   ld d,0x00
-  push de
-  push de
+  push de ; offset to null
+  push de ; offset to null
   _jp_next
-l5fedh:
+
+enclose.end:
+  ; Final delimiter found.
   ld d,0x00
-  push de
+  push de ; offset to byte following text
   inc e
-  push de
+  push de ; offset to 2 bytes after end of word
   _jp_next
 
 ; doc{
@@ -3054,11 +3071,11 @@ word_pfa:
 word.from_terminal:
   dw tib_,fetch_
 word.from_address:
-  dw in_,fetch_,plus_,swap_,enclose_
+  dw in_,fetch_,plus_,enclose_
 
   dw here_
   dw c_lit_
-  db 0x22
+  db width+3
   dw blanks_ ; XXX original
   dw in_,plus_store_
   dw over_,minus_
