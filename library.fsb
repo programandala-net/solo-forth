@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511032139
+\ Last modified: 201511050203
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -237,10 +237,12 @@ variable last-locatable  blk/disk 1- last-locatable !
 : needed  ( ca len -- )
 
   \ XXX OLD
-  \ XXX FIXME usually the final check fails because the saved
-  \ string has been overwritten. the only solution is to store
-  \ the string apart, in an ad hoc zone.
   \
+  \ XXX FIXME usually the final check fails because the saved
+  \ string has been overwritten in the circular string buffer.
+  \ the only solution is to store the string apart, in an ad
+  \ hoc zone.
+ 
   \ 2dup undefined?
   \   if  2dup reneeded  then
   \ 2dup undefined? warnings @ and
@@ -319,9 +321,9 @@ variable last-locatable  blk/disk 1- last-locatable !
 
 need error>line  need .line
 
-variable msg-scr  blk @ b/scr msg-scr !
+variable msg-scr
+s" Standard error codes" locate msg-scr !
   \ XXX TODO rename!
-  \ XXX FIXME the calculation with `b/scr` is not safe
 
   \ doc{
   \
@@ -608,7 +610,7 @@ variable msg-scr  blk @ b/scr msg-scr !
   \ }}} =======================================================
   \ Parsing {{{
 
-( parse-line )  ==parsing==
+( parse-line )  \ ==parsing==
 
   \ XXX OLD -- 2015-09-13: moved to kernel
   \ : source  ( -- a len )  \ Forth-94
@@ -3516,9 +3518,8 @@ need z80-asm
   \ Credits:
   \ Code from DZX-Forth.
 
-[unneeded] within dup
+[unneeded] within
 ?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
-?\ ;s
 
   \ doc{
   \
@@ -3536,10 +3537,9 @@ need z80-asm
   \
   \ }doc
 
-[unneeded] between ?\ ;s
+[needed] between ?\ ;s
 need -rot
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
-
 
   \ doc{
   \
@@ -4685,9 +4685,7 @@ code c!dosvar  ( b n -- )
 ( update flush continued ?load thru +load +thru reload )
 
 : update  ( -- )
-  disk-buffer @
-  [ base @ hex ] 8000 [ base ! ] or
-  disk-buffer !  ;
+  disk-buffer @ $8000 or disk-buffer !  ;
 
   \ doc{
   \
@@ -4757,7 +4755,8 @@ code c!dosvar  ( b n -- )
   \
   \ }doc
 
-: +load  ( u -- )  blk @ b/scr / + load  ;
+: +load  ( u -- )  blk @ + load  ;
+
 : +thru  ( u1 u2 -- )  1+ swap do  i +load  loop  ;
 
   \ Credits:
@@ -4800,8 +4799,7 @@ code c!dosvar  ( b n -- )
   \ `located` uses it.
   \
   \ : line>string  ( n1 n2 -- ca len )
-  \   >r c/l b/buf */mod
-  \   r> b/scr * +
+  \   >r  c/l b/buf */mod  r> +
   \   block + c/l  ;
 
   \ doc{
@@ -5272,6 +5270,8 @@ need break-key?  need trail  need name>link
   \ XXX FIXME -- terminal input errors are not managed;
   \ the screen of the last error is shown insted
 
+need [if]
+
 : where  ( -- )
   \ Print screen and line numbers and a picture of where the
   \ last error occurred.
@@ -5279,8 +5279,8 @@ need break-key?  need trail  need name>link
   \ n1 = value of `>in` when the error happened
   \ n2 = value of `blk` when the error happened
   dup if
-    dup b/scr / dup scr !
-    ." Scr # " decimal . cr
+    dup scr !
+    ." Scr # " decimal dup . cr
     swap c/l /mod c/l * rot block + c/l type cr
     here c@ - spaces [char] ^ emit
   else  2drop  then  ;
@@ -5760,6 +5760,8 @@ need cs-push  need cs-pop
 ( dtimes )
 
   \ XXX UNDER DEVELOPMENT
+
+need dfor
 
 : (dtimes)  ( d -- )
   rp@ @ dup cell+ rp@ ! @ swap
@@ -9992,6 +9994,7 @@ variable r#
   scr !  10 0 do [ also forth ] i [ previous ] e loop  ;
   \ Clear screen _n_ with blanks and select for editing.
 
+  \ XXX TODO -- rewrite with `search`
 : -text  ( a1 len1 a2 -- f )
   swap ?dup if
     over + swap do
@@ -10083,15 +10086,14 @@ also forth
   \ Copy in "text" to the cursor line at the cursor position.
 
 also forth
+
 : copy  ( n1 n2 -- )
-  b/scr * swap b/scr * b/scr over + swap
-  do
-    dup i block 2- ! 1+ update
-  loop  drop flush  ;  previous
+  swap block cell- ! update save-buffers  ;
   \ Copy screen _n1_ to screen _n2_.
 
 only forth definitions decimal
 
+  \ Copy screen _n1_ to screen _n2_.
   \ }}} =======================================================
   \ Sample game: Siderator 2 {{{
 
@@ -10119,7 +10121,7 @@ only forth definitions  decimal
 
 need random  need randomize  need udg:  need inkey
 need break-key?  need between  need ocr  need frames@
-need j
+need j  need between
 
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
 
@@ -10968,6 +10970,8 @@ vocabulary hanoi  also hanoi definitions
 
 variable slowness  1000 slowness !
   \ ms delay between screen updates
+
+3 constant pegs
 
 create PegSPS  pegs cells allot
   \ pointers for three disk stacks
@@ -12139,37 +12143,66 @@ defer num?
 
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
-  \        512-byte 1024-byte
-  \       --------- ---------
-  \    16      6323      8621
-
-  \  512 = 33242 bytes free
-  \ 1024 = 32777 bytes free
-  \          465 bytes required by the standard method
+  \        512-byte buffer 1024-byte buffer
+  \       ---------------- ----------------
+  \    16             6323       8621 (136%)
 
 ( buffer-benchmark-2 )
 
   2 load  need frames0  warnings off  frames0
 
   need list  need dump  need wdump  need decode
-  need life  need pong  need hanoi  need tt need siderator
+  need life  need hanoi  need tt need siderator  need pong
   need doer  need a!  need defer  need value  need editor
   need case  need times  need dtimes  need for
 
   frames@ cr .( Frames ) d. cr
 
-  \ Benchmark: Locate and load 16 times empty screen #457.
+  \             512-byte buffer 1024-byte buffer
+  \            ---------------- ----------------
+  \ Frames                20960     24310 (115%)
+  \                                 24042 (114%)
+  \ Bytes free            33242     32777 (-465)
 
-  \   Try Frames (1 frame = 50th of second)
-  \ ----- -----------------------------------
-  \        512-byte 1024-byte
-  \       --------- ---------
-  \    1  
+  \ 1 frame = 50th of second
 
-  \  512 = 33242 bytes free
-  \ 1024 = 32777 bytes free
-  \          465 bytes required by the standard method
+( constant-bench )
 
+need frames0
+
+0 constant const1
+
+: bench1  ( n -- )
+  frames0 0 do  const1 drop  loop
+  frames@ d. cr ;
+
+: const2  ( -- x )  const1 cell+  ;
+
+: bench2  ( n -- )
+  frames0 0 do  const2 drop  loop
+  frames@ d. cr ;
+
+
+( 0-bench false-bench )
+
+need frames0
+
+  \ This bench compares `0` (implemented as a `cconstant`) and
+  \ `false` (written in assembler).
+
+: 0-bench  ( n -- )
+  frames0 0 do  0 drop  loop
+  frames@ d. cr ;
+
+: false-bench  ( n -- )
+  frames0 0 do  false drop  loop
+  frames@ d. cr ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \                           0       false
+  \                       ----- -----------
+  \ 32000                   251   236 (94%)
 
 .( block x line 0 ) cr
   .( block x line 1 ) cr

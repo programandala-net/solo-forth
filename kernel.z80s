@@ -11,11 +11,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151103
+  ; Version:        20151105
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B3F
+version_low_part:   equ 0x7B41
   
-  ; Last modified:   201511032139
+  ; Last modified:  201511050203
 
 ; ==============================================================
 ; Author and license
@@ -193,7 +193,7 @@ version_low_part:   equ 0x7B3F
   ; when some config flags are used in nested `if`. A literal
   ; flag (0/1) is used instead, with the flag name in a comment;
   ; it is changed with a text substitution.  Some Vim mappings
-  ; are created to turn them on on an off.
+  ; are created to turn them on and off.
 
   ; XXX experimental
 size_optimization: equ false
@@ -207,15 +207,12 @@ size_optimization: equ false
 
   ; XXX TODO try false
   ; XXX FIXME still there are problems when compiler security is off
-  ; XXX TMP 2015-08-16 Note: using 1 intead  of the label doesn't make a
+  ; XXX TMP 2015-08-16 Note: using 1 instead  of the label doesn't make a
   ; difference in the crash bug
 ;fig_compiler_security: equ true
   ; true = fig-Forth `?pairs' is used
   ; false = no checking during compilation of control
   ;   structures: smaller and faster code.
-
-  ; XXX TODO
-show_version: equ true
 
   ; XXX the flag is harcoded in the code
   ; XXX OLD
@@ -251,9 +248,7 @@ bytes_per_terminal_input_buffer:  equ 0x50
 bytes_per_sector:                 equ 0x0200 ; 512-byte sectors in G+DOS
 sectors_per_block:                equ 0x02
 
-bytes_per_buffer:                 equ 0x0200
-;bytes_per_buffer:                 equ 0x0400 ; XXX UNDER DEVELOPMENT
-total_bytes_per_buffer:           equ cell+bytes_per_buffer
+bytes_per_buffer:                 equ 0x0400
 
 blocks_per_disk:                  equ 800 ; KiB per disk in G+DOS
 characters_per_line:              equ 0x40
@@ -1606,13 +1601,10 @@ parse_string.interpreting:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header c_lit_,'CLIT'
-
-  ; XXX FIXME -- Crash if not compiled.
+  _code_header c_lit_,'CLIT',compile_only
 
   ld a,(bc)
   inc bc
-  ; XXX TODO include these entry points in the `assembler` vocabulary?
 push_a:
   ld l,a
 push_l: ; XXX TMP -- not used yet
@@ -1620,9 +1612,7 @@ push_l: ; XXX TMP -- not used yet
   jp push_hl
 
 ; ----------------------------------------------
-  _code_header two_lit_,'2LIT'
-
-  ; XXX FIXME -- Crash if not compiled.
+  _code_header two_lit_,'2LIT',compile_only
 
   ld a,(bc)
   ld l,a
@@ -1634,12 +1624,7 @@ push_l: ; XXX TMP -- not used yet
   jp lit_pfa
 
 ; ----------------------------------------------
-  _code_header lit_,'LIT'
-
-  ; XXX FIXME -- Crash if not compiled.
-  ; This happens in DZX-Forth as well,
-  ; but not in Abersoft Forth. The code is the same.
-  ; In DX-Forth it's a hidden word.
+  _code_header lit_,'LIT',compile_only
 
   ld a,(bc)
   ld l,a
@@ -4353,6 +4338,24 @@ true_if_cy:
   jp push_hl
 
 ; ----------------------------------------------
+  _code_header under_plus_,'UNDER+'
+
+; under+  ( n1 n2 n3 -- n4 n2 )
+
+  ; XXX NEW
+  ; XXX TODO move to the library
+
+  exx
+  pop de
+  pop bc
+  pop hl
+  add hl,de
+  push hl
+  push bc
+  exx
+  _jp_next
+
+; ----------------------------------------------
   _code_header d_plus_,'D+'
 
 ; doc{
@@ -4362,8 +4365,6 @@ true_if_cy:
 ; Add _d2|ud2_ to _d1|ud1_, giving the sum _d3|ud3_.
 ;
 ; }doc
-
-if 1
 
   ; Credits:
   ; Code adapted from Z88 CamelForth.
@@ -4385,67 +4386,6 @@ if 1
   _jp_next              ;  08 02
                         ;  -- --
                         ; 112 15 TOTALS
-
-endif
-
-if 0 ; XXX OLD
-
-  ; Credits:
-  ; Code from fig-Forth 1.1g.
-
-  ; XXX FIXME
-  ;
-  ; This code fails.  The calculation `0 0 0 1 d+` should leave
-  ; `0 1` on the stack, but it leaves `0 65535`.
-
-              ;                           t  B
-              ;                           -- --
-  exx         ; save ip                   04 01
-  pop bc      ; (bc)<--d2h                10 01
-  pop hl      ; (hl)<--d2l                10 01
-  pop af      ; (af)<--d1h                10 01
-  pop de      ; (de)<--d1l                10 01
-  push  af    ; (s1)<--d1h                11 01
-  add hl,de   ; (hl)<--d2l+d1l=d3l        11 01
-  ex  de,hl   ; (de)<--d3l                04 01
-  pop hl      ; (hl)<--d1h                10 01
-  adc hl,bc   ; (hl)<--d1h+d2h+carry=d3h  15 02
-  push  de    ; (s2)<--d3l                11 01
-  push  hl    ; (s1)<--d3h                11 01
-  exx         ; restore ip                04 01
-  jp_next     ;                           08 02
-              ;                          --- --
-              ;                          134 15 TOTALS
-endif
-
-if 0 ; XXX OLD
-
-  ; Credits:
-  ; Code from Abersoft Forth.
-
-                ;  t  B
-                ;  -- --
-  ld hl,0x0006  ;  10 03
-  add hl,sp     ;  11 01
-  ld e,(hl)     ;  07 01
-  ld (hl),c     ;  07 01
-  inc hl        ;  06 01
-  ld d,(hl)     ;  07 01
-  ld (hl),b     ;  07 01
-  pop bc        ;  10 01
-  pop hl        ;  10 01
-  add hl,de     ;  11 01
-  ex de,hl      ;  04 01
-  pop hl        ;  10 01
-  adc hl,bc     ;  15 01
-  pop bc        ;  10 01
-  jp push_hlde  ;  10 03
-                ;  11    ; push de
-                ;  11    ; push hl
-                ; --- --
-                ; 157 19 TOTALS
-
-endif
 
 ; ----------------------------------------------
   _code_header invert_,'INVERT'
@@ -4721,7 +4661,7 @@ two_fetch.hl:
   ld h,(hl)     ; 07t  1
   ld l,a        ; 04t  1 ; hl = high part
   ex de,hl      ; 04t  1
-  jp push_hlde ; 10t  3
+  jp push_hlde  ; 10t  3
                 ; 11t  0 push de
                 ; 11t  0 push hl
                 ; 86t 12 TOTAL
@@ -5017,12 +4957,6 @@ endif
 ; ----------------------------------------------
   _code_header false_,'FALSE'
 
-; XXX FIXME this alternative crashes the system:
-;  _code_alias_header false_,'FALSE',,zero_
-
-; XXX TODO benchmark `false` and `0'
-; A `cconstant` needs 4 bytes.
-
 ; doc{
 ;
 ; false  ( -- false )
@@ -5049,7 +4983,7 @@ endif
 
 ; doc{
 ;
-; bl  ( -- n )
+; bl  ( -- b )
 ;
 ; }doc
 
@@ -5071,6 +5005,11 @@ endif
   dw disk_buffer
 
 ; ----------------------------------------------
+  _constant_header buffer_data_,'BUFFER-DATA'
+
+  dw disk_buffer+cell
+
+; ----------------------------------------------
   _constant_header b_slash_buf_,'B/BUF'
 
   dw bytes_per_buffer
@@ -5078,16 +5017,14 @@ endif
 ; ----------------------------------------------
   _constant_header b_slash_rec_,'B/REC'
 
+  ; XXX TODO -- remove? used only once, and may be harcoded
+
   dw bytes_per_sector
 
 ; ----------------------------------------------
-if bytes_per_buffer=0x0200
-
   _c_constant_header rec_slash_blk_,'REC/BLK'
 
   db sectors_per_block
-
-endif
 
 ; ----------------------------------------------
   _constant_header blk_slash_disk_,'BLK/DISK'
@@ -5250,22 +5187,6 @@ endif
 
   ; XXX TODO normal variable?
 
-if bytes_per_buffer=0x0200
-
-; doc{
-;
-; blk  ( -- a )
-;
-; User variable that holds de number of the disk block being
-; interpreted. A disk block holds 512 bytes. One source screen
-; consists of two disk blocks.
-;
-; }doc
-
-endif
-
-if bytes_per_buffer=0x0400
-
 ; doc{
 ;
 ; blk  ( -- a )
@@ -5275,8 +5196,6 @@ if bytes_per_buffer=0x0400
 ; consists of one disk block.
 ;
 ; }doc
-
-endif
 
   db 0x10
 
@@ -6818,7 +6737,7 @@ acceptx.begin:
 ;
 ; }doc
 
-  ; XXX FIXME -- sometimes seems the text is not updated
+  ; XXX FIXME -- sometimes it seems the text is not updated
   ; internally after deleting a char, but it looks right on the
   ; screen
 
@@ -6914,55 +6833,6 @@ accept.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if bytes_per_buffer=0x0200
-
-  _colon_header last_block_sector_,'LAST-BLOCK-SECTOR?'
-
-; doc{
-;
-; last-block-sector? ( -- f )
-;
-; Is `blk` the last block of a screen?
-;
-; }doc
-
-  ; XXX OLD
-  ;
-  ; The original generic check was:
-  ;   blk @ b/scr 1- and
-  ; But it could be:
-  ;   blk @ b/scr mod
-  ;
-  ; Alternative for 2 sectors per block:
-  ;   blk @ 1 and
-  ;   dw blk_,fetch_,one_,and_
-
-  dw blk_,fetch_,rec_slash_blk_,mod_
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-if bytes_per_buffer=0x0200
-
-  _colon_header next_block_,'NEXT-BLOCK'
-
-; XXX TMP -- this word is factored from the old fig-Forth null
-; word, in order to call it in `refill` and `interpret`.
-
-  dw one_,blk_,plus_store_ ; next disk buffer
-  dw to_in_,off_ ; clear `in`, preparing parsing of input text
-
-  dw last_block_sector_
-  dw question_branch_,next_block.end ; if not, branch
-  ; Last block of the screen.
-  ; dw question_executing_ ; error if not executing ; XXX OLD -- why this?
-next_block.end:
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
   _colon_header source_id_,'SOURCE-ID'
 
   ; XXX UNDER DEVELOPMENT
@@ -7013,13 +6883,8 @@ endif
   dw zero_branch_,refill.terminal ; if not, branch
 refill.block:
 ;  _chk 'refill -- block' ; XXX INFORMER
-if bytes_per_buffer=0x0200
-  dw next_block_
-endif
-if bytes_per_buffer=0x0400
   _literal 1
   dw blk_,plus_store_
-endif
   dw branch_,refill.end
 
 refill.terminal:
@@ -7516,7 +7381,7 @@ header.continue:
 
   ; ( ca len )
 
-  dw two_dup_,uppers_ ; XXX FIXME -- this modifies the input buffer!
+  ; dw two_dup_,uppers_ ; XXX OLD -- this modifies the input buffer!
 
   ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
@@ -7526,7 +7391,10 @@ header.continue:
   dw latest_,comma_np_ ; link field
   ; Now `np` contains the address of the nfa.
   dw np_fetch_
+  dw dup_,to_r_ ; XXX NEW
   dw place_ ; store the name
+  dw from_r_,count_,uppers_ ; XXX NEW
+
   dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
@@ -7885,18 +7753,7 @@ interpret.begin:
   ; end of stream
   dw two_drop_
 
-if bytes_per_buffer=0x0400
   dw exit_
-endif
-if bytes_per_buffer=0x0200
-  dw loading_question_ ; loading from a disk block?
-  dw zero_equals_,question_exit_ ; if not, exit
-  dw last_block_sector_ ; last sector of the block?
-  dw question_exit_ ; if so, exit
-;  _chk 'interpret -- before next-block' ; XXX INFORMER
-  dw next_block_
-  dw branch_,interpret.begin
-endif
 
 interpret.continue:
   ; not end of stream
@@ -8163,36 +8020,12 @@ do_vocabulary:
   dw left_bracket_
 quit.begin:
   dw rp0_,fetch_,rp_store_
-
-; _brk 'quit -- before query' ; XXX INFORMER
-
-  ; XXX TODO
-  dw cr_,query_ ; XXX TMP
-  ;dw refill_,drop_ ; XXX TMP
-
-;  _chk 'quit -- before interpret' ; XXX INFORMER
-;  dw cr_,blk_,question_ ; XXX INFORMER
-
+  dw cr_,query_ ; XXX TMP XXX TODO
   dw interpret_
-
-;   _chk 'quit -- after interpret, blk is:' ; XXX INFORMER
-  if debugging
-;    dw cr_,blk_,question_ ; XXX INFORMER
-  endif
-
-  ; XXX FIXME -- why `blk` contains zero here, after beeing
-  ; incremented at the end of `interpret`? The reason is
-  ; `(load)` finishes and restores `blk` from the return stack!
-
   dw compiling_question_
   dw question_branch_,quit.begin
-
   dw paren_dot_quote_
   _string 'ok'
-
-;  _echo 'In quit after ok:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_ ; XXX INFORMER
-
   dw branch_,quit.begin
 
 ; ----------------------------------------------
@@ -8282,21 +8115,16 @@ quit.begin:
 ;
 ; }doc
 
-if 1 ; show_version
   dw paren_dot_quote_
   _string "Solo Forth\rVersion "
   dw version_,d_dot_
   dw paren_dot_quote_
   _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
-else
-  dw paren_dot_quote_
-  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
-endif
 
   ; XXX TMP show the free memory, during development only
   dw unused_,u_dot_
   dw paren_dot_quote_
-  _string "bytes free"
+  _string "B free"
 
   dw semicolon_s_
 
@@ -8957,8 +8785,7 @@ endif
 ;
 ; ----
 ; : line>string  ( n1 n2 -- ca len )
-;   >r c/l b/buf */mod
-;   r> b/scr * +
+;   >r  c/l b/buf */mod  r> +
 ;   block + c/l  ;
 ; ----
 ; }doc
@@ -8970,9 +8797,6 @@ endif
   dw to_r_
   dw c_slash_l_,b_slash_buf_,star_slash_mod_
   dw from_r_
-if bytes_per_buffer=0x0200 ; XXX OLD XXX TODO
-  dw rec_slash_blk_,star_
-endif
   dw plus_
   dw block_,plus_,c_slash_l_
   dw semicolon_s_
@@ -9090,21 +8914,8 @@ endif
 ; ----
 ; }doc
 
-  dw lit_,buffer_block_id_mask,disk_buffer_,store_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header buffer_data_,'BUFFER-DATA'
-
-; doc{
-;
-; buffer-data  ( -- a )
-;
-; First data address of the disk buffer.
-;
-; }doc
-
-  dw disk_buffer_,cell_plus_
+  _literal buffer_block_id_mask
+  dw disk_buffer_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9122,27 +8933,6 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header block_number_,'BLOCK-NUMBER'
-
-; doc{
-;
-; block-number  ( x -- n )
-;
-; Convert the disk buffer id _x_ to its associated block _n_,
-; by removing the update bit.
-;
-; ---
-; : block-number  ( x -- n )
-;   $7FFF and  ;
-; ---
-;
-; }doc
-
-  _literal buffer_block_id_mask
-  dw and_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header buffer_block_,'BUFFER-BLOCK'
 
 ; doc{
@@ -9153,12 +8943,14 @@ endif
 ;
 ; ---
 ; : buffer-block  ( -- n )
-;   buffer-id block-number  ;
+;   buffer-id $7FFF literal and  ;
 ; ---
 ;
 ; }doc
 
-  dw buffer_id_,block_number_
+  dw buffer_id_
+  _literal buffer_block_id_mask
+  dw and_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9173,7 +8965,7 @@ endif
 
 ; ----
 ; : free-buffer  ( n -- )
-;   updated?  if    buffer-id block-number write-buffer
+;   updated?  if    buffer-block write-buffer
 ;             then  disk-buffer !  ;
 ; ----
 
@@ -9182,7 +8974,7 @@ endif
 ;  _chk "free-buffer -- start" ; XXX INFORMER
   dw updated_question_
   dw zero_branch_,free_buffer.end
-  dw buffer_block_,write_buffer_
+  dw buffer_block_,write_block_
   dw branch_,free_buffer.end
 free_buffer.end:
 ;  _chk "free-buffer.end" ; XXX INFORMER
@@ -9203,9 +8995,8 @@ free_buffer.end:
 
 ; ----
 ; : buffer  ( n -- a )
-;   dup buffer-block =  if    drop
-;                       else  (buffer)
-;                       then  buffer-data  ;
+;   dup buffer-block =
+;   if  drop  else  (buffer)  then  buffer-data  ;
 ; ----
 
 ; }doc
@@ -9244,7 +9035,7 @@ buffer.end:
 ; : block ( n -- a )
 ;   dup buffer-block =
 ;   if    drop
-;   else  save-buffers  dup read-buffer  disk-buffer !
+;   else  save-buffers  dup read-block  disk-buffer !
 ;   then  buffer-data  ;
 ; ----
 
@@ -9256,7 +9047,7 @@ buffer.end:
   dw branch_,block.end
 block.not_equals:
 ;  _brk "block.not_equals" ; XXX INFORMER
-  dw save_buffers_,dup_,read_buffer_
+  dw save_buffers_,dup_,read_block_
   dw disk_buffer_,store_
 block.end:
 ;  _brk "block.end" ; XXX INFORMER
@@ -9287,21 +9078,21 @@ block.end:
   jp push_hl
 
 ; ----------------------------------------------
-  _colon_header block_to_sector_,'BLOCK>SECTOR'
+  _colon_header sector_id_,'SECTOR-ID'
 
-if bytes_per_buffer=0x0200
+; XXX UNDER DEVELOPMENT
 
 ; doc{
 
-; block>sector  ( n1 -- n2 )
+; sector-id  ( n1 -- n2 )
 
-; Convert the disk block _n1_ to the disk sector _n2_, in the
-; format required by G+DOS: The high byte of _n2_ is the track
-; (0..79 for side 0; 128..207 for side 1); the low byte of _n2_
-; is the sector (1..10).
+; Convert the sequential disk sector _n1_ to the disk sector id
+; _n2_, in the format required by G+DOS: The high byte of _n2_
+; is the track (0..79 for side 0; 128..207 for side 1); the low
+; byte of _n2_ is the sector (1..10).
 
 ; ----
-; : block>sector  ( n1 -- n2 )
+; : sector-id  ( n1 -- n2 )
 ;   \ n2 (high byte) = track 0..79 for side 0, 128..207 for side 1
 ;   \    (low byte)  = sector 1..10
 ;   \ track0 = 0..79
@@ -9331,96 +9122,24 @@ if bytes_per_buffer=0x0200
 
   dw flip_,or_
   dw semicolon_s_
-
-endif
-
-if bytes_per_buffer=0x0400
-
-  ; XXX UNDER DEVELOPMENT
-
-; doc{
-
-; block>sector  ( n1 -- n2 )
-
-; Convert the disk block _n1_ to the disk sector _n2_, in the
-; format required by G+DOS: The high byte of _n2_ is the track
-; (0..79 for side 0; 128..207 for side 1); the low byte of _n2_
-; is the sector (1..10).
-
-; ----
-; : block>sector  ( n1 -- n2 )
-;   \ n2 (high byte) = track 0..79 for side 0, 128..207 for side 1
-;   \    (low byte)  = sector 1..10
-;   \ track0 = 0..79
-;   \ track = 0..207
-;   \ side = 0..1
-;   dup 10 mod 1+       ( n1 sector )
-;   swap dup 20 /       ( sector n1 track0 )
-;   swap 10 / 1 and     ( sector track0 side )
-;   128                 ( sector track 128 )
-;   negate 128 and or   ( sector track )
-;   flip or  ;
-; ----
-;
-; }doc
-
-  dw dup_
-  _literal 10
-  dw mod_,one_plus_,swap_,dup_
-  _literal 20
-  dw slash_,swap_
-  _literal 10
-  dw slash_,one_,and_
-
-  dw negate_
-  _literal 128
-  dw and_,or_
-
-  dw flip_,or_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header read_block_,'READ-BLOCK'
 
 ; doc{
 ;
-; read-block  ( a n -- )
+; read-block  ( n -- )
 ;
-; Read disk block _n_ to buffer _a_.
-;
-; ----
-; : read-block  ( a n -- )
-;   $44 transfer-block  ;
-; ----
-;
-; }doc
-
-;  _brk "read-block -- start"  ; XXX INFORMER
-  _literal 0x44 ; G+DOS command to read a disk sector
-  dw transfer_block_
-;  _brk "read-block -- end"  ; XXX INFORMER
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header read_buffer_,'READ-BUFFER'
-
-; doc{
-;
-; read-buffer  ( n -- )
-;
-; Read disk block _n_ to the disk buffer.
+; Read disk block _n_ to the buffer.
 ;
 ; ----
-; : read-buffer  ( n -- )
-;   buffer-data swap read-block  ;
+; : read-block  ( n -- )
+;   <disk transfer-block  ;
 ; ----
 ;
 ; }doc
 
-;  _chk "read-buffer" ; XXX INFORMER
-  dw buffer_data_,swap_,read_block_
+  dw from_disk_,transfer_block_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9428,128 +9147,77 @@ endif
 
 ; doc{
 ;
-; write-block  ( a n -- )
+; write-block  ( n -- )
 ;
-; Write buffer _a_ to disk block _n_.
-;
-; ----
-; : write-block  ( a n -- )
-;   $45 transfer-block  ;
-; ----
-;
-; }doc
-
-  _literal 0x45 ; G+DOS command to write a disk sector
-  dw transfer_block_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header write_buffer_,'WRITE-BUFFER'
-
-; doc{
-;
-; write-buffer  ( n -- )
-;
-; Write the disk buffer to disk block _n_.
+; Write the buffer to disk block _n_.
 ;
 ; ----
-; : write-buffer  ( n -- )
-;   buffer-data swap write-block  ;
+; : write-block  ( n -- )
+;   >disk transfer-block  ;
 ; ----
 ;
 ; }doc
 
-  dw buffer_data_,swap_,write_block_
+  dw to_disk_,transfer_block_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header transfer_block_,'TRANSFER-BLOCK'
 
-if bytes_per_buffer=bytes_per_sector
-
 ; doc{
 ;
-; transfer-block  ( a n b -- )
-;
-; The disk read-write linkage.
-;
-; a = source or destination block buffer
-; n = sequential number of the referenced disk block (=sector)
-; b = G+DOS command to read or write a sector
+; transfer-block  ( n -- )
+; 
+; The block-level disk read-write linkage.
+; Transfer block _n_ to or from disk.
+; The read or write mode must be previously set
+; by `>disk` or `<disk`.
 ;
 ; }doc
 
   ; XXX TODO restore the current drive
 
-;  _brk 'transfer-block -- start' ; XXX INFORMER
-  dw lit_,transfer_sector.command,c_store_
-  dw block_to_sector_
+  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
+  dw dup_
+  dw sector_id_
+  dw buffer_data_
   dw transfer_sector_
-;  _brk 'transfer-block -- end' ; XXX INFORMER
+
+  dw one_plus_,sector_id_
+
+  ; XXX TODO -- benchmark again
+  dw buffer_data_,b_slash_rec_,plus_ ; XXX 23768 frames
+  ;_literal disk_buffer+cell+bytes_per_sector ; XXX 24425 frames??
+
+  dw transfer_sector_
+
   dw semicolon_s_
-
-endif
-
-if bytes_per_buffer=0x0400
-
-; doc{
-;
-; transfer-block  ( a n b -- )
-;
-; The disk read-write linkage.
-;
-; a = source or destination block buffer
-; n = block
-; b = G+DOS command to read or write a sector
-;
-; }doc
-
-  ; XXX TODO restore the current drive
-
-;  _chk 'transfer-block -- start' ; XXX INFORMER
-  dw lit_,transfer_sector.command,c_store_
-
-  ; XXX UNDER DEVELOPMENT
-
-  _literal sectors_per_block
-  dw star_
-  dw two_dup_
-  dw block_to_sector_
-;  _brk "transfer-block -- sector 1" ; XXX INFORMER
-  dw transfer_sector_
-  dw one_plus_
-  dw swap_,b_slash_rec_,plus_,swap_
-  dw block_to_sector_
-;  _brk "transfer-block -- sector 2" ; XXX INFORMER
-  dw transfer_sector_
-
-
-;  _brk 'transfer-block -- end' ; XXX INFORMER
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_header transfer_sector_,'TRANSFER-SECTOR'
 
 ; doc{
 ;
-; transfer-sector  ( a +n -- )
+; transfer-sector  ( x a -- )
 ;
-; The disk read-write linkage.
+; The sector-level disk read-write linkage.
+; Transfer sector _x_ to or from disk.
+; The read or write mode must be previously set
+; by `>disk` or `<disk`.
 ;
+; x = sector to read or write
+;     high byte = track 0..79, +128 if side 1
+;     low byte  = sector 1..10
 ; a = source or destination address
-; +n = sector to read or write
-;      high byte = track 0..79, +128 if side 1
-;      low byte  = sector 1..10
 ;
 ; }doc
 
-  ; ( a sector -- )
+; XXX TODO -- format the parameters list of the documentation,
+; and other similar cases as well
 
+  pop ix ; address
   pop de ; d = track 0..79, +128 if side 1
          ; e = sector 1..10
-  pop ix ; address
   push bc ; save the Forth IP
   ld a,2 ; drive
   rst 8 ; G+DOS hook
@@ -9559,6 +9227,53 @@ transfer_sector.command:
   pop bc ; restore the Forth IP
   ld ix,next
   _jp_next
+
+; ----------------------------------------------
+  _colon_header paren_disk_,'(DISK)'
+
+; doc{
+;
+; (disk)  ( b -- )
+; 
+; Set the given mode for `transfer-sector`.
+;
+; b = 0x44 (read) or 0x45 (write)
+;
+; }doc
+
+  _literal transfer_sector.command
+  dw c_store_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header to_disk_,'>DISK'
+
+; doc{
+;
+; >disk  ( -- )
+;
+; Set the write mode for `transfer-sector`.
+;
+; }doc
+
+  _literal 0x45 ; G+DOS write sector command
+  dw paren_disk_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header from_disk_,'<DISK'
+
+; doc{
+;
+; <disk  ( -- )
+;
+; Set the read mode for `transfer-sector`.
+;
+; }doc
+
+  _literal 0x44 ; G+DOS read sector command
+  dw paren_disk_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header save_buffers_,'SAVE-BUFFERS'
@@ -9573,7 +9288,7 @@ transfer_sector.command:
 ; ----
 ; : save-buffers ( -- )
 ;   updated? 0= ?exit \ exit if not updated
-;   buffer-block dup write-buffer  disk-buffer !  ;
+;   buffer-block dup write-block  disk-buffer !  ;
 ; ----
 ;
 ; Standard: Forth-94.
@@ -9583,7 +9298,7 @@ transfer_sector.command:
   dw updated_question_,zero_equals_ ; not updated?
   dw question_exit_ ; exit if not updated
   ; Updated
-  dw buffer_block_,dup_,write_buffer_
+  dw buffer_block_,dup_,write_block_
   dw disk_buffer_,store_
   dw semicolon_s_
 
@@ -9603,14 +9318,11 @@ transfer_sector.command:
 
 ; ----
 ; : (load)  ( u -- )
-;   rec/blk * blk !  >in off  interpret  ;
+;   blk !  >in off  interpret  ;
 ; ----
 
 ; }doc
 
-if bytes_per_buffer=0x0200 ; XXX OLD XXX TODO
-  dw rec_slash_blk_,star_
-endif
   dw blk_,store_
   dw to_in_,off_
   dw interpret_
@@ -9670,20 +9382,14 @@ endif
 
 ; ----
 ; : -->  ( -- )
-;   ?loading  >in off
-;   rec/blk blk @ over mod - blk +!  ; immediate
+;   ?loading  >in off  1 blk +!  ; immediate
 ; ----
 
 ; }doc
 
   dw question_loading_
   dw to_in_,off_
-if bytes_per_buffer=0x0200
-  dw rec_slash_blk_,blk_,fetch_,over_,mod_,minus_
-endif
-if bytes_per_buffer=0x0400
   _literal 1
-endif
   dw blk_,plus_store_
   dw semicolon_s_
 
@@ -10708,9 +10414,6 @@ system_stack_pointer: equ $+1
 
 where.do_it:
   dw dup_
-if bytes_per_buffer=0x0200
-  dw rec_slash_blk_,slash_
-endif
   dw paren_dot_quote_
   _string 'Scr # '
   dw decimal_,dot_
