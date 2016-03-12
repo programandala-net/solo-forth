@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510160412
+\ Last modified: 201510162300
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -66,33 +66,50 @@ frames@ cr ." Frames " d. cr
   \ Does the string ca1 len1 contains the string ca2 len2?
 
 variable default-first-locatable  variable first-locatable
-8 dup default-first-locatable !  first-locatable !
+17 dup default-first-locatable !  first-locatable !
 variable last-locatable  scr/disk 1- last-locatable !
+  \ Variables that define the range of screens to be searched
+  \ by `located` and its descendants.
+
+: delimited  ( ca1 len1 -- ca2 len2 )
+  dup 2+ dup allocate-string swap  ( ca1 len1 ca2 len2 )
+  2dup blank  2dup 2>r drop char+ smove 2r>  ;
+  \ Add a leading space and trailing space to the given string.
 
 : located  ( ca len -- screen | false )
-  last-locatable @ 1+  first-locatable @
+  delimited  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over
     contains if  2drop i unloop exit  then
-    \ break-key? ?exhaust \ XXX TODO not in the kernel
+    \ break-key? ?exhaust
+    \ XXX TODO -- `break-key?` is not in the kernel
   loop  2drop false  ;
+  \ Locate the screen that contains the name _ca len_
+  \ (delimited with spaces at both sides) in its first line.
+  \ If not found, return zero. The search is case-sensitive.
+
+: ?located  ( screen | false -- )  dup 0= #-268 ?throw  ;  -->
+
+( need ) \ scr 3
 
 : locate  ( "name" -- screen | false )
   parse-name save-string located  ;
 
--->
-
-( need ) \ scr 3
-
-: ?located  ( screen | false -- )  dup 0= #-268 ?throw  ;
-
 : from  ( "name" -- )  locate ?located first-locatable !  ;
   \ Locate the given _name_ and set its screen the first one
-  \ `require` will search from.
+  \ `located` will search from.
 
 : reneeded  ( ca len -- )  located ?located load  ;
 
 : reneed  ( "name" -- )  parse-name save-string reneeded  ;
+
+2variable needed-word
+
+: [needed]  ( "name" -- f )
+  parse-name needed-word 2@  compare 0=  ; immediate
+
+: [unneeded]  ( "name" -- f )
+  postpone [needed] 0=  ; immediate
 
 : needed  ( ca len -- )
 
@@ -110,10 +127,11 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ 2dup undefined?  if  reneeded  else  2drop  then  ;
   \ undefined?  if  parsed-name 2@ reneeded  then  ;
 
+  needed-word 2@ 2>r  2dup needed-word 2!
   2dup save-string -trailing -leading undefined?
     \ a copy of the string is used because `undefined?`
     \ converts it to uppercase
-  if  reneeded  else  2drop  then  ;
+  if  reneeded  else  2drop  then  2r> needed-word 2!  ;
 
 : need  ( "name" -- )  parse-name save-string needed  ;
 
@@ -416,79 +434,6 @@ variable last-locatable  scr/disk 1- last-locatable !
     \   dup >r 16 mod 0= abs + r> 1+
     \ repeat  drop  ;
 
-( number? )
-
-: sign?  ( ca len -- ca' len' f )
-  \ get optional sign
-  \ ca len = number
-  \ ca' len' = number without the minus sign
-  \ f = negative number?
-  over c@ [char] - = dup >r abs /string r>  ;
-
-
-: number?  ( ca len -- n tf | ff )
-
-  base @ >r  number-base base !
-  0 0 2swap
-  sign? >r  >number nip
-  if    2drop rdrop false
-  else  r> if negate then  true
-  then  r> base !  ;
-
-( number? )
-
-: number?  ( ca len -- n tf | ff )
-
-  \ first version
-
-  base @ >r  number-base base !
-  0 0 2swap
-  sign? >r  >number nip
-  if    2drop rdrop false
-  else  r> if negate then  true
-  then  r> base !  ;
-
-( number? )
-
-: number?   ( ca len -- 0 | n 1 | d 2 )
-
-  dup 0= if 2drop 0 exit then   \ any chars?
-
-  over c@ [char] - = \ minus sign at the start?
-  dup >r  abs /string
-
-  dpl on  0 0 2swap >number dup
-  if
-    1 = swap c@ [char] . =  and
-    if    r@ if  dnegate  then  dpl off  2
-    else  2drop 0  then
-  else
-    2drop drop r@ if  negate  then  1
-  then  rdrop  ;
-
-( number? )
-
-  \ Credits:
-  \ Code from DZX-Forth.
-
-  \ XXX TODO -- adapt
-
-  \ XXX FIXME -- it compiles (with compiler security off) but
-  \ crashes
-
-: number?  ( ca len -- d true | false )
-  \ Convert a string to a double number.
-  over c@ [char] - = over 0> and dup >r 1
-  and /string over c@ [char] . > and 0 0
-  2swap ?dup
-  if
-    >number dpl on dup
-    if  1- over c@ [char] . - or  dpl off  then
-    while
-    then r> 2drop 2drop false
-    else drop r> if  dnegate  then true
-  then  ;
-
 ( error>line error>ordinal )
 
   \ XXX TODO -- new versions under development, adapted to
@@ -565,298 +510,6 @@ variable last-locatable  scr/disk 1- last-locatable !
   \  }doc
 
   \ }}} =======================================================
-  \ Strings {{{
-
-( s\" )  \ ==strings==
-
-only forth definitions
-need wid-of  need parse-char
-vocabulary escaped-voc
-wid-of escaped-voc constant escaped-wordlist
-also escaped-voc definitions
-
-  \ The `escaped-voc` vocabulary contains the words whose names
-  \ are characters that must be escaped after a backslash.
-  \ Their execution returns the new character(s) on the stack
-  \ (the first one at the top) and the count.
-  \
-  \ Most of the escaped chars are translated to one char, so
-  \ they are defined as double constants.
-
-7 1 2constant a  8 1 2constant b  27 1 2constant e
-  \ \a = backspace
-  \ \b = alert
-  \ \e = escape
-12 1 2constant f  10 1 2constant l  13 1 2constant n
-  \ \f = form feed
-  \ \l = line feed
-  \ \n = new line (implementation dependent)
-char " 1 2constant q  13 1 2constant r  9 1 2constant t
-  \ \q = double quote
-  \ \r = carriage return
-  \ \t = horizontal tab
-11 1 2constant v  0 1 2constant z
-  \ \v = vertical tab
-  \ \z = null character
-char " 1 2constant "  char \ 1 2constant \
-  \ \" = double quote
-  \ \\ = backslash
-
-: m  ( -- c1 c2 2 )  10 13 2  ;
-  \ \m = carriage return and line feed
-
-: (x)  ( "c" -- n )
-  parse-char upper 16 digit? 0= #-260 ?throw  ;
-  \ Parse an hex digit and convert it to a number.
-
-: x  ( "cc" -- c 1 )  (x) 16 * (x) + 1  ;
-  \ \x = hex character code
-  \ Parse the 8-bit hex number of a character code.
-
--->
-
-( s\" )
-
-only forth definitions
-
-need char>string   need search-wordlist
-need chars>string  need s+
-
-: unescape-char  ( c -- c1..cn n )
-  dup char>string escaped-wordlist search-wordlist
-  if  nip execute  else  [char] \ 2  then  ;
-  \ Translate a escaped char to a number of chars and their
-  \ count.
-  \ c1..cn = chars to make the string with
-  \          (_c1_ is the last one)
-  \ n = number of chars
-
-: (s\")  ( "text<quote>"  -- ca len )
-  pad 0  \ empty string to start with
-  begin  parse-char dup [char] " <>  while  \ not finished?
-    dup [char] \ =  \ possibly escaped char?
-    if    drop parse-char unescape-char
-    else  1  then  chars>string s+
-  repeat  drop  ;
-  \ Parse a text string delimited by a double quote, using the
-  \ translation rules described by Forth-2012's `s\"`, and
-  \ returning the string _ca len_ in the circular string
-  \ buffer.
-
-: s\"  ( "text<quote>"  - ca len )
-  (s\")  compiling? if  postpone sliteral  then  ; immediate
-
-  \ XXX TODO documentation
-
-  \ doc{
-  \
-  \ s\"  ( "text<quote>"  - ca len )
-  \
-  \ }doc
-
-( char>string chars>string )
-
-: char>string  ( c -- ca len )  1 allocate-string tuck c! 1  ;
-  \ Convert the char _c_ to a string _ca len_ in the circular
-  \ string buffer.
-
-: chars>string  ( c1..cn n -- ca len )
-  dup if
-    dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
-    bounds do  i c!  loop  2r>
-  else  pad swap  then  ;
-  \ Convert _n_ chars to a string _ca len_ in the circular
-  \ string buffer.
-  \ c1..cn = chars to make the string with
-  \          (_c1_ is the last one)
-  \ n = number of chars
-
-( +place )
-
-  \ Credits:
-  \ Code from Afera.
-
-: +place  ( ca1 len1 ca2 )
-  2dup c@ + over c!  dup c@ 1+ + smove  ;
-  \ Add the string _ca1 len1_ to the end of the counted string
-  \ _ca2_.
-
-( s+ )
-
-  \ Credits:
-  \ Code adapted from Afera.
-
-[defined] lengths
-?\ : lengths   2over nip over  ;
-   ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
-
-: s+  ( ca1 len1 ca2 len2 -- ca3 len3 )
-  lengths + >r           ( ca1 len2 ca2 len2 ) ( r: len3 )
-  r@ allocate-string >r  ( r: len3 ca3 )
-  2 pick r@ +            ( ca1 len1 ca2 len2 len1+ca3 )
-  smove                  ( ca1 len1 )  \ 2nd string to buffer
-  r@ smove               \  1st string to buffer
-  r> r>  ;
-  \ Append the string _ca2 len2_ to the end of string _ca1
-  \ len1_ returning the string _ca3 len3_ in the circular
-  \ string buffer.
-
-( s' )
-
-  \ Credits:
-  \ Code from Afera.
-
-  \ doc{
-  \
-  \ s'  ( compilation: "text<'>" -- ) ( run-time:  -- ca len )
-  \
-  \ }doc
-
-: s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
-  [char] ' parse-string  ; immediate
-
-( begin-stringtable end-stringtable )
-
-  \ Credits:
-  \ Code adapted from Forth Foundation Library (stt module).
-
-: begin-stringtable  ( "name" -- stringtable-sys )
-  \ Start a named stringtable definition.
-  create  here ( a1 ) cell allot here  ( a1 a2 )
-    \ stringtable-sys:
-    \   a1 = pointer (address of address) to the strings index
-    \   a2 = address of the compiled strings
-  does> ( n -- ca len )
-    \ Return the nth string.
-    ( n pfa )  @ swap cells + @ count  ;
-
-: end-stringtable  ( stringtable-sys -- )
-  \ End the stringtable definition.
-  \ stringtable-sys:
-  \   a1 = pointer (address of address) to the strings index
-  \   a2 = address of the compiled strings
-  ( a1 a2 )
-  here rot !   \ set the index
-  here swap  ( a3 a2 )
-  begin  2dup <>  while
-    dup ,   \ store the start of the string in the index
-    count chars +  \ move to the next string
-  repeat  2drop  ;
-
-  \ Usage example:
-  \
-  \ begin-stringtable esperanto-number
-  \   s" nulo" s,  s" unu" s,  s" du" s,  s" tri" s,
-  \ end-stringtable
-  \ 0 esperanto-number type
-  \ 3 esperanto-number type
-
-( hunt )
-
-: hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
-  search 0= if  chars + 0  then  ;
-
-  \ doc{
-  \
-  \ hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
-
-  \ Search a string _ca1 len1_ for a substring _ca2 len2_.
-  \ Return the part of _ca1 len1_ that starts with the first
-  \ occurence of _ca2 len2_.
-  \
-  \ ca1 len1 = string
-  \ ca2 len2 = substring
-  \ ca3 len3 = ca1+i len1-i
-  \
-  \ From Wil Baden's Charscan library (2003-02-17), public domain.
-  \
-  \ }doc
-
-( /name first-name )
-
-  \ XXX TODO copy to Galope; used also in the fsb2 project
-
-: /name  ( ca1 len1 -- ca2 len2 ca3 len3 )
-  \ ca1 len1 = Text.
-  \ ca2 len2 = Same text, from the start of its first name.
-  \ ca3 len3 = Same text, from the char after its first name.
-  bl skip 2dup bl scan  ;
-
-: first-name  ( ca1 len1 -- ca2 len2 )  /name nip -  ;
-  \ Return the first name _ca2 len2_ of the string _ca1 len1_.
-
-( prefix? )
-
-[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
-
-  \ Credits:
-  \ Code adapted from Gforth (module
-  \ string-prefix-question.fs).
-
-: prefix?  ( ca1 len1 ca2 len2 -- f )
-  tuck 2>r min 2r> s=  ;
-
-( suffix? )
-
-  \ Credits:
-  \ Code from Galope (module string-suffix-question.fs).
-
-require ./fourth.fs
-
-[defined] fourth
-?\ : fourth  ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 )  3 pick  ;
-  \ Copy fourth element on the stack onto top of stack.
-
-[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
-
-: suffix? ( ca1 len1 ca2 len2 -- wf )
-  \ Is string _ca2 len2_ the end of string _ca1 len1_?
-  2swap dup fourth - /string s=  ;
-
-( -prefix )
-
-  \ Credits:
-  \ Code from Galope (module minus-prefix.fs).
-
-need string-prefix?
-
-: -prefix  ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
-  \ Remove a prefix _ca2 len2_ from a string _ca1 len1_.
-  dup >r 2over 2swap string-prefix?
-  if  swap r@ + swap r> -  else  rdrop  then  ;
-
-( -suffix )
-
-  \ Credits:
-  \ Code from Galope (module minus-suffix.fs).
-
-need string-suffix?
-
-: -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
-  \ Remove a suffix _ca2 len2_ from a string _ca1 len1_.
-  dup >r 2over 2swap string-suffix?
-  if  r> -  else  rdrop  then  ;
-
-( ud>str d>str chop )
-
-  \ Credits:
-  \ Code from Galope (module ud-to-str.fs).
-
-: ud>str  ( ud -- ca len )  <# #s #>  ;
-
-  \ Credits:
-  \ Code from Galope (module d-to-str.fs).
-
-  \ XXX FIXME convert `sign` to Forth-94.
-: d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
-
-  \ Credits:
-  \ Code from Galope (module chop.fs).
-
-: chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
-  \ Remove the last character from string _ca len_.
-
-  \ }}} =======================================================
   \ Data stack {{{
 
 ( -rot )  \ ==datastack==
@@ -885,6 +538,63 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   F1 c,            \ pop af
   F1 c,            \ pop af
   C3 c, pushhlde , \ jp pushhlde
+
+  end-code
+
+( roll )
+
+  \ doc{
+  \
+  \ roll  ( xu xn .. x0 u -- xn .. x0 xu )
+  \
+  \ }doc
+
+  \ Credits:
+  \ Code adapted from DZX-Forth.
+
+need z80-asm
+
+code roll  ( xu xn .. x0 u -- xn .. x0 xu )
+
+  hl pop  hl addp  hl de ldp  sp addp
+    \ pop hl
+    \ add hl,hl
+    \ ld e,l
+    \ ld d,h
+    \ add hl,sp
+
+  bc push  m c ld  hl incp  m b ld
+    \ push bc
+    \ ld c,(hl)
+    \ inc hl
+    \ ld b,(hl)
+
+  bc push  de bc ldp  hl de ldp
+    \ push bc
+    \ ld c,e
+    \ ld b,d
+    \ ld e,l
+    \ ld d,h
+
+    \ ld a,b
+    \ or c
+  bc tstp
+    \ jp z,roll.end
+  0000 jpz |mark 0 unresolved ! 
+
+  hl decp  hl decp  lddr
+    \ dec hl
+    \ dec hl
+    \ lddr
+
+    \ roll.end:
+  0 unresolved @ >resolve
+  hl pop  bc pop  exsp
+    \ pop hl
+    \ pop bc
+    \ ex (sp),hl
+
+  jpnext
 
   end-code
 
@@ -1516,6 +1226,310 @@ code fzx-emit  ( c -- )
   end-code
 
   \ }}} =======================================================
+  \ Strings {{{
+
+( s\" )  \ ==strings==
+
+only forth definitions
+need wid-of  need parse-char
+vocabulary escaped-voc
+wid-of escaped-voc constant escaped-wordlist
+also escaped-voc definitions
+
+  \ The `escaped-voc` vocabulary contains the words whose names
+  \ are characters that must be escaped after a backslash.
+  \ Their execution returns the new character(s) on the stack
+  \ (the first one at the top) and the count.
+  \
+  \ Most of the escaped chars are translated to one char, so
+  \ they are defined as double constants.
+
+7 1 2constant a  8 1 2constant b  27 1 2constant e
+  \ \a = backspace
+  \ \b = alert
+  \ \e = escape
+12 1 2constant f  10 1 2constant l  13 1 2constant n
+  \ \f = form feed
+  \ \l = line feed
+  \ \n = new line (implementation dependent)
+char " 1 2constant q  13 1 2constant r  9 1 2constant t
+  \ \q = double quote
+  \ \r = carriage return
+  \ \t = horizontal tab
+11 1 2constant v  0 1 2constant z
+  \ \v = vertical tab
+  \ \z = null character
+char " 1 2constant "  char \ 1 2constant \
+  \ \" = double quote
+  \ \\ = backslash
+
+: m  ( -- c1 c2 2 )  10 13 2  ;
+  \ \m = carriage return and line feed
+
+: (x)  ( "c" -- n )
+  parse-char upper 16 digit? 0= #-260 ?throw  ;
+  \ Parse an hex digit and convert it to a number.
+
+: x  ( "cc" -- c 1 )  (x) 16 * (x) + 1  ;
+  \ \x = hex character code
+  \ Parse the 8-bit hex number of a character code.
+
+-->
+
+( s\" )
+
+only forth definitions
+
+need char>string   need search-wordlist
+need chars>string  need s+
+
+: unescape-char  ( c -- c1..cn n )
+  dup char>string escaped-wordlist search-wordlist
+  if  nip execute  else  [char] \ 2  then  ;
+  \ Translate a escaped char to a number of chars and their
+  \ count.
+  \ c1..cn = chars to make the string with
+  \          (_c1_ is the last one)
+  \ n = number of chars
+
+: (s\")  ( "text<quote>"  -- ca len )
+  pad 0  \ empty string to start with
+  begin  parse-char dup [char] " <>  while  \ not finished?
+    dup [char] \ =  \ possibly escaped char?
+    if    drop parse-char unescape-char
+    else  1  then  chars>string s+
+  repeat  drop  ;
+  \ Parse a text string delimited by a double quote, using the
+  \ translation rules described by Forth-2012's `s\"`, and
+  \ returning the string _ca len_ in the circular string
+  \ buffer.
+
+: s\"  ( "text<quote>"  - ca len )
+  (s\")  compiling? if  postpone sliteral  then  ; immediate
+
+  \ XXX TODO documentation
+
+  \ doc{
+  \
+  \ s\"  ( "text<quote>"  - ca len )
+  \
+  \ }doc
+
+( char>string chars>string )
+
+: char>string  ( c -- ca len )  1 allocate-string tuck c! 1  ;
+  \ Convert the char _c_ to a string _ca len_ in the circular
+  \ string buffer.
+
+: chars>string  ( c1..cn n -- ca len )
+  dup if
+    dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
+    bounds do  i c!  loop  2r>
+  else  pad swap  then  ;
+  \ Convert _n_ chars to a string _ca len_ in the circular
+  \ string buffer.
+  \ c1..cn = chars to make the string with
+  \          (_c1_ is the last one)
+  \ n = number of chars
+
+( +place )
+
+  \ Credits:
+  \ Code from Afera.
+
+: +place  ( ca1 len1 ca2 )
+  2dup c@ + over c!  dup c@ 1+ + smove  ;
+  \ Add the string _ca1 len1_ to the end of the counted string
+  \ _ca2_.
+
+( s+ )
+
+  \ Credits:
+  \ Code adapted from Afera.
+
+[defined] lengths
+?\ : lengths   2over nip over  ;
+   ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
+
+: s+  ( ca1 len1 ca2 len2 -- ca3 len3 )
+  lengths + >r           ( ca1 len2 ca2 len2 ) ( r: len3 )
+  r@ allocate-string >r  ( r: len3 ca3 )
+  2 pick r@ +            ( ca1 len1 ca2 len2 len1+ca3 )
+  smove                  ( ca1 len1 )  \ 2nd string to buffer
+  r@ smove               \  1st string to buffer
+  r> r>  ;
+  \ Append the string _ca2 len2_ to the end of string _ca1
+  \ len1_ returning the string _ca3 len3_ in the circular
+  \ string buffer.
+
+( s' )
+
+  \ Credits:
+  \ Code from Afera.
+
+  \ doc{
+  \
+  \ s'  ( compilation: "text<'>" -- ) ( run-time:  -- ca len )
+  \
+  \ }doc
+
+: s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
+  [char] ' parse-string  ; immediate
+
+( begin-stringtable end-stringtable )
+
+  \ Credits:
+  \ Code adapted from Forth Foundation Library (stt module).
+
+: begin-stringtable  ( "name" -- stringtable-sys )
+  \ Start a named stringtable definition.
+  create  here ( a1 ) cell allot here  ( a1 a2 )
+    \ stringtable-sys:
+    \   a1 = pointer (address of address) to the strings index
+    \   a2 = address of the compiled strings
+  does> ( n -- ca len )
+    \ Return the nth string.
+    ( n pfa )  @ swap cells + @ count  ;
+
+: end-stringtable  ( stringtable-sys -- )
+  \ End the stringtable definition.
+  \ stringtable-sys:
+  \   a1 = pointer (address of address) to the strings index
+  \   a2 = address of the compiled strings
+  ( a1 a2 )
+  here rot !   \ set the index
+  here swap  ( a3 a2 )
+  begin  2dup <>  while
+    dup ,   \ store the start of the string in the index
+    count chars +  \ move to the next string
+  repeat  2drop  ;
+
+  \ Usage example:
+  \
+  \ begin-stringtable esperanto-number
+  \   s" nulo" s,  s" unu" s,  s" du" s,  s" tri" s,
+  \ end-stringtable
+  \ 0 esperanto-number type
+  \ 3 esperanto-number type
+
+( hunt )
+
+: hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
+  search 0= if  chars + 0  then  ;
+
+  \ doc{
+  \
+  \ hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
+
+  \ Search a string _ca1 len1_ for a substring _ca2 len2_.
+  \ Return the part of _ca1 len1_ that starts with the first
+  \ occurence of _ca2 len2_.
+  \
+  \ ca1 len1 = string
+  \ ca2 len2 = substring
+  \ ca3 len3 = ca1+i len1-i
+  \
+  \ From Wil Baden's Charscan library (2003-02-17), public domain.
+  \
+  \ }doc
+
+( /name first-name trim last-name )
+
+  \ Credits:
+  \ Code from Galope.
+
+: /name  ( ca1 len1 -- ca2 len2 ca3 len3 )
+  \ ca1 len1 = Text.
+  \ ca2 len2 = Same text, from the start of its first name.
+  \ ca3 len3 = Same text, from the char after its first name.
+  bl skip 2dup bl scan  ;
+
+: first-name  ( ca1 len1 -- ca2 len2 )  /name nip -  ;
+  \ Get the first name from a string.
+  \ A name is a substring separated by spaces.
+
+: trim ( ca1 len1 -- ca2 len2 )  -leading -trailing  ;
+  \ Remove leading and trailing spaces from a string.
+
+: last-name  ( ca1 len1 -- ca2 len2 )
+  trim
+  begin  2dup bl scan bl skip dup
+  while  2nip  repeat  2drop  ;
+  \ Get the last name from a string.
+  \ A name is a substring separated by spaces.
+
+( prefix? )
+
+[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+
+  \ Credits:
+  \ Code adapted from Gforth (module
+  \ string-prefix-question.fs).
+
+: prefix?  ( ca1 len1 ca2 len2 -- f )
+  tuck 2>r min 2r> s=  ;
+
+( suffix? )
+
+  \ Credits:
+  \ Code from Galope (module string-suffix-question.fs).
+
+require ./fourth.fs
+
+[defined] fourth
+?\ : fourth  ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 )  3 pick  ;
+  \ Copy fourth element on the stack onto top of stack.
+
+[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+
+: suffix? ( ca1 len1 ca2 len2 -- wf )
+  \ Is string _ca2 len2_ the end of string _ca1 len1_?
+  2swap dup fourth - /string s=  ;
+
+( -prefix )
+
+  \ Credits:
+  \ Code from Galope (module minus-prefix.fs).
+
+need string-prefix?
+
+: -prefix  ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  \ Remove a prefix _ca2 len2_ from a string _ca1 len1_.
+  dup >r 2over 2swap string-prefix?
+  if  swap r@ + swap r> -  else  rdrop  then  ;
+
+( -suffix )
+
+  \ Credits:
+  \ Code from Galope (module minus-suffix.fs).
+
+need string-suffix?
+
+: -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  \ Remove a suffix _ca2 len2_ from a string _ca1 len1_.
+  dup >r 2over 2swap string-suffix?
+  if  r> -  else  rdrop  then  ;
+
+( ud>str d>str chop )
+
+  \ Credits:
+  \ Code from Galope (module ud-to-str.fs).
+
+: ud>str  ( ud -- ca len )  <# #s #>  ;
+
+  \ Credits:
+  \ Code from Galope (module d-to-str.fs).
+
+  \ XXX FIXME convert `sign` to Forth-94.
+: d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
+
+  \ Credits:
+  \ Code from Galope (module chop.fs).
+
+: chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
+  \ Remove the last character from string _ca len_.
+
+  \ }}} =======================================================
   \ Text output {{{
 
 ( column last-column row last-row at-x at-y )
@@ -1690,11 +1704,11 @@ variable print-width
   \
   \ }doc
 
-( xy-emit-udg )
+( hires-emit-udg )
 
-need (xy-emit)  need z80-asm
+need z80-asm  need (hires-emit)
 
-code xy-emit-udg  ( x y b -- )
+code hires-emit-udg  ( x y b -- )
 
   \ Display the used graphic character _b_ (0..255) at graphic
   \ coordinates _x y_. The system variable "UDG" is supossed to
@@ -1704,14 +1718,16 @@ code xy-emit-udg  ( x y b -- )
   \ The UDG character will be printed with overwritting
   \ (equivalent to `1 overwritte`).
 
+  \ XXX FIXME  -- crash?
+
   hl pop  l a ld
   de pop  hl pop  bc push  e b ld  l c ld
   5C7B de ftp  \ system variable UDG
-  (xy-emit) call
+  (hires-emit) call
   bc pop  next ix ldp#  jpnext
   end-code
 
-\ (xy-emit) \
+\ (hires-emit) \
 
 need z80-asm  need (pixel-addr)
 
@@ -1721,9 +1737,7 @@ need z80-asm  need (pixel-addr)
   \ published in Todospectrum, issue 2 (1984-10), page 16.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-create (xy-emit)  ( -- a )
-
-  \ XXX TODO rename all "xy-emit" to "hires-emit"
+create (hires-emit)  ( -- a )
 
   \ Print a 8x8 bits char at high resolution coordinates.
 
@@ -1734,6 +1748,8 @@ create (xy-emit)  ( -- a )
   \   C = x coordinate
   \ Modifies:
   \   AF BC HL IX DE
+
+  \ XXX FIXME  -- crash?
 
   asm
 
@@ -1767,7 +1783,7 @@ create (xy-emit)  ( -- a )
   \ issue 19 (1986-03), page 65.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-need z80-asm need ocr-chars
+need z80-asm  need ocr-chars
 
 code ocr  ( col line -- n )
 
@@ -2101,11 +2117,11 @@ code toggle-pixel  ( xc yc -- )
 
   end-code
 
-( pixel? )
+( test-pixel )
 
 need (pixel-addr)  need z80-asm
 
-code pixel?  ( xc yc -- f )
+code test-pixel  ( xc yc -- f )
   hl pop  de pop  bc push
   \ l = y coordinate
   \ e = x coordinate
@@ -2726,6 +2742,7 @@ need !p
 ( music )
 
 need ms  vocabulary music  current @  also music definitions
+need roll
 
   \ Credits:
   \ Code from Spectrum Forth-83.
@@ -2748,9 +2765,7 @@ variable len  variable tempo  variable octave  variable volume
 
 523 note c  554 note c# 583 note d  622 note d#
 659 note e  698 note f  740 note f# 784 note g
-831 note g# 880 note a  932 note a# 988 note b
-
--->
+831 note g# 880 note a  932 note a# 988 note b  -->
 
 ( music )
 
@@ -3092,7 +3107,9 @@ code c@+  ( ca - ca+1 c )
   \ Credits:
   \ Code from DZX-Forth.
 
-: within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
+[unneeded] within dup
+?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
+?\ ;s
 
   \ doc{
   \
@@ -3110,18 +3127,18 @@ code c@+  ( ca - ca+1 c )
   \
   \ }doc
 
+[unneeded] between ?\ ;s
 need -rot
-
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
 ( u<= u>= <= >= 0>= 0<= )
 
-: u<=  ( u1 u2 -- f )  u> 0=  ;
-: u>=  ( u1 u2 -- f )  u< 0=  ;
-: <=   ( n1 n2 -- f )  > 0=   ;
-: >=   ( n1 n2 -- f )  < 0=   ;
-: 0>=  ( n1 n2 -- f )  0< 0=  ;
-: 0<=  ( n1 n2 -- f )  0> 0=  ;
+[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  ;s
+[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  ;s
+[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  ;s
+[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  ;s
+[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  ;s
+[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
 
 ( ud* )
 
@@ -3154,28 +3171,49 @@ need -rot
         next
 
 
-( d0= d0< d< du< dmin dmax )
+( d0= d0< d< du< )
 
   \ Credits:
   \ Code from DZX-Forth.
 
-: d0=  ( d -- f )  or 0=  ;
+[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  ;s
 
-: d0<  ( d -- f )  nip 0<  ;
+[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; ;s
 
-; d<  ( d1 d2 -- f )
-  rot 2dup = if  2drop u< exit  then  2nip >  ;
+need [if]
+
+[needed] d< [if]
+
+need 2nip
+
+: d<  ( d1 d2 -- f )
+  rot 2dup = if  2drop u< exit  then  2nip >  ;  ;s
+
+[then]
+
+[needed] u< [if]
 
 : du<  ( ud1 ud2 -- f )
   rot swap 2dup
   u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;
+  -   if  2drop 0 exit  then  u<  ;  ;s
 
+[then]
+
+( dmin dmax )
+
+  \ Credits:
+  \ Code from DZX-Forth.
+
+need [if]
+
+[needed] dmin [if]
 : dmin  ( d1 d2 -- d1 | d2 )
-  2over 2over d< 0= if  2swap  then  2drop  ;
+  2over 2over d< 0= if  2swap  then  2drop  ;  ;s  [then]
 
+[needed] dmax [if]
 : dmax  ( d1 d2 -- d1 | d2 )
-  2over 2over d< if  2swap  then  2drop  ;
+  2over 2over d< if  2swap  then  2drop  ;  [then]
 
 ( lshift )
 
@@ -3361,47 +3399,54 @@ need fm/mod
 
 ( any? )
 
-  \ XXX TODO -- from F83
+  \ Credits:
+  \ Code from F83.
+
+need roll
+
+variable (any?)
 
 : any?  ( n1..nn n n0 -- f )
   \ Is any number _n1..nn_ equal to _n0_?
-  ;
+  dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
-( test-bit set-bit reset-bit toggle-bit )
-
-  \ XXX UNDER DEVELOPMENT
+( test-bits set-bits reset-bits toggle-bits )
 
   \ Credits:
-  \ Names from MPE PowerForth for TiniARM.
+  \ Words inspired by MPE PowerForth for TiniARM.
 
-code test-bit  ( b ca -- f )
+need z80-asm  need [if]
 
-  \ AND the mask _b_ with the contents of _ca_ and return
+[needed] test-bits [if]
+code test-bits  ( b ca -- wf )
+  hl pop  de pop  e a ld  m and
+  ' true cfa>pfa jpnz  ' false cfa>pfa jp
+  end-code  ;s  [then]
+  \ AND the bitmask _b_ with the contents of _ca_ and return
   \ `true` if the result is non-zero or `false` if the result
   \ is zero. Byte operation.
 
-  end-code
+[needed] set-bits [if]
+code set-bits  ( b ca -- )
+  hl pop  de pop  e a ld  m or  a m ld  jpnext
+  end-code  ;s  [then]
+  \ Apply the bitmask _b_ ORred with the contents of _ca_. Byte
+  \ operation.
 
-code set-bit  ( b ca -- )
+[needed] reset-bits [if]
+code reset-bits  ( b ca -- )
+  hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
+  end-code  ;s  [then]
+  \ Apply the bitmask _b_ inverted and ANDed with the contents
+  \ of _ca_. Byte operation.
 
-  \ Apply the mask _b_ ORred with the contents of _ca_. Byte operation.
-
-  end-code
-
-code reset-bit  ( b ca -- )
-
-  \ Apply the mask _b_ inverted and ANDed with the contents of
-  \ _ca_. Byte operation.
-
-
-  end-code
-
-code toggle-bit  ( b ca -- )
-
-  \ Invert the bits at _ca_ specified by the mask _b_. Byte operation.
-
-
-  end-code
+  \ XXX `toggle-bits` is in the kernel
+  \ [needed] toggle-bits [if]
+  \ code toggle-bits  ( b ca -- )
+  \   hl pop  de pop  m a ld  e xor  a m ld  jpnext
+  \   end-code  ;s  [then]
+  \   \ Invert the bits at _ca_ specified by the bitmask _b_. Byte
+  \   \ operation.
 
   \ }}} =======================================================
   \ Exceptions {{{
@@ -4715,506 +4760,6 @@ variable assert-level ( -- a )
     \ end an assertion
 
   \ }}} =======================================================
-  \ Keyboard {{{
-
-( xaccept )  \ ==keyboard==
-
-  \ XXX TODO -- accept
-
-  \ Credits:
-  \ Code adapted from eForth.
-
-  \ XXX TODO show cursor
-  \
-  \ XXX TODO compare with the kernel version and move the best
-  \ version to the kernel (probably this one)
-
-: xaccept ( ca len -- len )
-  over + over ( bot eot cur )
-  begin xkey dup 13 <> \ not carriage return?
-  while
-    dup 12 =  \ delete?
-    if    drop  >r over r@ < dup  \ any chars?
-          if  8 dup emit  bl emit  emit  then  r> +
-    else  \ printable
-          >r  2dup <>  \ more?
-          if r@ over c!  char+  r@ emit
-          then r> drop
-    then
-  repeat  drop nip swap -  ;
-
-( inkey )
-
-  \ Credits:
-  \ Code adapted and modified from Abersoft Forth's `inkey`.
-
-need z80-asm
-
-code inkey  ( -- c | 0 )
-
-  \ Leave the value of the key being pressed. If no key being
-  \ pressed leave zero.
-  \
-  \ This word reads the keyboard, so it works even when the
-  \ keyboard is not read by an interrupts routine.
-
-  bc push
-  028E call \ KEY-SCAN ROM routine
-  \ 1 or 2 keys in DE, most significant shift first if any
-  \ key values 0..39 else 255
-  z if  \ is key press valid?
-    031E call \ KEY-TEST ROM routine
-    cy if  \ is key code valid?
-      \ A = main key
-      \ D = ?
-      00 c ld#  \ XXX Spectrum Forth-83 does this
-      d dec  a e ld
-      0333 call \ KEY-DECODE ROM routine
-      \ A = key code
-    then
-  then
-  FF cp#  z if  a xor  then  \ convert FF to 00
-  \ XXX TODO jump to `key` to decode
-  bc pop  pusha jp  end-code
-
-( inkey )
-
-need z80-asm
-
-code inkey  ( -- c | 0 )
-
-  \ Leave the value of the key being pressed. If no key being
-  \ pressed, leave 0.
-  \
-  \ This word works only when an interrupts routine reads the
-  \ keyboard and updates the related system variables.
-
-  \ XXX FIXME -- Some times this word returns zero when the key
-  \ is pressed; the version on the previous screen works fine.
-  \ Anyway this version is smaller and can be useful.
-
-  di
-  a xor
-  01 iy 5 bitx  \ a new key pressed?
-  nz if
-    5C08 hl ldp#  \ LAST-K system variable
-    m a ld
-    \ 0 m ld# \ XXX OLD
-    01 iy 5 resx
-  then
-  ei
-  pusha jp
-
-  end-code
-
-( key?? )
-
-  \ An alternative to `key?` that works also when the system
-  \ interrupts are off. Variant with relative jumps.
-
-need z80-asm
-
-code key??  ( -- f )
-
-  bc push
-  028E call  \ ROM KEY_SCAN
-  here jrnz  >relmark 0 unresolved ! \ to return_false
-  031E call  \ ROM KEY_TEST
-  here jrnc  >relmark 1 unresolved ! \ to return_false
-
-  \ return_true:
-  bc pop  ' true cfa>pfa jp
-
-  \ return_false:
-  0 unresolved @ >relresolve
-  1 unresolved @ >relresolve
-  bc pop  ' false cfa>pfa jp
-
-  end-code
-
-( key?? )
-
-  \ An alternative to `key?` that works also when the system
-  \ interrupts are off. Faster variant with absolute jumps.
-
-need z80-asm
-
-code key??  ( -- f )
-
-  bc push
-  028E call  \ ROM KEY_SCAN
-  0000 jpnz  |mark 0 unresolved ! \ to return_false
-  031E call  \ ROM KEY_TEST
-  0000 jpnc  |mark 1 unresolved ! \ to return_false
-
-  \ return_true:
-  bc pop  ' true cfa>pfa jp
-
-  \ return_false:
-  0 unresolved @ >resolve
-  1 unresolved @ >resolve
-  bc pop  ' false cfa>pfa jp
-
-  end-code
-
-( y/n? y/n yes? no? )
-
-  \ Credits:
-  \ Code adapted from Afera.
-
-need value
-
-char Y value "y"  char N value "n"
-  \ Default (uppercase) letters for "yes" and "no".
-
-: y/n?  ( c -- f )  dup "y" = swap "n" = or  ;
-  \ Is the given (uppercase) char _c_
-  \ a valid answer for a "y/n" question?
-
-: y/n  ( -- c )
-  begin  key upper dup y/n? 0=  while  drop  repeat  ;
-  \ Wait for a valid key press for a "y/n" question
-  \ and return its code.
-
-: no?  ( -- f )  y/n "n" =  ;
-  \ Wait for a valid key press for a "y/n" question
-  \ and return `true` if it's the current letter for "no",
-  \ else return `false`.
-
-: yes?  ( -- f )  y/n "y" =  ;
-  \ Wait for a valid key press for a "y/n" question
-  \ and return `true` if it's the current letter for "yes",
-  \ else return `false`.
-
-
-( Keyboard rows ports)
-
-  \ From Afera.
-  \ XXX UNDER DEVELOPMENT
-  
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Some tools to manage key presses. An improved and detailed
-  \ implementation can be found in the Tron 0xF game
-  \ (http://programandala.net/en.program.tron_0xf.html).
-  \ -----------------------------------------------------------
-
-$F7FE CONSTANT KEY-ROW-1-5 \ 1 to 5
-$FBFE CONSTANT KEY-ROW-Q-T \ Q to T
-$FDFE CONSTANT KEY-ROW-A-G \ A to G
-$FEFE CONSTANT KEY-ROW-CS-V \ Caps Shift to V
-$EFFE CONSTANT KEY-ROW-6-0 \ 6 to 0
-$DFFE CONSTANT KEY-ROW-Y-P \ Y to P
-$BFFE CONSTANT KEY-ROW-H-EN \ H to Enter
-$7FFE CONSTANT KEY-ROW-B-SP \ B to Space
-
--->
-
-( Key identifiers)
-
-$01 KEY-ROW-1-5 2CONSTANT K-1
-$02 KEY-ROW-1-5 2CONSTANT K-2
-$04 KEY-ROW-1-5 2CONSTANT K-3
-$08 KEY-ROW-1-5 2CONSTANT K-4
-$10 KEY-ROW-1-5 2CONSTANT K-5
-
-$01 KEY-ROW-Q-T 2CONSTANT K-Q
-$02 KEY-ROW-Q-T 2CONSTANT K-W
-$04 KEY-ROW-Q-T 2CONSTANT K-E
-$08 KEY-ROW-Q-T 2CONSTANT K-R
-$10 KEY-ROW-Q-T 2CONSTANT K-T
-
-$01 KEY-ROW-A-G 2CONSTANT K-A
-$02 KEY-ROW-A-G 2CONSTANT K-S
-$04 KEY-ROW-A-G 2CONSTANT K-D
-$08 KEY-ROW-A-G 2CONSTANT K-F
-$10 KEY-ROW-A-G 2CONSTANT K-G  -->
-
-( Key identifiers)
-
-$01 KEY-ROW-CS-V 2CONSTANT K-CS
-$02 KEY-ROW-CS-V 2CONSTANT K-Z
-$04 KEY-ROW-CS-V 2CONSTANT K-X
-$08 KEY-ROW-CS-V 2CONSTANT K-C
-$10 KEY-ROW-CS-V 2CONSTANT K-V
-
-$01 KEY-ROW-6-0 2CONSTANT K-0
-$02 KEY-ROW-6-0 2CONSTANT K-9
-$04 KEY-ROW-6-0 2CONSTANT K-8
-$08 KEY-ROW-6-0 2CONSTANT K-7
-$10 KEY-ROW-6-0 2CONSTANT K-6
-
-$01 KEY-ROW-Y-P 2CONSTANT K-P
-$02 KEY-ROW-Y-P 2CONSTANT K-O
-$04 KEY-ROW-Y-P 2CONSTANT K-I
-$08 KEY-ROW-Y-P 2CONSTANT K-U
-$10 KEY-ROW-Y-P 2CONSTANT K-Y  -->
-
-( Key identifiers)
-
-$01 KEY-ROW-H-EN 2CONSTANT K-EN
-$02 KEY-ROW-H-EN 2CONSTANT K-L
-$04 KEY-ROW-H-EN 2CONSTANT K-K
-$08 KEY-ROW-H-EN 2CONSTANT K-J
-$10 KEY-ROW-H-EN 2CONSTANT K-H
-
-$01 KEY-ROW-B-SP 2CONSTANT K-SP
-$02 KEY-ROW-B-SP 2CONSTANT K-SS
-$04 KEY-ROW-B-SP 2CONSTANT K-M
-$08 KEY-ROW-B-SP 2CONSTANT K-N
-$10 KEY-ROW-B-SP 2CONSTANT K-B
-
--->
-
-( Keys table manipulation -- slower )
-
-  \ ............................................
-  \ Method 1: more compact but slower
-
-  \ Every key identifier occupies 3 bytes in the table (total
-  \ size is 120 bytes)
-
-  \ 3 CONSTANT /K  \ bytes per key definition in the keys table
-
-  \ Store a key definition into the keys table:
-  \ : K,  ( bitmask port -- ) , C,  ;
-
-  \ Fech a key definition from an element of the keys table:
-  \ : K@  ( a -- bitmask port ) DUP C@ SWAP 1+ @ ;
-
-  \ ............................................
-  \ Method 2: bigger but faster
-
-  \ With these words, every key identifier occupies 4 bytes
-  \ in the table (total size is 160 bytes)
-
-4 CONSTANT /K  \ bytes per key definition in the keys table
-
-  \ Store a key definition into the keys table:
-: K,  ( d -- ) , ,  ;
-
-  \ Fech a key definition from an element of the keys table:
-: K@  ( a -- bitmask port ) 2@ ;
-
--->
-
-( Keys table -- comon words and data )
-
-40 CONSTANT KEYS
-0 VARIABLE K-TABLE -2 ALLOT
-K-1 K, K-2 K, K-3 K, K-4 K, K-5 K, K-Q K, K-W K, K-E K, K-R K,
-K-T K, K-A K, K-S K, K-D K, K-F K, K-G K, K-CS K, K-Z K, K-X K,
-K-C K, K-V K, K-0 K, K-9 K, K-8 K, K-7 K, K-6 K, K-P K, K-O K,
-K-I K, K-U K, K-Y K, K-EN K, K-L K, K-K K, K-J K, K-H K,
-K-SP K, K-SS K, K-M K, K-N K, K-B K,
-
--->
-
-( PRESSED? PRESSED )
-
-: PRESSED? ( n1 n2 -- flag )
-  \ Is a key pressed?
-  \ n1 = key bit mask
-  \ n2 = keyboard row port
-  INP AND NOT ;
-
-: PRESSED  ( -- false | bitmask port true )
-  \ Return the key identifier of the first key
-  \ from the keys table that happens to be pressed.
-  0 \ false by default
-  [ K-TABLE KEYS /K * BOUNDS SWAP ] LITERAL LITERAL
-  DO  I K@ PRESSED? IF  DROP I K@ 1 LEAVE  THEN
-  /K +LOOP ;
-
--->
-
-( ONLY-ONE-PRESSED )
-
-0. 2VARIABLE K-PRESSED
-
-: ONLY-ONE-PRESSED  ( -- false | bitmask port true )
-
-  \ XXX TODO finish
-
-  \ Return the key identifier of the key pressed,
-  \ if there's only one key pressed.
-
-  0. K-PRESSED 2! \ none by default
-  [ K-TABLE KEYS /K * BOUNDS SWAP ] LITERAL LITERAL
-  DO  I K@ PRESSED?
-  IF  K-PRESSED 2@ + IF
-  THEN
-  /K +LOOP
-  K-PRESSED 2@ 2DUP + IF  1  ELSE  2DROP 0  THEN
-  ;
-
-  \ }}} =======================================================
-  \ Hardware {{{
-
-( @p )  \ ==hardware==
-
-code @p  ( ca -- c )
-
-  \ Input char _c_ from port _ca_.
-
-  E1 c,           \ pop hl
-  C5 c,           \ push bc
-  48 05 + c,      \ ld c,l
-  40 04 + c,      \ ld b,h
-  ED c, 68 c,     \ in l,(c)
-  C1 c,           \ pop bc
-  26 c, 00 c,     \ ld h,0x00
-  C3 c, pushhl ,  \ jp pushhl
-  end-code
-
-( !p )
-
-code !p  ( c ca -- )
-
-  \ Output char _c_ to port _ca_.
-
-  E1 c,           \ pop hl
-  D1 c,           \ pop de ; char in e
-  C5 c,           \ push bc
-  48 05 + c,      \ ld c,l
-  40 04 + c,      \ ld b,h
-  ED c, 59 c,     \ out (c),e
-  C1 c,           \ pop bc
-  jpnext          \ jp (ix)
-
-  End-code
-
-  \ }}} =======================================================
-  \ Turnkey {{{
-
-( extend size system turnkey )  \ ==turnkey==
-
-  \ XXX OLD
-  \
-  \ XXX WARNING -- Since name field addresses are saved in a
-  \ memory bank, the best way to save a modified Forth system
-  \ is to make a snapshot with the ZX Spectrum emulator;
-  \ otherwise a multipart saving and loading would be needed.
-  \ Anyway, these words are meant to save a Forth program, not
-  \ the Forth system.
-  \
-  \ XXX TODO -- Study how to save and load the names bank, even
-  \ after assembling the kernel.
-
-: extend  ( -- )
-
-  \ Change the `cold` start parameters to extend the system to
-  \ its current state.
-
-  latest 6 +origin !  \ top most word in `forth` vocabulary
-  here 22 +origin !  \ `fence` init value \ XXX OLD obsolete
-  here 24 +origin !   \ `dp` init value
-  \ XXX TODO -- update also the names pointer
-  \ `voc-link` init value:
-  [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
-
-  \ size  ( -- u )
-  \
-  \ Size of the system.
-
-: size  ( -- u )  here 0 +origin -  ;
-
-  \ system  ( -- a len )
-  \
-  \ Prepare the system in order to save a copy.  Return its
-  \ start address and length, to be used as parameters for
-  \ saving the system to disk.
-
-: system  ( -- a len )  extend  0 +origin size 10 +  ;
-
-  \ turnkey  ( cfa -- a len )
-  \
-  \ Prepare the system in order to save a copy that will
-  \ execute the given cfa after the ordinary boot process.
-  \ Return its start address and length, to be used as
-  \ parameters for saving the system to disk.
-
-: turnkey  ( cfa -- a len )  boot defer! system  ;
-
-  \ }}} =======================================================
-  \ Double numbers {{{
-
-( du.r u.r du. )  \ ==doublenumbers==
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-: du.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
-\ : u.r  ( n1 n2 -- )  >r 0 r> du.r  ;
-: du.  ( d -- )  0 du.r space  ;
-
-( d= d<> )
-
-  \ XXX TODO -- rewrite in Z80
-
-: d<>  ( d1 d2 -- f )
-  rot <> if  2drop true exit  then  <>  ;
-: d=  ( d1 d2 -- f )  d<> 0=  ;
-
-  \ XXX OLD
-  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
-  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
-
-( d- )
-
-need z80-asm
-
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
-code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
-
-  de pop          \ DE=d2hi
-  exx
-  de pop          \ DE'=d2lo
-  exx
-  hl pop          \ HL=d1hi,DE=d2hi
-  exx
-  hl pop          \ HL'=d1lo
-  de subp
-  hl push         \ 2OS=d1lo-d2lo
-  exx
-  de sbcp         \ HL=d1hi-d2hi-cy
-  pushhl jp
-  end-code
-
-  \ }}} =======================================================
-  \ Number conversion and notation {{{
-
-( b# d# h# )  ==numberconversion==
-
-  \ Credits:
-  \ Code adapted from eForth.
-
-  \ XXX TODO -- finish the conversion
-
-: x# ( -- ) ( "ccc" -- n | d )
-  does> c@              \ new radix
-  base @ >r  base !     \ save and set radix
-  parse-name            \ get string
-  ['] evaluate catch    \ convert to number, set trap
-  r> base !  throw  ;   \ restore radix before error control
-
-create b# ( "name" -- n | d )  2 c, x# immediate
-create d# ( "name" -- n | d ) 10 c, x# immediate
-create h# ( "name" -- n | d ) 16 c, x# immediate
-
-( c# )
-
-: c#  ( "name" -- c )
-  parse-name drop c@ postpone literal  ; immediate
-  \ Parse a name and return the code of the its first
-  \ character.
-  \ Note: This word depends on the fig-Forth's `literal`.
-  \ XXX TODO change when `literal` is updated.
-
-  \ }}} =======================================================
   \ Control structures {{{
 
 ( unless )  \ ==controlstructures==
@@ -5232,16 +4777,14 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   \ Original code by Neil Bawd, presented at FORML 1986.
 
   \ The original code was written two ways:
- 
+
   \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
   \   s" if" evaluate  bl word count evaluate  s" then" evaluate
   \   ;  immediate
-  
+
   \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
   \   postpone if bl word count evaluate  postpone then
   \   ;  immediate
-
-: ??  ( f -- )  0= if  r> cell+ >r  then  ;
 
   \ XXX OLD -- This first version used `postpone` and `compile,`
   \ instead of `evaluate`.
@@ -5251,6 +4794,20 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   \   parse-name find-name 0= -13 ?throw compile,
   \   postpone then
   \   ;  immediate
+
+  \ XXX OLD -- simpler:
+
+  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \  postpone if  ' compile,  postpone then
+  \  ;  immediate
+
+  \ XXX OLD -- even simpler:
+
+  \ : ??  ( f -- )  0= if  r> cell+ >r  then  ;
+
+: (??)  ( f -- )  0= if  r> cell+ >r  then  ;
+: ??  ( -- )  ?compiling postpone (??)  ; immediate
+
 
 ( don't )
 
@@ -5687,7 +5244,7 @@ code (step)  ( R: n -- n' )
   \ Credits:
   \ Code from Galope.
 
-s"  between " needed
+need between
 
 : (between-of)  ( x1 x2 x3 -- x1 x1 | x1 x1' )
   2>r dup dup 2r> between 0= if  invert  then  ;
@@ -5756,7 +5313,7 @@ s"  between " needed
   \ Credits:
   \ Code from Galope.
 
-s"  within " needed
+need within
 
 : (within-of)  ( x1 x2 x3 -- x1 x1 | x1 x1' )
   2>r dup dup 2r> within 0= if  invert  then  ;
@@ -5971,7 +5528,7 @@ variable #options
   0 do
     [ 2 cells ] literal + 2dup @ =  ( false x a' f )  \ match?
     \ a' = address of the current compiled option
-    if  nip nip cell+ perform  exhaust true 0 0  then
+    if  nip nip cell+ perform  true 0 0  exhaust then
   loop  ( f x1 x2 )  2drop
 
   if    rdrop       \ match, so discard the default option
@@ -5993,10 +5550,8 @@ variable #options
   postpone [  ; immediate
 
 : option  ( x "name" -- )
-  \ Compile an option _x_ to execute the word _name_.
-  ,                           \ compile the option
-  ' ,                         \ get cfa and compile it too
-  1 #options +!  ;
+  \ Compile an option _x_ and the cfa of its action "name".
+  ,  ' ,  1 #options +!  ;
 
 : ]options  ( a1 a2 a3 -- )
   \ a1 = address of exit point
@@ -6034,9 +5589,495 @@ variable #options
 : times-execute  ( cfa n -- )
   \ Execute _cfa_ _n_ times.
   2>r
-  begin   2r> 1- 2dup 2>r
-  while   execute
+  begin   2r@
+  while   2r> 1- 2>r execute
   repeat  drop 2rdrop  ;
+
+  \ }}} =======================================================
+  \ Keyboard {{{
+
+( xaccept )  \ ==keyboard==
+
+  \ XXX TODO -- accept
+
+  \ Credits:
+  \ Code adapted from eForth.
+
+  \ XXX TODO show cursor
+  \
+  \ XXX TODO compare with the kernel version and move the best
+  \ version to the kernel (probably this one)
+
+: xaccept ( ca len -- len )
+  over + over ( bot eot cur )
+  begin xkey dup 13 <> \ not carriage return?
+  while
+    dup 12 =  \ delete?
+    if    drop  >r over r@ < dup  \ any chars?
+          if  8 dup emit  bl emit  emit  then  r> +
+    else  \ printable
+          >r  2dup <>  \ more?
+          if r@ over c!  char+  r@ emit
+          then r> drop
+    then
+  repeat  drop nip swap -  ;
+
+( inkey )
+
+  \ Credits:
+  \ Code adapted and modified from Abersoft Forth's `inkey`.
+
+need z80-asm
+
+code inkey  ( -- c | 0 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed leave zero.
+  \
+  \ This word reads the keyboard, so it works even when the
+  \ keyboard is not read by an interrupts routine.
+
+  bc push
+  028E call \ KEY-SCAN ROM routine
+  \ 1 or 2 keys in DE, most significant shift first if any
+  \ key values 0..39 else 255
+  z if  \ is key press valid?
+    031E call \ KEY-TEST ROM routine
+    cy if  \ is key code valid?
+      \ A = main key
+      \ D = ?
+      00 c ld#  \ XXX Spectrum Forth-83 does this
+      d dec  a e ld
+      0333 call \ KEY-DECODE ROM routine
+      \ A = key code
+    then
+  then
+  FF cp#  z if  a xor  then  \ convert FF to 00
+  \ XXX TODO jump to `key` to decode
+  bc pop  pusha jp  end-code
+
+( inkey )
+
+need z80-asm
+
+code inkey  ( -- c | 0 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed, leave 0.
+  \
+  \ This word works only when an interrupts routine reads the
+  \ keyboard and updates the related system variables.
+
+  \ XXX FIXME -- Some times this word returns zero when the key
+  \ is pressed; the version on the previous screen works fine.
+  \ Anyway this version is smaller and can be useful.
+
+  di
+  a xor
+  01 iy 5 bitx  \ a new key pressed?
+  nz if
+    5C08 hl ldp#  \ LAST-K system variable
+    m a ld
+    \ 0 m ld# \ XXX OLD
+    01 iy 5 resx
+  then
+  ei
+  pusha jp
+
+  end-code
+
+( key?? )
+
+  \ An alternative to `key?` that works also when the system
+  \ interrupts are off. Variant with relative jumps.
+
+need z80-asm
+
+code key??  ( -- f )
+
+  bc push
+  028E call  \ ROM KEY_SCAN
+  here jrnz  >relmark 0 unresolved ! \ to return_false
+  031E call  \ ROM KEY_TEST
+  here jrnc  >relmark 1 unresolved ! \ to return_false
+
+  \ return_true:
+  bc pop  ' true cfa>pfa jp
+
+  \ return_false:
+  0 unresolved @ >relresolve
+  1 unresolved @ >relresolve
+  bc pop  ' false cfa>pfa jp
+
+  end-code
+
+( key?? )
+
+  \ An alternative to `key?` that works also when the system
+  \ interrupts are off. Faster variant with absolute jumps.
+
+need z80-asm
+
+code key??  ( -- f )
+
+  bc push
+  028E call  \ ROM KEY_SCAN
+  0000 jpnz  |mark 0 unresolved ! \ to return_false
+  031E call  \ ROM KEY_TEST
+  0000 jpnc  |mark 1 unresolved ! \ to return_false
+
+  \ return_true:
+  bc pop  ' true cfa>pfa jp
+
+  \ return_false:
+  0 unresolved @ >resolve
+  1 unresolved @ >resolve
+  bc pop  ' false cfa>pfa jp
+
+  end-code
+
+( y/n? y/n yes? no? )
+
+  \ Credits:
+  \ Code adapted from Afera.
+
+need value
+
+char Y value "y"  char N value "n"
+  \ Default (uppercase) letters for "yes" and "no".
+
+: y/n?  ( c -- f )  dup "y" = swap "n" = or  ;
+  \ Is the given (uppercase) char _c_
+  \ a valid answer for a "y/n" question?
+
+: y/n  ( -- c )
+  begin  key upper dup y/n? 0=  while  drop  repeat  ;
+  \ Wait for a valid key press for a "y/n" question
+  \ and return its code.
+
+: no?  ( -- f )  y/n "n" =  ;
+  \ Wait for a valid key press for a "y/n" question
+  \ and return `true` if it's the current letter for "no",
+  \ else return `false`.
+
+: yes?  ( -- f )  y/n "y" =  ;
+  \ Wait for a valid key press for a "y/n" question
+  \ and return `true` if it's the current letter for "yes",
+  \ else return `false`.
+
+
+( Keyboard rows ports)
+
+  \ From Afera.
+  \ XXX UNDER DEVELOPMENT
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Some tools to manage key presses. An improved and detailed
+  \ implementation can be found in the Tron 0xF game
+  \ (http://programandala.net/en.program.tron_0xf.html).
+  \ -----------------------------------------------------------
+
+
+( /k k, k@ )
+
+  \ ............................................
+  \ Method 1: more compact but slower
+
+  \ Every key identifier occupies 3 bytes in the table (total
+  \ size is 120 bytes)
+
+3 constant /k  \ bytes per key definition in the keys table
+
+: k,  ( bitmask port -- ) , c,  ;
+  \ Store a key definition into the keys table:
+
+: k@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
+  \ Fech a key definition from an element of the keys table:
+
+-->
+
+  \ ............................................
+  \ Method 2: bigger but faster
+
+  \ With these words, every key identifier occupies 4 bytes
+  \ in the table (total size is 160 bytes)
+
+4 constant /k  \ bytes per key definition in the keys table
+
+: k,  ( d -- )  2,  ;
+  \ Store a key definition into the keys table:
+
+: k@  ( a -- bitmask port )  2@  ;
+  \ Fech a key definition from an element of the keys table:
+
+( keys k-table )
+
+  \ Key constants are defined with double constants this way:
+  \ high part = bitmask
+  \ low part = port of the keyboard row
+
+$01 $F7FE 2constant k-1  $02 $F7FE 2constant k-2
+$04 $F7FE 2constant k-3  $08 $F7FE 2constant k-4
+$10 $F7FE 2constant k-5
+
+$01 $FBFE 2constant k-q  $02 $FBFE 2constant k-w
+$04 $FBFE 2constant k-e  $08 $FBFE 2constant k-r
+$10 $FBFE 2constant k-t
+
+$01 $FDFE 2constant k-a  $02 $FDFE 2constant k-s
+$04 $FDFE 2constant k-d  $08 $FDFE 2constant k-f
+$10 $FDFE 2constant k-g
+
+$01 $FDFE 2constant k-cs  $02 $FDFE 2constant k-z
+$04 $FDFE 2constant k-x   $08 $FDFE 2constant k-c
+$10 $FDFE 2constant k-v
+
+-->
+
+( keys k-table )
+
+$01 $EFFE 2constant k-0  $02 $EFFE 2constant k-9
+$04 $EFFE 2constant k-8  $08 $EFFE 2constant k-7
+$10 $EFFE 2constant k-6
+
+$01 $DFFE 2constant k-p  $02 $DFFE 2constant k-o
+$04 $DFFE 2constant k-i  $08 $DFFE 2constant k-u
+$10 $DFFE 2constant k-y
+
+$01 $BFFE 2constant k-en  $02 $BFFE 2constant k-l
+$04 $BFFE 2constant k-k   $08 $BFFE 2constant k-j
+$10 $BFFE 2constant k-h
+
+$01 $7FFE 2constant k-sp $02 $7FFE 2constant k-ss
+$04 $7FFE 2constant k-m  $08 $7FFE 2constant k-n
+$10 $7FFE 2constant k-b
+
+-->
+
+( keys k-table )
+
+need k,
+
+40 constant keys
+
+create k-table
+
+k-1 k, k-2 k, k-3 k, k-4 k, k-5 k, k-q k, k-w k, k-e k, k-r k,
+k-t k, k-a k, k-s k, k-d k, k-f k, k-g k, k-cs k, k-z k, k-x k,
+k-c k, k-v k, k-0 k, k-9 k, k-8 k, k-7 k, k-6 k, k-p k, k-o k,
+k-i k, k-u k, k-y k, k-en k, k-l k, k-k k, k-j k, k-h k,
+k-sp k, k-ss k, k-m k, k-n k, k-b k,
+
+( pressed? )
+
+need @p
+
+: pressed? ( n1 n2 -- f )  @p and 0=  ;
+  \ Is a key pressed?
+  \ n1 = key bitmask
+  \ n2 = keyboard row port
+
+( pressed )
+
+need pressed?  need k-table  need k@  need /k
+
+: pressed  ( -- false | n1 n2 true )
+  0 \ false by default
+  [ k-table keys /k * bounds swap ] literal literal
+  do  i k@ pressed? if  drop i k@ 1 exhaust  then  /k +loop  ;
+  \ Return the key identifier of the first key
+  \ from the keys table that happens to be pressed.
+  \ n1 = key bitmask
+  \ n2 = keyboard row port
+
+( only-one-pressed )
+
+  \ XXX UNDER DEVELOPMENT
+
+0. 2variable k-pressed
+
+: only-one-pressed  ( -- false | n1 n2 true )
+
+  \ XXX TODO finish
+
+  0. k-pressed 2! \ none by default
+  [ k-table keys /k * bounds swap ] literal literal
+  do  i k@ pressed?
+  if  k-pressed 2@ + if
+  then
+  /k +loop
+  k-pressed 2@ 2dup + if  1  else  2drop 0  then  ;
+  \ Return the key identifier of the key pressed,
+  \ if there's only one key pressed.
+  \ n1 = key bitmask
+  \ n2 = keyboard row port
+
+  \ }}} =======================================================
+  \ Hardware {{{
+
+( @p )  \ ==hardware==
+
+code @p  ( ca -- c )
+
+  \ Input char _c_ from port _ca_.
+
+  E1 c,           \ pop hl
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 68 c,     \ in l,(c)
+  C1 c,           \ pop bc
+  26 c, 00 c,     \ ld h,0x00
+  C3 c, pushhl ,  \ jp pushhl
+  end-code
+
+( !p )
+
+code !p  ( c ca -- )
+
+  \ Output char _c_ to port _ca_.
+
+  E1 c,           \ pop hl
+  D1 c,           \ pop de ; char in e
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 59 c,     \ out (c),e
+  C1 c,           \ pop bc
+  jpnext          \ jp (ix)
+
+  End-code
+
+  \ }}} =======================================================
+  \ Turnkey {{{
+
+( extend size system turnkey )  \ ==turnkey==
+
+  \ XXX OLD
+  \
+  \ XXX WARNING -- Since name field addresses are saved in a
+  \ memory bank, the best way to save a modified Forth system
+  \ is to make a snapshot with the ZX Spectrum emulator;
+  \ otherwise a multipart saving and loading would be needed.
+  \ Anyway, these words are meant to save a Forth program, not
+  \ the Forth system.
+  \
+  \ XXX TODO -- Study how to save and load the names bank, even
+  \ after assembling the kernel.
+
+: extend  ( -- )
+
+  \ Change the `cold` start parameters to extend the system to
+  \ its current state.
+
+  latest 6 +origin !  \ top most word in `forth` vocabulary
+  here 22 +origin !  \ `fence` init value \ XXX OLD obsolete
+  here 24 +origin !   \ `dp` init value
+  \ XXX TODO -- update also the names pointer
+  \ `voc-link` init value:
+  [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
+
+  \ size  ( -- u )
+  \
+  \ Size of the system.
+
+: size  ( -- u )  here 0 +origin -  ;
+
+  \ system  ( -- a len )
+  \
+  \ Prepare the system in order to save a copy.  Return its
+  \ start address and length, to be used as parameters for
+  \ saving the system to disk.
+
+: system  ( -- a len )  extend  0 +origin size 10 +  ;
+
+  \ turnkey  ( cfa -- a len )
+  \
+  \ Prepare the system in order to save a copy that will
+  \ execute the given cfa after the ordinary boot process.
+  \ Return its start address and length, to be used as
+  \ parameters for saving the system to disk.
+
+: turnkey  ( cfa -- a len )  boot defer! system  ;
+
+  \ }}} =======================================================
+  \ Double numbers {{{
+
+( du.r u.r du. )  \ ==doublenumbers==
+
+  \ Credits:
+  \ Code adapted from Spectrum Forth-83.
+
+: du.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+\ : u.r  ( n1 n2 -- )  >r 0 r> du.r  ;
+: du.  ( d -- )  0 du.r space  ;
+
+( d= d<> )
+
+  \ XXX TODO -- rewrite in Z80
+
+: d<>  ( d1 d2 -- f )
+  rot <> if  2drop true exit  then  <>  ;
+: d=  ( d1 d2 -- f )  d<> 0=  ;
+
+  \ XXX OLD
+  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
+  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
+( d- )
+
+need z80-asm
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
+
+  de pop          \ DE=d2hi
+  exx
+  de pop          \ DE'=d2lo
+  exx
+  hl pop          \ HL=d1hi,DE=d2hi
+  exx
+  hl pop          \ HL'=d1lo
+  de subp
+  hl push         \ 2OS=d1lo-d2lo
+  exx
+  de sbcp         \ HL=d1hi-d2hi-cy
+  pushhl jp
+  end-code
+
+  \ }}} =======================================================
+  \ Number conversion and notation {{{
+
+( b# d# h# )  ==numberconversion==
+
+  \ Credits:
+  \ Code adapted from eForth.
+
+  \ XXX TODO -- finish the conversion
+
+: x# ( -- ) ( "ccc" -- n | d )
+  does> c@              \ new radix
+  base @ >r  base !     \ save and set radix
+  parse-name            \ get string
+  ['] evaluate catch    \ convert to number, set trap
+  r> base !  throw  ;   \ restore radix before error control
+
+create b# ( "name" -- n | d )  2 c, x# immediate
+create d# ( "name" -- n | d ) 10 c, x# immediate
+create h# ( "name" -- n | d ) 16 c, x# immediate
+
+( c# )
+
+: c#  ( "name" -- c )
+  parse-name drop c@ postpone literal  ; immediate
+  \ Parse a name and return the code of the its first
+  \ character.
+  \ Note: This word depends on the fig-Forth's `literal`.
+  \ XXX TODO change when `literal` is updated.
 
   \ }}} =======================================================
   \ Data structures {{{
@@ -8206,7 +8247,7 @@ need +thru
 5 constant float  : float+  ( n1 -- n2 )  float +  ;
                   : floats  ( n1 -- n2 )  float *  ;
 
-need z80-asm  s"  calc " needed
+need z80-asm  need calc
 
 code s>f  ( n -- ) ( F: -- r )
   exx  bc pop  2D2B call  exx  jpnext  end-code
@@ -8233,7 +8274,7 @@ code f>d  ( -- d ) ( F: r -- )
 
   \ Operators
 
-need z80-asm  s"  calc " needed
+need z80-asm  need calc
 
 code f**  ( F: r1 -- r2 )
   calc 06 c, end-calc jpnext  end-code
@@ -8254,7 +8295,7 @@ code fsign  ( F: r1 -- r2 )
 
   \ Operators
 
-need z80-asm  s"  calc " needed
+need z80-asm  need calc
 
 code fabs  ( F: r1 -- r2 )
   calc 2A c, end-calc jpnext  end-code
@@ -8277,7 +8318,7 @@ code fround  ( F: r1 -- r2 )
 
   \ Constants
 
-need z80-asm  s"  calc " needed
+need z80-asm  need calc
 
 code f0  ( F: -- r1 )
   calc A0 c, end-calc jpnext  end-code
@@ -8292,7 +8333,7 @@ code f10  ( F: -- r1 )
 
 ( jp-f>s )
 
-need z80-asm  s"  f>s " needed
+need z80-asm  need f>s
 
   \ XXX TODO -- optimize; `f>s` has another pair of `exx`. A
   \ specific word will be faster and smaller, instead of
@@ -8310,7 +8351,7 @@ macro jp-f>s  ( -- )
 
   \ XXX FIXME -- the flag must be returned on the data stack
 
-need z80-asm  s"  calc " needed  need jp-f>s
+need z80-asm  need calc  need jp-f>s
 
 code f0<  ( F: r1 -- rwf )
   calc 36 c, 1B c, end-calc jp-f>s  end-code
@@ -8353,7 +8394,7 @@ code f>=  ( F: r1 r2 -- rwf )
 
   \ Stack
 
-need z80-asm  need float  s"  calc " needed
+need z80-asm  need float  need calc
 
 23651 constant fp0  23653 constant fp  : fp@  ( -- a )  fp @  ;
   \ 23651 = STKBOT system variable
@@ -8381,7 +8422,7 @@ code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
 
   \ Trigonometrical functions
 
-need z80-asm  s"  calc " needed
+need z80-asm  need calc
 
 code facos  ( F: r1 -- r2 )
   calc 23 c, end-calc jpnext  end-code
@@ -8645,7 +8686,7 @@ only forth definitions  decimal
 
 need random  need randomize  need udg:  need inkey
 need break-key?  need between  need ocr  need frames@
-s"  j " needed
+need j
 
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
 
@@ -8902,7 +8943,7 @@ only forth also definitions
   \ XXX TODO
   \ marker forget-tt
 
-need random  s"  j " needed  s"  >= " needed  s"  <= " needed
+need random  need j  need >=  need <=
 need value  need d<>  need d=  need case  need ms  need frames@
 need yes?  need begin-stringtable  need case:
 
@@ -9791,6 +9832,9 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ XXX UNDER DEVELOPMENT
 
+  \ XXX TODO use hires-emit-udg for the ball
+  \ XXX TODO use a 16x16 pixels ball
+
   \ Credits:
   \ Code adapted from IsForth (version 1.23v), 2015-10.
 
@@ -9802,16 +9846,17 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ Tested with IsForth, http://isforth.clss.net/
   \ ____
 
-need columns  need rows
-  \ need ms \ XXX OLD
-need options[  need udg:  need rnd
+need columns  need rows  need udg:  need rnd
+need ??  need pressed?  need break-key?
+
+0 cconstant black  7 cconstant white
 
   \ XXX OLD
   \ 500 constant initial-speed
   \ variable speed
   \ Delay in milliseconds.
 
-256 constant ball-delay0
+100 constant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
 variable ball-delay
   \ XXX NEW
@@ -9819,13 +9864,17 @@ variable ball-delay
 4 constant racket-size
 7 8 * 64 + constant racket-color  \ bright white paper
 
-char 1 constant left1-key  char 2 constant right1-key
+  \ Key constant are defined with double constants this way:
+  \ high part = bitmask
+  \ low part = port of the keyboard row
+
+$01 $F7FE 2constant left1-key   char 1 cconstant left1-char
+$02 $F7FE 2constant right1-key  char 2 cconstant right1-char
   \ Player 1 keys.
 
-char 6 constant left2-key  char 7 constant right2-key
+$10 $EFFE 2constant left2-key   char 6 cconstant left2-char
+$08 $EFFE 2constant right2-key  char 7 cconstant right2-char
   \ Player 2 keys.
-
-char Q constant quit-key
 
 -->
 
@@ -9920,7 +9969,7 @@ rows 1- constant racket2-y
 
 : restore-screen  ( -- )  colors0 page  ;
 
-: init-screen  ( -- )  restore-screen 7 border 7 ink  ;
+: init-screen  ( -- )  restore-screen white ink  ;
 
 : at-ball  ( -- )  x @ y @ at-xy  ;
 
@@ -9939,23 +9988,35 @@ rows 1- constant racket2-y
 
 ( pong )
 
-: print-point  ( n x y -- )  at-xy ." [ " . ." ]"  ;
+: print-point  ( n y -- )
+  0 swap at-xy s>d <# # # # #>  black ink type white ink  ;
+  \ Print the points of a player.
 
-: print-points  ( -- )
-  exit  \ XXX TMP
-  points1 @ racket1-x @ 3 + racket1-y print-point
-  points2 @ racket2-x @ 3 + racket2-y print-point  ;
+: print-point1  ( -- )
+  points1 @ racket1-y print-point show-racket1  ;
+  \ Print the points of player 1.
+
+: print-point2  ( -- )
+  points2 @ racket2-y print-point show-racket2  ;
+  \ Print the points of player 2.
+
+: print-points  ( -- )  print-point1 print-point2  ;
+  \ Print the points of both players.
 
 : erase-racket  ( a -- )  racket-size erase  ;
+  \ Erase a racket.
 
 : erase-racket1  ( -- )  22528 racket1-x @ + erase-racket  ;
+  \ Erase racket of player 1.
+
 : erase-racket2  ( -- )  23264 racket2-x @ + erase-racket  ;
+  \ Erase racket of player 2.
 
 : change-x  ( -- )  direction 2 toggle  ;
-  \ Change x direction.
+  \ Change the x direction of the ball.
 
 : change-y  ( -- )  direction 1 toggle  ;
-  \ Change y direction.
+  \ Change the y direction of the ball.
 
 : faster  ( -- )
   exit  ;  \ XXX OLD
@@ -9987,28 +10048,28 @@ rows 1- constant racket2-y
   columns 2/ x !  rows 2/ y !  rnd 3 and direction !  ;
   \ Initialize/reset ball position.
 
-: score-player1  ( -- )  1 points1 +!  ;
+: score-player1  ( -- )  1 points1 +! print-point1  ;
   \ Increase player 1's points by one.
 
-: score-player2  ( -- )  1 points2 +!  ;
+: score-player2  ( -- )  1 points2 +! print-point2  ;
   \ Increase player 2's points by one.
 
 : hit-racket1?  ( -- wf )
   x @ racket1-x @ 1- >
   x @ racket1-x @ racket-size + <  and  ;
-  \ Is pad1 hit by the ball?
+  \ Is racket1 hit by the ball?
   \ Is racket1-x <= x < racket1-x + racket-size?
 
 : hit-racket2?  ( -- wf )
   x @ racket2-x @ 1- >
   x @ racket2-x @ racket-size + <  and  ;
-  \ Is pad2 hit by the ball?
+  \ Is racket2 hit by the ball?
   \ Is racket2-x <= x < racket2-x + racket-size?
 
 : hit-racket?  ( a -- wf )
   \ XXX NEW -- alternative
   \ XXX TODO try
-  \ a = address that holds the x coordinate of a pad
+  \ a = address that holds the x coordinate of a racket
   @ x @ swap  ( ball-x pad-x )
   2dup 1- > >r
   racket-size + <  r> and  ;
@@ -10046,20 +10107,22 @@ rows 1- constant racket2-y
   \ : delay  ( -- )  speed @ ms  ;  \ XXX OLD
 
 : move-racket1-left  ( -- )
-  erase-racket1  racket1-x @ 0<> racket1-x +!  show-racket1  ;
+  racket1-x @ 0= ?exit
+  erase-racket1  -1 racket1-x +!  show-racket1  ;
 
 : move-racket1-right  ( -- )
-  erase-racket1
-  racket1-x @ racket-size + columns <> abs racket1-x +!
-  show-racket1  ;
+  racket1-x @ racket-size + columns = ?exit
+  erase-racket1 1 racket1-x +!  show-racket1  ;
 
 : move-racket2-left  ( -- )
-  erase-racket2  racket2-x @ 0<> racket2-x +!  show-racket2  ;
+  racket2-x @ 0= ?exit
+  erase-racket2  -1 racket2-x +!  show-racket2  ;
 
 : move-racket2-right  ( -- )
-  erase-racket2
-  racket2-x @ racket-size + columns <> abs racket2-x +!
-  show-racket2  ;  -->
+  racket2-x @ racket-size + columns = ?exit
+  erase-racket2 1 racket2-x +!  show-racket2  ;
+
+-->
 
 ( pong )
 
@@ -10075,12 +10138,22 @@ rows 1- constant racket2-y
                   ." Player 2 score: " points2 ?  quit  ;
 
   : keypress  ( key -- )
-    options[  left1-key   option move-racket1-left
-              right1-key  option move-racket1-right
-              left2-key   option move-racket2-left
-              right2-key  option move-racket2-right
-              quit-key    option quit-game
-    ]options  ;
+    left1-key     pressed? ?? move-racket1-left
+    right1-key    pressed? ?? move-racket1-right
+    left2-key     pressed? ?? move-racket2-left
+    right2-key    pressed? ?? move-racket2-right
+                break-key? ?? quit-game  ;
+
+  \ XXX OLD
+  \ : keypress  ( key -- )
+  \   options[  left1-key   option move-racket1-left
+  \             right1-key  option move-racket1-right
+  \             left2-key   option move-racket2-left
+  \             right2-key  option move-racket2-right
+  \             quit-key    option quit-game
+  \   ]options  ;
+
+  \ XXX OLD
   \ : keypress  ( key -- )
   \   case
   \     left1-key   of move-racket1-left endof
@@ -10095,21 +10168,28 @@ rows 1- constant racket2-y
 ( pong )
 
 : show-player-key  ( c ca len -- )
-  space rot emit ."  - " type cr  ;
+  space rot emit ."  = " type cr  ;
 
 : show-player-keys  ( c1 c2 -- )
   s" left" show-player-key  s" right" show-player-key  ;
 
+-->
+
+( pong )
+
 : show-help  ( -- )
   page
   \  <------------------------------>
-  ." Forth Pong by Robert Oestling, 2002" cr  \ 2002
-  ." Ported to IsForth by Mark Manning, 2012" cr  \ XXX TODO
-  ." Ported to Solo Forth by Marcos Cruz, 2015" cr  \ XXX TODO
+   \ XXX TODO
+  ." Forth Pong by Robert Oestling, 2002-06" cr
+  ." Ported to IsForth by Mark Manning, 2012" cr
+  ." Ported to Solo Forth by Marcos Cruz, 2015-10" cr
   cr
-  ." Player 1:" cr right1-key left1-key show-player-keys
-  ." Player 2:" cr right2-key left2-key show-player-keys
-  quit-key emit ." - quit" cr cr
+  ." Player 1:" cr
+  right1-char left1-char show-player-keys
+  ." Player 2:" cr
+  right2-char left2-char show-player-keys
+  ." Break (Shift+Space) = quit" cr cr
   \  <------------------------------>
   ." Press any key to start the game." key drop  ;
 
@@ -10118,12 +10198,8 @@ rows 1- constant racket2-y
 ( pong )
 
 : pong  ( -- )
-  init-game show-help page
-  show-all
-  begin
-    move-ball
-    key? if  key keypress  then
-  again  ;
+  init-game show-help  page show-all
+  begin  move-ball  keypress  again  ;
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{

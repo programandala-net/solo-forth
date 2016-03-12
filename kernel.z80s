@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510160412
+version_release:  equ 201510162300
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -3934,45 +3934,6 @@ endif
   ld (return_stack_pointer),hl
   _jp_next
 
-; ----------------------------------------------
-  _code_header roll_,'ROLL'
-
-; doc{
-;
-; roll  ( xu xn .. x0 u -- xn .. x0 xu )
-;
-; }doc
-
-  ; Credits:
-  ; Code adapted from DZX-Forth.
-
-  ; XXX TODO move to the library
-
-  pop hl
-  add hl,hl
-  ld e,l
-  ld d,h
-  add hl,sp
-  push bc
-  ld c,(hl)
-  inc hl
-  ld b,(hl)
-  push bc
-  ld c,e
-  ld b,d
-  ld e,l
-  ld d,h
-  ld a,b
-  or c
-  jp z,roll.end
-  dec hl
-  dec hl
-  lddr
-roll.end:
-  pop hl
-  pop bc
-  ex (sp),hl
-  _jp_next
 
 ; ----------------------------------------------
   _code_header pick_,'PICK'
@@ -4501,22 +4462,20 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header toggle_,'TOGGLE'
+  _code_header toggle_bits_,'TOGGLE-BITS'
 
 ; doc{
 ;
-; toggle  ( a b -- )
+; toggle  ( b ca -- )
 ;
-; Complement the contents of _a_ by the bit pattern _b_.
-;
-; Standard: fig-Forth.
+; Invert the bits at _ca_ specified by the bitmask _b_.
 ;
 ; }doc
 
   ; XXX TODO rename to `ctoggle` and write a 16-bit `toggle`?
 
-  pop de ; e = bit pattern
   pop hl ; address
+  pop de ; e = bitmask
   ld a,(hl)
   xor e
   ld (hl),a
@@ -6085,7 +6044,7 @@ endif
 ; space. Find name. Append the compilation semantics of _name_ to
 ; the current definition.
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -6132,10 +6091,10 @@ postpone.end:
 ;
 ; }doc
 
-  dw smudge_mask_
+  dw smudge_mask_,swap_
   ; XXX TODO factor `toggle-names'?
   _names_bank
-  dw toggle_
+  dw toggle_bits_
   _default_bank
   dw semicolon_s_
 
@@ -7293,7 +7252,7 @@ endif
 ;
 ; error  ( n -- )
 ;
-; Save the error number into `error-number`, and the current
+; Save the error number _n_ into `error-number`, and the current
 ; block and line into `error-pos`, to be used by `where`.  Issue
 ; error _n_ and restart the system.
 
@@ -7842,11 +7801,11 @@ endif
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
 
-  dw latest_
   _literal precedence_mask
+  dw latest_
   ; XXX TODO factor `toggle-names'?
   _names_bank
-  dw toggle_
+  dw toggle_bits_
   _default_bank
   dw semicolon_s_
 
@@ -8851,11 +8810,12 @@ endif
 ; ----------------------------------------------
   _colon_header message_,'MESSAGE'
 
-  ; XXX TODO move to the library?
-
 ; doc{
 ;
 ; message  ( n -- )
+;
+; Print on the terminal the line _n_ of text relative to the
+; screen hold in `msg-scr`.
 ;
 ; }doc
 
