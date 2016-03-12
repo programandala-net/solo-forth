@@ -1,4 +1,4 @@
-= F+D Forth TO-DO
+= Solo Forth TO-DO
 
 .2015-06-04:
 
@@ -13,4 +13,11 @@ Fix `exit`, `?exit`, `rdrop`...
 Fix: `begin` structures produce compilation errors in screens, but not
 in the terminal!
 
-Still strange problems with the stacks. 
+Still strange problems with the stacks:
+
+The problem seems to be, `?stack` is used only by `interpret`, but not
+during the execution of a word. When a word stacks several numbers,
+they can corrupt the zone below the stack before `?stack` detects the
+overflow.
+
+Often the stack gets full during compilation of screens.

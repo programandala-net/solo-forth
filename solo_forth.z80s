@@ -1,6 +1,48 @@
-; F+D Forth
-; By Marcos Cruz (programandala.net), 2015
-; http://programandala.net/en.program.f+d_forth.html
+; Solo Forth
+
+; This file is part of Solo Forth
+; http://programandala.net/en.program.solo_forth.html
+
+  ; ----------------------------------------------------------------
+  ; Author and acknowledgements
+
+  ; 2015: Solo Forth
+  ;
+  ; Marcos Cruz (programandala.net)
+  ; http://programandala.net/en.program.solo_forth.html
+  ;
+  ; Solo Forth started with the code of Abersoft Forth (for ZX Spectrum), that
+  ; was first studied, patched and improved
+  ; (http://programandala.net/en.program.afera.html) and finally fully
+  ; disassembled (http://programandala.net/en.program.abersoft_forth.html).
+  ;
+  ; 1983: Abersoft Forth
+  ;
+  ; Abersoft Forth (for ZX Spectrum) was implemented by John Jones Steele and
+  ; edited by Melbourne House in 1983. It is an implementation of Z80 fig-Forth
+  ; 1.1, with ZX Spectrum specific features and some extensions beyond the
+  ; fig-Forth model.
+  ;
+  ; 1979: fig-Forth 1.1
+  ;
+  ; All publications of the FORTH Interest Group are public domain.  They may
+  ; be further distributed by the inclusion of this credit notice:
+
+  ;               This publication has been made available by:
+  
+  ;               FORTH Interest Group
+  ;               P.O. Box 1105
+  ;               San Carlos, Ca. 94070
+
+  ; Aknowledgments:
+  
+  ; Solo Forth has copied, adapted and implemented ideas, code and
+  ; documentation from the following Forth systems (aknowledgment notes are
+  ; properly included in the sources):
+
+  ; Spectrum Forth-83, by Lennart Benschop (1988,2015)
+  ; v.Forth, by Matteo Vitturi (1990-2015)
+  ; lina ciforth, by Albert van der Horst (2000-2004)
 
   ; ----------------------------------------------------------------
   ; Symbols
@@ -9,21 +51,21 @@
 
 origin:                           equ 0x5E00
 
+false                             equ 0
+true                              equ 1
+
+cell                              equ 2
+
+cells_per_data_stack:             equ 0x50
+cells_per_return_stack:           equ 0x50
+
+bytes_per_terminal_input_buffer:  equ 0x50
+
 data_bytes_per_buffer:            equ 0x0200
 total_bytes_per_buffer:           equ data_bytes_per_buffer+4
 blocks_per_screen:                equ 0x02
-bytes_per_data_stack:             equ 0x50
-
-; XXX FIXME
-; bytes_per_data_stack:             equ 0x80 ; bombs out with 0x52 bytes full
-bytes_per_return_stack:           equ 0x50 ; bombs out with 0x2A bytes full
-
-bytes_per_terminal_input_buffer:  equ 0x50
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
-
-false                             equ 0
-true                              equ 1
 
 precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
@@ -36,7 +78,6 @@ rom_beeper:         equ 0x03B5
 rom_border_2297:    equ 0x2297
 rom_break_key:      equ 0x1F54
 rom_chan_open:      equ 0x1601
-rom_cls:            equ 0x0D6B ; XXX OLD -- not used
 rom_cl_all:         equ 0x0DAF
 rom_find_int1:      equ 0x1E94
 rom_key_decode:     equ 0x0333
@@ -51,9 +92,11 @@ rom_stack_fetch:    equ 0x2BF1
 
   ; System variables
 
-  ; XXX FIXME Pasmo's bug?
-  ; This must be the first one, because it's used in calculations:
-sys_errnr:         equ 0x5C3A ; IY
+  ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
+  ; not the defined first, the compilation halts with error "offset out of
+  ; range", though they are fine in the symbols file.
+
+sys_errnr:         equ 0x5C3A ; IY index
 
 sys_attr_p:        equ 0x5C8D
 sys_coordx:        equ 0x5C7D
@@ -118,23 +161,71 @@ endm
   org origin
 
 cold_entry:
+  ; Location: `0x00 +origin`
   jp cold_start
 warm_entry:
+  ; Location: `0x03 +origin`
   jp warm_start
+
+  ; ----------------------------------------------------------------
+  ; Parameter area
+
+top_most_word_in_forth_voc:
+  ; Location: `0x06 +origin`
+  dw nfa_of_top_most_word_in_forth_voc
+
+user_pointer_init_value:
+  ; Location: `0x08 +origin`
+  dw user_pointer_value
+
+user_pointer_value:
+  ; Location: `0x0A +origin`
+  dw user_variables
+
+return_pointer_value:
+  ; Location: `0x0C +origin`
+  dw return_stack_bottom
+
+  ; User variables default values
+
+  ; The first eight user variables have default values.  They are used
+  ; by `cold` to overwrite the correspondent user variables.  They must
+  ; be in the same order than user variables.
+
+default_user_variables_start:
+
+s0_init_value:
+  ; Location: `0x0E +origin`
+  dw data_stack_bottom
+r0_init_value:
+  ; Location: `0x10 +origin`
+  dw return_stack_bottom
+tib_init_value:
+  ; Location: `0x12 +origin`
+  dw terminal_input_buffer
+width_init_value:
+  ; Location: `0x14 +origin`
+  dw 0x001F
+warning_init_value:
+  ; Location: `0x16 +origin`
+  dw 0x0000
+fence_init_value:
+  ; Location: `0x18 +origin`
+  dw dictionary_pointer_after_cold
+dp_init_value:
+  ; Location: `0x1A +origin`
+  dw dictionary_pointer_after_cold
+voc_link_init_value:
+  ; Location: `0x1C +origin`
+  dw forth_vocabulary_link
+
+default_user_variables_end:
 
   ; ----------------------------------------------------------------
   ; User variables
 
 user_variables:
 
-  old_origin? equ 0
-
-  if old_origin?
-  ; Unused
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  endif
 s0_value: ; +0x00
   dw 0x0000
 r0_value: ; +0x02
@@ -159,7 +250,7 @@ out_value: ; +0x14
   dw 0x0000
 scr_value: ; +0x16
   dw 0x0000
-offset_value: ; +0x18
+offset_value: ; +0x18 ; XXX OLD
   dw 0x0000
 context_value: ; +0x1A
   dw 0x0000
@@ -175,10 +266,11 @@ fld_value: ; +0x24
   dw 0x0000
 csp_value: ; +0x26
   dw 0x0000
-r_hash_value: ; +0x28
+r_hash_value: ; +0x28 ; XXX OLD
   dw 0x0000
 hld_value: ; +0x2A
   dw 0x0000
+
   ; Unused
   dw 0x0000
   dw 0x0000
@@ -187,80 +279,23 @@ hld_value: ; +0x2A
   dw 0x0000
   dw 0x0000
   dw 0x0000
-  if not old_origin?
   dw 0x0000
   dw 0x0000
   dw 0x0000
-  endif
-
-  ; ----------------------------------------------------------------
-  ; User variables default values
-
-  ; The first eight user variables have default values.  They are used
-  ; by `cold` to overwrite the correspondent user variables.  They must
-  ; be in the same order than user variables.
-
-default_user_variables_start:
-
-init_s0_value:
-  dw data_stack_bottom
-init_r0_value:
-  dw return_stack_bottom
-init_tib_value:
-  dw terminal_input_buffer
-init_width_value:
-  dw 0x001F
-init_warning_value:
-  dw 0x0000
-init_fence_value:
-  dw dictionary_pointer_after_cold
-init_dp_value:
-  dw dictionary_pointer_after_cold
-init_voc_link_value:
-  dw forth_vocabulary_link
-
-default_user_variables_end:
-
-  ; ----------------------------------------------------------------
-  ; Parameter area
-
-top_most_word_in_forth_voc:
-  ; Location: 0x0C +ORIGIN
-  dw nfa_of_top_most_word_in_forth_voc
-backspace_char:
-  ; Location: 0x0D +ORIGIN
-  dw 0x000C
-
-init_user_pointer_value:
-  ; Location: 0x0E +ORIGIN ?
-  dw user_pointer_value
-
-user_pointer_value:
-  dw user_variables
-return_pointer_value:
-  dw return_stack_bottom
 
   ; ----------------------------------------------------------------
   ; Stacks and buffers
 
-;  defs 100 ; XXX TMP
-
-data_stack_limit: equ $+2
-  defs bytes_per_data_stack+2
+data_stack_limit: equ $+cell
+  defs cells_per_data_stack*cell
 data_stack_bottom:
-
-;  defs 100 ; XXX TMP
 
 terminal_input_buffer:
   defs bytes_per_terminal_input_buffer
 
-;  defs 4 ; XXX TMP
-
-return_stack_limit: equ $+2
-  defs bytes_per_return_stack+2
+return_stack_limit: equ $+cell
+  defs cells_per_return_stack*cell
 return_stack_bottom:
-
-;  defs 4 ; XXX TMP
 
 first_buffer:
   defs blocks_per_screen*total_bytes_per_buffer
@@ -1034,17 +1069,12 @@ sp_store_:
   dw sp_store_pfa
 sp_store_pfa:
   ; XXX OLD
-  if old_origin?
-   ld e,(ix+0x06)
-   ld d,(ix+0x07)
-  else
-   ld e,(ix+0x00)
-   ld d,(ix+0x01)
-  endif
-   ex de,hl
+  ld e,(ix+0x00)
+  ld d,(ix+0x01)
+  ex de,hl
   ; XXX NEW
-  ;ld l,(ix+0x06)
-  ;ld h,(ix+0x07)
+  ;ld l,(ix+0x00)
+  ;ld h,(ix+0x01)
   ld sp,hl
   jp next
 
@@ -1066,17 +1096,12 @@ rp_store_:
   dw rp_store_pfa
 rp_store_pfa:
   ; XXX OLD
-  if old_origin?
-  ld e,(ix+0x08)
-  ld d,(ix+0x09)
-  else
   ld e,(ix+0x02)
   ld d,(ix+0x03)
-  endif
   ex de,hl
   ; XXX NEW
-  ;ld l,(ix+0x08)
-  ;ld h,(ix+0x09)
+  ;ld l,(ix+0x02)
+  ;ld h,(ix+0x03)
   ld (return_pointer_value),hl
   jp next
 
@@ -1594,6 +1619,8 @@ user_lfa:
 user_:
   dw do_colon
 user_pfa:
+  ; XXX TODO -- Use only one byte for storage,
+  ; but defining `cconstant` only for this does not seem a good idea.
   dw constant_
   dw paren_semicolon_code_
 do_user:
@@ -1606,10 +1633,25 @@ do_user:
   add hl,de   ; hl= address of the user variable
   jp pushhl
 
+; doc{
+; msg-scr  ( -- n )  \  Constant: Screen where the error messages start.
+; }doc
+
+; Idea taken from lina ciforth.
+
+msg_scr_nfa:
+  db 0x07+0x80,'MSG-SC','R'+0x80
+msg_scr_lfa:
+  dw user_nfa
+msg_scr_:
+  dw do_constant
+msg_scr_pfa:
+  dw 0x0004
+
 zero_nfa:
   db 0x01+0x80,'','0'+0x80
 zero_lfa:
-  dw user_nfa
+  dw msg_scr_nfa
 zero_:
   dw do_constant
 zero_pfa:
@@ -1714,8 +1756,7 @@ s0_lfa:
 s0_:
   dw do_user
 s0_pfa:
-  db 0x06*old_origin?
-  ; nop ; XXX OLD
+  db 0x00
 
 r0_nfa:
   db 0x02+0x80,'R','0'+0x80
@@ -1724,8 +1765,7 @@ r0_lfa:
 r0_:
   dw do_user
 r0_pfa:
-  db 0x02+0x06*old_origin?
-  ; nop ; XXX OLD
+  db 0x02
 
 tib_nfa:
   db 0x03+0x80,'TI','B'+0x80
@@ -1734,7 +1774,7 @@ tib_lfa:
 tib_:
   dw do_user
 tib_pfa:
-  db 0x04+0x06*old_origin?
+  db 0x04
 
 width_nfa:
   db 0x05+0x80,'WIDT','H'+0x80
@@ -1743,7 +1783,7 @@ width_lfa:
 width_:
   dw do_user
 width_pfa:
-  db 0x06+0x06*old_origin?
+  db 0x06
 
 warning_nfa:
   db 0x07+0x80,'WARNIN','G'+0x80
@@ -1752,7 +1792,7 @@ warning_lfa:
 warning_:
   dw do_user
 warning_pfa:
-  db 0x08+0x06*old_origin?
+  db 0x08
 
 fence_nfa:
   db 0x05+0x80,'FENC','E'+0x80
@@ -1761,7 +1801,7 @@ fence_lfa:
 fence_:
   dw do_user
 fence_pfa:
-  db 0x0A+0x06*old_origin?
+  db 0x0A
 
 dp_nfa:
   db 0x02+0x80,'D','P'+0x80
@@ -1770,7 +1810,7 @@ dp_lfa:
 dp_:
   dw do_user
 dp_pfa:
-  db 0x0C+0x06*old_origin?
+  db 0x0C
 
 voc_link_nfa:
   db 0x08+0x80,'VOC-LIN','K'+0x80
@@ -1779,7 +1819,7 @@ voc_link_lfa:
 voc_link_:
   dw do_user
 voc_link_pfa:
-  db 0x0E+0x06*old_origin?
+  db 0x0E
 
 blk_nfa:
   db 0x03+0x80,'BL','K'+0x80
@@ -1788,7 +1828,7 @@ blk_lfa:
 blk_:
   dw do_user
 blk_pfa:
-  db 0x10+0x06*old_origin?
+  db 0x10
 
 in_nfa:
   db 0x02+0x80,'I','N'+0x80
@@ -1797,7 +1837,7 @@ in_lfa:
 in_:
   dw do_user
 in_pfa:
-  db 0x12+0x06*old_origin?
+  db 0x12
 
 out_nfa:
   db 0x03+0x80,'OU','T'+0x80
@@ -1806,7 +1846,7 @@ out_lfa:
 out_:
   dw do_user
 out_pfa:
-  db 0x14+0x06*old_origin?
+  db 0x14
 
 scr_nfa:
   db 0x03+0x80,'SC','R'+0x80
@@ -1815,7 +1855,7 @@ scr_lfa:
 scr_:
   dw do_user
 scr_pfa:
-  db 0x16+0x06*old_origin?
+  db 0x16
 
 offset_nfa:
   db 0x06+0x80,'OFFSE','T'+0x80
@@ -1824,7 +1864,7 @@ offset_lfa:
 offset_:
   dw do_user
 offset_pfa:
-  db 0x18+0x06*old_origin?
+  db 0x18
 
 context_nfa:
   db 0x07+0x80,'CONTEX','T'+0x80
@@ -1833,7 +1873,7 @@ context_lfa:
 context_:
   dw do_user
 context_pfa:
-  db 0x1A+0x06*old_origin?
+  db 0x1A
 
 current_nfa:
   db 0x07+0x80,'CURREN','T'+0x80
@@ -1842,7 +1882,7 @@ current_lfa:
 current_:
   dw do_user
 current_pfa:
-  db 0x1C+0x06*old_origin?
+  db 0x1C
 
 state_nfa:
   db 0x05+0x80,'STAT','E'+0x80
@@ -1851,7 +1891,7 @@ state_lfa:
 state_:
   dw do_user
 state_pfa:
-  db 0x1E+0x06*old_origin?
+  db 0x1E
 
 base_nfa:
   db 0x04+0x80,'BAS','E'+0x80
@@ -1860,7 +1900,7 @@ base_lfa:
 base_:
   dw do_user
 base_pfa:
-  db 0x20+0x06*old_origin?
+  db 0x20
 
 dpl_nfa:
   db 0x03+0x80,'DP','L'+0x80
@@ -1869,7 +1909,7 @@ dpl_lfa:
 dpl_:
   dw do_user
 dpl_pfa:
-  db 0x22+0x06*old_origin?
+  db 0x22
 
 fld_nfa:
   db 0x03+0x80,'FL','D'+0x80
@@ -1878,7 +1918,7 @@ fld_lfa:
 fld_:
   dw do_user
 fld_pfa:
-  db 0x24+0x06*old_origin?
+  db 0x24
 
 csp_nfa:
   db 0x03+0x80,'CS','P'+0x80
@@ -1887,7 +1927,7 @@ csp_lfa:
 csp_:
   dw do_user
 csp_pfa:
-  db 0x26+0x06*old_origin?
+  db 0x26
 
 r_hash_nfa:
   db 0x02+0x80,'R','#'+0x80
@@ -1896,7 +1936,7 @@ r_hash_lfa:
 r_hash_:
   dw do_user
 r_hash_pfa:
-  db 0x28+0x06*old_origin?
+  db 0x28
 
 hld_nfa:
   db 0x03+0x80,'HL','D'+0x80
@@ -1905,7 +1945,7 @@ hld_lfa:
 hld_:
   dw do_user
 hld_pfa:
-  db 0x2A+0x06*old_origin?
+  db 0x2A
 
 recurse_nfa:
   db 0x07+0x80+precedence_bit_mask,'RECURS','E'+0x80
@@ -2268,13 +2308,15 @@ question_error_lfa:
 question_error_:
   dw do_colon
 question_error_pfa:
+  ; XXX TODO optimize the memory usage with to exit points,
+  ; instead of jumps; search for similar cases in the code
   dw swap_
-  dw zero_branch_,branch_destination_0x6672
+  dw zero_branch_,question_error.no_error
   dw error_
-  dw branch_,branch_destination_0x6674
-branch_destination_0x6672:
+  dw branch_,question_error.end
+question_error.no_error:
   dw drop_
-branch_destination_0x6674:
+question_error.end:
   dw semicolon_s_
 
 question_comp_nfa:
@@ -2987,20 +3029,18 @@ error_:
   dw do_colon
 error_pfa:
   dw warning_,fetch_,zero_less_than_
+  ; XXX TODO optimize: jump directly to parent_abort_
   dw zero_branch_,branch_destination_0x6B0B
   dw paren_abort_
 branch_destination_0x6B0B:
-  dw here_
-  dw count_
-  dw type_
+  dw here_,count_,type_
   dw paren_dot_quote_
   _string '? '
   dw message_
   dw sp_store_
   dw blk_,fetch_,question_dup_
   dw zero_branch_,branch_destination_0x6B2A
-  dw in_,fetch_
-  dw swap_
+  dw in_,fetch_,swap_
 branch_destination_0x6B2A:
   dw quit_
 
@@ -3168,22 +3208,11 @@ question_stack_pfa:
   dw two_,question_error_
   dw sp_fetch_
   dw lit_,data_stack_limit
-
-  ; XXX INFORMER
-  ;dw two_dup_,two_swap_,u_dot_,u_dot_,cr_
-
   dw less_than_
-
-  ; XXX FIXME why the overflow is not detected?
-  ; XXX INFORMER
-  ;dw dup_
-  ;dw zero_branch_,question_stack.continue
-  ;dw two_,border_,key_,drop_
-;question_stack.continue:
-
   dw c_lit_
   db 0x07
   dw question_error_
+  dw lit_,7,border_ ; XXX INFORMER
   dw semicolon_s_
 
 ; XXX TODO -- In order to change the behaviour of `literal`, `2literal`
@@ -3314,14 +3343,11 @@ quit.do:
   dw rp_store_
   dw cr_
   dw query_
-  ;dw two_,border_,key_,drop_ ; XXX INFORMER
   dw interpret_
   dw state_,fetch_
   dw question_branch_,quit.do
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw paren_dot_quote_
   _string 'ok'
-  ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw branch_,quit.do
 
 greeting_nfa:
@@ -3332,7 +3358,7 @@ greeting_:
   dw do_colon
 greeting_pfa:
   dw paren_dot_quote_
-  _string "F+D Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
   dw semicolon_s_
 
 abort_nfa:
@@ -3345,14 +3371,25 @@ abort_pfa:
   dw sp_store_
   dw decimal_
   dw question_stack_
-  dw cls_,greeting_
+  dw cls_,greeting_ ; XXX TODO use cls0 instead
   dw forth_,definitions_
+boot:
+  dw noop_ ; to be patched by `turnkey`
   dw quit_
+
+boot_nfa:
+  db 0x04+0x80,'BOO','T'+0x80
+boot_lfa:
+  dw abort_nfa
+boot_:
+  dw do_constant
+boot_pfa:
+  dw boot
 
 warm_start:
   ld bc,warm_start_phony_
   ld ix,(user_pointer_value)
-  ld hl,(init_s0_value)
+  ld hl,(s0_init_value)
   ld sp,hl
   jp next
 warm_start_phony_:
@@ -3361,7 +3398,7 @@ warm_start_phony_:
 warm_nfa:
   db 0x04+0x80,'WAR','M'+0x80
 warm_lfa:
-  dw abort_nfa
+  dw boot_nfa
 warm_:
   dw do_colon
 warm_pfa:
@@ -3373,7 +3410,7 @@ cold_start:
   ; ld (iy+sys_df_sz_offset),a ; XXX TMP
   ld (printer_channel_or_zero),a
   ld ix,(user_pointer_value)
-  ld hl,(init_s0_value)
+  ld hl,(s0_init_value)
   ld sp,hl
   ld bc,cold_start_phony_
   jp next
@@ -3395,10 +3432,8 @@ cold_pfa:
   dw c_lit_
   db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
-  dw lit_,top_most_word_in_forth_voc
-  dw fetch_
-  dw lit_,forth_vocabulary_latest
-  dw store_
+  dw lit_,top_most_word_in_forth_voc,fetch_
+  dw lit_,forth_vocabulary_latest,store_
   dw abort_
 
 s_to_d_nfa:
@@ -3661,8 +3696,7 @@ message_pfa:
   dw zero_branch_,branch_destination_0x6FB3
   dw question_dup_
   dw zero_branch_,branch_destination_0x6FAF
-  dw c_lit_
-  db 0x04
+  dw msg_scr_
   ; XXX OLD
   ; dw offset_
   ; dw fetch_

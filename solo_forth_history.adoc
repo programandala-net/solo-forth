@@ -1,4 +1,4 @@
-= F+D Forth history
+= Solo Forth history
 
 .2015-06-02:
 
@@ -9,7 +9,7 @@ First changes:
 
 Some fig-Forth words are renamed with their modern forms: `vlist` as
 `words`, `-dup` as `?dup`, `minus` as `negate`, `dminus` as
-`dnegate`, `s->d` as `s>d`, `mon` to `bye`, `free` as `unused`.
+`dnegate`, `s->d` as `s>d`, `mon` as `bye`, `free` as `unused`.
 
 Old synonyms are removed: `end` and `endif`.
 
@@ -121,3 +121,8 @@ compilation is used, just in case. The final goal is to reorganize the
 parameter area, removing all unnecessary fig-Forth stuff.
 
 Change: Entry points are moved to the start (new origin).
+
+.2015-06-06:
+
+New: `msg-scr`, idea from lina ciforth, useful to customize the
+organization of the screens on disk.

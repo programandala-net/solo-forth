@@ -1,7 +1,54 @@
-( F+D Forth blocks file )
+( Solo Forth blocks file )
 
-\ This file is the library of F+D Forth,
-\ and the skeleton to build applications in F+D Forth.
+\ This file is part of Solo Forth
+\ http://programandala.net/en.program.solo_forth.html
+
+\ This file is the library of Solo Forth,
+\ and the skeleton to build applications in Solo Forth.
+
+\ ------------------------------------------------------------
+\ Author and acknowledgements
+
+\ 2015: Solo Forth
+\
+\ Marcos Cruz (programandala.net)
+\ http://programandala.net/en.program.solo_forth.html
+
+  \ Solo Forth started with the code of Abersoft Forth (for ZX
+  \ Spectrum), that was first studied, patched and improved
+  \ (http://programandala.net/en.program.afera.html) and
+  \ finally fully disassembled
+  \ (http://programandala.net/en.program.abersoft_forth.html).
+  \
+  \ 1983: Abersoft Forth
+  \
+  \ Abersoft Forth (for ZX Spectrum) was implemented by John
+  \ Jones Steele and edited by Melbourne House in 1983. It is
+  \ an implementation of Z80 fig-Forth 1.1, with ZX Spectrum
+  \ specific features and some extensions beyond the fig-Forth
+  \ model.
+  \
+  \ 1979: fig-Forth 1.1
+  \
+  \ All publications of the FORTH Interest Group are public
+  \ domain.  They may be further distributed by the inclusion
+  \ of this credit notice:
+
+  \               This publication has been made available by:
+
+  \               FORTH Interest Group
+  \               P.O. Box 1105
+  \               San Carlos, Ca. 94070
+
+  \ Aknowledgments:
+
+  \ Solo Forth has copied, adapted and implemented ideas, code
+  \ and documentation from the following Forth systems
+  \ (aknowledgment notes are properly included in the sources):
+
+  \ Spectrum Forth-83, by Lennart Benschop (1988,2015)
+  \ v.Forth, by Matteo Vitturi (1990-2015)
+  \ lina ciforth, by Albert van der Horst (2000-2004)
 
 ( ) \ scr 1
 
@@ -32,19 +79,19 @@
   2dup undefined? if  etype 24 message exit  then 2drop  ;
 : require  ( "name" -- )  bl word required  ;
 
-( Errors 1..15 ) \ scr 4
+( Error messages 1..15 ) \ scr 4
 
-\ Error #01: Word not found.
-\ Error #02: Stack empty.
+\ Error #1: Not a word nor a number.
+\ Error #2: Stack empty.
   \ #03 not used:
-\ Error #03: Dictionary full.
-\ Error #04: Is not unique.
-\ Error #05:
+\ Error #3: Dictionary full.
+\ Error #4: Warning: Is not unique.
+\ Error #5:
   \ #06 not used:
-\ Error #06: Out of disk range
-\ Error #07: Full stack.
-\ Error #08:
-\ Error #09: Trying to load from screen 0.
+\ Error #6: Out of disk range
+\ Error #7: Full stack.
+\ Error #8:
+\ Error #9: Trying to load from screen 0.
 \ Error #10:
 \ Error #11:
 \ Error #12:
@@ -52,9 +99,9 @@
 \ Error #14:
 \ Error #15:
 
-( Errors 17..31 )  \ scr 5
+( Error messages 17..31 )  \ scr 5
 
-\ Error #17: Compilation only, use in a definition.
+\ Error #17: Compilation only, use in definition.
 \ Error #18: Execution only.
 \ Error #19: Conditionals not paired.
 \ Error #20: Definition not finished.
@@ -62,10 +109,12 @@
 \ Error #22: Use only when loading.
 \ Error #23: Off current editing screen.
 \ Error #24: Declare vocabulary.
-\ Error #25:
-\ Error #26:
-\ Error #27:
-\ Error #28:
+  \ XXX TMP -- Copied from Afera library, not used yet:
+\ Error #25: Unsupported tape operation.
+\ Error #26: Unsupported disk operation.
+\ Error #27: Source file needed.
+  \ XXX Copied from lina's error #24:
+\ Error #28: Warning: Not present, thoguh required.
 \ Error #29:
 \ Error #30:
 \ Error #31:
@@ -258,7 +307,7 @@ forth definitions decimal
     [ ' (loop)  pfa>cfa ] literal of  decode-branch     endof
     [ ' (+loop) pfa>cfa ] literal of  decode-branch     endof
     [ ' (.")    pfa>cfa ] literal of  decode-dot-quote  endof
-  endcase  ; 
+  endcase  ;
 
 -->
 
@@ -266,11 +315,11 @@ forth definitions decimal
 
 : decode-end?  ( cfa -- f )
   \ is the given cfa the end of a definition?
-  dup  ' ;s pfa>cfa =  swap ' (;code) pfa>cfa =  or  ;
+  dup  ['] ;s pfa>cfa =  swap ['] (;code) pfa>cfa =  or  ;
 
 : colon-pfa?  ( pfa -- f )
   \ is the given pfa a colon definition?
-  pfa>cfa @ ' : pfa>cfa @ =  ;
+  pfa>cfa @ ['] : pfa>cfa @ =  ;
 
 -->
 
@@ -322,13 +371,11 @@ forth definitions decimal
   \ Change the `cold` start parameters to extend the system to
   \ its current state.
 
-  \ This word should be used especially when system words have
-  \ been patched with new words.  otherwise `cold` would delete
-  \ the new words and the system would crash when their space
-  \ would be overwritten.
-
-  latest 12 +origin !  here 28 +origin !  here 30 +origin !
-  here fence !  ' forth 8 + 32 +origin !  ;
+  latest 6 +origin !  \ top most word in `forth` vocabulary
+  here 24  +origin !  \ `fence` init value
+  here 26 +origin !   \ `dp` init value
+  here fence !
+  ['] forth 8 + 28 +origin !  ;  \ `voc-link` init value
 
   \ system  ( -- a len )
   \
@@ -347,4 +394,80 @@ forth definitions decimal
 
 : turnkey  ( cfa -- a len )  boot ! system  ;
 
-  \ vim: filetype=fplusdforth
+( c>hex )
+
+  \ Original code from:
+  \   lina
+  \   Copyright (c) 2000-2004 Albert van der Horst,
+  \   The Netherlands
+  \   Published under GPL
+
+hex
+
+: c>hex  ( c -- n )
+  \ convert a character to its hexadecimal value.
+  30 - dup 9 > if 7 - then  ;
+
+decimal
+
+( '. ) \ character prefix
+
+  \ Original code from:
+  \   lina
+  \   Copyright (c) 2000-2004 Albert van der Horst,
+  \   The Netherlands
+  \   Published under GPL
+
+hex  width @ 1 width !
+
+: '.  ( -- n )
+  \ leave ascii character; example: 'a leaves 0x41
+  here 2 + c@ [compile] literal  ; immediate
+
+width ! decimal
+
+( $.. $.... ) \ hex prefixes
+
+  \ Original code from:
+  \   lina
+  \   Copyright (c) 2000-2004 Albert van der Horst,
+  \   The Netherlands
+  \   Published under GPL
+
+width @  1 width !
+
+: $..  ( -- n )
+  \ leave hex number; example: $0a leaves 0x0A
+  here 2 + c@ c>hex 10 * here 3 + c@ c>hex +
+  [compile] literal  ; immediate
+
+: $....  ( -- n )
+  \ leave 16-bit hex number; example: $0aff leaves 0x0AFF
+  0 here 6 + here 2 + do 10 * i c@ c>hex + loop
+  [compile] literal  ; immediate
+
+width ! decimal
+
+( 0x.. 0x.... )  \ hex prefixes
+
+  \ Original code from:
+  \   lina
+  \   Copyright (c) 2000-2004 Albert van der Horst,
+  \   The Netherlands
+  \   Published under GPL
+
+hex  width @ 2 width !
+
+: 0x..  ( -- n )
+  \ leave hex number; example: 0x0a
+  here 3 + c@ c>hex 10 * here 4 + c@ c>hex +
+  [compile] literal  ; immediate
+
+: 0x....  ( -- n )
+  \ leave hex number; example: 0x0aff
+  0 here 7 + here 3 + do 10 * i c@ c>hex + loop
+  [compile] literal  ; immediate
+
+width ! decimal
+
+  \ vim: filetype=soloforth
