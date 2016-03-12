@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511010134
+\ Last modified: 201511032139
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -22,8 +22,8 @@
 
 \ You may do whatever you want with this work, so long as you
 \ retain all copyright notices, all credit notices, and this
-\ license in all redistributed copies and derived works. There
-\ is no warranty.
+\ license in all files of all redistributed copies and derived
+\ works. There is no warranty.
 
   \ ------------------------------------------------------------
   \ History
@@ -33,24 +33,23 @@
 
 ( ) \ scr 1 -- testing load screen
 
-  ;s \ XXX OLD
+  \ XXX FIXME
 
-  2 load 269 load
-  frames0
+2 load need [if]
 
-  211 load 293 load 176 load 184 load 281 load 173 load
-  170 load 171 load 174 load 175 load
-  \ case
-  \ z80-asm
-  \ decode
-  \ break-key?
-  \ rnd
-  \ ascii-type
-  \ hex.
-  \ dump
-  \ wdump
+0 [if]
 
-  frames@ cr ." Frames " d. cr
+code zx1  jpnext  end-code
+: hola1 ." hola" ;
+
+[then]
+
+1 [if]
+
+code zx2  jpnext  end-code
+: hola2 ." hola" ;
+
+[then]
 
   \ }}} =======================================================
   \ Need {{{
@@ -3866,7 +3865,7 @@ variable (any?)
   \ Is any number _n1..nn_ equal to _n0_?
   dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
-( c@test-bits )
+( c@test-bits c!toggle-bits )
 
   \ XXX TODO possible names:
   \ c@test-bits     cand@    c@and   c@mask?    c@test?  c@set?
@@ -3887,6 +3886,11 @@ need z80-asm  need [if]
   \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
   \   \ _true_ if the result is non-zero or _false_ if the result
   \   \ is zero.
+
+  \ XXX FIXME
+
+  \ XXX INFORMER
+  \ cr needed-word 2@ .s char < emit type char > emit cr
 
 [needed] c@test-bits [if]
 code c@test-bits  ( b1 ca -- b2 )
@@ -3924,7 +3928,8 @@ need s=
 
 : [else]  ( "..." -- )
 
-  1 begin   parse-name 2dup swap c@ and
+  \ 1 begin   parse-name 2dup swap c@ and \ XXX OLD
+  1 begin   parse-name dup
     while   2dup s" [if]" s=
             if    2drop 1+
             else  2dup s" [else]" s=
@@ -4026,6 +4031,7 @@ need s=
 
 ( smudge smudged )
 
+need c!toggle-bits
 
 : smudged  ( nfa -- )
   smudge-mask swap names-bank c!toggle-bits default-bank  ;
@@ -4042,7 +4048,7 @@ need s=
   \ }doc
 
  : smudge  ( -- )  latest smudged  ;
-  
+
   \ doc{
   \
   \ smudge  ( -- )
@@ -4151,7 +4157,7 @@ need >>link
   \ Copyright 1996 Phil Burk
   \ ____
 
-  \ This version needs 
+  \ This version needs
 
 need abort"  need name<name
 
@@ -6318,11 +6324,11 @@ code (step)  ( R: n -- n' )
   \ doc{
   \
   \ di  ( -- ud )  ( R: x ud -- x ud )
-  \ 
+  \
   \ Return the current index _ud_ of a `dfor` loop.
   \
   \ }doc
- 
+
 ( case )
 
   \ Credits:
@@ -7396,7 +7402,7 @@ need -rot
   \ returned.  This is the inverse of an array.
 
   \ Usage example:
- 
+
   \ ----
   \
   \ 1000 constant zx1  200 constant zx2  30 constant zx3
@@ -11014,7 +11020,7 @@ create PegStacks  30 chars allot
 00 02 01 12 00 10 21 20  #8 maketab TO!
 00 21 12 20 00 02 10 01  #8 maketab FRO!
 decimal
-    
+
 -->
 
 ( hanoi )
@@ -11257,6 +11263,44 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
 
   \ }}} =======================================================
+  \ Sample game: Toe {{{
+
+( toe )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \ Code from Leo Brodie's _Starting Forth_.
+  \ ANSized by Benjamin Hoyt in 1997
+
+create board  9 allot
+
+: square  ( square# -- addr )  board + ;
+: clear   board  9 erase ;  clear
+: bar   ." | " ;
+: dashes   cr  9 0 do  [char] - emit  loop cr ;
+
+: .box  ( square# -- )
+  square c@  dup 0=
+  if    2 spaces
+  else  dup 1 = if ." x " else ." o " then
+  then  drop ;
+
+-->
+
+( toe )
+
+: display  ( -- )
+  cr  9 0 do
+    i if  i 3 mod  0= if  dashes  else  bar  then  then  i .box
+  loop  cr quit ;
+
+: play  ( player square# -- )  1-  0 max  8 min  square c! ;
+
+: x!  ( square# -- )   1 swap  play  display ;
+: o!  ( square# -- )  -1 swap  play  display ;
+
+  \ }}} =======================================================
   \ Sample game: Pong {{{
 
 ( pong )
@@ -11280,6 +11324,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 need columns  need rows  need udg:  need rnd  need ??
 3 constant /k  need pressed?
 need break-key?  need hires-emit-udg
+need c!toggle-bits
 
 0 cconstant black  7 cconstant white
 
@@ -12073,3 +12118,88 @@ defer num?
   286 256 do  i . i error>ordinal ."  -> " . cr  loop
   1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
   \ vim: filetype=soloforth
+
+( dummy-needed )
+
+( buffer-benchmark-1 )
+
+  2 load need frames0
+  frames0
+
+  need dummy-needed need dummy-needed need dummy-needed
+  need dummy-needed need dummy-needed need dummy-needed
+  need dummy-needed need dummy-needed need dummy-needed
+  need dummy-needed need dummy-needed need dummy-needed
+  need dummy-needed need dummy-needed need dummy-needed
+  need dummy-needed
+
+  frames@ cr .( Frames ) d. cr
+
+  \ Benchmark: Locate and load 16 times empty screen #457.
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \        512-byte 1024-byte
+  \       --------- ---------
+  \    16      6323      8621
+
+  \  512 = 33242 bytes free
+  \ 1024 = 32777 bytes free
+  \          465 bytes required by the standard method
+
+( buffer-benchmark-2 )
+
+  2 load  need frames0  warnings off  frames0
+
+  need list  need dump  need wdump  need decode
+  need life  need pong  need hanoi  need tt need siderator
+  need doer  need a!  need defer  need value  need editor
+  need case  need times  need dtimes  need for
+
+  frames@ cr .( Frames ) d. cr
+
+  \ Benchmark: Locate and load 16 times empty screen #457.
+
+  \   Try Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \        512-byte 1024-byte
+  \       --------- ---------
+  \    1  
+
+  \  512 = 33242 bytes free
+  \ 1024 = 32777 bytes free
+  \          465 bytes required by the standard method
+
+
+.( block x line 0 ) cr
+  .( block x line 1 ) cr
+  .( block x line 2 ) cr
+  .( block x line 3 ) cr
+  .( block x line 4 ) cr
+  .( block x line 5 ) cr
+  .( block x line 6 ) cr
+  .( block x line 7 ) cr
+  .( block x line 8 ) cr
+  .( block x line 9 ) cr
+  .( block x line 10 ) cr
+  .( block x line 11 ) cr
+  .( block x line 12 ) cr
+  .( block x line 13 ) cr
+  .( block x line 14 ) cr
+  .( block x line 15 ) cr
+.( block x+1 line 0 ) cr
+  .( block x+1 line 1 ) cr
+  .( block x+1 line 2 ) cr
+  .( block x+1 line 3 ) cr
+  .( block x+1 line 4 ) cr
+  .( block x+1 line 5 ) cr
+  .( block x+1 line 6 ) cr
+  .( block x+1 line 7 ) cr
+  .( block x+1 line 8 ) cr
+  .( block x+1 line 9 ) cr
+  .( block x+1 line 10 ) cr
+  .( block x+1 line 11 ) cr
+  .( block x+1 line 12 ) cr
+  .( block x+1 line 13 ) cr
+  .( block x+1 line 14 ) cr
+  .( block x+1 line 15 ) cr

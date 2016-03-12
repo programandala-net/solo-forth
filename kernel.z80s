@@ -11,12 +11,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Development version:   201511022056
-  ; Public version:        20151102
-
-public_version_high_part:  equ 0x0133
-public_version_low_part:   equ 0x7B3E
-
+  ; Version:        20151103
+version_high_part:  equ 0x0133
+version_low_part:   equ 0x7B3F
+  
+  ; Last modified:   201511032139
 
 ; ==============================================================
 ; Author and license
@@ -25,8 +24,8 @@ public_version_low_part:   equ 0x7B3E
 
 ; You may do whatever you want with this work, so long as you
 ; retain all copyright notices, all credit notices, and this
-; license in all redistributed copies and derived works. There
-; is no warranty.
+; license in all files of all redistributed copies and derived
+; works. There is no warranty.
 
 ; ==============================================================
 ; Acknowledgments
@@ -5082,9 +5081,13 @@ endif
   dw bytes_per_sector
 
 ; ----------------------------------------------
+if bytes_per_buffer=0x0200
+
   _c_constant_header rec_slash_blk_,'REC/BLK'
 
   db sectors_per_block
+
+endif
 
 ; ----------------------------------------------
   _constant_header blk_slash_disk_,'BLK/DISK'
@@ -8267,8 +8270,8 @@ quit.begin:
 ; ----------------------------------------------
   _two_constant_header version_,'VERSION'
 
-  dw public_version_high_part
-  dw public_version_low_part
+  dw version_high_part
+  dw version_low_part
 
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
@@ -9512,10 +9515,12 @@ if bytes_per_buffer=0x0400
   dw star_
   dw two_dup_
   dw block_to_sector_
+;  _brk "transfer-block -- sector 1" ; XXX INFORMER
   dw transfer_sector_
   dw one_plus_
   dw swap_,b_slash_rec_,plus_,swap_
   dw block_to_sector_
+;  _brk "transfer-block -- sector 2" ; XXX INFORMER
   dw transfer_sector_
 
 
@@ -9666,17 +9671,19 @@ endif
 ; ----
 ; : -->  ( -- )
 ;   ?loading  >in off
-;   b/scr blk @ over mod - blk +!  ; immediate
+;   rec/blk blk @ over mod - blk +!  ; immediate
 ; ----
 
 ; }doc
 
-; XXX TODO -- if there were one block per screen, the
-; calculation would be a simple increment
-
   dw question_loading_
   dw to_in_,off_
+if bytes_per_buffer=0x0200
   dw rec_slash_blk_,blk_,fetch_,over_,mod_,minus_
+endif
+if bytes_per_buffer=0x0400
+  _literal 1
+endif
   dw blk_,plus_store_
   dw semicolon_s_
 
@@ -10700,7 +10707,10 @@ system_stack_pointer: equ $+1
   dw semicolon_s_
 
 where.do_it:
-  dw dup_,rec_slash_blk_,slash_
+  dw dup_
+if bytes_per_buffer=0x0200
+  dw rec_slash_blk_,slash_
+endif
   dw paren_dot_quote_
   _string 'Scr # '
   dw decimal_,dot_

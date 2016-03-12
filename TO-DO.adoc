@@ -8,6 +8,9 @@
 == Urgent ==
 // {{{
 
+.2015-11-02:
+
+Finish the alternative code for 1024-byte standard disk buffer.
 
 // }}}
 == Inner ==
