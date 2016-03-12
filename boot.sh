@@ -10,7 +10,6 @@ fuse \
 	--no-divide \
 	--plusd \
   --plusddisk ./solo_forth_disk_1.mgt \
-  --plusddisk ./solo_forth_disk_2.mgt \
 	$* \
 	&
 

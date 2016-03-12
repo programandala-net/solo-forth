@@ -9,6 +9,10 @@
 // {{{
 
 
+DCT version fails at `find-name-from`. The argument received by this
+word is not a _nt_ but the _xt_ of `context`...
+
+
 When the comments on screen `( find-name-in find )` are at the left margin,
 they are not processed by fsb2? 
 
@@ -207,8 +211,10 @@ Possible names for text and graphic cursor words.
 | at         | at@        | xy-at           | xy-at@          | xy-home
 | at-xy      | ?at        | gat-xy          | ?gat            | ghome
 | at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
-| at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-coord        | coord           | coord-home
 | at-xy      | xy         | at-coord        | coord           | home-coord 
+| at-xy      | xy         | at-coords       | coords          | coords-home
+| at-xy      | xy         | at-coords       | coords          | home-coords
 | at-xy      | xy         | at-gxy          | gxy             | ghome
 | at-xy      | xy@        | at-coords       | coords@         | home-coords
 | at-xy      | xy@        | at-gxy          | gxy@            | ghome
@@ -223,11 +229,14 @@ Possible names for text and graphic cursor words.
 | set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
 |===
 
-So far (2015-09-15) the best are:
+So far (2015-09-15, 2015-12-23) the best are:
 
 |===
 | set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
 
+| at-xy      | xy         | at-coord        | coord           | coord-home
+| at-xy      | xy         | at-coord        | coord           | home-coord 
+| at-xy      | xy         | at-coords       | coords          | coords-home
 | at-xy      | xy         | at-coords       | coords          | home-coords
 | at-xy      | xy         | at-gxy          | gxy             | ghome
 |===
@@ -468,6 +477,33 @@ Spectrum Forth-83).
 .2015-10-05:
 
 Finish adapt tt.
+
+// }}}
+== Strings ==
+// {{{
+
+Rename "csb" to "stringer" or "strings"?
+
+|===
+| >csb        | >strings       | >stringer
+| ?csb        | ?strings       | ?stringer
+| csb-size    | strings-size   | stringer-size
+| csb0        | strings0       | stringer0
+| empty-csb   | empty-strings  | empty-stringer
+| unused-csb  | unused-strings | unused-stringer
+|===
+
+strings-size strings0 >strings ?strings empty-strings unused-strings
+
+stringer-size stringer0 >stringer ?stringer empty-stringer unused-stringer
+
+// }}}
+== Maths ==
+// {{{
+
+.2015-12-24
+
+Fractional arithmetic, FD 4-1.
 
 // }}}
 == Other ==

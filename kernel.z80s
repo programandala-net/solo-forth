@@ -24,10 +24,10 @@ endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x7BB6  ; build 20151222
+  version_build_low_part:     equ 0x7BB8  ; build 20151224
 endif
 
-; This file was last modified: 201512230356
+; This file was last modified: 201512240323
 
 ; ==============================================================
 ; Author and license
@@ -401,7 +401,7 @@ _header: macro _base_label,_name,_flags
 _code_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw _base_label##pfa ; code field
 endif
   _base_label##pfa: ; parameter field address
@@ -411,15 +411,25 @@ endif
 _defer_header: macro _base_label,_name,_flags,_xt
 
   _code_header _base_label,_name,_flags
+if 0 ; itc
   ld hl,_xt
   jp next2
+else ; DTC
+  jp _xt
+endif
 
   endm
 
 _code_alias_header: macro _base_label,_name,_flags,_xt
 
   _header _base_label,_name,_flags
+if 0 ; itc
   dw _xt##pfa ; code field
+else ; DTC
+  jp _xt
+endif
+
+  endm
 
 ; XXX TODO
 ; _raw_code_alias_header: macro _base_label,_name,_flags,_alias
@@ -432,12 +442,12 @@ _code_alias_header: macro _base_label,_name,_flags,_xt
 
 ;_base_label##pfa: equ _alias##pfa ; XXX TODO
 
-  endm
+;  endm
 
 _colon_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw do_colon ; code field
 else
   call do_colon ; code field
@@ -449,7 +459,7 @@ endif
 _user_variable_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw do_user ; code field
 else
   call do_user ; code field
@@ -462,7 +472,7 @@ _does_header: macro _base_label,_name,_flags,_runtime_routine
 
   _header _base_label,_name,_flags
 
-if 1 ; itc
+if 0 ; itc
   dw _runtime_routine ; code field
 else
   call _runtime_routine ; code field ; XXX TODO confirm this
@@ -474,7 +484,7 @@ endif
 _constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw do_constant ; code field
 else
   call do_constant ; code field
@@ -486,7 +496,7 @@ endif
 _two_constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw do_two_constant ; code field
 else
   call do_two_constant ; code field
@@ -498,7 +508,7 @@ endif
 _c_constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw do_c_constant ; code field
 else
   call do_c_constant ; code field
@@ -510,7 +520,7 @@ endif
 _variable_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-if 1 ; itc
+if 0 ; itc
   dw do_create ; code field
 else
   call do_create ; code field
@@ -1243,7 +1253,7 @@ push_hlde:
 push_hl:
   push hl
 
-if 1 ; itc
+if 0 ; itc
 
 next:
   ; Execute the word whose xt is in the address pointed by the bc register.
@@ -1272,7 +1282,7 @@ next2:
 next2_end: ; XXX TMP label for debugging
   jp (hl)
 
-else ; dtc
+else ; DTC
 
 next:
   ; Execute the word whose xt is in the address pointed by the bc register.
@@ -1488,7 +1498,7 @@ endif
 
   dw context_,dup_,cell_plus_
   dw lit_,(max_search_order-cell)*cell
-  dw cmove_up_
+  dw c_move_up_
   dw exit_
 
 ; ----------------------------------------------
@@ -1652,7 +1662,7 @@ endif
   ; Code adapted from F83.
 
   dw context_,dup_,cell_plus_,swap_
-  dw lit_,(max_search_order-cell)*cell,cmove_
+  dw lit_,(max_search_order-cell)*cell,c_move_
   dw context_,lit_,(max_search_order-cell)*cell,plus_,off_
   dw exit_
 
@@ -2012,8 +2022,13 @@ question_csb_.enough:
 ;
 ; }doc
 
+;  _brk "execute" ; XXX INFORMER
   pop hl
+if 0 ; itc
   jp next2
+else ; DTC
+  jp (hl)
+endif
 
 ; ----------------------------------------------
   _code_header perform_,'PERFORM'
@@ -3682,7 +3697,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _code_header cmove_up_,'CMOVE>'
+  _code_header c_move_up_,'CMOVE>'
 
   exx
   pop bc
@@ -3693,7 +3708,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header cmove_,'CMOVE'
+  _code_header c_move_,'CMOVE'
 
   exx
   pop bc
@@ -4711,7 +4726,13 @@ store.de_into_hl_pointer:
   ; `do_colon`.
 
   dw store_csp_
-  dw header_,right_bracket_
+  dw header_
+if 0 ; itc
+else ; DTC
+  dw lit_,do_colon
+  dw code_field_comma_
+endif
+  dw right_bracket_
   dw paren_semicolon_code_
 do_colon:
   ld hl,(return_stack_pointer)
@@ -4721,14 +4742,14 @@ do_colon:
   ld (hl),c
   ld (return_stack_pointer),hl ; save the updated IP
 
-if 1 ; itc
+if 0 ; itc
                      ; T  B
                      ; -- -- 
   inc de ; de=pfa    ; 06 01
   ld c,e             ; 04 01
   ld b,d ; bc=pfa    ; 04 01
 
-else ; dtc
+else ; DTC
                      ; T  B
                      ; -- -- 
   pop bc ; bc=pfa    ; 10 01
@@ -4784,6 +4805,34 @@ do_colon.end: ; XXX TMP for debugging
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header finish_code_,'FINISH-CODE',compile_only
+
+; doc{
+;
+; finish-code  ( -- )
+;
+; ----
+; : finish-code  ( -- )
+;   ?csp  postpone [
+;   noname? @  noname? off  ?exit
+;   reveal  ;
+; ----
+;
+; }doc
+
+  ; Credits:
+  ;
+  ; Name borrowed from Gforth.
+
+  dw question_csp_
+  dw left_bracket_
+  dw noname_question_,fetch_
+  dw noname_question_,off_
+  dw question_exit_
+  dw reveal_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header semicolon_,';',immediate+compile_only
 
 ; doc{
@@ -4792,19 +4841,13 @@ do_colon.end: ; XXX TMP for debugging
 ;
 ; ----
 ; : ;  ( -- )
-;   ?csp
-;   postpone ;s  postpone [
-;   noname? @  noname? off  ?exit
-;   reveal  ;
+;   postpone exit  finish-code  ;
+; ----
+;
 ; }doc
 
-  dw question_csp_
   dw compile_,exit_
-  dw left_bracket_
-  dw noname_question_,fetch_
-  dw noname_question_,off_
-  dw question_exit_
-  dw reveal_
+  dw finish_code_
   dw exit_
 
 ; ----------------------------------------------
@@ -4816,7 +4859,11 @@ do_colon.end: ; XXX TMP for debugging
 ;
 ; }doc
 
+if 0 ; itc
   dw next ; code field
+else ; DTC
+  _jp_next ; code field
+endif
 
 ; ----------------------------------------------
   _colon_header c_constant_,'CCONSTANT'
@@ -4824,7 +4871,7 @@ do_colon.end: ; XXX TMP for debugging
   dw create_,c_comma_
   dw paren_semicolon_code_
 do_c_constant:
-if 1 ; itc
+if 0 ; itc
                      ; T  B
                      ; -- -- 
   inc de    ; de=pfa ; 06 01
@@ -4842,7 +4889,7 @@ endif
   dw create_,comma_
   dw paren_semicolon_code_
 do_constant:
-if 1 ; itc
+if 0 ; itc
                      ; T  B
                      ; -- -- 
   inc de    ; de=pfa ; 06 01
@@ -4851,6 +4898,8 @@ else
                      ; T  B
                      ; -- -- 
   pop hl             ; 10 01
+  ; _z80_border_wait 4 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
 endif
   jp fetch.hl
 
@@ -4877,8 +4926,6 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO `create 0 comma` ?
-
   dw create_,cell_,allot_
   dw exit_
 
@@ -4895,7 +4942,8 @@ if 0 ; old_user
 ; user area where the value for _name_ is stored.  Execution of
 ; _name_ leaves its absolute user area storage address.
 ;
-; Origin: fig-Forth, Forth-79, Forth-83.
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Uncontrolled Reference Words).
 ;
 ; }doc
 
@@ -4928,10 +4976,10 @@ else
   dw c_constant_
   dw paren_semicolon_code_
 do_user:
-if 1 ; itc
+if 0 ; itc
   inc de      ; de=pfa
   ex de,hl
-else
+else ; DTC
   pop hl
 endif
   ld e,(hl)
@@ -5659,7 +5707,7 @@ source.other:
 ;
 ; }doc
 
-  dw dup_,c_comma_,tuck_,here_,swap_,cmove_,allot_
+  dw dup_,c_comma_,tuck_,here_,swap_,c_move_,allot_
   dw exit_
 
 ; ----------------------------------------------
@@ -5865,9 +5913,9 @@ question_dup.end:
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; itc
+if 0 ; itc
   _code_alias_header from_body_,'BODY>',,two_minus_
-else
+else ; DTC
   _code_header from_body_,'BODY>'
   pop hl
   dec hl
@@ -5877,9 +5925,9 @@ else
 endif
 
 ; ----------------------------------------------
-if 1 ; itc
+if 0 ; itc
   _code_alias_header to_body_,'>BODY',,two_plus_
-else
+else ; DTC
   _code_header to_body_,'>BODY'
   pop hl
   inc hl
@@ -6421,22 +6469,22 @@ postpone.end:
 ;
 ; }doc
 
-if 1 ; itc
+if 0 ; itc
 
 ; ----
 ; : (;code)  ( -- )
 ;   r>        \ Pop the address of the next instruction off the return stack,
 ;             \ which is the starting address of the run-time code routine.
 ;   latest    \ Get the name token of the word under construction.
-;   name> !   \ Find its execution token and store in it the address of
-;             \ the code routine to be executed at run-time.
+;   name> !   \ Find its execution token and store the address of
+;             \ the code routine to be executed at run-time into it.
 ;   ;
 ; ----
 
   dw from_r_,latest_,from_name_,store_
   dw exit_
 
-else ; dtc
+else ; DTC
 
 ; ----
 ; : (;code)  ( -- )
@@ -6460,17 +6508,21 @@ endif
 ; Stop compilation and terminate a new defining word by
 ; compiling the run-time routine `(;code)`.
 ;
+; ----
+; : ;code  ( -- )
+;   postpone (;code)  finish-code  ;
+; ----
+;
 ; }doc
 
-  dw question_csp_
   dw compile_,paren_semicolon_code_
-  dw left_bracket_,reveal_
+  dw finish_code_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header does_,'DOES>',immediate+compile_only
 
-if 1 ; itc
+if 0 ; itc
 
   dw compile_,paren_semicolon_code_
   _literal 0xCD ; Z80 opcode for "call"
@@ -6495,7 +6547,9 @@ do_does:
   ; Execute the run-time routine.
   _jp_next
 
-else ; dtc
+else ; DTC
+
+do_does equ do_colon
 
   dw compile_,paren_semicolon_code_
   _literal 0xCD ; Z80 opcode for "call"
@@ -6503,12 +6557,13 @@ else ; dtc
   dw lit_,do_does,comma_ ; compile the routine address
   dw exit_
 
-do_does:
+;do_does:
   ; XXX UNDER DEVELOPMENT
-  pop de
-  push de 
-  push de
-  jp do_colon
+  ; XXX FIXME
+;  pop de
+;  push de 
+;  push de
+;  jp do_colon
 
 endif
 
@@ -7305,6 +7360,8 @@ parse.end:
 ; defining word will leave the input stream alone. `nextname`
 ; works with any defining word.
 ;
+; Origin: Gforth.
+;
 ; ----
 ;
 ; }doc
@@ -7554,16 +7611,45 @@ error.message:
   dw exit_
 
 ; ----------------------------------------------
+if 0 ; itc
+else ; DTC
+  _colon_header code_field_comma_,'CODE-FIELD,'
+
+; doc{
+;
+; code-field,  ( a -- )
+; 
+; Compile a code field for a high-level word, to execute the
+; actual Z80 code at _a_.
+
+; ----
+; : code-field,  ( a -- )
+;   $CD c,  \ Z80 opcode for "call"
+;   ,  ;
+; ----
+;
+; }doc
+
+  _literal 0xCD ; Z80 opcode for "call"
+  dw c_comma_ ; compile it
+  dw comma_  ; compile _a_
+  dw exit_
+
+endif
+
+; ----------------------------------------------
   _colon_header header_comma_,'HEADER,'
 
 ; doc{
 ;
 ; header,  ( ca len -- )
 ;
-; Create a dictionary header with the name _ca len_, with its
-; code field pointing to its parameter field.
+; Create a dictionary header with the name _ca len_.
 ;
 ; }doc
+
+  ; XXX TODO -- complete the description, depending on ITC and
+  ; DTC
 
   dw dup_,zero_equals_
   _question_throw error.zero_length_name
@@ -7598,7 +7684,13 @@ header_comma.continue:
   dw np_fetch_,get_current_,store_ ; update contents of `latest` in the current vocabulary
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
-  dw here_,two_plus_,comma_ ; compile the pfa into code field
+
+if 0 ; itc
+  dw here_,cell_plus_,comma_ ; compile the pfa into code field
+else ; DTC
+  ; no code field is created
+endif
+
   dw exit_
 
 ; ----------------------------------------------
@@ -7607,12 +7699,21 @@ header_comma.continue:
   ; XXX TODO factor `header reveal` to `visible-header`? it's
   ; used also by `defer`.
 
-  dw header_,reveal_
+  dw header_
+if 0 ; itc
+else ; DTC
+  dw lit_,do_create
+  dw code_field_comma_
+endif
+  dw reveal_
   dw paren_semicolon_code_
 do_create:
-if 1 ; itc
+if 0 ; itc
   inc de  ; de=pfa
   push de
+else ; DTC
+  ; DTC does not require any code, because `call do_create` already
+  ; left the pfa on the stack.
 endif
   _jp_next
 
@@ -8504,6 +8605,7 @@ quit.begin:
 ; }doc
 
   dw header_,reveal_
+if 0 ; itc
   _literal 0x21 ; Z80 opcode for `ld hl,NN`
   dw c_comma_
   _literal paren_defer_ ; default xt to execute
@@ -8512,10 +8614,17 @@ quit.begin:
   dw c_comma_
   _literal next2 ; address to jump to
   dw comma_
+else ; DTC
+  _literal 0xC3 ; Z80 opcode for `jp NN`
+  dw c_comma_
+  _literal paren_defer_ ; default xt to execute
+  dw comma_
+endif 
+
   dw exit_
 
 
-if 1 ; itc
+if 0 ; itc
 
 ; ----------------------------------------------
   _colon_header to_defer_,'>DEFER'
@@ -8533,7 +8642,7 @@ if 1 ; itc
   dw to_body_,one_plus_
   dw exit_
 
-else ; dtc
+else ; DTC
 
 ; ----------------------------------------------
   _code_alias_header to_defer_,'>DEFER',,one_plus_
@@ -8641,10 +8750,10 @@ endif
 if defined version_build_high_part
   _literal '+'
   dw emit_
-if 1 ; itc
   dw paren_dot_quote_
+if 0 ; itc
   _string "ITC."
-else
+else ; DTC
   _string "DTC."
 endif
   dw one_plus_,two_fetch_,d_dot_ 
@@ -8723,6 +8832,19 @@ endif
   dw noop_
 
 ; ----------------------------------------------
+  _colon_header save_mode_,'SAVE-MODE'
+
+  dw current_mode_,fetch_
+  dw previous_mode_,store_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header restore_mode_,'RESTORE-MODE'
+
+  dw previous_mode_,perform_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header warm_,'WARM'
 
 ; doc{
@@ -8732,7 +8854,7 @@ endif
 ; }doc
 
   dw display_
-  dw previous_mode_,perform_
+  dw restore_mode_
   dw page_ ; note: this must be after changing the screen mode
   dw abort_
   ; No return from `abort`.
@@ -8766,7 +8888,7 @@ warm_start:
   dw lit_,default_user_variables_start ; from
   dw up_,fetch_ ; to
   _literal default_user_variables_end-default_user_variables_start ; length
-  dw cmove_
+  dw c_move_
 
 ;  _brk 'cold -- after cmove' ; XXX INFORMER
 
@@ -8782,21 +8904,11 @@ endif
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
 
-;  dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  dw only_
-;  dw lit_,5,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  dw forth_
-;  dw lit_,3,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  dw definitions_  ; search order
-;  dw lit_,4,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw only_,forth_,definitions_  ; search order
   dw decimal_
-;  dw lit_,5,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
 
-;  dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
   dw display_,default_colors_,page_
-;  dw lit_,6,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
   dw greeting_
-;  dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
 
   dw abort_
 
@@ -9593,11 +9705,13 @@ block.end:
 ;
 ; Note: This word is called `><` or `cswap` in other Forth
 ; systems.
+; 
+; Origin: eForth.
 ;
 ; }doc
 
 ; Credits:
-; The name "flip" was taken from eForth.
+; The name "flip" was borrowed from eForth.
 
   pop hl
   ld a,h
@@ -9607,8 +9721,6 @@ block.end:
 
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
-
-; XXX UNDER DEVELOPMENT
 
 ; doc{
 
@@ -9770,8 +9882,7 @@ transfer_sector.command:
 ;
 ; }doc
 
-  _literal transfer_sector.command
-  dw c_store_
+  dw lit_,transfer_sector.command,c_store_
   dw exit_
 
 ; ----------------------------------------------
@@ -10118,7 +10229,7 @@ endif
 ; defined  ( "name" -- nt | 0 )
 ;
 ; Parse "name" and find its definition.  If the definition is
-; not found after searching all the vocabularies in the search
+; not found after searching all the word lists in the search
 ; order, return _ca len_ and _false_.  If the definition is found,
 ; return its _xt_, its length byte _b_ and _true_.
 ;
@@ -10843,14 +10954,7 @@ endif
   ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
 
-; XXX OLD -- can not work anymory because `home`is deferred
-; XXX NEW -- it works with the new version of `defer`.
-; XXX TODO -- try
   jp home_pfa ; continue at `home`
-; XXX NEW
-; XXX OLD
-;  ld hl,home_
-;  jp next2
 
   ; The Z80 version above uses 29 bytes;
   ; the following Forth version uses 30 bytes:
@@ -10928,8 +11032,7 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _colon_header bye_,'BYE'
 
-  dw current_mode_,fetch_
-  dw previous_mode_,store_
+  dw save_mode_
   dw default_mode_
   dw paren_bye_
   ; No return from `(bye)`.

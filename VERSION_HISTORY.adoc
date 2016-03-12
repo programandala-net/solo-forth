@@ -5,10 +5,10 @@
 
 _ Developed from 2015-06-02 to 2015-12-18.
 
-_ During this first long period of the development, Solo Forth grew
+_ During this long initial period of the development, Solo Forth grew
 from a small seed (the code of Abersoft Forth, a fig-Forth) to a
-disk-based system, almost without any trace of fig-Forth, with many
-features of modern standard Forth systems and a huge library of
+disk-based system, with only some small traces of fig-Forth left, with
+many features of modern standard Forth systems and a huge library of
 optional code.
 
 _ Version branch 0.0 finished after substituting the fig-Forth `do
@@ -37,3 +37,7 @@ _ Developed from 2015-12-18.
 - New: `dxor`, `dor`, `dand`.
 - Fixed: `du/mod`.
 - New: `synonym`.
+- New: `save-mode` and `restore-mode` (factored from `bye` and
+  `warm`).
+- New: The kernel can be assembled also with DTC instead of the
+  original ITC.

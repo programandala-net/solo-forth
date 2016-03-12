@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512221418
+\ Last modified: 201512240323
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -32,6 +32,8 @@
   \ http://programandala.net/en.program.solo_forth.history.html
 
 ( ) \ scr 1 -- testing load block
+
+2 load 504 load 505 load 507 load 509 load
 
 
   \ }}} =======================================================
@@ -741,15 +743,13 @@ need value
 
 need columns  need rows  need os-chars  need os-chans
 
-: mode-output  ( a -- )
+: mode-output  ( a -- )  os-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
   \ Associate the output
   \ routine at _a_ to the system channels "K", "S" and "P".
-  os-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
 
-: set-mode  ( a1 a2 -- )
+: set-mode  ( a1 a2 -- )  os-chars !  mode-output  ;
   \ Set the system font to _a1_ and associate the output
   \ routine at _a2_ to the system channels.
-  os-chars !  mode-output  ;
 
 : mode32  ( -- )
   [ latest name> ] literal current-mode !
@@ -3863,8 +3863,8 @@ code 2/  ( x1 -- x2 )
 
   \ Credits:
   \
-  \ Original code by Wil Baden, published on
-  \ Forth Dimensions 18/5 p. 27 (1997-01).
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ (volume 18, number 5, page 27, 1997-01).
 
 need d2*  need 2/
 
@@ -4059,7 +4059,8 @@ variable (any?)
   \ Credits:
   \
   \ Adapted from code written by Robert L. Smith,
-  \ published on Forth Dimensions (volume 4, number 1, page 3).
+  \ published on Forth Dimensions (volume 4, number 1, page 3,
+  \ 1982-05).
   \
   \ This implementation uses 36 bytes.
   \ Relative speed: 1.0582
@@ -4072,8 +4073,8 @@ variable (any?)
 
   \ Credits:
   \
-  \ Code by Wil Baden, published on Forth Dimensions
-  \ (volume 19, number 6, page 33, 1998-04).
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 33, 1998-04).
 
   \ This implementation uses 30 bytes.
   \ Relative speed: 1.0008
@@ -4087,8 +4088,8 @@ variable (any?)
 
   \ Credits:
   \
-  \ Code by Wil Baden, published on Forth Dimensions
-  \ (volume 19, number 6, page 34, 1998-04).
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 34, 1998-04).
 
 need tum*  need t+  need t-  need tum/  need d2*  need lshift
 
@@ -4304,7 +4305,7 @@ need -rot
   \ Credits:
   \
   \ Code by Robert L. Smith, published on Forth Dimensions
-  \ (volume 4, number 1, page 3).
+  \ (volume 4, number 1, page 3, 1982-05).
 
   \ XXX TODO benchmark with the version in the kernel
 
@@ -4367,8 +4368,8 @@ need -rot
 
   \ Credits:
   \
-  \ Original code by Wil Baden, published on
-  \ Forth Dimensions 18/5 p. 29 (1997-01).
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ 18/5 p. 29 (1997-01).
 
 need q2*  need d2*  need d<  need m+  need d- need 2rot
 need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
@@ -4403,8 +4404,8 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
 
   \ Credits:
   \
-  \ Code by Wil Baden, published on Forth Dimensions
-  \ (volume 19, number 6, page 34, 1998-04).
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 34, 1998-04).
 
   \ XXX TODO -- test
 
@@ -4436,8 +4437,8 @@ need d-
 
   \ Credits:
   \
-  \ Original code by Wil Baden, published on
-  \ Forth Dimensions 18/5 p. 29 (1997-01).
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ 18/5 p. 29 (1997-01).
 
 need d2*
 
@@ -5441,15 +5442,14 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Tape files {{{
 
-( >tape <tape )
+( write-tape-file read-tape-file )
 
-  \ XXX UNDER DEVELOPMENT
+  \ XXX UNDER DEVELOPMENT -- second approach:
+  \ save header and data apart
 
   \ Credits:
   \
   \ Code adapted from Afera.
-
-  \ XXX TODO finish adapting the code
 
   \ -----------------------------------------------------------
   \ Development documentation
@@ -5462,91 +5462,258 @@ code c!dosvar  ( b n -- )
   \ The load tape header is pointed by IX before calling the ROM
   \ routine. Its structure is the following:
 
-  \ +00 : 3 (identifier of code file type)
-  \ +01 : "<filename->" = 10-char filename, padded with spaces
-  \ +11 : 0 = length
-  \ +13 : 0 = start address
-  \ +15 : "  " (2 spaces) = not used for code files
+  \ +00 : byte, filetype (3 for code files)
+  \ +01 : 10-char filename, padded with spaces
+  \ +11 : cell, length
+  \ +13 : cell, start address
+  \ +15 : cell, not used for code files
 
-  \ The save tape header is right after the save header.
+  \ The save (=old) tape header is right after the load (=old)
+  \ header.
 
-17 constant /tape-header  \ bytes per tape header
+  \   Arrangement of two headers in workspace.
+  \
+  \   Originally IX addresses the load (=old) header, which is
+  \   the only one header required when saving.
+
+  \   OLD     NEW         PROG   DATA  DATA  CODE
+  \   HEADER  HEADER             num   chr          NOTES.
+  \   ------  ------      ----   ----  ----  ----   -----------------------------
+  \   IX-$11  IX+$00      0      1     2     3      Type.
+  \   IX-$10  IX+$01      x      x     x     x      F  ($FF if filename is null).
+  \   IX-$0F  IX+$02      x      x     x     x      i
+  \   IX-$0E  IX+$03      x      x     x     x      l
+  \   IX-$0D  IX+$04      x      x     x     x      e
+  \   IX-$0C  IX+$05      x      x     x     x      n
+  \   IX-$0B  IX+$06      x      x     x     x      a
+  \   IX-$0A  IX+$07      x      x     x     x      m
+  \   IX-$09  IX+$08      x      x     x     x      e
+  \   IX-$08  IX+$09      x      x     x     x      .
+  \   IX-$07  IX+$0A      x      x     x     x      (terminal spaces).
+  \   IX-$06  IX+$0B      lo     lo    lo    lo     Total
+  \   IX-$05  IX+$0C      hi     hi    hi    hi     Length of datablock.
+  \   IX-$04  IX+$0D      Auto   -     -     Start  Various
+  \   IX-$03  IX+$0E      Start  a-z   a-z   addr   ($80 if no autostart).
+  \   IX-$02  IX+$0F      lo     -     -     -      Length of Program
+  \   IX-$01  IX+$10      hi     -     -     -      only i.e. without variables.
+
+17 constant /tape-header
+  \ bytes per tape header
+
+  \ After the book by Don Thomasson:
 create tape-header  /tape-header 2 * allot
+  \ load (=new) and save (=old) headers
+
+  \ After the ROM disassembly:
+  \
+  \ /tape-header allot  \ old header
+  \ create tape-header  /tape-header allot  \ new header
 
 10 constant /tape-filename \ filename max length
 
-: >tape-filename  ( ca1 -- ca2 )   1+   ;
-: >tape-length    ( ca1 -- ca2 )  11 +  ;
-: >tape-start     ( ca1 -- ca2 )  13 +  ;
+: tape-filetype  ( -- ca )  tape-header  ;
+: tape-filename  ( -- ca )  tape-header 1+  ;
+: tape-length    ( -- a )   tape-header 11 +  ;
+: tape-start     ( -- a )   tape-header 13 +  ;
+
+3 tape-filetype c!  \ "code" filetype by default
 
 code (tape)  ( n -- )
-
-  \ n = 1 load
-  \ n = 0 save
-
-  \ pop hl
-  \ push bc
-  \ push ix
-  \ ld a,l ; 1=LOAD, 0=SAVE
-  \ ; this instruction is at 0x7618:
-  \ ; XXX OLD ; ld hl,D000  ; start address to save or load
-  \ ld hl,( XXX )  ; start address to save or load ; XXX NEW
-  \ ld ix,tape-header
-  \ ld (5C74),A
-  \ call 075A
-  \ pop ix
-  \ pop bc
-  \ jp next1
-
-  end-code
+  E1 c,  C5 c,  78 05 + c,
+    \ pop hl
+    \ push bc ; save Forth IP
+    \ ld a,l ; 1=load, 0=save
+  DD c, 21 c, tape-header ,  2A c, tape-length ,
+    \ ld ix,tape_header
+    \ ld hl,(tape_length)
+  32 c, 5C74 ,  CD c, 075A ,
+    \ ld (5C74),A ; T_ADDR system variable
+    \ call 075A ; SA_ALL ROM routine ; XXX FIXME crash!
+  C1 c,  DD c, 21 c, next ,
+    \ pop bc ; restore Forth IP
+    \ ld ix,next ; restore the address of Forth next
+  jpnext  end-code
+  \ Tape primitive that uses the data stored at
+  \ `tape-header` to load (n=1) or save (n=0)
+  \ a tape file.
 
 -->
 
-( >tape <tape )
+( write-tape-file read-tape-file )
 
-: -tape-filename  ( -- )
-  tape-header >tape-filename /tape-filename blanks ;
+: -tape-filename  ( -- )  tape-filename /tape-filename blank ;
   \ Blank the filename of the load header.
 
-  \  XXX TODO use the file execution table
-  \  to share one word with the disk support?
-: tape-filename!  ( ca len -- )
+: set-tape-filename  ( ca len -- )
   -tape-filename  /tape-filename min
-  tape-header >tape-filename swap cmove  ;
+  tape-filename swap cmove  ;
   \ Store a filename into the load header.
 
-: any-tape-filename  ( -- )
-  255 tape-header >tape-filename c!  ;
+: any-tape-filename  ( -- )  255 tape-filename c!  ;
   \ Configure the load header to load any filename.
 
-: tape-length!  ( len -- )
-  tape-header >tape-length !  ;
-  \ Set the given code length for the next tape loading,
-  \ storing it into the load header.
-
-: tape-start!  ( a -- )
-  tape-header >tape-start !  ;
-  \ Set the given code start for the next tape loading,
-  \ storing it into the load header and patching
-  \ the code of the word `(TAPE)`.
+: transfer-tape-file  ( ca len n -- )
+  >r tape-length ! tape-start !
+  tape-header dup /tape-header + /tape-header move  \ XXX TMP
+  \ save-mode default-mode
+  2 23659 c!
+    \ system variable DF_SZ (lines in the lower screen)
+  r> (tape)
+  0 23659 c!
+    \ system variable DF_SZ (lines in the lower screen)
+  \ restore-mode
+    ;
+  \ Read or write the tape file whose filename and filetype
+  \ have been already set in the tape header.  _n_ is 0 for
+  \ writing or 1 for reading; _ca len_ is the memory zone.
 
 -->
 
-( >tape <tape )
+( write-tape-file read-tape-file )
 
-: <tape  ( ca1 len1 ca2 len2 -- )
-  dup if  tape-filename!  else  2drop any-tape-filename  then
-  tape-length! tape-start!  1 (tape)  ;
-  \ Load a file from tape.
-  \ ca1      = destination
-  \ len1     = length (or zero if unspecified)
+: read-tape-file  ( ca1 len1 ca2 len2 -- )
+  dup if    set-tape-filename
+      else  2drop any-tape-filename
+      then  1 transfer-tape-file  ;
+  \ Read a tape file into a memory region.
+  \ ca1 len1 = memory zone (len1 is zero if unspecified)
   \ ca2 len2 = filename (len2 is zero if unspecified)
 
-: >tape  ( ca1 len1 ca2 len2 -- )
-  tape-filename! tape-length! tape-start!  0 (tape)  ;
-  \ Save a memory region into a tape file.
-  \ ca1      = start
-  \ len1     = length
+: write-tape-file  ( ca1 len1 ca2 len2 -- )
+  set-tape-filename 0 transfer-tape-file  ;
+  \ Write a memory region into a tape file.
+  \ ca1 len1 = memory zone
+  \ ca2 len2 = filename
+
+( write-tape-file read-tape-file )
+
+  \ XXX UNDER DEVELOPMENT -- first approach
+  \ XXX FIXME
+
+  \ Credits:
+  \
+  \ Code adapted from Afera.
+
+  \ -----------------------------------------------------------
+  \ Development documentation
+
+  \ Credits:
+  \
+  \ Information retrieved from from Don Thomasson's book
+  \ _Advanced Spectrum Forth_ (page 119).
+
+  \ The load tape header is pointed by IX before calling the ROM
+  \ routine. Its structure is the following:
+
+  \ +00 : byte, filetype (3 for code files)
+  \ +01 : 10-char filename, padded with spaces
+  \ +11 : cell, length
+  \ +13 : cell, start address
+  \ +15 : cell, not used for code files
+
+  \ XXX FIXME This information from the ZX Spectrum ROM
+  \ disassembly is contradictorry:
+
+  \ The save tape header is right after the save header.
+
+  \   Arrangement of two headers in workspace.
+  \   Originally IX addresses first location and only one header is required
+  \   when saving.
+  \
+  \   OLD     NEW         PROG   DATA  DATA  CODE
+  \   HEADER  HEADER             num   chr          NOTES.
+  \   ------  ------      ----   ----  ----  ----   -----------------------------
+  \   IX-$11  IX+$00      0      1     2     3      Type.
+  \   IX-$10  IX+$01      x      x     x     x      F  ($FF if filename is null).
+  \   IX-$0F  IX+$02      x      x     x     x      i
+  \   IX-$0E  IX+$03      x      x     x     x      l
+  \   IX-$0D  IX+$04      x      x     x     x      e
+  \   IX-$0C  IX+$05      x      x     x     x      n
+  \   IX-$0B  IX+$06      x      x     x     x      a
+  \   IX-$0A  IX+$07      x      x     x     x      m
+  \   IX-$09  IX+$08      x      x     x     x      e
+  \   IX-$08  IX+$09      x      x     x     x      .
+  \   IX-$07  IX+$0A      x      x     x     x      (terminal spaces).
+  \   IX-$06  IX+$0B      lo     lo    lo    lo     Total
+  \   IX-$05  IX+$0C      hi     hi    hi    hi     Length of datablock.
+  \   IX-$04  IX+$0D      Auto   -     -     Start  Various
+  \   IX-$03  IX+$0E      Start  a-z   a-z   addr   ($80 if no autostart).
+  \   IX-$02  IX+$0F      lo     -     -     -      Length of Program
+  \   IX-$01  IX+$10      hi     -     -     -      only i.e. without variables.
+
+17 constant /tape-header
+  \ bytes per tape header
+
+  \ After the book by Don Thomasson:
+create tape-header  /tape-header 2 * allot
+  \ load (=new) and save (=old) headers
+
+  \ After the ROM disassembly:
+  \
+  \ /tape-header allot  \ old header
+  \ create tape-header  /tape-header allot  \ new header
+
+10 constant /tape-filename \ filename max length
+
+: tape-filetype  ( -- ca )  tape-header  ;
+: tape-filename  ( -- ca )  tape-header 1+  ;
+: tape-length    ( -- a )   tape-header 11 +  ;
+: tape-start     ( -- a )   tape-header 13 +  ;
+
+3 tape-filetype c!  \ "code" filetype by default
+
+code (tape)  ( n -- )
+  E1 c,  C5 c,  78 05 + c,
+    \ pop hl
+    \ push bc ; save Forth IP
+    \ ld a,l ; 1=load, 0=save
+  DD c, 21 c, tape-header ,  2A c, tape-length ,
+    \ ld ix,tape_header
+    \ ld hl,(tape_length)
+  32 c, 5C74 ,  CD c, 075A ,
+    \ ld (5C74),A ; T_ADDR system variable
+    \ call 075A ; SA_ALL ROM routine
+  C1 c,  DD c, 21 c, next ,
+    \ pop bc ; restore Forth IP
+    \ ld ix,next ; restore the address of Forth next
+  jpnext  end-code
+  \ Tape primitive that uses the data stored at
+  \ `tape-header` to load (n=1) or save (n=0)
+  \ a tape file.
+
+-->
+
+( write-tape-file read-tape-file )
+
+: -tape-filename  ( -- )  tape-filename /tape-filename blank ;
+  \ Blank the filename of the load header.
+
+: set-tape-filename  ( ca len -- )
+  -tape-filename  /tape-filename min
+  tape-filename swap cmove  ;
+  \ Store a filename into the load header.
+
+: any-tape-filename  ( -- )  255 tape-filename c!  ;
+  \ Configure the load header to load any filename.
+
+: transfer-tape-file  ( ca len n -- )
+  >r tape-length ! tape-start !  r> (tape)  ;
+  \ Read or write the tape file whose filename and filetype
+  \ have been already set in the tape header.  _n_ is 0 for
+  \ writing or 1 for reading; _ca len_ is the memory zone.
+
+: read-tape-file  ( ca1 len1 ca2 len2 -- )
+  dup if    set-tape-filename
+      else  2drop any-tape-filename
+      then  1 transfer-tape-file  ;
+  \ Read a tape file into a memory region.
+  \ ca1 len1 = memory zone (len1 is zero if unspecified)
+  \ ca2 len2 = filename (len2 is zero if unspecified)
+
+: write-tape-file  ( ca1 len1 ca2 len2 -- )
+  set-tape-filename 0 transfer-tape-file  ;
+  \ Write a memory region into a tape file.
+  \ ca1 len1 = memory zone
   \ ca2 len2 = filename
 
   \ }}} =======================================================
@@ -5689,7 +5856,7 @@ need 16hex.  need ascii-type
   ?do
     cr dup 16hex.
     8 0 do  i over + @ flip 16hex.  cell +loop
-    \ 16 0 do  i over + c@ hexb.  loop
+    \ 16 0 do  i over + c@ hexb.  loop  \ XXX OLD
     dup bs 8 ascii-type
     break-key? ?leave
   8 + loop  drop  ;
@@ -5710,6 +5877,10 @@ need 16hex.
   loop drop  ;
 
 ( decode )
+
+
+  \ XXX UNDER DEVELOPMENT -- DTC version
+  \ 2015-12-24: Start adapting to DTC.
 
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -5750,20 +5921,161 @@ variable decode-address  \ in the word being decoded
 
   \ Special cases
 
-: decode-compile   ( a1 -- a2 )  2+ dup @ 2+ body>name id.  ;
+: decode-branch    ( a1 -- a2 )  cell+ dup @ u.  ;
 
-: decode-literal   ( a1 -- a2 )  2+ dup @ .  ;
+: decode-literal   ( a1 -- a2 )  cell+ dup @ .  ;
 
-: decode-cliteral  ( a1 -- a2 )  2+ dup c@ . 1-  ;
-
-: decode-branch    ( a1 -- a2 )  2+ dup @ u.  ;
+: decode-cliteral  ( a1 -- a2 )  cell+ dup c@ . 1-  ;
 
 : decode-sliteral  ( a1 -- a2 )
-  2+ dup count type  dup c@ + 1 -  ;
+  cell+ dup count type  dup c@ + 1-  ;
+
+: decode-compile   ( a1 -- a2 )
+  cell+ dup @ cell+ body>name id.  ;
 
 -->
 
 ( decode )
+
+  \ Special cases dispatcher
+
+: decode-special  ( a1 -- a1 | a2 )
+
+  dup @ case
+
+    ['] compile   of  decode-compile    endof
+    ['] lit       of  decode-literal    endof
+    ['] clit      of  decode-cliteral   endof
+    ['] slit      of  decode-sliteral   endof
+    ['] branch    of  decode-branch     endof
+    ['] 0branch   of  decode-branch     endof
+    ['] ?branch   of  decode-branch     endof
+
+    [defined] -branch [if]
+      ['] -branch   of  decode-branch     endof  [then]
+
+    ['] (do)      of  decode-branch     endof
+    ['] (?do)     of  decode-branch     endof
+
+    ['] (.")      of  decode-sliteral   endof
+
+  endcase  ;  -->
+
+( decode )
+
+  \ Checks of the main code
+
+: decode-end?  ( xt -- f )
+  dup  ['] exit =  swap ['] (;code) =  or  ;
+  \ Is the given xt the end of a definition?
+
+: colon-cfa?  ( cfa -- f )
+  dup c@ $CD <> if  drop false exit  then
+  1+ @  [ ' : 1+ ] literal =  ;
+  \ Is _cfa_ a colon cfa?
+  \ First, its first byte must be $CD (the Z80 call opcode);
+  \ second, its jump address must be the same of `:`.
+
+: colon-pfa?  ( pfa -- f )  body> colon-cfa?  ;
+  \ Is the given pfa a colon definition?
+
+-->
+
+( decode )
+
+  \ Main code
+
+: (decode)  ( pfa -- )
+
+  \ Decode the definition at the given pfa.
+
+  dup colon-pfa? if
+    dup body> decode-address ! indent  ." : " dup body>name id.
+    begin   ( pfa+n ) dup decode-address !
+            dup @ dup ( pfa+n xt xt ) decode-end? 0=
+            \ ( pfa+n xt f )
+    while  \ high level & not end of colon definition
+      \ ( pfa+n xt )
+      3 + ( pfa+n pfa' ) dup indent+  body>name id.
+      key case  [char] q  of  sp0 @ sp! quit  endof \ q
+                      bl  of  drop            endof \ space
+                                 swap recurse \ default
+          endcase  decode-special
+      cell+  -1 decode-level +!
+    repeat  indent cell+ body>name id. \ show the last word
+  else  ." Not a colon definition."  then  drop  ;  -->
+
+( decode )
+
+  \ Interface
+
+: decode-usage  ( -- )
+     \  <------------------------------>
+  cr ." Keys: space=more, q=quit, other=deeper." cr  ;
+
+: decode  ( "name" -- )
+  decode-usage
+  defined  ( nt | 0 )  dup 0= -13 ?throw
+  name>body  0 decode-level !  (decode)  ;
+
+( itc-decode )
+
+  \ XXX OLD -- ITC version
+
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Copyright (C) 2015 Marcos Cruz (programandala.net)
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+  \ Credits:
+  \
+  \ This code was adapted and improved from Afera (2015), by
+  \ the same author.  The Afera version was adapted and deeply
+  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
+  \ by EHR), modified by Dennis L. Wilson.  The original code
+  \ was written by Robert Dudley Ackerman, published on Forth
+  \ Dimensions IV,#2 p28 (1982-07).
+
+  \ Variables, indentation and pause control
+
+forth definitions decimal
+
+need body>name  need name>body  need case  need [if]
+
+variable decode-level  decode-level off \ depth of nesting
+variable decode-address  \ in the word being decoded
+
+: indent  ( -- )
+  cr decode-address @ u. decode-level @ 2 * spaces  ;
+
+: indent+  ( -- )  1 decode-level +! indent  ;
+
+-->
+
+( itc-decode )
+
+  \ Special cases
+
+: decode-branch    ( a1 -- a2 )  cell+ dup @ u.  ;
+
+: decode-literal   ( a1 -- a2 )  cell+ dup @ .  ;
+
+: decode-cliteral  ( a1 -- a2 )  cell+ dup c@ . 1-  ;
+
+: decode-sliteral  ( a1 -- a2 )
+  cell+ dup count type  dup c@ + 1-  ;
+
+: decode-compile   ( a1 -- a2 )
+  cell+ dup @ cell+ body>name id.  ;
+
+-->
+
+( itc-decode )
 
   \ Special cases dispatcher
 
@@ -5794,7 +6106,7 @@ variable decode-address  \ in the word being decoded
 
   endcase  ;  -->
 
-( decode )
+( itc-decode )
 
   \ Checks of the main code
 
@@ -5808,7 +6120,7 @@ variable decode-address  \ in the word being decoded
 
 -->
 
-( decode )
+( itc-decode )
 
   \ Main code
 
@@ -5823,16 +6135,16 @@ variable decode-address  \ in the word being decoded
             \ ( pfa+n xt f )
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
-      2+ ( pfa+n pfa' ) dup indent+  body>name id.
+      cell+ ( pfa+n pfa' ) dup indent+  body>name id.
       key case  [char] q  of  sp0 @ sp! quit  endof \ q
                       bl  of  drop            endof \ space
                                  swap recurse \ default
           endcase  decode-special
-      2+  -1 decode-level +!
-    repeat  indent 2+ body>name id. \ show the last word
+      cell+  -1 decode-level +!
+    repeat  indent cell+ body>name id. \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
 
-( decode )
+( itc-decode )
 
   \ Interface
 
@@ -6433,8 +6745,8 @@ code -exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
 
   \ Credits:
   \
-  \ Code of `retry` from an article by Richard Astle in
-  \ Forth Dimensions 17/4 p. 36 (1995-11).
+  \ Code of `retry` from an article by Richard Astle in Forth
+  \ Dimensions (volume 17, number 4, page 36, 1995-11).
 
 : retry  ( -- )
   latest name> >body postpone again
@@ -7763,11 +8075,10 @@ variable #options
 
   \ Credits:
   \
-  \ Adapted from:
-  \ Dijkstra Guarded Command Control Structures
-  \ M. Edward Borasky, 1996-08-03
-  \ Listing in "Towards a Discipline of ANS Forth Programming"
-  \ Originally published on Forth Dimensions XVIII, No.4, pp5-14
+  \ Adapted from: Dijkstra Guarded Command Control Structures
+  \ M. Edward Borasky, 1996-08-03 Listing in "Towards a
+  \ Discipline of ANS Forth Programming" Originally published
+  \ on Forth Dimensions (volume 18, number 4, pp 5-14).
   \ Adapted to hForth v0.9.9 by Wonyong Koh
 
 need cs-roll
@@ -7806,11 +8117,10 @@ need cs-roll
 
   \ Credits:
   \
-  \ Adapted from:
-  \ Dijkstra Guarded Command Control Structures
-  \ M. Edward Borasky, 1996-08-03
-  \ Listing in "Towards a Discipline of ANS Forth Programming"
-  \ Originally published on Forth Dimensions XVIII, No.4, pp5-14
+  \ Adapted from: Dijkstra Guarded Command Control Structures
+  \ M. Edward Borasky, 1996-08-03 Listing in "Towards a
+  \ Discipline of ANS Forth Programming" Originally published
+  \ on Forth Dimensions (number 18, number 4, pages 5-14).
   \ Adapted to hForth v0.9.9 by Wonyong Koh
 
 need cs-pick  need cs-roll
@@ -7898,7 +8208,7 @@ code inkey  ( -- c | 0 )
   \ Credits:
   \
   \ Code adapted from lpForth and Forth Dimensions (volume 10,
-  \ number 1, page 29).
+  \ number 1, page 29, 1988-05).
 
 need aborted?
 
@@ -8356,8 +8666,8 @@ need -rot
 
   \ Credits:
   \
-  \ Based on code written by Wil Baden, published in:
-  \ Forth Dimensions Volume XVII number 4 page 11.
+  \ Based on code written by Wil Baden, published on: Forth
+  \ Dimensions (volume 17, number 4, page 11, 1995-11).
 
   \ XXX UNDER DEVELOPMENT
 
@@ -8495,7 +8805,7 @@ variable (value)  ['] @ (value) !
   \
   \ Code written after the description by Rick VanNorman,
   \ published on Forth Dimensions (volume 20, number 3, pages
-  \ 19..22, 1998-09).
+  \ 19-22, 1998-09).
 
 defer link@  ( node1 -- node2 )
   ' @ ' link@ defer!
@@ -9056,8 +9366,9 @@ forth definitions  previous
 
   \ Credits:
   \
-  \ Idea inspired by an article by Paul King, published in
-  \ Format, vol. 2 no. 3 (1988-10).
+  \ Idea inspired by an article by Paul King, published on
+  \ Format (volume 2, number 3, 1988-10).
+  \
   \ XXX TODO link to the WoS archive ftp, when available
 
 need !dosvar  need @dosvar
@@ -9169,8 +9480,8 @@ code (local)  ( a0 -- )  ( R: a1 -- a0 x pfa a1 )
 
   \ Credits:
   \
-  \ Original code by Marc Perkel, published on
-  \ Forth Dimensions 3/6 p. 6 (1982-03).
+  \ Original code by Marc Perkel, published on Forth Dimensions
+  \ (volume 3, number 6, page 6, 1982-03).
 
 need 2/
 
@@ -9947,8 +10258,7 @@ need body>name
 
 need os-seed
 
-[needed] randomize dup ?\ : randomize  ( n -- )  os-seed !  ;
-  ?exit
+[needed] randomize0 ?\ : randomize  ( n -- )  os-seed !  ;
   \ Set the seed of the random number generator.
 
 need os-frames
@@ -9970,6 +10280,71 @@ need os-seed
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
+( z80-random )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Code from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+  \
+  \ This is one of many variations of PRNGs. This routine is
+  \ not particularly useful for many games, but is fairly
+  \ useful for shuffling a deck of cards. It uses SMC, but that
+  \ can be fixed by defining randSeed elsewhere and using ld
+  \ a,(randSeed) at the beginning.
+
+  \ PseudoRandByte:
+  \ ;f(n+1)=13f(n)+83
+  \ ;97 cycles
+  \      .db 3Eh     ;start of ld a,*
+  \ randSeed:
+  \      .db 0
+  \      ld c,a
+  \      add a,a
+  \      add a,c
+  \      add a,a
+  \      add a,a
+  \      add a,c
+  \      add a,83
+  \      ld (randSeed),a
+  \      ret
+
+  \ PseudoRandWord_0:
+
+  \ Similar to the PseudoRandByte_0, this generates a a
+  \ sequence of pseudo-random values that has a cycle of 65536
+  \ (so it will hit every single number):
+
+  \ PseudoRandWord:
+  \ ;f(n+1)=241f(n)+257   ;65536
+  \ ;181 cycles, add 17 if called
+  \ ;Outputs:
+  \ ;     BC was the previous pseudorandom value
+  \ ;     HL is the next pseudorandom value
+  \ ;Notes:
+  \ ;     You can also use B,C,H,L as pseudorandom 8-bit values
+  \ ;     this will generate all 8-bit values
+  \      .db 21h    ;start of ld hl,**
+  \ randSeed:
+  \      .dw 0
+  \      ld c,l
+  \      ld b,h
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,bc
+  \      inc h
+  \      inc hl
+  \      ld (randSeed),hl
+  \      ret
+
 ( random-range )
 
 need random
@@ -9977,7 +10352,7 @@ need random
 : random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
   \ Return a random number from _n1_ (min) to _n2_ (max).
 
-( rng-bench )
+( rng-benchmark )
 
   \ Random number generator benchmark
 
@@ -9989,22 +10364,23 @@ need set-pixel  need bench{  need pixels  need u%  need 3dup
 defer rng  ( n -- 0..n-1 )
 
 : pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
-  \ Print _u_ pixels as a percentage of the screen.
+  \ Print _u_ pixels as a percentage of the maximum
+  \ number of pixels.
 
-: pixels.  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
+: .pixels  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
   \ Print _u_ as the number of pixels.
 
-: origin.  ( ca len -- )  ." Code: " type  ;
+: .origin  ( ca len -- )  ." Code: " type  ;
 
 : fill-screen  ( -- )
   #pixels 0 do  256 rng 193 rng set-pixel  loop  ;
   \ Fill the screen with random pixels.
 
-: (rng-bench)  ( -- d )  bench{ fill-screen }bench  ;
+: (rng-benchmark)  ( -- d )  bench{ fill-screen }bench  ;
   \ Do the current RNG benchmark and return its result.
 
-: result.  ( ca len d -- )
-  2>r pixels >r  origin. cr  r> pixels. cr  2r> bench.  ;
+: .result  ( ca len d -- )
+  2>r pixels >r  .origin cr  r> .pixels cr  2r> bench.  ;
   \ Calculate and print the result of the benchmark.
   \ _d_ is the time in frames; _ca len_ is the title.
 
@@ -10014,10 +10390,10 @@ defer rng  ( n -- 0..n-1 )
 
 -->
 
-( rng-bench )
+( rng-benchmark )
 
-: rng-bench1  ( ca len xt -- )
-  init-rng (rng-bench) result. wait  ;
+: rng-benchmark1  ( ca len xt -- )
+  init-rng (rng-benchmark) .result wait  ;
   \ Do the RNG basic benchmark for _xt_ with title _ca len_:
   \ one single cycle of 49152 random pixels.
 
@@ -10031,36 +10407,36 @@ variable cycles
   \ Change the border color according to the current count
   \ of cycles, just to show that the benchmark is running.
 
-: rng-bench+  ( ca len xt -- )
+: rng-benchmark+  ( ca len xt -- )
   init-rng  -1 cycles !  bench{
   0 begin   signal  1 cycles +!
             fill-screen pixels tuck =  until  drop
-  }bench  0 border  result. .cycles  wait  ;
+  }bench  0 border  .result .cycles  wait  ;
   \ Do the RNG extended benchmark for _xt_ with title _ca len_:
   \ as many cycles of 49152 random pixels as required, until
   \ the number of pixels doesn't change.
 
-: rng-bench  ( ca len xt -- )
-  3dup rng-bench1 rng-bench+  ;
+: rng-benchmark  ( ca len xt -- )
+  3dup rng-benchmark1 rng-benchmark+  ;
   \ Do the RNG basic and extended benchmarks for _xt_ with
   \ title _ca len_:
 
 ( every-random )
 
-need rng-bench  need +thru
+need rng-benchmark  need +thru
 
 1 11 +thru
 
-ace-rng-bench
-dx-rng-bench
-g-rng-bench
-jer-rng-bench
-jml-rng-bench
-lb-rng-bench
-lina-rng-bench
-sf83-rng-bench
-tt-rng-bench
-v-rng-bench
+ace-rng-benchmark
+dx-rng-benchmark
+g-rng-benchmark
+jer-rng-benchmark
+jml-rng-benchmark
+lb-rng-benchmark
+lina-rng-benchmark
+sf83-rng-benchmark
+tt-rng-benchmark
+v-rng-benchmark
 
 ( ace-random )
 
@@ -10077,10 +10453,10 @@ need os-seed
 
 : ace-random  ( n1 -- n2 )  ace-rnd um* nip  ;
 
-need rng-bench
+need rng-benchmark
 
-: ace-rng-bench  ( -- )
-  s" Jupiter ACE manual" ['] ace-random rng-bench ;
+: ace-rng-benchmark  ( -- )
+  s" Jupiter ACE manual" ['] ace-random rng-benchmark ;
 
 ( dx-random )
 
@@ -10099,10 +10475,10 @@ need d*
 : dx-random ( u -- 0..u-1 )  dx-rnd um* nip ;
   \ Get random number between 0 and u-1
 
-need rng-bench
+need rng-benchmark
 
-: dx-rng-bench  ( -- )
-  s" DX-Forth" ['] dx-random rng-bench ;
+: dx-rng-benchmark  ( -- )
+  s" DX-Forth" ['] dx-random rng-benchmark ;
 
 ( g-random )
 
@@ -10117,17 +10493,17 @@ need os-seed  need ud*
 
 : g-random  ( n1 -- n2 )  g-rnd um* nip ;
 
-need rng-bench
+need rng-benchmark
 
-: g-rng-bench  ( -- )
-  s" Gforth" ['] g-random rng-bench ;
+: g-rng-benchmark  ( -- )
+  s" Gforth" ['] g-random rng-benchmark ;
 
 ( jer-random )
 
   \ Credits:
   \
   \ Random number generator by J. E. Rickenbacker, published on
-  \ Forth Dimensions volume 2, number 2, page 34.
+  \ Forth Dimensions (volume 2, number 2, page 34, 1980-07).
 
 need os-seed
 
@@ -10140,10 +10516,10 @@ need os-seed
 
   \ XXX Note: patterns
 
-need rng-bench
+need rng-benchmark
 
-: jer-rng-bench  ( -- )
-  s" J. E. Rickenbacker" ['] jer-random rng-bench ;
+: jer-rng-benchmark  ( -- )
+  s" J. E. Rickenbacker" ['] jer-random rng-benchmark ;
 
 ( jml-random )
 
@@ -10167,10 +10543,10 @@ code jml-rnd  ( -- u )
 
 : jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
 
-need rng-bench
+need rng-benchmark
 
-: jml-rng-bench  ( -- )
-  s" J.M. Lazo" ['] jml-random rng-bench ;
+: jml-rng-benchmark  ( -- )
+  s" J.M. Lazo" ['] jml-random rng-benchmark ;
 
 ( lb-random )
 
@@ -10184,10 +10560,10 @@ need os-seed
 
 : lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
 
-need rng-bench
+need rng-benchmark
 
-: lb-rng-bench  ( -- )
-  s" Leo Brodie" ['] lb-random rng-bench ;
+: lb-rng-benchmark  ( -- )
+  s" Leo Brodie" ['] lb-random rng-benchmark ;
 
 ( lcm-random )
 
@@ -10222,10 +10598,10 @@ need d*  need du/mod  need 2nip
 
 : lcm-random  ( n1 -- n2 )  lcm-rnd d>s um* nip  ;
 
-need rng-bench
+need rng-benchmark
 
-: lcm-rng-bench  ( -- )
-  s" LCM" ['] lcm-random rng-bench  ;
+: lcm-rng-benchmark  ( -- )
+  s" LCM" ['] lcm-random rng-benchmark  ;
 
 ( lina-random )
 
@@ -10236,10 +10612,10 @@ need os-seed
 
 : lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
 
-need rng-bench
+need rng-benchmark
 
-: lina-rng-bench  ( -- )
-  s" lina" ['] lina-random rng-bench ;
+: lina-rng-benchmark  ( -- )
+  s" lina" ['] lina-random rng-benchmark ;
 
 ( sf83-random )
 
@@ -10252,10 +10628,10 @@ need os-seed  3 os-seed !
 : sf83-random  ( n -- 0..n-1 )
   os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
 
-need rng-bench
+need rng-benchmark
 
-: sf83-rng-bench  ( -- )
-  s" Spectrum Forth-83" ['] sf83-random rng-bench ;
+: sf83-rng-benchmark  ( -- )
+  s" Spectrum Forth-83" ['] sf83-random rng-benchmark ;
 
 ( tt-random )
 
@@ -10270,10 +10646,10 @@ need os-seed
     os-seed @ 13 * $7FFF and
     dup os-seed !  swap mod ;
 
-need rng-bench
+need rng-benchmark
 
-: tt-rng-bench  ( -- )
-  s" Tetris for terminals" ['] tt-random rng-bench ;
+: tt-rng-benchmark  ( -- )
+  s" Tetris for terminals" ['] tt-random rng-benchmark ;
 
 ( v-random )
 
@@ -10289,10 +10665,10 @@ need os-frames
   \ dup os-seed !
   swap mod  ;
 
-need rng-bench
+need rng-benchmark
 
-: v-rng-bench  ( -- )
-  s" vForth" ['] v-random rng-bench ;
+: v-rng-benchmark  ( -- )
+  s" vForth" ['] v-random rng-benchmark ;
 
 ( z88-random )
 
@@ -10307,10 +10683,10 @@ need ud*  need os-seed
   os-seed @ ud* 12345. d+ over os-seed !
   rot ud/mod 2drop  ;
 
-need rng-bench
+need rng-benchmark
 
-: z88-rng-bench  ( -- )
-  s" Z88 CamelForth" ['] z88-random rng-bench ;
+: z88-rng-benchmark  ( -- )
+  s" Z88 CamelForth" ['] z88-random rng-benchmark ;
 
 ( random-byte )
 
@@ -10393,31 +10769,12 @@ need bench{
 
 ( synonym )
 
-  \ Credits:
-  \
-  \ The code of `synonym` is adapted from the example provided
-  \ in the Forth-2012 documentation, and improved with
-  \ `compile-only?`.
-
-  \ XXX FIXME -- `' newname` would not work fine
-: synonym  ( "newname" "oldname" -- )
-  create immediate
-    hide ' , reveal
-  does>  ( -- )
-   ( pfa ) @ ( xt ) dup >name dup ( xt nt nt )
-   compile-only? executing? and -14 ?throw
-   immediate? executing? or
-   if  execute  else  compile,  then  ;
-
-  \ XXX TODO -- new approach
-  \ XXX FIXME
-  \ does not work yet, because the synonym does not keep the
-  \ same attributes.
 need alias
-: synonym2  ( "newname" "oldname" -- )
+
+: synonym  ( "newname" "oldname" -- )
   parse-name nextname ' dup >r alias
-  r> >name dup immediate? if  immediate  then
-               compile-only? if  compile-only  then  ;
+  r> >name dup immediate?     if  immediate     then
+               compile-only?  if  compile-only  then  ;
 
   \ doc{
   \
@@ -10436,6 +10793,26 @@ need alias
   \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ }doc
+
+exit
+
+  \ XXX OLD -- first version
+  \ XXX FIXME -- `' newname` would not work fine
+
+  \ Credits:
+  \
+  \ This code of `synonym` is adapted from the example provided
+  \ in the Forth-2012 documentation, and improved with
+  \ `compile-only?`.
+
+: synonym  ( "newname" "oldname" -- )
+  create immediate
+    hide ' , reveal
+  does>  ( -- )
+   ( pfa ) @ ( xt ) dup >name dup ( xt nt nt )
+   compile-only? executing? and -14 ?throw
+   immediate? executing? or
+   if  execute  else  compile,  then  ;
 
   \ }}} =======================================================
   \ Assembler {{{
@@ -13962,16 +14339,19 @@ variable racket2-delay
   \ }}} =======================================================
   \ Benchmarks {{{
 
-  \ This section contains generic benchmarks.
+  \ This section contains generic benchmarks and benchmarking
+  \ tools.
   \
   \ Specific benchmarks written during the development of Solo
-  \ Forth, in order to choose between differen implementation
+  \ Forth, in order to choose between different implementation
   \ options, are in "Development benchamarks" section.
 
 ( bench{ }bench }bench. bench. )
 
-  \ Code adapted from:
-  \ Forth Dimensions Volume XVII number 4 page 11.
+  \ Credits:
+  \
+  \ Code adapted from Forth Dimensions (volume 17, number 4
+  \ page 11, 1995-11).
 
   \ System-dependent timing routines.
 
@@ -13992,6 +14372,7 @@ need reset-frames  need frames@
 
   \ XXX OLD
   \ : sec.  ( n -- )  s>d <# # # [char] . hold #s #> type  ;
+
 exit
 
   \ System-dependent timing routines.
@@ -14012,8 +14393,10 @@ exit
 
 ( byte-magazine-benchmark )
 
-  \ Code adapted from:
-  \ Forth Dimensions Volume XVII number 4 page 11.
+  \ Code adapted from: Forth Dimensions (volume 17, number 4,
+  \ page 11, 1995-11).
+  \
+  \ 2015-12-24. Removed the Modified: no printing.
 
 need bench{
 
@@ -14029,37 +14412,51 @@ need bench{
                 while   dup 0 c<- over +
                 repeat  drop drop 1+
               then
-  loop  u. ." PRIMES" cr  ;
-
--->
+  loop
+  \ u. ." PRIMES" cr  \ XXX OLD
+  drop  \ XXX NEW
+  ;  -->
 
 ( byte-magazine-benchmark )
 
-: byte-magazine-benchmark  ( -- )
-  ." 1000 iterations" cr
-  bench{ 100 0 do  do-prime  loop }bench.  ;
+: byte-magazine-benchmark  ( n -- )
+  cr dup u. ." iterations..." cr
+  bench{ 0 ?do  do-prime  loop }bench.  ;
 
-  .( To run the BYTE Magazine benchmark type:) cr
-  .(   byte-magazine-benchmark)
+  cr
+  \  <------------------------------>
+  .( To run the BYTE Magazine) cr
+  .( benchmark type:) cr
+  .(   n byte-magazine-benchmark) cr
+  .( where _n_ is the number of) cr
+  .( iterations. The original code) cr
+  .( used 1000 iterations.) cr
+
+  \ 2015-12-24
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       ITC           DTC
+  \       -----         -----
+  \ 00010  6397          5216
+  \ 00100 63970 (1.00)  52159 (0.81)
 
 ( interface-age-benchmark )
 
-  \ Code adapted from:
-  \ Forth Dimensions Volume XVII number 4 page 11.
+  \ Code adapted from: Forth Dimensions (volume 17, number 4,
+  \ page 11, 1995-11).
 
-  \ Interface Age Benchmark, 1985-11-16.
-  \ This is the Interface Age benchmark
-  \ program described in Appendix D of the
+  \ Interface Age Benchmark, 1985-11-16.  This is the Interface
+  \ Age benchmark program described in Appendix D of the
   \ forthCMP Manual.
 
-  \ XXX UNDER DEVELOPMENT
-  \ XXX FIXME crash because Forth-83 `leave` is not fully implemented
+  \ 2015-12-24. Modified: no printing.
 
-need bench{
+need bench{  need 2/
 
 : (interface-age-benchmark)  ( n -- )
   dup 2/ 1+ swap cr
-  1 do
+  1 ?do
     dup i 1 rot 2 do
       drop dup 0 i um/mod dup
       0=  if  drop drop 1 leave  then
@@ -14067,23 +14464,37 @@ need bench{
           else  dup 0= if  drop 0 leave  then
                 0< 0= if  1  then
           then
-    loop  if  .  else  drop  then
-  loop  drop cr  ;
-
--->
+    loop
+    \ if  .  else  drop  then  \ XXX OLD
+    2drop  \ XXX NEW
+  loop  drop  ;  -->
 
 ( interface-age-benchmark )
 
-: interface-age-benchmark  ( -- )
-  bench{ 5000 (interface-age-benchmark) }bench.  ;
+: interface-age-benchmark  ( n -- )
+  bench{ (interface-age-benchmark) }bench.  ;
 
-  .( To run the interface age benchmark type:) cr
-  .(   interface-age-benchmark  )
+  cr
+  \  <------------------------------>
+  .( To run the interface age) cr
+  .( benchmark type:) cr
+  .(   n interface-age-benchmark  ) cr
+  .( where _n_ is the number of) cr
+  .( iterations. The original code) cr
+  .( used 5000 iterations.) cr
+
+  \ 2015-12-24
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       ITC           DTC
+  \       ------------  ------------
+  \ 05000 80091 (1.00)  72445 (0.90)
 
 ( vector-loop-benchmark )
 
-  \ Code adapted from:
-  \ Forth Dimensions Volume XVII number 4 page 11.
+  \ Code adapted from: Forth Dimensions (volume 17, number 4,
+  \ page 11, 1995-11).
 
   \ M. Edward Borasky, 1995-07-30
 
@@ -14110,26 +14521,35 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
      1+ dup vsize =
   until  drop  ;
 
-: loop0  ( -- )  \ null loop
-  0 begin  1+ dup vsize =  until  drop  ;
-
 -->
 
 ( vector-loop-benchmark )
 
+: loop0  ( -- )  \ null loop
+  0 begin  1+ dup vsize =  until  drop  ;
+
 : loop1  ( -- )  \ vector add
   0 begin
-     dup vec1 @ over vec2 @ + over vec3 !  1+ dup vsize =
+     dup vec1 @ over vec2 @ + over vec3 !
+     1+ dup vsize =
   until  drop  ;
 
 : loop2 ( -- )  \ vector multiply
   \ XXX FIXME crash!
   0 begin
-     dup vec1 @ over vec2 @ * over vec3 !  1+ dup vsize =
+     dup vec1 @ over vec2 @ * over vec3 !
+     1+ dup vsize =
   until  drop  ;
 
+-->
+
+( vector-loop-benchmark )
+
 : loop3 ( -- ) \ vector divide
-  0 begin  dup vec1 @ over vec2 @ / over vec3 !  until  drop  ;
+  0 begin
+    dup vec1 @ over vec2 @ / over vec3 !
+    1+ dup vsize =
+  until  drop  ;
 
 : loop4 ( -- )  \ vector scale
   0 begin
@@ -14144,15 +14564,16 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
 : bench0  ( -- )  \ benchmark loop0
   bench{ 0 begin  loop0 1+ dup reps =  until  drop }bench.
-  ." Vector No-Op" cr ;
+  ." Vector No-Op" cr  ;
 
 : bench1 ( -- ) \ benchmark loop1
   bench{ 0 begin  loop1 1+ dup reps =  until  drop }bench.
-  ." Vector +    " cr ;
+  ." Vector +    " cr  ;
 
 : bench2 ( -- ) \ benchmark loop2 )
+  \ XXX FIXME crash!
   bench{ 0 begin  loop2 1+ dup reps =  until  drop }bench.
-  ." Vector *    " cr ;
+  ." Vector *    " cr  ;
 
 -->
 
@@ -14160,22 +14581,37 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
 : bench3 ( -- )  \ benchmark loop3
   bench{ 0 begin  loop3 1+ dup reps =  until  drop }bench.
-  ." Vector /    " cr ;
+  ." Vector /    " cr  ;
 
 : bench4 ( -- ) \ benchmark loop4
   bench{ 0 begin  loop4 1+ dup reps =  until  drop }bench.
-  ." Vector */   " cr ;
+  ." Vector */   " cr  ;
 
-: vector-loop-benchmark  ( -- )
+: vector-loop-benchmarks  ( -- )
   vecload  cr bench0 bench1 bench2 bench3 bench4  ;
 
-  .( To run the vector benchmarks type:) cr
-  .(   vector-loop-benchmark )
+  cr
+  \  <------------------------------>
+  .( To run the vector loop) cr
+  .( benchmarks type:) cr
+  .(   vector-loop-benchmarks ) cr
+
+  \ 2015-12-24
+  \
+  \ Benchmark     Frames (1 frame = 50th of second)
+  \ ---------     -----------------------------------
+  \               ITC           DTC
+  \               ------        -------------
+  \ Vector noop    10919 (1.0)    9033 (0.82)
+  \ Vector +       58650 (1.0)   47462 (0.80)
+  \ Vector *      107770 (1.0)   91611 (0.85)
+  \ Vector /      149002 (1.0)  127495 (0.85)
+  \ Vector */     178854 (1.0)  154480 (0.86)
 
 ( all-benchmarks )
 
-  \ Code adapted from:
-  \ Forth Dimensions Volume XVII number 4 page 11.
+  \ Code adapted from: Forth Dimensions (volume 17, number 4,
+  \ page 11, 1995-11).
 
 exit
 
@@ -14183,13 +14619,14 @@ need byte-magazine-benchmark
 need interface-age-benchmark
 need vector-loop-benchmark
 
-: all-benchmarks  ( -- )
+: all-benchmarks  ( n1 n2 -- )
   byte-magazine-benchmark
   interface-age-benchmark
   vector-loop-benchmark  ;
 
+  \  <------------------------------>
   .( To run all benchmarks type:) cr
-  .(   all-benchmarks)
+  .(   n1 n2 all-benchmarks) cr
 
   \ }}} =======================================================
   \ Development benchmarks {{{
@@ -15019,7 +15456,7 @@ need reset-frames  need frames@
   r> * swap r> * + +  ; ( d1*d2 ) ( R: )
 
   \ `d*` by Robert L. Smith, published on Forth Dimensions
-  \ (volume 4, number 1, page 3).
+  \ (volume 4, number 1, page 3, 1982-05).
 
 need pick  need roll
 
@@ -15197,17 +15634,17 @@ switch]
   \                        --------------------- --------------
   \ Structure              Code (1)  Example (2) Frames Seconds
   \ ---------              --------- ----------- ------ -------
-  \ case (7)               48       62          1365   27
-  \ eforth-case (8)        54       62          1366   27
-  \ 94-doc-case (6)        54       62          1365   27
-  \ abersoft-case (5)      64       62          1365   27
-  \ positional-case: (4)   21       12           823   16
-  \ options[ (9)          166       24          3627   72
-  \ cases: (10)           109       18          3155   63
-  \ baden-case (11)        18       56          1472   29
-  \ baden-case (12)        36       56          1472   29
-  \ baden-case (13)         0       50          1353   27
-  \ vannorman-switch (14) 124       24          3573   71
+  \ case (7)                 48       62          1365   27
+  \ eforth-case (8)          54       62          1366   27
+  \ 94-doc-case (6)          54       62          1365   27
+  \ abersoft-case (5)        64       62          1365   27
+  \ positional-case: (4)     21       12           823   16
+  \ options[ (9)            166       24          3627   72
+  \ cases: (10)             109       18          3155   63
+  \ baden-case (11)          18       56          1472   29
+  \ baden-case (12)          36       56          1472   29
+  \ baden-case (13)           0       50          1353   27
+  \ vannorman-switch (14)   124       24          3573   71
 
   \ (1) Bytes used by the compilation of the structure's code.
   \
