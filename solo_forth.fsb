@@ -798,4 +798,22 @@ width ! decimal
   \ Reset the system frames counter.
   0. time!  ;
 
+( i' )
+
+code i'  ( R: n x -- n x ) ( -- n )
+
+  \ Copy the last but one value from the return stack (which
+  \ within a `DO`-`LOOP` is the loop limit).
+
+  2A c, rp ,  \ ld hl,(return_stack_pointer)
+  23 c,       \ inc hl
+  23 c,       \ inc hl
+  5E c,       \ ld e,(hl)
+  23 c,       \ inc hl
+  56 c,       \ ld d,(hl)
+  D5 c,       \ push de
+  dd c, e9 c, \ jp (ix)
+
+  end-code
+
   \ vim: filetype=soloforth

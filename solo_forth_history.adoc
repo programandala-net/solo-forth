@@ -282,3 +282,7 @@ Change: `size` is moved to the disk. It's needed only by `system`.
 
 Change: `-find` is renamed as `find`, and factored out with
 `context-find`, in order to implement `defined?`, needed by `required`.
+
+Change: `i'` is moved to the disk.
+
+New: `rp`, required to rewrite `i'` outside the kernel.

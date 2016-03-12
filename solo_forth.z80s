@@ -168,28 +168,75 @@ sys_udg:           equ 0x5C7B
 ; ==============================================================
 ; Macros
 
+immediate equ 1 ; used as optional parameter
 previous_nfa defl 0 ; link to previous Forth word
 
-_header: macro label,name_but_last_letter,last_letter,immediate
+_header: macro label,name_but_last_letter,last_letter,is_immediate
 
   this_nfa: defl $ ; link address for next word
   bits: defl 0x80
-  if not nul immediate
+  if not nul is_immediate
     ; set immediate bit
     bits: defl bits | precedence_bit_mask
   endif
-  local _first ; address of the first char of the name
-  local _next  ; address after the last char of the name
-  db _next-_first+bits    ; count and flags byte
-  _first:
-  db name
-  db last_letter+0x80
-  _next:
-  dw previous_nfa ; the link field
+  ;  local _first ; address of the first char of the name
+  ;  local _next  ; address after the last char of the name
+  ;db _next-_first+bits    ; count and flags byte
+  db label##_lfa-label##_nfa+bits ; count and flags byte
+  ;  _first:
+  label##_nfa: ; name field address
+  db name_but_last_letter,last_letter+0x80 ; name field
+  ;  _next:
+  label##_lfa: ; link field address
+  dw previous_nfa ; link field
+  label##_: ; code field address
+  label##_pfa: equ $+2 ; parameter field address
 
   previous_nfa: defl this_nfa
 
 endm
+
+_code_header: macro label,name_but_last_letter,last_letter,immediate
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw label##_pfa ; code field
+
+  endm
+
+_colon_header: macro label,name_but_last_letter,last_letter,immediate
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw do_colon ; code field
+
+  endm
+
+_user_header: macro label,name_but_last_letter,last_letter,immediate
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw do_user ; code field
+
+  endm
+
+_does_header: macro label,name_but_last_letter,last_letter,immediate
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw do_does ; code field
+
+  endm
+
+_constant_header: macro label,name_but_last_letter,last_letter,immediate
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw do_constant ; code field
+
+  endm
+
+_variable_header: macro label,name_but_last_letter,last_letter,immediate
+
+  _header label,name_but_last_letter,last_letter,immediate
+  dw do_variable ; code field
+
+  endm
 
 ;_header: macro label,name,immediate
 
@@ -390,27 +437,27 @@ hld_value: ; +0x2A
 ; Data stack
 
 data_stack_limit: equ $+cell
-  defs cells_per_data_stack*cell
+  ds cells_per_data_stack*cell
 data_stack_bottom:
 
 ; ----------------------------------------------
 ; Terminal input buffer
 
 terminal_input_buffer:
-  defs bytes_per_terminal_input_buffer
+  ds bytes_per_terminal_input_buffer
 
 ; ----------------------------------------------
 ; Return stack
 
 return_stack_limit: equ $+cell
-  defs cells_per_return_stack*cell
+  ds cells_per_return_stack*cell
 return_stack_bottom:
 
 ; ----------------------------------------------
 ; Disk buffers
 
 first_buffer:
-  defs blocks_per_screen*total_bytes_per_buffer
+  ds blocks_per_screen*total_bytes_per_buffer
 limit:
 
 ; ==============================================================
@@ -470,10 +517,7 @@ next2:
 ; ==============================================================
 ; Dictionary
 
-c_lit_nfa:
-  db 0x04+0x80,'CLI','T'+0x80
-c_lit_lfa:
-  dw 0x0000
+  _header c_lit,'CLI','T'
 c_lit_:
   dw c_lit_pfa
 c_lit_pfa:
@@ -666,10 +710,10 @@ l5f65h:
 
 ; doc{
 ;
-; (FIND)  ( a1 nfa --- pfa b tf | ff )
+; (FIND)  ( ca nfa --- pfa b tf | ff )
 ;
 ; Search the dictionary starting at the name field address
-; _nfa_, matching to the text at _a1_. If a match is found,
+; _nfa_, matching to the text at _ca_. If a match is found,
 ; return parameter field address _pfa_, length byte of name
 ; field _b_ and a boolean true.  Otherwise return only a boolean
 ; false.
@@ -685,53 +729,57 @@ paren_find_:
 paren_find_pfa:
   ; XXX TODO optimize speed with absolute jumps?
   ; XXX TODO -- return cfa instead of pfa
-  pop de
-l5f75h:
-  pop hl
-  push hl
-  ld a,(de)
-  xor (hl)
-  and 0x3F
-  jr nz,l5f9ch
+  ; XXX TODO -- always return two elements, after Forth-94
+  pop de ; nfa
+paren_find.begin:
+  ; de = nfa
+  pop hl ; string address
+  push hl ; save for next iteration
+  ld a,(de) ; length byte
+  xor (hl) ; filter deviations
+  and 0x3F ; mask msb and precedence bit
+  jr nz,paren_find.skip_name_field ; lengths differ
 l5f7dh:
-  inc hl
-  inc de
+  inc hl ; next character in string
+  inc de ; next character in name field
   ld a,(de)
-  xor (hl)
+  xor (hl) ; filter deviations
   add a,a
-  jr nz,l5f9ah
-  jr nc,l5f7dh
-  ld hl,0x0005
+  jr nz,l5f9ah ; no match
+  jr nc,l5f7dh ; match so far, loop agn
+  ld hl,0x0005 ; string matches
   add hl,de
-  ex (sp),hl
+  ex (sp),hl ; pfa to stack
 l5f8bh:
-  dec de
+  dec de ; position de on nfa
   ld a,(de)
-  or a
-  jp p,l5f8bh
-  ld e,a
+  or a ; msb=1?; if so, length byte
+  jp p,l5f8bh ; no, try next char
+  ld e,a ; length byte
   ld d,0x00
-  ld hl,0x0001
-  jp pushde
+  ld hl,true
+  jp pushde ; name field found, return
 l5f9ah:
-  jr c,l5fa2h
-l5f9ch:
+  ; Above name field not a match, try next one
+  jr c,l5fa2h ; carry = end of name field
+paren_find.skip_name_field:
+  ; Find end of name field
   inc de
   ld a,(de)
-  or a
-  jp p,l5f9ch
+  or a ; msb=1?
+  jp p,paren_find.skip_name_field ; no, loop
 l5fa2h:
-  inc de
+  inc de ; lfa
   ex de,hl
   ld e,(hl)
   inc hl
   ld d,(hl)
   ld a,d
-  or e
-  jr nz,l5f75h
-  pop hl
-  ld hl,0x0000
-  jp pushhl
+  or e ; end of dictionary?
+  jp nz,paren_find.begin ; if not, continue
+  ; No match found, return
+  pop hl ; drop string address
+  jp false_pfa
 
 ; doc{
 
@@ -1305,10 +1353,19 @@ sp_store_pfa:
   ld sp,hl
   _jp_next
 
+rp_nfa:
+  db 0x02+0x80,'R','P'+0x80
+rp_lfa:
+  dw sp_store_nfa
+rp_:
+  dw do_constant
+rp_pfa:
+  dw return_stack_pointer
+
 rp_fetch_nfa:
   db 0x03+0x80,'RP','@'+0x80
 rp_fetch_lfa:
-  dw sp_store_nfa
+  dw rp_nfa
 rp_fetch_:
   dw rp_fetch_pfa
 rp_fetch_pfa:
@@ -1364,8 +1421,6 @@ unloop_nfa:
 unloop_lfa:
   dw pick_nfa
 unloop_:
-  ; XXX TODO -- this works, but why? it should save the return address,
-  ; the TORS.
   dw two_r_drop_pfa
 
 leave_nfa:
@@ -1424,7 +1479,6 @@ two_r_drop_lfa:
 two_r_drop_:
   dw two_r_drop_pfa
 two_r_drop_pfa:
-  ; XXX FIXME
   ld hl,(return_stack_pointer)
   inc hl
   inc hl
@@ -1440,7 +1494,6 @@ r_drop_lfa:
 r_drop_:
   dw two_r_drop_pfa
 r_drop_pfa:
-  ; XXX FIXME
   ld hl,(return_stack_pointer)
   inc hl
   inc hl
@@ -3580,19 +3633,19 @@ create.continue:
   dw semicolon_s_
 
 assembler_nfa:
-  defb 0x09+0x80,"ASSEMBLE","R"+0x80
+  db 0x09+0x80,"ASSEMBLE","R"+0x80
 assembler_lfa:
-  defw create_nfa
+  dw create_nfa
 assembler_:
-  defw do_does
+  dw do_does
 assembler_pfa:
-  defw do_vocabulary
+  dw do_vocabulary
 assembler_vocabulary_dummy_nfa:
-  defw 0xA081 ; Dummy name field.
+  dw 0xA081 ; Dummy name field.
 assembler_vocabulary_latest:
-  defw forth_vocabulary_dummy_nfa
+  dw forth_vocabulary_dummy_nfa
 assembler_vocabulary_link:
-  defw forth_vocabulary_link
+  dw forth_vocabulary_link
 
 code_nfa:
   db 0x04+0x80,'COD','E'+0x80
@@ -5475,27 +5528,10 @@ color:
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
-  ; XXX TODO move to the disk
-i_tick_nfa:
-  db 0x02+0x80,'I',"'"+0x80
-i_tick_lfa:
-  dw ink_nfa
-i_tick_:
-  dw i_tick_pfa
-i_tick_pfa:
-  ld hl,(return_stack_pointer)
-  inc hl
-  inc hl
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-  _jp_next
-
 j_nfa:
   db 0x01+0x80,'','J'+0x80
 j_lfa:
-  dw i_tick_nfa
+  dw ink_nfa
 j_:
   dw j_pfa
 j_pfa:
