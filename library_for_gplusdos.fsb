@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511110245
+\ Last modified: 201511121718
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -77,7 +77,6 @@ code zx2  jpnext  end-code
 
 
 variable default-first-locatable  variable first-locatable
-18 dup default-first-locatable !  first-locatable !
 variable last-locatable  blk/disk 1- last-locatable !
   \ Variables that define the range of screens to be searched
   \ by `located` and its descendants.
@@ -251,6 +250,7 @@ variable last-locatable  blk/disk 1- last-locatable !
 
   needed-word 2@ 2>r
   -trailing -leading save-string 2dup needed-word 2!
+  \ 2dup type  \ XXX INFORMER
   2dup undefined?
   if  reneeded  else  2drop  then  2r> needed-word 2!  ;
 
@@ -277,237 +277,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
-  \ }}} =======================================================
-  \ Error codes {{{
-
-( Standard error codes -01..-15 )  \ scr 5
-
-\ #-01 ABORT
-\ #-02 ABORT"
-\ #-03 stack overflow
-\ #-04 stack underflow
-\ #-05 return stack overflow
-\ #-06 return stack underflow
-\ #-07 do-loops nested too deeply during execution
-\ #-08 dictionary overflow
-\ #-09 invalid memory address
-\ #-10 division by zero
-\ #-11 result out of range
-\ #-12 argument type mismatch
-\ #-13 undefined word
-\ #-14 interpreting a compile-only word
-\ #-15 invalid FORGET
-
-( Standard error codes -16..-30 )
-
-\ #-16 attempt to use zero-length string as a name
-\ #-17 pictured numeric output string overflow
-\ #-18 parsed string overflow
-\ #-19 definition name too long
-\ #-20 write to a read-only location
-\ #-21 unsupported operation
-\ #-22 control structure mismatch
-\ #-23 address alignment exception
-\ #-24 invalid numeric argument
-\ #-25 return stack imbalance
-\ #-26 loop parameters unavailable
-\ #-27 invalid recursion
-\ #-28 user interrupt
-\ #-29 compiler nesting
-\ #-30 obsolescent feature
-
-( Standard error codes -31..-45 )
-
-\ #-31 >BODY used on non-CREATEd definition
-\ #-32 invalid name argument
-\ #-33 block read exception
-\ #-34 block write exception
-\ #-35 invalid block number
-\ #-36 invalid file position
-\ #-37 file I/O exception
-\ #-38 non-existent file
-\ #-39 unexpected end of file
-\ #-40 invalid BASE for floating point conversion
-\ #-41 loss of precision
-\ #-42 floating-point divide by zero
-\ #-43 floating-point result out of range
-\ #-44 floating-point stack overflow
-\ #-45 floating-point stack underflow
-
-( Standard error codes -46..-60 )
-
-\ #-46 floating-point invalid argument
-\ #-47 compilation word list deleted
-\ #-48 invalid POSTPONE
-\ #-49 search-order overflow
-\ #-50 search-order underflow
-\ #-51 compilation word list changed
-\ #-52 control-flow stack overflow
-\ #-53 exception stack overflow
-\ #-54 floating-point underflow
-\ #-55 floating-point unidentified fault
-\ #-56 QUIT
-\ #-57 exception in sending or receiving a character
-\ #-58 [IF], [ELSE], or [THEN] exception
-\ #-59 ALLOCATE
-\ #-60 FREE
-
-( Standard error codes -61..-75 )
-
-\ #-61 RESIZE
-\ #-62 CLOSE-FILE
-\ #-63 CREATE-FILE
-\ #-64 DELETE-FILE
-\ #-65 FILE-POSITION
-\ #-66 FILE-SIZE
-\ #-67 FILE-STATUS
-\ #-68 FLUSH-FILE
-\ #-69 OPEN-FILE
-\ #-70 READ-FILE
-\ #-71 READ-LINE
-\ #-72 RENAME-FILE
-\ #-73 REPOSITION-FILE
-\ #-74 RESIZE-FILE
-\ #-75 WRITE-FILE
-
-( Standard error codes -76..-79 )
-
-\ #-76 WRITE-LINE
-\ #-77 malformed xchar
-\ #-78 SUBSTITUTE
-\ #-79 REPLACES
-\ #-80
-\ #-81
-\ #-82
-\ #-83
-\ #-84
-\ #-85
-\ #-86
-\ #-87
-\ #-88
-\ #-89
-\ #-90
-
-( System error codes -256..-270 )
-
-\ #-256 not a word nor a number
-\ #-257 warning: is not unique
-\ #-258 stack imbalance
-\ #-259 trying to load from screen 0
-\ #-260 wrong digit
-\ #-261 deferred word is uninitialized
-\ #-262 assertion failed
-\ #-263 execution only
-\ #-264 definition not finished
-\ #-265 loading only
-\ #-266 off current editing screen
-\ #-267 warning: not present, though required
-\ #-268 required, but not located
-\ #-269 relative jump too long
-\ #-270 text not found
-
-( System error codes -271..-285 )
-
-\ #-271 immediate word not allowed in this structure
-\ #-272
-\ #-273
-\ #-274
-\ #-275
-\ #-276
-\ #-277
-\ #-278
-\ #-279
-\ #-280
-\ #-281
-\ #-282
-\ #-283
-\ #-284
-\ #-285
-
-( G+DOS error codes -1000..-1014 )
-
-  \ G+DOS Error codes and messages.
-  \ Some of them are useless for this implementation.
-
-\ #-1000 G+DOS: Nonsense in G+DOS
-\ #-1001 G+DOS: Nonsense in GNOS
-\ #-1002 G+DOS: Statement end error
-\ #-1003 G+DOS: Break requested
-\ #-1004 G+DOS: Sector error
-\ #-1005 G+DOS: Format data lost
-\ #-1006 G+DOS: Check disk in drive
-\ #-1007 G+DOS: No +SYS file
-\ #-1008 G+DOS: Invalid file name
-\ #-1009 G+DOS: Invalid station
-\ #-1010 G+DOS: Invalid device
-\ #-1011 G+DOS: Variable not found
-\ #-1012 G+DOS: Verify failed
-\ #-1013 G+DOS: Wrong file type
-\ #-1014 G+DOS: Merge error
-
-( G+DOS error codes -1015..-1029 )
-
-  \ G+DOS Error codes and messages.
-  \ Some of them are useless for this implementation.
-
-\ #-1015 G+DOS: Code error
-\ #-1016 G+DOS: Pupil set
-\ #-1017 G+DOS: Invalid code
-\ #-1018 G+DOS: Reading a write file
-\ #-1019 G+DOS: Writing a read file
-\ #-1020 G+DOS: O.K. G+DOS
-\ #-1021 G+DOS: Network off
-\ #-1022 G+DOS: Wrong drive
-\ #-1023 G+DOS: Disk write protected
-\ #-1024 G+DOS: Not enough space on disk
-\ #-1025 G+DOS: Directory full
-\ #-1026 G+DOS: File not found
-\ #-1027 G+DOS: End of file
-\ #-1028 G+DOS: File name used
-\ #-1029 G+DOS: No G+DOS loaded
-
-( G+DOS error codes -1030..-1031 )
-
-\ #-1030 G+DOS: STREAM used
-\ #-1031 G+DOS: CHANNEL used
-
-( OS error codes -1128..-1142 )
-
-  \ XXX TODO -- it seems OS error codes (there are 28 of them)
-  \ may be returned by G+DOS.  they are detected and converted
-  \ by `ior>error`.
-
-\ #-1128 OS:
-\ #-1129 OS:
-\ #-1130 OS:
-\ #-1131 OS:
-\ #-1132 OS:
-\ #-1133 OS:
-\ #-1134 OS:
-\ #-1135 OS:
-\ #-1136 OS:
-\ #-1137 OS:
-\ #-1138 OS:
-\ #-1139 OS:
-\ #-1140 OS:
-\ #-1141 OS:
-\ #-1142 OS:
-
-( OS error codes -1143..-1154 )
-
-\ #-1143 OS:
-\ #-1144 OS:
-\ #-1145 OS:
-\ #-1146 OS:
-\ #-1147 OS:
-\ #-1148 OS:
-\ #-1149 OS:
-\ #-1150 OS:
-\ #-1151 OS:
-\ #-1151 OS:
-\ #-1152 OS:
-\ #-1153 OS:
-\ #-1154 OS:
+blk @ 1+ dup default-first-locatable !  first-locatable !
 
   \ }}} =======================================================
   \ Exceptions {{{
@@ -3576,7 +3346,7 @@ need z80-asm
   \
   \ }doc
 
-[needed] between ?\ ;s
+[needed] between  ?\ ;s
 need -rot
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
@@ -5272,14 +5042,30 @@ need break-key?  need 16hex.
 
 ( decode )
 
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  
+  \ Copyright (C) 2015 Marcos Cruz (programandala.net)
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
   \ Credits:
-  \ Code adapted and improved from Afera's `DECODE`.
+  \
+  \ This code was adapted and improved from Afera (2015), by
+  \ the same author.  The Afera version was adapted and deeply
+  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
+  \ by EHR), modified by Dennis L. Wilson.  The original code
+  \ was written by Robert Dudley Ackerman, published in Forth
+  \ Dimensions IV,#2 p28 (1982-07).
 
   \ Variables, indentation and pause control
 
 forth definitions decimal
 
-need body>name  need name>body
+need body>name  need name>body  need case
 
 variable decode-level  decode-level off \ depth of nesting
 variable decode-address  \ in the word being decoded
@@ -5312,8 +5098,6 @@ variable decode-address  \ in the word being decoded
 
   \ Special cases dispatcher
 
-need case
-
 : decode-special  ( a1 -- a1 | a2 )
   dup @
   case
@@ -5327,7 +5111,9 @@ need case
     ['] (loop)    of  decode-branch     endof
     ['] (+loop)   of  decode-branch     endof
     ['] (.")      of  decode-sliteral   endof
-  endcase  ;  -->
+  endcase  ;
+
+-->
 
 ( decode )
 
@@ -5877,6 +5663,13 @@ variable assert-level ( -- a )
 : base-execute  ( cfa n -- )  base @ >r execute r> base !  ;
   \ Execute _cfa_ with the content of `base` being _n_
   \ and restoring the original `base` afterwards.
+
+( cs-pick cs-roll )
+
+need pick  need roll
+
+: cs-pick  pick  ;
+: cs-roll  roll  ;
 
 ( cs-pick cs-roll cs-drop cs-mark cs-test cs-push cs-pop )
 
@@ -7221,25 +7014,6 @@ variable #options
   >resolve                    \ store exit point
   ]  ;
 
-( options[-test )
-
-: o1 ." option 1" ;  : o2 ." option 2" ;  : o3 ." option 3" ;
-
-: test  ( c -- )
-  options[
-    char a option o1  char b option o2  char c option o3
-  ]options  ." end of test" cr   ;
-
-: retest  ( -- )  [char] a test ." end of retest" cr  ;
-
-: o0 ." default" ;
-
-: testd  ( c -- )
-  options[
-    char a option o1  char b option o2  char c option o3
-    default-option o0
-  ]options  ;
-
 ( executions )
 
   \ Credits:
@@ -7251,6 +7025,89 @@ variable #options
   begin   2r@
   while   2r> 1- 2>r execute
   repeat  drop 2rdrop  ;
+
+( {if if} if> |if| )
+
+  \ Dijkstra Guarded Command Control Structures
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX FIXME -- this can not work when compiler security is on
+
+  \ Credits:
+  \ Modified from:
+  \ Dijkstra Guarded Command Control Structures
+  \ M. Edward Borasky, 1996-08-03
+  \ Listing in "Towards a Discipline of ANS Forth Programming"
+  \ Originally published in Forth Dimensions XVIII, No.4, pp5-14
+  \ Adapted to hForth v0.9.9 by Wonyong Koh
+
+need cs-roll
+
+: {if  ( -- 0 )  0  ; immediate compile-only
+  \ start a conditional
+  \ put counter on stack
+
+: if>
+  \ ( count -- count+1 )
+  \ ( c: -- orig1 )
+  1+ >r postpone if  r> ; immediate compile-only
+  \ right-arrow for {if ... if}
+
+: |if|
+  \ ( count -- count )
+  \ ( c: orig ... orig1 -- orig ... orig2 )
+  >r postpone ahead \ new orig
+  1 cs-roll postpone then \ resolve old orig
+  r>  ; immediate compile-only
+  \ bar for {if ... if}
+
+: if} \ end of conditional
+  \ ( count -- )
+  \ ( c: orig1 ... orign -- )
+  >r  postpone ahead
+  1 cs-roll postpone then \ resolve old orig
+  -22 postpone literal postpone throw
+    \ 'control structure mismatch'
+  r> 0 do  postpone then  loop  ; immediate compile-only
+  \ XXX TODO use `?do` when available
+
+( {do do} do> |do| )
+
+  \ Dijkstra Guarded Command Control Structures
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX FIXME -- this can not work when compiler security is on
+
+  \ Credits:
+  \ Modified from:
+  \ Dijkstra Guarded Command Control Structures
+  \ M. Edward Borasky, 1996-08-03
+  \ Listing in "Towards a Discipline of ANS Forth Programming"
+  \ Originally published in Forth Dimensions XVIII, No.4, pp5-14
+  \ Adapted to hForth v0.9.9 by Wonyong Koh
+
+need cs-pick  need cs-roll
+
+: {do  ( c: -- dest )  postpone begin  ; immediate compile-only
+  \ start a loop
+
+: do>  ( c: dest -- orig1 dest )
+  postpone if  1 cs-roll  ; immediate compile-only
+  \ right arrow for {do ... od}
+
+: |do|  ( c: orig1 dest -- dest )
+  0 cs-pick postpone again \ resolve a copy of dest
+  1 cs-roll postpone then \ resolve old orig
+  ; immediate compile-only
+  \ bar for {do ... do}
+
+: do}  ( c: orig dest -- )
+  \ end of loop
+  postpone again \ resolve dest
+  postpone then \ resolve orig
+  ; immediate compile-only
 
   \ }}} =======================================================
   \ Keyboard {{{
@@ -8204,7 +8061,7 @@ code ms88  ( u -- )
   \ .endMS
   then  jpnext  end-code
 
-( frames@ frames! frames0 )
+( frames@ frames! reset-frames )
 
 [defined] sys-frames ?\ 23672 constant sys-frames
 
@@ -8216,7 +8073,7 @@ code ms88  ( u -- )
   [ sys-frames 2+ ] literal c! sys-frames !  ;
   \ Set the system frames counter.
 
-: frames0  ( -- )  0. frames!  ;
+: reset-frames  ( -- )  0. frames!  ;
   \ Reset the system frames counter.
 
 ( pause )
@@ -9141,48 +8998,6 @@ macro call-cfa  ( cfa -- )
   \ This is the low-level equivalent of `execute`.
   hl ldp#  execute-hl
   endm
-
-( until-test )
-
-  \ XXX TMP for debugging
-  \ XXX OLD
-
-need z80-asm  need dump
-
-code until-test  ( -- )
-  begin
-    nop
-  z until  jpnext
-  end-code
-
-' until-test >body 5 dump
-
-( if'-test )
-
-  \ XXX TMP for debugging
-  \ XXX OLD
-
-need z80-asm  need dump
-
-code if'-test  ( -- )
-
-  .( here is ) here u.
-
-  p' if'  \ not expecting a regular character
-
-    nz if  \ not expecting the column
-      \ expecting the line
-      \ get_lin:
-      cpl  C0 add#  \ now A = 191 - char
-      hl incp
-    then
-    \ get_col:
-    hl incp  a m ld
-    ret
-
-  then'  end-code
-
-' if'-test >body dup here swap - dump
 
   \ }}} =======================================================
   \ Address register {{{
@@ -10577,7 +10392,7 @@ binary
   parsecs @ record @ >  if  parsecs @ record !  then  ;
 : game-over  ( -- )
   blast halt  11 dup at ." GAME OVER"
-  new-record .info 22 0 at  colors0  ;
+  new-record .info 22 0 at  default-colors  ;
 
 -->
 
@@ -11624,7 +11439,7 @@ create board  9 allot
 
 need columns  need rows  need udg:  need rnd  need ??
 3 constant /k  need pressed?
-need cvariable  need 2/
+need cvariable  need 2/  need pixel-addr
 need break-key?  need hires-emit-udg  need c!toggle-bits
 
 0 cconstant black  7 cconstant white
@@ -11650,6 +11465,9 @@ white paper-color brighty cconstant racket-color
   \ address of the top left screen attribute
 23264 constant bottom-line-attr
   \ address of the bottom left screen attribute
+
+code sync  ( -- )  78 c,  jpnext  end-code
+  \ Z80 halt
 
 -->
 
@@ -11754,18 +11572,18 @@ rows 1- cconstant racket2-y
 
 ( pong )
 
-: restore-screen  ( -- )  colors0 page  ;
+: restore-screen  ( -- )  default-colors page  ;
 
 : init-screen  ( -- )  restore-screen white ink  ;
 
 : ball-xy  ( -- x y )  x @ y @  ;
 
-: show-ball  ( -- )  ball-xy ball hires-emit-udg  ;
+: show-ball  ( -- )  ball-xy ball sync hires-emit-udg  ;
 
-: erase-ball  ( -- )  ball-xy ball hires-emit-udg  ;
+: erase-ball  ( -- )  ball-xy ball sync hires-emit-udg  ;
 
 : (border)  ( a -- )
-  columns [ white paper-color ] literal fill  ;
+  columns [ white paper-color ] literal sync fill  ;
 
 : top-border  ( -- )  top-line-attr (border)  ;
 
@@ -11775,7 +11593,7 @@ rows 1- cconstant racket2-y
 
 ( pong )
 
-: show-racket  ( a -- )  racket-size racket-color fill  ;
+: show-racket  ( a -- )  racket-size racket-color sync fill  ;
 
 : show-racket1  ( -- )
   top-line-attr dup (border) racket1-x @ + show-racket  ;
@@ -11813,7 +11631,8 @@ rows 1- cconstant racket2-y
 ( pong )
 
 : (print-points)  ( n y -- )
-  0 swap at-xy s>d <# # # # #>  black ink type white ink  ;
+  0 swap at-xy s>d <# # # # #>
+  black ink sync type white ink  ;
   \ Print the points of a player.
 
 : print-points1  ( -- )
@@ -11920,42 +11739,71 @@ rows 1- cconstant racket2-y
   ball-moving-down?
   if  move-ball-down  else  move-ball-up  then  ;
 
+8 cconstant racket-delay0
+  \ Counter: Times the rackets are not moved in the main loop.
+variable racket1-delay
+variable racket2-delay
+
 -->
 
 ( pong )
 
+: ?move-ball  ( -- )
+  -1 ball-delay +!  ball-delay @ if  unnest  exit  then
+  ball-delay0 ball-delay !  ;
+
 : move-ball  ( -- )
-
-  \ XXX TODO -- factor
-  -1 ball-delay +!  ball-delay @ ?exit
-  ball-delay0 ball-delay !
-
+  ?move-ball
   erase-ball move-ball-x move-ball-y show-ball  ;
 
 : frame  ( -- )  white border  top-border bottom-border  ;
 
+: arena-line  ( -- )
+  [ 0 96 pixel-addr nip ] literal columns %10101010 fill
+  [ 0 95 pixel-addr nip ] literal columns %01010101 fill  ;
+
 : arena  ( -- )
-  cls  frame  show-rackets print-points show-ball  ;
+  cls  frame arena-line show-rackets print-points show-ball  ;
 
 -->
 
 ( pong )
 
+: ?move-racket1  ( -- )
+  -1 racket1-delay +!  racket1-delay @ if  unnest exit  then
+  racket-delay0 racket1-delay !  ;
+
+: (move-racket1)  ( 1|-1 -- )  racket1-x +!  show-racket1  ;
+
 : move-racket1-left  ( -- )
+  ?move-racket1
   racket1-x @ 0= ?exit
-  erase-racket1  -1 racket1-x +!  show-racket1  ;
+  -1 (move-racket1)  ;
 
 : move-racket1-right  ( -- )
+  ?move-racket1
   racket1-x @ racket-size + columns = ?exit
-  erase-racket1 1 racket1-x +!  show-racket1  ;
+  1 (move-racket1)  ;
+
+-->
+
+( pong )
+
+: ?move-racket2  ( -- )
+  -1 racket2-delay +!  racket2-delay @ if  unnest exit  then
+  racket-delay0 racket2-delay !  ;
+
+: (move-racket2)  ( 1|-1 -- )  racket2-x +!  show-racket2  ;
 
 : move-racket2-left  ( -- )
+  ?move-racket2
   racket2-x @ 0= ?exit
-  erase-racket2  -1 racket2-x +!  show-racket2  ;
+  -1 (move-racket2)  ;
 
 : move-racket2-right  ( -- )
+  ?move-racket2
   racket2-x @ racket-size + columns = ?exit
-  erase-racket2 1 racket2-x +!  show-racket2  ;
+  1 (move-racket2)  ;
 
 -->
 
@@ -11965,7 +11813,7 @@ rows 1- cconstant racket2-y
 
 : init-game  ( -- )
   init-screen reset-points
-  \ initial-speed speed !   \ XXX OLD
+  racket-delay0  dup racket1-delay !  racket2-delay !
   ball-delay0 ball-delay ! ready  ;
 
 : quit-game  ( -- )
@@ -11977,9 +11825,7 @@ rows 1- cconstant racket2-y
     right1-key    pressed? ?? move-racket1-right
     left2-key     pressed? ?? move-racket2-left
     right2-key    pressed? ?? move-racket2-right
-                break-key? ?? quit-game  ;
-
--->
+                break-key? ?? quit-game  ;  -->
 
 ( pong )
 
@@ -12031,6 +11877,12 @@ rows 1- cconstant racket2-y
   \ }}} =======================================================
   \ Benchmarks {{{
 
+  \ This section contains generic benchmarks.
+  \
+  \ Specific benchmarks written during the development of Solo
+  \ Forth, in order to choose between differen implementation
+  \ options, are in "Development benchamarks" section.
+
 ( bench marque )
 
   \ Code adapted from:
@@ -12038,9 +11890,9 @@ rows 1- cconstant racket2-y
 
   \ System-dependent timing routines.
 
-need frames0  need frames@
+need reset-frames  need frames@
 
-: bench  ( -- )  frames0  ;
+: bench  ( -- )  reset-frames  ;
   \ start timing
 
   \ XXX OLD
@@ -12249,7 +12101,13 @@ need vector-loop-benchmark
   .(   all-benchmarks)
 
   \ }}} =======================================================
-  \ Development benchmarks and tests {{{
+  \ Development benchmarks {{{
+
+  \ This section contains specific benchmarks written during
+  \ the development of Solo Forth in order to decide between
+  \ different implementation options.
+  \
+  \ Generic benchmarks are in the "Benchamarks" section.
 
 ( number-base-bench )
 
@@ -12281,11 +12139,11 @@ need vector-loop-benchmark
   dup [char] % = if  drop 1 /string  2  exit  then
       [char] # = if  1 /string 10  exit  then  base @  ;
 
-need frames@  need frames0  defer (number-base)
+need frames@  need reset-frames  defer (number-base)
 
 : (number-base-bench)  ( n cfa -- )
   ['] (number-base) defer!
-  frames0  0 do  s" 000" (number-base) drop 2drop  loop
+  reset-frames  0 do  s" 000" (number-base) drop 2drop  loop
   frames@ d. cr  ;
 
 : number-base-bench  ( n -- )
@@ -12310,13 +12168,13 @@ need frames@  need frames0  defer (number-base)
   \ `fill2` is a modified version
   \ `fill88` is the code adapted from Z88 CamelForth
 
-need frames@  need frames0  need rnd
+need frames@  need reset-frames  need rnd
 
 defer (fill)
 
 : (fill-bench)  ( n cfa -- )
   ['] (fill) defer!
-  frames0  0
+  reset-frames  0
   do  16384 6144 rnd (fill)  loop
   \ do  16384 1 rnd (fill)  loop
   \ do  16384 0 rnd (fill)  loop
@@ -12376,66 +12234,66 @@ defer (fill)
 
 ( value-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 0 value v1
 
 : value-bench  ( n -- )
-  frames0  0 do  v1 drop  loop  frames@ cr d.  ;
+  reset-frames  0 do  v1 drop  loop  frames@ cr d.  ;
 
 ( 2value-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 0. 2value v2
 
 : 2value-bench  ( n -- )
-  frames0  0 do  v2 2drop  loop  frames@ cr d.  ;
+  reset-frames  0 do  v2 2drop  loop  frames@ cr d.  ;
 
 ( to-value-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 0 value v1
 
 : to-value-bench  ( n -- )
-  frames0  0
+  reset-frames  0
   do  0 to v1   loop
   frames@ cr d.  ;
 
 ( to-2value-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 0. 2value v2
 
 : to-2value-bench  ( n -- )
-  frames0  0
+  reset-frames  0
   do  0. to v2   loop
   frames@ cr d.  ;
 
 ( 2to-2value-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 0. 2value v2
 
 : 2to-2value-bench  ( n -- )
-  frames0  0
+  reset-frames  0
   do  0. 2to v2   loop
   frames@ cr d.  ;
 
 ( rshift-bench lshift-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 : rshift-bench  ( n -- )
-  frames0  0
+  reset-frames  0
   do  128 255 rshift drop   loop
   frames@ cr d.  ;
 
 : lshift-bench  ( n -- )
-  frames0  0
+  reset-frames  0
   do  128 255 lshift drop   loop
   frames@ cr d.  ;
 
@@ -12451,36 +12309,6 @@ need frames@  need frames0
   \ Z88 = code adapted from Z88 CamelForth
   \ DZX = code adapted from DZX-Forth
 
-( /-test )
-
-  \ 2015-09-22: This test shows that Abersoft Forth's `m/` does
-  \ a symmetric division, and so it's equivalent to Forth-94's
-  \ `sm/rem`.
-
-  \ From the Forth-94 documentation:
-
-     \ Table 3.4 - Symmetric Division Example
-
-     \ Dividend        Divisor Remainder       Quotient
-     \ --------        ------- ---------       --------
-     \ 10                 7       3                1
-     \ -10                7      -3               -1
-     \ 10                -7       3               -1
-     \ -10               -7      -3                1
-
-[defined] (/)  ?\ defer (/)
-
-: ((/-test))  ( dividend divisor -- )
-  >r s>d r> (/) swap . . space  ;
-
-: (/-test)  ( -- )
-  cr  10  7 ((/-test)) -10  7 ((/-test))
-      10 -7 ((/-test)) -10 -7 ((/-test))  ;
-
-: /-test  ( -- )
-  dup ['] m/     ['] (/) defer! (/-test)
-      ['] sm/rem ['] (/) defer! (/-test)  ;
-
 ( /-bench )
 
   \ 2015-09-22: This bench compares the execution speed of
@@ -12488,14 +12316,15 @@ need frames@  need frames0
   \ words are equivalent.  Abersoft Forth's `m/` is much
   \ faster.
 
-need frames@  need frames0  need rnd
+need frames@  need reset-frames  need rnd
 
 : drnd  ( -- d )  rnd rnd  ;
 
 [defined] (/)  ?\ defer (/)
 
 : (/-bench)  ( n -- )
-  frames0  1+ 1 do  drnd i (/) 2drop  loop  frames@ cr d.  ;
+  reset-frames
+  1+ 1 do  drnd i (/) 2drop  loop  frames@ cr d.  ;
 
 : /-bench  ( n -- )
   dup ['] m/ ['] (/) defer! (/-bench)
@@ -12514,10 +12343,10 @@ need frames@  need frames0  need rnd
 
 ( um*-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 : um*-bench  ( n -- )
-  frames0  0 do  i i um* 2drop  loop  frames@ d.  ;
+  reset-frames  0 do  i i um* 2drop  loop  frames@ d.  ;
 
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
@@ -12536,29 +12365,6 @@ need frames@  need frames0
   \ hForth A = 33784      hForth, with absolute jumps
   \ Z88 R    = 33786      Z88 CamelForth, with relative jumps
   \ Z88 A    = 33784      Z88 CamelForth, with absolute jumps
-
-( exception-test )
-
-  \ Credits:
-  \ Code from MPE Forth for TiniARM User Manual.
-
-: could-fail  ( -- c )
-  key dup [char] q =
-  if  -1 throw  then  ;
-
-: do-it  ( a b -- c )
-  2drop could-fail  ;
-
-: try-it  ( -- )
-  1 2 ['] do-it catch
-  if    ( x1 x2 )  2drop ." There was an exception" cr
-  else  ." The character was " emit cr then  ;
-
-: retry-it  ( -- )
-  begin   1 2 ['] do-it catch
-  while   ( x1 x2 ) 2drop ." Exception, keep trying" cr
-  repeat  ( c )
-  ." The character was " emit cr  ;
 
 ( number? )
 
@@ -12583,14 +12389,14 @@ need frames@  need frames0
 
 ( number?-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 : empty-stack  ( -- )  sp0 @ sp!  ;
 
 defer num?
 
 : number?-bench  ( n -- )
-  frames0  0 do
+  reset-frames  0 do
     s" " num?  s" 12345" num?   s" 12345." num?
     s" -12345" num?  s" -12345." num?  empty-stack
   loop  frames@ cr d.  ;
@@ -12617,14 +12423,14 @@ defer num?
 
 ( number?-bench )
 
-need frames@  need frames0
+need frames@  need reset-frames
 
 : empty-stack  ( -- )  sp0 @ sp!  ;
 
 defer num?
 
 : number?-bench  ( n -- )
-  frames0  0 do
+  reset-frames  0 do
     s" " num?  s" 123x45." num?   s" 12345.999x" num?
     s" -12345.x" num?  s" -12345.999x" num?
     s" -12345.000.000" num?
@@ -12642,22 +12448,12 @@ defer num?
   \ 01000  4165
   \ 10000 41649
 
-( err>ord )
-
-  \ XXX TMP -- `err>ord` tests `error>ordinal`
-
-: err>ord  ( -- )
-  91 1 do  i . i error>ordinal ."  -> " . cr  loop
-  286 256 do  i . i error>ordinal ."  -> " . cr  loop
-  1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
-  \ vim: filetype=soloforth
-
 ( dummy-needed )
 
 ( buffer-benchmark-1 )
 
-  2 load need frames0
-  frames0
+  2 load need reset-frames
+  reset-frames
 
   need dummy-needed need dummy-needed need dummy-needed
   need dummy-needed need dummy-needed need dummy-needed
@@ -12678,7 +12474,7 @@ defer num?
 
 ( buffer-benchmark-2 )
 
-  2 load  need frames0  warnings off  frames0
+  2 load  need reset-frames  warnings off  reset-frames
 
   need list  need dump  need wdump  need decode
   need life  need hanoi  need tt need siderator  need pong
@@ -12695,32 +12491,117 @@ defer num?
 
   \ 1 frame = 50th of second
 
+( interpret-benchmark )
+
+  \ Compare different versions of `interpret`.
+
+  2 load  need reset-frames  warnings off  reset-frames
+
+  need list  need dump  need wdump  need decode
+  need life  need hanoi  need tt need siderator  need pong
+  need doer  need a!  need defer  need value  need editor
+  need case  need times  need dtimes  need for
+
+  frames@ cr .( Frames ) d. cr
+
+  \ How `interpret`
+  \ manages numbers   Bytes free  Frames
+  \ ----------------  ----------  ------
+  \ branches               32766   38888
+  \ execution table        32770   38879
+
+  \ 1 frame = 50th of second
+
+( interpret-benchmark )
+
+  \ Compare two versions of `interpret`.
+
+  2 load  need reset-frames  reset-frames
+
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 sp0 @ sp!
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 sp0 @ sp!
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 sp0 @ sp!
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 sp0 @ sp!
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+
+  frames@ cr .( Frames ) d. cr  sp0 @ sp!
+
+  \ 2015-11-12
+  \
+  \ How `interpret`
+  \ interprets numbers   Bytes free  Frames
+  \ ------------------  ----------  -------------
+  \ branches                 32766     500 (1.00)
+  \ execution table          32770     497 (0.99)
+
+  \ 1 frame = 50th of second
+
+( interpret-benchmark )
+
+  \ Compare two versions of `interpret`.
+
+  2 load  need reset-frames  reset-frames
+
+: foo  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  ;
+
+  frames@ cr .( Frames ) d. cr
+
+  \ 2015-11-12
+  \
+  \ How `interpret`
+  \ compiles numbers  Bytes free  Frames
+  \ ----------------  ----------  ------------
+  \ branches               32766     510 (1.00)
+  \ execution table        32770     507 (0.99)
+
+  \ 1 frame = 50th of second
+
 ( constant-bench )
 
-need frames0
+need reset-frames
 
 0 constant const1
 
 : bench1  ( n -- )
-  frames0 0 do  const1 drop  loop
+  reset-frames 0 do  const1 drop  loop
   frames@ d. cr ;
 
 : const2  ( -- x )  const1 cell+  ;
 
 : bench2  ( n -- )
-  frames0 0 do  const2 drop  loop
+  reset-frames 0 do  const2 drop  loop
   frames@ d. cr ;
 
 ( literal-bench )
 
-need frames0
+need reset-frames
 
 : bench1  ( n -- )
-  frames0 0 do  cell negate drop  loop
+  reset-frames 0 do  cell negate drop  loop
   frames@ d. cr ;
 
 : bench2  ( n -- )
-  frames0 0 do  [ cell negate ] literal drop  loop
+  reset-frames 0 do  [ cell negate ] literal drop  loop
   frames@ d. cr ;
 
   \ Times Frames (1 frame = 50th of second)
@@ -12731,17 +12612,17 @@ need frames0
 
 ( 0-bench false-bench )
 
-need frames0
+need reset-frames
 
   \ This bench compares `0` (implemented as a `cconstant`) and
   \ `false` (written in assembler).
 
 : 0-bench  ( n -- )
-  frames0 0 do  0 drop  loop
+  reset-frames 0 do  0 drop  loop
   frames@ d. cr ;
 
 : false-bench  ( n -- )
-  frames0 0 do  false drop  loop
+  reset-frames 0 do  false drop  loop
   frames@ d. cr ;
 
   \ Times Frames (1 frame = 50th of second)
@@ -12818,6 +12699,146 @@ need bench  need -if
   \ bench2a  245 (`-if`:    76%)
   \ bench3   528
 
+  \ }}} =======================================================
+  \ Development tests {{{
+
+( until-test )
+
+  \ XXX TMP for debugging
+  \ XXX OLD
+
+need z80-asm  need dump
+
+code until-test  ( -- )
+  begin
+    nop
+  z until  jpnext
+  end-code
+
+' until-test >body 5 dump
+
+( if'-test )
+
+  \ XXX TMP for debugging
+  \ XXX OLD
+
+need z80-asm  need dump
+
+code if'-test  ( -- )
+
+  .( here is ) here u.
+
+  p' if'  \ not expecting a regular character
+
+    nz if  \ not expecting the column
+      \ expecting the line
+      \ get_lin:
+      cpl  C0 add#  \ now A = 191 - char
+      hl incp
+    then
+    \ get_col:
+    hl incp  a m ld
+    ret
+
+  then'  end-code
+
+' if'-test >body dup here swap - dump
+
+( {if-test {do-test )
+
+  \ 2015-11-11
+
+: test2  ( n -- )
+  {do   dup 5 <   do> ." <5" cr 1+
+  |do|  dup 10 <  do> ." <10" cr 1+
+  do} drop  ;
+
+: test1  ( n1 n2 -- )
+  {if   2dup > if> ." >" cr
+  |if|  2dup < if> ." <" cr
+  if}  ;
+
+( options[-test )
+
+: o1 ." option 1" ;  : o2 ." option 2" ;  : o3 ." option 3" ;
+
+: test  ( c -- )
+  options[
+    char a option o1  char b option o2  char c option o3
+  ]options  ." end of test" cr   ;
+
+: retest  ( -- )  [char] a test ." end of retest" cr  ;
+
+: o0 ." default" ;
+
+: testd  ( c -- )
+  options[
+    char a option o1  char b option o2  char c option o3
+    default-option o0
+  ]options  ;
+
+( /-test )
+
+  \ 2015-09-22: This test shows that Abersoft Forth's `m/` does
+  \ a symmetric division, and so it's equivalent to Forth-94's
+  \ `sm/rem`.
+
+  \ From the Forth-94 documentation:
+
+     \ Table 3.4 - Symmetric Division Example
+
+     \ Dividend        Divisor Remainder       Quotient
+     \ --------        ------- ---------       --------
+     \ 10                 7       3                1
+     \ -10                7      -3               -1
+     \ 10                -7       3               -1
+     \ -10               -7      -3                1
+
+[defined] (/)  ?\ defer (/)
+
+: ((/-test))  ( dividend divisor -- )
+  >r s>d r> (/) swap . . space  ;
+
+: (/-test)  ( -- )
+  cr  10  7 ((/-test)) -10  7 ((/-test))
+      10 -7 ((/-test)) -10 -7 ((/-test))  ;
+
+: /-test  ( -- )
+  dup ['] m/     ['] (/) defer! (/-test)
+      ['] sm/rem ['] (/) defer! (/-test)  ;
+
+( exception-test )
+
+  \ Credits:
+  \ Code from MPE Forth for TiniARM User Manual.
+
+: could-fail  ( -- c )
+  key dup [char] q =
+  if  -1 throw  then  ;
+
+: do-it  ( a b -- c )
+  2drop could-fail  ;
+
+: try-it  ( -- )
+  1 2 ['] do-it catch
+  if    ( x1 x2 )  2drop ." There was an exception" cr
+  else  ." The character was " emit cr then  ;
+
+: retry-it  ( -- )
+  begin   1 2 ['] do-it catch
+  while   ( x1 x2 ) 2drop ." Exception, keep trying" cr
+  repeat  ( c )
+  ." The character was " emit cr  ;
+
+( err>ord )
+
+  \ XXX TMP -- `err>ord` tests `error>ordinal`
+
+: err>ord  ( -- )
+  91 1 do  i . i error>ordinal ."  -> " . cr  loop
+  286 256 do  i . i error>ordinal ."  -> " . cr  loop
+  1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
+
 .( block x line 0 ) cr
   .( block x line 1 ) cr
   .( block x line 2 ) cr
@@ -12850,3 +12871,240 @@ need bench  need -if
   .( block x+1 line 13 ) cr
   .( block x+1 line 14 ) cr
   .( block x+1 line 15 ) cr
+
+  \ }}} =======================================================
+  \ Error codes {{{
+
+( Standard error codes #-01..#-15 )  \ scr 5
+
+\ #-01 ABORT
+\ #-02 ABORT"
+\ #-03 stack overflow
+\ #-04 stack underflow
+\ #-05 return stack overflow
+\ #-06 return stack underflow
+\ #-07 do-loops nested too deeply during execution
+\ #-08 dictionary overflow
+\ #-09 invalid memory address
+\ #-10 division by zero
+\ #-11 result out of range
+\ #-12 argument type mismatch
+\ #-13 undefined word
+\ #-14 interpreting a compile-only word
+\ #-15 invalid FORGET
+
+( Standard error codes #-16..#-30 )
+
+\ #-16 attempt to use zero-length string as a name
+\ #-17 pictured numeric output string overflow
+\ #-18 parsed string overflow
+\ #-19 definition name too long
+\ #-20 write to a read-only location
+\ #-21 unsupported operation
+\ #-22 control structure mismatch
+\ #-23 address alignment exception
+\ #-24 invalid numeric argument
+\ #-25 return stack imbalance
+\ #-26 loop parameters unavailable
+\ #-27 invalid recursion
+\ #-28 user interrupt
+\ #-29 compiler nesting
+\ #-30 obsolescent feature
+
+( Standard error codes #-31..#-45 )
+
+\ #-31 >BODY used on non-CREATEd definition
+\ #-32 invalid name argument
+\ #-33 block read exception
+\ #-34 block write exception
+\ #-35 invalid block number
+\ #-36 invalid file position
+\ #-37 file I/O exception
+\ #-38 non-existent file
+\ #-39 unexpected end of file
+\ #-40 invalid BASE for floating point conversion
+\ #-41 loss of precision
+\ #-42 floating-point divide by zero
+\ #-43 floating-point result out of range
+\ #-44 floating-point stack overflow
+\ #-45 floating-point stack underflow
+
+( Standard error codes #-46..#-60 )
+
+\ #-46 floating-point invalid argument
+\ #-47 compilation word list deleted
+\ #-48 invalid POSTPONE
+\ #-49 search-order overflow
+\ #-50 search-order underflow
+\ #-51 compilation word list changed
+\ #-52 control-flow stack overflow
+\ #-53 exception stack overflow
+\ #-54 floating-point underflow
+\ #-55 floating-point unidentified fault
+\ #-56 QUIT
+\ #-57 exception in sending or receiving a character
+\ #-58 [IF], [ELSE], or [THEN] exception
+\ #-59 ALLOCATE
+\ #-60 FREE
+
+( Standard error codes #-61..#-75 )
+
+\ #-61 RESIZE
+\ #-62 CLOSE-FILE
+\ #-63 CREATE-FILE
+\ #-64 DELETE-FILE
+\ #-65 FILE-POSITION
+\ #-66 FILE-SIZE
+\ #-67 FILE-STATUS
+\ #-68 FLUSH-FILE
+\ #-69 OPEN-FILE
+\ #-70 READ-FILE
+\ #-71 READ-LINE
+\ #-72 RENAME-FILE
+\ #-73 REPOSITION-FILE
+\ #-74 RESIZE-FILE
+\ #-75 WRITE-FILE
+
+( Standard error codes #-76..#-79 )
+
+\ #-76 WRITE-LINE
+\ #-77 malformed xchar
+\ #-78 SUBSTITUTE
+\ #-79 REPLACES
+\ #-80
+\ #-81
+\ #-82
+\ #-83
+\ #-84
+\ #-85
+\ #-86
+\ #-87
+\ #-88
+\ #-89
+\ #-90
+
+( System error codes #-256..#-270 )
+
+\ #-256 not a word nor a number
+\ #-257 warning: is not unique
+\ #-258 stack imbalance
+\ #-259 trying to load from screen 0
+\ #-260 wrong digit
+\ #-261 deferred word is uninitialized
+\ #-262 assertion failed
+\ #-263 execution only
+\ #-264 definition not finished
+\ #-265 loading only
+\ #-266 off current editing screen
+\ #-267 warning: not present, though required
+\ #-268 required, but not located
+\ #-269 relative jump too long
+\ #-270 text not found
+
+( System error codes #-271..#-285 )
+
+\ #-271 immediate word not allowed in this structure
+\ #-272
+\ #-273
+\ #-274
+\ #-275
+\ #-276
+\ #-277
+\ #-278
+\ #-279
+\ #-280
+\ #-281
+\ #-282
+\ #-283
+\ #-284
+\ #-285
+
+
+  \ vim: filetype=soloforth
+( G+DOS error codes #-1000..#-1014 )
+
+  \ G+DOS Error codes and messages.
+  \ Some of them are useless for this implementation.
+
+\ #-1000 G+DOS: Nonsense in G+DOS
+\ #-1001 G+DOS: Nonsense in GNOS
+\ #-1002 G+DOS: Statement end error
+\ #-1003 G+DOS: Break requested
+\ #-1004 G+DOS: Sector error
+\ #-1005 G+DOS: Format data lost
+\ #-1006 G+DOS: Check disk in drive
+\ #-1007 G+DOS: No +SYS file
+\ #-1008 G+DOS: Invalid file name
+\ #-1009 G+DOS: Invalid station
+\ #-1010 G+DOS: Invalid device
+\ #-1011 G+DOS: Variable not found
+\ #-1012 G+DOS: Verify failed
+\ #-1013 G+DOS: Wrong file type
+\ #-1014 G+DOS: Merge error
+
+( G+DOS error codes #-1015..#-1029 )
+
+  \ G+DOS Error codes and messages.
+  \ Some of them are useless for this implementation.
+
+\ #-1015 G+DOS: Code error
+\ #-1016 G+DOS: Pupil set
+\ #-1017 G+DOS: Invalid code
+\ #-1018 G+DOS: Reading a write file
+\ #-1019 G+DOS: Writing a read file
+\ #-1020 G+DOS: O.K. G+DOS
+\ #-1021 G+DOS: Network off
+\ #-1022 G+DOS: Wrong drive
+\ #-1023 G+DOS: Disk write protected
+\ #-1024 G+DOS: Not enough space on disk
+\ #-1025 G+DOS: Directory full
+\ #-1026 G+DOS: File not found
+\ #-1027 G+DOS: End of file
+\ #-1028 G+DOS: File name used
+\ #-1029 G+DOS: No G+DOS loaded
+
+( G+DOS error codes #-1030..#-1031 )
+
+\ #-1030 G+DOS: STREAM used
+\ #-1031 G+DOS: CHANNEL used
+
+  \ vim: filetype=soloforth
+( OS error codes #-1128..#-1142 )
+
+  \ XXX TODO -- it seems OS error codes (there are 28 of them)
+  \ may be returned by G+DOS.  they are detected and converted
+  \ by `ior>error`.
+
+\ #-1128 OS:
+\ #-1129 OS:
+\ #-1130 OS:
+\ #-1131 OS:
+\ #-1132 OS:
+\ #-1133 OS:
+\ #-1134 OS:
+\ #-1135 OS:
+\ #-1136 OS:
+\ #-1137 OS:
+\ #-1138 OS:
+\ #-1139 OS:
+\ #-1140 OS:
+\ #-1141 OS:
+\ #-1142 OS:
+
+( OS error codes #-1143..#-1154 )
+
+\ #-1143 OS:
+\ #-1144 OS:
+\ #-1145 OS:
+\ #-1146 OS:
+\ #-1147 OS:
+\ #-1148 OS:
+\ #-1149 OS:
+\ #-1150 OS:
+\ #-1151 OS:
+\ #-1151 OS:
+\ #-1152 OS:
+\ #-1153 OS:
+\ #-1154 OS:
+
+  \ vim: filetype=soloforth

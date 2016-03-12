@@ -17,9 +17,9 @@
 
   ; Version:        20151111
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B47
+version_low_part:   equ 0x7B48
   
-  ; Last modified:  201511110212
+  ; Last modified:  201511121718
 
 ; ==============================================================
 ; Author and license
@@ -218,14 +218,12 @@ size_optimization: equ false
   ; true = fig-Forth `;s` is used
   ; false = Forth-83 and Forth-94 `exit` is used ; XXX FIXME
 
-  ; XXX TODO try false
-  ; XXX FIXME still there are problems when compiler security is off
-  ; XXX TMP 2015-08-16 Note: using 1 instead  of the label doesn't make a
-  ; difference in the crash bug
-;fig_compiler_security: equ true
+  ; XXX TODO remove compiler security
+  ; XXX FIXME there are problems when compiler security is off
+  ; (see the to-do file)
+fig_compiler_security: equ true
   ; true = fig-Forth `?pairs' is used
-  ; false = no checking during compilation of control
-  ;   structures: smaller and faster code.
+  ; false = no checking during compilation of control structures
 
   ; XXX the flag is harcoded in the code
   ; XXX OLD
@@ -4121,7 +4119,6 @@ endif
   ld (return_stack_pointer),hl
   _jp_next
 
-
 ; ----------------------------------------------
   _code_header pick_,'PICK'
 
@@ -4823,7 +4820,7 @@ do_colon.end: ; XXX TMP for debugging
 ; 
 ; ----
 ; : ;  ( -- )
-;   ?csb postpone ;s
+;   ?csp postpone ;s
 ;   postpone [
 ;   noname? @  noname? off  ?exit
 ;   reveal  ;
@@ -7726,6 +7723,9 @@ two_literal.end:
 ;
 ; }doc
 
+;  dw cr_,blk_,fetch_,dot_ ; XXX INFORMER
+;  dw to_in_,fetch_,c_slash_l_,slash_,dot_ ; XXX INFORMER
+;  dw dot_s_ ; XXX INFORMER
   dw sp_fetch_
   dw sp0_,fetch_
   dw swap_,less_than_
@@ -7735,6 +7735,23 @@ two_literal.end:
   dw less_than_
   _question_throw error.stack_overflow
   dw semicolon_s_
+
+
+if 1 ; interpret_numbers_with_execution_table
+
+  _variable_header numbers_execution_table_,'NUMBERS-EXECUTION-TABLE'
+
+  dw two_literal_     ; compiling a 2-cell number
+  dw literal_         ; compiling a 1-cell number
+  dw not_understood_  ; error
+  dw 0                ; interpreting a 2-cell number: do nothing
+  dw 0                ; interpreting a 1-cell number: do nothing
+  
+  _colon_header not_understood_,'NOT-UNDERSTOOD'
+  _literal error.not_understood
+  dw throw_
+
+endif
 
 ; ----------------------------------------------
   _colon_header interpret_,'INTERPRET'
@@ -7761,14 +7778,7 @@ interpret.begin:
 ;  _brk_type 'interpret -- after parse-name' ; XXX INFORMER
 
   dw dup_ ; end of stream?
-  dw question_branch_,interpret.continue ; if not, continue
-  ; end of stream
-  dw two_drop_
-
-  dw exit_
-
-interpret.continue:
-  ; not end of stream
+  dw zero_branch_,interpret.end ; if so, finish
 
 ; _chk 'interpret -- before find-name' ; XXX INFORMER
   dw find_name_ ; ( nfa | 0 )
@@ -7789,6 +7799,7 @@ interpret.continue:
   dw question_throw_ ; is so, throw error -14
 
   ; ( nfa )
+;  dw dup_,cr_,id_dot_  ; XXX INFORMER
   dw dup_,from_name_  ; ( nfa cfa )
   dw swap_,immediate_question_,zero_equals_ ; ( cfa non-immediate? )
   dw compiling_question_ ; ( nfa non-immediate? compiling? )
@@ -7808,6 +7819,21 @@ interpret.execute:
   dw branch_,interpret.begin
 
 interpret.word_not_found:
+
+if 1 ; interpret_numbers_with_execution_table
+
+  dw parsed_name_,two_fetch_
+  ; try to convert the text to a number
+  ; ( ca len )
+  dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
+  dw compiling_question_,question_negate_  ; ( d -2 | n -1 | 0 | n 1 | d 2 )
+  dw cells_
+  _literal numbers_execution_table_pfa+(2*cell)
+  dw plus_,perform_
+  dw branch_,interpret.begin ; repeat
+
+else
+
 ;  _chk 'interpret -- not found' ; XXX INFORMER
 
 ;  _chk 'interpret -- before parsed-name 2@' ; XXX INFORMER
@@ -7821,6 +7847,8 @@ interpret.word_not_found:
   dw number_question_ ; is it a number?
   ; ( 0 | n 1 | d 2 )
   ; XXX TODO preserve and use TOS to check single/double
+  ; XXX TODO better yet: use an execution table!
+
 ;  _brk 'interpret -- after number?' ; XXX INFORMER
   dw zero_equals_
   _question_throw error.not_understood ; error if not
@@ -7852,8 +7880,9 @@ interpret.16bit_number:
 
   dw branch_,interpret.begin ; repeat
 
+endif
+
 interpret.end:
-;  _chk 'interpret -- end' ; XXX INFORMER
   dw two_drop_
   dw semicolon_s_
 
@@ -8262,7 +8291,7 @@ endif
   dw only_,forth_,definitions_  ; search order
   dw decimal_
 
-  dw display_,colors0_,page_,greeting_
+  dw display_,default_colors_,page_,greeting_
 
 ;  _brk 'cold -- before abort' ; XXX INFORMER
 
@@ -9323,6 +9352,115 @@ transfer_sector.command:
   dw transfer_mode_
   dw semicolon_s_
 
+; **************************************************************
+; +3DOS
+
+; XXX UNDER DEVELOPMENT
+
+if defined plus3dos and false  ; XXX TMP
+
+back_from_dos:
+  ; cy = no error?
+  ; a  = error code
+  jp c,false_   ; no error
+
+back_from_dos.error:
+  ; a = error code
+  call convert_dos_error_code
+  ; hl = error code
+  jp push_hl
+
+convert_dos_error_code:
+  ; Input:   a  = original DOS error code (0..36)
+  ; Outptut: hl = DOS error code converted to Forth range (-1000..-1036)
+  ; XXX TODO use standard codes?
+  ; XXX TODO make a Forth word to access this code?
+  ld h,0
+  ld l,a
+convert_dos_error_code.hl:
+  ld de,1000
+  add hl,de
+  jp negate_hl
+
+get_current_drive:
+  ld a,0xFF
+
+set_current_drive:
+  ; a = drive (ASCII 'A'..'P' to set it; 0xFF to get it)
+  ld ix,dos_set_drive
+  jr do_dos
+
+get_current_user:
+  ld a,0xFF
+
+set_current_user:
+  ; a = user (0x00..0x0F to set it; 0xFF to get it)
+  ld ix,dos_set_user
+
+; ------------------------------
+; DOS call
+
+dos:
+
+  ; Adapted from the ZX Spectrum +3 manual.
+
+  ; IX holds the address of the DOS routine to be run. All other registers are
+  ; passed intact to the DOS routine and are returned from it.
+
+  ; Stack must be somewhere in central 32K (conforming to DOS requirements), so
+  ; saved AF and BC will not be switched out.
+
+  push af
+  push bc                  ; temp save registers while switching
+  ld   a,(sys_bankm)       ; RAM/ROM switching system variable
+  or   7                   ; want RAM page 7
+  res  4,a                 ; and DOS ROM
+  ld   bc,bank1_port       ; port used for horiz ROM switch and RAM paging
+  di
+  ld   (sys_bankm),a       ; keep system variables up to date
+  out  (c),a               ; RAM page 7 to top and DOS ROM
+  ei
+  pop  bc
+  pop  af
+
+  ;_border_halt blue_color ; XXX INFORMER
+  call call_dos.ix         ; go sub routine address in IX
+
+  push af
+  push bc
+  ld   a,(sys_bankm)
+  and  0F8h                ; reset bits for page 0
+  set  4,a                 ; switch to ROM 3 (48 BASIC)
+  ld   bc,bank1_port
+  di
+  ld   (sys_bankm),a
+  out  (c),a               ; switch back to RAM page 0 and 48 BASIC
+  ei
+  pop  bc
+  pop  af
+  ret
+
+call_dos.ix:
+
+  jp   (ix)                ; standard way to CALL (IX), by calling this jump
+
+; ------------------------------
+; DOS call preserving the Forth IP
+
+; This is used when the BC register (the Forth IP) is not a parameter of the
+; DOS routine
+
+do_dos:
+  ; IX = DOS routine to run
+  push bc
+  call dos
+  pop bc
+  ret
+
+; **************************************************************
+
+endif
+
 ; ----------------------------------------------
   _colon_header save_buffers_,'SAVE-BUFFERS'
 
@@ -9570,16 +9708,17 @@ transfer_sector.command:
 ; }doc
 
   dw backward_mark_ ; address to compute the backward branch
-if 1 ; fig_compiler_security
-  dw one_ ; error checking number
+if fig_compiler_security
+  _literal 1 ; error checking number
 endif
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header then_,'THEN',immediate+compile_only
 
-if 1 ; fig_compiler_security
-  dw two_,question_pairs_ ; check for nesting error
+if fig_compiler_security
+  _literal 2 ; error checking number
+  dw question_pairs_ ; check for nesting error
 endif
   dw forward_resolve_
   dw semicolon_s_
@@ -9621,7 +9760,7 @@ endif
 
   dw compile_,paren_question_do_
   dw backward_mark_
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
 endif
   dw semicolon_s_
@@ -9660,7 +9799,7 @@ endif
 
   dw compile_,paren_question_do83_
   dw forward_mark_
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
 endif
   dw semicolon_s_
@@ -9681,7 +9820,7 @@ endif
   dw compile_,paren_do_
 do.common: ; XXX OLD not used
   dw backward_mark_
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
 endif
   dw semicolon_s_
@@ -9706,7 +9845,7 @@ endif
   dw compile_,paren_do83_
 do.common83: ; XXX OLD not used
   dw forward_mark_
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
 endif
   dw semicolon_s_
@@ -9731,7 +9870,7 @@ endif
 ;
 ; }doc
 
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
   dw question_pairs_
 endif
@@ -9756,7 +9895,7 @@ endif
 ;
 ; }doc
 
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
   dw question_pairs_
 endif
@@ -9789,7 +9928,7 @@ endif
 ;
 ; }doc
 
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
   dw question_pairs_
 endif
@@ -9814,7 +9953,7 @@ endif
 ;
 ; }doc
 
-if 1 ; fig_compiler_security
+if fig_compiler_security
   _literal 3 ; error checking number
   dw question_pairs_
 endif
@@ -9827,8 +9966,9 @@ endif
 ; ----------------------------------------------
   _colon_header until_,'UNTIL',immediate+compile_only
 
-if 1 ; fig_compiler_security
-  dw one_,question_pairs_
+if fig_compiler_security
+  _literal 1 ; error checking number
+  dw question_pairs_
 endif
   dw compile_,zero_branch_
   dw backward_resolve_
@@ -9846,8 +9986,9 @@ endif
 ;
 ; }doc
 
-if 1 ; fig_compiler_security
-  dw one_,question_pairs_ ; check n for error
+if fig_compiler_security
+  _literal 1 ; error checking number
+  dw question_pairs_ ; check n for error
 endif
   dw compile_,branch_
   dw backward_resolve_
@@ -9855,6 +9996,8 @@ endif
 
 ; ----------------------------------------------
   _colon_header repeat_,'REPEAT',immediate+compile_only
+
+if fig_compiler_security
 
 ; doc{
 ;
@@ -9875,11 +10018,28 @@ endif
   dw two_to_r_
   dw again_ ; unconditional branch back to `begin`
   dw two_from_r_
-if 1 ; fig_compiler_security
   dw two_minus_ ; restore 2 to be checked by `then`
-endif
   dw then_ ; resolve the forward branching needed by `while`
   dw semicolon_s_
+
+else
+
+; doc{
+;
+; repeat
+;
+;   Compilation: ( orig dest -- )
+;
+; Compile `branch` to jump back to `begin`.  Resolve also  the
+; branching offset required by `while`.
+;
+; }doc
+
+  dw again_ ; unconditional branch back to `begin`
+  dw then_ ; resolve the forward branching needed by `while`
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header if_,'IF',immediate+compile_only
@@ -9893,8 +10053,8 @@ endif
   dw compile_,zero_branch_
 if.do:
   dw forward_mark_
-if 1 ; fig_compiler_security
-  dw two_ ; error checking number
+if fig_compiler_security
+  _literal 2 ; error checking number
 endif
   dw semicolon_s_
 
@@ -9917,7 +10077,7 @@ endif
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate+compile_only
 
-if 1 ; fig_compiler_security
+if fig_compiler_security
 
   dw two_ ; error checking number
   dw question_pairs_
@@ -9939,11 +10099,21 @@ endif
 ; ----------------------------------------------
   _colon_header while_,'WHILE',immediate+compile_only
 
+if fig_compiler_security
+
   dw if_
-if 1 ; fig_compiler_security
   dw two_plus_ ; leave 4 to be checked by `repeat`
-endif
   dw semicolon_s_
+
+else
+
+  ; XXX UNDER DEVELOPMENT
+
+  dw if_
+  dw swap_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header spaces_,'SPACES'
@@ -10159,12 +10329,28 @@ if 1
   ; XXX TMP -- only during the development, then remove
   ; It is already on the disk.
 
-  dw depth_,dup_,s_to_d_,less_hash_
+  dw depth_,dup_
+
+if 0
+  ; unsigned depth without space
+  dw s_to_d_,less_hash_
   _literal '>'
   dw hold_,hash_s_
   _literal '<'
-  dw hold_,hash_greater_,type_,space_
-  dw zero_branch_,dot_s.end
+  dw hold_,hash_greater_,type_
+else
+  ; signed depth, better for debugging
+  _literal '<'
+  dw emit_
+  dw dot_
+  _literal '>'
+  dw emit_
+endif
+
+  dw space_
+  _literal 1
+  dw less_than_
+  dw question_branch_,dot_s.end
 
   dw sp_fetch_,two_minus_,sp0_,fetch_,two_minus_
   dw paren_do_
@@ -10178,7 +10364,7 @@ dot_s.end:
 endif
 
 ; ----------------------------------------------
-  _code_header colors0_,'COLORS0'
+  _code_header default_colors_,'DEFAULT-COLORS'
 
 ; doc{
 ;

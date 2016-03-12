@@ -17,6 +17,9 @@
 #   Utilities section of
 #   http://worldofspectrum.org
 
+# bin2code (by Metalbrain)
+# 	http://metalbrain.speccy.org/link-eng.htm
+
 # fsb2 (by Marcos Cruz)
 # 	http://programandala.net/en.program.fsb2.html
 
@@ -59,7 +62,8 @@ origin = 0x5E00
 # 	echo variable pattern is $(pattern)
 
 .PHONY: all
-all: gplusdos plus3dos
+all: gplusdos
+#all: gplusdos plus3dos
 
 .PHONY: gplusdos
 gplusdos: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
@@ -88,7 +92,9 @@ clean:
 	rm -f \
 		solo_forth_disk_?.mgt \
 		solo_forth_disk_?.dsk \
-		solo_forth.*.tap
+		solo_forth.*.tap \
+		sys/4x8fd.tap \
+		sys/prnt42.tap
 
 include Makefile.pasmo
 #include Makefile.binutils
@@ -144,8 +150,8 @@ loader.plus3dos.bas.tap: loader.plus3dos.bas
 ################################################################
 # Font drivers
 
-# This driver is not part of the Solo Forth library yet.
-# Meanwhile, its binary is included in the first disk.
+# This drivers are not part of the Solo Forth library yet.
+# Meanwhile, their binary files are included in the first disk.
 
 # Note: an intermediate file called "4x8fd.bin" is used, in
 # order to force that filename in the TAP header and therefore
@@ -154,12 +160,12 @@ loader.plus3dos.bas.tap: loader.plus3dos.bas
 sys/4x8fd.tap: sys/4x8fd.z80s
 	cd sys ; \
 	pasmo 4x8fd.z80s 4x8fd.bin ; \
-	bin2code 4x8fd.bin 4x8fd.tap ; \
+	bin2code 4x8fd.bin 4x8fd.tap 60000 ; \
 	cd - 
 
 sys/prnt42.tap: sys/prnt42.bin
 	cd sys ; \
-	bin2code prnt42.bin prnt42.tap ; \
+	bin2code prnt42.bin prnt42.tap 63610 ; \
 	cd - 
 
 ################################################################
@@ -195,7 +201,7 @@ solo_forth_disk_1.mgt: \
 	mkmgt solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
 		loader.gplusdos.bas.tap \
-		kernel.bin.tap \
+		kernel.gplusdos.bin.tap \
 		sys/ea5aky-font42.tap \
 		sys/4x8fd.tap \
 		sys/prnt42.tap \
@@ -239,17 +245,34 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 # source blocks of the Forth system.  The blocks are stored on
 # the disk sectors, without file system.
 
-mgt_file = $(basename $(disk_source_file) ).mgt
+library_for_gplusdos.fsb: \
+	library.main.fsb \
+	library.error_codes.gplusdos.fsb \
+	library.error_codes.os.fsb
+	cat \
+		library.main.fsb \
+		library.error_codes.gplusdos.fsb \
+		library.error_codes.os.fsb \
+		> library_for_gplusdos.fsb
 
-solo_forth_disk_2.mgt: $(disk_source_file)
-	fsb2-mgt $(disk_source_file) ;\
-	mv $(mgt_file) solo_forth_disk_2.mgt
+solo_forth_disk_2.mgt: library_for_gplusdos.fsb
+	fsb2-mgt library_for_gplusdos.fsb ;\
+	mv library_for_gplusdos.mgt solo_forth_disk_2.mgt
+
+library_forth_plus3dos.fsb: \
+	library.main.fsb \
+	library.error_codes.plus3dos.fsb \
+	library.error_codes.os.fsb
+	cat \
+		library.main.fsb \
+		library.error_codes.plus3dos.fsb \
+		library.error_codes.os.fsb \
+		> library_for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
-dsk_file = $(basename $(disk_source_file) ).dsk
-solo_forth_disk_b.dsk: $(disk_source_file)
-	fsb2-dsk $(disk_source_file) ;\
-	mv $(dsk_file) solo_forth_disk_b.dsk
+solo_forth_disk_b.dsk: library_for_plus3dos.fsb
+	fsb2-dsk library_for_plus3dos.fsb ;\
+	mv library_for_plus3dos.dsk solo_forth_disk_b.dsk
 
 ################################################################
 # Backup
@@ -302,3 +325,9 @@ backup:
 # 2015-10-15: Updated.
 #
 # 2015-11-10: First changes to support also the +3DOS version.
+#
+# 2015-11-11: The DOS error codes are separated from the main file of the library.
+#
+# 2015-11-12: Fixed the load address of the font drivers; they
+# were missing because of the recent use of `bin2code`, required
+# to build +3DOS disk images.

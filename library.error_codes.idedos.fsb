@@ -1,0 +1,15 @@
+( IDEDOS error codes #-1056..#-1066 )
+
+\ #-1056 IDEDOS: Invalid partition
+\ #-1057 IDEDOS: Partition already exists
+\ #-1058 IDEDOS: Not implemented
+\ #-1059 IDEDOS: Partition open
+\ #-1060 IDEDOS: Out of partition handles
+\ #-1061 IDEDOS: Not a swap partition
+\ #-1062 IDEDOS: Drive already mapped
+\ #-1063 IDEDOS: Out of XDPBs
+\ #-1064 IDEDOS: No swap partition available
+\ #-1065 IDEDOS: Invalid device
+\ #-1066 IDEDOS: 8-bit data transfer
+
+  \ vim: filetype=soloforth

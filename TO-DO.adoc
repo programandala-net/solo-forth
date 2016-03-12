@@ -8,10 +8,35 @@
 == Urgent ==
 // {{{
 
+.2015-11-12:
+
+The stack depth becomes -2 at the end of a compiled block, when
+compiler security is off and the block has been compiled with a nested
+`need`.
+
+Some checks have been added to `?stack` and `interpret`, but
+I got no clue yet!
 
 // }}}
 == Inner ==
 // {{{
+
+.2015-11-12:
+
+Use an execution table to compile the numbers in `interpret`.
+
+First idea:
+
+0:: error
+1:: compile or push 16-bit number
+2:: compile or push 32-bit number
+
+0:: error
+1:: compile 16-bit number
+2:: compile 32-bit number
+3:: error
+4:: push 16-bit number
+5:: push 32-bit number
 
 .2015-11-10:
 
