@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509080423
+version_release:  equ 201509110057
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -7696,13 +7696,13 @@ where.do_it:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header paren_at_xy_,'(AT-XY)'
+  _colon_header paren_mode32_at_xy_,'(MODE32-AT-XY)'
 
 ; doc{
 
-; at-xy ( col line -- )  \ ANS Forth
+; (mode32-at-xy) ( col line -- )  \ ANS Forth
 ;
-; Default behaviour of `at-xy`.
+; Default behaviour of `at-xy`, in mode 32.
 ;
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
@@ -7742,7 +7742,7 @@ at_pfa.last_line:
 
 ; }doc
 
-  dw paren_at_xy_
+  dw paren_mode32_at_xy_
 
 ; ----------------------------------------------
   _code_header border_,'BORDER'

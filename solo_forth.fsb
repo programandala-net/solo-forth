@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509101717
+\ Last modified: 201509110058
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -211,7 +211,9 @@ variable last-locatable  scr/disk last-locatable !
 
 ( place +place )  \ ==strings==
 
-  \ [Code from Afera.]
+  \ Credits:
+  \ Code from Afera.
+  \ http://programandala.net/en.program.afera.html
 
 : place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
 
@@ -222,7 +224,8 @@ variable last-locatable  scr/disk last-locatable !
 
 require -rot
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
 : /string  ( ca1 len1 n -- ca2 len2 )
   rot over + -rot -  ;
@@ -239,7 +242,9 @@ require -rot
 
 ( s' )
 
-  \ [Code from Afera.]
+  \ Credits:
+  \ Code from Afera.
+  \ http://programandala.net/en.program.afera.html
 
   \ doc{
   \
@@ -255,7 +260,8 @@ require -rot
 
 ( -rot )  \ ==datastack==
 
-  \ [Code adapted from Afera.]
+  \ Credits:
+  \ Code adapted from Afera.
 
 code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
@@ -268,7 +274,8 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
 ( 2nip )
 
-  \ [Code from Afera; original code from DZX-Forth.]
+  \ Credits:
+  \ Code from Afera; original code from DZX-Forth.
 
 code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
 
@@ -291,12 +298,12 @@ code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
 
   exx
 
-  bc pop  0000 bc stp  here 2- 0 unresolved !
+  bc pop  0000 bc stp  |mark
   rp hl ftp
   begin  bc tstp  nz while
     de pop  hl decp  d m ld  hl decp  e m ld  bc decp
   repeat
-  0000 de ldp# here 2- 0 unresolved @ !
+  0000 de ldp# |resolve
   hl decp  d m ld  hl decp  e m ld
 
   rp hl stp  exx  jpnext
@@ -309,19 +316,17 @@ require nr>
 
 require z80-asm
 
-  \ XXX FIXME
-
 code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
 
   exx
   rp hl ftp
   m c ld  hl incp  m b ld  hl incp
-  0000 bc stp  here 2- 0 unresolved !
+  0000 bc stp  |mark
   begin  bc tstp  nz while
     m e ld  hl incp  m d ld  hl incp  de push  bc decp
   repeat
   rp hl stp  exx
-  0000 hl ldp# here 2- 0 unresolved @ !
+  0000 hl ldp# |resolve
   pushhl jp
   end-code
 
@@ -346,10 +351,20 @@ require n>r
   sys-chars !  channels!  ;
 
 
-: mode32  ( -- )  2548 15360 set-mode ;
+: mode32  ( -- ) 
+  2548 15360 set-mode
+  ['] (mode32-at-xy) ['] at-xy defer!  ;
   \ Set the default printing mode, 32 cpl and the ROM font.
 
 ( mode42 )
+
+  \ Credits:
+  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
+  \ Published in Microhobby, issue 66 (1986-02), page 24:
+  \ http://microhobby.org/numero066.htm
+  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+  \ XXX TMP
 
 require mode32  require <file-as-is
 
@@ -362,31 +377,133 @@ drive!
 : mode42  ( -- )  63900 [ 64600 256 - ] literal set-mode ;
   \ Set the 42 cpl printing mode.
 
-  \ Credits:
-  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
-  \ Published in Microhobby, issue 66 (1986-02), page 24:
-  \ http://microhobby.org/numero066.htm
-  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
-
 ( mode64 )
 
-require mode32  require <file-as-is
+  \ Credits:
+  \ Author of the original code: Andrew Owen.
+  \ Published in the World of Spectrum forum:
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \ Modified and adapted to Solo Forth by Marcos Cruz.
+
+  \ XXX OLD temporary first version
+  \ The driver and the font are in a disk file
+  \ that is loaded at 60000.
+
+require mode32  require <file-as-is  require 4x8font
 
 drive@ 1 drive!
 s" 4x8fd.tap" <file-as-is ?error
 drive!
   \ Load the driver and the font.
 
-variable mode64-driver  mode64-driver off
+: (mode64-at-xy)  ( col row -- )  22 emit swap emit emit  ;
 
-: mode64  ( -- )  60000 channels! ;
+: mode64  ( -- )
+  60000 4x8font set-mode
+  ['] (mode64-at-xy) ['] at-xy defer!  ;
   \ Set the 64 cpl printing mode.
 
+( mode64 )
+
+  \ XXX NEW
+  \ XXX TODO
+
+require z80-asm
+
+create mode64-at-flag 0 c,
+create mode64-column 0 c,
+create mode64-row 0 c,
+variable mode64-chars
+
+code (mode64-emit)  ( -- )
+
+  b a ld
+  here 1+ 0 unresolved !  \ address of at_flag
+  0 a ld#  and a
+  z if
+    FF a ld#
+  then
+  \ check_cr
+
+  end-code
+
+: mode64  ( -- )  mode64-chars @ (mode64-emit) set-mode ;
+
+( 4x8font )
+
+  \ Half width 4x8 font.
+  \ 336 bytes.
+  \ Top row is always zero and not stored.
+
   \ Credits:
-  \ Author of the 4x8 font driver: Andrew Owen.
+  \ Author of this 4x8 font: Andrew Owen.
   \ Published in the World of Spectrum forum:
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
-  \ Modified and adapted to Solo Forth by Marcos Cruz.
+
+create 4x8font  hex
+
+02 c, 02 c, 02 c, 02 c, 00 c, 02 c, 00 c,  \  !
+52 c, 57 c, 02 c, 02 c, 07 c, 02 c, 00 c,  \ "#
+25 c, 71 c, 62 c, 32 c, 74 c, 25 c, 00 c,  \ $%
+22 c, 42 c, 30 c, 50 c, 50 c, 30 c, 00 c,  \ &'
+14 c, 22 c, 41 c, 41 c, 41 c, 22 c, 14 c,  \ ()
+20 c, 70 c, 22 c, 57 c, 02 c, 00 c, 00 c,  \ *+
+00 c, 00 c, 00 c, 07 c, 00 c, 20 c, 20 c,  \ ,-
+01 c, 01 c, 02 c, 02 c, 04 c, 14 c, 00 c,  \ ./
+22 c, 56 c, 52 c, 52 c, 52 c, 27 c, 00 c,  \ 01
+27 c, 51 c, 12 c, 21 c, 45 c, 72 c, 00 c,  \ 23
+57 c, 54 c, 56 c, 71 c, 15 c, 12 c, 00 c,  \ 45
+17 c, 21 c, 61 c, 52 c, 52 c, 22 c, 00 c,  \ 67
+22 c, 55 c, 25 c, 53 c, 52 c, 24 c, 00 c,  \ 89
+-->
+
+( 4x8font )
+
+00 c, 00 c, 22 c, 00 c, 00 c, 22 c, 02 c,  \ :;
+00 c, 10 c, 27 c, 40 c, 27 c, 10 c, 00 c,  \ <=
+02 c, 45 c, 21 c, 12 c, 20 c, 42 c, 00 c,  \ >?
+23 c, 55 c, 75 c, 77 c, 45 c, 35 c, 00 c,  \ @A
+63 c, 54 c, 64 c, 54 c, 54 c, 63 c, 00 c,  \ BC
+67 c, 54 c, 56 c, 54 c, 54 c, 67 c, 00 c,  \ DE
+73 c, 44 c, 64 c, 45 c, 45 c, 43 c, 00 c,  \ FG
+57 c, 52 c, 72 c, 52 c, 52 c, 57 c, 00 c,  \ HI
+35 c, 15 c, 16 c, 55 c, 55 c, 25 c, 00 c,  \ JK
+45 c, 47 c, 45 c, 45 c, 45 c, 75 c, 00 c,  \ LM
+62 c, 55 c, 55 c, 55 c, 55 c, 52 c, 00 c,  \ NO
+62 c, 55 c, 55 c, 65 c, 45 c, 43 c, 00 c,  \ PQ
+63 c, 54 c, 52 c, 61 c, 55 c, 52 c, 00 c,  \ RS
+75 c, 25 c, 25 c, 25 c, 25 c, 22 c, 00 c,  \ TU
+-->
+
+( 4x8font )
+
+55 c, 55 c, 55 c, 55 c, 27 c, 25 c, 00 c,  \ VW
+55 c, 55 c, 25 c, 22 c, 52 c, 52 c, 00 c,  \ XY
+73 c, 12 c, 22 c, 22 c, 42 c, 72 c, 03 c,  \ Z[
+46 c, 42 c, 22 c, 22 c, 12 c, 12 c, 06 c,  \ \]
+20 c, 50 c, 00 c, 00 c, 00 c, 00 c, 0F c,  \ ^_
+20 c, 10 c, 03 c, 05 c, 05 c, 03 c, 00 c,  \ ?a
+40 c, 40 c, 63 c, 54 c, 54 c, 63 c, 00 c,  \ bc
+10 c, 10 c, 32 c, 55 c, 56 c, 33 c, 00 c,  \ de
+10 c, 20 c, 73 c, 25 c, 25 c, 43 c, 06 c,  \ fg
+42 c, 40 c, 66 c, 52 c, 52 c, 57 c, 00 c,  \ hi
+14 c, 04 c, 35 c, 16 c, 15 c, 55 c, 20 c,  \ jk
+60 c, 20 c, 25 c, 27 c, 25 c, 75 c, 00 c,  \ lm
+00 c, 00 c, 62 c, 55 c, 55 c, 52 c, 00 c,  \ no
+00 c, 00 c, 63 c, 55 c, 55 c, 63 c, 41 c,  \ pq
+-->
+
+( 4x8font )
+
+00 c, 00 c, 53 c, 66 c, 43 c, 46 c, 00 c,  \ rs
+00 c, 20 c, 75 c, 25 c, 25 c, 12 c, 00 c,  \ tu
+00 c, 00 c, 55 c, 55 c, 27 c, 25 c, 00 c,  \ vw
+00 c, 00 c, 55 c, 25 c, 25 c, 53 c, 06 c,  \ xy
+01 c, 02 c, 72 c, 34 c, 62 c, 72 c, 01 c,  \ z{
+24 c, 22 c, 22 c, 21 c, 22 c, 22 c, 04 c,  \ |}
+56 c, A9 c, 06 c, 04 c, 06 c, 09 c, 06 c,  \ ~?
+
+decimal
 
 ( spectrum-mode )
 
@@ -510,7 +627,7 @@ create (fzx-emit)  ( -- )
   fzx-font bc ftp  bc push  ix pop
     \ now IX = font addresss
 
-  0D cp#  0 jpz here 2- 0 unresolved !
+  0D cp#  0000 jpz |mark 0 unresolved !
     \ carriage return? if so, jump to NEWLINE
 
   \ CHK_CHAR:
@@ -546,7 +663,7 @@ create (fzx-emit)  ( -- )
 
   a inc
     \ now A = char - 31
-  a l ld  0 h ld#  hl de ldp  hl addp  de addp
+  a l ld  00 h ld#  hl de ldp  hl addp  de addp
     \ now HL = (char - 31) * 3
   bc addp
     \ now HL references offset/kern in char table
@@ -568,7 +685,7 @@ create (fzx-emit)  ( -- )
     \ now A = char shift
   af push  rld
     \ now A = (width - 1)
-  0 sta  here 2- 1 unresolved !
+  0000 sta  |mark 1 unresolved !
     \ store the width at width1
 
   08 cp#  \ check if char width is larger than 8 bits
@@ -583,7 +700,7 @@ create (fzx-emit)  ( -- )
     \ if cy, DE holds the instruction `0 c ld#`
     \ if nc, DE holds the instructions `m c ld` and `hl incp`
   \ NARROW_CHAR:
-  0 de stp  here 2- 2 unresolved !
+  0000 de stp  |mark 2 unresolved !
     \ modify the code at SMC to handle narrow/large chars;
     \ save the address of the patched address,
     \ to be resolved later at SMC
@@ -603,12 +720,12 @@ create (fzx-emit)  ( -- )
   cy if  a xor  then
     \ stop moving if it would fall outside screen
   \ ON_SCREEN:
-  a m ld  0 fta  here 2- 3 unresolved !
+  a m ld  0000 fta  |mark 3 unresolved !
     \ now A = (width - 1)
     \ fetch the width at width1
   m add
     \ now A = (width - 1) + column
-  0 callc here 2- 4 unresolved !  \ newline callc
+  0000 callc |mark 4 unresolved !  \ newline callc
     \ if char width won't fit then move to new line
 
 -->
@@ -687,7 +804,7 @@ create (fzx-emit)  ( -- )
       nc if  h a ld  08 sub#  a h ld  then
     then \ CHK_LOOP:
 
-    5 unresolved @ here >relresolve
+    5 unresolved @ >relresolve
 -->
 
 ( fzx-emit )
@@ -785,10 +902,11 @@ code xy-emit-udg  ( x y b -- )
 
 require z80-asm  require (pixel-addr)
 
-  \ [Code Adapted from "SMOOTH MOVE",
+  \ Credits:
+  \ Code Adapted from "SMOOTH MOVE",
   \ written by Simon N.  Goodwin,
-  \ published in Todospectrum, issue 2 (1984-10), page
-  \ 16.  http://microhobby.speccy.cz/zxsf/revistas-ts.htm]
+  \ published in Todospectrum, issue 2 (1984-10), page 16.
+  \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
 create (xy-emit)  ( -- )
 
@@ -829,9 +947,10 @@ create (xy-emit)  ( -- )
 
 ( ocr )
 
-  \ [Adapted from anonymous code published in Todospectrum,
+  \ Credits:
+  \ Adapted from anonymous code published in Todospectrum,
   \ issue 19 (1986-03), page 65.
-  \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm]
+  \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
 require z80-asm require ocr-chars
 
@@ -854,7 +973,7 @@ code ocr  ( col line -- n )
   c a ld  rrca  rrca  rrca  E0 and#  b xor  a e ld
   c a ld  18 and#  40 xor#  a d ld
     \ de = screen address
-  0 de stp here 2- 0 unresolved !
+  0 de stp |mark 0 unresolved !
     \ modify the code to get the screen address later
 
   ocr-chars fta  a b ld
@@ -864,7 +983,7 @@ code ocr  ( col line -- n )
     \ hl = address of scan 0 of the current char
     bc push  hl push
     0 de ldp#  \ restore the screen address
-    here 2- 0 unresolved @ !
+    |mark 0 unresolved @ !
       \ compilation: resolve the address of the screen address
     \ de = screen address
 
@@ -892,13 +1011,13 @@ code ocr  ( col line -- n )
       \ go to end
 
     \ next_char:
-    1 unresolved @ here >relresolve
+    1 unresolved @ >relresolve
     hl pop  0008 de ldp#  de addp  bc pop
   step
   \ b = 0 (no char matches)
 
   \ end:
-  2 unresolved @ here >relresolve  0 h ld#  b l ld
+  2 unresolved @ >relresolve  0 h ld#  b l ld
   bc pop  pushhl jp  end-code
 
 ( ocr-charset ocr-first ocr-chars ascii-ocr udg-ocr )
@@ -1093,10 +1212,11 @@ code plot  ( xc yc -- )
 
   \ Set a pixel without changing the color attributes.
 
-  \ [Author of the original code: José Manuel Lazo.
+  \ Credits:
+  \ Author of the original code: José Manuel Lazo.
   \ Published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
 require (pixel-addr)  require z80-asm
 
@@ -1117,10 +1237,11 @@ code set-pixel  ( xc yc -- )
 
   \ Reset a pixel without changing the color attributes.
 
-  \ [Based on code written by José Manuel Lazo,
+  \ Credits:
+  \ Based on code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
 require (pixel-addr)  require z80-asm
 
@@ -1139,10 +1260,11 @@ code reset-pixel  ( xc yc -- )
 
   \ Toggle a pixel without changing the color attributes.
 
-  \ [Based on code written by José Manuel Lazo,
+  \ Credits:
+  \ Based on code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
 require (pixel-addr)  require z80-asm
 
@@ -1181,7 +1303,8 @@ code pixel?  ( xc yc -- f )
 
 ( rdraw )
 
-  \ [Code adapted from Spectrum Forth-83's `DRAW`.]
+  \ Credits:
+  \ Code adapted from Spectrum Forth-83's `DRAW`.
 
 require z80-asm
 
@@ -1215,7 +1338,8 @@ code rdraw  ( x y -- )
 
 ( adraw ) \ from Abersoft Forth
 
-  \ [Code adapted from Abersoft Forth's `DRAW`.]
+  \ Credits:
+  \ Code adapted from Abersoft Forth's `DRAW`.
 
 require plot
 
@@ -1488,9 +1612,10 @@ code circle  ( x y radius -- )
   \ decrementing the values of paper and
   \ ink in a loop.
 
-  \ [Code adapted from a routine written by Pablo Ariza,
+  \ Credits:
+  \ Code adapted from a routine written by Pablo Ariza,
   \ published in Microhobby Especial, issue 7 (1987-12), page 46:
-  \ <http://microhobby.org/mhes7.htm>.]
+  \ <http://microhobby.org/mhes7.htm>.
 
 require z80-asm
 
@@ -1514,10 +1639,11 @@ code fade  ( -- )
 
   \ Invert the pixels of the whole screen.
 
-  \ [Code adapted from a routine written by Javier Granadino,
+  \ Credits:
+  \ Code adapted from a routine written by Javier Granadino,
   \ published in Microhobby, issue 133 (1987-06), page 7:
   \ http://microhobby.org/numero133.htm
-  \ http://microhobby.speccy.cz/mhf/133/MH133_07.jpg]
+  \ http://microhobby.speccy.cz/mhf/133/MH133_07.jpg
 
 require z80-asm
 
@@ -1535,10 +1661,11 @@ code inverted  ( -- )
   \ Modify the screen bitmap with a water
   \ effect and then restore the original.
 
-  \ [Code adapted from a routine written by Juan José Rivas,
+  \ Credits:
+  \ Code adapted from a routine written by Juan José Rivas,
   \ published in Microhobby, issue 150 (1987-06), page 9:
   \ http://microhobby.org/numero150.htm
-  \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg]
+  \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg
 
 require z80-asm
 
@@ -1559,10 +1686,11 @@ code water  ( -- )
   \ Clear the screen by rotating all bytes
   \ of the bitmap.
 
-  \ [Code adapted from a routine written by Anselmo Moreno Lorente,
+  \ Credits:
+  \ Code adapted from a routine written by Anselmo Moreno Lorente,
   \ published in Microhobby, issue 121 (1987-03), page 7:
   \ http://microhobby.org/numero121.htm
-  \ http://microhobby.speccy.cz/mhf/121/MH121_07.jpg]
+  \ http://microhobby.speccy.cz/mhf/121/MH121_07.jpg
 
 require z80-asm
 
@@ -1586,10 +1714,11 @@ code clsx  ( -- )
 
 ( scroll-1px-right )
 
-  \ [Code adapted from a routine written by Antonio Adolfo Sanz,
+  \ Credits:
+  \ Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published in Microhobby, issue 197 (1990-03), page 24:
   \ http://microhobby.org/numero197.htm
-  \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg
 
   \ XXX FIXME
 
@@ -1614,10 +1743,11 @@ code scroll-1px-right  ( -- )
 
 ( scroll-1px-up )
 
-  \ [Code adapted from a routine written by Iván Sansa,
+  \ Credits:
+  \ Code adapted from a routine written by Iván Sansa,
   \ published in Microhobby, issue 122 (1987-03), page 7:
   \ http://microhobby.org/numero122.htm
-  \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg]
+  \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg
 
 require z80-asm
 
@@ -1649,10 +1779,11 @@ code scroll-1px-up  ( -- )
 
 ( xy-scroll )
 
-  \ [Code adapted from a routine written by Antonio Adolfo Sanz,
+  \ Credits:
+  \ Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published in Microhobby, issue 197 (1990-03), page 24:
   \ http://microhobby.org/numero197.htm
-  \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg
 
   \ XXX FIXME
 
@@ -1679,10 +1810,11 @@ code xy-scroll  ( -- )
 
 ( horizontal-curtain )
 
-  \ [Code adapted from a routine written by Alejandro Mora,
+  \ Credits:
+  \ Code adapted from a routine written by Alejandro Mora,
   \ published in Microhobby, issue 128 (1987-05), page 7:
   \ http://microhobby.org/numero128.htm
-  \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg]
+  \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg
 
 require z80-asm
 
@@ -1710,10 +1842,11 @@ code horizontal-curtain  ( b -- )
 
 ( vertical-curtain )
 
-  \ [Code adapted from a routine written by Alejandro Mora,
+  \ Credits:
+  \ Code adapted from a routine written by Alejandro Mora,
   \ published in Microhobby, issue 128 (1987-05), page 7:
   \ http://microhobby.org/numero128.htm
-  \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg]
+  \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg
 
 require z80-asm
 
@@ -1747,7 +1880,9 @@ code vertical-curtain  ( b -- )
 
 ( !sound vol shutup noise )  \ ==sound128==
 
-  \ [Code from Spectrum Forth-83.]
+  \ Credits:
+  \ Code from Spectrum Forth-83.
+
   \ XXX TODO finish, document and test
 
 require !p
@@ -1770,7 +1905,9 @@ require !p
 
 require ms  vocabulary music  current @  also music definitions
 
-  \ [Code from Spectrum Forth-83.]
+  \ Credits:
+  \ Code from Spectrum Forth-83.
+
   \ XXX TODO finish, document and test
 
 : freq
@@ -1795,7 +1932,9 @@ variable len  variable tempo  variable octave  variable volume
 
 ( music )
 
-  \ [Code from Spectrum Forth-83.]
+  \ Credits:
+  \ Code from Spectrum Forth-83.
+
   \ XXX TODO finish, document and test
 
 : l  ( n -- )  len !  ;
@@ -1871,11 +2010,12 @@ code play  ( a -- )
 
   \ Sounds to be played with `play`.
 
-  \ [`waves` and `shoot` are
+  \ Credits:
+  \ `waves` and `shoot` are
   \ adapted from code written by Juan José Ruiz,
   \ published in Microhobby, issue 139 (1987-07), page 7:
   \ http://microhobby.org/numero139.htm
-  \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg]
+  \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
 
 create waves  ( -- a )
   0 c,  0 c,  0 c,  0 c,  0 c,  0 c,  7 c,
@@ -1885,11 +2025,12 @@ create shoot  ( -- a )
   10 c,  0 c,  177 c,  0 c,  191 c,  0 c,  31 c,
   71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c,
 
-  \ [`helicopter` and `train` are
+  \ Credits:
+  \ `helicopter` and `train` are
   \ adapted from code written by José Ángel Martín,
   \ published in Microhobby, issue 172 (1988-09), page 22:
   \ http://microhobby.org/numero172.htm
-  \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg]
+  \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
 
 create helicopter  ( -- a )
   200 c,  15 c,  200 c,  15 c,  200 c,  15 c,  0 c,
@@ -1950,7 +2091,8 @@ create water-drop  ( -- a )
 
 ( bleep )  \ ==sound48==
 
-  \ [Code modified from Abersoft Forth.]
+  \ Credits:
+  \ Code modified from Abersoft Forth.
 
 code bleep  ( n1 n2 -- )
   \ Produce a tone in the noise maker.
@@ -1965,7 +2107,8 @@ code bleep  ( n1 n2 -- )
 
 ( beep>bleep )
 
-  \ [Code from v.Forth.]
+  \ Credits:
+  \ Code from v.Forth.
 
   \ XXX TODO test
 
@@ -1978,6 +2121,8 @@ code bleep  ( n1 n2 -- )
 ( laser-gun )
 
   \ Laser gun sound for ZX Spectrum 48K.
+
+  \ Credits:
   \ Author of the original code: Álvaro Corredor Lanas.
   \ Published in Microhobby, issue 126 (1987), page 7:
   \ http://microhobby.org/numero126.htm
@@ -1999,6 +2144,8 @@ code laser-gun  ( -- )
 ( white-noise )
 
   \ White noise for ZX Spectrum 48K.
+
+  \ Credits:
   \ Author of the original code: Ricardo Serral Wigge.
   \ Published in Microhobby, issue 125 (1987), page 26:
   \ http://microhobby.org/numero125.htm
@@ -2035,6 +2182,8 @@ code white-noise  ( u -- )
 ( ambulance )
 
   \ Ambulance sound for ZX Spectrum 48K.
+
+  \ Credits:
   \ Author of the original code: Líder Software.
   \ Published in Microhobby, issue 142 (1987-09), page 7:
   \ http://microhobby.org/numero142.htm
@@ -2082,7 +2231,8 @@ code ambulance  ( n -- )
 
 ( within between )
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
 : within  ( n1|u1 n2|u2 n3|u3 -- f )
   over - >r - r> u<  ;
@@ -2094,7 +2244,8 @@ require -rot
 
 ( d0= d0< d< du< dmin dmax )
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
 : d0=  ( d -- f )  or 0=  ;
 
@@ -2116,7 +2267,8 @@ require -rot
 
 ( lshift )
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
 code lshift  ( x1 u -- x2 )
 
@@ -2137,7 +2289,8 @@ code lshift  ( x1 u -- x2 )
 
 code rshift  ( x1 u -- x2 )
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
   D1 c,           \ pop de
   E1 c,           \ pop hl
@@ -2154,7 +2307,8 @@ code rshift  ( x1 u -- x2 )
 
 ( Symmetric-division operators )
 
-  \ [From the ANS Forth documentation.]
+  \ Credits:
+  \ From the ANS Forth documentation.
 
   \ XXX TODO `sm/rem` not ready yet
 
@@ -2170,7 +2324,8 @@ code rshift  ( x1 u -- x2 )
 
 ( Floored-division operators )
 
-  \ [From the ANS Forth documentation.]
+  \ Credits:
+  \ From the ANS Forth documentation.
 
   \ XXX TODO `fm/mod` not ready yet
 
@@ -2818,7 +2973,8 @@ variable old-voc-link
 
 ( hex. hexb. dhex. <hex hex> )
 
-  \ [Code adapted from lina.]
+  \ Credits:
+  \ Code adapted from lina.
 
 [defined] base'  ?\ variable base'
 
@@ -2883,7 +3039,8 @@ require break-key?  require hex.  require ascii-type
 
 ( decode )
 
-  \ [Code adapted and improved from Afera.]
+  \ Credits:
+  \ Code adapted and improved from Afera.
 
   \ Variables, indentation and pause control
 
@@ -3026,7 +3183,8 @@ require break-key?
 
 ( words )
 
-  \ [Code adapted from Spectrum Forth-83.]
+  \ Credits:
+  \ Code adapted from Spectrum Forth-83.
 
 require break-key?
 
@@ -3040,7 +3198,8 @@ require break-key?
 
 ( words-like )
 
-  \ [Code adapted from pForth.]
+  \ Credits:
+  \ Code adapted from pForth.
 
 require break-key?
 
@@ -3077,7 +3236,8 @@ require break-key?
 
 ( .s u.s )
 
-  \ [Code from Afera. Original algorithm from v.Forth.]
+  \ Credits:
+  \ Code from Afera. Original algorithm from v.Forth.
 
 : .depth  ( n -- )
   s>d <# [char] > hold #s [char] < hold #> type space  ;
@@ -3236,7 +3396,8 @@ code inkey  ( -- c | 0 )
 
 ( inkey|255 )
 
-  \ [Code adapted from Abersoft Forth's `inkey`.]
+  \ Credits:
+  \ Code adapted from Abersoft Forth's `inkey`.
 
 require z80-asm
 
@@ -3358,7 +3519,8 @@ code !p  ( c ca -- )
 
 ( du.r u.r du. )  \ ==doublenumbers==
 
-  \ [Code adapted from Spectrum Forth-83.]
+  \ Credits:
+  \ Code adapted from Spectrum Forth-83.
 
 : du.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
 \ : u.r  ( n1 n2 -- )  >r 0 r> du.r  ;
@@ -3371,7 +3533,8 @@ code !p  ( c ca -- )
 
 require /string
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
   \ XXX TODO -- Move to the kernel.
 
@@ -3384,7 +3547,8 @@ require /string
 
 ( number? )
 
-  \ [Code from DZX-Forth.]
+  \ Credits:
+  \ Code from DZX-Forth.
 
   \ XXX TODO -- adapt
 
@@ -3406,7 +3570,8 @@ require /string
 
 ( b# d# h# )
 
-  \ [Code adapted from eForth.]
+  \ Credits:
+  \ Code adapted from eForth.
 
   \ XXX TODO -- finish the conversion
 
@@ -3423,7 +3588,8 @@ create h# ( 'ccc' -- n | d ) 16 c, x# immediate
 
 ( .b .d .h )
 
-  \ [Code copied from eForth and modified.]
+  \ Credits:
+  \ Code copied from eForth and modified.
 
 : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
 
@@ -3739,8 +3905,9 @@ code j'  ( -- x )
 
 ( for step )
 
-  \ [Code adapted from Z88 CamelForth. Modified to do the check
-  \ before decrementing the index.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth. Modified to do the check
+  \ before decrementing the index.
 
 code (step)  ( R: n -- n' )
 
@@ -3823,8 +3990,9 @@ code (step)  ( R: n -- n' )
 
 ( case )  \ ANS Forth version
 
-  \ [Code copied from the example provided in the ANS Forth
-  \ documentation].
+  \ Credits:
+  \ Code copied from the example provided in the ANS Forth
+  \ documentation.
 
 0 constant case immediate  \ init count of ofs
 
@@ -3918,7 +4086,8 @@ code (step)  ( R: n -- n' )
 
 ( ?dov dov loopv +loopv )
 
-  \ [Code from vForth.]
+  \ Credits:
+  \ Code from v.Forth.
 
   \ XXX TODO adapt
 
@@ -3969,7 +4138,8 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
 
 ( associative: )  \ ==datastructures==
 
-  \ [Code adapted from F83.]
+  \ Credits:
+  \ Code adapted from F83.
 
 require -rot
 
@@ -4139,7 +4309,8 @@ defer (value)
 
 ( .context .current order vocs )  \ ==vocabularies==
 
-  \ [Code adapted from F83.]
+  \ Credits:
+  \ Code adapted from F83.
 
 : .context  ( -- )  context #vocs 0 do
                       dup @ ?dup if  pfa>nfa id.  then  cell+
@@ -4205,7 +4376,8 @@ defer (value)
 
 ( seed rnd random randomize random-byte )  \ ==rng==
 
-  \ [Code adapted from Leo Brodie's code and Gforth.]
+  \ Credits:
+  \ Code adapted from Leo Brodie's code and Gforth.
 
 [defined] seed ?\ 23670 constant seed  \ system variable
 
@@ -4223,7 +4395,8 @@ code random-byte  ( -- b )
 
 ( ace-rnd )
 
-  \ [Adapted from Ace Forth, as of the Jupiter Ace manual.]
+  \ Credits:
+  \ Adapted from Ace Forth, as of the Jupiter Ace manual.
 
 [defined] seed        ?\ 23670 constant seed
 [defined] sys-frames  ?\ 23672 constant sys-frames
@@ -4238,10 +4411,13 @@ code random-byte  ( -- b )
 : randomize  ( n -- )
   ?dup 0=  if  sys-frames @  then  seed !  ;
 
-( vForth pseudo random number generator )
+( v.Forth pseudo random number generator )
 
-  \ From vForth
+  \ Credits:
+  \ Code from v.Forth.
+
   \ XXX TODO adapt and try
+
   \ : vrnd  ( n1 -- n2 )
   \   1+ 8195 23672 @ um* 1 0 d+
   \   16383 u/ drop dup seed !
@@ -4249,10 +4425,11 @@ code random-byte  ( -- b )
 
 ( xrnd )
 
-  \ [Based on code written by José Manuel Lazo,
+  \ Credits:
+  \ Based on code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
   \ XXX TODO try it
 
@@ -4272,7 +4449,8 @@ code xrnd  ( -- x )
 
 ( z88random )
 
-  \ [Code adapted from Z88 CamelForth.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
 [defined] seed
 ?\ 23670 constant seed  \ system variable
@@ -4298,7 +4476,8 @@ require random  require random-byte  require set-pixel
 
 ( defers action-of )  \ ==deferredwords==
 
-  \ [Code adapted from the Afera library.]
+  \ Credits:
+  \ Code adapted from the Afera library.
 
 : defers  ( "name" -- )  ' defer@ ,  ; immediate
   \ Compile the present contents of the deferred word "name"
@@ -4314,7 +4493,8 @@ require random  require random-byte  require set-pixel
 
 ( <is> [is] is  )
 
-  \ [Code adapted from the Afera library.]
+  \ Credits:
+  \ Code adapted from the Afera library.
 
 : <is>  ( cfa "name" -- )  ' defer!  ;
 
@@ -4553,25 +4733,28 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
   \ Leave the origin address of a forward relative branch
   \ just compiled, to be resolved by `>relresolve`.
 
-: >relresolve  ( orig dest -- )  1- over - ?page swap c!  ;
+: relresolve  ( orig dest -- )  1- over - ?page swap c!  ;
+  \ Resolve a relative branch.
+
+: >relresolve  ( orig -- )  here relresolve  ;
   \ Resolve a forward relative branch.
 
-: <relresolve  ( dest orig -- )  1- swap >relresolve  ;
+: <relresolve  ( dest -- )  here 1- swap relresolve  ;
   \ Resolve a backward relative branch.
-
-: then  ( orig cs-id -- )  0A ?pairs here >relresolve  ;
 
 : if  ( op -- orig cs-id )  , >relmark 0A  ;
 
+: then  ( orig cs-id -- )  0A ?pairs >relresolve  ;
+
 : else  ( orig cs-id -- cs-id ) \ XXX TODO document
   0A ?pairs 18 if rot swap then 0A  ;
+  \ Note 0x18 is the opcode of `jr`.
 
 : begin  (  -- dest cs-id )  <mark 0B  ;
 
 : while  (  op -- orig cs-id )  if 2+  ;
 
-: until  (  dest cs-id op -- )  , 0B ?pairs here <relresolve  ;
-  \ , 0B ?pairs 1- here swap >relresolve  ; \ XXX OLD
+: until  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
 
 : again  (  dest cs-id -- )  18 until  ;  \ compile `jr`
 
@@ -4603,6 +4786,12 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : repeat'  (  dest cs-id1 orig cs-id2 )
   2swap again' 2- then'  ;
+
+: |mark  ( -- a )  here 2-  ;
+  \ Leave the address of an absolute forward reference.
+
+: |resolve  ( a -- )  |mark swap !  ;
+  \ Resolve an absolute forward reference.
 
 -->
 
@@ -4697,7 +4886,8 @@ code if'-test  ( -- )
 
   \ Address register store and fetch words.
 
-  \ [Code adapted from Z88 CamelForth.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
   \ Note by Gary Lancaster in the Z88 CamelForth source file:
   \ Sadly, there aren't any spare registers to make this as
@@ -4722,7 +4912,8 @@ code a@  ( -- a )
 
 ( !a @a )
 
-  \ [Code adapted from Z88 CamelForth.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
 do-require a!
 
@@ -4746,7 +4937,8 @@ code @a  ( -- u )
 
 ( c!a c@a )
 
-  \ [Code adapted from Z88 CamelForth.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
 do-require a!
 
@@ -4768,7 +4960,8 @@ code c@a  ( -- c )
 
 ( !a+ @a+ )
 
-  \ [Code adapted from Z88 CamelForth.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
 do-require a!
 
@@ -4791,7 +4984,8 @@ code @a+  ( -- u )      \ Fetch cell at `a` with increment.
 
 ( c!a+ c@a+ )
 
-  \ [Code adapted from Z88 CamelForth.]
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
 do-require a!
 
