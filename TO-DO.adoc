@@ -192,19 +192,26 @@ Idea: `at-pixel` to set the graphic position.
 Other options:
 
 |===
-| set text pos | get text pos | set graphic pos  | get graphic pos  | graphic home
+| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
 
-| at           | at@          | at-pixel         | pixel@           | home-pixel
-| at           | at@          | graphic-at       | graphic-at@      | graphic-home
-| at           | at@          | gat              | gat@             | ghome
-| cursor!      | cursor@      | xy!              | xy@              | xy-home
-| set-cursor   | get-cursor   | set-xy           | get-xy           | home-xy
-| cursor!      | cursor@      | xy-cursor!       | xy-cursor@       | xy-home
-| at-xy        | at-xy@       | gat-xy           | gat-xy@          | ghome
-| set-cursor   | get-cursor   | set-coords       | get-coords       | home-coords
-| cursor!      | cursor@      | graphic-cursor!  | graphic-cursor@  | graphic-home
-| cursor!      | cursor@      | graph-cursor!    | graph-cursor@    | graph-home
+| at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
+| at         | at@        | at-pixel        | at-pixel@       | home-pixel
+| at         | at@        | graphic-at      | graphic-at@     | graphic-home
+| at         | at@        | xy-at           | xy-at@          | xy-home
+| at         | at@        | gat             | gat@            | ghome
+| set-cursor | get-cursor | set-xy          | get-xy          | home-xy
+| set-cursor | get-cursor | set-coords      | get-coords      | home-coords
+| cursor!    | cursor@    | graphic-cursor! | graphic-cursor@ | graphic-home
+| cursor!    | cursor@    | graph-cursor!   | graph-cursor@   | graph-home
+| cursor!    | cursor@    | gcursor!        | gcursor@        | ghome
+| cursor!    | cursor@    | xy-cursor!      | xy-cursor@      | xy-home
+| cursor!    | cursor@    | xy!             | xy@             | xy-home
 |===
 
-New: alternative printing system with 2 charsets: CHARS (32-127) and
-UDG (128-255). The current one is ROM based and prints BASIC tokens!
+.2015-09-05:
+
+Name for graphic fill: `flood`.
+
+There's an example how to change and restore a channel in print-42, by
+Ricardo Serral Wigge. Beside, it supports many (all?) control
+characters, unlike the implementation by Andy Jenkinson.

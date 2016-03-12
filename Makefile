@@ -103,6 +103,8 @@ solo_forth.bas.tap: solo_forth.bas
 solo_forth_disk_1.mgt: solo_forth.bas.tap solo_forth.bin.tap
 	mkmgt  solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
+		sys/ea5aky-font42.tap \
+		sys/print-42-bin.tap \
 		solo_forth.bas.tap \
 		fzx/*.fzx \
 		solo_forth.bin.tap

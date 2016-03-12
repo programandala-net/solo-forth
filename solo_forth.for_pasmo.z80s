@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509051358
+version_release:  equ 201509071819
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -326,10 +326,9 @@ error.relative_jump_too_long:       equ 30
 ; ZX Spectrum
 
 include inc/zx_spectrum_char_codes.z80s
-
 include inc/zx_spectrum_rom_routines.z80s
-
 include inc/zx_spectrum_system_variables.z80s
+include inc/zx_spectrum_system_variables_offsets.z80s
 
 sys_screen:                 equ 0x4000
 sys_screen_size:            equ 0x1B00
@@ -408,6 +407,8 @@ _code_alias_header: macro _base_label,_name,_is_immediate,_alias
   _header _base_label,_name,_is_immediate
   dw _alias##pfa ; code field
 
+;_base_label##pfa: equ _alias##pfa ; XXX TODO
+
   endm
 
 _colon_header: macro _base_label,_name,_is_immediate
@@ -439,6 +440,14 @@ _constant_header: macro _base_label,_name,_is_immediate
 
   _header _base_label,_name,_is_immediate
   dw do_constant ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_c_constant_header: macro _base_label,_name,_is_immediate
+
+  _header _base_label,_name,_is_immediate
+  dw do_c_constant ; code field
   _base_label##pfa: ; parameter field address
 
   endm
@@ -2029,17 +2038,17 @@ skip.begin:
 ;
 ; (emit)  ( b -- )
 ;
-; Send the character b to the current channel.
+; Send the character _b_ to the current channel.
 ;
 ; }doc
 
-; [Code from Spectrum Forth-83's `TOCH`.]
+if 0
 
+  ; [Code from Spectrum Forth-83's `TOCH`.]
 
-if 1
 
   ; XXX default printing system, with the ZX Spectrum charset
-  ; XXX TODO write an alternative with UDG 128..255
+  ; XXX OLD
 
   pop hl
   ld a,l
@@ -2051,7 +2060,7 @@ endif
 
 if 0
 
-  ; XXX first alternative
+  ; XXX alternative 1
 
   ; XXX OLD -- this uses UDG as a fake charset, but it can not
   ; work fine, because block chars and UDG are shown anyway,
@@ -2078,7 +2087,8 @@ endif
 
 if 0
 
-  ; XXX second alternative
+  ; XXX alternative 2
+  ; XXX OLD
   ; the coords get wrong after printing UDGs and scrolling
 
   pop hl
@@ -2159,7 +2169,9 @@ paren_emit.update2:
 
 endif
 
-if 0
+if 1
+
+  ; XXX alternative 3
 
   pop hl
   push bc
@@ -2168,7 +2180,7 @@ if 0
 
   ld a,l
   cp 128 ; control or ASCII character?
-  jp nc,paren_emit.print_udg ; is not, jump
+  jp nc,paren_emit.print_udg ; if not, jump
 
   ; use the ROM routine to print a control or ASCII character
   rst 0x10
@@ -2176,7 +2188,7 @@ if 0
   _jp_next
 
 paren_emit.print_udg:
-  ; hl = UDG code (128..255)
+  ; a = UDG code (128..255)
   sub 128
   ld l,a ; hl = UDG index code (0..127)
   ld de,(sys_udg)
@@ -2185,12 +2197,7 @@ paren_emit.print_udg:
   add hl,hl
   add hl,de
   ex de,hl ; de = char address in the font
-  ld de,(sys_s_posn)
-  ld hl,0x1821 ; 0x18 = 24 - row
-               ; 0x21 = 33 - column
-  sbc hl,de
-  ld b,h
-  ld c,l ; bc = current position
+  ld bc,(sys_s_posn) ; cursor position
   ld hl,(sys_df_cc) ; current screen address
   call rom_pr_all
   ld (sys_s_posn),bc
@@ -2211,10 +2218,16 @@ endif
 ;  dw semicolon_s_
 
 ; ----------------------------------------------
+  _variable_header printing_,'PRINTING'
+
+  dw false
+
+; ----------------------------------------------
   _colon_header printer_,'PRINTER'
 
   _literal 3
   dw chan_
+  dw printing_,on_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2222,6 +2235,7 @@ endif
 
   dw two_
   dw chan_
+  dw printing_,off_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2288,13 +2302,19 @@ decode_char.begin:
 ;
 ; }doc
 
+  ; XXX TODO use bit 5 of (iy+1)
+
 if 1
 
   ; XXX -- This version works only when the system interrupts
   ; are on.
 
+if 0
   ld a,(sys_last_k)
   and a
+else
+  bit 5,(iy+0x01) ; system variable FLAGS
+endif
   jp z,false_pfa
   jp true_pfa
 
@@ -2332,8 +2352,12 @@ endif
 if 1
 
 key.begin:
+if 0
   ld a,(sys_last_k)
   and a
+else
+  bit 5,(iy+0x01) ; system variable FLAGS
+endif
   jr z,key.begin
   ld hl,sys_last_k
   ld (hl),0
@@ -2375,7 +2399,7 @@ endif
 ;
 ; }doc
 
-  db 0x88 ; char code
+  db 0x5F ; char code
 
 ; ----------------------------------------------
   _code_header xkey_,'XKEY'
@@ -3348,8 +3372,6 @@ fetch.hl:
   push de
   _jp_next
 
-  ; XXX TODO faster or smaller with `jp pushhl`?
-
 ; ----------------------------------------------
   _code_header c_fetch_,'C@'
 
@@ -3496,6 +3518,8 @@ do_constant:
 ; ----------------------------------------------
   ; _colon_header c_variable_,'CVARIABLE'
 
+  ; XXX OLD -- this can be done with `create name n c,`
+
   ; dw create_
   ; _literal 1
   ; dw allot_
@@ -3551,26 +3575,29 @@ do_user:
   jp push_hl
 
 ; ----------------------------------------------
-  _constant_header zero_,'0'
+  _c_constant_header zero_,'0'
 
-  dw 0x0000
-
-; ----------------------------------------------
-  _constant_header one_,'1'
-
-  dw 0x0001
+  db 0x00
 
 ; ----------------------------------------------
-  _constant_header two_,'2'
+  _c_constant_header one_,'1'
 
-  dw 0x0002
+  db 0x01
+
+; ----------------------------------------------
+  _c_constant_header two_,'2'
+
+  db 0x02
 
 ; ----------------------------------------------
   _code_header false_,'FALSE'
 
+; XXX FIXME this alternative crashes the system:
+;  _code_alias_header false_,'FALSE',,zero_
+
 ; doc{
 ;
-; false  ( -- f )
+; false  ( -- ff )
 ;
 ; }doc
 
@@ -3582,7 +3609,7 @@ do_user:
 
 ; doc{
 ;
-; true  ( -- t )
+; true  ( -- tf )
 ;
 ; }doc
 
@@ -4835,8 +4862,10 @@ expect.end:
   dw number_tib_,fetch_
   dw two_dup_,blank_ ; clean the input buffer
 if 1 ; accept instead of expect
+  ; XXX NEW
   dw accept_,space_
 else
+  ; XXX OLD
   dw expect_,span_,fetch_
 endif
   dw plus_,stream_end_
@@ -7023,14 +7052,6 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  ; _colon_header question_do_,'?DO',immediate
-
-  ; XXX TODO
-
-  ; dw compile_,paren_question_do_
-  ; dw branch_,do.common
-
-; ----------------------------------------------
   _colon_header do_not_,"DON'T",immediate
 
   ; XXX TODO
@@ -7133,8 +7154,9 @@ endif
   dw two_to_r_
   dw again_ ; unconditional branch back to `begin`
   dw two_from_r_
-  ; dw two_minus_ ; restore 2 to be checked by `then` ; XXX OLD -- unnecessary
-  ; XXX TODO why unnecessary?
+if 1 ; fig_compiler_security
+  dw two_minus_ ; restore 2 to be checked by `then`
+endif
   dw then_ ; resolve the forward branching needed by `while`
   dw semicolon_s_
 
@@ -7197,8 +7219,9 @@ endif
   _colon_header while_,'WHILE',immediate
 
   dw if_
-  ; dw two_plus_ ; leave 4 to be checked by `repeat` ; XXX OLD -- unnecessary
-  ; XXX TODO 2015-08-13: why unnecessary? why fig-Forth does not use `swap`?
+if 1 ; fig_compiler_security
+  dw two_plus_ ; leave 4 to be checked by `repeat`
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7423,6 +7446,8 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO deactivate inverse mode.
+
   ; Set the colors and their masks.
 
   ld hl,(default_color_attribute)
@@ -7463,9 +7488,30 @@ endif
 ;
 ; }doc
 
+if 0
+
+  ; XXX OLD -- This method works only with the default ROM
+  ; printing routines.
+
   ld hl,0x1821 ; 0x18 = 24 - row
                ; 0x21 = 33 - column
   ld (sys_s_posn),hl
+
+else
+
+  ; XXX NEW -- This method works with any printing routine
+  ; associated to a chanel.
+
+  ld a,22
+  rst 0x10
+  xor a
+  rst 0x10
+  xor a
+  rst 0x10
+  _jp_next
+
+
+endif
   _jp_next
 
 ; ----------------------------------------------
@@ -7548,8 +7594,13 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO printer support
+  dw printing_,fetch_
+  dw zero_branch_,page.display
+  _literal form_feed_char
+  dw emit_
+  dw semicolon_s_
 
+page.display
   dw cls_
   dw semicolon_s_
 
@@ -7609,7 +7660,7 @@ system_stack_pointer: equ $+1
 ; ----------------------------------------------
   _colon_header unused_,'UNUSED'
 
-  ; XXX TODO -- adapt the the common heap is implemented
+  ; XXX TODO -- adapt when the common heap is implemented
   dw zero_,here_,minus_
   dw semicolon_s_
 
@@ -7720,7 +7771,7 @@ border.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header overwrite_,'OVERWRITE'
+  _code_header overprint_,'OVERPRINT'
 
   ld a,over_char
   jp color
@@ -7756,7 +7807,7 @@ border.end:
 
 color:
   ; Set a color attribute (ink, paper, bright, flash, inverse or
-  ; overwrite).
+  ; overprint).
   ; Input:
   ;   a = attribute control char
   ;   (tos) = color attribute value

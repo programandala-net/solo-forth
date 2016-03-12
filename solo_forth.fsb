@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509050231
+\ Last modified: 201509071818
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -71,9 +71,9 @@ decode dump
 
 : required  ( ca len -- )
 
-  \ XXX FIXME usually the final check
-  \ fails because the saved string has
-  \ been overwritten
+  \ XXX FIXME usually the final check fails because the saved
+  \ string has been overwritten. the only solution is to store
+  \ the string apart, in an ad hoc zone.
 
   \ XXX OLD
   \ 2dup undefined?
@@ -323,6 +323,33 @@ code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
   end-code
 
   \ }}} =======================================================
+  \ Screen modes {{{
+
+( mode32 mode42 )
+
+[defined] sys-chans ?\ 23631 constant sys-chans
+[defined] sys-chars ?\ 23606 constant sys-chars
+
+
+: (mode)  ( a1 a2 -- )
+  \ Set the system font to _a1_ and associate the output
+  \ routine at _a2_ to the system channels "K", "S" and "P".
+  sys-chars !
+  sys-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
+
+
+: mode32  ( -- )  2548 15360 (mode) ;
+  \ Set the default printing mode, 32 cpl and the ROM font.
+
+: mode42  ( -- )  63900 [ 64600 256 - ] literal (mode) ;
+  \ Set the 42 cpl printing mode.
+
+  \ [Author of the 42 cpl printing code: Ricardo Serral Wigge.
+  \ Published in Microhobby, issue 66 (1986-02), page 24:
+  \ http://microhobby.org/numero066.htm
+  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg]
+
+  \ }}} =======================================================
   \ Graphics {{{
 
 ( udg! udg: )
@@ -481,7 +508,7 @@ code ocr  ( col line -- n )
   2 unresolved @ here >relresolve  0 h ld#  b l ld
   bc pop  pushhl jp  end-code
 
-( ocr-charset ocr-first ocr-chars ocr-ascii ocr-udg )
+( ocr-charset ocr-first ocr-chars ascii-ocr udg-ocr )
 
 variable ocr-charset
 
@@ -501,8 +528,8 @@ variable ocr-first
   \
   \ ocr-first  ( -- a )
   \
-  \ Variable that holds the code of the first printable char in the
-  \ charset used by `ocr`. By default it contais 0x80, the
+  \ Variable that holds the code of the first printable char in
+  \ the charset used by `ocr`. By default it contais 0x80, the
   \ first UDG.
   \
   \ }doc
@@ -511,29 +538,30 @@ variable ocr-chars
 
   \ doc{
   \
-  \ ocr-charset  ( -- a )
+  \ ocr-chars  ( -- a )
   \
-  \ Variable that holds the number of printable chars in the
-  \ charset used by `ocr`. By default it contais 0x5F, the
-  \ number of printable ASCII chars in the ROM charset.
+  \ Variable that holds the number of chars used by `ocr`, from
+  \ address pointed by `ocr-charset`. By default it contais
+  \ 0x5F, the number of printable ASCII chars in the ROM
+  \ charset.
   \
   \ }doc
 
-: ocr-ascii  ( -- )
+: ascii-ocr  ( -- )
   \ Set `ocr` to work with the ASCII charset pointed by the
   \ system variable CHARS.
   23606 @ 256 + ocr-charset !
   32 ocr-first !
   95 ocr-chars !  ;
 
-: ocr-udg  ( n -- )
+: udg-ocr  ( n -- )
   \ Set `ocr` to work with the first _n_ chars of the UDG
   \ charset pointed by the system variable UDG.
   23675 @ ocr-charset !
   128 ocr-first !
   ocr-chars !  ;
 
-19 ocr-udg  \ default
+19 udg-ocr  \ default
 
 ( pixel-addr )
 
@@ -545,7 +573,7 @@ code pixel-addr  ( xc yc -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
   \ y = 0..191
-  \ n = position of the pixel in the byte address 0..7
+  \ n = position of the pixel (0..7) in its screen address
   \ a = address of the pixel byte in the screen bitmap
   E1 c,  D1 c,            \ pop hl / pop de
   C5 c,                   \ push bc
@@ -778,12 +806,12 @@ code rdraw  ( x y -- )
   \ hl = y
   \ bc = x
   1 e ld#
-  7 b bit  \ negative x?
+  b 7 bit  \ negative x?
   nz if  c a ld  neg  -1 e ld#  a c ld  then  \ negative x
 
   l b ld   \ y
   1 d ld#
-  7 h bit  \ negative y?
+  h 7 bit  \ negative y?
   nz if  b a ld  neg  -1 d ld#  a b ld  then  \ negative y
 
   24BA call \ alternative entry to the DRAW-LINE ROM routine
@@ -1126,7 +1154,7 @@ code water  ( -- )
   bc push
   20 b ld#
   begin    57FF hl ldp#
-            begin   m rrc  hl decp  6 h bit  z until
+            begin   m rrc  hl decp  h 6 bit  z until
             step
 
   bc pop  jpnext
@@ -2026,7 +2054,7 @@ code ambulance  ( n -- )
 
 require -rot
 
-: between  ( n1|u1 n2|u2 n3|u3 -- flag )
+: between  ( n1|u1 n2|u2 n3|u3 -- f )
   over - -rot - u< 0=  ;
 
 ( d0= d0< d< du< dmin dmax )
@@ -2953,7 +2981,7 @@ require break-key?
   \ XXX FIXME
 
 : words-like  ( "name" -- )
-  \ Print all words containing substring.
+  \ Print all words containing a substring.
   parse-name 2dup uppers trail  ( ca len nfa )
   begin  dup 0<> break-key? 0= and  while
     dup >r
@@ -3084,6 +3112,21 @@ require break-key?
   \ XXX TODO
   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
+( call )
+
+code call  ( a -- )
+  \ Call a machine code subroutine.
+ 
+  E1 c,               \ pop hl 
+  C5 c,               \ push bc
+  CD c, >mark         \ call call_hl
+  C1 c,               \ pop bc
+  DD c, 21 c, next ,  \ ld ix,next
+  jpnext              \ jp next
+  >resolve            \ call_hl:
+  E9 c,               \ jp (hl)
+  end-code
+
   \ }}} =======================================================
   \ Keyboard {{{
 
@@ -3094,7 +3137,7 @@ require z80-asm
 code inkey  ( -- c | 0 )
 
   \ Leave the value of the key being pressed. If no key being
-  \ pressed leaves 0.
+  \ pressed, leave 0.
   \
   \ This word works only when an interrupts routine reads the
   \ keyboard and updates the LAST-K system variable, as the OS
@@ -3103,11 +3146,15 @@ code inkey  ( -- c | 0 )
   \ XXX TODO try
 
   di
-  5C08 hl ldp#  \ LAST-K system variable
-  m a ld
-  0 m ld#
+  a xor
+  01 iy 5 bitx  \ a new key pressed?
+  nz if
+    5C08 hl ldp#  \ LAST-K system variable
+    m a ld
+    0 m ld#
+    01 iy 5 resx
+  then
   ei
-
   pusha jp
 
   end-code
@@ -4019,7 +4066,8 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
   \ system variables
 
 : seedon  ( -- n )
-  seed @ 75 um* d>s 75 0 d+ over over u< - - 1- dup seed !  ;
+  \ XXX FIXME
+  seed @ 75 um* d>s 75 0 d+ 2dup u< - - 1- dup seed !  ;
 
 : rnd  ( n1 -- n2 )  seedon um* d>s swap drop  ;
 
@@ -4184,8 +4232,12 @@ DD constant ix-op  FD constant iy-op
 
 : m7  ( 8b "name" -- )
   \ Bit manipulation of registers.
-  create c, does>  ( bit r -- )
-    ( bit r pfa ) CB c, c@ + swap 8* + c,  ;
+  \ XXX OLD
+  \ create c, does>  ( bit r -- )
+  \  ( bit r pfa ) CB c, c@ + swap 8* + c,  ;
+  \ XXX NEW
+  create c, does>  ( r bit -- )
+    ( r bit pfa ) CB c, c@ swap 8* + + c,  ;
 
 : m8  ( 16b "name" -- )
   \ 2-byte opcodes.
@@ -4214,10 +4266,15 @@ require -rot
 
 : mc  ( 8b "name" -- )
   \ Bit manipulation with index registers.
-  create c, does>  ( bit rphl disp -- )
-    ( bit rphl disp pfa ) CB c, rot drop c@ -rot c, 8* + c,  ;
+  \ XXX OLD
+  \  create c, does>  ( bit rphl disp -- )
+  \   ( bit rphl disp pfa ) CB c, rot drop c@ -rot c, 8* + c,  ;
+  \ XXX NEW
+  create c, does>  ( disp rphl bit -- )
+    ( disp rphl bit pfa )
+    CB c, c@ rot drop rot c, swap 8* + c, ;
 
-  -->
+-->
 
 ( z80-asm -- opcodes)
 
@@ -5171,11 +5228,11 @@ FORTH-WORDLIST SET-CURRENT
   \ }}} =======================================================
   \ Sample game: Siderator 2 {{{
 
-( siderator )
+.( siderator )
 
   \ XXX TODO
 
-\ Siderator 2: Judgement Day
+\ Siderator
 \ A game for the ZX Spectrum
 
 \ Copyright (C) 2009,2010,2013,2015 Marcos Cruz
@@ -5183,9 +5240,8 @@ FORTH-WORDLIST SET-CURRENT
 
   \ History
 
-  \ 2015-09-02: Start, with the code of Siderator:
-  \ http://programandala.net/en.program.siderator.html
-  \
+  \ 2015-09-02: Start, with the code of the Jupiter ACE
+  \ version: http://programandala.net/en.program.siderator.html
 
   \ Known bugs (or special features)
 
@@ -5193,7 +5249,7 @@ FORTH-WORDLIST SET-CURRENT
 
 only forth definitions
 
-locate ace-rnd load  require udg:  require inkey
+require rnd  require udg:  require inkey  require break-key?
 
 [defined] binary  ?\ : binary  ( -- )  2 base !  ;
 
@@ -5207,11 +5263,10 @@ also siderator definitions  decimal
   \ Game variables and constants:
 
 variable x          variable speed
-variable parsecs    variable record
+variable parsecs    variable record  record off
 
 999 constant max-speed
 char 5 constant left-key  char 8 constant right-key
-char q constant quit-key
 
   \ System variables and addresses:
 
@@ -5226,27 +5281,26 @@ char q constant quit-key
 
   \ Graphics
 
-15360 256 + constant charset  \ ROM charset
-23675 @ constant udg  \ UDG charset
+15360 constant charset  \ ROM charset
 : char>a  ( c -- a )  8 * charset +  ;
-: udg>a  ( c -- a )  8 * udg +  ;
+: udg>a  ( c -- a )  128 - 8 * udg +  ;
 : char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove ;
 
-0 constant star0-udg  char * star0-udg char>udg
+128 constant star0-udg  char * star0-udg char>udg
 
 binary
 00011000
+00001000
 00011000
+00010000
 00011000
+00001000
 00011000
-00011000
-00011000
-00011000
-00011000 decimal 1 udg: star-1-udg  -->
+00010000 decimal 129 udg: star1-udg  -->
 
 ( siderator )
 
-2 constant star2-udg
+130 constant star2-udg
 char | star2-udg char>udg
 
 binary
@@ -5257,7 +5311,7 @@ binary
 00001000
 00000000
 00001000
-00000000 decimal 3 udg: star3-udg  -->
+00000000 decimal 131 udg: star3-udg  -->
 
 ( siderator )
 
@@ -5269,41 +5323,47 @@ binary
 11111111
 01100110
 00111100
-00011000 decimal 4 udg: craft-udg  -->
+00011000 decimal 132 udg: craft-udg  -->
 
 ( siderator )
 
   \ Keyboard
 
-: k=  ( c -- f )  inkey =  ;
-: left?  ( -- f )  left-key k=  ;
-: right?  ( -- f )  right-key k=  ;
-: left  ( -- )  x @ left? - 0 max x !  ;
-: right  ( -- )  x @ right? + 31 min x !  ;
-: rudder  ( -- )  right left  ;
+: pressed?  ( c -- f )  inkey =  ;
+: left  ( col -- col' )  left-key pressed? + 0 max  ;
+: right  ( col -- col' )  right-key pressed? - 31 min  ;
+: rudder  ( -- )  x @ right left x !  ;
 
 -->
 
 ( siderator )
 
+require between
+
   \ Stars
 
 4 constant #stars
 : star-coords  ( -- y x )  23 31  ;
-: .star  ( c -- )  star-coords 1+ rnd at emit  ;
-: star/speed  ( -- c )  speed @ #stars 1- max-speed */ 1+  ;
+: .star  ( c -- )
+  star-coords 1+ random at 1 bright emit 0 bright  ;
+: stars/speed  ( -- n )  speed @ #stars 1- max-speed */ 1+  ;
 : scroll  ( -- )  star-coords at cr cr  ;
 : .stars  ( -- )
-  star/speed dup 0  do  dup .star  loop  drop  ;
-: star<>  ( c -- f )  #stars >  ;
-: star=  ( c -- f )  star<> 0=  ;
+  stars/speed dup [ star0-udg 1- ] literal + swap 0
+  do  dup .star  loop  drop  ;
+: star=  ( c -- f )  star0-udg star3-udg between  ;
+: star<>  ( c -- f )  star= 0=  ;
+
+-->
+
+( siderator )
 
   \ Craft
 
 : craft-coords  ( -- y x )  10 x @  ;
 : craft-at  ( -- )  craft-coords at  ;
 : -craft  ( -- )  craft-at space  ;
-: .craft  ( -- )  craft-at craft-udg emit  ;
+: .craft  ( -- )  craft-at craft-udg 5 ink emit 7 ink  ;
 
 -->
 
@@ -5315,7 +5375,7 @@ binary
 : delay  ( -- )  max-speed speed @ - 2 / 0  do  loop  ;
 : .speed  ( -- )  ." Speed:" speed @ .datum  ;
 : +speed  ( u1 -- u2 )
-  dup 10 / 1 max  parsecs @ 4 mod 0= *  + max-speed min  ;
+  dup 10 / 1 max  parsecs @ 4 mod 0= abs *  + max-speed min  ;
 : faster  ( -- )  speed @ +speed speed !  ;
 : .parsecs  ( -- )  ." Parsecs:" parsecs @ .datum  ;
 : farther  ( -- )  parsecs @ 1+ parsecs !  ;
@@ -5346,19 +5406,18 @@ require j  require ocr
 ( siderator )
 
 : safe?  ( -- f )  craft-coords swap ocr star<>  ;
-: autodestruction?  ( -- f )  quit-key k=  ;
-: continue?  ( -- f )  safe? autodestruction? 0= and  ;
+: continue?  ( -- f )  safe? break-key? 0= and  ;
 : new-record  ( -- )
   parsecs @ record @ >  if  parsecs @ record !  then  ;
 : game-over  ( -- )
   blast halt  11 dup at ." GAME OVER"
-  new-record .info 22 0 at  ;
+  new-record .info 22 0 at  colors0  ;
 
 -->
 
 ( siderator )
 
-\ Init
+\ Instructions
 
 : about  ( -- )
   cr ." Siderator 2: Jugdement Day"  cr
@@ -5373,32 +5432,42 @@ require j  require ocr
   cr ." Anyway you're supposed to die"
   cr ." before the 1000th parsec"
   cr ." because four digits would ruin"
-  cr ." the beautiful panel."  ;
+  cr ." the score panel."  ;
 
 -->
 
 ( siderator )
 
-require frames@
+\ Instructions
 
 : keys  ( -- )
   cr ." Rudder keys: "
   left-key emit space right-key emit
-  cr ." Autodestruction key: "
-  quit-key emit  ;
+  cr ." Autodestruction key: Break"  ;
 
 : instructions  ( -- )  objective cr keys  ;
 
 : wait  ( -- )  cr cr ." Press any key to start." pause  ;
 
-: init-screen  ( -- )
-  cls about cr instructions wait cls  ;
+-->
 
-: 4+-  ( n1 -- n2 )  9 rnd 4 - +  ;
+( siderator )
+
+  \ Init
+
+require frames@
+
+: init-colors  ( -- )
+  0 paper 7 ink 0 flash 0 bright 0 inverse 0 border  ;
+
+: init-screen  ( -- )
+  init-colors cls about cr instructions wait cls  ;
+
+: 4+-  ( n1 -- n2 )  9 random 4 - +  ;
 
 : init  ( -- )
-  frames@ s>d randomize  ocr-udg
-  init-screen  15 4+- x ! 0 parsecs ! 0 speed !  ;
+  frames@ s>d randomize  udg-ocr
+  init-screen  15 4+- x ! parsecs off  speed off  ;
 
 -->
 
@@ -5411,7 +5480,5 @@ require frames@
   begin   -craft scroll  faster farther .info  continue?
   while   rudder .craft .stars  delay
   repeat  game-over  ;
-
-run
 
   \ vim: filetype=soloforth
