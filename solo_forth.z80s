@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507011559
+; Version A-00-201507021540
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -33,6 +33,8 @@
 ; - fix: vocabularies.
 ; - fix: `lfa>nfa` was wrong, what ruined the bodies of new
 ; vocabularies.
+; - first changes to implement `create ... does>` after
+; Forth-83.
 
 ; ==============================================================
 ; Acknowledgments
@@ -214,12 +216,15 @@ fig_parsing?: equ false
   ; false = name fields and link fields are stored in the
   ; dictionary.
 
-  ; XXX TODO
+  ; XXX FIXME Pasmo gives strange errors (symbols not found)
+  ; when this config flag is used in nested `if`. A literal flag
+  ; (0/1) is used instead, with the flag name in a comment; it
+  ; is changed with a text substitution, and Vim mappings
+  ; are created to turn it on an off.
 ;fig_does?: equ true
   ; true = the fig-Forth `<builds does>` pair is used
   ; false = the modern `create does>` pair is used
 
-  ; XXX TODO
 fig_null_word?: equ false
   ; true = the fig-Forth null word is used to detect the end of
   ; the buffers: a word of one zero character. a null character
@@ -512,6 +517,15 @@ _does_header: macro _base_label,_name,_is_immediate
   _base_label##pfa: ; parameter field address
 
   endm
+
+_does_header83: macro _base_label,_name,_is_immediate,_do ; XXX TMP
+
+  _header _base_label,_name,_is_immediate
+  dw _do ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
 
 _constant_header: macro _base_label,_name,_is_immediate
 
@@ -4146,11 +4160,12 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; fig_does? ; XXX OLD -- original fig-Forth version, paired with `<builds`.
+if 0 ; fig_does?
 
   _colon_header nfa_to_pfa_,'NFA>PFA'
 
-  ; XXX TODO remove, not needed
+  ; XXX OLD
+  ; XXX TODO remove when possible; only needed by the old `<BUILDS ... DOES>`
 
   dw nfa_to_cfa_,cfa_to_pfa_
   dw semicolon_s_
@@ -4340,18 +4355,15 @@ endif
   dw left_bracket_,smudge_
   dw semicolon_s_
 
+if 0 ; fig_does?
+
 ; ----------------------------------------------
   _colon_header builds_,'<BUILDS'
 
-  ; XXX OLD
-  ; XXX TODO remove this, and check `does>`
-  ; XXX TODO adapt `vocabulary`
   dw zero_,constant_
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 1 ; fig_does? ; XXX OLD -- original fig-Forth version, paired with `<builds`.
-
   _colon_header does_,'DOES>'
 
   dw from_r_ ; address of the first word after `does>` (the run-time routine)
@@ -4378,15 +4390,69 @@ do_does:
   ; parameter field; push it on the stack:
   jp push_hl
 
-else  ; XXX NEW -- Forth-83 version, paired with `create`
+else ; XXX NEW -- Forth-83 version, paired with `create`
 
-  ; XXX TODO
-
-  _colon_header does_,'DOES>',immediate
+; ----------------------------------------------
+  _colon_header does83_,'DOES>83',immediate
 
   dw compile_,paren_semicolon_code_
-  call do_colon
-  _jp_next 
+  dw c_lit_
+  db 0xCD ; Z80 opcode for "call"
+  dw c_comma_ ; compile it
+  dw lit_,do_does83 ; routine address
+  dw comma_ ; compile it
+  dw semicolon_s_
+do_does83:
+  ; Save the IP in the return stack.
+  ld hl,(return_stack_pointer)
+  dec hl
+  ld (hl),b
+  dec hl
+  ld (hl),c
+  ld (return_stack_pointer),hl
+  ; Pop the address of the run-time routine
+  ; (put there bye `call do_does`) in IP.
+  pop bc ; new Forth IP
+  ; Push the pfa.
+  inc de  ; de=pfa
+  push de
+  ; Execute the run-time routine.
+  _jp_next
+
+  ; _colon_header vocabulary83_,'VOCABULARY83' ; XXX TMP
+
+  ; dw create_
+  ; ;A dummy header at vocabulary intersection.
+  ; dw current_,fetch_ ; address of the dummy lfa in the `current` vocabulary
+  ; dw lfa_to_nfa_ ; get its correspondent nfa in the dummy header
+  ; dw comma_ ; use it as link field of the dummy header in the new vocabulary
+  ; dw lit_,dummy_name_field,comma_ ; name field
+
+  ; dw here_ ; address of vocabulary link
+  ; ; Fetch the user variable `voc-link` and insert it in the dictionary.
+  ; dw voc_link_,fetch_,comma_
+
+  ; dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
+
+  ; ;dw does83_ ; this is the end in defining the vocabulary
+  ; dw paren_semicolon_code_
+; do_vocabulary83:
+  ; call do_does83
+
+  ; ; The next words are to be executed when the vocabulary is invoked.
+  ; dw context_,store_
+  ; dw semicolon_s_
+
+  ; _does_header83 vortaro83_,'VORTARO83',,do_vocabulary83 ; XXX TMP
+
+  ; ; Dummy header.
+  ; vortaro83_vocabulary_dummy_lfa:
+  ;   dw forth_vocabulary_dummy_nfa ; link field
+  ; vortaro83_vocabulary_dummy_nfa:
+  ;   dw dummy_name_field ; name field
+
+; vortaro83_vocabulary_link:
+  ; dw forth_vocabulary_link
 
 endif
 
@@ -5366,10 +5432,12 @@ do_create:
   _jp_next
 
 ; ----------------------------------------------
-
+if 0 ; fig_does?
   _does_header assembler_,'ASSEMBLER'
-
   dw do_vocabulary
+else
+  _does_header83 assembler_,'ASSEMBLER',,do_vocabulary83
+endif
 
   ; Dummy header.
 if 1 ; names_in_memory_bank?
@@ -5567,6 +5635,16 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header c_literal_,'CLITERAL',immediate
 
+; doc{
+;
+; cliteral  ( b -- )  \ I
+;
+; If compiling, then compile the stack value _b_ as a 8-bit literal.
+; `cliteral` does the same than `literal` but saves one byte of
+; dictionary space.
+;
+; }doc
+
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
@@ -5583,6 +5661,14 @@ c_literal.end:
 ; ----------------------------------------------
   _colon_header literal_,'LITERAL',immediate
 
+; doc{
+;
+; literal  ( n -- )  \ fig-Forth, I
+;
+; If compiling, then compile the stack value _n_ as a 16-bit literal.
+;
+; }doc
+
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
   if 1 ; XXX OLD
@@ -5598,6 +5684,14 @@ literal.end:
 
 ; ----------------------------------------------
   _colon_header two_literal_,'2LITERAL',immediate
+
+; doc{
+;
+; 2literal  ( d -- )  \ I
+;
+; If compiling, then compile the stack value _d_ as a 32-bit literal.
+;
+; }doc
 
   ; XXX TODO -- `interpret` needs the old method of `literal`
 
@@ -5738,7 +5832,11 @@ interpret.16bit_number:
   ; Create a dictionary entry with the parsed name as
   ; its name, and the code field pointing to the word after
   ; `does>`.
-  dw builds_ ; XXX TODO convert; see DZX-Forth
+if 0 ; fig_does?
+  dw builds_
+else
+  dw create_
+endif
 
 if 1 ; names_in_memory_bank?
   
@@ -5753,10 +5851,17 @@ if 1 ; names_in_memory_bank?
   dw voc_link_,fetch_,comma_
 
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-  dw does_ ; this is the end in defining the vocabulary
 
-  ; The next words are to be executed when the vocabulary invoked.
-do_vocabulary:
+  if 0 ; fig_does?
+    dw does_ ; this is the end in defining the vocabulary
+  do_vocabulary:
+  else
+    dw paren_semicolon_code_
+  do_vocabulary:
+    call do_does83
+  endif
+
+  ; The next words are to be executed when the vocabulary is invoked.
   dw context_,store_
 
 else
@@ -5780,12 +5885,18 @@ else
 
   ; Fetch the user variable `voc-link` and insert it in the dictionary.
   dw voc_link_,fetch_,comma_
-
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-  dw does_ ; this is the end in defining the vocabulary
 
-  ; The next words are to be executed when the vocabulary invoked.
-do_vocabulary:
+  if 0 ; fig_does?
+    dw does_ ; this is the end in defining the vocabulary
+  do_vocabulary:
+  else
+    dw paren_semicolon_code_
+  do_vocabulary:
+    call do_does83
+  endif
+
+  ; The next words are to be executed when the vocabulary is invoked.
   ; When the vocabulary is invoked, the second cell in its parameter field
   ; will be stored into the variable `context`.  The next
   ; dictionary search will begin with that vocabulary.
@@ -5796,9 +5907,13 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _does_header forth_,'FORTH'
 
+if 0 ; fig_does?
+  _does_header forth_,'FORTH'
   dw do_vocabulary
+else
+  _does_header83 forth_,'FORTH',,do_vocabulary83
+endif
 
   ; Dummy header.
 if 1 ; names_in_memory_bank?
