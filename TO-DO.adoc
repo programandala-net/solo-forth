@@ -99,4 +99,19 @@ without a fixed size.
 
 Fix:
 
-`2>r` and `2r>`.
+`2>r` and `2r>`. (done?)
+
+.2015-06-25:
+
+Change:
+fig-Forth `leave` --> `last-loop` / `no-loops` / `enough-loop`.
+
+New:
+ANS Forth `leave` --> `exit-loop` / `break-loop` (code from DZX-Forth).
+
+Fix: `65 dup emit .`. `.` prints a space at the start.
+In Abersoft Forth it does not.
+The code of `d.r` is the same in Solo Forth and Abersoft Forth.
+
+New: `??`. A control structure than executes the next compiled word if
+TOS is non-zero, else skip it.

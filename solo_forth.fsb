@@ -35,16 +35,15 @@
 
   \ This screen must be at a fixed location.
 
-  \ 2015-06-04: Copied and modified from lina (Copyright (c)
-  \ 2000-2004 Albert van der Horst, The Netherlands). First
-  \ changes to adapt it.
+  \ 2015-06-04: Copied and modified from lina ciforth.
   \
   \ 2015-06-23: First tries.
+  \
+  \ 2015-06-25: Fix. The parsed strings had to be saved in the
+  \ circular string buffer.
 
-  \ XXX TODO
-
-  \ Does the string ca1 len1 contains the string ca2 len2?
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
+  \ Does the string ca1 len1 contains the string ca2 len2?
 
 scr/disk 1 2variable locatable
 
@@ -53,21 +52,19 @@ scr/disk 1 2variable locatable
     0 i (line) 2over contains if  2drop i unloop exit  then
   loop  2drop false  ;
 
-: locate  ( "name" -- screen | false )  parse-word located  ;
-
-  \ XXX FIXME strange things happens, because strings are
-  \ overwritten.
+: locate  ( "name" -- screen | false )
+  parse-word save-string located  ;
 
 : (required)  ( ca len -- )
-  cr ." (requided) " 2dup type  \ XXX INFORMER
+  \ cr ." (required) <" 2dup type [char] > emit  \ XXX INFORMER
   located dup 0= 29 ?error load  ;
 
 : required  ( ca len -- )
   2dup undefined? if  2dup (required)  then
-  cr ." required " 2dup type  \ XXX INFORMER
+  \ cr ." required <" 2dup type [char] > emit  \ XXX INFORMER
   2dup undefined? if  type 24 message exit  then  2drop  ;
 
-: require  ( "name" -- )  parse-word required  ;
+: require  ( "name" -- )  parse-word save-string required  ;
 
 ( Error messages 1..15 ) \ scr 4
 
@@ -112,56 +109,7 @@ scr/disk 1 2variable locatable
 
 ( debug ) \ scr 6 for debugging
 
-: zx  ( -- )
-  page
-  begin   1
-          cr depth . sp@ u.
-          key drop
-  again ;
-  \ ?terminal until  ;
-
 ( debug ) \ scr 7 for debugging
-
- .( line 1 ) depth u.
- .( line 2 ) depth u.
- .( line 3 ) depth u.
- .( line 4 ) depth u.
- .( line 5 ) depth u.
- .( line 6 ) depth u.
- .( line 7 ) depth u.
- .( line 8 ) depth u.
- .( line 9 ) depth u.
- .( line 10 ) depth u.
- .( line 11 ) depth u.
- .( line 12 ) depth u.
- .( line 13 ) depth u.
- .( line 14 ) depth u.
- .( line 15 ) depth u.
-
-( cmove> )
-
-code cmove>  ( ca1 ca2 len -- )  \ ANS Forth
-
-  \ 2015-06-17: Copied from Afera.  Originally
-  \ adapted from Spectrum Forth-83.
-
-  \ exx / pop bc / pop de / pop hl
-  d9 c,  c1 c,  d1 c,  e1 c,
-
-  \ ld a,c / or b / jr z,end
-  79 c, b0 c, 28 c, 8 c,
-
-  09 c,         \ add hl,bc
-  2b c,         \ dec hl
-  eb c,         \ ex de,hl
-  09 c,         \ add hl,bc
-  2b c,         \ dec hl
-  eb c,         \ ex de,hl
-  ed c, b8 c,   \ lddr
-  \ end:
-  d9 c, dd c, e9 c,     \ exx / jp (ix)
-
-  end-code
 
 ( parse-name place +place /string )
 
@@ -178,9 +126,9 @@ code cmove>  ( ca1 ca2 len -- )  \ ANS Forth
   \ : s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
   \ : sliteral  ( ca len -- )  compile slit s,  ; immediate
 
-: place  ( ca1 len1 ca2 )  2dup c! 1+ swap move  ;
+: place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
 : +place  ( ca1 len1 ca2 )
-  2dup c@ + over c!  dup c@ 1+ + swap move  ;
+  2dup c@ + over c!  dup c@ 1+ + smove  ;
 
 : /string  ( ca1 len1 n -- ca2 len2 )
   dup >r - swap r> + swap  ;
@@ -214,12 +162,12 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
   end-code
 
-( pixel )
+( pixel-addr )
 
   \ 2015-06-11: Written.
   \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
 
-label (pixel)  ( -- a )  hex
+label pixel-addr  ( -- a )  hex
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
@@ -234,6 +182,10 @@ label (pixel)  ( -- a )  hex
   C3 c, 22B0 ,  \ jp 0x22B0 ; and return
   decimal
 
+( pixel )
+
+require pixel-addr
+
 code pixel  ( x y -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
@@ -244,7 +196,7 @@ code pixel  ( x y -- n a )
   C5 c,                   \ push bc
   40 05 + c,              \ ld b,l ; b=y
   48 03 + c,              \ ld c,e ; c=x
-  CD c, (pixel) ,         \ call (pixel)
+  CD c, pixel-addr ,      \ call pixel-addr
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
   C3 c, pushde ,          \ jp pushde
@@ -256,7 +208,7 @@ code pixel  ( x y -- n a )
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
-require pixel
+require pixel-addr
 
 code point  ( x y -- )
   E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
@@ -265,7 +217,7 @@ code point  ( x y -- )
   40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
   \ b = y coordinate
   \ c = x coordinate
-  CD c, (pixel) ,         \ call (pixel)
+  CD c, pixel-addr ,      \ call pixel-addr
   \ hl = screen address
   \ a = pixel position in hl
   40 07 + c,              \ ld b,a
@@ -286,7 +238,7 @@ code point  ( x y -- )
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
-require pixel
+require pixel-addr
 
 code plot  ( x y -- )
 
@@ -295,7 +247,7 @@ code plot  ( x y -- )
   C1 c,               \ pop bc
   40 05 + c,          \ ld b,l
   ED c, 43 , 5C7D ,   \ ld (0x5C7D),bc ; update COORDS
-  CD c, (pixel) ,     \ call (pixel)
+  CD c, pixel-addr ,  \ call pixel-addr
   \ hl = screen address
   \ a = pixel position in hl
   CD c, 22EC ,        \ call 0x22ec ; plot-sub + 7
@@ -385,7 +337,10 @@ code attr ( line col -- )
 
 ( screen )
 
-  \ XXX TODO -- write and optimize
+  \ XXX TODO -- rewrite after the planned method for a double
+  \ character set: `ascii-printed`, `udg-printed` and its
+  \ combination `printed`, or similar names. Modify the charset
+  \ system variable.
 
 code screen ( row col -- f )
 
@@ -451,9 +406,9 @@ code bleep
 
   \ XXX TODO
 
-  \ [From DZX-Forth.]
-
 code lshift  ( x1 u -- x2 )
+
+  \ [Code from DZX-Forth.]
 
   \ pop de
   \ pop hl
@@ -470,9 +425,9 @@ end-code
 
   \ XXX TODO
 
-  \ [From DZX-Forth.]
-
 code rshift  ( x1 u -- x2 )
+
+  \ [Code from DZX-Forth.]
 
   \ pop de
   \ pop hl
@@ -491,19 +446,20 @@ end-code
 
   \ 2015-06-04: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-25: Fully adapted.
 
-require s=  require parse-name  \ XXX TODO update
+[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
 
 : [else]  ( "..." -- )
 
-  1 begin   parse-name 2dup swap c@ and
+  1 begin   parse-word 2dup swap c@ and
     while   2dup s" [if]" s=
             if    2drop 1+
             else  2dup s" [else]" s=
                   if    2drop 1- dup if  1+  then
                   else  s" [then]" s= if  1-  then
                   then
-            then  -dup 0= if  exit  then
+            then  ?dup 0= if  exit  then
   repeat  2drop drop  ; immediate
 
 : [if]  ( "..." -- )  0= if [compile] [else] then  ; immediate
@@ -667,10 +623,18 @@ forth definitions decimal
      \  <------------------------------>
   cr ." Keys: space=more, q=quit, other=deeper." cr  ;
 
+  \ XXX OLD -- for fig-Forth `find`:
+\ : decode  ( "name" -- )
+\   decode-usage
+\   find if    drop  0 decode-level !  (decode)
+\        else  5 error  then  ;
+
+  \ XXX NEW -- for the modern `find`:
 : decode  ( "name" -- )
   decode-usage
-  find if    drop  0 decode-level !  (decode)
-       else  5 error  then  ;
+  defined if  cfa>pfa  0 decode-level !  (decode)
+          else  drop  5 error  then  ;
+
 
 ( words )
 
@@ -702,10 +666,12 @@ forth definitions decimal
   error-pos 2@  ( n1 n2 )
   \ n1 = value of `in` when the error happened
   \ n2 = value of `blk` when the error happened
-  dup b/scr / dup scr !
-  ." Scr # " decimal . cr
-  swap c/l /mod c/l * rot block + c/l type cr
-  here c@ - spaces char ^ emit  ;
+  dup if
+    dup b/scr / dup scr !
+    ." Scr # " decimal . cr
+    swap c/l /mod c/l * rot block + c/l type cr
+    here c@ - spaces [char] ^ emit
+  else  2drop  then  ;
 
 ( p@ )
 

@@ -7,11 +7,10 @@ fully disassembled
 (http://programandala.net/en.program.abersoft_forth.html).
 
 Solo Forth was made possible thanks to code, documentation,
-ideas and inspiration from the following Forth systems
-(acknowledgment notes are included in the source, at the
-correspondent places):
+ideas and inspiration from the following Forth systems,
+listed in alphabetial order:
 
-- Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele 1983.
+- Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele, 1983.
 - Afera (library for Abersoft Forth), by Marcos Cruz, 2015.
 - CP/M fig-Forth 1.1g (for Z80 CP/M), adaptative version by EHR et
   al., 1980-1984.
@@ -23,3 +22,5 @@ correspondent places):
   1988.
 - v.Forth (for ZX Spectrum 48K/128K), by Matteo Vitturi, 1990-2015.
 
+Acknowledgment notes are included in the source, at the correspondent
+places.

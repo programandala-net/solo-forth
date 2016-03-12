@@ -7,11 +7,13 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506240228
+; Version A-00-201506251840
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
 ; - circular string buffer
+; - fix: `require`
+; - fix: `emits`
 
 ; ==============================================================
 ; Aknowledgments
@@ -165,6 +167,7 @@ not_present_though_required_error:  equ 28
 required_but_not_located_error:     equ 29
 number_30_error:                    equ 30 ; free
 number_31_error:                    equ 31 ; free
+number_33_error:                    equ 32 ; free
 
 ; ----------------------------------------------
 ; Config
@@ -257,8 +260,8 @@ sys_udg:           equ 0x5C7B
 ; ----------------------------------------------
 ; Header
 
-immediate equ 1 ; used as optional parameter
-previous_nfa defl 0 ; link to previous Forth word
+immediate: equ 1 ; used as optional parameter
+previous_nfa: defl 0 ; link to previous Forth word
 
 _header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
 
@@ -346,7 +349,7 @@ _two_variable_header: macro _base_label,_name_but_last_letter,_last_letter,_is_i
   endm
 
 ; ----------------------------------------------
-; Strings
+; Literals 
 
 _string: macro text
 
@@ -357,6 +360,32 @@ _string: macro text
   _next:
 
 endm
+
+_number: macro _n
+  if _n=0
+    dw zero_
+  else
+    if _n=1
+      dw one_
+    else
+      if _n=2
+        dw two_
+      else
+        if _n=3
+          dw three_
+        else
+          if _n<256
+            dw c_lit_
+            db _n
+          else
+            dw lit_
+            dw _n
+          endif
+        endif
+      endif
+    endif
+  endif
+  endm
 
 ; ----------------------------------------------
 ; Jumps
@@ -396,30 +425,13 @@ _jump_z: macro _address
 ; ----------------------------------------------
 ; Error messages
 
-_error_code: macro _error
-  if _error=1
-    dw one_
-  else
-    if _error=2
-      dw two_
-    else
-      if _error=3
-        dw three_
-      else
-        dw c_lit_
-        db _error
-      endif
-    endif
-  endif
-  endm
-
 _question_error: macro _error
-  _error_code _error
+  _number _error
   dw question_error_
   endm
 
 _message: macro _error
-  _error_code _error
+  _number _error
   dw message_
   endm
 
@@ -999,6 +1011,17 @@ question_csb_.enough:
 ; ----------------------------------------------
   _code_header paren_loop_,'(LOOP',')'
 
+  ; XXX NOTE:
+  ;
+  ;
+  ; This code is from Abersoft Fort.  Its the same code used in
+  ; `(+loop)` in fig-Forth 1.1g.  The author of Abersoft Forth
+  ; used it to write `(loop)` and wrote `(+loop)` with a simple
+  ; call to it, what saves code.
+  ;
+  ; XXX TODO -- The `(loop)` of DZX-Forth is much faster, but
+  ; requires and additional parameter on the return stack.
+
   ld de,0x0001
 paren_loop.step_in_de:
   ld hl,(return_stack_pointer)
@@ -1010,27 +1033,33 @@ paren_loop.step_in_de:
   ld a,(hl)
   adc a,d
   ld (hl),a
-  inc hl
+  inc hl ; (hl) = limit
   inc d
   dec d
-  ld d,a
+  ld d,a ; de = new index
   jp m,l5eedh
+
+  ; increment>0
   ld a,e
   sub (hl)
   ld a,d
   inc hl
   sbc a,(hl)
   jp l5ef2h
-l5eedh:
-  ld a,(hl)
+
+l5eedh: ; increment<0
+  ld a,(hl) ; limit-index
   sub e
   inc hl
   ld a,(hl)
-  sbc a,d
+  sbc a,d ; a<0?
+
 l5ef2h:
-  jp m,branch_pfa
+  jp m,branch_pfa ; loop again if a<0
+  ; done, discard loop parameters
   inc hl
   ld (return_stack_pointer),hl
+  ; skip branch offset
   inc bc
   inc bc
   _jp_next
@@ -1042,45 +1071,40 @@ l5ef2h:
   jp paren_loop.step_in_de
 
 ; ----------------------------------------------
+
+  _colon_header paren_question_do,'(?DO',')'
+
+  ; XXX TODO -- first draft, just copied from DZX-Forth
+
+  dw two_dup_,equals_
+  dw question_branch_,paren_question.end
+  dw paren_do_
+  dw semicolon_s_
+paren_question.end:
+  dw two_drop_
+  dw from_r_,fetch_,to_r_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _code_header paren_do_,'(DO',')'
 
-if true ; XXX OLD
+  ; [Code from CP/M fig-Forth 1.1g.]
 
-  ld hl,(return_stack_pointer)
-  dec hl
-  dec hl
-  dec hl
-  dec hl
-  ld (return_stack_pointer),hl
-  pop de
-  ld (hl),e
-  inc hl
-  ld (hl),d
-  pop de
-  inc hl
-  ld (hl),e
-  inc hl
-  ld (hl),d
-
-else ; XXX NEW -- from CP/M fig-Forth 1.1g
-
-  EXX     ;/ SAVE IP
-  POP DE    ;  (DE)<--INITIAL INDEX
-  POP BC    ;/ (BC)<--LIMIT
-  LD  HL,(RPP)  ;  (HL)<--(RP)
-  DEC HL
-  LD  (HL),B
-  DEC HL
-  LD  (HL),C    ;/ (R2)<--LIMIT
-  DEC HL
-  LD  (HL),D
-  DEC HL
-  LD  (HL),E    ;  (R1)<--INITIAL INDEX
-  LD  (RPP),HL  ;  (RP)<--(RP)-4
-  EXX     ;/ RESTORE IP
-
-endif
-
+  exx                           ; 04t 01b
+  pop de                        ; 10t 01b
+  pop bc                        ; 10t 01b
+  ld hl,(return_stack_pointer)  ; 20t 03b
+  dec hl                        ; 06t 01b
+  ld (hl),b                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),c                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),d                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),e                     ; 07t 01b
+  ld (return_stack_pointer),hl  ; 16t 03b
+  exx                           ; 04t 01b
+                                ;116t 18b TOTAL
   _jp_next
 
 ; ----------------------------------------------
@@ -1666,7 +1690,7 @@ endif
 ;
 ; }doc
 ;
-; Copied from Spectrum Forth-83.
+; [Code from Spectrum Forth-83.]
 
   pop hl
   push bc
@@ -1693,7 +1717,7 @@ endif
 ;
 ; }doc
 
-; [Copied from Spectrum Forth-83's `TOCH`.]
+; [Code from Spectrum Forth-83's `TOCH`.]
 
   pop hl
   ld a,l
@@ -1704,7 +1728,8 @@ endif
 ; ----------------------------------------------
   _colon_header printer_,'PRINTE','R'
 
-  dw three_,chan_
+  _number 3
+  dw chan_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1878,13 +1903,34 @@ key.limit:
 ; ----------------------------------------------
   _code_header move_,'MOV','E'
 
+; doc{
+;
+; move  ( a1 a2 len -- )
+;
+; }doc
+
   exx
   pop bc
   pop de
+move.do
   pop hl
   call move_block
   exx
   _jp_next
+
+; ----------------------------------------------
+  _code_header smove_,'SMOV','E'
+
+; doc{
+;
+; smove  ( a1 len a2 -- )
+;
+; }doc
+
+  exx
+  pop de
+  pop bc
+  jr move.do
 
 ; ----------------------------------------------
   _code_header u_star_,'U','*'
@@ -2138,16 +2184,8 @@ l60c0h:
   _code_header two_r_drop_,'2RDRO','P'
 
   ld hl,(return_stack_pointer)
-if 0 ; XXX OLD
-  ; XXX TODO note in abersoft forth
-  inc hl
-  inc hl
-  inc hl
-  inc hl
-else ; XXX NEW faster
   ld de,cell*2
   add hl,de
-endif
   ld (return_stack_pointer),hl
   _jp_next
 
@@ -2514,7 +2552,7 @@ do_colon:
 ; ----------------------------------------------
   _colon_header noname_,':NONAM','E',immediate
 
-  ; [Copied from the Afera library.]
+  ; [Code from the Afera library.]
 
   ; XXX TODO move to the disk? problem: do_colon
 
@@ -3085,7 +3123,8 @@ endif
   _colon_header cfa_to_nfa_,'CFA>NF','A'
 
 if fig_name_field?
-  dw three_,minus_
+  _number 3
+  dw minus_
   dw lit_,-1,traverse_
 else
   dw cfa_to_lfa_,lfa_to_nfa_
@@ -3618,7 +3657,7 @@ stream.end:
   ; XXX TODO factor of `parse`?:
   dw scan_ ; ( ca len )
   ; XXX TODO factor of `parse`?:
-  dw dup_,one_plus_,to_in_,plus_store_
+  dw dup_,one_plus_,to_in_,plus_store_ ; XXX TODO `1+` ?
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3666,8 +3705,8 @@ else ; XXX NEW -- modern version with `skip parse`
   dw skip_ ; ( c a2 )
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`:
-  dw scan_ ; ( a3 len )
-  dw dup_,one_plus_,to_in_,plus_store_
+  dw scan_ ; ( a2 len )
+  dw dup_,to_in_,plus_store_
 
   dw here_
   dw c_lit_
@@ -4232,7 +4271,6 @@ compare.end:
   jp push_hl
 
 compare_strings_case_sensitive:
-  ; Copied from DZX-Forth.
   ; Used by 'compare' and 'search'.
   ; Input:
   ;   HL = a1
@@ -4240,6 +4278,7 @@ compare_strings_case_sensitive:
   ;   DE = len
   ; Output:
   ;   Z = match?
+  ; [Code from DZX-Forth.]
   ld a,e
   or d
   ret z
@@ -5216,21 +5255,22 @@ endif
 
   dw compile_,paren_do_
   dw backward_mark_
-  dw three_
+  _number 3
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header loop_,'LOO','P',immediate
 
-  dw three_,question_pairs_
+  _number 3
+  dw question_pairs_
   dw compile_,paren_loop_
   dw backward_resolve_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOO','P',immediate
-
-  dw three_
+  
+  _number 3
   dw question_pairs_
   dw compile_,paren_plus_loop_
   dw backward_resolve_
@@ -5328,8 +5368,8 @@ if.do:
 
   ; emits  ( u c -- )
 
-  ; XXX TODO use `?do` when available
-  dw swap_,question_dup_
+  ; XXX TODO use `?do` or `for` when available
+  dw swap_,zero_,max_,question_dup_
   dw zero_branch_,emits_.end
   dw zero_
   dw paren_do_
@@ -5386,30 +5426,56 @@ sign.end:
 ; ----------------------------------------------
   _colon_header hash_,'','#'
 
-  dw base_,fetch_,m_slash_mod_,rot_
+; doc{
+;
+; #  ( d1 -- d2 )
+;
+; Divide _d1_ by current base.  The remainder is converted to
+; an ASCII character and appended to the output text string.
+; The quotient _d2_ is left on stack.
+;
+; }doc
+
+
+  dw base_,fetch_
+  dw m_slash_mod_ ;  ( remainder dquotient )
+  dw rot_ ; ( dquotient remainder )
   dw c_lit_
   db 0x09
-  dw over_,less_than_
+  dw over_,less_than_ ; remainder<9?
   dw zero_branch_,hash.digit
+  ; remainder<9
   dw c_lit_
   db 0x07
-  dw plus_
+  dw plus_ ; make it an alphabet
 hash.digit:
+  ; Form the ASCII representation of a digit:
+  ; "0" to "9" and "A" to "F" (or above).
   dw c_lit_
   db '0'
-  dw plus_,hold_
+  dw plus_
+  dw hold_ ; put the digit into `pad` in a reversed order.
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header hash_s_,'#','S'
 
 hash_s.begin:
-  dw hash_,two_dup_,or_,zero_equals_
-  dw zero_branch_,hash_s.begin ; until
+  dw hash_,two_dup_,or_
+  dw question_branch_,hash_s.begin
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header d_dot_r_,'D.','R'
+
+; doc{
+;
+; d.r  ( d n -- )
+;
+; Print a signed double number _d_ right justified in a field of
+; _n_ characters.
+;
+; }doc
 
   dw to_r_ ; save n
   ; Save the high order part of d under d,
@@ -5432,11 +5498,29 @@ hash_s.begin:
 ; ----------------------------------------------
   _colon_header d_dot_,'D','.'
 
+; doc{
+;
+; d.  ( d -- )
+;
+; Print signed double integer _d_ according to current base,
+; followed by only one blank.
+;
+; }doc
+
   dw zero_,d_dot_r_,space_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header dot_,'','.'
+
+; doc{
+;
+; .  ( n -- )
+;
+; Print signed integer _n_ according to current base, followed
+; by only one blank.
+;
+; }doc
 
   dw s_to_d_,d_dot_
   dw semicolon_s_
@@ -5563,7 +5647,8 @@ list.loop:
 ; ----------------------------------------------
   _code_header two_swap_,'2SWA','P'
 
-  ; Copied from DZX-Forth.
+  ; [Code from DZX-Forth.]
+
   pop hl
   pop de
   ex (sp),hl
@@ -5596,7 +5681,9 @@ list.loop:
   dw swap_
   dw paren_do_
 index.do:
-  dw cr_,i_,three_,dot_r_,space_
+  dw cr_,i_
+  _number 3
+  dw dot_r_,space_
   dw zero_,i_,dot_line_
   dw question_terminal_
   dw zero_branch_,index.loop
@@ -5609,7 +5696,6 @@ index.loop:
   _colon_header where_,'WHER','E'
 
   ; XXX TODO -- remove; already copied to the disk
-  ; XXX TODO -- in disk version: return if zero
 
   dw error_pos_,two_fetch_ ; XXX NEW
   dw dup_
@@ -5653,13 +5739,13 @@ where.do_it:
 
 ; : at ( line col -- )
 
-; Adapted from Lennart Benschop's Spectrum Forth-83.
-
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
 ; be written if needed.
 
 ; }doc
+
+; [Code adapted from Spectrum Forth-83.]
 
   dw swap_,dup_
   dw c_lit_
@@ -5726,10 +5812,12 @@ at_pfa.last_line:
   _code_header ink_,'IN','K'
 
   ld a,ink_char
+
 color:
   ; Set a color attribute (ink, paper, bright, flash, inverse or gover).
-  ; a = attribute control char
-  ; (tos) = color attribute value
+  ; Input:
+  ;   a = attribute control char
+  ;   (tos) = color attribute value
   rst 0x10
   pop hl
   ld a,l
@@ -5741,16 +5829,8 @@ color:
   _code_header j_,'','J'
 
   ld hl,(return_stack_pointer)
-if 0 ; XXX OLD
-  ; XXX TODO note in abersoft forth
-  inc hl
-  inc hl
-  inc hl
-  inc hl
-else ; XXX NEW faster
   ld de,cell*2
   add hl,de
-endif
   ld e,(hl)
   inc hl
   ld d,(hl)
@@ -5907,6 +5987,10 @@ l8128h:
   dw next_screen_
 question_next_screen.end:
   dw semicolon_s_
+  
+  ; XXX TODO a good place to use `??` instead of a branch:
+;  dw question_question_,next_screen_
+;  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_backslash_,'?','\',immediate
@@ -5956,3 +6040,14 @@ end cold_entry
   ;dw lit_,7,border_,key_,drop_ ; XXX INFORMER
 
   ;dw two_dup_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
+
+; ==============================================================
+; Development notes
+;
+; 2015-06-25:
+;
+; Number  Times compiled (not including error numbers)
+; 0       20
+; 1       11
+; 2       11 
+; 3       6
