@@ -3,15 +3,8 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-2015061930
+; Version A-00-2015062208
 ; Latest important changes (in chronological order)
-; - `(emit)` and attributes fixed.
-; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
-; - `enclose` modified to save a `swap` in `word`.
-; - fix: now `enclose` uses a 16-bit offset counter.
-; - fix: `on` and `off`.
-; - new: `code`, `end-code`, `assembler`.
-; - new: header macros, not debugged yet.
 ; - new: optional new format for the name field, without end
 ; bit, still under development.
 
@@ -51,10 +44,12 @@
 
 ; Aknowledgments:
 
-; Solo Forth has copied, adapted and implemented ideas, code and
-; documentation from the following Forth systems (acknowledgment notes are
-; properly included in the correspondent sources):
+; The author of Solo Forth copied, adapted and implemented
+; ideas, code and documentation from the following Forth systems
+; (acknowledgment notes are properly included in the
+; correspondent sources):
 
+; Abersoft Forth, by John Jones Steele (1983)
 ; Spectrum Forth-83, by Lennart Benschop (1988,2015)
 ; v.Forth, by Matteo Vitturi (1990-2015)
 ; lina ciforth, by Albert van der Horst (2000-2004)
@@ -3387,13 +3382,16 @@ interpret.begin:
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found ; if
 
-  ; Note: `state` holds 0xC0 when compiling.  The text interpreter compares the
-  ; value stored in `state` with the value in the length byte of the definition
-  ; found in the dictionary.  If the definition is an immediate word, its
-  ; length byte is greater than 0xC0 because of the precedence and the sign
-  ; bits are both set.  Setting `state` to 0xC0 will force non-immediate words
-  ; to be compiled and immediate words to be executed, thus entering into the
-  ; "compiling state".
+  ; Note:
+  ;
+  ; `state` holds 0xC0 when compiling.  The text interpreter
+  ; compares the value stored in `state` with the value in the
+  ; length byte of the definition found in the dictionary.  If
+  ; the definition is an immediate word, its length byte is
+  ; greater than 0xC0 because of the precedence and the sign
+  ; bits are both set.  Setting `state` to 0xC0 will force
+  ; non-immediate words to be compiled and immediate words to be
+  ; executed.
 
   dw state_,fetch_,less_than_ ; compile the word?
   dw zero_branch_,interpret.execute_the_word ; if
