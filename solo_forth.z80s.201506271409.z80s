@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506271830
+; Version A-00-201506271409
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -16,7 +16,6 @@
 ; - fix: `emits`
 ; - change: new header macros, with complete names
 ; - first alternative code to store name fields in memory bank
-; - fix: `(find)`
 
 ; ==============================================================
 ; Aknowledgments
@@ -143,10 +142,9 @@ fig_parsing?                    equ false
   ; XXX FIXME Pasmo gives strang errors (symbols not found)
   ; when this config flag is used in nested `if`. A literal flag
   ; (0/1) is used instead, with the flag name in a comment; it
-  ; is changed with a text substitution, and Vim mappings
-  ; are created to turn it on an off.
-  ; XXX FIXME when the flag is true, 'interpret' enters an
-  ; endless loop.
+  ; is changed with a text substitution.
+  ; XXX FIXME when the flag is true, the system crashes after
+  ; searching for a word, but the problem is not in `(find)`.
 ;names_in_memory_bank?           equ true
   ; true = name fields and link fields are stored in a memory
   ; bank page, saving dictionary space.
@@ -190,13 +188,6 @@ max_word_length:                equ 0x1F
 max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
-
-; XXX TODO
-;if fig_find?
-  dummy_name_field: equ 0xA081 ; original
-;else
-;  dummy_name_field: equ 0xA000 ; XXX TODO needed for the name fields in bank?
-;endif
 
 ; Memory banks
 
@@ -335,7 +326,7 @@ _header: macro _base_label,_name,_is_immediate
     flags: defl flags | precedence_bit_mask ; add precedence bit
   endif
 
-  if 1 ; names_in_memory_bank?
+  if 0 ; names_in_memory_bank?
 
     ; In dictionary:
 
@@ -655,7 +646,7 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   ; XXX TODO
 
@@ -1394,7 +1385,7 @@ paren_find.nfa_backup: equ $+1
 
 else
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   ; XXX FIXME -- does not find words?
 
@@ -1411,8 +1402,10 @@ if 1 ; names_in_memory_bank?
   call bank.e ; page the memory bank
 
   pop de ; nfa
+  ;ld (65000),de ; XXX INFORMER
   pop hl ; string address
-  push bc ; save the Forth IP
+  ;ld (ip_backup),bc ; save Forth IP ; XXX OLD
+  push bc ; XXX NEW
   ld (paren_find.string_address),hl
 
   ; XXX FIXME the string searched for must be in the string
@@ -1446,37 +1439,33 @@ paren_find.compare_next_char:
   ; The string matches.
   ; c = name field length byte
   ld hl,(paren_find.nfa_backup)
-  ld (0xfffa),hl ; XXX INFORMER ; nfa, ok
   dec hl
   dec hl ; lfa
   dec hl ; high part of the pointer to cfa
   ld d,(hl)
   dec hl ; low part of the pointer to cfa
   ld e,(hl) ; de = cfa
-
-  ld (0xfffc),de ; XXX INFORMER ; cfa, ok
-
   ld hl,1 ; 1=immediate word
   ld a,c ; name field length byte
+  ;ld bc,(ip_backup) ; restore Forth IP ; XXX OLD
   and precedence_bit_mask ; immediate word?
+
+  ;.warning 'pasmo was here' ; XXX INFORMER
+  ; XXX FIXME why Pasmo says this symbol is undefined?:
   jp nz, paren_find.end
+  ; XXX the error happens because of the if structure: when I
+  ; remove it, the same error happens in other place
+
   ; non-immediate word
   dec hl
   dec hl ; -1 = non-immediate word
 
 paren_find.end:
-  ; If match found:
-  ;   de = cfa
-  ;   hl = -1 | 1
-  ; If no match found:
-  ;   de = ca
-  ;   hl = 0
-  exx
+  ; de = ca | cfa
+  ; hl = -1 | 0 | 1
   ld e,default_bank
   call bank.e ; page the default memory bank
-  exx
-  pop bc ; restore the Forth IP
-  ; _border 4 ; XXX INFORMER
+  pop bc ; restore Forth IP ; XXX NEW
   jp push_de_hl
 
 paren_find.not_a_match:
@@ -1491,6 +1480,7 @@ paren_find.nfa_backup: equ $+1
   or e ; end of dictionary? (next nfa=0)
   jp nz,paren_find.begin ; if not, continue
   ; End of dictionary, no match found, return.
+  ;ld bc,(ip_backup) ; restore Forth IP ; XXX OLD
   ld de,(paren_find.string_address)
   ld hl,0
   jp paren_find.end
@@ -1526,7 +1516,9 @@ paren_find.string_address: equ $+1
   jr nz,paren_find.not_a_match ; lengths differ
 
   ; Lengths match, compare the characters.
-  ld b,a ; length, used as count
+  ;ld a,c ; name field length byte
+  ;and max_word_length_bit_mask  ; length
+  ld b,a ; length
 paren_find.compare_next_char:
   inc hl ; next character in string
   inc de ; next character in name field
@@ -1748,15 +1740,17 @@ endif
 
   ; doc{
   ;
-  ; enclose  ( c ca -- ca n1 n2 n3 )
+  ; enclose  ( c a -- a n1 n2 n3 )
   ;
   ; The text scanning primitive used by `word`.
   ;
   ; c = delimiting character
-  ; ca = text address
-  ; n1 = byte offset to the first non-delimiter character
-  ; n2 = byte offset to the first delimiter after the text
-  ; n3 = byte offset to the first character not included
+  ; a = text address
+  ;
+  ; addr1 and an ascii delimiting character c, is determined the
+  ; n1 = byte offset to the first non-delimiter character n2 =
+  ; byte offset to the first delimiter after the text n3 = byte
+  ; offset to the first character not included
   ;
   ; This procedure will not process past an ASCII 'null',
   ; treating it as an unconditional delimiter.
@@ -2279,7 +2273,7 @@ l60c0h:
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _code_header np_fetch_,'NP@'
 
@@ -2308,7 +2302,7 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _constant_header np_,'NP'
 
@@ -2318,7 +2312,7 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _colon_header comma_np_,',np'
 
@@ -3324,7 +3318,7 @@ question_dup.end:
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_minus_
 
@@ -3349,7 +3343,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_lfa_,'PFA>LFA'
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   dw pfa_to_cfa_,cfa_to_nfa_
 
@@ -3370,7 +3364,7 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _colon_header cfa_to_lfa_,'CFA>LFA'
   dw cfa_to_nfa_,nfa_to_lfa_
@@ -3384,7 +3378,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   dw pfa_to_cfa_,cfa_to_nfa_
   dw semicolon_s_
@@ -3409,7 +3403,7 @@ endif
 
 ; XXX FIXME -- return 0 if cfa has no name associated
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _code_header cfa_to_nfa_,'CFA>NFA'
 
@@ -3458,7 +3452,7 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus_
 
@@ -3477,7 +3471,7 @@ endif
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _number 4
   dw minus_,fetch_
@@ -3506,7 +3500,7 @@ endif
 ;
 ; }doc
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _names_bank
   dw count_
@@ -4036,13 +4030,7 @@ stream.end:
 
 if 1 ; XXX OLD -- original version with `enclose`
 
-  dw stream_  ; ( c ca )
-  dw enclose_ ; ( ca n1 n2 n3 )
-  ; ca = text address
-  ; n1 = byte offset to the first non-delimiter character
-  ; n2 = byte offset to the first delimiter after the text
-  ; n3 = byte offset to the first character not included
-  
+  dw stream_,enclose_
   ;dw stream,true_,paren_parse_ ; XXX OLD -- abandoned idea
 
   ; XXX TODO use a factor of `s,` instead, without `allot`:
@@ -4385,18 +4373,7 @@ else ; XXX NEW -- modern `find`
     ;   doesn't work.
 
   ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In find before (find): ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-
   dw paren_find_
-  
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In find after (find):: ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
@@ -4506,7 +4483,7 @@ error.end:
   _message not_unique_error
 header.continue:
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
     ; XXX TODO
 
@@ -4555,7 +4532,7 @@ do_create:
 
   dw do_vocabulary
 assembler_vocabulary_dummy_nfa:
-  dw dummy_name_field
+  dw 0xA081 ; Dummy name field.
 assembler_vocabulary_latest:
   dw forth_vocabulary_dummy_nfa
 assembler_vocabulary_link:
@@ -4909,10 +4886,8 @@ interpret.begin:
   dw question_stack_
   ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw defined_
-  ;if 1 ; names_in_memory_bank?
-    ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-    ; _string 'In interpret after defined ' ; XXX INFORMER
-    ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
+  ;if 0 ; names_in_memory_bank?
+    ;dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
   ;endif
   dw question_dup_ ; found?
   ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
@@ -4930,8 +4905,11 @@ interpret.begin:
 
 interpret.execute:
   ; Executing or immediate ( cfa )
-  ; dw drop_ ; XXX TMP for debugging
-  dw execute_
+  if 0 ; names_in_memory_bank?
+    dw drop_ ; XXX TMP for debugging
+  else
+    dw execute_
+  endif
   dw branch_,interpret.begin
 
 interpret.word_not_found:
@@ -4970,19 +4948,13 @@ endif
   _colon_header vocabulary_,'VOCABULARY'
 
   dw builds_ ; XXX TODO convert; see DZX-Forth
-  dw lit_,dummy_name_field,comma_
-  dw current_,fetch_
-  dw pfa_to_cfa_ ; XXX FIXME this must be changed?
-  dw comma_
-  dw here_ ; address of vocabulary link
+  dw lit_,0xA081,comma_ ; dummy name field
+  dw current_,fetch_,pfa_to_cfa_,comma_
+  dw here_
   dw voc_link_,fetch_,comma_
-  dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-  dw does_ ; end in defining the vocabulary
-  ; The next words are to be executed when the vocabulary invoked.
+  dw voc_link_,store_
+  dw does_
 do_vocabulary:
-  ; When the vocabulary is invoked, the second cell in its parameter field
-  ; will be stored into the variable `context`.  The next
-  ; dictionary search will begin with that vocabulary.
   dw two_plus_,context_,store_
   dw semicolon_s_
 
@@ -4991,7 +4963,7 @@ do_vocabulary:
 
   dw do_vocabulary
 forth_vocabulary_dummy_nfa:
-  dw dummy_name_field
+  dw 0xA081 ; Dummy name field.
 forth_vocabulary_latest:
   dw nfa_of_top_most_word_in_forth_voc
 forth_vocabulary_link:
@@ -5552,23 +5524,7 @@ if not fig_find?
   ; XXX TODO -- adapt to the new parsing method
 
   dw b_l_,word_
-  dw here_,dup_,count_ ; ( ca ca+1 len )
-
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In defined the string is: ' ; XXX INFORMER
-  ; dw two_dup_,type_ ; XXX INFORMER
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'and the stack: ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-
-  dw uppers_,find_
-
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In defined after find: ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-
+  dw here_,dup_,count_,uppers_,find_
   dw semicolon_s_
 
 endif
@@ -5955,7 +5911,7 @@ if 1
   dw sp_fetch_,two_minus_,s0_,fetch_,two_minus_
   dw paren_do_
 dot_s.do:
-  dw i_,fetch_,u_dot_ ; XXX TMP `u.`
+  dw i_,fetch_,dot_
   dw lit_,-2
   dw paren_plus_loop_,dot_s.do
 dot_s.end:
@@ -6426,7 +6382,7 @@ dictionary_pointer_after_cold:
 ; ==============================================================
 ; Name and link fields
 
-if 1 ; names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   ; XXX TODO
 
