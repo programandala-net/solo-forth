@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507021540
+; Version A-00-201507021556
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -35,6 +35,8 @@
 ; vocabularies.
 ; - first changes to implement `create ... does>` after
 ; Forth-83.
+; - first working version with `create...does>` (`vocabulary`
+; and vocabularies adapted).
 
 ; ==============================================================
 ; Acknowledgments
@@ -510,22 +512,18 @@ _user_variable_header: macro _base_label,_name,_is_immediate
 
   endm
 
-_does_header: macro _base_label,_name,_is_immediate
+_does_header: macro _base_label,_name,_is_immediate,_runtime_routine
 
   _header _base_label,_name,_is_immediate
-  dw do_does ; code field
+
+  if 0 ; fig_does?
+    dw do_does ; code field
+  else
+    dw _runtime_routine ; code field
+  endif
   _base_label##pfa: ; parameter field address
 
   endm
-
-_does_header83: macro _base_label,_name,_is_immediate,_do ; XXX TMP
-
-  _header _base_label,_name,_is_immediate
-  dw _do ; code field
-  _base_label##pfa: ; parameter field address
-
-  endm
-
 
 _constant_header: macro _base_label,_name,_is_immediate
 
@@ -4164,8 +4162,7 @@ if 0 ; fig_does?
 
   _colon_header nfa_to_pfa_,'NFA>PFA'
 
-  ; XXX OLD
-  ; XXX TODO remove when possible; only needed by the old `<BUILDS ... DOES>`
+  ; XXX TODO remove; only needed by the old `<BUILDS ... DOES>`
 
   dw nfa_to_cfa_,cfa_to_pfa_
   dw semicolon_s_
@@ -4393,16 +4390,16 @@ do_does:
 else ; XXX NEW -- Forth-83 version, paired with `create`
 
 ; ----------------------------------------------
-  _colon_header does83_,'DOES>83',immediate
+  _colon_header does_,'DOES>',immediate
 
   dw compile_,paren_semicolon_code_
   dw c_lit_
   db 0xCD ; Z80 opcode for "call"
   dw c_comma_ ; compile it
-  dw lit_,do_does83 ; routine address
+  dw lit_,do_does ; routine address
   dw comma_ ; compile it
   dw semicolon_s_
-do_does83:
+do_does:
   ; Save the IP in the return stack.
   ld hl,(return_stack_pointer)
   dec hl
@@ -5436,7 +5433,7 @@ if 0 ; fig_does?
   _does_header assembler_,'ASSEMBLER'
   dw do_vocabulary
 else
-  _does_header83 assembler_,'ASSEMBLER',,do_vocabulary83
+  _does_header assembler_,'ASSEMBLER',,do_vocabulary
 endif
 
   ; Dummy header.
@@ -5858,7 +5855,7 @@ if 1 ; names_in_memory_bank?
   else
     dw paren_semicolon_code_
   do_vocabulary:
-    call do_does83
+    call do_does
   endif
 
   ; The next words are to be executed when the vocabulary is invoked.
@@ -5893,7 +5890,7 @@ else
   else
     dw paren_semicolon_code_
   do_vocabulary:
-    call do_does83
+    call do_does
   endif
 
   ; The next words are to be executed when the vocabulary is invoked.
@@ -5912,7 +5909,7 @@ if 0 ; fig_does?
   _does_header forth_,'FORTH'
   dw do_vocabulary
 else
-  _does_header83 forth_,'FORTH',,do_vocabulary83
+  _does_header forth_,'FORTH',,do_vocabulary
 endif
 
   ; Dummy header.
