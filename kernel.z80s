@@ -69,7 +69,7 @@ version_release:  equ 201510250021
 ; nfa:  db length+flags    ; Bits:      76543210
                            ; Bit names: .PSLLLLL
                            ; Legend:
-                           ;   P: Precedence bit.
+                           ;   P: Immediate bit.
                            ;      0 = non-immediate word
                            ;      1 = immediate word
                            ;   S: Smudge bit:
@@ -173,7 +173,7 @@ version_release:  equ 201510250021
 ; ----------------------------------------------
 ; Word attributes
 
-; XXX TODO -- not used
+; XXX OLD -- not used
 
 ; The capital letters on the right show definition characteristics:
 
@@ -181,7 +181,7 @@ version_release:  equ 201510250021
 ;        of memory addresses used, if other than one. A plus sign indicates
 ;        a variable number of memory addresses used.
 ; E      Intended for execution only.
-; I      Immediate. Has precedence bit set. Will execute even when compiling.
+; I      Immediate. Has immediate bit set. Will execute even when compiling.
 ; U      A user variable.
 
 ; ==============================================================
@@ -235,7 +235,7 @@ origin:                           equ 0x5E00
 false:                            equ 0x0000
 true:                             equ 0xFFFF ; -1
 
-cell:                             equ 2
+cell:                             equ 0x02
 
 cells_per_data_stack:             equ 0x50
 cells_per_return_stack:           equ 0x50
@@ -249,46 +249,43 @@ data_bytes_per_buffer:            equ 0x0400/blocks_per_screen
 
 total_bytes_per_buffer:           equ 2+data_bytes_per_buffer+3
 
-screens_per_disk:                 equ 0x0320 ; 800 KiB per disk in G+DOS
+screens_per_disk:                 equ 800 ; KiB per disk in G+DOS
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
 max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
 bytes_per_user_variables:         equ 0x40
 
-smudge_bit:         equ 5
-smudge_mask:        equ 1 << smudge_bit
-precedence_bit:     equ 6
-precedence_mask:    equ 1 << precedence_bit
-compile_only_bit:   equ 7
-compile_only_mask:  equ 1 << compile_only_bit
+word_length_mask:                 equ %00011111
+smudge_mask:                      equ %00100000
+immediate_mask:                   equ %01000000
+compile_only_mask:                equ %10000000
 
-max_word_length:            equ 0x1F
-max_word_length_mask:       equ max_word_length
-valid_word_length_mask:     equ max_word_length_mask or smudge_mask
+max_word_length:                  equ word_length_mask
+valid_word_length_mask:           equ word_length_mask or smudge_mask
 
-csb_size:                       equ 256 ; size of the circular string buffer
+csb_size:                         equ 256 ; bytes, size of the circular string buffer
 
 ; Memory banks
 
-default_bank: equ 0
-names_bank:   equ 1
+default_bank:                     equ 0
+names_bank:                       equ 1
 
-names_bank_address: equ 0xC000 ; names pointers
+names_bank_address:               equ 0xC000 ; names pointers
 
 ; Charset
 
-charset_size:     equ 224*8 ; 224 chars (0x20..0xFF) * 8 bitmap rows
-charset_address:  equ 0xFFFF-charset_size+1
+charset_size:                     equ 224*8 ; 224 chars (0x20..0xFF) * 8 bitmap rows
+charset_address:                  equ 0xFFFF-charset_size+1
 
 ; Control structure check numbers
 
 ; XXX TODO
-;begin_structure_check_number:   equ 1
-;if_structure_check_number:      equ 2
-;do_structure_check_number:      equ 3
-;case_structure_check_number:    equ 4
-;of_structure_check_number:      equ 5
-;for_structure_check_number:     equ 6
+;begin_structure_check_number:    equ 1
+;if_structure_check_number:       equ 2
+;do_structure_check_number:       equ 3
+;case_structure_check_number:     equ 4
+;of_structure_check_number:       equ 5
+;for_structure_check_number:      equ 6
 
 ; Error codes used in the kernel
 
@@ -333,7 +330,7 @@ border_port:  equ 0xFE
 ; ----------------------------------------------
 ; Header macros
 
-immediate:    equ precedence_mask
+immediate:    equ immediate_mask
 compile_only: equ compile_only_mask
 
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
@@ -358,7 +355,7 @@ _header: macro _base_label,_name,_flags
     dw nfa_of_the_previous_word ; link field
   _base_label##nfa: ; name field address
 
-  ; Length byte with optional precedence bit:
+  ; Length byte with optional immediate bit:
 
   if nul _flags
     db _address_after_name-_name_address
@@ -392,21 +389,18 @@ _code_header: macro _base_label,_name,_flags
 
   endm
 
-_defer_header: macro _base_label,_name,_flags,_alias
+_defer_header: macro _base_label,_name,_flags,_cfa
   
-  ; XXX NEW
-  ; XXX TODO use, try
-
   _code_header _base_label,_name,_flags
-  ld hl,_alias
+  ld hl,_cfa
   jp next2
 
   endm
 
-_code_alias_header: macro _base_label,_name,_flags,_alias
+_code_alias_header: macro _base_label,_name,_flags,_cfa
 
   _header _base_label,_name,_flags
-  dw _alias##pfa ; code field
+  dw _cfa##pfa ; code field
 
 ; XXX TODO
 ; _raw_code_alias_header: macro _base_label,_name,_flags,_alias
@@ -3097,12 +3091,9 @@ paren_mode32_emit.print_udg:
 endif
 
 ; ----------------------------------------------
-  _code_header emit_,'EMIT'
+  _defer_header emit_,'EMIT',,paren_mode32_emit_
 
 ; XXX TODO -- Add multitasker's `pause` when available.
-
-  ld hl,paren_mode32_emit_
-  jp next2
 
 ; ----------------------------------------------
   _variable_header printing_,'PRINTING'
@@ -3399,7 +3390,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header cr_,'CR'
+  _defer_header cr_,'CR',,paren_cr_
 
 ; doc{
 ;
@@ -3408,9 +3399,6 @@ endif
 ; Transmit a carriage return to the selected output device.
 ;
 ; }doc
-
-  ld hl,paren_cr_
-  jp next2
 
 ; ----------------------------------------------
   _code_header cmove_up_,'CMOVE>'
@@ -5647,7 +5635,7 @@ to_name.begin_1:
   inc hl
   inc hl
   ld a,(hl) ; name field byte length
-  and max_word_length_mask ; name length
+  and word_length_mask ; name length
   ld c,a ; name length
   inc c  ; plus the length byte
   add hl,bc ; point to the cfa pointer
@@ -5865,7 +5853,7 @@ to_name.begin_1:
 
   _names_bank
   dw count_
-  _literal max_word_length_mask
+  _literal word_length_mask
   dw and_
   dw save_string_
   _default_bank
@@ -6019,6 +6007,8 @@ postpone.end:
 ; ----------------------------------------------
   _colon_header paren_smudge_,'(SMUDGE)'
 
+  ; XXX TODO -- use `hide` and `reveal` instead?
+  ; XXX TODO move to the library
 
 ; doc{
 ;
@@ -6039,7 +6029,7 @@ postpone.end:
   _colon_header smudge_,'SMUDGE'
 
   ; XXX TODO -- use `hide` and `reveal` instead?
-
+  ; XXX TODO move to the library
 
 ; doc{
 ;
@@ -6057,6 +6047,86 @@ postpone.end:
   dw latest_,paren_smudge_
   dw semicolon_s_
 
+; ----------------------------------------------
+  _colon_header latest_bits_,'LATEST-BITS'
+
+  ; XXX UNDER DEVELOPMENT
+  ; XXX TODO better name! `smudge-it`?
+
+; doc{
+;
+; reveal  ( cfa -- )
+;
+; Execute _cfa_ ( b ca -- ) to modify the lenght byte of the
+; latest definition with the _b_ bitmask.
+;
+; }doc
+
+  dw smudge_mask_,latest_
+  _names_bank
+  dw rot_,execute_
+  _default_bank
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header reveal_,'REVEAL'
+
+  ; XXX UNDER DEVELOPMENT
+
+; doc{
+;
+; reveal  ( -- )
+;
+; Reset the "smudge bit" of the latest definition's name field.
+;
+; }doc
+
+if 0
+
+  dw smudge_mask_
+  dw latest_
+  _names_bank
+  ; dw reset_bits_ ; XXX TODO -- from the library
+  _default_bank
+  dw semicolon_s_
+
+else
+
+  ; _literal reset_bits_ ; XXX TODO
+  dw latest_bits_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _colon_header hide_,'HIDE'
+
+  ; XXX UNDER DEVELOPMENT
+
+; doc{
+;
+; hide  ( -- )
+;
+; Set the "smudge bit" of the latest definition's name field.
+;
+; }doc
+
+if 0
+
+  dw smudge_mask_
+  dw latest_
+  _names_bank
+  ; dw set_bits_ ; XXX TODO -- from the library
+  _default_bank
+  dw semicolon_s_
+
+else
+
+  ; _literal set_bits_ ; XXX TODO
+  dw latest_bits_
+  dw semicolon_s_
+
+endif
 ; ----------------------------------------------
   _c_constant_header smudge_mask_,'SMUDGE-MASK'
 
@@ -7600,7 +7670,7 @@ interpret.end:
 ; ----------------------------------------------
   _c_constant_header immediate_mask_,'IMMEDIATE-MASK'
 
-  db precedence_mask
+  db immediate_mask
 
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
@@ -7610,7 +7680,7 @@ immediate.do:
   dw latest_
   ; XXX TODO factor `toggle-names'?
   _names_bank
-  dw toggle_bits_
+  dw toggle_bits_ ; XXX FIXME -- set_bits_
   _default_bank
   dw semicolon_s_
 
@@ -7895,7 +7965,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header boot_,'BOOT'
+  _defer_header boot_,'BOOT',,noop_
 
 ; doc{
 ;
@@ -7905,9 +7975,6 @@ endif
 ; nothing. It is changed by `turnkey`.
 ;
 ; }doc
-
-  ld hl,noop_
-  jp next2
 
 ; ----------------------------------------------
   _variable_header previous_mode_,'PREVIOUS-MODE'
@@ -8612,7 +8679,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header dot_throw_,'.THROW'
+  _defer_header dot_throw_,'.THROW',,dot_throw_hash_
 
   ; Credits:
   ; Name from MPE Forth for TiniARM.
@@ -8625,9 +8692,6 @@ endif
 ; prints only the number.
 ;
 ; }doc
-
-  ld hl,dot_throw_hash_
-  jp next2
 
 ; ----------------------------------------------
 ; XXX OLD -- not used
@@ -9775,13 +9839,15 @@ if 0
   ld hl,0x1821 ; 0x18 = 24 - row
                ; 0x21 = 33 - column
   ld (sys_s_posn),hl
+  _jp_next
 
-else
+endif
+
+
+if 1
 
   ; XXX NEW -- This method works with any printing routine
   ; associated to a chanel.
-
-if 1
 
   ld a,at_char
   rst 0x10
@@ -9791,7 +9857,9 @@ if 1
   rst 0x10
   _jp_next
 
-else
+endif
+
+if 0 
 
   ; XXX TODO -- adapt this from DZX-Forth?
   ; same size, but slower
@@ -9800,24 +9868,27 @@ else
   push hl
   push hl
 
-  ; jr at_xy_ ; DZX-Forth
-  ld hl,at_xy_
-  jp next2
+  jp at_xy_
+  ; XXX OLD
+;  ld hl,at_xy_
+;  jp next2
 
 endif
-
-endif
-  _jp_next
 
 ; ----------------------------------------------
-  _code_header home_,'HOME'
+  _defer_header home_,'HOME',,paren_mode32_home_
 
-  ld hl,paren_mode32_home_
-  jp next2
+; doc{
+;
+; home  ( -- )
+;
+; Set the cursor position at the top left position (column 0,
+; row 0).
+;
+; }doc
 
 ; ----------------------------------------------
   _code_header cls_,'CLS'
-
 
 ; doc{
 ;
@@ -9853,10 +9924,13 @@ endif
   exx ; restore the Forth IP
 
 ; XXX OLD -- can not work anymory because `home`is deferred
-;  jp home_pfa ; continue at `home`
+; XXX NEW -- it works with the new version of `defer`.
+; XXX TODO -- try
+  jp home_pfa ; continue at `home`
 ; XXX NEW
-  ld hl,home_
-  jp next2
+; XXX OLD
+;  ld hl,home_
+;  jp next2
 
   ; The Z80 version above uses 29 bytes;
   ; the following Forth version uses 30 bytes:
@@ -9919,8 +9993,7 @@ system_stack_pointer: equ $+1
   db 0x08 ; "STOP" BASIC error
 
 ; ----------------------------------------------
-  _code_header default_mode_,'DEFAULT-MODE'
-
+  _defer_header default_mode_,'DEFAULT-MODE',,noop_
 
 ; doc{
 ;
@@ -9931,12 +10004,6 @@ system_stack_pointer: equ $+1
 ; It's used by `bye`.
 ;
 ; }doc
-
-  ; XXX TODO -- this is a new-format deferred word, mark it as
-  ; such with the future macro.
-
-  ld hl,noop_
-  jp next2
 
 ; ----------------------------------------------
   _colon_header bye_,'BYE'
@@ -10048,7 +10115,7 @@ at_pfa.last_line:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header at_xy_,'AT-XY'
+  _defer_header at_xy_,'AT-XY',,paren_mode32_at_xy_
 
 ; doc{
 ;
@@ -10057,9 +10124,6 @@ at_pfa.last_line:
 ; Standard: Forth-94.
 ;
 ; }doc
-
-  ld hl,paren_mode32_at_xy_
-  jp next2
 
 ; ----------------------------------------------
   _colon_header paren_mode32_xy_,'(MODE32-XY)'
@@ -10097,7 +10161,7 @@ paren_mode32_xy.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header xy_,'XY'
+  _defer_header xy_,'XY',,paren_mode32_xy_
 
 ; doc{
 ;
@@ -10106,9 +10170,6 @@ paren_mode32_xy.end:
 ; Return the current column and row of the text cursor.
 ;
 ; }doc
-
-  ld hl,paren_mode32_xy_
-  jp next2
 
 ; ----------------------------------------------
   _code_header border_,'BORDER'

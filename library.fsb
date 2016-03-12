@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510250021
+\ Last modified: 201510250209
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -3667,7 +3667,7 @@ variable (any?)
   \ Is any number _n1..nn_ equal to _n0_?
   dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
-( test-bits set-bits reset-bits toggle-bits )
+( test-bits set-bits reset-bits )
 
   \ Credits:
   \ Words inspired by MPE PowerForth for TiniARM.
@@ -3763,20 +3763,16 @@ need s=
 [unneeded] name>body
 ?\ : name>body  ( nfa -- pfa ) name> >body  ;
 
-[unneeded] link>name
-?\ : link>name  ( nfa -- pfa )  2+  ;
-  \ XXX TODO convert to alias
+[unneeded] link>name dup  ?\ need alias
+?\ ' cell+ alias link>name  ( nfa -- pfa )
 
-[unneeded] name>link
-?\ : name>link  ( nfa -- pfa )  2-  ;
-  \ XXX TODO convert to alias
+[unneeded] name>link dup  ?\ need alias
+?\ ' cell- alias name>link  ( nfa -- pfa )
 
-[unneeded] >>link
-?\ : >>link  ( cfap -- lfa )  2+  ;
-  \ XXX TODO convert to alias
+[unneeded] >>link dup  ?\ need alias
+?\ ' cell+ alias >>link  ( cfap -- lfa )
 
-[unneeded] name<name dup
-?\ need name>link
+[unneeded] name<name dup  ?\ need name>link
 ?\ : name<name  ( nfa1 -- nfa2 )  name>link @n  ;
   \ Get the previous _nfa2_ from _nfa1_.
 
@@ -7445,18 +7441,41 @@ need random-n
 : is  ( cfa "name" -- )
   compiling? if  postpone [is]  else  <is>  then  ; immediate
 
-( alias synonym )
+( code? code-alias? defer-alias code-alias alias )
 
-: alias  ( cfa "name" -- )  defer latest name> defer!  ;
+: code?  ( cfa -- wf )  dup >body swap @ =  ;
+  \ Is _cfa_ a word created by `code`?
+
+: code-alias?  ( cfa -- wf )  @ dup body> @ =  ;
+  \ Is _cfa_ a word created by `code-alias` or `code`?
+
+: defer-alias  ( cfa "name" -- )  defer latest name> defer!  ;
+  \ Create a deferred word _name_ that executes _cfa_.
+
+: (code-alias)  ( a "name" -- )
+  header smudge latest name> !  ;
+  \ Create a code word that executes the code at _a_.
+
+: code-alias  ( cfa "name" -- )  @ (code-alias)  ;
+  \ Create a code word that executes the code pointed by _cfa_.
+
+: alias  ( cfa "name" -- )
+  dup code? if  code-alias exit  then
+  dup code-alias? if  @ (code-alias) exit  then
+  defer-alias  ;
 
   \ doc{
   \
   \ alias  ( cfa "name" -- )
   \
-  \ Create an alias _name_ that will execute _cfa_.
-  \ In Solo Forth an alias is a deferred word.
+  \ Create an alias _name_ that will execute _cfa_.  If _cfa_
+  \ is a primitive word, the address hold in _name_'s own cfa
+  \ will be the same than the address hold in _cfa_. Otherwise
+  \ _name_ will be a deferred word executing _cfa_.
   \
   \ }doc
+
+( synonym )
 
   \ Credits:
   \ The code of `synonym` is adapted from the example provided in the
@@ -7478,7 +7497,7 @@ need random-n
   \ Create a definition for _newname_ with the the semantics
   \ defined below. _newname_ may be the same as _oldname_; when
   \ looking up _oldname_, _newname_ shall not be found.
- 
+
   \ newname ( Interpretation: i*x -- j*x )
   \         Perform the interpretation semantics of _oldname_.
   \
