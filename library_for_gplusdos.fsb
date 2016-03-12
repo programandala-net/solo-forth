@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512160323
+\ Last modified: 201512170324
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -83,7 +83,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over
     contains if  2drop i unloop exit  then
-    \ break-key? ?exhaust
+    \ break-key? ?leave
     \ XXX TODO -- `break-key?` is not in the kernel
   loop  2drop false  ;
 
@@ -5414,7 +5414,7 @@ need break-key?  need 16hex.  need ascii-type
       8 0 do  i over + @ flip 16hex.  cell +loop
       \ 16 0 do  i over + c@ hexb.  loop
       dup bs 8 ascii-type
-      break-key? ?exhaust
+      break-key? ?leave
     8 + loop
   else  2drop  then  drop  ;
 
@@ -5432,7 +5432,7 @@ need break-key?  need 16hex.
     do
       i 4 mod 0= if  cr dup 16hex. space  then  \ show address
       dup @ 16hex. cell+
-      break-key? ?exhaust
+      break-key? ?leave
     loop
   else  2drop  then  drop  ;
 
@@ -5585,7 +5585,7 @@ need break-key?  need .line
   cr ." Scr # " .
   l/scr 0 do
     cr i 2 .r space i scr @ .line
-    break-key? ?exhaust
+    break-key? ?leave
   loop cr  ;
 
 ( break-key? )
@@ -5620,7 +5620,7 @@ need break-key?  need .line
 
   1+ swap do
     cr i 3 .r space 0 i .line
-    break-key? if  exhaust  then
+    break-key? ?leave
   loop  ;
 
 ( index-like )
@@ -5647,7 +5647,7 @@ need break-key?  need .index
   parse-name 2swap
   1+ swap do
     0 i line>string 2over contains if  i .index  then
-    break-key? if  exhaust  then
+    break-key? ?leave
   loop  2drop  ;
 
 ( index-ilike )
@@ -5675,7 +5675,7 @@ need break-key?  need .index
   2swap 1+ swap do
     save-string  0 i line>string save-string 2dup uppers
     2over contains if  i .index  then
-    break-key? if  exhaust  then
+    break-key? ?leave
   loop  2drop  ;
 
   \ Note: The parsed string is re-saved to the circular string
@@ -6316,8 +6316,7 @@ need cs-push  need cs-pop
 
 : (times)  ( n -- )
   rp@ @ dup cell+ rp@ ! @ swap
-  0 do  dup execute  loop  drop  ;
-  \ XXX TODO ?do
+  0 ?do  dup execute  loop  drop  ;
 
 : times  ( Compilation: "name" -- ) ( Run-time: n -- )
   postpone (times) postpone [']  ; immediate compile-only
@@ -6343,8 +6342,7 @@ need cs-push  need cs-pop
 
 : (times)  ( n -- )
   rp@ @ dup cell+ rp@ ! @ swap
-  0 do  dup execute  loop  drop  ;
-  \ XXX TODO ?do
+  0 ?do  dup execute  loop  drop  ;
 
 : times  ( Compilation: "name" -- ) ( Run-time: n -- )
   postpone (times)
@@ -6373,8 +6371,7 @@ need cs-push  need cs-pop
 
 : (times)  ( n -- )
   rp@ @ dup cell+ rp@ ! @ swap
-  0 do  dup execute  loop  drop  ;
-  \ XXX TODO ?do
+  0 ?do  dup execute  loop  drop  ;
 
 : times  ( Compilation: "name" -- ) ( Run-time: n -- )
   postpone (times)  ; immediate compile-only
@@ -6476,260 +6473,6 @@ need dfor
   \
   \ }doc
 
-( >l l> )
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO create the leave stack; create the leave stack
-  \ pointer as a user variable
-
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
-code >l  ( x -- ) ( L: -- x )
-  \ Move to leave stack.
-  de pop
-  lp hl fthl
-  e m ld  hl incp  d m ld  hl incp
-  hl lp sthl
-  jpnext
-  end-code
-
-code l>  ( -- x ) ( L: x -- )
-  \ Move from leave stack.
-  lp hl fthl
-  hl decp  m d ld  hl decp  m e ld
-  hl lp sthl
-  pushhl jp
-  next
-
-( do )
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO adapt from hForth
-
-: (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
-  >r $8000 + r> over - swap r> swap >r swap >r >r ;
-
-  \ (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
-  \
-  \ Run-time funtion of `do`.
-  \
-  \ 0x8000 is the maximum negative.
-
-: do    ( n1|u1 n2|u2 -- )
-  0 rakevar !  0      \ ?do-orig is 0 for do
-  postpone (do)  here  bal+  \ do-dest
-  ; immediate compile-only
-
-  \ doc{
-  \
-  \ do
-  \
-  \ Compilation: ( C: -- do-sys )
-  \
-  \  Run-time: ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
-  \
-  \  Start a DO-LOOP structure in a colon definition. Place do-sys
-  \  on control-flow stack, which will be resolved by `loop` or
-  \  `+loop`.
-  \
-  \  Standard: Forth-94, Forth-2012
-  \
-  \  }doc
-
-code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
-
-    \ rp fthl
-    \ m inc
-    \ ; jr z,doloop2  ;12/7t a fast dec is ok, only
-    \ db  doloop2-doloop1   ;      failed every 255 time
-  \ doloop1   db  01ah  ; ld  a,(de)  ; 7t go back to the loop
-    \ a l ld
-    \ bc incp
-    \ de ftap \ ld  a,(de)  ; 7t
-    \ a h ld  \ db  067h  ; ld  h,a ; 4t
-    \ next2 jp  \ $nexthl
- \ doloop2   db  023h  ; inc hl  ; 6t
-    \ db  034h  ; inc (hl)  ;11t
-    \ db  0e2h  ; jp po,doloop1 ;10/7t ?loop end
-    \ dw  doloop1
-    \ db  0ebh  ; ex  de,hl ; 4t yes,continue past the branch offset
-    \ db  011h  ; ld  de,4  ;10t clear return stack
-    \ dw  4
-    \ db  0ddh,019h ; add ix,de ;15h
-    \ db  023h  ; inc hl  ; 6t
-    \ db  023h  ; inc hl  ; 6t
-    \ next2 jp  \ $nexthl
-    end-code
-
-: loop  postpone (loop) rake  ; immediate compile-only
-
-  \ loop
-  \
-  \ Compilation: ( C: do-sys -- )
-  \ Run-time: ( -- ) ( R: loop-sys1 -- loop-sys2 )
-  \ Terminate a DO|?DO ... LOOP structure. Resolve the destination
-  \ of all unresolved occurences of LEAVE.
-  \
-  \ Standard: Forth-83, Forth-94, Forth-2012.
-
-: +loop  postpone (+loop) rake  ; immediate compile-only
-
-  \ +loop
-  \
-  \ Compilation: ( C: do-sys -- )
-  \ Run-time: ( n -- ) ( R: loop-sys1 -- | loop-sys2 )
-  \
-  \ Terminate a `do +loop` structure. Resolve the destination of all
-  \ unresolved occurences of `leave`.
-  \ On execution add _n_ to the loop index. If loop index did not
-  \ cross the boundary between loop_limit-1 and loop_limit,
-  \ continue execution at the beginning of the loop. Otherwise,
-  \ finish the loop.
-  \
-  \ Standard: Forth-83, Forth-94, Forth-2012.
-
-( ?do )
-
-  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
-  \ Draft by Rod Pemberton
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO
-
-: (do)  ( n1 n2 -- )  2>r  ;
-
-: (?do) 2dup = if 2drop r> drop then  ;
-  \ exit the calling word
-
-: (loop)  ;
-  ( increments index -2nd item- on return stack)
-  ( calculates flag for until )
-
-: (+loop)  ;
-
-: do      postpone (do) postpone begin
-  ; immediate compile-only
-
-: ?do     postpone (?do) postpone (do) postpone begin
-  ; immediate compile-only
-
-: loop    postpone (loop) postpone until postpone unloop
-  ; immediate compile-only
-
-: +loop   postpone (+loop) postpone until postpone unloop
-  ; immediate compile-only
-
-  \ : unloop
-  \   ( removes 2nd and 3rd return stack items )
-  \   ( 1st return stack item is itc saved ip for unloop )  ;
-  \ : i ( gets 2nd return stack item to data stack )  ;
-  \ : j ( gets 4th ... )  ;
-  \ : k ( gets 6th ... )  ;
-
-( ?do )
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO
-
-  \ From:
-  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
-
-  \ Draft by Elisabeth Rather.
-
-: do ( -- flag addr)
-  postpone (do) 0   postpone begin  ; immediate compile-only
-
-: ?do ( -- addr1 flag addr2)
-    postpone (?do) postpone begin
-    postpone (do) 1   postpone begin  ; immediate compile-only
-
-  \ ...where (DO) and (?DO) are the run-time actions. (?DO)
-  \ contains a forward branch which compile-time LOOP or +LOOP
-  \ must resolve.    (BEGIN) leaves on the compile-time stack an
-  \ address for LOOP or +LOOP to branch back to, and a flag.
-
-( ?do )
-
-  \ From:
-  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO
-
-variable ?do?
-
-: exchange ( x1 addr -- x2 ) dup @ rot rot !  ;
-: 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0=  ;
-
-: do
-  postpone 2>r 0 ?do? exchange <mark
-  ; immediate compile-only
-: ?do
-  postpone 2dup<> postpone if postpone do ?do? on
-  ; immediate compile-only
-: loop
-  postpone (loop) <resolve ?do? exchange if postpone then then
-  ; immediate compile-only
-: +loop
-  postpone (+loop) <resolve ?do? exchange if postpone then then
-  ; immediate compile-only
-
-( ?do )
-
-  \ From:
-  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO
-
-variable ?do?
-
-: 2dup= ( x1 x2 -- x1 x2 flag )  2dup =  ;
-
-: do
-  ?do? @ ?do? off [compile] (do) >mark
-  ; immediate compile-only
-
-: ?do
-  postpone 2dup= postpone if postpone do ?do? on
-  ; immediate compile-only
-
-: complete-?do ( x dest | x -- )
-  ?do? @ if postpone then then ?do? !  ;
-
-: loop postpone (loop) <resolve complete-?do
-  ; immediate compile-only
-
-: +loop postpone (+loop) <resolve complete-?do
-  ; immediate compile-only
-
-( ?dov dov loopv +loopv )
-
-  \ Credits:
-  \ Code from v.Forth.
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO adapt
-
-: dov
-  compile (do) csp @ !csp here 3  ; immediate compile-only
-
-: ?dov
-  compile 2dup  compile (do)  compile <>
-  postpone if
-  2drop here swap 1 6  ; immediate compile-only
-
-: (resolve)
-  begin  sp@ csp @ -  while  2 postpone then  repeat  csp !
-  ; immediate compile-only
-
-: loopv
-  postpone (loop) (resolve)  ; immediate compile-only
-
-: +loopv
-  postpone (+loop) (resolve)  ; immediate compile-only
-
 ( j )
 
 code j
@@ -6738,10 +6481,10 @@ code j
 
   \ Return a copy of the next-outer loop index.
 
-  2A c, rp ,      \ ld hl,(return_stack_pointer)
-  11 c, 2 cells , \ ld de,2*cell
-  19 c,           \ add hl,de
-  C3 c, fetchhl , \ jp fetchhl
+  2A c, rp ,            \ ld hl,(return_stack_pointer)
+  11 c, 3 cells ,       \ ld de,3*cell
+  19 c,                 \ add hl,de
+  C3 c, ' i >body 3 + , \ jp i_pfa+3
 
   end-code
 
@@ -6753,10 +6496,10 @@ code k
 
   \ Return a copy of the third loop index.
 
-  2A c, rp ,      \ ld hl,(return_stack_pointer)
-  11 c, 4 cells , \ ld de,4*cell
-  19 c,           \ add hl,de
-  C3 c, fetchhl , \ jp fetchhl
+  2A c, rp ,            \ ld hl,(return_stack_pointer)
+  11 c, 6 cells ,       \ ld de,6*cell
+  19 c,                 \ add hl,de
+  C3 c, ' i >body 3 + , \ jp i_pfa+3
 
   end-code
 
@@ -6768,8 +6511,8 @@ code i'  ( -- x )
   \ Return a copy of the current (innermost) loop limit.
 
   2A c, rp ,        \ ld hl,(return_stack_pointer)
-  23 c,             \ inc hl
-  23 c,             \ inc hl
+  11 c, 2 cells , \ ld de,2*cell
+  19 c,           \ add hl,de
   C3 c, fetchhl ,   \ jp fetchhl
 
   end-code
@@ -6782,7 +6525,7 @@ code j'  ( -- x )
   \ Return a copy of the next-outer loop limit.
 
   2A c, rp ,      \ ld hl,(return_stack_pointer)
-  11 c, 3 cells , \ ld de,3*cell
+  11 c, 5 cells , \ ld de,5*cell
   19 c,           \ add hl,de
   C3 c, fetchhl , \ jp fetchhl
 
@@ -6797,7 +6540,7 @@ code k'
   \ Return a copy of the second next-outer loop limit.
 
   2A c, rp ,      \ ld hl,(return_stack_pointer)
-  11 c, 5 cells , \ ld de,5*cell
+  11 c, 8 cells , \ ld de,8*cell
   19 c,           \ add hl,de
   C3 c, fetchhl , \ jp fetchhl
 
@@ -7499,7 +7242,7 @@ need create:
     0 do  ( true selector a )
       2dup @ =  ( true selector a f )
       if    dup cell+ perform
-            2>r 0= 2r>  ( false selector a )  exhaust
+            2>r 0= 2r>  ( false selector a )  leave
       else  cell+ cell+  then
    loop  ( true selector a | false selector a )
    rot if  perform  else  drop  then  drop  ;
@@ -7600,7 +7343,7 @@ variable #options
   0 do
     [ 2 cells ] literal + 2dup @ =  ( false x a' f )  \ match?
     \ a' = address of the current compiled option
-    if  nip nip cell+ perform  true 0 0  exhaust then
+    if  nip nip cell+ perform  true 0 0  leave then
   loop  ( f x1 x2 )  2drop
 
   if    rdrop       \ match, so discard the default option
@@ -8117,7 +7860,7 @@ need pressed?  need k-table
 : pressed  ( -- false | n1 n2 true )
   0 \ false by default
   [ k-table keys /k * bounds swap ] literal literal
-  do  i k@ pressed? if  drop i k@ 1 exhaust  then  /k +loop  ;
+  do  i k@ pressed? if  drop i k@ 1 leave  then  /k +loop  ;
   \ Return the key identifier of the first key
   \ from the keys table that happens to be pressed.
   \ n1 = key bitmask
@@ -11814,7 +11557,7 @@ variable r#
   swap ?dup if
     over + swap do
       dup c@ [ also forth ] i [ previous ] c@ -
-      if  0= exhaust  else 1+  then
+      if  0= leave  else 1+  then
     loop  else  drop 0=  then  ;
   \ Return a non-zero _f_ if string _a1 len1_ exactly
   \ match string _a2 len1_, else return a false flag.
@@ -11828,7 +11571,7 @@ also forth
   >r >r 2dup r> r> 2swap over + swap
   do
     2dup i -text
-    if  >r 2drop r> - i swap - 0 swap 0 0 exhaust  then
+    if  >r 2drop r> - i swap - 0 swap 0 0 leave  then
   loop
   2drop swap 0= swap ;  previous
   \ Match the string _a len2_ with all strings contained in the
@@ -12650,7 +12393,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 : line-full?  ( line-no -- f )
     true  wide 0
     do  over i pit 2c@ empty d=
-        if  drop false  exhaust  then
+        if  drop false  leave  then
     loop nip  ;
 
 -->
@@ -14958,7 +14701,7 @@ need bench
   \ Bench     Forth-79  Forth-83
   \ --------  --------  --------
   \ loop           143       109
-  \ i              264       458
+  \ i              264       258
   \ +loop          108        97
 
   \ Note: 1 frame = 50th of second

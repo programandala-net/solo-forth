@@ -12,18 +12,19 @@
 ; ==============================================================
 ; Version
 
-  ; Version numbers are a ISO date format "YYYYMMDD[HH[MM]]".
+; Semantic versioning (http://semver.org)
 
-  ; Version:        20151216
-version_high_part:  equ 0x0133
-version_low_part:   equ 0x7BB0
+version_major:      equ 0
+version_minor:      equ 0
+version_patch:      equ 0
 
-  ; Last modified:  201512170217
-  ;
-  ; XXX FIXME: Forth-83 loops worked fine when the had diffent
-  ; names, but when I substituted the fig-Forth loops, the
-  ; system crashes. The compiled loops in the definitions have
-  ; been adapted.
+if 1
+  ; Build 20151217
+  version_build_high_part:  equ 0x0133
+  version_build_low_part:   equ 0x7BB1
+endif
+
+; This file was last modified: 201512170324
 
 ; ==============================================================
 ; Author and license
@@ -2079,276 +2080,28 @@ question_csb_.enough:
   inc bc ; skip the inline branch address
   _jp_next
 
-
-; ==============================================================
-if 0 ; old_loops
-
 ; ----------------------------------------------
-  _code_header paren_do_,'(DO)'
-
-  ; Credits:
-  ; Code from CP/M fig-Forth 1.1g.
-
-  exx                           ; 04t 01b
-  pop de                        ; 10t 01b
-  pop bc                        ; 10t 01b
-  ld hl,(return_stack_pointer)  ; 20t 03b
-  dec hl                        ; 06t 01b
-  ld (hl),b                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),c                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),d                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),e                     ; 07t 01b
-  ld (return_stack_pointer),hl  ; 16t 03b
-  exx                           ; 04t 01b
-                                ;116t 18b TOTAL
-  _jp_next
-
-; ----------------------------------------------
-  _colon_header plus_loop_,'+LOOP',immediate+compile_only
+  _code_header unloop_,'UNLOOP'
 
 ; doc{
 ;
-; +loop  ( n -- )
+; unloop  ( -- ) ( R: loop-sys -- )
 ;
-; Add the  signed  increment  _n_ to the  loop  index  using
-; the convention for `+`,  and compare the total to the limit.
-; Return execution to the corresponding `do` until the new index
-; is equal to or greater than the limit (n>0),  or until the new
-; index is less  than the limit (n<0).   Upon the exiting from
-; the  loop, discard  the  loop control  parameters,  continuing
-; execution ahead.   Index and  limit are  signed  integers in
-; the  range {-32,768..32,767}.
+; Discard the loop-control parameters for the current nesting
+; level. An `unloop` is required for each nesting level before
+; the definition may be exited with `exit`. An ambiguous
+; condition exists if the loop-control parameters are
+; unavailable.
 ;
-; Standard: fig-Forth, Forth-79.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
-
-  dw compile_,paren_plus_loop_
-  dw backward_resolve_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header loop_,'LOOP',immediate+compile_only
-
-; XXX TODO documentation
-; doc{
-;
-; loop  ( -- )
-;
-; Increment the `do-loop` index by one, terminating the loop  if
-; the new index is equal to or greater than  the  limit.
-;
-; Standard: fig-Forth, Forth-79.
-;
-; }doc
-
-  dw compile_,paren_loop_
-  dw backward_resolve_
-  dw exit_
-
-; ; ----------------------------------------------
-;   _code_header paren_question_do_,'(?DO)'
-
-; ; XXX UNDER DEVELOPMENT
-; ; A `(?do)` after Forth-79
-
-;   ; Credits:
-;   ; Code based on Spectrum Forth-83.
-
-; if 0
-
-;   pop hl
-;   pop de
-;   and a
-;   sbc hl,de
-;   jp z,branch_pfa
-;   add hl,de  ; reverse the substraction
-;   jp paren_do.de_hl
-
-; endif
-
-;   _jp_next
-
-; ; ----------------------------------------------
-;   _colon_header question_do_,'?DO',immediate+compile_only
-
-; ; XXX UNDER DEVELOPMENT
-; ; A `?do` after Forth-79
-
-; ; doc{
-; ;
-; ; ?do  ( n1 n2 -- )
-; ;
-; ; }doc
-
-;   dw compile_,paren_question_do_
-;   dw backward_mark_
-;   dw exit_
-;   _colon_header do_,'DO',immediate+compile_only
-
-; ----------------------------------------------
-  _colon_header do_,'DO',immediate+compile_only
-
-; doc{
-;
-; do  ( n1 n2 -- )
-;
-; Standard: fig-Forth, Forth-79.
-;
-; }doc
-
-  dw compile_,paren_do_
-  dw backward_mark_
-  dw exit_
-
-; ----------------------------------------------
-  _code_alias_header i_,'I',,r_fetch_
-
-; doc{
-;
-; i  ( -- x ) ( R: loop-sys -- loop-sys )
-;
-; Return a copy of the current (innermost) loop index.
-;
-; }doc
-
-; ----------------------------------------------
-  _code_header exhaust_,'EXHAUST'
-
-; doc{
-;
-; exhaust  ( -- ) ( R: n1 n2 -- n2 n2 )
-;
-;   n1 = loop limit
-;   n2 = loop index
-;
-; Force termination of a do-loop at the next opportunity by
-; setting the loop limit equal to the current value of the
-; index. The index itself remains unchanged, and execution
-; proceeds normally until `loop` or `+loop` is encountered.
-;
-; Note: This is the equivalent of fig-Forth's `leave`.
-;
-; }doc
-
-  ; XXX TODO rename to `leave-next`.
 
   ld hl,(return_stack_pointer)
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  inc hl
-  ld (hl),e
-  inc hl
-  ld (hl),d
-  _jp_next
-
-; ----------------------------------------------
-  _code_header question_exhaust_,'?EXHAUST'
-
-; doc{
-;
-; ?exhaust  ( f -- ) ( R: n1 n2 -- n1 n2 | n2 n2 )
-;
-; n1 = loop limit
-; n2 = loop index
-;
-; If _f_ is not false, force termination of a do-loop at the
-; next opportunity by setting the loop limit equal to the
-; current value of the index. The index itself remains
-; unchanged, and execution proceeds normally until `loop` or
-; `+loop` is encountered.
-;
-; }doc
-
-  ; XXX TODO rename to `?leave-next`.
-
-  pop hl
-  ld a,h
-  or l
-  jp nz,exhaust_pfa
-  _jp_next
-
-; ----------------------------------------------
-  _code_header paren_plus_loop_,'(+LOOP)'
-
-  pop de
-  jp paren_loop.step_in_de
-
-; ----------------------------------------------
-  _code_header paren_loop_,'(LOOP)'
-
-; doc{
-;
-; (loop)  ( n -- )
-;
-; Add the  signed  increment  _n_ to the  loop  index  using
-; the convention for `+`,  and compare the total to the limit.
-; Return execution to the corresponding `do` until the new index
-; is equal to or greater than the limit (n>0),  or until the new
-; index is less  than the limit (n<0).   Upon the exiting from
-; the  loop, discard  the  loop control  parameters,  continuing
-; execution ahead.   Index and  limit are  signed  integers in
-; the  range {-32,768..32,767}.
-;
-; }doc
-
-  ; Credits:
-  ;
-  ; This code is from Abersoft Forth.  It's the same code used
-  ; in `(+loop)` in fig-Forth 1.1g.  The author of Abersoft
-  ; Forth used it to write `(loop)` and wrote `(+loop)` with a
-  ; simple call to it, what saves code.
-
-  ld de,0x0001
-paren_loop.step_in_de:
-  ld hl,(return_stack_pointer)
-  ld a,(hl)
-  add a,e
-  ld (hl),a
-  ld e,a
-  inc hl
-  ld a,(hl)
-  adc a,d
-  ld (hl),a
-  inc hl ; (hl) = limit
-  inc d
-  dec d
-  ld d,a ; de = new index
-  jp m,paren_loop.negative_step
-
-  ; increment>0
-  ld a,e
-  sub (hl)
-  ld a,d
-  inc hl
-  sbc a,(hl)
-  jp paren_loop.end
-
-paren_loop.negative_step:
-  ; increment<0
-  ld a,(hl) ; limit-index
-  sub e
-  inc hl
-  ld a,(hl)
-  sbc a,d ; a<0?
-
-paren_loop.end:
-  jp m,branch_pfa ; loop again if a<0
-  ; done, discard loop parameters
-  inc hl
+  ld de,cell*3
+  add hl,de
   ld (return_stack_pointer),hl
-  ; skip branch offset
-  inc bc
-  inc bc
   _jp_next
-
-; ==============================================================
-else ; new loops
-
 
 ; ----------------------------------------------
   _code_header paren_question_do_,'(?DO)'
@@ -2481,7 +2234,10 @@ paren_do.de_hl:
   _code_header i_,'I'
 
   ld hl,(return_stack_pointer)
-  ; J jumps here. ; XXX TODO
+
+  ; Note: `j` and `k`jump here (body of `i` + 3), with updated
+  ; hl.
+
   ld e,(hl)
   inc hl
   ld d,(hl) ; de= current index, wich is: (index-limit) xor 0x8000
@@ -2497,6 +2253,21 @@ paren_do.de_hl:
   xor 0x80  ; flip most significant bit, getting true index value
   ld d,a
   push de ; result
+  _jp_next
+
+; ----------------------------------------------
+  _code_header question_leave_,'?LEAVE'
+
+; doc{
+;
+; ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
+;
+; }doc
+
+  pop hl
+  ld a,h
+  or l
+  jp nz,leave_pfa
   _jp_next
 
 ; ----------------------------------------------
@@ -2575,8 +2346,6 @@ paren_loop.continue:
   add hl,de ; increment RP by 5 (1 already done)
   ld (return_stack_pointer),hl
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _code_header digit_question_,'DIGIT?'
@@ -4430,30 +4199,6 @@ u_m_slash_mod.4:
   add hl,hl
   add hl,sp
   jp fetch.hl
-
-; ----------------------------------------------
-  _code_alias_header unloop_,'UNLOOP',,two_r_drop_
-
-; doc{
-;
-; unloop  ( -- ) ( R: loop-sys -- )
-;
-; Discard the loop-control parameters for the current nesting
-; level. An `unloop` is required for each nesting level before
-; the definition may be exited with `exit`. An ambiguous
-; condition exists if the loop-control parameters are
-; unavailable.
-;
-; In Solo Forth, the stack effect is:
-;
-; unloop  ( -- ) ( R: n1 n2 -- )
-;
-;   n1 = loop index
-;   n2 = loop limit
-;
-; Standard: Forth-94.
-;
-; }doc
 
 ; ----------------------------------------------
   _code_header to_r_,'>R'
@@ -8803,18 +8548,48 @@ quit.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _two_constant_header version_,'VERSION'
+  _variable_header version_,'VERSION'
 
 ; doc{
 ;
-; version  ( -- d )
+; version  ( -- a )
 ;
 ; Return the Solo Forth version number _d_.  The version number
 ; is the release date in the ISO format YYYYMMDD.
 ;
 ; }doc
 
-  dw version_high_part,version_low_part
+  db version_major
+  db version_minor
+  dw version_patch
+if defined version_build_high_part
+  dw version_build_high_part
+  dw version_build_low_part
+endif
+
+; ----------------------------------------------
+  _colon_header dot_version_,'.VERSION'
+
+  dw version_
+  dw dup_,c_fetch_
+  _literal 0
+  dw dot_r_
+  _literal '.'
+  dw emit_
+  dw one_plus_,dup_,c_fetch_
+  _literal 0
+  dw dot_r_
+  _literal '.'
+  dw emit_
+  dw one_plus_,dup_,fetch_
+  _literal 0
+  dw dot_r_
+if defined version_build_high_part
+  _literal '+'
+  dw emit_
+  dw cell_plus_,two_fetch_,d_dot_ 
+endif
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
@@ -8829,7 +8604,7 @@ quit.begin:
 
   dw paren_dot_quote_
   _string "Solo Forth\rVersion "
-  dw version_,d_dot_
+  dw dot_version_
   dw paren_dot_quote_
   _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
 
@@ -10516,12 +10291,10 @@ if.do:
 ;
 ; }doc
 
-  ; XXX TODO use `?do` or `for` when available
-  dw zero_,max_,question_dup_
-  dw zero_branch_,emits.end
+  dw zero_,max_
   dw zero_
 
-  dw paren_do_,emits.loop_exit ; do
+  dw paren_question_do_,emits.loop_exit ; do
   dw dup_,emit_
   dw paren_loop_ ; loop
 emits.loop_exit:
