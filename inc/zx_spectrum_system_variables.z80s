@@ -1,0 +1,279 @@
+; ZX Spectrum system variables
+
+; By Marcos Cruz (programandala.net)
+
+; 2014-12-17: Converted from the HTML version of the ZX Spectrum manual, with
+; the help of Vim.  Regulary improved afterwards.
+;
+; 2015-01-12: New: first two ZX Spectrum +3 variables.
+; 2015-01-15: New: 'sys_flags3'.
+; 2015-01-16: New: all ZX Spectrum +3 variables.
+; 2015-05-24: Changes to make the file usable as symbols input
+; file by z80dasm.
+
+; --------------------------------------------------------------
+; ZX Spectrum +3
+
+sys_nmiadd:      equ 23728 ; (2)
+
+; The system variable at 5CB0h (23728) was documented on previous models of the
+; Spectrum as 'Not used'. It is now used on the +3 as an NMI jump vector. If an
+; NMI occurs, this address is checked. If it contains a 0, then no action is
+; taken. However, for any other (non-zero) value, a jump will be made to the
+; address given by this variable. NMIs must not occur while the disk system is
+; active.
+
+sys_swap:           equ 23296 ; (0x5B00) (R16)
+                              ; Paging subroutine.
+sys_stoo:           equ 23312 ; (0x5B10) (R17)
+                              ; Paging subroutine. Entered with
+                              ; interrupts already disabled and AF, BC
+                              ; on the stack.
+sys_younger:        equ 23329 ; (0x5B21) (R9)
+                              ; Paging subroutine.
+sys_regnuoy:        equ 23338 ; (0x5B2A) (R16)
+                              ; Paging subroutine.
+sys_onerr:          equ 23354 ; (0x5B3A) (R24)
+                              ; Paging subroutine.
+sys_oldhl:          equ 23378 ; (0x5B52) (X2)
+                              ; Temporary register store while
+                              ; switching ROMs.
+sys_oldbc:          equ 23380 ; (0x5B54) (X2)
+                              ; Temporary register store while
+                              ; switching ROMs.
+sys_oldaf:          equ 23382 ; (0x5B56) (X2)
+                              ; Temporary register store while
+                              ; switching ROMs.
+sys_target:         equ 23384 ; (0x5B58) (N2)
+                              ; Subroutine address in ROM 3.
+sys_retaddr:        equ 23386 ; (0x5B5A) (X2)
+                              ; Return address in ROM 1.
+sys_bankm:          equ 23388 ; (0x5B5C) (X1)
+                              ; Copy of last byte output to I/O port
+                              ; 7FFDh (32765). This port is used to
+                              ; control the RAM paging (bits 0...2),
+                              ; the 'horizontal' ROM switch (01 and
+                              ; 23 - bit 4), screen selection (bit
+                              ; 3) and added I/O disabling (bit 5).
+                              ; This byte must be kept up to date with
+                              ; the last value output to the port if
+                              ; interrupts are enabled.
+sys_ramrst:         equ 23389 ; (0x5B5D) (X1)
+                              ; RST 8 instruction. Used by ROM 1 to
+                              ; report old errors to ROM 3.
+sys_ramerr:         equ 23390 ; (0x5B5E) (N1)
+                              ; Error number passed from ROM 1 to ROM
+                              ; 3. Also used by SAVE/LOAD as temporary
+                              ; drive store.
+sys_baud:           equ 23391 ; (0x5B5F) (2)
+                              ; RS232 bit period in T states/26. Set
+                              ; by FORMAT LINE.
+sys_serfl:          equ 23393 ; (0x5B61) (N2)
+                              ; Second-character-received-flag, and
+                              ; data.
+sys_col:            equ 23395 ; (0x5B63) (N1)
+                              ; Current column from 1 to width.
+sys_width:          equ 23396 ; (0x5B64) (1)
+                              ; Paper column width. Defaults to 80.
+sys_tvpars:         equ 23397 ; (0x5B65) (1)
+                              ; Number of inline parameters expected
+                              ; by RS232
+
+sys_flags3:         equ 23398 ; (0x5B66) (1)
+                              ; Various flags. Bits 0, 1, 6 and 7
+                              ; unlikely to be useful. Bit 2 is set
+                              ; when tokens are to be expanded on
+                              ; printing. Bit 3 is set if print output
+                              ; is RS232. The default (at reset) is
+                              ; Centronics. Bit 4 is set if a disk
+                              ; interface is present. Bit 5 is set if
+                              ; drive B: is present.
+sys_bank678:        equ 23399 ; (0x5B67) (X1)
+                              ; Copy of last byte output to I/O port
+                              ; 1FFDh (8189). This port is used to
+                              ; control the +3 extended RAM and ROM
+                              ; switching (bits 0..2 - if bit 0 is 0
+                              ; then bit 2 controls the 'vertical' ROM
+                              ; switch 02 and 13), the disk
+                              ; motor (bit 3) and Centronics strobe
+                              ; (bit 4). This byte must be kept up to
+                              ; date with the last value output to the
+                              ; port if interrupts are enabled.
+sys_xloc:           equ 23400 ; (0x5B68) (N1)
+                              ; Holds X location when using the
+                              ; unexpanded COPY command.
+sys_yloc:           equ 23401 ; (0x5B69) (N1)
+                              ; Holds Y location when using the
+                              ; unexpanded COPY command.
+sys_oldsp:          equ 23402 ; (0x5B6A) (X2)
+                              ; Old SP (stack pointer) when TSTACK is
+                              ; in use.
+sys_synret:         equ 23404 ; (0x5B6C) (X2)
+                              ; Return address for ONERR.
+sys_lastv:          equ 23406 ; (0x5B6E) (5)
+                              ; Last value printed by calculator.
+sys_rcline:         equ 23411 ; (0x5B73) (2)
+                              ; Current line being renumbered.
+sys_rcstart:        equ 23413 ; (0x5B75) (2)
+                              ; Starting line number for
+                              ; renumbering. The default value is 10.
+sys_rcstep:         equ 23415 ; (0x5B77) (2)
+                              ; Incremental value for renumbering. The
+                              ; default is 10.
+sys_loddrv:         equ 23417 ; (0x5B79) (1)
+                              ; Holds 'T' if LOAD, VERIFY, MERGE are
+                              ; from tape, otherwise holds 'A', 'B'
+                              ; or 'M'.
+sys_savdrv:         equ 23418 ; (0x5B7A) (1)
+                              ; Holds 'T' if SAVE is to tape,
+                              ; otherwise holds 'A', 'B' or 'M'.
+sys_dumplf:         equ 23419 ; (0x5B7B) (1)
+                              ; Holds the number of 1/216ths user for
+                              ; line feeds in 'COPY EXP'. This is
+                              ; normally set to 9. If problems are
+                              ; experienced fitting a dump onto a
+                              ; sheet of A4 paper, POKE this
+                              ; location with 8. This will reduce the
+                              ; size of the dump and improve the
+                              ; aspect ratio slightly. (The quality of
+                              ; the dump will be marginally degraded,
+                              ; however.)
+sys_strip1:         equ 23420 ; (0x5B7C) (N8)
+                              ; Stripe one bitmap.
+sys_strip2:         equ 23428 ; (0x5B84) (N8)
+                              ; Stripe two bitmap. This extends to
+                              ; 5B8Bh (23436).
+sys_tstack:         equ 23551 ; (0x5BFF) (X115)
+                              ; Temporary stack grows down from
+                              ; here. Used when RAM page 7 is switched
+                              ; in at top of memory (while executing
+                              ; the editor or calling +3DOS). it may
+                              ; safely go down to 5B8Ch (and across
+                              ; STRIP1 and STRIP2 if necessary). This
+                              ; guarantees at least 115 bytes of stack
+                              ; when BASIC calls +3DOS.
+
+; --------------------------------------------------------------
+; ZX Spectrum 48K
+
+sys_kstate:      equ 23552 ; (n8) Used in reading the keyboard.
+sys_last_k:      equ 23560 ; (nl) Stores newly pressed key.
+sys_last_key:    equ 23560
+sys_repdel:      equ 23561 ; (1) Time (in 50ths of a second
+                           ; in 60ths of a second in N. America) that a key must
+                           ; be held down before it repeats.
+                           ; This starts off at 35, but you can POKE in other values.
+sys_repper:      equ 23562 ; (1) Delay (in 50ths of a second in 60ths of a second
+                           ; in N. America) between successive repeats
+                           ; of a key held down: initially 5.
+sys_defadd:      equ 23563 ; (n2) Address of arguments of user defined function
+                           ; if one is being evaluated; otherwise 0.
+sys_k_data:      equ 23565 ; (nl) Stores 2nd byte of colour controls
+                           ; entered from keyboard.
+sys_tvdata:      equ 23566 ; (n2) Stores bytes of colour, AT and TAB controls
+                           ; going to television.
+sys_strms:       equ 23568 ; (x38) Addresses of channels attached to streams.
+sys_chars:       equ 23606 ; (2) 256 less than address of character set
+sys_rasp:        equ 23608 ; (1) Length of warning buzz.
+sys_pip:         equ 23609 ; (1) Length of keyboard click.
+
+; sys_err_nr is pointed by IY
+
+sys_err_nr:      equ 23610 ; (1) 1 less than the report code.
+                           ; Starts off at 255 (for 1) so PEEK 23610 gives 255.
+sys_flags:       equ 23611 ; (x1) Various flags to control the BASIC system.
+sys_tv_flag:     equ 23612 ; (x1) Flags associated with the television.
+sys_err_sp:      equ 23613 ; (x2) Address of item on machine stack
+                           ; to be used as error return.
+sys_list_sp:     equ 23615 ; (n2) Address of return address from automatic listing.
+sys_mode:        equ 23617 ; (n1) Specifies K, L, C. E or G cursor.
+sys_newppc:      equ 23618 ; (2) Line to be jumped to.
+sys_nsppc:       equ 23620 ; (1) Statement number in line to be jumped to.
+                           ; Poking first NEWPPC and then NSPPC
+                           ; forces a jump to a specified statement in a line.
+sys_ppc:         equ 23621 ; (2) Line number of statement currently being executed.
+sys_subppc:      equ 23623 ; (1) Number within line of statement being executed.
+sys_bordcr:      equ 23624 ; (1) Border colour * 8; also contains the attributes
+                           ; normally used for the lower half of the screen.
+sys_e_ppc:       equ 23625 ; (2) Number of current line (with program cursor).
+sys_vars:        equ 23627 ; (x2) Address of variables.
+sys_dest:        equ 23629 ; (n2) Address of variable in assignment.
+sys_chans:       equ 23631 ; (x2) Address of channel data.
+sys_curchl:      equ 23633 ; (x2) Address of information currently being used
+                           ; for input and output.
+sys_prog:        equ 23635 ; (x2) Address of BASIC program.
+sys_nxtlin:      equ 23637 ; (x2) Address of next line in program.
+sys_datadd:      equ 23639 ; (x2) Address of terminator of last DATA item.
+sys_e_line:      equ 23641 ; (x2) Address of command being typed in.
+sys_k_cur:       equ 23643 ; (2) Address of cursor.
+sys_ch_add:      equ 23645 ; (x2) Address of the next character to be interpreted:
+                           ; the character after the argument of PEEK,
+                           ; or the NEWLINE at the end of a POKE statement.
+sys_x_ptr:       equ 23647 ; (2) Address of the character after the ? marker.
+sys_worksp:      equ 23649 ; (x2) Address of temporary work space.
+sys_stkbot:      equ 23651 ; (x2) Address of bottom of calculator stack.
+sys_stkend:      equ 23653 ; (x2) Address of start of spare space.
+sys_breg:        equ 23655 ; (n1) Calculator's b register.
+sys_mem:         equ 23656 ; (n2) Address of area used for calculator's memory.
+                           ; (Usually MEMBOT, but not always.)
+sys_flags2:      equ 23658 ; (1) More flags.
+sys_df_sz:       equ 23659 ; (x1) The number of lines (including one blank line)
+                           ; in the lower part of the screen.
+sys_s_top:       equ 23660 ; (2) The number of the top program line in automatic listings.
+sys_oldppc:      equ 23662 ; (2) Line number to which CONTINUE jumps.
+sys_ospcc:       equ 23664 ; (1) Number within line of statement
+                           ; to which CONTINUE jumps.
+sys_flagx:       equ 23665 ; (n1) Various flags.
+sys_strlen:      equ 23666 ; (n2) Length of string type destination in assignment.
+sys_t_addr:      equ 23668 ; (n2) Address of next item in syntax table
+                           ; (very unlikely to be useful).
+sys_seed:        equ 23670 ; (2) The seed for RND.
+                           ; This is the variable that is set by RANDOMIZE.
+sys_frames:      equ 23672 ; (3) 3 byte (least significant first), frame counter.
+                           ; Incremented every 20ms.
+sys_udg:         equ 23675 ; (2) Address of 1st user defined graphic.
+sys_coords:      equ 23677 ; (2) coordinates of last point plotted.
+sys_coordx:      equ 23677 ; (1) x-coordinate of last point plotted.
+sys_coordy:      equ 23678 ; (1) y-coordinate of last point plotted.
+sys_p_posn:      equ 23679 ; (1) 33 column number of printer position
+sys_pr_cc:       equ 23680 ; (1) Less significant byte of address
+                           ; of next position for LPRINT to print at
+                           ; (in printer buffer).
+sys_unused0:     equ 23681 ; (1) Not used.
+sys_echo_e:      equ 23682 ; (2) 33 column number and 24 line number
+                           ; (in lower half) of end of input buffer.
+sys_df_cc:       equ 23684 ; (2) Address in display file of PRINT position.
+sys_dfccl:       equ 23686 ; (2) Like DF CC for lower part of screen.
+sys_s_posn:      equ 23688 ; (x2) 33 column and 24 line number for PRINT position
+sys_s_posx:      equ 23688 ; (x1) 33 column number for PRINT position
+sys_s_posy:      equ 23689 ; (x1) 24 line number for PRINT position.
+sys_s_posn2:     equ 23689
+sys_sposnl:      equ 23690 ; (x2) Like S POSN for lower part
+sys_scr_ct:      equ 23692 ; (1) Counts scrolls:
+                           ; it is always 1 more than the number of scrolls that
+                           ; will be done before stopping with scroll?  If you keep
+                           ; poking this with a number bigger than 1 (say 255), the
+                           ; screen will scroll on and on without asking you.
+sys_attr_p:      equ 23693 ; (1) Permanent current colours, etc
+                           ; (as set up by colour statements).
+sys_mask_p:      equ 23694 ; (1) Used for transparent colours, etc.
+                           ; Any bit that is 1 shows that the corresponding
+                           ; attribute bit is taken not from ATTR P, but from what
+                           ; is already on the screen.
+sys_attr_t:      equ 23695 ; (n1) Temporary current colours, etc
+                           ; (as set up by colour items).
+sys_mask_t:      equ 23696 ; (n1) Like MASK P, but temporary.
+sys_p_flag:      equ 23697 ; (1) More flags.
+sys_membot:      equ 23698 ; (n30) Calculator's memory area;
+                           ; used to store numbers that cannot
+                           ; conveniently be put on the calculator stack.
+sys_unused1:     equ 23728 ; (1) Not used.
+sys_unused2:     equ 23729 ; (1) Not used.
+sys_ramtop:      equ 23730 ; (2) Address of last byte of BASIC system area.
+sys_p_ramt:      equ 23732 ; (2) Address of last byte of physical RAM.
+
+; Some offsets
+
+sys_df_sz_offset:  equ sys_df_sz-sys_err_nr
+sys_last_k_offset: equ sys_last_k-sys_err_nr
+sys_scr_ct_offset: equ sys_scr_ct-sys_err_nr

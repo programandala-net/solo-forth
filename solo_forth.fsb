@@ -32,16 +32,6 @@ decode dump
 ( debugging ) \ scr 2
 
 
-: KKK .s ;
-
-  \ The name field is not compiled!
-
-  \ 08
-  \ D0
-  \ 42
-  \ 2E .
-  \ 28 (
-
   \ }}} =======================================================
   \ Require {{{
 
@@ -264,7 +254,7 @@ code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
 
 ( pixel )
 
-require pixel-addr
+require pixel-add
 
 code pixel  ( xc yc -- n a )
   \ Address of a pixel in the screen.
@@ -276,18 +266,18 @@ code pixel  ( xc yc -- n a )
   C5 c,                   \ push bc
   40 05 + c,              \ ld b,l ; b=y
   48 03 + c,              \ ld c,e ; c=x
-  CD c, pixel-addr ,      \ call pixel-addr
+  CD c, pixel-add ,       \ call pixel-add
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
   pushhlde,               \ jp pushhlde
   end-code
 
-( pixel-addr )
+( pixel-add )
 
   \ 2015-06-11: Written.
   \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
 
-label pixel-addr  ( -- )  hex
+label pixel-add  ( -- )  hex
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
@@ -309,7 +299,7 @@ label pixel-addr  ( -- )  hex
   \ 2015-06-11: Modified to use the whole screen.
   \ 2015-07-04: Fix. The address into PLOT-SUB was wrong.
 
-require pixel-addr
+require pixel-add
 
 code plot  ( xc yc -- )
 
@@ -317,17 +307,13 @@ code plot  ( xc yc -- )
   E1 c,               \ pop hl
   C1 c,               \ pop bc
   40 05 + c,          \ ld b,l
-  \ l = y coordinate
-  \ e = x coordinate
-  40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
   \ b = y coordinate
   \ c = x coordinate
-
-  ED c, 43 c, 5C7D ,   \ ld (0x5C7D),bc ; update COORDS
-  CD c, pixel-addr ,  \ call pixel-addr
+  ED c, 43 c, 5C7D ,  \ ld (0x5C7D),bc ; update COORDS
+  CD c, pixel-add ,   \ call pixel-add
   \ hl = screen address
   \ a = pixel position in hl (0..7)
-  CD c, 22EC ,        \ call 0x22EB ; plot-sub + 7
+  CD c, 22EC ,        \ call 0x22EB ; ROM PLOT-SUB + 7
   D9 c,               \ exx
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   next,               \ jp (ix)
@@ -337,74 +323,139 @@ code plot  ( xc yc -- )
 ( plotted? )
 
   \ 2015-06-04: Copied from Afera.
-  \ 2105-06-11: Modified to use the whole screen.
+  \ 2015-06-11: Modified to use the whole screen.
+  \ 2015-08-22: Converted to the Fasmo assembler.
 
-require pixel-addr
+require pixel-add  require fasmo
 
 code plotted?  ( xc yc -- f )
+  hl pop  de pop  bc push
+  \ l = y coordinate
+  \ e = x coordinate
+  l b ld  e c ld
+  \ b = y coordinate
+  \ c = x coordinate
+  pixel-add call
+  \ hl = screen address
+  \ a = pixel position in hl
+  a b ld  b inc  m a ld
+  here  rlca djnz \ rotate to bit 0
+  bc pop  \ restore the Forth IP
+  1 and#  \ plotted?
+  ' true cfa>pfa jpnz
+  ' false cfa>pfa jp
+  end-code
+
+( plotted? )
+
+  \ 2015-06-04: Copied from Afera.
+  \ 2015-06-11: Modified to use the whole screen.
+
+  \ XXX OLD -- version for true=1
+
+require pixel-add
+
+code plotted1?  ( xc yc -- f )
+  \ f = 1 or 0
   E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
   \ l = y coordinate
   \ e = x coordinate
   40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
   \ b = y coordinate
   \ c = x coordinate
-  CD c, pixel-addr ,      \ call pixel-addr
+  CD c, pixel-add ,       \ call pixel-add
   \ hl = screen address
   \ a = pixel position in hl
-  40 07 + c,              \ ld b,a
-  04 c,                   \ inc b
-  7E c,                   \ ld a,(hl)
+  40 07 + c, 04 c, 7E c,
+                          \ ld b,a
+                          \ inc b
+                          \ ld a,(hl)
   \ rotate:
   07 c,  10 c, FD c,      \ rlca / djnz rotate
   E6 c, 01 c,             \ and 1
   \ finish:
   26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
-  C1 c,                   \ pop bc
-  pushhl,                 \ jp pushhl
-  \ XXX TODO adapt when true=-1
+  C1 c,  pushhl,          \ jp pushhl
+                          \ pop bc
   end-code
 
-( draw )
+( rdraw )
 
-  \ XXX TODO
+  \ [Code adapted from Spectrum Forth-83's `DRAW`.]
 
-  \ Version of Spectrum Forth-83:
+require fasmo  \ assembler
 
-  \ CODE DRAW
-  \   H POP
-  \   B POP
-  \   D PUSH
-  \   1 E LD#
-  \   7 B BIT
-  \   NZ IF
-  \     C A LD
-  \     NEG
-  \     -1 E LD#
-  \     A C LD
-  \   THEN
-  \   1 D LD#
-  \   L B LD
-  \   7 H BIT
-  \   NZ IF
-  \     B A LD NEG
-  \     -1 D LD#
-  \     A B LD
-  \   THEN
-  \   24BA CALL
-  \   D POP
-  \   JPIX ;C
+code rdraw  ( x y -- )
+
+  \ Draw a line relative to the current coordinates.
+  \
+  \ x y = relative coordinates from the current ones
+
+  \ XXX FIXME -- use the whole screen
+
+  hl pop  de pop  bc push
+  de bc ldp
+
+  \ hl = y
+  \ bc = x
+  1 e ld#
+  7 b bit  \ negative x?
+  nz if  c a ld  neg  -1 e ld#  a c ld  then  \ negative x
+
+  l b ld   \ y
+  1 d ld#
+  7 h bit  \ negative y?
+  nz if  b a ld  neg  -1 d ld#  a b ld  then  \ negative y
+
+  24BA call \ alternative entry to the DRAW-LINE ROM routine
+
+  bc pop
+
+  next,  end-code
+
+( adraw ) \ from Abersoft Forth
+
+  \ [Code adapted from Abersoft Forth's `DRAW`.]
+
+require plot
+
+2variable x1  2variable incx  2variable y1  2variable incy
+
+  \ System variables used:
+  \   23677 = COORDX
+  \   23678 = COORDY
+
+: adraw  ( x y -- )
+
+  \ Draw a line from the current coordinates to the given
+  \ absolute coordinates.
+
+  23678 c@ ( y0 ) dup 0 swap y1 2! - dup abs rot
+  \ ( +-ydiff ydiff x )
+  23677 c@ ( x0 ) dup 0 swap x1 2! - dup abs rot
+  \ ( +-ydiff +-xdiff xdiff ydiff )
+  max >r dup 0<  \ negative xdiff?
+  if    abs 0 swap r@ m/mod dnegate
+  else  0 swap r@ m/mod  then
+  incx 2! drop dup 0<  \ negative ydiff?
+  if    abs 0 swap r@ m/mod dnegate
+  else  0 swap r@ m/mod  then
+  incy 2! drop r> 1+ 0
+  do  x1 @ y1 @ plot
+      x1 2@ incx 2@ d+ x1 2!
+      y1 2@ incy 2@ d+ y1 2!  loop  ;
 
 ( attr )
 
 require attr-addr
 
-code attr ( line col -- )
+code attr ( line col -- b )
 
   E1 c,  D1 c,
     \ pop hl ; l = col
     \ pop de ; e = line
-  50 05 + c, \ ld d,l ; d = col
-
+  50 05 + c,
+    \ ld d,l ; d = col
   6E c,  26 c, 00 c,  pushhl,
     \ ld l,(hl) ; pick up the colour attribute.
     \ ld h,0
@@ -414,9 +465,7 @@ code attr ( line col -- )
 
 ( attr-addr )
 
-also assembler
-
-label attr-addr  ( -- )  hex
+label attr-addr  ( -- )
 
   \ Modified version of the ROM routine at 0x2583.
 
@@ -445,7 +494,7 @@ label attr-addr  ( -- )  hex
 
   C9 c,  \ ret
 
-  decimal
+  end-asm
 
 ( emitted? )
 
@@ -473,12 +522,201 @@ code emitted? ( row col -- f )
 
 end-code
 
+( circle )
+
+
+  \ Code adapted from:
+  \ http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/ 
+
+  \ x^2+y^2=r^2 represents the real variable equation of a
+  \ circle which is to be plotted using a grid of discrete
+  \ pixels where each pixel has integer coordinates.
+
+  \ Note. original ROM circles are slightly displaced to the
+  \ right as noticed.
+
+  \ 2015-08-21: Start.
+
+  \ XXX TODO
+
+label circle-plot
+  hl push  bc push  de push
+  ' plot cfa>pfa call  \ XXX TODO
+  de pop  bc pop  hl pop  ret
+
+code circle  ( x y radius -- )
+
+  \ d=x0
+  \ e=y0
+  \ a=radious
+
+    \ pop hl
+    \ po
+
+  \ ;*************************************
+  \ ;*******Setup of parameters***********
+  \ ;*************************************
+
+    \ ld h,0  \ H is x -- init to 0
+    \ ld l,a  \ L is y -- init to radius
+  0 h ld#  l a ld
+  exx  cpl  a c ld  FF b ld#
+  bc incp  \ bc' is -radius
+
+    \ exx
+    \ cpl
+    \ ld c,a
+    \ ld b,$ff
+    \ inc bc     ;bc' is -radius
+    \ ld hl,1
+    \ add hl,bc
+    \ ex de,hl   ;de' is f=1-radius ; f error control
+    \ ;and a
+    \ rl c
+    \ rl b       ;-2*radius
+    \ ld hl,5
+    \ add hl,bc  ;hl'  is ddfy =5-2*r
+    \ ld bc,3    ;bc' is  ddfx =3
+    \ exx
+
+  \ ;*************************************
+  \ ;*******Main circle procedure*********
+  \ ;*************************************
+
+  \ Loop:
+
+  \ ;*******Set 8 pixels, one for each circle's octant*********
+    \ ld A,D ;Point #1
+    \ add A,H
+    \ ld c,A
+    \ ld A,E
+    \ add A,L
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #2
+    \ sub L
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,D ;Point #4
+    \ sub H
+    \ ld c,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #3
+    \ add A,L
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,D ;Point #5
+    \ add A,L
+    \ ld c,A
+    \ ld A,E
+    \ add A,H
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #6
+    \ sub H
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,D ;Point #8
+    \ sub L
+    \ ld c,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #7
+    \ add A,H
+    \ ld b,A
+    \ call plotpixel
+
+  \ ;********Main logic***********
+  \ Control:
+    \ ld a,h  ;H is x
+    \ cp l    ;L is y
+    \ jr nc,end_circle   ;While  (y > x)
+
+    \ exx
+    \ bit 7,d  ;if f>0
+    \ ;exx
+    \ jr nz,fneg
+
+  \ fpos:
+    \ ;exx
+
+    \ ex de,hl
+    \ add hl,de
+    \ ex de,hl
+
+    \ inc hl  ;hl' is ddfy
+    \ inc hl
+    \ exx
+
+    \ dec l
+    \ jr fneg2
+
+    \ ;end if
+  \ fneg:
+    \ ;exx
+
+    \ ex de,hl
+    \ add hl,bc
+    \ ex de,hl
+    \ exx
+
+  \ fneg2:
+    \ exx
+    \ inc bc   ;bc' is ddfx
+    \ inc bc
+
+    \ inc hl
+    \ inc hl
+    \ exx
+
+    \ inc h           ;H is x
+
+    \ jr Loop     ;end While
+  \ end_circle:
+    \ exx
+    \ ld hl,$2758 ;HL' must contain $2758 on return to the Zx OS
+    \ exx
+    \ ret
+
+
+end-code
+
+( fade )
+
+  \ [Code adapted from Microhobby Especial,
+  \ issue 7, 1987-12, page 46:
+  \ <http://microhobby.org/mhes7.htm>.]
+
+require fasmo
+
+code fade  ( -- )
+  bc push
+  8 b ld#
+  \ do:
+  here  5AFF hl ldp#  halt  halt
+    begin
+      m a ld  a d ld  07 and#  nz if  a dec  then
+      a e ld  a d ld  38 and#  nz if  8 sub#  then
+      e or  d xor  3F and#  d xor
+      a m ld  hl decp  h a ld
+      58 cp#
+    cy until
+  djnz \ loop
+  bc pop  next,
+  end-code
+
   \ }}} =======================================================
   \ Sound {{{
 
 ( bleep )
 
-  \ Code modified from Abersoft Forth:
+  \ [Code modified from Abersoft Forth:]
 
 code bleep  ( n1 n2 -- )
   \ Produce a tone in the noise maker.
@@ -491,7 +729,7 @@ code bleep  ( n1 n2 -- )
   next,               \ jp (ix)
   end-code
 
-  \ Code from v.Forth, not tested:
+  \ [Code from v.Forth, not tested:]
 
 : bleep-calc  ( freq duration -- n1 n2 )
   \ n1 = duration
@@ -1833,6 +2071,13 @@ variable #order  \ number of vocs in the current search order
   \   16383 u/ drop dup sys-seed !
   \   swap mod ;
 
+( random-test )
+
+require random require plot
+
+: random-test  ( n -- )
+  0 do  256 random 193 random plot  loop ;
+
   \ }}} =======================================================
   \ Deferred words {{{
 
@@ -1892,51 +2137,21 @@ variable #order  \ number of vocs in the current search order
 
 ( assembler )
 
-\ Assembler for Solo Forth
+\ Z80 Assembler for Solo Forth
 
-\ Copyright (C) 1988? Coos Haak
 \ Copyright (C) 2015 Marcos Cruz (programandala.net)
 
   \ This is a modified version of an assembler designed by Coos
   \ Haak for his own Forth, and used by Lennart Benschop with
   \ his Spectrum Forth-83 (1988).
 
-  \ It was ported to the fig-Forth Afera library by Marcos Cruz
-  \ (2015-03).
-
-  \ -----------------------------------------------------------
-  \ Differences from the original version
-
-  \ Also the pair registers BC, DE and HL can be used.
-  \ Example: both `1 B LDP#` and `1 BC LDP#` are valid.
-
-  \ `(HL)` can be used instead of `M`.
-
-  \ Special mnemonic `0OUTBC` is provided.
-
-  \ The condition flag operator `NOT` is removed; the condition
-  \ flag `v` is removed. The condition flags are completed,
-  \ including their opposite versions.
-
-  \ Changed names:
-  \ `INC` --> `INCP`;
-  \ `INR` --> `INC`;
-  \ `DEC` --> `DECP`;
-  \ `DER` --> `DEC`.
-  \ `TST` --> `TSTP`.
-
-  \ The set of conditional calls and returns has been completed
-  \ (the original included only the generic `CALLC` and
-  \ `RETC`).
-
-  \ Added many stack comments.
-
-  \ Case insensitive.
-
   \ -----------------------------------------------------------
   \ History
 
-  \ 2015-07-04: Copied from the Afera library.
+  \ 2015-07-04: Copied from the Afera library, a fig-Forth
+  \ version for Abersoft Forth, with some changes, of the
+  \ original assembler designed by Coos Haak and included in
+  \ Lennart Benschop's Spectrum Forth-83.
   \
   \ 2015-07-05: First changes to convert it from fig-Forth to
   \ Solo Forth.
@@ -1950,107 +2165,123 @@ variable #order  \ number of vocs in the current search order
   \ opcode, was mistaken as the DE register. '0DE' is used
   \ instead. Fix: a `variable` definition had its init value.
   \ Check: the assembler occupies 1565 bytes.
+  \
+  \ 2015-08-22: Updated after Fasmo, the Z80 assembler for
+  \ Gforth, based on the same code.
 
   \ -----------------------------------------------------------
 
-forth definitions
+
+  \ XXX TODO `get-order` here and `set-order` at the end.
+
+only forth definitions
 
 : 8*   ( n1 -- n2 )  2* 2* 2* ;
 
--->
+: fasmo  ( -- )  assembler ;
 
-( assembler -- Registers )
+vocabulary assembler
 
 : [assembler]  ( -- )  assembler  ; immediate
 
-assembler definitions hex
+also assembler definitions hex
+
+-->
+
+( fasmo assembler -- Registers )
+
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
 
-  \ XXX TODO -- remove ?
-0 constant bc  2 constant de  4 constant hl  6 constant (hl)
+0 constant bc  2 constant de  4 constant hl
 
 6 constant sp  6 constant af
 
 DD constant ix-op  FD constant iy-op
 
-variable xy  ix-op xy !
-: %x  ( -- )  ix-op xy ! ;    : %y  ( -- )  iy-op xy ! ;
-
-: xy,  ( -- )  xy @ c, ;
-
-: xl  xy, l ;         : xh  xy, h ;
-: ix  ix-op c, hl ;   : iy  iy-op c, hl ;
+: ix  ( -- rphl )  ix-op c, hl ;
+: iy  ( -- rphl )  iy-op c, hl ;
 
   \ Branch too long?
 : ?page  ( n -- n )  dup 80 + FF swap u< 1E ?error  ;
 
 -->
 
-( assembler -- Words for defining the z80 instructions)
+( fasmo assembler -- Words for defining the z80 instructions)
 
-: m1  ( n "name" -- )
+: m1  ( 8b "name" -- )
   \ 1-byte opcode without parameters.
-  create c, does> c@ c, ;
+  create c, does>  ( -- )  ( pfa ) c@ c, ;
 
-: m2  ( n "name" -- )
+: m2  ( 8b "name" -- )
   \ 1-byte opcode with register encoded in bits 0-3.
-  create c, does> c@ + c, ;
+  create c, does>  ( r -- )  ( r pfa ) c@ + c, ;
 
-: m3  ( n "name" -- )
+: m3  ( 8b "name" -- )
   \ 1-byte opcode with register encoded in bits 3-5.
-  create c, does> c@ swap 8* + c, ;
+  create c, does>  ( r -- )  ( r pfa ) c@ swap 8* + c, ;
 
-: m4  ( n "name" -- )
+: m4  ( 8b "name" -- )
   \ 1-byte opcode with 1-byte parameter.
-  create c, does> c@ c, c, ;
+  create c, does>  ( 8b -- )  ( 8b pfa ) c@ c, c, ;
 
-: m5  ( n "name" -- )
+: m5  ( 8b "name" -- )
   \ 1-byte opcode with 2-byte parameter.
-  create c, does> c@ c, , ;
+  create c, does>  ( 16b -- )  ( 16b pfa ) c@ c, , ;
 
-: m6  ( n "name" -- )
+: m6  ( 8b "name" -- )
   \ Rotation of registers.
-  create c, does> CB c, c@ + c, ;
+  create c, does>  ( r -- )  ( r pfa ) CB c, c@ + c, ;
 
   -->
 
-( assembler -- Words for defining the z80 instructions)
+( fasmo assembler -- Words for defining the z80 instructions)
 
-: m7  ( n "name" -- )
+: m7  ( 8b "name" -- )
   \ Bit manipulation of registers.
-  create c, does> CB c, c@ + swap 8* + c, ;
+  create c, does>  ( bit r -- )
+    ( bit r pfa ) CB c, c@ + swap 8* + c, ;
 
-: m8  ( n "name" -- )
+: m8  ( 16b "name" -- )
   \ 2-byte opcodes.
-  create , does> @ , ;
+  create , does>  ( -- )  ( pfa ) @ , ;
 
-: m9  ( n "name" -- )
+: m9  ( 8b "name" -- )
   \ Relative jumps.
-  create c, does> c@ c, here 1+ - ?page c, ;
+  create c, does>  ( a -- )
+    ( a pfa )  c@ c, here 1+ - ?page c, ;
 
-: ma  ( n "name" -- )
+-->
+
+( fasmo assembler -- Words for defining the z80 instructions)
+
+require -rot
+
+: ma  ( 8b "name" -- )
   \ Index registers with register.
-  create c, does> xy, c@ c, c, ;
+  create c, does>  ( disp rphl -- )
+    ( disp rphl pfa ) c@ c, drop c, ;
 
-: mb  ( n "name" -- )
+: mb  ( 8b "name" -- )
   \ Rotation with index registers.
-  create c, does> xy, CB c, c@ swap c, c, ;
+  create c, does>  ( disp rphl -- )
+    ( disp rphl pfa ) CB c, c@ c, drop c, ;
 
-: mc  ( n "name" -- )
+: mc  ( 8b "name" -- )
   \ Bit manipulation with index registers.
-  create c, does> xy, CB c, c@ rot rot c, 8* + c, ;
+  create c, does>  ( bit rphl disp -- )
+    ( bit rphl disp pfa ) CB c, rot drop c@ -rot c, 8* + c, ;
 
   -->
 
-( assembler -- Opcodes )
+( fasmo assembler -- Opcodes )
 
 00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
-08 m1 exaf 09 m3 addp 0A m3 ldap 0B m3 decp 0F m1 rrca
+08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca
 10 m9 djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl
 27 m1 daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta
-37 m1 scf 38 m9 jrc 3A m5 lda 3F m1 ccf 76 m1 halt 80 m2 add
+37 m1 scf 38 m9 jrc 3A m5 fta 3F m1 ccf 76 m1 halt 80 m2 add
 88 m2 adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz
 C3 m5 jp C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz
 CD m5 call CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc
@@ -2062,24 +2293,22 @@ FA m5 jpm FB m1 ei FE m4 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl
 C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
 47ED m8 ldia 56ED m8 im1 5EED m8 im2 B1ED m8 cpir         -->
 
-( assembler -- Opcodes)
+( fasmo assembler -- Opcodes)
 
-  \ XXX TODO missing stack notations
 : 0outbc  ( -- )  ED c, 71 c, ;
 : jpix  ( -- )  ix-op c, jphl ;
-: ldp#  ( 16b rp -- )  8* 1+ c,  , ;
-: ldix#  ( 16b rp -- )  8* 1+ c,  , ; \ xxx todo
+: ldp#  ( 16b rp -- )  8* 1+ c, , ;
 : ld#  ( 8b r -- )  8* 06 + c, c, ;
 : ld  ( r1 r2 -- )  8* 40 + + c, ;
-: sbcp  ED c, 8* 42 + c, ;
-: adcp  ED c, 8* 4A + c, ;
-: stp  ED c, 8* 43 + c, , ;
-: ldp  ED c, 8* 4B + c, , ;
+: sbcp  ( rp -- )  ED c, 8* 42 + c, ;
+: adcp  ( rp1 rp2 -- )  ED c, 8* 4A + c, ;
+: stp  ( a rp -- )  ED c, 8* 43 + c, , ;
+: ftp  ( a rp -- )  ED c, 8* 4B + c, , ;
 
   \ Macros
 
 : clr  ( rp -- )  0 swap ldp# ;
-: mov  2dup ld 1+ swap 1+ swap ld ; \ xxx todo stack notation
+: ldp  ( rp1 rp2 -- )  2dup ld 1+ swap 1+ swap ld ;
 
   \ zx Spectrum specific
 
@@ -2088,23 +2317,26 @@ D7 m1 prt  \ rst 0x16
 
 -->
 
-( assembler -- Index register opcodes)
+( fasmo assembler -- Index register opcodes)
 
-86 ma )add 8E ma )adc 96 ma )sub 9E ma )sbc A6 ma )and
-AE ma )xor B6 ma )or  BE ma )cp  34 ma )inc 35 ma )dec
-06 mb )rlc 0E mb )rrc 16 mb )rl  1E mb )rr  26 mb )sla
-2E mb )sra 3E mb )srl 46 mc )bit 86 mc )res C6 mc )set
+require -rot
+[defined] 3dup 
+?\ : 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
 
-  \ XXX TODO missing stack notations
-: )ld  xy, swap 8* 46 + c, c, ;
-: )st  xy, swap 70 + c, c, ;
-: )ld# xy, 36 c, c, c, ;
-: )ldp  over 1+ over )ld 1+ )ld ;
-: )stp  over 1+ over )st 1+ )st ;
+86 ma addx 8E ma adcx 96 ma subx 9E ma sbcx A6 ma andx
+AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
+06 mb rlcx 0E mb rrcx 16 mb rlx  1E mb rrx  26 mb slax
+2E mb srax 3E mb srlx 46 mc bitx 86 mc resx C6 mc setx
+
+: ftx   ( disp rpi r -- )   nip 8* 46 + c, c, ;
+: stx   ( r disp rphl -- )  drop swap 70 + c, c, ;
+: st#x  ( 8b disp rpi -- )  drop 36 c, swap c, c, ;
+: ftpx  ( disp rpi rp -- )  3dup 1+ ftx rot 1+ -rot ftx ;
+: stpx  ( disp rpi rp -- )  3dup 1+ stx rot 1+ -rot stx ;
 
 -->
 
-( assembler -- Condition codes, conditional ret and call)
+( fasmo assembler -- Conditional ret and call)
 
   \ Condition codes for relative jumps
 
@@ -2127,7 +2359,6 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : ?ret  ( op -- )  8 xor 2- c, ;
 
-  \ XXX TODO -- remove?
 : retc  ( -- )  cy' ?ret ;    : retnc  ( -- )  nc' ?ret ;
 : retz  ( -- )  z' ?ret ;     : retnz  ( -- )  nz' ?ret ;
 : retm  ( -- )  m' ?ret ;     : retp  ( -- )  p' ?ret ;
@@ -2137,7 +2368,6 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : ?call  ( a op -- )  8 xor 2+ c, , ;
 
-  \ XXX TODO -- remove?
 : callc  ( -- )  cy' ?call ;    : callnc  ( -- )  nc' ?call ;
 : callz  ( -- )  z' ?call ;     : callnz  ( -- )  nz' ?call ;
 : callm  ( -- )  m' ?call ;     : callp  ( -- )  p' ?call ;
@@ -2145,13 +2375,15 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( assembler -- Control structures built with relative jumps)
+( fasmo assembler -- Control structures with relative jumps)
 
   \ XXX TODO document
 
-  \ Forward relative mark.
 : >relmark  ( -- orig )  here 1- ;
+  \ Forward relative mark.
 : >relresolve  ( orig dest -- ) over - ?page swap c! ;
+  \ Forward relative resolve.
+
 : then  ( orig cs-id -- )  0A ?pairs >relmark >relresolve ;
 : if  ( op -- orig cs-id )  , >relmark 0A ;
 : else  ( orig cs-id -- cs-id ) \ XXX TODO document
@@ -2166,7 +2398,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( assembler -- Control structures built with absolute jumps )
+( fasmo assembler -- Control structures with absolute jumps )
 
   \ XXX TODO document
 
@@ -2183,7 +2415,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( assembler -- Last opcodes and macros)
+( fasmo assembler -- Last opcodes and macros)
 
   \ `AND`, `OR` and `XOR` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -2197,16 +2429,13 @@ A0 m2 and  B0 m2 or  A8 m2 xor
   \ Macro to test 16-bit register for zero:
 : tstp  ( rp -- )  dup a ld 1+ or ;
 
-  \ Patch `asm` with `%x`:
-' %x ' asm cfa>pfa !
-
-forth definitions
+also forth definitions
 
   \ Macros \ xxx todo -- test it
 : macro  ( "name" -- )  asm postpone :  ;
 : endm  ( -- )  postpone ;  ;
 
-decimal
+decimal only forth
 
   \ }}} =======================================================
   \ The address register {{{

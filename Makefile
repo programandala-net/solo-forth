@@ -35,7 +35,6 @@ VPATH = ./
 
 MAKEFLAGS = --no-print-directory
 
-kernel_source_file = solo_forth.z80s
 disk_source_file = solo_forth.fsb
 #kernel_source_file = solo_forth.z80s.201506290300.z80s
 #disk_source_file = solo_forth.fsb.201506290224.fsb
@@ -64,13 +63,26 @@ clean:
 include Makefile.pasmo
 #include Makefile.binutils
 
+# XXX TODO
+# .PHONY : pasmo
+# pasmo:
+# 	@make Makefile.pasmo
+# .PHONY : as
+# as:
+# 	@make Makefile.binutils
+
 ################################################################
 # The basic loader
 
+# solo_forth.bas.tap: solo_forth.bas
+# 	bas2tap -q -n -sAutoload -a1 \
+# 		solo_forth.bas  \
+# 		solo_forth.bas.tap
+
 solo_forth.bas.tap: solo_forth.bas
-	bas2tap -q -n -sAutoload -a1 \
-		solo_forth.bas  \
-		solo_forth.bas.tap
+	zmakebas -n Autoload -a 1 \
+		-o solo_forth.bas.tap \
+		solo_forth.bas
 
 ################################################################
 # The charset
@@ -119,6 +131,7 @@ backup:
 		_ideas/* \
 		_draft/* \
 		_tests/* \
+		inc/* \
 		*.fs \
 		*.sh \
 		solo_forth*.fsb \

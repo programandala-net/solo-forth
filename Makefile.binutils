@@ -25,6 +25,7 @@
 ################################################################
 # Config
 
+kernel_source_file = solo_forth.for_as.z80s
 object_file = solo_forth.o
 
 z80_dir=/usr/bin/
@@ -84,8 +85,8 @@ forth.bin: $(object_file)
 ################################################################
 # The TAP file
 
-# solo_forth.bin.tap: forth.bin
-# 	bin2code forth.bin solo_forth.bin.tap $(origin)
+solo_forth.bin.tap: forth.bin
+	bin2code forth.bin solo_forth.bin.tap $(origin)
 
 ################################################################
 # The symbols file
@@ -110,7 +111,7 @@ solo_forth.symbols.binutils.abs.txt: solo_forth.symbols.binutils.rel.txt
 		| sort > solo_forth.symbols.binutils.abs.txt
 
 solo_forth.symbols.txt: solo_forth.symbols.binutils.abs.txt
-	ln -s solo_forth.symbols.binutils.abs.z80s solo_forth.symbols.txt
+	ln -sf solo_forth.symbols.binutils.abs.txt solo_forth.symbols.txt
 
 ################################################################
 # Change history

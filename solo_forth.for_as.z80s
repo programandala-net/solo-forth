@@ -1,11 +1,13 @@
 ; Solo Forth
-;
 
 ; *******************************************************
 ; XXX WARNING
 
-; This source has being converted from Pasmo to GNU binutils.
-; It can be assembled, but does not work fine yet.
+; This file source is for the GNU binutils `as` assembler.
+; Some strange things happen with this code, caused
+; by the assembler.
+; As of now the file used is <solo_forth.for_pasmo.z80s>,
+; but this one is still updated.
 
 ; *******************************************************
 
@@ -14,7 +16,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 2015081721
+version_release:  equ 20150820 ; 1924
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -247,13 +249,13 @@ buffers:                          equ 0x01
 
 .if ans_forth_block_size
 
-data_bytes_per_buffer:          equ 0x0400
-blocks_per_screen:              equ 0x01
+data_bytes_per_buffer:            equ 0x0400
+blocks_per_screen:                equ 0x01
 
 .else
 
-data_bytes_per_buffer:          equ 0x0200
-blocks_per_screen:              equ 0x02
+data_bytes_per_buffer:            equ 0x0200
+blocks_per_screen:                equ 0x02
 
 .endif
 
@@ -337,74 +339,19 @@ error.number_31:                    equ 31 ; free
 error.number_33:                    equ 32 ; free
 
 ; ----------------------------------------------
-; Character codes
+; ZX Spectrum
 
-caps_char:                  equ 0x06 ; toggle caps lock
-edit_char:                  equ 0x07 ; edit
-backspace_char:             equ 0x08
-delete_char:                equ 0x0c ; delete (backspace)
-form_feed_char:             equ 0x0c ; used for printing
-carriage_return_char:       equ 0x0d
-extended_mode_char:         equ 0x0e ; Fuse associates it to the host's Tab key
-graphics_char:              equ 0x0f ; toggle graphics mode
-ink_char:                   equ 0x10
-paper_char:                 equ 0x11
-flash_char:                 equ 0x12
-bright_char:                equ 0x13
-inverse_char:               equ 0x14
-over_char:                  equ 0x15
-at_char:                    equ 0x16
-tab_char:                   equ 0x17 ; tab (screen only)
-space_char:                 equ 0x20
-copyright_char:             equ 0x7F
+include "inc/zx_spectrum_char_codes.z80s"
 
-; ----------------------------------------------
-; ROM  routines
+include "inc/zx_spectrum_rom_routines.z80s"
 
-rom_chan_open:                   equ 0x1601
-; rom_cl_all:                      equ 0x0DAF ; XXX OLD
-rom_key_decode:                  equ 0x0333
-rom_key_scan:                    equ 0x028E
-rom_key_test:                    equ 0x031E
-rom_set_permanent_colors_0x1CAD: equ 0x1CAD
-
-; ----------------------------------------------
-; System variables
-
-  ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
-  ; not defined first, the compilation halts with error "offset out of
-  ; range", though they are fine in the symbols file.
-
-sys_errnr:         equ 0x5C3A ; used as IY index by the OS
-
-sys_attr_p:        equ 0x5C8D
-sys_attr_t:        equ 0x5C8F
-sys_bankm:         equ 0x5B5C
-sys_bordcr:        equ 0x5C48
-sys_chars:         equ 0x5C36
-sys_df_cc:         equ 0x5C84
-sys_df_sz:         equ 0x5C6B
-sys_df_sz_offset:  equ sys_df_sz-sys_errnr
-sys_flags2:        equ 0x5C6A
-sys_last_k:        equ 0x5C08
-sys_last_k_offset: equ sys_last_k-sys_errnr
-sys_mode:          equ 0x5C41
-sys_s_posn:        equ 0x5C88
-sys_scr_ct:        equ 0x5C8C
-sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
-sys_udg:           equ 0x5C7B
-
-; ----------------------------------------------
-; System constants
+include "inc/zx_spectrum_system_variables.z80s"
 
 sys_screen:                 equ 0x4000
 sys_screen_size:            equ 0x1B00
 sys_screen_bitmap_size:     equ 0x1800
 sys_screen_attributes:      equ 0x5800
 sys_screen_attributes_size: equ 0x0300
-
-; ----------------------------------------------
-; Ports
 
 bank1_port:   equ 0x7FFD
 border_port:  equ 0xFE
@@ -5953,13 +5900,10 @@ quit.do:
   db copyright_char," 2015 Marcos Cruz",carriage_return_char
   db "(programandala.net)",carriage_return_char
 greeting.string_0_end:
-  ; dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   ; XXX TMP show the free memory, during development only
   dw unused_,u_dot_
   dw paren_dot_quote_
-  db greeting.string_1_end-$-1
-  db "bytes free" ; XXX TODO use _string
-greeting.string_1_end:
+  _string "bytes free"
 .endif
   dw semicolon_s_
 
@@ -6334,10 +6278,7 @@ max.2:
 
 message.number_only:
   dw paren_dot_quote_
-  ;_string "MSG # "  ; XXX FIXME compiled with length 2!
-  db message.string_end-$-1
-  db "MSG #" ; XXX TODO use _string
-message.string_end:
+  _string "MSG # "
   ; XXX TODO force decimal base
   dw dot_
   dw semicolon_s_
@@ -7547,10 +7488,7 @@ system_stack_pointer: equ $+1
 where.do_it:
   dw dup_,b_slash_scr_,slash_
   dw paren_dot_quote_
-  ;_string "Scr # " ; XXX FIXME compiled with length 2!
-  db where.string_1_end-$-1
-  db "Scr #" ; XXX TODO use _string
-where.string_1_end:
+  _string "Scr # "
   dw decimal_,dot_
   dw swap_,c_slash_l_,slash_mod_,c_slash_l_,star_
   dw rot_,block_,plus_

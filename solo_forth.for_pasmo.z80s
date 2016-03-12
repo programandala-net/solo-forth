@@ -3,19 +3,16 @@
 ; *******************************************************
 ; XXX WARNING
 
-; This file does not work fine.
-; Very strange things happen.
-; It seems the reason is the Pasmo assembler.
-;
-; This is the last version of this file written for Pasmo.
-; This source will be converted to GNU binutils.
+; This file source is for the Pasmo assembler.
+; As of now this is file used for the project,
+; but <solo_forth.for_binutils.z80s> is updated.
 
 ; *******************************************************
 
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508171354
+version_release:  equ 201508201924
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -230,7 +227,7 @@ show_version: equ false
 origin:                           equ 0x5E00
 
 false:                            equ 0
-true:                             equ 1
+true:                             equ -1
 if true=(-1)
   ; XXX FIXME
   ; There were problems when true=-1, but it seems they have
@@ -246,13 +243,19 @@ cells_per_return_stack:           equ 0x50
 bytes_per_terminal_input_buffer:  equ 0x50
 
 buffers:                          equ 0x01
+
 if ans_forth_block_size
-  data_bytes_per_buffer:          equ 0x0400
-  blocks_per_screen:              equ 0x01
+
+data_bytes_per_buffer:            equ 0x0400
+blocks_per_screen:                equ 0x01
+
 else
-  data_bytes_per_buffer:          equ 0x0200
-  blocks_per_screen:              equ 0x02
+
+data_bytes_per_buffer:            equ 0x0200
+blocks_per_screen:                equ 0x02
+
 endif
+
 total_bytes_per_buffer:           equ 2+data_bytes_per_buffer+3
 
 screens_per_disk:                 equ 0x030C ; 780 KiB per disk in G+DOS
@@ -333,74 +336,19 @@ error.number_31:                    equ 31 ; free
 error.number_33:                    equ 32 ; free
 
 ; ----------------------------------------------
-; Character codes
+; ZX Spectrum
 
-caps_char:                  equ 0x06 ; toggle caps lock
-edit_char:                  equ 0x07 ; edit
-backspace_char:             equ 0x08
-delete_char:                equ 0x0c ; delete (backspace)
-form_feed_char:             equ 0x0c ; used for printing
-carriage_return_char:       equ 0x0d
-extended_mode_char:         equ 0x0e ; Fuse associates it to the host's Tab key
-graphics_char:              equ 0x0f ; toggle graphics mode
-ink_char:                   equ 0x10
-paper_char:                 equ 0x11
-flash_char:                 equ 0x12
-bright_char:                equ 0x13
-inverse_char:               equ 0x14
-over_char:                  equ 0x15
-at_char:                    equ 0x16
-tab_char:                   equ 0x17 ; tab (screen only)
-space_char:                 equ 0x20
-copyright_char:             equ 0x7F
+include inc/zx_spectrum_char_codes.z80s
 
-; ----------------------------------------------
-; ROM  routines
+include inc/zx_spectrum_rom_routines.z80s
 
-rom_chan_open:                   equ 0x1601
-; rom_cl_all:                      equ 0x0DAF ; XXX OLD
-rom_key_decode:                  equ 0x0333
-rom_key_scan:                    equ 0x028E
-rom_key_test:                    equ 0x031E
-rom_set_permanent_colors_0x1CAD: equ 0x1CAD
-
-; ----------------------------------------------
-; System variables
-
-  ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
-  ; not defined first, the compilation halts with error "offset out of
-  ; range", though they are fine in the symbols file.
-
-sys_errnr:         equ 0x5C3A ; used as IY index by the OS
-
-sys_attr_p:        equ 0x5C8D
-sys_attr_t:        equ 0x5C8F
-sys_bankm:         equ 0x5B5C
-sys_bordcr:        equ 0x5C48
-sys_chars:         equ 0x5C36
-sys_df_cc:         equ 0x5C84
-sys_df_sz:         equ 0x5C6B
-sys_df_sz_offset:  equ sys_df_sz-sys_errnr
-sys_flags2:        equ 0x5C6A
-sys_last_k:        equ 0x5C08
-sys_last_k_offset: equ sys_last_k-sys_errnr
-sys_mode:          equ 0x5C41
-sys_s_posn:        equ 0x5C88
-sys_scr_ct:        equ 0x5C8C
-sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
-sys_udg:           equ 0x5C7B
-
-; ----------------------------------------------
-; System constants
+include inc/zx_spectrum_system_variables.z80s
 
 sys_screen:                 equ 0x4000
 sys_screen_size:            equ 0x1B00
 sys_screen_bitmap_size:     equ 0x1800
 sys_screen_attributes:      equ 0x5800
 sys_screen_attributes_size: equ 0x0300
-
-; ----------------------------------------------
-; Ports
 
 bank1_port:   equ 0x7FFD
 border_port:  equ 0xFE
@@ -730,8 +678,7 @@ width_init_value:
 warning_init_value:
   dw 0x0000
   dw 0x0000 ; XXX OLD -- fence
-dp_init_value:
-  dw dictionary_pointer_after_cold
+  dw 0x0000 ; XXX OLD -- dp
 
   ; XXX TODO move
   dw 0x0000 ; XXX free
@@ -772,6 +719,7 @@ names_pointer_init_value:
   ; by the `_header` macro.
   dw np
 
+
 ; ==============================================================
 ; User variables
 
@@ -793,8 +741,7 @@ warning_value: ; +0x08
   dw 0x0000
   ; +0x0A
   dw 0x0000 ; XXX OLD -- fence
-dp_value: ; +0x0C
-  dw dictionary_pointer_after_cold
+  dw 0x0000 ; XXX OLD -- dp
 
   ; XXX TODO move
   dw 0x0000 ; +0x0E free
@@ -1625,7 +1572,6 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw question_comp_
   dw here_,zero_,comma_
   dw semicolon_s_
 
@@ -1641,7 +1587,6 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw question_comp_
   dw here_,swap_,store_
   dw semicolon_s_
 
@@ -1658,7 +1603,6 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw question_comp_
   dw here_
   dw semicolon_s_
 
@@ -1676,7 +1620,6 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw question_comp_
   dw comma_
   dw semicolon_s_
 
@@ -2823,8 +2766,6 @@ endif
 ; ----------------------------------------------
   _constant_header np0_,'NP0'
 
-  ; XXX OLD -- not used
-
   dw names_bank_address
 
 ; ----------------------------------------------
@@ -3174,9 +3115,38 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header d_plus_,'D+'
 
-; XXX TODO move to the library.
+  ; [Code from Abersoft Forth.]
+
+                ;  t  B
+                ;  -- --
+  ld hl,0x0006  ;  10 03
+  add hl,sp     ;  11 01
+  ld e,(hl)     ;  07 01
+  ld (hl),c     ;  07 01
+  inc hl        ;  06 01
+  ld d,(hl)     ;  07 01
+  ld (hl),b     ;  07 01
+  pop bc        ;  10 01
+  pop hl        ;  10 01
+  add hl,de     ;  11 01
+  ex de,hl      ;  04 01
+  pop hl        ;  10 01
+  adc hl,bc     ;  15 01
+  pop bc        ;  10 01
+  jp push_hlde  ;  10 03
+                ;  11    ; push de
+                ;  11    ; push hl
+                ; --- --
+                ; 157 19 TOTALS
+
+if 0
 
 ; [Code from fig-Forth 1.1g.]
+ 
+  ; XXX FIXME
+  ;
+  ; This code fails.  The calculation `0 0 0 1 d+` should leave
+  ; `0 1` on the stack, but it leaves `0 65535`.
    
               ;                           t  B
               ;                           -- --
@@ -3196,6 +3166,7 @@ true_if_cy:
   jp_next     ;                           08 02
               ;                          --- --
               ;                          134 15 TOTALS
+endif
 
 ; ----------------------------------------------
   _code_header negate_,'NEGATE'
@@ -3208,8 +3179,6 @@ true_if_cy:
 
 ; ----------------------------------------------
   _code_header dnegate_,'DNEGATE'
-
-  ; XXX TODO move to the disk
 
   pop hl
   pop de
@@ -3661,12 +3630,12 @@ do_user:
   db 0x08
 
 ; ----------------------------------------------
-  _user_variable_header dp_,'DP'
+  _variable_header dp_,'DP'
 
-  ; XXX TODO why this is a user variable?
-  ; XXX TODO normal variable
-
-  db 0x0C
+dictionary_pointer:
+  dw dictionary_pointer_after_cold
+dictionary_pointer_init_value:
+  dw dictionary_pointer_after_cold
 
 ; ----------------------------------------------
   _variable_header voc_link_,'VOC-LINK'
@@ -5411,9 +5380,7 @@ do_create:
 ; ----------------------------------------------
   _colon_header code_,'CODE'
 
-  dw header_
-  dw store_csp_
-  dw also_,assembler_,asm_
+  dw header_,store_csp_,asm_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5935,6 +5902,10 @@ warm_start:
   ; Init the names pointer.
   dw lit_,names_pointer_init_value,fetch_
   dw lit_,names_pointer,store_
+  
+  ; Init the dictionary pointer.
+  dw lit_,dictionary_pointer_init_value,fetch_
+  dw lit_,dictionary_pointer,store_
 
   ; Init the disk buffers.
   dw empty_buffers_
@@ -5966,6 +5937,15 @@ warm_start:
   dw abort_
 
 cold_start:
+
+  ; XXX TODO -- experimental
+  ; ld hl,(sys_err_sp)
+  ; ld e,(hl)
+  ; inc hl
+  ; ld d,(hl)
+  ; ex de,hl
+  ; ld (sys_err_sp.backup),hl
+
 only_first_cold: ; XXX TMP -- temporary label
   call move_name_fields_to_memory_bank ; (only the first time)
 if 0 ; latin1_charset_in_bank
@@ -5979,13 +5959,14 @@ common_start:
 
   ; Common operations done by warm_start and cold_start.
 
+  im 1 ; interrupt mode 1
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
   ld (system_stack_pointer),sp ; save the system stack pointer
   ld sp,(s0_init_value)
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
   ld ix,next ; restore IX
-  _jp_next ; jump to the cfa pointed by the BC register
+  _jp_next ; jump to the cfa pointed by the register pair BC
 
 ; ----------------------------------------------
   _code_header s_to_d_,'S>D'
@@ -6258,6 +6239,11 @@ max.2:
 ; message  ( n -- )
 ;
 ; }doc
+
+  ; XXX TODO -- depending on `warning`:
+  ;   0 : nothing
+  ;   true : number
+  ;   other : text
 
   dw warning_,fetch_
   dw zero_branch_,message.number_only
@@ -7375,24 +7361,36 @@ endif
 ; many unnecessary BASIC-related things. This code simply clears
 ; the screen.
 
-  ; XXX TODO compare size with Forth
+; [The attributes part was improved after code by Dean Belfield
+; <http://wordpress.animatez.co.uk/programming/assembly-language/z80/z80-library-routines/204-2/>.
+; The idea for `ld (hl),l` was found in David Webb's _Advanced
+; Spectrum Machine Language_ ]
 
   exx ; save the Forth IP
   ; Erase the bitmap.
   ld hl,sys_screen
   ld de,sys_screen+1
   ld bc,sys_screen_bitmap_size
-  ld (hl),0
+  ld (hl),l ; l=0 because sys_screen=0x4000
   ldir
   ; Color with the permanent attributes.
-  ld hl,sys_screen_attributes
-  ld de,sys_screen_attributes+1
-  ld bc,sys_screen_attributes_size
+  ld bc,sys_screen_attributes_size-1
   ld a,(sys_attr_p)
   ld (hl),a
   ldir
+  ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
   jp home_pfa ; continue at `home`
+
+  ; The Z80 version above uses 26 bytes;
+  ; the following Forth version uses 30 bytes:
+
+  ; _colon_header cls_,'CLS'
+  ; dw lit_,sys_screen,lit_,sys_screen_bitmap_size,erase
+  ; dw lit_,sys_screen_attributes,lit_,sys_screen_attributes_size
+  ; dw lit_,sys_attr_p,c_fetch_,fill_
+  ; dw home_
+  ; dw semicolon_s
 
 ; ----------------------------------------------
   _colon_header page_,'PAGE'
@@ -7416,17 +7414,56 @@ endif
   _code_header bye_,'BYE'
 
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
-system_stack_pointer: equ $+1
-  ld sp,0 ; restore the system stack
+
+  ; XXX TODO -- experimental
+; sys_err_sp.backup: equ $+1
+;   ld hl,0
+;   push hl
+;   ld (sys_err_sp),sp
+
 if 0 ; latin1_charset_in_bank
   ; Restore the default charset:
   ld hl,15360
   ld (sys_chars),hl
 endif
+
+if 0
+  ; shows the STOP message, but halts
+  ld sp,(sys_err_sp)
+  pop bc ; remove old error return address
+  ld bc,0x1303 ; BASIC entry point in ROM
+  push bc ; push it so the next error will return to BASIC command line
+endif
+
+  im 1 ; interrupt mode 1, normal situation
+
+system_stack_pointer: equ $+1
+if 1
+  ld sp,0 ; restore the system stack
+else
+  ; no difference when sp is not restored at the end
+  ld hl,0 ; XXX TMP
+endif
+
+if 1
+
+; The Complete Spectrum ROM Disassembly (p201) states:
+; http://www.worldofspectrum.org/infoseekid.cgi?id=2000076
+;
+; For a successful return to BASIC, H'L' must on exit from the
+; machine code contain the address in SCANNING of the 'end-calc'
+; instruction, 2758 hex (10072 decimal).
+
+  ; no difference
+  ld hl,0x2758
+  exx
+endif
+
   ; Exit to BASIC:
 bye.end ; XXX TMP for debugging
   rst 0x08
   db 0x08 ; "STOP" BASIC error
+  ;db 0xFF ; "OK" BASIC error
 
 ; ----------------------------------------------
   _code_header two_drop_,'2DROP'

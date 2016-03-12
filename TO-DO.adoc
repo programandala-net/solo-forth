@@ -182,20 +182,14 @@ Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 
 New: `d>s`.
 
-Everything seemed to work fine: the 1-buffer system, true=-1...  But
-trying to fix the bug of warm something brokes, and the system crashes
-at start.  It seems the error conditions are not always the same. The
-debugger didn't help.
+.2015-08-22:
 
+Strange problems at the end of the compilation of Fasmo. No: the
+reason is the required word in the circular string buffer is
+overwritten!
 
-.2015-08-18:
+use `create x asm ... end-asm` instead of `label ...`, easier.
 
-Still problems after migrating to GNU binutils.
+New: `just-plot` or `set-pixel` to plot without changing the
+attributes.
 
-Does the `np` symbol is updated in memory? Why it does not appear in
-the symbols list?  It seems it depends on several conditions related
-to code sections.
-
-.2015-08-19:
-
-`bye` resets the system.

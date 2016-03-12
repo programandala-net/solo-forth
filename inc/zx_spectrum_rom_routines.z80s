@@ -1,0 +1,49 @@
+; ZX Spectrum ROM routines
+
+; By Marcos Cruz (programandala.net)
+
+; 2014-12-17: Start. Regulary improved afterwards.
+; 2015-05-24: Changes to make the file usable as symbols input
+; file by z80dasm.
+; 2015-08-20: Updated.
+
+rom_alpha:           equ 0x2C8D
+rom_beeper:          equ 0x03B5
+rom_border:          equ 0x2294
+rom_border_2297:     equ 0x2297 ; secondary entry to rom_border
+rom_border_229b:     equ 0x229B ; secondary entry to rom_border
+rom_break_key:       equ 0x1F54 ; called in several instances to read the BREAK key; the carry flag is returned reset only if the SHIFT and the BREAK keys are both being pressed.
+rom_call_jump:       equ 0x229B ; JP (HL)
+rom_chan_open:       equ 0x1601 ; open a channel (channel in A)
+rom_chan_s:          equ 0x1642 ; set flags for upper screen channel
+rom_cl_all:          equ 0x0DAF ; clearing whole (upper) display area
+rom_cls:             equ 0x0D6B ; CLS
+rom_cls_lower:       equ 0x0D6E 
+rom_draw:            equ 0x24BA ; point of the draw_line routine
+rom_find_int1:       equ 0x1E94
+rom_fp_to_a:         equ 0x2DD5
+rom_fp_to_bc:        equ 0x2DA2
+rom_go_to_bc:        equ 0x1E6A ; 'GO TO' line in BC register
+rom_go_to_hl:        equ 0x1E6C ; 'GO TO' line in HL register XXX not tested
+rom_hl_by_de_to_hl:  equ 0x30A9 ; HL=HL*DE
+rom_key_decode:      equ 0x0333
+rom_keyboard:        equ 0x02BF
+rom_key_scan:        equ 0x028E
+rom_key_test:        equ 0x031E
+rom_main_g:          equ 0x1303 ; runtime error (error in A)
+rom_pixel_add:       equ 0x22AA
+rom_plot_22df:       equ 0x22DF ; secondary entry to PLOT
+rom_plot_sub:        equ 0x22E5 ; the plot subroutine (coords in BC)
+rom_point_sub_22ce:  equ 0x22CE ; secondary entry to POINT-SUB
+rom_pr_string:       equ 0x203C ; print a string (start in de, count in BC)
+rom_print_string:    equ 0x203C
+rom_print_fp:        equ 0x2DE3 ; print a floating point number
+rom_sa_all:          equ 0x075A ; tape save/load
+rom_s_attr_s_2583:   equ 0x2583 ; secondary entry to S-ATTR-S
+rom_s_scrn_s_2538:   equ 0x2538 ; secondary entry to S-SCRN$-S
+rom_stack_bc:        equ 0x2D2B ; stack bc register pair
+rom_stack_fetch:     equ 0x2BF1 ; get last value from calculator stack
+
+; Special entry points:
+
+rom_set_permanent_colors_0x1CAD: equ 0x1CAD

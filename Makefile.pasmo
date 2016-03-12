@@ -14,6 +14,8 @@
 ################################################################
 # Config
 
+kernel_source_file = solo_forth.for_pasmo.z80s
+#pasmo=/usr/local/bin/pasmo.054beta2
 pasmo=/usr/local/bin/pasmo.053
 
 ################################################################
@@ -37,7 +39,7 @@ solo_forth.bin.tap: $(kernel_source_file)
 
 solo_forth.symbols.txt: solo_forth.bin.tap
 	echo "; vim: ft=z80" >> solo_forth.symbols.pasmo.z80s
-	ln -s solo_forth.symbols.pasmo.z80s solo_forth.symbols.txt
+	ln -sf solo_forth.symbols.pasmo.z80s solo_forth.symbols.txt
 
 ################################################################
 # Change history

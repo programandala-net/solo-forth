@@ -1,0 +1,41 @@
+; ZX Spectrum char codes
+
+; By Marcos Cruz (programandala.net)
+
+; 2015-01-11: Start. Created from sources of two projects. That's why there
+; are synonyms.
+; 2015-01-14: Label fixed.
+
+caps_char:                  equ 0x06 ; toggle caps lock
+print_comma_char:           equ 0x06 ; (when printed)
+edit_char:                  equ 0x07 ; edit
+esc_char:                   equ 0x07 ; escape
+cursor_left_char:           equ 0x08
+backspace_char:             equ 0x08
+bs_char:                    equ 0x08 ; backspace
+left_char:                  equ 0x08 ; cursor left
+cursor_right_char:          equ 0x09
+right_char:                 equ 0x09 ; cursor right
+cursor_down_char:           equ 0x0a
+down_char:                  equ 0x0a ; cursor down
+cursor_up_char:             equ 0x0b
+up_char:                    equ 0x0b ; cursor up
+delete_left_char:           equ 0x0c
+delete_char:                equ 0x0c ; delete (backspace)
+form_feed_char:             equ 0x0c ; used for printing
+carriage_return_char:       equ 0x0d
+cr_char:                    equ 0x0d ; carriage return (enter key)
+extended_mode_char:         equ 0x0e ; Fuse associates it to the host's Tab key
+graphics_char:              equ 0x0f ; toggle graphics mode
+ink_char:                   equ 0x10
+paper_char:                 equ 0x11
+flash_char:                 equ 0x12
+bright_char:                equ 0x13
+inverse_char:               equ 0x14
+over_char:                  equ 0x15
+at_char:                    equ 0x16
+tab_char:                   equ 0x17 ; tab (screen only)
+space_char:                 equ 0x20
+sp_char:                    equ 0x20 ; space
+copy_char:                  equ 0x7f ; copyright sign
+copyright_char:             equ 0x7f ; copyright sign
