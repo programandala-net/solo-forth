@@ -80,3 +80,8 @@ New:
 .2015-06-19:
 
 The new `find` is finished, but the system must be adapted with conditional compilation.
+
+.2015-06-20:
+
+New: `compiling?` and `executing?` after DZX-Forth.
+

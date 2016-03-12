@@ -531,3 +531,20 @@ changed after Forth-94. Its role in fig-Forth was already taken by
 Change: First steps to implement a modern version of `find`, after
 Forth-83 and Forth-94.
 
+Fix: `message` had a strange condition, from Abersoft Forth,
+to prevent from printing message number zero when `warning` is on.
+
+.2015-06-20:
+
+The new version of `find`, rewritten after Forth-83 and Forth-94, seems to work fine.
+Also the new version of the name field works fine.
+Conditional compilation is used for both changes, just in case.
+
+New: `error` does not push the values of `blk` and `in`, but stores
+them in a new double variable called `error-pos`. `where` fetchs them
+from there. This is cleaner and more flexible, because the last error
+position can be shown any time.
+
+New: `label`, a define word that returns the address of its pfa, like
+a variable, but stores nothing into it. Useful to create machine code
+routines or data buffers.

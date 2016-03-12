@@ -131,8 +131,9 @@ s w n(find)
 \ Error #23: Off current editing screen.
   \ XXX TODO better text:
 \ Error #24: Declare vocabulary.
-  \ XXX TMP -- Copied from Afera library, not used yet:
+  \ XXX TMP -- not used yet:
 \ Error #25: Unsupported tape operation.
+  \ XXX TMP -- not used yet:
 \ Error #26: Unsupported disk operation.
 \ Error #27: Source file needed.
 \ Error #28: Warning: Not present, though required.
@@ -140,7 +141,7 @@ s w n(find)
 \ Error #30:
 \ Error #31:
 
-( debug ) \ scr 6
+( debug ) \ scr 6 for debugging
 
 : zx  ( -- )
   page
@@ -257,8 +258,9 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 ( pixel )
 
   \ 2015-06-11: Written.
+  \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
 
-hex  0 variable (pixel) -2 allot
+label (pixel) hex
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
@@ -268,7 +270,7 @@ hex  0 variable (pixel) -2 allot
   \ Output:
   \   hl = address of the pixel byte in the screen bitmap
   \   a = position of the pixel in the byte address 0..7
-  3E c, BF c,  \ ld a,191 ; max Y coordinate
+  3E c, BF c,   \ ld a,191 ; max Y coordinate
   90 00 + c,    \ sub b
   C3 c, 22B0 ,  \ jp 0x22B0 ; and return
   decimal
@@ -279,14 +281,14 @@ code pixel  ( x y -- n a )
   \ y = 0..191
   \ n = position of the pixel in the byte address 0..7
   \ a = address of the pixel byte in the screen bitmap
-  E1 c,  D1 c,      \ pop hl / pop de
-  C5 c,             \ push bc
-  40 05 + c,        \ ld b,l ; b=y
-  48 03 + c,        \ ld c,e ; c=x
-  CD c, (pixel) ,   \ call (pixel)
-  C1 c,             \ pop bc
+  E1 c,  D1 c,            \ pop hl / pop de
+  C5 c,                   \ push bc
+  40 05 + c,              \ ld b,l ; b=y
+  48 03 + c,              \ ld c,e ; c=x
+  CD c, (pixel) ,         \ call (pixel)
+  C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
-  C3 c, pushde ,    \ jp pushde
+  C3 c, pushde ,          \ jp pushde
   end-code
 
 ( point )
@@ -298,25 +300,25 @@ code pixel  ( x y -- n a )
 require pixel
 
 code point  ( x y -- )
-  E1 c, D1 c, C5 c,   \ pop hl / pop de / push bc
+  E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
   \ l = y coordinate
   \ e = x coordinate
-  40 05 + c, 48 03 + c, \ ld b,l / ld c,e
+  40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
   \ b = y coordinate
   \ c = x coordinate
-  CD c, (pixel) ,    \ call (pixel)
+  CD c, (pixel) ,         \ call (pixel)
   \ hl = screen address
   \ a = pixel position in hl
-  40 07 + c,          \ ld b,a
-  04 c,               \ inc b
-  7E c,               \ ld a,(hl)
+  40 07 + c,              \ ld b,a
+  04 c,                   \ inc b
+  7E c,                   \ ld a,(hl)
   \ rotate:
-  07 c,  10 c, FD c,  \ rlca / djnz rotate
-  E6 c, 01 c,         \ and 1
+  07 c,  10 c, FD c,      \ rlca / djnz rotate
+  E6 c, 01 c,             \ and 1
   \ finish:
-  26 c, 00 c,  68 07 + c,  \ ld h,0 / ld l,a
-  C1 c,               \ pop bc
-  C3 c, pushhl ,      \ jp pushhl
+  26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
+  C1 c,                   \ pop bc
+  C3 c, pushhl ,          \ jp pushhl
   end-code
 
 ( plot )
@@ -329,18 +331,18 @@ require pixel
 
 code plot  ( x y -- )
 
-  D9 c,           \ exx
-  E1 c,           \ pop hl
-  C1 c,           \ pop bc
-  40 05 + c,      \ ld b,l
-  ED c, 43 , 5C7D ,  \ ld (0x5C7D),bc ; update COORDS
-  CD c, (pixel) ,    \ call (pixel)
+  D9 c,               \ exx
+  E1 c,               \ pop hl
+  C1 c,               \ pop bc
+  40 05 + c,          \ ld b,l
+  ED c, 43 , 5C7D ,   \ ld (0x5C7D),bc ; update COORDS
+  CD c, (pixel) ,     \ call (pixel)
   \ hl = screen address
   \ a = pixel position in hl
-  CD c, 22EC ,    \ call 0x22ec ; plot-sub + 7
-  D9 c,           \ exx
+  CD c, 22EC ,        \ call 0x22ec ; plot-sub + 7
+  D9 c,               \ exx
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
-  DD c, E9 c,     \ jp (ix)
+  DD c, E9 c,         \ jp (ix)
 
   end-code
 
@@ -616,14 +618,14 @@ forth definitions decimal
 
 ( where )
 
-: where  ( n1 n2 -- )
+: where  ( -- )
+  error-pos 2@  ( n1 n2 )
   \ n1 = value of `in` when the error happened
-  \ n2 = disk block where the error happened
+  \ n2 = value of `blk` when the error happened
   dup b/scr / dup scr !
   ." Scr # " decimal . cr
   swap c/l /mod c/l * rot block + c/l type cr
-  here c@ - spaces char ^ emit
-  quit  ;
+  here c@ - spaces char ^ emit  ;
 
 ( forget )
 
