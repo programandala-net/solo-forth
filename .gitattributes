@@ -1,0 +1,4 @@
+*.fsb linguist-language=Forth
+*.mgt binary
+*.tap binary
+*.z80s linguist-language=Assembly

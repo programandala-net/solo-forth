@@ -55,8 +55,6 @@
 
 ( debugging ) \ scr 2
 
-
-
 ( require ) \ scr 3
 
   \ This screen must be at a fixed location.
@@ -77,17 +75,11 @@
     0 i (line) 2over contains if  2drop i unloop exit  then
   loop  2drop false  ;
 
-: located  ( ca len -- screen | false )
-  scr/disk 1 do
-    0 i (line) 2over contains if  2drop i unloop exit  then
-  loop  2drop false  ;
-
 : locate  ( "name" -- screen | false )  bl word located  ;
 
   \ Make sure the given word is defined.
 
-: (required)  ( ca len -- )
-  located dup 0= 29 ?error load  ;
+: (required)  ( ca len -- )  located dup 0= 29 ?error load  ;
 
 : required  ( ca len -- )
   2dup undefined? if  2dup (required)  then
@@ -257,7 +249,7 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
   \ 2015-06-11: Written.
   \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
 
-label (pixel) hex
+label (pixel)  ( -- a )  hex
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
@@ -457,39 +449,47 @@ require s=  require parse-name  require s"
 
 : [then]  ( -- )  ; immediate
 
-( bs hexa. stype )
+( hex. hexb. dhex. hex{ )
 
-: bs  ( -- )  8 emit  ;
+  \ 2015-06-20: Adapted from lina (Copyright (c) 2000-2004
+  \ Albert van der Horst, The Netherlands).
 
-: hexa.  ( n -- )
-  \ Print _n_ in hexadecimal
-  \ (regarded as an address, with four digits).
-  base @ hex swap s>d <# # # # # #> type space base !  ;
+0 variable base'
 
-hex
+: hex{  ( -- )  base @ base' ! hex ; \ switch to hex
+: }hex  ( -- )  base' @ base !     ; \ and back
 
-: stype  ( ca len -- )
+: (dhex.)  ( d u -- )
+  hex{ <# 0 do  #  loop  #> }hex type space  ;
+: dhex.    ( d -- )  [ 4 cells ] literal (dhex.)  ;
+: hex.     ( n -- )  s>d [ 2 cells ] literal (dhex.)  ;
+: hexb.    ( n -- )  s>d 2 (dhex.)  ;
+
+( ascii-type )
+
+: ascii-type  ( ca len -- )
+  \ XXX TODO use `?do` instead of `if` when available
   dup if
     bounds do
-      i c@ 7f and dup bl < if  drop [char] .  then  emit
+      i c@ 127 and dup bl < if  drop [char] .  then  emit
     loop
   else  2drop  then  ;
 
-decimal  -->
-
 ( dump )
 
-require bs  require hexa.  require stype
+require hex.  require ascii-type
+
+[defined] bs ?\ : bs  ( -- )  8 emit  ;
 
 : dump  ( a len -- )
   7 + -8 and 8 / 0
+  \ XXX TODO use `?do` instead of `if` when available
   2dup - if
     do
-      cr dup hexa.
-      8 0 do
-        i over + @ cswap hexa.
-      2 +loop
-      dup bs 8 stype
+      cr dup hex.
+      8 0 do  i over + @ flip hex.  2 +loop
+      \ 16 0 do  i over + c@ hexb.  loop
+      dup bs 8 ascii-type
       ?terminal if  leave  then
     8 + loop
   else  2drop  then  drop  ;
@@ -592,8 +592,7 @@ forth definitions decimal
 
   \ From Spectrum Forth-83.
 
-  \ [defined] tab ?\  : tab  ( -- )  6 emit  ;
-: tab  ( -- )  6 emit  ;
+[defined] tab ?\  : tab  ( -- )  6 emit  ;
 
 : words  ( -- )
   context @ @
@@ -651,15 +650,17 @@ forth definitions decimal
   \ `voc-link` init value:
   [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
 
-: size  ( -- u )
+  \ size  ( -- u )
+  \
   \ Size of the system.
-  here 0 +origin -  ;
+
+: size  ( -- u )  here 0 +origin -  ;
 
   \ system  ( -- a len )
   \
   \ Prepare the system in order to save a copy.  Return its
-  \ start address and length, to be used as parameters for the
-  \ tape or disk saving commands.
+  \ start address and length, to be used as parameters for
+  \ saving the system to disk.
 
 : system  ( -- a len )  extend  0 +origin size 10 + ;
 
@@ -667,8 +668,8 @@ forth definitions decimal
   \
   \ Prepare the system in order to save a copy that will
   \ execute the given cfa after the ordinary boot process.
-  \ return its start address and length, to be used as
-  \ parameters for the tape or disk saving commands.
+  \ Return its start address and length, to be used as
+  \ parameters for saving the system to disk.
 
 : turnkey  ( cfa -- a len )  boot ! system  ;
 
