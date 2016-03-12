@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512260357
+\ Last modified: 201601010457
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -633,6 +633,45 @@ code dip  ( x1 x2 -- x2 x2 )
     \ push hl
     \ jp next
   end-code
+
+( 0dup -dup )
+
+code 0dup  ( x -- x | 0 0 )
+  E1 c,  78 04 + c,  B0 05 + c,
+    \ pop hl
+    \ ld a,h
+    \ or l
+  C2 c, pushhl ,  E5 c,  C3 c, pushhl ,
+    \ jp z,push_hl
+    \ push hl
+    \ jp push_hl
+  end-code
+
+  \ doc{
+  \
+  \ 0dup  ( x -- x | 0 0 )
+  \
+  \ Duplicate _x_ if it's zero.
+  \
+  \ }doc
+
+code -dup  ( x -- x | 0 0 )
+  E1 c,  CB c, 7C c,
+    \ pop hl
+    \ bit 7,h ; negative?
+  C2 c, pushhl ,  E5 c,  C3 c, pushhl ,
+    \ jp z,push_hl
+    \ push hl
+    \ jp push_hl
+  end-code
+
+  \ doc{
+  \
+  \ -dup  ( x -- x x | x )
+  \
+  \ Duplicate _x_ if it's negative.
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Return stack {{{
@@ -3878,6 +3917,22 @@ need d2*  need 2/
 
 : sqrt  ( radicand -- root )  (sqrt) nip  ;
 
+( sqrt )
+
+  \ Integer square root by Newton's method
+
+  \ Credits:
+  \
+  \ Adapted from Sinclair QL's Computer One Forth.
+
+: sqrt  ( n1 -- n2 )
+  dup 0< -24 ?throw  \ invalid numeric argument
+  dup
+  if  dup 2/  20 0
+      do      2dup / + 2/
+      loop    swap drop
+  then  ;
+
 ( sm/rem )
 
   \ Credits:
@@ -5856,6 +5911,7 @@ need 16hex.  need ascii-type
     dup bs 8 ascii-type
     break-key? ?leave
   8 + loop  drop  ;
+  \ Show the contents of _n_ bytes starting from _ca_.
 
 ( wdump )
 
@@ -5870,7 +5926,7 @@ need 16hex.
     i 4 mod 0= if  cr dup 16hex. space  then  \ show address
     dup @ 16hex. cell+
     break-key? ?leave
-  loop drop  ;
+  loop  drop  ;
 
 ( decode )
 
@@ -5927,7 +5983,7 @@ variable decode-address  \ in the word being decoded
   cell+ dup count type  dup c@ + 1-  ;
 
 : decode-compile   ( a1 -- a2 )
-  cell+ dup @ cell+ body>name id.  ;
+  cell+ dup @ cell+ body>name .name  ;
 
 -->
 
@@ -5986,19 +6042,20 @@ variable decode-address  \ in the word being decoded
   \ Decode the definition at the given pfa.
 
   dup colon-pfa? if
-    dup body> decode-address ! indent  ." : " dup body>name id.
+    dup body> decode-address ! indent
+    ." : " dup body>name .name
     begin   ( pfa+n ) dup decode-address !
             dup @ dup ( pfa+n xt xt ) decode-end? 0=
             \ ( pfa+n xt f )
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
-      3 + ( pfa+n pfa' ) dup indent+  body>name id.
+      3 + ( pfa+n pfa' ) dup indent+  body>name .name
       key case  [char] q  of  sp0 @ sp! quit  endof \ q
                       bl  of  drop            endof \ space
                                  swap recurse \ default
           endcase  decode-special
       cell+  -1 decode-level +!
-    repeat  indent cell+ body>name id. \ show the last word
+    repeat  indent cell+ body>name .name \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
 
 ( decode )
@@ -6067,7 +6124,7 @@ variable decode-address  \ in the word being decoded
   cell+ dup count type  dup c@ + 1-  ;
 
 : decode-compile   ( a1 -- a2 )
-  cell+ dup @ cell+ body>name id.  ;
+  cell+ dup @ cell+ body>name .name  ;
 
 -->
 
@@ -6125,19 +6182,20 @@ variable decode-address  \ in the word being decoded
   \ Decode the definition at the given pfa.
 
   dup colon-pfa? if
-    dup body> decode-address ! indent  ." : " dup body>name id.
+    dup body> decode-address ! indent
+    ." : " dup body>name .name
     begin   ( pfa+n ) dup decode-address !
             dup @ dup ( pfa+n xt xt ) decode-end? 0=
             \ ( pfa+n xt f )
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
-      cell+ ( pfa+n pfa' ) dup indent+  body>name id.
+      cell+ ( pfa+n pfa' ) dup indent+  body>name .name
       key case  [char] q  of  sp0 @ sp! quit  endof \ q
                       bl  of  drop            endof \ space
                                  swap recurse \ default
           endcase  decode-special
       cell+  -1 decode-level +!
-    repeat  indent cell+ body>name id. \ show the last word
+    repeat  indent cell+ body>name .name \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
 
 ( itc-decode )
@@ -6149,18 +6207,8 @@ variable decode-address  \ in the word being decoded
   cr ." Keys: space=more, q=quit, other=deeper." cr  ;
 
 : decode  ( "name" -- )
-  decode-usage
-
-  \ XXX OLD -- defined  ( "name" -- x 0 | xt 1 | xt -1 )
-  \ defined if  >body  0 decode-level !  (decode)
-  \         else  drop  -13 throw  then  ;
-
-  \ XXX OLD -- defined  ( "name" -- ca len false | xt b true )
-  \ defined 0= -13 ?throw
-  \ drop >body  0 decode-level !  (decode)  ;
-
-  \ XXX NEW -- defined  ( "name" -- nt | 0 )
   defined dup 0= -13 ?throw
+  decode-usage
   name>body  0 decode-level !  (decode)  ;
 
 ( list )
@@ -6274,7 +6322,7 @@ need trail  need name>link  need tab
 : words  ( -- )
   trail
   begin  dup 0<> break-key? 0= and  while
-    dup id. tab  name>link @n
+    dup .name tab  name>link @n
   repeat drop  ;
 
 [unneeded] wordlist-words ?exit
@@ -6299,7 +6347,7 @@ need trail  need name>link  need tab
   parse-name 2dup uppers trail  ( ca len nt )
   begin  dup 0<> break-key? 0= and  while
     dup >r
-    name>string 2over contains if  r@ id. tab  then
+    name>string 2over contains if  r@ .name tab  then
     r> name>link @n
   repeat drop 2drop  ;
 
@@ -10149,14 +10197,14 @@ need body>name
   \ have a name
 : .context  ( -- )
   context #vocs 0 do
-    dup @ ?dup if  body>name id.  then  cell+
-  loop drop  ;
+    dup @ ?dup if  body>name .name  then  cell+
+  loop  drop  ;
   \ Display the search order currently in effect.
   \
   \ XXX TODO -- from eForth:
   \ GET-ORDER BEGIN ?DUP WHILE SWAP .WID 1 - REPEAT
 
-: .current  ( -- )  get-current body>name id.  ;
+: .current  ( -- )  get-current body>name .name  ;
   \ Display the name of the `current` vocabulary.
   \ XXX TODO -- from eForth:
   \ GET-CURRENT .WID ;
@@ -10168,7 +10216,7 @@ need body>name
 
 : vocs  ( -- )
   voc-link @
-  begin  dup cell - body>name id.  @ dup 0= until  drop  ;
+  begin  dup cell - body>name .name  @ dup 0= until  drop  ;
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
@@ -13764,7 +13812,7 @@ rows 2 / constant craft-y
   \ }}} =======================================================
   \ Sample game: tt (Tetris for terminals) {{{
 
-( tt )
+.( tt ) blk @ . 
 
   \ tt (Tetris for terminals) is an improved port of a game
   \ written in Forth-94 by Dirk Uwe Zoller in 1994.
@@ -13813,7 +13861,7 @@ variable wiping
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
   \ c1 = left key
   \ c2 = right key
@@ -13852,7 +13900,7 @@ variable wiping
   [char] 6 [char] 7 [char] 8 [char] 9  bl edit-char  ;  -->
   \ Sinclair 2 joystick.
 
-( tt )
+.( tt ) blk @ . 
 
 6 constant max-keyset
   \ Maximum number of the keyset (first is zero).
@@ -13871,7 +13919,7 @@ positional-case: keyset>keys  ( n -- c1 c2 c3 c4 c5 c6 )
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
 begin-stringtable keyset>name  ( n -- ca len )
   s" Cursor        " s,
@@ -13887,7 +13935,7 @@ end-stringtable
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
 0 value quit-key  0 value pause-key  0 value drop-key
 0 value rot-key   0 value right-key  0 value left-key
@@ -13909,7 +13957,7 @@ end-stringtable
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
 variable score
 variable pieces
@@ -13937,7 +13985,7 @@ variable brick-row  variable brick-col
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
 wide deep * 2 * constant /pit
   \ Size of the pit in memory.
@@ -13963,7 +14011,7 @@ create 'pit /pit allot
   loop  draw-bottom  ;  -->
   \ Draw the frame of the pit.
 
-( tt )
+.( tt ) blk @ . 
 
 : bottom-msg  ( addr cnt -- )
   deep over 2/ wide swap - 2/ position 1 flash type 0 flash  ;
@@ -13994,7 +14042,7 @@ end-stringtable
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
 : show-keys  ( -- )
   \ display the game keys
@@ -14010,7 +14058,7 @@ end-stringtable
 
 -->
 
-( tt )
+.( tt ) blk @ . 
 
 : (show-help)  ( -- )
   0 0 at-xy
@@ -14033,7 +14081,7 @@ end-stringtable
   while  change-keyset  repeat  ;  -->
   \ Display some explanations and change the keyset.
 
-( tt )
+.( tt ) blk @ . 
 
 23 constant score-row
 
@@ -14060,32 +14108,35 @@ end-stringtable
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
+.s key drop
 
 : brick:  ( ca1 len1 ca2 len2 ca3 len3 ca4 len4 "name" -- )
   create  4 0 do
-            0 do  dup i chars + c@ c,  loop drop
+            0 ?do  dup i chars + c@ c,  loop drop
           loop
   does>  ( x1 x2 -- a ) ( pfa )  rot 4 * rot + 2* +  ;
   \ Define the shape of a brick.
   \ Every brick has 4 rows, defined by 4 strings.
   \ XXX TODO stack notation of `does>`
 
-s"         " 2constant empty-brick-row
+s"         " 2constant empty-brick-row .s key drop
+
+  \ XXX FIXME -- crash! -- never reaches the next `key drop`
 
 empty-brick-row
 s"   ##    "
-s" ######  "  empty-brick-row  brick: brick1
+s" ######  "  empty-brick-row  brick: brick1  .s key drop
 
 empty-brick-row 2dup
-s" <><><><>"  empty-brick-row  brick: brick2
+s" <><><><>"  empty-brick-row  brick: brick2  .s key drop
 
 empty-brick-row
 s"   {}    "
-s"   {}{}{}"  empty-brick-row  brick: brick3  -->
+s"   {}{}{}"  empty-brick-row  brick: brick3  .s key drop -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 empty-brick-row
 s"     ()  "
@@ -14108,7 +14159,7 @@ empty-brick-row 2dup 2dup 2dup brick: brick
 
 empty-brick-row 2dup 2dup 2dup brick: scratch  -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 create bricks  ' brick1 ,  ' brick2 ,  ' brick3 ,  ' brick4 ,
                ' brick5 ,  ' brick6 ,  ' brick7 ,
@@ -14135,7 +14186,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
   ['] scratch is-brick  ;  -->
   \ Rotate the current brick left.
 
-( tt )
+.( tt ) blk @ . key drop 
 
 
 : rotate-right  ( -- )
@@ -14160,7 +14211,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : put-brick  ( row col -- )
   4 0 do 4 0 do
@@ -14180,7 +14231,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : test-brick  ( row col -- f )
   4 0 do 4 0 do
@@ -14196,7 +14247,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 
 : move-brick  ( rows cols -- f )
@@ -14211,7 +14262,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : rotate-brick  ( f1 -- f2 )
   \ f1 = rotate right?, else rotate left
@@ -14229,7 +14280,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : insert-brick  ( row col -- f )
   2dup test-brick
@@ -14253,7 +14304,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : adjust-delay  ( -- )
   levels @
@@ -14265,7 +14316,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : new-level  ( -- )  1 levels +!  10 score +!  adjust-delay  ;
 
@@ -14283,7 +14334,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : interaction  ( -- f )
   case  key upper
@@ -14304,7 +14355,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 : play-game  ( -- )
   begin
@@ -14323,7 +14374,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 -->
 
-( tt )
+.( tt ) blk @ . key drop 
 
 also forth definitions
 
@@ -15244,6 +15295,26 @@ exit
 : }bench  ( d -- )  get-time t>b 2dup d. d- dnegate d.   ;
   \ stop timing
 
+( do-prime )
+
+  \ Eratosthenes Sieve Prime Number program in Forth
+  \ by Jim Gilbreath, BYTE Magazine, 1981-09, page 190.
+
+forth definitions decimal
+
+8190 constant size  variable flags  size allot
+
+: do-prime  ( -- )
+  flags size 1 fill
+  0 size 0
+  do flags i + c@
+     if i dup + 3 + dup i +
+          begin   dup size <
+          while   0 over flags + c! over +
+          repeat  drop drop 1+
+     then
+  loop  .  ." primes "  ;
+
 ( byte-magazine-benchmark )
 
   \ Code adapted from: Forth Dimensions (volume 17, number 4,
@@ -15480,6 +15551,27 @@ need vector-loop-benchmark
   \  <------------------------------>
   .( To run all benchmarks type:) cr
   .(   n1 n2 all-benchmarks) cr
+
+( Interface Age Benchmark program )
+
+  \ XXX TODO -- test
+
+  \ Forth Dimensions (volume 2, number 4, page 112)
+
+: bench  ( -- )
+  dup 2 / 1+ swap ." Starting " cr
+  1 do dup i 1 rot
+    2 do drop dup i /mod
+      dup 0= if  drop drop 1 leave
+      else  1 = if drop 1
+            else  dup 0 > if  drop 1
+                  else  0= if  0 leave  then
+                  then
+            then
+      then
+    loop
+    if  4 .r  else  drop  then
+  loop  drop cr ." Finished " ;
 
   \ }}} =======================================================
   \ Development benchmarks {{{
@@ -16609,6 +16701,39 @@ need bench{
   \ -----                         ---------------------------
   \ From Abersoft Forth           243 (4 s) (1.00)
   \ From Spectrum Forth-83        253 (5 s) (1.04)
+
+( ?dup-bench )
+
+  \ 2016-01-01
+
+need bench{  variable times  40000 times !
+
+: iterations  ( -- n1 n2 )  times @ 0  ;
+
+: forth-0-?dup-bench  ( -- )
+  bench{ iterations do  0 ?dup drop  loop  }bench.  ;
+
+: z80-0-?dup-bench  ( -- )
+  bench{ iterations do  0 ?dup80 drop  loop  }bench.  ;
+
+: forth-1-?dup-bench  ( -- )
+  bench{ iterations do  1 ?dup 2drop  loop  }bench.  ;
+
+: z80-1-?dup-bench  ( -- )
+  bench{ iterations do  1 ?dup80 2drop  loop  }bench.  ;
+
+: ?dup-bench  ( -- )
+  cr ." Forth version:" cr ." 0 ?dup :" forth-0-?dup-bench cr
+                           ." 1 ?dup :" forth-1-?dup-bench cr
+     ." Z80 version:"   cr ." 0 ?dup :" z80-0-?dup-bench cr
+                           ." 1 ?dup :" z80-1-?dup-bench cr  ;
+
+  \ Code        Frames for 40000 iterations
+  \ -----       ---------------------------
+  \             Forth  Z80
+  \             -----  ----
+  \ `0 ?dup`    532    288
+  \ `1 ?dup`    585    312
 
 ( #spaces-bench )
 

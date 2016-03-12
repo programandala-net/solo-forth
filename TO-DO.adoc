@@ -8,6 +8,11 @@
 == Urgent ==
 // {{{
 
+2016-01-01 compilation of the tt game crash!
+the offending word is marked.
+something to do with the new loops?
+
+
 When the comments on screen `( find-name-in find )` are at the left margin,
 they are not processed by fsb2? 
 
@@ -16,6 +21,7 @@ they are not processed by fsb2?
 // {{{
 
 .2015-12-20:
+
 
 Convert to DTC?
 
@@ -30,6 +36,8 @@ Convert to DTC?
 | defer         | 12      |  -36
 | TOTAL         |         |  +22
 |===
+
+done!
 
 .2015-11-12:
 

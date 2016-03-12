@@ -19,15 +19,15 @@ version_minor:                equ 1
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 1
+  version_release_candidate:  equ 2
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x7BBA  ; build 20151226
+  version_build_low_part:     equ 0x9E65  ; build 20160101
 endif
 
-; This file was last modified: 201512260357
+; This file was last modified: 201601010402
 
 ; ==============================================================
 ; Author and license
@@ -1254,15 +1254,15 @@ if 0
 negate_hl:
   ;       ; T  B
   ;       ; -- --
-	xor a   ; 04 01
-	sub l   ; 04 01
-	ld l,a  ; 04 01
-	sbc a,a ; 04 01
-	sub h   ; 04 01
-	ld h,a  ; 04 01
+  xor a   ; 04 01
+  sub l   ; 04 01
+  ld l,a  ; 04 01
+  sbc a,a ; 04 01
+  sub h   ; 04 01
+  ld h,a  ; 04 01
           ; -- --
           ; 24 06
-	ret
+  ret
 endif
 
 if 0 
@@ -1279,34 +1279,34 @@ de_multiplied_by_bc_to_dehl_unsigned:
 
   push bc
 
-	sla	e		; optimised 1st iteration
-	rl	d
-	jr	nc,de_multiplied_by_bc_to_dehl_unsigned.continue
-	ld	h,b
-	ld	l,c
+  sla e   ; optimised 1st iteration
+  rl  d
+  jr  nc,de_multiplied_by_bc_to_dehl_unsigned.continue
+  ld  h,b
+  ld  l,c
 
 de_multiplied_by_bc_to_dehl_unsigned.continue:
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	add	hl,hl
-	rl	e
-	rl	d
-	jr	nc,de_multiplied_by_bc_to_dehl_unsigned.end
-	add	hl,bc
-	jr	nc,de_multiplied_by_bc_to_dehl_unsigned.end
-	inc	de
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  rl  e
+  rl  d
+  jr  nc,de_multiplied_by_bc_to_dehl_unsigned.end
+  add hl,bc
+  jr  nc,de_multiplied_by_bc_to_dehl_unsigned.end
+  inc de
 
 de_multiplied_by_bc_to_dehl_unsigned.end:
   pop bc
@@ -1715,12 +1715,16 @@ endif
 ; ----------------------------------------------
   _colon_header previous_,'PREVIOUS'
 
+if 1 ; XXX OLD
+
 ; doc{
 ;
 ; previous  ( -- )
 ;
 ; Remove the most recently referenced vocabulary from the search
 ; order.
+;
+; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
 ;
 ; ----
 ; : previous  ( -- )
@@ -1734,14 +1738,35 @@ endif
   ; Code adapted from F83.
 
   dw context_,dup_,cell_plus_,swap_
-  _literal (max_search_order-cell)*cell,c_move_
+  _literal (max_search_order-cell)*cell
+  dw c_move_
   dw context_
   _literal (max_search_order-cell)*cell
   dw plus_,off_
   dw exit_
 
-  ; XXX TODO -- rewrite after eForth:
-  ; : previous ( -- ) get-order swap drop 1 - set-order ;
+else ; XXX NEW 
+
+; doc{
+;
+; previous  ( -- )
+;
+; Remove the most recently referenced vocabulary from the search
+; order.
+;
+; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
+;
+; ----
+; : previous ( -- )
+;   get-order nip 1- set-order ;
+; ----
+;
+; }doc
+
+  dw get_order_,nip_,one_minus_,set_order_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header seal_,'SEAL'
@@ -2422,21 +2447,21 @@ endif
   ; Credits:
   ; Code adapted from Spectrum Forth-83.
 
-  pop hl                        ; 10t 01b ; init
-  pop de                        ; 10t 01b ; limit
+  pop hl                        ; init
+  pop de                        ; limit
 paren_do.de_hl:
-  push hl                       ; 11t 01b
-  ld hl,(return_stack_pointer)  ; 20t 03b
-  dec hl                        ; 06t 01b
-  ld (hl),d                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),e                     ; 07t 01b ; push limit on return stack
+  push hl
+  ld hl,(return_stack_pointer)
+  dec hl
+  ld (hl),d
+  dec hl
+  ld (hl),e                     ; push limit on return stack
   inc bc
   inc bc                        ; skip branch address
-  dec hl                        ; 06t 01b
-  ld (hl),b                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),c                     ; 07t 01b ; push IP on return stack
+  dec hl
+  ld (hl),B
+  dec hl
+  ld (hl),c                     ; push IP on return stack
   ex (sp),hl                    ; hl=init, (sp)=rp@
   and a
   sbc hl,de                     ; hl=init-limit
@@ -2446,11 +2471,10 @@ paren_do.de_hl:
   ld e,l
   pop hl                        ; hl=rp@
   dec hl
-  ld (hl),d                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),e                     ; 07t 01b ; push (init-limit) xor 0x8000 on return stack
-  ld (return_stack_pointer),hl  ; 16t 03b
-                                ;116t 18b TOTAL
+  ld (hl),d
+  dec hl
+  ld (hl),e                     ; push (init-limit) xor 0x8000 on return stack
+  ld (return_stack_pointer),hl
   _jp_next
 
 
@@ -2458,7 +2482,7 @@ paren_do.de_hl:
   _code_header i_,'I'
 
   ; Credits:
-  ; Code adapted from spectrum Forth-83.
+  ; Code adapted from Spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
 
@@ -2501,7 +2525,7 @@ paren_do.de_hl:
   _code_header leave_,'LEAVE'
 
   ; Credits:
-  ; Code adapted from spectrum Forth-83.
+  ; Code adapted from Spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
   inc hl
@@ -3858,8 +3882,6 @@ move.do:
 ; faster.
 ;
 ; }doc
-
-; swap move
 
   exx
   pop de
@@ -5998,13 +6020,14 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_dup_,'?DUP'
+  _code_header question_dup_,'?DUP'
 
-  dw dup_
-  dw zero_branch_,question_dup.end
-  dw dup_
-question_dup.end:
-  dw exit_
+  pop hl
+  ld a,h
+  or l
+  jp z,push_hl
+  push hl
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header latest_,'LATEST'
@@ -8513,6 +8536,142 @@ endif
   dw compile_only_mask_,lex_question_
   dw exit_
 
+if 0 ; new_wordlists
+
+; ----------------------------------------------
+  _colon_header wordlist_comma_,'WORDLIST,'
+
+; doc{
+;
+; wordlist,  ( -- )
+;
+; Compile the contents of a new word list.
+; The structure is the following:
+;
+; +0: _nt_ of last definition
+; +2: _wid|0_, next wordlist in chain, or zero
+; +4: _nt|0_, wordlist name pointer, or zero
+;
+; ----
+; : wordlist,  ( -- )
+;   0 ,  here voc-link @ , voc-link !  0 ,  ;
+; ----
+;
+; }doc
+
+  _literal 0
+  dw comma_                   ; nt of the latest word defined in the vocabulary
+  dw here_                    ; new contents of vocabulary link
+  dw voc_link_,fetch_,comma_  ; compile the previous contents of `voc-link`
+  dw voc_link_,store_         ; update `voc-link`
+  _literal 0
+  dw comma_                   ; nt of the wordlist, or zero
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header wordlist_,'WORDLIST'
+
+; doc{
+;
+; wordlist  ( -- wid )
+;
+; : wordlist ( -- wid )
+;   here wordlist, ;
+;
+; }doc
+
+  dw here_,paren_vocabulary_
+  dw exit_
+
+; ----------------------------------------------
+  _code_alias_header wid_to_link_,'WID>LINK',,cell_plus_
+
+; doc{
+;
+; wid>link  ( wid -- a )
+;
+; ----
+; ' cell+ alias wid>link  ( wid -- a )
+; ----
+; }doc
+
+; ----------------------------------------------
+  _colon_header wid_to_name_,'WID>NAME'
+
+; doc{
+;
+; wid>name  ( wid -- )
+;
+; ----
+; : wid>name  ( wid -- a )
+;   [ 2 cells ] literal +  ;
+; ----
+; }doc
+
+  _literal 2*cells
+  dw plus_ 
+  dw exit
+
+; ----------------------------------------------
+  _colon_header named_wid_,'NAMED-WID'
+
+; doc{
+;
+; named-wid ( wid -- )
+;
+; ----
+; : named-wid ( wid -- )
+;   wid>name latest swap !  ;
+; ----
+; }doc
+
+  dw wid_to_name_,latest_,swap_,store_
+  dw exit
+
+; ----------------------------------------------
+  _colon_header wid_to_vocabulary_,'WID>VOCABULARY'
+
+; doc{
+;
+; wid>vocabulary  ( wid "name" -- )
+;
+; ----
+; : wid>vocabulary  ( wid "name" -- )
+;   create dup , named-wid
+;   does>  ( -- )  ( pfa )  @ context !  ;
+; ----
+;
+; }doc
+ 
+  dw create_,dup_,comma_,named_wid_
+  dw paren_semicolon_code_
+do_vocabulary:
+  call do_does
+  ; The following words are to be executed when the vocabulary is invoked.
+  dw fetch_,context_,store_
+  dw exit
+
+; ----------------------------------------------
+  _colon_header vocabulary_,'VOCABULARY'
+
+; doc{
+;
+; vocabulary  ( "name" -- )
+;
+; Create a vocabulary with the parsed "name" as its name. The
+; run-time efect of `name` is to replace `context`, the top
+; vocabulary in the search order.
+;
+; ----
+; : vocabulary  ( "name" -- )
+;   wordlist wid>vocabulary  ;
+; ----
+; }doc
+
+  dw wordlist_,wid_to_vocabulary
+
+else
+
 ; ----------------------------------------------
   _colon_header paren_vocabulary_,'(VOCABULARY)'
 
@@ -8534,16 +8693,7 @@ endif
   dw here_                    ; new contents of vocabulary link
   dw voc_link_,fetch_,comma_  ; compile the previous contents of `voc-link`
   dw voc_link_,store_         ; update `voc-link`
-if 0 ; new_worlists
-  _literal 0
-  dw comma_                   ; nt of the wordlist, or zero
-endif
   dw exit_
-
-; XXX TODO -- Structure of a wordlist, after eForth:
-; \ nt, of last definition, linked )
-; \ wid|0, next or last wordlist in chain
-; \ nt, wordlist name pointer
 
 ; ----------------------------------------------
   _colon_header vocabulary_,'VOCABULARY'
@@ -8567,52 +8717,12 @@ endif
   dw paren_semicolon_code_
 do_vocabulary:
   call do_does
-  ; The next words are to be executed when the vocabulary is invoked.
+  ; The following words are to be executed when the vocabulary is invoked.
   dw context_,store_
   dw exit_
 
 ; ----------------------------------------------
-if 0 ; XXX TODO
-  ; XXX Already in the library, but may be needed in the kernel,
-  ; depending on the final definitions of `wordlist` and
-  ; `vocabulary`.
-  _code_alias to_wid_,'>WID',,two_plus_
-
-; ----------------------------------------------
-  _code_alias to_wid_,'>WID',,two_minus_
-
-endif
-
-; ----------------------------------------------
   _colon_header wordlist_,'WORDLIST'
-
-if 0 ; new_wordlists
-
-; XXX UNDER DEVELOPMENT -- simpler alternative based on eForth
-
-; : wordlist ( -- wid )
-;   here
-;   0 ,
-;     \ nt, of last definition, linked )
-;   dup current cell+  dup @ ,  !
-;     \ wid|0, next or last wordlist in chain
-;   0 ,
-;     \ nt, wordlist name pointer
-;   ;
-
-; doc{
-;
-; wordlist  ( -- wid )
-;
-; : wordlist ( -- wid )
-;   here (vocabulary) ;
-;
-; }doc
-
-  dw here_,paren_vocabulary_
-  dw exit_
-
-else ; XXX OLD
 
 ; doc{
 ;
@@ -8626,6 +8736,18 @@ else ; XXX OLD
   dw colon_no_name_,paren_vocabulary_,semicolon_
   dw to_body_ ; XXX TODO `to_wid_`
   dw exit_
+
+endif
+
+; ----------------------------------------------
+if 0 ; XXX TODO
+  ; XXX Already in the library, but may be needed in the kernel,
+  ; depending on the final definitions of `wordlist` and
+  ; `vocabulary`.
+  _code_alias to_wid_,'>WID',,two_plus_
+
+; ----------------------------------------------
+  _code_alias to_wid_,'>WID',,two_minus_
 
 endif
 
