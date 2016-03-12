@@ -1291,11 +1291,6 @@ A constant leaving the address just above the highest memory available
 for the data of the last disc buffer.  It's the address of the 2 byte
 tail of the last disc buffer. All disc buffer tails contain 0.
 
-`LINE`  ( n -- addr )
-
-Leave address of line _n_ of current screen. This address will be in the
-RAM-disc buffer area.
-
 `LIST`  ( n -- )
 
 Display the ASCII text of screen _n_ on the selected output device.

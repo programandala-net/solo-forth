@@ -1,9 +1,14 @@
 ; Solo Forth
 
 ; A disk-based Forth for ZX Spectrum,
-; focused on development of ZX Spectrum programs.
+; intended for cross-development of ZX Spectrum programs.
+; http://programandala.net/en.program.solo_forth.html
 
-; Version A-00-201506221734
+; Copyright (C) 2015 Marcos Cruz (programandala.net)
+
+; ==============================================================
+; Version A-00-201506212132
+
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
 ; - change: new, modern `find`, after Forth-83 and Forth-94
@@ -14,57 +19,50 @@
 ; - `count` in Z80.
 ; - New versions of `0>`, `<` and `>`.
 
-; This file is part of Solo Forth
-; http://programandala.net/en.program.solo_forth.html
-
 ; ==============================================================
-; Author and acknowledgements
+; Aknowledgments
 
-; 2015: Solo Forth
-;
-; Marcos Cruz (programandala.net)
-; http://programandala.net/en.program.solo_forth.html
-;
-; Solo Forth started with the code of Abersoft Forth (for ZX Spectrum), that
-; was first studied and much improved
-; (http://programandala.net/en.program.afera.html) and finally fully
-; disassembled (http://programandala.net/en.program.abersoft_forth.html).
-;
-; 1983: Abersoft Forth
-;
-; Abersoft Forth (for ZX Spectrum) was implemented by John Jones Steele and
-; edited by Melbourne House in 1983. It's a tape and RAM disk implementation
-; of Z80 fig-Forth 1.1, with ZX Spectrum specific features and some
-; extensions beyond the fig-Forth model.
-;
-; 1979: fig-Forth 1.1
-;
-; All publications of the FORTH Interest Group are public domain.  They may
-; be further distributed by the inclusion of this credit notice:
+; Solo Forth started with the code of Abersoft Forth, that was
+; first studied and much improved
+; (http://programandala.net/en.program.afera.html) and finally
+; fully disassembled
+; (http://programandala.net/en.program.abersoft_forth.html).
 
-;               This publication has been made available by:
-
-;               FORTH Interest Group
-;               P.O. Box 1105
-;               San Carlos, Ca. 94070
-
-; Aknowledgments:
-
-; The author of Solo Forth copied, adapted and implemented
-; ideas, code and documentation from the following Forth systems
+; Solo Forth was made possible thanks to code, documentation,
+; ideas and inspiration from the following Forth systems
 ; (acknowledgment notes are included in the source, at the
 ; correspondent places):
 
-; Abersoft Forth, by John Jones Steele (1983)
-; DZX-Forth, by Marcos Cruz, (2014-2015, under development)
-; Spectrum Forth-83, by Lennart Benschop (1988,2015)
-; v.Forth, by Matteo Vitturi (1990-2015)
-; lina ciforth, by Albert van der Horst (2000-2004)
+; Afera library for Abersoft Forth, by Marcos Cruz, 2015.
+;
+; Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele
+; 1983.
+;
+; CP/M fig-Forth 1.1g, adaptative version by EHR et al.,
+; 1980-1984.
+;
+; DZX-Forth (for ZX Spectrum +3e), by Marcos Cruz, 2014 (under
+; development).
+;
+; eForth (for MS-DOS), by Bill Muench, 1989-997.
+;
+; lina ciforth (for Linux x86), by Albert van der Horst,
+; 2000-2004.
+;
+; Spectrum Forth-83 (for ZX Spectrum 48K/128K), by Lennart
+; Benschop, 1988.
+;
+; v.Forth (for ZX Spectrum 48K/128K), by Matteo Vitturi,
+; 1990-2015.
 
 ; ==============================================================
 ; License
 
-; XXX TODO
+; Copying and distribution of this file, with or without
+; modification, are permitted in any medium without royalty
+; provided the copyright notice, the aknowledgments list and
+; this notice are preserved.  This file is offered as-is,
+; without any warranty.
 
 ; ==============================================================
 ; Symbols
@@ -828,6 +826,8 @@ l5ef2h:
 ; ----------------------------------------------
   _code_header paren_do_,'(DO',')'
 
+if true ; XXX OLD
+
   ld hl,(return_stack_pointer)
   dec hl
   dec hl
@@ -843,6 +843,26 @@ l5ef2h:
   ld (hl),e
   inc hl
   ld (hl),d
+
+else ; XXX NEW -- from CP/M fig-Forth 1.1g
+
+  EXX     ;/ SAVE IP
+  POP DE    ;  (DE)<--INITIAL INDEX
+  POP BC    ;/ (BC)<--LIMIT
+  LD  HL,(RPP)  ;  (HL)<--(RP)
+  DEC HL
+  LD  (HL),B
+  DEC HL
+  LD  (HL),C    ;/ (R2)<--LIMIT
+  DEC HL
+  LD  (HL),D
+  DEC HL
+  LD  (HL),E    ;  (R1)<--INITIAL INDEX
+  LD  (RPP),HL  ;  (RP)<--(RP)-4
+  EXX     ;/ RESTORE IP
+
+endif
+
   _jp_next
 
 ; ----------------------------------------------
@@ -1307,6 +1327,8 @@ paren_parse.end:
 ; ----------------------------------------------
   _code_header key_,'KE','Y'
 
+  ; XXX TODO simplify, no Spectrum modes
+
   push bc
   ld a,0x02
   call rom_chan_open
@@ -1372,6 +1394,7 @@ key.graphic_mode_cursor:
   jr key.new_key
 
   ; Translate some chars
+  ; XXX TODO use a configurable list of chars pairs
 key.left_bracket:
   cp 0xC6
   jr nz,key.right_bracket
@@ -1920,7 +1943,6 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header fetch_,'','@'
 
-  ; XXX TODO optimize? maybe `jp push_hl` can be used?
   pop hl
 fetch.hl:
   ld e,(hl)
@@ -2511,31 +2533,15 @@ less_than.true:
 endif
 
 ; ----------------------------------------------
+  _code_header u_greater_than_,'U','>'
 
-if 1 ; XXX OLD -- original
+  pop hl
+u_greater_than.hl:
+  pop de
+  jp u_less_than.de_hl
 
-  _colon_header u_less_than_,'U','<'
-
-  dw two_dup_
-  dw xor_
-  dw zero_less_than_
-  dw zero_branch_,branch_destination_0x6585
-  dw drop_
-  dw zero_less_than_
-  dw zero_equals_
-  dw branch_,branch_destination_0x6589
-branch_destination_0x6585:
-  dw minus_
-  dw zero_less_than_
-branch_destination_0x6589:
-  dw semicolon_s_
-
-else
-
+; ----------------------------------------------
   _code_header u_less_than_,'U','<'
-
-  ; XXX NEW -- from DZX-Forth
-  ; XXX FIXME
 
   pop de
   pop hl
@@ -2547,8 +2553,6 @@ u_less_than.de_hl:
     jp c,true_pfa
     jp false_pfa
   endif
-
-endif
 
 ; ----------------------------------------------
   _code_header greater_than_,'','>'
@@ -2607,6 +2611,8 @@ endif
 
 if not fig_name_field?
 
+if 0 ; XXX OLD
+
   _colon_header lfa_to_nfa_,'LFA>NF','A'
 
 lfa_to_nfa.begin:
@@ -2616,6 +2622,19 @@ lfa_to_nfa.begin:
   dw and_
   dw zero_branch_,lfa_to_nfa.begin ; until
   dw semicolon_s_
+
+else ; faster alternative
+
+  _code_header lfa_to_nfa_,'LFA>NF','A'
+
+  pop hl
+lfa_to_nfa.do:
+  dec hl
+  bit name_bound_bit,(hl)
+  jp z,lfa_to_nfa.do
+  jp push_hl
+
+endif
 
 endif
 
@@ -3040,7 +3059,7 @@ expect.loop: ; ( a )
 
 ; }doc
 
-if 1 ; XXX OLD -- original version
+if 0 ; XXX OLD -- original version
 
   ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
@@ -3077,8 +3096,6 @@ x.end:
 
 else ; XXX NEW -- simpler and faster flow
 
-  ; XXX FIXME -- problems when loading screens (try `21 load`).
-
   ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.exit ; if not, branch
@@ -3086,11 +3103,12 @@ else ; XXX NEW -- simpler and faster flow
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
   dw in_,off_ ; clear `in`, preparing parsing of input text
-  ;dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer? ; XXX OLD
-  dw blk_,fetch_,one_,and_ ; last block of the screen?
-  dw zero_branch_,x.end ; if not, branch
-
-  ; Last block of the screen
+  ; Note: This check of the last block is specific for 2
+  ; blocks per screen; the generic slower check would be `blk @
+  ; b/scr 1- and`.
+  dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
+  dw question_branch_,x.end ; if not, branch
+  ; Last block of the screen.
   dw question_exec_ ; error if not executing
 
 x.exit:
@@ -3100,10 +3118,12 @@ x.exit:
   ; `execute` in `interpret`, but will return to the next higher level
   ; of nesting and execute the next word after `interpret` in the Forth
   ; loop.  This is when the familiar "ok" message is displayed on the
-  ; terminal, prompting the operator for the next  line of commands.
+  ; terminal, prompting the operator for the next line of commands.
 
   ; XXX FIXME why `rdrop` bombs out here?
-  dw from_r_,drop_
+  ;dw from_r_,drop_
+  ; XXX solved?
+  dw r_drop_
 
 x.end:
   dw semicolon_s_
@@ -3146,8 +3166,8 @@ fill.end:
 ; ----------------------------------------------
   _colon_header hold_,'HOL','D'
 
-  dw lit_,0xFFFF,hld_,plus_store_
-  dw hld_,fetch_,c_store_
+  dw lit_,-1,hld_,plus_store_ ; decrement `hld`
+  dw hld_,fetch_,c_store_ ; store character into `pad`
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4540,19 +4560,9 @@ flush.do:
 ; ----------------------------------------------
   _colon_header load_,'LOA','D'
 
-if 0 ; XXX OLD
-  dw dup_,zero_,equals_
-  _question_error loading_from_screen_0_error
-  dw blk_,fetch_,to_r_
-  dw in_,fetch_,to_r_
-  dw in_,off_
-  dw b_slash_scr_,star_,blk_,store_
-  dw interpret_
-else ; XXX NEW
   dw blk_,fetch_,to_r_
   dw in_,fetch_,to_r_
   dw continued_
-endif
   dw from_r_,in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
@@ -4739,14 +4749,24 @@ endif
 ; ----------------------------------------------
   _colon_header spaces_,'SPACE','S'
 
-  dw zero_,max_,question_dup_
-  dw zero_branch_,branch_destination_0x7418
+  dw b_l_,emits_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header emits_,'EMIT','S'
+
+  ; emits  ( u c -- )
+
+  ; XXX TODO use `?do` when available
+  dw swap_,question_dup_
+  dw zero_branch_,emits_.end
   dw zero_
   dw paren_do_
-branch_destination_0x7412:
-  dw space_
-  dw paren_loop_,branch_destination_0x7412
-branch_destination_0x7418:
+emits_.do:
+  dw dup_,emit_
+  dw paren_loop_,emits_.do
+emits_.end:
+  dw drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4770,6 +4790,19 @@ branch_destination_0x7418:
 
 ; ----------------------------------------------
   _colon_header sign_,'SIG','N'
+
+  ; doc{
+
+  ; sign  ( n  d  ---  d ) \ fig-Forth
+
+  ; Stores an ascii "-" sign just before a converted numeric
+  ; output string in the text output buffer when _n_ is negative.
+  ; _n_ is discarded but double number _d_ is maintained. Must be
+  ; used between `<#` and `#>`.
+
+  ; }doc
+
+  ; XXX TODO convert to Forth-94
 
   dw rot_,zero_less_than_
   dw zero_branch_,sign.end
@@ -4851,8 +4884,8 @@ hash_s.begin:
 
 ; ----------------------------------------------
   _colon_header words_,'WORD','S'
-  ; XXX OLD -- move to the blocks
 
+  ; XXX TODO move to the disk
   dw c_lit_
   db 0x80
   dw out_,store_
@@ -4878,6 +4911,8 @@ words.continue:
 ; ----------------------------------------------
   _colon_header list_,'LIS','T'
 
+
+  ; XXX TODO move to the disk
   dw cr_
   dw dup_,scr_,store_
   dw paren_dot_quote_
@@ -4937,19 +4972,6 @@ list.loop:
   dw c_slash_l_,one_plus_ ; count
   dw cmove_
   dw pad_,count_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header line_,'LIN','E'
-
-  ; XXX TODO use 0xF0
-  dw dup_
-  dw lit_,0xFFF0
-  dw and_ ; line between 0 and 15?
-  _question_error off_current_editing_screen_error ; if not, error
-  dw scr_,fetch_ ; screen number
-  dw paren_line_ ; address of the n'th line in the screen buffer
-  dw drop_ ; discard the character count left by `(line)`
   dw semicolon_s_
 
 ; ----------------------------------------------
