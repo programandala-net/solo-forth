@@ -105,4 +105,7 @@ Fix: Something went wrong after the massive of the `_number` macro:
 
 .2015-06-29:
 
-Fix: the loading screen causes an error, maybe after the changes in `continued`.
+Fix: the null word at the end of the disk buffers must have a leading
+space. Otherwise there's a risk it will not be parsed (when the last
+byte of the buffer is not a space, but the last letter of the last
+word in the block).

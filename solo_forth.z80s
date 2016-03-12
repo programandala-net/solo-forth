@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506291636
+; Version A-00-201506291956
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -27,6 +27,7 @@
 ; bug; everything seems to work again.
 ; - change: all code for `fig_find?` is copied to a file and commented out.
 ; - change: all code for `fig_find?` is removed.
+; - change: new method for the null word.
 
 ; ==============================================================
 ; Acknowledgments
@@ -184,12 +185,12 @@
 ; Configuration
 
   ; XXX experimental
-size_optimization?              equ false
+size_optimization?: equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
   ; XXX TODO -- not used yet
-fig_parsing?                    equ false
+fig_parsing?: equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
@@ -205,9 +206,26 @@ fig_parsing?                    equ false
   ; dictionary.
 
   ; XXX TODO
-;fig_does?                       equ true
+;fig_does?: equ true
   ; true = the fig-Forth `<builds does>` pair is used
   ; false = the modern `create does>` pair is used
+
+  ; XXX TODO
+fig_null_word?: equ false
+  ; true = the fig-Forth null word is used to detect the end of
+  ; the buffers: a word of one zero character. a null character
+  ; is at the end of the buffers. the scanning words (old
+  ; `enclose`, new `skip` and `scan`) must treat the null
+  ; character as a special unconditional delimiter, and do other
+  ; tricks, to simulate the null character found is a parsed
+  ; null word.
+  ;
+  ; false = the same word is used, but the scanning words does
+  ; not treat the null char apart; instead, a null and a space
+  ; are put after the buffers (disk buffers and `tib`), thus
+  ; making the null word to be parsed normally as any other
+  ; word. this new method is compatible with the original
+  ; fig-Forth parsing words.
 
 ; ==============================================================
 ; Symbols
@@ -249,6 +267,8 @@ csb_size:                       equ 256 ; circular string buffer
 
 dummy_name_field: equ 0xA081 ; original
 ;dummy_name_field: equ 0xA000 ; XXX TODO needed for the name fields in bank?
+
+null_word: equ 0x2000 ; a null followed by a blank
 
 ; Memory banks
 
@@ -375,10 +395,6 @@ bank1_port:        equ 0x7FFD
 
 immediate: equ 1 ; used as optional parameter
 previous_nfa: defl 0 ; link to previous Forth word
-
-  ; XXX OLD
-  ;include solo_forth.header_macro.bank.z80s
-  ;include solo_forth.header_macro.default.z80s
 
 _header: macro _base_label,_name,_is_immediate
 
@@ -813,6 +829,11 @@ data_stack_bottom:
 
 terminal_input_buffer:
   ds bytes_per_terminal_input_buffer
+; XXX OLD -- not practical, because the input address can be
+; different
+;if ! fig_null_word?
+;  dw null_word
+;endif
 
 ; ----------------------------------------------
 ; Return stack
@@ -1843,7 +1864,7 @@ scan.end:
 
 endif
 
-if 1 ; from the new `(parse)`
+if 0 ; from the new `(parse)`
 
 ; doc{
 ;
@@ -1866,14 +1887,53 @@ if 1 ; from the new `(parse)`
   ld hl,0 ; length
 scan.begin:
   ld a,(de)
-  or a ; unconditional null delimiter?
-  jr z,scan.end
   cp c ; delimiter?
   jr z,scan.end
-  inc de
+
+  ; Increase the length before the last check, so the first null
+  ; char will be interpreted as the null word, one char length.
+  ; XXX FIXME bad effect: the last word of the buffer receives
+  ; on additional byte in its count!
+
   inc hl
+
+  or a ; unconditional null delimiter?
+  jr z,scan.end
+  inc de
   jp scan.begin ; repeat
 scan.end:
+  pop bc ; restore Forth IP
+  jp push_hl
+
+endif
+
+if 1 ; XXX NEW for `! fig_null_word?`
+
+; doc{
+;
+; scan  ( ca c -- ca len )
+;
+; c = ascii delimiting character
+; ca = text address
+; len = length of the parsed text
+;
+; }doc
+
+  pop hl ; delimiter
+  pop de ; address
+  push de
+  push bc ; save Forth IP
+  ld c,l ; delimiter
+  ld hl,0 ; length
+  dec hl
+  dec de
+scan.begin:
+  inc hl
+  inc de
+  ld a,(de)
+  cp c ; delimiter?
+  jr nz,scan.begin
+  ; delimiter found
   pop bc ; restore Forth IP
   jp push_hl
 
@@ -1922,7 +1982,7 @@ skip.begin:
 
 endif
 
-if 1 ; XXX NEW for `word`
+if 0 ; XXX NEW for `word`
 
 ; skip  ( c ca1 -- ca2 )
 
@@ -1938,6 +1998,22 @@ skip.begin:
   jp skip.begin ; again
 
 endif
+
+if 1 ; XXX NEW for `! fig_null_word?`
+
+; skip  ( ca1 c -- ca2 )
+
+  pop de ; e = delimiter
+  pop hl ; ca1
+skip.begin:
+  ld a,(hl)
+  cp e ; delimiter?
+  jp nz,push_hl
+  inc hl
+  jp skip.begin ; again
+
+endif
+
 
 ; ----------------------------------------------
   _code_header enclose_,'ENCLOSE'
@@ -4202,10 +4278,24 @@ endif
 ; ----------------------------------------------
   _colon_header expect_,'EXPECT'
 
-  dw over_,plus_,over_ ; ( a a+len a )
+; doc{
+;
+; expect  ( ca len -- )
+;
+; Transfer characters from the terminal to address _ca_, until a
+; "return" or the count of characters have been received.
+; 
+; XXX TODO
+; fig-Forth: One or more nulls are added at the end of the text.
+; Solo Forth: a null word is added at the end of the text.
+;
+; }doc
+
+  dw bounds_ ; ( a+len a )
+  dw dup_,zero_,swap_,two_swap_ ; ( 0 a a+len a )
   dw paren_do_
-expect.do: ; ( a )
-  dw key_,dup_ ; ( a c c )
+expect.do: ; ( i a )
+  dw key_,dup_ ; ( i a c c )
   dw c_lit_
   db delete_char
   dw equals_ ; delete key?
@@ -4218,41 +4308,65 @@ expect.do: ; ( a )
   ; XXX TODO The `noop` and related `branch` were removed. Waiting for the code
   ; to fail...
 
-  ; Delete key ( a c )
+  ; Delete key ( i a c )
   dw drop_
   dw dup_,i_,equals_ ; cursor at the start position?
-  dw dup_ ; ( a f f ) ; XXX why this?
-  dw from_r_,two_minus_,plus_,to_r_
+  dw dup_ ; ( i a f f )
+  ; XXX TODO adapt this when true=-1
+  dw from_r_,two_minus_,plus_,to_r_ ; update the index
   dw question_branch_,expect.loop ; nothing to delete
+if ! fig_null_word?
+  dw b_l_,i_,c_store_ ; update the buffer
+endif
   dw c_lit_
   db backspace_char
   dw branch_,expect.emit
 
-expect.not_the_delete_key: ; ( a c )
+expect.not_the_delete_key: ; ( i a c )
   dw dup_
   dw c_lit_
   db carriage_return_char
   dw equals_ ; carriage return?
   dw zero_branch_,expect.ordinary_key
 
-  ; Carriage return ( a c )
+if fig_null_word?
+
+  ; Carriage return ( i a c )
   dw leave_
   dw drop_,b_l_,zero_
   dw branch_,expect.store
 
-expect.ordinary_key: ; ( a c )
+else
+
+  ; XXX TODO
+  ; Carriage return ( i a c )
+  dw leave_
+  dw drop_
+  dw branch_,expect.loop
+
+endif
+
+expect.ordinary_key: ; ( i a c )
   dw dup_
 
-expect.store: ; ( a c c | a c 0 )
+expect.store: ; ( i a c c | a c 0 )
   dw i_,c_store_
   dw i_,one_plus_,off_
 
-expect.emit: ; ( a c )
+expect.emit: ; ( i a c )
   dw emit_
 
-expect.loop: ; ( a )
+expect.loop: ; ( i a )
+  dw nip_,i_,swap_ ; update the copy of `i` on the stack
   dw paren_loop_,expect.do
+
   dw drop_
+if ! fig_null_word?
+  ; Add a null word after the text:
+  dw b_l_,over_,c_store_
+  dw zero_,over_,one_plus_,c_store_
+  dw b_l_,swap_,two_plus_,c_store_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4261,6 +4375,9 @@ expect.loop: ; ( a )
   dw tib_,fetch_
   dw c_lit_
   db bytes_per_terminal_input_buffer
+  if ! fig_null_word?
+    dw two_dup_,blank_ ; clean the input buffer
+  endif
   dw expect_
   dw to_in_,off_
   dw semicolon_s_
@@ -4285,7 +4402,7 @@ expect.loop: ; ( a )
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
   dw to_in_,off_ ; clear `in`, preparing parsing of input text
-  ; Note: This check of the last block is specific for 2
+  ; Note: The following check of the last block is specific for 2
   ; blocks per screen; the generic slower check would be `blk @
   ; b/scr 1- and`.
   dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
@@ -4393,8 +4510,8 @@ stream.end:
 ;
 ; }doc
 
-  dw stream_,scan_
-  dw dup_,one_plus_,to_in_,plus_store_
+  dw stream_,swap_,scan_
+  dw dup_,one_plus_,to_in_,plus_store_ ; XXX TODO factor this? possible name: `parsed`
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4408,11 +4525,11 @@ stream.end:
 
   ; XXX TODO case insensitive!
 
-  dw b_l_,b_l_,stream_,dup_,to_r_ ; ( c c ca1 )
-  dw skip_ ; ( ca2 )
+  dw stream_,dup_,to_r_ ; ( c c ca1 )
+  dw b_l_,skip_ ; ( ca2 )
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`?:
-  dw scan_ ; ( ca len )
+  dw b_l_,scan_ ; ( ca len )
   ; XXX TODO factor of `parse`?:
   dw dup_,one_plus_,to_in_,plus_store_ ; XXX TODO `1+` ?
   dw semicolon_s_
@@ -4434,7 +4551,7 @@ stream.end:
 ;
 ; }doc
 
-if 1 ; XXX OLD -- original version with `enclose`
+if 0 ; XXX OLD -- original version with `enclose`
 
   dw stream_  ; ( c ca )
   dw enclose_ ; ( ca n1 n2 n3 )
@@ -4457,18 +4574,35 @@ if 1 ; XXX OLD -- original version with `enclose`
   dw here_,one_plus_ ; destination
   dw from_r_ ; count
   dw cmove_ ; move the word
+  dw semicolon_s_
 
 else ; XXX NEW -- modern version with `skip parse`
 
-  ; XXX TMP -- code copied to `xword` for debugging
+  ; XXX FIXME
 
-  dw dup_ ; ( c c )
-  dw stream_ ; ( c c a1 )
+  ; the problem seems the null word is not recognized.
+
+  dw stream_ ; ( c a1 )
   dw dup_,to_r_
-  dw skip_ ; ( c a2 )
+  dw over_,skip_ ; ( c a2 )
+if  0
+  dw hex_
+  dw cr_,paren_dot_quote_ ; XXX INFORMER
+  _string 'In word after skip:' ; XXX INFORMER
+  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  dw key_,drop_ ; XXX INFORMER
+endif
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`:
-  dw scan_ ; ( a2 len )
+  dw swap_,scan_ ; ( a2 len )
+if  0
+  dw hex_
+  dw cr_,paren_dot_quote_ ; XXX INFORMER
+  _string 'In word after scan:' ; XXX INFORMER
+  dw cr_,two_dup_,type_ ; XXX INFORMER
+  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  dw key_,drop_ ; XXX INFORMER
+endif
   dw dup_,to_in_,plus_store_
 
   dw here_
@@ -4496,34 +4630,6 @@ endif
     ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
     ;dw key_,drop_ ; XXX INFORMER
   endif
-
-  dw semicolon_s_
-
-  _colon_header xword_,'XWORD'
-
-  ; XXX FIXME -- strange problems
-
-  dw dup_ ; ( c c )
-  dw stream_ ; ( c c a1 )
-  dw dup_,to_r_
-  dw skip_ ; ( c a2 )
-  dw dup_,from_r_,minus_,to_in_,plus_store_
-  ; XXX TODO factor of `parse`:
-  dw scan_ ; ( a3 len )
-  dw dup_,one_plus_,to_in_,plus_store_
-  ;dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
-
-  dw here_
-  dw c_lit_
-  db max_word_length+3
-  dw blank_
-
-  dw dup_,here_,c_store_ ; count byte
-  dw here_,one_plus_ ; destination
-  dw swap_ ; count
-  dw cmove_ ; move the word
-  ;dw here_,count_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
-  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
@@ -5127,6 +5233,7 @@ two_literal.end:
 ; ----------------------------------------------
   _colon_header question_stack_,'?STACK'
 
+  ;dw cr_,depth_,dot_ ; XXX INFORMER
   dw sp_fetch_
   dw sp0_,fetch_
   dw swap_,less_than_
@@ -5168,7 +5275,8 @@ interpret.begin:
 
   dw question_stack_
   ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
-  dw defined_
+  dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
+  ;dw cr_,dot_s_ ; XXX INFORMER
   ;if 1 ; names_in_memory_bank?
     ; dw cr_,paren_dot_quote_ ; XXX INFORMER
     ; _string 'In interpret after defined ' ; XXX INFORMER
@@ -5630,6 +5738,11 @@ plus_buf.continue:
   dw paren_do_
 empty_buffers.do:
   dw lit_,0x7FFF,i_,store_
+  if ! fig_null_word?
+    ; Store a null word after the end of the buffer:
+    dw lit_,null_word
+    dw i_,lit_,data_bytes_per_buffer+2,plus_,store_
+  endif
   dw lit_,total_bytes_per_buffer
   dw paren_plus_loop_,empty_buffers.do
   dw semicolon_s_
@@ -5903,18 +6016,22 @@ flush.do:
   dw b_l_,word_
   dw here_,dup_,count_ ; ( ca ca+1 len )
 
-;  dw cr_,paren_dot_quote_ ; XXX INFORMER
-;  _string 'In defined before find:' ; XXX INFORMER
-;  dw cr_,two_dup_,type_ ; XXX INFORMER
-;  dw cr_,dot_s_,cr_ ; XXX INFORMER
-  ;dw key_,drop_ ; XXX INFORMER
+if  0
+  dw hex_
+  dw cr_,paren_dot_quote_ ; XXX INFORMER
+  _string 'In defined before find:' ; XXX INFORMER
+  dw cr_,two_dup_,type_ ; XXX INFORMER
+  dw cr_,dot_s_,cr_ ; XXX INFORMER
+endif
 
   dw uppers_,find_
 
-;  dw cr_,paren_dot_quote_ ; XXX INFORMER
-;  _string 'In defined after find:' ; XXX INFORMER
-;  dw cr_,dot_s_,cr_ ; XXX INFORMER
+if 0
+  dw cr_,paren_dot_quote_ ; XXX INFORMER
+  _string 'In defined after find:' ; XXX INFORMER
+  dw cr_,dot_s_,cr_ ; XXX INFORMER
   ;dw key_,drop_ ; XXX INFORMER
+endif
 
   dw semicolon_s_
 
