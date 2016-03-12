@@ -95,10 +95,6 @@ Fix: `plot` and `point`.
 
 .2015-06-28:
 
-Fix: `vocabulary` needs changes after the new header format. Executing
-`forth` or `assembler` makes the system unusable (no word is
-recognized anymore).
-
 Fix: Something went wrong after the massive of the `_number` macro:
 `.` does not print well; `require` gives error 0!...  The problem is
 `_number -1`! Why? I wrote the autor of Pasmo. (He helped).
@@ -118,6 +114,4 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 Change: rewrote `word` to return and address, after Forth-83 or ANS Forth.
 
-Fix: the more important problem is `vocabulary`, see note on
-2015-06-28.
 

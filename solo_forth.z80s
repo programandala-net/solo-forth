@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507011219
+; Version A-00-201507011559
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -31,6 +31,8 @@
 ; - new versions of `expect`, `query`; new: `span`.
 ; - fix: `word` caused `s"`, `.(`, `."` to include the first space.
 ; - fix: vocabularies.
+; - fix: `lfa>nfa` was wrong, what ruined the bodies of new
+; vocabularies.
 
 ; ==============================================================
 ; Acknowledgments
@@ -3849,7 +3851,7 @@ question_dup.end:
 
 if 1 ; names_in_memory_bank?
 
-  _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_minus_
+  _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_plus_
 
 else
 
@@ -4976,8 +4978,7 @@ else ; XXX NEW -- modern version with `skip parse`
   dw over_,skip_ ; ( c a2 )
 if  0
   dw hex_
-  dw cr_,paren_dot_quote_ ; XXX INFORMER
-  _string 'In word after skip:' ; XXX INFORMER
+  _echo 'In word after skip:' ; XXX INFORMER
   dw cr_,dot_s_,cr_ ; XXX INFORMER
   dw key_,drop_ ; XXX INFORMER
 endif
@@ -4986,8 +4987,7 @@ endif
   dw swap_,scan_ ; ( a2 len )
 if  0
   dw hex_
-  dw cr_,paren_dot_quote_ ; XXX INFORMER
-  _string 'In word after scan:' ; XXX INFORMER
+  _echo 'In word after scan:' ; XXX INFORMER
   dw cr_,two_dup_,type_ ; XXX INFORMER
   dw cr_,dot_s_,cr_ ; XXX INFORMER
   dw key_,drop_ ; XXX INFORMER
@@ -5007,11 +5007,9 @@ endif
   if 0 ; XXX OLD
     ;dw space_ ; XXX INFORMER
     ;dw depth_,dot_ ; XXX INFORMER
-    ;dw paren_dot_quote_ ; XXX INFORMER
-    ;_string 'blk ' ; XXX INFORMER
+    ;_echo 'blk ' ; XXX INFORMER
     ;dw blk_,fetch_,dot_ ; XXX INFORMER
-    ;dw paren_dot_quote_ ; XXX INFORMER
-    ;_string 'in ' ; XXX INFORMER
+    ;_echo 'in ' ; XXX INFORMER
     ;dw in_,fetch_,dot_ ; XXX INFORMER
     ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
     ;dw key_,drop_ ; XXX INFORMER
@@ -5194,8 +5192,7 @@ uppers.do:
 ; }doc
 
   dw trail_
-  ;dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ;_string 'In find, nfa is:' ; XXX INFORMER
+  ;_echo 'In find, nfa is:' ; XXX INFORMER
   ;dw dup_,hex_,u_dot_,decimal_ ; XXX INFORMER ;
     ; Result:
     ;   0x86D3 with default system, why one less than `dot_paren_`? It works, though.
@@ -5203,15 +5200,13 @@ uppers.do:
     ;   doesn't work.
 
   ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In find before (find): ' ; XXX INFORMER
+  ; _echo 'In find before (find): ' ; XXX INFORMER
   ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
   ; dw key_,drop_ ; XXX INFORMER
 
   dw paren_find_
 
-  ;dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ;_string 'In find after (find):: ' ; XXX INFORMER
+  ;_echo 'In find after (find):: ' ; XXX INFORMER
   ;dw hex_,dot_s_,decimal_ ; XXX INFORMER
   ; dw key_,drop_ ; XXX INFORMER
 
@@ -5672,8 +5667,7 @@ interpret.begin:
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   ;dw cr_,dot_s_ ; XXX INFORMER
   ;if 1 ; names_in_memory_bank?
-    ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-    ; _string 'In interpret after defined ' ; XXX INFORMER
+    ; _echo 'In interpret after defined ' ; XXX INFORMER
     ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
   ;endif
   dw question_dup_ ; found?
@@ -6473,8 +6467,7 @@ flush.do:
 
 if  0
   dw hex_
-  dw cr_,paren_dot_quote_ ; XXX INFORMER
-  _string 'In defined before find:' ; XXX INFORMER
+  _echo 'In defined before find:' ; XXX INFORMER
   dw cr_,two_dup_,type_ ; XXX INFORMER
   dw cr_,dot_s_,cr_ ; XXX INFORMER
 endif
@@ -6482,8 +6475,7 @@ endif
   dw uppers_,find_
 
 if 0
-  dw cr_,paren_dot_quote_ ; XXX INFORMER
-  _string 'In defined after find:' ; XXX INFORMER
+  _echo 'In defined after find:' ; XXX INFORMER
   dw cr_,dot_s_,cr_ ; XXX INFORMER
   ;dw key_,drop_ ; XXX INFORMER
 endif
@@ -6887,16 +6879,23 @@ endif
   db 0x80
   dw out_,store_
   dw trail_
-words.begin:
+words.begin: ; ( nfa )
   dw out_,fetch_
   dw c_lit_
   db max_word_length-8
   dw greater_than_
   dw zero_branch_,words.continue
   dw cr_
-words.continue:
-  dw dup_,id_dot_
-  dw nfa_to_lfa_,fetch_n_
+words.continue: ; ( nfa )
+;  _echo 'nfa=' ; XXX INFORMER
+;  dw dup_,u_dot_ ; XXX INFORMER
+  dw dup_,id_dot_ ; print word
+  dw nfa_to_lfa_
+;  _echo 'lfa=' ; XXX INFORMER
+;  dw dup_,u_dot_ ; XXX INFORMER
+  dw fetch_n_
+;  _echo 'new nfa=' ; XXX INFORMER
+;  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
   dw dup_,zero_equals_,question_terminal_,or_
   dw zero_branch_,words.begin ; until
   dw drop_
