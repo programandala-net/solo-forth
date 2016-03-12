@@ -1,34 +1,37 @@
 ; Solo Forth
 
-; *******************************************************
+; A Forth system for ZX Spectrum 128K and G+DOS.
+; http://programandala.net/en.program.solo_forth.html
+
+; ==============================================================
 ; XXX WARNING
 
-; This file source is for the Pasmo assembler.
-; As of now this is file used for the project,
-; and <solo_forth.for_binutils.z80s> is not updated.
+; This file source is for the Pasmo assembler.  As of now this
+; is the file used for the project, and <solo_forth.for_as.z80s>
+; (for GNU binutils) is not updated.
 
-; *******************************************************
+; ==============================================================
+; Version
 
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509180233
+version_release:  equ 201509181936
 
-; XXX TMP -- for debugging
+; XXX TODO
 ;vr_div: equ version_release/65535
 ;vr_mod: equ version_release mod 65535
 ;vr_mod2: equ version_release - vr_div
 
-; A Forth system for ZX Spectrum 128K and G+DOS.
-; http://programandala.net/en.program.solo_forth.html
+; ==============================================================
+; Author and license
 
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
-; Copying and distribution of this file, with or without
-; modification, are permitted in any medium without royalty
-; provided the copyright notice, the aknowledgments file and
-; this notice are preserved.  This file is offered as-is,
-; without any warranty.
+; You may do whatever you want with this work, so long as you
+; retain all copyright notices, all credit notices, and this
+; license in all redistributed copies and derived works. There
+; is no warranty.
 
 ; ==============================================================
 ; Acknowledgments
@@ -95,45 +98,61 @@ version_release:  equ 201509180233
 ; ----------------------------------------------
 ; Stack notation
 
-; a        = address
-; ca       = character-aligned address
+; Symbol  Data type                                       Size
+; ------  ----------------------------------------------- ------
 
-; f        = flag (false is 0; true is any other value)
-; tf       = true flag (-1)
-; ff       = false flag (0)
-; wf       = well-formed flag (false is 0; true is -1)
+; a        = address                                      1 cell
+; ca       = character-aligned address                    1 cell
 
-; b        = 8-bit byte
-; c        = 7-bit or 8-bit character
-; u        = 16-bit unsigned number
-; len      = 16-bit unsigned number, length of memory zone or string
-; ca len   = string
-; n        = 16-bit signed number
-; x        = 16-bit signed or unsigned number
-; d        = 32-bit signed double number
-; ud       = 32-bit unsigned double number
-; xd       = 32-bit signed or unsigned number
+; f        = flag (false is 0; true is any other value)   1 cell
+; tf       = true flag (-1)                               1 cell
+; ff       = false flag (0)                               1 cell
+; wf       = well-formed flag (false is 0; true is -1)    1 cell
 
-; xc       = 8-bit graphic x coordinate (0..255)
-; yc       = 8-bit graphic y coordinate (0..191)
-; line     = 8-bit cursor line (0..23) XXX TODO -> row
-; col      = 8-bit cursor column (0..n)
-;            the maximum value depends on the screen mode
+; b        = 8-bit byte                                   1 cell
+; c        = 8-bit character                              1 cell
 
-; cfa      = code field address
-; lfa      = link field address
-; nfa      = name field address
-; pfa      = parameter field address
-; cfap     = code field address pointer
+; u        = 16-bit unsigned number                       1 cell
+; len      = 16-bit unsigned number,                      1 cell
+;            length of memory zone or string              1 cell
+; n        = 16-bit signed number                         1 cell
+; +n       = 16-bit non-negative number                   1 cell
+; n|u      = 16-bit signed or unsigned number             1 cell
+; x        = 16-bit unspecified number                    1 cell
 
-; orig     = address of an unresolved forward branch
-; dest     = address of a backward branch target
+; ca len   = string                                       2 cells
 
-; cs-id    = control structure identifier
+; d        = 32-bit signed double number                  2 cells
+; d|du     = 32-bit signed or unsigned double number      2 cells
+; +d       = 32-bit non-negative double number            2 cells
+; ud       = 32-bit unsigned double number                2 cells
+; xd       = 32-bit unspecified number                    2 cells
 
-; op       = Z80 8-bit opcode, generally a jump
-; r        = Z80 8-bit register identifier
-; rp       = Z80 16-bit register pair identifier
+; xc       = 8-bit graphic x coordinate (0..255)          1 cell
+; yc       = 8-bit graphic y coordinate (0..191)          1 cell
+; row      = 8-bit cursor row (0..n)                      1 cell
+;            (maximum value depends on the screen mode)
+; col      = 8-bit cursor column (0..n)                   1 cell
+;            (maximum value depends on the screen mode)
+
+; cfa      = code field address                           1 cell
+; lfa      = link field address                           1 cell
+; nfa      = name field address                           1 cell
+; pfa      = parameter field address                      1 cell
+; cfap     = code field address pointer                   1 cell
+
+; wid      = wordlist identifier                          1 cell
+;            (in Solo forth, the pfa of a vocabulary)
+
+; orig     = address of an unresolved forward branch      1 cell
+; dest     = address of a backward branch target          1 cell
+
+; cs-id    = control structure identifier                 1 cell
+; loop-sys = loop control parameters                      2 cells
+
+; op       = Z80 8-bit opcode, generally a jump           1 cell
+; r        = Z80 8-bit register identifier                1 cell
+; rp       = Z80 16-bit register pair identifier          1 cell
 
 ; ----------------------------------------------
 ; Parsed text notation
@@ -222,8 +241,8 @@ show_version: equ false
 
 origin:                           equ 0x5E00
 
-false:                            equ 0
-true:                             equ -1
+false:                            equ 0x0000
+true:                             equ 0xFFFF ; -1
 
 cell:                             equ 2
 
@@ -235,6 +254,8 @@ bytes_per_terminal_input_buffer:  equ 0x50
 buffers:                          equ 0x01
 
 if ans_forth_block_size
+
+  ; XXX TODO
 
 data_bytes_per_buffer:            equ 0x0400
 blocks_per_screen:                equ 0x01
@@ -278,7 +299,7 @@ charset_address:  equ 0xFFFF-charset_size+1
 
 ; Control structure check numbers
 
-; XXX TODO -- not used yet
+; XXX TODO
 ;begin_structure_check_number:   equ 1
 ;if_structure_check_number:      equ 2
 ;do_structure_check_number:      equ 3
@@ -287,9 +308,7 @@ charset_address:  equ 0xFFFF-charset_size+1
 ;for_structure_check_number:     equ 6
 
 ; Error messages are in the disk, starting from the screen
-; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
-; etc are not used, because they coincide with the first line of
-; screens.
+; number hold in the `msg-scr` constant.
 
 ; XXX TODO change the order
 
@@ -308,6 +327,7 @@ error.number_12:                    equ 12 ; free
 error.number_13:                    equ 13 ; free
 error.number_14:                    equ 14 ; free
 error.deferred_word_uninitialized:  equ 15
+error.assertion_failed:             equ 16
 error.compilation_only:             equ 17
 error.execution_only:               equ 18
 error.conditionals_not_paired:      equ 19
@@ -542,6 +562,18 @@ _jump_z: macro _address
   endm
 
 ; ----------------------------------------------
+; Code
+
+_compare_de_hl_unsigned: macro
+  if 1
+    or a
+    sbc hl,de
+  else
+    call compare_de_hl_unsigned
+  endif
+  endm
+
+; ----------------------------------------------
 ; Bank
 
 _bank: macro _n
@@ -608,7 +640,7 @@ _echo: macro _txt
   _string _txt
   endm
 
-debugging: equ 1
+debugging: equ 0
 
   ; type the string on top of stack
 _type: macro
@@ -887,7 +919,7 @@ endif
 ; Circular string buffer
 
 csb:
-unused_csb:
+to_csb:
   dw csb_size ; unused space in the buffer
 csb0:
   ds csb_size
@@ -941,7 +973,11 @@ endif
 ; ==============================================================
 ; Misc routines
 
-; [Code from DZX-Forth.]
+; Credits:
+; Code from DZX-Forth.
+
+; XXX TODO -- investigate if the code is optimized for Z80;
+; the code of DZX-Forth is generic, also for 8080.
 
 ; ----------------------------------------------
 ; Compare de and hl
@@ -953,17 +989,34 @@ compare_de_hl_unsigned:
   ;  flag CY if hl < de
   ;  flag Z if hl = de
 
-  ld a,h
-  cp d
-  ret nz
-  ld a,l
-  cp e
-  ret
+if 0 ; XXX OLD -- code from DZX-Forth
+
+          ; t  B
+          ; -- --
+  ld a,h  ; 04 01
+  cp d    ; 04 01
+  ret nz  ; 11 01  05 01
+  ld a,l  ; 04 01
+  cp e    ; 04 01
+  ret     ; 10 01
+          ; -- --  -- --
+          ; 37 06  31 06
+
+else ; XXX NEW -- code from DZX-Forth
+
+            ; -- --
+  or a      ; 04 01
+  sbc hl,de ; 15 02
+  ret       ; 10 01
+            ; -- --
+            ; 29 04
+
+endif
 
 compare_de_hl_signed:
 
-  ; Input:  de, hl
-  ; Output: flag CY if hl < de
+  ; Input:  DE, HL
+  ; Output: flag CY if HL < DE
 
   ld a,h
   xor d
@@ -989,7 +1042,7 @@ move_block:
   ; completes, the bc consecutive address units at de contain exactly what the
   ; bc consecutive address units at hl contained before the move.
 
-  call compare_de_hl_unsigned
+  _compare_de_hl_unsigned
   jp c,move_block_downwards
 
 ; ----------------------------------------------
@@ -1149,6 +1202,12 @@ endif
   _colon_header root_forth_,'FORTH'
 
   dw forth_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header root_forth_wordlist_,'FORTH-WORDLIST'
+
+  dw forth_wordlist_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1372,14 +1431,15 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; only  ( -- )
 ;
-; Erase the search order and forces the `root` vocabulary to
-; be the first and second.
-;
-; }doc
+; Set the search order to the minimum search order: Erase the
+; search order and forces the `root` vocabulary to be the first
+; and second.
 
-; [Code adapted from F83.]
-
+; ----
 ; : only  ( -- )  -order root also  ;
+; ----
+
+; }doc
 
   dw minus_order_,root_,also_
   dw semicolon_s_
@@ -1436,13 +1496,30 @@ root_vocabulary_link:
   dw 0x0000
 
 ; ----------------------------------------------
-
   _does_header forth_,'FORTH',,do_vocabulary
 
   dw latest_nfa_in_forth_voc ; nfa of the latest word defined in this vocabulary
 
 forth_vocabulary_link:
   dw root_vocabulary_link
+
+; ----------------------------------------------
+  _constant_header forth_wordlist_,'FORTH-WORDLIST'
+
+; doc{
+;
+; forth-wordlist  ( -- wid )
+;
+; Return _wid_, the identifier of the word list that includes
+; all standard words provided by the implementation. This word
+; list is initially the compilation word list and is part of the
+; initial search order.
+;
+; Standard: Forth 94, Forth 2012.
+;
+; }doc
+
+  dw forth_pfa
 
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
@@ -1474,16 +1551,11 @@ endif
 ; }doc
 
   dw parse_ ; ( ca len )
-
-  ; XXX FIXME -- when a string 
-
-;  _brk 'In parse-string after parse' ; XXX INFORMER
-
   dw comp_question_
   dw zero_branch_,parse_string.interpreting
   ; compiling
   dw s_literal_
-  dw semicolon_s_ ; XXX TODO exit_
+  dw exit_
 parse_string.interpreting:
   dw save_string_
   dw semicolon_s_
@@ -1521,11 +1593,11 @@ push_l: ; XXX TMP -- not used yet
 ;
 ; bank  ( n -- )
 ;
-; Page memory bank _n_ (0..7) at 0xC000..0xFFFF.
+; Page memory bank _n_ (0..7) in at 0xC000..0xFFFF.
 ;
 ; }doc
 
-  pop de ; e = bank
+  pop de ; E = bank
   call bank.e
   _jp_next
 
@@ -1548,12 +1620,47 @@ bank.e:
 
 ; doc{
 ;
-; csb-unused  ( -- len )
+; csb-unused  ( -- n )
+;
+; Return the number of free chars in the circular string-buffer.
+
+; ----
+; : csb-unused  ( -- n )
+;   >csb @  ;
+; ----
+
+; }doc
+
+  ld hl,(to_csb)
+  jp push_hl
+
+; ----------------------------------------------
+  _constant_header csb_size_,'CSB-SIZE'
+
+; doc{
+;
+; csb-size  ( -- n )
+;
+; Return the size of the circular string-buffer, in chars.
 ;
 ; }doc
 
-  ld hl,(unused_csb)
-  jp push_hl
+  dw csb_size
+
+; ----------------------------------------------
+  _constant_header to_csb_,'>CSB'
+
+; doc{
+;
+; to_csb  ( -- a )
+;
+; Address of the circular string buffer pointer. It holds an
+; offset to the first free address in the buffer; the offset
+; coincides with the number of free chars.
+;
+; }doc
+
+  dw to_csb
 
 ; ----------------------------------------------
   _constant_header csb0_,'CSB0'
@@ -1561,6 +1668,8 @@ bank.e:
 ; doc{
 ;
 ; csb0  ( -- a )
+;
+; Address of the data space of the circular string buffer.
 ;
 ; }doc
 
@@ -1573,18 +1682,23 @@ bank.e:
 ;
 ; ?csb  ( len -- )
 ;
-; Make sure there's room for the given characters.
-;
+; Make sure there's room in the circular string buffer for the
+; given characters.
+
+; ----
+; : ?csb  ( len -- )
+;   dup unused-csb >  \ not enough free space?
+;   if  csb-size >csb !  then  negate >csb +!
+; ----
 ; }doc
 
-  dw dup_,lit_,unused_csb,fetch_,greater_than_
+  dw dup_,unused_csb_,greater_than_
   dw zero_branch_,question_csb_.enough
-  ; not enough space; reset the pointer
-  _literal csb_size
-  dw lit_,unused_csb,store_
+  ; not enough space
+  dw csb_size_,to_csb_,store_ ; reset the pointer
 
 question_csb_.enough:
-  dw negate_,lit_,unused_csb,plus_store_
+  dw negate_,to_csb_,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1593,7 +1707,15 @@ question_csb_.enough:
 ; doc{
 ;
 ; string-allocate  ( len -- ca )
-;
+
+; Allocate _len_ chars in the circular string buffer and return
+; the address _ca_ of the allocated space.
+
+; ----
+; : string-allocate  ( len -- ca )
+;   ?csb csb0 unused-csb +  ;
+; ----
+
 ; }doc
 
   dw question_csb_
@@ -1606,7 +1728,15 @@ question_csb_.enough:
 ; doc{
 ;
 ; save-string  ( ca1 len1 -- ca2 len1 )
-;
+
+; Save the string _ca1 len1_ in the circular string buffer and
+; return it at its new address.
+
+; ----
+; : save-string  ( ca1 len1 -- ca2 len1 )
+;   dup allocate-string swap 2dup 2>r move 2r>  ;
+; ----
+
 ; }doc
 
   dw dup_,allocate_string_,swap_
@@ -1618,12 +1748,18 @@ question_csb_.enough:
   _colon_header save_counted_string_,'SAVE-COUNTED-STRING'
 
 ; doc{
-;
-; save-counted-string  ( ca1 len1 -- ca2 )
-;
-; }doc
 
-; dup 1+ string-allocate dup >r $! r>
+; save-counted-string  ( ca1 len1 -- ca2 )
+
+; Save the string _ca1 len1_ in the circular string buffer as a
+; counted string and return its new address _ca2_.
+
+; ----
+; : save-counted-string  ( ca1 len1 -- ca2 )
+;   dup 1+ allocate-string dup >r place r>  ;
+; ----
+
+; }doc
 
   dw dup_,one_plus_,allocate_string_
   dw dup_,to_r_,place_,from_r_
@@ -1635,6 +1771,8 @@ question_csb_.enough:
 ; doc{
 ;
 ; empty-csb  ( -- )
+;
+; Empty the circular string buffer.
 ;
 ; }doc
 
@@ -1905,7 +2043,7 @@ paren_loop.end:
 
 ; doc{
 ;
-; digit  ( c n --- u tf | ff )  \ fig-Forth
+; digit  ( c n -- u tf | ff )  \ fig-Forth
 ;
 ; Convert the ascii character _c_ (using base _n_) to its binary
 ; equivalent _u_, accompanied by a true flag. If the conversion
@@ -2124,7 +2262,7 @@ number_question.end:
 
 ; doc{
 ;
-; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
+; (find)  ( ca nfa -- ca 0 | cfa 1 | cfa -1 )
 ;
 ; Find the definition named in the counted string at _ca_,
 ; starting at _nfa_. If the definition is not found, return _ca_
@@ -2226,6 +2364,258 @@ paren_find.nfa_backup: equ $+1
   jp paren_find.end
 
 ; ----------------------------------------------
+  _code_header paren_find_name_,'(FIND-NAME)'
+
+  ; XXX TODO copy and convert to `search-wordlist`
+
+; doc{
+;
+; (find-name)  ( ca len nfa -- x 0 | cfa 1 | cfa -1 )
+;
+; Find the definition named in the string at _ca len_, starting
+; at _nfa_. If the definition is not found, return an undefined
+; cell _x_ and zero.  If the definition is found, return its
+; _cfa_.  If the definition is immediate, also return one (1);
+; otherwise also return minus-one (-1).
+;
+; The search is case-sensitive.
+;
+; }doc
+
+  ld (paren_find_name.ip_backup),bc ; save the Forth IP
+
+  ld e,names_bank
+  call bank.e ; page the memory bank in
+
+  pop de ; nfa
+  pop bc ; C=len, B is supposed to be 0
+  ld a,c
+  ld (paren_find_name.string_length),a
+  pop hl ; ca
+  ld (paren_find_name.string_address),hl
+
+  ; XXX FIXME the string searched for must be in the string
+  ; buffer, below 0xC000! This is not a problem now, during the
+  ; development, because the dictionary is small.
+
+paren_find_name.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (paren_find_name.nfa_backup),de ; save the nfa for later
+paren_find_name.string_address: equ $+1
+  ld hl,0x0000 ; string address
+  ld a,(de) ; length byte of the name field
+  ld (paren_find_name.length_byte_backup),a ; save it for later
+  and max_word_length_mask  ; length
+paren_find_name.string_length: equ $+1
+  ld c,0x00 ; length of the string
+  cp c ; same length?
+  jr nz,paren_find_name.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+paren_find_name.compare_next_char:
+  inc de
+  ld a,(de)
+  cpi
+  jr nz,paren_find_name.not_a_match ; mismatch
+  jp pe, paren_find_name.compare_next_char ; count not exhausted
+
+  ; The string matches.
+  ld hl,(paren_find_name.nfa_backup)
+  dec hl
+  dec hl ; lfa
+  dec hl ; high part of the pointer to cfa
+  ld d,(hl)
+  dec hl ; low part of the pointer to cfa
+  ld e,(hl) ; de = cfa
+
+  ld hl,1 ; 1=immediate word
+paren_find_name.length_byte_backup: equ $+1
+  ld a,0 ; name field length byte
+  and precedence_mask ; immediate word?
+  jp nz,paren_find_name.end
+  ; non-immediate word
+  dec hl
+  dec hl ; -1 = non-immediate word
+  jr paren_find_name.end
+
+paren_find_name.not_a_match:
+  ; Not a match, try the next word.
+paren_find_name.nfa_backup: equ $+1
+  ld hl,0x0000 ; nfa
+  dec hl ; high address of lfa
+  ld d,(hl) ; high part of the next nfa
+  dec hl ; low address of lfa
+  ld e,(hl) ; low part of the next nfa
+  ld a,d
+  or e ; end of dictionary? (next nfa=0)
+  jp nz,paren_find_name.begin ; if not, continue
+
+  ; End of dictionary, no match found.
+  ld hl,0x0000
+
+paren_find_name.end:
+  ; If match found:
+  ;   de = cfa
+  ;   hl = -1 | 1
+  ; If no match found:
+  ;   de = ?
+  ;   hl = 0
+  exx
+  ld e,default_bank
+  call bank.e ; page the default memory bank in
+  exx
+paren_find_name.ip_backup: equ $+1
+  ld bc,0x0000 ; restore the Forth IP
+;   _z80_border 4 ; XXX INFORMER
+  jp push_hlde
+
+; ----------------------------------------------
+  _colon_header search_wordlist_,'SEARCH-WORDLIST'
+
+; doc{
+;
+; search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
+;
+; Find the definition identified by the string _ca len_ in the
+; word list identified by _wid_. If the definition is not found,
+; return zero. If the definition is found, return its _cfa_ and
+; one (1) if the definition is immediate, minus-one (-1)
+; otherwise.
+;
+; The search is case-insensitive.
+;
+; Standard: Forth 94, Forth 2012.
+
+; ----
+; : search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
+;   @ (find-name) dup ?exit nip  ;
+; ----
+
+; }doc
+
+  dw to_r_,two_dup_,uppers_,from_r_
+  dw fetch_,paren_find_name_
+  dw dup_,question_exit_,nip_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header find_name_,'FIND-NAME'
+
+if 0 ; XXX OLD -- first version
+
+; doc{
+
+; find-name  ( ca len -- 0 | cfa 1 | cfa -1 )
+;
+; Find the definition identified by the string _ca len_ in the
+; current search order. If the definition is not found after
+; searching all the vocabularies in the search order, return
+; zero.  If the definition is found, return its _cfa_. If the
+; definition is immediate, also return one (1); otherwise also
+; return minus-one (-1).
+;
+; The search is case-insensitive.
+
+; ----
+; : find-name  ( ca len -- 0 | cfa 1 | cfa -1 )
+;   2dup uppers
+;   #vocs 0 do
+;     context i cells + @  ?dup
+;     if  @ >r 2dup r> (find-name) ?dup
+;         if  2swap 2drop unloop exit  then  drop
+;     then
+;   loop  2drop false  ;
+; ----
+
+; }doc
+
+;   _chk_type 'find-name -- start' ; XXX INFORMER
+  dw two_dup_,uppers_
+;   _brk_type 'find-name -- after uppers' ; XXX INFORMER
+  dw hash_vocs_,zero_,paren_do_
+find_name.do:
+  ; ( ca len )
+  dw context_,i_,cells_,plus_,fetch_
+  dw question_dup_ ; a vocabulary in the search order?
+  dw zero_branch_,find_name.loop ; if not, next
+  ; ( ca len wid )
+  ; valid vocabulary in the search order
+  dw fetch_,to_r_,two_dup_,from_r_ ; ( ca len ca len nfa )
+;   _chk 'find-name -- before (find-name)' ; XXX INFORMER
+  dw paren_find_name_,question_dup_ ; word found in the vocabulary?
+  dw zero_branch_,find_name.not_found
+;   _chk 'find-name -- found' ; XXX INFORMER
+  dw two_swap_,two_drop_
+  dw unloop_,exit_
+find_name.not_found:
+  dw drop_
+find_name.loop:
+  dw paren_loop_,find_name.do
+;   _chk 'find-name -- not found' ; XXX INFORMER
+  dw two_drop_,false_
+  dw semicolon_s_
+
+else ; XXX NEW version
+
+; doc{
+
+; find-name  ( ca len -- ca len 0 | cfa 1 | cfa -1 )
+;
+; Find the definition identified by the string _ca len_ in the
+; current search order. If the definition is not found after
+; searching all the vocabularies in the search order, return _ca
+; len_ (converted to uppercase) and zero.  If the definition is
+; found, return its _cfa_.  If the definition is immediate, also
+; return one (1); otherwise also return minus-one (-1).
+;
+; The search is case-insensitive.
+
+; ----
+; : find-name  ( ca len -- ca len 0 | cfa 1 | cfa -1 )
+;   2dup uppers
+;   #vocs 0 do
+;     context i cells + @  ?dup
+;     if  @ >r 2dup r> (find-name) ?dup
+;         if  2swap 2drop unloop exit  then  drop
+;     then
+;   loop  false  ;
+; ----
+
+; }doc
+
+; XXX TODO
+
+;   _chk_type 'find-name -- start' ; XXX INFORMER
+  dw two_dup_,uppers_
+;   _brk_type 'find-name -- after uppers' ; XXX INFORMER
+  dw hash_vocs_,zero_,paren_do_
+find_name.do:
+  ; ( ca len )
+  dw context_,i_,cells_,plus_,fetch_
+  dw question_dup_ ; a vocabulary in the search order?
+  dw zero_branch_,find_name.loop ; if not, next
+  ; ( ca len wid )
+  ; valid vocabulary in the search order
+  dw fetch_,to_r_,two_dup_,from_r_ ; ( ca len ca len nfa )
+;   _chk 'find-name -- before (find-name)' ; XXX INFORMER
+  dw paren_find_name_,question_dup_ ; word found in the vocabulary?
+  dw zero_branch_,find_name.not_found
+;   _chk 'find-name -- found' ; XXX INFORMER
+  dw two_swap_,two_drop_
+  dw unloop_,exit_
+find_name.not_found:
+  dw drop_
+find_name.loop:
+  dw paren_loop_,find_name.do
+;   _chk 'find-name -- not found' ; XXX INFORMER
+  dw false_
+  dw semicolon_s_
+
+
+endif
+
+; ----------------------------------------------
   _code_header scan_,'SCAN'
 
 if 0 ; fig_parsing
@@ -2268,13 +2658,13 @@ if 0 ; XXX OLD
 ; doc{
 ;
 ; scan  ( ca1 len1 c -- ca1 len2 )
-; 
+;
 ; XXX TODO
 ; ca1 len1 = string to search
 ; c = character searched for
 ; len2 = length of the searched string until the match
 ;        or until the end of the string
-; 
+;
 ; [Description from DZX-Forth:]
 ;
 ; Scan the string _ca1 len1_ for the character _c_.  Leave match
@@ -2317,7 +2707,7 @@ else
 ; doc{
 ;
 ; scan  ( ca1 len1 c -- ca2 len2 )
-; 
+;
 ; Scan the string _ca1 len1_ for the character _c_.  Leave match
 ; address _ca2_ and length remaining _len2_.  If no match occurred
 ; then _len2_ is zero and _ca2_ is _ca1_+_len1_.
@@ -2625,9 +3015,9 @@ paren_emit.print_udg_scan
   ld e,0
   inc d
   ld a,d
-  cp 23 ; last line?
+  cp 23 ; last row?
   jp c,paren_emit.update2 ; if not, jump
-  ; last line
+  ; last row
   call 0x0DFE ; ROM scroll routine
   ; XXX FIXME wrong coords after the scroll
   ld de, 0x1400
@@ -3498,7 +3888,7 @@ roll.end:
 ; the definition may be exited with `exit`. An ambiguous
 ; condition exists if the loop-control parameters are
 ; unavailable.
-; 
+;
 ; In Solo Forth, the stack effect is:
 ;
 ; unloop  ( -- ) ( R: n1 n2 -- )
@@ -3814,7 +4204,7 @@ endif
 ; doc{
 ;
 ; invert  ( x1 -- x2 )
-; 
+;
 ; Invert all bits of _x1_ giving its logical inverse _x2_.
 ;
 ; }doc
@@ -4488,7 +4878,7 @@ endif
   dw exit_
 source.tib:
   ; terminal input buffer
-  ; XXX TODO `span @` only
+  ; XXX TODO `span @` only?, `#tib @` only?
   dw tib_,number_tib_,fetch_,span_,fetch_,min_
   ;dw tib_,number_tib_,fetch_
   dw semicolon_s_
@@ -4661,7 +5051,7 @@ source.tib:
 
   pop de
   pop hl
-  call compare_de_hl_unsigned
+  _compare_de_hl_unsigned
 false_if_z: ; XXX entry not used yet
   jp z,false_pfa
   jp true_pfa
@@ -4671,7 +5061,7 @@ false_if_z: ; XXX entry not used yet
 
   pop de
   pop hl
-  call compare_de_hl_unsigned
+  _compare_de_hl_unsigned
 true_if_z: ; XXX entry not used yet
   jp z,true_pfa
   jp false_pfa
@@ -4701,16 +5091,33 @@ u_greater_than.hl:
 ; ----------------------------------------------
   _code_header u_less_than_,'U<'
 
+if 0 ; XXX OLD -- code adapted from DZX-Forth
+
   pop de
   pop hl
 u_less_than.de_hl:
-  call compare_de_hl_unsigned
+  _compare_de_hl_unsigned
   if size_optimization
     jp true_if_cy
   else
     jp c,true_pfa
     jp false_pfa
   endif
+
+else ; XXX NEW -- code adapted from Z88 CamelForth
+
+  ; XXX TODO benchmark
+
+  pop de
+  pop hl
+u_less_than.de_hl:
+  _compare_de_hl_unsigned
+  sbc a,a         ; propagate carry flag through A
+  ld h,a
+  ld l,a          ; HL = 0x0000 or 0xFFFF
+  jp push_hl
+
+endif
 
 ; ----------------------------------------------
   _code_header greater_than_,'>'
@@ -5107,8 +5514,14 @@ endif
 ; ----------------------------------------------
   _colon_header question_loading_,'?LOADING'
 
-  dw blk_,fetch_,zero_equals_
+  dw loading_question_,zero_equals_
   _question_error error.loading_only
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header loading_question_,'LOADING?'
+
+  dw blk_,fetch_,zero_not_equals_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5373,7 +5786,7 @@ dot_quote.interpreting:
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; 
+;
 ;
 ; }doc
 
@@ -5516,9 +5929,30 @@ else
 
 endif
 
-if 0 ; fig_parsing
+; ----------------------------------------------
+  _colon_header next_block_,'NEXT-BLOCK'
+
+; XXX -- this word is factored from the old fig-Forth null word,
+; in order to call it in `refill` and `interpret`.
+
+  dw one_,blk_,plus_store_ ; next disk buffer
+  dw to_in_,off_ ; clear `in`, preparing parsing of input text
+
+  ; XXX WARNING -- The following check of the last block is
+  ; specific for 2 blocks per screen; the generic slower check
+  ; would be `blk @ b/scr 1- and`.
+
+  dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
+  dw question_branch_,next_block.end ; if not, branch
+  ; Last block of the screen.
+  dw question_exec_ ; error if not executing ; XXX TODO -- why this?
+next_block.end:
+  dw semicolon_s_
 
 ; ----------------------------------------------
+
+if 0 ; fig_parsing
+
   _colon_header x_,0,immediate
 
 ; doc{
@@ -5547,20 +5981,11 @@ if 0 ; fig_parsing
 
 ; }doc
 
-  dw blk_,fetch_ ; input stream from disk?
+  dw loading_question_ ; input stream from disk?
   dw zero_branch_,x.exit ; if not, branch
   ; From disk.
-  dw one_,blk_,plus_store_ ; next disk buffer
-  dw to_in_,off_ ; clear `in`, preparing parsing of input text
+  dw next_block_
 
-  ; XXX WARNING -- The following check of the last block is
-  ; specific for 2 blocks per screen; the generic slower check
-  ; would be `blk @ b/scr 1- and`.
-
-  dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
-  dw question_branch_,x.end ; if not, branch
-  ; Last block of the screen.
-  dw question_exec_ ; error if not executing
 x.exit:
 
   ; The top item on the return stack is thrown away.  The interpreter
@@ -5616,7 +6041,7 @@ endif
 ;    -1 OF  FALSE  ENDOF
 ;    >R
 ;    INPUT-FBUF INPUT-FLEN R@ READ-LINE THROW PAUSE ; read a line
-;    IF  INPUT-FBUF SWAP TRUE  THEN   ; leave source-spec 
+;    IF  INPUT-FBUF SWAP TRUE  THEN   ; leave source-spec
 ;    R>
 ;   ENDCASE
 ;   THEN
@@ -5625,12 +6050,13 @@ endif
   ; XXX NEW
   ; XXX TODO -- try, check, complete
 
-  dw blk_,fetch_ ; input stream from disk?
+  dw loading_question_ ; input stream from disk?
   dw zero_branch_,refill.terminal ; if not, branch
 refill.block:
-  dw one_,blk_,plus_store_ ; next disk block
-  dw to_in_,off_
+  _chk 'refill -- block'
+  dw next_block_
   dw branch_,refill.end
+
 refill.terminal:
   dw query_
 refill.end:
@@ -5948,12 +6374,21 @@ if 0 ; XXX OLD
 
 else ; XXX NEW
 
-;   stream                 ( a n )
-;   dup >r   bl skip           ( a' n' )
-;   over >r  bl scan           ( a" n" )
-;   dup if char- then           \ skip trailing delimiter
-;   r> r> rot -   >in +!        \ update >in offset
-;   tuck -                      ( a' n )
+; doc{
+
+; parse-name  ( "name"  -- ca len )
+
+; ----
+; : parse-name  ( "name"  -- ca len )
+;   stream                 ( ca0 len0 )
+;   dup >r   bl skip       ( ca1 len1 ) ( R: len0 )
+;   over >r  bl scan       ( ca2 len2 ) ( R: len0 ca1 )
+;   dup if char- then      \ skip trailing delimiter
+;   r> r> rot -   >in +!   \ update `>in`
+;   tuck -  ;              ( ca len )
+; ----
+
+; }word
 
   dw stream_              ; ( ca len )
 ;  _brk 'parse-name -- after stream' ; XXX INFORMER
@@ -6151,7 +6586,7 @@ word.skip:
 
   endif
 
-endif 
+endif
 
 if 1 ; XXX TMP -- for debugging
 
@@ -6410,7 +6845,7 @@ uppers.do:
 ;
 ; An ambiguous condition exists if _len1_ is greater than 255 or
 ; the buffer at _ca2_ is less than _len1_+1 characters.
-; 
+;
 ; ----
 ; : place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
 ; ----
@@ -6436,7 +6871,7 @@ uppers.do:
 
 ; doc{
 ;
-; find  ( ca --- ca 0 | cfa 1 | cfa -1 )
+; find  ( ca -- ca 0 | cfa 1 | cfa -1 )
 ;
 ; Find the definition named in the counted string at _ca_. If
 ; the definition is not found after searching all the
@@ -6449,7 +6884,7 @@ uppers.do:
 ;
 ; }doc
 
-  ; : find  ( ca --- ca 0 | cfa 1 | cfa -1 )
+  ; : find  ( ca -- ca 0 | cfa 1 | cfa -1 )
   ;   #vocs 0 do
   ;     context i cells + @  ?dup
   ;     if  @ (find) ?dup if  unloop exit  then  then
@@ -6487,7 +6922,7 @@ find.loop:
 
 ; doc{
 ;
-; found  ( ca len --- ca 0 | cfa 1 | cfa -1 )
+; found  ( ca len -- ca 0 | cfa 1 | cfa -1 )
 ;
 ; }doc
 
@@ -6527,15 +6962,19 @@ find.loop:
 ; is used in order to skip the first line of screens and use
 ; them as screen headers as usual.
 ;
+; : error>line  ( n1 -- n2 )
+;   dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
+;
 ; }doc
+
+; XXX TODO -- consult in clf, if a calculation can be used
+; instead of a loop; I didn't success.
 
   dw dup_,one_plus_,one_,paren_do_
 error_to_number.do
   dw i_
   _literal 16
-  dw mod_,zero_equals_
-  dw abs_ ; XXX TODO because true=-1, simplify
-  dw plus_
+  dw mod_,zero_equals_,abs_,plus_
   dw paren_loop_,error_to_number.do
   dw semicolon_s_
 
@@ -6546,7 +6985,7 @@ error_to_number.do
 ; doc{
 ;
 ; error  ( n -- )
-; 
+;
 ; Issue error message _n_ and restart the system.  Save the
 ; error number into `error-number`, and the current block and
 ; line into `error-pos`, to be used by `where`.
@@ -7012,19 +7451,13 @@ interpret.begin:
   dw question_stack_
 ;  _brk 'interpret -- before parse-name'
   dw parse_name_  ; ( ca len )
-  _chk_type 'interpret -- after parse-name'
+;   _chk_type 'interpret -- after parse-name' ; XXX INFORMER
   dw dup_ ; not end of stream?
   dw zero_branch_,interpret.end ; while
 
-  dw save_counted_string_ ; XXX FIXME this changes the address of the string...
-  ; ...and makes `header` need to convert it to uppercase once more.
-
-  ; XXX TODO --
-  ; write `find-name` ( ca len -- ca len 0 | cfa 1 | cfa -1 )
-
-;  _chk 'interpret -- before find' ; XXX INFORMER
-  dw find_ ; ( ca 0 | cfa 1 | cfa -1 )
-;  _chk 'interpret -- after find' ; XXX INFORMER
+;  _chk 'interpret -- before find-name' ; XXX INFORMER
+  dw find_name_ ; ( ca len 0 | cfa 1 | cfa -1 )
+;  _chk 'interpret -- after find-name' ; XXX INFORMER
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
@@ -7051,11 +7484,9 @@ interpret.execute:
 
 interpret.word_not_found:
   ; try to convert the text to a number
-  ; ( ca )
+  ; ( ca len )
 ;  _chk 'interpret -- before number' ; XXX INFORMER
-;  dw dup_,count_,cr_,dot_s_,cr_,type_ ; XXX INFORMER
 
-  dw count_ ; XXX TMP
   dw number_question_ ; is it a number?
   dw zero_equals_
   _question_error error.not_understood ; error if not
@@ -7069,15 +7500,21 @@ interpret.word_not_found:
 
 interpret.16bit_number:
   dw drop_ ; discard high order part of the double number
+  ; XXX TODO use `c_literal` for 8-bit values.
   dw literal_
 
   dw branch_,interpret.begin ; repeat
 
 interpret.end:
-;  _chk 'interpret -- end' ; XXX INFORMER
+;   _chk 'interpret -- end' ; XXX INFORMER
   dw two_drop_
+  dw loading_question_,zero_equals_,question_exit_
+  _chk 'interpret -- before next-block' ; XXX INFORMER
+  dw cr_,blk_,question_ ; XXX INFORMER
+  dw next_block_
+  _chk 'interpret -- after next-block' ; XXX INFORMER
+  dw cr_,blk_,question_ ; XXX INFORMER
   dw semicolon_s_
-
 
 endif
 
@@ -7142,21 +7579,28 @@ do_vocabulary:
   dw left_bracket_
 quit.do:
   dw rp0_,fetch_,rp_store_
-  dw cr_
 
 ;  _brk 'quit -- before query' ; XXX INFORMER
 
 if 0 ; fig_parsing
-  dw query_
+  dw cr_,query_
 else
-  dw refill_,drop_ ; XXX TMP
+  ; XXX TMP
+  dw cr_,query_
+  ;dw refill_,drop_ ; XXX TMP
 endif
 
-;  _brk 'quit -- before interpret' ; XXX INFORMER
+  _chk 'quit -- before interpret' ; XXX INFORMER
+  dw cr_,blk_,question_ ; XXX INFORMER
 
   dw interpret_
 
-;  _brk 'quit -- after interpret' ; XXX INFORMER
+  _chk 'quit -- after interpret' ; XXX INFORMER
+
+  ; XXX FIXME -- why `blk` contains zero here, after beeing
+  ; incremented at the end of `interpret`?
+
+  dw cr_,blk_,question_ ; XXX INFORMER
 
   dw comp_question_
   dw question_branch_,quit.do
@@ -7476,7 +7920,7 @@ d_plus_minus.end:
 
   pop de
   pop hl
-  call compare_de_hl_unsigned
+  _compare_de_hl_unsigned
   jp max.1
 
 ; ----------------------------------------------
@@ -7492,7 +7936,7 @@ d_plus_minus.end:
 
   pop de
   pop hl
-  call compare_de_hl_unsigned
+  _compare_de_hl_unsigned
   jp max.2
 
 ; ----------------------------------------------
@@ -7882,7 +8326,7 @@ buffer.end:
 ; first cell in the disk buffer for data storage.
 
 ; ----
-; : block ( n --- a )
+; : block ( n -- a )
 ;   dup buffer-block =
 ;   if    drop
 ;   else  save-buffers  dup read-buffer  disk-buffer !
@@ -8171,6 +8615,9 @@ read_write_sector_command:
 ; ----
 ;
 ; }doc
+
+; XXX TODO -- if there were one block per screen, the
+; calculation would be a simple increment
 
   dw question_loading_
   dw to_in_,off_
@@ -8485,7 +8932,7 @@ emits_.end:
 
 ; doc{
 
-; sign  ( n  d  ---  d ) \ fig-Forth
+; sign  ( n  d  --  d ) \ fig-Forth
 
 ; Stores an ascii "-" sign just before a converted numeric
 ; output string in the text output buffer when _n_ is negative.
@@ -8926,7 +9373,7 @@ where.do_it:
 
 ; doc{
 
-; (mode32-at-xy) ( col line -- )  \ ANS Forth
+; (mode32-at-xy) ( col row -- )  \ ANS Forth
 ;
 ; Default behaviour of `at-xy`, in mode 32.
 ;
@@ -8940,9 +9387,9 @@ where.do_it:
 
   dw dup_
   _literal 23
-  dw not_equals_ ; not the last line?
+  dw not_equals_ ; not the last row?
   dw zero_branch_,at_pfa.last_line
-  ; not the last line
+  ; not the last row
   dw lit_,22,paren_emit_,paren_emit_,paren_emit_
   dw semicolon_s_ ; XXX TODO exit_
 
@@ -8964,7 +9411,7 @@ at_pfa.last_line:
 
 ; doc{
 
-; at-xy ( col line -- )  \ ANS Forth
+; at-xy ( col row -- )  \ ANS Forth
 
 ; }doc
 
@@ -9237,7 +9684,7 @@ question_backslash.end:
 ;
 ; }doc
 
-  dw blk_,fetch_
+  dw loading_question_ ; input stream from disk?
   dw question_branch_,backslash.loading
   ; Interpreting
   dw span_,fetch_,to_in_,store_

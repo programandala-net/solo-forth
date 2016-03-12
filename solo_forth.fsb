@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509180233
+\ Last modified: 201509181936
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -18,11 +18,10 @@
   \ ------------------------------------------------------------
   \ License
 
-\ Copying and distribution of this file, with or without
-\ modification, are permitted in any medium without royalty
-\ provided the copyright notice, the aknowledgments file and
-\ this notice are preserved.  This file is offered as-is,
-\ without any warranty.
+\ You may do whatever you want with this work, so long as you
+\ retain all copyright notices, all credit notices, and this
+\ license in all redistributed copies and derived works. There
+\ is no warranty.
 
   \ ------------------------------------------------------------
   \ History
@@ -52,7 +51,7 @@ variable default-first-locatable
 variable default-first-locatable
 variable first-locatable
   8 dup default-first-locatable !  first-locatable !
-variable last-locatable  scr/disk last-locatable !
+variable last-locatable  scr/disk last-locatable ! -->
 
   \ XXX TMP -- temporary border changes for debugging
 : located  ( ca len -- screen | false ) [ 2 border ]
@@ -71,6 +70,9 @@ variable last-locatable  scr/disk last-locatable !
 -->
 
 ( need ) \ scr 3
+
+  \ XXX TMP -- temporary border changes for debugging
+4 border
 
 : ?located  ( screen | false -- )  dup 0= 29 ?error  ;
 
@@ -3042,7 +3044,7 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Disk blocks {{{
 
-( update flush continued )  \ ==diskblocks==
+( update flush continued ?load )  \ ==diskblocks==
 
 : update  ( -- )
 
@@ -3080,9 +3082,23 @@ code c!dosvar  ( b n -- )
   \
   \ Continue interpretation at screen _u_.
   \
-  \ From: Forth-83 (Appendix B. Uncontrolled Reference Words).
+  \ Standard: Forth-83 (Appendix B. Uncontrolled Reference
+  \ Words).
   \
   \ }doc
+
+: ?load  ( scr f -)  if  dup load  then  drop  ;
+
+  \ doc{
+  \
+  \ ?load  ( u f -- )
+  \
+  \ Load screen _u_ if flag _f_ is true.
+  \
+  \ }doc
+
+  \ Credits:
+  \ `?load` copied from Pygmy Forth.
 
   \ }}} =======================================================
   \ Tape files {{{
@@ -5508,6 +5524,16 @@ only forth definitions also assembler
 
 : macro  ( "name" -- )  asm postpone :  ;
 : endm  ( -- )  end-asm postpone ;  ;  immediate
+
+
+\ For dumping code to screen
+: <<  ( -- a depth )  here depth ;
+: >>  ( a depth -- )
+
+  DEPTH 1- - ABORT bad stack CR BASE @ PUSH HEX
+  DUP 4 U.R SPACE  HERE OVER - FOR C@+ 3 U.R NEXT DROP
+  POP BASE !  SPACE   ;
+
 
 decimal only forth
 
