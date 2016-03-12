@@ -8,13 +8,6 @@
 == Urgent ==
 // {{{
 
-.2015-11-02:
-
-Finish the alternative code for 1024-byte standard disk buffer.
-
-.2015-11-04:
-
-Fix `locate` with 1024-byte buffer.
 
 // }}}
 == Inner ==
@@ -218,6 +211,7 @@ It seems more versatile to create different words to switch the modes
 on and provide a common user interface to row, column, cpl, window...
 
 // }}}
+//
 == Keyboard ==
 // {{{
 

@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511052125
+\ Last modified: 201511100311
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -95,7 +95,6 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ string buffer.
   \
   \ }doc
-
 
 : located  ( ca len -- screen | false )
   delimited  last-locatable @ 1+  first-locatable @
@@ -209,6 +208,8 @@ variable last-locatable  blk/disk 1- last-locatable !
 
 2variable needed-word
 
+  \ XXX TODO -- make `[needed]` and `[unneeded]` optional.
+
 : [needed]  ( "name" -- wf )
   parse-name needed-word 2@ 2dup or
   if  compare 0=  exit  then  2drop 2drop true   ; immediate
@@ -242,7 +243,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ string has been overwritten in the circular string buffer.
   \ the only solution is to store the string apart, in an ad
   \ hoc zone.
- 
+
   \ 2dup undefined?
   \   if  2dup reneeded  then
   \ 2dup undefined? warnings @ and
@@ -774,6 +775,32 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 
   end-code
 
+( swapped )
+
+  \ Credits:
+  \ Adapted from code written by Sam Suan Chen, published
+  \ on Forth Dimensions (volume 6, number 6, page 9, 1985-03).
+
+: swapped  ( i*x n1 n2 -- j*x )
+  >r 1+ cells sp@ +     ( i*x a1 ) ( R: n2 )
+  r> 2+ cells sp@ +     ( i*x a1 a2 )
+  over @ over @         ( i*x a1 a2 x1 x2 )
+  >r swap !  r> swap !  ;
+
+  \ Usage example:
+  \
+  \   ( 1 2 3 4 5 )  1 4 swapped  ( 4 2 3 1 5 )
+
+  \ Original code by Sam Suan Chen,
+  \ with an equivalent usage example:
+
+  \ : xyswap  ( i*x n -- j*x )
+  \   16 /mod >r dup + sp@ + sp@ r> dup + +
+  \   over @ over @
+  \   >r swap !  r> swap !  ;
+  \
+  \   ( 1 2 3 4 5 )  $25 xyswap  ( 4 2 3 1 5 )
+
   \ }}} =======================================================
   \ Return stack {{{
 
@@ -896,6 +923,8 @@ need columns  need rows
   \ Published in Microhobby, issue 66 (1986-02), page 24:
   \ http://microhobby.org/numero066.htm
   \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+  \ XXX UNDER DEVELOPMENT
 
   \ XXX TODO -- integrate the driver
 
@@ -1612,6 +1641,10 @@ only forth definitions  need char>string   need search-wordlist
 
 ( hunt )
 
+  \ Credits:
+  \ Code from Wil Baden's Charscan library (2003-02-17),
+  \ public domain.
+
 : hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
   search 0= if  chars + 0  then  ;
 
@@ -1626,8 +1659,6 @@ only forth definitions  need char>string   need search-wordlist
   \ ca1 len1 = string
   \ ca2 len2 = substring
   \ ca3 len3 = ca1+i len1-i
-  \
-  \ From Wil Baden's Charscan library (2003-02-17), public domain.
   \
   \ }doc
 
@@ -1813,7 +1844,7 @@ wid-of replaces-voc constant wid-subst
 
 
   \ }}} =======================================================
-  \ Text output {{{
+  \ Printing {{{
 
 ( column last-column row last-row at-x at-y )
 
@@ -1838,6 +1869,15 @@ wid-of replaces-voc constant wid-subst
   \ Set the cursor
   \ at the current column (x coordinate)
   \ and the given row (y coordinate).
+
+( ud.r ud. )
+
+  \ Credits:
+  \ Code adapted from Spectrum Forth-83.
+
+: ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+  \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
+: ud.  ( d -- )  0 ud.r space  ;
 
 ( print )
 
@@ -2020,7 +2060,7 @@ need z80-asm  need (pixel-addr)
   \ published in Todospectrum, issue 2 (1984-10), page 16.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-create (hires-emit)  ( -- a )
+create (hires-emit)  ( -- )
 
   \ Print a 8x8 bits char at high resolution coordinates.
 
@@ -3575,29 +3615,69 @@ need -rot
 
 : ud*  ( ud1 d2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
 
-( m+ )
-
-  \ XXX UNDER DEVELOPMENT
+( d* )
 
   \ Credits:
-  \ Code from Z88 CamelForth.
+  \ Code by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 33, 1998-04).
 
-;X M+       d n -- d         add single to double
-    head MPLUS,2,"M+",docode,0,mplusn-mplusf
+  \ This implementation uses 30 bytes.
 
-.mplusf ex de,hl
-        pop de          ; hi cell
-        ex (sp),hl      ; lo cell, save IP
-        add hl,bc
-        ld b,d          ; hi result in BC (TOS)
-        ld c,e
-        jr nc,mplus1
-        inc bc
-.mplus1 pop de          ; restore saved IP
-        push hl         ; push lo result
-.mplusn
-        next
+: d*  ( d1 d2 -- d3 )
+  >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
+  2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
+  r> * swap r> * + +  ; ( d1*d2 ) ( R: )
 
+  \ Alternative implementation.
+  \
+  \ Credits:
+  \ Adapted from code written by Robert L. Smith,
+  \ published on Forth Dimensions (volume 4, number 1, page 3).
+  \
+  \ This implementation uses 36 bytes and is 5% slower.
+  \
+  \ : d*  ( d1 d2 -- d3 )
+  \  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
+
+( m* )
+
+  \ Credits:
+  \ Code by Robert L. Smith, published on Forth Dimensions
+  \ (volume 4, number 1, page 3).
+
+  \ XXX TODO benchmark with the version in the kernel
+
+need d*
+: m*  ( n1 n2 -- d )
+  >r s>d r> s>d d* ;
+
+( m+ )
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+need z80-asm
+
+code m+  ( d1 n -- d2 )
+  exx     \ save Forth IP
+  bc pop  \ n
+  de pop  \ d1 hi cell
+  hl pop  \ d1 lo cell
+  bc addp  hl push
+  cy if  de inc  then  de push
+  exx      \ restore Forth IP
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ m+  ( d1|ud1 n -- d2|ud2 )
+  \
+  \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
+  \
+  \ Standard: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
+  \
+  \ }doc
 
 ( d0= d0< d< du< )
 
@@ -3642,6 +3722,114 @@ need [if]
 [needed] dmax [if]
 : dmax  ( d1 d2 -- d1 | d2 )
   2over 2over d< if  2swap  then  2drop  ;  [then]
+
+( d= d<> )
+
+  \ XXX TODO -- rewrite in Z80
+
+: d<>  ( d1 d2 -- f )
+  rot <> if  2drop true exit  then  <>  ;
+: d=  ( d1 d2 -- f )  d<> 0=  ;
+
+  \ XXX OLD
+  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
+  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
+( d- )
+
+need z80-asm
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
+
+  de pop          \ DE=d2hi
+  exx
+  de pop          \ DE'=d2lo
+  exx
+  hl pop          \ HL=d1hi,DE=d2hi
+  exx
+  hl pop          \ HL'=d1lo
+  de subp
+  hl push         \ 2OS=d1lo-d2lo
+  exx
+  de sbcp         \ HL=d1hi-d2hi-cy
+  pushhl jp
+  end-code
+
+( tum* tum/ t+ t- )
+
+  \ Credits:
+  \ Code by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 34, 1998-04).
+
+  \ XXX TODO -- test
+
+need d+  need d-
+
+: +carry  ( n1 n2 -- n1+n2 carry )  0 tuck d+  ;
+: -borrow  ( n1 n2 -- n1-n2 borrow )  0 tuck d-  ;
+
+: tum*  ( d n -- t )  2>r  r@ um*  0 2r>  um* d+  ;
+  \ Triple unsigned mixed multiply.
+
+: tum/  ( t n -- d )  dup >r um/mod r> swap >r um/mod nip r>  ;
+  \ Triple unsigned mixed division.
+
+: t+  ( t1 t2 -- t3 )
+  >r rot >r  >r swap >r +carry  0 r> r> +carry d+ r> r> + +  ;
+  \ Triple add.
+
+: t-  ( t1 t2 -- t3 )
+  >r rot >r  >r swap >r -borrow
+  s>d r> r> -borrow d+ r> r> - +  ;
+  \ Triple substract.
+
+( du/mod )
+
+  \ Credits:
+  \ Code by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 34, 1998-04).
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TODO -- d2*
+
+need tum*  need t+  need t-  need tum/  need d2*
+
+: normalize-divisor  ( d1 -- d1' shift )
+  0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
+
+  \ XXX TODO rename as `ud/mod`?
+  \ XXX TODO stack comments
+
+: du/mod  ( ud1 ud2 -- rem quot )
+
+  ?dup 0= if
+    \ there is a leading zero "digit" in divisor
+    >r  0 r@ um/mod  r> swap >r  um/mod  0 swap r>  exit
+  then
+
+  normalize-divisor dup >r rot rot 2>r
+  1 swap lshift tum*
+    \ normalize divisor and dividend
+
+
+  dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
+    \ guess leading "digit" of quotient
+
+  2r@  rot dup >r  tum*  t-
+    \ multiply divisor by trial quot and substract from
+    \ dividend
+
+  dup 0< if  r> 1-  2r@  rot >r  0 t+
+    \ if negative, decrement quot and add to dividend
+
+    dup 0< if  r> 1-  2r@  rot >r  0 t+  then
+    \ if still negative, do it one more time
+
+  then  ;
+  \ Double unsigned divide with remainder.
 
 ( lshift )
 
@@ -3718,7 +3906,7 @@ code rshift  ( x1 u -- x2 )
   \ Code adapted from DZX-Forth.
 
   \ This version is smaller (16 bytes used) but slower (133%
-  \ the execution time of version adapted from Z88 CamelForth).
+  \ the execution time of the version adapted from Z88 CamelForth).
 
 code rshift  ( x1 u -- x2 )
   D1 c,           \ pop de
@@ -3731,6 +3919,35 @@ code rshift  ( x1 u -- x2 )
   CB c, 1D c,     \ rr l
   C3 c, ,         \ jp begin
   end-code
+
+( 2/ )
+
+  \ Credits:
+  \ Code from Spectrum Forth-83.
+  \ Documentation partly based on lina.
+
+code 2/  ( x1 -- x2 )
+  E1 c,           \ pop hl
+  CB c, 2C c,     \ sra h
+  CB c, 1D c,     \ rr l
+  C3 c, pushhl ,  \ jp pushhl
+  end-code
+
+  \ doc{
+  \
+  \ 2/  ( x1 -- x2 )
+  \
+  \ _x2_ is the result of shifting _x1_ one bit toward the
+  \ least-significant bit, leaving the most-significant bit
+  \ unchanged.
+  \
+  \ This is the same as `s>d 2 fm/mod swap drop`. It is not the
+  \ same as `2 /`, nor is it the same as `1 rshift`.
+  \
+  \ Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).
+  \
+  \ }doc
 
 ( sm/rem )
 
@@ -3841,13 +4058,13 @@ need fm/mod
   \ Credits:
   \ Forth-94 documentation.
 
-: /_mod  ( n1 n2 -- n3 n4)  >r s>d r> fm/mod  ;
+: /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
 
-: /_  ( n1 n2 -- n3)  /_mod nip  ;
+: /_  ( n1 n2 -- n3 )  /_mod nip  ;
 
-: _mod  ( n1 n2 -- n3)  /_mod drop  ;
+: _mod  ( n1 n2 -- n3 )  /_mod drop  ;
 
-: */_mod  ( n1 n2 n3 -- n4 n5)  >r m* r> fm/mod  ;
+: */_mod  ( n1 n2 n3 -- n4 n5 )  >r m* r> fm/mod  ;
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
 
@@ -4020,7 +4237,7 @@ need s=
   \
   \ Return _x cfa_ that represents the compilation semantics
   \ of the word _nfa_. The  returned _cfa_ has the stack
-  \ effect ( i * x  x -- j * x  ).  Executing _cfa_ consumes
+  \ effect ( i*x  x -- j*x  ).  Executing _cfa_ consumes
   \ _x_ and performs the compilation semantics of the word
   \ represented by _nfa_.
   \
@@ -4125,7 +4342,7 @@ need >>link
 : privatize  ( nfa cfap -- )  >>link !n  ;
   \ Hide all words between `private{` and `}private`:
   \ Link the first public word to the word before the
-  \ first private word, thus making the internal words
+  \ first private word, thus making the private words
   \ invisible.
 
 ( privatize )
@@ -4156,8 +4373,6 @@ need >>link
   \ Copyright 1996 Phil Burk
   \ ____
 
-  \ This version needs
-
 need abort"  need name<name
 
 variable private-start  variable private-stop
@@ -4178,6 +4393,68 @@ variable private-start  variable private-stop
   while   dup hide name<name
   repeat  drop  private-start off  private-stop off  ;
   \ Hide all words between `private{` and `}private`.
+
+( begin-module: begin-module public private end-module )
+
+  \ Credits:
+  \ Code adapted and modified from Galope.
+
+need get-order  need get-current  need wordlist  need >order
+need set-current
+
+  \ Inner words
+
+get-order get-current
+
+wordlist dup set-current  >order
+
+variable current-wid  variable module-wid
+
+: (module)  ( -- wid )
+  get-current current-wid !
+  wordlist dup module-wid ! dup >order  ;
+
+set-current
+
+  \ Interface words
+
+: public  ( -- )  current-wid @ set-current  ;
+  \ Public definitions follow.
+
+: private  ( -- )  module-wid @ set-current  ;
+  \ Private definitions follow.
+
+: begin-module:  ( "name" -- )  (module) constant private  ;
+  \ Start a named module.
+  \ Private definitions follow.
+
+: begin-module  ( -- )  (module) drop private  ;
+  \ Start an anonymous module.
+  \ Private definitions follow.
+
+: end-module  ( -- )  public previous  ;
+  \ End a module.
+
+set-order
+
+  \ Description and usage.
+
+  \ Modules hide the internal implementation and leave visible the
+  \ words of the outer interface. Example:
+
+  \ begin-module: my_module
+  \   \ Inner/helper words.
+  \ public
+  \   \ Interface words,
+  \   \ compiled in the outer vocabulary,
+  \   \ thus seen from the extern.
+  \ private
+  \   \ Inner/helper words again.
+  \ public
+  \   \ Interface words again. And so on.
+  \ end-module
+
+  \ As an alternative, the word 'begin-module' starts an unnamed module.
 
   \ }}} =======================================================
   \ G+DOS {{{
@@ -5549,16 +5826,48 @@ variable assert-level ( -- a )
   \ }}} =======================================================
   \ Control structures {{{
 
-( unless )  \ ==controlstructures==
+( -if -while -until )  \ ==controlstructures==
 
-  \ Equivalent to `0= if`, but faster.
+  \ Credits:
+  \ Names after an article by Richard Astle in
+  \ Forth Dimensions 17/4 p. 36 (1995-11).
 
-: unless  ( f -- )
+: -if  ( f -- )
   postpone ?branch >mark 2  ; immediate compile-only
 
   \ XXX TODO Alternative for when compiler security is removed:
-  \ : unless  ( f -- )
+  \ : -if  ( f -- )
   \   postpone ?branch >mark  ; immediate compile-only
+
+: -while  ( f -- )
+  postpone if 2+  ; immediate compile-only
+
+  \ XXX TODO Alternative for when compiler security is removed:
+  \ : -while  ( f -- )
+  \   postpone if  ; immediate compile-only
+
+: -until  ( f -- )
+  1 ?pairs postpone ?branch <resolve  ; immediate compile-only
+
+  \ XXX TODO Alternative for when compiler security is removed:
+  \ : -until  ( f -- )
+  \   postpone ?branch <resolve  ; immediate compile-only
+
+( retry )
+
+  \ Credits:
+  \ Code of `retry` from an article by Richard Astle in
+  \ Forth Dimensions 17/4 p. 36 (1995-11).
+
+: retry  ( -- )
+  latest name> >body 1 postpone again
+  ; immediate compile-only
+
+  \ XXX TODO -- remove `1` when compiler security is disabled
+
+: ?retry  ( run-time: f -- )
+  postpone if  postpone retry  postpone then
+  ; immediate compile-only
 
 ( base-execute )
 
@@ -5612,8 +5921,8 @@ variable assert-level ( -- a )
 
   \ cs-test ( C: x -- x ) ( S: -- flag )
 
-  \ Return a true flag if x is an orig|dest, or false if a
-  \ marker. x is not altered or removed. If the control-flow
+  \ Return a true flag if _x_ is an orig|dest, or false if a
+  \ marker. _x_ is not altered or removed. If the control-flow
   \ stack is implemented using the data stack, flag shall be
   \ the topmost item on the data stack.
 
@@ -7300,53 +7609,6 @@ code !p  ( c ca -- )
   end-code
 
   \ }}} =======================================================
-  \ Double numbers {{{
-
-( ud.r ud. )  \ ==doublenumbers==
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-: ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
-  \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
-: ud.  ( d -- )  0 ud.r space  ;
-
-( d= d<> )
-
-  \ XXX TODO -- rewrite in Z80
-
-: d<>  ( d1 d2 -- f )
-  rot <> if  2drop true exit  then  <>  ;
-: d=  ( d1 d2 -- f )  d<> 0=  ;
-
-  \ XXX OLD
-  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
-  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
-
-( d- )
-
-need z80-asm
-
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
-code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
-
-  de pop          \ DE=d2hi
-  exx
-  de pop          \ DE'=d2lo
-  exx
-  hl pop          \ HL=d1hi,DE=d2hi
-  exx
-  hl pop          \ HL'=d1lo
-  de subp
-  hl push         \ 2OS=d1lo-d2lo
-  exx
-  de sbcp         \ HL=d1hi-d2hi-cy
-  pushhl jp
-  end-code
-
-  \ }}} =======================================================
   \ Number conversion and notation {{{
 
 ( b# d# h# )  ==numberconversion==
@@ -7633,7 +7895,7 @@ need xstack
 
 : x@  ( -- x ) ( X: x -- x )  xp@ @  ;
 
-: xdrop  ( X: x -- )  cell negate xp+!  ;
+: xdrop  ( X: x -- )  [ cell negate ] literal xp+!  ;
 
 : x>  ( -- x ) ( X: x -- )  x@ xdrop  ;
 
@@ -7782,7 +8044,7 @@ variable loc-done
     then  loc-done @
   until  0 0 (local)  ; immediate  privatize
 
-( { } ) \ tests
+( {}-tests )
 
   \ tests
 
@@ -9731,8 +9993,9 @@ code f-  ( F: r1 r2 -- r3 )
 code f/  ( F: r1 r2 -- r3 )
   calc 05 c, end-calc jpnext  end-code
 
- \ code fmax  ( F: r1 r2 -- r1|r2 ) calc end-calc jpnext  end-code
- \ code fmin  ( F: r1 r2 -- r1|r2 ) calc end-calc jpnext  end-code
+  \ XXX TODO
+  \ code fmax  ( F: r1 r2 -- r1|r2 ) calc end-calc jpnext  end-code
+  \ code fmin  ( F: r1 r2 -- r1|r2 ) calc end-calc jpnext  end-code
 
 code fsign  ( F: r1 -- r2 )
   calc 29 c, end-calc jpnext  end-code
@@ -9890,7 +10153,7 @@ code ftan  ( F: r1 -- r2 )
 
   \ This is the editor included with Specforth (also known as
   \ Artic Forth), a fig-Forth for ZX Spectrum. It has been
-  \ modified in order to adapt it to Solo Forth.
+  \ adapted to Solo Forth.
   \
   \ Descriptions and stack comments have been added after the
   \ Specforth manual, the Abersoft Forth manual and the book
@@ -9902,7 +10165,7 @@ code ftan  ( F: r1 -- r2 )
   \ Specforth Editor V1.1
   \ Copyright 1983 by Artic Computing Ltd.
   \ Written by Chris A. Thornton, 1983
-  \ Modified by Marcos Cruz, 2015
+  \ Modified by Marcos Cruz (programandala.net), 2015
 
 only forth definitions
 
@@ -10388,7 +10651,7 @@ only forth also definitions
   \ XXX TODO
   \ marker forget-tt
 
-need random  need j  need >=  need <=
+need random  need j  need >=  need <=  need 2/
 need value  need d<>  need d=  need case  need ms  need frames@
 need yes?  need begin-stringtable  need case:
 
@@ -11104,7 +11367,7 @@ mode64 page
   \ http://www.albany.net/~hello/
   \ ____
 
-need ms  need c+!
+need ms  need c+!  need 2/
 
 1 CHARS CONSTANT /Char
 
@@ -11321,11 +11584,10 @@ create board  9 allot
 
   \ XXX UNDER DEVELOPMENT
 
-  \ XXX FIXME `hires-emit-udg` does not work fine
-  \ XXX TODO use a 16x16 pixels ball
+  \ XXX TODO slow the rackets
 
   \ Credits:
-  \ Code adapted from IsForth (version 1.23v), 2015-10.
+  \ Code adapted from IsForth (version 1.23v).
 
   \ ____
   \
@@ -11337,8 +11599,8 @@ create board  9 allot
 
 need columns  need rows  need udg:  need rnd  need ??
 3 constant /k  need pressed?
-need break-key?  need hires-emit-udg
-need c!toggle-bits
+need cvariable  need 2/
+need break-key?  need hires-emit-udg  need c!toggle-bits
 
 0 cconstant black  7 cconstant white
 
@@ -11353,7 +11615,20 @@ variable ball-delay
   \ XXX NEW
 
 4 cconstant racket-size
-7 8 * 64 + cconstant racket-color  \ bright white paper
+
+: brighty  ( n1 -- n2 )  %1000000 or  ;
+: paper-color  ( n1 -- n2 )  8 *  ;
+
+white paper-color brighty cconstant racket-color
+
+22528 constant top-line-attr
+  \ address of the top left screen attribute
+23264 constant bottom-line-attr
+  \ address of the bottom left screen attribute
+
+-->
+
+( pong )
 
   \ Key constant are defined with double constants this way:
   \ high part = bitmask
@@ -11367,14 +11642,10 @@ $10 $EFFE 2constant left2-key   char 6 cconstant left2-char
 $08 $EFFE 2constant right2-key  char 7 cconstant right2-char
   \ Player 2 keys.
 
--->
-
-( pong )
-
 variable x  variable y
   \ Coordinates of the ball.
 
-variable direction
+cvariable direction
   \ Direction of ball.
   \ Bit 0: 1 = down, 0 = up.
   \ Bit 1: 1 = right, 0 = left.
@@ -11464,63 +11735,77 @@ rows 1- cconstant racket2-y
 
 : ball-xy  ( -- x y )  x @ y @  ;
 
-  \ XXX OLD
-  \ : at-ball  ( -- )  ball-xy at-xy  ;
-  \ : show-ball  ( -- )  at-ball ball emit  ;
-
 : show-ball  ( -- )  ball-xy ball hires-emit-udg  ;
 
-  \ XXX OLD
-  \ : erase-ball  ( -- )  at-ball space  ;
+: erase-ball  ( -- )  ball-xy ball hires-emit-udg  ;
 
-: erase-ball  ( -- )  ball-xy ball hires-emit-udg space  ;
+: (border)  ( a -- )
+  columns [ white paper-color ] literal fill  ;
 
-: show-racket  ( a -- )  racket-size racket-color fill  ;
+: top-border  ( -- )  top-line-attr (border)  ;
 
-: show-racket1  ( -- )  22528 racket1-x @ + show-racket  ;
-  \ 22528 = address of the top left screen attribute
-
-: show-racket2  ( -- )  23264 racket2-x @ + show-racket  ;
-  \ 23264 = address of the bottom left screen attribute
-
-: show-rackets  ( -- )  show-racket1 show-racket2  ;
+: bottom-border  ( -- )  bottom-line-attr (border)  ;
 
 -->
 
 ( pong )
 
-: print-point  ( n y -- )
-  0 swap at-xy s>d <# # # # #>  black ink type white ink  ;
-  \ Print the points of a player.
+: show-racket  ( a -- )  racket-size racket-color fill  ;
 
-: print-point1  ( -- )
-  points1 @ racket1-y print-point show-racket1  ;
-  \ Print the points of player 1.
+: show-racket1  ( -- )
+  top-line-attr dup (border) racket1-x @ + show-racket  ;
 
-: print-point2  ( -- )
-  points2 @ racket2-y print-point show-racket2  ;
-  \ Print the points of player 2.
+: show-racket2  ( -- )
+  bottom-line-attr dup (border) racket2-x @ + show-racket  ;
 
-: print-points  ( -- )  print-point1 print-point2  ;
-  \ Print the points of both players.
+: show-rackets  ( -- )  show-racket1 show-racket2  ;
+
+: racket-initial-x  ( -- n )
+  columns 2/ [ racket-size 2/ ] literal -  ;
+
+: reset-rackets  ( -- )
+  racket-initial-x dup racket1-x ! racket2-x !  ;
+
+-->
+
+( pong )
 
 : erase-racket  ( a1 a2 -- )  @ + racket-size erase  ;
   \ Erase a racket.
   \ a1 = address of the first screen attribute on the row
   \ a2 = variable that holds the racket x coordinate
 
-: erase-racket1  ( -- )  22528 racket1-x erase-racket  ;
+: erase-racket1  ( -- )
+  top-line-attr racket1-x erase-racket  ;
   \ Erase racket of player 1.
-  \ 22528 = address of the top left screen attribute
 
-: erase-racket2  ( -- )  23264 racket2-x erase-racket  ;
+: erase-racket2  ( -- )
+  bottom-line-attr racket2-x erase-racket  ;
   \ Erase racket of player 2.
-  \ 23264 = address of the bottom left screen attribute
 
-: change-x  ( -- )  2 direction c!toggle-bits  ;
+-->
+
+( pong )
+
+: (print-points)  ( n y -- )
+  0 swap at-xy s>d <# # # # #>  black ink type white ink  ;
+  \ Print the points of a player.
+
+: print-points1  ( -- )
+  points1 @ racket1-y (print-points) show-racket1  ;
+  \ Print the points of player 1.
+
+: print-points2  ( -- )
+  points2 @ racket2-y (print-points) show-racket2  ;
+  \ Print the points of player 2.
+
+: print-points  ( -- )  print-points1 print-points2  ;
+  \ Print the points of both players.
+
+: change-x  ( -- )  %10 direction c!toggle-bits  ;
   \ Change the x direction of the ball.
 
-: change-y  ( -- )  1 direction c!toggle-bits  ;
+: change-y  ( -- )  %01 direction c!toggle-bits  ;
   \ Change the y direction of the ball.
 
 : faster  ( -- )
@@ -11532,51 +11817,50 @@ rows 1- cconstant racket2-y
 
 ( pong )
 
-: ball-moving-right?  ( -- f )  direction @ 2 and  ;
-: ball-moving-down?  ( -- f )  direction @ 1 and  ;
+: ball-moving-right?  ( -- f )  direction c@ %10 and  ;
+: ball-moving-down?  ( -- f )  direction c@ %01 and  ;
   \ : ball-at-right?  ( -- wf )  x @ columns 1- =  ;
-: ball-at-right?  ( -- wf )  x @ 248 =  ;
-: ball-at-left?  ( -- wf )  x @ 0=  ;
+: ball-at-right?  ( -- wf )  x @ 247 >  ;
+: ball-at-left?  ( -- wf )  x @ 1 <  ;
   \ : ball-at-bottom?  ( -- wf )  y @ rows 2- =  ;
-: ball-at-bottom?  ( -- wf )  y @ 15 =  ;
+: ball-at-bottom?  ( -- wf )  y @ 16 <  ;
   \ : ball-at-top?  ( -- wf )  y @ 1 =  ;
-: ball-at-top?  ( -- wf )  y @ 183 =  ;
+: ball-at-top?  ( -- wf )  y @ 182 >  ;
 
-: move-x  ( -- )
+: move-ball-x  ( -- )
   ball-moving-right?
-  if    ball-at-right? if  change-x  else  1 x +!  then
-  else  ball-at-left? if  change-x  else  -1 x +!  then
-  then  ;
+  if
+    \ 0 2 at-xy ." right" \ XXX INFORMER
+    ball-at-right?  if  change-x  then  1
+  else
+    \ 0 2 at-xy ." left " \ XXX INFORMER
+    ball-at-left?   if  change-x  then  -1
+  then  x +!  ;
 
 -->
 
 ( pong )
 
 : reset-ball  ( -- )
-  \ columns 2/ x !  rows 2/ y !  rnd 3 and direction !  ;
-  128 x !  95 y !  rnd 3 and direction !  ;
-  \ Initialize/reset ball position.
+  128 x !  95 y !  rnd %11 and direction c!  ;
+  \ Reset the ball position and direction.
 
-: score-player1  ( -- )  1 points1 +! print-point1  ;
+: ready  ( -- )  reset-rackets reset-ball  ;
+
+: score-player1  ( -- )  1 points1 +! print-points1  ;
   \ Increase player 1's points by one.
 
-: score-player2  ( -- )  1 points2 +! print-point2  ;
+: score-player2  ( -- )  1 points2 +! print-points2  ;
   \ Increase player 2's points by one.
 
 [defined] 8* ?\ : 8*  ( n1 -- n2 )  2* 2* 2*  ;
 
-  \ : hit-racket1?  ( -- wf )
-  \   x @ racket1-x @ 1- >
-  \   x @ racket1-x @ racket-size + <  and  ;
 : hit-racket1?  ( -- wf )
   x @ racket1-x @ 8* 1- >
   x @ racket1-x @ 8* racket-size 8* + <  and  ;
   \ Is racket1 hit by the ball?
   \ Is racket1-x <= x < racket1-x + racket-size?
 
-  \ : hit-racket2?  ( -- wf )
-  \   x @ racket2-x @ 1- >
-  \   x @ racket2-x @ racket-size + <  and  ;
 : hit-racket2?  ( -- wf )
   x @ racket2-x @ 8* 1- >
   x @ racket2-x @ 8* racket-size 8* + <  and  ;
@@ -11587,42 +11871,50 @@ rows 1- cconstant racket2-y
   \   \ XXX NEW -- alternative
   \   \ XXX TODO try
   \   \ a = address that holds the x coordinate of a racket
-  \   @ x @ swap  ( ball-x pad-x )
+  \   @ 8* x @ swap  ( ball-x pad-x )
   \   2dup 1- > >r
-  \   racket-size + <  r> and  ;
+  \   racket-size 8* + <  r> and  ;
 
 -->
 
 ( pong )
 
-: move-y  ( -- )
-  ball-moving-down? if
-    ball-at-bottom? if
-      hit-racket2?
-      if change-y  else  score-player1 reset-ball  then
-    else  1 y +!  then
-  else
-    ball-at-top? if
-      hit-racket1?
-      if  change-y  else  score-player2 reset-ball  then
-    else  -1 y +!  then
-  then  ;
+: possible-top-hit  ( -- )
+  hit-racket2? if change-y  else  score-player1 ready  then  ;
+
+: move-ball-down  ( -- )
+  ball-at-bottom? if  possible-top-hit  else  -1 y +!  then  ;
+
+: possible-bottom-hit  ( -- )
+  hit-racket1? if  change-y  else  score-player2 ready  then  ;
+
+: move-ball-up  ( -- )
+  ball-at-top? if  possible-bottom-hit  else  1 y +!  then  ;
+
+: move-ball-y  ( -- )
+  ball-moving-down?
+  if  move-ball-down  else  move-ball-up  then  ;
 
 -->
 
 ( pong )
 
-: move-ball ( -- )
-  \ XXX TODO
-  \ -1 ball-delay +!  ball-delay @ ?exit
-  \ ball-delay0 ball-delay !
-  erase-ball move-x move-y show-ball  ;  -->
+: move-ball  ( -- )
+
+  \ XXX TODO -- factor
+  -1 ball-delay +!  ball-delay @ ?exit
+  ball-delay0 ball-delay !
+
+  erase-ball move-ball-x move-ball-y show-ball  ;
+
+: frame  ( -- )  white border  top-border bottom-border  ;
+
+: arena  ( -- )
+  cls  frame  show-rackets print-points show-ball  ;
+
+-->
 
 ( pong )
-
-: show-all  ( -- )  show-ball show-rackets print-points  ;
-
-  \ : delay  ( -- )  speed @ ms  ;  \ XXX OLD
 
 : move-racket1-left  ( -- )
   racket1-x @ 0= ?exit
@@ -11647,9 +11939,9 @@ rows 1- cconstant racket2-y
 : reset-points  ( -- )  points1 off  points2 off  ;
 
 : init-game  ( -- )
-  init-screen reset-ball  reset-points
+  init-screen reset-points
   \ initial-speed speed !   \ XXX OLD
-  ball-delay0 ball-delay !  ;
+  ball-delay0 ball-delay ! ready  ;
 
 : quit-game  ( -- )
   restore-screen  ." Player 1 score: " points1 ? cr
@@ -11662,25 +11954,6 @@ rows 1- cconstant racket2-y
     right2-key    pressed? ?? move-racket2-right
                 break-key? ?? quit-game  ;
 
-  \ XXX OLD
-  \ : keypress  ( key -- )
-  \   options[  left1-key   option move-racket1-left
-  \             right1-key  option move-racket1-right
-  \             left2-key   option move-racket2-left
-  \             right2-key  option move-racket2-right
-  \             quit-key    option quit-game
-  \   ]options  ;
-
-  \ XXX OLD
-  \ : keypress  ( key -- )
-  \   case
-  \     left1-key   of move-racket1-left endof
-  \     right1-key  of move-racket1-right endof
-  \     left2-key   of move-racket2-left endof
-  \     right2-key  of move-racket2-right endof
-  \     quit-key    of quit-game endof
-  \   endcase  ." after endcase" key drop  ;
-
 -->
 
 ( pong )
@@ -11691,42 +11964,43 @@ rows 1- cconstant racket2-y
 : show-player-keys  ( c1 c2 -- )
   s" left" show-player-key  s" right" show-player-key  ;
 
+: show-game-keys  ( -- )
+  ." Player 1:" cr right1-char left1-char show-player-keys
+  ." Player 2:" cr right2-char left2-char show-player-keys
+  ." Break (Shift+Space) = quit"  ;
+
 -->
 
 ( pong )
 
-: show-help  ( -- )
-  page
+: show-credits  ( -- )
+
   \  <------------------------------>
-   \ XXX TODO
-  ." Forth Pong by Robert Oestling, 2002-06" cr
-  ." Ported to IsForth by Mark Manning, 2012" cr
-  ." Ported to Solo Forth by Marcos Cruz, 2015-10" cr
-  cr
-  ." Player 1:" cr
-  right1-char left1-char show-player-keys
-  ." Player 2:" cr
-  right2-char left2-char show-player-keys
-  ." Break (Shift+Space) = quit" cr cr
+  ." Forth Pong" cr cr
+  ." Original code by:" cr
+  ."   Robert Oestling, 2002" cr
+  ." Ported to IsForth by:" cr
+  ."   Mark Manning, 2012" cr
+  ." Rewritten for Solo Forth by:" cr
+  ."   Marcos Cruz" cr
+  ."   (programandala.net), 2015" cr  ;
+  \  <------------------------------>
+
+: press-any-key  ( -- )
   \  <------------------------------>
   ." Press any key to start the game." key drop  ;
 
+: welcome  ( -- )
+  page show-credits cr show-game-keys cr cr press-any-key  ;
+
 -->
 
 ( pong )
 
-: pong-info  ( -- )
-  \ XXX TODO
-  ;
-
 : pong  ( -- )
-  init-game show-help  page show-all
+  init-game welcome page arena
   begin  move-ball
-
-  4 border begin key? until key drop 0 border
-  \ XXX TMP -- for debugging
-  \ XXX TODO -- show debug info
-
+  \ begin key? until key drop  \ XXX TMP -- for debugging
   keypress  again  ;
 
   \ }}} =======================================================
@@ -11739,16 +12013,17 @@ rows 1- cconstant racket2-y
 
   \ System-dependent timing routines.
 
-  \ Output are seconds.
-
 need frames0  need frames@
 
 : bench  ( -- )  frames0  ;
   \ start timing
 
+  \ XXX OLD
+  \ : sec.  ( n -- )  s>d <# # # [char] . hold #s #> type  ;
+
 : marque  ( -- )
-  frames@ 2dup d. ." frames (" 50 m/ . ." s) "  ;
-  \ stop timing and show the seconds
+  frames@ 2dup d. ." frames (" 50 m/ nip . ." s) " cr  ;
+  \ stop timing and show the frames and the seconds
 
 ;s
 
@@ -11937,8 +12212,8 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ Forth Dimensions Volume XVII number 4 page 11.
 
 need byte-magazine-benchmark
-need interface-age-benchmark 
-need vector-loop-benchmark 
+need interface-age-benchmark
+need vector-loop-benchmark
 
 : all-benchmarks  ( -- )
   byte-magazine-benchmark
@@ -12411,6 +12686,23 @@ need frames0
   frames0 0 do  const2 drop  loop
   frames@ d. cr ;
 
+( literal-bench )
+
+need frames0
+
+: bench1  ( n -- )
+  frames0 0 do  cell negate drop  loop
+  frames@ d. cr ;
+
+: bench2  ( n -- )
+  frames0 0 do  [ cell negate ] literal drop  loop
+  frames@ d. cr ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \                       bench1 bench2
+  \                       ------ ------
+  \ 32000                    320    249
 
 ( 0-bench false-bench )
 
@@ -12432,6 +12724,74 @@ need frames0
   \                           0       false
   \                       ----- -----------
   \ 32000                   251   236 (94%)
+
+( d*-bench )
+
+
+  \ `d*` by Wil Baden, published on Forth Dimensions
+  \ (volume 19, number 6, page 33, 1998-04).
+
+: baden-d*  ( d1 d2 -- d3 )
+  >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
+  2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
+  r> * swap r> * + +  ; ( d1*d2 ) ( R: )
+
+  \ `d*` by Robert L. Smith, published on Forth Dimensions
+  \ (volume 4, number 1, page 3).
+
+need pick  need roll
+
+: smith-d*  ( d1 d2 -- d3 )
+  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
+
+need bench  need marque
+
+: baden-d*-bench  ( n -- )  0 do  1. 2. baden-d* 2drop  loop  ;
+: smith-d*-bench  ( n -- )  0 do  1. 2. smith-d* 2drop  loop  ;
+
+: d*-benchs  ( -- )
+  32767 dup bench baden-d*-bench marque
+            bench smith-d*-bench marque  ;
+
+  \ Bench     Frames for 32767 iterations
+  \ -----     ---------------------------
+  \ baden-d*  4920 (98 seconds)
+  \ smith-d*  5189 (103 seconds) (105%)
+
+( misc-benchs )
+
+  \ Some generic speed benchs.
+
+need bench  need -if
+
+: bench1  ( n -- )
+  begin  ?dup if  1 - else exit then  again  ;
+
+: bench1a  ( n -- )
+  begin  ?dup if  1- else exit then  again  ;
+
+: bench2  ( n -- )
+  begin  dup 0= if  drop exit then 1-  again  ;
+
+: bench2a  ( n -- )
+  begin  dup -if  drop exit then 1-  again  ;
+
+: bench3  ( n -- )
+  begin  ?dup -if  exit then 1-  again  ;
+
+
+: misc-benchs  ( -- )
+  32767 dup bench bench1 marque
+        dup bench bench2 marque
+            bench bench3 marque  ;
+
+  \ Bench    Frames for 32767 iterations
+  \ -----   ---------------------------
+  \ bench1   655 (`1 -`)
+  \ bench1a  576 (`1-`)
+  \ bench2   320 (`0= if`: 100%)
+  \ bench2a  245 (`-if`:    76%)
+  \ bench3   528
 
 .( block x line 0 ) cr
   .( block x line 1 ) cr

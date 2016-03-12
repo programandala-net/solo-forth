@@ -11,11 +11,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151105
+  ; Version:        20151110
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B41
+version_low_part:   equ 0x7B46
   
-  ; Last modified:  201511052125
+  ; Last modified:  201511100311
 
 ; ==============================================================
 ; Author and license
@@ -1132,7 +1132,7 @@ hl_multiplied_by_de_to_hlde_signed:
   call hl_by_de_to_hlde_unsigned
   pop af
   ret nc
-  jp negate_hlde
+  jp negate_hlde ; XXX TODO
 
 endif
 
@@ -1193,7 +1193,7 @@ next2:
   ; hl = (cfa) = address of the code
   ; de = cfa+1 = pfa-1
 
-next2_end: ; XXX TMP for debugging
+next2_end: ; XXX TMP label for debugging
   jp (hl)
 
 ; ==============================================================
@@ -3285,6 +3285,14 @@ endif
 ; ----------------------------------------------
   _colon_header printer_,'PRINTER'
 
+; doc{
+;
+; printer  ( -- )
+;
+; Select the printer as output.
+;
+; }doc
+
   _literal 3
   dw chan_
   dw printing_,on_
@@ -3293,6 +3301,14 @@ endif
 ; ----------------------------------------------
   _colon_header display_,'DISPLAY'
 
+; doc{
+;
+; display  ( -- )
+;
+; Select the display as output.
+;
+; }doc
+
   _literal 2
   dw chan_
   dw printing_,off_
@@ -3300,6 +3316,8 @@ endif
 
 ; ----------------------------------------------
   _variable_header decode_table_,'DECODE-TABLE'
+
+  ; XXX UNDER DEVELOPMENT
 
   dw 0 ; no chained table ; XXX TODO
               ; Symbol Shift + Letter --> new char
@@ -3323,7 +3341,7 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO
+  ; XXX UNDER DEVELOPMENT
 
 if 0
 
@@ -3364,9 +3382,9 @@ endif
 
 ; doc{
 ;
-; key?  ( -- f )
+; key?  ( -- wf )
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
 ; }doc
 
@@ -3399,7 +3417,7 @@ endif
 ;
 ; key  ( -- c )
 ;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -3551,6 +3569,8 @@ delete_last_key:
 else
 
   ; XXX NEW
+  ; XXX TODO -- change this into a code word
+  ; XXX TODO -- make it compatible with the future multitasking
 
 wait_for_a_key:
   bit 5,(iy+1) ; bit 5 of FLAGS?: new key available?
@@ -3650,7 +3670,7 @@ move.do:
 ; Multiply _u1_ by _u2_, giving the unsigned double-cell product
 ; _ud_.  All values and arithmetic are unsigned.
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5536,40 +5556,11 @@ source.tib:
 ; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
+
 ; ----------------------------------------------
   _c_constant_header cell_,'CELL'
 
   db cell
-
-; ----------------------------------------------
-  _code_header two_slash_,'2/'
-
-  ; XXX TODO move to the library; not used
-
-; doc{
-;
-; 2/  ( x1 -- x2 )
-;
-; _x2_ is the result of shifting _x1_ one bit toward the
-; least-significant bit, leaving the most-significant bit
-; unchanged.
-;
-; This is the same as `s>d 2 fm/mod swap drop`. It is not the same
-; as `2 /`, nor is it the same as `1 rshift`.
-;
-; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
-; Forth-2012 (CORE).
-;
-; }doc
-
-  ; Credits:
-  ; Code from Spectrum Forth-83.
-  ; Documentation partly based on lina.
-
-  pop hl
-  sra h
-  rr l
-  jp push_hl
 
 ; ----------------------------------------------
   _colon_header here_,'HERE'
@@ -7807,6 +7798,8 @@ interpret.word_not_found:
 ;  _chk 'interpret -- before number' ; XXX INFORMER
 
   dw number_question_ ; is it a number?
+  ; ( 0 | n 1 | d 2 )
+  ; XXX TODO preserve and use TOS to check single/double
 ;  _brk 'interpret -- after number?' ; XXX INFORMER
   dw zero_equals_
   _question_throw error.not_understood ; error if not
