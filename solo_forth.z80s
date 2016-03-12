@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506281214
+; Version A-00-201506281259
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -23,6 +23,8 @@
 ; - fix: `words`  (for name fields in bank)
 ; - change: `_number` macro used for all `lit_` and `c_lit_`,
 ;   beside a needed exception.
+; - removed all old code for the `fig_find?` flag. problems with
+; `require`!
 
 ; ==============================================================
 ; Acknowledgments
@@ -1397,6 +1399,17 @@ paren_question.end:
 ; ----------------------------------------------
   _code_alias_header i_,'I',,r_fetch_
 
+; doc{
+;
+; i  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
+;
+; x1 = loop index
+; x2 = loop limit
+; 
+; Get a copy of the current (innermost) do-loop index.
+;
+; }doc
+
 ; ----------------------------------------------
   _code_header digit_,'DIGIT'
 
@@ -1429,79 +1442,6 @@ digit.test_value:
 
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
-
-if 0 ; fig_find? ; XXX OLD
-
-; doc{
-;
-; (find)  ( ca nfa --- pfa b tf | ff )
-;
-; }doc
-
-  ; XXX Note: this version uses the new format name field, but
-  ; works the same way the fig-Forth `find`.
-
-  ld (ip_backup),bc ; save Forth IP
-  pop de ; nfa
-  pop hl ; string address
-  ld (paren_find.string_address),hl
-paren_find.begin:
-  ; Compare the string with a new word.
-  ; de = nfa
-  ld (paren_find.nfa_backup),de ; save for later
-paren_find.string_address: equ $+1
-  ld hl,0 ; string address
-  ld a,(de) ; name field length byte
-  ld c,a    ; save for later
-  and max_word_length_bit_mask  ; actual length
-  cp (hl)
-  jr nz,paren_find.not_a_match ; lengths differ
-  ; Lengths match.
-  ld a,c ; name field length byte
-  and max_word_length_bit_mask  ; actual length
-  ld b,a
-paren_find.compare_next_char:
-  inc hl ; next character in string
-  inc de ; next character in name field
-  ld a,(de)
-  cp (hl)
-  jr nz,paren_find.not_a_match ; no match
-  djnz paren_find.compare_next_char ; match so far, loop again
-
-  ; The string matches.
-  ; de = address of the last char of the name field
-  ; c = name field length byte
-  ld hl,5 ; offset from lfa-1 to pfa
-  add hl,de
-  push hl ; pfa
-  ld e,c ; length byte
-  ld d,0
-  ld hl,true
-  ld bc,(ip_backup) ; restore Forth IP
-  jp push_de_hl
-
-paren_find.not_a_match:
-  ; Not a match, try next one.
-paren_find.nfa_backup: equ $+1
-  ld hl,0 ; nfa
-  ld a,c ; length byte
-  and max_word_length_bit_mask  ; actual length
-  ld c,a ; actual length
-  inc c ; plus the length byte
-  ld b,0
-  add hl,bc ; hl = lfa
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  ld a,d
-  or e ; end of dictionary?
-  jp nz,paren_find.begin ; if not, continue
-
-  ; No match found, return.
-  ld bc,(ip_backup) ; restore Forth IP
-  jp false_pfa
-
-else
 
 if 1 ; names_in_memory_bank?
 
@@ -1682,8 +1622,6 @@ paren_find.nfa_backup: equ $+1
   ld de,(paren_find.string_address)
   ld hl,false
   jp push_de_hl
-
-endif
 
 endif
 
@@ -2481,6 +2419,20 @@ endif
 ; ----------------------------------------------
   _code_header semicolon_s_,';S'
 
+; doc{
+; 
+; ;s  ( -- )  \ fig-Forth
+;
+; Return execution to the calling definition.  Unnest one level.
+;
+; It is used to stop interpretation of a screen. It is also the
+; run-time word compiled at the end of a colon-definition which
+; returns execution to the calling procedure.
+;
+; }doc
+
+; XXX TODO combine with `exit`?
+
   ld hl,(return_stack_pointer)
   ld c,(hl)
   inc hl
@@ -2500,14 +2452,32 @@ endif
 ; ----------------------------------------------
   _code_alias_header unloop_,'UNLOOP',,two_r_drop_
 
+; doc{
+;
+; unloop  ( -- ) ( R: x1 x2 -- )  \ ANS Forth, C
+; 
+; x1 = loop index
+; x2 = loop limit
+;
+; Discard the loop-control parameters for the current nesting
+; level. An `unloop` is required for each nesting level before
+; the definition may be exited with `exit`. An ambiguous
+; condition exists if the loop-control parameters are
+; unavailable.
+;
+; }doc
+
 ; ----------------------------------------------
   _code_header leave_,'LEAVE'
 
 ; doc{
 ;
-; leave  ( -- ) \ fig-Forth, C
+; leave  ( -- ) ( R: x1 x2 -- x1 x1 ) \ fig-Forth, C
 ;
-; Force termination of a `do`-`loop` at the next opportunity by
+; x1 = loop index
+; x2 = loop limit
+;
+; Force termination of a do-loop at the next opportunity by
 ; setting the loop limit equal to the current value of the
 ; index. The index itself remains unchanged, and execution
 ; proceeds normally until `loop` or `+loop` is encountered.
@@ -2530,6 +2500,12 @@ endif
 ; ----------------------------------------------
   _code_header to_r_,'>R'
 
+; doc{
+;
+; >r  ( x -- ) ( R: -- x )
+;
+; }doc
+
   pop de
   ld hl,(return_stack_pointer)
   dec hl
@@ -2541,6 +2517,12 @@ endif
 
 ; ----------------------------------------------
   _code_header from_r_,'R>'
+
+; doc{
+;
+; r>  ( -- x ) ( R: x -- )
+;
+; }doc
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -2554,6 +2536,12 @@ endif
 ; ----------------------------------------------
   _code_header two_r_drop_,'2RDROP'
 
+; doc{
+;
+; 2rdrop  ( R: x1 x2 -- )
+;
+; }doc
+
   ld hl,(return_stack_pointer)
   ld de,cell*2
   add hl,de
@@ -2562,6 +2550,12 @@ endif
 
 ; ----------------------------------------------
   _code_header r_drop_,'RDROP'
+
+; doc{
+;
+; rdrop  ( R: x -- )
+;
+; }doc
 
   ld hl,(return_stack_pointer)
   inc hl
@@ -2572,7 +2566,11 @@ endif
 ; ----------------------------------------------
   _code_header two_to_r_,'2>R'
 
+; doc{
+;
 ; 2>r  ( -- x1 x2 ) ( R: x1 x2 -- )
+;
+; }doc
 
   ld hl,(return_stack_pointer)
   ld de,-cell*2
@@ -3752,20 +3750,7 @@ question_error.no_error:
 ; ----------------------------------------------
   _colon_header right_bracket_,']'
 
-if fig_find?
-
-  ; Note: Setting `state` to 0xC0 for "compiling state" will force
-  ; non-immediate words to be compiled and immediate words to be executed. See
-  ; note in `interpret` for more details.
-
-  _number 0xC0
-  dw state_,store_
-
-else
-
   dw state_,on_
-
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4391,70 +4376,28 @@ uppers.do:
   jp uppers.do
 
 ; ----------------------------------------------
-if fig_find?
-
-  _colon_header context_find_,'CONTEXT-FIND'
+  _colon_header defined_question_,'DEFINED?'
 
 ; doc{
 ;
-; context-find  ( "name" -- pfa b tf | ff )
-;
-; Accept the next text word (delimited by blanks) in the input stream to
-; `here`, and search the `context` vocabulary for a matching entry.  If found,
-; leave the dictionary entry's parameter field address, its length byte, and a
-; boolean true.  Otherwise, leave only a boolean false.
+; defined?  ( ca len -- wf )
 ;
 ; }doc
-
-  ; XXX TODO -- return cfa instead of pfa
-  dw b_l_,word_
-  dw here_,count_,uppers_
-  dw here_,context_,fetch_,fetch_
-  ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
-  dw paren_find_
-  ;dw to_r_,to_r_,dup_,dot_,from_r_,dup_,dot_,from_r_,dup_,dot_ ; XXX INFORMER
-  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
-  dw semicolon_s_
-endif
-
-; ----------------------------------------------
-  _colon_header defined_question_,'DEFINED?'
-
-; defined?  ( ca len -- wf )
-
-if fig_find?
-
-  ; XXX TODO -- not finished
-  dw context_find_,dup_
-  dw zero_branch_,defined_question.end
-  dw two_drop_
-defined_question.end:
-  dw semicolon_s_
-
-else
 
   dw found_,nip_,zero_not_equals_
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
   _colon_header undefined_question_,'UNDEFINED?'
 
+; doc{
+;
 ; undefined?  ( ca len -- wf )
-
-if fig_find?
-
-  ; XXX TODO -- not finished
-  dw defined_question_,zero_equals_
-  dw semicolon_s_
-
-else
+;
+; }doc
 
   dw defined_question_,zero_equals_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_header dollar_store_,'$!'
@@ -4487,36 +4430,6 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-
-if fig_find? ; XXX OLD
-
-  _colon_header find_,'FIND'
-
-; doc{
-;
-; find  ( "name" --- pfa b tf | ff )
-;
-; Accept the next text word (delimited by blanks) in the input
-; stream to `here`, and search the `context` and then `current`
-; vocabularies for a matching entry.  If found, leave the
-; dictionary entry's parameter field address, its length byte,
-; and a boolean true.  Otherwise, leave only a boolean false.
-;
-; }doc
-
-  ; XXX TODO -- return cfa instead of pfa
-  dw context_find_,question_dup_
-  ; XXX TODO -- optimize with `?exit' here instead of a branch
-  dw question_branch_,find.end
-  ; The word was not found in the context vocabulary,
-  ; try again in the current vocabulary.
-  ; XXX TODO -- remove this?
-  dw here_,latest_,paren_find_
-find.end:
-  dw semicolon_s_
-
-
-else ; XXX NEW -- modern `find`
 
   _colon_header find_,'FIND'
 
@@ -4579,8 +4492,6 @@ else ; XXX NEW -- modern `find`
   dw find_dollar_,find_
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
   _colon_header paren_abort_,'(ABORT)'
 
@@ -4635,22 +4546,11 @@ error.end:
   ; XXX TMP -- this is a copy of the original `create`.
   ; XXX TODO -- accept an xt as parameter?
 
-  if fig_find? ; XXX OLD
-
-    dw find_ ; ( pfa b tf | ff )
-    dw zero_branch_,header.continue
-    ; The word is not unique.
-    dw drop_,pfa_to_nfa_
-
-  else ; XXX NEW
-
-    dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
-    dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
-    dw zero_branch_,header.continue
-    ; The word is not unique.
-    dw cfa_to_nfa_
-
-  endif
+  dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
+  dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
+  dw zero_branch_,header.continue
+  ; The word is not unique.
+  dw cfa_to_nfa_
 
   dw id_dot_
   _message not_unique_error
@@ -4897,13 +4797,7 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
-if fig_find?
-  dw find_,zero_equals_
-  _question_error not_found_error
-  dw drop_,pfa_to_cfa_,comma_
-else
   dw tick_,comma_
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4992,70 +4886,6 @@ two_literal.end:
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
 
-if fig_find?
-
-; doc{
-;
-; interpret  ( -- )  \ fig-Forth
-;
-; The outer text interpreter which sequentially executes or
-; compiles text from the input stream (terminal or disk)
-; depending on `state`. if the word name cannot be found after a
-; search of `context` and then `current` it is converted to a
-; number according to the current `base`.  That also failing, an
-; error message echoing the name with a "?" will be given.
-;
-; }doc
-
-interpret.begin:
-  dw find_ ; found?
-  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
-  dw zero_branch_,interpret.word_not_found ; if
-
-  ; Note:
-  ;
-  ; `state` holds 0xC0 when compiling.  The text interpreter
-  ; compares the value stored in `state` with the value in the
-  ; length byte of the definition found in the dictionary.  If
-  ; the definition is an immediate word, its length byte is
-  ; greater than 0xC0 because of the precedence and the sign
-  ; bits are both set.  Setting `state` to 0xC0 will force
-  ; non-immediate words to be compiled and immediate words to be
-  ; executed.
-
-  dw state_,fetch_,less_than_ ; compile the word?
-  dw zero_branch_,interpret.execute_the_word ; if
-  dw pfa_to_cfa_,comma_ ; compile the word
-  dw branch_,interpret.word_done
-interpret.execute_the_word: ; else
-  dw pfa_to_cfa_
-  dw execute_
-interpret.word_done: ; then
-  ;dw lit_,1,border_ ; XXX INFORMER
-  dw question_stack_
-  dw branch_,interpret.again
-interpret.word_not_found: ; else
-  ; word not found, try to convert the text to a number
-  dw here_,number_
-  dw dpl_,fetch_,one_plus_ ; is there a decimal point?
-  dw zero_branch_,interpret.16bit_number ; if
-  ; decimal point detected, so it's a double, 32-bit, number
-  dw two_literal_
-  dw branch_,interpret.number_done
-interpret.16bit_number: ; else
-  ; no decimal point, so it's a 16-bit number
-  dw drop_ ; discard high order part of the double number
-  ; XXX TODO use `c_literal` for 8-bit values.
-  dw literal_
-interpret.number_done: ; then
-  ;dw lit_,2,border_ ; XXX INFORMER
-  dw question_stack_
-
-interpret.again:
-  dw branch_,interpret.begin
-
-else ; XXX NEW -- version with modern `find`
-
 interpret.begin:
 
 ; doc{
@@ -5128,8 +4958,6 @@ interpret.16bit_number:
   ; XXX TODO use `c_literal` for 8-bit values.
   dw literal_
   dw branch_,interpret.begin
-
-endif
 
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
@@ -5743,9 +5571,6 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-
-if not fig_find?
-
   _colon_header defined_,'DEFINED'
 
 ; doc{
@@ -5774,8 +5599,6 @@ if not fig_find?
 
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
   _colon_header question_defined_,'?DEFINED'
 
@@ -5788,14 +5611,7 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
-if fig_find?
-  dw find_,dup_
-  dw zero_branch_,bracket_defined.end
-  dw nip_,nip_
-bracket_defined.end:
-else
   dw defined_,nip_
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5807,15 +5623,7 @@ endif
 ; ----------------------------------------------
   _colon_header tick_,"'"
 
-if fig_find?
-  dw find_
-  dw zero_equals_
-  _question_error not_found_error
-  ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
-  dw drop_,pfa_to_cfa_
-else
   dw defined_,question_defined_
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6436,6 +6244,17 @@ color:
 ; ----------------------------------------------
   _code_header j_,'J'
 
+; doc{
+;
+; j  ( -- x2 ) ( R: x1 x2 -- x1 x2 )
+;
+; x1 = loop index
+; x2 = loop limit
+;
+; Get a copy of the current (innermost) do-loop limit.
+;
+; }doc
+
   ld hl,(return_stack_pointer)
   ld de,cell*2
   add hl,de
@@ -6472,6 +6291,12 @@ do_two_constant:
 ; ----------------------------------------------
   _code_header two_over_,'2OVER'
 
+; doc{
+;
+; 2over  ( d1 d2 -- d1 d2 d1 )
+;
+; }doc
+
   ld hl,4
   add hl,sp
   jp two_fetch.hl
@@ -6479,11 +6304,37 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header exit_,'EXIT'
 
+; doc{
+; 
+; exit  ( -- ) ( R: a -- )  \ ANS Forth
+;
+; Return control to the calling definition, specified by the
+; address on the return stack.
+;
+; Before executing `exit` within a do-loop, a program shall
+; discard the loop-control parameters by executing `unloop`.
+;
+; }doc
+
+; XXX TODO combine with `;s`?
+
   dw r_drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header question_exit_,'?EXIT'
+
+; doc{
+; 
+; ?exit  ( f -- ) ( R: a | -- a | )
+;
+; If _f_ is non-zero, return control to the calling definition,
+; specified by the address on the return stack.
+; 
+; `?exit` is not intended to be used within a do-loop. Use `if
+; unloop exit then` instead.
+;
+; }doc
 
   dw question_branch_,exit_pfa
   dw semicolon_s_
