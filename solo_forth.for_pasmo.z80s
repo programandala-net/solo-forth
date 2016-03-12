@@ -5,14 +5,14 @@
 
 ; This file source is for the Pasmo assembler.
 ; As of now this is file used for the project,
-; but <solo_forth.for_binutils.z80s> is updated.
+; and <solo_forth.for_binutils.z80s> is not updated.
 
 ; *******************************************************
 
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508201924
+version_release:  equ 2015082517
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -172,7 +172,6 @@ version_release:  equ 201508201924
 ; I      Immediate. Has precedence bit set. Will execute even when compiling.
 ; U      A user variable.
 
-
 ; ==============================================================
 ; Configuration
 
@@ -217,6 +216,10 @@ ans_forth_block_size: equ false
 
   ; XXX TODO
 show_version: equ false
+
+  ; XXX the flag is harcoded in the code
+  ; XXX OLD
+;assembler_core_in_kernel: equ true
 
 ; ==============================================================
 ; Symbols
@@ -634,11 +637,19 @@ latest_nfa_in_root_voc.init_value:
 latest_nfa_in_forth_voc.init_value:
   dw latest_nfa_in_forth_voc
 
+if 1 ; assembler_core_in_kernel
+
 latest_nfa_in_assembler_voc.init_value:
   dw latest_nfa_in_assembler_voc
 
+endif
+
 voc_link.init_value:
+if 1 ; assembler_core_in_kernel
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
+else
+  dw forth_vocabulary_link ; link to the latest vocabulary defined
+endif
 
 user_variables_pointer:
   dw user_variables
@@ -675,10 +686,12 @@ r0_init_value:
   dw 0x0000 ; XXX OLD -- tib
 width_init_value:
   dw max_word_length
-warning_init_value:
+warnings_init_value:
+  dw true
+msg_scr_init_value:
   dw 0x0000
-  dw 0x0000 ; XXX OLD -- fence
-  dw 0x0000 ; XXX OLD -- dp
+dictionary_pointer_init_value:
+  dw dictionary_pointer_after_cold
 
   ; XXX TODO move
   dw 0x0000 ; XXX free
@@ -737,11 +750,12 @@ r0_value: ; +0x02
   dw 0x0000 ; XXX OLD -- tib
 width_value: ; +0x06
   dw max_word_length
-warning_value: ; +0x08
+warnings_value: ; +0x08
   dw 0x0000
-  ; +0x0A
-  dw 0x0000 ; XXX OLD -- fence
-  dw 0x0000 ; XXX OLD -- dp
+msg_scr_value:
+  dw 0x0000 ; +0x0A
+dictionary_pointer_value: ; +0x0C
+  dw dictionary_pointer_after_cold
 
   ; XXX TODO move
   dw 0x0000 ; +0x0E free
@@ -1056,6 +1070,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
 latest_nfa_in_root_voc: equ root_definitions_nfa
 
+if 1 ; assembler_core_in_kernel
+
 ; ----------------------------------------------
 ; Start compiling in the `assembler` vocabulary
 
@@ -1208,6 +1224,9 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw semicolon_s_
 
 latest_nfa_in_assembler_voc: equ fetchhl_comma_nfa
+;latest_nfa_in_assembler_voc: equ next_comma_nfa ; XXX OLD
+
+endif
 
 ; ----------------------------------------------
 ; Start compiling in the `forth` vocabulary
@@ -1215,12 +1234,37 @@ latest_nfa_in_assembler_voc: equ fetchhl_comma_nfa
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa
 
+if 0 ; assembler_core_in_kernel
 
 ; ----------------------------------------------
-  _colon_header label_,'LABEL'
+  _constant_header next_,'NEXT'
 
-  dw create_,asm_
-  dw semicolon_s_
+  dw next
+
+; ----------------------------------------------
+  ; _constant_header next_,'NEXT2'
+
+  ; ; XXX OLD -- added for the second version of `defer`, but
+  ; ; not needed
+  
+  ; dw next2
+
+; ----------------------------------------------
+  _constant_header pushhl_,'PUSHHL'
+
+  dw push_hl
+
+; ----------------------------------------------
+  _constant_header pushhlde_,'PUSHHLDE'
+
+  dw push_hlde
+
+; ----------------------------------------------
+  _constant_header fetchhl_,'FETCHHL'
+
+  dw fetch.hl
+
+endif
 
 ; ----------------------------------------------
   _colon_header also_,'ALSO'
@@ -1331,14 +1375,15 @@ forth_vocabulary_link:
   dw root_vocabulary_link
 
 ; ----------------------------------------------
-  _does_header assembler_,'ASSEMBLER',,do_vocabulary
+if 1 ; assembler_core_in_kernel
 
-; XXX TODO move `assembler` and everthing related
-; to the library disk?
+  _does_header assembler_,'ASSEMBLER',,do_vocabulary
 
   dw latest_nfa_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
+
+endif
 
 ; ----------------------------------------------
   _colon_header s_lit_,'SLIT'
@@ -1414,7 +1459,6 @@ bank.default:
 bank.names:
   ; XXX TODO ?
 bank.e:
-  ; ret ; XXX TMP for debugging
   ld a,(sys_bankm) ; get the saved status of BANKM
   and 0xF8 ; erase bits 0-2
   or e ; modify bits 0-2
@@ -1692,17 +1736,34 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
+  _code_header paren_do_,'(DO)'
+
+  ; [Code from CP/M fig-Forth 1.1g.]
+
+  exx                           ; 04t 01b
+  pop de                        ; 10t 01b
+  pop bc                        ; 10t 01b
+  ld hl,(return_stack_pointer)  ; 20t 03b
+  dec hl                        ; 06t 01b
+  ld (hl),b                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),c                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),d                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),e                     ; 07t 01b
+  ld (return_stack_pointer),hl  ; 16t 03b
+  exx                           ; 04t 01b
+                                ;116t 18b TOTAL
+  _jp_next
+
+; ----------------------------------------------
   _code_header paren_loop_,'(LOOP)'
 
-  ; XXX NOTE:
-  ;
-  ; This code is from Abersoft Fort.  It's the same code used in
-  ; `(+loop)` in fig-Forth 1.1g.  The author of Abersoft Forth
-  ; used it to write `(loop)` and wrote `(+loop)` with a simple
-  ; call to it, what saves code.
-  ;
-  ; XXX TODO -- The `(loop)` of DZX-Forth is much faster, but
-  ; requires and additional parameter on the return stack.
+  ; This code is from Abersoft Forth.  It's the same code used
+  ; in `(+loop)` in fig-Forth 1.1g.  The author of Abersoft
+  ; Forth used it to write `(loop)` and wrote `(+loop)` with a
+  ; simple call to it, what saves code.
 
   ld de,0x0001
 paren_loop.step_in_de:
@@ -1754,268 +1815,6 @@ paren_loop.end:
   jp paren_loop.step_in_de
 
 ; ----------------------------------------------
-
-if 0
-
-  _colon_header paren_question_do_,'(?DO)'
-
-  ; XXX TODO -- first draft, just copied from DZX-Forth
-
-  ; XXX FIXME -- crash in both cases
-
-  dw two_dup_,equals_
-  dw question_branch_,paren_question.end
-  dw paren_do_
-  dw semicolon_s_ ; XXX TODO exit_
-paren_question.end:
-  dw two_drop_
-  dw from_r_,fetch_,to_r_
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-  _code_header paren_do_,'(DO)'
-
-  ; [Code from CP/M fig-Forth 1.1g.]
-
-  exx                           ; 04t 01b
-  pop de                        ; 10t 01b
-  pop bc                        ; 10t 01b
-  ld hl,(return_stack_pointer)  ; 20t 03b
-  dec hl                        ; 06t 01b
-  ld (hl),b                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),c                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),d                     ; 07t 01b
-  dec hl                        ; 06t 01b
-  ld (hl),e                     ; 07t 01b
-  ld (return_stack_pointer),hl  ; 16t 03b
-  exx                           ; 04t 01b
-                                ;116t 18b TOTAL
-  _jp_next
-
-; ----------------------------------------------
-; XXX TODO experimental do-loop structures adapted from Spectrum Forth-83
-; and F83.
-
-; A do-loop pushes three items on the return stack:
-;
-; 0) Limit
-; 1) Reverse branch address (jump to here if loop repeats).
-; 2) Current index represented as `(index-limit) xor 0x8000`.
-;    This is at the top.
-;    The current index is represented this way so it is easier
-;    to check whether index has crossed the boundary between
-;    limit-1 and limit, acoording to
-;    the rules of Forth-83, even with negative increment in +LOOP.
-
-  _code_header paren_do83_,'(DO83)'
-
-  pop hl ; initial value
-  pop de ; limit
-paren_do83.de_hl
-  ; de = limit
-  ; hl = initial value
-  push hl ; initial value  ( initial )
-  ld hl,(return_stack_pointer)
-  dec hl
-  ld (hl),d
-  dec hl
-  ld (hl),e ; push limit value on return stack ( R: initial )
-  inc bc
-  inc bc ; increment the Forth IP, skip branch address
-  dec hl
-  ld (hl),b
-  dec hl
-  ld (hl),c ; push current instruction pointer on return stack
-  ex (sp),hl ; initial value now in HL, return stack pointer on stack
-  and a ; reset the carry flag
-  sbc hl,de ; B SBCP        \ Subtract limit value.
-  ld a,h ; H A LD
-  xor 0x80 ; 80 XOR#       \ Flip most significant bit.
-  ld d,a ; A B LD
-  ld e,l ; L C LD        \ Move result to DE.
-  pop hl ; H POP        \ Get return stack pointer from stack,
-  dec hl ; H DEC
-  ld (hl),d ; B M LD
-  dec hl ; H DEC
-  ld (hl),e ; C M LD        \ Push (initial - limit) XOR 0x8000 onto return stack.
-  ld (return_stack_pointer),hl ; RPTR STHL       \ Save return stack pointer.
-  _jp_next ; JPIX ;C
-
-  _code_header paren_question_do83_,'(?DO83)'
-
-  pop hl ; initial value
-  pop de ; limit
-  and a ; reset the carry flag
-  sbc hl,de ; compare
-  jr z,question_do.equals
-  ; not equals
-  ; XXX TODO move add after sbc and save one jump
-  add hl,de ; reverse the subtraction
-  jp paren_do83.de_hl ; perform regular `do`
-question_do.equals:
-  jp branch_pfa ; XXX TODO ?
-
-  _colon_header question_do83_,'?DO83',immediate
-
-  dw compile_,paren_question_do83_
-  dw forward_mark_
-if 1 ; fig_compiler_security
-  _literal 3
-endif
-  dw semicolon_s_
-
-  _colon_header do83_,'DO83',immediate
-
-  dw compile_,paren_do83_
-  dw forward_mark_
-if 1 ; fig_compiler_security
-  _literal 3
-endif
-  dw semicolon_s_
-
-  _colon_header loop83_,'LOOP83',immediate
-
-if 1 ; fig_compiler_security
-  _literal 3
-  dw question_pairs_
-endif
-  dw compile_,paren_loop83_
-  dw forward_resolve_
-  dw semicolon_s_
-
-  ; _colon_header plus_loop83_,'+LOOP83',immediate
-
-  ; dw c_lit_
-  ; db 3
-  ; dw question_pairs_
-  ; dw compile_,paren_plus_loop83_
-  ; dw forward_resolve_
-  ; dw semicolon_s_
-
-  _colon_header paren_loop83_,'(LOOP83)'
-
-  ld hl,(return_stack_pointer)
-  ld e,(hl) ; M C LD
-  inc hl    ; H INC
-  ld d,(hl) ; M B LD         \ Read current index value.
-  inc de    ; B INC         \ Increment it.
-  ld a,d    ; B A LD
-  xor 0x80  ; 80 XOR#
-  or e      ;  C OR         \ Was it equal to 0x8000 ?
-  jp nz,paren_loop83.loop ; jump if not
-
-  ; The real index has reached limit, terminate loop.
-  ; Increment ret stack pointer by 5 (1 increment already done).
-  ld de,5   ; 5 B LDP#
-  add hl,de ; B ADDP
-  ld (return_stack_pointer),hl ; RPTR STHL
-  _jp_next
-
-paren_loop83.loop:
-
-  ld (hl),d ;  B M LD
-  dec hl    ; H DEC
-  ld (hl),e ; C M LD    \ Store updated index.
-  inc hl    ; H INC
-  inc hl    ; H INC
-  ld c,(hl) ; M E LD
-  inc hl    ; H INC
-  ld c,(hl) ; M D LD   \ Read loop start address into instruction pointer, repeat loop.
-  _jp_next
-
-if 0 ; XXX TODO adapt
-
-; CODE (+LOOP83) ( w --- )
-;  RPTR LDHL     \ Read return stack pointer into HL.
-;    M C LD
-;     H INC
-;    M B LD      \ Read Current index.
-;      EXSP      \ HL now contains w, the increment value.
-;     A AND
-;    B ADCP      \ Add increment to index.
-;    v if
-;                \ If overflow, then boundary between limit-1 and limit is
-;                \ crossed, terminate loop.
-;      H POP     \ Get return stack pointer.
-;   5 B LDP#
-;     B ADDP
-;  RPTR STHL     \ Increment ret stack pointer by 5 (1 increment already done)
-;                \ and store updated ret stack pointer back.
-;    else
-;     H B LD
-;     L C LD     \ Move updated index to BC.
-;      H POP     \ Get return stack pointer.
-;     B M LD
-;      H DEC
-;     C M LD     \ Store updated index.
-;      H INC
-;      H INC
-;     M E LD
-;      H INC
-;     M D LD     \ Read loop start address into instruction pointer, repeat loop.
-;    then
-;  JPIX ;C
-
-; CODE LEAVE83
-;  RPTR LDHL     \ Read return stack pointer into HL.
-;     H INC
-;     H INC
-;    M E LD
-;     H INC
-;    M D LD      \ Get start address into DE.
-;     H INC
-;     H INC
-;     H INC
-; RPTR STHL      \ Write updated return stack pointer (6 was added).
-;     D DEC
-;     D DEC      \ DE (instruction pointer) now points to forward branch address
-;   'BRANCH @ JP ;C \ continue into BRANCH.
-
-; CODE I83  ( --- w)
-; RPTR LDHL        \ Read return stack pointer into HL.
-;   \ J jumps here.
-;   M C LD
-;    H INC
-;   M B LD         \ Read current index. (which is (index-limit) xor 0x8000.
-;    H INC
-;    H INC
-;    H INC
-;   M A LD         \ Read limit and add to index
-;    C ADD
-;   A C LD
-;    H INC
-;   M A LD
-;    B ADC
-;  80 XOR#         \ and flip most significant bit, getting true index value.
-;   A B LD
-;   B PUSH         \ Push result.
-; JPIX ;C
-
-; CODE J83 ( --- w)
-;   RPTR LDHL      \ Read return stack pointer into HL
-;   6 B LDP#
-;     B ADDP       \ Add 6 to it, to get to next inner loop parameters.
-;  'I @ 3 + JR ;C  \ Continue into I.
-
-; CODE I'83 ( --- w)
-;   RPTR LDHL      \ Read return stack pointer into HL
-;      H INC
-;      H INC
-;      H INC
-;      H INC
-;     M C LD
-;      H INC
-;     M B LD       \ Read limit value.
-;     B PUSH       \ Push result
-;     JPIX ;C
-
-endif
-
-; ----------------------------------------------
   _code_alias_header i_,'I',,r_fetch_
 
 ; doc{
@@ -2042,7 +1841,7 @@ endif
   pop hl  ; l=base
   pop de  ; e=character
   ld a,e  ; character
-  sub '0' ; >="0"
+  sub '0' ; >="0"?
   jp c,false_pfa ; <"0" is invalid
   cp 0x0A ; >"9"?
   jp m,digit.test_value ; no, test value
@@ -2353,10 +2152,23 @@ previous_key: equ $+1
 ;
 ; }doc
 
+if 0
+
+  ld hl,sys_last_k
+  ld (hl),0
+key.begin:
+  ld a,(sys_last_k)
+  and a
+  jr z,key.begin
+  jp push_a
+
+else
+
 ; XXX -- This version works also when the system interrupts are off.
 ; XXX TODO -- Add multitasker's `pause` when available.
 
   push bc
+  push ix ; XXX TMP
 key.begin:
   call rom_key_scan
   jr nz,key.begin
@@ -2368,8 +2180,11 @@ key.begin:
 key.end:
   ld hl,sys_last_k
   ld (hl),0
+  pop ix ; XXX TMP
   pop bc
   jp push_a
+
+endif
 
 ; ----------------------------------------------
   _code_header xkey_,'XKEY'
@@ -3319,6 +3134,7 @@ fetch.hl:
   _code_header c_fetch_,'C@'
 
   pop hl
+c_fetch.hl:
   ld l,(hl)
   ld h,0x00
   jp push_hl
@@ -3399,7 +3215,7 @@ do_colon:
   inc de ; de=pfa
   ld c,e
   ld b,d ; bc=pfa
-do_colon_end: ; XXX TMP for debugging
+do_colon.end: ; XXX TMP for debugging
   _jp_next
 
 ; ----------------------------------------------
@@ -3438,6 +3254,16 @@ do_colon_end: ; XXX TMP for debugging
   dw next ; code field
 
 ; ----------------------------------------------
+  _colon_header c_constant_,'CCONSTANT'
+
+  dw create_,c_comma_
+  dw paren_semicolon_code_
+do_c_constant:
+  inc de    ; de=pfa
+  ex de,hl  ; hl=pfa
+  jp c_fetch.hl
+
+; ----------------------------------------------
   _colon_header constant_,'CONSTANT'
 
   dw create_,comma_
@@ -3474,36 +3300,27 @@ do_constant:
 ; ----------------------------------------------
   _colon_header user_,'USER'
 
-  ; XXX TODO -- Use only one byte for storage,
-  ; but defining `cconstant` only for this does not seem a good idea.
 
-  dw constant_
+; doc{
+;
+; user  ( +n "name" -- )  \ Forth-83
+;
+; Create a user variable _name_.  _+n_ is the offset within the
+; user area where the value for _name_ is stored.  Execution of
+; _name_ leaves its absolute user area storage address.
+;
+; }doc
+
+  dw c_constant_
   dw paren_semicolon_code_
 do_user:
-;  _z80_border_wait 5 ; XXX INFORMER
   inc de      ; de=pfa
   ex de,hl
   ld e,(hl)
   ld d,0x00   ; de = index of the user variable
   ld hl,(user_variables_pointer)
   add hl,de   ; hl= address of the user variable
-;  _z80_border_wait 6 ; XXX INFORMER
   jp push_hl
-
-; ----------------------------------------------
-  _constant_header msg_scr_,'MSG-SCR'
-
-; doc{
-;
-; msg-scr  ( -- n )
-;
-; Constant: Screen where the error messages start.
-;
-; }doc
-
-; Idea taken from lina ciforth.
-
-  dw 0x0004
 
 ; ----------------------------------------------
   _constant_header zero_,'0'
@@ -3625,22 +3442,41 @@ do_user:
   db 0x06
 
 ; ----------------------------------------------
-  _user_variable_header warning_,'WARNING'
+  _user_variable_header warnings_,'WARNINGS'
 
   db 0x08
 
 ; ----------------------------------------------
-  _variable_header dp_,'DP'
+  _user_variable_header msg_scr_,'MSG-SCR'
 
-dictionary_pointer:
-  dw dictionary_pointer_after_cold
-dictionary_pointer_init_value:
-  dw dictionary_pointer_after_cold
+; doc{
+;
+; msg-scr  ( -- a )
+;
+; User variable that holds the screen number where the error
+; messages start, or zero. If it's zero, only the message number
+; will be shown.
+;
+; }doc
+
+  db 0x0A
+
+; ----------------------------------------------
+  _user_variable_header dp_,'DP'
+
+  db 0x0C
 
 ; ----------------------------------------------
   _variable_header voc_link_,'VOC-LINK'
 
+  ; XXX TODO -- this is used only by `.vocs`. use a brute search
+  ; instead in `.vocs` and remove this?
+
+if 1 ; assembler_core_in_kernel
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
+else
+  dw forth_vocabulary_link ; link to the latest vocabulary defined
+endif
 
 ; ----------------------------------------------
   _user_variable_header blk_,'BLK'
@@ -4448,6 +4284,7 @@ postpone.end:
 ; ----------------------------------------------
   _colon_header semicolon_code_,';CODE',immediate
 
+; XXX TODO move to the library?
 ; XXX TODO -- documentation
 ; doc{
 ;
@@ -4461,7 +4298,9 @@ postpone.end:
 
   dw question_csp_
   dw compile_,paren_semicolon_code_
+if 1 ; assembler_core_in_kernel
   dw asm_
+endif
   dw left_bracket_,smudge_
   dw semicolon_s_
 
@@ -4958,20 +4797,20 @@ stream.end:
   dw dup_,to_r_
   dw over_,skip_ ; ( c a2 )
 if  0
-  dw hex_
-  _echo 'In word after skip:' ; XXX INFORMER
-  dw cr_,dot_s_,cr_ ; XXX INFORMER
-  dw key_,drop_ ; XXX INFORMER
+;  dw hex_
+;  _echo 'In word after skip:' ; XXX INFORMER
+;  dw cr_,dot_s_,cr_ ; XXX INFORMER
+;  dw key_,drop_ ; XXX INFORMER
 endif
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`:
   dw swap_,scan_ ; ( a2 len )
 if  0
-  dw hex_
-  _echo 'In word after scan:' ; XXX INFORMER
-  dw cr_,two_dup_,type_ ; XXX INFORMER
-  dw cr_,dot_s_,cr_ ; XXX INFORMER
-  dw key_,drop_ ; XXX INFORMER
+  ; dw hex_
+  ; _echo 'In word after scan:' ; XXX INFORMER
+  ; dw cr_,two_dup_,type_ ; XXX INFORMER
+  ; dw cr_,dot_s_,cr_ ; XXX INFORMER
+  ; dw key_,drop_ ; XXX INFORMER
 endif
   dw dup_,one_plus_,to_in_,plus_store_
 
@@ -5300,7 +5139,7 @@ endif
   _colon_header error_,'ERROR'
 
   dw dup_,error_number_,store_ ; save the error number
-  dw warning_,fetch_,zero_less_than_ ; custom error routine?
+  dw warnings_,fetch_,zero_less_than_ ; custom error routine?
   dw question_branch_,paren_abort_pfa ; if so, branch to it
 
 error.message:
@@ -5342,10 +5181,12 @@ error.end:
   dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
   dw zero_branch_,header.continue
   ; The word is not unique.
-  dw cfa_to_nfa_
+  dw warnings_,fetch_
+  dw zero_branch_,header.continue
+  dw cfa_to_nfa_,id_dot_
+  _literal error.not_unique
+  dw warning_
 
-  dw id_dot_
-  _message error.not_unique
 header.continue:
 
     ; XXX TODO adapt to `parse-word`; now it works because
@@ -5378,10 +5219,14 @@ do_create:
   _jp_next
 
 ; ----------------------------------------------
+if 1 ; assembler_core_in_kernel
+
   _colon_header code_,'CODE'
 
   dw header_,store_csp_,asm_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header compare_,'COMPARE'
@@ -5789,18 +5634,12 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header quit_,'QUIT'
 
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw blk_,off_
   dw left_bracket_
 quit.do:
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw rp0_,fetch_,rp_store_
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw cr_
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw query_
-  ; XXX FIXME never reached before the crash
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw interpret_
   dw comp_question_
   dw question_branch_,quit.do
@@ -5846,6 +5685,7 @@ endif
 ; }doc
 
 if show_version
+  ; XXX TODO
   dw paren_dot_quote_
 ;  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
   _string "Solo Forth\rVersion "
@@ -5879,22 +5719,12 @@ boot:
 ; ----------------------------------------------
   _colon_header warm_,'WARM'
 
-  ; dw sp0_,fetch_,sp_store_
-  ; dw noop_ ; patched by `turnkey` ; XXX OLD
-  ; dw quit_
-  dw page_,abort_
+  dw display_,page_,abort_
   dw semicolon_s_
 
 warm_start:
-
-;  XXX TODO this works too
-;  ld hl,abort_
-;  ld ix,next ; restore IX
-;  jp next2
-
   call common_start
-  dw warm_ ; XXX FIXME -- this works
-;  dw abort_ ; XXX FIXME -- this crashes the system, why?
+  dw warm_
 
 ; ----------------------------------------------
   _colon_header cold_,'COLD'
@@ -5903,10 +5733,6 @@ warm_start:
   dw lit_,names_pointer_init_value,fetch_
   dw lit_,names_pointer,store_
   
-  ; Init the dictionary pointer.
-  dw lit_,dictionary_pointer_init_value,fetch_
-  dw lit_,dictionary_pointer,store_
-
   ; Init the disk buffers.
   dw empty_buffers_
 
@@ -5924,8 +5750,10 @@ warm_start:
   dw lit_,root_pfa,store_
   dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
   dw lit_,forth_pfa,store_
+if 1 ; assembler_core_in_kernel
   dw lit_,latest_nfa_in_assembler_voc.init_value,fetch_
   dw lit_,assembler_pfa,store_
+endif
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
 
@@ -5937,15 +5765,6 @@ warm_start:
   dw abort_
 
 cold_start:
-
-  ; XXX TODO -- experimental
-  ; ld hl,(sys_err_sp)
-  ; ld e,(hl)
-  ; inc hl
-  ; ld d,(hl)
-  ; ex de,hl
-  ; ld (sys_err_sp.backup),hl
-
 only_first_cold: ; XXX TMP -- temporary label
   call move_name_fields_to_memory_bank ; (only the first time)
 if 0 ; latin1_charset_in_bank
@@ -6232,6 +6051,20 @@ max.2:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header warning_,'WARNING'
+
+; doc{
+;
+; warning  ( n -- )
+;
+; }doc
+
+  dw warnings_,fetch_
+  dw question_branch_,message_pfa
+  dw drop_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header message_,'MESSAGE'
 
 ; doc{
@@ -6240,14 +6073,9 @@ max.2:
 ;
 ; }doc
 
-  ; XXX TODO -- depending on `warning`:
-  ;   0 : nothing
-  ;   true : number
-  ;   other : text
-
-  dw warning_,fetch_
+  dw msg_scr_,fetch_
   dw zero_branch_,message.number_only
-  dw error_to_line_,msg_scr_,dot_line_,space_
+  dw error_to_line_,msg_scr_,fetch_,dot_line_,space_
   dw semicolon_s_
 
 message.number_only:
@@ -6255,27 +6083,6 @@ message.number_only:
   _string 'MSG # '
   ; XXX TODO force decimal base
   dw dot_
-  dw semicolon_s_
-
-
-; ----------------------------------------------
-  _colon_header update_,'UPDATE'
-
-; doc{
-;
-; update  ( -- )  \ ANS-Forth
-;
-; Mark the most recently referenced block (pointed to by `prev`) as
-; altered. The block will subsequently be transferred automatically to
-; disk should its buffer be required for storage of a different block.
-;
-; }doc
-
-  ; XXX TODO move to the disk?
-
-  dw disk_buffer_,fetch_
-  dw lit_,0x8000,or_
-  dw disk_buffer_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6520,12 +6327,12 @@ block.end:
 ;   \ track0 = 0..79
 ;   \ track = 0..207
 ;   \ side = 0..1
-;   dup 10 mod 1+    ( n1 sector )
-;   swap dup 20 /    ( sector n1 track0 )
-;   swap 10 / 1 and  ( sector track0 side )
-;   128              ( sector track 128 )
-;   \ * +          ( sector track ) \ XXX OLD for true=1
-;   negate and or    ( sector track )  \ XXX NEW a bit faster, for true=-1
+;   dup 10 mod 1+       ( n1 sector )
+;   swap dup 20 /       ( sector n1 track0 )
+;   swap 10 / 1 and     ( sector track0 side )
+;   128                 ( sector track 128 )
+;   \ * +               ( sector track ) \ XXX OLD for true=1
+;   negate 128 and or   ( sector track )  \ XXX NEW a bit faster, for true=-1
 ;   flip or  ;
 ; ----
 ;
@@ -6642,7 +6449,7 @@ paren_transfer_block_pfa:
          ; e = sector 1..10
   pop ix ; address
   push bc ; save the Forth IP
-  ld a,2 ; drive ; XXX TMP
+  ld a,2 ; drive
   rst 8 ; G+DOS hook
 read_write_sector_command:
   ; G+DOS command already patched:
@@ -6674,14 +6481,6 @@ read_write_sector_command:
   ; Updated
   dw buffer_block_,dup_,write_buffer_
   dw disk_buffer_,store_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header flush_,'FLUSH'
-
-  ; XXX TODO -- move to the disk?
-
-  dw save_buffers_,empty_buffers_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6923,6 +6722,15 @@ endif
   ; dw branch_,do.common
 
 ; ----------------------------------------------
+  _colon_header do_not_,"DON'T",immediate
+
+  ; XXX TODO
+
+  dw two_dup_,equals_,question_exit_
+  dw two_drop_,r_drop_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header do_,'DO',immediate
 
   dw compile_,paren_do_
@@ -6935,6 +6743,16 @@ endif
 
 ; ----------------------------------------------
   _colon_header loop_,'LOOP',immediate
+
+; XXX TODO documentation
+; doc{
+;
+; loop  ( -- )  \ Forth-79
+;
+; Increment the `do-loop` index by one, terminating the loop  if
+; the new index is equal to or greater than  the  limit.
+;
+; }doc
 
 if 1 ; fig_compiler_security
   _literal 3 ; error checking number
@@ -6989,7 +6807,9 @@ endif
 
 ; doc{
 ;
-; repeat  ( compilation: a1 n1 a2 n2 -- )
+; repeat
+;
+;   Compilation: ( a1 n1 a2 n2 -- )
 ;
 ; a1 = address of `begin` to branch to
 ; n1 = `begin` check number
@@ -7005,7 +6825,7 @@ endif
   dw again_ ; unconditional branch back to `begin`
   dw two_from_r_
   ; dw two_minus_ ; restore 2 to be checked by `then` ; XXX OLD -- unnecessary
-  ; XXX TODO why unncessary?
+  ; XXX TODO why unnecessary?
   dw then_ ; resolve the forward branching needed by `while`
   dw semicolon_s_
 
@@ -7042,10 +6862,6 @@ endif
 
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate
-
-  ; XXX FIXME Pasmo bug?
-  ; The system crashes when conditional compilation
-  ; is used here, in any combination. Very strange.
 
 if 1 ; fig_compiler_security
 
@@ -7415,55 +7231,31 @@ endif
 
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
 
-  ; XXX TODO -- experimental
-; sys_err_sp.backup: equ $+1
-;   ld hl,0
-;   push hl
-;   ld (sys_err_sp),sp
-
 if 0 ; latin1_charset_in_bank
   ; Restore the default charset:
   ld hl,15360
   ld (sys_chars),hl
 endif
 
-if 0
-  ; shows the STOP message, but halts
-  ld sp,(sys_err_sp)
-  pop bc ; remove old error return address
-  ld bc,0x1303 ; BASIC entry point in ROM
-  push bc ; push it so the next error will return to BASIC command line
-endif
-
-  im 1 ; interrupt mode 1, normal situation
+  im 1 ; interrupt mode 1, normal situation of the OS
 
 system_stack_pointer: equ $+1
-if 1
   ld sp,0 ; restore the system stack
-else
-  ; no difference when sp is not restored at the end
-  ld hl,0 ; XXX TMP
-endif
 
-if 1
-
-; The Complete Spectrum ROM Disassembly (p201) states:
-; http://www.worldofspectrum.org/infoseekid.cgi?id=2000076
+; The Complete Spectrum ROM Disassembly
+; (http://www.worldofspectrum.org/infoseekid.cgi?id=2000076),
+; page 201, states:
 ;
 ; For a successful return to BASIC, H'L' must on exit from the
 ; machine code contain the address in SCANNING of the 'end-calc'
 ; instruction, 2758 hex (10072 decimal).
 
-  ; no difference
   ld hl,0x2758
   exx
-endif
 
   ; Exit to BASIC:
-bye.end ; XXX TMP for debugging
   rst 0x08
   db 0x08 ; "STOP" BASIC error
-  ;db 0xFF ; "OK" BASIC error
 
 ; ----------------------------------------------
   _code_header two_drop_,'2DROP'
@@ -7496,7 +7288,7 @@ bye.end ; XXX TMP for debugging
 ; ----------------------------------------------
   _colon_header unused_,'UNUSED'
 
-  ; XXX TMP
+  ; XXX TODO -- adapt the the common heap is implemented
   dw zero_,here_,minus_
   dw semicolon_s_
 
@@ -7565,7 +7357,7 @@ at_pfa.last_line:
 
   pop hl
   ld a,l
-  out(0xFE),a
+  out (border_port),a
 
   ; The system variable that holds the attributes of the lower
   ; part of the screen, unnecessary in Solo Forth, must be
@@ -7640,157 +7432,6 @@ color:
   rst 0x10
   call rom_set_permanent_colors_0x1CAD
   _jp_next
-
-; ----------------------------------------------
-  _code_header emitted_,'EMITTED'
-
-  ; [Code adapted and modified from the ZX Spectrum ROM routine
-  ; S-SCRN$-S at 0x2535.]
-
-; doc{
-;
-; emitted  ( col row -- n | 0 )
-;
-; Return the ordinal number _n_ (first is 1) of the character
-; printed at the given screen coordinates, or 0 if no character
-; can be recognized on that position of the screen.
-;
-; This word must be configured by `emitted-charset` and
-; `#emitted-chars`, that set the address of the first character
-; and the number of characters to compare with. By default the
-; printable ASCII chars of the ROM charset are used.
-;
-; The result _n_ is the ordinal number (first is 1) of the
-; recognized char in the specified charset. Example: with the
-; default configuration, a recognized space char would return 1;
-; a "!" char, 2; a "A", 34...
-;
-; This word is meant to be used with user defined graphics.
-;
-; }doc
-
-  ; XXX TODO improve the result
-  ;
-  ; XXX TODO move to the disk
-  ;
-  ; XXX TODO rename?: `ocr`, `recognized`, `on-xy`, `xy-char`?
-  ; The reasen is name clash with the fig-Forth `out` counter,
-  ; that was going to be called `emitted` or `#emitted`.
-
-  pop de ; row
-  pop hl ; col
-  push bc ; save the Forth IP
-  ld b,l ; column
-  ld c,e ; row
-  ld hl,(emitted_charset_pfa) ; address of first printable char in the charset
-  ld a,c  ; row
-  rrca
-  rrca
-  rrca ; multiply by 0x20
-  and  %11100000
-  xor  b ; combine with column (0x00..0x1F)
-  ld  e,a ; low byte of top row = 0x20 * (line mod 8) + column
-  ld  a,c  ; row is copied to a again
-  and  0x18
-  xor  0x40
-  ld  d,a ; high byte of top row = 64 + 8*int (line/8)
-  ; de = screen address
-  ld a,(hash_emitted_chars_pfa) ; number of chars in the charset
-  ld b,a
-
-emitted.do:
-  push  bc  ; save the characters count
-  push  de  ; save the screen pointer
-  push  hl  ; save the character set pointer (bitmap start)
-  ld  a,(de)  ; get first scan of screen character
-  xor  (hl)  ; match with scan from character set
-  jp z,emitted.match  ; jump if direct match found
-  ; if inverse, a=0xFF
-  inc  a  ; inverse? (if inverse, a=0)
-  jp  nz,emitted.next_char  ; jump if inverse match not found
-  ; inverse match
-  dec  a  ; restore 0xFF
-emitted.match:
-  ld  c,a  ; inverse mask (0x00 or 0xFF)
-  ld  b,0x07  ; count 7 more character rows
-emitted.scans:
-  inc  d  ; next screen scan (add 0x100)
-  inc  hl  ; next bitmap address
-  ld  a,(de)  ; screen scan
-  xor  (hl)  ; will give 0x00 or 0xFF (inverse)
-  xor  c  ; inverse mask to include the inverse status
-  jp  nz,emitted.next_char  ; jump if no match
-  djnz  emitted.scans  ; jump back till all scans done
-
-  ; character match
-  pop  bc  ; discard character set pointer
-  pop  bc  ; discard screen pointer
-  pop  bc  ; final count
-  ld a,(hash_emitted_chars_pfa) ; number of chars in the charset
-  sub  b ; ordinal number of the matched character (1 is the first)
-  ld l,a
-  jp emitted.end
-
-emitted.next_char:
-  pop  hl  ; restore character set pointer
-  ld  de,0x0008  ; move it on 8 bytes
-  add  hl,de  ; to the next character in the set
-  pop  de  ; restore the screen pointer
-  pop  bc  ; restore the counter
-  djnz  emitted.do  ; loop back for the 96 characters
-  ; no match
-  ld l,b ; zero
-
-emitted.end:
-  pop bc ; restore the Forth IP
-  ld h,0
-  jp push_hl
-
-; ----------------------------------------------
-  _variable_header emitted_charset_,'EMITTED-CHARSET'
-
-; doc{
-;
-; emitted-charset  ( -- a )
-;
-; Variable that holds the address of the first printable char in
-; the charset used by `emitted`. By default it contains 0x3D00, the
-; address of the space char in the ROM charset.
-;
-; }doc
-
-  dw 0x3D00 ; address of the space in the ROM charset
-
-; ----------------------------------------------
-  _variable_header hash_emitted_chars_,'#EMITTED-CHARS'
-
-; doc{
-;
-; #emitted-charset  ( -- a )
-;
-; Variable that holds the number of printable chars in the
-; charset used by `emitted`. By default it contais 0x5F, the
-; number of printable ASCII chars in the ROM charset.
-;
-; }doc
-
-  dw 0x5F ; printable ASCII chars in the ROM charset
-
-; ----------------------------------------------
-  _code_header j_,'J'
-
-; doc{
-;
-; j  ( -- x ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 ) \ ANS Forth
-;
-; Return a copy of the next-outer loop index.
-;
-; }doc
-
-  ld hl,(return_stack_pointer)
-  ld de,cell*2
-  add hl,de
-  jp fetch.hl
 
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
@@ -7946,26 +7587,6 @@ question_next_screen.end:
 ;  dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dot_context_,".CONTEXT"
-
-; XXX TMP for debuggging; already in the disk
-
-; : .context  ( -- )  context #vocs 0 do
-;                       dup @ ?dup if  pfa>nfa id.  then  cell+
-;                     loop drop  ;
-
-  dw context_,hash_vocs_,zero_,paren_do_
-dot_context.do:
-  dw dup_,fetch_,question_dup_
-  dw zero_branch_,dot_context.end
-  dw pfa_to_nfa_,id_dot_
-dot_context.end:
-  dw cell_plus_
-  dw paren_loop_,dot_context.do
-  dw drop_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header question_backslash_,'?\',immediate
 
 ; doc{
@@ -8054,12 +7675,6 @@ if 0 ; latin1_charset_in_bank
 endif
   ld e,default_bank
   call bank.e
-
-  ; Erase the default bank (not necessary) ; XXX OLD
-  ; ld hl,names_bank_address ; the first byte is 0
-  ; ld de,names_bank_address+1
-  ; ld bc,sys_screen
-  ; ldir
 
   ; Remove the call to this routine:
   ld hl,only_first_cold ; address of the call to this routine

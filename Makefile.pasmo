@@ -15,8 +15,8 @@
 # Config
 
 kernel_source_file = solo_forth.for_pasmo.z80s
-#pasmo=/usr/local/bin/pasmo.054beta2
-pasmo=/usr/local/bin/pasmo.053
+pasmo=/usr/local/bin/pasmo.054beta2
+#pasmo=/usr/local/bin/pasmo.053
 
 ################################################################
 # Main

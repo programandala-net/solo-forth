@@ -184,10 +184,6 @@ New: `d>s`.
 
 .2015-08-22:
 
-Strange problems at the end of the compilation of Fasmo. No: the
-reason is the required word in the circular string buffer is
-overwritten!
-
 use `create x asm ... end-asm` instead of `label ...`, easier.
 
 New: `just-plot` or `set-pixel` to plot without changing the

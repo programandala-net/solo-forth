@@ -119,10 +119,6 @@ decode dump
   \ Assembler:
 \ Error #30: Branch too long.
 
-( debug ) \ scr 6 for debugging
-
-( debug ) \ scr 7 for debugging
-
   \ }}} =======================================================
   \ Strings {{{
 
@@ -172,7 +168,7 @@ require -rot
 
 ( -rot )
 
-  \ 2015-06-05: Copied from Afera.
+  \ [Code adapted from Afera.]
 
 code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
@@ -195,7 +191,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   F1 c,           \ pop af
   pushhlde,       \ jp pushhlde
 
-end-code
+  end-code
 
   \ }}} =======================================================
   \ Return stack {{{
@@ -252,6 +248,143 @@ code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
   \ }}} =======================================================
   \ Graphics {{{
 
+( emmited )
+
+  \ ; ----------------------------------------------
+  \   _code_header emitted_,'EMITTED'
+
+  \   ; [Code adapted and modified from the ZX Spectrum ROM routine
+  \   ; S-SCRN$-S at 0x2535.]
+
+  \ ; doc{
+  \ ;
+  \ ; emitted  ( col row -- n | 0 )
+  \ ;
+  \ ; Return the ordinal number _n_ (first is 1) of the character
+  \ ; printed at the given screen coordinates, or 0 if no character
+  \ ; can be recognized on that position of the screen.
+  \ ;
+  \ ; This word must be configured by `emitted-charset` and
+  \ ; `#emitted-chars`, that set the address of the first character
+  \ ; and the number of characters to compare with. By default the
+  \ ; printable ASCII chars of the ROM charset are used.
+  \ ;
+  \ ; The result _n_ is the ordinal number (first is 1) of the
+  \ ; recognized char in the specified charset. Example: with the
+  \ ; default configuration, a recognized space char would return 1;
+  \ ; a "!" char, 2; a "A", 34...
+  \ ;
+  \ ; This word is meant to be used with user defined graphics.
+  \ ;
+  \ ; }doc
+
+  \   ; XXX TODO improve the result
+  \   ;
+  \   ; XXX TODO move to the disk
+  \   ;
+  \   ; XXX TODO rename?: `ocr`, `recognized`, `on-xy`, `xy-char`?
+  \   ; The reasen is name clash with the fig-Forth `out` counter,
+  \   ; that was going to be called `emitted` or `#emitted`.
+
+  \   pop de ; row
+  \   pop hl ; col
+  \   push bc ; save the Forth IP
+  \   ld b,l ; column
+  \   ld c,e ; row
+  \   ld hl,(emitted_charset_pfa) ; address of first printable char in the charset
+  \   ld a,c  ; row
+  \   rrca
+  \   rrca
+  \   rrca ; multiply by 0x20
+  \   and  %11100000
+  \   xor  b ; combine with column (0x00..0x1F)
+  \   ld  e,a ; low byte of top row = 0x20 * (line mod 8) + column
+  \   ld  a,c  ; row is copied to a again
+  \   and  0x18
+  \   xor  0x40
+  \   ld  d,a ; high byte of top row = 64 + 8*int (line/8)
+  \   ; de = screen address
+  \   ld a,(hash_emitted_chars_pfa) ; number of chars in the charset
+  \   ld b,a
+
+  \ emitted.do:
+  \   push  bc  ; save the characters count
+  \   push  de  ; save the screen pointer
+  \   push  hl  ; save the character set pointer (bitmap start)
+  \   ld  a,(de)  ; get first scan of screen character
+  \   xor  (hl)  ; match with scan from character set
+  \   jp z,emitted.match  ; jump if direct match found
+  \   ; if inverse, a=0xFF
+  \   inc  a  ; inverse? (if inverse, a=0)
+  \   jp  nz,emitted.next_char  ; jump if inverse match not found
+  \   ; inverse match
+  \   dec  a  ; restore 0xFF
+  \ emitted.match:
+  \   ld  c,a  ; inverse mask (0x00 or 0xFF)
+  \   ld  b,0x07  ; count 7 more character rows
+  \ emitted.scans:
+  \   inc  d  ; next screen scan (add 0x100)
+  \   inc  hl  ; next bitmap address
+  \   ld  a,(de)  ; screen scan
+  \   xor  (hl)  ; will give 0x00 or 0xFF (inverse)
+  \   xor  c  ; inverse mask to include the inverse status
+  \   jp  nz,emitted.next_char  ; jump if no match
+  \   djnz  emitted.scans  ; jump back till all scans done
+
+  \   ; character match
+  \   pop  bc  ; discard character set pointer
+  \   pop  bc  ; discard screen pointer
+  \   pop  bc  ; final count
+  \   ld a,(hash_emitted_chars_pfa) ; number of chars in the charset
+  \   sub  b ; ordinal number of the matched character (1 is the first)
+  \   ld l,a
+  \   jp emitted.end
+
+  \ emitted.next_char:
+  \   pop  hl  ; restore character set pointer
+  \   ld  de,0x0008  ; move it on 8 bytes
+  \   add  hl,de  ; to the next character in the set
+  \   pop  de  ; restore the screen pointer
+  \   pop  bc  ; restore the counter
+  \   djnz  emitted.do  ; loop back for the 96 characters
+  \   ; no match
+  \   ld l,b ; zero
+
+  \ emitted.end:
+  \   pop bc ; restore the Forth IP
+  \   ld h,0
+  \   jp push_hl
+
+  \ ; ----------------------------------------------
+  \   _variable_header emitted_charset_,'EMITTED-CHARSET'
+
+  \ ; doc{
+  \ ;
+  \ ; emitted-charset  ( -- a )
+  \ ;
+  \ ; Variable that holds the address of the first printable char in
+  \ ; the charset used by `emitted`. By default it contains 0x3D00, the
+  \ ; address of the space char in the ROM charset.
+  \ ;
+  \ ; }doc
+
+  \   dw 0x3D00 ; address of the space in the ROM charset
+
+  \ ; ----------------------------------------------
+  \   _variable_header hash_emitted_chars_,'#EMITTED-CHARS'
+
+  \ ; doc{
+  \ ;
+  \ ; #emitted-charset  ( -- a )
+  \ ;
+  \ ; Variable that holds the number of printable chars in the
+  \ ; charset used by `emitted`. By default it contais 0x5F, the
+  \ ; number of printable ASCII chars in the ROM charset.
+  \ ;
+  \ ; }doc
+
+  \   dw 0x5F ; printable ASCII chars in the ROM charset
+
 ( pixel )
 
 require pixel-add
@@ -274,10 +407,10 @@ code pixel  ( xc yc -- n a )
 
 ( pixel-add )
 
-  \ 2015-06-11: Written.
-  \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
+require z80-asm
 
-label pixel-add  ( -- )  hex
+create pixel-add  ( -- a )
+
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
@@ -288,10 +421,13 @@ label pixel-add  ( -- )  hex
   \   hl = address of the pixel byte in the screen bitmap
   \   a = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
+
+  asm
   3E c, BF c,   \ ld a,191 ; max Y coordinate
   90 00 + c,    \ sub b
   C3 c, 22B0 ,  \ jp 0x22B0 ; and return
   decimal
+  end-asm
 
 ( plot )
 
@@ -322,11 +458,7 @@ code plot  ( xc yc -- )
 
 ( plotted? )
 
-  \ 2015-06-04: Copied from Afera.
-  \ 2015-06-11: Modified to use the whole screen.
-  \ 2015-08-22: Converted to the Fasmo assembler.
-
-require pixel-add  require fasmo
+require pixel-add  require z80-asm
 
 code plotted?  ( xc yc -- f )
   hl pop  de pop  bc push
@@ -348,14 +480,11 @@ code plotted?  ( xc yc -- f )
 
 ( plotted? )
 
-  \ 2015-06-04: Copied from Afera.
-  \ 2015-06-11: Modified to use the whole screen.
-
   \ XXX OLD -- version for true=1
 
 require pixel-add
 
-code plotted1?  ( xc yc -- f )
+code plotted?  ( xc yc -- f )
   \ f = 1 or 0
   E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
   \ l = y coordinate
@@ -383,7 +512,7 @@ code plotted1?  ( xc yc -- f )
 
   \ [Code adapted from Spectrum Forth-83's `DRAW`.]
 
-require fasmo  \ assembler
+require z80-asm
 
 code rdraw  ( x y -- )
 
@@ -465,7 +594,9 @@ code attr ( line col -- b )
 
 ( attr-addr )
 
-label attr-addr  ( -- )
+require z80-asm
+
+create attr-addr  ( -- a )
 
   \ Modified version of the ROM routine at 0x2583.
 
@@ -476,6 +607,8 @@ label attr-addr  ( -- )
   \   e = line (0..23)
   \ Output:
   \   hl = address of the attribute in the screen
+
+  asm
 
   78 03 + c, \ ld a,e  ; line to a 0x00..0x17   (max 00010111)
   0F c, 0F c, 0F c, \ rrca | rrca | rrca  ; rotate bits left
@@ -520,7 +653,7 @@ code emitted? ( row col -- f )
   \ ld ix,next ; restore
   \ jp push_hl
 
-end-code
+  end-code
 
 ( circle )
 
@@ -535,14 +668,16 @@ end-code
   \ Note. original ROM circles are slightly displaced to the
   \ right as noticed.
 
-  \ 2015-08-21: Start.
-
   \ XXX TODO
 
-label circle-plot
+require z80-asm
+
+create circle-plot  ( -- a )
+  asm
   hl push  bc push  de push
   ' plot cfa>pfa call  \ XXX TODO
   de pop  bc pop  hl pop  ret
+  end-asm
 
 code circle  ( x y radius -- )
 
@@ -685,15 +820,15 @@ code circle  ( x y radius -- )
     \ ret
 
 
-end-code
+  end-code
 
 ( fade )
 
-  \ [Code adapted from Microhobby Especial,
-  \ issue 7, 1987-12, page 46:
+  \ [Code adapted from a routine written by Pablo Ariza,
+  \ published in Microhobby Especial, issue 7 (1987-12), page 46:
   \ <http://microhobby.org/mhes7.htm>.]
 
-require fasmo
+require z80-asm
 
 code fade  ( -- )
   bc push
@@ -712,7 +847,71 @@ code fade  ( -- )
   end-code
 
   \ }}} =======================================================
-  \ Sound {{{
+  \ Sound 128K {{{
+
+( tone sound )
+
+  \ [Code from Spectrum Forth-83.]
+  \ XXX TODO finish, document and test
+
+require bleep
+
+: tone
+  437.500 2 pick um/mod under >r 1000 */ r> bleep ;
+
+: sound  ( n1 n2 -- )  65533 p! 49149 p! ;
+
+: freq
+  2* 109.375 3 roll
+  um/mod  under 256 /mod 2 pick
+  1+  sound  swap sound ;
+
+: vol  ( n1 n2 -- )  8 + sound ;
+: tones  ( -- )  56 7 sound ;
+: shutup  ( -- )  -1 7 sound ;
+: noise  ( -- )  7 7 sound ;
+
+-->
+
+( note )
+
+  \ [Code from Spectrum Forth-83.]
+  \ XXX TODO finish, document and test
+
+require ms
+
+variable len  variable temp  variable oct  variable volume
+2 len !  200 temp !  8 oct !
+16 constant z
+
+: note  ( n "name" -- )
+  create  ,
+  does>   @ oct @ * z / lo @ 0=
+          if    1 freq tones
+                temp @ len @ * ms shutup
+          else  temp @ len @ * swap tone  then ;
+
+523 note c  554 note c# 583 note d  622 note d#
+659 note e  698 note f  740 note f# 784 note g
+831 note g# 880 note a  932 note a# 988 note b
+
+-->
+
+( o+ o- << >> )
+
+  \ [Code from Spectrum Forth-83.]
+  \ XXX TODO finish, document and test
+
+: l len ! ;
+: o+ oct @ 2 * oct ! ;
+: o- oct @ 2 / oct ! ;
+: r temp @ len @ * ms ;
+: >> 1 volume @ 1+ vol 1 volume +! ;
+: << 1 volume @ 1- vol -1 volume +! ;
+15 volume ! 1 15 vol
+
+  \ }}} =======================================================
+  \ Sound 48K {{{
 
 ( bleep )
 
@@ -730,12 +929,75 @@ code bleep  ( n1 n2 -- )
   end-code
 
   \ [Code from v.Forth, not tested:]
+  \ XXX TODO test
 
 : bleep-calc  ( freq duration -- n1 n2 )
   \ n1 = duration
   \ n2 = pitch
-  OVER 1000 */ SWAP
-  4375 100 ROT */ 30 -  ;
+  over 1000 */ swap
+  4375 100 rot */ 30 -  ;
+
+( shoot )
+
+  \ Shoot sound for ZX Spectrum 48K.
+  \ Author of the original code: Álvaro Corredor Lanas.
+  \ Published in Microhobby, issue 126 (1987), page 7:
+  \ http://microhobby.org/numero126.htm
+  \ http://microhobby.speccy.cz/mhf/126/MH126_07.jpg
+
+  \ XXX FIXME no sound!
+
+require z80-asm
+
+create (shoot)  ( -- a )
+  asm       af push  bc push  de push  hl push  03BC call
+            hl pop   de pop   bc pop   af pop   ret
+  end-asm
+
+code shoot  ( -- )
+  bc push
+  5 a ld#   begin
+              di  0014 bc ldp#  012C hl ldp#  0007 de ldp#
+              here  (shoot) call  djnz
+              0014 bc ldp#  nop  005A hl ldp#  0005 de ldp#
+              here  (shoot) call  djnz  hl ink  djnz
+            a dec z until  ei
+  bc pop  next ldix  next,
+  end-code
+
+( explosion )
+
+  \ Explosion sound for ZX Spectrum 48K.
+  \ Author of the original code: Ricardo Serral Wigge.
+  \ Published in Microhobby, issue 125 (1987), page 26:
+  \ http://microhobby.org/numero125.htm
+  \ http://microhobby.speccy.cz/mhf/125/MH125_26.jpg
+
+require z80-asm
+
+  \ XXX FIXME no sound!
+
+code explosion  ( -- )
+
+  bc push  \ save the Forth IP
+
+  0000 hl ldp#  \ start of ROM
+  0300 bc ldp#  \ 768*8 bits
+
+  5C48 fta  sra sra sra  07 and#  a d ld
+    \ d = border color (in bits 0-2)
+
+  here  m e ld  hl incp  bc decp  bc push
+        08 b ld#  \ bit counter
+        here  10 and#  e rl  d or  FE out  \ beep
+              djnz
+        bc pop  c a ld  b or
+        jrnz
+
+  bc pop  \ restore the Forth IP
+  next,
+
+  end-code
 
   \ }}} =======================================================
   \ Memory access {{{
@@ -762,6 +1024,8 @@ code bleep  ( n1 n2 -- )
 
 : within  ( n1|u1 n2|u2 n3|u3 -- f )
   over - >r - r> u<  ;
+
+require -rot
 
 : between  ( n1|u1 n2|u2 n3|u3 -- flag )
   over - -rot - u< 0=  ;
@@ -790,9 +1054,9 @@ code bleep  ( n1 n2 -- )
 
 ( lshift )
 
-code lshift  ( x1 u -- x2 )
-
   \ [Code from DZX-Forth.]
+
+code lshift  ( x1 u -- x2 )
 
   D1 c,           \ pop de
   E1 c,           \ pop hl
@@ -803,7 +1067,7 @@ code lshift  ( x1 u -- x2 )
   29 c,           \ add hl,hl
   C3 c, ,         \ jp begin
 
-end-code
+  end-code
 
 ( rshift )
 
@@ -813,18 +1077,18 @@ code rshift  ( x1 u -- x2 )
 
   \ [Code from DZX-Forth.]
 
-  \ pop de
-  \ pop hl
-  \ inc e
-\ rshift_.1:
-  \ dec e
-  \ jp z,push_hl
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
   \ or a
   \ ld a,h
   \ call sra_hl.1 ; XXX TODO this is in the kernel
-  \ jp rshift_.1
+  C3 c, ,         \ jp begin
 
-end-code
+  end-code
 
 ( Symmetric-division operators )
 
@@ -867,9 +1131,6 @@ end-code
 
 ( [if] [else] [then] )
 
-  \ 2015-06-04: Copied from Afera.
-  \ 2015-06-25: Fully adapted.
-
 [defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
 
 : [else]  ( "..." -- )
@@ -887,6 +1148,49 @@ end-code
 : [if]  ( "..." -- )  0= if postpone [else] then  ; immediate
 
 : [then]  ( -- )  ; immediate
+
+  \ }}} =======================================================
+  \ Disk files {{{
+
+  \ XXX TODO From Afera.
+
+  \ }}} =======================================================
+  \ Disk blocks {{{
+
+( update flush )
+
+: update  ( -- ) 
+
+  \ doc{
+  \
+  \ update  ( -- )  \ ANS-Forth
+  \
+  \ Mark the most recently referenced block as altered. The
+  \ block will subsequently be transferred automatically to
+  \ disk should its buffer be required for storage of a
+  \ different block.
+  \
+  \ }doc
+
+  disk-buffer @
+  [ base @ hex ] 8000 [ base ! ] or
+  disk-buffer !  ;
+
+: flush  ( -- )  save-buffers empty-buffers  ;
+
+  \ doc{
+  \
+  \ flush  ( -- )  \ ANS Forth
+  \
+  \ Perform the function of `save-buffers`, then unassign all
+  \ block buffers.
+  \
+  \ }doc
+
+  \ }}} =======================================================
+  \ Tape files {{{
+
+  \ XXX TODO From Afera.
 
   \ }}} =======================================================
   \ Tools {{{
@@ -955,7 +1259,7 @@ variable old-voc-link
          0 constant [false] immediate
 [false] 0= constant [true]  immediate
 
-( hex. hexb. dhex. hex{ )
+( hex. hexb. dhex. <hex hex> )
 
   \ 2015-06-20: Adapted from lina (Copyright (c) 2000-2004
   \ Albert van der Horst, The Netherlands).
@@ -965,10 +1269,10 @@ variable old-voc-link
 [defined] (d.)
 ?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
 
-: hex{  ( -- )  base @ base' ! hex ; \ switch to hex
-: }hex  ( -- )  base' @ base !     ; \ and back
+: <hex  ( -- )  base @ base' ! hex ; \ switch to hex
+: hex>  ( -- )  base' @ base !     ; \ and back
 
-: (dhex.)  ( d n -- )  hex{ (d.) }hex type space  ;
+: (dhex.)  ( d n -- )  <hex (d.) hex> type space  ;
 : dhex.    ( d -- )  8 (dhex.)  ;
 : hex.     ( n -- )  s>d 4 (dhex.)  ;
 : hexb.    ( b -- )  s>d 2 (dhex.)  ;
@@ -1353,7 +1657,7 @@ code @p  ( ca -- c )
   C1 c,           \ pop bc
   26 c, 00 c,     \ ld h,0x00
   pushhl,         \ jp pushhl
-end-code
+  end-code
 
 ( !p )
 
@@ -1370,7 +1674,7 @@ code !p  ( c ca -- )
   C1 c,           \ pop bc
   next,           \ jp (ix)
 
-end-code
+  end-code
 
   \ }}} =======================================================
   \ Turnkey {{{
@@ -1621,9 +1925,130 @@ width !
   \ }}} =======================================================
   \ Control structures {{{
 
-( k )
+( ?do )
 
-  \ [Word from Gforth.]
+  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
+  \ Draft by Rod Pemberton
+
+  \ XXX TODO
+
+: (do)  ( n1 n2 -- )  2>r  ;
+
+: (?do) 2dup = if 2drop r> drop then ;
+  \ exit the calling word 
+
+: (loop) ; 
+  ( increments index -2nd item- on return stack) 
+  ( calculates flag for until )
+
+: (+loop) ; 
+
+: do      postpone (do) postpone begin
+  ; immediate 
+
+: ?do     postpone (?do) postpone (do) postpone begin
+  ; immediate 
+
+: loop    postpone (loop) postpone until postpone unloop
+  ; immediate 
+
+: +loop   postpone (+loop) postpone until postpone unloop
+  ; immediate 
+
+
+
+  \ : unloop 
+  \   ( removes 2nd and 3rd return stack items ) 
+  \   ( 1st return stack item is itc saved ip for unloop ) ; 
+  \ : i ( gets 2nd return stack item to data stack ) ; 
+  \ : j ( gets 4th ... ) ; 
+  \ : k ( gets 6th ... ) ; 
+
+( ?do )
+
+  \ From:
+  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
+
+  \ Draft by Elisabeth Rather.
+
+: do ( -- flag addr) 
+    postpone (do) 0  postpone begin ;  immediate 
+
+: ?do ( -- addr1 flag addr2) 
+    postpone (?do) postpone begin
+    postpone (do) 1  postpone begin ;  immediate 
+
+  \ ...where (DO) and (?DO) are the run-time actions. (?DO)
+  \ contains a forward branch which compile-time LOOP or +LOOP
+  \ must resolve.   (BEGIN) leaves on the compile-time stack an
+  \ address for LOOP or +LOOP to branch back to, and a flag. 
+
+( ?do )
+
+  \ From:
+  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
+
+  \ XXX TODO
+
+variable ?do? 
+
+: exchange ( x1 addr -- x2 ) dup @ rot rot ! ; 
+: 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0= ; 
+
+: do
+  postpone 2>r 0 ?do? exchange here
+  ; immediate 
+: ?do
+  postpone 2dup<> postpone if postpone do ?do? on
+  ; immediate 
+: loop
+  postpone (loop) , ?do? exchange if postpone then then
+  ; immediate 
+: +loop
+  postpone (+loop) , ?do? exchange if postpone then then
+  ; immediate 
+
+( ?do )
+
+  \ From:
+  \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
+
+  \ XXX TODO
+
+variable ?do? 
+
+: 2dup= ( x1 x2 -- x1 x2 flag ) 2dup = ; 
+
+: do
+  ?do? @ ?do? off [compile] (do) here 0 , ; immediate 
+
+: ?do
+  postpone 2dup= postpone if postpone do ?do? on
+  ; immediate 
+
+: complete-?do ( x dest | x -- )
+  ?do? @ if postpone then then ?do? ! ; 
+
+: loop postpone (loop) , complete-?do ; immediate 
+
+: +loop postpone (+loop) , complete-?do ; immediate 
+
+( j )
+
+code j
+  \ ( -- x )
+  \ ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+
+  \ Return a copy of the next-outer loop index.
+
+  2A c, rp ,      \ ld hl,(return_stack_pointer)
+  11 c, 2 cells , \ ld de,2*cell
+  19 c,           \ add hl,de
+  fetchhl,        \ jp fetchhl
+
+  end-code
+
+( k )
 
 code k
   \ ( -- x )
@@ -1949,6 +2374,11 @@ case: zx  ( n -- )  zx0 zx1 zx2 ;
   \  -until,
   \  jp (ix)
 
+  \ Version from Spectrum Forth-83:
+  \ : ms  ( u -- )  20 /mod pause 0 ?do 10 0
+  \   do loop loop ;
+
+  \ Version from DZX-Forth:
   \ code ms  ( u -- )  hex
   \   d1 c,         \ pop de
   \   here          \ ms1:
@@ -2135,7 +2565,7 @@ require random require plot
   \ }}} =======================================================
   \ Assembler {{{
 
-( assembler )
+( z80-asm )
 
 \ Z80 Assembler for Solo Forth
 
@@ -2178,18 +2608,13 @@ only forth definitions
 
 : 8*   ( n1 -- n2 )  2* 2* 2* ;
 
-: fasmo  ( -- )  assembler ;
-
-vocabulary assembler
-
-: [assembler]  ( -- )  assembler  ; immediate
+: z80-asm  ( -- )  assembler ;
 
 also assembler definitions hex
 
 -->
 
-( fasmo assembler -- Registers )
-
+( z80-asm -- registers )
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
@@ -2208,7 +2633,7 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( fasmo assembler -- Words for defining the z80 instructions)
+( z80-asm -- words for defining the z80 instructions)
 
 : m1  ( 8b "name" -- )
   \ 1-byte opcode without parameters.
@@ -2236,7 +2661,7 @@ DD constant ix-op  FD constant iy-op
 
   -->
 
-( fasmo assembler -- Words for defining the z80 instructions)
+( z80-asm -- words for defining the z80 instructions)
 
 : m7  ( 8b "name" -- )
   \ Bit manipulation of registers.
@@ -2254,7 +2679,7 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( fasmo assembler -- Words for defining the z80 instructions)
+( z80-asm -- words for defining the z80 instructions)
 
 require -rot
 
@@ -2275,7 +2700,7 @@ require -rot
 
   -->
 
-( fasmo assembler -- Opcodes )
+( z80-asm -- opcodes)
 
 00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
 08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca
@@ -2293,7 +2718,7 @@ FA m5 jpm FB m1 ei FE m4 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl
 C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
 47ED m8 ldia 56ED m8 im1 5EED m8 im2 B1ED m8 cpir         -->
 
-( fasmo assembler -- Opcodes)
+( z80-asm -- opcodes)
 
 : 0outbc  ( -- )  ED c, 71 c, ;
 : jpix  ( -- )  ix-op c, jphl ;
@@ -2317,7 +2742,7 @@ D7 m1 prt  \ rst 0x16
 
 -->
 
-( fasmo assembler -- Index register opcodes)
+( z80-asm -- index register opcodes)
 
 require -rot
 [defined] 3dup 
@@ -2336,7 +2761,7 @@ AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
 
 -->
 
-( fasmo assembler -- Conditional ret and call)
+( z80-asm -- conditional ret and call)
 
   \ Condition codes for relative jumps
 
@@ -2375,7 +2800,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( fasmo assembler -- Control structures with relative jumps)
+( z80-asm -- control structures with relative jumps)
 
   \ XXX TODO document
 
@@ -2398,7 +2823,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( fasmo assembler -- Control structures with absolute jumps )
+( z80-asm -- control structures with absolute jumps)
 
   \ XXX TODO document
 
@@ -2415,7 +2840,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( fasmo assembler -- Last opcodes and macros)
+( z80-asm -- last opcodes and macros)
 
   \ `AND`, `OR` and `XOR` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -2429,9 +2854,30 @@ A0 m2 and  B0 m2 or  A8 m2 xor
   \ Macro to test 16-bit register for zero:
 : tstp  ( rp -- )  dup a ld 1+ or ;
 
-also forth definitions
+  \ ; next,  ( -- )  jpix  ; \ XXX OLD
 
-  \ Macros \ xxx todo -- test it
+-->
+
+( z80-asm -- definining words)
+
+variable abase  \ backup of `base`
+
+only forth definitions also assembler
+
+  \ XXX OLD
+
+  \ : asm  ( -- )  base @ abase ! hex  also assembler  ;
+  \   \ Start the assembler mode.
+
+  \ : end-asm  ( -- )  abase @ base !  previous  ;
+  \   \ End the assembler mode.
+
+  \ : code  ( "name" -- )  header !csp asm  ;
+  \   \ Start a code definition.
+
+  \ : end-code  ( -- )  ?csp end-asm smudge  ;
+  \   \ End a code definition
+
 : macro  ( "name" -- )  asm postpone :  ;
 : endm  ( -- )  postpone ;  ;
 
@@ -2463,13 +2909,13 @@ code a!  ( a -- )
   E1 c,                 \ pop hl
   22 c, a ,             \ ld (a),hl
   next,                 \ jp (ix)
-end-code
+  end-code
 
 code a@  ( -- a )
   \ Get the address register.
   2A c, a ,             \ ld hl,(a)
   pushhl,               \ jp pushhl
-end-code
+  end-code
 
 ( !a @a )
 
@@ -2483,7 +2929,7 @@ code !a  ( u -- )
   2A c, a ,                      \ ld hl,(a)
   70 03 + c,  23 c,  70 04 + c,  \ ld (hl),e  inc hl  ld (hl),d
   next,                          \ jp (ix)
-end-code
+  end-code
 
 code @a  ( -- u )
   \ Fetch cell at `a`.
@@ -2493,7 +2939,7 @@ code @a  ( -- u )
   66 c,                 \ ld h,(hl)
   68 03 + c,            \ ld l,e
   pushhl,               \ jp pushhl
-end-code
+  end-code
 
 ( c!a c@a )
 
@@ -2507,7 +2953,7 @@ code c!a  ( c -- )
   2A c, a ,             \ ld hl,(a)
   70 03 + c,            \ ld (hl),e
   next,                 \ jp (ix)
-end-code
+  end-code
 
 code c@a  ( -- c )
   \ Fetch char at `a`.
@@ -2515,7 +2961,7 @@ code c@a  ( -- c )
   6E c,                 \ ld l,(hl)
   26 c, 00 c,           \ ld h,0
   pushhl,               \ jp pushhl
-end-code
+  end-code
 
 ( !a+ @a+ )
 
@@ -2530,7 +2976,7 @@ code !a+  ( u -- )
   70 03 + c,  23 c,     \ ld (hl),e  inc hl
   70 04 + c,  23 c,     \ ld (hl),d  inc hl
   22 c, a ,  next,      \ ld (a),hl  jp (ix)
-end-code
+  end-code
 
 code @a+  ( -- u )      \ Fetch cell at `a` with increment.
   2A c, a ,             \ ld hl,(a)
@@ -2538,7 +2984,7 @@ code @a+  ( -- u )      \ Fetch cell at `a` with increment.
   56 c,  23 c,          \ ld d,(hl)  inc hl
   22 c, a ,             \ ld (a),hl
   D5 c,  next,          \ push de  jp (ix)
-end-code
+  end-code
 
 ( c!a+ c@a+ )
 
@@ -2552,7 +2998,7 @@ code c!a+  ( c -- )
   2A c, a ,             \ ld hl,(a)
   70 03 + c,  23 c,     \ ld (hl),e  inc hl
   22 c, a ,  next,      \ ld (a),hl  jp (ix)
-end-code
+  end-code
 
 code c@a+  ( -- c )
   \ Fetch char at `a` with increment.
@@ -2561,7 +3007,7 @@ code c@a+  ( -- c )
   06 c, 00 c,           \ ld d,0
   22 c, a ,             \ ld (a),hl
   D5 c,  next,          \ push de  jp (ix)
-end-code
+  end-code
 
   \ }}} =======================================================
   \ Common heap {{{
