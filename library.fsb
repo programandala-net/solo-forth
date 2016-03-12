@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510241802
+\ Last modified: 201510250021
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -168,7 +168,7 @@ variable last-locatable  scr/disk 1- last-locatable !
   \ ( use-x )
   \
   \ from ==data-structures== need x
-  \ 
+  \
   \ ( y )  ==data-structures==
   \
   \ : y ." Y data structure; ;
@@ -211,7 +211,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 2variable needed-word
 
 : [needed]  ( "name" -- wf )
-  parse-name needed-word 2@ 2dup or 
+  parse-name needed-word 2@ 2dup or
   if  compare 0=  exit  then  2drop 2drop true   ; immediate
 
   \ doc{
@@ -3733,7 +3733,7 @@ need s=
   \ XXX TMP -- still in the kernel
 
 : ?-->  ( f -- )  if  postpone -->  then  ; immediate
-  
+
   \ doc{
   \
   \ ?-->  ( f -- )
@@ -3799,12 +3799,12 @@ need s=
   \
   \ }doc
 
-: name>compile  ( nfa -- x cfa ) 
+: name>compile  ( nfa -- x cfa )
   ;
 
   \ doc{
   \
-  \ name>compile  ( nfa -- x cfa ) 
+  \ name>compile  ( nfa -- x cfa )
   \
   \ Return _x cfa_ that represents the compilation semantics
   \ of the word _nfa_. The  returned _cfa_ has the stack
@@ -4787,7 +4787,7 @@ need case
   \ XXX OLD -- defined  ( "name" -- ca len false | cfa b true )
   \ defined 0= -13 ?throw
   \ drop >body  0 decode-level !  (decode)  ;
-  
+
   \ XXX NEW -- defined  ( "name" -- nfa | 0 )
   defined dup 0= -13 ?throw
   name>body  0 decode-level !  (decode)  ;
@@ -5182,28 +5182,13 @@ variable assert-level ( -- a )
 
   \ : ??  ( f -- )  0= if  r> cell+ >r  then  ; compile-only
 
-  \ XXX OLD -- with `state` check:
-
-  \ : (??)  ( f -- )  0= if  r> cell+ >r  then  ;
-  \ : ??  ( -- )
-  \   ?compiling postpone (??)  ; immediate compile-only
-
   \ Complete version, after a comment by Anton Ertl in
   \ comp.lang.forth, 2015-10-19.
 
-  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
-  \   postpone if
-  \   defined ( x 0 | cfa 1 | cfa -1 )
-  \   dup 0= -13 ?throw
-  \   1 = if  execute  else  compile,  then
-  \   postpone then
-  \   ;  immediate compile-only
-
 : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
   postpone if
-  defined ( ca len false | cfa b true )
-  0= -13 ?throw
-  immediate?  if  execute  else  compile,  then
+  defined ( nfa | 0 ) ?dup 0= -13 ?throw
+  name>immediate? ( cfa f ) if  execute  else  compile,  then
   postpone then
   ;  immediate compile-only
 
@@ -5256,11 +5241,9 @@ code l>  ( -- x ) ( L: x -- )
 
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO adapt from hForth
-need ?compiling
-hex
 
 : (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
-  >r 8000 + r> over - swap r> swap >r swap >r >r ;
+  >r $8000 + r> over - swap r> swap >r swap >r >r ;
 
   \ (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
   \
@@ -5269,9 +5252,9 @@ hex
   \ 0x8000 is the maximum negative.
 
 : do    ( n1|u1 n2|u2 -- )
-  ?compiling  0 rakevar !  0      \ ?do-orig is 0 for do
+  0 rakevar !  0      \ ?do-orig is 0 for do
   postpone (do)  here  bal+  \ do-dest
-  ; immediate
+  ; immediate compile-only
 
   \ doc{
   \
@@ -5314,7 +5297,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
     \ next2 jp  \ $nexthl
     end-code
 
-: loop  ?compiling postpone (loop) rake  ; immediate
+: loop  postpone (loop) rake  ; immediate compile-only
 
   \ loop
   \
@@ -5325,7 +5308,7 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \
   \ Standard: Forth-83, Forth-94, Forth-2012.
 
-: +loop  ?compiling postpone (+loop) rake  ; immediate
+: +loop  postpone (+loop) rake  ; immediate compile-only
 
   \ +loop
   \
@@ -5361,18 +5344,16 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
 : (+loop)  ;
 
 : do      postpone (do) postpone begin
-  ; immediate
+  ; immediate compile-only
 
 : ?do     postpone (?do) postpone (do) postpone begin
-  ; immediate
+  ; immediate compile-only
 
 : loop    postpone (loop) postpone until postpone unloop
-  ; immediate
+  ; immediate compile-only
 
 : +loop   postpone (+loop) postpone until postpone unloop
-  ; immediate
-
-
+  ; immediate compile-only
 
   \ : unloop
   \   ( removes 2nd and 3rd return stack items )
@@ -5389,11 +5370,11 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
   \ Draft by Elisabeth Rather.
 
 : do ( -- flag addr)
-  postpone (do) 0   postpone begin ;   immediate
+  postpone (do) 0   postpone begin  ; immediate compile-only
 
 : ?do ( -- addr1 flag addr2)
     postpone (?do) postpone begin
-    postpone (do) 1   postpone begin ;   immediate
+    postpone (do) 1   postpone begin  ; immediate compile-only
 
   \ ...where (DO) and (?DO) are the run-time actions. (?DO)
   \ contains a forward branch which compile-time LOOP or +LOOP
@@ -5415,16 +5396,16 @@ variable ?do?
 
 : do
   postpone 2>r 0 ?do? exchange here
-  ; immediate
+  ; immediate compile-only
 : ?do
   postpone 2dup<> postpone if postpone do ?do? on
-  ; immediate
+  ; immediate compile-only
 : loop
   postpone (loop) , ?do? exchange if postpone then then
-  ; immediate
+  ; immediate compile-only
 : +loop
   postpone (+loop) , ?do? exchange if postpone then then
-  ; immediate
+  ; immediate compile-only
 
 ( ?do )
 
@@ -5435,21 +5416,24 @@ variable ?do?
 
 variable ?do?
 
-: 2dup= ( x1 x2 -- x1 x2 flag ) 2dup =  ;
+: 2dup= ( x1 x2 -- x1 x2 flag )  2dup =  ;
 
 : do
-  ?do? @ ?do? off [compile] (do) here 0 ,  ; immediate
+  ?do? @ ?do? off [compile] (do) here 0 ,
+  ; immediate compile-only
 
 : ?do
   postpone 2dup= postpone if postpone do ?do? on
-  ; immediate
+  ; immediate compile-only
 
 : complete-?do ( x dest | x -- )
   ?do? @ if postpone then then ?do? !  ;
 
-: loop postpone (loop) , complete-?do  ; immediate
+: loop postpone (loop) , complete-?do
+  ; immediate compile-only
 
-: +loop postpone (+loop) , complete-?do  ; immediate
+: +loop postpone (+loop) , complete-?do
+  ; immediate compile-only
 
 ( j )
 
@@ -5784,12 +5768,10 @@ need within
   \ Note: this version works only when the compiler security
   \ check config option is activated in the kernel.
 
-need ?compiling
-
 : case
   \ Compilation: ( -- a case-id )
   \ Runtime: ( x -- )
-  ?compiling csp @ !csp 4  ; immediate
+  csp @ !csp 4  ; immediate compile-only
 
 : of
   \ Compilation: ( case-id -- of-id )
@@ -5964,7 +5946,7 @@ variable #options
   #options @ swap !           \ store number of options
   (default-option) @ swap !   \ store default option cfa
   >resolve                    \ store exit point
-  ]  ;  -->
+  ]  ;
 
 ( options[-test )
 
@@ -6028,6 +6010,34 @@ variable #options
 
 ( inkey )
 
+need z80-asm
+
+code inkey  ( -- c | 0 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed, leave 0.
+  \
+  \ This word works only when an interrupts routine reads the
+  \ keyboard and updates the related system variables.
+
+  \ XXX FIXME -- Some times this word returns zero when the key
+  \ is pressed; the version on the previous screen works fine.
+  \ Anyway this version is smaller and can be useful.
+
+  a xor
+  01 iy 5 bitx  \ a new key pressed?
+  nz if
+    5C08 hl ldp#  \ LAST-K system variable
+    m a ld
+    \ 0 m ld# \ XXX OLD
+    01 iy 5 resx
+  then
+  pusha jp
+
+  end-code
+
+( inkey )
+
   \ Credits:
   \ Code adapted and modified from Abersoft Forth's `inkey`.
 
@@ -6059,36 +6069,6 @@ code inkey  ( -- c | 0 )
   FF cp#  z if  a xor  then  \ convert FF to 00
   \ XXX TODO jump to `key` to decode
   bc pop  pusha jp  end-code
-
-( inkey )
-
-need z80-asm
-
-code inkey  ( -- c | 0 )
-
-  \ Leave the value of the key being pressed. If no key being
-  \ pressed, leave 0.
-  \
-  \ This word works only when an interrupts routine reads the
-  \ keyboard and updates the related system variables.
-
-  \ XXX FIXME -- Some times this word returns zero when the key
-  \ is pressed; the version on the previous screen works fine.
-  \ Anyway this version is smaller and can be useful.
-
-  di
-  a xor
-  01 iy 5 bitx  \ a new key pressed?
-  nz if
-    5C08 hl ldp#  \ LAST-K system variable
-    m a ld
-    \ 0 m ld# \ XXX OLD
-    01 iy 5 resx
-  then
-  ei
-  pusha jp
-
-  end-code
 
 ( key?? )
 
@@ -6169,7 +6149,6 @@ char Y value "y"  char N value "n"
   \ and return _true_ if it's the current letter for "yes",
   \ else return _false_.
 
-
 ( Keyboard rows ports)
 
   \ From Afera.
@@ -6184,41 +6163,48 @@ char Y value "y"  char N value "n"
   \ -----------------------------------------------------------
 
 
-( /k k, k@ )
+( k-table k, k@ )
+
+  \ There are two versions of `k,` and `k@`. They depend on the
+  \ value of `/k`, a constant that holds the bytes ocuppied by
+  \ every key in `k-table`, 3 or 4.
+  \
+  \ The application must define `/k` before loading this
+  \ screen.
 
   \ ............................................
-  \ Method 1: more compact but slower
+  \ Method 1: smaller but slower
 
   \ Every key identifier occupies 3 bytes in the table (total
   \ size is 120 bytes)
 
-3 constant /k  \ bytes per key definition in the keys table
+/k 3 = dup
 
-: k,  ( bitmask port -- ) , c,  ;
-  \ Store a key definition into the keys table:
+?\ : k,  ( bitmask port -- ) , c,  ;
+  \ Store a key definition into the keys table.
 
-: k@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
-  \ Fech a key definition from an element of the keys table:
+?\ : k@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
+  \ Fech a key definition from an element of the keys table.
 
   \ XXX TODO wrote `k@` in Z80.
-
--->
 
   \ ............................................
   \ Method 2: bigger but faster
 
-  \ With these words, every key identifier occupies 4 bytes
-  \ in the table (total size is 160 bytes)
+  \ Every key identifier occupies 4 bytes in the table (total
+  \ size is 160 bytes)
 
-4 constant /k  \ bytes per key definition in the keys table
+/k 4 = dup
 
-: k,  ( d -- )  2,  ;
-  \ Store a key definition into the keys table:
+?\ : k,  ( d -- )  2,  ;
+  \ Store a key definition into the keys table.
 
-: k@  ( a -- bitmask port )  2@  ;
-  \ Fech a key definition from an element of the keys table:
+?\ : k@  ( a -- bitmask port )  2@  ;
+  \ Fech a key definition from an element of the keys table.
 
-( keys k-table )
+-->
+
+( k-table )
 
   \ Key constants are defined with double constants this way:
   \ high part = bitmask
@@ -6242,7 +6228,7 @@ $10 $FDFE 2constant k-v
 
 -->
 
-( keys k-table )
+( k-table )
 
 $01 $EFFE 2constant k-0  $02 $EFFE 2constant k-9
 $04 $EFFE 2constant k-8  $08 $EFFE 2constant k-7
@@ -6262,7 +6248,7 @@ $10 $7FFE 2constant k-b
 
 -->
 
-( keys k-table )
+( k-table )
 
 need k,
 
@@ -6280,7 +6266,7 @@ k-sp k, k-ss k, k-m k, k-n k, k-b k,
 
 need [if]
 
-[needed] pressed? [needed] pressed  or [if]
+[needed] pressed? [needed] pressed or [if]
 
 need @p
 
@@ -6293,7 +6279,7 @@ need @p
 
 [needed] pressed [if]
 
-need pressed?  need k-table  need k@  need /k
+need pressed?  need k-table
 
 : pressed  ( -- false | n1 n2 true )
   0 \ false by default
@@ -6309,6 +6295,10 @@ need pressed?  need k-table  need k@  need /k
 ( only-one-pressed )
 
   \ XXX UNDER DEVELOPMENT
+
+  \ The application must define the `/k` constant.
+
+need k-table
 
 0. 2variable k-pressed
 
@@ -6491,7 +6481,7 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   parse-name drop c@ postpone literal  ; immediate
   \ Parse a name and return the code of the its first
   \ character.
-  
+
   \ XXX FIXME -- This word depends on the old fig-Forth's
   \ state-smart `literal`.
 
@@ -7430,7 +7420,7 @@ need random-n
   \ Credits:
   \ Code adapted from the Afera library.
 
-: defers  ( "name" -- )  ' defer@ ,  ; immediate
+: defers  ( "name" -- )  ' defer@ compile,  ; immediate
   \ Compile the present contents of the deferred word "name"
   \ into the current definition. I.e. this produces static
   \ binding as if "name" was not deferred.
@@ -7438,8 +7428,8 @@ need random-n
 : action-of  ( Interpretation: "name" -- cfa )
              ( Compilation:    "name" -- )
              ( Runtime:        -- cfa )
-  ' compiling? if    postpone literal postpone defer@
-          else  defer@  then  ; immediate
+  ' compiling? if  postpone literal postpone defer@
+             else  defer@  then  ; immediate
   \ Return the code field address of a deferred word.
 
 ( <is> [is] is  )
@@ -7450,10 +7440,54 @@ need random-n
 : <is>  ( cfa "name" -- )  ' defer!  ;
 
 : [is]  ( cfa "name" -- )
-  ' postpone literal postpone defer!  ; immediate
+  postpone ['] postpone defer!  ; immediate compile-only
 
 : is  ( cfa "name" -- )
   compiling? if  postpone [is]  else  <is>  then  ; immediate
+
+( alias synonym )
+
+: alias  ( cfa "name" -- )  defer latest name> defer!  ;
+
+  \ doc{
+  \
+  \ alias  ( cfa "name" -- )
+  \
+  \ Create an alias _name_ that will execute _cfa_.
+  \ In Solo Forth an alias is a deferred word.
+  \
+  \ }doc
+
+  \ Credits:
+  \ The code of `synonym` is adapted from the example provided in the
+  \ Forth-2012 documentation, and improved with `compile-only?`.
+
+: synonym  ( "newname" "oldname" -- )
+  create immediate
+    smudge ' , smudge
+  does>  ( -- )
+   ( pfa ) @ ( cfa ) dup >name dup ( cfa nfa nfa )
+   compile-only? executing? and -14 ?throw
+   immediate? executing? or
+   if  execute  else  compile,  then  ;
+
+  \ doc{
+  \
+  \ synonym  ( "newname" "oldname" -- )
+  \
+  \ Create a definition for _newname_ with the the semantics
+  \ defined below. _newname_ may be the same as _oldname_; when
+  \ looking up _oldname_, _newname_ shall not be found.
+ 
+  \ newname ( Interpretation: i*x -- j*x )
+  \         Perform the interpretation semantics of _oldname_.
+  \
+  \ newname ( Compilation: i*x -- j*x )
+  \         Perform the compilation semantics of _oldname_.
+  \
+  \ Standard: Forth-2012 (TOOLS EXT).
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Assembler {{{
@@ -10290,7 +10324,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ XXX UNDER DEVELOPMENT
 
-  \ XXX TODO use hires-emit-udg for the ball
+  \ XXX FIXME `hires-emit-udg` does not work fine
   \ XXX TODO use a 16x16 pixels ball
 
   \ Credits:
@@ -10304,8 +10338,9 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ Tested with IsForth, http://isforth.clss.net/
   \ ____
 
-need columns  need rows  need udg:  need rnd
-need ??  need pressed?  need break-key?  need hires-emit-udg
+need columns  need rows  need udg:  need rnd  need ??
+3 constant /k  need pressed?
+need break-key?  need hires-emit-udg
 
 0 cconstant black  7 cconstant white
 
@@ -10314,13 +10349,13 @@ need ??  need pressed?  need break-key?  need hires-emit-udg
   \ variable speed
   \ Delay in milliseconds.
 
-8 constant ball-delay0
+8 cconstant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
 variable ball-delay
   \ XXX NEW
 
-4 constant racket-size
-7 8 * 64 + constant racket-color  \ bright white paper
+4 cconstant racket-size
+7 8 * 64 + cconstant racket-color  \ bright white paper
 
   \ Key constant are defined with double constants this way:
   \ high part = bitmask
@@ -10355,10 +10390,10 @@ variable racket1-x  columns racket-size - 2/  racket1-x !
 variable racket2-x  racket1-x @ racket2-x !
   \ Bottom racket x coordinate.
 
-0 constant racket1-y
+0 cconstant racket1-y
   \ Top racket y coordinate.
 
-rows 1- constant racket2-y
+rows 1- cconstant racket2-y
   \ Bottom racket y coordinate.
 
 -->
@@ -10429,20 +10464,26 @@ rows 1- constant racket2-y
 
 : init-screen  ( -- )  restore-screen white ink  ;
 
-  \ : at-ball  ( -- )  x @ y @ at-xy  ;
+: ball-xy  ( -- x y )  x @ y @  ;
+
+  \ XXX OLD
+  \ : at-ball  ( -- )  ball-xy at-xy  ;
   \ : show-ball  ( -- )  at-ball ball emit  ;
 
-: at-ball  ( -- )  x @ y @  ;
+: show-ball  ( -- )  ball-xy ball hires-emit-udg  ;
 
-: show-ball  ( -- )  at-ball ball hires-emit-udg  ;
-
+  \ XXX OLD
   \ : erase-ball  ( -- )  at-ball space  ;
-: erase-ball  ( -- )  at-ball ball hires-emit-udg space  ;
+
+: erase-ball  ( -- )  ball-xy ball hires-emit-udg space  ;
 
 : show-racket  ( a -- )  racket-size racket-color fill  ;
 
 : show-racket1  ( -- )  22528 racket1-x @ + show-racket  ;
+  \ 22528 = address of the top left screen attribute
+
 : show-racket2  ( -- )  23264 racket2-x @ + show-racket  ;
+  \ 23264 = address of the bottom left screen attribute
 
 : show-rackets  ( -- )  show-racket1 show-racket2  ;
 
@@ -10465,14 +10506,18 @@ rows 1- constant racket2-y
 : print-points  ( -- )  print-point1 print-point2  ;
   \ Print the points of both players.
 
-: erase-racket  ( a -- )  racket-size erase  ;
+: erase-racket  ( a1 a2 -- )  @ + racket-size erase  ;
   \ Erase a racket.
+  \ a1 = address of the first screen attribute on the row
+  \ a2 = variable that holds the racket x coordinate
 
-: erase-racket1  ( -- )  22528 racket1-x @ + erase-racket  ;
+: erase-racket1  ( -- )  22528 racket1-x erase-racket  ;
   \ Erase racket of player 1.
+  \ 22528 = address of the top left screen attribute
 
-: erase-racket2  ( -- )  23264 racket2-x @ + erase-racket  ;
+: erase-racket2  ( -- )  23264 racket2-x erase-racket  ;
   \ Erase racket of player 2.
+  \ 23264 = address of the bottom left screen attribute
 
 : change-x  ( -- )  2 direction toggle-bits  ;
   \ Change the x direction of the ball.
@@ -10672,9 +10717,19 @@ rows 1- constant racket2-y
 
 ( pong )
 
+: pong-info  ( -- )
+  \ XXX TODO
+  ;
+
 : pong  ( -- )
   init-game show-help  page show-all
-  begin  move-ball  keypress  again  ;
+  begin  move-ball
+
+  4 border begin key? until key drop 0 border
+  \ XXX TMP -- for debugging
+  \ XXX TODO -- show debug info
+
+  keypress  again  ;
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{
