@@ -719,7 +719,7 @@ AGAIN and REPEAT a return to `BEGIN` always occurs.  At compile time
 
 A constant that leaves the ASCII values for "blank".
 
-`BLANKS`  ( addr count -- )
+`BLANK`  ( addr count -- )
 
 Fill an area of memory beginning at _addr_ with count blanks.
 
@@ -1066,7 +1066,7 @@ This line number may be positive or negative, and beyond just screen
 4. If `WARNING` is 0, _n_ is just printed as a message number (RAM-disc
 installation). If `WARNING` is -1 the definition `(ABORT)` is executed,
 which executes the system `ABORT`. The user may cautiously modify this
-execution by altering `(ABORT)`. fig-Forth saves the contents of `IN` and
+execution by altering `(ABORT)`. fig-Forth saves the contents of `>IN` and
 `BLK` on the stack to assist in determining the location of the error.
 Final action is execution of `QUIT`.
 
@@ -1207,11 +1207,11 @@ handle unusual compiling situations, rather than build them into the
 fundamental compiler. The user may force compilation of an immediate
 definition by preceding it with `[COMPILE]`.
 
-`IN`  (  -- addr )
+`>IN`  (  -- addr )
 
 A user variable containing the byte offset within the current input
 text buffer (terminal or RAM-disc) from which the next text will be
-accepted. `WORD` uses and moves the value of `IN`.
+accepted. `WORD` uses and moves the value of `>IN`.
 
 `INCX`  ( -- addr )
 
@@ -1517,7 +1517,7 @@ register and jumping to `NEXT`.
 
 Input 80 characters of text (or until a "return") from the operators
 terminal. Text is positioned at the address contained in `TIB` with
-`IN` set to zero.
+`>IN` set to zero.
 
 `REPEAT`  ( Run-time: -- ) ( Compilation: addr n  --- ) P,C2
 
@@ -1803,7 +1803,7 @@ beginning at the dictionary buffer `HERE`. `WORD` leaves the character
 count in the first byte, then the characters, and ends with two or
 more blanks. Leading occurrences of c are ignored If `BLK` is zero,
 text is taken from the terminal input buffer, otherwise from the disc
-block stored in `BLK`. See `BLK`, `IN`.
+block stored in `BLK`. See `BLK`, `>IN`.
 
 `WORDS`  ( -- )
 

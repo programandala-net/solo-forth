@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506220204
+; Version A-00-201506221449
 
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
@@ -147,12 +147,16 @@ size_optimization?              equ false
   ; false = normal, faster code.
 
 fig_name_field?                 equ false
-  ; true = the original fig-Forth name field is used.
+  ; true = the fig-Forth name field is used.
   ; false = the last letter of the name does not have the sign bit set.
 
 fig_find?                       equ false
-  ; true = the original fig-Forth `find` is used.
+  ; true = the fig-Forth `find` is used.
   ; false = `find` works after Forth-83 and Forth-94.
+
+fig_parsing?                    equ false
+  ; true = the fig-Forth parsing words are used.
+  ; false = parsing is modified after Forth-83 and Forth-94.
 
 ; ----------------------------------------------
 ; Character codes
@@ -680,6 +684,8 @@ next2:
 ; ----------------------------------------------
   _colon_header paren_s_,'(S',')'
 
+if fig_parsing?
+
   ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
   ;  state @ if    compile slit word here c@ 1+ allot
   ;          else  parse-text  then  ;
@@ -693,6 +699,26 @@ next2:
 paren_s.interpreting:
   dw text_
   dw semicolon_s_
+
+else
+
+  ; XXX FIXME
+
+  ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+  ;  scan state @ if    compile slit word here c@ 1+ allot
+  ;               else  parse-text  then  ;
+
+  dw scan_ ; ( ca len )
+  dw state_,fetch_
+  dw zero_branch_,paren_s.interpreting
+  ; compiling
+  dw s_literal_
+  dw semicolon_s_
+paren_s.interpreting:
+  dw pad_,rot_,cmove_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header c_lit_,'CLI','T'
@@ -1124,9 +1150,177 @@ endif
 endif
 
 ; ----------------------------------------------
+  _code_header scan_,'SCA','N'
+
+if false ; XXX From DXZ-Forth, for ANS Forth parsing
+
+; scan  ( ca1 len1 c -- ca2 len2 )
+
+  pop de
+  ld l,c
+  ld h,b
+  pop bc
+  ex (sp),hl
+scan.begin:
+  ld a,c
+  or b
+  _jump_z scan.end
+  ld a,e
+  cp (hl)
+  _jump_z scan.end
+  inc hl
+  dec bc
+  jp scan.begin ; again
+
+scan.end:
+  ex (sp),hl ; hl = Forth IP ; push ca2
+scan.3:
+  push bc ; len2
+  ld c,l
+  ld b,h ; restore Forth IP
+  _jp_next
+
+endif
+
+if 0 ; XXX TMP -- version for fig-Forth parsing
+
+; doc{
+;
+; scan  ( ca1 c -- ca2 )
+;
+; ca1 = text address
+; c = ascii delimiting character
+; ca2 = start of the parsed text
+;
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+;
+; }doc
+
+
+  pop de ; e = delimiter
+  pop hl ; ca1
+  push bc ; save Forth IP
+scan.begin:
+  ld a,(hl)
+  or a ; null?
+  _jump_z scan.end
+  cp e
+  _jump_z scan.end
+  inc hl
+  jp scan.begin ; again
+
+scan.end:
+  pop bc ; restore Forth IP
+  jp push_hl
+
+endif
+
+if 1 ; from the new `(parse)`
+
+; doc{
+;
+; scan  ( c ca -- ca len )
+;
+; c = ascii delimiting character
+; ca = text address
+; len = length of the parsed text
+;
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+;
+; }doc
+
+  pop de ; address
+  pop hl ; delimiter
+  push de
+  push bc ; save Forth IP
+  ld c,l ; delimiter
+  ld hl,0 ; length
+scan.begin:
+  ld a,(de)
+  or a ; unconditional null delimiter?
+  jr z,scan.end
+  cp c ; delimiter?
+  jr z,scan.end
+  inc de
+  inc hl
+  jp scan.begin ; repeat
+scan.end:
+  pop bc ; restore Forth IP
+  jp push_hl
+
+endif
+
+; ----------------------------------------------
+  _code_header skip_,'SKI','P'
+
+if false ; XXX From DXZ-Forth, for ANS Forth parsing
+
+; skip  ( ca1 len1 c -- ca2 len2 )
+
+  pop de
+  ld l,c
+  ld h,b
+  pop bc ; len1
+  ex (sp),hl ; hl=ca1 ; save Forth IP
+skip.begin:
+  ld a,c
+  or b ; exhausted?
+  jp z,scan.end
+  ld a,e
+  cp (hl) ; delimiter?
+  jp nz,scan.end
+  inc hl
+  dec bc
+  jp skip.begin ; again
+
+endif
+
+if 0 ; XXX TMP -- version for fig-Forth parsing
+
+; skip  ( ca1 c -- ca2 )
+
+  pop de ; e = delimiter
+  pop hl ; ca1
+  push bc ; save Forth IP
+skip.begin:
+  ld a,(hl)
+  or a ; null delimiter?
+  jp z,scan.end
+  cp e ; delimiter?
+  jp nz,scan.end
+  inc hl
+  jp skip.begin ; again
+
+endif
+
+; ----------------------------------------------
   _code_header enclose_,'ENCLOS','E'
 
-  ; XXX WARNING: the order of the parameters has been changed, to save a `swap` in `word`.
+  ; doc{
+  ;
+  ; enclose  ( c a -- a n1 n2 n3 )
+  ;
+  ; The text scanning primitive used by `word`.
+  ;
+  ; c = delimiting character
+  ; a = text address
+  ;
+  ; addr1 and an ascii delimiting character c, is determined the
+  ; n1 = byte offset to the first non-delimiter character n2 =
+  ; byte offset to the first delimiter after the text n3 = byte
+  ; offset to the first character not included
+  ;
+  ; This procedure will not process past an ASCII 'null',
+  ; treating it as an unconditional delimiter.
+  ;
+  ; Note: This is not the fig-Forth `enclose`: the order of the
+  ; input parameters has been changed, to save a `swap` in
+  ; `word`.
+  ;
+  ; }doc
+
   ; XXX OLD -- this will be substituted by `(parse)`.
 
   exx ; save the Forth IP
@@ -1187,6 +1381,76 @@ enclose.end:
 ; ----------------------------------------------
   _code_header paren_parse_,'(PARSE',')'
 
+if 1 ; XXX NEW
+
+; doc{
+;
+; (parse)  ( c ca -- ca len )
+;
+; c = ascii delimiting character
+; ca = text address
+; len = length of the parsed text
+;
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+;
+; }doc
+
+  pop de ; address
+  pop hl ; delimiter
+  push de
+  push bc ; save Forth IP
+  ld c,l ; delimiter
+  ld hl,0 ; length
+paren_parse.scan:
+  ld a,(de)
+  or a ; unconditional null delimiter?
+  jr z,paren_parse.end
+  cp c ; delimiter?
+  jr z,paren_parse.end
+  inc de
+  inc hl
+  jp paren_parse.scan
+paren_parse.end:
+  pop bc ; restore Forth IP
+  jp push_hl
+
+endif
+
+if 0 ; XXX NEW
+
+; doc{
+;
+; (parse)  ( ca c -- ca len )
+;
+; c = ascii delimiting character
+; ca = text address
+; len = length of the parsed text
+;
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+;
+; }doc
+
+  pop hl
+  pop de
+  push de
+  ld d,l ; delimiter
+  ld hl,0 ; length
+paren_parse.scan:
+  ld a,(de)
+  and a ; unconditional null delimiter?
+  jp z,push_hl
+  cp d ; delimiter?
+  jp z,push_hl
+  inc hl
+  jp paren_parse.scan
+
+endif
+
+
+if 0 ; XXX OLD -- first try, after fig-Forth `enclose`
+
   ; XXX TODO -- unfinished
 
 ; doc{
@@ -1197,9 +1461,9 @@ enclose.end:
 ; Its code is based on fig-Forth's `enclose`.
 
 ; c = ascii delimiting character
-; a = text address, as a counted string
+; a = text address
 ; f = skip leading delimiters?
-; n1 = offset to the first non-delimiter character
+; n1 = offset to the first text character
 ; n2 = offset to the first delimiter after the text
 ; n3 = offset to the first character not included
 
@@ -1219,9 +1483,15 @@ enclose.end:
   push hl
   ld bc,0 ; init char offset
 
+  ; XXX TMP
   and a ; skip initial delimiters?
-  jr z,paren_parse.text
+;  jr z,paren_parse.text
+  jr nz,paren_parse.skip_initial_delimiters
+  ; Do not skip initial delimiters.
+  jr paren_parse.text
 
+paren_parse.skip_initial_delimiters:
+  ; Skip initial delimiters.
   dec hl ; init the address for the first inc 
   dec bc ; init the offset for the first inc
   ld a,e  ; a = delimiter
@@ -1271,6 +1541,8 @@ paren_parse.end:
   push bc
   exx ; restore the Forth IP
   _jp_next
+
+endif
 
 ; ----------------------------------------------
   _code_header chan_,'CHA','N'
@@ -2259,7 +2531,7 @@ do_user:
   db 0x10
 
 ; ----------------------------------------------
-  _user_variable_header in_,'I','N'
+  _user_variable_header to_in_,'>I','N'
 
   db 0x12
 
@@ -3024,7 +3296,7 @@ expect.loop: ; ( a )
   dw c_lit_
   db bytes_per_terminal_input_buffer
   dw expect_
-  dw in_,off_
+  dw to_in_,off_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3046,7 +3318,7 @@ expect.loop: ; ( a )
   dw zero_branch_,x.exit ; if not, branch
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
-  dw in_,off_ ; clear `in`, preparing parsing of input text
+  dw to_in_,off_ ; clear `in`, preparing parsing of input text
   ; Note: This check of the last block is specific for 2
   ; blocks per screen; the generic slower check would be `blk @
   ; b/scr 1- and`.
@@ -3080,7 +3352,7 @@ fill.e:
 fill.do
   ld a,b
   or c
-  jp z,fill.end
+  _jump_z fill.end
   ld (hl),e
   inc hl
   dec bc
@@ -3096,7 +3368,7 @@ fill.end:
   jp fill.e
 
 ; ----------------------------------------------
-  _code_header blanks_,'BLANK','S'
+  _code_header blank_,'BLAN','K'
 
   ld e,space_char
   jp fill.e
@@ -3132,6 +3404,8 @@ fill.end:
 ;
 ; }doc
 
+  ; XXX FIXME empty parsed strings return a length of one;
+  ; all other cases seem to work fine
 
   dw blk_,fetch_,question_dup_ ; from disk?
   dw zero_branch_,parse.from_terminal
@@ -3144,13 +3418,21 @@ parse.from_terminal:
   dw tib_,fetch_
 
 parse.from_address:
-  dw in_,fetch_,plus_
-  dw false_,paren_parse_
-  dw cr_,two_,pick_,dot_,over_,dot_,dup_,dot_ ; XXX INFORMER
-  dw in_,plus_store_
-  dw nip_
-  dw semicolon_s_
+  dw to_in_,fetch_,plus_
+  dw cr_,dup_,u_dot_ ; XXX INFORMER
 
+if fig_parsing?
+  dw false_,paren_parse_ ; ( ca n1 n2 n3 )
+  ;dw cr_,two_,pick_,dot_,over_,dot_,dup_,dot_ ; XXX INFORMER
+  dw to_in_,plus_store_
+  dw nip_
+else
+  dw scan_ ; ( ca len )
+  ;dw cr_,over_,u_dot_,dup_,dot_ ; XXX INFORMER
+  dw dup_,one_plus_,to_in_,plus_store_
+endif
+
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header word_,'WOR','D'
@@ -3163,14 +3445,14 @@ parse.from_address:
 word.from_terminal:
   dw tib_,fetch_
 word.from_address:
-  dw in_,fetch_,plus_,enclose_ ; XXX OLD
-  ;dw in_,fetch_,plus_,true_,paren_parse_ ; XXX NEW XXX TODO
+  dw to_in_,fetch_,plus_,enclose_ ; XXX OLD
+  ;dw to_in_,fetch_,plus_,true_,paren_parse_ ; XXX NEW XXX TODO
 
   dw here_
   dw c_lit_
   db max_word_length+3
-  dw blanks_
-  dw in_,plus_store_
+  dw blank_
+  dw to_in_,plus_store_
   dw over_,minus_
   dw to_r_ ; length
   dw r_fetch_,here_,c_store_ ; set the length byte
@@ -3186,7 +3468,7 @@ word.from_address:
   ;dw blk_,fetch_,dot_ ; XXX INFORMER
   ;dw paren_dot_quote_ ; XXX INFORMER
   ;_string 'in ' ; XXX INFORMER
-  ;dw in_,fetch_,dot_ ; XXX INFORMER
+  ;dw to_in_,fetch_,dot_ ; XXX INFORMER
   ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
   ;dw key_,drop_ ; XXX INFORMER
 
@@ -3427,7 +3709,7 @@ error.message:
   ; (`where` will be in the disk)
   dw blk_,fetch_,question_dup_
   dw zero_branch_,error.end
-  dw in_,fetch_
+  dw to_in_,fetch_
   dw swap_
   dw error_pos_,two_store_ ; XXX NEW
 error.end:
@@ -4444,7 +4726,7 @@ flush.do:
 
   dw dup_,zero_,equals_
   _question_error loading_from_screen_0_error
-  dw in_,off_
+  dw to_in_,off_
   dw b_slash_scr_,star_,blk_,store_
   dw interpret_
   dw semicolon_s_
@@ -4453,9 +4735,9 @@ flush.do:
   _colon_header load_,'LOA','D'
 
   dw blk_,fetch_,to_r_
-  dw in_,fetch_,to_r_
+  dw to_in_,fetch_,to_r_
   dw continued_
-  dw from_r_,in_,store_
+  dw from_r_,to_in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
 
@@ -4463,7 +4745,7 @@ flush.do:
   _colon_header next_screen_,'--','>',immediate
 
   dw question_loading_
-  dw in_,off_
+  dw to_in_,off_
   dw b_slash_scr_,blk_,fetch_,over_,mod_,minus_
   dw blk_,plus_store_
   dw semicolon_s_
@@ -4857,7 +5139,7 @@ list.loop:
   ; text  ( c "ccc<c>" -- pad len )
   ; Accept following text to `pad`. _c_ is the text delimiter.
 
-  dw here_,c_slash_l_,one_plus_,blanks_ ; fill the word buffer with blanks
+  dw here_,c_slash_l_,one_plus_,blank_ ; fill the word buffer with blanks
   dw word_ ; XXX FIXME use `parse` when available
   dw here_ ; origin
   dw pad_ ; destination
@@ -5287,11 +5569,10 @@ question_backslash.end:
 ; ----------------------------------------------
   _colon_header backslash_,'','\',immediate
 
-  dw in_,fetch_,c_slash_l_,mod_
+  dw to_in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_
-  dw in_,plus_store_
+  dw to_in_,plus_store_
   dw semicolon_s_
-
 
 nfa_of_top_most_word_in_forth_voc:
 

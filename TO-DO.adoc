@@ -67,7 +67,13 @@ New: `rshift` and `lshift`, from DZX-Forth.
 
 .2015-06-22:
 
-New: `within`, `beteewn`, from DZX-Forth.
+New: `within`, `between`, from DZX-Forth.
 
 Fix: change parsed words to uppercase only when needed to search the dictionary.
 Otherwise the parsing words can not be used for generic purposes.
+
+Fix: Crash: 
+----
+: zx blabla ;
+: zx ;
+----
