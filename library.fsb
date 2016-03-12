@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510142109
+\ Last modified: 201510151917
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -751,6 +751,97 @@ need chars>string  need s+
   \ 0 esperanto-number type
   \ 3 esperanto-number type
 
+( hunt )
+
+: hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
+  search 0= if  chars + 0  then  ;
+
+  \ doc{
+  \
+  \ hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
+
+  \ Search a string _ca1 len1_ for a substring _ca2 len2_.
+  \ Return the part of _ca1 len1_ that starts with the first
+  \ occurence of _ca2 len2_.
+  \
+  \ ca1 len1 = string
+  \ ca2 len2 = substring
+  \ ca3 len3 = ca1+i len1-i
+  \
+  \ From Wil Baden's Charscan library (2003-02-17), public domain.
+  \
+  \ }doc
+
+( prefix? )
+
+[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+
+  \ Credits:
+  \ Code adapted from Gforth (module
+  \ string-prefix-question.fs).
+
+: prefix?  ( ca1 len1 ca2 len2 -- f )
+  tuck 2>r min 2r> s=  ;
+
+( suffix? )
+
+  \ Credits:
+  \ Code from Galope (module string-suffix-question.fs).
+
+require ./fourth.fs
+
+[defined] fourth
+?\ : fourth  ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 )  3 pick  ;
+  \ Copy fourth element on the stack onto top of stack.
+
+[defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
+
+: suffix? ( ca1 len1 ca2 len2 -- wf )
+  \ Is string _ca2 len2_ the end of string _ca1 len1_?
+  2swap dup fourth - /string s=  ;
+
+( -prefix )
+
+  \ Credits:
+  \ Code from Galope (module minus-prefix.fs).
+
+need string-prefix?
+
+: -prefix  ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  \ Remove a prefix _ca2 len2_ from a string _ca1 len1_.
+  dup >r 2over 2swap string-prefix?
+  if  swap r@ + swap r> -  else  rdrop  then  ;
+
+( -suffix )
+
+  \ Credits:
+  \ Code from Galope (module minus-suffix.fs).
+
+need string-suffix?
+
+: -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  \ Remove a suffix _ca2 len2_ from a string _ca1 len1_.
+  dup >r 2over 2swap string-suffix?
+  if  r> -  else  rdrop  then  ;
+
+( ud>str d>str chop )
+
+  \ Credits:
+  \ Code from Galope (module ud-to-str.fs).
+
+: ud>str  ( ud -- ca len )  <# #s #>  ;
+
+  \ Credits:
+  \ Code from Galope (module d-to-str.fs).
+
+: d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
+
+  \ Credits:
+  \ Code from Galope (module chop.fs).
+
+: chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
+  \ Remove the last character from string _ca len_.
+
   \ }}} =======================================================
   \ Data stack {{{
 
@@ -833,7 +924,7 @@ need n>r
   \ Credits:
   \ Code from Afera.
 
-: rdepth  ( -- n )  rp@ r0 @ - -2 /  ;
+: rdepth  ( -- n )  rp@ rp0 @ - -2 /  ;
 
   \ }}} =======================================================
   \ User variables {{{
@@ -851,7 +942,15 @@ need n>r
   \ }}} =======================================================
   \ Screen modes {{{
 
-( mode32 )  \ ==screenmodes==
+( columns rows )  \ ==screenmodes==
+
+need value
+
+32 value columns  24 value rows
+
+( mode32 )
+
+need columns  need rows
 
 [defined] sys-chans ?\ 23631 constant sys-chans
   \ System variable that holds the address of the channels.
@@ -872,6 +971,7 @@ need n>r
 : mode32  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   2548 15360 set-mode
+  32 to columns  24 to rows
   ['] (mode32-xy) ['] xy defer!
   ['] (mode32-at-xy) ['] at-xy defer!  ;
   \ Set the default printing mode: the 32 cpl ROM routine, the
@@ -911,6 +1011,7 @@ drive!
 : mode42  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   63900 [ 64600 256 - ] literal set-mode
+  42 to columns  24 to rows
   ['] (mode42-xy) ['] xy defer!
   ['] (at-xy) ['] at-xy defer!  ;
   \ Set the 42 cpl printing mode: the driver, the font
@@ -944,6 +1045,7 @@ drive!
 : mode64  ( -- )
   [ latest nfa>cfa ] literal current-mode !
   60000 4x8font set-mode
+  64 to columns  24 to rows
   ['] (mode64-xy) ['] xy defer!
   ['] (at-xy) ['] at-xy defer!  ;
   \ Set the 64 cpl printing mode: the driver, the font
@@ -1055,17 +1157,6 @@ create 4x8font  hex
 56 c, A9 c, 06 c, 04 c, 06 c, 09 c, 06 c,  \ ~?
 
 decimal
-
-( spectrum-mode )
-
-  \ XXX OLD
-
-: spectrum-mode  ( -- )
-  \ Set the Spectrum printing mode. This is the default.
-  ['] (emit) ['] emit defer!
-  ['] (at-xy) ['] at-xy defer!
-  ['] (home) ['] home defer!
-  ['] (cr) ['] cr defer!  ;
 
 ( fzx-test )
 
@@ -1409,6 +1500,27 @@ code fzx-emit  ( c -- )
   bc pop  next ix ldp#  jpnext
 
   end-code
+
+  \ }}} =======================================================
+  \ Text output {{{
+
+( column row at-x at-y )
+
+: column  ( -- col )  xy drop  ;
+  \ Current column (x coordinate).
+
+: row  ( -- row )  xy nip  ;
+  \ Current row (y coordinate).
+
+: at-x  ( col -- )  row at-xy  ;
+  \ Set the cursor
+  \ at the given column (x coordinate)
+  \ and the current row (y coordinate).
+
+: at-y  ( row -- )  column swap at-xy  ;
+  \ Set the cursor
+  \ at the current column (x coordinate)
+  \ and the given row (y coordinate).
 
   \ }}} =======================================================
   \ Decompressor {{{
@@ -3997,14 +4109,31 @@ need break-key?  need 16hex.  need ascii-type
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
 : dump  ( a len -- )
-  7 + -8 and 8 / 0
+  7 + [ %111 invert ] literal and 8 / 0
   \ XXX TODO use `?do` instead of `if` when available
   2dup <> if
     do
       cr dup 16hex.
-      8 0 do  i over + @ flip 16hex.  2 +loop
+      8 0 do  i over + @ flip 16hex.  cell +loop
       \ 16 0 do  i over + c@ hexb.  loop
       dup bs 8 ascii-type
+      break-key? if  exhaust  then
+    8 + loop
+  else  2drop  then  drop  ;
+
+( wdump )
+
+need break-key?  need 16hex.
+
+[defined] bs ?\ : bs  ( -- )  8 emit  ;
+
+: wdump  ( a len -- )
+  7 + [ %111 invert ] literal and 8 / 0
+  \ XXX TODO use `?do` instead of `if` when available
+  2dup <> if
+    do
+      cr dup 16hex.
+      10 0 do  i over + @ 16hex.  cell +loop
       break-key? if  exhaust  then
     8 + loop
   else  2drop  then  drop  ;
@@ -4807,6 +4936,22 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   \ XXX TODO Alternative for when compiler security is removed:
   \ : unless  ( f -- )  postpone ?branch >mark  ; immediate
 
+( ?? )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \ Code adapted from Galope.
+  \ Original code by Neil Bawd, presented at FORML 1986.
+
+need evaluate
+
+: ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  postpone if
+  parse-name evaluate
+  postpone then
+  ;  immediate
+
 ( don't )
 
 : don't  ( n1 n2 -- | n1 n2 )
@@ -5464,7 +5609,9 @@ s"  within " needed
 
 ( case: )
 
-: case:  ( -- )
+  \ XXX TODO document -- adapted from F83?
+
+: case:  ( "name" -- )
   \ Create a positional case word.
   create  ]
   does>   ( n -- )
@@ -5487,6 +5634,113 @@ need case:
 case: zx  ( n -- )  zx0 zx1 zx2  ;
 
 3 associative: unzx  ( value -- n )  ' zx0 , ' zx1 , ' zx2 ,
+
+( options[ )
+
+  \ Credits:
+  \ `options[` is a port of IsForth's `case:`.
+
+variable (default-option)
+  \ default option cfa
+
+variable #options
+  \ number of compiled options
+
+: default-option ( "name" -- )  ' (default-option) !  ;
+  \ Set the default option.
+  \ It can go anywhere inside a the options statement.
+
+: (options)  ( i*x x -- j*x )
+
+  \ Note: in the original IsForth code this word (called
+  \ `docase`) is written in x86 assembler. I rewrote it from
+  \ scratch, without investigating the assembler code.
+
+  \ x = option to search for
+
+  false swap  ( false x ) \ default flag returned by the loop
+  r> dup cell+ dup cell+  ( false x a1 a2 a3 )
+  \ a1 = address of the exit point
+  \ a2 = address of the default option cfa
+  \ a3 = address of the number of options
+  rot @ >r    ( false x a2 a3 ) \ set the exit point
+  swap >r     ( false x a3 ) ( R: a2 ) \ save a2
+  dup cell- swap @  ( false x a4 n )
+  \ a4 = address of the first compiled option minus two cells
+  \ n = number of compiled options
+
+-->
+
+( options[ )
+
+  0 do
+    [ 2 cells ] literal + 2dup @ =  ( false x a5 f )  \ match?
+    \ a5 = address of the current compiled option
+    if
+        nip nip cell+ perform
+        unloop exhaust true 0 0  then
+  loop  ( f x1 x2 )  2drop
+  if    rdrop       \ discard the default option
+  else  r> perform  \ execute the default option
+  then  ;   -->
+
+( options[ )
+
+: options[        ( -- a1 a2 a3 )
+
+  \ a1 = address of exit point
+  \ a2 = address of default option cfa
+  \ a3 = address of number of options
+
+  (default-option) off        \ assume no default option
+  #options off                \ number of options is 0 so far
+  compile (options)           \ compile run time handler
+  >mark >mark >mark  ( a1 a2 a3 )
+  postpone [  ; immediate
+
+: option  ( x "name" -- )
+  \ Compile an option _x_ to execute the word _name_.
+  ,                           \ compile the option
+  ' ,                         \ get cfa and compile it too
+  1 #options +!  ;
+
+: ]options  ( a1 a2 a3 -- )
+  \ a1 = address of exit point
+  \ a2 = address of default option cfa
+  \ a3 = address of number of options
+  #options @ swap !           \ store number of options
+  (default-option) @ swap !   \ store default option cfa
+  >resolve                    \ store exit point
+  ]  ;
+
+( options[-test )
+
+: o1 ." option 1" ;  : o2 ." option 2" ;  : o3 ." option 3" ;
+
+: test  ( c -- )
+  options[
+    char a option o1  char b option o2  char c option o3
+  ]options  ;
+
+: o0 ." default" ;
+
+: testd  ( c -- )
+  options[
+    char a option o1  char b option o2  char c option o3
+    default-option o0
+  ]options  ;
+
+( times-execute )
+
+  \ Credits:
+  \ Code from Galope (module times.fs).
+
+: times-execute  ( cfa n -- )
+  \ Execute _cfa_ _n_ times.
+  2>r
+  begin   2r> 1- 2dup 2>r
+  while   execute
+  repeat  drop 2rdrop  ;
 
   \ }}} =======================================================
   \ Data structures {{{
@@ -5636,6 +5890,99 @@ variable (value)  ['] @ (value) !
   up fthl \ ld hl,(user_variables_pointer) \ XXX FIXME
   de addp  \ hl= address of the user variable
   pushhl jp end-asm
+
+( xstack )
+
+  \ Credits:
+  \ Code adapted from Galope (xstack module).
+
+  \ Creation and core manipulation of xstacks
+
+need value  need allocate  need free
+
+0 value xsize  0 value xp  0 value xp0
+  \ Values of the current xstack:
+  \ xsize = size in address units (constant)
+  \ xp = address of the xstack pointer (variable)
+  \ xp0 = initial value of the xstack pointer (constant)
+
+: xstack  ( n "name" -- )
+  \ Create a new xstack of _n_ cells.
+  create  cells dup allocate throw  cell - dup
+    , , ,
+    \ +0 = xp0
+    \ +2 = xp
+    \ +4 = xsize
+  does> ( -- )
+    \ Make an xstack the current one.
+    ( pfa ) dup @ to xp0  cell+ dup to xp  cell+ @ to xsize  ;
+
+: xp@  ( -- a )  xp @  ;
+
+: xp!  ( a -- )  xp !  ;
+
+: xp+!  ( n -- )  xp +!  ;
+
+: xclear  ( -- )  xp0 xp!  ;
+
+: xfree  ( -- )  xp0 free throw  ;
+
+( >x x@ xdrop x> xdup xpick )
+
+  \ xstack single-number operations
+
+need xstack
+
+: >x  ( x -- ) ( X: -- x )  cell xp+!  xp@ !   ;
+
+: x@  ( -- x ) ( X: x -- x )  xp@ @  ;
+
+: xdrop  ( X: x -- )  cell negate xp+!  ;
+
+: x>  ( -- x ) ( X: x -- )  x@ xdrop  ;
+
+: xdup  ( X: x -- x x )  x@ >x  ;
+
+: xpick  ( n -- x'n ) ( X: x'n ... x'0 -- x'n ... x'0 )
+  xp@ swap cells - @  ;
+
+: xover  ( X: x1 x2 -- x1 x2 x1 )  1 xpick >x  ;
+
+( x2@ 2>x 2x> x2drop x2dup )
+
+  \ xstack double-number operations
+
+need xstack  need x@  need >x  need xpick  need xover
+
+: x2@  ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )  x@ 1 xpick swap  ;
+
+: 2>x  ( x1 x2 -- ) ( X: -- x1 x2 )  swap >x >x  ;
+
+: 2x>  ( -- x1 x2 ) ( X: x1 x2 -- )  x> x> swap  ;
+
+: x2drop  ( X: x1 x2 -- )  [ -2 cells ] literal xp+!  ;
+
+: x2dup  ( X: x1 x2 -- x1 x2 x1 x2 )  xover xover  ;
+
+( xdepth .x )
+
+  \ xstack tools
+
+need xstack
+
+: xlen  ( -- n )  xp@ xp0 -  ;
+  \ Length of the current xstack, in address units.
+
+: xdepth  ( -- n )  xlen cell /  ;
+  \ Depth of the current xstack.
+
+: xdepth.  ( -- )  ." <"  s>d <# #s #> type  ." > "  ;
+
+: (.x)  ( -- )  xp0 cell+ xlen bounds ?do  i @ . cell +loop  ;
+  \ Display a list of the items in the xstack; TOS is the right-most item.
+: .x  ( -- )  xdepth dup xdepth. if  (.x)  then  ;
+  \ Display the number of items on the current xstack,
+  \ followed by a list of the items; TOS is the right-most item.
 
   \ }}} =======================================================
   \ Multitask {{{
@@ -6153,6 +6500,14 @@ code just-pause ( u -- )
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
 : randomize  ( n -- )  seed !  ;
+
+( random-range )
+
+need random
+
+: random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
+  \ Return a random number from _n1_ (min) to _n2_ (max).
+
 
 ( random-tt )
 
@@ -8676,7 +9031,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 
 ( tt )
 
-: rotate-brick  ( f1 --- f2 )
+: rotate-brick  ( f1 -- f2 )
   \ f1 = rotate right?, else rotate left
   \ f2 = success
   brick-row @ brick-col @ remove-brick
@@ -8931,6 +9286,444 @@ mode64 page
   .( Type 'n run' to play where) cr
   .( 'n' is the number of disks.) cr
   \  <-------------------------->
+
+  \ }}} =======================================================
+  \ Sample game: Life {{{
+
+( life )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ XXX -- works in Gforth, but freezes here.
+
+  \ Credits:
+  \ Code adapted from kForth. Original Credits:
+
+  \ ____
+  \
+  \ Conway's Game of Life, or Occam's Razor Dulled
+  \
+  \ The original ANS Forth version by Leo Wong (see bottom) has
+  \ been modified slightly to allow it to run under kForth.
+  \ Also, delays have been changed from 1000 ms to 100 ms for
+  \ faster update --- K. Myneni, 12-26-2001
+  \
+  \ 950724 + 970703 +
+  \ Copyright 1995 Leo Wong
+  \ hello at albany dot net
+  \ http://www.albany.net/~hello/
+  \ ____
+
+need ms
+
+1 CHARS CONSTANT /Char
+: C+!  ( char c-addr -- )  DUP >R  C@ +  R> C! ;
+
+  \ the universal pattern
+32 CONSTANT How-Deep  24 CONSTANT How-Wide
+
+How-Wide How-Deep *
+  \  1-  \ 1- prevents scrolling on my screen \ XXX OLD
+   CONSTANT Homes
+
+  \ world wrap
+: World  ( "name" -- )
+  CREATE  Homes CHARS ALLOT
+  DOES>  ( u -- c-addr )
+    ( u pfa ) SWAP Homes +  Homes MOD  CHARS + ;
+
+World old  World new
+
+-->
+
+( life )
+
+  \ biostatistics
+
+  \ begin hexadecimal numbering
+  \ hex xy : x holds life , y holds neighbors count
+
+$10 CONSTANT Alive  \ 0y = not alive
+
+  \ Conway's rules:
+  \ a life depends on the number of its next-door neighbors
+
+  \ it dies if it has fewer than 2 neighbors
+: Lonely  ( char -- flag )  $12 < ;
+
+  \ it dies if it has more than 3 neighbors
+: Crowded  ( char -- flag )  $13 > ;
+
+: -Sustaining  ( char -- flag )  DUP Lonely  SWAP Crowded  OR ;
+
+  \ it is born if it has exactly 3 neighbors
+: Quickening  ( char -- flag )  $03 = ;
+
+-->
+
+( life )
+
+  \ compass points
+: N  ( i -- j )  How-Wide - ;
+: S  ( i -- j )  How-Wide + ;
+: E  ( i -- j )  1+ ;
+: W  ( i -- j )  1- ;
+
+  \ census
+: Home+!  ( -1|1 i -- )  >R  Alive *  R> new C+! ;
+
+: Neighbors+!  ( -1|0|1 i -- )
+   2DUP N W new C+!  2DUP N new C+!  2DUP N E new C+!
+   2DUP   W new C+!  (     i      )  2DUP   E new C+!
+   2DUP S W new C+!  2DUP S new C+!       S E new C+! ;
+
+: Bureau-of-Vital-Statistics ( -1|1 i -- )
+   2DUP Home+!  Neighbors+! ;
+
+  \ mortal coils
+CHAR ? CONSTANT Soul  BL CONSTANT Body
+
+-->
+
+( life )
+
+: Home  ( char i -- )  How-Wide /MOD AT-XY  EMIT ;
+
+: Is-Born  ( i -- )
+  Soul OVER Home  1 SWAP Bureau-of-Vital-Statistics ;
+
+: Dies  ( i -- )
+  Body OVER Home  -1 SWAP Bureau-of-Vital-Statistics ;
+
+: One  ( c-addr -- i )  0 old -  /Char / ;
+
+-->
+
+( life )
+
+: there  ( -- )  How-Wide 1- 0 AT-XY ;
+
+: Everything  ( -- )
+   0 old  Homes
+   BEGIN  DUP
+   WHILE  OVER C@  DUP Alive AND
+      IF   -Sustaining IF  OVER One Dies     THEN
+      ELSE  Quickening IF  OVER One Is-Born  THEN THEN
+      1 /STRING
+   REPEAT  2DROP
+   there  ;
+
+-->
+
+( life )
+
+  \ in the beginning
+: Void  ( -- )  0 old  Homes BLANK ;
+
+  \ spirit
+: Voice  ( -- c-addr u )
+   PAGE ." Say: "  0 new  DUP Homes ACCEPT ;
+
+  \ subtlety
+: Serpent  ( -- )
+  0 2 AT-XY  ." Press a key for knowledge."  KEY DROP
+  0 2 AT-XY  ." Press space to re-start, Esc to escape life." ;
+
+  \ the primal state
+: Innocence  ( -- )
+   Homes 0 DO  I new C@  Alive /  I Neighbors+!  LOOP ;
+
+  \ children become parents
+: Passes  ( -- )  0 new  0 old  Homes  CMOVE ;
+
+-->
+
+( life )
+
+  \ a garden
+: Paradise  ( c-addr u -- )
+   >R  How-Deep How-Wide *  How-Deep 2 MOD 0=  How-Wide AND -
+   R@  -  2/  old
+   R>  CMOVE
+   0 old  Homes 0
+   DO  COUNT BL <>
+       DUP IF  Soul I Home  THEN
+       Alive AND  I new C!
+   LOOP  DROP
+   Serpent
+   Innocence Passes ;
+
+-->
+
+( life )
+
+: Creation  ( -- )  Void Voice Paradise ;
+
+  \ the human element
+
+100 CONSTANT Ideas
+: Dreams  ( -- )  Ideas MS ;
+
+100 CONSTANT Images
+: Meditation  ( -- )  Images MS ;
+
+  \ free will
+: Action  ( -- char )
+  KEY? DUP
+  IF  DROP KEY  DUP BL = IF  Creation  THEN
+  THEN ;
+
+  \ environmental dependence
+7 CONSTANT Escape
+
+  \ history
+: Goes-On  ( -- )
+   BEGIN  Everything Passes  Dreams Action Meditation
+          Escape = UNTIL ;
+
+  \ a vision
+: Life  ( -- )  Creation Goes-On ;
+
+  \ Life
+
+
+  \ }}} =======================================================
+  \ Sample game: Pong {{{
+
+( pong )
+
+  \ Credits:
+  \ Code adapted from IsForth, 2015-10.
+
+  \ ____
+  \
+  \ pong.f
+  \ Written june 2002 by Robert Oestling
+  \ <robost at telia dot com>
+  \ Tested with IsForth, http://isforth.clss.net/
+  \ ____
+
+need columns  need rows  need frames@  need ms  need options[
+
+variable speed  100 speed !  \ Delay in milliseconds.
+
+12 constant padsize  \ Size of pads.
+
+  \ Player keys.
+char 1 constant left1-k
+char 2 constant right1-k
+char 6 constant left2-k
+char 7 constant right2-k
+char Q constant quit-k
+
+-->
+
+( pong )
+
+variable x  variable y  \ Coordinates of the ball.
+
+variable dir   \ Direction of ball.
+               \ Bit 0: 1 = down, 0 = up.
+               \ Bit 1: 1 = right, 0 = left.
+
+variable points-player1  variable points-player2
+
+variable pad1x  \ Top pad x coordinate.
+columns padsize - 2/  pad1x !
+variable pad2x  pad1x @ pad2x !  \ Bottom pad x coordinate.
+0       constant pad1y      \ Top pad y coordinate.
+rows 1- constant pad2y      \ Bottom pad y coordinate.
+
+-->
+
+( pong )
+
+: init-screen  ( -- )  page  ;
+
+: restore-screen  ( -- )  page  ;
+
+: at-ball  ( -- )  x @ y @ at-xy  ;
+
+: show-ball  ( -- )  at-ball [char] o emit  ;
+
+: erase-ball  ( -- )  at-ball space  ;
+
+: show-pad  ( x y -- )
+  at-xy padsize 0 do  [char] = emit  loop  ;
+
+: show-pads  ( -- )
+  pad1x @ pad1y show-pad  pad2x @ pad2y show-pad  ;
+
+-->
+
+( pong )
+
+: print-point  ( n x y -- )  at-xy ." [ " . ." ]"  ;
+
+: print-points  ( -- )
+  points-player1 @ pad1x @ 3 + pad1y print-point
+  points-player2 @ pad2x @ 3 + pad2y print-point  ;
+
+: erase-pad  ( x y -- )  at-xy padsize spaces  ;
+
+: erase-pads  ( -- )
+  pad1x @ pad1y erase-pad  pad2x @ pad2y erase-pad  ;
+
+: change-x  ( -- )  dir @ 2 xor dir !  ;
+  \ Change x direction.
+
+: change-y  ( -- )  dir @ 1 xor dir !  ;
+  \ Change y direction.
+
+-->
+
+( pong )
+
+  \ XXX TODO -- remove `0=` by exchanging the order
+
+: move-x  ( -- )            \ This handles the column movement.
+  dir @ 2 and 0= if          \ Is the ball moving left?
+    x @ 0= if                \ Is it at column 0?
+      change-x             \ Yes, change direction.
+      1 x +!           \ This will make things look better.
+    then
+    -1 x +!              \ x--
+  else                     \ Is the ball moving right?
+    x @ columns 1- = if         \ Is it at last column?
+      change-x             \ Yes, change direction.
+      -1 x +!            \ This will make things look better.
+    then
+    1 x +!              \ x++
+  then  ;
+
+-->
+
+( pong )
+
+: reset-ball  ( -- )
+  columns 2/ x !  rows 2/ y !  frames@ d>s 3 and dir !  ;
+  \ Initialize/reset ball position.
+
+: faster  ( -- )
+  speed @ 40 > if  speed @ dup 20 / - speed !   then  ;
+  \ If the delay is more than 40, reduce it with 5%.
+
+: score-player1  ( -- )  1 points-player1 +!  ;
+  \ Increase player 1's points by one.
+
+: score-player2  ( -- )  1 points-player2 +!  ;
+  \ Increase player 2's points by one.
+
+: hit-pad1?  ( -- f )
+  x @ pad1x @ 1- >
+  x @ pad1x @ padsize + <  and  ;
+  \ Is pad1 hit by the ball?
+  \ Is pad1x <= x < pad1x + padsize?
+
+: hit-pad2?  ( -- f )
+  x @ pad2x @ 1- >
+  x @ pad2x @ padsize + <  and  ;
+  \ Is pad2 hit by the ball?
+  \ Is pad2x <= x < pad2x + padsize?
+
+-->
+
+( pong )
+
+  \ XXX TODO -- remove `0=` by exchanging the order
+
+: move-y  ( -- )            \ This handles the row movement.
+  dir @ 1 and 0=           \ Is the ball moving up?
+  if
+    y @ 1 = if               \ Is the ball at row 1?
+      faster  hit-pad1?
+      if    change-y 1 y +!
+      else  score-player2 reset-ball  then
+    then  -1 y +!
+
+-->
+
+( pong )
+
+  else                     \ The ball is moving down.
+    y @ rows 2- =          \ Is the ball at second last row?
+    if
+      faster  hit-pad2?
+      if    change-y -1 y +!
+      else  score-player1 reset-ball  then
+    then  1 y +!
+  then  ;  -->
+
+( pong )
+
+: show-all  ( -- )  show-ball show-pads print-points  ;
+
+: erase-all  ( -- )  erase-ball erase-pads  ;
+
+: delay  ( -- )  speed @ ms  ;
+
+: move-pad1-left  ( -- )  pad1x @ 0<> pad1x +!  ;
+
+: move-pad1-right  ( -- )
+  pad1x @ padsize + columns <> abs pad1x +!  ;
+
+: move-pad2-left  ( -- )  pad2x @ 0<> pad2x +!  ;
+
+: move-pad2-right  ( -- )
+  pad2x @ padsize + columns <> abs pad2x +!  ;
+
+: init-game  ( -- )  init-screen reset-ball  ;
+
+-->
+
+( pong )
+
+: quit-game  ( -- )
+  page  columns 2/ 7 - rows 2/ at-xy
+  ." Score: " points-player1 ?  ." - " points-player2 ?
+  key drop restore-screen bye  ;
+
+: keypress  ( key -- )
+  options[
+    left1-k   option move-pad1-left
+    right1-k  option move-pad1-right
+    left2-k   option move-pad2-left
+    right2-k  option move-pad2-right
+    quit-k    option quit
+  ]options  ;
+
+-->
+
+( pong )
+
+: show-player-keys  ( c1 c2 -- )
+  emit ." - left" cr  emit ." - right" cr  ;
+
+: show-help  ( -- )
+  page
+  \  <------------------------------>
+  ." Forth Pong by Robert Oestling" cr  \ 2002
+  ." Ported to IsForth by" cr  \ XXX TODO
+  ." Ported to Solo Forth" cr  \ XXX TODO
+  cr
+  ." Player 1:" cr right1-k left1-k show-player-keys
+  ." Player 2:" cr right2-k left2-k show-player-keys
+  quit-k emit ." - quit" cr cr
+  \  <------------------------------>
+  ." Press any key to start the game." key drop  ;
+
+-->
+
+( pong )
+
+: pong  ( -- )
+  init-game show-help page
+  begin
+    show-all delay erase-all move-x move-y
+    begin
+      key? if  key keypress  then
+    again
+  again  ;
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{

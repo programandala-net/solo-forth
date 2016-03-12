@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510142109
+version_release:  equ 201510150058
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -4708,6 +4708,8 @@ do_constant:
 ;
 ; }doc
 
+  ; XXX TODO `create 0 comma` ?
+
   dw create_,cell_,allot_
   dw semicolon_s_
 
@@ -5112,8 +5114,11 @@ endif
 ;
 ; hld  ( -- a )
 ; 
-; User variable that holds XXX TODO
+; A user variable that holds the address of the latest character of
+; text during numeric output conversion.
 ;
+; Standard: fig-Forth.
+; 
 ; }doc
 
   db 0x1A
@@ -9792,9 +9797,7 @@ emits_.end:
 ; ----------------------------------------------
   _colon_header less_hash_,'<#'
 
-  dw pad_
-  dw hld_
-  dw store_
+  dw pad_,hld_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9850,6 +9853,7 @@ sign.end:
 ;
 ; }doc
 
+  ; XXX FIXME -- `123 s>d <# #s #>`
 
   dw base_,fetch_
   dw m_slash_mod_ ;  ( remainder dquotient )

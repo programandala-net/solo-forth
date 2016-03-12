@@ -104,11 +104,10 @@ loader.bas.tap: loader.bas
 # user will use disk 1 for customized versions of the Forth
 # system, Forth turnkey applications, graphics and data files.
 
-sys/4x8fd.tap: _draft/4x8_font_driver/4x8fd.z80s
-	cd sys ; \
+sys/4x8fd.tap: sys/4x8fd.z80s
 	pasmo --tap \
-		../_draft/4x8_font_driver/4x8fd.z80s \
-		4x8fd.tap
+		sys/4x8fd.z80s \
+		sys/4x8fd.tap
 
 solo_forth_disk_1.mgt: \
 		sys/4x8fd.tap \
@@ -143,7 +142,6 @@ solo_forth_disk_2.mgt: $(disk_source_file)
 backup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
 		_draft/* \
-		_ideas/* \
 		_old/* \
 		_tests/* \
 		inc/* \
@@ -183,3 +181,5 @@ backup:
 # 2015-10-10: Substituted fsb (written in Vim) with fsb2
 # (written in Forth for Gforth). fsb was becoming too show with
 # more than 300 source screens, while fsb2 is instantaneous.
+#
+# 2015-10-15: Updated.

@@ -281,8 +281,9 @@ original address hold in `parsed-word` is used by `uppers`.
 
 Make the decimal point char configurable.
 
-Improve: Accept a decimal point at any position, else `dpl` is
-almost useless.
+.2015-10-15:
+
+Adapt from Gforth: `nextname` and `noname`.
 
 // }}}
 == Errors ==
@@ -336,21 +337,6 @@ Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
     LIT PKEY (KEY) !    \ Set default handler for KEY.
     >S ;                \ And initialize screen output.
 
-.2015-06-20:
-
-New: `executing?` after DZX-Forth.
-
-New: `rshift` and `lshift`, from DZX-Forth.
-
-.2015-06-22:
-
-New: `within`, `between`, from DZX-Forth.
-
-.2015-06-25:
-
-New: `??`. A control structure than executes the next compiled word if
-TOS is non-zero, else skip it.
-
 .2015-07-23:
 
 New: `lower` and `lowers`.
@@ -377,10 +363,6 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 .2015-08-12:
 
 Solve `;s` vs `exit`. Compare CamelForth, DZX-Forth...
-
-.2015-08-26:
-
-New: `cvalue`.
 
 .2015-09-12:
 
@@ -418,8 +400,6 @@ Spectrum Forth-83).
 
 Create a `_deferred_header` macro for the new format of deferred
 words.
-
-Convert `boot` to a deferred word.
 
 // }}}
 == Sample games ==
