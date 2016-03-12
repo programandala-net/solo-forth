@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511130153
+\ Last modified: 201511130228
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -5818,6 +5818,7 @@ need cs-push  need cs-pop
 
 ( times )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX first version
 
   \ Credits:
@@ -5838,7 +5839,7 @@ need cs-push  need cs-pop
   \ XXX TODO ?do
 
 : times  ( Compilation: "name" -- ) ( Run-time: n -- )
-  postpone (times) ' compile,  ; immediate compile-only
+  postpone (times) postpone [']  ; immediate compile-only
 
   \ Repeat the next instruction if the count on top of the
   \ stack is not zero.  The count is also decremented.  If
@@ -5852,6 +5853,7 @@ need cs-push  need cs-pop
 
 ( times )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX second version
   \ Immediate words are not allowed.
 
@@ -5881,6 +5883,7 @@ need cs-push  need cs-pop
 
 ( times )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX third version
   \ No check is done during compilation.
 
@@ -12098,6 +12101,8 @@ need frames@  need reset-frames  defer (number-base)
   dup ['] number-base-3 (number-base-bench)
       ['] number-base-4 (number-base-bench) ;
 
+  \ 2015-10-09 
+  \
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
   \          1    2    3    4
@@ -12243,6 +12248,8 @@ need frames@  need reset-frames
   do  128 255 lshift drop   loop
   frames@ cr d.  ;
 
+  \ 2015-11-01
+
   \ Times Frames (1 frame = 50th of second)
   \ ----- -----------------------------------
   \       rshift         lshift
@@ -12335,6 +12342,8 @@ need frames@  need reset-frames
 
 ( number?-bench )
 
+  \ 2015-10-14
+
 need frames@  need reset-frames
 
 : empty-stack  ( -- )  sp0 @ sp!  ;
@@ -12368,6 +12377,8 @@ defer num?
   \ 10000  25591      25652     25933      26581
 
 ( number?-bench )
+
+  \ 2015-10-14
 
 need frames@  need reset-frames
 
@@ -12410,6 +12421,8 @@ defer num?
 
   frames@ cr .( Frames ) d. cr
 
+  \ 2015-11-04
+
   \ Benchmark: Locate and load 16 times empty block #457.
 
   \ Times Frames (1 frame = 50th of second)
@@ -12428,6 +12441,8 @@ defer num?
   need case  need times  need dtimes  need for
 
   frames@ cr .( Frames ) d. cr
+
+  \ 2015-11-04
 
   \             512-byte buffer 1024-byte buffer
   \            ---------------- ----------------
@@ -12675,6 +12690,8 @@ need bench  need marque
   32767 dup bench baden-d*-bench marque
             bench smith-d*-bench marque  ;
 
+  \ 2015-11-09
+
   \ Bench     Frames for 32767 iterations
   \ -----     ---------------------------
   \ baden-d*  4920 (98 seconds)
@@ -12682,7 +12699,7 @@ need bench  need marque
 
 ( misc-benchs )
 
-  \ Some generic speed benchs.
+  \ Some misc speed benchs.
 
 need bench  need -if
 

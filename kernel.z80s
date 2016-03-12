@@ -19,7 +19,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B49
   
-  ; Last modified:  201511130153
+  ; Last modified:  201511130228
 
 ; ==============================================================
 ; Author and license
@@ -221,11 +221,6 @@ size_optimization: equ false
   ; XXX the flag is harcoded in the code
   ; XXX OLD
 ;assembler_core_in_kernel: equ true
-
-paren_dot_quote: equ true
-  ; use `(.")`? else compile `slit` and `type`
-  ; XXX TODO
-  ; XXX TMP
 
 ; old_loops: equ true
   ; true = pre-Forth-83 do-loops
@@ -6543,7 +6538,6 @@ minus_trailing.begin:
   dw b_l_,skip_
   dw semicolon_s_
 
-if 1 ; paren_dot_quote
 ; ----------------------------------------------
   _colon_header paren_dot_quote_,'(.")'
 
@@ -6571,8 +6565,6 @@ if 1 ; paren_dot_quote
   ; dw s_lit_,type_ ; XXX TODO -- this alternative can not work
 
   dw semicolon_s_
-endif
-
 
 if 0 ; XXX OLD
 
@@ -6673,13 +6665,7 @@ else
   ; Credits:
   ; Code adapted from DZX-Forth.
 
-if paren_dot_quote
   dw compile_,paren_dot_quote_,comma_quote_
-else ; XXX OLD
-  ; XXX TMP -- this new method uses 1 more cell for the compiled
-  ; code
-  dw comma_quote_,compile_,type_
-endif
   dw semicolon_s_
 
 endif
@@ -7830,9 +7816,8 @@ interpret.begin:
 
   ; Word found
   ; ( nfa )
-  dw dup_,from_name_,swap_  ; ( cfa nfa )
-  dw dup_,immediate_question_
-  dw swap_,compile_only_question_,two_star_
+  dw dup_,name_to_immediate_question_       ; ( nfa cfa f1 )
+  dw rot_,compile_only_question_,two_star_  ; ( cfa f1 n2 )
   dw plus_,abs_ ; ( cfa +n )
   _literal 3
   dw plus_ ; adjust the table index

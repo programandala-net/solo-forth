@@ -8,16 +8,6 @@
 == Urgent ==
 // {{{
 
-.2015-11-12:
-
-Bug:
-
-The stack depth becomes -2 at the end of a compiled block, when
-compiler security is off and the block has been compiled with a nested
-`need`.
-
-Some checks have been added to `?stack` and `interpret`, but
-I got no clue yet!
 
 // }}}
 == Inner ==
@@ -31,6 +21,10 @@ I got no clue yet!
 : [+csp]  ( -- )  [ cell negate ] literal csp +!  ; immediate compile-only
 : [-csp]  ( -- )  cell csp +!  ; immediate compile-only
 ----
+
+But for compiling an external number inside a definition,
+a trick is `[ dup ] literal` and a `drop` after `;`.
+
 
 .2015-11-10:
 
@@ -62,17 +56,10 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 .2015-08-12:
 
-Change: remove the control structure checking (`?pairs`). (now it's
-conditionally compiled in the kernel)
-
 Change: make the vocabulary links point to the pfa of the
 vocabularies? `vocabulary` should be adapted too. The advantage is the
 pfa is also the id used in search order and returned by `wordlist`.
 A word `pfa>vlfa` would be helpful.
-
-.2015-08-14:
-
-Fix: problem when compiler security is off.
 
 // }}}
 == Control structures ==
