@@ -32,8 +32,9 @@ New words, from the Afera library: `\`, `.(`, `char` and `[char]`,
 
 `dliteral` is renamed as `2literal`.
 
-`verify` is removed. The rest of tape related words will be removed.
-They will be defined in the blocks library.
+Removed: `verify`.
+
+.2015-06-04:
 
 New: `upperc` and `uppers`.
 
@@ -46,3 +47,15 @@ Removed: `udg`, `init-disc`, `.cpu`.
 New: `<>`.
 
 Improvement: the lower part of the screen can be used.
+
+Removed: `loadt`, `savet`, `(tape)` and tape headers.
+
+Removed: `triad`.
+
+Change: `inp` renamed as `p@`; `outp` renamed as `p!`.
+
+Change: stacks and buffers are moved to the bottom of the memory map,
+before the interpreter. They must be below 0xC000 in order to use the
+memory banks.
+
+Change: `r` renamed as `r@`.

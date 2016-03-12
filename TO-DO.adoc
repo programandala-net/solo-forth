@@ -1,0 +1,8 @@
+= F+D Forth TO-DO
+
+.2015-06-04:
+
+Move the most used words to the top of the `forth` vocabulary: `:`,
+`;`, stack words, control structures, etc.  This should speed up the
+compilation of sources.
+

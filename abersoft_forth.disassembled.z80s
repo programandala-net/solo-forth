@@ -720,6 +720,7 @@ sp_store_cfa:
   defw sp_store_pfa
 sp_store_pfa:
   ; XXX FIXME -- No need to use the DE register.
+  ; XXX FIXME -- Optimize: one register is enough:
   ld e,(ix+0x06)
   ld d,(ix+0x07)
   ex de,hl
@@ -743,6 +744,7 @@ rp_store_lfa:
 rp_store_cfa:
   defw rp_store_pfa
 rp_store_pfa:
+  ; XXX FIXME -- Optimize: one register is enough:
   ld e,(ix+0x08)
   ld d,(ix+0x09)
   ex de,hl
@@ -2857,6 +2859,7 @@ cold_lfa:
 cold_cfa:
   defw do_colon
 cold_pfa:
+  ; XXX FIXME -- `FIRST` should be used instead of compiled literals with its value:
   defw empty_buffers_cfa
   defw lit_cfa,first_buffer
   defw use_cfa
@@ -5046,6 +5049,7 @@ inp_pfa:
   pop bc
   ld h,0x00
   ld l,a
+  ; XXX FIXME -- Optimize: `jp pushhl`:
   push hl
   jp next
 
@@ -5086,6 +5090,7 @@ screen_pfa:
   ld l,a
   pop ix
   pop bc
+  ; XXX FIXME -- Optimize: `jp pushhl`:
   push hl
   jp next
 
@@ -5234,6 +5239,7 @@ attr_pfa:
   ld l,a
   pop ix
   pop bc
+  ; XXX FIXME -- Optimize: `jp pushhl`:
   push hl
   jp next
 
@@ -5262,6 +5268,7 @@ l7d20h:
   ld l,a
   pop ix
   pop bc
+  ; XXX FIXME -- Optimize: `jp pushhl`:
   push hl
   jp next
 

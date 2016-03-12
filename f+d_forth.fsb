@@ -1,0 +1,35 @@
+( F+D Forth blocks file)
+
+\ This file is the library of F+D Forth,
+\ and the skeleton to build applications in F+D Forth.
+
+( POINT )
+
+  \ 2015-06-04: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html)
+
+CREATE POINT  ( x y -- )
+  HEX
+  E1 C, D1 C, C5 C,   \ pop hl / pop de / push bc
+  \ l = y coordinate
+  \ e = x coordinate
+  40 05 + C, 48 03 + C, \ ld b,l / ld c,e
+  \ b = y coordinate
+  \ c = x coordinate
+  CD C, 22AA 6 + ,    \ call PIXELADD ; +6 to skip BASIC error
+  \ hl = screen address
+  \ a = pixel position in hl
+  40 07 + C,          \ ld b,a
+  04 C,               \ inc b
+  7E C,               \ ld a,(hl)
+  \ rotate:
+  07 C,  10 C, FD C,  \ rlca / djnz rotate
+  E6 C, 01 C,         \ and 1
+  \ finish:
+  26 C, 00 C,  68 07 + C,  \ ld h,0 / ld l,a
+  C1 C,               \ pop bc
+  C3 C, PUSHHL ,      \ jp pushhl
+  SMUDGE DECIMAL
+
+  \ vim: filetype=abersoftforthafera
+

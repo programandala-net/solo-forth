@@ -110,6 +110,7 @@ backup:
 	tar -czf backups/$$(date +%Y%m%d%H%M)_f+d_forth.tgz \
 		Makefile \
 		*.adoc \
+		*.fsb \
 		*.bas \
 		*.z80s
 

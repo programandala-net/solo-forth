@@ -6,10 +6,13 @@
 
   ; Forth symbols
 
-data_stack_bottom:  equ 0xCB40
-first_buffer:       equ 0xCBE0
-ram_disc_bottom:    equ 0xD000
-ram_disc_top:       equ 0xFBFF
+
+data_bytes_per_buffer:            equ 0x0200
+total_bytes_per_buffer:           equ data_bytes_per_buffer+4
+blocks_per_screen:                equ 0x02
+bytes_per_data_stack:             equ 0x50
+bytes_per_return_stack:           equ 0x50
+bytes_per_terminal_input_buffer:  equ 0x50
 
 precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
@@ -59,11 +62,11 @@ sys_t_addr:        equ 0x5C74
 sys_udg:           equ 0x5C7B
 
   ; ----------------------------------------------------------------
-  ; Header macro
-
-  ; XXX TODO -- Copied from DZX-Forth. Adapt it.
+  ; Macros
 
 _header: macro name,immediate
+
+  ; XXX TODO -- Copied from DZX-Forth. Adapt it.
 
   ; name        = name string
   ; immediate   = _immediate or nothing
@@ -78,8 +81,8 @@ _header: macro name,immediate
   endif
   local _first ; address of the first char of the name
   local _next  ; address after the last char of the name
-  db _next-_first+bits    ; count and flags byte
-  _first: db name
+  defb _next-_first+bits    ; count and flags byte
+  _first: defb name
   _next:
 
   ; the link field
@@ -89,6 +92,16 @@ _header: macro name,immediate
   last_xt: defl $+2
   dw last_xt
   previous_nfa: defl last_nfa
+
+endm
+
+_string: macro text
+
+  local _first ; address of the first char of the name
+  local _next  ; address after the last char of the name
+  defb _next-_first ; length byte
+  _first: defb text
+  _next:
 
 endm
 
@@ -210,9 +223,9 @@ init_user_pointer_value:
 init_s0_value:
   defw data_stack_bottom
 init_r0_value:
-  defw first_buffer
+  defw return_stack_bottom
 init_tib_value:
-  defw data_stack_bottom
+  defw terminal_input_buffer
 init_width_value:
   defw 0x001F
 init_warning_value:
@@ -234,7 +247,33 @@ cpu_name:
 user_pointer_value:
   defw user_variables_origin
 return_pointer_value:
-  defw 0xCBDE
+  defw return_stack_bottom
+
+  ; ----------------------------------------------------------------
+  ; Stacks and buffers
+
+;  defs 100 ; XXX TMP
+
+data_stack_limit:
+  defs bytes_per_data_stack+2
+data_stack_bottom:
+
+;  defs 4 ; XXX TMP
+
+terminal_input_buffer:
+  defs bytes_per_terminal_input_buffer
+
+;  defs 4 ; XXX TMP
+
+return_stack_limit:
+  defs bytes_per_return_stack+2
+return_stack_bottom:
+
+;  defs 4 ; XXX TMP
+
+first_buffer:
+  defs blocks_per_screen*total_bytes_per_buffer
+limit:
 
   ; ----------------------------------------------------------------
   ; Interpreter
@@ -967,12 +1006,12 @@ sp_store_cfa:
   defw sp_store_pfa
 sp_store_pfa:
   ; XXX OLD
-  ld e,(ix+0x06)
-  ld d,(ix+0x07)
-  ex de,hl
+  ; ld e,(ix+0x06)
+  ; ld d,(ix+0x07)
+  ; ex de,hl
   ; XXX NEW
-  ;ld l,(ix+0x06)
-  ;ld h,(ix+0x07)
+  ld l,(ix+0x06)
+  ld h,(ix+0x07)
   ld sp,hl
   jp next
 
@@ -993,9 +1032,13 @@ rp_store_lfa:
 rp_store_cfa:
   defw rp_store_pfa
 rp_store_pfa:
-  ld e,(ix+0x08)
-  ld d,(ix+0x09)
-  ex de,hl
+  ; XXX OLD
+  ;ld e,(ix+0x08)
+  ;ld d,(ix+0x09)
+  ;ex de,hl
+  ; XXX NEW
+  ld l,(ix+0x08)
+  ld h,(ix+0x09)
   ld (return_pointer_value),hl
   jp next
 
@@ -1063,17 +1106,17 @@ from_r_pfa:
   push de
   jp next
 
-r_nfa:
-  defb 0x01+0x80,'','R'+0x80
-r_lfa:
+r_fetch_nfa:
+  defb 0x01+0x80,'R','@'+0x80
+r_fetch_lfa:
   defw from_r_nfa
-r_cfa:
+r_fetch_cfa:
   defw i_pfa
 
 zero_equals_nfa:
   defb 0x02+0x80,'0','='+0x80
 zero_equals_lfa:
-  defw r_nfa
+  defw r_fetch_nfa
 zero_equals_cfa:
   defw zero_equals_pfa
 zero_equals_pfa:
@@ -1530,7 +1573,7 @@ limit_lfa:
 limit_cfa:
   defw do_constant
 limit_pfa:
-  defw ram_disc_bottom
+  defw limit
 
 b_slash_buf_nfa:
   defb 0x05+0x80,'B/BU','F'+0x80
@@ -1539,7 +1582,7 @@ b_slash_buf_lfa:
 b_slash_buf_cfa:
   defw do_constant
 b_slash_buf_pfa:
-  defw 0x0080
+  defw data_bytes_per_buffer
 
 b_slash_scr_nfa:
   defb 0x05+0x80,'B/SC','R'+0x80
@@ -1548,7 +1591,7 @@ b_slash_scr_lfa:
 b_slash_scr_cfa:
   defw do_constant
 b_slash_scr_pfa:
-  defw 0x0008
+  defw blocks_per_screen
 
 plus_origin_nfa:
   defb 0x07+0x80,'+ORIGI','N'+0x80
@@ -1569,7 +1612,7 @@ s0_cfa:
   defw do_user
 s0_pfa:
   defb 0x06
-  nop
+  nop ; XXX OLD
 
 r0_nfa:
   defb 0x02+0x80,'R','0'+0x80
@@ -1579,7 +1622,7 @@ r0_cfa:
   defw do_user
 r0_pfa:
   defb 0x08
-  nop
+  nop ; XXX OLD
 
 tib_nfa:
   defb 0x03+0x80,'TI','B'+0x80
@@ -2391,7 +2434,7 @@ paren_dot_quote_lfa:
 paren_dot_quote_cfa:
   defw do_colon
 paren_dot_quote_pfa:
-  defw r_cfa
+  defw r_fetch_cfa
   defw count_cfa
   defw dup_cfa
   defw one_plus_cfa
@@ -2647,7 +2690,7 @@ branch_destination_0x69E7:
   defw over_cfa
   defw minus_cfa
   defw to_r_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw here_cfa
   defw c_store_cfa
   defw plus_cfa
@@ -3000,19 +3043,14 @@ question_stack_cfa:
   defw do_colon
 question_stack_pfa:
   defw sp_fetch_cfa
-  defw s0_cfa
-  defw fetch_cfa
+  defw s0_cfa,fetch_cfa
   defw swap_cfa
   defw u_less_than_cfa
-  defw one_cfa
-  defw question_error_cfa
+  defw one_cfa,question_error_cfa
   defw sp_fetch_cfa
-  defw here_cfa
-  defw lit_cfa,0x0080
-  defw plus_cfa
+  defw lit_cfa,data_stack_limit
   defw u_less_than_cfa
-  defw lit_cfa,0x0007
-  defw question_error_cfa
+  defw lit_cfa,0x0007,question_error_cfa
   defw semicolon_s_cfa
 
 ; XXX TODO -- In order to change the behaviour of `literal` and
@@ -3144,9 +3182,7 @@ quit_lfa:
 quit_cfa:
   defw do_colon
 quit_pfa:
-  defw zero_cfa
-  defw blk_cfa
-  defw store_cfa
+  defw zero_cfa,blk_cfa,store_cfa
   defw left_bracket_cfa
 branch_destination_0x6D35:
   defw rp_store_cfa
@@ -3162,21 +3198,29 @@ branch_destination_0x6D35:
 branch_destination_0x6D4C:
   defw branch_cfa,branch_destination_0x6D35
 
+greeting_nfa:
+  defb 0x08+0x80,'GREETIN','G'+0x80
+greeting_lfa:
+  defw quit_nfa
+greeting_cfa:
+  defw do_colon
+greeting_pfa:
+  defw paren_dot_quote_cfa
+  _string "F+D Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+  defw semicolon_s_cfa
+
 abort_nfa:
   defb 0x05+0x80,'ABOR','T'+0x80
 abort_lfa:
-  defw quit_nfa
+  defw greeting_nfa
 abort_cfa:
   defw do_colon
 abort_pfa:
   defw sp_store_cfa
   defw decimal_cfa
   defw question_stack_cfa
-  defw cls_cfa
-  defw paren_dot_quote_cfa
-  defb 0x31,"F+D Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
-  defw forth_cfa
-  defw definitions_cfa
+  defw cls_cfa,greeting_cfa
+  defw forth_cfa,definitions_cfa
   defw quit_cfa
 
 warm_start:
@@ -3202,10 +3246,10 @@ cold_start:
   xor a
   ld (iy+sys_df_sz_offset),a
   ld (printer_channel_or_zero),a
-  ld bc,cold_start_phony_cfa
   ld ix,(user_pointer_value)
   ld hl,(init_s0_value)
   ld sp,hl
+  ld bc,cold_start_phony_cfa
   jp next
 cold_start_phony_cfa:
   defw cold_cfa
@@ -3218,17 +3262,14 @@ cold_cfa:
   defw do_colon
 cold_pfa:
   defw empty_buffers_cfa
-  defw lit_cfa,first_buffer
-  defw use_cfa
-  defw store_cfa
-  defw lit_cfa,first_buffer
-  defw prev_cfa
-  defw store_cfa
+  defw first_cfa,dup_cfa
+  defw use_cfa,store_cfa
+  defw prev_cfa,store_cfa
   defw dr0_cfa
   defw lit_cfa,init_s0_value
   defw lit_cfa,user_pointer_value
   defw fetch_cfa
-  defw lit_cfa,0x0006
+  defw lit_cfa,0x0006 ; XXX TODO -- avoid this gap
   defw plus_cfa
   defw lit_cfa,0x0010
   defw cmove_cfa
@@ -3361,11 +3402,11 @@ m_slash_pfa:
   defw to_r_cfa
   defw to_r_cfa
   defw dabs_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw abs_cfa
   defw u_slash_mod_cfa
   defw from_r_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw xor_cfa
   defw plus_minus_cfa
   defw swap_cfa
@@ -3455,7 +3496,7 @@ m_slash_mod_cfa:
 m_slash_mod_pfa:
   defw to_r_cfa
   defw zero_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw u_slash_mod_cfa
   defw from_r_cfa
   defw swap_cfa
@@ -3636,12 +3677,12 @@ empty_buffers_pfa:
   defw limit_cfa
   defw first_cfa
   defw paren_do_cfa
-branch_destination_0x713A:
+empty_buffers.do:
   defw lit_cfa,0x7FFF
   defw i_cfa
   defw store_cfa
-  defw lit_cfa,0x0084
-  defw paren_plus_loop_cfa,branch_destination_0x713A
+  defw lit_cfa,total_bytes_per_buffer
+  defw paren_plus_loop_cfa,empty_buffers.do
   defw semicolon_s_cfa
 
 dr0_nfa:
@@ -3672,22 +3713,22 @@ branch_destination_0x716F:
   defw zero_branch_cfa,branch_destination_0x716F
   defw use_cfa
   defw store_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw fetch_cfa
   defw zero_less_than_cfa
   defw zero_branch_cfa,branch_destination_0x7195
-  defw r_cfa
+  defw r_fetch_cfa
   defw two_plus_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw fetch_cfa
   defw lit_cfa,0x7FFF
   defw and_cfa
   defw zero_cfa
   defw read_write_cfa
 branch_destination_0x7195:
-  defw r_cfa
+  defw r_fetch_cfa
   defw store_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw prev_cfa
   defw store_cfa
   defw from_r_cfa
@@ -3709,7 +3750,7 @@ block_pfa:
   defw fetch_cfa
   defw dup_cfa
   defw fetch_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw minus_cfa
   defw dup_cfa
   defw plus_cfa
@@ -3719,10 +3760,10 @@ branch_destination_0x71CB:
   defw zero_equals_cfa
   defw zero_branch_cfa,branch_destination_0x71E5
   defw drop_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw buffer_cfa
   defw dup_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw one_cfa
   defw read_write_cfa
   defw two_cfa
@@ -3730,7 +3771,7 @@ branch_destination_0x71CB:
 branch_destination_0x71E5:
   defw dup_cfa
   defw fetch_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw minus_cfa
   defw dup_cfa
   defw plus_cfa
@@ -3745,49 +3786,84 @@ branch_destination_0x71FD:
   defw two_plus_cfa
   defw semicolon_s_cfa
 
-lo_nfa:
-  defb 0x02+0x80,'L','O'+0x80
-lo_lfa:
-  defw block_nfa
-lo_cfa:
-  defw do_constant
-lo_pfa:
-  defw ram_disc_bottom
+; doc{
+; : cswap  ( n1 -- n2 )
+;   \ Swap the low and high bytes within n1.
+; }doc
 
-hi_nfa:
-  defb 0x02+0x80,'H','I'+0x80
-hi_lfa:
-  defw lo_nfa
-hi_cfa:
-  defw do_constant
-hi_pfa:
-  defw ram_disc_top
+c_swap_nfa:
+  defb 0x05+0x80,'CSWA','P'+0x80
+c_swap_lfa:
+  defw block_nfa
+c_swap_cfa:
+  defw c_swap_pfa
+c_swap_pfa:
+  pop hl
+  ld a,h
+  ld h,l
+  ld l,a
+  jp pushhl
+
+; doc{
+
+; : block>sector  ( block -- sector )
+;   \ sector = track (high byte), +128 if side 1
+;   \        = sector (low byte)
+;   dup 10 mod 1+    \ sector 1..10
+;   swap dup 20 /    \ track 0..79
+;   swap 10 / 1 and  \ side 0..1
+;   128 * +          \ track 0..207
+;   >< or  ;
+
+; }doc
+
+block_to_sector_nfa:
+  defb 0x0C+0x80,'BLOCK>SECTO','R'+0x80
+block_to_sector_lfa:
+  defw c_swap_nfa
+block_to_sector_cfa:
+  defw do_colon
+block_to_sector_pfa:
+  defw dup_cfa,lit_cfa,10,mod_cfa,one_plus_cfa
+  defw swap_cfa,dup_cfa,lit_cfa,20,slash_cfa
+  defw swap_cfa,lit_cfa,10,slash_cfa,one_cfa,and_cfa
+  ; XXX TODO optimize with `7 shiftl`
+  defw lit_cfa,128,star_cfa,plus_cfa
+  defw c_swap_cfa,or_cfa
+  defw semicolon_s_cfa
 
 read_write_nfa:
   defb 0x03+0x80,'R/','W'+0x80
 read_write_lfa:
-  defw hi_nfa
+  defw block_to_sector_nfa
 read_write_cfa:
   defw do_colon
 read_write_pfa:
-  defw to_r_cfa
-  defw b_slash_buf_cfa
-  defw star_cfa
-  defw lo_cfa
-  defw plus_cfa
-  defw dup_cfa
-  defw hi_cfa
-  defw greater_than_cfa
-  defw lit_cfa,0x0006
-  defw question_error_cfa
-  defw from_r_cfa
-  defw zero_branch_cfa,branch_destination_0x723D
-  defw swap_cfa
-branch_destination_0x723D:
-  defw b_slash_buf_cfa
-  defw cmove_cfa
-  defw semicolon_s_cfa
+  defw lit_cfa,0x45,swap_cfa,minus_cfa
+  defw lit_cfa,read_write_sector_command,c_store_cfa
+  defw paren_read_write_cfa
 
+  ; Headerless word with the low level code of `R/W`.
+paren_read_write_cfa:
+  defw paren_read_write_pfa
+paren_read_write_pfa:
+  ld a,2 ; drive ; XXX TMP
+  pop de ; sector
+  pop hl ; address
+  push bc
+  push ix
+  push hl
+  pop ix
+  rst 8
+read_write_sector_command:
+  ; Patched by `R/W`:
+  ;   0x45 = write
+  ;   0x44 = read
+  defb 0x45
+  pop ix
+  pop bc
+  jp next
+  
 flush_nfa:
   defb 0x05+0x80,'FLUS','H'+0x80
 flush_lfa:
@@ -4361,51 +4437,10 @@ cls_pfa:
   pop bc
   jp next
 
-tape_load_header:
-  defb 3 ; filetype: code file
-  defb 'DISC      ' ; filename
-tape_load_header_length:
-  defw 0x2BFF ; XXX FIXME -- It should be 0x2C00.
-tape_load_header_address:
-  defw ram_disc_bottom
-tape_load_header_not_used:
-  defb 0x20
-  defb 0x20
-
-tape_save_header:
-  defb 3 ; filetype: code file
-  defb 'DISC      ' ; filename
-tape_save_header_length:
-  defw 0x2BFF ; XXX FIXME -- It should be 0x2C00.
-tape_save_header_address:
-  defw ram_disc_bottom
-tape_save_header_not_used:
-  defb 0x20
-  defb 0x20
-
-paren_tape_nfa:
-  defb 0x06+0x80,'(TAPE',')'+0x80
-paren_tape_lfa:
-  defw cls_nfa
-paren_tape_cfa:
-  defw paren_tape_pfa
-paren_tape_pfa:
-  pop hl
-  push bc
-  push ix
-  ld a,l
-  ld hl,ram_disc_bottom
-  ld ix,tape_load_header
-  ld (sys_t_addr),a
-  call rom_sa_all
-  pop ix
-  pop bc
-  jp next
-
 bye_nfa:
   defb 0x03+0x80,'BY','E'+0x80
 bye_lfa:
-  defw paren_tape_nfa
+  defw cls_nfa
 bye_cfa:
   defw bye_pfa
 bye_pfa:
@@ -4450,33 +4485,10 @@ line_pfa:
   defw drop_cfa
   defw semicolon_s_cfa
 
-loadt_nfa:
-  defb 0x05+0x80,'LOAD','T'+0x80
-loadt_lfa:
-  defw line_nfa
-loadt_cfa:
-  defw do_colon
-loadt_pfa:
-  defw one_cfa
-  defw paren_tape_cfa
-  defw semicolon_s_cfa
-
-savet_nfa:
-  defb 0x05+0x80,'SAVE','T'+0x80
-savet_lfa:
-  defw loadt_nfa
-savet_cfa:
-  defw do_colon
-savet_pfa:
-  defw flush_cfa
-  defw zero_cfa
-  defw paren_tape_cfa
-  defw semicolon_s_cfa
-
 two_drop_nfa:
   defb 0x05+0x80,'2DRO','P'+0x80
 two_drop_lfa:
-  defw savet_nfa
+  defw line_nfa
 two_drop_cfa:
   defw do_colon
 two_drop_pfa:
@@ -4517,9 +4529,8 @@ unused_lfa:
 unused_cfa:
   defw do_colon
 unused_pfa:
-  defw sp_fetch_cfa
-  defw here_cfa
-  defw minus_cfa
+  ; XXX TMP
+  defw zero_cfa,here_cfa,minus_cfa
   defw semicolon_s_cfa
 
 forget_nfa:
@@ -4579,38 +4590,6 @@ branch_destination_0x774B:
 branch_destination_0x7763:
   defw paren_loop_cfa,branch_destination_0x774B
   defw semicolon_s_cfa
-
-if 0
-
-triad_nfa:
-  defb 0x05+0x80,'TRIA','D'+0x80
-triad_lfa:
-  defw index_nfa
-triad_cfa:
-  defw do_colon
-triad_pfa:
-  defw cls_cfa
-  defw three_cfa
-  defw slash_cfa
-  defw three_cfa
-  defw star_cfa
-  defw three_cfa
-  defw over_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw paren_do_cfa
-branch_destination_0x7787:
-  defw cr_cfa
-  defw i_cfa
-  defw list_cfa
-  defw question_terminal_cfa
-  defw zero_branch_cfa,branch_destination_0x7795
-  defw leave_cfa
-branch_destination_0x7795:
-  defw paren_loop_cfa,branch_destination_0x7787
-  defw semicolon_s_cfa
-
-endif
 
 where_nfa:
   defb 0x05+0x80,'WHER','E'+0x80
@@ -4677,13 +4656,13 @@ pushde_cfa:
 pushde_pfa:
   defw pushde
 
-inp_nfa:
-  defb 0x03+0x80,'IN','P'+0x80
-inp_lfa:
+p_fetch_nfa:
+  defb 0x02+0x80,'P','@'+0x80
+p_fetch_lfa:
   defw pushde_nfa
-inp_cfa:
-  defw inp_pfa
-inp_pfa:
+p_fetch_cfa:
+  defw p_fetch_pfa
+p_fetch_pfa:
   pop hl
   push bc
   ld c,l
@@ -4692,16 +4671,15 @@ inp_pfa:
   pop bc
   ld h,0x00
   ld l,a
-  push hl
-  jp next
+  jp pushhl
 
-outp_nfa:
-  defb 0x04+0x80,'OUT','P'+0x80
-outp_lfa:
-  defw inp_nfa
-outp_cfa:
-  defw outp_pfa
-outp_pfa:
+p_store_nfa:
+  defb 0x02+0x80,'P','!'+0x80
+p_store_lfa:
+  defw p_fetch_nfa
+p_store_cfa:
+  defw p_store_pfa
+p_store_pfa:
   pop hl
   pop de
   push bc
@@ -4715,7 +4693,7 @@ outp_pfa:
 screen_nfa:
   defb 0x06+0x80,'SCREE','N'+0x80
 screen_lfa:
-  defw outp_nfa
+  defw p_store_nfa
 screen_cfa:
   defw screen_pfa
 screen_pfa:
@@ -4732,8 +4710,7 @@ screen_pfa:
   ld l,a
   pop ix
   pop bc
-  push hl
-  jp next
+  jp pushhl
 
 at_nfa:
   defb 0x02+0x80,'A','T'+0x80
@@ -4742,34 +4719,6 @@ at_lfa:
 at_cfa:
   defw do_colon
 at_pfa:
-
-  if 0 ; XXX OLD -- original version
-
-  defw abs_cfa
-  defw dup_cfa
-  defw lit_cfa,0x001F
-  defw greater_than_cfa
-  defw zero_branch_cfa,branch_destination_0x7BF2
-  defw two_drop_cfa
-  defw branch_cfa,branch_destination_0x7C12
-branch_destination_0x7BF2:
-  defw swap_cfa
-  defw abs_cfa
-  defw dup_cfa
-  defw lit_cfa,0x0015
-  defw greater_than_cfa
-  defw zero_branch_cfa,branch_destination_0x7C08
-  defw two_drop_cfa
-  defw branch_cfa,branch_destination_0x7C12
-branch_destination_0x7C08:
-  defw lit_cfa,0x0016
-  defw emit_cfa
-  defw emit_cfa
-  defw emit_cfa
-branch_destination_0x7C12:
-  defw semicolon_s_cfa
-
-  else  ; XXX NEW 
 
 ; doc{
 
@@ -4809,8 +4758,6 @@ at_pfa.last_line:
   defw lit_cfa,sys_s_posn ; 33 minus column number for print position
   defw c_store_cfa
   defw semicolon_s_cfa
-
-  endif
 
 border_nfa:
   defb 0x06+0x80,'BORDE','R'+0x80
@@ -4926,41 +4873,12 @@ attr_pfa:
   ld l,a
   pop ix
   pop bc
-  push hl
-  jp next
-
-point_nfa:
-  defb 0x05+0x80,'POIN','T'+0x80
-point_lfa:
-  defw attr_nfa
-point_cfa:
-  defw point_pfa
-point_pfa:
-  pop hl
-  pop de
-  push bc
-  push ix
-  ld c,e
-  ld b,l
-  ld a,l
-  cp 0xB0
-  jr c,l7d20h
-  ld a,0xAF
-  ld b,a
-l7d20h:
-  call rom_point_sub_22ce
-  call rom_find_int1
-  ld h,0x00
-  ld l,a
-  pop ix
-  pop bc
-  push hl
-  jp next
+  jp pushhl
 
 ink_nfa:
   defb 0x03+0x80,'IN','K'+0x80
 ink_lfa:
-  defw point_nfa
+  defw attr_nfa
 ink_cfa:
   defw do_colon
 ink_pfa:
@@ -5351,14 +5269,14 @@ draw_pfa:
   defw abs_cfa
   defw zero_cfa
   defw swap_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw m_slash_mod_cfa
   defw dnegate_cfa
   defw branch_cfa,branch_destination_0x8014
 branch_destination_0x800C:
   defw zero_cfa
   defw swap_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw m_slash_mod_cfa
 branch_destination_0x8014:
   defw incx_cfa
@@ -5370,14 +5288,14 @@ branch_destination_0x8014:
   defw abs_cfa
   defw zero_cfa
   defw swap_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw m_slash_mod_cfa
   defw dnegate_cfa
   defw branch_cfa,branch_destination_0x803A
 branch_destination_0x8032:
   defw zero_cfa
   defw swap_cfa
-  defw r_cfa
+  defw r_fetch_cfa
   defw m_slash_mod_cfa
 branch_destination_0x803A:
   defw incy_cfa
