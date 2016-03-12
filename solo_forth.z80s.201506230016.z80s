@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506230119
+; Version A-00-201506230016
 
 ; Latest important changes (in chronological order)
 ; - new format for the name field, without end bit.
@@ -20,7 +20,6 @@
 ; - `parse`.
 ; - fix: `id.`.
 ; - improvement: `."`.
-; - `skip`, for the new version of `word`.
 
 ; ==============================================================
 ; Aknowledgments
@@ -687,11 +686,29 @@ next2:
 ; ----------------------------------------------
   _colon_header paren_s_,'(S',')'
 
-; doc{
-;
-; (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
-;
-; }doc
+if 0 ; XXX OLD
+
+  ; XXX FIXME empty strings get one length, because of `word`.
+
+  ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+  ;  state @ if    compile slit word here c@ 1+ allot
+  ;          else  text  then  ;
+
+  dw comp_question_
+  dw zero_branch_,paren_s.interpreting
+  ; compiling
+  dw compile_,s_lit_,word_
+  dw here_,c_fetch_,one_plus_,allot_
+  dw semicolon_s_
+paren_s.interpreting:
+  dw text_
+  dw semicolon_s_
+
+else
+
+  ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+  ;  parse comp? if    sliteral
+  ;              else  tuck pad swap cmove pad swap then  ;
 
   dw parse_ ; ( ca len )
   dw comp_question_
@@ -702,6 +719,8 @@ next2:
 paren_s.interpreting:
   dw tuck_,pad_,swap_,cmove_,pad_,swap_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header c_lit_,'CLI','T'
@@ -1239,7 +1258,7 @@ endif
 ; ----------------------------------------------
   _code_header skip_,'SKI','P'
 
-if 0 ; XXX From DXZ-Forth, for ANS Forth parsing
+if false ; XXX From DXZ-Forth, for ANS Forth parsing
 
 ; skip  ( ca1 len1 c -- ca2 len2 )
 
@@ -1279,27 +1298,8 @@ skip.begin:
 
 endif
 
-if 1 ; XXX NEW for `word`
-
-; skip  ( c ca1 -- ca2 )
-
-  pop hl ; ca1
-  pop de ; e = delimiter
-skip.begin:
-  ld a,(hl)
-  or a ; unconditional null delimiter?
-  jp z,push_hl
-  cp e ; delimiter?
-  jp nz,push_hl
-  inc hl
-  jp skip.begin ; again
-
-endif
-
 ; ----------------------------------------------
   _code_header enclose_,'ENCLOS','E'
-
-  ; XXX OLD
 
   ; doc{
   ;
@@ -1451,6 +1451,102 @@ paren_parse.scan:
 
 endif
 
+
+if 0 ; XXX OLD -- first try, after fig-Forth `enclose`
+
+  ; XXX TODO -- unfinished
+
+; doc{
+
+; (parse)  ( c a f -- a n1 n2 n3 )
+
+; The parsing primitive used by `word` and `parse`.
+; Its code is based on fig-Forth's `enclose`.
+
+; c = ascii delimiting character
+; a = text address
+; f = skip leading delimiters?
+; n1 = offset to the first text character
+; n2 = offset to the first delimiter after the text
+; n3 = offset to the first character not included
+
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+
+; }doc
+
+  ; XXX FIXME empty parsed strings return a length of one;
+  ; all other cases seem to work fine
+
+  exx ; save the Forth IP
+  pop bc
+  ld a,c ; a = skip leading delimiters?
+  pop hl ; hl = address
+  pop de ; e = delimiter
+  push hl
+  ld bc,0 ; init char offset
+
+  ; XXX TMP
+  and a ; skip initial delimiters?
+;  jr z,paren_parse.text
+  jr nz,paren_parse.skip_initial_delimiters
+  ; Do not skip initial delimiters.
+  jr paren_parse.text
+
+paren_parse.skip_initial_delimiters:
+  ; Skip initial delimiters.
+  dec hl ; init the address for the first inc 
+  dec bc ; init the offset for the first inc
+  ld a,e  ; a = delimiter
+paren_parse.skip_initial_delimiter:
+  ; hl = previous address
+  ; a = delimiter
+  ; bc = offset
+  inc hl
+  inc bc
+  cp (hl) ; delimiter?
+  jp z,paren_parse.skip_initial_delimiter ; yes, loop
+  ; First non-delimiter found.
+
+paren_parse.text:
+  ; Scan the text.
+  push bc ; save offset
+  ld a,(hl)
+  and a ; is the first non-delimiter a null?
+  jp nz,paren_parse.scan
+
+  ; The first non-delimiter is a null.
+  inc bc
+  push bc ; offset to byte following null
+  dec bc ; offset to null
+  jp paren_parse.end
+
+paren_parse.scan:
+  ld a,e ; delimiter
+  inc hl ; address of next char
+  inc bc ; offset to next char
+  cp (hl) ; delimiter?
+  jp z,paren_parse.ending_delimiter
+  ld a,(hl)
+  and a ; null?
+  jp nz,paren_parse.scan
+
+  ; Final null found.
+  push bc ; offset to null
+  jp paren_parse.end
+
+paren_parse.ending_delimiter:
+  ; Final delimiter found.
+  push bc ; offset to byte following text
+  inc bc ; offset to 2 bytes after end of word
+
+paren_parse.end:
+  push bc
+  exx ; restore the Forth IP
+  _jp_next
+
+endif
+
 ; ----------------------------------------------
   _code_header chan_,'CHA','N'
 
@@ -1480,14 +1576,15 @@ endif
   _code_header paren_emit_,'(EMIT',')'
 
 ; doc{
-;
+
 ; (emit)  ( b -- )
-;
+
 ; Send the character b to the current channel.
 ;
-; }doc
+; Copied from `TOCH`, from Lennart Benschop's Spectrum
+; Forth-83.
 
-; [Copied from Spectrum Forth-83's `TOCH`.]
+; }doc
 
   pop hl
   ld a,l
@@ -2662,6 +2759,8 @@ true_if_z: ; XXX entry not used yet
 ; ----------------------------------------------
   _code_header less_than_,'','<'
 
+if 1 ; XXX NEW -- from DZX-Forth
+
   pop de
   pop hl
 is_de_less_than_hl:
@@ -2672,6 +2771,54 @@ is_de_less_than_hl:
     jp c,true_pfa
     jp false_pfa
   endif
+
+else ; XXX OLD
+
+  pop de ; n2
+  pop hl ; n1
+  ld a,d
+  xor h ; one of them negative?
+  jp m,less_than.wich_negative ; if so, determine which
+  ; no one is negative
+  and a ; clear carry
+  sbc hl,de
+
+less_than.wich_negative:
+
+  if 0 ; XXX OLD
+
+  ; Original version from Abersoft Forth, badly optimized
+  ; because of the two 'ld hl' and two `jp push_hl`.
+
+  inc h
+  dec h ; h negative?
+  jp m,less_than.true
+  ld hl,false
+  jp push_hl
+less_than.true:
+  ld hl,true
+  jp push_hl
+
+  else ; XXX NEW
+
+  ; Version from CP/M fig-Forth 1.1g,
+  ; with additional improvement for speed:
+
+  ; bit 7,h ; h negative?
+  ; ld hl,false
+  ; jp z,push_hl
+  ; inc l ; true ; XXX TODO -- change to `dec hl` when true=-1
+  ; jp push_hl
+
+  ; Optimized for space:
+
+  bit 7,h ; h negative?
+  jp z,false_pfa
+  jp true_pfa
+
+  endif
+
+endif
 
 ; ----------------------------------------------
   _code_header u_greater_than_,'U','>'
@@ -3353,7 +3500,8 @@ stream.end:
 
 ; }doc
 
-if 1 ; XXX OLD -- original version with `enclose`
+  ; XXX TODO use `skip parse` instead of `enclose` and rewrite
+  ; the rest.
 
   dw stream_,enclose_
   ;dw stream,true_,paren_parse_ ; XXX OLD -- abandoned idea
@@ -3370,30 +3518,6 @@ if 1 ; XXX OLD -- original version with `enclose`
   dw here_,one_plus_ ; destination
   dw from_r_ ; count
   dw cmove_ ; move the word
-
-else ; XXX NEW -- modern version with `skip parse`
-
-  ; XXX FIXME -- strange problems
-
-  dw lit_,1,border_,key_,drop_ ; XXX INFORMER
-  dw stream_
-  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  dw skip_
-  dw lit_,3,border_,key_,drop_ ; XXX INFORMER
-  dw parse_
-  dw lit_,4,border_,key_,drop_ ; XXX INFORMER
-  dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
-  dw here_
-  dw c_lit_
-  db max_word_length+3
-  dw blank_
-
-  dw dup_,here_,c_store_ ; count byte
-  dw here_,one_plus_ ; destination
-  dw swap_ ; count
-  dw cmove_ ; move the word
-
-endif
 
   if 0 ; XXX INFORMER
     dw space_ ; XXX INFORMER
@@ -5124,7 +5248,13 @@ list.loop:
   _code_header page_,'PAG','E'
 
   push bc
+  ; XXX OLD -- why open the channel?
+  ;ld a,0x02
+  ;call rom_chan_open
   call rom_cl_all
+  ; XXX OLD -- why open the channel?
+  ;ld a,0x02
+  ;call rom_chan_open
   ; XXX TODO check the status of the printer
   pop bc
   _jp_next
@@ -5135,6 +5265,26 @@ list.loop:
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
   rst 0x08
   db 0x08 ; "STOP" BASIC error
+
+; ----------------------------------------------
+
+if 0 ; XXX OLD
+
+  _colon_header text_,'TEX','T'
+
+  ; text  ( c "ccc<c>" -- pad len )
+  ; Accept following text to `pad`. _c_ is the text delimiter.
+
+  dw here_,c_slash_l_,one_plus_,blank_ ; fill the word buffer with blanks
+  dw word_
+  dw here_ ; origin
+  dw pad_ ; destination
+  dw c_slash_l_,one_plus_ ; count
+  dw cmove_
+  dw pad_,count_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header two_drop_,'2DRO','P'
@@ -5503,14 +5653,17 @@ nfa_of_top_most_word_in_forth_voc:
   _colon_header dot_paren_,'.','(',immediate
 
 ; doc{
-;
-; .(  ( 'ccc<paren>' -- )  \ immediate
-;
+; : .(  ( 'ccc<paren>' -- )
+;   [CHAR] ) TEXT PAD COUNT TYPE  ; IMMEDIATE
 ; }doc
 
   dw c_lit_
   db ')'
-  dw parse_,type_
+  if 0 ; XXX OLD
+    dw text_,type_
+  else
+    dw parse_,type_
+  endif
   dw semicolon_s_
 
 dictionary_pointer_after_cold:
