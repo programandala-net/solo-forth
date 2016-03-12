@@ -24,4 +24,6 @@ _ Developed from 2015-12-18.
   deferred word.
 - Removed the copy of `definitions` from the `root` vocabulary.
 - Moved `set-order` to the kernel and made it standard.
-
+- New: `0.r` and `0d.r` to print numbers without a trailing blank.
+- New: `m*/`.
+- New: `pixels`.

@@ -24,10 +24,10 @@ endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x7BB5  ; build 20151221
+  version_build_low_part:     equ 0x7BB6  ; build 20151222
 endif
 
-; This file was last modified: 201512210334
+; This file was last modified: 201512220204
 
 ; ==============================================================
 ; Author and license
@@ -794,32 +794,40 @@ warm_entry:
 
 latest_nt_in_root_voc.init_value:
   dw latest_nt_in_root_voc
+  ; `0x06 +origin`
 
 latest_nt_in_forth_voc.init_value:
   dw latest_nt_in_forth_voc
+  ; `0x08 +origin`
 
 if 1 ; assembler_core_in_kernel
 
 latest_nt_in_assembler_voc.init_value:
   dw latest_nt_in_assembler_voc
+  ; `0x0A +origin`
 
 endif
 
 voc_link.init_value:
 if 1 ; assembler_core_in_kernel
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
+  ; `0x0C +origin`
 else
   dw forth_vocabulary_link ; link to the latest vocabulary defined
+  ; `0x0C +origin`
 endif
 
 user_variables_pointer:
   dw user_variables
+  ; `0x0E +origin`
 
 return_stack_pointer:
   dw return_stack_bottom
+  ; `0x10 +origin`
 
 default_color_attribute:
   dw 4 ; low byte: green paper, black ink; high byte: no mask
+  ; `0x12 +origin`
 
   ; User variables default values
 
@@ -831,26 +839,35 @@ default_user_variables_start:
 
 sp0_init_value:                               ; +0x00
   dw data_stack_bottom
+  ; `0x14 +origin`
 rp0_init_value:                               ; +0x02
   dw return_stack_bottom
+  ; `0x16 +origin`
 paren_wait_init_value:                        ; +0x04
   dw noop_
+  ; `0x18 +origin`
 width_init_value:                             ; +0x06
   dw max_word_length
+  ; `0x1A +origin`
 warnings_init_value:                          ; +0x08
   dw true
+  ; `0x1C +origin`
 ; XXX TODO free                                    ; +0x0A
   dw +0x0000
+  ; `0x1E +origin`
 dictionary_pointer_init_value:                ; +0x0C
   dw dictionary_pointer_after_cold
+  ; `0x1F +origin`
 user_data_pointer_init_value:                 ; +0x0E
   dw user_data_pointer
+  ; `0x20 +origin`
 
 default_user_variables_end:
 
 
 ip_backup: ; temporary copy of Forth IP
   dw 0
+  ; `0x22 +origin`
 
 np: defl names_bank_address+1
 
@@ -859,12 +876,14 @@ names_pointer:
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
+  ; `0x24 +origin`
 
 names_pointer_init_value:
   ; Init value of the names pointer, used by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
+  ; `0x26 +origin`
 
 
 ; ==============================================================
@@ -2226,6 +2245,7 @@ question_csb_.enough:
   dw forward_mark_
   dw exit_
 
+; ----------------------------------------------
   _colon_header do_,'DO',immediate+compile_only
 
 ; doc{
@@ -10570,8 +10590,33 @@ hash_s.begin:
 ; ----------------------------------------------
   _colon_header zero_dot_r_,'0.R'
 
+; doc{
+;
+; 0.r  ( n -- )
+;
+; Print signed integer _n_ according to current base,
+; without any trailing blank.
+;
+; }doc
+
   _literal 0
   dw dot_r_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header zero_d_dot_r_,'0D.R'
+
+; doc{
+;
+; 0d.r  ( d -- )
+;
+; Print signed double integer _d_ according to current base,
+; without any trailing blank.
+;
+; }doc
+
+  _literal 0
+  dw d_dot_r_
   dw exit_
 
 ; ----------------------------------------------
@@ -10586,7 +10631,7 @@ hash_s.begin:
 ;
 ; }doc
 
-  dw zero_,d_dot_r_,space_
+  dw zero_d_dot_r_,space_
   dw exit_
 
 ; ----------------------------------------------
@@ -11219,73 +11264,6 @@ do_two_constant:
   ; Credits:
   ; http://dxforth.netbay.com.au/unnest.html
 
-if 0 ; XXX OLD
-
-; ----------------------------------------------
-  _code_header semicolon_s_,';S'
-
-; doc{
-;
-; ;s  ( -- )
-;
-; Return execution to the calling definition.  Unnest one level.
-;
-; It is used to stop interpretation of a screen. It is also the
-; run-time word compiled at the end of a colon-definition which
-; returns execution to the calling procedure.
-
-; Origin: fig-Forth.
-;
-; }doc
-
-  ld hl,(return_stack_pointer)
-  ld c,(hl)
-  inc hl
-  ld b,(hl)
-  inc hl
-  ld (return_stack_pointer),hl
-  _jp_next
-
-; ----------------------------------------------
-  _colon_header exit_,'EXIT',compile_only
-
-; doc{
-;
-; exit  ( -- ) ( R: nest-sys -- )
-
-; Return control to the calling definition, specified by
-; _nest-sys_.
-;
-; Before executing `exit` within a do-loop, a program shall
-; discard the loop-control parameters by executing `unloop`.
-;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-;
-; }doc
-
-  dw r_drop_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header question_exit_,'?EXIT',compile_only
-
-; doc{
-;
-; ?exit  ( f -- ) ( R: a | -- a | )
-;
-; If _f_ is non-zero, return control to the calling definition,
-; specified by the address on the return stack.
-;
-; `?exit` is not intended to be used within a do-loop. Use `if
-; unloop exit then` instead.
-;
-; }doc
-
-  dw question_branch_,exit_pfa
-  dw exit_
-
-else ; XXX NEW
-
 ; ----------------------------------------------
   _code_header exit_,'EXIT'
 
@@ -11337,8 +11315,6 @@ else ; XXX NEW
   or l
   jp nz,exit_pfa
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _colon_header catch_,'CATCH'
