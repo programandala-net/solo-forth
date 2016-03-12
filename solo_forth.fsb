@@ -294,36 +294,6 @@ label pixel-addr  ( -- )  hex
   C3 c, 22B0 ,  \ jp 0x22B0 ; and return
   decimal
 
-( point )
-
-  \ 2015-06-04: Copied from Afera.
-  \ 2105-06-11: Modified to use the whole screen.
-
-require pixel-addr
-
-code point  ( xc yc -- f )
-  E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
-  \ l = y coordinate
-  \ e = x coordinate
-  40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
-  \ b = y coordinate
-  \ c = x coordinate
-  CD c, pixel-addr ,      \ call pixel-addr
-  \ hl = screen address
-  \ a = pixel position in hl
-  40 07 + c,              \ ld b,a
-  04 c,                   \ inc b
-  7E c,                   \ ld a,(hl)
-  \ rotate:
-  07 c,  10 c, FD c,      \ rlca / djnz rotate
-  E6 c, 01 c,             \ and 1
-  \ finish:
-  26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
-  C1 c,                   \ pop bc
-  pushhl,                 \ jp pushhl
-  \ XXX TODO adapt when true=-1
-  end-code
-
 ( plot )
 
   \ 2015-06-05: Copied from Afera.
@@ -353,6 +323,36 @@ code plot  ( xc yc -- )
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   next,               \ jp (ix)
 
+  end-code
+
+( plotted? )
+
+  \ 2015-06-04: Copied from Afera.
+  \ 2105-06-11: Modified to use the whole screen.
+
+require pixel-addr
+
+code plotted?  ( xc yc -- f )
+  E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
+  \ l = y coordinate
+  \ e = x coordinate
+  40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
+  \ b = y coordinate
+  \ c = x coordinate
+  CD c, pixel-addr ,      \ call pixel-addr
+  \ hl = screen address
+  \ a = pixel position in hl
+  40 07 + c,              \ ld b,a
+  04 c,                   \ inc b
+  7E c,                   \ ld a,(hl)
+  \ rotate:
+  07 c,  10 c, FD c,      \ rlca / djnz rotate
+  E6 c, 01 c,             \ and 1
+  \ finish:
+  26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
+  C1 c,                   \ pop bc
+  pushhl,                 \ jp pushhl
+  \ XXX TODO adapt when true=-1
   end-code
 
 ( draw )
@@ -438,14 +438,14 @@ label attr-addr  ( -- )  hex
 
   decimal
 
-( screen )
+( emitted? )
 
   \ XXX TODO -- rewrite after the planned method for a double
   \ character set: `ascii-printed`, `udg-printed` and its
   \ combination `printed`, or similar names. Modify the charset
   \ system variable.
 
-code screen ( row col -- f )
+code emitted? ( row col -- f )
 
   \ pop hl
   \ pop de
@@ -491,7 +491,18 @@ code bleep  ( n1 n2 -- )
   4375 100 ROT */ 30 -  ;
 
   \ }}} =======================================================
+  \ Memory access {{{
+
+( exchange )
+
+: exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
+
+  \ }}} =======================================================
   \ Operators {{{
+
+( under+ )
+
+: under+  ( n1 n2 n3 -- n4 n3 )  >r + r>  ;
 
 ( within between )
 
@@ -597,7 +608,7 @@ end-code
 
 ( fig-Forth +- d+- )
 
-
+  \ XXX TODO -- still needed in the kernel
 
   \ }}} =======================================================
   \ Conditional compilation {{{
@@ -1356,9 +1367,27 @@ width !
   \ }}} =======================================================
   \ Control structures {{{
 
+( k )
+
+  \ [Word from Gforth.]
+
+code k
+  \ ( -- x )
+  \ ( R: loop-sys1 loop-sys2 loop-sys3 -- loop-sys1 loop-sys2 loop-sys3 )
+
+  \ Return a copy of the third loop index.
+
+  2A c, rp ,      \ ld hl,(return_stack_pointer)
+  11 c, 4 cells , \ ld de,4*cell
+  19 c,           \ add hl,de
+  fetchhl,        \ jp fetchhl
+
+  end-code
+
 ( i' )
 
-code i'  ( -- x ) ( R: loop-sys -- loop-sys ) \ ANS Forth
+code i'  ( -- x )
+         ( R: loop-sys -- loop-sys )
 
   \ Return a copy of the current (innermost) loop limit.
 
