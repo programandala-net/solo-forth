@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509012207
+version_release:  equ 201509020230
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -190,11 +190,6 @@ size_optimization: equ false
 fig_parsing: equ false
   ; true = the fig-Forth parsing method is used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
-
-  ; XXX TODO
-;latin1_charset_in_bank: equ false
-  ; true = a 224-char Latin 1 charset is stored in the memory bank.
-  ; false = the default charset is used.
 
 ans_forth_block_size: equ false
   ; true = one 1024-byte block per screen ; XXX TODO
@@ -2037,16 +2032,6 @@ skip.begin:
   _jp_next
 
 ; ----------------------------------------------
-  _does_header emit_,'EMIT',,do_defer
-
-; XXX TODO -- Add multitasker's `pause` when available.
-
-  dw paren_emit_
-  ; XXX OLD
-;  dw one_,out_,plus_store_
-;  dw semicolon_s_
-
-; ----------------------------------------------
   _code_header paren_emit_,'(EMIT)'
 
 ; doc{
@@ -2059,19 +2044,21 @@ skip.begin:
 
 ; [Code from Spectrum Forth-83's `TOCH`.]
 
-if 0 ; latin1_charset_in_bank
-  ld e,names_bank
-  call bank.e ; the charset is in the memory bank
-endif
   pop hl
   ld a,l
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
-if 0 ; latin1_charset_in_bank
-  ld e,default_bank
-  call bank.e
-endif
   _jp_next
+
+; ----------------------------------------------
+  _does_header emit_,'EMIT',,do_defer
+
+; XXX TODO -- Add multitasker's `pause` when available.
+
+  dw paren_emit_
+  ; XXX OLD
+;  dw one_,out_,plus_store_
+;  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header printer_,'PRINTER'
@@ -2301,6 +2288,13 @@ xkey.end:
   jp push_hl
 
 ; ----------------------------------------------
+  _colon_header paren_cr_,'(CR)'
+
+  _literal carriage_return_char
+  dw emit_,out_,off_ ; XXX OLD
+  dw semicolon_s_
+
+; ----------------------------------------------
   _does_header cr_,'CR',,do_defer
 
 ; doc{
@@ -2312,13 +2306,6 @@ xkey.end:
 ; }doc
 
   dw paren_cr_
-
-; ----------------------------------------------
-  _colon_header paren_cr_,'(CR)'
-
-  _literal carriage_return_char
-  dw emit_,out_,off_ ; XXX OLD
-  dw semicolon_s_
 
 ; ----------------------------------------------
   _code_header cmove_up_,'CMOVE>'
@@ -5758,6 +5745,35 @@ do_defer:
   dw fetch_,execute_
   dw semicolon_s_
 
+; ----------------------------------------------
+  _colon_header defer_fetch_,'DEFER@'
+
+; doc{
+;
+; defer@  ( cfa1 -- cfa2 )  \ Forth 2012
+;
+; Return the word _cfa2_ currently associated to the deferred
+; word _cfa1_.
+;
+; }doc
+
+  dw cfa_to_pfa_,fetch_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header defer_store_,'DEFER!'
+
+; doc{
+;
+; defer!  ( cfa1 cfa2 -- )  \ Forth 2012
+;
+; Change the deferred word _cfa2_ to execute _cfa1_.
+;
+; }doc
+
+  dw cfa_to_pfa_,store_
+  dw semicolon_s_
+
 if show_version
 
 ; ----------------------------------------------
@@ -5878,10 +5894,6 @@ endif
 cold_start:
 only_first_cold: ; XXX TMP -- temporary label
   call move_name_fields_to_memory_bank ; (only the first time)
-if 0 ; latin1_charset_in_bank
-  ld hl,charset_address-0x0100
-  ld (sys_chars),hl
-endif
   call common_start
   dw cold_
 
@@ -7275,7 +7287,24 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header home_,'HOME'
+  _code_header paren_home_,'(HOME)'
+;  _code_header home_,'HOME'
+
+; doc{
+;
+; (home)  ( -- )
+;
+; Defaust behaviour of `home`.
+;
+; }doc
+
+  ld hl,0x1821 ; 0x18 = 24 - row
+               ; 0x21 = 33 - column
+  ld (sys_s_posn),hl
+  _jp_next
+
+; ----------------------------------------------
+  _does_header home_,'HOME',,do_defer
 
 ; doc{
 ;
@@ -7286,10 +7315,7 @@ endif
 ;
 ; }doc
 
-  ld hl,0x1821 ; 0x18 = 24 - row
-               ; 0x21 = 33 - column
-  ld (sys_s_posn),hl
-  _jp_next
+  dw paren_home_
 
 ; ----------------------------------------------
   _code_header cls_,'CLS'
@@ -7327,9 +7353,14 @@ endif
   ldir
   ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
-  jp home_pfa ; continue at `home`
 
-  ; The Z80 version above uses 26 bytes;
+; XXX OLD -- can not work anymory because `home`is deferred
+;  jp home_pfa ; continue at `home`
+; XXX NEW
+  ld hl,home_
+  jp next2
+
+  ; The Z80 version above uses 29 bytes;
   ; the following Forth version uses 30 bytes:
 
   ; _colon_header cls_,'CLS'
@@ -7361,12 +7392,6 @@ endif
   _code_header bye_,'BYE'
 
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
-
-if 0 ; latin1_charset_in_bank
-  ; Restore the default charset:
-  ld hl,15360
-  ld (sys_chars),hl
-endif
 
   im 1 ; interrupt mode 1, normal situation of the OS
 
@@ -7448,12 +7473,14 @@ where.do_it:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header at_xy,'AT-XY'
+  _colon_header paren_at_xy_,'(AT-XY)'
 
 ; doc{
 
 ; at-xy ( col line -- )  \ ANS Forth
-
+;
+; Default behaviour of `at-xy`.
+;
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
 ; be written if needed.
@@ -7482,6 +7509,17 @@ at_pfa.last_line:
   dw lit_,sys_s_posn ; 33 minus column number for print position
   dw c_store_
   dw semicolon_s_
+
+; ----------------------------------------------
+  _does_header at_xy_,'AT-XY',,do_defer
+
+; doc{
+
+; at-xy ( col line -- )  \ ANS Forth
+
+; }doc
+
+  dw paren_at_xy_
 
 ; ----------------------------------------------
   _code_header border_,'BORDER'
@@ -7798,12 +7836,6 @@ move_name_fields_to_memory_bank:
   ld de,names_bank_address ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the name fields to the bank
-if 0 ; latin1_charset_in_bank
-  ld hl,sys_screen+sys_screen_size-charset_size ; origin
-  ld de,charset_address ; destination
-  ld bc,charset_size ; count
-  ldir ; copy the charset to the bank
-endif
   ld e,default_bank
   call bank.e
 
@@ -7819,14 +7851,6 @@ endif
   org names_bank_address
 
   db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
-
-if 0 ; latin1_charset_in_bank
-
-  org names_bank_address+sys_screen_size-charset_size
-
-  incbin solo_forth.charset.bin
-
-endif
 
 ; ==============================================================
 ; End

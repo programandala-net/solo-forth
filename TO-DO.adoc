@@ -185,4 +185,19 @@ Fix: `s" string` (pressing Enter without typing the closing quote)
 crashes the system. This didn't happen in Abersoft Forth: the string
 was left on the stack.
 
+Idea: `where-xy` or simply `xy` to return the current cursor position.
 
+Idea: `at-pixel` to set the graphic position.
+
+Other options:
+
+|===
+| Reference   | set text  | get text  | set graphic | get graphic
+
+| ANS Forth   | at-xy   | 
+|             | at      | at@         | at-pixel    | pixel@
+|             | at      | at@         | graphic-at  | graphic-at@
+|             | at      | at@         | gat         | gat@
+|             | cursor! | cursor@     | xy!         | xy@
+|             | set-cursor | get-cursor     | set-xy         | get-xy
+|===
