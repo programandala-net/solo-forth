@@ -548,3 +548,6 @@ position can be shown any time.
 New: `label`, a define word that returns the address of its pfa, like
 a variable, but stores nothing into it. Useful to create machine code
 routines or data buffers.
+
+New: `nfa>string`, adapted from DZX-Forth. It was a natural factor of
+the new version of `id.`.

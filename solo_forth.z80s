@@ -3,11 +3,12 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506200145
+; Version A-00-201506201854
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
 ; - change: new, modern `find`, after Forth-83 and Forth-94
 ; - both recent changes seem to work fine.
+; - basic string support.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -83,6 +84,7 @@ buffers:                          equ 0x02
 data_bytes_per_buffer:            equ 0x0200
 total_bytes_per_buffer:           equ data_bytes_per_buffer+4
 blocks_per_screen:                equ 0x02
+screens_per_disk:                 equ 0x030C ; 780 KiB per disk in G+DOS
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
 
@@ -651,6 +653,33 @@ next2:
 ; Dictionary
 
 ; ----------------------------------------------
+  _colon_header s_lit_,'SLI','T'
+
+  ; : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
+
+  dw r_fetch_,count_,dup_,one_plus_
+  dw from_r_,plus_,to_r_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header paren_s_,'(S',')'
+
+  ; : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+  ;  state @ if    compile slit word here c@ 1+ allot
+  ;          else  parse-text  then  ;
+
+  dw state_,fetch_
+  dw zero_branch_,paren_s.interpreting
+  ; compiling
+  dw compile_,s_lit_,word_
+  ;dw here_,count_,cr_,type_,cr_ ; XXX INFORMER
+  dw here_,c_fetch_,one_plus_,allot_
+  dw semicolon_s_
+paren_s.interpreting:
+  dw text_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _code_header c_lit_,'CLI','T'
 
   ld a,(bc)
@@ -1035,26 +1064,8 @@ endif
 ; ----------------------------------------------
   _code_header enclose_,'ENCLOS','E'
 
-; doc{
-
-; enclose  ( c a -- a n1 n2 n3 )
-
-; The text scanning primitive used by `word`.
-
-; c = ascii delimiting character
-; a = text address
-; n1 = offset to the first non-delimiter character
-; n2 = offset to the first delimiter after the text
-; n3 = offset to the first character not included
-
-; This word will not process past an ascii 'null',
-; treating it as an unconditional delimiter.
-
-; }doc
-
   ; XXX WARNING: the order of the parameters has been changed, to save a `swap` in `word`.
-
-  ; XXX TODO add `size_optimization?` condition
+  ; XXX OLD -- this will be substituted by `(parse)`.
 
   exx ; save the Forth IP
   pop hl ; hl = address
@@ -1106,6 +1117,89 @@ enclose.ending_delimiter:
   inc bc ; offset to 2 bytes after end of word
 
 enclose.end:
+  push bc
+  exx ; restore the Forth IP
+  _jp_next
+
+
+; ----------------------------------------------
+  _code_header paren_parse_,'(PARSE',')'
+
+  ; XXX TODO -- unfinished
+
+; doc{
+
+; (parse)  ( c a f -- a n1 n2 n3 )
+
+; The parsing primitive used by `word` and `parse`.
+; Its code is based on fig-Forth's `enclose`.
+
+; c = ascii delimiting character
+; a = text address, as a counted string
+; f = skip leading delimiters?
+; n1 = offset to the first non-delimiter character
+; n2 = offset to the first delimiter after the text
+; n3 = offset to the first character not included
+
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+
+; }doc
+
+  exx ; save the Forth IP
+  pop bc
+  ld d,c ; d = skip leading delimiters?
+  pop hl ; hl = address
+  pop de ; e  = delimiter
+  push hl
+  ld bc,-1 ; init char offset counter
+  dec hl
+
+paren_parse.do_not_skip_inital_delimiters:
+
+  ld a,e  ; a = delimiter
+paren_parse.skip_initial_delimiters:
+  ; hl = previous address
+  ; a = delimiter
+  ; bc = offset
+  inc hl
+  inc bc
+  cp (hl) ; delimiter?
+  jp z,paren_parse.skip_initial_delimiters ; yes, loop
+  ; First non-delimiter found.
+
+  ; Scan the text.
+  push bc ; save offset
+  ld a,(hl)
+  and a ; is the first non-delimiter a null?
+  jp nz,paren_parse.scan
+
+  ; The first non-delimiter is a null.
+  inc bc
+  push bc ; offset to byte following null
+  dec bc ; offset to null
+  jp paren_parse.end
+
+paren_parse.scan:
+  ld a,e ; delimiter
+  inc hl ; address of next char
+  inc bc ; offset to next char
+  cp (hl) ; delimiter?
+  jp z,paren_parse.ending_delimiter
+  ld a,(hl)
+  and a ; null?
+  jp nz,paren_parse.scan
+
+  ; Final null found.
+  push bc ; offset to null
+  jp paren_parse.end
+
+paren_parse.ending_delimiter:
+  ; Final delimiter found.
+  push bc ; offset to byte following text
+  inc bc ; offset to 2 bytes after end of word
+
+paren_parse.end:
   push bc
   exx ; restore the Forth IP
   _jp_next
@@ -1808,21 +1902,25 @@ two_fetch.hl
             ; T11  0 push de
             ; T11  0 push hl
             ; T86 12 TOTAL
+  ; Faster and shorter than the code of C/PM fig-Forth 1.1g
+  ; (T94 14):
 
-  if 0 ; XXX TODO -- study this alternative from C/PM fig-Forth 1.1g
+  if 0
 
-  EXX     ;/ SAVE IP
-  POP HL    ;  (HL)<--ADDR
-  LD  C,(HL)
-  INC HL
-  LD  B,(HL)    ;/ (BC)<--dH
-  INC HL
-  LD  E,(HL)
-  INC HL
-  LD  D,(HL)    ;  (DE)<--dL
-  PUSH  DE    ;  (S2)<--dL
-  PUSH  BC    ;/ (S1)<--dH
-  EXX     ;/ RESTORE IP
+  EXX         ; T04  1 ; save IP
+  POP HL      ; T10  1 ; addr
+  LD  C,(HL)  ; T07  1
+  INC HL      ; T06  1
+  LD  B,(HL)  ; T07  1 ; dH
+  INC HL      ; T06  1
+  LD  E,(HL)  ; T07  1
+  INC HL      ; T06  1
+  LD  D,(HL)  ; T07  1 ; dL
+  PUSH  DE    ; T11  1 ; (S2)<--dL
+  PUSH  BC    ; T11  1 ; (S1)<--dH
+  EXX         ; T04  1 ; restore IP
+  _jp_next    ; T08  2 ; jp (ix)
+              ; T94 14
 
   endif
 
@@ -2030,6 +2128,11 @@ do_user:
   dw blocks_per_screen
 
 ; ----------------------------------------------
+  _constant_header b_slash_scr_,'SCR/DIS','K'
+
+  dw screens_per_disk
+
+; ----------------------------------------------
   _colon_header plus_origin_,'+ORIGI','N'
 
   dw lit_,origin
@@ -2185,6 +2288,27 @@ do_user:
   jp pushhl
 
 ; ----------------------------------------------
+  _code_header two_slash_,'2','/'
+
+  ; From DZX-Forth.
+
+  pop hl
+  call sra_hl
+  jp pushhl
+
+sra_hl:
+  ld a,h   ; shift arithmetic right
+  rlca
+  rrca
+sra_hl.1:
+  rra
+  ld h,a
+  ld a,l
+  rra
+  ld l,a
+  ret
+
+; ----------------------------------------------
   _colon_header here_,'HER','E'
 
   dw dp_,fetch_
@@ -2194,6 +2318,14 @@ do_user:
   _colon_header allot_,'ALLO','T'
 
   dw dp_,plus_store_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header s_comma_,'s',','
+
+  ; : s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
+ 
+  dw swap_,here_,rot_,cmove_,one_plus_,allot_ 
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2482,6 +2614,23 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _code_header nfa_to_string_,'NFA>STRIN','G'
+
+; doc{
+; nfa>string  ( nfa -- ca len )
+; }doc
+
+  ; From DZX-Forth.
+
+  pop de
+  ld a,(de)
+  inc  de
+  and max_word_length_bit_mask
+  ld l,a
+  ld h,0
+  jp pushde
+
+; ----------------------------------------------
   _colon_header store_csp_,'!CS','P'
 
   dw sp_fetch_,csp_,store_
@@ -2705,17 +2854,20 @@ minus_trailing.loop:
 ; ----------------------------------------------
   _colon_header dot_quote_,'.','"',immediate
 
+  ; XXX TODO improve with the new string words
+
   dw c_lit_
   db '"'
   dw state_,fetch_ ; compiling?
   dw zero_branch_,dot_quote.interpreting
   ; compiling
   dw compile_,paren_dot_quote_
-  dw word_,here_,c_fetch_,one_plus_,allot_
+  dw word_ ; XXX FIXME use `parse` when available
+  ; XXX but get the text at `here`
+  dw here_,c_fetch_,one_plus_,allot_
   dw semicolon_s_
 dot_quote.interpreting:
   dw word_,here_,count_,type_
-dot_quote.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2922,6 +3074,54 @@ fill.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header parse_,'PARS','E' ; Forth-94
+
+  dw blk_,fetch_ ; from disk?
+  ; XXX TODO optimize with `?dup` here instead of repeating `blk @` later
+  ;dw question_dup_ ; XXX NEW
+  dw zero_branch_,parse.from_terminal
+
+  ; Parse from disk.
+  dw blk_,fetch_,block_
+  dw branch_,parse.from_address
+parse.from_terminal:
+  ; Parse from the terminal.
+  dw tib_,fetch_
+
+parse.from_address:
+  
+  ; XXX TODO -- not finished
+
+  dw in_,fetch_,plus_,false_,paren_parse_
+
+  dw here_
+  dw c_lit_
+  db max_word_length+3
+  dw blanks_
+  dw in_,plus_store_
+  dw over_,minus_
+  dw to_r_ ; length
+  dw r_fetch_,here_,c_store_ ; set the length byte
+  dw plus_ ; from
+  dw here_,one_plus_ ; destination
+  dw from_r_ ; count
+  dw cmove_ ; move the word
+
+  ;dw space_ ; XXX INFORMER
+  ;dw depth_,dot_ ; XXX INFORMER
+  ;dw paren_dot_quote_ ; XXX INFORMER
+  ;_string 'blk ' ; XXX INFORMER
+  ;dw blk_,fetch_,dot_ ; XXX INFORMER
+  ;dw paren_dot_quote_ ; XXX INFORMER
+  ;_string 'in ' ; XXX INFORMER
+  ;dw in_,fetch_,dot_ ; XXX INFORMER
+  ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
+  ;dw key_,drop_ ; XXX INFORMER
+
+  dw semicolon_s_
+
+
+; ----------------------------------------------
   _colon_header word_,'WOR','D'
 
   dw blk_,fetch_ ; from disk?
@@ -2934,7 +3134,8 @@ fill.end:
 word.from_terminal:
   dw tib_,fetch_
 word.from_address:
-  dw in_,fetch_,plus_,enclose_
+  dw in_,fetch_,plus_,enclose_ ; XXX OLD
+  ;dw in_,fetch_,plus_,true_,paren_parse_ ; XXX NEW XXX TODO
 
   dw here_
   dw c_lit_
@@ -3165,6 +3366,11 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _variable_header error_number_,'ERROR#','S'
+
+  dw 0
+
+; ----------------------------------------------
   _two_variable_header error_pos_,'ERROR-PO','S'
 
   dw 0,0
@@ -3172,6 +3378,7 @@ endif
 ; ----------------------------------------------
   _colon_header error_,'ERRO','R'
 
+  dw dup_,error_number_,store_ ; save the error number
   dw warning_,fetch_,zero_less_than_
   ; XXX TODO optimize: jump directly to parent_abort_
   dw zero_branch_,error.message
@@ -3227,10 +3434,7 @@ endif
 
 else ; XXX NEW -- name field without end bit in the last char
 
-  dw count_
-  dw c_lit_
-  db max_word_length_bit_mask
-  dw and_,type_,space_
+  dw nfa_to_string_,type_,space_
   dw semicolon_s_
 
 endif
@@ -3431,6 +3635,13 @@ else
 endif
   dw semicolon_s_
 
+; ----------------------------------------------
+  _colon_header s_literal_,'SLITERA','L',immediate
+
+  ; : sliteral  ( ca len -- )  compile slit s,  ; immediate
+
+  dw compile_,s_lit_,s_comma_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header c_literal_,'CLITERA','L',immediate
@@ -3622,8 +3833,7 @@ endif
   dw does_
 do_vocabulary:
   dw two_plus_
-  dw context_
-  dw store_
+  dw context_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3649,7 +3859,7 @@ forth_vocabulary_link:
 
   dw c_lit_
   db ')'
-  dw word_
+  dw word_ ; XXX FIXME use `parse` when available
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4538,12 +4748,16 @@ list.loop:
 ; ----------------------------------------------
   _colon_header text_,'TEX','T'
 
+  ; text  ( c "ccc<c>" -- pad len )
+  ; Accept following text to `pad`. _c_ is the text delimiter.
+
   dw here_,c_slash_l_,one_plus_,blanks_ ; fill the word buffer with blanks
-  dw word_
+  dw word_ ; XXX FIXME use `parse` when available
   dw here_ ; origin
   dw pad_ ; destination
   dw c_slash_l_,one_plus_ ; count
   dw cmove_
+  dw pad_,count_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4963,6 +5177,17 @@ l8128h:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header s_quote_,'S','"',immediate
+
+  ; : s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
+  ;  [char] " (s)  ; immediate
+
+  dw c_lit_
+  db '"'
+  dw paren_s_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header question_next_screen_,'?--','>',immediate
 
   dw zero_branch_,question_next_screen.end
@@ -4999,7 +5224,7 @@ nfa_of_top_most_word_in_forth_voc:
 
   dw c_lit_
   db ')'
-  dw text_,pad_,count_,type_
+  dw text_,type_
   dw semicolon_s_
 
 dictionary_pointer_after_cold:

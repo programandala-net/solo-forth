@@ -8,10 +8,8 @@ compilation of sources.
 
 .2015-06-05:
 
-Fix `?exit`.
-
 Fix: `begin` structures produce compilation errors in screens, but not
-in the terminal!
+in the terminal! [Already solved?]
 
 Still strange problems with the stacks:
 
@@ -21,10 +19,6 @@ they can corrupt the zone below the stack before `?stack` detects the
 overflow.
 
 .2015-06-06:
-
-Save the error code, in case `warning` is -1.
-
-Make `where` to use values saved somewhere, not on the stack.
 
 DZX-Forth implements `exit` simple as `compile (exit)`, and
 `exit` is the word called by `;`. Compare both implementations.
@@ -60,28 +54,13 @@ chars 0..127 and for chars 128..255.
 
 .2015-06-17:
 
-Change the header format:
-
-----
-lfa   dw nfa
-nfa   db len+bits,"name"
-cfa   dw a
-pfa   ...
-----
-
-Then write a macro to create the link field and the name field.
-
 New:
 - Case-sensitive mode.
 - Create words in lowercase.
 - Improve `parse-name` with case conversion and move it to the kernel.
 
-
-.2015-06-19:
-
-The new `find` is finished, but the system must be adapted with conditional compilation.
-
 .2015-06-20:
 
 New: `compiling?` and `executing?` after DZX-Forth.
 
+New: `rshift` and `lshift`, from DZX-Forth.

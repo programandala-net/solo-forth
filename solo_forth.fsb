@@ -55,15 +55,6 @@
 
 ( debugging ) \ scr 2
 
-  \ 2015-06-18: Testing the new `(find)`
-
-0 variable s 32 allot
-0 variable nfa 32 allot
-here
-  4 128 + c, char h c, char o c, char l c, char a c,
-constant w
-bl text hola pad s 32 cmove
-s w n(find)
 
 
 ( require ) \ scr 3
@@ -82,7 +73,12 @@ s w n(find)
   do   i pad $@ cora   0= if -1 unloop exit then   loop   0 ;
 
 : located  ( ca len -- screen | false )
-  780 1 do
+  scr/disk 1 do
+    0 i (line) 2over contains if  2drop i unloop exit  then
+  loop  2drop false  ;
+
+: located  ( ca len -- screen | false )
+  scr/disk 1 do
     0 i (line) 2over contains if  2drop i unloop exit  then
   loop  2drop false  ;
 
@@ -94,11 +90,10 @@ s w n(find)
   located dup 0= 29 ?error load  ;
 
 : required  ( ca len -- )
-  \ XXX TODO finish
   2dup undefined? if  2dup (required)  then
-  2dup undefined? if  type 24 message exit  then 2drop  ;
+  2dup undefined? if  type 24 message exit  then  2drop  ;
 
-: require  ( "name" -- )  bl word required  ;
+: require  ( "name" -- )  bl word here count required  ;
 
 ( Error messages 1..15 ) \ scr 4
 
@@ -205,18 +200,21 @@ require cmove>
 
   >r 2dup - 0< if  r> cmove>  else  r> cmove  then  ;
 
-( parse-text parse-name s, sliteral place +place /string )
+( parse-name place +place /string )
 
   \ 2015-06-17: Copied from the Afera Library.
 
 require move
 
-: parse-text  ( c "ccc<c>" -- ca len )  text pad count  ;
+  \ XXX OLD -- 2015-06-20: `text` modified in the kernel to do
+  \ this:
+  \ : parse-text  ( c "ccc<c>" -- ca len )  text pad count  ;
 : parse-name  ( "name" -- ca len )  bl parse-text  ;
 
-: slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
-: s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
-: sliteral  ( ca len -- )  compile slit s,  ; immediate
+  \ XXX OLD -- 2015-06-20: Moved to the kernel:
+  \ : slit  ( -- ca len )  r@ count dup 1+ r> + >r  ;
+  \ : s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
+  \ : sliteral  ( ca len -- )  compile slit s,  ; immediate
 
 : place  ( ca1 len1 ca2 )  2dup c! 1+ swap move  ;
 : +place  ( ca1 len1 ca2 )
@@ -225,18 +223,17 @@ require move
 : /string  ( ca1 len1 n -- ca2 len2 )
   dup >r - swap r> + swap  ;
 
-( s" s' )
+( s' )
 
   \ 2015-06-17: Copied from the Afera Library.
 
-require slit  require parse-text
+  \ XXX OLD -- 2015-06-20: Moved to the kernel:
+  \ : (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
+  \   state @ if    compile slit word here c@ 1+ allot
+  \           else  parse-text  then  ;
 
-: (s) ( compilation: c "ccc<c>" -- ) ( run-time:  -- ca len )
-  state @ if    compile slit word here c@ 1+ allot
-          else  parse-text  then  ;
-
-: s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
-  [char] " (s)  ; immediate
+  \ : s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
+  \   [char] " (s)  ; immediate
 
 : s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
   [char] ' (s)  ; immediate
@@ -848,5 +845,52 @@ code i'  ( R: n x -- n x ) ( -- n )
   dd c, e9 c, \ jp (ix)
 
   end-code
+
+( also  only )
+
+  \ 2015-04-17
+
+  \ Copied from the FORTH-83 Standard,
+  \ a publication of the FORTH Standars Team (1983-03)
+  \
+  \ Original code by William F. Ragsdale, 1982-06-12.
+  \
+  \
+  \ XXX TODO adapt
+
+  \ note the systems -FIND searches 1 to 5 vocabs in CONTEXT
+
+vocabulary only    only definitions
+
+: also  ( -- )
+  \ Slide transient into resident.
+  context dup 2+ 6 cmove>  ;
+
+  \ Alter run time of ONLY from usual vocabulary.
+
+here 2+
+  ] does>  context 8 erase  dup context !  context 8 + !
+           also  exit [  ' only cfa !
+
+  \ Make NULL word.
+
+: x  ( -- )  exit  ;  hex a080 decimal ' x nfa !  immediate
+
+: forth        ( -- )  forth  ;
+: definitions  ( -- )  definitions  ;
+: forget       ( "name" -- )  forget  ;
+: vocabulary   ( "name" -- )  vocabulary  ;
+: only         ( -- )  only  ;
+: words        ( -- ) words  ;
+
+( order )
+
+: order  ( -- )
+  \ Show the search order.
+  context 10 bounds
+  do  i @ -dup if  id.  else  leave  then  2 +loop
+  10 spaces  current @ id.  ;
+
+only forth also   definitions
 
   \ vim: filetype=soloforth
