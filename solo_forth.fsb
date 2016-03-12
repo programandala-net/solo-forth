@@ -45,9 +45,9 @@ decode dump
   \
   \ 2015-06-25: Fix. The parsed strings had to be saved in the
   \ circular string buffer.
-  \ 
+  \
   \ 2015-07-21: Change: renamed `(required)` as `do-required`.
-  \ New: `do-require`. 
+  \ New: `do-require`.
 
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
   \ Does the string ca1 len1 contains the string ca2 len2?
@@ -135,7 +135,7 @@ forth definitions  vocabulary assembler
   \ }}} =======================================================
   \ String operations {{{
 
-( parse-name place +place /string )
+( place +place /string )
 
   \ 2015-06-17: Copied from Afera.
 
@@ -179,7 +179,7 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
   E1 c, D1 c,     \ pop hl / pop de
   E3 c,           \ ex (sp),hl
   EB c,           \ ex de,hl
-  C3 c, pushde ,  \ jp pushde
+  pushde,         \ jp pushde
 
   end-code
 
@@ -194,7 +194,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   D1 c,           \ pop de
   F1 c,           \ pop af
   F1 c,           \ pop af
-  C3 c, pushde ,  \ jp pushde
+  pushde,         \ jp pushde
 
 end-code
 
@@ -218,7 +218,7 @@ code pixel  ( xc yc -- n a )
   CD c, pixel-addr ,      \ call pixel-addr
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
-  C3 c, pushde ,          \ jp pushde
+  pushde,                 \ jp pushde
   end-code
 
 ( pixel-add )  \ The ROM routine \ XXX OLD
@@ -236,7 +236,7 @@ code pixel-add  ( xc yc -- n a )
   CD c, 22AA ,            \ call pixel-add ; ROM routine
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
-  C3 c, pushde ,          \ jp pushde
+  pushde,                 \ jp pushde
   end-code
 
 ( pixel-addr )
@@ -286,7 +286,7 @@ code point  ( xc yc -- f )
   \ finish:
   26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
   C1 c,                   \ pop bc
-  C3 c, pushhl ,          \ jp pushhl
+  pushhl,                 \ jp pushhl
   \ XXX TODO adapt when true=-1
   end-code
 
@@ -317,7 +317,7 @@ code plot  ( xc yc -- )
   CD c, 22EC ,        \ call 0x22EB ; plot-sub + 7
   D9 c,               \ exx
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
-  DD c, E9 c,         \ jp (ix)
+  next,               \ jp (ix)
 
   end-code
 
@@ -380,7 +380,7 @@ code attr ( line col -- )
   \ ld l,(hl) ; pick up the colour attribute.
   \ ld h,0
   \ jp pushhl
-  6E c,  26 c, 00 c,  C3 c, pushhl ,
+  6E c,  26 c, 00 c,  pushhl,
 
   end-code
 
@@ -425,7 +425,7 @@ code bleep  ( n1 n2 -- )
   CD c, 03B5          \ call rom_beeper
   C1 c,               \ pop bc
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
-  DD c, E9 c,         \ jp (ix)
+  next,               \ jp (ix)
   end-code
 
   \ Code from v.Forth, not tested:
@@ -717,11 +717,13 @@ variable decode-address  \ in the word being decoded
 
 ( decode -- special cases )
 
-: decode-compile  ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
+: decode-compile    ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
 
-: decode-literal  ( a1 -- a2 )  2+ dup @ .  ;
+: decode-literal    ( a1 -- a2 )  2+ dup @ .  ;
 
-: decode-branch  ( a1 -- a2 )  2+ dup @ u.  ;
+: decode-cliteral   ( a1 -- a2 )  2+ dup c@ . 1-  ;
+
+: decode-branch     ( a1 -- a2 )  2+ dup @ u.  ;
 
 : decode-dot-quote  ( a1 -- a2 )
   2+ dup count type  dup c@ + 1 -  ;
@@ -735,6 +737,7 @@ variable decode-address  \ in the word being decoded
   case
     ['] compile   of  decode-compile    endof
     ['] lit       of  decode-literal    endof
+    ['] clit      of  decode-cliteral   endof
     ['] branch    of  decode-branch     endof
     ['] 0branch   of  decode-branch     endof
     ['] ?branch   of  decode-branch     endof
@@ -897,36 +900,34 @@ variable decode-address  \ in the word being decoded
 
 ( @p )
 
-code @p  ( u -- n )
+code @p  ( ca -- c )
 
-  \ Return the value read from port _u_.
+  \ Input char _c_ from port _ca_.
 
   E1 c,           \ pop hl
   C5 c,           \ push bc
   48 05 + c,      \ ld c,l
   40 04 + c,      \ ld b,h
-  ED c, 78 c,     \ in a,(c)
+  ED c, 68 c,     \ in l,(c)
   C1 c,           \ pop bc
   26 c, 00 c,     \ ld h,0x00
-  68 07 + c,      \ ld l,a
-  C3 c, pushhl ,  \ jp pushhl
+  pushhl,         \ jp pushhl
 end-code
 
 ( !p )
 
-code !p  ( n u -- )
+code !p  ( c ca -- )
 
-  \ Present _n_ to output port _u_.
+  \ Output char _c_ to port _ca_.
 
   E1 c,           \ pop hl
-  D1 c,           \ pop de
+  D1 c,           \ pop de ; char in e
   C5 c,           \ push bc
   48 05 + c,      \ ld c,l
   40 04 + c,      \ ld b,h
-  78 03 + c,      \ ld a,e
-  ED c, 79 c,     \ out (c),a
+  ED c, 59 c,     \ out (c),e
   C1 c,           \ pop bc
-  DD c, E9 c,     \ jp (ix)
+  next,           \ jp (ix)
 
 end-code
 
@@ -943,7 +944,7 @@ end-code
   \ the Forth system.
   \
   \ XXX TODO -- Study how to save and load the names bank, even
-  \ the assembled code.
+  \ after assembling the kernel.
 
 : extend  ( -- )
 
@@ -951,7 +952,7 @@ end-code
   \ its current state.
 
   latest 6 +origin !  \ top most word in `forth` vocabulary
-  here 22  +origin !  \ `fence` init value \ XXX OLD obsolete
+  here 22 +origin !  \ `fence` init value \ XXX OLD obsolete
   here 24 +origin !   \ `dp` init value
   \ XXX TODO -- update also the names pointer
   here fence ! \ XXX OLD obsolete
@@ -1359,18 +1360,26 @@ root definitions forth
 
   \ cr .( XXX 4) .s key drop \ XXX INFORMER
 
-( order )  \ XXX from F83
+( .context .current order )
+
+  \ [Code adapted from F83.]
+
+: .context  ( -- )  context #vocs 0 do
+                      dup @ ?dup if  pfa>nfa id.  then  cell+
+                    loop drop  ;
+  \ Display the search order currently in effect.
+
+: .current  ( -- )  current @ pfa>nfa id.  ;
+  \ Display the name of the `current` vocabulary.
 
 : order  ( -- )
-  cr ." context: "  context #vocs 0 do
-                      dup @ ?dup if  pfa>nfa id.  then  cell+
-                    loop drop
-  cr ." current: "  current @ pfa>nfa id.  ;
-  \ Display the search order currently in effect.  Also display
-  \ the `current` vocabulary, which is were definitions are
-  \ placed.
+  cr ." context: " .context cr ." current: " .current ;
+  \ Display the search order currently in effect and the name
+  \ of the `current` vocabulary.
 
-( vocs )  \ XXX from F83
+( vocs )
+
+  \ [Code adapted from F83.]
 
 : vocs  ( -- )
   voc-link @
@@ -1378,7 +1387,14 @@ root definitions forth
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
-  \ only forth also definitions
+( get-order )
+
+: get-order  ( -- widn..wid1 n )
+  \ get search order
+   sorder @ dup if
+     1 swap do  sorder i cells + @  -1 +loop
+     sorder @
+   then ;
 
 ( Forth-83 also only )
 
@@ -1454,34 +1470,38 @@ only forth also   definitions
 
   \ [Code adapted from the Afera library.]
 
-: (defer)  ( -- )
+: (defer)  ( -- )  15 error ;
   \ Default behaviour of an uninitialized deferred word: error.
-  15 error ;
 
-: defer  ( "name" -- )
+  \ XXX OLD  -- this method creates an additonal nesting level,
+  \ what may cause trouble in same cases.
+  \ : defer  ( "name" -- )
+  \   postpone : postpone (defer) postpone ;  ;
+  \   \ Create a deferred word.
+
+  \ XXX TODO  -- check nesting level
+: defer  ( "name" -- )  create ['] (defer) , does> @ execute  ;
   \ Create a deferred word.
-  postpone : postpone (defer) postpone ;  ;
 
-: defer@  ( cfa1 -- cfa2 )
-  \ Return the cfa of the word currently associated with a deferred word.
+: defer@  ( cfa1 -- cfa2 )  cfa>pfa @  ;
+  \ Return the cfa of the word currently associated with a
+  \ deferred word.
   \ cfa1 = cfa of the deferred word
   \ cfa2 = cfa of the word it's associated with
-  cfa>pfa @  ;
 
 : defer!  ( cfa1 cfa2 -- )  cfa>pfa !  ;
 
-: defers  ( "name" -- )
+: defers  ( "name" -- )  ' defer@ ,  ; immediate
   \ Compile the present contents of the deferred word "name"
   \ into the current definition. I.e. this produces static
   \ binding as if "name" was not deferred.
-  ' defer@ ,  ; immediate
 
 : action-of  ( Interpretation: "name" -- cfa )
              ( Compilation:    "name" -- )
              ( Runtime:        -- cfa )
-  \ Return the code field address of a deferred word.
   ' comp? if    postpone literal postpone defer@
           else  defer@  then  ; immediate
+  \ Return the code field address of a deferred word.
 
 ( <is> [is] is  )
 
@@ -1817,21 +1837,21 @@ decimal
   \ }}} =======================================================
   \ The address register {{{
 
-( a-register )
+( address-register )
 
   \ Address register store and fetch words.
-  \
+
+  \ [Code adapted from Z88 CamelForth.]
+
+  \ Note by Gary Lancaster in the Z88 CamelForth source file:
   \ Sadly, there aren't any spare registers to make this as
   \ efficient as it could be. However, it can still give a
   \ useful improvement in loops, and in many cases also results
   \ in cleaner-looking code.
 
-  \ Original code from Z88 CamelForth by Gary Lancaster.
-
   \ 2015-07-20: Start. Adapted the defining words.
   \ 2015-07-21: Start. Adapted the assembler.
-
-hex
+  \ 2015-07-23: Made it possible to load the words apart.
 
 variable a
 
@@ -1839,23 +1859,27 @@ code a!  ( a -- )
   \ Set the address register.
   E1 c,                 \ pop hl
   22 c, a ,             \ ld (a),hl
-  DD c, E9 c,           \ jp (ix)
+  next,                 \ jp (ix)
 end-code
 
 code a@  ( -- a )
   \ Get the address register.
   2A c, a ,             \ ld hl,(a)
-  C3 c, pushhl ,        \ jp pushhl
-end-code  -->
+  pushhl,               \ jp pushhl
+end-code
 
-( a-register )
+( !a @a )
+
+  \ [Code adapted from Z88 CamelForth.]
+
+do-require a-register
 
 code !a  ( u -- )
   \ Store cell at `a`.
   D1 c,                          \ pop de
   2A c, a ,                      \ ld hl,(a)
   70 03 + c,  23 c,  70 04 + c,  \ ld (hl),e  inc hl  ld (hl),d
-  DD c, E9 c,                    \ jp (ix)
+  next,                          \ jp (ix)
 end-code
 
 code @a  ( -- u )
@@ -1865,17 +1889,21 @@ code @a  ( -- u )
   23 c,                 \ inc hl
   66 c,                 \ ld h,(hl)
   68 03 + c,            \ ld l,e
-  C3 c, pushhl ,        \ jp pushhl
-end-code  -->
+  pushhl,               \ jp pushhl
+end-code
 
-( a-register )
+( c!a c@a )
+
+  \ [Code adapted from Z88 CamelForth.]
+
+do-require a-register
 
 code c!a  ( c -- )
   \ Store char at `a`.
   D1 c,                 \ pop de
   2A c, a ,             \ ld hl,(a)
   70 03 + c,            \ ld (hl),e
-  DD c, E9 c,           \ jp (ix)
+  next,                 \ jp (ix)
 end-code
 
 code c@a  ( -- c )
@@ -1883,10 +1911,14 @@ code c@a  ( -- c )
   2A c, a ,             \ ld hl,(a)
   6E c,                 \ ld l,(hl)
   26 c, 00 c,           \ ld h,0
-  C3 c, pushhl ,        \ jp pushhl
-end-code  -->
+  pushhl,               \ jp pushhl
+end-code
 
-( a-register )
+( !a+ @a+ )
+
+  \ [Code adapted from Z88 CamelForth.]
+
+do-require a-register
 
 code !a+  ( u -- )
   \ Store cell at `a` with increment.
@@ -1894,28 +1926,29 @@ code !a+  ( u -- )
   2A c, a ,             \ ld hl,(a)
   70 03 + c,  23 c,     \ ld (hl),e  inc hl
   70 04 + c,  23 c,     \ ld (hl),d  inc hl
-  22 c, a ,             \ ld (a),hl
-  DD c, E9 c,           \ jp (ix)
+  22 c, a ,  next,      \ ld (a),hl  jp (ix)
 end-code
 
-code @a+  ( -- u )
-  \ Fetch cell at `a` with increment.
+code @a+  ( -- u )      \ Fetch cell at `a` with increment.
   2A c, a ,             \ ld hl,(a)
   5E c,  23 c,          \ ld e,(hl)  inc hl
   56 c,  23 c,          \ ld d,(hl)  inc hl
   22 c, a ,             \ ld (a),hl
-  D5 c,  DD c, E9 c,    \ push de  jp (ix)
-end-code  -->
+  D5 c,  next,          \ push de  jp (ix)
+end-code
 
-( a-register )
+( c!a+ c@a+ )
+
+  \ [Code adapted from Z88 CamelForth.]
+
+do-require a-register
 
 code c!a+  ( c -- )
   \ Store char at `a` with increment.
   D1 c,                 \ pop de
   2A c, a ,             \ ld hl,(a)
   70 03 + c,  23 c,     \ ld (hl),e  inc hl
-  22 c, a ,             \ ld (a),hl
-  DD c, E9 c,           \ jp (ix)
+  22 c, a ,  next,      \ ld (a),hl  jp (ix)
 end-code
 
 code c@a+  ( -- c )
@@ -1924,9 +1957,8 @@ code c@a+  ( -- c )
   5E c,  23 c,          \ ld e,(hl)  inc hl
   06 c, 00 c,           \ ld d,0
   22 c, a ,             \ ld (a),hl
-  D5 c,                 \ push de
-  DD c, E9 c,           \ jp (ix)
-end-code  decimal
+  D5 c,  next,          \ push de  jp (ix)
+end-code
 
   \ }}} =======================================================
   \ Common heap {{{

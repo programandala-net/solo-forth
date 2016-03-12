@@ -147,14 +147,6 @@ From F83:
 
 Fix: `parse-word`.
 
-.2015-07-21:
-
-New words in the assembler vocabulary:
-
-`next,` :: `jp (ix)`
-`pushhl` :: `jp pushhl`
-`pushde` :: `jp pushde`
-
 .2015-07-23:
 
 Study how to save and load the main code and the name bank apart, in
@@ -162,3 +154,16 @@ two files. This way `turnkey` could be used also to save a modified
 copy of the system, not just Forth programs. Simpler solution: use the
 snapshop option of the +D.
 
+Adapt the markups of Z88 CamelForth to extract the glossary from the
+source.
+
+Fix?: creating a duplicate name in the same vocabulary gives no error
+if the vocabulary is not in the search order.
+
+Change: make `word` return a string.
+  
+Fix: the string searched for by `(find)` must be in the string buffer,
+below 0xC000! This is not a problem now, during the development,
+because the dictionary is small. A specific buffer is needed.
+
+New: `lowerc` and `lowers`.

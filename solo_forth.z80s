@@ -7,49 +7,20 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507230304
+; Version A-00-201507231835
 
 ; Latest important changes (in chronological order)
-; - `skip`, for the new version of `word`.
-; - circular string buffer
-; - fix: `require`
-; - fix: `emits`
-; - change: new header macros, with complete names
-; - first alternative code to store name fields in memory bank
-; - fix: `(find)`
-; - fix: `cfa>nfa` (for name fields in bank)
-; - fix: `nfa>string` (for name fields in bank)
-; - fix: `nfa>cfa`  (for name fields in bank)
-; - fix: `words`  (for name fields in bank)
-; - change: `_number` macro used for all `lit_` and `c_lit_`,
-;   beside a needed exception.
-; - change: `_number` macro is not used, because of a Pasmo's
-; bug; everything seems to work again.
-; - change: all code for `fig_find?` is copied to a file and commented out.
-; - change: all code for `fig_find?` is removed.
-; - change: new method for the null word.
-; - new versions of `expect`, `query`; new: `span`.
-; - fix: `word` caused `s"`, `.(`, `."` to include the first space.
-; - fix: vocabularies.
-; - fix: `lfa>nfa` was wrong, what ruined the bodies of new
-; vocabularies.
-; - first changes to implement `create ... does>` after
-; Forth-83.
-; - first working version with `create...does>` (`vocabulary`
-; and vocabularies adapted).
-; - `um*` instead of `u*`.
-; - `defer` and `rnd` in the library.
-; - first changes to implement multiple `while` in `begin`.
-; - first changes to implement multiple `sm/rem` and `fm/mod`.
-; - fix: `plot`.
-; - first draft of `emitted`, based on the S-SCREEN$ ROM
-; routine.
-; - first changes to implement a Latin 1 charset.
-; - fix: `error>line`.
 ; - change: `?terminal` does not check the Edit key.
 ; - change: `sp!` and `rp!` use TOS.
 ; - change: the names bank option is definitive.
 ; - fix: 'c!n` did `c@n` instead!
+; - new: ` `fetchhl'. 'fetchhl,', 'next,', 'pushhl,', 'pushde,'.
+; - new: `compile,`
+; - moved `end-code` and `asm` to the `assembler` vocabulary;
+; - new: `end-asm`, `parsed` (factored).
+; - change: `word` returns an address.
+; - change: `defined` uses `parse-word` (`word` is not used
+; anymore).
 
 ; ==============================================================
 ; Acknowledgments
@@ -86,39 +57,15 @@
 ;            May be used within Forth words if restored before `next`.
 
 ; ----------------------------------------------
-; Old header structure -- obsolete
-
-; XXX OLD
-
-; The whole header is created in the dictionary:
-
-; nfa: db length+flags     ; Bits:      76543210
-                           ; Bit names: BPSLLLLL
-                           ; Legend:
-                           ;   B: Name bound bit, always 1.
-                           ;   P: Precedence bit.
-                           ;      0 = non-immediate word
-                           ;      1 = immediate word
-                           ;   S: Smudge bit:
-                           ;      0 = definition completed
-                           ;      1 = definition not completed
-                           ;   LLLLL: name length (0..31).
-;      ds length           ; name
-; lfa: dw nfa_of_the_previous_word
-; cfa: dw code_address
-; pfa:    ...              ; data or code
-
-; ----------------------------------------------
-; New header structure
+; Header structure
 
 ; The name and link fields are created in a memory bank:
 
 ; cfap: dw cfa             ; Pointer to cfa in main memory.
-; lfa: dw nfa_of_the_previous_word
-; nfa: db length+flags     ; Bits:      76543210
-                           ; Bit names: BPSLLLLL
+; lfa:  dw nfa of the previous word
+; nfa:  db length+flags    ; Bits:      76543210
+                           ; Bit names: .PSLLLLL
                            ; Legend:
-                           ;   B: Name bound bit, always 1.
                            ;   P: Precedence bit.
                            ;      0 = non-immediate word
                            ;      1 = immediate word
@@ -126,7 +73,7 @@
                            ;      0 = definition completed
                            ;      1 = definition not completed
                            ;   LLLLL: name length (0..31).
-;      ds length           ; name
+;       ds length          ; name
 
 ; The code and parameter fields are created in the dictionary:
 
@@ -1160,8 +1107,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
 ; }doc
 
-  ld hl,x_
-  jp next2
+  ld hl,x_ ; cfa of the actual null word
+  jp next2 ; execute it
 
 ; ----------------------------------------------
   _colon_header root_forth_,'FORTH'
@@ -1176,6 +1123,151 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw semicolon_s_
 
 nfa_of_top_most_word_in_root_voc: equ root_definitions_nfa
+
+; ----------------------------------------------
+; Start compiling in the `assembler` vocabulary
+
+nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+; current_vocabulary: defl forth_pfa
+
+; ----------------------------------------------
+  _colon_header asm_,'ASM'
+
+; doc{
+;
+; asm  ( -- )
+;
+; Enter assembler mode.
+;
+; }doc
+
+  ; [Code adapted from Coos Haak's Z80 Forth assembler.]
+
+  dw noop_ ; to be patched by the assembler
+  dw base_,fetch_,hex_ ; save the current `base` and change it to hex
+  dw assembler_
+  ; dw store_csp_ ; XXX TODO needed?
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header end_asm_,'END-ASM'
+
+; doc{
+;
+; end-asm  ( -- )
+;
+; Exit the assembler mode.
+;
+; }doc
+
+  dw previous_ ; restore the search order
+  dw base_,store_ ; restore `base`
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header end_code_,'END-CODE'
+
+  dw question_csp_
+  dw end_asm_
+  dw smudge_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _constant_header next_,'NEXT'
+
+  dw next
+
+; ----------------------------------------------
+  ; _constant_header next_,'NEXT2'
+
+  ; ; XXX OLD -- added for the second version of `defer`, but
+  ; ; not needed
+  
+  ; dw next2
+
+; ----------------------------------------------
+  _constant_header pushhl_,'PUSHHL'
+
+  dw push_hl
+
+; ----------------------------------------------
+  _constant_header pushde_,'PUSHDE'
+
+  dw push_de_hl
+
+; ----------------------------------------------
+  _constant_header fetchhl_,'FETCHHL'
+
+  dw fetch.hl
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _constant_header next_comma_,'NEXT,'
+
+; doc{
+;
+; next,  ( -- )
+; 
+; Compile a Z80 jump to `next`.
+;
+; }doc
+
+  dw lit_,0xE9DD ; opcode `jp (ix)`
+  dw comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _constant_header pushhl_comma_,'PUSHHL,'
+
+; doc{
+;
+; pushhl,  ( -- )
+; 
+; Compile a Z80 jump to `pushhl`.
+;
+; }doc
+
+  dw c_lit_
+  db 0xC3 ; opcode `jp`
+  dw c_comma_
+  dw lit_,push_hl,comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _constant_header pushde_comma_,'PUSHDE,'
+
+; doc{
+;
+; pushde,  ( -- )
+; 
+; Compile a Z80 jump to `pushde`.
+;
+; }doc
+
+  dw c_lit_
+  db 0xC3 ; opcode `jp`
+  dw c_comma_
+  dw lit_,push_de_hl,comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header fetchhl_comma_,'FETCHHL,'
+
+; doc{
+;
+; fetchhl,  ( -- )
+; 
+; Compile a Z80 jump to `fetchhl`.
+;
+; }doc
+
+  dw c_lit_
+  db 0xC3 ; opcode `jp`
+  dw c_comma_
+  dw lit_,fetch.hl,comma_
+  dw semicolon_s_
+
+nfa_of_top_most_word_in_assembler_voc: equ fetchhl_comma_nfa
 
 ; ----------------------------------------------
 ; Start compiling in the `forth` vocabulary
@@ -1224,6 +1316,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; }doc
 
+; [Code adapted from F83.]
+
 ; : only  ( -- )  -order root also  ;
 
   dw minus_order_,root_,also_
@@ -1241,6 +1335,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; }doc
 
+; [Code adapted from F83.]
+
 ; : previous  ( -- )
 ;   context dup cell+ swap [ #vocs 2- cells dup ] literal cmove
 ;   context literal + off  ;
@@ -1248,6 +1344,25 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw context_,dup_,cell_plus_,swap_
   dw lit_,(max_search_order-cell)*cell,cmove_
   dw context_,lit_,(max_search_order-cell)*cell,plus_,off_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header seal_,'SEAL'
+
+; doc{
+;
+; seal  ( -- )
+;
+; Change the search order such that only the vocabulary at the
+; top of the search order will be searched.
+;
+; }doc
+
+; [Code adapted from F83.]
+
+; : seal  ( -- )  context @ -order context !  ;
+
+  dw context_,fetch_,minus_order_,context_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1317,7 +1432,7 @@ if 0 ; fig_vocabulary?
 
 else
 
-    dw 0 ; nfa of the latest word defined in this vocabulary
+    dw nfa_of_top_most_word_in_assembler_voc
 
 endif
 
@@ -1357,6 +1472,7 @@ paren_s.interpreting:
 
   ld a,(bc)
   inc bc
+  ; XXX TODO include these entry points in the `assembler` vocabulary?
 push_a:
   ld l,a
 push_l: ; XXX TMP -- not used yet
@@ -1489,6 +1605,8 @@ question_csb_.enough:
 ; save-counted-string  ( ca1 len1 -- ca2 )
 ;
 ; }doc
+
+; dup 1+ string-allocate dup >r $! r>
 
   dw dup_,one_plus_,string_allocate_
   dw dup_,to_r_,dollar_store_,from_r_
@@ -3709,7 +3827,9 @@ store.de_into_hl_pointer:
   dw question_exec_
   dw store_csp_
 if 0 ; fig_vocabulary?
-  dw current_,fetch_,context_,store_ ; XXX OLD -- why fig-Forth does this?
+  ; Make sure the `current` vocabulary is searched for
+  ; duplicates.
+  dw current_,fetch_,context_,store_
 endif
   dw header_,right_bracket_
   dw paren_semicolon_code_
@@ -4075,7 +4195,7 @@ endif
 ;
 ; }doc
 
-  dw latest_,nfa_to_cfa_,comma_
+  dw latest_,nfa_to_cfa_,compile_comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4201,6 +4321,28 @@ sra_hl.1:
 
   dw here_,store_,two_,allot_
   dw semicolon_s_
+
+; ----------------------------------------------
+  ; XXX NEW 2015-07-23
+
+
+; doc{
+;
+; compile,  ( cfa -- )
+;
+; }doc
+
+if 0
+  _code_header compile_comma_,'COMPILE,'
+  ; XXX 6 bytes
+  ld hl,comma_pfa
+  jp next2
+else
+  _colon_header compile_comma_,'COMPILE,'
+  ; XXX 4 bytes
+  dw comma_
+  dw semicolon_s_
+endif
 
 ; ----------------------------------------------
   _colon_header c_comma_,'C,'
@@ -4696,7 +4838,7 @@ question_error.no_error:
   _colon_header compile_,'COMPILE'
 
   dw question_comp_
-  dw from_r_,dup_,two_plus_,to_r_,fetch_,comma_
+  dw from_r_,dup_,two_plus_,to_r_,fetch_,compile_comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4719,7 +4861,7 @@ question_error.no_error:
   ; Non-immediate word.
   dw compile_,compile_ ; compile `compile`
 postpone.end:
-  dw comma_ ; compile the cfa
+  dw compile_comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4736,6 +4878,18 @@ postpone.end:
 
 ; ----------------------------------------------
   _colon_header smudge_,'SMUDGE'
+
+
+; doc{
+;
+; smudge  ( -- )
+;
+; Toggle the "smudge bit" in a definitions' name field. This
+; prevents an uncompleted definition from being found during
+; dictionary searches, until compiling is completed without
+; error.
+;
+; }doc
 
   dw latest_
   dw c_lit_
@@ -4850,8 +5004,7 @@ else ; XXX NEW -- Forth-83 version, paired with `create`
   dw c_lit_
   db 0xCD ; Z80 opcode for "call"
   dw c_comma_ ; compile it
-  dw lit_,do_does ; routine address
-  dw comma_ ; compile it
+  dw lit_,do_does,comma_ ; compile the routine address
   dw semicolon_s_
 do_does:
   ; Save the IP in the return stack.
@@ -5370,9 +5523,21 @@ stream.end:
 ;
 ; }doc
 
-  dw stream_,swap_,scan_
-  dw dup_,one_plus_,to_in_,plus_store_ ; XXX TODO factor this? possible name: `parsed`
+  dw stream_,swap_,scan_,dup_,parsed_
   dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header parsed_,'PARSED'
+
+; doc{
+;
+; parsed  ( len -- )
+;
+; Add the given _len_ plus 1 to `>in`.
+;
+; }word
+
+  dw one_plus_,to_in_,plus_store_
 
 ; ----------------------------------------------
   _colon_header parse_word_,'PARSE-WORD'
@@ -5390,12 +5555,13 @@ stream.end:
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`?:
   dw b_l_,scan_ ; ( ca len )
-  ; XXX TODO factor of `parse`?:
-  dw dup_,one_plus_,to_in_,plus_store_ ; XXX TODO `1+` ?
+  dw dup_,parsed_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header word_,'WORD'
+
+if 0 ; XXX OLD -- original version with `enclose`
 
 ; doc{
 ;
@@ -5410,8 +5576,6 @@ stream.end:
 ; byte), and with two or more blanks at the end.
 ;
 ; }doc
-
-if 0 ; XXX OLD -- original version with `enclose`
 
   dw stream_  ; ( c ca )
   dw enclose_ ; ( ca n1 n2 n3 )
@@ -5436,7 +5600,23 @@ if 0 ; XXX OLD -- original version with `enclose`
   dw cmove_ ; move the word
   dw semicolon_s_
 
-else ; XXX NEW -- modern version with `skip parse`
+endif
+
+if 0 ; XXX OLD -- second, modern version with `skip parse`
+
+; doc{
+;
+; word  ( c "<c...>text<c>" -- )  \ fig-Forth
+;
+; c = delimiter char
+;
+; Skip leading _c_ delimiters from the input stream.  Parse the
+; next text characters from the input stream, until a delimiter
+; _c_ is found, storing the packed character string beginning at
+; `here`, as a counted string (the character count in the first
+; byte), and with two or more blanks at the end.
+;
+; }doc
 
   dw stream_ ; ( c a1 )
   dw dup_,to_r_
@@ -5483,6 +5663,67 @@ endif
   dw semicolon_s_
 endif
 
+if 1 ; XXX NEW -- third, ANS-Forth version
+
+; doc{
+;
+; word  ( c "<c...>text<c>" -- ca )  \ ANS Forth
+;
+; c = delimiter char
+;
+; Skip leading _c_ delimiters from the input stream.  Parse the
+; next text characters from the input stream, until a delimiter
+; _c_ is found, storing the packed character string beginning at
+; _ca_, as a counted string (the character count in the first
+; byte), and with one blank at the end.
+;
+; }doc
+
+  dw stream_ ; ( c a1 )
+  dw dup_,to_r_
+  dw over_,skip_ ; ( c a2 )
+if  0
+  dw hex_
+  _echo 'In word after skip:' ; XXX INFORMER
+  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  dw key_,drop_ ; XXX INFORMER
+endif
+  dw dup_,from_r_,minus_,to_in_,plus_store_
+  ; XXX TODO factor of `parse`:
+  dw swap_,scan_ ; ( a2 len )
+if  0
+  dw hex_
+  _echo 'In word after scan:' ; XXX INFORMER
+  dw cr_,two_dup_,type_ ; XXX INFORMER
+  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  dw key_,drop_ ; XXX INFORMER
+endif
+  dw dup_,one_plus_,to_in_,plus_store_
+
+  dw here_
+  dw c_lit_
+  db max_word_length+2
+  dw blank_
+
+  dw dup_,here_,c_store_ ; count byte
+  dw here_,one_plus_ ; destination
+  dw swap_ ; count
+  dw cmove_ ; move the word
+  dw here_
+
+  if 0 ; XXX OLD
+    ;dw space_ ; XXX INFORMER
+    ;dw depth_,dot_ ; XXX INFORMER
+    ;_echo 'blk ' ; XXX INFORMER
+    ;dw blk_,fetch_,dot_ ; XXX INFORMER
+    ;_echo 'in ' ; XXX INFORMER
+    ;dw in_,fetch_,dot_ ; XXX INFORMER
+    ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
+    ;dw key_,drop_ ; XXX INFORMER
+  endif
+
+  dw semicolon_s_
+endif
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
 
@@ -5813,9 +6054,15 @@ error.end:
 
 ; header  ( "name" -- )
 
-  ; XXX NEW
-  ; XXX TMP -- this is a copy of the original `create`.
-  ; XXX TODO -- accept an xt as parameter?
+  ; XXX TODO -- make sure `current` is searched? else duplicated
+  ; definitions would not be remarked.
+  ;
+  ; the only secure method is:
+  ;
+  ;   get-order n>r also current @ context ! defined nr> set-order
+  ;
+  ; but that would make the compilation slower.
+  ; i think it can be left to the programmer.
 
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
@@ -5832,7 +6079,7 @@ header.continue:
     ; `here`.
 
   dw here_,count_
-  ; XXX TODO error if name is too long (see lina)?
+  ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
   dw save_string_,tuck_ ; ( len ca len )
   _names_bank
@@ -5857,42 +6104,11 @@ do_create:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header asm_,'ASM'
-
-; doc{
-;
-; asm  ( -- )
-;
-; Enter assembler mode.
-;
-; }doc
-
-  ; [Code adapted from Coos Haak's Z80 Forth assembler.]
-
-  dw noop_ ; to be patched by the assembler
-  dw assembler_,hex_
-  dw store_csp_ ; XXX TODO needed?
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header code_,'CODE'
 
   dw header_
-  dw base_,fetch_,hex_ ; save the current `base`
-  dw context_,fetch_ ; save the current `context`
   dw store_csp_
-  dw asm_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header end_code_,'END-CODE'
-
-; XXX TODO move to the `assembler` vocabulary.
-
-  dw question_csp_
-  dw context_,store_ ; restore `context`
-  dw base_,store_ ; restore `base`
-  dw smudge_
+  dw also_,assembler_,asm_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6042,7 +6258,7 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
-  dw tick_,comma_
+  dw tick_,compile_comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6194,7 +6410,7 @@ interpret.begin:
   dw zero_branch_,interpret.execute
 
   ; Compiling and not immediate  ( cfa )
-  dw comma_ ; compile the word
+  dw compile_comma_
   dw branch_,interpret.begin
 
 interpret.execute:
@@ -6272,7 +6488,7 @@ else
 endif
 
   dw here_ ; address of vocabulary link
-  dw voc_link_,fetch_,comma_ ; compile the current containt of `voc-link`
+  dw voc_link_,fetch_,comma_ ; compile the current content of `voc-link`
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
 
   if 0 ; fig_does?
@@ -6300,12 +6516,8 @@ endif
 
   dw c_lit_
   db ')'
-  if 0 ; XXX OLD
-    dw word_
-  else
-    ; XXX TODO use `skip`?
-    dw parse_,two_drop_
-  endif
+  ; XXX TODO use `skip`?
+  dw parse_,two_drop_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6940,23 +7152,19 @@ flush.do:
 
   ; XXX TODO -- adapt to the new parsing method
 
-  dw b_l_,word_
-  dw here_,dup_,count_ ; ( ca ca+1 len )
+if 1 ; XXX OLD
 
-if  0
-  dw hex_
-  _echo 'In defined before find:' ; XXX INFORMER
-  dw cr_,two_dup_,type_ ; XXX INFORMER
-  dw cr_,dot_s_,cr_ ; XXX INFORMER
+  dw b_l_,word_ ; ( ca2 )
+
+else ; XXX NEW
+
+  dw parse_word_  ; ( ca1 len1 )
+  dw save_counted_string_ ; ( ca2 )
+
 endif
 
-  dw uppers_,find_
-
-if 0
-  _echo 'In defined after find:' ; XXX INFORMER
-  dw cr_,dot_s_,cr_ ; XXX INFORMER
-  ;dw key_,drop_ ; XXX INFORMER
-endif
+  dw dup_,count_,uppers_  ; uppercase ( ca2 )
+  dw find_
 
   dw semicolon_s_
 
@@ -7585,26 +7793,6 @@ where.do_it:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _constant_header next_,'NEXT'
-
-  dw next
-
-; ----------------------------------------------
-  _constant_header pushhl_,'PUSHHL'
-
-  dw push_hl
-
-; ----------------------------------------------
-  _constant_header pushde_,'PUSHDE'
-
-  dw push_de_hl
-
-; ----------------------------------------------
-  _constant_header fetchhl_,'FETCHHL'
-
-  dw fetch.hl
-
-; ----------------------------------------------
   _colon_header at_,'AT'
 
 ; doc{
@@ -7973,11 +8161,7 @@ l8128h:
 ; ----------------------------------------------
   _colon_header char_,'CHAR'
 
-  if 0 ; XXX OLD
-    dw b_l_,word_,here_,one_plus_,c_fetch_
-  else
-    dw parse_word_,drop_,c_fetch_
-  endif
+  dw parse_word_,drop_,c_fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
