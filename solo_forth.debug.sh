@@ -16,8 +16,9 @@
 #    --debugger-command "br 0x5E00"  \
 
   fuse-gtk \
-    --debugger-command "br 0x6672" \
     solo_forth_disk_1.mgt  &
+
+#  --debugger-command "br 0x6672" \
 
 # the following formats fail:
 

@@ -195,3 +195,7 @@ Still problems after migrating to GNU binutils.
 Does the `np` symbol is updated in memory? Why it does not appear in
 the symbols list?  It seems it depends on several conditions related
 to code sections.
+
+.2015-08-19:
+
+`bye` resets the system.

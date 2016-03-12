@@ -32,6 +32,16 @@ decode dump
 ( debugging ) \ scr 2
 
 
+: KKK .s ;
+
+  \ The name field is not compiled!
+
+  \ 08
+  \ D0
+  \ 42
+  \ 2E .
+  \ 28 (
+
   \ }}} =======================================================
   \ Require {{{
 
@@ -1086,7 +1096,7 @@ require break-key?
 
 : source  ( -- ca len )  \ ANS Forth
   \ XXX TODO
-  blk @ ?dup if  block b/buf  else  tib @ #tib @  then  ;
+  blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
   \ }}} =======================================================
   \ Hardware {{{

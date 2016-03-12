@@ -9,12 +9,21 @@
 \ This source is being converted from GNU binutils to my own Z80 Forth
 \ assembler under development (<~/forth/okdek/).
 
-\ 2015-08-18: Start.
-
 \ The main problem is how to manage the undefined symbols. Many of
 \ them could be solved by rearranging the source code.
+\
+\ A solution: a key table of unresolved values that must be
+\ stored in the target memory. the key is the target address. a
+\ field indicates wheter 8b, 16b or 32b.
 
 \ *******************************************************
+\ History
+
+\ 2015-08-18: Start.
+\ 2015-08-19: Finished the raw conversion of opcodes and labels.
+
+\ *******************************************************
+
 
   .text
 
@@ -419,10 +428,10 @@ sys_scr_ct constant sys_scr_ct_offset sys_errnr -
 
 $ constant cold_entry
   \ Location (of the destination address): `0x01 +origin`
-  jp cold_start
+  cold_start jp
 $ constant warm_entry
   \ Location (of the destination address): `0x04 +origin`
-  jp warm_start
+  warm_start jp
 
 \ ==============================================================
 \ Parameter area
@@ -504,7 +513,7 @@ $ constant scr_init_value
 
 $ constant default_user_variables_end
 
-ip_backup: \ temporary copy of Forth IP
+$ constant ip_backup \ temporary copy of Forth IP
   0 __
 
 \ XXX FIXME binutils bug?
@@ -532,52 +541,52 @@ $ constant user_variables
   \ default values by `cold`.  They must be in the same order
   \ than their default variables.
 
-s0_value: \ +0x00
+$ constant s0_value \ +0x00
   data_stack_bottom __
-r0_value: \ +0x02
+$ constant r0_value \ +0x02
   return_stack_bottom __
   \ +0x04
   0x0000 __ \ XXX OLD -- tib
-width_value: \ +0x06
+$ constant width_value \ +0x06
   max_word_length __
-warning_value: \ +0x08
+$ constant warning_value \ +0x08
   0x0000 __
   \ +0x0A
   0x0000 __ \ XXX OLD -- fence
-dp_value: \ +0x0C
+$ constant dp_value \ +0x0C
   dictionary_pointer_after_cold __
 
   \ XXX TODO move
   0x0000 __ \ +0x0E free
 
-blk_value: \ +0x10
+$ constant blk_value \ +0x10
   0x0000 __
-in_value: \ +0x12
+$ constant in_value \ +0x12
   0x0000 __
-out_value: \ +0x14
+$ constant out_value \ +0x14
   0x0000 __
-scr_value: \ +0x16
+$ constant scr_value \ +0x16
   0x0000 __
-number_tib_value: \ +0x18
+$ constant number_tib_value \ +0x18
   0x0000 __
-hld_value: \ +0x1A
+$ constant hld_value \ +0x1A
   0x0000 __
-current_value: \ +0x1C
+$ constant current_value \ +0x1C
   0x0000 __
-state_value: \ +0x1E
+$ constant state_value \ +0x1E
   0x0000 __
-base_value: \ +0x20
+$ constant base_value \ +0x20
   0x000A __
-dpl_value: \ +0x22
+$ constant dpl_value \ +0x22
   0x0000 __
-fld_value: \ +0x24
+$ constant fld_value \ +0x24
   0x0000 __
-csp_value: \ +0x26
+$ constant csp_value \ +0x26
   0x0000 __
-r_hash_value: \ +0x28 ; XXX OLD -- used by the editor, remove
+$ constant r_hash_value \ +0x28 ; XXX OLD -- used by the editor, remove
   0x0000 __
 
-context_value: \ +0x2A..+0x38
+$ constant context_value \ +0x2A..+0x38
 
   forth_pfa __
   root_pfa __
@@ -588,8 +597,8 @@ context_value: \ +0x2A..+0x38
   0x0000 __
   0x0000 __
 
-($-user_variables) != bytes_per_user_variables [if]
-  .error "The space reserved for user variables is wrong."
+$ user_variables - bytes_per_user_variables <> [if]
+  .( The space reserved for user variables is wrong.) abort
 [then]
 
 \ ==============================================================
@@ -602,28 +611,29 @@ $ constant csb
 $ constant unused_csb
   csb_size __ \ unused space in the buffer
 $ constant csb0
-  ds csb_size
-csb_total_size: equ $-csb
+  csb_size allotz
+$ csb - constant csb_total_size
 
 \ ----------------------------------------------
 \ Data stack
 
-data_stack_limit: equ $+cell
-  ds cells_per_data_stack*cell
+$ cellz + constant data_stack_limit
+  cells_per_data_stack cellsz allotz
 $ constant data_stack_bottom
 
 \ ----------------------------------------------
 \ Terminal input buffer
 
 $ constant terminal_input_buffer
-  ds bytes_per_terminal_input_buffer
-  ds 3 \ for the null word
+  bytes_per_terminal_input_buffer
+  3 + \ for the null word
+  allotz 
 
 \ ----------------------------------------------
 \ Return stack
 
-return_stack_limit: equ $+cell
-  ds cells_per_return_stack*cell
+$ cellz+ constant return_stack_limit
+  cells_per_return_stack cellsz allot
 $ constant return_stack_bottom
 
 \ ----------------------------------------------
@@ -654,7 +664,7 @@ precedence_bit_mask constant immediate \ used as optional parameter
 nfa_of_the_previous_word defl 0 \ link to previous Forth word
 \ current_vocabulary defl forth_pfa \ XXX OLD
 
-_header: macro _base_label,_name,_is_immediate=0
+: _header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   \ In dictionary:
 
@@ -688,74 +698,74 @@ $ to np \ XXX it works! the symbol is updated and also appears in the list
 
 nfa_of_the_previous_word defl \_base_label\()nfa
 
-  endm
+  ;
 
-_code_header: macro _base_label,_name,_is_immediate=0
+: _code_header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
   \_base_label\()pfa __ \ code field
   \_base_label\()pfa: \ parameter field address
 
-  endm
+  ;
 
-_code_alias_header: macro _base_label,_name,_is_immediate=0,_alias
+: _code_alias_header  ( _base_label,_name,_is_immediate=0,_alias -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
   \_alias\()pfa __ \ code field
 
-  endm
+  ;
 
-_colon_header: macro _base_label,_name,_is_immediate=0
+: _colon_header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
   do_colon __ \ code field
   \_base_label\()pfa: \ parameter field address
 
-  endm
+  ;
 
-_user_variable_header: macro _base_label,_name,_is_immediate=0
+: _user_variable_header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
   do_user __ \ code field
   \_base_label\()pfa: \ parameter field address
 
-  endm
+  ;
 
-_does_header: macro _base_label,_name,_is_immediate=0,_runtime_routine
+: _does_header  ( _base_label,_name,_is_immediate=0,_runtime_routine -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
 
   \_runtime_routine __ \ code field
   \_base_label\()pfa: \ parameter field address
 
-  endm
+  ;
 
-_constant_header: macro _base_label,_name,_is_immediate=0
+: _constant_header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
   do_constant __ \ code field
   \_base_label\()pfa: \ parameter field address
 
-  endm
+  ;
 
-_variable_header: macro _base_label,_name,_is_immediate=0
+: _variable_header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   _header \_base_label,"\_name",\_is_immediate
   do_create __ \ code field
   \_base_label\()pfa: \ parameter field address
 
-  endm
+  ;
 
-_two_variable_header: macro _base_label,_name,_is_immediate=0
+: _two_variable_header  ( _base_label,_name,_is_immediate=0 -- )  \ XXX TODO
 
   _variable_header \_base_label,"\_name",\_is_immediate
 
-  endm
+  ;
 
 \ ----------------------------------------------
 \ Literals
 
-_string: macro _text
+: _string  ( _text -- )  \ XXX TODO
 
   \ XXX TODO
   \ XXX FIXME binutils compiles wrong lengths
@@ -766,7 +776,7 @@ _string: macro _text
   \ db "\_text" \ 
 _string_end defl $
 
-endm
+  ;
 
 : _literal  ( n -- )
 
@@ -784,30 +794,9 @@ endm
 ' jpix alias jpnext
 
 \ Create relative or absolute jumps, depending on the configured optimization
-
-_jump: macro _address
-  size_optimization? [if]
-    jr \_address
-  [else]
-    jp \_address
-  [then]
-  endm
-
-_jump_nc: macro _address
-  size_optimization? [if]
-    jr nc,\_address
-  [else]
-    jp nc,\_address
-  [then]
-  endm
-
-_jump_z: macro _address
-  size_optimization? [if]
-    jr z,\_address
-  [else]
-    jp z,\_address
-  [then]
-  endm
+: _jump  ( a -- )  size_optimization? [if]  jr [else]  jp  [then]  ;
+: _jump_nc  ( a -- )  size_optimization? [if]  jrnc  [else] jpnc  [then]  ;
+: _jump_z  ( a -- )  size_optimization? [if]  jrz  [else]  jpz  [then]  ;
 
 \ ----------------------------------------------
 \ Bank
@@ -821,15 +810,15 @@ _jump_z: macro _address
 \ ----------------------------------------------
 \ Error messages
 
-_question_error: macro _error
+: _question_error  ( _error -- )  \ XXX TODO
   \_error _literal
   question_error_ __
-  endm
+  ;
 
-_message: macro _error
+: _message  ( _error -- )  \ XXX TODO
   \_error _literal
   message_ __
-  endm
+  ;
 
 \ ----------------------------------------------
 \ Debug
@@ -842,7 +831,7 @@ _message: macro _error
   0 bc ldp#
   herez
     bc decp
-    b a ld
+    b a mv
     c or
   jrnz
   bc pop
@@ -851,22 +840,18 @@ _message: macro _error
 
 : _z80_border_wait ( color -- )
   af push
-  ld a,\_color
-  out (border_port),a
+  a ld \ color
+  border_port out
   a xor
-  ld (sys_last_k),a
-_z80_border_wait_pause: defl $
-  ld a,(sys_last_k)
-  a and
-  jr z,_z80_border_wait_pause
+  sys_last_k sta
+  herez
+    sys_last_k fta
+    a and
+  jrz
   af pop
   ;
 
-_echo: macro _txt
-  .warning "The _echo macro is obsolete"
-  cr_ __ paren_dot_quote_ __
-  _string "\_txt"
-  endm
+: _echo  ( ca len -- )  cr_ __ paren_dot_quote_ __ ,sz  ;
 
 \ ==============================================================
 \ Misc routines
@@ -883,10 +868,10 @@ $ constant compare_de_hl_unsigned
   \  flag C if hl < de
   \  flag Z if hl = de
 
-  h a ld
+  h a mv
   cp d
   retnz
-  l a ld
+  l a mv
   cp e
   ret
 
@@ -895,10 +880,10 @@ $ constant compare_de_hl_signed
   \ Input:  de, hl
   \ Output: flag C if hl < de
 
-  h a ld
+  h a mv
   d xor
-  jp p,compare_de_hl_unsigned
-  h a ld
+  compare_de_hl_unsigned jpp
+  h a mv
   a or
   retp
   scf
@@ -920,7 +905,7 @@ $ constant move_block
   \ bc consecutive address units at hl contained before the move.
 
   compare_de_hl_unsigned call
-  jp c,move_block_downwards
+  move_block_downwards jpc
 
 \ ----------------------------------------------
 \ Move block upwards
@@ -936,7 +921,7 @@ $ constant move_block_upwards
   \ space starting at hl to that starting at de, proceeding
   \ character-by-character from lower addresses to higher addresses.
 
-  c a ld
+  c a mv
   b or
   retz
   ldir
@@ -956,15 +941,15 @@ $ constant move_block_upwards
 
 $ constant move_block_downwards
 
-  c a ld
+  c a mv
   b or
   retz
-  add hl,bc
+  bc addp
   hl decp
-  ex de,hl
-  add hl,bc
+  exde
+  bc addp
   hl decp
-  ex de,hl
+  exde
   lddr
   ret
 
@@ -974,17 +959,17 @@ $ constant move_block_downwards
 \ AHL <- A * DE
 
 $ constant a_multiplied_by_de_to_ahl
-  ld hl,0
-  ld c,8
+  0 hl ldp#
+  8 c ld#
 $ constant a_multiplied_by_de_to_ahl.1
-  add hl,hl
+  hl addp
   rla
-  jp nc,a_multiplied_by_de_to_ahl.2
-  add hl,de
+  a_multiplied_by_de_to_ahl.2 jpnc
+  de addp
   adc a,0
 $ constant a_multiplied_by_de_to_ahl.2
   c dec
-  jp nz,a_multiplied_by_de_to_ahl.1
+  a_multiplied_by_de_to_ahl.1 jpnz
   ret
 
 \ Unsigned 16*16 multiply, 32-bit result
@@ -993,21 +978,21 @@ $ constant a_multiplied_by_de_to_ahl.2
 
 $ constant hl_multiplied_by_de_to_hlde_unsigned
   bc push \ save Forth IP
-  h b ld
-  l a ld
+  h b mv
+  l a mv
   a_multiplied_by_de_to_ahl call
   hl push
-  a h ld
-  b a ld
-  h b ld
+  a h mv
+  b a mv
+  h b mv
   a_multiplied_by_de_to_ahl call
   de pop
-  d c ld
-  add hl,bc
+  d c mv
+  bc addp
   adc a,0
-  l d ld
-  h l ld
-  a h ld
+  l d mv
+  h l mv
+  a h mv
   bc pop \ restore Forth IP
   ret
 
@@ -1024,11 +1009,11 @@ $ constant next
   \ Execute the word whose cfa is in the address pointed by the bc register.
   \ Forth: W  <-- (IP)
   \ Z80:   hl <-- (bc)
-  ld a,(bc)
-  a l ld
+  bc ftap
+  a l mv
   bc incp \ inc IP
-  ld a,(bc)
-  a h ld
+  bc ftap
+  a h mv
   bc incp \ inc IP
   \ bc = address of the next cfa
   \ hl = cfa
@@ -1037,10 +1022,10 @@ $ constant next2
   \ Execute the word whose cfa is in the hl register.
   \ Forth: PC <-- (W)
   \ Z80:   pc <-- (hl)
-  ld e,(hl)
+  m e mv
   hl incp
-  ld d,(hl)
-  ex de,hl
+  m d mv
+  exde
   \ hl = (cfa) = address of the code
   \ de = cfa+1 = pfa-1
 
@@ -1068,8 +1053,8 @@ nfa_of_the_previous_word defl 0 \ link to previous Forth word
 
 \ }doc
 
-  ld hl,x_ \ cfa of the actual null word
-  jp next2 \ execute it
+  x_ hl ldp# \ cfa of the actual null word
+  next2 jp \ execute it
 
 \ ----------------------------------------------
   _colon_header root_forth_,"FORTH"
@@ -1402,14 +1387,14 @@ $ constant paren_s.interpreting
 \ ----------------------------------------------
   _code_header c_lit_,"CLIT"
 
-  ld a,(bc)
+  bc ftap
   bc incp
   \ XXX TODO include these entry points in the `assembler` vocabulary?
 $ constant push_a
-  a l ld
+  a l mv
 push_l: \ XXX TMP -- not used yet
-  ld h,0
-  jp push_hl
+  0 h ld#
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header lit_,"LIT"
@@ -1417,13 +1402,13 @@ push_l: \ XXX TMP -- not used yet
   \ XXX FIXME -- crash if not compiling
   \ XXX TODO -- implement compile-only flag?
 
-  ld a,(bc)
+  bc ftap
   bc incp
-  a l ld
-  ld a,(bc)
+  a l mv
+  bc ftap
   bc incp
-  a h ld
-  jp push_hl
+  a h mv
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header bank_,"BANK"
@@ -1446,11 +1431,11 @@ $ constant bank.names
   \ XXX TODO ?
 $ constant bank.e
   \ ret \ XXX TMP for debugging
-  ld a,(sys_bankm) \ get the saved status of BANKM
+  sys_bankm fta \ get the saved status of BANKM
   and 0xF8 \ erase bits 0-2
   e or \ modify bits 0-2
   di
-  ld (sys_bankm),a \ update BANKM
+  sys_bankm sta \ update BANKM
   out (bank1_port),a \ page the bank
   ei
   ret
@@ -1464,8 +1449,8 @@ $ constant bank.e
 \
 \ }doc
 
-  ld hl,(unused_csb)
-  jp push_hl
+  unused_csb hl ldp
+  push_hl jp
 
 \ ----------------------------------------------
   _constant_header csb0_,"CSB0"
@@ -1565,7 +1550,7 @@ $ constant question_csb_.enough
 \ }doc
 
   hl pop
-  jp next2
+  next2 jp
 
 \ ----------------------------------------------
   _code_header perform_,"PERFORM"
@@ -1580,12 +1565,12 @@ $ constant question_csb_.enough
 \ }doc
 
   hl pop
-  ld a,(hl)
+  m a mv
   hl incp
-  ld h,(hl)
-  a l ld
+  m h mv
+  a l mv
   h or
-  jp nz,next2
+  next2 jpnz
   jpnext
 
 \ ----------------------------------------------
@@ -1671,11 +1656,11 @@ $ constant question_csb_.enough
 \
 \ }doc
 
-  b h ld
-  c l ld \ hl = Forth IP, containing the address to jump to
-  ld c,(hl)
+  b h mv
+  c l mv \ hl = Forth IP, containing the address to jump to
+  m c mv
   hl incp
-  ld b,(hl) \ bc = New Forth IP
+  m b mv \ bc = New Forth IP
   jpnext
 
 \ ----------------------------------------------
@@ -1692,9 +1677,9 @@ $ constant question_csb_.enough
 \ }doc
 
   hl pop
-  l a ld
+  l a mv
   h or
-  jp z,branch_pfa \ branch if zero
+  branch_pfa jpz \ branch if zero
   bc incp
   bc incp \ skip the inline branch address
   jpnext
@@ -1719,9 +1704,9 @@ $ constant question_csb_.enough
 \ }doc
 
   hl pop
-  l a ld
+  l a mv
   h or
-  jp nz,branch_pfa \ branch if not zero
+  branch_pfa jpnz \ branch if not zero
   bc incp
   bc incp \ skip the inline branch address
   jpnext
@@ -1739,41 +1724,41 @@ $ constant question_csb_.enough
   \ XXX TODO -- The `(loop)` of DZX-Forth is much faster, but
   \ requires and additional parameter on the return stack.
 
-  ld de,0x0001
+  0x0001 de ldp#
 $ constant paren_loop.step_in_de
-  ld hl,(return_stack_pointer)
-  ld a,(hl)
-  add a,e
-  ld (hl),a
-  a e ld
+  return_stack_pointer hl ldp
+  m a mv
+  e add
+  a m mv
+  a e mv
   hl incp
-  ld a,(hl)
-  adc a,d
-  ld (hl),a
+  m a mv
+  d adc
+  a m mv
   hl incp \ (hl) = limit
   d inc
   d dec
-  a d ld \ de = new index
-  jp m,paren_loop.negative_step
+  a d mv \ de = new index
+  paren_loop.negative_step jpm
 
   \ increment>0
-  e a ld
-  sub (hl)
-  d a ld
+  e a mv
+  m sub
+  d a mv
   hl incp
-  sbc a,(hl)
-  jp paren_loop.end
+  m a sbc
+  paren_loop.end jp
 
 $ constant paren_loop.negative_step
   \ increment<0
-  ld a,(hl) \ limit-index
+  m a mv \ limit-index
   sub e
   hl incp
-  ld a,(hl)
-  sbc a,d \ a<0?
+  m a mv
+  d sbc \ a<0?
 
 $ constant paren_loop.end
-  jp m,branch_pfa \ loop again if a<0
+  branch_pfa jpm \ loop again if a<0
   \ done, discard loop parameters
   hl incp
   ld (return_stack_pointer),hl
@@ -1786,7 +1771,7 @@ $ constant paren_loop.end
   _code_header paren_plus_loop_,"(+LOOP)"
 
   de pop
-  jp paren_loop.step_in_de
+  paren_loop.step_in_de jp
 
 \ ----------------------------------------------
 
@@ -1817,15 +1802,15 @@ $ constant paren_question.end
   exx                           \ 04t 01b
   de pop                        \ 10t 01b
   bc pop                        \ 10t 01b
-  ld hl,(return_stack_pointer)  \ 20t 03b
+  return_stack_pointer hl ldp  \ 20t 03b
   hl decp                        \ 06t 01b
-  ld (hl),b                     \ 07t 01b
+  b m mv                     \ 07t 01b
   hl decp                        \ 06t 01b
-  ld (hl),c                     \ 07t 01b
+  c m mv                     \ 07t 01b
   hl decp                        \ 06t 01b
-  ld (hl),d                     \ 07t 01b
+  d m mv                     \ 07t 01b
   hl decp                        \ 06t 01b
-  ld (hl),e                     \ 07t 01b
+  e m mv                     \ 07t 01b
   ld (return_stack_pointer),hl  \ 16t 03b
   exx                           \ 04t 01b
                                 ;116t 18b TOTAL
@@ -1854,29 +1839,29 @@ $ constant paren_do83.de_hl
   \ de = limit
   \ hl = initial constant
   hl push \ initial constant  ( initial )
-  ld hl,(return_stack_pointer)
+  return_stack_pointer hl ldp
   hl decp
-  ld (hl),d
+  d m mv
   hl decp
-  ld (hl),e \ push limit constant on return stack ( R: initial )
+  e m mv \ push limit constant on return stack ( R: initial )
   bc incp
   bc incp \ increment the Forth IP, skip branch address
   hl decp
-  ld (hl),b
+  b m mv
   hl decp
-  ld (hl),c \ push current instruction pointer on return stack
-  ex (sp),hl \ initial constant now in HL, return stack pointer on stack
+  c m mv \ push current instruction pointer on return stack
+  exsp \ initial constant now in HL, return stack pointer on stack
   a and \ reset the carry flag
-  sbc hl,de \ B SBCP        \ Subtract limit value.
-  h a ld \ H A LD
+  de sbcp \ B SBCP        \ Subtract limit value.
+  h a mv \ H A mv
   xor 0x80 \ 80 XOR#       \ Flip most significant bit.
-  a d ld \ A B LD
-  l e ld \ L C LD        \ Move result to DE.
+  a d mv \ A B mv
+  l e mv \ L C mv        \ Move result to DE.
   hl pop \ H POP        \ Get return stack pointer from stack,
   hl decp \ H DEC
-  ld (hl),d \ B M LD
+  d m mv \ B M LD
   hl decp \ H DEC
-  ld (hl),e \ C M LD        \ Push (initial - limit) XOR 0x8000 onto return stack.
+  e m mv \ C M LD        \ Push (initial - limit) XOR 0x8000 onto return stack.
   ld (return_stack_pointer),hl \ RPTR STHL       \ Save return stack pointer.
   jpnext \ JPIX ;C
 
@@ -1885,14 +1870,14 @@ $ constant paren_do83.de_hl
   hl pop \ initial constant
   de pop \ limit
   a and \ reset the carry flag
-  sbc hl,de \ compare
-  jr z,question_do.equals
+  de sbcp \ compare
+  question_do.equals jrz
   \ not equals
   \ XXX TODO move add after sbc and save one jump
-  add hl,de \ reverse the subtraction
-  jp paren_do83.de_hl \ perform regular `do`
+  de addp \ reverse the subtraction
+  paren_do83.de_hl jp \ perform regular `do`
 $ constant question_do.equals
-  jp branch_pfa \ XXX TODO ?
+  branch_pfa jp \ XXX TODO ?
 
   _colon_header question_do83_,"?DO83",immediate
 
@@ -1933,42 +1918,42 @@ fig_compiler_security? [if]
 
   _colon_header paren_loop83_,"(LOOP83)"
 
-  ld hl,(return_stack_pointer)
-  ld e,(hl) \ M C LD
+  return_stack_pointer hl ldp
+  m e mv \ M C LD
   hl incp    \ H INC
-  ld d,(hl) \ M B LD         \ Read current index value.
+  m d mv \ M B LD         \ Read current index value.
   de incp    \ B INC         \ Increment it.
-  d a ld    \ B A LD
+  d a mv    \ B A mv
   xor 0x80  \ 80 XOR#
   e or      \  C OR         \ Was it equal to 0x8000 ?
-  jp nz,paren_loop83.loop \ jump if not
+  paren_loop83.loop jpnz \ jump if not
 
   \ The real index has reached limit, terminate loop.
   \ Increment ret stack pointer by 5 (1 increment already done).
-  ld de,5   \ 5 B LDP#
-  add hl,de \ B ADDP
+  5 de ldp#   \ 5 B LDP#
+  de addp \ B ADDP
   ld (return_stack_pointer),hl \ RPTR STHL
   jpnext
 
 $ constant paren_loop83.loop
 
-  ld (hl),d \  B M LD
+  d m mv \  B M LD
   hl decp    \ H DEC
-  ld (hl),e \ C M LD    \ Store updated index.
+  e m mv \ C M LD    \ Store updated index.
   hl incp    \ H INC
   hl incp    \ H INC
-  ld c,(hl) \ M E LD
+  m c mv \ M E LD
   hl incp    \ H INC
-  ld c,(hl) \ M D LD   \ Read loop start address into instruction pointer, repeat loop.
+  m c mv \ M D LD   \ Read loop start address into instruction pointer, repeat loop.
   jpnext
 
 0 [if] \ XXX TODO adapt
 
 \ CODE (+LOOP83) ( w --- )
 \  RPTR LDHL     \ Read return stack pointer into HL.
-\    M C LD
+\    M C mv
 \     H INC
-\    M B LD      \ Read Current index.
+\    M B mv      \ Read Current index.
 \      EXSP      \ HL now contains __ the increment value.
 \     A AND
 \    B ADCP      \ Add increment to index.
@@ -1981,17 +1966,17 @@ $ constant paren_loop83.loop
 \  RPTR STHL     \ Increment ret stack pointer by 5 (1 increment already done)
 \                \ and store updated ret stack pointer back.
 \    else
-\     H B LD
-\     L C LD     \ Move updated index to BC.
+\     H B mv
+\     L C mv     \ Move updated index to BC.
 \      H POP     \ Get return stack pointer.
-\     B M LD
+\     B M mv
 \      H DEC
-\     C M LD     \ Store updated index.
+\     C M mv     \ Store updated index.
 \      H INC
 \      H INC
-\     M E LD
+\     M E mv
 \      H INC
-\     M D LD     \ Read loop start address into instruction pointer, repeat loop.
+\     M D mv     \ Read loop start address into instruction pointer, repeat loop.
 \    then
 \  JPIX ;C
 
@@ -1999,9 +1984,9 @@ $ constant paren_loop83.loop
 \  RPTR LDHL     \ Read return stack pointer into HL.
 \     H INC
 \     H INC
-\    M E LD
+\    M E mv
 \     H INC
-\    M D LD      \ Get start address into DE.
+\    M D mv      \ Get start address into DE.
 \     H INC
 \     H INC
 \     H INC
@@ -2013,20 +1998,20 @@ $ constant paren_loop83.loop
 \ CODE I83  ( --- w)
 \ RPTR LDHL        \ Read return stack pointer into HL.
 \   \ J jumps here.
-\   M C LD
+\   M C mv
 \    H INC
-\   M B LD         \ Read current index. (which is (index-limit) xor 0x8000.
+\   M B mv         \ Read current index. (which is (index-limit) xor 0x8000.
 \    H INC
 \    H INC
 \    H INC
-\   M A LD         \ Read limit and add to index
+\   M A mv         \ Read limit and add to index
 \    C ADD
-\   A C LD
+\   A C mv
 \    H INC
-\   M A LD
+\   M A mv
 \    B ADC
 \  80 XOR#         \ and flip most significant bit, getting true index value.
-\   A B LD
+\   A B mv
 \   B PUSH         \ Push result.
 \ JPIX ;C
 
@@ -2042,9 +2027,9 @@ $ constant paren_loop83.loop
 \      H INC
 \      H INC
 \      H INC
-\     M C LD
+\     M C mv
 \      H INC
-\     M B LD       \ Read limit value.
+\     M B mv       \ Read limit value.
 \     B PUSH       \ Push result
 \     JPIX ;C
 
@@ -2076,20 +2061,20 @@ $ constant paren_loop83.loop
 
   hl pop  \ l=base
   de pop  \ e=character
-  e a ld  \ character
+  e a mv  \ character
   sub '0' \ >="0"
-  jp c,false_pfa \ <"0" is invalid
+  false_pfa jpc \ <"0" is invalid
   cp 0x0A \ >"9"?
-  jp m,digit.test_value \ no, test constant
+  digit.test_value jpm \ no, test constant
   sub 0x07 \ gap between "9" & "A", now "A"=0x0A
   cp 0x0A \ >="A"?
-  jp c,false_pfa \ characters between "9" & "A" are invalid
+  false_pfa jpc \ characters between "9" & "A" are invalid
 $ constant digit.test_value
   cp l \ <base?
-  jp nc,false_pfa \ no, invalid
-  a e ld \ converted digit
+  false_pfa jpnc \ no, invalid
+  a e mv \ converted digit
   de push
-  jp true_pfa
+  true_pfa jp
 
 \ ----------------------------------------------
   _code_header paren_find_,"(FIND)"
@@ -2106,7 +2091,7 @@ $ constant digit.test_value
 \
 \ }doc
 
-  ld e,names_bank
+  names_bank e ld#
   bank.e call \ page the memory bank
 
   de pop \ nfa
@@ -2125,40 +2110,40 @@ $ constant paren_find.begin
   \ de = nfa
   ld (paren_find.nfa_backup),de \ save the nfa for later
 paren_find.string_address: equ $+1
-  ld hl,0 \ string address
-  ld a,(de) \ length byte of the name field
-  a c ld    \ save for later
+  0 hl ldp# \ string address
+  de ftap \ length byte of the name field
+  a c mv    \ save for later
   and max_word_length_bit_mask  \ length
-  cp (hl) \ same length?
-  jr nz,paren_find.not_a_match \ lengths differ
+  m cp \ same length?
+  paren_find.not_a_match jrnz \ lengths differ
 
   \ Lengths match, compare the characters.
-  a b ld \ length
+  a b mv \ length
 $ constant paren_find.compare_next_char
   hl incp \ next character in string
   de incp \ next character in name field
-  ld a,(de)
-  cp (hl) \ match?
-  jr nz,paren_find.not_a_match \ no match
+  de ftap
+  m cp \ match?
+  paren_find.not_a_match jrnz \ no match
   djnz paren_find.compare_next_char \ match so far, loop again
 
   \ The string matches.
   \ c = name field length byte
-  ld hl,(paren_find.nfa_backup)
+  paren_find.nfa_backup hl ldp
 \  ld (0xfffa),hl \ XXX INFORMER ; nfa, ok
   hl decp
   hl decp \ lfa
   hl decp \ high part of the pointer to cfa
-  ld d,(hl)
+  m d mv
   hl decp \ low part of the pointer to cfa
-  ld e,(hl) \ de = cfa
+  m e mv \ de = cfa
 
 \  ld (0xfffc),de \ XXX INFORMER ; cfa, ok
 
-  ld hl,1 \ 1=immediate word
-  c a ld \ name field length byte
+  1 hl ldp# \ 1=immediate word
+  c a mv \ name field length byte
   and precedence_bit_mask \ immediate word?
-  jp nz, paren_find.end
+  paren_find.end jpnz
   \ non-immediate word
   hl decp
   hl decp \ -1 = non-immediate word
@@ -2171,28 +2156,28 @@ $ constant paren_find.end
   \   de = ca
   \   hl = 0
   exx
-  ld e,default_bank
+  default_bank e ld#
   bank.e call \ page the default memory bank
   exx
   bc pop \ restore the Forth IP
   \ _z80_border 4 \ XXX INFORMER
-  jp push_hlde
+  push_hlde jp
 
 $ constant paren_find.not_a_match
   \ Not a match, try next one.
 paren_find.nfa_backup: equ $+1
-  ld hl,0 \ nfa
+  0 hl ldp# \ nfa
   hl decp \ high address of lfa
-  ld d,(hl) \ high part of the next nfa
+  m d mv \ high part of the next nfa
   hl decp \ low address of lfa
-  ld e,(hl) \ low part of the next nfa
-  d a ld
+  m e mv \ low part of the next nfa
+  d a mv
   e or \ end of dictionary? (next nfa=0)
-  jp nz,paren_find.begin \ if not, continue
+  paren_find.begin jpnz \ if not, continue
   \ End of dictionary, no match found, return.
-  ld de,(paren_find.string_address)
-  ld hl,0
-  jp paren_find.end
+  paren_find.string_address de ldp
+  0 hl ldp#
+  paren_find.end jp
 
 \ ----------------------------------------------
   _code_header scan_,"SCAN"
@@ -2211,19 +2196,19 @@ paren_find.nfa_backup: equ $+1
   de pop \ address
   de push
   bc push \ save Forth IP
-  l c ld \ delimiter
-  ld hl,0 \ length
+  l c mv \ delimiter
+  0 hl ldp# \ length
   hl decp
   de decp
 $ constant scan.begin
   hl incp
   de incp
-  ld a,(de)
+  de ftap
   cp c \ delimiter?
-  jr nz,scan.begin
+  scan.begin jrnz
   \ delimiter found
   bc pop \ restore Forth IP
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header skip_,"SKIP"
@@ -2237,11 +2222,11 @@ $ constant scan.begin
   de pop \ e = delimiter
   hl pop \ ca1
 $ constant skip.begin
-  ld a,(hl)
+  m a mv
   cp e \ delimiter?
-  jp nz,push_hl
+  push_hl jpnz
   hl incp
-  jp skip.begin \ again
+  skip.begin jp \ again
 
 \ ----------------------------------------------
   _code_header chan_,"CHAN"
@@ -2256,7 +2241,7 @@ $ constant skip.begin
 
   hl pop
   bc push
-  l a ld
+  l a mv
   rom_chan_open call
   bc pop
   jpnext
@@ -2285,15 +2270,15 @@ $ constant skip.begin
 \ [Code from Spectrum Forth-83's `TOCH`.]
 
 latin1_charset_in_bank? [if]
-  ld e,names_bank
+  names_bank e ld#
   bank.e call \ the charset is in the memory bank
 [then]
   hl pop
-  l a ld
-  ld (iy+sys_scr_ct_offset),0xFF \ no scroll message
+  l a mv
+  0xFF sys_scr_ct_offset )ld# \ \ no scroll message \ XXX TODO adapt for IY 
   rst 0x10
 latin1_charset_in_bank? [if]
-  ld e,default_bank
+  default_bank e ld#
   bank.e call
 [then]
   jpnext
@@ -2321,10 +2306,10 @@ latin1_charset_in_bank? [if]
 \
 \ }doc
 
-  ld a,(sys_last_k)
+  sys_last_k fta
   a and
-  jp z,false_pfa
-  jp true_pfa
+  false_pfa jpz
+  true_pfa jp
 
 \ ----------------------------------------------
   _variable_header decode_table_,"DECODE-TABLE"
@@ -2354,30 +2339,30 @@ latin1_charset_in_bank? [if]
   \ XXX TODO
 
   de pop
-  ld hl,decode_table_+2 \ XXX TMP
+  decode_table_+2 hl ldp# \ XXX TMP
 $ constant decode_char.begin
-  ld a,(hl)
+  m a mv
   a and
-  e a ld
+  e a mv
 
 \ ----------------------------------------------
   _code_header paren_key_,"(KEY)"
 
-  ld a,(sys_last_k)
-  ld (previous_key),a
+  sys_last_k fta
+  previous_key sta
 $ constant paren_key_.begin
   \ pause call \ XXX TODO
   \ rom_keyboard call \ XXX TODO not needed if system interrupts are on
-  ld a,(sys_last_k)
+  sys_last_k fta
 previous_key: equ $+1
   cp 0 \ a different key?
-  jp z,paren_key_.begin
-  ld h,0
-  a l ld
+  paren_key_.begin jpz
+  0 h ld#
+  a l mv
   a xor
-  ld (sys_last_k),a \ delete the last key
+  sys_last_k sta \ delete the last key
   hl push
-  jp decode_char_
+  decode_char_ jp
 
 \ ----------------------------------------------
   _code_header key_,"KEY"
@@ -2395,18 +2380,18 @@ previous_key: equ $+1
   push ix \ XXX TMP
 $ constant key.begin
   rom_key_scan call
-  jr nz,key.begin
+  key.begin jrnz
   rom_key_test call
-  jr nc,key.begin
+  key.begin jrnc
   d dec
-  a e ld
+  a e mv
   rom_key_decode call
 $ constant key.end
-  ld hl,sys_last_k
-  ld (hl),0
+  sys_last_k hl ldp#
+  0 m ld#
   pop ix \ XXX TMP
   bc pop
-  jp push_a
+  push_a jp
 
 \ ----------------------------------------------
   _code_header xkey_,"XKEY"
@@ -2428,35 +2413,35 @@ $ constant key.end
 
   \ XXX OLD
   \ inverse video on
-  \ ld a,inverse_char
+  \ inverse_char a ld#
   \ rst 0x10
-  \ ld a,0x01
+  \ 0x01 a ld#
   \ rst 0x10
 
 $ constant xkey.new_key
   a xor
-  ld (sys_last_k),a
+  sys_last_k sta
 
   \ Print cursor:
-  ld a,0x88 \ cursor
+  0x88 a ld# \ cursor
   rst 0x10
-  ld a,backspace_char
+  backspace_char a ld#
   rst 0x10
 
 $ constant xkey.wait_for_key
-  ld a,(sys_last_k)
+  sys_last_k fta
   a and
-  jr z,xkey.wait_for_key
+  xkey.wait_for_key jrz
   \ a = pressed key code
 
   cp caps_char \ toggle caps lock?
-  jr nz,xkey.translate
+  xkey.translate jrnz
   \ toggle caps lock
-  ld hl,sys_flags2
-  ld a,0x08
+  sys_flags2 hl ldp#
+  0x08 a ld#
   (hl) xor
-  ld (hl),a
-  jr xkey.new_key
+  a m mv
+  xkey.new_key jr
 
   \ Translate some chars
   \ XXX TODO use a configurable list of chars pairs
@@ -2464,52 +2449,52 @@ $ constant xkey.wait_for_key
 $ constant xkey.translate
 $ constant xkey.left_bracket
   cp 0xC6
-  jr nz,xkey.right_bracket
-  ld a,'['
+  xkey.right_bracket jrnz
+  '[' a ld#
 $ constant xkey.right_bracket
   cp 0xC5
-  jr nz,xkey.tilde
-  ld a,']'
+  xkey.tilde jrnz
+  ']' a ld#
 $ constant xkey.tilde
   cp 0xE2
-  jr nz,xkey.vertical_bar
-  ld a,'~'
+  xkey.vertical_bar jrnz
+  '~' a ld#
 $ constant xkey.vertical_bar
   cp 0xC3
-  jr nz,xkey.backslash
-  ld a,'|'
+  xkey.backslash jrnz
+  '|' a ld#
 $ constant xkey.backslash
   cp 0xCD
-  jr nz,xkey.left_curly_bracket
-  ld a,'\'
+  xkey.left_curly_bracket jrnz
+  '\' a ld#
 $ constant xkey.left_curly_bracket
   cp 0xCC
-  jr nz,xkey.right_curly_bracket
-  ld a,'{'
+  xkey.right_curly_bracket jrnz
+  '{' a ld#
 $ constant xkey.right_curly_bracket
   cp 0xCB
-  jr nz,xkey.end
-  ld a,'}'
+  xkey.end jrnz
+  '}' a ld#
 
 $ constant xkey.end
-  a l ld
-  ld h,0x00
+  a l mv
+  0x00 h ld#
 
   \ XXX OLD
   \ inverse video off
-  \ ld a,inverse_char
+  \ inverse_char a ld#
   \ rst 0x10
-  \ ld a,0x00
+  \ 0x00 a ld#
   \ rst 0x10
 
   \ delete the cursor
-  ld a,space_char
+  space_char a ld#
   rst 0x10
-  ld a,backspace_char
+  backspace_char a ld#
   rst 0x10
 
   bc pop
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _colon_header cr_,"CR"
@@ -2583,7 +2568,7 @@ $ constant move.do
   exx
   de pop
   bc pop
-  jp move.do
+  move.do jp
 
 \ ----------------------------------------------
   _code_header u_m_star_,"UM*"
@@ -2602,7 +2587,7 @@ $ constant move.do
   de pop
   hl pop
   hl_multiplied_by_de_to_hlde_unsigned call
-  jp push_hlde
+  push_hlde jp
 
 \ ----------------------------------------------
   _code_header u_slash_mod_,'U/MOD' \ XXX OLD
@@ -2625,52 +2610,52 @@ $ constant move.do
 \ Forth and other Forth systems that have been tested (some of
 \ them are fig-Forth).
 
-  ld hl,0x0004
+  0x0004 hl ldp#
   add hl,sp
-  ld e,(hl)
-  ld (hl),c
+  m e mv
+  c m mv
   hl incp
-  ld d,(hl)
-  ld (hl),b
+  m d mv
+  b m mv
   bc pop
   hl pop
-  l a ld
+  l a mv
   sub c
-  h a ld
-  sbc a,b
-  jr c,l60a0h
-  ld hl,0xFFFF
-  ld de,0xFFFF
-  jr l60c0h
+  h a mv
+  b sbc
+  l60a0h jrc
+  0xFFFF hl ldp#
+  0xFFFF de ldp#
+  l60c0h jr
 $ constant l60a0h
-  ld a,0x10
+  0x10 a ld#
 $ constant l60a2h
-  add hl,hl
+  hl addp
   rla
-  ex de,hl
-  add hl,hl
-  jr nc,l60aah
+  exde
+  hl addp
+  l60aah jrnc
   de incp
   a and
 $ constant l60aah
-  ex de,hl
+  exde
   rra
   af push
-  jr nc,l60b4h
+  l60b4h jrnc
   l and
-  sbc hl,bc
-  jr l60bbh
+  bc sbcp
+  l60bbh jr
 $ constant l60b4h
   a and
-  sbc hl,bc
-  jr nc,l60bbh
-  add hl,bc
+  bc sbcp
+  l60bbh jrnc
+  bc addp
   de decp
 $ constant l60bbh
   de incp
   af pop
   a dec
-  jr nz,l60a2h
+  l60a2h jrnz
 $ constant l60c0h
   bc pop
   hl push
@@ -2702,15 +2687,15 @@ $ constant l60c0h
 
 \ [Code from DZX-Forth.]
 
-  c l ld
-  b h ld
+  c l mv
+  b h mv
   bc pop
   de pop
-  ex (sp),hl
-  ex de,hl
+  exsp
+  exde
 $ constant s_m_slash_rem_.1
   msm call
-  jp msm.2
+  msm.2 jp
 
 \ ----------------------------------------------
   _code_header fm_slash_mod_,"FM/MOD"
@@ -2735,24 +2720,24 @@ $ constant s_m_slash_rem_.1
 
 \ [Code from DZX-Forth.]
 
-  c l ld
-  b h ld
+  c l mv
+  b h mv
   bc pop
   de pop
-  ex (sp),hl
-  ex de,hl
+  exsp
+  exde
 $ constant fm_slash_mod.1
   msm call
-  d a ld
+  d a mv
   e or
-  jp z,msm.2    \ skip if remainder = 0
+  msm.2 jpz    \ skip if remainder = 0
   hl decp    \ floor
   hl push
-  ex de,hl
-  add hl,bc
-  ex de,hl
+  exde
+  bc addp
+  exde
   hl pop
-  jp msm.2
+  msm.2 jp
 
 [then]
 
@@ -2761,39 +2746,39 @@ $ constant fm_slash_mod.1
 
   de pop
   hl pop
-  e a ld
+  e a mv
   l and
-  a l ld
-  d a ld
+  a l mv
+  d a mv
   h and
-  a h ld
-  jp push_hl
+  a h mv
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header or_,"OR"
 
   de pop
   hl pop
-  e a ld
+  e a mv
   l or
-  a l ld
-  d a ld
+  a l mv
+  d a mv
   h or
-  a h ld
-  jp push_hl
+  a h mv
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header xor_,"XOR"
 
   de pop
   hl pop
-  e a ld
+  e a mv
   l xor
-  a l ld
-  d a ld
+  a l mv
+  d a mv
   h xor
-  a h ld
-  jp push_hl
+  a h mv
+  push_hl jp
 
 \ ----------------------------------------------
   _constant_header np_,"NP"
@@ -2810,8 +2795,8 @@ $ constant fm_slash_mod.1
 \ ----------------------------------------------
   _code_header np_fetch_,"NP@"
 
-  ld hl,(names_pointer)
-  jp push_hl
+  names_pointer hl ldp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header np_store_,"NP!"
@@ -2841,9 +2826,9 @@ $ constant fm_slash_mod.1
 \ ----------------------------------------------
   _code_header sp_fetch_,"SP@"
 
-  ld hl,0x0000
+  0x0000 hl ldp#
   add hl,sp
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header sp_store_,"SP!"
@@ -2868,8 +2853,8 @@ $ constant fm_slash_mod.1
 \ ----------------------------------------------
   _code_header rp_fetch_,"RP@"
 
-  ld hl,(return_stack_pointer)
-  jp push_hl
+  return_stack_pointer hl ldp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header rp_store_,"RP!"
@@ -2883,13 +2868,13 @@ $ constant fm_slash_mod.1
 \ }doc
 
 0 [if] \ XXX OLD
-  ld hl,(user_variables_pointer)
+  user_variables_pointer hl ldp
   hl incp
   hl incp \ hl=address of r0
-  ld a,(hl)
+  m a mv
   hl incp
-  ld h,(hl)
-  a l ld
+  m h mv
+  a l mv
 [else]
   hl pop
 [then]
@@ -2919,10 +2904,10 @@ semicolon_s_ equ exit_
 
 \ XXX TODO combine this `;s` with `exit`?
 
-  ld hl,(return_stack_pointer)
-  ld c,(hl)
+  return_stack_pointer hl ldp
+  m c mv
   hl incp
-  ld b,(hl)
+  m b mv
   hl incp
   ld (return_stack_pointer),hl
   jpnext
@@ -2931,9 +2916,9 @@ semicolon_s_ equ exit_
   _code_header pick_,"PICK"
 
   hl pop
-  add hl,hl
+  hl addp
   add hl,sp
-  jp fetch.hl
+  fetch.hl jp
 
 \ ----------------------------------------------
   _code_alias_header unloop_,"UNLOOP",,two_r_drop_
@@ -2972,14 +2957,14 @@ semicolon_s_ equ exit_
 \
 \ }doc
 
-  ld hl,(return_stack_pointer)
-  ld e,(hl)
+  return_stack_pointer hl ldp
+  m e mv
   hl incp
-  ld d,(hl)
+  m d mv
   hl incp
-  ld (hl),e
+  e m mv
   hl incp
-  ld (hl),d
+  d m mv
   jpnext
 
 \ ----------------------------------------------
@@ -3001,9 +2986,9 @@ semicolon_s_ equ exit_
 \ }doc
 
   hl pop
-  a h ld
+  a h mv
   l or
-  jp nz,exhaust_pfa
+  exhaust_pfa jpnz
   jpnext
 
 \ ----------------------------------------------
@@ -3016,11 +3001,11 @@ semicolon_s_ equ exit_
 \ }doc
 
   de pop
-  ld hl,(return_stack_pointer)
+  return_stack_pointer hl ldp
   hl decp
-  ld (hl),d
+  d m mv
   hl decp
-  ld (hl),e
+  e m mv
   ld (return_stack_pointer),hl
   jpnext
 
@@ -3033,10 +3018,10 @@ semicolon_s_ equ exit_
 \
 \ }doc
 
-  ld hl,(return_stack_pointer)
-  ld e,(hl)
+  return_stack_pointer hl ldp
+  m e mv
   hl incp
-  ld d,(hl)
+  m d mv
   hl incp
   ld (return_stack_pointer),hl
   de push
@@ -3051,9 +3036,9 @@ semicolon_s_ equ exit_
 \
 \ }doc
 
-  ld hl,(return_stack_pointer)
-  ld de,cell*2
-  add hl,de
+  return_stack_pointer hl ldp
+  cell*2 de ldp#
+  de addp
   ld (return_stack_pointer),hl
   jpnext
 
@@ -3066,7 +3051,7 @@ semicolon_s_ equ exit_
 \
 \ }doc
 
-  ld hl,(return_stack_pointer)
+  return_stack_pointer hl ldp
   hl incp
   hl incp
   ld (return_stack_pointer),hl
@@ -3081,35 +3066,35 @@ semicolon_s_ equ exit_
 \
 \ }doc
 
-  ld hl,(return_stack_pointer)
-  ld de,-cell*2
-  add hl,de
+  return_stack_pointer hl ldp
+  -cell*2 de ldp#
+  de addp
   ld (return_stack_pointer),hl
-  jp two_store.into_hl_pointer
+  two_store.into_hl_pointer jp
 
 \ ----------------------------------------------
   _code_header two_from_r_,"2R>"
 
 \ 2r>  ( -- x1 x2 ) ( R: x1 x2 -- )
 
-  ld hl,(return_stack_pointer)
+  return_stack_pointer hl ldp
   hl push
-  ld de,cell*2
-  add hl,de
+  cell*2 de ldp#
+  de addp
   ld (return_stack_pointer),hl
-  jp two_fetch_pfa
+  two_fetch_pfa jp
 
 \ ----------------------------------------------
   _code_header two_r_fetch_,"2R@"
 
-  ld hl,(return_stack_pointer)
-  jp two_fetch.hl
+  return_stack_pointer hl ldp
+  two_fetch.hl jp
 
 \ ----------------------------------------------
   _code_header r_fetch_,"R@"
 
-  ld hl,(return_stack_pointer)
-  jp fetch.hl
+  return_stack_pointer hl ldp
+  fetch.hl jp
 
 \ ----------------------------------------------
   \ XXX FIXME as Error: confusion in formal parameters
@@ -3117,19 +3102,19 @@ semicolon_s_ equ exit_
   _code_header zero_equals_,"0="
 
   hl pop
-  l a ld
+  l a mv
   h or
-  jp z,true_pfa
-  jp false_pfa
+  true_pfa jpz
+  false_pfa jp
 
 \ ----------------------------------------------
   _code_header zero_not_equals_,"0<>"
 
   hl pop
-  l a ld
+  l a mv
   h or
-  jp z,false_pfa
-  jp true_pfa
+  false_pfa jpz
+  true_pfa jp
 
 \ ----------------------------------------------
   _code_header zero_less_than_,"0<"
@@ -3137,14 +3122,14 @@ semicolon_s_ equ exit_
   hl pop
 zero_less_.hl: \ XXX entry not used yet
   size_optimization? [if]
-    add hl,hl \ 11t, 1 byte
+    hl addp \ 11t, 1 byte
   [else]
     \ [Idea from Ace Forth.]
     rl h \ 8t, 2 bytes
   [then]
 $ constant true_if_cy
-  jp c,true_pfa
-  jp false_pfa
+  true_pfa jpc
+  false_pfa jp
 
 \ ----------------------------------------------
   _code_header zero_greater_than_,"0>"
@@ -3152,16 +3137,16 @@ $ constant true_if_cy
   \ [Code from DZX-Forth.]
 
   de pop
-  ld hl,0
-  jp is_de_less_than_hl
+  0 hl ldp#
+  is_de_less_than_hl jp
 
 \ ----------------------------------------------
   _code_header plus_,"+"
 
   de pop
   hl pop
-  add hl,de
-  jp push_hl
+  de addp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header d_plus_,"D+"
@@ -3178,10 +3163,10 @@ $ constant true_if_cy
   af pop      \ (af)<--d1h                10 01
   de pop      \ (de)<--d1l                10 01
   af push    \ (s1)<--d1h                11 01
-  add hl,de   \ (hl)<--d2l+d1l=d3l        11 01
-  ex  de,hl   \ (de)<--d3l                04 01
+  de addp   \ (hl)<--d2l+d1l=d3l        11 01
+  exde   \ (de)<--d3l                04 01
   hl pop      \ (hl)<--d1h                10 01
-  adc hl,bc   \ (hl)<--d1h+d2h+carry=d3h  15 02
+  bc adcp   \ (hl)<--d1h+d2h+carry=d3h  15 02
   de push    \ (s2)<--d3l                11 01
   hl push    \ (s1)<--d3h                11 01
   exx         \ restore ip                04 01
@@ -3193,10 +3178,10 @@ $ constant true_if_cy
   _code_header negate_,"NEGATE"
 
   de pop
-  ld hl,0x0000
+  0x0000 hl ldp#
   a and
-  sbc hl,de
-  jp push_hl
+  de sbcp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header dnegate_,"DNEGATE"
@@ -3207,24 +3192,24 @@ $ constant true_if_cy
   de pop
   sub a
   sub e
-  a e ld
-  ld a,0x00
-  sbc a,d
-  a d ld
-  ld a,0x00
-  sbc a,l
-  a l ld
-  ld a,0x00
-  sbc a,h
-  a h ld
-  jp push_hlde
+  a e mv
+  0x00 a ld#
+  d sbc
+  a d mv
+  0x00 a ld#
+  l sbc
+  a l mv
+  0x00 a ld#
+  h sbc
+  a h mv
+  push_hlde jp
 
 \ ----------------------------------------------
   _code_header nip_,"NIP"
 
   hl pop
   de pop
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header tuck_,"TUCK"
@@ -3232,7 +3217,7 @@ $ constant true_if_cy
   hl pop
   de pop
   hl push
-  jp push_hlde
+  push_hlde jp
 
 \ ----------------------------------------------
   _code_header over_,"OVER"
@@ -3240,7 +3225,7 @@ $ constant true_if_cy
   de pop
   hl pop
   hl push
-  jp push_hlde
+  push_hlde jp
 
 \ ----------------------------------------------
   _code_header drop_,"DROP"
@@ -3252,15 +3237,15 @@ $ constant true_if_cy
   _code_header swap_,"SWAP"
 
   hl pop
-  ex (sp),hl
-  jp push_hl
+  exsp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header dup_,"DUP"
 
   hl pop
   hl push
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header two_dup_,"2DUP"
@@ -3269,29 +3254,29 @@ $ constant true_if_cy
   de pop
   de push
   hl push
-  jp push_hlde
+  push_hlde jp
 
 \ ----------------------------------------------
   _code_header plus_store_,"+!"
 
   hl pop \ variable address
   de pop \ number
-  ld a,(hl)
-  add a,e
-  ld (hl),a
+  m a mv
+  e add
+  a m mv
   hl incp
-  ld a,(hl)
-  adc a,d
-  ld (hl),a
+  m a mv
+  d adc
+  a m mv
   jpnext
 
 \ ----------------------------------------------
   _code_header off_,"OFF"
 
   hl pop
-  ld (hl),0
+  0 m ld#
   hl incp
-  ld (hl),0
+  0 m ld#
   jpnext
 
 \ ----------------------------------------------
@@ -3299,13 +3284,13 @@ $ constant true_if_cy
 
   hl pop
 true_flag 1 = [if]
-  ld (hl),1
+  1 m ld#
   hl incp
-  ld (hl),0
+  0 m ld#
 [else]
-  ld (hl),0xFF
+  0xFF m ld#
   hl incp
-  ld (hl),0xFF
+  0xFF m ld#
 [then]
   jpnext
 
@@ -3322,9 +3307,9 @@ true_flag 1 = [if]
 
   de pop \ e = bit pattern
   hl pop \ address
-  ld a,(hl)
+  m a mv
   e xor
-  ld (hl),a
+  a m mv
   jpnext
 
 \ ----------------------------------------------
@@ -3332,9 +3317,9 @@ true_flag 1 = [if]
 
   hl pop
 $ constant fetch.hl
-  ld e,(hl)
+  m e mv
   hl incp
-  ld d,(hl)
+  m d mv
   de push
   jpnext
 
@@ -3342,25 +3327,25 @@ $ constant fetch.hl
   _code_header c_fetch_,"C@"
 
   hl pop
-  ld l,(hl)
-  ld h,0x00
-  jp push_hl
+  m l mv
+  0x00 h ld#
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header two_fetch_,"2@"
 
   hl pop \ address
 $ constant two_fetch.hl
-  ld e,(hl)     \ 07t  1
+  m e mv     \ 07t  1
   hl incp        \ 06t  1
-  ld d,(hl)     \ 07t  1 ; de = low part
+  m d mv     \ 07t  1 ; de = low part
   hl incp        \ 06t  1
-  ld a,(hl)     \ 07t  1
+  m a mv     \ 07t  1
   hl incp        \ 06t  1
-  ld h,(hl)     \ 07t  1
-  a l ld        \ 04t  1 ; hl = high part
-  ex de,hl      \ 04t  1
-  jp push_hlde \ 10t  3
+  m h mv     \ 07t  1
+  a l mv        \ 04t  1 ; hl = high part
+  exde      \ 04t  1
+  push_hlde jp \ 10t  3
                 \ 11t  0 de push
                 \ 11t  0 hl push
                 \ 86t 12 TOTAL
@@ -3371,17 +3356,17 @@ $ constant two_fetch.hl
   hl pop
 $ constant two_store.into_hl_pointer
   de pop
-  ld (hl),e
+  e m mv
   hl incp
-  ld (hl),d
+  d m mv
   hl incp
   size_optimization? [if]
-    jp store.into_hl_pointer
+    store.into_hl_pointer jp
   [else]
     de pop
-    ld (hl),e
+    e m mv
     hl incp
-    ld (hl),d
+    d m mv
     jpnext
   [then]
 
@@ -3392,9 +3377,9 @@ $ constant two_store.into_hl_pointer
 $ constant store.into_hl_pointer
   de pop
 $ constant store.de_into_hl_pointer
-  ld (hl),e
+  e m mv
   hl incp
-  ld (hl),d
+  d m mv
   jpnext
 
 \ ----------------------------------------------
@@ -3402,7 +3387,7 @@ $ constant store.de_into_hl_pointer
 
   hl pop
   de pop
-  ld (hl),e
+  e m mv
   jpnext
 
 \ ----------------------------------------------
@@ -3413,15 +3398,15 @@ $ constant store.de_into_hl_pointer
   header_ __ right_bracket_ __
   paren_semicolon_code_ __
 $ constant do_colon
-  ld hl,(return_stack_pointer)
+  return_stack_pointer hl ldp
   hl decp
-  ld (hl),b
+  b m mv
   hl decp
-  ld (hl),c
+  c m mv
   ld (return_stack_pointer),hl \ save the updated IP
   de incp \ de=pfa
-  e c ld
-  d b ld \ bc=pfa
+  e c mv
+  d b mv \ bc=pfa
 do_colon.end: \ XXX TMP for debugging
   jpnext
 
@@ -3467,8 +3452,8 @@ do_colon.end: \ XXX TMP for debugging
   paren_semicolon_code_ __
 $ constant do_constant
   de incp    \ de=pfa
-  ex de,hl  \ hl=pfa
-  jp fetch.hl
+  exde  \ hl=pfa
+  fetch.hl jp
 
 \ ----------------------------------------------
   _colon_header variable_,"VARIABLE"
@@ -3505,13 +3490,13 @@ $ constant do_constant
 $ constant do_user
 \  _z80_border_wait 5 \ XXX INFORMER
   de incp      \ de=pfa
-  ex de,hl
-  ld e,(hl)
-  ld d,0x00   \ de = index of the user variable
-  ld hl,(user_variables_pointer)
-  add hl,de   \ hl= address of the user variable
+  exde
+  m e mv
+  0x00 d ld#   \ de = index of the user variable
+  user_variables_pointer hl ldp
+  de addp   \ hl= address of the user variable
 \  _z80_border_wait 6 \ XXX INFORMER
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _constant_header msg_scr_,"MSG-SCR"
@@ -3552,8 +3537,8 @@ $ constant do_user
 \
 \ }doc
 
-  ld hl,false
-  jp push_hl
+  false hl ldp#
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header true_,"TRUE"
@@ -3564,8 +3549,8 @@ $ constant do_user
 \
 \ }doc
 
-  ld hl,true_flag
-  jp push_hl
+  true_flag hl ldp#
+  push_hl jp
 
 \ ----------------------------------------------
   _constant_header b_l_,"BL"
@@ -3772,7 +3757,7 @@ $ constant do_user
 
   hl pop
   hl incp
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header two_plus_,"2+"
@@ -3780,7 +3765,7 @@ $ constant do_user
   hl pop
   hl incp
   hl incp
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_alias_header cell_minus_,"CELL-",,two_minus_
@@ -3793,7 +3778,7 @@ $ constant do_user
 
   hl pop
   hl decp
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header two_minus_,"2-"
@@ -3801,7 +3786,7 @@ $ constant do_user
   hl pop
   hl decp
   hl decp
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header two_star_,"2*"
@@ -3822,8 +3807,8 @@ $ constant do_user
   \ ciforth.]
 
   hl pop
-  add hl,hl
-  jp push_hl
+  hl addp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_alias_header cells_,"CELLS",,two_star_
@@ -3855,7 +3840,7 @@ $ constant do_user
   hl pop
   sra h
   rr l
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
   _colon_header here_,"HERE"
@@ -3909,8 +3894,8 @@ $ constant do_user
   de pop
   hl pop
   a and
-  sbc hl,de
-  jp push_hl
+  de sbcp
+  push_hl jp
 
 \ ----------------------------------------------
   _code_header not_equals_,"<>"
@@ -3919,8 +3904,8 @@ $ constant do_user
   hl pop
   compare_de_hl_unsigned call
 false_if_z: \ XXX entry not used yet
-  jp z,false_pfa
-  jp true_pfa
+  false_pfa jpz
+  true_pfa jp
 
 \ ----------------------------------------------
   _code_header equals_,"="
@@ -3929,8 +3914,8 @@ false_if_z: \ XXX entry not used yet
   hl pop
   compare_de_hl_unsigned call
 true_if_z: \ XXX entry not used yet
-  jp z,true_pfa
-  jp false_pfa
+  true_pfa jpz
+  false_pfa jp
 
 \ ----------------------------------------------
   _code_header less_than_,"<"
@@ -3940,10 +3925,10 @@ true_if_z: \ XXX entry not used yet
 $ constant is_de_less_than_hl
   compare_de_hl_signed call
   size_optimization? [if]
-    jp true_if_cy
+    true_if_cy jp
   [else]
-    jp c,true_pfa
-    jp false_pfa
+    true_pfa jpc
+    false_pfa jp
   [then]
 
 \ ----------------------------------------------
@@ -3952,7 +3937,7 @@ $ constant is_de_less_than_hl
   hl pop
 $ constant u_greater_than.hl
   de pop
-  jp u_less_than.de_hl
+  u_less_than.de_hl jp
 
 \ ----------------------------------------------
   _code_header u_less_than_,"U<"
@@ -3962,10 +3947,10 @@ $ constant u_greater_than.hl
 $ constant u_less_than.de_hl
   compare_de_hl_unsigned call
 size_optimization? [if]
-    jp true_if_cy
+    true_if_cy jp
 [else]
-    jp c,true_pfa
-    jp false_pfa
+    true_pfa jpc
+    false_pfa jp
 [endif]
 
 \ ----------------------------------------------
@@ -3973,15 +3958,15 @@ size_optimization? [if]
 
   hl pop
   de pop
-  jp is_de_less_than_hl
+  is_de_less_than_hl jp
 
 \ ----------------------------------------------
   _code_header rot_,"ROT"
 
   de pop
   hl pop
-  ex (sp),hl
-  jp push_hlde
+  exsp
+  push_hlde jp
 
 \ ----------------------------------------------
   _colon_header space_,"SPACE"
@@ -4063,11 +4048,11 @@ $ constant question_dup.end
 
   _code_header cfa_to_nfa_,"CFA>NFA"
 
-  ld e,names_bank
+  names_bank e ld#
   bank.e call \ page the memory bank
   de pop \ cfa
   bc push \ save Forth IP
-  ld b,0
+  0 b ld#
   ld hl, names_bank_address-4
 
 $ constant cfa_to_nfa.begin_0
@@ -4077,28 +4062,28 @@ $ constant cfa_to_nfa.begin_1
   hl incp
   hl incp
   hl incp
-  ld a,(hl) \ name field byte length
+  m a mv \ name field byte length
   and max_word_length_bit_mask \ name length
-  a c ld \ name length
+  a c mv \ name length
   c inc  \ plus the length byte
-  add hl,bc \ point to the cfa pointer
+  bc addp \ point to the cfa pointer
 
-  ld a,(hl) \ low byte of cfa
+  m a mv \ low byte of cfa
   cp e \ equal?
-  jr nz,cfa_to_nfa.begin_0 \ not equal
+  cfa_to_nfa.begin_0 jrnz \ not equal
   hl incp
-  ld a,(hl) \ high byte of cfa
+  m a mv \ high byte of cfa
   cp d \ equal?
-  jr nz,cfa_to_nfa.begin_1 \ not equal
+  cfa_to_nfa.begin_1 jrnz \ not equal
   \ cfa found
-  ld c,3
-  add hl,bc \ nfa
+  3 c ld#
+  bc addp \ nfa
 
-  ld e,default_bank
+  default_bank e ld#
   bank.e call \ page the default memory bank
 
   bc pop \ restore Forth IP
-  jp push_hl
+  push_hl jp
 
 \ ----------------------------------------------
 
@@ -4129,11 +4114,11 @@ $ constant cfa_to_nfa.begin_1
   \ c_store_bank.e:
   \ bank.e call
   \ hl pop
-  \ ld l,(hl)
-  \ ld h,0
-  \ ld e,default_bank
+  \ m l mv
+  \ 0 h ld#
+  \ default_bank e ld#
   \ bank.e call
-  \ jp pushhl
+  \ pushhl jp
 
 \ ----------------------------------------------
   _colon_header store_bank_,"!BANK"
@@ -4172,11 +4157,11 @@ $ constant cfa_to_nfa.begin_1
   \ c_fetch_bank.e:
   \ bank.e call
   \ hl pop
-  \ ld l,(hl)
-  \ ld h,0
-  \ ld e,default_bank
+  \ m l mv
+  \ 0 h ld#
+  \ default_bank e ld#
   \ bank.e call
-  \ jp pushhl
+  \ pushhl jp
 
 \ ----------------------------------------------
   _colon_header fetch_bank_,"@BANK"
@@ -4199,13 +4184,13 @@ $ constant cfa_to_nfa.begin_1
   \ fetch_bank.e
   \ bank.e call
   \ hl pop
-  \ ld a,(hl)
+  \ m a mv
   \ hl incp
-  \ ld h,(hl)
-  \ a l ld
-  \ ld e,default_bank
+  \ m h mv
+  \ a l mv
+  \ default_bank e ld#
   \ bank.e call
-  \ jp pushhl
+  \ pushhl jp
 
 \ ----------------------------------------------
   _colon_header c_fetch_n_,"C@N"
@@ -4224,8 +4209,8 @@ $ constant cfa_to_nfa.begin_1
   semicolon_s_ __
 
   \ XXX 5 bytes
-  \ ld e,names_bank
-  \ jp c_fetch_bank.e
+  \ names_bank e ld#
+  \ c_fetch_bank.e jp
 
 \ ----------------------------------------------
   _colon_header fetch_n_,"@N"
@@ -4244,8 +4229,8 @@ $ constant cfa_to_nfa.begin_1
   semicolon_s_ __
 
   \ XXX 5 bytes
-  \ ld e,names_bank
-  \ jp fetch_bank.e
+  \ names_bank e ld#
+  \ fetch_bank.e jp
 
 \ ----------------------------------------------
   _colon_header c_store_n_,"C!N"
@@ -4499,11 +4484,11 @@ $ constant postpone.end
 
 $ constant do_does
   \ Save the IP in the return stack.
-  ld hl,(return_stack_pointer)
+  return_stack_pointer hl ldp
   hl decp
-  ld (hl),b
+  b m mv
   hl decp
-  ld (hl),c
+  c m mv
   ld (return_stack_pointer),hl
   \ Pop the address of the run-time routine
   \ (put there bye `call do_does`) in IP.
@@ -4520,10 +4505,10 @@ $ constant do_does
   \ Code from DZX-Forth.
 
   de pop
-  ld a,(de)
+  de ftap
   de incp
   de push
-  jp push_a
+  push_a jp
 
 \ ----------------------------------------------
   _colon_header bounds_,"BOUNDS"
@@ -4558,20 +4543,20 @@ $ constant type.end
   de pop
   hl pop
   hl push
-  add hl,de
-  ex de,hl
+  de addp
+  exde
   \ de = address after the string
   \ hl = length of the string
 $ constant minus_trailing.begin
-  l a ld
+  l a mv
   h or \ exhausted?
-  jp z,push_hl
+  push_hl jpz
   de decp \ next char
-  ld a,(de)
+  de ftap
   cp ' ' \ space?
-  jp nz,push_hl
+  push_hl jpnz
   hl decp \ new length
-  jp minus_trailing.begin \ repeat
+  minus_trailing.begin jp \ repeat
 
 \ ----------------------------------------------
   \ _colon_header paren_dot_quote_,"(.\")" \ XXX FIXME as error
@@ -4848,18 +4833,18 @@ $ constant x.end
 
   de pop \ e = char
 $ constant fill.e
-  c l ld
-  b h ld \ the Forth IP
+  c l mv
+  b h mv \ the Forth IP
   bc pop \ count
-  ex (sp),hl \ save the Forth IP
+  exsp \ save the Forth IP
 $ constant fill.do
-  b a ld
+  b a mv
   c or
   _jump_z fill.end
-  ld (hl),e
+  e m mv
   hl incp
   bc decp
-  jp fill.do
+  fill.do jp
 $ constant fill.end
   bc pop \ restore the Forth IP
   jpnext
@@ -4867,14 +4852,14 @@ $ constant fill.end
 \ ----------------------------------------------
   _code_header erase_,"ERASE"
 
-  ld e,0
-  jp fill.e
+  0 e ld#
+  fill.e jp
 
 \ ----------------------------------------------
   _code_header blank_,"BLANK"
 
-  ld e,space_char
-  jp fill.e
+  space_char e ld#
+  fill.e jp
 
 \ ----------------------------------------------
   _colon_header hold_,"HOLD"
@@ -5126,10 +5111,10 @@ $ constant number.end
 \ }doc
 
   hl pop
-  l a ld
+  l a mv
   upper.a call
-  a l ld
-  jp push_hl
+  a l mv
+  push_hl jp
 
 $ constant upper.a
   \ Convert the ASCII char in the 'a' register to uppercase.
@@ -5152,15 +5137,15 @@ $ constant upper.a
   de pop
   hl pop
 $ constant uppers.do
-  d a ld
+  d a mv
   e or
-  jp z,next
-  ld a,(hl)
+  next jpz
+  m a mv
   upper.a call
-  ld (hl),a
+  a m mv
   hl incp
   de decp
-  jp uppers.do
+  uppers.do jp
 
 \ ----------------------------------------------
   _colon_header defined_question_,"DEFINED?"
@@ -5211,7 +5196,7 @@ $ constant uppers.do
   move_block call
   hl pop      \ ca2
   de pop      \ e=len1
-  ld (hl),e
+  e m mv
   exx
   jpnext
 
@@ -5422,32 +5407,32 @@ $ constant do_create
 
   de pop      \ de = len2
   hl pop      \ hl = ca2
-  ex (sp),hl  \ hl = len1 ; ( ca1 ca2 )
-  d a ld
+  exsp  \ hl = len1 ; ( ca1 ca2 )
+  d a mv
   cp h
-  jr nz,compare.lengths
-  e a ld
+  compare.lengths jrnz
+  e a mv
   cp l
 $ constant compare.lengths
   \ cy = string2 is longer than string1?
-  jr c,compare.ready
-  ex de,hl
+  compare.ready jrc
+  exde
 $ constant compare.ready
   \ de = length of the short string
   \ hl = length of the long string
-  c l ld
-  b h ld \ hl = Forth IP
+  c l mv
+  b h mv \ hl = Forth IP
   bc pop \ bc = ca2
-  ex (sp),hl \ hl = ca1 ; save Forth IP
+  exsp \ hl = ca1 ; save Forth IP
   af push \ save carry flag
 compare.compare_strings: equ $+1 \ XXX not used
   compare_strings_case_sensitive call
-  jr nz,compare.no_match
+  compare.no_match jrnz
 
 $ constant compare.match
   \ The smaller string matches.
   af pop \ restore flags
-  jr compare.end
+  compare.end jr
 
 $ constant compare.no_match
   \ The smaller string does not match.
@@ -5455,12 +5440,12 @@ $ constant compare.no_match
 
 $ constant compare.end
   bc pop \ restore Forth IP
-  ld hl,1
-  jp c,push_hl
+  1 hl ldp#
+  push_hl jpc
   hl decp \ 0
-  jp z,push_hl \ string1 equals string2
+  push_hl jpz \ string1 equals string2
   hl decp \ -1
-  jp push_hl
+  push_hl jp
 
 $ constant compare_strings_case_sensitive
   \ Used by 'compare' and 'search'.
@@ -5471,16 +5456,16 @@ $ constant compare_strings_case_sensitive
   \ Output:
   \   Z = match?
   \ [Code from DZX-Forth.]
-  e a ld
+  e a mv
   d or
   retz
-  ld a,(bc)
-  cp (hl)
+  bc ftap
+  m cp
   retnz
   hl incp
   bc incp
   de decp
-  jp compare_strings_case_sensitive
+  compare_strings_case_sensitive jp
 
 \ ----------------------------------------------
   _code_header search_,"SEARCH"
@@ -5500,42 +5485,42 @@ $ constant compare_strings_case_sensitive
   exx \ save Forth IP
   hl pop
   ld (search.string_2_len),hl
-  l a ld
+  l a mv
   h or \ len2 is zero?
   bc pop \ ca2
   hl pop \ len1
   ld (search.string_1_len),hl
-  ex de,hl \ de = len1
+  exde \ de = len1
   hl pop \ ca1
   ld (search.string_1_addr),hl
-  jp z,search.match \ if len2 is zero, match
+  search.match jpz \ if len2 is zero, match
   hl decp
   de incp
 $ constant search.1
   hl incp \ address of current char of string 1
   de decp \ remaining length of string 1
-  e a ld
+  e a mv
   d or \ end of string 1?
-  jp z,search.no_match
+  search.no_match jpz
 \ XXX OLD -- already commented out in DX-Forth:
-\ ld a,(bc)
+\ bc ftap
 \ cp  (hl)
-\ jp nz,search.1
+\ search.1 jpnz
   de push
   bc push
   hl push
-  ex de,hl
+  exde
 search.string_2_len equ $+1
-  ld hl,0  \ length of the second string
-  ex de,hl
+  0 hl ldp#  \ length of the second string
+  exde
   compare_strings_case_sensitive call
   hl pop
   bc pop
   de pop
-  jp nz,search.1
+  search.1 jpnz
 
 $ constant search.match
-  ld bc,true
+  true bc ldp#
 $ constant search.end
   hl push
   de push
@@ -5544,13 +5529,13 @@ $ constant search.end
   jpnext
 
 $ constant search.no_match
-  ld bc,false
+  false bc ldp#
 search.string_1_len equ $+1
-  ld hl,0  \ length of the first string
-  ex de,hl
+  0 hl ldp#  \ length of the first string
+  exde
 search.string_1_addr equ $+1
-  ld hl,0  \ address of the first string
-  jp search.end
+  0 hl ldp#  \ address of the first string
+  search.end jp
 
 \ ----------------------------------------------
   _colon_header bracket_compile_,"[COMPILE]",immediate
@@ -5918,9 +5903,9 @@ $ constant warm_start
 
   ld (system_stack_pointer),sp \ save the system stack pointer
 \  XXX TODO this works too
-\  ld hl,abort_
+\  abort_ hl ldp#
 \  ld ix,next \ restore IX
-\  jp next2
+\  next2 jp
 
   common_start call
   warm_ __ \ XXX FIXME -- this works
@@ -5967,7 +5952,7 @@ $ constant cold_start
 only_first_cold: \ XXX TMP -- temporary label
   move_name_fields_to_memory_bank call \ (only the first time)
 latin1_charset_in_bank? [if]
-  ld hl,charset_address-0x0100
+  charset_address-0x0100 hl ldp#
   ld (sys_chars),hl
 [then]
   common_start call
@@ -5980,7 +5965,8 @@ $ constant common_start
   bc pop \ get the return address, that holds the cfa of `cold` or `warm`
   ld sp,(s0_init_value)
   a xor
-  ld (iy+sys_df_sz_offset),a \ no lines at the bottom part of the screen
+  \ XXX TODO adapt for IY :
+  a sys_df_sz_offset )st
   ld ix,next \ restore IX
   jpnext \ jump to the cfa pointed by the BC register
 
@@ -5997,13 +5983,13 @@ $ constant common_start
 
 \ dup 0<
 
-  ld hl,0
+  0 hl ldp#
   de pop
-  d a ld
+  d a mv
   a or
-  jp p,push_hlde \ jump if positive
+  push_hlde jpp \ jump if positive
   hl decp
-  jp push_hlde
+  push_hlde jp
 
 \ ----------------------------------------------
   _colon_header plus_minus_,"+-"
@@ -6082,7 +6068,7 @@ $ constant d_plus_minus.end
   de pop
   hl pop
   compare_de_hl_unsigned call
-  jp max.1
+  max.1 jp
 
 \ ----------------------------------------------
   _code_header umin_,"UMIN"
@@ -6098,7 +6084,7 @@ $ constant d_plus_minus.end
   de pop
   hl pop
   compare_de_hl_unsigned call
-  jp max.2
+  max.2 jp
 
 \ ----------------------------------------------
   _code_header min_,"MIN"
@@ -6108,7 +6094,7 @@ $ constant d_plus_minus.end
   de pop
   hl pop
   compare_de_hl_signed call
-  jp max.2
+  max.2 jp
 
 \ ----------------------------------------------
   _code_header max_,"MAX"
@@ -6122,9 +6108,9 @@ $ constant max.de
 $ constant max.1
   ccf
 $ constant max.2
-  jp c,push_hl
-  ex de,hl
-  jp push_hl
+  push_hl jpc
+  exde
+  push_hl jp
 
 \ ----------------------------------------------
   _colon_header m_star_,"M*"
@@ -6511,10 +6497,10 @@ $ constant block.end
 \ Forth systems.]
 
   hl pop
-  h a ld
-  l h ld
-  a l ld
-  jp push_hl
+  h a mv
+  l h mv
+  a l mv
+  push_hl jp
 
 \ ----------------------------------------------
   _colon_header block_to_sector_,"BLOCK>SECTOR"
@@ -6657,7 +6643,7 @@ $ constant paren_transfer_block_pfa
          \ e = sector 1..10
   pop ix \ address
   bc push \ save the Forth IP
-  ld a,2 \ drive ; XXX TMP
+  2 a ld# \ drive ; XXX TMP
   rst 8 \ G+DOS hook
 $ constant read_write_sector_command
   \ G+DOS command already patched:
@@ -7318,7 +7304,7 @@ $ constant dot_s.end
 
   \ Set the colors and their masks.
 
-  ld hl,(default_color_attribute)
+  default_color_attribute hl ldp
   \ l = 128*flash + 64*bright + 8*paper + ink
   \ h = mask
   ld (sys_attr_p),hl \ permanent
@@ -7330,8 +7316,8 @@ $ constant dot_s.end
   \ and at the end restores it with the constant of this system
   \ variable.
 
-  l a ld
-  ld (sys_bordcr),a \ lower screen colors
+  l a mv
+  sys_bordcr sta \ lower screen colors
 
   \ Set the border color to the paper color.
 
@@ -7356,7 +7342,7 @@ $ constant dot_s.end
 \
 \ }doc
 
-  ld hl,0x1821 \ 0x18 = 24 - row
+  0x1821 hl ldp# \ 0x18 = 24 - row
                \ 0x21 = 33 - column
   ld (sys_s_posn),hl
   jpnext
@@ -7382,20 +7368,20 @@ $ constant dot_s.end
 
   exx \ save the Forth IP
   \ Erase the bitmap.
-  ld hl,sys_screen
-  ld de,sys_screen+1
-  ld bc,sys_screen_bitmap_size
-  ld (hl),0
+  sys_screen hl ldp#
+  sys_screen+1 de ldp#
+  sys_screen_bitmap_size bc ldp#
+  0 m ld#
   ldir
   \ Color with the permanent attributes.
-  ld hl,sys_screen_attributes
-  ld de,sys_screen_attributes+1
-  ld bc,sys_screen_attributes_size
-  ld a,(sys_attr_p)
-  ld (hl),a
+  sys_screen_attributes hl ldp#
+  sys_screen_attributes+1 de ldp#
+  sys_screen_attributes_size bc ldp#
+  sys_attr_p fta
+  a m mv
   ldir
   exx \ restore the Forth IP
-  jp home_pfa \ continue at `home`
+  home_pfa jp \ continue at `home`
 
 \ ----------------------------------------------
   _colon_header page_,"PAGE"
@@ -7418,12 +7404,13 @@ $ constant dot_s.end
 \ ----------------------------------------------
   _code_header bye_,"BYE"
 
-  ld (iy+sys_df_sz_offset),0x02 \ restore lines of the lower screen
+  \ XXX TODO adapt for IY
+  0x02 sys_df_sz_offset )ld# \ restore lines of the lower screen
 system_stack_pointer: equ $+1
   ld sp,0 \ restore the system stack
 latin1_charset_in_bank? [if]
   \ Restore the default charset:
-  ld hl,15360
+  15360 hl ldp#
   ld (sys_chars),hl
 [then]
   \ Exit to BASIC:
@@ -7444,19 +7431,19 @@ latin1_charset_in_bank? [if]
 
   hl pop
   de pop
-  ex (sp),hl
+  exsp
   hl push
-  ld hl,5
+  5 hl ldp#
   add hl,sp
-  ld a,(hl)
-  ld (hl),d
-  a d ld
+  m a mv
+  d m mv
+  a d mv
   hl decp
-  ld a,(hl)
-  ld (hl),e
-  a e ld
+  m a mv
+  e m mv
+  a e mv
   hl pop
-  jp push_hlde
+  push_hlde jp
 
 \ ----------------------------------------------
   _colon_header unused_,"UNUSED"
@@ -7533,7 +7520,7 @@ $ constant at_pfa.last_line
   _code_header border_,"BORDER"
 
   hl pop
-  l a ld
+  l a mv
   out (border_port),a
 
   \ The system variable that holds the attributes of the lower
@@ -7549,53 +7536,53 @@ $ constant at_pfa.last_line
   \ simply remove it:
 
   cp 4 \ cy = dark color (0..3)?
-  ld a,7 \ white ink
-  jr c,border.end
+  7 a ld# \ white ink
+  border.end jrc
   a xor \ black ink
 
 $ constant border.end
   \ Note: slower than shifting the register, but saves three bytes.
-  add hl,hl
-  add hl,hl
-  add hl,hl \ l = paper (bits 3..5)
+  hl addp
+  hl addp
+  hl addp \ l = paper (bits 3..5)
   l or \ combine with ink
-  ld (sys_bordcr),a
+  sys_bordcr sta
   jpnext
 
 \ ----------------------------------------------
   _code_header overwrite_,"OVERWRITE"
 
-  ld a,over_char
-  jp color
+  over_char a ld#
+  color jp
 
 \ ----------------------------------------------
   _code_header flash_,"FLASH"
 
-  ld a,flash_char
-  jp color
+  flash_char a ld#
+  color jp
 
 \ ----------------------------------------------
   _code_header inverse_,"INVERSE"
 
-  ld a,inverse_char
-  jp color
+  inverse_char a ld#
+  color jp
 
 \ ----------------------------------------------
   _code_header bright_,"BRIGHT"
 
-  ld a,bright_char
-  jp color
+  bright_char a ld#
+  color jp
 
 \ ----------------------------------------------
   _code_header paper_,"PAPER"
 
-  ld a,paper_char
-  jp color
+  paper_char a ld#
+  color jp
 
 \ ----------------------------------------------
   _code_header ink_,"INK"
 
-  ld a,ink_char
+  ink_char a ld#
 
 $ constant color
   \ Set a color attribute (ink, paper, bright, flash, inverse or
@@ -7605,7 +7592,7 @@ $ constant color
   \   (tos) = color attribute constant
   rst 0x10
   hl pop
-  l a ld
+  l a mv
   rst 0x10
   rom_set_permanent_colors_0x1CAD call
   jpnext
@@ -7649,71 +7636,71 @@ $ constant color
   de pop \ row
   hl pop \ col
   bc push \ save the Forth IP
-  l b ld \ column
-  e c ld \ row
-  ld hl,(emitted_charset_pfa) \ address of first printable char in the charset
-  c a ld  \ row
+  l b mv \ column
+  e c mv \ row
+  emitted_charset_pfa hl ldp \ address of first printable char in the charset
+  c a mv  \ row
   rrca
   rrca
   rrca \ multiply by 0x20
   and  %11100000
   b xor \ combine with column (0x00..0x1F)
-  a e ld \ low byte of top row = 0x20 * (line mod 8) + column
-  c a ld  \ row is copied to a again
+  a e mv \ low byte of top row = 0x20 * (line mod 8) + column
+  c a mv  \ row is copied to a again
   and  0x18
   xor  0x40
-  a d ld \ high byte of top row = 64 + 8*int (line/8)
+  a d mv \ high byte of top row = 64 + 8*int (line/8)
   \ de = screen address
-  ld a,(hash_emitted_chars_pfa) \ number of chars in the charset
-  a b ld
+  hash_emitted_chars_pfa fta \ number of chars in the charset
+  a b mv
 
 $ constant emitted.do
   bc push  \ save the characters count
   de push  \ save the screen pointer
   hl push  \ save the character set pointer (bitmap start)
-  ld  a,(de)  \ get first scan of screen character
+  de ftap  \ get first scan of screen character
   (hl) xor  \ match with scan from character set
-  jp z,emitted.match  \ jump if direct match found
+  emitted.match jpz  \ jump if direct match found
   \ if inverse, a=0xFF
   a inc  \ inverse? (if inverse, a=0)
-  jp  nz,emitted.next_char  \ jump if inverse match not found
+  emitted.next_char jpnz  \ jump if inverse match not found
   \ inverse match
   a dec  \ restore 0xFF
 $ constant emitted.match
-  a c ld  \ inverse mask (0x00 or 0xFF)
-  ld  b,0x07  \ count 7 more character rows
+  a c mv  \ inverse mask (0x00 or 0xFF)
+  0x07 b ld#  \ count 7 more character rows
 $ constant emitted.scans
   d inc  \ next screen scan (add 0x100)
   hl incp  \ next bitmap address
-  ld  a,(de)  \ screen scan
+  de ftap  \ screen scan
   (hl) xor  \ will give 0x00 or 0xFF (inverse)
   c xor  \ inverse mask to include the inverse status
-  jp  nz,emitted.next_char  \ jump if no match
+  emitted.next_char jpnz  \ jump if no match
   djnz  emitted.scans  \ jump back till all scans done
 
   \ character match
   bc pop  \ discard character set pointer
   bc pop  \ discard screen pointer
   bc pop  \ final count
-  ld a,(hash_emitted_chars_pfa) \ number of chars in the charset
+  hash_emitted_chars_pfa fta \ number of chars in the charset
   sub  b \ ordinal number of the matched character (1 is the first)
-  a l ld
-  jp emitted.end
+  a l mv
+  emitted.end jp
 
 $ constant emitted.next_char
   hl pop  \ restore character set pointer
-  ld  de,0x0008  \ move it on 8 bytes
+  0x0008 de ldp#  \ move it on 8 bytes
   add  hl,de  \ to the next character in the set
   de pop  \ restore the screen pointer
   bc pop  \ restore the counter
   djnz  emitted.do  \ loop back for the 96 characters
   \ no match
-  b l ld \ zero
+  b l mv \ zero
 
 $ constant emitted.end
   bc pop \ restore the Forth IP
-  ld h,0
-  jp push_hl
+  0 h ld#
+  push_hl jp
 
 \ ----------------------------------------------
   _variable_header emitted_charset_,"EMITTED-CHARSET"
@@ -7733,7 +7720,7 @@ $ constant emitted.end
 \ ----------------------------------------------
   _variable_header hash_emitted_chars_,"#EMITTED-CHARS"
 
-\ doc{
+ doc{
 \
 \ #emitted-charset  ( -- a )
 \
@@ -7756,10 +7743,10 @@ $ constant emitted.end
 \
 \ }doc
 
-  ld hl,(return_stack_pointer)
-  ld de,cell*2
-  add hl,de
-  jp fetch.hl
+  return_stack_pointer hl ldp
+  cell*2 de ldp#
+  de addp
+  fetch.hl jp
 
 \ ----------------------------------------------
   _colon_header two_constant_,"2CONSTANT"
@@ -7768,8 +7755,8 @@ $ constant emitted.end
   paren_semicolon_code_ __
 $ constant do_two_constant
   de incp    \ de=pfa
-  ex de,hl  \ hl=pfa
-  jp two_fetch.hl
+  exde  \ hl=pfa
+  two_fetch.hl jp
 
 \ ----------------------------------------------
   _colon_header two_variable_,"2VARIABLE"
@@ -7811,9 +7798,9 @@ $ constant do_two_constant
 \
 \ }doc
 
-  ld hl,4
+  4 hl ldp#
   add hl,sp
-  jp two_fetch.hl
+  two_fetch.hl jp
 
 1 [if] \ fig_exit?
 
@@ -7873,9 +7860,9 @@ $ constant do_two_constant
 \ }doc
 
   hl pop
-  a h ld
+  a h mv
   l or
-  jp nz,exit_pfa
+  exit_pfa jpnz
   jpnext
 
 [then]
@@ -7980,40 +7967,40 @@ $ constant move_name_fields_to_memory_bank
   \ The whole screen is used as intermediate buffer for copying
   \ the data.
 
-  ld hl,names_bank_address \ origin
-  ld de,sys_screen \ destination
-  ld bc,sys_screen_size \ count
+  names_bank_address hl ldp# \ origin
+  sys_screen de ldp# \ destination
+  sys_screen_size bc ldp# \ count
   ldir \ copy the data to the screen
   \ _z80_border_wait 1 \ XXX INFORMER
-  ld e,names_bank
+  names_bank e ld#
   bank.e call
-  ld hl,sys_screen \ origin
-  ld de,names_bank_address \ destination
-  ld bc,sys_screen_size \ count
+  sys_screen hl ldp# \ origin
+  names_bank_address de ldp# \ destination
+  sys_screen_size bc ldp# \ count
   ldir \ copy the name fields to the bank
   \ _z80_border_wait 2 \ XXX INFORMER
 latin1_charset_in_bank? [if]
-  ld hl,sys_screen+sys_screen_size-charset_size \ origin
-  ld de,charset_address \ destination
-  ld bc,charset_size \ count
+  sys_screen sys_screen_size + charset_size - hl ldp# \ origin
+  charset_address de ldp# \ destination
+  charset_size bc ldp# \ count
   ldir \ copy the charset to the bank
 [then]
   ld e,default_bank
   bank.e call
 
   \ Erase the default bank (not necessary) \ XXX OLD
-  \ ld hl,names_bank_address \ the first byte is 0
-  \ ld de,names_bank_address+1
-  \ ld bc,sys_screen
+  \ names_bank_address hl ldp# \ the first byte is 0
+  \ names_bank_address+1 de ldp#
+  \ sys_screen bc ldp#
   \ ldir
 
   \ Remove the to call this routine:
-  ld hl,only_first_cold \ address of the to call this routine
-  ld (hl),0 \ nop
+  only_first_cold hl ldp# \ address of the to call this routine
+  0 m ld# \ nop
   hl incp
-  ld (hl),0 \ nop
+  0 m ld# \ nop
   hl incp
-  ld (hl),0 \ nop
+  0 m ld# \ nop
   \ _z80_border_wait 3 \ XXX INFORMER
   ret
 

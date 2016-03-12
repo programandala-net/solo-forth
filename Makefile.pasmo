@@ -1,0 +1,45 @@
+# Solo Forth included Makefile for Pasmo
+
+################################################################
+# Requirements
+
+# Pasmo (by Julián Albo)
+#   http://pasmo.speccy.org/
+
+################################################################
+# Change history
+
+# See at the end of the file.
+
+################################################################
+# Config
+
+pasmo=/usr/local/bin/pasmo.053
+
+################################################################
+# Main
+
+################################################################
+# The TAP file
+
+# A temporary name "forth.bin" is used because Pasmo does not have an option to
+# choose the filename used in the TAP file header; it uses the name of the
+# target file.
+
+solo_forth.bin.tap: $(kernel_source_file)
+	$(pasmo) -v --tap \
+		$(kernel_source_file) \
+		forth.bin \
+		solo_forth.symbols.pasmo.z80s
+	mv forth.bin solo_forth.bin.tap
+
+# > solo_forth.assembly_debug_info.txt ; \
+
+solo_forth.symbols.txt: solo_forth.bin.tap
+	echo "; vim: ft=z80" >> solo_forth.symbols.pasmo.z80s
+	ln -s solo_forth.symbols.pasmo.z80s solo_forth.symbols.txt
+
+################################################################
+# Change history
+
+# 2015-08-20: Created with code from the main Makefile.
