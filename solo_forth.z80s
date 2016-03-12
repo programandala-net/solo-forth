@@ -47,6 +47,7 @@
   ; ----------------------------------------------------------------
   ; Symbols
 
+  ; ............................
   ; Forth
 
 origin:                           equ 0x5E00
@@ -72,8 +73,39 @@ precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
 
-user_variables_pointer_in_ix?   equ false ; XXX NEW -- experimental
+  ; ............................
+  ; Config
 
+  ; XXX experimental
+  ; The original code used IX as the user variables pointers,
+  ; but it's more useful to use to jump to next.
+user_variables_pointer_in_ix?   equ false
+
+  ; XXX experimental
+  ; When true, some code pieces are more compact but slower.
+size_optimization?              equ false
+
+  ; ............................
+  ; Character codes
+
+caps_char:                  equ 0x06 ; toggle caps lock
+edit_char:                  equ 0x07 ; edit
+backspace_char:             equ 0x08
+delete_char:                equ 0x0c ; delete (backspace)
+form_feed_char:             equ 0x0c ; used for printing
+carriage_return_char:       equ 0x0d
+extended_mode_char:         equ 0x0e ; Fuse associates it to the host's Tab key
+graphics_char:              equ 0x0f ; toggle graphics mode
+ink_char:                   equ 0x10
+paper_char:                 equ 0x11
+flash_char:                 equ 0x12
+bright_char:                equ 0x13
+inverse_char:               equ 0x14
+over_char:                  equ 0x15
+at_char:                    equ 0x16
+tab_char:                   equ 0x17 ; tab (screen only)
+
+  ; ............................
   ; ROM  routines
 
 rom_beeper:                      equ 0x03B5
@@ -93,6 +125,7 @@ rom_sa_all:                      equ 0x075A
 rom_set_permanent_colors_0x1CAD  equ 0x1CAD
 rom_stack_fetch:                 equ 0x2BF1
 
+  ; ............................
   ; System variables
 
   ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
@@ -316,6 +349,24 @@ first_buffer:
 limit:
 
   ; ----------------------------------------------------------------
+  ; Misc routines
+
+  ; Taken from DZX-Forth
+  ; (http://programandala.net/en.program.dzx-forth.html)
+
+compare_de_hl_unsigned:
+  ; Input:  de, hl
+  ; Output:
+  ;  flag C if hl < de
+  ;  flag Z if hl = de
+  ld a,h
+  cp d
+  ret nz
+  ld a,l
+  cp e
+  ret
+
+  ; ----------------------------------------------------------------
   ; Interpreter
 
 pushde:
@@ -336,6 +387,7 @@ next:
   inc bc ; inc IP
   ; bc = address of the next cfa
   ; hl = cfa
+
 next2:
   ; Execute the word whose cfa is in the hl register.
   ; Forth: PC <-- (W)
@@ -678,52 +730,99 @@ to_chan_pfa:
   ; pop ix ;  XXX TMP not needed
   _jp_next
 
+; doc{
+;
+; chan  ( n -- )  \ Open channel n for output.
+;
+; }doc
+;
+; Copied from Spectrum Forth-83.
+
+chan_nfa:
+  db 0x0+0x80,'CHA','N'+0x80
+chan_lfa:
+  dw to_chan_nfa
+chan_:
+  dw chan_pfa
+chan_pfa:
+  pop hl
+  push bc
+  ld a,l
+  call rom_chan_open
+  pop bc
+  _jp_next
+
 emit_nfa:
   db 0x04+0x80,'EMI','T'+0x80
 emit_lfa:
-  dw to_chan_nfa
+  dw chan_nfa
 emit_:
   dw do_colon
 emit_pfa:
   dw paren_emit_
-  dw one_
-  dw out_
-  dw plus_store_
+  dw one_,out_,plus_store_
   dw semicolon_s_
 
 printer_channel_or_zero: ; XXX TODO move to the code
   db 0x00
 
+  ; XXX OLD
+; paren_emit_:
+;   dw paren_emit_pfa
+; paren_emit_pfa:
+;   pop hl
+;   push bc
+;   push hl
+;   ld a,0x02
+;   call rom_chan_open
+;   pop hl
+;   push hl
+;   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+;   ld a,l
+;   rst 0x10
+;   ld a,(printer_channel_or_zero)
+;   and a
+;   jr z,paren_emit.end
+;   call rom_chan_open
+;   pop hl
+;   push hl
+;   ld a,l
+;   rst 0x10
+; paren_emit.end:
+;   pop hl
+;   pop bc
+;   _jp_next
+
+  ; XXX NEW
+
+; doc{
+
+; (emit)  ( b -- )
+
+; Send the character b to the current channel.
+;
+; This word is copied from `TOCH`, from Lennart Benschop's Spectrum
+; Forth-83.
+
+; }doc
+
+paren_emit_nfa:
+  db 0x06+0x80,'(EMIT',')'+0x80
+paren_emit_lfa:
+  dw emit_nfa
 paren_emit_:
   dw paren_emit_pfa
 paren_emit_pfa:
   pop hl
-  push bc
-  push hl
-  ld a,0x02
-  call rom_chan_open
-  pop hl
-  push hl
+  ld a,l
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
-  ld a,l
   rst 0x10
-  ld a,(printer_channel_or_zero)
-  and a
-  jr z,paren_emit.end
-  call rom_chan_open
-  pop hl
-  push hl
-  ld a,l
-  rst 0x10
-paren_emit.end:
-  pop hl
-  pop bc
   _jp_next
 
 key_nfa:
   db 0x03+0x80,'KE','Y'+0x80
 key_lfa:
-  dw emit_nfa
+  dw paren_emit_nfa
 key_:
   dw key_pfa
 key_pfa:
@@ -1230,6 +1329,7 @@ two_r_drop_lfa:
 two_r_drop_:
   dw two_r_drop_pfa
 two_r_drop_pfa:
+  ; XXX FIXME
   ld hl,(return_stack_pointer)
   inc hl
   inc hl
@@ -1273,30 +1373,38 @@ zero_equals_lfa:
 zero_equals_:
   dw zero_equals_pfa
 zero_equals_pfa:
-  ; XXX TODO update if `true` is changed to -1:
   pop hl
   ld a,l
   or h
-  ld hl,0x0000
-  jr nz,l61aeh
-  inc hl
-l61aeh:
-  jp pushhl
+  jp z,true_pfa
+  jp false_pfa
+
+zero_not_equals_nfa:
+  db 0x03+0x80,'0<','>'+0x80
+zero_not_equals_lfa:
+  dw zero_equals_nfa
+zero_not_equals_:
+  dw zero_equals_pfa
+zero_not_equals_pfa:
+  pop hl
+  ld a,l
+  or h
+  jp z,false_pfa
+  jp true_pfa
 
 zero_less_than_nfa:
   db 0x02+0x80,'0','<'+0x80
 zero_less_than_lfa:
-  dw zero_equals_nfa
+  dw zero_not_equals_nfa
 zero_less_than_:
   dw zero_less_than_pfa
 zero_less_than_pfa:
   pop hl
+zero_less_.hl: ; XXX entry not used yet
   add hl,hl
-  ld hl,0x0000
-  jr nc,l61c0h
-  inc hl
-l61c0h:
-  jp pushhl
+true_if_cy:
+  jp c,true_pfa
+  jp false_pfa
 
 plus_nfa:
   db 0x01+0x80,'','+'+0x80
@@ -1771,18 +1879,20 @@ false_nfa:
 false_lfa:
   dw three_nfa
 false_:
-  dw do_constant
+  dw false_pfa
 false_pfa:
-  dw false
+  ld hl,false
+  jp pushhl
 
 true_nfa:
   db 0x04+0x80,'TRU','E'+0x80
 true_lfa:
   dw false_nfa
 true_:
-  dw do_constant
+  dw true_pfa
 true_pfa:
-  dw true
+  ld hl,true
+  jp pushhl
 
 b_l_nfa:
   db 0x02+0x80,'B','L'+0x80
@@ -2131,8 +2241,7 @@ allot_lfa:
 allot_:
   dw do_colon
 allot_pfa:
-  dw dp_
-  dw plus_store_
+  dw dp_,plus_store_
   dw semicolon_s_
 
 comma_nfa:
@@ -2142,10 +2251,7 @@ comma_lfa:
 comma_:
   dw do_colon
 comma_pfa:
-  dw here_
-  dw store_
-  dw two_
-  dw allot_
+  dw here_,store_,two_,allot_
   dw semicolon_s_
 
 c_comma_nfa:
@@ -2155,10 +2261,7 @@ c_comma_lfa:
 c_comma_:
   dw do_colon
 c_comma_pfa:
-  dw here_
-  dw c_store_
-  dw one_
-  dw allot_
+  dw here_,c_store_,one_,allot_
   dw semicolon_s_
 
 minus_nfa:
@@ -2181,27 +2284,26 @@ not_equals_lfa:
 not_equals_:
   dw not_equals_pfa
 not_equals_pfa:
-  pop hl
   pop de
-  and a ; reset cy flag
-  sbc hl,de
-  ld a,h
-  or l
-  jp z,pushhl
-  ld hl,true
-  jp pushhl
+  pop hl
+  call compare_de_hl_unsigned
+false_if_z: ; XXX entry not used yet
+  jp z,false_pfa
+  jp true_pfa
 
 equals_nfa:
   db 0x01+0x80,'','='+0x80
 equals_lfa:
   dw not_equals_nfa
 equals_:
-  dw do_colon
+  dw equals_pfa
 equals_pfa:
-  ; XXX TODO optimize
-  dw minus_
-  dw zero_equals_
-  dw semicolon_s_
+  pop de
+  pop hl
+  call compare_de_hl_unsigned
+true_if_z: ; XXX entry not used yet
+  jp z,true_pfa
+  jp false_pfa
 
 less_than_nfa:
   db 0x01+0x80,'','<'+0x80
@@ -2231,6 +2333,9 @@ u_less_than_nfa:
   db 0x02+0x80,'U','<'+0x80
 u_less_than_lfa:
   dw less_than_nfa
+
+if 0 ; XXX OLD -- original
+
 u_less_than_:
   dw do_colon
 u_less_than_pfa:
@@ -2247,6 +2352,27 @@ branch_destination_0x6585:
   dw zero_less_than_
 branch_destination_0x6589:
   dw semicolon_s_
+
+else
+
+  ; XXX NEW -- from DZX-Forth
+  ; XXX FIXME
+
+u_less_than_:
+  dw u_less_than_pfa
+u_less_than_pfa:
+  pop de
+  pop hl
+u_less_than.de_hl:
+  call compare_de_hl_unsigned
+  if size_optimization?
+    jp true_if_cy
+  else
+    jp c,true_pfa
+    jp false_pfa
+  endif
+
+endif
 
 greater_than_nfa:
   db 0x01+0x80,'','>'+0x80
@@ -2356,8 +2482,7 @@ pfa_to_cfa_lfa:
 pfa_to_cfa_:
   dw do_colon
 pfa_to_cfa_pfa:
-  dw two_
-  dw minus_
+  dw two_minus_
   dw semicolon_s_
 
 pfa_to_nfa_nfa:
@@ -2506,9 +2631,7 @@ left_bracket_lfa:
 left_bracket_:
   dw do_colon
 left_bracket_pfa:
-  dw zero_
-  dw state_
-  dw store_
+  dw state_,off_
   dw semicolon_s_
 
 right_bracket_nfa:
@@ -2596,8 +2719,7 @@ builds_lfa:
 builds_:
   dw do_colon
 builds_pfa:
-  dw zero_
-  dw constant_
+  dw zero_,constant_
   dw semicolon_s_
 
 does_nfa:
@@ -2681,15 +2803,11 @@ minus_trailing_lfa:
 minus_trailing_:
   dw do_colon
 minus_trailing_pfa:
-  dw dup_
-  dw zero_
+  dw dup_,zero_
   dw paren_do_
 branch_destination_0x681C:
-  dw over_
-  dw over_
-  dw plus_
-  dw one_
-  dw minus_
+  dw two_dup_,plus_
+  dw one_minus_
   dw c_fetch_
   dw b_l_
   dw minus_
@@ -2697,8 +2815,7 @@ branch_destination_0x681C:
   dw leave_
   dw branch_,branch_destination_0x683A
 branch_destination_0x6836:
-  dw one_
-  dw minus_
+  dw one_minus_
 branch_destination_0x683A:
   dw paren_loop_,branch_destination_0x681C
   dw semicolon_s_
@@ -2753,60 +2870,68 @@ expect_lfa:
 expect_:
   dw do_colon
 expect_pfa:
+  ;dw lit_,0,border_ ; XXX INFORMER
   dw over_
   dw plus_
   dw over_
   dw paren_do_
-branch_destination_0x689D:
-  dw key_
-  dw dup_
+expect.do:
+  dw key_,dup_
   dw c_lit_
-  db 0x0C ; backspace_char
+  db delete_char
   dw equals_
-  dw zero_branch_,branch_destination_0x68D7
+  dw zero_branch_,expect.not_the_delete_key ; if
+
+  ; XXX FIXME This word has a bug in
+  ; Abersoft Forth.  After using the delete
+  ; key, the typed word is not recognized.
+  ; Maybe the `noop` the author used to
+  ; patch the original bell?
+
+  ; Delete key
+  ;dw lit_,1,border_ ; XXX INFORMER
   dw drop_
   dw dup_
-  dw i_
-  dw equals_
+  dw i_,equals_
   dw dup_
-  dw from_r_
-  dw two_
-  dw minus_
-  dw plus_
-  dw to_r_
-  dw zero_branch_,branch_destination_0x68CF
+  dw from_r_,two_minus_,plus_,to_r_
+  dw zero_branch_,expect.backspace ; if
+  ; XXX OLD -- bell was here
   dw noop_
   dw noop_
-  dw branch_,branch_destination_0x68FF
-branch_destination_0x68CF:
+  dw branch_,expect.loop ; else
+
+expect.backspace:
   dw c_lit_
-  db 0x08
-  dw branch_,branch_destination_0x68FD
-branch_destination_0x68D7:
+  db backspace_char
+  dw branch_,expect.emit
+
+expect.not_the_delete_key:
   dw dup_
   dw c_lit_
-  db 0x0D
-  dw equals_
-  dw zero_branch_,branch_destination_0x68EF
+  db carriage_return_char
+  dw equals_ ; carriage return?
+  dw zero_branch_,expect.not_the_enter_key
+  ; carriage return
+  ;dw lit_,2,border_ ; XXX INFORMER
   dw leave_
-  dw drop_
-  dw b_l_
-  dw zero_
-  dw branch_,branch_destination_0x68F1
-branch_destination_0x68EF:
+  dw drop_,b_l_,zero_
+  dw branch_,expect.store
+
+expect.not_the_enter_key:
   dw dup_
-branch_destination_0x68F1:
-  dw i_
-  dw c_store_
-  dw zero_
-  dw i_
-  dw one_plus_
-  dw store_
-branch_destination_0x68FD:
+
+expect.store:
+  dw i_,c_store_
+  dw i_,one_plus_,off_
+
+expect.emit:
   dw emit_
-branch_destination_0x68FF:
-  dw paren_loop_,branch_destination_0x689D
+
+expect.loop:
+  dw paren_loop_,expect.do
   dw drop_
+  ;dw lit_,7,border_ ; XXX INFORMER
   dw semicolon_s_
 
 query_nfa:
@@ -2820,9 +2945,7 @@ query_pfa:
   dw c_lit_
   db bytes_per_terminal_input_buffer
   dw expect_
-  dw zero_
-  dw in_
-  dw store_
+  dw in_,off_
   dw semicolon_s_
 
 onezeroword_nfa:
@@ -2837,13 +2960,10 @@ onezeroword_pfa:
   dw one_
   dw blk_
   dw plus_store_
-  dw zero_
-  dw in_
-  dw store_
+  dw in_,off_
   dw blk_,fetch_
   dw b_slash_scr_
-  dw one_
-  dw minus_
+  dw one_minus_
   dw and_
   dw zero_equals_
   dw zero_branch_,branch_destination_0x6955
@@ -2889,8 +3009,7 @@ erase_lfa:
 erase_:
   dw do_colon
 erase_pfa:
-  dw zero_
-  dw fill_
+  dw zero_,fill_
   dw semicolon_s_
 
 blanks_nfa:
@@ -3170,8 +3289,7 @@ id_dot_pfa:
   dw and_
   dw two_dup_
   dw plus_
-  dw one_
-  dw minus_
+  dw one_minus_
   dw dup_
   dw fetch_
   dw lit_,0xFF7F
@@ -3434,7 +3552,7 @@ quit_lfa:
 quit_:
   dw do_colon
 quit_pfa:
-  dw zero_,blk_,store_
+  dw blk_,off_
   dw left_bracket_
 quit.do:
   dw rp_store_
@@ -3472,6 +3590,7 @@ abort_pfa:
   dw forth_,definitions_
 boot:
   dw noop_ ; patched by `turnkey`
+  ;dw one_,two_,equals_,dot_,dot_,cr_ ; XXX INFORMER
   dw quit_
 
 boot_nfa:
@@ -3750,15 +3869,10 @@ m_slash_mod_lfa:
 m_slash_mod_:
   dw do_colon
 m_slash_mod_pfa:
-  dw to_r_
-  dw zero_
-  dw r_fetch_
+  dw to_r_,zero_,r_fetch_
   dw u_slash_mod_
-  dw from_r_
-  dw swap_
-  dw to_r_
-  dw u_slash_mod_
-  dw from_r_
+  dw from_r_,swap_
+  dw to_r_,u_slash_mod_,from_r_
   dw semicolon_s_
 
 paren_line_nfa:
@@ -3978,8 +4092,7 @@ branch_destination_0x71CB:
   dw r_fetch_
   dw one_
   dw read_write_
-  dw two_
-  dw minus_
+  dw two_minus_
 branch_destination_0x71E5:
   dw dup_
   dw fetch_
@@ -4101,22 +4214,32 @@ flush.do:
   dw paren_loop_,flush.do ; loop
   dw semicolon_s_
 
-load_nfa:
-  db 0x04+0x80,'LOA','D'+0x80
-load_lfa:
+continued_nfa:
+  db 0x09+0x80,'CONTINUE','D'+0x80
+continued_lfa:
   dw flush_nfa
-load_:
+continued_:
   dw do_colon
-load_pfa:
+continued_pfa:
   dw dup_,zero_,equals_
   dw c_lit_
   db 0x09
   dw question_error_
-  dw blk_,fetch_,to_r_
-  dw in_,fetch_,to_r_
-  dw zero_,in_,store_
+  dw in_,off_
   dw b_slash_scr_,star_,blk_,store_
   dw interpret_
+  dw semicolon_s_
+
+load_nfa:
+  db 0x04+0x80,'LOA','D'+0x80
+load_lfa:
+  dw continued_nfa
+load_:
+  dw do_colon
+load_pfa:
+  dw blk_,fetch_,to_r_
+  dw in_,fetch_,to_r_
+  dw continued_
   dw from_r_,in_,store_
   dw from_r_,blk_,store_
   dw semicolon_s_
@@ -4129,7 +4252,7 @@ next_screen_:
   dw do_colon
 next_screen_pfa:
   dw question_loading_
-  dw zero_,in_,store_
+  dw in_,off_
   dw b_slash_scr_
   dw blk_,fetch_
   dw over_
@@ -4270,7 +4393,7 @@ repeat_pfa:
   dw again_
   dw from_r_
   dw from_r_
-  dw two_,minus_
+  dw two_minus_
   dw then_
   dw semicolon_s_
 
@@ -4337,9 +4460,7 @@ spaces_lfa:
 spaces_:
   dw do_colon
 spaces_pfa:
-  dw zero_
-  dw max_
-  dw question_dup_
+  dw zero_,max_,question_dup_
   dw zero_branch_,branch_destination_0x7418
   dw zero_
   dw paren_do_
@@ -4425,7 +4546,7 @@ hash_s_:
   dw do_colon
 hash_s_pfa:
 hash_s.begin:
-  dw hash_,over_,over_,or_,zero_equals_
+  dw hash_,two_dup_,or_,zero_equals_
   dw zero_branch_,hash_s.begin ; until
   dw semicolon_s_
 
@@ -4522,8 +4643,7 @@ words.begin:
   dw minus_
   dw greater_than_
   dw zero_branch_,words.continue
-  dw cr_
-  dw zero_,out_,store_
+  dw cr_,out_,off_
 words.continue:
   dw dup_,id_dot_
   dw nfa_to_pfa_,pfa_to_lfa_,fetch_
@@ -4733,14 +4853,8 @@ index_pfa:
   dw swap_
   dw paren_do_
 branch_destination_0x774B:
-  dw cr_
-  dw i_
-  dw three_
-  dw dot_r_
-  dw space_
-  dw zero_
-  dw i_
-  dw dot_line_
+  dw cr_,i_,three_,dot_r_,space_
+  dw zero_,i_,dot_line_
   dw question_terminal_
   dw zero_branch_,branch_destination_0x7763
   dw leave_
@@ -4847,8 +4961,8 @@ p_store_pfa:
   out (c),a
   pop bc
   _jp_next
-
-  ; XXX TODO -- move to the blocks disk
+ 
+  ; XXX TODO -- move to the blocks disk and optimize
 screen_nfa:
   db 0x06+0x80,'SCREE','N'+0x80
 screen_lfa:
@@ -4897,11 +5011,11 @@ at_pfa:
   dw not_equals_ ; not the last line?
   dw zero_branch_,at_pfa.last_line
   ; not the last line
-  dw lit_,22,to_chan_,to_chan_,to_chan_
+  dw lit_,22,paren_emit_,paren_emit_,paren_emit_
   dw semicolon_s_
 
 at_pfa.last_line:
-  dw one_minus_,dup_,to_chan_,to_chan_,zero_,to_chan_
+  dw one_minus_,dup_,paren_emit_,paren_emit_,zero_,paren_emit_
   dw cr_
   dw dup_
   dw lit_,sys_df_cc ; address in display file of print position
@@ -5160,10 +5274,7 @@ u_dot_r_lfa:
 u_dot_r_:
   dw do_colon
 u_dot_r_pfa:
-  dw to_r_
-  dw zero_
-  dw from_r_
-  dw d_dot_r_
+  dw to_r_,zero_,from_r_,d_dot_r_
   dw semicolon_s_
 
 two_over_nfa:
@@ -5189,16 +5300,9 @@ exit_nfa:
 exit_lfa:
   dw two_over_nfa
 exit_:
-
-  ; XXX FIXME
-  ;dw r_drop_pfa ; this fails, why?
-
-  ; XXX FIXME
-  ; this fails too, why?, it's the original code.
-  ; it has something to do with the stack problems.
-  dw exit_pfa
+  dw do_colon
 exit_pfa:
-  dw from_r_,drop_
+  dw r_drop_
   dw semicolon_s_
 
 question_exit_nfa:
@@ -5208,6 +5312,7 @@ question_exit_lfa:
 question_exit_:
   dw question_exit_pfa
 question_exit_pfa:
+  ; XXX FIXME
   pop hl
   ld a,h
   or l

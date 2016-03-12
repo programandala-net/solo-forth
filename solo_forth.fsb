@@ -114,7 +114,7 @@
 \ Error #26: Unsupported disk operation.
 \ Error #27: Source file needed.
   \ XXX Copied from lina's error #24:
-\ Error #28: Warning: Not present, thoguh required.
+\ Error #28: Warning: Not present, though required.
 \ Error #29:
 \ Error #30:
 \ Error #31:
@@ -122,7 +122,7 @@
 ( debug ) \ scr 6
 
 : zx  ( -- )
-  cls
+  page
   begin   1
           cr depth . sp@ u.
           key drop
@@ -189,7 +189,8 @@ create plot  ( x y -- )
   cd c, 22e5 ,    \ call 0x22e5 ; plot-sub
   dd c, e1 c,     \ pop ix
   d9 c,           \ exx
-  c3 c, next ,    \ jp next ; XXX TODO jp (ix)
+  \ c3 c, next ,  \ jp next ; XXX OLD
+  dd c, e9 c,     \ jp (ix)
 
   smudge decimal
 
@@ -283,7 +284,8 @@ create bleep
   cd c, 03b5          \ call rom_beeper
   dd c, e1 c,         \ pop ix
   c1 c,               \ pop bc
-  c3 c, next ,        \ jp next ; XXX TODO jp (ix)
+  \ c3 c, next ,        \ jp next ; XXX OLD
+  dd c, e9 c,         \ jp (ix)
   smudge decimal
 
 ( [if] [else] [then] )

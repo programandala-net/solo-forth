@@ -148,6 +148,7 @@ top_most_word_in_forth_voc:
 backspace_char:
   defw 0x000C
 init_user_pointer_value:
+  ; XXX NOTE: the fig-Forth model uses this in `COLD`, but Abersoft Forth doesn't.
   defw user_pointer_value
 
   ; ----------------------------------------------------------------
@@ -2064,6 +2065,7 @@ minus_trailing_pfa:
   defw zero_cfa
   defw paren_do_cfa
 branch_destination_0x681C:
+  ; XXX FIXME -- Optimize: `2DUP` instead of `OVER OVER`:
   defw over_cfa
   defw over_cfa
   defw plus_cfa
@@ -3939,6 +3941,7 @@ hash_s_cfa:
 branch_destination_0x748A:
 hash_s_pfa:
   defw hash_cfa
+  ; XXX FIXME -- Optimize: `2DUP` instead of `OVER OVER`:
   defw over_cfa
   defw over_cfa
   defw or_cfa

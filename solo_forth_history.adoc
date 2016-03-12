@@ -143,3 +143,14 @@ Change: `user_variables_pointer_init_value` is removed. The fig-Forth
 model uses it in `cold`, but it's not needed because the memory map is
 not calculated during the cold start.  In fact it is not used by
 Abersoft Forth.
+
+Fix: The new version of `at`, taken from Spectrum Forth-83, had a
+copying mistake, a missing `dup`.
+
+New: `continued`, as a factor of `load`.
+
+Change: optimizations in the definitions, thanks to the new words:
+`1-` instead of `1 minus`, `2-` instead of `2 -`.
+Also `2dup` instead of `over over`, an oversight of Abersoft Forth.
+
+Improvement: Some operators are (re)written, using Z80 code from DZX-Forth.
