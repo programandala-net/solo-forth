@@ -123,3 +123,9 @@ Fix: `plot` and `point`.
 .2015-06-28:
 
 Fix: `vocabulary` needs changes after the new header format.
+
+Fix: Something went wrong afte the massive of the `_number` macro:
+`.` does not print well;
+`require` gives error 0!... 
+
+The problem is `_number -1`! Why?

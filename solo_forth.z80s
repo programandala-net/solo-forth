@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506281259
+; Version A-00-201506281703
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -23,8 +23,8 @@
 ; - fix: `words`  (for name fields in bank)
 ; - change: `_number` macro used for all `lit_` and `c_lit_`,
 ;   beside a needed exception.
-; - removed all old code for the `fig_find?` flag. problems with
-; `require`!
+; - change: `_number` macro is not used, because of a Pasmo's
+; bug; everything seems to work again.
 
 ; ==============================================================
 ; Acknowledgments
@@ -205,12 +205,8 @@ max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
 
-; XXX TODO
-;if fig_find?
-  dummy_name_field: equ 0xA081 ; original
-;else
-;  dummy_name_field: equ 0xA000 ; XXX TODO needed for the name fields in bank?
-;endif
+dummy_name_field: equ 0xA081 ; original
+;dummy_name_field: equ 0xA000 ; XXX TODO needed for the name fields in bank?
 
 ; Memory banks
 
@@ -490,7 +486,7 @@ _number: macro _n
         if _n=3
           dw three_
         else
-          if _n>=0 & _n<=255
+          if _n>=0 && _n<=255
             dw c_lit_
             db _n
           else
@@ -1054,18 +1050,12 @@ bank.e:
 ;
 ; }doc
 
-  dw dup_
-  _number csb_unused
-  dw fetch_,greater_than_
+  dw dup_,lit_,csb_unused,fetch_,greater_than_
   dw zero_branch_,question_csb_.enough
   ; not enough space; reset the pointer
-  _number csb_size
-  _number csb_unused
-  dw store_
+  dw lit_,csb_size,lit_,csb_unused,store_
 question_csb_.enough:
-  dw negate_
-  _number csb_unused
-  dw plus_store_
+  dw negate_,lit_,csb_unused,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1117,8 +1107,13 @@ question_csb_.enough:
 ;
 ; }doc
 
-  _number csb
-  _number csb_total_size
+  dw lit_,csb
+  if csb_total_size<256
+    dw c_lit_
+    db csb_total_size
+  else
+    dw lit_,csb_total_size
+  endif
   dw erase_
   dw semicolon_s_
 
@@ -1171,9 +1166,7 @@ question_csb_.enough:
 ; }doc
 
   dw question_comp_
-  dw here_
-  _number 0
-  dw comma_
+  dw here_,zero_,comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1443,6 +1436,79 @@ digit.test_value:
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
 
+; if 0 ; fig_find? ; XXX OLD
+
+; ; doc{
+; ;
+; ; (find)  ( ca nfa --- pfa b tf | ff )
+; ;
+; ; }doc
+
+;   ; XXX Note: this version uses the new format name field, but
+;   ; works the same way the fig-Forth `find`.
+
+;   ld (ip_backup),bc ; save Forth IP
+;   pop de ; nfa
+;   pop hl ; string address
+;   ld (paren_find.string_address),hl
+; paren_find.begin:
+;   ; Compare the string with a new word.
+;   ; de = nfa
+;   ld (paren_find.nfa_backup),de ; save for later
+; paren_find.string_address: equ $+1
+;   ld hl,0 ; string address
+;   ld a,(de) ; name field length byte
+;   ld c,a    ; save for later
+;   and max_word_length_bit_mask  ; actual length
+;   cp (hl)
+;   jr nz,paren_find.not_a_match ; lengths differ
+;   ; Lengths match.
+;   ld a,c ; name field length byte
+;   and max_word_length_bit_mask  ; actual length
+;   ld b,a
+; paren_find.compare_next_char:
+;   inc hl ; next character in string
+;   inc de ; next character in name field
+;   ld a,(de)
+;   cp (hl)
+;   jr nz,paren_find.not_a_match ; no match
+;   djnz paren_find.compare_next_char ; match so far, loop again
+
+;   ; The string matches.
+;   ; de = address of the last char of the name field
+;   ; c = name field length byte
+;   ld hl,5 ; offset from lfa-1 to pfa
+;   add hl,de
+;   push hl ; pfa
+;   ld e,c ; length byte
+;   ld d,0
+;   ld hl,true
+;   ld bc,(ip_backup) ; restore Forth IP
+;   jp push_de_hl
+
+; paren_find.not_a_match:
+;   ; Not a match, try next one.
+; paren_find.nfa_backup: equ $+1
+;   ld hl,0 ; nfa
+;   ld a,c ; length byte
+;   and max_word_length_bit_mask  ; actual length
+;   ld c,a ; actual length
+;   inc c ; plus the length byte
+;   ld b,0
+;   add hl,bc ; hl = lfa
+;   ld e,(hl)
+;   inc hl
+;   ld d,(hl)
+;   ld a,d
+;   or e ; end of dictionary?
+;   jp nz,paren_find.begin ; if not, continue
+
+;   ; No match found, return.
+;   ld bc,(ip_backup) ; restore Forth IP
+;   jp false_pfa
+
+; else
+
 if 1 ; names_in_memory_bank?
 
   ; XXX FIXME -- does not find words?
@@ -1624,6 +1690,8 @@ paren_find.nfa_backup: equ $+1
   jp push_de_hl
 
 endif
+
+; endif
 
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
@@ -1963,8 +2031,7 @@ endif
   _colon_header emit_,'EMIT'
 
   dw paren_emit_
-  _number 1
-  dw out_,plus_store_
+  dw one_,out_,plus_store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -1989,14 +2056,14 @@ endif
 ; ----------------------------------------------
   _colon_header printer_,'PRINTER'
 
-  _number 3
+  dw three_
   dw chan_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header display_,'DISPLAY'
 
-  _number 2
+  dw two_
   dw chan_
   dw semicolon_s_
 
@@ -2134,7 +2201,8 @@ key.limit:
 ; ----------------------------------------------
   _colon_header cr_,'CR'
 
-  _number carriage_return_char
+  dw c_lit_
+  db carriage_return_char
   dw emit_
   dw out_,off_
   dw semicolon_s_
@@ -2930,8 +2998,7 @@ do_colon:
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
-  _number do_colon
-  dw comma_ ; create the code field
+  dw lit_,do_colon,comma_ ; create the code field
   dw right_bracket_
   dw semicolon_s_
 
@@ -3081,8 +3148,7 @@ do_user:
 ; ----------------------------------------------
   _colon_header plus_origin_,'+ORIGIN'
 
-  _number origin
-  dw plus_
+  dw lit_,origin,plus_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3462,7 +3528,8 @@ if 1 ; names_in_memory_bank?
 
 else
 
-  _number 0x04
+  dw c_lit_
+  db 0x04
   dw minus_
   dw semicolon_s_
 
@@ -3579,7 +3646,8 @@ else
   _colon_header nfa_to_lfa_,'NFA>LFA'
 
   dw dup_,c_fetch_
-  _number max_word_length_bit_mask
+  dw c_lit_
+  db max_word_length_bit_mask
   dw and_,plus_,one_plus_
   dw semicolon_s_
 
@@ -3615,7 +3683,8 @@ endif
 
 if 1 ; names_in_memory_bank?
 
-  _number 4
+  dw c_lit_
+  db 4
   dw minus_,n_fetch_
   dw semicolon_s_
 
@@ -3653,7 +3722,8 @@ if 1 ; names_in_memory_bank?
 
   _names_bank
   dw count_
-  _number max_word_length_bit_mask
+  dw c_lit_
+  db max_word_length_bit_mask
   dw and_
   dw save_string_
   _default_bank
@@ -3750,28 +3820,45 @@ question_error.no_error:
 ; ----------------------------------------------
   _colon_header right_bracket_,']'
 
+; if fig_find?
+
+;   ; Note: Setting `state` to 0xC0 for "compiling state" will force
+;   ; non-immediate words to be compiled and immediate words to be executed. See
+;   ; note in `interpret` for more details.
+
+;   dw c_lit_
+;   db 0xC0
+;   dw state_,store_
+
+; else
+
   dw state_,on_
+
+;endif
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header smudge_,'SMUDGE'
 
   dw latest_
-  _number smudge_bit_mask
+  dw c_lit_
+  db smudge_bit_mask
   dw toggle_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header hex_,'HEX'
 
-  _number 0x10
+  dw c_lit_
+  db 0x10
   dw base_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header decimal_,'DECIMAL'
 
-  _number 0x0A
+  dw c_lit_
+  db 0x0A
   dw base_,store_
   dw semicolon_s_
 
@@ -3795,8 +3882,7 @@ question_error.no_error:
   ; XXX OLD
   ; XXX TODO remove this, and check `does>`
   ; XXX TODO adapt `vocabulary`
-  _number 0
-  dw constant_
+  dw zero_,constant_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3912,7 +3998,8 @@ minus_trailing.begin:
 
 if 0 ; XXX OLD
 
-  _number '"'
+  dw c_lit_
+  db '"'
   dw comp_question_ ; compiling?
   dw zero_branch_,dot_quote.interpreting
   ; Compiling.
@@ -3926,7 +4013,8 @@ dot_quote.interpreting:
 
 else
 
-  _number '"'
+  dw c_lit_
+  db '"'
   dw parse_ ; ( ca len )
   dw comp_question_
   dw zero_branch_,dot_quote.interpreting
@@ -3946,7 +4034,8 @@ endif
   dw paren_do_
 expect.do: ; ( a )
   dw key_,dup_ ; ( a c c )
-  _number delete_char
+  dw c_lit_
+  db delete_char
   dw equals_ ; delete key?
   dw zero_branch_,expect.not_the_delete_key
 
@@ -3963,19 +4052,20 @@ expect.do: ; ( a )
   dw dup_ ; ( a f f ) ; XXX why this?
   dw from_r_,two_minus_,plus_,to_r_
   dw question_branch_,expect.loop ; nothing to delete
-  _number backspace_char
+  dw c_lit_
+  db backspace_char
   dw branch_,expect.emit
 
 expect.not_the_delete_key: ; ( a c )
   dw dup_
-  _number carriage_return_char
+  dw c_lit_
+  db carriage_return_char
   dw equals_ ; carriage return?
   dw zero_branch_,expect.ordinary_key
 
   ; Carriage return ( a c )
   dw leave_
-  dw drop_,b_l_
-  _number 0
+  dw drop_,b_l_,zero_
   dw branch_,expect.store
 
 expect.ordinary_key: ; ( a c )
@@ -3997,7 +4087,8 @@ expect.loop: ; ( a )
   _colon_header query_,'QUERY'
 
   dw tib_,fetch_
-  _number bytes_per_terminal_input_buffer
+  dw c_lit_
+  db bytes_per_terminal_input_buffer
   dw expect_
   dw to_in_,off_
   dw semicolon_s_
@@ -4020,8 +4111,7 @@ expect.loop: ; ( a )
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.exit ; if not, branch
   ; From disk.
-  _number 1
-  dw blk_,plus_store_ ; next disk buffer
+  dw one_,blk_,plus_store_ ; next disk buffer
   dw to_in_,off_ ; clear `in`, preparing parsing of input text
   ; Note: This check of the last block is specific for 2
   ; blocks per screen; the generic slower check would be `blk @
@@ -4081,8 +4171,7 @@ fill.end:
 ; ----------------------------------------------
   _colon_header hold_,'HOLD'
 
-  _number -1
-  dw hld_,plus_store_ ; decrement `hld`
+  dw lit_,-1,hld_,plus_store_ ; decrement `hld`
   dw hld_,fetch_,c_store_ ; store character into `pad`
   dw semicolon_s_
 
@@ -4090,7 +4179,8 @@ fill.end:
   _colon_header pad_,'PAD'
 
   dw here_
-  _number 0x44
+  dw c_lit_
+  db 0x44
   dw plus_
   dw semicolon_s_
 
@@ -4185,7 +4275,8 @@ if 1 ; XXX OLD -- original version with `enclose`
 
   ; XXX TODO use a factor of `s,` instead, without `allot`:
   dw here_
-  _number max_word_length+3
+  dw c_lit_
+  db max_word_length+3
   dw blank_
   dw to_in_,plus_store_
   dw over_,minus_,to_r_ ; length
@@ -4209,7 +4300,8 @@ else ; XXX NEW -- modern version with `skip parse`
   dw dup_,to_in_,plus_store_
 
   dw here_
-  _number max_word_length+3
+  dw c_lit_
+  db max_word_length+3
   dw blank_
 
   dw dup_,here_,c_store_ ; count byte
@@ -4250,7 +4342,8 @@ endif
   ;dw two_dup_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
 
   dw here_
-  _number max_word_length+3
+  dw c_lit_
+  db max_word_length+3
   dw blank_
 
   dw dup_,here_,c_store_ ; count byte
@@ -4278,8 +4371,7 @@ paren_number.begin: ; begin
   dw dpl_,fetch_,one_plus_ ; is DPL other than -1?
   dw zero_branch_,paren_number.decimal_point_done
   ; DPL is not -1, a decimal point was encountered
-  _number 1
-  dw dpl_,plus_store_ ; increment DPL, one more digit to right of decimal point
+  dw one_,dpl_,plus_store_ ; increment DPL, one more digit to right of decimal point
 paren_number.decimal_point_done:
   dw from_r_ ; pop addr1+1 back to convert the next digit
   dw branch_,paren_number.begin ; repeat
@@ -4290,12 +4382,11 @@ paren_number.end:
 ; ----------------------------------------------
   _colon_header number_,'NUMBER'
 
-  _number 0
-  _number 0
-  dw rot_ ; two zeros, initial value of the double number
+  dw zero_,zero_,rot_ ; two zeros, initial value of the double number
   ;dw dup_,count_,swap_,dot_,dot_ ; XXX INFORMER
   dw dup_,one_plus_,c_fetch_ ; get the first digit
-  _number '-'
+  dw c_lit_
+  db '-'
   dw equals_ ; is it a minus sign?
   dw dup_,to_r_ ; save the flag
   ; XXX TODO add `abs` here when `true` is changed to `-1`
@@ -4305,7 +4396,7 @@ paren_number.end:
   ; If the first digit is not "-", the flag is
   ; 0.  addr+0 remains the same, pointing to
   ; the first digit.
-  _number -1 ; initial value of `dpl`
+  dw lit_,-1 ; initial value of `dpl`
 number.begin:
   dw dpl_,store_
   dw paren_number_ ; convert one digit after another until an invalid char occurs
@@ -4314,11 +4405,12 @@ number.begin:
   dw zero_branch_,number.not_a_blank
   ; The invalid digit is not a blank.
   dw dup_,c_fetch_ ; get the invalid digit again
-  _number '.'
+  dw c_lit_
+  db '.'
   dw not_equals_ ; not a decimal point?
   _question_error not_understood_error ; error if not
   ; Decimal point found, set `dpl` to zero next time.
-  _number 0
+  dw zero_
   dw branch_,number.begin ; repeat
 number.not_a_blank:
   dw drop_ ; discard address
@@ -4376,28 +4468,70 @@ uppers.do:
   jp uppers.do
 
 ; ----------------------------------------------
+; if fig_find?
+
+;   _colon_header context_find_,'CONTEXT-FIND'
+
+; ; doc{
+; ;
+; ; context-find  ( "name" -- pfa b tf | ff )
+; ;
+; ; Accept the next text word (delimited by blanks) in the input stream to
+; ; `here`, and search the `context` vocabulary for a matching entry.  If found,
+; ; leave the dictionary entry's parameter field address, its length byte, and a
+; ; boolean true.  Otherwise, leave only a boolean false.
+; ;
+; ; }doc
+
+;   ; XXX TODO -- return cfa instead of pfa
+;   dw b_l_,word_
+;   dw here_,count_,uppers_
+;   dw here_,context_,fetch_,fetch_
+;   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
+;   dw paren_find_
+;   ;dw to_r_,to_r_,dup_,dot_,from_r_,dup_,dot_,from_r_,dup_,dot_ ; XXX INFORMER
+;   ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
+;   dw semicolon_s_
+; endif
+
+; ----------------------------------------------
   _colon_header defined_question_,'DEFINED?'
 
-; doc{
-;
 ; defined?  ( ca len -- wf )
-;
-; }doc
+
+if fig_find?
+
+  ; XXX TODO -- not finished
+  dw context_find_,dup_
+  dw zero_branch_,defined_question.end
+  dw two_drop_
+defined_question.end:
+  dw semicolon_s_
+
+else
 
   dw found_,nip_,zero_not_equals_
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
   _colon_header undefined_question_,'UNDEFINED?'
 
-; doc{
-;
 ; undefined?  ( ca len -- wf )
-;
-; }doc
+
+if fig_find?
+
+  ; XXX TODO -- not finished
+  dw defined_question_,zero_equals_
+  dw semicolon_s_
+
+else
 
   dw defined_question_,zero_equals_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header dollar_store_,'$!'
@@ -4430,6 +4564,36 @@ uppers.do:
   _jp_next
 
 ; ----------------------------------------------
+
+if fig_find? ; XXX OLD
+
+  _colon_header find_,'FIND'
+
+; doc{
+;
+; find  ( "name" --- pfa b tf | ff )
+;
+; Accept the next text word (delimited by blanks) in the input
+; stream to `here`, and search the `context` and then `current`
+; vocabularies for a matching entry.  If found, leave the
+; dictionary entry's parameter field address, its length byte,
+; and a boolean true.  Otherwise, leave only a boolean false.
+;
+; }doc
+
+  ; XXX TODO -- return cfa instead of pfa
+  dw context_find_,question_dup_
+  ; XXX TODO -- optimize with `?exit' here instead of a branch
+  dw question_branch_,find.end
+  ; The word was not found in the context vocabulary,
+  ; try again in the current vocabulary.
+  ; XXX TODO -- remove this?
+  dw here_,latest_,paren_find_
+find.end:
+  dw semicolon_s_
+
+
+else ; XXX NEW -- modern `find`
 
   _colon_header find_,'FIND'
 
@@ -4485,12 +4649,15 @@ uppers.do:
   ; XXX TODO factor
 
   dw find_dollar_
-  _number max_word_length+2
+  dw c_lit_
+  db max_word_length+2
   dw erase_ ; make sure there will be a null at the end
   dw find_dollar_,dollar_store_
   dw find_dollar_,count_,uppers_
   dw find_dollar_,find_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header paren_abort_,'(ABORT)'
@@ -4546,11 +4713,22 @@ error.end:
   ; XXX TMP -- this is a copy of the original `create`.
   ; XXX TODO -- accept an xt as parameter?
 
-  dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
-  dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
-  dw zero_branch_,header.continue
-  ; The word is not unique.
-  dw cfa_to_nfa_
+  if fig_find? ; XXX OLD
+
+    dw find_ ; ( pfa b tf | ff )
+    dw zero_branch_,header.continue
+    ; The word is not unique.
+    dw drop_,pfa_to_nfa_
+
+  else ; XXX NEW
+
+    dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
+    dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
+    dw zero_branch_,header.continue
+    ; The word is not unique.
+    dw cfa_to_nfa_
+
+  endif
 
   dw id_dot_
   _message not_unique_error
@@ -4583,7 +4761,8 @@ else
   ; XXX TODO error if name is too long (see lina)
   dw dup_,c_fetch_,width_,fetch_,min_,one_plus_,allot_ ; allocate space for name field
   dw dup_
-  _number name_bound_bit_mask+smudge_bit_mask
+  dw c_lit_
+  db name_bound_bit_mask+smudge_bit_mask
   dw toggle_
   dw latest_,comma_ ; compile the nfa of the last word in the link field
   dw current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
@@ -4797,7 +4976,13 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
+if fig_find?
+  dw find_,zero_equals_
+  _question_error not_found_error
+  dw drop_,pfa_to_cfa_,comma_
+else
   dw tick_,comma_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4860,9 +5045,7 @@ two_literal.end:
 ; ----------------------------------------------
   _colon_header depth_,'DEPTH'
 
-  dw sp_fetch_,sp0_,fetch_,minus_
-  _number -2
-  dw slash_
+  dw sp_fetch_,sp0_,fetch_,minus_,lit_,-2,slash_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4873,7 +5056,7 @@ two_literal.end:
   dw swap_,less_than_
   _question_error stack_empty_error
   dw sp_fetch_
-  _number data_stack_limit
+  dw lit_,data_stack_limit
   dw less_than_
   _question_error full_stack_error
   dw semicolon_s_
@@ -4885,6 +5068,70 @@ two_literal.end:
 ; XXX TODO -- In order to change the behaviour of `literal`, `2literal`
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
+
+if fig_find?
+
+; doc{
+;
+; interpret  ( -- )  \ fig-Forth
+;
+; The outer text interpreter which sequentially executes or
+; compiles text from the input stream (terminal or disk)
+; depending on `state`. if the word name cannot be found after a
+; search of `context` and then `current` it is converted to a
+; number according to the current `base`.  That also failing, an
+; error message echoing the name with a "?" will be given.
+;
+; }doc
+
+interpret.begin:
+  dw find_ ; found?
+  ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
+  dw zero_branch_,interpret.word_not_found ; if
+
+  ; Note:
+  ;
+  ; `state` holds 0xC0 when compiling.  The text interpreter
+  ; compares the value stored in `state` with the value in the
+  ; length byte of the definition found in the dictionary.  If
+  ; the definition is an immediate word, its length byte is
+  ; greater than 0xC0 because of the precedence and the sign
+  ; bits are both set.  Setting `state` to 0xC0 will force
+  ; non-immediate words to be compiled and immediate words to be
+  ; executed.
+
+  dw state_,fetch_,less_than_ ; compile the word?
+  dw zero_branch_,interpret.execute_the_word ; if
+  dw pfa_to_cfa_,comma_ ; compile the word
+  dw branch_,interpret.word_done
+interpret.execute_the_word: ; else
+  dw pfa_to_cfa_
+  dw execute_
+interpret.word_done: ; then
+  ;dw lit_,1,border_ ; XXX INFORMER
+  dw question_stack_
+  dw branch_,interpret.again
+interpret.word_not_found: ; else
+  ; word not found, try to convert the text to a number
+  dw here_,number_
+  dw dpl_,fetch_,one_plus_ ; is there a decimal point?
+  dw zero_branch_,interpret.16bit_number ; if
+  ; decimal point detected, so it's a double, 32-bit, number
+  dw two_literal_
+  dw branch_,interpret.number_done
+interpret.16bit_number: ; else
+  ; no decimal point, so it's a 16-bit number
+  dw drop_ ; discard high order part of the double number
+  ; XXX TODO use `c_literal` for 8-bit values.
+  dw literal_
+interpret.number_done: ; then
+  ;dw lit_,2,border_ ; XXX INFORMER
+  dw question_stack_
+
+interpret.again:
+  dw branch_,interpret.begin
+
+else ; XXX NEW -- version with modern `find`
 
 interpret.begin:
 
@@ -4959,11 +5206,14 @@ interpret.16bit_number:
   dw literal_
   dw branch_,interpret.begin
 
+endif
+
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
 
   dw latest_
-  _number precedence_bit_mask
+  dw c_lit_
+  db precedence_bit_mask
   dw toggle_
   dw semicolon_s_
 
@@ -4971,8 +5221,7 @@ interpret.16bit_number:
   _colon_header vocabulary_,'VOCABULARY'
 
   dw builds_ ; XXX TODO convert; see DZX-Forth
-  _number dummy_name_field
-  dw comma_
+  dw lit_,dummy_name_field,comma_
   dw current_,fetch_
   dw pfa_to_cfa_ ; XXX FIXME this must be changed?
   dw comma_
@@ -5027,7 +5276,8 @@ endif
 ; ----------------------------------------------
   _colon_header paren_,'(',immediate
 
-  _number ')'
+  dw c_lit_
+  db ')'
   if 0 ; XXX OLD
     dw word_
   else
@@ -5094,15 +5344,13 @@ warm_start_phony_:
   dw empty_csb_
   ; XXX TODO -- restore `np`
   dw first_,dup_,use_,store_,prev_,store_
-  _number default_user_variables_start ; from
-  _number user_variables_pointer
-  dw fetch_ ; to
-  _number default_user_variables_end-default_user_variables_start ; length
+  dw lit_,default_user_variables_start ; from
+  dw lit_,user_variables_pointer,fetch_ ; to
+  dw c_lit_
+  db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
-  _number top_most_word_in_forth_voc
-  dw fetch_
-  _number forth_vocabulary_latest
-  dw store_
+  dw lit_,top_most_word_in_forth_voc,fetch_
+  dw lit_,forth_vocabulary_latest,store_
   dw abort_
 
 cold_start:
@@ -5278,9 +5526,7 @@ max.2:
 ; ----------------------------------------------
   _colon_header m_slash_mod_,'M/MOD'
 
-  dw to_r_
-  _number 0
-  dw r_fetch_
+  dw to_r_,zero_,r_fetch_
   dw u_slash_mod_
   dw from_r_,swap_
   dw to_r_,u_slash_mod_,from_r_
@@ -5344,8 +5590,7 @@ message.number_only:
 
 ; }doc
 
-  _number total_bytes_per_buffer
-  dw plus_ ; a2
+  dw lit_,total_bytes_per_buffer,plus_ ; a2
   dw dup_,limit_,equals_ ; out of bounds?
   dw zero_branch_,plus_buf.continue
   ; a2 is out of bounds
@@ -5360,8 +5605,7 @@ plus_buf.continue:
   ; XXX TODO move to the disk?
 
   dw prev_,fetch_,fetch_
-  _number 0x8000
-  dw or_
+  dw lit_,0x8000,or_
   dw prev_,fetch_,store_
   dw semicolon_s_
 
@@ -5372,9 +5616,8 @@ plus_buf.continue:
   dw limit_,first_
   dw paren_do_
 empty_buffers.do:
-  _number 0x7FFF
-  dw i_,store_
-  _number total_bytes_per_buffer
+  dw lit_,0x7FFF,i_,store_
+  dw lit_,total_bytes_per_buffer
   dw paren_plus_loop_,empty_buffers.do
   dw semicolon_s_
 
@@ -5405,10 +5648,8 @@ buffer.begin:
   ; The buffer was updated, it must be saved to disk.
   dw r_fetch_,two_plus_ ; first cell of data in the buffer
   dw r_fetch_,fetch_
-  _number 0x7FFF
-  dw and_ ; discard the update bit, leave the block number
-  _number 0
-  dw read_write_ ; write
+  dw lit_,0x7FFF,and_ ; discard the update bit, leave the block number
+  dw zero_,read_write_ ; write
 buffer.end:
   dw r_fetch_,store_
   dw r_fetch_,prev_,store_
@@ -5470,7 +5711,8 @@ block.end:
   _colon_header block_to_sector_,'BLOCK>SECTOR'
 
 ; doc{
-
+;
+; ----
 ; : block>sector  ( block -- sector )
 ;   \ sector (high byte) = track 0..79, +128 if side 1
 ;   \        (low byte)   = sector 1..10
@@ -5479,28 +5721,33 @@ block.end:
 ;   swap 10 / 1 and  \ side 0..1
 ;   128 * +          \ track 0..207
 ;   cswap or  ;
-
+; ----
+;
 ; }doc
 
   dw dup_
-  _number 10
+  dw c_lit_
+  db 10
   dw mod_,one_plus_,swap_,dup_
-  _number 20
+  dw c_lit_
+  db 20
   dw slash_,swap_
-  _number 10
+  dw c_lit_
+  db 10
   dw slash_,one_,and_
   ; XXX TODO optimize with `7 lshift`?
-  _number 128
+  dw c_lit_
+  db 128
   dw star_,plus_,c_swap_,or_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header read_write_,'R/W'
 
-  _number 0x45
+  dw c_lit_
+  db 0x45
   dw swap_,minus_
-  dw lit_,read_write_sector_command
-  dw c_store_
+  dw lit_,read_write_sector_command,c_store_
   dw block_to_sector_
   dw paren_read_write_
   dw semicolon_s_
@@ -5530,21 +5777,17 @@ read_write_sector_command:
 
   ; XXX TODO -- move to the disk?
 
-  dw hash_buff_,one_plus_
-  _number 0
+  dw hash_buff_,one_plus_,zero_
   dw paren_do_
 flush.do:
-  _number 0
-  dw buffer_,drop_
+  dw zero_,buffer_,drop_
   dw paren_loop_,flush.do ; loop
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header continued_,'CONTINUED'
 
-  dw dup_
-  _number 0
-  dw equals_
+  dw dup_,zero_,equals_
   _question_error loading_from_screen_0_error
   dw to_in_,off_
   dw b_slash_scr_,star_,blk_,store_
@@ -5571,6 +5814,9 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
+
+if not fig_find?
+
   _colon_header defined_,'DEFINED'
 
 ; doc{
@@ -5599,6 +5845,8 @@ flush.do:
 
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
   _colon_header question_defined_,'?DEFINED'
 
@@ -5611,7 +5859,14 @@ flush.do:
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
+if fig_find?
+  dw find_,dup_
+  dw zero_branch_,bracket_defined.end
+  dw nip_,nip_
+bracket_defined.end:
+else
   dw defined_,nip_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5623,7 +5878,15 @@ flush.do:
 ; ----------------------------------------------
   _colon_header tick_,"'"
 
+if fig_find?
+  dw find_
+  dw zero_equals_
+  _question_error not_found_error
+  ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
+  dw drop_,pfa_to_cfa_
+else
   dw defined_,question_defined_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5647,15 +5910,14 @@ flush.do:
 
   dw question_comp_ ; error if not compiling
   dw backward_mark_ ; address to compute the backward branch
-  _number 1 ; error checking number
+  dw one_ ; error checking number
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header then_,'THEN',immediate
 
   dw question_comp_ ; error if not compiling
-  _number 2 ; error checking number
-  dw question_pairs_ ; check for nesting error
+  dw two_,question_pairs_ ; check for nesting error
   dw forward_resolve_
   dw semicolon_s_
 
@@ -5664,7 +5926,7 @@ flush.do:
 
   dw compile_,paren_question_do_
   dw backward_mark_
-  _number 3
+  dw three_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5672,13 +5934,13 @@ flush.do:
 
   dw compile_,paren_do_
   dw backward_mark_
-  _number 3
+  dw three_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header loop_,'LOOP',immediate
 
-  _number 3
+  dw three_
   dw question_pairs_
   dw compile_,paren_loop_
   dw backward_resolve_
@@ -5687,7 +5949,7 @@ flush.do:
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate
 
-  _number 3
+  dw three_
   dw question_pairs_
   dw compile_,paren_plus_loop_
   dw backward_resolve_
@@ -5696,8 +5958,7 @@ flush.do:
 ; ----------------------------------------------
   _colon_header until_,'UNTIL',immediate
 
-  _number 1 ; error checkin number
-  dw question_pairs_
+  dw one_,question_pairs_
   dw compile_,zero_branch_
   dw backward_resolve_
   dw semicolon_s_
@@ -5714,8 +5975,7 @@ flush.do:
 ;
 ; }doc
 
-  _number 1 ; error checkin number
-  dw question_pairs_ ; check n for error
+  dw one_,question_pairs_ ; check n for error
   dw compile_,branch_
   dw backward_resolve_
   dw semicolon_s_
@@ -5745,7 +6005,7 @@ flush.do:
   dw compile_,zero_branch_
 if.do:
   dw forward_mark_
-  _number 2 ; error checking number
+  dw two_ ; error checking number
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5761,14 +6021,14 @@ if.do:
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate
 
-  _number 2 ; error checking number
+  dw two_ ; error checking number
   dw question_pairs_
   dw compile_,branch_
   dw forward_mark_
   dw swap_
-  _number 2 ; error checking number
+  dw two_ ; error checking number
   dw then_
-  _number 2 ; error checking number
+  dw two_ ; error checking number
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5790,11 +6050,9 @@ if.do:
   ; emits  ( u c -- )
 
   ; XXX TODO use `?do` or `for` when available
-  dw swap_
-  _number 0
-  dw max_,question_dup_
+  dw swap_,zero_,max_,question_dup_
   dw zero_branch_,emits_.end
-  _number 0
+  dw zero_
   dw paren_do_
 emits_.do:
   dw dup_,emit_
@@ -5840,7 +6098,8 @@ emits_.end:
 
   dw rot_,zero_less_than_
   dw zero_branch_,sign.end
-  _number '-'
+  dw c_lit_
+  db '-'
   dw hold_
 sign.end:
   dw semicolon_s_
@@ -5862,16 +6121,19 @@ sign.end:
   dw base_,fetch_
   dw m_slash_mod_ ;  ( remainder dquotient )
   dw rot_ ; ( dquotient remainder )
-  _number 0x09
+  dw c_lit_
+  db 0x09
   dw over_,less_than_ ; remainder<9?
   dw zero_branch_,hash.digit
   ; remainder<9
-  _number 0x07
+  dw c_lit_
+  db 0x07
   dw plus_ ; make it an alphabet
 hash.digit:
   ; Form the ASCII representation of a digit:
   ; "0" to "9" and "A" to "F" (or above).
-  _number '0'
+  dw c_lit_
+  db '0'
   dw plus_
   dw hold_ ; put the digit into `pad` in a reversed order.
   dw semicolon_s_
@@ -5926,8 +6188,7 @@ hash_s.begin:
 ;
 ; }doc
 
-  _number 0
-  dw d_dot_r_,space_
+  dw zero_,d_dot_r_,space_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5954,8 +6215,7 @@ hash_s.begin:
 ; ----------------------------------------------
   _colon_header u_dot_,'U.'
 
-  _number 0
-  dw d_dot_
+  dw zero_,d_dot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5968,9 +6228,11 @@ if 1
   ; It is already on the disk.
 
   dw depth_,dup_,s_to_d_,less_hash_
-  _number '>'
+  dw c_lit_
+  db '>'
   dw hold_,hash_s_
-  _number '<'
+  dw c_lit_
+  db '<'
   dw hold_,hash_greater_,type_,space_
   dw zero_branch_,dot_s.end
 
@@ -5978,7 +6240,7 @@ if 1
   dw paren_do_
 dot_s.do:
   dw i_,fetch_,u_dot_ ; XXX TMP `u.`
-  _number -2
+  dw lit_,-2
   dw paren_plus_loop_,dot_s.do
 dot_s.end:
   dw semicolon_s_
@@ -5989,13 +6251,16 @@ endif
   _colon_header words_,'WORDS'
 
   ; XXX TODO move to the disk
-  _number 0x80
+  dw c_lit_
+  db 0x80
   dw out_,store_
   dw context_,fetch_,fetch_
 words.begin:
   dw out_,fetch_
-  _number 0x1F ; max word length
-  _number 0x08
+  dw c_lit_
+  db 0x1F ; max word length
+  dw c_lit_
+  db 0x08
   dw minus_
   dw greater_than_
   dw zero_branch_,words.continue
@@ -6018,13 +6283,15 @@ words.continue:
   dw paren_dot_quote_
   _string 'Scr # '
   dw dot_
-  _number lines_per_screen
-  _number 0
+  dw c_lit_
+  db lines_per_screen
+  dw zero_
   dw paren_do_
 list.do:
   dw cr_
   dw i_
-  _number 0x02
+  dw c_lit_
+  db 0x02
   dw dot_r_
   dw space_,i_,scr_,fetch_,dot_line_
   dw question_terminal_
@@ -6083,8 +6350,7 @@ list.loop:
   _colon_header unused_,'UNUSED'
 
   ; XXX TMP
-  _number 0
-  dw here_,minus_
+  dw zero_,here_,minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6097,10 +6363,9 @@ list.loop:
   dw paren_do_
 index.do:
   dw cr_,i_
-  _number 3
+  dw three_
   dw dot_r_,space_
-  _number 0
-  dw i_,dot_line_
+  dw zero_,i_,dot_line_
   dw question_terminal_
   dw zero_branch_,index.loop
   dw leave_
@@ -6128,7 +6393,8 @@ where.do_it:
   dw rot_,block_,plus_
   dw c_slash_l_,cr_,type_,cr_
   dw here_,c_fetch_,minus_,spaces_
-  _number '^'
+  dw c_lit_
+  db '^'
   dw emit_
   dw semicolon_s_
 
@@ -6163,26 +6429,25 @@ where.do_it:
 ; [Code adapted from Spectrum Forth-83.]
 
   dw swap_,dup_
-  _number 23
+  dw c_lit_
+  db 23
   dw not_equals_ ; not the last line?
   dw zero_branch_,at_pfa.last_line
   ; not the last line
-  _number 22
-  dw paren_emit_,paren_emit_,paren_emit_
+  dw lit_,22,paren_emit_,paren_emit_,paren_emit_
   dw semicolon_s_
 
 at_pfa.last_line:
-  dw one_minus_,dup_,paren_emit_,paren_emit_
-  _number 0
-  dw paren_emit_
+  dw one_minus_,dup_,paren_emit_,paren_emit_,zero_,paren_emit_
   dw cr_
   dw dup_
-  _number sys_df_cc ; address in display file of print position
+  dw lit_,sys_df_cc ; address in display file of print position
   dw plus_store_
-  _number 33
+  dw c_lit_
+  db 33
   dw swap_
   dw minus_
-  _number sys_s_posn ; 33 minus column number for print position
+  dw lit_,sys_s_posn ; 33 minus column number for print position
   dw c_store_
   dw semicolon_s_
 
@@ -6283,9 +6548,7 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header u_dot_r_,'U.R'
 
-  dw to_r_
-  _number 0
-  dw from_r_,d_dot_r_
+  dw to_r_,zero_,from_r_,d_dot_r_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6345,46 +6608,51 @@ do_two_constant:
 
   dw question_comp_
   dw csp_,fetch_,store_csp_
-  _number 0x04
+  dw c_lit_
+  db 0x04
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header of_,'OF',immediate
 
-  _number 0x04
+  dw c_lit_
+  db 0x04
   dw question_pairs_
   dw compile_,over_
   dw compile_,equals_
   dw compile_,zero_branch_
   dw forward_mark_
   dw compile_,drop_
-  _number 0x05
+  dw c_lit_
+  db 0x05
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header endof_,'ENDOF',immediate
 
-  _number 0x05
+  dw c_lit_
+  db 0x05
   dw question_pairs_
   dw compile_,branch_
   dw forward_mark_
   dw swap_
-  _number 2 ; error checking number
+  dw two_ ; error checking number
   dw then_
-  _number 0x04
+  dw c_lit_
+  db 0x04
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header endcase_,'ENDCASE',immediate
 
-  _number 0x04
+  dw c_lit_
+  db 0x04
   dw question_pairs_
   dw compile_,drop_
 endcase.compile_then:
   dw sp_fetch_,csp_,fetch_,equals_
   dw question_branch_,endcase.end
-  _number 2 ; error checking number
-  dw then_
+  dw two_,then_
   dw branch_,endcase.compile_then
 endcase.end:
   dw csp_,store_
@@ -6431,7 +6699,8 @@ l8128h:
   ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
   ;  [char] " (s)  ; immediate
 
-  _number '"'
+  dw c_lit_
+  db '"'
   dw paren_s_
   dw semicolon_s_
 
@@ -6472,7 +6741,8 @@ question_backslash.end:
 ;
 ; }doc
 
-  _number ')'
+  dw c_lit_
+  db ')'
   dw parse_,type_
   dw semicolon_s_
 
