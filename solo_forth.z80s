@@ -1,8 +1,10 @@
 ; Solo Forth
-; Version A-00-201508122222
 
-; A disk-based Forth for ZX Spectrum,
-; intended for cross-development of ZX Spectrum programs.
+branch:  equ 'A'
+version: equ 00
+release: equ 20150813 ; 0357
+
+; A Forth for ZX Spectrum 128K and G+DOS.
 ; http://programandala.net/en.program.solo_forth.html
 
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
@@ -24,12 +26,8 @@
 ; See
 ; http://programandala.net/en.program.solo_forth.history.html
 
-; Latest changes:
-; Removed `fig_vocabulary?` config option.
-; Removed `fig_null_word?` config option.
-
 ; ==============================================================
-; Description
+; System description
 
 ; ----------------------------------------------
 ; Forth Registers
@@ -40,11 +38,13 @@
 ;            Should be preserved across Forth words.
 ; SP    SP   Data stack pointer.
 ;            Should be used only as data stack across Forth words.
-;            May be used within Forth words if restored before `next`.
-;       DE   Input only when pushde called.
-;       HL   Input only when pushhl called.
+;            May be used within Forth words if restored before exit.
+;       DE   Input only when pushde called. ; XXX TODO
+;       HL   Input only when pushhl called. ; XXX TODO
 ;       IX   Address of `next`.
-;            May be used within Forth words if restored before `next`.
+;            May be used within Forth words if restored before exit.
+;       IY   Address of the ERRNR system variable.
+;            May be used within Forth words if restored before exit.
 
 ; ----------------------------------------------
 ; Header structure
@@ -175,10 +175,6 @@ fig_parsing?: equ false
   ; true = the fig-Forth parsing method is used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
-;fig_does?: equ true
-  ; true = the fig-Forth `<builds does>` pair is used
-  ; false = the modern `create does>` pair is used
-
   ; XXX TODO
 ;whiles?: equ true
   ;  true = a `while` counter is used, so any number of `while`
@@ -200,7 +196,7 @@ ans_forth_block_size?: equ false
   ; false = Forth-83 and ANS Forth `exit` is used ; XXX FIXME
 
   ; XXX TODO try false
-fig_compiler_security?: equ true
+fig_compiler_security?: equ false
   ; true = fig-Forth `?pairs' is used
   ; false = no checking during compilation of control
   ;   structures: smaller and faster code.
@@ -339,46 +335,35 @@ space_char:                 equ 0x20
 ; ----------------------------------------------
 ; ROM  routines
 
-rom_beeper:                      equ 0x03B5
-rom_border_0x2297:               equ 0x2297
 rom_chan_open:                   equ 0x1601
 rom_cl_all:                      equ 0x0DAF
-rom_find_int1:                   equ 0x1E94
 rom_key_decode:                  equ 0x0333
 rom_key_scan:                    equ 0x028E
 rom_key_test:                    equ 0x031E
-rom_plot_0x22DF:                 equ 0x22DF
-rom_point_sub_0x22CE:            equ 0x22CE
-rom_s_attr_s_0x2583:             equ 0x2583
-rom_s_scrn_s_0x2538:             equ 0x2538
-rom_sa_all:                      equ 0x075A
 rom_set_permanent_colors_0x1CAD  equ 0x1CAD
-rom_stack_fetch:                 equ 0x2BF1
 
 ; ----------------------------------------------
 ; System variables
 
   ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
-  ; not the defined first, the compilation halts with error "offset out of
+  ; not defined first, the compilation halts with error "offset out of
   ; range", though they are fine in the symbols file.
 
 sys_errnr:         equ 0x5C3A ; used as IY index by the OS
 
-sys_attr_p:        equ 0x5C8D
 sys_bankm:         equ 0x5B5C
+sys_bordcr:        equ 0x5C48
 sys_chars:         equ 0x5C36
-sys_coordx:        equ 0x5C7D
-sys_coordy:        equ 0x5C7E
 sys_df_cc:         equ 0x5C84
 sys_df_sz:         equ 0x5C6B
 sys_df_sz_offset:  equ sys_df_sz-sys_errnr
 sys_flags2:        equ 0x5C6A
 sys_last_k:        equ 0x5C08
+sys_last_k_offset: equ sys_last_k-sys_errnr
 sys_mode:          equ 0x5C41
 sys_s_posn:        equ 0x5C88
 sys_scr_ct:        equ 0x5C8C
 sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
-sys_t_addr:        equ 0x5C74
 sys_udg:           equ 0x5C7B
 
 ; ----------------------------------------------
@@ -490,11 +475,7 @@ _does_header: macro _base_label,_name,_is_immediate,_runtime_routine
 
   _header _base_label,_name,_is_immediate
 
-  if 0 ; fig_does?
-    dw do_does ; code field
-  else
-    dw _runtime_routine ; code field
-  endif
+  dw _runtime_routine ; code field
   _base_label##pfa: ; parameter field address
 
   endm
@@ -539,8 +520,8 @@ endm
 
 _number: macro _n
 
-  ; Note: parenthesis are needed to prevent a strange problem
-  ; with signs.
+  ; Note: parenthesis are needed to prevent a strange problem of
+  ; Pasmo with signs.
 
   if (_n)=0
     dw zero_
@@ -1150,12 +1131,6 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header label_,'LABEL'
-
-  dw create_,asm_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _constant_header next_,'NEXT'
 
   dw next
@@ -1257,6 +1232,13 @@ latest_nfa_in_assembler_voc: equ fetchhl_comma_nfa
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa
 
+
+; ----------------------------------------------
+  _colon_header label_,'LABEL'
+
+  dw create_,asm_
+  dw semicolon_s_
+
 ; ----------------------------------------------
   _colon_header also_,'ALSO'
 
@@ -1349,12 +1331,7 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
 ; ----------------------------------------------
 
-if 0 ; fig_does?
-  _does_header root_,'ROOT'
-  dw do_vocabulary
-else
   _does_header root_,'ROOT',,do_vocabulary
-endif
 
   dw latest_nfa_in_root_voc
 
@@ -1363,12 +1340,7 @@ root_vocabulary_link:
 
 ; ----------------------------------------------
 
-if 0 ; fig_does?
-  _does_header forth_,'FORTH'
-  dw do_vocabulary
-else
   _does_header forth_,'FORTH',,do_vocabulary
-endif
 
   dw latest_nfa_in_forth_voc ; nfa of the latest word defined in this vocabulary
 
@@ -1376,12 +1348,7 @@ forth_vocabulary_link:
   dw root_vocabulary_link
 
 ; ----------------------------------------------
-if 0 ; fig_does?
-  _does_header assembler_,'ASSEMBLER'
-  dw do_vocabulary
-else
   _does_header assembler_,'ASSEMBLER',,do_vocabulary
-endif
 
 ; XXX TODO move `assembler` and everthing related
 ; to the library disk?
@@ -2118,8 +2085,8 @@ digit.test_value:
   cp l ; <base?
   jp nc,false_pfa ; no, invalid
   ld e,a ; converted digit
-  ld hl,0x0001 ; true ; XXX TODO change when true=-1
-  jp push_de_hl
+  push de
+  jp true_pfa
 
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
@@ -2376,11 +2343,108 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _code_header key_question_,'KEY?'
+
+; doc{
+;
+; key?  ( -- f )  \ ANS Forth
+;
+; }doc
+
+  ld a,(sys_last_k)
+  and a
+  jp z,false_pfa
+  jp true_pfa
+
+; ----------------------------------------------
+  _variable_header decode_table_,'DECODE-TABLE'
+
+  dw 0 ; no chained table ; XXX TODO
+              ; Symbol Shift + Letter --> new char
+  db 0xC6,'[' ; "Y" 198 (0xC6) "AND"  --> 091 (0x5B) "["
+  db 0xC5,']' ; "U" 197 (0xC5) "OR"   --> 093 (0x5D) "]"
+  db 0xE2,'~' ; "A" 226 (0xE2) "STOP" --> 126 (0x7E) "~"
+  db 0xC3,'|' ; "S" 195 (0xC3) "NOT"  --> 124 (0x7C) "|"
+  db 0xCD,'\' ; "D" 205 (0xCD) "STEP" --> 092 (0x5C) "\"
+  db 0xCC,'{' ; "F" 204 (0xCC) "TO"   --> 123 (0x7B) "{"
+  db 0xCB,'}' ; "G" 203 (0xCB) "THEN" --> 125 (0x7D) "}"
+  db 0 ; end of data
+
+  ; "I" 172 (0xAC) "AT"   --> 127 (0x7F) "(C)" ; XXX TODO
+
+; ----------------------------------------------
+  _code_header decode_,'DECODE'
+  
+; doc{
+;
+; decode  ( c1 -- c2 )
+;
+; }doc
+
+  ; XXX TODO
+
+  pop de
+  ld hl,decode_table_+2 ; XXX TMP
+decode.begin:
+  ld a,(hl)
+  and a
+  ld a,e
+
+; ----------------------------------------------
+  _code_header paren_key_,'(KEY)'
+
+  ld a,(sys_last_k)
+  ld (previous_key),a
+paren_key_.begin
+  ; call pause ; XXX TODO
+  ; call rom_keyboard ; XXX TODO not needed if system interrupts are on
+  ld a,(sys_last_k)
+previous_key equ $+1
+  cp 0 ; a different key?
+  jp z,paren_key_.begin
+  ld h,0
+  ld l,a
+  xor a
+  ld (sys_last_k),a ; delete the last key
+  push hl
+  jp decode_
+
+; ----------------------------------------------
   _code_header key_,'KEY'
 
 ; doc{
 ;
-; key  ( -- c )
+; key  ( -- c )  \ ANS Forth
+;
+; }doc
+
+; XXX -- This version works when the system interrupts are off,
+; but multitasker's `pause` must be added.
+
+  push bc
+key.begin:
+  call rom_key_scan
+  jr nz,key.begin
+  call rom_key_test
+  jr nc,key.begin
+  dec d
+  ld e,a
+  call rom_key_decode
+key.end:
+  ld hl,sys_last_k
+  ld (hl),0
+  pop bc
+  jp push_a
+
+; ----------------------------------------------
+  _code_header xkey_,'XKEY'
+
+; XXX OLD -- this is the original code from Abersoft Forth.
+; Too complex. A mode-less version will be coded.
+
+; doc{
+;
+; xkey  ( -- c )
 ;
 ; Leave the ASCII value of the next terminal key struck.
 ;
@@ -2389,113 +2453,82 @@ endif
   ; XXX TODO simplify, no Spectrum modes
 
   push bc
-  ld a,0x02
-  call rom_chan_open
 
-  ; flash on
-  ld a,flash_char
-  rst 0x10
-  ld a,0x01
-  rst 0x10
+  ; XXX OLD
+  ; inverse video on
+  ; ld a,inverse_char
+  ; rst 0x10
+  ; ld a,0x01
+  ; rst 0x10
 
-key.new_key:
+xkey.new_key:
   xor a
   ld (sys_last_k),a
+
   ; Print cursor:
-key.cursor_char: equ $+1
-  ld a,'L'
+  ld a,0x88 ; cursor
   rst 0x10
   ld a,backspace_char
   rst 0x10
-key.wait_for_key:
+
+xkey.wait_for_key:
   ld a,(sys_last_k)
   and a
-  jr z,key.wait_for_key
+  jr z,xkey.wait_for_key
   ; a = pressed key code
 
   cp caps_char ; toggle caps lock?
-  jr nz,key.graphic_mode
+  jr nz,xkey.translate
   ; toggle caps lock
   ld hl,sys_flags2
   ld a,0x08
   xor (hl)
   ld (hl),a
-
-key.not_graphic_mode_cursor:
-  ; a = 0 (lowercase mode)
-  ;     8 (uppercase mode)
-  ld hl,key.cursor_char
-  bit 3,a ; cursor 'L'?
-  jr nz,key.cursor_c
-  ld (hl),'L'
-  jr key.new_key
-key.cursor_c:
-  ld (hl),'C'
-  jr key.new_key
-
-key.graphic_mode:
-  cp graphics_char ; change graphics mode?
-  jr nz,key.translate
-  ; graphics
-  ld a,0x02
-  ld hl,sys_mode
-  xor (hl)
-  ld (hl),a
-  and a ; now in graphics mode?
-  jr nz,key.graphic_mode_cursor
-  ; not in graphics mode
-  ld a,(sys_flags2)
-  jr key.not_graphic_mode_cursor
-
-key.graphic_mode_cursor:
-  ld a,'G'
-  ld (key.cursor_char),a
-  jr key.new_key
+  jr xkey.new_key
 
   ; Translate some chars
   ; XXX TODO use a configurable list of chars pairs
 
-key.translate:
-key.left_bracket:
+xkey.translate:
+xkey.left_bracket:
   cp 0xC6
-  jr nz,key.right_bracket
+  jr nz,xkey.right_bracket
   ld a,'['
-key.right_bracket:
+xkey.right_bracket:
   cp 0xC5
-  jr nz,key.tilde
+  jr nz,xkey.tilde
   ld a,']'
-key.tilde:
+xkey.tilde:
   cp 0xE2
-  jr nz,key.vertical_bar
+  jr nz,xkey.vertical_bar
   ld a,'~'
-key.vertical_bar:
+xkey.vertical_bar:
   cp 0xC3
-  jr nz,key.backslash
+  jr nz,xkey.backslash
   ld a,'|'
-key.backslash:
+xkey.backslash:
   cp 0xCD
-  jr nz,key.left_curly_bracket
+  jr nz,xkey.left_curly_bracket
   ld a,'\'
-key.left_curly_bracket:
+xkey.left_curly_bracket:
   cp 0xCC
-  jr nz,key.right_curly_bracket
+  jr nz,xkey.right_curly_bracket
   ld a,'{'
-key.right_curly_bracket:
+xkey.right_curly_bracket:
   cp 0xCB
-  jr nz,key.limit
+  jr nz,xkey.end
   ld a,'}'
 
-key.limit:
-  cp 0xA5 ; greater than 0xA4 (the last UDG)?
-  jr nc,key.new_key
+xkey.end:
   ld l,a
   ld h,0x00
 
-  ; flash off
-  ld a,flash_char
-  rst 0x10
-  ld a,0x00
-  rst 0x10
+  ; XXX OLD
+  ; inverse video off
+  ; ld a,inverse_char
+  ; rst 0x10
+  ; ld a,0x00
+  ; rst 0x10
 
   ; delete the cursor
   ld a,space_char
@@ -2514,16 +2547,6 @@ key.limit:
   ;   db from-n,to-n
   ;   db 0 ; end of data, continue at the chained table
 
-key_translation_table:
-  dw 0 ; no chained table
-  db 0xC6,'['
-  db 0xC5,']'
-  db 0xE2,'~'
-  db 0xC3,'|'
-  db 0xCD,'\'
-  db 0xCC,'{'
-  db 0xCB,'}'
-  db 0 ; end of data
 
 ; ----------------------------------------------
   _colon_header cr_,'CR'
@@ -2615,56 +2638,6 @@ move.do:
   pop hl
   call hl_multiplied_by_de_to_hlde_unsigned
   jp push_de_hl
-
-if 0 ; XXX OLD -- substituted by `um*`
-
-; ----------------------------------------------
-  _code_header u_star_,'U*'
-
-; doc{
-;
-; u*  ( u1 u2 -- ud )  \ fig-Forth
-;
-; Leave the unsigned double number product of two unsigned numbers.
-;
-; }doc
-
-  pop de
-  pop hl
-  push bc
-  ld b,h
-  ld a,l
-  call sub_606dh
-  push hl
-  ld h,a
-  ld a,b
-  ld b,h
-  call sub_606dh
-  pop de
-  ld c,d
-  add hl,bc
-  adc a,0x00
-  ld d,l
-  ld l,h
-  ld h,a
-  pop bc
-  push de
-  jp push_hl
-sub_606dh:
-  ld hl,0x0000
-  ld c,0x08
-l6072h:
-  add hl,hl
-  rla
-  jr nc,l6079h
-  add hl,de
-  adc a,0x00
-l6079h:
-  dec c
-  jr nz,l6072h
-  ret
-
-endif
 
 ; ----------------------------------------------
   _code_header u_slash_mod_,'U/MOD' ; XXX OLD
@@ -4093,14 +4066,6 @@ question_dup.end:
   _code_alias_header cfa_to_pfa_,'CFA>PFA',,two_plus_
 
 ; ----------------------------------------------
-
-  ; XXX TODO remove, not needed
-
-  _colon_header cfa_to_lfa_,'CFA>LFA'
-  dw cfa_to_nfa_,nfa_to_lfa_
-
-; ----------------------------------------------
-
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
   dw pfa_to_cfa_,cfa_to_nfa_
@@ -4346,19 +4311,6 @@ cfa_to_nfa.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-
-if 0 ; fig_does?
-
-  _colon_header nfa_to_pfa_,'NFA>PFA'
-
-  ; XXX TODO remove; only needed by the old `<BUILDS ... DOES>`
-
-  dw nfa_to_cfa_,cfa_to_pfa_
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
 ; doc{
 ;
 ; nfa>string  ( nfa -- ca len )
@@ -4564,43 +4516,6 @@ postpone.end:
   dw left_bracket_,smudge_
   dw semicolon_s_
 
-if 0 ; fig_does?
-
-; ----------------------------------------------
-  _colon_header builds_,'<BUILDS'
-
-  dw zero_,constant_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header does_,'DOES>'
-
-  dw from_r_ ; address of the first word after `does>` (the run-time routine)
-  dw latest_,nfa_to_pfa_ ; pfa of the definition under construction
-  dw store_ ; store the address of the run-time routine as the first parameter
-  dw paren_semicolon_code_
-do_does:
-  ; Push the address of the next instruction on the return stack:
-  ld hl,(return_stack_pointer)
-  dec hl
-  ld (hl),b
-  dec hl
-  ld (hl),c
-  ld (return_stack_pointer),hl
-  ; XXX TODO understand
-  ; Put the address of the run-time routine in IP:
-  inc de      ; de=pfa
-  ex de,hl
-  ld c,(hl)
-  inc hl
-  ld b,(hl)
-  inc hl
-  ; W was incremented in the last instruction, pointing to the
-  ; parameter field; push it on the stack:
-  jp push_hl
-
-else ; XXX NEW -- Forth-83 version, paired with `create`
-
 ; ----------------------------------------------
   _colon_header does_,'DOES>',immediate
 
@@ -4627,8 +4542,6 @@ do_does:
   push de
   ; Execute the run-time routine.
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _code_header count_,'COUNT'
@@ -4791,81 +4704,6 @@ dot_quote.interpreting:
 ; ----------------------------------------------
   _colon_header expect_,'EXPECT'
 
-if 0 ; XXX OLD fig-Forth version
-
-; doc{
-;
-; expect  ( ca len -- )
-;
-; Transfer characters from the terminal to address _ca_, until a
-; "return" or the count of characters have been received.
-;
-; XXX TODO
-; fig-Forth: One or more nulls are added at the end of the text.
-; Solo Forth: a null word is added at the end of the text.
-;
-; }doc
-
-  dw bounds_ ; ( a+len a )
-  dw dup_,zero_,swap_,two_swap_ ; ( 0 a a+len a )
-  dw paren_do_
-fig_expect.do: ; ( i a )
-  dw key_,dup_ ; ( i a c c )
-  dw c_lit_
-  db delete_char
-  dw equals_ ; delete key?
-  dw zero_branch_,fig_expect.not_the_delete_key
-
-  ; XXX FIXME This word has a bug in Abersoft Forth.  Sometimes, after using
-  ; the delete key, the typed word is not recognized.  Maybe the `noop` the
-  ; author used to patch the original bell?
-  ;
-  ; XXX TODO The `noop` and related `branch` were removed. Waiting for the code
-  ; to fail...
-
-  ; Delete key ( i a c )
-  dw drop_
-  dw dup_,i_,equals_ ; cursor at the start position?
-  dw dup_ ; ( i a f f )
-  ; XXX TODO adapt this when true=-1
-  dw from_r_,two_minus_,plus_,to_r_ ; update the index
-  dw question_branch_,fig_expect.loop ; nothing to delete
-  dw b_l_,i_,c_store_ ; update the buffer
-  dw c_lit_
-  db backspace_char
-  dw branch_,fig_expect.emit
-
-fig_expect.not_the_delete_key: ; ( i a c )
-  dw dup_
-  dw c_lit_
-  db carriage_return_char
-  dw equals_ ; carriage return?
-  dw zero_branch_,fig_expect.ordinary_key
-
-  ; Carriage return ( i a c )
-  dw exhaust_
-  dw drop_,b_l_
-  dw branch_,fig_expect.emit
-
-fig_expect.ordinary_key: ; ( i a c )
-  dw dup_
-
-fig_expect.store: ; ( i a c c | a c 0 )
-  dw i_,c_store_
-  dw i_,one_plus_,off_
-
-fig_expect.emit: ; ( i a c )
-  dw emit_
-
-fig_expect.loop: ; ( i a )
-  dw nip_,i_,swap_ ; update the copy of `i` on the stack
-  dw paren_loop_,fig_expect.do
-  dw drop_
-  dw stream_end_ ; add a null word after the text
-  dw semicolon_s_
-
-else ; XXX NEW Forth-83 version
-
 ; doc{
 ;
 ; expect  ( ca len -- )  \ Forth-83
@@ -4873,16 +4711,15 @@ else ; XXX NEW Forth-83 version
 ; Transfer characters from the terminal to address _ca_, until a
 ; "return" or _len_ characters have been received.
 ;
-; The transfer
-; begins at addr proceeding towards higher addresses one byte
-; per character until either a "return" is received or until +n
-; characters have been transferred.
+; The transfer begins at addr proceeding towards higher
+; addresses one byte per character until either a "return" is
+; received or until _len_ characters have been transferred.
 
-; No more than _len_ characters
-; will be stored.  The "return" is not stored into memory.  No
-; characters are received or transferred if _len_ is zero.  All
-; characters actually received and stored into memory will be
-; displayed, with the "return" displaying as a space.
+; No more than _len_ characters will be stored.  The "return" is
+; not stored into memory.  No characters are received or
+; transferred if _len_ is zero.  All characters actually
+; received and stored into memory will be displayed, with the
+; "return" displaying as a space.
 
 ; ; }doc
 
@@ -4893,7 +4730,7 @@ else ; XXX NEW Forth-83 version
   dw bounds_,tuck_ ; ( ca ca+len ca )
   dw paren_do_
 expect.do: ; ( ca )
-  dw key_,dup_ ; ( ca c c )
+  dw xkey_,dup_ ; ( ca c c )
 
   dw c_lit_
   db delete_char
@@ -4916,11 +4753,18 @@ expect.maybe_carriage_return: ; ( ca c )
   dw c_lit_
   db carriage_return_char
   dw equals_ ; carriage return?
-  dw zero_branch_,expect.ordinary_key
+  dw zero_branch_,expect.control_char
   ; Carriage return ( ca c )
   dw exhaust_
   dw drop_,b_l_
   dw branch_,expect.emit
+
+expect.control_char: ; ( ca c )
+  dw dup_,b_l_,less_than_ ; control char?
+  dw zero_branch_,expect.ordinary_key
+  ; Control char ( ca c )
+  dw drop_
+  dw branch_,expect.do
 
 expect.ordinary_key: ; ( ca c )
   dw dup_
@@ -4935,8 +4779,6 @@ expect.loop: ; ( ca )
 expect.end:
   dw drop_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header query_,'QUERY'
@@ -4963,18 +4805,12 @@ endif
 ;
 ; }doc
 
-  ;dw cr_,dot_s_,lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw tib_,fetch_,dup_
   dw number_tib_,fetch_
   dw two_dup_,blank_ ; clean the input buffer
-  ;dw cr_,dot_s_,lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw expect_
-  ;dw cr_,dot_s_,lit_,7,border_,key_,drop_ ; XXX INFORMER
   dw span_,fetch_,plus_,stream_end_
-  ;dw cr_,dot_s_,lit_,0,border_,key_,drop_ ; XXX INFORMER
-
   dw to_in_,off_
-  ;dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5158,110 +4994,6 @@ stream.end:
 ; ----------------------------------------------
   _colon_header word_,'WORD'
 
-if 0 ; XXX OLD -- original version with `enclose`
-
-; doc{
-;
-; word  ( c "<c...>text<c>" -- )  \ fig-Forth
-;
-; c = delimiter char
-;
-; Skip leading _c_ delimiters from the input stream.  Parse the
-; next text characters from the input stream, until a delimiter
-; _c_ is found, storing the packed character string beginning at
-; `here`, as a counted string (the character count in the first
-; byte), and with two or more blanks at the end.
-;
-; }doc
-
-  dw stream_  ; ( c ca )
-  dw enclose_ ; ( ca n1 n2 n3 )
-  ; ca = text address
-  ; n1 = byte offset to the first non-delimiter character
-  ; n2 = byte offset to the first delimiter after the text
-  ; n3 = byte offset to the first character not included
-
-  ;dw stream,true_,paren_parse_ ; XXX OLD -- abandoned idea
-
-  ; XXX TODO use a factor of `s,` instead, without `allot`:
-  dw here_
-  dw c_lit_
-  db max_word_length+3
-  dw blank_
-  dw to_in_,plus_store_
-  dw over_,minus_,to_r_ ; length
-  dw r_fetch_,here_,c_store_ ; set the length byte
-  dw plus_ ; from
-  dw here_,one_plus_ ; destination
-  dw from_r_ ; count
-  dw cmove_ ; move the word
-  dw semicolon_s_
-
-endif
-
-if 0 ; XXX OLD -- second, modern version with `skip parse`
-
-; doc{
-;
-; word  ( c "<c...>text<c>" -- )  \ fig-Forth
-;
-; c = delimiter char
-;
-; Skip leading _c_ delimiters from the input stream.  Parse the
-; next text characters from the input stream, until a delimiter
-; _c_ is found, storing the packed character string beginning at
-; `here`, as a counted string (the character count in the first
-; byte), and with two or more blanks at the end.
-;
-; }doc
-
-  dw stream_ ; ( c a1 )
-  dw dup_,to_r_
-  dw over_,skip_ ; ( c a2 )
-if  0
-  dw hex_
-  _echo 'In word after skip:' ; XXX INFORMER
-  dw cr_,dot_s_,cr_ ; XXX INFORMER
-  dw key_,drop_ ; XXX INFORMER
-endif
-  dw dup_,from_r_,minus_,to_in_,plus_store_
-  ; XXX TODO factor of `parse`:
-  dw swap_,scan_ ; ( a2 len )
-if  0
-  dw hex_
-  _echo 'In word after scan:' ; XXX INFORMER
-  dw cr_,two_dup_,type_ ; XXX INFORMER
-  dw cr_,dot_s_,cr_ ; XXX INFORMER
-  dw key_,drop_ ; XXX INFORMER
-endif
-  dw dup_,one_plus_,to_in_,plus_store_
-
-  dw here_
-  dw c_lit_
-  db max_word_length+3
-  dw blank_
-
-  dw dup_,here_,c_store_ ; count byte
-  dw here_,one_plus_ ; destination
-  dw swap_ ; count
-  dw cmove_ ; move the word
-
-  if 0 ; XXX OLD
-    ;dw space_ ; XXX INFORMER
-    ;dw depth_,dot_ ; XXX INFORMER
-    ;_echo 'blk ' ; XXX INFORMER
-    ;dw blk_,fetch_,dot_ ; XXX INFORMER
-    ;_echo 'in ' ; XXX INFORMER
-    ;dw in_,fetch_,dot_ ; XXX INFORMER
-    ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
-    ;dw key_,drop_ ; XXX INFORMER
-  endif
-
-  dw semicolon_s_
-endif
-
-if 1 ; XXX NEW -- third, ANS-Forth version
-
 ; doc{
 ;
 ; word  ( c "<c...>text<c>" -- ca )  \ ANS Forth
@@ -5320,7 +5052,6 @@ endif
   endif
 
   dw semicolon_s_
-endif
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
 
@@ -6071,25 +5802,17 @@ interpret.16bit_number:
   ; Create a dictionary entry with the parsed name as
   ; its name, and the code field pointing to the word after
   ; `does>`.
-if 0 ; fig_does?
-  dw builds_
-else
-  dw create_
-endif
 
+  dw create_
   dw zero_,comma_ ; space for the nfa of the latest word defined in the vocabulary
   dw here_ ; address of vocabulary link
   dw voc_link_,fetch_,comma_ ; compile the current content of `voc-link`
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
 
-  if 0 ; fig_does?
-    dw does_ ; this is the end in defining the vocabulary
-  do_vocabulary:
-  else
-    dw paren_semicolon_code_
-  do_vocabulary:
-    call do_does
-  endif
+  dw paren_semicolon_code_
+
+do_vocabulary:
+  call do_does
 
   ; The next words are to be executed when the vocabulary is invoked.
   dw context_,store_
@@ -6191,7 +5914,19 @@ warm_start_phony_:
 
   dw only_,forth_,definitions_  ; search order
   dw decimal_                   ; base
-  dw page_,greeting_            ; screen
+
+  ; Screen
+  ; XXX TODO factor out the default colors
+  dw zero_,paper_
+  dw zero_,bright_
+  dw zero_,inverse_
+  dw zero_,flash_
+  dw c_lit_
+  db 4
+  dw ink_
+  dw zero_,border_
+  dw page_,greeting_
+
   dw abort_
 
 cold_start:
@@ -6229,6 +5964,8 @@ common_start:
 ; ----------------------------------------------
   _colon_header plus_minus_,'+-'
 
+  ; XXX TODO move to the disk
+
   dw zero_less_than_
   dw zero_branch_,plus_minus.end
   dw negate_
@@ -6237,6 +5974,8 @@ plus_minus.end:
 
 ; ----------------------------------------------
   _colon_header d_plus_minus_,'D+-'
+
+  ; XXX TODO move to the disk
 
   dw zero_less_than_
   dw zero_branch_,d_plus_minus.end
@@ -7059,6 +6798,12 @@ endif
   dw branch_,if.do
 
 ; ----------------------------------------------
+  _colon_header ahead_,'AHEAD',immediate
+
+  dw compile_,branch_
+  dw forward_mark_
+
+; ----------------------------------------------
   _colon_header else_,'ELSE',immediate
 
   ; XXX FIXME Pasmo bug?
@@ -7406,11 +7151,11 @@ where.do_it:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header at_,'AT'
+  _colon_header at_xy,'AT-XY'
 
 ; doc{
 
-; at ( line col -- )
+; at ( col line -- )
 
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
@@ -7420,7 +7165,7 @@ where.do_it:
 
 ; [Code adapted from Spectrum Forth-83.]
 
-  dw swap_,dup_
+  dw dup_
   dw c_lit_
   db 23
   dw not_equals_ ; not the last line?
@@ -7444,11 +7189,50 @@ at_pfa.last_line:
   dw semicolon_s_
 
 ; ----------------------------------------------
+
+if 0 ; XXX TODO -- p! is not in the kernel
+
+  _colon_header border_,'BORDER'
+
+; [Code adapted from Spectrum Forth-83.]
+
+  dw dup_,dup_,dup_
+  _number 4
+  dw less_than_
+  _number 7
+  dw and_,swap_
+  _number 8
+  dw star_,plus
+  _number sys_bordrc
+  dw c_store_
+  _number 254
+  dw store_p_
+
+endif
+
   _code_header border_,'BORDER'
 
   pop hl
   ld a,l
   out(0xFE),a
+
+; XXX TODO -- calculate the contrast ink
+;  cp 4 ; cy = dark color?
+;  ld a,0
+  
+
+  ; The color*8 is stored in the system variable
+  ; that holds the attributes of the lower part
+  ; of the screen. The reason is the G+DOS, after
+  ; disk operations that make the border change, restores
+  ; the border color with the value of this system variable.
+  ; A contrast ink should be set too, but it's needed
+  ; only after returning to BASIC...
+  add hl,hl
+  add hl,hl
+  add hl,hl
+;  ld l,a  ; ink ; XXX TODO
+  ld (sys_bordcr),hl
   _jp_next
 
 ; ----------------------------------------------
@@ -7718,25 +7502,6 @@ else
   jp_next
 
 endif
-
-; ----------------------------------------------
-  _code_header inkey_,'INKEY'
-  ; XXX TODO move to the disk
-
-  push bc
-  call rom_key_scan
-  ld c,0x00
-  jr nz,l8128h
-  call rom_key_test
-  jr nc,l8128h
-  dec d
-  ld e,a
-  call rom_key_decode
-l8128h:
-  ld l,a
-  ld h,0x00
-  pop bc
-  jp push_hl
 
 ; ----------------------------------------------
   _colon_header char_,'CHAR'

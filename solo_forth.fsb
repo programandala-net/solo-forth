@@ -11,7 +11,7 @@
 \ ------------------------------------------------------------
 \ Acknowledgements
 
-\ See the file <AKNOWLEDGMENTS.adoc>.
+\ See <AKNOWLEDGMENTS.adoc>.
 
 \ ------------------------------------------------------------
 \ License
@@ -127,7 +127,7 @@ decode dump
   \ }}} =======================================================
   \ Strings {{{
 
-( place +place /string )
+( place +place )
 
   \ [Code from Afera.]
 
@@ -136,8 +136,24 @@ decode dump
 : +place  ( ca1 len1 ca2 )
   2dup c@ + over c!  dup c@ 1+ + smove  ;
 
+( /string )
+
+require -rot
+
+  \ [Code from DZX-Forth.]
+
 : /string  ( ca1 len1 n -- ca2 len2 )
-  dup >r - swap r> + swap  ;
+  rot over + -rot -  ;
+  \ dup >r - swap r> + swap  ;  \ alternative definition
+
+  \ XXX TODO -- in Z80
+  \ pop de                  ; n
+  \ pop hl                  ; u1
+  \ call hl_minus_de_to_hl  ; hl=u2
+  \ ex (sp),hl              ; (sp)=u2 hl=ca1
+  \ add hl,de               ; hl=ca2
+  \ ex (sp),hl              ; (sp)=ca2 hl=u2
+  \ _push_hl_jp_next
 
 ( s' )
 
@@ -371,36 +387,56 @@ code plot  ( xc yc -- )
 
 ( attr )
 
+require attr-addr
+
 code attr ( line col -- )
 
-  \ Improved version of the ROM routine at 0x2583
-
-  \ pop hl ; l = col
-  \ pop de ; e = line
   E1 c,  D1 c,
+    \ pop hl ; l = col
+    \ pop de ; e = line
   50 05 + c, \ ld d,l ; d = col
 
-  78 02 + c, \ ld a,d  ; line to a 0x00..0x17   (max 00010111)
+  6E c,  26 c, 00 c,  pushhl,
+    \ ld l,(hl) ; pick up the colour attribute.
+    \ ld h,0
+    \ jp pushhl
+
+  end-code
+
+( attr-addr )
+
+also assembler
+
+label attr-addr  ( -- )  hex
+
+  \ Modified version of the ROM routine at 0x2583.
+
+  \ XXX FIXME
+
+  \ Input:
+  \   d = column (0..31)
+  \   e = line (0..23)
+  \ Output:
+  \   hl = address of the attribute in the screen
+
+  78 03 + c, \ ld a,e  ; line to a 0x00..0x17   (max 00010111)
   0F c, 0F c, 0F c, \ rrca | rrca | rrca  ; rotate bits left
-  50 07 + c, \ ld d,a ; store in d as an intermediate value.
+  58 07 + c, \ ld e,a ; store in d as an intermediate value.
 
   E6 c, E0 c, \ and 0xE0 ; pick up bits 11100000 (was 00011100)
   A8 02 + c, \ xor d ; combine with column 0x00..0x1F
   68 07 + c, \ ld l,a ; low byte now correct.
 
-  78 02 + c, \ ld a,d ; bring back intermediate result from d
+  78 03 + c, \ ld a,e ; bring back intermediate result from d
 
-  \ and 0x03 ; mask to give correct third of screen
-  \ xor 0x58 ; combine with base address.
   E6 c, 03 c,  EE c, 58 c,
+    \ and 0x03 ; mask to give correct third of screen
+    \ xor 0x58 ; combine with base address.
   60 07 + c, \ ld h,a ; high byte correct.
 
-  \ ld l,(hl) ; pick up the colour attribute.
-  \ ld h,0
-  \ jp pushhl
-  6E c,  26 c, 00 c,  pushhl,
+  C9 c,  \ ret
 
-  end-code
+  decimal
 
 ( screen )
 
@@ -463,8 +499,6 @@ code bleep  ( n1 n2 -- )
 
 : within  ( n1|u1 n2|u2 n3|u3 -- f )
   over - >r - r> u<  ;
-
-exit
 
 : between  ( n1|u1 n2|u2 n3|u3 -- flag )
   over - -rot - u< 0=  ;
@@ -684,7 +718,7 @@ base !
 ?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
 
 : bin{  ( -- )  base @ base' ! binary ; \ switch to binary
-: }bin  ( -- )  base' @ base !        ; \ and binary
+: }bin  ( -- )  base' @ base !        ; \ and back
 
 : (dbin.)  ( d n -- )  bin{ (d.) }bin type space  ;
 : dbin.    ( d -- )  32 (dbin.)  ;
@@ -703,9 +737,7 @@ base !
 
 ( dump )
 
-require break-key?
-
-require hex.  require ascii-type
+require break-key?  require hex.  require ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
@@ -1125,7 +1157,71 @@ end-code
 : turnkey  ( cfa -- a len )  boot ! system  ;
 
   \ }}} =======================================================
-  \ Number notation {{{
+  \ Number conversion and notation {{{
+
+( >number )
+
+require /string
+
+  \ [Code from DZX-Forth.]
+
+  \ XXX TODO -- Move to the kernel.
+
+: >number  ( d1 ca1 len1 -- d2 ca2 len2 )
+  begin   dup
+  while   over c@ base @ digit
+  while   >r 2swap r> swap base @ um* drop rot base @
+          um* d+ 2swap 1 /string 1 dpl +!
+  repeat then  ;
+
+( number? )
+
+  \ [Code from DZX-Forth.]
+
+  \ XXX TODO -- adapt
+
+  \ XXX FIXME -- it compiles (with compiler security off) but
+  \ crashes
+
+: number?  ( ca len -- d true | false )
+  \ Convert a string to a double number.
+  over c@ [char] - = over 0> and dup >r 1
+  and /string over c@ [char] . > and 0 0
+  2swap ?dup
+  if
+    >number dpl on dup
+    if  1- over c@ [char] . - or  dpl off  then
+    while
+    then r> 2drop 2drop false
+    else drop r> if  dnegate  then true
+  then  ;
+
+( b# d# h# )
+
+  \ [Code adapted from eForth.]
+
+  \ XXX TODO -- finish the conversion
+
+: x# ( -- ) ( 'ccc' -- n | d )
+  does> c@              \  new radix
+  base @ >r  base !     \ save and set radix
+  parse-name            \ get string
+  ['] evaluate catch    \ convert to number, set trap
+  r> base !  throw  ;   \ restore radix before error control
+
+create b# ( 'ccc' -- n | d )  2 c, x# immediate
+create d# ( 'ccc' -- n | d ) 10 c, x# immediate
+create h# ( 'ccc' -- n | d ) 16 c, x# immediate
+
+( .b .d .h )
+
+  \ [Code copied from eForth and modified.]
+
+: base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+
+create bin.  ( n -- )   2 c, base.
+create dec.  ( n -- )  10 c, base.
+create hex.  ( n -- )  16 c, base.
 
 ( c>hex )
 
@@ -1144,6 +1240,9 @@ hex
 decimal
 
 ( '. ) \ character prefix
+
+  \ XXX FIXME it seems it does not work anymory after the
+  \ changes in the system.
 
   \ Original code from:
   \   lina
@@ -1167,7 +1266,9 @@ width ! decimal
   \   The Netherlands
   \   Published under GPL
 
-width @  1 width !
+require c>hex
+
+hex width @  1 width !
 
 : $..  ( -- n )
   \ leave hex number; example: $0a leaves 0x0A
@@ -1183,11 +1284,16 @@ width ! decimal
 
 ( 0x.. 0x.... )  \ hex prefixes
 
+  \ XXX FIXME it seems it does not work anymory after the
+  \ changes in the system.
+
   \ Original code from:
   \   lina
   \   Copyright (c) 2000-2004 Albert van der Horst,
   \   The Netherlands
   \   Published under GPL
+
+require c>hex
 
 hex  width @ 2 width !
 
@@ -1205,6 +1311,9 @@ width ! decimal
 
 ( #... #..... ) \ hex prefixes
 
+  \ XXX FIXME it seems it does not work anymory after the
+  \ changes in the system.
+
   \ Inspired by code from:
   \   lina
   \   Copyright (c) 2000-2004 Albert van der Horst,
@@ -1212,6 +1321,8 @@ width ! decimal
   \   Published under GPL
 
   \ XXX TODO
+
+require c>hex
 
 width @  1 width !
 
@@ -1225,7 +1336,7 @@ width @  1 width !
   0 here 6 + here 2 + do 10 * i c@ c>hex + loop
   postpone literal  ; immediate
 
-width ! decimal
+width !
 
   \ }}} =======================================================
   \ Control structures {{{
