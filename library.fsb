@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510220229
+\ Last modified: 201510221444
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -623,7 +623,7 @@ need /string
 
 ( parse-char )
 
-: parse-char  ( "c"  -- c )  stream c@ 1 parsed  ;
+: parse-char  ( "c"  -- c )  stream drop c@ 1 parsed  ;
   \ Parse the next char in the input stream and return its
   \ code.
 
@@ -656,7 +656,7 @@ need /string
   \  the end.  byte), and with one blank at the end (not
   \  included in the count).
   \
-  \  Standard: Forth-94.
+  \  Standard: Forth-94 (CORE), Forth-2012 (CORE).
   \
   \  }doc
 
@@ -1437,10 +1437,8 @@ char " 1 2constant "  char \ 1 2constant \
 
 ( s\" )
 
-only forth definitions
-
-need char>string   need search-wordlist
-need chars>string  need s+
+only forth definitions  need char>string   need search-wordlist
+                        need chars>string  need s+
 
 : unescape-char  ( c -- c1..cn n )
   dup char>string escaped-wordlist search-wordlist
@@ -1451,20 +1449,21 @@ need chars>string  need s+
   \          (_c1_ is the last one)
   \ n = number of chars
 
-: (s\")  ( "text<quote>"  -- ca len )
-  pad 0  \ empty string to start with
+: parse-escaped-string  ( "text<quote>"  -- ca len )
+  0 0  \ dummy empty string to start with
   begin  parse-char dup [char] " <>  while  \ not finished?
     dup [char] \ =  \ possibly escaped char?
     if    drop parse-char unescape-char
     else  1  then  chars>string s+
-  repeat  drop  ;
+  repeat  drop  ;  -->
   \ Parse a text string delimited by a double quote, using the
   \ translation rules described by Forth-2012's `s\"`, and
   \ returning the string _ca len_ in the circular string
   \ buffer.
 
-: s\"  ( "text<quote>"  - ca len )
-  (s\")  compiling? if  postpone sliteral  then  ; immediate
+: s\"  ( Compiling: "text<quote>" -- ) ( Run-time: -- ca len )
+  parse-escaped-string  postpone sliteral
+  ; immediate compile-only
 
   \ XXX TODO documentation
 
@@ -1539,6 +1538,7 @@ need chars>string  need s+
 
   \ Credits:
   \ Code adapted from Forth Foundation Library (stt module).
+  \ XXX TODO Published under LGPL ?
 
 : begin-stringtable  ( "name" -- stringtable-sys )
   \ Start a named stringtable definition.

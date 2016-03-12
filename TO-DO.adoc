@@ -66,11 +66,11 @@ Fix: problem when compiler security is off.
 .2015-09-15:
 
 |===
-| Solo Forth (now) | Forth-83  | Gforth              | Solo Forth (new)
+| Solo Forth (old) | Forth-83  | Gforth              | Solo Forth (new)
 
 | cfa>nfa          | >name     | >name               | >name
 | cfa>pfa          | >body     | >body               | >body
-| cfap>lfa         |           |                     | >>link pointer>link
+| cfap>lfa         |           |                     | >>link
 | lfa>nfa          | l>name    |                     | link>name
 | nfa>cfa          | name>     | name>int name>comp  | name>
 | nfa>lfa          | n>link    |                     | name>link

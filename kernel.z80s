@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510220228
+version_release:  equ 201510221444
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -2816,6 +2816,9 @@ endif
 
 if find_name_version!=3
 
+  ; XXX TODO use `save-string` to prevent the string from being
+  ; modified by `uppers`?
+
   dw to_r_,two_dup_,uppers_,from_r_
   dw fetch_,paren_find_name_
   dw dup_,question_exit_,nip_
@@ -2825,15 +2828,27 @@ else
 
   ; XXX UNDER DEVELOPMENT
 
+  ; XXX TODO use `save-string` to prevent the string from being
+  ; modified by `uppers`?
+
   dw to_r_,two_dup_,uppers_,from_r_
   dw fetch_,paren_find_name_  ; ( ca len false | cfa b true )
   dw zero_branch_,search_wordlist.not_found
-  _literal precedence_mask
-  dw and_,zero_equals_ ; ( cfa non-immediate? )
-  ; XXX TODO -- finish the calculation b > 1|-1
+  dw immediate_question_
+  dw zero_branch_,search_wordlist.nonimmediate
+
+  ; immediate:
+  _literal 1
+  dw exit_
+
+search_wordlist.nonimmediate:
+  dw true_,exit_
+
 search_wordlist.not_found:
   dw two_drop_,false_
   dw semicolon_s_
+
+  ; search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
 
 endif
 
@@ -7130,8 +7145,10 @@ fill.done:
   dw source_,to_in_,fetch_,slash_string_
 
   ; XXX TMP -- needed when no space is typed at the end
-  _literal 0
-  dw max_
+  ; XXX OLD -- not necessary anymore, I don't understand why
+  ; I added this
+  ; _literal 0
+  ; dw max_
 
   dw semicolon_s_
 
