@@ -18,7 +18,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7BB0
 
-  ; Last modified:  201512160323
+  ; Last modified:  201512160434
 
 ; ==============================================================
 ; Author and license
@@ -223,13 +223,6 @@ size_optimization: equ false
   ; true = pre-Forth-83 do-loops
   ; false = post-Forth-83 do-loops
 
-  ; XXX UNDER DEVELOPMENT
-  ; XXX NEW -- experimental, 2015-12-15
-  ; XXX FIXME -- bugs
-new_source: equ true
-  ; true = new, modern method to manage the input sources
-  ; false = classic method, only with `tib`, `blk`, etc.
-
 ; ==============================================================
 ; Symbols
 
@@ -255,7 +248,7 @@ bytes_per_buffer:                 equ 0x0400
 
 if defined gplusdos
   blocks_per_disk:                  equ 800 ; KiB per disk in G+DOS
- endif
+endif
 if defined plus3dos
   blocks_per_disk:                  equ 720 ; KiB per disk in +3DOS
 endif
@@ -3324,14 +3317,32 @@ if 1
 
   ld a,l
   cp 128 ; control or ASCII character?
-  jp nc,paren_mode32_emit.print_udg ; if not, jump
+  jp nc,emit_udg.a ; if not, jump
 
   ; use the ROM routine to print a control or ASCII character
   rst 0x10
   pop bc
   _jp_next
 
-paren_mode32_emit.print_udg:
+; ----------------------------------------------
+  _code_header emit_udg_,'EMIT-UDG'
+
+; doc{
+;
+; emit-udg  ( b -- )
+;
+; Print the User Defined Character _b_ (128..255).
+;
+; }doc
+
+  ; XXX TODO benchmark, compared to `emit`.
+
+  pop hl
+  push bc
+  ; h = 0
+  ld a,l
+
+emit_udg.a
   ; a = UDG code (128..255)
   ; h = 0
   sub 128
@@ -5554,18 +5565,20 @@ endif
 ; ----------------------------------------------
   _two_variable_header input_buffer_,'INPUT-BUFFER'
 
-  ; XXX NEW -- experimental, 2015-12-15
+; doc{
+;
+; input-buffer  ( -- a )
+;
+; A double-cell variable that holds the address and length of
+; the current input buffer.
+;
+; }doc
 
   dw 0 ; len
   dw 0 ; address
 
 ; ----------------------------------------------
   _colon_header source_,'SOURCE'
-
-;if new_source
-
-
-  ; XXX NEW -- experimental, 2015-12-16
 
 ; doc{
 ;
@@ -5588,61 +5601,6 @@ endif
 source.other:
   dw input_buffer_,two_fetch_
   dw exit_
-
-;endif
-
-
-if 0 ; XXX OLD
-
-  ; XXX NEW -- experimental, 2015-12-15
-
-; doc{
-;
-; source  ( -- ca len )
-;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
-;
-; ----
-; : source  ( -- ca len )
-;   input-buffer 2@  ;
-; ----
-;
-; }doc
-
-  ; XXX OLD buggy, because the content of the disk buffer could have change
-
-  dw input_buffer_,two_fetch_
-  dw exit_
-
-endif
-
-if 0 ; XXX OLD
-
-; doc{
-;
-; source  ( -- ca len )
-;
-; ----
-; : source  ( -- ca len )
-;   blk @ ?dup if  block b/buf exit  then
-;   tib #tib @ span @ min  ;
-; ----
-;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
-;
-; }doc
-
-  dw blk_,fetch_,question_dup_
-  dw zero_branch_,source.tib
-  ; disk block
-  dw block_,b_slash_buf_,exit_
-source.tib:
-  ; terminal input buffer
-  ; XXX TODO `span @` only?, `#tib @` only?
-  dw tib_,number_tib_,fetch_,span_,fetch_,min_
-  dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header recurse_,'RECURSE',immediate+compile_only
@@ -6902,7 +6860,7 @@ endif
 ;
 ; The address of a variable containing the count of characters
 ; actually received and stored by the last execution of
-; `expect`.
+; `accept`.
 ;
 ; }doc
 
@@ -7063,12 +7021,7 @@ accept.end:
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer
   dw accept_,number_tib_,store_,space_
-if new_source
   dw terminal_to_source_
-else
-  dw blk_,off_ ; XXX TODO needed?
-  dw to_in_,off_
-endif
   dw exit_
 
 ; ----------------------------------------------
@@ -7091,7 +7044,6 @@ endif
 ;
 ; }doc
 
-source_id_value:
   dw 0
 
 ; ----------------------------------------------
@@ -8121,38 +8073,26 @@ two_literal.end:
   dw throw_
 
 ; ----------------------------------------------
-
-  ; XXX NEW -- experimental, 2015-12-15
-  ; this word is more generic than the standard `save-input`
-
-if 0 ; XXX OLD
-
-  _colon_header nest_source_,'NEST-SOURCE'
-
-; doc{
-;
-; save-source  ( -- x1..xn n )
-;
-; }doc
-
-  dw depth_,to_r_
-  dw source_
-  dw source_id_
-  dw to_in_,fetch_
-  dw blk_,fetch_
-  dw number_tib_,fetch_
-  dw span_,fetch_
-  dw depth_,from_r_,minus_
-  dw exit_
-
-else
-
   _colon_header nest_source_,'NEST-SOURCE',compile_only
 
 ; doc{
 ;
-; save-source  ( R: -- x1..xn n )
+; nest-source  ( R: -- source-sys )
 ;
+; _source-sys_ describe the current source specification for
+; later use by `unnest-source`.
+
+; ----
+; : nest-source  ( R: -- source-sys )
+;   r>
+;   source 2>r
+;   source-id >r
+;   >in @ >r
+;   blk @ >r
+;   #tib @ >@
+;   >r  ;
+; ----
+
 ; }doc
 
   dw from_r_ ; save the return address
@@ -8161,85 +8101,40 @@ else
   dw to_in_,fetch_,to_r_
   dw blk_,fetch_,to_r_
   dw number_tib_,fetch_,to_r_
-  dw span_,fetch_,to_r_ ; XXX TMP
-  _literal 7
-  dw to_r_
   dw to_r_ ; restore the return address
   dw exit_
 
-endif
-
 ; ----------------------------------------------
-
-  ; XXX NEW -- experimental, 2015-12-15
-  ; this word is more generic than the standard `restore-input`
-
-if 0 ; XXX OLD
-
-  _colon_header unnest_source_,'UNNEST-SOURCE'
-
-; doc{
-;
-; restore-source  ( x1..xn n -- )
-;
-; }doc
-
-  dw drop_
-  dw span_,store_
-  dw number_tib_,store_
-  dw blk_,store_
-  dw to_in_,store_
-  _literal source_id_value
-  dw store_
-  dw input_buffer_,two_store_
-  dw exit_
-
-else
-
   _colon_header unnest_source_,'UNNEST-SOURCE',compile_only
 
 ; doc{
 ;
-; restore-source  ( R: x1..xn n -- )
+; unnest-source  ( R: source-sys -- )
 ;
+; Restore the source specification described by _source-sys_.
+
+; ----
+; : unnest-source  ( R: source-sys -- )
+;   r>
+;   r> #tib !
+;   r> blk !
+;   r> >in !
+;   r> [ ' source-id >body ] literal !
+;   2r> input-buffer 2!
+;   >r  ;
+; ----
+
 ; }doc
 
   dw from_r_ ; save the return address
-  dw r_drop_
-  dw from_r_,span_,store_
   dw from_r_,number_tib_,store_
   dw from_r_,blk_,store_
   dw from_r_,to_in_,store_
   dw from_r_
-  _literal source_id_value
+  _literal source_id_pfa
   dw store_
   dw two_from_r_,input_buffer_,two_store_
   dw to_r_ ; restore the return address
-  dw exit_
-
-endif
-
-; ----------------------------------------------
-  _colon_header set_source_,'SET-SOURCE'
-
-  ; XXX NEW -- experimental, 2015-12-15
-
-; doc{
-;
-; set-source  ( ca len -- )
-;
-; Make the string _ca len_ the current input buffer by settting
-; `input-buffer` to point to it and setting `>in` to zero.
-;
-; ----
-; : set-source  ( ca len -- )
-;   input-buffer 2!  >in off  ;
-; ----
-;
-; }doc
-
-  dw input_buffer_,two_store_
-  dw to_in_,off_
   dw exit_
 
 ; ----------------------------------------------
@@ -8257,10 +8152,12 @@ endif
 ; specification.
 ;
 ; Standard: Forth-94 (CORE), Forth-2012 (CORE).
-; 
+ 
 ; ----
 ; : evaluate  ( i*x ca len -- j*x )
 ;   nest-source string>source interpret unnest-source  ;
+; ----
+
 ; }doc
 
   dw nest_source_ 
@@ -8662,13 +8559,7 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header quit_,'QUIT'
 
-if new_source
   dw terminal_to_source_
-else
-  dw blk_,off_
-  _literal source_id_value
-  dw off_
-endif
   dw left_bracket_
 quit.begin:
   dw rp0_,fetch_,rp_store_
@@ -10042,24 +9933,45 @@ endif
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header set_source_,'SET-SOURCE'
+
+; doc{
+;
+; set-source  ( ca len -- )
+;
+; Set the memory zone _ca len_ as the current source by pointing
+; the input buffer to it.
+
+; ----
+; : set-source  ( ca len -- )
+;   input-buffer 2!  >in off  ;
+; ----
+;
+; }doc
+
+  dw input_buffer_,two_store_
+  dw to_in_,off_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header string_to_source_,'STRING>SOURCE'
 
 ; doc{
 ;
 ; string>source  ( ca len -- )
 ;
+; Set the string _ca len_ as the current source.
+;
 ; ----
 ; : string>source  ( ca len -- )
 ;   blk off
-;   XXX TODO -- source_id_value is not in Forth
+;   [ ' source-id >body ] literal on
 ;   set-source  ;
 ; ----
 ; }doc
 
-  ; XXX NEW -- experimental, 2015-12-15
-
   dw blk_,off_
-  _literal source_id_value
+  _literal source_id_pfa
   dw on_
   dw set_source_
   dw exit_
@@ -10071,20 +9983,19 @@ endif
 ;
 ; terminal>source  ( -- )
 ;
+; Set the terminal as the current source.
+;
 ; ----
 ; : terminal>source  ( -- )
 ;   blk off
-;   XXX TODO source_id_value is not in Forth
-;   off
+;   [ ' source-id >body ] literal off
 ;   tib #tib @ set-source  ;
 ; ----
 ;
 ; }doc
 
-  ; XXX NEW -- experimental, 2015-12-15
-
   dw blk_,off_
-  _literal source_id_value
+  _literal source_id_pfa
   dw off_
   dw tib_,number_tib_,fetch_,set_source_
   dw exit_
@@ -10096,6 +10007,8 @@ endif
 ;
 ; block>source  ( +n -- )
 ; 
+; Set block _+n_ as the current source.
+;
 ; ----
 ; : block>source  ( +n -- )
 ;   blk !  >in off  ;
@@ -10103,22 +10016,8 @@ endif
 ;
 ; }doc
 
-if 0 ; XXX OLD
-
-  ; XXX NEW -- experimental, 2015-12-15
-
-  dw dup_,blk_,store_
-  dw block_,b_slash_buf_,set_source_
-  dw exit_
-
-else
-
-  ; XXX NEW -- experimental, 2015-12-16
-
   dw blk_,store_,to_in_,off_
   dw exit_
-
-endif 
 
 ; ----------------------------------------------
   _colon_header paren_load_,'(LOAD)'
@@ -10140,21 +10039,10 @@ endif
 ; : (load)  ( u -- )
 ;   block>source interpret  ;
 ; ----
-
-; ---- XXX OLD
-; : (load)  ( u -- )
-;   blk !  >in off  interpret  ;
-; ----
 ;
 ; }doc
 
-if new_source
-  dw block_to_source_
-else
-  dw blk_,store_
-  dw to_in_,off_
-endif
-  dw interpret_
+  dw block_to_source_,interpret_
   dw exit_
 
 ; ----------------------------------------------
@@ -10178,9 +10066,7 @@ endif
 ; ----
 ; : load  ( u -- )
 ;   dup 0= 9 ?throw  dup scr !
-;   blk @ >r  >in @ >r
-;   (load)
-;   r> >in !  r> blk !  ;
+;   nest-source (load) unnest-source  ;
 ; ----
 ;
 ; }doc
@@ -10188,31 +10074,11 @@ endif
   dw dup_,zero_equals_
   _question_throw error.loading_from_screen_0
   dw dup_,scr_,store_
-
-if new_source
-  dw nest_source_
-else
-  dw blk_,fetch_,to_r_
-  dw to_in_,fetch_,to_r_
-endif
-
-  dw paren_load_
-
-if new_source
-  dw unnest_source_
-else
-  dw from_r_,to_in_,store_
-  dw from_r_,blk_,store_
-endif
-
+  dw nest_source_,paren_load_,unnest_source_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header next_screen_,'-->',immediate
-
-  ; XXX TODO -- In Gforth the definition is `refill drop`
-
-if new_source
+  _colon_header next_block_,'-->',immediate
 
 ; doc{
 ;
@@ -10230,37 +10096,12 @@ if new_source
 ;
 ; }doc
 
+  ; XXX TODO -- In Gforth the definition is `refill drop`
+
   dw question_loading_
   dw blk_,fetch_,one_plus_
   dw block_to_source_
   dw exit_
-
-else
-
-
-; doc{
-;
-; -->  ( -- )  \ "next-screen"
-;
-; Continue interpretation with the next disk screen.
-;
-; Standard: fig-Forth, Forth-79 (Reference Word Set), Forth-83
-; (Controlled Reference Words).
-;
-; ----
-; : -->  ( -- )
-;   ?loading  >in off  1 blk +!  ; immediate
-; ----
-;
-; }doc
-
-  dw question_loading_
-  dw to_in_,off_
-  _literal 1
-  dw blk_,plus_store_
-  dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header defined_,'DEFINED'
@@ -11828,37 +11669,6 @@ throw.end:
   dw exit_
 
 ; ----------------------------------------------
-
-if 0
-
-  ; XXX OLD -- moved to the library
-
-  _colon_header question_next_screen_,'?-->',immediate
-
-; doc{
-;
-; ?-->  ( f -- )
-;
-; If _f_ is not false, continue interpretation on the next
-; sequential screen.  parse area. This word is used for
-; conditional compilation.  This word is used for conditional
-; compilation.
-;
-; }doc
-
-
-  dw zero_branch_,question_next_screen.end
-  dw next_screen_
-question_next_screen.end:
-  dw exit_
-
-  ; XXX TODO a good place to use `??` instead of a branch:
-;  dw question_question_,next_screen_
-;  dw exit_
-
-endif
-
-; ----------------------------------------------
   _colon_header question_backslash_,'?\',immediate
 
 ; doc{
@@ -11893,7 +11703,7 @@ question_backslash.end:
   dw loading_question_ ; input stream from disk?
   dw question_branch_,backslash.loading
   ; Interpreting
-  dw span_,fetch_
+  dw span_,fetch_ ; XXX TODO -- use `#tib` instead?
 ;  _chk '\ tib -- before updating >in' ; XXX INFORMER
   dw to_in_,store_
   dw exit_

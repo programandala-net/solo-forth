@@ -8,15 +8,6 @@
 == Urgent ==
 // {{{
 
-.2015-12-16:
-
-Bug:
-
-The new source method, activated with the assembler flag new_source,
-fails with `need`.
-
-The problem is the new `source` does not uses `block`, so the content
-of the disk buffer has been changed by `located`!
 
 // }}}
 == Inner ==
