@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 2015082517
+version_release:  equ 201508280231
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -161,7 +161,7 @@ version_release:  equ 2015082517
 ; ----------------------------------------------
 ; Word attributes
 
-; XXX TODO -- finish
+; XXX TODO -- not used
 
 ; The capital letters on the right show definition characteristics:
 
@@ -1093,6 +1093,169 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw 0
 
 ; ----------------------------------------------
+  _colon_header end_asm_,'END-ASM'
+
+; doc{
+;
+; end-asm  ( -- )
+;
+; Exit the assembler mode.
+;
+; }doc
+
+  dw question_csp_
+  dw previous_ ; restore the search order ; XXX TODO better
+  dw abase_,fetch_,base_,store_ ; restore `base`
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header end_code_,'END-CODE'
+
+  dw end_asm_,smudge_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _constant_header next_,'NEXT'
+
+  dw next
+
+; ----------------------------------------------
+  ; _constant_header next_,'NEXT2'
+
+  ; ; XXX OLD -- added for the second version of `defer`, but
+  ; ; not needed
+  
+  ; dw next2
+
+; ----------------------------------------------
+  _constant_header pushhl_,'PUSHHL'
+
+  dw push_hl
+
+; ----------------------------------------------
+  _constant_header pushhlde_,'PUSHHLDE'
+
+  dw push_hlde
+
+; ----------------------------------------------
+  _constant_header fetchhl_,'FETCHHL'
+
+  dw fetch.hl
+
+; ----------------------------------------------
+  _colon_header jpnext_,'JPNEXT'
+
+; doc{
+;
+; jpnext  ( -- )
+; 
+; Compile a Z80 jump to `next`.
+;
+; }doc
+
+  dw lit_,0xE9DD ; opcode `jp (ix)`
+  dw comma_
+  dw semicolon_s_
+
+if 0 ; XXX OLD
+
+; ----------------------------------------------
+  _colon_header jppushhl_,'JPPUSHHL'
+
+; doc{
+;
+; jppushhl  ( -- )
+; 
+; Compile a Z80 jump to `pushhl`.
+;
+; }doc
+
+  _literal 0xC3 ; opcode `jp`
+  dw c_comma_
+  dw lit_,push_hl,comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header jppushhlde_,'JPPUSHHLDE'
+
+; doc{
+;
+; jppushhlde  ( -- )
+; 
+; Compile a Z80 jump to `pushhlde`.
+;
+; }doc
+
+  _literal 0xC3 ; opcode `jp`
+  dw c_comma_
+  dw lit_,push_hlde,comma_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header jpfetchhl_,'JPFETCHHL'
+
+; doc{
+;
+; jpfetchhl  ( -- )
+; 
+; Compile a Z80 jump to `fetchhl`.
+;
+; }doc
+
+  _literal 0xC3 ; opcode `jp`
+  dw c_comma_
+  dw lit_,fetch.hl,comma_
+  dw semicolon_s_
+
+latest_nfa_in_assembler_voc: equ fetchhl_comma_nfa
+
+else
+
+latest_nfa_in_assembler_voc: equ jpnext_nfa
+
+endif
+
+endif
+
+; ----------------------------------------------
+; Start compiling in the `forth` vocabulary
+
+nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+; current_vocabulary: defl forth_pfa
+
+if 0
+  
+; ----------------------------------------------
+  _constant_header next_,'NEXT'
+
+  dw next
+
+; ----------------------------------------------
+  ; _constant_header next_,'NEXT2'
+
+  ; ; XXX OLD -- added for the second version of `defer`, but
+  ; ; not needed
+  
+  ; dw next2
+
+; ----------------------------------------------
+  _constant_header pushhl_,'PUSHHL'
+
+  dw push_hl
+
+; ----------------------------------------------
+  _constant_header pushhlde_,'PUSHHLDE'
+
+  dw push_hlde
+
+; ----------------------------------------------
+  _constant_header fetchhl_,'FETCHHL'
+
+  dw fetch.hl
+
+endif
+
+; ----------------------------------------------
   _colon_header asm_,'ASM'
 
 ; doc{
@@ -1105,166 +1268,11 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
   ; [Idea taken from Coos Haak's Z80 Forth assembler.]
 
-  dw noop_ ; to be patched by the assembler
+  dw store_csp_
   dw base_,fetch_,abase_,store_ ; save the current base
   dw hex_
   dw also_,assembler_ ; XXX TODO better
   dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header end_asm_,'END-ASM'
-
-; doc{
-;
-; end-asm  ( -- )
-;
-; Exit the assembler mode.
-;
-; }doc
-
-  dw previous_ ; restore the search order ; XXX TODO better
-  dw abase_,fetch_,base_,store_ ; restore `base`
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header end_code_,'END-CODE'
-
-  dw question_csp_,end_asm_,smudge_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _constant_header next_,'NEXT'
-
-  dw next
-
-; ----------------------------------------------
-  ; _constant_header next_,'NEXT2'
-
-  ; ; XXX OLD -- added for the second version of `defer`, but
-  ; ; not needed
-  
-  ; dw next2
-
-; ----------------------------------------------
-  _constant_header pushhl_,'PUSHHL'
-
-  dw push_hl
-
-; ----------------------------------------------
-  _constant_header pushhlde_,'PUSHHLDE'
-
-  dw push_hlde
-
-; ----------------------------------------------
-  _constant_header fetchhl_,'FETCHHL'
-
-  dw fetch.hl
-
-; ----------------------------------------------
-  _colon_header next_comma_,'NEXT,'
-
-; doc{
-;
-; next,  ( -- )
-; 
-; Compile a Z80 jump to `next`.
-;
-; }doc
-
-  dw lit_,0xE9DD ; opcode `jp (ix)`
-  dw comma_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header pushhl_comma_,'PUSHHL,'
-
-; doc{
-;
-; pushhl,  ( -- )
-; 
-; Compile a Z80 jump to `pushhl`.
-;
-; }doc
-
-  _literal 0xC3 ; opcode `jp`
-  dw c_comma_
-  dw lit_,push_hl,comma_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header pushhlde_comma_,'PUSHHLDE,'
-
-; doc{
-;
-; pushhlde,  ( -- )
-; 
-; Compile a Z80 jump to `pushhlde`.
-;
-; }doc
-
-  _literal 0xC3 ; opcode `jp`
-  dw c_comma_
-  dw lit_,push_hlde,comma_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header fetchhl_comma_,'FETCHHL,'
-
-; doc{
-;
-; fetchhl,  ( -- )
-; 
-; Compile a Z80 jump to `fetchhl`.
-;
-; }doc
-
-  _literal 0xC3 ; opcode `jp`
-  dw c_comma_
-  dw lit_,fetch.hl,comma_
-  dw semicolon_s_
-
-latest_nfa_in_assembler_voc: equ fetchhl_comma_nfa
-;latest_nfa_in_assembler_voc: equ next_comma_nfa ; XXX OLD
-
-endif
-
-; ----------------------------------------------
-; Start compiling in the `forth` vocabulary
-
-nfa_of_the_previous_word: defl 0 ; link to previous Forth word
-; current_vocabulary: defl forth_pfa
-
-if 0 ; assembler_core_in_kernel
-
-; ----------------------------------------------
-  _constant_header next_,'NEXT'
-
-  dw next
-
-; ----------------------------------------------
-  ; _constant_header next_,'NEXT2'
-
-  ; ; XXX OLD -- added for the second version of `defer`, but
-  ; ; not needed
-  
-  ; dw next2
-
-; ----------------------------------------------
-  _constant_header pushhl_,'PUSHHL'
-
-  dw push_hl
-
-; ----------------------------------------------
-  _constant_header pushhlde_,'PUSHHLDE'
-
-  dw push_hlde
-
-; ----------------------------------------------
-  _constant_header fetchhl_,'FETCHHL'
-
-  dw fetch.hl
-
-endif
 
 ; ----------------------------------------------
   _colon_header also_,'ALSO'
@@ -1606,7 +1614,7 @@ question_csb_.enough:
 
 ; doc{
 ;
-; >mark  ( -- orig )  \ Forth-83, C, "forward-mark"
+; >mark  ( -- orig )  \ Forth-83, "forward-mark"
 ;
 ; Compile space in the dictionary for a branch address which
 ; will later be resolved by `>resolve`.
@@ -1624,7 +1632,7 @@ question_csb_.enough:
 
 ; doc{
 ;
-; >resolve  ( orig -- )  \ Forth-83, C, "forward-resolve"
+; >resolve  ( orig -- )  \ Forth-83, "forward-resolve"
 ;
 ; Resolve a forward branch by placing the address of the current
 ; dictionary pointer into the space compiled by `>mark`.
@@ -1639,7 +1647,7 @@ question_csb_.enough:
 
 ; doc{
 ;
-; <mark  ( -- dest )  \ Forth-83, C, "backward-mark"
+; <mark  ( -- dest )  \ Forth-83, "backward-mark"
 ;
 ; Leave the address of the current dictionary pointer, as the
 ; the destination of a backward branch.  _dest_ is typically
@@ -1655,7 +1663,7 @@ question_csb_.enough:
 
 ; doc{
 ;
-; <resolve  ( dest -- )  \ Forth-83, C, "backward-resolve"
+; <resolve  ( dest -- )  \ Forth-83, "backward-resolve"
 ;
 ; Resolve a backward branch.  Compile a branch address using
 ; _dest_, the address left by `<mark`,  as the destination
@@ -2491,7 +2499,7 @@ s_m_slash_rem_.1:
   jp msm.2
 
 ; ----------------------------------------------
-  _code_header fm_slash_mod_,'FM/MOD'
+  _code_header f_m_slash_mod_,'FM/MOD'
 
 ; doc{
 ;
@@ -2519,7 +2527,7 @@ s_m_slash_rem_.1:
   pop de
   ex (sp),hl
   ex de,hl
-fm_slash_mod.1:
+f_m_slash_mod.1:
   call msm
   ld a,d
   or e
@@ -2694,7 +2702,52 @@ endif
   _jp_next
 
 ; ----------------------------------------------
+  _code_header roll_,'ROLL'
+
+; doc{
+;
+; roll  ( xu xn .. x0 u -- xn .. x0 xu )
+;
+; }doc
+
+  ; [Code adapted from DZX-Forth.]
+
+  ; XXX TODO move to the library
+
+  pop hl
+  add hl,hl
+  ld e,l
+  ld d,h
+  add hl,sp
+  push bc
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  push bc
+  ld c,e
+  ld b,d
+  ld e,l
+  ld d,h
+  ld a,b
+  or c
+  jp z,roll.end
+  dec hl
+  dec hl
+  lddr
+roll.end:
+  pop hl
+  pop bc
+  ex (sp),hl
+  _jp_next
+
+; ----------------------------------------------
   _code_header pick_,'PICK'
+
+; doc{
+;
+; pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
+;
+; }doc
 
   pop hl
   add hl,hl
@@ -2706,7 +2759,7 @@ endif
 
 ; doc{
 ;
-; unloop  ( -- ) ( R: x1 x2 -- )  \ ANS Forth, C
+; unloop  ( -- ) ( R: x1 x2 -- )  \ ANS Forth
 ;
 ; x1 = loop index
 ; x2 = loop limit
@@ -3502,6 +3555,17 @@ endif
 ; ----------------------------------------------
   _user_variable_header scr_,'SCR' ; XXX OLD -- used by `list`
 
+; doc{
+;
+; scr  ( -- a )
+;
+; A user variable. _a_ is the address of a cell containing the
+; screen number of the screen most recently listed (with `list`)
+; or loaded (with `load` or `continued`). This is the value used
+; by `reload`.
+;
+; }doc
+
   db 0x16
 
 ; ----------------------------------------------
@@ -4190,7 +4254,7 @@ endif
 
 ; doc{
 ;
-; postpone ( "name" -- )  \ ANS Forth, C I
+; postpone ( "name" -- )  \ ANS Forth
 ;
 ; Skip leading space delimiters. Parse name delimited by a
 ; space. Find name. Append the compilation semantics of _name_ to
@@ -5139,8 +5203,10 @@ endif
   _colon_header error_,'ERROR'
 
   dw dup_,error_number_,store_ ; save the error number
-  dw warnings_,fetch_,zero_less_than_ ; custom error routine?
-  dw question_branch_,paren_abort_pfa ; if so, branch to it
+  ; XXX OLD
+  ; XXX TODO
+;  dw warnings_,fetch_,zero_less_than_ ; custom error routine?
+;  dw question_branch_,paren_abort_pfa ; if so, branch to it
 
 error.message:
   dw here_,count_,type_ ; last parsed word ; XXX TODO adapt to `parse-word`
@@ -5180,15 +5246,20 @@ error.end:
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
   dw zero_branch_,header.continue
+
   ; The word is not unique.
   dw warnings_,fetch_
-  dw zero_branch_,header.continue
+  dw zero_branch_,header.no_warning
   dw cfa_to_nfa_,id_dot_
   _literal error.not_unique
   dw warning_
+  dw zero_ ; just for the `drop`, faster and smaller than a branch
+header.no_warning:
+  dw drop_
 
 header.continue:
 
+;  dw cr_,dot_s_ ; XXX INFORMER
     ; XXX TODO adapt to `parse-word`; now it works because
     ; `defined` still uses `word`, that leaves the string at
     ; `here`.
@@ -5223,7 +5294,7 @@ if 1 ; assembler_core_in_kernel
 
   _colon_header code_,'CODE'
 
-  dw header_,store_csp_,asm_
+  dw header_,asm_
   dw semicolon_s_
 
 endif
@@ -5417,7 +5488,7 @@ c_literal.end:
 
 ; doc{
 ;
-; literal  ( n -- )  \ fig-Forth, I
+; literal  ( n -- )  \ fig-Forth
 ;
 ; If compiling, then compile the stack value _n_ as a 16-bit literal.
 ;
@@ -5788,11 +5859,20 @@ common_start:
   _jp_next ; jump to the cfa pointed by the register pair BC
 
 ; ----------------------------------------------
+  _code_alias_header d_to_s_,'D>S',,drop_
+
+; doc{
+;
+; d>s  ( d -- n )  \ ANS Forth
+;
+; }doc
+
+; ----------------------------------------------
   _code_header s_to_d_,'S>D'
 
 ; doc{
 ;
-; s->d  ( n -- d )
+; s>d  ( n -- d )
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
@@ -6035,6 +6115,15 @@ max.2:
   dw to_r_,u_slash_mod_,from_r_
   dw semicolon_s_
 
+
+; ----------------------------------------------
+  _colon_header u_m_slash_mod_,'UM/MOD'
+
+  ; XXX TMP -- temporary solution
+
+  dw m_slash_mod_,d_to_s_
+  dw semicolon_s_
+
 ; ----------------------------------------------
   _colon_header paren_line_,'(LINE)'
 
@@ -6081,8 +6170,7 @@ max.2:
 message.number_only:
   dw paren_dot_quote_
   _string 'MSG # '
-  ; XXX TODO force decimal base
-  dw dot_
+  dw base_,fetch_,swap_,decimal_,dot_,base_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6505,6 +6593,7 @@ read_write_sector_command:
 ;
 ; }doc
 
+  dw dup_,scr_,store_
   dw dup_,zero_equals_
   _question_error error.loading_from_screen_0
   dw b_slash_scr_,star_,blk_,store_

@@ -29,8 +29,6 @@ Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
     LIT PKEY (KEY) !    \ Set default handler for KEY.
     >S ;                \ And initialize screen output.
 
-Fix?: in 128, typing graphics T and U prints the new tokens.
-
 New: A printing routine instead the ROM routines, with two fonts: for
 chars 0..127 and for chars 128..255.
 
@@ -61,10 +59,6 @@ This error happens in all fig-Forth systems:
 
 New: `??`. A control structure than executes the next compiled word if
 TOS is non-zero, else skip it.
-
-.2015-06-26:
-
-Fix: `plot` and `point`.
 
 .2015-06-28:
 
@@ -160,17 +154,13 @@ vocabularies? `vocabulary` should be adapted too. The advantage is the
 pfa is also the id used in search order and returned by `wordlist`.
 A word `pfa>vlfa` would be helpful.
 
-New: `cvariable`, `cconstant`.
+New: `cvariable`.
 
 Fix: `attr`.
 
 Improve: version in the greeting message.
 
-Fix: warm reentry crashes the system.
-
 .2015-08-14:
-
-Fix: problems when true=-1.
 
 Fix: problem when compiler security is off.
 
@@ -180,12 +170,8 @@ Idea: maybe 0 could be used instead of 0x7fff to init the block number of a buff
 
 Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 
-New: `d>s`.
+.2015-08-26:
 
-.2015-08-22:
+Finish `sound:`.
 
-use `create x asm ... end-asm` instead of `label ...`, easier.
-
-New: `just-plot` or `set-pixel` to plot without changing the
-attributes.
-
+New: `cvalue`, `2value`.
