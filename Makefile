@@ -150,7 +150,7 @@ backup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
 		Makefile \
 		*.adoc \
-		old/* \
+		_old/* \
 		solo_forth*.fsb \
 		solo_forth*.bas \
 		solo_forth*.mgt \

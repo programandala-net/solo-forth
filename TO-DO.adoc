@@ -20,6 +20,10 @@ overflow.
 DZX-Forth implements `exit` simple as `compile (exit)`, and
 `exit` is the word called by `;`. Compare both implementations.
 
+.2015-08-12:
+
+Solve `;s` vs `exit`. Compare CamelForth, DZX-Forth...
+
 .2015-06-07:
 
 Write a version of `screen` that recognizes the UDG.
@@ -104,15 +108,14 @@ Fix: Something went wrong after the massive of the `_number` macro:
 New: command history, stored in the names bank.
 
 Change: remove double `;s` from the colon words in the kernel. Use
-`exit` instead, else the word can not be decoded.
+`exit` instead, else the word can not be decoded. [2015-08-12: Two
+cases found and marked.]
 
 Change: modify `expect` after Spectrum Forth-83.
 
 Change: modify `key` after Forth-83 and ANS Forth.
 
 Change: compare the user variables with those of Spectrum Forth-83.
-
-Change: rewrote `word` to return and address, after Forth-83 or ANS Forth.
 
 .2015-07-05:
 
@@ -143,10 +146,6 @@ From F83:
 ----
 
 
-.2015-07-06:
-
-Fix: `parse-word`.
-
 .2015-07-23:
 
 Study how to save and load the main code and the name bank apart, in
@@ -167,3 +166,25 @@ below 0xC000! This is not a problem now, during the development,
 because the dictionary is small. A specific buffer is needed.
 
 New: `lowerc` and `lowers`.
+
+Idea: 2 more bytes for `base`, to be used as save-restore space.
+
+----
+  : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
+    \ Exchange the 16-bit contents of a1 and a2.
+
+  : cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
+    \ Exchange the 8-bit contents of a1 and a2.
+
+  : switch  ( a1 -- )  dup cell+ exchange  ;
+    \ Exchange the 16-bit contents of a1 and the following cell.
+
+  \ Example:
+
+  base switch hex
+
+  base switch
+----
+
+
+

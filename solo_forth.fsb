@@ -60,7 +60,7 @@ decode dump
   loop  2drop false  ;
 
 : locate  ( "name" -- screen | false )
-  parse-word save-string located  ;
+  parse-name save-string located  ;
 
   \ cr ." (required) <" 2dup type [char] > emit  \ XXX INFORMER
 : do-required  ( ca len -- )  located dup 0= 29 ?error load  ;
@@ -70,10 +70,10 @@ decode dump
   \ cr ." required <" 2dup type [char] > emit  \ XXX INFORMER
   2dup undefined? if  type 28 message exit  then  2drop  ;
 
-: require  ( "name" -- )  parse-word save-string required  ;
+: require  ( "name" -- )  parse-name save-string required  ;
 
 : do-require  ( "name" -- )
-  parse-word save-string do-required  ;
+  parse-name save-string do-required  ;
 
   \ }}} =======================================================
   \ Error messages {{{
@@ -122,30 +122,17 @@ decode dump
 
 ( debug ) \ scr 6 for debugging
 
-( code ) \ scr 7 for debugging
-
-forth definitions  vocabulary assembler
-
-;s
-
-  \ XXX TODO
-  \ asm code end-code next, pushhl, pushde,
-
+( debug ) \ scr 7 for debugging
 
   \ }}} =======================================================
-  \ String operations {{{
+  \ Strings {{{
 
 ( place +place /string )
 
-  \ 2015-06-17: Copied from Afera.
-
-  \ XXX OLD -- 2015-06-20: `text` modified in the kernel to do
-  \ this:
-  \ : parse-text  ( c "ccc<c>" -- ca len )  text pad count  ;
-  \ XXX OLD -- 2015-06-23: `parse-word` in the kernel:
-  \ : parse-name  ( "name" -- ca len )  bl parse-text  ;
+  \ [Code from Afera.]
 
 : place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
+
 : +place  ( ca1 len1 ca2 )
   2dup c@ + over c!  dup c@ 1+ + smove  ;
 
@@ -154,9 +141,7 @@ forth definitions  vocabulary assembler
 
 ( s' )
 
-  \ 2015-06-17: Basic string support words copied from Afera.
-  \
-  \ 2015-06-20: All words but `s'` are moved to the kernel.
+  \ [Code from Afera.]
 
   \ doc{
   \
@@ -185,8 +170,7 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
 ( 2nip )
 
-  \ 2015-06-22: Copied from Afera; original code from
-  \ DZX-Forth.
+  \ [Code from Afera; original code from DZX-Forth.]
 
 code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
 
@@ -551,7 +535,7 @@ end-code
 
 : [else]  ( "..." -- )
 
-  1 begin   parse-word 2dup swap c@ and
+  1 begin   parse-name 2dup swap c@ and
     while   2dup s" [if]" s=
             if    2drop 1+
             else  2dup s" [else]" s=
@@ -646,7 +630,7 @@ variable old-voc-link
 : (dhex.)  ( d n -- )  hex{ (d.) }hex type space  ;
 : dhex.    ( d -- )  8 (dhex.)  ;
 : hex.     ( n -- )  s>d 4 (dhex.)  ;
-: hexb.    ( n -- )  s>d 2 (dhex.)  ;
+: hexb.    ( b -- )  s>d 2 (dhex.)  ;
 
 ( binary bin. binb. dbin. bin{ )
 
@@ -667,7 +651,7 @@ base !
 : (dbin.)  ( d n -- )  bin{ (d.) }bin type space  ;
 : dbin.    ( d -- )  32 (dbin.)  ;
 : bin.     ( n -- )  s>d 16 (dbin.)  ;
-: binb.    ( n -- )  s>d 8 (dbin.)  ;
+: binb.    ( b -- )  s>d 8 (dbin.)  ;
 
 ( ascii-type )
 
@@ -700,8 +684,7 @@ require hex.  require ascii-type
 
 ( decode -- variables, indentation and pause control )
 
-  \ 2015-06-05: Copied from Afera.
-  \ 2015-06-19: New: `?branch`.
+  \ [Code adapted and improved from Afera.]
 
 forth definitions decimal
 
@@ -841,7 +824,7 @@ variable decode-address  \ in the word being decoded
 
 : words-like  ( "name" -- )
   \ Print all words containing substring.
-  parse-word 2dup uppers trail  ( ca len nfa )
+  parse-name 2dup uppers trail  ( ca len nfa )
   begin  dup 0<> ?terminal 0= and  while
     dup >r
     nfa>string 2over 2swap contains if  r@ id. tab  then
@@ -863,8 +846,7 @@ variable decode-address  \ in the word being decoded
 
 ( .s )
 
-  \ 2015-06-22: Copied from Afera. The algorithm
-  \ was taken from v.Forth.
+  \ [Code from Afera. Origital algorithm from v.Forth.]
 
 : .s   ( -- )
   depth
@@ -1117,21 +1099,51 @@ code j'  ( -- x )
 
 ( case: associative: )
 
-  \ [Code adapted from F83.]
-  \
-  \ XXX TODO document
+  require -rot
 
-: case:  ( n -- )
-  create  1+ cells , ]
-  does>   dup @ + perform  ;
+  \ [Code adapted from F83.]
+
+: case:  ( -- )
+  \ Create a positional case word.
+  create  ]
+  does>   ( n -- )
+          \ Execute the n-th word compiled.
+          ( n pfa ) swap cells + perform  ;
+  \ A positional case statement.  At runtime, the n-th word is
+  \ executed, depending upon the value on the stack. No error
+  \ checking.
 
 : associative:  ( n -- )
+  \ Create a table lookup word.
+  \ n = number of entries in the table
   constant
-  does>
-    dup @ -rot dup @ 0 do
-      cell+ 2dup @ =
-      if  2drop drop i unloop exit   then
-    loop 2drop  ;
+  does>  ( x -- index )
+    ( x pfa )
+    dup @ ( x pfa n ) -rot dup @ 0 ( n x pfa n 0 )
+    do ( n x pfa )
+      cell+ 2dup @ = ( n x pfa' flag )
+      if  2drop drop i unloop exit  then
+    loop 2drop ( n )  ;
+  \ An associative memory word.  It must be followed by a set
+  \ of values to be looked up.  At runtime, the values stored
+  \ in the parameter field are searched for a match.  If one if
+  \ found, the index to that value is returned.  If no match is
+  \ made, then the number of entries, ie max index + 1 is
+  \ returned.  This is the inverse of an array.
+
+( test-case: )
+
+  \ XXX TMP
+
+require case:
+
+: zx0 ." zero" ;
+: zx1 ." one" ;
+: zx2 ." two" ;
+
+case: zx  ( n -- )  zx0 zx1 zx2 ;
+
+3 associative: unzx  ( value -- n )  ' zx0 , ' zx1 , ' zx2 ,
 
 ( Abersoft Forth case )
 
@@ -1178,12 +1190,6 @@ code j'  ( -- x )
 
 : +loopv
   postpone +loop (resolve)  ;
-
-( compile, )
-
-  \ [Code from v.Forth.]
-
-: compile,  ( cfa -- )  ?comp , ;
 
   \ }}} =======================================================
   \ Time {{{
@@ -1268,99 +1274,7 @@ code j'  ( -- x )
   \ }}} =======================================================
   \ Vocabularies {{{
 
-( root ) \ XXX from F83
-
-  \ XXX TODO This code from F83 seems simpler to adapt than the
-  \ code from the Forth-83 Standard.
-
-  \ 2015-07-22: Start.  Copied from F83. First changes to adapt
-  \ it.
-
-  \ XXX TMP
-  \ ' forth cfa>pfa context cell+ !
-  \ Put `forth` as the second vocabulary in the search order.
-
-  \ cr .( XXX 0) .s key drop \ XXX INFORMER
-
-  \ Get the cfa of the null word, in order to redefine it in
-  \ the root vocabulary.  If not found, error (should not
-  \ happen).
-
-vocabulary root  root definitions
-  \ A small vocabulary for controlling search order.
-
-  \ XXX FIXME with `rdrop`, the compilation crashes the system.
-
-  \ XXX FIXME without `rdrop`, everything seems fine except
-  \ `forth` crashes the system.
-
-forth
-: x  ( -- ) ( compiling: cfa -- )
-  \ XXX FIXME
-  rdrop
-  \ branch [ 1 pad ! pad find 0= 4 ?error cfa>pfa , ]
-  [ 1 pad ! pad find 0= 4 ?error , ]
-  ; immediate  root
-  \ Define an alias of the null word with a temporary name "x".
-  \ `rdrop` unnests one level, else the null word would fail.
-  \ `branch` is used to jump directly to the pfa of the null
-  \ word, therefore without adding a nesting level.  `pad` is
-  \ used to store the name of the null word to find, as a
-  \ counted string (a string with only a null char). `forth`
-  \ has to be the `context` vocabulary before the `find`.
-  \ `root` is restored at the end.
-
-  \ XXX TODO `forth` is not needed in `x`, because the kernel
-  \ provides `forth` as the second vocabulary in the search
-  \ order.
-
-  0 ' x cfa>nfa 1+ c!n
-  \ Rename `x` to its actual name: Overwrite the "x" with a
-  \ zero.
-
-( also )
-
-root definitions forth
-
-: also  ( -- )
-  context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
-  \ Duplicate the vocabulary at the top of the search order.
-
-  \ cr .( XXX 2) .s key drop \ XXX INFORMER
-
-( only seal previous )
-
-root definitions forth
-
-: -order  ( -- )  context [ #vocs cells ] literal erase  ;
-  \ Erase the search order.
-
-: only  ( -- )  -order root also  ;
-  \ Erase the search order and forces the `root` vocabulary to
-  \ be the first and second.
-
-: seal  ( -- )  context @ -order context !  ;
-  \ Change the search order such that only the vocabulary at
-  \ the top of the search order will be searched.
-
-: previous  ( -- )
-  context dup cell+ swap [ #vocs 2- cells ] literal cmove
-  context [ #vocs 2- cells ] literal + off  ;
-  \ Remove the most recently referenced
-  \ vocabulary from the search order.
-
-  \ cr .( XXX 3) .s key drop \ XXX INFORMER
-
-( forth definitions )  \ XXX from F83
-
-  \ cr .( XXX 3a) .s key drop \ XXX INFORMER
-: forth  ( -- )  forth  ;
-  \ cr .( XXX 3b) .s key drop \ XXX INFORMER
-: definitions  ( -- )  definitions  ;
-
-  \ cr .( XXX 4) .s key drop \ XXX INFORMER
-
-( .context .current order )
+( .context .current order vocs )
 
   \ [Code adapted from F83.]
 
@@ -1377,69 +1291,36 @@ root definitions forth
   \ Display the search order currently in effect and the name
   \ of the `current` vocabulary.
 
-( vocs )
-
-  \ [Code adapted from F83.]
-
 : vocs  ( -- )
   voc-link @
   begin  dup cell - pfa>nfa id.  @ dup 0= until  drop  ;
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
-( get-order )
+( get-order set-order )
 
-: get-order  ( -- widn..wid1 n )
-  \ get search order
-   sorder @ dup if
-     1 swap do  sorder i cells + @  -1 +loop
-     sorder @
-   then ;
+  \ XXX TODO
+  \ XXX FIXME
 
-( Forth-83 also only )
+variable #order  \ number of vocs in the current search order
 
-  \ Copied from the FORTH-83 Standard, a publication of the
-  \ FORTH Standars Team (1983-03)
-  \
-  \ Original code by William F. Ragsdale, 1982-06-12.
-  \
-  \ 2015-04-17: Start.
+: (get-order)  ( -- widn..wid1 n)
+  \ Do get the search order.
+  \ XXX TODO use `?do` when available
+  0 swap do  context i cells + @  -1 +loop  ;
 
-  \ 2015-07-22: This code from seems harder to adapt
-  \ than the code from F83.
+: get-order  ( -- 0 | widn..wid1 n)
+  \ Get the search order.
+  #order @ ?dup if  (get-order)  then  #order @  ;
 
-  \ note the systems -FIND searches 1 to 5 vocabs in CONTEXT
+: (set-order)  ( widn..wid1 n -- )
+  \ Do set the search order.
+  0 do  context i cells + !  loop  ;
 
-vocabulary only  only definitions
-
-: also  ( -- )  context dup cell+ 6 cmove>  ;
-  \ Slide transient into resident.
-
-  \ Alter run time of ONLY from usual vocabulary.
-
-here cell+
-  ] does>  context 8 erase  dup context !  context 8 + !
-           also  exit [  ' only cfa !
-
-: x  ( -- )  exit  ;  hex a080 decimal ' x nfa !  immediate
-  \ Make NULL word.
-
-: forth        ( -- )  forth  ;
-: definitions  ( -- )  definitions  ;
-: forget       ( "name" -- )  forget  ;
-: vocabulary   ( "name" -- )  vocabulary  ;
-: only         ( -- )  only  ;
-: words        ( -- ) words  ;
-
-( Forth-83 order )
-
-: order  ( -- )
-  \ Show the search order.
-  context 10 bounds
-  do  i @ -dup if  id.  else  exhaust  then  2 +loop
-  10 spaces  current @ id.  ;
-
-only forth also   definitions
+: set-order  ( -1 | 0 | widn..wid1 n -- )
+  \ Set the search order.
+  dup -1 =  if  drop only exit  then
+  dup #order ! ?dup if  (set-order)  then  ;
 
   \ }}} =======================================================
   \ Random number generator {{{
@@ -1478,6 +1359,8 @@ only forth also   definitions
   \ : defer  ( "name" -- )
   \   postpone : postpone (defer) postpone ;  ;
   \   \ Create a deferred word.
+
+  \ XXX TODO -- new approach, with a code word and a low-level jump
 
   \ XXX TODO  -- check nesting level
 : defer  ( "name" -- )  create ['] (defer) , does> @ execute  ;
