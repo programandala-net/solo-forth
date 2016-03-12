@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509200302
+\ Last modified: 201509212208
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -32,9 +32,9 @@
 
   \ XXX TMP
 
-variable default-first-locatable
-8 default-first-locatable
-
+s" hola
+y adios"
+.s
 
   \ }}} =======================================================
   \ Need {{{
@@ -273,7 +273,7 @@ char " 1 2constant "  char \ 1 2constant \
 : m  ( -- c1 c2 2 )  10 13 2  ;
   \ \m = carriage return and line feed
 
-: (x)  ( "c" -- n )  parse-char upper 16 digit 0= 14 ?error  ;
+: (x)  ( "c" -- n )  parse-char upper 16 digit? 0= 14 ?error  ;
   \ Parse an hex digit and convert it to a number.
 
 : x  ( "cc" -- c 1 )  (x) 16 * (x) + 1  ;
@@ -1369,7 +1369,7 @@ code plot  ( xc yc -- )
   \ Set a pixel without changing the color attributes.
 
   \ Credits:
-  \ Author of the original code: JosÃ© Manuel Lazo.
+  \ Author of the original code: José Manuel Lazo.
   \ Published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -1394,7 +1394,7 @@ code set-pixel  ( xc yc -- )
   \ Reset a pixel without changing the color attributes.
 
   \ Credits:
-  \ Based on code written by JosÃ© Manuel Lazo,
+  \ Based on code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -1417,7 +1417,7 @@ code reset-pixel  ( xc yc -- )
   \ Toggle a pixel without changing the color attributes.
 
   \ Credits:
-  \ Based on code written by JosÃ© Manuel Lazo,
+  \ Based on code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -2387,6 +2387,32 @@ need source  need /string
   \ Get the text string until the end of line.
   \ Note: this is possibly useful factor of the editor's
   \ `text`.
+
+( c@+ )
+
+need z80-asm
+
+  \ Credits:
+  \ Code adapted from Pygmy Forth.
+
+code c@+  ( ca - ca+1 c )
+
+  \ First version
+  \ de pop  de ftap  de incp  0 h ld# a l ld  pushhlde jp
+
+  \ Second version
+  hl pop  m a ld  hl incp  hl push  pusha jp
+
+  end-code
+
+  \ doc{
+  \
+  \ code c@+  ( ca - ca+1 c )
+  \
+  \ Fetch the byte at _ca_ a and increments the address.
+  \ This is handy for stepping through byte arrays.
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ Operators {{{
@@ -3987,7 +4013,7 @@ need /string
 
 : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
   begin   dup
-  while   over c@ base @ digit
+  while   over c@ base @ digit?
   while   >r 2swap r> swap base @ um* drop rot base @
           um* d+ 2swap 1 /string 1 dpl +!
   repeat then  ;
@@ -4202,7 +4228,7 @@ width !
   \
   \ }doc
 
-( >l >l )
+( >l l> )
 
   \ Credits:
   \ Code adapted from Z88 CamelForth.
@@ -4226,6 +4252,93 @@ code l>  ( -- x ) ( L: x -- )
   hl lp sthl
   pushhl jp
   next
+
+( do )
+
+  \ XXX TODO adapt from hForth
+hex
+ 
+: (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
+  >r 8000 + r> over - swap r> swap >r swap >r >r ;
+
+  \ (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
+  \
+  \ Run-time funtion of `do`.
+  \
+  \ 0x8000 is the maximum negative.
+
+: do	  ( n1|u1 n2|u2 -- )
+  ?comp  0 rakevar !  0			\ ?do-orig is 0 for do
+  postpone (do)  here  bal+	\ do-dest
+  ; immediate
+
+  \ doc{
+  \
+  \ do
+  \
+  \ Compilation: ( C: -- do-sys )
+  \
+  \	Run-time: ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
+  \
+  \	Start a DO-LOOP structure in a colon definition. Place do-sys
+  \	on control-flow stack, which will be resolved by `loop` or
+  \	`+loop`.
+  \
+  \	Standard: Forth 94, Forth 2012
+  \
+  \	}doc
+
+code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
+
+    \ rp fthl
+    \ m inc
+    \ ; jr z,doloop2  ;12/7t a fast dec is ok, only
+    \ db  doloop2-doloop1   ;      failed every 255 time
+  \ doloop1   db  01ah  ; ld  a,(de)  ; 7t go back to the loop
+    \ a l ld
+    \ bc incp
+    \ de ftap \ ld  a,(de)  ; 7t
+    \ a h ld  \ db  067h  ; ld  h,a ; 4t
+    \ next2 jp  \ $nexthl
+ \ doloop2   db  023h  ; inc hl  ; 6t
+    \ db  034h  ; inc (hl)  ;11t
+    \ db  0e2h  ; jp po,doloop1 ;10/7t ?loop end
+    \ dw  doloop1
+    \ db  0ebh  ; ex  de,hl ; 4t yes,continue past the branch offset
+    \ db  011h  ; ld  de,4  ;10t clear return stack
+    \ dw  4
+    \ db  0ddh,019h ; add ix,de ;15h
+    \ db  023h  ; inc hl  ; 6t
+    \ db  023h  ; inc hl  ; 6t
+    \ next2 jp  \ $nexthl
+    end-code
+
+: loop  ?comp postpone (loop) rake  ; immediate
+
+  \ loop
+  \
+  \ Compilation: ( C: do-sys -- )
+  \ Run-time: ( -- ) ( R: loop-sys1 -- loop-sys2 )
+  \ Terminate a DO|?DO ... LOOP structure. Resolve the destination
+  \ of all unresolved occurences of LEAVE.
+  \
+  \ Standard: Forth 83, Forth 94, Forth 2012
+
+: +loop  ?comp postpone (+loop) rake  ; immediate
+
+  \ +loop
+  \
+  \ Compilation: ( C: do-sys -- )
+  \ Run-time: ( n -- ) ( R: loop-sys1 -- | loop-sys2 )
+  \
+  \ Terminate a `do +loop` structure. Resolve the destination of all
+  \ unresolved occurences of `leave`.
+  \ On execution add _n_ to the loop index. If loop index did not
+  \ cross the boundary between loop_limit-1 and loop_limit,
+  \ continue execution at the beginning of the loop. Otherwise,
+  \ finish the loop.
+  \
+  \ Standard: Forth 83, Forth 94, Forth 2012
 
 ( ?do )
 
@@ -4722,28 +4835,39 @@ defer (value)
   create  swap , ,
   does>   ( pfa )  dup @ swap cell+ @ !  ;
 
-( c@+ )
+( user )
 
-need z80-asm
+  \ XXX TODO -- improved version, that uses the first free
+  \ offset.
 
-  \ Credits:
-  \ Code adapted from Pygmy Forth.
+  \ doc{
+  \
+  \ user  ( +n "name" -- )
+  \
+  \ Create a user variable _name_.  _+n_ is the offset within
+  \ the user area where the value for _name_ is stored.
+  \ Execution of _name_ leaves its absolute user area storage
+  \ address.
+  \
+  \ Standard: Forth 79, Forth 83
+  \
+  \ }doc
 
-  \ XXX TODO -- try
+: user  ( n "name -- )
+  create c,  does>  c@ up @ +  ;
 
-code  c@+  ( ca - ca+1 c )
+;s
 
-    \ Fetches the byte at _ca_ a and increments the address.
-    \ This is handy for stepping through byte arrays.
-
-  de pop
-  de ftap
-  de incp
-  0 h ld#
-  a l ld
-  pushhlde jp
-
-  end-code
+: user  ( n "name -- )
+  cconstant
+  ;code asm
+  de incp  \ de=pfa
+  exde
+  m e ld
+  00 d ld#  \ de = index of the user variable
+  up fthl \ ld hl,(user_variables_pointer) \ XXX FIXME
+  de addp  \ hl= address of the user variable
+  pushhl jp end-asm
 
   \ }}} =======================================================
   \ Multitask {{{
@@ -5146,7 +5270,7 @@ code random-b  ( -- b )
 ( random-n )
 
   \ Credits:
-  \ Adapted from code written by JosÃ© Manuel Lazo,
+  \ Adapted from code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -5567,8 +5691,11 @@ only forth definitions also assembler
 : macro  ( "name" -- )  asm postpone :  ;
 : endm  ( -- )  end-asm postpone ;  ;  immediate
 
+decimal only forth
 
-  \ For dumping code to screen
+( << >> )
+
+  \ For dumping assembled code to screen.
 
   \ Credits:
   \ Code adapted from Pygmy Forth.
@@ -5582,9 +5709,6 @@ need @c+  need for
   depth 1- - 8 ?error cr base @ >r hex
   dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
   r> base !  space   ;
-
-
-decimal only forth
 
 ( execute-hl call-cfa )
 
@@ -6069,6 +6193,7 @@ init-heap
   \ specified size and free the remainder, if there is any
   \ usable space left.
 
+: set-current  ( wid -- )  current !  ; \ XXX TMP
 FORTH-WORDLIST SET-CURRENT
 : ALLOCATE ( u -- addr ior)
   DUP 0< IF  allocationerror

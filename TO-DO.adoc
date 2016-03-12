@@ -135,6 +135,7 @@ Options for text and graphic cursor words.
 | at-xy      | ?at        | gat-xy          | ?gat            | ghome
 | at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
 | at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-coord        | coord           | home-coord 
 | at-xy      | xy         | at-gxy          | gxy             | ghome
 | at-xy      | xy@        | at-coords       | coords@         | home-coords
 | at-xy      | xy@        | at-gxy          | gxy@            | ghome
@@ -254,26 +255,35 @@ New:
 - Create words in lowercase.
 - Improve `parse-name` with case conversion.
 
-.2015-09-01:
-
-Fix: `s"`, `s\"`, `(`... all crash the system when the end delimiter is mising.
-This didn't happen with Abersoft Forth. The reason is the change of
-the zero char terminator to the zero string.
-
-This code in a screen leaves two zeros:
-
-----
-s" hola
-y adios"
-.s
-----
-
-New verions of `scan`, `skip`, `parse`, `parse-name` and `word` have
-been written, selectable with conditional compilation. Permanent
-copies of those words have the "x" suffix added, for debugging.
-
 Change: `parsed` to `>in +!` and choose a new name for `1+ ; parsed` or
 write as is.
+
+// }}}
+== Errors ==
+// {{{
+
+.2015-09-20:
+
+Idea:
+____
+
+The correlation between DX-Forth exception code and DOS error code
+is given below:
+
+ Exception   DOS
+     0        0     no error
+   -511       1     function number invalid (not used)
+   -510       2     file not found
+   -509       3     path not found
+   -508       4     too many open files
+   -507       5     access denied
+   -506       6     invalid handle
+    ...     ...
+   -257     255     unspecified error
+
+Note: To convert an exception code in the range -257 to -511 to its
+corresponding DOS error code, use: 255 AND
+____
 
 // }}}
 == Files ==
@@ -372,12 +382,15 @@ From the Spectrum Forth-83 manual:
 
 ----
 : unat  ( -- row col )
-  24 23689 c@ - 33
-  23688 c@ -
-  dup 32 = if  drop 1+ 0  then ;
+  24 23689 c@ -
+  33 23688 c@ - dup 32 = if  drop 1+ 0  then ;
 ----
 
 .2015-09-13:
 
 `rp` should be a user variable?
 
+
+.2015-09-21:
+
+`-if` from Machine Forth: checks the sign bit.
