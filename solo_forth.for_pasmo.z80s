@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509020230
+version_release:  equ 201509051358
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -95,16 +95,13 @@ version_release:  equ 201509020230
 ; ----------------------------------------------
 ; Stack notation
 
-; XXX TODO
-; XXX TODO update when true=-1
-
 ; a        = address
 ; ca       = character-aligned address
 
 ; f        = flag (false is 0; true is any other value)
-; tf       = true flag (1)
+; tf       = true flag (-1)
 ; ff       = false flag (0)
-; wf       = well-formed flag (false is 0; true is 1)
+; wf       = well-formed flag (false is 0; true is -1)
 
 ; b        = 8-bit byte
 ; c        = 7-bit or 8-bit character
@@ -226,12 +223,6 @@ origin:                           equ 0x5E00
 
 false:                            equ 0
 true:                             equ -1
-if true=(-1)
-  ; XXX FIXME
-  ; There were problems when true=-1, but it seems they have
-  ; disappeared after switching to the one buffer method.
-  .warning TRUE is -1
-endif
 
 cell:                             equ 2
 
@@ -2044,11 +2035,170 @@ skip.begin:
 
 ; [Code from Spectrum Forth-83's `TOCH`.]
 
+
+if 1
+
+  ; XXX default printing system, with the ZX Spectrum charset
+  ; XXX TODO write an alternative with UDG 128..255
+
   pop hl
   ld a,l
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
   _jp_next
+
+endif
+
+if 0
+
+  ; XXX first alternative
+
+  ; XXX OLD -- this uses UDG as a fake charset, but it can not
+  ; work fine, because block chars and UDG are shown anyway,
+  ; with higher codes.
+
+  pop hl
+  ld a,l
+  ld hl,(sys_chars)
+  push hl
+  cp 128
+  jr c,paren_emit.print_a
+  sub 96
+  ld hl,(sys_udg)
+  dec h
+  ld (sys_chars),hl
+paren_emit.print_a
+  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+  rst 0x10
+  pop hl
+  ld (sys_chars),hl
+  _jp_next
+
+endif
+
+if 0
+
+  ; XXX second alternative
+  ; the coords get wrong after printing UDGs and scrolling
+
+  pop hl
+  push bc
+
+  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+
+  ld a,l
+  cp 128 ; control or ASCII character?
+  jp nc,paren_emit.print_udg ; is not, jump
+
+  ; use the ROM routine to print a control or ASCII character
+  rst 0x10
+  pop bc
+  _jp_next
+
+paren_emit.print_udg:
+  ; hl = UDG code (128..255)
+  sub 128
+  ld l,a ; hl = UDG index code (0..127)
+  ld de,(sys_udg)
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,de
+  ex de,hl ; de = char address in the font
+  ld hl,(sys_df_cc) ; current screen address
+  ld b,8 ; char scans
+paren_emit.print_udg_scan
+  ld a,(de) ; get UDG scan
+  ld (hl),a ; put it on the screen
+  inc de ; address of next scan of the UDG
+  inc h ; address of next pixel row on the screen
+  djnz paren_emit.print_udg_scan
+
+  ; Update
+  ld de,(sys_s_posn)
+  ld hl,0x1821 ; 0x18 = 24 - row
+               ; 0x21 = 33 - column
+  sbc hl,de
+  ex de,hl
+  inc e
+  ld a,e
+  cp 32 ; last col?
+  jp c,paren_emit.update2 ; if not, jump
+  ; last col
+  ld e,0
+  inc d
+  ld a,d
+  cp 23 ; last line?
+  jp c,paren_emit.update2 ; if not, jump
+  ; last line
+  call 0x0DFE ; ROM scroll routine
+  ; XXX FIXME wrong coords after the scroll
+  ld de, 0x1400
+
+paren_emit.update2:
+  push de
+  ld a,d
+  and 0x07
+  rrca
+  rrca
+  rrca
+  or e
+  ld e,a
+  ld a,d
+  and 0x18
+  or 0x40
+  ld d,a
+  ld (sys_df_cc),de
+  pop de
+  ld hl,0x1821 ; 0x18 = 24 - row
+               ; 0x21 = 33 - column
+  sbc hl,de
+  ld (sys_s_posn),hl
+  pop bc
+  _jp_next
+
+endif
+
+if 0
+
+  pop hl
+  push bc
+
+  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+
+  ld a,l
+  cp 128 ; control or ASCII character?
+  jp nc,paren_emit.print_udg ; is not, jump
+
+  ; use the ROM routine to print a control or ASCII character
+  rst 0x10
+  pop bc
+  _jp_next
+
+paren_emit.print_udg:
+  ; hl = UDG code (128..255)
+  sub 128
+  ld l,a ; hl = UDG index code (0..127)
+  ld de,(sys_udg)
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  add hl,de
+  ex de,hl ; de = char address in the font
+  ld de,(sys_s_posn)
+  ld hl,0x1821 ; 0x18 = 24 - row
+               ; 0x21 = 33 - column
+  sbc hl,de
+  ld b,h
+  ld c,l ; bc = current position
+  ld hl,(sys_df_cc) ; current screen address
+  call rom_pr_all
+  ld (sys_s_posn),bc
+  ld (sys_df_cc),hl
+  pop bc
+  _jp_next
+
+endif
 
 ; ----------------------------------------------
   _does_header emit_,'EMIT',,do_defer
@@ -2073,20 +2223,6 @@ skip.begin:
   dw two_
   dw chan_
   dw semicolon_s_
-
-; ----------------------------------------------
-  _code_header key_question_,'KEY?'
-
-; doc{
-;
-; key?  ( -- f )  \ ANS Forth
-;
-; }doc
-
-  ld a,(sys_last_k)
-  and a
-  jp z,false_pfa
-  jp true_pfa
 
 ; ----------------------------------------------
   _variable_header decode_table_,'DECODE-TABLE'
@@ -2123,23 +2259,66 @@ decode_char.begin:
   ld a,e
 
 ; ----------------------------------------------
-  _code_header paren_key_,'(KEY)'
+  ; _code_header paren_key_,'(KEY)'
+
+  ; XXX not used yet
+
+  ; ld a,(sys_last_k)
+  ; ld (previous_key),a
+; paren_key_.begin:
+  ; ; call pause ; XXX TODO
+  ; ; call rom_keyboard ; XXX TODO not needed if system interrupts are on
+  ; ld a,(sys_last_k)
+; previous_key: equ $+1
+  ; cp 0 ; a different key?
+  ; jp z,paren_key_.begin
+  ; ld h,0
+  ; ld l,a
+  ; xor a
+  ; ld (sys_last_k),a ; delete the last key
+  ; push hl
+  ; jp decode_char_
+
+; ----------------------------------------------
+  _code_header key_question_,'KEY?'
+
+; doc{
+;
+; key?  ( -- f )  \ ANS Forth
+;
+; }doc
+
+if 1
+
+  ; XXX -- This version works only when the system interrupts
+  ; are on.
 
   ld a,(sys_last_k)
-  ld (previous_key),a
-paren_key_.begin:
-  ; call pause ; XXX TODO
-  ; call rom_keyboard ; XXX TODO not needed if system interrupts are on
-  ld a,(sys_last_k)
-previous_key: equ $+1
-  cp 0 ; a different key?
-  jp z,paren_key_.begin
-  ld h,0
-  ld l,a
-  xor a
-  ld (sys_last_k),a ; delete the last key
-  push hl
-  jp decode_char_
+  and a
+  jp z,false_pfa
+  jp true_pfa
+
+else
+
+  ; XXX -- This version works also when the system interrupts are off.
+
+  push bc
+  call rom_key_scan
+  jp nz,key_question.false
+  call rom_key_test
+  jp nc,key_question.false
+
+key_question.true:
+  pop bc
+  ld ix,next ; XXX TMP
+  jp true_pfa
+
+key_question.false:
+  pop bc
+  ld ix,next ; XXX TMP
+  jp false_pfa
+
+endif
 
 ; ----------------------------------------------
   _code_header key_,'KEY'
@@ -2150,14 +2329,14 @@ previous_key: equ $+1
 ;
 ; }doc
 
-if 0
+if 1
 
-  ld hl,sys_last_k
-  ld (hl),0
 key.begin:
   ld a,(sys_last_k)
   and a
   jr z,key.begin
+  ld hl,sys_last_k
+  ld (hl),0
   jp push_a
 
 else
@@ -2166,7 +2345,6 @@ else
 ; XXX TODO -- Add multitasker's `pause` when available.
 
   push bc
-  push ix ; XXX TMP
 key.begin:
   call rom_key_scan
   jr nz,key.begin
@@ -2178,43 +2356,48 @@ key.begin:
 key.end:
   ld hl,sys_last_k
   ld (hl),0
-  pop ix ; XXX TMP
+  ld ix,next ; XXX TMP
   pop bc
   jp push_a
 
 endif
 
 ; ----------------------------------------------
-  _code_header xkey_,'XKEY'
+  _variable_header cursor_char_,'CURSOR-CHAR'
 
-; XXX OLD -- this is the original code from Abersoft Forth.
-; Too complex. A mode-less version will be coded.
+; doc{
+;
+; cursor-char  ( -- a )
+;
+; A byte variable that holds the character code of the cursor
+; used by `xkey`. Note this is a _byte_ variable, thus it has to
+; be fetched with `c@` and modified with `c!`.
+;
+; }doc
+
+  db 0x88 ; char code
+
+; ----------------------------------------------
+  _code_header xkey_,'XKEY'
 
 ; doc{
 ;
 ; xkey  ( -- c )
-;
-; Leave the ASCII value of the next terminal key struck.
+; 
+; Show a cursor, wait for the next terminal key struck; if it's
+; the caps lock key, toggle caps and keep waiting; else leave
+; the char code of the key struck.
 ;
 ; }doc
 
-  ; XXX TODO simplify, no Spectrum modes
-
   push bc
-
-  ; XXX OLD
-  ; inverse video on
-  ; ld a,inverse_char
-  ; rst 0x10
-  ; ld a,0x01
-  ; rst 0x10
 
 xkey.new_key:
   xor a
   ld (sys_last_k),a
 
   ; Print cursor:
-  ld a,0x88 ; cursor
+  ld a,(cursor_char_pfa) ; cursor char code
   rst 0x10
   ld a,backspace_char
   rst 0x10
@@ -2270,13 +2453,6 @@ xkey.right_curly_bracket:
 xkey.end:
   ld l,a
   ld h,0x00
-
-  ; XXX OLD
-  ; inverse video off
-  ; ld a,inverse_char
-  ; rst 0x10
-  ; ld a,0x00
-  ; rst 0x10
 
   ; delete the cursor
   ld a,space_char
@@ -3138,15 +3314,9 @@ endif
   _code_header on_,'ON'
 
   pop hl
-if true=1
-  ld (hl),1
-  inc hl
-  ld (hl),0
-else
   ld (hl),0xFF
   inc hl
   ld (hl),0xFF
-endif
   _jp_next
 
 ; ----------------------------------------------
@@ -3322,6 +3492,14 @@ do_constant:
   inc de    ; de=pfa
   ex de,hl  ; hl=pfa
   jp fetch.hl
+
+; ----------------------------------------------
+  ; _colon_header c_variable_,'CVARIABLE'
+
+  ; dw create_
+  ; _literal 1
+  ; dw allot_
+  ; dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header variable_,'VARIABLE'
@@ -4491,58 +4669,65 @@ dot_quote.interpreting:
 ;
 ; accept  ( ca1 len1 -- len2 )  \ ANS Forth
 ;
+; Receive a string of at most _len1_ characters.  No characters
+; are received or transferred if _len1_ is zero.  Display
+; graphic characters as they are received. 
+;
+; Input terminates when an implementation-defined line
+; terminator is received. When input terminates, nothing is
+; appended to the string or displayed on the screen.
+;
+; _len2_ is the length of the string stored at _ca1_.
+;
 ; }doc
 
-  ; XXX TODO -- not finished
+  dw span_,off_
+  dw question_dup_
+  dw zero_branch_,accept.end
 
-  ; dw span_,off_
-  ; dw question_dup_
-  ; dw zero_branch_,accept.end
+  dw to_r_ ; ( ca1 ) ( R: len1 )
+accept.begin: ; ( ca )
+  dw xkey_ ; ( ca c )
+  
+  dw dup_ ; ( ca c c )
+  _literal delete_char
+  dw equals_ ; delete key?
+  dw zero_branch_,accept.maybe_carriage_return
+  ; Delete key ( ca c )
+  dw drop_
+  dw span_,fetch_
+  dw zero_branch_,accept.begin ; nothing to delete
+  ; Do delete the last char
+  dw one_minus_ ; update the current address
+  _literal -1 
+  dw span_,plus_store_ ; update `span`
+  _literal backspace_char
+  dw branch_,accept.emit
 
-  ; dw swap_ ; ( len ca )
-; accept.begin: ; ( len ca )
-  ; dw key_,dup_ ; ( len ca c c )
+accept.maybe_carriage_return: ; ( ca c )
+  dw dup_
+  _literal carriage_return_char
+  dw equals_ ; carriage return?
+  dw zero_branch_,accept.ordinary_key
+  ; Carriage return ( ca c )
+  dw drop_,r_drop_
+  dw branch_,accept.end
 
-  ; dw c_lit_
-  ; db delete_char
-  ; dw equals_ ; delete key?
-  ; dw zero_branch_,accept.maybe_carriage_return
-  ; ; Delete key ( len ca c )
-  ; dw drop_
-  ; dw dup_,i_,equals_ ; cursor at the start position?
-  ; dw dup_ ; ( len ca f f )
-  ; ; XXX TODO adapt this when true=-1
-  ; dw from_r_,two_minus_,plus_,to_r_ ; update the index
-  ; dw question_branch_,accept.loop ; nothing to delete
-  ; ; dw b_l_,i_,c_store_ ; update the buffer ; XXX OLD
-  ; dw c_lit_
-  ; db backspace_char
-  ; dw branch_,accept.emit
+accept.ordinary_key: ; ( ca c )
+  dw span_,fetch_,r_fetch_,less_than_
+  dw zero_branch_,accept.begin ; the string is full
+  _literal 1
+  dw span_,plus_store_ ; update `span`
+  dw two_dup_,swap_,c_store_
+  dw swap_,one_plus_,swap_
 
-; accept.maybe_carriage_return: ; ( len ca c )
-  ; dw dup_
-  ; dw c_lit_
-  ; db carriage_return_char
-  ; dw equals_ ; carriage return?
-  ; dw zero_branch_,accept.ordinary_key
-  ; ; Carriage return ( len ca c )
-  ; dw exhaust_
-  ; dw drop_,b_l_
-  ; dw branch_,accept.emit
+accept.emit: ; ( ca c )
+  dw emit_
+  dw branch_,accept.begin
 
-; accept.ordinary_key: ; ( len ca c )
-  ; dw dup_
-; accept.store: ; ( len ca c c | len ca c 0 )
-  ; dw i_,c_store_
-; accept.emit: ; ( len ca c )
-  ; dw emit_
-
-  ; ; ( len ca )
-  ; dw i_,over_,minus_,span_,store_ ; update `span`
-  ; dw paren_loop_,accept.do
-; accept.end:
-  ; dw drop_
-  ; dw span_,fetch_
+accept.end:
+  dw drop_
+  dw span_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4582,10 +4767,7 @@ expect.do: ; ( ca )
   ; Delete key ( ca c )
   dw drop_
   dw dup_,i_,equals_ ; cursor at the start position?
-if true=(-1)
-  ; XXX TODO simplify
-  dw abs_
-endif
+  dw abs_ ; XXX TODO -- because true=-1 -- simplify
   dw dup_ ; ( ca f f )
   dw from_r_,two_minus_,plus_,to_r_ ; update the index
   dw question_branch_,expect.loop ; nothing to delete
@@ -4642,18 +4824,22 @@ expect.end:
 ; operators terminal. Text is positioned at the address
 ; contained in TIB with IN set to zero.
 ;
-; Transfer characters from the terminal to address contained in
-; returned by `tib`, until a "return" or the count contained in
-; the `#tib` variable have been received. One or more nulls are
-; added at the end of the text.
+; Transfer characters from the terminal to address returned by
+; `tib`, until a "return" or the count contained in the `#tib`
+; variable have been received. One or more nulls are added at
+; the end of the text.
 ;
 ; }doc
 
   dw tib_,dup_
   dw number_tib_,fetch_
   dw two_dup_,blank_ ; clean the input buffer
-  dw expect_
-  dw span_,fetch_,plus_,stream_end_
+if 1 ; accept instead of expect
+  dw accept_,space_
+else
+  dw expect_,span_,fetch_
+endif
+  dw plus_,stream_end_
   dw to_in_,off_
   dw semicolon_s_
 
@@ -4955,9 +5141,7 @@ paren_number.end:
   _literal '-'
   dw equals_ ; is it a minus sign?
   dw dup_,to_r_ ; save the flag
-if true=(-1)
-  dw abs_
-endif
+  dw abs_ ; XXX TODO needed because true=-1, simplify
   dw plus_
   ; If the first digit is "-", the flag is 1,
   ; and addr+1 points to the second digit.
@@ -5186,9 +5370,7 @@ error_to_number.do
   dw i_
   _literal 16
   dw mod_,zero_equals_
-if true=(-1)
-  dw abs_
-endif
+  dw abs_ ; XXX TODO because true=-1, simplify
   dw plus_
   dw paren_loop_,error_to_number.do
   dw semicolon_s_
@@ -5592,13 +5774,6 @@ interpret.begin:
   ; Non-immediate word: ( cfa -1 )
   dw comp_question_
   ; ( cfa 1 state | cfa -1 state )
-if true=1
-  ; Compiling an immediate word:     ( cfa  1 1 )
-  ; Compiling a non-immediate word:  ( cfa -1 1 )
-  ; Executing an immediate word:     ( cfa  1 0 )
-  ; Executing a non-immediate word:  ( cfa -1 0 )
-  dw negate_
-endif
   ; Compiling an immediate word:     ( cfa  1 -1 )
   ; Compiling a non-immediate word:  ( cfa -1 -1 )
   ; Executing an immediate word:     ( cfa  1  0 )
@@ -6471,8 +6646,7 @@ block.end:
 ;   swap dup 20 /       ( sector n1 track0 )
 ;   swap 10 / 1 and     ( sector track0 side )
 ;   128                 ( sector track 128 )
-;   \ * +               ( sector track ) \ XXX OLD for true=1
-;   negate 128 and or   ( sector track )  \ XXX NEW a bit faster, for true=-1
+;   negate 128 and or   ( sector track )
 ;   flip or  ;
 ; ----
 ;
@@ -6486,15 +6660,9 @@ block.end:
   _literal 10
   dw slash_,one_,and_
 
-if true=1 ; XXX OLD
-  ; XXX TODO optimize with `7 lshift`?
-  _literal 128
-  dw star_,plus_
-else
   dw negate_
   _literal 128
   dw and_,or_
-endif
   
   dw flip_,or_
   dw semicolon_s_
@@ -6632,18 +6800,15 @@ read_write_sector_command:
 ;
 ; (load)  ( i*x u -- j*x )
 ;
-; Store _u_ in `blk` (thus making block _u_ the input source and
-; setting the input buffer to encompass its contents), set `>in`
-; to zero, and interpret.  Other stack effects are due to the
-; words loaded.
+; Store the first disk block of screen _u_ into `blk` (thus making
+; screen _u_ the input source and setting the input buffer to
+; encompass its contents), set `>in` to zero, and interpret.
+; Other stack effects are due to the words loaded.
 ;
 ; An error is issued if _u_ is zero.
 ;
-; ----
-; : (load)  ( i*x u -- j*x )
-;   dup 0= 9 ?error
-;   b/scr * blk !  >in off  interpret  ;
-; ----
+; ---- : (load)  ( i*x u -- j*x ) dup scr !  dup 0= 9 ?error
+; b/scr * blk !  >in off  interpret  ; ----
 ;
 ; }doc
 
@@ -6684,17 +6849,18 @@ read_write_sector_command:
 ;
 ; load  ( u -- )
 ;
-; Save the current input-source specification. Store _u_ in
-; `blk` (thus making block _u_ the input source and setting the
-; input buffer to encompass its contents), set `>in` to zero,
-; and interpret. When the parse area is exhausted, restore the
-; prior input source specification. Other stack effects are due
-; to the words loaded.
+; Save the current input-source specification. Store the first
+; disk block of screen _u_ in `blk` (thus making screen _u_ the
+; input source and setting the input buffer to encompass its
+; contents), set `>in` to zero, and interpret. When the parse
+; area is exhausted, restore the prior input source
+; specification. Other stack effects are due to the words
+; loaded.
 ;
 ; An error is issued if _u_ is zero.
 ;
 ; ----
-; : load  ( n -- )
+; : load  ( u -- )
 ;   blk @ >r  >in @ >r
 ;   (load)
 ;   r> >in !  r> blk !  ;
@@ -6990,6 +7156,7 @@ endif
 
   dw compile_,question_branch_
   dw branch_,if.do
+  dw semicolon_s_
 
   ; XXX TODO move to the disk:
 
@@ -7002,6 +7169,7 @@ endif
 
   dw compile_,branch_
   dw forward_mark_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate
@@ -7010,8 +7178,7 @@ if 1 ; fig_compiler_security
 
   dw two_ ; error checking number
   dw question_pairs_
-  dw compile_,branch_
-  dw forward_mark_
+  dw ahead_
   dw swap_
   dw two_ ; error checking number
   dw then_
@@ -7020,8 +7187,7 @@ if 1 ; fig_compiler_security
 
 else
 
-  dw compile_,branch_
-  dw forward_mark_
+  dw ahead_
   dw then_
   dw semicolon_s_
 
@@ -7069,8 +7235,7 @@ emits_.end:
 ; ----------------------------------------------
   _colon_header hash_greater_,'#>'
 
-  dw drop_
-  dw drop_
+  dw two_drop_
   dw hld_,fetch_
   dw pad_
   dw over_

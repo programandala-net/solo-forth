@@ -14,9 +14,10 @@
 
 # 0x5E00 cold_entry
 #    --debugger-command "br 0x5E00"  \
+#   --debugger-command "br 0x79B4" \
 
   fuse-gtk \
-   --debugger-command "br 0x79B4" \
+   --debugger-command "br 0x81E6" \
     solo_forth_disk_1.mgt  &
 
 #  --debugger-command "br 0x6672" \

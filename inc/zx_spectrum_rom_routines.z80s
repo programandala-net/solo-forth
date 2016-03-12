@@ -35,6 +35,7 @@ rom_pixel_add:       equ 0x22AA
 rom_plot_22df:       equ 0x22DF ; secondary entry to PLOT
 rom_plot_sub:        equ 0x22E5 ; the plot subroutine (coords in BC)
 rom_point_sub_22ce:  equ 0x22CE ; secondary entry to POINT-SUB
+rom_pr_all:          equ 0x0B7F ; "print all characters"
 rom_pr_string:       equ 0x203C ; print a string (start in de, count in BC)
 rom_print_string:    equ 0x203C
 rom_print_fp:        equ 0x2DE3 ; print a floating point number

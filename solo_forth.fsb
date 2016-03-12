@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509020230
+\ Last modified: 201509050231
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -325,150 +325,223 @@ code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
   \ }}} =======================================================
   \ Graphics {{{
 
-( emmited )
+( udg! udg: )
 
-  \ ; ----------------------------------------------
-  \   _code_header emitted_,'EMITTED'
+[defined] udg
+  ?\  : udg  ( -- a )  23675 @  ;
+      \ Address of the User Defined Graphics.
 
-  \   ; [Code adapted and modified from the ZX Spectrum ROM routine
-  \   ; S-SCRN$-S at 0x2535.]
+: udg!  ( b0..b7 c -- )
+  \ Store the given 8 bytes into the UDG char _c_.
+  \ b0 = first (top) scan
+  \ b7 = last (bottom) scan
+  \ c = 128..255
+  128 - 8 * udg + 1 - dup 8 + do  i c!  -1 +loop  ;
 
-  \ ; doc{
-  \ ;
-  \ ; emitted  ( col row -- n | 0 )
-  \ ;
-  \ ; Return the ordinal number _n_ (first is 1) of the character
-  \ ; printed at the given screen coordinates, or 0 if no character
-  \ ; can be recognized on that position of the screen.
-  \ ;
-  \ ; This word must be configured by `emitted-charset` and
-  \ ; `#emitted-chars`, that set the address of the first character
-  \ ; and the number of characters to compare with. By default the
-  \ ; printable ASCII chars of the ROM charset are used.
-  \ ;
-  \ ; The result _n_ is the ordinal number (first is 1) of the
-  \ ; recognized char in the specified charset. Example: with the
-  \ ; default configuration, a recognized space char would return 1;
-  \ ; a "!" char, 2; a "A", 34...
-  \ ;
-  \ ; This word is meant to be used with user defined graphics.
-  \ ;
-  \ ; }doc
+: udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;
 
-  \   ; XXX TODO improve the result
-  \   ;
-  \   ; XXX TODO move to the disk
-  \   ;
-  \   ; XXX TODO rename?: `ocr`, `recognized`, `on-xy`, `xy-char`?
-  \   ; The reasen is name clash with the fig-Forth `out` counter,
-  \   ; that was going to be called `emitted` or `#emitted`.
+( xy-emit-udg )
 
-  \   pop de ; row
-  \   pop hl ; col
-  \   push bc ; save the Forth IP
-  \   ld b,l ; column
-  \   ld c,e ; row
-  \   ld hl,(emitted_charset_pfa) ; address of first printable char in the charset
-  \   ld a,c  ; row
-  \   rrca
-  \   rrca
-  \   rrca ; multiply by 0x20
-  \   and  %11100000
-  \   xor  b ; combine with column (0x00..0x1F)
-  \   ld  e,a ; low byte of top row = 0x20 * (line mod 8) + column
-  \   ld  a,c  ; row is copied to a again
-  \   and  0x18
-  \   xor  0x40
-  \   ld  d,a ; high byte of top row = 64 + 8*int (line/8)
-  \   ; de = screen address
-  \   ld a,(hash_emitted_chars_pfa) ; number of chars in the charset
-  \   ld b,a
+require (xy-emit)  require z80-asm
 
-  \ emitted.do:
-  \   push  bc  ; save the characters count
-  \   push  de  ; save the screen pointer
-  \   push  hl  ; save the character set pointer (bitmap start)
-  \   ld  a,(de)  ; get first scan of screen character
-  \   xor  (hl)  ; match with scan from character set
-  \   jp z,emitted.match  ; jump if direct match found
-  \   ; if inverse, a=0xFF
-  \   inc  a  ; inverse? (if inverse, a=0)
-  \   jp  nz,emitted.next_char  ; jump if inverse match not found
-  \   ; inverse match
-  \   dec  a  ; restore 0xFF
-  \ emitted.match:
-  \   ld  c,a  ; inverse mask (0x00 or 0xFF)
-  \   ld  b,0x07  ; count 7 more character rows
-  \ emitted.scans:
-  \   inc  d  ; next screen scan (add 0x100)
-  \   inc  hl  ; next bitmap address
-  \   ld  a,(de)  ; screen scan
-  \   xor  (hl)  ; will give 0x00 or 0xFF (inverse)
-  \   xor  c  ; inverse mask to include the inverse status
-  \   jp  nz,emitted.next_char  ; jump if no match
-  \   djnz  emitted.scans  ; jump back till all scans done
+code xy-emit-udg  ( x y b -- )
 
-  \   ; character match
-  \   pop  bc  ; discard character set pointer
-  \   pop  bc  ; discard screen pointer
-  \   pop  bc  ; final count
-  \   ld a,(hash_emitted_chars_pfa) ; number of chars in the charset
-  \   sub  b ; ordinal number of the matched character (1 is the first)
-  \   ld l,a
-  \   jp emitted.end
+  \ Display the used graphic character _b_ (0..255) at graphic
+  \ coordinates _x y_. The system variable "UDG" is supossed to
+  \ hold the address of a graphic charset (the address of the
+  \ char 0 bitmap).
+  \
+  \ The UDG character will be printed with overwritting
+  \ (equivalent to `1 overwritte`).
 
-  \ emitted.next_char:
-  \   pop  hl  ; restore character set pointer
-  \   ld  de,0x0008  ; move it on 8 bytes
-  \   add  hl,de  ; to the next character in the set
-  \   pop  de  ; restore the screen pointer
-  \   pop  bc  ; restore the counter
-  \   djnz  emitted.do  ; loop back for the 96 characters
-  \   ; no match
-  \   ld l,b ; zero
+  hl pop  l a ld
+  de pop  hl pop  bc push  e b ld  l c ld
+  5C7B de ftp  \ system variable UDG
+  (xy-emit) call
+  bc pop  next ix ldp#  jpnext
+  end-code
 
-  \ emitted.end:
-  \   pop bc ; restore the Forth IP
-  \   ld h,0
-  \   jp push_hl
+\ (xy-emit) \
 
-  \ ; ----------------------------------------------
-  \   _variable_header emitted_charset_,'EMITTED-CHARSET'
+require z80-asm  require (pixel-addr)
 
-  \ ; doc{
-  \ ;
-  \ ; emitted-charset  ( -- a )
-  \ ;
-  \ ; Variable that holds the address of the first printable char in
-  \ ; the charset used by `emitted`. By default it contains 0x3D00, the
-  \ ; address of the space char in the ROM charset.
-  \ ;
-  \ ; }doc
+  \ [Code Adapted from "SMOOTH MOVE",
+  \ written by Simon N.  Goodwin,
+  \ published in Todospectrum, issue 2 (1984-10), page
+  \ 16.  http://microhobby.speccy.cz/zxsf/revistas-ts.htm]
 
-  \   dw 0x3D00 ; address of the space in the ROM charset
+create (xy-emit)  ( -- )
 
-  \ ; ----------------------------------------------
-  \   _variable_header hash_emitted_chars_,'#EMITTED-CHARS'
+  \ Print a 8x8 bits char at high resolution coordinates.
 
-  \ ; doc{
-  \ ;
-  \ ; #emitted-charset  ( -- a )
-  \ ;
-  \ ; Variable that holds the number of printable chars in the
-  \ ; charset used by `emitted`. By default it contais 0x5F, the
-  \ ; number of printable ASCII chars in the ROM charset.
-  \ ;
-  \ ; }doc
+  \ Input:
+  \   DE = address of the first char (0) bitmap in a charset
+  \   A = char code (0..255)
+  \   B = y coordinate
+  \   C = x coordinate
+  \ Modifies:
+  \   AF BC HL IX DE
 
-  \   dw 0x5F ; printable ASCII chars in the ROM charset
+  asm
 
-( pixel )
+  0 h ld#  a l ld  hl addp  hl addp  hl addp  de addp
+  hl push  ix pop  bc hl ldp  hl push  8 c ld#
 
-require pixel-add
+  begin
+
+    hl pop  h dec  hl push  h inc
+      \ next line
+
+    bc push  hl bc ldp  (pixel-addr) call  bc pop
+      \ convert the coords H (x) and L (y) to an address in HL
+      \ and a bit in A
+
+    a b ld  a xor  b or  0 ix a ftx
+    nz if   exde  0 h ld#  a l ld  8 a ld#  b sub  a b ld
+            begin  hl addp  step  exde
+            m a ld  d xor  a m ld
+            hl incp  e a ld  then
+
+    m xor  a m ld  ix incp  c dec
+      \ next char scan, one screen line less
+
+  z until  hl pop  ret  end-asm
+
+( ocr )
+
+  \ [Adapted from anonymous code published in Todospectrum,
+  \ issue 19 (1986-03), page 65.
+  \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm]
+
+require z80-asm require ocr-chars
+
+code ocr  ( col line -- n )
+
+  \ Try to recognize the char printed at the given cursor
+  \ coordinates, using the charset whose first printable char
+  \ is pointed by the variable `ocr-charset`. The variable
+  \ `ocr-chars` holds the number of chars in the charset,
+  \ and `ocr-first` holds the code of the first char in the
+  \ charset.  If succesful, return the char number _n_
+  \ according to the said variables.  If no char is recognized,
+  \ return 0. Inverse characters are not recognized.
+
+  de pop  hl pop  bc push
+    \ get row, get col, save the Forth IP
+  l b ld  e c ld  ocr-charset hl ftp
+    \ b=colum, c=row, hl=udg
+
+  c a ld  rrca  rrca  rrca  E0 and#  b xor  a e ld
+  c a ld  18 and#  40 xor#  a d ld
+    \ de = screen address
+  0 de stp here 2- 0 unresolved !
+    \ modify the code to get the screen address later
+
+  ocr-chars fta  a b ld
+    \ number of chars in the charset
+  begin
+    \ b=remaining chars
+    \ hl = address of scan 0 of the current char
+    bc push  hl push
+    0 de ldp#  \ restore the screen address
+    here 2- 0 unresolved @ !
+      \ compilation: resolve the address of the screen address
+    \ de = screen address
+
+-->
+
+( ocr )
+
+    08 b ld# \ scans
+    begin
+      de ftap  m xor  \ scan match?
+      here jrnz >relmark 1 unresolved !
+        \ if not, goto next_char
+      d inc  hl incp  \ update the pointers
+    step  \ next scan
+
+    \ all eight scans match: udg found
+
+    bc pop  bc pop
+      \ discard the saved pointer
+      \ b = chars left
+    ocr-chars fta  b sub  a b ld
+    ocr-first fta  b add  a b ld
+      \ b = char number
+    here jr >relmark 2 unresolved !
+      \ go to end
+
+    \ next_char:
+    1 unresolved @ here >relresolve
+    hl pop  0008 de ldp#  de addp  bc pop
+  step
+  \ b = 0 (no char matches)
+
+  \ end:
+  2 unresolved @ here >relresolve  0 h ld#  b l ld
+  bc pop  pushhl jp  end-code
+
+( ocr-charset ocr-first ocr-chars ocr-ascii ocr-udg )
+
+variable ocr-charset
+
+  \ doc{
+  \
+  \ ocr-charset  ( -- a )
+  \
+  \ Variable that holds the address of the first printable char
+  \ in the charset used by `ocr`. By default it contains
+  \ 0x3D00, the address of the space char in the ROM charset.
+  \
+  \ }doc
+
+variable ocr-first
+
+  \ doc{
+  \
+  \ ocr-first  ( -- a )
+  \
+  \ Variable that holds the code of the first printable char in the
+  \ charset used by `ocr`. By default it contais 0x80, the
+  \ first UDG.
+  \
+  \ }doc
+
+variable ocr-chars
+
+  \ doc{
+  \
+  \ ocr-charset  ( -- a )
+  \
+  \ Variable that holds the number of printable chars in the
+  \ charset used by `ocr`. By default it contais 0x5F, the
+  \ number of printable ASCII chars in the ROM charset.
+  \
+  \ }doc
+
+: ocr-ascii  ( -- )
+  \ Set `ocr` to work with the ASCII charset pointed by the
+  \ system variable CHARS.
+  23606 @ 256 + ocr-charset !
+  32 ocr-first !
+  95 ocr-chars !  ;
+
+: ocr-udg  ( n -- )
+  \ Set `ocr` to work with the first _n_ chars of the UDG
+  \ charset pointed by the system variable UDG.
+  23675 @ ocr-charset !
+  128 ocr-first !
+  ocr-chars !  ;
+
+19 ocr-udg  \ default
+
+( pixel-addr )
+
+require (pixel-addr)
 
   \ XXX TODO use z80-asm
 
-code pixel  ( xc yc -- n a )
+code pixel-addr  ( xc yc -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
   \ y = 0..191
@@ -478,15 +551,15 @@ code pixel  ( xc yc -- n a )
   C5 c,                   \ push bc
   40 05 + c,              \ ld b,l ; b=y
   48 03 + c,              \ ld c,e ; c=x
-  CD c, pixel-add ,       \ call pixel-add
+  CD c, (pixel-addr) ,       \ call (pixel-addr)
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
   C3 c, pushhlde ,        \ jp pushhlde
   end-code
 
-( pixel-add )
+\ (pixel-addr) \
 
-create pixel-add  ( -- a )
+create (pixel-addr)  ( -- a )
 
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
@@ -508,11 +581,11 @@ create pixel-add  ( -- a )
   C3 c, 22B0 ,  \ jp 0x22B0 ; and return
   end-asm
 
-( pixel-add )
+( (pixel-addr) )
 
 require z80-asm
 
-create pixel-add  ( -- a )
+create (pixel-addr)  ( -- a )
 
   \ This Z80 routine is a modified copy of the "pixel-add" ROM
   \ routine (0x22AA), to let the range of the y coordinate to
@@ -574,7 +647,7 @@ create pixel-add  ( -- a )
 
 ( plot )
 
-require pixel-add
+require (pixel-addr)
 
 code plot  ( xc yc -- )
 
@@ -585,7 +658,7 @@ code plot  ( xc yc -- )
   \ b = y coordinate
   \ c = x coordinate
   ED c, 43 c, 5C7D ,  \ ld (0x5C7D),bc ; update COORDS
-  CD c, pixel-add ,   \ call pixel-add
+  CD c, (pixel-addr) ,   \ call (pixel-addr)
   \ hl = screen address
   \ a = pixel position in hl (0..7)
   CD c, 22EC ,        \ call 0x22EB ; ROM PLOT-SUB + 7
@@ -604,16 +677,16 @@ code plot  ( xc yc -- )
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
 
-require pixel-add  require z80-asm
+require (pixel-addr)  require z80-asm
 
 code set-pixel  ( xc yc -- )
 
   \ XXX FIXME system halt?
 
   hl pop  de pop  bc push
-  l b ld  e c ld  pixel-add call
+  l b ld  e c ld  (pixel-addr) call
   a b ld  b inc  1 a ld#
-  begin  a rrc  step
+  begin  rrca  step
   m or  a m ld  \ combine pixel with byte in the screen
   bc pop  jpnext
 
@@ -628,14 +701,14 @@ code set-pixel  ( xc yc -- )
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
 
-require pixel-add  require z80-asm
+require (pixel-addr)  require z80-asm
 
 code reset-pixel  ( xc yc -- )
 
   hl pop  de pop  bc push
-  l b ld  e c ld  pixel-add call
+  l b ld  e c ld  (pixel-addr) call
   a b ld  b inc  1 a ld#
-  begin  a rrc  step
+  begin  rrca  step
   cpl  m and  a m ld  \ combine pixel with byte in the screen
   bc pop  jpnext
 
@@ -650,14 +723,14 @@ code reset-pixel  ( xc yc -- )
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg]
 
-require pixel-add  require z80-asm
+require (pixel-addr)  require z80-asm
 
 code toggle-pixel  ( xc yc -- )
 
   hl pop  de pop  bc push
-  l b ld  e c ld  pixel-add call
+  l b ld  e c ld  (pixel-addr) call
   a b ld  b inc  1 a ld#
-  begin  a rrc  step
+  begin  rrca  step
   m xor  a m ld  \ combine pixel with byte in the screen
   bc pop  jpnext
 
@@ -665,7 +738,7 @@ code toggle-pixel  ( xc yc -- )
 
 ( pixel? )
 
-require pixel-add  require z80-asm
+require (pixel-addr)  require z80-asm
 
 code pixel?  ( xc yc -- f )
   hl pop  de pop  bc push
@@ -674,7 +747,7 @@ code pixel?  ( xc yc -- f )
   l b ld  e c ld
   \ b = y coordinate
   \ c = x coordinate
-  pixel-add call
+  (pixel-addr) call
   \ hl = screen address
   \ a = pixel position in hl
   a b ld  b inc  m a ld
@@ -683,36 +756,6 @@ code pixel?  ( xc yc -- f )
   1 and#  \ pixel?
   ' true cfa>pfa jpnz
   ' false cfa>pfa jp
-  end-code
-
-( pixel? )
-
-  \ XXX OLD -- version for true=1
-
-require pixel-add
-
-code pixel?  ( xc yc -- f )
-  \ f = 1 or 0
-  E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
-  \ l = y coordinate
-  \ e = x coordinate
-  40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
-  \ b = y coordinate
-  \ c = x coordinate
-  CD c, pixel-add ,       \ call pixel-add
-  \ hl = screen address
-  \ a = pixel position in hl
-  40 07 + c, 04 c, 7E c,
-                          \ ld b,a
-                          \ inc b
-                          \ ld a,(hl)
-  \ rotate:
-  07 c,  10 c, FD c,      \ rlca / djnz rotate
-  E6 c, 01 c,             \ and 1
-  \ finish:
-  26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
-  C1 c,  C3 c, pushhl ,   \ jp pushhl
-                          \ pop bc
   end-code
 
 ( rdraw )
@@ -783,29 +826,50 @@ require plot
 
 ( attr )
 
-require attr-addr
+require z80-asm require (attr-addr)
 
-code attr ( line col -- b )
+code attr ( col line -- b )
 
-  E1 c,  D1 c,
-    \ pop hl ; l = col
-    \ pop de ; e = line
-  50 05 + c,
-    \ ld d,l ; d = col
-  6E c,  26 c, 00 c,  pushhl,
-    \ ld l,(hl) ; pick up the colour attribute.
-    \ ld h,0
-    \ jp pushhl
+  \ Return the color attribute of the given cursor coordinates.
+
+  de pop  hl pop  l d ld
+    \ d = col
+    \ e = line
+  (attr-addr) call
+    \ hl = attribute address
+  m l ld  0 h ld#
+    \ hl = attribute
+  pushhl jp
 
   end-code
 
 ( attr-addr )
 
-create attr-addr  ( -- a )
+require z80-asm require (attr-addr)
 
-  \ Modified version of the ROM routine at 0x2583.
+code attr-addr ( col line -- a )
 
-  \ XXX FIXME
+  \ Return the color attribute address of the given cursor
+  \ coordinates.
+
+  de pop  hl pop  l d ld
+    \ d = col
+    \ e = line
+  (attr-addr) call
+    \ hl = attribute address
+  pushhl jp
+
+  end-code
+
+\ (attr-addr) \
+
+require z80-asm
+
+create (attr-addr)  ( -- a )
+
+  \ Address of a Z80 routine that calculates the color
+  \ attribute address of a cursor position.  This is a modified
+  \ version of the ROM routine at 0x2583.
 
   \ Input:
   \   d = column (0..31)
@@ -815,50 +879,20 @@ create attr-addr  ( -- a )
 
   asm
 
-  78 03 + c, \ ld a,e  ; line to a 0x00..0x17   (max 00010111)
-  0F c, 0F c, 0F c, \ rrca | rrca | rrca  ; rotate bits left
-  58 07 + c, \ ld e,a ; store in d as an intermediate value.
-
-  E6 c, E0 c, \ and 0xE0 ; pick up bits 11100000 (was 00011100)
-  A8 02 + c, \ xor d ; combine with column 0x00..0x1F
-  68 07 + c, \ ld l,a ; low byte now correct.
-
-  78 03 + c, \ ld a,e ; bring back intermediate result from d
-
-  E6 c, 03 c,  EE c, 58 c,
-    \ and 0x03 ; mask to give correct third of screen
-    \ xor 0x58 ; combine with base address.
-  60 07 + c, \ ld h,a ; high byte correct.
-
-  C9 c,  \ ret
+  e a ld  \ line to a 0x00..0x17 (max 00010111)
+  rrca rrca rrca  \ rotate bits left
+  a e ld  \ store in d as an intermediate value
+  E0 and#  \ pick up bits 11100000 (was 00011100)
+  d xor  \ combine with column 0x00..0x1F
+  a l ld  \ low byte now correct
+  e a ld  \ bring back intermediate result from d
+  03 and#  58 xor#
+    \ mask to give correct third of screen
+    \ combine with base address
+  a h ld  \ high byte correct
+  ret
 
   end-asm
-
-( emitted? )
-
-  \ XXX TODO -- rewrite after the planned method for a double
-  \ character set: `ascii-printed`, `udg-printed` and its
-  \ combination `printed`, or similar names. Modify the charset
-  \ system variable.
-
-code emitted? ( row col -- f )
-
-  \ pop hl
-  \ pop de
-  \ push bc
-  \ ld c,e
-  \ ld b,l
-  \ call rom_s_scrn_s_0x2538
-  \ call rom_stack_fetch
-  \ ld a,(de)
-  \ ld h,0x00
-  \ ld l,a
-  \ pop bc
-  \ ; XXX TODO -- check if necessary after those ROM routines:
-  \ ld ix,next ; restore
-  \ jp push_hl
-
-  end-code
 
 ( circle )
 
@@ -1357,22 +1391,6 @@ create fzx-variables
 
 constant fzx-y  constant fzx-x  constant fzx-flags
 
-6 cells allocate-string
-  \ Temporary space to store unresolved addresses during
-  \ compilation. `pad` can not be used because it's transient
-  \ and changes during the compilation. The circular string
-  \ buffer is used.
-  \
-  \ XXX TODO -- use the heap instead, when implemented
-
-: unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
-  \ Return the address of the _n_ unresolved address.  Note:
-  \ The address returned by `allocate-string` is directly
-  \ compiled into this `unresolved`. This saves a definition.
-  \ `dup` and `drop` are used to pass the compiler security
-  \ that checks the stack is balanced at the end of the
-  \ definition.
-
 -->
 
 ( fzx-emit )
@@ -1555,7 +1573,7 @@ create (fzx-emit)  ( -- )
 
   \ XXX TODO -- adapt this call to the Forth word
   22AA 2+ call  exaf
-    \ call PIXEL-ADD + 2 to calculate screen address
+    \ call (PIXEL-ADDr) + 2 to calculate screen address
     \ now A' = (col % 8)
   here jr >relmark 5 unresolved !  \ jr CHK_LOOP
 
@@ -1655,9 +1673,9 @@ create (fzx-emit)  ( -- )
 
 code fzx-emit  ( c -- )
 
-  hl pop  bc push  ix push
+  hl pop  bc push
   l a ld  ' (fzx-emit) cfa>pfa call
-  ix pop  bc pop  jpnext
+  bc pop  next ix ldp#  jpnext
 
   end-code
 
@@ -2229,21 +2247,21 @@ require z80-asm  require --hook-codes--
 
 code drive@  ( -- n )
   \ Get the current drive (1 or 2).
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth registers
   patch hook
   3ACE fta  \ XXX NEW
   \ XXX TODO check this method:
   \ bit 0 of 3DD1
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   pusha jp  end-code
 
 code drive!  ( n -- )
   \ Set the current drive (1 or 2).
   hl pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth registers
   l a ld  21 hook   \ select drive in a
-  ix pop  bc pop    \ restore the Forth registers
+  bc pop   next ix ldp#  \ restore the Forth registers
   jpnext  end-code
 
 ( -file )
@@ -2254,10 +2272,10 @@ code (-file)  ( -- ior )
 
   \ Delete a disk file using the data hold in UFIA.
 
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth registers
   ufia ix ldp#
   heraz hook \ erase the file
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   af push
   jpnext
   end-code
@@ -2308,14 +2326,14 @@ code (>file)  ( -- ior )
 
   \ Save a file to disk using the data hold in UFIA.
 
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth registers
   ufia ix ldp#
   hofile hook \ open the file and create its header
   nc if \ no error?
     hd0d de ftp  hd0b bc ftp  \ de=start, bc=length
     hsvbk hook \ save to file
     nc if  cfsm hook  then  \ close the file if no error
-  then  ix pop  bc pop  \ restore the Forth registers
+  then  bc pop  next ix ldp#  \ restore the Forth registers
   af push  \ ior
   jpnext end-code
 
@@ -2338,7 +2356,7 @@ code (<file)  ( -- ior )
   \ file header and the parameters specified by the high level
   \ command.
 
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
 
   ufia ix ldp#  hgfile hook \ get the file
   nc if \ no error?  -- load the file header:
@@ -2357,7 +2375,7 @@ code (<file)  ( -- ior )
       \ length of the file header
       \ instead.  Then load the file data.
 
-  then  ix pop  bc pop  af push
+  then  bc pop  next ix ldp#  af push
         \ restore the Forth registers and save the ior
   jpnext  end-code
 
@@ -2375,13 +2393,13 @@ require ufia  require filename!  require --hook-codes--
 
 code (file?)  ( -- f )
 
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   patch hook
   nstr2 ix ldp#
   1146 call  \ FIND_FILE
   168E call  \ BORD_REST = restore the border
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   ' true cfa>pfa jpz
   ' false cfa>pfa jp
   end-code
@@ -2401,8 +2419,8 @@ code (cat)  ( n -- )
 
   \ n = cat type: 2=compact; 4=detailed
 
-  hl pop  bc push  ix push  exx
-    \ Get the parameter in hl' and save the Forth registers
+  hl pop  bc push  exx
+    \ Get the parameter in hl' and save the Forth IP
 
   patch hook
 
@@ -2413,7 +2431,7 @@ code (cat)  ( n -- )
     \ 24B5 = CAT_RUN (input: cat type in the a register)
     \ 168E = BORD_REST (restore the border)
 
-  E7 out  ix pop  bc pop  jpnext  end-code
+  E7 out  bc pop  next ix ldp#  jpnext  end-code
     \ page +D out
     \ restore the Forth registers and exit
 
@@ -2445,12 +2463,12 @@ require z80-asm  require --hook-codes--
 code @dos  ( a -- n )
   \ Fetch the content of +D memory address.
   hl pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   hl push
   patch hook
   hl pop m e ld  hl incp  m d ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   de push
   jpnext
   end-code
@@ -2462,13 +2480,13 @@ require z80-asm  require --hook-codes--
 code c@dos  ( a -- b )
   \ Fetch the content of +D memory address.
   hl pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   hl push
   patch hook
   hl pop
   m a ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   pusha jp
   end-code
 
@@ -2479,12 +2497,12 @@ require z80-asm  require --hook-codes--
 code c!dos  ( b a -- )
   \ Store b into the +D memory address a.
   hl pop  de pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   de push hl push
   patch hook
   hl pop  de pop  e m ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   jpnext
   end-code
 
@@ -2495,12 +2513,12 @@ require z80-asm  require --hook-codes--
 code !dos  ( n a -- )
   \ Store n into the +D memory address a.
   hl pop  de pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   de push  hl push
   patch hook
   hl pop  de pop  e m ld  hl incp  d m ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   jpnext
   end-code
 
@@ -2514,14 +2532,14 @@ require z80-asm  require --hook-codes--
 code @dosvar  ( n1 -- n2 )
   \ Fetch the content of G+DOS variable n1.
   hl pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
     \ XXX TODO use exx instead?
   hl push
   patch hook
   hl pop  dos-vars de ldp#  de addp
   m e ld  hl incp  m d ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   de push
   jpnext
   end-code
@@ -2536,7 +2554,7 @@ require z80-asm  require --hook-codes--
 code c@dosvar  ( n -- b )
   \ Fetch the content of G+DOS variable n.
   hl pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   hl push
   patch hook
   hl pop  dos-vars de ldp#  de addp
@@ -2544,14 +2562,14 @@ code c@dosvar  ( n -- b )
   \ XXX OLD
   \ m a ld 0 d ld#  a e ld
   \ E7 out  \ page +D out
-  \ ix pop  bc pop  \ restore the Forth registers
+  \ bc pop  next ix ldp#  \ restore the Forth registers
   \ de push
   \ jpnext
 
   \ XXX NEW
   m a ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   pusha jp
 
   end-code
@@ -2566,13 +2584,13 @@ require z80-asm  require --hook-codes--
 code !dosvar  ( n1 n2 -- )
   \ Store n1 into the G+DOS variable n2.
   hl pop  de pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   de push  hl push
   patch hook
   hl pop  dos-vars de ldp#  de addp  de pop
   e m ld  hl incp  d m ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   jpnext
   end-code
 
@@ -2586,13 +2604,13 @@ require z80-asm  require --hook-codes--
 code c!dosvar  ( b n -- )
   \ Store b into the G+DOS variable n.
   hl pop  de pop
-  bc push  ix push  \ save the Forth registers
+  bc push  \ save the Forth IP
   de push hl push
   patch hook
   hl pop  dos-vars de ldp#  de addp  de pop
   e m ld
   E7 out  \ page +D out
-  ix pop  bc pop  \ restore the Forth registers
+  bc pop  next ix ldp#  \ restore the Forth registers
   jpnext
   end-code
 
@@ -3067,6 +3085,65 @@ require break-key?
   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
   \ }}} =======================================================
+  \ Keyboard {{{
+
+( inkey )
+
+require z80-asm
+
+code inkey  ( -- c | 0 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed leaves 0.
+  \
+  \ This word works only when an interrupts routine reads the
+  \ keyboard and updates the LAST-K system variable, as the OS
+  \ does by default.
+
+  \ XXX TODO try
+
+  di
+  5C08 hl ldp#  \ LAST-K system variable
+  m a ld
+  0 m ld#
+  ei
+
+  pusha jp
+
+  end-code
+
+( inkey|255 )
+
+  \ [Code adapted from Abersoft Forth's `inkey`.]
+
+require z80-asm
+
+code inkey|255  ( -- c | 255 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed leave decimal 255.
+  \
+  \ This word works only if the keyboard is read by the
+  \ interrupts routine.  This word reads the keyboard, so it
+  \ works even when it's not read by an interrupts routien, as
+  \ the OS does by default.
+
+  \ XXX TODO try
+
+  bc push
+  028E call \ KEY-SCAN ROM routine
+  z if  031E call \ KEY-TEST ROM routine
+        c if  d dec  a e ld
+              0333 call \ KEY-DECODE ROM routine
+        then
+  then
+  a l ld  00 h ld#
+  bc pop
+  pushhl jp
+
+  end-code
+
+  \ }}} =======================================================
   \ Hardware {{{
 
 ( @p )
@@ -3472,7 +3549,7 @@ code j
   2A c, rp ,      \ ld hl,(return_stack_pointer)
   11 c, 2 cells , \ ld de,2*cell
   19 c,           \ add hl,de
-  fetchhl,        \ jp fetchhl
+  C3 c, fetchhl , \ jp fetchhl
 
   end-code
 
@@ -3487,7 +3564,7 @@ code k
   2A c, rp ,      \ ld hl,(return_stack_pointer)
   11 c, 4 cells , \ ld de,4*cell
   19 c,           \ add hl,de
-  fetchhl,        \ jp fetchhl
+  C3 c, fetchhl , \ jp fetchhl
 
   end-code
 
@@ -3498,10 +3575,10 @@ code i'  ( -- x )
 
   \ Return a copy of the current (innermost) loop limit.
 
-  2A c, rp ,  \ ld hl,(return_stack_pointer)
-  23 c,       \ inc hl
-  23 c,       \ inc hl
-  fetchhl,    \ jp fetchhl
+  2A c, rp ,        \ ld hl,(return_stack_pointer)
+  23 c,             \ inc hl
+  23 c,             \ inc hl
+  C3 c, fetchhl ,   \ jp fetchhl
 
   end-code
 
@@ -3515,7 +3592,7 @@ code j'  ( -- x )
   2A c, rp ,      \ ld hl,(return_stack_pointer)
   11 c, 3 cells , \ ld de,3*cell
   19 c,           \ add hl,de
-  fetchhl,        \ jp fetchhl
+  C3 c, fetchhl , \ jp fetchhl
 
   end-code
 
@@ -3933,6 +4010,24 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
 
 : randomize  ( n -- )  seed !  ;
 
+( ace-rnd )
+
+  \ [Adapted from Ace Forth, as of the Jupiter Ace manual.]
+
+[defined] seed        ?\ 23670 constant seed
+[defined] sys-frames  ?\ 23672 constant sys-frames
+  \ system variables
+
+: seedon  ( -- n )
+  seed @ 75 um* d>s 75 0 d+ over over u< - - 1- dup seed !  ;
+
+: rnd  ( n1 -- n2 )  seedon um* d>s swap drop  ;
+
+: randomize  ( n -- )
+  ?dup 0=  if  sys-frames @  then  seed !  ;
+
+( vForth pseudo random number generator )
+
   \ From vForth
   \ XXX TODO adapt and try
   \ : vrnd  ( n1 -- n2 )
@@ -4126,6 +4221,8 @@ require -rot
 
 ( z80-asm -- opcodes)
 
+  \ XXX FIXME ftap
+
 00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
 08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca 10 m9
 djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl 27 m1
@@ -4303,7 +4400,22 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
 -->
 
-( z80-asm -- definining words)
+( z80-asm -- unresolved macro endm )
+
+6 cells allocate-string
+  \ Temporary space to store unresolved addresses during
+  \ compilation. `pad` can not be used because it's transient
+  \ and changes during the compilation. The circular string
+  \ buffer is used.
+  \
+  \ XXX TODO -- use the heap instead, when implemented
+
+: unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
+  \ Return the address of the _n_ unresolved address.  Note:
+  \ The address returned by `allocate-string` is directly
+  \ compiled into `unresolved`. This saves a definition.  `dup`
+  \ and `drop` are used to pass the compiler security that
+  \ checks the stack is balanced at the end of the definition.
 
 only forth definitions also assembler
 
@@ -5055,5 +5167,251 @@ FORTH-WORDLIST SET-CURRENT
   \ zero. As this is a standard word it takes an unsigned size
   \ argument, but excessive requests fail automatically, as
   \ with ALLOCATE.
+
+  \ }}} =======================================================
+  \ Sample game: Siderator 2 {{{
+
+( siderator )
+
+  \ XXX TODO
+
+\ Siderator 2: Judgement Day
+\ A game for the ZX Spectrum
+
+\ Copyright (C) 2009,2010,2013,2015 Marcos Cruz
+\ (programandala.net)
+
+  \ History
+
+  \ 2015-09-02: Start, with the code of Siderator:
+  \ http://programandala.net/en.program.siderator.html
+  \
+
+  \ Known bugs (or special features)
+
+  \ The craft's autodestruction creates a new star.
+
+only forth definitions
+
+locate ace-rnd load  require udg:  require inkey
+
+[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+
+vocabulary siderator
+also siderator definitions  decimal
+
+-->
+
+( siderator )
+
+  \ Game variables and constants:
+
+variable x          variable speed
+variable parsecs    variable record
+
+999 constant max-speed
+char 5 constant left-key  char 8 constant right-key
+char q constant quit-key
+
+  \ System variables and addresses:
+
+8192 constant 'screen \ XXX OLD
+
+  \ Common words:
+
+: at  ( line col -- )  swap at-xy  ;
+: pause  ( -- )  begin  inkey  until  ;  -->
+
+( siderator )
+
+  \ Graphics
+
+15360 256 + constant charset  \ ROM charset
+23675 @ constant udg  \ UDG charset
+: char>a  ( c -- a )  8 * charset +  ;
+: udg>a  ( c -- a )  8 * udg +  ;
+: char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove ;
+
+0 constant star0-udg  char * star0-udg char>udg
+
+binary
+00011000
+00011000
+00011000
+00011000
+00011000
+00011000
+00011000
+00011000 decimal 1 udg: star-1-udg  -->
+
+( siderator )
+
+2 constant star2-udg
+char | star2-udg char>udg
+
+binary
+00001000
+00000000
+00001000
+00000000
+00001000
+00000000
+00001000
+00000000 decimal 3 udg: star3-udg  -->
+
+( siderator )
+
+binary
+10000001
+10000001
+11000011
+11100111
+11111111
+01100110
+00111100
+00011000 decimal 4 udg: craft-udg  -->
+
+( siderator )
+
+  \ Keyboard
+
+: k=  ( c -- f )  inkey =  ;
+: left?  ( -- f )  left-key k=  ;
+: right?  ( -- f )  right-key k=  ;
+: left  ( -- )  x @ left? - 0 max x !  ;
+: right  ( -- )  x @ right? + 31 min x !  ;
+: rudder  ( -- )  right left  ;
+
+-->
+
+( siderator )
+
+  \ Stars
+
+4 constant #stars
+: star-coords  ( -- y x )  23 31  ;
+: .star  ( c -- )  star-coords 1+ rnd at emit  ;
+: star/speed  ( -- c )  speed @ #stars 1- max-speed */ 1+  ;
+: scroll  ( -- )  star-coords at cr cr  ;
+: .stars  ( -- )
+  star/speed dup 0  do  dup .star  loop  drop  ;
+: star<>  ( c -- f )  #stars >  ;
+: star=  ( c -- f )  star<> 0=  ;
+
+  \ Craft
+
+: craft-coords  ( -- y x )  10 x @  ;
+: craft-at  ( -- )  craft-coords at  ;
+: -craft  ( -- )  craft-at space  ;
+: .craft  ( -- )  craft-at craft-udg emit  ;
+
+-->
+
+( siderator )
+
+  \ Speed, parsecs, record
+
+: .datum  ( u -- ) 0 <# # # # #> type space  ;
+: delay  ( -- )  max-speed speed @ - 2 / 0  do  loop  ;
+: .speed  ( -- )  ." Speed:" speed @ .datum  ;
+: +speed  ( u1 -- u2 )
+  dup 10 / 1 max  parsecs @ 4 mod 0= *  + max-speed min  ;
+: faster  ( -- )  speed @ +speed speed !  ;
+: .parsecs  ( -- )  ." Parsecs:" parsecs @ .datum  ;
+: farther  ( -- )  parsecs @ 1+ parsecs !  ;
+: .record  ( -- )  ." Record:" record @ .datum  ;
+: .info  ( -- )  0 dup at .speed .parsecs .record  ;
+
+-->
+
+( siderator )
+
+  \ End
+
+require j  require ocr
+
+: blast-delay  ( -- )  32 0  do  loop  ;
+: (blast)  ( -- )
+  .craft blast-delay craft-at star0-udg emit blast-delay  ;
+: blast  ( -- )  256 0  do  (blast)  loop  ;
+
+: halt  ( -- )
+  32 0  do  24 0 do
+    i j ocr star= if  i j at-xy  star0-udg emit  then
+  loop  loop  ;
+  \ XXX TODO
+
+-->
+
+( siderator )
+
+: safe?  ( -- f )  craft-coords swap ocr star<>  ;
+: autodestruction?  ( -- f )  quit-key k=  ;
+: continue?  ( -- f )  safe? autodestruction? 0= and  ;
+: new-record  ( -- )
+  parsecs @ record @ >  if  parsecs @ record !  then  ;
+: game-over  ( -- )
+  blast halt  11 dup at ." GAME OVER"
+  new-record .info 22 0 at  ;
+
+-->
+
+( siderator )
+
+\ Init
+
+: about  ( -- )
+  cr ." Siderator 2: Jugdement Day"  cr
+  cr ." Copyright (C) Marcos Cruz"
+  cr ." (programandala.net)"
+  cr ." Version: 2015-09-02"  ;
+
+: objective  ( -- )
+  cr ." Your objective is to travel as"
+  cr ." much parsecs as possible"
+  cr ." while dodging the stars."
+  cr ." Anyway you're supposed to die"
+  cr ." before the 1000th parsec"
+  cr ." because four digits would ruin"
+  cr ." the beautiful panel."  ;
+
+-->
+
+( siderator )
+
+require frames@
+
+: keys  ( -- )
+  cr ." Rudder keys: "
+  left-key emit space right-key emit
+  cr ." Autodestruction key: "
+  quit-key emit  ;
+
+: instructions  ( -- )  objective cr keys  ;
+
+: wait  ( -- )  cr cr ." Press any key to start." pause  ;
+
+: init-screen  ( -- )
+  cls about cr instructions wait cls  ;
+
+: 4+-  ( n1 -- n2 )  9 rnd 4 - +  ;
+
+: init  ( -- )
+  frames@ s>d randomize  ocr-udg
+  init-screen  15 4+- x ! 0 parsecs ! 0 speed !  ;
+
+-->
+
+( siderator )
+
+  \ Main
+
+: run ( -- )
+  init
+  begin   -craft scroll  faster farther .info  continue?
+  while   rudder .craft .stars  delay
+  repeat  game-over  ;
+
+run
 
   \ vim: filetype=soloforth
