@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511242208
+\ Last modified: 201512040307
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -3383,7 +3383,7 @@ need z80-asm  need [if]
   \ [needed] c@test-bits? [if]
   \ code c@test-bits?  ( b ca -- wf )
   \   hl pop  de pop  e a ld  m and
-  \   ' true >body jpnz  ' false >body jp  end-code  ;s  [then]
+  \   ' true >body jpnz  ' false >body jp  end-code  exit  [then]
   \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
   \   \ _true_ if the result is non-zero or _false_ if the result
   \   \ is zero.
@@ -3395,7 +3395,8 @@ need z80-asm  need [if]
 
 [needed] c@test-bits [if]
 code c@test-bits  ( b1 ca -- b2 )
-  hl pop  de pop  e a ld  m and  pusha jp  end-code  ;s  [then]
+  hl pop  de pop  e a ld  m and  pusha jp
+  end-code  exit  [then]
   \ Test the bits at _ca_ specified by the bitmask _b1_.
   \ Return the result _b2_. The bits sets in _b2_ are those
   \ set in both _b1_ and the contents of _ca_.
@@ -3404,20 +3405,20 @@ code c@test-bits  ( b1 ca -- b2 )
   \ [needed] c!set-bits [if]
   \ code c!set-bits  ( b ca -- )
   \   hl pop  de pop  e a ld  m or  a m ld  jpnext
-  \   end-code  ;s  [then]
+  \   end-code  exit  [then]
   \   \ Set the bits at _ca_ specified by the bitmask _b_.
 
   \ XXX OLD -- `c!reset-bits` is in the kernel
   \ [needed] c!reset-bits [if]
   \ code c!reset-bits  ( b ca -- )
   \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
-  \   end-code  ;s  [then]
+  \   end-code  exit  [then]
   \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
 [needed] c!toggle-bits [if]
 code c!toggle-bits  ( b ca -- )
   hl pop  de pop  m a ld  e xor  a m ld  jpnext
-  end-code  ;s  [then]
+  end-code  exit  [then]
   \ Invert the bits at _ca_ specified by the bitmask _b_.
 
 ( reserve )
@@ -3457,7 +3458,7 @@ code c!toggle-bits  ( b ca -- )
   \
   \ }doc
 
-[needed] between  ?\ exit
+[unneeded] between ?exit
 need -rot
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
@@ -3482,11 +3483,11 @@ need -rot
 
 ( u<= u>= <= >= 0>= 0<= )
 
-[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  ;s
-[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  ;s
-[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  ;s
-[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  ;s
-[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  ;s
+[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
+[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
+[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
+[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
+[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
 [unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
 
 ( lshift )
@@ -3843,9 +3844,9 @@ need tum*  need t+  need t-  need tum/  need d2*
   \ Credits:
   \ Code from DZX-Forth.
 
-[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  ;s
+[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  exit
 
-[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; ;s
+[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; exit
 
 need [if]
 
@@ -3854,7 +3855,7 @@ need [if]
 need 2nip
 
 : d<  ( d1 d2 -- f )
-  rot 2dup = if  2drop u< exit  then  2nip >  ;  ;s
+  rot 2dup = if  2drop u< exit  then  2nip >  ;  exit
 
 [then]
 
@@ -3865,7 +3866,7 @@ need 2nip
 : du<  ( ud1 ud2 -- f )
   rot swap 2dup
   u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;  ;s
+  -   if  2drop 0 exit  then  u<  ;  exit
 
 [then]
 
@@ -3878,7 +3879,7 @@ need [if]
 
 [needed] dmin [if]
 : dmin  ( d1 d2 -- d1 | d2 )
-  2over 2over d< 0= if  2swap  then  2drop  ;  ;s  [then]
+  2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
 
 [needed] dmax [if]
 : dmax  ( d1 d2 -- d1 | d2 )
@@ -4373,7 +4374,7 @@ variable private-start  variable private-stop
   \ Credits:
   \ Code adapted and modified from Galope.
 
-need get-order  need wordlist  need >order
+need get-order  need wordlist
 
   \ Inner words
 
@@ -5029,7 +5030,7 @@ code c!dosvar  ( b n -- )
 
 : reload  ( -- )  empty-buffers  scr @ load  ;
 
-;s
+exit
 
 : loads  ( block n -- )  bounds do  i load  loop  drop  ;
 
@@ -5077,7 +5078,112 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Tape files {{{
 
-  \ XXX TODO From Afera.
+( >tape <tape )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \ Code adapted from Afera.
+
+  \ XXX TODO finish adapting the code
+
+  \ -----------------------------------------------------------
+  \ Development documentation
+
+  \ Credits:
+  \
+  \ Information retrieved from from Don Thomasson's book
+  \ _Advanced Spectrum Forth_ (page 119).
+
+  \ The load tape header is pointed by IX before calling the ROM
+  \ routine. Its structure is the following:
+
+  \ +00 : 3 (identifier of code file type)
+  \ +01 : "<filename->" = 10-char filename, padded with spaces
+  \ +11 : 0 = length
+  \ +13 : 0 = start address
+  \ +15 : "  " (2 spaces) = not used for code files
+
+  \ The save tape header is right after the save header.
+
+17 constant /tape-header  \ bytes per tape header
+create tape-header  /tape-header 2 * allot
+
+10 constant /tape-filename \ filename max length
+
+: >tape-filename  ( ca1 -- ca2 )   1+   ;
+: >tape-length    ( ca1 -- ca2 )  11 +  ;
+: >tape-start     ( ca1 -- ca2 )  13 +  ;
+
+code (tape)  ( n -- )
+
+  \ n = 1 load
+  \ n = 0 save
+
+  \ pop hl
+  \ push bc
+  \ push ix
+  \ ld a,l ; 1=LOAD, 0=SAVE
+  \ ; this instruction is at 0x7618:
+  \ ; XXX OLD ; ld hl,D000  ; start address to save or load
+  \ ld hl,( XXX )  ; start address to save or load ; XXX NEW
+  \ ld ix,tape-header
+  \ ld (5C74),A
+  \ call 075A
+  \ pop ix
+  \ pop bc
+  \ jp next1
+
+  end-code
+
+-->
+
+( >tape <tape )
+
+: -tape-filename  ( -- )
+  tape-header >tape-filename /tape-filename blanks ;
+  \ Blank the filename of the load header.
+
+  \  XXX TODO use the file execution table
+  \  to share one word with the disk support?
+: tape-filename!  ( ca len -- )
+  -tape-filename  /tape-filename min
+  tape-header >tape-filename swap cmove  ;
+  \ Store a filename into the load header.
+
+: any-tape-filename  ( -- )
+  255 tape-header >tape-filename c!  ;
+  \ Configure the load header to load any filename.
+
+: tape-length!  ( len -- )
+  tape-header >tape-length !  ;
+  \ Set the given code length for the next tape loading,
+  \ storing it into the load header.
+
+: tape-start!  ( a -- )
+  tape-header >tape-start !  ;
+  \ Set the given code start for the next tape loading,
+  \ storing it into the load header and patching
+  \ the code of the word `(TAPE)`.
+
+-->
+
+( >tape <tape )
+
+: <tape  ( ca1 len1 ca2 len2 -- )
+  dup if  tape-filename!  else  2drop any-tape-filename  then
+  tape-length! tape-start!  1 (tape)  ;
+  \ Load a file from tape.
+  \ ca1      = destination
+  \ len1     = length (or zero if unspecified)
+  \ ca2 len2 = filename (len2 is zero if unspecified) 
+
+: >tape  ( ca1 len1 ca2 len2 -- )
+  tape-filename! tape-length! tape-start!  0 (tape)  ;
+  \ Save a memory region into a tape file.
+  \ ca1      = start
+  \ len1     = length
+  \ ca2 len2 = filename
 
   \ }}} =======================================================
   \ Tools {{{
@@ -5324,9 +5430,10 @@ variable decode-address  \ in the word being decoded
 
   \ Checks of the main code
 
+  \ XXX FIXME -- `;s` is not a valid check anymore
 : decode-end?  ( cfa -- f )
   \ Is the given cfa the end of a definition?
-  dup  ['] ;s =  swap ['] (;code) =  or  ;
+  dup  ['] exit =  swap ['] (;code) =  or  ;
 
 : colon-pfa?  ( pfa -- f )
   \ Is the given pfa a colon definition?
@@ -5506,9 +5613,8 @@ need break-key?  need trail  need name>link  need tab
     dup id. tab  name>link @n
   repeat drop  ;
 
-[needed] wordlist-words  ?\ ;s
+[unneeded] wordlist-words ?exit
 
-need >order
 : wordlist-words  ( wid -- )  >order  words  previous  ;
 
 ( words-like )
@@ -6819,7 +6925,7 @@ defer othercase  ( n -- )  ' drop ' othercase defer!
   postpone if  postpone drop  ; immediate compile-only
 
 : endof  ( n f -- )
-  postpone exit  postpone then  ; immediate compile-only  ;s
+  postpone exit  postpone then  ; immediate compile-only  exit
 
   \ Usage example
 
@@ -8031,8 +8137,7 @@ need -rot
 
   \ XXX UNDER DEVELOPMENT
 
-need >order  need abort"
-need words
+need words  need abort"
 
 : associative-list  ( "name" -- )  wordlist constant  ;
 
@@ -8159,7 +8264,7 @@ variable (value)  ['] @ (value) !
 
 ( link@ link, )
 
-  \ 2015-01-15
+  \ 2015-11-15
 
   \ Credits:
   \
@@ -8176,7 +8281,7 @@ defer link@  ( node1 -- node2 )
 
 ( [switch switch] )
 
-  \ 2015-01-15
+  \ 2015-11-15
 
   \ Credits:
   \
@@ -8231,7 +8336,7 @@ need link@  need link,
 : runs  ( head n "name" -- )  ' swap <switch  ;
   \ Associate the cfa of "name" to clause _n_ of switch _head_.
 
-;s
+exit
 
   \ XXX TODO -- `run:`
 
@@ -8328,7 +8433,7 @@ cr 1 sugar-numbers 2 sugar-numbers
 : user  ( n "name -- )
   create c,  does>  c@ up @ +  ;
 
-;s
+exit
 
 : user  ( n "name -- )
   cconstant
@@ -9470,22 +9575,7 @@ previous set-current
   \
   \ }doc
 
-  \ XXX TODO move to the kernel?
-[unneeded] >order
-?\ : >order  ( wid -- )  also context !  ;
-
-  \ doc{
-  \
-  \ >order  ( wid -- )
-  \
-  \ Push _wid_ on the search order.
-  \
-  \ }doc
-
-  \ Credits:
-  \ Word from Gforth.
-
-[unneeded] swap-current ?\ ;s
+[unneeded] swap-current ?\ exit
 : swap-current  ( wid1 -- wid2 )
   get-current swap set-current  ;
 
@@ -9751,6 +9841,7 @@ code call  ( a -- )
   C1 c,               \ pop bc
   DD c, 21 c, next ,  \ ld ix,next
   jpnext              \ jp next
+
   >resolve            \ call_hl:
   E9 c,               \ jp (hl)
   end-code
@@ -10178,15 +10269,17 @@ variable a
 
 code a!  ( a -- )
   \ Set the address register.
-  E1 c,                 \ pop hl
-  22 c, a ,             \ ld (a),hl
-  jpnext                \ jp (ix)
+  E1 c,  22 c, a ,  jpnext
+    \ pop hl
+    \ ld (a),hl
+    \ jp (ix)
   end-code
 
 code a@  ( -- a )
   \ Get the address register.
-  2A c, a ,             \ ld hl,(a)
-  C3 c, pushhl ,        \ jp pushhl
+  2A c, a ,  C3 c, pushhl ,
+    \ ld hl,(a)
+    \ jp pushhl
   end-code
 
 ( !a @a )
@@ -10198,20 +10291,24 @@ need a!
 
 code !a  ( u -- )
   \ Store cell at `a`.
-  D1 c,                          \ pop de
-  2A c, a ,                      \ ld hl,(a)
-  70 03 + c,  23 c,  70 04 + c,  \ ld (hl),e  inc hl  ld (hl),d
-  jpnext                         \ jp (ix)
+  D1 c,  2A c, a ,  70 03 + c,  23 c,  70 04 + c,  jpnext
+    \ pop de
+    \ ld hl,(a)
+    \ ld (hl),e
+    \ inc hl
+    \ ld (hl),d
+    \ jp (ix)
   end-code
 
 code @a  ( -- u )
   \ Fetch cell at `a`.
-  2A c, a ,             \ ld hl,(a)
-  5E c,                 \ ld e,(hl)
-  23 c,                 \ inc hl
-  66 c,                 \ ld h,(hl)
-  68 03 + c,            \ ld l,e
-  C3 c, pushhl ,        \ jp pushhl
+  2A c, a ,  5E c,  23 c,  66 c,  68 03 + c,  C3 c, pushhl ,
+    \ ld hl,(a)
+    \ ld e,(hl)
+    \ inc hl
+    \ ld h,(hl)
+    \ ld l,e
+    \ jp pushhl
   end-code
 
 ( c!a c@a )
@@ -10362,6 +10459,10 @@ also forth definitions
 need wid-of
 vocabulary heap-voc  wid-of heap-voc constant heap-wordlist
 also heap-voc definitions
+
+  \ XXX TODO -- alternative
+  \ forth-wordlist set-current
+  \ wordlist heap-wordlist
 
   \ **1** General Purpose Extensions
 
@@ -11113,8 +11214,10 @@ need +thru
 
 ( float float+ floats s>f f>s )
 
-5 constant float  : float+  ( n1 -- n2 )  float +  ;
-                  : floats  ( n1 -- n2 )  float *  ;
+5 constant float
+
+: float+  ( n1 -- n2 )  float +  ;
+: floats  ( n1 -- n2 )  float *  ;
 
 need z80-asm  need calc
 
@@ -11125,6 +11228,7 @@ code f>s  ( -- n ) ( F: r -- )
   exx  2DA2 call  bc push  exx  jpnext  end-code
 
 code f>d  ( -- d ) ( F: r -- )
+  \ XXX TODO
   end-code
 
 ( fvariable )
@@ -13237,7 +13341,7 @@ need reset-frames  need frames@
   frames@ 2dup d. ." frames (" 50 m/ nip . ." s) " cr  ;
   \ stop timing and show the frames and the seconds
 
-;s
+exit
 
   \ System-dependent timing routines.
 
@@ -13422,6 +13526,10 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 
   \ Code adapted from:
   \ Forth Dimensions Volume XVII number 4 page 11.
+
+  .( hola)
+
+exit
 
 need byte-magazine-benchmark
 need interface-age-benchmark
