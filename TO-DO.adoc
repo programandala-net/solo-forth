@@ -8,11 +8,9 @@
 == Urgent ==
 // {{{
 
-Fix `ior>error`.
+.2015-10-22:
 
-Confirm if `.line` is fig-Forth (`-line` is used too).
-
-Use `warning` as an example of `?branch`, in my message to clf.
+The implementation of version 4 of `find-name` ruined the interpreter!
 
 // }}}
 == Inner ==
@@ -62,23 +60,6 @@ Improve: show the version in the greeting message.
 .2015-08-14:
 
 Fix: problem when compiler security is off.
-
-.2015-09-15:
-
-|===
-| Solo Forth (old) | Forth-83  | Gforth              | Solo Forth (new)
-
-| cfa>nfa          | >name     | >name               | >name
-| cfa>pfa          | >body     | >body               | >body
-| cfap>lfa         |           |                     | >>link
-| lfa>nfa          | l>name    |                     | link>name
-| nfa>cfa          | name>     | name>int name>comp  | name>
-| nfa>lfa          | n>link    |                     | name>link
-| nfa>string       |           | name>string         | name>string
-| pfa>cfa          | body>     |                     | body>
-| pfa>lfa          |           |                     | body>link
-| pfa>nfa          |           |                     | body>name
-|===
 
 // }}}
 == Documentation ==
@@ -412,3 +393,10 @@ words.
 .2015-10-05:
 
 Finish adapt tt.
+// }}}
+
+== Other ==
+// {{{
+
+Use `warning` as an example of `?branch`, in my message to clf.
+

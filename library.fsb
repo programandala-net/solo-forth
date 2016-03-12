@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510221444
+\ Last modified: 201510222327
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,11 +33,11 @@
 
 ( ) \ scr 1 -- testing load screen
 
-  2 load 268 load
+  2 load 269 load
   frames0
 
-  210 load 292 load 175 load 183 load 280 172 load 169 load
-  170 load 173 load 174 load
+  211 load 293 load 176 load 184 load 281 load 173 load
+  170 load 171 load 174 load 175 load
   \ case
   \ z80-asm
   \ decode
@@ -848,7 +848,7 @@ need columns  need rows
   sys-chars !  mode-output  ;
 
 : mode32  ( -- )
-  [ latest nfa>cfa ] literal current-mode !
+  [ latest name> ] literal current-mode !
   2548 15360 set-mode
   32 to columns  24 to rows
   ['] (mode32-xy) ['] xy defer!
@@ -888,7 +888,7 @@ drive!
 : (mode42-xy)  ( -- col row )  0 0  ;  \ XXX TODO
 
 : mode42  ( -- )
-  [ latest nfa>cfa ] literal current-mode !
+  [ latest name> ] literal current-mode !
   63900 [ 64600 256 - ] literal set-mode
   42 to columns  24 to rows
   ['] (mode42-xy) ['] xy defer!
@@ -922,7 +922,7 @@ drive!
 : (mode64-xy)  ( -- col row )  0 0  ;  \ XXX TODO
 
 : mode64  ( -- )
-  [ latest nfa>cfa ] literal current-mode !
+  [ latest name> ] literal current-mode !
   60000 4x8font set-mode
   64 to columns  24 to rows
   ['] (mode64-xy) ['] xy defer!
@@ -1049,7 +1049,7 @@ font fzx-font !
 : zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
 
 cr .( fzx-emit is ready ) cr
-' (fzx-emit) cfa>pfa hex
+' (fzx-emit) >body hex
 cr .( Code start:   ) dup u.
 cr .( Code length:  ) ' fzx-emit swap - u.
 cr
@@ -1375,7 +1375,7 @@ create (fzx-emit)  ( -- )
 code fzx-emit  ( c -- )
 
   hl pop  bc push
-  l a ld  ' (fzx-emit) cfa>pfa call
+  l a ld  ' (fzx-emit) >body call
   bc pop  next ix ldp#  jpnext
 
   end-code
@@ -1455,7 +1455,7 @@ only forth definitions  need char>string   need search-wordlist
     dup [char] \ =  \ possibly escaped char?
     if    drop parse-char unescape-char
     else  1  then  chars>string s+
-  repeat  drop  ;  -->
+  repeat  drop  ;
   \ Parse a text string delimited by a double quote, using the
   \ translation rules described by Forth-2012's `s\"`, and
   \ returning the string _ca len_ in the circular string
@@ -2294,8 +2294,8 @@ code test-pixel  ( xc yc -- f )
   begin  rlca  step \ rotate to bit 0
   bc pop  \ restore the Forth IP
   1 and#  \ pixel?
-  ' true cfa>pfa jpnz
-  ' false cfa>pfa jp
+  ' true >body jpnz
+  ' false >body jp
   end-code
 
 ( rdraw )
@@ -2456,7 +2456,7 @@ need z80-asm
 create circle-plot  ( -- a )
   asm
   hl push  bc push  de push
-  ' plot cfa>pfa call  \ XXX TODO
+  ' plot >body call  \ XXX TODO
   de pop  bc pop  hl pop  ret
   end-asm
 
@@ -3637,7 +3637,7 @@ need z80-asm  need [if]
 [needed] test-bits [if]
 code test-bits  ( b ca -- wf )
   hl pop  de pop  e a ld  m and
-  ' true cfa>pfa jpnz  ' false cfa>pfa jp
+  ' true >body jpnz  ' false >body jp
   end-code  ;s  [then]
   \ AND the bitmask _b_ with the contents of _ca_ and return
   \ _true_ if the result is non-zero or _false_ if the result
@@ -3715,10 +3715,46 @@ need s=
   \
   \ }doc
 
-( nfa<nfa )
+( name<name )
 
-: nfa<nfa  ( nfa1 -- nfa2 )  nfa>lfa @n  ;
+: name<name  ( nfa1 -- nfa2 )  name>link @n  ;
   \ Get the previous _nfa2_ from _nfa1_.
+
+( name>interpret name>compile )
+
+  \ XXX UNDER DEVELOPMENT
+
+: name>interpret  ( nfa -- cfa | 0 )
+  ;
+
+  \ doc{
+  \
+  \ name>interpret  ( nfa -- cfa | 0 )
+  \
+  \ Return a _cfa_ that represents the interpretation semantics
+  \ of the word _nfa_. If _nfa_ has no interpretation
+  \ semantics, return zero.
+  \
+  \ Standard: Forth-2012 (TOOLS EXT).
+  \
+  \ }doc
+
+: name>compile  ( nfa -- x cfa ) 
+  ;
+
+  \ doc{
+  \
+  \ name>compile  ( nfa -- x cfa ) 
+  \
+  \ Return _x cfa_ that represents the compilation semantics
+  \ of the word _nfa_. The  returned _cfa_ has the stack
+  \ effect ( i * x  x -- j * x  ).  Executing _cfa_ consumes
+  \ _x_ and performs the compilation semantics of the word
+  \ represented by _nfa_.
+  \
+  \ Standard: Forth-2012 (TOOLS EXT).
+  \
+  \ }doc
 
 ( behead )
 
@@ -3756,7 +3792,7 @@ need s=
   \ "negative" addresses.
   \ ____
 
-need abort"  need nfa<nfa  need behead
+need abort"  need name<name  need behead
 
 variable private-start  variable private-stop
 
@@ -3772,7 +3808,7 @@ variable private-start  variable private-stop
   private-start @ 0= abort" Missing private{"
   private-stop @ dup 0= abort" Missing }private"
   begin   dup private-start @ u>
-  while   dup (smudge) nfa<nfa
+  while   dup (smudge) name<name
   repeat  drop  private-start off  private-stop off  ;
 
   \ }}} =======================================================
@@ -4060,8 +4096,8 @@ code (file?)  ( -- f )
   168E call  \ BORD_REST = restore the border
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  ' true cfa>pfa jpz
-  ' false cfa>pfa jp
+  ' true >body jpz
+  ' false >body jp
   end-code
 
 : file?  ( ca len -- f )  filename! (file?)  ;
@@ -4401,6 +4437,8 @@ code c!dosvar  ( b n -- )
   \
   \ Print line _n1_ from screen _n2_, without trailing spaces.
   \
+  \ Standard: fig-Forth.
+  \
   \ }doc
 
   \ }}} =======================================================
@@ -4464,7 +4502,7 @@ variable old-voc-link
 
   \ XXX TODO
 
-  old-latest @ old-np @ cfap>lfa !n  ;
+  old-latest @ old-np @ >>link !n  ;
 
 ( [false] [true] )
 
@@ -4594,7 +4632,7 @@ variable decode-address  \ in the word being decoded
 
   \ Special cases
 
-: decode-compile   ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
+: decode-compile   ( a1 -- a2 )  2+ dup @ 2+ body>name id.  ;
 
 : decode-literal   ( a1 -- a2 )  2+ dup @ .  ;
 
@@ -4638,7 +4676,7 @@ need case
 
 : colon-pfa?  ( pfa -- f )
   \ Is the given pfa a colon definition?
-  pfa>cfa @ ['] : @ =  ;
+  body> @ ['] : @ =  ;
 
 -->
 
@@ -4651,19 +4689,19 @@ need case
   \ Decode the definition at the given pfa.
 
   dup colon-pfa? if
-    dup pfa>cfa decode-address ! indent  ." : " dup pfa>nfa id.
+    dup body> decode-address ! indent  ." : " dup body>name id.
     begin   ( pfa+n ) dup decode-address !
             dup @ dup ( pfa+n cfa cfa ) decode-end? 0=
             \ ( pfa+n cfa f )
     while  \ high level & not end of colon definition
       \ ( pfa+n cfa )
-      ( pfa+n cfa ) 2+ ( pfa+n pfa' ) dup indent+  pfa>nfa id.
+      2+ ( pfa+n pfa' ) dup indent+  body>name id.
       key case  [char] q  of  sp0 @ sp! quit  endof \ q
                       bl  of  drop            endof \ space
                                  swap recurse \ default
           endcase  decode-special
       2+  -1 decode-level +!
-    repeat  indent 2+ pfa>nfa id. \ show the last word
+    repeat  indent 2+ body>name id. \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
 
 ( decode )
@@ -4678,12 +4716,12 @@ need case
   decode-usage
 
   \ XXX OLD -- defined  ( "name" -- x 0 | cfa 1 | cfa -1 )
-  \ defined if  cfa>pfa  0 decode-level !  (decode)
+  \ defined if  >body  0 decode-level !  (decode)
   \         else  drop  -13 throw  then  ;
 
   \ XXX NEW -- defined  ( "name" -- ca len false | cfa b true )
   defined 0= -13 ?throw
-  drop cfa>pfa  0 decode-level !  (decode)  ;
+  drop >body  0 decode-level !  (decode)  ;
 
 ( list )
 
@@ -4707,8 +4745,8 @@ code break-key?  ( -- f )
   \ Is the Break key pressed?
 
   CD c, 1F54 ,              \ call rom_break_key
-  D2 c, ' true cfa>pfa ,    \ jp nc,true
-  C3 c, ' false cfa>pfa ,   \ jp false
+  D2 c, ' true >body ,    \ jp nc,true
+  C3 c, ' false >body ,   \ jp false
 
   end-code
 
@@ -4807,7 +4845,7 @@ need break-key?
 : words  ( -- )
   trail
   begin  dup 0<> break-key? 0= and  while
-    dup id. tab  nfa>lfa @n
+    dup id. tab  name>link @n
   repeat drop  ;
 
 ( words-like )
@@ -4830,8 +4868,8 @@ need break-key?
   parse-name 2dup uppers trail  ( ca len nfa )
   begin  dup 0<> break-key? 0= and  while
     dup >r
-    nfa>string 2over contains if  r@ id. tab  then
-    r> nfa>lfa @n
+    name>string 2over contains if  r@ id. tab  then
+    r> name>link @n
   repeat drop 2drop  ;
 
 ( where )
@@ -5451,7 +5489,7 @@ code (step)  ( R: n -- n' )
     \ ld (hl),d
     \ dec hl
     \ ld (hl),e ; update the loop index
-  C2 c, ' branch cfa>pfa ,
+  C2 c, ' branch >body ,
     \ jp nz,branch_pfa ; loop again if not zero
     \ ; done, discard loop index:
   23 c, 23 c, 22 c, rp ,
@@ -5994,12 +6032,12 @@ code key??  ( -- f )
   here jrnc  >relmark 1 unresolved ! \ to return_false
 
   \ return_true:
-  bc pop  ' true cfa>pfa jp
+  bc pop  ' true >body jp
 
   \ return_false:
   0 unresolved @ >relresolve
   1 unresolved @ >relresolve
-  bc pop  ' false cfa>pfa jp
+  bc pop  ' false >body jp
 
   end-code
 
@@ -6019,12 +6057,12 @@ code key??  ( -- f )
   0000 jpnc  |mark 1 unresolved ! \ to return_false
 
   \ return_true:
-  bc pop  ' true cfa>pfa jp
+  bc pop  ' true >body jp
 
   \ return_false:
   0 unresolved @ >resolve
   1 unresolved @ >resolve
-  bc pop  ' false cfa>pfa jp
+  bc pop  ' false >body jp
 
   end-code
 
@@ -6280,7 +6318,7 @@ code !p  ( c ca -- )
   here 24 +origin !   \ `dp` init value
   \ XXX TODO -- update also the names pointer
   \ `voc-link` init value:
-  [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
+  [ ' forth >body 8 + ] literal 26 +origin !  ;
 
   \ size  ( -- u )
   \
@@ -6441,7 +6479,7 @@ need -rot
 
 : to  ( Interpretation: n "name" -- )
       ( Compilation: "name" -- )
-  ' cfa>pfa compiling? if    postpone literal postpone !
+  ' >body compiling? if    postpone literal postpone !
                   else  !  then  ; immediate
 
 ( 2value 2to )
@@ -6453,7 +6491,7 @@ need -rot
 
 : 2to  ( Interpretation: d "name" -- )
        ( Compilation: "name" -- )
-  ' cfa>pfa compiling? if    postpone literal postpone 2!
+  ' >body compiling? if    postpone literal postpone 2!
                        else  2!  then  ; immediate
 
 ( cvalue cto )
@@ -6462,7 +6500,7 @@ need -rot
 
 : cto  ( Interpretation: b "name" -- )
        ( Compilation: "name" -- )
-  ' cfa>pfa compiling? if    postpone literal postpone c!
+  ' >body compiling? if    postpone literal postpone c!
                        else  c!  then  ; immediate
 
 ( value 2value to )
@@ -6478,7 +6516,7 @@ need -rot
 
 : to  ( Interpretation: n "name" -- )
       ( Compilation: "name" -- )
-  ' cfa>pfa dup 1+ swap c@
+  ' >body dup 1+ swap c@
   compiling? if  swap postpone literal
                  if  postpone 2!  else  postpone !  then  exit
              then
@@ -6986,7 +7024,7 @@ code pause ( u -- )
   de pop  bc push
   begin
     de push
-    ' (wait) cfa>pfa fthl  execute-hl
+    ' (wait) >body fthl  execute-hl
       \ call the cfa hold in `(wait)`
     de pop  halt  de decp  de tstp  \ finished?
   z until
@@ -7012,7 +7050,7 @@ code pause ( u -- )
 
     \ Call the cfa hold in `(wait)`:
 
-    ' (wait) cfa>pfa fthl
+    ' (wait) >body fthl
     here 6 + bc ldp# \ point IP to phony_compiled_word
     next2 jp  \ execute the cfa in `(wait)`
     \ phony_compiled_word:
@@ -7053,11 +7091,11 @@ code just-pause ( u -- )
 
 : .context  ( -- )  context #vocs 0 do
   \ XXX FIXME
-                      dup @ ?dup if  pfa>nfa id.  then  cell+
+                      dup @ ?dup if  body>name id.  then  cell+
                     loop drop  ;
   \ Display the search order currently in effect.
 
-: .current  ( -- )  current @ pfa>nfa id.  ;
+: .current  ( -- )  current @ body>name id.  ;
   \ Display the name of the `current` vocabulary.
 
 : order  ( -- )
@@ -7067,7 +7105,7 @@ code just-pause ( u -- )
 
 : vocs  ( -- )
   voc-link @
-  begin  dup cell - pfa>nfa id.  @ dup 0= until  drop  ;
+  begin  dup cell - body>name id.  @ dup 0= until  drop  ;
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
@@ -7115,9 +7153,9 @@ code just-pause ( u -- )
   \ Credits:
   \ Code of `wid-of` adapted from eForth's `widof`.
 
-  \ : wid>voc  ( wid -- cfa )  @ cfa>pfa  ; \ XXX TODO
+  \ : wid>voc  ( wid -- cfa )  @ >body  ; \ XXX TODO
 
-: voc>wid  ( cfa -- wid )  cfa>pfa  ;
+: voc>wid  ( cfa -- wid )  >body  ;
 
 : wid-of  ( "name" -- wid )  ' voc>wid  ;
 
@@ -7130,7 +7168,8 @@ code just-pause ( u -- )
 
 ( search-wordlist )
 
-  \ XXX -- still in the kernel not because `header` uses it.
+  \ XXX -- still in the kernel because `header` uses it.
+  \ XXX TODO -- update to the final version of `(find-name)`.
 
 : search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
   >r 2dup uppers r>
@@ -7757,7 +7796,7 @@ code until-test  ( -- )
   z until  jpnext
   end-code
 
-' until-test cfa>pfa 5 dump
+' until-test >body 5 dump
 
 ( if'-test )
 
@@ -7784,7 +7823,7 @@ code if'-test  ( -- )
 
   then'  end-code
 
-' if'-test cfa>pfa dup here swap - dump
+' if'-test >body dup here swap - dump
 
   \ }}} =======================================================
   \ Address register {{{
@@ -8501,7 +8540,7 @@ forth-wordlist set-current
 
 : doer  ( "name" -- )
   \ Define a word whose behaviour is vectorable.
-  create  ['] doer-noop cfa>pfa ,
+  create  ['] doer-noop >body ,
   does>  ( pfa ) @ >r ;
 
 : (make)
@@ -8513,7 +8552,7 @@ forth-wordlist set-current
     \      or zero
     \ a2 = address of the doer word
     \ a3 = address of the code to associate the doer word with
-  swap @ cfa>pfa !
+  swap @ >body !
     \ Get the pfa of the doer word and store the code address
     \ into it.
   @ ?dup if  >r  then ;
@@ -8528,12 +8567,12 @@ variable >;and
   \ Or inside a definition:
   \   : definition  make doer-name forth-code  ;
   compiling? if     postpone (make)  here >;and ! 0 ,
-             else   here ' cfa>pfa ! ]  then  ; immediate
+             else   here ' >body ! ]  then  ; immediate
 
 : ;and  ( -- )  postpone exit  here >;and @ !  ; immediate
   \ Allow continuation of the "making" definition.
 
-: undo  ( "name" -- )  ['] doer-noop cfa>pfa  ' cfa>pfa ! ;
+: undo  ( "name" -- )  ['] doer-noop >body  ' >body ! ;
   \ Make the doer word "name" safe to execute.
 
 ( doer-test )
@@ -9278,7 +9317,7 @@ need yes?  need begin-stringtable  need case:
 
 [defined] tab ?\  : tab  ( -- )  6 emit  ;
 
-[defined] >body ?\  : >body  ( cfa -- pfa )  cfa>pfa  ;
+[defined] >body ?\  : >body  ( cfa -- pfa )  >body  ;
 
 vocabulary tt  also tt definitions  decimal
 

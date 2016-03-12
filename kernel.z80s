@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510221444
+version_release:  equ 201510222327
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -232,12 +232,14 @@ paren_dot_quote: equ true
   ; XXX TODO
   ; XXX TMP
 
-find_name_version: equ 3
+find_name_version: equ 4
   ; XXX UNDER DEVELOPMENT (version 3)
-  ; There are 4 versions of `find-name`, with different output.
-  ; The currently used version is 2.
-  ; the new version is 3, needed to implement the compile-only
+  ; XXX UNDER DEVELOPMENT (version 4)
+  ; There are 5 versions of `find-name`, with different output.
+  ; The old stable version is 2.
+  ; Version 3 was needed to implement the compile-only
   ; check in `interpret`.
+  ; Version 4 is experimental, after Gforth's `find-name`.
 
 ; ==============================================================
 ; Symbols
@@ -2534,6 +2536,93 @@ endif
 ; ----------------------------------------------
   _code_header paren_find_name_,'(FIND-NAME)'
 
+if find_name_version=4
+
+  ; XXX UNDER DEVELOPMENT -- version after Gforth's `find-name`.
+
+; doc{
+;
+; (find-name)  ( ca len nfa -- nfa | 0 )
+;
+; Find the definition named in the string at _ca len_, starting
+; at _nfa_. If the definition is found, return its _nfa_, else
+; return zero.
+;
+; The search is case-sensitive.
+;
+; }doc
+
+  ld (paren_find_name.ip_backup),bc ; save the Forth IP
+
+  ld e,names_bank
+  call bank.e ; page the memory bank in
+
+  pop de ; nfa
+  pop bc ; C=len, B is supposed to be 0
+  ld a,c
+  ld (paren_find_name.string_length),a
+  pop hl ; ca
+  ld (paren_find_name.string_address),hl
+
+  ; XXX FIXME the string searched for must be in the string
+  ; buffer, below 0xC000! This is not a problem now, during the
+  ; development, because the dictionary is small.
+
+paren_find_name.begin:
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (paren_find_name.nfa_backup),de ; save the nfa for later
+paren_find_name.string_address: equ $+1
+  ld hl,0x0000 ; string address
+  ld a,(de) ; length byte of the name field
+  and valid_word_length_mask  ; mask the length and the smudge bit
+paren_find_name.string_length: equ $+1
+  ld c,0x00 ; length of the string
+  cp c ; same length?
+  jr nz,paren_find_name.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+paren_find_name.compare_next_char:
+  inc de
+  ld a,(de)
+  cpi
+  jp nz,paren_find_name.not_a_match ; mismatch
+  jp pe, paren_find_name.compare_next_char ; count not exhausted
+
+  ; The string matches.
+  ld hl,(paren_find_name.nfa_backup)
+  jr paren_find_name.end
+
+paren_find_name.not_a_match:
+  ; Not a match, try the next word.
+paren_find_name.nfa_backup: equ $+1
+  ld hl,0x0000 ; nfa
+  dec hl ; high address of lfa
+  ld d,(hl) ; high part of the next nfa
+  dec hl ; low address of lfa
+  ld e,(hl) ; low part of the next nfa
+  ld a,d
+  or e ; end of dictionary? (next nfa=0)
+  jp nz,paren_find_name.begin ; if not, continue
+
+  ; End of dictionary, no match found.
+  ld hl,false
+
+paren_find_name.end:
+  ; If match found:
+  ;   hl = nfa
+  ; If no match found:
+  ;   hl = false
+  exx
+  ld e,default_bank
+  call bank.e ; page the default memory bank in
+  exx
+paren_find_name.ip_backup: equ $+1
+  ld bc,0x0000 ; restore the Forth IP
+  jp push_hl
+
+endif
+
 if find_name_version=3
 
   ; XXX UNDER DEVELOPMENT -- version after eForth, required to
@@ -2643,7 +2732,9 @@ paren_find_name.ip_backup: equ $+1
 ;   ; _z80_border 4 ; XXX INFORMER
   jp push_hlde
 
-else
+endif
+
+if (find_name_version>=0) and (find_name_version<=2)
 
   ; `(find-name)` for versions 0..2 of `find-name`
 
@@ -2771,7 +2862,28 @@ if find_name_version=3
 
 endif
 
+if find_name_version=4
+
+  _colon_header compile_only_question_,'COMPILE-ONLY?'
+
+; doc{
+;
+; compile-only?  ( nfa -- wf )
+;
+; Does the word with the given _nfa_ is compile-only?
+;
+; }doc
+
+  dw c_fetch_n_
+  _literal compile_only_mask
+  dw and_,zero_not_equals_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
+if find_name_version=3
+  
   _colon_header immediate_question_,'IMMEDIATE?'
 
 ; doc{
@@ -2786,6 +2898,35 @@ endif
   _literal precedence_mask
   dw and_,zero_not_equals_
   dw semicolon_s_
+
+endif
+
+if find_name_version=4
+  
+  _colon_header immediate_question_,'IMMEDIATE?'
+
+; doc{
+;
+; immediate?  ( nfa -- wf )
+;
+; Does the word with the given _nfa_ is immediate?
+;
+; }doc
+
+  dw c_fetch_n_ 
+  _literal precedence_mask
+  dw and_,zero_not_equals_
+  dw semicolon_s_
+
+  _colon_header name_to_immediate_question_,'NAME>IMMEDIATE?'
+
+  ; XXX TODO better name
+
+  dw dup_,from_name_,swap_ ; ( cfa nfa )
+  dw immediate_question_ ; ( cfa f )
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
@@ -2814,7 +2955,7 @@ endif
   ; XXX -- can not be moved to the library because `header` uses
   ; it.
 
-if find_name_version!=3
+if (find_name_version>=0) and (find_name_version<=2)
 
   ; XXX TODO use `save-string` to prevent the string from being
   ; modified by `uppers`?
@@ -2824,7 +2965,9 @@ if find_name_version!=3
   dw dup_,question_exit_,nip_
   dw semicolon_s_
 
-else
+endif
+
+if find_name_version=3
 
   ; XXX UNDER DEVELOPMENT
 
@@ -2852,31 +2995,40 @@ search_wordlist.not_found:
 
 endif
 
+if find_name_version=4
+
+  ; XXX UNDER DEVELOPMENT
+
+  ; XXX TODO use `save-string` to prevent the string from being
+  ; modified by `uppers`?
+
+  dw to_r_,two_dup_,uppers_,from_r_  ; ( ca len wid )
+  dw fetch_,paren_find_name_  ; ( nfa | 0 )
+  dw dup_,zero_equals_  ; ( nfa false | 0 true )
+  dw question_exit_  ; ( nfa )
+  dw name_to_immediate_question_ ; ( cfa f )
+  dw zero_equals_
+  _literal 1
+  dw or_ ; ( cfa 1 | cfa -1 )
+  dw semicolon_s_
+
+  ; search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
+
+endif
+
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
 
-  ; XXX TMP -- there are 3 versions of `find-name`. the only
-  ; difference is the values returned.
+  ; XXX TMP -- there are several versions of `find-name`. the
+  ; only difference is the values returned.
 
   ; XXX TODO move version 0 and 1 to the library, as reference.
 
   ; XXX TODO first, benchmark
 
-  ; XXX TMP
-if find_name_version=0
-  .warning '`find-name` version is 0'
-endif
-if find_name_version=1
-  .warning '`find-name` version is 1'
-endif
-if find_name_version=2
-  .warning '`find-name` version is 2'
-endif
-if find_name_version=3
-  .warning '`find-name` version is 3'
-endif
-
 if find_name_version=0 ; XXX TMP
+
+  .warning '`find-name` version is 0'
 
 ; doc{
 
@@ -2933,6 +3085,8 @@ find_name.loop:
 endif
 
 if find_name_version=1 ; XXX TMP
+
+  .warning '`find-name` version is 1'
 
 ; doc{
 
@@ -2991,6 +3145,8 @@ endif
 
 if find_name_version=2 ; XXX TMP
 
+  .warning '`find-name` version is 2'
+
 ; doc{
 
 ; find-name  ( ca len -- x 0 | cfa 1 | cfa -1 )
@@ -3047,6 +3203,8 @@ endif
 
 if find_name_version=3 ; XXX NEW
 
+  .warning '`find-name` version is 3'
+
 ; doc{
 
 ; find-name  ( ca len -- ca len false | cfa b true )
@@ -3061,12 +3219,13 @@ if find_name_version=3 ; XXX NEW
 ; The search is case-insensitive.
 
 ; ----
-; : find-name  ( ca len -- x 0 | cfa 1 | cfa -1 )
+; : find-name  ( ca len -- ca len false | cfa b true )
 ;   2dup uppers
 ;   #vocs 0 do
 ;     context i cells + @  ?dup
-;     if  @ (find-name) ?dup
-;         if  unloop exit  then
+;     if  @ (find-name)
+;         ( ca len false | cfa b true )
+;         ?dup if  unloop exit  then
 ;     then
 ;   loop  false  ;
 ; ----
@@ -3094,6 +3253,60 @@ find_name.loop:
   dw paren_loop_,find_name.do
 ;  _chk 'find-name -- not found' ; XXX INFORMER
   dw false_
+  dw semicolon_s_
+
+endif
+
+if find_name_version=4 ; XXX NEW
+
+  .warning '`find-name` version is 4'
+
+; doc{
+
+; find-name  ( ca len -- nfa | 0 )
+;
+; Find the definition identified by the string _ca len_ in the
+; current search order. If the definition is not found after
+; searching all the vocabularies in the search order, return
+; zero.  If the definition is found, return its _nfa_.
+;
+; The search is case-insensitive.
+
+; ----
+; : find-name  ( ca len -- nfa | 0 )
+;   2dup uppers
+;   #vocs 0 do
+;     context i cells + @  ?dup
+;     if  @ >r 2dup r> @ (find-name) ?dup
+;         ( ca len nfa nfa | ca len 0 )
+;         if  nip nip unloop exit  then
+;     then
+;   loop  2drop false  ;
+; ----
+
+; }doc
+
+;  _chk_type 'find-name -- start' ; XXX INFORMER
+  dw two_dup_,uppers_ ; XXX FIXME -- do not modify the input buffer
+;  _brk_type 'find-name -- after uppers' ; XXX INFORMER
+  dw hash_vocs_,zero_,paren_do_
+find_name.do:
+  ; ( ca len )
+  dw context_,i_,cells_,plus_,fetch_
+  dw question_dup_ ; a vocabulary in the search order?
+  dw zero_branch_,find_name.loop ; if not, next
+  ; ( ca len wid )
+  ; valid vocabulary in the search order
+  dw fetch_,to_r_,two_dup_,from_r_
+;  _chk 'find-name -- before (find-name)' ; XXX INFORMER
+  dw paren_find_name_,question_dup_ ; ( nfa nfa | 0 ) word found?
+  dw zero_branch_,find_name.loop
+;  _chk 'find-name -- found' ; XXX INFORMER
+  dw nip_,nip_,unloop_,exit_
+find_name.loop:
+  dw paren_loop_,find_name.do
+;  _chk 'find-name -- not found' ; XXX INFORMER
+  dw two_drop_,false_
   dw semicolon_s_
 
 endif
@@ -5519,7 +5732,7 @@ source.tib:
 ;
 ; }doc
 
-  dw latest_,nfa_to_cfa_,compile_comma_
+  dw latest_,from_name_,compile_comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5884,7 +6097,7 @@ question_dup.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_plus_
+  _code_alias_header link_to_name_,'LINK>NAME',,two_plus_
 
 ; ----------------------------------------------
   _colon_header trail_,'TRAIL'
@@ -5922,20 +6135,20 @@ question_dup.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header pfa_to_lfa_,'PFA>LFA'
+  _colon_header body_to_link_,'BODY>LINK'
 
-  dw pfa_to_cfa_,cfa_to_nfa_
-
-; ----------------------------------------------
-  _code_alias_header pfa_to_cfa_,'PFA>CFA',,two_minus_
+  dw from_body_,to_name_
 
 ; ----------------------------------------------
-  _code_alias_header cfa_to_pfa_,'CFA>PFA',,two_plus_
+  _code_alias_header from_body_,'BODY>',,two_minus_
 
 ; ----------------------------------------------
-  _colon_header pfa_to_nfa_,'PFA>NFA'
+  _code_alias_header to_body_,'>BODY',,two_plus_
 
-  dw pfa_to_cfa_,cfa_to_nfa_
+; ----------------------------------------------
+  _colon_header body_to_name_,'BODY>NAME'
+
+  dw from_body_,to_name_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5951,7 +6164,7 @@ question_dup.end:
 
 ; XXX FIXME -- make it return 0 if cfa has no name associated
 
-  _code_header cfa_to_nfa_,'CFA>NFA'
+  _code_header to_name_,'>NAME'
 
   ld e,names_bank
   call bank.e ; page the memory bank
@@ -5960,10 +6173,10 @@ question_dup.end:
   ld b,0
   ld hl, names_bank_address-4
 
-cfa_to_nfa.begin_0:
+to_name.begin_0:
   ; hl = address of the cfa pointer
   inc hl
-cfa_to_nfa.begin_1:
+to_name.begin_1:
   inc hl
   inc hl
   inc hl
@@ -5975,11 +6188,11 @@ cfa_to_nfa.begin_1:
 
   ld a,(hl) ; low byte of cfa
   cp e ; equal?
-  jr nz,cfa_to_nfa.begin_0 ; not equal
+  jr nz,to_name.begin_0 ; not equal
   inc hl
   ld a,(hl) ; high byte of cfa
   cp d ; equal?
-  jr nz,cfa_to_nfa.begin_1 ; not equal
+  jr nz,to_name.begin_1 ; not equal
   ; cfa found
   ld c,3
   add hl,bc ; nfa
@@ -5992,13 +6205,13 @@ cfa_to_nfa.begin_1:
 
 ; ----------------------------------------------
 
-  _code_alias_header cfap_to_lfa_,'CFAP>LFA',,two_plus_
+  _code_alias_header to_link_,'>>LINK',,two_plus_
 
   ; XXX TODO remove? only used by `-transient`, in the library.
 
 ; ----------------------------------------------
 
-  _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus_
+  _code_alias_header name_to_link_,'NAME>LINK',,two_minus_
 
 ; ----------------------------------------------
   _colon_header c_store_bank_,'C!BANK'
@@ -6172,7 +6385,7 @@ cfa_to_nfa.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header nfa_to_cfa_,'NFA>CFA'
+  _colon_header from_name_,'NAME>'
 
   _literal 4
   dw minus_,fetch_n_
@@ -6185,7 +6398,7 @@ cfa_to_nfa.begin_1:
 ;
 ; }doc
 
-  _colon_header nfa_to_string_,'NFA>STRING'
+  _colon_header name_to_string_,'NAME>STRING'
 
   _names_bank
   dw count_
@@ -6401,6 +6614,21 @@ postpone.end:
 
 endif
 
+if find_name_version=4 ; XXX TMP
+
+  dw defined_ ; ( nfa | 0 )
+  dw dup_,question_defined_ ; error if not found
+  ; ( nfa )
+  dw name_to_immediate_question_ ; ( cfa f )
+  dw question_branch_,postpone.end
+  ; Non-immediate word.
+  dw compile_,compile_ ; compile `compile`
+postpone.end:
+  dw compile_comma_ ; compile cfa
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header left_bracket_,'[',immediate
 
@@ -6498,7 +6726,7 @@ endif
 ;             \ the code routine to be executed at run-time.
 ;   ;
 
-  dw from_r_,latest_,nfa_to_cfa_,store_
+  dw from_r_,latest_,from_name_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7356,11 +7584,18 @@ uppers.do:
   ; XXX TODO -- this may be moved to the library, but it's
   ; needed by `needed`.
 
+if (find_name_version>=0) and (find_name_version<=2)
+  dw find_name_,nip_,zero_equals_
+  dw semicolon_s_
+endif
+
 if find_name_version=3
   dw find_name_,nip_,nip_,zero_equals_
   dw semicolon_s_
-else
-  dw find_name_,nip_,zero_equals_
+endif
+
+if find_name_version=4
+  dw find_name_,zero_equals_
   dw semicolon_s_
 endif
 
@@ -7490,7 +7725,7 @@ error.message:
 ; ----------------------------------------------
   _colon_header id_dot_,'ID.'
 
-  dw nfa_to_string_,type_,space_
+  dw name_to_string_,type_,space_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7520,7 +7755,7 @@ error.message:
   dw zero_branch_,header.continue
   ; the word is not unique in `current`
   ; ( ca len cfa )
-  dw cfa_to_nfa_,id_dot_
+  dw to_name_,id_dot_
   _literal error.not_unique
   dw dot_throw_ ; XXX TMP -- `warning`?
 
@@ -7725,6 +7960,8 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
+  ; XXX TODO compile-only? not in Gforth.
+
   dw tick_,compile_comma_
   dw semicolon_s_
 
@@ -7885,7 +8122,7 @@ interpret.begin:
   dw question_stack_
 ;  _chk 'interpret -- before parse-name' ; XXX INFORMER
   dw parse_name_  ; ( ca len )
-;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
+;  _brk_type 'interpret -- after parse-name' ; XXX INFORMER
 
   dw dup_ ; end of stream?
   dw question_branch_,interpret.continue ; if not, continue
@@ -7904,6 +8141,7 @@ interpret.continue:
 ; _chk 'interpret -- before find-name' ; XXX INFORMER
 
 if find_name_version=0 ; XXX TMP
+  ; XXX TODO use `parsed-name` later instead of `2dup` here
   dw two_dup_ ; keep a copy of the string
   dw find_name_ ; ( ca len 0 | ca len cfa 1 | ca len cfa -1 )
 endif
@@ -7911,21 +8149,42 @@ if find_name_version=1 ; XXX TMP
   dw find_name_ ; ( ca len 0 | cfa 1 | cfa -1 )
 endif
 if find_name_version=2 ; XXX TMP
-
-  ; XXX TODO use `parsed-name` instead
-
+  ; XXX TODO use `parsed-name` later instead of `2dup` here
   dw two_dup_ ; keep a copy of the string
   dw find_name_ ; ( ca len x 0 | ca len cfa 1 | ca len cfa -1 )
 endif
 if find_name_version=3 ; XXX TMP
   dw find_name_ ; ( ca len false | cfa b true )
 endif
+if find_name_version=4 ; XXX TMP
+  dw find_name_ ; ( nfa | 0 )
+endif
 
-;  _chk 'interpret -- after find-name' ; XXX INFORMER
-if find_name_version!=3 ; XXX TMP
+;  _brk 'interpret -- after find-name' ; XXX INFORMER
+
+if find_name_version=0
   dw question_dup_ ; found?
 endif
+if find_name_version=1
+  dw question_dup_ ; found?
+endif
+if find_name_version=2
+  dw question_dup_ ; found?
+endif
+if find_name_version=3 ; XXX TMP
+  ; ( ca len false | cfa b true )
+endif
+if find_name_version=4 ; XXX TMP
+  ; ( nfa | 0 )
+  dw question_dup_ ; found?
+endif
+
   dw zero_branch_,interpret.word_not_found
+
+  ; word found
+
+;  _chk 'interpret -- word found' ; XXX INFORMER
+
 if find_name_version=0 ; XXX TMP
   ; ( ca len cfa 1 | ca len cfa -1 )
   dw two_swap_,two_drop_ ; XXX TODO `2nip`
@@ -7942,8 +8201,11 @@ endif
 if find_name_version=3 ; XXX TMP
   ; ( cfa b )
 endif
+if find_name_version=4 ; XXX TMP
+  ; ( nfa )
+endif
 
-if find_name_version!=3 ; XXX TMP
+if (find_name_version>=0) and (find_name_version<=2) ; XXX TMP
   ; Found ( cfa 1 | cfa -1 )
   ; Immediate word:     ( cfa  1 )
   ; Non-immediate word: ( cfa -1 )
@@ -7955,10 +8217,12 @@ if find_name_version!=3 ; XXX TMP
   ; Executing a non-immediate word:  ( cfa -1  0 )
   dw equals_ ; compiling a non-immediate word?
   dw zero_branch_,interpret.execute
-else
+endif
+if find_name_version=3
 
   ; XXX UNDER DEVELOPMENT -- finished, not fully testest
 
+;  _chk 'interpret -- found' ; XXX INFORMER
   ; Found ( cfa b )
   dw dup_,compile_only_question_ ; ( cfa b compile-only? )
   dw executing_question_ ; ( cfa b compile-only? executing? )
@@ -7971,34 +8235,65 @@ else
   dw and_,zero_equals_ ; ( cfa b non-immediate? )
   dw compiling_question_ ; ( cfa b non-immediate? compiling? )
   dw and_ ; compiling a non-immediate word?
+;  _chk 'interpret -- execute?' ; XXX INFORMER
   dw zero_branch_,interpret.execute ; else, execute it
 
 endif
+if find_name_version=4
+
+  ; XXX UNDER DEVELOPMENT -- finished
+
+  ; Found ( nfa )
+  dw dup_,compile_only_question_ ; ( cfa b compile-only? )
+  dw executing_question_ ; ( cfa b compile-only? executing? )
+  dw and_ ; executing a compile-only word?
+  _literal -14
+  dw question_throw_ ; is so, throw error -14
+
+  ; ( nfa )
+  dw dup_,from_name_  ; ( nfa cfa )
+  dw swap_,immediate_question_,zero_equals_ ; ( cfa non-immediate? )
+  dw compiling_question_ ; ( nfa non-immediate? compiling? )
+  dw and_ ; compiling a non-immediate word?
+  dw zero_branch_,interpret.execute ; else, execute it
+
+endif
+
+;  _brk 'interpret -- compiling' ; XXX INFORMER
 
   ; Compiling a non-immediate word  ( cfa )
   dw compile_comma_
   dw branch_,interpret.begin
 
 interpret.execute:
+;  _brk 'interpret -- executing' ; XXX INFORMER
   ; Executing or immediate ( cfa )
   dw execute_
   dw branch_,interpret.begin
 
 interpret.word_not_found:
+;  _chk 'interpret -- not found' ; XXX INFORMER
+
 if find_name_version=2 ; XXX TMP
   ; ( ca len x )
   dw drop_
 endif
+if find_name_version=4 ; XXX TMP
+;  _chk 'interpret -- before parsed-name 2@' ; XXX INFORMER
+  dw parsed_name_,two_fetch_
+;  _chk 'interpret -- after parsed-name 2@' ; XXX INFORMER
+endif
+
   ; try to convert the text to a number
   ; ( ca len )
-;_chk 'interpret -- before number' ; XXX INFORMER
+;  _chk 'interpret -- before number' ; XXX INFORMER
 
   dw number_question_ ; is it a number?
 ;  _brk 'interpret -- after number?' ; XXX INFORMER
   dw zero_equals_
   _question_throw error.not_understood ; error if not
 
-; _chk 'interpret -- after number' ; XXX INFORMER
+; _brk 'interpret -- after number' ; XXX INFORMER
   dw dpl_,fetch_,zero_less_than_ ; single number?
   dw question_branch_,interpret.16bit_number
 
@@ -8201,7 +8496,7 @@ do_defer:
 ;
 ; }doc
 
-  dw cfa_to_pfa_,fetch_
+  dw to_body_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8217,7 +8512,7 @@ do_defer:
 ;
 ; }doc
 
-  dw cfa_to_pfa_,store_
+  dw to_body_,store_
   dw semicolon_s_
 
 else ; XXX NEW
@@ -8260,7 +8555,7 @@ else ; XXX NEW
 ;
 ; }doc
 
-  dw cfa_to_pfa_,one_plus_,fetch_
+  dw to_body_,one_plus_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8276,7 +8571,7 @@ else ; XXX NEW
 ;
 ; }doc
 
-  dw cfa_to_pfa_,one_plus_,store_
+  dw to_body_,one_plus_,store_
   dw semicolon_s_
 
 endif
@@ -9720,6 +10015,29 @@ if find_name_version=3 ; XXX TMP
 
 endif
 
+if find_name_version=4 ; XXX TMP
+
+; doc{
+;
+; defined  ( "name" -- nfa | 0 )
+;
+; Parse "name" and find its definition.  If the definition is
+; not found after searching all the vocabularies in the search
+; order, return _ca len_ and _false_.  If the definition is found,
+; return its _cfa_, its length byte _b_ and _true_.
+;
+; ----
+; : defined  ( "name" -- nfa | 0 )
+;   parse-name find-name  ;
+; ----
+;
+; }doc
+
+  dw parse_name_,find_name_ 
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header question_defined_,'?DEFINED'
 
@@ -9822,6 +10140,25 @@ if find_name_version=3 ; XXX TMP
   dw semicolon_s_
 
 endif
+
+if find_name_version=4 ; XXX TMP
+
+; doc{
+;
+; [defined]  ( "name" -- wf )
+;
+; ----
+; : [defined]  ( "name" -- wf )
+;   defined 0<>  ; immediate
+; ----
+;
+; }doc
+
+  dw defined_,zero_not_equals_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
   _colon_header bracket_undefined_,'[UNDEFINED]',immediate
 
@@ -9858,21 +10195,31 @@ endif
 ;
 ; }doc
 
-if find_name_version=3
-
-  dw defined_,question_defined_
-  dw drop_
-  dw semicolon_s_
-
-else
+if (find_name_version>=0) and (find_name_version<=2)
 
   dw defined_,question_defined_
   dw semicolon_s_
 
 endif
 
+if find_name_version=3
+
+  dw defined_,question_defined_
+  dw drop_
+  dw semicolon_s_
+
+endif
+
+if find_name_version=4
+
+  dw defined_,dup_,question_defined_
+  dw from_body_
+  dw semicolon_s_
+
+endif
+
 ; ----------------------------------------------
-  _colon_header bracket_tick_,"[']",immediate
+  _colon_header bracket_tick_,"[']",immediate+compile_only
 
 ; doc{
 ;
@@ -11114,7 +11461,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header bracket_char_,'[CHAR]',immediate
+  _colon_header bracket_char_,'[CHAR]',immediate+compile_only
 
   dw char_,literal_
   dw semicolon_s_
@@ -11124,6 +11471,8 @@ endif
 
   ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
   ;  [char] " parse-string  ; immediate
+
+  ; XXX TODO compile-only?
 
   _literal '"'
   dw parse_string_
