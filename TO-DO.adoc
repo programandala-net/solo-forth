@@ -146,3 +146,7 @@ From F83:
 .2015-07-06:
 
 Fix: 'parse-word'.
+
+.2015-07-17:
+
+Loading the assembler freezes the system.

@@ -32,7 +32,7 @@ decode dump
 ( debugging ) \ scr 2
 
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Require {{{
 
 ( require ) \ scr 3
@@ -70,7 +70,7 @@ decode dump
 
 : require  ( "name" -- )  parse-word save-string required  ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Error messages {{{
 
 ( Error messages 1..15 ) \ scr 4
@@ -93,8 +93,9 @@ decode dump
 \ Error #14:
 \ Error #15: Deferred word is uninitialized.
 
-( Error messages 17..31 )  \ scr 5
+( Error messages 16..30 )  \ scr 5
 
+\ Error #16:
 \ Error #17: Compilation only, use in definition.
 \ Error #18: Execution only.
 \ Error #19: Conditionals not paired.
@@ -111,8 +112,8 @@ decode dump
 \ Error #27: Source file needed.
 \ Error #28: Warning: Not present, though required.
 \ Error #29: Required, but not located.
+  \ Assembler:
 \ Error #30: Branch too long.
-\ Error #31:
 
 ( debug ) \ scr 6 for debugging
 
@@ -120,7 +121,7 @@ decode dump
 
   .( pantalla 7)
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ String operations {{{
 
 ( parse-name place +place /string )
@@ -160,13 +161,12 @@ decode dump
 : s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
   [char] ' (s)  ; immediate
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Stack manipulation {{{
 
 ( -rot )
 
-  \ 2015-06-05: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-05: Copied from Afera.
 
 code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
@@ -192,7 +192,7 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
 
 end-code
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Graphics {{{
 
 ( pixel )
@@ -256,8 +256,7 @@ label pixel-addr  ( -- )  hex
 
 ( point )
 
-  \ 2015-06-04: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-04: Copied from Afera.
   \ 2105-06-11: Modified to use the whole screen.
 
 require pixel-addr
@@ -287,8 +286,7 @@ code point  ( xc yc -- f )
 
 ( plot )
 
-  \ 2015-06-05: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-05: Copied from Afera.
   \ 2015-06-11: Modified to use the whole screen.
   \ 2015-07-04: Fix. The address into PLOT-SUB was wrong.
 
@@ -406,7 +404,7 @@ code screen ( row col -- f )
 
 end-code
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Sound {{{
 
 ( bleep )
@@ -432,7 +430,7 @@ code bleep  ( n1 n2 -- )
   OVER 1000 */ SWAP
   4375 100 ROT */ 30 -  ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Operators {{{
 
 ( within between )
@@ -535,13 +533,12 @@ end-code
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip ;
   
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Conditional compilation {{{
 
 ( [if] [else] [then] )
 
-  \ 2015-06-04: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-04: Copied from Afera.
   \ 2015-06-25: Fully adapted.
 
 [defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
@@ -562,13 +559,67 @@ end-code
 
 : [then]  ( -- )  ; immediate
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Tools {{{
+
+( transient[ )
+
+  \ 2015-07-16: Start adapting the code from Afera
+  \
+  \ XXX TODO -- Finish.
+
+variable old-dp
+variable old-np
+variable old-latest
+variable old-voc-link
+
+: transient[  ( u -- )
+
+  \ Start transient code, reserving u bytes for it (including
+  \ dictionary space and data stack).
+  \
+  \ This word must be used before compiling the transient code.
+  \ the compiled size of the transient code must be known in
+  \ advance.
+
+  here        old-dp !
+  np@         old-np !
+  latest      old-latest !
+  voc-link @  old-voc-link !
+
+  \ XXX FIXME changing `dp` crashes the system:
+
+  0 swap - dp !  ;
+
+: ]transient  ( -- )
+
+  \ End the transient code.
+  \
+  \ This word must be used after compiling the transient code.
+
+  old-dp @ dp !  old-np @ np !  ;
+
+: -transient  ( -- )
+
+  \ Remove the transient code, unlinking the dictionary space
+  \ that was reserved for it.
+  \
+  \ This word must be used when the transient code is not going
+  \ to be used any more.
+
+  old-voc-link @ voc-link !
+
+  \ Store the nfa of the latest word created before compiling
+  \ the transient code, into the lfa of the first word created
+  \ after the transient code was finished by `]transient`.
+
+  \ XXX TODO
+
+  old-latest @ old-np @ cfap>lfa !n  ;
 
 ( [false] [true] )
 
-  \ 2015-06-17: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-17: Copied from Afera.
 
          0 constant [false] immediate
 [false] 0= constant [true]  immediate
@@ -643,8 +694,7 @@ require hex.  require ascii-type
 
 ( decode -- variables, indentation and pause control )
 
-  \ 2015-06-05: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-05: Copied from Afera.
   \ 2015-06-19: New: `?branch`.
 
 forth definitions decimal
@@ -814,12 +864,21 @@ variable decode-address  \ in the word being decoded
   cfa>lfa @ current @ !    \ Update the `current` vocabulary.
   ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
+  \ XXX Misc {{{
+
+( source )
+
+: source  ( -- ca len )  \ ANS Forth
+  \ XXX TODO
+  blk @ ?dup if  block b/buf  else  tib @ #tib @  then  ;
+
+  \ }}} =======================================================
   \ Hardware {{{
 
-( p@ )
+( @p )
 
-code p@  ( u -- n )
+code @p  ( u -- n )
 
   \ Return the value read from port _u_.
 
@@ -834,9 +893,9 @@ code p@  ( u -- n )
   C3 c, pushhl ,  \ jp pushhl
 end-code
 
-( p! )
+( !p )
 
-code p!  ( n u -- )
+code !p  ( n u -- )
 
   \ Present _n_ to output port _u_.
  
@@ -852,7 +911,7 @@ code p!  ( n u -- )
 
 end-code
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Turnkey {{{
 
 ( extend size system turnkey )
@@ -893,7 +952,7 @@ end-code
 
 : turnkey  ( cfa -- a len )  boot ! system  ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Number notation {{{
 
 ( c>hex )
@@ -996,7 +1055,7 @@ width @  1 width !
 
 width ! decimal
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Control structures {{{
 
 ( i' )
@@ -1026,6 +1085,48 @@ code j'  ( -- x )
 
   end-code
 
+( case: associative: )
+
+  \ [Code adapted from F83.]
+  \
+  \ XXX TODO document
+
+: case:  ( n -- )
+  create  1+ cells , ]
+  does>   dup @ + perform  ;
+
+: associative:  ( n -- )
+  constant
+  does>
+    dup @ -rot dup @ 0 do
+      cell+ 2dup @ =
+      if  2drop drop i unloop exit   then
+    loop 2drop  ;
+
+( Abersoft Forth case )
+
+  \ This is the `case` provided by Abersoft Forth. It's too
+  \ complex and not ANS Forth compliant.
+
+  \ XXX TODO document
+
+: case  ( x -- )
+  ?comp csp @ !csp 4  ; immediate
+: of  ( x -- )
+  4 ?pairs
+  postpone over  postpone =  postpone 0branch >mark
+  postpone drop 5  ; immediate
+: endof  ( -- )
+  5 ?pairs
+  postpone branch  >mark
+  swap 2  postpone then  4  ; immediate
+: endcase  ( -- )
+  4 ?pairs
+  postpone drop
+  begin  sp@ csp @ =  while  2 postpone then  repeat
+  csp !  ;  immediate
+
+
 ( ?dov dov loopv +loopv )
 
   \ [Code from vForth.]
@@ -1054,13 +1155,12 @@ code j'  ( -- x )
 
 : compile,  ( cfa -- )  ?comp , ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Time {{{
 
 ( ms )
 
-  \ 2015-06-10: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-10: Copied from Afera.
 
 [defined] sys-frames ?\ 23672 constant sys-frames
 
@@ -1075,37 +1175,68 @@ code j'  ( -- x )
   \ code ms
   \  pop de
   \  begin,
-  \   ldi a'| 171 n,
+  \   ld a,171
   \   begin,
   \    nop
-  \    dec a'|
+  \    dec a
   \   -until,
-  \   decx de|
-  \   ld a'| d|
-  \  ora e|
+  \   dec de
+  \   ld a,d
+  \  ora e
   \  -until,
-  \ next c;
+  \  jp (ix)
 
-( time@ time! time0 )
+  \ code ms  ( u -- )  hex
+  \   d1 c,         \ pop de
+  \   here          \ ms1:
+  \   78 03 + c,  b0 02 + c,
+  \                 \ ld a,e
+  \                 \ or d
+  \   ca c, next ,  \ jp z,next
+  \   21 c, 0004 ,  \ ld hl,4 ; mhz
+  \   29 c,  29 c,  29 c,
+  \                 \ add hl,hl
+  \                 \ add hl,hl
+  \                 \ add hl,hl
+  \   here          \ ms2:
+  \   e3 c,  e3 c,  e3 c,  e3 c,
+  \                 \ ex (sp),hl        ; 19t
+  \                 \ ex (sp),hl        ; 19t
+  \                 \ ex (sp),hl        ; 19t
+  \                 \ ex (sp),hl        ; 19t
+  \   e5 c,  e1 c,  2b c,
+  \                 \ push hl           ; 11t
+  \                 \ pop hl            ; 10t
+  \                 \ dec hl            ;  6t
+  \   3e c, 00 c,  78 05 + c,  b0 04 + c,
+  \                 \ ld a,0            ;  7t
+  \                 \ ld a,l            ;  4t
+  \                 \ or h              ;  4t
+  \   c2 c, ,       \ jp nz,ms2         ; 10t
+  \   1b c,         \ dec de
+  \   c3 c, ,       \ jp ms1
+  \ end-code
 
-  \ 2015-06-10: Copied from Afera
-  \ (http://programandala.net/en.program.afera.html).
+( frames@ frames! frames0 )
+
+  \ 2015-06-10: Copied from Afera.
+  \ 2015-07-17: Renamed all words.
 
 [defined] sys-frames ?\ 23672 constant sys-frames
 
-: time@  ( -- d )
+: frames@  ( -- d )
   \ System frames counter (incremented every 20 ms).
   sys-frames @ [ sys-frames 2+ ] literal c@  ;
 
-: time!  ( d -- )
+: frames!  ( d -- )
   \ Set the system frames counter.
   [ sys-frames 2+ ] literal c! sys-frames !  ;
 
-: time0  ( -- )
+: frames0  ( -- )
   \ Reset the system frames counter.
-  0. time!  ;
+  0. frames!  ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Vocabularies {{{
 
 ( also  only )
@@ -1154,7 +1285,7 @@ here cell+
 
 only forth also   definitions
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Random number generator {{{
 
 ( seed rnd random randomize )
@@ -1176,7 +1307,7 @@ only forth also   definitions
   \   16383 u/ drop dup sys-seed !
   \   swap mod ;
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Deferred words {{{
 
 ( defer defer@ defer! defers action-of )
@@ -1224,7 +1355,7 @@ only forth also   definitions
 : is  ( cfa "name" -- )
   comp? if  postpone [is]  else  <is>  then  ; immediate
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Assembler {{{
 
 ( assembler )
@@ -1282,12 +1413,15 @@ only forth also   definitions
   \
   \ 2015-07-05: First changes to convert it from fig-Forth to
   \ Solo Forth.
+  \
+  \ 2015-07-17: First documentation of control structures.
+  \ Renamed `tst` as `tstp`.
   
   \ -----------------------------------------------------------
 
 forth definitions
 
-: 8*  2* 2* 2* ;
+: 8*   ( n1 -- n2 )  2* 2* 2* ;
 
 -->
 
@@ -1304,10 +1438,13 @@ assembler definitions hex
 
 DD constant ix-op  FD constant iy-op
 
-ix-op variable xy  : %x ix-op xy ! ; : %y iy-op xy ! ;
+ix-op variable xy
+: %x  ix-op xy ! ;    : %y  iy-op xy ! ;
 
-: xy,  xy @ c, ; : xl xy, l ; : xh xy, h ;
-: ix  ix-op c, hl ; : iy iy-op c, hl ;
+: xy,  xy @ c, ;
+
+: xl  xy, l ;         : xh  xy, h ;
+: ix  ix-op c, hl ;   : iy  iy-op c, hl ;
 
   \ Branch too long?
 : ?page  ( n -- ) dup 80 + FF swap u< 1E ?error  ;
@@ -1391,9 +1528,9 @@ C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
 ( assembler -- Opcodes)
 
 : 0outbc  ED c, 71 c, ;
-: jpix  IX-OP c, jphl ;
-: ldp#  ( 16b rps -- ) 8* 1+ c,  , ;
-: ldix#  ( 16b rps -- ) 8* 1+ c,  , ; \ xxx todo
+: jpix  ix-op c, jphl ;
+: ldp#  ( 16b rp -- ) 8* 1+ c,  , ;
+: ldix#  ( 16b rp -- ) 8* 1+ c,  , ; \ xxx todo
 : ld#  ( 8b r -- ) 8* 06 + c, c, ;
 : ld  ( r1 r2 -- ) 8* 40 + + c, ;
 : sbcp  ED c, 8* 42 + c, ;
@@ -1421,7 +1558,8 @@ AE ma )xor B6 ma )or  BE ma )cp  34 ma )inc 35 ma )dec
 2E mb )sra 3E mb )srl 46 mc )bit 86 mc )res C6 mc )set
 
 : )ld  xy, swap 8* 46 + c, c, ;
-: )st  xy, swap 70 + c, c, ; : )ld# xy, 36 c, c, c, ;
+: )st  xy, swap 70 + c, c, ;
+: )ld# xy, 36 c, c, c, ;
 : )ldp  over 1+ over )ld 1+ )ld ;
 : )stp  over 1+ over )st 1+ )st ;
 
@@ -1431,52 +1569,79 @@ AE ma )xor B6 ma )or  BE ma )cp  34 ma )inc 35 ma )dec
 
   \ Condition codes for relative jumps
 
-20 constant z  28 constant nz 30 constant cy 38 constant nc
+  \ They are Z80 opcodes for the required instructions.
+  \ Example `z if` compiles a `jr nz`, so `z` is the code for
+  \ `jr nz`.
+
+20 constant z  28 constant nz  30 constant cy  38 constant nc
 
   \ Condition codes for absolute jumps
+
+  \ They are Z80 opcodes for the required instructions.
+  \ Example `z' if` compiles a `jp nz`, so `z'` is the code for
+  \ `jp nz`.
 
 C2 constant z'  CA constant nz' D2 constant cy' DA constant nc'
 E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
   \ Conditional ret
 
-: ?ret  8 xor 2- c, ;
-: retc  cy' ?ret ;    : retnc nc' ?ret ;
-: retz  z' ?ret ;     : retnz nz' ?ret ;
-: retm  m' ?ret ;     : retp p' ?ret ;
-: retpe  pe' ?ret ;   : retpo po' ?ret ;
+: ?ret  ( op -- )  8 xor 2- c, ;
+
+: retc  ( -- )  cy' ?ret ;    : retnc  ( -- )  nc' ?ret ;
+: retz  ( -- )  z' ?ret ;     : retnz  ( -- )  nz' ?ret ;
+: retm  ( -- )  m' ?ret ;     : retp  ( -- )  p' ?ret ;
+: retpe  ( -- )  pe' ?ret ;   : retpo  ( -- )  po' ?ret ;
 
   \ Conditional call
 
-: ?call  8 xor 2+ c, , ;
-: callc  cy' ?call ;    : callnc nc' ?call ;
-: callz  z' ?call ;     : callnz nz' ?call ;
-: callm  m' ?call ;     : callp p' ?call ;
-: callpe  pe' ?call ;   : callpo po' ?call ; 
+: ?call  ( a op -- )  8 xor 2+ c, , ;
+
+: callc  ( -- )  cy' ?call ;    : callnc  ( -- )  nc' ?call ;
+: callz  ( -- )  z' ?call ;     : callnz  ( -- )  nz' ?call ;
+: callm  ( -- )  m' ?call ;     : callp  ( -- )  p' ?call ;
+: callpe  ( -- )  pe' ?call ;   : callpo ( -- )  po' ?call ; 
 
 -->
 
-( assembler -- Control structures and last opcodes)
+( assembler -- Control structures built with relative jumps)
 
-  \ Control structures created with relative jumps
+  \ XXX TODO document
+  \ XXX TODO factor `over - ?page swap c!` ?
 
-: then  0A ?pairs here 1- over - ?page swap c! ;
-: if  , here 1- 0A ;
-: else  0A ?pairs 18 if rot swap then 0A ;
-: until  , 0B ?pairs 1- here 1- swap over - ?page swap c! ;
-: begin  here 0B ;  : again 18 until ;
-: dsz  10 until ;   : repeat 2swap again 2- then ;
-: while  if 2+ ;
+: then  ( orig cs-id -- )
+  0A ?pairs here 1- over - ?page swap c! ;
+: if  ( op -- orig cs-id )  , here 1- 0A ;
+: else  ( orig cs-id -- cs-id ) \ XXX TODO document
+  0A ?pairs 18 if rot swap then 0A ;
+: begin  (  -- dest cs-id )  <mark 0B ;
+: while  (  op -- orig cs-id )  if 2+ ;
+: until  (  dest cs-id op -- )
+  , 0B ?pairs 1- here 1- swap over - ?page swap c! ;
+: again  (  dest cs-id -- )  18 until ;
+: dsz    ( dest cs-id -- )  10 until ;
+: repeat  (  dest cs-id1 orig cs-id2 )  2swap again 2- then ;
 
-  \ Control structures created with absolute jumps
+-->
 
-: then'  08 ?pairs here swap ! ;  : if' c, here 0 , 08 ;
-: else'  08 ?pairs C3 if' rot swap then' 08 ;
-: begin'  here 09 ;  : until' c, 09 ?pairs , ;
-: while'  if' 2+ ;    : again' C3 until' ;
-: repeat'  2swap again' 2- then' ;
+( assembler -- Control structures built with absolute jumps )
 
-  \ Last opcodes
+  \ XXX TODO document
+
+: then'  (  orig cs-id -- )  08 ?pairs >resolve ;
+: if'  (  op -- orig cs-id )  c, >mark 08 ;
+: else'  (  cs-id -- cs-id )
+  08 ?pairs C3 if' rot swap then' 08 ;
+: begin'  (  -- dest cs-id )  <mark 09 ;
+: while'  (  op -- orig cs-id )  if' 2+ ;
+: until'  (  cs-id op -- )  c, 09 ?pairs <resolve ;
+: again'  (  cs-id -- )  C3 until' ;
+: repeat'  (  dest cs-id1 orig cs-id2 )
+  2swap again' 2- then' ;
+
+-->
+
+( assembler -- Last opcodes and macros)
 
   \ `AND`, `OR` and `XOR` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -1484,16 +1649,16 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 A0 m2 and  B0 m2 or  A8 m2 xor
 
-: subp  a and sbcp ;  : tst  dup a ld 1+ or ;
+  \ Macro, 16-bit subtract:
+: subp  ( rp -- )  a and sbcp ;
 
--->
-
-( assembler -- Defining words)
+  \ Macro to test 16-bit register for zero:
+: tstp  ( rp -- )  dup a ld 1+ or ;
 
 forth definitions
 
   \ Macros \ xxx todo -- test it
-: macro  ( "name -- )  asm [compile] :  ;
+: macro  ( "name" -- )  asm [compile] :  ;
 : endm  ( -- )  [compile] ;  ;
 
   \ Patch `asm` with `%x`:
@@ -1501,7 +1666,7 @@ forth definitions
 
 decimal
 
-  \ }}} =========================================================
+  \ }}} =======================================================
   \ Common heap {{{
 
 ( heap )

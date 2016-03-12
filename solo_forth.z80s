@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507060141
+; Version A-00-201507170306
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -148,7 +148,8 @@
 ; ff       = false flag (0)
 ; wf       = well-formed flag (false is 0; true is 1)
 
-; c        = 8-bit character
+; b        = 8-bit byte
+; c        = 7-bit or 8-bit character
 ; u        = 16-bit unsigned number
 ; len      = 16-bit unsigned number, length of memory zone or string
 ; ca len   = string
@@ -169,8 +170,14 @@
 ; pfa      = parameter field address
 ; cfap     = code field address pointer
 
-; orig     = address of an nresolved forward branch
+; orig     = address of an unresolved forward branch
 ; dest     = address of a backward branch target
+
+; cs-id    = control structure identifier
+
+; op       = Z80 8-bit opcode, generally a jump
+; r        = Z80 8-bit register identifier
+; rp       = Z80 16-bit register pair identifier
 
 ; ----------------------------------------------
 ; Parsed text notation
@@ -192,7 +199,6 @@
 ; text            same as ccc
 ; name            a token delimited by space, equivalent to
 ;                 ccc<space> or ccc<eol>
-
 
 ; ----------------------------------------------
 ; Word attributes
@@ -497,7 +503,7 @@ _header: macro _base_label,_name,_is_immediate
     _base_label##lfa: ; link field address
       dw previous_nfa ; link field
     _base_label##nfa: ; name field address
-    flags: defl name_bound_bit_mask
+    flags: defl name_bound_bit_mask ; XXX OLD
       if not nul _is_immediate
         flags: defl flags | precedence_bit_mask ; add precedence bit
       endif
@@ -505,12 +511,12 @@ _header: macro _base_label,_name,_is_immediate
     _name_address: equ $
       db _name ; name field
     _address_after_name: equ $
-    np: defl $
+    np: defl $ ; new value of the names pointer
 
     ; Update the names pointer:
     org names_pointer
-    dw np
-    dw np
+    dw np ; overwrite names_pointer
+    dw np ; overwrite names_pointer_init_value
 
     ; In dictionary:
     org _dp_backup
@@ -2971,13 +2977,11 @@ if 1 ; names_in_memory_bank?
   jp push_hl
 
 ; ----------------------------------------------
-  ; _code_header np_store_,'NP!'
+  _code_header np_store_,'NP!'
 
-  ; XXX TODO
-
-  ; ld hl,(names_pointer)
-  ; jp push_hl
-  ; _jp_next
+  pop hl
+  ld (names_pointer),hl
+  _jp_next
 
 ; ----------------------------------------------
 
@@ -3009,6 +3013,8 @@ endif
 ; ----------------------------------------------
   _code_header sp_store_,'SP!'
 
+  ; XXX TODO -- modify after Gforth
+
   ld hl,(user_variables_pointer)
   ld a,(hl)
   inc hl
@@ -3030,6 +3036,8 @@ endif
 
 ; ----------------------------------------------
   _code_header rp_store_,'RP!'
+
+  ; XXX TODO -- modify after Gforth
 
   ld hl,(user_variables_pointer)
   inc hl
@@ -4264,6 +4272,14 @@ endif
 
 if 1 ; names_in_memory_bank?
 
+  _code_alias_header cfap_to_lfa_,'CFAP>LFA',,two_plus_
+
+endif
+
+; ----------------------------------------------
+
+if 1 ; names_in_memory_bank?
+
   _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus_
 
 else
@@ -4277,6 +4293,49 @@ else
   dw semicolon_s_
 
 endif
+
+; ----------------------------------------------
+  _colon_header c_store_bank_,'C!BANK'
+
+; doc{
+;
+; c!bank  ( b a n -- )
+;
+; Store _b_ into address _a_ of bank _n_.
+;
+; }doc
+
+  ; XXX 11 bytes
+  dw bank_,c_store_
+  _default_bank
+  dw semicolon_s_
+
+  ; XXX TODO
+  ; pop de
+  ; c_store_bank.e:
+  ; call bank.e
+  ; pop hl
+  ; ld l,(hl)
+  ; ld h,0
+  ; ld e,default_bank
+  ; call bank.e
+  ; jp pushhl
+
+; ----------------------------------------------
+  _colon_header store_bank_,'!BANK'
+
+; doc{
+;
+; !bank  ( x a n -- )
+;
+; Store _x_ into address _a_ of bank _n_.
+;
+; }doc
+
+  ; XXX 11 bytes
+  dw bank_,store_
+  _default_bank
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header c_fetch_bank_,'C@BANK'
@@ -4334,6 +4393,8 @@ endif
   ; call bank.e
   ; jp pushhl
 
+if 1 ; names_in_memory_bank?
+
 ; ----------------------------------------------
   _colon_header c_fetch_n_,'C@N'
 
@@ -4373,6 +4434,40 @@ endif
   ; XXX 5 bytes
   ; ld e,names_bank
   ; jp fetch_bank.e
+
+; ----------------------------------------------
+  _colon_header c_store_n_,'C!N'
+
+; doc{
+;
+; c!n  ( c a -- )
+;
+; Store _c_ into the _a_ address of the names bank.
+;
+; }doc
+
+  ; XXX 7 bytes:
+  _number names_bank
+  dw c_fetch_bank_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header store_n_,'!N'
+
+; doc{
+;
+; !n  ( x a -- )
+;
+; Store _x_ into the _a_ address of the names bank.
+;
+; }doc
+
+  ; XXX 7 bytes:
+  _number names_bank
+  dw store_bank_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
@@ -5571,25 +5666,51 @@ find.end:
   dw 0,0
 
 ; ----------------------------------------------
+  _colon_header error_to_line_,'ERROR>LINE'
+
+; doc{
+;
+; error>line  ( n1 -- n2 )
+;
+; Convert an error number to its correspondent line offset. This
+; is used in order to skip the first line of screens and use
+; them as screen headers as usual.
+;
+; }doc
+
+  ; XXX FIXME -- the calculation must be more complex
+  ; dw dup_
+  ; dw c_lit_
+  ; db 16
+  ; dw slash_,plus_
+
+  ; XXX NEW -- a loop instead a calculation
+  dw dup_,zero_,paren_do_
+  dw i_
+  dw c_lit_
+  db 16
+  dw mod_,zero_equals_,plus_,paren_loop_
+  ; XXX TODO update when true=-1
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header error_,'ERROR'
 
   dw dup_,error_number_,store_ ; save the error number
-  dw warning_,fetch_,zero_less_than_
-  dw question_branch_,paren_abort_pfa
+  dw warning_,fetch_,zero_less_than_ ; custom error routine?
+  dw question_branch_,paren_abort_pfa ; if so, branch to it
 
 error.message:
-  dw here_,count_,type_ ; last parsed word
+  dw here_,count_,type_ ; last parsed word ; XXX TODO adapt to `parse-word`
   dw paren_dot_quote_
   _string '? '
-  dw message_
+  dw error_to_line_,message_
   dw sp_store_
-  ; XXX TODO save the output parameters?
-  ; (`where` will be in the disk)
   dw blk_,fetch_,question_dup_
   dw zero_branch_,error.end
   dw to_in_,fetch_
   dw swap_
-  dw error_pos_,two_store_ ; XXX NEW
+  dw error_pos_,two_store_
 error.end:
   dw quit_
 
@@ -7812,7 +7933,7 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header case_,'CASE',immediate
 
-  ; XXX TODO move to the disk?
+  ; XXX TODO move to the disk
   ;
   ; XXX TODO use the simpler code from the ANS Forth
   ; documentation.
@@ -7860,11 +7981,11 @@ do_two_constant:
   db 0x04
   dw question_pairs_
   dw compile_,drop_
-endcase.compile_then:
-  dw sp_fetch_,csp_,fetch_,equals_
+endcase.compile_then: ; begin
+  dw sp_fetch_,csp_,fetch_,equals_ ; while
   dw question_branch_,endcase.end
   dw two_,then_
-  dw branch_,endcase.compile_then
+  dw branch_,endcase.compile_then ; repeat
 endcase.end:
   dw csp_,store_
   dw semicolon_s_
