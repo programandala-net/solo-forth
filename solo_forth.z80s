@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506260242
+; Version A-00-201506260311
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -829,11 +829,7 @@ next2:
   dw s_literal_
   dw semicolon_s_
 paren_s.interpreting:
-  if 0 ; XXX OLD -- without csb
-    dw tuck_,pad_,swap_,cmove_,pad_,swap_
-  else
-    dw save_string_
-  endif
+  dw save_string_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2728,7 +2724,11 @@ do_user:
   _constant_header msg_scr_,'MSG-SCR'
 
 ; doc{
-; msg-scr  ( -- n )  \  Constant: Screen where the error messages start.
+;
+; msg-scr  ( -- n )
+;
+; Constant: Screen where the error messages start.
+;
 ; }doc
 
 ; Idea taken from lina ciforth.
@@ -2751,7 +2751,7 @@ do_user:
   dw 0x0002
 
 ; ----------------------------------------------
-  _constant_header three_,'3'
+  _constant_header three_,'3' ; XXX TODO remove
 
   dw 0x0003
 
@@ -2837,16 +2837,19 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header fence_,'FENCE'
 
+  ; XXX TODO why this is a user variable?
   db 0x0A
 
 ; ----------------------------------------------
   _user_variable_header dp_,'DP'
 
+  ; XXX TODO why this is a user variable?
   db 0x0C
 
 ; ----------------------------------------------
   _user_variable_header voc_link_,'VOC-LINK'
 
+  ; XXX TODO why this is a user variable?
   db 0x0E
 
 ; ----------------------------------------------
@@ -2962,7 +2965,17 @@ do_user:
 ; ----------------------------------------------
   _code_header two_star_,'2*'
 
-  ; XXX TODO See comments in lina ciforth documentation.
+; doc{
+;
+; 2*  ( x1 -- x2 )  \ ANS Forth
+;
+; _x2_ is the result of shifting _x1_ one bit toward the
+; most-significant bit, filling the vacated least-significant
+; bit with zero.
+;
+; }doc
+
+  ; XXX TODO -- Copy comments against this word from lina ciforth documentation.
 
   pop hl
   add hl,hl
@@ -2979,9 +2992,19 @@ do_user:
 ; ----------------------------------------------
   _code_header two_slash_,'2/'
 
-  ; [From DZX-Forth.]
-  ; XXX FIXME With negative numbers `2/` is not the same than `2 /`.
-  ; XXX TODO See comments in lina ciforth documentation.
+; doc{
+;
+; 2/  ( x1 -- x2 )  \ ANS Forth
+;
+; _x2_ is the result of shifting _x1_ one bit toward the
+; least-significant bit, leaving the most-significant bit
+; unchanged.
+;
+; }doc
+
+  ; XXX TODO -- Copy comments against this word from lina ciforth documentation.
+
+  ; [Code from DZX-Forth.]
 
   pop hl
   call sra_hl
@@ -3502,8 +3525,8 @@ minus_trailing.begin:
 ; ----------------------------------------------
   _colon_header paren_dot_quote_,'(.")'
 
-  dw r_fetch_,count_,dup_,one_plus_
-  dw from_r_,plus_,to_r_
+  dw r_fetch_,count_ ; ( ca len )
+  dw dup_,one_plus_,from_r_,plus_,to_r_ ; skip the string after return
   dw type_
   dw semicolon_s_
 

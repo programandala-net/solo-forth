@@ -564,8 +564,7 @@ forth definitions decimal
 
 : decode-literal  ( a1 -- a2 )  2+ dup @ .  ;
 
-: decode-branch  ( a1 -- a2 )
-  decode-literal  ."  \ to " dup dup @ + u.  ;
+: decode-branch  ( a1 -- a2 )  2+ dup @ u.  ;
 
 : decode-dot-quote  ( a1 -- a2 )
   2+ dup count type  dup c@ + 1 -  ;
