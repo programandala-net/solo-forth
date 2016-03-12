@@ -185,12 +185,30 @@ code pixel  ( x y -- n a )
   C3 c, pushde ,          \ jp pushde
   end-code
 
+( pixel-add )  \ The ROM routine
+
+code pixel-add  ( x y -- n a )
+  \ Address of a pixel in the screen.
+  \ x = 0..255
+  \ y = 0..175
+  \ n = position of the pixel in the byte address 0..7
+  \ a = address of the pixel byte in the screen bitmap
+  E1 c,  D1 c,            \ pop hl / pop de
+  C5 c,                   \ push bc
+  40 05 + c,              \ ld b,l ; b=y
+  48 03 + c,              \ ld c,e ; c=x
+  CD c, 22AA ,            \ call pixel-add ; ROM routine
+  C1 c,                   \ pop bc
+  16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
+  C3 c, pushde ,          \ jp pushde
+  end-code
+
 ( pixel-addr )
 
   \ 2015-06-11: Written.
   \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
 
-label pixel-addr  ( -- a )  hex
+label pixel-addr  ( -- )  hex
   \ This Z80 routine is an alternative entry point to the
   \ "pixel-add" ROM routine (0x22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.

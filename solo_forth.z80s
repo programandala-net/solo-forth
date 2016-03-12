@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506300159
+; Version A-00-201507010225
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -29,6 +29,7 @@
 ; - change: all code for `fig_find?` is removed.
 ; - change: new method for the null word.
 ; - new versions of `expect`, `query`; new: `span`.
+; - Fix: `word` caused `s"`, `.(`, `."` to include the first space.
 
 ; ==============================================================
 ; Acknowledgments
@@ -88,7 +89,7 @@
 ; pfa:    ...              ; data or code
 
 ; ----------------------------------------------
-; Improved header structure (experimental, unfinished)
+; New header structure
 
 ; The name and link fields are created in a memory bank:
 
@@ -537,16 +538,20 @@ _string: macro text
 endm
 
 _number: macro _n
-  if _n=0
+
+  ; Note: parenthesis are needed to prevent a strange problem
+  ; with signs.
+
+  if (_n)=0
     dw zero_
   else
-    if _n=1
+    if (_n)=1
       dw one_
     else
-      if _n=2
+      if (_n)=2
         dw two_
       else
-        if _n>=0 && _n<=255
+        if (_n)>=0 && (_n)<=255
           dw c_lit_
           db _n
         else
@@ -1080,10 +1085,10 @@ bank.names:
   ; XXX TODO ?
 bank.e:
   ; ret ; XXX TMP for debugging
-  di
   ld a,(sys_bankm) ; get the saved status of BANKM
   and 0xF8 ; erase bits 0-2
   or e ; modify bits 0-2
+  di
   ld (sys_bankm),a ; update BANKM
   out (bank1_port),a ; page the bank
   ei
@@ -1473,12 +1478,13 @@ endif
 
 ; ----------------------------------------------
 ; XXX TODO experimental do-loop structures adapted from Spectrum Forth-83
+; and F83.
 
 ; A do-loop pushes three items on the return stack:
 ;
 ; 0) Limit
 ; 1) Reverse branch address (jump to here if loop repeats).
-; 2) Current index (represented as `(index-limit) xor 0x8000`.
+; 2) Current index represented as `(index-limit) xor 0x8000`.
 ;    This is at the top.
 ;    The current index is represented this way so it is easier
 ;    to check whether index has crossed the boundary between
@@ -1556,6 +1562,15 @@ endif
   dw forward_resolve_
   dw semicolon_s_
 
+  ; _colon_header plus_loop83_,'+LOOP83',immediate
+
+  ; dw c_lit_
+  ; db 3
+  ; dw question_pairs_
+  ; dw compile_,paren_plus_loop83_
+  ; dw forward_resolve_
+  ; dw semicolon_s_
+
   _colon_header paren_loop83_,'(LOOP83)'
 
   ld hl,(return_stack_pointer)
@@ -1586,6 +1601,94 @@ paren_loop83.loop:
   inc hl    ; H INC
   ld c,(hl) ; M D LD   \ Read loop start address into instruction pointer, repeat loop.
   _jp_next
+
+if 0 ; XXX TODO adapt
+
+; CODE (+LOOP83) ( w --- )
+;  RPTR LDHL     \ Read return stack pointer into HL.
+;    M C LD
+;     H INC
+;    M B LD      \ Read Current index.
+;      EXSP      \ HL now contains w, the increment value.
+;     A AND
+;    B ADCP      \ Add increment to index.
+;    v if
+;                \ If overflow, then boundary between limit-1 and limit is
+;                \ crossed, terminate loop.
+;      H POP     \ Get return stack pointer.
+;   5 B LDP#
+;     B ADDP
+;  RPTR STHL     \ Increment ret stack pointer by 5 (1 increment already done)
+;                \ and store updated ret stack pointer back.
+;    else
+;     H B LD
+;     L C LD     \ Move updated index to BC.
+;      H POP     \ Get return stack pointer.
+;     B M LD
+;      H DEC
+;     C M LD     \ Store updated index.
+;      H INC
+;      H INC
+;     M E LD
+;      H INC
+;     M D LD     \ Read loop start address into instruction pointer, repeat loop.
+;    then
+;  JPIX ;C
+
+; CODE LEAVE83
+;  RPTR LDHL     \ Read return stack pointer into HL.
+;     H INC
+;     H INC
+;    M E LD
+;     H INC
+;    M D LD      \ Get start address into DE.
+;     H INC
+;     H INC
+;     H INC
+; RPTR STHL      \ Write updated return stack pointer (6 was added).
+;     D DEC
+;     D DEC      \ DE (instruction pointer) now points to forward branch address
+;   'BRANCH @ JP ;C \ continue into BRANCH.
+
+; CODE I83  ( --- w)
+; RPTR LDHL        \ Read return stack pointer into HL.
+;   \ J jumps here.
+;   M C LD
+;    H INC
+;   M B LD         \ Read current index. (which is (index-limit) xor 0x8000.
+;    H INC
+;    H INC
+;    H INC
+;   M A LD         \ Read limit and add to index
+;    C ADD
+;   A C LD
+;    H INC
+;   M A LD
+;    B ADC
+;  80 XOR#         \ and flip most significant bit, getting true index value.
+;   A B LD
+;   B PUSH         \ Push result.
+; JPIX ;C
+
+; CODE J83 ( --- w)
+;   RPTR LDHL      \ Read return stack pointer into HL
+;   6 B LDP#
+;     B ADDP       \ Add 6 to it, to get to next inner loop parameters.
+;  'I @ 3 + JR ;C  \ Continue into I.
+
+; CODE I'83 ( --- w)
+;   RPTR LDHL      \ Read return stack pointer into HL
+;      H INC
+;      H INC
+;      H INC
+;      H INC
+;     M C LD
+;      H INC
+;     M B LD       \ Read limit value.
+;     B PUSH       \ Push result
+;     JPIX ;C
+
+endif
 
 ; ----------------------------------------------
   _code_alias_header i_,'I',,r_fetch_
@@ -3236,6 +3339,8 @@ do_constant:
 ; ----------------------------------------------
   _colon_header label_,'LABEL'
 
+  ; XXX TODO call `assembler`?
+
   dw create_
   dw semicolon_s_
 
@@ -3909,6 +4014,62 @@ else
 endif
 
 ; ----------------------------------------------
+  _colon_header c_fetch_bank_,'C@BANK'
+
+; doc{
+;
+; c@bank  ( a n -- b )
+;
+; Fetch the 8-bit content of address _a_ of the bank _n_.
+;
+; }doc
+
+  ; XXX 11 bytes
+  dw bank_,c_fetch_
+  _default_bank
+  dw semicolon_s_
+
+  ; XXX 15 bytes
+  ; pop de
+  ; c_fetch_bank.e:
+  ; call bank.e
+  ; pop hl
+  ; ld l,(hl)
+  ; ld h,0
+  ; ld e,default_bank
+  ; call bank.e
+  ; jp pushhl
+
+; ----------------------------------------------
+  _colon_header fetch_bank_,'@BANK'
+
+; doc{
+;
+; @bank  ( a n -- x )
+;
+; Fetch the 16-bit content of address _a_ of bank _n_.
+;
+; }doc
+
+  ; XXX 11 bytes
+  dw bank_,fetch_
+  _default_bank
+  dw semicolon_s_
+
+  ; XXX 17 bytes
+  ; pop de
+  ; fetch_bank.e
+  ; call bank.e
+  ; pop hl
+  ; ld a,(hl)
+  ; inc hl
+  ; ld h,(hl)
+  ; ld l,a
+  ; ld e,default_bank
+  ; call bank.e
+  ; jp pushhl
+
+; ----------------------------------------------
   _colon_header c_fetch_n_,'C@N'
 
 ; doc{
@@ -3919,11 +4080,14 @@ endif
 ;
 ; }doc
 
-  ; XXX 14 bytes:
-  _names_bank
-  dw c_fetch_
-  _default_bank
+  ; XXX 7 bytes:
+  _number names_bank
+  dw c_fetch_bank_
   dw semicolon_s_
+
+  ; XXX 5 bytes
+  ; ld e,names_bank
+  ; jp c_fetch_bank.e
 
 ; ----------------------------------------------
   _colon_header fetch_n_,'@N'
@@ -3936,19 +4100,14 @@ endif
 ;
 ; }doc
 
-  ; XXX 14 bytes:
-  _names_bank
-  dw fetch_
-  _default_bank
+  ; XXX 7 bytes:
+  _number names_bank
+  dw fetch_bank_
   dw semicolon_s_
 
-  ; XXX TODO in Z80 if smaller:
+  ; XXX 5 bytes
   ; ld e,names_bank
-  ; call bank.e
-  ; pop hl
-  ; ld e,default_bank
-  ; call bank.e
-  ; _jp_next
+  ; jp fetch_bank.e
 
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
@@ -4341,54 +4500,54 @@ endif
 
   ; XXX TODO -- not finished
 
-  dw span_,off_
-  dw question_dup_
-  dw zero_branch_,accept.end
+  ; dw span_,off_
+  ; dw question_dup_
+  ; dw zero_branch_,accept.end
 
-  dw swap_ ; ( len ca )
-accept.begin: ; ( len ca )
-  dw key_,dup_ ; ( len ca c c )
+  ; dw swap_ ; ( len ca )
+; accept.begin: ; ( len ca )
+  ; dw key_,dup_ ; ( len ca c c )
 
-  dw c_lit_
-  db delete_char
-  dw equals_ ; delete key?
-  dw zero_branch_,accept.maybe_carriage_return
-  ; Delete key ( len ca c )
-  dw drop_
-  dw dup_,i_,equals_ ; cursor at the start position?
-  dw dup_ ; ( len ca f f )
-  ; XXX TODO adapt this when true=-1
-  dw from_r_,two_minus_,plus_,to_r_ ; update the index
-  dw question_branch_,accept.loop ; nothing to delete
-  ; dw b_l_,i_,c_store_ ; update the buffer ; XXX OLD
-  dw c_lit_
-  db backspace_char
-  dw branch_,accept.emit
+  ; dw c_lit_
+  ; db delete_char
+  ; dw equals_ ; delete key?
+  ; dw zero_branch_,accept.maybe_carriage_return
+  ; ; Delete key ( len ca c )
+  ; dw drop_
+  ; dw dup_,i_,equals_ ; cursor at the start position?
+  ; dw dup_ ; ( len ca f f )
+  ; ; XXX TODO adapt this when true=-1
+  ; dw from_r_,two_minus_,plus_,to_r_ ; update the index
+  ; dw question_branch_,accept.loop ; nothing to delete
+  ; ; dw b_l_,i_,c_store_ ; update the buffer ; XXX OLD
+  ; dw c_lit_
+  ; db backspace_char
+  ; dw branch_,accept.emit
 
-accept.maybe_carriage_return: ; ( len ca c )
-  dw dup_
-  dw c_lit_
-  db carriage_return_char
-  dw equals_ ; carriage return?
-  dw zero_branch_,accept.ordinary_key
-  ; Carriage return ( len ca c )
-  dw leave_
-  dw drop_,b_l_
-  dw branch_,accept.emit
+; accept.maybe_carriage_return: ; ( len ca c )
+  ; dw dup_
+  ; dw c_lit_
+  ; db carriage_return_char
+  ; dw equals_ ; carriage return?
+  ; dw zero_branch_,accept.ordinary_key
+  ; ; Carriage return ( len ca c )
+  ; dw leave_
+  ; dw drop_,b_l_
+  ; dw branch_,accept.emit
 
-accept.ordinary_key: ; ( len ca c )
-  dw dup_
-accept.store: ; ( len ca c c | len ca c 0 )
-  dw i_,c_store_
-accept.emit: ; ( len ca c )
-  dw emit_
+; accept.ordinary_key: ; ( len ca c )
+  ; dw dup_
+; accept.store: ; ( len ca c c | len ca c 0 )
+  ; dw i_,c_store_
+; accept.emit: ; ( len ca c )
+  ; dw emit_
 
-  ; ( len ca )
-  dw i_,over_,minus_,span_,store_ ; update `span`
-  dw paren_loop_,accept.do
-accept.end:
-  dw drop_
-  dw span_,fetch_
+  ; ; ( len ca )
+  ; dw i_,over_,minus_,span_,store_ ; update `span`
+  ; dw paren_loop_,accept.do
+; accept.end:
+  ; dw drop_
+  ; dw span_,fetch_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4814,7 +4973,7 @@ if  0
   dw cr_,dot_s_,cr_ ; XXX INFORMER
   dw key_,drop_ ; XXX INFORMER
 endif
-  dw dup_,to_in_,plus_store_
+  dw dup_,one_plus_,to_in_,plus_store_
 
   dw here_
   dw c_lit_
@@ -4825,9 +4984,6 @@ endif
   dw here_,one_plus_ ; destination
   dw swap_ ; count
   dw cmove_ ; move the word
-  dw semicolon_s_
-
-endif
 
   if 0 ; XXX OLD
     ;dw space_ ; XXX INFORMER
@@ -4838,9 +4994,12 @@ endif
     ;dw paren_dot_quote_ ; XXX INFORMER
     ;_string 'in ' ; XXX INFORMER
     ;dw in_,fetch_,dot_ ; XXX INFORMER
-    ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
+    ; dw here_,count_,one_,ink_,type_,zero_,ink_,space_ ; XXX INFORMER
     ;dw key_,drop_ ; XXX INFORMER
   endif
+
+  dw semicolon_s_
+endif
 
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
@@ -5016,7 +5175,7 @@ uppers.do:
 ; }doc
 
   dw trail_
-  ;dw paren_dot_quote_ ; XXX INFORMER
+  ;dw cr_,paren_dot_quote_ ; XXX INFORMER
   ;_string 'In find, nfa is:' ; XXX INFORMER
   ;dw dup_,hex_,u_dot_,decimal_ ; XXX INFORMER ;
     ; Result:
@@ -5031,12 +5190,24 @@ uppers.do:
   ; dw key_,drop_ ; XXX INFORMER
 
   dw paren_find_
-  
-  ; dw cr_,paren_dot_quote_ ; XXX INFORMER
-  ; _string 'In find after (find):: ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
+
+  ;dw cr_,paren_dot_quote_ ; XXX INFORMER
+  ;_string 'In find after (find):: ' ; XXX INFORMER
+  ;dw hex_,dot_s_,decimal_ ; XXX INFORMER
   ; dw key_,drop_ ; XXX INFORMER
 
+  ; XXX TODO fig-Forth searches `current` if searching `context`
+  ; fails. But the problem remains if both are the same.
+  ; Forth-83 search order will be implemented.
+  dw question_dup_ ; not found?
+  dw question_branch_,find.end
+  ; not found, try with the current vocabulary
+  dw latest_,paren_find_
+  dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
+  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+  dw lit_,7,border_ ; XXX INFORMER
+
+find.end:
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
@@ -5182,22 +5353,23 @@ do_create:
 
 ; ----------------------------------------------
 
-if 1 ; fig_does?
+if 0 ; 1 ; names_in_memory_bank?
+
+  ; XXX FIXME
 
   _does_header assembler_,'ASSEMBLER'
 
   dw do_vocabulary
-assembler_vocabulary_dummy_nfa:
-  dw dummy_name_field
 assembler_vocabulary_latest:
   dw forth_vocabulary_dummy_nfa
+assembler_vocabulary_dummy_nfa:
+  dw dummy_name_field
 assembler_vocabulary_link:
   dw forth_vocabulary_link
 
 else
 
-  ; XXX TODO
-  _colon_header assembler_,'ASSEMBLER'
+  _does_header assembler_,'ASSEMBLER'
 
   dw do_vocabulary
 assembler_vocabulary_dummy_nfa:
@@ -5552,41 +5724,87 @@ interpret.16bit_number:
 ; ----------------------------------------------
   _colon_header vocabulary_,'VOCABULARY'
 
+; doc{
+;
+; vocabulary  ( "name" -- )
+;
+; }doc
+
+  ; Create a dictionary entry with the parsed name as
+  ; its name, and the code field pointing to the word after
+  ; `does>`.
   dw builds_ ; XXX TODO convert; see DZX-Forth
+
+if 0 ; 1 ; names_in_memory_bank?
+  
+  ; XXX FIXME
+
+  ; Fetch the parameter field address pointing to the last word
+  ; and store its code field address in the second cell in
+  ; parameter field.
+  dw current_,fetch_,pfa_to_cfa_,comma_
+  ;A dummy header at vocabulary intersection.
   dw lit_,dummy_name_field,comma_
-  dw current_,fetch_
-  dw pfa_to_cfa_ ; XXX FIXME this must be changed?
-  dw comma_
+
   dw here_ ; address of vocabulary link
+  ; Fetch the user variable `voc-link` and insert it in the dictionary.
   dw voc_link_,fetch_,comma_
+
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-  dw does_ ; end in defining the vocabulary
+  dw does_ ; this is the end in defining the vocabulary
+
+  ; The next words are to be executed when the vocabulary invoked.
+do_vocabulary:
+  dw two_plus_,context_,store_
+
+else
+
+  ;A dummy header at vocabulary intersection.
+  dw lit_,dummy_name_field,comma_
+
+  ; Fetch the parameter field address pointing to the last word
+  ; and store its code field address in the second cell in
+  ; parameter field.
+  dw current_,fetch_,pfa_to_cfa_,comma_
+
+  dw here_ ; address of vocabulary link
+
+  ; Fetch the user variable `voc-link` and insert it in the dictionary.
+  dw voc_link_,fetch_,comma_
+
+  dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
+  dw does_ ; this is the end in defining the vocabulary
+
   ; The next words are to be executed when the vocabulary invoked.
 do_vocabulary:
   ; When the vocabulary is invoked, the second cell in its parameter field
   ; will be stored into the variable `context`.  The next
   ; dictionary search will begin with that vocabulary.
   dw two_plus_,context_,store_
+
+endif
+
   dw semicolon_s_
 
 ; ----------------------------------------------
 
-if 1 ; fig_does?
+if 0 ; 1 ; names_in_memory_bank?
+
+  ; XXX FIXME
 
   _does_header forth_,'FORTH'
 
   dw do_vocabulary
-forth_vocabulary_dummy_nfa:
-  dw dummy_name_field
 forth_vocabulary_latest:
   dw nfa_of_top_most_word_in_forth_voc
+forth_vocabulary_dummy_nfa:
+  dw dummy_name_field
 forth_vocabulary_link:
   dw 0x0000
 
 else
 
-  ; XXX TODO
-  _colon_header forth_,'FORTH'
+  _does_header forth_,'FORTH'
 
   dw do_vocabulary
 forth_vocabulary_dummy_nfa:

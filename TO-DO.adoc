@@ -115,3 +115,9 @@ Change: modify `expect` after Spectrum Forth-83.
 Change: modify `key` after Forth-83 and ANS Forth.
 
 Change: compare the user variables with those of Spectrum Forth-83.
+
+Change: rewrote `word` to return and address, after Forth-83 or ANS Forth.
+
+Fix: the more important problem is `vocabulary`, see note on
+2015-06-28.
+
