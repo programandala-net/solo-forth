@@ -78,3 +78,6 @@ two user variables.  Everything seems normal.  Interesting things:
 Fix: `flash`, `bright`, `inverse`, `gover`. The code is the same than
 in Abersoft Forth and Afera, but it doesn't work fine. Details in the
 code. The problem is the new code of `(emit)`.
+
+In order to save compilation time, move inner words to the bottom of
+the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...

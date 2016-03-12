@@ -3,65 +3,66 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506090220
+; Version A-00-201506090248
 ; Latests important changes (in chronological order)
 ; - `'` returns a cfa instead of a pfa.
 ; - Boolean attributes are moved to the disk, `(emit)` must be fixed.
+; - `pick`.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-  ; ============================================================
-  ; Author and acknowledgements
+; ==============================================================
+; Author and acknowledgements
 
-  ; 2015: Solo Forth
-  ;
-  ; Marcos Cruz (programandala.net)
-  ; http://programandala.net/en.program.solo_forth.html
-  ;
-  ; Solo Forth started with the code of Abersoft Forth (for ZX Spectrum), that
-  ; was first studied and much improved
-  ; (http://programandala.net/en.program.afera.html) and finally fully
-  ; disassembled (http://programandala.net/en.program.abersoft_forth.html).
-  ;
-  ; 1983: Abersoft Forth
-  ;
-  ; Abersoft Forth (for ZX Spectrum) was implemented by John Jones Steele and
-  ; edited by Melbourne House in 1983. It's a tape and RAM disk implementation
-  ; of Z80 fig-Forth 1.1, with ZX Spectrum specific features and some
-  ; extensions beyond the fig-Forth model.
-  ;
-  ; 1979: fig-Forth 1.1
-  ;
-  ; All publications of the FORTH Interest Group are public domain.  They may
-  ; be further distributed by the inclusion of this credit notice:
+; 2015: Solo Forth
+;
+; Marcos Cruz (programandala.net)
+; http://programandala.net/en.program.solo_forth.html
+;
+; Solo Forth started with the code of Abersoft Forth (for ZX Spectrum), that
+; was first studied and much improved
+; (http://programandala.net/en.program.afera.html) and finally fully
+; disassembled (http://programandala.net/en.program.abersoft_forth.html).
+;
+; 1983: Abersoft Forth
+;
+; Abersoft Forth (for ZX Spectrum) was implemented by John Jones Steele and
+; edited by Melbourne House in 1983. It's a tape and RAM disk implementation
+; of Z80 fig-Forth 1.1, with ZX Spectrum specific features and some
+; extensions beyond the fig-Forth model.
+;
+; 1979: fig-Forth 1.1
+;
+; All publications of the FORTH Interest Group are public domain.  They may
+; be further distributed by the inclusion of this credit notice:
 
-  ;               This publication has been made available by:
+;               This publication has been made available by:
 
-  ;               FORTH Interest Group
-  ;               P.O. Box 1105
-  ;               San Carlos, Ca. 94070
+;               FORTH Interest Group
+;               P.O. Box 1105
+;               San Carlos, Ca. 94070
 
-  ; Aknowledgments:
+; Aknowledgments:
 
-  ; Solo Forth has copied, adapted and implemented ideas, code and
-  ; documentation from the following Forth systems (acknowledgment notes are
-  ; properly included in the correspondent sources):
+; Solo Forth has copied, adapted and implemented ideas, code and
+; documentation from the following Forth systems (acknowledgment notes are
+; properly included in the correspondent sources):
 
-  ; Spectrum Forth-83, by Lennart Benschop (1988,2015)
-  ; v.Forth, by Matteo Vitturi (1990-2015)
-  ; lina ciforth, by Albert van der Horst (2000-2004)
+; Spectrum Forth-83, by Lennart Benschop (1988,2015)
+; v.Forth, by Matteo Vitturi (1990-2015)
+; lina ciforth, by Albert van der Horst (2000-2004)
 
-  ; ============================================================
-  ; License
+; ==============================================================
+; License
 
-  ; XXX TODO
+; XXX TODO
 
-  ; ============================================================
-  ; Symbols
+; ==============================================================
+; Symbols
 
-  ; --------------------------------------------
-  ; Forth
+; ----------------------------------------------
+; Forth
 
 origin:                           equ 0x5E00
 
@@ -87,8 +88,8 @@ precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
 smudge_bit_mask:      equ 1 shl smudge_bit
 
-  ; --------------------------------------------
-  ; Config
+; ----------------------------------------------
+; Config
 
   ; XXX experimental
   ; The original code used IX as the user variables pointers,
@@ -99,8 +100,8 @@ user_variables_pointer_in_ix?   equ false
   ; When true, some code pieces are more compact but slower.
 size_optimization?              equ false
 
-  ; --------------------------------------------
-  ; Character codes
+; ----------------------------------------------
+; Character codes
 
 caps_char:                  equ 0x06 ; toggle caps lock
 edit_char:                  equ 0x07 ; edit
@@ -119,8 +120,8 @@ over_char:                  equ 0x15
 at_char:                    equ 0x16
 tab_char:                   equ 0x17 ; tab (screen only)
 
-  ; --------------------------------------------
-  ; ROM  routines
+; ----------------------------------------------
+; ROM  routines
 
 rom_beeper:                      equ 0x03B5
 rom_border_0x2297:               equ 0x2297
@@ -139,8 +140,8 @@ rom_sa_all:                      equ 0x075A
 rom_set_permanent_colors_0x1CAD  equ 0x1CAD
 rom_stack_fetch:                 equ 0x2BF1
 
-  ; --------------------------------------------
-  ; System variables
+; ----------------------------------------------
+; System variables
 
   ; XXX FIXME Pasmo's bug?: `sys_errnr` is used as the base offset.  When it's
   ; not the defined first, the compilation halts with error "offset out of
@@ -163,8 +164,8 @@ sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
 sys_t_addr:        equ 0x5C74
 sys_udg:           equ 0x5C7B
 
-  ; ============================================================
-  ; Macros
+; ==============================================================
+; Macros
 
 _header: macro name,immediate
 
@@ -213,8 +214,8 @@ _jp_next: macro
 
   endm
 
-  ; ============================================================
-  ; Entry points
+; ==============================================================
+; Entry points
 
   org origin
 
@@ -225,8 +226,8 @@ warm_entry:
   ; Location: `0x03 +origin`
   jp warm_start
 
-  ; ============================================================
-  ; Parameter area
+; ==============================================================
+; Parameter area
 
 top_most_word_in_forth_voc:
   ; Location: `0x06 +origin`
@@ -280,8 +281,8 @@ voc_link_init_value:
 
 default_user_variables_end:
 
-  ; ============================================================
-  ; User variables
+; ==============================================================
+; User variables
 
 user_variables:
 
@@ -342,47 +343,49 @@ hld_value: ; +0x2A
   dw 0x0000
   dw 0x0000
 
-  ; ============================================================
-  ; Stacks and buffers
+; ==============================================================
+; Stacks and buffers
 
-  ; --------------------------------------------
-  ; Data stack
+; ----------------------------------------------
+; Data stack
 
 data_stack_limit: equ $+cell
   defs cells_per_data_stack*cell
 data_stack_bottom:
 
-  ; --------------------------------------------
-  ; Terminal input buffer
+; ----------------------------------------------
+; Terminal input buffer
 
 terminal_input_buffer:
   defs bytes_per_terminal_input_buffer
 
-  ; --------------------------------------------
-  ; Return stack
+; ----------------------------------------------
+; Return stack
 
 return_stack_limit: equ $+cell
   defs cells_per_return_stack*cell
 return_stack_bottom:
 
-  ; --------------------------------------------
-  ; Disk buffers
+; ----------------------------------------------
+; Disk buffers
 
 first_buffer:
   defs blocks_per_screen*total_bytes_per_buffer
 limit:
 
-  ; ============================================================
-  ; Misc routines
-
-  ; Taken from DZX-Forth
-  ; (http://programandala.net/en.program.dzx-forth.html)
+; ==============================================================
+; Misc routines
 
 compare_de_hl_unsigned:
+
   ; Input:  de, hl
   ; Output:
   ;  flag C if hl < de
   ;  flag Z if hl = de
+
+  ; Taken from DZX-Forth
+  ; (http://programandala.net/en.program.dzx-forth.html)
+
   ld a,h
   cp d
   ret nz
@@ -390,8 +393,8 @@ compare_de_hl_unsigned:
   cp e
   ret
 
-  ; ============================================================
-  ; Inner interpreter
+; ==============================================================
+; Inner interpreter
 
 pushde:
   push de
@@ -424,8 +427,8 @@ next2:
   ; de = cfa+1 = pfa-1
   jp (hl)
 
-  ; ============================================================
-  ; Dictionary
+; ==============================================================
+; Dictionary
 
 c_lit_nfa:
   db 0x04+0x80,'CLI','T'+0x80
@@ -740,6 +743,9 @@ l5fedh:
 ; Forth's `EMIT' changes the current channel.
 
 ; }doc
+
+; XXX OLD -- copied as `(emit)`.
+; XXX TODO -- remove this when `(emit)` is fixed.
 
 to_chan_nfa:
   db 0x05+0x80,'>CHA','N'+0x80
@@ -5483,8 +5489,8 @@ dictionary_pointer_after_cold:
 
 end cold_entry
 
-  ; ============================================================
-  ; Debug tools
+; ==============================================================
+; Debug tools
 
   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
