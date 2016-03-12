@@ -419,6 +419,74 @@ code bleep
   DD c, E9 c,         \ jp (ix)
   end-code
 
+( within between )
+
+: within  ( n1|u1 n2|u2 n3|u3 -- f )
+  over - >r - r> u<  ;
+
+: between  ( n1|u1 n2|u2 n3|u3 -- flag )
+  over - -rot - u< 0=  ;
+
+( d0= d0< d< du< dmin dmax )
+
+: d0=  ( d -- f )  or 0=  ;
+
+: d0<  ( d -- f )  swap drop 0<  ;
+
+; d<  ( d1 d2 -- f )
+  rot 2dup = if  2drop u< exit  then  2nip >  ;
+
+: du<  ( ud1 ud2 -- f )
+  rot swap 2dup
+  u<  if  2drop 2drop -1 exit  then
+  -   if  2drop 0 exit  then  u<  ;
+
+: dmin  ( d1 d2 -- d1 | d2 )
+  2over 2over d< 0= if  2swap  then  2drop  ;
+
+: dmax  ( d1 d2 -- d1 | d2 )
+  2over 2over d< if  2swap  then  2drop  ;
+
+( lshift )
+
+  \ XXX TODO
+
+  \ [From DZX-Forth.]
+
+code lshift  ( x1 u -- x2 )
+
+  \ pop de
+  \ pop hl
+  \ inc e
+\ lshift_.1:
+  \ dec e
+  \ jp z,push_hl
+  \ add hl,hl
+  \ jp lshift_.1
+
+end-code
+
+( rshift )
+
+  \ XXX TODO
+
+  \ [From DZX-Forth.]
+
+code rshift  ( x1 u -- x2 )
+
+  \ pop de
+  \ pop hl
+  \ inc e
+\ rshift_.1:
+  \ dec e
+  \ jp z,push_hl
+  \ or a
+  \ ld a,h
+  \ call sra_hl.1 ; XXX TODO this is in the kernel
+  \ jp rshift_.1
+
+end-code
+
 ( [if] [else] [then] )
 
   \ 2015-06-04: Copied from Afera

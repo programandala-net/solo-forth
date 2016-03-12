@@ -7,19 +7,9 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506240056
+; Version A-00-201506240228
 
 ; Latest important changes (in chronological order)
-; - new format for the name field, without end bit.
-; - modern `find`, after Forth-83 and ANS Forth
-; - basic string support.
-; - `<mark`, `<resolve`, `>mark` and `>resolve`.
-; - `compare`, `search`.
-; - `count` in Z80.
-; - New versions of `0>`, `<` and `>`.
-; - `parse`.
-; - fix: `id.`.
-; - improvement: `."`.
 ; - `skip`, for the new version of `word`.
 ; - circular string buffer
 
@@ -2148,10 +2138,16 @@ l60c0h:
   _code_header two_r_drop_,'2RDRO','P'
 
   ld hl,(return_stack_pointer)
+if 0 ; XXX OLD
+  ; XXX TODO note in abersoft forth
   inc hl
   inc hl
   inc hl
   inc hl
+else ; XXX NEW faster
+  ld de,cell*2
+  add hl,de
+endif
   ld (return_stack_pointer),hl
   _jp_next
 
@@ -2256,6 +2252,8 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header d_plus_,'D','+'
 
+  ; XXX TODO move to the disk
+
   ld hl,0x0006
   add hl,sp
   ld e,(hl)
@@ -2270,8 +2268,24 @@ true_if_cy:
   pop hl
   adc hl,bc
   pop bc
-  push de
-  jp push_hl
+  jp push_de_hl
+
+if 0 ; XXX TODO study this alternative from fig-Forth 1.1g
+  EXX     ;/ SAVE IP
+  POP BC    ;  (BC)<--d2H
+  POP HL    ;  (HL)<--d2L
+  POP AF    ;d (AF)<--d1H
+  POP DE    ;  (DE)<--d1L
+  PUSH  AF    ;/ (S1)<--d1H
+  ADD HL,DE   ;  (HL)<--d2L+d1L=d3L
+  EX  DE,HL   ;  (DE)<--d3L
+  POP HL    ;  (HL)<--d1H
+  ADC HL,BC   ;/ (HL)<--d1H+d2H+CARRY=d3H
+  PUSH  DE    ;  (S2)<--d3L
+  PUSH  HL    ;/ (S1)<--d3H
+  EXX     ;/ RESTORE IP
+  JNEXT
+endif
 
 ; ----------------------------------------------
   _code_header negate_,'NEGAT','E'
@@ -2284,6 +2298,8 @@ true_if_cy:
 
 ; ----------------------------------------------
   _code_header dnegate_,'DNEGAT','E'
+
+  ; XXX TODO move to the disk
 
   pop hl
   pop de
@@ -2500,6 +2516,8 @@ do_colon:
 
   ; [Copied from the Afera library.]
 
+  ; XXX TODO move to the disk? problem: do_colon
+
   dw question_exec_
   dw current_,fetch_,context_,store_ ; XXX TODO why fig-Forth does this?
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
@@ -2519,9 +2537,15 @@ do_colon:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header noop_,'NOO','P'
 
+if 0 ; XXX OLD
+  _colon_header noop_,'NOO','P'
   dw semicolon_s_
+else ; XXX NEW -- save 2 bytes
+  ; XXX TODO test it
+  _header noop_,'NOO','P'
+  dw next ; code field
+endif
 
 ; ----------------------------------------------
   _colon_header constant_,'CONSTAN','T'
@@ -2802,6 +2826,8 @@ do_user:
 ; ----------------------------------------------
   _code_header two_star_,'2','*'
 
+  ; XXX TODO See comments in lina ciforth documentation.
+
   pop hl
   add hl,hl
   jp push_hl
@@ -2817,7 +2843,9 @@ do_user:
 ; ----------------------------------------------
   _code_header two_slash_,'2','/'
 
-  ; From DZX-Forth.
+  ; [From DZX-Forth.]
+  ; XXX FIXME With negative numbers `2/` is not the same than `2 /`.
+  ; XXX TODO See comments in lina ciforth documentation.
 
   pop hl
   call sra_hl
@@ -3564,7 +3592,7 @@ stream.end:
 ;
 ; ca = address of the parsed string, within the input buffer
 ; len = length of the parsed string
-; 
+;
 ; If the parse area was empty, the resulting string has a zero length.
 ;
 ; }doc
@@ -3588,10 +3616,9 @@ stream.end:
   dw skip_ ; ( ca2 )
   dw dup_,from_r_,minus_,to_in_,plus_store_
   ; XXX TODO factor of `parse`?:
-  dw scan_ ; ( ca3 len )
+  dw scan_ ; ( ca len )
   ; XXX TODO factor of `parse`?:
   dw dup_,one_plus_,to_in_,plus_store_
-  dw two_dup_,uppers_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3600,14 +3627,14 @@ stream.end:
 ; doc{
 ;
 ; word  ( c "<c...>text<c>" -- )  \ fig-Forth
-; 
+;
 ; c = delimiter char
 ;
 ; Skip leading _c_ delimiters from the input stream.  Parse the
 ; next text characters from the input stream, until a delimiter
 ; _c_ is found, storing the packed character string beginning at
 ; `here`, as a counted string (the character count in the first
-; byte), and with two or more blanks at the end. 
+; byte), and with two or more blanks at the end.
 ;
 ; }doc
 
@@ -3630,7 +3657,7 @@ if 1 ; XXX OLD -- original version with `enclose`
   dw cmove_ ; move the word
 
 else ; XXX NEW -- modern version with `skip parse`
-  
+
   ; XXX TMP -- code copied to `xword` for debugging
 
   dw dup_ ; ( c c )
@@ -4467,7 +4494,7 @@ interpret.begin:
 ; echoing the name with a "?" will be given.
 ;
 ; }doc
-; 
+;
 ; Note: The main difference with the fig-Forth version of
 ; `interpret` is this version does not search the `current`
 ; vocabulary.
@@ -5161,16 +5188,26 @@ endif
 ; ----------------------------------------------
   _colon_header begin_,'BEGI','N',immediate
 
-  dw question_comp_
-  dw backward_mark_
-  dw one_
+; doc{
+;
+; begin  ( compilation: -- a n )
+;
+; At compile time `begin` leaves the dictionary address on
+; stack with an error checking number _n_.  It does not compile
+; anything to the dictionary.
+;
+; }doc
+
+  dw question_comp_ ; error if not compiling
+  dw backward_mark_ ; address to compute the backward branch
+  dw one_ ; error checking number
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header then_,'THE','N',immediate
 
-  dw question_comp_
-  dw two_,question_pairs_
+  dw question_comp_ ; error if not compiling
+  dw two_,question_pairs_ ; check for nesting error
   dw forward_resolve_
   dw semicolon_s_
 
@@ -5210,7 +5247,16 @@ endif
 ; ----------------------------------------------
   _colon_header again_,'AGAI','N',immediate
 
-  dw one_,question_pairs_
+; doc{
+;
+; again  ( compilation: a n -- )
+;
+; End of an infinite loop.  Compile an unconditional jump
+; instruction to branch backward to _a_.
+;
+; }doc
+
+  dw one_,question_pairs_ ; check n for error
   dw compile_,branch_
   dw backward_resolve_
   dw semicolon_s_
@@ -5218,16 +5264,20 @@ endif
 ; ----------------------------------------------
   _colon_header repeat_,'REPEA','T',immediate
 
-  ; XXX TODO simplify
-  ; XXX TODO optimize with 2>r and 2r>
-  ; XXX TODO optimize with  `<resolve`
-  dw to_r_
-  dw to_r_
-  dw again_
-  dw from_r_
-  dw from_r_
+; doc{
+;
+; repeat  ( compilation: a1 n1 a2 n2 -- )
+;
+; Compile `branch` to jump back to `begin`.  Resolve also  the
+; branching offset required by `while`.
+;
+; }doc
+
+  dw two_to_r_
+  dw again_ ; unconditional branch back to `begin`
+  dw two_from_r_
   dw two_minus_
-  dw then_
+  dw then_ ; resolve the forward branching needed by `while`
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5691,10 +5741,16 @@ color:
   _code_header j_,'','J'
 
   ld hl,(return_stack_pointer)
+if 0 ; XXX OLD
+  ; XXX TODO note in abersoft forth
   inc hl
   inc hl
   inc hl
   inc hl
+else ; XXX NEW faster
+  ld de,cell*2
+  add hl,de
+endif
   ld e,(hl)
   inc hl
   ld d,(hl)
@@ -5820,7 +5876,11 @@ l8128h:
 ; ----------------------------------------------
   _colon_header char_,'CHA','R'
 
-  dw b_l_,word_,here_,one_plus_,c_fetch_
+  if 0 ; XXX OLD
+    dw b_l_,word_,here_,one_plus_,c_fetch_
+  else
+    dw parse_word_,drop_,c_fetch_
+  endif
   dw semicolon_s_
 
 ; ----------------------------------------------
