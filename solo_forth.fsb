@@ -790,9 +790,30 @@ variable decode-address  \ in the word being decoded
   defined if  cfa>pfa  0 decode-level !  (decode)
           else  drop  5 error  then  ;
 
+( list )
+
+: list  ( n -- )
+
+  \ List screen number _n_.
+
+  dup scr !
+  cr ." Scr # " .
+  l/scr 0 do
+    cr i 2 .r space i scr @ .line
+    ?terminal if  exhaust  then
+  loop cr  ;
+
+( index )
+
+: index  ( n1 n2 -- )
+  1+ swap do
+    cr i 3 .r space 0 i .line
+    ?terminal if  exhaust  then
+  loop  ;
+
 ( words )
 
-  \ From Spectrum Forth-83.
+  \ [Code adapted from Spectrum Forth-83.]
 
 [defined] tab ?\  : tab  ( -- )  6 emit  ;
 
@@ -823,14 +844,6 @@ variable decode-address  \ in the word being decoded
     nfa>string 2over 2swap contains if  r@ id. tab  then
     r> nfa>lfa @n
   repeat drop 2drop  ;
-
-( index )
-
-: index  ( n1 n2 -- )
-  1+ swap do
-    cr i 3 .r space 0 i .line
-    ?terminal if  exhaust  then
-  loop  ;
 
 ( where )
 
@@ -921,6 +934,16 @@ end-code
   \ Turnkey {{{
 
 ( extend size system turnkey )
+
+  \ XXX WARNING -- Since name field addresses are saved in a
+  \ memory bank, the best way to save a modified Forth system
+  \ is to make a snapshot with the ZX Spectrum emulator;
+  \ otherwise a multipart saving and loading would be needed.
+  \ Anyway, these words are meant to save a Forth program, not
+  \ the Forth system.
+  \
+  \ XXX TODO -- Study how to save and load the names bank, even
+  \ the assembled code.
 
 : extend  ( -- )
 
@@ -1244,7 +1267,7 @@ code j'  ( -- x )
   \ }}} =======================================================
   \ Vocabularies {{{
 
-( root also ) \ XXX from F83
+( root ) \ XXX from F83
 
   \ XXX TODO This code from F83 seems simpler to adapt than the
   \ code from the Forth-83 Standard.
@@ -1270,18 +1293,21 @@ vocabulary root  root definitions
   \ XXX FIXME without `rdrop`, everything seems fine except
   \ `forth` crashes the system.
 
+forth
 : x  ( -- ) ( compiling: cfa -- )
-  rdrop branch
-  [ forth 1 pad ! pad find 0= 4 ?error cfa>pfa , root ]
-  ; immediate
+  \ XXX FIXME
+  rdrop
+  \ branch [ 1 pad ! pad find 0= 4 ?error cfa>pfa , ]
+  [ 1 pad ! pad find 0= 4 ?error , ]
+  ; immediate  root
   \ Define an alias of the null word with a temporary name "x".
   \ `rdrop` unnests one level, else the null word would fail.
-  \ `branch` is used to jump to the pfa of the null word,
-  \ therefore withot adding a nesting level.  `pad` is used to
-  \ store the name of the null word to find, as a counted
-  \ string (1-char string with a null char). `forth` has to be
-  \ the `context` vocabulary before the `find`. `root` is
-  \ restored at the end.
+  \ `branch` is used to jump directly to the pfa of the null
+  \ word, therefore without adding a nesting level.  `pad` is
+  \ used to store the name of the null word to find, as a
+  \ counted string (a string with only a null char). `forth`
+  \ has to be the `context` vocabulary before the `find`.
+  \ `root` is restored at the end.
 
   \ XXX TODO `forth` is not needed in `x`, because the kernel
   \ provides `forth` as the second vocabulary in the search
@@ -1291,6 +1317,10 @@ vocabulary root  root definitions
   \ Rename `x` to its actual name: Overwrite the "x" with a
   \ zero.
 
+( also )
+
+root definitions forth
+
 : also  ( -- )
   context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
   \ Duplicate the vocabulary at the top of the search order.
@@ -1298,6 +1328,8 @@ vocabulary root  root definitions
   \ cr .( XXX 2) .s key drop \ XXX INFORMER
 
 ( only seal previous )
+
+root definitions forth
 
 : -order  ( -- )  context [ #vocs cells ] literal erase  ;
   \ Erase the search order.

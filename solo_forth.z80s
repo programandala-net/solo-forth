@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507222045
+; Version A-00-201507230304
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -104,7 +104,7 @@
                            ;      1 = definition not completed
                            ;   LLLLL: name length (0..31).
 ;      ds length           ; name
-; lfa: dw previous_nfa
+; lfa: dw nfa_of_the_previous_word
 ; cfa: dw code_address
 ; pfa:    ...              ; data or code
 
@@ -114,7 +114,7 @@
 ; The name and link fields are created in a memory bank:
 
 ; cfap: dw cfa             ; Pointer to cfa in main memory.
-; lfa: dw previous_nfa
+; lfa: dw nfa_of_the_previous_word
 ; nfa: db length+flags     ; Bits:      76543210
                            ; Bit names: BPSLLLLL
                            ; Legend:
@@ -302,12 +302,6 @@ lines_per_screen:                 equ 0x10
 max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
 bytes_per_user_variables:         equ 0x40
 
-if 0 ; XXX OLD -- fig-Forth header
-  name_bound_bit:       equ 7
-  name_bound_bit_mask:  equ 1 shl name_bound_bit
-else
-  name_bound_bit_mask:  equ 0
-endif
 precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
@@ -475,11 +469,13 @@ bank1_port:        equ 0x7FFD
 ; Header
 
 immediate: equ 1 ; used as optional parameter
-previous_nfa: defl 0 ; link to previous Forth word
+
+nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+; current_vocabulary: defl forth_pfa \ XXX OLD
 
 _header: macro _base_label,_name,_is_immediate
 
-  flags: defl name_bound_bit_mask
+  flags: defl 0
   if not nul _is_immediate
     flags: defl flags | precedence_bit_mask ; add precedence bit
   endif
@@ -498,9 +494,9 @@ _header: macro _base_label,_name,_is_immediate
   _base_label##cfap:
     dw _base_label ; code field address pointer
   _base_label##lfa: ; link field address
-    dw previous_nfa ; link field
+    dw nfa_of_the_previous_word ; link field
   _base_label##nfa: ; name field address
-  flags: defl name_bound_bit_mask ; XXX OLD
+  flags: defl 0
     if not nul _is_immediate
       flags: defl flags | precedence_bit_mask ; add precedence bit
     endif
@@ -515,10 +511,17 @@ _header: macro _base_label,_name,_is_immediate
   dw np ; overwrite names_pointer
   dw np ; overwrite names_pointer_init_value
 
+if 0
+  ; XXX FIXME -- this crashes the system before booting
+  ; Update the current vocabulary:
+  org current_vocabulary ; pfa of the current vocabulary
+  dw _base_label##nfa
+endif
+
   ; In dictionary:
   org _dp_backup
 
-  previous_nfa: defl _base_label##nfa
+  nfa_of_the_previous_word: defl _base_label##nfa
 
   endm
 
@@ -1138,6 +1141,188 @@ next2:
 
 ; ==============================================================
 ; Dictionary
+
+; ----------------------------------------------
+; Start compiling in the `root` vocabulary
+
+nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+; current_vocabulary: defl root_pfa
+
+; ----------------------------------------------
+  _code_header root_x_,0,immediate
+
+; doc{
+
+; x  ( -- )
+
+; This is pseudonym for an alias of the "null" word that is
+; defined in the `forth` vocabulary.
+
+; }doc
+
+  ld hl,x_
+  jp next2
+
+; ----------------------------------------------
+  _colon_header root_forth_,'FORTH'
+
+  dw forth_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header root_definitions_,'DEFINITIONS'
+
+  dw definitions_
+  dw semicolon_s_
+
+nfa_of_top_most_word_in_root_voc: equ root_definitions_nfa
+
+; ----------------------------------------------
+; Start compiling in the `forth` vocabulary
+
+nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+; current_vocabulary: defl forth_pfa
+
+; ----------------------------------------------
+  _colon_header also_,'ALSO'
+
+; doc{
+;
+; also  ( -- )
+;
+; Duplicate the vocabulary at the top of the search order.
+;
+; }doc
+
+; [Code adapted from F83.]
+
+; : also  ( -- )
+;   context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
+
+  dw context_,dup_,cell_plus_
+  dw lit_,(max_search_order-cell)*cell
+  dw cmove_up_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header minus_order_,'-ORDER'
+
+; : -order  ( -- )  context [ #vocs cells ] literal erase  ;
+
+  dw context_,lit_,max_search_order*cell,erase_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header only_,'ONLY'
+
+; doc{
+;
+; only  ( -- )
+;
+; Erase the search order and forces the `root` vocabulary to
+; be the first and second.
+;
+; }doc
+
+; : only  ( -- )  -order root also  ;
+
+  dw minus_order_,root_,also_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header previous_,'PREVIOUS'
+
+; doc{
+;
+; previous  ( -- )
+;
+; Remove the most recently referenced vocabulary from the search
+; order.
+;
+; }doc
+
+; : previous  ( -- )
+;   context dup cell+ swap [ #vocs 2- cells dup ] literal cmove
+;   context literal + off  ;
+
+  dw context_,dup_,cell_plus_,swap_
+  dw lit_,(max_search_order-cell)*cell,cmove_
+  dw context_,lit_,(max_search_order-cell)*cell,plus_,off_
+  dw semicolon_s_
+
+; ----------------------------------------------
+
+if 0 ; fig_vocabulary?
+
+else
+
+if 0 ; fig_does?
+  _does_header root_,'ROOT'
+  dw do_vocabulary
+else
+  _does_header root_,'ROOT',,do_vocabulary
+endif
+
+  dw nfa_of_top_most_word_in_root_voc
+
+endif
+
+root_vocabulary_link:
+  dw 0x0000
+
+; ----------------------------------------------
+
+if 0 ; fig_does?
+  _does_header forth_,'FORTH'
+  dw do_vocabulary
+else
+  _does_header forth_,'FORTH',,do_vocabulary
+endif
+
+if 0 ; fig_vocabulary?
+
+; Dummy header.
+forth_vocabulary_dummy_lfa:
+  dw nfa_of_top_most_word_in_forth_voc ; link field
+forth_vocabulary_dummy_nfa:
+  dw dummy_name_field ; name field
+
+else
+
+  dw nfa_of_top_most_word_in_forth_voc ; nfa of the latest word defined in this vocabulary
+
+endif
+
+forth_vocabulary_link:
+  dw root_vocabulary_link
+
+; ----------------------------------------------
+if 0 ; fig_does?
+  _does_header assembler_,'ASSEMBLER'
+  dw do_vocabulary
+else
+  _does_header assembler_,'ASSEMBLER',,do_vocabulary
+endif
+
+; XXX TODO move `assembler` and everthing related
+; to the library disk?
+
+if 0 ; fig_vocabulary?
+
+  ; Dummy header.
+  assembler_vocabulary_dummy_lfa:
+    dw forth_vocabulary_dummy_nfa ; link field
+  assembler_vocabulary_dummy_nfa:
+    dw dummy_name_field ; name field
+
+else
+
+    dw 0 ; nfa of the latest word defined in this vocabulary
+
+endif
+
+assembler_vocabulary_link:
+  dw forth_vocabulary_link
 
 ; ----------------------------------------------
   _colon_header s_lit_,'SLIT'
@@ -3690,6 +3875,11 @@ do_user:
   dw characters_per_line
 
 ; ----------------------------------------------
+  _constant_header l_slash_scr_,'L/SCR'
+
+  dw lines_per_screen
+
+; ----------------------------------------------
   _constant_header first_,'FIRST'
 
   dw first_buffer
@@ -4575,11 +4765,40 @@ postpone.end:
 ; ----------------------------------------------
   _colon_header paren_semicolon_code_,'(;CODE)'
 
+; doc{
+;
+; (;code)  ( -- )
+;
+; The run-time procedure compiled by `;code`. Rewrite the code
+; field of the most recently defined word to point to the
+; following machine code sequence.
+;
+; }doc
+
+; : (;code)       --
+;   r>        \ Pop the address of the next instruction off the return stack,
+;             \ which is the starting address of the run-time code routine.
+;   latest    \ Get the name field address of the word under construction.
+;   nfa>cfa ! \ Find its code field address and store in it the address of
+;             \ the code routine to be executed at run-time.
+;   ;
+
   dw from_r_,latest_,nfa_to_cfa_,store_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header semicolon_code_,';CODE',immediate
+
+; XXX TODO -- documentation
+; doc{
+;
+; ;code  ( -- )
+;
+; Stop compilation and terminate a new defining word by
+; compiling the run-time routine `(;code)`.  Assemble the
+; assembly mnemonics following.
+;
+; }doc
 
   dw question_csp_
   dw compile_,paren_semicolon_code_
@@ -4650,41 +4869,6 @@ do_does:
   push de
   ; Execute the run-time routine.
   _jp_next
-
-  ; _colon_header vocabulary83_,'VOCABULARY83' ; XXX TMP
-
-  ; dw create_
-  ; ;A dummy header at vocabulary intersection.
-  ; dw current_,fetch_ ; address of the dummy lfa in the `current` vocabulary
-  ; dw lfa_to_nfa_ ; get its correspondent nfa in the dummy header
-  ; dw comma_ ; use it as link field of the dummy header in the new vocabulary
-  ; dw lit_,dummy_name_field,comma_ ; name field
-
-  ; dw here_ ; address of vocabulary link
-  ; ; Fetch the user variable `voc-link` and insert it in the dictionary.
-  ; dw voc_link_,fetch_,comma_
-
-  ; dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-
-  ; ;dw does83_ ; this is the end in defining the vocabulary
-  ; dw paren_semicolon_code_
-; do_vocabulary83:
-  ; call do_does83
-
-  ; ; The next words are to be executed when the vocabulary is invoked.
-  ; dw context_,store_
-  ; dw semicolon_s_
-
-  ; _does_header83 vortaro83_,'VORTARO83',,do_vocabulary83 ; XXX TMP
-
-  ; ; Dummy header.
-  ; vortaro83_vocabulary_dummy_lfa:
-  ;   dw forth_vocabulary_dummy_nfa ; link field
-  ; vortaro83_vocabulary_dummy_nfa:
-  ;   dw dummy_name_field ; name field
-
-; vortaro83_vocabulary_link:
-  ; dw forth_vocabulary_link
 
 endif
 
@@ -4758,23 +4942,6 @@ minus_trailing.begin:
 ; ----------------------------------------------
   _colon_header dot_quote_,'."',immediate
 
-if 0 ; XXX OLD
-
-  dw c_lit_
-  db '"'
-  dw comp_question_ ; compiling?
-  dw zero_branch_,dot_quote.interpreting
-  ; Compiling.
-  dw compile_,paren_dot_quote_
-  dw word_
-  dw here_,c_fetch_,one_plus_,allot_
-  dw semicolon_s_
-dot_quote.interpreting:
-  dw word_,here_,count_,type_
-  dw semicolon_s_
-
-else
-
   dw c_lit_
   db '"'
   dw parse_ ; ( ca len )
@@ -4782,12 +4949,10 @@ else
   dw zero_branch_,dot_quote.interpreting
   ; Compiling.
   dw compile_,paren_dot_quote_,s_comma_
-  dw semicolon_s_
+  dw exit_
 dot_quote.interpreting:
   dw type_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
 if ! fig_null_word?
@@ -5690,61 +5855,6 @@ do_create:
   inc de  ; de=pfa
   push de
   _jp_next
-
-; ----------------------------------------------
-
-if 0 ; fig_does?
-  _does_header forth_,'FORTH'
-  dw do_vocabulary
-else
-  _does_header forth_,'FORTH',,do_vocabulary
-endif
-
-if 0 ; fig_vocabulary?
-
-; Dummy header.
-forth_vocabulary_dummy_lfa:
-  dw nfa_of_top_most_word_in_forth_voc ; link field
-forth_vocabulary_dummy_nfa:
-  dw dummy_name_field ; name field
-
-else
-
-  dw nfa_of_top_most_word_in_forth_voc ; nfa of the latest word defined in this vocabulary
-
-endif
-
-forth_vocabulary_link:
-  dw 0x0000
-
-
-; ----------------------------------------------
-if 0 ; fig_does?
-  _does_header assembler_,'ASSEMBLER'
-  dw do_vocabulary
-else
-  _does_header assembler_,'ASSEMBLER',,do_vocabulary
-endif
-
-; XXX TODO move `assembler` and everthing related
-; to the library disk?
-
-if 0 ; fig_vocabulary?
-
-  ; Dummy header.
-  assembler_vocabulary_dummy_lfa:
-    dw forth_vocabulary_dummy_nfa ; link field
-  assembler_vocabulary_dummy_nfa:
-    dw dummy_name_field ; name field
-
-else
-
-    dw 0 ; nfa of the latest word defined in this vocabulary
-
-endif
-
-assembler_vocabulary_link:
-  dw forth_vocabulary_link
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -7343,14 +7453,16 @@ dot_s.end:
 
 endif
 
+if 0 ; XXX OLD
+
 ; ----------------------------------------------
   _colon_header words_,'WORDS'
 
-  ; XXX TODO move to the disk
+  dw trail_,question_dup_,zero_equals_ ; no word?
+  dw question_exit_ ; if so, exit
   dw c_lit_
   db 0x80
   dw out_,store_
-  dw trail_
 words.begin: ; ( nfa )
   dw out_,fetch_
   dw c_lit_
@@ -7359,48 +7471,15 @@ words.begin: ; ( nfa )
   dw zero_branch_,words.continue
   dw cr_
 words.continue: ; ( nfa )
-;  _echo 'nfa=' ; XXX INFORMER
-;  dw dup_,u_dot_ ; XXX INFORMER
   dw dup_,id_dot_ ; print word
   dw nfa_to_lfa_
-;  _echo 'lfa=' ; XXX INFORMER
-;  dw dup_,u_dot_ ; XXX INFORMER
   dw fetch_n_
-;  _echo 'new nfa=' ; XXX INFORMER
-;  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
   dw dup_,zero_equals_,question_terminal_,or_
   dw zero_branch_,words.begin ; until
   dw drop_
   dw semicolon_s_
 
-; ----------------------------------------------
-  _colon_header list_,'LIST'
-
-
-  ; XXX TODO move to the disk
-  dw cr_
-  dw dup_,scr_,store_
-  dw paren_dot_quote_
-  _string 'Scr # '
-  dw dot_
-  dw c_lit_
-  db lines_per_screen
-  dw zero_
-  dw paren_do_
-list.do:
-  dw cr_
-  dw i_
-  dw c_lit_
-  db 0x02
-  dw dot_r_
-  dw space_,i_,scr_,fetch_,dot_line_
-  dw question_terminal_
-  dw zero_branch_,list.loop
-  dw exhaust_
-list.loop:
-  dw paren_loop_,list.do ; loop
-  dw cr_
-  dw semicolon_s_
+endif
 
 ; ----------------------------------------------
   _code_header page_,'PAGE'

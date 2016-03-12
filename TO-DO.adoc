@@ -155,3 +155,10 @@ New words in the assembler vocabulary:
 `pushhl` :: `jp pushhl`
 `pushde` :: `jp pushde`
 
+.2015-07-23:
+
+Study how to save and load the main code and the name bank apart, in
+two files. This way `turnkey` could be used also to save a modified
+copy of the system, not just Forth programs. Simpler solution: use the
+snapshop option of the +D.
+
