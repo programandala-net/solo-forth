@@ -230,11 +230,9 @@ label pixel-addr  ( -- )  hex
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
-  \ XXX FIXME 2015-06-25: now it always returns 0, why?
-
 require pixel-addr
 
-code point  ( x y -- )
+code point  ( x y -- f )
   E1 c, D1 c, C5 c,       \ pop hl / pop de / push bc
   \ l = y coordinate
   \ e = x coordinate
@@ -254,19 +252,15 @@ code point  ( x y -- )
   26 c, 00 c,  68 07 + c, \ ld h,0 / ld l,a
   C1 c,                   \ pop bc
   C3 c, pushhl ,          \ jp pushhl
+  \ XXX TODO adapt when true=-1
   end-code
 
 ( plot )
 
   \ 2015-06-05: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
-  \ 2105-06-11: Modified to use the whole screen.
-
-  \ XXX FIXME 2015-06-25: now it prints 7 pixels to the right,
-  \ why?
-  \
-  \ XXX 2015-07-04: Note: `point` uses the right coordinates:
-  \ `0 175 plot 7 175 point .` prints "1".
+  \ 2015-06-11: Modified to use the whole screen.
+  \ 2015-07-04: Fix. The address into PLOT-SUB was wrong.
 
 require pixel-addr
 
@@ -276,11 +270,17 @@ code plot  ( x y -- )
   E1 c,               \ pop hl
   C1 c,               \ pop bc
   40 05 + c,          \ ld b,l
+  \ l = y coordinate
+  \ e = x coordinate
+  40 05 + c, 48 03 + c,   \ ld b,l / ld c,e
+  \ b = y coordinate
+  \ c = x coordinate
+
   ED c, 43 c, 5C7D ,   \ ld (0x5C7D),bc ; update COORDS
   CD c, pixel-addr ,  \ call pixel-addr
   \ hl = screen address
   \ a = pixel position in hl (0..7)
-  CD c, 22EB ,        \ call 0x22EB ; plot-sub + 6
+  CD c, 22EC ,        \ call 0x22EB ; plot-sub + 7
   D9 c,               \ exx
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   DD c, E9 c,         \ jp (ix)
@@ -321,25 +321,11 @@ code plot  ( x y -- )
 
 code attr ( line col -- )
 
-  \ Version of Abersoft Forth
-
-  \ pop hl
-  \ pop de
-  \ push bc
-  \ push ix
-  \ ld c,e
-  \ ld b,l
-  \ call rom_s_attr_s_0x2583
-  \ call rom_find_int1
-  \ ld h,0x00
-  \ ld l,a
-  \ pop ix
-  \ pop bc
-
   \ Improved version of the ROM routine at 0x2583
 
-  E1 c, \ pop hl ; l = col
-  D1 c, \ pop de ; e = line
+  \ pop hl ; l = col
+  \ pop de ; e = line
+  E1 c,  D1 c, 
   50 05 + c, \ ld d,l ; d = col
 
   78 02 + c, \ ld a,d  ; line to a 0x00..0x17   (max 00010111)
@@ -350,18 +336,17 @@ code attr ( line col -- )
   A8 02 + c, \ xor d ; combine with column 0x00..0x1F
   68 07 + c, \ ld l,a ; low byte now correct.
 
-  -->
-
-( attr )
-
   78 02 + c, \ ld a,d ; bring back intermediate result from d
-  E6 c, 03 c, \ and 0x03 ; mask to give correct third of screen
-  EE c, 58 c, \ xor 0x58 ; combine with base address.
-  60 07 + c, \ ld h,a ; high byte correct.
-  6E c, \ ld l,(hl) ; pick up the colour attribute.
-  26 c, 00 c, \ ld h,0
 
-  C3 c, pushhl , \ jp pushhl
+  \ and 0x03 ; mask to give correct third of screen
+  \ xor 0x58 ; combine with base address.
+  E6 c, 03 c,  EE c, 58 c,
+  60 07 + c, \ ld h,a ; high byte correct.
+
+  \ ld l,(hl) ; pick up the colour attribute.
+  \ ld h,0
+  \ jp pushhl
+  6E c,  26 c, 00 c,  C3 c, pushhl ,
 
   end-code
 

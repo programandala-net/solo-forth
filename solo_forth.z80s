@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507041843
+; Version A-00-201507042216
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -41,6 +41,7 @@
 ; - `defer` and `rnd` in the library.
 ; - first changes to implement multiple `while` in `begin`.
 ; - first changes to implement multiple `sm/rem` and `fm/mod`.
+; - fix: `plot`.
 
 ; ==============================================================
 ; Acknowledgments
@@ -1575,14 +1576,17 @@ endif
 
   pop hl ; initial value
   pop de ; limit
-  push hl ; initial value
+paren_do83.de_hl
+  ; de = limit
+  ; hl = initial value
+  push hl ; initial value  ( initial ) 
   ld hl,(return_stack_pointer)
   dec hl
   ld (hl),d
   dec hl
-  ld (hl),e ; push limit value on return stack
+  ld (hl),e ; push limit value on return stack ( R: initial )
   inc bc
-  inc bc ; increment the instruction pointer, skip branch address
+  inc bc ; increment the Forth IP, skip branch address
   dec hl
   ld (hl),b
   dec hl
@@ -1610,12 +1614,11 @@ endif
   sbc hl,de ; compare
   jr z,question_do.equals
   ; not equals
+  ; XXX TODO move add after sbc and save one jump
   add hl,de ; reverse the subtraction
-  push de ; limit
-  push hl ; inital value
-  jr paren_do_pfa ; perform regular `do`
-  question_do.equals:
-  jp branch_pfa ; XXX TODO
+  jp paren_do83.de_hl ; perform regular `do`
+question_do.equals:
+  jp branch_pfa ; XXX TODO ?
 
   _colon_header question_do83_,'?DO83',immediate
 
