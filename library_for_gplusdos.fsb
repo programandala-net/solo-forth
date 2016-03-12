@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512150315
+\ Last modified: 201512160307
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,23 +33,6 @@
 
 ( ) \ scr 1 -- testing load block
 
-  \ XXX FIXME
-
-2 load need [if]
-
-0 [if]
-
-code zx1  jpnext  end-code
-: hola1 ." hola" ;
-
-[then]
-
-1 [if]
-
-code zx2  jpnext  end-code
-: hola2 ." hola" ;
-
-[then]
 
   \ }}} =======================================================
   \ Need {{{
@@ -386,8 +369,6 @@ s" Standard error codes" locate msg-scr !
   \ : source  ( -- a len )  \ Forth-94
   \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
-need /string
-
 : parse-line  ( "text<eol>" -- ca len )
   source span @ min c/l min  >in @ span @ min /string
   dup >in +! save-string  ;
@@ -593,6 +574,35 @@ need roll
   \   >r swap !  r> swap !  ;
   \
   \   ( 1 2 3 4 5 )  $25 xyswap  ( 4 2 3 1 5 )
+
+( nup drup dip )
+
+code nup  ( x1 x2 -- x1 x1 x2 )
+  E1 c,  D1 c,  D5 c,  C3 c, pushhlde ,
+    \ pop hl
+    \ pop de
+    \ push de
+    \ jp pushhlde
+  end-code
+  \ Also called `under`.
+
+code drup  ( x1 x2 -- x1 x1 )
+  D1 c,  E1 c,  E5 c,  E5 c,  jpnext
+    \ pop de
+    \ pop hl
+    \ push hl
+    \ push hl
+    \ jp next
+  end-code
+
+code dip  ( x1 x2 -- x2 x2 )
+  E1 c, D1 c, E5 c, E5 c,  jpnext
+    \ pop hl
+    \ pop de
+    \ push hl
+    \ push hl
+    \ jp next
+  end-code
 
   \ }}} =======================================================
   \ Return stack {{{

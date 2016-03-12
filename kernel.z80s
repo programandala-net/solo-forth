@@ -14,11 +14,11 @@
 
   ; Version numbers are a ISO date format "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151215
+  ; Version:        20151216
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7BAF
+version_low_part:   equ 0x7BB0
 
-  ; Last modified:  201512150410
+  ; Last modified:  201512160323
 
 ; ==============================================================
 ; Author and license
@@ -226,7 +226,7 @@ size_optimization: equ false
   ; XXX UNDER DEVELOPMENT
   ; XXX NEW -- experimental, 2015-12-15
   ; XXX FIXME -- bugs
-new_source: equ false
+new_source: equ true
   ; true = new, modern method to manage the input sources
   ; false = classic method, only with `tib`, `blk`, etc.
 
@@ -5562,7 +5562,37 @@ endif
 ; ----------------------------------------------
   _colon_header source_,'SOURCE'
 
-if new_source
+;if new_source
+
+
+  ; XXX NEW -- experimental, 2015-12-16
+
+; doc{
+;
+; source  ( -- ca len )
+;
+; ----
+; : source  ( -- ca len )
+;   blk @ ?dup if  block b/buf exit  then
+;   input-buffer 2@  ;
+; ----
+;
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
+  dw blk_,fetch_,question_dup_
+  dw zero_branch_,source.other
+  ; disk block
+  dw block_,b_slash_buf_,exit_
+source.other:
+  dw input_buffer_,two_fetch_
+  dw exit_
+
+;endif
+
+
+if 0 ; XXX OLD
 
   ; XXX NEW -- experimental, 2015-12-15
 
@@ -5579,10 +5609,14 @@ if new_source
 ;
 ; }doc
 
+  ; XXX OLD buggy, because the content of the disk buffer could have change
+
   dw input_buffer_,two_fetch_
   dw exit_
 
-else  ; XXX OLD
+endif
+
+if 0 ; XXX OLD
 
 ; doc{
 ;
@@ -7116,9 +7150,9 @@ refill.end:
 ;
 ;   : refill  ( f )
 ;     source-id true = if  0 exit  then
-;		  memtop [ size-of-pad chars ] literal - dup
-;		  size-of-pad accept sourcevar 2!
-;		  >in off  true  ;
+;     memtop [ size-of-pad chars ] literal - dup
+;     size-of-pad accept sourcevar 2!
+;     >in off  true  ;
 
 ; ----------------------------------------------
   _code_header fill_,'FILL'
@@ -7235,7 +7269,7 @@ fill.done:
 ; }doc
 
   dw source_,to_in_,fetch_,slash_string_
-  ; dw two_dup_,cr_,type_  ; XXX INFORMER
+;  _brk 'stream' ; XXX INFORMER
   dw exit_
 
 ; ----------------------------------------------
@@ -8194,17 +8228,17 @@ endif
 ;
 ; set-source  ( ca len -- )
 ;
+; Make the string _ca len_ the current input buffer by settting
+; `input-buffer` to point to it and setting `>in` to zero.
+;
+; ----
+; : set-source  ( ca len -- )
+;   input-buffer 2!  >in off  ;
+; ----
+;
 ; }doc
 
-  ; XXX TODO make the string the current input buffer, how?
-  ;
-  ; - make `tib` configurable?
-  ;
-  ; - create a generic `input-buffer` variable, returned by
-  ; `source`?
-
-  dw input_buffer_
-  dw two_store_
+  dw input_buffer_,two_store_
   dw to_in_,off_
   dw exit_
 
@@ -8223,10 +8257,11 @@ endif
 ; specification.
 ;
 ; Standard: Forth-94 (CORE), Forth-2012 (CORE).
-;
+; 
+; ----
+; : evaluate  ( i*x ca len -- j*x )
+;   nest-source string>source interpret unnest-source  ;
 ; }doc
-
-  ; XXX UNDER DEVELOPMENT
 
   dw nest_source_ 
   dw string_to_source_
@@ -10011,8 +10046,14 @@ endif
 
 ; doc{
 ;
-; string-source  ( ca len -- )
+; string>source  ( ca len -- )
 ;
+; ----
+; : string>source  ( ca len -- )
+;   blk off
+;   XXX TODO -- source_id_value is not in Forth
+;   set-source  ;
+; ----
 ; }doc
 
   ; XXX NEW -- experimental, 2015-12-15
@@ -10028,7 +10069,15 @@ endif
 
 ; doc{
 ;
-; terminal-source  ( -- )
+; terminal>source  ( -- )
+;
+; ----
+; : terminal>source  ( -- )
+;   blk off
+;   XXX TODO source_id_value is not in Forth
+;   off
+;   tib #tib @ set-source  ;
+; ----
 ;
 ; }doc
 
@@ -10037,7 +10086,7 @@ endif
   dw blk_,off_
   _literal source_id_value
   dw off_
-  dw tib_,number_tib_,set_source_
+  dw tib_,number_tib_,fetch_,set_source_
   dw exit_
 
 ; ----------------------------------------------
@@ -10045,15 +10094,31 @@ endif
 
 ; doc{
 ;
-; block-source  ( +n -- )
+; block>source  ( +n -- )
+; 
+; ----
+; : block>source  ( +n -- )
+;   blk !  >in off  ;
+; ----
 ;
 ; }doc
+
+if 0 ; XXX OLD
 
   ; XXX NEW -- experimental, 2015-12-15
 
   dw dup_,blk_,store_
-  dw block_,set_source_
+  dw block_,b_slash_buf_,set_source_
   dw exit_
+
+else
+
+  ; XXX NEW -- experimental, 2015-12-16
+
+  dw blk_,store_,to_in_,off_
+  dw exit_
+
+endif 
 
 ; ----------------------------------------------
   _colon_header paren_load_,'(LOAD)'
@@ -10072,6 +10137,11 @@ endif
 ; This word is a common factor of `load` and `continued`.
 ;
 ; ----
+; : (load)  ( u -- )
+;   block>source interpret  ;
+; ----
+
+; ---- XXX OLD
 ; : (load)  ( u -- )
 ;   blk !  >in off  interpret  ;
 ; ----
@@ -10094,7 +10164,7 @@ endif
 ;
 ; load  ( u -- )
 ;
-; XXX TODO update
+; XXX TODO update the description
 ;
 ; Save the current input-source specification. Store the first
 ; disk block of screen _u_ in `blk` (thus making screen _u_ the
@@ -10140,6 +10210,34 @@ endif
 ; ----------------------------------------------
   _colon_header next_screen_,'-->',immediate
 
+  ; XXX TODO -- In Gforth the definition is `refill drop`
+
+if new_source
+
+; doc{
+;
+; -->  ( -- )  \ "next-screen"
+;
+; Continue interpretation with the next disk screen.
+;
+; Standard: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Controlled Reference Words).
+;
+; ----
+; : -->  ( -- )
+;   ?loading  blk @ 1+ block>source  ; immediate
+; ----
+;
+; }doc
+
+  dw question_loading_
+  dw blk_,fetch_,one_plus_
+  dw block_to_source_
+  dw exit_
+
+else
+
+
 ; doc{
 ;
 ; -->  ( -- )  \ "next-screen"
@@ -10156,13 +10254,13 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- In Gforth the definition is `refill drop`
-
   dw question_loading_
   dw to_in_,off_
   _literal 1
   dw blk_,plus_store_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header defined_,'DEFINED'
