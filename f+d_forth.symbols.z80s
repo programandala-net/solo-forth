@@ -139,9 +139,6 @@ branch_destination_0x6AB9 EQU 07159H
 branch_destination_0x6AE3 EQU 071C2H
 branch_destination_0x6B0B EQU 071EAH
 branch_destination_0x6B2A EQU 07209H
-branch_destination_0x6B95 EQU 07270H
-branch_destination_0x6C03 EQU 072F9H
-branch_destination_0x6C20 EQU 07316H
 branch_destination_0x6C5D EQU 0734EH
 branch_destination_0x6C75 EQU 07366H
 branch_destination_0x6C79 EQU 0736AH
@@ -220,7 +217,7 @@ c_lit_		EQU 0637AH
 c_lit_lfa	EQU 06378H
 c_lit_nfa	EQU 06373H
 c_lit_pfa	EQU 0637CH
-c_literal.exit	EQU 072DDH
+c_literal.end	EQU 072DDH
 c_literal_	EQU 072CDH
 c_literal_lfa	EQU 072CBH
 c_literal_nfa	EQU 072C2H
@@ -296,6 +293,7 @@ cr_		EQU 06622H
 cr_lfa		EQU 06620H
 cr_nfa		EQU 0661DH
 cr_pfa		EQU 06624H
+create.continue	EQU 07270H
 create_		EQU 0725BH
 create_lfa	EQU 07259H
 create_nfa	EQU 07252H
@@ -710,6 +708,7 @@ lit_		EQU 0638AH
 lit_lfa		EQU 06388H
 lit_nfa		EQU 06384H
 lit_pfa		EQU 0638CH
+literal.end	EQU 072F9H
 literal_	EQU 072E9H
 literal_lfa	EQU 072E7H
 literal_nfa	EQU 072DFH
@@ -1241,6 +1240,7 @@ two_fetch_lfa	EQU 0691CH
 two_fetch_nfa	EQU 06919H
 two_fetch_pfa	EQU 06920H
 two_lfa		EQU 06A03H
+two_literal.end	EQU 07316H
 two_literal_	EQU 07306H
 two_literal_lfa	EQU 07304H
 two_literal_nfa	EQU 072FBH

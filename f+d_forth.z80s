@@ -1907,10 +1907,20 @@ hld_:
 hld_pfa:
   db 0x30
 
+recurse_nfa:
+  db 0x07+0x80+precedence_bit_mask,'RECURS','E'+0x80
+recurse_lfa:
+  dw hld_nfa
+recurse_:
+  dw do_colon
+recurse_pfa:
+  dw latest_,pfa_,cfa_,comma_
+  dw semicolon_s_
+
 one_plus_nfa:
   db 0x02+0x80,'1','+'+0x80
 one_plus_lfa:
-  dw hld_nfa
+  dw recurse_nfa
 one_plus_:
   dw one_plus_pfa
 one_plus_pfa:
@@ -2109,9 +2119,24 @@ greater_than_pfa:
   dw less_than_
   dw semicolon_s_
 
+; XXX TMP -- written in the blocks disk instead
+; minus_rot_nfa:
+;   db 0x04+0x80,'-RO','T'+0x80
+; minus_rot_lfa:
+;   dw greater_than_nfa
+; minus_rot_:
+;   dw minus_rot_pfa
+; minus_rot_pfa:
+;   pop hl
+;   pop de
+;   ex (sp),hl
+;   ex de,hl
+;   jp pushde
+
 rot_nfa:
   db 0x03+0x80,'RO','T'+0x80
 rot_lfa:
+  ; dw minus_rot_nfa ; XXX TMP
   dw greater_than_nfa
 rot_:
   dw rot_pfa
@@ -2154,16 +2179,12 @@ traverse_:
 traverse_pfa:
   dw swap_
 traverse.begin:
-  dw over_
-  dw plus_
+  dw over_,plus_
   dw c_lit_
   db 0x7F
-  dw over_
-  dw c_fetch_
-  dw less_than_
+  dw over_,c_fetch_,less_than_
   dw zero_branch_,traverse.begin ; until
-  dw swap_
-  dw drop_
+  dw swap_,drop_
   dw semicolon_s_
 
 latest_nfa:
@@ -2872,8 +2893,8 @@ branch_destination_0x6A89:
   dw c_fetch_
   dw c_lit_
   db 0x2E
-  dw minus_
-  dw zero_
+  dw minus_ ; XXX TODO not_equals_
+  dw one_
   dw question_error_
   dw zero_
   dw branch_,branch_destination_0x6A89
@@ -2934,20 +2955,18 @@ minus_find_lfa:
 minus_find_:
   dw do_colon
 minus_find_pfa:
-  dw b_l_
-  dw word_
-  dw here_,count_,uppers_
-  dw here_
+  dw b_l_,word_
+  dw here_,count_,uppers_,here_
   dw context_,fetch_,fetch_
   dw paren_find_
-  dw dup_
-  dw zero_equals_
-  dw zero_branch_,branch_destination_0x6AE3
+  dw dup_,zero_equals_ ; found?
+  dw zero_branch_minus_find.end,
+  ; The word was not found in the context vocabulary,
+  ; try again in the current vocabulary.
+  ; XXX TODO -- remove this?
   dw drop_
-  dw here_
-  dw latest_
-  dw paren_find_
-branch_destination_0x6AE3:
+  dw here_,latest_,paren_find_
+minus_find.end:
   dw semicolon_s_
 
 paren_abort_nfa:
@@ -3033,39 +3052,27 @@ create_:
   dw do_colon
 create_pfa:
   dw minus_find_
-  dw zero_branch_,branch_destination_0x6B95
-  dw drop_
-  dw nfa_
-  dw id_dot_
+  dw zero_branch_,create.continue
+  ; The word is not unique.
+  dw drop_,nfa_,id_dot_
   dw c_lit_
   db 0x04
-  dw message_
-  dw space_
-branch_destination_0x6B95:
+  dw message_,space_
+create.continue:
   dw here_
-  dw dup_
-  dw c_fetch_
-  dw width_,fetch_
-  dw min_
-  dw one_plus_
-  dw allot_
+  dw dup_,c_fetch_,width_,fetch_,min_
+  dw one_plus_,allot_
   dw dup_
   dw c_lit_
   db 0xA0
   dw toggle_
-  dw here_
-  dw one_
-  dw minus_
+  dw here_,one_,minus_
   dw c_lit_
   db 0x80
   dw toggle_
-  dw latest_
-  dw comma_
-  dw current_,fetch_
-  dw store_
-  dw here_
-  dw two_plus_
-  dw comma_
+  dw latest_,comma_
+  dw current_,fetch_,store_
+  dw here_,two_plus_,comma_
   dw semicolon_s_
 
 bracket_compile_nfa:
@@ -3076,7 +3083,7 @@ bracket_compile_:
   dw do_colon
 bracket_compile_pfa:
   dw minus_find_,zero_equals_
-  dw zero_,question_error_
+  dw one_,question_error_
   dw drop_,cfa_,comma_
   dw semicolon_s_
 
@@ -3088,19 +3095,14 @@ c_literal_:
   dw do_colon
 c_literal_pfa:
   if 1 ; XXX OLD 
-    dw state_
-    dw fetch_
-    dw zero_branch_,c_literal.exit
-    dw compile_
-    dw c_lit_
-    dw comma_
-c_literal.exit:
+    dw state_,fetch_
+    dw zero_branch_,c_literal.end
+    dw compile_,c_lit_,comma_
+c_literal.end:
   else ; XXX NEW
     ; XXX FIXME -- `interpret` needs the old method of `literal`
     dw question_comp_
-    dw compile_
-    dw c_lit_
-    dw comma_
+    dw compile_,c_lit_,comma_
   endif
   dw semicolon_s_
 
@@ -3112,19 +3114,14 @@ literal_:
   dw do_colon
 literal_pfa:
   if 1 ; XXX OLD 
-    dw state_
-    dw fetch_
-    dw zero_branch_,branch_destination_0x6C03
-    dw compile_
-    dw lit_
-    dw comma_
-branch_destination_0x6C03:
+    dw state_,fetch_
+    dw zero_branch_,literal.end
+    dw compile_,lit_,comma_
+literal.end:
   else ; XXX NEW
     ; XXX FIXME -- `interpret` needs the old method of `literal`
     dw question_comp_
-    dw compile_
-    dw lit_
-    dw comma_
+    dw compile_,lit_,comma_
   endif
   dw semicolon_s_
 
@@ -3136,20 +3133,15 @@ two_literal_:
   dw do_colon
 two_literal_pfa:
   if 1 ; XXX OLD 
-    dw state_
-    dw fetch_
-    dw zero_branch_,branch_destination_0x6C20
-    dw swap_
-    dw literal_
-    dw literal_
-branch_destination_0x6C20:
+    dw state_,fetch_
+    dw zero_branch_,two_literal.end
+    dw swap_,literal_,literal_
+two_literal.end:
   else ; XXX NEW
     ; XXX TODO -- dlit
     ; XXX FIXME -- `interpret` needs the old method of `literal`
     dw question_comp_
-    dw swap_
-    dw literal_
-    dw literal_
+    dw swap_,literal_,literal_
   endif
   dw semicolon_s_
 
@@ -3162,16 +3154,15 @@ question_stack_:
 question_stack_pfa:
   dw sp_fetch_
   dw s0_,fetch_
-  dw swap_
-  dw u_less_than_
-  dw one_,question_error_
+  dw swap_,less_than_
+  dw two_,question_error_
   dw sp_fetch_
   dw lit_,data_stack_limit
 
   ; XXX INFORMER
   ;dw two_dup_,two_swap_,u_dot_,u_dot_,cr_
 
-  dw u_less_than_
+  dw less_than_
 
   ; XXX FIXME why the overflow is not detected?
   ; XXX INFORMER
@@ -4020,9 +4011,7 @@ tick_:
   dw do_colon
 tick_pfa:
   dw minus_find_
-  dw zero_equals_
-  dw zero_
-  dw question_error_
+  dw zero_equals_,one_,question_error_
   dw drop_
   dw semicolon_s_
 

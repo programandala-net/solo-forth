@@ -32,14 +32,63 @@
   2dup undefined? if  etype 24 message exit  then 2drop  ;
 : require  ( "name" -- )  bl word required  ;
 
-( Errors ) \ scr 4
+( Errors 1..15 ) \ scr 4
 
-( Errors )  \ scr 5
+\ Error #01: Word not found.
+\ Error #02: Stack empty.
+  \ #03 not used:
+\ Error #03: Dictionary full.
+\ Error #04: Is not unique.
+\ Error #05:
+  \ #06 not used:
+\ Error #06: Out of disk range
+\ Error #07: Full stack.
+\ Error #08:
+\ Error #09: Trying to load from screen 0.
+\ Error #10:
+\ Error #11:
+\ Error #12:
+\ Error #13:
+\ Error #14:
+\ Error #15:
+
+( Errors 17..31 )  \ scr 5
+
+\ Error #17: Compilation only, use in a definition.
+\ Error #18: Execution only.
+\ Error #19: Conditionals not paired.
+\ Error #20: Definition not finished.
+\ Error #21: In protected dictionary.
+\ Error #22: Use only when loading.
+\ Error #23: Off current editing screen.
+\ Error #24: Declare vocabulary.
+\ Error #25:
+\ Error #26:
+\ Error #27:
+\ Error #28:
+\ Error #29:
+\ Error #30:
+\ Error #31:
+
+( -rot )
+
+  \ 2015-06-05: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html).
+
+create -rot  ( x1 x2 x3 -- x3 x1 x2 )
+
+  hex
+  e1 c, d1 c,     \ pop hl / pop de
+  e3 c,           \ ex (sp),hl
+  eb c,           \ ex de,hl
+  c3 c, pushde ,  \ jp pushde
+
+  smudge decimal
 
 ( point )
 
   \ 2015-06-04: Copied from the Afera library
-  \ (http://programandala.net/en.program.afera.html)
+  \ (http://programandala.net/en.program.afera.html).
 
 create point  ( x y -- )
   hex
@@ -67,7 +116,7 @@ create point  ( x y -- )
 ( plot )
 
   \ 2015-06-05: Copied from the Afera library
-  \ (http://programandala.net/en.program.afera.html)
+  \ (http://programandala.net/en.program.afera.html).
 
 create plot  ( x y -- )
 
@@ -102,7 +151,7 @@ create bleep
 ( [if] [else] [then] )
 
   \ 2015-06-04: Copied from the Afera library
-  \ (http://programandala.net/en.program.afera.html)
+  \ (http://programandala.net/en.program.afera.html).
 
   require s=  require parse-name  require s"
 
@@ -122,39 +171,39 @@ create bleep
 
 : [then]  ( -- )  ; immediate
 
-( BS H. STYPE )
+( bs h. stype )
 
-: BS  ( -- )  8 EMIT  ;
+: bs  ( -- )  8 emit  ;
 
-: H.  ( n -- )
+: h.  ( n -- )
   \ Print n in hexadecimal with four digits.
-  BASE @ HEX SWAP S->D <# # # # # #> TYPE SPACE BASE !  ;
+  base @ hex swap s>d <# # # # # #> type space base !  ;
 
-HEX
+hex
 
-: STYPE  ( ca len -- )
-  0 2DUP - IF
-    DO
-      DUP C@ 7F AND DUP BL < IF  DROP [CHAR] .  THEN  EMIT 1+
-    LOOP
-  ELSE  2DROP  THEN  DROP  ;
+: stype  ( ca len -- )
+  0 2dup - if
+    do
+      dup c@ 7f and dup bl < if  drop [char] .  then  emit 1+
+    loop
+  else  2drop  then  drop  ;
 
-DECIMAL  -->
+decimal  -->
 
-( DUMP )
+( dump )
 
-: DUMP  ( a len -- )
-  7 + -8 AND 8 / 0
-  2DUP - IF
-    DO
-      CR DUP H.
-      8 0 DO
-        I OVER + @ CSWAP H.
-      2 +LOOP
-      DUP BS 8 STYPE
-      ?TERMINAL IF  LEAVE  THEN
-    8 + LOOP
-  ELSE  2DROP  THEN  DROP  ;
+: dump  ( a len -- )
+  7 + -8 and 8 / 0
+  2dup - if
+    do
+      cr dup h.
+      8 0 do
+        i over + @ cswap h.
+      2 +loop
+      dup bs 8 stype
+      ?terminal if  leave  then
+    8 + loop
+  else  2drop  then  drop  ;
 
   \ XXX TMP -- a new syntax file will be needed:
   \ vim: filetype=abersoftforthafera

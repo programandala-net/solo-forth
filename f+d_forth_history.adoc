@@ -91,3 +91,11 @@ New: `rdrop`, in Z80 (`exit` is pointed to it); `2rdrop` and `unloop`.
 
 Removed: `plot` (faster version, from Afera, added to the blocks
 disk); `draw` (faster version will be create).
+
+Improvement: Error messages are included in screens 4 and 5 of the
+blocks disk.  In order to avoid numbers 0 and 16 (that coincide with
+the first lines of screens 4 and 5, and are incompatible with the fsb
+format), some error messages are reorganized (and updated in the main
+source).
+
+New: `-rot` in the blocks disk.
