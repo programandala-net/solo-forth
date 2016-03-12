@@ -35,9 +35,9 @@ VPATH = ./
 
 MAKEFLAGS = --no-print-directory
 
-disk_source_file = solo_forth.fsb
+disk_source_file = library.fsb
 #kernel_source_file = solo_forth.z80s.201506290300.z80s
-#disk_source_file = solo_forth.fsb.201506290224.fsb
+#disk_source_file = library.fsb.201506290224.fsb
 
 origin = 0x5E00
 
@@ -49,10 +49,14 @@ origin = 0x5E00
 # Main
 
 .PHONY: all
-all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt symbols
+all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
 
-.PHONY: symbols
-symbols: solo_forth.symbols.txt
+# XXX OLD -- all included simbols
+#	symbols
+
+# XXX OLD
+#.PHONY: symbols
+#symbols: solo_forth.symbols.txt
 
 .PHONY : clean
 clean:
@@ -74,15 +78,15 @@ include Makefile.pasmo
 ################################################################
 # The basic loader
 
-# solo_forth.bas.tap: solo_forth.bas
+# loader.bas.tap: loader.bas
 # 	bas2tap -q -n -sAutoload -a1 \
-# 		solo_forth.bas  \
-# 		solo_forth.bas.tap
+# 		loader.bas  \
+# 		loader.bas.tap
 
-solo_forth.bas.tap: solo_forth.bas
+loader.bas.tap: loader.bas
 	zmakebas -n Autoload -a 1 \
-		-o solo_forth.bas.tap \
-		solo_forth.bas
+		-o loader.bas.tap \
+		loader.bas
 
 ################################################################
 # The charset
@@ -108,12 +112,12 @@ sys/4x8fd.tap: _draft/4x8_font_driver/4x8fd.z80s
 
 solo_forth_disk_1.mgt: \
 		sys/4x8fd.tap \
-		solo_forth.bas.tap \
-		solo_forth.bin.tap
+		loader.bas.tap \
+		kernel.bin.tap
 	mkmgt  solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
-		solo_forth.bas.tap \
-		solo_forth.bin.tap \
+		loader.bas.tap \
+		kernel.bin.tap \
 		sys/ea5aky-font42.tap \
 		sys/4x8fd.tap \
 		sys/print-42-bin.tap \
@@ -138,21 +142,19 @@ solo_forth_disk_2.mgt: $(disk_source_file)
 .PHONY: backup
 backup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
-		Makefile* \
-		*.adoc \
-		_old/* \
-		_ideas/* \
 		_draft/* \
+		_ideas/* \
+		_old/* \
 		_tests/* \
 		inc/* \
-		*.fs \
+		Makefile* \
+		*.adoc \
+		*.bas \
+		*.fsb \
+		*.mgt \
 		*.sh \
-		solo_forth*.fsb \
-		solo_forth*.bas \
-		solo_forth*.ld \
-		solo_forth*.txt \
-		solo_forth*.mgt \
-		solo_forth*.z80s
+		*.txt \
+		*.z80s
 
 ################################################################
 # Change history

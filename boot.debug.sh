@@ -1,5 +1,7 @@
 #/bin/sh
 
+# boot.debug.sh
+
 # 2015-08-16
 
 # Launch fuse with the following breakpoints:

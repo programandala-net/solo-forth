@@ -14,7 +14,7 @@
 ################################################################
 # Config
 
-kernel_source_file = solo_forth.for_pasmo.z80s
+kernel_source_file = kernel.z80s
 pasmo=/usr/local/bin/pasmo.054beta2
 #pasmo=/usr/local/bin/pasmo.053
 
@@ -28,18 +28,19 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # choose the filename used in the TAP file header; it uses the name of the
 # target file.
 
-solo_forth.bin.tap: $(kernel_source_file)
+kernel.bin.tap: $(kernel_source_file)
 	$(pasmo) -v --tap \
 		$(kernel_source_file) \
 		forth.bin \
-		solo_forth.symbols.pasmo.z80s
-	mv forth.bin solo_forth.bin.tap
+		kernel.symbols.z80s
+	mv forth.bin kernel.bin.tap
 
 # > solo_forth.assembly_debug_info.txt ; \
 
-solo_forth.symbols.txt: solo_forth.bin.tap
-	echo "; vim: ft=z80" >> solo_forth.symbols.pasmo.z80s
-	ln -sf solo_forth.symbols.pasmo.z80s solo_forth.symbols.txt
+# XXX OLD
+#solo_forth.symbols.txt: kernel.bin.tap
+#	echo "; vim: ft=z80" >> kernel.symbols.z80s
+#	ln -sf kernel.symbols.z80s solo_forth.symbols.txt
 
 ################################################################
 # Change history

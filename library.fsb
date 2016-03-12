@@ -116,27 +116,27 @@ variable last-locatable  scr/disk 1- last-locatable !
 : need  ( "name" -- )  parse-name save-string needed  ;
 
   \ }}} =======================================================
-  \ Error messages {{{
+  \ Error codes {{{
 
-( Error messages -01..-15 )  \ scr 4
+( Standard error codes -01..-15 )  \ scr 4
 
 \ #-01 ABORT
 \ #-02 ABORT"
-\ #-03 stack overflow [XXX ex 07]
-\ #-04 stack underflow [XXX ex 02]
+\ #-03 stack overflow
+\ #-04 stack underflow
 \ #-05 return stack overflow
 \ #-06 return stack underflow
 \ #-07 do-loops nested too deeply during execution
-\ #-08 dictionary overflow [XXX ex 03]
+\ #-08 dictionary overflow
 \ #-09 invalid memory address
 \ #-10 division by zero
 \ #-11 result out of range
 \ #-12 argument type mismatch
-\ #-13 undefined word [XXX ex 05]
-\ #-14 interpreting a compile-only word [XXX ex 17]
+\ #-13 undefined word
+\ #-14 interpreting a compile-only word
 \ #-15 invalid FORGET
 
-( Error messages -16..-30 )
+( Standard error codes -16..-30 )
 
 \ #-16 attempt to use zero-length string as a name
 \ #-17 pictured numeric output string overflow
@@ -144,7 +144,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-19 definition name too long
 \ #-20 write to a read-only location
 \ #-21 unsupported operation
-\ #-22 control structure mismatch [XXX ex 19]
+\ #-22 control structure mismatch
 \ #-23 address alignment exception
 \ #-24 invalid numeric argument
 \ #-25 return stack imbalance
@@ -154,7 +154,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-29 compiler nesting
 \ #-30 obsolescent feature
 
-( Error messages -31..-45 )
+( Standard error codes -31..-45 )
 
 \ #-31 >BODY used on non-CREATEd definition
 \ #-32 invalid name argument
@@ -172,7 +172,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-44 floating-point stack overflow
 \ #-45 floating-point stack underflow
 
-( Error messages -46..-60 )
+( Standard error codes -46..-60 )
 
 \ #-46 floating-point invalid argument
 \ #-47 compilation word list deleted
@@ -190,7 +190,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-59 ALLOCATE
 \ #-60 FREE
 
-( Error messages -61..-75 )
+( Standard error codes -61..-75 )
 
 \ #-61 RESIZE
 \ #-62 CLOSE-FILE
@@ -208,7 +208,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-74 RESIZE-FILE
 \ #-75 WRITE-FILE
 
-( Error messages -76..-79 )
+( Standard error codes -76..-79 )
 
 \ #-76 WRITE-LINE
 \ #-77 malformed xchar
@@ -226,29 +226,26 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-89
 \ #-90
 
-  \ }}} =======================================================
-  \ Solo Forth error codes {{{
+( System error codes -256..-270 )
 
-( Error messages -256..-268 )
-
-\ #-256 not a word nor a number [XXX ex 01]
-\ #-257 warning: is not unique [XXX ex 04]
-\ #-258 stack imbalance [XXX ex 08]
-\ #-259 trying to load from screen 0 [XXX ex 09]
-\ #-260 wrong digit [XXX ex 14]
-\ #-261 deferred word is uninitialized [XXX ex 15]
-\ #-262 assertion failed [XXX ex 16]
-\ #-263 execution only [XXX ex 18]
-\ #-264 definition not finished [XXX ex 20]
-\ #-265 loading only [XXX ex 22]
-\ #-266 off current editing screen [XXX ex 23]
-\ #-267 warning: not present, though required [XXX ex 28]
-\ #-268 required, but not located [XXX ex 29]
-\ #-269 relative jump too long [XXX ex 30]
-
-( Error messages -270..-285 )
-
+\ #-256 not a word nor a number
+\ #-257 warning: is not unique
+\ #-258 stack imbalance
+\ #-259 trying to load from screen 0
+\ #-260 wrong digit
+\ #-261 deferred word is uninitialized
+\ #-262 assertion failed
+\ #-263 execution only
+\ #-264 definition not finished
+\ #-265 loading only
+\ #-266 off current editing screen
+\ #-267 warning: not present, though required
+\ #-268 required, but not located
+\ #-269 relative jump too long
 \ #-270 text not found
+
+( System error codes -271..-286 )
+
 \ #-271
 \ #-272
 \ #-273
@@ -263,11 +260,9 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-283
 \ #-284
 \ #-285
+\ #-286
 
-  \ }}} =======================================================
-  \ G+DOS error codes {{{
-
-( Error messages -1000..-1014 )
+( G+DOS error codes -1000..-1014 )
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
@@ -288,7 +283,7 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-1013 G+DOS: Wrong file type
 \ #-1014 G+DOS: Merge error
 
-( Error messages -1015..-1029 )
+( G+DOS error codes -1015..-1029 )
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
@@ -309,30 +304,60 @@ variable last-locatable  scr/disk 1- last-locatable !
 \ #-1028 G+DOS: File name used
 \ #-1029 G+DOS: No G+DOS loaded
 
-( Error messages -1030..-1031 )
+( G+DOS error codes -1030..-1031 )
 
 \ #-1030 G+DOS: STREAM used
 \ #-1031 G+DOS: CHANNEL used
 
+( OS error codes -1128..-1142 )
+
+  \ XXX TODO -- it seems OS error codes (there are 28 of them)
+  \ may be returned by G+DOS.  they are detected and converted
+  \ by `ior>error`.
+
+\ #-1128 OS:
+\ #-1129 OS:
+\ #-1130 OS:
+\ #-1131 OS:
+\ #-1132 OS:
+\ #-1133 OS:
+\ #-1134 OS:
+\ #-1135 OS:
+\ #-1136 OS:
+\ #-1137 OS:
+\ #-1138 OS:
+\ #-1139 OS:
+\ #-1140 OS:
+\ #-1141 OS:
+\ #-1142 OS:
+
+( OS error codes -1143..-1154 )
+
+\ #-1143 OS:
+\ #-1144 OS:
+\ #-1145 OS:
+\ #-1146 OS:
+\ #-1147 OS:
+\ #-1148 OS:
+\ #-1149 OS:
+\ #-1150 OS:
+\ #-1151 OS:
+\ #-1151 OS:
+\ #-1152 OS:
+\ #-1153 OS:
+\ #-1154 OS:
+
   \ }}} =======================================================
   \ Code under development {{{
 
-( test )
-cr .( 01)
-cr .( 02)
-cr .( 03)
-cr .( 04)
-cr .( 05)
-cr .( 06)
-cr .( 07)
-cr .( 08)
-cr .( 09)
-cr .( 10)
-cr .( 11)
-cr .( 12)
-cr .( 13)
-cr .( 14)
-cr .( 15)
+( err>lin )
+
+  \ XXX FIXME -- fixed version of `error>line`
+
+: err>lin  ( n1 -- n2 )
+  error>ordinal dup 1+ 1
+  do  cr i . ." 16 mod . " 16 mod . key drop
+    i 16 mod 0= abs +  loop  ;
 
 ( number? )
 
@@ -366,7 +391,7 @@ cr .( 15)
   else  r> if negate then  true
   then  r> base !  ;
 
-( XXX )
+( error>line error>ordinal )
 
   \ XXX TODO -- new versions under development, adapted to
   \ Forth-2012 codes
@@ -390,28 +415,6 @@ cr .( 15)
 
 : error>line  ( -n1 -- +n2 )
   error>ordinal  dup 1+ 1 do  i 16 mod 0= abs +  loop  ;
-
-: ior>error  ( ior -- f n )
-
-  \ XXX TODO -- adapt to Forth-2012 codes
-
-  \ Convert a DOS ior to a Forth error number.
-
-  \ ior = the AF register returned by a DOS command:
-  \     bit 0     = set: error
-  \     bits 8-14 = error code
-  \     bit 15    = set: ZX Spectrum error; unset: DOS error
-  \ f = error?
-  \ n = error number:
-  \     n<0  = ZX Spectrum error number (negative)
-  \     n>99 = DOS error number (plus 100)
-
-  dup 1 and negate  \ error?
-  swap 255 /        \ error code
-                    \ XXX TODO `flip 255 and` instead
-  dup 128 and       \ ZX Spectrum error?
-  \ XXX FIXME -- BASIC errors are not properly calculated
-  if  negate  else  31 +  then   ;
 
   \ }}} =======================================================
   \ Development benchmarks and tests {{{
@@ -3102,17 +3105,15 @@ decimal
   \     bit 15    = set: ZX Spectrum error; unset: DOS error
   \ f = error?
   \ n = error number:
-  \     n<0  = ZX Spectrum error number (negative)
-  \     n>99 = DOS error number (plus 100)
+  \     n>999 = DOS error number
+  \     n>1127 = OS error number
 
-  \ XXX TODO -- adapt to Forth-2012 codes
+  \ XXX OLD
+  \ dup 128 and       \ ZX Spectrum error?
+  \ \ XXX FIXME -- BASIC errors are not properly calculated
+  \ if  negate  else  31 +  then   ;
 
-  dup 1 and negate  \ error?
-  swap 255 /        \ error code
-                    \ XXX TODO `flip 255 and` instead
-  dup 128 and       \ ZX Spectrum error?
-  \ XXX FIXME -- BASIC errors are not properly calculated
-  if  negate  else  31 +  then   ;
+  1000 +  ;
 
 : ?dos-error  ( ior -- )
   \ ior = the AF register returned by a DOS command:

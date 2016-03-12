@@ -2,6 +2,8 @@
 # solo_forth.sh
 # 2015-06
 
+# boot.sh
+
 fuse \
   --speed 100 \
 	--machine 128 \

@@ -1,1 +1,0 @@
-solo_forth.debug.sh
