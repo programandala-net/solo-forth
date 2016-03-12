@@ -20,11 +20,8 @@
 #   Utilities section of
 #   http://worldofspectrum.org
 
-# bin2tap (by Metalbrain)
+# bin2code (by Metalbrain)
 # 	http://metalbrain.speccy.org/link-eng.htm
-
-# Pasmo (by Julián Albo)
-#   http://pasmo.speccy.org/
 
 # fsb (by Marcos Cruz)
 # 	http://programandala.net/en.program.fsb.html
@@ -49,14 +46,10 @@ disk_source_file = solo_forth.fsb
 #kernel_source_file = solo_forth.z80s.201506290300.z80s
 #disk_source_file = solo_forth.fsb.201506290224.fsb
 
+origin = 0x5E00
+ld_script = solo_forth.ld
+
 .ONESHELL:
-
-# The default assembler can be overridden by a comand line
-# argument, eg:
-#
-# 	make asm=z80asm
-
-asm = pasmo
 
 ################################################################
 # Main
@@ -95,40 +88,30 @@ solo_forth.bas.tap: solo_forth.bas
 # choose the filename used in the TAP file header; it uses the name of the
 # target file.
 
-solo_forth.bin.tap: $(kernel_source_file)
-ifeq ($(asm),pasmo)
-	pasmo -v --tap \
-		$(kernel_source_file) \
-		forth.bin \
-		solo_forth.symbols.pasmo.z80s ; \
-	mv forth.bin solo_forth.bin.tap
-else ifeq ($(asm),pasmo053)
-	/usr/local/bin/pasmo.053 -v --tap \
-		$(kernel_source_file) \
-		forth.bin \
-		solo_forth.symbols.pasmo.z80s ; \
-	mv forth.bin solo_forth.bin.tap
-else ifeq ($(asm),pasmo054)
-	/usr/local/bin/pasmo.054beta2 -v --tap \
-		$(kernel_source_file) \
-		forth.bin \
-		solo_forth.symbols.pasmo.z80s ; \
-	mv forth.bin solo_forth.bin.tap
-else ifeq ($(asm),z80asm)
-	/usr/bin/z80asm \
-		--input=$(kernel_source_file) \
-		--output=forth.bin \
-		--label=solo_forth.symbols.z80asm.z80s \
-		--list=solo_forth.list.txt ; \
-	bin2tap forth.bin solo_forth.bin.tap
-else ifeq ($(asm),as)
-	z80-unknown-coff-as \
-		-o forth.bin \
-		-as=solo_forth.symbols.z80asm.z80s \
-		-al=solo_forth.list.txt \
-		-z80 $(kernel_source_file) ; \
-	bin2tap forth.bin solo_forth.bin.tap
-endif
+solo_forth.bin.tap: $(kernel_source_file) $(ld_script)
+	/usr/bin/z80-unknown-coff-as \
+		-z80 \
+		-aglhs=solo_forth.list.txt \
+		-o solo_forth.o \
+		$(kernel_source_file) && \
+	/usr/bin/z80-unknown-coff-ld \
+		--trace \
+		--oformat binary \
+		-Map solo_forth.map \
+		-Ttext=$(origin) \
+		-Tdata=0xC000 \
+		--output forth.bin \
+		solo_forth.o && \
+	bin2code forth.bin solo_forth.bin.tap $(origin)
+
+# XXX with the script, the data section starts after the text section:
+#		-T$(ld_script) \
+# XXX same with this notation
+#		--section-start=text=$(origin) \
+#		--section-start=data=0xC000 \
+# XXX this notation works!:
+#		-Ttext=$(origin) \
+#		-Tdata=0xC000 \
 
 # > solo_forth.assembly_debug_info.txt ; \
 
@@ -143,9 +126,9 @@ endif
 ################################################################
 # The MGT disk images
 
-# Disk 1 (for drive 1) contains G+DOS and the Forth system. The user
-# will use disk 1 for customized versions of the Forth system, Forth
-# applications and will their data files.
+# Disk 1 (for drive 1) contains G+DOS and the Forth system. The
+# user will use disk 1 for customized versions of the Forth
+# system, Forth turnkey applications, graphics and data files.
 
 solo_forth_disk_1.mgt: solo_forth.bas.tap solo_forth.bin.tap
 	mkmgt  solo_forth_disk_1.mgt \
@@ -153,42 +136,18 @@ solo_forth_disk_1.mgt: solo_forth.bas.tap solo_forth.bin.tap
 		solo_forth.bas.tap \
 		solo_forth.bin.tap
 
-# Disk 2 (for drive 2) contains the source blocks of the Forth system,
-# with a library of extensions and tools.  The disk sectors are used
-# directly, without the G+DOS file system, the way classic Forth
-# worked. The user can edit the original fsb source file with a modern
-# editor, in order to write Forth programs, and then use `mkmgt` to
-# convert it to a fake MGT disk image, as shown:
+# Disk 2 (for drive 2) contains the source blocks of the Forth
+# system, with a library of extensions and tools.  The disk
+# sectors are used directly, without the G+DOS file system, the
+# way classic Forth worked. The user can edit the original fsb
+# source file with a modern editor and convert it to a fake MGT
+# disk image with `mkmgt`, as shown:
 
 mgt_file = $(basename $(disk_source_file) ).mgt
 
 solo_forth_disk_2.mgt: $(disk_source_file)
 	fsb2mgt $(disk_source_file) ;\
 	mv $(mgt_file) solo_forth_disk_2.mgt
-
-################################################################
-# Tests
-
-test: if_test
-
-.PHONY: if_test
-if_test:
-	pasmo \
-		_test/if_test.z80s \
-		_test/if_test.bin \
-		_test/if_test.symbols.z80s
-
-.PHONY: test_bank_with_pasmo
-test_bank_with_pasmo:
-	pasmo \
-		_test/bank_test.pasmo.asm \
-		_test/bank_test.pasmo.bin \
-		_test/bank_test.pasmo.symbols.asm
-	
-.PHONY: test_bank_with_z80asm
-test_bank_with_z80asm:
-	z80asm -s \
-		_test/bank_test.z80asm.asm
 
 ################################################################
 # Backup
@@ -203,6 +162,9 @@ backup:
 		_draft/* \
 		solo_forth*.fsb \
 		solo_forth*.bas \
+		solo_forth*.ld \
+		solo_forth*.sh \
+		solo_forth*.txt \
 		solo_forth*.mgt \
 		solo_forth*.z80s
 
@@ -222,3 +184,5 @@ backup:
 # old sources.
 #
 # 2015-08-14: Updated backup recipe.
+#
+# 2015-08-17: Modified to use GNU binutils instead of Pasmo.

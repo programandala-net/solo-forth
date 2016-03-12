@@ -2054,7 +2054,7 @@ C0 m7 set B0ED m8 ldir B8ED m8 lddr 44ED m8 neg 57ED m8 ldai
 
 ( assembler -- Opcodes)
 
-\ XXX TODO missing stack notations
+  \ XXX TODO missing stack notations
 : 0outbc  ( -- )  ED c, 71 c, ;
 : jpix  ( -- )  ix-op c, jphl ;
 : ldp#  ( 16b rp -- )  8* 1+ c,  , ;
@@ -2085,7 +2085,7 @@ AE ma )xor B6 ma )or  BE ma )cp  34 ma )inc 35 ma )dec
 06 mb )rlc 0E mb )rrc 16 mb )rl  1E mb )rr  26 mb )sla
 2E mb )sra 3E mb )srl 46 mc )bit 86 mc )res C6 mc )set
 
-\ XXX TODO missing stack notations
+  \ XXX TODO missing stack notations
 : )ld  xy, swap 8* 46 + c, c, ;
 : )st  xy, swap 70 + c, c, ;
 : )ld# xy, 36 c, c, c, ;
