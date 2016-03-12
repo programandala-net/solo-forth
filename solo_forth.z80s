@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506220041
+; Version A-00-201506220204
 
 ; Latest important changes (in chronological order)
 ; - change: new format for the name field, without end bit.
@@ -609,7 +609,7 @@ compare_de_hl_signed:
 
   ; Input:  de, hl
   ; Output: flag C if hl < de
-  
+
   ; Taken from DZX-Forth.
 
   ld a,h
@@ -707,6 +707,8 @@ push_l: ; XXX TMP -- not used yet
 
 ; ----------------------------------------------
   _code_header lit_,'LI','T'
+
+  ; XXX FIXME -- crash if not compiling
 
   ld a,(bc)
   inc bc
@@ -898,7 +900,7 @@ if fig_name_field?
 
 ; doc{
 ;
-; (find)  ( ca nfa --- pfa b tf | ff )
+; (find)  ( ca nfa --- pfa b tf | ff )  \ fig-Forth
 ;
 ; Search the dictionary starting at the name field address
 ; _nfa_, matching to the text at _ca_. If a match is found,
@@ -910,9 +912,6 @@ if fig_name_field?
 
   ; XXX Note: this is the original fig-Forth version.
 
-  ; XXX TODO optimize speed with absolute jumps?
-  ; XXX TODO -- return cfa instead of pfa
-  ; XXX TODO -- always return two elements, after Forth-94
   pop de ; nfa
 paren_find.begin:
   ; (sp) = string address
@@ -1209,28 +1208,34 @@ enclose.end:
 
 ; }doc
 
+  ; XXX FIXME empty parsed strings return a length of one;
+  ; all other cases seem to work fine
+
   exx ; save the Forth IP
   pop bc
-  ld d,c ; d = skip leading delimiters?
+  ld a,c ; a = skip leading delimiters?
   pop hl ; hl = address
-  pop de ; e  = delimiter
+  pop de ; e = delimiter
   push hl
-  ld bc,-1 ; init char offset counter
-  dec hl
+  ld bc,0 ; init char offset
 
-paren_parse.do_not_skip_inital_delimiters:
+  and a ; skip initial delimiters?
+  jr z,paren_parse.text
 
+  dec hl ; init the address for the first inc 
+  dec bc ; init the offset for the first inc
   ld a,e  ; a = delimiter
-paren_parse.skip_initial_delimiters:
+paren_parse.skip_initial_delimiter:
   ; hl = previous address
   ; a = delimiter
   ; bc = offset
   inc hl
   inc bc
   cp (hl) ; delimiter?
-  jp z,paren_parse.skip_initial_delimiters ; yes, loop
+  jp z,paren_parse.skip_initial_delimiter ; yes, loop
   ; First non-delimiter found.
 
+paren_parse.text:
   ; Scan the text.
   push bc ; save offset
   ld a,(hl)
@@ -2404,8 +2409,8 @@ sra_hl.1:
   _colon_header s_comma_,'s',','
 
   ; : s,  ( ca len -- )  swap here rot cmove 1+ allot  ;
- 
-  dw swap_,here_,rot_,cmove_,one_plus_,allot_ 
+
+  dw swap_,here_,rot_,cmove_,one_plus_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2453,7 +2458,7 @@ true_if_z: ; XXX entry not used yet
   _code_header less_than_,'','<'
 
 if 1 ; XXX NEW -- from DZX-Forth
-  
+
   pop de
   pop hl
 is_de_less_than_hl:
@@ -3113,62 +3118,47 @@ fill.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header parse_,'PARS','E' ; Forth-94
+  _colon_header parse_,'PARS','E'
 
-  dw blk_,fetch_ ; from disk?
-  ; XXX TODO optimize with `?dup` here instead of repeating `blk @` later
-  ;dw question_dup_ ; XXX NEW
+; doc{
+;
+; parse  ( c "ccc<c>" -- ca len )  \ Forth-94
+;
+; Parse _ccc_ delimited by the delimiter char _c_.
+;
+; _ca_ is the address (within the input buffer) and _len_ is the
+; length of the parsed string. If the parse area was empty, the
+; resulting string has a zero length.
+;
+; }doc
+
+
+  dw blk_,fetch_,question_dup_ ; from disk?
   dw zero_branch_,parse.from_terminal
 
   ; Parse from disk.
-  dw blk_,fetch_,block_
+  dw block_
   dw branch_,parse.from_address
 parse.from_terminal:
   ; Parse from the terminal.
   dw tib_,fetch_
 
 parse.from_address:
-  
-  ; XXX TODO -- not finished
-
-  dw in_,fetch_,plus_,false_,paren_parse_
-
-  dw here_
-  dw c_lit_
-  db max_word_length+3
-  dw blanks_
+  dw in_,fetch_,plus_
+  dw false_,paren_parse_
+  dw cr_,two_,pick_,dot_,over_,dot_,dup_,dot_ ; XXX INFORMER
   dw in_,plus_store_
-  dw over_,minus_
-  dw to_r_ ; length
-  dw r_fetch_,here_,c_store_ ; set the length byte
-  dw plus_ ; from
-  dw here_,one_plus_ ; destination
-  dw from_r_ ; count
-  dw cmove_ ; move the word
-
-  ;dw space_ ; XXX INFORMER
-  ;dw depth_,dot_ ; XXX INFORMER
-  ;dw paren_dot_quote_ ; XXX INFORMER
-  ;_string 'blk ' ; XXX INFORMER
-  ;dw blk_,fetch_,dot_ ; XXX INFORMER
-  ;dw paren_dot_quote_ ; XXX INFORMER
-  ;_string 'in ' ; XXX INFORMER
-  ;dw in_,fetch_,dot_ ; XXX INFORMER
-  ;dw here_,count_,one_,ink_,type_,zero_,ink_ ; XXX INFORMER
-  ;dw key_,drop_ ; XXX INFORMER
-
+  dw nip_
   dw semicolon_s_
 
 
 ; ----------------------------------------------
   _colon_header word_,'WOR','D'
 
-  dw blk_,fetch_ ; from disk?
-  ; XXX TODO optimize with `?dup` here instead of repeating `blk @` later
-  ;dw question_dup_ ; XXX NEW
+  dw blk_,fetch_,question_dup_ ; from disk?
   dw zero_branch_,word.from_terminal
   ; from disk
-  dw blk_,fetch_,block_
+  dw block_
   dw branch_,word.from_address
 word.from_terminal:
   dw tib_,fetch_
@@ -4097,21 +4087,6 @@ d_plus_minus.end:
   jp max.2
 
 ; ----------------------------------------------
-
-if 0 ; XXX OLD
-
-  _colon_header min_,'MI','N'
-
-  dw two_dup_
-  dw greater_than_
-  dw zero_branch_,min.end
-  dw swap_
-min.end:
-  dw drop_
-  dw semicolon_s_
-
-else
-
   _code_header min_,'MI','N'
 
   pop de
@@ -4119,24 +4094,7 @@ else
   call compare_de_hl_signed
   jp max.2
 
-endif
-
 ; ----------------------------------------------
-
-if 0 ; XXX OLD
-
-  _colon_header max_,'MA','X'
-
-  dw two_dup_
-  dw less_than_
-  dw zero_branch_,max.end
-  dw swap_
-max.end:
-  dw drop_
-  dw semicolon_s_
-
-else
-
   _code_header max_,'MA','X'
 
   pop de
@@ -4149,8 +4107,6 @@ max.2:
   jp c,push_hl
   ex de,hl
   jp push_hl
-
-endif
 
 ; ----------------------------------------------
   _colon_header m_star_,'M','*'
@@ -4288,7 +4244,7 @@ message.number_only:
 
 ; doc{
 
-; +buf  ( a1 -- a2 f )
+; +buf  ( a1 -- a2 f )  \ fig-Forth
 
 ;   Advance the disk buffer address _a1_ to the address of the next
 ;   buffer _a2_.  Boolean _f_ is false when _a2_ is the buffer
@@ -4365,11 +4321,9 @@ buffer.end:
 
   dw to_r_
   dw prev_,fetch_ ; most recently accessed buffer
-  dw dup_,fetch_ ; block number pointed by `prev`
-  ; XXX TODO optimize with `<>`?
+  dw dup_,fetch_ ; its block number (bit 15, the update indicator, may be set)
   dw r_fetch_,minus_ ; compare to the required block
-  ; XXX TODO optimize with `2*` (or remove, if `<>` is used above?):
-  dw dup_,plus_ ; discard the left most bit, with is the update indicator
+  dw two_star_ ; discard the left most bit, with is the update indicator
   dw zero_branch_,block.end
   ; Block number n is not the previously referenced.
   ; Prepare disk access.
@@ -4384,12 +4338,9 @@ block.begin:
   dw two_minus_ ; backup to the buffer address of block n
 branch_destination_0x71E5:
   dw dup_,fetch_ ; beginning address of the buffer, with a block number in it
-  ; XXX TODO optimize with `<>`?
   dw r_fetch_,minus_ ; compare to the block number n.
-  ; XXX TODO optimize with `2*` (or remove, if `<>` is used above?):
-  dw dup_,plus_ ; discard the update bit
-  dw zero_equals_
-  dw zero_branch_,block.begin ; until
+  dw two_star_ ; discard the left most bit, with is the update indicator
+  dw question_branch_,block.begin ; until
   dw dup_,prev_,store_ ; store the buffer address in `prev`
 block.end:
   dw r_drop_
@@ -4400,12 +4351,14 @@ block.end:
   _code_header c_swap_,'FLI','P'
 
 ; doc{
+;
 ; flip  ( n1 -- n2 )
 ;
 ;   Exchange the low and high bytes within n1.
-;   Name taken from eForth.
 ;
 ; }doc
+
+; [Name taken from eForth.]
 
   pop hl
   ld a,h
@@ -4730,16 +4683,16 @@ emits_.end:
 ; ----------------------------------------------
   _colon_header sign_,'SIG','N'
 
-  ; doc{
+; doc{
 
-  ; sign  ( n  d  ---  d ) \ fig-Forth
+; sign  ( n  d  ---  d ) \ fig-Forth
 
-  ; Stores an ascii "-" sign just before a converted numeric
-  ; output string in the text output buffer when _n_ is negative.
-  ; _n_ is discarded but double number _d_ is maintained. Must be
-  ; used between `<#` and `#>`.
+; Stores an ascii "-" sign just before a converted numeric
+; output string in the text output buffer when _n_ is negative.
+; _n_ is discarded but double number _d_ is maintained. Must be
+; used between `<#` and `#>`.
 
-  ; }doc
+; }doc
 
   ; XXX TODO convert to Forth-94
 

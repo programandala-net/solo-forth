@@ -454,16 +454,39 @@ require s=  require parse-name  require s"
   \ 2015-06-20: Adapted from lina (Copyright (c) 2000-2004
   \ Albert van der Horst, The Netherlands).
 
-0 variable base'
+[defined] base'  ?\ 0 variable base'
+
+[defined] (d.)
+?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
 
 : hex{  ( -- )  base @ base' ! hex ; \ switch to hex
 : }hex  ( -- )  base' @ base !     ; \ and back
 
-: (dhex.)  ( d u -- )
-  hex{ <# 0 do  #  loop  #> }hex type space  ;
-: dhex.    ( d -- )  [ 4 cells ] literal (dhex.)  ;
-: hex.     ( n -- )  s>d [ 2 cells ] literal (dhex.)  ;
+: (dhex.)  ( d n -- )  hex{ (d.) }hex type space  ;
+: dhex.    ( d -- )  8 (dhex.)  ;
+: hex.     ( n -- )  s>d 4 literal (dhex.)  ;
 : hexb.    ( n -- )  s>d 2 (dhex.)  ;
+
+( binary bin. binb. dbin. bin{ )
+
+  \ 2015-06-22
+
+[defined] base'  ?\ 0 variable base'
+
+base @ decimal
+[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+base !
+
+[defined] (d.)
+?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+
+: bin{  ( -- )  base @ base' ! binary ; \ switch to binary
+: }bin  ( -- )  base' @ base !        ; \ and binary
+
+: (dbin.)  ( d n -- )  bin{ (d.) }bin type space  ;
+: dbin.    ( d -- )  32 (dbin.)  ;
+: bin.     ( n -- )  s>d 16 (dbin.)  ;
+: binb.    ( n -- )  s>d 8 (dbin.)  ;
 
 ( ascii-type )
 
