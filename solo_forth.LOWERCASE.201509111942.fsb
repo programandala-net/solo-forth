@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509122258
+\ Last modified: 201509111730
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -46,7 +46,7 @@ require source  require /string  require place
   cr ." >in: <" .s ." >"
   /string
   cr ." after /string: <" .s ." >"
-
+  
   \ dup >r
   \ pad place
   \ r> >in +!
@@ -318,14 +318,14 @@ code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
   exx
 
   bc pop  0000 bc stp  |mark
-  rp fthl
+  rp hl ftp
   begin  bc tstp  nz while
     de pop  hl decp  d m ld  hl decp  e m ld  bc decp
   repeat
   0000 de ldp# |resolve
   hl decp  d m ld  hl decp  e m ld
 
-  rp sthl  exx  jpnext
+  rp hl stp  exx  jpnext
 
   end-code
 
@@ -338,25 +338,18 @@ require z80-asm
 code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
 
   exx
-  rp fthl
+  rp hl ftp
   m c ld  hl incp  m b ld  hl incp
   0000 bc stp  |mark
   begin  bc tstp  nz while
     m e ld  hl incp  m d ld  hl incp  de push  bc decp
   repeat
-  rp sthl  exx
+  rp hl stp  exx
   0000 hl ldp# |resolve
   pushhl jp
   end-code
 
 require n>r
-
-( rdepth )
-
-  \ Credits:
-  \ Code from Afera.
-  
-: rdepth  ( -- n )  rp@ r0 @ - -2 /  ;
 
   \ }}} =======================================================
   \ Screen modes {{{
@@ -582,7 +575,7 @@ cr
 
 ( fzx-mode )
 
-require fzx-emit
+require zx-emit
 
   \ XXX TODO -- finish -- the text input words in the kernel
   \ need some changes before this mode can work fine, and the
@@ -1014,7 +1007,7 @@ code ocr  ( col line -- n )
 
   de pop  hl pop  bc push
     \ get row, get col, save the Forth IP
-  l b ld  e c ld  ocr-charset fthl
+  l b ld  e c ld  ocr-charset hl ftp
     \ b=colum, c=row, hl=udg
 
   c a ld  rrca  rrca  rrca  E0 and#  b xor  a e ld
@@ -2219,7 +2212,7 @@ code white-noise  ( u -- )
           08 b ld#  \ bit counter
           begin   e a ld  10 and#  e rl  d or  FE out  \ beep
                   step
-          bc pop  bc tstp
+          bc pop  c a ld  b or
           jrnz
 
   bc pop  jpnext \ restore the Forth IP and go next
@@ -2248,7 +2241,7 @@ code ambulance  ( n -- )
           <mark   hl push
                   03B5 call  \ ROM beeper
                   hl pop  hl decp
-                  hl tstp
+                  h a ld  l or
                   jrnz
           bc pop
           step
@@ -2766,7 +2759,7 @@ code (cat)  ( n -- )
   \ the stream number to use) before doing `CAT`. The default
   \ value is 2 (screen) and should be restored. Example:
   \
-  \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
+  \   3 sstr1 c! s" forth?.*" wcat 2 sstr c!
 
 ( @dos )
 
@@ -3227,88 +3220,15 @@ code break-key?  ( -- f )
 
   end-code
 
-( index .index )
+( index )
 
 require break-key?
 
-: .index  ( n -- )  cr dup 3 .r space 0 swap .line  ;
-  \ Print the first line of the screen _n_.
-
 : index  ( n1 n2 -- )
-
-  \ doc{
-  \
-  \ index  ( n1 n2 -- )
-  \
-  \ Print the first line of each screen over the range from
-  \ _n1_ to _n2_.
-  \
-  \ }doc
-
   1+ swap do
     cr i 3 .r space 0 i .line
     break-key? if  exhaust  then
   loop  ;
-
-( index-like )
-
-require break-key?  require .index
-
-[defined] contains
-  ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
-     \ Does the string _ca1 len1_ contains the string _ca2
-     \ len2?_
-
-: index-like  ( n1 n2 "name" -- )
-
-  \ doc{
-  \
-  \ index-like  ( n1 n2 "name" -- )
-  \
-  \ Print the first line of each screen over the range from
-  \ _n1_ to _n2_, as long as the string "name" is included in
-  \ the line. The string comparison is case-sensitive.
-  \
-  \ }doc
-
-  parse-name 2swap
-  1+ swap do
-    0 i (line) 2over contains if  i .index  then
-    break-key? if  exhaust  then
-  loop  2drop  ;
-
-( index-ilike )
-
-require break-key?  require .index
-
-[defined] contains
-  ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
-     \ Does the string _ca1 len1_ contains the string _ca2
-     \ len2?_
-
-: index-ilike  ( n1 n2 "name" -- )
-
-  \ doc{
-  \
-  \ index-ilike  ( n1 n2 "name" -- )
-  \
-  \ Print the first line of each screen over the range from
-  \ _n1_ to _n2_, as long as the string "name" is included in
-  \ the line. The string comparison is case-insensitive.
-  \
-  \ }doc
-
-  parse-name save-string 2dup uppers
-  2swap 1+ swap do
-    save-string  0 i (line) save-string 2dup uppers
-    2over contains if  i .index  then
-    break-key? if  exhaust  then
-  loop  2drop  ;
-
-  \ Note: The parsed string is re-saved to the circular string
-  \ buffer in every iteration in order to prevent it from being
-  \ overwritten by the strings of the index lines, because the
-  \ circular string buffer is small.
 
 ( words )
 
@@ -3334,18 +3254,19 @@ require break-key?
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
-     \ Does the string _ca1 len1_ contains the string _ca2
-     \ len2?_
+     \ Does the string ca1 len1 contains the string ca2 len2?
 
 [defined] tab
   ?\  : tab  ( -- )  6 emit  ;
 
+  \ XXX FIXME
+
 : words-like  ( "name" -- )
-  \ Print all words (from the `context` vocabulary) containing a substring.
+  \ Print all words containing a substring.
   parse-name 2dup uppers trail  ( ca len nfa )
   begin  dup 0<> break-key? 0= and  while
     dup >r
-    nfa>string 2over contains if  r@ id. tab  then
+    nfa>string 2over 2swap contains if  r@ id. tab  then
     r> nfa>lfa @n
   repeat drop 2drop  ;
 
@@ -3500,40 +3421,6 @@ code call  ( a -- )
 
 ( inkey )  \ ==keyboard==
 
-  \ Credits:
-  \ Code adapted and modified from Abersoft Forth's `inkey`.
-
-require z80-asm
-
-code inkey  ( -- c | 0 )
-
-  \ Leave the value of the key being pressed. If no key being
-  \ pressed leave zero.
-  \
-  \ This word reads the keyboard, so it works even when the
-  \ keyboard is not read by an interrupts routine.
-
-  bc push
-  028E call \ KEY-SCAN ROM routine
-  \ 1 or 2 keys in DE, most significant shift first if any
-  \ key values 0..39 else 255
-  z if  \ is key press valid?
-    031E call \ KEY-TEST ROM routine
-    cy if  \ is key code valid?
-      \ A = main key
-      \ D = ?
-      00 c ld#  \ XXX Spectrum Forth-83 does this
-      d dec  a e ld
-      0333 call \ KEY-DECODE ROM routine
-      \ A = key code
-    then
-  then
-  FF cp#  z if  a xor  then  \ convert FF to 00
-  \ XXX TODO jump to `key` to decode
-  bc pop  pusha jp  end-code
-
-( inkey )
-
 require z80-asm
 
 code inkey  ( -- c | 0 )
@@ -3542,11 +3429,10 @@ code inkey  ( -- c | 0 )
   \ pressed, leave 0.
   \
   \ This word works only when an interrupts routine reads the
-  \ keyboard and updates the related system variables.
+  \ keyboard and updates the LAST-K system variable, as the OS
+  \ does by default.
 
-  \ XXX FIXME -- Some times this word returns zero when the key
-  \ is pressed; the version on the previous screen works fine.
-  \ Anyway this version is smaller and can be useful.
+  \ XXX TODO try
 
   di
   a xor
@@ -3554,7 +3440,7 @@ code inkey  ( -- c | 0 )
   nz if
     5C08 hl ldp#  \ LAST-K system variable
     m a ld
-    \ 0 m ld# \ XXX OLD
+    0 m ld#
     01 iy 5 resx
   then
   ei
@@ -3562,53 +3448,35 @@ code inkey  ( -- c | 0 )
 
   end-code
 
-( key?? )
+( inkey|255 )
 
-  \ An alternative to `key?` that works also when the system
-  \ interrupts are off. Variant with relative jumps.
-
-require z80-asm
-
-code key??  ( -- f )
-
-  bc push
-  028E call  \ ROM KEY_SCAN
-  here jrnz  >relmark 0 unresolved ! \ to return_false
-  031E call  \ ROM KEY_TEST
-  here jrnc  >relmark 1 unresolved ! \ to return_false
-
-  \ return_true:
-  bc pop  ' true cfa>pfa jp
-
-  \ return_false:
-  0 unresolved @ >relresolve
-  1 unresolved @ >relresolve
-  bc pop  ' false cfa>pfa jp
-
-  end-code
-
-( key?? )
-
-  \ An alternative to `key?` that works also when the system
-  \ interrupts are off. Faster variant with absolute jumps.
+  \ Credits:
+  \ Code adapted from Abersoft Forth's `inkey`.
 
 require z80-asm
 
-code key??  ( -- f )
+code inkey|255  ( -- c | 255 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed leave decimal 255.
+  \
+  \ This word works only if the keyboard is read by the
+  \ interrupts routine.  This word reads the keyboard, so it
+  \ works even when it's not read by an interrupts routien, as
+  \ the OS does by default.
+
+  \ XXX TODO try
 
   bc push
-  028E call  \ ROM KEY_SCAN
-  0000 jpnz  |mark 0 unresolved ! \ to return_false
-  031E call  \ ROM KEY_TEST
-  0000 jpnc  |mark 1 unresolved ! \ to return_false
-
-  \ return_true:
-  bc pop  ' true cfa>pfa jp
-
-  \ return_false:
-  0 unresolved @ >resolve
-  1 unresolved @ >resolve
-  bc pop  ' false cfa>pfa jp
+  028E call \ KEY-SCAN ROM routine
+  z if  031E call \ KEY-TEST ROM routine
+        c if  d dec  a e ld
+              0333 call \ KEY-DECODE ROM routine
+        then
+  then
+  a l ld  00 h ld#
+  bc pop
+  pushhl jp
 
   end-code
 
@@ -3761,25 +3629,16 @@ require /string
 
   \ XXX TODO -- finish the conversion
 
-: x# ( -- ) ( "ccc" -- n | d )
+: x# ( -- ) ( 'ccc' -- n | d )
   does> c@              \  new radix
   base @ >r  base !     \ save and set radix
   parse-name            \ get string
   ['] evaluate catch    \ convert to number, set trap
   r> base !  throw  ;   \ restore radix before error control
 
-create b# ( "name" -- n | d )  2 c, x# immediate
-create d# ( "name" -- n | d ) 10 c, x# immediate
-create h# ( "name" -- n | d ) 16 c, x# immediate
-
-( c# )
-
-: c#  ( "name" -- c )
-  parse-name drop c@ postpone literal  ; immediate
-  \ Parse a name and return the code of the its first
-  \ character.
-  \ Note: This word depends on the fig-Forth's `literal`.
-  \ XXX TODO change when `literal` is updated.
+create b# ( 'ccc' -- n | d )  2 c, x# immediate
+create d# ( 'ccc' -- n | d ) 10 c, x# immediate
+create h# ( 'ccc' -- n | d ) 16 c, x# immediate
 
 ( .b .d .h )
 
@@ -3870,12 +3729,12 @@ require c>hex
 hex  width @ 2 width !
 
 : 0x..  ( -- n )
-  \ Leave hex number; example: 0x0A.
+  \ leave hex number; example: 0x0a
   here 3 + c@ c>hex 10 * here 4 + c@ c>hex +
   postpone literal  ; immediate
 
 : 0x....  ( -- n )
-  \ Leave hex number; example: 0x0AFF.
+  \ leave hex number; example: 0x0aff
   0 here 7 + here 3 + do 10 * i c@ c>hex + loop
   postpone literal  ; immediate
 
@@ -3912,15 +3771,6 @@ width !
 
   \ }}} =======================================================
   \ Control structures {{{
-
-( unless )
-  
-  \ Equivalent to `0= if`, but faster.
-
-: unless  ( f -- )  postpone ?branch >mark 2  ; immediate
-
-  \ XXX TODO Alternative for when compiler security is removed:
-  \ : unless  ( f -- )  postpone ?branch >mark  ; immediate
 
 ( don't )  \ ==controlstructures==
 
@@ -4441,7 +4291,7 @@ defer (value)
   begin  dup sys-frames @ u<  until drop  ;
 
   \ XXX TODO
-  \ Adapt this better version from v.Forth:
+  \ Adapth this better version from v.Forth:
   \
   \ code ms
   \  pop de
@@ -4465,7 +4315,7 @@ defer (value)
   \ code ms  ( u -- )  hex
   \   d1 c,         \ pop de
   \   here          \ ms1:
-  \   78 03 + c,  B0 02 + c,
+  \   78 03 + c,  b0 02 + c,
   \                 \ ld a,e
   \                 \ or d
   \   ca c, next ,  \ jp z,next
@@ -4480,16 +4330,16 @@ defer (value)
   \                 \ ex (sp),hl        ; 19t
   \                 \ ex (sp),hl        ; 19t
   \                 \ ex (sp),hl        ; 19t
-  \   e5 c,  e1 c,  2B c,
+  \   e5 c,  e1 c,  2b c,
   \                 \ push hl           ; 11t
   \                 \ pop hl            ; 10t
   \                 \ dec hl            ;  6t
-  \   3E c, 00 c,  78 05 + c,  B0 04 + c,
+  \   3e c, 00 c,  78 05 + c,  b0 04 + c,
   \                 \ ld a,0            ;  7t
   \                 \ ld a,l            ;  4t
   \                 \ or h              ;  4t
   \   c2 c, ,       \ jp nz,ms2         ; 10t
-  \   1B c,         \ dec de
+  \   1b c,         \ dec de
   \   c3 c, ,       \ jp ms1
   \ end-code
 
@@ -4507,149 +4357,6 @@ defer (value)
 
 : frames0  ( -- )  0. frames!  ;
   \ Reset the system frames counter.
-
-( pause )
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-  \ Variant: `(wait)` is a user variable, and it's executed
-  \ to get its current adress.
-
-require z80-asm  require call-cfa  require execute-hl
-
-code pause ( u --- )
-  \ u = number of ticks
-  de pop  bc push
-  begin
-    de push
-    \ XXX FIXME -- crash -- why this does not work?:
-    ' (wait) call-cfa  hl pop  execute-hl
-      \ execute the cfa hold in the user variable `(wait)`
-    de pop  halt  de decp  de tstp  \ finished?
-  z until
-  bc pop  jpnext
-  end-code
-
-( pause )
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-  \ Variant: `(wait)` is a deferred word.
-
-require z80-asm  require call-cfa
-
-defer (wait)  ' noop ' (wait) defer!
-
-code pause ( u --- )
-  \ u = number of ticks
-  de pop  bc push
-  begin
-    de push
-    ' (wait) call-cfa
-      \ call the cfa hold in `(wait)`
-    de pop  halt  de decp  de tstp  \ finished?
-  z until
-  bc pop  jpnext
-  end-code
-
-( pause )
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-  \ Variant: `(wait)` is a user variable, but it's current
-  \ address is compiled, what is wrong.
-
-require z80-asm  require execute-hl
-
-code pause ( u --- )
-  \ u = number of ticks
-  de pop  bc push
-  begin
-    de push
-    (wait) fthl  execute-hl
-      \ call the cfa hold in `(wait)`
-    de pop  halt  de decp  de tstp  \ finished?
-  z until
-  bc pop  jpnext
-  end-code
-
-( pause )
-
-  \ XXX OLD
-
-  \ Variant: `(wait)` is a variable.
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-require z80-asm  require execute-hl
-
-variable (wait)  ' noop (wait) !
-
-code pause ( u --- )
-  \ u = number of ticks
-  de pop  bc push
-  begin
-    de push
-    ' (wait) cfa>pfa fthl  execute-hl
-      \ call the cfa hold in `(wait)`
-    de pop  halt  de decp  de tstp  \ finished?
-  z until
-  bc pop  jpnext
-  end-code
-
-( pause )
-
-  \ XXX OLD
-
-  \ Variant: `(wait)` is a variable and the calling is not
-  \ factored.
-
-require z80-asm
-
-variable (wait)  ' noop (wait) !
-
-code pause ( u --- )
-  \ u = number of ticks
-  de pop  bc push
-  begin
-    de push
-
-    \ Call the cfa hold in `(wait)`:
-
-    ' (wait) cfa>pfa fthl
-    here 6 + bc ldp# \ point IP to phony_compiled_word
-    next2 jp  \ execute the cfa in `(wait)`
-    \ phony_compiled_word:
-    here cell+ ,  \ point to the phony cfa following
-    here cell+ ,  \ phony cfa, point to the code following
-
-    de pop  halt  de decp  de tstp  \ finished?
-  z until
-  bc pop  jpnext
-  end-code
-
-  \ XXX NOTE -- If ever the system is converted from ITC to
-  \ DTC, `pause` has to be modified.
-
-( just-pause )
-
-  \ Credits:
-  \ Code adapted from Spectrum Forth-83.
-
-require z80-asm
-
-code just-pause ( u --- )
-  \ u = number of ticks
-  de pop  bc push
-  begin
-    halt  de decp  de tstp  \ finished?
-  z until
-  bc pop  jpnext
-  end-code
 
   \ }}} =======================================================
   \ Vocabularies {{{
@@ -4719,9 +4426,9 @@ code just-pause ( u --- )
 
 
   \ }}} =======================================================
-  \ Random number generators {{{
+  \ Random number generator {{{
 
-( seed rnd random randomize )  \ ==rng==
+( seed rnd random randomize random-byte )  \ ==rng==
 
   \ Credits:
   \ Code adapted from Leo Brodie's code and Gforth.
@@ -4734,10 +4441,8 @@ code just-pause ( u --- )
 
 : randomize  ( n -- )  seed !  ;
 
-( random-b )
-
-code random-b  ( -- b )
-  \ XXX FIXME this returns patterns; see `random-b-test`
+code random-byte  ( -- b )
+  \ XXX FIXME this returns patterns; see `random-byte-test`
   ED c, 5F c,     \ ld a,r
   C3 c, pusha ,   \ jp pusha
   end-code
@@ -4745,7 +4450,7 @@ code random-b  ( -- b )
 ( ace-rnd )
 
   \ Credits:
-  \ Adapted from ACE Forth, as of the Jupiter ACE manual.
+  \ Adapted from Ace Forth, as of the Jupiter Ace manual.
 
 [defined] seed        ?\ 23670 constant seed
 [defined] sys-frames  ?\ 23672 constant sys-frames
@@ -4767,35 +4472,33 @@ code random-b  ( -- b )
 
   \ XXX TODO adapt and try
 
-[defined] seed ?\ 23670 constant seed
+  \ : vrnd  ( n1 -- n2 )
+  \   1+ 8195 23672 @ um* 1 0 d+
+  \   16383 u/ drop dup seed !
+  \   swap mod  ;
 
-  : vrnd  ( n1 -- n2 )
-    1+ 8195 23672 @ um* 1 0 d+
-    16383 u/ drop dup seed !
-    swap mod  ;
-
-( random-n )
+( xrnd )
 
   \ Credits:
-  \ Adapted from code written by José Manuel Lazo,
+  \ Based on code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
+  \ XXX TODO try it
+
 [defined] seed
 ?\ 23670 constant seed  \ system variable
 
-code random-n  ( -- x )
+code xrnd  ( -- x )
 
   \ Return a random number (0000..FFFF)
 
-  \ XXX FIXME this returns patterns; see `random-n-test`
-
-  seed fthl  hl push
+  seed hl ftp  hl push
   hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
-  de pop  de addp  0029 de ldp#  de addp
-  seed sthl
-  pushhl jp
+  de pop  de addp  d# 41 de ldp#  de addp
+  seed hl stp
+  jpnext
   end-code
 
 ( z88random )
@@ -4806,33 +4509,21 @@ code random-n  ( -- x )
 [defined] seed
 ?\ 23670 constant seed  \ system variable
 
-  \ XXX TODO adapt.
+  \ XXX TODO Adapt.
 : z88random  ( u1 -- u2 )
   20077 16838 seed @
   ud* 12345 0 d+ over seed !
   rot ud/mod 2drop  ;
 
-( random-test random-b-test random-n-test )
+( random-test random-byte-test )
 
-require set-pixel
-
-require random
+require random  require random-byte  require set-pixel
 
 : random-test  ( n -- )
-  cls  0 do  256 random 193 random set-pixel  loop  ;
+  0 do  256 random 193 random set-pixel  loop  ;
 
-require random-b
-
-: random-b-test  ( n -- )
-  cls  0 do  random-b random-b 192 min set-pixel  loop  ;
-
-require random-n
-
-: random-n-test  ( n -- )
-  cls
-  0 do  random-n 255 and
-        random-n 255 and 192 umin set-pixel
-  loop  ;
+: random-byte-test  ( n -- )
+  0 do  random-byte random-byte 192 min set-pixel  loop  ;
 
   \ }}} =======================================================
   \ Deferred words {{{
@@ -4872,7 +4563,7 @@ require random-n
 
 ( z80-asm )
 
-\ Z80 assembler for Solo Forth
+\ Z80 Assembler for Solo Forth
 
   \ This is a modified version of an assembler designed by Coos
   \ Haak for his own Forth, and used by Lennart Benschop with
@@ -4993,7 +4684,7 @@ require -rot
 00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
 08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca 10 m9
 djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl 27 m1
-daa 28 m9 jrz 2A m5 fthl 2F m1 cpl 30 m9 jrnc 32 m5 sta 37 m1
+daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta 37 m1
 scf 38 m9 jrc 3A m5 fta 3F m1 ccf 76 m1 halt 80 m2 add 88 m2
 adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz C3 m5 jp
 C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz CD m5 call
@@ -5160,7 +4851,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 ( z80-asm -- last opcodes and macros)
 
-  \ `and`, `or` and `xor` are defined at the end, in order to
+  \ `AND`, `OR` and `XOR` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
   \ name:
 
@@ -5196,39 +4887,9 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 only forth definitions also assembler
 
 : macro  ( "name" -- )  asm postpone :  ;
-: endm  ( -- )  end-asm postpone ;  ;  immediate
+: endm  ( -- )  postpone ;  ;
 
 decimal only forth
-
-( execute-hl call-cfa )
-
-  \ Assembler macros to call any Forth word from code words.
-
-  \ Credits:
-  \
-  \ Code inspired by Spectrum Forth-83, where similar code is
-  \ embedded in `KEY` and `PAUSE` to call a cfa hold in a
-  \ variable. The code has been converted from DTC to ITC and
-  \ factored to two assembler macros in order to make it
-  \ reusable.
-
-macro execute-hl  ( -- )
-  \ Compile an `execute` with the cfa hold in HL.
-  here 6 + bc ldp# \ point IP to phony_compiled_word
-  next2 jp  \ execute the cfa in HL
-  \ phony_compiled_word:
-  here cell+ ,  \ point to the phony cfa following
-  here cell+ ,  \ phony cfa, point to the code following
-  endm
-
-  \ XXX NOTE -- If ever the system is converted from ITC to
-  \ DTC, `execut-hl` has to be modified.
-
-macro call-cfa  ( cfa -- )
-  \ Compile a call to _cfa_.
-  \ This is the low-level equivalent of `execute`.
-  hl ldp#  execute-hl
-  endm
 
 ( until-test )
 
@@ -5260,11 +4921,11 @@ code if'-test  ( -- )
 
     nz if  \ not expecting the column
       \ expecting the line
-      \ get_lin:
+      \ GET_LIN:
       cpl  C0 add#  \ now A = 191 - char
       hl incp
     then
-    \ get_col:
+    \ GET_COL:
     hl incp  a m ld
     ret
 
@@ -6184,7 +5845,7 @@ also forth
 : copy  ( n1 n2 -- )
   b/scr * swap b/scr * b/scr over + swap
   do
-    dup i block 2- ! 1+ update
+    dup i block 2- ! 1+ update 
   loop  drop flush  ;  previous
   \ Copy screen _n1_ to screen _n2_.
 

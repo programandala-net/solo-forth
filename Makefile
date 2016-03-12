@@ -112,12 +112,12 @@ solo_forth_disk_1.mgt: \
 		solo_forth.bin.tap
 	mkmgt  solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
+		solo_forth.bas.tap \
+		solo_forth.bin.tap \
 		sys/ea5aky-font42.tap \
 		sys/4x8fd.tap \
 		sys/print-42-bin.tap \
-		solo_forth.bas.tap \
-		fzx/*.fzx \
-		solo_forth.bin.tap
+		fzx/*.fzx
 
 # Disk 2 (for drive 2) contains the source blocks of the Forth
 # system, with a library of extensions and tools.  The disk

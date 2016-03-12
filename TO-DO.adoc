@@ -240,3 +240,36 @@ on and provide a common user interface to row, column, cpl, window...
 .2015-09-12:
 
 use bit 5 of FLAGS to detect and reset a new char.
+
+Ideas from Forth-79:
+____
+
+ROTATE         n1 n2 -- n3
+     Rotate  the value n1 left n2 bits if n2 is positive, right  n2
+     bits  if n2 is negative.  Bits shifted out of one end  of  the
+     cell are shifted back in at the opposite end.
+
+
+SET            n addr --
+     A defining word used  in the form:
+          n  addr  SET  <name>
+
+     Defines  a  word <name> which, when executed, will  cause  the
+     value  n  to be stored at address.
+____
+
+Implement a configurable case mode for `search` and `compare`? See how
+Z88 CamelForth does it.
+
+From the Spectrum Forth-83 manual:
+
+----
+: unat  ( -- row col )
+  24 23689 c@ - 33
+  23688 c@ -
+  dup 32 = if  drop 1+ 0  then ;
+----
+
+.2015-09-13:
+
+`rp` should be a user variable?

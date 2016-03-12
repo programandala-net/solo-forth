@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509120213
+version_release:  equ 201509122257
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -673,19 +673,22 @@ endif
 
 default_user_variables_start:
 
-s0_init_value:
+sp0_init_value:                               ; +0x00
   dw data_stack_bottom
-r0_init_value:
+rp0_init_value:                               ; +0x02
   dw return_stack_bottom
-  dw 0x0000 ; XXX OLD -- tib
-width_init_value:
+paren_wait_init_value:                        ; +0x04
+  dw noop_
+width_init_value:                             ; +0x06
   dw max_word_length
-warnings_init_value:
+warnings_init_value:                          ; +0x08
   dw true
-msg_scr_init_value:
-  dw 0x0000
-dictionary_pointer_init_value:
+msg_scr_init_value:                           ; +0x0A
+  dw +0x0000
+dictionary_pointer_init_value:                ; +0x0C
   dw dictionary_pointer_after_cold
+
+if 0  ; XXX OLD
 
   ; XXX TODO move
   dw 0x0000 ; XXX free
@@ -706,6 +709,8 @@ scr_init_value:
 ; XXX OLD
 ;number_tib_init_value:
 ;  dw bytes_per_terminal_input_buffer
+
+endif
 
 default_user_variables_end:
 
@@ -736,57 +741,58 @@ user_variables:
   ; default values by `cold`.  They must be in the same order
   ; than their default variables.
 
-s0_value: ; +0x00
+sp0_value:                                    ; +0x00
   dw data_stack_bottom
-r0_value: ; +0x02
+rp0_value:                                    ; +0x02
   dw return_stack_bottom
-  ; +0x04
-  dw 0x0000 ; XXX OLD -- tib
-width_value: ; +0x06
+paren_wait:                                   ; +0x04
+  dw 0x0000
+width_value:                                  ; +0x06
   dw max_word_length
-warnings_value: ; +0x08
+warnings_value:                               ; +0x08
   dw 0x0000
-msg_scr_value:
-  dw 0x0000 ; +0x0A
-dictionary_pointer_value: ; +0x0C
+msg_scr_value:                                ; +0x0A
+  dw 0x0000
+dictionary_pointer_value:                     ; +0x0C
   dw dictionary_pointer_after_cold
-
-  ; XXX TODO move
-  dw 0x0000 ; +0x0E free
-
-blk_value: ; +0x10
+                                              ; +0x0E free
+  dw 0x0000 ; XXX TODO move
+blk_value:                                    ; +0x10
   dw 0x0000
-in_value: ; +0x12
+in_value:                                     ; +0x12
   dw 0x0000
-out_value: ; +0x14
+out_value:                                    ; +0x14
   dw 0x0000
-scr_value: ; +0x16
+scr_value:                                    ; +0x16
   dw 0x0000
-number_tib_value: ; +0x18
+                                              ; +0x18 free
   dw 0x0000
-hld_value: ; +0x1A
+hld_value:                                    ; +0x1A
   dw 0x0000
-current_value: ; +0x1C
+current_value:                                ; +0x1C
   dw 0x0000
-state_value: ; +0x1E
+state_value:                                  ; +0x1E
   dw 0x0000
-base_value: ; +0x20
+base_value:                                   ; +0x20
   dw 0x000A
-dpl_value: ; +0x22
+dpl_value:                                    ; +0x22
   dw 0x0000
-fld_value: ; +0x24
+fld_value:                                    ; +0x24
   dw 0x0000
-csp_value: ; +0x26
+csp_value:                                    ; +0x26
   dw 0x0000
-r_hash_value: ; +0x28 ; XXX OLD -- used by the editor, remove
+r_hash_value:                                 ; +0x28
+  ; XXX OLD -- used by the editor, remove?
   dw 0x0000
 
-context_value: ; +0x2A..+0x38
+context_value:                                ; +0x2A..+0x38
 
   dw forth_pfa
   dw root_pfa
   ds (max_search_order-2)*cell
-  dw 0x0000 ; end of search order, required by `find` \ XXX TODO improve and remove
+
+  dw 0x0000 ; end of search order, required by `find`
+            ; XXX TODO improve `find` and remove this
 
   ; Unused
   dw 0x0000
@@ -1118,7 +1124,7 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
   ; XXX OLD -- added for the second version of `defer`
   ; XXX -- used by `pause`
-  
+
   dw next2
 
 ; ----------------------------------------------
@@ -1147,7 +1153,7 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; doc{
 ;
 ; jpnext  ( -- )
-; 
+;
 ; Compile a Z80 jump to `next`.
 ;
 ; }doc
@@ -1164,7 +1170,7 @@ if 0 ; XXX OLD
 ; doc{
 ;
 ; jppushhl  ( -- )
-; 
+;
 ; Compile a Z80 jump to `pushhl`.
 ;
 ; }doc
@@ -1180,7 +1186,7 @@ if 0 ; XXX OLD
 ; doc{
 ;
 ; jppushhlde  ( -- )
-; 
+;
 ; Compile a Z80 jump to `pushhlde`.
 ;
 ; }doc
@@ -1196,7 +1202,7 @@ if 0 ; XXX OLD
 ; doc{
 ;
 ; jpfetchhl  ( -- )
-; 
+;
 ; Compile a Z80 jump to `fetchhl`.
 ;
 ; }doc
@@ -2143,6 +2149,8 @@ if 1
   ; XXX alternative 3
 
   pop hl
+  ; h = 0
+  ; l = character code
   push bc
 
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
@@ -2158,6 +2166,7 @@ if 1
 
 paren_emit.print_udg:
   ; a = UDG code (128..255)
+  ; h = 0
   sub 128
   ld l,a ; hl = UDG index code (0..127)
   ld de,(sys_udg)
@@ -2225,7 +2234,7 @@ endif
 
 ; ----------------------------------------------
   _code_header decode_char_,'DECODE-CHAR'
-  
+
 ; doc{
 ;
 ; decode-char  ( c1 -- c2 )
@@ -2234,12 +2243,18 @@ endif
 
   ; XXX TODO
 
+if 0
+
   pop de
   ld hl,decode_table_+2 ; XXX TMP
 decode_char.begin:
   ld a,(hl)
   and a
   ld a,e
+
+endif
+
+  _jpnext
 
 ; ----------------------------------------------
   ; _code_header paren_key_,'(KEY)'
@@ -2271,45 +2286,27 @@ decode_char.begin:
 ;
 ; }doc
 
-  ; XXX TODO use bit 5 of (iy+1)
-
-if 1 ; XXX OLD
-
   ; XXX -- This version works only when the system interrupts
   ; are on.
 
-if 1
-  ld a,(sys_last_k)
-  and a
-else
-  bit 5,(iy+0x01) ; system variable FLAGS
-endif
+  bit 5,(iy+0x01) ; new key available? (system variable FLAGS)
   jp z,false_pfa
   jp true_pfa
 
-endif
+; ----------------------------------------------
+  _variable_header cursor_char_,'CURSOR-CHAR'
 
-if 0 ; XXX OLD
+; doc{
+;
+; cursor-char  ( -- a )
+;
+; A byte variable that holds the character code of the cursor
+; used by `xkey`. Note this is a _byte_ variable, thus it has to
+; be fetched with `c@` and modified with `c!`.
+;
+; }doc
 
-  ; XXX -- This version works also when the system interrupts are off.
-
-  push bc
-  call rom_key_scan
-  jp nz,key_question.false
-  call rom_key_test
-  jp nc,key_question.false
-
-key_question.true:
-  pop bc
-  ld ix,next ; XXX TMP
-  jp true_pfa
-
-key_question.false:
-  pop bc
-  ld ix,next ; XXX TMP
-  jp false_pfa
-
-endif
+  db 0x5F ; char code
 
 ; ----------------------------------------------
   _code_header key_,'KEY'
@@ -2365,27 +2362,12 @@ key.end:
 endif
 
 ; ----------------------------------------------
-  _variable_header cursor_char_,'CURSOR-CHAR'
-
-; doc{
-;
-; cursor-char  ( -- a )
-;
-; A byte variable that holds the character code of the cursor
-; used by `xkey`. Note this is a _byte_ variable, thus it has to
-; be fetched with `c@` and modified with `c!`.
-;
-; }doc
-
-  db 0x5F ; char code
-
-; ----------------------------------------------
   _code_header xkey_,'XKEY'
 
 ; doc{
 ;
 ; xkey  ( -- c )
-; 
+;
 ; Show a cursor, wait for the next terminal key struck; if it's
 ; the caps lock key, toggle caps and keep waiting; else leave
 ; the char code of the key struck.
@@ -2459,6 +2441,10 @@ xkey.end:
   pop bc
   jp push_hl
 
+if 0
+
+  ; XXX OLD
+
 wait_for_a_key:
   ; call delete_last_key ; XXX OLD -- not ANS Forth
 wait_for_a_key.begin:
@@ -2471,6 +2457,19 @@ delete_last_key:
   ld (sys_last_k),a
   pop af
   ret
+
+else
+
+  ; XXX NEW
+
+wait_for_a_key:
+  bit 5,(iy+1) ; bit 5 of FLAGS?: new key available?
+  jr z,wait_for_a_key
+  ld a,(sys_last_k)
+  res 5,(iy+1) ; no new key available anymore
+  ret
+
+endif
 
 ; ----------------------------------------------
   _colon_header paren_cr_,'(CR)'
@@ -2537,10 +2536,12 @@ move.do:
 
 ; doc{
 ;
-; smove  ( a1 len a2 -- )
-; 
-; Move the string _a1 len_ to _a2_. _a2_ will contain the first
-; char of the string.
+; smove  ( ca1 len1 ca2 -- )
+;
+; Move the string _ca1 len1_ to _ca2_.
+;
+; This word is the equivalent of the idiom `swap move`, but
+; faster.
 ;
 ; }doc
 
@@ -2760,6 +2761,45 @@ endif
   xor h
   ld h,a
   jp push_hl
+
+; ----------------------------------------------
+  _constant_header slash_user_,'/USER'
+
+; doc{
+;
+; /user  ( -- n )
+;
+; Constant, the length of the user variables.
+;
+; }doc
+
+  dw bytes_per_user_variables
+
+; ----------------------------------------------
+  _constant_header up_,'UP'
+
+; doc{
+;
+; up  ( -- a )  \ fig-Forth
+;
+; Constant, the address of the user area pointer.
+;
+; }doc
+
+  dw user_variables_pointer
+
+; ----------------------------------------------
+  _constant_header up0_,'UP0'
+
+; doc{
+;
+; up0  ( -- a )
+;
+; Constant, the default address of the user area.
+;
+; }doc
+
+  dw user_variables
 
 ; ----------------------------------------------
   _constant_header np_,'NP'
@@ -2990,7 +3030,7 @@ roll.end:
 ;
 ; n1 = loop limit
 ; n2 = loop index
-; 
+;
 ; If _f_ is not false, force termination of a do-loop at the
 ; next opportunity by setting the loop limit equal to the
 ; current value of the index. The index itself remains
@@ -3190,12 +3230,12 @@ true_if_cy:
 if 0
 
 ; [Code from fig-Forth 1.1g.]
- 
+
   ; XXX FIXME
   ;
   ; This code fails.  The calculation `0 0 0 1 d+` should leave
   ; `0 1` on the stack, but it leaves `0 65535`.
-   
+
               ;                           t  B
               ;                           -- --
   exx         ; save ip                   04 01
@@ -3675,6 +3715,11 @@ do_user:
   db 0x02
 
 ; ----------------------------------------------
+  _user_variable_header paren_wait_,'(WAIT)'
+
+  db 0x04
+
+; ----------------------------------------------
   _user_variable_header width_,'WIDTH'
 
   ; XXX TODO normal variable
@@ -3707,28 +3752,16 @@ do_user:
   db 0x0C
 
 ; ----------------------------------------------
-  _variable_header voc_link_,'VOC-LINK'
-
-  ; XXX TODO -- this is used only by `.vocs`. use a brute search
-  ; instead in `.vocs` and remove this?
-
-if 1 ; assembler_core_in_kernel
-  dw assembler_vocabulary_link ; link to the latest vocabulary defined
-else
-  dw forth_vocabulary_link ; link to the latest vocabulary defined
-endif
-
-; ----------------------------------------------
   _user_variable_header blk_,'BLK'
 
-  ; XXX TODO normal variable
+  ; XXX TODO normal variable?
 
   db 0x10
 
 ; ----------------------------------------------
   _user_variable_header to_in_,'>IN'
 
-  ; XXX TODO normal variable
+  ; XXX TODO normal variable?
 
   db 0x12
 
@@ -3736,7 +3769,8 @@ endif
   _user_variable_header out_,'OUT'
 
   ; XXX TODO In Forth 83 it's a user variable too, but it's called `#out`.
-  ; XXX TODO rename to `#emitted`
+  ; XXX TODO rename to `#emitted`?
+
   db 0x14
 
 ; ----------------------------------------------
@@ -3756,9 +3790,9 @@ endif
   db 0x16
 
 ; ----------------------------------------------
-  _user_variable_header context_,'CONTEXT'
+  _user_variable_header hld_,'HLD'
 
-  db 0x2A
+  db 0x1A
 
 ; ----------------------------------------------
   _user_variable_header current_,'CURRENT'
@@ -3808,9 +3842,21 @@ endif
   db 0x28
 
 ; ----------------------------------------------
-  _user_variable_header hld_,'HLD'
+  _user_variable_header context_,'CONTEXT'
 
-  db 0x1A
+  db 0x2A
+
+; ----------------------------------------------
+  _variable_header voc_link_,'VOC-LINK'
+
+  ; XXX TODO -- this is used only by `.vocs`. use a brute search
+  ; instead in `.vocs` and remove this?
+
+if 1 ; assembler_core_in_kernel
+  dw assembler_vocabulary_link ; link to the latest vocabulary defined
+else
+  dw forth_vocabulary_link ; link to the latest vocabulary defined
+endif
 
 ; ----------------------------------------------
   _constant_header tib_,'TIB'
@@ -4697,7 +4743,7 @@ dot_quote.interpreting:
 ;
 ; Receive a string of at most _len1_ characters.  No characters
 ; are received or transferred if _len1_ is zero.  Display
-; graphic characters as they are received. 
+; graphic characters as they are received.
 ;
 ; Input terminates when an implementation-defined line
 ; terminator is received. When input terminates, nothing is
@@ -4714,7 +4760,7 @@ dot_quote.interpreting:
   dw to_r_ ; ( ca1 ) ( R: len1 )
 accept.begin: ; ( ca )
   dw xkey_ ; ( ca c )
-  
+
   dw dup_ ; ( ca c c )
   _literal delete_char
   dw equals_ ; delete key?
@@ -4725,7 +4771,7 @@ accept.begin: ; ( ca )
   dw zero_branch_,accept.begin ; nothing to delete
   ; Do delete the last char
   dw one_minus_ ; update the current address
-  _literal -1 
+  _literal -1
   dw span_,plus_store_ ; update `span`
   _literal backspace_char
   dw branch_,accept.emit
@@ -5065,7 +5111,7 @@ stream.end:
 ;
 ; }doc
 
-; XXX FIXME 
+; XXX FIXME
 ; `0 word` crashes the system. how to parse till the end of
 ; line?
 
@@ -5227,7 +5273,7 @@ upper.a:
   ret c
   cp 'z'+1
   ret nc
-  xor 0x20 ; toggle bit 5
+  and %11011111
   ret
 
 ; ----------------------------------------------
@@ -5590,11 +5636,16 @@ compare_strings_case_sensitive:
 
   ; Adapted from DZX-Forth.
   ;
-  ; XXX TODO do not use compare_strings_case_sensitive,
-  ; because there will be no option to change it.
-  ; Use shorter internal code instead.
-  ; When case insensitive comparation is needed,
-  ; `uppers` can be used.
+  ; XXX TODO -- do not use compare_strings_case_sensitive,
+  ; because there will be no option to change it.  Use shorter
+  ; internal code instead.  When case insensitive comparation is
+  ; needed, `uppers` can be used.
+  ;
+  ; XXX TODO --  2015-09-12: make the case mode comparison
+  ; configurable seems a better option, easier than customize
+  ; several version of the same code with `uppers`, not to
+  ; mention `uppers` with parsed strings must use tthe circular
+  ; string buffer, what is a limitation.
 
   exx ; save Forth IP
   pop hl
@@ -6066,7 +6117,7 @@ warm_start:
   ; Init the names pointer.
   dw lit_,names_pointer_init_value,fetch_
   dw lit_,names_pointer,store_
-  
+
   ; Init the disk buffers.
   dw empty_buffers_
 
@@ -6075,7 +6126,7 @@ warm_start:
 
   ; Init the user variables.
   dw lit_,default_user_variables_start ; from
-  dw lit_,user_variables_pointer,fetch_ ; to
+  dw up_,fetch_ ; to
   _literal default_user_variables_end-default_user_variables_start ; length
   dw cmove_
 
@@ -6111,7 +6162,7 @@ common_start:
   im 1 ; interrupt mode 1
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
   ld (system_stack_pointer),sp ; save the system stack pointer
-  ld sp,(s0_init_value)
+  ld sp,(sp0_init_value)
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
   ld ix,next ; restore IX
@@ -6386,6 +6437,16 @@ max.2:
 ; ----------------------------------------------
   _colon_header paren_line_,'(LINE)'
 
+
+; doc{
+;
+; (line)  ( n1 n2 -- ca len )  \ fig-Forth
+;
+; Convert the line number _n1_ and the screen number _n2_ to the
+; disk buffer address containing the data.
+;
+; }doc
+
   dw to_r_
   dw c_slash_l_,b_slash_buf_,star_slash_mod_
   dw from_r_,b_slash_scr_,star_,plus_
@@ -6469,7 +6530,7 @@ message.number_only:
 ; doc{
 ;
 ; empty-buffers  ( -- )
-; 
+;
 ; Unassign all block buffers. Do not transfer the contents of
 ; any updated block to mass storage.
 ;
@@ -6484,7 +6545,7 @@ message.number_only:
 ; doc{
 ;
 ; buffer-data  ( -- a )
-; 
+;
 ; First data address of the disk buffer.
 ;
 ; }doc
@@ -6498,7 +6559,7 @@ message.number_only:
 ; doc{
 ;
 ; buffer-id  ( -- x )
-; 
+;
 ; Id of the disk buffer.
 ;
 ; }doc
@@ -6512,7 +6573,7 @@ message.number_only:
 ; doc{
 ;
 ; block-number  ( x -- n )
-; 
+;
 ; Convert the disk buffer id _x_ to its associated block _n_,
 ; by removing the update bit.
 ;
@@ -6553,7 +6614,7 @@ message.number_only:
 ;             else  drop
 ;             then  disk-buffer !  ;
 ; ----
- 
+
 ; }doc
 
   dw updated_question_
@@ -6594,7 +6655,7 @@ free_buffer.end:
   dw branch_,buffer.end
 buffer.not_equals:
   dw paren_buffer_
-buffer.end:  
+buffer.end:
   dw buffer_data_ ; first cell of data in the buffer
   dw semicolon_s_
 
@@ -6607,7 +6668,7 @@ buffer.end:
 
 ; If the block _n_ is already in memory, leave the address _a_
 ; of the first cell in the disk buffer for data storage.
-; 
+;
 ; If the block _n_ is not already in memory, transfer it from
 ; disk to the buffer.  If the block occupying that buffer has
 ; been marked as updated, rewrite it to disk before block _n_ is
@@ -6695,7 +6756,7 @@ block.end:
   dw negate_
   _literal 128
   dw and_,or_
-  
+
   dw flip_,or_
   dw semicolon_s_
 
@@ -6782,7 +6843,7 @@ block.end:
 paren_transfer_block_:
   ; Headerless word with the low level code of `R/W`.
   dw paren_transfer_block_pfa ; code field
-  
+
   ; ( a sector -- )
   ; sector (high byte) = track 0..79, +128 if side 1
   ;        (low byte)   = sector 1..10
@@ -7166,21 +7227,6 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header unless_,'UNLESS',immediate
-
-  ; Equivalent to `0= if`, but faster.
-
-  dw compile_,question_branch_
-  dw branch_,if.do
-  dw semicolon_s_
-
-  ; XXX TODO move to the disk:
-
-; : unless  ( f -- )  postpone ?branch >mark 2  ; immediate
-; \ Alternative: when compiler security is removed:
-; : unless  ( f -- )  postpone ?branch >mark  ; immediate
-
-; ----------------------------------------------
   _colon_header ahead_,'AHEAD',immediate
 
   dw compile_,branch_
@@ -7435,7 +7481,7 @@ endif
 ; doc{
 ;
 ; colors0  ( -- )
-; 
+;
 ; Set the screen colors to the default values.
 ;
 ; }doc
@@ -8011,7 +8057,7 @@ question_backslash.end:
 ; doc{
 ;
 ; \  ( -- )
-; 
+;
 ; Discard the rest of the parse area.
 ;
 ; }doc
