@@ -518,7 +518,7 @@ question_terminal_lfa:
 question_terminal_cfa:
   defw question_terminal_pfa
 question_terminal_pfa:
-  ld hl,0x0000
+  ld hl,0x0000 ; XXX FIXME -- This command is unnecessary.
   jp question_terminal_routine
 
 cr_nfa:
@@ -3172,6 +3172,7 @@ branch_destination_0x6FBE:
   defw semicolon_s_cfa
 
 question_terminal_routine:
+  ; XXX FIXME -- Saving and restoring de and bc is unnecessary.
   push bc
   push de
   call rom_break_key
@@ -5398,6 +5399,7 @@ gover_lfa:
 gover_cfa:
   defw do_colon
 gover_pfa:
+  ; XXX FIXME: The final store operations should be `C!`, not `!`, else the next system variable, MEMBOT, is affected.
   ; XXX FIXME: Only one store operation is needed, at the end, what saves 6 bytes without speed penalty.
   defw zero_branch_cfa,0x0016 ; to branch_destination_0x7E61
   defw lit_cfa,sys_p_flag
@@ -5424,6 +5426,7 @@ inverse_lfa:
 inverse_cfa:
   defw do_colon
 inverse_pfa:
+  ; XXX FIXME: The final store operations should be `C!`, not `!`, else the next system variable, MEMBOT, is affected.
   ; XXX FIXME: Only one store operation is needed, at the end, what saves 6 bytes without speed penalty.
   defw zero_branch_cfa,0x0018 ; to branch_destination_0x7E9B
   defw lit_cfa,sys_p_flag

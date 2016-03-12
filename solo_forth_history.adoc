@@ -179,10 +179,52 @@ Problem detected with `(emit)` and those four booleans attributes.
 
 New: `pick`, from DZX-Forth.
 
-Change: The original system to to print out with `link` wasn't
+Change: The original system to print out with `link` wasn't
 practical, because it copied to the printer everything that was
 printed on the screen.  It is removed. Now the new words `printer` and
 `display` are used instead.
 
+.2015-06-10:
+
 Changes in `(emit)`, in order to fix the problems with boolean
-attributes. It seems the channel must be opened every time.
+attributes. It seems the channel must be opened every time; or the
+temporary attributes must be set.  Finally, all color words are
+written in Z80, in the kernel, sharing one main routine: printing the
+chars required to set the temporary attribute, and then calling the
+ROM routine that makes it permanent. This method works for all
+attributes and print flags. Example:
+
+----
+paper_nfa:
+  db 0x05+0x80,'PAPE','R'+0x80
+paper_lfa:
+  dw bright_nfa
+paper_:
+  dw paper_pfa
+paper_pfa:
+  ld a,paper_char
+  jp color
+
+ink_nfa:
+  db 0x03+0x80,'IN','K'+0x80
+ink_lfa:
+  dw paper_nfa
+ink_:
+  dw ink_pfa
+ink_pfa:
+  ld a,ink_char
+color:
+  ; Set a color attribute (ink, paper, bright, flash, inverse or gover).
+  ; a = attribute control char
+  ; (tos) = color attribute value
+  rst 0x10
+  pop hl
+  ld a,l
+  rst 0x10
+  call rom_set_permanent_colors_0x1CAD
+  _jp_next
+----
+
+The color words are removed from the blocks disk.
+
+Improvement: smaller and faster `?terminal`.

@@ -8,7 +8,7 @@ compilation of sources.
 
 .2015-06-05:
 
-Fix `exit`, `?exit`, `rdrop`...
+Fix `?exit`.
 
 Fix: `begin` structures produce compilation errors in screens, but not
 in the terminal!
@@ -20,15 +20,13 @@ during the execution of a word. When a word stacks several numbers,
 they can corrupt the zone below the stack before `?stack` detects the
 overflow.
 
-Often the stack gets full during compilation of screens.
-
+Often the stack gets full during compilation of screens. [Already solved?]
 
 .2015-06-06:
 
 Save the error code, in case `warning` is -1.
 
-Make `where` to use values saved somewhere, not on the stack?
-
+Make `where` to use values saved somewhere, not on the stack.
 
 DZX-Forth implements `exit` simple as `compile (exit)`, and
 `exit` is the word called by `;`. Compare both implementations.
@@ -75,9 +73,15 @@ two user variables.  Everything seems normal.  Interesting things:
 
 .2015-06-09:
 
-Fix: `flash`, `bright`, `inverse`, `gover`. The code is the same than
-in Abersoft Forth and Afera, but it doesn't work fine. Details in the
-code. The problem is the new code of `(emit)`.
-
 In order to save compilation time, move inner words to the bottom of
 the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
+
+.2015-06-10:
+
+Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
+
+  : TERMINAL ( --- )
+    LIT PKEY (KEY) !    \ Set default handler for KEY.
+    >S ;                \ And initialize screen output.
+
+Fix: the compilation of `decode` fails and corrupts the system.

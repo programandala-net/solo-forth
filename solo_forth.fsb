@@ -157,47 +157,6 @@ create -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
   smudge decimal
 
-( flash )
-
-  \ 23693 = ATTR P system variable
-
-  \ XXX FIXME It doesn't work fine: no effect unless the cursor
-  \ is on the lower part of the screen.  It could have to do
-  \ with the flashing cursor of the system, but there's no
-  \ effect also when the flash is activated in a definition.
-
-: flash  ( f -- )
-  if    23693 c@ 128 or
-  else  23693 c@ 127 and
-  then  23693 !  ;
-
-( bright )
-
-  \ 23693 = ATTR P system variable
-
-: bright  ( f -- )
-  if    23693 c@ 64 or
-  else  23693 c@ 191 and
-  then  23693 !  ;
-
-( gover )
-
-  \ 23697 = P FLAG system variable
-
-: gover  ( f -- )
-  if    23697 c@ 2 or
-  else  23697 c@ 253 and
-  then  23697 c!  ;
-
-( inverse )
-
-  \ 23697 = P FLAG system variable
-
-: inverse  ( f -- )
-  if    23697 c@ 8 or
-  else  23697 c@ 247 and
-  then  23697 c!  ;
-
 ( point )
 
   \ 2015-06-04: Copied from the Afera library
@@ -637,5 +596,29 @@ hex  width @ 2 width !
   [compile] literal  ; immediate
 
 width ! decimal
+
+( Time extensions )
+
+  \ 2015-06-10: Copied from the Afera library
+  \ (http://programandala.net/en.program.afera.html).
+
+23672 constant sys-frames
+
+: ms  ( n -- )
+  \ Wait n ms (miliseconds), with 20 ms precision.
+  20 / sys-frames @ +
+  begin  dup sys-frames @ u<  until drop  ;
+
+: time@  ( -- d )
+  \ System frames counter (incremented every 20 ms).
+  sys-frames @ [ sys-frames 2+ ] literal c@  ;
+
+: time!  ( d -- )
+  \ Set the system frames counter.
+  [ sys-frames 2+ ] literal c! sys-frames !  ;
+
+: time0  ( -- )
+  \ Reset the system frames counter.
+  0. time!  ;
 
   \ vim: filetype=soloforth
