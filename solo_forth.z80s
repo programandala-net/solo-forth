@@ -3,7 +3,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201508141929
+version_release:  equ 201508150335
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -49,7 +49,7 @@ version_release:  equ 201508141929
 ;       HL   Input only when pushhl called. ; XXX TODO
 ;       IX   Address of `next`.
 ;            May be used within Forth words if restored before exit.
-;       IY   Address of the ERRNR system variable.
+;       IY   Address of the ERRNR ZX Spectrum system variable.
 ;            May be used within Forth words if restored before exit.
 
 ; ----------------------------------------------
@@ -197,13 +197,18 @@ ans_forth_block_size?: equ false
   ; false = Forth-83 and ANS Forth `exit` is used ; XXX FIXME
 
   ; XXX TODO try false
-fig_compiler_security?: equ false
+  ; XXX FIXME still there are problems when compiler security is off
+fig_compiler_security?: equ true
   ; true = fig-Forth `?pairs' is used
   ; false = no checking during compilation of control
   ;   structures: smaller and faster code.
 
   ; XXX TODO
 show_version?: equ false
+
+new_read_write?: equ true
+  ; false : 33308 bytes free
+  ; true :  33301 bytes free
 
 ; ==============================================================
 ; Symbols
@@ -215,6 +220,10 @@ origin:                           equ 0x5E00
 
 false:                            equ 0
 true:                             equ 1
+if true=(-1)
+  ; XXX FIXME still there are problems when true=-1
+  .warning TRUE is -1
+endif
 
 cell:                             equ 2
 
@@ -228,11 +237,11 @@ if ans_forth_block_size?
   data_bytes_per_buffer:            equ 0x0400
   blocks_per_screen:                equ 0x01
 else
-  buffers:                          equ 0x02
+  buffers:                          equ 0x01 ; XXX NEW 1 buffer instead of 2
   data_bytes_per_buffer:            equ 0x0200
   blocks_per_screen:                equ 0x02
 endif
-total_bytes_per_buffer:           equ data_bytes_per_buffer+5
+total_bytes_per_buffer:           equ 2+data_bytes_per_buffer+3
 
 screens_per_disk:                 equ 0x030C ; 780 KiB per disk in G+DOS
 characters_per_line:              equ 0x40
@@ -711,14 +720,13 @@ s0_init_value:
   dw data_stack_bottom
 r0_init_value:
   dw return_stack_bottom
-tib_init_value:
-  dw terminal_input_buffer
+; tib_init_value: ; XXX OLD
+  dw 0x0000 ; XXX OLD -- terminal_input_buffer
 width_init_value:
   dw max_word_length
 warning_init_value:
   dw 0x0000
-fence_init_value:
-  dw dictionary_pointer_after_cold
+  dw 0x0000 ; XXX OLD -- fence
 dp_init_value:
   dw dictionary_pointer_after_cold
 
@@ -738,8 +746,9 @@ out_init_value:
 scr_init_value:
   dw 0x0000
 
-number_tib_init_value:
-  dw bytes_per_terminal_input_buffer
+; XXX OLD
+;number_tib_init_value:
+;  dw bytes_per_terminal_input_buffer
 
 default_user_variables_end:
 
@@ -779,8 +788,8 @@ width_value: ; +0x06
   dw 0x0000
 warning_value: ; +0x08
   dw 0x0000
-fence_value: ; +0x0A
-  dw 0x0000
+  ; +0x0A
+  dw 0x0000 ; XXX OLD -- fence
 dp_value: ; +0x0C
   dw 0x0000
 
@@ -871,13 +880,20 @@ return_stack_bottom:
 ; Disk buffers
 
 first_buffer:
-  ds blocks_per_screen*total_bytes_per_buffer
+if buffers=1
+  dw 0x7FFF ; block number
+  ds data_bytes_per_buffer
+  db space_char,0,space_char
+else
+  ; ds blocks_per_screen*total_bytes_per_buffer ; XXX OLD
+  ds buffers*total_bytes_per_buffer
+endif
 limit:
 
 ; ==============================================================
 ; Misc routines
 
-; [Taken from DZX-Forth.]
+; [Code from DZX-Forth.]
 
 ; ----------------------------------------------
 ; Compare de and hl
@@ -2275,6 +2291,9 @@ skip.begin:
 ; ----------------------------------------------
   _colon_header emit_,'EMIT'
 
+; XXX TODO -- Add multitasker's `pause` when available.
+; XXX TODO -- defer
+
   dw paren_emit_
   dw one_,out_,plus_store_
   dw semicolon_s_
@@ -2396,8 +2415,8 @@ previous_key equ $+1
 ;
 ; }doc
 
-; XXX -- This version works when the system interrupts are off,
-; but multitasker's `pause` must be added.
+; XXX -- This version works when the system interrupts are off.
+; XXX TODO -- Add multitasker's `pause` when available.
 
   push bc
 key.begin:
@@ -2578,6 +2597,9 @@ move.do:
 ; doc{
 ;
 ; smove  ( a1 len a2 -- )
+; 
+; Move the string _a1 len_ to _a2_. _a2_ will contain the first
+; char of the string.
 ;
 ; }doc
 
@@ -3158,7 +3180,7 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0>'
 
-  ; [Taken from DZX-Forth.]
+  ; [Code from DZX-Forth.]
 
   pop de
   ld hl,0
@@ -3306,14 +3328,12 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header on_,'ON'
 
-if true=1
   pop hl
+if true=1
   ld (hl),1
   inc hl
   ld (hl),0
 else
-  .warning TRUE ERROR
-  pop hl
   ld (hl),0xFF
   inc hl
   ld (hl),0xFF
@@ -3631,6 +3651,17 @@ do_user:
 ; ----------------------------------------------
   _colon_header plus_origin_,'+ORIGIN'
 
+; doc{
+;
+; +origin  ( n -- a )  \ fig-Forth
+;
+; Leave the memory address relative by _n_ to the origin
+; parameter area.  _n_ is the minimum address unit, either byte
+; or word.  This definition is used to access or modify the
+; boot-up parameters at the origin area.
+;
+; }doc
+
   dw lit_,origin,plus_
   dw semicolon_s_
 
@@ -3645,24 +3676,6 @@ do_user:
   db 0x02
 
 ; ----------------------------------------------
-  _user_variable_header tib_,'TIB'
-
-; doc{
-;
-; tib  ( -- ca )  \ fig-Forth, U
-;
-; A user variable containing the address of the terminal input buffer.
-;
-; }doc
-
-; XXX TODO in Forth-83 this word is a constant; in ANS Forth
-; it's obsolete.
-  ; XXX TODO normal variable
-
-
-  db 0x04
-
-; ----------------------------------------------
   _user_variable_header width_,'WIDTH'
 
   ; XXX TODO normal variable
@@ -3673,15 +3686,6 @@ do_user:
   _user_variable_header warning_,'WARNING'
 
   db 0x08
-
-; ----------------------------------------------
-  _user_variable_header fence_,'FENCE'
-
-  ; XXX TODO why this is a user variable?
-  ; XXX OLD -- obsolescent word
-  ; XXX TODO normal variable
-
-  db 0x0A
 
 ; ----------------------------------------------
   _user_variable_header dp_,'DP'
@@ -3721,11 +3725,6 @@ do_user:
   _user_variable_header scr_,'SCR' ; XXX OLD -- used by `list`
 
   db 0x16
-
-; ----------------------------------------------
-  _user_variable_header number_tib_,'#TIB'
-
-  db 0x18
 
 ; ----------------------------------------------
   _user_variable_header context_,'CONTEXT'
@@ -3772,6 +3771,24 @@ do_user:
   _user_variable_header hld_,'HLD'
 
   db 0x1A
+
+; ----------------------------------------------
+  _constant_header tib_,'TIB'
+
+; doc{
+;
+; tib  ( -- ca )  \ ANS-Forth
+;
+; Address of the terminal input buffer.
+;
+; }doc
+
+  dw terminal_input_buffer
+
+; ----------------------------------------------
+  _variable_header number_tib_,'#TIB'
+
+  dw bytes_per_terminal_input_buffer
 
 ; ----------------------------------------------
   _colon_header recurse_,'RECURSE',immediate
@@ -4726,16 +4743,12 @@ expect.do: ; ( ca )
   ; Delete key ( ca c )
   dw drop_
   dw dup_,i_,equals_ ; cursor at the start position?
-if true=1
-  dw dup_ ; ( ca f f )
-  dw from_r_,two_minus_,plus_,to_r_ ; update the index
-else
-  .warning TRUE ERROR
+if true=(-1)
   ; XXX TODO simplify
   dw abs_
+endif
   dw dup_ ; ( ca f f )
   dw from_r_,two_minus_,plus_,to_r_ ; update the index
-endif
   dw question_branch_,expect.loop ; nothing to delete
   ; dw b_l_,i_,c_store_ ; update the buffer ; XXX OLD
   _literal backspace_char
@@ -4797,7 +4810,7 @@ expect.end:
 ;
 ; }doc
 
-  dw tib_,fetch_,dup_
+  dw tib_,dup_
   dw number_tib_,fetch_
   dw two_dup_,blank_ ; clean the input buffer
   dw expect_
@@ -4927,7 +4940,7 @@ fill.end:
   dw block_ ; from disk
   dw branch_,stream.end
 stream.terminal:
-  dw tib_,fetch_ ; from terminal
+  dw tib_ ; from terminal
 stream.end:
   dw to_in_,fetch_,plus_
   dw semicolon_s_
@@ -5104,7 +5117,6 @@ paren_number.end:
   dw equals_ ; is it a minus sign?
   dw dup_,to_r_ ; save the flag
 if true=(-1)
-  .warning TRUE ERROR
   dw abs_
 endif
   dw plus_
@@ -5334,12 +5346,11 @@ find.loop:
 error_to_number.do
   dw i_
   _literal 16
-if true=1
-  dw mod_,zero_equals_,plus_
-else
-  .warning TRUE ERROR
-  dw mod_,zero_equals_,abs_,plus_
+  dw mod_,zero_equals_
+if true=(-1)
+  dw abs_
 endif
+  dw plus_
   dw paren_loop_,error_to_number.do
   dw semicolon_s_
 
@@ -5695,13 +5706,6 @@ two_literal.end:
 ; ----------------------------------------------
   _colon_header interpret_,'INTERPRET'
 
-
-; XXX TODO -- In order to change the behaviour of `literal`, `2literal`
-; and `cliteral` (make them give an error in interpretation mode),
-; `interpret` must be modified.
-
-interpret.begin:
-
 ; doc{
 ;
 ; interpret  ( -- )
@@ -5709,57 +5713,71 @@ interpret.begin:
 ; The outer text interpreter which sequentially executes or
 ; compiles text from the input stream (terminal or disk)
 ; depending on `state`. if the word name cannot be found after a
-; search of `context` it is converted to a number according to
-; the current `base`.  That also failing, an error message
-; echoing the name with a "?" will be given.
+; search of the `context` search order it is converted to a
+; number according to the current `base`.  That also failing, an
+; error message echoing the name with a "?" will be given.
 ;
 ; }doc
-;
-; Note: The main difference with the fig-Forth version of
-; `interpret` is this version does not search the `current`
-; vocabulary.
+
+interpret.begin:
 
   ; XXX TODO -- finish
 
+  ; XXX TODO -- In order to change the behaviour of `literal`,
+  ; `2literal` and `cliteral` (make them give an error in
+  ; interpretation mode), `interpret` must be modified.
+
+
   dw question_stack_
-  ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
+  ; dw lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   ;dw cr_,dot_s_ ; XXX INFORMER
   ; _echo 'In interpret after defined ' ; XXX INFORMER
   ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
   dw question_dup_ ; found?
-  ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
+  ; dw lit_,4,border_,dot_s_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found
 
   ; Found ( cfa 1 | cfa -1 )
+  ; Immediate word:     ( cfa  1 )
+  ; Non-immediate word: ( cfa -1 )
+  dw comp_question_
+  ; ( cfa 1 state | cfa -1 state )
 if true=1
-  dw state_,fetch_,negate_ ; compiling?
-else
-  .warning TRUE ERROR
-  dw state_,fetch_ ; compiling?
+  ; Compiling an immediate word:     ( cfa  1 1 )
+  ; Compiling a non-immediate word:  ( cfa -1 1 )
+  ; Executing an immediate word:     ( cfa  1 0 )
+  ; Executing a non-immediate word:  ( cfa -1 0 )
+  dw negate_
 endif
-  dw equals_ ; compiling an immediate word?
+  ; Compiling an immediate word:     ( cfa  1 -1 )
+  ; Compiling a non-immediate word:  ( cfa -1 -1 )
+  ; Executing an immediate word:     ( cfa  1  0 )
+  ; Executing a non-immediate word:  ( cfa -1  0 )
+  dw equals_ ; compiling a non-immediate word?
   dw zero_branch_,interpret.execute
 
-  ; Compiling and not immediate  ( cfa )
+  ; Compiling a non-immediate word  ( cfa )
   dw compile_comma_
   dw branch_,interpret.begin
 
 interpret.execute:
   ; Executing or immediate ( cfa )
-;  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-;  _echo 'about to execute cfa ' ; XXX INFORMER
+  ;_echo 'about to execute cfa ' ; XXX INFORMER
+  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
 ;  dw dup_,u_dot_,key_,drop_ ; XXX INFORMER
   dw execute_
-;  dw lit_,7,border_ ; XXX INFORMER
+  ;dw zero_,border_ ; XXX INFORMER
   dw branch_,interpret.begin
 
 interpret.word_not_found:
   ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   ; try to convert the text to a number
   ; ( ca )
-  ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
+  ;_echo 'about to convert to number ' ; XXX INFORMER
+  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw number_
+  ;dw zero_,border_ ; XXX INFORMER
   dw dpl_,fetch_,one_plus_ ; is there a decimal point?
   dw zero_branch_,interpret.16bit_number
   ; decimal point detected, so it's a double, 32-bit, number
@@ -5793,11 +5811,11 @@ interpret.16bit_number:
 ;
 ; vocabulary  ( "name" -- )
 ;
+; Create a vocabulary with the parsed "name" as its name. The
+; run-time efect of `name` is to replace `context`, the top
+; vocabulary in the search order.
+;
 ; }doc
-
-  ; Create a dictionary entry with the parsed name as
-  ; its name, and the code field pointing to the word after
-  ; `does>`.
 
   dw create_
   dw zero_,comma_ ; space for the nfa of the latest word defined in the vocabulary
@@ -5875,6 +5893,12 @@ endif
 ; ----------------------------------------------
   _colon_header greeting_,'GREETING'
 
+; doc{
+;
+; greeting  ( -- )
+;
+; }doc
+
 if show_version?
   dw paren_dot_quote_
 ;  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
@@ -5895,6 +5919,7 @@ endif
 ; ----------------------------------------------
   _colon_header abort_,'ABORT'
 
+
   dw sp0_,fetch_,sp_store_
 boot:
   dw noop_ ; patched by `turnkey` ; XXX OLD
@@ -5906,18 +5931,31 @@ boot:
   dw boot
 
 ; ----------------------------------------------
-  _colon_header warm_,'WARM'
+  ; _colon_header warm_,'WARM' ; XXX OLD
 
-  dw lit_,1,border_,key_,drop_ ; XXX INFORMER
-  dw empty_buffers_
-  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  dw abort_
+  ; dw empty_buffers_
+  ; dw lit_,2,border_,key_,drop_ ; XXX INFORMER
+  ; dw abort_
 
 warm_start:
+  ld hl,0
+  add hl,sp
+  ld (system_stack_pointer),hl ; save the system stack pointer
   ld sp,(s0_init_value) ; reset the data stack
+
+  xor a
+  ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
+  ld bc,abort_
+  ld ix,next ; restore IX
+  _jp_next ; jump to the cfa in the BC register
+
+
+  ; XXX OLD
   call common_start
 warm_start_phony_:
-  dw warm_
+;  dw warm_ ; XXX OLDa
+  _echo "check point 0"
+  dw abort_
 
 ; ----------------------------------------------
   _colon_header cold_,'COLD'
@@ -5967,6 +6005,9 @@ endif
   dw abort_
 
 cold_start:
+  ld hl,0
+  add hl,sp
+  ld (system_stack_pointer),hl ; save the system stack pointer
   ld sp,(s0_init_value) ; reset the data stack
 only_first_cold: ; XXX TMP -- temporary label
   call move_name_fields_to_memory_bank ; (only the first time)
@@ -5983,17 +6024,21 @@ common_start:
   ; Common operations done by warm_start and cold_start.
 
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
-  ld hl,0
-  add hl,sp
-  ld (system_stack_pointer),hl ; save the system stack pointer for later
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
-  ld sp,(s0_init_value) ; reset the data stack
   ld ix,next ; restore IX
   _jp_next ; jump to the cfa in the BC register
 
 ; ----------------------------------------------
   _code_header s_to_d_,'S>D'
+
+; doc{
+;
+; s->d  ( n -- d )
+;
+; Sign extend a single number _n_ to form a double number _d_.
+;
+; }doc
 
   ld hl,0
   pop de
@@ -6005,8 +6050,6 @@ common_start:
 
 ; ----------------------------------------------
   _colon_header plus_minus_,'+-'
-
-  ; XXX TODO move to the disk
 
 ; doc{
 ;
@@ -6024,8 +6067,6 @@ plus_minus.end:
 
 ; ----------------------------------------------
   _colon_header d_plus_minus_,'D+-'
-
-  ; XXX TODO move to the disk
 
 ; doc{
 ;
@@ -6045,15 +6086,29 @@ d_plus_minus.end:
 ; ----------------------------------------------
   _colon_header abs_,'ABS'
 
-  dw dup_
-  dw plus_minus_
+; doc{
+;
+; abs  ( n -- u )
+;
+; Leave the absolute value _u_ of a number _n_.
+;
+; }doc
+
+  dw dup_,plus_minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header dabs_,'DABS'
 
-  dw dup_
-  dw d_plus_minus_
+; doc{
+;
+; dabs  ( d -- ud )
+;
+; Leave the absolute value _ud_ of a double number _d_.
+;
+; }doc
+
+  dw dup_,d_plus_minus_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6173,6 +6228,15 @@ max.2:
 ; ----------------------------------------------
   _colon_header slash_mod_,'/MOD'
 
+; doc{
+;
+; /mod  ( n1 n2 -- rem quot )  \ fig-Forth
+;
+; Leave the remainder and signed quotient of _n1_/_n2_. The
+; remainder has the sign of the dividend.
+;
+; }doc
+
   dw to_r_,s_to_d_
   dw from_r_,m_slash_
   dw semicolon_s_
@@ -6258,19 +6322,28 @@ message.number_only:
   dw first_buffer
 
 ; ----------------------------------------------
-  _constant_header hash_buff_,'#BUFF'
+  _constant_header buffers_,'BUFFERS'
+
+; doc{
+;
+; buffers  ( -- n )
+; 
+; Number of disk buffers.
+;
+; }doc
 
   dw buffers
 
 ; ----------------------------------------------
+; XXX TODO remove this word when there's only one buffer
   _colon_header plus_buf_,'+BUF'
 
 ; doc{
 
-; +buf  ( a1 -- a2 f )  \ fig-Forth
+; +buf  ( a1 -- a2 wf )  \ fig-Forth
 
 ;   Advance the disk buffer address _a1_ to the address of the next
-;   buffer _a2_.  Boolean _f_ is false when _a2_ is the buffer
+;   buffer _a2_.  Boolean _wf_ is false when _a2_ is the buffer
 ;   presently pointed to by the variable `prev`.
 
 ; }doc
@@ -6287,11 +6360,32 @@ plus_buf.continue:
 ; ----------------------------------------------
   _colon_header update_,'UPDATE'
 
+; doc{
+;
+; update  ( -- )  \ fig-Forth
+;
+; Mark the most recently referenced block (pointed to by `prev`) as
+; altered. The block will subsequently be transferred automatically to
+; disk should its buffer be required for storage of a different block.
+;
+; }doc
+
   ; XXX TODO move to the disk?
+
+if buffers=1
+
+  dw first_,fetch_
+  dw lit_,0x8000,or_
+  dw first_,store_
+
+else
 
   dw prev_,fetch_,fetch_
   dw lit_,0x8000,or_
   dw prev_,fetch_,store_
+
+endif
+
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6306,26 +6400,31 @@ plus_buf.continue:
 ;
 ; }doc
 
-if 1 ; XXX OLD
-
-  dw b_l_,over_,c_store_
-  dw zero_,over_,one_plus_,c_store_
-  dw b_l_,swap_,two_plus_,c_store_
-  dw semicolon_s_
-
-else ; XXX NEW
-
   dw s_lit_
-  db 3,space_char,0,space_char
-  dw rot_,cmove_
+  db 3,space_char,0,space_char ; string
+  dw rot_,smove_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header empty_buffers_,'EMPTY-BUFFERS'
 
-  dw first_,limit_,over_,minus_,erase_
+; doc{
+;
+; empty-buffers  ( -- )
+; 
+; Unassign all block buffers. Do not transfer the contents of
+; any updated block to mass storage. All buffers are filled with
+; blanks.
+;
+; }doc
+
+if buffers=1
+
+  dw lit_,0x7FFF,first_,store_
+
+else
+
+  dw first_,limit_,over_,minus_,blank_ 
   dw limit_,first_
   dw paren_do_
 empty_buffers.do:
@@ -6334,21 +6433,82 @@ empty_buffers.do:
   dw i_,lit_,data_bytes_per_buffer+2,plus_,stream_end_
   dw lit_,total_bytes_per_buffer
   dw paren_plus_loop_,empty_buffers.do
+
+endif
+
   dw semicolon_s_
+
+if buffers=1
+; ----------------------------------------------
+  _colon_header block_number_,'BLOCK-NUMBER'
+
+; doc{
+;
+; block-number  ( n1 -- n2 )
+; 
+; Remove the update bit from the block number _n1_.
+;
+; }doc
+
+  _literal 0x7FFF
+  dw and_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header free_buffer_,'FREE-BUFFER'
+
+; doc{
+;
+; free-buffer  ( n1 n2 -- )
+; 
+; Free the disk buffer, currently assigned to block _n2_,
+; and assign it to block _n1_.
+;
+; }doc
+
+  dw dup_,zero_less_than_ ; updated?
+  dw zero_branch_,free_buffer.not_updated
+  dw block_number_,first_,cell_plus_,swap_,write_block_
+  dw branch_,free_buffer.end
+free_buffer.not_updated:
+  dw drop_
+free_buffer.end:
+  dw first_,store_
+  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header buffer_,'BUFFER'
 
 ; doc{
-
-; : buffer  ( n -- a )
-
+;
+; buffer  ( n -- a )
+;
 ; Obtain the next block buffer and assign it to block _n_.   If the
 ; contents of the buffer were marked as updated, it is written to the
 ; disk.  The block _n_ is not read from the disk.  The address left on
 ; stack is the first cell in the buffer for data storage.
-
+;
 ; }doc
+
+if buffers=1
+
+  ; XXX TODO
+
+  dw first_,fetch_ ; current block assigned to the buffer
+  dw two_dup_,block_number_,equals_
+  dw zero_branch_,buffer.not_equals
+  ; The requested block is the one already in the buffer.
+  dw two_drop_
+  dw branch_,buffer.end
+buffer.not_equals:
+  dw free_buffer_
+buffer.end:  
+  dw first_,cell_plus_ ; first cell of data in the buffer
+  dw semicolon_s_
+
+else
 
   dw use_,fetch_
   dw dup_,to_r_
@@ -6364,36 +6524,61 @@ buffer.begin:
   dw r_fetch_,two_plus_ ; first cell of data in the buffer
   dw r_fetch_,fetch_
   dw lit_,0x7FFF,and_ ; discard the update bit, leave the block number
-  dw zero_,read_write_ ; write
+if 1 ; new_read_write?
+  dw write_block_
+else
+  dw false_,read_write_ ; write
+endif
 buffer.end:
   dw r_fetch_,store_
   dw r_fetch_,prev_,store_
   dw from_r_,two_plus_ ; first cell of data in the buffer
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
   _colon_header block_,'BLOCK'
+
+; doc{
+;
+; block  ( n -- a )
+
+; Leave the memory address _a_ of the block buffer containing
+; block _n_. If the block is not already in memory, it is
+; transferred from disk to which ever buffer was least recently
+; written. If the block occupying that buffer has been marked as
+; updated, it is rewritten to disc before block _n_ is read into
+; the buffer.
+;
+; }doc
 
   dw to_r_
   dw prev_,fetch_ ; most recently accessed buffer
   dw dup_,fetch_ ; its block number (bit 15, the update indicator, may be set)
   dw r_fetch_,minus_ ; compare to the required block
-  dw two_star_ ; discard the left most bit, with is the update indicator
+  dw two_star_ ; discard the left most bit, which is the update indicator
   dw zero_branch_,block.end
-  ; Block number n is not the previously referenced.
+  ; Block number _n_ is not the previously referenced.
   ; Prepare disk access.
 block.begin:
-  ; Scan the buffers and look for a buffer which might contain block n already.
+  ; Scan the buffers and look for a buffer which might contain
+  ; block _n_ already.
   dw plus_buf_,zero_equals_ ; advance a buffer
   dw zero_branch_,branch_destination_0x71E5
   ; This buffer is pointed to by `prev`, all buffers scanned.
   dw drop_ ; discard the buffer address
-  dw r_fetch_,buffer_ ; find the disk sector, update the sector if necessary.
-  dw dup_,r_fetch_,one_,read_write_ ; read one sector from the disk
+  dw r_fetch_,buffer_ ; find the disk sector, update the sector if necessary
+  dw dup_,r_fetch_
+if 1 ; new_read_write?
+  dw read_block_
+else
+  dw true_,read_write_ ; read one sector from the disk
+endif
   dw two_minus_ ; backup to the buffer address of block n
 branch_destination_0x71E5:
   dw dup_,fetch_ ; beginning address of the buffer, with a block number in it
-  dw r_fetch_,minus_ ; compare to the block number n.
+  dw r_fetch_,minus_ ; compare to the block number _n_
   dw two_star_ ; discard the left most bit, with is the update indicator
   dw question_branch_,block.begin ; until
   dw dup_,prev_,store_ ; store the buffer address in `prev`
@@ -6403,7 +6588,7 @@ block.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header c_swap_,'FLIP'
+  _code_header flip_,'FLIP'
 
 ; doc{
 ;
@@ -6413,8 +6598,8 @@ block.end:
 ;
 ; }doc
 
-; [Name taken from eForth.]
-; XXX TODO move to the disk
+; [Name taken from eForth. It's called `><` or `cswap` in other
+; Forth systems.]
 
   pop hl
   ld a,h
@@ -6435,7 +6620,7 @@ block.end:
 ;   swap dup 20 /    \ track 0..79
 ;   swap 10 / 1 and  \ side 0..1
 ;   128 * +          \ track 0..207
-;   cswap or  ;
+;   flip or  ;
 ; ----
 ;
 ; }doc
@@ -6449,33 +6634,105 @@ block.end:
   dw slash_,one_,and_
   ; XXX TODO optimize with `7 lshift`?
   _literal 128
-  dw star_,plus_,c_swap_,or_
+  dw star_,plus_,flip_,or_
   dw semicolon_s_
+
+if 1 ; new_read_write? ; XXX NEW
+
+; ----------------------------------------------
+  _colon_header read_block_,'READ-BLOCK'
+
+; doc{
+;
+; read-block  ( a n -- )
+;
+; Read disk block _n_ to buffer _a_.
+;
+; }doc
+
+  _literal 0x44 ; G+DOS command to read a disk sector
+  dw transfer_block_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header write_block_,'WRITE-BLOCK'
+
+; doc{
+;
+; write-block  ( a n -- )
+;
+; Write buffer _a_ to disk block _n_.
+;
+; }doc
+
+  _literal 0x45 ; G+DOS command to write a disk sector
+  dw transfer_block_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header transfer_block_,'TRANSFER-BLOCK'
+
+; doc{
+;
+; transfer-block  ( a n b -- )
+;
+; The disk read-write linkage.
+;
+; a = source or destination block buffer
+; n = sequential number of the referenced disk block
+; b = G+DOS command to read or write a sector
+;
+; }doc
+
+  dw lit_,read_write_sector_command,c_store_
+  dw block_to_sector_
+  dw paren_transfer_block_
+  dw semicolon_s_
+
+paren_transfer_block_:
+  ; Headerless word with the low level code of `R/W`.
+  dw paren_transfer_block_pfa ; code field
+  
+  ; ( a sector -- )
+  ; sector (high byte) = track 0..79, +128 if side 1
+  ;        (low byte)   = sector 1..10
+paren_transfer_block_pfa:
+  pop de ; d = track 0..79, +128 if side 1
+         ; e = sector 1..10
+  pop ix ; address
+  push bc ; save the Forth IP
+  ld a,2 ; drive ; XXX TMP
+  rst 8 ; G+DOS hook
+read_write_sector_command:
+  ; G+DOS command already patched:
+  db 0x44 ; 0x44 = read ; 0x45 = write
+  pop bc ; restore the Forth IP
+  ld ix,next
+  _jp_next
+
+else ; XXX OLD
 
 ; ----------------------------------------------
   _colon_header read_write_,'R/W'
 
-; XXX TODO update the description when true=-1
-
 ; doc{
 ;
-; r/w  ( a blk f -- )
+; r/w  ( a block wf -- )
 ;
-; The fig-Forth standard disc read-write linkage. _a_ specifies
-; the source or destination block buffer, _blk_ is the
-; sequential number of the referenced block; and _f_ is a flag
-; for f=0 write and f=1 read.  `r/w` determines the location on
-; mass storage, performs the read-write and performs any error
-; checking.
+; The disk read-write linkage. _a_ specifies the source or
+; destination block buffer, _block_ is the sequential number of
+; the referenced block; and _wf_ is a flag: false=write,
+; true=read.  `r/w` determines the location on mass storage,
+; performs the read-write and performs any error checking.
 ;
 ; }doc
 
   _literal 0x45
+  dw swap_
 if true=1
-  dw swap_,minus_
+  dw minus_
 else
-  .warning TRUE ERROR
-  dw swap_,plus_
+  dw plus_
 endif
   dw lit_,read_write_sector_command,c_store_
   dw block_to_sector_
@@ -6492,33 +6749,53 @@ paren_read_write_:
 
   dw paren_read_write_pfa ; code field
 paren_read_write_pfa:
-  ld a,2 ; drive ; XXX TMP
   pop de ; d = track 0..79, +128 if side 1
          ; e = sector 1..10
-  pop hl ; address
-  push bc ; save the Forth IP
-  push hl
   pop ix ; address
-  rst 8 ; G+DOS command
+  push bc ; save the Forth IP
+  ld a,2 ; drive ; XXX TMP
+  rst 8 ; G+DOS hook
 read_write_sector_command:
-  ; Patched by `r/w`:
-  ;   0x45 = write
-  ;   0x44 = read
-  db 0x44
+  ; G+DOS command already patched:
+  db 0x44 ; 0x44 = read ; 0x45 = write
   pop bc ; restore the Forth IP
   ld ix,next
   _jp_next
+
+endif
+
+; ----------------------------------------------
+  _colon_header save_buffer_,'SAVE-BUFFER'
+  ; XXX TODO
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header save_buffers_,'SAVE-BUFFERS'
+
+; doc{
+;
+; save-buffers  ( -- )  \ ANS Forth
+;
+; Transfer the contents of each updated block buffer to disk.
+; Mark all buffers as unmodified.
+;
+; }doc
+
+  ; XXX TODO -- move to the disk?
+
+  dw buffers_,one_plus_,zero_
+  dw paren_do_
+save_buffers.do:
+  dw zero_,buffer_,drop_
+  dw paren_loop_,save_buffers.do ; loop
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header flush_,'FLUSH'
 
   ; XXX TODO -- move to the disk?
 
-  dw hash_buff_,one_plus_,zero_
-  dw paren_do_
-flush.do:
-  dw zero_,buffer_,drop_
-  dw paren_loop_,flush.do ; loop
+  dw save_buffers_,empty_buffers_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6528,15 +6805,12 @@ flush.do:
 ;
 ; (load)  ( i*x u -- j*x )
 ;
-; XXX FIXME wrong description: not the screen _u_ is stored in
-; `blk`, but the correspondent disk block.
-;
 ; Store _u_ in `blk` (thus making block _u_ the input source and
 ; setting the input buffer to encompass its contents), set `>in`
 ; to zero, and interpret.  Other stack effects are due to the
 ; words loaded.
 ;
-; An error is issued if _u_ is zero or `blk` is zero.
+; An error is issued if _u_ is zero is zero.
 ;
 ; }doc
 
@@ -6552,23 +6826,15 @@ flush.do:
 
 ; doc{
 ;
-; load  ( i*x u -- j*x )  \ Forth-79 (uncontrolled word
+; continued  ( i*x u -- j*x )  \ Forth-79 (uncontrolled word
 ; definition from the Reference Word Set)
-;
-; XXX FIXME  wrong description: not the screen _u_ is stored in
-; `blk`, but the correspondent disk block.
 ;
 ; Store _u_ in `blk` (thus making block _u_ the input source and
 ; setting the input buffer to encompass its contents), set `>in`
 ; to zero, and interpret.  Other stack effects are due to the
 ; words loaded.
 ;
-; An error is issued if _u_ is zero or `blk` is zero.
-;
 ; }doc
-
-; XXX TODO : An ambiguous condition exists if _u_ or is not a
-; valid block number.
 
   dw question_loading_,paren_load_
   dw semicolon_s_
@@ -6579,9 +6845,6 @@ flush.do:
 ; doc{
 ;
 ; load  ( u -- )
-;
-; XXX FIXME  wrong description: not the screen _u_ is stored in
-; `blk`, but the correspondent disk block.
 ;
 ; Save the current input-source specification. Store _u_ in
 ; `blk` (thus making block _u_ the input source and setting the
@@ -6594,9 +6857,6 @@ flush.do:
 ;
 ; }doc
 
-; XXX TODO : An ambiguous condition exists if _u_ is not a
-; valid block number.
-
   dw blk_,fetch_,to_r_
   dw to_in_,fetch_,to_r_
   dw paren_load_
@@ -6606,6 +6866,14 @@ flush.do:
 
 ; ----------------------------------------------
   _colon_header next_screen_,'-->',immediate
+
+; doc{
+;
+; -->  ( -- )  \ "next-screen"
+;
+; Continue interpretation with the next disc screen.
+;
+; }doc
 
   dw question_loading_
   dw to_in_,off_
@@ -6649,7 +6917,13 @@ endif
 ; ----------------------------------------------
   _colon_header question_defined_,'?DEFINED'
 
-  ; From DZX-Forth.
+; doc{
+;
+; ?defined  ( f -- )
+;
+; }doc
+
+  ; [Code from DZX-Forth.]
 
   dw zero_equals_
   _question_error error.not_found
@@ -6658,11 +6932,23 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_defined_,'[DEFINED]',immediate
 
+; doc{
+;
+; [defined]  ( "name" -- wf )
+;
+; }doc
+
   dw defined_,nip_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header bracket_undefined_,'[UNDEFINED]',immediate
+
+; doc{
+;
+; [undefined]  ( "name" -- wf )
+;
+; }doc
 
   dw bracket_defined_,zero_equals_
   dw semicolon_s_
@@ -6670,11 +6956,23 @@ endif
 ; ----------------------------------------------
   _colon_header tick_,"'"
 
+; doc{
+;
+; '  ( "name" -- cfa )
+;
+; }doc
+
   dw defined_,question_defined_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header bracket_tick_,"[']",immediate
+
+; doc{
+;
+; [']  ( "name" -- cfa )
+;
+; }doc
 
   dw tick_,literal_
   dw semicolon_s_

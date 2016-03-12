@@ -105,11 +105,10 @@ decode dump
 \ Error #18: Execution only.
 \ Error #19: Conditionals not paired.
 \ Error #20: Definition not finished.
-\ Error #21: In protected dictionary.
+\ Error #21:
 \ Error #22: Use only when loading.
 \ Error #23: Off current editing screen.
-  \ XXX TODO better text:
-\ Error #24: Declare vocabulary.
+\ Error #24: 
   \ XXX TMP -- not used yet:
 \ Error #25: Unsupported tape operation.
   \ XXX TMP -- not used yet:
@@ -497,6 +496,11 @@ code bleep  ( n1 n2 -- )
 
 : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
+( source )
+
+: source  ( -- a len )  \ ANS Forth
+  blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+
   \ }}} =======================================================
   \ Operators {{{
 
@@ -641,7 +645,7 @@ end-code
 
 ( transient[ )
 
-  \ 2015-07-16: Start adapting the code from Afera
+  \ 2015-07-16: Started adapting the code from Afera
   \
   \ XXX TODO -- Finish.
 
@@ -664,7 +668,9 @@ variable old-voc-link
   latest      old-latest !
   voc-link @  old-voc-link !
 
-  \ XXX FIXME changing `dp` crashes the system:
+  \ XXX FIXME -- after changing `dp` the interpreter does not
+  \ recognize any input, just issues error #1, "not
+  \ understood".
 
   0 swap - dp !  ;
 

@@ -167,3 +167,15 @@ Fix: `attr`.
 Improve: version in the greeting message.
 
 Fix: warm reentry crashes the system.
+
+.2015-08-14:
+
+Fix: problems when true=-1.
+
+Fix: problem when compiler security is off.
+
+.2015-08-15:
+
+Idea: maybe 0 could be used instead of 0x7fff to init the block number of a buffer.
+
+Idea: instead of update bit, negate the number.
