@@ -69,15 +69,14 @@ New: `rshift` and `lshift`, from DZX-Forth.
 
 New: `within`, `between`, from DZX-Forth.
 
-Fix: change parsed words to uppercase only when needed to search the dictionary.
-Otherwise the parsing words can not be used for generic purposes.
+This error happens in all fig-Forth systems:
 
-Fix: Crash: 
 ----
-: zx blabla ;
-: zx ;
+: test 6 literal ;  RAL ? [ rubbish ] MGS # 2
 ----
 
-Fix: something is wrong after the parsing changes, even deactivating
-them with `fig_parsing?`:  `21 load` halts at the middle of a word, in
-line 8.
+Fix:
+
+----
+123 16384 2!  ? [ rubbish ] MSG # 2
+----

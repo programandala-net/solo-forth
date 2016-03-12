@@ -55,6 +55,10 @@
 
 ( debugging ) \ scr 2
 
+  \ XXX to test `error`:
+
+: wrong 4 literal ;
+
 ( require ) \ scr 3
 
   \ This screen must be at a fixed location.
@@ -487,7 +491,7 @@ require s=  require parse-name  require s"
 
 : (dhex.)  ( d n -- )  hex{ (d.) }hex type space  ;
 : dhex.    ( d -- )  8 (dhex.)  ;
-: hex.     ( n -- )  s>d 4 literal (dhex.)  ;
+: hex.     ( n -- )  s>d 4 (dhex.)  ;
 : hexb.    ( n -- )  s>d 2 (dhex.)  ;
 
 ( binary bin. binb. dbin. bin{ )
@@ -702,6 +706,16 @@ code p!  ( n u -- )
   C1 c,           \ pop bc
   DD c, E9 c,     \ jp (ix)
 end-code
+
+( .s )
+
+  \ 2015-06-22: Copied from the Afera library. The algorithm
+  \ was taken from v.Forth.
+
+: .S   ( -- )
+  depth
+  dup s>d <# [char] > hold #s [char] < hold #> type space
+  if  sp@ 2- s0 @ 2- do i @ . -2 +loop  then  ;
 
 ( forget )
 
@@ -973,5 +987,21 @@ here 2+
   10 spaces  current @ id.  ;
 
 only forth also   definitions
+
+( 2nip )
+
+  \ 2015-06-22: Copied from Afera; original code from
+  \ DZX-Forth.
+
+code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
+
+  E1 c,           \ pop hl
+  D1 c,           \ pop de
+  F1 c,           \ pop af
+  F1 c,           \ pop af
+  C3 c, pushde ,  \ jp pushde
+
+end-code
+
 
   \ vim: filetype=soloforth
