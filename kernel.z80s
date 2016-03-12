@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151117
+  ; Version:        20151119
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B4D
+version_low_part:   equ 0x7B4F
   
-  ; Last modified:  201511172232
+  ; Last modified:  201511190311  
 
 ; ==============================================================
 ; Author and license
@@ -3720,10 +3720,10 @@ move.do:
 ;
 ; }doc
 
+if 1 ; original_u_m_star
+
   ; Credits:
   ; Code from DZX-Forth.
-
-if 1 ; original_u_m_star
 
   pop de
   pop hl
@@ -3828,23 +3828,25 @@ u_m_star.4:
 endif
 
 ; ----------------------------------------------
-  _code_header u_slash_mod_,'U/MOD'
 
- ; XXX OLD
+if 1 ; XXX OLD
+
+  _code_header u_m_slash_mod_,'UM/MOD'
 
 ; doc{
 ;
-; u/mod ( ud u1 -- u2 u3 )
+; um/mod ( ud u1 -- u2 u3 )
 ;
 ; Divide _ud_ by _u1_, giving the quotient _u3_ and the
 ; remainder _u2_.  All values and arithmetic are unsigned.
 ;
-; Standard: Forth-79.
+; Standard: Forth-94, Forth-2012.
 ;
 ; }doc
 
   ; Credits:
   ; Code from Abersoft Forth.
+  ; The original word was called `u/mod`, from Forth-79.
 
 ; XXX FIXME -- This word, has a bug that affects `line>string`, used
 ; by `message`, and other words that use it: `*/mod`, `mod` and
@@ -3903,6 +3905,85 @@ l60c0h:
   push hl
   push de
   _jp_next
+
+endif
+
+if 0 ; XXX OLD
+
+  _colon_header u_m_slash_mod_,'UM/MOD'
+
+; doc{
+;
+; um/mod  ( ud u1 -- u2 u3 )
+
+; Divide _ud_ by _u1_, giving the quotient _u3_ and the
+; remainder _u2_.  All values and arithmetic are unsigned.
+
+; Standard: Forth-94, Forth-2012.
+
+; ----
+; : um/mod  ( ud u1 -- u2 u3 )
+;   m/mod d>s  ;
+; ----
+
+; }doc
+
+  ; XXX TMP -- temporary solution
+  ; XXX OLD -- can not work anymore, because now `ud/mod` calls this!
+
+  dw u_d_slash_mod_,d_to_s_
+  dw semicolon_s_
+
+endif
+
+if 0 ; XXX NEW
+
+  _code_header u_m_slash_mod_,'UM/MOD'
+
+  ; XXX TODO -- adapt this code, taken from Z88 CamelForth
+
+  push bc
+  exx
+  pop bc      ; BC = divisor
+  pop hl      ; HLDE = dividend
+  pop de
+  ld a,16     ; loop counter
+  sla e
+  rl d        ; hi bit DE -> carry
+u_m_slash_mod.do:
+  adc hl,hl   ; rot left w/ carry
+  jr nc,u_m_slash_mod.3
+  ; case 1: 17 bit, cy:HL = 1xxxx
+  or a        ; we know we can subtract
+  sbc hl,bc
+  or a        ; clear cy to indicate sub ok
+  jr u_m_slash_mod.4
+  ; case 2: 16 bit, cy:HL = 0xxxx
+u_m_slash_mod.3:
+  sbc hl,bc   ; try the subtract
+  jr nc,u_m_slash_mod.4 ; if no cy, subtract ok
+  add hl,bc   ; else cancel the subtract
+  scf         ;   and set cy to indicate
+u_m_slash_mod.4:
+  rl e        ; rotate result bit into DE,
+  rl d        ; and next bit of DE into cy
+  dec a
+  jr nz,u_m_slash_mod.do
+  ; now have complemented quotient in DE,
+  ; and remainder in HL
+  ld a,d
+  cpl
+  ld b,a
+  ld a,e
+  cpl
+  ld c,a
+  push hl     ; push remainder
+  push bc
+  exx
+  pop bc      ; quotient remains in TOS
+  _jp_next
+
+endif
 
 ; ----------------------------------------------
   _code_header and_,'AND'
@@ -5457,6 +5538,16 @@ endif
 ; ----------------------------------------------
   _c_constant_header slash_tib_,'/TIB'
 
+; doc{
+;
+; /tib  ( -- n )
+; 
+; Size of the terminal input buffer.
+;
+; See `tib` and `#tib`.
+;
+; }doc
+
   db bytes_per_terminal_input_buffer
 
 ; ----------------------------------------------
@@ -5478,7 +5569,7 @@ endif
 ;   tib #tib @ span @ min  ;
 ; ----
 ;
-; Standard: Forth-94.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5877,6 +5968,7 @@ question_dup.end:
 ; doc{
 ;
 ; >name  ( cfa -- nfa )
+; >name  ( cfa -- nfa | 0 ) \ XXX TODO
 ;
 ; Warning: No check is done wether cfa belongs to a definition
 ; created with `:noname`; if so, the name assoctiated to _nfa_,
@@ -5884,16 +5976,44 @@ question_dup.end:
 ;
 ; }doc
 
-; XXX FIXME -- make it return 0 if cfa has no name associated
+  ; XXX FIXME -- make it return 0 if cfa has no name associated
 
   call bank.names ; page the memory bank in
+
   pop de ; cfa
+;  ld (to_name.cfa),de ; save cfa for later ; XXX OLD
+
+  ld a,(np_pfa) ; low byte of the names pointer
+  ld (to_name.names_pointer_low_byte),a ; save it for later
+  ld a,(np_pfa+1) ; hight byte of the names pointer
+  ld (to_name.names_pointer_high_byte),a ; save it for later
+
   push bc ; save Forth IP
   ld b,0
   ld hl, names_bank_address-4
 
 to_name.begin_0:
   ; hl = address of the cfa pointer
+
+  ; XXX NEW -- compare hl with  np: if equals, exit
+  ; XXX FIXME -- not working yet
+  ; XXX TODO use the Fuse's debugger
+
+  ; compare the cfa pointer with the names pointer
+  ; if they are equals, there are no more names to check
+to_name.names_pointer_high_byte equ $+1
+  ld a,0
+  cp h
+  jr nz,to_name.names_not_finished
+to_name.names_pointer_low_byte equ $+1
+  ld a,0
+  cp l
+  jr nz,to_name.names_not_finished
+  ; more names left, not found!
+  ld hl,0
+  jr to_name.end
+
+to_name.names_not_finished:
   inc hl
 to_name.begin_1:
   inc hl ; hl = lfa
@@ -5905,6 +6025,10 @@ to_name.begin_1:
   inc c  ; plus the length byte
   add hl,bc ; point to the cfa pointer of the next word
 
+; XXX OLD
+; to_name.cfa equ $+1 
+;  ld de,0 ; cfa searched for
+
   ld a,(hl) ; low byte of cfa
   cp e ; equal?
   jr nz,to_name.begin_0 ; not equal
@@ -5912,13 +6036,14 @@ to_name.begin_1:
   ld a,(hl) ; high byte of cfa
   cp d ; equal?
   jr nz,to_name.begin_1 ; not equal
+
   ; cfa found
   inc hl
   inc hl
   inc hl ; nfa
 
+to_name.end:
   call bank.default ; page the default memory bank
-
   pop bc ; restore Forth IP
   jp push_hl
 
@@ -6730,7 +6855,7 @@ endif
 
 ; doc{
 ;
-; acceptx  ( ca1 len1 -- len2 )
+; accept  ( ca1 len1 -- len2 )
 ;
 ; Receive a string of at most _len1_ characters.  No characters
 ; are received or transferred if _len1_ is zero.  Display
@@ -6742,8 +6867,7 @@ endif
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -6780,7 +6904,7 @@ acceptx.begin:
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; Standard: Forth-94, Forth-2012.
+; Standard: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -6857,7 +6981,7 @@ accept.end:
 ; Make the user input device the input source. Receive input
 ; into the terminal input buffer, replacing any previous
 ; contents. Make the result, whose address is returned by `tib`,
-; the input buffer. `>in` to zero.
+; the input buffer. Set `>in` to zero.
 ;
 ; Input 80 characters of text (or until a "return") from the
 ; operators terminal. Text is positioned at the address
@@ -6868,7 +6992,7 @@ accept.end:
 ; variable have been received. One or more nulls are added at
 ; the end of the text.
 ;
-; Standard: Forth-83, Forth-94 (obsolescent).
+; Standard: Forth-83, Forth-94 (CORE EXT, obsolescent).
 ;
 ; }doc
 
@@ -6906,6 +7030,23 @@ accept.end:
 ; 'SOURCE 2!  0 >IN !
 ;   THEN ;
 
+  ; XXX NEW
+  ; XXX TODO -- try, check, complete
+
+  dw loading_question_ ; input stream from disk?
+  dw zero_branch_,refill.terminal ; if not, branch
+
+refill.block:
+  _literal 1
+  dw blk_,plus_store_
+  dw to_in_,off_
+  dw branch_,refill.end
+
+refill.terminal:
+  dw query_
+refill.end:
+  dw true_
+  dw semicolon_s_
 
 ; XXX TMP -- From Z88 CamelForth (version with files)
 ;X REFILL   -- f
@@ -6923,22 +7064,6 @@ accept.end:
 ;   THEN
 ;   DUP IF  >R 'SOURCE 2!  0 >IN ! R>  THEN ;
 
-  ; XXX NEW
-  ; XXX TODO -- try, check, complete
-
-  dw loading_question_ ; input stream from disk?
-  dw zero_branch_,refill.terminal ; if not, branch
-refill.block:
-;  _chk 'refill -- block' ; XXX INFORMER
-  _literal 1
-  dw blk_,plus_store_
-  dw branch_,refill.end
-
-refill.terminal:
-  dw query_
-refill.end:
-  dw true_
-  dw semicolon_s_
 
 ; ----------------------------------------------
   _code_header fill_,'FILL'
@@ -8755,7 +8880,7 @@ if 0
   ; 16777216. 50 m/  ( -- -1 -1 )
 
   dw over_,to_r_,to_r_
-  dw d_abs_,r_fetch_,abs_,u_slash_mod_
+  dw d_abs_,r_fetch_,abs_,u_m_slash_mod_
   dw from_r_,r_fetch_,xor_,question_negate_,swap_
   dw from_r_,question_negate_,swap_
   dw semicolon_s_
@@ -8907,58 +9032,6 @@ endif
   ; Code from Abersoft Forth.
 
   dw star_slash_mod_,nip_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header m_slash_mod_,'M/MOD'
-
-; doc{
-;
-; m/mod  ( ud1 u2 -- u3 ud4 )
-;
-; An unsigned mixed magnitude math operation which leaves a
-; double quotient _ud4_ and remainder _u3_, from a double
-; dividend _ud1_ and single divisor _u2_.
-;
-; Standard: fig-Forth.
-;
-; : m/mod  ( ud1 u2 -- u3 ud4 )
-;   >r 0 r@ u/mod r> swap >r u/mod r>  ;
-;
-; }doc
-
-  ; Credits:
-  ; Code from Abersoft Forth.
-
-  dw to_r_,zero_,r_fetch_
-  dw u_slash_mod_
-  dw from_r_,swap_
-  dw to_r_,u_slash_mod_,from_r_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header u_m_slash_mod_,'UM/MOD'
-
-; doc{
-;
-; um/mod  ( ud u1 -- u2 u3 )
-
-; Divide _ud_ by _u1_, giving the quotient _u3_ and the
-; remainder _u2_.  All values and arithmetic are unsigned.
-
-; Standard: Forth-94, Forth-2012.
-
-; ----
-; : um/mod  ( ud u1 -- u2 u3 )
-;   m/mod d>s  ;
-; ----
-
-; }doc
-
-  ; XXX TMP -- temporary solution
-  ; XXX TODO -- definitive
-
-  dw m_slash_mod_,d_to_s_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9687,6 +9760,8 @@ endif
 
 ; }doc
 
+  ; XXX TODO -- In Gforth the definition is `refill drop`
+
   dw question_loading_
   dw to_in_,off_
   _literal 1
@@ -10191,30 +10266,58 @@ emits_.end:
 
 ; doc{
 
-; sign  ( n  d  --  d )
+; sign  ( n  --  )
 
-; Stores an ASCII "-" sign just before a converted numeric
-; output string in the text output buffer when _n_ is negative.
-; _n_ is discarded but double number _d_ is maintained. Must be
-; used between `<#` and `#>`.
-
-; Standard: fig-Forth.
+; If _n_ is negative, add a minus sign to the beginning of the
+; pictured numeric output string.
+;
+; Standard: Forth 94 (CORE), Forth-2012 (CORE).
+;
+; See: `<#`, `#>`.
 
 ; ----
-; : sign  ( n  d  --  d )
-;   rot 0< if  [char] - hold  then  ;
+; : sign  ( n -- )
+;   0< if  [char] - hold  then  ;
 ; ----
 
 ; }doc
 
-  ; XXX TODO convert to Forth-94
-
-  dw rot_,zero_less_than_
+  dw zero_less_than_
   dw zero_branch_,sign.end
   _literal '-'
   dw hold_
 sign.end:
   dw semicolon_s_
+
+; ----------------------------------------------
+  _code_header to_digit_,'>DIGIT'
+
+; doc{
+;
+; >digit  ( n -- c )
+;
+; Convert a number to its character digit: 0..9A..Z.
+; 
+; ----
+; : >digit  ( n -- c )
+;   dup 9 > [ 'A' '0' - 1+ ] literal and + '0' +  ;
+; ----
+;
+; }doc
+
+  ; Credits:
+  ;
+  ; Adapted from Z88 CamelForth.
+
+  pop hl
+  ld a,l
+  cp 10
+  jr c,to_digit.end
+  add a,7
+to_digit.end
+  add a,0x30
+  ld l,a
+  jp push_hl
 
 ; ----------------------------------------------
   _colon_header hash_,'#'
@@ -10226,24 +10329,62 @@ sign.end:
 ; Divide _d1_ by current base.  The remainder is converted to
 ; an ASCII character and appended to the output text string.
 ; The quotient _d2_ is left on stack.
+; 
+; ----
+; : #  ( d1 -- d2 )
+;   base @ ud/mod rot >digit hold  ;
+; ----
 ;
 ; }doc
 
   dw base_,fetch_
-  dw m_slash_mod_ ;  ( remainder dquotient )
-  dw rot_ ; ( dquotient remainder )
-  _literal 9
-  dw over_,less_than_ ; remainder<9?
-  dw zero_branch_,hash.digit
-  ; remainder<9
-  _literal 7
-  dw plus_ ; make it an alphabet
-hash.digit:
-  ; Form the ASCII representation of a digit:
-  ; "0" to "9" and "A" to "F" (or above).
-  _literal '0'
-  dw plus_
-  dw hold_ ; put the digit into `pad` in a reversed order.
+  dw u_d_slash_mod_,rot_,to_digit_,hold_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header u_d_slash_mod_,'UD/MOD'
+
+; : ud/mod ( ud1 u2 -- urem udquot )
+;   >r 0 r@ um/mod r> swap >r um/mod r>  ;
+
+  ; XXX TODO benchmark
+
+  ; Credits:
+  ;
+  ; Code from Abersoft Forth (in fig-Forth this word is called
+  ; `m/mod`) and Gforth.
+
+  dw to_r_
+  _literal 0
+  dw r_fetch_
+  dw u_m_slash_mod_
+  dw from_r_
+  dw swap_
+  dw to_r_
+  dw u_m_slash_mod_
+  dw from_r_
+  dw semicolon_s_
+
+  _colon_header u_d_slash_mod88_,'UD/MOD88'  ; XXX TMP -- possible alternative
+
+  ; XXX TODO benchmark
+
+  ; Credits:
+  ; Code from Z88 CamelForth.
+
+; : ud/mod  ( ud1 u1 -- u2 ud2 )
+;   >r 0 r@ um/mod  rot rot r> um/mod rot ;
+; : ud/mod  ( ud1 u1 -- u2 ud2 )
+;   >r 0 r@ um/mod -rot r> um/mod rot ;
+
+  dw to_r_
+  _literal 0
+  dw r_fetch_
+  dw u_m_slash_mod_
+  dw rot_,rot_ ; XXX TODO try `-rot`
+  dw from_r_
+  dw u_m_slash_mod_
+  dw rot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -10280,7 +10421,7 @@ hash_s.begin:
   ; Convert the absolute value to ASCII text with proper sign:
   dw less_hash_
   dw hash_s_
-  dw sign_ ; XXX TODO convert to Forth-94
+  dw rot_,sign_
   dw hash_greater_
   dw from_r_ ; retrieve n
   dw over_,minus_,spaces_ ; fill the output field with preceding blanks

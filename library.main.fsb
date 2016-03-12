@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511182052
+\ Last modified: 201511190236
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -1518,7 +1518,6 @@ need string-suffix?
   \ Credits:
   \ Code from Galope (module d-to-str.fs).
 
-  \ XXX FIXME convert `sign` to Forth-94.
 : d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
 
   \ Credits:
@@ -2296,11 +2295,11 @@ need plot
   23677 c@ ( x0 ) dup 0 swap x1 2! - dup abs rot
   \ ( +-ydiff +-xdiff xdiff ydiff )
   max >r dup 0<  \ negative xdiff?
-  if    abs 0 swap r@ m/mod dnegate
-  else  0 swap r@ m/mod  then
+  if    abs 0 swap r@ ud/mod dnegate
+  else  0 swap r@ ud/mod  then
   incx 2! drop dup 0<  \ negative ydiff?
-  if    abs 0 swap r@ m/mod dnegate
-  else  0 swap r@ m/mod  then
+  if    abs 0 swap r@ ud/mod dnegate
+  else  0 swap r@ ud/mod  then
   incy 2! drop r> 1+ 0
   do  x1 @ y1 @ plot
       x1 2@ incx 2@ d+ x1 2!
@@ -3322,6 +3321,8 @@ need z80-asm
   \ Store a byte to memory and decrement the address by n.
 
 ( bit? set-bit reset-bit )
+
+need lshift
 
 : bit>mask  ( n -- b )  1 swap lshift  ;
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
@@ -9498,8 +9499,10 @@ need random-n
 ( synonym )
 
   \ Credits:
-  \ The code of `synonym` is adapted from the example provided in the
-  \ Forth-2012 documentation, and improved with `compile-only?`.
+  \
+  \ The code of `synonym` is adapted from the example provided
+  \ in the Forth-2012 documentation, and improved with
+  \ `compile-only?`.
 
 : synonym  ( "newname" "oldname" -- )
   create immediate
@@ -10665,8 +10668,10 @@ forth-wordlist set-current
   \ By Javier Gil
   \ From his book _Introducción a Forth_ (2007-01)
 
+  \ 2015-11-18: Start.
+
 need value  need set-bit  need reset-bit  need bit?
-need reserve
+need reserve  need alias
 
 8 constant address-unit-bits
 16 value /chunk \ bytes per chunk
@@ -10692,7 +10697,7 @@ need reserve
 
 ( create-heap )
 
-value heap  ( -- a )
+0 value heap  ( -- a )
   \ Address of the current heap.
 
   \ XXX TODO
@@ -10773,44 +10778,28 @@ value heap  ( -- a )
 
 ( create-heap )
 
-: locate-chunks  ( n1 -- n2 wior )
-  \ XXX TODO
-  -59
-  ;
+: locate-chunks  ( n1 -- n1 n2 0 | ior )
+  dup 0 \ count
+  heap-chunks 0 do  ( n1 n1 count )
+    2dup = if  2drop i 0 unloop exit  then
+    i used-chunk? if  drop 0  else  1+  then
+  loop  drop 2drop -59  ;
   \ Locate _n1_ consecutive free chunks in the current heap.
-  \ If succesful, return the first chunk _n2_ of them, else
-  \ return zero.
+  \ If succesful, _n2_ is the first chunk of the group and ior
+  \ is zero; else _n2_ is indefined and ior is -59, the error
+  \ code for `allocate`.
+
+: chunk>address  ( n1 -- a )  /chunk * heap-data +  ;
 
 : (allocate)  ( n1 n2 -- a 0 )
   ( chunks first-chunk )
   dup chunk>address >r
-  
+  bounds do  i use-chunk  loop
   r> 0  ;
   \ Allocate _n1_ chunks starting from chunk _n2_ 
 
-: allocate  ( n -- a wior )
-  bytes>chunks dup locate-chunks dup ?exit  (allocate)  ;
-
-( create-heap )
-
-  \ XXX OLD -- original by Javier Gil
-  \ XXX TODO understand, rewrite, factor, make it legible
-
-: allocate ( n heap -- 0 | a )
-  swap cell+ bytes>chunks swap  dup @  0 swap
-  0 do
-    over cell+ i used-chunk?
-    if  drop 0
-    else
-      1+ rot 2dup = if
-        drop 2dup over @ chunks>bytes  rot cell+ + swap i swap
-        - 1+ /chunk * + -rot
-        rot 2dup ! cell+ -rot  swap cell+ swap
-        i swap - 1+ i 1+ swap do  dup i use-chunk  loop  drop
-        unloop exit
-      else  -rot  then
-    then
-  loop  drop 2drop 0  ;
+: allocate  ( n -- a ior )
+  bytes>chunks locate-chunks ?dup ?exit  (allocate)  ;
 
   \ }}} =======================================================
   \ Leo Brodie's DOER ... MAKE construct {{{
