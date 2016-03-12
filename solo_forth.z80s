@@ -3,11 +3,12 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506112134
+; Version A-00-201506130121
 ; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
 ; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
 ; - `enclose` modified to save a `swap` in `word`.
+; - fix: now `enclose` uses a 16-bit offset counter.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -668,6 +669,23 @@ l5fa2h:
   ld hl,0x0000
   jp pushhl
 
+; doc{
+
+; enclose  ( c a -- a n1 n2 n3 )
+
+; The text scanning primitive used by `word`.
+
+; c = ascii delimiting character
+; a = text address
+; n1 = offset to the first non-delimiter character
+; n2 = offset to the first delimiter after the text
+; n3 = offset to the first character not included
+
+; This word will not process past an ascii 'null',
+; treating it as an unconditional delimiter.
+
+; }doc
+
 enclose_nfa:
   db 0x07+0x80,'ENCLOS','E'+0x80
 enclose_lfa:
@@ -678,12 +696,14 @@ enclose_pfa:
 
   ; XXX WARNING: the order of the parameters has been changed, to save a `swap` in `word`.
 
+if 0 ; XXX OLD -- can not work with zones greater than 128 bytes
+
   pop hl ; hl = address
   pop de ; e  = delimiter
   push hl
   ld a,e
   ld d,a  ; delimiter
-  ld e,-1 ; init char offset counter
+  ld e,0xFF ; init char offset counter
   dec hl
 
 enclose.skip:
@@ -697,7 +717,7 @@ enclose.skip:
   ; First non-delimiter found.
   ld d,0x00
   push de ; save offset
-  ld d,a
+  ld d,a ; delimiter
   ld a,(hl)
   and a ; is the first non-delimiter a null?
   jr nz,enclose.scan
@@ -733,6 +753,66 @@ enclose.end:
   inc e
   push de ; offset to 2 bytes after end of word
   _jp_next
+
+else ; XXX NEW
+
+  ; XXX TODO add `size_optimization?` condition
+
+  exx ; save the Forth IP
+  pop hl ; hl = address
+  pop de ; e  = delimiter
+  push hl
+  ld a,e  ; a = delimiter
+  ld bc,-1 ; init char offset counter
+  dec hl
+
+enclose.skip:
+  ; Skip initial delimiters.
+  ; hl = previous address
+  ; a = delimiter
+  ; bc = offset
+  inc hl
+  inc bc
+  cp (hl) ; delimiter?
+  jp z,enclose.skip ; yes, loop
+
+  ; First non-delimiter found.
+  push bc ; save offset
+  ld a,(hl)
+  and a ; is the first non-delimiter a null?
+  jp nz,enclose.scan
+
+  ; The first non-delimiter is a null.
+  inc bc
+  push bc ; offset to byte following null
+  dec bc ; offset to null
+  jp enclose.end
+
+enclose.scan:
+  ld a,e ; delimiter
+  inc hl ; address of next char
+  inc bc ; offset to next char
+  cp (hl) ; delimiter?
+  jp z,enclose.ending_delimiter
+  ld a,(hl)
+  and a ; null?
+  jp nz,enclose.scan
+
+  ; Final null found.
+  push bc ; offset to null
+  jp enclose.end
+
+enclose.ending_delimiter:
+  ; Final delimiter found.
+  push bc ; offset to byte following text
+  inc bc ; offset to 2 bytes after end of word
+
+enclose.end:
+  push bc
+  exx ; restore the Forth IP
+  _jp_next
+
+endif
 
 ; doc{
 ;
@@ -3089,7 +3169,7 @@ word.from_address:
   dw cmove_ ; move
   ; XXX FIXME blank 1-char strings are parsed from empty screens!
   ; they are converted to 0 by `number` and the stack gets full!
-  ;dw lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
+  dw space_,depth_,dot_,lit_,'{',emit_,here_,count_,type_,lit_,'}',emit_ ; XXX INFORMER
   ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
@@ -4073,41 +4153,37 @@ block_:
   dw do_colon
 block_pfa:
   dw to_r_
-  dw prev_,fetch_
-  dw dup_
-  dw fetch_
-  dw r_fetch_
-  dw minus_
-  dw dup_
-  dw plus_
-  dw zero_branch_,branch_destination_0x71FD
-branch_destination_0x71CB:
-  dw plus_buf_
-  dw zero_equals_
+  dw prev_,fetch_ ; most recently accessed buffer
+  dw dup_,fetch_ ; block number pointed by `prev`
+  ; XXX TODO optimize with `<>`?
+  dw r_fetch_,minus_ ; compare to the required block
+  ; XXX TODO optimize with `2*` (or remove, if `<>` is used above?):
+  dw dup_,plus_ ; discard the left most bit, with is the update indicator
+  dw zero_branch_,block.end
+  ; Block number n is not the previously referenced.
+  ; Prepare disk access.
+block.begin:
+  ; Scan the buffers and look for a buffer which might contain block n already.
+  dw plus_buf_,zero_equals_ ; advance a buffer
   dw zero_branch_,branch_destination_0x71E5
-  dw drop_
-  dw r_fetch_
-  dw buffer_
-  dw dup_
-  dw r_fetch_
-  dw one_
-  dw read_write_
-  dw two_minus_
+  ; This buffer is pointed to by `prev`, all buffers scanned.
+  dw drop_ ; discard the buffer address
+  dw r_fetch_,buffer_ ; find the disk sector, update the sector if necessary.
+  dw dup_,r_fetch_,one_,read_write_ ; read one sector from the disk
+  dw two_minus_ ; backup to the buffer address of block n
 branch_destination_0x71E5:
-  dw dup_
-  dw fetch_
-  dw r_fetch_
-  dw minus_
-  dw dup_
-  dw plus_
+  dw dup_,fetch_ ; beginning address of the buffer, with a block number in it
+  ; XXX TODO optimize with `<>`?
+  dw r_fetch_,minus_ ; compare to the block number n.
+  ; XXX TODO optimize with `2*` (or remove, if `<>` is used above?):
+  dw dup_,plus_ ; discard the update bit
   dw zero_equals_
-  dw zero_branch_,branch_destination_0x71CB
-  dw dup_
-  dw prev_
-  dw store_
-branch_destination_0x71FD:
+  dw zero_branch_,block.begin ; until
+  dw dup_,prev_,store_ ; store the buffer address in `prev`
+block.end:
+  ; XXX TODO optimive with `rdrop`?
   dw from_r_,drop_
-  dw two_plus_
+  dw two_plus_ ; get the address where data begin
   dw semicolon_s_
 
 ; doc{

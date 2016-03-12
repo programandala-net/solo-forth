@@ -240,3 +240,12 @@ it's faster and easier, and uses the same memory (4 bytes).
 .2015-06-11:
 
 The parameters of `enclose` have been exchanged. This saves a `swap` in `word`.
+
+.2015-06-13:
+
+The parsing bug has been found. The problem is `enclose` use an 8-bit
+register as offset counter. It can not be used to scan a 512-byte buffer.
+The code has been rewritten to use a pair register as offset counter.
+
+There's a second bug: something fails when the parsing of the screen
+passes from the first to the second disk block.

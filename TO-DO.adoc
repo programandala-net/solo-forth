@@ -39,37 +39,11 @@ Define `rp`, like in Afera:
 
 Write a version of `screen` that recognizes the UDG.
 
-Fix: `load` corrupts the system, even with empty screens.
+Fix: `load` corrupts the system, even with empty screens. (Already solved
+by rewritting `enclose`?).
 
 Change: move key to the blocks, as `mode-key` or similar, and use a
 simpler `key` (`akey` from Afera).
-
-.2015-06-08:
-
-Fix: `load` corrupts the system with empty screens. The reason is
-spaces are interpreted as number 0. But `interpret`, `enclose`,
-`number` and `(number)` seems right.  The problem must be the hidden
-effect of a recent change.
-
-This behaviour is correct, but maybe it's a clue:
-
-----
-bl text 123 pad number ok
-2dup ok
-. . 0 123 ok
-d. 123 ok
-bl text  pad number NUMBER? MSG # 1
-----
-
-I save a corrupted BIN file with the Forth binary, after doing `60
-load` and getting error "stack full", and compare it to the good
-binary.  vbindiff does not show important diffs, only the stacks and
-two user variables.  Everything seems normal.  Interesting things:
-
-- Only the first buffer has been loaded.
-- The value of `use` is 0x61F0, pointing to the second buffer.
-- RP holds an addres 6 bytes smaller (3 more elements on the return
-  stack): 0x5EFC, 0x5F4C.
 
 .2015-06-09:
 
@@ -84,9 +58,10 @@ Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
     LIT PKEY (KEY) !    \ Set default handler for KEY.
     >S ;                \ And initialize screen output.
 
-Fix: the compilation of `decode` fails and corrupts the system.
-
 Fix: in 128, typing graphics T and U prints the new tokens.
 
 New: A printing routine instead the ROM routines, with two fonts: for
 chars 0..127 and for chars 128..255.
+
+Fix: A second bug related to parsing: something fails when the parsing
+of the screen passes from the first to the second disk block.
