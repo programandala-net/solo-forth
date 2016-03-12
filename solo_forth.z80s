@@ -1,5 +1,5 @@
 ; Solo Forth
-; Version A-00-201508122129
+; Version A-00-201508122222
 
 ; A disk-based Forth for ZX Spectrum,
 ; intended for cross-development of ZX Spectrum programs.
@@ -23,6 +23,10 @@
 
 ; See
 ; http://programandala.net/en.program.solo_forth.history.html
+
+; Latest changes:
+; Removed `fig_vocabulary?` config option.
+; Removed `fig_null_word?` config option.
 
 ; ==============================================================
 ; Description
@@ -175,27 +179,6 @@ fig_parsing?: equ false
   ; true = the fig-Forth `<builds does>` pair is used
   ; false = the modern `create does>` pair is used
 
-  ; XXX OLD -- the search order is already implemented
-; fig_vocabulary?: equ true
-  ; true = fig-Forth chained vocabularies
-  ; false = F83 search order
-
-fig_null_word?: equ false
-  ; true = the fig-Forth null word is used to detect the end of
-  ; the buffers: a word of one zero character (a null character)
-  ; is at the end of the buffers. the scanning words (old
-  ; `enclose`, new `skip` and `scan`) must treat the null
-  ; character as a special unconditional delimiter, and do other
-  ; tricks, to simulate the null character found is a parsed
-  ; null word.
-  ;
-  ; false = the same word is used, but the scanning words does
-  ; not treat the null char apart; instead, a null surrounded by
-  ; spaces is put after the buffers (disk buffers and `tib`),
-  ; thus making the null word to be parsed normally as any other
-  ; word. this new method is compatible with the original
-  ; fig-Forth parsing words.
-
   ; XXX TODO
 ;whiles?: equ true
   ;  true = a `while` counter is used, so any number of `while`
@@ -266,17 +249,6 @@ max_word_length:                equ 0x1F
 max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
-
-if 0 ; fig_vocabulary?
-
-; The dummy name field is used to create a dummy header in the
-; parameter field of vocabularies, as part of the vocabulary
-; chaining. It contains one space, so it will never be matched
-; by `find`.
-  
-dummy_name_field: equ 0x2001 ; the lenght (0x01) and a space (0x20)
-
-endif
 
   ; XXX TODO not used?
 null_word: equ 0x2000 ; a null followed by a blank
@@ -749,13 +721,8 @@ fence_init_value:
 dp_init_value:
   dw dictionary_pointer_after_cold
 
-if 0 ; fig_vocabulary?
-voc_link_init_value:
-  dw forth_vocabulary_link
-else
   ; XXX TODO move
   dw 0x0000 ; XXX free
-endif
 
   ; XXX TODO this four user variables do not need init and this
   ; space could be saved; they are included here because `#tib`
@@ -816,13 +783,8 @@ fence_value: ; +0x0A
 dp_value: ; +0x0C
   dw 0x0000
 
-if 0 ; fig_vocabulary?
-voc_link_value: ; +0x0E
-  dw 0x0000
-else
   ; XXX TODO move
   dw 0x0000 ; +0x0E free
-endif
 
 blk_value: ; +0x10
   dw 0x0000
@@ -853,13 +815,9 @@ r_hash_value: ; +0x28 ; XXX OLD -- used by the editor, remove
 
 context_value: ; +0x2A..+0x38
 
-if 0 ; fig_vocabulary?
-  ds max_search_order*cell
-else
   dw forth_pfa
   dw root_pfa
   ds (max_search_order-2)*cell
-endif
   dw 0x0000 ; end of search order, required by `find` \ XXX TODO improve and remove
 
   ; Unused
@@ -899,9 +857,7 @@ data_stack_bottom:
 
 terminal_input_buffer:
   ds bytes_per_terminal_input_buffer
-  if ! fig_null_word?
-    ds 3 ; for the null word
-  endif
+  ds 3 ; for the null word
 
 ; ----------------------------------------------
 ; Return stack
@@ -1393,10 +1349,6 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 
 ; ----------------------------------------------
 
-if 0 ; fig_vocabulary?
-
-else
-
 if 0 ; fig_does?
   _does_header root_,'ROOT'
   dw do_vocabulary
@@ -1405,8 +1357,6 @@ else
 endif
 
   dw latest_nfa_in_root_voc
-
-endif
 
 root_vocabulary_link:
   dw 0x0000
@@ -1420,19 +1370,7 @@ else
   _does_header forth_,'FORTH',,do_vocabulary
 endif
 
-if 0 ; fig_vocabulary?
-
-; Dummy header.
-forth_vocabulary_dummy_lfa:
-  dw latest_nfa_in_forth_voc ; link field
-forth_vocabulary_dummy_nfa:
-  dw dummy_name_field ; name field
-
-else
-
   dw latest_nfa_in_forth_voc ; nfa of the latest word defined in this vocabulary
-
-endif
 
 forth_vocabulary_link:
   dw root_vocabulary_link
@@ -1448,20 +1386,7 @@ endif
 ; XXX TODO move `assembler` and everthing related
 ; to the library disk?
 
-if 0 ; fig_vocabulary?
-
-  ; Dummy header.
-  assembler_vocabulary_dummy_lfa:
-    dw forth_vocabulary_dummy_nfa ; link field
-  assembler_vocabulary_dummy_nfa:
-    dw dummy_name_field ; name field
-
-else
-
-    dw latest_nfa_in_assembler_voc
-
-endif
-
+  dw latest_nfa_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
 
@@ -2302,115 +2227,6 @@ paren_find.nfa_backup: equ $+1
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
 
-if false ; XXX From DXZ-Forth, for ANS Forth parsing
-
-; scan  ( ca1 len1 c -- ca2 len2 )
-
-  pop de
-  ld l,c
-  ld h,b
-  pop bc
-  ex (sp),hl
-scan.begin:
-  ld a,c
-  or b
-  _jump_z scan.end
-  ld a,e
-  cp (hl)
-  _jump_z scan.end
-  inc hl
-  dec bc
-  jp scan.begin ; again
-
-scan.end:
-  ex (sp),hl ; hl = Forth IP ; push ca2
-scan.3:
-  push bc ; len2
-  ld c,l
-  ld b,h ; restore Forth IP
-  _jp_next
-
-endif
-
-if 0 ; XXX TMP -- version for fig-Forth parsing
-
-; doc{
-;
-; scan  ( ca1 c -- ca2 )
-;
-; ca1 = text address
-; c = ascii delimiting character
-; ca2 = start of the parsed text
-;
-; This word will not process past an ascii 'null',
-; treating it as an unconditional delimiter.
-;
-; }doc
-
-
-  pop de ; e = delimiter
-  pop hl ; ca1
-  push bc ; save Forth IP
-scan.begin:
-  ld a,(hl)
-  or a ; null?
-  _jump_z scan.end
-  cp e
-  _jump_z scan.end
-  inc hl
-  jp scan.begin ; again
-
-scan.end:
-  pop bc ; restore Forth IP
-  jp push_hl
-
-endif
-
-if 0 ; from the new `(parse)`
-
-; doc{
-;
-; scan  ( c ca -- ca len )
-;
-; c = ascii delimiting character
-; ca = text address
-; len = length of the parsed text
-;
-; This word will not process past an ascii 'null',
-; treating it as an unconditional delimiter.
-;
-; }doc
-
-  pop de ; address
-  pop hl ; delimiter
-  push de
-  push bc ; save Forth IP
-  ld c,l ; delimiter
-  ld hl,0 ; length
-scan.begin:
-  ld a,(de)
-  cp c ; delimiter?
-  jr z,scan.end
-
-  ; Increase the length before the last check, so the first null
-  ; char will be interpreted as the null word, one char length.
-  ; XXX FIXME bad effect: the last word of the buffer receives
-  ; on additional byte in its count!
-
-  inc hl
-
-  or a ; unconditional null delimiter?
-  jr z,scan.end
-  inc de
-  jp scan.begin ; repeat
-scan.end:
-  pop bc ; restore Forth IP
-  jp push_hl
-
-endif
-
-if 1 ; XXX NEW for `! fig_null_word?`
-
 ; doc{
 ;
 ; scan  ( ca c -- ca len )
@@ -2439,71 +2255,14 @@ scan.begin:
   pop bc ; restore Forth IP
   jp push_hl
 
-endif
-
 ; ----------------------------------------------
   _code_header skip_,'SKIP'
 
-if 0 ; XXX From DXZ-Forth, for ANS Forth parsing
-
-; skip  ( ca1 len1 c -- ca2 len2 )
-
-  pop de
-  ld l,c
-  ld h,b
-  pop bc ; len1
-  ex (sp),hl ; hl=ca1 ; save Forth IP
-skip.begin:
-  ld a,c
-  or b ; exhausted?
-  jp z,scan.end
-  ld a,e
-  cp (hl) ; delimiter?
-  jp nz,scan.end
-  inc hl
-  dec bc
-  jp skip.begin ; again
-
-endif
-
-if 0 ; XXX TMP -- version for fig-Forth parsing
-
+; doc{
+;
 ; skip  ( ca1 c -- ca2 )
-
-  pop de ; e = delimiter
-  pop hl ; ca1
-  push bc ; save Forth IP
-skip.begin:
-  ld a,(hl)
-  or a ; null delimiter?
-  jp z,scan.end
-  cp e ; delimiter?
-  jp nz,scan.end
-  inc hl
-  jp skip.begin ; again
-
-endif
-
-if 0 ; XXX NEW for `word`
-
-; skip  ( c ca1 -- ca2 )
-
-  pop hl ; ca1
-  pop de ; e = delimiter
-skip.begin:
-  ld a,(hl)
-  or a ; unconditional null delimiter?
-  jp z,push_hl
-  cp e ; delimiter?
-  jp nz,push_hl
-  inc hl
-  jp skip.begin ; again
-
-endif
-
-if 1 ; XXX NEW for `! fig_null_word?`
-
-; skip  ( ca1 c -- ca2 )
+;
+; }doc
 
   pop de ; e = delimiter
   pop hl ; ca1
@@ -2513,100 +2272,9 @@ skip.begin:
   jp nz,push_hl
   inc hl
   jp skip.begin ; again
-
-endif
-
-if 0 ; XXX OLD
-
-; ----------------------------------------------
-  _code_header enclose_,'ENCLOSE'
-
-  ; XXX OLD
-
-  ; doc{
-  ;
-  ; enclose  ( c ca -- ca n1 n2 n3 )
-  ;
-  ; The text scanning primitive used by `word`.
-  ;
-  ; c = delimiting character
-  ; ca = text address
-  ; n1 = byte offset to the first non-delimiter character
-  ; n2 = byte offset to the first delimiter after the text
-  ; n3 = byte offset to the first character not included
-  ;
-  ; This procedure will not process past an ASCII 'null',
-  ; treating it as an unconditional delimiter.
-  ;
-  ; Note: This is not the fig-Forth `enclose`: the order of the
-  ; input parameters has been changed, to save a `swap` in
-  ; `word`.
-  ;
-  ; }doc
-
-  ; XXX OLD -- this will be substituted by `(parse)`.
-
-  exx ; save the Forth IP
-  pop hl ; hl = address
-  pop de ; e  = delimiter
-  push hl
-  ld a,e  ; a = delimiter
-  ld bc,-1 ; init char offset counter
-  dec hl
-
-enclose.skip:
-  ; Skip initial delimiters.
-  ; hl = previous address
-  ; a = delimiter
-  ; bc = offset
-  inc hl
-  inc bc
-  cp (hl) ; delimiter?
-  jp z,enclose.skip ; yes, loop
-
-  ; First non-delimiter found.
-  push bc ; save offset
-  ld a,(hl)
-  and a ; is the first non-delimiter a null?
-  jp nz,enclose.scan
-
-  ; The first non-delimiter is a null.
-  inc bc
-  push bc ; offset to byte following null
-  dec bc ; offset to null
-  jp enclose.end
-
-enclose.scan:
-  ld a,e ; delimiter
-  inc hl ; address of next char
-  inc bc ; offset to next char
-  cp (hl) ; delimiter?
-  jp z,enclose.ending_delimiter
-  ld a,(hl)
-  and a ; null?
-  jp nz,enclose.scan
-
-  ; Final null found.
-  push bc ; offset to null
-  jp enclose.end
-
-enclose.ending_delimiter:
-  ; Final delimiter found.
-  push bc ; offset to byte following text
-  inc bc ; offset to 2 bytes after end of word
-
-enclose.end:
-  push bc
-  exx ; restore the Forth IP
-  _jp_next
-
-
-endif
 
 ; ----------------------------------------------
   _code_header paren_parse_,'(PARSE)'
-
-if 1 ; XXX NEW
 
 ; doc{
 ;
@@ -2639,39 +2307,6 @@ paren_parse.scan:
 paren_parse.end:
   pop bc ; restore Forth IP
   jp push_hl
-
-endif
-
-if 0 ; XXX NEW
-
-; doc{
-;
-; (parse)  ( ca c -- ca len )
-;
-; c = ascii delimiting character
-; ca = text address
-; len = length of the parsed text
-;
-; This word will not process past an ascii 'null',
-; treating it as an unconditional delimiter.
-;
-; }doc
-
-  pop hl
-  pop de
-  push de
-  ld d,l ; delimiter
-  ld hl,0 ; length
-paren_parse.scan:
-  ld a,(de)
-  and a ; unconditional null delimiter?
-  jp z,push_hl
-  cp d ; delimiter?
-  jp z,push_hl
-  inc hl
-  jp paren_parse.scan
-
-endif
 
 ; ----------------------------------------------
   _code_header chan_,'CHAN'
@@ -3844,11 +3479,6 @@ store.de_into_hl_pointer:
 
   dw question_exec_
   dw store_csp_
-if 0 ; fig_vocabulary?
-  ; Make sure the `current` vocabulary is searched for
-  ; duplicates.
-  dw current_,fetch_,context_,store_
-endif
   dw header_,right_bracket_
   dw paren_semicolon_code_
 do_colon:
@@ -3871,9 +3501,6 @@ do_colon:
   ; XXX TODO move to the disk? problem: do_colon
 
   dw question_exec_
-if 0 ; fig_vocabulary?
-  dw current_,fetch_,context_,store_ ; XXX TODO why fig-Forth does this in `:`?
-endif
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
@@ -4099,23 +3726,9 @@ do_user:
   db 0x0C
 
 ; ----------------------------------------------
-
-if 0 ; fig_vocabulary?
-
-  _user_variable_header voc_link_,'VOC-LINK'
-
-  ; XXX TODO why this is a user variable?
-  ; XXX TODO normal variable
-
-  db 0x0E
-
-else
-
   _variable_header voc_link_,'VOC-LINK'
 
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
-
-endif
 
 ; ----------------------------------------------
   _user_variable_header blk_,'BLK'
@@ -5100,8 +4713,6 @@ dot_quote.interpreting:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if ! fig_null_word?
-
   _variable_header span_,'SPAN'
 
 ; doc{
@@ -5115,8 +4726,6 @@ if ! fig_null_word?
 ; }doc
 
   dw 0
-
-endif
 
 ; ----------------------------------------------
   _colon_header accept_,'ACCEPT'
@@ -5221,9 +4830,7 @@ fig_expect.do: ; ( i a )
   ; XXX TODO adapt this when true=-1
   dw from_r_,two_minus_,plus_,to_r_ ; update the index
   dw question_branch_,fig_expect.loop ; nothing to delete
-if ! fig_null_word?
   dw b_l_,i_,c_store_ ; update the buffer
-endif
   dw c_lit_
   db backspace_char
   dw branch_,fig_expect.emit
@@ -5238,12 +4845,7 @@ fig_expect.not_the_delete_key: ; ( i a c )
   ; Carriage return ( i a c )
   dw exhaust_
   dw drop_,b_l_
-if fig_null_word?
-  dw zero_
-  dw branch_,fig_expect.store
-else
   dw branch_,fig_expect.emit
-endif
 
 fig_expect.ordinary_key: ; ( i a c )
   dw dup_
@@ -5259,10 +4861,7 @@ fig_expect.loop: ; ( i a )
   dw nip_,i_,swap_ ; update the copy of `i` on the stack
   dw paren_loop_,fig_expect.do
   dw drop_
-if ! fig_null_word?
-  ; Add a null word after the text:
-  dw stream_end_
-endif
+  dw stream_end_ ; add a null word after the text
   dw semicolon_s_
 
 else ; XXX NEW Forth-83 version
@@ -5364,14 +4963,6 @@ endif
 ;
 ; }doc
 
-if fig_null_word?
-
-  dw tib_,fetch_
-  dw number_tib_,fetch_
-  dw expect_
-
-else
-
   ;dw cr_,dot_s_,lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw tib_,fetch_,dup_
   dw number_tib_,fetch_
@@ -5381,8 +4972,6 @@ else
   ;dw cr_,dot_s_,lit_,7,border_,key_,drop_ ; XXX INFORMER
   dw span_,fetch_,plus_,stream_end_
   ;dw cr_,dot_s_,lit_,0,border_,key_,drop_ ; XXX INFORMER
-
-endif
 
   dw to_in_,off_
   ;dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
@@ -5400,6 +4989,20 @@ endif
 ; procedure to terminate interpretation of a line of text from
 ; the terminal or within a disk buffer, as both buffers always
 ; have a null word at the end.
+;
+; In the fig-Forth model a null character is used to detect the
+; end of the buffers.  Therefore the scanning words must treat
+; the null character as a special unconditional delimiter, and
+; do other tricks in order to simulate the null character found
+; is a parsed null word.
+;
+; In Solo Forth the scanning words does not treat the null char
+; apart; instead, an actual null word (a null character
+; surrounded by spaces) is put after the buffers (disk buffers
+; and `tib`). Therefore the null word is parsed normally as any
+; other word. No need to treat the null character as a special
+; delimiter. This new method is compatible with the original
+; fig-Forth parsing words.
 
 ; }doc
 
@@ -6474,20 +6077,7 @@ else
   dw create_
 endif
 
-if 0 ; fig_vocabulary?
-
-  ;A dummy header at vocabulary intersection.
-  dw current_,fetch_ ; address of the dummy lfa in the `current` vocabulary
-  dw lfa_to_nfa_ ; get its correspondent nfa in the dummy header
-  dw comma_ ; use it as link field of the dummy header in the new vocabulary
-  dw lit_,dummy_name_field,comma_ ; name field
-
-else
-
-  dw zero_,comma_ ; nfa of the latest word defined in this vocabulary
-
-endif
-
+  dw zero_,comma_ ; space for the nfa of the latest word defined in the vocabulary
   dw here_ ; address of vocabulary link
   dw voc_link_,fetch_,comma_ ; compile the current content of `voc-link`
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
@@ -6589,11 +6179,7 @@ warm_start_phony_:
   db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
 
-  ; Restore the vocabularies.
-if 0 ; fig_vocabulary?
-  dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
-  dw lit_,forth_vocabulary_dummy_lfa,store_
-else
+  ; Restore the vocabularies to the default state.
   dw lit_,latest_nfa_in_root_voc.init_value,fetch_
   dw lit_,root_pfa,store_
   dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
@@ -6602,16 +6188,14 @@ else
   dw lit_,assembler_pfa,store_
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
-endif
 
-  ; Restore the search order.
-  dw only_,forth_,definitions_
-
-  dw page_,greeting_
+  dw only_,forth_,definitions_  ; search order
+  dw decimal_                   ; base
+  dw page_,greeting_            ; screen
   dw abort_
 
 cold_start:
-  call move_name_fields_to_memory_bank
+  call move_name_fields_to_memory_bank ; (only the first time)
 if 0 ; latin1_charset_in_bank?
   ld hl,charset_address-0x0100
   ld (sys_chars),hl
@@ -6877,8 +6461,6 @@ plus_buf.continue:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  if ! fig_null_word?
-
   _colon_header stream_end_,'STREAM-END'
 
 ; doc{
@@ -6906,8 +6488,6 @@ else ; XXX NEW
 
 endif
 
-  endif
-
 ; ----------------------------------------------
   _colon_header empty_buffers_,'EMPTY-BUFFERS'
 
@@ -6916,10 +6496,8 @@ endif
   dw paren_do_
 empty_buffers.do:
   dw lit_,0x7FFF,i_,store_
-  if ! fig_null_word?
-    ; Store a null word after the end of the buffer:
-    dw i_,lit_,data_bytes_per_buffer+2,plus_,stream_end_
-  endif
+  ; Store a null word after the end of the buffer:
+  dw i_,lit_,data_bytes_per_buffer+2,plus_,stream_end_
   dw lit_,total_bytes_per_buffer
   dw paren_plus_loop_,empty_buffers.do
   dw semicolon_s_

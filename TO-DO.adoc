@@ -196,3 +196,5 @@ Change: make the vocabulary links point to the pfa of the vocabularies?
 Fix: `cold` must reset the search order.
 
 New: `cvariable`, `cconstant`.
+
+Remove `fig_does?`.
