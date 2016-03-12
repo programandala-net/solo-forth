@@ -101,11 +101,17 @@ recognized anymore).
 
 Fix: Something went wrong after the massive of the `_number` macro:
 `.` does not print well; `require` gives error 0!...  The problem is
-`_number -1`! Why? I wrote the autor of Pasmo.
+`_number -1`! Why? I wrote the autor of Pasmo. (He helped).
 
-.2015-06-29:
+.2015-06-30:
 
-Fix: the null word at the end of the disk buffers must have a leading
-space. Otherwise there's a risk it will not be parsed (when the last
-byte of the buffer is not a space, but the last letter of the last
-word in the block).
+New: command history, stored in the names bank.
+
+Change: remove double `;s` from the colon words in the kernel. Use
+`exit` instead, else the word can not be decoded.
+
+Change: modify `expect` after Spectrum Forth-83.
+
+Change: modify `key` after Forth-83 and ANS Forth.
+
+Change: compare the user variables with those of Spectrum Forth-83.
