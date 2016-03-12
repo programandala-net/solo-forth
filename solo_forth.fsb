@@ -62,7 +62,7 @@ scr/disk 1 2variable locatable
 : required  ( ca len -- )
   2dup undefined? if  2dup (required)  then
   \ cr ." required <" 2dup type [char] > emit  \ XXX INFORMER
-  2dup undefined? if  type 24 message exit  then  2drop  ;
+  2dup undefined? if  type 28 message exit  then  2drop  ;
 
 : require  ( "name" -- )  parse-word save-string required  ;
 
@@ -162,26 +162,6 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
   end-code
 
-( pixel-addr )
-
-  \ 2015-06-11: Written.
-  \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
-
-label pixel-addr  ( -- a )  hex
-  \ This Z80 routine is an alternative entry point to the
-  \ "pixel-add" ROM routine (0x22AA), to let the range of the y
-  \ coordinate to be 0..191 instead of 0..175.
-  \ Input:
-  \   c = x cordinate (0..255)
-  \   b = y coordinate (0..191)
-  \ Output:
-  \   hl = address of the pixel byte in the screen bitmap
-  \   a = position of the pixel in the byte address 0..7
-  3E c, BF c,   \ ld a,191 ; max Y coordinate
-  90 00 + c,    \ sub b
-  C3 c, 22B0 ,  \ jp 0x22B0 ; and return
-  decimal
-
 ( pixel )
 
 require pixel-addr
@@ -202,11 +182,34 @@ code pixel  ( x y -- n a )
   C3 c, pushde ,          \ jp pushde
   end-code
 
+( pixel-addr )
+
+  \ 2015-06-11: Written.
+  \ 2015-06-20: `label` instead of `variable` and `-2 allot`.
+
+label pixel-addr  ( -- a )  hex
+  \ This Z80 routine is an alternative entry point to the
+  \ "pixel-add" ROM routine (0x22AA), to let the range of the y
+  \ coordinate to be 0..191 instead of 0..175.
+  \ Input:
+  \   c = x cordinate (0..255)
+  \   b = y coordinate (0..191)
+  \ Output:
+  \   hl = address of the pixel byte in the screen bitmap
+  \   a = position of the pixel in the byte address (0..7),
+  \       note: position 0=bit 7, position 7=bit 0.
+  3E c, BF c,   \ ld a,191 ; max Y coordinate
+  90 00 + c,    \ sub b
+  C3 c, 22B0 ,  \ jp 0x22B0 ; and return
+  decimal
+
 ( point )
 
   \ 2015-06-04: Copied from Afera
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
+
+  \ XXX FIXME 2015-06-25: now it always returns 0, why?
 
 require pixel-addr
 
@@ -238,6 +241,9 @@ code point  ( x y -- )
   \ (http://programandala.net/en.program.afera.html).
   \ 2105-06-11: Modified to use the whole screen.
 
+  \ XXX FIXME 2015-06-25: now it prints 8 pixels to the right,
+  \ why?
+
 require pixel-addr
 
 code plot  ( x y -- )
@@ -246,11 +252,11 @@ code plot  ( x y -- )
   E1 c,               \ pop hl
   C1 c,               \ pop bc
   40 05 + c,          \ ld b,l
-  ED c, 43 , 5C7D ,   \ ld (0x5C7D),bc ; update COORDS
+  ED c, 43 c, 5C7D ,   \ ld (0x5C7D),bc ; update COORDS
   CD c, pixel-addr ,  \ call pixel-addr
   \ hl = screen address
-  \ a = pixel position in hl
-  CD c, 22EC ,        \ call 0x22ec ; plot-sub + 7
+  \ a = pixel position in hl (0..7)
+  CD c, 22EB ,        \ call 0x22EB ; plot-sub + 6
   D9 c,               \ exx
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   DD c, E9 c,         \ jp (ix)

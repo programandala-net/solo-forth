@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506260122
+; Version A-00-201506251911
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -93,29 +93,6 @@
 ; pfa:    ...              ; data or code
 
 ; ==============================================================
-; Configuration
-
-  ; XXX experimental
-size_optimization?              equ false
-  ; true = some code pieces are more compact but slower.
-  ; false = normal, faster code.
-
-fig_find?                       equ false
-  ; true = the fig-Forth `find` is used.
-  ; false = `find` works after Forth-83 and ANS Forth.
-
-fig_parsing?                    equ false
-  ; true = the fig-Forth parsing words are used.
-  ; false = parsing is modified after Forth-83 and ANS Forth.
-
-  ; XXX TODO
-names_in_memory_bank?           equ false
-  ; true = name fields and link fields are stored in a memory
-  ; bank page, saving dictionary space.
-  ; false = name fields and link fields are stored in the
-  ; dictionary.
-
-; ==============================================================
 ; Symbols
 
 ; ----------------------------------------------
@@ -191,6 +168,33 @@ required_but_not_located_error:     equ 29
 number_30_error:                    equ 30 ; free
 number_31_error:                    equ 31 ; free
 number_33_error:                    equ 32 ; free
+
+; ----------------------------------------------
+; Config
+
+  ; XXX experimental
+size_optimization?              equ false
+  ; true = some code pieces are more compact but slower.
+  ; false = normal, faster code.
+
+fig_name_field?                 equ false
+  ; true = the fig-Forth name field is used.
+  ; false = the last letter of the name does not have the sign bit set.
+
+fig_find?                       equ false
+  ; true = the fig-Forth `find` is used.
+  ; false = `find` works after Forth-83 and ANS Forth.
+
+fig_parsing?                    equ false
+  ; true = the fig-Forth parsing words are used.
+  ; false = parsing is modified after Forth-83 and ANS Forth.
+
+  ; XXX TODO
+names_in_memory_bank?           equ false
+  ; true = name fields and link fields are stored in a memory
+  ; bank page, saving dictionary space.
+  ; false = name fields and link fields are stored in the
+  ; dictionary.
 
 ; ----------------------------------------------
 ; Character codes
@@ -272,12 +276,90 @@ bank1_port:        equ 0x7FFD
 immediate: equ 1 ; used as optional parameter
 previous_nfa: defl 0 ; link to previous Forth word
 
-; XXX FIXME Something gets wrong after modifing the header
-; macros to use a complete name as parameter.
+_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
 
-;include solo_forth.header_macros.old.z80s ; XXX TMP
-include solo_forth.header_macros.old_but_one.z80s ; XXX TMP
-;include solo_forth.header_macros.new.z80s ; XXX TMP
+  this_nfa: defl $ ; link address for next word
+  flags: defl name_bound_bit_mask
+    if not nul _is_immediate
+      flags: defl flags | precedence_bit_mask ; add precedence bit
+    endif
+  _base_label##nfa: ; name field address
+    db _base_label##lfa-_base_label##nfa-1+flags ; length and flags byte
+    if fig_name_field?
+      db _name_but_last_letter,_last_letter+name_bound_bit_mask ; name field
+    else
+      db _name_but_last_letter,_last_letter ; name field
+    endif
+  _base_label##lfa: ; link field address
+    dw previous_nfa ; link field
+  _base_label: ; code field address
+
+  previous_nfa: defl this_nfa
+
+endm
+
+_code_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw _base_label##pfa ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_code_alias_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate,alias
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw alias##pfa ; code field
+
+  endm
+
+_colon_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw do_colon ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_user_variable_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw do_user ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_does_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw do_does ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_constant_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw do_constant ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_variable_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw do_create ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_two_variable_header: macro _base_label,_name_but_last_letter,_last_letter,_is_immediate
+
+  _header _base_label,_name_but_last_letter,_last_letter,_is_immediate
+  dw do_create ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
 
 ; ----------------------------------------------
 ; Literals 
@@ -468,13 +550,6 @@ default_user_variables_end:
 
 ip_backup: ; temporary copy of Forth IP
   dw 0
-
-if names_in_memory_bank?
-
-names_pointer:
-  dw np0+1
-
-endif
 
 ; ==============================================================
 ; User variables
@@ -789,19 +864,15 @@ push_l: ; XXX TMP -- not used yet
 ;
 ; }doc
 
-  pop de ; e = bank
-  call bank.e
-  _jp_next
-
-bank.e:
   di
+  pop de ; e = bank
   ld a,(sys_bankm) ; get the saved status of BANKM
   and 0xF8 ; erase bits 0-2
   or e ; modify bits 0-2
   ld (sys_bankm),a ; update BANKM
   out (bank1_port),a ; page the bank
   ei
-  ret ; XXX TODO reti?
+  _jp_next
 
 ; ----------------------------------------------
   _code_header csb_unused_,'CSB-UNUSE','D'
@@ -912,35 +983,8 @@ question_csb_.enough:
 ; ----------------------------------------------
   _code_header execute_,'EXECUT','E'
 
-; doc{
-;
-; execute  ( cfa  -- )
-;
-; }doc
-
   pop hl
   jp next2
-
-; ----------------------------------------------
-  _code_header perform_,'PERFOR','M'
-
-; doc{
-;
-; perform  ( a  -- )
-;
-; Execute the word whose cfa is stored in _a_.  Do nothing if
-; the content of _a_ is zero.
-;
-; }doc
-
-  pop hl
-  ld a,(hl)
-  inc hl
-  ld h,(hl)
-  or h
-  ld l,a
-  jp nz,next2
-  _jp_next
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>MAR','K'
@@ -1126,6 +1170,78 @@ l5f65h:
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND',')'
 
+if fig_name_field?
+
+; doc{
+;
+; (find)  ( ca nfa --- pfa b tf | ff )  \ fig-Forth
+;
+; Search the dictionary starting at the name field address
+; _nfa_, matching to the text at _ca_. If a match is found,
+; return parameter field address _pfa_, length byte of name
+; field _b_ and a boolean true.  Otherwise return only a boolean
+; false.
+;
+; }doc
+
+  ; XXX Note: this is the original fig-Forth version.
+
+  pop de ; nfa
+paren_find.begin:
+  ; (sp) = string address
+  ; de = nfa
+  pop hl ; string address
+  push hl ; save for next iteration
+  ld a,(de) ; length byte
+  xor (hl) ; filter deviations
+  and 0x3F ; mask msb and precedence bit
+  jr nz,paren_find.skip_name_field ; lengths differ
+paren_find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  xor (hl) ; filter deviations
+  add a,a
+  jr nz,paren_find.not_a_match ; no match
+  jr nc,paren_find.compare_next_char ; match so far, loop again
+  ; The string matches.
+  ; de = address of the last char of the name field
+  ld hl,0x0005 ; offset from lfa-1 to pfa
+  add hl,de
+  ex (sp),hl ; pfa to stack
+paren_find.search_for_length_byte:
+  dec de ; position de on nfa
+  ld a,(de)
+  or a ; msb=1?; if so, length byte
+  jp p,paren_find.search_for_length_byte ; no, try next char
+  ld e,a ; length byte
+  ld d,0x00
+  ld hl,true
+  jp push_de_hl ; name field found, return
+paren_find.not_a_match:
+  ; Above name field not a match, try next one
+  jr c,paren_find.name_field_skipped ; carry = end of name field
+paren_find.skip_name_field:
+  ; Find end of name field
+  inc de
+  ld a,(de)
+  or a ; msb=1?
+  jp p,paren_find.skip_name_field ; no, loop
+paren_find.name_field_skipped:
+  inc de ; lfa
+  ex de,hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld a,d
+  or e ; end of dictionary?
+  jp nz,paren_find.begin ; if not, continue
+  ; No match found, return
+  pop hl ; drop string address
+  jp false_pfa
+
+else
+
 if fig_find?
 
 ; doc{
@@ -1276,6 +1392,8 @@ paren_find.nfa_backup: equ $+1
   ld de,(paren_find.string_address)
   ld hl,false
   jp push_de_hl
+
+endif
 
 endif
 
@@ -2949,6 +3067,44 @@ question_dup.end:
 
 ; ----------------------------------------------
 
+if fig_name_field?
+
+  _colon_header traverse_,'TRAVERS','E'
+
+  ; TRAVERSE  ( a1 n --- a2 )
+
+  ; XXX TODO -- simplify
+
+  dw swap_ ; ( n a )
+traverse.begin:
+  dw over_,plus_ ; ( n a' )
+  dw c_lit_
+  db 0x7F ; invert of 0x80, the name bound bit mask
+  dw over_,c_fetch_,less_than_
+  dw zero_branch_,traverse.begin ; until
+  dw swap_,drop_
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+
+if not fig_name_field?
+
+if 0 ; XXX OLD
+
+  _colon_header lfa_to_nfa_,'LFA>NF','A'
+
+lfa_to_nfa.begin:
+  dw one_minus_,dup_,c_fetch_ ; ( a c )
+  dw c_lit_
+  db name_bound_bit_mask
+  dw and_
+  dw zero_branch_,lfa_to_nfa.begin ; until
+  dw semicolon_s_
+
+else ; faster alternative
+
   _code_header lfa_to_nfa_,'LFA>NF','A'
 
   pop hl
@@ -2957,6 +3113,10 @@ lfa_to_nfa.do:
   bit name_bound_bit,(hl)
   jp z,lfa_to_nfa.do
   jp push_hl
+
+endif
+
+endif
 
 ; ----------------------------------------------
   _colon_header latest_,'LATES','T'
@@ -2984,22 +3144,38 @@ lfa_to_nfa.do:
 ; ----------------------------------------------
   _colon_header pfa_to_nfa_,'PFA>NF','A'
 
+if fig_name_field?
+  dw c_lit_
+  db 0x05
+  dw minus_,lit_,-1,traverse_
+else
   dw pfa_to_lfa_,lfa_to_nfa_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header cfa_to_nfa_,'CFA>NF','A'
 
+if fig_name_field?
+  _number 3
+  dw minus_
+  dw lit_,-1,traverse_
+else
   dw cfa_to_lfa_,lfa_to_nfa_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header nfa_to_lfa_,'NFA>LF','A'
 
+if fig_name_field?
+  dw one_,traverse_,one_plus_
+else
   dw dup_,c_fetch_
   dw c_lit_
   db max_word_length_bit_mask
   dw and_,plus_,one_plus_
+endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -3946,8 +4122,41 @@ error.end:
 ; ----------------------------------------------
   _colon_header id_dot_,'ID','.'
 
+if fig_name_field?
+
+  dw pad_
+  dw c_lit_
+  db max_word_length+1
+  dw c_lit_
+  db 0x5F ; XXX why this char?
+  dw fill_
+  dw dup_,nfa_to_lfa_,over_ ; ( nfa lfa nfa )
+  dw minus_ ; ( nfa len+1 )
+  dw pad_,swap_,cmove_
+  dw pad_,count_ ; ( pad len+name_bound_bit_mask+n )
+  dw c_lit_
+  db max_word_length
+  dw and_ ; ( pad len )
+  dw two_dup_,plus_,one_minus_ ; address of the last char ( pad len pad+len-1 )
+if 0 ; XXX OLD
+  dw dup_,fetch_
+  dw lit_,0xFF7F,and_
+  dw swap_,store_
+else ; XXX NEW
+  dw dup_,c_fetch_
+  dw c_lit_
+  db 0x7F
+  dw and_,swap_,c_store_
+endif
+  dw type_,space_
+  dw semicolon_s_
+
+else ; XXX NEW -- name field without end bit in the last char
+
   dw nfa_to_string_,type_,space_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header header_,'HEADE','R'
@@ -3985,6 +4194,14 @@ header.continue:
   dw c_lit_
   db name_bound_bit_mask+smudge_bit_mask
   dw toggle_
+  if fig_name_field?
+    ; Toggle the name bound bit in the last character of the
+    ; name, as a delimiter to the name field.
+    dw here_,one_minus_
+    dw c_lit_
+    db name_bound_bit_mask
+    dw toggle_
+  endif
   dw latest_,comma_ ; compile the nfa of the last word in the link field
   dw current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
   dw here_,two_plus_,comma_ ; compile the pfa into code field.
@@ -5844,27 +6061,6 @@ nfa_of_top_most_word_in_forth_voc:
 dictionary_pointer_after_cold:
 
 end cold_entry
-
-; ==============================================================
-;
-
-if names_in_memory_bank?
-
-  ; XXX TODO
-
-
-  np0: equ 0xC000 ; names pointers
-
-  org np0
-
-  db 0 ; this null byte is needed by the algorithm used in `cfa>nfa`
-
-  ; Structure of an entry:
-  ; dw cfa ; pointer to the cfa of the word, in the main memory
-  ; dw nfa ; pointer to the nfa of the next word, or zero
-  ; db lenght+flags,"name; ; name field
-
-endif
 
 ; ==============================================================
 ; Debug tools

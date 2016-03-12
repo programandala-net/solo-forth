@@ -104,14 +104,21 @@ Fix:
 .2015-06-25:
 
 Change:
-fig-Forth `leave` --> `last-loop` / `no-loops` / `enough-loop`.
+
+fig-Forth `leave` --> `last-loop` | `no-loops` | `enough-loop` |
+`exhaust` | `exhausted` | `last` | `last-do`
 
 New:
-ANS Forth `leave` --> `exit-loop` / `break-loop` (code from DZX-Forth).
 
-Fix: `65 dup emit .`. `.` prints a space at the start.
-In Abersoft Forth it does not.
-The code of `d.r` is the same in Solo Forth and Abersoft Forth.
+ANS Forth `leave` (code from DZX-Forth) --> `exit-loop` | `break-loop`
+| `enough` | `break` | `abandon`
 
 New: `??`. A control structure than executes the next compiled word if
 TOS is non-zero, else skip it.
+
+.2015-06-26:
+
+Fix: 
+Something gets wrong after modifing the header
+macros to use a complete name as parameter.
+The values of the header symbols change some bytes.
