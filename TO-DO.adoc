@@ -1,5 +1,5 @@
 = Solo Forth TO-DO
-:revdate: 2015-09-14
+:revdate: 2015-09-19
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -275,16 +275,13 @@ copies of those words have the "x" suffix added, for debugging.
 Change: `parsed` to `>in +!` and choose a new name for `1+ ; parsed` or
 write as is.
 
-.2015-09-16:
-
-
-New: `find-name` ( ca len -- ca len 0 | cfa 1 | cfa -1 )
+// }}}
+== Files ==
+// {{{
 
 .2015-09-18:
 
-Fix: when loading blocks with the new parsing method, the parsing
-stops at the end of the first block of the screen, because the null
-word is not executed anymore. The solution is to use `refill`.
+New: `.files` (from Pygmy Forth).
 
 // }}}
 == Misc new words ==

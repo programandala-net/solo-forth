@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509182220
+\ Last modified: 201509200302
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -45,23 +45,23 @@ variable default-first-locatable
 
 : reload  ( -- )  scr @ load  ;
 
+  \ XXX TMP
+  \ XXX INFORMER
+  \ : contains  ( ca1 len1 ca2 len2 -- f )  2dup cr type ." in"
+  \ 2over -trailing cr type ." ?" cr .s key drop search nip nip ;
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
   \ Does the string ca1 len1 contains the string ca2 len2?
 
 variable default-first-locatable
 variable first-locatable
   8 dup default-first-locatable !  first-locatable !
-variable last-locatable  scr/disk last-locatable ! -->
+variable last-locatable  scr/disk 1- last-locatable !
 
-  \ XXX TMP -- temporary border changes for debugging
-: located  ( ca len -- screen | false ) [ 2 border ]
-  [ 4 border ]  \ XXX INFORMER
-  \ XXX TMP -- temporary commented out for debugging:
-  \ last-locatable @ 1+  first-locatable @
+: located  ( ca len -- screen | false )
+  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
-  do
-    0 i (line) 2over contains if  2drop i unloop exit  then
-    \ break-key? ?exhaust
+  do   0 i (line) 2over contains if  2drop i unloop exit  then
+    \ break-key? ?exhaust \ XXX TODO not in the kernel
   loop  2drop false  ;
 
 : locate  ( "name" -- screen | false )
@@ -70,9 +70,6 @@ variable last-locatable  scr/disk last-locatable ! -->
 -->
 
 ( need ) \ scr 3
-
-  \ XXX TMP -- temporary border changes for debugging
-4 border
 
 : ?located  ( screen | false -- )  dup 0= 29 ?error  ;
 
@@ -97,7 +94,13 @@ variable last-locatable  scr/disk last-locatable ! -->
   \   if  type 28 warning exit  then  2drop  ;
 
   \ XXX TMP
-  2dup undefined?  if  reneeded  else  2drop  then  ;
+  \ 2dup undefined?  if  reneeded  else  2drop  then  ;
+  \ undefined?  if  parsed-name 2@ reneeded  then  ;
+
+  2dup save-string undefined?
+    \ a copy of the string is used because `undefined?`
+    \ converts it to uppercase
+  if  reneeded  else  2drop  then  ;
 
 : need  ( "name" -- )  parse-name save-string needed  ;
 
@@ -218,7 +221,7 @@ variable last-locatable  scr/disk last-locatable ! -->
 
   \ XXX Gforth:
 
-: evaluate  ( ca len -- )  ['] interprent execute-parsing  ;
+: evaluate  ( ca len -- )  ['] interpret execute-parsing  ;
 
 ( parse-char )
 
@@ -1366,7 +1369,7 @@ code plot  ( xc yc -- )
   \ Set a pixel without changing the color attributes.
 
   \ Credits:
-  \ Author of the original code: José Manuel Lazo.
+  \ Author of the original code: JosÃ© Manuel Lazo.
   \ Published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -1391,7 +1394,7 @@ code set-pixel  ( xc yc -- )
   \ Reset a pixel without changing the color attributes.
 
   \ Credits:
-  \ Based on code written by José Manuel Lazo,
+  \ Based on code written by JosÃ© Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -1414,7 +1417,7 @@ code reset-pixel  ( xc yc -- )
   \ Toggle a pixel without changing the color attributes.
 
   \ Credits:
-  \ Based on code written by José Manuel Lazo,
+  \ Based on code written by JosÃ© Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -1815,7 +1818,7 @@ code inverted  ( -- )
   \ effect and then restore the original.
 
   \ Credits:
-  \ Code adapted from a routine written by Juan José Rivas,
+  \ Code adapted from a routine written by Juan JosÃ© Rivas,
   \ published in Microhobby, issue 150 (1987-06), page 9:
   \ http://microhobby.org/numero150.htm
   \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg
@@ -1897,7 +1900,7 @@ code scroll-1px-right  ( -- )
 ( scroll-1px-up )
 
   \ Credits:
-  \ Code adapted from a routine written by Iván Sansa,
+  \ Code adapted from a routine written by IvÃ¡n Sansa,
   \ published in Microhobby, issue 122 (1987-03), page 7:
   \ http://microhobby.org/numero122.htm
   \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg
@@ -2103,7 +2106,7 @@ current ! previous
 
   \ Code inspired by the article
   \ "Las posibilidades sonoras del 128 K",
-  \ written by Juan José Rosado Recio,
+  \ written by Juan JosÃ© Rosado Recio,
   \ published in Microhobby, issue 147 (1987-10), page 24:
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
@@ -2165,7 +2168,7 @@ code play  ( a -- )
 
   \ Credits:
   \ `waves` and `shoot` are
-  \ adapted from code written by Juan José Ruiz,
+  \ adapted from code written by Juan JosÃ© Ruiz,
   \ published in Microhobby, issue 139 (1987-07), page 7:
   \ http://microhobby.org/numero139.htm
   \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
@@ -2180,7 +2183,7 @@ create shoot  ( -- a )
 
   \ Credits:
   \ `helicopter` and `train` are
-  \ adapted from code written by José Ángel Martín,
+  \ adapted from code written by JosÃ© Ãngel MartÃ­n,
   \ published in Microhobby, issue 172 (1988-09), page 22:
   \ http://microhobby.org/numero172.htm
   \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
@@ -2197,7 +2200,7 @@ create train  ( -- a )
 
   \ Sounds to be played with `play`.
 
-  \ Data extracted a program written by Juan José Rosado Recio,
+  \ Data extracted a program written by Juan JosÃ© Rosado Recio,
   \ published in Microhobby, issue 147 (1987-10), page 24:
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
@@ -2276,7 +2279,7 @@ code bleep  ( n1 n2 -- )
   \ Laser gun sound for ZX Spectrum 48K.
 
   \ Credits:
-  \ Author of the original code: Álvaro Corredor Lanas.
+  \ Author of the original code: Ãlvaro Corredor Lanas.
   \ Published in Microhobby, issue 126 (1987), page 7:
   \ http://microhobby.org/numero126.htm
   \ http://microhobby.speccy.cz/mhf/126/MH126_07.jpg
@@ -2337,7 +2340,7 @@ code white-noise  ( u -- )
   \ Ambulance sound for ZX Spectrum 48K.
 
   \ Credits:
-  \ Author of the original code: Líder Software.
+  \ Author of the original code: LÃ­der Software.
   \ Published in Microhobby, issue 142 (1987-09), page 7:
   \ http://microhobby.org/numero142.htm
   \ http://microhobby.speccy.cz/mhf/142/MH142_07.jpg
@@ -3050,7 +3053,7 @@ code c!dosvar  ( b n -- )
 
   \ doc{
   \
-  \ update  ( -- )  \ ANS-Forth
+  \ update  ( -- )
   \
   \ Mark the most recently referenced block as altered. The
   \ block will subsequently be transferred automatically to
@@ -3067,7 +3070,7 @@ code c!dosvar  ( b n -- )
 
   \ doc{
   \
-  \ flush  ( -- )  \ ANS Forth
+  \ flush  ( -- )
   \
   \ Perform the function of `save-buffers`, then unassign all
   \ block buffers.
@@ -3082,8 +3085,8 @@ code c!dosvar  ( b n -- )
   \
   \ Continue interpretation at screen _u_.
   \
-  \ Standard: Forth-83 (Appendix B. Uncontrolled Reference
-  \ Words).
+  \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
+  \ B. Uncontrolled Reference Words).
   \
   \ }doc
 
@@ -3881,7 +3884,7 @@ code !p  ( c ca -- )
   C1 c,           \ pop bc
   jpnext          \ jp (ix)
 
-  end-code
+  End-code
 
   \ }}} =======================================================
   \ Turnkey {{{
@@ -4237,8 +4240,8 @@ code l>  ( -- x ) ( L: x -- )
   \ exit the calling word
 
 : (loop)  ;
-  ( increments index -2nd item- on return stack)
-  ( calculates flag for until )
+  ( increments index -2nd item- on return stack)
+  ( calculates flag for until )
 
 : (+loop)  ;
 
@@ -4257,8 +4260,8 @@ code l>  ( -- x ) ( L: x -- )
 
 
   \ : unloop
-  \   ( removes 2nd and 3rd return stack items )
-  \   ( 1st return stack item is itc saved ip for unloop )  ;
+  \   ( removes 2nd and 3rd return stack items )
+  \   ( 1st return stack item is itc saved ip for unloop )  ;
   \ : i ( gets 2nd return stack item to data stack )  ;
   \ : j ( gets 4th ... )  ;
   \ : k ( gets 6th ... )  ;
@@ -4271,15 +4274,15 @@ code l>  ( -- x ) ( L: x -- )
   \ Draft by Elisabeth Rather.
 
 : do ( -- flag addr)
-    postpone (do) 0  postpone begin ;  immediate
+  postpone (do) 0   postpone begin ;   immediate
 
 : ?do ( -- addr1 flag addr2)
-    postpone (?do) postpone begin
-    postpone (do) 1  postpone begin ;  immediate
+    postpone (?do) postpone begin
+    postpone (do) 1   postpone begin ;   immediate
 
   \ ...where (DO) and (?DO) are the run-time actions. (?DO)
   \ contains a forward branch which compile-time LOOP or +LOOP
-  \ must resolve.   (BEGIN) leaves on the compile-time stack an
+  \ must resolve.    (BEGIN) leaves on the compile-time stack an
   \ address for LOOP or +LOOP to branch back to, and a flag.
 
 ( ?do )
@@ -5143,7 +5146,7 @@ code random-b  ( -- b )
 ( random-n )
 
   \ Credits:
-  \ Adapted from code written by José Manuel Lazo,
+  \ Adapted from code written by JosÃ© Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
