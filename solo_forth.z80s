@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201507042216
+; Version A-00-201507050029
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -42,6 +42,9 @@
 ; - first changes to implement multiple `while` in `begin`.
 ; - first changes to implement multiple `sm/rem` and `fm/mod`.
 ; - fix: `plot`.
+; - first draft of `emitted`, based on the S-SCREEN$ ROM
+; routine.
+; - first changes to implement a Latin 1 charset.
 
 ; ==============================================================
 ; Acknowledgments
@@ -255,6 +258,11 @@ fig_null_word?: equ false
   ;  can be used in a `begin` structure.
   ;  false = no change to the standard structure.
 
+  ; XXX TODO
+;latin1_charset_in_bank?: equ false
+  ; true = a 224-char Latin 1 charset is stored in the memory bank.
+  ; false = the default charset is used.
+
 ; ==============================================================
 ; Symbols
 
@@ -315,6 +323,11 @@ default_bank: equ 0
 names_bank:   equ 1
 
 names_bank_address: equ 0xC000 ; names pointers
+
+; Charset
+
+charset_size:     equ 224*8 ; 224 chars (0x20..0xFF) * 8 bitmap rows
+charset_address:  equ 0xFFFF-charset_size+1
 
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
@@ -407,6 +420,7 @@ sys_errnr:         equ 0x5C3A ; IY index
 
 sys_attr_p:        equ 0x5C8D
 sys_bankm:         equ 0x5B5C
+sys_chars:         equ 0x5C36
 sys_coordx:        equ 0x5C7D
 sys_coordy:        equ 0x5C7E
 sys_df_cc:         equ 0x5C84
@@ -420,6 +434,12 @@ sys_scr_ct:        equ 0x5C8C
 sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
 sys_t_addr:        equ 0x5C74
 sys_udg:           equ 0x5C7B
+
+; ----------------------------------------------
+; System constants
+
+sys_screen_address: equ 0x4000
+sys_screen_size:    equ 0x1B00
 
 ; ----------------------------------------------
 ; Ports
@@ -2412,10 +2432,18 @@ endif
 
 ; [Code from Spectrum Forth-83's `TOCH`.]
 
+if 0 ; latin1_charset_in_bank?
+  ld e,names_bank
+  call bank.e ; the charset is in the memory bank
+endif
   pop hl
   ld a,l
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
+if 0 ; latin1_charset_in_bank?
+  ld e,default_bank
+  call bank.e
+endif
   _jp_next
 
 ; ----------------------------------------------
@@ -6217,6 +6245,10 @@ warm_start_phony_:
 
 cold_start:
   call move_name_fields_to_memory_bank
+if 0 ; latin1_charset_in_bank?
+  ld hl,charset_address-0x0100
+  ld (sys_chars),hl
+endif
   call common_start
 cold_start_phony_:
   dw cold_
@@ -7313,6 +7345,12 @@ list.loop:
   _code_header bye_,'BYE'
 
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
+if 0 ; latin1_charset_in_bank?
+  ; Restore the default charset:
+  ld hl,15360
+  ld (sys_chars),hl
+endif
+  ; Exit to BASIC:
   rst 0x08
   db 0x08 ; "STOP" BASIC error
 
@@ -7504,6 +7542,88 @@ color:
   rst 0x10
   call rom_set_permanent_colors_0x1CAD
   _jp_next
+
+; ----------------------------------------------
+  _code_header emitted_,'EMITTED'
+
+; doc{
+;
+; emitted  ( line col -- c )
+;
+; }doc
+
+  pop hl ; column
+  pop de ; line
+  push bc ; save the Forth IP
+  ld b,l ; column
+  ld c,e ; line
+if 0 ; XXX OLD
+  ld  hl,(sys_chars) ; character set (address of character 0)
+  inc h ; address of character 0x20 in the character set
+else ; XXX NEW
+  ld  hl,(sys_udg) ; address of the first character bitmap
+endif
+  ld  a,c  ; line
+  rrca
+  rrca 
+  rrca  ; multiply by 0x20
+  and  0xE0  ; %11100000
+  xor  b ; combine with column (0x00..0x1F)
+  ld  e,a ; low byte of top line = 0x20 * (line mod 8) + column
+  ld  a,c  ; x is copied to a again
+  and  0x18
+  xor  0x40
+  ld  d,a ; high byte of top line = 64 + 8*int (line/8)
+  ; de = screen address
+  ld  b,224  ; characters count
+
+emitted.do:
+  push  bc  ; save the characters count
+  push  de  ; save the screen pointer
+  push  hl  ; save the character set pointer (bitmap start)
+  ld  a,(de)  ; get first row of screen character
+  xor  (hl)  ; match with row from character set
+  jp  Z,emitted.match  ; jump if direct match found
+  ; if inverse, a=0xFF
+  inc  a  ; inverse? (if inverse, a=0)
+  jp  nz,emitted.next_char  ; jump if inverse match not found
+  ; inverse match
+  dec  a  ; restore 0xFF
+emitted.match:
+  ld  c,a  ; inverse mask (0x00 or 0xFF)
+  ld  b,0x07  ; count 7 more character rows
+emitted.rows:
+  inc  d  ; next screen row (add 0x100)
+  inc  hl  ; next bitmap address
+  ld  a,(de)  ; screen row
+  xor  (hl)  ; will give 0x00 or 0xFF (inverse)
+  xor  c  ; inverse mask to include the inverse status
+  jr  nz,emitted.next_char  ; jump if no match
+  djnz  emitted.rows  ; jump back till all rows done
+
+  ; character match
+  pop  bc  ; discard character set pointer
+  pop  bc  ; discard screen pointer
+  pop  bc  ; final count
+  ld  a,0x100  ; last character code in set plus one
+  sub  b  ; code of the matched character (0x20..0xFF)
+  ld l,a
+  jp emitted.end
+
+emitted.next_char:
+  pop  hl  ; restore character set pointer
+  ld  de,0x0008  ; move it on 8 bytes, to the next
+  add  hl,de  ; character in the set
+  pop  de  ; restore the screen pointer
+  pop  bc  ; restore the counter
+  djnz  emitted.do  ; loop back for the 96 characters
+  ; no match
+  ld l,c ; zero
+
+emitted.end:
+  pop bc ; restore the Forth IP
+  ld h,0
+  jp push_hl
 
 ; ----------------------------------------------
   _code_header j_,'J'
@@ -7779,30 +7899,39 @@ if 1 ; names_in_memory_bank?
 
 move_name_fields_to_memory_bank:
   
-  ; Move the name fields, assembled in ordinary memory,
-  ; to the names bank. This routine is needed only once.
-  ; Its call is patched with `noop` at the end, and the routine
-  ; itself will be overwritten by the Forth dictionary.
+  ; Move the name fields, assembled in ordinary memory, to the
+  ; names bank. This routine is needed only once, therefore its
+  ; call is patched with `noop` at the end; the routine itself
+  ; will be overwritten by the Forth dictionary.
 
   ; The whole screen is used as intermediate buffer for copying
   ; the data.
 
-  ld hl,names_bank_address
-  ld de,16384 ; screen
-  ld bc,6912 ; screen size
-  ldir
+  ld hl,names_bank_address ; origin
+  ld de,sys_screen_address ; destination
+  ld bc,sys_screen_size ; count
+  ldir ; copy the data to the screen
   ld e,names_bank
   call bank.e
-  ld hl,16384 ; screen
-  ld de,names_bank_address
-  ldir
+  ld hl,sys_screen_address ; origin
+  ld de,names_bank_address ; destination
+  ld bc,sys_screen_size ; count
+  ldir ; copy the name fields to the bank
+if 0 ; latin1_charset_in_bank?
+  ld hl,sys_screen_address+sys_screen_size-charset_size ; origin
+  ld de,charset_address ; destination
+  ld bc,charset_size ; count
+  ldir ; copy the charset to the bank
+endif
   ld e,default_bank
   call bank.e
-  ; Erase the default bank (not necessary)
-  ld hl,names_bank_address ; the first byte is 0
-  ld de,names_bank_address+1
-  ld bc,16384
-  ldir
+
+  ; Erase the default bank (not necessary) ; XXX OLD
+  ; ld hl,names_bank_address ; the first byte is 0
+  ; ld de,names_bank_address+1
+  ; ld bc,sys_screen_address
+  ; ldir
+
   ; Remove the call to this routine:
   ld hl,cold_start ; address of the call to this routine
   ld (hl),0 ; noop
@@ -7815,6 +7944,14 @@ move_name_fields_to_memory_bank:
   org names_bank_address
 
   db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
+
+if 0 ; latin1_charset_in_bank?
+
+  org names_bank_address+sys_screen_size-charset_size
+
+  incbin solo_forth.charset.bin
+
+endif
 
 endif
 

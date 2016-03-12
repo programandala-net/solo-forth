@@ -70,13 +70,20 @@ solo_forth.bas.tap: solo_forth.bas
 		solo_forth.bas  \
 		solo_forth.bas.tap
 
+# The charset.
+
+solo_forth.charset.bin: solo_forth.charset.z80s
+	pasmo -v \
+		solo_forth.charset.z80s \
+		solo_forth.charset.bin
+
 # The new binary.
 
 # A temporary name "forth.bin" is used because Pasmo does not have an option to
 # choose the filename used in the TAP file header; it uses the name of the
 # target file.
 
-solo_forth.bin.tap: $(kernel_source_file)
+solo_forth.bin.tap: $(kernel_source_file) solo_forth.charset.bin
 	pasmo -v --tap \
 		$(kernel_source_file) \
 		forth.bin \
