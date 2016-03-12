@@ -179,4 +179,10 @@ Problem detected with `(emit)` and those four booleans attributes.
 
 New: `pick`, from DZX-Forth.
 
+Change: The original system to to print out with `link` wasn't
+practical, because it copied to the printer everything that was
+printed on the screen.  It is removed. Now the new words `printer` and
+`display` are used instead.
 
+Changes in `(emit)`, in order to fix the problems with boolean
+attributes. It seems the channel must be opened every time.

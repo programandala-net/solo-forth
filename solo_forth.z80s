@@ -3,7 +3,7 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506090248
+; Version A-00-201506092358
 ; Latests important changes (in chronological order)
 ; - `'` returns a cfa instead of a pfa.
 ; - Boolean attributes are moved to the disk, `(emit)` must be fixed.
@@ -795,8 +795,10 @@ emit_pfa:
   dw one_,out_,plus_store_
   dw semicolon_s_
 
+if 0 ; XXX OLD
 printer_channel_or_zero: ; XXX TODO move to the code
   db 0x00
+endif
 
 if 0 ; XXX OLD
 
@@ -861,12 +863,47 @@ paren_emit_pfa:
   rst 0x10
   _jp_next
 
+  ; XXX NEW
+  ; rom_chan_open fixes the problem,
+  ; but I don't understand why.
+
+  ; push bc
+  ; ld a,0x02
+  ; call rom_chan_open
+  ; pop bc
+  ; pop hl
+  ; ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+  ; ld a,l
+  ; rst 0x10
+  ; _jp_next
+
 endif
+
+
+printer_nfa:
+  db 0x07+0x80,'PRINTE','R'+0x80
+printer_lfa:
+  dw paren_emit_nfa
+printer_:
+  dw do_colon
+printer_pfa:
+  dw three_,chan_
+  dw semicolon_s_
+
+display_nfa:
+  db 0x07+0x80,'DISPLA','Y'+0x80
+display_lfa:
+  dw printer_nfa
+display_:
+  dw do_colon
+display_pfa:
+  dw two_,chan_
+  dw semicolon_s_
 
 key_nfa:
   db 0x03+0x80,'KE','Y'+0x80
 key_lfa:
-  dw paren_emit_nfa
+  dw display_nfa
 key_:
   dw key_pfa
 key_pfa:
@@ -1017,6 +1054,9 @@ cr_nfa:
   db 0x02+0x80,'C','R'+0x80
 cr_lfa:
   dw question_terminal_nfa
+
+  if 0 ; XXX OLD
+
 cr_:
   dw cr_pfa
 cr_pfa:
@@ -1036,6 +1076,22 @@ cr_pfa:
 cr.end:
   pop bc
   _jp_next
+
+  else ; XXX NEW
+
+cr_:
+  dw do_colon
+cr_pfa:
+
+  ; from Spectrum Forth-83
+
+  dw c_lit_
+  db carriage_return_char
+  dw emit_
+  dw out_,off_
+  dw semicolon_s_
+
+  endif
 
 cmove_nfa:
   db 0x05+0x80,'CMOV','E'+0x80
@@ -1327,6 +1383,8 @@ unloop_nfa:
 unloop_lfa:
   dw pick_nfa
 unloop_:
+  ; XXX TODO -- this works, but why? it should save the return address,
+  ; the TORS.
   dw two_r_drop_pfa
 
 leave_nfa:
@@ -4388,13 +4446,8 @@ next_screen_:
 next_screen_pfa:
   dw question_loading_
   dw in_,off_
-  dw b_slash_scr_
-  dw blk_,fetch_
-  dw over_
-  dw mod_
-  dw minus_
-  dw blk_
-  dw plus_store_
+  dw b_slash_scr_,blk_,fetch_,over_,mod_,minus_
+  dw blk_,plus_store_
   dw semicolon_s_
 
 tick_nfa:
@@ -4814,6 +4867,8 @@ list.loop:
   dw cr_
   dw semicolon_s_
 
+if 0 ; XXX OLD
+
 link_nfa:
   db 0x04+0x80,'LIN','K'+0x80
 link_lfa:
@@ -4830,10 +4885,12 @@ link.end:
   ld (printer_channel_or_zero),a
   _jp_next
 
+endif
+
 page_nfa:
   db 0x04+0x80,'PAG','E'+0x80
 page_lfa:
-  dw link_nfa
+  dw list_nfa
 page_:
   dw page_pfa
 page_pfa:
