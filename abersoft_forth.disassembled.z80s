@@ -1306,7 +1306,7 @@ plus_origin_lfa:
 plus_origin_cfa:
   defw do_colon
 plus_origin_pfa:
-  defw lit_cfa,0x5E40
+  defw lit_cfa,origin
   defw plus_cfa
   defw semicolon_s_cfa
 
@@ -2857,29 +2857,23 @@ cold_cfa:
   defw do_colon
 cold_pfa:
   defw empty_buffers_cfa
-  defw lit_cfa
-  defw first_buffer
+  defw lit_cfa,first_buffer
   defw use_cfa
   defw store_cfa
-  defw lit_cfa
-  defw first_buffer
+  defw lit_cfa,first_buffer
   defw prev_cfa
   defw store_cfa
   defw dr0_cfa
-  defw lit_cfa
-  defw init_s0_value
-  defw lit_cfa
-  defw user_pointer_value
+  defw lit_cfa,init_s0_value
+  defw lit_cfa,user_pointer_value
   defw fetch_cfa
   defw lit_cfa,0x0006
   defw plus_cfa
   defw lit_cfa,0x0010
   defw cmove_cfa
-  defw lit_cfa
-  defw top_most_word_in_forth_voc
+  defw lit_cfa,top_most_word_in_forth_voc
   defw fetch_cfa
-  defw lit_cfa
-  defw forth_vocabulary_latest
+  defw lit_cfa,forth_vocabulary_latest
   defw store_cfa
   defw abort_cfa
 
@@ -5016,7 +5010,7 @@ next_lfa:
 next_cfa:
   defw do_constant
 next_pfa:
-  defw 0x5E6C
+  defw next
 
 pushhl_nfa:
   defb 0x06+0x80,"PUSHH","L"+0x80

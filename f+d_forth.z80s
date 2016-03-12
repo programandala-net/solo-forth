@@ -4,8 +4,6 @@
 
   org 0x5E00
 
-editor?: equ 0
-
 data_stack_bottom:  equ 0xCB40
 first_buffer: equ 0xCBE0
 precedence_bit: equ 0x40
@@ -168,11 +166,7 @@ init_fence_value:
 init_dp_value:
   defw dictionary_pointer_after_cold
 init_voc_link_value:
-  if editor?
-    defw editor_vocabulary_link
-  else
-    defw forth_vocabulary_link
-  endif
+  defw forth_vocabulary_link
 
 cpu_name:
   ; CPU name stored as a 32-bit base 36 integer.
@@ -1339,7 +1333,7 @@ plus_origin_lfa:
 plus_origin_cfa:
   defw do_colon
 plus_origin_pfa:
-  defw lit_cfa,0x5E40
+  defw lit_cfa,origin
   defw plus_cfa
   defw semicolon_s_cfa
 
@@ -1548,27 +1542,62 @@ one_plus_nfa:
 one_plus_lfa:
   defw hld_nfa
 one_plus_cfa:
-  defw do_colon
+  defw one_plus_pfa
 one_plus_pfa:
-  defw one_cfa
-  defw plus_cfa
-  defw semicolon_s_cfa
+  pop hl
+  inc hl
+  jp pushhl
 
 two_plus_nfa:
   defb 0x02+0x80,"2","+"+0x80
 two_plus_lfa:
   defw one_plus_nfa
 two_plus_cfa:
-  defw do_colon
+  defw two_plus_pfa
 two_plus_pfa:
-  defw two_cfa
-  defw plus_cfa
-  defw semicolon_s_cfa
+  pop hl
+  inc hl
+  inc hl
+  jp pushhl
+
+one_minus_nfa:
+  defb 0x02+0x80,"1","-"+0x80
+one_minus_lfa:
+  defw two_plus_nfa
+one_minus_cfa:
+  defw one_minus_pfa
+one_minus_pfa:
+  pop hl
+  dec hl
+  jp pushhl
+
+two_minus_nfa:
+  defb 0x02+0x80,"2","-"+0x80
+two_minus_lfa:
+  defw one_minus_nfa
+two_minus_cfa:
+  defw two_minus_pfa
+two_minus_pfa:
+  pop hl
+  dec hl
+  dec hl
+  jp pushhl
+
+two_star_nfa:
+  defb 0x02+0x80,"2","*"+0x80
+two_star_lfa:
+  defw two_minus_nfa
+two_star_cfa:
+  defw two_star_pfa
+two_star_pfa:
+  pop hl
+  add hl,hl
+  jp pushhl
 
 here_nfa:
   defb 0x04+0x80,"HER","E"+0x80
 here_lfa:
-  defw two_plus_nfa
+  defw two_star_nfa
 here_cfa:
   defw do_colon
 here_pfa:
@@ -2764,7 +2793,7 @@ do_vocabulary:
   defw semicolon_s_cfa
 
 forth_nfa:
-  defb 0x05+0x80+precedence_bit,"FORT","H"+0x80
+  defb 0x05+0x80,"FORT","H"+0x80
 forth_lfa:
   defw vocabulary_nfa
 forth_cfa:
@@ -2890,29 +2919,23 @@ cold_cfa:
   defw do_colon
 cold_pfa:
   defw empty_buffers_cfa
-  defw lit_cfa
-  defw first_buffer
+  defw lit_cfa,first_buffer
   defw use_cfa
   defw store_cfa
-  defw lit_cfa
-  defw first_buffer
+  defw lit_cfa,first_buffer
   defw prev_cfa
   defw store_cfa
   defw dr0_cfa
-  defw lit_cfa
-  defw init_s0_value
-  defw lit_cfa
-  defw user_pointer_value
+  defw lit_cfa,init_s0_value
+  defw lit_cfa,user_pointer_value
   defw fetch_cfa
   defw lit_cfa,0x0006
   defw plus_cfa
   defw lit_cfa,0x0010
   defw cmove_cfa
-  defw lit_cfa
-  defw top_most_word_in_forth_voc
+  defw lit_cfa,top_most_word_in_forth_voc
   defw fetch_cfa
-  defw lit_cfa
-  defw forth_vocabulary_latest
+  defw lit_cfa,forth_vocabulary_latest
   defw store_cfa
   defw abort_cfa
 
@@ -4438,25 +4461,6 @@ branch_destination_0x7795:
 
 endif
 
-if editor?
-
-editor_nfa:
-  defb 0x06+0x80+precedence_bit,"EDITO","R"+0x80
-editor_lfa:
-  defw index_nfa
-editor_cfa:
-  defw do_does
-editor_pfa:
-  defw do_vocabulary
-editor_vocabulary_dummy_nfa:
-  defw 0xA081 ; Dummy name field.
-editor_vocabulary_latest:
-  defw c_nfa
-editor_vocabulary_link:
-  defw forth_vocabulary_link
-
-endif
-
 where_nfa:
   defb 0x05+0x80,"WHER","E"+0x80
 where_lfa:
@@ -4492,560 +4496,8 @@ where_pfa:
   defw spaces_cfa
   defw lit_cfa,0x005E
   defw emit_cfa
-  if editor?
-    defw editor_cfa
-  endif
   defw quit_cfa
   defw semicolon_s_cfa
-
-if editor?
-
-hash_locate_nfa:
-  defb 0x07+0x80,"#LOCAT","E"+0x80
-hash_locate_lfa:
-  defw forth_vocabulary_dummy_nfa
-hash_locate_cfa:
-  defw do_colon
-hash_locate_pfa:
-  defw r_hash_cfa
-  defw fetch_cfa
-  defw c_slash_l_cfa
-  defw slash_mod_cfa
-  defw semicolon_s_cfa
-
-hash_lead_nfa:
-  defb 0x05+0x80,"#LEA","D"+0x80
-hash_lead_lfa:
-  defw hash_locate_nfa
-hash_lead_cfa:
-  defw do_colon
-hash_lead_pfa:
-  defw hash_locate_cfa
-  defw line_cfa
-  defw swap_cfa
-  defw semicolon_s_cfa
-
-hash_lag_nfa:
-  defb 0x04+0x80,"#LA","G"+0x80
-hash_lag_lfa:
-  defw hash_lead_nfa
-hash_lag_cfa:
-  defw do_colon
-hash_lag_pfa:
-  defw hash_lead_cfa
-  defw dup_cfa
-  defw to_r_cfa
-  defw plus_cfa
-  defw c_slash_l_cfa
-  defw from_r_cfa
-  defw minus_cfa
-  defw semicolon_s_cfa
-
-minus_move_nfa:
-  defb 0x05+0x80,"-MOV","E"+0x80
-minus_move_lfa:
-  defw hash_lag_nfa
-minus_move_cfa:
-  defw do_colon
-minus_move_pfa:
-  defw line_cfa
-  defw c_slash_l_cfa
-  defw cmove_cfa
-  defw update_cfa
-  defw semicolon_s_cfa
-
-h_nfa:
-  defb 0x01+0x80,"H"+0x80
-h_lfa:
-  defw minus_move_nfa
-h_cfa:
-  defw do_colon
-h_pfa:
-  defw line_cfa
-  defw pad_cfa
-  defw one_plus_cfa
-  defw c_slash_l_cfa
-  defw dup_cfa
-  defw pad_cfa
-  defw c_store_cfa
-  defw cmove_cfa
-  defw semicolon_s_cfa
-
-e_nfa:
-  defb 0x01+0x80,"E"+0x80
-e_lfa:
-  defw h_nfa
-e_cfa:
-  defw do_colon
-e_pfa:
-  defw line_cfa
-  defw c_slash_l_cfa
-  defw blanks_cfa
-  defw update_cfa
-  defw semicolon_s_cfa
-
-s_nfa:
-  defb 0x01+0x80,"S"+0x80
-s_lfa:
-  defw e_nfa
-s_cfa:
-  defw do_colon
-s_pfa:
-  defw dup_cfa
-  defw one_cfa
-  defw minus_cfa
-  defw lit_cfa,0x000E
-  defw paren_do_cfa
-branch_destination_0x788C:
-  defw i_cfa
-  defw line_cfa
-  defw i_cfa
-  defw one_plus_cfa
-  defw minus_move_cfa
-  defw lit_cfa,0xFFFF
-  defw paren_plus_loop_cfa,branch_destination_0x788C
-  defw e_cfa
-  defw semicolon_s_cfa
-
-d_nfa:
-  defb 0x01+0x80,"D"+0x80
-d_lfa:
-  defw s_nfa
-d_cfa:
-  defw do_colon
-d_pfa:
-  defw dup_cfa
-  defw h_cfa
-  defw lit_cfa,0x000F
-  defw dup_cfa
-  defw rot_cfa
-  defw paren_do_cfa
-branch_destination_0x78B6:
-  defw i_cfa
-  defw one_plus_cfa
-  defw line_cfa
-  defw i_cfa
-  defw minus_move_cfa
-  defw paren_loop_cfa,branch_destination_0x78B6
-  defw e_cfa
-  defw semicolon_s_cfa
-
-m_nfa:
-  defb 0x01+0x80,"M"+0x80
-m_lfa:
-  defw d_nfa
-m_cfa:
-  defw do_colon
-m_pfa:
-  defw r_hash_cfa
-  defw plus_store_cfa
-  defw cr_cfa
-  defw space_cfa
-  defw hash_lead_cfa
-  defw type_cfa
-  defw lit_cfa,0x005F
-  defw emit_cfa
-  defw hash_lag_cfa
-  defw type_cfa
-  defw hash_locate_cfa
-  defw dot_cfa
-  defw drop_cfa
-  defw semicolon_s_cfa
-
-t_nfa:
-  defb 0x01+0x80,"T"+0x80
-t_lfa:
-  defw m_nfa
-t_cfa:
-  defw do_colon
-t_pfa:
-  defw dup_cfa
-  defw c_slash_l_cfa
-  defw star_cfa
-  defw r_hash_cfa
-  defw store_cfa
-  defw dup_cfa
-  defw h_cfa
-  defw zero_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-l_nfa:
-  defb 0x01+0x80,"L"+0x80
-l_lfa:
-  defw t_nfa
-l_cfa:
-  defw do_colon
-l_pfa:
-  defw scr_cfa
-  defw fetch_cfa
-  defw list_cfa
-  defw zero_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-editor_r_nfa:
-  defb 0x01+0x80,"R"+0x80
-editor_r_lfa:
-  defw l_nfa
-editor_r_cfa:
-  defw do_colon
-editor_r_pfa:
-  defw pad_cfa
-  defw one_plus_cfa
-  defw swap_cfa
-  defw minus_move_cfa
-  defw semicolon_s_cfa
-
-p_nfa:
-  defb 0x01+0x80,"P"+0x80
-p_lfa:
-  defw editor_r_nfa
-p_cfa:
-  defw do_colon
-p_pfa:
-  defw one_cfa
-  defw text_cfa
-  defw editor_r_cfa
-  defw semicolon_s_cfa
-
-editor_i_nfa:
-  defb 0x01+0x80,"I"+0x80
-editor_i_lfa:
-  defw p_nfa
-editor_i_cfa:
-  defw do_colon
-editor_i_pfa:
-  defw dup_cfa
-  defw s_cfa
-  defw editor_r_cfa
-  defw semicolon_s_cfa
-
-top_nfa:
-  defb 0x03+0x80,"TO","P"+0x80
-top_lfa:
-  defw editor_i_nfa
-top_cfa:
-  defw do_colon
-top_pfa:
-  defw zero_cfa
-  defw r_hash_cfa
-  defw store_cfa
-  defw semicolon_s_cfa
-
-clear_nfa:
-  defb 0x05+0x80,"CLEA","R"+0x80
-clear_lfa:
-  defw top_nfa
-clear_cfa:
-  defw do_colon
-clear_pfa:
-  defw scr_cfa
-  defw store_cfa
-  defw lit_cfa,0x0010
-  defw zero_cfa
-  defw paren_do_cfa
-branch_destination_0x796A:
-  defw i_cfa
-  defw e_cfa
-  defw paren_loop_cfa,branch_destination_0x796A
-  defw semicolon_s_cfa
-
-copy_nfa:
-  defb 0x04+0x80,"COP","Y"+0x80
-copy_lfa:
-  defw clear_nfa
-copy_cfa:
-  defw do_colon
-copy_pfa:
-  defw b_slash_scr_cfa
-  defw star_cfa
-  defw offset_cfa
-  defw fetch_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw b_slash_scr_cfa
-  defw star_cfa
-  defw b_slash_scr_cfa
-  defw over_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw paren_do_cfa
-branch_destination_0x7997:
-  defw dup_cfa
-  defw i_cfa
-  defw block_cfa
-  defw two_cfa
-  defw minus_cfa
-  defw store_cfa
-  defw one_plus_cfa
-  defw update_cfa
-  defw paren_loop_cfa,branch_destination_0x7997
-  defw drop_cfa
-  defw flush_cfa
-  defw semicolon_s_cfa
-
-minus_text_nfa:
-  defb 0x05+0x80,"-TEX","T"+0x80
-minus_text_lfa:
-  defw copy_nfa
-minus_text_cfa:
-  defw do_colon
-minus_text_pfa:
-  defw swap_cfa
-  defw question_dup_cfa
-  defw zero_branch_cfa,branch_destination_0x79EB
-  defw over_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw paren_do_cfa
-branch_destination_0x79CB:
-  defw dup_cfa
-  defw c_fetch_cfa
-  defw i_cfa
-  defw c_fetch_cfa
-  defw minus_cfa
-  defw zero_branch_cfa,branch_destination_0x79E1
-  defw zero_equals_cfa
-  defw leave_cfa
-  defw branch_cfa,branch_destination_0x79E3
-branch_destination_0x79E1:
-  defw one_plus_cfa
-branch_destination_0x79E3:
-  defw paren_loop_cfa,branch_destination_0x79CB
-  defw branch_cfa,branch_destination_0x79EF
-branch_destination_0x79EB:
-  defw drop_cfa
-  defw zero_equals_cfa
-branch_destination_0x79EF:
-  defw semicolon_s_cfa
-
-match_nfa:
-  defb 0x05+0x80,"MATC","H"+0x80
-match_lfa:
-  defw minus_text_nfa
-match_cfa:
-  defw do_colon
-match_pfa:
-  defw to_r_cfa
-  defw to_r_cfa
-  defw two_dup_cfa
-  defw from_r_cfa
-  defw from_r_cfa
-  defw two_swap_cfa
-  defw over_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw paren_do_cfa
-branch_destination_0x7A0F:
-  defw two_dup_cfa
-  defw i_cfa
-  defw minus_text_cfa
-  defw zero_branch_cfa,branch_destination_0x7A31
-  defw to_r_cfa
-  defw two_drop_cfa
-  defw from_r_cfa
-  defw minus_cfa
-  defw i_cfa
-  defw swap_cfa
-  defw minus_cfa
-  defw zero_cfa
-  defw swap_cfa
-  defw zero_cfa
-  defw zero_cfa
-  defw leave_cfa
-branch_destination_0x7A31:
-  defw paren_loop_cfa,branch_destination_0x7A0F
-  defw two_drop_cfa
-  defw swap_cfa
-  defw zero_equals_cfa
-  defw swap_cfa
-  defw semicolon_s_cfa
-
-oneline_nfa:
-  defb 0x05+0x80,"1LIN","E"+0x80
-oneline_lfa:
-  defw match_nfa
-oneline_cfa:
-  defw do_colon
-oneline_pfa:
-  defw hash_lag_cfa
-  defw pad_cfa
-  defw count_cfa
-  defw match_cfa
-  defw r_hash_cfa
-  defw plus_store_cfa
-  defw semicolon_s_cfa
-
-find_nfa:
-  defb 0x04+0x80,"FIN","D"+0x80
-find_lfa:
-  defw oneline_nfa
-find_cfa:
-  defw do_colon
-branch_destination_0x7A60:
-find_pfa:
-  defw lit_cfa,0x03FF
-  defw r_hash_cfa
-  defw fetch_cfa
-  defw less_than_cfa
-  defw zero_branch_cfa,branch_destination_0x7A7E
-  defw top_cfa
-  defw pad_cfa
-  defw here_cfa
-  defw c_slash_l_cfa
-  defw one_plus_cfa
-  defw cmove_cfa
-  defw zero_cfa
-  defw error_cfa
-branch_destination_0x7A7E:
-  defw oneline_cfa
-  defw zero_branch_cfa,branch_destination_0x7A60
-  defw semicolon_s_cfa
-
-delete_nfa:
-  defb 0x06+0x80,"DELET","E"+0x80
-delete_lfa:
-  defw find_nfa
-delete_cfa:
-  defw do_colon
-delete_pfa:
-  defw to_r_cfa
-  defw hash_lag_cfa
-  defw plus_cfa
-  defw r_cfa
-  defw minus_cfa
-  defw hash_lag_cfa
-  defw r_cfa
-  defw negate_cfa
-  defw r_hash_cfa
-  defw plus_store_cfa
-  defw hash_lead_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw cmove_cfa
-  defw from_r_cfa
-  defw blanks_cfa
-  defw update_cfa
-  defw semicolon_s_cfa
-
-n_nfa:
-  defb 0x01+0x80,"N"+0x80
-n_lfa:
-  defw delete_nfa
-n_cfa:
-  defw do_colon
-n_pfa:
-  defw find_cfa
-  defw zero_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-f_nfa:
-  defb 0x01+0x80,"F"+0x80
-f_lfa:
-  defw n_nfa
-f_cfa:
-  defw do_colon
-f_pfa:
-  defw one_cfa
-  defw text_cfa
-  defw n_cfa
-  defw semicolon_s_cfa
-
-b_nfa:
-  defb 0x01+0x80,"B"+0x80
-b_lfa:
-  defw f_nfa
-b_cfa:
-  defw do_colon
-b_pfa:
-  defw pad_cfa
-  defw c_fetch_cfa
-  defw negate_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-x_nfa:
-  defb 0x01+0x80,"X"+0x80
-x_lfa:
-  defw b_nfa
-x_cfa:
-  defw do_colon
-x_pfa:
-  defw one_cfa
-  defw text_cfa
-  defw find_cfa
-  defw pad_cfa
-  defw c_fetch_cfa
-  defw delete_cfa
-  defw zero_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-till_nfa:
-  defb 0x04+0x80,"TIL","L"+0x80
-till_lfa:
-  defw x_nfa
-till_cfa:
-  defw do_colon
-till_pfa:
-  defw hash_lead_cfa
-  defw plus_cfa
-  defw one_cfa
-  defw text_cfa
-  defw oneline_cfa
-  defw zero_equals_cfa
-  defw zero_cfa
-  defw question_error_cfa
-  defw hash_lead_cfa
-  defw plus_cfa
-  defw swap_cfa
-  defw minus_cfa
-  defw delete_cfa
-  defw zero_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-c_nfa:
-  defb 0x01+0x80,"C"+0x80
-c_lfa:
-  defw till_nfa
-c_cfa:
-  defw do_colon
-c_pfa:
-  defw one_cfa
-  defw text_cfa
-  defw pad_cfa
-  defw count_cfa
-  defw hash_lag_cfa
-  defw rot_cfa
-  defw over_cfa
-  defw min_cfa
-  defw to_r_cfa
-  defw r_cfa
-  defw r_hash_cfa
-  defw plus_store_cfa
-  defw r_cfa
-  defw minus_cfa
-  defw to_r_cfa
-  defw dup_cfa
-  defw here_cfa
-  defw r_cfa
-  defw cmove_cfa
-  defw here_cfa
-  defw hash_lead_cfa
-  defw plus_cfa
-  defw from_r_cfa
-  defw cmove_cfa
-  defw from_r_cfa
-  defw cmove_cfa
-  defw update_cfa
-  defw zero_cfa
-  defw m_cfa
-  defw semicolon_s_cfa
-
-endif
 
 next_nfa:
   defb 0x04+0x80,"NEX","T"+0x80
@@ -5054,7 +4506,7 @@ next_lfa:
 next_cfa:
   defw do_constant
 next_pfa:
-  defw 0x5E6C
+  defw next
 
 pushhl_nfa:
   defb 0x06+0x80,"PUSHH","L"+0x80
@@ -5955,12 +5407,20 @@ dictionary_pointer_after_cold:
 ; (http://programandala.net/en.program.abersoft_forth.html). First
 ; changes:
 ;
-; Some fig-Forth words are renamed with their modern forms: `vlist` to
-; `words`, `-dup` to `?dup`, `minus` to `negate`, `dminus` to
-; `denegate`.
+; Some fig-Forth words are renamed with their modern forms: `vlist` as
+; `words`, `-dup` as `?dup`, `minus` as `negate`, `dminus` as
+; `dnegate`, `s->d` as `s>d`, `mon` to `bye`.
 ;
 ; `branch` and `back` are modified to do absolute branches.  The
 ; branches are converted with a simple substitution, thanks to the
 ; comments prepared by the disassembling of Abersoft Forth.
 ;
-; New words, from the Afera library: `\`, `.(`, `char` and `[char]`.
+; New words, from the Afera library: `\`, `.(`, `char` and `[char]`,
+; `2-`, `1-`.
+; 
+; `2+` and `1+` are converted to Z80.
+;
+; The editor is removed.
+;
+; `forth` is not immediate any more.
+;

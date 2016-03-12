@@ -66,7 +66,6 @@ f+d_forth_loader.tap: f+d_forth_loader.bas
 # target file.
 
 f+d_forth.bin.tap: f+d_forth.z80s
-	cd src ; \
 	pasmo --tap \
 		f+d_forth.z80s \
 		forth.bin \
