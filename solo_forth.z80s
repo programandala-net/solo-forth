@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506262133
+; Version A-00-201506270120
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -137,8 +137,13 @@ fig_parsing?                    equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
-  ; XXX TODO
-names_in_memory_bank?           equ true
+  ; XXX FIXME Pasmo gives strang errors (symbols not found)
+  ; when this config flag is used in nested `if`. A literal flag
+  ; (0/1) is used instead, with the flag name in a comment; it
+  ; is changed with a text substitution.
+  ; XXX FIXME when the flag is true, the system crashes after
+  ; searching for a word, but the problem is not in `(find)`.
+;names_in_memory_bank?           equ true
   ; true = name fields and link fields are stored in a memory
   ; bank page, saving dictionary space.
   ; false = name fields and link fields are stored in the
@@ -308,12 +313,66 @@ bank1_port:        equ 0x7FFD
 immediate: equ 1 ; used as optional parameter
 previous_nfa: defl 0 ; link to previous Forth word
 
-;if names_in_memory_bank_?
+  ; XXX OLD
+  ;include solo_forth.header_macro.bank.z80s
+  ;include solo_forth.header_macro.default.z80s
 
-  include solo_forth.header_macro.bank.z80s
-;  include solo_forth.header_macro.default.z80s
+_header: macro _base_label,_name,_is_immediate
 
-;endif
+  flags: defl name_bound_bit_mask
+  if not nul _is_immediate
+    flags: defl flags | precedence_bit_mask ; add precedence bit
+  endif
+
+  if 0 ; names_in_memory_bank?
+
+    ; In dictionary:
+
+    _base_label: ; code field address
+    local _dp_backup
+    local _name_address
+    local _address_after_name
+    _dp_backup: equ $
+
+    ; In memory bank:
+
+    org np
+    _base_label##to_cfa:
+      dw _base_label ; pointer to cfa
+    _base_label##lfa: ; link field address
+      dw previous_nfa ; link field
+    _base_label##nfa: ; name field address
+    flags: defl name_bound_bit_mask
+      if not nul _is_immediate
+        flags: defl flags | precedence_bit_mask ; add precedence bit
+      endif
+      db _address_after_name-_name_address+flags ; length
+    _name_address: equ $
+      db _name ; name field
+    _address_after_name: equ $
+    np: defl $
+
+    ; Update the names pointer:
+    org names_pointer
+    dw np
+
+    ; In dictionary:
+    org _dp_backup
+
+  else
+
+    _base_label##nfa: ; name field address
+      db _base_label##lfa-_base_label##nfa-1+flags ; length and flags byte
+      db _name ; name field
+    _base_label##lfa: ; link field address
+      dw previous_nfa ; link field
+    _base_label: ; code field address
+
+  endif
+
+  previous_nfa: defl _base_label##nfa
+
+  endm
 
 _code_header: macro _base_label,_name,_is_immediate
 
@@ -458,7 +517,7 @@ _jump_z: macro _address
 
 _bank: macro _n
   _number _n
-  dw macro_
+  dw bank_
   endm
 
 _names_bank: macro
@@ -585,7 +644,7 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-;if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   ; XXX TODO
 
@@ -593,7 +652,7 @@ ip_backup: ; temporary copy of Forth IP
 names_pointer:
   dw np
 
-;endif
+endif
 
 ; ==============================================================
 ; User variables
@@ -715,7 +774,6 @@ compare_de_hl_unsigned:
   ; Output:
   ;  flag C if hl < de
   ;  flag Z if hl = de
-
 
   ld a,h
   cp d
@@ -1252,7 +1310,7 @@ digit.test_value:
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
 
-if fig_find? ; XXX OLD
+if 0 ; fig_find? ; XXX OLD
 
 ; doc{
 ;
@@ -1325,9 +1383,108 @@ paren_find.nfa_backup: equ $+1
 
 else
 
-if ! fig_find? 
-  
-if ! names_in_memory_bank?
+if 0 ; names_in_memory_bank?
+
+  ; XXX FIXME -- does not find words?
+
+; doc{
+;
+; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
+;
+; }doc
+
+  ; XXX Note: this version uses the name fields stored in a
+  ; memory bank, with a different format.
+
+  ld e,names_bank
+  call bank.e ; page the memory bank
+
+  pop de ; nfa
+  ;ld (65000),de ; XXX INFORMER
+  pop hl ; string address
+  ;ld (ip_backup),bc ; save Forth IP ; XXX OLD
+  push bc ; XXX NEW
+  ld (paren_find.string_address),hl
+
+  ; XXX FIXME the string searched for must be in the string
+  ; buffer, below 0xC000! This is not a problem now, during the
+  ; development, because the dictionary is small.
+
+paren_find.begin:
+  ;_border 2 ; XXX INFORMER
+  ;_border 7 ; XXX INFORMER
+  ; Compare the string with a new word.
+  ; de = nfa
+  ld (paren_find.nfa_backup),de ; save the nfa for later
+paren_find.string_address: equ $+1
+  ld hl,0 ; string address
+  ld a,(de) ; length byte of the name field
+  ld c,a    ; save for later
+  and max_word_length_bit_mask  ; length
+  cp (hl) ; same length?
+  jr nz,paren_find.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+  ld b,a ; length
+paren_find.compare_next_char:
+  inc hl ; next character in string
+  inc de ; next character in name field
+  ld a,(de)
+  cp (hl) ; match?
+  jr nz,paren_find.not_a_match ; no match
+  djnz paren_find.compare_next_char ; match so far, loop again
+
+  ; The string matches.
+  ; c = name field length byte
+  ld hl,(paren_find.nfa_backup)
+  dec hl
+  dec hl ; lfa
+  dec hl ; high part of the pointer to cfa
+  ld d,(hl)
+  dec hl ; low part of the pointer to cfa
+  ld e,(hl) ; de = cfa
+  ld hl,1 ; 1=immediate word
+  ld a,c ; name field length byte
+  ;ld bc,(ip_backup) ; restore Forth IP ; XXX OLD
+  and precedence_bit_mask ; immediate word?
+
+  ;.warning 'pasmo was here' ; XXX INFORMER
+  ; XXX FIXME why Pasmo says this symbol is undefined?:
+  jp nz, paren_find.end
+  ; XXX the error happens because of the if structure: when I
+  ; remove it, the same error happens in other place
+
+  ; non-immediate word
+  dec hl
+  dec hl ; -1 = non-immediate word
+
+paren_find.end:
+  ; de = ca | cfa
+  ; hl = -1 | 0 | 1
+  ld e,default_bank
+  call bank.e ; page the default memory bank
+  pop bc ; restore Forth IP ; XXX NEW
+  jp push_de_hl
+
+paren_find.not_a_match:
+  ; Not a match, try next one.
+paren_find.nfa_backup: equ $+1
+  ld hl,0 ; nfa
+  dec hl ; high address of lfa
+  ld d,(hl) ; high part of the next nfa
+  dec hl ; low address of lfa
+  ld e,(hl) ; low part of the next nfa
+  ld a,d
+  or e ; end of dictionary? (next nfa=0)
+  jp nz,paren_find.begin ; if not, continue
+  ; End of dictionary, no match found, return.
+  ;ld bc,(ip_backup) ; restore Forth IP ; XXX OLD
+  ld de,(paren_find.string_address)
+  ld hl,0
+  jp paren_find.end
+
+
+else
   
 ; doc{
 ;
@@ -1406,103 +1563,6 @@ paren_find.nfa_backup: equ $+1
   ld de,(paren_find.string_address)
   ld hl,false
   jp push_de_hl
-
-else
-
-  ; XXX TODO finish adapt to the new data format in the memory bank
-
-; doc{
-;
-; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
-;
-; }doc
-
-  ; XXX Note: this version uses the name fields stored in a
-  ; memory bank, with a different format.
-
-  ld e,names_bank
-  call bank.e ; page the memory bank
-
-  ld (ip_backup),bc ; save Forth IP
-  pop de ; nfa
-  pop hl ; string address
-  ld (paren_find.string_address),hl
-
-  ; XXX FIXME the string searched for must be in the string
-  ; buffer, below 0xC000!
-
-paren_find.begin:
-  ; Compare the string with a new word.
-  ; de = nfa
-  ld (paren_find.nfa_backup),de ; save for later
-paren_find.string_address: equ $+1
-  ld hl,0 ; string address
-  ld a,(de) ; name field length byte
-  ld c,a    ; save for later
-  and max_word_length_bit_mask  ; actual length
-  cp (hl)
-  jr nz,paren_find.not_a_match ; lengths differ
-
-  ; Lengths match, compare the characters.
-  ld b,a ; length
-paren_find.compare_next_char:
-  inc hl ; next character in string
-  inc de ; next character in name field
-  ld a,(de)
-  cp (hl)
-  jr nz,paren_find.not_a_match ; no match
-  djnz paren_find.compare_next_char ; match so far, loop again
-
-  ; The string matches.
-  ; de = address of the last char of the name field
-  ; c = name field length byte
-  ex de,hl
-  dec hl
-  dec hl
-  ld d,(hl)
-  dec hl
-  ld e,(hl) ; de = cfa
-  ld hl,1 ; 1=immediate word
-  ld a,c ; name field length byte
-  ld bc,(ip_backup) ; restore Forth IP
-  and precedence_bit_mask ; immediate word?
-
-  .warning 'pasmo was here'
-  ; XXX FIXME why Pasmo says this symbol is undefined?:
-  jp nz,paren_find.end
-  ; XXX the error happens because of the if structure: when I
-  ; remove it, the same error happens in other place
-
-  ; non-immediate word
-  dec hl
-  dec hl ; -1 = non-immediate word
-
-paren_find.end:
-  ; de = ca | cfa
-  ; hl = -1 | 0 | 1
-  ld e,default_bank
-  call bank.e ; page the default memory bank
-  jp push_de_hl
-
-paren_find.not_a_match:
-  ; Not a match, try next one.
-paren_find.nfa_backup: equ $+1
-  ld hl,0 ; nfa
-  dec hl
-  dec hl ; hl = lfa
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  ld a,d
-  or e ; end of dictionary?
-  jp nz,paren_find.begin ; if not, continue
-  ; End of dictionary, no match found, return.
-  ld bc,(ip_backup) ; restore Forth IP
-  ld de,(paren_find.string_address)
-  ld hl,0
-  jp paren_find.end
-
-endif
 
 endif
 
@@ -3241,7 +3301,7 @@ question_dup.end:
 
 ; ----------------------------------------------
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_minus_
 
@@ -3266,7 +3326,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_lfa_,'PFA>LFA'
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   dw pfa_to_cfa_,cfa_to_nfa_
 
@@ -3287,7 +3347,7 @@ endif
 
 ; ----------------------------------------------
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _colon_header cfa_to_lfa_,'CFA>LFA'
   dw cfa_to_nfa_,nfa_to_lfa_
@@ -3301,7 +3361,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   dw pfa_to_cfa_,cfa_to_nfa_
   dw semicolon_s_
@@ -3326,7 +3386,7 @@ endif
 
 ; XXX FIXME -- return 0 if cfa has no name associated
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _code_header cfa_to_nfa_,'CFA>NFA'
 
@@ -3350,10 +3410,10 @@ cfa_to_nfa.begin
   ld a,(hl) ; low byte of cfa
   cp e ; equal?
   inc hl
-  jr nz,cfa_to_nfa.next ; not equal
+  jr nz,cfa_to_nfa.begin ; not equal
   ld a,(hl) ; high byte of cfa
   cp d ; equal?
-  jr nz,cfa_to_nfa.next ; not equal
+  jr nz,cfa_to_nfa.begin ; not equal
   ; cfa found
   ld c,4
   add hl,bc
@@ -3362,7 +3422,7 @@ cfa_to_nfa.begin
   ld e,default_bank
   call bank.e ; page the default memory bank
 
-  jp pushhl
+  jp push_hl
 
 else
 
@@ -3375,9 +3435,9 @@ endif
 
 ; ----------------------------------------------
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
-  _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus
+  _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus_
 
 else
 
@@ -3394,7 +3454,7 @@ endif
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _number 4
   dw minus_,fetch_
@@ -3423,7 +3483,7 @@ endif
 ;
 ; }doc
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   _names_bank
   dw count_
@@ -4286,7 +4346,10 @@ else ; XXX NEW -- modern `find`
 ;
 ; }doc
 
-  dw context_,fetch_,fetch_,paren_find_
+  dw context_,fetch_,fetch_
+  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
+  dw paren_find_
+  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4395,7 +4458,7 @@ error.end:
   _message not_unique_error
 header.continue:
 
-if names_in_memory_bank? ; XXX NEW
+if 0 ; names_in_memory_bank?
 
     ; XXX TODO
 
@@ -4410,7 +4473,7 @@ if names_in_memory_bank? ; XXX NEW
   dw here_,two_plus_,comma_ ; compile the pfa into code field
   dw semicolon_s_
 
-else ; XXX OLD
+else
 
   dw here_
   ; XXX TODO error if name is too long (see lina)
@@ -4705,6 +4768,7 @@ two_literal.end:
 ; ----------------------------------------------
   _colon_header interpret_,'INTERPRET'
 
+
 ; XXX TODO -- In order to change the behaviour of `literal`, `2literal`
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
@@ -4794,9 +4858,14 @@ interpret.begin:
 
   ; XXX TODO -- finish
 
-  ;dw lit_,3,border_ ; XXX INFORMER
   dw question_stack_
-  dw defined_,question_dup_ ; found?
+  ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
+  dw defined_
+  if 0 ; names_in_memory_bank?
+    dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
+  endif
+  dw question_dup_ ; found?
+  ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found
 
   ; Found ( cfa 1 | cfa -1 )
@@ -4811,10 +4880,15 @@ interpret.begin:
 
 interpret.execute:
   ; Executing or immediate ( cfa )
-  dw execute_
+  if 0 ; names_in_memory_bank?
+    dw drop_ ; XXX TMP for debugging
+  else
+    dw execute_
+  endif
   dw branch_,interpret.begin
 
 interpret.word_not_found:
+  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   ; try to convert the text to a number
   ; ( ca )
   ;dw lit_,0,border_,key_,drop_ ; XXX INFORMER
@@ -6262,8 +6336,6 @@ question_backslash.end:
   dw to_in_,plus_store_
   dw semicolon_s_
 
-nfa_of_top_most_word_in_forth_voc:
-
 ; ----------------------------------------------
   _colon_header dot_paren_,'.(',immediate
 
@@ -6278,12 +6350,14 @@ nfa_of_top_most_word_in_forth_voc:
   dw parse_,type_
   dw semicolon_s_
 
+nfa_of_top_most_word_in_forth_voc: equ dot_paren_nfa
+
 dictionary_pointer_after_cold:
 
 ; ==============================================================
 ; Name and link fields
 
-if names_in_memory_bank?
+if 0 ; names_in_memory_bank?
 
   ; XXX TODO
 

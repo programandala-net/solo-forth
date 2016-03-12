@@ -72,11 +72,13 @@ solo_forth.bas.tap: solo_forth.bas
 # target file.
 
 solo_forth.bin.tap: solo_forth.z80s
-	pasmo -v -1 --tap \
+	pasmo -v --tap \
 		solo_forth.z80s \
 		forth.bin \
-		solo_forth.symbols.z80s ; \
+		solo_forth.symbols.z80s
 	mv forth.bin solo_forth.bin.tap
+
+# > solo_forth.assembly_debug_info.txt ; \
 
 ################################################################
 # The MGT disk images
@@ -105,7 +107,14 @@ solo_forth_disk_2.mgt: solo_forth.fsb
 ################################################################
 # Tests
 
-test: test_bank_with_pasmo
+test: if_test
+
+.PHONY: if_test
+if_test:
+	pasmo \
+		_test/if_test.z80s \
+		_test/if_test.bin \
+		_test/if_test.symbols.z80s
 
 .PHONY: test_bank_with_pasmo
 test_bank_with_pasmo:
