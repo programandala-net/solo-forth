@@ -85,3 +85,8 @@ Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
     >S ;                \ And initialize screen output.
 
 Fix: the compilation of `decode` fails and corrupts the system.
+
+Fix: in 128, typing graphics T and U prints the new tokens.
+
+New: A printing routine instead the ROM routines, with two fonts: for
+chars 0..127 and for chars 128..255.

@@ -212,6 +212,7 @@ char_lfa	EQU 080A6H
 char_nfa	EQU 080A1H
 char_pfa	EQU 080AAH
 characters_per_line EQU 00040H
+cmove.end	EQU 066D5H
 cmove_		EQU 066C8H
 cmove_lfa	EQU 066C6H
 cmove_nfa	EQU 066C0H
@@ -637,7 +638,6 @@ l5fa2h		EQU 06549H
 l5fc6h		EQU 0656DH
 l5fdch		EQU 06582H
 l5fedh		EQU 06592H
-l6046h		EQU 066D5H
 l6072h		EQU 06700H
 l6079h		EQU 06707H
 l60a0h		EQU 0672EH
@@ -1049,7 +1049,7 @@ read_write_	EQU 07960H
 read_write_lfa	EQU 0795EH
 read_write_nfa	EQU 0795AH
 read_write_pfa	EQU 07962H
-read_write_sector_command EQU 07982H
+read_write_sector_command EQU 07980H
 recurse_	EQU 06C0DH
 recurse_lfa	EQU 06C0BH
 recurse_nfa	EQU 06C03H
@@ -1381,7 +1381,6 @@ user_nfa	EQU 06A76H
 user_pfa	EQU 06A7FH
 user_variables	EQU 05E1CH
 user_variables_pointer EQU 05E08H
-user_variables_pointer_in_ix? EQU 00000H
 variable_	EQU 06A6CH
 variable_lfa	EQU 06A6AH
 variable_nfa	EQU 06A61H

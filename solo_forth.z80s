@@ -3,9 +3,10 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-201506100153
-; Latests important changes (in chronological order)
+; Version A-00-201506100204
+; Latest important changes (in chronological order)
 ; - `(emit)` and attributes fixed.
+; - `ld ix,next` used to restore IX after ROM calls, instead of push/pop.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -88,11 +89,6 @@ smudge_bit_mask:      equ 1 shl smudge_bit
 
 ; ----------------------------------------------
 ; Config
-
-  ; XXX experimental
-  ; The original code used IX as the user variables pointers,
-  ; but it seems more useful holding the address of `next` in it.
-user_variables_pointer_in_ix?   equ false
 
   ; XXX experimental
   ; When true, some code pieces are more compact but slower.
@@ -204,11 +200,7 @@ endm
 
 _jp_next: macro
 
-  if user_variables_pointer_in_ix?
-    jp next
-  else
-    jp (ix)
-  endif
+  jp (ix)
 
   endm
 
@@ -1144,27 +1136,11 @@ sp_store_lfa:
 sp_store_:
   dw sp_store_pfa
 sp_store_pfa:
-
-  if user_variables_pointer_in_ix? ; XXX OLD -- original method
-
-    ; XXX OLD
-    ld e,(ix+0x00) ; T19
-    ld d,(ix+0x01) ; T19
-    ex de,hl       ; T04
-    ; XXX NEW
-    ;ld l,(ix+0x00) ; T19
-    ;ld h,(ix+0x01) ; T19
-
-  else ; XXX NEW -- experimental
-
-    ld hl,(user_variables_pointer)  ; T20 ; hl=address of s0
-    ld a,(hl)                       ; T07
-    inc hl                          ; T06
-    ld h,(hl)                       ; T07
-    ld l,a                          ; T04
-
-  endif
-
+  ld hl,(user_variables_pointer)
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
   ld sp,hl
   _jp_next
 
@@ -1185,31 +1161,14 @@ rp_store_lfa:
 rp_store_:
   dw rp_store_pfa
 rp_store_pfa:
-
-  if user_variables_pointer_in_ix? ; XXX OLD -- original method
-
-    ; XXX OLD
-    ld e,(ix+0x02)
-    ld d,(ix+0x03)
-    ex de,hl
-    ; XXX NEW
-    ;ld l,(ix+0x02)
-    ;ld h,(ix+0x03)
-
-  else ; XXX NEW -- experimental
-
-    ld hl,(user_variables_pointer)
-    inc hl
-    inc hl ; hl=address of r0
-    ld a,(hl)
-    inc hl
-    ld h,(hl)
-    ld l,a
-
-  endif
-
+  ld hl,(user_variables_pointer)
+  inc hl
+  inc hl ; hl=address of r0
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
   ld (return_stack_pointer),hl
-
   _jp_next
 
 semicolon_s_nfa:
@@ -1796,24 +1755,13 @@ user_pfa:
   dw paren_semicolon_code_
 do_user:
   inc de      ; de=pfa
-  ex de,hl    ; T04
-  ld e,(hl)   ; T07
+  ex de,hl
+  ld e,(hl)
   ld d,0x00
-
-  if user_variables_pointer_in_ix? ; XXX OLD -- original method
-
-    push ix   ; T15 ; user variable pointer
-    pop hl    ; T10
-
-  else ; XXX NEW -- experimental
-
-    ld hl,(user_variables_pointer)   ; T20
-    ; XXX This is faster, but makes the access to the pointer non-standard:
+  ld hl,(user_variables_pointer)   ; T20
+  ; XXX This is faster, but makes the access to the pointer non-standard:
 ;user_variables_pointer: equ $+1
-;    ld hl,user_variables   ; T10
-
-  endif
-
+; ld hl,user_variables   ; T10
   add hl,de   ; hl= address of the user variable
   jp pushhl
 
@@ -3659,11 +3607,7 @@ common_start:
   pop bc ; get the return address, that holds the cfa of `cold` or `warm`
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
-  if user_variables_pointer_in_ix?
-    ld ix,(user_variables_pointer)
-  else
-    ld ix,next
-  endif
+  ld ix,next
   ld sp,(s0_init_value)
   _jp_next
 
@@ -4226,7 +4170,6 @@ paren_read_write_pfa:
   pop de ; sector
   pop hl ; address
   push bc
-  push ix
   push hl
   pop ix ; address
   rst 8
@@ -4235,8 +4178,8 @@ read_write_sector_command:
   ;   0x45 = write
   ;   0x44 = read
   db 0x44
-  pop ix
   pop bc
+  ld ix,next
   _jp_next
 
 flush_nfa:
@@ -4969,7 +4912,6 @@ screen_pfa:
   pop hl
   pop de
   push bc
-  push ix
   ld c,e
   ld b,l
   call rom_s_scrn_s_0x2538
@@ -4977,8 +4919,8 @@ screen_pfa:
   ld a,(de)
   ld h,0x00
   ld l,a
-  pop ix
   pop bc
+  ld ix,next ; restore ; XXX TODO -- check if necessary after those ROM routines
   jp pushhl
 
 ; doc{

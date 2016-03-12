@@ -228,3 +228,11 @@ color:
 The color words are removed from the blocks disk.
 
 Improvement: smaller and faster `?terminal`.
+
+Change: the use of the IX register to hold the address of `next` is
+made definitive. The conditional compilation for the old method is
+removed.
+
+Improvement: when the IX register must be preserved because of ROM
+calls, now `ld ix,next` is used instead of `push ix` and `pop ix`;
+it's faster and easier, and uses the same memory (4 bytes).
