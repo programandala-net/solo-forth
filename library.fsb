@@ -79,7 +79,7 @@
 
 variable default-first-locatable  variable first-locatable
 17 dup default-first-locatable !  first-locatable !
-variable last-locatable  scr/disk 1- last-locatable !
+variable last-locatable  blk/disk 1- last-locatable !
   \ Variables that define the range of screens to be searched
   \ by `located` and its descendants.
 
@@ -837,6 +837,7 @@ need n>r
   \ }}} =======================================================
   \ User variables {{{
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO
 
 : uallot ( n -- )  udp @ swap udp +!  ;
@@ -3646,8 +3647,34 @@ need [if]
 
 ( lshift )
 
+need z80-asm
+
   \ Credits:
-  \ Code from DZX-Forth.
+  \ Code adapted from Z88 CamelForth.
+
+  \ 16 bytes used
+
+code lshift  ( x1 u -- x2 )
+
+  exx
+  bc pop  \ C = loop counter
+  c b ld
+  hl pop  \ hi 8 bits ignored!
+  b inc  ahead 0 unresolved !
+  begin  hl addp  0 unresolved @ >relresolve  step
+  hl push
+  exx
+  jpnext
+
+  end-code
+
+( lshift )
+
+  \ Credits:
+  \ Code adapted from DZX-Forth.
+
+  \ This version is smaller (13 bytes used) but slower (169%
+  \ the execution time of version adapted from Z88 CamelForth).
 
 code lshift  ( x1 u -- x2 )
 
@@ -3664,48 +3691,48 @@ code lshift  ( x1 u -- x2 )
 
 ( rshift )
 
-  \ XXX UNDER DEVELOPMENT
-
 need z80-asm
 
-  \ XXX original code from Z88 CamelForth
-  \ .rshiff ld b,c        ; b = loop counter
-  \         pop hl        ;   NB: hi 8 bits ignored!
-  \         inc b         ; test for counter=0 case
-  \         jr rsh2
-  \ .rsh1   srl h         ; right shift HL, n times
-  \         rr l
-  \ .rsh2   djnz rsh1
-  \         ld b,h        ; result is new TOS
-  \         ld c,l
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
+
+  \ 19 bytes used
 
 code rshift  ( x1 u -- x2 )
 
-  \ XXX FIXME -- crash!
-
   exx
-  bc pop
+  bc pop  \ C = loop counter
   c b ld
-  hl pop
+  hl pop  \ hi 8 bits ignored!
 
   b inc  ahead 0 unresolved !
 
   begin  h srl  l rr  0 unresolved @ >relresolve  step
-  pushhl jp
+  hl push
+  exx
+  jpnext
 
   end-code
 
-  \ XXX OLD -- Code from DZX-Forth.
-  \ D1 c,           \ pop de
-  \ E1 c,           \ pop hl
-  \ 1C c,           \ inc e
-  \ here            \ begin:
-  \ 1D c,           \ dec e
-  \ CA c, pushhl ,  \ jp z,push_hl
-  \ \ or a
-  \ \ ld a,h
-  \ \ call sra_hl.1 ; XXX TODO this is in the kernel
-  \ C3 c, ,         \ jp begin
+( rshift )
+
+  \ Credits:
+  \ Code adapted from DZX-Forth.
+
+  \ This version is smaller (16 bytes used) but slower (133%
+  \ the execution time of version adapted from Z88 CamelForth).
+
+code rshift  ( x1 u -- x2 )
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
+  CB c, 3C c,     \ srl h
+  CB c, 1D c,     \ rr l
+  C3 c, ,         \ jp begin
+  end-code
 
 ( sm/rem )
 
@@ -4745,6 +4772,21 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 : reload  ( -- )  scr @ load  ;
+
+;s
+
+: loads  ( u n -- )  bounds do  i load  loop  drop  ;
+
+  \ Credits:
+  \ Word from MMSFORTH.
+
+  \ doc{
+  \
+  \ loads  ( u n -- )
+  \
+  \ Load _n_ screen starting from screen _u_.
+  \
+  \ }doc
 
 ( .line )
 
@@ -11804,6 +11846,32 @@ need frames@  need frames0
   frames0  0
   do  0. 2to v2   loop
   frames@ cr d.  ;
+
+( rshift-bench lshift-bench )
+
+need frames@  need frames0
+
+: rshift-bench  ( n -- )
+  frames0  0
+  do  128 255 rshift drop   loop
+  frames@ cr d.  ;
+
+: lshift-bench  ( n -- )
+  frames0  0
+  do  128 255 lshift drop   loop
+  frames@ cr d.  ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -----------------------------------
+  \       rshift         lshift
+  \       -------------- --------------
+  \        Z88  DZX    %  Z88  DZX    %
+  \       ---- ---- ---- ---- ---- ----
+  \ 10000 1203 1609 133% 1016 1723 169%
+  \ 30000 3607 4826 133% 3048 5170 169%
+
+  \ Z88 = code adapted from Z88 CamelForth
+  \ DZX = code adapted from DZX-Forth
 
 ( /-test )
 
