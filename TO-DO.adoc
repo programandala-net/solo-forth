@@ -8,10 +8,6 @@
 == Urgent ==
 // {{{
 
-.2015-10-24:
-
-Compilation works, but execution of words crashes the machine. See
-`dump`, `words`...
 
 // }}}
 == Inner ==
@@ -42,11 +38,43 @@ vocabularies? `vocabulary` should be adapted too. The advantage is the
 pfa is also the id used in search order and returned by `wordlist`.
 A word `pfa>vlfa` would be helpful.
 
-Improve: show the version in the greeting message.
-
 .2015-08-14:
 
 Fix: problem when compiler security is off.
+
+// }}}
+== Control structures ==
+// {{{
+
+
+.2015-10-25:
+
+From cmForth:
+
+____
+
+LOOP         Test the top item on the return stack.  If it is zero,
+pop it off the return stack and continue executing the next
+instruction. ÊIf it is not zero, decrement it and jump to the address
+specified in this instruction.  Address specifier is the same as in
+BRANCH.  LOOP is compiled by NEXT.
+
+REPEATS      Repeat the next instruction if the count on top of the
+return stack is not zero.  The count is also decremented.  If count is
+zero, pop the return stack and continue executing the following
+instruction.  REPEATS is  compiled by        TIMES or OF(.
+
+cmForth does not support the traditional DO-LOOP structures in most
+Forth systems.  The FOR-NEXT loop is a more efficient loop structure
+with one decrementing counter.  The DO-LOOP structure can be
+synthesized with much execution overhead.
+
+The REPEATS instruction is used frequently to implement complicated
+math operations, like shifts, multiply, divide and square root, from
+appropriate math step instructions.  It is also useful in repeating
+auto-indexing memory instructions.
+
+____
 
 // }}}
 == Documentation ==

@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510250209
+\ Last modified: 201510260147
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -237,24 +237,19 @@ variable last-locatable  scr/disk 1- last-locatable !
 
 : needed  ( ca len -- )
 
+  \ XXX OLD
   \ XXX FIXME usually the final check fails because the saved
   \ string has been overwritten. the only solution is to store
   \ the string apart, in an ad hoc zone.
-
-  \ XXX OLD
+  \
   \ 2dup undefined?
   \   if  2dup reneeded  then
   \ 2dup undefined? warnings @ and
   \   if  type 28 warning exit  then  2drop  ;
 
-  \ XXX TMP
-  \ 2dup undefined?  if  reneeded  else  2drop  then  ;
-  \ undefined?  if  parsed-name 2@ reneeded  then  ;
-
-  needed-word 2@ 2>r  2dup needed-word 2!
-  2dup save-string -trailing -leading undefined?
-    \ a copy of the string is used because `undefined?`
-    \ converts it to uppercase
+  needed-word 2@ 2>r
+  -trailing -leading save-string 2dup needed-word 2!
+  2dup undefined?
   if  reneeded  else  2drop  then  2r> needed-word 2!  ;
 
   \ doc{
@@ -268,7 +263,7 @@ variable last-locatable  scr/disk 1- last-locatable !
   \
   \ }doc
 
-: need  ( "name" -- )  parse-name save-string needed  ;
+: need  ( "name" -- )  parse-name needed  ;
 
   \ doc{
   \
@@ -295,8 +290,8 @@ variable last-locatable  scr/disk 1- last-locatable !
 : (abort")  ( n -- )
   r> count rot if  abort-message 2! -2 throw  then + >r  ;
 
-: abort"  ( compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate
+: abort"  ( Compilation: "ccc<quote>" -- )
+  postpone (abort") ,"  ; immediate compile-only
 
 ( error>ordinal error>line )
 
@@ -510,7 +505,7 @@ variable msg-scr  blk @ b/scr msg-scr !
 
 ( System error codes -271..-285 )
 
-\ #-271
+\ #-271 immediate word not allowed in this structure
 \ #-272
 \ #-273
 \ #-274
@@ -1553,11 +1548,11 @@ only forth definitions  need char>string   need search-wordlist
 
   \ doc{
   \
-  \ s'  ( compilation: "text<'>" -- ) ( run-time:  -- ca len )
+  \ s'  ( Compilation: "text<'>" -- ) ( Run-time:  -- ca len )
   \
   \ }doc
 
-: s'  ( compilation: "ccc<'>" -- ) ( run-time:  -- ca len )
+: s'  ( Compilation: "ccc<'>" -- ) ( Run-time:  -- ca len )
   [char] ' parse-string  ; immediate
 
 ( begin-stringtable end-stringtable )
@@ -1602,7 +1597,9 @@ only forth definitions  need char>string   need search-wordlist
   \ XXX TODO test
 
 : cslit  ( -- ca len )  r@ dup c@ 1+ r> + >r  ;
-: csliteral  ( ca -- )  compile cslit s,  ; immediate
+
+: csliteral  ( ca -- )
+  compile cslit s,  ; immediate compile-only
 
 ( hunt )
 
@@ -1727,6 +1724,84 @@ need string-suffix?
   \ a counted string and return its new address _ca2_.
 
   \ }doc
+
+( replaces )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ Credits:
+  \ Code adapted from the Forth-2012 documentation.
+
+s" /counted-string" environment? 0= [if] 256 [then]
+chars constant string-max
+
+vocabulary replaces-voc
+wid-of replaces-voc constant wid-subst
+  \ wordlist id of the wordlist used to hold substitution names and replacement text.
+
+[defined] vfxforth [if] \ vfx forth
+  : makesubst \ c-addr len -- c-addr
+    get-current >r wid-subst set-current
+    ($create)  \ like create but takes c-addr/len
+    r> set-current
+    here string-max allot 0 over c! \ create buffer space
+    ;
+  \ given a name string create a substution and storage space.
+  \ return the address of the buffer for the substitution text.
+  \ this word requires system specific knowledge of the host forth.
+  \ some systems may need to perform case conversion here.
+[then]
+
+( replaces )
+
+[defined] (wid-create) [if] \ swiftforth
+: makesubst \ c-addr len -- c-addr
+  wid-subst (wid-create)
+  \ like create but takes c-addr/len/wid
+  last @ >create !
+  here string-max allot 0 over c! \ create buffer space
+  ;
+[then]
+
+-->
+
+( replaces )
+
+: findsubst  ( ca len -- cfa f | 0 )
+  wid-subst search-wordlist  ;
+  \ Given a name string, find the substitution.
+  \ Return _cfa_ and _f_ if found, or just zero if not found.
+
+: replaces \ text tlen name nlen --
+  2dup findsubst if
+    nip nip execute    \ get buffer address
+  else
+     makesubst
+  then
+  place  ;
+
+  \ doc{
+  \
+  \ replaces  ( ca1 len1 ca2 len2 -- )
+
+  \ Set the string _ca1 len1_ as the text to substitute for
+  \ the substitution named by _ca2 len2_. If the substitution
+  \ does not exist it is created. The  program may then reuse
+  \ the buffer _ca1 len1_ without affecting the definition  of
+  \ the substitution.
+
+  \ Ambiguous conditions occur as follows:
+
+  \   * The substitution cannot be created;
+  \   * The name of a substitution contains the "%" delimiter character.
+
+  \ `replaces` may allot  data space and  create a definition.
+  \ This breaks  the contiguity of  the current region  and is
+  \ not allowed during compilation of a colon definition
+  \
+  \ }doc
+
+
 
   \ }}} =======================================================
   \ Text output {{{
@@ -3080,7 +3155,7 @@ create train  ( -- a )
 
   \ Sounds to be played with `play`.
 
-  \ Data extracted a program written by Juan JosÃ© Rosado Recio,
+  \ Data extracted a program written by Juan José Rosado Recio,
   \ published in Microhobby, issue 147 (1987-10), page 24:
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
@@ -3352,6 +3427,75 @@ need z80-asm
   \
   \ }doc
 
+( c@+ c!+ -c@ -c! )
+
+  \ XXX UNDER DEVELOPMENT -- 2015-10-25
+
+  \ Credits:
+  \ Words from the TED editor.
+  \ http://dxforth.netbay.com.au/ted.html
+
+  \ Note: these words are too specific for the TED editor.
+
+: c@+  ( ca -- c )  dup @ c@ swap 1+!  ;
+: c!+  ( c ca -- )  tuck @ c! 1+!  ;
+: -c@  ( ca -- c )  dup 1-! @ c@  ;
+: -c!  ( c ca -- )  dup 1-! @ c!  ;
+
+( @+ @- !+ !- c@+ c@- c!+ c!- )
+
+  \ XXX UNDER DEVELOPMENT -- 2015-10-25
+
+  \ Credits:
+  \ Words written after cmForth.
+
+  \ XXX Note: the original descriptions didn't include stack
+  \ notations. Some of them are not clear.
+
+  \ @+  ( n a -- x n a' )
+  \
+  \ Fetch data from memory pointed to by the top item on the
+  \ stack.  Data obtained is pushed below the top item.  The
+  \ top address is incremented by n.  Repeating this
+  \ instruction pushes an array of data on the data stack below
+  \ the address on top.
+
+  \ @-  ( n a -- x n a' )
+  \
+  \ Fetch data from memory pointed to by the top item on the
+  \ stack.  Data obtained is pushed below the top item.  The
+  \ top address is decremented by n.  Repeating this
+  \ instruction pushes an array of data on the data stack below
+  \ the address on top.
+
+  \ !+  ( n x a -- a' )
+  \
+  \ Pop the second item on the data stack and store it in the
+  \ memory pointed to by the address on top of the stack.  The
+  \ address is then incremented by n.
+
+  \ !-  ( n x a -- a' )
+  \
+  \ Pop the second item on the data stack and store it in the
+  \ memory pointed to by the address on top of the stack.  The
+  \ address is then decremented by n.
+
+  \ c@+  ( ca n -- b ca' )
+  \
+  \ Fetch a byte from memory and increment the address by n.
+
+  \ c@-  ( ca n -- b ca' )
+  \
+  \ Fetch a byte from memory and decrement the address by n.
+
+  \ c!+  ( b ca n -- ca' )
+  \
+  \ Store a byte to memory and increment the address by n.
+
+  \ c!-  ( b ca n -- ca' )
+  \
+  \ Store a byte to memory and decrement the address by n.
+
   \ }}} =======================================================
   \ Operators {{{
 
@@ -3373,12 +3517,12 @@ need z80-asm
   \ within  ( n1|u1 n2|u2 n3|u3 -- f )
   \
   \ Perform a comparison of a test value n1|u1 with a lower
-  \ limit n2|u2 and an upper limit n3|u3, returning true if
-  \ either (n2|u2 < n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <
+  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
+  \ if either (n2|u2 < n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <
   \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 <= n1|u1 or n1|u1 <
-  \ n3|u3)) is true, returning false otherwise. An ambiguous
-  \ condition exists if n1|u1, n2|u2, and n3|u3 are not all the
-  \ same type.
+  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
+  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
+  \ all the same type.
   \
   \ Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
@@ -3387,6 +3531,26 @@ need z80-asm
 [unneeded] between ?\ ;s
 need -rot
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
+
+
+  \ doc{
+  \
+  \ between  ( n1|u1 n2|u2 n3|u3 -- f )
+
+  \ Perform a comparison of a test value _n1|u1_ with a lower
+  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
+  \ if either (n2|u2 <= n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <=
+  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 < n1|u1 or n1|u1 <
+  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
+  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
+  \ all the same type.
+
+  \ name  ( -- )
+  \
+  \ }doc
+
+  \ Credits:
+  \ http://dxforth.netbay.com.au/between.html
 
 ( u<= u>= <= >= 0>= 0<= )
 
@@ -3705,6 +3869,44 @@ code reset-bits  ( b ca -- )
   \   \ Invert the bits at _ca_ specified by the bitmask _b_. Byte
   \   \ operation.
 
+( c!test-bits c!set-bits c!reset-bits )
+
+  \ Credits:
+  \ Words inspired by MPE PowerForth for TiniARM.
+
+need z80-asm  need [if]
+
+[needed] c@test-bits [if]
+code c@test-bits  ( b ca -- wf )
+  hl pop  de pop  e a ld  m and
+  ' true >body jpnz  ' false >body jp
+  end-code  ;s  [then]
+  \ AND the bitmask _b_ with the contents of _ca_ and return
+  \ _true_ if the result is non-zero or _false_ if the result
+  \ is zero. Byte operation.
+
+[needed] c!set-bits [if]
+code c!set-bits  ( b ca -- )
+  hl pop  de pop  e a ld  m or  a m ld  jpnext
+  end-code  ;s  [then]
+  \ Apply the bitmask _b_ ORred with the contents of _ca_. Byte
+  \ operation.
+
+[needed] c!reset-bits [if]
+code c!reset-bits  ( b ca -- )
+  hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
+  end-code  ;s  [then]
+  \ Apply the bitmask _b_ inverted and ANDed with the contents
+  \ of _ca_. Byte operation.
+
+  \ XXX `toggle-bits` is in the kernel
+  \ [needed] c!toggle-bits [if]
+  \ code c!toggle-bits  ( b ca -- )
+  \   hl pop  de pop  m a ld  e xor  a m ld  jpnext
+  \   end-code  ;s  [then]
+  \   \ Invert the bits at _ca_ specified by the bitmask _b_. Byte
+  \   \ operation.
+
   \ }}} =======================================================
   \ Compilation {{{
 
@@ -3728,9 +3930,7 @@ need s=
 
 : [then]  ( -- )  ; immediate
 
-( ?--> ?\ )
-
-  \ XXX TMP -- still in the kernel
+( ?--> )
 
 : ?-->  ( f -- )  if  postpone -->  then  ; immediate
 
@@ -3744,7 +3944,10 @@ need s=
   \
   \ }doc
 
-: ?\  ( f "text<eol>" -- )  if  postpone \  then  ; immediate
+
+  \ XXX TMP -- `?\` is still in the kernel
+
+  \ : ?\  ( f "text<eol>" -- )  if  postpone \  then  ; immediate
 
   \ doc{
   \
@@ -3754,6 +3957,7 @@ need s=
   \ parse area. This word is used for conditional compilation.
   \
   \ }doc
+
 
 ( body>name name>body link>name name>link >>link name<name )
 
@@ -3814,9 +4018,15 @@ need s=
 
 ( behead )
 
+  \ XXX FIXME this is not a good idea, because `>name` will
+  \ fail!
+
 : behead  ( nfa -- )  0 swap c!n  ;
   \ Store zero at _nfa_, thus making the definition impossible
   \ to find.
+
+: behead  ( nfa -- )
+  dup c@n smudge-mask c!set-bits swap c!n  ;
 
 ( privatize )
 
@@ -5142,7 +5352,192 @@ variable assert-level ( -- a )
   postpone ?branch >mark 2  ; immediate compile-only
 
   \ XXX TODO Alternative for when compiler security is removed:
-  \ : unless  ( f -- )  postpone ?branch >mark  ; immediate
+  \ : unless  ( f -- )
+  \   postpone ?branch >mark  ; immediate compile-only
+
+( cs-pick cs-roll cs-drop cs-mark cs-test cs-push cs-pop )
+
+  \ XXX UNDER DEVELOPMENT 2015-10-26
+
+  \ Credits:
+  \ http://dxforth.netbay.com.au/cfsext.html
+
+  \ Control-flow stack extension words. Sample implementation.
+  \ Assumes control flow is on the data stack and control flow
+  \ items are one cell wide.
+
+  \ XXX NOTE: This words are defined also in the kernel of
+  \ DZX-Forth.
+
+  variable cf0
+
+  \ initialize control flow stack base
+  : !cfs ( -- )  sp@ cf0 ! ;  !cfs
+
+  : #cs ( -- n )
+    sp@ cf0 @ - negate [ 1 cells ] literal / 1-
+    0 max ( handle empty stack) ;
+
+  : cs-pick  pick ( +bal) ;
+  : cs-roll  roll ;
+  : cs-drop  drop ( -bal) ;
+  : cs-mark  0 ( +bal) ;
+  : cs-test  dup 0<> ;
+  : cs-push  #cs -roll ;
+  : cs-pop   #cs roll ;
+
+  \ cs-drop ( C: x -- )
+
+  \ Remove the top item from the control-flow stack.
+
+  \ cs-mark ( C: -- x )
+
+  \ Place a marker on the control-flow stack. A marker occupies
+  \ the same width as an orig|dest but is distinguishable using
+  \ `cs-test`.
+
+  \ cs-test ( C: x -- x ) ( S: -- flag )
+
+  \ Return a true flag if x is an orig|dest, or false if a
+  \ marker. x is not altered or removed. If the control-flow
+  \ stack is implemented using the data stack, flag shall be
+  \ the topmost item on the data stack.
+
+  \ cs-push ( C: xu..x1 x0 -- x0 xu..x1 )
+
+  \ Rotate items on the control-flow stack such that the top
+  \ item becomes the bottom.  An ambiguous condition exists if
+  \ the control-flow stack is empty before `cs-push` is executed.
+
+  \ cs-pop ( C: xu xu-1..x0 -- xu-1..x0 xu )
+
+  \ Rotate items on the control-flow stack such that the bottom
+  \ item becomes the top.  An ambiguous condition exists if the
+  \ control-flow stack is empty before `cs-pop` is executed.
+
+  \ XXX TODO implement this in the kernel:
+
+  : : ( "name" -- ) ... ( !csp bal off) !cfs ;
+  : :noname ( -- xt ) ... ( xt ) ( !csp bal off) !cfs ;
+
+  \ start Forth with control flow base set to a safe value
+  : cold ( -- ) ... !cfs ;
+
+( begincase )
+
+  \ XXX UNDER DEVELOPMENT 2015-10-26
+
+  \ Credits:
+  \ http://dxforth.netbay.com.au/cfsext.html
+
+need cs-push  need cs-pop
+
+: begincase
+  postpone case  postpone begin  cs-push  ; immediate
+
+: (nextcase)
+  cs-pop  postpone again  postpone endcase  ; immediate
+
+: nextcase
+  postpone drop  postpone (nextcase)  ; immediate
+
+: test
+  begincase
+    cr ." press a key ('2' '4' '9' exits) : " key
+    [char] 2 of  ." ... 2 "  endof
+    [char] 4 of  ." ... 4 "  endof
+    [char] 9 of  ." ... 9 "  endof
+      dup emit ."  try again"
+  nextcase  ;
+
+( times )
+
+  \ XXX first version
+
+  \ Credits:
+  \ `(times)` was inspired by cmForth's `repeats`.
+
+  \ XXX TODO  
+  \ code (times)  ( n -- )
+  \   \ ld h,b
+  \   \ ld l,c
+  \   \ ld e,(hl)
+  \   \ inc hl
+  \   \ ld d,(hl) ; de = cfa to execute
+  \   end-code
+
+: (times)  ( n -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  0 do  dup execute  loop  drop  ;
+  \ XXX TODO ?do
+
+: times  ( Compilation: "name" -- ) ( Run-time: n -- )
+  postpone (times) ' compile,  ; immediate compile-only
+
+  \ Repeat the next instruction if the count on top of the
+  \ stack is not zero.  The count is also decremented.  If
+  \ count is zero, pop it and continue executing the following
+  \ instruction.
+
+  \ `times` is useful to implement complicated math operations,
+  \ like shifts, multiply, divide and square root, from
+  \ appropriate math step instructions.  It is also useful in
+  \ repeating auto-indexing memory instructions.
+
+( times )
+
+  \ XXX second version
+  \ Immediate words are not allowed.
+
+  \ Credits:
+  \ `(times)` was inspired by cmForth's `repeats`.
+
+: (times)  ( n -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  0 do  dup execute  loop  drop  ;
+  \ XXX TODO ?do
+
+: times  ( Compilation: "name" -- ) ( Run-time: n -- )
+  postpone (times) 
+  defined ( nfa | 0 ) ?dup 0= -13 ?throw
+  name>immediate? ( cfa f )  -271 ?throw  compile,
+  ; immediate compile-only
+
+  \ Repeat the next instruction if the count on top of the
+  \ stack is not zero.  The count is also decremented.  If
+  \ count is zero, pop it and continue executing the following
+  \ instruction.
+
+  \ `times` is useful to implement complicated math operations,
+  \ like shifts, multiply, divide and square root, from
+  \ appropriate math step instructions.  It is also useful in
+  \ repeating auto-indexing memory instructions.
+
+( times )
+
+  \ XXX third version
+  \ No check is done during compilation.
+
+  \ Credits:
+  \ `(times)` was inspired by cmForth's `repeats`.
+
+: (times)  ( n -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  0 do  dup execute  loop  drop  ;
+  \ XXX TODO ?do
+
+: times  ( Compilation: "name" -- ) ( Run-time: n -- )
+  postpone (times)  ; immediate compile-only
+
+  \ Repeat the next instruction if the count on top of the
+  \ stack is not zero.  The count is also decremented.  If
+  \ count is zero, pop it and continue executing the following
+  \ instruction.
+
+  \ `times` is useful to implement complicated math operations,
+  \ like shifts, multiply, divide and square root, from
+  \ appropriate math step instructions.  It is also useful in
+  \ repeating auto-indexing memory instructions.
 
 ( ?? )
 
@@ -5590,18 +5985,70 @@ code (step)  ( R: n -- n' )
   \
   \ }doc
 
-( case )  \ Forth-94 version
+( case )
+
+  \ Credits:
+  \ Code adapted and modified from eForth.
+
+  \ This version uses 48 bytes.
+
+0 constant case  immediate compile-only
+
+: of
+  \ Compilation: ( -- orig )
+  \ Run-time: ( x1 x2 -- )
+  postpone over postpone = postpone if  postpone drop
+  ; immediate compile-only
+
+: endof  ( orig1 -- orig2 )
+  postpone else  ; immediate compile-only
+
+: endcase
+  ( Compilation: 0 orig1..orign -- )
+  ( Run-time: x -- )
+  postpone drop  begin  ?dup  while  [compile] then  repeat
+  ; immediate compile-only
+
+( case )
+
+  \ Credits:
+  \ Code adapted and modified from eForth.
+
+  \ This version uses 54 bytes.
+
+0 constant case  immediate compile-only
+
+: of
+  \ Compilation: ( -- orig )
+  \ Run-time: ( x1 x2 -- )
+  postpone over postpone = postpone if  postpone drop
+  ; immediate compile-only
+
+: endof  ( orig1 -- orig2 )
+  postpone else  ; immediate compile-only
+
+: (endcase) ( 0 orig1..orign -- )
+  begin  ?dup  while  [compile] then  repeat  ;
+
+: endcase
+  ( Compilation: 0 orig1..orign -- )
+  ( Run-time: x -- )
+  postpone drop (endcase)  ; immediate compile-only
+
+( case )
 
   \ Credits:
   \ Code copied from the example provided in the Forth-94
   \ documentation.
+
+  \ This version uses 56 bytes.
 
 0 constant case  immediate compile-only
   \ init count of ofs
 
 : of
   \ Compilation: ( #of -- orig #of+1 )
-  \ Run-time: ( x -- )
+  \ Run-time: ( x1 x2 -- )
   1+ >r
   postpone over  postpone =   \ copy and test case value
   postpone if                 \ add orig to control flow stack
@@ -5619,6 +6066,78 @@ code (step)  ( R: n -- n' )
   \ XXX TODO use `?do` when available
   postpone drop  \ discard case value
   0 do  postpone then  loop  ; immediate compile-only
+
+( case )
+
+  \ Credits:
+  \ This is the fig-Forth `case` provided by Abersoft Forth,
+  \ translated from the Z80 disassembly, adapted and commented.
+  \
+  \ Note: this version works only when the compiler security
+  \ check config option is activated in the kernel.
+
+  \ This version uses 110 bytes.
+
+: case
+  \ Compilation: ( -- a case-id )
+  \ Runtime: ( x -- )
+  csp @ !csp 4  ; immediate compile-only
+
+: of
+  \ Compilation: ( case-id -- of-id )
+  \ Run-time: ( x -- )
+  \ Note: `postpone 0branch >mark` is used instead of `postpone
+  \ if` because `if` leaves its own id on the stack when compiler
+  \ security is activated.
+  4 ?pairs
+  postpone over  postpone =  postpone 0branch >mark
+  postpone drop 5  ; immediate compile-only
+
+: endof
+  \ Compilation: ( of-id -- case-id )
+  \ Run-time: ( -- )
+  5 ?pairs  postpone branch >mark
+            swap 2  postpone then  4  ; immediate compile-only
+
+: endcase
+  \ Compilation: ( a orig1..orign case-id -- 3
+  \ Run-time: ( x -- )
+  4 ?pairs
+  postpone drop
+  begin  sp@ csp @ <>  while  2 postpone then  repeat
+  csp !  ;  immediate compile-only
+
+( case )
+
+  \ Credits:
+  \ This is the `case` provided by Abersoft Forth,
+  \ translated from the Z80 disassembly, modified (no compiler
+  \ security checks) and commented.
+
+  \ This version uses 64 bytes.
+
+: case
+  \ Compilation: ( -- a )
+  \ Runtime: ( x -- )
+  csp @ !csp  ; immediate compile-only
+
+: of
+  \ Compilation: ( -- )
+  \ Run-time: ( x -- )
+  postpone over  postpone =  postpone if  postpone drop
+  ; immediate compile-only
+
+: endof
+  \ Compilation: ( -- )
+  \ Run-time: ( -- )
+  postpone else  ; immediate compile-only
+
+: endcase
+  \ Compilation: ( a orig1..orign -- )
+  \ Run-time: ( x -- )
+  postpone drop
+  begin  sp@ csp @ <>  while  postpone then  repeat
+  csp !  ;  immediate
 
 ( between-of )
 
@@ -5756,71 +6275,124 @@ need within
   \     4 of  ." four"  endof
   \   endcase  ;
 
-( case )  \ fig-Forth version with compiler security
+( select )
 
-  \ This is the fig-Forth `case` provided by Abersoft Forth,
-  \ translated from the Z80 disassembly, adapted and commented.
-  \
-  \ Note: this version works only when the compiler security
-  \ check config option is activated in the kernel.
+  \ XXX UNDER DEVELOPMENT
 
-: case
-  \ Compilation: ( -- a case-id )
-  \ Runtime: ( x -- )
-  csp @ !csp 4  ; immediate compile-only
+  \ XXX FIXME `when` causes
+  \ #-22 control structure mismatch
 
-: of
-  \ Compilation: ( case-id -- of-id )
-  \ Run-time: ( x -- )
-  \ Note: `postpone 0branch >mark` is used instead of `postpone
-  \ if` because `if` leaves its own id on the stack when compiler
-  \ security is activated.
-  4 ?pairs
-  postpone over  postpone =  postpone 0branch >mark
-  postpone drop 5  ; immediate
+  \ Credits:
+  \ Code adapted from Galope.
+  \ Original code from:
+  \ http://dxforth.netbay.com.au/miser.html
 
-: endof
-  \ Compilation: ( of-id -- case-id )
-  \ Run-time: ( -- )
-  5 ?pairs  postpone branch >mark
-            swap 2  postpone then  4  ; immediate
+  \ Syntax
 
-: endcase
-  \ Compilation: ( a orig1..orign case-id -- 3
-  \ Run-time: ( x -- )
-  4 ?pairs
-  postpone drop
-  begin  sp@ csp @ <>  while  2 postpone then  repeat
-  csp !  ;  immediate
+  \ select  ( x0 )
+  \    cond  <tests>  when    ... else
+  \          <test>   if drop ... else
+  \    ...   ( default )
+  \ endselect
 
-( case )  \ fig-Forth version without compiler security
+  \ All clauses are optional.
 
-  \ This is the fig-Forth `case` provided by Abersoft Forth,
-  \ translated from the Z80 disassembly, modified (no compiler
-  \ security checks) and commented.
+  \ <tests> may consist of one or more of the following:
 
-: case
-  \ Compilation: ( -- a )
-  \ Runtime: ( x -- )
-  csp @ !csp  ; immediate
+  \  x1    equal  ( test if x0 and x1 are equal )
+  \  x1 x2 range  ( test if x0 is in the range x1..x2 )
 
-: of
-  \ Compilation: ( -- )
-  \ Run-time: ( x -- )
-  postpone over  postpone =  postpone if  postpone drop
+  \ <test> can be any code that leaves x0 and a flag (0|<>0).
+  \ 'if drop ... else' is for expansion, allowing user-defined
+  \ tests.
+
+  \ 'continue' may be placed anywhere within:
+
+  \ when ... else
+  \ if ( drop ) ... else
+
+  \ 'continue' redirects program flow from previously matched
+  \ clauses that would otherwise pass to 'endselect'. It
+  \ provides "fall-through" capability akin to C's switch
+  \ statement.
+
+need -rot
+
+0 constant select immediate
+0 constant cond immediate
+
+  \ XXX NOTE: A version of `thens` is in the kernel of
+  \ DZX-Forth.
+
+: thens  ( 0 a'1 ... a'n -- )
+  begin  ?dup while  postpone then  repeat  ;
+  \ Compile the pending `then`.
+
+: endselect
+  \ ( Compilation: 0 a'1 ... a'n -- ) ( Run-time: x0 -- )
+  postpone drop  thens  ; immediate
+
+: when
+  \ ( Compilation: 0 orig1..orign -- )
+  \ ( Run-time: xxx )
+  postpone else  >r >r >r  thens  r> r> r>  postpone drop
   ; immediate
+  \ XXX TODO stack
 
-: endof
-  \ Compilation: ( -- )
-  \ Run-time: ( -- )
-  postpone else  ; immediate
+-->
 
-: endcase
-  \ Compilation: ( a orig1..orign -- )
-  \ Run-time: ( x -- )
-  postpone drop
-  begin  sp@ csp @ <>  while  postpone then  repeat
-  csp !  ;  immediate
+( select )
+
+: continue
+  \ ( Compilation: xxx )
+  \ ( Run-time: xxx )
+  >r >r >r thens  0  r> r> r>  ; immediate
+  \ XXX TODO stack
+
+: equal
+  \ ( Compilation: -- orig )
+  \ ( Run-time: x0 x1 -- )
+  postpone over  postpone -  postpone if  ; immediate
+
+: (range)  ( x0 x1 x2 -- x0 wf )
+  2>r dup 2r> over - -rot - u<  ;
+
+: range
+  \ ( Compilation: -- orig )
+  \ ( Run-time: x0 x1 x2 -- x0 wf )
+  postpone (range)  postpone if  ; immediate
+
+( select-test )
+
+  \ Usage example
+
+: select-test ( n -- )
+  space
+  select
+    cond  $00 $1F range
+          $7F     equal  when  ." Control char "       else
+    cond  $20 $2F range
+          $3A $40 range
+          $5B $60 range
+          $7B $7E range  when  ." Punctuation "        else
+    cond  $30 $39 range  when  ." Digit "              else
+    cond  $41 $5A range  when  ." Upper case letter "  else
+    cond  $61 $7A range  when  ." Lower case letter "  else
+    ." Not a character "
+  endselect  ;  -->
+
+( select-test )
+
+cr cr .( Running 'select' test...)
+
+cr  char a  .(   ) dup emit  select-test
+cr  char ,  .(   ) dup emit  select-test
+cr  char 8  .(   ) dup emit  select-test
+cr  char ?  .(   ) dup emit  select-test
+cr  char K  .(   ) dup emit  select-test
+cr  0              dup 3 .r  select-test
+cr  127            dup 3 .r  select-test
+cr  128            dup 3 .r  select-test
 
 ( ?dov dov loopv +loopv )
 
@@ -6540,7 +7112,7 @@ need -rot
 : to  ( Interpretation: n "name" -- )
       ( Compilation: "name" -- )
   ' >body compiling? if    postpone literal postpone !
-                  else  !  then  ; immediate
+                     else  !  then  ; immediate
 
 ( 2value 2to )
 
@@ -6552,7 +7124,7 @@ need -rot
 : 2to  ( Interpretation: d "name" -- )
        ( Compilation: "name" -- )
   ' >body compiling? if    postpone literal postpone 2!
-                       else  2!  then  ; immediate
+                     else  2!  then  ; immediate
 
 ( cvalue cto )
 
@@ -7424,8 +7996,8 @@ need random-n
 : action-of  ( Interpretation: "name" -- cfa )
              ( Compilation:    "name" -- )
              ( Runtime:        -- cfa )
-  ' compiling? if  postpone literal postpone defer@
-             else  defer@  then  ; immediate
+  ' compiling? if    postpone literal postpone defer@
+               else  defer@  then  ; immediate
   \ Return the code field address of a deferred word.
 
 ( <is> [is] is  )
@@ -10538,10 +11110,10 @@ rows 1- cconstant racket2-y
   \ Erase racket of player 2.
   \ 23264 = address of the bottom left screen attribute
 
-: change-x  ( -- )  2 direction toggle-bits  ;
+: change-x  ( -- )  2 direction c!toggle-bits  ;
   \ Change the x direction of the ball.
 
-: change-y  ( -- )  1 direction toggle-bits  ;
+: change-y  ( -- )  1 direction c!toggle-bits  ;
   \ Change the y direction of the ball.
 
 : faster  ( -- )

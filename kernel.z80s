@@ -11,12 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510250021
-
-; XXX TODO
-;vr_div: equ version_release/65535
-;vr_mod: equ version_release mod 65535
-;vr_mod2: equ version_release - vr_div
+version_release:  equ 201510252147
 
 ; ==============================================================
 ; Author and license
@@ -67,8 +62,11 @@ version_release:  equ 201510250021
 ; cfap: dw cfa             ; Pointer to cfa in main memory.
 ; lfa:  dw nfa of the previous word
 ; nfa:  db length+flags    ; Bits:      76543210
-                           ; Bit names: .PSLLLLL
+                           ; Bit names: CPSLLLLL
                            ; Legend:
+                           ;   C: Compile-ony bit.
+                           ;      0 = non-restricted word
+                           ;      1 = compile-only word
                            ;   P: Immediate bit.
                            ;      0 = non-immediate word
                            ;      1 = immediate word
@@ -213,7 +211,7 @@ size_optimization: equ false
   ;   structures: smaller and faster code.
 
   ; XXX TODO
-show_version: equ false
+show_version: equ true
 
   ; XXX the flag is harcoded in the code
   ; XXX OLD
@@ -444,6 +442,14 @@ _constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
   dw do_constant ; code field
+  _base_label##pfa: ; parameter field address
+
+  endm
+
+_two_constant_header: macro _base_label,_name,_flags
+
+  _header _base_label,_name,_flags
+  dw do_two_constant ; code field
   _base_label##pfa: ; parameter field address
 
   endm
@@ -772,7 +778,7 @@ default_color_attribute:
   dw 4 ; low byte: green paper, black ink; high byte: no mask
 
   ; XXX TODO
-if show_version
+if 0 ; show_version
 version_status_variable:
   dw version_status
 version_branch_variable:
@@ -4438,7 +4444,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header toggle_bits_,'TOGGLE-BITS'
+  _code_header c_store_toggle_bits_,'C!TOGGLE-BITS'
 
 ; doc{
 ;
@@ -5201,7 +5207,7 @@ source.tib:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header recurse_,'RECURSE',immediate
+  _colon_header recurse_,'RECURSE',immediate+compile_only
 
 ; doc{
 ;
@@ -5377,6 +5383,9 @@ source.tib:
 
   dw dp_,plus_store_
   dw semicolon_s_
+
+  ; Alternative non-standard definition:
+  ; http://dxforth.netbay.com.au/allot.html
 
 ; ----------------------------------------------
   _colon_header s_comma_,'S,'
@@ -5611,8 +5620,9 @@ question_dup.end:
 ;
 ; >name  ( cfa -- nfa )
 ;
-; Warning: No check is done where cfa belongs to a definition
-; created with `:noname`.
+; Warning: No check is done wether cfa belongs to a definition
+; created with `:noname`; if so, the name assoctiated to _nfa_,
+; returned by `name>string`, will be empty.
 ;
 ; }doc
 
@@ -5621,7 +5631,7 @@ question_dup.end:
   _code_header to_name_,'>NAME'
 
   ld e,names_bank
-  call bank.e ; page the memory bank
+  call bank.e ; page the memory bank in
   pop de ; cfa
   push bc ; save Forth IP
   ld b,0
@@ -5631,14 +5641,14 @@ to_name.begin_0:
   ; hl = address of the cfa pointer
   inc hl
 to_name.begin_1:
+  inc hl ; hl = lfa
   inc hl
-  inc hl
-  inc hl
+  inc hl ; hl = nfa
   ld a,(hl) ; name field byte length
   and word_length_mask ; name length
   ld c,a ; name length
   inc c  ; plus the length byte
-  add hl,bc ; point to the cfa pointer
+  add hl,bc ; point to the cfa pointer of the next word
 
   ld a,(hl) ; low byte of cfa
   cp e ; equal?
@@ -5648,8 +5658,9 @@ to_name.begin_1:
   cp d ; equal?
   jr nz,to_name.begin_1 ; not equal
   ; cfa found
-  ld c,3
-  add hl,bc ; nfa
+  inc hl
+  inc hl
+  inc hl ; nfa
 
   ld e,default_bank
   call bank.e ; page the default memory bank
@@ -6021,7 +6032,7 @@ postpone.end:
   dw smudge_mask_,swap_
   ; XXX TODO factor `toggle-names'?
   _names_bank
-  dw toggle_bits_
+  dw c_store_toggle_bits_
   _default_bank
   dw semicolon_s_
 
@@ -6175,7 +6186,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header semicolon_code_,';CODE',immediate
+  _colon_header semicolon_code_,';CODE',immediate+compile_only
 
 ; XXX TODO move to the library?
 ; XXX TODO -- documentation
@@ -6194,7 +6205,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header does_,'DOES>',immediate
+  _colon_header does_,'DOES>',immediate+compile_only
 
   dw compile_,paren_semicolon_code_
   _literal 0xCD ; Z80 opcode for "call"
@@ -6412,7 +6423,7 @@ else
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header dot_quote_,'."',immediate
+  _colon_header dot_quote_,'."',immediate+compile_only
 
 ; doc{
 ;
@@ -6442,7 +6453,7 @@ else
 
 if paren_dot_quote
   dw compile_,paren_dot_quote_,comma_quote_
-else
+else ; XXX OLD
   ; XXX TMP -- this new method uses 1 more cell for the compiled
   ; code
   dw comma_quote_,compile_,type_
@@ -7399,8 +7410,6 @@ search.string_1_addr equ $+1
 ; ----------------------------------------------
   _colon_header bracket_compile_,'[COMPILE]',immediate
 
-  ; XXX TODO compile-only? not in Gforth.
-
   dw tick_,compile_comma_
   dw semicolon_s_
 
@@ -7680,7 +7689,7 @@ immediate.do:
   dw latest_
   ; XXX TODO factor `toggle-names'?
   _names_bank
-  dw toggle_bits_ ; XXX FIXME -- set_bits_
+  dw c_store_toggle_bits_ ; XXX FIXME -- set_bits_
   _default_bank
   dw semicolon_s_
 
@@ -7905,21 +7914,37 @@ quit.begin:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if show_version
+  _two_constant_header version_,'VERSION'
 
-  _constant_header version_release_,'VERSION-RELEASE'
+  ; XXX UNDER DEVELOPMENT
+  ; XXX TMP
 
-  ; XXX TMP for debugging
+  dw 0,0
 
-  dw version_release_variable
+if 0
+
+  ; XXX TODO -- No way to manipulate a 32-bit number in Pasmo
+
+  ; version_release:  equ 2015102500
+
+  dw (version_release >> 16) ; wrong result: 0 instead of 30748
+  dw (version_release and 0xFFFF) ; right result: 1572
+  
+  dw (version_release / 0xFFFF) ; wrong result: 0 instead of 30748
+  dw (version_release mod 0xFFFF) ; right result: 1572
+
+  dw (2015102500 / 0xFFFF) ; wrong result: 0 instead of 30748
+  ; dw (version_release / 0xFFFF) ; wrong result: 0 instead of 30748
+  dw version_release ; right result: 1572
 
 endif
 
 ; ----------------------------------------------
-if show_version
+if 0 ; show_version
 
   _colon_header dot_version_,'.VERSION'
 
+  ; XXX UNDER DEVELOPMENT
   ; XXX TMP
 
   dw lit_,version_status_variable,fetch_,emit_
@@ -7946,7 +7971,7 @@ endif
 ; }doc
 
 ;  _chk 'greeting -- start' ; XXX INFORMER
-if show_version
+if 0 ; show_version
   ; XXX TODO
   dw paren_dot_quote_
 ;  _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
@@ -7957,11 +7982,13 @@ if show_version
 else
   dw paren_dot_quote_
   _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
+endif
+
   ; XXX TMP show the free memory, during development only
   dw unused_,u_dot_
   dw paren_dot_quote_
   _string "bytes free"
-endif
+
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9372,7 +9399,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header do_,'DO',immediate
+  _colon_header do_,'DO',immediate+compile_only
 
 ; doc{
 ;
@@ -9391,7 +9418,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header loop_,'LOOP',immediate
+  _colon_header loop_,'LOOP',immediate+compile_only
 
 ; XXX TODO documentation
 ; doc{
@@ -9414,7 +9441,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header plus_loop_,'+LOOP',immediate
+  _colon_header plus_loop_,'+LOOP',immediate+compile_only
 
 ; doc{
 ;
@@ -9433,7 +9460,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header until_,'UNTIL',immediate
+  _colon_header until_,'UNTIL',immediate+compile_only
 
 if 1 ; fig_compiler_security
   dw one_,question_pairs_
@@ -9443,7 +9470,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header again_,'AGAIN',immediate
+  _colon_header again_,'AGAIN',immediate+compile_only
 
 ; doc{
 ;
@@ -9462,7 +9489,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header repeat_,'REPEAT',immediate
+  _colon_header repeat_,'REPEAT',immediate+compile_only
 
 ; doc{
 ;
@@ -9490,7 +9517,13 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header if_,'IF',immediate
+  _colon_header if_,'IF',immediate+compile_only
+
+; doc{
+;
+; if  ( Compilation: -- orig ) ( Run-time: x -- )
+;
+; }doc
 
   dw compile_,zero_branch_
 if.do:
@@ -9501,7 +9534,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header ahead_,'AHEAD',immediate
+  _colon_header ahead_,'AHEAD',immediate+compile_only
 
 ; doc{
 ;
@@ -9517,7 +9550,7 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header else_,'ELSE',immediate
+  _colon_header else_,'ELSE',immediate+compile_only
 
 if 1 ; fig_compiler_security
 
@@ -9539,7 +9572,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header while_,'WHILE',immediate
+  _colon_header while_,'WHILE',immediate+compile_only
 
   dw if_
 if 1 ; fig_compiler_security
@@ -10336,6 +10369,9 @@ if 1 ; fig_exit?
 
   ; XXX NEW -- experimental
 
+  ; Credits:
+  ; http://dxforth.netbay.com.au/unnest.html
+
 ; ----------------------------------------------
   _colon_header question_exit_,'?EXIT'
 
@@ -10539,13 +10575,16 @@ endif
   ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
   ;  [char] " parse-string  ; immediate
 
-  ; XXX TODO compile-only?
-
   _literal '"'
   dw parse_string_
   dw semicolon_s_
 
 ; ----------------------------------------------
+
+if 0
+
+  ; XXX OLD -- moved to the library
+
   _colon_header question_next_screen_,'?-->',immediate
 
 ; doc{
@@ -10559,7 +10598,6 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO move to the library?
 
   dw zero_branch_,question_next_screen.end
   dw next_screen_
@@ -10569,6 +10607,8 @@ question_next_screen.end:
   ; XXX TODO a good place to use `??` instead of a branch:
 ;  dw question_question_,next_screen_
 ;  dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header question_backslash_,'?\',immediate
@@ -10672,7 +10712,7 @@ move_name_fields_to_memory_bank:
 
   org names_bank_address
 
-  db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
+  db 0 ; fake length byte, needed by the algorithm used in `>name`
 
 ; ==============================================================
 ; End
