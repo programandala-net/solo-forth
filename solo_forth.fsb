@@ -108,6 +108,7 @@
 \ Error #21: In protected dictionary.
 \ Error #22: Use only when loading.
 \ Error #23: Off current editing screen.
+  \ XXX TODO better text:
 \ Error #24: Declare vocabulary.
   \ XXX TMP -- Copied from Afera library, not used yet:
 \ Error #25: Unsupported tape operation.
@@ -155,6 +156,47 @@ create -rot  ( x1 x2 x3 -- x3 x1 x2 )
   c3 c, pushde ,  \ jp pushde
 
   smudge decimal
+
+( flash )
+
+  \ 23693 = ATTR P system variable
+
+  \ XXX FIXME It doesn't work fine: no effect unless the cursor
+  \ is on the lower part of the screen.  It could have to do
+  \ with the flashing cursor of the system, but there's no
+  \ effect also when the flash is activated in a definition.
+
+: flash  ( f -- )
+  if    23693 c@ 128 or
+  else  23693 c@ 127 and
+  then  23693 !  ;
+
+( bright )
+
+  \ 23693 = ATTR P system variable
+
+: bright  ( f -- )
+  if    23693 c@ 64 or
+  else  23693 c@ 191 and
+  then  23693 !  ;
+
+( gover )
+
+  \ 23697 = P FLAG system variable
+
+: gover  ( f -- )
+  if    23697 c@ 2 or
+  else  23697 c@ 253 and
+  then  23697 c!  ;
+
+( inverse )
+
+  \ 23697 = P FLAG system variable
+
+: inverse  ( f -- )
+  if    23697 c@ 8 or
+  else  23697 c@ 247 and
+  then  23697 c!  ;
 
 ( point )
 
@@ -258,7 +300,7 @@ create attr ( line col -- )  hex
 
   \ ; b=col->d
   \ ; c=line->e
-  
+
   E1 c, \ pop hl ; l = col
   D1 c, \ pop de ; e = line
   50 05 + c, \ ld d,l ; d = col
@@ -281,7 +323,7 @@ create attr ( line col -- )  hex
   60 07 + c, \ ld h,a ; high byte correct.
   6E c, \ ld l,(hl) ; pick up the colour attribute.
   26 c, 00 c, \ ld h,0
- 
+
   c3 c, pushhl , \ jp pushhl
 
   smudge decimal
@@ -395,13 +437,13 @@ forth definitions decimal
 : decode-special  ( a1 -- a1 | a2 )
   dup @
   case
-    [ ' compile pfa>cfa ] literal of  decode-compile    endof
-    [ ' lit     pfa>cfa ] literal of  decode-literal    endof
-    [ ' branch  pfa>cfa ] literal of  decode-branch     endof
-    [ ' 0branch pfa>cfa ] literal of  decode-branch     endof
-    [ ' (loop)  pfa>cfa ] literal of  decode-branch     endof
-    [ ' (+loop) pfa>cfa ] literal of  decode-branch     endof
-    [ ' (.")    pfa>cfa ] literal of  decode-dot-quote  endof
+    ['] compile of  decode-compile    endof
+    ['] lit of  decode-literal    endof
+    ['] branch of  decode-branch     endof
+    ['] 0branch of  decode-branch     endof
+    ['] (loop) of  decode-branch     endof
+    ['] (+loop) of  decode-branch     endof
+    ['] (.") of  decode-dot-quote  endof
   endcase  ;
 
 -->
@@ -410,11 +452,11 @@ forth definitions decimal
 
 : decode-end?  ( cfa -- f )
   \ is the given cfa the end of a definition?
-  dup  ['] ;s pfa>cfa =  swap ['] (;code) pfa>cfa =  or  ;
+  dup  ['] ;s =  swap ['] (;code) =  or  ;
 
 : colon-pfa?  ( pfa -- f )
   \ is the given pfa a colon definition?
-  pfa>cfa @ ['] : pfa>cfa @ =  ;
+  pfa>cfa @ ['] : @ =  ;
 
 -->
 
@@ -476,6 +518,19 @@ forth definitions decimal
     ?terminal if leave then
   loop  ;
 
+( forget )
+
+: forget  ( "name" -- )
+  current @ context @ <>   \ Compare `current` with `context`.
+  24 ?error                \ If not the same, issue an error.
+  '                        \ Locate "name", return its cfa.
+  dup fence @ u<           \ Below `fence`?
+  21 ?error                \ If so, issue an error.
+  dup  ( cfa cfa )
+  cfa>nfa dp store         \ Update the dictionary pointer.
+  cfa>lfa  @ current @ !   \ Update the `current` vocabulary.
+  ;
+
 ( extend system )
 
 : extend  ( -- )
@@ -487,7 +542,8 @@ forth definitions decimal
   here 22  +origin !  \ `fence` init value
   here 24 +origin !   \ `dp` init value
   here fence !
-  ['] forth 8 + 26 +origin !  ;  \ `voc-link` init value
+  \ `voc-link` init value:
+  [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
 
   \ system  ( -- a len )
   \

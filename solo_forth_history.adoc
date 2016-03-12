@@ -155,7 +155,6 @@ Also `2dup` instead of `over over`, an oversight of Abersoft Forth.
 
 Improvement: Some operators are (re)written, using Z80 code from DZX-Forth.
 
-
 .2015-06-08:
 
 Improvement: faster `blanks` and `erase`, with Z80 jumps into `fill`.
@@ -164,3 +163,20 @@ Improvement: the branches of `x` (the null word) are optimized.
 
 Improvement: one branch removed from `."` (2 bytes less, and faster in
 compiling mode).
+
+Change: Now `'` and `[']` return the cfa, not the pfa.
+
+New: `cfa>pfa`, `cfa>lfa`, `cfa>nfa` (`pfa>nfa` and `pfa>lfa` could be removed).
+
+Change: `forget` is updated to the new behaviour of `'` and moved to
+the blocks file; also the code in the blocks file is updated.
+
+.2015-06-09:
+
+Change: `flash`, `bright`, `gover` and `inverse` are moved to the disk.
+
+Problem detected with `(emit)` and those four booleans attributes.
+
+New: `pick`, from DZX-Forth.
+
+

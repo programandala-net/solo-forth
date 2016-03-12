@@ -3,7 +3,10 @@
 ; A disk-based Forth for ZX Spectrum,
 ; focused on development of ZX Spectrum programs.
 
-; Version A-00-2015060821
+; Version A-00-201506090220
+; Latests important changes (in chronological order)
+; - `'` returns a cfa instead of a pfa.
+; - Boolean attributes are moved to the disk, `(emit)` must be fixed.
 
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
@@ -153,9 +156,7 @@ sys_df_sz:         equ 0x5C6B
 sys_df_sz_offset:  equ sys_df_sz-sys_errnr
 sys_flags2:        equ 0x5C6A
 sys_last_k:        equ 0x5C08
-sys_mask_p:        equ 0x5C8E
 sys_mode:          equ 0x5C41
-sys_p_flag:        equ 0x5C91
 sys_s_posn:        equ 0x5C88
 sys_scr_ct:        equ 0x5C8C
 sys_scr_ct_offset: equ sys_scr_ct-sys_errnr
@@ -791,34 +792,39 @@ emit_pfa:
 printer_channel_or_zero: ; XXX TODO move to the code
   db 0x00
 
-  ; XXX OLD
-; paren_emit_:
-;   dw paren_emit_pfa
-; paren_emit_pfa:
-;   pop hl
-;   push bc
-;   push hl
-;   ld a,0x02
-;   call rom_chan_open
-;   pop hl
-;   push hl
-;   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
-;   ld a,l
-;   rst 0x10
-;   ld a,(printer_channel_or_zero)
-;   and a
-;   jr z,paren_emit.end
-;   call rom_chan_open
-;   pop hl
-;   push hl
-;   ld a,l
-;   rst 0x10
-; paren_emit.end:
-;   pop hl
-;   pop bc
-;   _jp_next
+if 0 ; XXX OLD
 
-  ; XXX NEW
+paren_emit_nfa:
+  db 0x06+0x80,'(EMIT',')'+0x80
+paren_emit_lfa:
+  dw emit_nfa
+paren_emit_:
+  dw paren_emit_pfa
+paren_emit_pfa:
+  pop hl
+  push bc
+  push hl
+  ld a,0x02
+  call rom_chan_open
+  pop hl
+  push hl
+  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+  ld a,l
+  rst 0x10
+  ld a,(printer_channel_or_zero)
+  and a
+  jr z,paren_emit.end
+  call rom_chan_open
+  pop hl
+  push hl
+  ld a,l
+  rst 0x10
+paren_emit.end:
+  pop hl
+  pop bc
+  _jp_next
+
+else ; XXX NEW
 
 ; doc{
 
@@ -838,11 +844,18 @@ paren_emit_lfa:
 paren_emit_:
   dw paren_emit_pfa
 paren_emit_pfa:
+
+  ; XXX FIXME with this version, the boolean attributes does not work fine.
+  ; They have no effect unless the cursor is on the lower part of the screen,
+  ; or a new line is printed.
+
   pop hl
   ld a,l
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
   _jp_next
+
+endif
 
 key_nfa:
   db 0x03+0x80,'KE','Y'+0x80
@@ -1291,10 +1304,22 @@ semicolon_s_pfa:
   ld (return_stack_pointer),hl
   _jp_next
 
+pick_nfa:
+  db 0x04+0x80,'PIC','K'+0x80
+pick_lfa:
+  dw semicolon_s_nfa
+pick_:
+  dw pick_pfa
+pick_pfa:
+  pop hl
+  add hl,hl
+  add hl,sp
+  jp fetch.hl
+
 unloop_nfa:
   db 0x06+0x80,'UNLOO','P'+0x80
 unloop_lfa:
-  dw semicolon_s_nfa
+  dw pick_nfa
 unloop_:
   dw two_r_drop_pfa
 
@@ -1647,6 +1672,7 @@ fetch_:
 fetch_pfa:
   ; XXX TODO optimize? maybe `jp pushhl` can be used?
   pop hl
+fetch.hl:
   ld e,(hl)
   inc hl
   ld d,(hl)
@@ -2544,24 +2570,48 @@ pfa_to_cfa_lfa:
 pfa_to_cfa_:
   dw two_minus_pfa
 
+cfa_to_pfa_nfa:
+  db 0x07+0x80,'CFA>PF','A'+0x80
+cfa_to_pfa_lfa:
+  dw pfa_to_cfa_nfa
+cfa_to_pfa_:
+  dw two_plus_pfa
+
+cfa_to_lfa_nfa:
+  db 0x07+0x80,'CFA>LF','A'+0x80
+cfa_to_lfa_lfa:
+  dw cfa_to_pfa_nfa
+cfa_to_lfa_:
+  dw two_minus_pfa
+
 pfa_to_nfa_nfa:
   db 0x07+0x80,'PFA>NF','A'+0x80
 pfa_to_nfa_lfa:
-  dw pfa_to_cfa_nfa
+  dw cfa_to_lfa_nfa
 pfa_to_nfa_:
   dw do_colon
 pfa_to_nfa_pfa:
-  ; XXX TODO optimize
   dw c_lit_
   db 0x05
   dw minus_
   dw lit_,-1,traverse_
   dw semicolon_s_
 
+cfa_to_nfa_nfa:
+  db 0x07+0x80,'CFA>NF','A'+0x80
+cfa_to_nfa_lfa:
+  dw pfa_to_nfa_nfa
+cfa_to_nfa_:
+  dw do_colon
+cfa_to_nfa_pfa:
+  dw three_,minus_
+  dw lit_,-1,traverse_
+  dw semicolon_s_
+
 nfa_to_lfa_nfa:
   db 0x07+0x80,'NFA>LF','A'+0x80
 nfa_to_lfa_lfa:
-  dw pfa_to_nfa_nfa
+  dw cfa_to_nfa_nfa
 nfa_to_lfa_:
   dw do_colon
 nfa_to_lfa_pfa:
@@ -4350,8 +4400,7 @@ tick_:
 tick_pfa:
   dw minus_find_
   dw zero_equals_,one_,question_error_
-  dw drop_
-  ; XXX TODO add `pfa>cfa` here, like v.Forth
+  dw drop_,pfa_to_cfa_
   dw semicolon_s_
 
 bracket_tick_nfa:
@@ -4884,40 +4933,11 @@ unused_pfa:
   dw zero_,here_,minus_
   dw semicolon_s_
 
-forget_nfa:
-  db 0x06+0x80,'FORGE','T'+0x80
-forget_lfa:
-  dw unused_nfa
-forget_:
-  dw do_colon
-forget_pfa:
-  dw current_,fetch_
-  dw context_,fetch_
-  dw not_equals_
-  dw c_lit_
-  db 0x18
-  dw question_error_
-  dw tick_
-  dw dup_
-  dw fence_,fetch_
-  dw u_less_than_
-  dw c_lit_
-  db 0x15
-  dw question_error_
-  dw dup_
-  dw pfa_to_nfa_
-  dw dp_
-  dw store_
-  dw pfa_to_lfa_,fetch_
-  dw current_,fetch_
-  dw store_
-  dw semicolon_s_
-
   ; XXX TODO -- remove, already copied to the blocks disk
 index_nfa:
   db 0x05+0x80,'INDE','X'+0x80
 index_lfa:
-  dw forget_nfa
+  dw unused_nfa
 index_:
   dw do_colon
 index_pfa:
@@ -5107,17 +5127,9 @@ border_lfa:
 border_:
   dw border_pfa
 border_pfa:
-  if false ; XXX OLD -- original
-    pop hl
-    push bc
-    ld a,l
-    call rom_border_0x2297
-    pop bc
-  else ; XXX NEW
-    pop hl
-    ld a,l
-    out(0xFE),a
-  endif
+  pop hl
+  ld a,l
+  out(0xFE),a
   _jp_next
 
 paper_nfa:
@@ -5127,6 +5139,7 @@ paper_lfa:
 paper_:
   dw paper_pfa
 paper_pfa:
+  ; XXX TODO improve, changing only ATTR P?
   ld a,0x11
   rst 0x10
   pop hl
@@ -5142,6 +5155,7 @@ ink_lfa:
 ink_:
   dw ink_pfa
 ink_pfa:
+  ; XXX TODO improve, changing only ATTR P?
   ld a,0x10
   rst 0x10
   pop hl
@@ -5150,7 +5164,8 @@ ink_pfa:
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
-  ; XXX TODO move to the blocks disk
+  ; XXX TMP for debugging `(emit)`.
+  ; After fixing `(emit)`, this word will be removed (it's in the blocks).
 flash_nfa:
   db 0x05+0x80,'FLAS','H'+0x80
 flash_lfa:
@@ -5178,94 +5193,10 @@ branch_destination_0x7DF2:
 branch_destination_0x7E04:
   dw semicolon_s_
 
-  ; XXX TODO move to the blocks disk
-bright_nfa:
-  db 0x06+0x80,'BRIGH','T'+0x80
-bright_lfa:
-  dw flash_nfa
-bright_:
-  dw do_colon
-bright_pfa:
-  dw zero_branch_,branch_destination_0x7E2B
-  dw lit_,sys_attr_p
-  dw c_fetch_
-  dw c_lit_
-  db 0x40
-  dw or_
-  dw lit_,sys_attr_p
-  dw store_
-  dw branch_,branch_destination_0x7E3D
-branch_destination_0x7E2B:
-  dw lit_,sys_attr_p
-  dw c_fetch_
-  dw c_lit_
-  db 0xBF
-  dw and_
-  dw lit_,sys_attr_p
-  dw store_
-branch_destination_0x7E3D:
-  dw semicolon_s_
-
-  ; XXX TODO move to the blocks disk
-gover_nfa:
-  db 0x05+0x80,'GOVE','R'+0x80
-gover_lfa:
-  dw bright_nfa
-gover_:
-  dw do_colon
-gover_pfa:
-  dw zero_branch_,branch_destination_0x7E61
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw two_
-  dw or_
-  dw lit_,sys_p_flag
-  dw store_
-  dw branch_,branch_destination_0x7E73
-branch_destination_0x7E61:
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0xFD
-  dw and_
-  dw lit_,sys_p_flag
-  dw store_
-branch_destination_0x7E73:
-  dw semicolon_s_
-
-  ; XXX TODO move to the blocks disk
-inverse_nfa:
-  db 0x07+0x80,'INVERS','E'+0x80
-inverse_lfa:
-  dw gover_nfa
-inverse_:
-  dw do_colon
-inverse_pfa:
-  dw zero_branch_,branch_destination_0x7E9B
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0x08
-  dw or_
-  dw lit_,sys_p_flag
-  dw store_
-  dw branch_,branch_destination_0x7EAD
-branch_destination_0x7E9B:
-  dw lit_,sys_p_flag
-  dw c_fetch_
-  dw c_lit_
-  db 0xF7
-  dw and_
-  dw lit_,sys_p_flag
-  dw store_
-branch_destination_0x7EAD:
-  dw semicolon_s_
-
-  ; XXX TODO move to the blocks disk
 i_tick_nfa:
   db 0x02+0x80,'I',"'"+0x80
 i_tick_lfa:
-  dw inverse_nfa
+  dw flash_nfa
 i_tick_:
   dw i_tick_pfa
 i_tick_pfa:
