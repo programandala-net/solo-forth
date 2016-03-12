@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509171640
+version_release:  equ 201509180233
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -608,13 +608,35 @@ _echo: macro _txt
   _string _txt
   endm
 
-debugging: equ 0
+debugging: equ 1
+
+  ; type the string on top of stack
+_type: macro
+  if debugging
+    _echo 'TOS str= <'
+    dw two_dup_,type_
+    _literal '>'
+    dw emit_
+  endif
+  endm
+
+  ; type the counted string on top of stack
+_ctype: macro
+  if debugging
+    _echo 'TOS cstr= <'
+    dw dup_,count_,type_
+    _literal '>'
+    dw emit_
+  endif
+  endm
 
   ; check point
 _chk: macro _message
   if debugging
     _echo _message
-    dw cr_,hex_,dot_s_,decimal_
+    dw base_,fetch_,to_r_,hex_
+    dw cr_,dot_s_
+    dw from_r_,base_,store_
   endif
   endm
 
@@ -623,6 +645,44 @@ _brk: macro _message
   if debugging
     _chk _message
     dw key_,drop_
+  endif
+  endm
+
+  ; break point
+  ; first type the string on top of stack
+_brk_type: macro _message
+  if debugging
+    _type
+    _chk _message
+    dw key_,drop_
+  endif
+  endm
+
+  ; break point
+  ; first type the counted string on top of stack
+_brk_ctype: macro _message
+  if debugging
+    _chk _message
+    _ctype
+    dw key_,drop_
+  endif
+  endm
+
+  ; check point
+  ; first type the string on top of stack
+_chk_type: macro _message
+  if debugging
+    _chk _message
+    _type
+  endif
+  endm
+
+  ; check point
+  ; first type the counted string on top of stack
+_chk_ctype: macro _message
+  if debugging
+    _ctype
+    _chk _message
   endif
   endm
 
@@ -846,7 +906,7 @@ data_stack_bottom:
 terminal_input_buffer:
   ds bytes_per_terminal_input_buffer
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
   ds 3 ; for the null word
 
@@ -874,7 +934,7 @@ disk_buffer:
                               ; is not associated with a block.
   ds data_bytes_per_buffer    ; Actual content of the block,
                               ; a disk sector.
-if 1 ; fig_parsing
+if 0 ; fig_parsing
   db space_char,0,space_char  ; Null word, required by the parsing words.
 endif
 
@@ -1066,7 +1126,7 @@ next2_end: ; XXX TMP for debugging
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl root_pfa
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; ----------------------------------------------
   _code_header root_x_,0,immediate
@@ -2168,7 +2228,7 @@ paren_find.nfa_backup: equ $+1
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; doc{
 ;
@@ -2315,7 +2375,7 @@ endif
 ; ----------------------------------------------
   _code_header skip_,'SKIP'
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; doc{
 ;
@@ -3431,16 +3491,20 @@ roll.end:
 
 ; doc{
 ;
-; unloop  ( -- ) ( R: x1 x2 -- )  \ ANS Forth
-;
-; x1 = loop index
-; x2 = loop limit
+; unloop  ( -- ) ( R: loop-sys -- )  \ ANS Forth
 ;
 ; Discard the loop-control parameters for the current nesting
 ; level. An `unloop` is required for each nesting level before
 ; the definition may be exited with `exit`. An ambiguous
 ; condition exists if the loop-control parameters are
 ; unavailable.
+; 
+; In Solo Forth, the stack effect is:
+;
+; unloop  ( -- ) ( R: n1 n2 -- )
+;
+;   n1 = loop index
+;   n2 = loop limit
 ;
 ; }doc
 
@@ -3451,8 +3515,8 @@ roll.end:
 ;
 ; exhaust  ( -- ) ( R: n1 n2 -- n2 n2 )
 ;
-; n1 = loop limit
-; n2 = loop index
+;   n1 = loop limit
+;   n2 = loop index
 ;
 ; Force termination of a do-loop at the next opportunity by
 ; setting the loop limit equal to the current value of the
@@ -4385,7 +4449,7 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 else
 
   _constant_header slash_tib_,'/TIB'
@@ -5430,7 +5494,7 @@ accept.end:
 ;
 ; }doc
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
   dw tib_,dup_
   dw number_tib_,fetch_
@@ -5452,7 +5516,7 @@ else
 
 endif
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; ----------------------------------------------
   _colon_header x_,0,immediate
@@ -5566,9 +5630,10 @@ endif
 refill.block:
   dw one_,blk_,plus_store_ ; next disk block
   dw to_in_,off_
-  dw true_
+  dw branch_,refill.end
 refill.terminal:
   dw query_
+refill.end:
   dw true_
   dw semicolon_s_
 
@@ -5660,7 +5725,7 @@ fill88.done:
 ; ----------------------------------------------
   _colon_header stream_,'STREAM'
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; doc{
 ;
@@ -5776,7 +5841,7 @@ endif
 ; ----------------------------------------------
   _colon_header parse_,'PARSE'
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; doc{
 ;
@@ -5833,7 +5898,7 @@ parsex.end:
 endif
 
 ; ----------------------------------------------
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 else
   _two_variable_header parsed_name_,'PARSED-NAME'
 
@@ -5859,7 +5924,7 @@ endif
 ;
 ; }word
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
   dw stream_,dup_,to_r_ ; ( ca1 )
   dw b_l_,skip_ ; ( ca2 )
@@ -5874,12 +5939,10 @@ else
 if 0 ; XXX OLD
 
   dw stream_,b_l_,skip_ ; ( ca2 len2 )
-;  dw two_dup_,cr_,type_  ; XXX INFORMER
-;  _brk "in parse-name after skip"  ; XXX INFORMER
+;  _brk_type "in parse-name after skip"  ; XXX INFORMER
   dw dup_,parsed_
   dw b_l_,scan_ ; ( ca len )
-;  dw two_dup_,cr_,type_  ; XXX INFORMER
-;  _brk "in parse-name after scan"  ; XXX INFORMER
+;  _brk_type "in parse-name after scan"  ; XXX INFORMER
   dw dup_,parsed_
   dw semicolon_s_
 
@@ -5912,8 +5975,7 @@ parse_name.skip:
   dw to_in_,plus_store_   ; ( ca2 ca1 )
   dw tuck_,minus_         ; ( ca1 len4 )
   dw two_dup_,parsed_name_,two_store_
-;  _brk 'parse-name -- end' ; XXX INFORMER
-;  dw two_dup_,cr_,type_ ; XXX INFORMER
+;  _brk_type 'parse-name -- end' ; XXX INFORMER
   dw semicolon_s_
 
 endif
@@ -5976,7 +6038,7 @@ endif
 ;
 ; }doc
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; XXX FIXME
 ; `0 word` crashes the system. how to parse till the end of
@@ -6162,6 +6224,8 @@ word88.skip:
   endif
 
 ; ----------------------------------------------
+if 0 ; fig_parsing
+
   _colon_header paren_number_,'(NUMBER)'
 
 ; doc{
@@ -6176,15 +6240,15 @@ word88.skip:
 ; }doc
 
 paren_number.begin: ; begin
-  _chk '(number) -- begin' ; XXX INFORMER
+;  _chk '(number) -- begin' ; XXX INFORMER
   dw one_plus_ ; address of the next digit
   dw dup_,to_r_ ; save the address
   dw c_fetch_ ; get the digit
-  _chk '(number) -- before digit?' ; XXX INFORMER
+;  _chk '(number) -- before digit?' ; XXX INFORMER
 ;  dw dot_s_,key_,drop_; XXX INFORMER
 ;  dw dup_,dup_,cr_,dot_,emit_; XXX INFORMER
   dw base_,fetch_,digit_question_ ; convert the digit
-  _chk '(number) -- after digit?' ; XXX INFORMER
+;  _chk '(number) -- after digit?' ; XXX INFORMER
   dw zero_branch_,paren_number.end ; while
   dw swap_ ; get the high order part of d1 to the top.
   dw base_,fetch_,u_m_star_ ; multiply by base value
@@ -6201,10 +6265,14 @@ paren_number.decimal_point_done:
   dw branch_,paren_number.begin ; repeat
 paren_number.end:
   dw from_r_ ; address of the first non-convertable digit, a2.
-  _chk '(number) -- end' ; XXX INFORMER
+;  _chk '(number) -- end' ; XXX INFORMER
   dw semicolon_s_
 
+endif
+
 ; ----------------------------------------------
+if 0 ; fig_parsing
+
   _colon_header number_,'NUMBER'
 
 ; doc{
@@ -6219,8 +6287,7 @@ paren_number.end:
 ;
 ; }doc
 
-  _brk 'number -- start' ; XXX INFORMER
-;  dw dup_,count_,cr_,dot_s_,cr_,type_ ; XXX INFORMER
+;  _brk_ctype 'number -- start' ; XXX INFORMER
   dw zero_,zero_,rot_ ; two zeros, initial value of the double number
   dw dup_,one_plus_,c_fetch_ ; get the first digit
   _literal '-'
@@ -6235,7 +6302,7 @@ paren_number.end:
   ; the first digit.
   dw lit_,-1 ; initial value of `dpl`
 number.begin:
-  _chk 'number -- begin' ; XXX INFORMER
+;  _chk 'number -- begin' ; XXX INFORMER
   dw dpl_,store_
   dw paren_number_ ; convert one digit after another until an invalid char occurs
   dw dup_,c_fetch_ ; get the invalid digit
@@ -6259,6 +6326,8 @@ number.a_blank:
   dw d_negate_
 number.end:
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _code_header upper_,'UPPER'
@@ -6386,7 +6455,9 @@ uppers.do:
   ;     if  @ (find) ?dup if  unloop exit  then  then
   ;   loop  false  ;
 
+;  _chk_ctype 'find -- start' ; XXX INFORMER
   dw dup_,count_,uppers_
+;  _brk_ctype 'find -- after uppers' ; XXX INFORMER
   dw hash_vocs_,zero_,paren_do_
 find.do:
   dw context_,i_,cells_,plus_,fetch_
@@ -6395,9 +6466,11 @@ find.do:
   ; valid vocabulary in the search order
   dw fetch_,paren_find_,question_dup_ ; word found in the vocabulary?
   dw zero_branch_,find.loop ; if not, try the next vocabulary
+;  _chk 'find -- found' ; XXX INFORMER
   dw unloop_,exit_
 find.loop:
   dw paren_loop_,find.do,false_
+;  _chk 'find -- not found' ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6420,7 +6493,6 @@ find.loop:
 
   ; XXX TODO factor
 
-  ; dw two_dup_,uppers_  ; XXX OLD
   dw find_dollar_
   _literal max_word_length+2
   dw erase_ ; make sure there will be a null at the end
@@ -6491,7 +6563,7 @@ error_to_number.do
 ;  dw question_branch_,paren_abort_pfa ; if so, branch to it
 
 error.message:
-if 1 ; fig_parsing
+if 0 ; fig_parsing
   dw here_,count_,type_ ; last parsed word
 else
   dw parsed_name_,two_fetch_,type_ ; last parsed word
@@ -6519,23 +6591,13 @@ error.end:
 
 ; header  ( "name" -- )
 
-  ; XXX TODO -- make sure `current` is searched? else duplicated
-  ; definitions would not be remarked.
-  ;
-  ; the only secure method is:
-  ;
-  ;   get-order n>r also current @ context ! defined nr>
-  ;   set-order
-  ;
-  ; but that would make the compilation slower.  i think it can
-  ; be left to the programmer.
-  ;
   ; XXX TODO -- 2015-09-13: check only when `warnings` is on,
   ; and check only `current`!
   ;
   ; XXX TODO -- use `parse-name` directly, and, if `warnings` is
   ; on, `search-wordlist.
 
+;  _chk 'header -- start' ; XXX INFORMER
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
   dw zero_branch_,header.continue
@@ -6546,21 +6608,31 @@ error.end:
   dw cfa_to_nfa_,id_dot_
   _literal error.not_unique
   dw warning_
-  dw zero_ ; just for the `drop`, faster and smaller than a branch
+  dw zero_ ; for the `drop`, faster and smaller than a branch
 header.no_warning:
   dw drop_
 
 header.continue:
 
-;  dw cr_,dot_s_ ; XXX INFORMER
-    ; XXX TODO adapt to `parse-word`; now it works because
-    ; `defined` still uses `word`, that leaves the string at
-    ; `here`.
-
+if 0 ; fig_parsing
   dw here_,count_
+else
+  dw parsed_name_,two_fetch_
+  dw two_dup_,uppers_ ; XXX TMP -- temporary solution
+  ; XXX FIXME -- the problem is `parsed-name` is updated by
+  ; `parse-name`, thus before `find` converted the word to uppercase.
+  ; The solution is to write an alternative to `find`:
+  ;     `find-name ( ca len -- 0 | cfa 1 | cfa -1 )`
+endif
+;  _brk_type 'header -- continue' ; XXX INFORMER
+
+
   ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
-  dw save_string_,tuck_ ; ( len ca len )
+if 0 ; fig_parsing
+  dw save_string_
+endif
+  dw tuck_ ; ( len ca len )
   _names_bank
   dw here_,comma_np_ ; store a pointer to the cfa
   dw latest_,comma_np_ ; link field
@@ -6873,7 +6945,7 @@ two_literal.end:
 ;
 ; }doc
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 interpret.begin:
 
@@ -6932,7 +7004,7 @@ interpret.16bit_number:
 
 else
 
-  ; XXX NEW
+  ; XXX NEW -- 'interpret'
 
 interpret.begin:
 
@@ -6940,19 +7012,19 @@ interpret.begin:
   dw question_stack_
 ;  _brk 'interpret -- before parse-name'
   dw parse_name_  ; ( ca len )
-;  _brk 'interpret -- after parse-name'
-;  dw two_dup_,cr_,type_ ; XXX INFORMER
+  _chk_type 'interpret -- after parse-name'
   dw dup_ ; not end of stream?
   dw zero_branch_,interpret.end ; while
 
-  dw save_counted_string_
+  dw save_counted_string_ ; XXX FIXME this changes the address of the string...
+  ; ...and makes `header` need to convert it to uppercase once more.
 
   ; XXX TODO --
   ; write `find-name` ( ca len -- ca len 0 | cfa 1 | cfa -1 )
 
-;  _brk 'interpret -- before find'
+;  _chk 'interpret -- before find' ; XXX INFORMER
   dw find_ ; ( ca 0 | cfa 1 | cfa -1 )
-;  _brk 'interpret -- after find'
+;  _chk 'interpret -- after find' ; XXX INFORMER
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
@@ -7002,7 +7074,7 @@ interpret.16bit_number:
   dw branch_,interpret.begin ; repeat
 
 interpret.end:
-  _chk 'interpret -- end'
+;  _chk 'interpret -- end' ; XXX INFORMER
   dw two_drop_
   dw semicolon_s_
 
@@ -7074,7 +7146,7 @@ quit.do:
 
 ;  _brk 'quit -- before query' ; XXX INFORMER
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
   dw query_
 else
   dw refill_,drop_ ; XXX TMP
@@ -7637,7 +7709,7 @@ message.number_only:
   dw buffer_id_,zero_less_than_
   dw semicolon_s_
 
-if 1 ; fig_parsing
+if 0 ; fig_parsing
 
 ; ----------------------------------------------
   _colon_header stream_end_,'STREAM-END'
@@ -8047,7 +8119,7 @@ read_write_sector_command:
   _question_error error.loading_from_screen_0
   dw b_slash_scr_,star_,blk_,store_
   dw to_in_,off_,interpret_
-  _brk '(load) -- after interpret' ; XXX INFORMER
+;  _brk '(load) -- after interpret' ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -8115,32 +8187,14 @@ read_write_sector_command:
 ;
 ; }doc
 
-  ; XXX TODO -- adapt to the new parsing method
-
-if 1 ; fig_parsing
-
-;   _echo 'In defined before word ' ; XXX INFORMER
-;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
+if 0 ; fig_parsing
   dw b_l_,word_ ; ( ca2 )
-
 else
-
   dw parse_name_  ; ( ca1 len1 )
-;  dw cr_,dot_s_,lit_,1,border_,key_,drop_ ; XXX INFORMER
   dw save_counted_string_ ; ( ca2 )
-;  dw cr_,dot_s_,lit_,2,border_,key_,drop_ ; XXX INFORMER
-
 endif
-
-;   _echo 'In defined after word ' ; XXX INFORMER
-;   dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  ; dw dup_,count_,uppers_  ; uppercase ( ca2 ) ; XXX OLD
-;  dw cr_,dot_s_,lit_,3,border_,key_,drop_ ; XXX INFORMER
+;  _chk_ctype 'defined -- before find' ; XXX INFORMER
   dw find_
-;  dw cr_,dot_s_,lit_,4,border_,key_,drop_ ; XXX INFORMER
-
   dw semicolon_s_
 
 ; ----------------------------------------------

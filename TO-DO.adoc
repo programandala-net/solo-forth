@@ -280,8 +280,11 @@ write as is.
 
 New: `find-name` ( ca len -- ca len 0 | cfa 1 | cfa -1 )
 
-Fix: when `fig_parsing` is off, interpretation of numbers causes error
-#1.
+.2015-09-18:
+
+Fix: when loading blocks with the new parsing method, the parsing
+stops at the end of the first block of the screen, because the null
+word is not executed anymore. The solution is to use `refill`.
 
 // }}}
 == Misc new words ==

@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509171640
+\ Last modified: 201509180233
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,9 +33,8 @@
 
   \ XXX TMP
 
-s" hola
-y adios"
-.s
+variable default-first-locatable
+8 default-first-locatable
 
 
   \ }}} =======================================================
@@ -55,8 +54,11 @@ variable first-locatable
   8 dup default-first-locatable !  first-locatable !
 variable last-locatable  scr/disk last-locatable !
 
-: located  ( ca len -- screen | false )
-  last-locatable @ 1+  first-locatable @
+  \ XXX TMP -- temporary border changes for debugging
+: located  ( ca len -- screen | false ) [ 2 border ]
+  [ 4 border ]  \ XXX INFORMER
+  \ XXX TMP -- temporary commented out for debugging:
+  \ last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do
     0 i (line) 2over contains if  2drop i unloop exit  then
@@ -1000,6 +1002,13 @@ code fzx-emit  ( c -- )
   bc pop  next ix ldp#  jpnext
 
   end-code
+
+  \ }}} =======================================================
+  \ Decompressor {{{
+
+( zx7 )
+
+  \ XXX TODO  -- adapt
 
   \ }}} =======================================================
   \ Graphics {{{
