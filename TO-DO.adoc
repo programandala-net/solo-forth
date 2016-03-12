@@ -234,5 +234,9 @@ Idea: screen modes table?
 - 5: 51 cpl
 - 6: 64 cpl
 
+It seems more versatile to create different words to switch the modes
+on and provide a common user interface to row, column, cpl, window...
 
+.2015-09-12:
 
+use bit 5 of FLAGS to detect and reset a new char.

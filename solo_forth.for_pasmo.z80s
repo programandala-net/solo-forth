@@ -12,7 +12,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201509111730
+version_release:  equ 201509120213
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -116,8 +116,9 @@ version_release:  equ 201509111730
 
 ; xc       = 8-bit graphic x coordinate (0..255)
 ; yc       = 8-bit graphic y coordinate (0..191)
-; line     = 8-bit cursor line (0..23)
-; col      = 8-bit cursor column (0..31)
+; line     = 8-bit cursor line (0..23) XXX TODO -> row
+; col      = 8-bit cursor column (0..n)
+;            the maximum value depends on the screen mode
 
 ; cfa      = code field address
 ; lfa      = link field address
@@ -153,7 +154,7 @@ version_release:  equ 201509111730
 ;                 excluding the delimiter character
 ; text            same as ccc
 ; name            a token delimited by space, equivalent to
-;                 ccc<space> or ccc<eol>
+;                 ccc<space> or ccc<eol> ; XXX TODO
 
 ; ----------------------------------------------
 ; Word attributes
@@ -1113,12 +1114,12 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw next
 
 ; ----------------------------------------------
-  ; _constant_header next_,'NEXT2'
+  _constant_header next2_,'NEXT2'
 
-  ; ; XXX OLD -- added for the second version of `defer`, but
-  ; ; not needed
+  ; XXX OLD -- added for the second version of `defer`
+  ; XXX -- used by `pause`
   
-  ; dw next2
+  dw next2
 
 ; ----------------------------------------------
   _constant_header pusha_,'PUSHA'
@@ -1220,38 +1221,6 @@ endif
 
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa
-
-if 0
-  
-; ----------------------------------------------
-  _constant_header next_,'NEXT'
-
-  dw next
-
-; ----------------------------------------------
-  ; _constant_header next_,'NEXT2'
-
-  ; ; XXX OLD -- added for the second version of `defer`, but
-  ; ; not needed
-  
-  ; dw next2
-
-; ----------------------------------------------
-  _constant_header pushhl_,'PUSHHL'
-
-  dw push_hl
-
-; ----------------------------------------------
-  _constant_header pushhlde_,'PUSHHLDE'
-
-  dw push_hlde
-
-; ----------------------------------------------
-  _constant_header fetchhl_,'FETCHHL'
-
-  dw fetch.hl
-
-endif
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'

@@ -8,7 +8,7 @@
   \ This file is the library of Solo Forth,
   \ and the skeleton to build applications in Solo Forth.
 
-\ Last modified: 201509111730
+\ Last modified: 201509120213
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -3432,7 +3432,8 @@ code inkey  ( -- c | 0 )
   \ keyboard and updates the LAST-K system variable, as the OS
   \ does by default.
 
-  \ XXX TODO try
+  \ XXX FIXME some times it returns zero when the key is
+  \ pressed; the word in the next screen works better
 
   di
   a xor
@@ -3440,7 +3441,7 @@ code inkey  ( -- c | 0 )
   nz if
     5C08 hl ldp#  \ LAST-K system variable
     m a ld
-    0 m ld#
+    \ 0 m ld# \ XXX OLD
     01 iy 5 resx
   then
   ei
@@ -3465,20 +3466,27 @@ code inkey|255  ( -- c | 255 )
   \ works even when it's not read by an interrupts routien, as
   \ the OS does by default.
 
-  \ XXX TODO try
+  \ XXX TODO make it return 
 
   bc push
   028E call \ KEY-SCAN ROM routine
-  z if  031E call \ KEY-TEST ROM routine
-        c if  d dec  a e ld
-              0333 call \ KEY-DECODE ROM routine
-        then
+  \ 1 or 2 keys in DE, most significant shift first if any
+  \ key values 0..39 else 255
+  z if  \ is key press valid?
+    031E call \ KEY-TEST ROM routine
+    cy if  \ is key code valid?
+      \ A = main key
+      \ D = ?
+      00 c ld#  \ XXX Spectrum Forth-83 does this 
+      d dec  a e ld
+      0333 call \ KEY-DECODE ROM routine
+      \ A = key code
+      FF cp#  z if  a xor  then
+      \ XXX FIXME why A=0xFF here?!
+      \ XXX TODO jump to `key` to decode
+    then
   then
-  a l ld  00 h ld#
-  bc pop
-  pushhl jp
-
-  end-code
+  bc pop  pusha jp  end-code
 
   \ }}} =======================================================
   \ Hardware {{{
@@ -4358,52 +4366,80 @@ defer (value)
 : frames0  ( -- )  0. frames!  ;
   \ Reset the system frames counter.
 
+( pause )
+
+  \ Credits:
+  \ Code adapted from Spectrum Forth-83.
+
+require z80-asm
+
+variable (wait)  ' noop (wait) !
+
+code pause ( u --- )
+  \ u = number of ticks
+  de pop  bc push
+  begin
+    \ XXX FIXME -- crash! but everything seems ok
+    de push
+    \ Call a Forth word from assembler:
+    ' (wait) cfa>pfa hl ftp
+    here 6 + bc ldp# \ point instruction pointer to phony_cfa
+    next2 jp  \ execute the cfa in `(wait)`
+    \ XXX FIXME -- the cfa is executed once
+    \ phony_cfa:
+    here cell+ ,  \ point to the code following
+    \ XXX TODO check if execution gets here!
+    de pop  halt  de decp  de tstp  \ finished?
+  z until
+  bc pop  jpnext
+  end-code
+
   \ }}} =======================================================
-  \ Vocabularies {{{
+  \ vocabularies {{{
 
 ( .context .current order vocs )  \ ==vocabularies==
 
-  \ Credits:
-  \ Code adapted from F83.
+  \ credits:
+  \ code adapted from f83.
 
 : .context  ( -- )  context #vocs 0 do
                       dup @ ?dup if  pfa>nfa id.  then  cell+
                     loop drop  ;
-  \ Display the search order currently in effect.
+  \ display the search order currently in effect.
 
 : .current  ( -- )  current @ pfa>nfa id.  ;
-  \ Display the name of the `current` vocabulary.
+  \ display the name of the `current` vocabulary.
 
 : order  ( -- )
   cr ." context: " .context cr ." current: " .current  ;
-  \ Display the search order currently in effect and the name
+  \ display the search order currently in effect and the name
   \ of the `current` vocabulary.
 
 : vocs  ( -- )
   voc-link @
   begin  dup cell - pfa>nfa id.  @ dup 0= until  drop  ;
-  \ List all of the vocabularies that have been defined so
+  \ list all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
 ( get-order set-order )
 
-  \ XXX TODO use the actual number of vocs in context, not
+  \ xxx todo use the actual number of vocs in context, not
   \ the maximum
 
 : (get-order)  ( n -- widn..wid1 n)
-  \ Do get the search order.
+  \ do get the search order.
   1- -1 swap do  context i cells + @  -1 +loop  ;
 
 : get-order  ( -- 0 | widn..wid1 n)
-  \ Get the search order.
+  \ get the search order.
   #vocs ?dup if  (get-order)  then  #vocs  ;
 
 : (set-order)  ( widn..wid1 n -- )
-  \ Do set a search order.
+  \ do set a search order.
   0 do  context i cells + !  loop  ;
 
 : set-order  ( -1 | 0 | widn..wid1 n -- )
-  \ Set a search order.
+  \ set a search order.
   dup -1 =  if  drop only exit  then  -order
   ?dup if  (set-order)  then  ;
 
@@ -4412,26 +4448,26 @@ defer (value)
   \
   \ set-order  ( -1 | 0 | widn..wid1 n -- )
   \
-  \ Set the search order to the word lists identified by
-  \ _widn..wid1_. Subsequently, word list _wid1_ will be
-  \ searched first, and word list _widn_ searched last. If _n_
-  \ is zero, empty the search order. If _n_ is minus one, set
+  \ set the search order to the word lists identified by
+  \ _widn..wid1_. subsequently, word list _wid1_ will be
+  \ searched first, and word list _widn_ searched last. if _n_
+  \ is zero, empty the search order. if _n_ is minus one, set
   \ the search order to the implementation-defined minimum
   \ search order.
   \
-  \ This word is defined in ANS Forth but its implementation in
-  \ Solo Forth is not fully ANS Forth compliant.
+  \ this word is defined in ans forth but its implementation in
+  \ solo forth is not fully ans forth compliant.
   \
   \ }doc
 
 
   \ }}} =======================================================
-  \ Random number generator {{{
+  \ random number generator {{{
 
 ( seed rnd random randomize random-byte )  \ ==rng==
 
-  \ Credits:
-  \ Code adapted from Leo Brodie's code and Gforth.
+  \ credits:
+  \ code adapted from leo brodie's code and gforth.
 
 [defined] seed ?\ 23670 constant seed  \ system variable
 
@@ -4442,22 +4478,22 @@ defer (value)
 : randomize  ( n -- )  seed !  ;
 
 code random-byte  ( -- b )
-  \ XXX FIXME this returns patterns; see `random-byte-test`
-  ED c, 5F c,     \ ld a,r
-  C3 c, pusha ,   \ jp pusha
+  \ xxx fixme this returns patterns; see `random-byte-test`
+  ed c, 5f c,     \ ld a,r
+  c3 c, pusha ,   \ jp pusha
   end-code
 
 ( ace-rnd )
 
-  \ Credits:
-  \ Adapted from Ace Forth, as of the Jupiter Ace manual.
+  \ credits:
+  \ adapted from ace forth, as of the jupiter ace manual.
 
 [defined] seed        ?\ 23670 constant seed
 [defined] sys-frames  ?\ 23672 constant sys-frames
   \ system variables
 
 : seedon  ( -- n )
-  \ XXX FIXME
+  \ xxx fixme
   seed @ 75 um* d>s 75 0 d+ 2dup u< - - 1- dup seed !  ;
 
 : rnd  ( n1 -- n2 )  seedon um* d>s swap drop  ;
@@ -4465,12 +4501,12 @@ code random-byte  ( -- b )
 : randomize  ( n -- )
   ?dup 0=  if  sys-frames @  then  seed !  ;
 
-( v.Forth pseudo random number generator )
+( v.forth pseudo random number generator )
 
-  \ Credits:
-  \ Code from v.Forth.
+  \ credits:
+  \ code from v.forth.
 
-  \ XXX TODO adapt and try
+  \ xxx todo adapt and try
 
   \ : vrnd  ( n1 -- n2 )
   \   1+ 8195 23672 @ um* 1 0 d+
@@ -4479,20 +4515,20 @@ code random-byte  ( -- b )
 
 ( xrnd )
 
-  \ Credits:
-  \ Based on code written by José Manuel Lazo,
-  \ published in Microhobby, issue 85 (1986-07), page 24:
+  \ credits:
+  \ based on code written by josé manuel lazo,
+  \ published in microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
+  \ http://microhobby.speccy.cz/mhf/085/mh085_24.jpg
 
-  \ XXX TODO try it
+  \ xxx todo try it
 
 [defined] seed
 ?\ 23670 constant seed  \ system variable
 
 code xrnd  ( -- x )
 
-  \ Return a random number (0000..FFFF)
+  \ return a random number (0000..ffff)
 
   seed hl ftp  hl push
   hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
@@ -4503,13 +4539,13 @@ code xrnd  ( -- x )
 
 ( z88random )
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
+  \ credits:
+  \ code adapted from z88 camelforth.
 
 [defined] seed
 ?\ 23670 constant seed  \ system variable
 
-  \ XXX TODO Adapt.
+  \ xxx todo adapt.
 : z88random  ( u1 -- u2 )
   20077 16838 seed @
   ud* 12345 0 d+ over seed !
@@ -4526,29 +4562,29 @@ require random  require random-byte  require set-pixel
   0 do  random-byte random-byte 192 min set-pixel  loop  ;
 
   \ }}} =======================================================
-  \ Deferred words {{{
+  \ deferred words {{{
 
 ( defers action-of )  \ ==deferredwords==
 
-  \ Credits:
-  \ Code adapted from the Afera library.
+  \ credits:
+  \ code adapted from the afera library.
 
 : defers  ( "name" -- )  ' defer@ ,  ; immediate
-  \ Compile the present contents of the deferred word "name"
-  \ into the current definition. I.e. this produces static
+  \ compile the present contents of the deferred word "name"
+  \ into the current definition. i.e. this produces static
   \ binding as if "name" was not deferred.
 
-: action-of  ( Interpretation: "name" -- cfa )
-             ( Compilation:    "name" -- )
-             ( Runtime:        -- cfa )
+: action-of  ( interpretation: "name" -- cfa )
+             ( compilation:    "name" -- )
+             ( runtime:        -- cfa )
   ' comp? if    postpone literal postpone defer@
           else  defer@  then  ; immediate
-  \ Return the code field address of a deferred word.
+  \ return the code field address of a deferred word.
 
 ( <is> [is] is  )
 
-  \ Credits:
-  \ Code adapted from the Afera library.
+  \ credits:
+  \ code adapted from the afera library.
 
 : <is>  ( cfa "name" -- )  ' defer!  ;
 
@@ -4559,18 +4595,18 @@ require random  require random-byte  require set-pixel
   comp? if  postpone [is]  else  <is>  then  ; immediate
 
   \ }}} =======================================================
-  \ Assembler {{{
+  \ assembler {{{
 
 ( z80-asm )
 
-\ Z80 Assembler for Solo Forth
+\ z80 assembler for solo forth
 
-  \ This is a modified version of an assembler designed by Coos
-  \ Haak for his own Forth, and used by Lennart Benschop with
-  \ his Spectrum Forth-83 (1988).
+  \ this is a modified version of an assembler designed by coos
+  \ haak for his own forth, and used by lennart benschop with
+  \ his spectrum forth-83 (1988).
 
 
-  \ XXX TODO `get-order` here and `set-order` at the end.
+  \ xxx todo `get-order` here and `set-order` at the end.
 
 only forth definitions
 
@@ -4591,13 +4627,13 @@ also assembler definitions hex
 
 6 constant sp  6 constant af
 
-DD constant ix-op  FD constant iy-op
+dd constant ix-op  fd constant iy-op
 
 : ix  ( -- rphl )  ix-op c, hl  ;
 : iy  ( -- rphl )  iy-op c, hl  ;
 
-: ?page  ( n -- n )  dup 80 + FF swap u< 1E ?error  ;
-  \ Branch too long?
+: ?page  ( n -- n )  dup 80 + ff swap u< 1e ?error  ;
+  \ branch too long?
 
 -->
 
@@ -4624,28 +4660,28 @@ DD constant ix-op  FD constant iy-op
   create c, does>  ( 16b -- )  ( 16b pfa ) c@ c, ,  ;
 
 : m6  ( 8b "name" -- )
-  \ Rotation of registers.
-  create c, does>  ( r -- )  ( r pfa ) CB c, c@ + c,  ;
+  \ rotation of registers.
+  create c, does>  ( r -- )  ( r pfa ) cb c, c@ + c,  ;
 
   -->
 
 ( z80-asm -- words for defining the z80 instructions)
 
 : m7  ( 8b "name" -- )
-  \ Bit manipulation of registers.
-  \ XXX OLD
+  \ bit manipulation of registers.
+  \ xxx old
   \ create c, does>  ( bit r -- )
-  \  ( bit r pfa ) CB c, c@ + swap 8* + c,  ;
-  \ XXX NEW
+  \  ( bit r pfa ) cb c, c@ + swap 8* + c,  ;
+  \ xxx new
   create c, does>  ( r bit -- )
-    ( r bit pfa ) CB c, c@ swap 8* + + c,  ;
+    ( r bit pfa ) cb c, c@ swap 8* + + c,  ;
 
 : m8  ( 16b "name" -- )
   \ 2-byte opcodes.
   create , does>  ( -- )  ( pfa ) @ ,  ;
 
 : m9  ( 8b "name" -- )
-  \ Relative jumps.
+  \ relative jumps.
   create c, does>  ( a -- )
     ( a pfa )  c@ c, here 1+ - ?page c,  ;
 
@@ -4656,68 +4692,68 @@ DD constant ix-op  FD constant iy-op
 require -rot
 
 : ma  ( 8b "name" -- )
-  \ Index registers with register.
+  \ index registers with register.
   create c, does>  ( disp rphl -- )
     ( disp rphl pfa ) c@ c, drop c,  ;
 
 : mb  ( 8b "name" -- )
-  \ Rotation with index registers.
+  \ rotation with index registers.
   create c, does>  ( disp rphl -- )
-    ( disp rphl pfa ) CB c, c@ c, drop c,  ;
+    ( disp rphl pfa ) cb c, c@ c, drop c,  ;
 
 : mc  ( 8b "name" -- )
-  \ Bit manipulation with index registers.
-  \ XXX OLD
+  \ bit manipulation with index registers.
+  \ xxx old
   \  create c, does>  ( bit rphl disp -- )
-  \   ( bit rphl disp pfa ) CB c, rot drop c@ -rot c, 8* + c,  ;
-  \ XXX NEW
+  \   ( bit rphl disp pfa ) cb c, rot drop c@ -rot c, 8* + c,  ;
+  \ xxx new
   create c, does>  ( disp rphl bit -- )
     ( disp rphl bit pfa )
-    CB c, c@ rot drop rot c, swap 8* + c,  ;
+    cb c, c@ rot drop rot c, swap 8* + c,  ;
 
 -->
 
 ( z80-asm -- opcodes)
 
-  \ XXX FIXME ftap
+  \ xxx fixme ftap
 
 00 m1 nop 02 m3 stap 03 m3 incp 04 m3 inc 05 m3 dec 07 m1 rlca
-08 m1 exaf 09 m3 addp 0A m3 ftap 0B m3 decp 0F m1 rrca 10 m9
-djnz 17 m1 rla 18 m9 jr  1F m1 rra 20 m9 jrnz 22 m5 sthl 27 m1
-daa 28 m9 jrz 2A m5 ldhl 2F m1 cpl 30 m9 jrnc 32 m5 sta 37 m1
-scf 38 m9 jrc 3A m5 fta 3F m1 ccf 76 m1 halt 80 m2 add 88 m2
-adc 90 m2 sub 98 m2 sbc B8 m2 cp C1 m3 pop C2 m5 jpnz C3 m5 jp
-C5 m3 push C6 m4 add# C7 m2 rst C9 m1 ret CA m5 jpz CD m5 call
-CE m4 adc# D2 m5 jpnc D3 m4 out 41 m3 outbc D6 m4 sub# D9 m1
-exx DA m5 jpc DB m4 in 40 m3 inbc 0DE m4 sbc# E2 m5 jppo E3 m1
-exsp E6 m4 and# E9 m1 jphl EA m5 jppe EB m1 exde EE m4 xor# F2
-m5 jpp F3 m1 di  F6 m4 or# F9 m1 ldsp FA m5 jpm FB m1 ei FE m4
+08 m1 exaf 09 m3 addp 0a m3 ftap 0b m3 decp 0f m1 rrca 10 m9
+djnz 17 m1 rla 18 m9 jr  1f m1 rra 20 m9 jrnz 22 m5 sthl 27 m1
+daa 28 m9 jrz 2a m5 ldhl 2f m1 cpl 30 m9 jrnc 32 m5 sta 37 m1
+scf 38 m9 jrc 3a m5 fta 3f m1 ccf 76 m1 halt 80 m2 add 88 m2
+adc 90 m2 sub 98 m2 sbc b8 m2 cp c1 m3 pop c2 m5 jpnz c3 m5 jp
+c5 m3 push c6 m4 add# c7 m2 rst c9 m1 ret ca m5 jpz cd m5 call
+ce m4 adc# d2 m5 jpnc d3 m4 out 41 m3 outbc d6 m4 sub# d9 m1
+exx da m5 jpc db m4 in 40 m3 inbc 0de m4 sbc# e2 m5 jppo e3 m1
+exsp e6 m4 and# e9 m1 jphl ea m5 jppe eb m1 exde ee m4 xor# f2
+m5 jpp f3 m1 di  f6 m4 or# f9 m1 ldsp fa m5 jpm fb m1 ei fe m4
 cp# 00 m6 rlc 08 m6 rrc 10 m6 rl 18 m6 rr 20 m6 sla  28 m6 sra
-38 m6 srl  40 m7 bit 80 m7 res C0 m7 set B0ED m8 ldir B8ED m8
-lddr 44ED m8 neg 57ED m8 ldai 47ED m8 ldia 56ED m8 im1 5EED m8
-im2 B1ED m8 cpir 6FED m8 rld -->
+38 m6 srl  40 m7 bit 80 m7 res c0 m7 set b0ed m8 ldir b8ed m8
+lddr 44ed m8 neg 57ed m8 ldai 47ed m8 ldia 56ed m8 im1 5eed m8
+im2 b1ed m8 cpir 6fed m8 rld -->
 
 ( z80-asm -- opcodes)
 
-: 0outbc  ( -- )  ED c, 71 c,  ;
+: 0outbc  ( -- )  ed c, 71 c,  ;
 : jpix  ( -- )  ix-op c, jphl  ;
 : ldp#  ( 16b rp -- )  8* 1+ c, ,  ;
 : ld#  ( 8b r -- )  8* 06 + c, c,  ;
 : ld  ( r1 r2 -- )  8* 40 + + c,  ;
-: sbcp  ( rp -- )  ED c, 8* 42 + c,  ;
-: adcp  ( rp1 rp2 -- )  ED c, 8* 4A + c,  ;
-: stp  ( a rp -- )  ED c, 8* 43 + c, ,  ;
-: ftp  ( a rp -- )  ED c, 8* 4B + c, ,  ;
+: sbcp  ( rp -- )  ed c, 8* 42 + c,  ;
+: adcp  ( rp1 rp2 -- )  ed c, 8* 4a + c,  ;
+: stp  ( a rp -- )  ed c, 8* 43 + c, ,  ;
+: ftp  ( a rp -- )  ed c, 8* 4b + c, ,  ;
 
-  \ Macros
+  \ macros
 
 : clr  ( rp -- )  0 swap ldp#  ;
 : ldp  ( rp1 rp2 -- )  2dup ld 1+ swap 1+ swap ld  ;
 
-  \ ZX Spectrum specific
+  \ zx spectrum specific
 
-CF m4 hook \ rst 8
-D7 m1 prt  \ rst 0x16
+cf m4 hook \ rst 8
+d7 m1 prt  \ rst 0x16
 
 -->
 
@@ -4727,10 +4763,10 @@ require -rot
 [defined] 3dup
 ?\ : 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
 
-86 ma addx 8E ma adcx 96 ma subx 9E ma sbcx A6 ma andx
-AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
-06 mb rlcx 0E mb rrcx 16 mb rlx  1E mb rrx  26 mb slax
-2E mb srax 3E mb srlx 46 mc bitx 86 mc resx C6 mc setx
+86 ma addx 8e ma adcx 96 ma subx 9e ma sbcx a6 ma andx
+ae ma xorx b6 ma orx  be ma cpx  34 ma incx 35 ma decx
+06 mb rlcx 0e mb rrcx 16 mb rlx  1e mb rrx  26 mb slax
+2e mb srax 3e mb srlx 46 mc bitx 86 mc resx c6 mc setx
 
 : ftx   ( disp rpi r -- )   nip 8* 46 + c, c,  ;
 : stx   ( r disp rphl -- )  drop swap 70 + c, c,  ;
@@ -4742,24 +4778,24 @@ AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
 
 ( z80-asm -- conditional ret and call)
 
-  \ Condition codes for relative jumps
+  \ condition codes for relative jumps
 
-  \ They are Z80 opcodes for the required instructions.
-  \ Example `z if` compiles a `jr nz`, so `z` is the code for
+  \ they are z80 opcodes for the required instructions.
+  \ example `z if` compiles a `jr nz`, so `z` is the code for
   \ `jr nz`.
 
 20 constant z  28 constant nz  30 constant cy  38 constant nc
 
-  \ Condition codes for absolute jumps
+  \ condition codes for absolute jumps
 
-  \ They are Z80 opcodes for the required instructions.
-  \ Example `z' if` compiles a `jp nz`, so `z'` is the code for
+  \ they are z80 opcodes for the required instructions.
+  \ example `z' if` compiles a `jp nz`, so `z'` is the code for
   \ `jp nz`.
 
-C2 constant z'  CA constant nz' D2 constant cy' DA constant nc'
-E2 constant pe' EA constant po' F2 constant m'  FA constant p'
+c2 constant z'  ca constant nz' d2 constant cy' da constant nc'
+e2 constant pe' ea constant po' f2 constant m'  fa constant p'
 
-  \ Conditional ret
+  \ conditional ret
 
 : ?ret  ( op -- )  8 xor 2- c,  ;
 
@@ -4768,7 +4804,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 : retm  ( -- )  m' ?ret ;     : retp  ( -- )  p' ?ret  ;
 : retpe  ( -- )  pe' ?ret ;   : retpo  ( -- )  po' ?ret  ;
 
-  \ Conditional call
+  \ conditional call
 
 : ?call  ( a op -- )  8 xor 2+ c, ,  ;
 
@@ -4781,34 +4817,34 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 ( z80-asm -- control structures with relative jumps)
 
-  \ XXX TODO document
+  \ xxx todo document
 
 : >relmark  ( -- orig )  here 1-  ;
-  \ Leave the origin address of a forward relative branch
+  \ leave the origin address of a forward relative branch
   \ just compiled, to be resolved by `>relresolve`.
 
 : relresolve  ( orig dest -- )  1- over - ?page swap c!  ;
-  \ Resolve a relative branch.
+  \ resolve a relative branch.
 
 : >relresolve  ( orig -- )  here relresolve  ;
-  \ Resolve a forward relative branch.
+  \ resolve a forward relative branch.
 
 : <relresolve  ( dest -- )  here 1- swap relresolve  ;
-  \ Resolve a backward relative branch.
+  \ resolve a backward relative branch.
 
-: if  ( op -- orig cs-id )  , >relmark 0A  ;
+: if  ( op -- orig cs-id )  , >relmark 0a  ;
 
-: then  ( orig cs-id -- )  0A ?pairs >relresolve  ;
+: then  ( orig cs-id -- )  0a ?pairs >relresolve  ;
 
-: else  ( orig cs-id -- cs-id ) \ XXX TODO document
-  0A ?pairs 18 if rot swap then 0A  ;
-  \ Note 0x18 is the opcode of `jr`.
+: else  ( orig cs-id -- cs-id ) \ xxx todo document
+  0a ?pairs 18 if rot swap then 0a  ;
+  \ note 0x18 is the opcode of `jr`.
 
-: begin  (  -- dest cs-id )  <mark 0B  ;
+: begin  (  -- dest cs-id )  <mark 0b  ;
 
 : while  (  op -- orig cs-id )  if 2+  ;
 
-: until  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
+: until  (  dest cs-id op -- )  , 0b ?pairs <relresolve  ;
 
 : again  (  dest cs-id -- )  18 until  ;  \ compile `jr`
 
@@ -4820,15 +4856,15 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 ( z80-asm -- control structures with absolute jumps)
 
-  \ XXX TODO document
+  \ xxx todo document
 
 : if'  (  op -- orig cs-id )  c, >mark 08  ;
 
 : then'  (  orig cs-id -- )  08 ?pairs >resolve  ;
 
 : else'  (  cs-id -- cs-id )
-  08 ?pairs C3 if' rot swap then' 08  ;
-  \ C3 = opcode of `jp`
+  08 ?pairs c3 if' rot swap then' 08  ;
+  \ c3 = opcode of `jp`
 
 : begin'  (  -- dest cs-id )  <mark 09  ;
 
@@ -4836,51 +4872,51 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : until'  (  cs-id op -- )  c, 09 ?pairs <resolve  ;
 
-: again'  (  cs-id -- )  C3 until'  ;
+: again'  (  cs-id -- )  c3 until'  ;
 
 : repeat'  (  dest cs-id1 orig cs-id2 )
   2swap again' 2- then'  ;
 
 : |mark  ( -- a )  here 2-  ;
-  \ Leave the address of an absolute forward reference.
+  \ leave the address of an absolute forward reference.
 
 : |resolve  ( a -- )  |mark swap !  ;
-  \ Resolve an absolute forward reference.
+  \ resolve an absolute forward reference.
 
 -->
 
 ( z80-asm -- last opcodes and macros)
 
-  \ `AND`, `OR` and `XOR` are defined at the end, in order to
-  \ avoid name clashes with the Forth words that have the same
+  \ `and`, `or` and `xor` are defined at the end, in order to
+  \ avoid name clashes with the forth words that have the same
   \ name:
 
-A0 m2 and  B0 m2 or  A8 m2 xor
+a0 m2 and  b0 m2 or  a8 m2 xor
 
-  \ Macro, 16-bit subtract:
+  \ macro, 16-bit subtract:
 : subp  ( rp -- )  a and sbcp  ;
 
-  \ Macro to test 16-bit register for zero:
+  \ macro to test 16-bit register for zero:
 : tstp  ( rp -- )  dup a ld 1+ or  ;
 
-  \ ; jpnext ( -- )  jpix  ; \ XXX OLD
+  \ ; jpnext ( -- )  jpix  ; \ xxx old
 
 -->
 
 ( z80-asm -- unresolved macro endm )
 
 6 cells allocate-string
-  \ Temporary space to store unresolved addresses during
+  \ temporary space to store unresolved addresses during
   \ compilation. `pad` can not be used because it's transient
-  \ and changes during the compilation. The circular string
+  \ and changes during the compilation. the circular string
   \ buffer is used.
   \
-  \ XXX TODO -- use the heap instead, when implemented
+  \ xxx todo -- use the heap instead, when implemented
 
 : unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
-  \ Return the address of the _n_ unresolved address.  Note:
-  \ The address returned by `allocate-string` is directly
-  \ compiled into `unresolved`. This saves a definition.  `dup`
+  \ return the address of the _n_ unresolved address.  note:
+  \ the address returned by `allocate-string` is directly
+  \ compiled into `unresolved`. this saves a definition.  `dup`
   \ and `drop` are used to pass the compiler security that
   \ checks the stack is balanced at the end of the definition.
 
@@ -4893,8 +4929,8 @@ decimal only forth
 
 ( until-test )
 
-  \ XXX TMP for debugging
-  \ XXX OLD
+  \ xxx tmp for debugging
+  \ xxx old
 
 require z80-asm  require dump
 
@@ -4908,8 +4944,8 @@ code until-test  ( -- )
 
 ( if'-test )
 
-  \ XXX TMP for debugging
-  \ XXX OLD
+  \ xxx tmp for debugging
+  \ xxx old
 
 require z80-asm  require dump
 
@@ -4921,11 +4957,11 @@ code if'-test  ( -- )
 
     nz if  \ not expecting the column
       \ expecting the line
-      \ GET_LIN:
-      cpl  C0 add#  \ now A = 191 - char
+      \ get_lin:
+      cpl  c0 add#  \ now a = 191 - char
       hl incp
     then
-    \ GET_COL:
+    \ get_col:
     hl incp  a m ld
     ret
 
@@ -4934,195 +4970,195 @@ code if'-test  ( -- )
 ' if'-test cfa>pfa dup here swap - dump
 
   \ }}} =======================================================
-  \ Address register {{{
+  \ address register {{{
 
 ( a! a@ )  \ ==addressregister==
 
-  \ Address register store and fetch words.
+  \ address register store and fetch words.
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
+  \ credits:
+  \ code adapted from z88 camelforth.
 
-  \ Note by Gary Lancaster in the Z88 CamelForth source file:
-  \ Sadly, there aren't any spare registers to make this as
-  \ efficient as it could be. However, it can still give a
+  \ note by gary lancaster in the z88 camelforth source file:
+  \ sadly, there aren't any spare registers to make this as
+  \ efficient as it could be. however, it can still give a
   \ useful improvement in loops, and in many cases also results
   \ in cleaner-looking code.
 
 variable a
 
 code a!  ( a -- )
-  \ Set the address register.
-  E1 c,                 \ pop hl
+  \ set the address register.
+  e1 c,                 \ pop hl
   22 c, a ,             \ ld (a),hl
   jpnext                \ jp (ix)
   end-code
 
 code a@  ( -- a )
-  \ Get the address register.
-  2A c, a ,             \ ld hl,(a)
-  C3 c, pushhl ,        \ jp pushhl
+  \ get the address register.
+  2a c, a ,             \ ld hl,(a)
+  c3 c, pushhl ,        \ jp pushhl
   end-code
 
 ( !a @a )
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
+  \ credits:
+  \ code adapted from z88 camelforth.
 
 rerequire a!
 
 code !a  ( u -- )
-  \ Store cell at `a`.
-  D1 c,                          \ pop de
-  2A c, a ,                      \ ld hl,(a)
+  \ store cell at `a`.
+  d1 c,                          \ pop de
+  2a c, a ,                      \ ld hl,(a)
   70 03 + c,  23 c,  70 04 + c,  \ ld (hl),e  inc hl  ld (hl),d
   jpnext                         \ jp (ix)
   end-code
 
 code @a  ( -- u )
-  \ Fetch cell at `a`.
-  2A c, a ,             \ ld hl,(a)
-  5E c,                 \ ld e,(hl)
+  \ fetch cell at `a`.
+  2a c, a ,             \ ld hl,(a)
+  5e c,                 \ ld e,(hl)
   23 c,                 \ inc hl
   66 c,                 \ ld h,(hl)
   68 03 + c,            \ ld l,e
-  C3 c, pushhl ,        \ jp pushhl
+  c3 c, pushhl ,        \ jp pushhl
   end-code
 
 ( c!a c@a )
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
+  \ credits:
+  \ code adapted from z88 camelforth.
 
 rerequire a!
 
 code c!a  ( c -- )
-  \ Store char at `a`.
-  D1 c,                 \ pop de
-  2A c, a ,             \ ld hl,(a)
+  \ store char at `a`.
+  d1 c,                 \ pop de
+  2a c, a ,             \ ld hl,(a)
   70 03 + c,            \ ld (hl),e
   jpnext                \ jp (ix)
   end-code
 
 code c@a  ( -- c )
-  \ Fetch char at `a`.
-  2A c, a ,             \ ld hl,(a)
-  6E c,                 \ ld l,(hl)
+  \ fetch char at `a`.
+  2a c, a ,             \ ld hl,(a)
+  6e c,                 \ ld l,(hl)
   26 c, 00 c,           \ ld h,0
-  C3 c, pushhl ,        \ jp pushhl
+  c3 c, pushhl ,        \ jp pushhl
   end-code
 
 ( !a+ @a+ )
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
+  \ credits:
+  \ code adapted from z88 camelforth.
 
 rerequire a!
 
 code !a+  ( u -- )
-  \ Store cell at `a` with increment.
-  D1 c,                 \ pop de
-  2A c, a ,             \ ld hl,(a)
+  \ store cell at `a` with increment.
+  d1 c,                 \ pop de
+  2a c, a ,             \ ld hl,(a)
   70 03 + c,  23 c,     \ ld (hl),e  inc hl
   70 04 + c,  23 c,     \ ld (hl),d  inc hl
   22 c, a ,  jpnext     \ ld (a),hl  jp (ix)
   end-code
 
-code @a+  ( -- u )      \ Fetch cell at `a` with increment.
-  2A c, a ,             \ ld hl,(a)
-  5E c,  23 c,          \ ld e,(hl)  inc hl
+code @a+  ( -- u )      \ fetch cell at `a` with increment.
+  2a c, a ,             \ ld hl,(a)
+  5e c,  23 c,          \ ld e,(hl)  inc hl
   56 c,  23 c,          \ ld d,(hl)  inc hl
   22 c, a ,             \ ld (a),hl
-  D5 c,  jpnext         \ push de  jp (ix)
+  d5 c,  jpnext         \ push de  jp (ix)
   end-code
 
 ( c!a+ c@a+ )
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
+  \ credits:
+  \ code adapted from z88 camelforth.
 
 rerequire a!
 
 code c!a+  ( c -- )
-  \ Store char at `a` with increment.
-  D1 c,                 \ pop de
-  2A c, a ,             \ ld hl,(a)
+  \ store char at `a` with increment.
+  d1 c,                 \ pop de
+  2a c, a ,             \ ld hl,(a)
   70 03 + c,  23 c,     \ ld (hl),e  inc hl
   22 c, a ,  jpnext     \ ld (a),hl  jp (ix)
   end-code
 
 code c@a+  ( -- c )
-  \ Fetch char at `a` with increment.
-  2A c, a ,             \ ld hl,(a)
-  5E c,  23 c,          \ ld e,(hl)  inc hl
+  \ fetch char at `a` with increment.
+  2a c, a ,             \ ld hl,(a)
+  5e c,  23 c,          \ ld e,(hl)  inc hl
   06 c, 00 c,           \ ld d,0
   22 c, a ,             \ ld (a),hl
-  D5 c,  jpnext         \ push de  jp (ix)
+  d5 c,  jpnext         \ push de  jp (ix)
   end-code
 
   \ }}} =======================================================
-  \ Common heap {{{
+  \ common heap {{{
 
 ( heap )
 
-  \ An implementation of the ANS Forth Memory-Allocation Word
-  \ Set.
+  \ an implementation of the ans forth memory-allocation word
+  \ set.
 
-  \ Adapted from code written by Gordon Charlton, 1994:
+  \ adapted from code written by gordon charlton, 1994:
   \
-  \ XXX TODO adapt
+  \ xxx todo adapt
 
-  \ This is freeware, copyright Gordon Charlton, 12th of
-  \ September 1994.  Copy and distribute it. Use it. Don't mess
-  \ with this file. Acknowledge its use. I make no guarentees
-  \ as to its fitness for any purpose. Tell me about any bugs.
-  \ Tell me how much you like it.
+  \ this is freeware, copyright gordon charlton, 12th of
+  \ september 1994.  copy and distribute it. use it. don't mess
+  \ with this file. acknowledge its use. i make no guarentees
+  \ as to its fitness for any purpose. tell me about any bugs.
+  \ tell me how much you like it.
 
   \ <gordon at charlton dot demon dot co dot uk>
 
-  \ There are five broad areas that the program covers;
+  \ there are five broad areas that the program covers;
 
-  \      1, General purpose extensions to the Forth system.
+  \      1, general purpose extensions to the forth system.
 
-  \      2, Creation of the heap and associated use of the data
+  \      2, creation of the heap and associated use of the data
   \      space.
 
-  \      3, Allocation of space from the heap.
+  \      3, allocation of space from the heap.
 
-  \      4, Releasing space back to the heap.
+  \      4, releasing space back to the heap.
 
-  \      5, Altering the size of allocated heap space.
+  \      5, altering the size of allocated heap space.
 
-  \ The ANS word set consists of three words, ALLOCATE, FREE,
-  \ and RESIZE which give the minimum functionality required to
-  \ use the heap. These are given in areas 3, 4 and 5
+  \ the ans word set consists of three words, allocate, free,
+  \ and resize which give the minimum functionality required to
+  \ use the heap. these are given in areas 3, 4 and 5
   \ respectively.
 
-  \ The heap is maintained as a doubly linked ordered circular
+  \ the heap is maintained as a doubly linked ordered circular
   \ list of nodes with an additional field noting the size of
-  \ each node and whether it is in use. The size of the heap is
-  \ specified by the constant HEAPSIZE. The constant HYSTERESIS
+  \ each node and whether it is in use. the size of the heap is
+  \ specified by the constant heapsize. the constant hysteresis
   \ controls the amount of spare space that is added to an
   \ allocation, to reduce the need for block moves during
   \ resizing.
 
-  \ Initially there is only one node, the size of the heap.
-  \ Aditional nodes are created by dividing an existing node
-  \ into two parts. Nodes are removed by marking as free, and
-  \ merging with adjoining free nodes. Nodes are altered in
+  \ initially there is only one node, the size of the heap.
+  \ aditional nodes are created by dividing an existing node
+  \ into two parts. nodes are removed by marking as free, and
+  \ merging with adjoining free nodes. nodes are altered in
   \ size by merging with a following free node, if possible,
   \ and a node being created above the new size of the node, if
   \ needed, or by allocating a new node and block moving the
   \ data field if necessary.
 
-  \ Finding an available node is done by sequential search and
-  \ comparison. The first node to be found that is large enough
-  \ is used for allocation. Each search starts from the node
+  \ finding an available node is done by sequential search and
+  \ comparison. the first node to be found that is large enough
+  \ is used for allocation. each search starts from the node
   \ most recently allocated, making this a "nextfit" algorithm.
-  \ The redundancy in the head fields is required to optimise
+  \ the redundancy in the head fields is required to optimise
   \ the search loop, as is the use of a sentinel to terminate
   \ the search once every node has been looked at, by always
-  \ succeeding. A final refinement is the use of the sign bit
+  \ succeeding. a final refinement is the use of the sign bit
   \ of the size field to mark "in-use" nodes so that they are
   \ disregarded without a separate test.
 
@@ -5130,207 +5166,207 @@ forth definitions
 vocabulary heap-voc
 heap-voc definitions
 
-  \ **1** General Purpose Extensions
+  \ **1** general purpose extensions
 
-: unique (  )  VARIABLE  ;
+: unique (  )  variable  ;
 
-  \ Defining word. Each child returns a different non-zero
-  \ number. The standard introduces the need for unique
-  \ identifiers in the form of IORs and THROW codes, but
-  \ provides no means for generating them. This does the trick.
+  \ defining word. each child returns a different non-zero
+  \ number. the standard introduces the need for unique
+  \ identifiers in the form of iors and throw codes, but
+  \ provides no means for generating them. this does the trick.
 
-0 1 2 UM/MOD NIP 1- CONSTANT maxpos
+0 1 2 um/mod nip 1- constant maxpos
 
-  \ The largest positive single length integer.
+  \ the largest positive single length integer.
 
-  \ **2** Heap Creation
+  \ **2** heap creation
 
-  \ ANSI Heap  ---  Constants
+  \ ansi heap  ---  constants
 
-256 CELLS CONSTANT heapsize
+256 cells constant heapsize
 
-  \ Number of address units of data space that the heap
+  \ number of address units of data space that the heap
   \ occupies.
 
-4 CELLS 1- CONSTANT hysteresis
+4 cells 1- constant hysteresis
 
-  \ Node lengths are rounded up according to the value of
-  \ HYSTERESIS to reduce the number of block moves during
-  \ RESIZE operations. The value of this constant must be one
+  \ node lengths are rounded up according to the value of
+  \ hysteresis to reduce the number of block moves during
+  \ resize operations. the value of this constant must be one
   \ less than a power of two and at least equal to one less
   \ than the size of a cell.
 
 unique allocationerror
 
-  \ Indicates there is less contiguous heap space available
+  \ indicates there is less contiguous heap space available
   \ than required.
 
-3 CELLS CONSTANT headsize
+3 cells constant headsize
 
-  \ A node on the heap consists of a three cell head followed
-  \ by a variable length data space. The first cell in the head
-  \ points to the next node in the heap. The second cell
+  \ a node on the heap consists of a three cell head followed
+  \ by a variable length data space. the first cell in the head
+  \ points to the next node in the heap. the second cell
   \ indicates the size of the node, and the third points to the
-  \ previous node. The second cell is negated to indicate the
-  \ node is in use. The heap consists of a doubly linked
-  \ circular list. There is no special notation to indicate an
+  \ previous node. the second cell is negated to indicate the
+  \ node is in use. the heap consists of a doubly linked
+  \ circular list. there is no special notation to indicate an
   \ empty list, as this situation cannot occur.
 
-: adjustsize ( n -- n)  headsize +  hysteresis OR  1+  ;
+: adjustsize ( n -- n)  headsize +  hysteresis or  1+  ;
 
-  \ The amount of space that is requested for a node needs
+  \ the amount of space that is requested for a node needs
   \ adjusting to include the length of the head, and to
   \ incorporate the hysteresis.
 
-0 adjustsize CONSTANT overhead
+0 adjustsize constant overhead
 
-  \ The size of the smallest possible node.
+  \ the size of the smallest possible node.
 
-  \ ANSI Heap  ---  Structure
+  \ ansi heap  ---  structure
 
-CREATE sentinel  HERE CELL+ ,  maxpos ,  0 ,  0 ,
+create sentinel  here cell+ ,  maxpos ,  0 ,  0 ,
 
-  \ A dummy node used to speed up searching the heap. The
+  \ a dummy node used to speed up searching the heap. the
   \ search, which is for a node larger than or equal to the
-  \ specified size will always succeed.  The cell that points
+  \ specified size will always succeed.  the cell that points
   \ to the next node is set up so that the there is a zero
   \ three cells ahead of where it points, where the pointer to
-  \ the previous node (ie the sentinel) should be. This is a
+  \ the previous node (ie the sentinel) should be. this is a
   \ special value that indicates the search has failed.
 
-CREATE heap  heapsize ALLOT
+create heap  heapsize allot
 
-  \ The heap is as described in HEADSIZE.
+  \ the heap is as described in headsize.
 
-VARIABLE nextnode  -->
+variable nextnode  -->
 
-  \ Searching is done using a "nextfit" algorithm. NEXTNODE
+  \ searching is done using a "nextfit" algorithm. nextnode
   \ points to the most recently allocated node to indicate
   \ where the next search is to start from.
 
 ( heap )
 
-: >size ( addr -- addr)  CELL+  ;
+: >size ( addr -- addr)  cell+  ;
 
-  \ Move from the "next" cell in the node head to the "size"
-  \ cell. Within the word set nodes are referred to by the
-  \ address of the "next" cell.  Externally they are referred
+  \ move from the "next" cell in the node head to the "size"
+  \ cell. within the word set nodes are referred to by the
+  \ address of the "next" cell.  externally they are referred
   \ to by the address of the start of the data field.
 
-: >prev ( addr -- addr)  2 CELLS +  ;
+: >prev ( addr -- addr)  2 cells +  ;
 
-  \ Move from the "next" cell to the "previous" cell.
+  \ move from the "next" cell to the "previous" cell.
 
-: init-heap (  )  heap DUP nextnode !
-  DUP DUP !
-  DUP heapsize  OVER >size !
+: init-heap (  )  heap dup nextnode !
+  dup dup !
+  dup heapsize  over >size !
   >prev !  ;
 
-  \ Initially the heap contains only one node, which is the
-  \ same size as the heap. Both the "next" cell and the
-  \ "previous" cell point to the "next" cell, as does NEXTNODE.
+  \ initially the heap contains only one node, which is the
+  \ same size as the heap. both the "next" cell and the
+  \ "previous" cell point to the "next" cell, as does nextnode.
 
 init-heap
 
-  \ **3** Heap Allocation
+  \ **3** heap allocation
 
-  \ ANSI Heap  ---  List Searching
+  \ ansi heap  ---  list searching
 
 : attach ( addr)
-  >prev @  DUP sentinel ROT !  sentinel >prev !  ;
+  >prev @  dup sentinel rot !  sentinel >prev !  ;
 
-  \ The sentinel is joined into the nodelist. The "next" field
+  \ the sentinel is joined into the nodelist. the "next" field
   \ of the node preceding the one specified (addr) is set to
   \ point to the sentinel, and the "prev" field of the sentinel
   \ to point to the node that points to the sentinel.
 
 : search  ( addr size -- addr|0)
-  >R BEGIN 2@ SWAP R@ < INVERT UNTIL
-  R> DROP  >prev @  ;
+  >r begin 2@ swap r@ < invert until
+  r> drop  >prev @  ;
 
-  \ Search the nodelist, starting at the node specified (addr),
+  \ search the nodelist, starting at the node specified (addr),
   \ for a free node larger than or equal to the specified size.
-  \ Return the address of the first node that matches, or zero
-  \ for no match. The heap structure is set up to make this a
-  \ near optimal search loop. The "size" field is next to the
+  \ return the address of the first node that matches, or zero
+  \ for no match. the heap structure is set up to make this a
+  \ near optimal search loop. the "size" field is next to the
   \ "next" field so that both can be collected in a single
-  \ operation (2@). Nodes in use have negated sizes so they
-  \ never match the search. The "previous" field is included to
+  \ operation (2@). nodes in use have negated sizes so they
+  \ never match the search. the "previous" field is included to
   \ allow the search to overshoot the match by one node and
   \ then link back outside the loop, rather than remembering
-  \ the address of the node just examined. The sentinel removes
-  \ the need for a separate test for failure. SEARCH assumes
+  \ the address of the node just examined. the sentinel removes
+  \ the need for a separate test for failure. search assumes
   \ the sentinel is in place.
 
-: detach ( addr)  DUP >prev @ !  ;
+: detach ( addr)  dup >prev @ !  ;
 
-  \ Remake the link from the node prior to the one specified to
-  \ the one specified. This will remove the sentinel if it is
-  \ attached here. (It will be.)
+  \ remake the link from the node prior to the one specified to
+  \ the one specified. this will remove the sentinel if it is
+  \ attached here. (it will be.)
 
 -->
 
 ( heap )
 
 : findspace ( size -- addr|0)  nextnode @
-           DUP      attach
-           DUP ROT  search
-           SWAP     detach  ;
+           dup      attach
+           dup rot  search
+           swap     detach  ;
 
-  \ Search the nodelist for a node larger or equal to that
-  \ specified. Return the address of a suitable node, or zero
-  \ if none found. The search starts at the node pointed to by
-  \ NEXTNODE, the sentinal temporarily attached, the search
+  \ search the nodelist for a node larger or equal to that
+  \ specified. return the address of a suitable node, or zero
+  \ if none found. the search starts at the node pointed to by
+  \ nextnode, the sentinal temporarily attached, the search
   \ proceeded with and the sentinel detached.
 
 
-  \ ANSI Heap  ---  Head Creation
+  \ ansi heap  ---  head creation
 
-: fits ( size addr -- flag)  >size @ SWAP -  overhead  <  ;
+: fits ( size addr -- flag)  >size @ swap -  overhead  <  ;
 
-  \ Returns TRUE if the size of the node specified is the same
+  \ returns true if the size of the node specified is the same
   \ as the specified size, or larger than it by less than the
-  \ size of the smallest possible node. Returns FALSE
+  \ size of the smallest possible node. returns false
   \ otherwise.
 
-: togglesize ( addr)  >size DUP @  NEGATE SWAP !  ;
+: togglesize ( addr)  >size dup @  negate swap !  ;
 
-  \ Negate the contents of the "size" field of the specified
-  \ node. If the node was available it is marked as in use, and
+  \ negate the contents of the "size" field of the specified
+  \ node. if the node was available it is marked as in use, and
   \ vice versa.
 
 : next! ( addr)  nextnode !  ;
 
-  \ Make the specified node the starting node for future
+  \ make the specified node the starting node for future
   \ searches of the node list.
 
 : sizes! ( size addr -- addr)
-  2DUP + >R  >size 2DUP @ SWAP -
-  R@ >size !   SWAP NEGATE SWAP !  R>  ;
+  2dup + >r  >size 2dup @ swap -
+  r@ >size !   swap negate swap !  r>  ;
 
-  \ Given a free node (addr), reduce its size to that specified
-  \ and mark it as in use. Start to construct a new node within
+  \ given a free node (addr), reduce its size to that specified
+  \ and mark it as in use. start to construct a new node within
   \ the specified node beyond its new length, by storing the
   \ length of the remainder of the node in the size field of
-  \ the new node. Return the address of the partially
+  \ the new node. return the address of the partially
   \ constructed node.
 
 : links! ( addr1 addr2)
-  2DUP SWAP @  2DUP  SWAP !  >prev !
-  2DUP >prev !   SWAP !  ;
+  2dup swap @  2dup  swap !  >prev !
+  2dup >prev !   swap !  ;
 
 
-  \ Addr1 is an existing node. Addr2 is the address of a new
-  \ node just above the existing node. Break the links from the
+  \ addr1 is an existing node. addr2 is the address of a new
+  \ node just above the existing node. break the links from the
   \ existing node to the next node and from the next node to
   \ the existing node and join the new node to them.
 
 
-  \ ANSI heap  ---  Node Construction  ALLOCATE
+  \ ansi heap  ---  node construction  allocate
 
-: newnode ( size addr)  TUCK sizes!  links!  ;
+: newnode ( size addr)  tuck sizes!  links!  ;
 
-  \ Given a free node at addr split it into an in-use node of
+  \ given a free node at addr split it into an in-use node of
   \ the specified size and a new free node above the in-use
   \ node.
 
@@ -5339,174 +5375,174 @@ init-heap
 ( heap )
 
 : makenode ( size addr)
-  2DUP fits IF  togglesize DROP  ELSE  newnode  THEN  ;
+  2dup fits if  togglesize drop  else  newnode  then  ;
 
-  \ Given a free node at addr make an in-use node of the
+  \ given a free node at addr make an in-use node of the
   \ specified size and free the remainder, if there is any
   \ usable space left.
 
-FORTH-WORDLIST SET-CURRENT
-: ALLOCATE ( u -- addr ior)
-  DUP 0< IF  allocationerror
-       ELSE  adjustsize
-       DUP findspace
-       DUP IF  DUP next!
-         TUCK makenode
+forth-wordlist set-current
+: allocate ( u -- addr ior)
+  dup 0< if  allocationerror
+       else  adjustsize
+       dup findspace
+       dup if  dup next!
+         tuck makenode
          headsize +  0
-         ELSE  DROP allocationerror
-         THEN
-       THEN  ;
-MEMORY-ALLOC-WORDLIST SET-CURRENT  -->
+         else  drop allocationerror
+         then
+       then  ;
+memory-alloc-wordlist set-current  -->
 
-  \ Make an in-use node with a data field at least u address
-  \ units long.  Return the address of the data field and an
-  \ ior of 0 to indicate success.  If the space is not
+  \ make an in-use node with a data field at least u address
+  \ units long.  return the address of the data field and an
+  \ ior of 0 to indicate success.  if the space is not
   \ available return any old number and an ior equal to the
-  \ constant ALLOCATIONERROR. The standard specifies that the
-  \ argument to ALLOCATE is unsigned. As the implementation
+  \ constant allocationerror. the standard specifies that the
+  \ argument to allocate is unsigned. as the implementation
   \ uses the sign bit of the size field for its own purposes
-  \ any request for an amount of space greater than MAXPOS must
-  \ fail. As this would be a request for half the addressable
+  \ any request for an amount of space greater than maxpos must
+  \ fail. as this would be a request for half the addressable
   \ memory or more this is not unreasonable.
 
 ( heap )
 
-  \ **4** Releasing Space
+  \ **4** releasing space
 
-  \ ANSI heap  ---  Head Destruction
+  \ ansi heap  ---  head destruction
 
 : mergesizes ( addr addr)
-  >size @ SWAP >size +!  ;
+  >size @ swap >size +!  ;
 
-  \ Make the size field of the node at addr1 equal to the sum
-  \ of the sizes of the two specified nodes. In usage the node
+  \ make the size field of the node at addr1 equal to the sum
+  \ of the sizes of the two specified nodes. in usage the node
   \ at addr2 will be the one immediately above addr1.
 
 : mergelinks ( addr addr)
-  @ 2DUP SWAP !  >prev !  ;
+  @ 2dup swap !  >prev !  ;
 
-  \ The node at addr2 is removed from the node list. As with
-  \ MERGESIZES the node at addr2 will be immediately above that
-  \ at addr1. Destroy the link from node1 to node2 and relink
-  \ node1 to the node above node2. Destroy the backward link
+  \ the node at addr2 is removed from the node list. as with
+  \ mergesizes the node at addr2 will be immediately above that
+  \ at addr1. destroy the link from node1 to node2 and relink
+  \ node1 to the node above node2. destroy the backward link
   \ from the node above node2 and relink it to node1.
 
 : jiggle (  )
   nextnode @ @  >prev @  next!  ;
 
-  \ There is a possibility when a node is removed from the node
-  \ list that NEXTNODE may point to it. This is cured by making
-  \ it point to the node prior to the one removed. We do not
+  \ there is a possibility when a node is removed from the node
+  \ list that nextnode may point to it. this is cured by making
+  \ it point to the node prior to the one removed. we do not
   \ want to alter the pointer if it does not point to the
   \ removed node as that could be detrimental to the efficiency
-  \ of the nextfit search algorithm. Rather than testing for
+  \ of the nextfit search algorithm. rather than testing for
   \ this condition we jiggle the pointer about a bit to settle
-  \ it into a linked node. This is done for reasons of
-  \ programmer amusement. Specifically NEXTNODE is set to point
+  \ it into a linked node. this is done for reasons of
+  \ programmer amusement. specifically nextnode is set to point
   \ to the node pointed to by the "previous" field of the node
   \ pointed to in the "next" field of the node pointed to by
-  \ NEXTNODE. Ordinarily this is a no-op (ie I am my father's
+  \ nextnode. ordinarily this is a no-op (ie i am my father's
   \ son) but when the node has had its links merged it sets
-  \ NEXTNODE to point to the node prior to the node it pointed
-  \ to (ie when I died my father adopted my son, so now my son
+  \ nextnode to point to the node prior to the node it pointed
+  \ to (ie when i died my father adopted my son, so now my son
   \ is my father's son).
 
 : merge ( addr)
-  DUP @ 2DUP mergesizes
+  dup @ 2dup mergesizes
        mergelinks  jiggle  ;
 
-  \ Combine the node specified with the node above it. Merge
+  \ combine the node specified with the node above it. merge
   \ the sizes, merge the lengths and jiggle.
 
 
-  \ ANSI Heap  ---  Node Removal    FREE
+  \ ansi heap  ---  node removal    free
 
 : ?merge ( addr1 addr2)  >size @
-  0> IF
-    DUP DUP @
-    U< IF  DUP merge  THEN
-  THEN  DROP  ;  -->
+  0> if
+    dup dup @
+    u< if  dup merge  then
+  then  drop  ;  -->
 
-  \ Merge the node at addr1 with the one above it on two
+  \ merge the node at addr1 with the one above it on two
   \ conditions, firstly that the node at addr2 is free, and
   \ secondly that the node pointed to by the next field in
   \ addr1 is actually above addr1 (ie that it does not wrap
-  \ around because it is the topmost node). In usage addr2 will
-  \ be either addr1 or the node above it. In each instance the
+  \ around because it is the topmost node). in usage addr2 will
+  \ be either addr1 or the node above it. in each instance the
   \ other affected node (either the node above addr1 or addr1)
   \ is known to be free, so no test is needed for this.
 
 ( heap )
 
-: ?mergenext ( addr)  DUP @ ?merge  ;
+: ?mergenext ( addr)  dup @ ?merge  ;
 
-  \ Merge the node following the specified node with the
+  \ merge the node following the specified node with the
   \ specified node, if following node is free.
 
-: ?mergeprev ( addr)  >prev @ DUP ?merge  ;
+: ?mergeprev ( addr)  >prev @ dup ?merge  ;
 
-  \ Merge the specified node with the one preceding it, if the
+  \ merge the specified node with the one preceding it, if the
   \ preceding node is free.
 
-FORTH-WORDLIST SET-CURRENT
-: FREE ( addr -- ior)
-  headsize -  DUP togglesize  DUP ?mergenext  ?mergeprev  0  ;
+forth-wordlist set-current
+: free ( addr -- ior)
+  headsize -  dup togglesize  dup ?mergenext  ?mergeprev  0  ;
 
-MEMORY-ALLOC-WORDLIST SET-CURRENT
+memory-alloc-wordlist set-current
 
-  \ Mark the specified in-use word as free, and merge with any
-  \ adjacent free space. As this is a standard word addr is the
-  \ address of the data field rather than the "next" field. As
+  \ mark the specified in-use word as free, and merge with any
+  \ adjacent free space. as this is a standard word addr is the
+  \ address of the data field rather than the "next" field. as
   \ there is no compelling reason for this to fail the ior is
   \ zero.
 
 
-  \ **5** Resizing Allocated Space
+  \ **5** resizing allocated space
 
-  \ ANSI Heap  ---  Node Repairing
+  \ ansi heap  ---  node repairing
 
-VARIABLE stash
+variable stash
 
-  \ The RESIZE algorithm is simplified and made faster by
-  \ assuming that it will always succeed. STASH holds the
+  \ the resize algorithm is simplified and made faster by
+  \ assuming that it will always succeed. stash holds the
   \ minimum information required to make good when it fails.
 
 : savelink ( addr)  @ stash !  ;
 
-  \ Saves the contents of the >NEXT field of the node being
-  \ RESIZEd in STASH (above).
+  \ saves the contents of the >next field of the node being
+  \ resized in stash (above).
 
-: restorelink ( addr)  stash @  SWAP !  ;
+: restorelink ( addr)  stash @  swap !  ;
 
-  \ Converse operation to SAVELINK (above).
+  \ converse operation to savelink (above).
 
-: fixprev ( addr)  DUP >prev @ !  ;
+: fixprev ( addr)  dup >prev @ !  ;
 
-  \ The >NEXT field of the node prior to the node being RESIZEd
-  \ should point to the node being RESIZEd. It may very well do
+  \ the >next field of the node prior to the node being resized
+  \ should point to the node being resized. it may very well do
   \ already, but this makes sure.
 
-: fixnext ( addr)  DUP @ >prev !  ;
+: fixnext ( addr)  dup @ >prev !  ;
 
-  \ The >PREV field of the node after the node resized may need
-  \ correcting.  This corrects it whether it needs it or not.
-  \ (Its quicker just to do it than to check first.)
+  \ the >prev field of the node after the node resized may need
+  \ correcting.  this corrects it whether it needs it or not.
+  \ (its quicker just to do it than to check first.)
 
-: fixlinks ( addr)  DUP fixprev  DUP fixnext  @ fixnext  ;
+: fixlinks ( addr)  dup fixprev  dup fixnext  @ fixnext  ;
 
-  \ RESIZE may very well merge its argument node with the
-  \ previous one. It may very well merge that with the next
-  \ one. This means we need to fix the previous one, the next
-  \ one and the one after next. To extend the metaphor started
-  \ in the description of JIGGLE (above), not only did I die,
-  \ but my father did too. This brings my grandfather into the
-  \ picture as guardian of my son. Now to confound things we
-  \ have all come back to life. I still remember who my son is,
-  \ and my father remembers who his father is. Once I know who
-  \ my father is I can tell my son that I am his father, I can
-  \ tell my father that I am his son and my grandfather who his
-  \ son is. Thankfully we are only concerned about the male
-  \ lineage here! (In fact nodes reproduce by division, like
+  \ resize may very well merge its argument node with the
+  \ previous one. it may very well merge that with the next
+  \ one. this means we need to fix the previous one, the next
+  \ one and the one after next. to extend the metaphor started
+  \ in the description of jiggle (above), not only did i die,
+  \ but my father did too. this brings my grandfather into the
+  \ picture as guardian of my son. now to confound things we
+  \ have all come back to life. i still remember who my son is,
+  \ and my father remembers who his father is. once i know who
+  \ my father is i can tell my son that i am his father, i can
+  \ tell my father that i am his son and my grandfather who his
+  \ son is. thankfully we are only concerned about the male
+  \ lineage here! (in fact nodes reproduce by division, like
   \ amoebae, which is where the metaphor breaks down -- (1)
   \ they are sexless and (2) which half is parent and which
   \ child?)
@@ -5516,44 +5552,44 @@ VARIABLE stash
 ( heap )
 
 : fixsize ( addr)
-  DUP >size @ 0>
-  IF  DUP @  2DUP <
-      IF    OVER - SWAP >size !  ELSE  2DROP  THEN
-  ELSE  DROP  THEN  ;
+  dup >size @ 0>
+  if  dup @  2dup <
+      if    over - swap >size !  else  2drop  then
+  else  drop  then  ;
 
-  \ Reconstruct the size field of a node from the address of
-  \ the head and the contents of the >NEXT field provided that
+  \ reconstruct the size field of a node from the address of
+  \ the head and the contents of the >next field provided that
   \ the node is free and it is not the topmost node in the heap
-  \ (ie there is no wraparound). Both these conditions need to
+  \ (ie there is no wraparound). both these conditions need to
   \ be true for the node to have been merged with its
   \ successor.
 
-: fixsizes ( addr)  DUP fixsize  >prev @ fixsize  ;
+: fixsizes ( addr)  dup fixsize  >prev @ fixsize  ;
 
-  \ The two nodes whose size fields may need repairing are the
-  \ one passed as an argument to RESIZE (damaged by ?MERGENEXT)
-  \ and its predecessor (damaged by ?MERGEPREV).
+  \ the two nodes whose size fields may need repairing are the
+  \ one passed as an argument to resize (damaged by ?mergenext)
+  \ and its predecessor (damaged by ?mergeprev).
 
 : repair ( addr)
-  DUP restorelink
-  DUP fixlinks  DUP fixsizes
+  dup restorelink
+  dup fixlinks  dup fixsizes
   togglesize  ;
 
-  \ Make good the damage done by RESIZE. Restore the >next
+  \ make good the damage done by resize. restore the >next
   \ field, fix the links, fix the size fields and mark the node
-  \ as in-use. Note that this may not restore the system to
-  \ exactly how it was. In particular the pointer NEXTNODE may
+  \ as in-use. note that this may not restore the system to
+  \ exactly how it was. in particular the pointer nextnode may
   \ have moved back one or two nodes by virtue of having been
-  \ JIGGLEd about if it happened to be pointing to the wrong
-  \ node. This is not serious, so I have chosen to ignore it.
+  \ jiggled about if it happened to be pointing to the wrong
+  \ node. this is not serious, so i have chosen to ignore it.
 
 
-  \ ANSI Heap  ---  Node Movement
+  \ ansi heap  ---  node movement
 
 : toobig? ( addr size -- flag)
-  SWAP  >size @  >  ;
+  swap  >size @  >  ;
 
-  \ Flag is true if the node at addr is smaller than the
+  \ flag is true if the node at addr is smaller than the
   \ specified size.
 
 -->
@@ -5561,99 +5597,99 @@ VARIABLE stash
 ( heap )
 
 : copynode ( addr1 addr2)
-  OVER >size @  headsize -
-  ROT  headsize + ROT ROT MOVE  ;
+  over >size @  headsize -
+  rot  headsize + rot rot move  ;
 
-  \ Move the contents of the data field of the node at addr1 to
-  \ the data field at addr2. Assumes addr2 is large enough. It
+  \ move the contents of the data field of the node at addr1 to
+  \ the data field at addr2. assumes addr2 is large enough. it
   \ will be.
 
 : enlarge ( addr1 size -- addr2 ior)
-  OVER  ?mergeprev
-  ALLOCATE DUP >R
-  IF  SWAP repair  ELSE  TUCK copynode  THEN  R>  ;
+  over  ?mergeprev
+  allocate dup >r
+  if  swap repair  else  tuck copynode  then  r>  ;
 
-  \ Make a new node of the size specified. Copy the data field
-  \ of addr1 to the new node. Merge the node at addr1 with the
-  \ one preceding it, if possible. This last behaviour is to
-  \ finish off removing the node at addr1. The word ADJUST
-  \ (below) starts removing the node. The node is removed
-  \ before allocation to increase the probability of ALLOCATE
-  \ succeeding. The address returned by ENLARGE is that
-  \ returned by ALLOCATE, which is that of the data field, not
-  \ the head. If the allocation fails repair the damage done by
+  \ make a new node of the size specified. copy the data field
+  \ of addr1 to the new node. merge the node at addr1 with the
+  \ one preceding it, if possible. this last behaviour is to
+  \ finish off removing the node at addr1. the word adjust
+  \ (below) starts removing the node. the node is removed
+  \ before allocation to increase the probability of allocate
+  \ succeeding. the address returned by enlarge is that
+  \ returned by allocate, which is that of the data field, not
+  \ the head. if the allocation fails repair the damage done by
   \ removing the node at addr1.
 
 
-  \ ANSI Heap  ---  Node Restructuring  RESIZE
+  \ ansi heap  ---  node restructuring  resize
 
 : adjust ( addr1 size1 -- addr2 size2)
-  adjustsize >R
+  adjustsize >r
   headsize -
-  DUP savelink
-  DUP togglesize
-  DUP ?mergenext R>  ;
+  dup savelink
+  dup togglesize
+  dup ?mergenext r>  ;
 
-  \ Addr1 points to the data field of a node, not the "next"
-  \ field. This needs correcting. Size1 also needs adjusting as
-  \ per ADJUSTSIZE. In addition it is easier to work with free
+  \ addr1 points to the data field of a node, not the "next"
+  \ field. this needs correcting. size1 also needs adjusting as
+  \ per adjustsize. in addition it is easier to work with free
   \ nodes than live ones as the size field is correct, and, as
   \ we intend to change the nodes size we will inevitably want
   \ to muck about with the next node, if its free, so lets
-  \ merge with it straight away. Sufficient information is
+  \ merge with it straight away. sufficient information is
   \ first saved to put the heap back as it was, if necessary.
-  \ Now we are ready to get down to business.
+  \ now we are ready to get down to business.
 
 -->
 
 ( heap )
 
-FORTH-WORDLIST SET-CURRENT
+forth-wordlist set-current
 
-: RESIZE ( addr1 u -- addr2 ior)
-  DUP 0<  IF  DROP allocationerror
-          ELSE  adjust  2DUP toobig?
-                IF enlarge
-                ELSE  OVER makenode headsize +  0  THEN
-          THEN  ;
+: resize ( addr1 u -- addr2 ior)
+  dup 0<  if  drop allocationerror
+          else  adjust  2dup toobig?
+                if enlarge
+                else  over makenode headsize +  0  then
+          then  ;
 
-  \ Resize the node at addr1 to the specified size. Return the
+  \ resize the node at addr1 to the specified size. return the
   \ address of the resized node (addr2) along with an ior of
-  \ zero if successful and ALLOCATIONERROR if not. Addr2 may be
-  \ the same as, or different to, addr1.  If ior is non-zero
-  \ then addr2 is not meaningful. Being a standard word the
+  \ zero if successful and allocationerror if not. addr2 may be
+  \ the same as, or different to, addr1.  if ior is non-zero
+  \ then addr2 is not meaningful. being a standard word the
   \ arguments need adjusting to the internal representation on
-  \ entry, and back again on exit. If after the first merge the
+  \ entry, and back again on exit. if after the first merge the
   \ requested size is still too large to reuse the specified
   \ node then it is moved to a larger node and the specified
-  \ node released. If, on the other hand the request is not too
+  \ node released. if, on the other hand the request is not too
   \ big for the node, then we remake the node at the right
-  \ length, and free any space at the top using MAKENODE, which
-  \ has just the right functionality. In this case the ior is
-  \ zero. As this is a standard word it takes an unsigned size
+  \ length, and free any space at the top using makenode, which
+  \ has just the right functionality. in this case the ior is
+  \ zero. as this is a standard word it takes an unsigned size
   \ argument, but excessive requests fail automatically, as
-  \ with ALLOCATE.
+  \ with allocate.
 
   \ }}} =======================================================
-  \ Specforth editor {{{
+  \ specforth editor {{{
 
 ( editor )
 
-  \ This is the editor included with Specforth (also known as
-  \ Artic Forth), a fig-Forth for ZX Spectrum. It has been
-  \ modified in order to adapt it to Solo Forth.
+  \ this is the editor included with specforth (also known as
+  \ artic forth), a fig-forth for zx spectrum. it has been
+  \ modified in order to adapt it to solo forth.
   \
-  \ Descriptions and stack comments have been added after the
-  \ Specforth manual, the Abersoft Forth manual and the book
-  \ _Systems Guide to fig-Forth_. The word `copy` has been
-  \ adapted from Abersoft Forth. The word `text` has been
+  \ descriptions and stack comments have been added after the
+  \ specforth manual, the abersoft forth manual and the book
+  \ _systems guide to fig-forth_. the word `copy` has been
+  \ adapted from abersoft forth. the word `text` has been
   \ rewritten.
 
-  \ Credits:
-  \ Specforth Editor V1.1
-  \ Copyright 1983 by Artic Computing Ltd.
-  \ Written by Chris A. Thornton, 1983
-  \ Modified by Marcos Cruz, 2015
+  \ credits:
+  \ specforth editor v1.1
+  \ copyright 1983 by artic computing ltd.
+  \ written by chris a. thornton, 1983
+  \ modified by marcos cruz, 2015
 
 only forth definitions
 
@@ -5662,34 +5698,34 @@ require command
 
 vocabulary editor  also editor definitions  hex
 
-  \ XXX OLD
-  \ XXX FIXME `1 text`, used by two words, corrupts the system.
-  \ How to get the text till the end of the line?
+  \ xxx old
+  \ xxx fixme `1 text`, used by two words, corrupts the system.
+  \ how to get the text till the end of the line?
   \ : text  ( c "text<c>" -- )
   \  here c/l 1+ blank word pad c/l 1+ cmove  ;
-  \ Parse a text string delimited by character _c_ and store it
+  \ parse a text string delimited by character _c_ and store it
   \ into `pad`, blank-filling the remainder of `pad` to `c/l`
   \ characters.
 
 : text  ( "text<eol>" -- )
   pad c/l 1+ blank  command  pad place  ;
-  \ Get the text string until end of line and store it
+  \ get the text string until end of line and store it
   \ into `pad` as a counted string, blank-filling the remainder
   \ of `pad` to `c/l` characters.
 
 : line  ( n -- a )
-  dup FFF0 and 17 ?error scr @ (line) drop  ;
-  \ Leave address _a_ of the beginning of line _n_ in the
-  \ current screen buffer.  The screen number is in `scr`.
-  \ Read the disk block from  disk if it is not already in the
+  dup fff0 and 17 ?error scr @ (line) drop  ;
+  \ leave address _a_ of the beginning of line _n_ in the
+  \ current screen buffer.  the screen number is in `scr`.
+  \ read the disk block from  disk if it is not already in the
   \ disk buffer.
 
 : #locate  ( -- n1 n2 )  r# @ c/l /mod  ;
-  \ From the cursor pointer `r#` compute the line number _n2_
+  \ from the cursor pointer `r#` compute the line number _n2_
   \ and the character offset _n1_ in line number _n2_.
 
 : #lead  ( -- a n )  #locate line swap  ;
-  \ From the cursor pointer `r#` compute the line address _a_
+  \ from the cursor pointer `r#` compute the line address _a_
   \ in the screen buffer and the offset from _a_ to the cursor
   \ location _n_.
 
@@ -5698,10 +5734,10 @@ vocabulary editor  also editor definitions  hex
   \ n = count after cursor till end of line
 
 : -move  ( a n -- )  line c/l cmove update  ;
-  \ Move a line of text from _a_ to line _n_ of current screen.
+  \ move a line of text from _a_ to line _n_ of current screen.
 
 : h  ( n -- )  line pad 1+ c/l dup pad c! cmove  ;
-  \ Hold line _n_ at `pad` (used by system more often than by
+  \ hold line _n_ at `pad` (used by system more often than by
   \ user).
 
 -->
@@ -5709,41 +5745,41 @@ vocabulary editor  also editor definitions  hex
 ( editor )
 
 : e  ( n -- )  line c/l blank update  ;
-  \ Erase line _n_ with blanks.
+  \ erase line _n_ with blanks.
 
-: s  ( n -- )  dup 1 - 0E do i line i 1+ -move -1 +loop e  ;
-  \ Spread at line _n_. Line _n_ and following lines are are
-  \ moved down one line. Line _n_ becomes blank. Line 15 is
+: s  ( n -- )  dup 1 - 0e do i line i 1+ -move -1 +loop e  ;
+  \ spread at line _n_. line _n_ and following lines are are
+  \ moved down one line. line _n_ becomes blank. line 15 is
   \ lost.
 
-: d  ( n -- )  dup h 0F dup rot do i 1+ line i -move loop e  ;
-  \ Delete line _n_ but hold it in `pad`. Line 15 becomes free
+: d  ( n -- )  dup h 0f dup rot do i 1+ line i -move loop e  ;
+  \ delete line _n_ but hold it in `pad`. line 15 becomes free
   \ as all statements move up one line.
 
 : m  ( n -- )
   r# +! cr space #lead type [char] _ emit
   #lag type #locate . drop  ;
-  \ Move the cursor by _n_ characters. The position of the
+  \ move the cursor by _n_ characters. the position of the
   \ cursor on its line is shown by a "_" (underline).
 
 : t  ( n -- )  dup c/l * r# ! dup h 0 m  ;
-  \ Type line _n_ and save in `pad`.
+  \ type line _n_ and save in `pad`.
 
 : l  ( n -- )  scr @ list 0 m  ;
-  \ List the current screen.
+  \ list the current screen.
 
 : r  ( n -- )  pad 1+ swap -move  ;
-  \ Replace line _n_ with text in `pad`.
+  \ replace line _n_ with text in `pad`.
 
 : p  ( n "text<eol>"  -- )  text r  ;
-  \ Put "text" on line _n_.
+  \ put "text" on line _n_.
 
 : i  ( n -- )  dup s r  ;
-  \ Insert text from `pad` at line _n_, moving the old line _n_
-  \ down. Line 15 is lost.
+  \ insert text from `pad` at line _n_, moving the old line _n_
+  \ down. line 15 is lost.
 
 : top  ( -- )  0 r# !  ;
-  \ Position the cursor at the start of the screen.
+  \ position the cursor at the start of the screen.
 
 -->
 
@@ -5751,7 +5787,7 @@ vocabulary editor  also editor definitions  hex
 
 : clear  ( n -- )
   scr !  10 0 do [ also forth ] i [ previous ] e loop  ;
-  \ Clear screen _n_ with blanks and select for editing.
+  \ clear screen _n_ with blanks and select for editing.
 
 : -text  ( a1 len1 a2 -- f )
   swap ?dup if
@@ -5759,7 +5795,7 @@ vocabulary editor  also editor definitions  hex
       dup c@ [ also forth ] i [ previous ] c@ -
       if  0= exhaust  else 1+  then
     loop  else  drop 0=  then  ;
-  \ Return a non-zero _f_ if string _a1 len1_ exactly
+  \ return a non-zero _f_ if string _a1 len1_ exactly
   \ match string _a2 len1_, else return a false flag.
 
 -->
@@ -5774,23 +5810,23 @@ also forth
     if  >r 2drop r> - i swap - 0 swap 0 0 exhaust  then
   loop
   2drop swap 0= swap ;  previous
-  \ Match the string _a len2_ with all strings contained in the
-  \ string _a1 len1_ If found leaves _n3_ bytes until the end
+  \ match the string _a len2_ with all strings contained in the
+  \ string _a1 len1_ if found leaves _n3_ bytes until the end
   \ of the matching string, else leaves _n4_ bytes to end of
   \ line.
 
 : 1line  ( -- f )  #lag pad count match r# +!  ;
-  \ Scan the cursor line for a match to `pad` text. Return flag
+  \ scan the cursor line for a match to `pad` text. return flag
   \ and update the cursor `r#` to the end of matching text, or
   \ to the start of the next line if no match is found.
 
 : find  ( -- )
   begin
-    03FF r# @ <
+    03ff r# @ <
     if  top pad here c/l 1+ cmove 0 error  then  1line
   until  ;
-  \ Search for a match to the string at `pad`, from the cursor
-  \ position until the end of screen.  If no match found issue
+  \ search for a match to the string at `pad`, from the cursor
+  \ position until the end of screen.  if no match found issue
   \ an error message and reposition the cursor at the top of
   \ the screen.
 
@@ -5801,29 +5837,29 @@ also forth
 : delete  ( n -- )
   >r #lag + r@ - #lag r@ negate r# +! #lead + swap cmove
   r> blank  ;
-  \ Delete _n_ characters prior to the cursor.
+  \ delete _n_ characters prior to the cursor.
 
 : n  ( -- )  find 0 m  ;
-  \ Find the next occurrence of the string found by an `f`
+  \ find the next occurrence of the string found by an `f`
   \ command.
 
 : f  ( "text<eol>" -- )  text n  ;
-  \ Search forward from the current cursor position until
-  \ string "text" is found. The cursor is left at the end of
-  \ the string and the cursor line is printed. If the string is
+  \ search forward from the current cursor position until
+  \ string "text" is found. the cursor is left at the end of
+  \ the string and the cursor line is printed. if the string is
   \ not found and error message is given and the cursor
   \ repositioned to the top of the screen.
 
 : b  ( -- )  pad c@ negate m  ;
-  \ Used after `f` to backup the cursor by the length of the
+  \ used after `f` to backup the cursor by the length of the
   \ most recent text.
 
 : x  ( "text<eol>" -- )  text find pad c@ delete 0 m  ;
-  \ Find and delete the next occurrence of the string "text".
+  \ find and delete the next occurrence of the string "text".
 
 : till  ( "text<eol>" -- )
   #lead + text 1line 0= 0 ?error #lead + swap - delete 0 m  ;
-  \ Delete on the cursor line from the cursor till the end of
+  \ delete on the cursor line from the cursor till the end of
   \ string "text".
 
 -->
@@ -5834,12 +5870,12 @@ also forth
   #lag rot over min >r r@ r# +! r@ - >r
   dup here r@ cmove here #lead + r> cmove r> cmove 0 m
   update  ;
-  \ Copy the string _ca len_ to the cursor line at the cursor
+  \ copy the string _ca len_ to the cursor line at the cursor
   \ position.
 
 : c  ( "text<eol>" -- )
   text pad count dup if  (c)  else  2drop  then  ;
-  \ Copy in "text" to the cursor line at the cursor position.
+  \ copy in "text" to the cursor line at the cursor position.
 
 also forth
 : copy  ( n1 n2 -- )
@@ -5847,31 +5883,31 @@ also forth
   do
     dup i block 2- ! 1+ update 
   loop  drop flush  ;  previous
-  \ Copy screen _n1_ to screen _n2_.
+  \ copy screen _n1_ to screen _n2_.
 
 only forth definitions decimal
 
   \ }}} =======================================================
-  \ Sample game: Siderator 2 {{{
+  \ sample game: siderator 2 {{{
 
 .( siderator )
 
-  \ XXX TODO
+  \ xxx todo
 
-\ Siderator
-\ A game for the ZX Spectrum
+\ siderator
+\ a game for the zx spectrum
 
-\ Copyright (C) 2009,2010,2013,2015 Marcos Cruz
+\ copyright (c) 2009,2010,2013,2015 marcos cruz
 \ (programandala.net)
 
-  \ History
+  \ history
 
-  \ 2015-09-02: Start, with the code of the Jupiter ACE
+  \ 2015-09-02: start, with the code of the jupiter ace
   \ version: http://programandala.net/en.program.siderator.html
 
-  \ Known bugs (or special features)
+  \ known bugs (or special features)
 
-  \ The craft's autodestruction creates a new star.
+  \ the craft's autodestruction creates a new star.
 
 only forth definitions
 
@@ -5886,7 +5922,7 @@ also siderator definitions  decimal
 
 ( siderator )
 
-  \ Game variables and constants:
+  \ game variables and constants:
 
 variable x          variable speed
 variable parsecs    variable record  record off
@@ -5894,20 +5930,20 @@ variable parsecs    variable record  record off
 999 constant max-speed
 char 5 constant left-key  char 8 constant right-key
 
-  \ System variables and addresses:
+  \ system variables and addresses:
 
-8192 constant 'screen \ XXX OLD
+8192 constant 'screen \ xxx old
 
-  \ Common words:
+  \ common words:
 
 : at  ( line col -- )  swap at-xy  ;
 : pause  ( -- )  begin  inkey  until  ;  -->
 
 ( siderator )
 
-  \ Graphics
+  \ graphics
 
-15360 constant charset  \ ROM charset
+15360 constant charset  \ rom charset
 : char>a  ( c -- a )  8 * charset +  ;
 : udg>a  ( c -- a )  128 - 8 * udg +  ;
 : char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove  ;
@@ -5953,7 +5989,7 @@ binary
 
 ( siderator )
 
-  \ Keyboard
+  \ keyboard
 
 : pressed?  ( c -- f )  inkey =  ;
 : left  ( col -- col' )  left-key pressed? + 0 max  ;
@@ -5966,7 +6002,7 @@ binary
 
 require between
 
-  \ Stars
+  \ stars
 
 4 constant #stars
 : star-coords  ( -- y x )  23 31  ;
@@ -5984,7 +6020,7 @@ require between
 
 ( siderator )
 
-  \ Craft
+  \ craft
 
 : craft-coords  ( -- y x )  10 x @  ;
 : craft-at  ( -- )  craft-coords at  ;
@@ -5995,24 +6031,24 @@ require between
 
 ( siderator )
 
-  \ Speed, parsecs, record
+  \ speed, parsecs, record
 
 : .datum  ( u -- ) 0 <# # # # #> type space  ;
 : delay  ( -- )  max-speed speed @ - 2 / 0  do  loop  ;
-: .speed  ( -- )  ." Speed:" speed @ .datum  ;
+: .speed  ( -- )  ." speed:" speed @ .datum  ;
 : +speed  ( u1 -- u2 )
   dup 10 / 1 max  parsecs @ 4 mod 0= abs *  + max-speed min  ;
 : faster  ( -- )  speed @ +speed speed !  ;
-: .parsecs  ( -- )  ." Parsecs:" parsecs @ .datum  ;
+: .parsecs  ( -- )  ." parsecs:" parsecs @ .datum  ;
 : farther  ( -- )  parsecs @ 1+ parsecs !  ;
-: .record  ( -- )  ." Record:" record @ .datum  ;
+: .record  ( -- )  ." record:" record @ .datum  ;
 : .info  ( -- )  0 dup at .speed .parsecs .record  ;
 
 -->
 
 ( siderator )
 
-  \ End
+  \ end
 
 require j  require ocr
 
@@ -6025,7 +6061,7 @@ require j  require ocr
   32 0  do  24 0 do
     i j ocr star= if  i j at-xy  star0-udg emit  then
   loop  loop  ;
-  \ XXX TODO
+  \ xxx todo
 
 -->
 
@@ -6036,26 +6072,26 @@ require j  require ocr
 : new-record  ( -- )
   parsecs @ record @ >  if  parsecs @ record !  then  ;
 : game-over  ( -- )
-  blast halt  11 dup at ." GAME OVER"
+  blast halt  11 dup at ." game over"
   new-record .info 22 0 at  colors0  ;
 
 -->
 
 ( siderator )
 
-\ Instructions
+\ instructions
 
 : about  ( -- )
-  cr ." Siderator 2: Jugdement Day"  cr
-  cr ." Copyright (C) Marcos Cruz"
+  cr ." siderator 2: jugdement day"  cr
+  cr ." copyright (c) marcos cruz"
   cr ." (programandala.net)"
-  cr ." Version: 2015-09-02"  ;
+  cr ." version: 2015-09-02"  ;
 
 : objective  ( -- )
-  cr ." Your objective is to travel as"
+  cr ." your objective is to travel as"
   cr ." much parsecs as possible"
   cr ." while dodging the stars."
-  cr ." Anyway you're supposed to die"
+  cr ." anyway you're supposed to die"
   cr ." before the 1000th parsec"
   cr ." because four digits would ruin"
   cr ." the score panel."  ;
@@ -6064,22 +6100,22 @@ require j  require ocr
 
 ( siderator )
 
-\ Instructions
+\ instructions
 
 : keys  ( -- )
-  cr ." Rudder keys: "
+  cr ." rudder keys: "
   left-key emit space right-key emit
-  cr ." Autodestruction key: Break"  ;
+  cr ." autodestruction key: break"  ;
 
 : instructions  ( -- )  objective cr keys  ;
 
-: wait  ( -- )  cr cr ." Press any key to start." pause  ;
+: wait  ( -- )  cr cr ." press any key to start." pause  ;
 
 -->
 
 ( siderator )
 
-  \ Init
+  \ init
 
 require frames@
 
@@ -6099,7 +6135,7 @@ require frames@
 
 ( siderator )
 
-  \ Main
+  \ main
 
 : run ( -- )
   init
