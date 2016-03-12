@@ -190,7 +190,7 @@ fig_parsing?: equ false
   ; true = the fig-Forth `<builds does>` pair is used
   ; false = the modern `create does>` pair is used
 
-  ; XXX OLD -- the search order is already implemented
+  ; XXX TODO
 ; fig_vocabulary?: equ true
   ; true = fig-Forth chained vocabularies
   ; false = F83 search order
@@ -225,17 +225,6 @@ fig_null_word?: equ false
 ans_forth_block_size?: equ false
   ; true = one 1024-byte block per screen ; XXX TODO
   ; false = two 512-byte blocks per screen
-
-  ; XXX TODO
-; fig_exit?: equ true
-  ; true = fig-Forth `;s` is used
-  ; false = Forth-83 and ANS Forth `exit` is used ; XXX FIXME
-
-  ; XXX TODO try false
-fig_compiler_security?: equ true
-  ; true = fig-Forth `?pairs' is used
-  ; false = no checking during compilation of control
-  ;   structures: smaller and faster code.
 
 ; ==============================================================
 ; Symbols
@@ -282,16 +271,12 @@ max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
 
-if 0 ; fig_vocabulary?
-
 ; The dummy name field is used to create a dummy header in the
 ; parameter field of vocabularies, as part of the vocabulary
 ; chaining. It contains one space, so it will never be matched
 ; by `find`.
   
 dummy_name_field: equ 0x2001 ; the lenght (0x01) and a space (0x20)
-
-endif
 
   ; XXX TODO not used?
 null_word: equ 0x2000 ; a null followed by a blank
@@ -2009,29 +1994,23 @@ question_do.equals:
 
   dw compile_,paren_question_do83_
   dw forward_mark_
-if fig_compiler_security?
   dw c_lit_
   db 3
-endif
   dw semicolon_s_
 
   _colon_header do83_,'DO83',immediate
 
   dw compile_,paren_do83_
   dw forward_mark_
-if fig_compiler_security?
   dw c_lit_
   db 3
-endif
   dw semicolon_s_
 
   _colon_header loop83_,'LOOP83',immediate
 
-if fig_compiler_security?
   dw c_lit_
   db 3
   dw question_pairs_
-endif
   dw compile_,paren_loop83_
   dw forward_resolve_
   dw semicolon_s_
@@ -3364,13 +3343,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-if 1 ; fig_exit?
   _code_header semicolon_s_,';S'
-else
-  _code_header exit_,'EXIT'
-  semicolon_s_ equ exit_
-endif
-
 
 ; doc{
 ;
@@ -3384,7 +3357,7 @@ endif
 ;
 ; }doc
 
-; XXX TODO combine this `;s` with `exit`?
+; XXX TODO combine with `exit`?
 
   ld hl,(return_stack_pointer)
   ld c,(hl)
@@ -4839,14 +4812,11 @@ question_error.no_error:
   dw semicolon_s_
 
 ; ----------------------------------------------
-if 1 ; fig_compiler_security?
-  ; XXX TODO -- remove when the security is removed
   _colon_header question_pairs_,'?PAIRS'
 
   dw not_equals_
   _question_error error.conditionals_not_paired
   dw semicolon_s_
-endif
 
 ; ----------------------------------------------
   _colon_header question_csp_,'?CSP'
@@ -7275,18 +7245,14 @@ endif
     dw hash_whiles_,off_
   endif
   dw backward_mark_ ; address to compute the backward branch
-if fig_compiler_security?
   dw one_ ; error checking number
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header then_,'THEN',immediate
 
   dw question_comp_ ; error if not compiling
-if fig_compiler_security?
   dw two_,question_pairs_ ; check for nesting error
-endif
   dw forward_resolve_
   dw semicolon_s_
 
@@ -7317,20 +7283,16 @@ endif
   _colon_header for_,'FOR',immediate
 
   dw compile_,to_r_,backward_mark_
-if fig_compiler_security?
   dw c_lit_
-  db 6 ; error checking number
-endif
+  db 6
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header step_,'STEP',immediate
 
-if fig_compiler_security?
   dw c_lit_
-  db 6 ; error checking number
+  db 6
   dw question_pairs_
-endif
   dw compile_,paren_step_,backward_resolve_
   dw semicolon_s_
 
@@ -7348,20 +7310,16 @@ endif
   dw compile_,paren_do_
 do.common:
   dw backward_mark_
-if fig_compiler_security?
   dw c_lit_
-  db 3 ; error checking number
-endif
+  db 3
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header loop_,'LOOP',immediate
 
-if fig_compiler_security?
   dw c_lit_
-  db 3 ; error checking number
+  db 3
   dw question_pairs_
-endif
   dw compile_,paren_loop_
   dw backward_resolve_
   dw semicolon_s_
@@ -7369,11 +7327,9 @@ endif
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate
 
-if fig_compiler_security?
   dw c_lit_
-  db 3 ; error checking number
+  db 3
   dw question_pairs_
-endif
   dw compile_,paren_plus_loop_
   dw backward_resolve_
   dw semicolon_s_
@@ -7381,9 +7337,7 @@ endif
 ; ----------------------------------------------
   _colon_header until_,'UNTIL',immediate
 
-if fig_compiler_security?
   dw one_,question_pairs_
-endif
   dw compile_,zero_branch_
   dw backward_resolve_
   dw semicolon_s_
@@ -7400,9 +7354,7 @@ endif
 ;
 ; }doc
 
-if fig_compiler_security?
   dw one_,question_pairs_ ; check n for error
-endif
   dw compile_,branch_
   dw backward_resolve_
   dw semicolon_s_
@@ -7476,9 +7428,7 @@ endif
   dw compile_,zero_branch_
 if.do:
   dw forward_mark_
-if fig_compiler_security?
   dw two_ ; error checking number
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7494,12 +7444,6 @@ endif
 ; ----------------------------------------------
   _colon_header else_,'ELSE',immediate
 
-  ; XXX FIXME Pasmo bug?
-  ; The system crashes when conditional compilation
-  ; is used here, in any combination. Very strange.
-
-if fig_compiler_security?
-
   dw two_ ; error checking number
   dw question_pairs_
   dw compile_,branch_
@@ -7509,15 +7453,6 @@ if fig_compiler_security?
   dw then_
   dw two_ ; error checking number
   dw semicolon_s_
-
-else
-
-  dw compile_,branch_
-  dw forward_mark_
-  dw then_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
 if 0 ; whiles?
@@ -8133,8 +8068,6 @@ do_two_constant:
   add hl,sp
   jp two_fetch.hl
 
-if 1 ; fig_exit?
-
 ; ----------------------------------------------
   _colon_header exit_,'EXIT'
 
@@ -8150,7 +8083,7 @@ if 1 ; fig_exit?
 ;
 ; }doc
 
-; XXX TODO combine this `exit` with `;s`?
+; XXX TODO combine with `;s`?
 
   dw r_drop_
   dw semicolon_s_
@@ -8173,30 +8106,65 @@ if 1 ; fig_exit?
   dw question_branch_,exit_pfa
   dw semicolon_s_
 
-else
+; ----------------------------------------------
+  _colon_header case_,'CASE',immediate
+
+  ; XXX TODO move to the disk
+  ;
+  ; XXX TODO use the simpler code from the ANS Forth
+  ; documentation.
+
+  dw question_comp_
+  dw csp_,fetch_,store_csp_
+  dw c_lit_
+  db 0x04
+  dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header question_exit_,'?EXIT'
+  _colon_header of_,'OF',immediate
 
-; doc{
-;
-; ?exit  ( f -- ) ( R: a | -- a | )
-;
-; If _f_ is non-zero, return control to the calling definition,
-; specified by the address on the return stack.
-;
-; `?exit` is not intended to be used within a do-loop. Use `if
-; unloop exit then` instead.
-;
-; }doc
+  dw c_lit_
+  db 0x04
+  dw question_pairs_
+  dw compile_,over_
+  dw compile_,equals_
+  dw compile_,zero_branch_
+  dw forward_mark_
+  dw compile_,drop_
+  dw c_lit_
+  db 0x05
+  dw semicolon_s_
 
-  pop hl
-  ld h,a
-  or l
-  jp nz,exit_pfa
-  jp_next
+; ----------------------------------------------
+  _colon_header endof_,'ENDOF',immediate
 
-endif
+  dw c_lit_
+  db 0x05
+  dw question_pairs_
+  dw compile_,branch_
+  dw forward_mark_
+  dw swap_
+  dw two_ ; error checking number
+  dw then_
+  dw c_lit_
+  db 0x04
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header endcase_,'ENDCASE',immediate
+
+  dw c_lit_
+  db 0x04
+  dw question_pairs_
+  dw compile_,drop_
+endcase.compile_then: ; begin
+  dw sp_fetch_,csp_,fetch_,equals_ ; while
+  dw question_branch_,endcase.end
+  dw two_,then_
+  dw branch_,endcase.compile_then ; repeat
+endcase.end:
+  dw csp_,store_
+  dw semicolon_s_
 
 ; ----------------------------------------------
   _code_header inkey_,'INKEY'
@@ -8255,15 +8223,6 @@ question_next_screen.end:
 ; ----------------------------------------------
   _colon_header question_backslash_,'?\',immediate
 
-; doc{
-;
-; ?\  ( f "ccc<eol> -- )
-;
-; If _f_ is not false, parse and discard the rest of the parse
-; area. This word is used for conditional compilation.
-;
-; }doc
-
   dw zero_branch_,question_backslash.end
   dw backslash_
 question_backslash.end:
@@ -8271,14 +8230,6 @@ question_backslash.end:
 
 ; ----------------------------------------------
   _colon_header backslash_,'\',immediate
-
-; doc{
-;
-; \  ( -- )
-; 
-; Parse and discard the rest of the parse area.
-;
-; }doc
 
   dw to_in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_
@@ -8343,11 +8294,11 @@ endif
 
   ; Remove the call to this routine:
   ld hl,cold_start ; address of the call to this routine
-  ld (hl),0 ; nop
+  ld (hl),0 ; noop
   inc hl
-  ld (hl),0 ; nop
+  ld (hl),0 ; noop
   inc hl
-  ld (hl),0 ; nop
+  ld (hl),0 ; noop
   ret
 
   org names_bank_address

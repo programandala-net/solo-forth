@@ -153,7 +153,7 @@ decode dump
   [char] ' (s)  ; immediate
 
   \ }}} =======================================================
-  \ Stack manipulation {{{
+  \ Data stack {{{
 
 ( -rot )
 
@@ -183,6 +183,58 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
 end-code
 
   \ }}} =======================================================
+  \ Return stack {{{
+
+( n>r nr> )
+
+  \ XXX TODO
+
+code n>r  ( x0..xn n -- ) ( R: -- x0..xn n )
+
+  \ exx
+  \ pop bc
+  \ ld (count),bc
+  \ do:
+  \ ld a,b
+  \ or c
+  \ jp z,end
+  \ pop de
+  \ dec hl
+  \ ld (hl),d
+  \ dec hl
+  \ ld (hl),e
+  \ jp do
+  \ count: equ $+1
+  \ ld hl,0
+  \ ld (rp),hl
+  \ end:
+  \ exx
+  \ next,
+
+  end-code
+
+code nr>  ( -- x0..xn n ) ( R: x0..xn n -- )
+
+  \ exx
+  \ ld hl,(rp)
+  \ ld b,(hl)
+  \ inc hl
+  \ ld c,(hl)
+  \ inc hl
+  \ do:
+  \ ld a,b
+  \ or c
+  \ jp z,end
+  \ ld e,(hl)
+  \ inc hl
+  \ ld d,(hl)
+  \ inc hl
+  \ push de
+  \ jp do
+
+  end-code
+
+  \ }}} =======================================================
   \ Graphics {{{
 
 ( pixel )
@@ -200,24 +252,6 @@ code pixel  ( xc yc -- n a )
   40 05 + c,              \ ld b,l ; b=y
   48 03 + c,              \ ld c,e ; c=x
   CD c, pixel-addr ,      \ call pixel-addr
-  C1 c,                   \ pop bc
-  16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
-  pushde,                 \ jp pushde
-  end-code
-
-( pixel-add )  \ The ROM routine \ XXX OLD
-
-code pixel-add  ( xc yc -- n a )
-  \ Address of a pixel in the screen.
-  \ x = 0..255
-  \ y = 0..175
-  \ n = position of the pixel in the byte address 0..7
-  \ a = address of the pixel byte in the screen bitmap
-  E1 c,  D1 c,            \ pop hl / pop de
-  C5 c,                   \ push bc
-  40 05 + c,              \ ld b,l ; b=y
-  48 03 + c,              \ ld c,e ; c=x
-  CD c, 22AA ,            \ call pixel-add ; ROM routine
   C1 c,                   \ pop bc
   16 c, 0 c,  58 07 + c,  \ ld d,0 / ld e,a
   pushde,                 \ jp pushde
@@ -425,13 +459,19 @@ code bleep  ( n1 n2 -- )
 
 ( within between )
 
+  \ [Code from DZX-Forth.]
+
 : within  ( n1|u1 n2|u2 n3|u3 -- f )
   over - >r - r> u<  ;
+
+exit
 
 : between  ( n1|u1 n2|u2 n3|u3 -- flag )
   over - -rot - u< 0=  ;
 
 ( d0= d0< d< du< dmin dmax )
+
+  \ [Code from DZX-Forth.]
 
 : d0=  ( d -- f )  or 0=  ;
 
@@ -453,20 +493,18 @@ code bleep  ( n1 n2 -- )
 
 ( lshift )
 
-  \ XXX TODO
-
 code lshift  ( x1 u -- x2 )
 
   \ [Code from DZX-Forth.]
 
-  \ pop de
-  \ pop hl
-  \ inc e
-\ lshift_.1:
-  \ dec e
-  \ jp z,push_hl
-  \ add hl,hl
-  \ jp lshift_.1
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
+  29 c,           \ add hl,hl
+  C3 c, ,         \ jp begin
 
 end-code
 
@@ -682,9 +720,11 @@ require hex.  require ascii-type
     8 + loop
   else  2drop  then  drop  ;
 
-( decode -- variables, indentation and pause control )
+( decode )
 
   \ [Code adapted and improved from Afera.]
+
+  \ Variables, indentation and pause control
 
 forth definitions decimal
 
@@ -698,7 +738,9 @@ variable decode-address  \ in the word being decoded
 
 -->
 
-( decode -- special cases )
+( decode )
+
+  \ Special cases
 
 : decode-compile    ( a1 -- a2 )  2+ dup @ 2+ pfa>nfa id.  ;
 
@@ -713,7 +755,11 @@ variable decode-address  \ in the word being decoded
 
 -->
 
-( decode -- special cases dispatcher )
+( decode )
+
+  \ Special cases dispatcher
+
+require case
 
 : decode-special  ( a1 -- a1 | a2 )
   dup @
@@ -731,7 +777,9 @@ variable decode-address  \ in the word being decoded
 
 -->
 
-( decode -- checks of the main code )
+( decode )
+
+  \ Checks of the main code
 
 : decode-end?  ( cfa -- f )
   \ Is the given cfa the end of a definition?
@@ -743,7 +791,9 @@ variable decode-address  \ in the word being decoded
 
 -->
 
-( decode -- main code )
+( decode )
+
+  \ Main code
 
 : (decode)  ( pfa --- )
 
@@ -765,7 +815,9 @@ variable decode-address  \ in the word being decoded
     repeat  indent 2+ pfa>nfa id. \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
 
-( decode -- interface )
+( decode )
+
+  \ Interface
 
 : decode-usage  ( -- )
      \  <------------------------------>
@@ -1079,7 +1131,7 @@ code i'  ( -- x ) ( R: loop-sys -- loop-sys ) \ ANS Forth
   2A c, rp ,  \ ld hl,(return_stack_pointer)
   23 c,       \ inc hl
   23 c,       \ inc hl
-  C3 c, fetchhl , \ jp fetchhl
+  fetchhl,    \ jp fetchhl
 
   end-code
 
@@ -1093,9 +1145,87 @@ code j'  ( -- x )
   2A c, rp ,      \ ld hl,(return_stack_pointer)
   11 c, 3 cells , \ ld de,3*cell
   19 c,           \ add hl,de
-  C3 c, fetchhl , \ jp fetchhl
+  fetchhl,        \ jp fetchhl
 
   end-code
+
+( case )  \ ANS Forth version
+
+0 constant case immediate  \ init count of ofs
+
+: of  ( Compile-time: #of -- orig #of+1 ) ( Run-time: x -- )
+  1+ >r
+  postpone over  postpone =   \ copy and test case value
+  postpone if                 \ add orig to control flow stack 
+  postpone drop               \ discards case value if = 
+  r>  ; immediate
+
+: endof ( orig1 #of -- orig2 #of )
+  >r  postpone else  r>  ; immediate
+
+: endcase  ( orig1..orign #of -- )
+  \ XXX TODO use `?do` when available
+  postpone drop  \ discard case value 
+  dup   if    0 do  postpone then  loop
+        else  2drop
+        then  ; immediate
+
+( case )  \ Abersoft Forth version
+
+  \ This is the `case` provided by Abersoft Forth, translated
+  \ from the Z80 disassembly, adapted and commented.
+
+  \ XXX TODO check why `0branch >mark` is used instead of `if`
+  \ XXX TODO check if it's ANS Forth compatible
+
+: case
+  \ Compilation: ( -- case-id )
+  \ Runtime: ( x -- )
+  ?comp csp @ !csp 4  ; immediate
+
+: of
+  \ Compilation: ( case-id -- of-id )
+  \ Run-time: ( x -- )
+  4 ?pairs
+  postpone over  postpone =  postpone 0branch >mark
+  postpone drop  5  ; immediate
+
+: endof
+  \ Compilation: ( of-id -- case-id )
+  \ Run-time: ( -- )
+  5 ?pairs
+  postpone branch  >mark
+  swap 2  postpone then  4  ; immediate
+
+: endcase
+  \ Compilation: ( orig1..orign case-id -- )
+  \ Run-time: ( x -- )
+  4 ?pairs
+  postpone drop
+  begin  sp@ csp @ =  while  2 postpone then  repeat
+  csp !  ;  immediate
+
+( ?dov dov loopv +loopv )
+
+  \ [Code from vForth.]
+
+  \ XXX TODO adapt
+
+: dov  compile (do) csp @ !csp here 3 ;
+
+: ?dov
+  compile 2dup  compile (do)  compile <>
+  postpone if
+  2drop here swap 1 6  ; immediate
+
+: (resolve)
+  begin  sp@ csp @ -  while  2 postpone then  repeat  csp !  ;
+
+: loopv
+  postpone loop (resolve)  ;
+
+: +loopv
+  postpone +loop (resolve)  ;
 
 ( case: associative: )
 
@@ -1145,51 +1275,6 @@ case: zx  ( n -- )  zx0 zx1 zx2 ;
 
 3 associative: unzx  ( value -- n )  ' zx0 , ' zx1 , ' zx2 ,
 
-( Abersoft Forth case )
-
-  \ This is the `case` provided by Abersoft Forth. It's too
-  \ complex and not ANS Forth compliant.
-
-  \ XXX TODO document
-
-: case  ( x -- )
-  ?comp csp @ !csp 4  ; immediate
-: of  ( x -- )
-  4 ?pairs
-  postpone over  postpone =  postpone 0branch >mark
-  postpone drop 5  ; immediate
-: endof  ( -- )
-  5 ?pairs
-  postpone branch  >mark
-  swap 2  postpone then  4  ; immediate
-: endcase  ( -- )
-  4 ?pairs
-  postpone drop
-  begin  sp@ csp @ =  while  2 postpone then  repeat
-  csp !  ;  immediate
-
-
-( ?dov dov loopv +loopv )
-
-  \ [Code from vForth.]
-
-  \ XXX TODO adapt
-
-: dov  compile (do) csp @ !csp here 3 ;
-
-: ?dov
-  compile 2dup  compile (do)  compile <>
-  postpone if
-  2drop here swap 1 6  ; immediate
-
-: (resolve)
-  begin  sp@ csp @ -  while  2 postpone then  repeat  csp !  ;
-
-: loopv
-  postpone loop (resolve)  ;
-
-: +loopv
-  postpone +loop (resolve)  ;
 
   \ }}} =======================================================
   \ Time {{{

@@ -186,5 +186,10 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
   base switch
 ----
 
+.2015-08-12:
 
+Fix: `cold` does not restores the dictionary.
 
+Change: remove the control structure checking (`?pairs`).
+
+Fix: crash at the start! Why? What did I change?
