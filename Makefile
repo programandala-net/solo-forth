@@ -153,6 +153,7 @@ backup:
 		old/* \
 		solo_forth*.fsb \
 		solo_forth*.bas \
+		solo_forth*.mgt \
 		solo_forth*.z80s
 
 ################################################################
@@ -165,3 +166,7 @@ backup:
 # 2015-06-29: Improvement: The source filenames are
 # configurable. This makes it easier to try old versions, for
 # debugging.
+#
+# 2015-07-22: Added the MGT disk images to the backup. Sometimes
+# it's useful to test and old version without recompiling the
+# old sources.

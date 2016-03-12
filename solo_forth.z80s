@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-2015072202
+; Version A-00-201507222045
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -48,6 +48,8 @@
 ; - fix: `error>line`.
 ; - change: `?terminal` does not check the Edit key.
 ; - change: `sp!` and `rp!` use TOS.
+; - change: the names bank option is definitive.
+; - fix: 'c!n` did `c@n` instead!
 
 ; ==============================================================
 ; Acknowledgments
@@ -236,24 +238,18 @@ fig_parsing?: equ false
   ; true = the fig-Forth parsing method is used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
 
-  ; XXX FIXME Pasmo gives strange errors (symbols not found)
-  ; when this config flag is used in nested `if`. A literal flag
-  ; (0/1) is used instead, with the flag name in a comment; it
-  ; is changed with a text substitution, and Vim mappings
-  ; are created to turn it on an off.
-;names_in_memory_bank?           equ true
-  ; true = name fields and link fields are stored in a memory
-  ; bank page, saving dictionary space.
-  ; false = name fields and link fields are stored in the
-  ; dictionary.
-
 ;fig_does?: equ true
   ; true = the fig-Forth `<builds does>` pair is used
   ; false = the modern `create does>` pair is used
 
+  ; XXX TODO
+; fig_vocabulary?: equ true
+  ; true = fig-Forth chained vocabularies
+  ; false = F83 search order
+
 fig_null_word?: equ false
   ; true = the fig-Forth null word is used to detect the end of
-  ; the buffers: a word of one zero character. a null character
+  ; the buffers: a word of one zero character (a null character)
   ; is at the end of the buffers. the scanning words (old
   ; `enclose`, new `skip` and `scan`) must treat the null
   ; character as a special unconditional delimiter, and do other
@@ -303,9 +299,15 @@ blocks_per_screen:                equ 0x02
 screens_per_disk:                 equ 0x030C ; 780 KiB per disk in G+DOS
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
+max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
+bytes_per_user_variables:         equ 0x40
 
-name_bound_bit:       equ 7
-name_bound_bit_mask:  equ 1 shl name_bound_bit
+if 0 ; XXX OLD -- fig-Forth header
+  name_bound_bit:       equ 7
+  name_bound_bit_mask:  equ 1 shl name_bound_bit
+else
+  name_bound_bit_mask:  equ 0
+endif
 precedence_bit:       equ 6
 precedence_bit_mask:  equ 1 shl precedence_bit
 smudge_bit:           equ 5
@@ -316,20 +318,14 @@ max_word_length_bit_mask:       equ max_word_length
 
 csb_size:                       equ 256 ; circular string buffer
 
-; The dummy name field is used to create a dummy header
-; in the parameter field of vocabularies, as part of the
-; vocabulary chaining. It contains one space,
-; so it will never be matched by `find`.
-if 1 ; names_in_memory_bank?
-  ; No "name bound bit" needed in this header format,
-  ; just the lenght (0x01) and a space (0x20).
-  dummy_name_field: equ 0x2001
-else
-  ; The "name bound bit" is needed in the original header format,
-  ; lenght (0x01 + 0x80) and a space (0x20 + 0x80).
-  dummy_name_field: equ 0xA081 ; original
-endif
+; The dummy name field is used to create a dummy header in the
+; parameter field of vocabularies, as part of the vocabulary
+; chaining. It contains one space, so it will never be matched
+; by `find`.
+  
+dummy_name_field: equ 0x2001 ; the lenght (0x01) and a space (0x20)
 
+  ; XXX TODO not used?
 null_word: equ 0x2000 ; a null followed by a blank
 
 ; Memory banks
@@ -442,7 +438,7 @@ rom_stack_fetch:                 equ 0x2BF1
   ; not the defined first, the compilation halts with error "offset out of
   ; range", though they are fine in the symbols file.
 
-sys_errnr:         equ 0x5C3A ; IY index
+sys_errnr:         equ 0x5C3A ; used as IY index by the OS
 
 sys_attr_p:        equ 0x5C8D
 sys_bankm:         equ 0x5B5C
@@ -488,52 +484,39 @@ _header: macro _base_label,_name,_is_immediate
     flags: defl flags | precedence_bit_mask ; add precedence bit
   endif
 
-  if 1 ; names_in_memory_bank?
+  ; In dictionary:
 
-    ; In dictionary:
+  _base_label: ; code field address
+  local _dp_backup
+  local _name_address
+  local _address_after_name
+  _dp_backup: equ $
 
-    _base_label: ; code field address
-    local _dp_backup
-    local _name_address
-    local _address_after_name
-    _dp_backup: equ $
+  ; In memory bank:
 
-    ; In memory bank:
+  org np
+  _base_label##cfap:
+    dw _base_label ; code field address pointer
+  _base_label##lfa: ; link field address
+    dw previous_nfa ; link field
+  _base_label##nfa: ; name field address
+  flags: defl name_bound_bit_mask ; XXX OLD
+    if not nul _is_immediate
+      flags: defl flags | precedence_bit_mask ; add precedence bit
+    endif
+    db _address_after_name-_name_address+flags ; length
+  _name_address: equ $
+    db _name ; name field
+  _address_after_name: equ $
+  np: defl $ ; new value of the names pointer
 
-    org np
-    _base_label##cfap:
-      dw _base_label ; code field address pointer
-    _base_label##lfa: ; link field address
-      dw previous_nfa ; link field
-    _base_label##nfa: ; name field address
-    flags: defl name_bound_bit_mask ; XXX OLD
-      if not nul _is_immediate
-        flags: defl flags | precedence_bit_mask ; add precedence bit
-      endif
-      db _address_after_name-_name_address+flags ; length
-    _name_address: equ $
-      db _name ; name field
-    _address_after_name: equ $
-    np: defl $ ; new value of the names pointer
+  ; Update the names pointer:
+  org names_pointer
+  dw np ; overwrite names_pointer
+  dw np ; overwrite names_pointer_init_value
 
-    ; Update the names pointer:
-    org names_pointer
-    dw np ; overwrite names_pointer
-    dw np ; overwrite names_pointer_init_value
-
-    ; In dictionary:
-    org _dp_backup
-
-  else
-
-    _base_label##nfa: ; name field address
-      db _base_label##lfa-_base_label##nfa-1+flags ; length and flags byte
-      db _name ; name field
-    _base_label##lfa: ; link field address
-      dw previous_nfa ; link field
-    _base_label: ; code field address
-
-  endif
+  ; In dictionary:
+  org _dp_backup
 
   previous_nfa: defl _base_label##nfa
 
@@ -805,9 +788,15 @@ fence_init_value:
 dp_init_value:
   ; Location: `0x18 +origin`
   dw dictionary_pointer_after_cold
+
+if 0 ; fig_vocabulary?
 voc_link_init_value:
   ; Location: `0x1A +origin`
   dw forth_vocabulary_link
+else
+  ; XXX TODO move
+  dw 0x0000 ; XXX free
+endif
 
   ; XXX TODO this four user variables do not need init and this
   ; space could be saved; they are included here because `#tib`
@@ -830,9 +819,7 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   dw 0
 
-if 1 ; names_in_memory_bank?
-
-  np: defl names_bank_address+1
+np: defl names_bank_address+1
 
 names_pointer:
   ; First free address in the names bank.
@@ -846,12 +833,14 @@ names_pointer_init_value:
   ; by the `_header` macro.
   dw np
 
-endif
-
 ; ==============================================================
 ; User variables
 
 user_variables:
+
+  ; Note: the first eight user variables are initialized with
+  ; default values by `cold`.  They must be in the same order
+  ; than their default variables.
 
 s0_value: ; +0x00
   dw 0x0000
@@ -867,8 +856,15 @@ fence_value: ; +0x0A
   dw 0x0000
 dp_value: ; +0x0C
   dw 0x0000
+
+if 0 ; fig_vocabulary?
 voc_link_value: ; +0x0E
   dw 0x0000
+else
+  ; XXX TODO move
+  dw 0x0000 ; +0x0E free
+endif
+
 blk_value: ; +0x10
   dw 0x0000
 in_value: ; +0x12
@@ -879,7 +875,7 @@ scr_value: ; +0x16
   dw 0x0000
 number_tib_value: ; +0x18
   dw 0x0000
-context_value: ; +0x1A ; XXX TODO use more space, for `order`
+hld_value: ; +0x1A
   dw 0x0000
 current_value: ; +0x1C
   dw 0x0000
@@ -895,20 +891,25 @@ csp_value: ; +0x26
   dw 0x0000
 r_hash_value: ; +0x28 ; XXX OLD -- used by the editor, remove
   dw 0x0000
-hld_value: ; +0x2A
-  dw 0x0000
+
+context_value: ; +0x2A..+0x38
+
+if 0 ; fig_vocabulary?
+  ds max_search_order*2
+else
+  dw forth_pfa
+  dw forth_pfa
+  ds (max_search_order-2)*2
+endif
+  dw 0x0000 ; end of search order, required by `find` \ XXX TODO improve and remove
 
   ; Unused
   dw 0x0000
   dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
-  dw 0x0000
+
+if ($-user_variables) != bytes_per_user_variables
+  .error "The space reserved for user variables is wrong."
+endif
 
 ; ==============================================================
 ; Stacks and buffers
@@ -1863,16 +1864,17 @@ digit.test_value:
 ; ----------------------------------------------
   _code_header paren_find_,'(FIND)'
 
-if 1 ; names_in_memory_bank?
-
 ; doc{
 ;
 ; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
 ;
+; Find the definition named in the counted string at _ca_,
+; starting at _nfa_. If the definition is not found, return _ca_
+; and zero.  If the definition is found, return its _cfa_. If
+; the definition is immediate, also return one (1); otherwise
+; also return minus-one (-1).
+;
 ; }doc
-
-  ; XXX Note: this version uses the name fields stored in a
-  ; memory bank, with a different format.
 
   ld e,names_bank
   call bank.e ; page the memory bank
@@ -1961,87 +1963,6 @@ paren_find.nfa_backup: equ $+1
   ld de,(paren_find.string_address)
   ld hl,0
   jp paren_find.end
-
-
-else
-
-; doc{
-;
-; (find)  ( ca nfa --- ca 0 | cfa 1 | cfa -1 )
-;
-; }doc
-
-  ; XXX Note: this version uses the new format name field,
-  ; and is used by the new version of `find`, written after
-  ; Forth-83.
-
-  ld (ip_backup),bc ; save Forth IP
-  pop de ; nfa
-  pop hl ; string address
-  ld (paren_find.string_address),hl
-
-paren_find.begin:
-  ; Compare the string with a new word.
-  ; de = nfa
-  ld (paren_find.nfa_backup),de ; save for later
-paren_find.string_address: equ $+1
-  ld hl,0 ; string address
-  ld a,(de) ; name field length byte
-  ld c,a    ; save for later
-  and max_word_length_bit_mask  ; length
-  cp (hl)
-  jr nz,paren_find.not_a_match ; lengths differ
-
-  ; Lengths match, compare the characters.
-  ld b,a ; length, used as count
-paren_find.compare_next_char:
-  inc hl ; next character in string
-  inc de ; next character in name field
-  ld a,(de)
-  cp (hl)
-  jr nz,paren_find.not_a_match ; no match
-  djnz paren_find.compare_next_char ; match so far, loop again
-
-  ; The string matches.
-  ; de = address of the last char of the name field
-  ; c = name field length byte
-  inc de ; de = lfa
-  inc de
-  inc de ; de = cfa
-  ld hl,1 ; 1=immediate word
-  ld a,c ; name field length byte
-  ld bc,(ip_backup) ; restore Forth IP
-  and precedence_bit_mask ; immediate word?
-  jp nz,push_de_hl
-  ; non-immediate word
-  dec hl
-  dec hl ; -1 = non-immediate word
-  jp push_de_hl
-
-paren_find.not_a_match:
-  ; Not a match, try next one.
-paren_find.nfa_backup: equ $+1
-  ld hl,0 ; nfa
-  ld a,c ; length byte
-  and max_word_length_bit_mask  ; actual length
-  ld c,a ; actual length
-  inc c ; plus the length byte
-  ld b,0
-  add hl,bc ; hl = lfa
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  ld a,d
-  or e ; end of dictionary?
-  jp nz,paren_find.begin ; if not, continue
-
-  ; No match found, return.
-  ld bc,(ip_backup) ; restore Forth IP
-  ld de,(paren_find.string_address)
-  ld hl,false
-  jp push_de_hl
-
-endif
 
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
@@ -2987,8 +2908,6 @@ endif
   ld h,a
   jp push_hl
 
-if 1 ; names_in_memory_bank?
-
 ; ----------------------------------------------
   _constant_header np_,'NP'
 
@@ -3031,8 +2950,6 @@ if 1 ; names_in_memory_bank?
 
   dw np_fetch_,store_,two_,np_,plus_store_
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_header sp_fetch_,'SP@'
@@ -3152,22 +3069,21 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _code_header leave_,'LEAVE'
+  _code_header exhaust_,'EXHAUST'
 
 ; doc{
 ;
-; leave  ( -- ) ( R: x1 x2 -- x1 x1 ) \ fig-Forth, C
+; exhaust  ( -- ) ( R: n1 n2 -- n2 n2 )
 ;
-; x1 = loop index
-; x2 = loop limit
+; n1 = loop limit
+; n2 = loop index
 ;
 ; Force termination of a do-loop at the next opportunity by
 ; setting the loop limit equal to the current value of the
 ; index. The index itself remains unchanged, and execution
 ; proceeds normally until `loop` or `+loop` is encountered.
 ;
-; Note: This is the fig-Forth version of `leave`, not the ANS
-; Forth version.
+; Note: This is the equivalent of fig-Forth's `leave`.
 ;
 ; }doc
 
@@ -3179,6 +3095,30 @@ endif
   ld (hl),e
   inc hl
   ld (hl),d
+  _jp_next
+
+; ----------------------------------------------
+  _code_header question_exhaust_,'?EXHAUST'
+
+; doc{
+;
+; ?exhaust  ( f -- ) ( R: n1 n2 -- n1 n2 | n2 n2 )
+;
+; n1 = loop limit
+; n2 = loop index
+; 
+; If _f_ is not false, force termination of a do-loop at the
+; next opportunity by setting the loop limit equal to the
+; current value of the index. The index itself remains
+; unchanged, and execution proceeds normally until `loop` or
+; `+loop` is encountered.
+;
+; }doc
+
+  pop hl
+  ld h,a
+  or l
+  jp nz,exhaust_pfa
   _jp_next
 
 ; ----------------------------------------------
@@ -3583,7 +3523,9 @@ store.de_into_hl_pointer:
 
   dw question_exec_
   dw store_csp_
+if 0 ; fig_vocabulary?
   dw current_,fetch_,context_,store_ ; XXX OLD -- why fig-Forth does this?
+endif
   dw header_,right_bracket_
   dw paren_semicolon_code_
 do_colon:
@@ -3606,7 +3548,9 @@ do_colon:
   ; XXX TODO move to the disk? problem: do_colon
 
   dw question_exec_
+if 0 ; fig_vocabulary?
   dw current_,fetch_,context_,store_ ; XXX TODO why fig-Forth does this in `:`?
+endif
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
@@ -3771,6 +3715,11 @@ do_user:
   dw screens_per_disk
 
 ; ----------------------------------------------
+  _constant_header hash_vocs_,'#VOCS'
+
+  dw max_search_order
+
+; ----------------------------------------------
   _colon_header plus_origin_,'+ORIGIN'
 
   dw lit_,origin,plus_
@@ -3834,12 +3783,23 @@ do_user:
   db 0x0C
 
 ; ----------------------------------------------
+
+if 0 ; fig_vocabulary?
+
   _user_variable_header voc_link_,'VOC-LINK'
 
   ; XXX TODO why this is a user variable?
   ; XXX TODO normal variable
 
   db 0x0E
+
+else
+
+  _variable_header voc_link_,'VOC-LINK'
+
+  dw assembler_vocabulary_link ; link to the latest vocabulary defined
+
+endif
 
 ; ----------------------------------------------
   _user_variable_header blk_,'BLK'
@@ -3874,7 +3834,7 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header context_,'CONTEXT'
 
-  db 0x1A
+  db 0x2A
 
 ; ----------------------------------------------
   _user_variable_header current_,'CURRENT'
@@ -3914,7 +3874,7 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header hld_,'HLD'
 
-  db 0x2A
+  db 0x1A
 
 ; ----------------------------------------------
   _colon_header recurse_,'RECURSE',immediate
@@ -4156,22 +4116,7 @@ question_dup.end:
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
-
   _code_alias_header lfa_to_nfa_,'LFA>NFA',,two_plus_
-
-else
-
-  _code_header lfa_to_nfa_,'LFA>NFA'
-  pop hl
-lfa_to_nfa.do:
-  dec hl
-  bit name_bound_bit,(hl)
-  jp z,lfa_to_nfa.do
-  jp push_hl
-
-endif
-
 
 ; ----------------------------------------------
   _colon_header trail_,'TRAIL'
@@ -4206,18 +4151,7 @@ endif
 ; ----------------------------------------------
   _colon_header pfa_to_lfa_,'PFA>LFA'
 
-if 1 ; names_in_memory_bank?
-
   dw pfa_to_cfa_,cfa_to_nfa_
-
-else
-
-  dw c_lit_
-  db 0x04
-  dw minus_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_alias_header pfa_to_cfa_,'PFA>CFA',,two_minus_
@@ -4227,34 +4161,17 @@ endif
 
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
-
   ; XXX TODO remove, not needed
 
   _colon_header cfa_to_lfa_,'CFA>LFA'
   dw cfa_to_nfa_,nfa_to_lfa_
 
-else
-
-  _code_alias_header cfa_to_lfa_,'CFA>LFA',,two_minus_
-
-endif
-
 ; ----------------------------------------------
 
   _colon_header pfa_to_nfa_,'PFA>NFA'
 
-if 1 ; names_in_memory_bank?
-
   dw pfa_to_cfa_,cfa_to_nfa_
   dw semicolon_s_
-
-else
-
-  dw pfa_to_lfa_,lfa_to_nfa_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
 
@@ -4268,8 +4185,6 @@ endif
 ; }doc
 
 ; XXX FIXME -- make it return 0 if cfa has no name associated
-
-if 1 ; names_in_memory_bank?
 
   _code_header cfa_to_nfa_,'CFA>NFA'
 
@@ -4310,40 +4225,13 @@ cfa_to_nfa.begin_1:
   pop bc ; restore Forth IP
   jp push_hl
 
-else
-
-  _colon_header cfa_to_nfa_,'CFA>NFA'
-
-  dw cfa_to_lfa_,lfa_to_nfa_
-  dw semicolon_s_
-
-endif
-
 ; ----------------------------------------------
-
-if 1 ; names_in_memory_bank?
 
   _code_alias_header cfap_to_lfa_,'CFAP>LFA',,two_plus_
 
-endif
-
 ; ----------------------------------------------
 
-if 1 ; names_in_memory_bank?
-
   _code_alias_header nfa_to_lfa_,'NFA>LFA',,two_minus_
-
-else
-
-  _colon_header nfa_to_lfa_,'NFA>LFA'
-
-  dw dup_,c_fetch_
-  dw c_lit_
-  db max_word_length_bit_mask
-  dw and_,plus_,one_plus_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header c_store_bank_,'C!BANK'
@@ -4444,8 +4332,6 @@ endif
   ; call bank.e
   ; jp pushhl
 
-if 1 ; names_in_memory_bank?
-
 ; ----------------------------------------------
   _colon_header c_fetch_n_,'C@N'
 
@@ -4499,7 +4385,7 @@ if 1 ; names_in_memory_bank?
 
   ; XXX 7 bytes:
   _number names_bank
-  dw c_fetch_bank_
+  dw c_store_bank_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4518,25 +4404,13 @@ if 1 ; names_in_memory_bank?
   dw store_bank_
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
   _colon_header nfa_to_cfa_,'NFA>CFA'
-
-if 1 ; names_in_memory_bank?
 
   dw c_lit_
   db 4
   dw minus_,fetch_n_
   dw semicolon_s_
-
-else
-
-  dw nfa_to_lfa_,two_plus_
-  dw semicolon_s_
-
-endif
-
 
 ; ----------------------------------------------
 
@@ -4558,8 +4432,6 @@ endif
 ;
 ; }doc
 
-if 1 ; names_in_memory_bank?
-
   _colon_header nfa_to_string_,'NFA>STRING'
 
   _names_bank
@@ -4570,22 +4442,6 @@ if 1 ; names_in_memory_bank?
   dw save_string_
   _default_bank
   dw semicolon_s_
-
-else
-
-  _code_header nfa_to_string_,'NFA>STRING'
-
-  ; [From DZX-Forth.]
-
-  pop de
-  ld a,(de)
-  inc  de
-  and max_word_length_bit_mask
-  ld h,0
-  ld l,a
-  jp push_de_hl
-
-endif
 
 ; ----------------------------------------------
   _colon_header store_csp_,'!CSP'
@@ -4695,13 +4551,9 @@ postpone.end:
   dw c_lit_
   db smudge_bit_mask
   ; XXX TODO factor `toggle-names'?
-if 1 ; names_in_memory_bank?
   _names_bank
   dw toggle_
   _default_bank
-else
-  dw toggle_
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4998,7 +4850,7 @@ endif
   ; dw equals_ ; carriage return?
   ; dw zero_branch_,accept.ordinary_key
   ; ; Carriage return ( len ca c )
-  ; dw leave_
+  ; dw exhaust_
   ; dw drop_,b_l_
   ; dw branch_,accept.emit
 
@@ -5074,7 +4926,7 @@ fig_expect.not_the_delete_key: ; ( i a c )
   dw zero_branch_,fig_expect.ordinary_key
 
   ; Carriage return ( i a c )
-  dw leave_
+  dw exhaust_
   dw drop_,b_l_
 if fig_null_word?
   dw zero_
@@ -5157,7 +5009,7 @@ expect.maybe_carriage_return: ; ( ca c )
   dw equals_ ; carriage return?
   dw zero_branch_,expect.ordinary_key
   ; Carriage return ( ca c )
-  dw leave_
+  dw exhaust_
   dw drop_,b_l_
   dw branch_,expect.emit
 
@@ -5234,7 +5086,7 @@ endif
 ; name of one character of ascii null. It is the execution
 ; procedure to terminate interpretation of a line of text from
 ; the terminal or within a disk buffer, as both buffers always
-; have a null at the end.
+; have a null word at the end.
 
 ; }doc
 
@@ -5243,9 +5095,11 @@ endif
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
   dw to_in_,off_ ; clear `in`, preparing parsing of input text
-  ; Note: The following check of the last block is specific for 2
-  ; blocks per screen; the generic slower check would be `blk @
-  ; b/scr 1- and`.
+
+  ; XXX WARNING -- The following check of the last block is
+  ; specific for 2 blocks per screen; the generic slower check
+  ; would be `blk @ b/scr 1- and`.
+
   dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
   dw question_branch_,x.end ; if not, branch
   ; Last block of the screen.
@@ -5467,10 +5321,23 @@ endif
 ; ----------------------------------------------
   _colon_header paren_number_,'(NUMBER)'
 
+; doc{
+;
+; (number)  ( d1 ca1 -- d2 ca2 )  \ fig-Forth
+;
+; Convert the ASCII text beginning at _ca1+l_ with regard to
+; `base`. The new value is accumulated into double number _d1_,
+; being left as _d2_.  _ca2_ is the address of the first
+; unconvertable digit. Used by `number`.
+;
+; }doc
+
 paren_number.begin: ; begin
   dw one_plus_ ; address of the next digit
   dw dup_,to_r_ ; save the address
   dw c_fetch_ ; get the digit
+  ;dw dot_s_,key_,drop_; XXX INFORMER
+  ;dw dup_,dup_,cr_,dot_,emit_; XXX INFORMER
   dw base_,fetch_,digit_ ; convert the digit
   dw zero_branch_,paren_number.end ; while
   dw swap_ ; get the high order part of d1 to the top.
@@ -5493,8 +5360,21 @@ paren_number.end:
 ; ----------------------------------------------
   _colon_header number_,'NUMBER'
 
+; doc{
+;
+; number  ( ca  -- d )  \ fig-Forth
+;
+; Convert a counted character string left at _ca_, to a signed
+; .double number, using the current numeric base. If a decimal
+; point is encountered in the text, its position will be given
+; in `dpl`, but no other effect occurs. If numeric conversion is
+; not possible, an error message will be given.
+;
+; }doc
+
+  ;dw cr_,dup_,count_,swap_,dot_,dot_ ; XXX INFORMER
+  ;dw dup_,count_,type_ ; XXX INFORMER
   dw zero_,zero_,rot_ ; two zeros, initial value of the double number
-  ;dw dup_,count_,swap_,dot_,dot_ ; XXX INFORMER
   dw dup_,one_plus_,c_fetch_ ; get the first digit
   dw c_lit_
   db '-'
@@ -5512,8 +5392,10 @@ number.begin:
   dw dpl_,store_
   dw paren_number_ ; convert one digit after another until an invalid char occurs
   dw dup_,c_fetch_ ; get the invalid digit
-  dw b_l_,not_equals_ ; not a blank?
-  dw zero_branch_,number.not_a_blank
+  ;dw dot_s_,key_,drop_; XXX INFORMER
+  ;dw cr_,dup_,emit_; XXX INFORMER
+  dw b_l_,equals_ ; is it a blank?
+  dw question_branch_,number.a_blank
   ; The invalid digit is not a blank.
   dw dup_,c_fetch_ ; get the invalid digit again
   dw c_lit_
@@ -5523,7 +5405,7 @@ number.begin:
   ; Decimal point found, set `dpl` to zero next time.
   dw zero_
   dw branch_,number.begin ; repeat
-number.not_a_blank:
+number.a_blank:
   dw drop_ ; discard address
   dw from_r_ ; pop the flag of "-" sign back
   dw zero_branch_,number.end
@@ -5607,12 +5489,15 @@ uppers.do:
 ;
 ; $!  ( ca1 len1 ca2 -- )
 ;
-; Store the string ca1 len1 as a counted string at ca2.  The
-; source and destination strings are permitted to overlap.  An
-; ambiguous condition exists if len is greater than 255 or the
-; buffer at ca2 is less than len1+1 characters.
+; Store the string _ca1 len1_ as a counted string at _ca2_.  The
+; source and destination strings are permitted to overlap.
+;
+; An ambiguous condition exists if _len1_ is greater than 255 or
+; the buffer at _ca2_ is less than _len1_+1 characters.
 ;
 ; }doc
+
+  ; XXX TODO rename? `s!`, `packed`, `pack`, `uncount`...
 
   exx
   pop de      ; de=ca2
@@ -5635,40 +5520,32 @@ uppers.do:
 ;
 ; find  ( ca --- ca 0 | cfa 1 | cfa -1 )
 ;
+; Find the definition named in the counted string at _ca_. If
+; the definition is not found after searching all the
+; vocabularies in the search order, return _ca_ and zero.  If
+; the definition is found, return its _cfa_. If the definition
+; is immediate, also return one (1); otherwise also return
+; minus-one (-1).
+;
 ; }doc
 
-  dw trail_
-  ;_echo 'In find, nfa is:' ; XXX INFORMER
-  ;dw dup_,hex_,u_dot_,decimal_ ; XXX INFORMER ;
-    ; Result:
-    ;   0x86D3 with default system, why one less than `dot_paren_`? It works, though.
-    ;   0xCD87 with bank system, exactly `dot_paren_nfa`, but it
-    ;   doesn't work.
+  ; : find  ( ca --- ca 0 | cfa 1 | cfa -1 )
+  ;   #vocs 0 do
+  ;     context i cells + @  ?dup
+  ;     if  @ (find) ?dup if  unloop exit  then  then
+  ;   loop  false  ;
 
-  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
-  ; _echo 'In find before (find): ' ; XXX INFORMER
-  ; dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-
-  dw paren_find_
-
-  ;_echo 'In find after (find):: ' ; XXX INFORMER
-  ;dw hex_,dot_s_,decimal_ ; XXX INFORMER
-  ; dw key_,drop_ ; XXX INFORMER
-
-  ; XXX TODO fig-Forth searches `current` if searching `context`
-  ; fails. But the problem remains if both are the same.
-  ; Forth-83 search order will be implemented.
-  dw question_dup_ ; not found?
-  dw question_branch_,find.end
-  ; not found, try with the current vocabulary
-  dw latest_,paren_find_
-;  dw cr_,hex_,dot_s_,decimal_ ; XXX INFORMER
-;  dw lit_,6,border_,key_,drop_ ; XXX INFORMER
-;  dw lit_,7,border_ ; XXX INFORMER
-
-find.end:
-  ;dw lit_,6,border_,key_,drop_ ; XXX INFORMER
+  dw hash_vocs_,zero_,paren_do_
+find.do:
+  dw context_,i_,cells_,plus_,fetch_
+  dw question_dup_ ; a vocabulary in the search order?
+  dw zero_branch_,find.loop ; if not, next
+  ; valid vocabulary in the search order
+  dw fetch_,paren_find_,question_dup_ ; word found in the vocabulary?
+  dw zero_branch_,find.loop ; if not, try the next vocabulary
+  dw unloop_,exit_
+find.loop:
+  dw paren_loop_,find.do,false_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5785,8 +5662,6 @@ error.end:
   _message error.not_unique
 header.continue:
 
-if 1 ; names_in_memory_bank?
-
     ; XXX TODO adapt to `parse-word`; now it works because
     ; `defined` still uses `word`, that leaves the string at
     ; `here`.
@@ -5806,22 +5681,6 @@ if 1 ; names_in_memory_bank?
   dw here_,two_plus_,comma_ ; compile the pfa into code field
   dw semicolon_s_
 
-else
-
-  dw here_
-  ; XXX TODO error if name is too long (see lina)
-  dw dup_,c_fetch_,width_,fetch_,min_,one_plus_,allot_ ; allocate space for name field
-  dw dup_
-  dw c_lit_
-  db name_bound_bit_mask+smudge_bit_mask
-  dw toggle_
-  dw latest_,comma_ ; compile the nfa of the last word in the link field
-  dw current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
-  dw here_,two_plus_,comma_ ; compile the pfa into code field.
-  dw semicolon_s_
-
-endif
-
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
 
@@ -5831,6 +5690,33 @@ do_create:
   inc de  ; de=pfa
   push de
   _jp_next
+
+; ----------------------------------------------
+
+if 0 ; fig_does?
+  _does_header forth_,'FORTH'
+  dw do_vocabulary
+else
+  _does_header forth_,'FORTH',,do_vocabulary
+endif
+
+if 0 ; fig_vocabulary?
+
+; Dummy header.
+forth_vocabulary_dummy_lfa:
+  dw nfa_of_top_most_word_in_forth_voc ; link field
+forth_vocabulary_dummy_nfa:
+  dw dummy_name_field ; name field
+
+else
+
+  dw nfa_of_top_most_word_in_forth_voc ; nfa of the latest word defined in this vocabulary
+
+endif
+
+forth_vocabulary_link:
+  dw 0x0000
+
 
 ; ----------------------------------------------
 if 0 ; fig_does?
@@ -5843,18 +5729,18 @@ endif
 ; XXX TODO move `assembler` and everthing related
 ; to the library disk?
 
+if 0 ; fig_vocabulary?
 
   ; Dummy header.
-if 1 ; names_in_memory_bank?
   assembler_vocabulary_dummy_lfa:
     dw forth_vocabulary_dummy_nfa ; link field
   assembler_vocabulary_dummy_nfa:
     dw dummy_name_field ; name field
+
 else
-  assembler_vocabulary_dummy_nfa:
-    dw dummy_name_field ; name field
-  assembler_vocabulary_dummy_lfa:
-    dw forth_vocabulary_dummy_nfa ; link field
+
+    dw 0 ; nfa of the latest word defined in this vocabulary
+
 endif
 
 assembler_vocabulary_link:
@@ -6185,10 +6071,8 @@ interpret.begin:
   ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
   ;dw cr_,dot_s_ ; XXX INFORMER
-  ;if 1 ; names_in_memory_bank?
-    ; _echo 'In interpret after defined ' ; XXX INFORMER
-    ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-  ;endif
+  ; _echo 'In interpret after defined ' ; XXX INFORMER
+  ; dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
   dw question_dup_ ; found?
   ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
   dw zero_branch_,interpret.word_not_found
@@ -6263,7 +6147,7 @@ else
   dw create_
 endif
 
-if 1 ; names_in_memory_bank?
+if 0 ; fig_vocabulary?
 
   ;A dummy header at vocabulary intersection.
   dw current_,fetch_ ; address of the dummy lfa in the `current` vocabulary
@@ -6271,10 +6155,14 @@ if 1 ; names_in_memory_bank?
   dw comma_ ; use it as link field of the dummy header in the new vocabulary
   dw lit_,dummy_name_field,comma_ ; name field
 
-  dw here_ ; address of vocabulary link
-  ; Fetch the user variable `voc-link` and insert it in the dictionary.
-  dw voc_link_,fetch_,comma_
+else
 
+  dw zero_,comma_ ; nfa of the latest word defined in this vocabulary
+
+endif
+
+  dw here_ ; address of vocabulary link
+  dw voc_link_,fetch_,comma_ ; compile the current containt of `voc-link`
   dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
 
   if 0 ; fig_does?
@@ -6288,73 +6176,7 @@ if 1 ; names_in_memory_bank?
 
   ; The next words are to be executed when the vocabulary is invoked.
   dw context_,store_
-
-else
-
-  ;A dummy header at vocabulary intersection.
-  dw lit_,dummy_name_field,comma_
-
-  ; Fetch the parameter field address pointing to the last word
-  ; and store its code field address in the second cell in
-  ; parameter field.
-  ; XXX FIXME That description is wrong; the content of
-  ; `current` is an address in the pf of the vocabulary,
-  ; and it seems `pfa>cfa` is used just instead of `2-`,
-  ; according to the original header structure.
-  ; XXX TODO fix it in _Sistems guide to fig-Forth_
-  ;dw current_,fetch_,pfa_to_cfa_,comma_
-  ; XXX NEW
-  dw current_,fetch_,lfa_to_nfa_,comma_
-
-  dw here_ ; address of vocabulary link
-
-  ; Fetch the user variable `voc-link` and insert it in the dictionary.
-  dw voc_link_,fetch_,comma_
-  dw voc_link_,store_ ; update `voc-link` with the link in this vocabulary
-
-  if 0 ; fig_does?
-    dw does_ ; this is the end in defining the vocabulary
-  do_vocabulary:
-  else
-    dw paren_semicolon_code_
-  do_vocabulary:
-    call do_does
-  endif
-
-  ; The next words are to be executed when the vocabulary is invoked.
-  ; When the vocabulary is invoked, the second cell in its parameter field
-  ; will be stored into the variable `context`.  The next
-  ; dictionary search will begin with that vocabulary.
-  dw cell_plus_,context_,store_
-
-endif
-
   dw semicolon_s_
-
-; ----------------------------------------------
-
-if 0 ; fig_does?
-  _does_header forth_,'FORTH'
-  dw do_vocabulary
-else
-  _does_header forth_,'FORTH',,do_vocabulary
-endif
-
-  ; Dummy header.
-if 1 ; names_in_memory_bank?
-  forth_vocabulary_dummy_lfa:
-    dw nfa_of_top_most_word_in_forth_voc ; link field
-  forth_vocabulary_dummy_nfa:
-    dw dummy_name_field ; name field
-else
-  forth_vocabulary_dummy_nfa:
-    dw dummy_name_field ; name field
-  forth_vocabulary_dummy_lfa:
-    dw nfa_of_top_most_word_in_forth_voc ; link field
-endif
-
-forth_vocabulary_link:
-  dw 0x0000
 
 ; ----------------------------------------------
   _colon_header definitions_,'DEFINITIONS'
@@ -6439,8 +6261,10 @@ warm_start_phony_:
   dw c_lit_
   db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
+if 0 ; fig_vocabulary?
   dw lit_,top_most_word_in_forth_voc,fetch_
   dw lit_,forth_vocabulary_dummy_lfa,store_
+endif
   dw abort_
 
 cold_start:
@@ -7572,7 +7396,7 @@ list.do:
   dw space_,i_,scr_,fetch_,dot_line_
   dw question_terminal_
   dw zero_branch_,list.loop
-  dw leave_
+  dw exhaust_
 list.loop:
   dw paren_loop_,list.do ; loop
   dw cr_
@@ -7651,7 +7475,7 @@ index.do:
   dw zero_,i_,dot_line_
   dw question_terminal_
   dw zero_branch_,index.loop
-  dw leave_
+  dw exhaust_
 index.loop:
   dw paren_loop_,index.do
   dw semicolon_s_
@@ -8143,8 +7967,6 @@ dictionary_pointer_after_cold:
 ; ==============================================================
 ; Name and link fields
 
-if 1 ; names_in_memory_bank?
-
 move_name_fields_to_memory_bank:
 
   ; Move the name fields, assembled in ordinary memory, to the
@@ -8198,8 +8020,6 @@ if 0 ; latin1_charset_in_bank?
   org names_bank_address+sys_screen_size-charset_size
 
   incbin solo_forth.charset.bin
-
-endif
 
 endif
 

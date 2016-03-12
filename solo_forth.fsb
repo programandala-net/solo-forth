@@ -694,7 +694,7 @@ require hex.  require ascii-type
       8 0 do  i over + @ flip hex.  2 +loop
       \ 16 0 do  i over + c@ hexb.  loop
       dup bs 8 ascii-type
-      ?terminal if  leave  then
+      ?terminal if  exhaust  then
     8 + loop
   else  2drop  then  drop  ;
 
@@ -771,8 +771,8 @@ variable decode-address  \ in the word being decoded
     while  \ high level & not end of colon definition
       \ ( pfa+n cfa )
       ( pfa+n cfa ) 2+ ( pfa+n pfa' ) dup indent+  pfa>nfa id.
-      key case  [char] q  of  sp! quit  endof \ q
-                      bl  of  drop      endof \ space
+      key case  [char] q  of  sp0 sp! quit  endof \ q
+                      bl  of  drop          endof \ space
                                  swap recurse \ default
           endcase  decode-special
       2+  -1 decode-level +!
@@ -829,7 +829,7 @@ variable decode-address  \ in the word being decoded
 : index  ( n1 n2 -- )
   1+ swap do
     cr i 3 .r space 0 i .line
-    ?terminal if  leave  then
+    ?terminal if  exhaust  then
   loop  ;
 
 ( where )
@@ -1231,83 +1231,122 @@ code j'  ( -- x )
 [defined] sys-frames ?\ 23672 constant sys-frames
 
 : frames@  ( -- d )
-  \ System frames counter (incremented every 20 ms).
   sys-frames @ [ sys-frames 2+ ] literal c@  ;
+  \ System frames counter (incremented every 20 ms).
 
 : frames!  ( d -- )
-  \ Set the system frames counter.
   [ sys-frames 2+ ] literal c! sys-frames !  ;
+  \ Set the system frames counter.
 
-: frames0  ( -- )
+: frames0  ( -- )  0. frames!  ;
   \ Reset the system frames counter.
-  0. frames!  ;
 
   \ }}} =======================================================
   \ Vocabularies {{{
 
-( F83 also only )
+( root also ) \ XXX from F83
 
   \ XXX TODO This code from F83 seems simpler to adapt than the
   \ code from the Forth-83 Standard.
 
-  \ Code adapted from F83.
-  \ 2015-07-22: Start.
+  \ 2015-07-22: Start.  Copied from F83. First changes to adapt
+  \ it.
 
-4 constant #vocs
+  \ XXX TMP
+  \ ' forth cfa>pfa context cell+ !
+  \ Put `forth` as the second vocabulary in the search order.
+
+  \ cr .( XXX 0) .s key drop \ XXX INFORMER
+
+  \ Get the cfa of the null word, in order to redefine it in
+  \ the root vocabulary.  If not found, error (should not
+  \ happen).
 
 vocabulary root  root definitions
   \ A small vocabulary for controlling search order.
 
-: also  ( -- )  context dup cell+ #vocs 2- cells cmove>  ;
-   \ Add another vocabulary to the search order.
+  \ XXX FIXME with `rdrop`, the compilation crashes the system.
 
-: only  ( -- )
-  ['] root cfa>pfa
-  context #vocs 1- cells 2dup erase + !  root  ;
+  \ XXX FIXME without `rdrop`, everything seems fine except
+  \ `forth` crashes the system.
+
+: x  ( -- ) ( compiling: cfa -- )
+  rdrop branch
+  [ forth 1 pad ! pad find 0= 4 ?error cfa>pfa , root ]
+  ; immediate
+  \ Define an alias of the null word with a temporary name "x".
+  \ `rdrop` unnests one level, else the null word would fail.
+  \ `branch` is used to jump to the pfa of the null word,
+  \ therefore withot adding a nesting level.  `pad` is used to
+  \ store the name of the null word to find, as a counted
+  \ string (1-char string with a null char). `forth` has to be
+  \ the `context` vocabulary before the `find`. `root` is
+  \ restored at the end.
+
+  \ XXX TODO `forth` is not needed in `x`, because the kernel
+  \ provides `forth` as the second vocabulary in the search
+  \ order.
+
+  0 ' x cfa>nfa 1+ c!n
+  \ Rename `x` to its actual name: Overwrite the "x" with a
+  \ zero.
+
+: also  ( -- )
+  context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
+  \ Duplicate the vocabulary at the top of the search order.
+
+  \ cr .( XXX 2) .s key drop \ XXX INFORMER
+
+( only seal previous )
+
+: -order  ( -- )  context [ #vocs cells ] literal erase  ;
+  \ Erase the search order.
+
+: only  ( -- )  -order root also  ;
   \ Erase the search order and forces the `root` vocabulary to
-  \ be the first and last.
-  \
-  \ XXX TODO simplify? simply erase and then `root also` ;
+  \ be the first and second.
 
-: seal  ( "name" -- )
-  ' cfa>pfa  context #vocs cells erase  context !  ;
-  \ Change the search order such that only the `name`
-  \ vocabulary will be searched. Used for turn-key
-  \ applications.
-  \
-  \ XXX TODO change after Gforth.
+: seal  ( -- )  context @ -order context !  ;
+  \ Change the search order such that only the vocabulary at
+  \ the top of the search order will be searched.
 
 : previous  ( -- )
-  context dup cell+ swap #vocs 2- cells cmove
-  context #vocs 2- cells + off  ;
-  \ The inverse of `also`: remove the most recently referenced
+  context dup cell+ swap [ #vocs 2- cells ] literal cmove
+  context [ #vocs 2- cells ] literal + off  ;
+  \ Remove the most recently referenced
   \ vocabulary from the search order.
 
-( f83 also only )
+  \ cr .( XXX 3) .s key drop \ XXX INFORMER
 
-  \ We initialize the `root` vocabulary with a few definitions
-  \ that allow us to do vocabulary related things.
+( forth definitions )  \ XXX from F83
 
+  \ cr .( XXX 3a) .s key drop \ XXX INFORMER
 : forth  ( -- )  forth  ;
+  \ cr .( XXX 3b) .s key drop \ XXX INFORMER
 : definitions  ( -- )  definitions  ;
 
+  \ cr .( XXX 4) .s key drop \ XXX INFORMER
+
+( order )  \ XXX from F83
+
 : order  ( -- )
-  cr ." context: "
-  context  #vocs 0 do
-    dup @ ?dup if  cfa>nfa id.  then  cell+
-  loop drop
-  cr ." current: " current @ cfa>nfa id.  ;
+  cr ." context: "  context #vocs 0 do
+                      dup @ ?dup if  pfa>nfa id.  then  cell+
+                    loop drop
+  cr ." current: "  current @ pfa>nfa id.  ;
   \ Display the search order currently in effect.  Also display
   \ the `current` vocabulary, which is were definitions are
   \ placed.
 
-: vocs  ( -- )
-  voc-link @ begin  dup #threads cells - cfa>nfa id.
-  @ dup 0= until  drop  ;
-  \ List all of the vocabularies that have been defined so
-  \ far, in the order of their definition.
+( vocs )  \ XXX from F83
 
-only forth also definitions
+: vocs  ( -- )
+  voc-link @
+  begin  dup cell - pfa>nfa id.  @ dup 0= until  drop  ;
+  \ List all of the vocabularies that have been defined so
+  \ far, in the order of their definition (more recent first).
+
+  \ only forth also definitions
 
 ( Forth-83 also only )
 
@@ -1344,12 +1383,12 @@ here cell+
 : only         ( -- )  only  ;
 : words        ( -- ) words  ;
 
-( order )
+( Forth-83 order )
 
 : order  ( -- )
   \ Show the search order.
   context 10 bounds
-  do  i @ -dup if  id.  else  leave  then  2 +loop
+  do  i @ -dup if  id.  else  exhaust  then  2 +loop
   10 spaces  current @ id.  ;
 
 only forth also   definitions
