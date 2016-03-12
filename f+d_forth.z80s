@@ -4,6 +4,8 @@
 
   org 0x5E00
 
+editor?: equ 0
+
 data_stack_bottom:  equ 0xCB40
 first_buffer: equ 0xCBE0
 precedence_bit: equ 0x40
@@ -142,7 +144,7 @@ fig_implementation_attributes:
   ;      1 = word
 
 top_most_word_in_forth_voc:
-  defw udg_nfa
+  defw nfa_of_top_most_word_in_forth_voc
 backspace_char:
   defw 0x000C
 init_user_pointer_value:
@@ -166,7 +168,11 @@ init_fence_value:
 init_dp_value:
   defw dictionary_pointer_after_cold
 init_voc_link_value:
-  defw editor_vocabulary_link
+  if editor?
+    defw editor_vocabulary_link
+  else
+    defw forth_vocabulary_link
+  endif
 
 cpu_name:
   ; CPU name stored as a 32-bit base 36 integer.
@@ -189,11 +195,11 @@ pushhl:
   push hl
 next:
   ld a,(bc)
-  inc bc
   ld l,a
-  ld a,(bc)
   inc bc
+  ld a,(bc)
   ld h,a
+  inc bc
 next2:
   ld e,(hl)
   inc hl
@@ -236,6 +242,8 @@ branch_lfa:
 branch_cfa:
   defw branch_pfa
 branch_pfa:
+relative_branches?: equ 0
+if relative_branches? ; XXX OLD
   ld h,b
   ld l,c
   ld e,(hl)
@@ -245,6 +253,13 @@ branch_pfa:
   add hl,de
   ld c,l
   ld b,h
+else
+  ld h,b
+  ld l,c
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+endif
   jp next
 
 zero_branch_nfa:
@@ -1656,11 +1671,11 @@ u_less_than_pfa:
   defw two_dup_cfa
   defw xor_cfa
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x000C ; to branch_destination_0x6585
+  defw zero_branch_cfa,branch_destination_0x6585
   defw drop_cfa
   defw zero_less_than_cfa
   defw zero_equals_cfa
-  defw branch_cfa,0x0006 ; to branch_destination_0x6589
+  defw branch_cfa,branch_destination_0x6589
 branch_destination_0x6585:
   defw minus_cfa
   defw zero_less_than_cfa
@@ -1709,7 +1724,7 @@ question_dup_cfa:
   defw do_colon
 question_dup_pfa:
   defw dup_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x65C6
+  defw zero_branch_cfa,branch_destination_0x65C6
   defw dup_cfa
 branch_destination_0x65C6:
   defw semicolon_s_cfa
@@ -1729,7 +1744,7 @@ branch_destination_0x65D7:
   defw over_cfa
   defw c_fetch_cfa
   defw less_than_cfa
-  defw zero_branch_cfa,0xFFF0 ; to branch_destination_0x65D7
+  defw zero_branch_cfa,branch_destination_0x65D7
   defw swap_cfa
   defw drop_cfa
   defw semicolon_s_cfa
@@ -1814,9 +1829,9 @@ question_error_cfa:
   defw do_colon
 question_error_pfa:
   defw swap_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6672
+  defw zero_branch_cfa,branch_destination_0x6672
   defw error_cfa
-  defw branch_cfa,0x0004 ; to branch_destination_0x6674
+  defw branch_cfa,branch_destination_0x6674
 branch_destination_0x6672:
   defw drop_cfa
 branch_destination_0x6674:
@@ -2053,7 +2068,7 @@ type_cfa:
   defw do_colon
 type_pfa:
   defw question_dup_cfa
-  defw zero_branch_cfa,0x0018 ; to branch_destination_0x6804
+  defw zero_branch_cfa,branch_destination_0x6804
   defw over_cfa
   defw plus_cfa
   defw swap_cfa
@@ -2062,8 +2077,8 @@ branch_destination_0x67F6:
   defw i_cfa
   defw c_fetch_cfa
   defw emit_cfa
-  defw paren_loop_cfa,0xFFF8 ; to branch_destination_0x67F6
-  defw branch_cfa,0x0004 ; to branch_destination_0x6806
+  defw paren_loop_cfa,branch_destination_0x67F6
+  defw branch_cfa,branch_destination_0x6806
 branch_destination_0x6804:
   defw drop_cfa
 branch_destination_0x6806:
@@ -2088,14 +2103,14 @@ branch_destination_0x681C:
   defw c_fetch_cfa
   defw b_l_cfa
   defw minus_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6836
+  defw zero_branch_cfa,branch_destination_0x6836
   defw leave_cfa
-  defw branch_cfa,0x0006 ; to branch_destination_0x683A
+  defw branch_cfa,branch_destination_0x683A
 branch_destination_0x6836:
   defw one_cfa
   defw minus_cfa
 branch_destination_0x683A:
-  defw paren_loop_cfa,0xFFE0 ; to branch_destination_0x681C
+  defw paren_loop_cfa,branch_destination_0x681C
   defw semicolon_s_cfa
 
 paren_dot_quote_nfa:
@@ -2125,7 +2140,7 @@ dot_quote_pfa:
   defw lit_cfa,0x0022
   defw state_cfa
   defw fetch_cfa
-  defw zero_branch_cfa,0x0014 ; to branch_destination_0x6880
+  defw zero_branch_cfa,branch_destination_0x6880
   defw compile_cfa
   defw paren_dot_quote_cfa
   defw word_cfa
@@ -2133,7 +2148,7 @@ dot_quote_pfa:
   defw c_fetch_cfa
   defw one_plus_cfa
   defw allot_cfa
-  defw branch_cfa,0x000A ; to branch_destination_0x6888
+  defw branch_cfa,branch_destination_0x6888
 branch_destination_0x6880:
   defw word_cfa
   defw here_cfa
@@ -2160,7 +2175,7 @@ branch_destination_0x689D:
   defw plus_origin_cfa
   defw fetch_cfa
   defw equals_cfa
-  defw zero_branch_cfa,0x002A ; to branch_destination_0x68D7
+  defw zero_branch_cfa,branch_destination_0x68D7
   defw drop_cfa
   defw dup_cfa
   defw i_cfa
@@ -2171,23 +2186,23 @@ branch_destination_0x689D:
   defw minus_cfa
   defw plus_cfa
   defw to_r_cfa
-  defw zero_branch_cfa,0x000A ; to branch_destination_0x68CF
+  defw zero_branch_cfa,branch_destination_0x68CF
   defw noop_cfa
   defw noop_cfa
-  defw branch_cfa,0x0032 ; to branch_destination_0x68FF
+  defw branch_cfa,branch_destination_0x68FF
 branch_destination_0x68CF:
   defw lit_cfa,0x0008
-  defw branch_cfa,0x0028 ; to branch_destination_0x68FD
+  defw branch_cfa,branch_destination_0x68FD
 branch_destination_0x68D7:
   defw dup_cfa
   defw lit_cfa,0x000D
   defw equals_cfa
-  defw zero_branch_cfa,0x000E ; to branch_destination_0x68EF
+  defw zero_branch_cfa,branch_destination_0x68EF
   defw leave_cfa
   defw drop_cfa
   defw b_l_cfa
   defw zero_cfa
-  defw branch_cfa,0x0004 ; to branch_destination_0x68F1
+  defw branch_cfa,branch_destination_0x68F1
 branch_destination_0x68EF:
   defw dup_cfa
 branch_destination_0x68F1:
@@ -2200,7 +2215,7 @@ branch_destination_0x68F1:
 branch_destination_0x68FD:
   defw emit_cfa
 branch_destination_0x68FF:
-  defw paren_loop_cfa,0xFF9C ; to branch_destination_0x689D
+  defw paren_loop_cfa,branch_destination_0x689D
   defw drop_cfa
   defw semicolon_s_cfa
 
@@ -2229,7 +2244,7 @@ onezeroword_cfa:
 onezeroword_pfa:
   defw blk_cfa
   defw fetch_cfa
-  defw zero_branch_cfa,0x002A ; to branch_destination_0x6959
+  defw zero_branch_cfa,branch_destination_0x6959
   defw one_cfa
   defw blk_cfa
   defw plus_store_cfa
@@ -2243,12 +2258,12 @@ onezeroword_pfa:
   defw minus_cfa
   defw and_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6955
+  defw zero_branch_cfa,branch_destination_0x6955
   defw question_exec_cfa
   defw from_r_cfa
   defw drop_cfa
 branch_destination_0x6955:
-  defw branch_cfa,0x0006 ; to branch_destination_0x695D
+  defw branch_cfa,branch_destination_0x695D
 branch_destination_0x6959:
   defw from_r_cfa
   defw drop_cfa
@@ -2339,11 +2354,11 @@ word_cfa:
 word_pfa:
   defw blk_cfa
   defw fetch_cfa
-  defw zero_branch_cfa,0x000C ; to branch_destination_0x69E3
+  defw zero_branch_cfa,branch_destination_0x69E3
   defw blk_cfa
   defw fetch_cfa
   defw block_cfa
-  defw branch_cfa,0x0006 ; to branch_destination_0x69E7
+  defw branch_cfa,branch_destination_0x69E7
 branch_destination_0x69E3:
   defw tib_cfa
   defw fetch_cfa
@@ -2386,7 +2401,7 @@ paren_number_pfa:
   defw base_cfa
   defw fetch_cfa
   defw digit_cfa
-  defw zero_branch_cfa,0x002C ; to branch_destination_0x6A5E
+  defw zero_branch_cfa,branch_destination_0x6A5E
   defw swap_cfa
   defw base_cfa
   defw fetch_cfa
@@ -2400,13 +2415,13 @@ paren_number_pfa:
   defw dpl_cfa
   defw fetch_cfa
   defw one_plus_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6A58
+  defw zero_branch_cfa,branch_destination_0x6A58
   defw one_cfa
   defw dpl_cfa
   defw plus_store_cfa
 branch_destination_0x6A58:
   defw from_r_cfa
-  defw branch_cfa,0xFFC6 ; to branch_destination_0x6A22
+  defw branch_cfa,branch_destination_0x6A22
 branch_destination_0x6A5E:
   defw from_r_cfa
   defw semicolon_s_cfa
@@ -2438,7 +2453,7 @@ branch_destination_0x6A89:
   defw c_fetch_cfa
   defw b_l_cfa
   defw minus_cfa
-  defw zero_branch_cfa,0x0016 ; to branch_destination_0x6AAF
+  defw zero_branch_cfa,branch_destination_0x6AAF
   defw dup_cfa
   defw c_fetch_cfa
   defw lit_cfa,0x002E
@@ -2446,11 +2461,11 @@ branch_destination_0x6A89:
   defw zero_cfa
   defw question_error_cfa
   defw zero_cfa
-  defw branch_cfa,0xFFDC ; to branch_destination_0x6A89
+  defw branch_cfa,branch_destination_0x6A89
 branch_destination_0x6AAF:
   defw drop_cfa
   defw from_r_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x6AB9
+  defw zero_branch_cfa,branch_destination_0x6AB9
   defw dnegate_cfa
 branch_destination_0x6AB9:
   defw semicolon_s_cfa
@@ -2471,7 +2486,7 @@ minus_find_pfa:
   defw paren_find_cfa
   defw dup_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0x000A ; to branch_destination_0x6AE3
+  defw zero_branch_cfa,branch_destination_0x6AE3
   defw drop_cfa
   defw here_cfa
   defw latest_cfa
@@ -2499,7 +2514,7 @@ error_pfa:
   defw warning_cfa
   defw fetch_cfa
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x6B0B
+  defw zero_branch_cfa,branch_destination_0x6B0B
   defw paren_abort_cfa
 branch_destination_0x6B0B:
   defw here_cfa
@@ -2512,7 +2527,7 @@ branch_destination_0x6B0B:
   defw blk_cfa
   defw fetch_cfa
   defw question_dup_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6B2A
+  defw zero_branch_cfa,branch_destination_0x6B2A
   defw in_cfa
   defw fetch_cfa
   defw swap_cfa
@@ -2564,7 +2579,7 @@ create_cfa:
   defw do_colon
 create_pfa:
   defw minus_find_cfa
-  defw zero_branch_cfa,0x0010 ; to branch_destination_0x6B95
+  defw zero_branch_cfa,branch_destination_0x6B95
   defw drop_cfa
   defw nfa_cfa
   defw id_dot_cfa
@@ -2623,7 +2638,7 @@ literal_cfa:
 literal_pfa:
   defw state_cfa
   defw fetch_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6C03
+  defw zero_branch_cfa,branch_destination_0x6C03
   defw compile_cfa
   defw lit_cfa
   defw comma_cfa
@@ -2639,7 +2654,7 @@ dliteral_cfa:
 dliteral_pfa:
   defw state_cfa
   defw fetch_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6C20
+  defw zero_branch_cfa,branch_destination_0x6C20
   defw swap_cfa
   defw literal_cfa
   defw literal_cfa
@@ -2678,36 +2693,36 @@ interpret_cfa:
 branch_destination_0x6C5D:
 interpret_pfa:
   defw minus_find_cfa
-  defw zero_branch_cfa,0x001E ; to branch_destination_0x6C7F
+  defw zero_branch_cfa,branch_destination_0x6C7F
   defw state_cfa
   defw fetch_cfa
   defw less_than_cfa
-  defw zero_branch_cfa,0x000A ; to branch_destination_0x6C75
+  defw zero_branch_cfa,branch_destination_0x6C75
   defw cfa_cfa
   defw comma_cfa
-  defw branch_cfa,0x0006 ; to branch_destination_0x6C79
+  defw branch_cfa,branch_destination_0x6C79
 branch_destination_0x6C75:
   defw cfa_cfa
   defw execute_cfa
 branch_destination_0x6C79:
   defw question_stack_cfa
-  defw branch_cfa,0x001C ; to branch_destination_0x6C99
+  defw branch_cfa,branch_destination_0x6C99
 branch_destination_0x6C7F:
   defw here_cfa
   defw number_cfa
   defw dpl_cfa
   defw fetch_cfa
   defw one_plus_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x6C93
+  defw zero_branch_cfa,branch_destination_0x6C93
   defw dliteral_cfa
-  defw branch_cfa,0x0006 ; to branch_destination_0x6C97
+  defw branch_cfa,branch_destination_0x6C97
 branch_destination_0x6C93:
   defw drop_cfa
   defw literal_cfa
 branch_destination_0x6C97:
   defw question_stack_cfa
 branch_destination_0x6C99:
-  defw branch_cfa,0xFFC2 ; to branch_destination_0x6C5D
+  defw branch_cfa,branch_destination_0x6C5D
 
 immediate_nfa:
   defb 0x09+0x80,"IMMEDIAT","E"+0x80
@@ -2806,11 +2821,11 @@ branch_destination_0x6D35:
   defw state_cfa
   defw fetch_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0x0007 ; to branch_destination_0x6D4C
+  defw zero_branch_cfa,branch_destination_0x6D4C
   defw paren_dot_quote_cfa
   defb 0x02,"ok"
 branch_destination_0x6D4C:
-  defw branch_cfa,0xFFE7 ; to branch_destination_0x6D35
+  defw branch_cfa,branch_destination_0x6D35
 
 abort_nfa:
   defb 0x05+0x80,"ABOR","T"+0x80
@@ -2925,7 +2940,7 @@ plus_minus_cfa:
   defw do_colon
 plus_minus_pfa:
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x6E2F
+  defw zero_branch_cfa,branch_destination_0x6E2F
   defw negate_cfa
 branch_destination_0x6E2F:
   defw semicolon_s_cfa
@@ -2938,7 +2953,7 @@ d_plus_minus_cfa:
   defw do_colon
 d_plus_minus_pfa:
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x6E41
+  defw zero_branch_cfa,branch_destination_0x6E41
   defw dnegate_cfa
 branch_destination_0x6E41:
   defw semicolon_s_cfa
@@ -2974,7 +2989,7 @@ min_cfa:
 min_pfa:
   defw two_dup_cfa
   defw greater_than_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x6E72
+  defw zero_branch_cfa,branch_destination_0x6E72
   defw swap_cfa
 branch_destination_0x6E72:
   defw drop_cfa
@@ -2989,7 +3004,7 @@ max_cfa:
 max_pfa:
   defw two_dup_cfa
   defw less_than_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x6E88
+  defw zero_branch_cfa,branch_destination_0x6E88
   defw swap_cfa
 branch_destination_0x6E88:
   defw drop_cfa
@@ -3168,9 +3183,9 @@ message_cfa:
 message_pfa:
   defw warning_cfa
   defw fetch_cfa
-  defw zero_branch_cfa,0x001E ; to branch_destination_0x6FB3
+  defw zero_branch_cfa,branch_destination_0x6FB3
   defw question_dup_cfa
-  defw zero_branch_cfa,0x0014 ; to branch_destination_0x6FAF
+  defw zero_branch_cfa,branch_destination_0x6FAF
   defw lit_cfa,0x0004
   defw offset_cfa
   defw fetch_cfa
@@ -3180,7 +3195,7 @@ message_pfa:
   defw dot_line_cfa
   defw space_cfa
 branch_destination_0x6FAF:
-  defw branch_cfa,0x000D ; to branch_destination_0x6FBE
+  defw branch_cfa,branch_destination_0x6FBE
 branch_destination_0x6FB3:
   defw paren_dot_quote_cfa
   defb 0x06,"MSG # "
@@ -3389,7 +3404,7 @@ plus_buf_pfa:
   defw dup_cfa
   defw limit_cfa
   defw equals_cfa
-  defw zero_branch_cfa,0x0006 ; to branch_destination_0x70EF
+  defw zero_branch_cfa,branch_destination_0x70EF
   defw drop_cfa
   defw first_cfa
 branch_destination_0x70EF:
@@ -3436,7 +3451,7 @@ branch_destination_0x713A:
   defw i_cfa
   defw store_cfa
   defw lit_cfa,0x0084
-  defw paren_plus_loop_cfa,0xFFF2 ; to branch_destination_0x713A
+  defw paren_plus_loop_cfa,branch_destination_0x713A
   defw semicolon_s_cfa
 
 dr0_nfa:
@@ -3464,13 +3479,13 @@ buffer_pfa:
   defw to_r_cfa
 branch_destination_0x716F:
   defw plus_buf_cfa
-  defw zero_branch_cfa,0xFFFC ; to branch_destination_0x716F
+  defw zero_branch_cfa,branch_destination_0x716F
   defw use_cfa
   defw store_cfa
   defw r_cfa
   defw fetch_cfa
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0014 ; to branch_destination_0x7195
+  defw zero_branch_cfa,branch_destination_0x7195
   defw r_cfa
   defw two_plus_cfa
   defw r_cfa
@@ -3508,11 +3523,11 @@ block_pfa:
   defw minus_cfa
   defw dup_cfa
   defw plus_cfa
-  defw zero_branch_cfa,0x0034 ; to branch_destination_0x71FD
+  defw zero_branch_cfa,branch_destination_0x71FD
 branch_destination_0x71CB:
   defw plus_buf_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0x0014 ; to branch_destination_0x71E5
+  defw zero_branch_cfa,branch_destination_0x71E5
   defw drop_cfa
   defw r_cfa
   defw buffer_cfa
@@ -3530,7 +3545,7 @@ branch_destination_0x71E5:
   defw dup_cfa
   defw plus_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0xFFD6 ; to branch_destination_0x71CB
+  defw zero_branch_cfa,branch_destination_0x71CB
   defw dup_cfa
   defw prev_cfa
   defw store_cfa
@@ -3576,7 +3591,7 @@ read_write_pfa:
   defw lit_cfa,0x0006
   defw question_error_cfa
   defw from_r_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x723D
+  defw zero_branch_cfa,branch_destination_0x723D
   defw swap_cfa
 branch_destination_0x723D:
   defw b_slash_buf_cfa
@@ -3598,7 +3613,7 @@ branch_destination_0x7255:
   defw zero_cfa
   defw buffer_cfa
   defw drop_cfa
-  defw paren_loop_cfa,0xFFF8 ; to branch_destination_0x7255
+  defw paren_loop_cfa,branch_destination_0x7255
   defw semicolon_s_cfa
 
 load_nfa:
@@ -3678,8 +3693,10 @@ back_lfa:
 back_cfa:
   defw do_colon
 back_pfa:
+if relative_branches? ; XXX OLD
   defw here_cfa
   defw minus_cfa
+endif
   defw comma_cfa
   defw semicolon_s_cfa
 
@@ -3870,12 +3887,12 @@ spaces_pfa:
   defw zero_cfa
   defw max_cfa
   defw question_dup_cfa
-  defw zero_branch_cfa,0x000C ; to branch_destination_0x7418
+  defw zero_branch_cfa,branch_destination_0x7418
   defw zero_cfa
   defw paren_do_cfa
 branch_destination_0x7412:
   defw space_cfa
-  defw paren_loop_cfa,0xFFFC ; to branch_destination_0x7412
+  defw paren_loop_cfa,branch_destination_0x7412
 branch_destination_0x7418:
   defw semicolon_s_cfa
 
@@ -3916,7 +3933,7 @@ sign_cfa:
 sign_pfa:
   defw rot_cfa
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x7457
+  defw zero_branch_cfa,branch_destination_0x7457
   defw lit_cfa,0x002D
   defw hold_cfa
 branch_destination_0x7457:
@@ -3936,7 +3953,7 @@ hash_pfa:
   defw lit_cfa,0x0009
   defw over_cfa
   defw less_than_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x7479
+  defw zero_branch_cfa,branch_destination_0x7479
   defw lit_cfa,0x0007
   defw plus_cfa
 branch_destination_0x7479:
@@ -3958,7 +3975,7 @@ hash_s_pfa:
   defw over_cfa
   defw or_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0xFFF4 ; to branch_destination_0x748A
+  defw zero_branch_cfa,branch_destination_0x748A
   defw semicolon_s_cfa
 
 d_dot_r_nfa:
@@ -4061,7 +4078,7 @@ branch_destination_0x751B:
   defw lit_cfa,0x0008
   defw minus_cfa
   defw greater_than_cfa
-  defw zero_branch_cfa,0x000A ; to branch_destination_0x7537
+  defw zero_branch_cfa,branch_destination_0x7537
   defw cr_cfa
   defw zero_cfa
   defw out_cfa
@@ -4076,7 +4093,7 @@ branch_destination_0x7537:
   defw zero_equals_cfa
   defw question_terminal_cfa
   defw or_cfa
-  defw zero_branch_cfa,0xFFD0 ; to branch_destination_0x751B
+  defw zero_branch_cfa,branch_destination_0x751B
   defw drop_cfa
   defw semicolon_s_cfa
 
@@ -4109,10 +4126,10 @@ branch_destination_0x7577:
   defw fetch_cfa
   defw dot_line_cfa
   defw question_terminal_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x7593
+  defw zero_branch_cfa,branch_destination_0x7593
   defw leave_cfa
 branch_destination_0x7593:
-  defw paren_loop_cfa,0xFFE2 ; to branch_destination_0x7577
+  defw paren_loop_cfa,branch_destination_0x7577
   defw cr_cfa
   defw semicolon_s_cfa
 
@@ -4383,11 +4400,13 @@ branch_destination_0x774B:
   defw i_cfa
   defw dot_line_cfa
   defw question_terminal_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x7763
+  defw zero_branch_cfa,branch_destination_0x7763
   defw leave_cfa
 branch_destination_0x7763:
-  defw paren_loop_cfa,0xFFE6 ; to branch_destination_0x774B
+  defw paren_loop_cfa,branch_destination_0x774B
   defw semicolon_s_cfa
+
+if 0
 
 triad_nfa:
   defb 0x05+0x80,"TRIA","D"+0x80
@@ -4411,16 +4430,20 @@ branch_destination_0x7787:
   defw i_cfa
   defw list_cfa
   defw question_terminal_cfa
-  defw zero_branch_cfa,0x0004 ; to branch_destination_0x7795
+  defw zero_branch_cfa,branch_destination_0x7795
   defw leave_cfa
 branch_destination_0x7795:
-  defw paren_loop_cfa,0xFFF0 ; to branch_destination_0x7787
+  defw paren_loop_cfa,branch_destination_0x7787
   defw semicolon_s_cfa
+
+endif
+
+if editor?
 
 editor_nfa:
   defb 0x06+0x80+precedence_bit,"EDITO","R"+0x80
 editor_lfa:
-  defw triad_nfa
+  defw index_nfa
 editor_cfa:
   defw do_does
 editor_pfa:
@@ -4432,10 +4455,12 @@ editor_vocabulary_latest:
 editor_vocabulary_link:
   defw forth_vocabulary_link
 
+endif
+
 where_nfa:
   defb 0x05+0x80,"WHER","E"+0x80
 where_lfa:
-  defw editor_nfa
+  defw index_nfa
 where_cfa:
   defw do_colon
 where_pfa:
@@ -4467,9 +4492,13 @@ where_pfa:
   defw spaces_cfa
   defw lit_cfa,0x005E
   defw emit_cfa
-  defw editor_cfa
+  if editor?
+    defw editor_cfa
+  endif
   defw quit_cfa
   defw semicolon_s_cfa
+
+if editor?
 
 hash_locate_nfa:
   defb 0x07+0x80,"#LOCAT","E"+0x80
@@ -4574,7 +4603,7 @@ branch_destination_0x788C:
   defw one_plus_cfa
   defw minus_move_cfa
   defw lit_cfa,0xFFFF
-  defw paren_plus_loop_cfa,0xFFF0 ; to branch_destination_0x788C
+  defw paren_plus_loop_cfa,branch_destination_0x788C
   defw e_cfa
   defw semicolon_s_cfa
 
@@ -4597,7 +4626,7 @@ branch_destination_0x78B6:
   defw line_cfa
   defw i_cfa
   defw minus_move_cfa
-  defw paren_loop_cfa,0xFFF4 ; to branch_destination_0x78B6
+  defw paren_loop_cfa,branch_destination_0x78B6
   defw e_cfa
   defw semicolon_s_cfa
 
@@ -4719,7 +4748,7 @@ clear_pfa:
 branch_destination_0x796A:
   defw i_cfa
   defw e_cfa
-  defw paren_loop_cfa,0xFFFA ; to branch_destination_0x796A
+  defw paren_loop_cfa,branch_destination_0x796A
   defw semicolon_s_cfa
 
 copy_nfa:
@@ -4751,7 +4780,7 @@ branch_destination_0x7997:
   defw store_cfa
   defw one_plus_cfa
   defw update_cfa
-  defw paren_loop_cfa,0xFFEE ; to branch_destination_0x7997
+  defw paren_loop_cfa,branch_destination_0x7997
   defw drop_cfa
   defw flush_cfa
   defw semicolon_s_cfa
@@ -4765,7 +4794,7 @@ minus_text_cfa:
 minus_text_pfa:
   defw swap_cfa
   defw question_dup_cfa
-  defw zero_branch_cfa,0x002A ; to branch_destination_0x79EB
+  defw zero_branch_cfa,branch_destination_0x79EB
   defw over_cfa
   defw plus_cfa
   defw swap_cfa
@@ -4776,15 +4805,15 @@ branch_destination_0x79CB:
   defw i_cfa
   defw c_fetch_cfa
   defw minus_cfa
-  defw zero_branch_cfa,0x000A ; to branch_destination_0x79E1
+  defw zero_branch_cfa,branch_destination_0x79E1
   defw zero_equals_cfa
   defw leave_cfa
-  defw branch_cfa,0x0004 ; to branch_destination_0x79E3
+  defw branch_cfa,branch_destination_0x79E3
 branch_destination_0x79E1:
   defw one_plus_cfa
 branch_destination_0x79E3:
-  defw paren_loop_cfa,0xFFE6 ; to branch_destination_0x79CB
-  defw branch_cfa,0x0006 ; to branch_destination_0x79EF
+  defw paren_loop_cfa,branch_destination_0x79CB
+  defw branch_cfa,branch_destination_0x79EF
 branch_destination_0x79EB:
   defw drop_cfa
   defw zero_equals_cfa
@@ -4812,7 +4841,7 @@ branch_destination_0x7A0F:
   defw two_dup_cfa
   defw i_cfa
   defw minus_text_cfa
-  defw zero_branch_cfa,0x001A ; to branch_destination_0x7A31
+  defw zero_branch_cfa,branch_destination_0x7A31
   defw to_r_cfa
   defw two_drop_cfa
   defw from_r_cfa
@@ -4826,7 +4855,7 @@ branch_destination_0x7A0F:
   defw zero_cfa
   defw leave_cfa
 branch_destination_0x7A31:
-  defw paren_loop_cfa,0xFFDC ; to branch_destination_0x7A0F
+  defw paren_loop_cfa,branch_destination_0x7A0F
   defw two_drop_cfa
   defw swap_cfa
   defw zero_equals_cfa
@@ -4860,7 +4889,7 @@ find_pfa:
   defw r_hash_cfa
   defw fetch_cfa
   defw less_than_cfa
-  defw zero_branch_cfa,0x0012 ; to branch_destination_0x7A7E
+  defw zero_branch_cfa,branch_destination_0x7A7E
   defw top_cfa
   defw pad_cfa
   defw here_cfa
@@ -4871,7 +4900,7 @@ find_pfa:
   defw error_cfa
 branch_destination_0x7A7E:
   defw oneline_cfa
-  defw zero_branch_cfa,0xFFDE ; to branch_destination_0x7A60
+  defw zero_branch_cfa,branch_destination_0x7A60
   defw semicolon_s_cfa
 
 delete_nfa:
@@ -5016,6 +5045,8 @@ c_pfa:
   defw m_cfa
   defw semicolon_s_cfa
 
+endif
+
 next_nfa:
   defb 0x04+0x80,"NEX","T"+0x80
 next_lfa:
@@ -5112,18 +5143,18 @@ at_pfa:
   defw dup_cfa
   defw lit_cfa,0x001F
   defw greater_than_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x7BF2
+  defw zero_branch_cfa,branch_destination_0x7BF2
   defw two_drop_cfa
-  defw branch_cfa,0x0022 ; to branch_destination_0x7C12
+  defw branch_cfa,branch_destination_0x7C12
 branch_destination_0x7BF2:
   defw swap_cfa
   defw abs_cfa
   defw dup_cfa
   defw lit_cfa,0x0015
   defw greater_than_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x7C08
+  defw zero_branch_cfa,branch_destination_0x7C08
   defw two_drop_cfa
-  defw branch_cfa,0x000C ; to branch_destination_0x7C12
+  defw branch_cfa,branch_destination_0x7C12
 branch_destination_0x7C08:
   defw lit_cfa,0x0016
   defw emit_cfa
@@ -5173,14 +5204,14 @@ paper_pfa:
   defw dup_cfa
   defw lit_cfa,0x0009
   defw greater_than_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x7C5F
+  defw zero_branch_cfa,branch_destination_0x7C5F
   defw drop_cfa
-  defw branch_cfa,0x0088 ; to branch_destination_0x7CE5
+  defw branch_cfa,branch_destination_0x7CE5
 branch_destination_0x7C5F:
   defw dup_cfa
   defw lit_cfa,0x0009
   defw equals_cfa
-  defw zero_branch_cfa,0x001A ; to branch_destination_0x7C83
+  defw zero_branch_cfa,branch_destination_0x7C83
   defw lit_cfa,sys_p_flag
   defw c_fetch_cfa
   defw lit_cfa,0x0080
@@ -5188,12 +5219,12 @@ branch_destination_0x7C5F:
   defw lit_cfa,sys_p_flag
   defw c_store_cfa
   defw drop_cfa
-  defw branch_cfa,0x0064 ; to branch_destination_0x7CE5
+  defw branch_cfa,branch_destination_0x7CE5
 branch_destination_0x7C83:
   defw dup_cfa
   defw lit_cfa,0x0008
   defw equals_cfa
-  defw zero_branch_cfa,0x001A ; to branch_destination_0x7CA7
+  defw zero_branch_cfa,branch_destination_0x7CA7
   defw lit_cfa,sys_mask_p
   defw c_fetch_cfa
   defw lit_cfa,0x0038
@@ -5201,7 +5232,7 @@ branch_destination_0x7C83:
   defw lit_cfa,sys_mask_p
   defw c_store_cfa
   defw drop_cfa
-  defw branch_cfa,0x0040 ; to branch_destination_0x7CE5
+  defw branch_cfa,branch_destination_0x7CE5
 branch_destination_0x7CA7:
   defw lit_cfa,0x0008
   defw star_cfa
@@ -5288,14 +5319,14 @@ ink_pfa:
   defw dup_cfa
   defw lit_cfa,0x0009
   defw greater_than_cfa
-  defw zero_branch_cfa,0x0008 ; to branch_destination_0x7D4C
+  defw zero_branch_cfa,branch_destination_0x7D4C
   defw drop_cfa
-  defw branch_cfa,0x0082 ; to branch_destination_0x7DCC
+  defw branch_cfa,branch_destination_0x7DCC
 branch_destination_0x7D4C:
   defw dup_cfa
   defw lit_cfa,0x0009
   defw equals_cfa
-  defw zero_branch_cfa,0x001A ; to branch_destination_0x7D70
+  defw zero_branch_cfa,branch_destination_0x7D70
   defw lit_cfa,sys_p_flag
   defw c_fetch_cfa
   defw lit_cfa,0x0020
@@ -5303,12 +5334,12 @@ branch_destination_0x7D4C:
   defw lit_cfa,sys_p_flag
   defw c_store_cfa
   defw drop_cfa
-  defw branch_cfa,0x005E ; to branch_destination_0x7DCC
+  defw branch_cfa,branch_destination_0x7DCC
 branch_destination_0x7D70:
   defw dup_cfa
   defw lit_cfa,0x0008
   defw equals_cfa
-  defw zero_branch_cfa,0x001A ; to branch_destination_0x7D94
+  defw zero_branch_cfa,branch_destination_0x7D94
   defw lit_cfa,sys_mask_p
   defw c_fetch_cfa
   defw lit_cfa,0x0007
@@ -5316,7 +5347,7 @@ branch_destination_0x7D70:
   defw lit_cfa,sys_mask_p
   defw c_store_cfa
   defw drop_cfa
-  defw branch_cfa,0x003A ; to branch_destination_0x7DCC
+  defw branch_cfa,branch_destination_0x7DCC
 branch_destination_0x7D94:
   defw lit_cfa,sys_attr_p
   defw c_fetch_cfa
@@ -5347,14 +5378,14 @@ flash_lfa:
 flash_cfa:
   defw do_colon
 flash_pfa:
-  defw zero_branch_cfa,0x0018 ; to branch_destination_0x7DF2
+  defw zero_branch_cfa,branch_destination_0x7DF2
   defw lit_cfa,sys_attr_p
   defw c_fetch_cfa
   defw lit_cfa,0x0080
   defw or_cfa
   defw lit_cfa,sys_attr_p
   defw store_cfa
-  defw branch_cfa,0x0014 ; to branch_destination_0x7E04
+  defw branch_cfa,branch_destination_0x7E04
 branch_destination_0x7DF2:
   defw lit_cfa,sys_attr_p
   defw c_fetch_cfa
@@ -5372,14 +5403,14 @@ bright_lfa:
 bright_cfa:
   defw do_colon
 bright_pfa:
-  defw zero_branch_cfa,0x0018 ; to branch_destination_0x7E2B
+  defw zero_branch_cfa,branch_destination_0x7E2B
   defw lit_cfa,sys_attr_p
   defw c_fetch_cfa
   defw lit_cfa,0x0040
   defw or_cfa
   defw lit_cfa,sys_attr_p
   defw store_cfa
-  defw branch_cfa,0x0014 ; to branch_destination_0x7E3D
+  defw branch_cfa,branch_destination_0x7E3D
 branch_destination_0x7E2B:
   defw lit_cfa,sys_attr_p
   defw c_fetch_cfa
@@ -5397,14 +5428,14 @@ gover_lfa:
 gover_cfa:
   defw do_colon
 gover_pfa:
-  defw zero_branch_cfa,0x0016 ; to branch_destination_0x7E61
+  defw zero_branch_cfa,branch_destination_0x7E61
   defw lit_cfa,sys_p_flag
   defw c_fetch_cfa
   defw two_cfa
   defw or_cfa
   defw lit_cfa,sys_p_flag
   defw store_cfa
-  defw branch_cfa,0x0014 ; to branch_destination_0x7E73
+  defw branch_cfa,branch_destination_0x7E73
 branch_destination_0x7E61:
   defw lit_cfa,sys_p_flag
   defw c_fetch_cfa
@@ -5422,14 +5453,14 @@ inverse_lfa:
 inverse_cfa:
   defw do_colon
 inverse_pfa:
-  defw zero_branch_cfa,0x0018 ; to branch_destination_0x7E9B
+  defw zero_branch_cfa,branch_destination_0x7E9B
   defw lit_cfa,sys_p_flag
   defw c_fetch_cfa
   defw lit_cfa,0x0008
   defw or_cfa
   defw lit_cfa,sys_p_flag
   defw store_cfa
-  defw branch_cfa,0x0014 ; to branch_destination_0x7EAD
+  defw branch_cfa,branch_destination_0x7EAD
 branch_destination_0x7E9B:
   defw lit_cfa,sys_p_flag
   defw c_fetch_cfa
@@ -5667,14 +5698,14 @@ draw_pfa:
   defw to_r_cfa
   defw dup_cfa
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0012 ; to branch_destination_0x800C
+  defw zero_branch_cfa,branch_destination_0x800C
   defw abs_cfa
   defw zero_cfa
   defw swap_cfa
   defw r_cfa
   defw m_slash_mod_cfa
   defw dnegate_cfa
-  defw branch_cfa,0x000A ; to branch_destination_0x8014
+  defw branch_cfa,branch_destination_0x8014
 branch_destination_0x800C:
   defw zero_cfa
   defw swap_cfa
@@ -5686,14 +5717,14 @@ branch_destination_0x8014:
   defw drop_cfa
   defw dup_cfa
   defw zero_less_than_cfa
-  defw zero_branch_cfa,0x0012 ; to branch_destination_0x8032
+  defw zero_branch_cfa,branch_destination_0x8032
   defw abs_cfa
   defw zero_cfa
   defw swap_cfa
   defw r_cfa
   defw m_slash_mod_cfa
   defw dnegate_cfa
-  defw branch_cfa,0x000A ; to branch_destination_0x803A
+  defw branch_cfa,branch_destination_0x803A
 branch_destination_0x8032:
   defw zero_cfa
   defw swap_cfa
@@ -5727,7 +5758,7 @@ branch_destination_0x8048:
   defw d_plus_cfa
   defw y1_cfa
   defw two_store_cfa
-  defw paren_loop_cfa,0xFFD8 ; to branch_destination_0x8048
+  defw paren_loop_cfa,branch_destination_0x8048
   defw semicolon_s_cfa
 
 case_nfa:
@@ -5804,10 +5835,10 @@ branch_destination_0x80F0:
   defw fetch_cfa
   defw equals_cfa
   defw zero_equals_cfa
-  defw zero_branch_cfa,0x000A ; to branch_destination_0x8106
+  defw zero_branch_cfa,branch_destination_0x8106
   defw two_cfa
   defw then_cfa
-  defw branch_cfa,0xFFEC ; to branch_destination_0x80F0
+  defw branch_cfa,branch_destination_0x80F0
 branch_destination_0x8106:
   defw csp_cfa
   defw store_cfa
@@ -5857,10 +5888,79 @@ udg_pfa:
   defw lit_cfa,sys_udg
   defw fetch_cfa
   defw semicolon_s_cfa
+
+char_nfa:
+  defb 0x04+0x80,"CHA","R"+0x80
+char_lfa:
+  defw udg_nfa
+char_cfa:
+  defw do_colon
+char_pfa:
+  defw b_l_cfa
+  defw word_cfa
+  defw here_cfa
+  defw one_plus_cfa
+  defw c_fetch_cfa
+  defw semicolon_s_cfa
+
+bracket_char_nfa:
+  defb 0x06+0x80+precedence_bit,"[CHAR","]"+0x80
+bracket_char_lfa:
+  defw char_nfa
+bracket_char_cfa:
+  defw do_colon
+bracket_char_pfa:
+  defw char_cfa
+  defw literal_cfa
+  defw semicolon_s_cfa
+
+backslash_nfa:
+  defb 0x01+0x80+precedence_bit,0x5C+0x80
+backslash_lfa:
+  defw bracket_char_nfa
+backslash_cfa:
+  defw do_colon
+backslash_pfa:
+  defw in_cfa,fetch_cfa,c_slash_l_cfa,mod_cfa
+  defw c_slash_l_cfa,swap_cfa,minus_cfa
+  defw in_cfa,plus_store_cfa
+  defw semicolon_s_cfa
+
+; doc{
+; : .(  ( "ccc<paren>" -- )
+;   [CHAR] ) TEXT PAD COUNT TYPE  ; IMMEDIATE
+; }doc
+
+nfa_of_top_most_word_in_forth_voc:
+
+dot_paren_nfa:
+  defb 0x02+0x80+precedence_bit,".","("+0x80
+dot_paren_lfa:
+  defw backslash_nfa
+dot_paren_cfa:
+  defw do_colon
+dot_paren_pfa:
+  defw lit_cfa,0x0029 ; ")"
+  defw text_cfa,pad_cfa,count_cfa,type_cfa
+  defw semicolon_s_cfa
+
 dictionary_pointer_after_cold:
 
 ; --------------------------------------------------------------
 ; History
 
-; 2015-06-02: Start, based on the disassembled code of Abersoft Forth
-; (http://programandala.net/en.program.abersoft_forth.html).
+; 2015-06-02:
+;
+; Start, based on the disassembled code of Abersoft Forth
+; (http://programandala.net/en.program.abersoft_forth.html). First
+; changes:
+;
+; Some fig-Forth words are renamed with their modern forms: `vlist` to
+; `words`, `-dup` to `?dup`, `minus` to `negate`, `dminus` to
+; `denegate`.
+;
+; `branch` and `back` are modified to do absolute branches.  The
+; branches are converted with a simple substitution, thanks to the
+; comments prepared by the disassembling of Abersoft Forth.
+;
+; New words, from the Afera library: `\`, `.(`, `char` and `[char]`.
