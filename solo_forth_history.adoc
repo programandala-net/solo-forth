@@ -302,3 +302,11 @@ the end bit of the last char. The new format will make some things
 easier.
 
 Change: `dr0` removed.
+
+Improvement: `nip` used in `/` and `*/`.
+
+.2015-06-19:
+
+Improvement: The new format of name fields is finished and working.
+The old format can be selected with conditional compilation, just in
+case, until the system is fully tested.

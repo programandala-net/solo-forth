@@ -52,19 +52,10 @@
 
 ( ) \ scr 1
 
-  \ 2015-06-11
-  \ XXX FIXME this issues error 7 (full stack) compiling test1,
-  \ and execution of words freezes the system.
-
-: test1 1 . ;
-
-  \ XXX FIXME with this change, compilation resets the machine:
-
-  \ : test1 ;
 
 ( debugging ) \ scr 2
 
-  \ 2015-06-18: Testing the new `(find)`, still buggy.
+  \ 2015-06-18: Testing the new `(find)`
 
 0 variable s 32 allot
 0 variable nfa 32 allot
@@ -116,7 +107,7 @@ s w n(find)
   \ #03 not used:
 \ Error #3: Dictionary full.
 \ Error #4: Warning: Is not unique.
-\ Error #5:
+\ Error #5: Word not found.
   \ #06 not used:
 \ Error #6: Out of disk range
 \ Error #7: Full stack.
@@ -508,6 +499,7 @@ require bs  require hexa.  require stype
 
   \ 2015-06-05: Copied from the Afera library
   \ (http://programandala.net/en.program.afera.html).
+  \ 2015-06-19: New: `?branch`.
 
 forth definitions decimal
 
@@ -544,6 +536,7 @@ forth definitions decimal
     ['] lit       of  decode-literal    endof
     ['] branch    of  decode-branch     endof
     ['] 0branch   of  decode-branch     endof
+    ['] ?branch   of  decode-branch     endof
     ['] (loop)    of  decode-branch     endof
     ['] (+loop)   of  decode-branch     endof
     ['] (.")      of  decode-dot-quote  endof
@@ -593,8 +586,8 @@ forth definitions decimal
 
 : decode  ( "name" -- )
   decode-usage
-  -find if    drop 0 decode-level ! (decode)
-        else  ." Not found"  then  ;
+  find if    drop  0 decode-level !  (decode)
+       else  5 error  then  ;
 
 ( words )
 
