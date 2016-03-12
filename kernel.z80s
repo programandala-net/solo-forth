@@ -15,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151119
+  ; Version:        20151123
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B4F
+version_low_part:   equ 0x7B53
   
-  ; Last modified:  201511190311  
+  ; Last modified:  201511230218
 
 ; ==============================================================
 ; Author and license
@@ -302,6 +302,7 @@ charset_address:                  equ 0xFFFF-charset_size+1
 
 error.stack_overflow:               equ -003
 error.stack_underflow:              equ -004
+error.dictionary_overflow:          equ -008
 error.not_found:                    equ -013
 error.compilation_only:             equ -014
 error.zero_length_name:             equ -016
@@ -3363,9 +3364,7 @@ endif
 ; ----------------------------------------------
   _variable_header decode_table_,'DECODE-TABLE'
 
-  ; XXX UNDER DEVELOPMENT
-
-  dw 0 ; no chained table ; XXX TODO
+;  dw 0 ; no chained table ; XXX TODO
               ; Symbol Shift + Letter --> new char
   db 0xC6,'[' ; "Y" 198 (0xC6) "AND"  --> 091 (0x5B) "["
   db 0xC5,']' ; "U" 197 (0xC5) "OR"   --> 093 (0x5D) "]"
@@ -3387,20 +3386,110 @@ endif
 ;
 ; }doc
 
-  ; XXX UNDER DEVELOPMENT
+  pop de
+  call decode_char.e
+  ld h,0
+  ld l,e
+  jp push_hl
 
-if 0
+decode_char.a:
+  push de
+  ld e,a
+  call decode_char.e
+  ld a,e
+  pop de
+  ret
+
+decode_char.e:
+  ld hl,decode_table_pfa-1
+decode_char.begin:
+  inc hl
+  ld a,(hl)
+  and a ; end of table?
+  ret z
+  cp e
+  inc hl
+  jr nz,decode_char.begin
+  ld e,(hl)
+  ret
+
+if 0 ; XXX OLD
 
   pop de
-  ld hl,decode_table_+2 ; XXX TMP
+  ld hl,decode_table_pfa-1
+
 decode_char.begin:
+  inc hl
   ld a,(hl)
-  and a
-  ld a,e
+  and a ; end of table?
+  jr z,decode_char.end
+  cp e
+  inc hl
+  jr nz,decode_char.begin
+
+  ld e,(hl)
+decode_char.end:
+  push de
+  _jp_next
 
 endif
 
-  _jpnext
+if 0 ; XXX UNDER DEVELOPMENT
+
+  ; improved version with support for chained tables
+
+; ----------------------------------------------
+  _colon_header decode_char_,'DECODE-CHAR'
+
+; doc{
+;
+; decode-char  ( c1 -- c2 )
+;
+; }doc
+
+  ; XXX TODO  
+
+  dw decode_table_
+  dw fetch_
+  dw question_dup_
+  dw zero_
+
+decode_char.do_it
+  dw cell_plus_
+  dw paren_decode_char_
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _code_header paren_decode_char_,'(DECODE-CHAR)'
+
+; doc{
+;
+; (decode-char)  ( c1 ca -- c1 false | c2 true )
+;
+; }doc
+
+  pop hl  ; ca 
+  pop de  ; c1
+  push de ; keep c1 on the stack, as default
+  dec hl
+
+decode_char.begin:
+  inc hl
+  ld a,(hl)
+  and a ; end of table?
+  jp z,false_pfa ; no match found
+  cp e
+  inc hl
+  jr nz,decode_char.begin
+
+  ; match found
+  ld e,(hl)
+decode_char.end:
+  pop hl  ; discard c1
+  push de
+  jp true_pfa
+
+endif
 
 ; ----------------------------------------------
   ; _code_header paren_key_,'(KEY)'
@@ -3469,6 +3558,7 @@ endif
 
 if 1
   call wait_for_a_key
+  call decode_char.a
   jp push_a
 endif
 
@@ -3553,6 +3643,13 @@ xkey.new_key:
   ; XXX TODO use a configurable list of chars pairs
 
 xkey.translate:
+
+if 1 ; XXX NEW
+
+  call decode_char.a
+
+else ; XXX OLD
+
 xkey.left_bracket:
   cp 0xC6
   jr nz,xkey.right_bracket
@@ -3581,6 +3678,7 @@ xkey.right_curly_bracket:
   cp 0xCB
   jr nz,xkey.end
   ld a,'}'
+endif
 
 xkey.end:
   ld l,a
@@ -6908,10 +7006,6 @@ acceptx.begin:
 ;
 ; }doc
 
-  ; XXX FIXME -- sometimes it seems the text is not updated
-  ; internally after deleting a char, but it looks right on the
-  ; screen. it seems it happens with the left key. not sure.
-
   dw span_,off_
   dw question_dup_
   dw zero_branch_,accept.end
@@ -6924,6 +7018,7 @@ accept.begin: ; ( ca )
   _literal delete_char
   dw equals_ ; delete key?
   dw zero_branch_,accept.maybe_carriage_return
+
   ; Delete key ( ca c )
   dw drop_
   dw span_,fetch_
@@ -6940,11 +7035,21 @@ accept.maybe_carriage_return: ; ( ca c )
   _literal carriage_return_char
   dw equals_ ; carriage return?
   dw zero_branch_,accept.ordinary_key
+
   ; Carriage return ( ca c )
   dw drop_,r_drop_
   dw branch_,accept.end
 
 accept.ordinary_key: ; ( ca c )
+
+  dw dup_,b_l_,less_than_ ; control key?
+  dw zero_branch_,accept.printable_key
+  ; Control key ( ca c )
+  dw drop_
+  dw branch_,accept.begin
+
+  ; Printable key
+accept.printable_key ; ( ca c )
   dw span_,fetch_,r_fetch_,less_than_
   dw zero_branch_,accept.begin ; the string is full
   _literal 1
@@ -6957,16 +7062,8 @@ accept.emit: ; ( ca c )
   dw branch_,accept.begin
 
 accept.end:
-
-;  _echo 'In accept.end:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_ ; XXX INFORMER
-
   dw drop_
   dw span_,fetch_
-
-;  _echo 'In accept before the end:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_ ; XXX INFORMER
-
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7973,6 +8070,23 @@ two_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header dictionary_stack_,'?DICTIONARY'
+
+; doc{
+;
+; ?dictionary  ( -- )
+;
+; Issue an error message if the dictionary is out of bounds.
+;
+; }doc
+
+  ; XXX UNDER DEVELOPMENT
+
+  dw zero_ ; XXX TMP
+  _question_throw error.dictionary_overflow
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header question_stack_,'?STACK'
 
 ; doc{
@@ -8741,7 +8855,7 @@ endif
   _code_header max_,'MAX'
 
   ; Credits:
-  ; Code from DZX-Forth.
+  ; Code adapted from DZX-Forth.
 
   pop de
 max.de:
@@ -8751,8 +8865,8 @@ max.1:
   ccf
 max.2:
   jp c,push_hl
-  ex de,hl
-  jp push_hl
+  push de
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header m_star_,'M*'
@@ -8871,7 +8985,7 @@ if 0
 
 ; ----
 ; : sm/rem  ( d n1 -- n2 n3 )
-;   over >r >r dabs r@ abs u/mod
+;   over >r >r dabs r@ abs um/mod
 ;   r> r@ xor ?negate swap
 ;   r> ?negate swap  ;
 ; ----
@@ -10776,10 +10890,24 @@ system_stack_pointer: equ $+1
   jp push_hlde
 
 ; ----------------------------------------------
+  _variable_header limit_,'LIMIT'
+
+; doc{
+;
+; limit  ( -- a )
+;
+; Variable that holds the address above the highest address
+; usable by the dictionary.
+;
+; }doc
+
+  dw 0
+
+; ----------------------------------------------
   _colon_header unused_,'UNUSED'
 
   ; XXX TODO -- adapt when the common heap is implemented
-  dw zero_,here_,minus_
+  dw limit_,fetch_,here_,minus_
   dw semicolon_s_
 
 ; ----------------------------------------------

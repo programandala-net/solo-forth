@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511190236
+\ Last modified: 201511230218
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -543,6 +543,23 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
   jpnext
 
   end-code
+
+( 3drop 4drop )
+
+code 3drop  ( x1 x2 x3 -- )
+  E1 c,  E1 c,  E1 c,
+    \ pop hl
+    \ pop hl
+    \ pop hl
+  jpnext  end-code
+
+code 4drop  ( x1 x2 x3 x4 -- )
+  E1 c,  E1 c,  E1 c,  E1 c,
+    \ pop hl
+    \ pop hl
+    \ pop hl
+    \ pop hl
+  jpnext  end-code
 
 ( 2rot )
 
@@ -1620,6 +1637,19 @@ wid-of replaces-voc constant wid-subst
 
   \ }}} =======================================================
   \ Printing {{{
+
+( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
+
+ 6 constant 'tab'
+ 8 constant 'bs'
+13 constant 'cr'
+
+: tab          ( -- )  'tab' emit  ;
+: backspace    ( -- )  'bs'  emit  ;
+
+: crs           ( n -- )  'cr'  emits  ;
+: tabs          ( n -- )  'tab' emits  ;
+: backspaces    ( n -- )  'bs'  emits  ;
 
 ( column last-column row last-row at-x at-y )
 
@@ -5469,9 +5499,7 @@ need break-key?  need .index
 
   \ XXX TODO -- pause with the space bar
 
-need break-key?  need trail  need name>link
-
-[defined] tab ?\  : tab  ( -- )  6 emit  ;
+need break-key?  need trail  need name>link  need tab
 
 : words  ( -- )
   trail
@@ -5489,15 +5517,12 @@ need >order
   \ Credits:
   \ Code adapted from pForth.
 
-need break-key?  need trail  need name>link
+need break-key?  need trail  need name>link  need tab
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
      \ Does the string _ca1 len1_ contains the string _ca2
      \ len2?_
-
-[defined] tab
-  ?\  : tab  ( -- )  6 emit  ;
 
 : words-like  ( "name" -- )
   \ Print all words (from the `context` vocabulary) containing a substring.
@@ -5792,14 +5817,109 @@ variable assert-level ( -- a )
 
 ( 0if 0while 0until )  \ ==controlstructures==
 
+  \ XXX TODO Compilation stack notation.
+
 : 0if  ( f -- )
   postpone ?branch >mark  ; immediate compile-only
 
+  \ doc{
+  \
+  \ 0if  ( f -- )
+  \
+  \ Faster and smaller alternative to the idiom `0= if`.
+  \
+  \ }doc
+
+
 : 0while  ( f -- )
-  postpone 0if  ; immediate compile-only
+  postpone 0if  postpone swap  ; immediate compile-only
+  \ XXX TODO use cs-swap
+
+  \ doc{
+  \
+  \ 0while  ( f -- )
+  \
+  \ Faster and smaller alternative to the idiom `0= while`.
+  \
+  \ }doc
 
 : 0until  ( f -- )
   postpone ?branch <resolve  ; immediate compile-only
+
+  \ doc{
+  \
+  \ 0until  ( f -- )
+  \
+  \ Faster and smaller alternative to the idiom `0= until`.
+  \
+  \ }doc
+
+( -branch )
+
+code -branch  ( f -- )
+
+  E1 c,
+    \ pop hl
+  CB c, 7C c,
+    \ bit 7,h ; negative?
+  CA c, ' branch >body ,
+    \ jp z,branch_pfa ; if not, branch
+  03 c, 03 c,
+    \ inc bc
+    \ inc bc ; skip the inline branch address
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ -branch  ( f -- )
+  \
+  \ A run-time procedure to branch conditionally. If  _f_ on
+  \ stack is negative, the following in-line address is copied
+  \ to IP to branch forward or  backward.
+  \
+  \ Compiled by `-if`, `-while` and `-until`.
+  \
+  \ }doc
+
+( -if -while -until )
+
+  \ XXX TODO Compilation stack notation.
+
+need -branch  need cs-swap
+
+: -if  ( f -- )
+  postpone -branch >mark  ; immediate compile-only
+
+  \ doc{
+  \
+  \ -if  ( f -- )
+  \
+  \ Faster and smaller alternative to the idiom `0< if`.
+  \
+  \ }doc
+
+: -while  ( f -- )
+  postpone -if  postpone cs-swap  ; immediate compile-only
+
+  \ doc{
+  \
+  \ -while  ( f -- )
+  \
+  \ Faster and smaller alternative to the idiom `0< while`.
+  \
+  \ }doc
+
+: -until  ( f -- )
+  postpone -branch <resolve  ; immediate compile-only
+
+  \ doc{
+  \
+  \ -until  ( f -- )
+  \
+  \ Faster and smaller alternative to the idiom `0< until`.
+  \
+  \ }doc
 
 ( retry )
 
@@ -5824,12 +5944,14 @@ variable assert-level ( -- a )
   \ Execute _cfa_ with the content of `base` being _n_
   \ and restoring the original `base` afterwards.
 
-( cs-pick cs-roll )
+( cs-pick cs-roll cs-swap cs-drop )
 
-need pick  need roll
+need alias need pick  need roll
 
-: cs-pick  pick  ;
-: cs-roll  roll  ;
+' pick alias cs-pick
+' roll alias cs-roll
+' swap alias cs-swap
+' drop alias cs-drop
 
 ( cs-pick cs-roll cs-drop cs-mark cs-test cs-push cs-pop )
 
@@ -7080,14 +7202,24 @@ cr  0              dup 3 .r  select-test
 cr  127            dup 3 .r  select-test
 cr  128            dup 3 .r  select-test
 
+( create: )
+
+: create:  ( "name" -- )  create hide ]  ;
+  \ Create a word that will return the address of its pfa.
+  \
+  \ The idea for this word was borrowed from CP/M-volksForth
+  \ 3.80a.
+
 ( case: )
 
   \ Credits:
   \ Code adapted from F83.
 
+need create:
+
 : case:  ( "name" -- )
   \ Create a positional case word.
-  create  ]
+  create:
   does>   ( n -- )
           \ Execute the n-th word compiled.
           ( n pfa ) swap cells + perform  ;
@@ -7437,6 +7569,68 @@ code inkey  ( -- c | 0 )
   pusha jp
 
   end-code
+
+( nuf? )
+
+  \ Credits:
+  \
+  \ Code adapted from lpForth and Forth Dimensions (volume 10,
+  \ number 1, page 29).
+
+need aborted?
+
+[defined] 'cr' ?\ 13 constant 'cr' \ code of carriage return
+
+: nuf?  ( -- f )  'cr' aborted?  ;
+
+  \ XXX OLD -- Classic definition:
+  \
+  \ : nuf?  ( -- f )  key? dup if  key 2drop key 'cr' = then  ;
+
+  \ doc{
+  \
+  \ nuf?  ( -- f )
+  \
+  \ If no key is pressed return _false_.  If a key is pressed,
+  \ discard it and wait for a second key. Then return _true_ if
+  \ it's a carriage return, else return _false_.
+
+  \ Usage example:
+  \
+  \ : listing  ( -- )
+  \   begin  ." bla " nuf?  until  ." Aborted"  ;
+  \
+  \ }doc
+
+( aborted? )
+
+: aborted?  ( c -- f )
+  key? dup  if    key 2drop key =
+            else  nip  then  ;
+
+  \ doc{
+  \
+  \ aborted?  ( c -- f )
+  \
+  \ If no key is pressed return _false_.  If a key is pressed,
+  \ discard it and wait for a second key. Ther return _true_ if
+  \ it's _c_, else return _false_.
+
+  \ Usage example:
+  \
+  \ : listing  ( -- )
+  \   begin  ." bla "  bl aborted?  until  ." Aborted"  ;
+  \
+  \ }doc
+
+
+( break? )
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TODO try
+
+: break?  ( -- f )
+  key? dup if  key 2drop break-key?  then  ;
 
 ( inkey )
 
@@ -9289,6 +9483,17 @@ need body>name
   \ Credits:
   \ Word from Gforth.
 
+( swap-current )
+
+need get-current  need set-current
+
+: swap-current  ( wid1 -- wid2 )
+  get-current swap set-current  ;
+
+  \ Credits:
+  \
+  \ Idea from lpForth.
+
   \ }}} =======================================================
   \ Random number generators {{{
 
@@ -9483,6 +9688,7 @@ need random-n
 : alias  ( cfa "name" -- )
   dup code? if  code-alias exit  then
   dup code-alias? if  @ (code-alias) exit  then
+  \ XXX TODO -- why `@ (code-alias)` instead `code-alias`?
   defer-alias  ;
 
   \ doc{
@@ -9512,6 +9718,9 @@ need random-n
    compile-only? executing? and -14 ?throw
    immediate? executing? or
    if  execute  else  compile,  then  ;
+
+  \ XXX TODO -- consult this sentence of the description: "when
+  \ looking up _oldname_, _newname_ shall not be found."
 
   \ doc{
   \
@@ -10669,9 +10878,13 @@ forth-wordlist set-current
   \ From his book _Introducción a Forth_ (2007-01)
 
   \ 2015-11-18: Start.
+  \ 2015-11-21: Changes.
 
 need value  need set-bit  need reset-bit  need bit?
 need reserve  need alias
+
+0 value heap  ( -- a )
+  \ Address of the current heap.
 
 8 constant address-unit-bits
 16 value /chunk \ bytes per chunk
@@ -10686,27 +10899,11 @@ need reserve  need alias
 : chunks>bytes ( n1 -- n2 )  address-unit-bits groups  ;
   \ Return the bytes _n2_ required for a bitmap of _n1_ chunks.
 
-: create-heap ( n "name" -- )
-  create  bytes>chunks dup ,              \ chunks
-          0 ,                             \ free chunks
-          dup chunks>bytes reserve drop   \ bitmap
-              /chunk * allot  ;           \ data space
-  \ Create a new heap "name" to hold _n_ bytes.
-
--->
-
-( create-heap )
-
-0 value heap  ( -- a )
-  \ Address of the current heap.
-
-  \ XXX TODO
-
 ' heap alias heap-chunks  ( -- a )
   \ Address that holds the number of chunks of the current
   \ heap.
 
-: heap-unused-chunks  ( -- a )  heap cell+  ;
+: heap-unused-chunks  ( -- a )  heap-chunks cell+  ;
   \ Address that holds the number of unused chunks of the
   \ current heap.
 
@@ -10721,11 +10918,11 @@ need reserve  need alias
 
 ( create-heap )
 
-: (mapbit)  ( n1 -- n2 a2 )
-  heap-map address-unit-bits /mod rot +  ;
+: (mapbit)  ( n1 -- n2 ca )
+  address-unit-bits /mod heap-map +  ;
   \ n1 = number of bit in the bitmap
-  \ a2 = address of the correspondent byte
   \ n2 = number of bit in the byte at _a2_
+  \ ca = address of the bitmap that holds bit _n2_
 
 : mapbit ( n1 -- a2 b n2 )  (mapbit) dup @ rot  ;
   \ n1 = number of bit in the bitmap
@@ -10742,10 +10939,6 @@ need reserve  need alias
 : free-chunk ( n -- )  mapbit reset-bit swap !  ;
   \ Mark chunk _n_ as free.
 
--->
-
-( create-heap )
-
 : allocated>chunks  ( a -- n )  cell- @  ;
   \ Convert the address _a_ of an allocated space in the
   \ current heap to its number of chunks.
@@ -10761,45 +10954,80 @@ need reserve  need alias
   \ current heap to its index _n1_ in the map of heap chunks
   \ and the number _n2_ of ocuppied chunks.
 
-: free  ( a -- )
-  allocated>map dup >r
-  bounds do  i free-chunk  loop
-  r> heap-unused-chunks +!  ;
-  \ Free the allocated space at _a_ from the current heap.
-
-: .heap ( -- )
-  heap-chunks @ 0 do
-    i used-chunk? if  [char] x  else  [char] -  then  emit
-  loop  ;
-  \ Print the map of the current heap. Occupied chunks are
-  \ marked with a "x"; free chunks are marked with a "-".
-
 -->
 
 ( create-heap )
 
 : locate-chunks  ( n1 -- n1 n2 0 | ior )
-  dup 0 \ count
-  heap-chunks 0 do  ( n1 n1 count )
-    2dup = if  2drop i 0 unloop exit  then
-    i used-chunk? if  drop 0  else  1+  then
-  loop  drop 2drop -59  ;
+  0 tuck  ( n2 n1 count )
+  heap-chunks @ 0 do  ( n2 n1 count )
+    i used-chunk? if  drop >r i 1+ r> 0  else  1+  then
+    2dup = if  drop swap 0 unloop exit  then
+  loop  2drop drop -59  ;
   \ Locate _n1_ consecutive free chunks in the current heap.
-  \ If succesful, _n2_ is the first chunk of the group and ior
-  \ is zero; else _n2_ is indefined and ior is -59, the error
-  \ code for `allocate`.
+  \ If succesful, _n2_ is the first chunk of the group;
+  \ else return _ior_ -59, the error code for `allocate`.
 
 : chunk>address  ( n1 -- a )  /chunk * heap-data +  ;
 
-: (allocate)  ( n1 n2 -- a 0 )
-  ( chunks first-chunk )
+: (allocate)  ( n1 n2 -- a )
   dup chunk>address >r
-  bounds do  i use-chunk  loop
-  r> 0  ;
-  \ Allocate _n1_ chunks starting from chunk _n2_ 
+  swap bounds do  i use-chunk  loop
+  r>  ;
+  \ Allocate _n1_ chunks of the current heap, starting from
+  \ chunk _n2_; return the address _a_ of the allocated space.
+
+-->
+
+( create-heap )
+
+  \ User interface
+
+: create-heap ( n "name" -- )
+  create  bytes>chunks dup ,  0 ,
+            \ max chunks and free chunks
+          dup chunks>bytes reserve drop
+            \ bitmap
+          /chunk * allot  ;
+            \ data space
+  \ Create a new heap "name" to hold _n_ bytes.
 
 : allocate  ( n -- a ior )
-  bytes>chunks locate-chunks ?dup ?exit  (allocate)  ;
+  bytes>chunks locate-chunks ?dup ?exit  (allocate) 0  ;
+
+: free  ( a -- ior )
+  allocated>map dup >r
+  bounds do  i free-chunk  loop
+  r> heap-unused-chunks +! 0  ;
+
+  \ XXX TODO -- update with `resize`
+  \ doc{
+  \
+  \ free  ( a -- ior )
+  \
+  \ Return the contiguous region of data space indicated by _a_
+  \ to the system for later allocation. _a_ shall indicate a
+  \ region of data space that was previously obtained by
+  \ `allocate`.
+  \
+  \ If the operation succeeds, _ior_ is zero. If the operation
+  \ fails, _ior_ is -60.
+  \
+  \ Standard: Forth-94 (MEMORY), Forth-2012 (MEMORY).
+  \
+  \ }doc
+
+
+: empty-heap  ( -- )  heap-chunks @ 0 do  i free-chunk  loop  ;
+  \ Empty the current heap, setting all chunks free.
+
+: .heap ( -- )
+  heap-chunks @ 0 do
+    i used-chunk? if  [char] x  else  [char] -  then  emit
+  loop  ;
+
+  \ Print the map of the current heap. Occupied chunks are
+  \ marked with a "x"; free chunks are marked with a "-".
 
   \ }}} =======================================================
   \ Leo Brodie's DOER ... MAKE construct {{{
@@ -11588,9 +11816,7 @@ only forth also definitions
 
 need random  need j  need >=  need <=  need 2/
 need value  need d<>  need d=  need case  need ms  need frames@
-need yes?  need begin-stringtable  need case:
-
-[defined] tab ?\  : tab  ( -- )  6 emit  ;
+need yes?  need begin-stringtable  need case:  need tab
 
 [defined] >body ?\  : >body  ( cfa -- pfa )  >body  ;
 
