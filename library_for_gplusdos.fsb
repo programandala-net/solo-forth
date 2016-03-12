@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512170324
+\ Last modified: 201512210335
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -82,9 +82,8 @@ variable last-locatable  blk/disk 1- last-locatable !
   delimited  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over
-    contains if  2drop i unloop exit  then
-    \ break-key? ?leave
-    \ XXX TODO -- `break-key?` is not in the kernel
+      contains if  2drop i unloop exit  then
+      break-key? ?leave
   loop  2drop false  ;
 
   \ doc{
@@ -387,7 +386,7 @@ s" Standard error codes" locate msg-scr !
   \ XXX UNDER DEVELOPMENT
 
   \ XXX Gforth:
-: execute-parsing  ( ca len cfa -- )
+: execute-parsing  ( ca len xt -- )
   >in @ >r >in off
   source >r >r ;
 
@@ -428,7 +427,7 @@ s" Standard error codes" locate msg-scr !
   \  the end.  byte), and with one blank at the end (not
   \  included in the count).
   \
-  \  Standard: Forth-94 (CORE), Forth-2012 (CORE).
+  \  Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
   \  }doc
 
@@ -1630,10 +1629,10 @@ wid-of replaces-voc constant wid-subst
 
 ( replaces )
 
-: findsubst  ( ca len -- cfa f | 0 )
+: findsubst  ( ca len -- xt f | 0 )
   wid-subst search-wordlist  ;
   \ Given a name string, find the substitution.
-  \ Return _cfa_ and _f_ if found, or just zero if not found.
+  \ Return _xt_ and _f_ if found, or just zero if not found.
 
 : replaces \ text tlen name nlen --
   2dup findsubst if
@@ -1851,7 +1850,7 @@ variable print-width
   \ Graphics.
 
 : udg!  ( b0..b7 c -- )
-  128 - 8 * sys-udg @ + 1 - dup 8 + do  i c!  -1 +loop  ;
+  128 - 8 * sys-udg @ + dup 7 + do  i c!  -1 +loop  ;
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
@@ -3538,7 +3537,7 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
   \ all the same type.
   \
-  \ Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
   \
   \ }doc
 
@@ -3687,7 +3686,7 @@ code 2/  ( x1 -- x2 )
   \ This is the same as `s>d 2 fm/mod swap drop`. It is not the
   \ same as `2 /`, nor is it the same as `1 rshift`.
   \
-  \ Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).
   \
   \ }doc
@@ -3738,7 +3737,7 @@ need d2*  need 2/
   \ quotient lies outside the range of a single-cell signed
   \ integer.
 
-  \ Standard: Forth-94 (CORE), Forth-2012 (CORE).
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
 
   \ [caption="Symmetric Division Example"]
   \
@@ -3800,7 +3799,7 @@ need d2*  need 2/
   \ the remainder _n2_. Input and output stack arguments are
   \ signed.
   \
-  \ Standard: Forth-94 (CORE), Forth-2012 (CORE).
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
 
   \ [caption="Floored Division Example"]
   \
@@ -3856,7 +3855,7 @@ variable (any?)
   \ Credits:
   \ Code from Z88 CamelForth.
 
-: ud*  ( ud1 d2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
+: ud*  ( ud1 u2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
 
 ( d* )
 
@@ -4104,7 +4103,7 @@ code m+  ( d1 n -- d2 )
   \
   \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
   \
-  \ Standard: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
+  \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
   \
   \ }doc
 
@@ -4213,89 +4212,60 @@ need s=
 
 : [then]  ( -- )  ; immediate
 
-( ?--> )
-
-: ?-->  ( f -- )  if  postpone -->  then  ; immediate
-
-  \ doc{
-  \
-  \ ?-->  ( f -- )
-  \
-  \ If _f_ is not false, continue interpretation on the next
-  \ sequential block.  parse area. This word is used for
-  \ conditional compilation.
-  \
-  \ }doc
-
-
-  \ XXX TMP -- `?\` is still in the kernel
-
-  \ : ?\  ( f "text<eol>" -- )  if  postpone \  then  ; immediate
-
-  \ doc{
-  \
-  \ ?\  ( f "ccc" -- )
-  \
-  \ If _f_ is not false, parse and discard the rest of the
-  \ parse area. This word is used for conditional compilation.
-  \
-  \ }doc
-
-
 ( body>name name>body link>name name>link >>link name<name )
 
 [unneeded] body>name
-?\ : body>name  ( pfa -- nfa ) body> >name  ;
+?\ : body>name  ( pfa -- nt ) body> >name  ;
 
 [unneeded] name>body
-?\ : name>body  ( nfa -- pfa ) name> >body  ;
+?\ : name>body  ( nt -- pfa ) name> >body  ;
 
 [unneeded] link>name dup  ?\ need alias
-?\ ' cell+ alias link>name  ( nfa -- pfa )
+?\ ' cell+ alias link>name  ( nt -- pfa )
 
 [unneeded] name>link dup  ?\ need alias
-?\ ' cell- alias name>link  ( nfa -- pfa )
+?\ ' cell- alias name>link  ( nt -- pfa )
 
 [unneeded] >>link dup  ?\ need alias
-?\ ' cell+ alias >>link  ( cfap -- lfa )
+?\ ' cell+ alias >>link  ( xtp -- lfa )
 
 [unneeded] name<name dup  ?\ need name>link
-?\ : name<name  ( nfa1 -- nfa2 )  name>link @n  ;
-  \ Get the previous _nfa2_ from _nfa1_.
+?\ : name<name  ( nt1 -- nt2 )  name>link @n  ;
+  \ Get the previous _nt2_ from _nt1_.
 
 ( name>interpret name>compile )
 
   \ XXX UNDER DEVELOPMENT
 
-: name>interpret  ( nfa -- cfa | 0 )
+: name>interpret  ( nt -- xt | 0 )
   ;
 
   \ doc{
   \
-  \ name>interpret  ( nfa -- cfa | 0 )
+  \ name>interpret  ( nt -- xt | 0 )
   \
-  \ Return a _cfa_ that represents the interpretation semantics
-  \ of the word _nfa_. If _nfa_ has no interpretation
+  \ Return a _xt_ that represents the interpretation semantics
+  \ of the word _nt_. If _nt_ has no interpretation
   \ semantics, return zero.
   \
-  \ Standard: Forth-2012 (TOOLS EXT).
+  \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ }doc
 
-: name>compile  ( nfa -- x cfa )
+: name>compile  ( nt -- x xt )
   ;
 
   \ doc{
   \
-  \ name>compile  ( nfa -- x cfa )
+  \ name>compile  ( nt -- x xt )
   \
-  \ Return _x cfa_ that represents the compilation semantics
-  \ of the word _nfa_. The  returned _cfa_ has the stack
-  \ effect ( i*x  x -- j*x  ).  Executing _cfa_ consumes
+  \ Return _x xt_ that represents the compilation semantics
+  \ of the word _nt_. The  returned _xt_ has the stack
+  \ effect ( i*x  x -- j*x  ).  Executing _xt_ consumes
   \ _x_ and performs the compilation semantics of the word
-  \ represented by _nfa_.
+  \ represented by _nt_.
   \
-  \ Standard: Forth-2012 (TOOLS EXT).
+  \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ }doc
 
@@ -4303,14 +4273,14 @@ need s=
 
 need c!toggle-bits
 
-: smudged  ( nfa -- )
+: smudged  ( nt -- )
   smudge-mask swap names-bank c!toggle-bits default-bank  ;
 
   \ doc{
   \
-  \ smudged  ( nfa -- )
+  \ smudged  ( nt -- )
   \
-  \ Toggle the "smudge bit" of the given name field address.
+  \ Toggle the "smudge bit" of the given _nt_.
   \
   \ This word is obsolete. `hided` and `revealed` are used
   \ instead.
@@ -4331,7 +4301,7 @@ need c!toggle-bits
   \ This word is obsolete. `hide` and `reveal` are used
   \ instead.
   \
-  \ Standard: fig-Forth.
+  \ Origin: fig-Forth.
   \
   \ }doc
 
@@ -4368,16 +4338,16 @@ need c!toggle-bits
   \ (1981-01). The following original code is for fig-Forth.
   \ I added stack effects and comments:
 
-  \ : INTERNAL  ( -- nfa )  CURRENT @ @  ;
+  \ : INTERNAL  ( -- nt )  CURRENT @ @  ;
   \   \ Start the definition of internal words of the module.
-  \   \ Return the nfa of the latest word created in the
+  \   \ Return the nt of the latest word created in the
   \   \ `current` vocabulary.
   \
-  \ : EXTERNAL  ( -- nfa )  HERE  ;
+  \ : EXTERNAL  ( -- nt )  HERE  ;
   \   \ Start the definition of external words of the module.
-  \   \ Return the nfa of the next word to be defined.
+  \   \ Return the nt of the next word to be defined.
   \
-  \ : MODULE  ( nfa1 nfa2 -- )  PFA LFA !  ;
+  \ : MODULE  ( nt1 nt2 -- )  PFA LFA !  ;
   \   \ End the module.
   \   \ Link the first external word to the word before the
   \   \ first internal word, thus making the internal words
@@ -4388,18 +4358,18 @@ need c!toggle-bits
 
 need >>link
 
-: private{  ( -- nfa )  latest  ;
+: private{  ( -- nt )  latest  ;
   \ Start private definitions.
-  \ Return the nfa of the latest word created in the
+  \ Return the nt of the latest word created in the
   \ `current` vocabulary.
 
-: }private  ( -- cfap )  np@  ;
+: }private  ( -- xtp )  np@  ;
   \ End private definitions.
-  \ Return the cfap (code field address pointer) of the first
+  \ Return the xtp (execution token pointer) of the first
   \ word to be defined as public, that is, the current value
   \ of the names pointer.
 
-: privatize  ( nfa cfap -- )  >>link !n  ;
+: privatize  ( nt xtp -- )  >>link !n  ;
   \ Hide all words between `private{` and `}private`:
   \ Link the first public word to the word before the
   \ first private word, thus making the private words
@@ -4433,7 +4403,7 @@ need >>link
   \ Copyright 1996 Phil Burk
   \ ____
 
-need abort"  need name<name
+need name<name  need abort"
 
 variable private-start  variable private-stop
 
@@ -5017,6 +4987,34 @@ code c!dosvar  ( b n -- )
   \ }}} =======================================================
   \ Disk blocks {{{
 
+( ?--> )  \ ==diskblocks==
+
+: ?-->  ( f -- )  if  postpone -->  then  ; immediate
+
+  \ doc{
+  \
+  \ ?-->  ( f -- )
+  \
+  \ If _f_ is not false, continue interpretation on the next
+  \ sequential block.  parse area. This word is used for
+  \ conditional compilation.
+  \
+  \ }doc
+
+
+  \ XXX TMP -- `?\` is still in the kernel
+
+  \ : ?\  ( f "text<eol>" -- )  if  postpone \  then  ; immediate
+
+  \ doc{
+  \
+  \ ?\  ( f "ccc" -- )
+  \
+  \ If _f_ is not false, parse and discard the rest of the
+  \ parse area. This word is used for conditional compilation.
+  \
+  \ }doc
+
 ( update flush continued ?load thru +load +thru reload )
 
 : update  ( -- )
@@ -5031,7 +5029,7 @@ code c!dosvar  ( b n -- )
   \ its buffer be required for storage of a different block, or
   \ upon execution of `flush` or `save-buffers`.
   \
-  \ Standard: Forth-83 (Required Word Set), Forth-94 (BLOCK),
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
   \
   \ }doc
@@ -5045,7 +5043,7 @@ code c!dosvar  ( b n -- )
   \ Perform the function of `save-buffers`, then unassign all
   \ block buffers.
   \
-  \ Standard: Forth-83 (Required Word Set), Forth-94 (BLOCK),
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
   \ }doc
 
@@ -5057,7 +5055,7 @@ code c!dosvar  ( b n -- )
   \
   \ Continue interpretation at block _u_.
   \
-  \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
+  \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
   \ }doc
@@ -5085,7 +5083,7 @@ code c!dosvar  ( b n -- )
   \ Load consecutively the blocks from _block1_ through
   \ _block2_.
   \
-  \ Standard: Forth-79 (Reference Word Set), Forth-83
+  \ Origin: Forth-79 (Reference Word Set), Forth-83
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
   \ Forth-2012 (BLOCK EXT).
   \
@@ -5108,7 +5106,7 @@ code c!dosvar  ( b n -- )
   \ Define a word "name" which, when executed, will  load
   \ block _block_.
   \
-  \ Standard: Forth-79 (Reference Word Set), Forth-83 (Appendix
+  \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
   \ }doc
@@ -5156,7 +5154,7 @@ exit
   \
   \ Print line _n1_ from block _n2_, without trailing spaces.
   \
-  \ Standard: fig-Forth.
+  \ Origin: fig-Forth.
   \
   \ }doc
 
@@ -5320,7 +5318,7 @@ variable old-voc-link
 
   old-voc-link @ voc-link !
 
-  \ Store the nfa of the latest word created before compiling
+  \ Store the nt of the latest word created before compiling
   \ the transient code, into the lfa of the first word created
   \ after the transient code was finished by `]transient`.
 
@@ -5398,7 +5396,7 @@ variable old-voc-link
 
 ( dump )
 
-need break-key?  need 16hex.  need ascii-type
+need 16hex.  need ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
@@ -5420,7 +5418,7 @@ need break-key?  need 16hex.  need ascii-type
 
 ( wdump )
 
-need break-key?  need 16hex.
+need 16hex.
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
@@ -5516,8 +5514,8 @@ variable decode-address  \ in the word being decoded
   \ Checks of the main code
 
   \ XXX FIXME -- `;s` is not a valid check anymore
-: decode-end?  ( cfa -- f )
-  \ Is the given cfa the end of a definition?
+: decode-end?  ( xt -- f )
+  \ Is the given xt the end of a definition?
   dup  ['] exit =  swap ['] (;code) =  or  ;
 
 : colon-pfa?  ( pfa -- f )
@@ -5537,10 +5535,10 @@ variable decode-address  \ in the word being decoded
   dup colon-pfa? if
     dup body> decode-address ! indent  ." : " dup body>name id.
     begin   ( pfa+n ) dup decode-address !
-            dup @ dup ( pfa+n cfa cfa ) decode-end? 0=
-            \ ( pfa+n cfa f )
+            dup @ dup ( pfa+n xt xt ) decode-end? 0=
+            \ ( pfa+n xt f )
     while  \ high level & not end of colon definition
-      \ ( pfa+n cfa )
+      \ ( pfa+n xt )
       2+ ( pfa+n pfa' ) dup indent+  body>name id.
       key case  [char] q  of  sp0 @ sp! quit  endof \ q
                       bl  of  drop            endof \ space
@@ -5561,21 +5559,21 @@ variable decode-address  \ in the word being decoded
 : decode  ( "name" -- )
   decode-usage
 
-  \ XXX OLD -- defined  ( "name" -- x 0 | cfa 1 | cfa -1 )
+  \ XXX OLD -- defined  ( "name" -- x 0 | xt 1 | xt -1 )
   \ defined if  >body  0 decode-level !  (decode)
   \         else  drop  -13 throw  then  ;
 
-  \ XXX OLD -- defined  ( "name" -- ca len false | cfa b true )
+  \ XXX OLD -- defined  ( "name" -- ca len false | xt b true )
   \ defined 0= -13 ?throw
   \ drop >body  0 decode-level !  (decode)  ;
 
-  \ XXX NEW -- defined  ( "name" -- nfa | 0 )
+  \ XXX NEW -- defined  ( "name" -- nt | 0 )
   defined dup 0= -13 ?throw
   name>body  0 decode-level !  (decode)  ;
 
 ( list )
 
-need break-key?  need .line
+need .line
 
 : list  ( n -- )
 
@@ -5588,21 +5586,9 @@ need break-key?  need .line
     break-key? ?leave
   loop cr  ;
 
-( break-key? )
-
-code break-key?  ( -- f )
-
-  \ Is the Break key pressed?
-
-  CD c, 1F54 ,              \ call rom_break_key
-  D2 c, ' true >body ,    \ jp nc,true
-  C3 c, ' false >body ,   \ jp false
-
-  end-code
-
 ( index .index )
 
-need break-key?  need .line
+need .line
 
 : .index  ( n -- )  cr dup 3 .r space 0 swap .line  ;
   \ Print the first line of the block _n_.
@@ -5625,7 +5611,7 @@ need break-key?  need .line
 
 ( index-like )
 
-need break-key?  need .index
+need .index
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -5652,7 +5638,7 @@ need break-key?  need .index
 
 ( index-ilike )
 
-need break-key?  need .index
+need .index
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -5690,7 +5676,7 @@ need break-key?  need .index
 
   \ XXX TODO -- pause with the space bar
 
-need break-key?  need trail  need name>link  need tab
+need trail  need name>link  need tab
 
 : words  ( -- )
   trail
@@ -5707,7 +5693,7 @@ need break-key?  need trail  need name>link  need tab
   \ Credits:
   \ Code adapted from pForth.
 
-need break-key?  need trail  need name>link  need tab
+need trail  need name>link  need tab
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -5716,7 +5702,7 @@ need break-key?  need trail  need name>link  need tab
 
 : words-like  ( "name" -- )
   \ Print all words (from the `context` vocabulary) containing a substring.
-  parse-name 2dup uppers trail  ( ca len nfa )
+  parse-name 2dup uppers trail  ( ca len nt )
   begin  dup 0<> break-key? 0= and  while
     dup >r
     name>string 2over contains if  r@ id. tab  then
@@ -5754,12 +5740,14 @@ need [if]
 : .depth  ( n -- )  [char] < emit 0 .r [char] > space  ;
 
 : .s   ( -- )
-  depth dup .depth
-  if  sp@ 2- s0 @ 2- do i @ . -2 +loop  then  ;
+  depth dup .depth if
+    sp@ s0 @ cell- do i @ .  [ cell negate ] literal +loop
+  then  ;
 
 : u.s   ( -- )
-  depth dup .depth
-  if  sp@ 2- s0 @ 2- do i @ u. -2 +loop  then  ;
+  depth dup .depth if
+    sp@ s0 @ cell- do i @ u.  [ cell negate ] literal +loop
+  then  ;
 
 ( possibly anew )
 
@@ -5779,42 +5767,21 @@ need marker
 
   \ XXX UNDER DEVELOPMENT
 
-  \ XXX TODO -- add user variables pointer
-  \ XXX TODO -- add order
-  \ XXX TODO -- add latest of all vocs
+: marker,  ( -- a )
+  here  voc-link @ dup ,
+  begin
+    dup cell- @  ( a nt ) swap @
+  dup 0= until  drop
+  np@ ,  ;
+  \ Compile the data required by a a marker and return its
+  \ address.
 
-: get-every-latest  ( -- nfa0..nfan | nfa )
-  \ Get the latest definition of every vocabulary.
-  voc-link @ begin
-    dup cell - @  ( a nfa ) swap @
-  dup 0= until  drop  ;
-
-: set-every-latest  ( nfa0..nfan | nfa -- )
-  \ Set the latest definition of every vocabulary.
-  voc-link @ begin
-    dup cell - @  ( a nfa ) swap @
-  dup 0= until  drop  ;
-
-: marker@  ( -- x1..xn1 n1 nfa1..nfan2 n2 )
-  \ Get the data a marker word must preserve.
-  \ n = number of data cells on the stack
-  depth >r
-  here np@ voc-link @
-  depth r> - get-every-latest  ;
-
-: marker!  ( a -- )
-  \ Restore the data preserved by a marker word.
-  set-order 0 do  2@ !  loop  ;
-
--->
-
-( marker )
-
-: n,  ( x1..xn n -- )  0 do  ,  loop  ;
-  \ Compile _n_ cells.
+: unmarker  ( a -- )
+  ;
+  \ Restore the data preserved at _a_ by a marker word.
 
 : marker  ( "name" -- )
-  marker@ create n,  does>  ( -- ) ( pfa )  marker!  ;
+  marker, create ,  does>  ( -- ) ( pfa )  @ unmarker  ;
   \ Create a definition for "name" that will remove itself and
   \ everything defined after it, restoring all dictionary
   \ allocation and search order pointers to the state they had
@@ -5828,19 +5795,19 @@ need marker
   \ XXX TODO -- add order
   \ XXX TODO -- add latest of all vocs
 
-: get-every-latest  ( -- nfa0..nfan | nfa )
+: get-every-latest  ( -- nt0..ntn | nt )
   \ Get the latest definition of every vocabulary.
   voc-link @ begin
-    dup cell - @  ( a nfa ) swap @
+    dup cell - @  ( a nt ) swap @
   dup 0= until  drop  ;
 
-: set-every-latest  ( nfa0..nfan | nfa -- )
+: set-every-latest  ( nt0..ntn | nt -- )
   \ Set the latest definition of every vocabulary.
   voc-link @ begin
-    dup cell - @  ( a nfa ) swap @
+    dup cell - @  ( a nt ) swap @
   dup 0= until  drop  ;
 
-: marker@  ( -- x1..xn1 n1 nfa1..nfan2 n2 )
+: marker@  ( -- x1..xn1 n1 nt1..ntn2 n2 )
   \ Get the data a marker word must preserve.
   \ n = number of data cells on the stack
   depth >r  here np@ voc-link @
@@ -5955,12 +5922,12 @@ variable assert-level ( -- a )
 
   \ XXX OLD
   \
-  \ XXX WARNING -- Since name field addresses are saved in a
-  \ memory bank, the best way to save a modified Forth system
-  \ is to make a snapshot with the ZX Spectrum emulator;
-  \ otherwise a multipart saving and loading would be needed.
-  \ Anyway, these words are meant to save a Forth program that
-  \ does not need to search the dictionary.
+  \ XXX WARNING -- Since name fields are saved in a memory
+  \ bank, the best way to save a modified Forth system is to
+  \ make a snapshot with the ZX Spectrum emulator; otherwise a
+  \ multipart saving and loading would be needed.  Anyway,
+  \ these words are meant to save a Forth program that does not
+  \ need to search the dictionary.
   \
   \ XXX TODO -- Study how to save and load the names bank, even
   \ after assembling the kernel.
@@ -5992,14 +5959,14 @@ variable assert-level ( -- a )
 
 : system  ( -- a len )  extend  0 +origin size 10 +  ;
 
-  \ turnkey  ( cfa -- a len )
+  \ turnkey  ( xt -- a len )
   \
   \ Prepare the system in order to save a copy that will
-  \ execute the given cfa after the ordinary boot process.
+  \ execute the given xt after the ordinary boot process.
   \ Return its start address and length, to be used as
   \ parameters for saving the system to disk.
 
-: turnkey  ( cfa -- a len )  boot defer! system  ;
+: turnkey  ( xt -- a len )  boot defer! system  ;
 
 
   \ }}} =======================================================
@@ -6130,8 +6097,8 @@ need -branch  need cs-swap
   \ Credits:
   \ Word from Gforth.
 
-: base-execute  ( cfa n -- )  base @ >r execute r> base !  ;
-  \ Execute _cfa_ with the content of `base` being _n_
+: base-execute  ( xt n -- )  base @ >r execute r> base !  ;
+  \ Execute _xt_ with the content of `base` being _n_
   \ and restoring the original `base` afterwards.
 
 ( cs-pick cs-roll cs-swap cs-drop )
@@ -6311,7 +6278,7 @@ need cs-push  need cs-pop
   \   \ ld l,c
   \   \ ld e,(hl)
   \   \ inc hl
-  \   \ ld d,(hl) ; de = cfa to execute
+  \   \ ld d,(hl) ; de = xt to execute
   \   end-code
 
 : (times)  ( n -- )
@@ -6346,8 +6313,8 @@ need cs-push  need cs-pop
 
 : times  ( Compilation: "name" -- ) ( Run-time: n -- )
   postpone (times)
-  defined ( nfa | 0 ) ?dup 0= -13 ?throw
-  name>immediate? ( cfa f )  -271 ?throw  compile,
+  defined ( nt | 0 ) ?dup 0= -13 ?throw
+  name>immediate? ( xt f )  -271 ?throw  compile,
   ; immediate compile-only
 
   \ Repeat the next instruction if the count on top of the
@@ -6449,8 +6416,8 @@ need dfor
 
 : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
   postpone if
-  defined ( nfa | 0 ) ?dup 0= -13 ?throw
-  name>immediate? ( cfa f ) if  execute  else  compile,  then
+  defined ( nt | 0 ) ?dup 0= -13 ?throw
+  name>immediate? ( xt f ) if  execute  else  compile,  then
   postpone then
   ;  immediate compile-only
 
@@ -7320,7 +7287,7 @@ need create:
   \ 166 bytes used.
 
 variable (default-option)
-  \ default option cfa
+  \ default option xt
 
 variable #options
   \ number of compiled options
@@ -7335,7 +7302,7 @@ variable #options
 
   false swap  ( false x ) \ default flag returned by the loop
   r> dup @ >r   \ set the new exit point
-  cell+ dup >r  \ save the address of the default option cfa
+  cell+ dup >r  \ save the address of the default option xt
   dup cell+ @  ( false x a n )
   \ a = address of the first compiled option minus two cells
   \ n = number of compiled options
@@ -7355,7 +7322,7 @@ variable #options
 : options[  ( -- a1 a2 a3 )
 
   \ a1 = address of exit point
-  \ a2 = address of default option cfa
+  \ a2 = address of default option xt
   \ a3 = address of number of options
 
   (default-option) off        \ assume no default option
@@ -7392,15 +7359,15 @@ variable #options
   \ }doc
 
 : option  ( x "name" -- )
-  \ Compile an option _x_ and the cfa of its action "name".
+  \ Compile an option _x_ and the xt of its action "name".
   ,  ' ,  1 #options +!  ;
 
 : ]options  ( a1 a2 a3 -- )
   \ a1 = address of exit point
-  \ a2 = address of default option cfa
+  \ a2 = address of default option xt
   \ a3 = address of number of options
   #options @ swap !           \ store number of options
-  (default-option) @ swap !   \ store default option cfa
+  (default-option) @ swap !   \ store default option xt
   >resolve                    \ store exit point
   ]  ;
 
@@ -7409,8 +7376,8 @@ variable #options
   \ Credits:
   \ Code from Galope (module times.fs).
 
-: executions  ( cfa n -- )
-  \ Execute _cfa_ _n_ times.
+: executions  ( xt n -- )
+  \ Execute _xt_ _n_ times.
   2>r
   begin   2r@
   while   2r> 1- 2>r execute
@@ -8020,7 +7987,7 @@ need words  need abort"
   current @ >r current !  create  s,  r> current !
   does>  ( -- ca len )  ( pfa ) count  ;
 
-: item?  ( ca len -- 0 | cfa )
+: item?  ( ca len -- 0 | xt )
   search-wordlist dup if  drop  then  ;
 
 : item  ( ca1 len1 wid -- ca2 len2 )
@@ -8056,7 +8023,7 @@ need words  need abort"
 
 ( value to )
 
-  \ Standard: Forth-94.
+  \ Origin: Forth-94.
 
 : value  ( n "name"  -- )  constant  ;
 
@@ -8088,7 +8055,7 @@ need words  need abort"
 
 ( value 2value to )
 
-  \ Standard: Forth-2012.
+  \ Origin: Forth-2012.
 
   \ This Forth-2012 implementation of `to` is provided as an
   \ alternative, but it's bigger and slower than the Forth-94
@@ -8132,7 +8099,7 @@ variable (value)  ['] @ (value) !
   \ Define a word "name" which, when executed, will  cause  the
   \ value _x_  to be stored at _a_.
   \
-  \ Standard: Forth-79 (Reference Word Set); Forth-83 (Appendix
+  \ Origin: Forth-79 (Reference Word Set); Forth-83 (Appendix
   \ B.  Uncontrolled Reference Words).
   \
   \ }doc
@@ -8166,7 +8133,7 @@ defer link@  ( node1 -- node2 )
 need link@  need link,
 
 : switcher  ( i*x n head -- j*x )
-  dup cell+ @ >r  \ save default cfa
+  dup cell+ @ >r  \ save default xt
   begin  link@ ?dup while  ( n a )
     2dup cell+ @ = if   \ match
       nip cell+ cell+ perform  r> drop exit
@@ -8174,19 +8141,19 @@ need link@  need link,
   repeat  r> execute  ;
   \ Search the linked list from its _head_ for a match to the
   \ value _n_. If a match is found, discard _n_ and execute the
-  \ associated matched cfa. If no match is found, leave _n_ on
-  \ the stack and execute the default cfa.
+  \ associated matched xt. If no match is found, leave _n_ on
+  \ the stack and execute the default xt.
 
-: :switch  ( cfa "name" -- a )
+: :switch  ( xt "name" -- a )
   create  >mark swap ,
   does>  ( n -- )  ( n pfa ) switcher  ;
   \ Create a code switch whose default behaviour is given by
-  \ _cfa_. Leave the address of the head of its list on the
+  \ _xt_. Leave the address of the head of its list on the
   \ stack.
 
-: <switch  ( head cfa n -- head )
+: <switch  ( head xt n -- head )
   2 pick link,  , ,  ;
-  \ Define a new clause to execute _cfa_ when the key _n_
+  \ Define a new clause to execute _xt_ when the key _n_
   \ is matched.
 
 -->
@@ -8209,14 +8176,14 @@ need link@  need link,
   \ Used after defining clauses.
 
 : runs  ( head n "name" -- )  ' swap <switch  ;
-  \ Associate the cfa of "name" to clause _n_ of switch _head_.
+  \ Associate the xt of "name" to clause _n_ of switch _head_.
 
 exit
 
   \ XXX TODO -- `run:`
 
 : run:  ( head n "text<;>" -- )
-  :noname [char] ; parse evaluate postpone ; ( cfa )
+  :noname [char] ; parse evaluate postpone ; ( xt )
   swap >switch  ;
 
 ( [switch-test ) \ without syntactic sugar
@@ -8301,7 +8268,7 @@ cr 1 sugar-numbers 2 sugar-numbers
   \ Execution of _name_ leaves its absolute user area storage
   \ address.
   \
-  \ Standard: Forth-79, Forth-83.
+  \ Origin: Forth-79, Forth-83.
   \
   \ }doc
 
@@ -8897,13 +8864,13 @@ $0A arg: s5 $0C arg: s6 $0E arg: s7 $0A arg: s8 $0C arg: s9
   \ Dimensions 6/1 p. 33 (1984-05).
 
 variable (anon)  ( -- a )
-  \ cfa of the latest anonymous variable.
+  \ xt of the latest anonymous variable.
 
 : create-anon  ( -- )
   here (anon) !
   [ (anon) body> @ ] literal compile, 0 ,  ;
   \ Create a new anonymous variable.  `(anon)` is used to get
-  \ and compile the cfa executed by all variables.
+  \ and compile the xt executed by all variables.
 
 : anon  ( Compilation: -- ) ( Run-time: -- a )
   (anon) @
@@ -9046,7 +9013,7 @@ variable loc-done
   \
   \ ms  ( u -- )
   \
-  \ Standard: Forth-94 (FACILITY EXT), Forth-202 (FACILITY
+  \ Origin: Forth-94 (FACILITY EXT), Forth-202 (FACILITY
   \ EXT).
   \
   \ }doc
@@ -9181,7 +9148,7 @@ code ms88  ( u -- )
   \ Variant: `(wait)` is a user variable, and it's executed
   \ to get its current adress.
 
-need z80-asm  need call-cfa  need execute-hl
+need z80-asm  need call-xt  need execute-hl
 
 code pause ( u -- )
   \ u = number of ticks
@@ -9189,8 +9156,8 @@ code pause ( u -- )
   begin
     de push
     \ XXX FIXME -- crash -- why this does not work?:
-    ' (wait) call-cfa  hl pop  execute-hl
-      \ execute the cfa hold in the user variable `(wait)`
+    ' (wait) call-xt  hl pop  execute-hl
+      \ execute the xt hold in the user variable `(wait)`
     de pop  halt  de decp  de tstp  \ finished?
   z until
   bc pop  jpnext
@@ -9203,7 +9170,7 @@ code pause ( u -- )
 
   \ Variant: `(wait)` is a deferred word.
 
-need z80-asm  need call-cfa
+need z80-asm  need call-xt
 
 defer (wait)  ' noop ' (wait) defer!
 
@@ -9212,8 +9179,8 @@ code pause ( u -- )
   de pop  bc push
   begin
     de push
-    ' (wait) call-cfa
-      \ call the cfa hold in `(wait)`
+    ' (wait) call-xt
+      \ call the xt hold in `(wait)`
     de pop  halt  de decp  de tstp  \ finished?
   z until
   bc pop  jpnext
@@ -9235,7 +9202,7 @@ code pause ( u -- )
   begin
     de push
     (wait) fthl  execute-hl
-      \ call the cfa hold in `(wait)`
+      \ call the xt hold in `(wait)`
     de pop  halt  de decp  de tstp  \ finished?
   z until
   bc pop  jpnext
@@ -9260,7 +9227,7 @@ code pause ( u -- )
   begin
     de push
     ' (wait) >body fthl  execute-hl
-      \ call the cfa hold in `(wait)`
+      \ call the xt hold in `(wait)`
     de pop  halt  de decp  de tstp  \ finished?
   z until
   bc pop  jpnext
@@ -9283,14 +9250,14 @@ code pause ( u -- )
   begin
     de push
 
-    \ Call the cfa hold in `(wait)`:
+    \ Call the xt hold in `(wait)`:
 
     ' (wait) >body fthl
     here 6 + bc ldp# \ point IP to phony_compiled_word
-    next2 jp  \ execute the cfa in `(wait)`
+    next2 jp  \ execute the xt in `(wait)`
     \ phony_compiled_word:
-    here cell+ ,  \ point to the phony cfa following
-    here cell+ ,  \ phony cfa, point to the code following
+    here cell+ ,  \ point to the phony xt following
+    here cell+ ,  \ phony xt, point to the code following
 
     de pop  halt  de decp  de tstp  \ finished?
   z until
@@ -9458,7 +9425,7 @@ need get-time  need get-date
   \
   \ See: `get-time`, `get-date`, `set-time`, `set-date`.
   \
-  \ Standard: Forth-94 (FACILITY EXT), Forth-201 (FACILITY
+  \ Origin: Forth-94 (FACILITY EXT), Forth-201 (FACILITY
   \ EXT).
   \
   \ }doc
@@ -9508,66 +9475,30 @@ need body>name
   \ Get the search order.
   #vocs ?dup if  (get-order)  then  #vocs  ;
 
-( set-order )
-
-  \ XXX TODO use the actual number of vocs in context, not
-  \ the maximum
-
-  \ XXX TODO move to the kernel
-
-get-current also root definitions
-
-: (set-order)  ( widn..wid1 n -- )
-  \ Do set a search order.
-  0 do  context i cells + !  loop  ;
-
-: set-order  ( -1 | 0 | widn..wid1 n -- )
-  \ Set a search order.
-  dup -1 =  if  drop only exit  then  -order
-  ?dup if  (set-order)  then  ;
-
-previous set-current
-
-  \ doc{
-  \
-  \ set-order  ( -1 | 0 | widn..wid1 n -- )
-  \
-  \ Set the search order to the word lists identified by
-  \ _widn..wid1_. Subsequently, word list _wid1_ will be
-  \ searched first, and word list _widn_ searched last. If _n_
-  \ is zero, empty the search order. If _n_ is minus one, set
-  \ the search order to the implementation-defined minimum
-  \ search order.
-  \
-  \ This word is defined in Forth-94 but its implementation in
-  \ Solo Forth is not fully Forth-94 compliant.
-  \
-  \ }doc
-
 ( wid-of wid> >wid )
 
   \ Credits:
   \ Code of `wid-of` adapted from eForth's `widof`.
 
-: wid>  ( wid -- cfa )  body>  ;
-  \ Convert a _wid_ to the _cfa_ of its vocabulary.
+: wid>  ( wid -- xt )  body>  ;
+  \ Convert a _wid_ to the _xt_ of its vocabulary.
   \ XXX TODO confirm this description
 
-: >wid  ( cfa -- wid )  >body  ;
-  \ Convert the _cfa_ of a vocabulary to its _wid_.
+: >wid  ( xt -- wid )  >body  ;
+  \ Convert the _xt_ of a vocabulary to its _wid_.
 
 : wid-of  ( "name" -- wid )  ' >wid  ;
 
 ( swap-current trail >order )
 
 [unneeded] trail
-?\ : trail  ( -- nfa )  context @ @  ;
+?\ : trail  ( -- nt )  context @ @  ;
 
   \ doc{
   \
-  \ trail ( -- nfa )
+  \ trail ( -- nt )
   \
-  \ Leave the name field address of the topmost word in the
+  \ Leave the _nt_ of the topmost word in the
   \ `context` vocabulary.
   \
   \ }doc
@@ -9580,21 +9511,104 @@ previous set-current
   \
   \ Idea from lpForth.
 
+( find-name-in find )
+
+: find-name-in  ( ca len wid -- nt | 0 )  @ find-name-from  ;
+
+  \ doc{
+  \
+  \ find-name-in  ( ca len wid -- nt | 0 )
+  \
+  \ Find the definition named in the string at _ca len_, in word
+  \ list _wid_. If the definition is found, return its _nt_,
+  \ else return zero.
+  \
+  \ The search is case-sensitive.
+  \
+  \ }doc
+
+: find  ( ca -- ca 0 | xt 1 | xt -1 )
+  dup count find-name dup
+  if  nip name>immediate? 1 or negate  then  ;
+
+  \ doc{
+  \
+  \ find  ( ca -- ca 0 | xt 1 | xt -1 )
+  \
+  \ Find the definition named in the counted  string at _ca_.
+  \ If the definition is  not found, return _ca_ and zero. If
+  \ the definition is found, return its execution token _xt_.
+  \ If the definition  is immediate,  also  return one  (1),
+  \ otherwise  also  return minus-one (-1).
+  \
+  \ Origin: Forth-83 (Required word set), Forth-94 (CORE,
+  \ SEARCH), Forth-2012 (CORE, SEARCH).
+  \
+  \ }doc
+
   \ }}} =======================================================
   \ Random number generators {{{
 
-( seed rnd random randomize )  \ ==rng==
+( seed randomize )  \ ==rng==
+
+23670 constant seed  \ system variable
+
+: randomize  ( n -- )  seed !  ;
+
+exit
+
+  \ XXX TODO alternative
+
+[defined] sys-frames  ?\ 23672 constant sys-frames
+  \ system variable
+
+: randomize  ( n -- )
+  ?dup 0=  if  sys-frames @  then  seed !  ;
+
+( rnd random )  \ ==rng==
 
   \ Credits:
   \ Code adapted from Leo Brodie's code and Gforth.
 
-[defined] seed ?\ 23670 constant seed  \ system variable
+need seed
 
 : rnd  ( -- n )  seed @ 31421 * 6927 + dup seed !  ;
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
-: randomize  ( n -- )  seed !  ;
+( lb-random )
+
+  \ Credits:
+  \ Code adapted from Leo Brodie's code and Gforth.
+
+need seed
+
+: lb-rnd  ( -- n )  seed @ 31421 * 6927 + dup seed !  ;
+
+: lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
+
+need rng-bench
+
+: lb-rng-bench  ( -- )
+  s" lb-random" ['] lb-random rng-bench ;
+
+( g-random )
+
+need seed  need ud*
+
+  \ Credits:
+  \
+  \ Adapted from Gforth.
+
+: g-rnd  ( -- n )
+  272958469. seed @ ud* d>s 1+ dup seed ! ;
+
+: g-random  ( n1 -- n2 )  g-rnd um* nip ;
+
+need rng-bench
+
+: g-rng-bench  ( -- )
+  s" g-random" ['] g-random rng-bench ;
 
 ( random-range )
 
@@ -9603,8 +9617,7 @@ need random
 : random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
   \ Return a random number from _n1_ (min) to _n2_ (max).
 
-
-( random-tt )
+( tt-random )
 
   \ Credits:
   \
@@ -9612,68 +9625,96 @@ need random
   \ ANSI-Forth.  Written 05Apr94 by Dirk Uwe Zoller, e-mail duz
   \ AT roxi DOT rz DOT fht-mannheim DOT de.
 
-[defined] seed ?\ 23670 constant seed  \ system variable
+need seed
 
-: random-tt   ( n -- 0..n-1 )
+: tt-random   ( n -- 0..n-1 )
     seed @ 13 * $07FFF and
     dup seed !  swap mod ;
 
-( random-b )
+need rng-bench
 
-code random-b  ( -- b )
-  \ XXX FIXME this returns patterns; see `random-b-test`
+: tt-rng-bench  ( -- )
+  s" tt-random" ['] tt-random rng-bench ;
+
+( random-byte )
+
+code random-byte  ( -- b )
+  \ XXX FIXME this returns patterns; see `random-byte-test`
   ED c, 5F c,     \ ld a,r
   C3 c, pusha ,   \ jp pusha
   end-code
 
-( ace-rnd )
+need bench  need marque
+
+: random-byte-test  ( -- )
+  ['] random-byte ['] random defer!  cls  bench pixels
+  do  random random 192 min set-pixel  loop  marque
+  ." random-byte" cr key drop ;
+
+( a-random )
 
   \ Credits:
-  \ Adapted from ACE Forth, as of the Jupiter ACE manual.
+  \ Adapted from ACE Forth, after the Jupiter ACE manual.
+  \ Also used by Abersoft Forth in its bundled game
+  \ "Bertie".
 
-[defined] seed        ?\ 23670 constant seed
-[defined] sys-frames  ?\ 23672 constant sys-frames
-  \ system variables
+need seed
 
-: seedon  ( -- n )
-  \ XXX FIXME
-  seed @ 75 um* d>s 75 0 d+ 2dup u< - - 1- dup seed !  ;
+: a-rnd  ( -- n )
+  seed @ 75 um* 75. d+ 2dup u< - - 1- dup seed !  ;
 
-: rnd  ( n1 -- n2 )  seedon um* d>s swap drop  ;
+: a-random  ( n1 -- n2 )  a-rnd um* nip  ;
 
-: randomize  ( n -- )
-  ?dup 0=  if  sys-frames @  then  seed !  ;
+need rng-bench
 
-( v.Forth pseudo random number generator )
+: a-rng-bench  ( -- )
+  s" a-random" ['] a-random rng-bench ;
+
+( v-random )
 
   \ Credits:
   \ Code from v.Forth.
 
   \ XXX TODO adapt and try
 
-[defined] seed ?\ 23670 constant seed
+  \ need seed
 
-  : vrnd  ( n1 -- n2 )
-    1+ 8195 23672 @ um* 1 0 d+
-    16383 u/ drop dup seed !
-    swap mod  ;
+exit
 
-( random-n )
+: v-random  ( n1 -- n2 )
+  1+ 8195 23672 @ um* 1. d+
+  16383 u/ drop
+  \ dup seed !
+  swap mod  ;
+
+need rng-bench
+: v-rng-bench  ( -- )
+  cls  pixels do  256 v-random 193 v-random set-pixel  loop  ;
+
+( lina-random )
+
+need seed
+
+: lina-rnd  ( -- n )  seed @ 107465 * 234567 + dup seed ! ;
+
+: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
+
+need rng-bench
+
+: lina-rng-bench  ( -- )
+  s" lina-random" ['] lina-random rng-bench ;
+
+( l-random )
 
   \ Credits:
-  \ Adapted from code written by JosÃ© Manuel Lazo,
+  \ Adapted from code written by José Manuel Lazo,
   \ published in Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
-[defined] seed
-?\ 23670 constant seed  \ system variable
+need seed
 
-code random-n  ( -- x )
-
-  \ Return a random number (0000..FFFF)
-
-  \ XXX FIXME this returns patterns; see `random-n-test`
+code l-rnd  ( -- u )
 
   seed fthl  hl push
   hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
@@ -9682,63 +9723,70 @@ code random-n  ( -- x )
   pushhl jp
   end-code
 
-( z88random )
+: l-random  ( n -- 0..n-1 )  l-rnd um* nip  ;
+
+  \ XXX Note: patterns
+need rng-bench
+: l-rng-bench  ( -- )
+  s" l-random" ['] l-random rng-bench ;
+
+( z88-random )
 
   \ XXX UNDER DEVELOPMENT
 
   \ Credits:
   \ Code adapted from Z88 CamelForth.
 
-[defined] seed
-?\ 23670 constant seed  \ system variable
+need ud*  need seed
 
   \ XXX TODO adapt.
-: z88random  ( u1 -- u2 )
-  20077 16838 seed @
-  ud* 12345 0 d+ over seed !
+: z88-rnd  ( -- d )
+  1103515245. \ 20077 16838
+  seed @ ud* 12345. d+ over seed !
   rot ud/mod 2drop  ;
 
-( rickenbacker-random )
+: z88-random  ( n -- 0..n-1 )  rnd um* nip  ;
+
+need rng-bench
+
+: z88-rng-bench  ( -- )
+  s" z88-random" ['] z88-random rng-bench ;
+
+( r-random )
 
   \ Credits:
 
   \ Random number generator by J. E. Rickenbacker, published on
   \ Forth Dimensions volume 2, number 2, page 34.
 
-[defined] seed ?\ 23670 constant seed  \ system variable
+need seed
 
-: (random)  ( -- n )
+: rnd  ( -- n )
   seed @ 259 * 3 + 32767 and dup seed !  ;
 
-: random ( n1 -- n2 )
-  (random) 32767 */  ;
+: r-random ( n1 -- n2 )
+  rnd 32767 */  ;
   \ Return a random number _n2_ (0 <= n2 < n1).
 
-( random-test random-b-test random-n-test )
+  \ XXX Note: patterns
 
-need set-pixel
+need rng-bench
 
-need random
+: r-rng-bench  ( -- )
+  s" r-random" ['] r-random rng-bench ;
 
-: random-test  ( n -- )
-  cls  0 do  256 random 193 random set-pixel  loop  ;
+( rng-bench )
 
-need random-b
+warnings off
 
-: random-b-test  ( n -- )
-  cls  0 do  random-b random-b 192 min set-pixel  loop  ;
+need set-pixel  need bench
+49152 0 2constant pixels
+defer rng
 
-need random-n
-
-: random-n-test  ( n -- )
-  cls
-  0 do  random-n 255 and
-        random-n 255 and 192 umin set-pixel  loop  ;
-
-need rickenbacker-random
-
-: r-random-test  ( n -- )
-  cls  0 do  256 random 193 random set-pixel  loop  ;
+: rng-bench  ( ca len xt -- )
+  ['] rng defer!  cls  bench
+  pixels do  256 rng 193 rng set-pixel  loop  marque
+  type cr key drop ;
 
   \ }}} =======================================================
   \ Deferred words {{{
@@ -9753,9 +9801,9 @@ need rickenbacker-random
   \ into the current definition. I.e. this produces static
   \ binding as if "name" was not deferred.
 
-: action-of  ( Interpretation: "name" -- cfa )
+: action-of  ( Interpretation: "name" -- xt )
              ( Compilation:    "name" -- )
-             ( Runtime:        -- cfa )
+             ( Runtime:        -- xt )
   ' compiling? if    postpone literal postpone defer@
                else  defer@  then  ; immediate
   \ Return the code field address of a deferred word.
@@ -9765,41 +9813,41 @@ need rickenbacker-random
   \ Credits:
   \ Code adapted from the Afera library.
 
-: <is>  ( cfa "name" -- )  ' defer!  ;
+: <is>  ( xt "name" -- )  ' defer!  ;
 
-: [is]  ( cfa "name" -- )
+: [is]  ( xt "name" -- )
   postpone ['] postpone defer!  ; immediate compile-only
 
-: is  ( cfa "name" -- )
+: is  ( xt "name" -- )
   compiling? if  postpone [is]  else  <is>  then  ; immediate
 
 ( code? code-alias? defer-alias code-alias alias )
 
-: code?  ( cfa -- wf )  dup >body swap @ =  ;
-  \ Is _cfa_ a word created by `code`?
+: code?  ( xt -- wf )  dup >body swap @ =  ;
+  \ Is _xt_ a word created by `code`?
 
-: code-alias?  ( cfa -- wf )  @ dup body> @ =  ;
-  \ Is _cfa_ a word created by `code-alias` or `code`?
+: code-alias?  ( xt -- wf )  @ dup body> @ =  ;
+  \ Is _xt_ a word created by `code-alias` or `code`?
 
-: defer-alias  ( cfa "name" -- )
+: defer-alias  ( xt "name" -- )
   defer latest name> defer!  ;
-  \ Create a deferred word _name_ that executes _cfa_.
+  \ Create a deferred word _name_ that executes _xt_.
 
-: code-alias  ( cfa "name" -- )
+: code-alias  ( xt "name" -- )
   @ header reveal latest name> !  ;
-  \ Create a code word that executes the code pointed by _cfa_.
+  \ Create a code word that executes the code pointed by _xt_.
 
-: alias  ( cfa "name" -- )
+: alias  ( xt "name" -- )
   dup code-alias? if  code-alias exit  then  defer-alias  ;
 
   \ doc{
   \
-  \ alias  ( cfa "name" -- )
+  \ alias  ( xt "name" -- )
   \
-  \ Create an alias _name_ that will execute _cfa_.  If _cfa_
-  \ is a primitive word, the address hold in _name_'s own cfa
-  \ will be the same than the address hold in _cfa_. Otherwise
-  \ _name_ will be a deferred word executing _cfa_.
+  \ Create an alias _name_ that will execute _xt_.  If _xt_
+  \ is a primitive word, the address hold in _name_'s own xt
+  \ will be the same than the address hold in _xt_. Otherwise
+  \ _name_ will be a deferred word executing _xt_.
   \
   \ }doc
 
@@ -9816,7 +9864,7 @@ need rickenbacker-random
   create immediate
     hide ' , reveal
   does>  ( -- )
-   ( pfa ) @ ( cfa ) dup >name dup ( cfa nfa nfa )
+   ( pfa ) @ ( xt ) dup >name dup ( xt nt nt )
    compile-only? executing? and -14 ?throw
    immediate? executing? or
    if  execute  else  compile,  then  ;
@@ -9843,7 +9891,7 @@ need alias
   \ newname ( Compilation: i*x -- j*x )
   \         Perform the compilation semantics of _oldname_.
   \
-  \ Standard: Forth-2012 (TOOLS EXT).
+  \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ }doc
 
@@ -10239,32 +10287,32 @@ need @c+  need for
   dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
   r> base !  space   ;
 
-( execute-hl call-cfa )
+( execute-hl call-xt )
 
   \ Assembler macros to call any Forth word from code words.
 
   \ Credits:
   \
   \ Code inspired by Spectrum Forth-83, where similar code is
-  \ embedded in `KEY` and `PAUSE` to call a cfa hold in a
+  \ embedded in `KEY` and `PAUSE` to call a xt hold in a
   \ variable. The code has been converted from DTC to ITC and
   \ factored to two assembler macros in order to make it
   \ reusable.
 
 macro execute-hl  ( -- )
-  \ Compile an `execute` with the cfa hold in HL.
+  \ Compile an `execute` with the xt hold in HL.
   here 6 + bc ldp# \ point IP to phony_compiled_word
-  next2 jp  \ execute the cfa in HL
+  next2 jp  \ execute the xt in HL
   \ phony_compiled_word:
-  here cell+ ,  \ point to the phony cfa following
-  here cell+ ,  \ phony cfa, point to the code following
+  here cell+ ,  \ point to the phony xt following
+  here cell+ ,  \ phony xt, point to the code following
   endm
 
   \ XXX NOTE -- If ever the system is converted from ITC to
   \ DTC, `execute-hl` has to be modified.
 
-macro call-cfa  ( cfa -- )
-  \ Compile a call to _cfa_.
+macro call-xt  ( xt -- )
+  \ Compile a call to _xt_.
   \ This is the low-level equivalent of `execute`.
   hl ldp#  execute-hl
   endm
@@ -11131,7 +11179,7 @@ need reserve  need alias
   \ If the operation succeeds, _ior_ is zero. If the operation
   \ fails, _ior_ is -60.
   \
-  \ Standard: Forth-94 (MEMORY), Forth-2012 (MEMORY).
+  \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
   \
   \ }doc
 
@@ -11336,7 +11384,7 @@ need z80-asm  need f>s
   \ XXX FIXME -- `macro` is not recognized here.
 
 macro jp-f>s  ( -- )
-  ['] f>s call-cfa
+  ['] f>s call-xt
   endm
 
 ( f0< f0= f< f<= f<> f= f> f>= )
@@ -11677,10 +11725,9 @@ only forth definitions decimal
 only forth definitions  decimal
 
 need random  need randomize  need udg:  need inkey
-need break-key?  need between  need ocr  need frames@
-need j  need between
-
-[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+need between  need ocr  need frames@
+need j  need between  need rows  need last-column
+need last-row
 
 vocabulary siderator
 also siderator definitions
@@ -11695,7 +11742,7 @@ variable x          variable speed
 variable parsecs    variable record  record off
 
 999 constant max-speed
-char 5 constant left-key  char 8 constant right-key
+'5' constant left-key  '8' constant right-key
 
   \ System variables and addresses:
 
@@ -11703,7 +11750,6 @@ char 5 constant left-key  char 8 constant right-key
 
   \ Common words:
 
-: at  ( row col -- )  swap at-xy  ;
 : pause  ( -- )  begin  inkey  until  ;  -->
 
 ( siderator )
@@ -11711,56 +11757,63 @@ char 5 constant left-key  char 8 constant right-key
   \ Graphics
 
 15360 constant charset  \ ROM charset
+
 : char>a  ( c -- a )  8 * charset +  ;
+
 : udg>a  ( c -- a )  128 - 8 * sys-udg @ +  ;
+
 : char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove  ;
 
-128 constant star0-udg  char * star0-udg char>udg
+128 constant star0-udg  '*' star0-udg char>udg
 
-binary
-00011000
-00001000
-00011000
-00010000
-00011000
-00001000
-00011000
-00010000 decimal 129 udg: star1-udg  -->
+%00011000
+%00001000
+%00011000
+%00010000
+%00011000
+%00001000
+%00011000
+%00010000 129 udg: star1-udg  -->
 
 ( siderator )
 
 130 constant star2-udg
 char | star2-udg char>udg
 
-binary
-00001000
-00000000
-00001000
-00000000
-00001000
-00000000
-00001000
-00000000 decimal 131 udg: star3-udg  -->
+%00001000
+%00000000
+%00001000
+%00000000
+%00001000
+%00000000
+%00001000
+%00000000 131 udg: star3-udg  -->
 
 ( siderator )
 
-binary
-10000001
-10000001
-11000011
-11100111
-11111111
-01100110
-00111100
-00011000 decimal 132 udg: craft-udg  -->
+%10000001
+%10000001
+%11000011
+%11100111
+%11111111
+%01100110
+%00111100
+%00011000 132 udg: craft-udg  -->
 
 ( siderator )
 
   \ Keyboard
 
+0 constant first-column
+
 : pressed?  ( c -- f )  inkey =  ;
-: left  ( col -- col' )  left-key pressed? + 0 max  ;
-: right  ( col -- col' )  right-key pressed? - 31 min  ;
+
+: left  ( col -- col' )
+  left-key pressed? + first-column max  ;
+
+: right  ( col -- col' )
+  right-key pressed? - last-column min  ;
+
 : rudder  ( -- )  x @ right left x !  ;
 
 -->
@@ -11770,15 +11823,23 @@ binary
   \ Stars
 
 4 constant #stars
-: star-coords  ( -- y x )  23 31  ;
+
+: star-coords  ( -- x y )  last-column last-row  ;
+
 : .star  ( c -- )
-  star-coords 1+ random at 1 bright emit 0 bright  ;
+  [ last-column 1+ ] literal random last-row at-xy
+  1 bright emit 0 bright  ;
+
 : stars/speed  ( -- n )  speed @ #stars 1- max-speed */ 1+  ;
-: scroll  ( -- )  star-coords at cr cr  ;
+
+: scroll  ( -- )  star-coords at-xy cr cr  ;
+
 : .stars  ( -- )
   stars/speed dup [ star0-udg 1- ] literal + swap 0
   do  dup .star  loop  drop  ;
+
 : star=  ( c -- f )  star0-udg star3-udg between  ;
+
 : star<>  ( c -- f )  star= 0=  ;
 
 -->
@@ -11787,10 +11848,15 @@ binary
 
   \ Craft
 
-: craft-coords  ( -- y x )  10 x @  ;
-: craft-at  ( -- )  craft-coords at  ;
-: -craft  ( -- )  craft-at space  ;
-: .craft  ( -- )  craft-at craft-udg 5 ink emit 7 ink  ;
+rows 2 / constant craft-y
+
+: craft-coords  ( -- y x )  x @ craft-y  ;
+
+: at-craft  ( -- )  craft-coords at-xy  ;
+
+: -craft  ( -- )  at-craft space  ;
+
+: .craft  ( -- )  at-craft craft-udg 5 ink emit 7 ink  ;
 
 -->
 
@@ -11798,16 +11864,24 @@ binary
 
   \ Speed, parsecs, record
 
-: .datum  ( u -- ) 0 <# # # # #> type space  ;
+: .datum  ( u -- )  s>d <# # # # #> type space  ;
+
 : delay  ( -- )  max-speed speed @ - 2 / 0  do  loop  ;
+
 : .speed  ( -- )  ." Speed:" speed @ .datum  ;
+
 : +speed  ( u1 -- u2 )
   dup 10 / 1 max  parsecs @ 4 mod 0= abs *  + max-speed min  ;
+
 : faster  ( -- )  speed @ +speed speed !  ;
+
 : .parsecs  ( -- )  ." Parsecs:" parsecs @ .datum  ;
-: farther  ( -- )  parsecs @ 1+ parsecs !  ;
+
+: farther  ( -- )  1 parsecs +!  ;
+
 : .record  ( -- )  ." Record:" record @ .datum  ;
-: .info  ( -- )  0 dup at .speed .parsecs .record  ;
+
+: .info  ( -- )  home .speed .parsecs .record  ;
 
 -->
 
@@ -11816,8 +11890,10 @@ binary
   \ End
 
 : blast-delay  ( -- )  32 0  do  loop  ;
+
 : (blast)  ( -- )
-  .craft blast-delay craft-at star0-udg emit blast-delay  ;
+  .craft blast-delay at-craft star0-udg emit blast-delay  ;
+
 : blast  ( -- )  256 0  do  (blast)  loop  ;
 
 : halt  ( -- )
@@ -11831,12 +11907,16 @@ binary
 ( siderator )
 
 : safe?  ( -- f )  craft-coords swap ocr star<>  ;
+
 : continue?  ( -- f )  safe? break-key? 0= and  ;
+
 : new-record  ( -- )
   parsecs @ record @ >  if  parsecs @ record !  then  ;
+
 : game-over  ( -- )
-  blast halt  11 dup at ." GAME OVER"
-  new-record .info 22 0 at  default-colors  ;
+  blast halt  11 dup at-xy ." GAME OVER"
+  new-record .info first-column last-row at-xy
+  default-colors  ;
 
 -->
 
@@ -11848,7 +11928,7 @@ binary
   cr ." Siderator 2: Jugdement Day"  cr
   cr ." Copyright (C) Marcos Cruz"
   cr ." (programandala.net)"
-  cr ." Version: 2015-09-02"  ;
+  cr ." Version: 0.1.0+20151218"  ;
 
 : objective  ( -- )
   cr ." Your objective is to travel as"
@@ -11939,7 +12019,7 @@ need random  need j  need >=  need <=  need 2/  need value
 need d<>  need d=  need case  need ms  need frames@  need yes?
 need begin-stringtable  need positional-case:  need tab
 
-[defined] >body ?\  : >body  ( cfa -- pfa )  >body  ;
+[defined] >body ?\  : >body  ( xt -- pfa )  >body  ;
 
 vocabulary tt  also tt definitions  decimal
 
@@ -12705,12 +12785,12 @@ $10 CONSTANT Alive  \ 0y = not alive
 : Home+!  ( -1|1 i -- )  >R  Alive *  R> new C+! ;
 
 : Neighbors+!  ( -1|0|1 i -- )
-   2DUP N W new C+!  2DUP N new C+!  2DUP N E new C+!
-   2DUP   W new C+!  (     i      )  2DUP   E new C+!
-   2DUP S W new C+!  2DUP S new C+!       S E new C+! ;
+  2DUP N W new C+!  2DUP N new C+!  2DUP N E new C+!
+  2DUP   W new C+!  (     i      )  2DUP   E new C+!
+  2DUP S W new C+!  2DUP S new C+!       S E new C+! ;
 
 : Bureau-of-Vital-Statistics ( -1|1 i -- )
-   2DUP Home+!  Neighbors+! ;
+  2DUP Home+!  Neighbors+! ;
 
   \ mortal coils
 CHAR ? CONSTANT Soul  BL CONSTANT Body
@@ -12736,14 +12816,14 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 : there  ( -- )  How-Wide 1- 0 AT-XY ;
 
 : Everything  ( -- )
-   0 old  Homes
-   BEGIN  DUP
-   WHILE  OVER C@  DUP Alive AND
-      IF   -Sustaining IF  OVER One Dies     THEN
-      ELSE  Quickening IF  OVER One Is-Born  THEN THEN
-      1 /STRING
-   REPEAT  2DROP
-   there  ;
+  0 old  Homes
+  BEGIN  DUP
+  WHILE  OVER C@  DUP Alive AND
+     IF   -Sustaining IF  OVER One Dies     THEN
+     ELSE  Quickening IF  OVER One Is-Born  THEN THEN
+     1 /STRING
+  REPEAT  2DROP
+  there  ;
 
 -->
 
@@ -12754,7 +12834,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ spirit
 : Voice  ( -- c-addr u )
-   PAGE ." Say: "  0 new  DUP Homes ACCEPT ;
+  PAGE ." Say: "  0 new  DUP Homes ACCEPT ;
 
   \ subtlety
 : Serpent  ( -- )
@@ -12763,7 +12843,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ the primal state
 : Innocence  ( -- )
-   Homes 0 DO  I new C@  Alive /  I Neighbors+!  LOOP ;
+  Homes 0 DO  I new C@  Alive /  I Neighbors+!  LOOP ;
 
   \ children become parents
 : Passes  ( -- )  0 new  0 old  Homes  CMOVE ;
@@ -12774,16 +12854,16 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ a garden
 : Paradise  ( c-addr u -- )
-   >R  How-Deep How-Wide *  How-Deep 2 MOD 0=  How-Wide AND -
-   R@  -  2/  old
-   R>  CMOVE
-   0 old  Homes 0
-   DO  COUNT BL <>
-       DUP IF  Soul I Home  THEN
-       Alive AND  I new C!
-   LOOP  DROP
-   Serpent
-   Innocence Passes ;
+  >R  How-Deep How-Wide *  How-Deep 2 MOD 0=  How-Wide AND -
+  R@  -  2/  old
+  R>  CMOVE
+  0 old  Homes 0
+  DO  COUNT BL <>
+      DUP IF  Soul I Home  THEN
+      Alive AND  I new C!
+  LOOP  DROP
+  Serpent
+  Innocence Passes ;
 
 -->
 
@@ -12810,8 +12890,8 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ history
 : Goes-On  ( -- )
-   BEGIN  Everything Passes  Dreams Action Meditation
-          Escape = UNTIL ;
+  BEGIN  Everything Passes  Dreams Action Meditation
+         Escape = UNTIL ;
 
   \ a vision
 : Life  ( -- )  Creation Goes-On ;
@@ -12897,7 +12977,7 @@ create board  squares allot
 need columns  need rows  need udg:  need rnd  need ??
 3 constant /k  need pressed?
 need cvariable  need 2/  need pixel-addr
-need break-key?  need hires-emit-udg  need c!toggle-bits
+need hires-emit-udg  need c!toggle-bits
 
 0 cconstant black  7 cconstant white
 
@@ -13600,7 +13680,7 @@ need vector-loop-benchmark
 
 need frames@  need reset-frames  defer (number-base)
 
-: (number-base-bench)  ( n cfa -- )
+: (number-base-bench)  ( n xt -- )
   ['] (number-base) defer!
   reset-frames  0 do  s" 000" (number-base) drop 2drop  loop
   frames@ d. cr  ;
@@ -13633,7 +13713,7 @@ need frames@  need reset-frames  need rnd
 
 defer (fill)
 
-: (fill-bench)  ( n cfa -- )
+: (fill-bench)  ( n xt -- )
   ['] (fill) defer!
   reset-frames  0
   do  16384 6144 rnd (fill)  loop
@@ -13859,6 +13939,44 @@ need bench
   \            ---------- ---------
   \ AF         32689      Abersoft Forth
   \ Z88        32707      Z88 CamelForth
+
+( ud/mod-bench )
+
+  \ 2015-12-21
+
+need bench
+
+: a-m/mod  ( n -- )
+  bench  0 do  i s>d i ud/mod drop 2drop  loop  marque  ;
+
+: z1-ud/mod  ( n -- )
+  bench  0 do  i s>d i ud/mod881 drop 2drop  loop  marque  ;
+
+: z2-ud/mod  ( n -- )
+  bench  0 do  i s>d i ud/mod882 drop 2drop  loop  marque  ;
+
+: run  ( n -- )
+  dup cr ." Abersoft Forth  M/MOD ..." a-m/mod
+  dup cr ." Z88 CamelForth UD/MOD 1..." z1-ud/mod
+      cr ." Z88 CamelForth UD/MOD 2..." z2-ud/mod  ;
+
+  \ 10000 run  20000  run 65535 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \            AF    Z88 (1) Z88 (2)
+  \         ----- ---------- -------
+  \ 10000     964    967      944
+  \ 20000    1928   1934     1888
+  \ 65535    6300   6316     6161
+
+  \            AF    Z88 (1) Z88 (2)
+  \         ----- ---------- -------
+  \ B used:    22         22      20 (3)
+
+  \ (1) Z88 CamelForth code
+  \ (2) Z88 CamelForth code, with `-rot` instead of `rot rot`
+  \ (3) Not including the size of `-rot`
 
 ( number? )
 
@@ -14393,7 +14511,7 @@ warnings off
 
 defer (case-bench)  ( -- )
 
-: case-bench  ( n cfa -- )
+: case-bench  ( n xt -- )
   cr ." ..."
   ['] (case-bench) defer!
   bench
@@ -14706,6 +14824,20 @@ need bench
 
   \ Note: 1 frame = 50th of second
 
+( emit-udg-bench )
+
+  \ 2015-12-18
+
+need bench
+
+: e  ( n -- )  bench 0 ?do  home 128 emit  loop  marque  ;
+: eu  ( n -- )  bench 0 ?do  home 128 emit-udg  loop  marque  ;
+
+  \             Frames (20 ms)
+  \             -----------------------
+  \ Iterations  emit        emit-udg
+  \ ----------  ----------- -----------
+  \ 32000       1904 (1.00) 1856 (0.97)
 
   \ }}} =======================================================
   \ Development tests {{{

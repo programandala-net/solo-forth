@@ -9,9 +9,28 @@
 // {{{
 
 
+When the comments on screen `( find-name-in find )` are at the left margin,
+they are not processed by fsb2? 
+
 // }}}
 == Inner ==
 // {{{
+
+.2015-12-20:
+
+Convert to DTC?
+
+|===
+| word type   | number  | DTC memory diff
+
+| code          | 145     | -290
+| colon         | 248     | +248
+| variable      | 42      |  +42
+| user variable | 20      |  +20
+| constant      | 38      |  +38
+| defer         | 12      |  -36
+| TOTAL         |         |  +22
+|===
 
 .2015-11-12:
 

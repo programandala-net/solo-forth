@@ -1,0 +1,27 @@
+= Solo Forth version history
+:revdate: 2015-12-19
+
+== 0.0
+
+_ Developed from 2015-06-02 to 2015-12-18.
+
+_ During this first long period of the development, Solo Forth grew
+from a small seed (the code of Abersoft Forth, a fig-Forth) to a
+disk-based system, almost without any trace of fig-Forth, with many
+features of modern standard Forth systems and a huge library of
+optional code.
+
+_ Version branch 0.0 finished after substituting the fig-Forth `do
+loop` control structures with the Forth-83 version, adding a method to
+nest sources (`nest-source` and `unnest-source`) and writing `evaluate`.
+
+== 0.1.0
+
+_ Developed from 2015-12-18.
+
+- Fixed: `udg!` and `.s` (after the Forth-83 `do +loop` structure).
+- Modified: `break-key?` is moved to the kernel and converted to a
+  deferred word.
+- Removed the copy of `definitions` from the `root` vocabulary.
+- Moved `set-order` to the kernel and made it standard.
+

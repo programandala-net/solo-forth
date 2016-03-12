@@ -14,17 +14,20 @@
 
 ; Semantic versioning (http://semver.org)
 
-version_major:      equ 0
-version_minor:      equ 0
-version_patch:      equ 0
+version_major:                equ 0
+version_minor:                equ 1
+version_patch:                equ 0
 
 if 1
-  ; Build 20151217
-  version_build_high_part:  equ 0x0133
-  version_build_low_part:   equ 0x7BB1
+  version_release_candidate:  equ 1
 endif
 
-; This file was last modified: 201512170324
+if 1
+  version_build_high_part:    equ 0x0133
+  version_build_low_part:     equ 0x7BB5  ; build 20151221
+endif
+
+; This file was last modified: 201512210334
 
 ; ==============================================================
 ; Author and license
@@ -72,9 +75,9 @@ endif
 
 ; The name and link fields are created in a memory bank:
 
-; cfap: dw cfa             ; Pointer to cfa in main memory.
-; lfa:  dw nfa of the previous word
-; nfa:  db length+flags    ; Bits:      76543210
+; xtp: dw xt              ; Pointer to xt in main memory.
+; lfa:  dw nt of the previous word
+; nt:  db length+flags    ; Bits:      76543210
                            ; Bit names: CPSLLLLL
                            ; Legend:
                            ;   C: Compile-ony bit.
@@ -91,7 +94,7 @@ endif
 
 ; The code and parameter fields are created in the dictionary:
 
-; cfa: dw code_address
+; xt: dw code_address
 ; pfa:    ...              ; data or code
 
 ; ==============================================================
@@ -141,11 +144,13 @@ endif
 ; col      = 8-bit cursor column (0..n)                   1 cell
 ;            (maximum value depends on the screen mode)
 
-; cfa      = code field address                           1 cell
+; xt       = execution token                              1 cell
+; cfa      = code field address (=xt)                     1 cell
 ; lfa      = link field address                           1 cell
+; nt       = name token (=nfa)                            1 cell
 ; nfa      = name field address                           1 cell
 ; pfa      = parameter field address                      1 cell
-; cfap     = code field address pointer                   1 cell
+; xtp      = execution token pointer                      1 cell
 
 ; wid      = wordlist identifier                          1 cell
 ;            (in Solo forth, the pfa of a vocabulary)
@@ -224,6 +229,12 @@ size_optimization: equ false
   ; XXX the flag is harcoded in the code
   ; XXX OLD
 ;assembler_core_in_kernel: equ true
+
+  ; XXX experimental
+;dtc: equ true
+;itc: equ !dtc
+  ; dtc = Direct Threaded Code? (experimental)
+  ; itc = Indirect Threaded Code? (original)
 
 ; ==============================================================
 ; Symbols
@@ -339,14 +350,14 @@ border_port:  equ 0xFE
 immediate:    equ immediate_mask
 compile_only: equ compile_only_mask
 
-nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+nt_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa \ XXX OLD
 
 _header: macro _base_label,_name,_flags
 
   ; In dictionary:
 
-  _base_label: ; code field address
+  _base_label: ; execution token
   local _dp_backup
   local _name_address
   local _address_after_name
@@ -355,11 +366,11 @@ _header: macro _base_label,_name,_flags
   ; In memory bank:
 
   org np
-  _base_label##cfap:
-    dw _base_label ; code field address pointer
+  _base_label##xtp:
+    dw _base_label ; execution token pointer
   _base_label##lfa: ; link field address
-    dw nfa_of_the_previous_word ; link field
-  _base_label##nfa: ; name field address
+    dw nt_of_the_previous_word ; link field
+  _base_label##nt: ; name token
 
   ; Length byte with optional immediate bit:
 
@@ -383,30 +394,32 @@ _header: macro _base_label,_name,_flags
   ; In dictionary:
   org _dp_backup
 
-  nfa_of_the_previous_word: defl _base_label##nfa
+  nt_of_the_previous_word: defl _base_label##nt
 
   endm
 
 _code_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw _base_label##pfa ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
 
-_defer_header: macro _base_label,_name,_flags,_cfa
+_defer_header: macro _base_label,_name,_flags,_xt
 
   _code_header _base_label,_name,_flags
-  ld hl,_cfa
+  ld hl,_xt
   jp next2
 
   endm
 
-_code_alias_header: macro _base_label,_name,_flags,_cfa
+_code_alias_header: macro _base_label,_name,_flags,_xt
 
   _header _base_label,_name,_flags
-  dw _cfa##pfa ; code field
+  dw _xt##pfa ; code field
 
 ; XXX TODO
 ; _raw_code_alias_header: macro _base_label,_name,_flags,_alias
@@ -424,7 +437,11 @@ _code_alias_header: macro _base_label,_name,_flags,_cfa
 _colon_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw do_colon ; code field
+else
+  call do_colon ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -432,7 +449,11 @@ _colon_header: macro _base_label,_name,_flags
 _user_variable_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw do_user ; code field
+else
+  call do_user ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -441,7 +462,11 @@ _does_header: macro _base_label,_name,_flags,_runtime_routine
 
   _header _base_label,_name,_flags
 
+if 1 ; itc
   dw _runtime_routine ; code field
+else
+  call _runtime_routine ; code field ; XXX TODO confirm this
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -449,7 +474,11 @@ _does_header: macro _base_label,_name,_flags,_runtime_routine
 _constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw do_constant ; code field
+else
+  call do_constant ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -457,7 +486,11 @@ _constant_header: macro _base_label,_name,_flags
 _two_constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw do_two_constant ; code field
+else
+  call do_two_constant ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -465,7 +498,11 @@ _two_constant_header: macro _base_label,_name,_flags
 _c_constant_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw do_c_constant ; code field
+else
+  call do_c_constant ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -473,7 +510,11 @@ _c_constant_header: macro _base_label,_name,_flags
 _variable_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
+if 1 ; itc
   dw do_create ; code field
+else
+  call do_create ; code field
+endif
   _base_label##pfa: ; parameter field address
 
   endm
@@ -751,16 +792,16 @@ warm_entry:
 
   ; XXX TODO document the `+origin` index
 
-latest_nfa_in_root_voc.init_value:
-  dw latest_nfa_in_root_voc
+latest_nt_in_root_voc.init_value:
+  dw latest_nt_in_root_voc
 
-latest_nfa_in_forth_voc.init_value:
-  dw latest_nfa_in_forth_voc
+latest_nt_in_forth_voc.init_value:
+  dw latest_nt_in_forth_voc
 
 if 1 ; assembler_core_in_kernel
 
-latest_nfa_in_assembler_voc.init_value:
-  dw latest_nfa_in_assembler_voc
+latest_nt_in_assembler_voc.init_value:
+  dw latest_nt_in_assembler_voc
 
 endif
 
@@ -1183,8 +1224,10 @@ push_hlde:
 push_hl:
   push hl
 
+if 1 ; itc
+
 next:
-  ; Execute the word whose cfa is in the address pointed by the bc register.
+  ; Execute the word whose xt is in the address pointed by the bc register.
   ; Forth: W  <-- (IP)
   ; Z80:   hl <-- (bc)
   ld a,(bc)
@@ -1193,22 +1236,46 @@ next:
   ld a,(bc)
   ld h,a
   inc bc ; inc IP
-  ; bc = address of the next cfa
-  ; hl = cfa
+  ; bc = address of the next xt
+  ; hl = xt
 
 next2:
-  ; Execute the word whose cfa is in the hl register.
+  ; Execute the word whose xt is in the hl register.
   ; Forth: PC <-- (W)
   ; Z80:   pc <-- (hl)
   ld e,(hl)
   inc hl
   ld d,(hl)
   ex de,hl
-  ; hl = (cfa) = address of the code
-  ; de = cfa+1 = pfa-1
+  ; hl = (xt) = address of the code
+  ; de = xt+1 = pfa-1
 
 next2_end: ; XXX TMP label for debugging
   jp (hl)
+
+else ; dtc
+
+next:
+  ; Execute the word whose xt is in the address pointed by the bc register.
+  ; Forth: W  <-- (IP)
+  ; Z80:   hl <-- (bc)
+  ld a,(bc)
+  ld l,a
+  inc bc ; inc IP
+  ld a,(bc)
+  ld h,a
+  inc bc ; inc IP
+  ; bc = address of the next xt
+  ; hl = xt
+
+next2:
+  ; Execute the word whose xt is in the hl register.
+  ; Forth: PC <-- (W)
+  ; Z80:   pc <-- (hl)
+next2_end: ; XXX TMP label for debugging
+  jp (hl)
+
+endif
 
 ; ==============================================================
 ; Dictionary
@@ -1216,7 +1283,7 @@ next2_end: ; XXX TMP label for debugging
 ; ----------------------------------------------
 ; Start compiling in the `root` vocabulary
 
-nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+nt_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl root_pfa
 
 ; ----------------------------------------------
@@ -1232,19 +1299,19 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header root_definitions_,'DEFINITIONS'
+  _colon_header root_set_order_,'SET-ORDER'
 
-  dw definitions_
+  dw set_order_
   dw exit_
 
-latest_nfa_in_root_voc: equ root_definitions_nfa
+latest_nt_in_root_voc: equ root_set_order_nt
 
 if 1 ; assembler_core_in_kernel
 
 ; ----------------------------------------------
 ; Start compiling in the `assembler` vocabulary
 
-nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+nt_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa
 
 ; ----------------------------------------------
@@ -1254,8 +1321,6 @@ if 1 ; abase
   _variable_header abase_,'ABASE'
 
   ; XXX TODO use the return stack instead?
-  ; but after removing `abase` the system crashes during the
-  ; loading of `base64`.
 
 ; doc{
 ;
@@ -1286,7 +1351,7 @@ endif
 if 1 ; abase
   dw abase_,fetch_,base_,store_ ; restore `base`
 else
-  dw from_r_,base_,store_ ; restore `base`
+  dw base_,store_ ; restore `base`
 endif
 
   dw exit_
@@ -1341,74 +1406,20 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO remove?
+
   dw lit_,0xE9DD ; opcode `jp (ix)`
   dw comma_
   dw exit_
 
-if 0 ; XXX OLD
-
-; ----------------------------------------------
-  _colon_header jppushhl_,'JPPUSHHL'
-
-; doc{
-;
-; jppushhl  ( -- )
-;
-; Compile a Z80 jump to `pushhl`.
-;
-; }doc
-
-  _literal 0xC3 ; opcode `jp`
-  dw c_comma_
-  dw lit_,push_hl,comma_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header jppushhlde_,'JPPUSHHLDE'
-
-; doc{
-;
-; jppushhlde  ( -- )
-;
-; Compile a Z80 jump to `pushhlde`.
-;
-; }doc
-
-  _literal 0xC3 ; opcode `jp`
-  dw c_comma_
-  dw lit_,push_hlde,comma_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header jpfetchhl_,'JPFETCHHL'
-
-; doc{
-;
-; jpfetchhl  ( -- )
-;
-; Compile a Z80 jump to `fetchhl`.
-;
-; }doc
-
-  _literal 0xC3 ; opcode `jp`
-  dw c_comma_
-  dw lit_,fetch.hl,comma_
-  dw exit_
-
-latest_nfa_in_assembler_voc: equ fetchhl_comma_nfa
-
-else
-
-latest_nfa_in_assembler_voc: equ jpnext_nfa
-
-endif
+latest_nt_in_assembler_voc: equ jpnext_nt
 
 endif
 
 ; ----------------------------------------------
 ; Start compiling in the `forth` vocabulary
 
-nfa_of_the_previous_word: defl 0 ; link to previous Forth word
+nt_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl forth_pfa
 
 ; ----------------------------------------------
@@ -1429,7 +1440,7 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 if 1 ; abase
   dw base_,fetch_,abase_,store_ ; save the current base
 else
-  dw base_,fetch_,to_r_ ; save the current base
+  dw base_,fetch_ ; save the current base
 endif
   dw hex_
   dw also_,assembler_ ; XXX TODO better
@@ -1498,7 +1509,85 @@ endif
 ;
 ; }doc
 
-  dw minus_order_,root_,also_
+;  dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw minus_order_
+;  dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw root_
+;  dw lit_,3,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw also_
+;  dw lit_,4,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header paren_set_order_,'(SET-ORDER)'
+
+; doc{
+;
+; (set-order)  ( widn..wid1 n -- )
+;
+; Set the search order to the word lists identified by
+; _widn..wid1_. Subsequently, word list _wid1_ will be
+; searched first, and word list _widn_ searched last.
+;
+; }doc
+
+; ----
+; : (set-order)  ( widn..wid1 n -- )
+;   0 ?do  context i cells + !  loop  ;
+; ----
+
+  _literal 0
+  dw paren_question_do_,paren_set_order.loop_exit
+  dw context_,i_,cells_,plus_,store_
+  dw paren_loop_
+paren_set_order.loop_exit
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header set_order_,'SET-ORDER'
+
+; doc{
+;
+; set-order  ( -1 | 0 | widn..wid1 n -- )
+;
+; Set the search order to the word lists identified by
+; _widn..wid1_. Subsequently, word list _wid1_ will be
+; searched first, and word list _widn_ searched last. If _n_
+; is zero, empty the search order. If _n_ is minus one, set
+; the search order to the implementation-defined minimum
+; search order.
+;
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+;
+; }doc
+
+; ----
+; : set-order  ( -1 | 0 | widn..wid1 n -- )
+;   dup -1 =  if  drop only exit  then
+;   ?dup if  (set-order)  else -order  then  ;
+; ----
+
+if 0 ; XXX OLD -- 14 cells
+  dw dup_
+  _literal -1
+  dw equals_
+  dw zero_branch_,set_order.do_set_order
+  dw drop_,only_,exit_
+set_order.do_set_order
+  dw question_dup_
+  dw zero_branch_,minus_order_pfa
+  dw paren_set_order_
+  dw exit_
+endif
+
+  ; XXX NEW -- 12 cells
+  dw question_dup_
+  dw zero_branch_,minus_order_pfa ; 0
+  dw dup_
+  _literal -1
+  dw equals_
+  dw zero_branch_,paren_set_order_pfa ; <>-1
+  dw drop_,only_ ; -1
   dw exit_
 
 ; ----------------------------------------------
@@ -1575,7 +1664,7 @@ endif
 
   _does_header root_,'ROOT',,do_vocabulary
 
-  dw latest_nfa_in_root_voc
+  dw latest_nt_in_root_voc
 
 root_vocabulary_link:
   dw 0x0000
@@ -1583,7 +1672,7 @@ root_vocabulary_link:
 ; ----------------------------------------------
   _does_header forth_,'FORTH',,do_vocabulary
 
-  dw latest_nfa_in_forth_voc ; nfa of the latest word defined in this vocabulary
+  dw latest_nt_in_forth_voc ; nt of the latest word defined in this vocabulary
 
 forth_vocabulary_link:
   dw root_vocabulary_link
@@ -1600,7 +1689,7 @@ forth_vocabulary_link:
 ; list is initially the compilation word list and is part of the
 ; initial search order.
 ;
-; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; }doc
 
@@ -1611,7 +1700,7 @@ if 1 ; assembler_core_in_kernel
 
   _does_header assembler_,'ASSEMBLER',,do_vocabulary
 
-  dw latest_nfa_in_assembler_voc
+  dw latest_nt_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
 
@@ -1900,7 +1989,7 @@ question_csb_.enough:
 
 ; doc{
 ;
-; execute  ( cfa  -- )
+; execute  ( xt  -- )
 ;
 ; }doc
 
@@ -1914,7 +2003,7 @@ question_csb_.enough:
 ;
 ; perform  ( a  -- )
 ;
-; Execute the word whose cfa is stored in _a_.  Do nothing if
+; Execute the word whose xt is stored in _a_.  Do nothing if
 ; the content of _a_ is zero.
 ;
 ; }doc
@@ -1941,7 +2030,7 @@ question_csb_.enough:
 ; Used at the source of a forward branch.  Typically used after
 ; either `branch`, `0branch` or `?branch`.
 ;
-; Standard: Forth-83.
+; Origin: Forth-83.
 ;
 ; }doc
 
@@ -1958,7 +2047,7 @@ question_csb_.enough:
 ; Resolve a forward branch by placing the address of the current
 ; dictionary pointer into the space compiled by `>mark`.
 ;
-; Standard: Forth-83.
+; Origin: Forth-83.
 ;
 ; }doc
 
@@ -1978,7 +2067,7 @@ question_csb_.enough:
 ; the destination of a backward branch.  _dest_ is typically
 ; only used by `<resolve` to compile a branch address.
 ;
-; Standard: Forth-83.
+; Origin: Forth-83.
 ;
 ; }doc
 
@@ -2001,7 +2090,7 @@ question_csb_.enough:
 ; address.  Used at the source of a backward branch after either
 ; `branch` or `?branch` or `0branch`.
 ;
-; Standard: Forth-83.
+; Origin: Forth-83.
 ;
 ; }doc
 
@@ -2019,7 +2108,7 @@ question_csb_.enough:
 ; offset is copied to the interpretive pointer IP to branch
 ; forward or backward.
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -2041,7 +2130,7 @@ question_csb_.enough:
 ; is false (zero), the following in-line address is copied to IP
 ; to branch forward or  backward.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -2093,7 +2182,7 @@ question_csb_.enough:
 ; condition exists if the loop-control parameters are
 ; unavailable.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -2124,7 +2213,7 @@ question_csb_.enough:
 ;
 ; ?do  ( n1 n2 -- )
 ;
-; Standard: Forth-83, Forth-94, Forth-2012.
+; Origin: Forth-83, Forth-94, Forth-2012.
 ;
 ; ----
 ; : ?do  ( n1 n2 -- )
@@ -2143,7 +2232,7 @@ question_csb_.enough:
 ;
 ; do  ( n1 n2 -- )
 ;
-; Standard: Forth-83, Forth-94, Forth-2012.
+; Origin: Forth-83, Forth-94, Forth-2012.
 ;
 ; ----
 ; : do  ( n1 n2 -- )
@@ -2166,7 +2255,7 @@ question_csb_.enough:
 ; Increment the `do-loop` index by one, terminating the loop  if
 ; the new index is equal to or greater than  the  limit.
 ;
-; Standard: Forth-83, Forth-94, Forth-2012.
+; Origin: Forth-83, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -2184,7 +2273,7 @@ question_csb_.enough:
 ; Increment the `do-loop` index by one, terminating the loop  if
 ; the new index is equal to or greater than  the  limit.
 ;
-; Standard: Forth-83, Forth-94, Forth-2012.
+; Origin: Forth-83, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -2462,7 +2551,7 @@ number_base.current:
 ; end of the string if the string was entirely converted. _len2_
 ; is the number of unconverted characters in the string.
 
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; ----
 ; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
@@ -2510,13 +2599,7 @@ to_number.end:
 ; ----------------------------------------------
   _colon_header number_question_,'NUMBER?'
 
-  ; XXX TODO convert this to a deferred word, to
-  ; make it hackable.
-
-if 0 ; XXX OLD -- version adapted from pForth
-
-  ; XXX Note: this version ocuppies 26 bytes less than the
-  ; next one, improved, inspired by fig-Forth.
+  ; XXX TODO convert this to a deferred word?
 
 ; doc{
 ;
@@ -2526,199 +2609,12 @@ if 0 ; XXX OLD -- version adapted from pForth
 ; conversion is not possible. If the result is a single number,
 ; return _n_ and 1. If the result is a double number, return _d_
 ; and 2.
-
-; : number?   ( ca len -- 0 | n 1 | d 2 )
-;   dup 0= if  2drop 0 exit  then
-;   base @ >r number-base base !
-;   skip-sign? >r
-;   dpl on  0 0 2swap >number dup
-;   if
-;     1 =  \ one non-converted character left?
-;     swap c@ [char] . =  and  \ and is it '.'?
-;     if    r@ ?dnegate  dpl off  2  \ if so, it's a double number
-;     else  2drop 0  then
-;   else
-;     2drop d>s r@ ?negate  1
-;   then  rdrop  r> base !  ;
-
 ;
-; }doc
+; This word accepts a dot anywhere on the string and updates
+; `dpl` accordingly; beside it recognizes chars between single
+; quotes, after Forth-2012.
 
-  ; Credits:
-  ; Code adapted from pForth.
-
-  dw dup_
-  dw question_branch_,number_question.not_empty
-  dw two_drop_
-  _literal 0
-  dw exit_
-
-number_question.not_empty:
-
-  dw base_,fetch_,to_r_
-  dw number_base_,base_,store_
-
-  dw skip_sign_question_,to_r_
-  dw dpl_,on_
-  _literal 0
-  _literal 0
-  dw two_swap_,to_number_
-  dw dup_ ; are there non-recognized chars?
-  dw zero_branch_,number_question.single
-
-  ; The conversion was not completed, so it may be because of
-  ; the final dot that indicates it's a double number.
-
-  _literal 1
-  dw equals_ ; only one character left?
-  dw swap_,c_fetch_
-  _literal '.'
-  dw equals_,and_ ; and is it a dot?
-  dw zero_branch_,number_question.failed_conversion
-
-number_question.double:
-  ; double number
-  dw r_fetch_,question_d_negate_
-  dw dpl_,off_
-  _literal 2
-  dw branch_,number_question.end
-
-number_question.failed_conversion:
-  dw two_drop_
-  _literal 0
-  dw branch_,number_question.end
-
-number_question.single:
-  ; single number
-  dw two_drop_,d_to_s_
-  dw r_fetch_,question_negate_
-  _literal 1
-
-number_question.end:
-  dw r_drop_               ; discard the sign flag
-  dw from_r_,base_,store_  ; restore `base`
-  dw exit_
-
-endif
-
-if 0 ; XXX NEW -- improved version inspired by fig-Forth
-
-  ; This improved version:
-  ;
-  ; - Accepts a "." at any position and updates `dpl` accordingly.
-
-  ; XXX Note: this version ocuppies 26 bytes more than the
-  ; one based on pForth.
-
-; doc{
-;
-; number?   ( ca len -- 0 | n 1 | d 2 )
-;
-; Convert a string _ca len_ to a number. Return 0 if the
-; conversion is not possible. If the result is a single number,
-; return _n_ and 1. If the result is a double number, return _d_
-; and 2.
-
-; : number?   ( ca len -- 0 | n 1 | d 2 )
-;   dup 0= if  2drop 0 exit  then
-;   base @ >r  number-base base !  ( R: radix )
-;   skip-sign? >r                  ( R: radix sign )
-;   0 0 2swap  dpl on
-;   begin                          ( d ca len )
-;     >number dup
-;   while
-;     over c@ [char] . <>   \ not a decimal point?
-;     dpl @ 0< 0=  or       \ or not the first decimal point?
-;     if  2drop 2rdrop 0 exit  then
-;     dup 1- dpl !  \ update the position of the decimal point
-;     1 /string     \ skip the decimal point
-;   repeat
-;   2drop     \ discard the empty string
-;   dpl @ 0<  \ single-cell number?
-;   if    d>s r> ?negate  1   \ single-cell number
-;   else  r> ?dnegate  2      \ double-cell number
-;   then  r> base !  ;        \ restore the radix
-
-; }doc
-
-  dw dup_,zero_equals_
-  dw zero_branch_,number_question2.not_empty
-  dw two_drop_
-  _literal 0
-  dw exit_
-
-number_question2.not_empty:
-
-  dw base_,fetch_,to_r_
-  dw number_base_,base_,store_
-
-  dw skip_sign_question_,to_r_
-  _literal 0
-  _literal 0
-  dw two_swap_,dpl_,on_
-number_question2.begin:
-  dw to_number_
-  dw dup_ ; are there non-recognized chars?
-  dw zero_branch_,number_question2.done ; while
-
-  ; The conversion was not completed, so it may be because of
-  ; the final dot that indicates it's a double number.
-
-  dw over_,c_fetch_
-  _literal '.'
-  dw not_equals_ ; not a decimal point?
-  dw dpl_,fetch_,zero_less_than_,zero_equals_ ; not the first decimal point?
-  dw or_
-  dw zero_branch_,number_question2.decimal_point
-  dw two_drop_,two_r_drop_
-  _literal 0
-  dw exit_
-
-number_question2.decimal_point:
-  dw dup_,one_minus_,dpl_,store_ ; update the position of the decimal point
-  _literal 1
-  dw slash_string_ ; skip the decimal point
-
-  dw branch_,number_question2.begin ; repeat
-
-number_question2.done:
-  dw two_drop_ ; discard the empty string
-  dw dpl_,fetch_,zero_less_than_ ; single-cell number?
-  dw zero_branch_,number_question2.double
-
-  ; single-cell number
-  dw d_to_s_,from_r_,question_negate_
-  _literal 1
-  dw branch_,number_question2.end
-
-number_question2.double:
-  ; double-cell number
-  dw from_r_,question_d_negate_
-  _literal 2
-
-number_question2.end:
-  dw from_r_,base_,store_  ; restore `base`
-
-  dw exit_
-
-endif
-
-if 1 ; XXX NEW
-
-  ; This improved version:
-  ;
-  ; - Accepts a "." at any position and updates `dpl` accordingly.
-  ; - Recognizes chars between single quotes, after Forth-2012.
-
-; doc{
-;
-; number?   ( ca len -- 0 | n 1 | d 2 )
-;
-; Convert a string _ca len_ to a number. Return 0 if the
-; conversion is not possible. If the result is a single number,
-; return _n_ and 1. If the result is a double number, return _d_
-; and 2.
-
+; ----
 ; : number?   ( ca len -- 0 | n 1 | d 2 )
 ;   dup 0= if  2drop 0 exit  then
 ;   2dup char? if nip nip 1 exit  then
@@ -2739,6 +2635,7 @@ if 1 ; XXX NEW
 ;   if    d>s r> ?negate  1   \ single-cell number
 ;   else  r> ?dnegate  2      \ double-cell number
 ;   then  r> base !  ;        \ restore the radix
+; ----
 
 ; }doc
 
@@ -2808,14 +2705,16 @@ number_question2.end:
 
   dw exit_
 
-endif
-
 ; ----------------------------------------------
   _colon_header char_question_,'CHAR?'
 
 ; doc{
 ;
 ; char?  ( ca len -- c true | false )
+;
+; Is the string _ca len_ the representation of a character?
+; If so return the character _c_ and _true_; else return
+; _false_.
 ;
 ; ----
 ; : char?  ( ca len -- c true | false )
@@ -2826,6 +2725,8 @@ endif
 ;     then
 ;   then
 ;   drop false ;
+; ----
+;
 ; }doc
 
   _literal 3
@@ -2878,10 +2779,10 @@ char_question.not:
 
 ; doc{
 ;
-; find-name-from  ( ca len nfa -- nfa | 0 )
+; find-name-from  ( ca len nt -- nt | 0 )
 ;
 ; Find the definition named in the string at _ca len_, starting
-; at _nfa_. If the definition is found, return its _nfa_, else
+; at _nt_. If the definition is found, return its _nt_, else
 ; return zero.
 ;
 ; The search is case-sensitive.
@@ -2892,15 +2793,15 @@ char_question.not:
   ; in comp.lang.forth, thread "description of Forth-2012's
   ; `synonym`", there are some suggestions:
   ; 
-  ; found  ( ca len -- nfa | 0 ) \ Albert van der Horst
-  ; find-name-in ( ca len wid -- nfa | 0 ) \ Bernd Paysan
-  ; search-name  ( ca len wid -- nfa | 0 ) \ Mathias Trute, amforth
+  ; found  ( ca len -- nt | 0 ) \ Albert van der Horst
+  ; find-name-in ( ca len wid -- nt | 0 ) \ Bernd Paysan
+  ; search-name  ( ca len wid -- nt | 0 ) \ Mathias Trute, amforth
 
   ld (find_name_from.ip_backup),bc ; save the Forth IP
 
   call bank.names ; page the memory bank in
 
-  pop hl ; nfa
+  pop hl ; nt
   pop bc ; C=len, B is supposed to be 0
   ld a,c
   ld (find_name_from.string_length),a
@@ -2913,8 +2814,8 @@ char_question.not:
 
 find_name_from.begin:
   ; Compare the string with a new word.
-  ; hl = nfa
-  ld (find_name_from.nfa_backup),hl ; save the nfa for later
+  ; hl = nt
+  ld (find_name_from.nt_backup),hl ; save the nt for later
 find_name_from.string_address: equ $+1
   ld de,0x0000 ; string address
   ld a,(hl) ; length byte of the name field
@@ -2935,22 +2836,22 @@ find_name_from.compare_next_char:
   jp pe, find_name_from.compare_next_char ; count not exhausted
 
   ; The string matches.
-  ld hl,(find_name_from.nfa_backup)
+  ld hl,(find_name_from.nt_backup)
   jr find_name_from.end
 
 find_name_from.not_a_match:
   ; Not a match, try the next word.
 
-find_name_from.nfa_backup: equ $+1
+find_name_from.nt_backup: equ $+1
                                         ;  T  B
-  ld hl,0x0000 ; nfa                      10 03
+  ld hl,0x0000 ; nt                      10 03
   dec hl ; high address of lfa            06 01
-  ld d,(hl) ; high part of the next nfa   07 01
+  ld d,(hl) ; high part of the next nt    07 01
   dec hl ; low address of lfa             06 01
-  ld e,(hl) ; low part of the next nfa    07 01
+  ld e,(hl) ; low part of the next nt     07 01
   ex de,hl                              ; 04 01
   ld a,h                                ; 04 01
-  or l ; end of dictionary? (next nfa=0)  04 01
+  or l ; end of dictionary? (next nt=0)   04 01
                                         ; 48 10 TOTAL
 
   jp nz,find_name_from.begin ; if not, continue
@@ -2960,7 +2861,7 @@ find_name_from.nfa_backup: equ $+1
 
 find_name_from.end:
   ; If match found:
-  ;   hl = nfa
+  ;   hl = nt
   ; If no match found:
   ;   hl = false
   exx
@@ -2975,20 +2876,20 @@ find_name_from.ip_backup: equ $+1
 
 ; doc{
 ;
-; search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
+; search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
 ;
 ; Find the definition identified by the string _ca len_ in the
 ; word list identified by _wid_. If the definition is not found,
-; return zero. If the definition is found, return its _cfa_ and
+; return zero. If the definition is found, return its _xt_ and
 ; one (1) if the definition is immediate, minus-one (-1)
 ; otherwise.
 ;
 ; The search is case-insensitive.
 ;
-; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; ----
-; : search-wordlist  ( ca len wid -- 0 | cfa 1 | cfa -1 )
+; : search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
 ;   @ find-name-from dup 0= ?exit
 ;   name>immediate? 0= 1 or  ;
 ; ----
@@ -2998,13 +2899,13 @@ find_name_from.ip_backup: equ $+1
   ; XXX -- can not be moved to the library because `header` uses
   ; it.
 
-  dw fetch_,find_name_from_  ; ( nfa | 0 )
-  dw dup_,zero_equals_  ; ( nfa false | 0 true )
-  dw question_exit_  ; ( nfa )
-  dw name_to_immediate_question_ ; ( cfa f )
+  dw fetch_,find_name_from_  ; ( nt | 0 )
+  dw dup_,zero_equals_  ; ( nt false | 0 true )
+  dw question_exit_  ; ( nt )
+  dw name_to_immediate_question_ ; ( xt f )
   dw zero_equals_
   _literal 1
-  dw or_ ; ( cfa 1 | cfa -1 )
+  dw or_ ; ( xt 1 | xt -1 )
   dw exit_
 
 ; ----------------------------------------------
@@ -3012,26 +2913,28 @@ find_name_from.ip_backup: equ $+1
 
 ; doc{
 
-; find-name  ( ca len -- nfa | 0 )
+; find-name  ( ca len -- nt | 0 )
 ;
 ; Find the definition identified by the string _ca len_ in the
 ; current search order. If the definition is not found after
 ; searching all the vocabularies in the search order, return
-; zero.  If the definition is found, return its _nfa_.
+; zero.  If the definition is found, return its _nt_.
 ;
 ; The search is case-insensitive.
 ;
 ; ----
-; : find-name  ( ca len -- nfa | 0 )
+; : find-name  ( ca len -- nt | 0 )
 ;   2dup uppers
 ;   #vocs 0 do
 ;     context i cells + @  ?dup
 ;     if  @ >r 2dup r> @ find-name-from ?dup
-;         ( ca len nfa nfa | ca len 0 )
+;         ( ca len nt nt | ca len 0 )
 ;         if  nip nip unloop exit  then
 ;     then
 ;   loop  2drop false  ;
 ; ----
+; 
+; Origin: Gforth.
 ;
 ; }doc
 
@@ -3048,7 +2951,7 @@ find_name_from.ip_backup: equ $+1
   ; valid vocabulary in the search order
   dw fetch_,to_r_,two_dup_,from_r_
 ;  _chk 'find-name -- before find-name-from' ; XXX INFORMER
-  dw find_name_from_,question_dup_ ; ( nfa nfa | 0 ) word found?
+  dw find_name_from_,question_dup_ ; ( nt nt | 0 ) word found?
   dw zero_branch_,find_name.loop
 ;  _chk 'find-name -- found' ; XXX INFORMER
   dw nip_,nip_,unloop_,exit_
@@ -3321,8 +3224,6 @@ if 1
 ;
 ; }doc
 
-  ; XXX TODO benchmark, compared to `emit`.
-
   pop hl
   push bc
   ; h = 0
@@ -3542,13 +3443,40 @@ endif
   ; jp translate_char_
 
 ; ----------------------------------------------
+  _code_header default_break_key_question_,'DEFAULT-BREAK-KEY?'
+
+; doc{
+;
+; break-key?  ( -- f )
+;
+; Is the default break key (Shift+Space) pressed?
+;
+; }doc
+
+  call rom_break_key
+  jp nc,true_pfa
+  jp false_pfa
+
+; ----------------------------------------------
+  _defer_header break_key_question_,'BREAK-KEY?',,default_break_key_question_
+
+; doc{
+;
+; break-key?  ( -- f )
+;
+; Is the break key pressed? This is a deferred work that bye
+; default checks the standard break key (Shift+Space).
+;
+; }doc
+
+; ----------------------------------------------
   _code_header key_question_,'KEY?'
 
 ; doc{
 ;
 ; key?  ( -- wf )
 ;
-; Standard: Forth-94 (FACILITY), Forth-2012 (FACILITY).
+; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
 ; }doc
 
@@ -3581,7 +3509,7 @@ endif
 ;
 ; key  ( -- c )
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -3804,7 +3732,7 @@ move.do:
 ; Multiply _u1_ by _u2_, giving the unsigned double-cell product
 ; _ud_.  All values and arithmetic are unsigned.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -3925,7 +3853,7 @@ endif
 ; Divide _ud_ by _u1_, giving the quotient _u3_ and the
 ; remainder _u2_.  All values and arithmetic are unsigned.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -4033,7 +3961,7 @@ u_m_slash_mod.4:
 ;
 ; Constant, the address of the user area pointer.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -4422,7 +4350,7 @@ true_if_cy:
 ;
 ; Negate _n1_, giving its arithmetic inverse _n2_.
 ;
-; Standard: Forth-79 (Required word set), Forth-83 (Required
+; Origin: Forth-79 (Required word set), Forth-83 (Required
 ; word set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
@@ -4444,7 +4372,7 @@ true_if_cy:
 ;
 ; Negate _d1_, giving its arithmetic inverse _d2_.
 ;
-; Standard: Forth-79 (Required word set), Forth-83 (Required
+; Origin: Forth-79 (Required word set), Forth-83 (Required
 ; word set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
@@ -4567,7 +4495,7 @@ endif
 ;
 ; Add _n|u_ to the single-cell number at _a_.
 ;
-; Standard: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
@@ -4592,6 +4520,8 @@ endif
 ;
 ; Store _false_ at _a_.
 ;
+; Origin: Comus.
+;
 ; }doc
 
   pop hl
@@ -4608,6 +4538,8 @@ endif
 ; on  ( a -- )
 ;
 ; Store _true_ at _a_.
+;
+; Origin: Comus.
 ;
 ; }doc
 
@@ -4768,9 +4700,21 @@ do_colon:
   dec hl
   ld (hl),c
   ld (return_stack_pointer),hl ; save the updated IP
-  inc de ; de=pfa
-  ld c,e
-  ld b,d ; bc=pfa
+
+if 1 ; itc
+                     ; T  B
+                     ; -- -- 
+  inc de ; de=pfa    ; 06 01
+  ld c,e             ; 04 01
+  ld b,d ; bc=pfa    ; 04 01
+
+else ; dtc
+                     ; T  B
+                     ; -- -- 
+  pop bc ; bc=pfa    ; 10 01
+
+endif
+
 do_colon.end: ; XXX TMP for debugging
   _jp_next
 
@@ -4798,9 +4742,9 @@ do_colon.end: ; XXX TMP for debugging
 
 ; doc{
 ;
-; :noname  ( -- cfa )
+; :noname  ( -- xt )
 ;
-; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; ----
 ; }doc
@@ -4812,7 +4756,7 @@ do_colon.end: ; XXX TMP for debugging
   ; XXX TODO move to the library?
   ; first `do_colon` must be defined as a constant
 
-  dw here_ ; cfa
+  dw here_ ; xt
   dw store_csp_
   dw lit_,do_colon,comma_ ; create the code field
   dw noname_question_,on_
@@ -4860,8 +4804,16 @@ do_colon.end: ; XXX TMP for debugging
   dw create_,c_comma_
   dw paren_semicolon_code_
 do_c_constant:
-  inc de    ; de=pfa
-  ex de,hl  ; hl=pfa
+if 1 ; itc
+                     ; T  B
+                     ; -- -- 
+  inc de    ; de=pfa ; 06 01
+  ex de,hl  ; hl=pfa ; 04 01
+else
+                     ; T  B
+                     ; -- -- 
+  pop hl             ; 10 01
+endif
   jp c_fetch.hl
 
 ; ----------------------------------------------
@@ -4870,8 +4822,16 @@ do_c_constant:
   dw create_,comma_
   dw paren_semicolon_code_
 do_constant:
-  inc de    ; de=pfa
-  ex de,hl  ; hl=pfa
+if 1 ; itc
+                     ; T  B
+                     ; -- -- 
+  inc de    ; de=pfa ; 06 01
+  ex de,hl  ; hl=pfa ; 04 01
+else
+                     ; T  B
+                     ; -- -- 
+  pop hl             ; 10 01
+endif
   jp fetch.hl
 
 ; ----------------------------------------------
@@ -4893,7 +4853,7 @@ do_constant:
 ;    responsible for initializing the contents of the reserved
 ;    cell.
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -4915,7 +4875,7 @@ if 0 ; old_user
 ; user area where the value for _name_ is stored.  Execution of
 ; _name_ leaves its absolute user area storage address.
 ;
-; Standard: fig-Forth, Forth-79, Forth-83.
+; Origin: fig-Forth, Forth-79, Forth-83.
 ;
 ; }doc
 
@@ -4948,8 +4908,12 @@ else
   dw c_constant_
   dw paren_semicolon_code_
 do_user:
+if 1 ; itc
   inc de      ; de=pfa
   ex de,hl
+else
+  pop hl
+endif
   ld e,(hl)
   ld d,0x00   ; de = index of the user variable
   ld hl,(user_variables_pointer)
@@ -5094,7 +5058,7 @@ endif
 ; or word.  This definition is used to access or modify the
 ; boot-up parameters at the origin area.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -5142,7 +5106,7 @@ endif
 ;
 ; (wait)  ( -- a )
 ;
-; User variable that holds the cfa of a word to be executed by
+; User variable that holds the xt of a word to be executed by
 ; some words that accept user input, during multitasking.
 ;
 ; }doc
@@ -5164,7 +5128,7 @@ endif
 ; its natural characters are saved, up to the value in `width`.
 ; The value may be changed at any time within the above limits.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -5319,7 +5283,7 @@ endif
 ; A user variable that holds the address of the latest character of
 ; text during numeric output conversion.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -5389,7 +5353,7 @@ endif
 ; User variable that holds the current data stack position saved
 ; by `!csp`.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -5429,7 +5393,7 @@ endif
 ;
 ; Address of the terminal input buffer.
 ;
-; Standard: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
+; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
 ;
 ; }doc
 
@@ -5461,7 +5425,7 @@ endif
 ; _a_ is the address of a cell containing the number of
 ; characters in the terminal input buffer.
 ; 
-; Standard: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
+; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
 ;
 ; }doc
 
@@ -5495,7 +5459,7 @@ endif
 ;   input-buffer 2@  ;
 ; ----
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5514,7 +5478,7 @@ source.other:
 ;
 ; recurse  ( -- )
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -5576,7 +5540,7 @@ source.other:
 ;
 ; This is the same as `1 lshift`.
 ;
-; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
 ; }doc
@@ -5604,7 +5568,7 @@ source.other:
 ;
 ; In Solo Forth, this word does nothing.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5619,7 +5583,7 @@ source.other:
 ;
 ; _n2_ is the size in address units of _n1_ cells.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5707,7 +5671,7 @@ endif
 
 ; doc{
 ;
-; compile,  ( cfa -- )
+; compile,  ( xt -- )
 ;
 ; }doc
 
@@ -5868,12 +5832,12 @@ question_dup.end:
 
 ; doc{
 ;
-; latest ( -- nfa )
+; latest ( -- nt )
 ;
-; Leave the name field address of the topmost word in the
+; Leave the name token of the topmost word in the
 ; `current` vocabulary.
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -5881,31 +5845,49 @@ question_dup.end:
   dw exit_
 
 ; ----------------------------------------------
+if 1 ; itc
   _code_alias_header from_body_,'BODY>',,two_minus_
+else
+  _code_header from_body_,'BODY>'
+  pop hl
+  dec hl
+  dec hl
+  dec hl
+  jp push_hl
+endif
 
 ; ----------------------------------------------
+if 1 ; itc
   _code_alias_header to_body_,'>BODY',,two_plus_
+else
+  _code_header to_body_,'>BODY'
+  pop hl
+  inc hl
+  inc hl
+  inc hl
+  jp push_hl
+endif
 
 ; ----------------------------------------------
   _code_header to_name_,'>NAME'
 
 ; doc{
 ;
-; >name  ( cfa -- nfa )
-; >name  ( cfa -- nfa | 0 ) \ XXX TODO
+; >name  ( xt -- nt )
+; >name  ( xt -- nt | 0 ) \ XXX TODO
 ;
-; Warning: No check is done wether cfa belongs to a definition
-; created with `:noname`; if so, the name assoctiated to _nfa_,
+; Warning: No check is done wether xt belongs to a definition
+; created with `:noname`; if so, the name assoctiated to _nt_,
 ; returned by `name>string`, will be empty.
 ;
 ; }doc
 
-  ; XXX FIXME -- make it return 0 if cfa has no name associated
+  ; XXX FIXME -- make it return 0 if xt has no name associated
 
   call bank.names ; page the memory bank in
 
-  pop de ; cfa
-;  ld (to_name.cfa),de ; save cfa for later ; XXX OLD
+  pop de ; xt
+;  ld (to_name.xt),de ; save xt for later ; XXX OLD
 
   ld a,(np_pfa) ; low byte of the names pointer
   ld (to_name.names_pointer_low_byte),a ; save it for later
@@ -5917,13 +5899,13 @@ question_dup.end:
   ld hl, names_bank_address-4
 
 to_name.begin_0:
-  ; hl = address of the cfa pointer
+  ; hl = address of the xt pointer
 
   ; XXX NEW -- compare hl with  np: if equals, exit
   ; XXX FIXME -- not working yet
   ; XXX TODO use the Fuse's debugger
 
-  ; compare the cfa pointer with the names pointer
+  ; compare the xt pointer with the names pointer
   ; if they are equals, there are no more names to check
 to_name.names_pointer_high_byte equ $+1
   ld a,0
@@ -5942,29 +5924,29 @@ to_name.names_not_finished:
 to_name.begin_1:
   inc hl ; hl = lfa
   inc hl
-  inc hl ; hl = nfa
+  inc hl ; hl = nt
   ld a,(hl) ; name field byte length
   and word_length_mask ; name length
   ld c,a ; name length
   inc c  ; plus the length byte
-  add hl,bc ; point to the cfa pointer of the next word
+  add hl,bc ; point to the xt pointer of the next word
 
 ; XXX OLD
-; to_name.cfa equ $+1
-;  ld de,0 ; cfa searched for
+; to_name.xt equ $+1
+;  ld de,0 ; xt searched for
 
-  ld a,(hl) ; low byte of cfa
+  ld a,(hl) ; low byte of xt
   cp e ; equal?
   jr nz,to_name.begin_0 ; not equal
   inc hl
-  ld a,(hl) ; high byte of cfa
+  ld a,(hl) ; high byte of xt
   cp d ; equal?
   jr nz,to_name.begin_1 ; not equal
 
-  ; cfa found
+  ; xt found
   inc hl
   inc hl
-  inc hl ; nfa
+  inc hl ; nt
 
 to_name.end:
   call bank.default ; page the default memory bank
@@ -6137,7 +6119,7 @@ to_name.end:
 
 ; doc{
 ;
-; name>  ( nfa -- cfa )
+; name>  ( nt -- xt )
 ;
 ; }doc
 
@@ -6148,7 +6130,7 @@ to_name.end:
 ; ----------------------------------------------
 ; doc{
 ;
-; name>string  ( nfa -- ca len )
+; name>string  ( nt -- ca len )
 ;
 ; }doc
 
@@ -6171,7 +6153,7 @@ to_name.end:
 ;
 ; Save the the current data stack position.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -6246,7 +6228,7 @@ to_name.end:
 ;
 ; // XXX TODO and `checking` is not zero.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -6294,19 +6276,19 @@ to_name.end:
 ; space. Find name. Append the compilation semantics of _name_ to
 ; the current definition.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
-  dw defined_ ; ( nfa | 0 )
+  dw defined_ ; ( nt | 0 )
   dw dup_,question_defined_ ; error if not found
-  ; ( nfa )
-  dw name_to_immediate_question_ ; ( cfa f )
+  ; ( nt )
+  dw name_to_immediate_question_ ; ( xt f )
   dw question_branch_,postpone.end
   ; Non-immediate word.
   dw compile_,compile_ ; compile `compile`
 postpone.end:
-  dw compile_comma_ ; compile cfa
+  dw compile_comma_ ; compile xt
   dw exit_
 
 ; ----------------------------------------------
@@ -6326,9 +6308,9 @@ postpone.end:
 
 ; doc{
 ;
-; revealed  ( nfa -- )
+; revealed  ( nt -- )
 ;
-; Reveal the definition _nfa_ by resetting its smudge bit.
+; Reveal the definition _nt_ by resetting its smudge bit.
 ;
 ; }doc
 
@@ -6355,9 +6337,9 @@ postpone.end:
 
 ; doc{
 ;
-; hided  ( nfa -- )
+; hided  ( nt -- )
 ;
-; Hide the definition _nfa_ by setting its smudge bit.
+; Hide the definition _nt_ by setting its smudge bit.
 ;
 ; }doc
 
@@ -6379,74 +6361,16 @@ postpone.end:
   dw latest_,hided_
   dw exit_
 
-if 0 ; XXX OLD
-
-; ----------------------------------------------
-  _code_header c_store_toggle_bits_,'C!TOGGLE-BITS'
-
-; doc{
-;
-; c!toggle-bits  ( b ca -- )
-;
-; Invert the bits at _ca_ specified by the bitmask _b_.
-;
-; }doc
-
-  pop hl ; address
-  pop de ; e = bitmask
-  ld a,(hl)
-  xor e
-  ld (hl),a
-  _jp_next
-
-; ----------------------------------------------
-  _colon_header smudged_,'SMUDGED'
-
-  ; XXX OLD
-  ; XXX TODO move to the library
-
-; doc{
-;
-; smudged  ( nfa -- )
-;
-; Toggle the "smudge bit" of the given name field address.
-;
-; }doc
-
-  dw smudge_mask_,swap_
-  dw names_bank_,c_store_toggle_bits_,default_bank_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header smudge_,'SMUDGE'
-
-  ; XXX OLD
-  ; XXX TODO move to the library
-
-; doc{
-;
-; smudge  ( -- )
-;
-; Toggle the "smudge bit" of the latest definition's name field.
-; This prevents an uncompleted definition from being found
-; during dictionary searches, until compiling is completed
-; without error.
-;
-; Standard: fig-Forth.
-;
-; }doc
-
-  dw latest_,smudged_
-  dw exit_
-
-endif
-
 ; ----------------------------------------------
   _c_constant_header smudge_mask_,'SMUDGE-MASK'
 
-  ; XXX TMP -- added for the port of pForth's `privatize` in the
-  ; library, but finally it's not needed, because `(smudge)`
-  ; toggles the bit. It may be useful anyway.
+; doc{
+;
+; smudge-mask  ( -- b )
+;
+; Constant that holds the bitmask of the smudge bit.
+;
+; }doc
 
   db smudge_mask
 
@@ -6477,16 +6401,32 @@ endif
 ;
 ; }doc
 
-; : (;code)       --
+if 1 ; itc
+
+; ----
+; : (;code)  ( -- )
 ;   r>        \ Pop the address of the next instruction off the return stack,
 ;             \ which is the starting address of the run-time code routine.
-;   latest    \ Get the name field address of the word under construction.
-;   nfa>cfa ! \ Find its code field address and store in it the address of
+;   latest    \ Get the name token of the word under construction.
+;   name> !   \ Find its execution token and store in it the address of
 ;             \ the code routine to be executed at run-time.
 ;   ;
+; ----
 
   dw from_r_,latest_,from_name_,store_
   dw exit_
+
+else ; dtc
+
+; ----
+; : (;code)  ( -- )
+;   r> latest name> 1+ !  ;
+; ----
+
+  dw from_r_,latest_,from_name_,one_plus_,store_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header semicolon_code_,';CODE',immediate+compile_only
@@ -6510,6 +6450,8 @@ endif
 ; ----------------------------------------------
   _colon_header does_,'DOES>',immediate+compile_only
 
+if 1 ; itc
+
   dw compile_,paren_semicolon_code_
   _literal 0xCD ; Z80 opcode for "call"
   dw c_comma_ ; compile it
@@ -6517,7 +6459,7 @@ endif
   dw exit_
 
 do_does:
-  ; Save the IP in the return stack.
+  ; Save the IP on the return stack.
   ld hl,(return_stack_pointer)
   dec hl
   ld (hl),b
@@ -6532,6 +6474,23 @@ do_does:
   push de
   ; Execute the run-time routine.
   _jp_next
+
+else ; dtc
+
+  dw compile_,paren_semicolon_code_
+  _literal 0xCD ; Z80 opcode for "call"
+  dw c_comma_ ; compile it
+  dw lit_,do_does,comma_ ; compile the routine address
+  dw exit_
+
+do_does:
+  ; XXX UNDER DEVELOPMENT
+  pop de
+  push de 
+  push de
+  jp do_colon
+
+endif
 
 ; ----------------------------------------------
   _code_header count_,'COUNT'
@@ -6586,7 +6545,7 @@ type.end:
 ; specified by _ca1 len1_. If _len1_ is zero or the entire
 ; string consists of spaces, _len2_ is zero.
 ;
-; Standard: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (STRING), Forth-2012 (STRING).
 ;
 ; }doc
@@ -6677,7 +6636,7 @@ if 0 ; XXX OLD
 ;
 ; Display "text".
 ;
-; Standard: Forth-79, Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-79, Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -6738,7 +6697,7 @@ else
 ;
 ; Display "text".
 ;
-; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
 ; ----
@@ -6791,7 +6750,7 @@ endif
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -6828,7 +6787,7 @@ acceptx.begin:
 ;
 ; _len2_ is the length of the string stored at _ca1_.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -6917,7 +6876,7 @@ accept.end:
 ; variable have been received. One or more nulls are added at
 ; the end of the text.
 ;
-; Standard: Forth-83, Forth-94 (CORE EXT, obsolescent).
+; Origin: Forth-83, Forth-94 (CORE EXT, obsolescent).
 ;
 ; }doc
 
@@ -6945,7 +6904,7 @@ accept.end:
 ; | -1 | String via `evaluate`
 ; |===
 ;
-; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; }doc
 
@@ -7021,7 +6980,7 @@ refill.end:
 ; If _u_ is not zero, store _b_ in each of _u_
 ; consecutive characters of memory beginning at _a_.
 ;
-; Standard: fig-Forth, Forth-83.
+; Origin: fig-Forth, Forth-83.
 ;
 ; }doc
 
@@ -7104,7 +7063,7 @@ fill.done:
 ; Return the address of a transient region that can be used to
 ; hold data for intermediate processing.
 ;
-; Standard: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT),
+; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT),
 ; Forth-2012 (CORE EXT).
 ;
 ; }doc
@@ -7140,7 +7099,7 @@ fill.done:
 ; The resulting character string _ca2 len2_ begins at _ca1_ plus
 ; _n_ characters and is _len1_ minus _n_ characters long.
 ;
-; Standard: Forth-94 (STRING), Forth-2012 (STRING).
+; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
 ;
 ; ----
@@ -7197,7 +7156,7 @@ fill.done:
 ;
 ; If the parse area was empty, the resulting string has a zero length.
 ;
-; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; ----
 ; : parse  ( c "text<c>" -- ca len )
@@ -7596,7 +7555,7 @@ error.message:
   dw two_dup_,get_current_,search_wordlist_
   dw zero_branch_,header_comma.continue
   ; the word is not unique in `current`
-  ; ( ca len cfa )
+  ; ( ca len xt )
   dw to_name_,id_dot_
   _literal error.not_unique
   dw dot_throw_ ; XXX TMP -- `warning`?
@@ -7608,9 +7567,9 @@ header_comma.continue:
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
   dw names_bank_
-  dw here_,comma_np_ ; store a pointer to the cfa
+  dw here_,comma_np_ ; store a pointer to the xt
   dw latest_,comma_np_ ; link field
-  ; Now `np` contains the address of the nfa.
+  ; Now `np` contains the address of the nt.
   dw np_fetch_
   dw dup_,to_r_
   dw place_ ; store the name
@@ -7625,14 +7584,16 @@ header_comma.continue:
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
 
-  ; XXX TODO factor `header smudge` to `visible-header`? it's
+  ; XXX TODO factor `header reveal` to `visible-header`? it's
   ; used also by `defer`.
 
   dw header_,reveal_
   dw paren_semicolon_code_
 do_create:
+if 1 ; itc
   inc de  ; de=pfa
   push de
+endif
   _jp_next
 
 ; ----------------------------------------------
@@ -7875,7 +7836,7 @@ c_literal.end:
 ;
 ; If compiling, then compile the stack value _n_ as a 16-bit literal.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -7948,7 +7909,7 @@ two_literal.end:
 ;
 ; Issue an error message if the stack is out of bounds.
 
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -8056,7 +8017,7 @@ two_literal.end:
 ; area  is  empty, restore the prior input source
 ; specification.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
  
 ; ----
 ; : evaluate  ( i*x ca len -- j*x )
@@ -8128,15 +8089,15 @@ interpret.begin:
   dw dup_ ; end of stream?
   dw zero_branch_,interpret.end ; if so, finish
 
-  dw find_name_ ; ( nfa | 0 )
+  dw find_name_ ; ( nt | 0 )
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
   ; Word found
-  ; ( nfa )
-  dw dup_,name_to_immediate_question_       ; ( nfa cfa f1 )
-  dw rot_,compile_only_question_,two_star_  ; ( cfa f1 n2 )
-  dw plus_,abs_ ; ( cfa +n )
+  ; ( nt )
+  dw dup_,name_to_immediate_question_       ; ( nt xt f1 )
+  dw rot_,compile_only_question_,two_star_  ; ( xt f1 n2 )
+  dw plus_,abs_ ; ( xt +n )
   _literal 3
   dw plus_ ; adjust the table index
 
@@ -8161,6 +8122,14 @@ interpret.end:
 ; ----------------------------------------------
   _c_constant_header immediate_mask_,'IMMEDIATE-MASK'
 
+; doc{
+;
+; immediate-mask  ( -- b )
+;
+; Constant that holds the bitmask of the precedence bit.
+;
+; }doc
+
   db immediate_mask
 
 ; ----------------------------------------------
@@ -8168,9 +8137,9 @@ interpret.end:
 
 ; doc{
 ;
-; lex?  ( nfa b -- )
+; lex?  ( nt b -- )
 ;
-; Test the bits at _nfa_ specified by the bitmask _b_.
+; Test the bits at _nt_ specified by the bitmask _b_.
 ; Return _true_ if the result is non-zero, else return _false_.
 ;
 ; }doc
@@ -8194,9 +8163,9 @@ endif
 
 ; doc{
 ;
-; lex!  ( b nfa -- )
+; lex!  ( b nt -- )
 ;
-; Set the bits of the mask _b_ in the length byte of _nfa_.
+; Set the bits of the mask _b_ in the length byte of _nt_.
 ;
 ; }doc
 
@@ -8232,9 +8201,9 @@ endif
 
 ; doc{
 ;
-; immediate?  ( nfa -- wf )
+; immediate?  ( nt -- wf )
 ;
-; Does the word with the given _nfa_ is immediate?
+; Does the word with the given _nt_ is immediate?
 ;
 ; }doc
 
@@ -8246,22 +8215,30 @@ endif
 
 ; doc{
 ;
-; name>immediate?  ( nfa -- cfa wf )
+; name>immediate?  ( nt -- xt wf )
 ;
-; Does the word with the given _nfa_ is immediate?
+; Does the word with the given _nt_ is immediate?
 ;
 ; }doc
 
   ; XXX TODO better name!
   ; this name is confusing, compared to `immediate?`,
-  ; which converts a nfa to a flag.
+  ; which converts a nt to a flag.
 
-  dw dup_,from_name_,swap_ ; ( cfa nfa )
-  dw immediate_question_ ; ( cfa wf )
+  dw dup_,from_name_,swap_ ; ( xt nt )
+  dw immediate_question_ ; ( xt wf )
   dw exit_
 
 ; ----------------------------------------------
   _c_constant_header compile_only_mask_,'COMPILE-ONLY-MASK'
+
+; doc{
+;
+; compile-only-mask  ( -- b )
+;
+; Constant that holds the bitmask of the compile-only bit.
+;
+; }doc
 
   db compile_only_mask
 
@@ -8276,9 +8253,9 @@ endif
 
 ; doc{
 ;
-; compile-only?  ( nfa -- wf )
+; compile-only?  ( nt -- wf )
 ;
-; Does the word with the given _nfa_ is compile-only?
+; Does the word with the given _nt_ is compile-only?
 ;
 ; }doc
 
@@ -8302,7 +8279,7 @@ endif
 ; }doc
 
   _literal 0
-  dw comma_                   ; nfa of the latest word defined in the vocabulary
+  dw comma_                   ; nt of the latest word defined in the vocabulary
   dw here_                    ; new contents of vocabulary link
   dw voc_link_,fetch_,comma_  ; compile the previous contents of `voc-link`
   dw voc_link_,store_         ; update `voc-link`
@@ -8358,7 +8335,7 @@ do_vocabulary:
 ;
 ; Return _wid_, the identifier of the compilation word list.
 ;
-; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; ----
 ; : get-current  ( -- wid )
@@ -8380,7 +8357,7 @@ do_vocabulary:
 ; Set the compilation word list to the word list identified by
 ; _wid_.
 ;
-; Standard: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; ----
 ; : set-current  ( wid -- )
@@ -8499,14 +8476,14 @@ quit.begin:
 ;
 ; Create a deferred word.
 ;
-; Standard: Forth-2012 (CORE EXT).
+; Origin: Forth-2012 (CORE EXT).
 ;
 ; }doc
 
   dw header_,reveal_
   _literal 0x21 ; Z80 opcode for `ld hl,NN`
   dw c_comma_
-  _literal paren_defer_ ; default cfa to execute
+  _literal paren_defer_ ; default xt to execute
   dw comma_
   _literal 0xC3 ; Z80 opcode for `jp NN`
   dw c_comma_
@@ -8514,21 +8491,56 @@ quit.begin:
   dw comma_
   dw exit_
 
+
+if 1 ; itc
+
+; ----------------------------------------------
+  _colon_header to_defer_,'>DEFER'
+
+; doc{
+;
+; >defer  ( xt1 -- a )
+; 
+; Return the address _a_ that holds the xt currently associated
+; to the deferred word _xt1_.
+;
+; }doc
+
+
+  dw to_body_,one_plus_
+  dw exit_
+
+else ; dtc
+
+; ----------------------------------------------
+  _code_alias_header to_defer_,'>DEFER',,one_plus_
+
+; doc{
+;
+; >defer  ( xt1 -- a )
+; 
+; Return the address _a_ that holds the xt currently associated
+; to the deferred word _xt1_.
+;
+; }doc
+
+endif
+
 ; ----------------------------------------------
   _colon_header defer_fetch_,'DEFER@'
 
 ; doc{
 ;
-; defer@  ( cfa1 -- cfa2 )
+; defer@  ( xt1 -- xt2 )
 ;
-; Return the word _cfa2_ currently associated to the deferred
-; word _cfa1_.
+; Return the word _xt2_ currently associated to the deferred
+; word _xt1_.
 ;
-; Standard: Forth-2012 (CORE EXT).
+; Origin: Forth-2012 (CORE EXT).
 ;
 ; }doc
 
-  dw to_body_,one_plus_,fetch_
+  dw to_defer_,fetch_
   dw exit_
 
 ; ----------------------------------------------
@@ -8536,15 +8548,15 @@ quit.begin:
 
 ; doc{
 ;
-; defer!  ( cfa1 cfa2 -- )
+; defer!  ( xt1 xt2 -- )
 ;
-; Change the deferred word _cfa2_ to execute _cfa1_.
+; Change the deferred word _xt2_ to execute _xt1_.
 ;
-; Standard: Forth-2012 (CORE EXT).
+; Origin: Forth-2012 (CORE EXT).
 ;
 ; }doc
 
-  dw to_body_,one_plus_,store_
+  dw to_defer_,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -8554,14 +8566,26 @@ quit.begin:
 ;
 ; version  ( -- a )
 ;
-; Return the Solo Forth version number _d_.  The version number
-; is the release date in the ISO format YYYYMMDD.
+; Return an address that holds the Solo Forth version, as
+; follows:
+;
+; +0: version major (one byte)
+; +1: version minor(one byte)
+; +2: version patch (one byte)
+; 
+; Development versions include also:
+;
+; +3: version release candidate (one byte)
+; +4: version build (two cells)
 ;
 ; }doc
 
   db version_major
   db version_minor
-  dw version_patch
+  db version_patch
+if defined version_release_candidate
+  db version_release_candidate
+endif
 if defined version_build_high_part
   dw version_build_high_part
   dw version_build_low_part
@@ -8570,25 +8594,39 @@ endif
 ; ----------------------------------------------
   _colon_header dot_version_,'.VERSION'
 
+; doc{
+;
+; .version  ( -- )
+; 
+; Print the Solo Forth version.
+;
+; }doc
+
   dw version_
-  dw dup_,c_fetch_
-  _literal 0
-  dw dot_r_
+  dw dup_,c_fetch_,zero_dot_r_
   _literal '.'
   dw emit_
-  dw one_plus_,dup_,c_fetch_
-  _literal 0
-  dw dot_r_
+  dw one_plus_,dup_,c_fetch_,zero_dot_r_
   _literal '.'
   dw emit_
-  dw one_plus_,dup_,fetch_
-  _literal 0
-  dw dot_r_
+  dw one_plus_,dup_,c_fetch_,zero_dot_r_
+if defined version_release_candidate ; XXX TODO
+  dw paren_dot_quote_
+  _string "-rc"
+  dw one_plus_,dup_,c_fetch_,zero_dot_r_
+endif
 if defined version_build_high_part
   _literal '+'
   dw emit_
-  dw cell_plus_,two_fetch_,d_dot_ 
+if 1 ; itc
+  dw paren_dot_quote_
+  _string "ITC."
+else
+  _string "DTC."
 endif
+  dw one_plus_,two_fetch_,d_dot_ 
+endif
+
   dw exit_
 
 ; ----------------------------------------------
@@ -8608,7 +8646,6 @@ endif
   dw paren_dot_quote_
   _string "\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
 
-  ; XXX TMP show the free memory, during development only
   dw unused_,u_dot_
   dw paren_dot_quote_
   _string "B free"
@@ -8636,7 +8673,7 @@ endif
 ;
 ; previous-mode  ( -- a )
 ;
-; Variable that holds the cfa of the word that activates the
+; Variable that holds the xt of the word that activates the
 ; screen mode that was active before executing `bye`.  It's
 ; updated by `bye`, and used by `warm` to restore the current
 ; mode.
@@ -8654,7 +8691,7 @@ endif
 ;
 ; current-mode  ( -- a )
 ;
-; Variable that holds the cfa of the word that activates the
+; Variable that holds the xt of the word that activates the
 ; current screen mode. It's set to `noop` until the first mode
 ; change is done.
 ;
@@ -8694,6 +8731,8 @@ warm_start:
   dw lit_,names_pointer_init_value,fetch_
   dw lit_,names_pointer,store_
 
+;  _brk 'cold -- before empty-buffers' ; XXX INFORMER
+
   ; Init the disk buffers.
   dw empty_buffers_
 
@@ -8706,24 +8745,35 @@ warm_start:
   _literal default_user_variables_end-default_user_variables_start ; length
   dw cmove_
 
+;  _brk 'cold -- after cmove' ; XXX INFORMER
+
   ; Restore the vocabularies to the default state.
-  dw lit_,latest_nfa_in_root_voc.init_value,fetch_
+  dw lit_,latest_nt_in_root_voc.init_value,fetch_
   dw lit_,root_pfa,store_
-  dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
+  dw lit_,latest_nt_in_forth_voc.init_value,fetch_
   dw lit_,forth_pfa,store_
 if 1 ; assembler_core_in_kernel
-  dw lit_,latest_nfa_in_assembler_voc.init_value,fetch_
+  dw lit_,latest_nt_in_assembler_voc.init_value,fetch_
   dw lit_,assembler_pfa,store_
 endif
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
 
-  dw only_,forth_,definitions_  ; search order
+;  dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw only_
+;  dw lit_,5,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw forth_
+;  dw lit_,3,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw definitions_  ; search order
+;  dw lit_,4,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
   dw decimal_
+;  dw lit_,5,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
 
-  dw display_,default_colors_,page_,greeting_
-
-;  _brk 'cold -- before abort' ; XXX INFORMER
+;  dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw display_,default_colors_,page_
+;  dw lit_,6,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw greeting_
+;  dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
 
   dw abort_
 
@@ -8737,16 +8787,16 @@ common_start:
 
   ; Common operations done by warm_start and cold_start.
 
-  ; (SP) = cfa of `cold` or `warm`
+  ; (SP) = xt of `cold` or `warm`
 
   im 1 ; interrupt mode 1
-  pop bc ; get the return address, that holds the cfa of `cold` or `warm`
+  pop bc ; get the return address, that holds the xt of `cold` or `warm`
   ld (system_stack_pointer),sp ; save the system stack pointer
   ld sp,(sp0_init_value)
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
   ld ix,next ; restore IX
-  _jp_next ; jump to the cfa pointed by the register pair BC
+  _jp_next ; jump to the xt pointed by the register pair BC
 
 ; ----------------------------------------------
   _code_alias_header d_to_s_,'D>S',,drop_
@@ -8755,7 +8805,7 @@ common_start:
 ;
 ; d>s  ( d -- n )
 ;
-; Standard: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
+; Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
 ;
 ; ----
 ; : d>s  ( d -- n )
@@ -8772,7 +8822,7 @@ common_start:
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; ----
 ; : s>d  ( n -- d )
@@ -8955,7 +9005,7 @@ max.2:
 ;
 ; Multiply _n1_ by _n2_ producing the result _d_.
 ;
-; Standard: fig-Forth, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-94, Forth-2012.
 ;
 ; ----
 ; : m*  ( n1 n2 -- d )
@@ -9009,7 +9059,7 @@ endif
 ; Therefore setting it to execute either `sm/rem` or `fm/mod`
 ; will change the behaviour of all division operators.
 ;
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -9029,7 +9079,7 @@ endif
 ; Divide _d_ by _n1_, giving the symmetric quotient _n3_ and the
 ; remainder _n2_. Input and output stack arguments are signed.
 ;
-; Standard: Forth-94, Forth-2012.
+; Origin: Forth-94, Forth-2012.
 
 ; }doc
 
@@ -9089,7 +9139,7 @@ endif
 ;
 ; Multiply n1|u1 by n2|u2 giving the product n3|u3.
 ;
-; Standard: fig-Forth, Forth-79, Forth-83, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79, Forth-83, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -9120,7 +9170,7 @@ endif
 ; Divide _n1_ by _n2_ and leave the remainder _n3_ and quotient
 ; _n4_.
 ;
-; Standard: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -9136,7 +9186,7 @@ endif
 ;
 ; Divide _n1_ by _n2_, giving the quotient _n3_.
 
-; Standard: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; ----
 ; : /  ( n1 n2 -- n3 )
@@ -9160,7 +9210,7 @@ endif
 ;
 ; Divide _n1_ by _n2_, giving the single-cell remainder _n3_.
 
-; Standard: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; ----
 ; : mod  ( n1 n2 -- n3 )
@@ -9186,7 +9236,7 @@ endif
 ; result _d_. Divide _d_ by _n3_ producing the remainder
 ; _n4_ and the quotient _n5_.
 
-; Standard: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; ----
 ; : */mod  ( n1 n2 n3 -- n4 n5 )
@@ -9211,7 +9261,7 @@ endif
 ; Multiply _n1_ by _n2_ producing the intermediate
 ; _d_. Divide _d_ by _n3_ giving the quotient _n4_.
 
-; Standard: fig-Forth, Forth-79, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; ----
 ; : */  ( n1 n2 n3 -- n4 )
@@ -9802,7 +9852,6 @@ dos:
   pop  bc
   pop  af
 
-  ;_border_halt blue_color ; XXX INFORMER
   call call_dos.ix         ; go sub routine address in IX
 
   push af
@@ -9856,7 +9905,7 @@ endif
 ;   buffer-block dup write-block  disk-buffer !  ;
 ; ----
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -10021,7 +10070,7 @@ endif
 ;
 ; Continue interpretation with the next disk screen.
 ;
-; Standard: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
 ; (Controlled Reference Words).
 ;
 ; ----
@@ -10043,15 +10092,15 @@ endif
 
 ; doc{
 ;
-; defined  ( "name" -- nfa | 0 )
+; defined  ( "name" -- nt | 0 )
 ;
 ; Parse "name" and find its definition.  If the definition is
 ; not found after searching all the vocabularies in the search
 ; order, return _ca len_ and _false_.  If the definition is found,
-; return its _cfa_, its length byte _b_ and _true_.
+; return its _xt_, its length byte _b_ and _true_.
 ;
 ; ----
-; : defined  ( "name" -- nfa | 0 )
+; : defined  ( "name" -- nt | 0 )
 ;   parse-name find-name  ;
 ; ----
 ;
@@ -10118,13 +10167,13 @@ endif
 
 ; doc{
 ;
-; '  ( "name" -- cfa )
+; '  ( "name" -- xt )
 ;
-; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
 ; ----
-; : '  ( "name" -- cfa )
+; : '  ( "name" -- xt )
 ;   defined dup ?defined name>  ;
 ; ----
 ;
@@ -10138,13 +10187,13 @@ endif
 
 ; doc{
 ;
-; [']  ( "name" -- cfa )
+; [']  ( "name" -- xt )
 ;
-; Standard: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
 ; ----
-; : [']  ( "name" -- cfa )
+; : [']  ( "name" -- xt )
 ;   ' postpone literal  ; immediate
 ; ----
 ;
@@ -10240,7 +10289,7 @@ if.do:
 ; ahead
 ;   Compilation: ( -- )
 ;
-; Standard: Forth-94, Forth-2012.
+; Origin: Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -10272,7 +10321,7 @@ if.do:
 ;
 ; If _n_ is greater than zero, display _n_ spaces.
 ;
-; Standard: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
@@ -10329,7 +10378,7 @@ emits.end:
 ; If _n_ is negative, add a minus sign to the beginning of the
 ; pictured numeric output string.
 ;
-; Standard: Forth 94 (CORE), Forth-2012 (CORE).
+; Origin: Forth 94 (CORE), Forth-2012 (CORE).
 ;
 ; See: `<#`, `#>`.
 ;
@@ -10402,15 +10451,27 @@ to_digit.end
 ; ----------------------------------------------
   _colon_header u_d_slash_mod_,'UD/MOD'
 
+; doc{
+;
+; ud/mod ( ud1 u2 -- urem udquot )
+;
+; ----
 ; : ud/mod ( ud1 u2 -- urem udquot )
-;   >r 0 r@ um/mod r> swap >r um/mod r>  ;
+;   >r 0 r@ um/mod r> swap
+;   >r um/mod r>  ;
+; ----
+
+; Origin: fig-Forth (`m/mod`), Gforth.
+;
+; }doc
+;
 
   ; XXX TODO benchmark
 
   ; Credits:
   ;
-  ; Code from Abersoft Forth (in fig-Forth this word is called
-  ; `m/mod`) and Gforth.
+  ; Code from in fig-Forth (where this word is called `m/mod`)
+  ; and Gforth.
 
   dw to_r_
   _literal 0
@@ -10423,15 +10484,15 @@ to_digit.end
   dw from_r_
   dw exit_
 
+if 0 ; XXX TMP 
+
   _colon_header u_d_slash_mod88_,'UD/MOD88'  ; XXX TMP -- possible alternative
 
-  ; XXX TODO benchmark
-
   ; Credits:
-  ; Code from Z88 CamelForth.
+  ; Code modified from Z88 CamelForth.
 
 ; : ud/mod  ( ud1 u1 -- u2 ud2 )
-;   >r 0 r@ um/mod  rot rot r> um/mod rot ;
+;   >r 0 r@ um/mod  -rot r> um/mod rot ;
 ; : ud/mod  ( ud1 u1 -- u2 ud2 )
 ;   >r 0 r@ um/mod -rot r> um/mod rot ;
 
@@ -10439,11 +10500,25 @@ to_digit.end
   _literal 0
   dw r_fetch_
   dw u_m_slash_mod_
-  dw rot_,rot_ ; XXX TODO try `-rot`
+  dw minus_rot_
   dw from_r_
   dw u_m_slash_mod_
   dw rot_
   dw exit_
+
+; ----------------------------------------------
+  _code_header minus_rot_,'-ROT'
+
+  ; XXX TMP -- already on the library
+  ; XXX 2015-12-21: only for benchmarking `ud/mod`
+
+  pop hl
+  pop de
+  ex (sp),hl
+  ex de,hl
+  jp push_hlde
+
+endif
 
 ; ----------------------------------------------
   _colon_header hash_s_,'#S'
@@ -10490,6 +10565,13 @@ hash_s.begin:
   _colon_header dot_r_,'.R'
 
   dw to_r_,s_to_d_,from_r_,d_dot_r_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header zero_dot_r_,'0.R'
+
+  _literal 0
+  dw dot_r_
   dw exit_
 
 ; ----------------------------------------------
@@ -10556,10 +10638,10 @@ if 1
   dw less_than_
   dw question_branch_,dot_s.end
 
-  dw sp_fetch_,two_minus_,sp0_,fetch_,two_minus_
+  dw sp_fetch_,sp0_,fetch_,cell_minus_
   dw paren_do_,dot_s.loop_exit ; do
   dw i_,fetch_,dot_ ; XXX TMP `u.`
-  dw lit_,-2
+  _literal -cell
   dw paren_plus_loop_ ; loop
 dot_s.loop_exit:
 
@@ -10743,7 +10825,7 @@ endif
 ; the screen and resets the cursor position to the upper left
 ; corner. On a printer, `page` performs a form feed.
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -10865,7 +10947,7 @@ system_stack_pointer: equ $+1
 ; Return the amount of space remaining in the region addressed
 ; by `here`, in address units.
 ;
-; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; }doc
 
@@ -10943,7 +11025,7 @@ at_pfa.last_line:
 ;
 ; at-xy ( col row -- )
 ;
-; Standard: Forth-94 (FACILITY), Forth-2012 (FACILITY).
+; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
 ; }doc
 
@@ -11103,7 +11185,7 @@ do_two_constant:
 ;    consecutive cells. A program is responsible for
 ;    initializing the contents.
 ;
-; Standard: Forth-94.
+; Origin: Forth-94.
 ;
 ; }doc
 
@@ -11152,7 +11234,7 @@ if 0 ; XXX OLD
 ; run-time word compiled at the end of a colon-definition which
 ; returns execution to the calling procedure.
 
-; Standard: fig-Forth.
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -11177,7 +11259,7 @@ if 0 ; XXX OLD
 ; Before executing `exit` within a do-loop, a program shall
 ; discard the loop-control parameters by executing `unloop`.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -11220,7 +11302,7 @@ else ; XXX NEW
 ; In Solo Forth `exit` can be used in interpretation mode to
 ; stop the interpretation of a block.
 ;
-; Standard: Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -11263,27 +11345,27 @@ endif
 
 ; doc{
 
-; catch  ( cfa -- 0 | err# )
+; catch  ( xt -- 0 | err# )
 
 ; Push an exception frame on the exception stack and then
-; execute _cfa_ (as with `execute`) in such a way that control
+; execute _xt_ (as with `execute`) in such a way that control
 ; can be transferred to a point just after `catch` if `throw` is
-; executed during the execution of _cfa_.
+; executed during the execution of _xt_.
 ;
-; If the execution of _cfa_ completes normally (i.e., the
+; If the execution of _xt_ completes normally (i.e., the
 ; exception frame pushed by this `catch` is not popped by an
 ; execution of `throw`) pop the exception frame and return zero
 ; on top of the data stack, above whatever stack items would
-; have been returned by the execution of _cfa_. Otherwise, the
+; have been returned by the execution of _xt_. Otherwise, the
 ; remainder of the execution semantics are given by `throw`.
 ;
-; Standard: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
+; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
 
 ;----
 ; : catch  ( xt -- exception# | 0 )
-;   sp@ >r          ( cfa ) \ save data stack pointer
-;   catcher @ >r    ( cfa ) \ save previous catcher
-;   rp@ catcher !   ( cfa ) \ set current catcher
+;   sp@ >r          ( xt )  \ save data stack pointer
+;   catcher @ >r    ( xt )  \ save previous catcher
+;   rp@ catcher !   ( xt )  \ set current catcher
 ;   execute         ( )     \ `execute` returns if no `throw`
 ;   r> catcher !    ( )     \ restore previous catcher
 ;   r> drop         ( )     \ discard saved stack pointer
@@ -11314,7 +11396,7 @@ endif
 ;
 ; throw  ( n -- )
 ;
-; Standard: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
+; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
 ;
 ; ----
 ; : throw  ( n -- )
@@ -11416,7 +11498,7 @@ question_backslash.end:
 ;
 ; Parse and discard the rest of the parse area.
 ;
-; Standard: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
+; Origin: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
 ;
 ; }doc
 
@@ -11449,7 +11531,7 @@ backslash.loading:
   dw parse_,type_
   dw exit_
 
-latest_nfa_in_forth_voc: equ dot_paren_nfa
+latest_nt_in_forth_voc: equ dot_paren_nt
 
 dictionary_pointer_after_cold:
 
