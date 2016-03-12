@@ -18,7 +18,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510052046
+version_release:  equ 201510062144
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -204,10 +204,6 @@ version_release:  equ 201510052046
 size_optimization: equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
-
-; fig_parsing: equ true ; XXX harcoded flag, else label problems
-  ; true = the fig-Forth parsing method is used.
-  ; false = parsing is modified after Forth-83 and Forth-94.
 
 ans_forth_block_size: equ false
   ; true = one 1024-byte block per screen ; XXX TODO
@@ -937,12 +933,6 @@ data_stack_bottom:
 terminal_input_buffer:
   ds bytes_per_terminal_input_buffer
 
-if 0 ; fig_parsing
-
-  ds 3 ; for the null word
-
-endif
-
 ; ----------------------------------------------
 ; Return stack
 
@@ -965,10 +955,6 @@ disk_buffer:
                               ; is not associated with a block.
   ds data_bytes_per_buffer    ; Actual content of the block,
                               ; a disk sector.
-if 0 ; fig_parsing
-  db space_char,0,space_char  ; Null word, required by the parsing words.
-endif
-
 ; ==============================================================
 ; Misc routines
 
@@ -1246,25 +1232,6 @@ next2_end: ; XXX TMP for debugging
 
 nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ; current_vocabulary: defl root_pfa
-
-if 0 ; fig_parsing
-
-; ----------------------------------------------
-  _code_header root_x_,0,immediate
-
-; doc{
-
-; x  ( -- )
-
-; This is a pseudonym for an alias of the "null" word that is
-; defined in the `forth` vocabulary.
-
-; }doc
-
-  ld hl,x_ ; cfa of the actual null word
-  jp next2 ; execute it
-
-endif
 
 ; ----------------------------------------------
   _colon_header root_forth_,'FORTH'
@@ -3073,92 +3040,6 @@ endif
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
 
-if 0 ; fig_parsing
-
-; doc{
-;
-; scan  ( ca1 c -- ca1 len1 )
-;
-; ca1 = text address
-; c = character to search for
-; len1 = length of the string until the matched character
-;
-; }doc
-
-  pop hl ; delimiter
-  pop de ; address
-  push de
-  push bc ; save Forth IP
-  ld c,l ; delimiter
-  ld hl,0 ; length
-  dec hl
-  dec de
-scan.begin:
-  inc hl
-  inc de
-  ld a,(de)
-  cp c ; delimiter?
-  jr nz,scan.begin
-  ; delimiter found
-  pop bc ; restore Forth IP
-  jp push_hl
-
-else
-
-if 0 ; XXX OLD
-
-  ; XXX TODO
-  ; XXX FIXME
-
-; doc{
-;
-; scan  ( ca1 len1 c -- ca1 len2 )
-;
-; XXX TODO
-; ca1 len1 = string to search
-; c = character searched for
-; len2 = length of the searched string until the match
-;        or until the end of the string
-;
-; [Description from DZX-Forth:]
-;
-; Scan the string _ca1 len1_ for the character _c_.  Leave match
-; address _ca2_ and length remaining _len2_.  If no match occurred
-; then _len2_ is zero and _ca2_ is _ca1_+_len1_.
-;
-; }doc
-
-  ld de,0 ; len2
-  exx
-  pop de ; E = char searched for
-  pop bc ; len1
-  pop hl ; ca1
-  push hl
-scan.begin:
-  ld a,c
-  or b ; exhausted?
-  jr z,scan.end ; if so, exit
-  ld a,e
-  cp (hl) ; character match?
-  jr z,scan.end ; if so, exit
-  inc hl
-  dec bc
-  exx
-  inc de ; count
-  exx
-  jr scan.begin ; again
-
-scan.end:
-  exx
-  push de ; len2
-  _jp_next
-
-else
-
-; XXX TODO -- version with cpir
-
-; [Description from DZX-Forth:]
-
 ; doc{
 ;
 ; scan  ( ca1 len1 c -- ca2 len2 )
@@ -3188,66 +3069,8 @@ scan.nothing:
   exx
   _jp_next
 
-endif
-
-endif
-
 ; ----------------------------------------------
   _code_header skip_,'SKIP'
-
-if 0 ; fig_parsing
-
-; doc{
-;
-; skip  ( ca1 c -- ca2 )
-;
-; }doc
-
-  pop de ; e = delimiter
-  pop hl ; ca1
-skip.begin:
-  ld a,(hl)
-  cp e ; delimiter?
-  jp nz,push_hl
-  inc hl
-  jp skip.begin ; again
-
-else
-
-; doc{
-;
-; skip  ( ca1 len1 c -- ca2 len2 )
-;
-; }doc
-
-if 0 ; XXX OLD
-
-  pop de
-  ld l,c
-  ld h,b
-  pop bc ; len1
-  ex (sp),hl ; hl=ca1 ; save Forth IP
-skip.begin:
-  ld a,c
-  or b ; exhausted?
-  jr z,skip.end ; if so, exit
-  ld a,e
-  cp (hl) ; delimiter?
-  jr nz,skip.end ; if not, exit
-  inc hl
-  dec bc
-  jp skip.begin ; again
-
-skip.end:
-  ex (sp),hl ; HL = Forth IP ; push ca1
-  push bc ; len2
-  ld c,l
-  ld b,h ; restore Forth IP
-  _jp_next
-
-else ; XXX NEW
-
-; [Description from DZX-Forth:]
 
 ; doc{
 ;
@@ -3260,6 +3083,7 @@ else ; XXX NEW
 ;
 ; }doc
 
+; Credits:
 ; Code adapted and modified from CamelForth.
 
   exx
@@ -3284,10 +3108,6 @@ skip.end:
   push bc
   exx
   _jp_next
-
-endif
-
-endif
 
 ; ----------------------------------------------
   _code_header chan_,'CHAN'
@@ -5582,17 +5402,9 @@ endif
 
 
 ; ----------------------------------------------
-
-if 0 ; fig_parsing
-else
-
   _constant_header slash_tib_,'/TIB'
 
-  ; XXX NEW  -- for the non-FIG parsing method
-
   dw bytes_per_terminal_input_buffer
-
-endif
 
 ; ----------------------------------------------
   _variable_header number_tib_,'#TIB'
@@ -5802,10 +5614,17 @@ source.tib:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header s_comma_,'s,'
+  _colon_header s_comma_,'S,'
 
 ; doc{
+;
 ; s,  ( ca len -- )
+; 
+; ----
+; : s,  ( ca len -- )
+;   dup c, tuck here swap cmove allot  ;
+; ----
+;
 ; }doc
 
   dw dup_,c_comma_,tuck_,here_,swap_,cmove_,allot_
@@ -6809,19 +6628,6 @@ accept.end:
 ;
 ; }doc
 
-if 0 ; fig_parsing
-
-  dw tib_,dup_
-  dw number_tib_,fetch_
-  dw two_dup_,blank_ ; clean the input buffer
-  dw accept_,space_
-  dw plus_
-  dw stream_end_
-  dw to_in_,off_
-  dw semicolon_s_
-
-else
-
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer
   dw accept_,number_tib_,store_,space_
@@ -6829,12 +6635,7 @@ else
   dw to_in_,off_
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
-if 0 ; fig_parsing
-else
-
   _colon_header last_block_question_,'LAST-BLOCK?'
 
 ; doc{
@@ -6853,12 +6654,7 @@ else
   dw blk_,fetch_,b_slash_scr_,mod_
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
-if 0 ; fig_parsing
-else
-
   _colon_header next_block_,'NEXT-BLOCK'
 
 ; XXX TMP -- this word is factored from the old fig-Forth null
@@ -6873,72 +6669,6 @@ else
   dw question_executing_ ; error if not executing ; XXX TODO -- why this?
 next_block.end:
   dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-
-if 0 ; fig_parsing
-
-  _colon_header x_,0,immediate
-
-; doc{
-
-; x  ( -- )
-
-; This is pseudonym for the "null" or dictionary entry for a
-; name of one character of ascii null. It is the execution
-; procedure to terminate interpretation of a line of text from
-; the terminal or within a disk buffer, as both buffers always
-; have a null word at the end.
-;
-; In the fig-Forth model a null character is used to detect the
-; end of the buffers.  Therefore the scanning words must treat
-; the null character as a special unconditional delimiter, and
-; do other tricks in order to simulate the null character found
-; is a parsed null word.
-;
-; In Solo Forth the scanning words does not treat the null char
-; apart; instead, an actual null word (a null character
-; surrounded by spaces) is put after the buffers (disk buffers
-; and `tib`). Therefore the null word is parsed normally as any
-; other word. No need to treat the null character as a special
-; delimiter. This new method is compatible with the original
-; fig-Forth parsing words.
-
-; }doc
-
-  dw loading_question_ ; input stream from disk?
-  dw zero_branch_,x.exit ; if not, branch
-  ; From disk.
-  dw one_,blk_,plus_store_ ; next disk buffer
-  dw to_in_,off_ ; clear `in`, preparing parsing of input text
-
-  ; XXX WARNING -- The following check of the last block is
-  ; specific for 2 blocks per screen; the original check was
-  ; `blk @ b/scr 1- and`, but it could be `blk @ b/scr mod`.
-
-  dw blk_,fetch_,one_,and_ ; was it the last block of the screen?
-  dw question_branch_,x.exit ; if not, branch
-  ; Last block of the screen.
-  dw question_executing_ ; error if not executing ; XXX TODO -- why this?
-
-x.exit:
-
-  ; The top item on the return stack is thrown away.  The interpreter
-  ; will not continue to execute the `?stack` instruction that follows
-  ; `execute` in `interpret`, but will return to the next higher level
-  ; of nesting and execute the next word after `interpret` in the Forth
-  ; loop.  This is when the familiar "ok" message is displayed on the
-  ; terminal, prompting the operator for the next line of commands.
-
-  dw r_drop_
-; dw lit_,7,border_ ; XXX INFORMER
-
-x.end:
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header source_id_,'SOURCE-ID'
@@ -7094,29 +6824,6 @@ fill.done:
 ; ----------------------------------------------
   _colon_header stream_,'STREAM'
 
-if 0 ; fig_parsing
-
-; doc{
-;
-; stream  ( -- ca )
-;
-; Return the address of the current parsing position in the
-; stream source.
-;
-; }doc
-
-  dw blk_,fetch_,question_dup_ ; from disk?
-  dw zero_branch_,stream.terminal
-  dw block_ ; from disk
-  dw branch_,stream.end
-stream.terminal:
-  dw tib_ ; from terminal
-stream.end:
-  dw to_in_,fetch_,plus_
-  dw semicolon_s_
-
-else
-
 ; doc{
 ;
 ; stream  ( -- ca len )
@@ -7132,8 +6839,6 @@ else
   dw max_
 
   dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_header slash_string_,'/STRING'
@@ -7190,8 +6895,6 @@ endif
 ; ----------------------------------------------
   _colon_header parse_,'PARSE'
 
-if 0 ; fig_parsing
-
 ; doc{
 ;
 ; parse  ( c "text<c>" -- ca len )
@@ -7205,17 +6908,16 @@ if 0 ; fig_parsing
 ;
 ; Standard: Forth-94.
 ;
-; }doc
-
-  dw stream_,swap_,scan_,dup_,parsed_
-  dw semicolon_s_
-
-else
-
+; ----
+; : parse  ( c "text<c>" -- ca len )
 ;   stream 2dup 2>r rot scan
 ;   dup if  char-  then
 ;   2r> rot - >in +!
-;   tuck - ;
+;   tuck -  ;
+; ----
+;
+; }doc
+
 
   dw stream_,two_dup_,two_to_r_,rot_,scan_
   dw dup_,zero_branch_,parse.end
@@ -7226,11 +6928,7 @@ parse.end:
   dw tuck_,minus_
   dw semicolon_s_
 
-endif
-
 ; ----------------------------------------------
-if 0 ; fig_parsing
-else
   _two_variable_header parsed_name_,'PARSED-NAME'
 
 ; doc{
@@ -7244,40 +6942,8 @@ else
 
   dw 0,0
 
-endif
-
 ; ----------------------------------------------
   _colon_header parse_name_,'PARSE-NAME'
-
-; doc{
-;
-; parse-name  ( "name"  -- ca len )
-;
-; }word
-
-if 0 ; fig_parsing
-
-  dw stream_,dup_,to_r_ ; ( ca1 )
-  dw b_l_,skip_ ; ( ca2 )
-  dw dup_,from_r_,minus_,to_in_,plus_store_
-  ; XXX TODO factor of `parse`?:
-  dw b_l_,scan_ ; ( ca len )
-  dw dup_,parsed_
-  dw semicolon_s_
-
-else
-
-if 0 ; XXX OLD
-
-  dw stream_,b_l_,skip_ ; ( ca2 len2 )
-;   _brk_type "in parse-name after skip"  ; XXX INFORMER
-  dw dup_,parsed_
-  dw b_l_,scan_ ; ( ca len )
-;   _brk_type "in parse-name after scan"  ; XXX INFORMER
-  dw dup_,parsed_
-  dw semicolon_s_
-
-else ; XXX NEW
 
 ; doc{
 
@@ -7299,7 +6965,7 @@ else ; XXX NEW
 ; _brk 'parse-name -- after stream' ; XXX INFORMER
   dw dup_,to_r_           ; ( ca len ) ( R: len )
 ; _brk 'parse-name -- before skip' ; XXX INFORMER
-  dw b_l_,skip_           ; ( ca1 len1 ) ( R: len )
+  dw minus_leading_           ; ( ca1 len1 ) ( R: len )
 ; _brk 'parse-name -- after skip' ; XXX INFORMER
   dw over_,to_r_          ; ( ca1 len1 ) ( R: len ca1 )
   dw b_l_,scan_           ; ( ca2 len2 ) ( R: len ca1 )
@@ -7317,298 +6983,6 @@ parse_name.skip:
   dw two_dup_,parsed_name_,two_store_
 ;  _brk_type 'parse-name -- end' ; XXX INFORMER
   dw semicolon_s_
-
-endif
-
-endif
-
-; ----------------------------------------------
-  _colon_header word_,'WORD'
-
-; doc{
-;
-; word  ( c "<c...>text<c>" -- ca )
-;
-; c = delimiter char
-;
-; Skip leading _c_ delimiters from the input stream.  Parse the
-; next text characters from the input stream, until a delimiter
-; _c_ is found, storing the packed character string beginning at
-; _ca_, as a counted string (the character count in the first
-; byte), and with one blank at the end.
-;
-; Standard: Forth-94.
-;
-; }doc
-
-if 0 ; fig_parsing
-
-  dw stream_ ; ( c a1 )
-  dw dup_,to_r_
-  dw over_,skip_ ; ( c a2 )
-
-;  _echo 'In word after skip:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  dw dup_,from_r_,minus_,to_in_,plus_store_
-  ; XXX TODO factor of `parse`:
-  dw swap_,scan_ ; ( a2 len )
-
-;  _echo 'In word after scan:' ; XXX INFORMER
-;  dw cr_,two_dup_,type_ ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  dw dup_,parsed_
-
-  dw here_
-  _literal max_word_length+2
-  dw blank_
-
-  dw dup_,here_,c_store_ ; count byte
-  dw here_,one_plus_ ; destination
-  dw swap_ ; count
-  dw cmove_ ; move the word
-  dw here_
-
-  dw semicolon_s_
-
-else
-
-  if 0 ; XXX OLD
-
-  dw dup_,to_r_ ; save the delimiter
-
-;  _echo 'In word before stream:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  dw stream_ ; ( ca1 len1 )
-
-;  _echo 'In word after stream:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  dw over_,to_r_ ; save the start of the string
-  dw rot_
-
-;  _echo 'In word before skip:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  dw skip_ ; ( ca2 len2 )
-
-;  _echo 'In word after skip:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-
-  dw over_,from_r_,minus_,to_in_,plus_store_
-  dw from_r_,scan_ ; ( ca2 len3 )
-
-;  _echo 'In word after scan:' ; XXX INFORMER
-;  dw hex_,dot_s_,decimal_,key_,drop_ ; XXX INFORMER
-
-  dw dup_,parsed_
-
-  dw here_
-  _literal max_word_length+2
-  dw blank_
-
-  dw dup_,here_,c_store_ ; count byte
-  dw here_,one_plus_ ; destination
-  dw swap_ ; count
-  dw cmove_ ; move the word
-  dw here_
-
-  dw semicolon_s_
-
-  else ; XXX NEW after Z88 CamelForth
-
-;   dup  source >in @ /string   ( c c a n )
-;   dup >r   rot skip           ( c a' n' )
-;   over >r  rot scan           ( a" n" )
-;   dup if char- then           \ skip trailing delimiter
-;   r> r> rot -   >in +!        \ update >in offset
-;   tuck -                      ( a' n )
-;   here place                  ( )
-;   here                        ( a )
-;   bl over count + c! ;        \ append trailing blank
-
-  dw dup_,stream_       ; ( c c ca len )
-  dw dup_,to_r_         ; ( c c ca len ) ( R: len )
-  dw rot_,skip_         ; ( c ca1 len1 ) ( R: len )
-  dw over_,to_r_       ; ( c ca1 len1 ) ( R: len ca1 )
-  dw rot_,scan_         ; ( ca2 len2 ) ( R: len ca1 )
-  dw dup_
-  dw zero_branch_,word.skip
-  dw char_minus_
-word.skip:
-  dw from_r_,from_r_    ; ( ca2 len2 ca1 len )
-  dw rot_,minus_        ; ( ca2 ca1 len3 )
-  dw to_in_,plus_store_  ; ( ca2 ca1 )
-  dw tuck_,minus_       ; ( ca1 len4 )
-  dw here_,place_
-  dw here_
-  dw b_l_,over_,count_,plus_,c_store_ ; append trailing blank
-  dw semicolon_s_
-
-  endif
-
-endif
-
-if 0 ; XXX TMP for debugging
-
-  _colon_header word88_,'WORD88' ; XXX TMP
-
-; XXX NEW after Z88 CamelForth
-
-;   dup  source >in @ /string   ( c c a n )
-;   dup >r   rot skip           ( c a' n' )
-;   over >r  rot scan           ( a" n" )
-;   dup if char- then           \ skip trailing delimiter
-;   r> r> rot -   >in +!        \ update >in offset
-;   tuck -                      ( a' n )
-;   here place                  ( )
-;   here                        ( a )
-;   bl over count + c! ;        \ append trailing blank
-
-  dw dup_,streamx_       ; ( c c ca len )
-  ;_brk "1"
-  dw dup_,to_r_         ; ( c c ca len ) ( R: len )
-  dw rot_,skipx_         ; ( c ca1 len1 ) ( R: len )
-  ;_brk "2"
-  dw over_,to_r_       ; ( c ca1 len1 ) ( R: len ca1 )
-  dw rot_,scanx_         ; ( ca2 len2 ) ( R: len ca1 )
-  ;_brk "3"
-  dw dup_
-  dw zero_branch_,word88.skip
-  ;_brk "char-"
-  dw char_minus_
-word88.skip:
-  ;_brk "4"
-  dw from_r_,from_r_    ; ( ca2 len2 ca1 len )
-  dw rot_,minus_        ; ( ca2 ca1 len3 )
-  dw to_in_,plus_store_  ; ( ca2 ca1 )
-  dw tuck_,minus_       ; ( ca1 len4 )
-  ;_brk "5"
-  dw here_,place_
-  dw here_
-  ;_brk "6"
-  dw b_l_,over_,count_,plus_,c_store_ ; append trailing blank
-  ;_brk "7"
-  dw semicolon_s_
-
-  endif
-
-; ----------------------------------------------
-if 0 ; fig_parsing
-
-  ; XXX OLD
-
-  _colon_header paren_number_,'(NUMBER)'
-
-; doc{
-;
-; (number)  ( d1 ca1 -- d2 ca2 )
-;
-; Convert the text string beginning at _ca1+l_ with regard to
-; `base`. The new value is accumulated into double number _d1_,
-; being left as _d2_.  _ca2_ is the address of the first
-; unconvertable digit. Used by `number`.
-;
-; Standard: fig-Forth.
-;
-; }doc
-
-paren_number.begin: ; begin
-; _chk '(number) -- begin' ; XXX INFORMER
-  dw one_plus_ ; address of the next digit
-  dw dup_,to_r_ ; save the address
-  dw c_fetch_ ; get the digit
-; _chk '(number) -- before digit?' ; XXX INFORMER
-; dw dot_s_,key_,drop_; XXX INFORMER
-; dw dup_,dup_,cr_,dot_,emit_; XXX INFORMER
-  dw base_,fetch_,digit_question_ ; convert the digit
-; _chk '(number) -- after digit?' ; XXX INFORMER
-  dw zero_branch_,paren_number.end ; while
-  dw swap_ ; get the high order part of d1 to the top.
-  dw base_,fetch_,u_m_star_ ; multiply by base value
-  dw drop_ ; drop the high order part of the product
-  dw rot_ ; move the low order part of d1 to top of stack
-  dw base_,fetch_,u_m_star_ ; multiply by base value
-  dw d_plus_ ; accumulate result into d1
-  dw dpl_,fetch_,one_plus_ ; is DPL other than -1?
-  dw zero_branch_,paren_number.decimal_point_done
-  ; DPL is not -1, a decimal point was encountered
-  dw one_,dpl_,plus_store_ ; increment DPL, one more digit to right of decimal point
-paren_number.decimal_point_done:
-  dw from_r_ ; pop addr1+1 back to convert the next digit
-  dw branch_,paren_number.begin ; repeat
-paren_number.end:
-  dw from_r_ ; address of the first non-convertable digit, a2.
-; _chk '(number) -- end' ; XXX INFORMER
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-if 0 ; fig_parsing
-
-  ; XXX OLD
-
-  _colon_header number_,'NUMBER'
-
-; doc{
-;
-; number  ( ca  -- d )
-;
-; Convert a counted character string left at _ca_, to a signed
-; double number _d_, using the current numeric base. If a
-; decimal point is encountered in the text, its position will be
-; given in `dpl`, but no other effect occurs. If numeric
-; conversion is not possible, an error message will be given.
-;
-; Standard: fig-Forth.
-;
-; }doc
-
-; _brk_ctype 'number -- start' ; XXX INFORMER
-  dw zero_,zero_,rot_ ; two zeros, initial value of the double number
-  dw dup_,one_plus_,c_fetch_ ; get the first digit
-  _literal '-'
-  dw equals_ ; is it a minus sign?
-  dw dup_,to_r_ ; save the flag
-  dw abs_ ; XXX TODO needed because true=-1, simplify
-  dw plus_
-  ; If the first digit is "-", the flag is 1,
-  ; and addr+1 points to the second digit.
-  ; If the first digit is not "-", the flag is
-  ; 0.  addr+0 remains the same, pointing to
-  ; the first digit.
-  dw lit_,-1 ; initial value of `dpl`
-number.begin:
-; _chk 'number -- begin' ; XXX INFORMER
-  dw dpl_,store_
-  dw paren_number_ ; convert one digit after another until an invalid char occurs
-  dw dup_,c_fetch_ ; get the invalid digit
-; dw dot_s_,key_,drop_; XXX INFORMER
-; dw cr_,dup_,emit_; XXX INFORMER
-  dw b_l_,equals_ ; is it a blank?
-  dw question_branch_,number.a_blank
-  ; The invalid digit is not a blank.
-  dw dup_,c_fetch_ ; get the invalid digit again
-  _literal '.'
-  dw not_equals_ ; not a decimal point?
-  _question_error error.not_understood ; error if not
-  ; Decimal point found, set `dpl` to zero next time.
-  dw zero_
-  dw branch_,number.begin ; repeat
-number.a_blank:
-  dw drop_ ; discard address
-  dw from_r_ ; pop the flag of "-" sign back
-  dw zero_branch_,number.end
-  ; The first digit is a "-" sign.
-  dw d_negate_
-number.end:
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _code_header upper_,'UPPER'
@@ -7661,12 +7035,8 @@ uppers.do:
 
 ; defined?  ( ca len -- wf )
 
-if 0 ; fig_parsing
-  dw found_,nip_,zero_not_equals_
-else
   ; XXX FIME -- this works only with version 2 of `find-name`
   dw find_name_,nip_,zero_not_equals_
-endif
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -7716,205 +7086,6 @@ endif
   ld (hl),e
   exx
   _jp_next
-
-; ----------------------------------------------
-
-if 0 ; fig_parsing
-
-  _code_header paren_find_,'(FIND)'
-
-  ; XXX TODO move to the library
-
-; doc{
-;
-; (find)  ( ca nfa -- ca 0 | cfa 1 | cfa -1 )
-;
-; Find the definition named in the counted string at _ca_,
-; starting at _nfa_. If the definition is not found, return _ca_
-; and zero.  If the definition is found, return its _cfa_. If
-; the definition is immediate, also return one (1); otherwise
-; also return minus-one (-1).
-;
-; The search is case-sensitive: only words in uppercase are
-; found.
-;
-; }doc
-
-  ld e,names_bank
-  call bank.e ; page the memory bank
-
-  pop de ; nfa
-  pop hl ; string address
-  push bc ; save the Forth IP
-  ld (paren_find.string_address),hl
-
-  ; XXX FIXME the string searched for must be in the string
-  ; buffer, below 0xC000! This is not a problem now, during the
-  ; development, because the dictionary is small.
-
-paren_find.begin:
-;   ; _z80_border 2 ; XXX INFORMER
-;   ; _z80_border 7 ; XXX INFORMER
-  ; Compare the string with a new word.
-  ; de = nfa
-  ld (paren_find.nfa_backup),de ; save the nfa for later
-paren_find.string_address: equ $+1
-  ld hl,0 ; string address
-  ld a,(de) ; length byte of the name field
-  ld c,a    ; save for later
-  and max_word_length_mask  ; length
-  cp (hl) ; same length?
-  jr nz,paren_find.not_a_match ; lengths differ
-
-  ; Lengths match, compare the characters.
-  ld b,a ; length
-paren_find.compare_next_char:
-  inc hl ; next character in string
-  inc de ; next character in name field
-  ld a,(de)
-  cp (hl) ; match?
-  jr nz,paren_find.not_a_match ; no match
-  djnz paren_find.compare_next_char ; match so far, loop again
-
-  ; The string matches.
-  ; c = name field length byte
-  ld hl,(paren_find.nfa_backup)
-;  ld (0xfffa),hl ; XXX INFORMER ; nfa, ok
-  dec hl
-  dec hl ; lfa
-  dec hl ; high part of the pointer to cfa
-  ld d,(hl)
-  dec hl ; low part of the pointer to cfa
-  ld e,(hl) ; de = cfa
-
-;  ld (0xfffc),de ; XXX INFORMER ; cfa, ok
-
-  ld hl,1 ; 1=immediate word
-  ld a,c ; name field length byte
-  and precedence_mask ; immediate word?
-  jp nz,paren_find.end
-  ; non-immediate word
-  dec hl
-  dec hl ; -1 = non-immediate word
-
-paren_find.end:
-  ; If match found:
-  ;   de = cfa
-  ;   hl = -1 | 1
-  ; If no match found:
-  ;   de = ca
-  ;   hl = 0
-  exx
-  ld e,default_bank
-  call bank.e ; page the default memory bank
-  exx
-  pop bc ; restore the Forth IP
-;   ;  _z80_border 4 ; XXX INFORMER
-  jp push_hlde
-
-paren_find.not_a_match:
-  ; Not a match, try next one.
-paren_find.nfa_backup: equ $+1
-  ld hl,0 ; nfa
-  dec hl ; high address of lfa
-  ld d,(hl) ; high part of the next nfa
-  dec hl ; low address of lfa
-  ld e,(hl) ; low part of the next nfa
-  ld a,d
-  or e ; end of dictionary? (next nfa=0)
-  jp nz,paren_find.begin ; if not, continue
-  ; End of dictionary, no match found, return.
-  ld de,(paren_find.string_address)
-  ld hl,0
-  jp paren_find.end
-
-endif
-
-; ----------------------------------------------
-
-if 0 ; fig_parsing
-
-  ; XXX TODO move to the library
-
-  _colon_header find_,'FIND'
-
-; doc{
-;
-; find  ( ca -- ca 0 | cfa 1 | cfa -1 )
-;
-; Find the definition named in the counted string at _ca_. If
-; the definition is not found after searching all the
-; vocabularies in the search order, return _ca_ and zero.  If
-; the definition is found, return its _cfa_. If the definition
-; is immediate, also return one (1); otherwise also return
-; minus-one (-1).
-;
-; The search is case-insensitive.
-;
-; }doc
-
-  ; : find  ( ca -- ca 0 | cfa 1 | cfa -1 )
-  ;   #vocs 0 do
-  ;     context i cells + @  ?dup
-  ;     if  @ (find) ?dup if  unloop exit  then  then
-  ;   loop  false  ;
-
-; _chk_ctype 'find -- start' ; XXX INFORMER
-  dw dup_,count_,uppers_
-; _brk_ctype 'find -- after uppers' ; XXX INFORMER
-  dw hash_vocs_,zero_,paren_do_
-find.do:
-  dw context_,i_,cells_,plus_,fetch_
-  dw question_dup_ ; a vocabulary in the search order?
-  dw zero_branch_,find.loop ; if not, next
-  ; valid vocabulary in the search order
-  dw fetch_,paren_find_,question_dup_ ; word found in the vocabulary?
-  dw zero_branch_,find.loop ; if not, try the next vocabulary
-; _chk 'find -- found' ; XXX INFORMER
-  dw unloop_,exit_
-find.loop:
-  dw paren_loop_,find.do,false_
-; _chk 'find -- not found' ; XXX INFORMER
-  dw semicolon_s_
-
-endif
-
-; ----------------------------------------------
-
-if 0 ; fig_parsing
-
-  _variable_header find_dollar_,'FIND$'
-
-  ; XXX TODO use an unused address above `pad` instead?
-  ; XXX TODO rename to `word$`?
-  ; XXX TODO use also in `word`?
-
-  ds max_word_length+2
-
-endif
-
-; ----------------------------------------------
-
-if 0 ; fig_parsing
-
-  _colon_header found_,'FOUND'
-
-; doc{
-;
-; found  ( ca len -- ca 0 | cfa 1 | cfa -1 )
-;
-; }doc
-
-  ; XXX TODO factor
-
-  dw find_dollar_
-  _literal max_word_length+2
-  dw erase_ ; make sure there will be a null at the end
-  dw find_dollar_,place_
-  dw find_dollar_,find_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _colon_header paren_abort_,'(ABORT)'
@@ -8014,11 +7185,7 @@ error_to_number.do
 ;  dw question_branch_,paren_abort_pfa ; if so, branch to it
 
 error.message:
-if 0 ; fig_parsing
-  dw here_,count_,type_ ; last parsed word
-else
   dw parsed_name_,two_fetch_,type_ ; last parsed word
-endif
   dw paren_dot_quote_
   _string '? '
   dw message_
@@ -8040,90 +7207,14 @@ error.end:
 ; ----------------------------------------------
   _colon_header header_,'HEADER'
 
+; doc{
+;
 ; header  ( "name" -- )
-
-if 0 ; XXX OLD
-
-  ; XXX TODO -- 2015-09-13: check only when `warnings` is on,
-  ; and check only `current`!
-  ;
-  ; XXX TODO -- use `parse-name` directly, and, if `warnings` is
-  ; on, `search-wordlist.
-
-;  _chk 'header -- start' ; XXX INFORMER
-  dw defined_ ; ( x 0 | cfa 1 | cfa -1 )
-;  _brk_type 'header -- after defined' ; XXX INFORMER
-  dw abs_,star_,question_dup_ ; ( 0 | cfa cfa )
-  dw zero_branch_,header.continue
-
-  ; The word is not unique.
-;  _brk_type 'header -- not unique' ; XXX INFORMER
-  ; Note: `warnings` is already checked by `warning`,
-  ; but it has to be done here too, in order to show the
-  ; offending word or not before executing `warning`.
-  dw warnings_,fetch_
-  dw zero_branch_,header.no_warning
-  dw cfa_to_nfa_,id_dot_
-  _literal error.not_unique
-  dw warning_
-  dw zero_ ; for the `drop`, faster and smaller than a branch
-header.no_warning:
-  dw drop_
-
-header.continue:
-;  _chk 'header -- continue' ; XXX INFORMER
-
-if 0 ; fig_parsing
-
-  dw here_,count_
-
-else
-
-  dw parsed_name_,two_fetch_
-  dw two_dup_,uppers_ ; XXX TMP
-;  _brk_type 'header -- after uppers' ; XXX INFORMER
-
-  ; XXX FIXME -- the problem is `parsed-name` is updated by
-  ; `parse-name`, thus before `find` converted the word to uppercase.
-  ; The solution is to write an alternative to `find`:
-  ;     `find-name ( ca len -- 0 | cfa 1 | cfa -1 )`
-
-endif
-;  _brk_type 'header -- string' ; XXX INFORMER
-
-  dw dup_,zero_equals_
-  _question_error error.zero_length_name
-
-  ; XXX TODO error if name is too long? (see lina)
-  dw width_,fetch_,min_
-;  _brk_type 'header -- after min' ; XXX INFORMER
-if 0 ; fig_parsing
-  dw save_string_
-endif
-  dw tuck_ ; ( len ca len )
-;  _brk_type 'header -- after tuck' ; XXX INFORMER
-  _names_bank
-;  _brk_type 'header -- after names bank' ; XXX INFORMER
-  dw here_,comma_np_ ; store a pointer to the cfa
-  dw latest_,comma_np_ ; link field
-;  _brk_type 'header -- after link field' ; XXX INFORMER
-  ; Now `np` contains the address of the nfa.
-  dw np_fetch_
-;  _brk_ctype 'header -- before place' ; XXX INFORMER
-  dw place_ ; store the name
-;  _brk 'header -- after place' ; XXX INFORMER
-  dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
-;  _brk 'header -- before smudge' ; XXX INFORMER
-  dw smudge_ ; set the smudge bit and page the default bank
-;  _brk 'header -- after smudge' ; XXX INFORMER
-  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
-  dw here_,two_plus_,comma_ ; compile the pfa into code field
-;  _brk 'header -- end' ; XXX INFORMER
-  dw semicolon_s_
-
-else
-
-; XXX NEW -- smarter and faster
+;
+; Create a dictionary header for "name", with its code field
+; pointing to its parameter field.
+;
+; }doc
 
   ; XXX Note: This version checks wether the word is unique only when
   ; `warnings` is on, and by searching only `current`.
@@ -8148,20 +7239,10 @@ header.continue:
 
   ; ( ca len )
 
-if 0 ; fig_parsing
-  .error 'fig parsing is incompatible with the new version of `header`'
-else
-
   dw two_dup_,uppers_ ; XXX FIXME -- do this modifies the buffer?
-
-endif
-
 
   ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
-if 0 ; fig_parsing
-  dw save_string_
-endif
   dw tuck_ ; ( len ca len )
   _names_bank
   dw here_,comma_np_ ; store a pointer to the cfa
@@ -8174,9 +7255,6 @@ endif
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
   dw here_,two_plus_,comma_ ; compile the pfa into code field
   dw semicolon_s_
-
-
-endif
 
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
@@ -8370,7 +7448,7 @@ search.string_1_addr equ $+1
 
 ; doc{
 ;
-; cliteral  ( b -- )  \ I
+; cliteral  ( b -- )
 ;
 ; If compiling, then compile the stack value _b_ as a 8-bit literal.
 ; `cliteral` does the same than `literal` but saves one byte of
@@ -8487,67 +7565,6 @@ two_literal.end:
 ;
 ; }doc
 
-if 0 ; fig_parsing
-
-interpret.begin:
-
-  ; XXX TODO -- finish
-
-  ; XXX TODO -- In order to change the behaviour of `literal`,
-  ; `2literal` and `cliteral` (make them give an error in
-  ; interpretation mode), `interpret` must be modified.
-
-  dw question_stack_
-  dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
-  dw question_dup_ ; found?
-  dw zero_branch_,interpret.word_not_found
-
-  ; Found ( cfa 1 | cfa -1 )
-  ; Immediate word:     ( cfa  1 )
-  ; Non-immediate word: ( cfa -1 )
-  dw compiling_question
-  ; ( cfa 1 state | cfa -1 state )
-  ; Compiling an immediate word:     ( cfa  1 -1 )
-  ; Compiling a non-immediate word:  ( cfa -1 -1 )
-  ; Executing an immediate word:     ( cfa  1  0 )
-  ; Executing a non-immediate word:  ( cfa -1  0 )
-  dw equals_ ; compiling a non-immediate word?
-  dw zero_branch_,interpret.execute
-
-  ; Compiling a non-immediate word  ( cfa )
-  dw compile_comma_
-  dw branch_,interpret.begin
-
-interpret.execute:
-  ; Executing or immediate ( cfa )
-  dw execute_
-  dw branch_,interpret.begin
-
-interpret.word_not_found:
-
-
-  ; try to convert the text to a number
-  ; ( ca )
-  dw number_
-
-  dw dpl_,fetch_,one_plus_ ; is there a decimal point?
-  dw zero_branch_,interpret.16bit_number
-  ; decimal point detected, so it's a double, 32-bit, number
-  dw two_literal_
-  dw branch_,interpret.begin
-
-interpret.16bit_number:
-
-  ; no decimal point, so it's a 16-bit number
-  dw drop_ ; discard high order part of the double number
-  ; XXX TODO use `c_literal` for 8-bit values.
-  dw literal_
-  dw branch_,interpret.begin
-
-else
-
-  ; XXX NEW -- 'interpret'
-
 interpret.begin:
 
 ;  _chk 'interpret -- begin' ; XXX INFORMER
@@ -8555,13 +7572,6 @@ interpret.begin:
 ;  _chk 'interpret -- before parse-name' ; XXX INFORMER
   dw parse_name_  ; ( ca len )
 ;  _chk_type 'interpret -- after parse-name' ; XXX INFORMER
-
-if 0  ; XXX OLD
-  dw dup_ ; not end of stream?
-  dw zero_branch_,interpret.end ; while
-endif
-
-if 1
 
   dw dup_ ; end of stream?
   dw question_branch_,interpret.continue ; if not, continue
@@ -8576,8 +7586,6 @@ if 1
   dw branch_,interpret.begin
 interpret.continue:
   ; not end of stream
-
-endif
 
 ; _chk 'interpret -- before find-name' ; XXX INFORMER
 
@@ -8681,9 +7689,6 @@ endif
   
   dw semicolon_s_
 
-
-endif
-
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
 
@@ -8748,13 +7753,9 @@ quit.do:
 
 ; _brk 'quit -- before query' ; XXX INFORMER
 
-if 0 ; fig_parsing
-  dw cr_,query_
-else
-  ; XXX TMP
-  dw cr_,query_
+  ; XXX TODO
+  dw cr_,query_ ; XXX TMP
   ;dw refill_,drop_ ; XXX TMP
-endif
 
 ;  _chk 'quit -- before interpret' ; XXX INFORMER
 ;  dw cr_,blk_,question_ ; XXX INFORMER
@@ -9780,27 +8781,6 @@ message.number_only:
   dw buffer_id_,zero_less_than_
   dw semicolon_s_
 
-if 0 ; fig_parsing
-
-; ----------------------------------------------
-  _colon_header stream_end_,'STREAM-END'
-
-; doc{
-;
-; stream-end  ( ca -- )
-;
-; Store the null word (a null character) at the given address,
-; surrounded by spaces. This marks the end of a input stream.
-;
-; }doc
-
-  dw s_lit_
-  db 3,space_char,0,space_char ; string
-  dw rot_,smove_
-  dw semicolon_s_
-
-endif
-
 ; ----------------------------------------------
   _colon_header empty_buffers_,'EMPTY-BUFFERS'
 
@@ -10297,20 +9277,6 @@ read_write_sector_command:
 ; ----------------------------------------------
   _colon_header defined_,'DEFINED'
 
-if 0 ; fig_parsing
-
-; doc{
-;
-; defined  ( "name" -- ca 0 | cfa 1 | cfa -1 )
-;
-; }doc
-
-  dw b_l_,word_ ; ( ca2 )
-  dw find_
-  dw semicolon_s_
-
-else
-
 if find_name_version=0 ; XXX TMP
 
 ; doc{
@@ -10368,9 +9334,6 @@ if find_name_version=2 ; XXX TMP
   dw semicolon_s_
 
 endif
-
-endif
-
 
 ; ----------------------------------------------
   _colon_header question_defined_,'?DEFINED'
