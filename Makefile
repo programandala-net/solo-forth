@@ -110,6 +110,7 @@ backup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
 		Makefile \
 		*.adoc \
+		*.vim \
 		solo_forth*.fsb \
 		solo_forth*.bas \
 		solo_forth*.z80s

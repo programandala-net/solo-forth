@@ -289,5 +289,10 @@ New: `rp`, required to rewrite `i'` outside the kernel.
 
 .2015-06-18:
 
-Change: Macros are used to create the headers. The symbols file
-created with macros is identical to the former one.
+Improvement: Macros are used to create the headers.
+
+Fix: `?exit`.
+
+Improvement: faster and smaller `2@` and `2over`, `do_two_constant`.
+
+New: `2r@`.

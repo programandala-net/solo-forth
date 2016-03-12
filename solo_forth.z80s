@@ -219,7 +219,7 @@ _colon_header: macro label,name_but_last_letter,last_letter,immediate
 
   endm
 
-_user_header: macro label,name_but_last_letter,last_letter,immediate
+_user_variable_header: macro label,name_but_last_letter,last_letter,immediate
 
   _header label,name_but_last_letter,last_letter,immediate
   dw do_user ; code field
@@ -530,26 +530,16 @@ next2:
 ; ==============================================================
 ; Dictionary
 
-c_lit_nfa:
-  db 0x04+0x80,'CLI','T'+0x80
-c_lit_lfa:
-  dw 0x0000
-c_lit_:
-  dw c_lit_pfa
-c_lit_pfa:
+  _code_header c_lit_,'CLI','T'
+
   ld a,(bc)
   inc bc
   ld l,a
   ld h,0
   jp pushhl
 
-lit_nfa:
-  db 0x03+0x80,'LI','T'+0x80
-lit_lfa:
-  dw c_lit_nfa
-lit_:
-  dw lit_pfa
-lit_pfa:
+  _code_header lit_,'LI','T'
+
   ld a,(bc)
   inc bc
   ld l,a
@@ -558,23 +548,13 @@ lit_pfa:
   ld h,a
   jp pushhl
 
-execute_nfa:
-  db 0x07+0x80,'EXECUT','E'+0x80
-execute_lfa:
-  dw lit_nfa
-execute_:
-  dw execute_pfa
-execute_pfa:
+  _code_header execute_,'EXECUT','E'
+
   pop hl
   jp next2
 
-branch_nfa:
-  db 0x06+0x80,'BRANC','H'+0x80
-branch_lfa:
-  dw execute_nfa
-branch_:
-  dw branch_pfa
-branch_pfa:
+  _code_header branch_,'BRANC','H'
+
   ld h,b
   ld l,c
   ld c,(hl)
@@ -582,13 +562,8 @@ branch_pfa:
   ld b,(hl)
   _jp_next
 
-zero_branch_nfa:
-  db 0x07+0x80,'0BRANC','H'+0x80
-zero_branch_lfa:
-  dw branch_nfa
-zero_branch_:
-  dw zero_branch_pfa
-zero_branch_pfa:
+  _code_header zero_branch_,'0BRANC','H'
+
   pop hl
   ld a,l
   or h
@@ -597,14 +572,8 @@ zero_branch_pfa:
   inc bc
   _jp_next
 
-  ; XXX NEW
-question_branch_nfa:
-  db 0x07+0x80,'?BRANC','H'+0x80
-question_branch_lfa:
-  dw zero_branch_nfa
-question_branch_:
-  dw question_branch_pfa
-question_branch_pfa:
+  _code_header question_branch_,'?BRANC','H'
+
   pop hl
   ld a,l
   or h
@@ -613,13 +582,8 @@ question_branch_pfa:
   inc bc
   _jp_next
 
-paren_loop_nfa:
-  db 0x06+0x80,'(LOOP',')'+0x80
-paren_loop_lfa:
-  dw question_branch_nfa
-paren_loop_:
-  dw paren_loop_pfa
-paren_loop_pfa:
+  _code_header paren_loop_,'(LOOP',')'
+
   ld de,0x0001
 paren_loop.step_in_de:
   ld hl,(return_stack_pointer)
@@ -656,23 +620,13 @@ l5ef2h:
   inc bc
   _jp_next
 
-paren_plus_loop_nfa:
-  db 0x07+0x80,'(+LOOP',')'+0x80
-paren_plus_loop_lfa:
-  dw paren_loop_nfa
-paren_plus_loop_:
-  dw paren_plus_loop_pfa
-paren_plus_loop_pfa:
+  _code_header paren_plus_loop_,'(+LOOP',')'
+
   pop de
   jp paren_loop.step_in_de
 
-paren_do_nfa:
-  db 0x04+0x80,'(DO',')'+0x80
-paren_do_lfa:
-  dw paren_plus_loop_nfa
-paren_do_:
-  dw paren_do_pfa
-paren_do_pfa:
+  _code_header paren_do_,'(DO',')'
+
   ld hl,(return_stack_pointer)
   dec hl
   dec hl
@@ -690,20 +644,10 @@ paren_do_pfa:
   ld (hl),d
   _jp_next
 
-i_nfa:
-  db 0x01+0x80,'','I'+0x80
-i_lfa:
-  dw paren_do_nfa
-i_:
-  dw r_fetch_pfa
+  _code_alias_header i_,'','I',,r_fetch_
 
-digit_nfa:
-  db 0x05+0x80,'DIGI','T'+0x80
-digit_lfa:
-  dw i_nfa
-digit_:
-  dw digit_pfa
-digit_pfa:
+  _code_header digit_,'DIGI','T'
+
   pop hl
   pop de
   ld a,e
@@ -736,13 +680,8 @@ l5f65h:
 ;
 ; }doc
 
-paren_find_nfa:
-  db 0x06+0x80,'(FIND',')'+0x80
-paren_find_lfa:
-  dw digit_nfa
-paren_find_:
-  dw paren_find_pfa
-paren_find_pfa:
+  _code_header paren_find_,'(FIND',')'
+
   ; XXX TODO optimize speed with absolute jumps?
   ; XXX TODO -- return cfa instead of pfa
   ; XXX TODO -- always return two elements, after Forth-94
@@ -814,13 +753,7 @@ l5fa2h:
 
 ; }doc
 
-enclose_nfa:
-  db 0x07+0x80,'ENCLOS','E'+0x80
-enclose_lfa:
-  dw paren_find_nfa
-enclose_:
-  dw enclose_pfa
-enclose_pfa:
+  _code_header enclose_,'ENCLOS','E'
 
   ; XXX WARNING: the order of the parameters has been changed, to save a `swap` in `word`.
 
@@ -836,7 +769,7 @@ if 0 ; XXX OLD -- can not work with zones greater than 128 bytes
 
 enclose.skip:
   ; Skip initial delimiters.
-  ; hl = previous 
+  ; hl = previous
   inc hl
   inc e
   cp (hl) ; delimiter?
@@ -950,13 +883,8 @@ endif
 ;
 ; Copied from Spectrum Forth-83.
 
-chan_nfa:
-  db 0x04+0x80,'CHA','N'+0x80
-chan_lfa:
-  dw enclose_nfa
-chan_:
-  dw chan_pfa
-chan_pfa:
+  _code_header chan_,'CHA','N'
+
   pop hl
   push bc
   ld a,l
@@ -964,13 +892,8 @@ chan_pfa:
   pop bc
   _jp_next
 
-emit_nfa:
-  db 0x04+0x80,'EMI','T'+0x80
-emit_lfa:
-  dw chan_nfa
-emit_:
-  dw do_colon
-emit_pfa:
+  _colon_header emit_,'EMI','T'
+
   dw paren_emit_
   dw one_,out_,plus_store_
   dw semicolon_s_
@@ -986,46 +909,25 @@ emit_pfa:
 
 ; }doc
 
-paren_emit_nfa:
-  db 0x06+0x80,'(EMIT',')'+0x80
-paren_emit_lfa:
-  dw emit_nfa
-paren_emit_:
-  dw paren_emit_pfa
-paren_emit_pfa:
+  _code_header paren_emit_,'(EMIT',')'
+
   pop hl
   ld a,l
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
   _jp_next
 
-printer_nfa:
-  db 0x07+0x80,'PRINTE','R'+0x80
-printer_lfa:
-  dw paren_emit_nfa
-printer_:
-  dw do_colon
-printer_pfa:
+  _colon_header printer_,'PRINTE','R'
+
   dw three_,chan_
   dw semicolon_s_
 
-display_nfa:
-  db 0x07+0x80,'DISPLA','Y'+0x80
-display_lfa:
-  dw printer_nfa
-display_:
-  dw do_colon
-display_pfa:
+  _colon_header display_,'DISPLA','Y'
+
   dw two_,chan_
   dw semicolon_s_
 
-key_nfa:
-  db 0x03+0x80,'KE','Y'+0x80
-key_lfa:
-  dw display_nfa
-key_:
-  dw key_pfa
-key_pfa:
+  _code_header key_,'KE','Y'
 
   push bc
   ld a,0x02
@@ -1142,14 +1044,8 @@ key.limit:
   pop bc
   jp pushhl
 
+  _code_header question_terminal_,'?TERMINA','L'
 
-question_terminal_nfa:
-  db 0x09+0x80,'?TERMINA','L'+0x80
-question_terminal_lfa:
-  dw key_nfa
-question_terminal_:
-  dw question_terminal_pfa
-question_terminal_pfa:
   call rom_break_key
   jp nc,true_pfa
   ld a,(sys_last_k)
@@ -1157,13 +1053,8 @@ question_terminal_pfa:
   jp z,true_pfa
   jp false_pfa
 
-cr_nfa:
-  db 0x02+0x80,'C','R'+0x80
-cr_lfa:
-  dw question_terminal_nfa
-cr_:
-  dw do_colon
-cr_pfa:
+  _colon_header cr_,'C','R'
+
   ; From Spectrum Forth-83.
   dw c_lit_
   db carriage_return_char
@@ -1171,13 +1062,8 @@ cr_pfa:
   dw out_,off_
   dw semicolon_s_
 
-cmove_nfa:
-  db 0x05+0x80,'CMOV','E'+0x80
-cmove_lfa:
-  dw cr_nfa
-cmove_:
-  dw cmove_pfa
-cmove_pfa:
+  _code_header cmove_,'CMOV','E'
+
   ld l,c
   ld h,b
   pop bc
@@ -1191,13 +1077,8 @@ cmove.end:
   pop bc
   _jp_next
 
-u_star_nfa:
-  db 0x02+0x80,'U','*'+0x80
-u_star_lfa:
-  dw cmove_nfa
-u_star_:
-  dw u_star_pfa
-u_star_pfa:
+  _code_header u_star_,'U','*'
+
   pop de
   pop hl
   push bc
@@ -1233,13 +1114,8 @@ l6079h:
   jr nz,l6072h
   ret
 
-u_slash_mod_nfa:
-  db 0x05+0x80,'U/MO','D'+0x80
-u_slash_mod_lfa:
-  dw u_star_nfa
-u_slash_mod_:
-  dw u_slash_mod_pfa
-u_slash_mod_pfa:
+  _code_header u_slash_mod_,'U/MO','D'
+
   ld hl,0x0004
   add hl,sp
   ld e,(hl)
@@ -1292,13 +1168,8 @@ l60c0h:
   push de
   _jp_next
 
-and_nfa:
-  db 0x03+0x80,'AN','D'+0x80
-and_lfa:
-  dw u_slash_mod_nfa
-and_:
-  dw and_pfa
-and_pfa:
+  _code_header and_,'AN','D'
+
   pop de
   pop hl
   ld a,e
@@ -1309,13 +1180,8 @@ and_pfa:
   ld h,a
   jp pushhl
 
-or_nfa:
-  db 0x02+0x80,'O','R'+0x80
-or_lfa:
-  dw and_nfa
-or_:
-  dw or_pfa
-or_pfa:
+  _code_header or_,'O','R'
+
   pop de
   pop hl
   ld a,e
@@ -1326,13 +1192,8 @@ or_pfa:
   ld h,a
   jp pushhl
 
-xor_nfa:
-  db 0x03+0x80,'XO','R'+0x80
-xor_lfa:
-  dw or_nfa
-xor_:
-  dw xor_pfa
-xor_pfa:
+  _code_header xor_,'XO','R'
+
   pop de
   pop hl
   ld a,e
@@ -1343,24 +1204,14 @@ xor_pfa:
   ld h,a
   jp pushhl
 
-sp_fetch_nfa:
-  db 0x03+0x80,'SP','@'+0x80
-sp_fetch_lfa:
-  dw xor_nfa
-sp_fetch_:
-  dw sp_fetch_pfa
-sp_fetch_pfa:
+  _code_header sp_fetch_,'SP','@'
+
   ld hl,0x0000
   add hl,sp
   jp pushhl
 
-sp_store_nfa:
-  db 0x03+0x80,'SP','!'+0x80
-sp_store_lfa:
-  dw sp_fetch_nfa
-sp_store_:
-  dw sp_store_pfa
-sp_store_pfa:
+  _code_header sp_store_,'SP','!'
+
   ld hl,(user_variables_pointer)
   ld a,(hl)
   inc hl
@@ -1369,32 +1220,17 @@ sp_store_pfa:
   ld sp,hl
   _jp_next
 
-rp_nfa:
-  db 0x02+0x80,'R','P'+0x80
-rp_lfa:
-  dw sp_store_nfa
-rp_:
-  dw do_constant
-rp_pfa:
+  _constant_header rp_,'R','P'
+
   dw return_stack_pointer
 
-rp_fetch_nfa:
-  db 0x03+0x80,'RP','@'+0x80
-rp_fetch_lfa:
-  dw rp_nfa
-rp_fetch_:
-  dw rp_fetch_pfa
-rp_fetch_pfa:
+  _code_header rp_fetch_,'RP','@'
+
   ld hl,(return_stack_pointer)
   jp pushhl
 
-rp_store_nfa:
-  db 0x03+0x80,'RP','!'+0x80
-rp_store_lfa:
-  dw rp_fetch_nfa
-rp_store_:
-  dw rp_store_pfa
-rp_store_pfa:
+  _code_header rp_store_,'RP','!'
+
   ld hl,(user_variables_pointer)
   inc hl
   inc hl ; hl=address of r0
@@ -1405,13 +1241,8 @@ rp_store_pfa:
   ld (return_stack_pointer),hl
   _jp_next
 
-semicolon_s_nfa:
-  db 0x02+0x80,';','S'+0x80
-semicolon_s_lfa:
-  dw rp_store_nfa
-semicolon_s_:
-  dw semicolon_s_pfa
-semicolon_s_pfa:
+  _code_header semicolon_s_,';','S'
+
   ld hl,(return_stack_pointer)
   ld c,(hl)
   inc hl
@@ -1420,32 +1251,17 @@ semicolon_s_pfa:
   ld (return_stack_pointer),hl
   _jp_next
 
-pick_nfa:
-  db 0x04+0x80,'PIC','K'+0x80
-pick_lfa:
-  dw semicolon_s_nfa
-pick_:
-  dw pick_pfa
-pick_pfa:
+  _code_header pick_,'PIC','K'
+
   pop hl
   add hl,hl
   add hl,sp
   jp fetch.hl
 
-unloop_nfa:
-  db 0x06+0x80,'UNLOO','P'+0x80
-unloop_lfa:
-  dw pick_nfa
-unloop_:
-  dw two_r_drop_pfa
+  _code_alias_header unloop_,'UNLOO','P',,two_r_drop_
 
-leave_nfa:
-  db 0x05+0x80,'LEAV','E'+0x80
-leave_lfa:
-  dw unloop_nfa
-leave_:
-  dw leave_pfa
-leave_pfa:
+  _code_header leave_,'LEAV','E'
+
   ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
@@ -1456,13 +1272,8 @@ leave_pfa:
   ld (hl),d
   _jp_next
 
-to_r_nfa:
-  db 0x02+0x80,'>','R'+0x80
-to_r_lfa:
-  dw leave_nfa
-to_r_:
-  dw to_r_pfa
-to_r_pfa:
+  _code_header to_r_,'>','R'
+
   pop de
   ld hl,(return_stack_pointer)
   dec hl
@@ -1472,13 +1283,8 @@ to_r_pfa:
   ld (return_stack_pointer),hl
   _jp_next
 
-from_r_nfa:
-  db 0x02+0x80,'R','>'+0x80
-from_r_lfa:
-  dw to_r_nfa
-from_r_:
-  dw from_r_pfa
-from_r_pfa:
+  _code_header from_r_,'R','>'
+
   ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
@@ -1488,13 +1294,8 @@ from_r_pfa:
   push de
   _jp_next
 
-two_r_drop_nfa:
-  db 0x06+0x80,'2RDRO','P'+0x80
-two_r_drop_lfa:
-  dw from_r_nfa
-two_r_drop_:
-  dw two_r_drop_pfa
-two_r_drop_pfa:
+  _code_header two_r_drop_,'2RDRO','P'
+
   ld hl,(return_stack_pointer)
   inc hl
   inc hl
@@ -1503,26 +1304,21 @@ two_r_drop_pfa:
   ld (return_stack_pointer),hl
   _jp_next
 
-r_drop_nfa:
-  db 0x05+0x80,'RDRO','P'+0x80
-r_drop_lfa:
-  dw two_r_drop_nfa
-r_drop_:
-  dw r_drop_pfa
-r_drop_pfa:
+  _code_header r_drop_,'RDRO','P'
+
   ld hl,(return_stack_pointer)
   inc hl
   inc hl
   ld (return_stack_pointer),hl
   _jp_next
 
-r_fetch_nfa:
-  db 0x02+0x80,'R','@'+0x80
-r_fetch_lfa:
-  dw r_drop_nfa
-r_fetch_:
-  dw r_fetch_pfa
-r_fetch_pfa:
+  _code_header two_r_fetch_,'2R','@'
+
+  ld hl,(return_stack_pointer)
+  jp two_fetch.hl
+
+  _code_header r_fetch_,'R','@'
+
   ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
@@ -1530,39 +1326,24 @@ r_fetch_pfa:
   push de
   _jp_next
 
-zero_equals_nfa:
-  db 0x02+0x80,'0','='+0x80
-zero_equals_lfa:
-  dw r_fetch_nfa
-zero_equals_:
-  dw zero_equals_pfa
-zero_equals_pfa:
+  _code_header zero_equals_,'0','='
+
   pop hl
   ld a,l
   or h
   jp z,true_pfa
   jp false_pfa
 
-zero_not_equals_nfa:
-  db 0x03+0x80,'0<','>'+0x80
-zero_not_equals_lfa:
-  dw zero_equals_nfa
-zero_not_equals_:
-  dw zero_not_equals_pfa
-zero_not_equals_pfa:
+  _code_header zero_not_equals_,'0<','>'
+
   pop hl
   ld a,l
   or h
   jp z,false_pfa
   jp true_pfa
 
-zero_less_than_nfa:
-  db 0x02+0x80,'0','<'+0x80
-zero_less_than_lfa:
-  dw zero_not_equals_nfa
-zero_less_than_:
-  dw zero_less_than_pfa
-zero_less_than_pfa:
+  _code_header zero_less_than_,'0','<'
+
   pop hl
 zero_less_.hl: ; XXX entry not used yet
   add hl,hl
@@ -1570,25 +1351,15 @@ true_if_cy:
   jp c,true_pfa
   jp false_pfa
 
-plus_nfa:
-  db 0x01+0x80,'','+'+0x80
-plus_lfa:
-  dw zero_less_than_nfa
-plus_:
-  dw plus_pfa
-plus_pfa:
+  _code_header plus_,'','+'
+
   pop de
   pop hl
   add hl,de
   jp pushhl
 
-d_plus_nfa:
-  db 0x02+0x80,'D','+'+0x80
-d_plus_lfa:
-  dw plus_nfa
-d_plus_:
-  dw d_plus_pfa
-d_plus_pfa:
+  _code_header d_plus_,'D','+'
+
   ld hl,0x0006
   add hl,sp
   ld e,(hl)
@@ -1606,26 +1377,16 @@ d_plus_pfa:
   push de
   jp pushhl
 
-negate_nfa:
-  db 0x06+0x80,'NEGAT','E'+0x80
-negate_lfa:
-  dw d_plus_nfa
-negate_:
-  dw negate_pfa
-negate_pfa:
+  _code_header negate_,'NEGAT','E'
+
   pop de
   ld hl,0x0000
   and a
   sbc hl,de
   jp pushhl
 
-dnegate_nfa:
-  db 0x07+0x80,'DNEGAT','E'+0x80
-dnegate_lfa:
-  dw negate_nfa
-dnegate_:
-  dw dnegate_pfa
-dnegate_pfa:
+  _code_header dnegate_,'DNEGAT','E'
+
   pop hl
   pop de
   sub a
@@ -1643,93 +1404,53 @@ dnegate_pfa:
   push de
   jp pushhl
 
-nip_nfa:
-  db 0x03+0x80,'NI','P'+0x80
-nip_lfa:
-  dw dnegate_nfa
-nip_:
-  dw nip_pfa
-nip_pfa:
+  _code_header nip_,'NI','P'
+
   pop hl
   pop de
   jp pushhl
 
-tuck_nfa:
-  db 0x04+0x80,'TUC','K'+0x80
-tuck_lfa:
-  dw nip_nfa
-tuck_:
-  dw tuck_pfa
-tuck_pfa:
+  _code_header tuck_,'TUC','K'
+
   pop hl
   pop de
   push hl
   jp pushde
 
-over_nfa:
-  db 0x04+0x80,'OVE','R'+0x80
-over_lfa:
-  dw tuck_nfa
-over_:
-  dw over_pfa
-over_pfa:
+  _code_header over_,'OVE','R'
+
   pop de
   pop hl
   push hl
   jp pushde
 
-drop_nfa:
-  db 0x04+0x80,'DRO','P'+0x80
-drop_lfa:
-  dw over_nfa
-drop_:
-  dw drop_pfa
-drop_pfa:
+  _code_header drop_,'DRO','P'
+
   pop hl
   _jp_next
 
-swap_nfa:
-  db 0x04+0x80,'SWA','P'+0x80
-swap_lfa:
-  dw drop_nfa
-swap_:
-  dw swap_pfa
-swap_pfa:
+  _code_header swap_,'SWA','P'
+
   pop hl
   ex (sp),hl
   jp pushhl
 
-dup_nfa:
-  db 0x03+0x80,'DU','P'+0x80
-dup_lfa:
-  dw swap_nfa
-dup_:
-  dw dup_pfa
-dup_pfa:
+  _code_header dup_,'DU','P'
+
   pop hl
   push hl
   jp pushhl
 
-two_dup_nfa:
-  db 0x04+0x80,'2DU','P'+0x80
-two_dup_lfa:
-  dw dup_nfa
-two_dup_:
-  dw two_dup_pfa
-two_dup_pfa:
+  _code_header two_dup_,'2DU','P'
+
   pop hl
   pop de
   push de
   push hl
   jp pushde
 
-plus_store_nfa:
-  db 0x02+0x80,'+','!'+0x80
-plus_store_lfa:
-  dw two_dup_nfa
-plus_store_:
-  dw plus_store_pfa
-plus_store_pfa:
+  _code_header plus_store_,'+','!'
+
   pop hl ; variable address
   pop de ; number
   ld a,(hl)
@@ -1741,26 +1462,16 @@ plus_store_pfa:
   ld (hl),a
   _jp_next
 
-off_nfa:
-  db 0x03+0x80,'OF','F'+0x80
-off_lfa:
-  dw plus_store_nfa
-off_:
-  dw off_pfa
-off_pfa:
+  _code_header off_,'OF','F'
+
   pop hl
   ld (hl),0
   inc hl
   ld (hl),0
   _jp_next
 
-on_nfa:
-  db 0x02+0x80,'O','N'+0x80
-on_lfa:
-  dw off_nfa
-on_:
-  dw on_pfa
-on_pfa:
+  _code_header on_,'O','N'
+
   ; XXX TODO -- update when true=-1
   pop hl
   ld (hl),1
@@ -1768,13 +1479,8 @@ on_pfa:
   ld (hl),0
   _jp_next
 
-toggle_nfa:
-  db 0x06+0x80,'TOGGL','E'+0x80
-toggle_lfa:
-  dw on_nfa
-toggle_:
-  dw toggle_pfa
-toggle_pfa:
+  _code_header toggle_,'TOGGL','E'
+
   pop de ; e = bit pattern
   pop hl ; address
   ld a,(hl)
@@ -1782,13 +1488,8 @@ toggle_pfa:
   ld (hl),a
   _jp_next
 
-fetch_nfa:
-  db 0x01+0x80,'','@'+0x80
-fetch_lfa:
-  dw toggle_nfa
-fetch_:
-  dw fetch_pfa
-fetch_pfa:
+  _code_header fetch_,'','@'
+
   ; XXX TODO optimize? maybe `jp pushhl` can be used?
   pop hl
 fetch.hl:
@@ -1798,38 +1499,52 @@ fetch.hl:
   push de
   _jp_next
 
-c_fetch_nfa:
-  db 0x02+0x80,'C','@'+0x80
-c_fetch_lfa:
-  dw fetch_nfa
-c_fetch_:
-  dw c_fetch_pfa
-c_fetch_pfa:
+  _code_header c_fetch_,'C','@'
+
   pop hl
   ld l,(hl)
   ld h,0x00
   jp pushhl
 
-two_fetch_nfa:
-  db 0x02+0x80,'2','@'+0x80
-two_fetch_lfa:
-  dw c_fetch_nfa
-two_fetch_:
-  dw two_fetch_pfa
-two_fetch_pfa:
+  _code_header two_fetch_,'2','@'
+
   pop hl ; address
-  inc hl
-  inc hl ; high part
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-  dec hl
-  dec hl
-  ld d,(hl)
-  dec hl
-  ld e,(hl)
-  push de
+two_fetch.hl
+
+if 0 ; XXX OLD -- Abersoft Forth
+
+  inc hl    ; T06  1
+  inc hl    ; T06  1 ; high part
+  ld e,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld d,(hl) ; T07  1
+  push de   ; T11  1
+  dec hl    ; T06  1
+  dec hl    ; T06  1
+  ld d,(hl) ; T07  1
+  dec hl    ; T06  1
+  ld e,(hl) ; T07  1
+  push de   ; T11  1
+  _jp_next  ; T08  2
+            ;T104 14 TOTAL
+
+else ; XXX NEW -- From DZX-Forth
+
+  ld e,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld d,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld a,(hl) ; T07  1
+  inc hl    ; T06  1
+  ld h,(hl) ; T07  1
+  ld l,a    ; T04  1
+  ex de,hl  ; T04  1
+  jp pushde ; T10  3
+            ; T11  0 push de
+            ; T11  0 push hl
+            ; T86 12 TOTAL
+
+endif
 
   if 0 ; XXX TODO -- study this alternative from C/PM fig-Forth 1.1g
 
@@ -1848,15 +1563,9 @@ two_fetch_pfa:
 
   endif
 
-  _jp_next
 
-store_nfa:
-  db 0x01+0x80,'','!'+0x80
-store_lfa:
-  dw two_fetch_nfa
-store_:
-  dw store_pfa
-store_pfa:
+  _code_header store_,'','!'
+
   pop hl
   pop de
   ld (hl),e
@@ -1864,25 +1573,15 @@ store_pfa:
   ld (hl),d
   _jp_next
 
-c_store_nfa:
-  db 0x02+0x80,'C','!'+0x80
-c_store_lfa:
-  dw store_nfa
-c_store_:
-  dw c_store_pfa
-c_store_pfa:
+  _code_header c_store_,'C','!'
+
   pop hl
   pop de
   ld (hl),e
   _jp_next
 
-two_store_nfa:
-  db 0x02+0x80,'2','!'+0x80
-two_store_lfa:
-  dw c_store_nfa
-two_store_:
-  dw two_store_pfa
-two_store_pfa:
+  _code_header two_store_,'2','!'
+
   pop hl
   pop de
   ld (hl),e
@@ -1895,13 +1594,8 @@ two_store_pfa:
   ld (hl),d
   _jp_next
 
-colon_nfa:
-  db 0x01+0x80+precedence_bit_mask,'',':'+0x80
-colon_lfa:
-  dw two_store_nfa
-colon_:
-  dw do_colon
-colon_pfa:
+  _colon_header colon_,'',':',immediate
+
   dw question_exec_
   dw store_csp_
   dw current_,fetch_
@@ -1921,35 +1615,20 @@ do_colon:
   ld b,d ; bc=pfa
   _jp_next
 
-semicolon_nfa:
-  db 0x01+0x80+precedence_bit_mask,'',';'+0x80
-semicolon_lfa:
-  dw colon_nfa
-semicolon_:
-  dw do_colon
-semicolon_pfa:
+  _colon_header semicolon_,'',';',immediate
+
   dw question_csp_
   dw compile_,semicolon_s_
   dw smudge_
   dw left_bracket_
   dw semicolon_s_
 
-noop_nfa:
-  db 0x04+0x80,'NOO','P'+0x80
-noop_lfa:
-  dw semicolon_nfa
-noop_:
-  dw do_colon
-noop_pfa:
+  _colon_header noop_,'NOO','P'
+
   dw semicolon_s_
 
-constant_nfa:
-  db 0x08+0x80,'CONSTAN','T'+0x80
-constant_lfa:
-  dw noop_nfa
-constant_:
-  dw do_colon
-constant_pfa:
+  _colon_header constant_,'CONSTAN','T'
+
   dw create_
   dw smudge_
   dw comma_
@@ -1963,13 +1642,8 @@ do_constant:
   push de
   _jp_next
 
-variable_nfa:
-  db 0x08+0x80,'VARIABL','E'+0x80
-variable_lfa:
-  dw constant_nfa
-variable_:
-  dw do_colon
-variable_pfa:
+  _colon_header variable_,'VARIABL','E'
+
   dw constant_
   dw paren_semicolon_code_
 do_variable:
@@ -1977,13 +1651,8 @@ do_variable:
   push de
   _jp_next
 
-user_nfa:
-  db 0x04+0x80,'USE','R'+0x80
-user_lfa:
-  dw variable_nfa
-user_:
-  dw do_colon
-user_pfa:
+  _colon_header user_,'USE','R'
+
   ; XXX TODO -- Use only one byte for storage,
   ; but defining `cconstant` only for this does not seem a good idea.
   dw constant_
@@ -2006,452 +1675,217 @@ do_user:
 
 ; Idea taken from lina ciforth.
 
-msg_scr_nfa:
-  db 0x07+0x80,'MSG-SC','R'+0x80
-msg_scr_lfa:
-  dw user_nfa
-msg_scr_:
-  dw do_constant
-msg_scr_pfa:
+  _constant_header msg_scr_,'MSG-SC','R'
+
   dw 0x0004
 
-zero_nfa:
-  db 0x01+0x80,'','0'+0x80
-zero_lfa:
-  dw msg_scr_nfa
-zero_:
-  dw do_constant
-zero_pfa:
+  _constant_header zero_,'','0'
+
   dw 0x0000
 
-one_nfa:
-  db 0x01+0x80,'','1'+0x80
-one_lfa:
-  dw zero_nfa
-one_:
-  dw do_constant
-one_pfa:
+  _constant_header one_,'','1'
+
   dw 0x0001
 
-two_nfa:
-  db 0x01+0x80,'','2'+0x80
-two_lfa:
-  dw one_nfa
-two_:
-  dw do_constant
-two_pfa:
+  _constant_header two_,'','2'
+
   dw 0x0002
 
-three_nfa:
-  db 0x01+0x80,'','3'+0x80
-three_lfa:
-  dw two_nfa
-three_:
-  dw do_constant
-three_pfa:
+  _constant_header three_,'','3'
+
   dw 0x0003
 
-false_nfa:
-  db 0x05+0x80,'FALS','E'+0x80
-false_lfa:
-  dw three_nfa
-false_:
-  dw false_pfa
-false_pfa:
+  _code_header false_,'FALS','E'
+
   ld hl,false
   jp pushhl
 
-true_nfa:
-  db 0x04+0x80,'TRU','E'+0x80
-true_lfa:
-  dw false_nfa
-true_:
-  dw true_pfa
-true_pfa:
+  _code_header true_,'TRU','E'
+
   ld hl,true
   jp pushhl
 
-b_l_nfa:
-  db 0x02+0x80,'B','L'+0x80
-b_l_lfa:
-  dw true_nfa
-b_l_:
-  dw do_constant
-b_l_pfa:
+  _constant_header b_l_,'B','L'
+
   dw space_char
 
-c_slash_l_nfa:
-  db 0x03+0x80,'C/','L'+0x80
-c_slash_l_lfa:
-  dw b_l_nfa
-c_slash_l_:
-  dw do_constant
-c_slash_l_pfa:
+  _constant_header c_slash_l_,'C/','L'
+
   dw characters_per_line
 
-first_nfa:
-  db 0x05+0x80,'FIRS','T'+0x80
-first_lfa:
-  dw c_slash_l_nfa
-first_:
-  dw do_constant
-first_pfa:
+  _constant_header first_,'FIRS','T'
+
   dw first_buffer
 
-limit_nfa:
-  db 0x05+0x80,'LIMI','T'+0x80
-limit_lfa:
-  dw first_nfa
-limit_:
-  dw do_constant
-limit_pfa:
+  _constant_header limit_,'LIMI','T'
+
   dw limit
 
-b_slash_buf_nfa:
-  db 0x05+0x80,'B/BU','F'+0x80
-b_slash_buf_lfa:
-  dw limit_nfa
-b_slash_buf_:
-  dw do_constant
-b_slash_buf_pfa:
+  _constant_header b_slash_buf_,'B/BU','F'
+
   dw data_bytes_per_buffer
 
-b_slash_scr_nfa:
-  db 0x05+0x80,'B/SC','R'+0x80
-b_slash_scr_lfa:
-  dw b_slash_buf_nfa
-b_slash_scr_:
-  dw do_constant
-b_slash_scr_pfa:
+  _constant_header b_slash_scr_,'B/SC','R'
+
   dw blocks_per_screen
 
-plus_origin_nfa:
-  db 0x07+0x80,'+ORIGI','N'+0x80
-plus_origin_lfa:
-  dw b_slash_scr_nfa
-plus_origin_:
-  dw do_colon
-plus_origin_pfa:
+  _colon_header plus_origin_,'+ORIGI','N'
+
   dw lit_,origin
   dw plus_
   dw semicolon_s_
 
-s0_nfa:
-  db 0x02+0x80,'S','0'+0x80
-s0_lfa:
-  dw plus_origin_nfa
-s0_:
-  dw do_user
-s0_pfa:
+  _user_variable_header s0_,'S','0'
+
   db 0x00
 
-r0_nfa:
-  db 0x02+0x80,'R','0'+0x80
-r0_lfa:
-  dw s0_nfa
-r0_:
-  dw do_user
-r0_pfa:
+  _user_variable_header r0_,'R','0'
+
   db 0x02
 
-tib_nfa:
-  db 0x03+0x80,'TI','B'+0x80
-tib_lfa:
-  dw r0_nfa
-tib_:
-  dw do_user
-tib_pfa:
+  _user_variable_header tib_,'TI','B'
+
   db 0x04
 
-width_nfa:
-  db 0x05+0x80,'WIDT','H'+0x80
-width_lfa:
-  dw tib_nfa
-width_:
-  dw do_user
-width_pfa:
+  _user_variable_header width_,'WIDT','H'
+
   db 0x06
 
-warning_nfa:
-  db 0x07+0x80,'WARNIN','G'+0x80
-warning_lfa:
-  dw width_nfa
-warning_:
-  dw do_user
-warning_pfa:
+  _user_variable_header warning_,'WARNIN','G'
+
   db 0x08
 
-fence_nfa:
-  db 0x05+0x80,'FENC','E'+0x80
-fence_lfa:
-  dw warning_nfa
-fence_:
-  dw do_user
-fence_pfa:
+  _user_variable_header fence_,'FENC','E'
+
   db 0x0A
 
-dp_nfa:
-  db 0x02+0x80,'D','P'+0x80
-dp_lfa:
-  dw fence_nfa
-dp_:
-  dw do_user
-dp_pfa:
+  _user_variable_header dp_,'D','P'
+
   db 0x0C
 
-voc_link_nfa:
-  db 0x08+0x80,'VOC-LIN','K'+0x80
-voc_link_lfa:
-  dw dp_nfa
-voc_link_:
-  dw do_user
-voc_link_pfa:
+  _user_variable_header voc_link_,'VOC-LIN','K'
+
   db 0x0E
 
-blk_nfa:
-  db 0x03+0x80,'BL','K'+0x80
-blk_lfa:
-  dw voc_link_nfa
-blk_:
-  dw do_user
-blk_pfa:
+  _user_variable_header blk_,'BL','K'
+
   db 0x10
 
-in_nfa:
-  db 0x02+0x80,'I','N'+0x80
-in_lfa:
-  dw blk_nfa
-in_:
-  dw do_user
-in_pfa:
+  _user_variable_header in_,'I','N'
+
   db 0x12
 
-out_nfa:
-  db 0x03+0x80,'OU','T'+0x80
-out_lfa:
-  dw in_nfa
-out_:
-  dw do_user
-out_pfa:
+  _user_variable_header out_,'OU','T'
+
   db 0x14
 
-scr_nfa:
-  db 0x03+0x80,'SC','R'+0x80
-scr_lfa:
-  dw out_nfa
-scr_:
-  dw do_user
-scr_pfa:
+  _user_variable_header scr_,'SC','R'
+
   db 0x16
 
-context_nfa:
-  db 0x07+0x80,'CONTEX','T'+0x80
-context_lfa:
-  dw scr_nfa
-context_:
-  dw do_user
-context_pfa:
+  _user_variable_header context_,'CONTEX','T'
+
   db 0x1A
 
-current_nfa:
-  db 0x07+0x80,'CURREN','T'+0x80
-current_lfa:
-  dw context_nfa
-current_:
-  dw do_user
-current_pfa:
+  _user_variable_header current_,'CURREN','T'
+
   db 0x1C
 
-state_nfa:
-  db 0x05+0x80,'STAT','E'+0x80
-state_lfa:
-  dw current_nfa
-state_:
-  dw do_user
-state_pfa:
+  _user_variable_header state_,'STAT','E'
+
   db 0x1E
 
-base_nfa:
-  db 0x04+0x80,'BAS','E'+0x80
-base_lfa:
-  dw state_nfa
-base_:
-  dw do_user
-base_pfa:
+  _user_variable_header base_,'BAS','E'
+
   db 0x20
 
-dpl_nfa:
-  db 0x03+0x80,'DP','L'+0x80
-dpl_lfa:
-  dw base_nfa
-dpl_:
-  dw do_user
-dpl_pfa:
+  _user_variable_header dpl_,'DP','L'
+
   db 0x22
 
-fld_nfa:
-  db 0x03+0x80,'FL','D'+0x80
-fld_lfa:
-  dw dpl_nfa
-fld_:
-  dw do_user
-fld_pfa:
+  _user_variable_header fld_,'FL','D'
+
   db 0x24
 
-csp_nfa:
-  db 0x03+0x80,'CS','P'+0x80
-csp_lfa:
-  dw fld_nfa
-csp_:
-  dw do_user
-csp_pfa:
+  _user_variable_header csp_,'CS','P'
+
   db 0x26
 
-r_hash_nfa:
-  db 0x02+0x80,'R','#'+0x80
-r_hash_lfa:
-  dw csp_nfa
-r_hash_:
-  dw do_user
-r_hash_pfa:
+  _user_variable_header r_hash_,'R','#'
+
   db 0x28
 
-hld_nfa:
-  db 0x03+0x80,'HL','D'+0x80
-hld_lfa:
-  dw r_hash_nfa
-hld_:
-  dw do_user
-hld_pfa:
+  _user_variable_header hld_,'HL','D'
+
   db 0x2A
 
-recurse_nfa:
-  db 0x07+0x80+precedence_bit_mask,'RECURS','E'+0x80
-recurse_lfa:
-  dw hld_nfa
-recurse_:
-  dw do_colon
-recurse_pfa:
+  _colon_header recurse_,'RECURS','E',immediate
+
   dw latest_,nfa_to_cfa_,comma_
   dw semicolon_s_
 
-one_plus_nfa:
-  db 0x02+0x80,'1','+'+0x80
-one_plus_lfa:
-  dw recurse_nfa
-one_plus_:
-  dw one_plus_pfa
-one_plus_pfa:
+  _code_header one_plus_,'1','+'
+
   pop hl
   inc hl
   jp pushhl
 
-two_plus_nfa:
-  db 0x02+0x80,'2','+'+0x80
-two_plus_lfa:
-  dw one_plus_nfa
-two_plus_:
-  dw two_plus_pfa
-two_plus_pfa:
+  _code_header two_plus_,'2','+'
+
   pop hl
   inc hl
   inc hl
   jp pushhl
 
-one_minus_nfa:
-  db 0x02+0x80,'1','-'+0x80
-one_minus_lfa:
-  dw two_plus_nfa
-one_minus_:
-  dw one_minus_pfa
-one_minus_pfa:
+  _code_header one_minus_,'1','-'
+
   pop hl
   dec hl
   jp pushhl
 
-two_minus_nfa:
-  db 0x02+0x80,'2','-'+0x80
-two_minus_lfa:
-  dw one_minus_nfa
-two_minus_:
-  dw two_minus_pfa
-two_minus_pfa:
+  _code_header two_minus_,'2','-'
+
   pop hl
   dec hl
   dec hl
   jp pushhl
 
-two_star_nfa:
-  db 0x02+0x80,'2','*'+0x80
-two_star_lfa:
-  dw two_minus_nfa
-two_star_:
-  dw two_star_pfa
-two_star_pfa:
+  _code_header two_star_,'2','*'
+
   pop hl
   add hl,hl
   jp pushhl
 
-here_nfa:
-  db 0x04+0x80,'HER','E'+0x80
-here_lfa:
-  dw two_star_nfa
-here_:
-  dw do_colon
-here_pfa:
+  _colon_header here_,'HER','E'
+
   dw dp_,fetch_
   dw semicolon_s_
 
-allot_nfa:
-  db 0x05+0x80,'ALLO','T'+0x80
-allot_lfa:
-  dw here_nfa
-allot_:
-  dw do_colon
-allot_pfa:
+  _colon_header allot_,'ALLO','T'
+
   dw dp_,plus_store_
   dw semicolon_s_
 
-comma_nfa:
-  db 0x01+0x80,'',','+0x80
-comma_lfa:
-  dw allot_nfa
-comma_:
-  dw do_colon
-comma_pfa:
+  _colon_header comma_,'',','
+
   dw here_,store_,two_,allot_
   dw semicolon_s_
 
-c_comma_nfa:
-  db 0x02+0x80,'C',','+0x80
-c_comma_lfa:
-  dw comma_nfa
-c_comma_:
-  dw do_colon
-c_comma_pfa:
+  _colon_header c_comma_,'C',','
+
   dw here_,c_store_,one_,allot_
   dw semicolon_s_
 
-minus_nfa:
-  db 0x01+0x80,'','-'+0x80
-minus_lfa:
-  dw c_comma_nfa
-minus_:
-  dw minus_pfa
-minus_pfa:
+  _code_header minus_,'','-'
+
   pop de
   pop hl
   and a
   sbc hl,de
   jp pushhl
 
-not_equals_nfa:
-  db 0x02+0x80,'<','>'+0x80
-not_equals_lfa:
-  dw minus_nfa
-not_equals_:
-  dw not_equals_pfa
-not_equals_pfa:
+  _code_header not_equals_,'<','>'
+
   pop de
   pop hl
   call compare_de_hl_unsigned
@@ -2459,13 +1893,8 @@ false_if_z: ; XXX entry not used yet
   jp z,false_pfa
   jp true_pfa
 
-equals_nfa:
-  db 0x01+0x80,'','='+0x80
-equals_lfa:
-  dw not_equals_nfa
-equals_:
-  dw equals_pfa
-equals_pfa:
+  _code_header equals_,'','='
+
   pop de
   pop hl
   call compare_de_hl_unsigned
@@ -2473,13 +1902,8 @@ true_if_z: ; XXX entry not used yet
   jp z,true_pfa
   jp false_pfa
 
-less_than_nfa:
-  db 0x01+0x80,'','<'+0x80
-less_than_lfa:
-  dw equals_nfa
-less_than_:
-  dw less_than_pfa
-less_than_pfa:
+  _code_header less_than_,'','<'
+
   pop de ; n2
   pop hl ; n1
   ld a,d
@@ -2527,13 +1951,8 @@ less_than.true:
 
 if 1 ; XXX OLD -- original
 
-u_less_than_nfa:
-  db 0x02+0x80,'U','<'+0x80
-u_less_than_lfa:
-  dw less_than_nfa
-u_less_than_:
-  dw do_colon
-u_less_than_pfa:
+  _colon_header u_less_than_,'U','<'
+
   dw two_dup_
   dw xor_
   dw zero_less_than_
@@ -2553,13 +1972,8 @@ else
   ; XXX NEW -- from DZX-Forth
   ; XXX FIXME
 
-u_less_than_nfa:
-  db 0x02+0x80,'U','<'+0x80
-u_less_than_lfa:
-  dw less_than_nfa
-u_less_than_:
-  dw u_less_than_pfa
-u_less_than_pfa:
+  _code_header u_less_than_,'U','<'
+
   pop de
   pop hl
 u_less_than.de_hl:
@@ -2573,13 +1987,8 @@ u_less_than.de_hl:
 
 endif
 
-greater_than_nfa:
-  db 0x01+0x80,'','>'+0x80
-greater_than_lfa:
-  dw u_less_than_nfa
-greater_than_:
-  dw do_colon
-greater_than_pfa:
+  _colon_header greater_than_,'','>'
+
   dw swap_
   dw less_than_
   dw semicolon_s_
@@ -2598,49 +2007,29 @@ greater_than_pfa:
 ;   ex de,hl
 ;   jp pushde
 
-rot_nfa:
-  db 0x03+0x80,'RO','T'+0x80
-rot_lfa:
-  dw greater_than_nfa
-rot_:
-  dw rot_pfa
-rot_pfa:
+  _code_header rot_,'RO','T'
+
   pop de
   pop hl
   ex (sp),hl
   jp pushde
 
-space_nfa:
-  db 0x05+0x80,'SPAC','E'+0x80
-space_lfa:
-  dw rot_nfa
-space_:
-  dw do_colon
-space_pfa:
+  _colon_header space_,'SPAC','E'
+
   dw b_l_
   dw emit_
   dw semicolon_s_
 
-question_dup_nfa:
-  db 0x04+0x80,'?DU','P'+0x80
-question_dup_lfa:
-  dw space_nfa
-question_dup_:
-  dw do_colon
-question_dup_pfa:
+  _colon_header question_dup_,'?DU','P'
+
   dw dup_
   dw zero_branch_,question_dup.end
   dw dup_
 question_dup.end:
   dw semicolon_s_
 
-traverse_nfa:
-  db 0x08+0x80,'TRAVERS','E'+0x80
-traverse_lfa:
-  dw question_dup_nfa
-traverse_:
-  dw do_colon
-traverse_pfa:
+  _colon_header traverse_,'TRAVERS','E'
+
   dw swap_
 traverse.begin:
   dw over_,plus_
@@ -2651,120 +2040,60 @@ traverse.begin:
   dw swap_,drop_
   dw semicolon_s_
 
-latest_nfa:
-  db 0x06+0x80,'LATES','T'+0x80
-latest_lfa:
-  dw traverse_nfa
-latest_:
-  dw do_colon
-latest_pfa:
+  _colon_header latest_,'LATES','T'
+
   dw current_,fetch_,fetch_
   dw semicolon_s_
 
-pfa_to_lfa_nfa:
-  db 0x07+0x80,'PFA>LF','A'+0x80
-pfa_to_lfa_lfa:
-  dw latest_nfa
-pfa_to_lfa_:
-  dw do_colon
-pfa_to_lfa_pfa:
+  _colon_header pfa_to_lfa_,'PFA>LF','A'
+
   dw c_lit_
   db 0x04
   dw minus_
   dw semicolon_s_
 
-pfa_to_cfa_nfa:
-  db 0x07+0x80,'PFA>CF','A'+0x80
-pfa_to_cfa_lfa:
-  dw pfa_to_lfa_nfa
-pfa_to_cfa_:
-  dw two_minus_pfa
+  _code_alias_header pfa_to_cfa_,'PFA>CF','A',,two_minus_
 
-cfa_to_pfa_nfa:
-  db 0x07+0x80,'CFA>PF','A'+0x80
-cfa_to_pfa_lfa:
-  dw pfa_to_cfa_nfa
-cfa_to_pfa_:
-  dw two_plus_pfa
+  _code_alias_header cfa_to_pfa_,'CFA>PF','A',,two_plus_
 
-cfa_to_lfa_nfa:
-  db 0x07+0x80,'CFA>LF','A'+0x80
-cfa_to_lfa_lfa:
-  dw cfa_to_pfa_nfa
-cfa_to_lfa_:
-  dw two_minus_pfa
+  _code_alias_header cfa_to_lfa_,'CFA>LF','A',,two_minus_
 
-pfa_to_nfa_nfa:
-  db 0x07+0x80,'PFA>NF','A'+0x80
-pfa_to_nfa_lfa:
-  dw cfa_to_lfa_nfa
-pfa_to_nfa_:
-  dw do_colon
-pfa_to_nfa_pfa:
+  _colon_header pfa_to_nfa_,'PFA>NF','A'
+
   dw c_lit_
   db 0x05
   dw minus_
   dw lit_,-1,traverse_
   dw semicolon_s_
 
-cfa_to_nfa_nfa:
-  db 0x07+0x80,'CFA>NF','A'+0x80
-cfa_to_nfa_lfa:
-  dw pfa_to_nfa_nfa
-cfa_to_nfa_:
-  dw do_colon
-cfa_to_nfa_pfa:
+  _colon_header cfa_to_nfa_,'CFA>NF','A'
+
   dw three_,minus_
   dw lit_,-1,traverse_
   dw semicolon_s_
 
-nfa_to_lfa_nfa:
-  db 0x07+0x80,'NFA>LF','A'+0x80
-nfa_to_lfa_lfa:
-  dw cfa_to_nfa_nfa
-nfa_to_lfa_:
-  dw do_colon
-nfa_to_lfa_pfa:
+  _colon_header nfa_to_lfa_,'NFA>LF','A'
+
   dw one_,traverse_,one_plus_
   dw semicolon_s_
 
-nfa_to_cfa_nfa:
-  db 0x07+0x80,'NFA>CF','A'+0x80
-nfa_to_cfa_lfa:
-  dw nfa_to_lfa_nfa
-nfa_to_cfa_:
-  dw do_colon
-nfa_to_cfa_pfa:
+  _colon_header nfa_to_cfa_,'NFA>CF','A'
+
   dw nfa_to_lfa_,two_plus_
   dw semicolon_s_
 
-nfa_to_pfa_nfa:
-  db 0x07+0x80,'NFA>PF','A'+0x80
-nfa_to_pfa_lfa:
-  dw nfa_to_cfa_nfa
-nfa_to_pfa_:
-  dw do_colon
-nfa_to_pfa_pfa:
+  _colon_header nfa_to_pfa_,'NFA>PF','A'
+
   dw nfa_to_cfa_,two_plus_
   dw semicolon_s_
 
-store_csp_nfa:
-  db 0x04+0x80,'!CS','P'+0x80
-store_csp_lfa:
-  dw nfa_to_pfa_nfa
-store_csp_:
-  dw do_colon
-store_csp_pfa:
+  _colon_header store_csp_,'!CS','P'
+
   dw sp_fetch_,csp_,store_
   dw semicolon_s_
 
-question_error_nfa:
-  db 0x06+0x80,'?ERRO','R'+0x80
-question_error_lfa:
-  dw store_csp_nfa
-question_error_:
-  dw do_colon
-question_error_pfa:
+  _colon_header question_error_,'?ERRO','R'
+
   ; XXX TODO optimize the memory usage with to exit points,
   ; instead of jumps; search for similar cases in the code
   dw swap_
@@ -2776,99 +2105,58 @@ question_error.no_error:
 question_error.end:
   dw semicolon_s_
 
-question_comp_nfa:
-  db 0x05+0x80,'?COM','P'+0x80
-question_comp_lfa:
-  dw question_error_nfa
-question_comp_:
-  dw do_colon
-question_comp_pfa:
+  _colon_header question_comp_,'?COM','P'
+
   dw state_,fetch_,zero_equals_
   dw c_lit_
   db 0x11
   dw question_error_
   dw semicolon_s_
 
-question_exec_nfa:
-  db 0x05+0x80,'?EXE','C'+0x80
-question_exec_lfa:
-  dw question_comp_nfa
-question_exec_:
-  dw do_colon
-question_exec_pfa:
+  _colon_header question_exec_,'?EXE','C'
+
   dw state_,fetch_
   dw c_lit_
   db 0x12
   dw question_error_
   dw semicolon_s_
 
-question_pairs_nfa:
-  db 0x06+0x80,'?PAIR','S'+0x80
-question_pairs_lfa:
-  dw question_exec_nfa
-question_pairs_:
-  dw do_colon
-question_pairs_pfa:
+  _colon_header question_pairs_,'?PAIR','S'
+
   dw not_equals_
   dw c_lit_
   db 0x13
   dw question_error_
   dw semicolon_s_
 
-question_csp_nfa:
-  db 0x04+0x80,'?CS','P'+0x80
-question_csp_lfa:
-  dw question_pairs_nfa
-question_csp_:
-  dw do_colon
-question_csp_pfa:
+  _colon_header question_csp_,'?CS','P'
+
   dw sp_fetch_,csp_,fetch_,not_equals_
   dw c_lit_
   db 0x14
   dw question_error_
   dw semicolon_s_
 
-question_loading_nfa:
-  db 0x08+0x80,'?LOADIN','G'+0x80
-question_loading_lfa:
-  dw question_csp_nfa
-question_loading_:
-  dw do_colon
-question_loading_pfa:
+  _colon_header question_loading_,'?LOADIN','G'
+
   dw blk_,fetch_,zero_equals_
   dw c_lit_
   db 0x16
   dw question_error_
   dw semicolon_s_
 
-compile_nfa:
-  db 0x07+0x80,'COMPIL','E'+0x80
-compile_lfa:
-  dw question_loading_nfa
-compile_:
-  dw do_colon
-compile_pfa:
+  _colon_header compile_,'COMPIL','E'
+
   dw question_comp_
   dw from_r_,dup_,two_plus_,to_r_,fetch_,comma_
   dw semicolon_s_
 
-left_bracket_nfa:
-  db 0x01+0x80+precedence_bit_mask,'','['+0x80
-left_bracket_lfa:
-  dw compile_nfa
-left_bracket_:
-  dw do_colon
-left_bracket_pfa:
+  _colon_header left_bracket_,'','[',immediate
+
   dw state_,off_
   dw semicolon_s_
 
-right_bracket_nfa:
-  db 0x01+0x80,'',']'+0x80
-right_bracket_lfa:
-  dw left_bracket_nfa
-right_bracket_:
-  dw do_colon
-right_bracket_pfa:
+  _colon_header right_bracket_,'',']'
 
   ; Note: Setting `state` to 0xC0 for "compiling state" will force
   ; non-immediate words to be compiled and immediate words to be executed. See
@@ -2879,82 +2167,47 @@ right_bracket_pfa:
   dw state_,store_
   dw semicolon_s_
 
-smudge_nfa:
-  db 0x06+0x80,'SMUDG','E'+0x80
-smudge_lfa:
-  dw right_bracket_nfa
-smudge_:
-  dw do_colon
-smudge_pfa:
+  _colon_header smudge_,'SMUDG','E'
+
   dw latest_
   dw c_lit_
   db smudge_bit_mask
   dw toggle_
   dw semicolon_s_
 
-hex_nfa:
-  db 0x03+0x80,'HE','X'+0x80
-hex_lfa:
-  dw smudge_nfa
-hex_:
-  dw do_colon
-hex_pfa:
+  _colon_header hex_,'HE','X'
+
   dw c_lit_
   db 0x10
   dw base_,store_
   dw semicolon_s_
 
-decimal_nfa:
-  db 0x07+0x80,'DECIMA','L'+0x80
-decimal_lfa:
-  dw hex_nfa
-decimal_:
-  dw do_colon
-decimal_pfa:
+  _colon_header decimal_,'DECIMA','L'
+
   dw c_lit_
   db 0x0A
   dw base_,store_
   dw semicolon_s_
 
-paren_semicolon_code_nfa:
-  db 0x07+0x80,'(;CODE',')'+0x80
-paren_semicolon_code_lfa:
-  dw decimal_nfa
-paren_semicolon_code_:
-  dw do_colon
-paren_semicolon_code_pfa:
+  _colon_header paren_semicolon_code_,'(;CODE',')'
+
   dw from_r_,latest_,nfa_to_cfa_,store_
   dw semicolon_s_
 
-semicolon_code_nfa:
-  db 0x05+0x80+precedence_bit_mask,';COD','E'+0x80
-semicolon_code_lfa:
-  dw paren_semicolon_code_nfa
-semicolon_code_:
-  dw do_colon
-semicolon_code_pfa:
+  _colon_header semicolon_code_,';COD','E',immediate
+
   dw question_csp_
   dw compile_,paren_semicolon_code_
   dw left_bracket_,smudge_
   dw semicolon_s_
 
-builds_nfa:
-  db 0x07+0x80,'<BUILD','S'+0x80
-builds_lfa:
-  dw semicolon_code_nfa
-builds_:
-  dw do_colon
-builds_pfa:
+  _colon_header builds_,'<BUILD','S'
+
   dw zero_,constant_
   dw semicolon_s_
 
-does_nfa:
-  db 0x05+0x80,'DOES','>'+0x80
-does_lfa:
-  dw builds_nfa
-does_:
-  dw do_colon
-does_pfa:
+  _colon_header does_,'DOES','>'
+
   dw from_r_
   dw latest_
   dw nfa_to_pfa_
@@ -2975,34 +2228,19 @@ do_does:
   inc hl
   jp pushhl
 
-count_nfa:
-  db 0x05+0x80,'COUN','T'+0x80
-count_lfa:
-  dw does_nfa
-count_:
-  dw do_colon
-count_pfa:
+  _colon_header count_,'COUN','T'
+
   ; XXX TODO -- rewrite in Z80
   dw dup_,one_plus_,swap_,c_fetch_
   dw semicolon_s_
 
-bounds_nfa:
-  db 0x06+0x80,'BOUND','S'+0x80
-bounds_lfa:
-  dw count_nfa
-bounds_:
-  dw do_colon
-bounds_pfa:
+  _colon_header bounds_,'BOUND','S'
+
   dw over_,plus_,swap_
   dw semicolon_s_
 
-type_nfa:
-  db 0x04+0x80,'TYP','E'+0x80
-type_lfa:
-  dw bounds_nfa
-type_:
-  dw do_colon
-type_pfa:
+  _colon_header type_,'TYP','E'
+
   dw question_dup_
   dw zero_branch_,type.empty_string
   dw bounds_
@@ -3016,13 +2254,8 @@ type.empty_string:
 type.end:
   dw semicolon_s_
 
-minus_trailing_nfa:
-  db 0x09+0x80,'-TRAILIN','G'+0x80
-minus_trailing_lfa:
-  dw type_nfa
-minus_trailing_:
-  dw do_colon
-minus_trailing_pfa:
+  _colon_header minus_trailing_,'-TRAILIN','G'
+
   dw dup_,zero_
   dw paren_do_
 minus_trailing.do:
@@ -3039,25 +2272,15 @@ minus_trailing.loop:
   dw paren_loop_,minus_trailing.do
   dw semicolon_s_
 
-paren_dot_quote_nfa:
-  db 0x04+0x80,'(."',')'+0x80
-paren_dot_quote_lfa:
-  dw minus_trailing_nfa
-paren_dot_quote_:
-  dw do_colon
-paren_dot_quote_pfa:
+  _colon_header paren_dot_quote_,'(."',')'
+
   dw r_fetch_,count_,dup_,one_plus_
   dw from_r_,plus_,to_r_
   dw type_
   dw semicolon_s_
 
-dot_quote_nfa:
-  db 0x02+0x80+precedence_bit_mask,'.','"'+0x80
-dot_quote_lfa:
-  dw paren_dot_quote_nfa
-dot_quote_:
-  dw do_colon
-dot_quote_pfa:
+  _colon_header dot_quote_,'.','"',immediate
+
   dw c_lit_
   db '"'
   dw state_,fetch_ ; compiling?
@@ -3071,13 +2294,8 @@ dot_quote.interpreting:
 dot_quote.end:
   dw semicolon_s_
 
-expect_nfa:
-  db 0x06+0x80,'EXPEC','T'+0x80
-expect_lfa:
-  dw dot_quote_nfa
-expect_:
-  dw do_colon
-expect_pfa:
+  _colon_header expect_,'EXPEC','T'
+
   ;dw lit_,0,border_ ; XXX INFORMER
   dw over_,plus_,over_ ; ( a a+len a )
   dw paren_do_
@@ -3132,13 +2350,8 @@ expect.loop: ; ( a )
   dw drop_
   dw semicolon_s_
 
-query_nfa:
-  db 0x05+0x80,'QUER','Y'+0x80
-query_lfa:
-  dw expect_nfa
-query_:
-  dw do_colon
-query_pfa:
+  _colon_header query_,'QUER','Y'
+
   dw tib_,fetch_
   dw c_lit_
   db bytes_per_terminal_input_buffer
@@ -3162,13 +2375,8 @@ query_pfa:
 
 if 1 ; XXX OLD -- original version
 
-x_nfa:
-  db 0x01+0x80+precedence_bit_mask,'',0x80
-x_lfa:
-  dw query_nfa
-x_:
-  dw do_colon
-x_pfa:
+  _colon_header x_,'',0,immediate
+
   ;dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
   dw zero_branch_,x.from_terminal
@@ -3203,14 +2411,8 @@ x.end:
 
 else ; XXX NEW -- simpler and faster flow
 
-x_nfa:
-  db 0x01+0x80+precedence_bit_mask,'',0x80
-x_lfa:
-  dw query_nfa
-x_:
-  dw do_colon
-x_pfa:
-  
+  _colon_header x_,'',0,immediate
+
   ; XXX FIXME -- why the system crashes when loading?
   dw two_,ink_,lit_,'x',emit_,zero_,ink_ ; XXX INFORMER
   dw blk_,fetch_ ; input stream from disk?
@@ -3219,7 +2421,7 @@ x_pfa:
   ; From disk.
   dw one_,blk_,plus_store_ ; next disk buffer
   dw in_,off_ ; clear `in`, preparing parsing of input text
-  ;dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer? ; XXX OLD 
+  ;dw blk_,fetch_,b_slash_scr_,one_minus_,and_,zero_equals_ ; last buffer? ; XXX OLD
   dw blk_,fetch_,one_,and_ ; last block of the screen?
   dw zero_branch_,x.end ; if not, branch
 
@@ -3243,18 +2445,13 @@ x.end:
 
 endif
 
-fill_nfa:
-  db 0x04+0x80,'FIL','L'+0x80
-fill_lfa:
-  dw x_nfa
-fill_:
-  dw fill_pfa
-fill_pfa:
+  _code_header fill_,'FIL','L'
+
   pop de ; e = char
 fill.e:
   ld l,c
   ld h,b ; the Forth IP
-  pop bc ; bc = count
+  pop bc ; count
   ex (sp),hl ; save the Forth IP
 fill.do
   ld a,b
@@ -3268,57 +2465,32 @@ fill.end:
   pop bc ; restore the Forth IP
   _jp_next
 
-erase_nfa:
-  db 0x05+0x80,'ERAS','E'+0x80
-erase_lfa:
-  dw fill_nfa
-erase_:
-  dw erase_pfa
-erase_pfa:
+  _code_header erase_,'ERAS','E'
+
   ld e,0
   jp fill.e
 
-blanks_nfa:
-  db 0x06+0x80,'BLANK','S'+0x80
-blanks_lfa:
-  dw erase_nfa
-blanks_:
-  dw blanks_pfa
-blanks_pfa:
-  ld e,' '
+  _code_header blanks_,'BLANK','S'
+
+  ld e,space_char
   jp fill.e
 
-hold_nfa:
-  db 0x04+0x80,'HOL','D'+0x80
-hold_lfa:
-  dw blanks_nfa
-hold_:
-  dw do_colon
-hold_pfa:
+  _colon_header hold_,'HOL','D'
+
   dw lit_,0xFFFF,hld_,plus_store_
   dw hld_,fetch_,c_store_
   dw semicolon_s_
 
-pad_nfa:
-  db 0x03+0x80,'PA','D'+0x80
-pad_lfa:
-  dw hold_nfa
-pad_:
-  dw do_colon
-pad_pfa:
+  _colon_header pad_,'PA','D'
+
   dw here_
   dw c_lit_
   db 0x44
   dw plus_
   dw semicolon_s_
 
-word_nfa:
-  db 0x04+0x80,'WOR','D'+0x80
-word_lfa:
-  dw pad_nfa
-word_:
-  dw do_colon
-word_pfa:
+  _colon_header word_,'WOR','D'
+
   dw blk_,fetch_ ; from disk?
   ; XXX TODO optimize with `?dup` here instead of repeating `blk @` later
   ;dw question_dup_ ; XXX NEW
@@ -3360,13 +2532,8 @@ word.from_address:
 
   dw semicolon_s_
 
-paren_number_nfa:
-  db 0x08+0x80,'(NUMBER',')'+0x80
-paren_number_lfa:
-  dw word_nfa
-paren_number_:
-  dw do_colon
-paren_number_pfa:
+  _colon_header paren_number_,'(NUMBER',')'
+
 paren_number.begin: ; begin
   dw one_plus_ ; address of the next digit
   dw dup_,to_r_ ; save the address
@@ -3390,13 +2557,8 @@ paren_number.end:
   dw from_r_ ; address of the first non-convertable digit, a2.
   dw semicolon_s_
 
-number_nfa:
-  db 0x06+0x80,'NUMBE','R'+0x80
-number_lfa:
-  dw paren_number_nfa
-number_:
-  dw do_colon
-number_pfa:
+  _colon_header number_,'NUMBE','R'
+
   dw zero_,zero_,rot_ ; two zeros, initial value of the double number
   dw dup_,one_plus_,c_fetch_ ; get the first digit
   dw c_lit_
@@ -3435,13 +2597,8 @@ number.not_a_blank:
 number.end:
   dw semicolon_s_
 
-upperc_nfa:
-  db 0x06+0x80,'UPPER','C'+0x80
-upperc_lfa:
-  dw number_nfa
-upperc_:
-  dw upperc_pfa
-upperc_pfa:
+  _code_header upperc_,'UPPER','C'
+
   pop hl
   ld a,l
   call upperc.a
@@ -3454,16 +2611,11 @@ upperc.a:
   ret c
   cp 'z'+1
   ret nc
-  xor 0x20
+  xor 0x20 ; toggle bit 5
   ret
 
-uppers_nfa:
-  db 0x06+0x80,'UPPER','S'+0x80
-uppers_lfa:
-  dw upperc_nfa
-uppers_:
-  dw uppers_pfa
-uppers_pfa:
+  _code_header uppers_,'UPPER','S'
+
   pop de
   pop hl
 uppers.do:
@@ -3488,26 +2640,16 @@ uppers.do:
 ;
 ; }doc
 
-context_find_nfa:
-  db 0x0C+0x80,'CONTEXT-FIN','D'+0x80
-context_find_lfa:
-  dw uppers_nfa
-context_find_:
-  dw do_colon
-context_find_pfa:
+  _colon_header context_find_,'CONTEXT-FIN','D'
+
   ; XXX TODO -- return cfa instead of pfa
   dw b_l_,word_
   dw here_,count_,uppers_
   dw here_,context_,fetch_,fetch_,paren_find_
   dw semicolon_s_
 
-defined_question_nfa:
-  db 0x08+0x80,'DEFINED','?'+0x80
-defined_question_lfa:
-  dw context_find_nfa
-defined_question_:
-  dw do_colon
-defined_question_pfa:
+  _colon_header defined_question_,'DEFINED','?'
+
   ; XXX TODO -- not finished
   dw context_find_,dup_
   dw zero_branch_,defined_question.end
@@ -3515,13 +2657,8 @@ defined_question_pfa:
 defined_question.end:
   dw semicolon_s_
 
-undefined_question_nfa:
-  db 0x0A+0x80,'UNDEFINED','?'+0x80
-undefined_question_lfa:
-  dw defined_question_nfa
-undefined_question_:
-  dw do_colon
-undefined_question_pfa:
+  _colon_header undefined_question_,'UNDEFINED','?'
+
   ; XXX TODO -- not finished
   dw defined_question_,zero_equals_
   dw semicolon_s_
@@ -3538,13 +2675,8 @@ undefined_question_pfa:
 ;
 ; }doc
 
-find_nfa:
-  db 0x04+0x80,'FIN','D'+0x80
-find_lfa:
-  dw undefined_question_nfa
-find_:
-  dw do_colon
-find_pfa:
+  _colon_header find_,'FIN','D'
+
   ; XXX TODO -- return cfa instead of pfa
   dw context_find_,question_dup_
   ; XXX TODO -- optimize with `?exit' here instead of a branch
@@ -3556,23 +2688,13 @@ find_pfa:
 find.end:
   dw semicolon_s_
 
-paren_abort_nfa:
-  db 0x07+0x80,'(ABORT',')'+0x80
-paren_abort_lfa:
-  dw find_nfa
-paren_abort_:
-  dw do_colon
-paren_abort_pfa:
+  _colon_header paren_abort_,'(ABORT',')'
+
   dw abort_
   dw semicolon_s_
 
-error_nfa:
-  db 0x05+0x80,'ERRO','R'+0x80
-error_lfa:
-  dw paren_abort_nfa
-error_:
-  dw do_colon
-error_pfa:
+  _colon_header error_,'ERRO','R'
+
   dw warning_,fetch_,zero_less_than_
   ; XXX TODO optimize: jump directly to parent_abort_
   dw zero_branch_,branch_destination_0x6B0B
@@ -3589,13 +2711,8 @@ branch_destination_0x6B0B:
 branch_destination_0x6B2A:
   dw quit_
 
-id_dot_nfa:
-  db 0x03+0x80,'ID','.'+0x80
-id_dot_lfa:
-  dw error_nfa
-id_dot_:
-  dw do_colon
-id_dot_pfa:
+  _colon_header id_dot_,'ID','.'
+
   dw pad_
   dw c_lit_
   db max_word_length+1
@@ -3625,13 +2742,8 @@ endif
 
   ; XXX OLD -- original version of `create`
   ; XXX TODO -- rewrite after Forth-83 and Forth-94.
-create_nfa:
-  db 0x06+0x80,'CREAT','E'+0x80
-create_lfa:
-  dw id_dot_nfa
-create_:
-  dw do_colon
-create_pfa:
+  _colon_header create_,'CREAT','E'
+
   dw find_
   dw zero_branch_,create.continue
   ; The word is not unique.
@@ -3656,13 +2768,8 @@ create.continue:
   dw here_,two_plus_,comma_
   dw semicolon_s_
 
-assembler_nfa:
-  db 0x09+0x80,'ASSEMBLE','R'+0x80
-assembler_lfa:
-  dw create_nfa
-assembler_:
-  dw do_does
-assembler_pfa:
+  _does_header assembler_,'ASSEMBLE','R'
+
   dw do_vocabulary
 assembler_vocabulary_dummy_nfa:
   dw 0xA081 ; Dummy name field.
@@ -3671,13 +2778,8 @@ assembler_vocabulary_latest:
 assembler_vocabulary_link:
   dw forth_vocabulary_link
 
-code_nfa:
-  db 0x04+0x80,'COD','E'+0x80
-code_lfa:
-  dw assembler_nfa
-code_:
-  dw do_colon
-code_pfa:
+  _colon_header code_,'COD','E'
+
   dw find_
   dw zero_branch_,code.continue
   ; The word is not unique.
@@ -3705,26 +2807,16 @@ code.continue:
   dw store_csp_
   dw semicolon_s_
 
-end_code_nfa:
-  db 0x08+0x80,'END-COD','E'+0x80
-end_code_lfa:
-  dw code_nfa
-end_code_:
-  dw do_colon
-end_code_pfa:
+  _colon_header end_code_,'END-COD','E'
+
   dw question_csp_
   dw context_,store_
   dw base_,store_
   dw smudge_
   dw semicolon_s_
 
-compare_nfa:
-  db 0x07+0x80,'COMPAR','E'+0x80
-compare_lfa:
-  dw end_code_nfa
-compare_:
-  dw compare_pfa
-compare_pfa:
+  _code_header compare_,'COMPAR','E'
+
   pop de      ; de = len2
   pop hl      ; hl = ca2
   ex (sp),hl  ; hl = len1
@@ -3795,7 +2887,7 @@ if 0 ; XXX TODO
   ld a,b      ; test for count=0
   or c
   jr z,compare.match     ; by definition, match!
-compare.do:  
+compare.do:
   ld a,(de)
   inc de
   cpi
@@ -3818,25 +2910,15 @@ compare.end:
 
 endif
 
-bracket_compile_nfa:
-  db 0x09+0x80+precedence_bit_mask,'[COMPILE',']'+0x80
-bracket_compile_lfa:
-  dw compare_nfa
-bracket_compile_:
-  dw do_colon
-bracket_compile_pfa:
+  _colon_header bracket_compile_,'[COMPILE',']',immediate
+
   dw find_,zero_equals_
   dw one_,question_error_
   dw drop_,pfa_to_cfa_,comma_
   dw semicolon_s_
 
-c_literal_nfa:
-  db 0x08+0x80+precedence_bit_mask,'CLITERA','L'+0x80
-c_literal_lfa:
-  dw bracket_compile_nfa
-c_literal_:
-  dw do_colon
-c_literal_pfa:
+  _colon_header c_literal_,'CLITERA','L',immediate
+
   if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,c_literal.end
@@ -3849,13 +2931,8 @@ c_literal.end:
   endif
   dw semicolon_s_
 
-literal_nfa:
-  db 0x07+0x80+precedence_bit_mask,'LITERA','L'+0x80
-literal_lfa:
-  dw c_literal_nfa
-literal_:
-  dw do_colon
-literal_pfa:
+  _colon_header literal_,'LITERA','L',immediate
+
   if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,literal.end
@@ -3868,13 +2945,8 @@ literal.end:
   endif
   dw semicolon_s_
 
-two_literal_nfa:
-  db 0x08+0x80+precedence_bit_mask,'2LITERA','L'+0x80
-two_literal_lfa:
-  dw literal_nfa
-two_literal_:
-  dw do_colon
-two_literal_pfa:
+  _colon_header two_literal_,'2LITERA','L',immediate
+
   if 1 ; XXX OLD
     dw state_,fetch_
     dw zero_branch_,two_literal.end
@@ -3888,23 +2960,13 @@ two_literal.end:
   endif
   dw semicolon_s_
 
-depth_nfa:
-  db 0x05+0x80,'DEPT','H'+0x80
-depth_lfa:
-  dw two_literal_nfa
-depth_:
-  dw do_colon
-depth_pfa:
+  _colon_header depth_,'DEPT','H'
+
   dw sp_fetch_,s0_,fetch_,minus_,lit_,-2,slash_
   dw semicolon_s_
 
-question_stack_nfa:
-  db 0x06+0x80,'?STAC','K'+0x80
-question_stack_lfa:
-  dw depth_nfa
-question_stack_:
-  dw do_colon
-question_stack_pfa:
+  _colon_header question_stack_,'?STAC','K'
+
   dw sp_fetch_
   dw s0_,fetch_
   dw swap_,less_than_
@@ -3921,13 +2983,8 @@ question_stack_pfa:
 ; and `cliteral` (make them give an error in interpretation mode),
 ; `interpret` must be modified.
 
-interpret_nfa:
-  db 0x09+0x80,'INTERPRE','T'+0x80
-interpret_lfa:
-  dw question_stack_nfa
-interpret_:
-  dw do_colon
-interpret_pfa:
+  _colon_header interpret_,'INTERPRE','T'
+
 interpret.begin:
   dw find_ ; found?
   ;dw lit_,1,border_,key_,drop_ ; XXX INFORMER
@@ -3980,26 +3037,16 @@ interpret.number_done: ; then
 interpret.again:
   dw branch_,interpret.begin
 
-immediate_nfa:
-  db 0x09+0x80,'IMMEDIAT','E'+0x80
-immediate_lfa:
-  dw interpret_nfa
-immediate_:
-  dw do_colon
-immediate_pfa:
+  _colon_header immediate_,'IMMEDIAT','E'
+
   dw latest_
   dw c_lit_
   db precedence_bit_mask
   dw toggle_
   dw semicolon_s_
 
-vocabulary_nfa:
-  db 0x0A+0x80,'VOCABULAR','Y'+0x80
-vocabulary_lfa:
-  dw immediate_nfa
-vocabulary_:
-  dw do_colon
-vocabulary_pfa:
+  _colon_header vocabulary_,'VOCABULAR','Y'
+
   dw builds_
   dw lit_,0xA081 ; Dummy name field.
   dw comma_
@@ -4016,13 +3063,8 @@ do_vocabulary:
   dw store_
   dw semicolon_s_
 
-forth_nfa:
-  db 0x05+0x80,'FORT','H'+0x80
-forth_lfa:
-  dw vocabulary_nfa
-forth_:
-  dw do_does
-forth_pfa:
+  _does_header forth_,'FORT','H'
+
   dw do_vocabulary
 forth_vocabulary_dummy_nfa:
   dw 0xA081 ; Dummy name field.
@@ -4031,36 +3073,21 @@ forth_vocabulary_latest:
 forth_vocabulary_link:
   dw 0x0000
 
-definitions_nfa:
-  db 0x0B+0x80,'DEFINITION','S'+0x80
-definitions_lfa:
-  dw forth_nfa
-definitions_:
-  dw do_colon
-definitions_pfa:
+  _colon_header definitions_,'DEFINITION','S'
+
   dw context_,fetch_
   dw current_,store_
   dw semicolon_s_
 
-paren_nfa:
-  db 0x01+0x80+precedence_bit_mask,'','('+0x80
-paren_lfa:
-  dw definitions_nfa
-paren_:
-  dw do_colon
-paren_pfa:
+  _colon_header paren_,'','(',immediate
+
   dw c_lit_
   db ')'
   dw word_
   dw semicolon_s_
 
-quit_nfa:
-  db 0x04+0x80,'QUI','T'+0x80
-quit_lfa:
-  dw paren_nfa
-quit_:
-  dw do_colon
-quit_pfa:
+  _colon_header quit_,'QUI','T'
+
   dw blk_,off_
   dw left_bracket_
 quit.do:
@@ -4072,24 +3099,14 @@ quit.do:
   _string 'ok'
   dw branch_,quit.do
 
-greeting_nfa:
-  db 0x08+0x80,'GREETIN','G'+0x80
-greeting_lfa:
-  dw quit_nfa
-greeting_:
-  dw do_colon
-greeting_pfa:
+  _colon_header greeting_,'GREETIN','G'
+
   dw paren_dot_quote_
   _string "Solo Forth\r\x7F 2015 Marcos Cruz\r(programandala.net)\r"
   dw semicolon_s_
 
-abort_nfa:
-  db 0x05+0x80,'ABOR','T'+0x80
-abort_lfa:
-  dw greeting_nfa
-abort_:
-  dw do_colon
-abort_pfa:
+  _colon_header abort_,'ABOR','T'
+
   dw sp_store_
   dw decimal_
   dw question_stack_
@@ -4100,13 +3117,8 @@ boot:
   ;dw one_,two_,equals_,dot_,dot_,cr_ ; XXX INFORMER
   dw quit_
 
-boot_nfa:
-  db 0x04+0x80,'BOO','T'+0x80
-boot_lfa:
-  dw abort_nfa
-boot_:
-  dw do_constant
-boot_pfa:
+  _constant_header boot_,'BOO','T'
+
   dw boot
 
 common_start:
@@ -4123,13 +3135,8 @@ warm_start:
 warm_start_phony_:
   dw warm_
 
-warm_nfa:
-  db 0x04+0x80,'WAR','M'+0x80
-warm_lfa:
-  dw boot_nfa
-warm_:
-  dw do_colon
-warm_pfa:
+  _colon_header warm_,'WAR','M'
+
   dw empty_buffers_
   dw abort_
 
@@ -4138,13 +3145,8 @@ cold_start:
 cold_start_phony_:
   dw cold_
 
-cold_nfa:
-  db 0x04+0x80,'COL','D'+0x80
-cold_lfa:
-  dw warm_nfa
-cold_:
-  dw do_colon
-cold_pfa:
+  _colon_header cold_,'COL','D'
+
   dw empty_buffers_
   dw first_,dup_,use_,store_,prev_,store_
   dw dr0_ ; XXX TODO -- change
@@ -4157,13 +3159,8 @@ cold_pfa:
   dw lit_,forth_vocabulary_latest,store_
   dw abort_
 
-s_to_d_nfa:
-  db 0x03+0x80,'S>','D'+0x80
-s_to_d_lfa:
-  dw cold_nfa
-s_to_d_:
-  dw s_to_d_pfa
-s_to_d_pfa:
+  _code_header s_to_d_,'S>','D'
+
   pop de
   ld hl,0x0000
   ld a,d
@@ -4173,61 +3170,36 @@ s_to_d_pfa:
 l6e1dh:
   jp pushde
 
-plus_minus_nfa:
-  db 0x02+0x80,'+','-'+0x80
-plus_minus_lfa:
-  dw s_to_d_nfa
-plus_minus_:
-  dw do_colon
-plus_minus_pfa:
+  _colon_header plus_minus_,'+','-'
+
   dw zero_less_than_
   dw zero_branch_,branch_destination_0x6E2F
   dw negate_
 branch_destination_0x6E2F:
   dw semicolon_s_
 
-d_plus_minus_nfa:
-  db 0x03+0x80,'D+','-'+0x80
-d_plus_minus_lfa:
-  dw plus_minus_nfa
-d_plus_minus_:
-  dw do_colon
-d_plus_minus_pfa:
+  _colon_header d_plus_minus_,'D+','-'
+
   dw zero_less_than_
   dw zero_branch_,branch_destination_0x6E41
   dw dnegate_
 branch_destination_0x6E41:
   dw semicolon_s_
 
-abs_nfa:
-  db 0x03+0x80,'AB','S'+0x80
-abs_lfa:
-  dw d_plus_minus_nfa
-abs_:
-  dw do_colon
-abs_pfa:
+  _colon_header abs_,'AB','S'
+
   dw dup_
   dw plus_minus_
   dw semicolon_s_
 
-dabs_nfa:
-  db 0x04+0x80,'DAB','S'+0x80
-dabs_lfa:
-  dw abs_nfa
-dabs_:
-  dw do_colon
-dabs_pfa:
+  _colon_header dabs_,'DAB','S'
+
   dw dup_
   dw d_plus_minus_
   dw semicolon_s_
 
-min_nfa:
-  db 0x03+0x80,'MI','N'+0x80
-min_lfa:
-  dw dabs_nfa
-min_:
-  dw do_colon
-min_pfa:
+  _colon_header min_,'MI','N'
+
   dw two_dup_
   dw greater_than_
   dw zero_branch_,branch_destination_0x6E72
@@ -4236,13 +3208,8 @@ branch_destination_0x6E72:
   dw drop_
   dw semicolon_s_
 
-max_nfa:
-  db 0x03+0x80,'MA','X'+0x80
-max_lfa:
-  dw min_nfa
-max_:
-  dw do_colon
-max_pfa:
+  _colon_header max_,'MA','X'
+
   dw two_dup_
   dw less_than_
   dw zero_branch_,branch_destination_0x6E88
@@ -4251,13 +3218,8 @@ branch_destination_0x6E88:
   dw drop_
   dw semicolon_s_
 
-m_star_nfa:
-  db 0x02+0x80,'M','*'+0x80
-m_star_lfa:
-  dw max_nfa
-m_star_:
-  dw do_colon
-m_star_pfa:
+  _colon_header m_star_,'M','*'
+
   dw two_dup_
   dw xor_
   dw to_r_
@@ -4269,13 +3231,8 @@ m_star_pfa:
   dw d_plus_minus_
   dw semicolon_s_
 
-m_slash_nfa:
-  db 0x02+0x80,'M','/'+0x80
-m_slash_lfa:
-  dw m_star_nfa
-m_slash_:
-  dw do_colon
-m_slash_pfa:
+  _colon_header m_slash_,'M','/'
+
   dw over_
   dw to_r_
   dw to_r_
@@ -4293,121 +3250,71 @@ m_slash_pfa:
   dw swap_
   dw semicolon_s_
 
-star_nfa:
-  db 0x01+0x80,'','*'+0x80
-star_lfa:
-  dw m_slash_nfa
-star_:
-  dw do_colon
-star_pfa:
+  _colon_header star_,'','*'
+
   dw m_star_
   dw drop_
   dw semicolon_s_
 
-slash_mod_nfa:
-  db 0x04+0x80,'/MO','D'+0x80
-slash_mod_lfa:
-  dw star_nfa
-slash_mod_:
-  dw do_colon
-slash_mod_pfa:
+  _colon_header slash_mod_,'/MO','D'
+
   dw to_r_
   dw s_to_d_
   dw from_r_
   dw m_slash_
   dw semicolon_s_
 
-slash_nfa:
-  db 0x01+0x80,'','/'+0x80
-slash_lfa:
-  dw slash_mod_nfa
-slash_:
-  dw do_colon
-slash_pfa:
+  _colon_header slash_,'','/'
+
   dw slash_mod_
   dw swap_
   dw drop_
   dw semicolon_s_
 
-mod_nfa:
-  db 0x03+0x80,'MO','D'+0x80
-mod_lfa:
-  dw slash_nfa
-mod_:
-  dw do_colon
-mod_pfa:
+  _colon_header mod_,'MO','D'
+
   dw slash_mod_
   dw drop_
   dw semicolon_s_
 
-star_slash_mod_nfa:
-  db 0x05+0x80,'*/MO','D'+0x80
-star_slash_mod_lfa:
-  dw mod_nfa
-star_slash_mod_:
-  dw do_colon
-star_slash_mod_pfa:
+  _colon_header star_slash_mod_,'*/MO','D'
+
   dw to_r_
   dw m_star_
   dw from_r_
   dw m_slash_
   dw semicolon_s_
 
-star_slash_nfa:
-  db 0x02+0x80,'*','/'+0x80
-star_slash_lfa:
-  dw star_slash_mod_nfa
-star_slash_:
-  dw do_colon
-star_slash_pfa:
+  _colon_header star_slash_,'*','/'
+
   dw star_slash_mod_
   dw swap_
   dw drop_
   dw semicolon_s_
 
-m_slash_mod_nfa:
-  db 0x05+0x80,'M/MO','D'+0x80
-m_slash_mod_lfa:
-  dw star_slash_nfa
-m_slash_mod_:
-  dw do_colon
-m_slash_mod_pfa:
+  _colon_header m_slash_mod_,'M/MO','D'
+
   dw to_r_,zero_,r_fetch_
   dw u_slash_mod_
   dw from_r_,swap_
   dw to_r_,u_slash_mod_,from_r_
   dw semicolon_s_
 
-paren_line_nfa:
-  db 0x06+0x80,'(LINE',')'+0x80
-paren_line_lfa:
-  dw m_slash_mod_nfa
-paren_line_:
-  dw do_colon
-paren_line_pfa:
+  _colon_header paren_line_,'(LINE',')'
+
   dw to_r_
   dw c_slash_l_,b_slash_buf_,star_slash_mod_
   dw from_r_,b_slash_scr_,star_,plus_
   dw block_,plus_,c_slash_l_
   dw semicolon_s_
 
-dot_line_nfa:
-  db 0x05+0x80,'.LIN','E'+0x80
-dot_line_lfa:
-  dw paren_line_nfa
-dot_line_:
-  dw do_colon
-dot_line_pfa:
+  _colon_header dot_line_,'.LIN','E'
+
   dw paren_line_,minus_trailing_,type_
   dw semicolon_s_
 
-message_nfa:
-  db 0x07+0x80,'MESSAG','E'+0x80
-message_lfa:
-  dw dot_line_nfa
-message_:
-  dw do_colon
-message_pfa:
+  _colon_header message_,'MESSAG','E'
+
   dw warning_,fetch_
   dw zero_branch_,branch_destination_0x6FB3
   dw question_dup_
@@ -4425,31 +3332,16 @@ branch_destination_0x6FB3:
 branch_destination_0x6FBE:
   dw semicolon_s_
 
-use_nfa:
-  db 0x03+0x80,'US','E'+0x80
-use_lfa:
-  dw message_nfa
-use_:
-  dw do_variable
-use_pfa:
+  _variable_header use_,'US','E'
+
   dw first_buffer
 
-prev_nfa:
-  db 0x04+0x80,'PRE','V'+0x80
-prev_lfa:
-  dw use_nfa
-prev_:
-  dw do_variable
-prev_pfa:
+  _variable_header prev_,'PRE','V'
+
   dw first_buffer
 
-hash_buff_nfa:
-  db 0x05+0x80,'#BUF','F'+0x80
-hash_buff_lfa:
-  dw prev_nfa
-hash_buff_:
-  dw do_constant
-hash_buff_pfa:
+  _constant_header hash_buff_,'#BUF','F'
+
   dw buffers
 
 ; doc{
@@ -4462,14 +3354,8 @@ hash_buff_pfa:
 
 ; }doc
 
+  _colon_header plus_buf_,'+BU','F'
 
-plus_buf_nfa:
-  db 0x04+0x80,'+BU','F'+0x80
-plus_buf_lfa:
-  dw hash_buff_nfa
-plus_buf_:
-  dw do_colon
-plus_buf_pfa:
   dw lit_,total_bytes_per_buffer,plus_ ; a2
   dw dup_,limit_,equals_ ; out of bounds?
   dw zero_branch_,plus_buf.continue
@@ -4479,25 +3365,15 @@ plus_buf.continue:
   dw dup_,prev_,fetch_,not_equals_
   dw semicolon_s_
 
-update_nfa:
-  db 0x06+0x80,'UPDAT','E'+0x80
-update_lfa:
-  dw plus_buf_nfa
-update_:
-  dw do_colon
-update_pfa:
+  _colon_header update_,'UPDAT','E'
+
   dw prev_,fetch_,fetch_
   dw lit_,0x8000,or_
   dw prev_,fetch_,store_
   dw semicolon_s_
 
-empty_buffers_nfa:
-  db 0x0D+0x80,'EMPTY-BUFFER','S'+0x80
-empty_buffers_lfa:
-  dw update_nfa
-empty_buffers_:
-  dw do_colon
-empty_buffers_pfa:
+  _colon_header empty_buffers_,'EMPTY-BUFFER','S'
+
   dw first_,limit_,over_,minus_,erase_
   dw limit_,first_
   dw paren_do_
@@ -4507,13 +3383,8 @@ empty_buffers.do:
   dw paren_plus_loop_,empty_buffers.do
   dw semicolon_s_
 
-dr0_nfa:
-  db 0x03+0x80,'DR','0'+0x80
-dr0_lfa:
-  dw empty_buffers_nfa
-dr0_:
-  dw do_colon
-dr0_pfa:
+  _colon_header dr0_,'DR','0'
+
   ; XXX OLD -- not used
   dw semicolon_s_
 
@@ -4528,13 +3399,8 @@ dr0_pfa:
 
 ; }doc
 
-buffer_nfa:
-  db 0x06+0x80,'BUFFE','R'+0x80
-buffer_lfa:
-  dw dr0_nfa
-buffer_:
-  dw do_colon
-buffer_pfa:
+  _colon_header buffer_,'BUFFE','R'
+
   dw use_,fetch_
   dw dup_,to_r_
 buffer.begin:
@@ -4556,13 +3422,8 @@ buffer.end:
   dw from_r_,two_plus_ ; first cell of data in the buffer
   dw semicolon_s_
 
-block_nfa:
-  db 0x05+0x80,'BLOC','K'+0x80
-block_lfa:
-  dw buffer_nfa
-block_:
-  dw do_colon
-block_pfa:
+  _colon_header block_,'BLOC','K'
+
   dw to_r_
   dw prev_,fetch_ ; most recently accessed buffer
   dw dup_,fetch_ ; block number pointed by `prev`
@@ -4602,13 +3463,8 @@ block.end:
 ;   \ Swap the low and high bytes within n1.
 ; }doc
 
-c_swap_nfa:
-  db 0x05+0x80,'CSWA','P'+0x80
-c_swap_lfa:
-  dw block_nfa
-c_swap_:
-  dw c_swap_pfa
-c_swap_pfa:
+  _code_header c_swap_,'CSWA','P'
+
   pop hl
   ld a,h
   ld h,l
@@ -4628,13 +3484,8 @@ c_swap_pfa:
 
 ; }doc
 
-block_to_sector_nfa:
-  db 0x0C+0x80,'BLOCK>SECTO','R'+0x80
-block_to_sector_lfa:
-  dw c_swap_nfa
-block_to_sector_:
-  dw do_colon
-block_to_sector_pfa:
+  _colon_header block_to_sector_,'BLOCK>SECTO','R'
+
   dw dup_
   dw c_lit_
   db 10
@@ -4651,13 +3502,8 @@ block_to_sector_pfa:
   dw star_,plus_,c_swap_,or_
   dw semicolon_s_
 
-read_write_nfa:
-  db 0x03+0x80,'R/','W'+0x80
-read_write_lfa:
-  dw block_to_sector_nfa
-read_write_:
-  dw do_colon
-read_write_pfa:
+  _colon_header read_write_,'R/','W'
+
   dw c_lit_
   db 0x45
   dw swap_,minus_
@@ -4686,13 +3532,8 @@ read_write_sector_command:
   ld ix,next
   _jp_next
 
-flush_nfa:
-  db 0x05+0x80,'FLUS','H'+0x80
-flush_lfa:
-  dw read_write_nfa
-flush_:
-  dw do_colon
-flush_pfa:
+  _colon_header flush_,'FLUS','H'
+
   dw hash_buff_,one_plus_,zero_
   dw paren_do_
 flush.do:
@@ -4700,13 +3541,8 @@ flush.do:
   dw paren_loop_,flush.do ; loop
   dw semicolon_s_
 
-continued_nfa:
-  db 0x09+0x80,'CONTINUE','D'+0x80
-continued_lfa:
-  dw flush_nfa
-continued_:
-  dw do_colon
-continued_pfa:
+  _colon_header continued_,'CONTINUE','D'
+
   dw dup_,zero_,equals_
   dw c_lit_
   db 0x09
@@ -4716,13 +3552,8 @@ continued_pfa:
   dw interpret_
   dw semicolon_s_
 
-load_nfa:
-  db 0x04+0x80,'LOA','D'+0x80
-load_lfa:
-  dw continued_nfa
-load_:
-  dw do_colon
-load_pfa:
+  _colon_header load_,'LOA','D'
+
 if 1 ; XXX OLD
   dw dup_,zero_,equals_
   dw c_lit_
@@ -4745,144 +3576,84 @@ endif
   dw from_r_,blk_,store_
   dw semicolon_s_
 
-next_screen_nfa:
-  db 0x03+0x80+precedence_bit_mask,'--','>'+0x80
-next_screen_lfa:
-  dw load_nfa
-next_screen_:
-  dw do_colon
-next_screen_pfa:
+  _colon_header next_screen_,'--','>',immediate
+
   dw question_loading_
   dw in_,off_
   dw b_slash_scr_,blk_,fetch_,over_,mod_,minus_
   dw blk_,plus_store_
   dw semicolon_s_
 
-tick_nfa:
-  db 0x01+0x80,'',"'"+0x80
-tick_lfa:
-  dw next_screen_nfa
-tick_:
-  dw do_colon
-tick_pfa:
+  _colon_header tick_,'',"'"
+
   dw find_
   dw zero_equals_,one_,question_error_
   ; XXX TODO -- after modifying `(find)`, `pfa>cfa` will be unnecessary
   dw drop_,pfa_to_cfa_
   dw semicolon_s_
 
-bracket_tick_nfa:
-  db 0x03+0x80+precedence_bit_mask,"['",']'+0x80
-bracket_tick_lfa:
-  dw tick_nfa
-bracket_tick_:
-  dw do_colon
-bracket_tick_pfa:
+  _colon_header bracket_tick_,"['",']',immediate
+
   dw tick_,literal_
   dw semicolon_s_
 
-back_nfa:
-  db 0x04+0x80,'BAC','K'+0x80
-back_lfa:
-  dw bracket_tick_nfa
-back_:
-  dw do_colon
-back_pfa:
+  _colon_header back_,'BAC','K'
+
   dw comma_
   dw semicolon_s_
 
-begin_nfa:
-  db 0x05+0x80+precedence_bit_mask,'BEGI','N'+0x80
-begin_lfa:
-  dw back_nfa
-begin_:
-  dw do_colon
-begin_pfa:
+  _colon_header begin_,'BEGI','N',immediate
+
   dw question_comp_
   dw here_
   dw one_
   dw semicolon_s_
 
-then_nfa:
-  db 0x04+0x80+precedence_bit_mask,'THE','N'+0x80
-then_lfa:
-  dw begin_nfa
-then_:
-  dw do_colon
-then_pfa:
+  _colon_header then_,'THE','N',immediate
+
   dw question_comp_
   dw two_,question_pairs_
   dw here_,swap_,store_
   dw semicolon_s_
 
-do_nfa:
-  db 0x02+0x80+precedence_bit_mask,'D','O'+0x80
-do_lfa:
-  dw then_nfa
-do_:
-  dw do_colon
-do_pfa:
+  _colon_header do_,'D','O',immediate
+
   dw compile_,paren_do_
   dw here_
   dw three_
   dw semicolon_s_
 
-loop_nfa:
-  db 0x04+0x80+precedence_bit_mask,'LOO','P'+0x80
-loop_lfa:
-  dw do_nfa
-loop_:
-  dw do_colon
-loop_pfa:
+  _colon_header loop_,'LOO','P',immediate
+
   dw three_,question_pairs_
   dw compile_,paren_loop_
   dw back_
   dw semicolon_s_
 
-plus_loop_nfa:
-  db 0x05+0x80+precedence_bit_mask,'+LOO','P'+0x80
-plus_loop_lfa:
-  dw loop_nfa
-plus_loop_:
-  dw do_colon
-plus_loop_pfa:
+  _colon_header plus_loop_,'+LOO','P',immediate
+
   dw three_
   dw question_pairs_
   dw compile_,paren_plus_loop_
   dw back_
   dw semicolon_s_
 
-until_nfa:
-  db 0x05+0x80+precedence_bit_mask,'UNTI','L'+0x80
-until_lfa:
-  dw plus_loop_nfa
-until_:
-  dw do_colon
-until_pfa:
+  _colon_header until_,'UNTI','L',immediate
+
   dw one_,question_pairs_
   dw compile_,zero_branch_
   dw back_
   dw semicolon_s_
 
-again_nfa:
-  db 0x05+0x80+precedence_bit_mask,'AGAI','N'+0x80
-again_lfa:
-  dw until_nfa
-again_:
-  dw do_colon
-again_pfa:
+  _colon_header again_,'AGAI','N',immediate
+
   dw one_,question_pairs_
   dw compile_,branch_
   dw back_
   dw semicolon_s_
 
-repeat_nfa:
-  db 0x06+0x80+precedence_bit_mask,'REPEA','T'+0x80
-repeat_lfa:
-  dw again_nfa
-repeat_:
-  dw do_colon
-repeat_pfa:
+  _colon_header repeat_,'REPEA','T',immediate
+
   ; XXX TODO optimize with 2>r and 2r>
   dw to_r_
   dw to_r_
@@ -4893,13 +3664,8 @@ repeat_pfa:
   dw then_
   dw semicolon_s_
 
-if_nfa:
-  db 0x02+0x80+precedence_bit_mask,'I','F'+0x80
-if_lfa:
-  dw repeat_nfa
-if_:
-  dw do_colon
-if_pfa:
+  _colon_header if_,'I','F',immediate
+
   dw compile_,zero_branch_
   dw here_
   dw zero_,comma_
@@ -4907,26 +3673,16 @@ if_pfa:
   dw semicolon_s_
 
   ; XXX NEW
-unless_nfa:
-  db 0x06+0x80+precedence_bit_mask,'UNLES','S'+0x80
-unless_lfa:
-  dw if_nfa
-unless_:
-  dw do_colon
-unless_pfa:
+  _colon_header unless_,'UNLES','S',immediate
+
   dw compile_,question_branch_
   dw here_
   dw zero_,comma_
   dw two_
   dw semicolon_s_
 
-else_nfa:
-  db 0x04+0x80+precedence_bit_mask,'ELS','E'+0x80
-else_lfa:
-  dw unless_nfa
-else_:
-  dw do_colon
-else_pfa:
+  _colon_header else_,'ELS','E',immediate
+
   dw two_
   dw question_pairs_
   dw compile_,branch_
@@ -4938,24 +3694,14 @@ else_pfa:
   dw two_
   dw semicolon_s_
 
-while_nfa:
-  db 0x05+0x80+precedence_bit_mask,'WHIL','E'+0x80
-while_lfa:
-  dw else_nfa
-while_:
-  dw do_colon
-while_pfa:
+  _colon_header while_,'WHIL','E',immediate
+
   dw if_
   dw two_plus_
   dw semicolon_s_
 
-spaces_nfa:
-  db 0x06+0x80,'SPACE','S'+0x80
-spaces_lfa:
-  dw while_nfa
-spaces_:
-  dw do_colon
-spaces_pfa:
+  _colon_header spaces_,'SPACE','S'
+
   dw zero_,max_,question_dup_
   dw zero_branch_,branch_destination_0x7418
   dw zero_
@@ -4966,25 +3712,15 @@ branch_destination_0x7412:
 branch_destination_0x7418:
   dw semicolon_s_
 
-less_hash_nfa:
-  db 0x02+0x80,'<','#'+0x80
-less_hash_lfa:
-  dw spaces_nfa
-less_hash_:
-  dw do_colon
-less_hash_pfa:
+  _colon_header less_hash_,'<','#'
+
   dw pad_
   dw hld_
   dw store_
   dw semicolon_s_
 
-hash_greater_nfa:
-  db 0x02+0x80,'#','>'+0x80
-hash_greater_lfa:
-  dw less_hash_nfa
-hash_greater_:
-  dw do_colon
-hash_greater_pfa:
+  _colon_header hash_greater_,'#','>'
+
   dw drop_
   dw drop_
   dw hld_,fetch_
@@ -4993,13 +3729,8 @@ hash_greater_pfa:
   dw minus_
   dw semicolon_s_
 
-sign_nfa:
-  db 0x04+0x80,'SIG','N'+0x80
-sign_lfa:
-  dw hash_greater_nfa
-sign_:
-  dw do_colon
-sign_pfa:
+  _colon_header sign_,'SIG','N'
+
   dw rot_
   dw zero_less_than_
   dw zero_branch_,branch_destination_0x7457
@@ -5009,13 +3740,8 @@ sign_pfa:
 branch_destination_0x7457:
   dw semicolon_s_
 
-hash_nfa:
-  db 0x01+0x80,'','#'+0x80
-hash_lfa:
-  dw sign_nfa
-hash_:
-  dw do_colon
-hash_pfa:
+  _colon_header hash_,'','#'
+
   dw base_,fetch_,m_slash_mod_,rot_
   dw c_lit_
   db 0x09
@@ -5031,25 +3757,15 @@ hash.digit:
   dw hold_
   dw semicolon_s_
 
-hash_s_nfa:
-  db 0x02+0x80,'#','S'+0x80
-hash_s_lfa:
-  dw hash_nfa
-hash_s_:
-  dw do_colon
-hash_s_pfa:
+  _colon_header hash_s_,'#','S'
+
 hash_s.begin:
   dw hash_,two_dup_,or_,zero_equals_
   dw zero_branch_,hash_s.begin ; until
   dw semicolon_s_
 
-d_dot_r_nfa:
-  db 0x03+0x80,'D.','R'+0x80
-d_dot_r_lfa:
-  dw hash_s_nfa
-d_dot_r_:
-  dw do_colon
-d_dot_r_pfa:
+  _colon_header d_dot_r_,'D.','R'
+
   dw to_r_
   dw swap_
   dw over_
@@ -5065,64 +3781,34 @@ d_dot_r_pfa:
   dw type_
   dw semicolon_s_
 
-dot_r_nfa:
-  db 0x02+0x80,'.','R'+0x80
-dot_r_lfa:
-  dw d_dot_r_nfa
-dot_r_:
-  dw do_colon
-dot_r_pfa:
+  _colon_header dot_r_,'.','R'
+
   dw to_r_,s_to_d_,from_r_,d_dot_r_
   dw semicolon_s_
 
-d_dot_nfa:
-  db 0x02+0x80,'D','.'+0x80
-d_dot_lfa:
-  dw dot_r_nfa
-d_dot_:
-  dw do_colon
-d_dot_pfa:
+  _colon_header d_dot_,'D','.'
+
   dw zero_,d_dot_r_,space_
   dw semicolon_s_
 
-dot_nfa:
-  db 0x01+0x80,'','.'+0x80
-dot_lfa:
-  dw d_dot_nfa
-dot_:
-  dw do_colon
-dot_pfa:
+  _colon_header dot_,'','.'
+
   dw s_to_d_,d_dot_
   dw semicolon_s_
 
-question_nfa:
-  db 0x01+0x80,'','?'+0x80
-question_lfa:
-  dw dot_nfa
-question_:
-  dw do_colon
-question_pfa:
+  _colon_header question_,'','?'
+
   dw fetch_,dot_
   dw semicolon_s_
 
-u_dot_nfa:
-  db 0x02+0x80,'U','.'+0x80
-u_dot_lfa:
-  dw question_nfa
-u_dot_:
-  dw do_colon
-u_dot_pfa:
+  _colon_header u_dot_,'U','.'
+
   dw zero_,d_dot_
   dw semicolon_s_
 
   ; XXX OLD -- move to the blocks
-words_nfa:
-  db 0x05+0x80,'WORD','S'+0x80
-words_lfa:
-  dw u_dot_nfa
-words_:
-  dw do_colon
-words_pfa:
+  _colon_header words_,'WORD','S'
+
   dw c_lit_
   db 0x80
   dw out_,store_
@@ -5145,13 +3831,8 @@ words.continue:
   dw drop_
   dw semicolon_s_
 
-list_nfa:
-  db 0x04+0x80,'LIS','T'+0x80
-list_lfa:
-  dw words_nfa
-list_:
-  dw do_colon
-list_pfa:
+  _colon_header list_,'LIS','T'
+
   dw cr_
   dw dup_,scr_,store_
   dw paren_dot_quote_
@@ -5176,13 +3857,8 @@ list.loop:
   dw cr_
   dw semicolon_s_
 
-page_nfa:
-  db 0x04+0x80,'PAG','E'+0x80
-page_lfa:
-  dw list_nfa
-page_:
-  dw page_pfa
-page_pfa:
+  _code_header page_,'PAG','E'
+
   push bc
   ; XXX OLD -- why open the channel?
   ;ld a,0x02
@@ -5195,24 +3871,14 @@ page_pfa:
   pop bc
   _jp_next
 
-bye_nfa:
-  db 0x03+0x80,'BY','E'+0x80
-bye_lfa:
-  dw page_nfa
-bye_:
-  dw bye_pfa
-bye_pfa:
+  _code_header bye_,'BY','E'
+
   ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
   rst 0x08
   db 0x08 ; "STOP" BASIC error
 
-text_nfa:
-  db 0x04+0x80,'TEX','T'+0x80
-text_lfa:
-  dw bye_nfa
-text_:
-  dw do_colon
-text_pfa:
+  _colon_header text_,'TEX','T'
+
   dw here_,c_slash_l_,one_plus_,blanks_ ; fill the word buffer with blanks
   dw word_
   dw here_ ; origin
@@ -5221,13 +3887,8 @@ text_pfa:
   dw cmove_
   dw semicolon_s_
 
-line_nfa:
-  db 0x04+0x80,'LIN','E'+0x80
-line_lfa:
-  dw text_nfa
-line_:
-  dw do_colon
-line_pfa:
+  _colon_header line_,'LIN','E'
+
   dw dup_
   dw lit_,0xFFF0
   dw and_ ; make sure line is between 0 and 15.
@@ -5239,24 +3900,14 @@ line_pfa:
   dw drop_ ; discard the character count left by `(line)`
   dw semicolon_s_
 
-two_drop_nfa:
-  db 0x05+0x80,'2DRO','P'+0x80
-two_drop_lfa:
-  dw line_nfa
-two_drop_:
-  dw two_drop_pfa
-two_drop_pfa:
+  _code_header two_drop_,'2DRO','P'
+
   pop hl
   pop hl
   _jp_next
 
-two_swap_nfa:
-  db 0x05+0x80,'2SWA','P'+0x80
-two_swap_lfa:
-  dw two_drop_nfa
-two_swap_:
-  dw two_swap_pfa
-two_swap_pfa:
+  _code_header two_swap_,'2SWA','P'
+
   ; Copied from DZX-Forth.
   pop hl
   pop de
@@ -5274,25 +3925,15 @@ two_swap_pfa:
   pop hl
   jp pushde
 
-unused_nfa:
-  db 0x06+0x80,'UNUSE','D'+0x80
-unused_lfa:
-  dw two_swap_nfa
-unused_:
-  dw do_colon
-unused_pfa:
+  _colon_header unused_,'UNUSE','D'
+
   ; XXX TMP
   dw zero_,here_,minus_
   dw semicolon_s_
 
   ; XXX TODO -- remove, already copied to the blocks disk
-index_nfa:
-  db 0x05+0x80,'INDE','X'+0x80
-index_lfa:
-  dw unused_nfa
-index_:
-  dw do_colon
-index_pfa:
+  _colon_header index_,'INDE','X'
+
   dw one_plus_
   dw swap_
   dw paren_do_
@@ -5306,13 +3947,8 @@ branch_destination_0x7763:
   dw paren_loop_,branch_destination_0x774B
   dw semicolon_s_
 
-where_nfa:
-  db 0x05+0x80,'WHER','E'+0x80
-where_lfa:
-  dw index_nfa
-where_:
-  dw do_colon
-where_pfa:
+  _colon_header where_,'WHER','E'
+
   dw dup_
   dw b_slash_scr_
   dw slash_
@@ -5345,40 +3981,20 @@ where_pfa:
   dw quit_
   dw semicolon_s_
 
-next_nfa:
-  db 0x04+0x80,'NEX','T'+0x80
-next_lfa:
-  dw where_nfa
-next_:
-  dw do_constant
-next_pfa:
+  _constant_header next_,'NEX','T'
+
   dw next
 
-pushhl_nfa:
-  db 0x06+0x80,'PUSHH','L'+0x80
-pushhl_lfa:
-  dw next_nfa
-pushhl_:
-  dw do_constant
-pushhl_pfa:
+  _constant_header pushhl_,'PUSHH','L'
+
   dw pushhl
 
-pushde_nfa:
-  db 0x06+0x80,'PUSHD','E'+0x80
-pushde_lfa:
-  dw pushhl_nfa
-pushde_:
-  dw do_constant
-pushde_pfa:
+  _constant_header pushde_,'PUSHD','E'
+
   dw pushde
 
-p_fetch_nfa:
-  db 0x02+0x80,'P','@'+0x80
-p_fetch_lfa:
-  dw pushde_nfa
-p_fetch_:
-  dw p_fetch_pfa
-p_fetch_pfa:
+  _code_header p_fetch_,'P','@'
+
   pop hl
   push bc
   ld c,l
@@ -5389,13 +4005,8 @@ p_fetch_pfa:
   ld l,a
   jp pushhl
 
-p_store_nfa:
-  db 0x02+0x80,'P','!'+0x80
-p_store_lfa:
-  dw p_fetch_nfa
-p_store_:
-  dw p_store_pfa
-p_store_pfa:
+  _code_header p_store_,'P','!'
+
   pop hl
   pop de
   push bc
@@ -5407,13 +4018,8 @@ p_store_pfa:
   _jp_next
 
   ; XXX TODO -- move to the blocks disk and optimize
-screen_nfa:
-  db 0x06+0x80,'SCREE','N'+0x80
-screen_lfa:
-  dw p_store_nfa
-screen_:
-  dw screen_pfa
-screen_pfa:
+  _code_header screen_,'SCREE','N'
+
   pop hl
   pop de
   push bc
@@ -5440,13 +4046,7 @@ screen_pfa:
 
 ; }doc
 
-at_nfa:
-  db 0x02+0x80,'A','T'+0x80
-at_lfa:
-  dw screen_nfa
-at_:
-  dw do_colon
-at_pfa:
+  _colon_header at_,'A','T'
 
   dw swap_,dup_
   dw c_lit_
@@ -5471,75 +4071,40 @@ at_pfa.last_line:
   dw c_store_
   dw semicolon_s_
 
-border_nfa:
-  db 0x06+0x80,'BORDE','R'+0x80
-border_lfa:
-  dw at_nfa
-border_:
-  dw border_pfa
-border_pfa:
+  _code_header border_,'BORDE','R'
+
   pop hl
   ld a,l
   out(0xFE),a
   _jp_next
 
-gover_nfa:
-  db 0x05+0x80,'GOVE','R'+0x80
-gover_lfa:
-  dw border_nfa
-gover_:
-  dw gover_pfa
-gover_pfa:
+  _code_header gover_,'GOVE','R'
+
   ld a,over_char
   jp color
 
-flash_nfa:
-  db 0x05+0x80,'FLAS','H'+0x80
-flash_lfa:
-  dw gover_nfa
-flash_:
-  dw flash_pfa
-flash_pfa:
+  _code_header flash_,'FLAS','H'
+
   ld a,flash_char
   jp color
 
-inverse_nfa:
-  db 0x07+0x80,'INVERS','E'+0x80
-inverse_lfa:
-  dw flash_nfa
-inverse_:
-  dw inverse_pfa
-inverse_pfa:
+  _code_header inverse_,'INVERS','E'
+
   ld a,inverse_char
   jp color
 
-bright_nfa:
-  db 0x06+0x80,'BRIGH','T'+0x80
-bright_lfa:
-  dw inverse_nfa
-bright_:
-  dw bright_pfa
-bright_pfa:
+  _code_header bright_,'BRIGH','T'
+
   ld a,bright_char
   jp color
 
-paper_nfa:
-  db 0x05+0x80,'PAPE','R'+0x80
-paper_lfa:
-  dw bright_nfa
-paper_:
-  dw paper_pfa
-paper_pfa:
+  _code_header paper_,'PAPE','R'
+
   ld a,paper_char
   jp color
 
-ink_nfa:
-  db 0x03+0x80,'IN','K'+0x80
-ink_lfa:
-  dw paper_nfa
-ink_:
-  dw ink_pfa
-ink_pfa:
+  _code_header ink_,'IN','K'
+
   ld a,ink_char
 color:
   ; Set a color attribute (ink, paper, bright, flash, inverse or gover).
@@ -5552,13 +4117,8 @@ color:
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
-j_nfa:
-  db 0x01+0x80,'','J'+0x80
-j_lfa:
-  dw ink_nfa
-j_:
-  dw j_pfa
-j_pfa:
+  _code_header j_,'','J'
+
   ld hl,(return_stack_pointer)
   inc hl
   inc hl
@@ -5570,46 +4130,21 @@ j_pfa:
   push de
   _jp_next
 
-two_constant_nfa:
-  db 0x09+0x80,'2CONSTAN','T'+0x80
-two_constant_lfa:
-  dw j_nfa
-two_constant_:
-  dw do_colon
-two_constant_pfa:
-  dw create_
-  dw smudge_
-  dw here_
-  dw two_store_
+  _colon_header two_constant_,'2CONSTAN','T'
+
+  dw create_,smudge_
+  dw here_,two_store_
   dw c_lit_
   db 0x04
   dw allot_
   dw paren_semicolon_code_
 do_two_constant:
-  ; XXX OLD optimize to use pushde
   inc de    ; de=pfa
   ex de,hl  ; hl=pfa
-  inc hl
-  inc hl
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-  dec hl
-  dec hl
-  ld d,(hl)
-  dec hl
-  ld e,(hl)
-  push de
-  _jp_next
+  jp two_fetch.hl
 
-two_variable_nfa:
-  db 0x09+0x80,'2VARIABL','E'+0x80
-two_variable_lfa:
-  dw two_constant_nfa
-two_variable_:
-  dw do_colon
-two_variable_pfa:
+  _colon_header two_variable_,'2VARIABL','E'
+
   dw two_constant_
   dw paren_semicolon_code_
 do_two_variable:
@@ -5618,66 +4153,30 @@ do_two_variable:
   push de
   _jp_next
 
-u_dot_r_nfa:
-  db 0x03+0x80,'U.','R'+0x80
-u_dot_r_lfa:
-  dw two_variable_nfa
-u_dot_r_:
-  dw do_colon
-u_dot_r_pfa:
+  _colon_header u_dot_r_,'U.','R'
+
   dw to_r_,zero_,from_r_,d_dot_r_
   dw semicolon_s_
 
-two_over_nfa:
-  db 0x05+0x80,'2OVE','R'+0x80
-two_over_lfa:
-  dw u_dot_r_nfa
-two_over_:
-  dw do_colon
-two_over_pfa:
-  ; XXX TODO rewrite in Z80
-  dw two_swap_
-  dw two_dup_
-  ; XXX TODO optimize with 2>r and 2r>
-  dw to_r_
-  dw to_r_
-  dw two_swap_
-  dw from_r_
-  dw from_r_
-  dw semicolon_s_
+  _code_header two_over_,'2OVE','R'
 
-exit_nfa:
-  db 0x04+0x80,'EXI','T'+0x80
-exit_lfa:
-  dw two_over_nfa
-exit_:
-  dw do_colon
-exit_pfa:
+  ld hl,4
+  add hl,sp
+  jp two_fetch.hl
+
+  _colon_header exit_,'EXI','T'
+
   dw r_drop_
   dw semicolon_s_
 
-question_exit_nfa:
-  db 0x05+0x80,'?EXI','T'+0x80
-question_exit_lfa:
-  dw exit_nfa
-question_exit_:
-  dw question_exit_pfa
-question_exit_pfa:
-  ; XXX FIXME
-  pop hl
-  ld a,h
-  or l
-  jp nz,r_drop_pfa
-  _jp_next
+  _colon_header question_exit_,'?EXI','T'
+
+  dw question_branch_,exit_pfa
+  dw semicolon_s_
 
   ; XXX TODO move to the disk?
-case_nfa:
-  db 0x04+0x80+precedence_bit_mask,'CAS','E'+0x80
-case_lfa:
-  dw question_exit_nfa
-case_:
-  dw do_colon
-case_pfa:
+  _colon_header case_,'CAS','E',immediate
+
   dw question_comp_
   dw csp_,fetch_
   dw store_csp_
@@ -5685,13 +4184,8 @@ case_pfa:
   db 0x04
   dw semicolon_s_
 
-of_nfa:
-  db 0x02+0x80+precedence_bit_mask,'O','F'+0x80
-of_lfa:
-  dw case_nfa
-of_:
-  dw do_colon
-of_pfa:
+  _colon_header of_,'O','F',immediate
+
   dw c_lit_
   db 0x04
   dw question_pairs_
@@ -5705,13 +4199,8 @@ of_pfa:
   db 0x05
   dw semicolon_s_
 
-endof_nfa:
-  db 0x05+0x80+precedence_bit_mask,'ENDO','F'+0x80
-endof_lfa:
-  dw of_nfa
-endof_:
-  dw do_colon
-endof_pfa:
+  _colon_header endof_,'ENDO','F',immediate
+
   dw c_lit_
   db 0x05
   dw question_pairs_
@@ -5725,13 +4214,8 @@ endof_pfa:
   db 0x04
   dw semicolon_s_
 
-endcase_nfa:
-  db 0x07+0x80+precedence_bit_mask,'ENDCAS','E'+0x80
-endcase_lfa:
-  dw endof_nfa
-endcase_:
-  dw do_colon
-endcase_pfa:
+  _colon_header endcase_,'ENDCAS','E',immediate
+
   dw c_lit_
   db 0x04
   dw question_pairs_
@@ -5751,13 +4235,8 @@ branch_destination_0x8106:
   dw semicolon_s_
 
   ; XXX TODO move to the disk
-inkey_nfa:
-  db 0x05+0x80,'INKE','Y'+0x80
-inkey_lfa:
-  dw endcase_nfa
-inkey_:
-  dw inkey_pfa
-inkey_pfa:
+  _code_header inkey_,'INKE','Y'
+
   push bc
   call rom_key_scan
   ld c,0x00
@@ -5773,80 +4252,45 @@ l8128h:
   pop bc
   jp pushhl
 
-char_nfa:
-  db 0x04+0x80,'CHA','R'+0x80
-char_lfa:
-  dw inkey_nfa
-char_:
-  dw do_colon
-char_pfa:
+  _colon_header char_,'CHA','R'
+
   dw b_l_,word_,here_,one_plus_,c_fetch_
   dw semicolon_s_
 
-bracket_char_nfa:
-  db 0x06+0x80+precedence_bit_mask,'[CHAR',']'+0x80
-bracket_char_lfa:
-  dw char_nfa
-bracket_char_:
-  dw do_colon
-bracket_char_pfa:
+  _colon_header bracket_char_,'[CHAR',']',immediate
+
   dw char_,literal_
   dw semicolon_s_
 
-bracket_defined_nfa:
-  db 0x09+0x80+precedence_bit_mask,'[DEFINED',']'+0x80
-bracket_defined_lfa:
-  dw bracket_char_nfa
-bracket_defined_:
-  dw do_colon
-bracket_defined_pfa:
+  _colon_header bracket_defined_,'[DEFINED',']',immediate
+
   dw find_,dup_
   dw zero_branch_,bracket_defined.end
   dw nip_,nip_
 bracket_defined.end:
   dw semicolon_s_
 
-bracket_undefined_nfa:
-  db 0x0B+0x80+precedence_bit_mask,'[UNDEFINED',']'+0x80
-bracket_undefined_lfa:
-  dw bracket_defined_nfa
-bracket_undefined_:
-  dw do_colon
-bracket_undefined_pfa:
+  _colon_header bracket_undefined_,'[UNDEFINED',']',immediate
+
   dw bracket_defined_,zero_equals_
   dw semicolon_s_
 
-question_next_screen_nfa:
-  db 0x04+0x80+precedence_bit_mask,'?--','>'+0x80
-question_next_screen_lfa:
-  dw bracket_undefined_nfa
-question_next_screen_:
-  dw do_colon
-question_next_screen_pfa:
+  _colon_header question_next_screen_,'?--','>',immediate
+
   dw zero_branch_,question_next_screen.end
   dw next_screen_
 question_next_screen.end:
   dw semicolon_s_
 
-question_backslash_nfa:
-  db 0x02+0x80+precedence_bit_mask,'?','\'+0x80
-question_backslash_lfa:
-  dw question_next_screen_nfa
-question_backslash_:
-  dw do_colon
-question_backslash_pfa:
+  _colon_header question_backslash_,'?','\',immediate
+
   dw zero_branch_,question_backslash.end
   dw backslash_
 question_backslash.end:
   dw semicolon_s_
 
-backslash_nfa:
-  db 0x01+0x80+precedence_bit_mask,'','\'+0x80
-backslash_lfa:
-  dw question_backslash_nfa
-backslash_:
-  dw do_colon
-backslash_pfa:
+  _colon_header backslash_,'','\',immediate
+
   dw in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_
   dw in_,plus_store_
@@ -5859,13 +4303,8 @@ backslash_pfa:
 
 nfa_of_top_most_word_in_forth_voc:
 
-dot_paren_nfa:
-  db 0x02+0x80+precedence_bit_mask,'.','('+0x80
-dot_paren_lfa:
-  dw backslash_nfa
-dot_paren_:
-  dw do_colon
-dot_paren_pfa:
+  _colon_header dot_paren_,'.','(',immediate
+
   dw c_lit_
   db ')'
   dw text_,pad_,count_,type_
