@@ -19,7 +19,7 @@
 version_high_part:  equ 0x0133
 version_low_part:   equ 0x7B53
   
-  ; Last modified:  201511230218
+  ; Last modified:  201511230248
 
 ; ==============================================================
 ; Author and license
@@ -3386,6 +3386,10 @@ endif
 ;
 ; }doc
 
+if 0 ; XXX TMP
+
+  ; 33697 bytes free
+
   pop de
   call decode_char.e
   ld h,0
@@ -3412,6 +3416,30 @@ decode_char.begin:
   jr nz,decode_char.begin
   ld e,(hl)
   ret
+
+else
+
+  pop de
+  ld a,e
+  call decode_char.a
+  jp push_a
+
+decode_char.a:
+  ld hl,decode_table_pfa-1
+decode_char.begin:
+  inc hl    ; next record of the table
+  ld e,(hl) ; char that must be translated, or zero
+  inc e     ; is it...
+  dec e     ; zero? (=end of table?)
+  ret z
+  cp e      ; match?
+  inc hl    ; point to the char transalation
+  jr nz,decode_char.begin ; no match yet, continue
+  ; match
+  ld a,(hl) ; translate char
+  ret
+
+endif
 
 if 0 ; XXX OLD
 
@@ -3558,7 +3586,7 @@ endif
 
 if 1
   call wait_for_a_key
-  call decode_char.a
+  call decode_char.a ; XXX TODO
   jp push_a
 endif
 
@@ -3639,48 +3667,9 @@ xkey.new_key:
   ld (hl),a
   jr xkey.new_key
 
-  ; Translate some chars
-  ; XXX TODO use a configurable list of chars pairs
-
 xkey.translate:
-
-if 1 ; XXX NEW
-
-  call decode_char.a
-
-else ; XXX OLD
-
-xkey.left_bracket:
-  cp 0xC6
-  jr nz,xkey.right_bracket
-  ld a,'['
-xkey.right_bracket:
-  cp 0xC5
-  jr nz,xkey.tilde
-  ld a,']'
-xkey.tilde:
-  cp 0xE2
-  jr nz,xkey.vertical_bar
-  ld a,'~'
-xkey.vertical_bar:
-  cp 0xC3
-  jr nz,xkey.backslash
-  ld a,'|'
-xkey.backslash:
-  cp 0xCD
-  jr nz,xkey.left_curly_bracket
-  ld a,'\'
-xkey.left_curly_bracket:
-  cp 0xCC
-  jr nz,xkey.right_curly_bracket
-  ld a,'{'
-xkey.right_curly_bracket:
-  cp 0xCB
-  jr nz,xkey.end
-  ld a,'}'
-endif
-
-xkey.end:
+  ; Translate some chars
+  call decode_char.a ; XXX TMP
   ld l,a
   ld h,0x00
 
