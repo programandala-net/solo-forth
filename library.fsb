@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510222327
+\ Last modified: 201510241802
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -32,6 +32,8 @@
   \ http://programandala.net/en.program.solo_forth.history.html
 
 ( ) \ scr 1 -- testing load screen
+
+  ;s \ XXX OLD
 
   2 load 269 load
   frames0
@@ -350,6 +352,30 @@ variable msg-scr  blk @ b/scr msg-scr !
   \ Print the text of throw error _n_.  The variable `msg-scr`
   \ contains the number of the first screen where messages are
   \ hold. If it contains zero, only the error number is printer.
+  \
+  \ }doc
+
+( ?compiling ?executing )
+
+[unneeded] ?compiling
+?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
+
+  \ doc{
+  \
+  \ ?compiling  ( -- )
+  \
+  \ Issue an error if not compiling.
+  \
+  \ }doc
+
+[unneeded] ?executing
+?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
+
+  \ doc{
+  \
+  \ ?executing  ( -- )
+  \
+  \ Issue an error if not executing.
   \
   \ }doc
 
@@ -1687,6 +1713,20 @@ need string-suffix?
 
 : chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
   \ Remove the last character from string _ca len_.
+
+( save-counted-string )
+
+: save-counted-string  ( ca1 len1 -- ca2 )
+  dup 1+ allocate-string dup >r place r>  ;
+
+  \ doc{
+
+  \ save-counted-string  ( ca1 len1 -- ca2 )
+
+  \ Save the string _ca1 len1_ in the circular string buffer as
+  \ a counted string and return its new address _ca2_.
+
+  \ }doc
 
   \ }}} =======================================================
   \ Text output {{{
@@ -3715,9 +3755,29 @@ need s=
   \
   \ }doc
 
-( name<name )
+( body>name name>body link>name name>link >>link name<name )
 
-: name<name  ( nfa1 -- nfa2 )  name>link @n  ;
+[unneeded] body>name
+?\ : body>name  ( pfa -- nfa ) body> >name  ;
+
+[unneeded] name>body
+?\ : name>body  ( nfa -- pfa ) name> >body  ;
+
+[unneeded] link>name
+?\ : link>name  ( nfa -- pfa )  2+  ;
+  \ XXX TODO convert to alias
+
+[unneeded] name>link
+?\ : name>link  ( nfa -- pfa )  2-  ;
+  \ XXX TODO convert to alias
+
+[unneeded] >>link
+?\ : >>link  ( cfap -- lfa )  2+  ;
+  \ XXX TODO convert to alias
+
+[unneeded] name<name dup
+?\ need name>link
+?\ : name<name  ( nfa1 -- nfa2 )  name>link @n  ;
   \ Get the previous _nfa2_ from _nfa1_.
 
 ( name>interpret name>compile )
@@ -4453,6 +4513,8 @@ code c!dosvar  ( b n -- )
 
   \ XXX TODO -- Finish.
 
+need >>link
+
 variable old-dp
 variable old-np
 variable old-latest
@@ -4478,13 +4540,11 @@ variable old-voc-link
 
   0 swap - dp !  ;
 
-: ]transient  ( -- )
+: ]transient  ( -- )  old-dp @ dp !  old-np @ np !  ;
 
   \ End the transient code.
   \
   \ This word must be used after compiling the transient code.
-
-  old-dp @ dp !  old-np @ np !  ;
 
 : -transient  ( -- )
 
@@ -4578,6 +4638,9 @@ need break-key?  need 16hex.  need ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
+  \ XXX FIXME -- when len=0 a row is shown; `wdump` does
+  \ nothing.
+
 : dump  ( ca len -- )
   8 2dup mod - + 8 / 0
   \ XXX TODO use `?do` instead of `if` when available
@@ -4617,6 +4680,8 @@ need break-key?  need 16hex.
   \ Variables, indentation and pause control
 
 forth definitions decimal
+
+need body>name  need name>body
 
 variable decode-level  decode-level off \ depth of nesting
 variable decode-address  \ in the word being decoded
@@ -4719,9 +4784,13 @@ need case
   \ defined if  >body  0 decode-level !  (decode)
   \         else  drop  -13 throw  then  ;
 
-  \ XXX NEW -- defined  ( "name" -- ca len false | cfa b true )
-  defined 0= -13 ?throw
-  drop >body  0 decode-level !  (decode)  ;
+  \ XXX OLD -- defined  ( "name" -- ca len false | cfa b true )
+  \ defined 0= -13 ?throw
+  \ drop >body  0 decode-level !  (decode)  ;
+  
+  \ XXX NEW -- defined  ( "name" -- nfa | 0 )
+  defined dup 0= -13 ?throw
+  name>body  0 decode-level !  (decode)  ;
 
 ( list )
 
@@ -4838,7 +4907,9 @@ need break-key?  need .index
   \ Credits:
   \ Code adapted from Spectrum Forth-83.
 
-need break-key?
+  \ XXX TODO -- pause with the space bar
+
+need break-key?  need trail  need name>link
 
 [defined] tab ?\  : tab  ( -- )  6 emit  ;
 
@@ -4853,7 +4924,7 @@ need break-key?
   \ Credits:
   \ Code adapted from pForth.
 
-need break-key?
+need break-key?  need trail  need name>link
 
 [defined] contains
   ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
@@ -5185,6 +5256,7 @@ code l>  ( -- x ) ( L: x -- )
 
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO adapt from hForth
+need ?compiling
 hex
 
 : (do)  ( n1|u1 n2|u2 -- ) ( R: -- n1 n2-n1-0x8000 )
@@ -5711,6 +5783,8 @@ need within
   \
   \ Note: this version works only when the compiler security
   \ check config option is activated in the kernel.
+
+need ?compiling
 
 : case
   \ Compilation: ( -- a case-id )
@@ -7089,6 +7163,8 @@ code just-pause ( u -- )
   \ Credits:
   \ Code adapted from F83.
 
+need body>name
+
 : .context  ( -- )  context #vocs 0 do
   \ XXX FIXME
                       dup @ ?dup if  body>name id.  then  cell+
@@ -7161,10 +7237,25 @@ code just-pause ( u -- )
 
 
 
-( set-current get-current )
+( set-current get-current trail )
 
-: get-current  ( -- wid )  current @  ;
-: set-current  ( wid -- )  current !  ;
+[unneeded] get-current
+?\ : get-current  ( -- wid )  current @  ;
+
+[unneeded] set-current
+?\ : set-current  ( wid -- )  current !  ;
+
+[unneeded] trail
+?\ : trail  ( -- nfa )  context @ @  ;
+
+  \ doc{
+  \
+  \ trail ( -- nfa )
+  \
+  \ Leave the name field address of the topmost word in the
+  \ `context` vocabulary.
+  \
+  \ }doc
 
 ( search-wordlist )
 

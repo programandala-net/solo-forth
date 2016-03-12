@@ -8,9 +8,10 @@
 == Urgent ==
 // {{{
 
-.2015-10-22:
+.2015-10-24:
 
-The implementation of version 4 of `find-name` ruined the interpreter!
+Compilation works, but execution of words crashes the machine. See
+`dump`, `words`...
 
 // }}}
 == Inner ==
@@ -21,14 +22,6 @@ The implementation of version 4 of `find-name` ruined the interpreter!
 In order to save compilation time, move inner words to the bottom of
 the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 
-.2015-06-22:
-
-This error happens in all fig-Forth systems:
-
-----
-: test 6 literal ;  RAL ? [ rubbish ] MGS # 2
-----
-
 .2015-06-30:
 
 New: command history, stored in the names bank.
@@ -38,12 +31,6 @@ Change: remove double `;s` from the colon words in the kernel. Use
 cases found and marked.]
 
 Change: compare the user variables with those of Spectrum Forth-83.
-
-.2015-07-23:
-
-Fix: the string searched for by `(find)` must be in the string buffer,
-below 0xC000! This is not a problem now, during the development,
-because the dictionary is small. A specific buffer is needed.
 
 .2015-08-12:
 

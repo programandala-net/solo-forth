@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510222327
+version_release:  equ 201510241802
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -1642,6 +1642,8 @@ parse_string.interpreting:
 ; ----------------------------------------------
   _code_header c_lit_,'CLIT'
 
+  ; XXX FIXME -- Crash if not compiled.
+
   ld a,(bc)
   inc bc
   ; XXX TODO include these entry points in the `assembler` vocabulary?
@@ -1654,9 +1656,7 @@ push_l: ; XXX TMP -- not used yet
 ; ----------------------------------------------
   _code_header two_lit_,'2LIT'
 
-  ; XXX FIXME -- crash if not compiling
-  ; XXX TODO -- implement compile-only flag?
-  ; -- document the issue?
+  ; XXX FIXME -- Crash if not compiled.
 
   ld a,(bc)
   ld l,a
@@ -1670,9 +1670,10 @@ push_l: ; XXX TMP -- not used yet
 ; ----------------------------------------------
   _code_header lit_,'LIT'
 
-  ; XXX FIXME -- crash if not compiling
-  ; XXX TODO -- implement compile-only flag?
-  ; -- document the issue?
+  ; XXX FIXME -- Crash if not compiled.
+  ; This happens in DZX-Forth as well,
+  ; but not in Abersoft Forth. The code is the same.
+  ; In DX-Forth it's a hidden word.
 
   ld a,(bc)
   ld l,a
@@ -1838,29 +1839,6 @@ question_csb_.enough:
   dw dup_,allocate_string_,swap_
   dw two_dup_,two_to_r_
   dw move_,two_from_r_
-  dw semicolon_s_
-
-; ----------------------------------------------
-  _colon_header save_counted_string_,'SAVE-COUNTED-STRING'
-
-  ; XXX TODO move to the library?
-
-; doc{
-
-; save-counted-string  ( ca1 len1 -- ca2 )
-
-; Save the string _ca1 len1_ in the circular string buffer as a
-; counted string and return its new address _ca2_.
-
-; ----
-; : save-counted-string  ( ca1 len1 -- ca2 )
-;   dup 1+ allocate-string dup >r place r>  ;
-; ----
-
-; }doc
-
-  dw dup_,one_plus_,allocate_string_
-  dw dup_,to_r_,place_,from_r_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2213,17 +2191,20 @@ digit.test_value:
 
 ; ----
 ; : number-base  ( ca len -- ca' len' n )
-;  over c@
-;  dup [char] $ = if  drop 1 /string 16  exit  then
-;  dup [char] % = if  drop 1 /string  2  exit  then
-;      [char] # = if  1 /string 10  exit  then  base @  ; 
+;   dup if
+;    over c@
+;    dup [char] $ = if  drop 1 /string 16  exit  then
+;    dup [char] % = if  drop 1 /string  2  exit  then
+;        [char] # = if  1 /string 10  exit  then
+;   then
+;   base @  ; 
 ; ----
 
 ; }doc
 
-  ; XXX FIXME -- check len=0?
-
 number_base.try_hex:
+  dw dup_
+  dw zero_branch_,number_base.current
   dw over_,c_fetch_
   dw dup_
   _literal '$'
@@ -2322,7 +2303,7 @@ to_number.end:
   ; XXX TODO convert this to a deferred word, to
   ; make it hackable.
 
-if 0 ; XXX -- version adapted from pForth
+if 0 ; XXX OLD -- version adapted from pForth
 
   ; XXX Note: this version ocuppies 26 bytes less than the
   ; one, improved, inspired by fig-Forth.
@@ -2408,13 +2389,14 @@ number_question.end:
   dw from_r_,base_,store_  ; restore `base`
   dw semicolon_s_
 
-else ; XXX -- improved version inspired by fig-Forth
+endif
 
-  ; XXX UNDER DEVELOPMENT
+if 0 ; XXX NEW -- improved version inspired by fig-Forth
+
+  ; This improved version:
   ;
-  ; This new version must accept a "." at any position
-  ; and updates `dpl` accordingly.
-  ;
+  ; - Accepts a "." at any position and updates `dpl` accordingly.
+
   ; XXX Note: this version ocuppies 26 bytes more than the
   ; one based on pForth.
 
@@ -2511,6 +2493,160 @@ number_question2.end:
 
 endif
 
+if 1 ; XXX NEW
+
+  ; XXX UNDER DEVELOPMENT  -- at the moment it's a copy of the
+  ; previous version
+
+  ; This improved version:
+  ;
+  ; - Accepts a "." at any position and updates `dpl` accordingly.
+  ; - Recognizes chars between single quotes, after Forth-2012.
+
+; doc{
+;
+; number?   ( ca len -- 0 | n 1 | d 2 )
+;
+; Convert a string _ca len_ to a number. Return 0 if the
+; conversion is not possible. If the result is a single number,
+; return _n_ and 1. If the result is a double number, return _d_
+; and 2.
+
+; : number?   ( ca len -- 0 | n 1 | d 2 )
+;   dup 0= if  2drop 0 exit  then
+;   2dup char? if nip nip 1 exit  then 
+;   base @ >r  number-base base !  ( R: radix )
+;   skip-sign? >r                  ( R: radix sign )
+;   0 0 2swap  dpl on
+;   begin                          ( d ca len )
+;     >number dup
+;   while
+;     over c@ [char] . <>   \ not a decimal point?
+;     dpl @ 0< 0=  or       \ or not the first decimal point?
+;     if  2drop 2rdrop 0 exit  then
+;     dup 1- dpl !  \ update the position of the decimal point
+;     1 /string     \ skip the decimal point
+;   repeat
+;   2drop     \ discard the empty string
+;   dpl @ 0<  \ single-cell number?
+;   if    d>s r> ?negate  1   \ single-cell number
+;   else  r> ?dnegate  2      \ double-cell number
+;   then  r> base !  ;        \ restore the radix
+
+; }doc
+
+  dw dup_,zero_equals_
+  dw zero_branch_,number_question2.not_empty
+  dw two_drop_
+  _literal 0
+  dw exit_
+
+number_question2.not_empty:
+  dw two_dup_,char_question_
+  dw zero_branch_,number_question2.not_char
+  dw nip_,nip_
+  _literal 1
+  dw exit_
+
+number_question2.not_char:
+  dw base_,fetch_,to_r_
+  dw number_base_,base_,store_
+
+  dw skip_sign_question_,to_r_
+  _literal 0
+  _literal 0
+  dw two_swap_,dpl_,on_
+number_question2.begin:
+  dw to_number_
+  dw dup_ ; are there non-recognized chars?
+  dw zero_branch_,number_question2.done ; while
+
+  ; The conversion was not completed, so it may be because of
+  ; the final dot that indicates it's a double number.
+
+  dw over_,c_fetch_
+  _literal '.'
+  dw not_equals_ ; not a decimal point?
+  dw dpl_,fetch_,zero_less_than_,zero_equals_ ; not the first decimal point?
+  dw or_
+  dw zero_branch_,number_question2.decimal_point
+  dw two_drop_,two_r_drop_
+  _literal 0
+  dw exit_
+
+number_question2.decimal_point:
+  dw dup_,one_minus_,dpl_,store_ ; update the position of the decimal point
+  _literal 1
+  dw slash_string_ ; skip the decimal point
+
+  dw branch_,number_question2.begin ; repeat
+
+number_question2.done:
+  dw two_drop_ ; discard the empty string
+  dw dpl_,fetch_,zero_less_than_ ; single-cell number?
+  dw zero_branch_,number_question2.double
+
+  ; single-cell number
+  dw d_to_s_,from_r_,question_negate_
+  _literal 1
+  dw branch_,number_question2.end
+
+number_question2.double:
+  ; double-cell number
+  dw from_r_,question_d_negate_
+  _literal 2
+
+number_question2.end:
+  dw from_r_,base_,store_  ; restore `base`
+
+  dw semicolon_s_
+
+endif
+
+; ----------------------------------------------
+  _colon_header char_question_,'CHAR?'
+
+  ; XXX FIXME -- the string has been already converted to
+  ; uppercase!
+
+; doc{
+;
+; char?  ( ca len -- c true | false )
+; 
+; ----
+; : char?  ( ca len -- c true | false )
+;   3 <> if
+;     dup c@ [char] ' <> if
+;       dup [ 2 chars ] literal + c@ [char] ' <>
+;       if  char+ c@ true exit  then
+;     then
+;   then
+;   drop false ;
+; }doc
+
+  _literal 3
+  dw equals_
+  dw zero_branch_,char_question.not
+
+char_question.right_length:
+  dw dup_,c_fetch_
+  _literal "'"
+  dw equals_
+  dw zero_branch_,char_question.not
+  
+char_question.first_quote:
+  dw dup_,two_plus_,c_fetch_
+  _literal "'"
+  dw equals_
+  dw zero_branch_,char_question.not
+
+char_question.match:
+  dw char_plus_,c_fetch_,true_,exit_
+
+char_question.not:
+  dw drop_,false_,exit_
+  dw semicolon_s_
+
 ; ----------------------------------------------
   _colon_header skip_sign_question_,'SKIP-SIGN?'
 
@@ -2536,9 +2672,11 @@ endif
 ; ----------------------------------------------
   _code_header paren_find_name_,'(FIND-NAME)'
 
-if find_name_version=4
-
+if find_name_version=4 and false
+  
   ; XXX UNDER DEVELOPMENT -- version after Gforth's `find-name`.
+
+  ; XXX OLD -- version without conversion to uppercase
 
 ; doc{
 ;
@@ -2585,6 +2723,14 @@ paren_find_name.string_length: equ $+1
 paren_find_name.compare_next_char:
   inc de
   ld a,(de)
+  ; XXX OLD -- this method is wrong, because
+  ; it converts to uppercase the dictionary name!
+  ; ld (22528),a ; XXX INFORMER
+  ; ld (22529),a ; XXX INFORMER
+  ; call upper.a ; XXX NEW experimental XXX FIXME
+  ; ld (22529),a ; XXX INFORMER
+  ; _z80_border_wait 2 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
   cpi
   jp nz,paren_find_name.not_a_match ; mismatch
   jp pe, paren_find_name.compare_next_char ; count not exhausted
@@ -2603,6 +2749,102 @@ paren_find_name.nfa_backup: equ $+1
   ld e,(hl) ; low part of the next nfa
   ld a,d
   or e ; end of dictionary? (next nfa=0)
+  jp nz,paren_find_name.begin ; if not, continue
+
+  ; End of dictionary, no match found.
+  ld hl,false
+
+paren_find_name.end:
+  ; If match found:
+  ;   hl = nfa
+  ; If no match found:
+  ;   hl = false
+  exx
+  ld e,default_bank
+  call bank.e ; page the default memory bank in
+  exx
+paren_find_name.ip_backup: equ $+1
+  ld bc,0x0000 ; restore the Forth IP
+  jp push_hl
+
+endif
+
+if find_name_version=4 and true ; XXX TMP
+
+  ; XXX UNDER DEVELOPMENT -- version after Gforth's `find-name`.
+  ; XXX NEW : the characters are converted to uppercase on the
+  ; fly
+
+; doc{
+;
+; (find-name)  ( ca len nfa -- nfa | 0 )
+;
+; Find the definition named in the string at _ca len_, starting
+; at _nfa_. If the definition is found, return its _nfa_, else
+; return zero.
+;
+; The search is case-sensitive.
+;
+; }doc
+
+  ld (paren_find_name.ip_backup),bc ; save the Forth IP
+
+  ld e,names_bank
+  call bank.e ; page the memory bank in
+
+  pop hl ; nfa
+  pop bc ; C=len, B is supposed to be 0
+  ld a,c
+  ld (paren_find_name.string_length),a
+  pop de ; ca
+  ld (paren_find_name.string_address),de
+
+  ; XXX FIXME the string searched for must be in the string
+  ; buffer, below 0xC000! This is not a problem now, during the
+  ; development, because the dictionary is small.
+
+paren_find_name.begin:
+  ; Compare the string with a new word.
+  ; hl = nfa
+  ld (paren_find_name.nfa_backup),hl ; save the nfa for later
+paren_find_name.string_address: equ $+1
+  ld de,0x0000 ; string address
+  ld a,(hl) ; length byte of the name field
+  and valid_word_length_mask  ; mask the length and the smudge bit
+paren_find_name.string_length: equ $+1
+  ld c,0x00 ; length of the string
+  cp c ; same length?
+  jr nz,paren_find_name.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+  inc hl ; point to the first char of the name in the dictionary
+paren_find_name.compare_next_char:
+  ld a,(de)
+  call upper.a ; XXX NEW experimental
+  cpi
+  inc de ; point to next character of the string
+  jp nz,paren_find_name.not_a_match ; mismatch
+  jp pe, paren_find_name.compare_next_char ; count not exhausted
+
+  ; The string matches.
+  ld hl,(paren_find_name.nfa_backup)
+  jr paren_find_name.end
+
+paren_find_name.not_a_match:
+  ; Not a match, try the next word.
+
+paren_find_name.nfa_backup: equ $+1
+                                        ;  T  B
+  ld hl,0x0000 ; nfa                      10 03
+  dec hl ; high address of lfa            06 01
+  ld d,(hl) ; high part of the next nfa   07 01
+  dec hl ; low address of lfa             06 01
+  ld e,(hl) ; low part of the next nfa    07 01
+  ex de,hl                              ; 04 01
+  ld a,h                                ; 04 01
+  or l ; end of dictionary? (next nfa=0)  04 01
+                                        ; 48 10 TOTAL
+
   jp nz,paren_find_name.begin ; if not, continue
 
   ; End of dictionary, no match found.
@@ -3022,8 +3264,6 @@ endif
   ; XXX TMP -- there are several versions of `find-name`. the
   ; only difference is the values returned.
 
-  ; XXX TODO move version 0 and 1 to the library, as reference.
-
   ; XXX TODO first, benchmark
 
 if find_name_version=0 ; XXX TMP
@@ -3287,7 +3527,8 @@ if find_name_version=4 ; XXX NEW
 ; }doc
 
 ;  _chk_type 'find-name -- start' ; XXX INFORMER
-  dw two_dup_,uppers_ ; XXX FIXME -- do not modify the input buffer
+  ; dw two_dup_,uppers_ ; XXX FIXME -- do not modify the input buffer
+;  dw two_dup_,cr_,type_ ; XXX INFORMER
 ;  _brk_type 'find-name -- after uppers' ; XXX INFORMER
   dw hash_vocs_,zero_,paren_do_
 find_name.do:
@@ -5080,7 +5321,7 @@ do_colon.end: ; XXX TMP for debugging
   ; Credits:
   ; Code from the Afera library.
 
-  ; XXX TODO move to the disk? problem: do_colon
+  ; XXX TODO move to the library
 
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
@@ -5844,7 +6085,7 @@ source.tib:
 ; ----------------------------------------------
   _code_header two_slash_,'2/'
 
-  ; XXX TODO move to the library
+  ; XXX TODO move to the library; not used
 
 ; doc{
 ;
@@ -5921,13 +6162,20 @@ source.tib:
 ; ----------------------------------------------
   _colon_header two_comma_,'2,'
 
-  ; XXX TODO `, ,` would do the same; benchmark
+if size_optimization
+
+  dw comma_,comma_
+  dw semicolon_s_
+
+else
 
   dw here_,two_store_
 two_comma.allot:
   _literal 2*cell
   dw allot_
   dw semicolon_s_
+
+endif
 
 ; ----------------------------------------------
   _colon_header comma_,','
@@ -5936,7 +6184,7 @@ two_comma.allot:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header compile_comma_,'COMPILE,',compile_only
+  _colon_header compile_comma_,'COMPILE,'
 
 ; doc{
 ;
@@ -6097,27 +6345,6 @@ question_dup.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_alias_header link_to_name_,'LINK>NAME',,two_plus_
-
-; ----------------------------------------------
-  _colon_header trail_,'TRAIL'
-
-  ; XXX OLD not used anymore
-  ; XXX TODO move to the library
-
-; doc{
-;
-; trail ( -- nfa )
-;
-; Leave the name field address of the topmost word in the
-; `context` vocabulary.
-;
-; }doc
-
-  dw context_,fetch_,fetch_
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header latest_,'LATEST'
 
 ; doc{
@@ -6135,27 +6362,16 @@ question_dup.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header body_to_link_,'BODY>LINK'
-
-  dw from_body_,to_name_
-
-; ----------------------------------------------
   _code_alias_header from_body_,'BODY>',,two_minus_
 
 ; ----------------------------------------------
   _code_alias_header to_body_,'>BODY',,two_plus_
 
 ; ----------------------------------------------
-  _colon_header body_to_name_,'BODY>NAME'
-
-  dw from_body_,to_name_
-  dw semicolon_s_
-
-; ----------------------------------------------
 
 ; doc{
 ;
-; cfa>nfa  ( cfa -- nfa )
+; >name  ( cfa -- nfa )
 ;
 ; Warning: No check is done where cfa belongs to a definition
 ; created with `:noname`.
@@ -6205,15 +6421,6 @@ to_name.begin_1:
 
 ; ----------------------------------------------
 
-  _code_alias_header to_link_,'>>LINK',,two_plus_
-
-  ; XXX TODO remove? only used by `-transient`, in the library.
-
-; ----------------------------------------------
-
-  _code_alias_header name_to_link_,'NAME>LINK',,two_minus_
-
-; ----------------------------------------------
   _colon_header c_store_bank_,'C!BANK'
 
 ; doc{
@@ -6229,7 +6436,7 @@ to_name.begin_1:
   _default_bank
   dw semicolon_s_
 
-  ; XXX TODO
+  ; XXX TODO -- faster version:
   ; pop de
   ; c_store_bank.e:
   ; call bank.e
@@ -6272,7 +6479,7 @@ to_name.begin_1:
   _default_bank
   dw semicolon_s_
 
-  ; XXX 15 bytes
+  ; XXX TODO -- 15 bytes -- faster version:
   ; pop de
   ; c_fetch_bank.e:
   ; call bank.e
@@ -6299,7 +6506,7 @@ to_name.begin_1:
   _default_bank
   dw semicolon_s_
 
-  ; XXX 17 bytes
+  ; XXX TODO -- 17 bytes -- faster version:
   ; pop de
   ; fetch_bank.e
   ; call bank.e
@@ -6328,7 +6535,7 @@ to_name.begin_1:
   dw c_fetch_bank_
   dw semicolon_s_
 
-  ; XXX 5 bytes
+  ; XXX TODO -- 5 bytes -- faster version:
   ; ld e,names_bank
   ; jp c_fetch_bank.e
 
@@ -6348,7 +6555,7 @@ to_name.begin_1:
   dw fetch_bank_
   dw semicolon_s_
 
-  ; XXX 5 bytes
+  ; XXX TODO -- 5 bytes -- faster version:
   ; ld e,names_bank
   ; jp fetch_bank.e
 
@@ -6387,6 +6594,12 @@ to_name.begin_1:
 ; ----------------------------------------------
   _colon_header from_name_,'NAME>'
 
+; doc{
+;
+; name>  ( nfa -- cfa )
+;
+; }doc
+
   _literal 4
   dw minus_,fetch_n_
   dw semicolon_s_
@@ -6394,7 +6607,7 @@ to_name.begin_1:
 ; ----------------------------------------------
 ; doc{
 ;
-; nfa>string  ( nfa -- ca len )
+; name>string  ( nfa -- ca len )
 ;
 ; }doc
 
@@ -6454,26 +6667,6 @@ to_name.begin_1:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_compiling_,'?COMPILING'
-
-  ; XXX TODO move to the library
-
-; doc{
-;
-; ?compiling  ( -- )
-;
-; Issue an error if not compiling.
-; 
-; : ?compiling  ( -- )
-;   compiling? 0= -14 ?throw  ;
-;
-; }doc
-
-  dw compiling_question_,zero_equals_
-  _question_throw error.compilation_only
-  dw semicolon_s_
-
-; ----------------------------------------------
   _colon_header executing_question_,'EXECUTING?'
 
 ; doc{
@@ -6489,35 +6682,6 @@ to_name.begin_1:
 
   dw state_,fetch_,zero_equals_
   dw semicolon_s_
-
-; ----------------------------------------------
-if 0 ; XXX OLD  -- not needed
-
-  _colon_header question_executing_,'?EXECUTING'
-
-  ; XXX TODO use a bit in the length byte instead?, say
-  ; `execute-only`? But there's no free bit. The "smudge" bit
-  ; and `smudge` may be substituted with `reveal`, that stores
-  ; the length byte into its place...
-
-  ; XXX TODO move to the library
-
-; doc{
-;
-; ?executing  ( -- )
-;
-; Issue an error if not executing.
-; 
-; : ?executing  ( -- )
-;   compiling? -263 ?throw  ;
-;
-; }doc
-
-  dw compiling_question_
-  _question_throw error.execution_only
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
 if 1
@@ -6777,6 +6941,7 @@ do_does:
 ; ----------------------------------------------
   _code_header count_,'COUNT'
 
+  ; Credits:
   ; Code from DZX-Forth.
 
   pop de
@@ -6794,7 +6959,7 @@ do_does:
 ; ----------------------------------------------
   _colon_header type_,'TYPE'
 
-  ; XXX TODO Rewrite in Z80, after the ROM routine.
+  ; XXX TODO Rewrite in Z80, with the ROM routine?
 
   dw question_dup_
   dw zero_branch_,type.empty_string
@@ -7535,9 +7700,13 @@ parse_name.skip:
 ;
 ; }doc
 
+  ; XXX TODO convert to deferred, to let it be customized for
+  ; 8-bit charsets.
+
   pop hl
   ld a,l
   call upper.a
+  ; XXX TODO `jp push_a` to save 1 byte?
   ld l,a
   jp push_hl
 
@@ -7600,7 +7769,7 @@ if find_name_version=4
 endif
 
 ; ----------------------------------------------
-  _code_header place_,'place'
+  _code_header place_,'PLACE'
 
   ; Credits:
   ; Z80 code from DZX-Forth's `packed`.
@@ -7616,7 +7785,8 @@ endif
 ; the buffer at _ca2_ is less than _len1_+1 characters.
 ;
 ; ----
-; : place  ( ca1 len1 ca2 )  2dup c! 1+ smove  ;
+; : place  ( ca1 len1 ca2 )
+;   2dup c! 1+ smove  ;
 ; ----
 ;
 ; }doc
@@ -7763,7 +7933,7 @@ header.continue:
 
   ; ( ca len )
 
-  dw two_dup_,uppers_ ; XXX FIXME -- do this modifies the buffer?
+  dw two_dup_,uppers_ ; XXX FIXME -- this modifies the input buffer!
 
   ; XXX TODO error if name is too long? (see lina)
   dw width_,fetch_,min_
@@ -8002,24 +8172,29 @@ c_literal.end:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _code_header char_question_,'CHAR?'
 
-  ; Credits:
-  ; Word adapted from DZX-Forth.
+  ; XXX TODO not used yet
+  ; XXX TODO rename to `byte?` (there's a `char?` used by
+  ; `number?`)
 
-; doc{
-;
-; char?  ( n -- f )
-;
-; Is _n_ an 8-bit number?
-;
-; }doc
+  ; _code_header char_question_,'CHAR?'
 
-  ; XXX TODO -- use with `interpret` or `literal`?
+  ; ; Credits:
+  ; ; Word adapted from DZX-Forth.
 
-  pop hl
-  ld l,h
-  jp zero_equals.hl
+; ; doc{
+; ;
+; ; char?  ( n -- f )
+; ;
+; ; Is _n_ an 8-bit number?
+; ;
+; ; }doc
+
+  ; ; XXX TODO -- use with `interpret` or `literal`?
+
+  ; pop hl
+  ; ld l,h
+  ; jp zero_equals.hl
 
 ; ----------------------------------------------
   _colon_header literal_,'LITERAL',immediate+compile_only
@@ -10213,7 +10388,7 @@ endif
 if find_name_version=4
 
   dw defined_,dup_,question_defined_
-  dw from_body_
+  dw from_name_
   dw semicolon_s_
 
 endif
@@ -10539,8 +10714,6 @@ sign.end:
 ; The quotient _d2_ is left on stack.
 ;
 ; }doc
-
-  ; XXX FIXME -- `123 s>d <# #s #>`
 
   dw base_,fetch_
   dw m_slash_mod_ ;  ( remainder dquotient )
