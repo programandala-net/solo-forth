@@ -48,8 +48,33 @@ origin = 0x5E00
 ################################################################
 # Main
 
+# XXX OLD -- tests
+# .PHONY: test
+# test: test2
+# 	echo $(pattern)
+# 	ls $(pattern)
+# .PHONY: test2
+# test2:
+# 	$(eval pattern=ker*)
+# 	echo variable pattern is $(pattern)
+
 .PHONY: all
-all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
+all: gplusdos plus3dos
+
+.PHONY: gplusdos
+gplusdos: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
+
+.PHONY: plus3dos
+plus3dos: solo_forth_disk_a.dsk
+# plus3dos: solo_forth_disk_a.dsk solo_forth_disk_b.dsk
+
+# XXX OLD
+# .PHONY: setgplusdos
+# setgplusdos:
+# 	$(eval dos=gplusdos)
+# .PHONY: setplus3dos
+# setplus3dos:
+# 	$(eval dos=plus3dos)
 
 # XXX OLD -- all included simbols
 #	symbols
@@ -62,6 +87,7 @@ all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
 clean:
 	rm -f \
 		solo_forth_disk_?.mgt \
+		solo_forth_disk_?.dsk \
 		solo_forth.*.tap
 
 include Makefile.pasmo
@@ -78,15 +104,33 @@ include Makefile.pasmo
 ################################################################
 # The basic loader
 
+# XXX OLD
 # loader.bas.tap: loader.bas
 # 	bas2tap -q -n -sAutoload -a1 \
 # 		loader.bas  \
 # 		loader.bas.tap
 
-loader.bas.tap: loader.bas
+# XXX OLD
+# loader.bas.tap: loader.bas
+# 	zmakebas -n Autoload -a 1 \
+# 		-o loader.bas.tap \
+# 		loader.bas
+
+# XXX OLD
+# loader.bas.tap: loader.bas
+# 	zmakebas -n $(if gplusdos,Autoload,DISK) -a 1 \
+# 		-o loader.$(dos).bas.tap \
+# 		loader.$(dos).bas
+
+loader.gplusdos.bas.tap: loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 \
-		-o loader.bas.tap \
-		loader.bas
+		-o loader.gplusdos.bas.tap \
+		loader.gplusdos.bas
+
+loader.plus3dos.bas.tap: loader.plus3dos.bas
+	zmakebas -n DISK -a 1 \
+		-o loader.plus3dos.bas.tap \
+		loader.plus3dos.bas
 
 ################################################################
 # The charset
@@ -98,42 +142,114 @@ loader.bas.tap: loader.bas
 # 		solo_forth.charset.bin
 
 ################################################################
-# The MGT disk images
+# Font drivers
 
-# Disk 1 (for drive 1) contains G+DOS and the Forth system. The
-# user will use disk 1 for customized versions of the Forth
-# system, Forth turnkey applications, graphics and data files.
+# This driver is not part of the Solo Forth library yet.
+# Meanwhile, its binary is included in the first disk.
+
+# Note: an intermediate file called "4x8fd.bin" is used, in
+# order to force that filename in the TAP header and therefore
+# in the disk image.
 
 sys/4x8fd.tap: sys/4x8fd.z80s
-	pasmo --tap \
-		sys/4x8fd.z80s \
-		sys/4x8fd.tap
+	cd sys ; \
+	pasmo 4x8fd.z80s 4x8fd.bin ; \
+	bin2code 4x8fd.bin 4x8fd.tap ; \
+	cd - 
+
+sys/prnt42.tap: sys/prnt42.bin
+	cd sys ; \
+	bin2code prnt42.bin prnt42.tap ; \
+	cd - 
+
+################################################################
+# Fonts
+
+# The DSK disk image needs these binary files to be converted to
+# TAP first.
+
+fzx_fonts = $(wildcard fzx/*.fzx)
+
+fzx/fzx_fonts.tap : $(fzx_fonts)
+	cd fzx ; \
+	for file in $$(ls -1 *.fzx); do \
+		bin2code $$file $$file.tap; \
+	done; \
+	cat *.fzx.tap > fzx_fonts.tap ; \
+	rm -f *.fzx.tap ; \
+	cd -
+
+################################################################
+# The disk images
+
+# The first disk ("1" for G+DOS, "A" for +3DOS) contains the
+# Forth system. The user will use the first disk for customized
+# versions of the Forth system, Forth turnkey applications,
+# graphics and data files.
 
 solo_forth_disk_1.mgt: \
+		loader.gplusdos.bas.tap \
+		kernel.gplusdos.bin.tap \
 		sys/4x8fd.tap \
-		loader.bas.tap \
-		kernel.bin.tap
-	mkmgt  solo_forth_disk_1.mgt \
+		sys/prnt42.tap
+	mkmgt solo_forth_disk_1.mgt \
 		sys/gplusdos-sys-2a.tap \
-		loader.bas.tap \
+		loader.gplusdos.bas.tap \
 		kernel.bin.tap \
 		sys/ea5aky-font42.tap \
 		sys/4x8fd.tap \
-		sys/print-42-bin.tap \
+		sys/prnt42.tap \
 		fzx/*.fzx
 
-# Disk 2 (for drive 2) contains the source blocks of the Forth
-# system, with a library of extensions and tools.  The disk
-# sectors are used directly, without the G+DOS file system, the
-# way classic Forth worked. The user can edit the original fsb
-# source file with a modern editor and convert it to a fake MGT
-# disk image with `mkmgt`, as shown:
+tmp/solo_forth_disk_a.tap: \
+		loader.plus3dos.bas.tap \
+		kernel.plus3dos.bin.tap \
+		sys/4x8fd.tap \
+		sys/prnt42.tap \
+		fzx/fzx_fonts.tap
+	cat \
+		loader.plus3dos.bas.tap \
+		kernel.plus3dos.bin.tap \
+		sys/ea5aky-font42.tap \
+		sys/4x8fd.tap \
+		sys/prnt42.tap \
+		fzx/fzx_fonts.tap \
+		> tmp/solo_forth_disk_a.tap
+
+# XXX OLD
+# solo_forth_disk_a.dsk: \
+# 		sys/4x8fd.tap \
+# 		loader.plus3dos.bas.tap \
+# 		kernel.plus3dos.bin.tap
+# 	mkp3fs -720  -label SoloForth \
+# 		solo_forth_disk_a.dsk \
+# 		loader.plus3dos.bas.tap \
+# 		kernel.bin.tap \
+# 		sys/ea5aky-font42.tap \
+# 		sys/4x8fd.tap \
+# 		sys/print-42-bin.tap \
+# 		fzx/*.fzx
+
+solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
+	tap2dsk -720 -label SoloForth \
+		tmp/solo_forth_disk_a.tap \
+		solo_forth_disk_a.dsk
+
+# The second disk ("2" for G+DOS, "B" for +3DOS) contains the
+# source blocks of the Forth system.  The blocks are stored on
+# the disk sectors, without file system.
 
 mgt_file = $(basename $(disk_source_file) ).mgt
 
 solo_forth_disk_2.mgt: $(disk_source_file)
 	fsb2-mgt $(disk_source_file) ;\
 	mv $(mgt_file) solo_forth_disk_2.mgt
+
+# XXX TODO -- `fsb2-dsk` is not ready yet.
+dsk_file = $(basename $(disk_source_file) ).dsk
+solo_forth_disk_b.dsk: $(disk_source_file)
+	fsb2-dsk $(disk_source_file) ;\
+	mv $(dsk_file) solo_forth_disk_b.dsk
 
 ################################################################
 # Backup
@@ -150,6 +266,7 @@ backup:
 		*.bas \
 		*.fsb \
 		*.mgt \
+		*.dsk \
 		*.sh \
 		*.txt \
 		*.z80s
@@ -183,3 +300,5 @@ backup:
 # more than 300 source screens, while fsb2 is instantaneous.
 #
 # 2015-10-15: Updated.
+#
+# 2015-11-10: First changes to support also the +3DOS version.

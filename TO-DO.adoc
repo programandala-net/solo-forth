@@ -1,5 +1,5 @@
 = Solo Forth TO-DO
-:revdate: 2015-11-04
+:revdate: 2015-11-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -12,6 +12,15 @@
 // }}}
 == Inner ==
 // {{{
+
+.2015-11-10:
+
+On +3DOS, reserve one memory bank for the name fields.
+
+Move the circular string buffer to the top of memory.  Use `high` or
+similar, like fig-Forth, to protect the string buffer and the heap. In
+fact, the string buffer should be defined in the heap, but a small
+implementation of the heap is needed.
 
 .2015-11-04:
 

@@ -28,12 +28,21 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # choose the filename used in the TAP file header; it uses the name of the
 # target file.
 
-kernel.bin.tap: $(kernel_source_file)
+kernel.gplusdos.bin.tap: $(kernel_source_file)
 	$(pasmo) -v --tap \
+		--equ gplusdos \
 		$(kernel_source_file) \
 		forth.bin \
-		kernel.symbols.z80s
-	mv forth.bin kernel.bin.tap
+		kernel.symbols.gplusdos.z80s
+	mv forth.bin kernel.gplusdos.bin.tap
+
+kernel.plus3dos.bin.tap: $(kernel_source_file)
+	$(pasmo) -v --tap \
+		--equ plus3dos \
+		$(kernel_source_file) \
+		forth.bin \
+		kernel.symbols.plus3dos.z80s
+	mv forth.bin kernel.plus3dos.bin.tap
 
 # > solo_forth.assembly_debug_info.txt ; \
 

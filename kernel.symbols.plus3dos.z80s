@@ -1555,7 +1555,7 @@ block_cfap	EQU 0CF28H
 block_lfa	EQU 0CF2AH
 block_nfa	EQU 0CF2CH
 block_pfa	EQU 07A2AH
-blocks_per_disk	EQU 00320H
+blocks_per_disk	EQU 002D0H
 boot_		EQU 077F7H
 boot_cfap	EQU 0CDA9H
 boot_lfa	EQU 0CDABH
@@ -4073,7 +4073,7 @@ version_	EQU 0779BH
 version_cfap	EQU 0CD90H
 version_high_part EQU 00133H
 version_lfa	EQU 0CD92H
-version_low_part EQU 07B46H
+version_low_part EQU 07B47H
 version_nfa	EQU 0CD94H
 version_pfa	EQU 0779DH
 voc_link.init_value EQU 05E0CH

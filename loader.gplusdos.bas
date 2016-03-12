@@ -1,5 +1,7 @@
-# Solo Forth loader
+# Solo Forth loader for G+DOS
 
 1 CLEAR VAL "24063": LOAD d*"forth.bin" CODE VAL"24064"
 2 POKE@VAL"10",NOT PI:RANDOMIZE USR VAL "24064": REM cold
 3 RANDOMIZE USR VAL"24067": REM warm
+
+# vim: ft=sinclairbasic

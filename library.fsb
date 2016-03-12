@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201511100311
+\ Last modified: 201511110245
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -936,7 +936,7 @@ need columns  need rows
 need mode32  need <file-as-is
 
 drive@ 1 drive!
-s" print-42" <file-as-is ?throw
+s" prnt42.bin" <file-as-is ?throw
 s" ea5aky.f42" <file-as-is ?throw
 drive!
   \ Load the driver and the font.
@@ -971,7 +971,7 @@ drive!
 need mode32  need <file-as-is  need 4x8font
 
 drive@ 1 drive!
-s" 4x8fd.tap" <file-as-is ?throw
+s" 4x8fd.bin" <file-as-is ?throw
 drive!
   \ Load the driver and the font.
 
@@ -4077,8 +4077,8 @@ need roll
 
 variable (any?)
 
-: any?  ( n1..nn n n0 -- f )
-  \ Is any number _n1..nn_ equal to _n0_?
+: any?  ( x0 x1..xn x -- f )
+  \ Is any _x1..xn_ equal to _x0_?
   dup 1+ roll (any?) !  0 swap 0 do swap (any?) @ = or loop  ;
 
 ( c@test-bits c!toggle-bits )
@@ -6943,6 +6943,26 @@ need within
   \     6 of  ." six"  endof
   \   endcase  ;
 
+( any-of )
+
+need any?
+
+: (any-of)  ( x0 x1..xn n -- x0 x0 | x0 0 )
+  dup 1+ pick >r any? r> tuck and  ;
+
+: any-of  ( Compilation: -- of-sys )
+          ( Run-time: x0 x1..xn n -- | x0 )
+  postpone (any-of) postpone of  ; immediate compile-only
+
+  \ Usage example:
+
+  \ : test  ( n -- )
+  \   case
+  \     1 of  ." one"  endof
+  \     2 7 10 3 any-of  ." two, seven or ten"  endof
+  \     6 of  ." six"  endof
+  \   endcase  ;
+
 ( default-of )
 
   \ Credits:
@@ -9299,6 +9319,8 @@ code c@a+  ( -- c )
   \ An implementation of the Forth-94 Memory-Allocation Word
   \ Set.
 
+  \ XXX Note: 1614 bytes used!
+
   \ XXX TODO use top of memory instead of dictionary space?
   \ problem: memory banks could not be used at the same time.
   \
@@ -9575,6 +9597,7 @@ init-heap
   \ usable space left.
 
 forth-wordlist set-current
+
 : allocate ( u -- addr ior)
   dup 0< if  -59  \ `allocate` error code
        else  adjustsize
@@ -9585,6 +9608,7 @@ forth-wordlist set-current
          else  drop -59  \ `allocate` error code
          then
        then  ;
+
 heap-wordlist set-current  -->
 
   \ Make an in-use node with a data field at least _u_ address
@@ -9679,6 +9703,7 @@ heap-wordlist set-current  -->
   \ preceding node is free.
 
 forth-wordlist set-current
+
 : free ( addr -- ior)
   headsize -  dup togglesize  dup ?mergenext  ?mergeprev  0  ;
 

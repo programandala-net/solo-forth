@@ -1,6 +1,10 @@
 ; Solo Forth
 
-; A Forth system for ZX Spectrum 128K and G+DOS.
+; A Forth system for:
+;
+;   ZX Spectrum 128K with G+DOS
+;   ZX Spectrum +3
+;
 ; http://programandala.net/en.program.solo_forth.html
 
 ; XXX UNDER DEVELOPMENT
@@ -11,11 +15,11 @@
   ; Note: Version numbers use the ISO date format
   ; "YYYYMMDD[HH[MM]]".
 
-  ; Version:        20151110
+  ; Version:        20151111
 version_high_part:  equ 0x0133
-version_low_part:   equ 0x7B46
+version_low_part:   equ 0x7B47
   
-  ; Last modified:  201511100311
+  ; Last modified:  201511110212
 
 ; ==============================================================
 ; Author and license
@@ -195,6 +199,15 @@ version_low_part:   equ 0x7B46
   ; it is changed with a text substitution.  Some Vim mappings
   ; are created to turn them on and off.
 
+  ; Solo Forth can be compiled for G+DOS or +3DOS.
+  ; This depends on two labels, `gplusdos` and `plus3dos`,
+  ; defined with a parameter of the Pasmo assembler. See the
+  ; Makefile files for details.
+
+if (!defined gplusdos) and (!defined plus3dos)
+  gplusdos equ true ; G+DOS by default
+endif
+
   ; XXX experimental
 size_optimization: equ false
   ; true = some code pieces are more compact but slower.
@@ -245,12 +258,18 @@ cells_per_return_stack:           equ 0x50
 
 bytes_per_terminal_input_buffer:  equ 0x50
 
-bytes_per_sector:                 equ 0x0200 ; 512-byte sectors in G+DOS
+bytes_per_sector:                 equ 0x0200 ; 512-byte sectors in G+DOS and +3DOS
 sectors_per_block:                equ 0x02
 
 bytes_per_buffer:                 equ 0x0400
 
-blocks_per_disk:                  equ 800 ; KiB per disk in G+DOS
+if defined gplusdos
+  blocks_per_disk:                  equ 800 ; KiB per disk in G+DOS
+ endif
+if defined plus3dos
+  blocks_per_disk:                  equ 720 ; KiB per disk in +3DOS
+endif
+
 characters_per_line:              equ 0x40
 lines_per_screen:                 equ 0x10
 max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
@@ -1394,7 +1413,8 @@ nfa_of_the_previous_word: defl 0 ; link to previous Forth word
 ;
 ; }doc
 
-  ; [Idea taken from Coos Haak's Z80 Forth assembler.]
+  ; Credits:
+  ; Idea taken from Coos Haak's Z80 Forth assembler.
 
   dw store_csp_
   dw base_,fetch_,abase_,store_ ; save the current base
@@ -4332,7 +4352,8 @@ zero_less_.hl: ; XXX entry not used yet
   if size_optimization
     add hl,hl ; 11t, 1 byte
   else
-    ; [Idea from Ace Forth.]
+    ; Credits:
+    ; Idea from Ace Forth.
     rl h ; 8t, 2 bytes
   endif
 true_if_cy:
@@ -10280,10 +10301,11 @@ endif
 ; many unnecessary BASIC-related things. This code simply clears
 ; the screen.
 
-; [The attributes part was improved after code by Dean Belfield
+; Credits:
+; The attributes part was improved after code by Dean Belfield
 ; <http://wordpress.animatez.co.uk/programming/assembly-language/z80/z80-library-routines/204-2/>.
 ; The idea for `ld (hl),l` was found in David Webb's _Advanced
-; Spectrum Machine Language_ ]
+; Spectrum Machine Language_.
 
   exx ; save the Forth IP
   ; Erase the bitmap.
