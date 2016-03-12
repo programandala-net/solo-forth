@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506272203
+; Version A-00-201506280027
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -147,13 +147,16 @@ fig_parsing?                    equ false
   ; (0/1) is used instead, with the flag name in a comment; it
   ; is changed with a text substitution, and Vim mappings
   ; are created to turn it on an off.
-  ; XXX FIXME when the flag is true, 'interpret' enters an
-  ; endless loop.
 ;names_in_memory_bank?           equ true
   ; true = name fields and link fields are stored in a memory
   ; bank page, saving dictionary space.
   ; false = name fields and link fields are stored in the
   ; dictionary.
+
+  ; XXX TODO
+;fig_does?                       equ true
+  ; true = the fig-Forth `<builds does>` pair is used
+  ; false = the modern `create does>` pair is used
 
 ; ==============================================================
 ; Symbols
@@ -202,10 +205,10 @@ csb_size:                       equ 256 ; circular string buffer
 
 ; Memory banks
 
-default_bank: equ 2
-names_bank:   equ 2 ; XXX TMP for debugging
+default_bank: equ 0
+names_bank:   equ 1
 
-np0: equ 0xC000 ; names pointers
+names_bank_address: equ 0xC000 ; names pointers
 
 ; Error messages are in the disk, starting from the screen
 ; number hold in the `msg-scr` constant.  Error codes 0, 16, 32
@@ -367,6 +370,7 @@ _header: macro _base_label,_name,_is_immediate
 
     ; Update the names pointer:
     org names_pointer
+    dw np
     dw np
 
     ; In dictionary:
@@ -659,10 +663,18 @@ ip_backup: ; temporary copy of Forth IP
 
 if 1 ; names_in_memory_bank?
 
-  ; XXX TODO
+  np: defl names_bank_address+1
 
-  np: defl np0+1
 names_pointer:
+  ; First free address in the names bank.
+  ; The value is updated during the assembling,
+  ; by the `_header` macro.
+  dw np
+
+names_pointer_init_value:
+  ; Init value of the names pointer, restored by `cold`.
+  ; The value is updated during the assembling,
+  ; by the `_header` macro.
   dw np
 
 endif
@@ -971,7 +983,7 @@ push_l: ; XXX TMP -- not used yet
 ;
 ; bank  ( n -- )
 ;
-; Page memory bank _n_ at 0xC000..0xFFFF.
+; Page memory bank _n_ (0..7) at 0xC000..0xFFFF.
 ;
 ; }doc
 
@@ -980,11 +992,10 @@ push_l: ; XXX TMP -- not used yet
   _jp_next
 
 bank.default:
-  ; XXX TODO
+  ; XXX TODO ?
 bank.names:
-  ; XXX TODO
+  ; XXX TODO ?
 bank.e:
-  ret ; XXX TMP for debugging
   di
   ld a,(sys_bankm) ; get the saved status of BANKM
   and 0xF8 ; erase bits 0-2
@@ -992,7 +1003,7 @@ bank.e:
   ld (sys_bankm),a ; update BANKM
   out (bank1_port),a ; page the bank
   ei
-  ret ; XXX TODO reti?
+  ret
 
 ; ----------------------------------------------
   _code_header csb_unused_,'CSB-UNUSED'
@@ -2279,14 +2290,52 @@ l60c0h:
   ld h,a
   jp push_hl
 
-; ----------------------------------------------
-
 if 1 ; names_in_memory_bank?
 
+; ----------------------------------------------
+  _constant_header np_,'NP'
+
+  dw names_pointer
+
+; ----------------------------------------------
+  _constant_header n0_,'N0'
+
+  ; XXX TODO
+
+  dw names_bank_address
+
+; ----------------------------------------------
   _code_header np_fetch_,'NP@'
 
   ld hl,(names_pointer)
   jp push_hl
+
+; ----------------------------------------------
+  ; _code_header np_store_,'NP!'
+
+  ; XXX TODO
+
+  ; ld hl,(names_pointer)
+  ; jp push_hl
+  ; _jp_next
+
+; ----------------------------------------------
+
+  _colon_header comma_np_,',NP'
+
+; doc{
+;
+; ,np  ( x -- )
+;
+; Store _x_ into the next available names memory cell, advancing
+; the names pointer.
+;
+; Note: The names memory is supposed to be paged in.
+;
+; }doc
+
+  dw np_fetch_,store_,two_,np_,plus_store_
+  dw semicolon_s_
 
 endif
 
@@ -2307,38 +2356,6 @@ endif
   ld l,a
   ld sp,hl
   _jp_next
-
-; ----------------------------------------------
-
-if 1 ; names_in_memory_bank?
-
-  _constant_header np_,'NP'
-
-  dw names_pointer
-
-endif
-
-; ----------------------------------------------
-
-if 1 ; names_in_memory_bank?
-
-  _colon_header comma_np_,',NP'
-
-; doc{
-;
-; ,np  ( x -- )
-;
-; Store _x_ into the next available names memory cell, advancing
-; the names pointer.
-;
-; Note: The names memory is supposed to be paged in.
-;
-; }doc
-
-  dw np_fetch_,store_,two_,np_,plus_store_
-  dw semicolon_s_
-
-endif
 
 ; ----------------------------------------------
   _constant_header rp_,'RP'
@@ -2974,19 +2991,11 @@ do_user:
   dw semicolon_s_
 
 ; ----------------------------------------------
-; XXX TODO
-;  _user_variable_header np0_,'NP0'
-
-;  db 0x00
-
-; ----------------------------------------------
-; XXX TODO rename to SP0
   _user_variable_header s0_,'S0'
 
   db 0x00
 
 ; ----------------------------------------------
-; XXX TODO rename to RP0
   _user_variable_header r0_,'R0'
 
   db 0x02
@@ -3010,6 +3019,7 @@ do_user:
   _user_variable_header fence_,'FENCE'
 
   ; XXX TODO why this is a user variable?
+  ; XXX OLD -- obsolescent word
   db 0x0A
 
 ; ----------------------------------------------
@@ -3420,7 +3430,7 @@ if 1 ; names_in_memory_bank?
   pop de ; cfa
   push bc ; save Forth IP
   ld b,0
-  ld hl, np0-4
+  ld hl, names_bank_address-4
 
 cfa_to_nfa.begin_0:
   ; hl = address of the cfa pointer
@@ -3678,9 +3688,9 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header does_,'DOES>'
+if 1 ; fig_does? ; XXX OLD -- original fig-Forth version, paired with `<builds`.
 
-  ; XXX TODO -- check
+  _colon_header does_,'DOES>'
 
   dw from_r_ ; address of the first word after `does>` (the run-time routine)
   dw latest_,nfa_to_pfa_ ; pfa of the definition under construction
@@ -3702,9 +3712,21 @@ do_does:
   inc hl
   ld b,(hl)
   inc hl
-  ; W was incremented in the last instruction, pointing to the parameter field.
-  ; Push the first parameter on stack:
+  ; W was incremented in the last instruction, pointing to the
+  ; parameter field; push it on the stack:
   jp push_hl
+
+else  ; XXX NEW -- Forth-83 version, paired with `create`
+
+  ; XXX TODO
+
+  _colon_header does_,'DOES>',immediate
+
+  dw compile_,paren_semicolon_code_
+  call do_colon
+  _jp_next 
+
+endif
 
 ; ----------------------------------------------
   _code_header count_,'COUNT'
@@ -3910,6 +3932,7 @@ x.exit:
   ; terminal, prompting the operator for the next line of commands.
 
   dw r_drop_
+;  dw lit_,7,border_ ; XXX INFORMER
 
 x.end:
   dw semicolon_s_
@@ -4091,7 +4114,7 @@ else ; XXX NEW -- modern version with `skip parse`
 
 endif
 
-  if 0 ; XXX INFORMER
+  if 0
     ;dw space_ ; XXX INFORMER
     ;dw depth_,dot_ ; XXX INFORMER
     ;dw paren_dot_quote_ ; XXX INFORMER
@@ -4517,13 +4540,15 @@ if 1 ; names_in_memory_bank?
 
     ; XXX TODO
 
-  dw here_,count_,save_string_
+  dw here_,count_,save_string_ ; ( ca len )
+  dw tuck_ ; save the name length for later ( len ca len )
   _names_bank
   dw here_,comma_np_ ; store a pointer to the cfa
   dw latest_,comma_np_ ; link field
-  dw tuck_ ; save the name length for later
+  ; Now `np` contains the address of the nfa.
   dw np_fetch_,dollar_store_ ; store the name
-  dw np_,plus_store_ ; update the names pointer
+  dw np_fetch_,current_,fetch_,store_ ; update contents of `latest` in the current vocabulary
+  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
   _default_bank
   dw here_,two_plus_,comma_ ; compile the pfa into code field
   dw semicolon_s_
@@ -4547,9 +4572,6 @@ endif
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
 
-  ; XXX TODO -- rewrite after Forth-83 and ANS Forth.
-  ; XXX TODO -- check if already done.
-
   dw header_,smudge_
   dw paren_semicolon_code_
 do_create:
@@ -4558,6 +4580,9 @@ do_create:
   _jp_next
 
 ; ----------------------------------------------
+
+if 1 ; fig_does?
+
   _does_header assembler_,'ASSEMBLER'
 
   dw do_vocabulary
@@ -4567,6 +4592,21 @@ assembler_vocabulary_latest:
   dw forth_vocabulary_dummy_nfa
 assembler_vocabulary_link:
   dw forth_vocabulary_link
+
+else
+
+  ; XXX TODO
+  _colon_header assembler_,'ASSEMBLER'
+
+  dw do_vocabulary
+assembler_vocabulary_dummy_nfa:
+  dw dummy_name_field
+assembler_vocabulary_latest:
+  dw forth_vocabulary_dummy_nfa
+assembler_vocabulary_link:
+  dw forth_vocabulary_link
+
+endif
 
 ; ----------------------------------------------
   _colon_header code_,'CODE'
@@ -4619,9 +4659,8 @@ compare.ready:
   pop bc ; bc = ca2
   ex (sp),hl ; hl = ca1 ; save Forth IP
   push af ; save carry flag
-compare_.compare_strings: equ $+1 ; XXX not used yet
+compare.compare_strings: equ $+1 ; XXX not used
   call compare_strings_case_sensitive
-  ;jr z,compare.match
   jr nz,compare.no_match
 
 compare.match:
@@ -4938,7 +4977,9 @@ interpret.begin:
 interpret.execute:
   ; Executing or immediate ( cfa )
   ; dw drop_ ; XXX TMP for debugging
+;  dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw execute_
+;  dw lit_,7,border_ ; XXX INFORMER
   dw branch_,interpret.begin
 
 interpret.word_not_found:
@@ -4994,6 +5035,9 @@ do_vocabulary:
   dw semicolon_s_
 
 ; ----------------------------------------------
+
+if 1 ; fig_does?
+
   _does_header forth_,'FORTH'
 
   dw do_vocabulary
@@ -5003,6 +5047,21 @@ forth_vocabulary_latest:
   dw nfa_of_top_most_word_in_forth_voc
 forth_vocabulary_link:
   dw 0x0000
+
+else
+
+  ; XXX TODO
+  _colon_header forth_,'FORTH'
+
+  dw do_vocabulary
+forth_vocabulary_dummy_nfa:
+  dw dummy_name_field
+forth_vocabulary_latest:
+  dw nfa_of_top_most_word_in_forth_voc
+forth_vocabulary_link:
+  dw 0x0000
+
+endif
 
 ; ----------------------------------------------
   _colon_header definitions_,'DEFINITIONS'
@@ -5080,6 +5139,7 @@ warm_start_phony_:
 
   dw empty_buffers_
   dw empty_csb_
+  ; XXX TODO -- restore `np`
   dw first_,dup_,use_,store_,prev_,store_
   dw lit_,default_user_variables_start ; from
   dw lit_,user_variables_pointer,fetch_ ; to
@@ -5091,6 +5151,7 @@ warm_start_phony_:
   dw abort_
 
 cold_start:
+  call move_name_fields_to_memory_bank
   call common_start
 cold_start_phony_:
   dw cold_
@@ -5338,6 +5399,8 @@ plus_buf.continue:
 ; ----------------------------------------------
   _colon_header update_,'UPDATE'
 
+  ; XXX TODO move to the disk?
+
   dw prev_,fetch_,fetch_
   dw lit_,0x8000,or_
   dw prev_,fetch_,store_
@@ -5433,6 +5496,7 @@ block.end:
 ; }doc
 
 ; [Name taken from eForth.]
+; XXX TODO move to the disk
 
   pop hl
   ld a,h
@@ -5735,6 +5799,8 @@ if.do:
   _colon_header unless_,'UNLESS',immediate
 
   ; Equivalent to `0= if`, but faster.
+
+  ; XXX TODO move to the disk?
 
   dw compile_,question_branch_
   dw branch_,if.do
@@ -6433,9 +6499,36 @@ dictionary_pointer_after_cold:
 
 if 1 ; names_in_memory_bank?
 
-  ; XXX TODO
+move_name_fields_to_memory_bank:
+  
+  ; Move the name fields, assembled in ordinary memory,
+  ; to the names bank. This routine is needed only once.
+  ; Its call is patched with `noop` at the end, and the routine
+  ; itself will be overwritten by the Forth dictionary.
 
-  org np0
+  ; The whole screen is used as intermediate buffer for copying
+  ; the data.
+
+  ld hl,names_bank_address
+  ld de,16384 ; screen
+  ld bc,6912 ; screen size
+  ldir
+  ld e,names_bank
+  call bank.e
+  ld hl,16384 ; screen
+  ld de,names_bank_address
+  ldir
+  ld e,default_bank
+  call bank.e
+  ld hl,cold_start ; address of the call to this routine
+  ld (hl),0 ; noop
+  inc hl
+  ld (hl),0 ; noop
+  inc hl
+  ld (hl),0 ; noop
+  ret
+
+  org names_bank_address
 
   db 0 ; fake length byte, needed by the algorithm used in `cfa>nfa`
 

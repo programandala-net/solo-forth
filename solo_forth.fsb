@@ -724,6 +724,8 @@ end-code
 
 ( forget )
 
+  \ XXX OLD -- obsolescent word
+
 : forget  ( "name" -- )
   current @ context @ <>   \ Compare `current` with `context`.
   24 ?error                \ If not the same, issue an error.
@@ -743,9 +745,10 @@ end-code
   \ its current state.
 
   latest 6 +origin !  \ top most word in `forth` vocabulary
-  here 22  +origin !  \ `fence` init value
+  here 22  +origin !  \ `fence` init value \ XXX OLD obsolete
   here 24 +origin !   \ `dp` init value
-  here fence !
+  \ XXX TODO -- update also the names pointer
+  here fence ! \ XXX OLD obsolete
   \ `voc-link` init value:
   [ ' forth cfa>pfa 8 + ] literal 26 +origin !  ;
 

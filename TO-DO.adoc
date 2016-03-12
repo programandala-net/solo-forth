@@ -119,3 +119,7 @@ TOS is non-zero, else skip it.
 .2015-06-26:
 
 Fix: `plot` and `point`.
+
+.2015-06-28:
+
+Fix: execution of new words resets the machine.
