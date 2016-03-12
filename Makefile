@@ -20,6 +20,9 @@
 #   Utilities section of
 #   http://worldofspectrum.org
 
+# bin2tap (by Metalbrain)
+# 	http://metalbrain.speccy.org/link-eng.htm
+
 # Pasmo (by Julián Albo)
 #   http://pasmo.speccy.org/
 
@@ -48,9 +51,17 @@ disk_source_file = solo_forth.fsb
 
 .ONESHELL:
 
+# The default assembler can be overridden by a comand line
+# argument, eg:
+#
+# 	make asm=z80asm
+
+asm = pasmo
+
 ################################################################
 # Main
 
+.PHONY: all
 all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
 
 .PHONY : clean
@@ -72,10 +83,11 @@ solo_forth.bas.tap: solo_forth.bas
 
 # The charset.
 
-solo_forth.charset.bin: solo_forth.charset.z80s
-	pasmo -v \
-		solo_forth.charset.z80s \
-		solo_forth.charset.bin
+# XXX OLD
+# solo_forth.charset.bin: solo_forth.charset.z80s
+# 	pasmo -v \
+# 		solo_forth.charset.z80s \
+# 		solo_forth.charset.bin
 
 # The new binary.
 
@@ -83,14 +95,50 @@ solo_forth.charset.bin: solo_forth.charset.z80s
 # choose the filename used in the TAP file header; it uses the name of the
 # target file.
 
-solo_forth.bin.tap: $(kernel_source_file) solo_forth.charset.bin
+solo_forth.bin.tap: $(kernel_source_file)
+ifeq ($(asm),pasmo)
 	pasmo -v --tap \
 		$(kernel_source_file) \
 		forth.bin \
-		solo_forth.symbols.z80s
+		solo_forth.symbols.pasmo.z80s ; \
 	mv forth.bin solo_forth.bin.tap
+else ifeq ($(asm),pasmo053)
+	/usr/local/bin/pasmo.053 -v --tap \
+		$(kernel_source_file) \
+		forth.bin \
+		solo_forth.symbols.pasmo.z80s ; \
+	mv forth.bin solo_forth.bin.tap
+else ifeq ($(asm),pasmo054)
+	/usr/local/bin/pasmo.054beta2 -v --tap \
+		$(kernel_source_file) \
+		forth.bin \
+		solo_forth.symbols.pasmo.z80s ; \
+	mv forth.bin solo_forth.bin.tap
+else ifeq ($(asm),z80asm)
+	/usr/bin/z80asm \
+		--input=$(kernel_source_file) \
+		--output=forth.bin \
+		--label=solo_forth.symbols.z80asm.z80s \
+		--list=solo_forth.list.txt ; \
+	bin2tap forth.bin solo_forth.bin.tap
+else ifeq ($(asm),as)
+	z80-unknown-coff-as \
+		-o forth.bin \
+		-as=solo_forth.symbols.z80asm.z80s \
+		-al=solo_forth.list.txt \
+		-z80 $(kernel_source_file) ; \
+	bin2tap forth.bin solo_forth.bin.tap
+endif
 
 # > solo_forth.assembly_debug_info.txt ; \
+
+# solo_forth.bin.tap: $(kernel_source_file)
+# 	z80asm \
+# 		--input=$(kernel_source_file) \
+# 		--output=forth.bin \
+# 		--label=solo_forth.symbols.z80asm.z80s \
+# 		--list=solo_forth.list.txt \
+# 	bin2tap forth.bin solo_forth.bin.tap
 
 ################################################################
 # The MGT disk images

@@ -182,4 +182,7 @@ Idea: instead of update bit, `negate` the number. Then `abs` can be used.
 
 New: `d>s`.
 
-
+Everything seemed to work fine: the 1-buffer system, true=-1...  But
+trying to fix the bug of warm something brokes, and the system crashes
+at start.  It seems the error conditions are not always the same. The
+debugger didn't help.

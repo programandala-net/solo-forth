@@ -1293,12 +1293,13 @@ and_cfap	EQU 0C351H
 and_lfa		EQU 0C353H
 and_nfa		EQU 0C355H
 and_pfa		EQU 0684EH
-ans_forth_block_size? EQU 00000H
+ans_forth_block_size EQU 00000H
 asm_		EQU 06382H
 asm_cfap	EQU 0C02BH
 asm_lfa		EQU 0C02DH
 asm_nfa		EQU 0C02FH
 asm_pfa		EQU 06384H
+assembler	EQU 00001H
 assembler_	EQU 06459H
 assembler_cfap	EQU 0C0FAH
 assembler_lfa	EQU 0C0FCH
@@ -2068,8 +2069,7 @@ fetchhl_comma_pfa EQU 063E8H
 fetchhl_lfa	EQU 0C06FH
 fetchhl_nfa	EQU 0C071H
 fetchhl_pfa	EQU 063BCH
-fig_compiler_security? EQU 00001H
-fig_parsing?	EQU 00000H
+fig_parsing	EQU 00000H
 fill.do		EQU 06F42H
 fill.e		EQU 06F3EH
 fill.end	EQU 06F4DH
@@ -2714,6 +2714,7 @@ parsed_cfap	EQU 0C992H
 parsed_lfa	EQU 0C994H
 parsed_nfa	EQU 0C996H
 parsed_pfa	EQU 06F99H
+pasmo		EQU 00000H
 perform_	EQU 06522H
 perform_cfap	EQU 0C1AAH
 perform_lfa	EQU 0C1ACH
@@ -3100,14 +3101,14 @@ semicolon_s_cfap EQU 0C3B6H
 semicolon_s_lfa	EQU 0C3B8H
 semicolon_s_nfa	EQU 0C3BAH
 semicolon_s_pfa	EQU 068BEH
-show_version?	EQU 00000H
+show_version	EQU 00000H
 sign.end	EQU 07887H
 sign_		EQU 07878H
 sign_cfap	EQU 0CE5BH
 sign_lfa	EQU 0CE5DH
 sign_nfa	EQU 0CE5FH
 sign_pfa	EQU 0787AH
-size_optimization? EQU 00000H
+size_optimization EQU 00000H
 skip.begin	EQU 066D8H
 skip_		EQU 066D4H
 skip_cfap	EQU 0C28DH
@@ -3602,6 +3603,7 @@ xor_cfap	EQU 0C360H
 xor_lfa		EQU 0C362H
 xor_nfa		EQU 0C364H
 xor_pfa		EQU 06868H
+z80asm		EQU 00001H
 zero_		EQU 06ABFH
 zero_branch_	EQU 06560H
 zero_branch_cfap EQU 0C1EFH
