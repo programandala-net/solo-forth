@@ -185,20 +185,33 @@ return_pointer_value:
 
 pushde:
   push de
+
 pushhl:
   push hl
+
 next:
+  ; Execute the word pointed by the bc register.
+  ; Forth: W  <-- (IP)
+  ; Z80:   hl <-- (bc)
   ld a,(bc)
   ld l,a
-  inc bc
+  inc bc ; inc IP
   ld a,(bc)
   ld h,a
-  inc bc
+  inc bc ; inc IP
+  ; bc = address of the next cfa
+  ; hl = cfa
+
 next2:
+  ; Execute the word whose cfa is in the hl register.
+  ; Forth: PC <-- (W)
+  ; Z80:   pc <-- (hl)
   ld e,(hl)
   inc hl
   ld d,(hl)
   ex de,hl
+  ; hl = (cfa)
+  ; de = cfa+1
   jp (hl)
 
   ; ----------------------------------------------------------------
@@ -236,24 +249,11 @@ branch_lfa:
 branch_cfa:
   defw branch_pfa
 branch_pfa:
-relative_branches?: equ 0
-if relative_branches? ; XXX OLD
-  ld h,b
-  ld l,c
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  dec hl
-  add hl,de
-  ld c,l
-  ld b,h
-else
   ld h,b
   ld l,c
   ld c,(hl)
   inc hl
   ld b,(hl)
-endif
   jp next
 
 zero_branch_nfa:
@@ -2665,35 +2665,52 @@ literal_lfa:
 literal_cfa:
   defw do_colon
 literal_pfa:
-  defw state_cfa
-  defw fetch_cfa
-  defw zero_branch_cfa,branch_destination_0x6C03
-  defw compile_cfa
-  defw lit_cfa
-  defw comma_cfa
+  if 1 ; XXX OLD 
+    defw state_cfa
+    defw fetch_cfa
+    defw zero_branch_cfa,branch_destination_0x6C03
+    defw compile_cfa
+    defw lit_cfa
+    defw comma_cfa
 branch_destination_0x6C03:
+  else ; XXX NEW
+    ; XXX FIXME -- `interpret` needs the old method of `literal`
+    defw question_comp_cfa
+    defw compile_cfa
+    defw lit_cfa
+    defw comma_cfa
+  endif
   defw semicolon_s_cfa
 
-dliteral_nfa:
-  defb 0x08+0x80+precedence_bit,"DLITERA","L"+0x80
-dliteral_lfa:
+two_literal_nfa:
+  defb 0x08+0x80+precedence_bit,"2LITERA","L"+0x80
+two_literal_lfa:
   defw literal_nfa
-dliteral_cfa:
+two_literal_cfa:
   defw do_colon
-dliteral_pfa:
-  defw state_cfa
-  defw fetch_cfa
-  defw zero_branch_cfa,branch_destination_0x6C20
-  defw swap_cfa
-  defw literal_cfa
-  defw literal_cfa
+two_literal_pfa:
+  if 1 ; XXX OLD 
+    defw state_cfa
+    defw fetch_cfa
+    defw zero_branch_cfa,branch_destination_0x6C20
+    defw swap_cfa
+    defw literal_cfa
+    defw literal_cfa
 branch_destination_0x6C20:
+  else ; XXX NEW
+    ; XXX TODO -- dlit
+    ; XXX FIXME -- `interpret` needs the old method of `literal`
+    defw question_comp_cfa
+    defw swap_cfa
+    defw literal_cfa
+    defw literal_cfa
+  endif
   defw semicolon_s_cfa
 
 question_stack_nfa:
   defb 0x06+0x80,"?STAC","K"+0x80
 question_stack_lfa:
-  defw dliteral_nfa
+  defw two_literal_nfa
 question_stack_cfa:
   defw do_colon
 question_stack_pfa:
@@ -2713,6 +2730,10 @@ question_stack_pfa:
   defw question_error_cfa
   defw semicolon_s_cfa
 
+; XXX TODO -- In order to change the behaviour of `literal` and
+; `2literal` (make them give an error in interpretation mode),
+; `interpret` must be modified.
+
 interpret_nfa:
   defb 0x09+0x80,"INTERPRE","T"+0x80
 interpret_lfa:
@@ -2721,37 +2742,37 @@ interpret_cfa:
   defw do_colon
 branch_destination_0x6C5D:
 interpret_pfa:
-  defw minus_find_cfa
-  defw zero_branch_cfa,branch_destination_0x6C7F
+  defw minus_find_cfa ; begin
+  defw zero_branch_cfa,branch_destination_0x6C7F ; if
   defw state_cfa
   defw fetch_cfa
   defw less_than_cfa
-  defw zero_branch_cfa,branch_destination_0x6C75
+  defw zero_branch_cfa,branch_destination_0x6C75 ; if
   defw cfa_cfa
   defw comma_cfa
-  defw branch_cfa,branch_destination_0x6C79
+  defw branch_cfa,branch_destination_0x6C79 ; else
 branch_destination_0x6C75:
   defw cfa_cfa
-  defw execute_cfa
+  defw execute_cfa ; then
 branch_destination_0x6C79:
   defw question_stack_cfa
-  defw branch_cfa,branch_destination_0x6C99
+  defw branch_cfa,branch_destination_0x6C99 ; else
 branch_destination_0x6C7F:
   defw here_cfa
   defw number_cfa
   defw dpl_cfa
   defw fetch_cfa
   defw one_plus_cfa
-  defw zero_branch_cfa,branch_destination_0x6C93
-  defw dliteral_cfa
-  defw branch_cfa,branch_destination_0x6C97
+  defw zero_branch_cfa,branch_destination_0x6C93 ; if
+  defw two_literal_cfa
+  defw branch_cfa,branch_destination_0x6C97 ; else
 branch_destination_0x6C93:
   defw drop_cfa
-  defw literal_cfa
+  defw literal_cfa ; then
 branch_destination_0x6C97:
-  defw question_stack_cfa
+  defw question_stack_cfa ; then
 branch_destination_0x6C99:
-  defw branch_cfa,branch_destination_0x6C5D
+  defw branch_cfa,branch_destination_0x6C5D ; again
 
 immediate_nfa:
   defb 0x09+0x80,"IMMEDIAT","E"+0x80
@@ -3695,7 +3716,7 @@ next_screen_pfa:
   defw semicolon_s_cfa
 
 tick_nfa:
-  defb 0x01+0x80+precedence_bit,"'"+0x80
+  defb 0x01+0x80,"'"+0x80
 tick_lfa:
   defw next_screen_nfa
 tick_cfa:
@@ -3706,20 +3727,26 @@ tick_pfa:
   defw zero_cfa
   defw question_error_cfa
   defw drop_cfa
+  defw semicolon_s_cfa
+
+bracket_tick_nfa:
+  defb 0x03+0x80+precedence_bit,"['","]"+0x80
+bracket_tick_lfa:
+  defw tick_nfa
+bracket_tick_cfa:
+  defw do_colon
+bracket_tick_pfa:
+  defw tick_cfa
   defw literal_cfa
   defw semicolon_s_cfa
 
 back_nfa:
   defb 0x04+0x80,"BAC","K"+0x80
 back_lfa:
-  defw tick_nfa
+  defw bracket_tick_nfa
 back_cfa:
   defw do_colon
 back_pfa:
-if relative_branches? ; XXX OLD
-  defw here_cfa
-  defw minus_cfa
-endif
   defw comma_cfa
   defw semicolon_s_cfa
 
@@ -5409,18 +5436,25 @@ dictionary_pointer_after_cold:
 ;
 ; Some fig-Forth words are renamed with their modern forms: `vlist` as
 ; `words`, `-dup` as `?dup`, `minus` as `negate`, `dminus` as
-; `dnegate`, `s->d` as `s>d`, `mon` to `bye`.
+; `dnegate`, `s->d` as `s>d`, `mon` to `bye`, `free` as `unused`.
+;
+; Old synonyms are removed: `end` and `endif`.
+;
+; The editor is removed.
 ;
 ; `branch` and `back` are modified to do absolute branches.  The
 ; branches are converted with a simple substitution, thanks to the
 ; comments prepared by the disassembling of Abersoft Forth.
 ;
 ; New words, from the Afera library: `\`, `.(`, `char` and `[char]`,
-; `2-`, `1-`.
+; `2-`, `1-`, `2*`.
 ; 
 ; `2+` and `1+` are converted to Z80.
 ;
-; The editor is removed.
-;
 ; `forth` is not immediate any more.
 ;
+; `'` is changed as non-immediate; new: `[']`.
+;
+; 2015-06-03:
+;
+; `dliteral` is renamed as `2literal`.
