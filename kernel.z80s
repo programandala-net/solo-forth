@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 201510150058
+version_release:  equ 201510160412
 
 ; XXX TODO
 ;vr_div: equ version_release/65535
@@ -4513,6 +4513,8 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO rename to `ctoggle` and write a 16-bit `toggle`?
+
   pop de ; e = bit pattern
   pop hl ; address
   ld a,(hl)
@@ -5461,9 +5463,20 @@ source.tib:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header two_comma_,'2,'
+
+  ; XXX TODO `, ,` would do the same; benchmark
+
+  dw here_,two_store_
+two_comma.allot:
+  _literal 2*cell
+  dw allot_
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header comma_,','
 
-  dw here_,store_,two_,allot_
+  dw here_,store_,cell_,allot_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -6048,8 +6061,17 @@ endif
 ; ----------------------------------------------
   _colon_header compile_,'COMPILE'
 
+; doc{
+;
+; compile  ( -- )
+;
+; : compile  ( -- )
+;   ?compiling  r> dup cell+ >r  @ compile,  ;
+;
+; }doc
+
   dw question_compiling_
-  dw from_r_,dup_,two_plus_,to_r_,fetch_,compile_comma_
+  dw from_r_,dup_,cell_plus_,to_r_,fetch_,compile_comma_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -9774,16 +9796,33 @@ endif
 ; ----------------------------------------------
   _colon_header spaces_,'SPACES'
 
-  dw b_l_,emits_
+; doc{
+;
+; spaces  ( n -- )
+; 
+; If _n_ is greater than zero, display _n_ spaces.
+; 
+; Standard: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
+  dw b_l_,swap_,emits_
   dw semicolon_s_
 
 ; ----------------------------------------------
   _colon_header emits_,'EMITS'
 
-  ; emits  ( u c -- )
+; doc{
+;
+; emits  ( c n -- )
+; 
+; If _n_ is greater than zero, display _n_ characters _c_.
+; 
+; }doc
 
   ; XXX TODO use `?do` or `for` when available
-  dw swap_,zero_,max_,question_dup_
+  dw zero_,max_,question_dup_
   dw zero_branch_,emits_.end
   dw zero_
   dw paren_do_
@@ -9906,7 +9945,7 @@ hash_s.begin:
   ; Convert the absolute value to ASCII text with proper sign:
   dw less_hash_
   dw hash_s_
-  dw sign_
+  dw sign_ ; XXX TODO convert to Forth-94
   dw hash_greater_
   dw from_r_ ; retrieve n
   dw over_,minus_,spaces_ ; fill the output field with preceding blanks
@@ -10501,7 +10540,7 @@ color:
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
 
-  dw create_,comma_,comma_
+  dw create_,two_comma_
   dw paren_semicolon_code_
 do_two_constant:
   inc de    ; de=pfa
@@ -10532,8 +10571,7 @@ do_two_constant:
 ; }doc
 
   dw create_
-  dw lit_,cell*2,allot_
-  dw semicolon_s_
+  dw branch_,two_comma.allot
 
 ; ----------------------------------------------
   _colon_header u_dot_r_,'U.R'

@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510151917
+\ Last modified: 201510160412
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -772,6 +772,19 @@ need chars>string  need s+
   \
   \ }doc
 
+( /name first-name )
+
+  \ XXX TODO copy to Galope; used also in the fsb2 project
+
+: /name  ( ca1 len1 -- ca2 len2 ca3 len3 )
+  \ ca1 len1 = Text.
+  \ ca2 len2 = Same text, from the start of its first name.
+  \ ca3 len3 = Same text, from the char after its first name.
+  bl skip 2dup bl scan  ;
+
+: first-name  ( ca1 len1 -- ca2 len2 )  /name nip -  ;
+  \ Return the first name _ca2 len2_ of the string _ca1 len1_.
+
 ( prefix? )
 
 [defined] s=  ?\  : s=  ( ca1 len1 ca2 len2 )  compare 0=  ;
@@ -834,6 +847,7 @@ need string-suffix?
   \ Credits:
   \ Code from Galope (module d-to-str.fs).
 
+  \ XXX FIXME convert `sign` to Forth-94.
 : d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
 
   \ Credits:
@@ -1504,13 +1518,19 @@ code fzx-emit  ( c -- )
   \ }}} =======================================================
   \ Text output {{{
 
-( column row at-x at-y )
+( column last-column row last-row at-x at-y )
 
 : column  ( -- col )  xy drop  ;
   \ Current column (x coordinate).
 
+: last-column  ( -- row  )  column 1-  ;
+  \ Last column (x coordinate).
+
 : row  ( -- row )  xy nip  ;
   \ Current row (y coordinate).
+
+: last-row  ( -- row  )  row 1-  ;
+  \ Last row (y coordinate).
 
 : at-x  ( col -- )  row at-xy  ;
   \ Set the cursor
@@ -1521,6 +1541,112 @@ code fzx-emit  ( c -- )
   \ Set the cursor
   \ at the current column (x coordinate)
   \ and the given row (y coordinate).
+
+( print )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Adapted from Galope <print.fs>.
+
+need last-row  need /name
+
+  \ export
+
+variable #printed   \ Printed chars in the current line.
+variable #indented   \ Indented chars in the current line.
+: printed+  ( u -- )  #printed +!  ;
+: indented+  ( u -- )  #indented +!  ;
+: (.word) ( ca len -- )  dup printed+ type  ;
+: .char  ( c -- )  emit 1 printed+  ;
+: not-at-home?  ( -- f )  xy +  ;
+
+  \ export
+
+: no-printed  ( -- )  #printed off #indented off  ;
+: print-home  ( -- )  home no-printed  ;
+: print-page  ( -- )  page print-home  ;
+
+-->
+
+( print )
+
+: print-start-of-line  ( -- )
+  #printed @ trm+move-cursor-left no-printed  ;
+
+  \ : print-cr  ( -- )  not-at-home? if  cr  then  no-printed  ;
+  \ XXX OLD first version
+
+  \ hide
+
+: at-last-start-of-line?  ( -- wf )
+  xy last-row = swap 0= and  ;
+: not-at-start-of-line?  ( -- wf )  column 0<>  ;
+: print-cr?  ( -- wf )
+  not-at-home? not-at-start-of-line? and
+  \ xxx fixme 2012-09-30 what this was for?:
+  \ at-last-start-of-line? 0= or
+  ;
+
+  \ export
+
+defer (print-cr) ' (print-cr) ' cr defer!
+
+: print-cr print-cr? ?? (print-cr) no-printed ;
+
+variable print-width
+
+-->
+
+( print )
+
+  \ hide
+
+: previous-word?  ( -- wf )  #printed @ #indented @ >  ;
+: ?space  ( -- ) previous-word? if  bl .char  then  ;
+: current-print-width  ( -- u )
+  print-width @ ?dup 0= ?? cols  ;
+: too-long?  ( u -- wf )
+  1+ #printed @ + current-print-width >  ;
+: .word  ( ca len -- )
+  dup too-long? if  print-cr  else  ?space  then  (.word)  ;
+
+-->
+
+( print )
+
+: (print-indentation)  ( u -- )
+  dup trm+move-cursor-right dup indented+ printed+  ;
+
+  \ export
+
+: print-indentation  ( u -- )  ?dup ?? (print-indentation)  ;
+
+  \ hide
+
+: >word  ( ca1 len1 ca2 len2 -- ca2 len2 ca1 len4 )
+  \ ca1 len1 = Text, from the start of its first word.
+  \ ca2 len2 = Same text, from the char after its first word.
+  \ ca1 len4 = First word of the text.
+  tuck 2>r -  2r> 2swap  ;
+
+: first-word  ( ca1 len1 -- ca2 len2 ca3 len3 )  /name >word  ;
+
+: (print)  ( ca1 len1 -- ca2 len2 )  first-word .word  ;
+
+-->
+
+( print )
+
+  \ export
+
+: print  ( ca len --)
+  begin  dup   while  (print)  repeat  2drop  ;
+
+  \ Suggested usage in the application:
+
+  \ 4 value indentation
+  \ : paragraph  ( ca len -- )
+  \   print-cr indentation print-indentation print  ;
+
 
   \ }}} =======================================================
   \ Decompressor {{{
@@ -4108,8 +4234,8 @@ need break-key?  need 16hex.  need ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
-: dump  ( a len -- )
-  7 + [ %111 invert ] literal and 8 / 0
+: dump  ( ca len -- )
+  8 2dup mod - + 8 / 0
   \ XXX TODO use `?do` instead of `if` when available
   2dup <> if
     do
@@ -4117,7 +4243,7 @@ need break-key?  need 16hex.  need ascii-type
       8 0 do  i over + @ flip 16hex.  cell +loop
       \ 16 0 do  i over + c@ hexb.  loop
       dup bs 8 ascii-type
-      break-key? if  exhaust  then
+      break-key? ?exhaust
     8 + loop
   else  2drop  then  drop  ;
 
@@ -4127,15 +4253,16 @@ need break-key?  need 16hex.
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
-: wdump  ( a len -- )
-  7 + [ %111 invert ] literal and 8 / 0
+: wdump  ( a n -- )
+  \ Show the contents of _n_ cells starting from _a_.
+  0
   \ XXX TODO use `?do` instead of `if` when available
   2dup <> if
     do
-      cr dup 16hex.
-      10 0 do  i over + @ 16hex.  cell +loop
-      break-key? if  exhaust  then
-    8 + loop
+      i 4 mod 0= if  cr dup 16hex. space  then  \ show address
+      dup @ 16hex. cell+
+      break-key? ?exhaust
+    loop
   else  2drop  then  drop  ;
 
 ( decode )
@@ -4759,6 +4886,169 @@ char Y value "y"  char N value "n"
   \ and return `true` if it's the current letter for "yes",
   \ else return `false`.
 
+
+( Keyboard rows ports)
+
+  \ From Afera.
+  \ XXX UNDER DEVELOPMENT
+  
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Some tools to manage key presses. An improved and detailed
+  \ implementation can be found in the Tron 0xF game
+  \ (http://programandala.net/en.program.tron_0xf.html).
+  \ -----------------------------------------------------------
+
+$F7FE CONSTANT KEY-ROW-1-5 \ 1 to 5
+$FBFE CONSTANT KEY-ROW-Q-T \ Q to T
+$FDFE CONSTANT KEY-ROW-A-G \ A to G
+$FEFE CONSTANT KEY-ROW-CS-V \ Caps Shift to V
+$EFFE CONSTANT KEY-ROW-6-0 \ 6 to 0
+$DFFE CONSTANT KEY-ROW-Y-P \ Y to P
+$BFFE CONSTANT KEY-ROW-H-EN \ H to Enter
+$7FFE CONSTANT KEY-ROW-B-SP \ B to Space
+
+-->
+
+( Key identifiers)
+
+$01 KEY-ROW-1-5 2CONSTANT K-1
+$02 KEY-ROW-1-5 2CONSTANT K-2
+$04 KEY-ROW-1-5 2CONSTANT K-3
+$08 KEY-ROW-1-5 2CONSTANT K-4
+$10 KEY-ROW-1-5 2CONSTANT K-5
+
+$01 KEY-ROW-Q-T 2CONSTANT K-Q
+$02 KEY-ROW-Q-T 2CONSTANT K-W
+$04 KEY-ROW-Q-T 2CONSTANT K-E
+$08 KEY-ROW-Q-T 2CONSTANT K-R
+$10 KEY-ROW-Q-T 2CONSTANT K-T
+
+$01 KEY-ROW-A-G 2CONSTANT K-A
+$02 KEY-ROW-A-G 2CONSTANT K-S
+$04 KEY-ROW-A-G 2CONSTANT K-D
+$08 KEY-ROW-A-G 2CONSTANT K-F
+$10 KEY-ROW-A-G 2CONSTANT K-G  -->
+
+( Key identifiers)
+
+$01 KEY-ROW-CS-V 2CONSTANT K-CS
+$02 KEY-ROW-CS-V 2CONSTANT K-Z
+$04 KEY-ROW-CS-V 2CONSTANT K-X
+$08 KEY-ROW-CS-V 2CONSTANT K-C
+$10 KEY-ROW-CS-V 2CONSTANT K-V
+
+$01 KEY-ROW-6-0 2CONSTANT K-0
+$02 KEY-ROW-6-0 2CONSTANT K-9
+$04 KEY-ROW-6-0 2CONSTANT K-8
+$08 KEY-ROW-6-0 2CONSTANT K-7
+$10 KEY-ROW-6-0 2CONSTANT K-6
+
+$01 KEY-ROW-Y-P 2CONSTANT K-P
+$02 KEY-ROW-Y-P 2CONSTANT K-O
+$04 KEY-ROW-Y-P 2CONSTANT K-I
+$08 KEY-ROW-Y-P 2CONSTANT K-U
+$10 KEY-ROW-Y-P 2CONSTANT K-Y  -->
+
+( Key identifiers)
+
+$01 KEY-ROW-H-EN 2CONSTANT K-EN
+$02 KEY-ROW-H-EN 2CONSTANT K-L
+$04 KEY-ROW-H-EN 2CONSTANT K-K
+$08 KEY-ROW-H-EN 2CONSTANT K-J
+$10 KEY-ROW-H-EN 2CONSTANT K-H
+
+$01 KEY-ROW-B-SP 2CONSTANT K-SP
+$02 KEY-ROW-B-SP 2CONSTANT K-SS
+$04 KEY-ROW-B-SP 2CONSTANT K-M
+$08 KEY-ROW-B-SP 2CONSTANT K-N
+$10 KEY-ROW-B-SP 2CONSTANT K-B
+
+-->
+
+( Keys table manipulation -- slower )
+
+  \ ............................................
+  \ Method 1: more compact but slower
+
+  \ Every key identifier occupies 3 bytes in the table (total
+  \ size is 120 bytes)
+
+  \ 3 CONSTANT /K  \ bytes per key definition in the keys table
+
+  \ Store a key definition into the keys table:
+  \ : K,  ( bitmask port -- ) , C,  ;
+
+  \ Fech a key definition from an element of the keys table:
+  \ : K@  ( a -- bitmask port ) DUP C@ SWAP 1+ @ ;
+
+  \ ............................................
+  \ Method 2: bigger but faster
+
+  \ With these words, every key identifier occupies 4 bytes
+  \ in the table (total size is 160 bytes)
+
+4 CONSTANT /K  \ bytes per key definition in the keys table
+
+  \ Store a key definition into the keys table:
+: K,  ( d -- ) , ,  ;
+
+  \ Fech a key definition from an element of the keys table:
+: K@  ( a -- bitmask port ) 2@ ;
+
+-->
+
+( Keys table -- comon words and data )
+
+40 CONSTANT KEYS
+0 VARIABLE K-TABLE -2 ALLOT
+K-1 K, K-2 K, K-3 K, K-4 K, K-5 K, K-Q K, K-W K, K-E K, K-R K,
+K-T K, K-A K, K-S K, K-D K, K-F K, K-G K, K-CS K, K-Z K, K-X K,
+K-C K, K-V K, K-0 K, K-9 K, K-8 K, K-7 K, K-6 K, K-P K, K-O K,
+K-I K, K-U K, K-Y K, K-EN K, K-L K, K-K K, K-J K, K-H K,
+K-SP K, K-SS K, K-M K, K-N K, K-B K,
+
+-->
+
+( PRESSED? PRESSED )
+
+: PRESSED? ( n1 n2 -- flag )
+  \ Is a key pressed?
+  \ n1 = key bit mask
+  \ n2 = keyboard row port
+  INP AND NOT ;
+
+: PRESSED  ( -- false | bitmask port true )
+  \ Return the key identifier of the first key
+  \ from the keys table that happens to be pressed.
+  0 \ false by default
+  [ K-TABLE KEYS /K * BOUNDS SWAP ] LITERAL LITERAL
+  DO  I K@ PRESSED? IF  DROP I K@ 1 LEAVE  THEN
+  /K +LOOP ;
+
+-->
+
+( ONLY-ONE-PRESSED )
+
+0. 2VARIABLE K-PRESSED
+
+: ONLY-ONE-PRESSED  ( -- false | bitmask port true )
+
+  \ XXX TODO finish
+
+  \ Return the key identifier of the key pressed,
+  \ if there's only one key pressed.
+
+  0. K-PRESSED 2! \ none by default
+  [ K-TABLE KEYS /K * BOUNDS SWAP ] LITERAL LITERAL
+  DO  I K@ PRESSED?
+  IF  K-PRESSED 2@ + IF
+  THEN
+  /K +LOOP
+  K-PRESSED 2@ 2DUP + IF  1  ELSE  2DROP 0  THEN
+  ;
+
   \ }}} =======================================================
   \ Hardware {{{
 
@@ -4938,19 +5228,29 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
 
 ( ?? )
 
-  \ XXX UNDER DEVELOPMENT
-
   \ Credits:
-  \ Code adapted from Galope.
   \ Original code by Neil Bawd, presented at FORML 1986.
 
-need evaluate
+  \ The original code was written two ways:
+ 
+  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \   s" if" evaluate  bl word count evaluate  s" then" evaluate
+  \   ;  immediate
+  
+  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \   postpone if bl word count evaluate  postpone then
+  \   ;  immediate
 
-: ??  ( Compilation: "name" -- ) ( Runtime: f -- )
-  postpone if
-  parse-name evaluate
-  postpone then
-  ;  immediate
+: ??  ( f -- )  0= if  r> cell+ >r  then  ;
+
+  \ XXX OLD -- This first version used `postpone` and `compile,`
+  \ instead of `evaluate`.
+
+  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \   postpone if
+  \   parse-name find-name 0= -13 ?throw compile,
+  \   postpone then
+  \   ;  immediate
 
 ( don't )
 
@@ -5640,6 +5940,13 @@ case: zx  ( n -- )  zx0 zx1 zx2  ;
   \ Credits:
   \ `options[` is a port of IsForth's `case:`.
 
+  \ Note: in the original IsForth code the word `(options`)
+  \ (called `docase` in IsForth) is written in x86 assembler. I
+  \ rewrote it from scratch, without investigating the
+  \ assembler code.
+
+  \ XXX TODO alternative version `coptions[`
+
 variable (default-option)
   \ default option cfa
 
@@ -5652,41 +5959,28 @@ variable #options
 
 : (options)  ( i*x x -- j*x )
 
-  \ Note: in the original IsForth code this word (called
-  \ `docase`) is written in x86 assembler. I rewrote it from
-  \ scratch, without investigating the assembler code.
-
   \ x = option to search for
 
   false swap  ( false x ) \ default flag returned by the loop
-  r> dup cell+ dup cell+  ( false x a1 a2 a3 )
-  \ a1 = address of the exit point
-  \ a2 = address of the default option cfa
-  \ a3 = address of the number of options
-  rot @ >r    ( false x a2 a3 ) \ set the exit point
-  swap >r     ( false x a3 ) ( R: a2 ) \ save a2
-  dup cell- swap @  ( false x a4 n )
-  \ a4 = address of the first compiled option minus two cells
+  r> dup @ >r   \ set the new exit point
+  cell+ dup >r  \ save the address of the default option cfa
+  dup cell+ @  ( false x a n )
+  \ a = address of the first compiled option minus two cells
   \ n = number of compiled options
 
--->
-
-( options[ )
-
   0 do
-    [ 2 cells ] literal + 2dup @ =  ( false x a5 f )  \ match?
-    \ a5 = address of the current compiled option
-    if
-        nip nip cell+ perform
-        unloop exhaust true 0 0  then
+    [ 2 cells ] literal + 2dup @ =  ( false x a' f )  \ match?
+    \ a' = address of the current compiled option
+    if  nip nip cell+ perform  exhaust true 0 0  then
   loop  ( f x1 x2 )  2drop
-  if    rdrop       \ discard the default option
-  else  r> perform  \ execute the default option
+
+  if    rdrop       \ match, so discard the default option
+  else  r> perform  \ no match, so execute the default option
   then  ;   -->
 
 ( options[ )
 
-: options[        ( -- a1 a2 a3 )
+: options[  ( -- a1 a2 a3 )
 
   \ a1 = address of exit point
   \ a2 = address of default option cfa
@@ -5711,7 +6005,7 @@ variable #options
   #options @ swap !           \ store number of options
   (default-option) @ swap !   \ store default option cfa
   >resolve                    \ store exit point
-  ]  ;
+  ]  ;  -->
 
 ( options[-test )
 
@@ -5720,7 +6014,9 @@ variable #options
 : test  ( c -- )
   options[
     char a option o1  char b option o2  char c option o3
-  ]options  ;
+  ]options  ." end of test" cr   ;
+
+: retest  ( -- )  [char] a test ." end of retest" cr  ;
 
 : o0 ." default" ;
 
@@ -9247,6 +9543,7 @@ create PegStacks  30 chars allot
 ( hanoi )
 
 : base3 [ decimal ] 3 base ! ;
+
 base3  00 02 01 12 00 10 21 20  decimal 8 maketab TO!
 base3  00 21 12 20 00 02 10 01  decimal 8 maketab FRO!
 
@@ -9492,8 +9789,10 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
 ( pong )
 
+  \ XXX UNDER DEVELOPMENT
+
   \ Credits:
-  \ Code adapted from IsForth, 2015-10.
+  \ Code adapted from IsForth (version 1.23v), 2015-10.
 
   \ ____
   \
@@ -9503,56 +9802,138 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ Tested with IsForth, http://isforth.clss.net/
   \ ____
 
-need columns  need rows  need frames@  need ms  need options[
+need columns  need rows
+  \ need ms \ XXX OLD
+need options[  need udg:  need rnd
 
-variable speed  100 speed !  \ Delay in milliseconds.
+  \ XXX OLD
+  \ 500 constant initial-speed
+  \ variable speed
+  \ Delay in milliseconds.
 
-12 constant padsize  \ Size of pads.
+256 constant ball-delay0
+  \ Counter: Times the ball is not moved in the main loop.
+variable ball-delay
+  \ XXX NEW
 
-  \ Player keys.
-char 1 constant left1-k
-char 2 constant right1-k
-char 6 constant left2-k
-char 7 constant right2-k
-char Q constant quit-k
+4 constant racket-size
+7 8 * 64 + constant racket-color  \ bright white paper
 
--->
+char 1 constant left1-key  char 2 constant right1-key
+  \ Player 1 keys.
 
-( pong )
+char 6 constant left2-key  char 7 constant right2-key
+  \ Player 2 keys.
 
-variable x  variable y  \ Coordinates of the ball.
-
-variable dir   \ Direction of ball.
-               \ Bit 0: 1 = down, 0 = up.
-               \ Bit 1: 1 = right, 0 = left.
-
-variable points-player1  variable points-player2
-
-variable pad1x  \ Top pad x coordinate.
-columns padsize - 2/  pad1x !
-variable pad2x  pad1x @ pad2x !  \ Bottom pad x coordinate.
-0       constant pad1y      \ Top pad y coordinate.
-rows 1- constant pad2y      \ Bottom pad y coordinate.
+char Q constant quit-key
 
 -->
 
 ( pong )
 
-: init-screen  ( -- )  page  ;
+variable x  variable y
+  \ Coordinates of the ball.
 
-: restore-screen  ( -- )  page  ;
+variable direction
+  \ Direction of ball.
+  \ Bit 0: 1 = down, 0 = up.
+  \ Bit 1: 1 = right, 0 = left.
+
+variable points1  variable points2
+  \ Player points.
+
+variable racket1-x  columns racket-size - 2/  racket1-x !
+  \ Top racket x coordinate.
+
+variable racket2-x  racket1-x @ racket2-x !
+  \ Bottom racket x coordinate.
+
+0 constant racket1-y
+  \ Top racket y coordinate.
+
+rows 1- constant racket2-y
+  \ Bottom racket y coordinate.
+
+-->
+
+( pong )
+
+%00111100
+%01111110
+%11111111
+%11111111
+%11111111
+%11111111
+%01111110
+%00111100 129 udg: ball
+
+  \ XXX TODO -- frames
+
+  \ %00111100
+  \ %01111110
+  \ %11111011
+  \ %11111101
+  \ %11111111
+  \ %11111111
+  \ %01111110
+  \ %00111100 129 udg: ball0
+
+  \ %00111100
+  \ %01111110
+  \ %11111111
+  \ %11111101
+  \ %11111101
+  \ %11111111
+  \ %01111110
+  \ %00111100 130 udg: ball1
+
+  \ %00111100
+  \ %01111110
+  \ %11111111
+  \ %11111111
+  \ %11111101
+  \ %11111011
+  \ %01111110
+  \ %00111100 130 udg: ball1
+
+  \ %00111100
+  \ %01111110
+  \ %11111111
+  \ %11111111
+  \ %11111111
+  \ %11100111
+  \ %01111110
+  \ %00111100 130 udg: ball1
+
+  \ %00111100
+  \ %01111110
+  \ %11111111
+  \ %11111111
+  \ %11111111
+  \ %11110011
+  \ %01111110
+  \ %00111100 130 udg: ball1
+
+-->
+
+( pong )
+
+: restore-screen  ( -- )  colors0 page  ;
+
+: init-screen  ( -- )  restore-screen 7 border 7 ink  ;
 
 : at-ball  ( -- )  x @ y @ at-xy  ;
 
-: show-ball  ( -- )  at-ball [char] o emit  ;
+: show-ball  ( -- )  at-ball ball emit  ;
 
 : erase-ball  ( -- )  at-ball space  ;
 
-: show-pad  ( x y -- )
-  at-xy padsize 0 do  [char] = emit  loop  ;
+: show-racket  ( a -- )  racket-size racket-color fill  ;
 
-: show-pads  ( -- )
-  pad1x @ pad1y show-pad  pad2x @ pad2y show-pad  ;
+: show-racket1  ( -- )  22528 racket1-x @ + show-racket  ;
+: show-racket2  ( -- )  23264 racket2-x @ + show-racket  ;
+
+: show-rackets  ( -- )  show-racket1 show-racket2  ;
 
 -->
 
@@ -9561,39 +9942,41 @@ rows 1- constant pad2y      \ Bottom pad y coordinate.
 : print-point  ( n x y -- )  at-xy ." [ " . ." ]"  ;
 
 : print-points  ( -- )
-  points-player1 @ pad1x @ 3 + pad1y print-point
-  points-player2 @ pad2x @ 3 + pad2y print-point  ;
+  exit  \ XXX TMP
+  points1 @ racket1-x @ 3 + racket1-y print-point
+  points2 @ racket2-x @ 3 + racket2-y print-point  ;
 
-: erase-pad  ( x y -- )  at-xy padsize spaces  ;
+: erase-racket  ( a -- )  racket-size erase  ;
 
-: erase-pads  ( -- )
-  pad1x @ pad1y erase-pad  pad2x @ pad2y erase-pad  ;
+: erase-racket1  ( -- )  22528 racket1-x @ + erase-racket  ;
+: erase-racket2  ( -- )  23264 racket2-x @ + erase-racket  ;
 
-: change-x  ( -- )  dir @ 2 xor dir !  ;
+: change-x  ( -- )  direction 2 toggle  ;
   \ Change x direction.
 
-: change-y  ( -- )  dir @ 1 xor dir !  ;
+: change-y  ( -- )  direction 1 toggle  ;
   \ Change y direction.
+
+: faster  ( -- )
+  exit  ;  \ XXX OLD
+  \ speed @ 40 > if  speed @ dup 20 / - speed !   then  ;
+  \ If the delay is more than 40 ms, reduce it with 5%.
 
 -->
 
 ( pong )
 
-  \ XXX TODO -- remove `0=` by exchanging the order
+: ball-moving-right?  ( -- f )  direction @ 2 and  ;
+: ball-moving-down?  ( -- f )  direction @ 1 and  ;
+: ball-at-last-column?  ( -- wf )  x @ columns 1- =  ;
+: ball-at-first-column?  ( -- wf )  x @ 0=  ;
+: ball-at-second-last-row?  ( -- wf )  y @ rows 2- =  ;
+: ball-at-second-row?  ( -- wf )  y @ 1 =  ;
 
-: move-x  ( -- )            \ This handles the column movement.
-  dir @ 2 and 0= if          \ Is the ball moving left?
-    x @ 0= if                \ Is it at column 0?
-      change-x             \ Yes, change direction.
-      1 x +!           \ This will make things look better.
-    then
-    -1 x +!              \ x--
-  else                     \ Is the ball moving right?
-    x @ columns 1- = if         \ Is it at last column?
-      change-x             \ Yes, change direction.
-      -1 x +!            \ This will make things look better.
-    then
-    1 x +!              \ x++
+: move-x  ( -- )
+  ball-moving-right?
+  if    ball-at-last-column? if  change-x  else  1 x +!  then
+  else  ball-at-first-column? if  change-x  else  -1 x +!  then
   then  ;
 
 -->
@@ -9601,114 +9984,132 @@ rows 1- constant pad2y      \ Bottom pad y coordinate.
 ( pong )
 
 : reset-ball  ( -- )
-  columns 2/ x !  rows 2/ y !  frames@ d>s 3 and dir !  ;
+  columns 2/ x !  rows 2/ y !  rnd 3 and direction !  ;
   \ Initialize/reset ball position.
 
-: faster  ( -- )
-  speed @ 40 > if  speed @ dup 20 / - speed !   then  ;
-  \ If the delay is more than 40, reduce it with 5%.
-
-: score-player1  ( -- )  1 points-player1 +!  ;
+: score-player1  ( -- )  1 points1 +!  ;
   \ Increase player 1's points by one.
 
-: score-player2  ( -- )  1 points-player2 +!  ;
+: score-player2  ( -- )  1 points2 +!  ;
   \ Increase player 2's points by one.
 
-: hit-pad1?  ( -- f )
-  x @ pad1x @ 1- >
-  x @ pad1x @ padsize + <  and  ;
+: hit-racket1?  ( -- wf )
+  x @ racket1-x @ 1- >
+  x @ racket1-x @ racket-size + <  and  ;
   \ Is pad1 hit by the ball?
-  \ Is pad1x <= x < pad1x + padsize?
+  \ Is racket1-x <= x < racket1-x + racket-size?
 
-: hit-pad2?  ( -- f )
-  x @ pad2x @ 1- >
-  x @ pad2x @ padsize + <  and  ;
+: hit-racket2?  ( -- wf )
+  x @ racket2-x @ 1- >
+  x @ racket2-x @ racket-size + <  and  ;
   \ Is pad2 hit by the ball?
-  \ Is pad2x <= x < pad2x + padsize?
+  \ Is racket2-x <= x < racket2-x + racket-size?
+
+: hit-racket?  ( a -- wf )
+  \ XXX NEW -- alternative
+  \ XXX TODO try
+  \ a = address that holds the x coordinate of a pad
+  @ x @ swap  ( ball-x pad-x )
+  2dup 1- > >r
+  racket-size + <  r> and  ;
 
 -->
 
 ( pong )
 
-  \ XXX TODO -- remove `0=` by exchanging the order
-
-: move-y  ( -- )            \ This handles the row movement.
-  dir @ 1 and 0=           \ Is the ball moving up?
-  if
-    y @ 1 = if               \ Is the ball at row 1?
-      faster  hit-pad1?
-      if    change-y 1 y +!
-      else  score-player2 reset-ball  then
-    then  -1 y +!
-
--->
-
-( pong )
-
-  else                     \ The ball is moving down.
-    y @ rows 2- =          \ Is the ball at second last row?
-    if
-      faster  hit-pad2?
-      if    change-y -1 y +!
-      else  score-player1 reset-ball  then
-    then  1 y +!
-  then  ;  -->
-
-( pong )
-
-: show-all  ( -- )  show-ball show-pads print-points  ;
-
-: erase-all  ( -- )  erase-ball erase-pads  ;
-
-: delay  ( -- )  speed @ ms  ;
-
-: move-pad1-left  ( -- )  pad1x @ 0<> pad1x +!  ;
-
-: move-pad1-right  ( -- )
-  pad1x @ padsize + columns <> abs pad1x +!  ;
-
-: move-pad2-left  ( -- )  pad2x @ 0<> pad2x +!  ;
-
-: move-pad2-right  ( -- )
-  pad2x @ padsize + columns <> abs pad2x +!  ;
-
-: init-game  ( -- )  init-screen reset-ball  ;
+: move-y  ( -- )
+  ball-moving-down? if
+    ball-at-second-last-row? if
+      hit-racket2?
+      if change-y  else  score-player1 reset-ball  then
+    else  1 y +!  then
+  else
+    ball-at-second-row? if
+      hit-racket1?
+      if  change-y  else  score-player2 reset-ball  then
+    else  -1 y +!  then
+  then  ;
 
 -->
 
 ( pong )
+
+: move-ball ( -- )
+  -1 ball-delay +!  ball-delay @ ?exit
+  ball-delay0 ball-delay !
+  erase-ball move-x move-y show-ball  ;  -->
+
+( pong )
+
+: show-all  ( -- )  show-ball show-rackets print-points  ;
+
+  \ : delay  ( -- )  speed @ ms  ;  \ XXX OLD
+
+: move-racket1-left  ( -- )
+  erase-racket1  racket1-x @ 0<> racket1-x +!  show-racket1  ;
+
+: move-racket1-right  ( -- )
+  erase-racket1
+  racket1-x @ racket-size + columns <> abs racket1-x +!
+  show-racket1  ;
+
+: move-racket2-left  ( -- )
+  erase-racket2  racket2-x @ 0<> racket2-x +!  show-racket2  ;
+
+: move-racket2-right  ( -- )
+  erase-racket2
+  racket2-x @ racket-size + columns <> abs racket2-x +!
+  show-racket2  ;  -->
+
+( pong )
+
+: reset-points  ( -- )  points1 off  points2 off  ;
+
+: init-game  ( -- )
+  init-screen reset-ball  reset-points
+  \ initial-speed speed !   \ XXX OLD
+  ball-delay0 ball-delay !  ;
 
 : quit-game  ( -- )
-  page  columns 2/ 7 - rows 2/ at-xy
-  ." Score: " points-player1 ?  ." - " points-player2 ?
-  key drop restore-screen bye  ;
+  restore-screen  ." Player 1 score: " points1 ? cr
+                  ." Player 2 score: " points2 ?  quit  ;
 
-: keypress  ( key -- )
-  options[
-    left1-k   option move-pad1-left
-    right1-k  option move-pad1-right
-    left2-k   option move-pad2-left
-    right2-k  option move-pad2-right
-    quit-k    option quit
-  ]options  ;
+  : keypress  ( key -- )
+    options[  left1-key   option move-racket1-left
+              right1-key  option move-racket1-right
+              left2-key   option move-racket2-left
+              right2-key  option move-racket2-right
+              quit-key    option quit-game
+    ]options  ;
+  \ : keypress  ( key -- )
+  \   case
+  \     left1-key   of move-racket1-left endof
+  \     right1-key  of move-racket1-right endof
+  \     left2-key   of move-racket2-left endof
+  \     right2-key  of move-racket2-right endof
+  \     quit-key    of quit-game endof
+  \   endcase  ." after endcase" key drop  ;
 
 -->
 
 ( pong )
 
+: show-player-key  ( c ca len -- )
+  space rot emit ."  - " type cr  ;
+
 : show-player-keys  ( c1 c2 -- )
-  emit ." - left" cr  emit ." - right" cr  ;
+  s" left" show-player-key  s" right" show-player-key  ;
 
 : show-help  ( -- )
   page
   \  <------------------------------>
-  ." Forth Pong by Robert Oestling" cr  \ 2002
-  ." Ported to IsForth by" cr  \ XXX TODO
-  ." Ported to Solo Forth" cr  \ XXX TODO
+  ." Forth Pong by Robert Oestling, 2002" cr  \ 2002
+  ." Ported to IsForth by Mark Manning, 2012" cr  \ XXX TODO
+  ." Ported to Solo Forth by Marcos Cruz, 2015" cr  \ XXX TODO
   cr
-  ." Player 1:" cr right1-k left1-k show-player-keys
-  ." Player 2:" cr right2-k left2-k show-player-keys
-  quit-k emit ." - quit" cr cr
+  ." Player 1:" cr right1-key left1-key show-player-keys
+  ." Player 2:" cr right2-key left2-key show-player-keys
+  quit-key emit ." - quit" cr cr
   \  <------------------------------>
   ." Press any key to start the game." key drop  ;
 
@@ -9718,11 +10119,10 @@ rows 1- constant pad2y      \ Bottom pad y coordinate.
 
 : pong  ( -- )
   init-game show-help page
+  show-all
   begin
-    show-all delay erase-all move-x move-y
-    begin
-      key? if  key keypress  then
-    again
+    move-ball
+    key? if  key keypress  then
   again  ;
 
   \ }}} =======================================================
