@@ -905,6 +905,92 @@ require case
   dup s>d <# [char] > hold #s [char] < hold #> type space
   if  sp@ 2- s0 @ 2- do i @ . -2 +loop  then  ;
 
+( marker ) \ 2nd approach
+
+  \ XXX TODO 
+
+  \ XXX TODO -- add user variables pointer
+  \ XXX TODO -- add order
+  \ XXX TODO -- add latest of all vocs
+
+: get-every-latest  ( -- nfa0..nfan | nfa )
+  \ Get the latest definition of every vocabulary.
+  voc-link @ begin
+    dup cell - @  ( a nfa ) swap @
+  dup 0= until  drop  ;
+
+: set-every-latest  ( nfa0..nfan | nfa -- )
+  \ Set the latest definition of every vocabulary.
+  voc-link @ begin
+    dup cell - @  ( a nfa ) swap @
+  dup 0= until  drop  ;
+
+: marker@  ( -- x1..xn1 n1 nfa1..nfan2 n2 )
+  \ Get the data a marker word must preserve.
+  \ n = number of data cells on the stack
+  depth >r
+  here np@ voc-link @ 
+  depth r> - get-every-latest  ;
+
+: marker!  ( a -- )
+  \ Restore the data preserved by a marker word.
+  set-order 0 do  2@ !  loop  ;
+
+( marker )
+
+: n,  ( x1..xn n -- )  0 do  ,  loop  ;
+  \ Compile _n_ cells.
+
+: marker  ( "name" -- )
+  marker@ create n,  does>  ( -- ) ( pfa )  marker!  ;
+  \ Create a definition for "name" that will remove itself and
+  \ everything defined after it, restoring all dictionary
+  \ allocation and search order pointers to the state they had
+  \ just prior to the definition of "name".
+
+
+( marker )
+
+  \ XXX TODO 
+
+  \ XXX TODO -- add user variables pointer
+  \ XXX TODO -- add order
+  \ XXX TODO -- add latest of all vocs
+
+: get-every-latest  ( -- nfa0..nfan | nfa )
+  \ Get the latest definition of every vocabulary.
+  voc-link @ begin
+    dup cell - @  ( a nfa ) swap @
+  dup 0= until  drop  ;
+
+: set-every-latest  ( nfa0..nfan | nfa -- )
+  \ Set the latest definition of every vocabulary.
+  voc-link @ begin
+    dup cell - @  ( a nfa ) swap @
+  dup 0= until  drop  ;
+
+: marker@  ( -- x1..xn1 n1 nfa1..nfan2 n2 )
+  \ Get the data a marker word must preserve.
+  \ n = number of data cells on the stack
+  depth >r  here np@ voc-link @ 
+  depth r> - get-every-latest  ;
+
+: marker!  ( a -- )
+  \ Restore the data preserved by a marker word.
+  dup @ dup voc-link !  cell+ dup @ np!  cell+ @ dp !  ;
+
+( marker )
+
+: n,  ( x1..xn n -- )  0 do  ,  loop  ;
+  \ Compile _n_ cells.
+
+: marker  ( "name" -- )
+  marker@ create n,  does>  ( -- ) ( pfa )  marker!  ;
+  \ Create a definition for "name" that will remove itself and
+  \ everything defined after it, restoring all dictionary
+  \ allocation and search order pointers to the state they had
+  \ just prior to the definition of "name".
+
 ( forget )
 
   \ XXX OLD -- obsolescent word
@@ -970,6 +1056,8 @@ end-code
 
 ( extend size system turnkey )
 
+  \ XXX OLD
+  \
   \ XXX WARNING -- Since name field addresses are saved in a
   \ memory bank, the best way to save a modified Forth system
   \ is to make a snapshot with the ZX Spectrum emulator;
@@ -1151,35 +1239,47 @@ code j'  ( -- x )
 
 ( case )  \ ANS Forth version
 
+  \ [Code copied from the example provided in the ANS Forth
+  \ documentation].
+
+  \ XXX FIXME problems with `decode` (nesting of `case`?)
+
 0 constant case immediate  \ init count of ofs
 
-: of  ( Compile-time: #of -- orig #of+1 ) ( Run-time: x -- )
+: of
+  \ Compilation: ( #of -- orig #of+1 )
+  \ Run-time: ( x -- )
   1+ >r
   postpone over  postpone =   \ copy and test case value
   postpone if                 \ add orig to control flow stack 
   postpone drop               \ discards case value if = 
   r>  ; immediate
 
-: endof ( orig1 #of -- orig2 #of )
+: endof
+  \ Compilation: ( orig1 #of -- orig2 #of )
+  \ Run-time: ( -- )
   >r  postpone else  r>  ; immediate
 
-: endcase  ( orig1..orign #of -- )
+: endcase
+  \ Compilation:  ( orig1..orign #of -- )
+  \ Run-time: ( -- )
   \ XXX TODO use `?do` when available
   postpone drop  \ discard case value 
-  dup   if    0 do  postpone then  loop
-        else  2drop
-        then  ; immediate
+  0 do  postpone then  loop  ; immediate
 
 ( case )  \ Abersoft Forth version
 
   \ This is the `case` provided by Abersoft Forth, translated
   \ from the Z80 disassembly, adapted and commented.
+  \
+  \ Note: this version only works when the compiler security
+  \ check config option is activated in the kernel.
 
-  \ XXX TODO check why `0branch >mark` is used instead of `if`
+  \ XXX FIXME problems with `decode` (nesting of `case`?)
   \ XXX TODO check if it's ANS Forth compatible
 
 : case
-  \ Compilation: ( -- case-id )
+  \ Compilation: ( -- a case-id )
   \ Runtime: ( x -- )
   ?comp csp @ !csp 4  ; immediate
 
@@ -1187,22 +1287,53 @@ code j'  ( -- x )
   \ Compilation: ( case-id -- of-id )
   \ Run-time: ( x -- )
   4 ?pairs
-  postpone over  postpone =  postpone 0branch >mark
-  postpone drop  5  ; immediate
+  postpone over  postpone =  postpone if postpone drop
+  5  ; immediate
 
 : endof
   \ Compilation: ( of-id -- case-id )
   \ Run-time: ( -- )
-  5 ?pairs
-  postpone branch  >mark
-  swap 2  postpone then  4  ; immediate
+  5 ?pairs  postpone branch  >mark
+            swap 2  postpone then  4  ; immediate
 
 : endcase
-  \ Compilation: ( orig1..orign case-id -- )
+  \ Compilation: ( a orig1..orign case-id -- )
   \ Run-time: ( x -- )
   4 ?pairs
   postpone drop
-  begin  sp@ csp @ =  while  2 postpone then  repeat
+  begin  sp@ csp @ <>  while  2 postpone then  repeat
+  csp !  ;  immediate
+
+( case )  \ Abersoft Forth version without compiler security
+
+  \ This is the `case` provided by Abersoft Forth, translated
+  \ from the Z80 disassembly, modified (no compiler security
+  \ checks) and commented.
+
+  \ XXX FIXME problems with `decode` (nesting of `case`?)
+  \ XXX TODO check if it's ANS Forth compatible
+
+: case
+  \ Compilation: ( -- a )
+  \ Runtime: ( x -- )
+  ?comp csp @ !csp  ; immediate
+
+: of
+  \ Compilation: ( -- )
+  \ Run-time: ( x -- )
+  postpone over  postpone =  postpone if  postpone drop
+  ; immediate
+
+: endof
+  \ Compilation: ( -- )
+  \ Run-time: ( -- )
+  postpone else  ; immediate
+
+: endcase
+  \ Compilation: ( a orig1..orign -- )
+  \ Run-time: ( x -- )
+  postpone drop
+  begin  sp@ csp @ <>  while  postpone then  repeat
   csp !  ;  immediate
 
 ( ?dov dov loopv +loopv )

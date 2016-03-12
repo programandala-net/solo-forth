@@ -190,6 +190,7 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 
 Fix: `cold` does not restores the dictionary.
 
-Change: remove the control structure checking (`?pairs`).
+Change: remove the control structure checking (`?pairs`). (now it's
+conditionally compiled in the kernel)
 
-Fix: crash at the start! Why? What did I change?
+Change: make the vocabulary links point to the pfa of the vocabularies?

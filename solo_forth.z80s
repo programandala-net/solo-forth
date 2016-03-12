@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-20150811
+; Version A-00-201508122023
 
 ; Latest important changes (in chronological order)
 ; - change: `?terminal` does not check the Edit key.
@@ -715,25 +715,31 @@ _echo: macro _txt
   org origin
 
 cold_entry:
-  ; Location: `0x00 +origin`
+  ; Location (of the destination address): `0x01 +origin`
   jp cold_start
 warm_entry:
-  ; Location: `0x03 +origin`
+  ; Location (of the destination address): `0x04 +origin`
   jp warm_start
 
 ; ==============================================================
 ; Parameter area
 
-top_most_word_in_forth_voc:
-  ; Location: `0x06 +origin`
+latest_nfa_in_root_voc.init_value:
+  dw latest_nfa_in_root_voc
+
+latest_nfa_in_forth_voc.init_value:
   dw latest_nfa_in_forth_voc
 
+latest_nfa_in_assembler_voc.init_value:
+  dw latest_nfa_in_assembler_voc
+
+voc_link.init_value:
+  dw assembler_vocabulary_link ; link to the latest vocabulary defined
+
 user_variables_pointer:
-  ; Location: `0x08 +origin`
   dw user_variables
 
 return_stack_pointer:
-  ; Location: `0x0A +origin`
   dw return_stack_bottom
 
   ; User variables default values
@@ -745,30 +751,22 @@ return_stack_pointer:
 default_user_variables_start:
 
 s0_init_value:
-  ; Location: `0x0C +origin`
   dw data_stack_bottom
 r0_init_value:
-  ; Location: `0x0E +origin`
   dw return_stack_bottom
 tib_init_value:
-  ; Location: `0x10 +origin`
   dw terminal_input_buffer
 width_init_value:
-  ; Location: `0x12 +origin`
   dw max_word_length
 warning_init_value:
-  ; Location: `0x14 +origin`
   dw 0x0000
 fence_init_value:
-  ; Location: `0x16 +origin`
   dw dictionary_pointer_after_cold
 dp_init_value:
-  ; Location: `0x18 +origin`
   dw dictionary_pointer_after_cold
 
 if 0 ; fig_vocabulary?
 voc_link_init_value:
-  ; Location: `0x1A +origin`
   dw forth_vocabulary_link
 else
   ; XXX TODO move
@@ -799,13 +797,13 @@ ip_backup: ; temporary copy of Forth IP
 np: defl names_bank_address+1
 
 names_pointer:
-  ; First free address in the names bank.
+  ; First free address in the names bank,  restored by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
 
 names_pointer_init_value:
-  ; Init value of the names pointer, restored by `cold`.
+  ; Init value of the names pointer, used by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
@@ -3263,6 +3261,7 @@ endif
   _constant_header np0_,'NP0'
 
   ; XXX TODO
+  ; XXX OLD -- not used
 
   dw names_bank_address
 
@@ -3922,15 +3921,9 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-
-if 0 ; XXX OLD
-  _colon_header noop_,'NOOP'
-  dw semicolon_s_
-else ; XXX NEW -- save 2 bytes
-  ; XXX TODO test it
   _header noop_,'NOOP'
+
   dw next ; code field
-endif
 
 ; ----------------------------------------------
   _colon_header constant_,'CONSTANT'
@@ -6385,7 +6378,14 @@ two_literal.end:
 ; ----------------------------------------------
   _colon_header question_stack_,'?STACK'
 
-  ;dw cr_,depth_,dot_ ; XXX INFORMER
+; doc{
+;
+; ?stack  ( -- )  \ fig-Forth
+;
+; Issue an error message is the stack is out of bounds.
+;
+; }doc
+
   dw sp_fetch_
   dw sp0_,fetch_
   dw swap_,less_than_
@@ -6578,13 +6578,8 @@ quit.do:
   _colon_header abort_,'ABORT'
 
   dw sp0_,fetch_,sp_store_
-  dw decimal_
-  ;dw lit_,4,border_ ; XXX INFORMER
-  dw question_stack_
-  dw page_,greeting_
-  dw forth_,definitions_
 boot:
-  dw noop_ ; patched by `turnkey`
+  dw noop_ ; patched by `turnkey` ; XXX OLD
   dw quit_
 
 ; ----------------------------------------------
@@ -6606,19 +6601,41 @@ warm_start_phony_:
 ; ----------------------------------------------
   _colon_header cold_,'COLD'
 
+  ; Init the names pointer.
+  dw lit_,names_pointer_init_value,fetch_
+  dw lit_,names_pointer,store_
+
+  ; Init the disk buffers.
   dw empty_buffers_
+  dw first_,use_,store_
+  dw first_,prev_,store_
+
+  ; Init the circular string buffer.
   dw empty_csb_
-  ; XXX TODO -- restore `np`
-  dw first_,dup_,use_,store_,prev_,store_
+
+  ; Init the user variables.
   dw lit_,default_user_variables_start ; from
   dw lit_,user_variables_pointer,fetch_ ; to
   dw c_lit_
   db default_user_variables_end-default_user_variables_start ; length
   dw cmove_
+
+  ; Restore the vocabularies.
 if 0 ; fig_vocabulary?
-  dw lit_,top_most_word_in_forth_voc,fetch_
+  dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
   dw lit_,forth_vocabulary_dummy_lfa,store_
+else
+  dw lit_,latest_nfa_in_root_voc.init_value,fetch_
+  dw lit_,root_pfa,store_
+  dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
+  dw lit_,forth_pfa,store_
+  dw lit_,latest_nfa_in_assembler_voc.init_value,fetch_
+  dw lit_,assembler_pfa,store_
+  dw lit_,voc_link.init_value,fetch_
+  dw lit_,voc_link_pfa,store_
 endif
+
+  dw page_,greeting_
   dw abort_
 
 cold_start:
@@ -6639,8 +6656,8 @@ common_start:
   xor a
   ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
   ld ix,next
-  ld sp,(s0_init_value)
-  _jp_next
+  ld sp,(s0_init_value) ; reset the data stack
+  _jp_next ; jump to the cfa in the BC register
 
 ; ----------------------------------------------
   _code_header s_to_d_,'S>D'
