@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201510282359
+\ Last modified: 201511010134
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -5709,6 +5709,28 @@ need cs-push  need cs-pop
   \ appropriate math step instructions.  It is also useful in
   \ repeating auto-indexing memory instructions.
 
+( dtimes )
+
+  \ XXX UNDER DEVELOPMENT
+
+: (dtimes)  ( d -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  dfor  dup execute  dstep  drop  ;
+  \ XXX TODO ?do
+
+: dtimes  ( Compilation: "name" -- ) ( Run-time: d -- )
+  postpone (times)  ; immediate compile-only
+
+  \ Repeat the next instruction if the count _d_ on top of the
+  \ stack is not zero.  The count is also decremented.  If
+  \ count is zero, drop it and continue executing the following
+  \ instruction.
+
+  \ `times` is useful to implement complicated math operations,
+  \ like shifts, multiply, divide and square root, from
+  \ appropriate math step instructions.  It is also useful in
+  \ repeating auto-indexing memory instructions.
+
 ( ?? )
 
   \ Credits:
@@ -5774,12 +5796,12 @@ need cs-push  need cs-pop
 
 ( >l l> )
 
-  \ Credits:
-  \ Code adapted from Z88 CamelForth.
-
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO create the leave stack; create the leave stack
   \ pointer as a user variable
+
+  \ Credits:
+  \ Code adapted from Z88 CamelForth.
 
 code >l  ( x -- ) ( L: -- x )
   \ Move to leave stack.
@@ -5925,6 +5947,9 @@ code (loop)  ( -- ) ( R: loop-sys1 -- | loop-sys2 )
 
 ( ?do )
 
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TODO
+
   \ From:
   \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
 
@@ -5956,16 +5981,16 @@ variable ?do?
 : 2dup<> ( x1 x2 -- x1 x2 flag ) 2dup = 0=  ;
 
 : do
-  postpone 2>r 0 ?do? exchange here
+  postpone 2>r 0 ?do? exchange <mark
   ; immediate compile-only
 : ?do
   postpone 2dup<> postpone if postpone do ?do? on
   ; immediate compile-only
 : loop
-  postpone (loop) , ?do? exchange if postpone then then
+  postpone (loop) <resolve ?do? exchange if postpone then then
   ; immediate compile-only
 : +loop
-  postpone (+loop) , ?do? exchange if postpone then then
+  postpone (+loop) <resolve ?do? exchange if postpone then then
   ; immediate compile-only
 
 ( ?do )
@@ -5973,6 +5998,7 @@ variable ?do?
   \ From:
   \ https://groups.google.com/forum/#!msg/comp.lang.forth/rtfm_yg5Kd4/pKijHsPDrIAJ
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TODO
 
 variable ?do?
@@ -5980,7 +6006,7 @@ variable ?do?
 : 2dup= ( x1 x2 -- x1 x2 flag )  2dup =  ;
 
 : do
-  ?do? @ ?do? off [compile] (do) here 0 ,
+  ?do? @ ?do? off [compile] (do) >mark
   ; immediate compile-only
 
 : ?do
@@ -5990,11 +6016,37 @@ variable ?do?
 : complete-?do ( x dest | x -- )
   ?do? @ if postpone then then ?do? !  ;
 
-: loop postpone (loop) , complete-?do
+: loop postpone (loop) <resolve complete-?do
   ; immediate compile-only
 
-: +loop postpone (+loop) , complete-?do
+: +loop postpone (+loop) <resolve complete-?do
   ; immediate compile-only
+
+( ?dov dov loopv +loopv )
+
+  \ Credits:
+  \ Code from v.Forth.
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TODO adapt
+
+: dov
+  compile (do) csp @ !csp here 3  ; immediate compile-only
+
+: ?dov
+  compile 2dup  compile (do)  compile <>
+  postpone if
+  2drop here swap 1 6  ; immediate compile-only
+
+: (resolve)
+  begin  sp@ csp @ -  while  2 postpone then  repeat  csp !
+  ; immediate compile-only
+
+: loopv
+  postpone (loop) (resolve)  ; immediate compile-only
+
+: +loopv
+  postpone (+loop) (resolve)  ; immediate compile-only
 
 ( j )
 
@@ -6155,6 +6207,80 @@ code (step)  ( R: n -- n' )
   \
   \ }doc
 
+( dfor dstep di )
+
+: (dstep)  ( R: x ud -- x ud' )
+
+  \ doc{
+  \
+  \ (dstep)  ( R: x ud -- x ud' | x )
+  \
+  \ The run-time procedure compiled by `dstep`.
+  \
+  \ If the loop index _ud_ is zero, discard it and continue
+  \ execution after the loop. Otherwise decrement the loop
+  \ index and continue execution at the beginning of the loop.
+  \
+  \ }doc
+
+  r>  \ save the return address
+  2r> 2dup or  \ is the index zero?
+  if    -1. d+ 2>r
+    \ decrement the index
+  else  2drop  [ 2 cells ] literal +
+    \ discard the index and skip the branch offset
+  then  >r  ;
+    \ restore the return address
+
+: dfor  ( ud -- )  postpone 2>r <mark  ; immediate compile-only
+
+  \ doc{
+  \
+  \ dfor
+  \
+  \ Compilation: ( R: -- dest )
+  \ Run-time: ( ud -- )
+  \
+  \ Start of a `dfor dstep` loop, that will iterate _ud+1_
+  \ times, starting with _du_ and ending with 0.
+  \
+  \ The current value of the index can be retrieved with `di`.
+  \
+  \ }doc
+
+: dstep  ( -- )
+  postpone (dstep) postpone branch <resolve
+  ; immediate compile-only
+
+  \ doc{
+  \
+  \ dstep
+  \
+  \ Compilation: ( dest -- )
+  \
+  \ Append the run-time semantics given below to the current
+  \ definition. Resolve the destination of `dfor`.
+  \
+  \ Run-time:    ( R: ud -- ud' )
+  \
+  \ If the loop index is zero, discard the loop parameters and
+  \ continue execution after the loop. Otherwise decrement the
+  \ loop index and continue execution at the beginning of the
+  \ loop.
+  \
+  \ }doc
+
+: di  ( -- ud )  ( R: x ud -- x ud )
+  r> 2r@ rot >r  ;
+
+  \ doc{
+  \
+  \ di  ( -- ud )  ( R: x ud -- x ud )
+  \ 
+  \ Return the current index _ud_ of a `dfor` loop.
+  \
+  \ }doc
+ 
 ( case )
 
   \ Credits:
@@ -6564,30 +6690,6 @@ cr  0              dup 3 .r  select-test
 cr  127            dup 3 .r  select-test
 cr  128            dup 3 .r  select-test
 
-( ?dov dov loopv +loopv )
-
-  \ Credits:
-  \ Code from v.Forth.
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO adapt
-
-: dov  compile (do) csp @ !csp here 3  ;
-
-: ?dov
-  compile 2dup  compile (do)  compile <>
-  postpone if
-  2drop here swap 1 6  ; immediate
-
-: (resolve)
-  begin  sp@ csp @ -  while  2 postpone then  repeat  csp !  ;
-
-: loopv
-  postpone loop (resolve)  ;
-
-: +loopv
-  postpone +loop (resolve)  ;
-
 ( case: )
 
   \ Credits:
@@ -6704,12 +6806,12 @@ variable #options
     default-option o0
   ]options  ;
 
-( times-execute )
+( executions )
 
   \ Credits:
   \ Code from Galope (module times.fs).
 
-: times-execute  ( cfa n -- )
+: executions  ( cfa n -- )
   \ Execute _cfa_ _n_ times.
   2>r
   begin   2r@

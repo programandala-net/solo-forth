@@ -14,10 +14,10 @@
 ; 20151029
 
 public_version_high_part:  equ 0x0133
-public_version_low_part:   equ 0x7AF5
+public_version_low_part:   equ 0x7B3D
 
 ; Internal development version:
-; 201510290411
+; 201511010135
 
 ; ==============================================================
 ; Author and license
@@ -227,6 +227,10 @@ paren_dot_quote: equ true
   ; use `(.")`? else compile `slit` and `type`
   ; XXX TODO
   ; XXX TMP
+
+; old_loops: equ true
+  ; true = pre-Forth-83 do-loops
+  ; false = post-Forth-83 do-loops
 
 ; ==============================================================
 ; Symbols
@@ -2020,6 +2024,8 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
+;;if 0 ; old_loops
+
   _code_header paren_do_,'(DO)'
 
   ; Credits:
@@ -2042,12 +2048,57 @@ question_csb_.enough:
                                 ;116t 18b TOTAL
   _jp_next
 
+;;else
+
+  _code_header paren_do83_,'(DO83)'
+
+; XXX UNDER DEVELOPMENT
+; XXX FIXME
+
+  ; Credits:
+  ; Code from Spectrum Forth-83.
+
+  pop hl                        ; 10t 01b ; init
+  pop de                        ; 10t 01b ; limit
+paren_do83.de_hl:
+  push hl                       ; 11t 01b
+  ld hl,(return_stack_pointer)  ; 20t 03b
+  dec hl                        ; 06t 01b
+  ld (hl),d                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),e                     ; 07t 01b ; push limit on return stack
+  inc bc
+  inc bc                        ; skip branch address
+  dec hl                        ; 06t 01b
+  ld (hl),b                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),c                     ; 07t 01b ; push IP on return stack
+  ex (sp),hl                    ; hl=init, (sp)=rp@
+  and a
+  sbc hl,de                     ; hl=init-limit
+  ld a,h
+  xor 0x80                      ; flip most significant bit
+  ld d,a
+  ld e,l
+  pop hl                        ; hl=rp@
+  dec hl
+  ld (hl),d                     ; 07t 01b
+  dec hl                        ; 06t 01b
+  ld (hl),e                     ; 07t 01b ; push (init-limit) xor 0x8000 on return stack
+  ld (return_stack_pointer),hl  ; 16t 03b
+                                ;116t 18b TOTAL
+  _jp_next
+
+;;endif
+
 ; ----------------------------------------------
+;;if 0 ; old_loops
+
   _code_header paren_loop_,'(LOOP)'
 
 ; doc{
 ;
-; +loop  ( n -- )
+; (loop)  ( n -- )
 ;
 ; Add the  signed  increment  _n_ to the  loop  index  using
 ; the convention for `+`,  and compare the total to the limit.
@@ -2057,8 +2108,6 @@ question_csb_.enough:
 ; the  loop, discard  the  loop control  parameters,  continuing
 ; execution ahead.   Index and  limit are  signed  integers in
 ; the  range {-32,768..32,767}.
-;
-; Standard: Forth-79.
 ;
 ; }doc
 
@@ -2112,13 +2161,121 @@ paren_loop.end:
   inc bc
   _jp_next
 
+;;else
+
+  _code_header paren_loop83_,'(LOOP83)'
+
+; XXX UNDER DEVELOPMENT
+
+  ld hl,(return_stack_pointer)
+  ld e,(hl)
+  inc hl
+  ld d,(hl)   ; de = index value
+  inc de      ; increment the index
+  ld a,d
+  xor 0x80
+  or e        ; index=0x8000?
+  jp nz,paren_loop83.continue
+
+  ; limit reached
+  ld de,0x0005
+  add hl,de ; increment RP by 5 (1 already done)
+  ld (return_stack_pointer),hl
+  _jp_next
+
+paren_loop83.continue:
+  ; XXX TODO this part is common to `(+loop83)`:
+  ld (hl),d
+  dec hl
+  ld (hl),e ; update the index on the return stack
+  inc hl
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl) ; IP = start address, repeat loop
+  _jp_next
+
+;;endif
+
 ; ----------------------------------------------
+
+;;if 0 ; old_loops
+  
   _code_header paren_plus_loop_,'(+LOOP)'
 
   pop de
   jp paren_loop.step_in_de
 
+;;else
+
+  _code_header paren_plus_loop83_,'(+LOOP83)'
+
+  ; XXX UNDER DEVELOPMENT
+
+  ld hl,(return_stack_pointer)
+  ld e,(hl)
+  inc hl
+  ld d,(hl)  ; de = current index
+  ex (sp),hl ; hl = the increment value
+  add hl,de     ; add increment to index
+
+  jp po,paren_plus_loop83.continue
+
+  ; If overflow, then boundary between limit-1 and limit is
+  ; crossed, terminate loop.
+
+  pop hl ; return stack pointer
+  ld de,0x0005
+  add hl,de
+  ld (return_stack_pointer),hl
+  ; Increment return stack pointer by 5 (1 increment already done)
+  _jp_next
+
+paren_plus_loop83.continue: 
+  ld d,h
+  ld e,l ; de = updated index
+  pop hl ; return stack pointer
+
+  ; XXX TODO this part is common to `(loop83)`:
+  ld (hl),d
+  dec hl
+  ld (hl),e  ; update the index on the return stack
+  inc hl
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl) ; IP = start address, repeat loop
+  _jp_next
+
+;;endif
+
 ; ----------------------------------------------
+
+;;if 0 ; old_loops
+;;else
+
+  _code_header leave_,'LEAVE'
+
+  ld hl,(return_stack_pointer)
+  inc hl
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl) ; bc = start address
+  inc hl
+  inc hl
+  inc hl
+  ld (return_stack_pointer),hl ; write updated return stack pointer (6 was added)
+  dec bc
+  dec bc ; point IP to forward branch address
+  jp branch_pfa
+
+;;endif
+
+; ----------------------------------------------
+
+;;if 0 ; old_loops
+
   _code_alias_header i_,'I',,r_fetch_
 
 ; doc{
@@ -2128,6 +2285,31 @@ paren_loop.end:
 ; Return a copy of the current (innermost) loop index.
 ;
 ; }doc
+
+;;else
+
+  _code_header i83_,'I83'
+
+  ld hl,(return_stack_pointer)
+  ; J jumps here. ; XXX TODO
+  ld e,(hl)
+  inc hl
+  ld d,(hl) ; de= current index, wich is: (index-limit) xor 0x8000
+  inc hl
+  inc hl
+  inc hl
+  ld a,(hl)
+  add a,e   ; read limit and add to index
+  ld e,a
+  inc hl
+  ld a,(hl)
+  adc a,d
+  xor 0x80  ; flip most significant bit, getting true index value
+  ld b,a
+  push de ; result
+  _jp_next
+
+;;endif
 
 ; ----------------------------------------------
   _code_header digit_question_,'DIGIT?'
@@ -4630,10 +4812,11 @@ do_colon.end: ; XXX TMP for debugging
 
 ; doc{
 ;
-; :noname  ( -- xt )
+; :noname  ( -- cfa )
 ; 
 ; Standard: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ; 
+; ----
 ; }doc
 
 
@@ -4836,6 +5019,9 @@ endif
 
 ; XXX FIXME this alternative crashes the system:
 ;  _code_alias_header false_,'FALSE',,zero_
+
+; XXX TODO benchmark `false` and `0'
+; A `cconstant` needs 4 bytes.
 
 ; doc{
 ;
@@ -9466,18 +9652,41 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header do_,'DO',immediate+compile_only
+  _code_header paren_question_do_,'(?DO)'
+
+; XXX UNDER DEVELOPMENT
+; A `(?do)` after Forth-79
+
+  ; Credits:
+  ; Code based on Spectrum Forth-83.
+
+if 0
+
+  pop hl
+  pop de
+  and a
+  sbc hl,de
+  jp z,branch_pfa
+  add hl,de  ; reverse the substraction
+  jp paren_do.de_hl
+
+endif
+
+  _jp_next
+
+; ----------------------------------------------
+  _colon_header question_do_,'?DO',immediate+compile_only
+
+; XXX UNDER DEVELOPMENT
+; A `?do` after Forth-79
 
 ; doc{
 ;
-; do  ( n1 n2 -- )
-;
-; Standard: fig-Forth, Forth 79.
+; ?do  ( n1 n2 -- )
 ;
 ; }doc
 
-  dw compile_,paren_do_
-do.common:
+  dw compile_,paren_question_do_
   dw backward_mark_
 if 1 ; fig_compiler_security
   _literal 3 ; error checking number
@@ -9485,6 +9694,96 @@ endif
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _code_header paren_question_do83_,'(?DO83)'
+
+; XXX UNDER DEVELOPMENT
+
+  ; Credits:
+  ; Code based on Spectrum Forth-83.
+
+  pop hl
+  pop de
+  and a
+  sbc hl,de
+  jp z,branch_pfa
+  add hl,de  ; reverse the substraction
+  jp paren_do83.de_hl
+
+; ----------------------------------------------
+  _colon_header question_do83_,'?DO83',immediate+compile_only
+
+; XXX UNDER DEVELOPMENT
+
+; doc{
+;
+; ?do  ( n1 n2 -- )
+;
+; Standard: Forth-83, Forth-94, Forth-2012.
+;
+; : ?do  ( n1 n2 -- )
+;   postpone (?do) >mark  ;  immediate compile-only
+;
+; }doc
+
+  dw compile_,paren_question_do83_
+  dw forward_mark_
+if 1 ; fig_compiler_security
+  _literal 3 ; error checking number
+endif
+  dw semicolon_s_
+
+; ----------------------------------------------
+;;if 0 ; old_loops
+
+  _colon_header do_,'DO',immediate+compile_only
+
+; doc{
+;
+; do  ( n1 n2 -- )
+;
+; Standard: fig-Forth, Forth-79.
+;
+; }doc
+
+  dw compile_,paren_do_
+do.common: ; XXX OLD not used
+  dw backward_mark_
+if 1 ; fig_compiler_security
+  _literal 3 ; error checking number
+endif
+  dw semicolon_s_
+
+;;else
+
+  _colon_header do83_,'DO83',immediate+compile_only
+
+; XXX UNDER DEVELOPMENT
+
+; doc{
+;
+; do  ( n1 n2 -- )
+;
+; Standard: Forth-83, Forth-94, Forth-2012.
+;
+; : do  ( n1 n2 -- )
+;   postpone (do) >mark  ;  immediate compile-only
+;
+; }doc
+
+  dw compile_,paren_do83_
+do.common83: ; XXX OLD not used
+  dw forward_mark_
+if 1 ; fig_compiler_security
+  _literal 3 ; error checking number
+endif
+  dw semicolon_s_
+
+;;endif
+
+; ----------------------------------------------
+
+;;if 0 ; old_loops
+
   _colon_header loop_,'LOOP',immediate+compile_only
 
 ; XXX TODO documentation
@@ -9495,7 +9794,7 @@ endif
 ; Increment the `do-loop` index by one, terminating the loop  if
 ; the new index is equal to or greater than  the  limit.
 ;
-; Standard: fig-Forth, Forth 79.
+; Standard: fig-Forth, Forth-79.
 ;
 ; }doc
 
@@ -9507,14 +9806,53 @@ endif
   dw backward_resolve_
   dw semicolon_s_
 
+;;else
+
+  _colon_header loop83_,'LOOP83',immediate+compile_only
+
+; XXX UNDER DEVELOPMENT
+
+; doc{
+;
+; loop  ( -- )
+;
+; Increment the `do-loop` index by one, terminating the loop  if
+; the new index is equal to or greater than  the  limit.
+;
+; Standard: Forth-83, Forth-94, Forth-2012.
+;
+; }doc
+
+if 1 ; fig_compiler_security
+  _literal 3 ; error checking number
+  dw question_pairs_
+endif
+  dw compile_,paren_loop83_
+  dw forward_resolve_
+  dw semicolon_s_
+
+;;endif
+
 ; ----------------------------------------------
+
+;;if 0 ; old_loops
+
   _colon_header plus_loop_,'+LOOP',immediate+compile_only
 
 ; doc{
 ;
 ; +loop  ( n -- )
 ;
-; Standard: fig-Forth, Forth 79.
+; Add the  signed  increment  _n_ to the  loop  index  using
+; the convention for `+`,  and compare the total to the limit.
+; Return execution to the corresponding `do` until the new index
+; is equal to or greater than the limit (n>0),  or until the new
+; index is less  than the limit (n<0).   Upon the exiting from
+; the  loop, discard  the  loop control  parameters,  continuing
+; execution ahead.   Index and  limit are  signed  integers in
+; the  range {-32,768..32,767}.
+;
+; Standard: fig-Forth, Forth-79.
 ;
 ; }doc
 
@@ -9525,6 +9863,33 @@ endif
   dw compile_,paren_plus_loop_
   dw backward_resolve_
   dw semicolon_s_
+
+;;else
+
+  _colon_header plus_loop83_,'+LOOP83',immediate+compile_only
+
+; XXX UNDER DEVELOPMENT
+
+; doc{
+;
+; loop  ( -- )
+;
+; Increment the `do-loop` index by one, terminating the loop  if
+; the new index is equal to or greater than  the  limit.
+;
+; Standard: Forth-83, Forth-94, Forth-2012.
+;
+; }doc
+
+if 1 ; fig_compiler_security
+  _literal 3 ; error checking number
+  dw question_pairs_
+endif
+  dw compile_,paren_plus_loop83_
+  dw forward_resolve_
+  dw semicolon_s_
+
+;;endif
 
 ; ----------------------------------------------
   _colon_header until_,'UNTIL',immediate+compile_only
