@@ -1,3 +1,10 @@
+; This file is part of Solo Forth
+;
+; This file contains the old original optional code code related
+; to fig-Forth's `find`, finally removed from the system, just
+; in case something gets wrong.
+;
+; 2015-06-28 
 
 ; doc{
 ;
@@ -226,19 +233,6 @@ endif
 ; `interpret` must be modified.
 
 if fig_find?
-
-; doc{
-;
-; interpret  ( -- )  \ fig-Forth
-;
-; The outer text interpreter which sequentially executes or
-; compiles text from the input stream (terminal or disk)
-; depending on `state`. if the word name cannot be found after a
-; search of `context` and then `current` it is converted to a
-; number according to the current `base`.  That also failing, an
-; error message echoing the name with a "?" will be given.
-;
-; }doc
 
 interpret.begin:
   dw find_ ; found?

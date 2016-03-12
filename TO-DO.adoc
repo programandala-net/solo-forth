@@ -8,9 +8,6 @@ compilation of sources.
 
 .2015-06-05:
 
-Fix: `begin` structures produce compilation errors in screens, but not
-in the terminal! [Already solved?]
-
 Still strange problems with the stacks:
 
 The problem seems to be, `?stack` is used only by `interpret`, but not
@@ -22,10 +19,6 @@ overflow.
 
 DZX-Forth implements `exit` simple as `compile (exit)`, and
 `exit` is the word called by `;`. Compare both implementations.
-
-Define `rp`, like in Afera:
-
-  HEX  5E68 CONSTANT RP  DECIMAL
 
 .2015-06-07:
 
@@ -61,7 +54,7 @@ New:
 
 .2015-06-20:
 
-New: `compiling?` and `executing?` after DZX-Forth.
+New: `executing?` after DZX-Forth.
 
 New: `rshift` and `lshift`, from DZX-Forth.
 
@@ -80,26 +73,6 @@ Fix:
 ----
 123 16384 2!  ? [ rubbish ] MSG # 2
 ----
-
-.2015-06-23:
-
-Fix:
-
-`require`.
-
-Fix:
-
-`continued` does strange things, when used in the command line.
-
-Fix:
-
-`require` does strange things, because the strings are overwritten.  A
-circular buffer is needed, and a heap would be useful to implement it
-without a fixed size.
-
-Fix:
-
-`2>r` and `2r>`. (done?)
 
 .2015-06-25:
 
@@ -122,10 +95,13 @@ Fix: `plot` and `point`.
 
 .2015-06-28:
 
-Fix: `vocabulary` needs changes after the new header format.
+Fix: `vocabulary` needs changes after the new header format. Executing
+`forth` or `assembler` makes the system unusable (no word is
+recognized anymore).
 
-Fix: Something went wrong afte the massive of the `_number` macro:
-`.` does not print well;
-`require` gives error 0!... 
+Fix: Something went wrong after the massive of the `_number` macro:
+`.` does not print well; `require` gives error 0!...  The problem is
+`_number -1`! Why? I wrote the autor of Pasmo.
 
-The problem is `_number -1`! Why?
+.2015-06-29:
+

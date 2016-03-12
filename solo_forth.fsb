@@ -24,12 +24,11 @@
 
 ( ) \ scr 1
 
+  .( hola)
+  7 continued
 
 ( debugging ) \ scr 2
 
-  \ XXX to test `error`:
-
-: wrong 4 literal ;
 
 ( require ) \ scr 3
 
@@ -110,6 +109,8 @@ scr/disk 1 2variable locatable
 ( debug ) \ scr 6 for debugging
 
 ( debug ) \ scr 7 for debugging
+
+  .( pantalla 7)
 
 ( parse-name place +place /string )
 
@@ -369,16 +370,26 @@ end-code
 
 ( bleep )
 
-  \ 2015-06-04: Abersoft Forth's `bleep`.
+  \ Code modified from Abersoft Forth:
 
-code bleep
+code bleep  ( n1 n2 -- )
+  \ Produce a tone in the noise maker.
+  \ n1 = duration
+  \ n2 = pitch
   E1 c, D1 c, C5 c,   \ pop hl / pop de / push bc
-  DD c, E5 c,         \ push ix
   CD c, 03B5          \ call rom_beeper
-  DD c, E1 c,         \ pop ix
   C1 c,               \ pop bc
+  DD c, 21 c, next ,  \ ld ix,next ; restore ix
   DD c, E9 c,         \ jp (ix)
   end-code
+
+  \ Code from v.Forth, not tested:
+
+: bleep-calc ( freq duration -- n1 n2 )
+  \ n1 = duration
+  \ n2 = pitch
+  OVER 1000 */ SWAP
+  4375 100 ROT */ 30 -  ;
 
 ( within between )
 
@@ -882,6 +893,39 @@ width ! decimal
 
          0 constant [false] immediate
 [false] 0= constant [true]  immediate
+
+( ?vdo vdo vloop )
+
+  \ [Code from vForth.]
+
+  \ XXX TODO adapt
+
+: vdo compile (do) csp @ !csp here 3 ;
+
+: ?vdo
+  compile 2dup  compile (do)  compile <>
+  [compile] if
+  2drop here swap 1 6  ; immediate
+
+: (resolve)
+  begin  sp@ csp @ -  while  2 [compile] then  repeat  csp !  ;
+
+: loop
+  [compile] loop (resolve)  ;
+
+: +loop
+  [compile] +loop (resolve)  ;
+
+( compile, postpone )
+
+  \ [Code from v.Forth.]
+
+: compile, ( cfa -- )  ?comp , ;
+
+: postpone  ( "name" -- )
+  ?comp defined dup ?defined
+  dup 0= 0 ?error
+  0< if  compile compile  then  ,  ;  immediate
 
 ( ms )
 

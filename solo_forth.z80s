@@ -7,7 +7,7 @@
 ; Copyright (C) 2015 Marcos Cruz (programandala.net)
 
 ; ==============================================================
-; Version A-00-201506281715
+; Version A-00-201506290300
 
 ; Latest important changes (in chronological order)
 ; - `skip`, for the new version of `word`.
@@ -63,7 +63,9 @@
 ;            May be used within Forth words if restored before `next`.
 
 ; ----------------------------------------------
-; Default header structure
+; Old header structure -- obsolete
+
+; XXX OLD
 
 ; The whole header is created in the dictionary:
 
@@ -108,6 +110,13 @@
 ; cfa: dw code_address
 ; pfa:    ...              ; data or code
 
+; ==============================================================
+; Glossary
+
+; The description of Forth words is included in this source.
+; The markers `doc{` and `}doc` to delimitate the comments that
+; form the glossary.
+
 ; ----------------------------------------------
 ; Stack comment conventions
 
@@ -137,6 +146,18 @@
 ; nfa      = address of name field
 ; pfa      = address of parameter field
 
+; ----------------------------------------------
+; Word attributes
+
+; The capital letters on the right show definition characteristics:
+
+; C      May only be used within a colon definition. A digit indicates number
+;        of memory addresses used, if other than one. A plus sign indicates
+;        a variables number of memory addresses used.
+; E      Intended for execution only.
+; I      Immediate. Has precedence bit set. Will execute even when compiling.
+; U      A user variable.
+
 ; ==============================================================
 ; Configuration
 
@@ -145,6 +166,7 @@ size_optimization?              equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
+  ; XXX TODO -- not used yet
 fig_parsing?                    equ false
   ; true = the fig-Forth parsing words are used.
   ; false = parsing is modified after Forth-83 and ANS Forth.
@@ -1350,6 +1372,8 @@ l5ef2h:
 
 ; ----------------------------------------------
 
+if 0
+
   _colon_header paren_question_do_,'(?DO)'
 
   ; XXX TODO -- first draft, just copied from DZX-Forth
@@ -1365,6 +1389,8 @@ paren_question.end:
   dw from_r_,fetch_,to_r_
   dw semicolon_s_
 
+endif
+  
 ; ----------------------------------------------
   _code_header paren_do_,'(DO)'
 
@@ -1385,6 +1411,119 @@ paren_question.end:
   ld (return_stack_pointer),hl  ; 16t 03b
   exx                           ; 04t 01b
                                 ;116t 18b TOTAL
+  _jp_next
+
+; ----------------------------------------------
+; XXX TODO experimental do-loop structures adapted from Spectrum Forth-83
+
+; A do-loop pushes three items on the return stack:
+;
+; 0) Limit
+; 1) Reverse branch address (jump to here if loop repeats).
+; 2) Current index (represented as `(index-limit) xor 0x8000`.
+;    This is at the top.
+;    The current index is represented this way so it is easier
+;    to check whether index has crossed the boundary between
+;    limit-1 and limit, acoording to
+;    the rules of Forth-83, even with negative increment in +LOOP.
+
+  _code_header paren_do83_,'(DO83)'
+
+  pop hl ; initial value
+  pop de ; limit
+  push hl ; initial value
+  ld hl,(return_stack_pointer)
+  dec hl
+  ld (hl),d
+  dec hl
+  ld (hl),e ; push limit value on return stack
+  inc bc
+  inc bc ; increment the instruction pointer, skip branch address
+  dec hl
+  ld (hl),b
+  dec hl
+  ld (hl),c ; push current instruction pointer on return stack
+  ex (sp),hl ; initial value now in HL, return stack pointer on stack
+  and a ; reset the carry flag
+  sbc hl,de ; B SBCP        \ Subtract limit value.
+  ld a,h ; H A LD
+  xor 0x80 ; 80 XOR#       \ Flip most significant bit.
+  ld d,a ; A B LD
+  ld e,l ; L C LD        \ Move result to DE.
+  pop hl ; H POP        \ Get return stack pointer from stack,
+  dec hl ; H DEC
+  ld (hl),d ; B M LD
+  dec hl ; H DEC
+  ld (hl),e ; C M LD        \ Push (initial - limit) XOR 0x8000 onto return stack.
+  ld (return_stack_pointer),hl ; RPTR STHL       \ Save return stack pointer.
+  _jp_next ; JPIX ;C
+
+  _code_header paren_question_do83_,'(?DO83)'
+
+  pop hl ; initial value
+  pop de ; limit
+  and a ; reset the carry flag
+  sbc hl,de ; compare
+  jr z,question_do.equals
+  ; not equals
+  add hl,de ; reverse the subtraction
+  push de ; limit
+  push hl ; inital value
+  jr paren_do_pfa ; perform regular `do`
+  question_do.equals:
+  jp branch_pfa ; XXX TODO
+
+  _colon_header question_do83_,'?DO83',immediate
+
+  dw compile_,paren_question_do83_
+  dw forward_mark_
+  dw three_
+  dw semicolon_s_
+
+  _colon_header do83_,'DO83',immediate
+
+  dw compile_,paren_do83_
+  dw forward_mark_
+  dw three_
+  dw semicolon_s_
+
+  _colon_header loop83_,'LOOP83',immediate
+
+  dw three_
+  dw question_pairs_
+  dw compile_,paren_loop83_
+  dw forward_resolve_
+  dw semicolon_s_
+
+  _colon_header paren_loop83_,'(LOOP83)'
+
+  ld hl,(return_stack_pointer)
+  ld e,(hl) ; M C LD
+  inc hl    ; H INC
+  ld d,(hl) ; M B LD         \ Read current index value.
+  inc de    ; B INC         \ Increment it.
+  ld a,d    ; B A LD
+  xor 0x80  ; 80 XOR#
+  or e      ;  C OR         \ Was it equal to 0x8000 ?
+  jp nz,paren_loop83.loop ; jump if not
+
+  ; The real index has reached limit, terminate loop.
+  ; Increment ret stack pointer by 5 (1 increment already done).
+  ld de,5   ; 5 B LDP#
+  add hl,de ; B ADDP
+  ld (return_stack_pointer),hl ; RPTR STHL
+  _jp_next
+
+paren_loop83.loop:
+
+  ld (hl),d ;  B M LD
+  dec hl    ; H DEC
+  ld (hl),e ; C M LD    \ Store updated index.
+  inc hl    ; H INC
+  inc hl    ; H INC
+  ld c,(hl) ; M E LD
+  inc hl    ; H INC
+  ld c,(hl) ; M D LD   \ Read loop start address into instruction pointer, repeat loop.
   _jp_next
 
 ; ----------------------------------------------
@@ -2042,7 +2181,7 @@ key.cursor_c:
 
 key.graphic_mode:
   cp graphics_char ; change graphics mode?
-  jr nz,key.left_bracket
+  jr nz,key.translate
   ; graphics
   ld a,0x02
   ld hl,sys_mode
@@ -2061,6 +2200,8 @@ key.graphic_mode_cursor:
 
   ; Translate some chars
   ; XXX TODO use a configurable list of chars pairs
+
+key.translate:
 key.left_bracket:
   cp 0xC6
   jr nz,key.right_bracket
@@ -2110,6 +2251,25 @@ key.limit:
 
   pop bc
   jp push_hl
+
+  ; XXX TODO
+  ; Table structure:
+  ;   dw chained table (or zero)
+  ;   db from1,to1
+  ;   db ...
+  ;   db from-n,to-n
+  ;   db 0 ; end of data, continue at the chained table
+
+key_translation_table:
+  dw 0 ; no chained table
+  db 0xC6,'['
+  db 0xC5,']'
+  db 0xE2,'~'
+  db 0xC3,'|'
+  db 0xCD,'\'
+  db 0xCC,'{'
+  db 0xCB,'}'
+  db 0 ; end of data
 
 ; ----------------------------------------------
   _code_header question_terminal_,'?TERMINAL'
@@ -2917,7 +3077,7 @@ do_colon:
   ; XXX TODO move to the disk? problem: do_colon
 
   dw question_exec_
-  dw current_,fetch_,context_,store_ ; XXX TODO why fig-Forth does this?
+  dw current_,fetch_,context_,store_ ; XXX TODO why fig-Forth does this in `:`?
   dw smudge_  ; deactivate the effect of the next `smudge` in `;`
   dw here_ ; cfa
   dw store_csp_
@@ -3436,8 +3596,33 @@ lfa_to_nfa.do:
 
 endif
 
+
+; ----------------------------------------------
+  _colon_header trail_,'TRAIL'
+
+; doc{
+;
+; trail ( -- nfa )
+;
+; Leave the name field address of the topmost word in the
+; `context` vocabulary.
+;
+; }doc
+
+  dw context_,fetch_,fetch_
+  dw semicolon_s_
+
 ; ----------------------------------------------
   _colon_header latest_,'LATEST'
+
+; doc{
+;
+; latest ( -- nfa )  \ ANS Forth
+;
+; Leave the name field address of the topmost word in the
+; `current` vocabulary.
+;
+; }doc
 
   dw current_,fetch_,fetch_
   dw semicolon_s_
@@ -3577,11 +3762,28 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header n_fetch_,'N@'
+  _colon_header c_fetch_n_,'C@N'
 
 ; doc{
 ;
-; n@  ( a -- x )
+; c@n  ( a -- x )
+;
+; Fetch from the _a_ address of the names bank.
+;
+; }doc
+
+  ; XXX 14 bytes:
+  _names_bank
+  dw c_fetch_
+  _default_bank
+  dw semicolon_s_
+
+; ----------------------------------------------
+  _colon_header fetch_n_,'@N'
+
+; doc{
+;
+; @n  ( a -- x )
 ;
 ; Fetch from the _a_ address of the names bank.
 ;
@@ -3608,7 +3810,7 @@ if 1 ; names_in_memory_bank?
 
   dw c_lit_
   db 4
-  dw minus_,n_fetch_
+  dw minus_,fetch_n_
   dw semicolon_s_
 
 else
@@ -3735,6 +3937,29 @@ question_error.no_error:
   dw semicolon_s_
 
 ; ----------------------------------------------
+  _colon_header postpone_,'POSTPONE',immediate
+
+; doc{
+;
+; postpone ( "name" -- )  \ ANS Forth, C I
+;
+; Skip leading space delimiters. Parse name delimited by a
+; space. Find name. Append the compilation semantics of _name_ to
+; the current definition.
+;
+; }doc
+
+  dw defined_ ; ( ca 0 | cfa 1 | cfa -1 )
+  dw dup_,question_defined_ ; error if not found
+  dw zero_less_than_ ; non-immediate word?
+  dw zero_branch_,postpone.end
+  ; Non-immediate word.
+  dw compile_,compile_ ; compile `compile`
+postpone.end:
+  dw comma_ ; compile the cfa
+  dw semicolon_s_
+
+; ----------------------------------------------
   _colon_header left_bracket_,'[',immediate
 
   dw state_,off_
@@ -3752,7 +3977,10 @@ question_error.no_error:
   dw latest_
   dw c_lit_
   db smudge_bit_mask
+  ; XXX TODO factor `toggle-names'?
+  _names_bank
   dw toggle_
+  _default_bank
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -4435,7 +4663,7 @@ uppers.do:
 ;
 ; }doc
 
-  dw context_,fetch_,fetch_
+  dw trail_
   ;dw paren_dot_quote_ ; XXX INFORMER
   ;_string 'In find, nfa is:' ; XXX INFORMER
   ;dw dup_,hex_,u_dot_,decimal_ ; XXX INFORMER ;
@@ -4961,7 +5189,10 @@ interpret.16bit_number:
   dw latest_
   dw c_lit_
   db precedence_bit_mask
+  ; XXX TODO factor `toggle-names'?
+  _names_bank
   dw toggle_
+  _default_bank
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5534,6 +5765,12 @@ flush.do:
 ; ----------------------------------------------
   _colon_header continued_,'CONTINUED'
 
+  ; XXX FIXME this does strange things when executed from the
+  ; command line, because `blk` is not restored.
+  ; it works fine in a screen.
+  ; as a temporary solution, `?loading` is used:
+
+  dw question_loading_
   dw dup_,zero_,equals_
   _question_error loading_from_screen_0_error
   dw to_in_,off_
@@ -5649,17 +5886,18 @@ flush.do:
   dw semicolon_s_
 
 ; ----------------------------------------------
-  _colon_header question_do_,'?DO',immediate
+  ; _colon_header question_do_,'?DO',immediate
 
-  dw compile_,paren_question_do_
-  dw backward_mark_
-  dw three_
-  dw semicolon_s_
+  ; XXX TODO
+
+  ; dw compile_,paren_question_do_
+  ; dw branch_,do.common
 
 ; ----------------------------------------------
   _colon_header do_,'DO',immediate
 
   dw compile_,paren_do_
+do.common:
   dw backward_mark_
   dw three_
   dw semicolon_s_
@@ -5981,7 +6219,7 @@ endif
   dw c_lit_
   db 0x80
   dw out_,store_
-  dw context_,fetch_,fetch_
+  dw trail_
 words.begin:
   dw out_,fetch_
   dw c_lit_
@@ -5994,7 +6232,7 @@ words.begin:
   dw cr_,out_,off_
 words.continue:
   dw dup_,id_dot_
-  dw nfa_to_lfa_,n_fetch_
+  dw nfa_to_lfa_,fetch_n_
   dw dup_,zero_equals_,question_terminal_,or_
   dw zero_branch_,words.begin ; until
   dw drop_
