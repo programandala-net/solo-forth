@@ -448,6 +448,7 @@ _header: macro _base_label,_name,_is_immediate
   _name_address: equ $
     db _name ; name field
   _address_after_name: equ $
+
   np: defl $ ; new value of the names pointer
 
   ; Update the names pointer:

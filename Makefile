@@ -43,11 +43,21 @@ MAKEFLAGS = --no-print-directory
 
 kernel_source_file = solo_forth.z80s
 disk_source_file = solo_forth.fsb
+object_file = solo_forth.o
 #kernel_source_file = solo_forth.z80s.201506290300.z80s
 #disk_source_file = solo_forth.fsb.201506290224.fsb
 
 origin = 0x5E00
-ld_script = solo_forth.ld
+
+z80_dir=/usr/bin/
+z80_prefix=z80-unknown-coff-
+z80=$(z80_dir)$(z80_prefix)
+
+as=$(z80)as
+ld=$(z80)ld
+nm=$(z80)nm
+
+#ld_script = solo_forth.ld
 
 .ONESHELL:
 
@@ -57,24 +67,25 @@ ld_script = solo_forth.ld
 .PHONY: all
 all: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
 
+.PHONY: symbols
+symbols: solo_forth.symbols.abs.txt
+
 .PHONY : clean
 clean:
 	rm -f \
 		solo_forth_disk_?.mgt \
 		solo_forth.*.tap
 
-
 ################################################################
-# The binary
-
-# The new basic loader.
+# The basic loader
 
 solo_forth.bas.tap: solo_forth.bas
 	bas2tap -q -n -sAutoload -a1 \
 		solo_forth.bas  \
 		solo_forth.bas.tap
 
-# The charset.
+################################################################
+# The charset
 
 # XXX OLD
 # solo_forth.charset.bin: solo_forth.charset.z80s
@@ -82,27 +93,32 @@ solo_forth.bas.tap: solo_forth.bas
 # 		solo_forth.charset.z80s \
 # 		solo_forth.charset.bin
 
-# The new binary.
+################################################################
+# The object file
 
-# A temporary name "forth.bin" is used because Pasmo does not have an option to
-# choose the filename used in the TAP file header; it uses the name of the
-# target file.
-
-solo_forth.bin.tap: $(kernel_source_file) $(ld_script)
-	/usr/bin/z80-unknown-coff-as \
+$(object_file): $(kernel_source_file) $(ld_script)
+	$(as) \
 		-z80 \
 		-aglhs=solo_forth.list.txt \
-		-o solo_forth.o \
-		$(kernel_source_file) && \
-	/usr/bin/z80-unknown-coff-ld \
+		-o $(object_file) \
+		$(kernel_source_file)
+
+################################################################
+# The binary file
+
+# The filename "forth.bin" is used because bin2code does not
+# have an option to choose the filename used in the TAP file
+# header; it uses the name of the original file.
+
+forth.bin: $(object_file)
+	$(ld) \
 		--trace \
 		--oformat binary \
 		-Map solo_forth.map \
 		-Ttext=$(origin) \
 		-Tdata=0xC000 \
 		--output forth.bin \
-		solo_forth.o && \
-	bin2code forth.bin solo_forth.bin.tap $(origin)
+		$(object_file)
 
 # XXX with the script, the data section starts after the text section:
 #		-T$(ld_script) \
@@ -113,15 +129,33 @@ solo_forth.bin.tap: $(kernel_source_file) $(ld_script)
 #		-Ttext=$(origin) \
 #		-Tdata=0xC000 \
 
-# > solo_forth.assembly_debug_info.txt ; \
+################################################################
+# The TAP file
 
-# solo_forth.bin.tap: $(kernel_source_file)
-# 	z80asm \
-# 		--input=$(kernel_source_file) \
-# 		--output=forth.bin \
-# 		--label=solo_forth.symbols.z80asm.z80s \
-# 		--list=solo_forth.list.txt \
-# 	bin2tap forth.bin solo_forth.bin.tap
+solo_forth.bin.tap: forth.bin
+	bin2code forth.bin solo_forth.bin.tap $(origin)
+
+################################################################
+# The symbols file
+
+# The GNU binutils `as` assembler prints the symbols only with
+# relative values, because they are not linke yet. But the `ld`
+# linker does not have an option to print them.
+#
+# The chosen solution is to get a symbols list from the object
+# file using the `nm` utility, also from GNU binutils. The
+# values are relative, but the format of the listing makes the
+# file directly interpretable by a Forth program...
+
+solo_forth.symbols.rel.txt: $(object_file)
+	$(nm) $(object_file) > solo_forth.symbols.rel.txt
+
+solo_forth.symbols.abs.txt: solo_forth.symbols.rel.txt
+	gforth \
+		nm2absolute.fs \
+		solo_forth.symbols.rel.txt \
+		-e bye \
+		| sort > solo_forth.symbols.abs.txt
 
 ################################################################
 # The MGT disk images
@@ -160,10 +194,11 @@ backup:
 		_old/* \
 		_ideas/* \
 		_draft/* \
+		*.fs \
+		*.sh \
 		solo_forth*.fsb \
 		solo_forth*.bas \
 		solo_forth*.ld \
-		solo_forth*.sh \
 		solo_forth*.txt \
 		solo_forth*.mgt \
 		solo_forth*.z80s
@@ -186,3 +221,6 @@ backup:
 # 2015-08-14: Updated backup recipe.
 #
 # 2015-08-17: Modified to use GNU binutils instead of Pasmo.
+#
+# 2015-08-18: Improved. New: a Forth program creates the symbols
+# file.

@@ -11,7 +11,7 @@
 ; XXX TODO
 version_status:   equ 'A'
 version_branch:   equ 00
-version_release:  equ 2015081720
+version_release:  equ 2015081721
 
 ; XXX TMP -- for debugging
 ;vr_div: equ version_release/65535
@@ -437,6 +437,231 @@ bank1_port:   equ 0x7FFD
 border_port:  equ 0xFE
 
 ; ==============================================================
+; Entry points
+
+  .text
+
+cold_entry:
+  ; Location (of the destination address): `0x01 +origin`
+  jp cold_start
+warm_entry:
+  ; Location (of the destination address): `0x04 +origin`
+  jp warm_start
+
+; ==============================================================
+; Parameter area
+
+  ; XXX TODO document the `+origin` index
+
+latest_nfa_in_root_voc.init_value:
+  dw latest_nfa_in_root_voc
+
+latest_nfa_in_forth_voc.init_value:
+  dw latest_nfa_in_forth_voc
+
+latest_nfa_in_assembler_voc.init_value:
+  dw latest_nfa_in_assembler_voc
+
+voc_link.init_value:
+  dw assembler_vocabulary_link ; link to the latest vocabulary defined
+
+user_variables_pointer:
+  dw user_variables
+
+return_stack_pointer:
+  dw return_stack_bottom
+
+default_color_attribute:
+  dw 4 ; low byte: green paper, black ink; high byte: no mask
+
+  ; XXX TODO
+.if show_version
+version_status_variable:
+  dw version_status
+version_branch_variable:
+  dw version_branch
+version_release_variable:
+  dw version_release mod 0xFFFF
+  dw version_release / 0xFFFF
+.endif
+
+  ; User variables default values
+
+  ; The first eight user variables have default values.  They are used
+  ; by `cold` to overwrite the correspondent user variables.  They must
+  ; be in the same order than user variables.
+
+default_user_variables_start:
+
+s0_init_value:
+  dw data_stack_bottom
+r0_init_value:
+  dw return_stack_bottom
+  dw 0x0000 ; XXX OLD -- tib
+width_init_value:
+  dw max_word_length
+warning_init_value:
+  dw 0x0000
+  dw 0x0000 ; XXX OLD -- fence
+dp_init_value:
+  dw dictionary_pointer_after_cold
+
+  ; XXX TODO move
+  dw 0x0000 ; XXX free
+
+  ; XXX TODO this four user variables do not need init and this
+  ; space could be saved; they are included here because `#tib`
+  ; must be init; it should be moved to user variable +0x10.
+
+blk_init_value:
+  dw 0x0000
+in_init_value:
+  dw 0x0000
+out_init_value:
+  dw 0x0000
+scr_init_value:
+  dw 0x0000
+
+; XXX OLD
+;number_tib_init_value:
+;  dw bytes_per_terminal_input_buffer
+
+default_user_variables_end:
+
+ip_backup: ; temporary copy of Forth IP
+  dw 0
+
+np defl names_bank_address+1
+
+names_pointer:
+  ; First free address in the names bank,  restored by `cold`.
+  dw np
+
+names_pointer_init_value:
+  ; Init value of the names pointer, used by `cold`.
+  dw np
+
+; ==============================================================
+; User variables
+
+user_variables:
+
+  ; Note: the first eight user variables are initialized with
+  ; default values by `cold`.  They must be in the same order
+  ; than their default variables.
+
+s0_value: ; +0x00
+  dw data_stack_bottom
+r0_value: ; +0x02
+  dw return_stack_bottom
+  ; +0x04
+  dw 0x0000 ; XXX OLD -- tib
+width_value: ; +0x06
+  dw max_word_length
+warning_value: ; +0x08
+  dw 0x0000
+  ; +0x0A
+  dw 0x0000 ; XXX OLD -- fence
+dp_value: ; +0x0C
+  dw dictionary_pointer_after_cold
+
+  ; XXX TODO move
+  dw 0x0000 ; +0x0E free
+
+blk_value: ; +0x10
+  dw 0x0000
+in_value: ; +0x12
+  dw 0x0000
+out_value: ; +0x14
+  dw 0x0000
+scr_value: ; +0x16
+  dw 0x0000
+number_tib_value: ; +0x18
+  dw 0x0000
+hld_value: ; +0x1A
+  dw 0x0000
+current_value: ; +0x1C
+  dw 0x0000
+state_value: ; +0x1E
+  dw 0x0000
+base_value: ; +0x20
+  dw 0x000A
+dpl_value: ; +0x22
+  dw 0x0000
+fld_value: ; +0x24
+  dw 0x0000
+csp_value: ; +0x26
+  dw 0x0000
+r_hash_value: ; +0x28 ; XXX OLD -- used by the editor, remove
+  dw 0x0000
+
+context_value: ; +0x2A..+0x38
+
+  dw forth_pfa
+  dw root_pfa
+  ds (max_search_order-2)*cell
+  dw 0x0000 ; end of search order, required by `find` \ XXX TODO improve and remove
+
+  ; Unused
+  dw 0x0000
+  dw 0x0000
+
+.if ($-user_variables) != bytes_per_user_variables
+  .error "The space reserved for user variables is wrong."
+.endif
+
+; ==============================================================
+; Stacks and buffers
+
+; ----------------------------------------------
+; Circular string buffer
+
+csb:
+unused_csb:
+  dw csb_size ; unused space in the buffer
+csb0:
+  ds csb_size
+csb_total_size: equ $-csb
+
+; ----------------------------------------------
+; Data stack
+
+data_stack_limit: equ $+cell
+  ds cells_per_data_stack*cell
+data_stack_bottom:
+
+; ----------------------------------------------
+; Terminal input buffer
+
+terminal_input_buffer:
+  ds bytes_per_terminal_input_buffer
+  ds 3 ; for the null word
+
+; ----------------------------------------------
+; Return stack
+
+return_stack_limit: equ $+cell
+  ds cells_per_return_stack*cell
+return_stack_bottom:
+
+; ----------------------------------------------
+; Disk buffer
+
+buffer_block_id_mask: equ 0x7FFF
+
+; A block id is the number of the associated block, with the
+; sign bit indicating, when it's set, that the buffer has been
+; modified.
+
+disk_buffer:
+
+dw buffer_block_id_mask     ; Block id used when the  buffer
+                            ; is not associated with a block.
+ds data_bytes_per_buffer    ; Actual content of the block,
+                            ; a disk sector.
+db space_char,0,space_char  ; Null word, required by the parsing words.
+
+; ==============================================================
 ; Macros
 
 ; ----------------------------------------------
@@ -454,14 +679,9 @@ _header: macro _base_label,_name,_is_immediate=0
   .text
 
 \_base_label: ; code field address
-  ; local _dp_backup ; XXX OLD
-  ; local _name_address ; XXX OLD
-  ; local _address_after_name ; XXX OLD
-;_dp_backup defl $ ; XXX OLD
 
   ; In memory bank:
 
-;.org np ; XXX OLD
   .data
 
 \_base_label\()cfap: 
@@ -486,7 +706,7 @@ np defl $ ; new value of the names pointer
 ;  dw np ; overwrite names_pointer_init_value
 
   ; In dictionary:
-;  org _dp_backup ; XXX OLD
+  
   .text
 
 nfa_of_the_previous_word defl \_base_label\()nfa
@@ -662,11 +882,11 @@ _z80_border: macro _color
   ld a,\_color
   out (border_port),a
   ld bc,0
-  _z80_border_pause0:
+_z80_border_pause: defl $
   dec bc
   ld a,b
   or c
-  jr nz,_z80_border_pause0
+  jr nz,_z80_border_pause
   pop bc
   pop af
   endm
@@ -677,7 +897,7 @@ _z80_border_wait: macro _color
   out (border_port),a
   xor a
   ld (sys_last_k),a
-  _z80_border_wait_pause:
+_z80_border_wait_pause: defl $
   ld a,(sys_last_k)
   and a
   jr z,_z80_border_wait_pause
@@ -688,240 +908,6 @@ _echo: macro _txt
   dw cr_,paren_dot_quote_
   _string "\_txt"
   endm
-
-; ==============================================================
-; Entry points
-
-  .text ; section
-
-  ;org origin ; XXX OLD
-
-cold_entry:
-  ; Location (of the destination address): `0x01 +origin`
-  jp cold_start
-warm_entry:
-  ; Location (of the destination address): `0x04 +origin`
-  jp warm_start
-
-; ==============================================================
-; Parameter area
-
-  ; XXX TODO document the `+origin` index
-
-latest_nfa_in_root_voc.init_value:
-  dw latest_nfa_in_root_voc
-
-latest_nfa_in_forth_voc.init_value:
-  dw latest_nfa_in_forth_voc
-
-latest_nfa_in_assembler_voc.init_value:
-  dw latest_nfa_in_assembler_voc
-
-voc_link.init_value:
-  dw assembler_vocabulary_link ; link to the latest vocabulary defined
-
-user_variables_pointer:
-  dw user_variables
-
-return_stack_pointer:
-  dw return_stack_bottom
-
-default_color_attribute:
-  dw 4 ; low byte: green paper, black ink; high byte: no mask
-
-  ; XXX TODO
-.if show_version
-version_status_variable:
-  dw version_status
-version_branch_variable:
-  dw version_branch
-version_release_variable:
-  dw version_release mod 0xFFFF
-  dw version_release / 0xFFFF
-.endif
-
-  ; User variables default values
-
-  ; The first eight user variables have default values.  They are used
-  ; by `cold` to overwrite the correspondent user variables.  They must
-  ; be in the same order than user variables.
-
-default_user_variables_start:
-
-s0_init_value:
-  dw data_stack_bottom
-r0_init_value:
-  dw return_stack_bottom
-  dw 0x0000 ; XXX OLD -- tib
-width_init_value:
-  dw max_word_length
-warning_init_value:
-  dw 0x0000
-  dw 0x0000 ; XXX OLD -- fence
-dp_init_value:
-  dw dictionary_pointer_after_cold
-
-  ; XXX TODO move
-  dw 0x0000 ; XXX free
-
-  ; XXX TODO this four user variables do not need init and this
-  ; space could be saved; they are included here because `#tib`
-  ; must be init; it should be moved to user variable +0x10.
-
-blk_init_value:
-  dw 0x0000
-in_init_value:
-  dw 0x0000
-out_init_value:
-  dw 0x0000
-scr_init_value:
-  dw 0x0000
-
-; XXX OLD
-;number_tib_init_value:
-;  dw bytes_per_terminal_input_buffer
-
-default_user_variables_end:
-
-ip_backup: ; temporary copy of Forth IP
-  dw 0
-
-np defl names_bank_address+1
-
-  ; XXX TODO how to update the names pointer in the `_header` macro?
-  ; Pasmo can use `org` to go backward, but as can not.
-
-names_pointer:
-  ; First free address in the names bank,  restored by `cold`.
-  ; The value is updated during the assembling,
-  ; by the `_header` macro.
-  dw np
-
-names_pointer_init_value:
-  ; Init value of the names pointer, used by `cold`.
-  ; The value is updated during the assembling,
-  ; by the `_header` macro.
-  dw np
-
-; ==============================================================
-; User variables
-
-user_variables:
-
-  ; Note: the first eight user variables are initialized with
-  ; default values by `cold`.  They must be in the same order
-  ; than their default variables.
-
-s0_value: ; +0x00
-  dw data_stack_bottom
-r0_value: ; +0x02
-  dw return_stack_bottom
-  ; +0x04
-  dw 0x0000 ; XXX OLD -- tib
-width_value: ; +0x06
-  dw max_word_length
-warning_value: ; +0x08
-  dw 0x0000
-  ; +0x0A
-  dw 0x0000 ; XXX OLD -- fence
-dp_value: ; +0x0C
-  dw dictionary_pointer_after_cold
-
-  ; XXX TODO move
-  dw 0x0000 ; +0x0E free
-
-blk_value: ; +0x10
-  dw 0x0000
-in_value: ; +0x12
-  dw 0x0000
-out_value: ; +0x14
-  dw 0x0000
-scr_value: ; +0x16
-  dw 0x0000
-number_tib_value: ; +0x18
-  dw 0x0000
-hld_value: ; +0x1A
-  dw 0x0000
-current_value: ; +0x1C
-  dw 0x0000
-state_value: ; +0x1E
-  dw 0x0000
-base_value: ; +0x20
-  dw 0x000A
-dpl_value: ; +0x22
-  dw 0x0000
-fld_value: ; +0x24
-  dw 0x0000
-csp_value: ; +0x26
-  dw 0x0000
-r_hash_value: ; +0x28 ; XXX OLD -- used by the editor, remove
-  dw 0x0000
-
-context_value: ; +0x2A..+0x38
-
-  dw forth_pfa
-  dw root_pfa
-  ds (max_search_order-2)*cell
-  dw 0x0000 ; end of search order, required by `find` \ XXX TODO improve and remove
-
-  ; Unused
-  dw 0x0000
-  dw 0x0000
-
-.if ($-user_variables) != bytes_per_user_variables
-  .error "The space reserved for user variables is wrong."
-.endif
-
-; ==============================================================
-; Stacks and buffers
-
-; ----------------------------------------------
-; Circular string buffer
-
-csb:
-unused_csb:
-  dw csb_size ; unused space in the buffer
-csb0:
-  ds csb_size
-csb_total_size: equ $-csb
-
-; ----------------------------------------------
-; Data stack
-
-data_stack_limit: equ $+cell
-  ds cells_per_data_stack*cell
-data_stack_bottom:
-
-; ----------------------------------------------
-; Terminal input buffer
-
-terminal_input_buffer:
-  ds bytes_per_terminal_input_buffer
-  ds 3 ; for the null word
-
-; ----------------------------------------------
-; Return stack
-
-return_stack_limit: equ $+cell
-  ds cells_per_return_stack*cell
-return_stack_bottom:
-
-; ----------------------------------------------
-; Disk buffer
-
-buffer_block_id_mask: equ 0x7FFF
-
-; A block id is the number of the associated block, with the
-; sign bit indicating, when it's set, that the buffer has been
-; modified.
-
-disk_buffer:
-
-dw buffer_block_id_mask     ; Block id used when the  buffer
-                            ; is not associated with a block.
-ds data_bytes_per_buffer    ; Actual content of the block,
-                            ; a disk sector.
-db space_char,0,space_char  ; Null word, required by the parsing words.
 
 ; ==============================================================
 ; Misc routines
@@ -1351,7 +1337,9 @@ nfa_of_the_previous_word defl 0 ; link to previous Forth word
 
 ; : only  ( -- )  -order root also  ;
 
-  dw minus_order_,root_,also_
+  dw minus_order_
+  dw root_
+  dw also_
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -2445,6 +2433,7 @@ previous_key: equ $+1
 ; XXX TODO -- Add multitasker's `pause` when available.
 
   push bc
+  push ix ; XXX TMP
 key.begin:
   call rom_key_scan
   jr nz,key.begin
@@ -2456,6 +2445,7 @@ key.begin:
 key.end:
   ld hl,sys_last_k
   ld (hl),0
+  pop ix ; XXX TMP
   pop bc
   jp push_a
 
@@ -5855,14 +5845,14 @@ do_vocabulary:
   call do_does
 
   ; The next words are to be executed when the vocabulary is invoked.
-  _echo "Was here 1"
-  dw lit_,3,border_,key_,drop_ ; XXX INFORMER
+  ;_echo "Was here 1"
+  ;dw lit_,3,border_,key_,drop_ ; XXX INFORMER
   dw context_
-  _echo "Was here 2"
-  dw lit_,4,border_,key_,drop_ ; XXX INFORMER
+  ;_echo "Was here 2"
+  ;dw lit_,4,border_,key_,drop_ ; XXX INFORMER
   dw store_
-  _echo "Was here 3"
-  dw lit_,5,border_,key_,drop_ ; XXX INFORMER
+  ;_echo "Was here 3"
+  ;dw lit_,5,border_,key_,drop_ ; XXX INFORMER
   dw semicolon_s_
 
 ; ----------------------------------------------
@@ -5995,48 +5985,38 @@ warm_start:
   _colon_header cold_,"COLD"
 
   ; Init the names pointer.
-  ; XXX TMP commented out for debugging
-  ;dw lit_,names_pointer_init_value,fetch_
-  ;dw lit_,names_pointer,store_
+  dw lit_,names_pointer_init_value,fetch_
+  dw lit_,names_pointer,store_
 
   ; Init the disk buffers.
-  ; XXX TMP commented out for debugging
-  ;dw empty_buffers_
+  dw empty_buffers_
 
   ; Init the circular string buffer.
-  ;dw empty_csb_
+  dw empty_csb_
 
   ; Init the user variables.
-  ; XXX TMP commented out for debugging
-  ; dw lit_,default_user_variables_start ; from
-  ; dw lit_,user_variables_pointer,fetch_ ; to
-  ; _literal default_user_variables_end-default_user_variables_start ; length
-  ; dw cmove_
+  dw lit_,default_user_variables_start ; from
+  dw lit_,user_variables_pointer,fetch_ ; to
+  _literal default_user_variables_end-default_user_variables_start ; length
+  dw cmove_
 
   ; Restore the vocabularies to the default state.
-  ; XXX TMP commented out for debugging
-  ; dw lit_,latest_nfa_in_root_voc.init_value,fetch_
-  ; dw lit_,root_pfa,store_
-  ; dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
-  ; dw lit_,forth_pfa,store_
-  ; dw lit_,latest_nfa_in_assembler_voc.init_value,fetch_
-  ; dw lit_,assembler_pfa,store_
-  ; dw lit_,voc_link.init_value,fetch_
-  ; dw lit_,voc_link_pfa,store_
+  dw lit_,latest_nfa_in_root_voc.init_value,fetch_
+  dw lit_,root_pfa,store_
+  dw lit_,latest_nfa_in_forth_voc.init_value,fetch_
+  dw lit_,forth_pfa,store_
+  dw lit_,latest_nfa_in_assembler_voc.init_value,fetch_
+  dw lit_,assembler_pfa,store_
+  dw lit_,voc_link.init_value,fetch_
+  dw lit_,voc_link_pfa,store_
 
-  ; XXX TMP commented out for debugging
-  ;dw only_
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
-  ;dw forth_
-  ; XXX FIXME never reached, crash before this point
-  ;dw lit_,7,border_,key_,drop_ ; XXX INFORMER
-  ;dw definitions_  ; search order
-  ; dw decimal_                   ; base
+  dw only_
+  dw forth_
+  dw definitions_  ; search order
+  dw decimal_      ; base
 
-  ; XXX TMP commented out for debugging
-  ;dw colors0_,page_,greeting_
+  dw colors0_,page_,greeting_
 
-  ;dw lit_,2,border_,key_,drop_ ; XXX INFORMER
   dw abort_
 
 cold_start:
@@ -7623,11 +7603,12 @@ at_pfa.last_line:
   xor a ; black ink
 
 border.end:
+  ; Note: slower than shifting the register, but saves three bytes.
   add hl,hl
   add hl,hl
-  add hl,hl ; paper
-  ld l,a  ; ink
-  ld (sys_bordcr),hl
+  add hl,hl ; l = paper (bits 3..5)
+  or l ; combine with ink
+  ld (sys_bordcr),a
   _jp_next
 
 ; ----------------------------------------------
@@ -8050,12 +8031,14 @@ move_name_fields_to_memory_bank:
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the data to the screen
+  ;_z80_border_wait 1 ; XXX INFORMER
   ld e,names_bank
   call bank.e
   ld hl,sys_screen ; origin
   ld de,names_bank_address ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the name fields to the bank
+  ;_z80_border_wait 2 ; XXX INFORMER
 .if latin1_charset_in_bank
   ld hl,sys_screen+sys_screen_size-charset_size ; origin
   ld de,charset_address ; destination
@@ -8078,6 +8061,7 @@ move_name_fields_to_memory_bank:
   ld (hl),0 ; nop
   inc hl
   ld (hl),0 ; nop
+  ;_z80_border_wait 3 ; XXX INFORMER
   ret
 
 ; ==============================================================
@@ -8111,6 +8095,9 @@ move_name_fields_to_memory_bank:
   ;dw lit_,7,border_,key_,drop_ ; XXX INFORMER
 
   ;dw two_dup_,two_,ink_,type_,zero_,ink_ ; XXX INFORMER
+
+  ; XXX TMP commented out for debugging
+
 
 ; ==============================================================
 ; Development notes
