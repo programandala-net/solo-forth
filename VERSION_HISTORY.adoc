@@ -41,3 +41,5 @@ _ Developed from 2015-12-18.
   `warm`).
 - New: The kernel can be assembled also with DTC instead of the
   original ITC.
+- Fixed and renamed: `cls-chars0` and `cls-chars1`.
+- New: `>code`.

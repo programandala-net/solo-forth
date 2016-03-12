@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201512240323
+\ Last modified: 201512260357
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -958,7 +958,7 @@ font fzx-font !
 : zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
 
 cr .( fzx-emit is ready ) cr
-' (fzx-emit) >body hex
+' (fzx-emit) >code hex
 cr .( Code start:   ) dup u.
 cr .( Code length:  ) ' fzx-emit swap - u.
 cr
@@ -1285,7 +1285,7 @@ create (fzx-emit)  ( -- )
 code fzx-emit  ( c -- )
 
   hl pop  bc push
-  l a ld  ' (fzx-emit) >body call
+  l a ld  ' (fzx-emit) >code call
   bc pop  next ix ldp#  jpnext
 
   end-code
@@ -2369,8 +2369,8 @@ code test-pixel  ( xc yc -- f )
   begin  rlca  step \ rotate to bit 0
   bc pop  \ restore the Forth IP
   1 and#  \ pixel?
-  ' true >body jpnz
-  ' false >body jp
+  ' true >code jpnz
+  ' false >code jp
   end-code
 
 ( rdraw )
@@ -2515,6 +2515,7 @@ create (attr-addr)  ( -- a )
 
 ( circle )
 
+  \ XXX UNDER DEVELOPMENT
 
   \ Code adapted from:
   \ http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/
@@ -2526,14 +2527,12 @@ create (attr-addr)  ( -- a )
   \ Note. original ROM circles are slightly displaced to the
   \ right as noticed.
 
-  \ XXX TODO
-
 need z80-asm
 
 create circle-plot  ( -- a )
   asm
   hl push  bc push  de push
-  ' plot >body call  \ XXX TODO
+  ' plot >code call  \ XXX TODO
   de pop  bc pop  hl pop  ret
   end-asm
 
@@ -2758,38 +2757,6 @@ code water  ( -- )
 
   end-code
 
-( clsx )
-
-  \ Clear the screen by rotating all bytes
-  \ of the bitmap.
-
-  \ Credits:
-  \
-  \ Code adapted from a routine written by Anselmo Moreno Lorente,
-  \ published on Microhobby, issue 121 (1987-03), page 7:
-  \ http://microhobby.org/numero121.htm
-  \ http://microhobby.speccy.cz/mhf/121/MH121_07.jpg
-
-need z80-asm
-
-code clsx  ( -- )
-
-  bc push
-
-  6 b ld#
-  begin   bc push  57FF hl ldp#
-          begin   20 c ld#  a and
-                  begin   nop  m sla
-                          nop  m rlc
-                          nop  m sla
-                          nop  hl decp  c dec  z until
-                  3F a ld#  h cp  z until
-          bc pop  step
-
-  bc pop  jpnext
-
-  end-code
-
 ( scroll-1px-right )
 
   \ Credits:
@@ -2798,8 +2765,6 @@ code clsx  ( -- )
   \ published on Microhobby, issue 197 (1990-03), page 24:
   \ http://microhobby.org/numero197.htm
   \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg
-
-  \ XXX FIXME
 
 need z80-asm
 
@@ -2810,11 +2775,11 @@ code scroll-1px-right  ( -- )
   4000 hl ldp#  \ screen bitmap address
   C0 c ld#  \ pixel rows
   begin
-          m srl  hl incp  \ first char column
-          1F b ld#  \ remaining columns
-          begin   m rr  hl incp  step
-          c dec
-          z until
+    m srl  hl incp  \ first char column
+    1F b ld#  \ remaining columns
+    begin   m rr  hl incp  step
+    c dec
+  z until
 
   bc pop jpnext
 
@@ -2857,20 +2822,54 @@ code scroll-1px-up  ( -- )
   (scroll-1px-up) call
   bc pop  jpnext  end-code
 
-( xy-scroll )
+( cls-chars0 )
+
+  \ Clear the screen by rotating all bytes of the bitmap.
+
+  \ Credits:
+  \
+  \ Code adapted from a routine written by Anselmo Moreno
+  \ Lorente, published on Microhobby, issue 121 (1987-03), page
+  \ 7:
+  \
+  \ http://microhobby.org/numero121.htm
+  \ http://microhobby.speccy.cz/mhf/121/MH121_07.jpg
+
+need z80-asm
+
+code cls-chars0  ( -- )
+
+  bc push
+
+  6 b ld#
+  begin   bc push  57FF hl ldp#
+          begin   20 c ld#  a and
+                  begin   nop  m sla
+                          nop  m rlc
+                          nop  m sla
+                          nop  hl decp  c dec  z until
+                  3F a ld#  h cp  z until
+          bc pop  step
+
+  bc pop  jpnext
+
+  end-code
+
+( cls-chars1 )
+
+  \ Clear the screen by rotating all bytes of the bitmap.
 
   \ Credits:
   \
   \ Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published on Microhobby, issue 197 (1990-03), page 24:
+  \
   \ http://microhobby.org/numero197.htm
   \ http://microhobby.speccy.cz/mhf/197/MH197_24.jpg
 
-  \ XXX FIXME
-
 need z80-asm
 
-code xy-scroll  ( -- )
+code cls-chars1  ( -- )
 
   bc push
 
@@ -2879,15 +2878,14 @@ code xy-scroll  ( -- )
 
     4000 hl ldp#  \ screen bitmap address
     begin
-
       m srl  hl incp
       m sla  hl incp
       58 a ld#  h cp
-      z until
+    z until
 
-    step
+  step
 
-  bc pop  end-code
+  bc pop  jpnext  end-code
 
 ( horizontal-curtain )
 
@@ -2940,8 +2938,6 @@ code vertical-curtain  ( b -- )
   \ columns to the middle.
 
   \ b = color attribute
-
-  \ XXX FIXME crash!
 
   de pop  bc push
 
@@ -3010,7 +3006,12 @@ code pixels  ( -- u )
   \ }}} =======================================================
   \ Sound 128 {{{
 
-( !sound vol shutup noise )  \ ==sound128==
+( sound-register-port sound-write-port )  \ ==sound128==
+
+65533 constant sound-register-port
+49149 constant sound-write-port
+
+( !sound vol shutup noise )
 
   \ Credits:
   \
@@ -3018,12 +3019,7 @@ code pixels  ( -- u )
 
   \ XXX TODO finish, document and test
 
-need !p
-
-[defined] sound-register-port
-  ?\ 65533 constant sound-register-port
-[defined] sound-write-port
-  ?\ 49149 constant sound-write-port
+need !p  need sound-register-port  need sound-write-port
 
 : !sound  ( b1 b2 -- )
   \ b1 = sound datum
@@ -3071,17 +3067,19 @@ variable len  variable tempo  variable octave  variable volume
 
   \ XXX TODO finish, document and test
 
-: l  ( n -- )  len !  ;
-: o+  ( -- )  octave @ 2 * octave !  ;
-: o-  ( -- )  octave @ 2 / octave !  ;
-: r  ( -- )  tempo @ len @ * ms  ;
-: >>  ( -- )  1 volume @ 1+ vol 1 volume +!  ;
-: <<  ( -- )  1 volume @ 1- vol -1 volume +!  ;
+: l   ( n -- )  len !  ;
+: o+  ( -- )    octave @ 2 * octave !  ;
+: o-  ( -- )    octave @ 2 / octave !  ;
+: r   ( -- )    tempo @ len @ * ms  ;
+: >>  ( -- )    1 volume @ 1+ vol 1 volume +!  ;
+: <<  ( -- )    1 volume @ 1- vol -1 volume +!  ;
 
 current ! previous
 
 ( play sound: )
 
+  \ Credits:
+  \
   \ Code inspired by the article
   \ "Las posibilidades sonoras del 128 K",
   \ written by Juan José Rosado Recio,
@@ -3089,12 +3087,7 @@ current ! previous
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
-need !p
-
-[defined] sound-register-port
-  ?\ 65533 constant sound-register-port
-[defined] sound-write-port
-  ?\ 49149 constant sound-write-port
+need !p  need sound-register-port  need sound-write-port
 
 : play  ( a -- )
   \ a = address of a table with 14 bytes
@@ -3113,10 +3106,7 @@ need !p
 
 need z80-asm
 
-[defined] sound-register-port
-?\ 65533 constant sound-register-port
-[defined] sound-write-port
-?\ 49149 constant sound-write-port
+need sound-register-port  need sound-write-port
 
 code play  ( a -- )
 
@@ -3176,10 +3166,12 @@ create train  ( -- a )
   100 c,  120 c,  48 c,  97 c,  12 c,  200 c,  55 c,
   15 c,  9 c,  11 c,  55 c,  180 c,  4 c,  8 c,
 
-( sound effects )
+( Sound effects )
 
   \ Sounds to be played with `play`.
 
+  \ Credits:
+  \
   \ Data extracted a program written by Juan José Rosado Recio,
   \ published on Microhobby, issue 147 (1987-10), page 24:
   \ http://microhobby.org/numero147.htm
@@ -3201,18 +3193,21 @@ FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound: bell3
 00 00 00 00 00 00 0F C0 0B 10 10 FF 50 0E sound: beach
 24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound: waterdrop
 
-  decimal
+decimal
 
 ( rain water-drops )
 
   \ Sounds to be played with `play`.
 
+  \ Credits:
+  \
   \ Data extracted from a program written by Carlos Ventura,
   \ published on Microhobby, issue 198 (1990-05), page 16:
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-  \ XXX this effects don't sound fine, but the data is right
+  \ XXX this effects don't sound fine, though the data are
+  \ correct
 
 create rain  ( -- a )
   44 c, 24 c, 6 c, 6 c, 7 c, 3 c, 3 c,
@@ -3569,7 +3564,7 @@ need z80-asm  need [if]
   \ [needed] c@test-bits? [if]
   \ code c@test-bits?  ( b ca -- wf )
   \   hl pop  de pop  e a ld  m and
-  \   ' true >body jpnz  ' false >body jp  end-code  exit  [then]
+  \   ' true >code jpnz  ' false >code jp  end-code  exit  [then]
   \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
   \   \ _true_ if the result is non-zero or _false_ if the result
   \   \ is zero.
@@ -3710,11 +3705,11 @@ need -rot
   \ Code adapted from Z88 CamelForth.
 
 code polarity  ( n -- -1 | 0 | 1 )
-  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false >body ,
+  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false >code ,
     \ pop de
     \ ld a,d
     \ or e
-    \ jp z,false_pfa
+    \ jp z,false_code
 
   CB c, 10 03 + c,  ED c, 62 c,
     \ rl d ; set carry if DE -ve
@@ -4292,13 +4287,13 @@ need [if]  need z80-asm
 need -rot
 
 [unneeded] dxor
-?\  : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
+?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
 
 [unneeded] dor
-?\  : dor  ( d1 d2 -- d3 )  rot or -rot or swap  ;
+?\ : dor  ( d1 d2 -- d3 )  rot or -rot or swap  ;
 
 [unneeded] dand
-?\  : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
+?\ : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
 
 ( m* )
 
@@ -5033,8 +5028,8 @@ code (file?)  ( -- f )
   168E call  \ BORD_REST = restore the border
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  ' true >body jpz
-  ' false >body jp
+  ' true >code jpz
+  ' false >code jp
   end-code
 
 : file?  ( ca len -- f )  filename! (file?)  ;
@@ -5280,8 +5275,8 @@ code c!dosvar  ( b n -- )
 
 ( update flush thru )
 
-: update  ( -- )
-  disk-buffer @ $8000 or disk-buffer !  ;
+[unneeded] update
+?\ : update  ( -- )  disk-buffer @ $8000 or disk-buffer !  ;
 
   \ doc{
   \
@@ -5298,7 +5293,7 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 [unneeded] flush
-?\  : flush  ( -- )  save-buffers empty-buffers  ;
+?\ : flush  ( -- )  save-buffers empty-buffers  ;
 
   \ doc{
   \
@@ -5313,7 +5308,8 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 [unneeded] thru
-?\  : thru  ( block1 block2 -- )  1+ swap do  i load  loop  ;
+?\ : thru  ( block1 block2 -- )  1+ swap ?do  i load  loop  ;
+  \ XXX FIXME -- when block1>block2
 
   \ doc{
   \
@@ -5331,7 +5327,7 @@ code c!dosvar  ( b n -- )
 ( continued ?load reload loads +load +thru loader )
 
 [unneeded] continued
-?\  : continued  ( u -- )  ?loading (load)  ;
+?\ : continued  ( u -- )  ?loading (load)  ;
 
   \ doc{
   \
@@ -5345,7 +5341,7 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 [unneeded] ?load
-?\  : ?load  ( block f -- )  if  dup load  then  drop  ;
+?\ : ?load  ( block f -- )  if  dup load  then  drop  ;
 
   \ Credits:
   \
@@ -5360,7 +5356,7 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 [unneeded] reload
-?\  : reload  ( -- )  empty-buffers  scr @ load  ;
+?\ : reload  ( -- )  empty-buffers  scr @ load  ;
 
   \ doc{
   \
@@ -5371,7 +5367,7 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 [unneeded] loads
-?\  : loads  ( block n -- )  bounds ?do  i load  loop  ;
+?\ : loads  ( block n -- )  bounds ?do  i load  loop  ;
 
   \ Credits:
   \
@@ -5386,10 +5382,10 @@ code c!dosvar  ( b n -- )
   \ }doc
 
 [unneeded] +load  [unneeded] +thru  and
-?\  : +load  ( n -- )  blk @ + load  ;
+?\ : +load  ( n -- )  blk @ + load  ;
 
 [unneeded] +thru
-?\  : +thru  ( n1 n2 -- )  1+ swap do  i +load  loop  ;
+?\ : +thru  ( n1 n2 -- )  1+ swap do  i +load  loop  ;
 
 
 [unneeded] loader ?exit
@@ -5786,7 +5782,7 @@ variable old-voc-link
   \ Code modified from eForth.
 
 [defined] base.
-?\  : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+?\ : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
 
 [unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
 [unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
@@ -6631,8 +6627,8 @@ code -branch  ( f -- )
     \ pop hl
   CB c, 7C c,
     \ bit 7,h ; negative?
-  CA c, ' branch >body ,
-    \ jp z,branch_pfa ; if not, branch
+  CA c, ' branch >code ,
+    \ jp z,branch_code ; if not, branch
   03 c, 03 c,
     \ inc bc
     \ inc bc ; skip the inline branch address
@@ -6697,7 +6693,7 @@ code 0exit  ( f -- ) ( R: nest-sys | -- nest-sys | )
   E1 c,                 \ pop hl
   78 04 + c,            \ ld a,h
   B0 05 + c,            \ or l
-  CA c, ' exit >body ,  \ jp z,exit_pfa
+  CA c, ' exit >code ,  \ jp z,exit_code
   jpnext                \ jp next
 
   end-code
@@ -6721,7 +6717,7 @@ code -exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
 
   E1 c,                   \ pop hl
   CB c, 7C c,             \ bit 7,h ; negative?
-  C2 c, ' exit >body ,    \ jp nz,exit_pfa
+  C2 c, ' exit >code ,    \ jp nz,exit_code
   jpnext                  \ jp next
 
   end-code
@@ -6741,15 +6737,17 @@ code -exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
   \
   \ }doc
 
-( retry )
+( retry ?retry )
 
   \ Credits:
   \
   \ Code of `retry` from an article by Richard Astle in Forth
   \ Dimensions (volume 17, number 4, page 36, 1995-11).
 
+need name>body
+
 : retry  ( -- )
-  latest name> >body postpone again
+  latest name>body postpone again
   ; immediate compile-only
 
 : ?retry  ( run-time: f -- )
@@ -7123,7 +7121,7 @@ code j
   2A c, rp ,            \ ld hl,(return_stack_pointer)
   11 c, 3 cells ,       \ ld de,3*cell
   19 c,                 \ add hl,de
-  C3 c, ' i >body 3 + , \ jp i_pfa+3
+  C3 c, ' i >code 3 + , \ jp i_code+3
 
   end-code
 
@@ -7138,7 +7136,7 @@ code k
   2A c, rp ,            \ ld hl,(return_stack_pointer)
   11 c, 6 cells ,       \ ld de,6*cell
   19 c,                 \ add hl,de
-  C3 c, ' i >body 3 + , \ jp i_pfa+3
+  C3 c, ' i >code 3 + , \ jp i_code+3
 
   end-code
 
@@ -7223,8 +7221,8 @@ code (step)  ( R: n -- n' )
     \ ld (hl),d
     \ dec hl
     \ ld (hl),e ; update the loop index
-  C2 c, ' branch >body ,
-    \ jp nz,branch_pfa ; loop again if not zero
+  C2 c, ' branch >code ,
+    \ jp nz,branch_code ; loop again if not zero
     \ ; done, discard loop index:
   23 c, 23 c, 22 c, rp ,
     \ inc hl
@@ -7533,7 +7531,7 @@ need between
   \
   \ Code from Galope.
 
-[defined] nup ?\  : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
+[defined] nup ?\ : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
 
 : (less-of)  ( x1 x2 -- x1 x1 | x1 x1' )
   nup nup >= if  invert  then  ;
@@ -7557,7 +7555,7 @@ need between
   \
   \ Code from Galope.
 
-[defined] nup ?\  : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
+[defined] nup ?\ : nup  ( x1 x2 -- x1 x1 x2 )  over swap  ;
 
 : (greater-of)  ( x1 x2 -- x1 x1 | x1 x1' )
   nup nup <= if  invert  then  ;
@@ -8316,12 +8314,12 @@ code key??  ( -- f )
   here jrnc  >relmark 1 unresolved ! \ to return_false
 
   \ return_true:
-  bc pop  ' true >body jp
+  bc pop  ' true >code jp
 
   \ return_false:
   0 unresolved @ >relresolve
   1 unresolved @ >relresolve
-  bc pop  ' false >body jp
+  bc pop  ' false >code jp
 
   end-code
 
@@ -8341,12 +8339,12 @@ code key??  ( -- f )
   0000 jpnc  |mark 1 unresolved ! \ to return_false
 
   \ return_true:
-  bc pop  ' true >body jp
+  bc pop  ' true >code jp
 
   \ return_false:
   0 unresolved @ >resolve
   1 unresolved @ >resolve
-  bc pop  ' false >body jp
+  bc pop  ' false >code jp
 
   end-code
 
@@ -10138,6 +10136,9 @@ need get-time  need get-date
 
 ( .context .current order vocs )  \ ==vocabularies==
 
+  \ XXX OLD 2015-12-26 -- this will be replaced with a new
+  \ version, based on eForth
+
   \ Credits:
   \
   \ Code adapted from F83.
@@ -10151,9 +10152,14 @@ need body>name
     dup @ ?dup if  body>name id.  then  cell+
   loop drop  ;
   \ Display the search order currently in effect.
+  \
+  \ XXX TODO -- from eForth:
+  \ GET-ORDER BEGIN ?DUP WHILE SWAP .WID 1 - REPEAT
 
-: .current  ( -- )  current @ body>name id.  ;
+: .current  ( -- )  get-current body>name id.  ;
   \ Display the name of the `current` vocabulary.
+  \ XXX TODO -- from eForth:
+  \ GET-CURRENT .WID ;
 
 : order  ( -- )
   cr ." context: " .context cr ." current: " .current  ;
@@ -10166,18 +10172,86 @@ need body>name
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
 
+( order wordlists )
+
+  \ 2015-12-26
+  \ XXX UNDER DEVELOPMENT -- new version after eForth
+
+  \ XXX TODO -- Structure of a wordlist, after eForth:
+  \
+  \ nt, of last definition, linked )
+  \ wid|0, next or last wordlist in chain
+  \ nt, wordlist name pointer
+
+: wid>chain  ( wid -- a )  cell+ ;
+
+: wid>name  ( wid -- a )  [ 2 cells ] literal + ;
+
+: .wid ( wid -- )
+  space dup wid>name @ ?dup if  .name drop exit  then  0 u.r ;
+
+: .current  ( -- )  get-current .wid  ;
+
+: .context  ( -- )
+  get-order begin  ?dup  while  swap .wid 1-  repeat  ;
+
+: order  ( -- )
+  cr ." Search: " .context cr ." Define: " .current  ;
+  \ Display the search order currently in effect and the name
+  \ of the `current` vocabulary.
+
+ : wordlists  ( -- )
+   voc-link
+   begin  @ ?dup  while  dup .wid wid>chain  repeat  ;
+   \ List all wordlists.
+   \ XXX TODO -- finish the conversion
+
+( vocabulary )
+
+  \ 2015-12-26
+  \ XXX UNDER DEVELOPMENT -- new version after eForth
+
+: !wid  ( wid -- ) wid>name latest swap ! ;
+  \ Associate the lastest name to _wid_.
+  \ XXX TODO better name
+
+: create-vocabulary  ( wid "name" -- )
+  create dup , !wid
+  does>  ( -- )  ( pfa ) @ context !  ;
+
+: wid-of ( "vocabulary" -- wid )  ' >body @  ;
+  \ Return the _wid_ of "vocabulary".
+
+: vocabulary ( "name" -- ) wordlist create-vocabulary ;
+
 ( get-order )
 
   \ XXX TODO use the actual number of vocs in context, not
   \ the maximum
 
 : (get-order)  ( n -- widn..wid1 n)
-  \ Do get the search order.
   1- -1 swap do  context i cells + @  -1 +loop  ;
+  \ Do get the search order.
 
 : get-order  ( -- 0 | widn..wid1 n)
-  \ Get the search order.
   #vocs ?dup if  (get-order)  then  #vocs  ;
+  \ Get the search order.
+  \ XXX FIXME `#vocs` can not be zero
+
+( get-order order@ )
+
+  \ 2015-12-26
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ From eForth:
+
+: order@  ( a -- u*wid u )
+  dup @ dup if    >r cell+  recurse  r> swap 1+ exit
+            then  nip  ;
+  \ XXX TODO use the actual number of vocs in context, 
+  \ not a trailing zero
+
+: get-order  ( -- u*wid u )  context order@ ;
 
 ( wid-of wid> >wid )
 
@@ -10185,16 +10259,18 @@ need body>name
   \
   \ Code of `wid-of` adapted from eForth's `widof`.
 
-: wid>  ( wid -- xt )  body>  ;
+[unneeded] wid> [unneeded] >wid and
+?\ : wid>  ( wid -- xt )  body>  ;
   \ Convert a _wid_ to the _xt_ of its vocabulary.
-  \ XXX TODO confirm this description
 
-: >wid  ( xt -- wid )  >body  ;
+[unneeded] wid> [unneeded] >wid and
+?\ : >wid  ( xt -- wid )  >body  ;
   \ Convert the _xt_ of a vocabulary to its _wid_.
 
-: wid-of  ( "name" -- wid )  ' >wid  ;
+[unneeded] wid-of
+?\ : wid-of  ( "name" -- wid )  ' >wid  ;
 
-( swap-current trail >order )
+( swap-current trail )
 
 [unneeded] trail
 ?\ : trail  ( -- nt )  context @ @  ;
@@ -10215,6 +10291,30 @@ need body>name
   \ Credits:
   \
   \ Idea from lpForth.
+
+( vocabulary )
+
+  \ XXX UNDER DEVELOPMENT 2015-12-26
+  \
+  \ XXX Note: Already in the kernel, but may be moved here.
+
+  \ From Gforth:
+
+: vocabulary ( "name" -- )
+  wordlist create ,
+  does> ( -- )
+    \ Replace the wordlist on the top of the search list with
+    \ the vocabulary's wordlist.
+    ( pfa ) @ >r
+    get-order dup 0= -50 and throw \ search-order underflow
+    nip r> swap  set-order ;
+
+  \ From Z88 CamelForth:
+
+: vocabulary ( "name" -- )
+  wordlist create ,
+  does> ( -- )
+    ( pfa ) @ >r get-order nip r> swap set-order  ;
 
 ( find-name-in find )
 
@@ -10280,71 +10380,6 @@ need os-seed
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
-( z80-random )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Code from:
-  \ http://z80-heaven.wikidot.com/math#toc40
-  \
-  \ This is one of many variations of PRNGs. This routine is
-  \ not particularly useful for many games, but is fairly
-  \ useful for shuffling a deck of cards. It uses SMC, but that
-  \ can be fixed by defining randSeed elsewhere and using ld
-  \ a,(randSeed) at the beginning.
-
-  \ PseudoRandByte:
-  \ ;f(n+1)=13f(n)+83
-  \ ;97 cycles
-  \      .db 3Eh     ;start of ld a,*
-  \ randSeed:
-  \      .db 0
-  \      ld c,a
-  \      add a,a
-  \      add a,c
-  \      add a,a
-  \      add a,a
-  \      add a,c
-  \      add a,83
-  \      ld (randSeed),a
-  \      ret
-
-  \ PseudoRandWord_0:
-
-  \ Similar to the PseudoRandByte_0, this generates a a
-  \ sequence of pseudo-random values that has a cycle of 65536
-  \ (so it will hit every single number):
-
-  \ PseudoRandWord:
-  \ ;f(n+1)=241f(n)+257   ;65536
-  \ ;181 cycles, add 17 if called
-  \ ;Outputs:
-  \ ;     BC was the previous pseudorandom value
-  \ ;     HL is the next pseudorandom value
-  \ ;Notes:
-  \ ;     You can also use B,C,H,L as pseudorandom 8-bit values
-  \ ;     this will generate all 8-bit values
-  \      .db 21h    ;start of ld hl,**
-  \ randSeed:
-  \      .dw 0
-  \      ld c,l
-  \      ld b,h
-  \      add hl,hl
-  \      add hl,bc
-  \      add hl,hl
-  \      add hl,bc
-  \      add hl,hl
-  \      add hl,bc
-  \      add hl,hl
-  \      add hl,hl
-  \      add hl,hl
-  \      add hl,hl
-  \      add hl,bc
-  \      inc h
-  \      inc hl
-  \      ld (randSeed),hl
-  \      ret
-
 ( random-range )
 
 need random
@@ -10370,73 +10405,148 @@ defer rng  ( n -- 0..n-1 )
 : .pixels  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
   \ Print _u_ as the number of pixels.
 
-: .origin  ( ca len -- )  ." Code: " type  ;
+: .title  ( ca len -- )  ." Code: " type  ;
 
-: fill-screen  ( -- )
-  #pixels 0 do  256 rng 193 rng set-pixel  loop  ;
-  \ Fill the screen with random pixels.
+variable cycles
 
-: (rng-benchmark)  ( -- d )  bench{ fill-screen }bench  ;
-  \ Do the current RNG benchmark and return its result.
+defer .cycles  ( -- )
+
+: (.cycles)  ( -- )
+  cycles ?  s" cycles" cycles @ 1 = + type  ;
+  \ Print the number of cycles.
+
+: .time  ( d -- )  bench. ." per cycle" cr  ;
 
 : .result  ( ca len d -- )
-  2>r pixels >r  .origin cr  r> .pixels cr  2r> bench.  ;
+  2>r pixels >r  .title cr  r> .pixels cr
+  2r> .time .cycles   ;
   \ Calculate and print the result of the benchmark.
   \ _d_ is the time in frames; _ca len_ is the title.
-
-: init-rng  ( xt -- )  ['] rng defer! page  ;
-
-: wait  ( -- )  key drop  ;
 
 -->
 
 ( rng-benchmark )
 
-: rng-benchmark1  ( ca len xt -- )
-  init-rng (rng-benchmark) .result wait  ;
-  \ Do the RNG basic benchmark for _xt_ with title _ca len_:
-  \ one single cycle of 49152 random pixels.
+defer random-coords  ( -- x y )
+  \ Random graphic coordinates. Configurable depending on the
+  \ type of `random` to benchmark.
 
-variable cycles
+: (random-coords)  ( -- x y )  256 rng 193 rng  ;
+  \ Default behaviour of `random-coords`.
 
-: .cycles  ( -- )
-  cycles ?  s" cycles" cycles @ 1 = + type  ;
-  \ Print the number of cycles.
+: fill-screen  ( -- )
+  #pixels 0 do  random-coords set-pixel  loop  ;
+  \ Fill the screen with random pixels.
 
 : signal  ( -- )  cycles @ %111 and border  ;
   \ Change the border color according to the current count
   \ of cycles, just to show that the benchmark is running.
 
-: rng-benchmark+  ( ca len xt -- )
-  init-rng  -1 cycles !  bench{
-  0 begin   signal  1 cycles +!
-            fill-screen pixels tuck =  until  drop
-  }bench  0 border  .result .cycles  wait  ;
-  \ Do the RNG extended benchmark for _xt_ with title _ca len_:
-  \ as many cycles of 49152 random pixels as required, until
-  \ the number of pixels doesn't change.
+: (rng-benchmark)  ( -- d )
+  1 cycles +!  signal  bench{ fill-screen }bench  ;
+  \ Do the RNG benchmark of ony cycle and return its result.
 
-: rng-benchmark  ( ca len xt -- )
-  3dup rng-benchmark1 rng-benchmark+  ;
-  \ Do the RNG basic and extended benchmarks for _xt_ with
-  \ title _ca len_:
+: wait  ( -- )  key drop  ;
 
-( every-random )
+: finish  ( ca len d -- )  0 border  .result  wait  ;
+  \ Finish the benchmark.
+  \ _d_ is the time in frames; _ca len_ is the title.
 
-need rng-benchmark  need +thru
+: init  ( xt1 xt2 x3 -- )
+  ['] random-coords defer!  ['] .cycles defer!  ['] rng defer!
+  page  -1 cycles !  ;
 
-1 11 +thru
+defer finish?  ( i*x -- j*x f )
+  \ Finish the benchmark?
 
-ace-rng-benchmark
-dx-rng-benchmark
-g-rng-benchmark
-jer-rng-benchmark
-jml-rng-benchmark
-lb-rng-benchmark
-lina-rng-benchmark
-sf83-rng-benchmark
-tt-rng-benchmark
-v-rng-benchmark
+: new-pixels?  ( n1 -- n2 f )  pixels tuck =  ;
+  \ Are there new pixels on the screen, comparing the previous
+  \ count _n1_ with the new count _n2_?
+
+' new-pixels? ' finish? defer!  -->
+
+( rng-benchmark )
+
+defer rng-benchmark  ( ca len xt -- )
+  \ Do a RNG benchmark for the `random` word _xt_ with title
+  \ _ca len_.
+
+: (rng-benchmark2)  ( ca len -- )
+  0 begin   (rng-benchmark) 2>r
+            finish? dup 0= if  2rdrop  then
+  until     drop 2r> finish  ;
+  \ Do a double RNG benchmark with title _ca len_: The time
+  \ required to complete one cycle (49152 random pixels), plus
+  \ the number of cycles required until the number of pixels
+  \ doesn't change.
+
+: rng-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] (random-coords) init  (rng-benchmark2)  ;
+  \ Do a double RNG benchmark for the `random` word _xt_ with
+  \ title _ca len_: The time required to complete one cycle
+  \ (49152 random pixels), plus the number of cycles required
+  \ until the number of pixels doesn't change.
+
+  \ The best `random` words need several cycles. In such cases
+  \ it's useful a simpler test to show only the pixels set at
+  \ the end of the first cycle:
+
+' rng-benchmark2 ' rng-benchmark defer!  \ default benchmark
+
+: (.cycle)  ( -- )  ." First cycle only"  ;
+
+: (rng-benchmark1)  ( ca len -- )
+  (rng-benchmark) .result wait  ;
+  \ Do a one-cycle RNG benchmark with title _ca len_: Only the
+  \ time required to complete one cycle (49152 random pixels).
+
+: rng-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] (random-coords) init  (rng-benchmark1)  ;
+  \ Do a one-cycle RNG benchmark for `random` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+-->
+
+( rng-benchmark )
+
+  \ Versions for 8-bit `rnd`.
+
+: crnd-coords  ( -- x y )  rng rng 192 min  ;
+  \ Random graphic coordinates for 8-bit `rnd`.
+
+: rng8-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] crnd-coords init  (rng-benchmark2)  ;
+  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+: rng8-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] crnd-coords init  (rng-benchmark1)  ;
+  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+( all-rng-benchmarks )
+
+  \ Execute all 16-bit RNG benchmarks
+
+need rng-benchmark  need +thru  1 13 +thru
+
+ace-rng-benchmark   dx-rng-benchmark
+gf-rng-benchmark    jer-rng-benchmark
+jml-rng-benchmark   lb-rng-benchmark
+lina-rng-benchmark  mb-rng-benchmark
+sf83-rng-benchmark  tt-rng-benchmark
+vf-rng-benchmark    z88-rng-benchmark
+zh-rng-benchmark
+
+  \ Execute single-cycle benchmarks of RNG that need more than
+  \ one cycle to finish:
+
+' rng-benchmark1 ' rng-benchmark defer!
+
+dx-rng-benchmark  vf-rng-benchmark
 
 ( ace-random )
 
@@ -10456,7 +10566,7 @@ need os-seed
 need rng-benchmark
 
 : ace-rng-benchmark  ( -- )
-  s" Jupiter ACE manual" ['] ace-random rng-benchmark ;
+  s" Jupiter ACE manual" ['] ace-random rng-benchmark  ;
 
 ( dx-random )
 
@@ -10469,18 +10579,18 @@ need rng-benchmark
 need d*
 
 : dx-rnd ( -- u )
-  dx-seed 2@ $15A4E35. d* 1. d+ tuck dx-seed 2! ;
+  dx-seed 2@ $15A4E35. d* 1. d+ tuck dx-seed 2!  ;
   \ Get random number
 
-: dx-random ( u -- 0..u-1 )  dx-rnd um* nip ;
+: dx-random ( u -- 0..u-1 )  dx-rnd um* nip  ;
   \ Get random number between 0 and u-1
 
 need rng-benchmark
 
 : dx-rng-benchmark  ( -- )
-  s" DX-Forth" ['] dx-random rng-benchmark ;
+  s" DX-Forth" ['] dx-random rng-benchmark  ;
 
-( g-random )
+( gf-random )
 
   \ Credits:
   \
@@ -10488,15 +10598,15 @@ need rng-benchmark
 
 need os-seed  need ud*
 
-: g-rnd  ( -- n )
-  272958469. os-seed @ ud* d>s 1+ dup os-seed ! ;
+: gf-rnd  ( -- n )
+  272958469. os-seed @ ud* d>s 1+ dup os-seed !  ;
 
-: g-random  ( n1 -- n2 )  g-rnd um* nip ;
+: gf-random  ( n1 -- n2 )  gf-rnd um* nip  ;
 
 need rng-benchmark
 
-: g-rng-benchmark  ( -- )
-  s" Gforth" ['] g-random rng-benchmark ;
+: gf-rng-benchmark  ( -- )
+  s" Gforth" ['] gf-random rng-benchmark  ;
 
 ( jer-random )
 
@@ -10519,7 +10629,7 @@ need os-seed
 need rng-benchmark
 
 : jer-rng-benchmark  ( -- )
-  s" J. E. Rickenbacker" ['] jer-random rng-benchmark ;
+  s" J. E. Rickenbacker" ['] jer-random rng-benchmark  ;
 
 ( jml-random )
 
@@ -10546,7 +10656,7 @@ code jml-rnd  ( -- u )
 need rng-benchmark
 
 : jml-rng-benchmark  ( -- )
-  s" J.M. Lazo" ['] jml-random rng-benchmark ;
+  s" J.M. Lazo" ['] jml-random rng-benchmark  ;
 
 ( lb-random )
 
@@ -10563,7 +10673,242 @@ need os-seed
 need rng-benchmark
 
 : lb-rng-benchmark  ( -- )
-  s" Leo Brodie" ['] lb-random rng-benchmark ;
+  s" Leo Brodie" ['] lb-random rng-benchmark  ;
+
+( lina-random )
+
+need os-seed
+
+: lina-rnd  ( -- n )
+  os-seed @ 107465 * 234567 + dup os-seed !  ;
+
+: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
+
+need rng-benchmark
+
+: lina-rng-benchmark  ( -- )
+  s" lina" ['] lina-random rng-benchmark  ;
+
+( mb-random )
+
+  \ Credits:
+  \
+  \ Adapted from code published by Milos Bazelides:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+need z80-asm  need os-seed
+
+code mb-rnd  ( -- n )
+  os-seed de ftp
+  d a ld  e h ld  #253 l ld#
+  a or  de sbcp
+  0 sbc#  de sbcp
+  0 d ld#  d sbc  a e ld
+  de sbcp
+  cy if  hl incp  then
+  os-seed sthl
+  pushhl jp  end-code
+
+: mb-random  ( n1 -- n2 )  mb-rnd um* nip  ;
+
+  \ Original code:
+
+  \ ----
+  \ ; Input: none
+  \ ; Output: HL = pseudo-random number, period 65536
+
+  \ Rand16:
+  \  ld  de,Seed    ; Seed is usually 0
+  \  ld  a,d
+  \  ld  h,e
+  \  ld  l,253
+  \  or  a
+  \  sbc  hl,de
+  \  sbc  a,0
+  \  sbc  hl,de
+  \  ld  d,0
+  \  sbc  a,d
+  \  ld  e,a
+  \  sbc  hl,de
+  \  jr  nc,Rand
+  \  inc  hl
+  \ Rand:
+  \  ld  (Rand16+1),hl
+  \  ret
+  \ ----
+
+need rng-benchmark
+
+: mb-rng-benchmark  ( -- )
+  s" Milos Bazelides" ['] mb-random rng-benchmark  ;
+
+( sf83-random )
+
+  \ Credits:
+  \
+  \ Code from Spectrum Forth-83.
+
+need os-seed  3 os-seed !
+
+: sf83-random  ( n -- 0..n-1 )
+  os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
+
+need rng-benchmark
+
+: sf83-rng-benchmark  ( -- )
+  s" Spectrum Forth-83" ['] sf83-random rng-benchmark  ;
+
+( tt-random )
+
+  \ Credits:
+  \
+  \ Code from tt.pfe, Tetris for terminals, redone in
+  \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
+
+need os-seed
+
+: tt-random   ( n -- 0..n-1 )
+    os-seed @ 13 * $7FFF and
+    dup os-seed !  swap mod ;
+
+need rng-benchmark
+
+: tt-rng-benchmark  ( -- )
+  s" Tetris for terminals" ['] tt-random rng-benchmark  ;
+
+( vf-random )
+
+  \ Credits:
+  \
+  \ Code from vForth.
+
+need os-frames
+
+: vf-random  ( n1 -- n2 )
+  1+ 8195 os-frames @ um* 1. d+
+  16383 um/mod drop
+  \ dup os-seed !
+  swap mod  ;
+
+need rng-benchmark
+
+: vf-rng-benchmark  ( -- )
+  s" vForth" ['] vf-random rng-benchmark  ;
+
+( z88-random )
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+need ud*  need os-seed
+
+: z88-random  ( u1 -- u2 )
+  1103515245. \ 20077 16838
+  os-seed @ ud* 12345. d+ over os-seed !
+  rot ud/mod 2drop  ;
+
+need rng-benchmark
+
+: z88-rng-benchmark  ( -- )
+  s" Z88 CamelForth" ['] z88-random rng-benchmark  ;
+
+( zh-random )
+
+  \ Credits:
+  \
+  \ Code adapted from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+
+need z80-asm  need os-seed
+
+code zh-rnd  ( -- n )
+
+  os-seed fthl
+    \ ld hl,(seed)
+  hl de ldp
+    \ ld c,l
+    \ ld b,h
+  hl addp  de addp  hl addp  de addp  hl addp
+  de addp  hl addp  hl addp  hl addp  hl addp  de addp
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,de
+  h inc  hl incp
+    \ inc h
+    \ inc hl
+  os-seed sthl
+    \ ld (seed),hl
+  pushhl jp  end-code
+
+: zh-random  ( n1 -- n2 )  zh-rnd um* nip  ;
+
+  \ Original code:
+
+  \ ----
+  \ PseudoRandWord:
+  \
+  \ ; this generates a sequence of pseudo-random values
+  \ ; that has a cycle of 65536 (so it will hit every
+  \ ; single number):
+  \
+  \ ;f(n+1)=241f(n)+257   ;65536
+  \ ;181 cycles, add 17 if called
+  \
+  \ ;Outputs:
+  \ ;     BC was the previous pseudorandom value
+  \ ;     HL is the next pseudorandom value
+  \ ;Notes:
+  \ ;     You can also use B,C,H,L as pseudorandom 8-bit values
+  \ ;     this will generate all 8-bit values
+  \      .db 21h    ;start of ld hl,**
+  \ randSeed:
+  \      .dw 0
+  \      ld c,l
+  \      ld b,h
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,bc
+  \      inc h
+  \      inc hl
+  \      ld (randSeed),hl
+  \      ret
+  \ ----
+
+need rng-benchmark
+
+: zh-rng-benchmark  ( -- )
+  s" Z80 Heaven" ['] zh-random rng-benchmark  ;
+
+( random-byte )
+
+code random-byte  ( -- b )
+  ED c, 5F c,     \ ld a,r
+  C3 c, pusha ,   \ jp pusha
+  end-code
+
+need bench{
+
+: random-byte-test  ( -- )
+  ['] random-byte ['] rng defer!  cls  bench{ pixels
+  do  rng rng 192 min set-pixel  loop  }bench.
+  ." Z80 R register" cr key drop ;
 
 ( lcm-random )
 
@@ -10603,104 +10948,216 @@ need rng-benchmark
 : lcm-rng-benchmark  ( -- )
   s" LCM" ['] lcm-random rng-benchmark  ;
 
-( lina-random )
+( all-rng-benchmarks )
+
+  \ Execute all 8-bit RNG benchmarks
+
+need rng-benchmark  need +thru  1 4 +thru
+
+' rng8-benchmark2 ' rng-benchmark defer!
+
+jw-rng-benchmark
+mb1-rng-benchmark
+mb2-rng-benchmark
+zh-rng-benchmark
+
+  \ Execute single-cycle benchmarks of RNG that need more than
+  \ one cycle to finish:
+
+' rng8-benchmark1 ' rng-benchmark defer!
+
+jw-rng-benchmark
+
+( jw-crnd )
+
+  \ 2015-12-25
+
+  \ Credits:
+  \
+  \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
+  \ Joe Wingbermuehle 
 
 need os-seed
 
-: lina-rnd  ( -- n )
-  os-seed @ 107465 * 234567 + dup os-seed ! ;
+code jw-crnd  ( -- b )
 
-: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
-
-need rng-benchmark
-
-: lina-rng-benchmark  ( -- )
-  s" lina" ['] lina-random rng-benchmark ;
-
-( sf83-random )
-
-  \ Credits:
-  \
-  \ Code from Spectrum Forth-83.
-
-need os-seed  3 os-seed !
-
-: sf83-random  ( n -- 0..n-1 )
-  os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
-
-need rng-benchmark
-
-: sf83-rng-benchmark  ( -- )
-  s" Spectrum Forth-83" ['] sf83-random rng-benchmark ;
-
-( tt-random )
-
-  \ Credits:
-  \
-  \ Code from tt.pfe, Tetris for terminals, redone in
-  \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
-
-need os-seed
-
-: tt-random   ( n -- 0..n-1 )
-    os-seed @ 13 * $7FFF and
-    dup os-seed !  swap mod ;
-
-need rng-benchmark
-
-: tt-rng-benchmark  ( -- )
-  s" Tetris for terminals" ['] tt-random rng-benchmark ;
-
-( v-random )
-
-  \ Credits:
-  \
-  \ Code from v.Forth.
-
-need os-frames
-
-: v-random  ( n1 -- n2 )
-  1+ 8195 os-frames @ um* 1. d+
-  16383 um/mod drop
-  \ dup os-seed !
-  swap mod  ;
-
-need rng-benchmark
-
-: v-rng-benchmark  ( -- )
-  s" vForth" ['] v-random rng-benchmark ;
-
-( z88-random )
-
-  \ Credits:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-need ud*  need os-seed
-
-: z88-random  ( u1 -- u2 )
-  1103515245. \ 20077 16838
-  os-seed @ ud* 12345. d+ over os-seed !
-  rot ud/mod 2drop  ;
-
-need rng-benchmark
-
-: z88-rng-benchmark  ( -- )
-  s" Z88 CamelForth" ['] z88-random rng-benchmark ;
-
-( random-byte )
-
-code random-byte  ( -- b )
-  ED c, 5F c,     \ ld a,r
-  C3 c, pusha ,   \ jp pusha
+  os-seed fthl
+    \ ld      hl,(randData)
+  ED c, 5F c,  a d ld  m e ld
+    \ ld      a,r
+    \ ld      d,a
+    \ ld      e,(hl)
+  de addp  l add  h xor
+    \ add     hl,de
+    \ add     a,l
+    \ xor     h
+  os-seed sthl
+    \ ld      (randData),hl
+  pusha jp
+    \ jp push_a
   end-code
 
-need bench{
+need rng-benchmark
 
-: random-byte-test  ( -- )
-  ['] random-byte ['] rng defer!  cls  bench{ pixels
-  do  rng rng 192 min set-pixel  loop  }bench.
-  ." Z80 R register" cr key drop ;
+: jw-rng-benchmark  ( -- )
+  s" Joe Wingbermuehle" ['] jw-crnd rng-benchmark  ;
+
+  \ Original code:
+
+  \ ----
+  \ ; ouput a=answer 0<=a<=255
+  \ ; all registers are preserved except: af
+  \ random:
+  \         push    hl
+  \         push    de
+  \         ld      hl,(randData)
+  \         ld      a,r
+  \         ld      d,a
+  \         ld      e,(hl)
+  \         add     hl,de
+  \         add     a,l
+  \         xor     h
+  \         ld      (randData),hl
+  \         pop     de
+  \         pop     hl
+  \         ret
+  \ ----
+
+( mb1-crandom )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-12-25
+
+  \ Credits:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+   \ This is a very simple linear congruential generator. The
+   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+   \ advantage is small size and simplicity. Due to nature of
+   \ such generators only a couple of higher bits should be
+   \ considered random.
+
+  \ Input: none
+  \ Output: A = pseudo-random number, period 256
+
+need z80-asm  need os-seed
+
+code mb1-crnd  ( -- b )
+
+  os-seed fta
+    \ ld  a,(seed) ; Seed is usually 0
+  a d ld  a add  a add  d add
+    \  ld  d,a
+    \  add  a,a
+    \  add  a,a
+    \  add  a,d
+  a inc  os-seed sta
+    \  inc  a    ; another possibility is ADD A,7
+    \  ld  (seed),a
+  pusha jp
+  end-code
+
+: mb1-crandom  ( n1 -- n2 )  mb1-crnd um* nip  ;
+  \ XXX FIXME -- it always return zero
+
+need rng-benchmark
+
+  \ : mb1-rng-benchmark  ( -- )
+  \   s" Milos Bazelides 1" ['] mb1-crandom rng-benchmark  ;
+
+: mb1-rng-benchmark  ( -- )
+  s" Milos Bazelides 1" ['] mb1-crnd rng-benchmark  ;
+
+( mb2-crandom )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-12-25
+
+  \ Credits:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+   \ This is a very simple linear congruential generator. The
+   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+   \ advantage is small size and simplicity. Due to nature of
+   \ such generators only a couple of higher bits should be
+   \ considered random.
+
+  \ Input: none
+  \ Output: A = pseudo-random number, period 256
+
+need z80-asm  need os-seed
+
+code mb2-crnd  ( -- b )
+
+  os-seed fta
+    \ ld  a,(seed) ; Seed is usually 0
+  a d ld  a add  a add  d add
+    \  ld  d,a
+    \  add  a,a
+    \  add  a,a
+    \  add  a,d
+  07 add#  os-seed sta
+    \  add a,7
+    \  ld  (seed),a
+  pusha jp  end-code
+
+: mb2-crandom  ( n1 -- n2 )  mb2-crnd um* nip  ;
+  \ XXX FIXME -- it always return zero
+
+need rng-benchmark
+
+  \ : mb2-rng-benchmark  ( -- )
+  \   s" Milos Bazelides 2" ['] mb2-crandom rng-benchmark  ;
+
+: mb2-rng-benchmark  ( -- )
+  s" Milos Bazelides 2" ['] mb2-crnd rng-benchmark  ;
+
+( zh-crnd )
+
+  \ 2015-12-25
+
+  \ Credits:
+  \
+  \ Code adapted from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+
+code zh-crnd  ( -- b )
+
+  os-seed fta  a e ld
+  a add  e add  a add  a add  e add  #83 add#
+  os-seed sta
+  pusha jp
+
+  end-code
+
+need rng-benchmark
+
+: zh-rng-benchmark  ( -- )
+  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-benchmark  ;
+
+  \ This is one of many variations of PRNGs. This routine is
+  \ not particularly useful for many games, but is fairly
+  \ useful for shuffling a deck of cards. It uses SMC, but that
+  \ can be fixed by defining randSeed elsewhere and using ld
+  \ a,(randSeed) at the beginning.
+
+  \ PseudoRandByte:
+  \ ;f(n+1)=13f(n)+83
+  \ ;97 cycles
+  \      .db 3Eh     ;start of ld a,*
+  \ randSeed:
+  \      .db 0
+  \      ld c,a
+  \      add a,a
+  \      add a,c
+  \      add a,a
+  \      add a,a
+  \      add a,c
+  \      add a,83
+  \      ld (randSeed),a
+  \      ret
 
   \ }}} =======================================================
   \ Deferred words {{{
@@ -10715,6 +11172,8 @@ need bench{
   \ Compile the present contents of the deferred word "name"
   \ into the current definition. I.e. this produces static
   \ binding as if "name" was not deferred.
+  \
+  \ Origin: Gforth.
 
 : action-of  ( Interpretation: "name" -- xt )
              ( Compilation:    "name" -- )
@@ -10722,6 +11181,8 @@ need bench{
   ' compiling? if    postpone literal postpone defer@
                else  defer@  then  ; immediate
   \ Return the code field address of a deferred word.
+  \
+  \ Origin: Forth-2012 (CORE EXT).
 
 ( <is> [is] is  )
 
@@ -10737,7 +11198,32 @@ need bench{
 : is  ( xt "name" -- )
   compiling? if  postpone [is]  else  <is>  then  ; immediate
 
+( deferred? alias )
+
+  \ XXX NEW -- DTC
+
+: deferred?  ( xt -- wf )  c@ $C3 =  ;
+  \ Is _xt_ a deferred word?
+  \ The code of a deferred word starts with a Z80 jump ($C3)
+  \ to the word it's associated.
+
+: alias  ( xt "name" -- )
+  dup deferred? if  1+ @  then  defer latest name> defer!  ;
+
+  \ doc{
+  \
+  \ alias  ( xt "name" -- )
+  \
+  \ Create an alias _name_ that will execute _xt_.
+  \
+  \ If _xt_ is a deferred word, the alias will point to the
+  \ word it's associated to.
+  \
+  \ }doc
+
 ( code? code-alias? defer-alias code-alias alias )
+
+  \ XXX OLD -- ITC
 
 : code?  ( xt -- wf )  dup >body swap @ =  ;
   \ Is _xt_ a word created by `code`?
@@ -10833,9 +11319,378 @@ code call  ( a -- )
   E9 c,               \ jp (hl)
   end-code
 
+( z80-asm, )
+
+  \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
+  \ syntax.
+  \
+  \ 2015-12-25 First changes:
+  \
+  \ 1. "," suffixes in Z80 instructions;
+  \ 2. one single set of conditions;
+  \ 3. "a" and "r" prefixes in control structures;
+  \ 4. condition "m" renamed to "ne".
+
+  \ XXX TODO
+  \
+  \ - combine changes 2..4 with the previous version.
+  \ - rename `|mark` and `|resolve`
+  \ - remove all "retCOND" and "callCOND" and "jpCOND"
+  \   (or make them optional
+  \ - make absolute-jump control structures optional.
+  \
+
+  \ Z80 assembler for Solo Forth
+
+  \ This is a modified version of an assembler designed by Coos
+  \ Haak for his own Forth, and used by Lennart Benschop with
+  \ his Spectrum Forth-83 (1988).
+
+
+  \ XXX TODO `get-order` here and `set-order` at the end.
+
+only forth definitions
+
+need ?pairs  need -rot  need 3dup
+
+: 8*   ( n1 -- n2 )  2* 2* 2*  ;
+
+: z80-asm,  ( -- )  assembler  ;
+
+also assembler definitions hex
+
+-->
+
+( z80-asm, -- registers )
+
+0 constant b   1 constant c   2 constant d   3 constant e
+4 constant h   5 constant l   6 constant m   7 constant a
+
+0 constant bc  2 constant de  4 constant hl
+
+6 constant sp  6 constant af
+
+DD constant ix-op  FD constant iy-op
+
+: ix  ( -- rphl )  ix-op c, hl  ;
+: iy  ( -- rphl )  iy-op c, hl  ;
+
+: ?page  ( n -- n )  dup 80 + FF swap u< #-269 ?throw  ;
+  \ Branch too long?
+
+-->
+
+( z80-asm, -- defining words for z80 instructions)
+
+: m1  ( 8b "name" -- )
+  create c, does>  ( -- )  ( pfa ) c@ c,  ;
+  \ 1-byte opcode without parameters.
+
+: m2  ( 8b "name" -- )
+  create c, does>  ( r -- )  ( r pfa ) c@ + c,  ;
+  \ 1-byte opcode with register encoded in bits 0-3.
+
+: m3  ( 8b "name" -- )
+  create c, does>  ( r -- )  ( r pfa ) c@ swap 8* + c,  ;
+  \ 1-byte opcode with register encoded in bits 3-5.
+
+: m4  ( 8b "name" -- )
+  create c, does>  ( 8b -- )  ( 8b pfa ) c@ c, c,  ;
+  \ 1-byte opcode with 1-byte parameter.
+
+: m5  ( 8b "name" -- )
+  create c, does>  ( 16b -- )  ( 16b pfa ) c@ c, ,  ;
+  \ 1-byte opcode with 2-byte parameter.
+
+: m6  ( 8b "name" -- )
+  create c, does>  ( r -- )  ( r pfa ) CB c, c@ + c,  ;
+  \ Rotation of registers.
+
+  -->
+
+( z80-asm, -- defining words for z80 instructions)
+
+: m7  ( 8b "name" -- )
+  create c, does>  ( r bit -- )
+    ( r bit pfa ) CB c, c@ swap 8* + + c,  ;
+  \ Bit manipulation of registers.
+
+: m8  ( 16b "name" -- )
+  create , does>  ( -- )  ( pfa ) @ ,  ;
+  \ 2-byte opcodes.
+
+: m9  ( 8b "name" -- )
+  create c, does>  ( a -- )
+    ( a pfa )  c@ c, here 1+ - ?page c,  ;
+  \ Relative jumps.
+
+-->
+
+( z80-asm, -- defining words for z80 instructions)
+
+: ma  ( 8b "name" -- )
+  create c, does>  ( disp rphl -- )
+    ( disp rphl pfa ) c@ c, drop c,  ;
+  \ Index registers with register.
+
+: mb  ( 8b "name" -- )
+  create c, does>  ( disp rphl -- )
+    ( disp rphl pfa ) CB c, c@ c, drop c,  ;
+  \ Rotation with index registers.
+
+: mc  ( 8b "name" -- )
+  create c, does>  ( disp rphl bit -- )
+    ( disp rphl bit pfa )
+    CB c, c@ rot drop rot c, swap 8* + c,  ;
+  \ Bit manipulation with index registers.
+
+-->
+
+( z80-asm, -- opcodes)
+
+  \ XXX FIXME ftap
+
+00 m1 nop, 02 m3 stap, 03 m3 incp, 04 m3 inc, 05 m3 dec, 07 m1
+rlca, 08 m1 exaf, 09 m3 addp, 0A m3 ftap, 0B m3 decp, 0F m1
+rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 20 m9 jrnz,
+22 m5 sthl, 27 m1 daa, 28 m9 jrz, 2A m5 fthl, 2F m1 cpl, 30 m9
+jrnc, 32 m5 sta, 37 m1 scf, 38 m9 jrc, 3A m5 fta, 3F m1 ccf, 76
+m1 halt, 80 m2 add, 88 m2 adc, 90 m2 sub, 98 m2 sbc, B8 m2 cp,
+C1 m3 pop, C2 m5 jpnz, C3 m5 jp, C5 m3 push, C6 m4 add#, C7 m2
+rst, C9 m1 ret, CA m5 jpz, CD m5 call, CE m4 adc#, D2
+
+-->
+
+( z80-asm, -- opcodes)
+
+m5 jpnc, D3 m4 out, 41 m3 outbc, D6 m4 sub#, D9 m1 exx, DA m5
+jpc, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E2 m5 jppo, E3 m1
+exsp, E6 m4 and#, E9 m1 jphl, EA m5 jppe, EB m1 exde, EE m4
+xor#, F2 m5 jpp, F3 m1 di,  F6 m4 or#, F9 m1 ldsp, FA m5 jpm,
+FB m1 ei, FE m4 cp#, 00 m6 rlc, 08 m6 rrc, 10 m6 rl, 18 m6
+rr, 20 m6 sla,  28 m6 sra, 38 m6 srl,  40 m7 bit, 80 m7 res, C0
+m7 set, B0ED m8 ldir, B8ED m8 lddr, 44ED m8 neg, 57ED m8 ldai,
+47ED m8 ldia, 56ED m8 im1 5EED m8 im2 B1ED m8 cpir, 6FED m8
+rld,
+
+-->
+
+( z80-asm, -- opcodes)
+
+: jpix,  ( -- )  ix-op c, jphl,  ;
+: ldp#,  ( 16b rp -- )  8* 1+ c, ,  ;
+: ld#,  ( 8b r -- )  8* 06 + c, c,  ;
+: ld,  ( r1 r2 -- )  8* 40 + + c,  ;
+: sbcp,  ( rp -- )  ED c, 8* 42 + c,  ;
+: adcp,  ( rp1 rp2 -- )  ED c, 8* 4A + c,  ;
+: stp,  ( a rp -- )  ED c, 8* 43 + c, ,  ;
+: ftp,  ( a rp -- )  ED c, 8* 4B + c, ,  ;
+
+  \ Macros
+
+: clr,  ( rp -- )  0 swap ldp#,  ;
+: ldp,  ( rp1 rp2 -- )  2dup ld, 1+ swap 1+ swap ld,  ;
+
+  \ ZX Spectrum specific
+
+CF m4 hook, \ rst 0x08
+D7 m1 prt,  \ rst 0x16
+
+-->
+
+( z80-asm, -- index register opcodes)
+
+86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
+AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
+06 mb rlcx, 0E mb rrcx, 16 mb rlx,  1E mb rrx,  26 mb slax,
+2E mb srax, 3E mb srlx, 46 mc bitx, 86 mc resx, C6 mc setx,
+
+: ftx,   ( disp rpi r -- )   nip 8* 46 + c, c,  ;
+: stx,   ( r disp rphl -- )  drop swap 70 + c, c,  ;
+: st#x,  ( 8b disp rpi -- )  drop 36 c, swap c, c,  ;
+: ftpx,  ( disp rpi rp -- )  3dup 1+ ftx, rot 1+ -rot ftx,  ;
+: stpx,  ( disp rpi rp -- )  3dup 1+ stx, rot 1+ -rot stx,  ;
+
+-->
+
+( z80-asm, -- conditions)
+
+  \ Conditions are Z80 opcodes for the required jump
+  \ instruction.
+  \
+  \ Example: `z aif` compiles a `jp nz`, so `z` is the code for
+  \ `jp nz`.
+  \
+  \ Control structures that compile relative jumps modify the
+  \ opcode accordingly. Example: `z rif` compiles a `jr nz `
+
+C2 constant z  CA constant nz D2 constant cy DA constant nc
+E2 constant pe EA constant po F2 constant ne  FA constant p
+
+  \ XXX FIXME condition `m` has been renamed to `ne` because of
+  \ the register `m`; but maybe all registers should be
+  \ renamed.
+  \ XXX TODO ne->ns and p->ps
+
+: jp>jr  ( op1 -- op2 )  dup nc > #-273 ?throw  A2 -  ;
+  \ Convert an absolute-jump condition to a relative-jump
+  \ condition.  Throw error #-273 if the condition is
+  \ invalid.
+
+-->
+
+( z80-asm, -- conditional ret and call)
+
+  \ Conditional ret
+
+: ?ret,  ( op -- )  8 xor 2- c,  ;
+
+: retc,  ( -- )  cy ?ret,  ;    : retnc,  ( -- )  nc ?ret,  ;
+: retz,  ( -- )  z ?ret,  ;     : retnz,  ( -- )  nz ?ret,  ;
+: retm,  ( -- )  ne ?ret,  ;     : retp,  ( -- )  p ?ret,  ;
+: retpe,  ( -- )  pe ?ret,  ;   : retpo,  ( -- )  po ?ret,  ;
+
+  \ Conditional call
+
+: ?call,  ( a op -- )  8 xor 2+ c, ,  ;
+
+: callc,  ( -- )  cy ?call, ;
+: callnc,  ( -- )  nc ?call,  ;
+: callz,  ( -- )  z ?call, ;
+: callnz,  ( -- )  nz ?call,  ;
+: callm,  ( -- )  ne ?call, ;
+: callp,  ( -- )  p ?call,  ;
+: callpe,  ( -- )  pe ?call, ;
+: callpo, ( -- )  po ?call,  ;
+
+-->
+
+( z80-asm, -- control structures with relative jumps)
+
+  \ XXX TODO document
+
+: >relmark  ( -- orig )  here 1-  ;
+  \ Leave the origin address of a forward relative branch
+  \ just compiled, to be resolved by `>relresolve`.
+
+: relresolve  ( orig dest -- )  1- over - ?page swap c!  ;
+  \ Resolve a relative branch.
+
+: >relresolve  ( orig -- )  here relresolve  ;
+  \ Resolve a forward relative branch.
+
+: <relresolve  ( dest -- )  here 1- swap relresolve  ;
+  \ Resolve a backward relative branch.
+
+-->
+
+( z80-asm, -- control structures with relative jumps)
+
+: ahead  ( -- orig  )  18 , >relmark  ;
+  \ Create a relative branch forward.
+  \ Leave the origin address of a forward relative branch
+  \ just compiled, to be resolved by `>relresolve`.
+  \ Note: 0x18 is the Z80 opcode for `jr`.
+
+: rif  ( op -- orig cs-id )  jp>jr , >relmark 0A  ;
+
+: rthen  ( orig cs-id -- )  0A ?pairs >relresolve  ;
+
+: relse  ( orig cs-id -- cs-id ) \ XXX TODO document
+  0A ?pairs 18 rif rot swap rthen 0A  ;
+  \ Note 0x18 is the opcode of `jr`.
+
+: rbegin  (  -- dest cs-id )  <mark 0B  ;
+
+: rwhile  (  op -- orig cs-id )  jp>jr rif 2+  ;
+
+: runtil  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
+
+: ragain  (  dest cs-id -- )  18 runtil  ;
+  \ compile `jr`
+
+: rrepeat  (  dest cs-id1 orig cs-id2 )
+  2swap ragain 2- rthen  ;
+
+: rstep    ( dest cs-id -- )  10 runtil  ;  -->
+  \ compile `djnz`
+
+( z80-asm, -- control structures with absolute jumps)
+
+  \ XXX TODO document
+
+: aif  (  op -- orig cs-id )  c, >mark 08  ;
+
+: athen  (  orig cs-id -- )  08 ?pairs >resolve  ;
+
+: aelse  (  cs-id -- cs-id )
+  08 ?pairs C3 aif rot swap athen 08  ;
+  \ C3 = opcode of `jp`
+
+: abegin  (  -- dest cs-id )  <mark 09  ;
+
+: awhile  (  op -- orig cs-id )  aif 2+  ;
+
+: auntil  (  cs-id op -- )  c, 09 ?pairs <resolve  ;
+
+: aagain  (  cs-id -- )  C3 auntil  ;
+
+: arepeat  (  dest cs-id1 orig cs-id2 )
+  2swap aagain 2- athen  ;
+
+: |mark  ( -- a )  here 2-  ;
+  \ Leave the address of an absolute forward reference.
+
+: |resolve  ( a -- )  |mark swap !  ;
+  \ Resolve an absolute forward reference.
+
+-->
+
+( z80-asm, -- last opcodes and macros)
+
+  \ `and`, `or` and `xor` are defined at the end, in order to
+  \ avoid name clashes with the Forth words that have the same
+  \ name:
+
+A0 m2 and,  B0 m2 or,  A8 m2 xor,
+
+  \ Macro, 16-bit subtract:
+: subp,  ( rp -- )  a and sbcp,  ;
+
+  \ Macro to test 16-bit register for zero:
+: tstp,  ( rp -- )  dup a ld, 1+ or,  ;
+
+-->
+
+( z80-asm, -- unresolved macro endm )
+
+6 cells allocate-string
+  \ Temporary space to store unresolved addresses during
+  \ compilation. `pad` can not be used because it's transient
+  \ and changes during the compilation. The circular string
+  \ buffer is used.
+  \
+  \ XXX TODO -- use the heap instead, when implemented
+
+: unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
+  \ Return the address of the _n_ unresolved address.  Note:
+  \ The address returned by `allocate-string` is directly
+  \ compiled into `unresolved`. This saves a definition.  `dup`
+  \ and `drop` are used to pass the stack check at the end of
+  \ the definition.
+
+only forth definitions also assembler
+
+: macro  ( "name" -- )  postpone : asm  ;
+: endm  ( -- )  end-asm postpone ;  ;  immediate
+
+decimal only forth
+
 ( z80-asm )
 
 \ Z80 assembler for Solo Forth
+
+  \ XXX NOTE: first version
 
   \ This is a modified version of an assembler designed by Coos
   \ Haak for his own Forth, and used by Lennart Benschop with
@@ -12941,8 +13796,6 @@ need random  need j  need >=  need <=  need 2/  need value
 need d<>  need d=  need case  need ms  need frames@  need yes?
 need begin-stringtable  need positional-case:  need tab
 
-[defined] >body ?\  : >body  ( xt -- pfa )  >body  ;
-
 vocabulary tt  also tt definitions  decimal
 
 bl bl 2constant empty
@@ -14364,7 +15217,7 @@ need reset-frames  need frames@
   \ stop timing
 
 : bench.  ( d -- )
-  2dup d. ." frames (" 50 m/ nip . ." s) " cr  ;
+  2dup d. ." frames (" 50 m/ nip . ." s) "  ;
   \ print the result _d_
 
 : }bench.  ( -- )  }bench bench.  ;
@@ -16061,7 +16914,7 @@ code if'-test  ( -- )
   \ }}} =======================================================
   \ Error codes {{{
 
-( Standard error codes #-01..#-15 )  \ scr 5
+( Standard error codes #-01..#-15 )
 
 \ #-01 ABORT
 \ #-02 ABORT"
@@ -16191,7 +17044,7 @@ code if'-test  ( -- )
 
 \ #-271 immediate word not allowed in this structure
 \ #-272 array index out of range
-\ #-273
+\ #-273 invalid assembler condition
 \ #-274
 \ #-275
 \ #-276
@@ -16204,6 +17057,21 @@ code if'-test  ( -- )
 \ #-283
 \ #-284
 \ #-285
+
+( XXX TMP -- block for temporary tries )
+
+need thru
+blk @ 1+ blk @ 2+ thru
+
+( XXX TMP -- block for temporary tries )
+
+: hello  ( -- )
+
+( XXX TMP -- block for temporary tries )
+
+  ." hello"
+
+  ;
 
 
   \ vim: filetype=soloforth:fileencoding=utf-8

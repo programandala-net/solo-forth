@@ -245,7 +245,7 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 # source blocks of the Forth system.  The blocks are stored on
 # the disk sectors, without file system.
 
-library_for_gplusdos.fsb: \
+library.complete.for_gplusdos.fsb: \
 	library.main.fsb \
 	library.error_codes.gplusdos.fsb \
 	library.error_codes.os.fsb
@@ -253,13 +253,13 @@ library_for_gplusdos.fsb: \
 		library.main.fsb \
 		library.error_codes.gplusdos.fsb \
 		library.error_codes.os.fsb \
-		> library_for_gplusdos.fsb
+		> library.complete.for_gplusdos.fsb
 
-solo_forth_disk_2.mgt: library_for_gplusdos.fsb
-	fsb2-mgt library_for_gplusdos.fsb ;\
-	mv library_for_gplusdos.mgt solo_forth_disk_2.mgt
+solo_forth_disk_2.mgt: library.complete.for_gplusdos.fsb
+	fsb2-mgt library.complete.for_gplusdos.fsb ;\
+	mv library.complete.for_gplusdos.mgt solo_forth_disk_2.mgt
 
-library_forth_plus3dos.fsb: \
+library.complete.for_plus3dos.fsb: \
 	library.main.fsb \
 	library.error_codes.plus3dos.fsb \
 	library.error_codes.os.fsb
@@ -267,12 +267,12 @@ library_forth_plus3dos.fsb: \
 		library.main.fsb \
 		library.error_codes.plus3dos.fsb \
 		library.error_codes.os.fsb \
-		> library_for_plus3dos.fsb
+		> library.complete.for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
-solo_forth_disk_b.dsk: library_for_plus3dos.fsb
-	fsb2-dsk library_for_plus3dos.fsb ;\
-	mv library_for_plus3dos.dsk solo_forth_disk_b.dsk
+solo_forth_disk_b.dsk: library.complete.for_plus3dos.fsb
+	fsb2-dsk library.complete.for_plus3dos.fsb ;\
+	mv library.complete.for_plus3dos.dsk solo_forth_disk_b.dsk
 
 ################################################################
 # Backup

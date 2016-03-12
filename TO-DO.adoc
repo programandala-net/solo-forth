@@ -8,11 +8,6 @@
 == Urgent ==
 // {{{
 
-
-DCT version fails at `find-name-from`. The argument received by this
-word is not a _nt_ but the _xt_ of `context`...
-
-
 When the comments on screen `( find-name-in find )` are at the left margin,
 they are not processed by fsb2? 
 

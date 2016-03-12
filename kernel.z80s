@@ -24,10 +24,10 @@ endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x7BB8  ; build 20151224
+  version_build_low_part:     equ 0x7BBA  ; build 20151226
 endif
 
-; This file was last modified: 201512240323
+; This file was last modified: 201512260357
 
 ; ==============================================================
 ; Author and license
@@ -75,9 +75,9 @@ endif
 
 ; The name and link fields are created in a memory bank:
 
-; xtp: dw xt              ; Pointer to xt in main memory.
+; xtp: dw xt               ; Pointer to xt in main memory.
 ; lfa:  dw nt of the previous word
-; nt:  db length+flags    ; Bits:      76543210
+; nt:  db length+flags     ; Bits:      76543210
                            ; Bit names: CPSLLLLL
                            ; Legend:
                            ;   C: Compile-ony bit.
@@ -107,66 +107,66 @@ endif
 ; ----------------------------------------------
 ; Stack notation
 
-; Symbol  Data type                                       Size
-; ------  ----------------------------------------------- ------
+; Symbol  Data type                                          Size
+; ------  -------------------------------------------------- ------
 
-; a        = address                                      1 cell
-; ca       = character-aligned address                    1 cell
+; a           = address                                      1 cell
+; ca          = character-aligned address                    1 cell
 
-; f        = flag (false is 0; true is any other value)   1 cell
-; true     = true flag (-1)                               1 cell
-; false    = false flag (0)                               1 cell
-; wf       = well-formed flag (false is 0; true is -1)    1 cell
+; f           = flag (false is 0; true is any other value)   1 cell
+; true        = true flag (-1)                               1 cell
+; false       = false flag (0)                               1 cell
+; wf          = well-formed flag (false is 0; true is -1)    1 cell
 
-; b        = 8-bit byte                                   1 cell
-; c        = 8-bit character                              1 cell
+; b           = 8-bit byte                                   1 cell
+; c           = 8-bit character                              1 cell
 
-; u        = 16-bit unsigned number                       1 cell
-; len      = 16-bit unsigned number,                      1 cell
-;            length of memory zone or string              1 cell
-; n        = 16-bit signed number                         1 cell
-; +n       = 16-bit non-negative number                   1 cell
-; n|u      = 16-bit signed or unsigned number             1 cell
-; x        = 16-bit unspecified number                    1 cell
+; u           = 16-bit unsigned number                       1 cell
+; len         = 16-bit unsigned number,                      1 cell
+;               length of memory zone or string              1 cell
+; n           = 16-bit signed number                         1 cell
+; +n          = 16-bit non-negative number                   1 cell
+; n|u         = 16-bit signed or unsigned number             1 cell
+; x           = 16-bit unspecified number                    1 cell
 
-; ca len   = string                                       2 cells
+; ca len      = string                                       2 cells
 
-; d        = 32-bit signed double number                  2 cells
-; d|ud     = 32-bit signed or unsigned double number      2 cells
-; +d       = 32-bit non-negative double number            2 cells
-; ud       = 32-bit unsigned double number                2 cells
-; xd       = 32-bit unspecified number                    2 cells
+; d           = 32-bit signed double number                  2 cells
+; d|ud        = 32-bit signed or unsigned double number      2 cells
+; +d          = 32-bit non-negative double number            2 cells
+; ud          = 32-bit unsigned double number                2 cells
+; xd          = 32-bit unspecified number                    2 cells
 
-; xc       = 8-bit graphic x coordinate (0..255)          1 cell
-; yc       = 8-bit graphic y coordinate (0..191)          1 cell
-; row      = 8-bit cursor row (0..n)                      1 cell
-;            (maximum value depends on the screen mode)
-; col      = 8-bit cursor column (0..n)                   1 cell
-;            (maximum value depends on the screen mode)
+; xc          = 8-bit graphic x coordinate (0..255)          1 cell
+; yc          = 8-bit graphic y coordinate (0..191)          1 cell
+; row         = 8-bit cursor row (0..n)                      1 cell
+;               (maximum value depends on the screen mode)
+; col         = 8-bit cursor column (0..n)                   1 cell
+;               (maximum value depends on the screen mode)
 
-; xt       = execution token                              1 cell
-; cfa      = code field address (=xt)                     1 cell
-; lfa      = link field address                           1 cell
-; nt       = name token (=nfa)                            1 cell
-; nfa      = name field address                           1 cell
-; pfa      = parameter field address                      1 cell
-; xtp      = execution token pointer                      1 cell
+; xt          = execution token (=cfa)                       1 cell
+; cfa         = code field address (=xt)                     1 cell
+; lfa         = link field address                           1 cell
+; nt          = name token (=nfa)                            1 cell
+; nfa         = name field address (=nt)                     1 cell
+; pfa         = parameter field address                      1 cell
+; xtp         = execution token pointer                      1 cell
 
-; wid      = wordlist identifier                          1 cell
-;            (in Solo forth, the pfa of a vocabulary)
+; wid         = wordlist identifier                          1 cell
+;               (in Solo forth, the pfa of a vocabulary)
 
-; orig     = address of an unresolved forward branch      1 cell
-; dest     = address of a backward branch target          1 cell
+; orig        = address of an unresolved forward branch      1 cell
+; dest        = address of a backward branch target          1 cell
 
-; cs-id    = control structure identifier                 1 cell
-; loop-sys = loop control parameters                      2 cells
-; nest-sys = definition call                              1 cell
-; source-sys = source identifier                          several cells
+; cs-id       = control structure identifier                 1 cell
+; loop-sys    = loop control parameters                      2 cells
+; nest-sys    = definition call                              1 cell
+; source-sys  = source identifier                            several cells
 ; XXX TODO -- fix typo "definition cells" in Forth-2012 document (Table 3.1)
 
-; op       = Z80 8-bit opcode, generally a jump           1 cell
-; r        = Z80 8-bit register identifier                1 cell
-; rp       = Z80 16-bit register pair identifier          1 cell
+; op          = Z80 8-bit opcode, generally a jump           1 cell
+; r           = Z80 8-bit register identifier                1 cell
+; rp          = Z80 16-bit register pair identifier          1 cell
 
 ; ----------------------------------------------
 ; Parsed text notation
@@ -188,20 +188,6 @@ endif
 ; text            same as ccc
 ; name            a token delimited by space, equivalent to
 ;                 ccc<space> or ccc<eol> ; XXX TODO
-
-; ----------------------------------------------
-; Word attributes
-
-; XXX OLD -- not used
-
-; The capital letters on the right show definition characteristics:
-
-; C      May only be used within a colon definition. A digit indicates number
-;        of memory addresses used, if other than one. A plus sign indicates
-;        a variable number of memory addresses used.
-; E      Intended for execution only.
-; I      Immediate. Has immediate bit set. Will execute even when compiling.
-; U      A user variable.
 
 ; ==============================================================
 ; Configuration
@@ -235,6 +221,10 @@ size_optimization: equ false
 ;itc: equ !dtc
   ; dtc = Direct Threaded Code? (experimental)
   ; itc = Indirect Threaded Code? (original)
+
+  ; XXX UNDER DEVELOPMENT
+;new_wordlists: false
+  ; new = simpler implementation of `wordlist`, based on eForth
 
 ; ==============================================================
 ; Symbols
@@ -404,7 +394,8 @@ _code_header: macro _base_label,_name,_flags
 if 0 ; itc
   dw _base_label##pfa ; code field
 endif
-  _base_label##pfa: ; parameter field address
+  _base_label##pfa:   ; parameter field address
+  _base_label##code:  ; address of the actual code
 
   endm
 
@@ -428,6 +419,8 @@ if 0 ; itc
 else ; DTC
   jp _xt
 endif
+
+  ; XXX TODO -- with DTC, alias of colon words are possible.
 
   endm
 
@@ -1231,15 +1224,92 @@ abs_hl:
 
 negate_hl:
   ; two's complement
-  dec hl
+  ;       ; T  B
+  ;       ; -- --
+  dec hl  ; 06 01
 negate_hl.1:
   ; one's complement
-  ld a,l
-  cpl
-  ld l,a
-  ld a,h
-  cpl
-  ld h,a
+  ld a,l  ; 04 01
+  cpl     ; 04 01
+  ld l,a  ; 04 01
+  ld a,h  ; 04 01
+  cpl     ; 04 01
+  ld h,a  ; 04 01
+          ; -- --
+          ; 30 07
+  ret
+
+endif
+
+if 0
+
+  ; Credits:
+  ;
+  ; http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Signed_Math
+
+  ;input: hl
+  ;ouput: hl negated
+  ;destroys a
+
+negate_hl:
+  ;       ; T  B
+  ;       ; -- --
+	xor a   ; 04 01
+	sub l   ; 04 01
+	ld l,a  ; 04 01
+	sbc a,a ; 04 01
+	sub h   ; 04 01
+	ld h,a  ; 04 01
+          ; -- --
+          ; 24 06
+	ret
+endif
+
+if 0 
+
+  ; XXX TODO -- adapt
+  ;
+  ; Credits:
+  ; http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#1.3
+
+  ; Input: DE = Multiplier, BC = Multiplicand, HL = 0
+  ; Output: DE:HL = Product
+
+de_multiplied_by_bc_to_dehl_unsigned:
+
+  push bc
+
+	sla	e		; optimised 1st iteration
+	rl	d
+	jr	nc,de_multiplied_by_bc_to_dehl_unsigned.continue
+	ld	h,b
+	ld	l,c
+
+de_multiplied_by_bc_to_dehl_unsigned.continue:
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	rl	e
+	rl	d
+	jr	nc,de_multiplied_by_bc_to_dehl_unsigned.end
+	add	hl,bc
+	jr	nc,de_multiplied_by_bc_to_dehl_unsigned.end
+	inc	de
+
+de_multiplied_by_bc_to_dehl_unsigned.end:
+  pop bc
   ret
 
 endif
@@ -1497,9 +1567,12 @@ endif
   ; XXX TODO -- check the limit
 
   dw context_,dup_,cell_plus_
-  dw lit_,(max_search_order-cell)*cell
+  _literal (max_search_order-cell)*cell
   dw c_move_up_
   dw exit_
+
+  ; XXX TODO rewrite after eForth:
+  ; : also ( -- ) get-order over swap 1+ set-order ;
 
 ; ----------------------------------------------
   _colon_header minus_order_,'-ORDER'
@@ -1518,7 +1591,9 @@ endif
 ; }doc
 
 
-  dw context_,lit_,max_search_order*cell,erase_
+  dw context_
+  _literal max_search_order*cell
+  dw erase_
   dw exit_
 
 ; ----------------------------------------------
@@ -1538,14 +1613,11 @@ endif
 ;
 ; }doc
 
-;  dw lit_,1,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  dw minus_order_
-;  dw lit_,2,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  dw root_
-;  dw lit_,3,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
-  dw also_
-;  dw lit_,4,border_,key_,drop_,lit_,7,border_ ; XXX INFORMER
+  dw minus_order_,root_,also_
   dw exit_
+
+  ; XXX TODO rewrite `only` and `set-order`?
+  ; : only ( -- ) -1 set-order ;
 
 ; ----------------------------------------------
   _colon_header paren_set_order_,'(SET-ORDER)'
@@ -1662,9 +1734,14 @@ endif
   ; Code adapted from F83.
 
   dw context_,dup_,cell_plus_,swap_
-  dw lit_,(max_search_order-cell)*cell,c_move_
-  dw context_,lit_,(max_search_order-cell)*cell,plus_,off_
+  _literal (max_search_order-cell)*cell,c_move_
+  dw context_
+  _literal (max_search_order-cell)*cell
+  dw plus_,off_
   dw exit_
+
+  ; XXX TODO -- rewrite after eForth:
+  ; : previous ( -- ) get-order swap drop 1 - set-order ;
 
 ; ----------------------------------------------
   _colon_header seal_,'SEAL'
@@ -1698,6 +1775,10 @@ endif
 root_vocabulary_link:
   dw 0x0000
 
+if 0 ; new_wordlists
+  dw root_nfa
+endif
+
 ; ----------------------------------------------
   _does_header forth_,'FORTH',,do_vocabulary
 
@@ -1705,6 +1786,10 @@ root_vocabulary_link:
 
 forth_vocabulary_link:
   dw root_vocabulary_link
+
+if 0 ; new_wordlists
+  dw forth_nfa
+endif
 
 ; ----------------------------------------------
   _constant_header forth_wordlist_,'FORTH-WORDLIST'
@@ -1732,6 +1817,10 @@ if 1 ; assembler_core_in_kernel
   dw latest_nt_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
+
+if 0 ; new_wordlists
+  dw assembler_nfa
+endif
 
 endif
 
@@ -1783,7 +1872,6 @@ parse_string.interpreting:
   inc bc
 push_a:
   ld l,a
-push_l: ; XXX TMP -- not used yet
   ld h,0
   jp push_hl
 
@@ -1797,7 +1885,7 @@ push_l: ; XXX TMP -- not used yet
   ld h,a
   inc bc
   push hl
-  jp lit_pfa
+  jp lit_code
 
 ; ----------------------------------------------
   _code_header lit_,'LIT',compile_only
@@ -2008,7 +2096,7 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw lit_,csb
+  _literal csb
   _literal csb_total_size
   dw erase_
   dw exit_
@@ -2171,7 +2259,7 @@ endif
   pop hl
   ld a,l
   or h
-  jp z,branch_pfa ; branch if zero
+  jp z,branch_code ; branch if zero
   inc bc
   inc bc ; skip the inline branch address
   _jp_next
@@ -2198,7 +2286,7 @@ endif
   pop hl
   ld a,l
   or h
-  jp nz,branch_pfa ; branch if not zero
+  jp nz,branch_code ; branch if not zero
   inc bc
   inc bc ; skip the inline branch address
   _jp_next
@@ -2236,12 +2324,15 @@ endif
   pop de
   and a
   sbc hl,de
-  jp z,branch_pfa
+  jp z,branch_code
   add hl,de  ; reverse the substraction
   jp paren_do.de_hl
 
 ; ----------------------------------------------
   _colon_header question_do_,'?DO',immediate+compile_only
+
+  ; Credits:
+  ; Code adapted from Spectrum Forth-83.
 
 ; doc{
 ;
@@ -2263,6 +2354,9 @@ endif
 ; ----------------------------------------------
   _colon_header do_,'DO',immediate+compile_only
 
+  ; Credits:
+  ; Code adapted from Spectrum Forth-83.
+
 ; doc{
 ;
 ; do  ( n1 n2 -- )
@@ -2283,6 +2377,9 @@ endif
 ; ----------------------------------------------
   _colon_header loop_,'LOOP',immediate+compile_only
 
+  ; Credits:
+  ; Code adapted from Spectrum Forth-83.
+
 ; doc{
 ;
 ; loop  ( -- )
@@ -2300,6 +2397,9 @@ endif
 
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate+compile_only
+
+  ; Credits:
+  ; Code adapted from Spectrum Forth-83.
 
 ; doc{
 ;
@@ -2320,7 +2420,7 @@ endif
   _code_header paren_do_,'(DO)'
 
   ; Credits:
-  ; Code from Spectrum Forth-83.
+  ; Code adapted from Spectrum Forth-83.
 
   pop hl                        ; 10t 01b ; init
   pop de                        ; 10t 01b ; limit
@@ -2357,6 +2457,9 @@ paren_do.de_hl:
 ; ----------------------------------------------
   _code_header i_,'I'
 
+  ; Credits:
+  ; Code adapted from spectrum Forth-83.
+
   ld hl,(return_stack_pointer)
 
   ; Note: `j` and `k`jump here (body of `i` + 3), with updated
@@ -2391,11 +2494,14 @@ paren_do.de_hl:
   pop hl
   ld a,h
   or l
-  jp nz,leave_pfa
+  jp nz,leave_code
   _jp_next
 
 ; ----------------------------------------------
   _code_header leave_,'LEAVE'
+
+  ; Credits:
+  ; Code adapted from spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
   inc hl
@@ -2409,10 +2515,13 @@ paren_do.de_hl:
   ld (return_stack_pointer),hl ; write updated return stack pointer (6 was added)
   dec bc
   dec bc ; point IP to forward branch address
-  jp branch_pfa
+  jp branch_code
 
 ; ----------------------------------------------
   _code_header paren_plus_loop_,'(+LOOP)'
+
+  ; Credits:
+  ; Code adapted from spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -2454,6 +2563,9 @@ paren_loop.continue:
 
 ; ----------------------------------------------
   _code_header paren_loop_,'(LOOP)'
+
+  ; Credits:
+  ; Code adapted from spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -2498,18 +2610,18 @@ paren_loop.continue:
   ld a,e  ; character
   call upper.a
   sub '0' ; >="0"?
-  jp c,false_pfa ; <"0" is invalid
+  jp c,false_code ; <"0" is invalid
   cp 0x0A ; >"9"?
   jp m,digit.test_value ; no, test value
   sub 0x07 ; gap between "9" & "A", now "A"=0x0A
   cp 0x0A ; >="A"?
-  jp c,false_pfa ; characters between "9" & "A" are invalid
+  jp c,false_code ; characters between "9" & "A" are invalid
 digit.test_value:
   cp l ; <base?
-  jp nc,false_pfa ; no, invalid
+  jp nc,false_code ; no, invalid
   ld e,a ; converted digit
   push de
-  jp true_pfa
+  jp true_code
 
 ; ----------------------------------------------
   _colon_header number_base_,'NUMBER-BASE'
@@ -2791,22 +2903,19 @@ char_question.not:
   _colon_header skip_sign_question_,'SKIP-SIGN?'
 
 ; : sign?  ( ca len -- ca' len' f )
+;   over c@ [char] - = dup >r abs /string r>  ;
 ;   \ get optional sign
 ;   \ ca len = number
 ;   \ ca' len' = number without the minus sign
 ;   \ f = negative number?
-;   over c@ [char] - = dup >r abs /string r>  ;
 
   ; Credits:
   ; Code adapted from CamelForth.
 
-;  _prompt 'sign? -- start' ; XXX INFORMER
   dw over_,c_fetch_
   _literal '-'
-;  _prompt 'sign? -- before =' ; XXX INFORMER
   dw equals_,dup_,to_r_,abs_
   dw slash_string_,from_r_
-;  _prompt 'sign? -- end' ; XXX INFORMER
   dw exit_
 
 ; ----------------------------------------------
@@ -3442,7 +3551,7 @@ translate_char.begin:
   inc hl
   ld a,(hl)
   and a ; end of table?
-  jp z,false_pfa ; no match found
+  jp z,false_code ; no match found
   cp e
   inc hl
   jr nz,translate_char.begin
@@ -3452,7 +3561,7 @@ translate_char.begin:
 translate_char.end:
   pop hl  ; discard c1
   push de
-  jp true_pfa
+  jp true_code
 
 endif
 
@@ -3489,8 +3598,8 @@ endif
 ; }doc
 
   call rom_break_key
-  jp nc,true_pfa
-  jp false_pfa
+  jp nc,true_code
+  jp false_code
 
 ; ----------------------------------------------
   _defer_header break_key_question_,'BREAK-KEY?',,default_break_key_question_
@@ -3519,8 +3628,8 @@ endif
   ; are on.
 
   bit 5,(iy+0x01) ; new key available? (system variable FLAGS)
-  jp z,false_pfa
-  jp true_pfa
+  jp z,false_code
+  jp true_code
 
 ; ----------------------------------------------
   _variable_header cursor_char_,'CURSOR-CHAR'
@@ -4254,7 +4363,7 @@ u_m_slash_mod.4:
   ld de,cell*2
   add hl,de
   ld (return_stack_pointer),hl
-  jp two_fetch_pfa
+  jp two_fetch_code
 
 ; ----------------------------------------------
   _code_header two_r_fetch_,'2R@'
@@ -4275,8 +4384,8 @@ u_m_slash_mod.4:
 zero_equals.hl:
   ld a,l
   or h
-  jp z,true_pfa
-  jp false_pfa
+  jp z,true_code
+  jp false_code
 
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
@@ -4284,8 +4393,8 @@ zero_equals.hl:
   pop hl
   ld a,l
   or h
-  jp z,false_pfa
-  jp true_pfa
+  jp z,false_code
+  jp true_code
 
 ; ----------------------------------------------
   _code_header zero_less_than_,'0<'
@@ -4300,8 +4409,8 @@ zero_less_.hl: ; XXX entry not used yet
     rl h ; 8t, 2 bytes
   endif
 true_if_cy:
-  jp c,true_pfa
-  jp false_pfa
+  jp c,true_code
+  jp false_code
 
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0>'
@@ -4600,8 +4709,8 @@ endif
   pop de ; e = bitmask
   ld a,e
   and (hl)
-  jp nz,true_pfa
-  jp false_pfa
+  jp nz,true_code
+  jp false_code
 
 ; ----------------------------------------------
   _code_header c_store_set_bits_,'C!SET-BITS'
@@ -5443,8 +5552,9 @@ endif
 ; ----------------------------------------------
   _variable_header voc_link_,'VOC-LINK'
 
-  ; XXX TODO -- this is used only by `.vocs`. use a brute search
-  ; instead in `.vocs` and remove this?
+  ; XXX TODO 2015-12-26 -- rename to `latest-wordlist` after
+  ; finishing the new implementation of `wordlist`, based on
+  ; eForth.
 
 if 1 ; assembler_core_in_kernel
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
@@ -5546,7 +5656,8 @@ source.other:
 ;
 ; recurse  ( -- )
 ;
-; Origin: Forth-94.
+; Origin: Forth-83 (Controlled Reference Words), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5770,8 +5881,8 @@ endif
   pop hl
   _compare_de_hl_unsigned
 false_if_z: ; XXX entry not used yet
-  jp z,false_pfa
-  jp true_pfa
+  jp z,false_code
+  jp true_code
 
 ; ----------------------------------------------
   _code_header equals_,'='
@@ -5780,8 +5891,8 @@ false_if_z: ; XXX entry not used yet
   pop hl
   _compare_de_hl_unsigned
 true_if_z: ; XXX entry not used yet
-  jp z,true_pfa
-  jp false_pfa
+  jp z,true_code
+  jp false_code
 
 ; ----------------------------------------------
   _code_header less_than_,'<'
@@ -5793,8 +5904,8 @@ is_de_less_than_hl:
   if size_optimization
     jp true_if_cy
   else
-    jp c,true_pfa
-    jp false_pfa
+    jp c,true_code
+    jp false_code
   endif
 
 if 0
@@ -5816,13 +5927,13 @@ if 0
 
   jp pe,less_than.reverse  ; if OV, jump
   ; not overflow
-  jp p,false_pfa    ; if +ve, result false
-  jp true_pfa       ; if -ve, result true
+  jp p,false_code    ; if +ve, result false
+  jp true_code       ; if -ve, result true
 
 less_than.reverse
   ; overflow
-  jp m,false_pfa    ; if -ve, result false
-  jp true_pfa       ; if +ve, result true
+  jp m,false_code    ; if -ve, result false
+  jp true_code       ; if +ve, result true
 
 endif
 
@@ -5846,8 +5957,8 @@ u_less_than.de_hl:
   if size_optimization
     jp true_if_cy
   else
-    jp c,true_pfa
-    jp false_pfa
+    jp c,true_code
+    jp false_code
   endif
 
 else ; XXX NEW -- code adapted from Z88 CamelForth
@@ -5935,6 +6046,25 @@ else ; DTC
   inc hl
   jp push_hl
 endif
+
+; ----------------------------------------------
+if 0 ; ITC
+  _code_alias_header to_code_,'>CODE',,two_plus_
+else ; DTC
+  _code_alias_header to_code_,'>CODE',immediate,noop_
+endif
+
+; doc{
+;
+; >code  ( xt -- a )
+; 
+; Convert _xt_ of a primitive word to the actual address where
+; the Z80 code is.
+; 
+; This word is an abstraction: On ITC Solo Forth, `>code` is
+; equivalent to `>body`; on DTC, it does nothing.
+;
+; }doc
 
 ; ----------------------------------------------
   _code_header to_name_,'>NAME'
@@ -7571,7 +7701,7 @@ uppers.do:
 ;   >in @ blk @ error-pos 2!
 ;   dup -1 = if  (abort)  then
 ;   dup -2 = if  abort-message 2@ type (abort)  then
-;   parsed-name 2@ type ." ? " message  (abort)  ;
+;   parsed-name 2@ type ." ? " .throw  (abort)  ;
 ; ----
 ;
 ; }doc
@@ -7605,7 +7735,7 @@ error.message:
   dw 0,0
 
 ; ----------------------------------------------
-  _colon_header id_dot_,'ID.'
+  _colon_header dot_name_,'.NAME'
 
   dw name_to_string_,type_,space_
   dw exit_
@@ -7662,7 +7792,7 @@ endif
   dw zero_branch_,header_comma.continue
   ; the word is not unique in `current`
   ; ( ca len xt )
-  dw to_name_,id_dot_
+  dw to_name_,dot_name_
   _literal error.not_unique
   dw dot_throw_ ; XXX TMP -- `warning`?
 
@@ -8404,7 +8534,16 @@ endif
   dw here_                    ; new contents of vocabulary link
   dw voc_link_,fetch_,comma_  ; compile the previous contents of `voc-link`
   dw voc_link_,store_         ; update `voc-link`
+if 0 ; new_worlists
+  _literal 0
+  dw comma_                   ; nt of the wordlist, or zero
+endif
   dw exit_
+
+; XXX TODO -- Structure of a wordlist, after eForth:
+; \ nt, of last definition, linked )
+; \ wid|0, next or last wordlist in chain
+; \ nt, wordlist name pointer
 
 ; ----------------------------------------------
   _colon_header vocabulary_,'VOCABULARY'
@@ -8433,7 +8572,47 @@ do_vocabulary:
   dw exit_
 
 ; ----------------------------------------------
+if 0 ; XXX TODO
+  ; XXX Already in the library, but may be needed in the kernel,
+  ; depending on the final definitions of `wordlist` and
+  ; `vocabulary`.
+  _code_alias to_wid_,'>WID',,two_plus_
+
+; ----------------------------------------------
+  _code_alias to_wid_,'>WID',,two_minus_
+
+endif
+
+; ----------------------------------------------
   _colon_header wordlist_,'WORDLIST'
+
+if 0 ; new_wordlists
+
+; XXX UNDER DEVELOPMENT -- simpler alternative based on eForth
+
+; : wordlist ( -- wid )
+;   here
+;   0 ,
+;     \ nt, of last definition, linked )
+;   dup current cell+  dup @ ,  !
+;     \ wid|0, next or last wordlist in chain
+;   0 ,
+;     \ nt, wordlist name pointer
+;   ;
+
+; doc{
+;
+; wordlist  ( -- wid )
+;
+; : wordlist ( -- wid )
+;   here (vocabulary) ;
+;
+; }doc
+
+  dw here_,paren_vocabulary_
+  dw exit_
+
+else ; XXX OLD
 
 ; doc{
 ;
@@ -8444,11 +8623,11 @@ do_vocabulary:
 ;
 ; }doc
 
-  dw colon_no_name_,paren_vocabulary_,semicolon_,to_body_
+  dw colon_no_name_,paren_vocabulary_,semicolon_
+  dw to_body_ ; XXX TODO `to_wid_`
   dw exit_
 
-; XXX TODO simpler:
-; : wordlist  ( -- wid )  here 0 ,  ;
+endif
 
 ; ----------------------------------------------
   _colon_header get_current_,'GET-CURRENT'
@@ -8993,7 +9172,7 @@ common_start:
   pop hl
 question_negate.hl:
   bit 7,h
-  jp nz,negate_pfa
+  jp nz,negate_code
   _jp_next
 
 ; ----------------------------------------------
@@ -9016,7 +9195,7 @@ question_negate.hl:
   pop hl
 question_d_negate.hl:
   bit 7,h
-  jp nz,d_negate_pfa
+  jp nz,d_negate_code
   _jp_next
 
 ; ----------------------------------------------
@@ -9041,7 +9220,7 @@ question_d_negate.hl:
 
 if 0
 
-  ; XXX TODO ? -- from DZX-Forth
+  ; XXX OLD -- from DZX-Forth
 
   pop hl
   call abs_hl
@@ -9497,28 +9676,6 @@ endif
 ; prints only the number.
 ;
 ; }doc
-
-; ----------------------------------------------
-; XXX OLD -- not used
-  ; _colon_header dot_warning_hash_,'.WARNING#'
-
-; ; doc{
-; ;
-; ; .warning#  ( n -- )
-; ;
-; ; Print the warning _n_.
-; ;
-; ; }doc
-
-  ; dw warnings_,fetch_
-  ; dw question_branch_,dot_warning_hash.do
-  ; dw drop_,exit_
-
-; dot_warning_hash.do:
-  ; dw paren_dot_quote_
-  ; _string 'Warning #'
-  ; dw dec_dot_
-  ; dw exit_
 
 ; ----------------------------------------------
   _colon_header updated_question_,'UPDATED?'
@@ -10954,7 +11111,7 @@ endif
   ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
 
-  jp home_pfa ; continue at `home`
+  jp home_code ; continue at `home`
 
   ; The Z80 version above uses 29 bytes;
   ; the following Forth version uses 30 bytes:
@@ -11419,7 +11576,7 @@ do_two_constant:
   pop hl
   ld a,h
   or l
-  jp nz,exit_pfa
+  jp nz,exit_code
   _jp_next
 
 ; ----------------------------------------------
