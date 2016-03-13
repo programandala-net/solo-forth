@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201602180233
+\ Last modified: 201602260155
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -33,8 +33,10 @@
 
 ( ) \ scr 1 -- testing load block
 
-2 load 504 load 505 load 507 load 509 load
-
+2 load
+  \ need list 
+  \ 504 load 505 load 507 load 509 load
+  634 load  \ XXX TMP -- for Nuclear Invaders
 
   \ }}} =======================================================
   \ Need {{{
@@ -1416,17 +1418,35 @@ only forth definitions  need char>string   need search-wordlist
   \ returning the string _ca len_ in the circular string
   \ buffer.
 
-: s\"  ( Compiling: "text<quote>" -- ) ( Run-time: -- ca len )
-  parse-escaped-string  postpone sliteral
-  ; immediate compile-only
+-->
+
+( s\" )
+
+  \ XXX TODO -- need parse-escaped-string
+
+: s\"  ( Interpretation: "text<quote>" -- ca len )
+       ( Compilation: "text<quote>" -- )
+       ( Run-time: -- ca len )
+  parse-escaped-string compiling? if  postpone sliteral  then
+  ; immediate
 
   \ XXX TODO documentation
-
   \ doc{
   \
   \ s\"  ( "text<quote>"  - ca len )
   \
   \ }doc
+
+( .\" )
+
+need s\"
+  \ XXX TMP
+  \ XXX TODO -- need parse-escaped-string
+
+: .\"  ( Compilation: "text<quote>" -- )
+       ( Run-time: -- ca len )
+  compile (.")  parse-escaped-string s,
+  ; immediate compile-only
 
 ( char>string chars>string )
 
@@ -1987,7 +2007,7 @@ need os-udg
 
 need z80-asm  need (hires-emit)
 
-code hires-emit-udg  ( x y b -- )
+code hires-emit-udg  ( xc yc b -- )
 
   \ Display the user graphic character _b_ (0..255) at graphic
   \ coordinates _x y_. The system variable "UDG" is supossed to
@@ -1995,7 +2015,7 @@ code hires-emit-udg  ( x y b -- )
   \ char 0 bitmap).
   \
   \ The UDG character will be printed with overwritting
-  \ (equivalent to `1 overwritte`).
+  \ (equivalent to `1 overwrite`).
 
   \ XXX FIXME  -- crash?
 
@@ -2305,7 +2325,7 @@ need (pixel-addr)
 
 code plot  ( xc yc -- )
 
-  D9 c,               \ exx
+  D9 c,               \ exx ; save Forth IP
   E1 c,               \ pop hl
   C1 c,               \ pop bc
   40 05 + c,          \ ld b,l
@@ -2316,7 +2336,7 @@ code plot  ( xc yc -- )
   \ hl = screen address
   \ a = pixel position in hl (0..7)
   CD c, 22EC ,        \ call 0x22EB ; ROM PLOT-SUB + 7
-  D9 c,               \ exx
+  D9 c,               \ exx ; restore Forth IP
   DD c, 21 c, next ,  \ ld ix,next ; restore ix
   jpnext              \ jp (ix)
 
@@ -2426,11 +2446,11 @@ code test-pixel  ( xc yc -- f )
 
 need z80-asm
 
-code rdraw  ( x y -- )
+code rdraw  ( xc yc -- )
 
   \ Draw a line relative to the current coordinates.
   \
-  \ x y = relative coordinates from the current ones
+  \ xc yc = relative coordinates from the current ones
 
   \ XXX FIXME -- use the whole screen
 
@@ -2454,6 +2474,91 @@ code rdraw  ( x y -- )
 
   jpnext end-code
 
+\ (rdraw) \
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX TODO -- finish adapting the DRAW-LINE ROM routine
+
+need z80-asm
+
+create (rdraw)
+asm
+
+
+  \  ld      a,c
+  \  cp      b
+  \  jr      nc,dl_x_ge_y
+  \
+  \  ld      l,c
+  \  push    de
+  \  xor     a
+  \  ld      e,a
+  \  jr      dl_larger
+  \
+  \ dl_x_ge_y:
+  \  or      c
+  \  ret     z
+  \
+  \  ld      l,b
+  \  ld      b,c
+  \  push    de
+  \  ld      d,$00
+  \
+  \ dl_larger:
+  \  ld      h,b
+  \  ld      a,b
+  \  rra
+  \
+  \ d_l_loop:
+  \  add     a,l
+  \  jr      c,d_l_diag
+  \
+  \  cp      h
+  \  jr      c,d_l_hr_vt
+  \
+  \ d_l_diag:
+  \  sub     h
+  \  ld      c,a
+  \  exx
+  \  pop     bc
+  \  push    bc
+  \  jr      d_l_step
+  \
+  \ d_l_hr_vt:
+  \  ld      c,a
+  \  push    de
+  \  exx
+  \  pop     bc
+  \
+  \ d_l_step:
+  \  ld      hl,($5c7d) ; coords
+  \  ld      a,b
+  \  add     a,h
+  \  ld      b,a
+  \  ld      a,c
+  \  inc     a
+  \  add     a,l
+  \  jr      c,d_l_range
+  \  jr      z,report_bc ; XXX TODO -- adapt, integer out of range
+  \
+  \ d_l_plot:
+  \  dec     a
+  \  ld      c,a
+  \  call    l22e5      ; routine plot-sub \ XXX TODO
+  \ XXX TODO -- replace `call PLOT-SUB` with `call PLOT-SUB+7`
+  \  exx
+  \  ld      a,c
+  \  djnz    d_l_loop
+  \
+  \  pop     de
+  \  ret
+  \
+  \ d_l_range:
+  \  jr      z,d_l_plot
+
+end-asm
+
 ( adraw ) \ from Abersoft Forth
 
   \ Credits:
@@ -2468,7 +2573,7 @@ need plot
   \   23677 = COORDX
   \   23678 = COORDY
 
-: adraw  ( x y -- )
+: adraw  ( xc yc -- )
 
   \ Draw a line from the current coordinates to the given
   \ absolute coordinates.
@@ -2581,7 +2686,7 @@ create circle-plot  ( -- a )
   de pop  bc pop  hl pop  ret
   end-asm
 
-code circle  ( x y radius -- )
+code circle  ( xc yc radius -- )
 
   \ d=x0
   \ e=y0
@@ -3121,7 +3226,7 @@ variable len  variable tempo  variable octave  variable volume
 
 current ! previous
 
-( play sound: )
+( play sound: sound, )
 
   \ Credits:
   \
@@ -3134,16 +3239,44 @@ current ! previous
 
 need !p  need sound-register-port  need sound-write-port
 
+14 constant /sound
+
 : play  ( a -- )
   \ a = address of a table with 14 bytes
-  14 0 do
+  /sound 0 do
     i sound-register-port !p  dup c@ sound-write-port !p 1+
   loop  drop  ;
 
-  \ XXX TODO
+: sound,  ( b0 ... b13 -- )
+  here /sound allot here 1- do  i c!  -1 +loop  ;
+
+: sound:  ( b0 ... b13 "name" -- )  create  sound,  ;
+
+( play sound: sound, )
+
+  \ XXX TODO -- alternative:
+
+need roll
 
 : sound:  ( b0 ... b13 "name" -- )
-  create  here 1- 14 allot here -1 do  i c!  -1 +loop  ;
+  create  14 0 do  14 i - roll ,  loop  ;
+
+: sound,  ( b0 ... b13 -- a )
+  here >r 14 0 do  14 i - roll ,  loop  r>  ;
+
+( play )
+
+  \ Faster version of the previous `play`, using `c@+`,
+  \ which requires the assembler.
+
+need !p  need c@+
+need sound-register-port  need sound-write-port
+
+: play  ( a -- )
+  \ a = address of a table with 14 bytes
+  14 0 do
+    i sound-register-port !p  c@+ sound-write-port !p
+  loop  drop  ;
 
 ( play )
 
@@ -3175,9 +3308,11 @@ code play  ( a -- )
   bc pop  jpnext
   end-code
 
-( waves shoot helicopter train )
+( waves shoot helicopter1 train )
 
   \ Sounds to be played with `play`.
+
+need sound:
 
   \ Credits:
   \
@@ -3187,13 +3322,11 @@ code play  ( a -- )
   \ http://microhobby.org/numero139.htm
   \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
 
-create waves  ( -- a )
-  0 c,  0 c,  0 c,  0 c,  0 c,  0 c,  7 c,
-  71 c,  20 c,  20 c,  20 c,  0 c,  38 c,  14 c,
+0  0  0  0  0  0  7 71  20  20  20  0  38  14
+sound: waves
 
-create shoot  ( -- a )
-  10 c,  0 c,  177 c,  0 c,  191 c,  0 c,  31 c,
-  71 c,  20 c,  20 c,  20 c,  92 c,  28 c,  3 c,
+10  0  177  0  191  0  31 71  20  20  20  92  28  3
+sound: shoot
 
   \ Credits:
   \
@@ -3203,13 +3336,36 @@ create shoot  ( -- a )
   \ http://microhobby.org/numero172.htm
   \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
 
-create helicopter  ( -- a )
-  200 c,  15 c,  200 c,  15 c,  200 c,  15 c,  0 c,
-  7 c, 23 c,  23 c,  23 c,  255 c,  1 c,  12 c,
+200  15  200  15  200  15  0 7 23  23  23  255  1  12
+sound: helicopter1
 
-create train  ( -- a )
-  100 c,  120 c,  48 c,  97 c,  12 c,  200 c,  55 c,
-  15 c,  9 c,  11 c,  55 c,  180 c,  4 c,  8 c,
+100  120  48  97  12  200  55 15  9  11  55  180  4  8
+sound: train
+
+( bomber whip metalic rain2 lightning1 lighting2 )
+
+  \ Sounds to be played with `play`.
+
+  \ Credits:
+  \
+  \ Adapted from data written by Francisco Majón,
+  \ published on Microhobby, issue 194 (1989-12), page 26:
+  \ http://microhobby.org/numero194.htm
+  \ http://microhobby.speccy.cz/mhf/194/MH194_26.jpg
+
+need sound:
+
+73 82 62 165 90 138 159 140 102 77 100 162 87 201 sound: bomber
+
+5 18 8 6 19 11 5 11 0 19 3 24 21 1 sound: whip
+
+149 64 104 236 210 180 0 32 0 194 146 73 81 177 sound: metalic
+
+16 17 25 10 19 9 4 31 245 1 6 30 2 sound: rain2
+
+1 4 0 16 36 67 8 4 31 245 1 6 30 2 sound: lighting1
+
+0 0 0 0 0 255 7 4 255 25 0 60 60 3 sound: lighting2
 
 ( Sound effects )
 
@@ -3230,19 +3386,21 @@ AB 03 2A 02 0C 01 00 F8 10 10 10 00 71 10 sound: bell1
 66 00 4B 00 45 00 00 F8 10 10 10 00 22 10 sound: bell2
 FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound: bell3
 0C 1F 00 00 00 1F 07 E8 0F 10 0F 9A 00 18 sound: airplane
-09 00 00 06 0C 00 0B C0 10 0E 10 3A 02 1C sound: helicopter
+09 00 00 06 0C 00 0B C0 10 0E 10 3A 02 1C sound: helicopter2
 03 05 FC 04 0C 05 00 F8 10 10 10 FF FF 0E sound: background
 00 00 00 00 00 00 06 C0 10 10 10 00 05 18 sound: rap
 00 06 00 00 00 05 11 E8 10 10 10 00 0A 10 sound: drum
 09 00 00 00 00 00 00 C0 10 10 10 03 09 10 sound: cymbal
 00 00 00 00 00 00 0F C0 0B 10 10 FF 50 0E sound: beach
-24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound: waterdrop
+24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound: waterdrop2
 
 decimal
 
-( rain water-drops )
+( rain1 waterdrop1 )
 
   \ Sounds to be played with `play`.
+
+need sound:
 
   \ Credits:
   \
@@ -3251,16 +3409,12 @@ decimal
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-  \ XXX this effects don't sound fine, though the data are
-  \ correct
+  \ XXX FIXME -- this effects don't sound fine, though the data
+  \ are correct
 
-create rain  ( -- a )
-  44 c, 24 c, 6 c, 6 c, 7 c, 3 c, 3 c,
-  5 c, 44 c, 6 c, 3 c, 5 c, 3 c, 3 c,
+44 24 6 6 7 3 3 5 44 6 3 5 3 3 sound: rain1
 
-create water-drop  ( -- a )
-  20 c, 83 c, 94 c, 39 c, 0 c, 8 c, 31 c,
-  71 c, 23 c, 23 c, 22 c, 90 c, 0 c, 0 c,
+20 83 94 39 0 8 31 71 23 23 22 90 0 0 sound: waterdrop1
 
   \ }}} =======================================================
   \ Sound 48 {{{
@@ -5526,7 +5680,7 @@ code c!dosvar  ( b n -- )
   \ +13 : cell, start address
   \ +15 : cell, not used for code files
 
-  \ The save (=old) tape header is right after the load (=old)
+  \ The save (=old) tape header is right after the load (=new)
   \ header.
 
   \   Arrangement of two headers in workspace.
@@ -5670,7 +5824,7 @@ code (tape)  ( n -- )
   \ +15 : cell, not used for code files
 
   \ XXX FIXME This information from the ZX Spectrum ROM
-  \ disassembly is contradictorry:
+  \ disassembly is contradictory:
 
   \ The save tape header is right after the save header.
 
@@ -6222,7 +6376,7 @@ variable decode-address  \ in the word being decoded
 
 ( list )
 
-need .line
+need .line  need nuf?
 
 : list  ( n -- )
 
@@ -6232,7 +6386,6 @@ need .line
   cr ." Scr # " .
   l/scr 0 do
     cr i 2 .r space i scr @ .line
-    break-key? ?leave
     nuf? ?leave
   loop cr  ;
 
@@ -6533,26 +6686,47 @@ need marker
 
 ( ~~ )
 
+
   \ 2016-02-18: First version.
+
+need :noname  need defer  need is
 
 variable ~~?    ~~? on      \ active?
 variable ~~x    ~~x off     \ x coordinate
 variable ~~y    ~~y off     \ y coordinate
 variable ~~key  ~~key off   \ quit key, or zero if no pause
 
-: ((~~))  ( nt blk -- )
-  ~~x @ ~~y @ at-xy ." Block " . .name .s 
-  ~~key @ ?dup 0= ?exit  key = if  quit  then  ;
-  \ Execute the debugging code: show the block and the name
-  \ of the word `~~` was compiled into. If `~~key` is 
-  \ zero, exit; else wait for a key and quit if it equals
-  \ the contents of `~~key`.
+: ~~show  ( nt line block -- )
+  ~~x @ ~~y @ at-xy ." Block " . ." Line " . .name .s   ;
+  \ Show the debugging info.
 
-: (~~)  ( nt blk -- )  ~~? @ if  ((~~))  else  2drop  then  ;
-  \ Execute the debugging code, if active.
+: ~~control  ( -- )
+  ~~key @ ?dup 0= ?exit  key = if  quit  then  ;
+  \ If `~~key` is non-zero, wait for a key and quit if it
+  \ equals the contents of `~~key`.
+
+2variable ~~backup-xy
+
+defer ~~save  ( -- )  defer ~~restore  ( -- )
+
+:noname  ( -- )  xy ~~backup-xy 2!        ; is ~~save
+:noname  ( -- )     ~~backup-xy 2@ at-xy  ; is ~~restore
+  \ Save and restore the current coordinates.
+
+-->
+
+( ~~ )
+
+: (~~)  ( nt line block -- )
+  ~~? @
+  if    ~~save ~~show ~~control ~~restore
+  else  2drop drop  then  ;
+  \ Execute the debugging code, if debugging is active.
 
 : ~~  ( -- )
-  latest postpone literal  blk @ postpone literal
+  latest      postpone literal
+  >in @ c/l / postpone literal
+  blk @       postpone literal
   postpone (~~)  ; immediate compile-only
   \ Compile debugging code.
   \ This word was inspired by Gforth's `~~`.
@@ -7288,8 +7462,8 @@ code i'  ( -- x )
   \ Return a copy of the current (innermost) loop limit.
 
   2A c, rp ,        \ ld hl,(return_stack_pointer)
-  11 c, 2 cells , \ ld de,2*cell
-  19 c,           \ add hl,de
+  11 c, 2 cells ,   \ ld de,2*cell
+  19 c,             \ add hl,de
   C3 c, fetchhl ,   \ jp fetchhl
 
   end-code
@@ -8440,7 +8614,7 @@ code inkey  ( -- c | 0 )
 
 ( key?? )
 
-  \ An alternative to `key?` that works also when the system
+  \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Variant with relative jumps.
 
 need z80-asm
@@ -8465,7 +8639,7 @@ code key??  ( -- f )
 
 ( key?? )
 
-  \ An alternative to `key?` that works also when the system
+  \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Faster variant with absolute jumps.
 
 need z80-asm
@@ -8520,7 +8694,7 @@ char Y value "y"  char N value "n"
 
 ( Keyboard rows ports)
 
-  \ From Afera.
+  \ Adapted from Afera.
   \ XXX UNDER DEVELOPMENT
 
   \ -----------------------------------------------------------
@@ -8529,16 +8703,23 @@ char Y value "y"  char N value "n"
   \ Some tools to manage key presses. An improved and detailed
   \ implementation can be found in the Tron 0xF game
   \ (http://programandala.net/en.program.tron_0xf.html).
+  \ 
+  \ "kk" stands for "keyboard key". This notation was chosen
+  \ first in order to prevent future name clashes with standard
+  \ words which uses the "k-" prefix, and second because these
+  \ words manage only physical keys of the keyboard, not key
+  \ combinations.
+  \
   \ -----------------------------------------------------------
 
 
-( k-table k, k@ )
+( kk-ports kk, kk@ )
 
-  \ There are two versions of `k,` and `k@`. They depend on the
-  \ value of `/k`, a constant that holds the bytes ocuppied by
-  \ every key in `k-table`, 3 or 4.
+  \ There are two versions of `kk,` and `kk@`. They depend on the
+  \ value of `/kk`, a constant that holds the bytes ocuppied by
+  \ every key in `kk-ports`, 3 or 4.
   \
-  \ The application must define `/k` before loading this
+  \ The application must define `/kk` before loading this
   \ block.
 
   \ ............................................
@@ -8547,15 +8728,15 @@ char Y value "y"  char N value "n"
   \ Every key identifier occupies 3 bytes in the table (total
   \ size is 120 bytes)
 
-/k 3 = dup
+/kk 3 <> dup
 
-?\ : k,  ( bitmask port -- ) , c,  ;
+?\ : kk,  ( bitmask port -- ) , c,  ;
   \ Store a key definition into the keys table.
 
-?\ : k@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
+?\ : kk@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
   \ Fech a key definition from an element of the keys table.
 
-  \ XXX TODO wrote `k@` in Z80.
+  \ XXX TODO wrote `kk@` in Z80.
 
   \ ............................................
   \ Method 2: bigger but faster
@@ -8563,73 +8744,126 @@ char Y value "y"  char N value "n"
   \ Every key identifier occupies 4 bytes in the table (total
   \ size is 160 bytes)
 
-/k 4 = dup
+/kk 4 <> dup
 
-?\ : k,  ( d -- )  2,  ;
+?\ : kk,  ( d -- )  2,  ;
   \ Store a key definition into the keys table.
 
-?\ : k@  ( a -- bitmask port )  2@  ;
+?\ : kk@  ( a -- bitmask port )  2@  ;
   \ Fech a key definition from an element of the keys table.
 
 -->
 
-( k-table )
+( kk-ports )
 
   \ Key constants are defined with double constants this way:
   \ high part = bitmask
   \ low part = port of the keyboard row
 
-$01 $F7FE 2constant k-1  $02 $F7FE 2constant k-2
-$04 $F7FE 2constant k-3  $08 $F7FE 2constant k-4
-$10 $F7FE 2constant k-5
+$01 $F7FE 2constant kk-1  $02 $F7FE 2constant kk-2
+$04 $F7FE 2constant kk-3  $08 $F7FE 2constant kk-4
+$10 $F7FE 2constant kk-5
 
-$01 $FBFE 2constant k-q  $02 $FBFE 2constant k-w
-$04 $FBFE 2constant k-e  $08 $FBFE 2constant k-r
-$10 $FBFE 2constant k-t
+$01 $FBFE 2constant kk-q  $02 $FBFE 2constant kk-w
+$04 $FBFE 2constant kk-e  $08 $FBFE 2constant kk-r
+$10 $FBFE 2constant kk-t
 
-$01 $FDFE 2constant k-a  $02 $FDFE 2constant k-s
-$04 $FDFE 2constant k-d  $08 $FDFE 2constant k-f
-$10 $FDFE 2constant k-g
+$01 $FDFE 2constant kk-a  $02 $FDFE 2constant kk-s
+$04 $FDFE 2constant kk-d  $08 $FDFE 2constant kk-f
+$10 $FDFE 2constant kk-g
 
-$01 $FDFE 2constant k-cs  $02 $FDFE 2constant k-z
-$04 $FDFE 2constant k-x   $08 $FDFE 2constant k-c
-$10 $FDFE 2constant k-v
-
--->
-
-( k-table )
-
-$01 $EFFE 2constant k-0  $02 $EFFE 2constant k-9
-$04 $EFFE 2constant k-8  $08 $EFFE 2constant k-7
-$10 $EFFE 2constant k-6
-
-$01 $DFFE 2constant k-p  $02 $DFFE 2constant k-o
-$04 $DFFE 2constant k-i  $08 $DFFE 2constant k-u
-$10 $DFFE 2constant k-y
-
-$01 $BFFE 2constant k-en  $02 $BFFE 2constant k-l
-$04 $BFFE 2constant k-k   $08 $BFFE 2constant k-j
-$10 $BFFE 2constant k-h
-
-$01 $7FFE 2constant k-sp $02 $7FFE 2constant k-ss
-$04 $7FFE 2constant k-m  $08 $7FFE 2constant k-n
-$10 $7FFE 2constant k-b
+$01 $FDFE 2constant kk-cs  $02 $FDFE 2constant kk-z
+$04 $FDFE 2constant kk-x   $08 $FDFE 2constant kk-c
+$10 $FDFE 2constant kk-v
 
 -->
 
-( k-table )
+( kk-ports )
 
-need k,
+$01 $EFFE 2constant kk-0  $02 $EFFE 2constant kk-9
+$04 $EFFE 2constant kk-8  $08 $EFFE 2constant kk-7
+$10 $EFFE 2constant kk-6
+
+$01 $DFFE 2constant kk-p  $02 $DFFE 2constant kk-o
+$04 $DFFE 2constant kk-i  $08 $DFFE 2constant kk-u
+$10 $DFFE 2constant kk-y
+
+$01 $BFFE 2constant kk-en  $02 $BFFE 2constant kk-l
+$04 $BFFE 2constant kk-k   $08 $BFFE 2constant kk-j
+$10 $BFFE 2constant kk-h
+
+$01 $7FFE 2constant kk-sp $02 $7FFE 2constant kk-ss
+$04 $7FFE 2constant kk-m  $08 $7FFE 2constant kk-n
+$10 $7FFE 2constant kk-b
+
+-->
+
+( kk-ports )
+
+  \ This table contains the key double constants (port and
+  \ bitmak) of all keys.
+
+  \ This table contains 40 items, one per physical key, and
+  \ it's organized by keyboard rows.
+
+need kk,
 
 40 constant keys
 
-create k-table
+create kk-ports
 
-k-1 k, k-2 k, k-3 k, k-4 k, k-5 k, k-q k, k-w k, k-e k, k-r k,
-k-t k, k-a k, k-s k, k-d k, k-f k, k-g k, k-cs k, k-z k, k-x k,
-k-c k, k-v k, k-0 k, k-9 k, k-8 k, k-7 k, k-6 k, k-p k, k-o k,
-k-i k, k-u k, k-y k, k-en k, k-l k, k-k k, k-j k, k-h k,
-k-sp k, k-ss k, k-m k, k-n k, k-b k,
+kk-1  kk,  kk-2  kk,  kk-3 kk,  kk-4 kk,  kk-5 kk,
+kk-q  kk,  kk-w  kk,  kk-e kk,  kk-r kk,  kk-t kk,
+kk-a  kk,  kk-s  kk,  kk-d kk,  kk-f kk,  kk-g kk,
+kk-cs kk,  kk-z  kk,  kk-x kk,  kk-c kk,  kk-v kk,
+kk-0  kk,  kk-9  kk,  kk-8 kk,  kk-7 kk,  kk-6 kk,
+kk-p  kk,  kk-o  kk,  kk-i kk,  kk-u kk,  kk-y kk,
+kk-en kk,  kk-l  kk,  kk-k kk,  kk-j kk,  kk-h kk,
+kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
+
+( kk-1# )
+
+  \ Key number constants, to be used as indexes of the key
+  \ tables.
+
+need enum
+
+0
+enum kk-1#  enum kk-2#  enum kk-3# enum kk-4# enum kk-5#
+enum kk-q#  enum kk-w#  enum kk-e# enum kk-r# enum kk-t#
+enum kk-a#  enum kk-s#  enum kk-d# enum kk-f# enum kk-g#
+enum kk-cs# enum kk-z#  enum kk-x# enum kk-c# enum kk-v#
+enum kk-0#  enum kk-9#  enum kk-8# enum kk-7# enum kk-6#
+enum kk-p#  enum kk-o#  enum kk-i# enum kk-u# enum kk-y#
+enum kk-en# enum kk-l#  enum kk-k# enum kk-j# enum kk-h#
+enum kk-sp# enum kk-ss# enum kk-m# enum kk-n# enum kk-b#
+drop
+
+( kk-chars )
+
+  \ This table contains the chars used as names of the keys.
+
+  \ This table contains 40 items, one per physical key, and
+  \ it's organized by keyboard rows.
+ 
+  \ By default, the first 4 UDG are used for keys whose names
+  \ are not a printable char:
+  \
+  \ 128 = Caps Shift
+  \ 129 = Enter
+  \ 130 = Space
+  \ 131 = Symbol Shift
+
+create kk-chars
+
+char 1 c,  char 2 c,  char 3 c,  char 4 c,  char 5 c,
+char q c,  char w c,  char e c,  char r c,  char t c,
+char a c,  char s c,  char d c,  char f c,  char g c,
+128    c,  char z c,  char x c,  char c c,  char v c,
+char 0 c,  char 9 c,  char 8 c,  char 7 c,  char 6 c,
+char p c,  char o c,  char i c,  char u c,  char y c,
+129    c,  char l c,  char k c,  char j c,  char h c,
+130    c,  131    c,  char m c,  char n c,  char b c,
 
 ( pressed pressed? )
 
@@ -8648,12 +8882,12 @@ need @p
 
 [needed] pressed [if]
 
-need pressed?  need k-table
+need pressed?  need kk-ports
 
 : pressed  ( -- false | n1 n2 true )
   0 \ false by default
-  [ k-table keys /k * bounds swap ] literal literal
-  do  i k@ pressed? if  drop i k@ 1 leave  then  /k +loop  ;
+  [ kk-ports keys /kk * bounds swap ] literal literal
+  do  i kk@ pressed? if  drop i kk@ 1 leave  then  /kk +loop  ;
   \ Return the key identifier of the first key
   \ from the keys table that happens to be pressed.
   \ n1 = key bitmask
@@ -8667,21 +8901,21 @@ need pressed?  need k-table
 
   \ The application must define the `/k` constant.
 
-need k-table
+need kk-ports
 
-0. 2variable k-pressed
+0. 2variable kk-pressed
 
 : only-one-pressed  ( -- false | n1 n2 true )
 
   \ XXX TODO finish
 
-  0. k-pressed 2! \ none by default
-  [ k-table keys /k * bounds swap ] literal literal
-  do  i k@ pressed?
-  if  k-pressed 2@ + if
+  0. kk-pressed 2! \ none by default
+  [ kk-ports keys /kk * bounds swap ] literal literal
+  do  i kk@ pressed?
+  if  kk-pressed 2@ + if
   then
-  /k +loop
-  k-pressed 2@ 2dup + if  1  else  2drop 0  then  ;
+  /kk +loop
+  kk-pressed 2@ 2dup + if  1  else  2drop 0  then  ;
 
   \ Return the key identifier of the key pressed,
   \ if there's only one key pressed.
@@ -8843,13 +9077,16 @@ need words  need abort"
 
 : end-structure  ( struct-sys n -- )  swap !  ;
 
-( buffer: cvariable )
+( buffer: cvariable enum )
 
 [unneeded] buffer:
 ?\ : buffer:  ( u "name" -- )  create allot  ;
 
 [unneeded] cvariable
 ?\ : cvariable  ( "name"  -- )  create 1 allot  ;
+
+[unneeded] enum
+?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;
 
 ( value to )
 
@@ -10030,7 +10267,7 @@ code pause ( u -- )
   \
   \ Code adapted from Spectrum Forth-83.
 
-  \ Variant: `(wait)` is a user variable, but it's current
+  \ Variant: `(wait)` is a user variable, but its current
   \ address is compiled, what is wrong.
 
 need z80-asm  need execute-hl
@@ -10399,16 +10636,15 @@ need body>name
   \
   \ Code of `wid-of` adapted from eForth's `widof`.
 
-[unneeded] wid> [unneeded] >wid and
-?\ : wid>  ( wid -- xt )  body>  ;
+: wid>  ( wid -- xt )  body>  ;
   \ Convert a _wid_ to the _xt_ of its vocabulary.
+  \ XXX TODO -- use `alias`
 
-[unneeded] wid> [unneeded] >wid and
-?\ : >wid  ( xt -- wid )  >body  ;
+: >wid  ( xt -- wid )  >body  ;
   \ Convert the _xt_ of a vocabulary to its _wid_.
+  \ XXX TODO -- use `alias`
 
-[unneeded] wid-of
-?\ : wid-of  ( "name" -- wid )  ' >wid  ;
+: wid-of  ( "name" -- wid )  ' >wid  ;
 
 ( swap-current trail )
 
@@ -10567,11 +10803,11 @@ defer .cycles  ( -- )
 
 ( rng-benchmark )
 
-defer random-coords  ( -- x y )
+defer random-coords  ( -- xc yc )
   \ Random graphic coordinates. Configurable depending on the
   \ type of `random` to benchmark.
 
-: (random-coords)  ( -- x y )  256 rng 193 rng  ;
+: (random-coords)  ( -- xc yc )  256 rng 193 rng  ;
   \ Default behaviour of `random-coords`.
 
 : fill-screen  ( -- )
@@ -10652,7 +10888,7 @@ defer rng-benchmark  ( ca len xt -- )
 
   \ Versions for 8-bit `rnd`.
 
-: crnd-coords  ( -- x y )  rng rng 192 min  ;
+: crnd-coords  ( -- xc yc )  rng rng 192 min  ;
   \ Random graphic coordinates for 8-bit `rnd`.
 
 : rng8-benchmark2  ( ca len xt -- )
@@ -13741,7 +13977,7 @@ char | star2-udg char>udg
 
 4 constant #stars
 
-: star-coords  ( -- x y )  last-column last-row  ;
+: star-coords  ( -- xc yc )  last-column last-row  ;
 
 : .star  ( c -- )
   [ last-column 1+ ] literal random last-row at-xy
@@ -14896,7 +15132,7 @@ create board  squares allot
   \ ____
 
 need columns  need rows  need udg:  need rnd  need ??
-3 constant /k  need pressed?
+3 constant /kk  need pressed?
 need cvariable  need 2/  need pixel-addr
 need hires-emit-udg  need c!toggle-bits
 

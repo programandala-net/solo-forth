@@ -500,6 +500,10 @@ strings-size strings0 >strings ?strings empty-strings unused-strings
 
 stringer-size stringer0 >stringer ?stringer empty-stringer unused-stringer
 
+.2016-02-19:
+
+Write `.\"`, equivalent to `s\"`.
+
 // }}}
 == Maths ==
 // {{{

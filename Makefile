@@ -90,6 +90,7 @@ plus3dos: solo_forth_disk_a.dsk
 .PHONY : clean
 clean:
 	rm -f \
+		library.complete.*.fsb \
 		solo_forth_disk_?.mgt \
 		solo_forth_disk_?.dsk \
 		solo_forth.*.tap \
@@ -309,18 +310,19 @@ backup:
 # configurable. This makes it easier to try old versions, for
 # debugging.
 #
-# 2015-07-22: Added the MGT disk images to the backup. Sometimes
-# it's useful to test and old version without recompiling the
-# old sources.
+# 2015-07-22: Added the MGT disk images to the backup.
+# Sometimes it's useful to test and old version without
+# recompiling the old sources.
 #
 # 2015-08-14: Updated backup recipe.
 #
 # 2015-08-17: Modified to use GNU binutils instead of Pasmo.
 #
-# 2015-08-18: Improved. New: a Forth program creates the symbols
-# file.
+# 2015-08-18: Improved. New: a Forth program creates the
+# symbols file.
 #
-# 2015-08-20: Divided in three parts: Makefile, Makefile.pasmo, Makefile.binutils.
+# 2015-08-20: Divided in three parts: Makefile, Makefile.pasmo,
+# Makefile.binutils.
 #
 # 2015-10-10: Substituted fsb (written in Vim) with fsb2
 # (written in Forth for Gforth). fsb was becoming too show with
@@ -330,11 +332,16 @@ backup:
 #
 # 2015-11-10: First changes to support also the +3DOS version.
 #
-# 2015-11-11: The DOS error codes are separated from the main file of the library.
+# 2015-11-11: The DOS error codes are separated from the main
+# file of the library.
 #
 # 2015-11-12: Fixed the load address of the font drivers; they
-# were missing because of the recent use of `bin2code`, required
-# to build +3DOS disk images.
+# were missing because of the recent use of `bin2code`,
+# required to build +3DOS disk images.
 #
-# 2016-02-15: Added Nuclear Invaders to the library, an
-# game under development for Solo Forth, in order to try it.
+# 2016-02-15: Added Nuclear Invaders to the library, an game
+# under development for Solo Forth, in order to try it.
+#
+# 2016-02-22: Delete also <library.complete.*.fsb> in clean.
+# It seems this is required when parts of the library are
+# simbolyc links.
