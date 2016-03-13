@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201602260155
+\ Last modified: 201602261820
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -34,7 +34,9 @@
 ( ) \ scr 1 -- testing load block
 
 2 load
-  \ need list 
+  need wipe-block  need color-block  need clear-block
+  exit
+  \ need list
   \ 504 load 505 load 507 load 509 load
   634 load  \ XXX TMP -- for Nuclear Invaders
 
@@ -504,10 +506,10 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 
   bc push  de bc ldp  hl de ldp
     \ push bc
-    \ ld c,e
     \ ld b,d
-    \ ld e,l
+    \ ld c,e
     \ ld d,h
+    \ ld e,l
 
   bc tstp
     \ ld a,b
@@ -673,6 +675,61 @@ code -dup  ( x -- x | 0 0 )
   \ -dup  ( x -- x x | x )
   \
   \ Duplicate _x_ if it's negative.
+  \
+  \ }doc
+
+( ndrop )
+
+need z80-asm
+
+code ndrop  ( x1..xn n -- )
+
+  hl pop  hl addp  exde  \ DE = n cells
+    \ pop hl
+    \ add hl,hl
+    \ ex de,hl
+  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ld hl,0
+    \ add hl,sp
+  de addp  ldsp  \ update SP
+    \ add hl,de
+    \ ld sp,hl
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ ndrop  ( x1..xn n -- )
+  \
+  \ Drop _n_ cell items from the stack.
+  \
+  \ }doc
+
+( 2ndrop )
+
+need z80-asm
+
+code 2ndrop  ( dx1..dxn n -- )
+
+  hl pop  hl addp  hl addp  exde  \ DE = n cells
+    \ pop hl
+    \ add hl,hl
+    \ add hl,hl
+    \ ex de,hl
+  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ld hl,0
+    \ add hl,sp
+  de addp  ldsp  \ update SP
+    \ add hl,de
+    \ ld sp,hl
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ ndrop  ( dx1..dxn n -- )
+  \
+  \ Drop _n_ double cell items from the stack.
   \
   \ }doc
 
@@ -2838,8 +2895,8 @@ code circle  ( xc yc radius -- )
   \ Credits:
   \
   \ Code adapted from a routine written by Pablo Ariza,
-  \ published on Microhobby Especial, issue 7 (1987-12), page 46:
-  \ <http://microhobby.org/mhes7.htm>.
+  \ published on Microhobby Especial, issue 7 (1987-12), page
+  \ 46: <http://microhobby.org/mhes7.htm>.
 
 need z80-asm
 
@@ -3050,9 +3107,8 @@ need z80-asm
 
 code horizontal-curtain  ( b -- )
 
-  \ Wash the screen with the given color
-  \ attribute _b_ from the top and bottom
-  \ rows to the middle.
+  \ Wash the screen with the given color attribute _b_ from the
+  \ top and bottom rows to the middle.
 
   de pop  bc push
 
@@ -3152,6 +3208,311 @@ code pixels  ( -- u )
   \ cp 88
   \ jr nz,byte
   \ ret
+
+( clear-block )
+
+  \ Credits:
+  \
+  \ Code extracted and adapted from a routine written by Pablo
+  \ Ariza, published on Microhobby Especial, issue 7 (1987-12),
+  \ page 50: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code clear-block  ( column row width height -- )
+
+  exx  0 ix ldp#  sp addix
+    \ exx ; save the Forth IP
+    \ ld ix,0
+    \ add ix,sp ; ix = address of TOS
+    \
+    \ ; ix+6 = column
+    \ ; ix+4 = row
+    \ ; ix+2 = width
+    \ ; ix+0 = height
+
+  #4 ix a ftx  a d ld  rrca rrca rrca  #224 and#  #6 ix orx
+    \ ld a,(ix+4) ; row
+    \ ld d,a
+    \ rrca
+    \ rrca
+    \ rrca
+    \ and 224
+    \ or (ix+6) ; column
+  a e ld  d a ld  #24 and#  #64 or#  a d ld
+    \ ld e,a
+    \ ld a,d ; column
+    \ and 24
+    \ or 64
+    \ ld d,a
+  #2 ix c ftx  #0 ix a ftx  a add  a add  a add  a b ld
+    \ ld c,(ix+2) ; width
+    \ ld a,(ix+0) ; height
+    \ add a,a
+    \ add a,a
+    \ add a,a
+    \ ld b,a ; width*8
+
+  begin
+    \ delete_bitmap:
+    de push  de hl ldp  de incp  0 m ld#  bc push  c dec
+      \ push de
+      \ ld l,e
+      \ ld h,d
+      \ inc de
+      \ ld (hl),0
+      \ push bc
+      \ dec c
+    nz if  0 b ld#  ldir  then
+      \ jr z,label1
+      \   ld b,0
+      \   ldir
+      \ label1:
+    bc pop  de pop  d inc  d a ld  7 and#
+      \ pop bc
+      \ pop de
+      \ inc d
+      \ ld a,d
+      \ and 7
+    z if  #32 a ld#  e add  a e ld
+      nc if  d a ld  8 sub#  a d ld  then
+    then
+      \ jr nz,inc_char
+      \ ld a,32
+      \ add a,e
+      \ ld e,a
+      \ jr c,inc_char
+      \ ld a,d
+      \ sub 8
+      \ ld d,a
+      \ inc_char:
+  step  0 hl ldp#  sp addp  #4 cells de ldp#  de addp  ldsp
+    \ djnz delete_bitmap
+    \ ; Drop the parameters:
+    \ ld hl,0
+    \ add hl,sp
+    \ ld de,5*cells
+    \ add hl,de
+    \ ld sp,hl
+
+  exx  next ix ldp#  jpnext  end-code
+    \ exx         ; restore the Forth IP
+    \ ld ix,next  ; restore IX
+    \ jp next
+
+( color-block )
+
+  \ Credits:
+  \
+  \ Code extracted and adapted from a routine written by Pablo
+  \ Ariza, published on Microhobby Especial, issue 7 (1987-12),
+  \ page 50: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code color-block  ( column row width height color -- )
+
+  \ XXX FIXME -- the length of the zone is wrong
+
+  exx  0 ix ldp#  sp addix
+    \ exx ; save the Forth IP
+    \ ld ix,0
+    \ add ix,sp ; ix = address of TOS
+    \
+    \ ; ix+8 = column
+    \ ; ix+6 = row
+    \ ; ix+4 = width
+    \ ; ix+2 = height
+    \ ; ix+0 = color
+
+  #6 ix a ftx  #22 d ld#  a add  a add  a add  a add
+    \ ld a,(ix+6) ; row
+    \ ld d,22
+    \ add a
+    \ add a
+    \ add a
+    \ add a ; row*8
+  d rl  a add  d rl  #8 ix orx  a e ld  #2 ix b ftx
+    \ rl d
+    \ add a
+    \ rl d
+    \ or (ix+8) ; column
+    \ ld e,a
+    \ ld b,(ix+2) ; height
+  begin
+    \ delete_attributes:
+    de push  de hl ldp  de incp  bc push  #0 b ld#
+      \ push de
+      \ ld h,d
+      \ ld l,e
+      \ inc de
+      \ push bc
+      \ ld b,0
+    0 ix a ftx  a m ld  c dec
+      \ ld a,(ix+0) ; color
+      \ ld (hl),a
+      \ dec c
+    nz if  ldir  then
+      \ jr z,no_more_attributes
+      \ ldir
+      \ no_more_attributes:
+    bc pop  hl pop  #32 de ldp#  de addp  exde
+      \ pop bc
+      \ pop hl
+      \ ld de,32
+      \ add hl,de
+      \ ex de,hl
+  step
+    \ djnz delete_attributes
+
+  \ Drop the parameters:
+  0 hl ldp#  sp addp  #5 cells de ldp#  de addp  ldsp
+    \ ld hl,0
+    \ add hl,sp
+    \ ld de,5*cells
+    \ add hl,de
+    \ ld sp,hl
+
+  exx  next ix ldp#  jpnext  end-code
+    \ exx         ; restore the Forth IP
+    \ ld ix,next  ; restore IX
+    \ jp next
+
+( wipe-block )
+
+  \ Credits:
+  \
+  \ Code adapted from a routine written by Pablo Ariza,
+  \ published on Microhobby Especial, issue 7 (1987-12), page
+  \ 50: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code wipe-block  ( column row width height color -- )
+
+  exx  0 ix ldp#  sp addix
+    \ exx ; save the Forth IP
+    \ ld ix,0
+    \ add ix,sp ; ix = address of TOS
+    \
+    \ ; ix+8 = column
+    \ ; ix+6 = row
+    \ ; ix+4 = width
+    \ ; ix+2 = height
+    \ ; ix+0 = color
+
+  #6 ix a ftx  a d ld  rrca rrca rrca  #224 and#  #8 ix orx
+    \ ld a,(ix+6) ; row
+    \ ld d,a
+    \ rrca
+    \ rrca
+    \ rrca
+    \ and 224
+    \ or (ix+8) ; column
+  a e ld  d a ld  #24 and#  #64 or#  a d ld
+    \ ld e,a
+    \ ld a,d ; column
+    \ and 24
+    \ or 64
+    \ ld d,a
+  #4 ix c ftx  #2 ix a ftx  a add  a add  a add  a b ld
+    \ ld c,(ix+4) ; width
+    \ ld a,(ix+2) ; height
+    \ add a,a
+    \ add a,a
+    \ add a,a
+    \ ld b,a ; width*8
+
+  begin
+    \ delete_bitmap:
+    de push  de hl ldp  de incp  0 m ld#  bc push  c dec
+      \ push de
+      \ ld l,e
+      \ ld h,d
+      \ inc de
+      \ ld (hl),0
+      \ push bc
+      \ dec c
+    nz if  0 b ld#  ldir  then
+      \ jr z,label1
+      \   ld b,0
+      \   ldir
+      \ label1:
+    bc pop  de pop  d inc  d a ld  7 and#
+      \ pop bc
+      \ pop de
+      \ inc d
+      \ ld a,d
+      \ and 7
+    z if  #32 a ld#  e add  a e ld
+      nc if  d a ld  8 sub#  a d ld  then
+    then
+      \ jr nz,inc_char
+      \ ld a,32
+      \ add a,e
+      \ ld e,a
+      \ jr c,inc_char
+      \ ld a,d
+      \ sub 8
+      \ ld d,a
+      \ inc_char:
+  step  -->
+    \ djnz delete_bitmap
+
+( wipe-block )
+
+  #6 ix a ftx  #22 d ld#  a add  a add  a add  a add
+    \ ld a,(ix+6) ; row
+    \ ld d,22
+    \ add a
+    \ add a
+    \ add a
+    \ add a ; row*8
+  d rl  a add  d rl  #8 ix orx  a e ld  #2 ix b ftx
+    \ rl d
+    \ add a
+    \ rl d
+    \ or (ix+8) ; column
+    \ ld e,a
+    \ ld b,(ix+2) ; height
+  begin
+    \ delete_attributes:
+    de push  de hl ldp  de incp  bc push  #0 b ld#
+      \ push de
+      \ ld h,d
+      \ ld l,e
+      \ inc de
+      \ push bc
+      \ ld b,0
+    0 ix a ftx  a m ld  c dec
+      \ ld a,(ix+0) ; color
+      \ ld (hl),a
+      \ dec c
+    nz if  ldir  then
+      \ jr z,no_more_attributes
+      \ ldir
+      \ no_more_attributes:
+    bc pop  hl pop  #32 de ldp#  de addp  exde
+      \ pop bc
+      \ pop hl
+      \ ld de,32
+      \ add hl,de
+      \ ex de,hl
+  step
+    \ djnz delete_attributes
+
+  \ Drop the parameters:
+  0 hl ldp#  sp addp  #5 cells de ldp#  de addp  ldsp
+    \ ld hl,0
+    \ add hl,sp
+    \ ld de,5*cells
+    \ add hl,de
+    \ ld sp,hl
+
+  exx  next ix ldp#
+    \ exx         ; restore the Forth IP
+    \ ld ix,next  ; restore IX
+  jpnext  end-code
 
   \ }}} =======================================================
   \ Sound 128 {{{
@@ -8703,7 +9064,7 @@ char Y value "y"  char N value "n"
   \ Some tools to manage key presses. An improved and detailed
   \ implementation can be found in the Tron 0xF game
   \ (http://programandala.net/en.program.tron_0xf.html).
-  \ 
+  \
   \ "kk" stands for "keyboard key". This notation was chosen
   \ first in order to prevent future name clashes with standard
   \ words which uses the "k-" prefix, and second because these
@@ -8845,7 +9206,7 @@ drop
 
   \ This table contains 40 items, one per physical key, and
   \ it's organized by keyboard rows.
- 
+
   \ By default, the first 4 UDG are used for keys whose names
   \ are not a printable char:
   \
@@ -11722,7 +12083,6 @@ code call  ( a -- )
   \ Haak for his own Forth, and used by Lennart Benschop with
   \ his Spectrum Forth-83 (1988).
 
-
   \ XXX TODO `get-order` here and `set-order` at the end.
 
 only forth definitions
@@ -11861,6 +12221,9 @@ rld,
 : adcp,  ( rp1 rp2 -- )  ED c, 8* 4A + c,  ;
 : stp,  ( a rp -- )  ED c, 8* 43 + c, ,  ;
 : ftp,  ( a rp -- )  ED c, 8* 4B + c, ,  ;
+
+: addix,  ( rp -- )  ix-op c, addp,  ;
+: addiy,  ( rp -- )  iy-op c, addp,  ;
 
   \ Macros
 
@@ -12212,6 +12575,9 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 : stp  ( a rp -- )  ED c, 8* 43 + c, ,  ;
 : ftp  ( a rp -- )  ED c, 8* 4B + c, ,  ;
 
+: addix  ( rp -- )  ix-op c, addp  ;
+: addiy  ( rp -- )  iy-op c, addp  ;
+
   \ Macros
 
 : clr  ( rp -- )  0 swap ldp#  ;
@@ -12219,10 +12585,8 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 
   \ ZX Spectrum specific
 
-CF m4 hook \ rst 0x08
-D7 m1 prt  \ rst 0x16
-
--->
+CF m4 hook       \ rst 0x08
+D7 m1 prt  -->   \ rst 0x16
 
 ( z80-asm -- index register opcodes)
 
