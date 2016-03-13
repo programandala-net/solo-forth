@@ -9,7 +9,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ Last modified: 201602260155
+\ Last modified: 201603071747
 
   \ ------------------------------------------------------------
   \ Acknowledgements
@@ -34,7 +34,9 @@
 ( ) \ scr 1 -- testing load block
 
 2 load
-  \ need list 
+  need wipe-block  need color-block  need clear-block
+  exit
+  \ need list
   \ 504 load 505 load 507 load 509 load
   634 load  \ XXX TMP -- for Nuclear Invaders
 
@@ -263,6 +265,128 @@ variable last-locatable  blk/disk 1- last-locatable !
 blk @ 1+ dup default-first-locatable !  first-locatable !
 
   \ }}} =======================================================
+  \ Command line history {{{
+
+( history )
+
+  \ 2016-03-07: Start.
+
+  \ Command line history is implemented as a list of counted
+  \ string at the top of the memory bank which is used also to
+  \ store the name fields. Name files are stored upwards from
+  \ the bottom of the 16-KiB space; command line history grows
+  \ downwards from the top.
+  \
+  \ The length of the counted strings is used as link field.
+  \ The bottom of the list is the hights address of the bank,
+  \ and it holds one byte, the length of the first string
+  \ stored in the history, or zero when the history is empty.
+  \
+  \ There's a maximum space usable for the history. When
+  \ there's no free space left, the oldest string is removed
+  \ in a loop until the necessary space is freed.
+  \ XXX TODO
+
+variable hp
+  \ Pointer to the most recent string in the history.
+
+$FFFF constant hp0
+  \ Pointer to the bottom of the history, which contains a copy
+  \ of the length of the first string.
+
+1024 constant /history
+  \ Size of the history space, where all strings are hold.
+
+: init-hp0  ( -- )  0 hp0 c!n  ;
+
+: empty-history  ( -- )  init-hp0  hp0 hp !  ;  empty-history
+
+: history-bounds  ( -- ca1 ca2 )  hp0 hp @  ;
+  \ Return bottom of history _a1_ and address of the latest
+  \ string _ca2:
+
+: used-history  ( -- u )  history-bounds -  ;
+  \ Used space _u_ in the history.
+
+: unused-history  ( -- n )  /history @ used-history -  ;
+  \ Unused space _n_ in the history.
+
+: allot-history  ( +n -- )  negate hp +!  ;
+  \ Reserve _+n_ bytes in the history.
+
+: history-empty?  ( -- f )  history-bounds =  ;
+  \ Is the history empty?
+
+: allocate-history  ( +n -- ior )
+  dup /history @ > if  drop #-274 exit  then
+    \ command line history overflow?
+  ." allocate-history" \ XXX INFORMER
+  0  ; \ XXX TMP
+  \ Allocate _+n_ bytes in the history.
+  \ XXX TODO -- remove older strings if needed
+
+-->
+
+( history )
+
+need s=
+
+: latest-history  ( -- ca len )
+  names-bank  hp @ count  save-string  default-bank  ;
+  \ Return the latest string in the command line history,
+  \ copied in the circular string buffer, without affecting
+  \ the contents of the command line history.
+
+: (history>)  ( -- ca len )
+  latest-history  dup 0= ?exit
+                  dup 1+ negate allot-history
+  history-empty? if  init-hp0  then  ;
+  \ Get a string from the command line history, and return it
+  \ as _ca len_ in the circular string buffer.
+
+-->
+
+( history )
+
+: duplicated-history?  ( ca len -- f )  latest-history s=  ;
+  \ Is string _ca len_ identical to the latest string in
+  \ the command line history?
+
+: (>history)  ( ca len -- )
+  dup 0= if  2drop exit  then
+    \ If string is empty, do nothing.
+  history-empty? if  dup hp0 c!n  then
+    \ If history is empty, init its bottom with the lenght
+    \ of the string.
+  2dup duplicated-history? if  2drop exit  then
+  dup 1+ unused-history >
+  if  dup 1+ allocate-history throw  then
+    \ If there's no space left, allocate it.
+  dup 1+ allot-history
+  hp @ names-bank place default-bank  ;
+  \ Save string _ca len_ into the command line history.
+
+-->
+
+( history )
+
+variable history
+  \ A variable holding the current status of the command line
+  \ history as a flag: on (true) or off (false).
+
+: history-off  ( -- )
+  ['] 2drop ['] >history defer!
+  ['] s""   ['] history> defer!  history off  ;
+  \ Turn command line history off.
+
+: history-on  ( -- )
+  ['] (>history) ['] >history defer!
+  ['] (history>) ['] history> defer!  history on  ;
+  \ Turn command line history on.
+
+\ history-on
+
+  \ }}} =======================================================
   \ Exceptions {{{
 
 ( abort" )
@@ -457,6 +581,12 @@ code -rot  ( x1 x2 x3 -- x3 x1 x2 )
 
   end-code
 
+  \ doc{
+  \
+  \ -rot  ( x1 x2 x3 -- x3 x1 x2 )
+  \
+  \ }doc
+
 ( 2nip )
 
   \ Credits:
@@ -472,6 +602,12 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   C3 c, pushhlde , \ jp pushhlde
 
   end-code
+
+  \ doc{
+  \
+  \ 2nip  ( x1 x2 x3 x4 -- x3 x4 )
+  \
+  \ }doc
 
 ( roll )
 
@@ -504,10 +640,10 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 
   bc push  de bc ldp  hl de ldp
     \ push bc
-    \ ld c,e
     \ ld b,d
-    \ ld e,l
+    \ ld c,e
     \ ld d,h
+    \ ld e,l
 
   bc tstp
     \ ld a,b
@@ -541,6 +677,12 @@ code 3drop  ( x1 x2 x3 -- )
     \ pop hl
   jpnext  end-code
 
+  \ doc{
+  \
+  \ 3drop  ( x1 x2 x3 -- )
+  \
+  \ }doc
+
 code 4drop  ( x1 x2 x3 x4 -- )
   E1 c,  E1 c,  E1 c,  E1 c,
     \ pop hl
@@ -548,6 +690,12 @@ code 4drop  ( x1 x2 x3 x4 -- )
     \ pop hl
     \ pop hl
   jpnext  end-code
+
+  \ doc{
+  \
+  \ 4drop  ( x1 x2 x3 x4 -- )
+  \
+  \ }doc
 
 ( 3dup )
 
@@ -570,7 +718,13 @@ code 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ exx
   jpnext  end-code
 
-exit  \ slow and smaller version:
+  \ doc{
+  \
+  \ 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+  \
+  \ }doc
+
+exit  \ slower and smaller version:
 
 : 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
 
@@ -580,6 +734,12 @@ need roll
 
 : 2rot  ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
   5 roll 5 roll  ;
+
+  \ doc{
+  \
+  \ 2rot  ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
+  \
+  \ }doc
 
 ( swapped )
 
@@ -619,6 +779,12 @@ code nup  ( x1 x2 -- x1 x1 x2 )
   end-code
   \ Also called `under`.
 
+  \ doc{
+  \
+  \ nup  ( x1 x2 -- x1 x1 x2 )
+  \
+  \ }doc
+
 code drup  ( x1 x2 -- x1 x1 )
   D1 c,  E1 c,  E5 c,  E5 c,  jpnext
     \ pop de
@@ -628,6 +794,12 @@ code drup  ( x1 x2 -- x1 x1 )
     \ jp next
   end-code
 
+  \ doc{
+  \
+  \ drup  ( x1 x2 -- x1 x1 )
+  \
+  \ }doc
+
 code dip  ( x1 x2 -- x2 x2 )
   E1 c, D1 c, E5 c, E5 c,  jpnext
     \ pop hl
@@ -636,6 +808,12 @@ code dip  ( x1 x2 -- x2 x2 )
     \ push hl
     \ jp next
   end-code
+
+  \ doc{
+  \
+  \ dip  ( x1 x2 -- x2 x2 )
+  \
+  \ }doc
 
 ( 0dup -dup )
 
@@ -676,6 +854,61 @@ code -dup  ( x -- x | 0 0 )
   \
   \ }doc
 
+( ndrop )
+
+need z80-asm
+
+code ndrop  ( x1..xn n -- )
+
+  hl pop  hl addp  exde  \ DE = n cells
+    \ pop hl
+    \ add hl,hl
+    \ ex de,hl
+  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ld hl,0
+    \ add hl,sp
+  de addp  ldsp  \ update SP
+    \ add hl,de
+    \ ld sp,hl
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ ndrop  ( x1..xn n -- )
+  \
+  \ Drop _n_ cell items from the stack.
+  \
+  \ }doc
+
+( 2ndrop )
+
+need z80-asm
+
+code 2ndrop  ( dx1..dxn n -- )
+
+  hl pop  hl addp  hl addp  exde  \ DE = n cells
+    \ pop hl
+    \ add hl,hl
+    \ add hl,hl
+    \ ex de,hl
+  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ld hl,0
+    \ add hl,sp
+  de addp  ldsp  \ update SP
+    \ add hl,de
+    \ ld sp,hl
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ ndrop  ( dx1..dxn n -- )
+  \
+  \ Drop _n_ double cell items from the stack.
+  \
+  \ }doc
+
   \ }}} =======================================================
   \ Return stack {{{
 
@@ -699,6 +932,12 @@ code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
 
   end-code
 
+  \ doc{
+  \
+  \ n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
+  \
+  \ }doc
+
 need nr>
 
 ( nr> )
@@ -719,6 +958,12 @@ code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
   pushhl jp
   end-code
 
+  \ doc{
+  \
+  \ nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
+  \
+  \ }doc
+
 need n>r
 
 ( rdepth r'@ )
@@ -730,6 +975,12 @@ need n>r
 [unneeded] rdepth
 ?\ : rdepth  ( -- n )  rp@ rp0 @ - -2 /  ;
 
+  \ doc{
+  \
+  \ rdepth  ( -- n )
+  \
+  \ }doc
+
   \ Credits:
   \
   \ `r'@` from Wil Baden.
@@ -737,6 +988,12 @@ need n>r
 [unneeded] r'@ dup
 ?\ : r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
 ?\   r> 2r@ drop swap >r  ;
+
+  \ doc{
+  \
+  \ r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
+  \
+  \ }doc
 
   \ }}} =======================================================
   \ User variables {{{
@@ -825,10 +1082,10 @@ need columns  need rows  need os-chars  need os-chans
 
 need mode32  need <file-as-is
 
-drive@ 1 drive!
+get-drive 1 set-drive
 s" prnt42.bin" <file-as-is ?throw
 s" ea5aky.f42" <file-as-is ?throw
-drive!
+set-drive
   \ Load the driver and the font.
 
 [defined] (at-xy)
@@ -861,9 +1118,9 @@ drive!
 
 need mode32  need <file-as-is  need 4x8font
 
-drive@ 1 drive!
+get-drive 1 set-drive
 s" 4x8fd.bin" <file-as-is ?throw
-drive!
+set-drive
   \ Load the driver and the font.
 
 [defined] (at-xy)
@@ -995,7 +1252,7 @@ decimal
 need fzx-emit  need <file
 
 create font  2048 allot
-1 drive!  font 0 s" lettra.fzx" <file
+1 set-drive  font 0 s" lettra.fzx" <file
 font fzx-font !
 : zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
 
@@ -2838,8 +3095,8 @@ code circle  ( xc yc radius -- )
   \ Credits:
   \
   \ Code adapted from a routine written by Pablo Ariza,
-  \ published on Microhobby Especial, issue 7 (1987-12), page 46:
-  \ <http://microhobby.org/mhes7.htm>.
+  \ published on Microhobby Especial, issue 7 (1987-12), page
+  \ 46: <http://microhobby.org/mhes7.htm>.
 
 need z80-asm
 
@@ -3050,9 +3307,8 @@ need z80-asm
 
 code horizontal-curtain  ( b -- )
 
-  \ Wash the screen with the given color
-  \ attribute _b_ from the top and bottom
-  \ rows to the middle.
+  \ Wash the screen with the given color attribute _b_ from the
+  \ top and bottom rows to the middle.
 
   de pop  bc push
 
@@ -3152,6 +3408,350 @@ code pixels  ( -- u )
   \ cp 88
   \ jr nz,byte
   \ ret
+
+( clear-block )
+
+  \ Credits:
+  \
+  \ Code extracted and adapted from a routine written by Pablo
+  \ Ariza, published on Microhobby Especial, issue 7 (1987-12),
+  \ page 50: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code clear-block  ( column row width height -- )
+
+  \ doc{
+  \
+  \ clear-block  ( column row width height -- )
+  \
+  \ Clear a screen block at the given character coordinates and
+  \ of the given size in characters.  Only the bitmap is
+  \ cleared. The color attributes remain unchanged.
+  \
+  \ }doc
+
+  exx  0 ix ldp#  sp addix
+    \ exx ; save the Forth IP
+    \ ld ix,0
+    \ add ix,sp ; ix = address of TOS
+    \
+    \ ; ix+6 = column
+    \ ; ix+4 = row
+    \ ; ix+2 = width
+    \ ; ix+0 = height
+
+  #4 ix a ftx  a d ld  rrca rrca rrca  #224 and#  #6 ix orx
+    \ ld a,(ix+4) ; row
+    \ ld d,a
+    \ rrca
+    \ rrca
+    \ rrca
+    \ and 224
+    \ or (ix+6) ; column
+  a e ld  d a ld  #24 and#  #64 or#  a d ld
+    \ ld e,a
+    \ ld a,d ; column
+    \ and 24
+    \ or 64
+    \ ld d,a
+  #2 ix c ftx  #0 ix a ftx  a add  a add  a add  a b ld
+    \ ld c,(ix+2) ; width
+    \ ld a,(ix+0) ; height
+    \ add a,a
+    \ add a,a
+    \ add a,a
+    \ ld b,a ; width*8
+
+  begin
+    \ delete_bitmap:
+    de push  de hl ldp  de incp  0 m ld#  bc push  c dec
+      \ push de     ; save the address of the block scan
+      \ ld l,e
+      \ ld h,d      ; HL = origin, start of the scan
+      \ inc de      ; DE = destination
+      \ ld (hl),0   ; delete the first byte
+      \ push bc     ; save the counts
+      \ dec c       ; is width greater than 1?
+    nz if  0 b ld#  ldir  then
+      \ jr z,label1
+      \   ld b,0    ; BC = width
+      \   ldir      ; erase the rest of the scan
+      \ label1:
+    bc pop  de pop  d inc  d a ld  7 and#
+      \ pop bc      ; restore counts
+      \ pop de      ; restore address of scan
+      \ inc d
+      \ ld a,d
+      \ and 7
+    z if  #32 a ld#  e add  a e ld
+      nc if  d a ld  8 sub#  a d ld  then
+    then
+      \ jr nz,inc_char
+      \ ld a,32
+      \ add a,e
+      \ ld e,a
+      \ jr c,inc_char
+      \ ld a,d
+      \ sub 8
+      \ ld d,a
+      \ inc_char:
+  step  0 hl ldp#  sp addp  #4 cells de ldp#  de addp  ldsp
+    \ djnz delete_bitmap
+    \ ; Drop the parameters:
+    \ ld hl,0
+    \ add hl,sp
+    \ ld de,5*cells
+    \ add hl,de
+    \ ld sp,hl
+
+  exx  next ix ldp#  jpnext  end-code
+    \ exx         ; restore the Forth IP
+    \ ld ix,next  ; restore IX
+    \ jp next
+
+( color-block )
+
+  \ Credits:
+  \
+  \ Code extracted and adapted from a routine written by Pablo
+  \ Ariza, published on Microhobby Especial, issue 7 (1987-12),
+  \ page 50: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code color-block  ( column row width height color -- )
+
+  \ doc{
+  \
+  \ color-block  ( column row width height color -- )
+  \
+  \ Color a screen block at the given character coordinates and
+  \ of the given size in characters.  Only the color attributes
+  \ are changed; the bitmap remains unchanged.
+  \
+  \ }doc
+
+  exx  0 ix ldp#  sp addix
+    \ exx ; save the Forth IP
+    \ ld ix,0
+    \ add ix,sp ; ix = address of TOS
+    \
+    \ ; ix+8 = column
+    \ ; ix+6 = row
+    \ ; ix+4 = width
+    \ ; ix+2 = height
+    \ ; ix+0 = color
+
+  #6 ix a ftx  #22 d ld#  a add  a add  a add  a add
+    \ ld a,(ix+6) ; row
+    \ ld d,22
+    \ add a
+    \ add a
+    \ add a
+    \ add a ; row*8
+  d rl  a add  d rl  #8 ix orx  a e ld
+    \ rl d
+    \ add a
+    \ rl d
+    \ or (ix+8) ; column
+    \ ld e,a
+  #2 ix b ftx  #4 ix c ftx
+    \ ld b,(ix+2) ; height
+    \ ld c,(ix+4) ; width
+  begin
+    \ delete_attributes:
+    de push  de hl ldp  de incp  bc push  #0 b ld#
+      \ push de
+      \ ld h,d
+      \ ld l,e
+      \ inc de
+      \ push bc
+      \ ld b,0
+    0 ix a ftx  a m ld  c dec
+      \ ld a,(ix+0) ; color
+      \ ld (hl),a
+      \ dec c
+    nz if  ldir  then
+      \ jr z,no_more_attributes
+      \ ldir
+      \ no_more_attributes:
+    bc pop  hl pop  #32 de ldp#  de addp  exde
+      \ pop bc
+      \ pop hl
+      \ ld de,32
+      \ add hl,de
+      \ ex de,hl
+  step
+    \ djnz delete_attributes
+
+  \ Drop the parameters:
+  0 hl ldp#  sp addp  #5 cells de ldp#  de addp  ldsp
+    \ ld hl,0
+    \ add hl,sp
+    \ ld de,5*cells
+    \ add hl,de
+    \ ld sp,hl
+
+  exx  next ix ldp#  jpnext  end-code
+    \ exx         ; restore the Forth IP
+    \ ld ix,next  ; restore IX
+    \ jp next
+
+( wipe-block )
+
+  \ Credits:
+  \
+  \ Code adapted from a routine written by Pablo Ariza,
+  \ published on Microhobby Especial, issue 7 (1987-12), page
+  \ 50: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code wipe-block  ( column row width height color -- )
+
+  \ doc{
+  \
+  \ wipe-block  ( column row width height color -- )
+  \
+  \ Wipe a screen block at the given character coordinates and
+  \ of the given size in characters.  The bitmap is erased and
+  \ the color attributes are changed with the given color.
+  \
+  \ This word is written in assembler and it combines the
+  \ functions of `clear-block` and `color-block`. It may be
+  \ defined also this way (with slower but much smaller code):
+
+  \ ----
+  \ : wipe-block  ( column row width height color -- )
+  \   >r 2over 2over clear-block r> color-block  ;
+  \ ----
+
+  \ }doc
+
+  exx  0 ix ldp#  sp addix
+    \ exx ; save the Forth IP
+    \ ld ix,0
+    \ add ix,sp ; ix = address of TOS
+    \
+    \ ; ix+8 = column
+    \ ; ix+6 = row
+    \ ; ix+4 = width
+    \ ; ix+2 = height
+    \ ; ix+0 = color
+
+  #6 ix a ftx  a d ld  rrca rrca rrca  #224 and#  #8 ix orx
+    \ ld a,(ix+6) ; row
+    \ ld d,a
+    \ rrca
+    \ rrca
+    \ rrca
+    \ and 224
+    \ or (ix+8) ; column
+  a e ld  d a ld  #24 and#  #64 or#  a d ld
+    \ ld e,a
+    \ ld a,d ; column
+    \ and 24
+    \ or 64
+    \ ld d,a ; DE = top left address of the block
+  #4 ix c ftx  #2 ix a ftx  a add  a add  a add  a b ld
+    \ ld c,(ix+4) ; width
+    \ ld a,(ix+2) ; height
+    \ add a,a
+    \ add a,a
+    \ add a,a
+    \ ld b,a ; width*8
+
+  begin
+    \ delete_bitmap:
+    de push  de hl ldp  de incp  0 m ld#  bc push  c dec
+      \ push de     ; save the address of the block scan
+      \ ld l,e
+      \ ld h,d      ; HL = origin, start of the scan
+      \ inc de      ; DE = destination
+      \ ld (hl),0   ; delete the first byte
+      \ push bc     ; save the counts
+      \ dec c       ; is width greater than 1?
+    nz if  0 b ld#  ldir  then
+      \ jr z,label1
+      \   ld b,0    ; BC = width
+      \   ldir      ; erase the rest of the scan
+      \ label1:
+    bc pop  de pop  d inc  d a ld  7 and#
+      \ pop bc      ; restore counts
+      \ pop de      ; restore address of scan
+      \ inc d
+      \ ld a,d
+      \ and 7
+    z if  #32 a ld#  e add  a e ld
+      nc if  d a ld  8 sub#  a d ld  then
+    then
+      \ jr nz,inc_char
+      \ ld a,32
+      \ add a,e
+      \ ld e,a
+      \ jr c,inc_char
+      \ ld a,d
+      \ sub 8
+      \ ld d,a
+      \ inc_char:
+  step  -->
+    \ djnz delete_bitmap
+
+( wipe-block )
+
+  #6 ix a ftx  #22 d ld#  a add  a add  a add  a add
+    \ ld a,(ix+6) ; row
+    \ ld d,22
+    \ add a
+    \ add a
+    \ add a
+    \ add a ; row*8
+  d rl  a add  d rl  #8 ix orx  a e ld  #2 ix b ftx
+    \ rl d
+    \ add a
+    \ rl d
+    \ or (ix+8) ; column
+    \ ld e,a
+    \ ld b,(ix+2) ; height
+  begin
+    \ delete_attributes:
+    de push  de hl ldp  de incp  bc push  #0 b ld#
+      \ push de
+      \ ld h,d
+      \ ld l,e
+      \ inc de
+      \ push bc
+      \ ld b,0
+    0 ix a ftx  a m ld  c dec
+      \ ld a,(ix+0) ; color
+      \ ld (hl),a
+      \ dec c
+    nz if  ldir  then
+      \ jr z,no_more_attributes
+      \ ldir
+      \ no_more_attributes:
+    bc pop  hl pop  #32 de ldp#  de addp  exde
+      \ pop bc
+      \ pop hl
+      \ ld de,32
+      \ add hl,de
+      \ ex de,hl
+  step
+    \ djnz delete_attributes
+
+  \ Drop the parameters:
+  0 hl ldp#  sp addp  #5 cells de ldp#  de addp  ldsp
+    \ ld hl,0
+    \ add hl,sp
+    \ ld de,5*cells
+    \ add hl,de
+    \ ld sp,hl
+
+  exx  next ix ldp#
+    \ exx         ; restore the Forth IP
+    \ ld ix,next  ; restore IX
+  jpnext  end-code
 
   \ }}} =======================================================
   \ Sound 128 {{{
@@ -4969,33 +5569,37 @@ set-order
   \ Note: The original field names are used, except `device`,
   \ whose original name is "lstr1".
 
-ufia      constant dstr1 \ drive: 1 or 2
-ufia 1+   constant fstr1 \ program number
-ufia 2+   constant sstr1 \ stream number
-ufia 3 +  constant device \ device: "D" or "d"
-ufia 4 +  constant nstr1 \ directory description
-ufia 5 +  constant nstr2 \ file name
-ufia 15 + constant hd00  \ file type
-ufia 16 + constant hd0b  \ file length
-ufia 18 + constant hd0d  \ file start address
+ufia      constant dstr1   \ drive: 1 or 2
+ufia 1+   constant fstr1   \ program number
+ufia 2+   constant sstr1   \ stream number
+ufia 3 +  constant device  \ device: "D" or "d"
+ufia 4 +  constant nstr1   \ directory description
+ufia 5 +  constant nstr2   \ file name
+ufia 15 + constant hd00    \ file type
+ufia 16 + constant hd0b    \ file length
+ufia 18 + constant hd0d    \ file start address
 
   \ XXX OLD -- not needed
   \ ufia 20 + constant hd0f  \ BASIC length without variables
   \ ufia 22 + constant hd11  \ BASIC autorun line
 
 char d device c! \ "d" or "D"
-2 sstr1 c! \ stream 2
-1 dstr1 c! \ drive 1
+2 sstr1 c!  \ stream 2
+1 dstr1 c!  \ drive 1
 
-variable file-length  \ copy of `hd0b` used by `(<file)`
-variable file-address \ copy of `hd0d` used by `(<file)`
+variable file-length   \ copy of `hd0b` used by `(<file)`
+variable file-address  \ copy of `hd0d` used by `(<file)`
 
-( File types and directory descriptions)
+( --file-types-- --directory-descriptions-- )
 
   \ File types
 
-0 constant basic-filetype  1 constant data-array-filetype
-2 constant string-array-filetype  3 constant code-filetype
+0 constant basic-filetype
+1 constant data-array-filetype
+2 constant string-array-filetype
+3 constant code-filetype
+
+: --file-types--  ;
 
   \ Directory descriptions
 
@@ -5005,6 +5609,8 @@ variable file-address \ copy of `hd0d` used by `(<file)`
 07 constant screens$-file-dir   08 constant special-file-dir
 09 constant snapshot-128k-dir   10 constant opentype-file-dir
 11 constant execute-file-dir
+
+: --directory-descriptions--  ;
 
 ( --hook-codes-- )
 
@@ -5022,22 +5628,21 @@ decimal
 
 : --hook-codes--  ;
 
-( ior>error ?dos-error )
+( ior>error ?dos-error dosior>ior )
 
 : ior>error  ( ior -- f n )
-
+  dup 1 and negate swap   \ calculate f
+  flip %11111111 and      \ upper 8 bits of ior
+  1000 + negate  ;
   \ Convert a DOS ior to a Forth error number.
-
   \ ior = the AF register returned by a DOS command:
   \     bit 0     = set: error
   \     bits 8-14 = error code
   \     bit 15    = set: OS error; unset: DOS error
   \ f = error?
-  \ n = error number: 1000..1031: G+DOS error number
-  \                   1128..1154: OS error number
-  dup 1 and negate swap   \ calculate f
-  flip %11111111 and      \ upper 8 bits of ior
-  1000 + negate  ;
+  \ n = error number:
+  \     -1000..-1031: G+DOS error number 0..31
+  \     -1128..-1154: OS error number 0..26
 
 : ?dos-error  ( ior -- )
   \ ior = the AF register returned by a DOS command:
@@ -5046,13 +5651,27 @@ decimal
   \   bit 15    = set: OS error; unset: DOS error
   ior>error ?throw  ;
 
-( drive@ drive! )
+: dosior>ior  ( ior1 -- ior2 )
+  dup 1 and negate          \ error?
+  swap flip %11111111 and   \ get upper 8 bits of ior
+  1000 + negate and  ;
+  \ Convert a DOS ior to a Forth ior.
+  \ ior1 = the AF register returned by a DOS command:
+  \     bit 0     = set: error
+  \     bits 8-14 = error code
+  \     bit 15    = set: OS error; unset: DOS error
+  \ ior2 = error number:
+  \     0: no error
+  \     -1000..-1031: G+DOS error number 0..31
+  \     -1128..-1154: OS error number 0..26
+
+( get-drive set-drive )
 
 need z80-asm  need --hook-codes--
 
-code drive@  ( -- n )
+code get-drive  ( -- n )
   \ Get the current drive (1 or 2).
-  bc push  \ save the Forth registers
+  bc push  \ save the Forth IP
   patch hook
   3ACE fta  \ XXX NEW
   \ XXX TODO check this method:
@@ -5061,42 +5680,38 @@ code drive@  ( -- n )
   bc pop  next ix ldp#  \ restore the Forth registers
   pusha jp  end-code
 
-code drive!  ( n -- )
+code set-drive  ( n -- )
   \ Set the current drive (1 or 2).
   hl pop
-  bc push  \ save the Forth registers
+  bc push  \ save the Forth IP
   l a ld  21 hook   \ select drive in a
   bc pop   next ix ldp#  \ restore the Forth registers
   jpnext  end-code
 
-( -file )
+( delete-file )
 
 need z80-asm  need ufia  need --hook-codes--
+need filename>ufia  need ior>error  need dos>error
 
-code (-file)  ( -- ior )
-
-  \ Delete a disk file using the data hold in UFIA.
-
+code (delete-file)  ( -- ior )
   bc push  \ save the Forth registers
   ufia ix ldp#
-  heraz hook \ erase the file
+  heraz hook  \ erase the file
   bc pop  next ix ldp#  \ restore the Forth registers
   af push
   jpnext
   end-code
+  \ Delete a disk file using the data hold in UFIA.
+  \ Return a G+DOS _ior_.
 
-need ior>error
-
-: -file  ( ca len -- f n )
-  \ Delete a disk file.
-  \ ca len  = filename
-  \ f       = error?
-  \ n       = error
-  filename>ufia (-file) ior>error  ;
+: delete-file  ( ca len -- ior )
+  filename>ufia (delete-file) dosior>ior  ;
+  \ Delete a disk file _ca len_ and return I/O result code
+  \ _ior_.
 
 ( -filename filename! >ufia filename>ufia )
 
-need ufia  need drive@
+need ufia  need get-drive
 
 10 constant /filename  \ max filename length
 
@@ -5107,6 +5722,7 @@ need ufia  need drive@
   \ Store a filename into UFIA.
   \ ca len = filename
   -filename /filename min nstr2 swap cmove  ;
+  \ XXX TODO -- rename to `set-filename`?
 
 : >ufia  ( a1 len1 ca2 len2 -- )
   \ Set the UFIA.
@@ -5116,9 +5732,9 @@ need ufia  need drive@
   filename!
   dup hd0b !  file-length !
   dup hd0d !  file-address !
-  drive@ dstr1 c!  ;
+  get-drive dstr1 c!  ;
 
-1 drive!  \ default
+1 set-drive  \ default
 
 : filename>ufia  ( ca len -- )  0 0 2swap >ufia  ;
 
@@ -5195,6 +5811,66 @@ code (<file)  ( -- ior )
   \ n         = error
   >ufia (<file) ior>error  ;
 
+( file>screen )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Experimental code to read lines from a file
+
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need ior>error
+
+code (file>screen)  ( -- ior )
+
+  \ Print a file on the screen, line by line, using the data
+  \ hold in UFIA.
+
+  bc push  \ save the Forth IP
+
+  ufia ix ldp#  hgfile hook \ get the file
+  nc if \ no error?  -- load the file header:
+
+    patch hook  4000 de ldp#  128 bc ldp#
+      \ page +D in
+      \ destination and count
+
+    d h ld
+    begin   lbyte hook  de stap
+            a l ld  de push  bc push  1744 call  bc pop  de pop
+              \ print HL
+            de incp  bc decp  b a ld  c or
+    z until  E7 out  \ page +D out
+    \ begin
+    \   lbyte hook  af push  10 hook  af pop  13 cp
+    \ z until
+
+  then  bc pop  next ix ldp#  af push
+        \ restore the Forth registers and save the ior
+  jpnext  end-code -->
+
+( file>screen )
+
+: file>screen  ( ca2 len2 -- f n )
+  \ Copy a file to the screen, line by line.
+  \ ca2 len2  = filename
+  \ f         = error?
+  \ n         = error
+  >ufia (file>screen) ior>error  ;
+
+( .000 )
+
+  \ XXX TMP -- for debugging
+
+code .100  ( u -- )
+  hl pop
+  bc push
+  hl push
+  patch hook
+  hl pop
+  1744 call
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  jpnext
+  end-code
+
 ( <file-as-is )
 
 need z80-asm  need ufia  need --hook-codes--
@@ -5256,7 +5932,7 @@ need z80-asm  need ufia  need --hook-codes--
 need filename>ufia
 
   \ G+DOS addresses (in its own paged memory).
-[defined] ufia1  ?\ hex 3E01 constant ufia1 decimal
+[defined] ufia1  ?\ $3E01 constant ufia1
   \ 3E1A constant ufia2
 
 code (cat)  ( n -- )
@@ -5271,9 +5947,12 @@ code (cat)  ( n -- )
   ufia hl ldp#  ufia1 de ldp#  /ufia bc ldp#  ldir
     \ Copy Forth UFIA to G+DOS UFIA1.
 
-  exx  l a ld  24B5 call  168E call
-    \ 24B5 = CAT_RUN (input: cat type in the a register)
+  \ exx  l a ld  24B5 call  168E call \ XXX OLD
+    \ 24B5 = CAT_RUN (input: cat type in the A register)
     \ 168E = BORD_REST (restore the border)
+
+  exx  l a ld  09A5 call \ XXX NEW
+    \ 09A5 = SCAN_CAT  (input: cat or search type in the A register)
 
   E7 out  bc pop  next ix ldp#  jpnext  end-code
     \ page +D out
@@ -5287,10 +5966,10 @@ code (cat)  ( n -- )
   \ A variant of `wcat` that shows an abbreviated catalogue.
   \ See the +D manual for wild-card syntax.
 
-: cat  ( ca len -- )  s" *" wcat  ;
+: cat  ( -- )  s" *" wcat  ;
   \ Show a complete disk catologue.
 
-: acat  ( ca len -- )  s" *" wacat ;  decimal
+: acat  ( -- )  s" *" wacat ;  decimal
   \ A variant of `cat` that shows an abbreviated catalogue.
 
   \ The disk catalogues can be printed out on a printer by
@@ -6731,6 +7410,16 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ Compile debugging code.
   \ This word was inspired by Gforth's `~~`.
 
+( assert assert= )
+
+  \ Credits:
+  \
+  \ Taken from Brad Nelson's code:
+  \ http://bradn123.github.io/literateforth/out/events.fs
+
+: assert   ( n -- )    0= if  abort  then  ;
+: assert=  ( a b -- )  = assert  ;
+
 ( assert( )
 
   \ Credits:
@@ -7559,7 +8248,7 @@ code (step)  ( R: n -- n' )
   \ Start of a `for step` loop, that will iterate _u+1_ times,
   \ starting with _u_ and ending with 0.
   \
-  \ The current value of the index can be retrieved with `i`.
+  \ The current value of the index can be retrieved with `r@`.
   \
   \ }doc
 
@@ -7649,6 +8338,8 @@ code (step)  ( R: n -- n' )
 
 : di  ( -- ud )  ( R: x ud -- x ud )
   r> 2r@ rot >r  ;
+
+  \ XXX TODO -- rename `dfor-i`?
 
   \ doc{
   \
@@ -8703,7 +9394,7 @@ char Y value "y"  char N value "n"
   \ Some tools to manage key presses. An improved and detailed
   \ implementation can be found in the Tron 0xF game
   \ (http://programandala.net/en.program.tron_0xf.html).
-  \ 
+  \
   \ "kk" stands for "keyboard key". This notation was chosen
   \ first in order to prevent future name clashes with standard
   \ words which uses the "k-" prefix, and second because these
@@ -8845,7 +9536,7 @@ drop
 
   \ This table contains 40 items, one per physical key, and
   \ it's organized by keyboard rows.
- 
+
   \ By default, the first 4 UDG are used for keys whose names
   \ are not a printable char:
   \
@@ -11574,17 +12265,11 @@ need rng-benchmark
 : is  ( xt "name" -- )
   compiling? if  postpone [is]  else  <is>  then  ; immediate
 
-( deferred? alias )
+( alias )
 
   \ XXX NEW -- DTC
 
-: deferred?  ( xt -- wf )  c@ $C3 =  ;
-  \ Is _xt_ a deferred word?
-  \ The code of a deferred word starts with a Z80 jump ($C3)
-  \ to the word it's associated.
-
-: alias  ( xt "name" -- )
-  dup deferred? if  1+ @  then  defer latest name> defer!  ;
+: alias  ( xt "name" -- )  defer latest name> defer!  ;
 
   \ doc{
   \
@@ -11592,10 +12277,16 @@ need rng-benchmark
   \
   \ Create an alias _name_ that will execute _xt_.
   \
-  \ If _xt_ is a deferred word, the alias will point to the
-  \ word it's associated to.
-  \
   \ }doc
+
+exit
+
+  \ XXX OLD
+
+: deferred?  ( xt -- wf )  c@ $C3 =  ;
+  \ Is _xt_ a deferred word?
+  \ The code of a deferred word starts with a Z80 jump ($C3)
+  \ to the word it's associated to.
 
 ( code? code-alias? defer-alias code-alias alias )
 
@@ -11721,7 +12412,6 @@ code call  ( a -- )
   \ This is a modified version of an assembler designed by Coos
   \ Haak for his own Forth, and used by Lennart Benschop with
   \ his Spectrum Forth-83 (1988).
-
 
   \ XXX TODO `get-order` here and `set-order` at the end.
 
@@ -11862,6 +12552,9 @@ rld,
 : stp,  ( a rp -- )  ED c, 8* 43 + c, ,  ;
 : ftp,  ( a rp -- )  ED c, 8* 4B + c, ,  ;
 
+: addix,  ( rp -- )  ix-op c, addp,  ;
+: addiy,  ( rp -- )  iy-op c, addp,  ;
+
   \ Macros
 
 : clr,  ( rp -- )  0 swap ldp#,  ;
@@ -11981,6 +12674,7 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 : rwhile  (  op -- orig cs-id )  jp>jr rif 2+  ;
 
 : runtil  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
+  \ compile a relative conditional jump
 
 : ragain  (  dest cs-id -- )  18 runtil  ;
   \ compile `jr`
@@ -12008,8 +12702,10 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 : awhile  (  op -- orig cs-id )  aif 2+  ;
 
 : auntil  (  cs-id op -- )  c, 09 ?pairs <resolve  ;
+  \ Compile an absolute conditional jump.
 
 : aagain  (  cs-id -- )  C3 auntil  ;
+  \ Compile an absolute jump.
 
 : arepeat  (  dest cs-id1 orig cs-id2 )
   2swap aagain 2- athen  ;
@@ -12057,7 +12753,7 @@ A0 m2 and,  B0 m2 or,  A8 m2 xor,
 
 only forth definitions also assembler
 
-: macro  ( "name" -- )  postpone : asm  ;
+: macro  ( "name" -- )  : asm  ;
 : endm  ( -- )  end-asm postpone ;  ;  immediate
 
 decimal only forth
@@ -12212,6 +12908,9 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 : stp  ( a rp -- )  ED c, 8* 43 + c, ,  ;
 : ftp  ( a rp -- )  ED c, 8* 4B + c, ,  ;
 
+: addix  ( rp -- )  ix-op c, addp  ;
+: addiy  ( rp -- )  iy-op c, addp  ;
+
   \ Macros
 
 : clr  ( rp -- )  0 swap ldp#  ;
@@ -12219,10 +12918,8 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 
   \ ZX Spectrum specific
 
-CF m4 hook \ rst 0x08
-D7 m1 prt  \ rst 0x16
-
--->
+CF m4 hook       \ rst 0x08
+D7 m1 prt  -->   \ rst 0x16
 
 ( z80-asm -- index register opcodes)
 
@@ -12314,6 +13011,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 : while  (  op -- orig cs-id )  if 2+  ;
 
 : until  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
+  \ compile a relative conditional jump
 
 : again  (  dest cs-id -- )  18 until  ;
   \ compile `jr`
@@ -12391,7 +13089,7 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
 only forth definitions also assembler
 
-: macro  ( "name" -- )  postpone : asm  ;
+: macro  ( "name" -- )  : asm  ;
 : endm  ( -- )  end-asm postpone ;  ;  immediate
 
 decimal only forth
@@ -12400,7 +13098,9 @@ decimal only forth
 
 need z80-asm
 
-current @  also assembler definitions
+  \ current @  also assembler definitions
+  \ XXX OLD
+  \ XXX TODO
 
 macro calc  ( -- )  exx EF c,  endm
   \ 0xEF = `rst 0x28`, call the ROM calculator
@@ -12412,7 +13112,9 @@ macro end-calc  ( -- )  38 c, exx  next ix ldp  endm
   \ so this code will work:
   \ macro end-calc  ( -- )  38 c, exx  endm
 
-current !  previous
+  \ current !  previous
+  \ XXX OLD
+  \ XXX TODO
 
 ( << >> )
 
@@ -13420,9 +14122,9 @@ undo test
 
   \ XXX UNDER DEVELOPMENT
 
-  \ The ROM calculator is used to implement most words of the
-  \ Forth-2012 FLOATING and FLOATING EXT word sets, and some
-  \ words not provided by Forth-2012.
+  \ The ROM calculator is used for implementing most words of
+  \ the Forth-2012 FLOATING and FLOATING EXT word sets, and
+  \ some words not provided by Forth-2012.
 
   \ XXX FIXME -- The ROM calculator calls the BASIC error
   \ routines, what crashes the system.
@@ -13447,9 +14149,9 @@ code s>f  ( n -- ) ( F: -- r )
 code f>s  ( -- n ) ( F: r -- )
   exx  2DA2 call  bc push  exx  jpnext  end-code
 
-code f>d  ( -- d ) ( F: r -- )
-  \ XXX TODO
-  end-code
+  \ code f>d  ( -- d ) ( F: r -- )
+  \  end-code
+  \  \ XXX TODO
 
 ( fvariable )
 
@@ -17528,7 +18230,7 @@ code if'-test  ( -- )
 \ #-271 immediate word not allowed in this structure
 \ #-272 array index out of range
 \ #-273 invalid assembler condition
-\ #-274
+\ #-274 command line history overflow
 \ #-275
 \ #-276
 \ #-277

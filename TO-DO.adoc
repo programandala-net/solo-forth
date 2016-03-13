@@ -1,5 +1,5 @@
 = Solo Forth TO-DO
-:revdate: 2015-11-14
+:revdate: 2016-02-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -73,10 +73,6 @@ the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 .2015-06-30:
 
 New: command history, stored in the names bank.
-
-Change: remove double `;s` from the colon words in the kernel. Use
-`exit` instead, else the word can not be decoded. [2015-08-12: Two
-cases found and marked.]
 
 Change: compare the user variables with those of Spectrum Forth-83.
 
@@ -392,6 +388,10 @@ ____
 // }}}
 == Files ==
 // {{{
+
+.2016-03-02:
+
+Adapt all file words to standard _ior_; remove _f n_.
 
 .2015-09-18:
 

@@ -19,15 +19,15 @@ version_minor:                equ 1
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 6
+  version_release_candidate:  equ 7
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9EDC  ; build 20160220
+  version_build_low_part:     equ 0x9F33  ; build 20160307
 endif
 
-; This file was last modified: 201602201854
+; This file was last modified: 201603071746
 
 ; ==============================================================
 ; Author and license
@@ -3870,7 +3870,7 @@ move.do:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header smove_,'SMOVE'
+  _code_header s_move_,'SMOVE'
 
 ; doc{
 ;
@@ -6354,13 +6354,13 @@ to_name.end:
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header name_to_string_,'NAME>STRING'
+
 ; doc{
 ;
 ; name>string  ( nt -- ca len )
 ;
 ; }doc
-
-  _colon_header name_to_string_,'NAME>STRING'
 
   dw names_bank_
   dw count_
@@ -7004,6 +7004,141 @@ acceptx.begin:
   dw exit_
 
 ; ----------------------------------------------
+  _variable_header history_,'HISTORY'
+
+; doc{
+;
+; history  ( -- a )
+;
+; A variable holding the status of the command line history.  If
+; it's zero, command line history in deactivated.
+;
+; }doc
+
+  dw false
+
+; ----------------------------------------------
+  _defer_header to_history_,'>HISTORY',,two_drop_
+
+; doc{
+;
+; >history  ( -- ca len )
+; 
+; A deferred word. When command line history is activated,
+; store string _ca len_ into it, else drop it.
+;
+; }doc
+
+; ----------------------------------------------
+  _colon_header s_quote_quote_,'S""'
+
+; doc{
+;
+; s""  ( -- ca len )
+;
+; Return an empty string in the circular string buffer.
+;
+; }doc
+
+  _literal 0
+  dw allocate_string_
+  _literal 0
+  dw exit_
+
+; ----------------------------------------------
+  _defer_header from_history_,'HISTORY>',,s_quote_quote_
+
+; doc{
+;
+; history>  ( -- ca len )
+; 
+; A deferred word. When command line history is activated,
+; return string _ca len_ from it, else return an empty string.
+;
+; }doc
+
+; ----------------------------------------------
+  _two_variable_header accept_buffer_,'ACCEPT-BUFFER'
+
+; doc{
+;
+; accept-buffer  ( -- a )
+;
+; A double variable that holds the address and maximum length
+; used as parameters of the most recent `accept`.
+;
+; }doc
+
+  dw 0,0
+
+; ----------------------------------------------
+  _two_variable_header accept_xy_,'ACCEPT-XY'
+
+; doc{
+;
+; accept-xy  ( -- a )
+;
+; A double variable that holds the cursor position at the start
+; of the most recent `accept`.
+;
+; }doc
+
+  dw 0,0
+
+; ----------------------------------------------
+  _colon_header at_accept_,'AT-ACCEPT'
+
+; doc{
+;
+; at-accept  ( -- )
+;
+; Set the cursor position at the start of the most recent
+; `accept`.
+;
+; }doc
+
+  dw accept_xy_,two_fetch_,at_xy_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header clear_accept_,'CLEAR-ACCEPT'
+
+; doc{
+;
+; clear-accept ( -- )
+; 
+; Clear the string currently edited by `accept`.
+;
+; }doc
+
+  dw at_accept_,span_,fetch_,spaces_,at_accept_
+  dw span_,off_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header set_accept_,'SET-ACCEPT'
+
+; doc{
+;
+; set-accept  ( ca1 len1 -- ca1' )
+;
+; Set string _ca len_ as the string being edited by `accept`.
+; Return the address _ca1'_ of its last position.
+;
+; }doc
+
+  ; XXX FIXME -- crash!
+
+  dw clear_accept_
+  dw accept_buffer_,fetch_,min_         ; ( ca1 len1' )
+  dw dup_,to_r_
+  dw accept_buffer_,cell_plus_,fetch_   ; ( ca1 len1' ca2 )
+  dw s_move_
+  dw accept_buffer_,cell_plus_,fetch_   ; ( ca2 )
+  dw from_r_,plus_                      ; ( ca1' )
+  dw exit_
+
+; ----------------------------------------------
   _colon_header accept_,'ACCEPT'
 
 ; doc{
@@ -7028,6 +7163,11 @@ acceptx.begin:
   dw question_dup_
   dw zero_branch_,accept.end
 
+  ; Save a copy of the current cursor coordinates
+  ; and the parameters:
+  dw xy_,accept_xy_,two_store_
+  dw two_dup_,accept_buffer_,two_store_
+
   dw to_r_ ; ( ca1 ) ( R: len1 )
 accept.begin: ; ( ca )
   dw xkey_ ; ( ca c )
@@ -7035,7 +7175,7 @@ accept.begin: ; ( ca )
   dw dup_ ; ( ca c c )
   _literal delete_char
   dw equals_ ; delete key?
-  dw zero_branch_,accept.maybe_carriage_return
+  dw zero_branch_,accept.maybe_cursor_up
 
   ; Delete key ( ca c )
   dw drop_
@@ -7048,26 +7188,58 @@ accept.begin: ; ( ca )
   _literal backspace_char
   dw branch_,accept.emit
 
+accept.maybe_cursor_up: ; ( ca c )
+  dw dup_ ; ( ca c c )
+  _literal cursor_up_char
+  dw equals_ ; cursor up?
+  dw zero_branch_,accept.maybe_cursor_down
+
+  ; Cursor up ( ca c )
+  ; XXX FIXME -- crash!
+  dw two_drop_
+  dw from_history_,set_accept_
+  dw branch_,accept.begin
+
+accept.maybe_cursor_down: ; ( ca c )
+  dw dup_ ; ( ca c c )
+  _literal cursor_down_char
+  dw equals_ ; cursor down?
+  dw zero_branch_,accept.maybe_edit
+
+  ; Cursor down ( ca c )
+  ; XXX TODO
+  dw drop_
+  dw branch_,accept.begin
+
+accept.maybe_edit: ; ( ca c )
+  dw dup_
+  _literal edit_char
+  dw equals_ ; edit?
+  dw zero_branch_,accept.maybe_carriage_return
+
+  ; Edit ( ca c )
+  dw two_drop_
+  dw clear_accept_
+  dw accept_buffer_,cell_plus_,fetch_
+  dw branch_,accept.begin
+
 accept.maybe_carriage_return: ; ( ca c )
   dw dup_
   _literal carriage_return_char
   dw equals_ ; carriage return?
-  dw zero_branch_,accept.ordinary_key
-
-  ; Carriage return ( ca c )
-  dw drop_,r_drop_
-  dw branch_,accept.end
+  dw question_branch_,accept.carriage_return
 
 accept.ordinary_key: ; ( ca c )
 
   dw dup_,b_l_,less_than_ ; control key?
   dw zero_branch_,accept.printable_key
+
   ; Control key ( ca c )
   dw drop_
   dw branch_,accept.begin
 
-  ; Printable key
 accept.printable_key ; ( ca c )
+  ; Printable key
   dw span_,fetch_,r_fetch_,less_than_
   dw zero_branch_,accept.begin ; the string is full
   _literal 1
@@ -7079,9 +7251,13 @@ accept.emit: ; ( ca c )
   dw emit_
   dw branch_,accept.begin
 
+accept.carriage_return: ; ( ca c )
+  dw drop_,r_drop_
+
 accept.end:
   dw drop_
   dw span_,fetch_
+  dw two_dup_,to_history_
   dw exit_
 
 ; ----------------------------------------------
@@ -7091,13 +7267,15 @@ accept.end:
 ;
 ; query  ( -- )
 ;
-; XXX TODO description in Forth-94:
-;
 ; Make the user input device the input source. Receive input
 ; into the terminal input buffer, replacing any previous
 ; contents. Make the result, whose address is returned by `tib`,
 ; the input buffer. Set `>in` to zero.
 ;
+; Origin: Forth-94 (CORE EXT, obsolescent).
+;
+; }doc
+
 ; XXX OLD -- old descriptions:
 ;
 ; Input 80 characters of text (or until a "return") from the
@@ -7109,10 +7287,6 @@ accept.end:
 ; variable have been received. One or more nulls are added at
 ; the end of the text.
 ;
-; Origin: Forth-83, Forth-94 (CORE EXT, obsolescent).
-;
-; }doc
-
   ; XXX TODO move to the library
 
   dw tib_,slash_tib_
@@ -8241,7 +8415,7 @@ two_literal.end:
 ;   >in @ >r
 ;   blk @ >r
 ;   #tib @ >@
-;   >r  ;
+;   >r  ; compile-only
 ; ----
 
 ; }doc
@@ -8272,7 +8446,7 @@ two_literal.end:
 ;   r> >in !
 ;   r> [ ' source-id >body ] literal !
 ;   2r> input-buffer 2!
-;   >r  ;
+;   >r  ; compile-only
 ; ----
 
 ; }doc
@@ -8835,8 +9009,7 @@ endif
 ;
 ; (  ( f "text<paren>" -- )
 ;
-; Parse until a right paren is found.
-; The number of parsed
+; Parse until a right paren is found.  The number of parsed
 ; characters may be zero to the number of characters in the
 ; parse area.
 ;
@@ -8881,7 +9054,7 @@ endif
   dw left_bracket_
 quit.begin:
   dw rp0_,fetch_,rp_store_
-  dw cr_,query_ ; XXX TMP XXX TODO
+  dw cr_,query_ ; XXX TMP ; XXX TODO
   dw interpret_
   dw compiling_question_
   dw question_branch_,quit.begin
@@ -10413,12 +10586,12 @@ endif
 
 ; doc{
 ;
-; block>source  ( +n -- )
+; block>source  ( u -- )
 ; 
-; Set block _+n_ as the current source.
+; Set block _u_ as the current source.
 ;
 ; ----
-; : block>source  ( +n -- )
+; : block>source  ( u -- )
 ;   blk !  >in off  ;
 ; ----
 ;
@@ -10434,12 +10607,7 @@ endif
 ;
 ; (load)  ( u -- )
 ;
-; XXX TODO -- update
-;
-; Store the first disk block of screen _u_ into `blk` (thus
-; making screen _u_ the input source and setting the input
-; buffer to encompass its contents), set `>in` to zero, and
-; interpret.  Other stack effects are due to the words loaded.
+; Making block _u_ the current input source and interpret it.
 
 ; This word is a common factor of `load` and `continued`.
 ;
@@ -11253,7 +11421,7 @@ endif
   ; dw lit_,sys_screen_attributes,lit_,sys_screen_attributes_size
   ; dw lit_,sys_attr_p,c_fetch_,fill_
   ; dw home_
-  ; dw semicolon_s
+  ; dw exit_
 
 ; ----------------------------------------------
   _colon_header page_,'PAGE'
