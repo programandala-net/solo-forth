@@ -12,7 +12,6 @@
 the offending word is marked.
 something to do with the new loops?
 
-
 When the comments on screen `( find-name-in find )` are at the left margin,
 they are not processed by fsb2? 
 
@@ -83,6 +82,10 @@ vocabularies? `vocabulary` should be adapted too. The advantage is the
 pfa is also the id used in search order and returned by `wordlist`.
 A word `pfa>vlfa` would be helpful.
 
+.2016-03-07:
+
+Rename "names bank" to "system bank", because it's used also for the history.
+
 // }}}
 == Local variables ==
 // {{{
@@ -112,15 +115,7 @@ Prefix Frame Operators                   11   1   023
 
 .2015-11-14:
 
-`-if`, `-while` and `-until` after cmForth: check negative numbers.
-
-.2015-11-14:
-
 Forth Dimensions v06n1p26: `it endit` control structure. 
-
-.2015-11-13:
-
-Idea: `0exit`. Useful for `?\`, `?(`.
 
 .2015-10-25:
 
@@ -485,7 +480,7 @@ Finish adapt tt.
 == Strings ==
 // {{{
 
-Rename "csb" to "stringer" or "strings"?
+Rename "csb" as "stringer" or "strings"?
 
 |===
 | >csb        | >strings       | >stringer
@@ -495,10 +490,6 @@ Rename "csb" to "stringer" or "strings"?
 | empty-csb   | empty-strings  | empty-stringer
 | unused-csb  | unused-strings | unused-stringer
 |===
-
-strings-size strings0 >strings ?strings empty-strings unused-strings
-
-stringer-size stringer0 >stringer ?stringer empty-stringer unused-stringer
 
 .2016-02-19:
 

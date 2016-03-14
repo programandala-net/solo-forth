@@ -1,25 +1,61 @@
-= Solo Forth
+= Solo Forth README
 :author: Marcos Cruz (programandala.net)
 :revdate: 2016-03-12
+
+// This file is part of Solo Forth
+// http://programandala.net/en.program.solo_forth.html
 
 == Description
 
 Solo Forth is a DTCfootnote:[Directe Threaded Code.] Forth system
 under development for ZX Spectrum 128 with G+DOS.
 
-This Forth system was first called "F+D Forth". On 2015-06-06 it was
-renamed to "Solo Forth.
+Home page: http://programandala.net/en.program.solo_forth.html
+
+== History and current status
+
+The
+http://programandala.net/en.program.solo_forth.history.html[development
+history].  started on 2015-05-30.
+
+As of 2016-03-12 Solo Forth is under active development, almost beta
+state, very usable and stable.
+
+== How to compile
+
+See the requirements in the header of the Makefile. Then:
+
+----
+make
+----
+
+== How to run
+
+1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 with the +D
+   disk interface.
+2. "Insert" the file <solo_forth_disk_1.mgt> as disk 1 of the +D disk
+   interface.
+3. Choose "128 BASIC" from the ZX Spectrum start menu.
+4. Type `run` in BASIC. G+DOS will be loaded from disk and Solo Forth
+   will be autoloaded.
+
+In order to use the library disk, follow these steps:
+
+1. "Insert" the file <solo_forth_disk_2.mgt> as disk 2 of the +D disk
+   interface. This is the library disk; the source code is on its
+   sectors, without any filesystem.
+2. Type `2 load` in Forth. Block 2 will be loaded from disk 2. This
+   will load `need` and related words.
+3. Type `need name` in Forth, were "name" is the name of the word or
+   tool you want to load from the library.
+
+== Target platforms
+
+Solo Forth is first intended for ZX Spectrum 128 with G+DOS.  There is
+unfinished code to make it run also on ZX Spectrum +3 with +3DOS. It
+may eventually run also on ZX Spectrum +3e, with IDEDOS or ResiDOS.
 
 == Git repository
 
 The Git repository of Solo Forth was created from development backups
-on 2016-03-12.
-
-== Status
-
-The development started on 2015-05-30.  As of 2016-03-12 it's under
-active development, almost beta state, very usable and stable.
-
-Later versions of Solo Forth include alternative unfinished code to
-make it run also on ZX Spectrum +3 with +3DOS. It may eventually run
-also on ZX Spectrum +3e, with IDEDOS or ResiDOS.
+on 2016-03-12. Later commits are "real".

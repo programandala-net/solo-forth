@@ -1,13 +1,21 @@
-; Solo Forth
+; Solo Forth kernel
 
-; A Forth system for:
-;
-;   ZX Spectrum 128K with G+DOS
-;   ZX Spectrum +3
-;
+; Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
 ; XXX UNDER DEVELOPMENT
+
+; This file was last modified: 201603140210
+
+; ==============================================================
+; License
+
+; You may do whatever you want with this work, so long as you
+; retain all copyright notices, all credit notices, and this
+; license in all files of all redistributed copies and derived
+; works. There is no warranty.
 
 ; ==============================================================
 ; Version
@@ -18,31 +26,14 @@ version_major:                equ 0
 version_minor:                equ 1
 version_patch:                equ 0
 
-if 1
-  version_release_candidate:  equ 7
+if 0
+  version_release_candidate:  equ 0
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9F33  ; build 20160307
+  version_build_low_part:     equ 0x9F3A  ; build 20160314
 endif
-
-; This file was last modified: 201603071746
-
-; ==============================================================
-; Author and license
-
-; Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
-
-; You may do whatever you want with this work, so long as you
-; retain all copyright notices, all credit notices, and this
-; license in all files of all redistributed copies and derived
-; works. There is no warranty.
-
-; ==============================================================
-; Acknowledgments
-
-; See the file <ACKNOWLEDGMENTS.adoc>.
 
 ; ==============================================================
 ; History
@@ -282,16 +273,6 @@ names_bank_address:               equ 0xC000 ; names pointers
 
 charset_size:                     equ 224*8 ; 224 chars (0x20..0xFF) * 8 bitmap rows
 charset_address:                  equ 0xFFFF-charset_size+1
-
-; Control structure check numbers
-
-; XXX TODO
-;begin_structure_check_number:    equ 1
-;if_structure_check_number:       equ 2
-;do_structure_check_number:       equ 3
-;case_structure_check_number:     equ 4
-;of_structure_check_number:       equ 5
-;for_structure_check_number:      equ 6
 
 ; Error codes used in the kernel
 
@@ -1027,7 +1008,7 @@ if 1
 
   ; Code from DZX-Forth
 
-          ; t  B
+          ; T  B
           ; -- --
   ld a,h  ; 04 01
   cp d    ; 04 01
@@ -1047,7 +1028,7 @@ else
   ; The routine is so short that it's better to use the
   ; instructions directly. The problem is the output flags are
   ; different from the DZX-Forth version, and more complex to
-  ; use.
+  ; use. Beside, it modifies HL.
 
   ; Input:  DE, HL
   ; Output:
@@ -1057,6 +1038,7 @@ else
   ;   positive & OV:      HL -ve, DE +ve, result +ve, so HL<DE
   ;   thus OV reverses the sense of the sign bit
 
+            ; T  B
             ; -- --
   or a      ; 04 01
   sbc hl,de ; 15 02
@@ -3741,7 +3723,8 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO rename to `a[ccept]key`, `c[aps]key`, `m[ode]key`?
+  ; XXX TODO -- rename to `a[ccept]key`, `c[aps]key`, `m[ode]key`?
+  ; XXX TODO -- rewrite in Forth and move to the library
 
   push bc
 
@@ -4720,7 +4703,7 @@ endif
 
 ; doc{
 ;
-; c!test-bits?  ( b ca -- wf )
+; c@test-bits?  ( b ca -- wf )
 ;
 ; Test the bits at _ca_ specified by the bitmask _b_.
 ; Return _true_ if the result is non-zero, else return _false_.
@@ -6964,60 +6947,6 @@ endif
   dw 0
 
 ; ----------------------------------------------
-  _colon_header acceptx_,'ACCEPTX'
-
-; XXX UNDER DEVELOPMENT -- to substitute the current
-; implementation of `accept`
-
-; doc{
-;
-; accept  ( ca1 len1 -- len2 )
-;
-; Receive a string of at most _len1_ characters.  No characters
-; are received or transferred if _len1_ is zero.  Display
-; graphic characters as they are received.
-;
-; Input terminates when an implementation-defined line
-; terminator is received. When input terminates, nothing is
-; appended to the string or displayed on the screen.
-;
-; _len2_ is the length of the string stored at _ca1_.
-;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-;
-; }doc
-
-  ; XXX UNDER DEVELOPMENT
-
-  dw dup_,span_,store_
-  dw swap_,zero_ ; ( len count left )
-acceptx.begin:
-  _literal 2
-  dw pick_,over_,minus_ ; ( len a count left )
-
-  dw xkey_ ; ( ca c )
-
-  dw branch_,acceptx.begin
-
-  dw two_drop_,drop_
-
-  dw exit_
-
-; ----------------------------------------------
-  _variable_header history_,'HISTORY'
-
-; doc{
-;
-; history  ( -- a )
-;
-; A variable holding the status of the command line history.  If
-; it's zero, command line history in deactivated.
-;
-; }doc
-
-  dw false
-
-; ----------------------------------------------
   _defer_header to_history_,'>HISTORY',,two_drop_
 
 ; doc{
@@ -7031,6 +6960,8 @@ acceptx.begin:
 
 ; ----------------------------------------------
   _colon_header s_quote_quote_,'S""'
+
+; XXX OLD
 
 ; doc{
 ;
@@ -7046,100 +6977,7 @@ acceptx.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header from_history_,'HISTORY>',,s_quote_quote_
-
-; doc{
-;
-; history>  ( -- ca len )
-; 
-; A deferred word. When command line history is activated,
-; return string _ca len_ from it, else return an empty string.
-;
-; }doc
-
-; ----------------------------------------------
-  _two_variable_header accept_buffer_,'ACCEPT-BUFFER'
-
-; doc{
-;
-; accept-buffer  ( -- a )
-;
-; A double variable that holds the address and maximum length
-; used as parameters of the most recent `accept`.
-;
-; }doc
-
-  dw 0,0
-
-; ----------------------------------------------
-  _two_variable_header accept_xy_,'ACCEPT-XY'
-
-; doc{
-;
-; accept-xy  ( -- a )
-;
-; A double variable that holds the cursor position at the start
-; of the most recent `accept`.
-;
-; }doc
-
-  dw 0,0
-
-; ----------------------------------------------
-  _colon_header at_accept_,'AT-ACCEPT'
-
-; doc{
-;
-; at-accept  ( -- )
-;
-; Set the cursor position at the start of the most recent
-; `accept`.
-;
-; }doc
-
-  dw accept_xy_,two_fetch_,at_xy_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header clear_accept_,'CLEAR-ACCEPT'
-
-; doc{
-;
-; clear-accept ( -- )
-; 
-; Clear the string currently edited by `accept`.
-;
-; }doc
-
-  dw at_accept_,span_,fetch_,spaces_,at_accept_
-  dw span_,off_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header set_accept_,'SET-ACCEPT'
-
-; doc{
-;
-; set-accept  ( ca1 len1 -- ca1' )
-;
-; Set string _ca len_ as the string being edited by `accept`.
-; Return the address _ca1'_ of its last position.
-;
-; }doc
-
-  ; XXX FIXME -- crash!
-
-  dw clear_accept_
-  dw accept_buffer_,fetch_,min_         ; ( ca1 len1' )
-  dw dup_,to_r_
-  dw accept_buffer_,cell_plus_,fetch_   ; ( ca1 len1' ca2 )
-  dw s_move_
-  dw accept_buffer_,cell_plus_,fetch_   ; ( ca2 )
-  dw from_r_,plus_                      ; ( ca1' )
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header accept_,'ACCEPT'
+  _defer_header accept_,'ACCEPT',,simple_accept_
 
 ; doc{
 ;
@@ -7157,107 +6995,88 @@ acceptx.begin:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; In Solo Forth `accept` is a deferred word. Its default
+; behaviour is `default-accept`, which provides only the basic
+; editing options Alternative definitions are provided in the
+; library.
+;
 ; }doc
 
-  dw span_,off_
-  dw question_dup_
-  dw zero_branch_,accept.end
+; ----------------------------------------------
+  _colon_header simple_accept_,'SIMPLE-ACCEPT'
 
-  ; Save a copy of the current cursor coordinates
-  ; and the parameters:
-  dw xy_,accept_xy_,two_store_
-  dw two_dup_,accept_buffer_,two_store_
+; Credits:
+;
+; Code adapted from eForth.
 
-  dw to_r_ ; ( ca1 ) ( R: len1 )
-accept.begin: ; ( ca )
-  dw xkey_ ; ( ca c )
+; doc{
+;
+; simple-accept  ( ca1 len1 -- len2 )
+; 
+; Default behaviour of the deferred word `accept`:
+;
+; Receive a string of at most _len1_ characters.  No characters
+; are received or transferred if _len1_ is zero.  Display
+; graphic characters as they are received.
+;
+; Input terminates when the Return key is pressed.  When input
+; terminates, nothing is appended to the string or displayed on
+; the screen.
+;
+; The only control key accepted is Delete.
+;
+; _len2_ is the length of the string stored at _ca1_.
 
-  dw dup_ ; ( ca c c )
-  _literal delete_char
-  dw equals_ ; delete key?
-  dw zero_branch_,accept.maybe_cursor_up
+; ----
+; : simple-accept  ( ca len -- len' )
+;   over + over  ( bot eot cur )
+;   begin  xkey dup 13 <> \ not carriage return?
+;   while  ( bot eot cur c )
+;     dup 12 =  \ delete?
+;     if    drop  >r over r@ < dup  \ any chars?
+;           if  8 dup emit  bl emit  emit  then  r> +
+;     else  \ maybe printable
+;           >r  2dup <>  \ more?
+;           r@ [ bl 1- ] literal > and  \ and printable?
+;           if  r@ over c!  char+  r@ emit  then  r> drop
+;     then
+;   repeat  ( bot eot cur c )  drop nip swap -  ;
+; ----
+;
+; }doc
 
-  ; Delete key ( ca c )
-  dw drop_
-  dw span_,fetch_
-  dw zero_branch_,accept.begin ; nothing to delete
-  ; Do delete the last char
-  dw one_minus_ ; update the current address
-  _literal -1
-  dw span_,plus_store_ ; update `span`
-  _literal backspace_char
-  dw branch_,accept.emit
-
-accept.maybe_cursor_up: ; ( ca c )
-  dw dup_ ; ( ca c c )
-  _literal cursor_up_char
-  dw equals_ ; cursor up?
-  dw zero_branch_,accept.maybe_cursor_down
-
-  ; Cursor up ( ca c )
-  ; XXX FIXME -- crash!
-  dw two_drop_
-  dw from_history_,set_accept_
-  dw branch_,accept.begin
-
-accept.maybe_cursor_down: ; ( ca c )
-  dw dup_ ; ( ca c c )
-  _literal cursor_down_char
-  dw equals_ ; cursor down?
-  dw zero_branch_,accept.maybe_edit
-
-  ; Cursor down ( ca c )
-  ; XXX TODO
-  dw drop_
-  dw branch_,accept.begin
-
-accept.maybe_edit: ; ( ca c )
-  dw dup_
-  _literal edit_char
-  dw equals_ ; edit?
-  dw zero_branch_,accept.maybe_carriage_return
-
-  ; Edit ( ca c )
-  dw two_drop_
-  dw clear_accept_
-  dw accept_buffer_,cell_plus_,fetch_
-  dw branch_,accept.begin
-
-accept.maybe_carriage_return: ; ( ca c )
-  dw dup_
+  dw over_,plus_,over_
+simple_accept.begin                                    ; begin
+  dw xkey_,dup_
   _literal carriage_return_char
-  dw equals_ ; carriage return?
-  dw question_branch_,accept.carriage_return
-
-accept.ordinary_key: ; ( ca c )
-
-  dw dup_,b_l_,less_than_ ; control key?
-  dw zero_branch_,accept.printable_key
-
-  ; Control key ( ca c )
-  dw drop_
-  dw branch_,accept.begin
-
-accept.printable_key ; ( ca c )
-  ; Printable key
-  dw span_,fetch_,r_fetch_,less_than_
-  dw zero_branch_,accept.begin ; the string is full
-  _literal 1
-  dw span_,plus_store_ ; update `span`
-  dw two_dup_,swap_,c_store_
-  dw swap_,one_plus_,swap_
-
-accept.emit: ; ( ca c )
-  dw emit_
-  dw branch_,accept.begin
-
-accept.carriage_return: ; ( ca c )
-  dw drop_,r_drop_
-
-accept.end:
-  dw drop_
-  dw span_,fetch_
-  dw two_dup_,to_history_
+  dw not_equals_
+  dw zero_branch_,simple_accept.end                    ; while
+  dw dup_
+  _literal delete_char
+  dw equals_                                           ; delete?
+  dw zero_branch_,simple_accept.printable              ; if
+  dw drop_,to_r_,over_,r_fetch_,less_than_,dup_        ; any chars?
+  dw zero_branch_,simple_accept.delete_end             ; if
+  _literal backspace_char
+  dw dup_,emit_,b_l_,emit_,emit_
+simple_accept.delete_end                               ; then
+  dw from_r_,plus_
+  dw branch_,simple_accept.repeat
+simple_accept.printable                                ; else
+  ; printable
+  dw to_r_,two_dup_,not_equals_                        ; more?
+  dw r_fetch_
+  _literal space_char-1
+  dw greater_than_,and_                                ; and printable?
+  dw zero_branch_,simple_accept.printable_end          ; if
+  dw r_fetch_,over_,c_store_,char_plus_,r_fetch_,emit_
+simple_accept.printable_end                            ; then
+  dw from_r_,drop_
+simple_accept.repeat
+  dw branch_,simple_accept.begin                       ; repeat
+simple_accept.end
+  ; ( bot eot cur c )
+  dw drop_,nip_,swap_,minus_
   dw exit_
 
 ; ----------------------------------------------
@@ -7307,7 +7126,7 @@ accept.end:
 ; Identifies the input source as follows:
 ;
 ; |===
-; | 0  | User input device
+; |  0 | User input device
 ; | -1 | String via `evaluate`
 ; |===
 ;
@@ -7459,8 +7278,6 @@ fill.done:
 ; ----
 ;
 ; }doc
-
-  ; XXX TODO don't use `pad`
 
   dw lit_,-1,hld_,plus_store_ ; decrement `hld`
   dw hld_,fetch_,c_store_ ; store character into `pad`
@@ -7836,10 +7653,13 @@ uppers.do:
 ;
 ; ----
 ; : place  ( ca1 len1 ca2 -- )
-;   2dup c! 1+ smove  ;
+;   2dup c! char+ smove  ;
 ; ----
 ;
 ; }doc
+
+; XXX TODO -- alternative in Forth Dimensions 20-3 p.29
+;   2dup c! char+ swap chars move
 
   ; Credits:
   ; Code from DZX-Forth's `packed`.
@@ -8248,17 +8068,9 @@ search.string_1_addr equ $+1
 ;
 ; }doc
 
-  ; XXX TODO -- `interpret` needs the old method of `literal`
   ; XXX TODO -- move to the library?
 
-  if 0 ; XXX OLD
-    dw compiling_question_
-    dw zero_branch_,c_literal.end
-    dw compile_,c_lit_,c_comma_
-c_literal.end:
-  else ; XXX NEW
-    dw compile_,c_lit_,comma_
-  endif
+  dw compile_,c_lit_,c_comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -9739,7 +9551,7 @@ if 0
 ; ----
 ;
   ; XXX FIXME
-  ; 16777216. 50 m/  ( -1 -1 )
+  ; 16777216. 50 sm/rem  ( -1 -1 )
 
   dw over_,to_r_,to_r_
   dw d_abs_,r_fetch_,abs_,u_m_slash_mod_
@@ -10945,6 +10757,8 @@ emits.end:
 
 ; ----------------------------------------------
   _colon_header less_hash_,'<#'
+
+  ; XXX FIXME -- don't use `pad`
 
   dw pad_,hld_,store_
   dw exit_

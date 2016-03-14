@@ -5,6 +5,9 @@ _draft/
 _ideas/
 _old/
 _screenshots/
-_tmp/
 _tests/
+_tmp/
+solo-forth.sna
+solo-forth.szx
+solo-forth.z80
 tools/
