@@ -7,7 +7,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ This file was last modified: 201603140211
+\ This file was last modified: 201603141321
 
   \ ------------------------------------------------------------
   \ License
@@ -1495,7 +1495,7 @@ font fzx-font !
 : zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
 
 cr .( fzx-emit is ready ) cr
-' (fzx-emit) >code hex
+' (fzx-emit) hex
 cr .( Code start:   ) dup u.
 cr .( Code length:  ) ' fzx-emit swap - u.
 cr
@@ -1822,7 +1822,7 @@ create (fzx-emit)  ( -- )
 code fzx-emit  ( c -- )
 
   hl pop  bc push
-  l a ld  ' (fzx-emit) >code call
+  l a ld  ' (fzx-emit) call
   bc pop  next ix ldp#  jpnext
 
   end-code
@@ -2964,8 +2964,8 @@ code test-pixel  ( xc yc -- f )
   begin  rlca  step \ rotate to bit 0
   bc pop  \ restore the Forth IP
   1 and#  \ pixel?
-  ' true >code jpnz
-  ' false >code jp
+  ' true jpnz
+  ' false jp
   end-code
 
 ( rdraw )
@@ -3212,7 +3212,7 @@ need z80-asm
 create circle-plot  ( -- a )
   asm
   hl push  bc push  de push
-  ' plot >code call  \ XXX TODO
+  ' plot call  \ XXX TODO
   de pop  bc pop  hl pop  ret
   end-asm
 
@@ -4637,7 +4637,7 @@ need z80-asm  need [if]
   \ [needed] c@test-bits? [if]
   \ code c@test-bits?  ( b ca -- wf )
   \   hl pop  de pop  e a ld  m and
-  \   ' true >code jpnz  ' false >code jp  end-code  exit  [then]
+  \   ' true jpnz  ' false jp  end-code  exit  [then]
   \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
   \   \ _true_ if the result is non-zero or _false_ if the result
   \   \ is zero.
@@ -4778,7 +4778,7 @@ need -rot
   \ Code adapted from Z88 CamelForth.
 
 code polarity  ( n -- -1 | 0 | 1 )
-  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false >code ,
+  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false ,
     \ pop de
     \ ld a,d
     \ or e
@@ -6193,8 +6193,8 @@ code (file?)  ( -- f )
   168E call  \ BORD_REST = restore the border
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  ' true >code jpz
-  ' false >code jp
+  ' true jpz
+  ' false jp
   end-code
 
 : file?  ( ca len -- f )  filename! (file?)  ;
@@ -7903,7 +7903,7 @@ code -branch  ( f -- )
     \ pop hl
   CB c, 7C c,
     \ bit 7,h ; negative?
-  CA c, ' branch >code ,
+  CA c, ' branch ,
     \ jp z,branch_code ; if not, branch
   03 c, 03 c,
     \ inc bc
@@ -7969,7 +7969,7 @@ code 0exit  ( f -- ) ( R: nest-sys | -- nest-sys | )
   E1 c,                 \ pop hl
   78 04 + c,            \ ld a,h
   B0 05 + c,            \ or l
-  CA c, ' exit >code ,  \ jp z,exit_code
+  CA c, ' exit ,        \ jp z,exit_code
   jpnext                \ jp next
 
   end-code
@@ -7993,7 +7993,7 @@ code -exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
 
   E1 c,                   \ pop hl
   CB c, 7C c,             \ bit 7,h ; negative?
-  C2 c, ' exit >code ,    \ jp nz,exit_code
+  C2 c, ' exit ,          \ jp nz,exit_code
   jpnext                  \ jp next
 
   end-code
@@ -8397,7 +8397,7 @@ code j
   2A c, rp ,            \ ld hl,(return_stack_pointer)
   11 c, 3 cells ,       \ ld de,3*cell
   19 c,                 \ add hl,de
-  C3 c, ' i >code 3 + , \ jp i_code+3
+  C3 c, ' i 3 + ,       \ jp i_code+3
 
   end-code
 
@@ -8412,7 +8412,7 @@ code k
   2A c, rp ,            \ ld hl,(return_stack_pointer)
   11 c, 6 cells ,       \ ld de,6*cell
   19 c,                 \ add hl,de
-  C3 c, ' i >code 3 + , \ jp i_code+3
+  C3 c, ' i 3 + ,       \ jp i_code+3
 
   end-code
 
@@ -8497,7 +8497,7 @@ code (step)  ( R: n -- n' )
     \ ld (hl),d
     \ dec hl
     \ ld (hl),e ; update the loop index
-  C2 c, ' branch >code ,
+  C2 c, ' branch ,
     \ jp nz,branch_code ; loop again if not zero
     \ ; done, discard loop index:
   23 c, 23 c, 22 c, rp ,
@@ -9742,12 +9742,12 @@ code key??  ( -- f )
   here jrnc  >relmark 1 unresolved ! \ to return_false
 
   \ return_true:
-  bc pop  ' true >code jp
+  bc pop  ' true jp
 
   \ return_false:
   0 unresolved @ >relresolve
   1 unresolved @ >relresolve
-  bc pop  ' false >code jp
+  bc pop  ' false jp
 
   end-code
 
@@ -9767,12 +9767,12 @@ code key??  ( -- f )
   0000 jpnc  |mark 1 unresolved ! \ to return_false
 
   \ return_true:
-  bc pop  ' true >code jp
+  bc pop  ' true jp
 
   \ return_false:
   0 unresolved @ >resolve
   1 unresolved @ >resolve
-  bc pop  ' false >code jp
+  bc pop  ' false jp
 
   end-code
 
