@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
-:revdate: 2016-02-27
+:revdate: 2016-03-16
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 // }}}
-== Urgent ==
+== Misc ==
 // {{{
 
 2016-01-01 compilation of the tt game crash!
@@ -18,25 +18,6 @@ they are not processed by fsb2?
 // }}}
 == Inner ==
 // {{{
-
-.2015-12-20:
-
-
-Convert to DTC?
-
-|===
-| word type   | number  | DTC memory diff
-
-| code          | 145     | -290
-| colon         | 248     | +248
-| variable      | 42      |  +42
-| user variable | 20      |  +20
-| constant      | 38      |  +38
-| defer         | 12      |  -36
-| TOTAL         |         |  +22
-|===
-
-done!
 
 .2015-11-12:
 
@@ -85,6 +66,10 @@ A word `pfa>vlfa` would be helpful.
 .2016-03-07:
 
 Rename "names bank" to "system bank", because it's used also for the history.
+
+.2016-03-16:
+
+Investigate how to use the free memory of the Plus D RAM.
 
 // }}}
 == Local variables ==
@@ -483,6 +468,8 @@ Finish adapt tt.
 Rename "csb" as "stringer" or "strings"?
 
 |===
+| Now         | "strings"      | "stringer"
+
 | >csb        | >strings       | >stringer
 | ?csb        | ?strings       | ?stringer
 | csb-size    | strings-size   | stringer-size
@@ -491,17 +478,24 @@ Rename "csb" as "stringer" or "strings"?
 | unused-csb  | unused-strings | unused-stringer
 |===
 
-.2016-02-19:
-
-Write `.\"`, equivalent to `s\"`.
-
 // }}}
 == Maths ==
 // {{{
 
-.2015-12-24
+.2015-12-24:
 
 Fractional arithmetic, FD 4-1.
+
+.2016-03-16:
+
+Fix? Now `number?` recognizes numbers that have no digit, only valid
+punctuation, as zero.
+
+.2016-03-16:
+
+Idea for improving `number?` or an optional alternative: return the
+chars and positions of every punctuation, not only the last one in
+`dpl`.
 
 // }}}
 == Other ==

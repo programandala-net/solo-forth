@@ -237,6 +237,7 @@ syn keyword soloforthFlow else
 syn keyword soloforthFlow endcase
 syn keyword soloforthFlow endof
 syn keyword soloforthFlow error
+syn keyword soloforthFlow evaluate
 syn keyword soloforthFlow execute
 syn keyword soloforthFlow exit
 syn keyword soloforthFlow for
@@ -1110,6 +1111,8 @@ let b:current_syntax = "soloforth"
 " 2016-02-27: Updated: `macro`, `endm`.
 "
 " 2016-03-13: Updated: added `span`, removed `(home)`.
+"
+" 2016-03-15: Added `evaluate`.
 
 " --------------------------------------------------------------
 

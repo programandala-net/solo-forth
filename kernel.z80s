@@ -7,7 +7,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603141326
+; This file was last modified: 201603160210
 
 ; ==============================================================
 ; License
@@ -23,16 +23,16 @@
 ; Semantic versioning (http://semver.org)
 
 version_major:                equ 0
-version_minor:                equ 2
+version_minor:                equ 3
 version_patch:                equ 0
 
-if 0
+if 1
   version_release_candidate:  equ 0
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9F3A  ; build 20160314
+  version_build_low_part:     equ 0x9F3C  ; build 20160316
 endif
 
 ; ==============================================================
@@ -210,6 +210,10 @@ size_optimization: equ false
   ; XXX UNDER DEVELOPMENT
 ;new_wordlists: false
   ; new = simpler implementation of `wordlist`, based on eForth
+
+developing: equ true
+  ; true = include some words needed during the development
+  ; false = don't
 
 ; ==============================================================
 ; Symbols
@@ -1776,7 +1780,7 @@ endif
 
 ; doc{
 ;
-; parse-string ( compilation: c "text<c>" -- ) ( run-time:  -- ca len )
+; parse-string ( compilation: c "ccc<char>" -- ) ( run-time:  -- ca len )
 ;
 ; }doc
 
@@ -2665,6 +2669,42 @@ to_number.end:
   dw exit_
 
 ; ----------------------------------------------
+  _defer_header number_punctuation_question_,'NUMBER-PUNCTUATION?',,paren_number_punctuation_question_
+
+; ----------------------------------------------
+  _colon_header paren_number_punctuation_question_,'(NUMBER-PUNCTUATION?)'
+
+; doc{
+;
+; number-punctuation?  ( c -- f )
+;
+; Is character _c_ a valid punctuation in a number?  Allowed
+; characters are: plus sign, comma, hyphen, point, slash and
+; colon.
+
+; ----
+; : number-punctuation?  ( c -- f )
+;   dup [char] : = swap [char] + - 5 u< or  ;
+; ----
+;
+; }doc
+
+; Credits:
+;
+; Code by Wil Baden, from Forth Dimensions (volume 20, number
+; 3 page 26, 1998-10).
+
+  dw dup_
+  _literal ':'
+  dw equals_ ; is it ":"?
+  dw swap_
+  _literal '+'
+  dw minus_
+  _literal '/'-'+'+1
+  dw u_less_than_,or_ ; or is it in range "+".."/"?
+  dw exit_
+
+; ----------------------------------------------
   _colon_header number_question_,'NUMBER?'
 
   ; XXX TODO convert this to a deferred word?
@@ -2678,9 +2718,11 @@ to_number.end:
 ; return _n_ and 1. If the result is a double number, return _d_
 ; and 2.
 ;
-; This word accepts a dot anywhere on the string and updates
-; `dpl` accordingly; beside it recognizes chars between single
-; quotes, after Forth-2012.
+; This word accepts valid punctuation anywhere on the number and
+; updates `dpl` with the position of the last one. If no
+; punctuation is found, `dpl` contains -1.
+;
+; Chars between single quotes are recognized, after Forth-2012.
 
 ; ----
 ; : number?   ( ca len -- 0 | n 1 | d 2 )
@@ -2692,11 +2734,10 @@ to_number.end:
 ;   begin                          ( d ca len )
 ;     >number dup
 ;   while
-;     over c@ [char] . <>   \ not a decimal point?
-;     dpl @ 0< 0=  or       \ or not the first decimal point?
-;     if  2drop 2rdrop 0 exit  then
-;     dup 1- dpl !  \ update the position of the decimal point
-;     1 /string     \ skip the decimal point
+;     over c@ number-punctuation? 0=   \ invalid punctuation?
+;     if  2drop 2drop rdrop r> base ! 0 exit  then
+;     dup 1- dpl !  \ update the position of the last punctuation
+;     1 /string     \ skip the punctuation
 ;   repeat
 ;   2drop     \ discard the empty string
 ;   dpl @ 0<  \ single-cell number?
@@ -2708,19 +2749,19 @@ to_number.end:
 ; }doc
 
   dw dup_,zero_equals_
-  dw zero_branch_,number_question2.not_empty
+  dw zero_branch_,number_question.not_empty
   dw two_drop_
   _literal 0
   dw exit_
 
-number_question2.not_empty:
+number_question.not_empty:
   dw two_dup_,char_question_
-  dw zero_branch_,number_question2.not_char
+  dw zero_branch_,number_question.not_char
   dw nip_,nip_
   _literal 1
   dw exit_
 
-number_question2.not_char:
+number_question.not_char:
   dw base_,fetch_,to_r_
   dw number_base_,base_,store_
 
@@ -2728,47 +2769,46 @@ number_question2.not_char:
   _literal 0
   _literal 0
   dw two_swap_,dpl_,on_
-number_question2.begin:
+number_question.begin:
   dw to_number_
   dw dup_ ; are there non-recognized chars?
-  dw zero_branch_,number_question2.done ; while
+  dw zero_branch_,number_question.done ; while
 
   ; The conversion was not completed, so it may be because of
   ; the final dot that indicates it's a double number.
 
-  dw over_,c_fetch_
-  _literal '.'
-  dw not_equals_ ; not a decimal point?
-  dw dpl_,fetch_,zero_less_than_,zero_equals_ ; not the first decimal point?
-  dw or_
-  dw zero_branch_,number_question2.decimal_point
-  dw two_drop_,two_r_drop_
+  dw over_,c_fetch_ ; get the non-digit character
+  dw number_punctuation_question_ ; is it valid punctuation?
+  dw question_branch_,number_question.punctuation
+
+  ; error: invalid character
+  dw two_drop_,two_drop_,r_drop_
   _literal 0
-  dw exit_
+  dw branch_,number_question.end
 
-number_question2.decimal_point:
-  dw dup_,one_minus_,dpl_,store_ ; update the position of the decimal point
+number_question.punctuation:
+  dw dup_,one_minus_,dpl_,store_ ; update the position of the last punctuation
   _literal 1
-  dw slash_string_ ; skip the decimal point
+  dw slash_string_ ; skip the punctuation
 
-  dw branch_,number_question2.begin ; repeat
+  dw branch_,number_question.begin ; repeat
 
-number_question2.done:
+number_question.done:
   dw two_drop_ ; discard the empty string
   dw dpl_,fetch_,zero_less_than_ ; single-cell number?
-  dw zero_branch_,number_question2.double
+  dw zero_branch_,number_question.double
 
   ; single-cell number
   dw d_to_s_,from_r_,question_negate_
   _literal 1
-  dw branch_,number_question2.end
+  dw branch_,number_question.end
 
-number_question2.double:
+number_question.double:
   ; double-cell number
   dw from_r_,question_d_negate_
   _literal 2
 
-number_question2.end:
+number_question.end:
   dw from_r_,base_,store_  ; restore `base`
 
   dw exit_
@@ -4749,10 +4789,20 @@ store.de_into_hl_pointer:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header colon_,':'
+  _constant_header do_colon_,'DOCOLON'
 
-  ; XXX TODO -- `(:)` or `DOCOLON` constants to access
-  ; `do_colon`.
+; doc{
+;
+; docolon  ( -- a )
+;
+; A constant that returns the address of the colon interpreter.
+;
+; }doc
+
+  dw do_colon
+
+; ----------------------------------------------
+  _colon_header colon_,':'
 
   dw store_csp_
   dw header_
@@ -6630,18 +6680,18 @@ if 0 ; XXX OLD
 ;
 ; ."
 ;
-; Interpretation: ( "text<quote>" -- )
+; Interpretation: ( "ccc<quote>" -- )
 ;
-; Parse "text" delimited by a double-quote and display it.
+; Parse "ccc" delimited by a double-quote and display it.
 ;
-; Compilation: ( "text<quote>" -- )
+; Compilation: ( "ccc<quote>" -- )
 ;
-; Parse "text" delimited by a double-quote. Append the run-time
+; Parse "ccc" delimited by a double-quote. Append the run-time
 ; semantics given below to the current definition.
 ;
 ;       Run-time: ( -- )
 ;
-; Display "text".
+; Display "ccc".
 ;
 ; Origin: Forth-79, Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -6669,9 +6719,9 @@ else
 
 ; doc{
 ;
-; ,"  ( "text<quote>" -- )
+; ,"  ( "ccc<quote>" -- )
 ;
-; Parse "text" delimited by a double-quote and compile the
+; Parse "ccc" delimited by a double-quote and compile the
 ; string.
 ;
 ; ----
@@ -6695,20 +6745,20 @@ else
 ;
 ; ."
 ;
-; Compilation: ( "text<quote>" -- )
+; Compilation: ( "ccc<quote>" -- )
 ;
-; Parse "text" delimited by a double-quote. Append the run-time
+; Parse "ccc" delimited by a double-quote. Append the run-time
 ; semantics given below to the current definition.
 ;
 ;       Run-time: ( -- )
 ;
-; Display "text".
+; Display "ccc".
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
 ; ----
-; : ."  ( "text<quote> -- )
+; : ."  ( "ccc<quote> -- )
 ;   compile (.") ,"  ;  immediate
 ; ----
 ;
@@ -7168,9 +7218,9 @@ fill.done:
 
 ; doc{
 ;
-; parse  ( c "text<c>" -- ca len )
+; parse  ( c "ccc<char>" -- ca len )
 ;
-; Parse _text_ delimited by the delimiter char _c_.
+; Parse _ccc_ delimited by the delimiter _c_.
 ;
 ; ca = address of the parsed string, within the input buffer
 ; len = length of the parsed string
@@ -7180,7 +7230,7 @@ fill.done:
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; ----
-; : parse  ( c "text<c>" -- ca len )
+; : parse  ( c "ccc<char>" -- ca len )
 ;   stream 2dup 2>r rot scan
 ;   dup if  char-  then
 ;   2r> rot - parsed
@@ -7400,6 +7450,9 @@ upper.a:
 ; uppers  ( ca len -- )
 ;
 ; }doc
+
+  ; XXX TODO convert to deferred, to let it be customized for
+  ; 8-bit charsets.
 
   pop de
   pop hl
@@ -8590,7 +8643,7 @@ endif
 
 ; doc{
 ;
-; (  ( f "text<paren>" -- )
+; (  ( f "ccc<paren>" -- )
 ;
 ; Parse until a right paren is found.  The number of parsed
 ; characters may be zero to the number of characters in the
@@ -8779,7 +8832,7 @@ endif
   dw one_plus_,dup_,c_fetch_,zero_dot_r_
 if defined version_release_candidate ; XXX TODO
   dw paren_dot_quote_
-  _string "-rc"
+  _string "-rc."
   dw one_plus_,dup_,c_fetch_,zero_dot_r_
 endif
 if defined version_build_high_part
@@ -10590,48 +10643,23 @@ to_digit.end
 
 ; doc{
 ;
-; ud/mod ( ud1 u2 -- urem udquot )
-;
-; ----
-; : ud/mod ( ud1 u2 -- urem udquot )
-;   >r 0 r@ um/mod r> swap
-;   >r um/mod r>  ;
-; ----
+; ud/mod ( ud1 u2 -- u3 ud4 )
+;  
+; An unsigned mixed magnitude math operation which leaves a
+; double quotient _ud4_ and remainder _u3_, from a double
+; dividend _ud1_ and single divisor _u2_.
 
-; Origin: fig-Forth (`m/mod`), Gforth.
+; ----
+; : ud/mod  ( ud1 u1 -- urem udquot )
+;   >r 0 r@ um/mod -rot r> um/mod rot  ;
+; ----
+;
+; Origin: fig-Forth (`m/mod`), comus: Gforth, Z88 CameForth.
 ;
 ; }doc
-;
-
-  ; XXX TODO benchmark
-
-  ; Credits:
-  ;
-  ; Code from in fig-Forth (where this word is called `m/mod`)
-  ; and Gforth.
-
-  dw to_r_
-  _literal 0
-  dw r_fetch_
-  dw u_m_slash_mod_
-  dw from_r_
-  dw swap_
-  dw to_r_
-  dw u_m_slash_mod_
-  dw from_r_
-  dw exit_
-
-if 0 ; XXX TMP 
-
-  _colon_header u_d_slash_mod88_,'UD/MOD88'  ; XXX TMP -- possible alternative
 
   ; Credits:
   ; Code modified from Z88 CamelForth.
-
-; : ud/mod  ( ud1 u1 -- u2 ud2 )
-;   >r 0 r@ um/mod  -rot r> um/mod rot ;
-; : ud/mod  ( ud1 u1 -- u2 ud2 )
-;   >r 0 r@ um/mod -rot r> um/mod rot ;
 
   dw to_r_
   _literal 0
@@ -10646,16 +10674,21 @@ if 0 ; XXX TMP
 ; ----------------------------------------------
   _code_header minus_rot_,'-ROT'
 
-  ; XXX TMP -- already on the library
-  ; XXX 2015-12-21: only for benchmarking `ud/mod`
+; doc{
+;
+; -rot  ( x1 x2 x3 -- x3 x1 x2 )
+;
+; }doc
+
+  ; Credits:
+  ;
+  ; Code adapted from Afera.
 
   pop hl
   pop de
   ex (sp),hl
   ex de,hl
   jp push_hlde
-
-endif
 
 ; ----------------------------------------------
   _colon_header hash_s_,'#S'
@@ -10780,7 +10813,7 @@ hash_s.begin:
 
 ; ----------------------------------------------
 
-if 1
+if 1 ; developing
 
   _colon_header dot_s_,'.S'
 
@@ -11109,6 +11142,8 @@ system_stack_pointer: equ $+1
   dw exit_
 
 ; ----------------------------------------------
+if 1 ; developing
+
   _colon_header where_,'WHERE'
 
   ; XXX TMP -- needed only during the development
@@ -11132,6 +11167,8 @@ where.do_it:
   _literal '^'
   dw emit_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header paren_mode32_at_xy_,'(MODE32-AT-XY)'
@@ -11550,7 +11587,7 @@ throw.end:
 ; ----------------------------------------------
   _colon_header s_quote_,'S"',immediate
 
-  ; : s"  ( compilation: "text<">" -- ) ( run-time:  -- ca len )
+  ; : s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
   ;  [char] " parse-string  ; immediate
 
   _literal '"'
@@ -11562,7 +11599,7 @@ throw.end:
 
 ; doc{
 ;
-; ?\  ( f "text" -- )
+; ?\  ( f "ccc" -- )
 ;
 ; If _f_ is not false, parse and discard the rest of the parse
 ; area.  This word is used for conditional compilation.
@@ -11581,7 +11618,7 @@ question_backslash.end:
 
 ; doc{
 ;
-; \  ( "text" -- )
+; \  ( "ccc" -- )
 ;
 ; Parse and discard the rest of the parse area.
 ;

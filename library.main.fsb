@@ -7,7 +7,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ This file was last modified: 201603141321
+\ This file was last modified: 201603160213
 
   \ ------------------------------------------------------------
   \ License
@@ -724,13 +724,13 @@ s" Standard error codes" locate msg-scr !
   \ : source  ( -- a len )  \ Forth-94
   \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
 
-: parse-line  ( "text<eol>" -- ca len )
+: parse-line  ( "ccc<eol>" -- ca len )
   source span @ min c/l min  >in @ span @ min /string
   dup >in +! save-string  ;
 
   \ doc{
   \
-  \ parse-line  ( "text<eol>" -- ca len )
+  \ parse-line  ( "ccc<eol>" -- ca len )
   \
   \ Get the text string until the end of line.  Note: this is a
   \ factor of the editor's `text`.
@@ -760,7 +760,7 @@ s" Standard error codes" locate msg-scr !
   \
   \ Code from Z88 CamelForth.
 
-: word  ( c "<c...>text<c>" -- ca )
+: word  ( c "<chars>ccc<char>" -- ca )
   dup  stream                 ( c c ca len )
   dup >r   rot skip           ( c ca' len' )
   over >r  rot scan           ( ca" len" )
@@ -772,7 +772,7 @@ s" Standard error codes" locate msg-scr !
 
   \  doc{
   \
-  \  word  ( c "<c...>text<c>" -- ca )
+  \  word  ( c "<chars>ccc<char>" -- ca )
   \
   \  c = delimiter char
   \
@@ -795,28 +795,7 @@ s" Standard error codes" locate msg-scr !
   \ }}} =======================================================
   \ Data stack {{{
 
-( -rot )  \ ==datastack==
-
-  \ Credits:
-  \
-  \ Code adapted from Afera.
-
-code -rot  ( x1 x2 x3 -- x3 x1 x2 )
-
-  E1 c, D1 c,      \ pop hl / pop de
-  E3 c,            \ ex (sp),hl
-  EB c,            \ ex de,hl
-  C3 c, pushhlde , \ jp pushhlde
-
-  end-code
-
-  \ doc{
-  \
-  \ -rot  ( x1 x2 x3 -- x3 x1 x2 )
-  \
-  \ }doc
-
-( 2nip )
+( 2nip )  \ ==datastack==
 
   \ Credits:
   \
@@ -1839,31 +1818,41 @@ code fzx-emit  ( c -- )
 : sconstant  ( ca len "name" -- )
   here >r s, r> count 2constant  ;
 
-( csliteral c" )
+( cslit csliteral c" )
 
-: csliteral  ( Compilation: ca len -- )
-             ( Run-time: -- ca )
-  2>r postpone ahead here 2r> s, >r postpone then
-  r> postpone literal  ; immediate compile-only
+  \ This is the default definition of `csliteral`, based on a
+  \ system-dependent `cslit`, which makes it possible to decode
+  \ `c"`.
+
+  \ XXX REMARK -- 43 bytes used
+
+: cslit  ( -- ca )  r@ dup c@ 1+ r> + >r  ;
   \ doc{
   \
-  \ csliteral  ( Compilation: "text<quote>" -- ) ( Run-time: -- ca )
+  \ cslit  ( -- ca )
+  \
+  \ Return a string that is compiled after the calling word, and
+  \ adjust the instruction pointer to step over the inline string.
+  \
+  \ }doc
+
+: csliteral  ( ca len -- )
+  compile cslit s,  ; immediate compile-only
+  \ doc{
+  \
+  \ csliteral  ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
   \
   \ Compile a string _ca len_ which at run-time will
   \ be returned as a counted string.
   \
   \ }doc
-  \
-  \ Credits:
-  \ Code from Gforth's `CLiteral`.
 
-: c"  ( Compilation: "text<quote>" -- )
+: c"  ( Compilation: "ccc<quote>" -- )
       ( Run-time: -- ca )
   [char] " parse postpone csliteral  ; immediate compile-only
-
   \ doc{
   \
-  \ c"  ( Compilation: "text<quote>" -- ) ( Run-time: -- ca )
+  \ c"  ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
   \
   \ Parse a string delimited by double quotes and
   \ compile it into the current definition.
@@ -1874,7 +1863,25 @@ code fzx-emit  ( c -- )
   \
   \ }doc
 
-( s\" )
+( csliteral c" )
+
+  \ This is an alternative system-independent definition of
+  \ `csliteral`.
+
+  \ XXX REMARK -- 43 bytes used
+
+: csliteral  ( Compilation: ca len -- )
+             ( Run-time: -- ca )
+  2>r postpone ahead here 2r> s, >r postpone then
+  r> postpone literal  ; immediate compile-only
+  \ Credits:
+  \ Code from Gforth's `CLiteral`.
+
+: c"  ( Compilation: "ccc<quote>" -- )
+      ( Run-time: -- ca )
+  [char] " parse postpone csliteral  ; immediate compile-only
+
+( parse-escaped-string )
 
 only forth definitions
 need wid-of  need parse-char
@@ -1922,7 +1929,7 @@ char " 1 2constant "  char \ 1 2constant \
 
 -->
 
-( s\" )
+( parse-escaped-string )
 
 only forth definitions  need char>string   need search-wordlist
                         need chars>string  need s+
@@ -1936,7 +1943,7 @@ only forth definitions  need char>string   need search-wordlist
   \          (_c1_ is the last one)
   \ n = number of chars
 
-: parse-escaped-string  ( "text<quote>"  -- ca len )
+: parse-escaped-string  ( "ccc<quote>"  -- ca len )
   0 0  \ dummy empty string to start with
   begin  parse-char dup [char] " <>  while  \ not finished?
     dup [char] \ =  \ possibly escaped char?
@@ -1948,14 +1955,12 @@ only forth definitions  need char>string   need search-wordlist
   \ returning the string _ca len_ in the circular string
   \ buffer.
 
--->
-
 ( s\" )
 
-  \ XXX TODO -- need parse-escaped-string
+need parse-escaped-string
 
-: s\"  ( Interpretation: "text<quote>" -- ca len )
-       ( Compilation: "text<quote>" -- )
+: s\"  ( Interpretation: "ccc<quote>" -- ca len )
+       ( Compilation: "ccc<quote>" -- )
        ( Run-time: -- ca len )
   parse-escaped-string compiling? if  postpone sliteral  then
   ; immediate
@@ -1963,17 +1968,15 @@ only forth definitions  need char>string   need search-wordlist
   \ XXX TODO documentation
   \ doc{
   \
-  \ s\"  ( "text<quote>"  - ca len )
+  \ s\"  ( "ccc<quote>"  - ca len )
   \
   \ }doc
 
 ( .\" )
 
-need s\"
-  \ XXX TMP
-  \ XXX TODO -- need parse-escaped-string
+need parse-escaped-string
 
-: .\"  ( Compilation: "text<quote>" -- )
+: .\"  ( Compilation: "ccc<quote>" -- )
        ( Run-time: -- ca len )
   compile (.")  parse-escaped-string s,
   ; immediate compile-only
@@ -2035,11 +2038,15 @@ need s\"
 
   \ doc{
   \
-  \ s'  ( Compilation: "text<'>" -- ) ( Run-time:  -- ca len )
+  \ s'  ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
+  \
+  \ Identical to the standard word `s"`, but using single
+  \ quote as delimiter. A simple alternative to `s\"` when only
+  \ double quotes are needed in a string.
   \
   \ }doc
 
-: s'  ( Compilation: "ccc<'>" -- ) ( Run-time:  -- ca len )
+: s'  ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
   [char] ' parse-string  ; immediate
 
 ( begin-stringtable end-stringtable )
@@ -2079,15 +2086,6 @@ need s\"
   \ end-stringtable
   \ 0 esperanto-number type
   \ 3 esperanto-number type
-
-( csliteral cslit )
-
-  \ XXX TODO test
-
-: cslit  ( -- ca len )  r@ dup c@ 1+ r> + >r  ;
-
-: csliteral  ( ca -- )
-  compile cslit s,  ; immediate compile-only
 
 ( hunt )
 
@@ -4748,7 +4746,7 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \ }doc
 
 [unneeded] between ?exit
-need -rot
+
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
   \ doc{
@@ -5373,8 +5371,6 @@ need [if]  need z80-asm
   \ Code written by Everett F. Carter, published on Forth
   \ Dimensions (volume 16, number 2, page 17, 1994-08).
 
-need -rot
-
 [unneeded] dxor
 ?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
 
@@ -5432,8 +5428,6 @@ code m+  ( d1 n -- d2 )
   \ Credits:
   \
   \ Code from Gforth 0.7.3.
-
-need -rot
 
 : m*/  ( d1 n1 +n2 -- d2 )
 
@@ -6430,7 +6424,7 @@ code c!dosvar  ( b n -- )
 
   \ XXX TMP -- `?\` is still in the kernel
 
-  \ : ?\  ( f "text<eol>" -- )  if  postpone \  then  ; immediate
+  \ : ?\  ( f "ccc<eol>" -- )  if  postpone \  then  ; immediate
 
   \ doc{
   \
@@ -7076,7 +7070,7 @@ variable decode-level  decode-level off \ depth of nesting
 variable decode-address  \ in the word being decoded
 
 : indent  ( -- )
-  cr decode-address @ u. decode-level @ 2 * spaces  ;
+  cr decode-address @ u. decode-level @ 2* spaces  ;
 
 : indent+  ( -- )  1 decode-level +! indent  ;
 
@@ -7115,14 +7109,20 @@ variable decode-address  \ in the word being decoded
     ['] branch    of  decode-branch     endof
     ['] 0branch   of  decode-branch     endof
     ['] ?branch   of  decode-branch     endof
-
-    [defined] -branch [if]
-      ['] -branch   of  decode-branch     endof  [then]
-
     ['] (do)      of  decode-branch     endof
     ['] (?do)     of  decode-branch     endof
-
     ['] (.")      of  decode-sliteral   endof
+
+-->
+
+( decode )
+
+    [defined] cslit [if]
+      ['] cslit     of  decode-sliteral  endof
+    [then]
+    [defined] -branch [if]
+      ['] -branch   of  decode-branch     endof
+    [then]
 
   endcase  ;  -->
 
@@ -7136,13 +7136,13 @@ variable decode-address  \ in the word being decoded
 
 : colon-cfa?  ( cfa -- f )
   dup c@ $CD <> if  drop false exit  then
-  1+ @  [ ' : 1+ ] literal =  ;
-  \ Is _cfa_ a colon cfa?
+  1+ @  docolon =  ;
+  \ Is _cfa_ a colon definition?
   \ First, its first byte must be $CD (the Z80 call opcode);
-  \ second, its jump address must be the same of `:`.
+  \ second, its jump address must be the colon interpreter.
 
 : colon-pfa?  ( pfa -- f )  body> colon-cfa?  ;
-  \ Is the given pfa a colon definition?
+  \ Is _pfa_ a colon definition?
 
 -->
 
@@ -7160,17 +7160,16 @@ variable decode-address  \ in the word being decoded
     dup body> decode-address ! indent
     ." : " dup body>name .name
     begin   ( pfa+n ) dup decode-address !
-            dup @ dup ( pfa+n xt xt ) decode-end? 0=
-            \ ( pfa+n xt f )
+            dup @  ( pfa+n xt ) dup decode-end? 0=
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
-      3 + ( pfa+n pfa' ) dup indent+  body>name .name
-      key case  [char] q  of  sp0 @ sp! quit  endof \ q
-                      bl  of  drop            endof \ space
-                                 swap recurse \ default
-          endcase  decode-special
-      cell+  -1 decode-level +!
-    repeat  indent cell+ body>name .name \ show the last word
+      >body ( pfa+n pfa' ) dup indent+  body>name .name
+      key case  [char] q  of  sp0 @ sp! quit  endof
+                      bl  of  drop            endof
+                swap recurse  \ default
+          endcase  decode-special  cell+  -1 decode-level +!
+    repeat  indent >name .name
+            \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
 
 ( decode )
@@ -7185,161 +7184,6 @@ variable decode-address  \ in the word being decoded
   decode-usage
   defined  ( nt | 0 )  dup 0= -13 ?throw
   name>body  0 decode-level !  (decode)  ;
-
-( itc-decode )
-
-  \ XXX OLD -- ITC version
-
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Copyright (C) 2015 Marcos Cruz (programandala.net)
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
-
-  \ Credits:
-  \
-  \ This code was adapted and improved from Afera (2015), by
-  \ the same author.  The Afera version was adapted and deeply
-  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
-  \ by EHR), modified by Dennis L. Wilson.  The original code
-  \ was written by Robert Dudley Ackerman, published on Forth
-  \ Dimensions IV,#2 p28 (1982-07).
-
-  \ Variables, indentation and pause control
-
-forth definitions decimal
-
-need body>name  need name>body  need case  need [if]
-
-variable decode-level  decode-level off \ depth of nesting
-variable decode-address  \ in the word being decoded
-
-: indent  ( -- )
-  cr decode-address @ u. decode-level @ 2 * spaces  ;
-
-: indent+  ( -- )  1 decode-level +! indent  ;
-
--->
-
-( itc-decode )
-
-  \ Special cases
-
-: decode-branch    ( a1 -- a2 )  cell+ dup @ u.  ;
-
-: decode-literal   ( a1 -- a2 )  cell+ dup @ .  ;
-
-: decode-cliteral  ( a1 -- a2 )  cell+ dup c@ . 1-  ;
-
-: decode-sliteral  ( a1 -- a2 )
-  cell+ dup count type  dup c@ + 1-  ;
-
-: decode-compile   ( a1 -- a2 )
-  cell+ dup @ cell+ body>name .name  ;
-
--->
-
-( itc-decode )
-
-  \ Special cases dispatcher
-
-: decode-special  ( a1 -- a1 | a2 )
-
-  dup @ case
-
-    ['] compile   of  decode-compile    endof
-    ['] lit       of  decode-literal    endof
-    ['] clit      of  decode-cliteral   endof
-    ['] slit      of  decode-sliteral   endof
-    ['] branch    of  decode-branch     endof
-    ['] 0branch   of  decode-branch     endof
-    ['] ?branch   of  decode-branch     endof
-
-    [defined] -branch [if]
-      ['] -branch   of  decode-branch     endof  [then]
-
-    \ XXX OLD -- for fig-Forth `do loop`:
-    \ ['] (loop)    of  decode-branch     endof
-    \ ['] (+loop)   of  decode-branch     endof
-
-    \ XXX NEW -- for Forth-83 `do loop`:
-    ['] (do)      of  decode-branch     endof
-    ['] (?do)     of  decode-branch     endof
-
-    ['] (.")      of  decode-sliteral   endof
-
-  endcase  ;  -->
-
-( itc-decode )
-
-  \ Checks of the main code
-
-: decode-end?  ( xt -- f )
-  \ Is the given xt the end of a definition?
-  dup  ['] exit =  swap ['] (;code) =  or  ;
-
-: colon-pfa?  ( pfa -- f )
-  \ Is the given pfa a colon definition?
-  body> @ ['] : @ =  ;
-
--->
-
-( itc-decode )
-
-  \ Main code
-
-: (decode)  ( pfa -- )
-
-  \ Decode the definition at the given pfa.
-
-  dup colon-pfa? if
-    dup body> decode-address ! indent
-    ." : " dup body>name .name
-    begin   ( pfa+n ) dup decode-address !
-            dup @ dup ( pfa+n xt xt ) decode-end? 0=
-            \ ( pfa+n xt f )
-    while  \ high level & not end of colon definition
-      \ ( pfa+n xt )
-      cell+ ( pfa+n pfa' ) dup indent+  body>name .name
-      key case  [char] q  of  sp0 @ sp! quit  endof \ q
-                      bl  of  drop            endof \ space
-                                 swap recurse \ default
-          endcase  decode-special
-      cell+  -1 decode-level +!
-    repeat  indent cell+ body>name .name \ show the last word
-  else  ." Not a colon definition."  then  drop  ;  -->
-
-( itc-decode )
-
-  \ Interface
-
-: decode-usage  ( -- )
-     \  <------------------------------>
-  cr ." Keys: space=more, q=quit, other=deeper." cr  ;
-
-: decode  ( "name" -- )
-  defined dup 0= -13 ?throw
-  decode-usage
-  name>body  0 decode-level !  (decode)  ;
-
-( list )
-
-need .line  need nuf?
-
-: list  ( n -- )
-
-  \ List block number _n_.
-
-  dup scr !
-  cr ." Scr # " .
-  l/scr 0 do
-    cr i 2 .r space i scr @ .line
-    nuf? ?leave
-  loop cr  ;
 
 ( index .index )
 
@@ -8983,8 +8827,6 @@ need any?
   \ provides "fall-through" capability akin to C's switch
   \ statement.
 
-need -rot
-
 0 constant select immediate
 0 constant cond immediate
 
@@ -10041,9 +9883,9 @@ need kk-ports
 
 ( @p )  \ ==hardware==
 
-code @p  ( ca -- c )
+code @p  ( a -- b )
 
-  \ Input char _c_ from port _ca_.
+  \ Input byte _b_ from port _a_.
 
   E1 c,           \ pop hl
   C5 c,           \ push bc
@@ -10057,9 +9899,9 @@ code @p  ( ca -- c )
 
 ( !p )
 
-code !p  ( c ca -- )
+code !p  ( b a -- )
 
-  \ Output char _c_ to port _ca_.
+  \ Output byte _b_ to port _a_.
 
   E1 c,           \ pop hl
   D1 c,           \ pop de ; char in e
@@ -10075,18 +9917,32 @@ code !p  ( c ca -- )
   \ }}} =======================================================
   \ Number conversion and notation {{{
 
-( b# d# h# )  ==numberconversion==
+( b# d# h# )  \ ==numberconversion==
 
   \ Credits:
   \
-  \ Code adapted from eForth.
+  \ Based on code from eForth and code written by Wil Baden
+  \ (published on Forth Dimensions 20-3, p. 27).
 
-  \ XXX TODO -- finish the conversion
+: base# ( -- ) ( "name" -- )
+  create c, immediate
+  does> c@
+  base c@ >r  base !    \ save and set radix
+  parse-name            \ get string
+  ['] evaluate catch    \ convert to number, set trap
+  r> base !  throw  ;   \ restore radix before error control
+
+ 2 base# b#
+10 base# d#
+16 base# h#
+
+( b# o# d# h# t# )
+
+  \ Credits:
   \
-  \ XXX TODO -- there's an alternative in Forth Dimensions 20-3
-  \ p. 27, by Wil Baden.
+  \ Code from eForth.
 
-: x# ( -- ) ( "ccc" -- n | d )
+: x# ( -- ) ( "name" -- n | d )
   does> c@              \ new radix
   base @ >r  base !     \ save and set radix
   parse-name            \ get string
@@ -10094,8 +9950,10 @@ code !p  ( c ca -- )
   r> base !  throw  ;   \ restore radix before error control
 
 create b# ( "name" -- n | d )  2 c, x# immediate
+create o# ( "name" -- n | d )  2 c, x# immediate
 create d# ( "name" -- n | d ) 10 c, x# immediate
 create h# ( "name" -- n | d ) 16 c, x# immediate
+create t# ( "name" -- n | d ) 36 c, x# immediate
 
 ( c# )
 
@@ -10109,6 +9967,20 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   \ Parse a name and return the code of the its first
   \ character. This is an alternative to `char` and `[char]`.
 
+( number )
+
+: number  ( ca len -- n | d )  number? 0= #-275 ?throw  ;
+  \ doc{
+  \
+  \ number  ( ca len -- n | d )
+  \
+  \ Attempt to convert a string _ca len_ into a number. If
+  \ valid punctuation is found, return _d_; if there is no
+  \ punctuation, return _n_. If conversion fails due to an
+  \ invalid character, an exception #-275 is thrown.
+  \
+  \ }doc
+
   \ }}} =======================================================
   \ Data structures {{{
 
@@ -10117,8 +9989,6 @@ create h# ( "name" -- n | d ) 16 c, x# immediate
   \ Credits:
   \
   \ Code adapted from F83.
-
-need -rot
 
 : associative:  ( n -- )
   \ Create a table lookup word.
@@ -10367,7 +10237,7 @@ exit
 
   \ XXX TODO -- `run:`
 
-: run:  ( head n "text<;>" -- )
+: run:  ( head n "ccc<semicolon>" -- )
   :noname [char] ; parse evaluate postpone ; ( xt )
   swap >switch  ;
 
@@ -11458,8 +11328,7 @@ code pause ( u -- )
   bc pop  jpnext
   end-code
 
-  \ XXX NOTE -- If ever the system is converted from ITC to
-  \ DTC, `pause` has to be modified.
+  \ XXX NOTE -- adapt `pause` to DTC, needed?
 
 ( just-pause )
 
@@ -12693,8 +12562,6 @@ need rng-benchmark
 
 ( alias )
 
-  \ XXX NEW -- DTC
-
 : alias  ( xt "name" -- )  defer latest name> defer!  ;
 
   \ doc{
@@ -12713,38 +12580,6 @@ exit
   \ Is _xt_ a deferred word?
   \ The code of a deferred word starts with a Z80 jump ($C3)
   \ to the word it's associated to.
-
-( code? code-alias? defer-alias code-alias alias )
-
-  \ XXX OLD -- ITC
-
-: code?  ( xt -- wf )  dup >body swap @ =  ;
-  \ Is _xt_ a word created by `code`?
-
-: code-alias?  ( xt -- wf )  @ dup body> @ =  ;
-  \ Is _xt_ a word created by `code-alias` or `code`?
-
-: defer-alias  ( xt "name" -- )
-  defer latest name> defer!  ;
-  \ Create a deferred word _name_ that executes _xt_.
-
-: code-alias  ( xt "name" -- )
-  @ header reveal latest name> !  ;
-  \ Create a code word that executes the code pointed by _xt_.
-
-: alias  ( xt "name" -- )
-  dup code-alias? if  code-alias exit  then  defer-alias  ;
-
-  \ doc{
-  \
-  \ alias  ( xt "name" -- )
-  \
-  \ Create an alias _name_ that will execute _xt_.  If _xt_
-  \ is a primitive word, the address hold in _name_'s own xt
-  \ will be the same than the address hold in _xt_. Otherwise
-  \ _name_ will be a deferred word executing _xt_.
-  \
-  \ }doc
 
 ( synonym )
 
@@ -12843,7 +12678,7 @@ code call  ( a -- )
 
 only forth definitions
 
-need ?pairs  need -rot  need 3dup
+need ?pairs  need 3dup
 
 : 8*   ( n1 -- n2 )  2* 2* 2*  ;
 
@@ -13199,7 +13034,7 @@ decimal only forth
 
 only forth definitions
 
-need ?pairs  need -rot  need 3dup
+need ?pairs  need 3dup
 
 : 8*   ( n1 -- n2 )  2* 2* 2*  ;
 
@@ -13567,28 +13402,23 @@ need @c+  need for
   \ Credits:
   \
   \ Code inspired by Spectrum Forth-83, where similar code is
-  \ embedded in `KEY` and `PAUSE` to call a xt hold in a
-  \ variable. The code has been converted from DTC to ITC and
-  \ factored to two assembler macros in order to make it
-  \ reusable.
+  \ embedded in `KEY` and `PAUSE` to call an xt hold in a
+  \ variable.  The code was factored to two assembler macros in
+  \ order to make it reusable.
 
 macro execute-hl  ( -- )
-  \ Compile an `execute` with the xt hold in HL.
-  here 6 + bc ldp# \ point IP to phony_compiled_word
-  next2 jp  \ execute the xt in HL
+  here 6 + bc ldp#  \ point IP to phony_compiled_word
+  next2 jp          \ execute the xt in HL
   \ phony_compiled_word:
-  here cell+ ,  \ point to the phony xt following
-  here cell+ ,  \ phony xt, point to the code following
+  here cell+ ,      \ point to the phony xt following
   endm
-
-  \ XXX NOTE -- If ever the system is converted from ITC to
-  \ DTC, `execute-hl` has to be modified.
+  \ Compile an `execute` with the xt hold in HL.
 
 macro call-xt  ( xt -- )
-  \ Compile a call to _xt_.
-  \ This is the low-level equivalent of `execute`.
   hl ldp#  execute-hl
   endm
+  \ Compile a call to _xt_.
+  \ This is the low-level equivalent of `execute`.
 
   \ }}} =======================================================
   \ Address register {{{
@@ -14790,13 +14620,13 @@ vocabulary editor  also editor definitions  hex
   \ XXX OLD
   \ XXX FIXME `1 text`, used by two words, corrupts the system.
   \ How to get the text till the end of the line?
-  \ : text  ( c "text<c>" -- )
+  \ : text  ( c "ccc<char>" -- )
   \  here c/l 1+ blank word pad c/l 1+ cmove  ;
   \ Parse a text string delimited by character _c_ and store it
   \ into `pad`, blank-filling the remainder of `pad` to `c/l`
   \ characters.
 
-: text  ( "text<eol>" -- )
+: text  ( "ccc<eol>" -- )
   pad c/l 1+ blank  parse-line  pad place  ;
   \ Get the text string until end of line and store it
   \ into `pad` as a counted string, blank-filling the remainder
@@ -14863,8 +14693,8 @@ variable r#
 : r  ( n -- )  pad 1+ swap -move  ;
   \ Replace line _n_ with text in `pad`.
 
-: p  ( n "text<eol>"  -- )  text r  ;
-  \ Put "text" on line _n_.
+: p  ( n "ccc<eol>"  -- )  text r  ;
+  \ Put "ccc" on line _n_.
 
 : i  ( n -- )  dup s r  ;
   \ Insert text from `pad` at line _n_, moving the old line _n_
@@ -14937,9 +14767,9 @@ also forth
   \ Find the next occurrence of the string found by an `f`
   \ command.
 
-: f  ( "text<eol>" -- )  text n  ;
+: f  ( "ccc<eol>" -- )  text n  ;
   \ Search forward from the current cursor position until
-  \ string "text" is found. The cursor is left at the end of
+  \ string "ccc" is found. The cursor is left at the end of
   \ the string and the cursor line is printed. If the string is
   \ not found and error message is given and the cursor
   \ repositioned to the top of the block.
@@ -14948,14 +14778,14 @@ also forth
   \ Used after `f` to backup the cursor by the length of the
   \ most recent text.
 
-: x  ( "text<eol>" -- )  text find pad c@ delete 0 m  ;
-  \ Find and delete the next occurrence of the string "text".
+: x  ( "ccc<eol>" -- )  text find pad c@ delete 0 m  ;
+  \ Find and delete the next occurrence of the string "ccc".
 
-: till  ( "text<eol>" -- )
+: till  ( "ccc<eol>" -- )
   #lead + text 1line 0= #-270 ?throw
   #lead + swap - delete 0 m  ;
   \ Delete on the cursor line from the cursor till the end of
-  \ string "text".
+  \ string "ccc".
 
 -->
 
@@ -14968,9 +14798,9 @@ also forth
   \ Copy the string _ca len_ to the cursor line at the cursor
   \ position.
 
-: c  ( "text<eol>" -- )
+: c  ( "ccc<eol>" -- )
   text pad count dup if  (c)  else  2drop  then  ;
-  \ Copy in "text" to the cursor line at the cursor position.
+  \ Copy in "ccc" to the cursor line at the cursor position.
 
 also forth
 
@@ -17368,11 +17198,40 @@ need bench{
 
   \            AF    Z88 (1) Z88 (2)
   \         ----- ---------- -------
-  \ B used:    22         22      20 (3)
+  \ B used:    22     22      20 (3)
 
   \ (1) Z88 CamelForth code
   \ (2) Z88 CamelForth code, with `-rot` instead of `rot rot`
   \ (3) Not including the size of `-rot`
+
+( ud/mod-bench )
+
+  \ 2016-03-15: Second benchmark. Faster results because of
+  \ DTC.
+
+need bench{
+
+: a-m/mod  ( n -- )
+  bench{  0 do  i s>d i ud/mod drop 2drop  loop  }bench.  ;
+
+: z-ud/mod  ( n -- )
+  bench{  0 do  i s>d i ud/mod88 drop 2drop  loop  }bench.  ;
+
+
+: run  ( n -- )
+      cr ." UD/MOD from:"
+  dup cr ." Abersoft Forth and Gforth ..." a-m/mod
+  dup cr ." Z88 CamelForth .............." z-ud/mod  ;
+
+  \ 10000 run  20000  run 65535 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \            AF    Z88
+  \         ----- ------
+  \ 10000     900    882
+  \ 20000    1799   1765
+  \ 65535    5870   5759
 
 ( number? )
 
@@ -18657,7 +18516,7 @@ code if'-test  ( -- )
 \ #-272 array index out of range
 \ #-273 invalid assembler condition
 \ #-274 command line history overflow
-\ #-275
+\ #-275 wrong number
 \ #-276
 \ #-277
 \ #-278
