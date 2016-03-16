@@ -547,6 +547,7 @@ syn keyword soloforthAssembler end-code
 syn keyword soloforthAssembler endm
 syn keyword soloforthAssembler fetchhl
 syn keyword soloforthAssembler jpnext
+syn keyword soloforthAssembler jppushhl
 syn keyword soloforthAssembler macro
 syn keyword soloforthAssembler next
 syn keyword soloforthAssembler pusha

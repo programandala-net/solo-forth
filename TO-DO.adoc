@@ -488,14 +488,19 @@ Fractional arithmetic, FD 4-1.
 
 .2016-03-16:
 
-Fix? Now `number?` recognizes numbers that have no digit, only valid
-punctuation, as zero.
+Idea for improving `number?` or writing an optional alternative:
+Return the chars and positions of every point, not only the last
+one. Convert `dpl` to a backwards compatible array:
 
-.2016-03-16:
+----
++0 cell: position of the last point
++2 byte: last point
++3 cell: position of the last but one point
++5 byte: last but one point
+etc.
+----
 
-Idea for improving `number?` or an optional alternative: return the
-chars and positions of every punctuation, not only the last one in
-`dpl`.
+A new variable `#dpl` would hold the number of points.
 
 // }}}
 == Other ==

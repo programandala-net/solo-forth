@@ -1,45 +1,44 @@
 = Solo Forth version history
-:revdate: 2015-12-19
+:author: Marcos Cruz (programandala.net)
+:revdate: 2016-03-16
+
+// This file is part of Solo Forth
+// http://programandala.net/en.program.solo_forth.html
 
 == 0.0
 
-_ Developed from 2015-06-02 to 2015-12-18.
+Developed from 2015-06-02 to 2015-12-18.
 
-_ During this long initial period of the development, Solo Forth grew
-from a small seed (the code of Abersoft Forth, a fig-Forth) to a
+During this long initial period of the development, Solo Forth grew
+from a small seed (the code of Abersoft Forth, a fig-Forth 1.1) to a
 disk-based system, with only some small traces of fig-Forth left, with
 many features of modern standard Forth systems and a huge library of
 optional code.
 
-_ Version branch 0.0 finished after substituting the fig-Forth `do
+Version branch 0.0 was finished after replacing the fig-Forth `do
 loop` control structures with the Forth-83 version, adding a method to
-nest sources (`nest-source` and `unnest-source`) and writing `evaluate`.
+nest sources (`nest-source` and `unnest-source`) and writing
+`evaluate`.
 
 == 0.1.0
 
-_ Developed from 2015-12-18.
+Developed from 2015-12-18 to 2016-03-14.
 
-- Fixed: `udg!` and `.s` (after the Forth-83 `do +loop` structure).
-- Modified: `break-key?` is moved to the kernel and converted to a
-  deferred word.
-- Removed the copy of `definitions` from the `root` vocabulary.
-- Moved `set-order` to the kernel and made it standard.
-- New: `0.r` and `0d.r` to print numbers without a trailing blank.
-- New: `m*/`.
-- New: `pixels`.
-- Improved: `bench{`.
-- New: `3dup` written in Z80 (formerly it was included in the
-  assembler, and was written in Forth).
-- Change: `loads`, a defining word found on Forth-79 (Reference Word
-  Set) and Forth-83 (Appendix B. Uncontrolled Reference Words) is
-  renamed to `loader`.
-- New: `loads`, from MMSForth.
-- New: `dxor`, `dor`, `dand`.
-- Fixed: `du/mod`.
-- New: `synonym`.
-- New: `save-mode` and `restore-mode` (factored from `bye` and
-  `warm`).
-- New: The kernel can be assembled also with DTC instead of the
-  original ITC.
-- Fixed and renamed: `cls-chars0` and `cls-chars1`.
-- New: `>code`.
+Many fixes, changes and improvements. See the
+http://programandala.net/en.program.solo_forth.history.html[development
+history].
+
+- The Vim syntax file for Solo Forth is included.
+
+== 0.2.0
+
+Released on 2016-03-14.
+
+- The old alternative ITC code is removed.
+
+== 0.3.0
+
+Under development since 2016-03-14.
+
+// XXX TODO --  summarize the commit messages since 0.2.0
+

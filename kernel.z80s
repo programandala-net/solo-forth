@@ -7,7 +7,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603160210
+; This file was last modified: 201603161838
 
 ; ==============================================================
 ; License
@@ -27,7 +27,7 @@ version_minor:                equ 3
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 0
+  version_release_candidate:  equ 1
 endif
 
 if 1
@@ -512,6 +512,15 @@ _literal: macro _n
 _jp_next: macro
 
   jp (ix)
+
+  endm
+
+_jp_pushhl macro
+
+  ; Faster (2 T less) than `jp push_hl`.
+
+  push hl
+  _jp_next
 
   endm
 
@@ -1263,6 +1272,9 @@ push_hlde:
 push_hl:
   push hl
 
+  ; XXX TODO -- replace `jp push_hl` (3 bytes, 10+11 T) with
+  ; faster `push hl` and `jp (ix)` (3 bytes in total 11+8 T).
+
 next:
   ; Execute the word whose xt is in the address pointed by the bc register.
   ; Forth: W  <-- (IP)
@@ -1401,6 +1413,24 @@ endif
   dw fetch.hl
 
 ; ----------------------------------------------
+  _colon_header jppushl_,'JPPUSHHL'
+
+; doc{
+;
+; jppushl  ( -- )
+;
+; Compile a Z80 jump to `pushhl`.
+;
+; Actually two instructions are compiled, which is faster: `push
+; hl` and `jp (ix)`.
+;
+; }doc
+
+  _literal 0xE5 ; opcode `push hl`
+  dw comma_
+  dw branch_,jpnext_pfa
+
+; ----------------------------------------------
   _colon_header jpnext_,'JPNEXT'
 
 ; doc{
@@ -1413,7 +1443,7 @@ endif
 
   ; XXX TODO remove?
 
-  dw lit_,0xE9DD ; opcode `jp (ix)`
+  _literal 0xE9DD ; opcode `jp (ix)`
   dw comma_
   dw exit_
 
@@ -1804,7 +1834,7 @@ parse_string.interpreting:
 push_a:
   ld l,a
   ld h,0
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_lit_,'2LIT',compile_only
@@ -1827,7 +1857,7 @@ push_a:
   ld a,(bc)
   ld h,a
   inc bc
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header default_bank_,'DEFAULT-BANK'
@@ -1904,7 +1934,7 @@ bank.e:
 ; }doc
 
   ld hl,(to_csb)
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _constant_header csb_size_,'CSB-SIZE'
@@ -2669,45 +2699,53 @@ to_number.end:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header number_punctuation_question_,'NUMBER-PUNCTUATION?',,paren_number_punctuation_question_
-
-; ----------------------------------------------
-  _colon_header paren_number_punctuation_question_,'(NUMBER-PUNCTUATION?)'
+  _defer_header number_point_question_,'NUMBER-POINT?',,standard_number_point_question_
 
 ; doc{
 ;
-; number-punctuation?  ( c -- f )
+; number-point?  ( c -- f )
 ;
-; Is character _c_ a valid punctuation in a number?  Allowed
-; characters are: plus sign, comma, hyphen, point, slash and
-; colon.
+; Is character _c_ a valid point in a number?  This is a
+; deferred word used in `number?`. Its default behaviour is
+; `standard-number-point?`, which only allows the period.
+;
+; The library provides alternatives which accept more points.
+;
+; }doc
+
+; ----------------------------------------------
+  _colon_header standard_number_point_question_,'STANDARD-NUMBER-POINT?'
+
+; doc{
+;
+; standard-number-point?  ( c -- f )
+;
+; Is character _c_ a valid point in a number?  The only allowed
+; point is period.
+;
+; This is the default behaviour of the deferred word
+; `number-point?`, which is used in `number?`.
+;
+; The library provides alternatives which accept more points.
 
 ; ----
-; : number-punctuation?  ( c -- f )
-;   dup [char] : = swap [char] + - 5 u< or  ;
+; : number-point?  ( c -- f )
+;   [char] . =  ;
 ; ----
 ;
 ; }doc
 
 ; Credits:
 ;
-; Code by Wil Baden, from Forth Dimensions (volume 20, number
-; 3 page 26, 1998-10).
 
-  dw dup_
-  _literal ':'
-  dw equals_ ; is it ":"?
-  dw swap_
-  _literal '+'
-  dw minus_
-  _literal '/'-'+'+1
-  dw u_less_than_,or_ ; or is it in range "+".."/"?
+  _literal '.'
+  dw equals_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header number_question_,'NUMBER?'
 
-  ; XXX TODO convert this to a deferred word?
+  ; XXX TODO make it a deferred word
 
 ; doc{
 ;
@@ -2718,29 +2756,41 @@ to_number.end:
 ; return _n_ and 1. If the result is a double number, return _d_
 ; and 2.
 ;
-; This word accepts valid punctuation anywhere on the number and
+; This word accepts valid point anywhere on the number and
 ; updates `dpl` with the position of the last one. If no
-; punctuation is found, `dpl` contains -1.
+; point is found, `dpl` contains -1.
 ;
 ; Chars between single quotes are recognized, after Forth-2012.
 
 ; ----
 ; : number?   ( ca len -- 0 | n 1 | d 2 )
-;   dup 0= if  2drop 0 exit  then
-;   2dup char? if nip nip 1 exit  then
+;
+;   dup 0= if  2drop 0 exit  then  \ reject empty strings
+;
+;   2dup char? if  nip nip 1 exit  then  \ char format
+;
+;   over c@ number-point?  \ first char is a point?
+;   if  2drop 0 exit  then  \ is so, reject the string
+;
 ;   base @ >r  number-base base !  ( R: radix )
 ;   skip-sign? >r                  ( R: radix sign )
 ;   0 0 2swap  dpl on
-;   begin                          ( d ca len )
-;     >number dup
-;   while
-;     over c@ number-punctuation? 0=   \ invalid punctuation?
+;
+;   begin  ( d ca len )  >number dup  while
+;
+;     over c@ number-point? 0=   \ invalid point?
 ;     if  2drop 2drop rdrop r> base ! 0 exit  then
-;     dup 1- dpl !  \ update the position of the last punctuation
-;     1 /string     \ skip the punctuation
+;
+;     dup dpl @ =   \ previous char was a point?
+;     if  2drop 2drop rdrop r> base ! 0 exit  then
+;
+;     dup 1- dpl !  \ update the position of the last point
+;     1 /string     \ skip the point
+;
 ;   repeat
-;   2drop     \ discard the empty string
-;   dpl @ 0<  \ single-cell number?
+;
+;   2drop                     \ discard the empty string
+;   dpl @ 0<                  \ single-cell number?
 ;   if    d>s r> ?negate  1   \ single-cell number
 ;   else  r> ?dnegate  2      \ double-cell number
 ;   then  r> base !  ;        \ restore the radix
@@ -2748,48 +2798,57 @@ to_number.end:
 
 ; }doc
 
-  dw dup_,zero_equals_
-  dw zero_branch_,number_question.not_empty
-  dw two_drop_
-  _literal 0
+  dw dup_,zero_equals_ ; empty string?
+  dw zero_branch_,number_question.try_char
+  ; reject an empty string
+number_question.reject:
+  dw two_drop_,false_
   dw exit_
 
-number_question.not_empty:
-  dw two_dup_,char_question_
-  dw zero_branch_,number_question.not_char
+number_question.try_char:
+  dw two_dup_,char_question_ ; a char?
+  dw zero_branch_,number_question.try_initial_point
+  ; return the char code
   dw nip_,nip_
   _literal 1
   dw exit_
 
-number_question.not_char:
+number_question.try_initial_point:
+  dw over_,c_fetch_ ; first char...
+  dw number_point_question_ ; ...is point?
+  dw question_branch_,number_question.reject ; is so, reject the string
+
   dw base_,fetch_,to_r_
   dw number_base_,base_,store_
 
   dw skip_sign_question_,to_r_
-  _literal 0
-  _literal 0
+  dw two_lit_,0,0 ; initial value
   dw two_swap_,dpl_,on_
+
 number_question.begin:
   dw to_number_
   dw dup_ ; are there non-recognized chars?
   dw zero_branch_,number_question.done ; while
 
-  ; The conversion was not completed, so it may be because of
-  ; the final dot that indicates it's a double number.
+  ; The conversion was not completed, so it may be because of a
+  ; point that indicates it's a double number.
 
   dw over_,c_fetch_ ; get the non-digit character
-  dw number_punctuation_question_ ; is it valid punctuation?
-  dw question_branch_,number_question.punctuation
+  dw number_point_question_ ; is it valid point?
+  dw question_branch_,number_question.point
 
-  ; error: invalid character
-  dw two_drop_,two_drop_,r_drop_
-  _literal 0
+number_question.invalid_character:
+  dw two_drop_,two_drop_,r_drop_,false_
   dw branch_,number_question.end
 
-number_question.punctuation:
-  dw dup_,one_minus_,dpl_,store_ ; update the position of the last punctuation
+number_question.point:
+  dw dup_,dpl_,fetch_,equals_ ; was the previous character a point?
+  dw question_branch_,number_question.invalid_character ; if so, invalid
+
+number_question.valid_point:
+  dw dup_,one_minus_,dpl_,store_ ; update the position of the last point
   _literal 1
-  dw slash_string_ ; skip the punctuation
+  dw slash_string_ ; skip the point
 
   dw branch_,number_question.begin ; repeat
 
@@ -2826,7 +2885,7 @@ number_question.end:
 ;
 ; ----
 ; : char?  ( ca len -- c true | false )
-;   3 <> if
+;   3 = if
 ;     dup c@ [char] ' <> if
 ;       dup [ 2 chars ] literal + c@ [char] ' <>
 ;       if  char+ c@ true exit  then
@@ -2974,7 +3033,7 @@ find_name_from.end:
   exx
 find_name_from.ip_backup: equ $+1
   ld bc,0x0000 ; restore the Forth IP
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
@@ -3363,7 +3422,7 @@ endif
 ; ----------------------------------------------
   _variable_header printing_,'PRINTING'
 
-; XXX TODO make it a user variable?
+; XXX TODO -- make it a user variable?
 ; but the open channel would be common!
 
   dw false
@@ -3378,6 +3437,8 @@ endif
 ; Select the printer as output.
 ;
 ; }doc
+
+; XXX TODO -- move to the library?
 
   _literal 3
   dw chan_
@@ -3552,7 +3613,7 @@ endif
 
 ; doc{
 ;
-; break-key?  ( -- f )
+; default-break-key?  ( -- f )
 ;
 ; Is the default break key (Shift+Space) pressed?
 ;
@@ -3715,7 +3776,7 @@ xkey.translate:
   rst 0x10
 
   pop bc
-  jp push_hl
+  _jp_pushhl
 
 if 0
 
@@ -4015,7 +4076,7 @@ u_m_slash_mod.4:
   ld a,d
   and h
   ld h,a
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header or_,'OR'
@@ -4028,7 +4089,7 @@ u_m_slash_mod.4:
   ld a,d
   or h
   ld h,a
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header xor_,'XOR'
@@ -4041,7 +4102,7 @@ u_m_slash_mod.4:
   ld a,d
   xor h
   ld h,a
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _constant_header slash_user_,'/USER'
@@ -4114,7 +4175,7 @@ u_m_slash_mod.4:
 ; }doc
 
   ld hl,(names_pointer)
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header np_store_,'NP!'
@@ -4154,7 +4215,7 @@ u_m_slash_mod.4:
 
   ld hl,0x0000
   add hl,sp
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header sp_store_,'SP!'
@@ -4198,7 +4259,7 @@ u_m_slash_mod.4:
 ; }doc
 
   ld hl,(return_stack_pointer)
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header rp_store_,'RP!'
@@ -4388,7 +4449,7 @@ true_if_cy:
   pop de
   pop hl
   add hl,de
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header d_plus_,'D+'
@@ -4414,9 +4475,9 @@ true_if_cy:
   exx                   ;  04 01
   pop hl                ;  10 01 ; HL'=d1lo
   add hl,de             ;  11 01
-  push hl               ;  11 01 ; 2OS=d1lo+d2lo
+  push hl               ;  11 01 ; 2OS=d1lo+d2lo=d3lo
   exx                   ;  04 01
-  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+cy
+  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+cy=d3hi
   push hl               ;  11 01
   _jp_next              ;  08 02
                         ;  -- --
@@ -4443,7 +4504,7 @@ true_if_cy:
   ld a,l
   cpl
   ld l,a
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header negate_,'NEGATE'
@@ -4465,7 +4526,7 @@ true_if_cy:
   and a         ; 04 01
   sbc hl,de     ; 15 02
                 ; 29 06 total
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header d_negate_,'DNEGATE'
@@ -4531,10 +4592,17 @@ else
   push    hl        ; negated low part          ;  11 01
   ld      hl,0x0000                             ;  10 03
   sbc     hl,de     ; hl = negated high part    ;  15 02
+if 0 ; XXX OLD
   jp push_hl                                    ;  10 03
                                                 ;  11 00 push hl
                                                 ; --- --
                                                 ; 127 19
+else ; XXX NEW
+  _jp_pushhl                                    ; 11 01 push hl
+                                                ; 08 02
+                                                ; --- --
+                                                ; 125 19
+endif
 
 endif
 
@@ -4543,7 +4611,7 @@ endif
 
   pop hl
   pop de
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header tuck_,'TUCK'
@@ -4572,14 +4640,14 @@ endif
 
   pop hl
   ex (sp),hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header dup_,'DUP'
 
   pop hl
   push hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_dup_,'2DUP'
@@ -4727,7 +4795,7 @@ fetch.hl:
 c_fetch.hl:
   ld l,(hl)
   ld h,0x00
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_fetch_,'2@'
@@ -4996,7 +5064,7 @@ do_user:
   ld d,0x00   ; de = index of the user variable
   ld hl,(user_variables_pointer)
   add hl,de   ; hl= address of the user variable
-  jp push_hl
+  _jp_pushhl
 
 else
 
@@ -5021,7 +5089,7 @@ do_user:
   ld d,0x00   ; de = index of the user variable
   ld hl,(user_variables_pointer)
   add hl,de   ; hl= address of the user variable
-  jp push_hl
+  _jp_pushhl
 
 endif
 
@@ -5077,7 +5145,7 @@ endif
 ; }doc
 
   ld hl,false
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header true_,'TRUE'
@@ -5089,7 +5157,7 @@ endif
 ; }doc
 
   ld hl,true
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _c_constant_header b_l_,'BL'
@@ -5595,7 +5663,7 @@ source.other:
 
   pop hl
   inc hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_plus_,'2+'
@@ -5603,7 +5671,7 @@ source.other:
   pop hl
   inc hl
   inc hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_alias_header cell_minus_,'CELL-',,two_minus_
@@ -5622,7 +5690,7 @@ source.other:
 
   pop hl
   dec hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_minus_,'2-'
@@ -5630,7 +5698,7 @@ source.other:
   pop hl
   dec hl
   dec hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_star_,'2*'
@@ -5656,7 +5724,7 @@ source.other:
 
   pop hl
   add hl,hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
 
@@ -5798,7 +5866,7 @@ endif
   pop hl
   and a
   sbc hl,de
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header not_equals_,'<>'
@@ -5898,7 +5966,7 @@ u_less_than.de_hl:
   sbc a,a         ; propagate carry flag through A
   ld h,a
   ld l,a          ; HL = 0x0000 or 0xFFFF
-  jp push_hl
+  _jp_pushhl
 
 endif
 
@@ -5931,7 +5999,7 @@ endif
   or l
   jp z,push_hl
   push hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header latest_,'LATEST'
@@ -5956,7 +6024,7 @@ endif
   dec hl
   dec hl
   dec hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header to_body_,'>BODY'
@@ -5964,7 +6032,7 @@ endif
   inc hl
   inc hl
   inc hl
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header to_name_,'>NAME'
@@ -6049,7 +6117,7 @@ to_name.begin_1:
 to_name.end:
   call bank.default ; page the default memory bank
   pop bc ; restore Forth IP
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
 
@@ -6074,7 +6142,7 @@ to_name.end:
   ; ld l,(hl)
   ; ld h,0
   ; call bank.default
-  ; jp pushhl
+  ; _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header store_bank_,'!BANK'
@@ -6112,7 +6180,7 @@ to_name.end:
   ; ld l,(hl)
   ; ld h,0
   ; call bank.default
-  ; jp pushhl
+  ; _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header fetch_bank_,'@BANK'
@@ -6138,7 +6206,7 @@ to_name.end:
   ; ld h,(hl)
   ; ld l,a
   ; call bank.default
-  ; jp pushhl
+  ; _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header c_fetch_n_,'C@N'
@@ -7192,7 +7260,7 @@ fill.done:
   ex (sp),hl              ; (sp)=len2 hl=ca1
   add hl,de               ; hl=ca2
   ex (sp),hl              ; (sp)=ca2 hl=len2
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header parsed_,'PARSED'
@@ -7431,7 +7499,7 @@ parse_name.skip:
   call upper.a
   ; XXX TODO `jp push_a` to save 1 byte?
   ld l,a
-  jp push_hl
+  _jp_pushhl
 
 upper.a:
   ; Convert the ASCII char in the 'a' register to uppercase.
@@ -7765,7 +7833,7 @@ compare.end:
   dec hl ; 0
   jp z,push_hl ; string1 equals string2
   dec hl ; -1
-  jp push_hl
+  _jp_pushhl
 
 compare_strings_case_sensitive:
   ; Used by 'compare' and 'search'.
@@ -7935,17 +8003,7 @@ search.string_1_addr equ $+1
 ;
 ; }doc
 
-  ; XXX TODO -- `interpret` needs the old method of `literal`
-
-  if 0 ; XXX OLD
-    dw compiling_question_
-    dw zero_branch_,literal.end
-    dw compile_,lit_,comma_
-literal.end:
-  else ; XXX NEW
-    ; XXX TODO -- 8-bit (`cliteral`) and 16-bit, after DZX-Forth
-    dw compile_,lit_,comma_
-  endif
+  dw compile_,lit_,comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -7959,17 +8017,8 @@ literal.end:
 ;
 ; }doc
 
-  ; XXX TODO -- `interpret` needs the old method of `literal`
-
-  if 0 ; XXX OLD
-    dw compiling_question_
-    dw zero_branch_,two_literal.end
-    dw swap_,literal_,literal_
-two_literal.end:
-  else ; XXX NEW
-    dw compile_,two_lit_
-    dw swap_,comma_,comma_
-  endif
+  dw compile_,two_lit_
+  dw swap_,comma_,comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -9127,7 +9176,7 @@ if 0
 
   pop hl
   call abs_hl
-  jp push_hl
+  _jp_pushhl
 
 endif
 
@@ -9777,7 +9826,7 @@ block.end:
   ld a,h
   ld h,l
   ld l,a
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
@@ -9991,7 +10040,7 @@ back_from_dos.error:
   ; a = error code
   call convert_dos_error_code
   ; hl = error code
-  jp push_hl
+  _jp_pushhl
 
 convert_dos_error_code:
   ; Input:   a  = original DOS error code (0..36)
@@ -10614,7 +10663,7 @@ sign.end:
 to_digit.end
   add a,0x30
   ld l,a
-  jp push_hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header hash_,'#'
@@ -10909,7 +10958,6 @@ if 0
 
 endif
 
-
 if 1
 
   ; XXX NEW -- This method works with any printing routine
@@ -10928,16 +10976,12 @@ endif
 if 0
 
   ; XXX TODO -- adapt this from DZX-Forth?
-  ; same size, but slower
+  ; slower?
 
   ld hl,0x0000
   push hl
   push hl
-
   jp at_xy_
-  ; XXX OLD
-;  ld hl,at_xy_
-;  jp next2
 
 endif
 

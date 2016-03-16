@@ -7,7 +7,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ This file was last modified: 201603160213
+\ This file was last modified: 201603161808
 
   \ ------------------------------------------------------------
   \ License
@@ -1030,7 +1030,7 @@ code 0dup  ( x -- x | 0 0 )
     \ pop hl
     \ ld a,h
     \ or l
-  C2 c, pushhl ,  E5 c,  C3 c, pushhl ,
+  C2 c, pushhl ,  E5 c,  jppushhl
     \ jp z,push_hl
     \ push hl
     \ jp push_hl
@@ -1048,7 +1048,7 @@ code -dup  ( x -- x | 0 0 )
   E1 c,  CB c, 7C c,
     \ pop hl
     \ bit 7,h ; negative?
-  C2 c, pushhl ,  E5 c,  C3 c, pushhl ,
+  C2 c, pushhl ,  E5 c,  jppushhl
     \ jp z,push_hl
     \ push hl
     \ jp push_hl
@@ -1163,7 +1163,7 @@ code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
   repeat
   rp sthl  exx
   0000 hl ldp# |resolve
-  pushhl jp
+  jppushhl
   end-code
 
   \ doc{
@@ -1613,7 +1613,7 @@ create (fzx-emit)  ( -- )
   a l ld  00 h ld#  hl de ldp  hl addp  de addp
     \ now HL = (char - 31) * 3
   bc addp
-    \ now HL references offset/kern in char table
+    r now HL references offset/kern in char table
   m e ld  hl incp  m a ld  3F and#  a d ld
     \ now DE = offset
   m xor  rlca  rlca  a c ld
@@ -1655,7 +1655,7 @@ create (fzx-emit)  ( -- )
   hl incp  m a ld
     \ now HL references next char offset
     \ now A = LSB of next char offset
-  l add  a e ld
+  r add  a e ld
     \ now E = LSB of next char definition address
 -->
 
@@ -2678,7 +2678,7 @@ code ocr  ( col line -- n )
 
   \ end:
   2 unresolved @ >relresolve  0 h ld#  b l ld
-  bc pop  pushhl jp  end-code
+  bc pop  jppushhl  end-code
 
 ( ocr-charset ocr-first ocr-chars ascii-ocr udg-ocr )
 
@@ -3136,7 +3136,7 @@ code attr ( col line -- b )
     \ hl = attribute address
   m l ld  0 h ld#
     \ hl = attribute
-  pushhl jp
+  jppushhl
 
   end-code
 
@@ -3154,7 +3154,7 @@ code attr-addr ( col line -- a )
     \ e = line
   (attr-addr) call
     \ hl = attribute address
-  pushhl jp
+  jppushhl
 
   end-code
 
@@ -4786,7 +4786,7 @@ code polarity  ( n -- -1 | 0 | 1 )
     \ rl d ; set carry if DE -ve
     \ sbc hl,hl ; HL=0 if DE +ve, or -1 if DE -ve
 
-  78 05 + c,  F6 c, 01 c,  68 07 + c,  C3 c, pushhl ,
+  78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl
     \ ld a,l
     \ or 1
     \ ld l,a ; HL=1 or -1
@@ -4906,7 +4906,7 @@ code 2/  ( x1 -- x2 )
   E1 c,           \ pop hl
   CB c, 2C c,     \ sra h
   CB c, 1D c,     \ rr l
-  C3 c, pushhl ,  \ jp pushhl
+  jppushhl        \ jp pushhl
   end-code
 
   \ doc{
@@ -5296,7 +5296,7 @@ code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
   hl push         \ 2OS=d1lo-d2lo
   exx
   de sbcp         \ HL=d1hi-d2hi-cy
-  pushhl jp
+  jppushhl
   end-code
 
 ( d2* d2/ )
@@ -8883,7 +8883,7 @@ need any?
     cond  $20 $2F range
           $3A $40 range
           $5B $60 range
-          $7B $7E range  when  ." Punctuation "        else
+          $7B $7E range  when  ." Point "              else
     cond  $30 $39 range  when  ." Digit "              else
     cond  $41 $5A range  when  ." Upper case letter "  else
     cond  $61 $7A range  when  ." Lower case letter "  else
@@ -9894,7 +9894,7 @@ code @p  ( a -- b )
   ED c, 68 c,     \ in l,(c)
   C1 c,           \ pop bc
   26 c, 00 c,     \ ld h,0x00
-  C3 c, pushhl ,  \ jp pushhl
+  jppushhl        \ jp pushhl
   end-code
 
 ( !p )
@@ -9975,11 +9975,58 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ number  ( ca len -- n | d )
   \
   \ Attempt to convert a string _ca len_ into a number. If
-  \ valid punctuation is found, return _d_; if there is no
-  \ punctuation, return _n_. If conversion fails due to an
+  \ a valid point is found, return _d_; if there is no
+  \ valid point, return _n_. If conversion fails due to an
   \ invalid character, an exception #-275 is thrown.
   \
   \ }doc
+
+( standard-number-point? extended-number-point? )
+
+need [if]
+
+[needed] classic-number-point? [if]
+
+: classic-number-point?  ( c -- f )
+  dup [char] : = swap [char] , - 4 u< or  ;
+  \ doc{
+  \
+  \ standard-number-point?  ( c -- f )
+  \
+  \ Is character _c_ a classic number point?  Allowed
+  \ points are: comma, hyphen, period, slash and
+  \ colon.
+  \
+  \ This word is an alternative behaviour for the deferred word
+  \ `number-point?`, which is used in `number?`.
+  \
+  \ }doc
+
+[then]
+
+[needed] extended-number-point? [if]
+
+: extended-number-point?  ( c -- f )
+  dup [char] : = swap [char] + - 5 u< or  ;
+  \ doc{
+  \
+  \ extended-number-point?  ( c -- f )
+  \
+  \ Is character _c_ an extended number point?  Allowed
+  \ points are: plus sign, comma, hyphen, period, slash and
+  \ colon, after _Forth Programmer's Handbook_.
+  \
+  \ This word is an alternative behaviour for the deferred word
+  \ `number-point?`, which is used in `number?`.
+  \
+  \ }doc
+  \
+  \ Credits:
+  \
+  \ Code by Wil Baden, from Forth Dimensions (volume 20, number
+  \ 3 page 26, 1998-10).
+
+[then]
 
   \ }}} =======================================================
   \ Data structures {{{
@@ -10341,7 +10388,7 @@ exit
   00 d ld#  \ de = index of the user variable
   up fthl \ ld hl,(user_variables_pointer) \ XXX FIXME
   de addp  \ hl= address of the user variable
-  pushhl jp end-asm
+  jppushhl  end-asm
 
 ( 1array ) \ noble-arrays
 
@@ -12010,7 +12057,7 @@ code jml-rnd  ( -- u )
   hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
   de pop  de addp  0029 de ldp#  de addp
   os-seed sthl
-  pushhl jp
+  jppushhl
   end-code
 
 : jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
@@ -12069,7 +12116,7 @@ code mb-rnd  ( -- n )
   de sbcp
   cy if  hl incp  then
   os-seed sthl
-  pushhl jp  end-code
+  jppushhl   end-code
 
 : mb-random  ( n1 -- n2 )  mb-rnd um* nip  ;
 
@@ -12209,7 +12256,7 @@ code zh-rnd  ( -- n )
     \ inc hl
   os-seed sthl
     \ ld (seed),hl
-  pushhl jp  end-code
+  jppushhl   end-code
 
 : zh-random  ( n1 -- n2 )  zh-rnd um* nip  ;
 
@@ -16657,6 +16704,18 @@ need bench{
   \ 00010  6397          5216
   \ 00100 63970 (1.00)  52159 (0.81)
 
+  \ 2016-03-16
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- --------------------------------------
+  \       jp pushhl        push hl + jp (ix) [1]
+  \       ------------     ---------------------
+  \ 00001                    517
+  \ 00010                   5164
+  \ 00100 52161 (1.00)     51635 (0.98)
+  \
+  \ [1] Changed only in the kernel.
+
 ( interface-age-benchmark )
 
   \ Code adapted from: Forth Dimensions (volume 17, number 4,
@@ -16707,6 +16766,16 @@ need bench{  need 2/
   \       ------------  ------------
   \ 05000 80091 (1.00)  72445 (0.90)
 
+  \ 2016-03-16 XXX TODO --
+  \
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- --------------------------------------
+  \       jp pushhl        push hl + jp (ix) [1]
+  \       ------------     ---------------------
+  \ 05000 72445 (1.00)     71914 (0.99)
+  \
+  \ [1] Changed only in the kernel.
+
 ( vector-loop-benchmark )
 
   \ Code adapted from: Forth Dimensions (volume 17, number 4,
@@ -16751,7 +16820,6 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   until  drop  ;
 
 : loop2 ( -- )  \ vector multiply
-  \ XXX FIXME crash!
   0 begin
      dup vec1 @ over vec2 @ * over vec3 !
      1+ dup vsize =
@@ -16786,8 +16854,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   bench{ 0 begin  loop1 1+ dup reps =  until  drop }bench.
   ." Vector +    " cr  ;
 
-: bench2 ( -- ) \ benchmark loop2 )
-  \ XXX FIXME crash!
+: bench2 ( -- ) \ benchmark loop2
   bench{ 0 begin  loop2 1+ dup reps =  until  drop }bench.
   ." Vector *    " cr  ;
 
@@ -16824,12 +16891,24 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ Vector /      149002 (1.0)  127495 (0.85)
   \ Vector */     178854 (1.0)  154480 (0.86)
 
+  \ 2016-03-16  XXX TODO --
+  \
+  \ Benchmark     Frames (1 frame = 50th of second)
+  \ ---------     -----------------------------------
+  \               jp pushhl        push hl + jp (ix) [1]
+  \               ------------     ---------------------
+  \ Vector noop     9033 (1.0)       8943 (0.99)
+  \ Vector +       47461 (1.0)      47177 (0.99)
+  \ Vector *       91920 (1.0)      91153 (0.99)
+  \ Vector /      127496 (1.0)     126783 (0.99)
+  \ Vector */     155192 (1.0)     154364 (0.99)
+
+  \ [1] Changed only in the kernel.
+
 ( all-benchmarks )
 
   \ Code adapted from: Forth Dimensions (volume 17, number 4,
   \ page 11, 1995-11).
-
-exit
 
 need byte-magazine-benchmark
 need interface-age-benchmark
