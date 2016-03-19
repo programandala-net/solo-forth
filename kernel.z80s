@@ -7,7 +7,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603161838
+; This file was last modified: 201603190250
 
 ; ==============================================================
 ; License
@@ -20,19 +20,19 @@
 ; ==============================================================
 ; Version
 
-; Semantic versioning (http://semver.org)
+; Semantic Versioning (http://semver.org)
 
 version_major:                equ 0
 version_minor:                equ 3
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 1
+  version_release_candidate:  equ 2
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9F3C  ; build 20160316
+  version_build_low_part:     equ 0x9F3F  ; build 20160319
 endif
 
 ; ==============================================================
@@ -95,91 +95,6 @@ endif
 ; The markers `doc{` and `}doc` delimitate the comments that
 ; form the glossary.
 
-; ----------------------------------------------
-; Stack notation
-
-; Symbol  Data type                                          Size
-; ------  -------------------------------------------------- ------
-
-; a           = address                                      1 cell
-; ca          = character-aligned address                    1 cell
-
-; f           = flag (false is 0; true is any other value)   1 cell
-; true        = true flag (-1)                               1 cell
-; false       = false flag (0)                               1 cell
-; wf          = well-formed flag (false is 0; true is -1)    1 cell
-
-; b           = 8-bit byte                                   1 cell
-; c           = 8-bit character                              1 cell
-
-; u           = 16-bit unsigned number                       1 cell
-; len         = 16-bit unsigned number,                      1 cell
-;               length of memory zone or string              1 cell
-; n           = 16-bit signed number                         1 cell
-; +n          = 16-bit non-negative number                   1 cell
-; n|u         = 16-bit signed or unsigned number             1 cell
-; x           = 16-bit unspecified number                    1 cell
-
-; ca len      = string                                       2 cells
-
-; d           = 32-bit signed double number                  2 cells
-; d|ud        = 32-bit signed or unsigned double number      2 cells
-; +d          = 32-bit non-negative double number            2 cells
-; ud          = 32-bit unsigned double number                2 cells
-; xd          = 32-bit unspecified number                    2 cells
-
-; xc          = 8-bit graphic x coordinate (0..255)          1 cell
-; yc          = 8-bit graphic y coordinate (0..191)          1 cell
-; row         = 8-bit cursor row (0..n)                      1 cell
-;               (maximum value depends on the screen mode)
-; col         = 8-bit cursor column (0..n)                   1 cell
-;               (maximum value depends on the screen mode)
-
-; xt          = execution token (=cfa)                       1 cell
-; cfa         = code field address (=xt)                     1 cell
-; lfa         = link field address                           1 cell
-; nt          = name token (=nfa)                            1 cell
-; nfa         = name field address (=nt)                     1 cell
-; pfa         = parameter field address                      1 cell
-; xtp         = execution token pointer                      1 cell
-
-; wid         = wordlist identifier                          1 cell
-;               (in Solo forth, the pfa of a vocabulary)
-
-; orig        = address of an unresolved forward branch      1 cell
-; dest        = address of a backward branch target          1 cell
-
-; cs-id       = control structure identifier                 1 cell
-; loop-sys    = loop control parameters                      2 cells
-; nest-sys    = definition call                              1 cell
-; source-sys  = source identifier                            several cells
-; XXX TODO -- fix typo "definition cells" in Forth-2012 document (Table 3.1)
-
-; op          = Z80 8-bit opcode, generally a jump           1 cell
-; r           = Z80 8-bit register identifier                1 cell
-; rp          = Z80 16-bit register pair identifier          1 cell
-
-; ----------------------------------------------
-; Parsed text notation
-
-; XXX TODO
-
-; <char>          the delimiting character marking the end of the
-;                 string being parsed
-; <chars>         zero or more consecutive occurrences of the
-;                 character char
-; <space>         a delimiting space character
-; <spaces>        zero or more consecutive occurrences of the
-;                 character space
-; <quote>         a delimiting double quote
-; <paren>         a delimiting right parenthesis
-; <eol>           an implied delimiter marking the end of a line
-; ccc             a parsed sequence of arbitrary characters,
-;                 excluding the delimiter character
-; text            same as ccc
-; name            a token delimited by space, equivalent to
-;                 ccc<space> or ccc<eol> ; XXX TODO
-
 ; ==============================================================
 ; Configuration
 
@@ -192,7 +107,8 @@ endif
   ; Solo Forth can be compiled for G+DOS or +3DOS.
   ; This depends on two labels, `gplusdos` and `plus3dos`,
   ; defined with a parameter of the Pasmo assembler. See the
-  ; Makefile files for details.
+  ; Makefile files for details. Support for +3DOS is not
+  ; finished yet.
 
 if (!defined gplusdos) and (!defined plus3dos)
   gplusdos equ true ; G+DOS by default
@@ -370,39 +286,22 @@ _header: macro _base_label,_name,_flags
 _code_header: macro _base_label,_name,_flags
 
   _header _base_label,_name,_flags
-  _base_label##pfa:   ; parameter field address
-  _base_label##code:  ; address of the actual code ; XXX TODO -- remove?
 
   endm
 
 _defer_header: macro _base_label,_name,_flags,_xt
 
-  _code_header _base_label,_name,_flags
+  _header _base_label,_name,_flags
   jp _xt
 
   endm
 
-_code_alias_header: macro _base_label,_name,_flags,_xt
+_alias_header: macro _base_label,_name,_flags,_xt
 
   _header _base_label,_name,_flags
   jp _xt
 
-  ; XXX TODO -- with DTC, alias of colon words are possible.
-
   endm
-
-; XXX TODO
-; _raw_code_alias_header: macro _base_label,_name,_flags,_alias
-
-;   ; Special macro used to create alias of code words that don't
-;   ; have a parameter field, e.g. `noop`.
-
-;   _header _base_label,_name,_flags
-;   dw _alias ; code field
-
-;_base_label##pfa: equ _alias##pfa ; XXX TODO
-
-;  endm
 
 _colon_header: macro _base_label,_name,_flags
 
@@ -1288,7 +1187,7 @@ next:
   ; bc = address of the next xt
   ; hl = xt
 
-next2:
+execute_hl:
   ; Execute the word whose xt is in the hl register.
   ; Forth: PC <-- (W)
   ; Z80:   pc <-- (hl)
@@ -1383,14 +1282,6 @@ endif
   _constant_header next_,'NEXT'
 
   dw next
-
-; ----------------------------------------------
-  _constant_header next2_,'NEXT2'
-
-  ; XXX OLD -- added for the second version of `defer`
-  ; XXX -- used by `pause`
-
-  dw next2
 
 ; ----------------------------------------------
   _constant_header pusha_,'PUSHA'
@@ -1846,7 +1737,7 @@ push_a:
   ld h,a
   inc bc
   push hl
-  jp lit_code
+  jp lit_
 
 ; ----------------------------------------------
   _code_header lit_,'LIT',compile_only
@@ -2092,7 +1983,7 @@ question_csb_.enough:
   ld h,(hl)
   ld l,a
   or h
-  jp nz,next2
+  jp nz,execute_hl
   _jp_next
 
 ; ----------------------------------------------
@@ -2133,31 +2024,22 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header backward_mark_,'<MARK'
-
-  ; XXX TODO convert to an alias
+  _alias_header backward_mark_,'<MARK',,here_
 
 ; doc{
 ;
-; <mark  ( -- dest )
+; <mark  ( -- a )
 ;
 ; Leave the address of the current dictionary pointer, as the
-; the destination of a backward branch.  _dest_ is typically
+; the destination of a backward branch.  _a_ is typically
 ; only used by `<resolve` to compile a branch address.
 ;
-; Origin: Forth-83.
+; Origin: Forth-83 (System Extension Word Set).
 ;
 ; }doc
 
-  ; XXX TODO convert to an alias
-
-  dw here_
-  dw exit_
-
 ; ----------------------------------------------
-  _colon_header backward_resolve_,'<RESOLVE'
-
-  ; XXX TODO convert to an alias
+  _alias_header backward_resolve_,'<RESOLVE',,comma_
 
 ; doc{
 ;
@@ -2172,9 +2054,6 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw comma_
-  dw exit_
-
 ; ----------------------------------------------
   _code_header branch_,'BRANCH'
 
@@ -2182,11 +2061,11 @@ question_csb_.enough:
 ;
 ; branch  ( -- )
 ;
-; The run-time procedure to branch unconditionally. An in-line
-; offset is copied to the interpretive pointer IP to branch
-; forward or backward.
+; The run-time procedure to branch unconditionally. The
+; following in-line address is copied to IP to branch forward or
+; backward.
 ;
-; Origin: Forth-94.
+; Origin: Forth-83 (System Extension Word Set).
 ;
 ; }doc
 
@@ -2204,9 +2083,9 @@ question_csb_.enough:
 ;
 ; 0branch  ( f -- )
 ;
-; A run-time procedure to branch conditionally. If  _f_ on stack
+; A run-time procedure to branch conditionally. If  _f_ 
 ; is false (zero), the following in-line address is copied to IP
-; to branch forward or  backward.
+; to branch forward or backward.
 ;
 ; Origin: fig-Forth.
 ;
@@ -2215,7 +2094,7 @@ question_csb_.enough:
   pop hl
   ld a,l
   or h
-  jp z,branch_code ; branch if zero
+  jp z,branch_ ; branch if zero
   inc bc
   inc bc ; skip the inline branch address
   _jp_next
@@ -2227,22 +2106,19 @@ question_csb_.enough:
 ;
 ; ?branch  ( f -- )
 ;
-; A run-time procedure to branch conditionally. If  _f_ on stack
-; is not zero, the following in-line address is copied to IP to
-; branch forward or backward.
+; A run-time procedure to branch conditionally. If  _f_ is not
+; false (not zero), the following in-line address is copied to
+; IP to branch forward or backward.
 ;
-; Note: This is not Forth-83's `?branch`: Forth-83's `?branch`
-; does the same than fig-Forth's `0branch`: the branch is done
-; when the flag is zero. Solo Forth includes fig-Forth's
-; `0branch` and also `?branch`, which branches when the flag is
-; not zero.
+; Note: This is not Forth-83's `?branch`, which is equivalent to
+; '0branch` in fig-Forth's and Solo Forth.
 ;
 ; }doc
 
   pop hl
   ld a,l
   or h
-  jp nz,branch_code ; branch if not zero
+  jp nz,branch_ ; branch if not zero
   inc bc
   inc bc ; skip the inline branch address
   _jp_next
@@ -2280,7 +2156,7 @@ question_csb_.enough:
   pop de
   and a
   sbc hl,de
-  jp z,branch_code
+  jp z,branch_
   add hl,de  ; reverse the substraction
   jp paren_do.de_hl
 
@@ -2449,7 +2325,7 @@ paren_do.de_hl:
   pop hl
   ld a,h
   or l
-  jp nz,leave_code
+  jp nz,leave_
   _jp_next
 
 ; ----------------------------------------------
@@ -2470,7 +2346,7 @@ paren_do.de_hl:
   ld (return_stack_pointer),hl ; write updated return stack pointer (6 was added)
   dec bc
   dec bc ; point IP to forward branch address
-  jp branch_code
+  jp branch_
 
 ; ----------------------------------------------
   _code_header paren_plus_loop_,'(+LOOP)'
@@ -2565,18 +2441,18 @@ paren_loop.continue:
   ld a,e  ; character
   call upper.a
   sub '0' ; >="0"?
-  jp c,false_code ; <"0" is invalid
+  jp c,false_ ; <"0" is invalid
   cp 0x0A ; >"9"?
   jp m,digit.test_value ; no, test value
   sub 0x07 ; gap between "9" & "A", now "A"=0x0A
   cp 0x0A ; >="A"?
-  jp c,false_code ; characters between "9" & "A" are invalid
+  jp c,false_ ; characters between "9" & "A" are invalid
 digit.test_value:
   cp l ; <base?
-  jp nc,false_code ; no, invalid
+  jp nc,false_ ; no, invalid
   ld e,a ; converted digit
   push de
-  jp true_code
+  jp true_
 
 ; ----------------------------------------------
   _colon_header number_base_,'NUMBER-BASE'
@@ -3573,7 +3449,7 @@ translate_char.begin:
   inc hl
   ld a,(hl)
   and a ; end of table?
-  jp z,false_code ; no match found
+  jp z,false_ ; no match found
   cp e
   inc hl
   jr nz,translate_char.begin
@@ -3583,7 +3459,7 @@ translate_char.begin:
 translate_char.end:
   pop hl  ; discard c1
   push de
-  jp true_code
+  jp true_
 
 endif
 
@@ -3620,8 +3496,8 @@ endif
 ; }doc
 
   call rom_break_key
-  jp nc,true_code
-  jp false_code
+  jp nc,true_
+  jp false_
 
 ; ----------------------------------------------
   _defer_header break_key_question_,'BREAK-KEY?',,default_break_key_question_
@@ -3650,8 +3526,8 @@ endif
   ; are on.
 
   bit 5,(iy+0x01) ; new key available? (system variable FLAGS)
-  jp z,false_code
-  jp true_code
+  jp z,false_
+  jp true_
 
 ; ----------------------------------------------
   _variable_header cursor_char_,'CURSOR-CHAR'
@@ -4384,7 +4260,7 @@ u_m_slash_mod.4:
   ld de,cell*2
   add hl,de
   ld (return_stack_pointer),hl
-  jp two_fetch_code
+  jp two_fetch_
 
 ; ----------------------------------------------
   _code_header two_r_fetch_,'2R@'
@@ -4405,8 +4281,8 @@ u_m_slash_mod.4:
 zero_equals.hl:
   ld a,l
   or h
-  jp z,true_code
-  jp false_code
+  jp z,true_
+  jp false_
 
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
@@ -4414,8 +4290,8 @@ zero_equals.hl:
   pop hl
   ld a,l
   or h
-  jp z,false_code
-  jp true_code
+  jp z,false_
+  jp true_
 
 ; ----------------------------------------------
   _code_header zero_less_than_,'0<'
@@ -4430,8 +4306,8 @@ zero_less_.hl: ; XXX entry not used yet
     rl h ; 8t, 2 bytes
   endif
 true_if_cy:
-  jp c,true_code
-  jp false_code
+  jp c,true_
+  jp false_
 
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0>'
@@ -4737,8 +4613,8 @@ endif
   pop de ; e = bitmask
   ld a,e
   and (hl)
-  jp nz,true_code
-  jp false_code
+  jp nz,true_
+  jp false_
 
 ; ----------------------------------------------
   _code_header c_store_set_bits_,'C!SET-BITS'
@@ -4983,7 +4859,7 @@ do_colon.end: ; XXX TMP for debugging
   dw exit_
 
 ; ----------------------------------------------
-  _header noop_,'NOOP'
+  _code_header noop_,'NOOP'
 
 ; doc{
 ;
@@ -4991,7 +4867,7 @@ do_colon.end: ; XXX TMP for debugging
 ;
 ; }doc
 
-  _jp_next ; code field
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header c_constant_,'CCONSTANT'
@@ -5343,7 +5219,11 @@ endif
 ;
 ; dp  ( -- a )
 ;
-; User variable that holds XXX TODO
+; A variable, the dictionary pointer, which contains the address
+; of the next free memory above the dictionary. The value may be
+; read by `here` and altered by `there` and `allot`.
+;
+; Origin: fig-Forth (where `dp` is a user variable).
 ;
 ; }doc
 
@@ -5674,16 +5554,16 @@ source.other:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_alias_header cell_minus_,'CELL-',,two_minus_
+  _alias_header cell_minus_,'CELL-',,two_minus_
 
 ; ----------------------------------------------
-  _code_alias_header cell_plus_,'CELL+',,two_plus_
+  _alias_header cell_plus_,'CELL+',,two_plus_
 
 ; ----------------------------------------------
-  _code_alias_header char_minus_,'CHAR-',,one_minus_
+  _alias_header char_minus_,'CHAR-',,one_minus_
 
 ; ----------------------------------------------
-  _code_alias_header char_plus_,'CHAR+',,one_plus_
+  _alias_header char_plus_,'CHAR+',,one_plus_
 
 ; ----------------------------------------------
   _code_header one_minus_,'1-'
@@ -5727,10 +5607,6 @@ source.other:
   _jp_pushhl
 
 ; ----------------------------------------------
-
-; XXX TODO
-;  _raw_code_alias_header chars_,'CHARS',immediate,noop_
-
   _code_header chars_,'CHARS',immediate
 
 ; doc{
@@ -5748,7 +5624,7 @@ source.other:
   _jp_next
 
 ; ----------------------------------------------
-  _code_alias_header cells_,'CELLS',,two_star_
+  _alias_header cells_,'CELLS',,two_star_
 
 ; doc{
 ;
@@ -5768,7 +5644,32 @@ source.other:
 ; ----------------------------------------------
   _colon_header here_,'HERE'
 
+; doc{
+;
+; here  ( -- a )
+;
+; Return the address of the data-space pointer.
+;
+; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
   dw dp_,fetch_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header there_,'THERE'
+
+; doc{
+;
+; there  ( a -- )
+;
+; Set the address of the data-space pointer.
+;
+; }doc
+
+  dw dp_,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -5787,6 +5688,9 @@ source.other:
 ; : allot  ( n -- )
 ;   dp +!  ;
 ; ----
+;
+; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5840,18 +5744,13 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header compile_comma_,'COMPILE,'
+  _alias_header compile_comma_,'COMPILE,',,comma_
 
 ; doc{
 ;
 ; compile,  ( xt -- )
 ;
 ; }doc
-
-  ; XXX TODO alias
-
-  dw comma_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header c_comma_,'C,'
@@ -5875,8 +5774,8 @@ endif
   pop hl
   _compare_de_hl_unsigned
 false_if_z: ; XXX entry not used yet
-  jp z,false_code
-  jp true_code
+  jp z,false_
+  jp true_
 
 ; ----------------------------------------------
   _code_header equals_,'='
@@ -5885,8 +5784,8 @@ false_if_z: ; XXX entry not used yet
   pop hl
   _compare_de_hl_unsigned
 true_if_z: ; XXX entry not used yet
-  jp z,true_code
-  jp false_code
+  jp z,true_
+  jp false_
 
 ; ----------------------------------------------
   _code_header less_than_,'<'
@@ -5898,8 +5797,8 @@ is_de_less_than_hl:
   if size_optimization
     jp true_if_cy
   else
-    jp c,true_code
-    jp false_code
+    jp c,true_
+    jp false_
   endif
 
 if 0
@@ -5921,13 +5820,13 @@ if 0
 
   jp pe,less_than.reverse  ; if OV, jump
   ; not overflow
-  jp p,false_code    ; if +ve, result false
-  jp true_code       ; if -ve, result true
+  jp p,false_    ; if +ve, result false
+  jp true_       ; if -ve, result true
 
 less_than.reverse
   ; overflow
-  jp m,false_code    ; if -ve, result false
-  jp true_code       ; if +ve, result true
+  jp m,false_    ; if -ve, result false
+  jp true_       ; if +ve, result true
 
 endif
 
@@ -5951,8 +5850,8 @@ u_less_than.de_hl:
   if size_optimization
     jp true_if_cy
   else
-    jp c,true_code
-    jp false_code
+    jp c,true_
+    jp false_
   endif
 
 else ; XXX NEW -- code adapted from Z88 CamelForth
@@ -7367,20 +7266,21 @@ parse.end:
 
 ; doc{
 ;
-; header  ( "name" -- )
+; input-stream-header  ( "name" -- )
 
 ; Create a dictionary header "name" with its code field
 ; pointing to its parameter field.
 ;
 ; ----
 ; : input-stream-header  ( "name" | -- )
-;   parse-name header,  ;
+;   parse-name ?name-too-short header,  ;
 ; ----
 ;
 ; }doc
 
   dw parse_name_
   dw question_name_too_short_
+;  dw two_dup_,type_,space_; XXX INFORMER
   dw header_comma_
   dw exit_
 
@@ -8454,7 +8354,7 @@ if 0 ; new_wordlists
   dw exit_
 
 ; ----------------------------------------------
-  _code_alias_header wid_to_link_,'WID>LINK',,cell_plus_
+  _alias_header wid_to_link_,'WID>LINK',,cell_plus_
 
 ; doc{
 ;
@@ -8463,6 +8363,7 @@ if 0 ; new_wordlists
 ; ----
 ; ' cell+ alias wid>link  ( wid -- a )
 ; ----
+;
 ; }doc
 
 ; ----------------------------------------------
@@ -8614,10 +8515,10 @@ if 0 ; XXX TODO
   ; XXX Already in the library, but may be needed in the kernel,
   ; depending on the final definitions of `wordlist` and
   ; `vocabulary`.
-  _code_alias to_wid_,'>WID',,two_plus_
+  _alias_header to_wid_,'>WID',,two_plus_
 
 ; ----------------------------------------------
-  _code_alias to_wid_,'>WID',,two_minus_
+  _alias_header to_wid_,'>WID',,two_minus_
 
 endif
 
@@ -8784,7 +8685,7 @@ quit.begin:
 
 
 ; ----------------------------------------------
-  _code_alias_header to_defer_,'>DEFER',,one_plus_
+  _alias_header to_defer_,'>DEFER',,one_plus_
 
 ; doc{
 ;
@@ -9065,7 +8966,7 @@ common_start:
   _jp_next ; jump to the xt pointed by the register pair BC
 
 ; ----------------------------------------------
-  _code_alias_header d_to_s_,'D>S',,drop_
+  _alias_header d_to_s_,'D>S',,drop_
 
 ; doc{
 ;
@@ -9124,7 +9025,7 @@ common_start:
   pop hl
 question_negate.hl:
   bit 7,h
-  jp nz,negate_code
+  jp nz,negate_
   _jp_next
 
 ; ----------------------------------------------
@@ -9147,7 +9048,7 @@ question_negate.hl:
   pop hl
 question_d_negate.hl:
   bit 7,h
-  jp nz,d_negate_code
+  jp nz,d_negate_
   _jp_next
 
 ; ----------------------------------------------
@@ -10441,7 +10342,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header begin_,'BEGIN',immediate+compile_only
+  _alias_header begin_,'BEGIN',immediate+compile_only,backward_mark_
 
 ; doc{
 ;
@@ -10453,16 +10354,8 @@ endif
 ;
 ; }doc
 
-  dw backward_mark_ ; address to compute the backward branch
-  dw exit_
-
 ; ----------------------------------------------
-  _colon_header then_,'THEN',immediate+compile_only
-
-  ; XXX TODO use an alias
-
-  dw forward_resolve_
-  dw exit_
+  _alias_header then_,'THEN',immediate+compile_only,forward_resolve_
 
 ; ----------------------------------------------
   _colon_header until_,'UNTIL',immediate+compile_only
@@ -11034,7 +10927,7 @@ endif
   ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
 
-  jp home_code ; continue at `home`
+  jp home_ ; continue at `home`
 
   ; The Z80 version above uses 29 bytes;
   ; the following Forth version uses 30 bytes:
@@ -11449,7 +11342,7 @@ do_two_constant:
   jp two_fetch.hl
 
 ; ----------------------------------------------
-  _code_alias_header unnest_,'UNNEST',,r_drop_
+  _alias_header unnest_,'UNNEST',,r_drop_
 
   ; XXX NEW -- experimental
 
@@ -11505,7 +11398,7 @@ do_two_constant:
   pop hl
   ld a,h
   or l
-  jp nz,exit_code
+  jp nz,exit_
   _jp_next
 
 ; ----------------------------------------------

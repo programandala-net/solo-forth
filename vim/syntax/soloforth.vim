@@ -398,6 +398,7 @@ syn keyword soloforthMemory sp
 syn keyword soloforthMemory sp!
 syn keyword soloforthMemory sp0
 syn keyword soloforthMemory sp@
+syn keyword soloforthMemory there
 syn keyword soloforthMemory unused-csb
 syn keyword soloforthOperator *
 syn keyword soloforthOperator */
@@ -1114,6 +1115,8 @@ let b:current_syntax = "soloforth"
 " 2016-03-13: Updated: added `span`, removed `(home)`.
 "
 " 2016-03-15: Added `evaluate`.
+"
+" 2016-03-19: Added `there`.
 
 " --------------------------------------------------------------
 

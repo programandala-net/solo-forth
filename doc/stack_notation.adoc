@@ -1,0 +1,76 @@
+= Stack notation
+:author: Marcos Cruz (programandala.net)
+:revdate: 2016-03-19
+
+|===
+| Symbol     | Data type                                     | Size
+
+| a           | address                                      | 1 cell
+| ca          | character-aligned address                    | 1 cell
+
+| f           | flag (false is 0; true is any other value)   | 1 cell
+| true        | true flag (-1)                               | 1 cell
+| false       | false flag (0)                               | 1 cell
+| wf          | well-formed flag (false is 0; true is -1)    | 1 cell
+
+| b           | 8-bit byte                                   | 1 cell
+| c           | 8-bit character                              | 1 cell
+
+| u           | 16-bit unsigned number                       | 1 cell
+| len         | 16-bit unsigned number,                      | 1 cell
+|               length of memory zone or string              | 1 cell
+| n           | 16-bit signed number                         | 1 cell
+| +n          | 16-bit non-negative number                   | 1 cell
+| n\|u         | 16-bit signed or unsigned number             | 1 cell
+| x           | 16-bit unspecified number                    | 1 cell
+
+| ca len      | string                                       | 2 cells
+
+| d           | 32-bit signed double number                  | 2 cells
+| d\|ud        | 32-bit signed or unsigned double number      | 2 cells
+| +d          | 32-bit non-negative double number            | 2 cells
+| ud          | 32-bit unsigned double number                | 2 cells
+| xd          | 32-bit unspecified number                    | 2 cells
+
+| xc          | 8-bit graphic x coordinate (0..255)          | 1 cell
+| yc          | 8-bit graphic y coordinate (0..191)          | 1 cell
+| row         | 8-bit cursor row (0..n)                      | 1 cell
+| col         | 8-bit cursor column (0..n)                   | 1 cell
+
+| xt          | execution token (=cfa)                       | 1 cell
+| cfa         | code field address (=xt)                     | 1 cell
+| lfa         | link field address                           | 1 cell
+| nt          | name token (=nfa)                            | 1 cell
+| nfa         | name field address (=nt)                     | 1 cell
+| pfa         | parameter field address                      | 1 cell
+| xtp         | execution token pointer                      | 1 cell
+
+| wid         | wordlist identifier                          | 1 cell
+
+| orig        | address of an unresolved forward branch      | 1 cell
+| dest        | address of a backward branch target          | 1 cell
+
+| cs-id       | control structure identifier                 | 1 cell
+| loop-sys    | loop control parameters                      | 2 cells
+| nest-sys    | definition call                              | 1 cell
+| source-sys  | source identifier                            | n cells
+
+| op          | Z80 8-bit opcode, generally a jump           | 1 cell
+| r           | Z80 8-bit register identifier                | 1 cell
+| rp          | Z80 16-bit register pair identifier          | 1 cell
+|===
+
+|===
+| Parsed text notation
+
+| <char>     | the delimiting character marking the end of the string being parsed
+| <chars>    | zero or more consecutive occurrences of the character char
+| <space>    | a delimiting space character
+| <spaces>   | zero or more consecutive occurrences of the character space
+| <quote>    | a delimiting double quote
+| <paren>    | a delimiting right parenthesis
+| <eol>      | an implied delimiter marking the end of a line
+| ccc        | a parsed sequence of arbitrary characters, excluding the delimiter character
+| name       | a token delimited by space, equivalent to ccc<space> or ccc<eol>.
+|===
+

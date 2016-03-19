@@ -7,7 +7,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ This file was last modified: 201603161808
+\ This file was last modified: 201603190238
 
   \ ------------------------------------------------------------
   \ License
@@ -25,11 +25,15 @@
 
 ( ) \ scr 1 -- testing load block
 
+  \ XXX TMP --
+
 2 load
   need wipe-block  need color-block  need clear-block
   exit
+
   \ need list
   \ 504 load 505 load 507 load 509 load
+
   634 load  \ XXX TMP -- for Nuclear Invaders
 
   \ }}} =======================================================
@@ -213,19 +217,6 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ }doc
 
 : needed  ( ca len -- )
-
-  \ XXX OLD
-  \
-  \ XXX FIXME usually the final check fails because the saved
-  \ string has been overwritten in the circular string buffer.
-  \ the only solution is to store the string apart, in an ad
-  \ hoc zone.
-
-  \ 2dup undefined?
-  \   if  2dup reneeded  then
-  \ 2dup undefined? warnings @ and
-  \   if  type 28 warning exit  then  2drop  ;
-
   needed-word 2@ 2>r
   -trailing -leading save-string 2dup needed-word 2!
   2dup undefined?
@@ -6906,9 +6897,9 @@ variable old-voc-link
   \ recognize any input, just issues error #1, "not
   \ understood".
 
-  0 swap - dp !  ;
+  0 swap - there  ;
 
-: ]transient  ( -- )  old-dp @ dp !  old-np @ np !  ;
+: ]transient  ( -- )  old-dp @ there  old-np @ np !  ;
 
   \ End the transient code.
   \
@@ -7414,7 +7405,7 @@ need marker
   dup @ >r r@ cells 2* + 1 cells - r@ 0
   ?do dup dup @ swap cell+ @ over ! swap 2 cells - loop
   drop r> set-order
-  dp !
+  there
   ;
 
 ( marker )  \ first approach
@@ -7445,7 +7436,7 @@ need marker
 
 : marker!  ( a -- )
   \ Restore the data preserved by a marker word.
-  dup @ dup voc-link !  cell+ dup @ np!  cell+ @ dp !  ;
+  dup @ dup voc-link !  cell+ dup @ np!  cell+ @ there  ;
 
 -->
 
@@ -11351,7 +11342,7 @@ code pause ( u -- )
   \ Variant: `(wait)` is a variable and the calling is not
   \ factored.
 
-need z80-asm
+need z80-asm  need execute-hl
 
 variable (wait)  ' noop (wait) !
 
@@ -11363,12 +11354,7 @@ code pause ( u -- )
 
     \ Call the xt hold in `(wait)`:
 
-    ' (wait) >body fthl
-    here 6 + bc ldp# \ point IP to phony_compiled_word
-    next2 jp  \ execute the xt in `(wait)`
-    \ phony_compiled_word:
-    here cell+ ,  \ point to the phony xt following
-    here cell+ ,  \ phony xt, point to the code following
+    ' (wait) >body fthl execute-hl
 
     de pop  halt  de decp  de tstp  \ finished?
   z until
@@ -13455,7 +13441,7 @@ need @c+  need for
 
 macro execute-hl  ( -- )
   here 6 + bc ldp#  \ point IP to phony_compiled_word
-  next2 jp          \ execute the xt in HL
+  jphl          \ execute the xt in HL
   \ phony_compiled_word:
   here cell+ ,      \ point to the phony xt following
   endm
@@ -17312,27 +17298,6 @@ need bench{
   \ 20000    1799   1765
   \ 65535    5870   5759
 
-( number? )
-
-  \ XXX UNDER DEVELOPMENT
-  \ Improved alternative to `number?`.
-
-: solo-number?   ( ca len -- 0 | n 1 | d 2 )
-  dup 0= if  2drop 0 exit  then
-  base @ >r number-base base !
-  skip-sign? >r
-  0 0 2swap  dpl on
-  begin
-    >number dup
-  while
-    over c@ [char] . <>  \ not a decimal point?
-    dpl @ 0< 0=  or  \ or not the first decimal point?
-    if  2drop 2rdrop 0 exit  then
-    dup 1- dpl !  1 /string
-  repeat  2drop  dpl @ 0<
-  if    d>s r> ?negate  1
-  else  r> ?dnegate  2  then  r> base !  ;
-
 ( number?-bench )
 
   \ 2015-10-14
@@ -17473,8 +17438,6 @@ defer num?
 
 ( header-benchmark )
 
-  \ XXX UNDER DEVELOPMENT
-
 need bench{ warnings off bench{ : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
@@ -17519,8 +17482,6 @@ need bench{ warnings off bench{ : w ; : w ; : w ; : w ;
   \ (4) Same as (1) but with zero-length name check.
 
 ( header-benchmark )
-
-  \ XXX UNDER DEVELOPMENT
 
 need bench{ warnings off blk @ 1+ constant b bench{ b load
 b load b load b load b load b load b load b load b load b load
@@ -17585,7 +17546,7 @@ b load b load b load b load b load b load b load b load }bench.
 
   \ Compare two versions of `interpret`.
 
-  2 load  need reset-frames  reset-frames
+  need bench{  bench{
 
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
@@ -17601,19 +17562,19 @@ b load b load b load b load b load b load b load b load }bench.
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 sp0 @ sp!
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 
-  frames@ cr .( Frames ) d. cr  sp0 @ sp!
+  }bench. sp0 @ sp!
 
-  \ 2015-11-12
-  \
   \ How `interpret`
-  \ interprets numbers   Bytes free  Frames
-  \ ------------------   ----------  -------------
-  \ branches (1)              32766     500 (1.00)
-  \ execution table (1)       32770     497 (0.99)
-  \ execution table (2)       32761     498 (0.99)
+  \ interprets numbers   Bytes free  Frames         Date
+  \ ------------------   ----------  -------------  ----------
+  \ branches (1)              32766     500 (1.00)  2015-11-12
+  \ execution table (1)       32770     497 (0.99)  2015-11-12
+  \ execution table (2)       32761     498 (0.99)  2015-11-12
+  \ execution table (3)                 476 (0.95)  2016-03-19
 
   \ (1): before implementing an execution table for words
   \ (2): shared with the words, integrating the common factor
+  \ (3): same as (2), but when the Forth system is DTC
 
   \ 1 frame = 50th of second
 
@@ -17621,7 +17582,7 @@ b load b load b load b load b load b load b load b load }bench.
 
   \ Compare two versions of `interpret`.
 
-  2 load  need reset-frames  reset-frames
+  need bench{  bench{
 
 : foo  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
@@ -17637,19 +17598,19 @@ b load b load b load b load b load b load b load b load }bench.
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  ;
 
-  frames@ cr .( Frames ) d. cr
+  }bench.
 
-  \ 2015-11-12
-  \
   \ How `interpret`
-  \ compiles numbers    Bytes free  Frames
-  \ ----------------    ----------  ------------
-  \ branches (1)             32766     510 (1.00)
-  \ execution table (1)      32770     507 (0.99)
-  \ execution table (2)      32761     508 (0.99)
+  \ compiles numbers    Bytes free  Frames         Date
+  \ ----------------    ----------  -------------  ----------
+  \ branches (1)             32766     510 (1.00)  2015-11-12
+  \ execution table (1)      32770     507 (0.99)  2015-11-12
+  \ execution table (2)      32761     508 (0.99)  2015-11-12
+  \ execution table (3)                483 (0.94)  2016-03-19
 
   \ (1): before implementing an execution table for words
   \ (2): shared with the words, integrating the common factor
+  \ (3): same as (2), but when the Forth system is DTC
 
   \ 1 frame = 50th of second
 
@@ -17657,7 +17618,7 @@ b load b load b load b load b load b load b load b load }bench.
 
   \ Compare two versions of `interpret`.
 
-  2 load  need reset-frames  reset-frames
+  need bench{  bench{
 
 noop noop noop noop noop noop noop noop noop noop noop noop
 noop noop noop noop noop noop noop noop noop noop noop noop
@@ -17673,24 +17634,24 @@ noop noop noop noop noop noop noop noop noop noop noop noop
 noop noop noop noop noop noop noop noop noop noop noop noop
 noop noop noop noop noop noop noop noop noop noop noop noop
 
-  frames@ cr .( Frames ) d. cr
+  }bench.
 
-  \ 2015-11-12
-  \
   \ How `interpret`
-  \ interprets words               Bytes free  Frames
-  \ ------------------             ----------  -------------
-  \ branches (0)                        32770     192 (1.00)
-  \ independent table (1)               32746     190 (0.98)
-  \ combined table (2)                  32747     190 (0.98)
-  \ combined table (3)                  32753     192 (1.00)
-  \ combined table (4)                  32761     190 (0.98)
+  \ interprets words       Bytes free  Frames      Date
+  \ ---------------------  ----------  ----------- ----------
+  \ branches (0)           32770       192 (1.00)  2015-11-12
+  \ independent table (1)  32746       190 (0.98)  2015-11-12
+  \ combined table (2)     32747       190 (0.98)  2015-11-12
+  \ combined table (3)     32753       192 (1.00)  2015-11-12
+  \ combined table (4)     32761       190 (0.98)  2015-11-12
+  \ combined table (5)                 191 (0.99)  2016-03-19
 
   \ (0): after implementing an execution table for numbers
   \ (1): separate from the numbers table
   \ (2): shared with the numbers
   \ (3): shared with the numbers, using a common factor
   \ (4): shared with the numbers, integrating the common factor
+  \ (5): same as (4), but when the Forth system is DTC
 
   \ 1 frame = 50th of second
 
@@ -17698,7 +17659,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop
 
   \ Compare two versions of `interpret`.
 
-  2 load  need reset-frames  reset-frames
+  need bench{  bench{
 
 : foo noop noop noop noop noop noop noop noop noop noop noop
 noop noop noop noop noop noop noop noop noop noop noop noop
@@ -17714,24 +17675,24 @@ noop noop noop noop noop noop noop noop noop noop noop noop
 noop noop noop noop noop noop noop noop noop noop noop noop
 noop noop noop noop noop noop noop noop noop noop noop noop ;
 
-  frames@ cr .( Frames ) d. cr
+  }bench.
 
-  \ 2015-11-12
-  \
   \ How `interpret`
-  \ compiles words                 Bytes free  Frames
-  \ ------------------             ----------  -------------
-  \ branches (0)                        32770     199 (1.00)
-  \ independent table (1)               32746     198 (0.98)
-  \ combined table (2)                  32747     198 (0.99)
-  \ combined table (3)                  32753     200 (1.00)
-  \ combined table (4)                  32761     198 (0.98)
+  \ compiles words        Bytes free  Frames      Date
+  \ ------------------    ----------  ----------  ----------
+  \ branches (0)          32770       199 (1.00)  2015-11-12
+  \ independent table (1) 32746       198 (0.98)  2015-11-12
+  \ combined table (2)    32747       198 (0.99)  2015-11-12
+  \ combined table (3)    32753       200 (1.00)  2015-11-12
+  \ combined table (4)    32761       198 (0.98)  2015-11-12
+  \ combined table (5)                191 (0.95)  2016-03-19
 
   \ (0): after implementing an execution table for numbers
   \ (1): separate from the numbers table
   \ (2): shared with the numbers
   \ (3): shared with the numbers, using a common factor
   \ (4): shared with the numbers, integrating the common factor
+  \ (5): same as (4), but when the Forth system is DTC
 
   \ 1 frame = 50th of second
 
