@@ -7,7 +7,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ This file was last modified: 201603200202
+\ This file was last modified: 201603200539
 
   \ ------------------------------------------------------------
   \ License
@@ -4765,6 +4765,39 @@ code c!toggle-bits  ( b ca -- )
   \ Reserve a zone of _n_ bytes in the dictionary
   \ and return its address _a_.
 
+( code-bank )
+
+need save-here  need call
+
+variable cp  bank-start cp !  \ code pointer
+
+: code-here   ( -- a )  cp @  ;
+: code-there  ( a -- )  cp !  ;
+: code-allot  ( n -- )  cp +!  ;
+
+variable code-bank#  3 code-bank# !
+  \ Memory bank used as code bank.
+
+: code-bank  ( -- )  code-bank# @ bank  ;
+  \ Page the code bank in.
+
+: code-bank{  ( -- )  save-here code-here there code-bank  ;
+  \ Start compiling code into the code bank.
+
+: }code-bank  ( -- )  default-bank restore-here  ;
+  \ End compiling code into the code bank.
+
+: ?bank  ( -- )  bank-start here u< #-276 ?throw  ;
+  \ Issue error -276 if the dictionary has reached
+  \ the zone of memory banks. This check is required after
+  \ compiling code which must manipulate memory banks.
+
+: code-bank-routine  ( i*x a "name" -- j*x )
+  create ?bank ,
+  does>  ( -- )  ( pfa ) @ code-bank call default-bank  ;
+  \ Create a word "name" which will call the machine code
+  \ routine at _a_, in the code bank.
+
   \ }}} =======================================================
   \ Single-cell operators {{{
 
@@ -4790,17 +4823,42 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \ Origin: Comus.
   \
   \ ----
-  \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )  rot + swap  ;
+  \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  \   rot + swap  ;
   \ ----
   \
   \ }doc
 
-  \ XXX TODO -- variants:
+( +under )
 
-  \ : +under  ( n1 n2 x -- n1+n2 x )  >r + r>  ;
+code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  D9 c,           \ exx
+  C1 c,           \ pop bc
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  19 c,           \ add hl,de
+  E5 c,           \ push hl
+  C5 c,           \ push bc
+  D9 c,           \ exx
+  jpnext  end-code
+
+  \ doc{
   \
+  \ +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  \
+  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ Origin: Comus.
+  \
+  \ ----
+  \ : +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  \   >r + r>  ;
+  \ ----
+  \
+  \ }doc
+
+  \ XXX TODO -- variant after PFE's `(under+)`:
   \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
-  \ After PFE's `(under+)`
 
 ( within between )
 
@@ -10021,42 +10079,6 @@ code !p  ( b a -- )
   end-code
 
   \ }}} =======================================================
-  \ Code bank {{{
-
-( code-bank )
-
-need save-here  need call
-
-variable cp  bank-start cp !  \ code pointer
-
-: code-here   ( -- a )  cp @  ;
-: code-there  ( a -- )  cp !  ;
-: code-allot  ( n -- )  cp +!  ;
-
-variable code-bank#  3 code-bank# !
-  \ Memory bank used as code bank.
-
-: code-bank  ( -- )  code-bank# @ bank  ;
-  \ Page the code bank in.
-
-: code-bank{  ( -- )  save-here code-here there code-bank  ;
-  \ Start compiling code into the code bank.
-
-: }code-bank  ( -- )  default-bank restore-here  ;
-  \ End compiling code into the code bank.
-
-: ?bank  ( -- )  bank-start here u< #-276 ?throw  ;
-  \ Issue error -276 if the dictionary has reached
-  \ the zone of memory banks. This check is required after
-  \ compiling code which must manipulate memory banks.
-
-: code-bank-routine  ( i*x a "name" -- j*x )
-  create ?bank ,
-  does>  ( -- )  ( pfa ) @ code-bank call default-bank  ;
-  \ Create a word "name" which will call the machine code
-  \ routine at _a_, in the code bank.
-
-  \ }}} =======================================================
   \ Number conversion and notation {{{
 
 ( b# d# h# )  \ ==numberconversion==
@@ -11681,62 +11703,14 @@ need get-time  need get-date
   \ }}} =======================================================
   \ Wordlists {{{
 
-( .context .current order vocs )  \ ==wordlists==
+( .current .context order wordlists )  \ ==wordlists==
 
-  \ XXX OLD 2015-12-26 -- this will be replaced with a new
-  \ version, based on eForth
+  \ XXX TODO -- test
 
-  \ Credits:
-  \
-  \ Code adapted from F83.
-
-need body>name
-
-  \ XXX FIXME -- this fails with wordlists, because they don't
-  \ have a name
-: .context  ( -- )
-  context #vocs 0 do
-    dup @ ?dup if  body>name .name  then  cell+
-  loop  drop  ;
-  \ Display the search order currently in effect.
-  \
-  \ XXX TODO -- from eForth:
-  \ GET-ORDER BEGIN ?DUP WHILE SWAP .WID 1 - REPEAT
-
-: .current  ( -- )  get-current body>name .name  ;
-  \ Display the name of the `current` vocabulary.
-  \ XXX TODO -- from eForth:
-  \ GET-CURRENT .WID ;
-
-: order  ( -- )
-  cr ." context: " .context cr ." current: " .current  ;
-  \ Display the search order currently in effect and the name
-  \ of the `current` vocabulary.
-
-: vocs  ( -- )
-  voc-link @
-  begin  dup cell - body>name .name  @ dup 0= until  drop  ;
-  \ List all of the vocabularies that have been defined so
-  \ far, in the order of their definition (more recent first).
-  \ XXX OLD
-
-( order wordlists )
-
-  \ 2015-12-26
-  \ XXX UNDER DEVELOPMENT -- new version after eForth
-
-  \ XXX TODO -- Structure of a wordlist, after eForth:
-  \
-  \ nt, of last definition, linked )
-  \ wid|0, next or last wordlist in chain
-  \ nt, wordlist name pointer
-
-: wid>chain  ( wid -- a )  cell+ ;
-
-: wid>name  ( wid -- a )  [ 2 cells ] literal + ;
+need wid>name  need wid>link  need get-order
 
 : .wid ( wid -- )
-  space dup wid>name @ ?dup if  .name drop exit  then  0 u.r ;
+  space dup wid>name @ ?dup if  .name drop exit  then  0 u.r  ;
 
 : .current  ( -- )  get-current .wid  ;
 
@@ -11750,77 +11724,43 @@ need body>name
 
  : wordlists  ( -- )
    voc-link
-   begin  @ ?dup  while  dup .wid wid>chain  repeat  ;
+   begin  @ ?dup  while  dup .wid wid>link  repeat  ;
    \ List all wordlists.
-   \ XXX TODO -- finish the conversion
+   \ XXX FIXME -- prints only one
 
-( vocabulary )
+( wid>link wid>name named-wid wid>vocabulary )
 
-  \ 2015-12-26
-  \ XXX UNDER DEVELOPMENT -- new version after eForth
+  \ XXX TODO -- test
 
-: !wid  ( wid -- ) wid>name latest swap ! ;
-  \ Associate the lastest name to _wid_.
-  \ XXX TODO better name
+need alias
 
-: create-vocabulary  ( wid "name" -- )
-  create dup , !wid
-  does>  ( -- )  ( pfa ) @ context !  ;
+' cell+ alias wid>link  ( wid -- a )
 
-: wid-of ( "vocabulary" -- wid )  ' >body @  ;
-  \ Return the _wid_ of "vocabulary".
+: wid>name  ( wid -- a )  [ 2 cells ] literal +  ;
 
-: vocabulary ( "name" -- ) wordlist create-vocabulary ;
+  \ doc{
+  \
+  \ wid>name  ( wid -- )
+  \
+  \ }doc
 
-( vocabulary )
+: named-wid ( wid -- )  wid>name latest swap !  ;
 
-  \ 2015-12-26
-  \ XXX UNDER DEVELOPMENT
+  \ doc{
+  \
+  \ named-wid ( wid -- )
+  \
+  \ Associate the latest name to _wid_.
+  \
+  \ }doc
 
-  \ From Gforth:
-
-: vocabulary ( "name" -- )
-  wordlist create ,
-  does> ( -- )
-    \ Replace the wordlist on the top of the search list with
-    \ the vocabulary's wordlist.
-    ( pfa ) @ >r  get-order
-    dup 0= -50 ?throw \ search-order underflow?
-    nip r> swap  set-order ;
-
-  \ From Z88 CamelForth:
-
-: vocabulary ( "name" -- )
-  wordlist create ,
-  does> ( -- )
-    ( pfa ) @ >r get-order nip r> swap set-order  ;
-
-  \ Simplest:
-
-: vocabulary ( "name" -- )
-  wordlist create ,
-  does> ( -- )  ( pfa ) @ context !  ;
-
-( get-order )
-
-  \ XXX TODO use the actual number of vocs in context, not
-  \ the maximum
-
-: (get-order)  ( n -- widn..wid1 n)
-  1- -1 swap do  context i cells + @  -1 +loop  ;
-  \ Do get the search order.
-
-: get-order  ( -- 0 | widn..wid1 n)
-  #vocs ?dup if  (get-order)  then  #vocs  ;
-  \ Get the search order.
-  \ XXX FIXME `#vocs` can not be zero
+: wid>vocabulary  ( wid "name" -- )
+  create dup , named-wid
+  does>  ( -- )  ( pfa )  @ context !  ;
 
 ( get-order order@ )
 
-  \ 2015-12-26
-  \ XXX UNDER DEVELOPMENT
-  \
-  \ From eForth:
+  \ Credits: Code from eForth.
 
 : order@  ( a -- u*wid u )
   dup @ dup if    >r cell+  recurse  r> swap 1+ exit
@@ -11830,21 +11770,14 @@ need body>name
 
 : get-order  ( -- u*wid u )  context order@ ;
 
-( wid-of wid> >wid )
+( wid-of )
 
   \ Credits:
   \
-  \ Code of `wid-of` adapted from eForth's `widof`.
+  \ Adapted from eForth's `widof`.
 
-need alias
-
-' body> alias wid>  ( wid -- xt )
-  \ Convert a _wid_ to the _xt_ of its vocabulary.
-
-' >body alias >wid  ( xt -- wid )
-  \ Convert the _xt_ of a vocabulary to its _wid_.
-
-: wid-of  ( "name" -- wid )  ' >wid  ;
+: wid-of  ( "name" -- wid )  ' >body  ;
+  \ Return the _wid_ of vocabulary "name".
 
 ( swap-current trail )
 

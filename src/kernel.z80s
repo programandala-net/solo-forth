@@ -7,7 +7,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603200215
+; This file was last modified: 201603200559
 
 ; ==============================================================
 ; License
@@ -27,7 +27,7 @@ version_minor:                equ 3
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 3
+  version_release_candidate:  equ 4
 endif
 
 if 1
@@ -236,7 +236,6 @@ immediate:    equ immediate_mask
 compile_only: equ compile_only_mask
 
 nt_of_the_previous_word: defl 0 ; link to previous Forth word
-; current_vocabulary: defl forth_pfa \ XXX OLD
 
 _header: macro _base_label,_name,_flags
 
@@ -1199,26 +1198,16 @@ execute_hl:
 ; ----------------------------------------------
 ; Start compiling in the `root` vocabulary
 
-nt_of_the_previous_word: defl 0 ; link to previous Forth word
-; current_vocabulary: defl root_pfa
+nt_of_the_previous_word: defl 0
 
 ; ----------------------------------------------
-  _colon_header root_forth_,'FORTH'
-
-  dw forth_
-  dw exit_
+  _alias_header root_forth_,'FORTH',,forth_
 
 ; ----------------------------------------------
-  _colon_header root_forth_wordlist_,'FORTH-WORDLIST'
-
-  dw forth_wordlist_
-  dw exit_
+  _alias_header root_forth_wordlist_,'FORTH-WORDLIST',,forth_wordlist_
 
 ; ----------------------------------------------
-  _colon_header root_set_order_,'SET-ORDER'
-
-  dw set_order_
-  dw exit_
+  _alias_header root_set_order_,'SET-ORDER',,set_order_
 
 latest_nt_in_root_voc: equ root_set_order_nt
 
@@ -1227,8 +1216,7 @@ if 1 ; assembler_core_in_kernel
 ; ----------------------------------------------
 ; Start compiling in the `assembler` vocabulary
 
-nt_of_the_previous_word: defl 0 ; link to previous Forth word
-; current_vocabulary: defl forth_pfa
+nt_of_the_previous_word: defl 0
 
 ; ----------------------------------------------
 
@@ -1345,8 +1333,7 @@ endif
 ; ----------------------------------------------
 ; Start compiling in the `forth` vocabulary
 
-nt_of_the_previous_word: defl 0 ; link to previous Forth word
-; current_vocabulary: defl forth_pfa
+nt_of_the_previous_word: defl 0
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -1487,28 +1474,14 @@ paren_set_order.loop_exit
 ;
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
-; }doc
-
 ; ----
 ; : set-order  ( -1 | 0 | widn..wid1 n -- )
-;   dup -1 =  if  drop only exit  then
-;   ?dup if  (set-order)  else -order  then  ;
+;   ?dup if    dup -1 = if  drop only  else  (set-order)  then
+;        else  -order  then  ;
 ; ----
+;
+; }doc
 
-if 0 ; XXX OLD -- 14 cells
-  dw dup_
-  _literal -1
-  dw equals_
-  dw zero_branch_,set_order.do_set_order
-  dw drop_,only_,exit_
-set_order.do_set_order
-  dw question_dup_
-  dw zero_branch_,minus_order_pfa
-  dw paren_set_order_
-  dw exit_
-endif
-
-  ; XXX NEW -- 12 cells
   dw question_dup_
   dw zero_branch_,minus_order_pfa ; 0
   dw dup_
@@ -1584,14 +1557,21 @@ else ; XXX NEW
 ; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
 ;
 ; ----
-; : previous ( -- )
-;   get-order nip 1- set-order ;
+; : previous  ( -- )
+;   get-order nip 1- set-order  ;
 ; ----
 ;
 ; }doc
 
+  ; XXX TODO -- `get-order` is in the library
+
   dw get_order_,nip_,one_minus_,set_order_
   dw exit_
+
+; XXX TODO -- from Gforth:
+;
+; : previous  ( -- )
+;   vp @ 1- dup 0= -50 ?throw vp !  ;
 
 endif
 
@@ -1619,29 +1599,21 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-
   _does_header root_,'ROOT',,do_vocabulary
 
   dw latest_nt_in_root_voc
-
 root_vocabulary_link:
   dw 0x0000
-
-if 0 ; new_wordlists
-  dw root_nfa
-endif
+  dw root_nt
 
 ; ----------------------------------------------
   _does_header forth_,'FORTH',,do_vocabulary
 
-  dw latest_nt_in_forth_voc ; nt of the latest word defined in this vocabulary
-
+forth_wid:
+  dw latest_nt_in_forth_voc
 forth_vocabulary_link:
   dw root_vocabulary_link
-
-if 0 ; new_wordlists
-  dw forth_nfa
-endif
+  dw forth_nt
 
 ; ----------------------------------------------
   _constant_header forth_wordlist_,'FORTH-WORDLIST'
@@ -1659,7 +1631,7 @@ endif
 ;
 ; }doc
 
-  dw forth_pfa
+  dw forth_wid
 
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
@@ -1669,10 +1641,7 @@ if 1 ; assembler_core_in_kernel
   dw latest_nt_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
-
-if 0 ; new_wordlists
-  dw assembler_nfa
-endif
+  dw assembler_nt
 
 endif
 
@@ -4802,7 +4771,6 @@ do_colon.end: ; XXX TMP for debugging
 ; ----------------------------------------------
   _colon_header colon_no_name_,':NONAME',immediate
 
-
 ; doc{
 ;
 ; :noname  ( -- xt )
@@ -4811,7 +4779,6 @@ do_colon.end: ; XXX TMP for debugging
 ;
 ; ----
 ; }doc
-
 
   ; Credits:
   ; Code from the Afera library.
@@ -8323,8 +8290,6 @@ endif
   dw compile_only_mask_,lex_question_
   dw exit_
 
-if 0 ; new_wordlists
-
 ; ----------------------------------------------
   _colon_header wordlist_comma_,'WORDLIST,'
 
@@ -8334,10 +8299,12 @@ if 0 ; new_wordlists
 ;
 ; Compile the contents of a new word list.
 ; The structure is the following:
-;
-; +0: _nt_ of last definition
-; +2: _wid|0_, next wordlist in chain, or zero
-; +4: _nt|0_, wordlist name pointer, or zero
+; 
+; |===
+; | +0 | _nt_ of last definition
+; | +2 | _wid|0_, next wordlist in chain, or zero
+; | +4 | _nt|0_, wordlist name pointer, or zero
+; |===
 ;
 ; ----
 ; : wordlist,  ( -- )
@@ -8358,6 +8325,9 @@ if 0 ; new_wordlists
 ; ----------------------------------------------
   _colon_header wordlist_,'WORDLIST'
 
+; Credits: Most code related to word lists has been adapted from
+; eForth.
+
 ; doc{
 ;
 ; wordlist  ( -- wid )
@@ -8367,120 +8337,7 @@ if 0 ; new_wordlists
 ;
 ; }doc
 
-  dw here_,paren_vocabulary_
-  dw exit_
-
-; ----------------------------------------------
-  _alias_header wid_to_link_,'WID>LINK',,cell_plus_
-
-; doc{
-;
-; wid>link  ( wid -- a )
-;
-; ----
-; ' cell+ alias wid>link  ( wid -- a )
-; ----
-;
-; }doc
-
-; ----------------------------------------------
-  _colon_header wid_to_name_,'WID>NAME'
-
-; doc{
-;
-; wid>name  ( wid -- )
-;
-; ----
-; : wid>name  ( wid -- a )
-;   [ 2 cells ] literal +  ;
-; ----
-; }doc
-
-  _literal 2*cells
-  dw plus_ 
-  dw exit
-
-; ----------------------------------------------
-  _colon_header named_wid_,'NAMED-WID'
-
-; doc{
-;
-; named-wid ( wid -- )
-;
-; ----
-; : named-wid ( wid -- )
-;   wid>name latest swap !  ;
-; ----
-; }doc
-
-  dw wid_to_name_,latest_,swap_,store_
-  dw exit
-
-; ----------------------------------------------
-  _colon_header wid_to_vocabulary_,'WID>VOCABULARY'
-
-; doc{
-;
-; wid>vocabulary  ( wid "name" -- )
-;
-; ----
-; : wid>vocabulary  ( wid "name" -- )
-;   create dup , named-wid
-;   does>  ( -- )  ( pfa )  @ context !  ;
-; ----
-;
-; }doc
- 
-  dw create_,dup_,comma_,named_wid_
-  dw paren_semicolon_code_
-do_vocabulary:
-  call do_does
-  ; The following words are to be executed when the vocabulary is invoked.
-  dw fetch_,context_,store_
-  dw exit
-
-; ----------------------------------------------
-  _colon_header vocabulary_,'VOCABULARY'
-
-; doc{
-;
-; vocabulary  ( "name" -- )
-;
-; Create a vocabulary with the parsed "name" as its name. The
-; run-time efect of `name` is to replace `context`, the top
-; vocabulary in the search order.
-;
-; ----
-; : vocabulary  ( "name" -- )
-;   wordlist wid>vocabulary  ;
-; ----
-; }doc
-
-  dw wordlist_,wid_to_vocabulary
-
-else
-
-; ----------------------------------------------
-  _colon_header paren_vocabulary_,'(VOCABULARY)'
-
-; doc{
-;
-; (vocabulary)  ( -- )
-;
-; Create the parameter field of a vocabulary or word list just created.
-;
-; ----
-; : (vocabulary)  ( -- )
-;   0 ,  here voc-link @ , voc-link !  ;
-; ----
-;
-; }doc
-
-  _literal 0
-  dw comma_                   ; nt of the latest word defined in the vocabulary
-  dw here_                    ; new contents of vocabulary link
-  dw voc_link_,fetch_,comma_  ; compile the previous contents of `voc-link`
-  dw voc_link_,store_         ; update `voc-link`
+  dw here_,wordlist_comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -8490,54 +8347,29 @@ else
 ;
 ; vocabulary  ( "name" -- )
 ;
-; Create a vocabulary with the parsed "name" as its name. The
-; run-time efect of `name` is to replace `context`, the top
-; vocabulary in the search order.
+; Create a dictionary entry for "name" which specifies a new
+; ordered list of word definitions.  Subsequent execution of
+; "name" replaces the first vocabulary in the search order with
+; "name", or just add it if the search order is empty.
 ;
 ; ----
 ; : vocabulary  ( "name" -- )
-;   create  (vocabulary)
+;   create  wordlist,
 ;   does>   ( -- )  ( pfa ) context !  ;
 ; ----
+;
 ; }doc
 
-  dw create_,paren_vocabulary_
+; XXX TODO -- Check what Forth-83 systems do when the search
+; order is empty and a vocabulary is executed.
+
+  dw create_,wordlist_comma_
   dw paren_semicolon_code_
 do_vocabulary:
   call do_does
   ; The following words are to be executed when the vocabulary is invoked.
   dw context_,store_
   dw exit_
-
-; ----------------------------------------------
-  _colon_header wordlist_,'WORDLIST'
-
-; doc{
-;
-; wordlist  ( -- wid )
-;
-; : wordlist ( -- wid )
-;   :noname  (vocabulary)  postpone ;  >body  ;
-;
-; }doc
-
-  dw colon_no_name_,paren_vocabulary_,semicolon_
-  dw to_body_ ; XXX TODO `to_wid_`
-  dw exit_
-
-endif
-
-; ----------------------------------------------
-if 0 ; XXX TODO
-  ; XXX Already in the library, but may be needed in the kernel,
-  ; depending on the final definitions of `wordlist` and
-  ; `vocabulary`.
-  _alias_header to_wid_,'>WID',,two_plus_
-
-; ----------------------------------------------
-  _alias_header to_wid_,'>WID',,two_minus_
-
-endif
 
 ; ----------------------------------------------
   _colon_header get_current_,'GET-CURRENT'
@@ -11561,7 +11393,7 @@ throw.end:
 
 ; doc{
 ;
-; ?\  ( f "ccc" -- )
+; ?\  ( f "ccc<eol>" -- )
 ;
 ; If _f_ is not false, parse and discard the rest of the parse
 ; area.  This word is used for conditional compilation.
@@ -11580,7 +11412,7 @@ question_backslash.end:
 
 ; doc{
 ;
-; \  ( "ccc" -- )
+; \  ( "ccc<eol>" -- )
 ;
 ; Parse and discard the rest of the parse area.
 ;
