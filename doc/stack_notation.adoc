@@ -55,6 +55,10 @@
 | nest-sys    | definition call                              | 1 cell
 | source-sys  | source identifier                            | n cells
 
+| i*x         | any data type                                | 0 or more cells
+| j*x         | any data type                                | 0 or more cells
+| k*x         | any data type                                | 0 or more cells
+
 | op          | Z80 8-bit opcode, generally a jump           | 1 cell
 | r           | Z80 8-bit register identifier                | 1 cell
 | rp          | Z80 16-bit register pair identifier          | 1 cell

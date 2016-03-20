@@ -1,19 +1,8 @@
 = Solo Forth TO-DO
-:revdate: 2016-03-16
+:revdate: 2016-03-19
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
-
-// }}}
-== Misc ==
-// {{{
-
-2016-01-01 compilation of the tt game crash!
-the offending word is marked.
-something to do with the new loops?
-
-When the comments on screen `( find-name-in find )` are at the left margin,
-they are not processed by fsb2? 
 
 // }}}
 == Inner ==
@@ -70,6 +59,11 @@ Rename "names bank" to "system bank", because it's used also for the history.
 .2016-03-16:
 
 Investigate how to use the free memory of the Plus D RAM.
+
+.2016-03-19:
+
+Separate header flags from the length byte of the name field.
+This way an alias bit will fit, and word names will be actual strings.
 
 // }}}
 == Local variables ==
@@ -134,6 +128,10 @@ ____
 
 Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
+
+.2016-03-19:
+
+Simplify the origin of words: mention only the most recent standard.
 
 // }}}
 == Turnkey ==
@@ -460,6 +458,11 @@ Spectrum Forth-83).
 .2015-10-05:
 
 Finish adapt tt.
+
+.2016-01-01:
+
+Compilation of the tt game crash!  the offending word is marked.
+something to do with the new loops?
 
 // }}}
 == Strings ==

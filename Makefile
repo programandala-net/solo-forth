@@ -32,34 +32,23 @@
 # See at the end of the file.
 
 ################################################################
+# Notes
+
+# $? list of dependencies changed more recently than current target
+# $@ name of current target
+# $< name of current dependency
+
+################################################################
 # Config
 
 VPATH = ./
 
 MAKEFLAGS = --no-print-directory
 
-disk_source_file = library.fsb
-#kernel_source_file = solo_forth.z80s.201506290300.z80s
-#disk_source_file = library.fsb.201506290224.fsb
-
-origin = 0x5E00
-
-#ld_script = solo_forth.ld
-
 .ONESHELL:
 
 ################################################################
 # Main
-
-# XXX OLD -- tests
-# .PHONY: test
-# test: test2
-# 	echo $(pattern)
-# 	ls $(pattern)
-# .PHONY: test2
-# test2:
-# 	$(eval pattern=ker*)
-# 	echo variable pattern is $(pattern)
 
 .PHONY: all
 all: gplusdos
@@ -72,30 +61,12 @@ gplusdos: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
 plus3dos: solo_forth_disk_a.dsk
 # plus3dos: solo_forth_disk_a.dsk solo_forth_disk_b.dsk
 
-# XXX OLD
-# .PHONY: setgplusdos
-# setgplusdos:
-# 	$(eval dos=gplusdos)
-# .PHONY: setplus3dos
-# setplus3dos:
-# 	$(eval dos=plus3dos)
-
-# XXX OLD -- all included simbols
-#	symbols
-
-# XXX OLD
-#.PHONY: symbols
-#symbols: solo_forth.symbols.txt
-
 .PHONY : clean
 clean:
-	rm -f \
-		library.complete.*.fsb \
-		solo_forth_disk_?.mgt \
-		solo_forth_disk_?.dsk \
-		solo_forth.*.tap \
-		sys/4x8fd.tap \
-		sys/prnt42.tap
+	find tmp/ -name "*.bin" -exec rm -f '{}' ';'
+	find tmp/ -name "*.tap" -exec rm -f '{}' ';'
+	find tmp/ -name "*.fsb" -exec rm -f '{}' ';'
+	rm -f solo_forth_disk_?.mgt solo_forth_disk_?.dsk
 
 include Makefile.pasmo
 #include Makefile.binutils
@@ -109,44 +80,13 @@ include Makefile.pasmo
 # 	@make Makefile.binutils
 
 ################################################################
-# The basic loader
+# The loader
 
-# XXX OLD
-# loader.bas.tap: loader.bas
-# 	bas2tap -q -n -sAutoload -a1 \
-# 		loader.bas  \
-# 		loader.bas.tap
+tmp/loader.gplusdos.bas.tap: src/loader/gplusdos.bas
+	zmakebas -n Autoload -a 1 -o $@ $<
 
-# XXX OLD
-# loader.bas.tap: loader.bas
-# 	zmakebas -n Autoload -a 1 \
-# 		-o loader.bas.tap \
-# 		loader.bas
-
-# XXX OLD
-# loader.bas.tap: loader.bas
-# 	zmakebas -n $(if gplusdos,Autoload,DISK) -a 1 \
-# 		-o loader.$(dos).bas.tap \
-# 		loader.$(dos).bas
-
-loader.gplusdos.bas.tap: loader.gplusdos.bas
-	zmakebas -n Autoload -a 1 \
-		-o loader.gplusdos.bas.tap \
-		loader.gplusdos.bas
-
-loader.plus3dos.bas.tap: loader.plus3dos.bas
-	zmakebas -n DISK -a 1 \
-		-o loader.plus3dos.bas.tap \
-		loader.plus3dos.bas
-
-################################################################
-# The charset
-
-# XXX OLD
-# solo_forth.charset.bin: solo_forth.charset.z80s
-# 	pasmo -v \
-# 		solo_forth.charset.z80s \
-# 		solo_forth.charset.bin
+tmp/loader.plus3dos.bas.tap: src/loader/plus3dos.bas
+	zmakebas -n DISK -a 1 -o $@ $<
 
 ################################################################
 # Font drivers
@@ -156,29 +96,35 @@ loader.plus3dos.bas.tap: loader.plus3dos.bas
 
 # Note: an intermediate file called "4x8fd.bin" is used, in
 # order to force that filename in the TAP header and therefore
-# in the disk image.
+# in the disk image.  This file must be in the current
+# directory, because the path specified in the command will be
+# part of the filename in the TAP header.
 
-sys/4x8fd.tap: sys/4x8fd.z80s
-	cd sys ; \
-	pasmo 4x8fd.z80s 4x8fd.bin ; \
-	bin2code 4x8fd.bin 4x8fd.tap 60000 ; \
-	cd - 
+# XXX WARNING -- 2016-03-19. bin2code returns error 97 when one
+# the filenames has a path, but it creates the tap file as
+# usual.  A hyphen at the beggining of the recipe line forces
+# Make to ignore the error.
 
-sys/prnt42.tap: sys/prnt42.bin
-	cd sys ; \
+tmp/4x8fd.tap: src/modules/4x8fd.z80s
+	pasmo --tap $< 4x8fd.bin ; \
+	mv 4x8fd.bin $@
+
+tmp/prnt42.tap: bin/modules/prnt42.bin
+	cd bin/modules/ ; \
 	bin2code prnt42.bin prnt42.tap 63610 ; \
-	cd - 
+	cd - ; \
+	mv bin/modules/prnt42.tap tmp/prnt42.tap
 
 ################################################################
 # Fonts
 
-# The DSK disk image needs these binary files to be converted to
-# TAP first.
+# The DSK disk image needs the fzx files to be packed into TAP
+# first.
 
-fzx_fonts = $(wildcard fzx/*.fzx)
+fzx_fonts = $(wildcard bin/fonts/*.fzx)
 
-fzx/fzx_fonts.tap : $(fzx_fonts)
-	cd fzx ; \
+bin/fonts/fzx_fonts.tap : $(fzx_fonts)
+	cd bin/fonts ; \
 	for file in $$(ls -1 *.fzx); do \
 		bin2code $$file $$file.tap; \
 	done; \
@@ -192,50 +138,38 @@ fzx/fzx_fonts.tap : $(fzx_fonts)
 # The first disk ("1" for G+DOS, "A" for +3DOS) contains the
 # Forth system. The user will use the first disk for customized
 # versions of the Forth system, Forth turnkey applications,
-# graphics and data files.
+# fonts, graphics and data.
 
 solo_forth_disk_1.mgt: \
-		loader.gplusdos.bas.tap \
-		kernel.gplusdos.bin.tap \
-		sys/4x8fd.tap \
-		sys/prnt42.tap
+		tmp/loader.gplusdos.bas.tap \
+		tmp/kernel.gplusdos.bin.tap \
+		tmp/4x8fd.tap \
+		bin/fonts/ea5aky-font42.tap \
+		tmp/prnt42.tap
 	mkmgt solo_forth_disk_1.mgt \
-		sys/gplusdos-sys-2a.tap \
-		loader.gplusdos.bas.tap \
-		kernel.gplusdos.bin.tap \
-		sys/ea5aky-font42.tap \
-		sys/4x8fd.tap \
-		sys/prnt42.tap \
-		fzx/*.fzx
+		bin/sys/gplusdos-sys-2a.tap \
+		tmp/loader.gplusdos.bas.tap \
+		tmp/kernel.gplusdos.bin.tap \
+		tmp/4x8fd.tap \
+		bin/fonts/ea5aky-font42.tap \
+		tmp/prnt42.tap \
+		bin/fonts/*.fzx
 
 tmp/solo_forth_disk_a.tap: \
-		loader.plus3dos.bas.tap \
-		kernel.plus3dos.bin.tap \
-		sys/4x8fd.tap \
-		sys/prnt42.tap \
-		fzx/fzx_fonts.tap
+		tmp/loader.plus3dos.bas.tap \
+		tmp/kernel.plus3dos.bin.tap \
+		tmp/4x8fd.tap \
+		bin/fonts/ea5aky-font42.tap \
+		tmp/prnt42.tap \
+		bin/fonts/fzx_fonts.tap
 	cat \
-		loader.plus3dos.bas.tap \
-		kernel.plus3dos.bin.tap \
-		sys/ea5aky-font42.tap \
-		sys/4x8fd.tap \
-		sys/prnt42.tap \
-		fzx/fzx_fonts.tap \
+		tmp/loader.plus3dos.bas.tap \
+		tmp/kernel.plus3dos.bin.tap \
+		tmp/4x8fd.tap \
+		bin/fonts/ea5aky-font42.tap \
+		tmp/prnt42.tap \
+		bin/fonts/fzx_fonts.tap \
 		> tmp/solo_forth_disk_a.tap
-
-# XXX OLD
-# solo_forth_disk_a.dsk: \
-# 		sys/4x8fd.tap \
-# 		loader.plus3dos.bas.tap \
-# 		kernel.plus3dos.bin.tap
-# 	mkp3fs -720  -label SoloForth \
-# 		solo_forth_disk_a.dsk \
-# 		loader.plus3dos.bas.tap \
-# 		kernel.bin.tap \
-# 		sys/ea5aky-font42.tap \
-# 		sys/4x8fd.tap \
-# 		sys/print-42-bin.tap \
-# 		fzx/*.fzx
 
 solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 	tap2dsk -720 -label SoloForth \
@@ -246,58 +180,56 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 # source blocks of the Forth system.  The blocks are stored on
 # the disk sectors, without file system.
 
-library.complete.for_gplusdos.fsb: \
-	library.main.fsb \
-	library.game.nuclear_invaders.fsb \
-	library.error_codes.gplusdos.fsb \
-	library.error_codes.os.fsb
+tmp/library.complete.for_gplusdos.fsb: \
+	src/library.main.fsb \
+	src/library.game.nuclear_invaders.fsb \
+	src/library.error_codes.gplusdos.fsb \
+	src/library.error_codes.os.fsb
 	cat \
-		library.main.fsb \
-		library.game.nuclear_invaders.fsb \
-		library.error_codes.gplusdos.fsb \
-		library.error_codes.os.fsb \
-		> library.complete.for_gplusdos.fsb
+		src/library.main.fsb \
+		src/library.game.nuclear_invaders.fsb \
+		src/library.error_codes.gplusdos.fsb \
+		src/library.error_codes.os.fsb \
+		> tmp/library.complete.for_gplusdos.fsb
 
-solo_forth_disk_2.mgt: library.complete.for_gplusdos.fsb
-	fsb2-mgt library.complete.for_gplusdos.fsb ;\
-	mv library.complete.for_gplusdos.mgt solo_forth_disk_2.mgt
+solo_forth_disk_2.mgt: tmp/library.complete.for_gplusdos.fsb
+	fsb2-mgt tmp/library.complete.for_gplusdos.fsb ;\
+	mv tmp/library.complete.for_gplusdos.mgt solo_forth_disk_2.mgt
 
-library.complete.for_plus3dos.fsb: \
-	library.main.fsb \
-	library.game.nuclear_invaders.fsb \
-	library.error_codes.plus3dos.fsb \
-	library.error_codes.os.fsb
+tmp/library.complete.for_plus3dos.fsb: \
+	src/library.main.fsb \
+	src/library.game.nuclear_invaders.fsb \
+	src/library.error_codes.plus3dos.fsb \
+	src/library.error_codes.os.fsb
 	cat \
-		library.main.fsb \
-		library.error_codes.plus3dos.fsb \
-		library.game.nuclear_invaders.fsb \
-		library.error_codes.os.fsb \
-		> library.complete.for_plus3dos.fsb
+		src/library.main.fsb \
+		src/library.error_codes.plus3dos.fsb \
+		src/library.game.nuclear_invaders.fsb \
+		src/library.error_codes.os.fsb \
+		> tmp/library.complete.for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
-solo_forth_disk_b.dsk: library.complete.for_plus3dos.fsb
-	fsb2-dsk library.complete.for_plus3dos.fsb ;\
-	mv library.complete.for_plus3dos.dsk solo_forth_disk_b.dsk
+solo_forth_disk_b.dsk: tmp/library.complete.for_plus3dos.fsb
+	fsb2-dsk tmp/library.complete.for_plus3dos.fsb ;\
+	mv tmp/library.complete.for_plus3dos.dsk solo_forth_disk_b.dsk
 
 ################################################################
 # Backup
 
+# XXX OLD
 .PHONY: backup
 backup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
 		_draft/* \
 		_old/* \
 		_tests/* \
-		inc/* \
+		src/* \
 		Makefile* \
 		*.adoc \
-		*.bas \
-		*.fsb \
 		*.mgt \
 		*.dsk \
 		*.sh \
-		*.txt \
-		*.z80s
+		*.txt
 
 ################################################################
 # Change history
@@ -345,3 +277,6 @@ backup:
 # 2016-02-22: Delete also <library.complete.*.fsb> in clean.
 # It seems this is required when parts of the library are
 # simbolyc links.
+#
+# 2016-03-19: Updated after the reorganization of files into
+# directories.

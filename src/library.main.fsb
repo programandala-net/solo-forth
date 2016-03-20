@@ -7,7 +7,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-\ This file was last modified: 201603190238
+\ This file was last modified: 201603200202
 
   \ ------------------------------------------------------------
   \ License
@@ -287,15 +287,15 @@ variable hp
 : history>link  ( ca -- a )  cell-  ;
   \ Convert a history string address to its link field.
 
-: history<history  ( ca1 -- ca2 )  history>link @n  ;
+: history<history  ( ca1 -- ca2 )  history>link @s  ;
   \ Convert a history string address to the previous one.
 
 : history>history  ( ca1 -- ca2 )
-  names-bank count default-bank  + cell+  ;
+  system-bank count default-bank  + cell+  ;
   \ Convert a history string address to the next one.
 
 : history>string  ( ca1 -- ca2 len2 )
-  names-bank count save-string default-bank  ;  -->
+  system-bank count save-string default-bank  ;  -->
   \ Copy a history string to a string in the circular string
   \ buffer.
 
@@ -326,7 +326,7 @@ variable browsed-history
 
 : init-history  ( n -- )
   dup /history !  $FFFF swap -
-  dup hp0 !  dup hp !  browsed-history !  0 hp0 @ c!n  ;
+  dup hp0 !  dup hp !  browsed-history !  0 hp0 @ c!s  ;
 
 1024 init-history  -->
 
@@ -365,8 +365,8 @@ need s=
 
 : history,  ( ca len -- )
   hp @ dup >r  over >r  ( ca len ca1 ) ( R: len ca1 -- )
-  names-bank place default-bank
-  r> 1+ allot-history  r> hp @ !n  cell allot-history  ;
+  system-bank place default-bank
+  r> 1+ allot-history  r> hp @ !s  cell allot-history  ;
   \ Add a string to the command line history.
 
 : (>history)  ( ca len -- )
@@ -426,7 +426,7 @@ variable history
 
 need dump
 
-: hdump  ( ca len -- )  names-bank dump default-bank  ;
+: hdump  ( ca len -- )  system-bank dump default-bank  ;
 
 : .h  ( -- )  hp0 dup hp @ - hdump  ;
 
@@ -466,7 +466,7 @@ $FFFF constant hp0
 variable /history  1024 /history !
   \ Size of the history space, where all strings are hold.
 
-: init-hp0  ( -- )  0 hp0 c!n  ;
+: init-hp0  ( -- )  0 hp0 c!s  ;
 
 : history-bounds  ( -- ca1 ca2 )  hp0 hp @  ;
   \ Return bottom of history _a1_ and address of the latest
@@ -490,7 +490,7 @@ variable currently-browsed-history
 
 : older-history  ( -- )
   currently-browsed-history @ dup previously-browsed-history !
-  names-bank count default-bank +
+  system-bank count default-bank +
   currently-browsed-history !  ;
   \ Update the current history being browsed to the previous
   \ (older) one.
@@ -527,14 +527,14 @@ need s=
   \ XXX TODO -- remove older strings if needed
 
 : latest-history  ( -- ca len )
-  names-bank  hp @ count  save-string  default-bank  ;
+  system-bank  hp @ count  save-string  default-bank  ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
   \ XXX OLD
 
 : browsed-history  ( -- ca len )
   currently-browsed-history @
-  names-bank  count save-string  default-bank  ;
+  system-bank  count save-string  default-bank  ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
 
@@ -557,7 +557,7 @@ need s=
 : (>history)  ( ca len -- )
   dup 0= if  2drop exit  then
     \ If string is empty, do nothing.
-  history-empty? if  dup hp0 c!n  then
+  history-empty? if  dup hp0 c!s  then
     \ If history is empty, init its bottom with the length
     \ of the string.
   2dup duplicated-history? if  2drop exit  then
@@ -565,7 +565,7 @@ need s=
   if  dup allocate-history throw  then
     \ If there's no space left, allocate it.
   dup 1+ allot-history
-  hp @ dup names-bank place default-bank
+  hp @ dup system-bank place default-bank
            currently-browsed-history !  ;
   \ Save string _ca len_ into the command line history.
 
@@ -601,7 +601,7 @@ variable history
 
 : .history  ( -- )
   hp @  begin  dup hp0 <  while
-          names-bank count 2dup type cr default-bank  +
+          system-bank count 2dup type cr default-bank  +
         repeat  drop  ;
 
 \ history-on
@@ -1246,21 +1246,69 @@ need value
 
 32 value columns  24 value rows
 
+( set-banked-mode-output )
+
+need set-mode-output
+
+0 constant (output-routine)
+
+code (banked-mode-output)  ( -- )
+  C5 c,                 \ push bc ; save Forth IP
+  CD c, 0 ,             \ call output_routine ; to be patched
+
+  here cell- ' (output-routine) >body !
+    \ Store the address where the address of the output routine
+    \ must be stored, into the constant `(output-routine)`.
+
+  C1 c,                 \ pop bc ; restore Forth IP
+  DD c, 21 c, next ,    \ ld ix,next ; restore IX, just in case
+  jpnext  end-code
+
+: set-banked-mode-output  ( a -- )
+  (output-routine) !  \ patch `(banked-mode-output)`
+  ['] (banked-mode-output) set-mode-output  ;
+  \ Associate the output routine at _a_ (which is in the code
+  \ bank) to the system channels "K", "S" and "P", using and
+  \ intermediate routine to page the code bank in and out.
+
+( set-mode-output set-font )
+
+need os-chars  need os-chans
+
+: set-mode-output  ( a -- )
+  os-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
+
+  \ doc{
+  \
+  \ set-mode-output  ( a -- )
+  \
+  \ Associate the output routine at _a_ to the system channels
+  \ "K", "S" and "P".
+  \
+  \ }doc
+  \ XXX TODO -- why also "P"?
+
+: set-font  ( a -- )  os-chars !  ;
+
+  \ doc{
+  \
+  \ set-font  ( a -- )
+  \
+  \ Set the system font to _a_.  This is used by all modes:
+  \ `mode32`, `mode42` and `mode64`. The value of _a_ depends
+  \ on the mode: In `mode32` and `mode42`, _a_ is the address
+  \ of char 0, i.e. 256 bytes below the space char; In `mode64`
+  \ _a_ is the address of space char.
+  \
+  \ }doc
+
 ( mode32 )
 
-need columns  need rows  need os-chars  need os-chans
-
-: mode-output  ( a -- )  os-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
-  \ Associate the output
-  \ routine at _a_ to the system channels "K", "S" and "P".
-
-: set-mode  ( a1 a2 -- )  os-chars !  mode-output  ;
-  \ Set the system font to _a1_ and associate the output
-  \ routine at _a2_ to the system channels.
+need columns  need rows  need set-font  need set-mode-output
 
 : mode32  ( -- )
   [ latest name> ] literal current-mode !
-  2548 15360 set-mode
+  15360 set-font  2548 set-mode-output
   32 to columns  24 to rows
   ['] (mode32-xy) ['] xy defer!
   ['] (mode32-at-xy) ['] at-xy defer!  ;
@@ -1288,27 +1336,72 @@ need columns  need rows  need os-chars  need os-chans
   \ XXX FIXME -- a pixel of the cursor is not deleted when
   \ backspace is used on the command line
 
-need mode32  need <file-as-is
+need set-mode-output  need <file-as-is  need (mode42
+
+: mode42  ( -- )
+  [ latest name> ] literal current-mode !
+  (mode42 set-mode-output  ;
+  \ Set the 42 cpl printing mode: the driver, the font
+  \ and `at-xy`.
 
 get-drive 1 set-drive
-s" prnt42.bin" <file-as-is ?throw
-s" ea5aky.f42" <file-as-is ?throw
+s" prnt42.bin" <file-as-is throw
+s" ea5aky.f42" <file-as-is throw
 set-drive
   \ Load the driver and the font.
+
+( banked-mode42 )
+
+  \ Credits:
+  \
+  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
+  \ Published on Microhobby, issue 66 (1986-02), page 24:
+  \ http://microhobby.org/numero066.htm
+  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX TODO -- integrate the driver
+
+  \ XXX TODO -- check how the UDG are printed (8 pixels width?)
+
+  \ XXX FIXME -- a pixel of the cursor is not deleted when
+  \ backspace is used on the command line
+
+need set-banked-mode-output  need <file-as-is
+need (mode42  need code-bank
+
+: banked-mode42  ( -- )
+  [ latest name> ] literal current-mode !
+  (mode42 set-banked-mode-output  ;
+  \ Set the 42 cpl printing mode: the driver, the font
+  \ and `at-xy`.
+  \ XXX FIXME -- crash!
+
+code-bank{
+  get-drive 1 set-drive
+  s" prnt42.bin" <file-as-is throw
+  s" ea5aky.f42" <file-as-is throw
+  set-drive
+}code-bank
+  \ Load the driver and the font into the code bank.
+
+( (mode42 )
+
+need columns  need rows  need set-font
 
 [defined] (at-xy)
 ?\ : (at-xy)  ( col row -- )  22 emit swap emit emit  ;
 
 : (mode42-xy)  ( -- col row )  0 0  ;  \ XXX TODO
 
-: mode42  ( -- )
-  [ latest name> ] literal current-mode !
-  63900 [ 64600 256 - ] literal set-mode
+: (mode42  ( -- a )
   42 to columns  24 to rows
   ['] (mode42-xy) ['] xy defer!
-  ['] (at-xy) ['] at-xy defer!  ;
-  \ Set the 42 cpl printing mode: the driver, the font
-  \ and `at-xy`.
+  ['] (at-xy) ['] at-xy defer!
+  [ 64600 256 - ] literal set-font 63900  ;
+  \ Set the 42 cpl font and `at-xy`;
+  \ Return the address of the output routine.
 
 ( mode64 )
 
@@ -1319,15 +1412,14 @@ set-drive
   \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
   \ Modified and adapted to Solo Forth by Marcos Cruz.
 
-  \ XXX OLD temporary first version
-  \ First the driver and the font were in a disk file
-  \ that is loaded at 60000. Later the font was compiled
-  \ into the dictionary.
+  \ XXX TMP -- The driver is loaded from disk into and the
+  \ memory address 60000.
+  \ XXX TODO -- Integrate the driver into the library.
 
 need mode32  need <file-as-is  need 4x8font
 
 get-drive 1 set-drive
-s" 4x8fd.bin" <file-as-is ?throw
+s" 4x8fd.bin" <file-as-is throw
 set-drive
   \ Load the driver and the font.
 
@@ -1338,10 +1430,10 @@ set-drive
 
 : mode64  ( -- )
   [ latest name> ] literal current-mode !
-  60000 4x8font set-mode
   64 to columns  24 to rows
   ['] (mode64-xy) ['] xy defer!
-  ['] (at-xy) ['] at-xy defer!  ;
+  ['] (at-xy) ['] at-xy defer!
+  4x8font set-font  60000 set-mode-output  ;
   \ Set the 64 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
@@ -1366,14 +1458,13 @@ code (mode64-emit)  ( -- )
   b a ld
   here 1+ 0 unresolved !  \ address of at_flag
   0 a ld#  and a
-  z if
-    FF a ld#
-  then
+  z if  FF a ld#  then
   \ check_cr
 
   end-code
 
-: mode64  ( -- )  (mode64-emit) mode64-chars @ set-mode
+: mode64  ( -- )
+  mode64-chars @ set-font  (mode64-emit) set-mode-outupt
   ['] (at-xy) ['] at-xy defer!  ;
 
 ( 4x8font )
@@ -5560,7 +5651,7 @@ need s=
 ?\ ' cell+ alias >>link  ( xtp -- lfa )
 
 [unneeded] name<name dup  ?\ need name>link
-?\ : name<name  ( nt1 -- nt2 )  name>link @n  ;
+?\ : name<name  ( nt1 -- nt2 )  name>link @s  ;
   \ Get the previous _nt2_ from _nt1_.
 
 ( name>interpret name>compile )
@@ -5604,7 +5695,7 @@ need s=
 need c!toggle-bits
 
 : smudged  ( nt -- )
-  smudge-mask swap names-bank c!toggle-bits default-bank  ;
+  smudge-mask swap system-bank c!toggle-bits default-bank  ;
 
   \ doc{
   \
@@ -5640,6 +5731,12 @@ need c!toggle-bits
 : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;
   \ If _x1_ not equals _x2_ throw an error -22 (control
   \ structure mismatch).
+
+( save-here restore-here )
+
+variable here-backup
+: save-here  ( -- )  here here-backup !  ;
+: restore-here  ( -- )  here-backup there  ;
 
 ( privatize )
 
@@ -5699,7 +5796,7 @@ need >>link
   \ word to be defined as public, that is, the current value
   \ of the names pointer.
 
-: privatize  ( nt xtp -- )  >>link !n  ;
+: privatize  ( nt xtp -- )  >>link !s  ;
   \ Hide all words between `private{` and `}private`:
   \ Link the first public word to the word before the
   \ first private word, thus making the private words
@@ -5886,9 +5983,9 @@ decimal
 
 : --hook-codes--  ;
 
-( ior>error ?dos-error dosior>ior )
+( dosior>error ?dos-error dosior>ior )
 
-: ior>error  ( ior -- f n )
+: dosior>error  ( dosior -- f n )
   dup 1 and negate swap   \ calculate f
   flip %11111111 and      \ upper 8 bits of ior
   1000 + negate  ;
@@ -5901,27 +5998,30 @@ decimal
   \ n = error number:
   \     -1000..-1031: G+DOS error number 0..31
   \     -1128..-1154: OS error number 0..26
+  \ XXX OLD -- obsolete
 
-: ?dos-error  ( ior -- )
-  \ ior = the AF register returned by a DOS command:
+: ?dos-error  ( dosior -- )
+  \ dosior = the AF register returned by a DOS command:
   \   bit 0     = set: error
   \   bits 8-14 = error code
   \   bit 15    = set: OS error; unset: DOS error
-  ior>error ?throw  ;
+  dosior>error ?throw  ;
+  \ XXX OLD -- obsolete
 
-: dosior>ior  ( ior1 -- ior2 )
+: dosior>ior  ( dosior -- ior )
   dup 1 and negate          \ error?
-  swap flip %11111111 and   \ get upper 8 bits of ior
+  swap flip %11111111 and   \ get upper 8 bits
   1000 + negate and  ;
   \ Convert a DOS ior to a Forth ior.
-  \ ior1 = the AF register returned by a DOS command:
+  \ dosior = the AF register returned by a DOS command:
   \     bit 0     = set: error
   \     bits 8-14 = error code
   \     bit 15    = set: OS error; unset: DOS error
-  \ ior2 = error number:
+  \ ior = error number:
   \     0: no error
   \     -1000..-1031: G+DOS error number 0..31
   \     -1128..-1154: OS error number 0..26
+  \ XXX TODO -- check
 
 ( get-drive set-drive )
 
@@ -5949,7 +6049,7 @@ code set-drive  ( n -- )
 ( delete-file )
 
 need z80-asm  need ufia  need --hook-codes--
-need filename>ufia  need ior>error  need dos>error
+need filename>ufia  need dosior>ior
 
 code (delete-file)  ( -- ior )
   bc push  \ save the Forth registers
@@ -5999,7 +6099,7 @@ need ufia  need get-drive
 ( >file )
 
 need z80-asm  need ufia  need --hook-codes--
-need >ufia  need ior>error
+need >ufia  need dosior>ior
 
 code (>file)  ( -- ior )
 
@@ -6016,18 +6116,18 @@ code (>file)  ( -- ior )
   af push  \ ior
   jpnext end-code
 
-: >file  ( a1 len1 ca2 len2 -- f n )
+: >file  ( a1 len1 ca2 len2 -- ior )
   \ Save a file to disk.
   \ a1 len1   = memory region to save
   \ ca2 len2  = filename
   \ f         = error?
   \ n         = error
-  >ufia (>file) ior>error  ;
+  >ufia (>file) dosior>ior  ;
 
 ( <file )
 
 need z80-asm  need ufia  need --hook-codes--
-need >ufia  need ior>error
+need >ufia  need dosior>ior
 
 code (<file)  ( -- ior )
 
@@ -6061,13 +6161,13 @@ code (<file)  ( -- ior )
         \ restore the Forth registers and save the ior
   jpnext  end-code
 
-: <file  ( a1 len1 ca2 len2 -- f n )
+: <file  ( a1 len1 ca2 len2 -- ior )
   \ Load a file from disk.
   \ a1 len1   = memory region to load
   \ ca2 len2  = filename
   \ f         = error?
   \ n         = error
-  >ufia (<file) ior>error  ;
+  >ufia (<file) dosior>ior  ;
 
 ( file>screen )
 
@@ -6075,9 +6175,9 @@ code (<file)  ( -- ior )
   \ Experimental code to read lines from a file
 
 need z80-asm  need ufia  need --hook-codes--
-need >ufia  need ior>error
+need >ufia  need dosior>ior
 
-code (file>screen)  ( -- ior )
+code (file>screen)  ( -- dosior )
 
   \ Print a file on the screen, line by line, using the data
   \ hold in UFIA.
@@ -6107,12 +6207,12 @@ code (file>screen)  ( -- ior )
 
 ( file>screen )
 
-: file>screen  ( ca2 len2 -- f n )
+: file>screen  ( ca2 len2 -- ior )
   \ Copy a file to the screen, line by line.
   \ ca2 len2  = filename
   \ f         = error?
   \ n         = error
-  >ufia (file>screen) ior>error  ;
+  >ufia (file>screen) dosior>ior  ;
 
 ( .000 )
 
@@ -6132,7 +6232,7 @@ code .100  ( u -- )
 ( <file-as-is )
 
 need z80-asm  need ufia  need --hook-codes--
-need >ufia  need ior>error
+need >ufia  need dosior>ior
 
 code (<file-as-is)  ( -- ior )
 
@@ -6158,12 +6258,12 @@ code (<file-as-is)  ( -- ior )
 
   jpnext  end-code
 
-: <file-as-is  ( ca len -- f n )
+: <file-as-is  ( ca len -- ior )
   \ Load a file from disk.
   \ ca len  = filename
   \ f       = error?
   \ n       = error
-  0 0 2swap >ufia (<file-as-is) ior>error  ;
+  0 0 2swap >ufia (<file-as-is) dosior>ior  ;
 
 ( file? )
 
@@ -6921,7 +7021,7 @@ variable old-voc-link
 
   \ XXX TODO
 
-  old-latest @ old-np @ >>link !n  ;
+  old-latest @ old-np @ >>link !s  ;
 
 ( [false] [true] )
 
@@ -7176,6 +7276,21 @@ variable decode-address  \ in the word being decoded
   defined  ( nt | 0 )  dup 0= -13 ?throw
   name>body  0 decode-level !  (decode)  ;
 
+( list )
+
+need .line  need nuf?
+
+: list  ( n -- )
+
+  \ List block number _n_.
+
+  dup scr !
+  cr ." Scr # " .
+  l/scr 0 do
+    cr i 2 .r space i scr @ .line
+    nuf? ?leave
+  loop cr  ;
+
 ( index .index )
 
 need .line  need nuf?
@@ -7275,7 +7390,7 @@ need trail  need name>link  need tab  need nuf?
 : words  ( -- )
   trail
   begin  more-words?  while
-    dup .name tab  name>link @n
+    dup .name tab  name>link @s
   repeat drop  ;
 
 [unneeded] wordlist-words ?exit
@@ -7305,7 +7420,7 @@ need trail  need name>link  need tab  need nuf?
   begin  more-words?  while
     dup >r
     name>string 2over contains if  r@ .name tab  then
-    r> name>link @n
+    r> name>link @s
   repeat drop 2drop  ;
 
 ( where )
@@ -9341,7 +9456,7 @@ variable >accept          \ offset to the cursor position
 
 : set-accept  ( ca1 len1 -- ca1' )
   clear-accept /accept @ min  ( ca1 len1' )
-  dup span ! 2dup names-bank type default-bank
+  dup span ! 2dup system-bank type default-bank
   dup >r
   accept-buffer @  ( ca1 len1' ca2 )
   smove accept-buffer @  ( ca2 )
@@ -9904,6 +10019,42 @@ code !p  ( b a -- )
   jpnext          \ jp (ix)
 
   end-code
+
+  \ }}} =======================================================
+  \ Code bank {{{
+
+( code-bank )
+
+need save-here  need call
+
+variable cp  bank-start cp !  \ code pointer
+
+: code-here   ( -- a )  cp @  ;
+: code-there  ( a -- )  cp !  ;
+: code-allot  ( n -- )  cp +!  ;
+
+variable code-bank#  3 code-bank# !
+  \ Memory bank used as code bank.
+
+: code-bank  ( -- )  code-bank# @ bank  ;
+  \ Page the code bank in.
+
+: code-bank{  ( -- )  save-here code-here there code-bank  ;
+  \ Start compiling code into the code bank.
+
+: }code-bank  ( -- )  default-bank restore-here  ;
+  \ End compiling code into the code bank.
+
+: ?bank  ( -- )  bank-start here u< #-276 ?throw  ;
+  \ Issue error -276 if the dictionary has reached
+  \ the zone of memory banks. This check is required after
+  \ compiling code which must manipulate memory banks.
+
+: code-bank-routine  ( i*x a "name" -- j*x )
+  create ?bank ,
+  does>  ( -- )  ( pfa ) @ code-bank call default-bank  ;
+  \ Create a word "name" which will call the machine code
+  \ routine at _a_, in the code bank.
 
   \ }}} =======================================================
   \ Number conversion and notation {{{
@@ -11528,9 +11679,9 @@ need get-time  need get-date
   \ }doc
 
   \ }}} =======================================================
-  \ Vocabularies {{{
+  \ Wordlists {{{
 
-( .context .current order vocs )  \ ==vocabularies==
+( .context .current order vocs )  \ ==wordlists==
 
   \ XXX OLD 2015-12-26 -- this will be replaced with a new
   \ version, based on eForth
@@ -11567,6 +11718,7 @@ need body>name
   begin  dup cell - body>name .name  @ dup 0= until  drop  ;
   \ List all of the vocabularies that have been defined so
   \ far, in the order of their definition (more recent first).
+  \ XXX OLD
 
 ( order wordlists )
 
@@ -11620,6 +11772,35 @@ need body>name
 
 : vocabulary ( "name" -- ) wordlist create-vocabulary ;
 
+( vocabulary )
+
+  \ 2015-12-26
+  \ XXX UNDER DEVELOPMENT
+
+  \ From Gforth:
+
+: vocabulary ( "name" -- )
+  wordlist create ,
+  does> ( -- )
+    \ Replace the wordlist on the top of the search list with
+    \ the vocabulary's wordlist.
+    ( pfa ) @ >r  get-order
+    dup 0= -50 ?throw \ search-order underflow?
+    nip r> swap  set-order ;
+
+  \ From Z88 CamelForth:
+
+: vocabulary ( "name" -- )
+  wordlist create ,
+  does> ( -- )
+    ( pfa ) @ >r get-order nip r> swap set-order  ;
+
+  \ Simplest:
+
+: vocabulary ( "name" -- )
+  wordlist create ,
+  does> ( -- )  ( pfa ) @ context !  ;
+
 ( get-order )
 
   \ XXX TODO use the actual number of vocs in context, not
@@ -11655,13 +11836,13 @@ need body>name
   \
   \ Code of `wid-of` adapted from eForth's `widof`.
 
-: wid>  ( wid -- xt )  body>  ;
-  \ Convert a _wid_ to the _xt_ of its vocabulary.
-  \ XXX TODO -- use `alias`
+need alias
 
-: >wid  ( xt -- wid )  >body  ;
+' body> alias wid>  ( wid -- xt )
+  \ Convert a _wid_ to the _xt_ of its vocabulary.
+
+' >body alias >wid  ( xt -- wid )
   \ Convert the _xt_ of a vocabulary to its _wid_.
-  \ XXX TODO -- use `alias`
 
 : wid-of  ( "name" -- wid )  ' >wid  ;
 
@@ -11687,30 +11868,6 @@ need body>name
   \
   \ Idea from lpForth.
 
-( vocabulary )
-
-  \ XXX UNDER DEVELOPMENT 2015-12-26
-  \
-  \ XXX Note: Already in the kernel, but may be moved here.
-
-  \ From Gforth:
-
-: vocabulary ( "name" -- )
-  wordlist create ,
-  does> ( -- )
-    \ Replace the wordlist on the top of the search list with
-    \ the vocabulary's wordlist.
-    ( pfa ) @ >r
-    get-order dup 0= -50 and throw \ search-order underflow
-    nip r> swap  set-order ;
-
-  \ From Z88 CamelForth:
-
-: vocabulary ( "name" -- )
-  wordlist create ,
-  does> ( -- )
-    ( pfa ) @ >r get-order nip r> swap set-order  ;
-
 ( find-name-in find )
 
 : find-name-in  ( ca len wid -- nt | 0 )  @ find-name-from  ;
@@ -11719,9 +11876,9 @@ need body>name
   \
   \ find-name-in  ( ca len wid -- nt | 0 )
   \
-  \ Find the definition named in the string at _ca len_, in word
-  \ list _wid_. If the definition is found, return its _nt_,
-  \ else return zero.
+  \ Find the definition named in the string at _ca len_, in
+  \ word list _wid_. If the definition is found, return its
+  \ _nt_, else return zero.
   \
   \ The search is case-sensitive.
   \
@@ -18557,7 +18714,7 @@ code if'-test  ( -- )
 \ #-273 invalid assembler condition
 \ #-274 command line history overflow
 \ #-275 wrong number
-\ #-276
+\ #-276 dictionary reached the zone of memory banks
 \ #-277
 \ #-278
 \ #-279

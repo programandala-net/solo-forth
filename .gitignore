@@ -1,12 +1,5 @@
-_dev_tools/
-_diff/
 _doc/
-_draft/
-_ideas/
-_old/
-_screenshots/
-_tests/
-_tmp/
+_meta/
 solo-forth.sna
 solo-forth.szx
 solo-forth.z80

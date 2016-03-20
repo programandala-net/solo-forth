@@ -7,7 +7,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603190250
+; This file was last modified: 201603200215
 
 ; ==============================================================
 ; License
@@ -27,12 +27,12 @@ version_minor:                equ 3
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 2
+  version_release_candidate:  equ 3
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9F3F  ; build 20160319
+  version_build_low_part:     equ 0x9F40  ; build 20160320
 endif
 
 ; ==============================================================
@@ -45,7 +45,7 @@ endif
 ; System description
 
 ; ----------------------------------------------
-; Forth Registers
+; Registers
 
 ; Forth Z80  Forth preservation rules
 ; ----- ---  ------------------------
@@ -54,8 +54,6 @@ endif
 ; SP    SP   Data stack pointer.
 ;            Should be used only as data stack across Forth words.
 ;            May be used within Forth words if restored before exit.
-;       DE   Input only when pushhlde called. ; XXX TODO
-;       HL   Input only when pushhl called. ; XXX TODO
 ;       IX   Address of `next`.
 ;            May be used within Forth words if restored before exit.
 ;       IY   Address of the ERRNR ZX Spectrum system variable.
@@ -178,10 +176,12 @@ csb_size:                         equ 256 ; bytes, size of the circular string b
 
 ; Memory banks (0xC000..0xFFFF)
 
-default_bank:                     equ 0
-names_bank:                       equ 1
+bank_start                        equ 0xC000
 
-names_bank_address:               equ 0xC000 ; names pointers
+default_bank:                     equ 0
+system_bank:                       equ 1
+
+names_bank_address:               equ bank_start ; names pointers
 
 ; Charset
 
@@ -722,7 +722,7 @@ ip_backup: ; temporary copy of Forth IP
 np: defl names_bank_address+1
 
 names_pointer:
-  ; First free address in the names bank,  restored by `cold`.
+  ; First free address in the system bank,  restored by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
@@ -1765,18 +1765,33 @@ push_a:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header names_bank_,'NAMES-BANK'
+  _code_header system_bank_,'SYSTEM-BANK'
 
 ; doc{
 ;
 ; names-bank  ( -- )
 ;
-; Page the names memory bank in at 0xC000..0xFFFF.
+; Page the system bank in at 0xC000..0xFFFF.
+; This memory bank is used to store the word names and,
+; optionally, also the command line history.
 ;
 ; }doc
 
   call bank.names
   _jp_next
+
+; ----------------------------------------------
+  _constant_header bank_start_,'BANK-START'
+
+; doc{
+;
+; bank-start  ( -- a )
+; 
+; A constant: Memory address where banks are paged in.
+;
+; }doc
+
+  dw bank_start
 
 ; ----------------------------------------------
   _code_header bank_,'BANK'
@@ -1794,7 +1809,7 @@ push_a:
   _jp_next
 
 bank.names:
-  ld e,names_bank
+  ld e,system_bank
   jr bank.e
 bank.default:
   ld e,default_bank
@@ -6108,74 +6123,76 @@ to_name.end:
   ; _jp_pushhl
 
 ; ----------------------------------------------
-  _colon_header c_fetch_n_,'C@N'
+  _colon_header c_fetch_s_,'C@S'
 
 ; doc{
 ;
-; c@n  ( a -- x )
+; c@s  ( a -- x )
 ;
-; Fetch from the _a_ address of the names bank.
+; Fetch from the _a_ address of the system bank.
 ;
 ; }doc
 
   ; XXX 7 bytes:
-  _literal names_bank
+  _literal system_bank
   dw c_fetch_bank_
   dw exit_
 
   ; XXX TODO -- 5 bytes -- faster version:
-  ; ld e,names_bank
+  ; ld e,system_bank
   ; jp c_fetch_bank.e
 
 ; ----------------------------------------------
-  _colon_header fetch_n_,'@N'
+  _colon_header fetch_s_,'@S'
 
 ; doc{
 ;
-; @n  ( a -- x )
+; @s  ( a -- x )
 ;
-; Fetch from the _a_ address of the names bank.
+; Fetch from the _a_ address of the system bank.
 ;
 ; }doc
 
   ; XXX 7 bytes:
-  _literal names_bank
+  _literal system_bank
   dw fetch_bank_
   dw exit_
 
   ; XXX TODO -- 5 bytes -- faster version:
-  ; ld e,names_bank
+  ; ld e,system_bank
   ; jp fetch_bank.e
 
 ; ----------------------------------------------
-  _colon_header c_store_n_,'C!N'
+  _colon_header c_store_s_,'C!S'
 
 ; doc{
 ;
-; c!n  ( c a -- )
+; c!s  ( c a -- )
 ;
-; Store _c_ into the _a_ address of the names bank.
+; Store _c_ into the _a_ address of the system bank.
 ;
 ; }doc
 
-  ; XXX 7 bytes:
-  _literal names_bank
+  ; XXX TODO -- move to the library?
+
+  _literal system_bank
   dw c_store_bank_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header store_n_,'!N'
+  _colon_header store_s_,'!S'
 
 ; doc{
 ;
-; !n  ( x a -- )
+; !s  ( x a -- )
 ;
-; Store _x_ into the _a_ address of the names bank.
+; Store _x_ into the _a_ address of the system bank.
 ;
 ; }doc
 
-  ; XXX 7 bytes:
-  _literal names_bank
+  ; XXX TODO -- move to the library?
+
+  _literal system_bank
   dw store_bank_
   dw exit_
 
@@ -6189,7 +6206,7 @@ to_name.end:
 ; }doc
 
   _literal 4
-  dw minus_,fetch_n_
+  dw minus_,fetch_s_
   dw exit_
 
 ; ----------------------------------------------
@@ -6201,7 +6218,7 @@ to_name.end:
 ;
 ; }doc
 
-  dw names_bank_
+  dw system_bank_
   dw count_
   _literal word_length_mask
   dw and_
@@ -6380,7 +6397,7 @@ postpone.end:
 ; }doc
 
   dw smudge_mask_,swap_
-  dw names_bank_,c_store_reset_bits_,default_bank_
+  dw system_bank_,c_store_reset_bits_,default_bank_
   dw exit_
 
 ; ----------------------------------------------
@@ -6409,7 +6426,7 @@ postpone.end:
 ; }doc
 
   dw smudge_mask_,swap_
-  dw names_bank_,c_store_set_bits_,default_bank_
+  dw system_bank_,c_store_set_bits_,default_bank_
   dw exit_
 
 ; ----------------------------------------------
@@ -7637,7 +7654,7 @@ header_comma.continue:
 
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
-  dw names_bank_
+  dw system_bank_
   dw here_,comma_np_ ; store a pointer to the xt
   dw latest_,comma_np_ ; link field
   ; Now `np` contains the address of the nt.
@@ -8190,14 +8207,14 @@ interpret.end:
 
 if 1
 
-  dw names_bank_
+  dw system_bank_
   dw swap_,c_fetch_test_bits_question_
   dw default_bank_
   dw exit_
 
 else  ; XXX TMP alternative without `c@test-bits?`
 
-  dw swap_,c_fetch_n_,and_,zero_not_equals_
+  dw swap_,c_fetch_s_,and_,zero_not_equals_
   dw exit_
 
 endif
@@ -8216,7 +8233,7 @@ endif
   ; Credits:
   ; Word adapted from eForth.
 
-  dw names_bank_,c_store_set_bits_,default_bank_
+  dw system_bank_,c_store_set_bits_,default_bank_
   dw exit_
 
 ; ----------------------------------------------
@@ -9020,6 +9037,9 @@ common_start:
 ; : ?negate  ( n1 n2 -- n1|n3 )
 ;   0< if  negate  then  ;
 ; ----
+;
+; Origin: fig-Forth's `+-`.
+;
 ; }doc
 
   pop hl
@@ -9042,6 +9062,8 @@ question_negate.hl:
 ; : ?dnegate  ( d1 n -- d1|d2 )
 ;   0< if  dnegate  then  ;
 ; ----
+;
+; Origin: fig-Forth's `d+-`.
 ;
 ; }doc
 
@@ -9246,7 +9268,7 @@ endif
 ; Divide _d_ by _n1_, giving the symmetric quotient _n3_ and the
 ; remainder _n2_. Input and output stack arguments are signed.
 ;
-; Origin: Forth-94, Forth-2012.
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 
 ; }doc
 
@@ -9273,11 +9295,12 @@ if 0
   _colon_header s_m_slash_rem2_,'SM/REM2'  ; XXX TMP
 
   ; Credits:
-  ; Code from Abersoft Forth's `m/`.
+  ;
+  ; Code of `m/` in Abersoft Forth's and White Lightning.
+  ;
+  ; XXX Note: This implementation is faster than Z88
+  ; CamelForth's, but has bugs.
 
-  ; XXX Note: This implementation, from Abersoft Forth, is
-  ; faster than Z88 CamelForth's, but has bugs.
-;
 ; ----
 ; : sm/rem  ( d n1 -- n2 n3 )
 ;   over >r >r dabs r@ abs um/mod
@@ -9289,10 +9312,12 @@ if 0
   ; 16777216. 50 sm/rem  ( -1 -1 )
 
   dw over_,to_r_,to_r_
-  dw d_abs_,r_fetch_,abs_,u_m_slash_mod_
+  dw d_abs_,r_fetch_,abs_
+  dw u_m_slash_mod_
   dw from_r_,r_fetch_,xor_,question_negate_,swap_
   dw from_r_,question_negate_,swap_
   dw exit_
+
 
 endif
 
@@ -11602,7 +11627,7 @@ dictionary_pointer_after_cold:
 move_name_fields_to_memory_bank:
 
   ; Move the name fields, assembled in ordinary memory, to the
-  ; names bank. This routine is needed only once, therefore its
+  ; system bank. This routine is needed only once, therefore its
   ; call is patched with `noop` at the end; the routine itself
   ; will be overwritten by the Forth dictionary.
 

@@ -1,4 +1,9 @@
 = Acknowledgments
+:author: Marcos Cruz (programandala.net)
+:revdate: 2016-03-19
+
+// This file is part of Solo Forth
+// http://programandala.net/en.program.solo_forth.html
 
 Solo Forth started with the code of Abersoft Forth, which was first
 studied and much improved
@@ -6,7 +11,7 @@ studied and much improved
 disassembled
 (http://programandala.net/en.program.abersoft_forth.html).
 
-Solo Forth was made possible thanks to code, documentation, ideas and
+Solo Forth is being possible thanks to code, documentation, ideas and
 inspiration from the following Forth systems and libraries, listed in
 alphabetical order:
 

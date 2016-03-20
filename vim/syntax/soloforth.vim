@@ -343,7 +343,7 @@ syn keyword soloforthMath decimal
 syn keyword soloforthMath hex
 syn keyword soloforthMemory !
 syn keyword soloforthMemory !bank
-syn keyword soloforthMemory !n
+syn keyword soloforthMemory !s
 syn keyword soloforthMemory -leading
 syn keyword soloforthMemory -trailing
 syn keyword soloforthMemory /string
@@ -354,17 +354,19 @@ syn keyword soloforthMemory ?
 syn keyword soloforthMemory ?csb
 syn keyword soloforthMemory @
 syn keyword soloforthMemory @bank
-syn keyword soloforthMemory @n
+syn keyword soloforthMemory @s
 syn keyword soloforthMemory allocate-string
 syn keyword soloforthMemory allot
+syn keyword soloforthMemory bank
+syn keyword soloforthMemory bank-start
 syn keyword soloforthMemory blank
 syn keyword soloforthMemory c!
 syn keyword soloforthMemory c!bank
-syn keyword soloforthMemory c!n
+syn keyword soloforthMemory c!s
 syn keyword soloforthMemory c,
 syn keyword soloforthMemory c@
 syn keyword soloforthMemory c@bank
-syn keyword soloforthMemory c@n
+syn keyword soloforthMemory c@s
 syn keyword soloforthMemory cell
 syn keyword soloforthMemory cell+
 syn keyword soloforthMemory cell-
@@ -376,12 +378,13 @@ syn keyword soloforthMemory cmove
 syn keyword soloforthMemory cmove>
 syn keyword soloforthMemory count
 syn keyword soloforthMemory csb0
+syn keyword soloforthMemory default-bank
 syn keyword soloforthMemory dp
 syn keyword soloforthMemory empty-csb
 syn keyword soloforthMemory erase
 syn keyword soloforthMemory fill
-syn keyword soloforthMemory limit
 syn keyword soloforthMemory here
+syn keyword soloforthMemory limit
 syn keyword soloforthMemory move
 syn keyword soloforthMemory np
 syn keyword soloforthMemory np!
@@ -398,6 +401,7 @@ syn keyword soloforthMemory sp
 syn keyword soloforthMemory sp!
 syn keyword soloforthMemory sp0
 syn keyword soloforthMemory sp@
+syn keyword soloforthMemory system-bank
 syn keyword soloforthMemory there
 syn keyword soloforthMemory unused-csb
 syn keyword soloforthOperator *
@@ -1060,7 +1064,8 @@ let b:current_syntax = "soloforth"
 "
 " 2015-10-14: Updated: `catch`, `throw`, `abort"`, `?throw`.
 "
-" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed `@p`, `!p`.
+" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed
+" `@p`, `!p`.
 "
 " 2015-10-21: Upadted: `compile-only`.
 "
@@ -1116,7 +1121,9 @@ let b:current_syntax = "soloforth"
 "
 " 2016-03-15: Added `evaluate`.
 "
-" 2016-03-19: Added `there`.
+" 2016-03-19: Added `there`, `system-bank`, `default-bank`,
+" `bank`, `bank-start`.  Renamed the words related to the names
+" bank.
 
 " --------------------------------------------------------------
 
