@@ -1,0 +1,234 @@
+  \ floating_point.rom.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains a floating point implementation that
+  \ uses the ROM calculator.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+  \ -------------------------------------------------------------
+  \ Description
+
+  \ The ROM calculator is used for implementing most words of
+  \ the Forth-2012 FLOATING and FLOATING EXT word sets, and
+  \ some words not provided by Forth-2012.
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX FIXME -- The ROM calculator calls the BASIC error
+  \ routines, what crashes the system.
+
+( fp-load )
+
+need +thru
+1 9 +thru
+
+( float float+ floats s>f f>s )
+
+5 constant float
+
+: float+  ( n1 -- n2 )  float +  ;
+: floats  ( n1 -- n2 )  float *  ;
+
+need z80-asm  need calc
+
+code s>f  ( n -- ) ( F: -- r )
+  exx  bc pop  2D2B call  exx  jpnext  end-code
+
+code f>s  ( -- n ) ( F: r -- )
+  exx  2DA2 call  bc push  exx  jpnext  end-code
+
+  \ code f>d  ( -- d ) ( F: r -- )
+  \  end-code
+  \  \ XXX TODO
+
+( fvariable )
+
+: fvariable  ( "name" -- )  create  float allot  ;
+
+: f!  ( a -- ) ( F: r -- )  ;
+  \ XXX TODO
+
+: f,  ( -- )  here float allot f!  ;
+
+: fconstant  ( "name" -- )  ( F: f -- )  create  f,  does>  ;
+  \ XXX TODO
+
+( f** f+ f- f/ )
+
+  \ Operators
+
+need z80-asm  need calc
+
+code f**  ( F: r1 -- r2 )
+  calc 06 c, end-calc jpnext  end-code
+code f+  ( F: r1 r2 -- r3 )
+  calc 0F c, end-calc jpnext  end-code
+code f-  ( F: r1 r2 -- r3 )
+  calc 03 c, end-calc jpnext  end-code
+code f/  ( F: r1 r2 -- r3 )
+  calc 05 c, end-calc jpnext  end-code
+
+  \ XXX TODO
+  \ code fmax  ( F: r1 r2 -- r1|r2 ) calc end-calc jpnext  end-code
+  \ code fmin  ( F: r1 r2 -- r1|r2 ) calc end-calc jpnext  end-code
+
+code fsign  ( F: r1 -- r2 )
+  calc 29 c, end-calc jpnext  end-code
+
+( fabs fexp fln fmod fnegate fsqrt )
+
+  \ Operators
+
+need z80-asm  need calc
+
+code fabs  ( F: r1 -- r2 )
+  calc 2A c, end-calc jpnext  end-code
+code fexp  ( F: r1 -- r2 )
+  calc 26 c, end-calc jpnext  end-code
+code fmod  ( F: r1 -- r2 )
+  calc 32 c, end-calc jpnext  end-code
+code fnegate  ( F: r1 -- r2 )
+  calc 1B c, end-calc jpnext  end-code
+
+code fln  ( F: r1 -- r2 )
+  calc 25 c, end-calc jpnext  end-code
+code fsqrt  ( F: r1 -- r2 )
+  calc 28 c, end-calc jpnext  end-code
+
+code fround  ( F: r1 -- r2 )
+  calc 3A c, end-calc jpnext  end-code
+
+( f0 f1 fhalf fpi2/ f10 )
+
+  \ Constants
+
+need z80-asm  need calc
+
+code f0  ( F: -- r1 )
+  calc A0 c, end-calc jpnext  end-code
+code f1  ( F: -- r1 )
+  calc A1 c, end-calc jpnext  end-code
+code fhalf  ( F: -- r1 )
+  calc A2 c, end-calc jpnext  end-code
+code fpi2/  ( F: -- r1 )
+  calc A3 c, end-calc jpnext  end-code
+code f10  ( F: -- r1 )
+  calc A4 c, end-calc jpnext  end-code
+
+( jp-f>s )
+
+need z80-asm  need f>s
+
+  \ XXX TODO -- optimize; `f>s` has another pair of `exx`. A
+  \ specific word will be faster and smaller, instead of
+  \ `end-calc jp-f>s`.
+
+  \ XXX FIXME -- `macro` is not recognized here.
+
+macro jp-f>s  ( -- )
+  ['] f>s call-xt
+  endm
+
+( f0< f0= f< f<= f<> f= f> f>= )
+
+  \ Comparisons
+
+  \ XXX FIXME -- the flag must be returned on the data stack
+
+need z80-asm  need calc  need jp-f>s
+
+code f0<  ( F: r1 -- rwf )
+  calc 36 c, 1B c, end-calc jp-f>s  end-code
+
+code f0=  ( F: r1 -- rwf )
+  calc 30 c, 1B c, end-calc jp-f>s  end-code
+
+code f0<>  ( F: r1 -- rwf )
+  calc 30 c, 30 c, 1B c, end-calc jp-f>s  end-code
+
+code f<  ( F: r1 r2 -- rwf )
+  calc 0D c, 1B c, end-calc jp-f>s  end-code
+
+  \ code f~ \ XXX TODO
+
+( f<= f<> f= f> f>= )
+
+  \ Comparisons
+
+  \ XXX FIXME -- the flag must be returned on the data stack
+
+need z80-asm
+
+code f<=  ( F: r1 r2 -- rwf )
+  calc 09 c, 1B c, end-calc jp-f>s  end-code
+
+code f<>  ( F: r1 r2 -- rwf )
+  calc 0B c, 1B c, end-calc jp-f>s  end-code
+
+code f=  ( F: r1 r2 -- rwf )
+  calc 0E c, 1B c, end-calc jp-f>s  end-code
+
+code f>  ( F: r1 r2 -- rwf )
+  calc 0C c, 1B c, end-calc jp-f>s  end-code
+
+code f>=  ( F: r1 r2 -- rwf )
+  calc 0A c, 1B c, end-calc jp-f>s  end-code
+
+( fdrop fdup fswap fover frot )
+
+  \ Stack
+
+need z80-asm  need float  need calc
+
+23651 constant fp0  23653 constant fp  : fp@  ( -- a )  fp @  ;
+  \ 23651 = STKBOT system variable
+  \ 23653 = STKEND system variable
+
+: fdepth  ( -- n )  fp@ fp0 @ - float /  ;
+
+code fdrop  ( F: r1 -- )
+  calc 02 c, end-calc jpnext  end-code
+
+code fdup  ( F: r1 -- r1 r1 )
+  calc 31 c, end-calc jpnext  end-code
+
+code fswap  ( F: r1 r2 -- r2 r1 )
+  calc 01 c, end-calc jpnext  end-code
+
+code fover  ( F: r1 r2 -- r1 r2 r1 )
+  calc C2 c, C1 c, E1 c, E2 c, E1 c, end-calc jpnext  end-code
+
+code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
+  calc C3 c, C2 c, C1 c, E2 c, E3 c, E1 c, end-calc
+  jpnext  end-code
+
+( facos fasin fatan fcos fsin ftan )
+
+  \ Trigonometrical functions
+
+need z80-asm  need calc
+
+code facos  ( F: r1 -- r2 )
+  calc 23 c, end-calc jpnext  end-code
+code fasin  ( F: r1 -- r2 )
+  calc 22 c, end-calc jpnext  end-code
+code fatan  ( F: r1 -- r2 )
+  calc 24 c, end-calc jpnext  end-code
+code fcos  ( F: r1 -- r2 )
+  calc 20 c, end-calc jpnext  end-code
+code fsin  ( F: r1 -- r2 )
+  calc 1F c, end-calc jpnext  end-code
+code ftan  ( F: r1 -- r2 )
+  calc 21 c, end-calc jpnext  end-code
+

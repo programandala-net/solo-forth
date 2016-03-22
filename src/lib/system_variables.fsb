@@ -1,0 +1,44 @@
+  \ system_variables.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains constants for the system variables.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( os-chars os-chans os-flags2 os-seed os-frames os-udg )
+
+[unneeded] os-chars    ?\ 23606 constant os-chars
+  \ 1 cell:
+  \ address of character 0 of the font (actual characters 32..127)
+
+[unneeded] os-chans    ?\ 23631 constant os-chans
+  \ 1 cell:
+  \ address of the channels
+
+[unneeded] os-flags2   ?\ 23658 constant os-flags2
+  \ 1 byte:
+  \ several flags
+
+[unneeded] os-seed     ?\ 23670 constant os-seed
+  \ 1 cell:
+  \ seed of the random number generator
+
+[unneeded] os-frames   ?\ 23672 constant os-frames
+  \ 3 bytes:
+  \ 24-bit counter of frames (1 frame = 20 ms)
+
+[unneeded] os-udg      ?\ 23675 constant os-udg
+  \ 1 cell:
+  \ address of the User Defined Graphics (characters 128..255)
+
+  \ vim: filetype=soloforth

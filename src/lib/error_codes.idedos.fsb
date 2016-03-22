@@ -1,3 +1,8 @@
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains the error codes of IDEDOS.
+
 ( IDEDOS error codes #-1056..#-1066 )
 
 \ #-1056 IDEDOS: Invalid partition

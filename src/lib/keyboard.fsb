@@ -1,0 +1,633 @@
+  \ keyboard.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words related to the keyboard.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+  \ }}} =======================================================
+  \ Keyboard {{{
+
+( capslock )  \ ==keyboard==
+
+need os-flags2
+need c!toggle-bits  need c@test-bits
+need c!reset-bits   need c!reset-bits
+
+%1000 os-flags2 2constant capslock
+  \ Bit and system variable that control the capslock.
+
+: toggle-capslock  ( -- )    capslock c!toggle-bits  ;
+: set-capslock     ( -- )    capslock c!set-bits  ;
+: unset-capslock   ( -- )    capslock c!reset-bits  ;
+: capslock?        ( -- f )  capslock c@test-bits 0<>  ;
+
+( at-accept clear-accept set-accept )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Common code for several versions of `accept`
+  \
+  \ 2016-03-13: copied from the kernel, in
+  \ order to make it optional in the future.
+
+2variable accept-xy       \ coordinates of the edited string
+  \ doc{
+  \
+  \ accept-xy  ( -- a )
+  \
+  \ A double variable that holds the cursor position at the
+  \ start of the most recent `accept`.
+  \
+  \ }doc
+
+variable accept-buffer    \ address of the edited string
+  \ doc{
+  \
+  \ accept-buffer  ( -- a )
+  \
+  \ A variable that holds the buffer address used by
+  \ the latest execution of `accept`.
+  \
+  \ }doc
+
+variable /accept          \ max length of the edited string
+  \ doc{
+  \
+  \ /accept  ( -- a )
+  \
+  \ A variable that holds the buffer max length used by
+  \ the latest execution of `accept`.
+  \
+  \ }doc
+
+variable >accept          \ offset to the cursor position
+  \ doc{
+  \
+  \ >accept  ( -- a )
+  \
+  \ A variable that holds the offset of the cursor in the
+  \ string being edited by `accept`.
+  \
+  \ }doc
+
+: at-accept  ( -- )  accept-xy 2@ at-xy  ;
+  \ doc{
+  \
+  \ at-accept  ( -- )
+  \
+  \ Set the cursor position at the start of the most recent
+  \ `accept`.
+  \
+  \ }doc
+
+: clear-accept  ( -- )
+  at-accept span @ spaces at-accept  span off  ;
+  \ doc{
+  \
+  \ clear-accept ( -- )
+  \
+  \ Clear the string currently edited by `accept`.
+  \
+  \ }doc
+
+: set-accept  ( ca1 len1 -- ca1' )
+  clear-accept /accept @ min  ( ca1 len1' )
+  dup span ! 2dup system-bank type default-bank
+  dup >r
+  accept-buffer @  ( ca1 len1' ca2 )
+  smove accept-buffer @  ( ca2 )
+  r> +  ( ca1' )  ;
+  \ doc{
+  \
+  \ set-accept  ( ca1 len1 -- ca1' )
+  \
+  \ Set string _ca len_ as the string being edited by `accept`.
+  \ Return the address _ca1'_ after its last character.
+  \
+  \ }doc
+
+( acceptx )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ Alternative version of `accept` with more editing features
+  \
+  \ 2016-03-13: copied from the kernel, in
+  \ order to make it optional in the future.
+
+need at-accept  need set-accept
+
+: .acceptx  ( -- )
+
+  accept-buffer @ >accept @ at-accept type
+    \ Print the start of the string, before the cursor.
+
+  1 inverse  >accept @ span @ <
+  if accept-buffer @ >accept @ + c@ emit  else  space  then
+  0 inverse
+    \ Print the cursor.
+
+  accept-buffer @ span @ >accept @ 1+ min /string type
+    \ Print the end of the string, after the cursor.
+  ;
+
+-->
+
+( acceptx )
+
+need toggle-capslock
+
+: accept-edit  ( -- )  clear-accept init-accept  ;
+: accept-left  ( -- )  ;
+: accept-right  ( -- )  ;
+: accept-up  ( -- )  ;
+: accept-down  ( -- )  ;
+: accept-delete  ( -- )  ;
+
+create accept-commands ] noop noop noop noop noop noop
+toogle-capslock accept-edit accept-left accept-right
+accept-down accept-up accept-delete noop noop noop noop noop
+noop noop noop noop noop noop noop noop noop noop noop noop [
+
+: >accept-command  ( c -- a )  cells accept-commands +  ;
+: accept-command  ( c -- )  >accept-command perform  ;
+
+-->
+
+( acceptx )
+
+: init-acceptx  ( ca len -- )
+  /accept !  accept-buffer !  >accept off  xy accept-xy 2!  ;
+
+: (acceptx) ( ca len -- len' )  2dup init-accept
+
+  over + over ( bot eot cur )
+  begin  key dup 13 <> \ not carriage return?
+  while
+    dup 12 =  \ delete?
+    if    drop  >r over r@ < dup  \ any chars?
+          if  8 dup emit  bl emit  emit  then  r> +
+    else  \ printable
+          >r  2dup <>  \ more?
+          if r@ over c!  char+  r@ emit
+          then r> drop
+    then
+  repeat  drop nip swap -  ;  -->
+
+( acceptx )
+
+: acceptx ( ca len -- len' )
+  span off  ?dup 0= if  drop 0  else  (acceptx)  then  ;
+
+
+  \ XXX TMP -- for debugging
+
+: ax  ( -- )  ['] acceptx ['] accept defer!  ;
+: a0  ( -- )  ['] default-accept ['] accept defer!  ;
+
+( inkey )
+
+need z80-asm
+
+code inkey  ( -- c | 0 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed, leave 0.
+  \
+  \ This word works only when an interrupts routine reads the
+  \ keyboard and updates the related system variables.
+
+  \ XXX FIXME -- Some times this word returns zero when the key
+  \ is pressed; the version on the previous block works fine.
+  \ Anyway this version is smaller and can be useful.
+
+  a xor
+  01 iy 5 bitx  \ a new key pressed?
+  nz if
+    5C08 hl ldp#  \ LAST-K system variable
+    m a ld
+    \ 0 m ld# \ XXX OLD
+    01 iy 5 resx
+  then
+  pusha jp
+
+  end-code
+
+( nuf? )
+
+  \ Credits:
+  \
+  \ Code adapted from lpForth and Forth Dimensions (volume 10,
+  \ number 1, page 29, 1988-05).
+
+need aborted?
+
+[defined] 'cr' ?\ 13 constant 'cr' \ code of carriage return
+
+: nuf?  ( -- f )  'cr' aborted?  ;
+
+  \ XXX OLD -- Classic definition:
+  \
+  \ : nuf?  ( -- f )  key? dup if  key 2drop key 'cr' = then  ;
+
+  \ doc{
+  \
+  \ nuf?  ( -- f )
+  \
+  \ If no key is pressed return _false_.  If a key is pressed,
+  \ discard it and wait for a second key. Then return _true_ if
+  \ it's a carriage return, else return _false_.
+
+  \ Usage example:
+  \
+  \ : listing  ( -- )
+  \   begin  ." bla " nuf?  until  ." Aborted"  ;
+  \
+  \ }doc
+
+( aborted? )
+
+: aborted?  ( c -- f )
+  key? dup  if    key 2drop key =
+            else  nip  then  ;
+
+  \ doc{
+  \
+  \ aborted?  ( c -- f )
+  \
+  \ If no key is pressed return _false_.  If a key is pressed,
+  \ discard it and wait for a second key. Then return _true_ if
+  \ it's _c_, else return _false_.
+
+  \ Usage example:
+  \
+  \ : listing  ( -- )
+  \   begin  ." bla "  bl aborted?  until  ." Aborted"  ;
+  \
+  \ }doc
+
+
+( break? )
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TODO try
+
+: break?  ( -- f )
+  key? dup if  key 2drop break-key?  then  ;
+
+( inkey )
+
+  \ Credits:
+  \
+  \ Code adapted and modified from Abersoft Forth's `inkey`.
+
+need z80-asm
+
+code inkey  ( -- c | 0 )
+
+  \ Leave the value of the key being pressed. If no key being
+  \ pressed leave zero.
+  \
+  \ This word reads the keyboard, so it works even when the
+  \ keyboard is not read by an interrupts routine.
+
+  bc push
+  028E call \ KEY-SCAN ROM routine
+  \ 1 or 2 keys in DE, most significant shift first if any
+  \ key values 0..39 else 255
+  z if  \ is key press valid?
+    031E call \ KEY-TEST ROM routine
+    cy if  \ is key code valid?
+      \ A = main key
+      \ D = ?
+      00 c ld#  \ XXX Spectrum Forth-83 does this
+      d dec  a e ld
+      0333 call \ KEY-DECODE ROM routine
+      \ A = key code
+    then
+  then
+  FF cp#  z if  a xor  then  \ convert FF to 00
+  \ XXX TODO jump to `key` to decode
+  bc pop  pusha jp  end-code
+
+( key?? )
+
+  \ An alternative to `key?`. It works also when the system
+  \ interrupts are off. Variant with relative jumps.
+
+need z80-asm
+
+code key??  ( -- f )
+
+  bc push
+  028E call  \ ROM KEY_SCAN
+  here jrnz  >relmark 0 unresolved ! \ to return_false
+  031E call  \ ROM KEY_TEST
+  here jrnc  >relmark 1 unresolved ! \ to return_false
+
+  \ return_true:
+  bc pop  ' true jp
+
+  \ return_false:
+  0 unresolved @ >relresolve
+  1 unresolved @ >relresolve
+  bc pop  ' false jp
+
+  end-code
+
+( key?? )
+
+  \ An alternative to `key?`. It works also when the system
+  \ interrupts are off. Faster variant with absolute jumps.
+
+need z80-asm
+
+code key??  ( -- f )
+
+  bc push
+  028E call  \ ROM KEY_SCAN
+  0000 jpnz  |mark 0 unresolved ! \ to return_false
+  031E call  \ ROM KEY_TEST
+  0000 jpnc  |mark 1 unresolved ! \ to return_false
+
+  \ return_true:
+  bc pop  ' true jp
+
+  \ return_false:
+  0 unresolved @ >resolve
+  1 unresolved @ >resolve
+  bc pop  ' false jp
+
+  end-code
+
+( y/n? y/n yes? no? )
+
+  \ Credits:
+  \
+  \ Code adapted from Afera.
+
+need value
+
+char Y value "y"  char N value "n"
+  \ Default (uppercase) letters for "yes" and "no".
+
+: y/n?  ( c -- f )  dup "y" = swap "n" = or  ;
+  \ Is the given (uppercase) char _c_
+  \ a valid answer for a "y/n" question?
+
+: y/n  ( -- c )
+  begin  key upper dup y/n? 0=  while  drop  repeat  ;
+  \ Wait for a valid key press for a "y/n" question
+  \ and return its code.
+
+: no?  ( -- f )  y/n "n" =  ;
+  \ Wait for a valid key press for a "y/n" question
+  \ and return _true_ if it's the current letter for "no",
+  \ else return _false_.
+
+: yes?  ( -- f )  y/n "y" =  ;
+  \ Wait for a valid key press for a "y/n" question
+  \ and return _true_ if it's the current letter for "yes",
+  \ else return _false_.
+
+( Keyboard rows ports)
+
+  \ Adapted from Afera.
+  \ XXX UNDER DEVELOPMENT
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Some tools to manage key presses. An improved and detailed
+  \ implementation can be found in the Tron 0xF game
+  \ (http://programandala.net/en.program.tron_0xf.html).
+  \
+  \ "kk" stands for "keyboard key". This notation was chosen
+  \ first in order to prevent future name clashes with standard
+  \ words which uses the "k-" prefix, and second because these
+  \ words manage only physical keys of the keyboard, not key
+  \ combinations.
+  \
+  \ -----------------------------------------------------------
+
+
+( kk-ports kk, kk@ )
+
+  \ There are two versions of `kk,` and `kk@`. They depend on the
+  \ value of `/kk`, a constant that holds the bytes ocuppied by
+  \ every key in `kk-ports`, 3 or 4.
+  \
+  \ The application must define `/kk` before loading this
+  \ block.
+
+  \ ............................................
+  \ Method 1: smaller but slower
+
+  \ Every key identifier occupies 3 bytes in the table (total
+  \ size is 120 bytes)
+
+/kk 3 <> dup
+
+?\ : kk,  ( bitmask port -- ) , c,  ;
+  \ Store a key definition into the keys table.
+
+?\ : kk@  ( a -- bitmask port ) dup c@ swap 1+ @ ;
+  \ Fech a key definition from an element of the keys table.
+
+  \ XXX TODO wrote `kk@` in Z80.
+
+  \ ............................................
+  \ Method 2: bigger but faster
+
+  \ Every key identifier occupies 4 bytes in the table (total
+  \ size is 160 bytes)
+
+/kk 4 <> dup
+
+?\ : kk,  ( d -- )  2,  ;
+  \ Store a key definition into the keys table.
+
+?\ : kk@  ( a -- bitmask port )  2@  ;
+  \ Fech a key definition from an element of the keys table.
+
+-->
+
+( kk-ports )
+
+  \ Key constants are defined with double constants this way:
+  \ high part = bitmask
+  \ low part = port of the keyboard row
+
+$01 $F7FE 2constant kk-1  $02 $F7FE 2constant kk-2
+$04 $F7FE 2constant kk-3  $08 $F7FE 2constant kk-4
+$10 $F7FE 2constant kk-5
+
+$01 $FBFE 2constant kk-q  $02 $FBFE 2constant kk-w
+$04 $FBFE 2constant kk-e  $08 $FBFE 2constant kk-r
+$10 $FBFE 2constant kk-t
+
+$01 $FDFE 2constant kk-a  $02 $FDFE 2constant kk-s
+$04 $FDFE 2constant kk-d  $08 $FDFE 2constant kk-f
+$10 $FDFE 2constant kk-g
+
+$01 $FDFE 2constant kk-cs  $02 $FDFE 2constant kk-z
+$04 $FDFE 2constant kk-x   $08 $FDFE 2constant kk-c
+$10 $FDFE 2constant kk-v
+
+-->
+
+( kk-ports )
+
+$01 $EFFE 2constant kk-0  $02 $EFFE 2constant kk-9
+$04 $EFFE 2constant kk-8  $08 $EFFE 2constant kk-7
+$10 $EFFE 2constant kk-6
+
+$01 $DFFE 2constant kk-p  $02 $DFFE 2constant kk-o
+$04 $DFFE 2constant kk-i  $08 $DFFE 2constant kk-u
+$10 $DFFE 2constant kk-y
+
+$01 $BFFE 2constant kk-en  $02 $BFFE 2constant kk-l
+$04 $BFFE 2constant kk-k   $08 $BFFE 2constant kk-j
+$10 $BFFE 2constant kk-h
+
+$01 $7FFE 2constant kk-sp $02 $7FFE 2constant kk-ss
+$04 $7FFE 2constant kk-m  $08 $7FFE 2constant kk-n
+$10 $7FFE 2constant kk-b
+
+-->
+
+( kk-ports )
+
+  \ This table contains the key double constants (port and
+  \ bitmak) of all keys.
+
+  \ This table contains 40 items, one per physical key, and
+  \ it's organized by keyboard rows.
+
+need kk,
+
+40 constant keys
+
+create kk-ports
+
+kk-1  kk,  kk-2  kk,  kk-3 kk,  kk-4 kk,  kk-5 kk,
+kk-q  kk,  kk-w  kk,  kk-e kk,  kk-r kk,  kk-t kk,
+kk-a  kk,  kk-s  kk,  kk-d kk,  kk-f kk,  kk-g kk,
+kk-cs kk,  kk-z  kk,  kk-x kk,  kk-c kk,  kk-v kk,
+kk-0  kk,  kk-9  kk,  kk-8 kk,  kk-7 kk,  kk-6 kk,
+kk-p  kk,  kk-o  kk,  kk-i kk,  kk-u kk,  kk-y kk,
+kk-en kk,  kk-l  kk,  kk-k kk,  kk-j kk,  kk-h kk,
+kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
+
+( kk-1# )
+
+  \ Key number constants, to be used as indexes of the key
+  \ tables.
+
+need enum
+
+0
+enum kk-1#  enum kk-2#  enum kk-3# enum kk-4# enum kk-5#
+enum kk-q#  enum kk-w#  enum kk-e# enum kk-r# enum kk-t#
+enum kk-a#  enum kk-s#  enum kk-d# enum kk-f# enum kk-g#
+enum kk-cs# enum kk-z#  enum kk-x# enum kk-c# enum kk-v#
+enum kk-0#  enum kk-9#  enum kk-8# enum kk-7# enum kk-6#
+enum kk-p#  enum kk-o#  enum kk-i# enum kk-u# enum kk-y#
+enum kk-en# enum kk-l#  enum kk-k# enum kk-j# enum kk-h#
+enum kk-sp# enum kk-ss# enum kk-m# enum kk-n# enum kk-b#
+drop
+
+( kk-chars )
+
+  \ This table contains the chars used as names of the keys.
+
+  \ This table contains 40 items, one per physical key, and
+  \ it's organized by keyboard rows.
+
+  \ By default, the first 4 UDG are used for keys whose names
+  \ are not a printable char:
+  \
+  \ 128 = Caps Shift
+  \ 129 = Enter
+  \ 130 = Space
+  \ 131 = Symbol Shift
+
+create kk-chars
+
+char 1 c,  char 2 c,  char 3 c,  char 4 c,  char 5 c,
+char q c,  char w c,  char e c,  char r c,  char t c,
+char a c,  char s c,  char d c,  char f c,  char g c,
+128    c,  char z c,  char x c,  char c c,  char v c,
+char 0 c,  char 9 c,  char 8 c,  char 7 c,  char 6 c,
+char p c,  char o c,  char i c,  char u c,  char y c,
+129    c,  char l c,  char k c,  char j c,  char h c,
+130    c,  131    c,  char m c,  char n c,  char b c,
+
+( pressed pressed? )
+
+need [if]
+
+[needed] pressed? [needed] pressed or [if]
+
+need @p
+
+: pressed? ( n1 n2 -- f )  @p and 0=  ;
+  \ Is a key pressed?
+  \ n1 = key bitmask
+  \ n2 = keyboard row port
+
+[then]
+
+[needed] pressed [if]
+
+need pressed?  need kk-ports
+
+: pressed  ( -- false | n1 n2 true )
+  0 \ false by default
+  [ kk-ports keys /kk * bounds swap ] literal literal
+  do  i kk@ pressed? if  drop i kk@ 1 leave  then  /kk +loop  ;
+  \ Return the key identifier of the first key
+  \ from the keys table that happens to be pressed.
+  \ n1 = key bitmask
+  \ n2 = keyboard row port
+
+[then]
+
+( only-one-pressed )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ The application must define the `/k` constant.
+
+need kk-ports
+
+0. 2variable kk-pressed
+
+: only-one-pressed  ( -- false | n1 n2 true )
+
+  \ XXX TODO finish
+
+  0. kk-pressed 2! \ none by default
+  [ kk-ports keys /kk * bounds swap ] literal literal
+  do  i kk@ pressed?
+  if  kk-pressed 2@ + if
+  then
+  /kk +loop
+  kk-pressed 2@ 2dup + if  1  else  2drop 0  then  ;
+
+  \ Return the key identifier of the key pressed,
+  \ if there's only one key pressed.
+  \ n1 = key bitmask
+  \ n2 = keyboard row port
+
+  \ vim: filetype=soloforth

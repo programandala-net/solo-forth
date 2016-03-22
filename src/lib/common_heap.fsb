@@ -1,0 +1,761 @@
+  \ common_heap.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains implementations of the common heap.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( heap )
+
+  \ An implementation of the Forth-94 Memory-Allocation Word
+  \ Set.
+
+  \ XXX Note: 1614 bytes used!
+
+  \ XXX TODO use top of memory instead of dictionary space?
+  \ problem: memory banks could not be used at the same time.
+  \
+  \ XXX TODO use a memory bank instead of dictionary space?
+  \ problem: only words below 0xC000 could manipulate the heap.
+
+  \ Credits:
+  \
+  \ Adapted from code written by Gordon Charlton, 1994:
+
+  \ This is freeware, copyright Gordon Charlton, 12th of
+  \ September 1994.  Copy and distribute it. Use it. Don't mess
+  \ with this file. Acknowledge its use. I make no guarentees
+  \ as to its fitness for any purpose. Tell me about any bugs.
+  \ Tell me how much you like it.
+
+  \ <gordon at charlton dot demon dot co dot uk>
+
+  \ There are five broad areas that the program covers;
+
+  \      1, General purpose extensions to the Forth system.
+
+  \      2, Creation of the heap and associated use of the data
+  \      space.
+
+  \      3, Allocation of space from the heap.
+
+  \      4, Releasing space back to the heap.
+
+  \      5, Altering the size of allocated heap space.
+
+  \ The ANS word set consists of three words, `allocate`,
+  \ `free`, and `resize` which give the minimum functionality
+  \ required to use the heap. These are given in areas 3, 4 and
+  \ 5 respectively.
+
+  \ The heap is maintained as a doubly linked ordered circular
+  \ list of nodes with an additional field noting the size of
+  \ each node and whether it is in use. The size of the heap is
+  \ specified by the constant `heapsize`. the constant
+  \ `hysteresis` controls the amount of spare space that is
+  \ added to an allocation, to reduce the need for block moves
+  \ during resizing.
+
+  \ Initially there is only one node, the size of the heap.
+  \ Aditional nodes are created by dividing an existing node
+  \ into two parts. Nodes are removed by marking as free, and
+  \ merging with adjoining free nodes. Nodes are altered in
+  \ size by merging with a following free node, if possible,
+  \ and a node being created above the new size of the node, if
+  \ needed, or by allocating a new node and block moving the
+  \ data field if necessary.
+
+  \ Finding an available node is done by sequential search and
+  \ comparison. The first node to be found that is large enough
+  \ is used for allocation. Each search starts from the node
+  \ most recently allocated, making this a "nextfit" algorithm.
+  \ The redundancy in the head fields is required to optimise
+  \ the search loop, as is the use of a sentinel to terminate
+  \ the search once every node has been looked at, by always
+  \ succeeding. A final refinement is the use of the sign bit
+  \ of the size field to mark "in-use" nodes so that they are
+  \ disregarded without a separate test.
+
+also forth definitions
+need wid-of
+vocabulary heap-voc  wid-of heap-voc constant heap-wordlist
+also heap-voc definitions
+
+  \ XXX TODO -- alternative
+  \ forth-wordlist set-current
+  \ wordlist heap-wordlist
+
+  \ **1** General Purpose Extensions
+
+0 1 2 um/mod nip 1- constant maxpos
+  \ XXX TODO use `environment?` instead when available
+
+  \ The largest positive single length integer.
+
+  \ **2** Heap Creation
+
+  \ ANSI Heap  --  Constants
+
+256 cells constant heapsize
+
+  \ Number of address units of data space that the heap
+  \ occupies.
+
+4 cells 1- constant hysteresis
+
+  \ Node lengths are rounded up according to the value of
+  \ `hysteresis` to reduce the number of block moves during
+  \ `resize` operations. The value of this constant must be one
+  \ less than a power of two and at least equal to one less
+  \ than the size of a cell.
+
+3 cells constant headsize
+
+  \ A node on the heap consists of a three cell head followed
+  \ by a variable length data space. The first cell in the head
+  \ points to the next node in the heap. The second cell
+  \ indicates the size of the node, and the third points to the
+  \ previous node. The second cell is negated to indicate the
+  \ node is in use. The heap consists of a doubly linked
+  \ circular list. There is no special notation to indicate an
+  \ empty list, as this situation cannot occur.
+
+: adjustsize ( n -- n)  headsize +  hysteresis or  1+  ;
+
+  \ The amount of space that is requested for a node needs
+  \ adjusting to include the length of the head, and to
+  \ incorporate the hysteresis.
+
+0 adjustsize constant overhead
+
+  \ The size of the smallest possible node.
+
+  \ ANSI Heap  --  Structure
+
+create sentinel  here cell+ ,  maxpos ,  0 ,  0 ,
+
+  \ A dummy node used to speed up searching the heap. The
+  \ search, which is for a node larger than or equal to the
+  \ specified size will always succeed.  The cell that points
+  \ to the next node is set up so that the there is a zero
+  \ three cells ahead of where it points, where the pointer to
+  \ the previous node (ie the sentinel) should be. This is a
+  \ special value that indicates the search has failed.
+
+create heap  heapsize allot
+
+  \ The heap is as described in `headsize`.
+
+variable nextnode  -->
+
+  \ Searching is done using a "nextfit" algorithm. `nextnode`
+  \ points to the most recently allocated node to indicate
+  \ where the next search is to start from.
+
+( heap )
+
+: >size ( addr1 -- addr2)  cell+  ;
+
+  \ Move from the "next" cell in the node head to the "size"
+  \ cell. Within the word set nodes are referred to by the
+  \ address of the "next" cell.  Externally they are referred
+  \ to by the address of the start of the data field.
+
+: >prev ( addr1 -- addr2)  [ 2 cells ] literal +  ;
+
+  \ Move from the "next" cell to the "previous" cell.
+
+: init-heap (  )
+  heap dup nextnode !
+  dup dup !
+  dup heapsize  over >size !
+  >prev !  ;
+
+  \ Initially the heap contains only one node, which is the
+  \ same size as the heap. Both the "next" cell and the
+  \ "previous" cell point to the "next" cell, as does
+  \ `nextnode`.
+
+init-heap
+
+  \ **3** Heap Allocation
+
+  \ ANSI Heap  --  List Searching
+
+: attach ( addr)
+  >prev @  dup sentinel rot !  sentinel >prev !  ;
+
+  \ The sentinel is joined into the nodelist. The "next" field
+  \ of the node preceding the one specified (_addr_) is set to
+  \ point to the sentinel, and the "prev" field of the sentinel
+  \ to point to the node that points to the sentinel.
+
+: search  ( addr size -- addr|0)
+  >r begin 2@ swap R@ < invert until
+  r> drop  >prev @  ;
+
+  \ Search the nodelist, starting at the node specified
+  \ (_addr_), for a free node larger than or equal to the
+  \ specified _size_.  Return the address of the first node
+  \ that matches, or zero for no match. The heap structure is
+  \ set up to make this a near optimal search loop. The "size"
+  \ field is next to the "next" field so that both can be
+  \ collected in a single operation (2@). Nodes in use have
+  \ negated sizes so they never match the search. The
+  \ "previous" field is included to allow the search to
+  \ overshoot the match by one node and then link back outside
+  \ the loop, rather than remembering the address of the node
+  \ just examined. The sentinel removes the need for a separate
+  \ test for failure. `search` assumes the sentinel is in
+  \ place.
+
+: detach ( addr)  dup >prev @ !  ;
+
+  \ Remake the link from the node prior to the one specified to
+  \ the one specified. This will remove the sentinel if it is
+  \ attached here. (It will be.)
+
+-->
+
+( heap )
+
+: findspace ( size -- addr|0)  nextnode @
+           dup      attach
+           dup rot  search
+           swap     detach  ;
+
+  \ Search the nodelist for a node larger or equal to that
+  \ specified. Return the address of a suitable node, or zero
+  \ if none found. The search starts at the node pointed to by
+  \ `nextnode`, the sentinal temporarily attached, the search
+  \ proceeded with and the sentinel detached.
+
+
+  \ ANSI Heap  --  Head Creation
+
+: fits ( size addr -- flag)  >size @ swap -  overhead  <  ;
+
+  \ Returns _true_ if the size of the node specified is the
+  \ same as the specified size, or larger than it by less than
+  \ the size of the smallest possible node. Returns _false_
+  \ otherwise.
+
+: togglesize ( addr)  >size dup @  negate swap !  ;
+
+  \ Negate the contents of the "size" field of the specified
+  \ node. If the node was available it is marked as in use, and
+  \ vice versa.
+
+: next! ( addr)  nextnode !  ;
+
+  \ Make the specified node the starting node for future
+  \ searches of the node list.
+
+: sizes! ( size addr -- addr)
+  2dup + >r  >size 2dup @ swap -
+  R@ >size !   swap negate swap !  r>  ;
+
+  \ Given a free node (_addr_), reduce its size to that
+  \ specified and mark it as in use. Start to construct a new
+  \ node within the specified node beyond its new length, by
+  \ storing the length of the remainder of the node in the size
+  \ field of the new node. Return the address of the partially
+  \ constructed node.
+
+: links! ( addr1 addr2)
+  2dup swap @  2dup  swap !  >prev !
+  2dup >prev !   swap !  ;
+
+
+  \ _Addr1_ is an existing node. _Addr2_ is the address of a
+  \ new node just above the existing node. Break the links from
+  \ the existing node to the next node and from the next node
+  \ to the existing node and join the new node to them.
+
+
+  \ ANSI heap  --  Node Construction  ALLOCATE
+
+: newnode ( size addr)  tuck sizes!  links!  ;
+
+  \ Given a free node at addr split it into an in-use node of
+  \ the specified size and a new free node above the in-use
+  \ node.
+
+-->
+
+( heap )
+
+: makenode ( size addr)
+  2dup fits if  togglesize drop  else  newnode  then  ;
+
+  \ Given a free node at addr make an in-use node of the
+  \ specified size and free the remainder, if there is any
+  \ usable space left.
+
+forth-wordlist set-current
+
+: allocate ( u -- addr ior)
+  dup 0< if  -59  \ `allocate` error code
+       else  adjustsize
+       dup findspace
+       dup if  dup next!
+         tuck makenode
+         headsize +  0
+         else  drop -59  \ `allocate` error code
+         then
+       then  ;
+
+heap-wordlist set-current  -->
+
+  \ Make an in-use node with a data field at least _u_ address
+  \ units long.  Return the address of the data field and an
+  \ ior of 0 to indicate success.  If the space is not
+  \ available return any old number and the standard ior.  The
+  \ standard specifies that the argument to `allocate` is
+  \ unsigned. As the implementation uses the sign bit of the
+  \ size field for its own purposes any request for an amount
+  \ of space greater than `maxpos` must fail. As this would be
+  \ a request for half the addressable memory or more this is
+  \ not unreasonable.
+
+( heap )
+
+  \ **4** Releasing Space
+
+  \ ANSI heap  --  Head Destruction
+
+: mergesizes ( addr1 addr2)
+  >size @ swap >size +!  ;
+
+  \ Make the size field of the node at _addr1_ equal to the sum
+  \ of the sizes of the two specified nodes. In usage the node
+  \ at _addr2_ will be the one immediately above _addr1_.
+
+: mergelinks ( addr1 addr2)
+  @ 2dup swap !  >prev !  ;
+
+  \ The node at _addr2_ is removed from the node list. As with
+  \ `mergesizes` the node at _addr2_ will be immediately above
+  \ that at _addr1_. Destroy the link from node1 to node2 and
+  \ relink node1 to the node above node2. Destroy the backward
+  \ link from the node above node2 and relink it to node1.
+
+: jiggle (  )
+  nextnode @ @  >prev @  next!  ;
+
+  \ There is a possibility when a node is removed from the node
+  \ list that `nextnode` may point to it. This is cured by
+  \ making it point to the node prior to the one removed. We do
+  \ not want to alter the pointer if it does not point to the
+  \ removed node as that could be detrimental to the efficiency
+  \ of the nextfit search algorithm. Rather than testing for
+  \ this condition we jiggle the pointer about a bit to settle
+  \ it into a linked node. This is done for reasons of
+  \ programmer amusement. Specifically `nextnode` is set to
+  \ point to the node pointed to by the "previous" field of the
+  \ node pointed to in the "next" field of the node pointed to
+  \ by `nextnode`. Ordinarily this is a no-op (ie I am my
+  \ father's son) but when the node has had its links merged it
+  \ sets `nextnode` to point to the node prior to the node it
+  \ pointed to (ie when I died my father adopted my son, so now
+  \ my son is my father's son).
+
+: merge ( addr)
+  dup @ 2dup mergesizes
+       mergelinks  jiggle  ;
+
+  \ Combine the node specified with the node above it. Merge
+  \ the sizes, merge the lengths and jiggle.
+
+
+  \ ANSI Heap  --  Node Removal
+
+: ?merge ( addr1 addr2)
+  >size @ 0> if
+    dup dup @
+    u< if  dup merge  then
+  then  drop  ;  -->
+
+  \ Merge the node at _addr1_ with the one above it on two
+  \ conditions, firstly that the node at _addr2_ is free, and
+  \ secondly that the node pointed to by the next field in
+  \ _addr1_ is actually above _addr1_ (ie that it does not wrap
+  \ around because it is the topmost node). In usage _addr2_
+  \ will be either _addr1_ or the node above it. In each
+  \ instance the other affected node (either the node above
+  \ _addr1_ or _addr1_) is known to be free, so no test is
+  \ needed for this.
+
+( heap )
+
+: ?mergenext ( addr)  dup @ ?merge  ;
+
+  \ Merge the node following the specified node with the
+  \ specified node, if following node is free.
+
+: ?mergeprev ( addr)  >prev @ dup ?merge  ;
+
+  \ Merge the specified node with the one preceding it, if the
+  \ preceding node is free.
+
+forth-wordlist set-current
+
+: free ( addr -- ior)
+  headsize -  dup togglesize  dup ?mergenext  ?mergeprev  0  ;
+
+heap-wordlist set-current
+
+  \ Mark the specified in-use word as free, and merge with any
+  \ adjacent free space. As this is a standard word addr is the
+  \ address of the data field rather than the "next" field. As
+  \ there is no compelling reason for this to fail the ior is
+  \ zero.
+
+
+  \ **5** Resizing Allocated Space
+
+  \ ANSI Heap  --  Node Repairing
+
+variable stash
+
+  \ the `resize` algorithm is simplified and made faster by
+  \ assuming that it will always succeed. `stash` holds the
+  \ minimum information required to make good when it fails.
+
+: savelink ( addr)  @ stash !  ;
+
+  \ saves the contents of the `>next` field of the node being
+  \ `resize`d in `stash` (above).
+
+: restorelink ( addr)  stash @  swap !  ;
+
+  \ Converse operation to `savelink` (above).
+
+: fixprev ( addr)  dup >prev @ !  ;
+
+  \ The `>next` field of the node prior to the node being
+  \ `resize`d should point to the node being `resize`d. it may
+  \ very well do already, but this makes sure.
+
+: fixnext ( addr)  dup @ >prev !  ;
+
+  \ The `>prev` field of the node after the node resized may
+  \ need correcting.  This corrects it whether it needs it or
+  \ not.  (Its quicker just to do it than to check first.)
+
+: fixlinks ( addr)  dup fixprev  dup fixnext  @ fixnext  ;
+
+  \ `resize` may very well merge its argument node with the
+  \ previous one. It may very well merge that with the next
+  \ one. This means we need to fix the previous one, the next
+  \ one and the one after next. To extend the metaphor started
+  \ in the description of `jiggle` (above), not only did I die,
+  \ but my father did too. This brings my grandfather into the
+  \ picture as guardian of my son. Now to confound things we
+  \ have all come back to life. I still remember who my son is,
+  \ and my father remembers who his father is. Once I know who
+  \ my father is I can tell my son that I am his father, I can
+  \ tell my father that I am his son and my grandfather who his
+  \ son is. Thankfully we are only concerned about the male
+  \ lineage here! (In fact nodes reproduce by division, like
+  \ amoebae, which is where the metaphor breaks down -- (1)
+  \ they are sexless and (2) which half is parent and which
+  \ child?)
+
+-->
+
+( heap )
+
+: fixsize ( addr)
+  dup >size @ 0>
+  if  dup @  2dup <
+      if    over - swap >size !  else  2drop  then
+  else  drop  then  ;
+
+  \ Reconstruct the size field of a node from the address of
+  \ the head and the contents of the `>next` field provided
+  \ that the node is free and it is not the topmost node in the
+  \ heap (ie there is no wraparound). Both these conditions
+  \ need to be true for the node to have been merged with its
+  \ successor.
+
+: fixsizes ( addr)  dup fixsize  >prev @ fixsize  ;
+
+  \ The two nodes whose size fields may need repairing are the
+  \ one passed as an argument to `resize` (damaged by
+  \ `?mergenext`) and its predecessor (damaged by `?mergeprev`).
+
+: repair ( addr)
+  dup restorelink
+  dup fixlinks  dup fixsizes
+  togglesize  ;
+
+  \ Make good the damage done by `resize`. Restore the `>next`
+  \ field, fix the links, fix the size fields and mark the node
+  \ as in-use. Note that this may not restore the system to
+  \ exactly how it was. In particular the pointer `nextnode`
+  \ may have moved back one or two nodes by virtue of having
+  \ been `jiggle`d about if it happened to be pointing to the
+  \ wrong node. This is not serious, so I have chosen to ignore
+  \ it.
+
+
+  \ ANSI Heap  --  Node Movement
+
+: toobig? ( addr size -- flag)
+  swap  >size @  >  ;
+
+  \ _Flag_ is true if the node at _addr_ is smaller than the
+  \ specified size.
+
+-->
+
+( heap )
+
+: copynode ( addr1 addr2)
+  over >size @  headsize -
+  rot  headsize + rot rot move  ;
+
+  \ Move the contents of the data field of the node at _addr1_
+  \ to the data field at _addr2_. Assumes _addr2_ is large
+  \ enough. It will be.
+
+: enlarge ( addr1 size -- addr2 ior)
+  over  ?mergeprev
+  allocate dup >r
+  if  swap repair  else  tuck copynode  then  r>  ;
+
+  \ Make a new node of the size specified. Copy the data field
+  \ of _addr1_ to the new node. Merge the node at addr1 with
+  \ the one preceding it, if possible. This last behaviour is
+  \ to finish off removing the node at _addr1_. The word
+  \ `adjust` (below) starts removing the node. The node is
+  \ removed before allocation to increase the probability of
+  \ `allocate` succeeding. The address returned by `enlarge` is
+  \ that returned by `allocate`, which is that of the data
+  \ field, not the head. If the allocation fails repair the
+  \ damage done by removing the node at _addr1_.
+
+
+  \ ANSI Heap  --  Node Restructuring
+
+: adjust ( addr1 size1 -- addr2 size2)
+  adjustsize >r
+  headsize -
+  dup savelink
+  dup togglesize
+  dup ?mergenext r>  ;
+
+  \ _Addr1_ points to the data field of a node, not the "next"
+  \ field. This needs correcting. _Size1_ also needs adjusting
+  \ as per `adjustsize`. In addition it is easier to work with
+  \ free nodes than live ones as the size field is correct,
+  \ and, as we intend to change the nodes size we will
+  \ inevitably want to muck about with the next node, if its
+  \ free, so lets merge with it straight away. Sufficient
+  \ information is first saved to put the heap back as it was,
+  \ if necessary.  Now we are ready to get down to business.
+
+-->
+
+( heap )
+
+forth-wordlist set-current
+
+: resize ( addr1 u -- addr2 ior)
+  dup 0<  if  drop -61  \ `resize` error code
+          else  adjust  2dup toobig?
+                if enlarge
+                else  over makenode headsize +  0  then
+          then  ;
+
+  \ Resize the node at _addr1_ to the specified size. Return
+  \ the address of the resized node _addr2_ along with an _ior_
+  \ of zero if successful and -61 if not. _Addr2_ may be the
+  \ same as, or different to, _addr1_.  If _ior_ is non-zero
+  \ then _addr2_ is not meaningful. Being a standard word the
+  \ arguments need adjusting to the internal representation on
+  \ entry, and back again on exit. If after the first merge the
+  \ requested size is still too large to reuse the specified
+  \ node then it is moved to a larger node and the specified
+  \ node released. If, on the other hand the request is not too
+  \ big for the node, then we remake the node at the right
+  \ length, and free any space at the top using `makenode`,
+  \ which has just the right functionality.  In this case the
+  \ ior is zero. As this is a standard word it takes an
+  \ unsigned size argument, but excessive requests fail
+  \ automatically, as with `allocate`.
+
+( create-heap )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Inspired by:
+  \
+  \ Gestor de memoria dinámica (version 1)
+  \ By Javier Gil
+  \ From his book _Introducción a Forth_ (2007-01)
+
+  \ 2015-11-18: Start.
+  \ 2015-11-21: Changes.
+
+need value  need set-bit  need reset-bit  need bit?
+need reserve  need alias
+
+0 value heap  ( -- a )
+  \ Address of the current heap.
+
+8 constant address-unit-bits
+16 value /chunk \ bytes per chunk
+
+: groups ( n1 n2 -- n3 )  /mod swap 0<> abs +  ;
+  \ Return the number _n3_ of groups of _n2_ elements, needed
+  \ to hold _n1_ elements.
+
+: bytes>chunks ( n1 -- n2 )  /chunk groups  ;
+  \ Return the chunks _n2_ required to allocate _n1_ bytes.
+
+: chunks>bytes ( n1 -- n2 )  address-unit-bits groups  ;
+  \ Return the bytes _n2_ required for a bitmap of _n1_ chunks.
+
+' heap alias heap-chunks  ( -- a )
+  \ Address that holds the number of chunks of the current
+  \ heap.
+
+: heap-unused-chunks  ( -- a )  heap-chunks cell+  ;
+  \ Address that holds the number of unused chunks of the
+  \ current heap.
+
+: heap-map  ( -- a )  heap-unused-chunks cell+  ;
+  \ Address of the current heap's map.
+
+: /heap-map  ( -- n )  heap-chunks @ chunks>bytes  ;
+  \ Number of bytes of the current heap's map.
+
+: heap-data  ( -- a ) heap-map /heap-map +  ;  -->
+  \ Address of the current heap's data space.
+
+( create-heap )
+
+: (mapbit)  ( n1 -- n2 ca )
+  address-unit-bits /mod heap-map +  ;
+  \ n1 = number of bit in the bitmap
+  \ n2 = number of bit in the byte at _a2_
+  \ ca = address of the bitmap that holds bit _n2_
+
+: mapbit ( n1 -- a2 b n2 )  (mapbit) dup @ rot  ;
+  \ n1 = number of bit in the bitmap
+  \ a2 = address of the correspondent byte
+  \ b =  correspondent byte
+  \ n2 = number of bit in _b_
+
+: used-chunk? ( n -- f )  (mapbit) @ swap bit?  ;
+  \ Is chunk _n_ used?
+
+: use-chunk ( n -- )  mapbit set-bit swap !  ;
+  \ Mark chunk _n_ as used.
+
+: free-chunk ( n -- )  mapbit reset-bit swap !  ;
+  \ Mark chunk _n_ as free.
+
+: allocated>chunks  ( a -- n )  cell- @  ;
+  \ Convert the address _a_ of an allocated space in the
+  \ current heap to its number of chunks.
+
+: allocated>index  ( a -- n )  heap-data - /chunk /  ;
+  \ Convert the address _a_ of an allocated space in the
+  \ current heap to its index _n_ in the map of the heap
+  \ chunks.
+
+: allocated>map  ( a -- n1 n2 )
+  dup allocated>index swap allocated>chunks  ;
+  \ Convert the address _a_ of an allocated space in the
+  \ current heap to its index _n1_ in the map of heap chunks
+  \ and the number _n2_ of ocuppied chunks.
+
+-->
+
+( create-heap )
+
+: locate-chunks  ( n1 -- n1 n2 0 | ior )
+  0 tuck  ( n2 n1 count )
+  heap-chunks @ 0 do  ( n2 n1 count )
+    i used-chunk? if  drop >r i 1+ r> 0  else  1+  then
+    2dup = if  drop swap 0 unloop exit  then
+  loop  2drop drop -59  ;
+  \ Locate _n1_ consecutive free chunks in the current heap.
+  \ If succesful, _n2_ is the first chunk of the group;
+  \ else return _ior_ -59, the error code for `allocate`.
+
+: chunk>address  ( n1 -- a )  /chunk * heap-data +  ;
+
+: (allocate)  ( n1 n2 -- a )
+  dup chunk>address >r
+  swap bounds do  i use-chunk  loop
+  r>  ;
+  \ Allocate _n1_ chunks of the current heap, starting from
+  \ chunk _n2_; return the address _a_ of the allocated space.
+
+-->
+
+( create-heap )
+
+  \ User interface
+
+: create-heap ( n "name" -- )
+  create  bytes>chunks dup ,  0 ,
+            \ max chunks and free chunks
+          dup chunks>bytes reserve drop
+            \ bitmap
+          /chunk * allot  ;
+            \ data space
+  \ Create a new heap "name" to hold _n_ bytes.
+
+: allocate  ( n -- a ior )
+  bytes>chunks locate-chunks ?dup ?exit  (allocate) 0  ;
+
+: free  ( a -- ior )
+  allocated>map dup >r
+  bounds do  i free-chunk  loop
+  r> heap-unused-chunks +! 0  ;
+
+  \ XXX TODO -- update with `resize`
+  \ doc{
+  \
+  \ free  ( a -- ior )
+  \
+  \ Return the contiguous region of data space indicated by _a_
+  \ to the system for later allocation. _a_ shall indicate a
+  \ region of data space that was previously obtained by
+  \ `allocate`.
+  \
+  \ If the operation succeeds, _ior_ is zero. If the operation
+  \ fails, _ior_ is -60.
+  \
+  \ Origin: Forth-94 (MEMORY), Forth-2012 (MEMORY).
+  \
+  \ }doc
+
+
+: empty-heap  ( -- )  heap-chunks @ 0 do  i free-chunk  loop  ;
+  \ Empty the current heap, setting all chunks free.
+
+: .heap ( -- )
+  heap-chunks @ 0 do
+    i used-chunk? if  [char] x  else  [char] -  then  emit
+  loop  ;
+
+  \ Print the map of the current heap. Occupied chunks are
+  \ marked with a "x"; free chunks are marked with a "-".
+
+  \ vim: filetype=soloforth

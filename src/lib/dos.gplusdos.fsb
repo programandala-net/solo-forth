@@ -1,0 +1,596 @@
+  \ dos.gplusdos.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains the words for G+DOS.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( ufia )
+
+24 constant /ufia  create ufia  /ufia allot  ufia /ufia erase
+
+  \ Note: The original field names are used, except `device`,
+  \ whose original name is "lstr1".
+
+ufia      constant dstr1   \ drive: 1 or 2
+ufia 1+   constant fstr1   \ program number
+ufia 2+   constant sstr1   \ stream number
+ufia 3 +  constant device  \ device: "D" or "d"
+ufia 4 +  constant nstr1   \ directory description
+ufia 5 +  constant nstr2   \ file name
+ufia 15 + constant hd00    \ file type
+ufia 16 + constant hd0b    \ file length
+ufia 18 + constant hd0d    \ file start address
+
+  \ XXX OLD -- not needed
+  \ ufia 20 + constant hd0f  \ BASIC length without variables
+  \ ufia 22 + constant hd11  \ BASIC autorun line
+
+char d device c! \ "d" or "D"
+2 sstr1 c!  \ stream 2
+1 dstr1 c!  \ drive 1
+
+variable file-length   \ copy of `hd0b` used by `(<file)`
+variable file-address  \ copy of `hd0d` used by `(<file)`
+
+( --file-types-- --directory-descriptions-- )
+
+  \ File types
+
+0 constant basic-filetype
+1 constant data-array-filetype
+2 constant string-array-filetype
+3 constant code-filetype
+
+: --file-types--  ;
+
+  \ Directory descriptions
+
+01 constant basic-file-dir      02 constant data-array-dir
+03 constant string-array-dir    04 constant code-file-dir
+05 constant snapshot-48k-dir    06 constant microdrive-file-dir
+07 constant screens$-file-dir   08 constant special-file-dir
+09 constant snapshot-128k-dir   10 constant opentype-file-dir
+11 constant execute-file-dir
+
+: --directory-descriptions--  ;
+
+( --hook-codes-- )
+
+hex
+
+33 constant hxfer  34 constant ofsm  35 constant hofile
+36 constant sbyte  37 constant hsvbk 38 constant cfsm
+39 constant pntp   3A constant cops  3B constant hgfile
+3C constant lbyte  3D constant hldbk 3E constant wsad
+3F constant sad    40 constant rest  41 constant heraz
+42 constant cops2  43 constant pcat  44 constant hrsad
+45 constant hwsad  46 constant otfoc 47 constant patch
+
+decimal
+
+: --hook-codes--  ;
+
+( dosior>error ?dos-error dosior>ior )
+
+: dosior>error  ( dosior -- f n )
+  dup 1 and negate swap   \ calculate f
+  flip %11111111 and      \ upper 8 bits of ior
+  1000 + negate  ;
+  \ Convert a DOS ior to a Forth error number.
+  \ ior = the AF register returned by a DOS command:
+  \     bit 0     = set: error
+  \     bits 8-14 = error code
+  \     bit 15    = set: OS error; unset: DOS error
+  \ f = error?
+  \ n = error number:
+  \     -1000..-1031: G+DOS error number 0..31
+  \     -1128..-1154: OS error number 0..26
+  \ XXX OLD -- obsolete
+
+: ?dos-error  ( dosior -- )
+  \ dosior = the AF register returned by a DOS command:
+  \   bit 0     = set: error
+  \   bits 8-14 = error code
+  \   bit 15    = set: OS error; unset: DOS error
+  dosior>error ?throw  ;
+  \ XXX OLD -- obsolete
+
+: dosior>ior  ( dosior -- ior )
+  dup 1 and negate          \ error?
+  swap flip %11111111 and   \ get upper 8 bits
+  1000 + negate and  ;
+  \ Convert a DOS ior to a Forth ior.
+  \ dosior = the AF register returned by a DOS command:
+  \     bit 0     = set: error
+  \     bits 8-14 = error code
+  \     bit 15    = set: OS error; unset: DOS error
+  \ ior = error number:
+  \     0: no error
+  \     -1000..-1031: G+DOS error number 0..31
+  \     -1128..-1154: OS error number 0..26
+  \ XXX TODO -- check
+
+( get-drive set-drive )
+
+need z80-asm  need --hook-codes--
+
+code get-drive  ( -- n )
+  \ Get the current drive (1 or 2).
+  bc push  \ save the Forth IP
+  patch hook
+  3ACE fta  \ XXX NEW
+  \ XXX TODO check this method:
+  \ bit 0 of 3DD1
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  pusha jp  end-code
+
+code set-drive  ( n -- )
+  \ Set the current drive (1 or 2).
+  hl pop
+  bc push  \ save the Forth IP
+  l a ld  21 hook   \ select drive in a
+  bc pop   next ix ldp#  \ restore the Forth registers
+  jpnext  end-code
+
+( delete-file )
+
+need z80-asm  need ufia  need --hook-codes--
+need filename>ufia  need dosior>ior
+
+code (delete-file)  ( -- ior )
+  bc push  \ save the Forth registers
+  ufia ix ldp#
+  heraz hook  \ erase the file
+  bc pop  next ix ldp#  \ restore the Forth registers
+  af push
+  jpnext
+  end-code
+  \ Delete a disk file using the data hold in UFIA.
+  \ Return a G+DOS _ior_.
+
+: delete-file  ( ca len -- ior )
+  filename>ufia (delete-file) dosior>ior  ;
+  \ Delete a disk file _ca len_ and return I/O result code
+  \ _ior_.
+
+( -filename filename! >ufia filename>ufia )
+
+need ufia  need get-drive
+
+10 constant /filename  \ max filename length
+
+: -filename  ( -- )  nstr2 /filename blank  ;
+  \ Blank the filename in UFIA.
+
+: filename!  ( ca len -- )
+  \ Store a filename into UFIA.
+  \ ca len = filename
+  -filename /filename min nstr2 swap cmove  ;
+  \ XXX TODO -- rename to `set-filename`?
+
+: >ufia  ( a1 len1 ca2 len2 -- )
+  \ Set the UFIA.
+  \ a1 len1   = memory region to save or load
+  \ ca2 len2  = filename
+  3 hd00 c!  4 nstr1 c!  \ code filetype and dir description
+  filename!
+  dup hd0b !  file-length !
+  dup hd0d !  file-address !
+  get-drive dstr1 c!  ;
+
+1 set-drive  \ default
+
+: filename>ufia  ( ca len -- )  0 0 2swap >ufia  ;
+
+( >file )
+
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need dosior>ior
+
+code (>file)  ( -- ior )
+
+  \ Save a file to disk using the data hold in UFIA.
+
+  bc push  \ save the Forth registers
+  ufia ix ldp#
+  hofile hook \ open the file and create its header
+  nc if \ no error?
+    hd0d de ftp  hd0b bc ftp  \ de=start, bc=length
+    hsvbk hook \ save to file
+    nc if  cfsm hook  then  \ close the file if no error
+  then  bc pop  next ix ldp#  \ restore the Forth registers
+  af push  \ ior
+  jpnext end-code
+
+: >file  ( a1 len1 ca2 len2 -- ior )
+  \ Save a file to disk.
+  \ a1 len1   = memory region to save
+  \ ca2 len2  = filename
+  \ f         = error?
+  \ n         = error
+  >ufia (>file) dosior>ior  ;
+
+( <file )
+
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need dosior>ior
+
+code (<file)  ( -- ior )
+
+  \ Load a file from disk, using the data hold in UFIA, the
+  \ file header and the parameters specified by the high level
+  \ command.
+
+  bc push  \ save the Forth IP
+
+  ufia ix ldp#  hgfile hook \ get the file
+  nc if \ no error?  -- load the file header:
+
+    hd00 de ldp#  9 b ld# \ destination and count
+    begin  lbyte hook  de stap  de incp  step
+      \ Load the file header.
+
+    file-address de ftp  file-length bc ftp
+      \ The start address and length specified
+      \ in the command are used by default instead
+      \ of those stored in the file header.
+
+  \ XXX TODO make the file address optional
+  \ XXX TODO make the file length optional
+
+    bc tstp z if  hd0b bc ftp  then  hldbk hook
+      \ If the length is zero, use the
+      \ length of the file header
+      \ instead.  Then load the file data.
+
+  then  bc pop  next ix ldp#  af push
+        \ restore the Forth registers and save the ior
+  jpnext  end-code
+
+: <file  ( a1 len1 ca2 len2 -- ior )
+  \ Load a file from disk.
+  \ a1 len1   = memory region to load
+  \ ca2 len2  = filename
+  \ f         = error?
+  \ n         = error
+  >ufia (<file) dosior>ior  ;
+
+( file>screen )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Experimental code to read lines from a file
+
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need dosior>ior
+
+code (file>screen)  ( -- dosior )
+
+  \ Print a file on the screen, line by line, using the data
+  \ hold in UFIA.
+
+  bc push  \ save the Forth IP
+
+  ufia ix ldp#  hgfile hook \ get the file
+  nc if \ no error?  -- load the file header:
+
+    patch hook  4000 de ldp#  128 bc ldp#
+      \ page +D in
+      \ destination and count
+
+    d h ld
+    begin   lbyte hook  de stap
+            a l ld  de push  bc push  1744 call  bc pop  de pop
+              \ print HL
+            de incp  bc decp  b a ld  c or
+    z until  E7 out  \ page +D out
+    \ begin
+    \   lbyte hook  af push  10 hook  af pop  13 cp
+    \ z until
+
+  then  bc pop  next ix ldp#  af push
+        \ restore the Forth registers and save the ior
+  jpnext  end-code -->
+
+( file>screen )
+
+: file>screen  ( ca2 len2 -- ior )
+  \ Copy a file to the screen, line by line.
+  \ ca2 len2  = filename
+  \ f         = error?
+  \ n         = error
+  >ufia (file>screen) dosior>ior  ;
+
+( .000 )
+
+  \ XXX TMP -- for debugging
+
+code .100  ( u -- )
+  hl pop
+  bc push
+  hl push
+  patch hook
+  hl pop
+  1744 call
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  jpnext
+  end-code
+
+( <file-as-is )
+
+need z80-asm  need ufia  need --hook-codes--
+need >ufia  need dosior>ior
+
+code (<file-as-is)  ( -- ior )
+
+  \ Load a file from disk, using the data hold in UFIA, the
+  \ file header and the parameters specified by the high level
+  \ command.
+
+  bc push  \ save the Forth IP
+
+  ufia ix ldp#  hgfile hook \ get the file
+  nc if \ no error?  -- load the file header:
+
+    hd00 de ldp#  9 b ld# \ destination and count
+    begin  lbyte hook  de stap  de incp  step
+      \ Load the file header.
+
+    hd0d de ftp  hd0b bc ftp  hldbk hook
+      \ Use the address and length from the header.
+      \ Then load the file data.
+
+  then  bc pop  next ix ldp#  af push
+        \ Restore the Forth registers and save the ior.
+
+  jpnext  end-code
+
+: <file-as-is  ( ca len -- ior )
+  \ Load a file from disk.
+  \ ca len  = filename
+  \ f       = error?
+  \ n       = error
+  0 0 2swap >ufia (<file-as-is) dosior>ior  ;
+
+( file? )
+
+need ufia  need filename!  need --hook-codes--
+
+code (file?)  ( -- f )
+
+  bc push  \ save the Forth IP
+  patch hook
+  nstr2 ix ldp#
+  1146 call  \ FIND_FILE
+  168E call  \ BORD_REST = restore the border
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  ' true jpz
+  ' false jp
+  end-code
+
+: file?  ( ca len -- f )  filename! (file?)  ;
+
+( cat acat wcat wacat )
+
+need z80-asm  need ufia  need --hook-codes--
+need filename>ufia
+
+  \ G+DOS addresses (in its own paged memory).
+[defined] ufia1  ?\ $3E01 constant ufia1
+  \ 3E1A constant ufia2
+
+code (cat)  ( n -- )
+
+  \ n = cat type: 2=compact; 4=detailed
+
+  hl pop  bc push  exx
+    \ Get the parameter in hl' and save the Forth IP
+
+  patch hook
+
+  ufia hl ldp#  ufia1 de ldp#  /ufia bc ldp#  ldir
+    \ Copy Forth UFIA to G+DOS UFIA1.
+
+  \ exx  l a ld  24B5 call  168E call \ XXX OLD
+    \ 24B5 = CAT_RUN (input: cat type in the A register)
+    \ 168E = BORD_REST (restore the border)
+
+  exx  l a ld  09A5 call \ XXX NEW
+    \ 09A5 = SCAN_CAT  (input: cat or search type in the A register)
+
+  E7 out  bc pop  next ix ldp#  jpnext  end-code
+    \ page +D out
+    \ restore the Forth registers and exit
+
+: wcat  ( ca len -- )  filename>ufia  4 (cat)  ;
+  \ Show a disk catologue using the given wild-card filename.
+  \ See the +D manual for wild-card syntax.
+
+: wacat  ( ca len -- )  filename>ufia  2 (cat)  ;  decimal
+  \ A variant of `wcat` that shows an abbreviated catalogue.
+  \ See the +D manual for wild-card syntax.
+
+: cat  ( -- )  s" *" wcat  ;
+  \ Show a complete disk catologue.
+
+: acat  ( -- )  s" *" wacat ;  decimal
+  \ A variant of `cat` that shows an abbreviated catalogue.
+
+  \ The disk catalogues can be printed out on a printer by
+  \ storing the number 3 into SSTR1 (a field of UFIA that holds
+  \ the stream number to use) before doing `CAT`. The default
+  \ value is 2 (screen) and should be restored. Example:
+  \
+  \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
+
+( @dos )
+
+need z80-asm  need --hook-codes--
+
+code @dos  ( a -- n )
+  \ Fetch the content of +D memory address.
+  hl pop
+  bc push  \ save the Forth IP
+  hl push
+  patch hook
+  hl pop m e ld  hl incp  m d ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  de push
+  jpnext
+  end-code
+
+( c@dos )
+
+need z80-asm  need --hook-codes--
+
+code c@dos  ( a -- b )
+  \ Fetch the content of +D memory address.
+  hl pop
+  bc push  \ save the Forth IP
+  hl push
+  patch hook
+  hl pop
+  m a ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  pusha jp
+  end-code
+
+( c!dos )
+
+need z80-asm  need --hook-codes--
+
+code c!dos  ( b a -- )
+  \ Store b into the +D memory address a.
+  hl pop  de pop
+  bc push  \ save the Forth IP
+  de push hl push
+  patch hook
+  hl pop  de pop  e m ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  jpnext
+  end-code
+
+( !dos )
+
+need z80-asm  need --hook-codes--
+
+code !dos  ( n a -- )
+  \ Store n into the +D memory address a.
+  hl pop  de pop
+  bc push  \ save the Forth IP
+  de push  hl push
+  patch hook
+  hl pop  de pop  e m ld  hl incp  d m ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  jpnext
+  end-code
+
+( @dosvar )
+
+need z80-asm  need --hook-codes--
+
+[defined] dos-vars ?\ 8192 constant dos-vars
+  \ Address of the G+DOS vars in its own memory.
+
+code @dosvar  ( n1 -- n2 )
+  \ Fetch the content of G+DOS variable n1.
+  hl pop
+  bc push  \ save the Forth IP
+    \ XXX TODO use exx instead?
+  hl push
+  patch hook
+  hl pop  dos-vars de ldp#  de addp
+  m e ld  hl incp  m d ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  de push
+  jpnext
+  end-code
+
+( c@dosvar )
+
+need z80-asm  need --hook-codes--
+
+[defined] dos-vars ?\ 8192 constant dos-vars
+  \ Address of the G+DOS vars in its own memory.
+
+code c@dosvar  ( n -- b )
+  \ Fetch the content of G+DOS variable n.
+  hl pop
+  bc push  \ save the Forth IP
+  hl push
+  patch hook
+  hl pop  dos-vars de ldp#  de addp
+
+  \ XXX OLD
+  \ m a ld 0 d ld#  a e ld
+  \ E7 out  \ page +D out
+  \ bc pop  next ix ldp#  \ restore the Forth registers
+  \ de push
+  \ jpnext
+
+  \ XXX NEW
+  m a ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  pusha jp
+
+  end-code
+
+( !dosvar )
+
+need z80-asm  need --hook-codes--
+
+[defined] dos-vars ?\ 8192 constant dos-vars
+  \ Address of the G+DOS vars in its own memory.
+
+code !dosvar  ( n1 n2 -- )
+  \ Store n1 into the G+DOS variable n2.
+  hl pop  de pop
+  bc push  \ save the Forth IP
+  de push  hl push
+  patch hook
+  hl pop  dos-vars de ldp#  de addp  de pop
+  e m ld  hl incp  d m ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  jpnext
+  end-code
+
+( c!dosvar )
+
+need z80-asm  need --hook-codes--
+
+[defined] dos-vars ?\ 8192 constant dos-vars
+  \ Address of the G+DOS vars in its own memory.
+
+code c!dosvar  ( b n -- )
+  \ Store b into the G+DOS variable n.
+  hl pop  de pop
+  bc push  \ save the Forth IP
+  de push hl push
+  patch hook
+  hl pop  dos-vars de ldp#  de addp  de pop
+  e m ld
+  E7 out  \ page +D out
+  bc pop  next ix ldp#  \ restore the Forth registers
+  jpnext
+  end-code
+
+  \ vim: filetype=soloforth

@@ -1,0 +1,823 @@
+  \ random.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains random number generators.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( randomize randomize0 )
+
+need os-seed
+
+[needed] randomize0 ?\ : randomize  ( n -- )  os-seed !  ;
+  \ Set the seed of the random number generator.
+
+need os-frames
+
+: randomize0  ( n -- )
+  ?dup 0=  if  os-frames @  then  os-seed !  ;
+  \ Set the seed of the random number generator;
+  \ if _n_ is zero use the system frames counter instead.
+
+( rnd random )  \ ==rng==
+
+  \ Credits:
+  \
+  \ Code adapted from Leo Brodie's _Starting Forth_.
+
+need os-seed
+
+: rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
+
+: random  ( n -- 0..n-1 )  rnd um* nip  ;
+
+( random-range )
+
+need random
+
+: random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
+  \ Return a random number from _n1_ (min) to _n2_ (max).
+
+( rng-benchmark )
+
+  \ Random number generator benchmark
+
+need set-pixel  need bench{  need pixels  need u%  need 3dup
+
+256 192 * constant #pixels
+  \ number of pixels of the screen
+
+defer rng  ( n -- 0..n-1 )
+
+: pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
+  \ Print _u_ pixels as a percentage of the maximum
+  \ number of pixels.
+
+: .pixels  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
+  \ Print _u_ as the number of pixels.
+
+: .title  ( ca len -- )  ." Code: " type  ;
+
+variable cycles
+
+defer .cycles  ( -- )
+
+: (.cycles)  ( -- )
+  cycles ?  s" cycles" cycles @ 1 = + type  ;
+  \ Print the number of cycles.
+
+: .time  ( d -- )  bench. ." per cycle" cr  ;
+
+: .result  ( ca len d -- )
+  2>r pixels >r  .title cr  r> .pixels cr
+  2r> .time .cycles   ;
+  \ Calculate and print the result of the benchmark.
+  \ _d_ is the time in frames; _ca len_ is the title.
+
+-->
+
+( rng-benchmark )
+
+defer random-coords  ( -- xc yc )
+  \ Random graphic coordinates. Configurable depending on the
+  \ type of `random` to benchmark.
+
+: (random-coords)  ( -- xc yc )  256 rng 193 rng  ;
+  \ Default behaviour of `random-coords`.
+
+: fill-screen  ( -- )
+  #pixels 0 do  random-coords set-pixel  loop  ;
+  \ Fill the screen with random pixels.
+
+: signal  ( -- )  cycles @ %111 and border  ;
+  \ Change the border color according to the current count
+  \ of cycles, just to show that the benchmark is running.
+
+: (rng-benchmark)  ( -- d )
+  1 cycles +!  signal  bench{ fill-screen }bench  ;
+  \ Do the RNG benchmark of ony cycle and return its result.
+
+: wait  ( -- )  key drop  ;
+
+: finish  ( ca len d -- )  0 border  .result  wait  ;
+  \ Finish the benchmark.
+  \ _d_ is the time in frames; _ca len_ is the title.
+
+: init  ( xt1 xt2 x3 -- )
+  ['] random-coords defer!  ['] .cycles defer!  ['] rng defer!
+  page  -1 cycles !  ;
+
+defer finish?  ( i*x -- j*x f )
+  \ Finish the benchmark?
+
+: new-pixels?  ( n1 -- n2 f )  pixels tuck =  ;
+  \ Are there new pixels on the screen, comparing the previous
+  \ count _n1_ with the new count _n2_?
+
+' new-pixels? ' finish? defer!  -->
+
+( rng-benchmark )
+
+defer rng-benchmark  ( ca len xt -- )
+  \ Do a RNG benchmark for the `random` word _xt_ with title
+  \ _ca len_.
+
+: (rng-benchmark2)  ( ca len -- )
+  0 begin   (rng-benchmark) 2>r
+            finish? dup 0= if  2rdrop  then
+  until     drop 2r> finish  ;
+  \ Do a double RNG benchmark with title _ca len_: The time
+  \ required to complete one cycle (49152 random pixels), plus
+  \ the number of cycles required until the number of pixels
+  \ doesn't change.
+
+: rng-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] (random-coords) init  (rng-benchmark2)  ;
+  \ Do a double RNG benchmark for the `random` word _xt_ with
+  \ title _ca len_: The time required to complete one cycle
+  \ (49152 random pixels), plus the number of cycles required
+  \ until the number of pixels doesn't change.
+
+  \ The best `random` words need several cycles. In such cases
+  \ it's useful a simpler test to show only the pixels set at
+  \ the end of the first cycle:
+
+' rng-benchmark2 ' rng-benchmark defer!  \ default benchmark
+
+: (.cycle)  ( -- )  ." First cycle only"  ;
+
+: (rng-benchmark1)  ( ca len -- )
+  (rng-benchmark) .result wait  ;
+  \ Do a one-cycle RNG benchmark with title _ca len_: Only the
+  \ time required to complete one cycle (49152 random pixels).
+
+: rng-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] (random-coords) init  (rng-benchmark1)  ;
+  \ Do a one-cycle RNG benchmark for `random` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+-->
+
+( rng-benchmark )
+
+  \ Versions for 8-bit `rnd`.
+
+: crnd-coords  ( -- xc yc )  rng rng 192 min  ;
+  \ Random graphic coordinates for 8-bit `rnd`.
+
+: rng8-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] crnd-coords init  (rng-benchmark2)  ;
+  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+: rng8-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] crnd-coords init  (rng-benchmark1)  ;
+  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+( all-rng-benchmarks )
+
+  \ Execute all 16-bit RNG benchmarks
+
+need rng-benchmark  need +thru  1 13 +thru
+
+ace-rng-benchmark   dx-rng-benchmark
+gf-rng-benchmark    jer-rng-benchmark
+jml-rng-benchmark   lb-rng-benchmark
+lina-rng-benchmark  mb-rng-benchmark
+sf83-rng-benchmark  tt-rng-benchmark
+vf-rng-benchmark    z88-rng-benchmark
+zh-rng-benchmark
+
+  \ Execute single-cycle benchmarks of RNG that need more than
+  \ one cycle to finish:
+
+' rng-benchmark1 ' rng-benchmark defer!
+
+dx-rng-benchmark  vf-rng-benchmark
+
+( ace-random )
+
+  \ Credits:
+  \
+  \ Adapted from ACE Forth, after the Jupiter ACE manual.
+  \ Also used by Abersoft Forth in its bundled game
+  \ "Bertie".
+
+need os-seed
+
+: ace-rnd  ( -- n )
+  os-seed @ 75 um* 75. d+ 2dup u< - - 1- dup os-seed !  ;
+
+: ace-random  ( n1 -- n2 )  ace-rnd um* nip  ;
+
+need rng-benchmark
+
+: ace-rng-benchmark  ( -- )
+  s" Jupiter ACE manual" ['] ace-random rng-benchmark  ;
+
+( dx-random )
+
+  \ Credits:
+  \
+  \ Code from DX-Forth 4.13.
+
+2variable dx-seed  1. dx-seed 2!
+
+need d*
+
+: dx-rnd ( -- u )
+  dx-seed 2@ $15A4E35. d* 1. d+ tuck dx-seed 2!  ;
+  \ Get random number
+
+: dx-random ( u -- 0..u-1 )  dx-rnd um* nip  ;
+  \ Get random number between 0 and u-1
+
+need rng-benchmark
+
+: dx-rng-benchmark  ( -- )
+  s" DX-Forth" ['] dx-random rng-benchmark  ;
+
+( gf-random )
+
+  \ Credits:
+  \
+  \ Adapted from Gforth.
+
+need os-seed  need ud*
+
+: gf-rnd  ( -- n )
+  272958469. os-seed @ ud* d>s 1+ dup os-seed !  ;
+
+: gf-random  ( n1 -- n2 )  gf-rnd um* nip  ;
+
+need rng-benchmark
+
+: gf-rng-benchmark  ( -- )
+  s" Gforth" ['] gf-random rng-benchmark  ;
+
+( jer-random )
+
+  \ Credits:
+  \
+  \ Random number generator by J. E. Rickenbacker, published on
+  \ Forth Dimensions (volume 2, number 2, page 34, 1980-07).
+
+need os-seed
+
+: jer-rnd  ( -- n )
+  os-seed @ 259 * 3 + 32767 and dup os-seed !  ;
+
+: jer-random ( n1 -- n2 )
+  jer-rnd 32767 */  ;
+  \ Return a random number _n2_ (0 <= n2 < n1).
+
+  \ XXX Note: patterns
+
+need rng-benchmark
+
+: jer-rng-benchmark  ( -- )
+  s" J. E. Rickenbacker" ['] jer-random rng-benchmark  ;
+
+( jml-random )
+
+  \ Credits:
+  \
+  \ Adapted from code written by José Manuel Lazo,
+  \ published on Microhobby, issue 85 (1986-07), page 24:
+  \ http://microhobby.org/numero085.htm
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
+
+need z80-asm  need os-seed
+
+code jml-rnd  ( -- u )
+
+  os-seed fthl  hl push
+  hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
+  de pop  de addp  0029 de ldp#  de addp
+  os-seed sthl
+  jppushhl
+  end-code
+
+: jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
+
+need rng-benchmark
+
+: jml-rng-benchmark  ( -- )
+  s" J.M. Lazo" ['] jml-random rng-benchmark  ;
+
+( lb-random )
+
+  \ Credits:
+  \
+  \ Code adapted from Leo Brodie's _Starting Forth_.
+
+need os-seed
+
+: lb-rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
+
+: lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
+
+need rng-benchmark
+
+: lb-rng-benchmark  ( -- )
+  s" Leo Brodie" ['] lb-random rng-benchmark  ;
+
+( lina-random )
+
+need os-seed
+
+: lina-rnd  ( -- n )
+  os-seed @ 107465 * 234567 + dup os-seed !  ;
+
+: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
+
+need rng-benchmark
+
+: lina-rng-benchmark  ( -- )
+  s" lina" ['] lina-random rng-benchmark  ;
+
+( mb-random )
+
+  \ Credits:
+  \
+  \ Adapted from code published by Milos Bazelides:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+need z80-asm  need os-seed
+
+code mb-rnd  ( -- n )
+  os-seed de ftp
+  d a ld  e h ld  #253 l ld#
+  a or  de sbcp
+  0 sbc#  de sbcp
+  0 d ld#  d sbc  a e ld
+  de sbcp
+  cy if  hl incp  then
+  os-seed sthl
+  jppushhl   end-code
+
+: mb-random  ( n1 -- n2 )  mb-rnd um* nip  ;
+
+  \ Original code:
+
+  \ ----
+  \ ; Input: none
+  \ ; Output: HL = pseudo-random number, period 65536
+
+  \ Rand16:
+  \  ld  de,Seed    ; Seed is usually 0
+  \  ld  a,d
+  \  ld  h,e
+  \  ld  l,253
+  \  or  a
+  \  sbc  hl,de
+  \  sbc  a,0
+  \  sbc  hl,de
+  \  ld  d,0
+  \  sbc  a,d
+  \  ld  e,a
+  \  sbc  hl,de
+  \  jr  nc,Rand
+  \  inc  hl
+  \ Rand:
+  \  ld  (Rand16+1),hl
+  \  ret
+  \ ----
+
+need rng-benchmark
+
+: mb-rng-benchmark  ( -- )
+  s" Milos Bazelides" ['] mb-random rng-benchmark  ;
+
+( sf83-random )
+
+  \ Credits:
+  \
+  \ Code from Spectrum Forth-83.
+
+need os-seed  3 os-seed !
+
+: sf83-random  ( n -- 0..n-1 )
+  os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
+
+need rng-benchmark
+
+: sf83-rng-benchmark  ( -- )
+  s" Spectrum Forth-83" ['] sf83-random rng-benchmark  ;
+
+( tt-random )
+
+  \ Credits:
+  \
+  \ Code from tt.pfe, Tetris for terminals, redone in
+  \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
+
+need os-seed
+
+: tt-random   ( n -- 0..n-1 )
+    os-seed @ 13 * $7FFF and
+    dup os-seed !  swap mod ;
+
+need rng-benchmark
+
+: tt-rng-benchmark  ( -- )
+  s" Tetris for terminals" ['] tt-random rng-benchmark  ;
+
+( vf-random )
+
+  \ Credits:
+  \
+  \ Code from vForth.
+
+need os-frames
+
+: vf-random  ( n1 -- n2 )
+  1+ 8195 os-frames @ um* 1. d+
+  16383 um/mod drop
+  \ dup os-seed !
+  swap mod  ;
+
+need rng-benchmark
+
+: vf-rng-benchmark  ( -- )
+  s" vForth" ['] vf-random rng-benchmark  ;
+
+( z88-random )
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+need ud*  need os-seed
+
+: z88-random  ( u1 -- u2 )
+  1103515245. \ 20077 16838
+  os-seed @ ud* 12345. d+ over os-seed !
+  rot ud/mod 2drop  ;
+
+need rng-benchmark
+
+: z88-rng-benchmark  ( -- )
+  s" Z88 CamelForth" ['] z88-random rng-benchmark  ;
+
+( zh-random )
+
+  \ Credits:
+  \
+  \ Code adapted from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+
+need z80-asm  need os-seed
+
+code zh-rnd  ( -- n )
+
+  os-seed fthl
+    \ ld hl,(seed)
+  hl de ldp
+    \ ld c,l
+    \ ld b,h
+  hl addp  de addp  hl addp  de addp  hl addp
+  de addp  hl addp  hl addp  hl addp  hl addp  de addp
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,de
+  h inc  hl incp
+    \ inc h
+    \ inc hl
+  os-seed sthl
+    \ ld (seed),hl
+  jppushhl   end-code
+
+: zh-random  ( n1 -- n2 )  zh-rnd um* nip  ;
+
+  \ Original code:
+
+  \ ----
+  \ PseudoRandWord:
+  \
+  \ ; this generates a sequence of pseudo-random values
+  \ ; that has a cycle of 65536 (so it will hit every
+  \ ; single number):
+  \
+  \ ;f(n+1)=241f(n)+257   ;65536
+  \ ;181 cycles, add 17 if called
+  \
+  \ ;Outputs:
+  \ ;     BC was the previous pseudorandom value
+  \ ;     HL is the next pseudorandom value
+  \ ;Notes:
+  \ ;     You can also use B,C,H,L as pseudorandom 8-bit values
+  \ ;     this will generate all 8-bit values
+  \      .db 21h    ;start of ld hl,**
+  \ randSeed:
+  \      .dw 0
+  \      ld c,l
+  \      ld b,h
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,bc
+  \      inc h
+  \      inc hl
+  \      ld (randSeed),hl
+  \      ret
+  \ ----
+
+need rng-benchmark
+
+: zh-rng-benchmark  ( -- )
+  s" Z80 Heaven" ['] zh-random rng-benchmark  ;
+
+( random-byte )
+
+code random-byte  ( -- b )
+  ED c, 5F c,     \ ld a,r
+  C3 c, pusha ,   \ jp pusha
+  end-code
+
+need bench{
+
+: random-byte-test  ( -- )
+  ['] random-byte ['] rng defer!  cls  bench{ pixels
+  do  rng rng 192 min set-pixel  loop  }bench.
+  ." Z80 R register" cr key drop ;
+
+( lcm-random )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credits:
+  \
+  \ Adapted from code written by Everett F. Carter, published
+  \ on Forth Dimensions (volume 16, number 2, page 17,
+  \ 1994-08).
+
+need d*  need du/mod  need 2nip
+
+2variable 2seed
+
+2147483647. 2constant max32
+
+  \ Linear Congruential Method, the "minimal standard
+  \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
+  \ pp. 1192-1201
+: lcm-rnd  ( -- d )
+  \ XXX FIXME -- it always returns 0
+  2seed 2@ 16807. d*
+  max32 du/mod  2nip
+  2dup 2seed 2!  ;
+
+  \ \ Original code:
+  \ : lcm-rnd  ( -- d )
+  \   2seed 2@ 16807. umd*
+  \   max32 umd/mod
+  \   2drop 2seed 2!  ;
+
+: lcm-random  ( n1 -- n2 )  lcm-rnd d>s um* nip  ;
+
+need rng-benchmark
+
+: lcm-rng-benchmark  ( -- )
+  s" LCM" ['] lcm-random rng-benchmark  ;
+
+( all-rng-benchmarks )
+
+  \ Execute all 8-bit RNG benchmarks
+
+need rng-benchmark  need +thru  1 4 +thru
+
+' rng8-benchmark2 ' rng-benchmark defer!
+
+jw-rng-benchmark
+mb1-rng-benchmark
+mb2-rng-benchmark
+zh-rng-benchmark
+
+  \ Execute single-cycle benchmarks of RNG that need more than
+  \ one cycle to finish:
+
+' rng8-benchmark1 ' rng-benchmark defer!
+
+jw-rng-benchmark
+
+( jw-crnd )
+
+  \ 2015-12-25
+
+  \ Credits:
+  \
+  \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
+  \ Joe Wingbermuehle
+
+need os-seed
+
+code jw-crnd  ( -- b )
+
+  os-seed fthl
+    \ ld      hl,(randData)
+  ED c, 5F c,  a d ld  m e ld
+    \ ld      a,r
+    \ ld      d,a
+    \ ld      e,(hl)
+  de addp  l add  h xor
+    \ add     hl,de
+    \ add     a,l
+    \ xor     h
+  os-seed sthl
+    \ ld      (randData),hl
+  pusha jp
+    \ jp push_a
+  end-code
+
+need rng-benchmark
+
+: jw-rng-benchmark  ( -- )
+  s" Joe Wingbermuehle" ['] jw-crnd rng-benchmark  ;
+
+  \ Original code:
+
+  \ ----
+  \ ; ouput a=answer 0<=a<=255
+  \ ; all registers are preserved except: af
+  \ random:
+  \         push    hl
+  \         push    de
+  \         ld      hl,(randData)
+  \         ld      a,r
+  \         ld      d,a
+  \         ld      e,(hl)
+  \         add     hl,de
+  \         add     a,l
+  \         xor     h
+  \         ld      (randData),hl
+  \         pop     de
+  \         pop     hl
+  \         ret
+  \ ----
+
+( mb1-crandom )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-12-25
+
+  \ Credits:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+   \ This is a very simple linear congruential generator. The
+   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+   \ advantage is small size and simplicity. Due to nature of
+   \ such generators only a couple of higher bits should be
+   \ considered random.
+
+  \ Input: none
+  \ Output: A = pseudo-random number, period 256
+
+need z80-asm  need os-seed
+
+code mb1-crnd  ( -- b )
+
+  os-seed fta
+    \ ld  a,(seed) ; Seed is usually 0
+  a d ld  a add  a add  d add
+    \  ld  d,a
+    \  add  a,a
+    \  add  a,a
+    \  add  a,d
+  a inc  os-seed sta
+    \  inc  a    ; another possibility is ADD A,7
+    \  ld  (seed),a
+  pusha jp
+  end-code
+
+: mb1-crandom  ( n1 -- n2 )  mb1-crnd um* nip  ;
+  \ XXX FIXME -- it always return zero
+
+need rng-benchmark
+
+  \ : mb1-rng-benchmark  ( -- )
+  \   s" Milos Bazelides 1" ['] mb1-crandom rng-benchmark  ;
+
+: mb1-rng-benchmark  ( -- )
+  s" Milos Bazelides 1" ['] mb1-crnd rng-benchmark  ;
+
+( mb2-crandom )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-12-25
+
+  \ Credits:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+   \ This is a very simple linear congruential generator. The
+   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+   \ advantage is small size and simplicity. Due to nature of
+   \ such generators only a couple of higher bits should be
+   \ considered random.
+
+  \ Input: none
+  \ Output: A = pseudo-random number, period 256
+
+need z80-asm  need os-seed
+
+code mb2-crnd  ( -- b )
+
+  os-seed fta
+    \ ld  a,(seed) ; Seed is usually 0
+  a d ld  a add  a add  d add
+    \  ld  d,a
+    \  add  a,a
+    \  add  a,a
+    \  add  a,d
+  07 add#  os-seed sta
+    \  add a,7
+    \  ld  (seed),a
+  pusha jp  end-code
+
+: mb2-crandom  ( n1 -- n2 )  mb2-crnd um* nip  ;
+  \ XXX FIXME -- it always return zero
+
+need rng-benchmark
+
+  \ : mb2-rng-benchmark  ( -- )
+  \   s" Milos Bazelides 2" ['] mb2-crandom rng-benchmark  ;
+
+: mb2-rng-benchmark  ( -- )
+  s" Milos Bazelides 2" ['] mb2-crnd rng-benchmark  ;
+
+( zh-crnd )
+
+  \ 2015-12-25
+
+  \ Credits:
+  \
+  \ Code adapted from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+
+code zh-crnd  ( -- b )
+
+  os-seed fta  a e ld
+  a add  e add  a add  a add  e add  #83 add#
+  os-seed sta
+  pusha jp
+
+  end-code
+
+need rng-benchmark
+
+: zh-rng-benchmark  ( -- )
+  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-benchmark  ;
+
+  \ This is one of many variations of PRNGs. This routine is
+  \ not particularly useful for many games, but is fairly
+  \ useful for shuffling a deck of cards. It uses SMC, but that
+  \ can be fixed by defining randSeed elsewhere and using ld
+  \ a,(randSeed) at the beginning.
+
+  \ PseudoRandByte:
+  \ ;f(n+1)=13f(n)+83
+  \ ;97 cycles
+  \      .db 3Eh     ;start of ld a,*
+  \ randSeed:
+  \      .db 0
+  \      ld c,a
+  \      add a,a
+  \      add a,c
+  \      add a,a
+  \      add a,a
+  \      add a,c
+  \      add a,83
+  \      ld (randSeed),a
+  \      ret
+
+  \ vim: filetype=soloforth

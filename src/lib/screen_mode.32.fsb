@@ -1,0 +1,34 @@
+  \ screen_mode.32.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains the screen mode 32.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( mode32 )
+
+need columns  need rows  need set-font  need set-mode-output
+
+: mode32  ( -- )
+  [ latest name> ] literal current-mode !
+  15360 set-font  2548 set-mode-output
+  32 to columns  24 to rows
+  ['] mode32-xy ['] xy defer!
+  ['] mode32-at-xy ['] at-xy defer!  ;
+  \ Set the default printing mode: the 32 cpl ROM routine, the
+  \ ROM font, and the special code for `at-xy` (required to
+  \ use the whole screen).
+
+' mode32 ' default-mode defer!
+
+  \ vim: filetype=soloforth

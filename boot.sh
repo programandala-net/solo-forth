@@ -1,8 +1,8 @@
 #!/bin/sh
-# solo_forth.sh
-# 2015-06
 
 # boot.sh
+
+# 2015-06
 
 fuse \
   --speed 100 \

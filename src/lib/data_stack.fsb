@@ -1,0 +1,340 @@
+  \ data_stack.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words that manipulate the data stack.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( 2nip )  \ ==datastack==
+
+  \ Credits:
+  \
+  \ Code from Afera; original code from DZX-Forth.
+
+code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
+
+  E1 c,            \ pop hl
+  D1 c,            \ pop de
+  F1 c,            \ pop af
+  F1 c,            \ pop af
+  C3 c, pushhlde , \ jp pushhlde
+
+  end-code
+
+  \ doc{
+  \
+  \ 2nip  ( x1 x2 x3 x4 -- x3 x4 )
+  \
+  \ }doc
+
+( roll )
+
+  \ doc{
+  \
+  \ roll  ( xu xn .. x0 u -- xn .. x0 xu )
+  \
+  \ }doc
+
+  \ Credits:
+  \
+  \ Code adapted from DZX-Forth.
+
+need z80-asm
+
+code roll  ( xu xn .. x0 u -- xn .. x0 xu )
+
+  hl pop  hl addp  hl de ldp  sp addp
+    \ pop hl
+    \ add hl,hl
+    \ ld e,l
+    \ ld d,h
+    \ add hl,sp
+
+  bc push  m c ld  hl incp  m b ld
+    \ push bc
+    \ ld c,(hl)
+    \ inc hl
+    \ ld b,(hl)
+
+  bc push  de bc ldp  hl de ldp
+    \ push bc
+    \ ld b,d
+    \ ld c,e
+    \ ld d,h
+    \ ld e,l
+
+  bc tstp
+    \ ld a,b
+    \ or c
+
+  0000 jpz |mark 0 unresolved !
+    \ jp z,roll.end
+
+  hl decp  hl decp  lddr
+    \ dec hl
+    \ dec hl
+    \ lddr
+
+    \ roll.end:
+  0 unresolved @ >resolve
+  hl pop  bc pop  exsp
+    \ pop hl
+    \ pop bc
+    \ ex (sp),hl
+
+  jpnext
+
+  end-code
+
+( 3drop 4drop )
+
+code 3drop  ( x1 x2 x3 -- )
+  E1 c,  E1 c,  E1 c,
+    \ pop hl
+    \ pop hl
+    \ pop hl
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ 3drop  ( x1 x2 x3 -- )
+  \
+  \ }doc
+
+code 4drop  ( x1 x2 x3 x4 -- )
+  E1 c,  E1 c,  E1 c,  E1 c,
+    \ pop hl
+    \ pop hl
+    \ pop hl
+    \ pop hl
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ 4drop  ( x1 x2 x3 x4 -- )
+  \
+  \ }doc
+
+( 3dup )
+
+code 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+  D9 c,
+    \ exx
+  C1 c,  D1 c,  E1 c,
+    \ pop bc
+    \ pop de
+    \ pop hl
+  E5 c,  D5 c,  C5 c,
+    \ push hl
+    \ push de
+    \ push bc
+  E5 c,  D5 c,  C5 c,
+    \ push hl
+    \ push de
+    \ push bc
+  D9 c,
+    \ exx
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
+  \
+  \ }doc
+
+exit  \ slower and smaller version:
+
+: 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )  dup 2over rot  ;
+
+( 2rot )
+
+need roll
+
+: 2rot  ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
+  5 roll 5 roll  ;
+
+  \ doc{
+  \
+  \ 2rot  ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
+  \
+  \ }doc
+
+( swapped )
+
+  \ Credits:
+  \
+  \ Adapted from code written by Sam Suan Chen, published
+  \ on Forth Dimensions (volume 6, number 6, page 9, 1985-03).
+
+: swapped  ( i*x n1 n2 -- j*x )
+  >r 1+ cells sp@ +     ( i*x a1 ) ( R: n2 )
+  r> 2+ cells sp@ +     ( i*x a1 a2 )
+  over @ over @         ( i*x a1 a2 x1 x2 )
+  >r swap !  r> swap !  ;
+
+  \ Usage example:
+  \
+  \   ( 1 2 3 4 5 )  1 4 swapped  ( 4 2 3 1 5 )
+
+  \ Original code by Sam Suan Chen,
+  \ with an equivalent usage example:
+
+  \ : xyswap  ( i*x n -- j*x )
+  \   16 /mod >r dup + sp@ + sp@ r> dup + +
+  \   over @ over @
+  \   >r swap !  r> swap !  ;
+  \
+  \   ( 1 2 3 4 5 )  $25 xyswap  ( 4 2 3 1 5 )
+
+( nup drup dip )
+
+code nup  ( x1 x2 -- x1 x1 x2 )
+  E1 c,  D1 c,  D5 c,  C3 c, pushhlde ,
+    \ pop hl
+    \ pop de
+    \ push de
+    \ jp pushhlde
+  end-code
+  \ Also called `under`.
+
+  \ doc{
+  \
+  \ nup  ( x1 x2 -- x1 x1 x2 )
+  \
+  \ }doc
+
+code drup  ( x1 x2 -- x1 x1 )
+  D1 c,  E1 c,  E5 c,  E5 c,  jpnext
+    \ pop de
+    \ pop hl
+    \ push hl
+    \ push hl
+    \ jp next
+  end-code
+
+  \ doc{
+  \
+  \ drup  ( x1 x2 -- x1 x1 )
+  \
+  \ }doc
+
+code dip  ( x1 x2 -- x2 x2 )
+  E1 c, D1 c, E5 c, E5 c,  jpnext
+    \ pop hl
+    \ pop de
+    \ push hl
+    \ push hl
+    \ jp next
+  end-code
+
+  \ doc{
+  \
+  \ dip  ( x1 x2 -- x2 x2 )
+  \
+  \ }doc
+
+( 0dup -dup )
+
+code 0dup  ( x -- x | 0 0 )
+  E1 c,  78 04 + c,  B0 05 + c,
+    \ pop hl
+    \ ld a,h
+    \ or l
+  C2 c, pushhl ,  E5 c,  jppushhl
+    \ jp z,push_hl
+    \ push hl
+    \ jp push_hl
+  end-code
+
+  \ doc{
+  \
+  \ 0dup  ( x -- x | 0 0 )
+  \
+  \ Duplicate _x_ if it's zero.
+  \
+  \ }doc
+
+code -dup  ( x -- x | 0 0 )
+  E1 c,  CB c, 7C c,
+    \ pop hl
+    \ bit 7,h ; negative?
+  C2 c, pushhl ,  E5 c,  jppushhl
+    \ jp z,push_hl
+    \ push hl
+    \ jp push_hl
+  end-code
+
+  \ doc{
+  \
+  \ -dup  ( x -- x x | x )
+  \
+  \ Duplicate _x_ if it's negative.
+  \
+  \ }doc
+
+( ndrop )
+
+need z80-asm
+
+code ndrop  ( x1..xn n -- )
+
+  hl pop  hl addp  exde  \ DE = n cells
+    \ pop hl
+    \ add hl,hl
+    \ ex de,hl
+  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ld hl,0
+    \ add hl,sp
+  de addp  ldsp  \ update SP
+    \ add hl,de
+    \ ld sp,hl
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ ndrop  ( x1..xn n -- )
+  \
+  \ Drop _n_ cell items from the stack.
+  \
+  \ }doc
+
+( 2ndrop )
+
+need z80-asm
+
+code 2ndrop  ( dx1..dxn n -- )
+
+  hl pop  hl addp  hl addp  exde  \ DE = n cells
+    \ pop hl
+    \ add hl,hl
+    \ add hl,hl
+    \ ex de,hl
+  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ld hl,0
+    \ add hl,sp
+  de addp  ldsp  \ update SP
+    \ add hl,de
+    \ ld sp,hl
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ ndrop  ( dx1..dxn n -- )
+  \
+  \ Drop _n_ double cell items from the stack.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

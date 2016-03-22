@@ -1,0 +1,379 @@
+  \ operators.2-cell.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains double-cell operators.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( ud* )
+
+  \ Credits:
+  \
+  \ Code from Z88 CamelForth.
+
+: ud*  ( ud1 u2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
+
+( d* )
+
+  \
+  \ Credits:
+  \
+  \ Code from DX-Forth 4.13.
+
+  \ This implementation uses 30 bytes.
+  \ Relative speed: 1.0000
+
+: d* ( d|ud1 d|ud2 -- d|ud3 )
+  >r swap >r 2dup um* rot r> * + rot r> * + ;
+
+  \ --------------------------------------------
+  \ Alternative implementation.
+  \
+  \ Credits:
+  \
+  \ Adapted from code written by Robert L. Smith,
+  \ published on Forth Dimensions (volume 4, number 1, page 3,
+  \ 1982-05).
+  \
+  \ This implementation uses 36 bytes.
+  \ Relative speed: 1.0582
+  \
+  \ : d*  ( d1 d2 -- d3 )
+  \  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
+
+  \ --------------------------------------------
+  \ Alternative implementation.
+
+  \ Credits:
+  \
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 33, 1998-04).
+
+  \ This implementation uses 30 bytes.
+  \ Relative speed: 1.0008
+
+  \ : d*  ( d1 d2 -- d3 )
+  \   >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
+  \   2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
+  \   r> * swap r> * + +  ; ( d1*d2 ) ( R: )
+
+( du/mod )
+
+  \ Credits:
+  \
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 34, 1998-04).
+
+need tum*  need t+  need t-  need tum/  need d2*  need lshift
+
+: normalize-divisor  ( d1 -- d1' shift )
+  0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
+
+  \ XXX TODO rename as `ud/mod`?
+  \ XXX TODO stack comments
+
+: du/mod  ( ud1 ud2 -- ud3 ud4 )
+
+  ?dup 0= if
+    \ there is a leading zero "digit" in divisor
+    >r  0 r@ um/mod  r> swap >r  um/mod  0 swap r>  exit
+  then
+
+  normalize-divisor dup >r rot rot 2>r
+  1 swap lshift tum*
+    \ normalize divisor and dividend
+
+  dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
+    \ guess leading "digit" of quotient
+
+  2r@  rot dup >r  tum*  t-
+    \ multiply divisor by trial quot and substract from
+    \ dividend
+
+  dup 0< if  r> 1-  2r@  rot >r  0 t+
+    \ if negative, decrement quot and add to dividend
+
+    dup 0< if  r> 1-  2r@  rot >r  0 t+  then
+    \ if still negative, do it one more time
+
+  then
+
+  r> 2r> 2drop  1 r>  rot >r  lshift tum/  r> 0  ;
+    \ undo nurmalization of dividend to get remainder
+
+  \ Double unsigned divide with remainder.  Given a dividend
+  \ _ud1_ and a divisor _ud2_, return remainder _ud3_ and
+  \ quotient _ud4_.
+
+( d0= d0< d< du< )
+
+  \ Credits:
+  \
+  \ Code from DZX-Forth.
+
+[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  exit
+
+[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; exit
+
+need [if]
+
+[needed] d< [if]
+
+need 2nip
+
+: d<  ( d1 d2 -- f )
+  rot 2dup = if  2drop u< exit  then  2nip >  ;  exit
+
+[then]
+
+[needed] du< [if]
+
+  \ XXX TODO rewrite in Z80
+
+: du<  ( ud1 ud2 -- f )
+  rot swap 2dup
+  u<  if  2drop 2drop -1 exit  then
+  -   if  2drop 0 exit  then  u<  ;  exit
+
+[then]
+
+( dmin dmax )
+
+  \ Credits:
+  \
+  \ Code from DZX-Forth.
+
+need [if]
+
+[needed] dmin [if]
+: dmin  ( d1 d2 -- d1 | d2 )
+  2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
+
+[needed] dmax [if]
+: dmax  ( d1 d2 -- d1 | d2 )
+  2over 2over d< if  2swap  then  2drop  ;  [then]
+
+( d= d<> )
+
+  \ XXX TODO -- rewrite in Z80
+
+: d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
+
+: d=  ( d1 d2 -- f )  d<> 0=  ;
+
+  \ XXX OLD
+  \ XXX TODO benchmark
+  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
+  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
+( d- )
+
+need z80-asm
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
+
+  de pop          \ DE=d2hi
+  exx
+  de pop          \ DE'=d2lo
+  exx
+  hl pop          \ HL=d1hi,DE=d2hi
+  exx
+  hl pop          \ HL'=d1lo
+  de subp
+  hl push         \ 2OS=d1lo-d2lo
+  exx
+  de sbcp         \ HL=d1hi-d2hi-cy
+  jppushhl
+  end-code
+
+( d2* d2/ )
+
+  \ Credits:
+  \
+  \ Code converted to Z80 from the 8080 version
+  \ of DZX-Forth.
+
+need [if]
+
+[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+
+  D1 c, E1 c,
+    \ pop de / pop hl
+  29 c,  CB c, 13 c,  CB c, 12 c,
+    \ add hl,hl
+    \ rl e
+    \ rl d
+  EB c, C3 c, pushhlde ,
+    \ ex de,hl jp pushhlde
+
+  end-code  [then]
+
+[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+
+  E1 c, D1 c,
+    \ pop hl / pop de
+  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
+    \ sra h  /  rr h /  rr l
+  CB c, 1A c,  CB c, 1B c,
+    \ rr d /  rr e
+  EB c, C3 c, pushhlde ,
+    \ ex de,hl jp pushhlde
+
+  end-code  [then]
+
+( d2* d2/ )
+
+  \ Credits:
+  \
+  \ Code converted to Z80 from the 8080 version
+  \ of DZX-Forth.
+
+need [if]  need z80-asm
+
+[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+
+  de pop  hl pop
+  hl addp  e rl  d rl
+                              \ alternatives:
+  exde  pushhlde jp           \ smaller but slower
+  \ hl push  de push  jpnext  \ faster but bigger
+
+  end-code  [then]
+
+[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+
+  hl pop  de pop
+  h sra  l rr  d rr  e rr
+
+                              \ alternatives:
+  pushhlde jp                 \ smaller but slower
+  \ hl push  de push  jpnext  \ faster but bigger
+
+  end-code  [then]
+
+( dxor dor dand )
+
+  \ Credits:
+  \
+  \ Code written by Everett F. Carter, published on Forth
+  \ Dimensions (volume 16, number 2, page 17, 1994-08).
+
+[unneeded] dxor
+?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
+
+[unneeded] dor
+?\ : dor  ( d1 d2 -- d3 )  rot or -rot or swap  ;
+
+[unneeded] dand
+?\ : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
+
+( m* )
+
+  \ Credits:
+  \
+  \ Code by Robert L. Smith, published on Forth Dimensions
+  \ (volume 4, number 1, page 3, 1982-05).
+
+  \ XXX TODO benchmark with the version in the kernel
+
+need d*
+
+: m*  ( n1 n2 -- d )
+  >r s>d r> s>d d* ;
+
+( m+ )
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+need z80-asm
+
+code m+  ( d1 n -- d2 )
+  exx     \ save Forth IP
+  bc pop  \ n
+  de pop  \ d1 hi cell
+  hl pop  \ d1 lo cell
+  bc addp  hl push
+  cy if  de inc  then  de push
+  exx      \ restore Forth IP
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ m+  ( d1|ud1 n -- d2|ud2 )
+  \
+  \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
+  \
+  \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
+  \
+  \ }doc
+
+( m*/ )
+
+  \ Credits:
+  \
+  \ Code from Gforth 0.7.3.
+
+: m*/  ( d1 n1 +n2 -- d2 )
+
+  >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
+  rot tuck um* 2swap um* swap
+  >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
+  if     if     1 0 d+
+         then
+         dnegate
+  else   drop
+  then  ;
+
+  \ XXX TODO document, see difference Gforth - Forth-94
+
+( dsqrt )
+
+  \ Credits:
+  \
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ 18/5 p. 29 (1997-01).
+
+need q2*  need d2*  need d<  need m+  need d- need 2rot
+need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
+
+  \ XXX FIXME wrong results
+  \
+  \ It worked fine, but something got wrong
+  \ Perhaps because of some wrong dependency?
+  \ maybe `d<`?
+  \
+  \ It works in Gforth
+
+: (dsqrt)  ( radicand . -- remainder . root . )
+  0. 0.             ( radicand . remainder . root . )
+  cell-bits 0 do    ( radicand . remainder . root . )
+    cr .s  key drop  \ XXX INFORMER
+    2>r q2* q2* 2r>  d2*
+    2over 2over d2* 2swap
+      cr .s ." d< ?"  \ XXX INFORMER
+      d< if
+      cr .s ." d<"  \ XXX INFORMER
+      2dup 2>r d2* d- -1 m+ 2r>  1 m+
+    then
+  loop  cr .s 2rot 2drop  ;
+
+: dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
+
+  \ vim: filetype=soloforth

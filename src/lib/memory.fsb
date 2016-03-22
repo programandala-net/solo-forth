@@ -1,0 +1,351 @@
+  \ memory.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words related to memory.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( exchange )  \  ==memory==
+
+[unneeded] exchange
+?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
+
+
+( c+! c@+ )
+
+need z80-asm
+
+[unneeded] c+! dup
+?\  code c+!  ( b ca -- )
+?\    hl pop  de pop  e a ld  m a add  a m ld  jpnext  end-code
+
+  \ doc{
+  \
+  \ code c+!  ( b ca - )
+  \
+  \ Add _b_ to the 8-bit number at _ca_
+  \
+  \ }doc
+
+[unneeded] c@+ dup
+?\ code c@+  ( ca - ca+1 c )
+
+  \ Credits:
+  \
+  \ Code adapted from Pygmy Forth.
+
+  \ First version
+  \ de pop  de ftap  de incp  0 h ld# a l ld  pushhlde jp
+
+  \ Second version
+?\  hl pop  m a ld  hl incp  hl push  pusha jp  end-code
+
+  \ doc{
+  \
+  \ code c@+  ( ca - ca+1 c )
+  \
+  \ Fetch the byte at _ca_ a and increments the address.
+  \ This is handy for stepping through byte arrays.
+  \
+  \ }doc
+
+( 1+! 1-! )
+
+need z80-asm  need [if]
+
+[needed] 1+! [if]
+code 1+!  ( a -- )
+  hl pop  m e ld  hl incp  m d ld  de incp
+  d m ld  hl decp  e m ld  jpnext
+end-code
+[then]
+
+  \ doc{
+  \
+  \ 1+!  ( a - )
+  \
+  \ Increment the cell number at _a_.
+  \
+  \ }doc
+
+[needed] 1-! [if]
+code 1-!  ( a -- )
+  hl pop  m e ld  hl incp  m d ld  de decp
+  d m ld  hl decp  e m ld  jpnext
+end-code
+[then]
+
+  \ doc{
+  \
+  \ 1-!  ( a - )
+  \
+  \ Decrement the cell number at _a_.
+  \
+  \ }doc
+
+( c1+! c1-! )
+
+need z80-asm
+
+[unneeded] c1+!
+?\  code c1+!  ( ca -- )  hl pop  m inc  jpnext  end-code
+
+  \ doc{
+  \
+  \ c1+!  ( ca - )
+  \
+  \ Increment the 8-bit number at _ca_.
+  \
+  \ }doc
+
+[unneeded] c1-!
+?\  code c1-!  ( ca -- )  hl pop  m dec  jpnext  end-code
+
+  \ doc{
+  \
+  \ c1-!  ( ca - )
+  \
+  \ Decrement the 8-bit number at _ca_.
+  \
+  \ }doc
+
+( c@+ c!+ -c@ -c! )
+
+  \ XXX UNDER DEVELOPMENT -- 2015-10-25
+
+  \ Credits:
+  \
+  \ Words from the TED editor.
+  \ http://dxforth.netbay.com.au/ted.html
+
+  \ Note: these words are too specific for the TED editor.
+
+need 1+!  need 1-!
+
+: c@+  ( ca -- c )  dup @ c@ swap 1+!  ;
+: c!+  ( c ca -- )  tuck @ c! 1+!  ;
+: -c@  ( ca -- c )  dup 1-! @ c@  ;
+: -c!  ( c ca -- )  dup 1-! @ c!  ;
+
+( @+ @- !+ !- c@+ c@- c!+ c!- )
+
+  \ XXX UNDER DEVELOPMENT -- 2015-10-25
+
+  \ Credits:
+  \
+  \ Words written after cmForth.
+
+  \ XXX Note: the original descriptions didn't include stack
+  \ notations. Some of them are not clear.
+
+  \ @+  ( n a -- x n a' )
+  \
+  \ Fetch data from memory pointed to by the top item on the
+  \ stack.  Data obtained is pushed below the top item.  The
+  \ top address is incremented by n.  Repeating this
+  \ instruction pushes an array of data on the data stack below
+  \ the address on top.
+
+  \ XXX TODO alternative found -- which one is cmForth?
+  : @+ ( a inc -- value a+inc )  + dup @ swap  ;
+
+  \ @-  ( n a -- x n a' )
+  \
+  \ Fetch data from memory pointed to by the top item on the
+  \ stack.  Data obtained is pushed below the top item.  The
+  \ top address is decremented by n.  Repeating this
+  \ instruction pushes an array of data on the data stack below
+  \ the address on top.
+
+  \ !+  ( n x a -- a' )
+  \
+  \ Pop the second item on the data stack and store it in the
+  \ memory pointed to by the address on top of the stack.  The
+  \ address is then incremented by n.
+
+  \ XXX TODO alternative found -- which one is cmForth?
+  : !+  ( value a inc -- a+inc )  + tuck !  ;
+
+  \ !-  ( n x a -- a' )
+  \
+  \ Pop the second item on the data stack and store it in the
+  \ memory pointed to by the address on top of the stack.  The
+  \ address is then decremented by n.
+
+  \ c@+  ( ca n -- b ca' )
+  \
+  \ Fetch a byte from memory and increment the address by n.
+
+  \ c@-  ( ca n -- b ca' )
+  \
+  \ Fetch a byte from memory and decrement the address by n.
+
+  \ c!+  ( b ca n -- ca' )
+  \
+  \ Store a byte to memory and increment the address by n.
+
+  \ c!-  ( b ca n -- ca' )
+  \
+  \ Store a byte to memory and decrement the address by n.
+
+( bit? set-bit reset-bit )
+
+need lshift
+
+: bit>mask  ( n -- b )  1 swap lshift  ;
+  \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
+
+: bit? ( b n -- f )  bit>mask and 0<> ;
+  \ Is bit _n_ of _b_ set?
+
+: set-bit ( b1 n -- b2 )  bit>mask or ;
+  \ Set bit _n_ of _b1_, returning the result _b2_.
+
+: reset-bit ( b1 n -- b2 )  bit>mask invert and ;
+  \ Reset bit _n_ of _b1_, returning the result _b2_.
+
+( c@test-bits c!toggle-bits )
+
+  \ XXX TODO possible names:
+  \ c@test-bits     cand@    c@and   c@mask?    c@test?  c@set?
+  \ c!set-bits      cor!     c!or    c!mask     c!set
+  \ c!reset-bits                     c!unmask   c!reset
+  \ c!toggle-bits   cxor!    c!xor   c!toggle   c!toggle
+
+  \ Credits:
+  \
+  \ Words inspired by MPE PowerForth for TiniARM.
+
+need z80-asm  need [if]
+
+  \ XXX OLD -- `c@test-bits?` is in the kernel
+  \ [needed] c@test-bits? [if]
+  \ code c@test-bits?  ( b ca -- wf )
+  \   hl pop  de pop  e a ld  m and
+  \   ' true jpnz  ' false jp  end-code  exit  [then]
+  \   \ Test the bits at _ca_ specified by the bitmask _b_.  Return
+  \   \ _true_ if the result is non-zero or _false_ if the result
+  \   \ is zero.
+
+  \ XXX FIXME
+
+  \ XXX INFORMER
+  \ cr needed-word 2@ .s char < emit type char > emit cr
+
+[needed] c@test-bits [if]
+code c@test-bits  ( b1 ca -- b2 )
+  hl pop  de pop  e a ld  m and  pusha jp
+  end-code  exit  [then]
+  \ Test the bits at _ca_ specified by the bitmask _b1_.
+  \ Return the result _b2_. The bits sets in _b2_ are those
+  \ set in both _b1_ and the contents of _ca_.
+
+  \ XXX OLD -- `c!set-bits` is in the kernel
+  \ [needed] c!set-bits [if]
+  \ code c!set-bits  ( b ca -- )
+  \   hl pop  de pop  e a ld  m or  a m ld  jpnext
+  \   end-code  exit  [then]
+  \   \ Set the bits at _ca_ specified by the bitmask _b_.
+
+  \ XXX OLD -- `c!reset-bits` is in the kernel
+  \ [needed] c!reset-bits [if]
+  \ code c!reset-bits  ( b ca -- )
+  \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
+  \   end-code  exit  [then]
+  \   \ Reset the bits at _ca_ specified by the bitmask _b_.
+
+[needed] c!toggle-bits [if]
+code c!toggle-bits  ( b ca -- )
+  hl pop  de pop  m a ld  e xor  a m ld  jpnext
+  end-code  exit  [then]
+  \ Invert the bits at _ca_ specified by the bitmask _b_.
+
+( reserve alloted )
+
+: reserve  ( n -- a )  here tuck over erase allot  ;
+  \ Reserve a zone of _n_ bytes in the dictionary, erase it
+  \ and return its address _a_.
+
+: allotted  ( n -- a )  here swap allot ;
+  \ Reserve a zone of _n_ bytes in the dictionary
+  \ and return its address _a_.
+
+( code-bank )
+
+need save-here  need call
+
+variable cp  bank-start cp !  \ code pointer
+
+: code-here   ( -- a )  cp @  ;
+: code-there  ( a -- )  cp !  ;
+: code-allot  ( n -- )  cp +!  ;
+
+variable code-bank#  3 code-bank# !
+  \ Memory bank used as code bank.
+
+: code-bank  ( -- )  code-bank# @ bank  ;
+  \ Page the code bank in.
+
+: code-bank{  ( -- )  save-here code-here there code-bank  ;
+  \ Start compiling code into the code bank.
+
+: }code-bank  ( -- )  default-bank restore-here  ;
+  \ End compiling code into the code bank.
+
+: ?bank  ( -- )  bank-start here u< #-276 ?throw  ;
+  \ Issue error -276 if the dictionary has reached
+  \ the zone of memory banks. This check is required after
+  \ compiling code that manipulates memory banks.
+
+: code-bank-caller  ( i*x a "name" -- j*x )
+  create ?bank ,
+  does>  ( -- )  ( pfa ) @ code-bank call default-bank  ;
+  \ Create a word "name" which will call the machine code
+  \ routine at _a_, in the code bank.
+
+?bank
+
+( @p )
+
+code @p  ( a -- b )
+
+  \ Input byte _b_ from port _a_.
+
+  E1 c,           \ pop hl
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 68 c,     \ in l,(c)
+  C1 c,           \ pop bc
+  26 c, 00 c,     \ ld h,0x00
+  jppushhl        \ jp pushhl
+  end-code
+
+( !p )
+
+code !p  ( b a -- )
+
+  \ Output byte _b_ to port _a_.
+
+  E1 c,           \ pop hl
+  D1 c,           \ pop de ; char in e
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 59 c,     \ out (c),e
+  C1 c,           \ pop bc
+  jpnext          \ jp (ix)
+
+  end-code
+
+  \ vim: filetype=soloforth

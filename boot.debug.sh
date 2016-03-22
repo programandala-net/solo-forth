@@ -4,7 +4,7 @@
 
 # 2015-08-16
 
-# Launch fuse with the following breakpoints:
+# Launch Fuse with the following breakpoints:
 
 # 0x6355 next
 # 0x635B next2

@@ -8,7 +8,7 @@
 # permitted in any medium without royalty provided the copyright notice and
 # this notice are preserved.  This file is offered as-is, without any warranty.
 
-################################################################
+# ==============================================================
 # Requirements
 
 # head, cat and sort (from the GNU coreutils)
@@ -26,19 +26,19 @@
 # mkmgt (by Marcos Cruz)
 # 	http://programandala.net/en.program.mkmgt.html
 
-################################################################
-# Change history
+# ==============================================================
+# History
 
 # See at the end of the file.
 
-################################################################
+# ==============================================================
 # Notes
 
 # $? list of dependencies changed more recently than current target
 # $@ name of current target
 # $< name of current dependency
 
-################################################################
+# ==============================================================
 # Config
 
 VPATH = ./
@@ -47,7 +47,7 @@ MAKEFLAGS = --no-print-directory
 
 .ONESHELL:
 
-################################################################
+# ==============================================================
 # Main
 
 .PHONY: all
@@ -63,10 +63,12 @@ plus3dos: solo_forth_disk_a.dsk
 
 .PHONY : clean
 clean:
-	find tmp/ -name "*.bin" -exec rm -f '{}' ';'
-	find tmp/ -name "*.tap" -exec rm -f '{}' ';'
-	find tmp/ -name "*.fsb" -exec rm -f '{}' ';'
+	@make cleantmp
 	rm -f solo_forth_disk_?.mgt solo_forth_disk_?.dsk
+
+.PHONY : cleantmp
+cleantmp:
+	rm -f tmp/*
 
 include Makefile.pasmo
 #include Makefile.binutils
@@ -79,7 +81,7 @@ include Makefile.pasmo
 # as:
 # 	@make Makefile.binutils
 
-################################################################
+# ==============================================================
 # The loader
 
 tmp/loader.gplusdos.bas.tap: src/loader/gplusdos.bas
@@ -88,7 +90,7 @@ tmp/loader.gplusdos.bas.tap: src/loader/gplusdos.bas
 tmp/loader.plus3dos.bas.tap: src/loader/plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
 
-################################################################
+# ==============================================================
 # Font drivers
 
 # This drivers are not part of the Solo Forth library yet.
@@ -115,7 +117,7 @@ tmp/prnt42.tap: bin/modules/prnt42.bin
 	cd - ; \
 	mv bin/modules/prnt42.tap tmp/prnt42.tap
 
-################################################################
+# ==============================================================
 # Fonts
 
 # The DSK disk image needs the fzx files to be packed into TAP
@@ -132,8 +134,11 @@ bin/fonts/fzx_fonts.tap : $(fzx_fonts)
 	rm -f *.fzx.tap ; \
 	cd -
 
-################################################################
+# ==============================================================
 # The disk images
+
+# ----------------------------------------------
+# Main disk
 
 # The first disk ("1" for G+DOS, "A" for +3DOS) contains the
 # Forth system. The user will use the first disk for customized
@@ -176,47 +181,51 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 		tmp/solo_forth_disk_a.tap \
 		solo_forth_disk_a.dsk
 
+# ----------------------------------------------
+# Library disk
+
 # The second disk ("2" for G+DOS, "B" for +3DOS) contains the
-# source blocks of the Forth system.  The blocks are stored on
-# the disk sectors, without file system.
+# source blocks of the library. The blocks are stored on the
+# disk sectors, without file system.
 
-tmp/library.complete.for_gplusdos.fsb: \
-	src/library.main.fsb \
-	src/library.game.nuclear_invaders.fsb \
-	src/library.error_codes.gplusdos.fsb \
-	src/library.error_codes.os.fsb
+library_files = $(sort $(wildcard src/lib/*.fsb))
+
+# Library disk for G+DOS
+
+# XXX WARNING -- `%` in filter patterns works only at the start
+# of the pattern?
+
+gplusdos_library_files = \
+	$(filter-out %plus3dos.fsb %idedos.fsb , $(library_files))
+
+tmp/library_for_gplusdos.fsb: $(gplusdos_library_files)
 	cat \
-		src/library.main.fsb \
-		src/library.game.nuclear_invaders.fsb \
-		src/library.error_codes.gplusdos.fsb \
-		src/library.error_codes.os.fsb \
-		> tmp/library.complete.for_gplusdos.fsb
+		$(gplusdos_library_files) \
+		> tmp/library_for_gplusdos.fsb
 
-solo_forth_disk_2.mgt: tmp/library.complete.for_gplusdos.fsb
-	fsb2-mgt tmp/library.complete.for_gplusdos.fsb ;\
-	mv tmp/library.complete.for_gplusdos.mgt solo_forth_disk_2.mgt
+solo_forth_disk_2.mgt: tmp/library_for_gplusdos.fsb
+	fsb2-mgt tmp/library_for_gplusdos.fsb ;\
+	mv tmp/library_for_gplusdos.mgt solo_forth_disk_2.mgt
 
-tmp/library.complete.for_plus3dos.fsb: \
-	src/library.main.fsb \
-	src/library.game.nuclear_invaders.fsb \
-	src/library.error_codes.plus3dos.fsb \
-	src/library.error_codes.os.fsb
+# Library disk for +3DOS
+
+plus3dos_library_files = $(filter-out %gplusdos.fsb,$(library_files))
+
+tmp/library_for_plus3dos.fsb: $(plus3dos_library_files)
 	cat \
-		src/library.main.fsb \
-		src/library.error_codes.plus3dos.fsb \
-		src/library.game.nuclear_invaders.fsb \
-		src/library.error_codes.os.fsb \
-		> tmp/library.complete.for_plus3dos.fsb
+		$(gplusdos_library_files) \
+		> tmp/library_for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
-solo_forth_disk_b.dsk: tmp/library.complete.for_plus3dos.fsb
-	fsb2-dsk tmp/library.complete.for_plus3dos.fsb ;\
-	mv tmp/library.complete.for_plus3dos.dsk solo_forth_disk_b.dsk
+solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
+	fsb2-dsk tmp/library_for_plus3dos.fsb ;\
+	mv tmp/library_for_plus3dos.dsk solo_forth_disk_b.dsk
 
-################################################################
+# ==============================================================
 # Backup
 
 # XXX OLD
+
 .PHONY: backup
 backup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
@@ -231,8 +240,8 @@ backup:
 		*.sh \
 		*.txt
 
-################################################################
-# Change history
+# ==============================================================
+# History
 
 # 2015-06-02: Start.
 #
@@ -271,7 +280,7 @@ backup:
 # were missing because of the recent use of `bin2code`,
 # required to build +3DOS disk images.
 #
-# 2016-02-15: Added Nuclear Invaders to the library, an game
+# 2016-02-15: Added Nuclear Invaders to the library, a game
 # under development for Solo Forth, in order to try it.
 #
 # 2016-02-22: Delete also <library.complete.*.fsb> in clean.
@@ -280,3 +289,6 @@ backup:
 #
 # 2016-03-19: Updated after the reorganization of files into
 # directories.
+#
+# 2016-03-22: Removed Nuclear Invaders from the library, because
+# now it's built on its own directory.

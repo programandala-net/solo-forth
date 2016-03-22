@@ -1,0 +1,469 @@
+  \ operators.1-cell.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains single-cell operators.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( under+ )  \ ==operators==
+
+code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  D9 c,           \ exx
+  D1 c,           \ pop de
+  C1 c,           \ pop bc
+  E1 c,           \ pop hl
+  19 c,           \ add hl,de
+  E5 c,           \ push hl
+  C5 c,           \ push bc
+  D9 c,           \ exx
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  \
+  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ Origin: Comus.
+  \
+  \ ----
+  \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  \   rot + swap  ;
+  \ ----
+  \
+  \ }doc
+
+( +under )
+
+code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  D9 c,           \ exx
+  C1 c,           \ pop bc
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  19 c,           \ add hl,de
+  E5 c,           \ push hl
+  C5 c,           \ push bc
+  D9 c,           \ exx
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  \
+  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ Origin: Comus.
+  \
+  \ ----
+  \ : +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  \   >r + r>  ;
+  \ ----
+  \
+  \ }doc
+
+  \ XXX TODO -- variant after PFE's `(under+)`:
+  \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
+
+( within between )
+
+  \ Credits:
+  \
+  \ Code from DZX-Forth.
+
+[unneeded] within
+?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
+
+  \ doc{
+  \
+  \ within  ( n1|u1 n2|u2 n3|u3 -- f )
+  \
+  \ Perform a comparison of a test value n1|u1 with a lower
+  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
+  \ if either (n2|u2 < n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <
+  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 <= n1|u1 or n1|u1 <
+  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
+  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
+  \ all the same type.
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+[unneeded] between ?exit
+
+: between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
+
+  \ doc{
+  \
+  \ between  ( n1|u1 n2|u2 n3|u3 -- f )
+
+  \ Perform a comparison of a test value _n1|u1_ with a lower
+  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
+  \ if either (n2|u2 <= n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <=
+  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 < n1|u1 or n1|u1 <
+  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
+  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
+  \ all the same type.
+
+  \ name  ( -- )
+  \
+  \ }doc
+
+  \ Credits:
+  \
+  \ http://dxforth.netbay.com.au/between.html
+
+( polarity )
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+code polarity  ( n -- -1 | 0 | 1 )
+  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false ,
+    \ pop de
+    \ ld a,d
+    \ or e
+    \ jp z,false_code
+
+  CB c, 10 03 + c,  ED c, 62 c,
+    \ rl d ; set carry if DE -ve
+    \ sbc hl,hl ; HL=0 if DE +ve, or -1 if DE -ve
+
+  78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl
+    \ ld a,l
+    \ or 1
+    \ ld l,a ; HL=1 or -1
+    \ jp push_hl
+  end-code
+
+( u<= u>= <= >= 0>= 0<= )
+
+[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
+[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
+[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
+[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
+[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
+[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
+
+( lshift )
+
+need z80-asm
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+  \ 16 bytes used
+
+code lshift  ( x1 u -- x2 )
+
+  exx
+  bc pop  \ C = loop counter
+  c b ld
+  hl pop  \ hi 8 bits ignored!
+  b inc  ahead 0 unresolved !
+  begin  hl addp  0 unresolved @ >relresolve  step
+  hl push
+  exx
+  jpnext
+
+  end-code
+
+( lshift )
+
+  \ Credits:
+  \
+  \ Code adapted from DZX-Forth.
+
+  \ This version is smaller (13 bytes used) but slower (169%
+  \ the execution time of version adapted from Z88 CamelForth).
+
+code lshift  ( x1 u -- x2 )
+
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
+  29 c,           \ add hl,hl
+  C3 c, ,         \ jp begin
+
+  end-code
+
+( rshift )
+
+need z80-asm
+
+  \ Credits:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+  \ 19 bytes used
+
+code rshift  ( x1 u -- x2 )
+
+  exx
+  bc pop  \ C = loop counter
+  c b ld
+  hl pop  \ hi 8 bits ignored!
+
+  b inc  ahead 0 unresolved !
+
+  begin  h srl  l rr  0 unresolved @ >relresolve  step
+  hl push
+  exx
+  jpnext
+
+  end-code
+
+( rshift )
+
+  \ Credits:
+  \
+  \ Code adapted from DZX-Forth.
+
+  \ This version is smaller (16 bytes used) but slower (133%
+  \ the execution time of the version adapted from Z88 CamelForth).
+
+code rshift  ( x1 u -- x2 )
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
+  CB c, 3C c,     \ srl h
+  CB c, 1D c,     \ rr l
+  C3 c, ,         \ jp begin
+  end-code
+
+( 2/ )
+
+  \ Credits:
+  \
+  \ Code from Spectrum Forth-83.
+  \ Documentation partly based on lina.
+
+code 2/  ( x1 -- x2 )
+  E1 c,           \ pop hl
+  CB c, 2C c,     \ sra h
+  CB c, 1D c,     \ rr l
+  jppushhl        \ jp pushhl
+  end-code
+
+  \ doc{
+  \
+  \ 2/  ( x1 -- x2 )
+  \
+  \ _x2_ is the result of shifting _x1_ one bit toward the
+  \ least-significant bit, leaving the most-significant bit
+  \ unchanged.
+  \
+  \ This is the same as `s>d 2 fm/mod swap drop`. It is not the
+  \ same as `2 /`, nor is it the same as `1 rshift`.
+  \
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).
+  \
+  \ }doc
+
+( sqrt )
+
+  \ Credits:
+  \
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ (volume 18, number 5, page 27, 1997-01).
+
+need d2*  need 2/
+
+[defined] cell-bits ?\ 16 constant cell-bits
+
+: (sqrt)  ( radicand -- remainder root )
+  0 0                           ( radicand remainder root )
+  [ cell-bits 2/ ] literal 0 do
+    >r d2* d2* r>               \ shift remainder left 2 bits
+    2*                          \ shift root left 1 bit
+    2dup 2* u> if               \ check for next bit of root
+      >r r@ 2* - 1- r>          \ reduce remainder
+      1+                        \ add a bit to root
+    then
+  loop  cr .s rot drop  ;
+
+: sqrt  ( radicand -- root )  (sqrt) nip  ;
+
+( sqrt )
+
+  \ Integer square root by Newton's method
+
+  \ Credits:
+  \
+  \ Adapted from Sinclair QL's Computer One Forth.
+
+: sqrt  ( n1 -- n2 )
+  dup 0< -24 ?throw  \ invalid numeric argument
+  dup
+  if  dup 2/  20 0
+      do      2dup / + 2/
+      loop    swap drop
+  then  ;
+
+( sm/rem )
+
+  \ Credits:
+  \
+  \ Code from Z88 CamelForth.
+
+: sm/rem  ( d1 n1 -- n2 n3 )
+  \ symmetric signed division
+  2dup xor >r  \  sign of quotient
+  over >r      \  sign of remainder
+  abs >r dabs r> um/mod
+  swap r> ?negate
+  swap r> ?negate  ;
+
+  \ doc{
+  \
+  \ sm/rem  ( d1 n1 -- n2 n3 )
+
+  \ Divide d1 by n1, giving the symmetric quotient n3 and the
+  \ remainder n2. Input and output stack arguments are signed.
+  \ An ambiguous condition exists if n1 is zero or if the
+  \ quotient lies outside the range of a single-cell signed
+  \ integer.
+
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+
+  \ [caption="Symmetric Division Example"]
+  \
+  \ |===
+  \ | Dividend  | Divisor | Remainder | Quotient
+
+  \ >|       10  >|      7  >|        3  >|        1
+  \ >|      -10  >|      7  >|       -3  >|       -1
+  \ >|       10  >|     -7  >|        3  >|       -1
+  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |===
+
+  \ }doc
+
+( /-rem /- -rem */-rem */- )
+
+  \ Symmetric-division operators
+
+  \ Credits:
+  \
+  \ Forth-94 documentation.
+
+: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
+
+: /-  (  n1 n2 -- n3 )  /-rem nip  ;
+
+: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
+
+: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
+
+: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
+
+( fm/mod )
+
+  \ Credits:
+  \
+  \ Code from Z88 CamelForth.
+
+: fm/mod  ( d1 n1 -- n2 n3 )
+  \ floored signed division
+  dup >r                \ save divisor
+  sm/rem
+  over 0<> over 0< and  \ quotient<0 and remainder<>0?
+  if
+    swap r> +           \ add divisor to remainder
+    swap 1-             \ decrement quotient
+  else r> drop then  ;
+
+  \ doc{
+  \
+  \ fm/mod  ( d1 n1 -- n2 n3 )
+  \
+  \ Floored division:
+  \
+  \ ----
+  \   d1 = n3*n1+n2
+  \   n1>n2>=0 or 0>=n2>n1
+  \ ----
+  \
+  \ Divide _d1_ by _n1_, giving the floored quotient _n3_ and
+  \ the remainder _n2_. Input and output stack arguments are
+  \ signed.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+
+  \ [caption="Floored Division Example"]
+  \
+  \ |===
+  \ | Dividend  | Divisor | Remainder | Quotient
+
+  \ >|       10  >|      7  >|        3  >|        1
+  \ >|      -10  >|      7  >|        4  >|       -2
+  \ >|       10  >|     -7  >|       -4  >|       -2
+  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |===
+  \
+  \ }doc
+
+( /_mod /_ _mod */_mod */_ )
+
+  \ Floored-division operators
+
+need fm/mod
+
+  \ Credits:
+  \
+  \ Forth-94 documentation.
+
+: /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
+
+: /_  ( n1 n2 -- n3 )  /_mod nip  ;
+
+: _mod  ( n1 n2 -- n3 )  /_mod drop  ;
+
+: */_mod  ( n1 n2 n3 -- n4 n5 )  >r m* r> fm/mod  ;
+
+: */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
+
+( any? )
+
+  \ Credits:
+  \
+  \ Code from F83.
+
+need roll
+
+variable (any?)
+
+: any?  ( x0 x1..xn n -- f )
+  dup 1+ roll (any?) !
+  0 swap 0 do  swap (any?) @ = or  loop  ;
+  \ Is any _x1..xn_ equal to _x0_?
+
+( % u% )
+
+: %  ( n1 n2 -- n3 )  100 swap */  ;
+  \ _n1_ is percentage _n3_ of _n2_
+
+: u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
+  \ _u1_ is percentage _u3_ of _u2_
+
+  \ vim: filetype=soloforth

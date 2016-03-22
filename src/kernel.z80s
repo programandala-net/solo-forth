@@ -7,7 +7,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603200559
+; This file was last modified: 201603221720
 
 ; ==============================================================
 ; License
@@ -27,12 +27,12 @@ version_minor:                equ 3
 version_patch:                equ 0
 
 if 1
-  version_release_candidate:  equ 4
+  version_release_candidate:  equ 5
 endif
 
 if 1
   version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9F40  ; build 20160320
+  version_build_low_part:     equ 0x9F42  ; build 20160322
 endif
 
 ; ==============================================================
@@ -179,7 +179,7 @@ csb_size:                         equ 256 ; bytes, size of the circular string b
 bank_start                        equ 0xC000
 
 default_bank:                     equ 0
-system_bank:                       equ 1
+system_bank:                      equ 1
 
 names_bank_address:               equ bank_start ; names pointers
 
@@ -1720,6 +1720,58 @@ push_a:
   _jp_pushhl
 
 ; ----------------------------------------------
+  _constant_header default_bank_hash_,'DEFAULT-BANK#'
+
+  ; XXX TMP --
+
+; doc{
+;
+; default-bank#  ( -- a )
+; 
+; An 8-bit variable holding the value of the default bank.  Note
+; this variable must be set with `c!` and fetched with `c@`.
+;
+; }doc
+
+  dw address_of_default_bank
+
+; ----------------------------------------------
+  _code_header set_default_bank_,'SET-DEFAULT-BANK'
+
+  ; XXX TMP --
+
+; doc{
+;
+; set-default-bank  ( +n -- )
+;
+; Set _+n_ (0..7) as the default memory bank to be paged at
+; 0xC000..0xFFFF.
+;
+; }doc
+
+  pop hl
+  ld a,l
+  ld (address_of_default_bank),a
+  _jp_next
+
+; ----------------------------------------------
+  _code_header get_default_bank_,'GET-DEFAULT-BANK'
+
+  ; XXX TMP --
+
+; doc{
+;
+; get-default-bank  ( -- +n )
+;
+; Get the current default bank _+n_ (0..7) paged at
+; 0xC000..0xFFFF.
+;
+; }doc
+
+  ld a,(address_of_default_bank)
+  jp push_a
+
+; ----------------------------------------------
   _code_header default_bank_,'DEFAULT-BANK'
 
 ; doc{
@@ -1746,7 +1798,7 @@ push_a:
 ;
 ; }doc
 
-  call bank.names
+  call bank.system
   _jp_next
 
 ; ----------------------------------------------
@@ -1777,10 +1829,11 @@ push_a:
   call bank.e
   _jp_next
 
-bank.names:
+bank.system:
   ld e,system_bank
   jr bank.e
 bank.default:
+address_of_default_bank equ $+1
   ld e,default_bank
 bank.e:
   ld a,(sys_bankm) ; get the saved status of BANKM
@@ -1869,10 +1922,12 @@ bank.e:
 ; ----
 ; }doc
 
+  ; XXX TODO -- rename to `csb-room` or something
+
   dw dup_,unused_csb_,greater_than_
   dw zero_branch_,question_csb_.enough
   ; not enough space
-  dw csb_size_,to_csb_,store_ ; reset the pointer
+  dw csb_size_,to_csb_,store_ ; reset the pointer ; XXX TODO -- factor out
 
 question_csb_.enough:
   dw negate_,to_csb_,plus_store_
@@ -2423,7 +2478,7 @@ paren_loop.continue:
   pop hl  ; l=base
   pop de  ; e=character
   ld a,e  ; character
-  call upper.a
+  call ascii_upper.a
   sub '0' ; >="0"?
   jp c,false_ ; <"0" is invalid
   cp 0x0A ; >"9"?
@@ -2823,7 +2878,7 @@ char_question.not:
 
   ld (find_name_from.ip_backup),bc ; save the Forth IP
 
-  call bank.names ; page the memory bank in
+  call bank.system ; page the memory bank in
 
   pop hl ; nt
   pop bc ; C=len, B is supposed to be 0
@@ -2853,7 +2908,7 @@ find_name_from.string_length: equ $+1
   inc hl ; point to the first char of the name in the dictionary
 find_name_from.compare_next_char:
   ld a,(de)
-  call upper.a ; XXX NEW experimental
+  call ascii_upper.a ; XXX NEW experimental
   cpi
   inc de ; point to next character of the string
   jp nz,find_name_from.not_a_match ; mismatch
@@ -3079,11 +3134,11 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_mode32_emit_,'(MODE32-EMIT)'
+  _code_header mode32_emit_,'MODE32-EMIT'
 
 ; doc{
 ;
-; (emit)  ( b -- )
+; mode32-emit  ( b -- )
 ;
 ; Send the character _b_ to the current channel.
 ;
@@ -3119,12 +3174,12 @@ if 0
   ld hl,(sys_chars)
   push hl
   cp 128
-  jr c,paren_mode32_emit.print_a
+  jr c,mode32_emit.print_a
   sub 96
   ld hl,(sys_udg)
   dec h
   ld (sys_chars),hl
-paren_mode32_emit.print_a
+mode32_emit.print_a
   ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
   rst 0x10
   pop hl
@@ -3146,14 +3201,14 @@ if 0
 
   ld a,l
   cp 128 ; control or ASCII character?
-  jp nc,paren_mode32_emit.print_udg ; is not, jump
+  jp nc,mode32_emit.print_udg ; is not, jump
 
   ; use the ROM routine to print a control or ASCII character
   rst 0x10
   pop bc
   _jp_next
 
-paren_mode32_emit.print_udg:
+mode32_emit.print_udg:
   ; hl = UDG code (128..255)
   sub 128
   ld l,a ; hl = UDG index code (0..127)
@@ -3165,12 +3220,12 @@ paren_mode32_emit.print_udg:
   ex de,hl ; de = char address in the font
   ld hl,(sys_df_cc) ; current screen address
   ld b,8 ; char scans
-paren_mode32_emit.print_udg_scan
+mode32_emit.print_udg_scan
   ld a,(de) ; get UDG scan
   ld (hl),a ; put it on the screen
   inc de ; address of next scan of the UDG
   inc h ; address of next pixel row on the screen
-  djnz paren_mode32_emit.print_udg_scan
+  djnz mode32_emit.print_udg_scan
 
   ; Update
   ld de,(sys_s_posn)
@@ -3181,19 +3236,19 @@ paren_mode32_emit.print_udg_scan
   inc e
   ld a,e
   cp 32 ; last col?
-  jp c,paren_mode32_emit.update2 ; if not, jump
+  jp c,mode32_emit.update2 ; if not, jump
   ; last col
   ld e,0
   inc d
   ld a,d
   cp 23 ; last row?
-  jp c,paren_mode32_emit.update2 ; if not, jump
+  jp c,mode32_emit.update2 ; if not, jump
   ; last row
   call 0x0DFE ; ROM scroll routine
   ; XXX FIXME wrong coords after the scroll
   ld de, 0x1400
 
-paren_mode32_emit.update2:
+mode32_emit.update2:
   push de
   ld a,d
   and 0x07
@@ -3275,7 +3330,7 @@ emit_udg.a
 endif
 
 ; ----------------------------------------------
-  _defer_header emit_,'EMIT',,paren_mode32_emit_
+  _defer_header emit_,'EMIT',,mode32_emit_
 
 ; XXX TODO -- Add multitasker's `pause` when available.
 
@@ -4996,6 +5051,8 @@ endif
 ; ----------------------------------------------
   _code_header false_,'FALSE'
 
+  ; XXX TODO -- convert to cconstant?
+
 ; doc{
 ;
 ; false  ( -- false )
@@ -5007,6 +5064,8 @@ endif
 
 ; ----------------------------------------------
   _code_header true_,'TRUE'
+
+  ; XXX TODO -- convert to constant?
 
 ; doc{
 ;
@@ -5072,6 +5131,8 @@ endif
 
 ; ----------------------------------------------
   _c_constant_header hash_vocs_,'#VOCS'
+
+  ; XXX TODO -- rename to `/order`?
 
   db max_search_order
 
@@ -5931,7 +5992,7 @@ endif
 
   ; XXX FIXME -- make it return 0 if xt has no name associated
 
-  call bank.names ; page the memory bank in
+  call bank.system ; page the memory bank in
 
   pop de ; xt
 ;  ld (to_name.xt),de ; save xt for later ; XXX OLD
@@ -7380,12 +7441,10 @@ parse_name.skip:
 
   pop hl
   ld a,l
-  call upper.a
-  ; XXX TODO `jp push_a` to save 1 byte?
-  ld l,a
-  _jp_pushhl
+  call ascii_upper.a
+  jp push_a
 
-upper.a:
+ascii_upper.a:
   ; Convert the ASCII char in the 'a' register to uppercase.
   cp 'a'
   ret c
@@ -7413,7 +7472,7 @@ uppers.do:
   or e
   jp z,next
   ld a,(hl)
-  call upper.a
+  call ascii_upper.a
   ld (hl),a
   inc hl
   dec de
@@ -8181,7 +8240,9 @@ if 1
 
 else  ; XXX TMP alternative without `c@test-bits?`
 
+  dw system_bank_
   dw swap_,c_fetch_s_,and_,zero_not_equals_
+  dw default_bank_
   dw exit_
 
 endif
@@ -10686,7 +10747,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_mode32_home_,'(MODE32-HOME)'
+  _code_header mode32_home_,'MODE32-HOME'
 
 ; doc{
 ;
@@ -10736,7 +10797,7 @@ if 0
 endif
 
 ; ----------------------------------------------
-  _defer_header home_,'HOME',,paren_mode32_home_
+  _defer_header home_,'HOME',,mode32_home_
 
 ; doc{
 ;
@@ -10965,7 +11026,7 @@ where.do_it:
 endif
 
 ; ----------------------------------------------
-  _colon_header paren_mode32_at_xy_,'(MODE32-AT-XY)'
+  _colon_header mode32_at_xy_,'MODE32-AT-XY'
 
 ; doc{
 
@@ -10987,11 +11048,11 @@ endif
   dw not_equals_ ; not the last row?
   dw zero_branch_,at_pfa.last_line
   ; not the last row
-  dw lit_,22,paren_mode32_emit_,paren_mode32_emit_,paren_mode32_emit_
+  dw lit_,22,mode32_emit_,mode32_emit_,mode32_emit_
   dw exit_ ; XXX TODO exit_
 
 at_pfa.last_line:
-  dw one_minus_,dup_,paren_mode32_emit_,paren_mode32_emit_,zero_,paren_mode32_emit_
+  dw one_minus_,dup_,mode32_emit_,mode32_emit_,zero_,mode32_emit_
   dw cr_
   dw dup_
   dw lit_,sys_df_cc ; address in display file of print position
@@ -11004,7 +11065,7 @@ at_pfa.last_line:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header at_xy_,'AT-XY',,paren_mode32_at_xy_
+  _defer_header at_xy_,'AT-XY',,mode32_at_xy_
 
 ; doc{
 ;
@@ -11015,7 +11076,7 @@ at_pfa.last_line:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header paren_mode32_xy_,'(MODE32-XY)'
+  _colon_header mode32_xy_,'MODE32-XY'
 
 ; doc{
 ;
@@ -11043,15 +11104,15 @@ at_pfa.last_line:
   dw dup_
   _literal 32 ; XXX TODO -- chars per line in the current mode
   dw equals_
-  dw zero_branch_,paren_mode32_xy.end
+  dw zero_branch_,mode32_xy.end
   dw drop_,one_plus_
   _literal 0
-paren_mode32_xy.end:
+mode32_xy.end:
   dw swap_
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header xy_,'XY',,paren_mode32_xy_
+  _defer_header xy_,'XY',,mode32_xy_
 
 ; doc{
 ;
@@ -11063,6 +11124,14 @@ paren_mode32_xy.end:
 
 ; ----------------------------------------------
   _code_header border_,'BORDER'
+
+; doc{
+;
+; border  ( +n -- )
+;
+; Set the border of the screen to color to _+n_ (0..7).
+;
+; }doc
 
   pop hl
   ld a,l
@@ -11077,14 +11146,15 @@ paren_mode32_xy.end:
   ; sure the lower part of the screen is usable after returning
   ; to BASIC.
 
-  ; XXX TODO move the contrast ink calculation to `bye` or
+if 0 ; XXX OLD
+
+  ; XXX TODO move this (contrast ink calculation) to `bye` or
   ; simply remove it:
 
   cp 4 ; cy = dark color (0..3)?
   ld a,7 ; white ink
   jr c,border.end
   xor a ; black ink
-
 border.end:
   ; Note: slower than shifting the register, but saves three bytes.
   add hl,hl
@@ -11092,6 +11162,9 @@ border.end:
   add hl,hl ; l = paper (bits 3..5)
   or l ; combine with ink
   ld (sys_bordcr),a
+
+endif
+
   _jp_next
 
 ; ----------------------------------------------
@@ -11470,7 +11543,7 @@ move_name_fields_to_memory_bank:
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the data to the screen
-  call bank.names
+  call bank.system
   ld hl,sys_screen ; origin
   ld de,names_bank_address ; destination
   ld bc,sys_screen_size ; count
