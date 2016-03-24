@@ -1,0 +1,158 @@
+  \ control_structures.stack.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \
+  \ This file contains words to manipulate the control flow
+  \ stack.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( cs-pick cs-roll cs-swap cs-drop )
+
+need alias need pick  need roll
+
+' pick alias cs-pick
+' roll alias cs-roll
+' swap alias cs-swap
+' drop alias cs-drop
+
+( cs-pick cs-roll cs-drop cs-mark cs-test cs-push cs-pop )
+
+  \ XXX UNDER DEVELOPMENT 2015-10-26
+
+  \ Credits:
+  \
+  \ http://dxforth.netbay.com.au/cfsext.html
+
+  \ Control-flow stack extension words. Sample implementation.
+  \ Assumes control flow is on the data stack and control flow
+  \ items are one cell wide.
+
+  \ XXX NOTE: This words are defined also in the kernel of
+  \ DZX-Forth.
+
+  variable cf0
+
+  \ initialize control flow stack base
+  : !cfs ( -- )  sp@ cf0 ! ;  !cfs
+
+  : #cs ( -- n )
+    sp@ cf0 @ - negate [ 1 cells ] literal / 1-
+    0 max ( handle empty stack) ;
+
+  : cs-pick  pick ( +bal) ;
+  : cs-roll  roll ;
+  : cs-drop  drop ( -bal) ;
+  : cs-mark  0 ( +bal) ;
+  : cs-test  dup 0<> ;
+  : cs-push  #cs -roll ;
+  : cs-pop   #cs roll ;
+
+  \ cs-drop ( C: x -- )
+
+  \ Remove the top item from the control-flow stack.
+
+  \ cs-mark ( C: -- x )
+
+  \ Place a marker on the control-flow stack. A marker occupies
+  \ the same width as an orig|dest but is distinguishable using
+  \ `cs-test`.
+
+  \ cs-test ( C: x -- x ) ( S: -- flag )
+
+  \ Return a true flag if _x_ is an orig|dest, or false if a
+  \ marker. _x_ is not altered or removed. If the control-flow
+  \ stack is implemented using the data stack, flag shall be
+  \ the topmost item on the data stack.
+
+  \ cs-push ( C: xu..x1 x0 -- x0 xu..x1 )
+
+  \ Rotate items on the control-flow stack such that the top
+  \ item becomes the bottom.  An ambiguous condition exists if
+  \ the control-flow stack is empty before `cs-push` is executed.
+
+  \ cs-pop ( C: xu xu-1..x0 -- xu-1..x0 xu )
+
+  \ Rotate items on the control-flow stack such that the bottom
+  \ item becomes the top.  An ambiguous condition exists if the
+  \ control-flow stack is empty before `cs-pop` is executed.
+
+  \ XXX TODO implement this in the kernel:
+
+  : : ( "name" -- ) ... ( !csp bal off) !cfs ;
+  : :noname ( -- xt ) ... ( xt ) ( !csp bal off) !cfs ;
+
+  \ start Forth with control flow base set to a safe value
+  : cold ( -- ) ... !cfs ;
+
+( cs-pick cs-roll )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ Credits:
+  \
+  \ Code from hForth.
+
+  \ cs-pick
+  \
+  \    Execution: ( C: destu ... orig0|dest0 -- destu ... orig0|dest0 destu )
+  \    ( S: u -- )
+  \  Interpretation: Interpretation semantics for this word are undefined.
+
+  \    Remove u.  Copy destu to the top of the control-flow
+  \    stack.  An ambiguous condition exists if there are less
+  \    than u+1 items, each of which shall be an orig or dest,
+  \    on the control-flow stack before CS-PICK is executed.
+  \
+  \    If the control-flow stack is implemented using the data
+  \    stack, u shall be the topmost item on the data stack.
+
+: cs-pick
+  ( destu ... orig0|dest0 u -- destu ... orig0|dest0 destu )
+  dup 2* 1+ pick    \ check destu; dest type is 0
+  if -22 throw then    \ control structure mismatch
+  dup >r  0 swap    \ destu ... orig0|dest0 0 u  r: u
+  1+ 0 do i 2* 1+ pick or loop
+    \ dest type is 0; orig type is 1
+  1 invert and if -22 throw then  \ ored types should be 0
+  r> 2* 1+ pick 0
+  bal 1+ to bal ; compile-only
+
+  \ cs-roll
+  \    Execution: ( C: origu|destu origu-1|destu-1 ... orig0|dest0 --
+  \        origu-1|destu-1 ... orig0|dest0 origu|destu )
+  \    ( S: u -- )
+
+  \  Interpretation: Interpretation semantics for this word are
+  \  undefined.
+  \
+  \    Remove u.  Rotate u+1 elements on top of the control-flow
+  \    stack so that origu|destu is on top of the control-flow
+  \    stack.  An ambiguous condition exists if there are less
+  \    than u+1 items, each of which shall be an orig or dest,
+  \    on the control-flow stack before CS-ROLL is executed.
+  \
+  \    If the control-flow stack is implemented using the data
+  \    stack, u shall be the topmost item on the data stack.
+
+: cs-roll
+  \ ( origu|destu origu-1|destu-1 ... orig0|dest0 u
+  \    -- origu-1|destu-1 ... orig0|dest0 origu|destu )
+  dup >r  0 swap    \ destu ... orig0|dest0 0 u  r: u
+  1+ 0 do i 2* 1+ pick or loop
+    \ dest type is 0; orig type is 1
+  1 invert and if -22 throw then  \ ored types should be 0
+  r@ 2* 1+ roll
+  r> 2* 1+ roll ; compile-only
+
+  \ vim: filetype=soloforth

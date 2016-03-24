@@ -1,0 +1,28 @@
+  \ value.char.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \
+  \ This file contains `cvalue` and `cto`.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( cvalue cto )
+
+: cvalue  ( b "name"  -- )  cconstant  ;
+
+: cto  ( Interpretation: b "name" -- )
+       ( Compilation: "name" -- )
+  ' >body compiling? if    postpone literal postpone c!
+                       else  c!  then  ; immediate
+
+  \ vim: filetype=soloforth

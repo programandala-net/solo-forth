@@ -1,0 +1,151 @@
+  \ data_structures.noble_arrays.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains the Noble arrays.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( 1array ) \ noble-arrays
+
+  \ Toolset for one- and two-dimensional arrays by Julian V.
+  \ Noble
+
+  \ 2015-11-15
+
+  \ ---------------------------------------------------
+  \ (c) Copyright 2001 Julian V. Noble. \
+  \ Permission is granted by the author to \
+  \ use this software for any application pro- \
+  \ vided this copyright notice is preserved. \
+  \ ---------------------------------------------------
+
+  \ ...........................................................
+  \ References:
+  \
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
+
+  \ ...........................................................
+  \ Description:
+
+  \ Well, as I am sure everyone knows to the point of hurling
+  \ (regurgitating) by now, I chose a format that looks
+  \ somewhat like Fortran. I could not use the right
+  \ parenthesis, ) , because it was taken as the closure for a
+  \ parenthesized comment. Could not use the [ ]'s because they
+  \ also have a definite meaning (turn compiler off and on by
+  \ switching STATE).  So I was left with what I could do using
+  \ curly braces { and }.
+
+  \ Now why did I want an array notation that looks like
+  \ Fortran? There were several reasons:
+
+  \ 1. I wanted (at that time) to sell Forth to the Fortran
+  \ community.  (Silly me! But I was young then.)
+
+  \ 2. I wanted a notation that unequivocally said "I am an
+  \ array!" I had already written a number of linear equations
+  \ and other matrix ops programs and kept running into the
+  \ problems of
+
+  \  a. different constructors for each data type;
+  \
+  \  b. reading the program when it was done.
+
+  \ 3. I wanted something that would be completely transparent,
+  \ would permit address arithmetic, and would not require tons
+  \ of comments to be maintainable.
+
+  \ Eventually I hit on the Forthish solution of defining an
+  \ array with a header that contained its size and its data
+  \ size. Then I wrote a de-referencing operator that would dig
+  \ into the header and calculate the address of the datum
+  \ being indexed. The notation for this was
+
+  \ v{ I } ( -- adr of v[I] )
+
+  \ The left curly brace in an array's name was simply
+  \ syntactic sugar.  But at some point I realized that by
+  \ naming 2-dimensional arrays something like M{{ (2 curly
+  \ braces) I could have the name say "I am a 2-dimensional
+  \ array." Then one dereferences such by saying
+
+  \ m{{ i j }}
+
+  \ --that is, the 2-dim dereferencing operator expects a base
+  \ address and two indices and produces the correct address of
+  \ the I,Jth element.
+
+  \ For those who want it, go to my home page (under
+  \ construction) then to the link "Computational Methods in
+  \ the Physical Sciences", and thence to "Forth system and
+  \ example programs". There you can find the file arrays.f
+  \ that does all of this stuff. I have bounds checking in that
+  \ version because it was intended for student use.  Experts
+  \ can delete that stuff.
+
+  \ ...........................................................
+  \ Implementation:
+
+  \ words for 1-dimensional arrays
+
+need <=
+
+: long ; immediate
+
+: 1array ( len #bytes/datum --) \ ( #b len data ...)
+  create 2dup , , * allot ;
+
+: _len ( base_addr -- len)  cell+ @ ;
+  \ determine length of an array
+
+: } ( base_adr indx -- adr[indx] )
+  over _len over <= over 0< or #-272 ?throw
+    \ #-272 = array index out of range
+  over @ * + cell+ cell+ ;
+
+( 2array ) \ noble-arrays
+
+  \ words for 2-dimensional arrays
+
+need 1array
+
+: wide ; immediate
+
+: 2array ( hgt wid data_size --) \ ( wid #b len data ...)
+  create >r tuck , ( wid hgt)
+  r@ , * dup , r> * allot ;
+
+: }} ( base_adr m n -- adr[m,n] ) \ data stored row-wise
+  2>r cell+ dup cell- @
+  r> * r> + ( base_adr+cell m+n*w)
+  } ;
+
+  \ ...........................................................
+  \ Usage examples:
+
+  \ 20 long 2 floats 1array a{
+  \   \ complex vector
+  \
+  \ 20 long 20 wide 1 floats 2array m{{
+  \   \ real matrix
+  \
+  \ 20 long 1 cells 1array irow{
+  \   \ single-length, integer-valued vector
+  \
+  \ m{{ i j }} ( -- adr[m_ij] )
+  \   \ to dereference
+
+  \ vim: filetype=soloforth

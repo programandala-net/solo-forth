@@ -1,0 +1,98 @@
+  \ graphics.screen_filters.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words that make filter effects to the
+  \ whole screen.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( fade )
+
+  \ Do a screen fade to black, by
+  \ decrementing the values of paper and
+  \ ink in a loop.
+
+  \ Credits:
+  \
+  \ Code adapted from a routine written by Pablo Ariza,
+  \ published on Microhobby Especial, issue 7 (1987-12), page
+  \ 46: <http://microhobby.org/mhes7.htm>.
+
+need z80-asm
+
+code fade  ( -- )
+  bc push
+  8 b ld#
+  \ do:
+  begin  5AFF hl ldp#  halt  halt
+    begin
+      m a ld  a d ld  07 and#  nz if  a dec  then
+      a e ld  a d ld  38 and#  nz if  8 sub#  then
+      e or  d xor  3F and#  d xor
+      a m ld  hl decp  h a ld
+      58 cp#
+    cy until
+  step
+  bc pop  jpnext
+  end-code
+
+( inverted )
+
+  \ Invert the pixels of the whole screen.
+
+  \ Credits:
+  \
+  \ Code adapted from a routine written by Javier Granadino,
+  \ published on Microhobby, issue 133 (1987-06), page 7:
+  \ http://microhobby.org/numero133.htm
+  \ http://microhobby.speccy.cz/mhf/133/MH133_07.jpg
+
+need z80-asm
+
+code inverted  ( -- )
+
+  4000 hl ldp#
+  begin   m a ld  cpl  a m ld
+          hl incp  h a ld  58 cp#
+          jrnz
+  jpnext
+  end-code
+
+( water )
+
+  \ Modify the screen bitmap with a water
+  \ effect and then restore the original.
+
+  \ Credits:
+  \
+  \ Code adapted from a routine written by Juan José Rivas,
+  \ published on Microhobby, issue 150 (1987-06), page 9:
+  \ http://microhobby.org/numero150.htm
+  \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg
+
+need z80-asm
+
+code water  ( -- )
+
+  bc push
+  20 b ld#
+  begin    57FF hl ldp#
+           begin   m rrc  hl decp  h 6 bit  z until
+  step
+
+  bc pop  jpnext
+
+  end-code
+
+  \ vim: filetype=soloforth

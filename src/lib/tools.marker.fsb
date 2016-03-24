@@ -1,0 +1,141 @@
+  \ tools.marker.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains `marker` and `anew`.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( possibly anew )
+
+need marker
+
+  \ Credits:
+  \
+  \ Code adapted from Wil Baden.
+
+  \ XXX TODO test
+
+: possibly  ( "name" -- )
+  defined ?dup if  name> execute  then  ;
+
+: anew  ( "name" -- )  >in @  possibly  >in !  marker  ;
+
+( marker ) \ second approach
+
+  \ XXX UNDER DEVELOPMENT
+
+: marker,  ( -- a )
+  here  voc-link @ dup ,
+  begin
+    dup cell- @  ( a nt ) swap @
+  dup 0= until  drop
+  np@ ,  ;
+  \ Compile the data required by a a marker and return its
+  \ address.
+
+: unmarker  ( a -- )
+  ;
+  \ Restore the data preserved at _a_ by a marker word.
+
+: marker  ( "name" -- )
+  marker, create ,  does>  ( -- ) ( pfa )  @ unmarker  ;
+  \ Create a definition for "name" that will remove itself and
+  \ everything defined after it, restoring all dictionary
+  \ allocation and search order pointers to the state they had
+  \ just prior to the definition of "name".
+
+( marker )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2016-01-01: example taken from m3forth
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
+
+: MARKER ( "name" -- )
+  here
+  get-current ,
+  get-order dup , 0 ?do dup , @ , loop
+  create ,
+  does> @ dup \ only
+  dup @ set-current cell+
+  dup @ >r r@ cells 2* + 1 cells - r@ 0
+  ?do dup dup @ swap cell+ @ over ! swap 2 cells - loop
+  drop r> set-order
+  there
+  ;
+
+( marker )  \ first approach
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX TODO -- add user variables pointer
+  \ XXX TODO -- add order
+  \ XXX TODO -- add latest of all vocs
+
+: get-every-latest  ( -- nt0..ntn | nt )
+  \ Get the latest definition of every vocabulary.
+  voc-link @ begin
+    dup cell - @  ( a nt ) swap @
+  dup 0= until  drop  ;
+
+: set-every-latest  ( nt0..ntn | nt -- )
+  \ Set the latest definition of every vocabulary.
+  voc-link @ begin
+    dup cell - @  ( a nt ) swap @
+  dup 0= until  drop  ;
+
+: marker@  ( -- x1..xn1 n1 nt1..ntn2 n2 )
+  \ Get the data a marker word must preserve.
+  \ n = number of data cells on the stack
+  depth >r  here np@ voc-link @
+  depth r> - get-every-latest  ;
+
+: marker!  ( a -- )
+  \ Restore the data preserved by a marker word.
+  dup @ dup voc-link !  cell+ dup @ np!  cell+ @ there  ;
+
+-->
+
+( marker )
+
+: n,  ( x1..xn n -- )  0 do  ,  loop  ;
+  \ Compile _n_ cells.
+
+: marker  ( "name" -- )
+  marker@ create n,  does>  ( -- ) ( pfa )  marker!  ;
+  \ Create a definition for "name" that will remove itself and
+  \ everything defined after it, restoring all dictionary
+  \ allocation and search order pointers to the state they had
+  \ just prior to the definition of "name".
+
+( marker )
+
+  \ XXX UNDER DEVELOPMENT
+  \ Code from eForth, for reference.
+
+ \ : _MARKER ( -- ) ( R: dfa -- ) \ ???
+ \   R> 2@ ( * ) DUP @ FOLLOWER !  DUP CONTEXT
+ \   BEGIN >R CELL+ DUP @ DUP R@ ! WHILE R> CELL+ REPEAT ( search order )
+ \   CELL+ DUP 2@ CURRENT 2!  CELL+ DUP @ ( cur wid & head )
+ \   BEGIN >R  CELL+ DUP @ R@ !  R> CELL+ @ ?DUP 0= UNTIL ( wid last na's )
+ \   R> 2DROP ( * ) DP 2! ; COMPILE-ONLY
+
+ \ : MARKER ( "name" -- ) \ ???
+ \   ALIGN DP 2@ ( * ) FOLLOWER @ ,  CONTEXT
+ \   BEGIN DUP @ DUP , WHILE CELL+ REPEAT  DROP ( search order )
+ \   CURRENT 2@ , DUP , ( cur wid & head )
+ \   BEGIN DUP @ , CELL+ @ ?DUP 0= UNTIL ( wid last na's )
+ \   ['] _MARKER : REVEAL COMPILE, ( * ) , , ;
+
+  \ vim: filetype=soloforth

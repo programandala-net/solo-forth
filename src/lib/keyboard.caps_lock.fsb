@@ -1,0 +1,32 @@
+  \ keyboard.casp_lock.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words related to manipulate caps lock.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( capslock )
+
+need os-flags2
+need c!toggle-bits  need c@test-bits
+need c!reset-bits   need c!reset-bits
+
+%1000 os-flags2 2constant capslock
+  \ Bit and system variable that control the capslock.
+
+: toggle-capslock  ( -- )    capslock c!toggle-bits  ;
+: set-capslock     ( -- )    capslock c!set-bits  ;
+: unset-capslock   ( -- )    capslock c!reset-bits  ;
+: capslock?        ( -- f )  capslock c@test-bits 0<>  ;
+
+  \ vim: filetype=soloforth

@@ -1,0 +1,67 @@
+  \ tools.listing.words.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words to list words.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( words wordlist-words )
+
+  \ Credits:
+  \
+  \ Code adapted from Spectrum Forth-83.
+
+need trail  need name>link  need tab  need nuf?
+
+[defined] more-words?
+?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
+     \ A common factor of `words` and `words-like`.
+
+: words  ( -- )
+  trail
+  begin  more-words?  while
+    dup .name tab  name>link @s
+  repeat drop  ;
+
+[unneeded] wordlist-words ?exit
+
+: wordlist-words  ( wid -- )  >order  words  previous  ;
+
+( words-like )
+
+  \ Credits:
+  \
+  \ Code adapted from pForth.
+
+need trail  need name>link  need tab  need nuf?
+
+[defined] more-words?
+?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
+     \ A common factor of `words` and `words-like`.
+
+[defined] contains
+?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
+   \ Does the string _ca1 len1_ contains the string _ca2
+   \ len2?_
+
+: words-like  ( "name" -- )
+  \ Print all words (from the `context` vocabulary) containing a substring.
+  parse-name 2dup uppers trail  ( ca len nt )
+  begin  more-words?  while
+    dup >r
+    name>string 2over contains if  r@ .name tab  then
+    r> name>link @s
+  repeat drop 2drop  ;
+
+  \ vim: filetype=soloforth

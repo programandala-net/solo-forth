@@ -1,0 +1,67 @@
+  \ control_structures.switch.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \
+  \ This file contains `switch`, a case selector with word
+  \ lists.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( switch )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-11-16: Start.
+
+: n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
+  \ Convert _n_ to a code string of two bytes.
+
+: switch:  ( "name" -- )  wordlist constant  ;
+  \ Create a new switch "name".
+
+: switch  ( n switch -- )
+  swap n>code-string rot search-wordlist if  execute  then  ;
+  \ Execute the switch _switch_ for the key _n_.
+
+  \ XXX FIXME -- runtime: screen garbage and stack underflow!
+: :clause  ( n switch -- )
+  get-current >r set-current
+  n>code-string next-name 2! :
+  r> set-current  ;
+  \ Start the definition of a switch clause _n_ for switch
+  \ _switch_.
+
+( switch )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-11-16: Start.
+
+: n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
+  \ Convert _n_ to a code string of two bytes.
+
+: switch:  ( "name" -- )  wordlist constant  ;
+  \ Create a new switch "name".
+
+: switch  ( n switch -- )
+  swap n>code-string rot search-wordlist if  execute  then  ;
+  \ Execute the switch _switch_ for the key _n_.
+
+  \ XXX FIXME -- runtime: screen garbage and stack underflow!
+: :clause  ( n switch -- )
+  get-current >r set-current
+  n>code-string next-name 2! :
+  r> set-current  ;
+  \ Start the definition of a switch clause _n_ for switch
+  \ _switch_.
+

@@ -177,22 +177,6 @@
 
 ( .line )
 
-  \ XXX TODO -- `line>string` is in the kernel because
-  \ `located` uses it.
-  \
-  \ : line>string  ( n1 n2 -- ca len )
-  \   >r  c/l b/buf */mod  r> +
-  \   block + c/l  ;
-
-  \ doc{
-  \
-  \ line>string  ( n1 n2 -- ca len )
-  \
-  \ Convert the line number _n1_ and the block number _n2_ to
-  \ a string in the disk buffer containing the data.
-  \
-  \ }doc
-
 : .line  ( n1 n2 -- )  line>string -trailing type  ;
 
   \ doc{

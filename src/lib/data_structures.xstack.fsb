@@ -1,0 +1,111 @@
+  \ data_structures.xstack.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains `xstack`, an implementation of named
+  \ extra stacks.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+( xstack )
+
+  \ Credits:
+  \
+  \ Code adapted from Galope (xstack module).
+
+  \ Creation and core manipulation of xstacks
+
+need value  need allocate  need free
+
+0 value xsize  0 value xp  0 value xp0
+  \ Values of the current xstack:
+  \ xsize = size in address units (constant)
+  \ xp = address of the xstack pointer (variable)
+  \ xp0 = initial value of the xstack pointer (constant)
+
+: xstack  ( n "name" -- )
+  \ Create a new xstack of _n_ cells.
+  create  cells dup allocate throw  cell - dup
+    , , ,
+    \ +0 = xp0
+    \ +2 = xp
+    \ +4 = xsize
+  does> ( -- )
+    \ Make an xstack the current one.
+    ( pfa ) dup @ to xp0  cell+ dup to xp  cell+ @ to xsize  ;
+
+: xp@  ( -- a )  xp @  ;
+
+: xp!  ( a -- )  xp !  ;
+
+: xp+!  ( n -- )  xp +!  ;
+
+: xclear  ( -- )  xp0 xp!  ;
+
+: xfree  ( -- )  xp0 free throw  ;
+
+( >x x@ xdrop x> xdup xpick )
+
+  \ xstack single-number operations
+
+need xstack
+
+: >x  ( x -- ) ( X: -- x )  cell xp+!  xp@ !   ;
+
+: x@  ( -- x ) ( X: x -- x )  xp@ @  ;
+
+: xdrop  ( X: x -- )  [ cell negate ] literal xp+!  ;
+
+: x>  ( -- x ) ( X: x -- )  x@ xdrop  ;
+
+: xdup  ( X: x -- x x )  x@ >x  ;
+
+: xpick  ( n -- x'n ) ( X: x'n ... x'0 -- x'n ... x'0 )
+  xp@ swap cells - @  ;
+
+: xover  ( X: x1 x2 -- x1 x2 x1 )  1 xpick >x  ;
+
+( 2x@ 2>x 2x> 2xdrop 2xdup )
+
+  \ xstack double-number operations
+
+need xstack  need x@  need >x  need xpick  need xover
+
+: 2x@  ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )  x@ 1 xpick swap  ;
+
+: 2>x  ( x1 x2 -- ) ( X: -- x1 x2 )  swap >x >x  ;
+
+: 2x>  ( -- x1 x2 ) ( X: x1 x2 -- )  x> x> swap  ;
+
+: 2xdrop  ( X: x1 x2 -- )  [ -2 cells ] literal xp+!  ;
+
+: 2xdup  ( X: x1 x2 -- x1 x2 x1 x2 )  xover xover  ;
+
+( xdepth .x )
+
+  \ xstack tools
+
+need xstack
+
+: xlen  ( -- n )  xp@ xp0 -  ;
+  \ Length of the current xstack, in address units.
+
+: xdepth  ( -- n )  xlen cell /  ;
+  \ Depth of the current xstack.
+
+: xdepth.  ( -- )  ." <"  s>d <# #s #> type  ." > "  ;
+
+: (.x)  ( -- )  xp0 cell+ xlen bounds ?do  i @ . cell +loop  ;
+  \ Display a list of the items in the xstack; TOS is the right-most item.
+: .x  ( -- )  xdepth dup xdepth. if  (.x)  then  ;
+  \ Display the number of items on the current xstack,
+  \ followed by a list of the items, if any; TOS is the right-most item.

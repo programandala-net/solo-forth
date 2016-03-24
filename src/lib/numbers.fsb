@@ -127,4 +127,60 @@ need [if]
 
 [then]
 
+( bin. dec. hex. )
+
+  \ Credits:
+  \
+  \ Code modified from eForth.
+
+[defined] base.
+?\ : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+
+[unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
+[unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
+
+[unneeded] dec.  [defined] dec.  or
+  \ XXX TMP -- `dec.` is in the kernel
+  ?\  create dec.  ( n -- )  10 c, base.
+
+( 8hex. 16hex. 32hex. <hex hex> )
+
+  \ Credits:
+  \
+  \ Code adapted from lina.
+
+[defined] base'  ?\ variable base'
+
+[defined] (d.)
+?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+
+: <hex  ( -- )  base @ base' ! hex ; \ switch to hex
+: hex>  ( -- )  base' @ base !     ; \ and back
+
+: (dhex.)  ( d n -- )  <hex (d.) hex> type space  ;
+: 32hex.    ( d -- )  8 (dhex.)  ;
+: 16hex.     ( n -- )  s>d 4 (dhex.)  ;
+: 8hex.    ( b -- )  s>d 2 (dhex.)  ;
+
+( binary 8bin. 16bin. 32bin. <bin bin> )
+
+  \ Credits:
+  \
+  \ Code inspired by lina.
+
+[defined] base'  ?\ variable base'
+
+[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+
+[defined] (d.)
+?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+
+: <bin  ( -- )  base @ base' ! binary ; \ switch to binary
+: bin>  ( -- )  base' @ base !        ; \ and back
+
+: (dbin.)  ( d n -- )  <bin (d.) bin> type space  ;
+: 32bin.    ( d -- )  32 (dbin.)  ;
+: 16bin.     ( n -- )  s>d 16 (dbin.)  ;
+: 8bin.    ( b -- )  s>d 8 (dbin.)  ;
+
   \ vim: filetype=soloforth

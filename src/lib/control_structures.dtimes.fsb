@@ -1,0 +1,43 @@
+  \ control_structures.dtimes.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \
+  \ This file contains `dtimes`.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( dtimes )
+
+  \ XXX UNDER DEVELOPMENT
+
+need dfor
+
+: (dtimes)  ( d -- )
+  rp@ @ dup cell+ rp@ ! @ swap
+  dfor  dup execute  dstep  drop  ;
+  \ XXX TODO ?do
+
+: dtimes  ( Compilation: "name" -- ) ( Run-time: d -- )
+  postpone (times)  ; immediate compile-only
+
+  \ Repeat the next instruction if the count _d_ on top of the
+  \ stack is not zero.  The count is also decremented.  If
+  \ count is zero, drop it and continue executing the following
+  \ instruction.
+
+  \ `times` is useful to implement complicated math operations,
+  \ like shifts, multiply, divide and square root, from
+  \ appropriate math step instructions.  It is also useful in
+  \ repeating auto-indexing memory instructions.
+
+  \ vim: filetype=soloforth

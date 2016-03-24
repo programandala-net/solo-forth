@@ -1,0 +1,96 @@
+  \ strings.replaces.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains `replaces`.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( replaces )
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ Credits:
+  \
+  \ Code adapted from the Forth-2012 documentation.
+
+s" /counted-string" environment? 0= [if] 256 [then]
+chars constant string-max
+
+vocabulary replaces-voc
+wid-of replaces-voc constant wid-subst
+  \ wordlist id of the wordlist used to hold substitution names and replacement text.
+
+[defined] vfxforth [if] \ vfx forth
+  : makesubst \ c-addr len -- c-addr
+    get-current >r wid-subst set-current
+    ($create)  \ like create but takes c-addr/len
+    r> set-current
+    here string-max allot 0 over c! \ create buffer space
+    ;
+  \ given a name string create a substution and storage space.
+  \ return the address of the buffer for the substitution text.
+  \ this word requires system specific knowledge of the host forth.
+  \ some systems may need to perform case conversion here.
+[then]
+
+( replaces )
+
+[defined] (wid-create) [if] \ swiftforth
+: makesubst \ c-addr len -- c-addr
+  wid-subst (wid-create)
+  \ like create but takes c-addr/len/wid
+  last @ >create !
+  here string-max allot 0 over c! \ create buffer space
+  ;
+[then]
+
+-->
+
+( replaces )
+
+: findsubst  ( ca len -- xt f | 0 )
+  wid-subst search-wordlist  ;
+  \ Given a name string, find the substitution.
+  \ Return _xt_ and _f_ if found, or just zero if not found.
+
+: replaces \ text tlen name nlen --
+  2dup findsubst if
+    nip nip execute    \ get buffer address
+  else
+     makesubst
+  then
+  place  ;
+
+  \ doc{
+  \
+  \ replaces  ( ca1 len1 ca2 len2 -- )
+
+  \ Set the string _ca1 len1_ as the text to substitute for
+  \ the substitution named by _ca2 len2_. If the substitution
+  \ does not exist it is created. The  program may then reuse
+  \ the buffer _ca1 len1_ without affecting the definition  of
+  \ the substitution.
+
+  \ Ambiguous conditions occur as follows:
+
+  \   * The substitution cannot be created;
+  \   * The name of a substitution contains the "%" delimiter character.
+
+  \ `replaces` may allot  data space and  create a definition.
+  \ This breaks  the contiguity of  the current region  and is
+  \ not allowed during compilation of a colon definition
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

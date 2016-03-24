@@ -45,17 +45,6 @@ New: command history, stored in the names bank.
 
 Change: compare the user variables with those of Spectrum Forth-83.
 
-.2015-08-12:
-
-Change: make the vocabulary links point to the pfa of the
-vocabularies? `vocabulary` should be adapted too. The advantage is the
-pfa is also the id used in search order and returned by `wordlist`.
-A word `pfa>vlfa` would be helpful.
-
-.2016-03-07:
-
-Rename "names bank" to "system bank", because it's used also for the history.
-
 .2016-03-16:
 
 Investigate how to use the free memory of the Plus D RAM.
@@ -225,11 +214,6 @@ Name for graphic fill: `flood`.
 // }}}
 == Screen modes ==
 // {{{
-
-.2015-06-10:
-
-New: A printing routine instead the ROM routines, with two fonts: for
-chars 0..127 and for chars 128..255.
 
 .2015-09-05:
 

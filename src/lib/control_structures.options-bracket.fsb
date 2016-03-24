@@ -1,0 +1,119 @@
+  \ control_structures.options-bracket.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \
+  \ This file contains `options[`.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( options[ )
+
+  \ Credits:
+  \
+  \ `options[` is a port of IsForth's `case:`.
+
+  \ Note: in the original IsForth code the word `(options`)
+  \ (called `docase` in IsForth) is written in x86 assembler. I
+  \ rewrote it from scratch, without investigating the
+  \ assembler code.
+
+  \ XXX TODO -- alternative version `coptions[`
+
+  \ 166 bytes used.
+
+variable (default-option)
+  \ default option xt
+
+variable #options
+  \ number of compiled options
+
+: default-option ( "name" -- )  ' (default-option) !  ;
+  \ Set the default option.
+  \ It can go anywhere inside a the options statement.
+
+: (options)  ( i*x x -- j*x )
+
+  \ x = option to search for
+
+  false swap  ( false x ) \ default flag returned by the loop
+  r> dup @ >r   \ set the new exit point
+  cell+ dup >r  \ save the address of the default option xt
+  dup cell+ @  ( false x a n )
+  \ a = address of the first compiled option minus two cells
+  \ n = number of compiled options
+
+  0 do
+    [ 2 cells ] literal + 2dup @ =  ( false x a' f )  \ match?
+    \ a' = address of the current compiled option
+    if  nip nip cell+ perform  true 0 0  leave then
+  loop  ( f x1 x2 )  2drop
+
+  if    rdrop       \ match, so discard the default option
+  else  r> perform  \ no match, so execute the default option
+  then  ;   -->
+
+( options[ )
+
+: options[  ( -- a1 a2 a3 )
+
+  \ a1 = address of exit point
+  \ a2 = address of default option xt
+  \ a3 = address of number of options
+
+  (default-option) off        \ assume no default option
+  #options off                \ number of options is 0 so far
+  compile (options)           \ compile run time handler
+  >mark >mark >mark  ( a1 a2 a3 )
+  postpone [  ; immediate compile-only
+
+  \ doc{
+  \
+  \ options[  ( -- )
+  \
+  \ Start an `options[` structure.
+
+  \ Usage example:
+  \
+  \ ----
+  \ : say10     ." dek"  ;
+  \ : say100    ." cent" ;
+  \ : say1000   ." mil"  ;
+  \ : say-other  ." alia" ;
+  \
+  \ : say  ( n )
+  \   options[
+  \     10 option  say10
+  \    100 option  say100
+  \   1000 option  say1000
+  \        default-option say-other
+  \   ]options  ;
+  \
+  \ 10 say  100 say  1000 say  1001 say
+  \ ----
+  \
+  \ }doc
+
+: option  ( x "name" -- )
+  \ Compile an option _x_ and the xt of its action "name".
+  ,  ' ,  1 #options +!  ;
+
+: ]options  ( a1 a2 a3 -- )
+  \ a1 = address of exit point
+  \ a2 = address of default option xt
+  \ a3 = address of number of options
+  #options @ swap !           \ store number of options
+  (default-option) @ swap !   \ store default option xt
+  >resolve                    \ store exit point
+  ]  ;
+
+  \ vim: filetype=soloforth

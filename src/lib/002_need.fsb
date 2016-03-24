@@ -76,6 +76,9 @@ variable last-locatable  blk/disk 1- last-locatable !
 
 : ?located  ( block | 0 -- )  dup 0= #-268 ?throw  ;
 
+  \ XXX FIXME -- the word shown by the exception may have been
+  \ overwritten in the circular string buffer.
+
   \ doc{
   \
   \ ?located ( f -- )

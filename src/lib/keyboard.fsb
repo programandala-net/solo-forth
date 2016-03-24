@@ -2,7 +2,7 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
+  \
   \ This file contains words related to the keyboard.
   \
   \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
@@ -17,20 +17,6 @@
 
   \ }}} =======================================================
   \ Keyboard {{{
-
-( capslock )  \ ==keyboard==
-
-need os-flags2
-need c!toggle-bits  need c@test-bits
-need c!reset-bits   need c!reset-bits
-
-%1000 os-flags2 2constant capslock
-  \ Bit and system variable that control the capslock.
-
-: toggle-capslock  ( -- )    capslock c!toggle-bits  ;
-: set-capslock     ( -- )    capslock c!set-bits  ;
-: unset-capslock   ( -- )    capslock c!reset-bits  ;
-: capslock?        ( -- f )  capslock c@test-bits 0<>  ;
 
 ( at-accept clear-accept set-accept )
 
@@ -189,39 +175,10 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 : acceptx ( ca len -- len' )
   span off  ?dup 0= if  drop 0  else  (acceptx)  then  ;
 
-
   \ XXX TMP -- for debugging
 
 : ax  ( -- )  ['] acceptx ['] accept defer!  ;
 : a0  ( -- )  ['] default-accept ['] accept defer!  ;
-
-( inkey )
-
-need z80-asm
-
-code inkey  ( -- c | 0 )
-
-  \ Leave the value of the key being pressed. If no key being
-  \ pressed, leave 0.
-  \
-  \ This word works only when an interrupts routine reads the
-  \ keyboard and updates the related system variables.
-
-  \ XXX FIXME -- Some times this word returns zero when the key
-  \ is pressed; the version on the previous block works fine.
-  \ Anyway this version is smaller and can be useful.
-
-  a xor
-  01 iy 5 bitx  \ a new key pressed?
-  nz if
-    5C08 hl ldp#  \ LAST-K system variable
-    m a ld
-    \ 0 m ld# \ XXX OLD
-    01 iy 5 resx
-  then
-  pusha jp
-
-  end-code
 
 ( nuf? )
 
@@ -285,121 +242,6 @@ need aborted?
 : break?  ( -- f )
   key? dup if  key 2drop break-key?  then  ;
 
-( inkey )
-
-  \ Credits:
-  \
-  \ Code adapted and modified from Abersoft Forth's `inkey`.
-
-need z80-asm
-
-code inkey  ( -- c | 0 )
-
-  \ Leave the value of the key being pressed. If no key being
-  \ pressed leave zero.
-  \
-  \ This word reads the keyboard, so it works even when the
-  \ keyboard is not read by an interrupts routine.
-
-  bc push
-  028E call \ KEY-SCAN ROM routine
-  \ 1 or 2 keys in DE, most significant shift first if any
-  \ key values 0..39 else 255
-  z if  \ is key press valid?
-    031E call \ KEY-TEST ROM routine
-    cy if  \ is key code valid?
-      \ A = main key
-      \ D = ?
-      00 c ld#  \ XXX Spectrum Forth-83 does this
-      d dec  a e ld
-      0333 call \ KEY-DECODE ROM routine
-      \ A = key code
-    then
-  then
-  FF cp#  z if  a xor  then  \ convert FF to 00
-  \ XXX TODO jump to `key` to decode
-  bc pop  pusha jp  end-code
-
-( key?? )
-
-  \ An alternative to `key?`. It works also when the system
-  \ interrupts are off. Variant with relative jumps.
-
-need z80-asm
-
-code key??  ( -- f )
-
-  bc push
-  028E call  \ ROM KEY_SCAN
-  here jrnz  >relmark 0 unresolved ! \ to return_false
-  031E call  \ ROM KEY_TEST
-  here jrnc  >relmark 1 unresolved ! \ to return_false
-
-  \ return_true:
-  bc pop  ' true jp
-
-  \ return_false:
-  0 unresolved @ >relresolve
-  1 unresolved @ >relresolve
-  bc pop  ' false jp
-
-  end-code
-
-( key?? )
-
-  \ An alternative to `key?`. It works also when the system
-  \ interrupts are off. Faster variant with absolute jumps.
-
-need z80-asm
-
-code key??  ( -- f )
-
-  bc push
-  028E call  \ ROM KEY_SCAN
-  0000 jpnz  |mark 0 unresolved ! \ to return_false
-  031E call  \ ROM KEY_TEST
-  0000 jpnc  |mark 1 unresolved ! \ to return_false
-
-  \ return_true:
-  bc pop  ' true jp
-
-  \ return_false:
-  0 unresolved @ >resolve
-  1 unresolved @ >resolve
-  bc pop  ' false jp
-
-  end-code
-
-( y/n? y/n yes? no? )
-
-  \ Credits:
-  \
-  \ Code adapted from Afera.
-
-need value
-
-char Y value "y"  char N value "n"
-  \ Default (uppercase) letters for "yes" and "no".
-
-: y/n?  ( c -- f )  dup "y" = swap "n" = or  ;
-  \ Is the given (uppercase) char _c_
-  \ a valid answer for a "y/n" question?
-
-: y/n  ( -- c )
-  begin  key upper dup y/n? 0=  while  drop  repeat  ;
-  \ Wait for a valid key press for a "y/n" question
-  \ and return its code.
-
-: no?  ( -- f )  y/n "n" =  ;
-  \ Wait for a valid key press for a "y/n" question
-  \ and return _true_ if it's the current letter for "no",
-  \ else return _false_.
-
-: yes?  ( -- f )  y/n "y" =  ;
-  \ Wait for a valid key press for a "y/n" question
-  \ and return _true_ if it's the current letter for "yes",
-  \ else return _false_.
-
 ( Keyboard rows ports)
 
   \ Adapted from Afera.
@@ -419,7 +261,6 @@ char Y value "y"  char N value "n"
   \ combinations.
   \
   \ -----------------------------------------------------------
-
 
 ( kk-ports kk, kk@ )
 

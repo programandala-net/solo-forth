@@ -1,0 +1,83 @@
+  \ string.cquote.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \
+  \ This file contains two implementations of `c"` and
+  \ `csliteral`.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( cslit csliteral c" )
+
+  \ This is the default definition of `csliteral`, based on a
+  \ system-dependent `cslit`, which makes it possible to decode
+  \ `c"`.
+
+  \ XXX REMARK -- 43 bytes used
+
+: cslit  ( -- ca )  r@ dup c@ 1+ r> + >r  ;
+  \ doc{
+  \
+  \ cslit  ( -- ca )
+  \
+  \ Return a string that is compiled after the calling word, and
+  \ adjust the instruction pointer to step over the inline string.
+  \
+  \ }doc
+
+: csliteral  ( ca len -- )
+  compile cslit s,  ; immediate compile-only
+  \ doc{
+  \
+  \ csliteral  ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
+  \
+  \ Compile a string _ca len_ which at run-time will
+  \ be returned as a counted string.
+  \
+  \ }doc
+
+: c"  ( Compilation: "ccc<quote>" -- )
+      ( Run-time: -- ca )
+  [char] " parse postpone csliteral  ; immediate compile-only
+  \ doc{
+  \
+  \ c"  ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
+  \
+  \ Parse a string delimited by double quotes and
+  \ compile it into the current definition.
+  \ At run-time the string will be returned as a
+  \ counted string _ca_.
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+( csliteral c" )
+
+  \ This is an alternative system-independent definition of
+  \ `csliteral`.
+
+  \ XXX REMARK -- 43 bytes used
+
+: csliteral  ( Compilation: ca len -- )
+             ( Run-time: -- ca )
+  2>r postpone ahead here 2r> s, >r postpone then
+  r> postpone literal  ; immediate compile-only
+  \ Credits:
+  \ Code from Gforth's `CLiteral`.
+
+: c"  ( Compilation: "ccc<quote>" -- )
+      ( Run-time: -- ca )
+  [char] " parse postpone csliteral  ; immediate compile-only
+
+  \ vim: filetype=soloforth

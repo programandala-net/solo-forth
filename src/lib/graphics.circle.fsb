@@ -1,0 +1,185 @@
+  \ graphics.circle.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+  \ 
+  \ This file contains words to draw circles.
+  \
+  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain all copyright notices, all credit notices, and this
+  \ license in all files of all redistributed copies and derived
+  \ works. There is no warranty.
+
+
+( circle )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Code adapted from:
+  \ http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/
+
+  \ x^2+y^2=r^2 represents the real variable equation of a
+  \ circle which is to be plotted using a grid of discrete
+  \ pixels where each pixel has integer coordinates.
+
+  \ Note. original ROM circles are slightly displaced to the
+  \ right as noticed.
+
+need z80-asm
+
+create circle-plot  ( -- a )
+  asm
+  hl push  bc push  de push
+  ' plot call  \ XXX TODO
+  de pop  bc pop  hl pop  ret
+  end-asm
+
+code circle  ( xc yc radius -- )
+
+  \ d=x0
+  \ e=y0
+  \ a=radious
+
+    \ pop hl
+    \ po
+
+  \ ;*************************************
+  \ ;*******Setup of parameters***********
+  \ ;*************************************
+
+    \ ld h,0  \ H is x -- init to 0
+    \ ld l,a  \ L is y -- init to radius
+  0 h ld#  l a ld
+  exx  cpl  a c ld  FF b ld#
+  bc incp  \ bc' is -radius
+
+    \ exx
+    \ cpl
+    \ ld c,a
+    \ ld b,$ff
+    \ inc bc     ;bc' is -radius
+    \ ld hl,1
+    \ add hl,bc
+    \ ex de,hl   ;de' is f=1-radius ; f error control
+    \ ;and a
+    \ rl c
+    \ rl b       ;-2*radius
+    \ ld hl,5
+    \ add hl,bc  ;hl'  is ddfy =5-2*r
+    \ ld bc,3    ;bc' is  ddfx =3
+    \ exx
+
+  \ ;*************************************
+  \ ;*******Main circle procedure*********
+  \ ;*************************************
+
+  \ Loop:
+
+  \ ;*******Set 8 pixels, one for each circle's octant*********
+    \ ld A,D ;Point #1
+    \ add A,H
+    \ ld c,A
+    \ ld A,E
+    \ add A,L
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #2
+    \ sub L
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,D ;Point #4
+    \ sub H
+    \ ld c,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #3
+    \ add A,L
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,D ;Point #5
+    \ add A,L
+    \ ld c,A
+    \ ld A,E
+    \ add A,H
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #6
+    \ sub H
+    \ ld b,A
+    \ call plotpixel
+
+    \ ld A,D ;Point #8
+    \ sub L
+    \ ld c,A
+    \ call plotpixel
+
+    \ ld A,E ;Point #7
+    \ add A,H
+    \ ld b,A
+    \ call plotpixel
+
+  \ ;********Main logic***********
+  \ Control:
+    \ ld a,h  ;H is x
+    \ cp l    ;L is y
+    \ jr nc,end_circle   ;While  (y > x)
+
+    \ exx
+    \ bit 7,d  ;if f>0
+    \ ;exx
+    \ jr nz,fneg
+
+  \ fpos:
+    \ ;exx
+
+    \ ex de,hl
+    \ add hl,de
+    \ ex de,hl
+
+    \ inc hl  ;hl' is ddfy
+    \ inc hl
+    \ exx
+
+    \ dec l
+    \ jr fneg2
+
+    \ ;end if
+  \ fneg:
+    \ ;exx
+
+    \ ex de,hl
+    \ add hl,bc
+    \ ex de,hl
+    \ exx
+
+  \ fneg2:
+    \ exx
+    \ inc bc   ;bc' is ddfx
+    \ inc bc
+
+    \ inc hl
+    \ inc hl
+    \ exx
+
+    \ inc h           ;H is x
+
+    \ jr Loop     ;end While
+  \ end_circle:
+    \ exx
+    \ ld hl,$2758 ;HL' must contain $2758 on return to the Zx OS
+    \ exx
+    \ ret
+
+
+  end-code
+
+  \ vim: filetype=soloforth
