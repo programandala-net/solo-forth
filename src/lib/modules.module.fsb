@@ -1,0 +1,106 @@
+  \ modules.module.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201603252149
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Simple and small implementation of unnamed modules.
+  \
+  \ Modules hide the internal implementation and leave visible
+  \ the words of the outer interface.
+  \
+  \ This implementation uses the data stack for temporary
+  \ values and does no error checking.
+  \
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Deway Val Schorre wrote the original code for fig-Forth,
+  \ which was published on the article _Structured programming
+  \ by adding modules to FORTH_, on Forth Dimensions (volume 2,
+  \ number 5, page 132, 1981-01).
+
+  \ Marcos Cruz (programandala.net), adapted it to Solo Forth,
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( module )
+
+
+need alias  need >>link
+
+' latest alias internal  ( -- nt )
+
+  \ doc{
+  \
+  \ internal  ( -- nt )
+  \
+  \ Start private definitions.
+  \
+  \ Return the _nt_ of the latest word created in the `current`
+  \ vocabulary.
+  \
+  \ See `module` for a usage example.
+  \
+  \ }doc
+
+' np@ alias external  ( -- xtp )
+
+  \ doc{
+  \
+  \ external  ( -- xtp )
+
+  \ End internal definitions.
+  \
+  \ Return the _xtp_ (execution token pointer) of the first
+  \ word to be defined as external, that is, the current value
+  \ of the names pointer.
+  \
+  \ See `module` for a usage example.
+  \
+  \ }doc
+
+: module  ( nt xtp -- )  >>link !s  ;
+
+  \ doc{
+  \
+  \ module  ( nt xtp -- )
+  \
+  \ Hide all words defined between the latest pair `internal`
+  \ and `external`.  Those words are supposed to be needed only
+  \ within a module and do not need to be exported.
+
+  \ Link the first word after `external` to the word before
+  \ `internal`, thus making the private words invisible.
+
+  \ Usage example:
+  \
+  \ ----
+  \ internal
+  \
+  \ : hello  ( -- )  ." hello"  ;
+  \
+  \ external
+  \
+  \ : salute  ( -- )  hello  ;
+  \
+  \ module
+  \
+  \ salute  \ ok!
+  \ hello   \ error!
+  \ ----
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

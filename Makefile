@@ -1,8 +1,9 @@
 # Solo Forth Makefile
-
-# Copyright (C) 2015 By Marcos Cruz (programandala.net)
-
+#
+# This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
+
+# By Marcos Cruz (programandala.net), 2015, 2016.
 
 # Copying and distribution of this file, with or without modification, are
 # permitted in any medium without royalty provided the copyright notice and
@@ -224,10 +225,27 @@ solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
 # ==============================================================
 # Backup
 
-# XXX OLD
+.PHONY: backupsrc
+backupsrc:
+	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth_src.tar.xz \
+		Makefile* \
+		src/lib/*.fsb \
+		src/kernel.z80s
 
-.PHONY: backup
-backup:
+.PHONY: backuplib
+backuplib:
+	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth_library.tar.xz \
+		src/lib/*.fsb
+
+# XXX TODO --
+# .PHONY: backupkernel
+# backupkernel:
+# 	xz src/kernel.z80s
+# 	mv src/kernel.z80s.xz backups/$$(date +%Y%m%d%H%M)_solo_forth_kernel.z80s.xz \
+
+# XXX OLD
+.PHONY: oldbackup
+oldbackup:
 	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth.tar.xz \
 		_draft/* \
 		_old/* \
@@ -292,3 +310,5 @@ backup:
 #
 # 2016-03-22: Removed Nuclear Invaders from the library, because
 # now it's built on its own directory.
+#
+# 2016-03-24: New partial backups.

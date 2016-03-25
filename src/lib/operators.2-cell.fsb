@@ -2,22 +2,29 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains double-cell operators.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Double-cell operators.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( ud* )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from Z88 CamelForth.
 
@@ -26,7 +33,7 @@
 ( d* )
 
   \
-  \ Credits:
+  \ Credit:
   \
   \ Code from DX-Forth 4.13.
 
@@ -39,7 +46,7 @@
   \ --------------------------------------------
   \ Alternative implementation.
   \
-  \ Credits:
+  \ Credit:
   \
   \ Adapted from code written by Robert L. Smith,
   \ published on Forth Dimensions (volume 4, number 1, page 3,
@@ -54,7 +61,7 @@
   \ --------------------------------------------
   \ Alternative implementation.
 
-  \ Credits:
+  \ Credit:
   \
   \ Code by Wil Baden, published on Forth Dimensions (volume
   \ 19, number 6, page 33, 1998-04).
@@ -69,7 +76,7 @@
 
 ( du/mod )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code by Wil Baden, published on Forth Dimensions (volume
   \ 19, number 6, page 34, 1998-04).
@@ -117,7 +124,7 @@ need tum*  need t+  need t-  need tum/  need d2*  need lshift
 
 ( d0= d0< d< du< )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from DZX-Forth.
 
@@ -149,7 +156,7 @@ need 2nip
 
 ( dmin dmax )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from DZX-Forth.
 
@@ -180,7 +187,7 @@ need [if]
 
 need z80-asm
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Z88 CamelForth.
 
@@ -202,7 +209,7 @@ code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
 
 ( d2* d2/ )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code converted to Z80 from the 8080 version
   \ of DZX-Forth.
@@ -237,7 +244,7 @@ need [if]
 
 ( d2* d2/ )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code converted to Z80 from the 8080 version
   \ of DZX-Forth.
@@ -267,7 +274,7 @@ need [if]  need z80-asm
 
 ( dxor dor dand )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code written by Everett F. Carter, published on Forth
   \ Dimensions (volume 16, number 2, page 17, 1994-08).
@@ -283,7 +290,7 @@ need [if]  need z80-asm
 
 ( m* )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code by Robert L. Smith, published on Forth Dimensions
   \ (volume 4, number 1, page 3, 1982-05).
@@ -297,7 +304,7 @@ need d*
 
 ( m+ )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Z88 CamelForth.
 
@@ -326,7 +333,7 @@ code m+  ( d1 n -- d2 )
 
 ( m*/ )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from Gforth 0.7.3.
 
@@ -345,7 +352,7 @@ code m+  ( d1 n -- d2 )
 
 ( dsqrt )
 
-  \ Credits:
+  \ Credit:
   \
   \ Original code by Wil Baden, published on Forth Dimensions
   \ 18/5 p. 29 (1997-01).

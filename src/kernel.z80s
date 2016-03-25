@@ -1,21 +1,23 @@
 ; Solo Forth kernel
 
-; Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
-
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
 ; XXX UNDER DEVELOPMENT
 
-; This file was last modified: 201603240159
+; Last modified: 201603252355
+
+; ==============================================================
+; Author
+
+; Marcos Cruz (programandala.net), 2015, 2016.
 
 ; ==============================================================
 ; License
 
 ; You may do whatever you want with this work, so long as you
-; retain all copyright notices, all credit notices, and this
-; license in all files of all redistributed copies and derived
-; works. There is no warranty.
+; retain every copyright, credit and authorship notice, and this
+; license.  There is no warranty.
 
 ; ==============================================================
 ; Version
@@ -26,14 +28,10 @@ version_major:                equ 0
 version_minor:                equ 3
 version_patch:                equ 0
 
-if 1
-  version_release_candidate:  equ 6
-endif
+version_release_candidate:    equ 7 ; zero if none
 
-if 1
-  version_build_high_part:    equ 0x0133
-  version_build_low_part:     equ 0x9F44  ; build 20160324
-endif
+version_build_high_part:      equ 0x0133
+version_build_low_part:       equ 0x9F45  ; build 20160325
 
 ; ==============================================================
 ; History
@@ -89,9 +87,9 @@ endif
 ; ==============================================================
 ; Glossary
 
-; The description of Forth words is included in this source.
-; The markers `doc{` and `}doc` delimitate the comments that
-; form the glossary.
+; At the moment the description of Forth words is included in
+; this source.  The markers `doc{` and `}doc` delimitate the
+; comments that will be extracted to build the actual glossary.
 
 ; ==============================================================
 ; Configuration
@@ -405,7 +403,7 @@ _literal: macro _n
   endm
 
 ; ----------------------------------------------
-; Jumps macros
+; Jump macros
 
 _jp_next: macro
 
@@ -472,7 +470,7 @@ _compare_de_hl_unsigned: macro
   endm
 
 ; ----------------------------------------------
-; Error messages macros
+; Error message macros
 
 _question_throw: macro _error
   _literal (_error)
@@ -853,7 +851,7 @@ disk_buffer:
 ; ==============================================================
 ; Misc routines
 
-; Credits:
+; Credit:
 ; Code from DZX-Forth.
 
 ; XXX TODO -- investigate if the code is optimized for Z80;
@@ -1090,7 +1088,7 @@ endif
 
 if 0
 
-  ; Credits:
+  ; Credit:
   ;
   ; http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Signed_Math
 
@@ -1116,7 +1114,7 @@ if 0
 
   ; XXX TODO -- adapt
   ;
-  ; Credits:
+  ; Credit:
   ; http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#1.3
 
   ; Input: DE = Multiplier, BC = Multiplicand, HL = 0
@@ -1346,7 +1344,7 @@ nt_of_the_previous_word: defl 0
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Idea taken from Coos Haak's Z80 Forth assembler.
 
   dw store_csp_
@@ -1375,7 +1373,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from F83.
 
   ; XXX TODO -- check the limit
@@ -1506,7 +1504,7 @@ paren_set_order.loop_exit
 ;
 ; }doc
 
-; Credits:
+; Credit:
 ; Word from Gforth.
 
   dw also_,context_,store_
@@ -1534,7 +1532,7 @@ if 1 ; XXX OLD
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from F83.
 
   dw context_,dup_,cell_plus_,swap_
@@ -1592,7 +1590,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from F83.
 
   dw context_,fetch_,minus_order_,context_,store_
@@ -2188,7 +2186,7 @@ question_csb_.enough:
 ; ----------------------------------------------
   _code_header paren_question_do_,'(?DO)'
 
-  ; Credits:
+  ; Credit:
   ; Code based on Spectrum Forth-83.
 
   pop hl
@@ -2202,7 +2200,7 @@ question_csb_.enough:
 ; ----------------------------------------------
   _colon_header question_do_,'?DO',immediate+compile_only
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
 ; doc{
@@ -2225,7 +2223,7 @@ question_csb_.enough:
 ; ----------------------------------------------
   _colon_header do_,'DO',immediate+compile_only
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
 ; doc{
@@ -2248,7 +2246,7 @@ question_csb_.enough:
 ; ----------------------------------------------
   _colon_header loop_,'LOOP',immediate+compile_only
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
 ; doc{
@@ -2269,7 +2267,7 @@ question_csb_.enough:
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate+compile_only
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
 ; doc{
@@ -2290,7 +2288,7 @@ question_csb_.enough:
 ; ----------------------------------------------
   _code_header paren_do_,'(DO)'
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
   pop hl                        ; init
@@ -2327,7 +2325,7 @@ paren_do.de_hl:
 ; ----------------------------------------------
   _code_header i_,'I'
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
@@ -2370,7 +2368,7 @@ paren_do.de_hl:
 ; ----------------------------------------------
   _code_header leave_,'LEAVE'
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
@@ -2390,7 +2388,7 @@ paren_do.de_hl:
 ; ----------------------------------------------
   _code_header paren_plus_loop_,'(+LOOP)'
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
@@ -2434,7 +2432,7 @@ paren_loop.continue:
 ; ----------------------------------------------
   _code_header paren_loop_,'(LOOP)'
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
@@ -2587,7 +2585,7 @@ number_base.current:
 ; An ambiguous condition exists if _ud2_ overflows during the
 ; conversion.
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
 to_number.begin: ; begin
@@ -2650,7 +2648,7 @@ to_number.end:
 ;
 ; }doc
 
-; Credits:
+; Credit:
 ;
 
   _literal '.'
@@ -2844,7 +2842,7 @@ char_question.not:
 ;   \ ca' len' = number without the minus sign
 ;   \ f = negative number?
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from CamelForth.
 
   dw over_,c_fetch_
@@ -2867,14 +2865,6 @@ char_question.not:
 ; The search is case-sensitive.
 ;
 ; }doc
-
-  ; XXX TODO --
-  ; in comp.lang.forth, thread "description of Forth-2012's
-  ; `synonym`", there are some suggestions:
-  ; 
-  ; found  ( ca len -- nt | 0 ) \ Albert van der Horst
-  ; find-name-in ( ca len wid -- nt | 0 ) \ Bernd Paysan
-  ; search-name  ( ca len wid -- nt | 0 ) \ Mathias Trute, amforth
 
   ld (find_name_from.ip_backup),bc ; save the Forth IP
 
@@ -3088,7 +3078,7 @@ scan.nothing:
 ;
 ; }doc
 
-; Credits:
+; Credit:
 ; Code adapted and modified from CamelForth.
 
   exx
@@ -3123,7 +3113,7 @@ skip.end:
 ;
 ; }doc
 ;
-  ; Credits:
+  ; Credit:
   ; Code from Spectrum Forth-83.
 
   pop hl
@@ -3146,7 +3136,7 @@ skip.end:
 
 if 0
 
-  ; Credits:
+  ; Credit:
   ; Code from Spectrum Forth-83's `TOCH`.
 
 
@@ -3818,7 +3808,7 @@ move.do:
 
 if 1 ; original_u_m_star
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   pop de
@@ -3937,7 +3927,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ;
   ; Code adapted from Z88 CamelForth.
 
@@ -4340,7 +4330,7 @@ zero_less_.hl: ; XXX entry not used yet
   if size_optimization
     add hl,hl ; 11t, 1 byte
   else
-    ; Credits:
+    ; Credit:
     ; Idea from Ace Forth.
     rl h ; 8t, 2 bytes
   endif
@@ -4351,7 +4341,7 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0>'
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   pop de
@@ -4377,7 +4367,7 @@ true_if_cy:
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Z88 CamelForth.
 
                         ;  t  B
@@ -4409,7 +4399,7 @@ true_if_cy:
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Z88 CamelForth.
 
   pop hl
@@ -4459,7 +4449,7 @@ true_if_cy:
 
 if 0
 
-  ; Credits:
+  ; Credit:
   ; Code from Abersoft Forth, also found in White Lightning.
 
   ; XXX TODO optimize?
@@ -4488,7 +4478,7 @@ if 0
 
 else
 
-  ; Credits:
+  ; Credit:
   ; Code from Spectrum Forth-83.
   ;
   ; Comparison to the Abersoft Forth version:
@@ -4818,7 +4808,7 @@ do_colon.end: ; XXX TMP for debugging
 ;
 ; }doc
 
-; Credits:
+; Credit:
 ; The idea for this variable was taken from hForth.
 
   dw false
@@ -4835,7 +4825,7 @@ do_colon.end: ; XXX TMP for debugging
 ; ----
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from the Afera library.
 
   ; XXX TODO move to the library?
@@ -4865,7 +4855,7 @@ do_colon.end: ; XXX TMP for debugging
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ;
   ; Name borrowed from Gforth.
 
@@ -5641,7 +5631,7 @@ source.other:
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
   ; Documentation partly based on lina.
 
@@ -6564,7 +6554,7 @@ do_does equ do_colon
 ; ----------------------------------------------
   _code_header count_,'COUNT'
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   pop de
@@ -6743,7 +6733,7 @@ else
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from DZX-Forth.
 
   _literal '"'
@@ -6776,7 +6766,7 @@ else
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from DZX-Forth.
 
   dw compile_,paren_dot_quote_,comma_quote_
@@ -6858,7 +6848,7 @@ endif
 ; ----------------------------------------------
   _colon_header simple_accept_,'SIMPLE-ACCEPT'
 
-; Credits:
+; Credit:
 ;
 ; Code adapted from eForth.
 
@@ -7375,7 +7365,7 @@ parse.end:
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; This word is borrowed from Gforth.
 
   dw nextname_string_,two_store_
@@ -7516,7 +7506,7 @@ uppers.do:
 ; XXX TODO -- alternative in Forth Dimensions 20-3 p.29
 ;   2dup c! char+ swap chars move
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth's `packed`.
 
   exx         ; save Forth IP
@@ -7786,7 +7776,7 @@ compare_strings_case_sensitive:
   ;   DE = len
   ; Output:
   ;   Z = match?
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
   ld a,e
   or d
@@ -7916,7 +7906,7 @@ search.string_1_addr equ $+1
 
   ; _code_header char_question_,'CHAR?'
 
-  ; ; Credits:
+  ; ; Credit:
   ; ; Word adapted from DZX-Forth.
 
 ; ; doc{
@@ -8258,7 +8248,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Word adapted from eForth.
 
   dw system_bank_,c_store_set_bits_,default_bank_
@@ -8386,7 +8376,7 @@ endif
 ; ----------------------------------------------
   _colon_header wordlist_,'WORDLIST'
 
-; Credits: Most code related to word lists has been adapted from
+; Credit: Most code related to word lists has been adapted from
 ; eForth.
 
 ; doc{
@@ -8423,6 +8413,10 @@ endif
 
 ; XXX TODO -- Check what Forth-83 systems do when the search
 ; order is empty and a vocabulary is executed.
+
+; XXX REMARK -- This word can not be moved to the library,
+; because `root`, `forth` and `assembler` are vocabularies,
+; and they point to `do_vocabulary`:
 
   dw create_,wordlist_comma_
   dw paren_semicolon_code_
@@ -8649,27 +8643,20 @@ quit.begin:
 ; Return an address that holds the Solo Forth version, as
 ; follows:
 ;
-; +0: version major (one byte)
-; +1: version minor(one byte)
-; +2: version patch (one byte)
-; 
-; Development versions include also:
-;
-; +3: version release candidate (one byte)
-; +4: version build (two cells)
+; +0: major (one byte)
+; +1: minor (one byte)
+; +2: patch (one byte)
+; +3: release candidate (one byte)
+; +4: build (two cells)
 ;
 ; }doc
 
   db version_major
   db version_minor
   db version_patch
-if defined version_release_candidate
   db version_release_candidate
-endif
-if defined version_build_high_part
   dw version_build_high_part
   dw version_build_low_part
-endif
 
 ; ----------------------------------------------
   _colon_header dot_version_,'.VERSION'
@@ -8690,16 +8677,16 @@ endif
   _literal '.'
   dw emit_
   dw one_plus_,dup_,c_fetch_,zero_dot_r_
-if defined version_release_candidate ; XXX TODO
+  dw one_plus_
+if version_release_candidate
   dw paren_dot_quote_
   _string "-rc."
-  dw one_plus_,dup_,c_fetch_,zero_dot_r_
+  dw dup_,c_fetch_,zero_dot_r_
 endif
-if defined version_build_high_part
+dot_version.build
   _literal '+'
   dw emit_
   dw one_plus_,two_fetch_,d_dot_ 
-endif
 
   dw exit_
 
@@ -9025,7 +9012,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   pop de
@@ -9042,7 +9029,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   pop de
@@ -9053,7 +9040,7 @@ endif
 ; ----------------------------------------------
   _code_header min_,'MIN'
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   pop de
@@ -9064,7 +9051,7 @@ endif
 ; ----------------------------------------------
   _code_header max_,'MAX'
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from DZX-Forth.
 
   pop de
@@ -9100,7 +9087,7 @@ max.2:
 
 if 1 ; original_m_star
 
-  ; Credits:
+  ; Credit:
   ; Code from Abersoft Forth.
 
   ; XXX Note: this code is used also by Z88 CamelForth.
@@ -9187,7 +9174,7 @@ if 0
 
   _colon_header s_m_slash_rem2_,'SM/REM2'  ; XXX TMP
 
-  ; Credits:
+  ; Credit:
   ;
   ; Code of `m/` in Abersoft Forth's and White Lightning.
   ;
@@ -9280,7 +9267,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from Abersoft Forth.
 
   dw slash_mod_,nip_
@@ -9304,7 +9291,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from Abersoft Forth.
 
   dw slash_mod_,drop_
@@ -9330,7 +9317,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from Abersoft Forth.
 
   dw to_r_,m_star_,from_r_,m_slash_
@@ -9355,7 +9342,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from Abersoft Forth.
 
   dw star_slash_mod_,nip_
@@ -9436,7 +9423,7 @@ endif
 ; ----------------------------------------------
   _defer_header dot_throw_,'.THROW',,dot_throw_hash_
 
-  ; Credits:
+  ; Credit:
   ; Name from MPE Forth for TiniARM.
 
 ; doc{
@@ -9638,7 +9625,7 @@ block.end:
 ;
 ; }doc
 
-; Credits:
+; Credit:
 ; The name "flip" was borrowed from eForth.
 
   pop hl
@@ -10175,7 +10162,7 @@ endif
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
 
   dw zero_equals_
@@ -10462,7 +10449,7 @@ sign.end:
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ;
   ; Adapted from Z88 CamelForth.
 
@@ -10518,7 +10505,7 @@ to_digit.end
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code modified from Z88 CamelForth.
 
   dw to_r_
@@ -10540,7 +10527,7 @@ to_digit.end
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ;
   ; Code adapted from Afera.
 
@@ -10824,7 +10811,7 @@ endif
 ; many unnecessary BASIC-related things. This code simply clears
 ; the screen.
 
-; Credits:
+; Credit:
 ; The attributes part was improved after code by Dean Belfield
 ; <http://wordpress.animatez.co.uk/programming/assembly-language/z80/z80-library-routines/204-2/>.
 ; The idea for `ld (hl),l` was found in David Webb's _Advanced
@@ -10944,7 +10931,7 @@ system_stack_pointer: equ $+1
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Z88 CamelForth
 
                       ; T   B
@@ -11040,7 +11027,7 @@ endif
 
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
   dw dup_
@@ -11092,7 +11079,7 @@ at_pfa.last_line:
 ;
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from the Spectrum Forth-83 manual.
 
   _literal 24
@@ -11276,7 +11263,7 @@ do_two_constant:
 
   ; XXX NEW -- experimental
 
-  ; Credits:
+  ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
 
 ; ----------------------------------------------
@@ -11364,7 +11351,7 @@ do_two_constant:
 ;----
 ; }doc
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth and MPE Forth for TiniARM.
 
   dw sp_fetch_,to_r_ ; save data stack pointer
@@ -11379,7 +11366,7 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header throw_,'THROW'
 
-  ; Credits:
+  ; Credit:
   ; Code from DZX-Forth.
   ; Comments from MPE Forth for TiniARM.
 
@@ -11593,4 +11580,4 @@ end cold_entry
 ; 2       11
 ; 3       6
 
-; vim: ft=z80
+; vim: filetype=z80:textwidth=64

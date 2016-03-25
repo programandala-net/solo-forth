@@ -1,0 +1,144 @@
+  \ flow.select.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `select`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( select )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX FIXME `when` causes
+  \ #-22 control structure mismatch
+
+  \ Credit:
+  \
+  \ Code adapted from Galope.
+  \ Original code from:
+  \ http://dxforth.netbay.com.au/miser.html
+
+  \ Syntax
+
+  \ select  ( x0 )
+  \    cond  <tests>  when    ... else
+  \          <test>   if drop ... else
+  \    ...   ( default )
+  \ endselect
+
+  \ All clauses are optional.
+
+  \ <tests> may consist of one or more of the following:
+
+  \  x1    equal  ( test if x0 and x1 are equal )
+  \  x1 x2 range  ( test if x0 is in the range x1..x2 )
+
+  \ <test> can be any code that leaves x0 and a flag (0|<>0).
+  \ 'if drop ... else' is for expansion, allowing user-defined
+  \ tests.
+
+  \ 'continue' may be placed anywhere within:
+
+  \ when ... else
+  \ if ( drop ) ... else
+
+  \ 'continue' redirects program flow from previously matched
+  \ clauses that would otherwise pass to 'endselect'. It
+  \ provides "fall-through" capability akin to C's switch
+  \ statement.
+
+0 constant select immediate
+0 constant cond immediate
+
+  \ XXX NOTE: A version of `thens` is in the kernel of
+  \ DZX-Forth.
+
+: thens  ( 0 a'1 ... a'n -- )
+  begin  ?dup while  postpone then  repeat  ;
+  \ Compile the pending `then`.
+
+: endselect
+  \ ( Compilation: 0 a'1 ... a'n -- ) ( Run-time: x0 -- )
+  postpone drop  thens  ; immediate
+
+: when
+  \ ( Compilation: 0 orig1..orign -- )
+  \ ( Run-time: xxx )
+  postpone else  >r >r >r  thens  r> r> r>  postpone drop
+  ; immediate
+  \ XXX TODO stack
+
+-->
+
+( select )
+
+: continue
+  \ ( Compilation: xxx )
+  \ ( Run-time: xxx )
+  >r >r >r thens  0  r> r> r>  ; immediate
+  \ XXX TODO stack
+
+: equal
+  \ ( Compilation: -- orig )
+  \ ( Run-time: x0 x1 -- )
+  postpone over  postpone -  postpone if  ; immediate
+
+: (range)  ( x0 x1 x2 -- x0 wf )
+  2>r dup 2r> over - -rot - u<  ;
+
+: range
+  \ ( Compilation: -- orig )
+  \ ( Run-time: x0 x1 x2 -- x0 wf )
+  postpone (range)  postpone if  ; immediate
+
+( select-test )
+
+  \ Usage example
+
+: select-test ( n -- )
+  space
+  select
+    cond  $00 $1F range
+          $7F     equal  when  ." Control char "       else
+    cond  $20 $2F range
+          $3A $40 range
+          $5B $60 range
+          $7B $7E range  when  ." Point "              else
+    cond  $30 $39 range  when  ." Digit "              else
+    cond  $41 $5A range  when  ." Upper case letter "  else
+    cond  $61 $7A range  when  ." Lower case letter "  else
+    ." Not a character "
+  endselect  ;  -->
+
+( select-test )
+
+cr cr .( Running 'select' test...)
+
+cr  char a  .(   ) dup emit  select-test
+cr  char ,  .(   ) dup emit  select-test
+cr  char 8  .(   ) dup emit  select-test
+cr  char ?  .(   ) dup emit  select-test
+cr  char K  .(   ) dup emit  select-test
+cr  0              dup 3 .r  select-test
+cr  127            dup 3 .r  select-test
+cr  128            dup 3 .r  select-test
+
+  \ vim: filetype=soloforth

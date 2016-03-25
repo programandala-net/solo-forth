@@ -8,6 +8,16 @@
 == Inner ==
 // {{{
 
+.2016-03-25:
+
+Extract two <modules.X.fsb> from <compilation.fsb>.
+
+Check remaining "Copyright" and adjust the headers.
+
+// }}}
+== Inner ==
+// {{{
+
 .2015-11-12:
 
 `+bal`, `-bal` or similar, to change `csp`:

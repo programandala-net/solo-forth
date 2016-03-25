@@ -2,23 +2,30 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains words which manipulate screen blocks
-  \ (windows)
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words which manipulate screen blocks
+  \ (windows)
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( clear-block )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code extracted and adapted from a routine written by Pablo
   \ Ariza, published on Microhobby Especial, issue 7 (1987-12),
@@ -119,7 +126,7 @@ code clear-block  ( column row width height -- )
 
 ( color-block )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code extracted and adapted from a routine written by Pablo
   \ Ariza, published on Microhobby Especial, issue 7 (1987-12),
@@ -207,7 +214,7 @@ code color-block  ( column row width height color -- )
 
 ( wipe-block )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from a routine written by Pablo Ariza,
   \ published on Microhobby Especial, issue 7 (1987-12), page

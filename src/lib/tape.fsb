@@ -2,18 +2,25 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains words related to tape.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to tape.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 
 ( write-tape-file read-tape-file )
@@ -21,14 +28,14 @@
   \ XXX UNDER DEVELOPMENT -- second approach:
   \ save header and data apart
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Afera.
 
   \ -----------------------------------------------------------
   \ Development documentation
 
-  \ Credits:
+  \ Credit:
   \
   \ Information retrieved from from Don Thomasson's book
   \ _Advanced Spectrum Forth_ (page 119).
@@ -164,14 +171,14 @@ code (tape)  ( n -- )
   \ XXX UNDER DEVELOPMENT -- first approach
   \ XXX FIXME
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Afera.
 
   \ -----------------------------------------------------------
   \ Development documentation
 
-  \ Credits:
+  \ Credit:
   \
   \ Information retrieved from from Don Thomasson's book
   \ _Advanced Spectrum Forth_ (page 119).

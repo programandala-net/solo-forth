@@ -1097,8 +1097,8 @@
 00000448	EQU 07864H
 00000449	EQU 0CFD8H
 0000044A	EQU 0CFE0H
-0000044B	EQU 0788CH
-0000044C	EQU 07890H
+0000044B	EQU 0788EH
+0000044C	EQU 07892H
 0000044D	EQU 078A5H
 0000044E	EQU 0CFE5H
 0000044F	EQU 0CFEDH
@@ -2233,6 +2233,7 @@ dot_throw_hash_xtp EQU 0D106H
 dot_throw_lfa	EQU 0D114H
 dot_throw_nt	EQU 0D116H
 dot_throw_xtp	EQU 0D112H
+dot_version.build EQU 07898H
 dot_version_	EQU 07864H
 dot_version_lfa	EQU 0CFD5H
 dot_version_nt	EQU 0CFD7H
@@ -4181,14 +4182,14 @@ variable_pfa	EQU 06E62H
 variable_xtp	EQU 0C724H
 version_	EQU 07859H
 version_build_high_part EQU 00133H
-version_build_low_part EQU 09F44H
+version_build_low_part EQU 09F45H
 version_lfa	EQU 0CFC9H
 version_major	EQU 00000H
 version_minor	EQU 00003H
 version_nt	EQU 0CFCBH
 version_patch	EQU 00000H
 version_pfa	EQU 0785CH
-version_release_candidate EQU 00006H
+version_release_candidate EQU 00007H
 version_xtp	EQU 0CFC7H
 voc_link.init_value EQU 05E0CH
 voc_link_	EQU 06F21H

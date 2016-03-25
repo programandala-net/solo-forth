@@ -1,0 +1,49 @@
+  \ printing.cursor.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160325
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to the cursor position.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( column last-column row last-row at-x at-y )
+
+: column  ( -- col )  xy drop  ;
+  \ Current column (x coordinate).
+
+: last-column  ( -- row  )  column 1-  ;
+  \ Last column (x coordinate).
+
+: row  ( -- row )  xy nip  ;
+  \ Current row (y coordinate).
+
+: last-row  ( -- row  )  row 1-  ;
+  \ Last row (y coordinate).
+
+: at-x  ( col -- )  row at-xy  ;
+  \ Set the cursor
+  \ at the given column (x coordinate)
+  \ and the current row (y coordinate).
+
+: at-y  ( row -- )  column swap at-xy  ;
+  \ Set the cursor
+  \ at the current column (x coordinate)
+  \ and the given row (y coordinate).
+
+  \ vim: filetype=soloforth

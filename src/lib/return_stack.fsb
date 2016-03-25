@@ -2,18 +2,25 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains words that manipulate the return stack.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words that manipulate the return stack.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( n>r )  \ ==returnstack==
 
@@ -71,7 +78,7 @@ need n>r
 
 ( rdepth r'@ )
 
-  \ Credits:
+  \ Credit:
   \
   \ `rdepth` from Afera.
 
@@ -84,7 +91,7 @@ need n>r
   \
   \ }doc
 
-  \ Credits:
+  \ Credit:
   \
   \ `r'@` from Wil Baden.
 

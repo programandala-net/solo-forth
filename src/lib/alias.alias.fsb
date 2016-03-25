@@ -1,0 +1,44 @@
+  \ alias.alias.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ An implementation of `alias`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( alias )
+
+: alias  ( xt "name" -- )  defer latest name> defer!  ;
+
+  \ doc{
+  \
+  \ alias  ( xt "name" -- )
+  \
+  \ Create an alias _name_ that will execute _xt_.
+  \
+  \ Aliases don't inherit the precedence (set by `immediate`)
+  \ and restricted (set by `compile-only`) attributes from the
+  \ original word.
+  \
+  \ Aliases have their own execution token, different from the
+  \ original _xt_.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

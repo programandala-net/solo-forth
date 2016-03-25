@@ -1,0 +1,94 @@
+  \ modules.privatize.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201603252149
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Implementation of unnamed modules with error checking,
+  \ adapted from pForth.
+  \
+  \ Modules hide the internal implementation and leave visible
+  \ the words of the outer interface.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Copyright 1996 Phil Burk.
+
+  \ Adapted from pForth to Solo Forth by Marcos Cruz
+  \ (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( privatize )
+
+need name<name  need abort"
+
+variable private-start  variable private-stop
+
+: private{  ( -- )
+  latest private-start !  private-stop off  ;
+
+  \ doc{
+  \
+  \ private{  ( -- )
+  \
+  \ Start private definitions.  See `privatize` for a usage
+  \ example.
+  \
+  \ }doc
+
+: }private  ( -- )
+  private-stop @ abort" Extra }private"
+  latest private-stop !  ;
+
+  \ doc{
+  \
+  \ }private  ( -- )
+  \
+  \ End private definitions. See `privatize` for a usage
+  \ example.
+  \
+  \ }doc
+
+: privatize  ( -- )
+  private-start @ 0= abort" Missing private{"
+  private-stop @ dup 0= abort" Missing }private"
+  begin   dup private-start @ u>
+  while   dup hide name<name
+  repeat  drop  private-start off  private-stop off  ;
+
+  \ doc{
+  \
+  \ privatize  ( -- )
+  \
+  \ Hide all words defined between the latest valid pair of
+  \ `private{` and `}private`.
+
+  \ Usage example:
+  \
+  \ ----
+  \ private{
+  \ \ everything between `private{` and `}private`
+  \ \ will become private.
+  \ : foo ;
+  \ : moo ;
+  \ }private
+  \
+  \ : goo   foo moo ;  \ can use foo and moo
+  \ privatize          \ hide foo and moo
+  \ ' foo              \ will fail
+  \ ----
+
+  \ }doc
+
+  \ vim: filetype=soloforth

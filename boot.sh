@@ -4,7 +4,7 @@
 
 # 2015-06
 
-fuse \
+fuse-sdl \
   --speed 100 \
 	--machine 128 \
 	--no-divide \

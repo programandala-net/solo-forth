@@ -1,7 +1,14 @@
+  \ error_codes.os.fsb
+  \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains the error codes of the ZX Spectrum OS.
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Error codes of the ZX Spectrum OS.
 
 ( OS error codes #-1128..#-1142 )
 

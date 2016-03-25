@@ -2,18 +2,25 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains words that manipulate pixels.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words that manipulate pixels.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 
 ( pixel-addr )
@@ -153,7 +160,7 @@ code plot  ( xc yc -- )
 
   \ Set a pixel without changing the color attributes.
 
-  \ Credits:
+  \ Credit:
   \
   \ Author of the original code: José Manuel Lazo.
   \ Published on Microhobby, issue 85 (1986-07), page 24:
@@ -179,7 +186,7 @@ code set-pixel  ( xc yc -- )
 
   \ Reset a pixel without changing the color attributes.
 
-  \ Credits:
+  \ Credit:
   \
   \ Based on code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
@@ -203,7 +210,7 @@ code reset-pixel  ( xc yc -- )
 
   \ Toggle a pixel without changing the color attributes.
 
-  \ Credits:
+  \ Credit:
   \
   \ Based on code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
@@ -247,7 +254,7 @@ code test-pixel  ( xc yc -- f )
 
 ( pixels )
 
-  \ Credits:
+  \ Credit:
   \
   \ Original code written by Juan Antonio Paz,
   \ published on Microhobby, issue 170 (1988-05), page 21:

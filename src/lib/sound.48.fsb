@@ -2,22 +2,29 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains words related to 48k sound.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to 48k sound.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( bleep )  \ ==sound48==
 
-  \ Credits:
+  \ Credit:
   \
   \ Code modified from Abersoft Forth.
 
@@ -32,7 +39,7 @@ code bleep  ( duration pitch -- )
 
 ( beep>bleep )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from v.Forth.
 
@@ -49,7 +56,7 @@ code bleep  ( duration pitch -- )
 
   \ Laser gun sound for ZX Spectrum 48K.
 
-  \ Credits:
+  \ Credit:
   \
   \ Author of the original code: Álvaro Corredor Lanas.
   \ Published on Microhobby, issue 126 (1987), page 7:
@@ -73,7 +80,7 @@ code laser-gun  ( -- )
 
   \ White noise for ZX Spectrum 48K.
 
-  \ Credits:
+  \ Credit:
   \
   \ Author of the original code: Ricardo Serral Wigge.
   \ Published on Microhobby, issue 125 (1987), page 26:
@@ -112,7 +119,7 @@ code white-noise  ( u -- )
 
   \ Ambulance sound for ZX Spectrum 48K.
 
-  \ Credits:
+  \ Credit:
   \
   \ Author of the original code: Líder Software.
   \ Published on Microhobby, issue 142 (1987-09), page 7:

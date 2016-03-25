@@ -2,18 +2,25 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains random number generators.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Random number generators.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( randomize randomize0 )
 
@@ -31,7 +38,7 @@ need os-frames
 
 ( rnd random )  \ ==rng==
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Leo Brodie's _Starting Forth_.
 
@@ -211,7 +218,7 @@ dx-rng-benchmark  vf-rng-benchmark
 
 ( ace-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Adapted from ACE Forth, after the Jupiter ACE manual.
   \ Also used by Abersoft Forth in its bundled game
@@ -231,7 +238,7 @@ need rng-benchmark
 
 ( dx-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from DX-Forth 4.13.
 
@@ -253,7 +260,7 @@ need rng-benchmark
 
 ( gf-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Adapted from Gforth.
 
@@ -271,7 +278,7 @@ need rng-benchmark
 
 ( jer-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Random number generator by J. E. Rickenbacker, published on
   \ Forth Dimensions (volume 2, number 2, page 34, 1980-07).
@@ -294,7 +301,7 @@ need rng-benchmark
 
 ( jml-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Adapted from code written by José Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
@@ -321,7 +328,7 @@ need rng-benchmark
 
 ( lb-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Leo Brodie's _Starting Forth_.
 
@@ -352,7 +359,7 @@ need rng-benchmark
 
 ( mb-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Adapted from code published by Milos Bazelides:
   \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
@@ -405,7 +412,7 @@ need rng-benchmark
 
 ( sf83-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from Spectrum Forth-83.
 
@@ -421,7 +428,7 @@ need rng-benchmark
 
 ( tt-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from tt.pfe, Tetris for terminals, redone in
   \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
@@ -439,7 +446,7 @@ need rng-benchmark
 
 ( vf-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code from vForth.
 
@@ -458,7 +465,7 @@ need rng-benchmark
 
 ( z88-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from Z88 CamelForth.
 
@@ -476,7 +483,7 @@ need rng-benchmark
 
 ( zh-random )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from:
   \ http://z80-heaven.wikidot.com/math#toc40
@@ -575,7 +582,7 @@ need bench{
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Credits:
+  \ Credit:
   \
   \ Adapted from code written by Everett F. Carter, published
   \ on Forth Dimensions (volume 16, number 2, page 17,
@@ -633,7 +640,7 @@ jw-rng-benchmark
 
   \ 2015-12-25
 
-  \ Credits:
+  \ Credit:
   \
   \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
   \ Joe Wingbermuehle
@@ -690,7 +697,7 @@ need rng-benchmark
 
   \ 2015-12-25
 
-  \ Credits:
+  \ Credit:
   \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
 
    \ This is a very simple linear congruential generator. The
@@ -736,7 +743,7 @@ need rng-benchmark
 
   \ 2015-12-25
 
-  \ Credits:
+  \ Credit:
   \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
 
    \ This is a very simple linear congruential generator. The
@@ -779,7 +786,7 @@ need rng-benchmark
 
   \ 2015-12-25
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from:
   \ http://z80-heaven.wikidot.com/math#toc40

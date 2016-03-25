@@ -1,0 +1,116 @@
+  \ modules.minus-transient.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201603252228
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Implementation of transient modules, whose code is
+  \ discarded after being used. First intended for assemblers,
+  \ but can be used for any other tool needed during the
+  \ compilation of a program, but not during the execution.
+  \ The size of the discarded code must be known in advance.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ Credit
+
+  \ The code was adapted from the Afera library. The Afera
+  \ version was adapted from Spectrum Forth-83 (by Lennart
+  \ Benschop, 1988), where it was used only for the assembler.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( transient[ )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ XXX TODO -- Finish and test.
+
+need >>link
+
+variable old-dp
+variable old-np
+variable old-latest
+variable old-voc-link
+
+: transient[  ( u -- )
+
+  here        old-dp !
+  np@         old-np !
+  latest      old-latest !
+  voc-link @  old-voc-link !
+
+  \ XXX FIXME -- after changing `dp` the interpreter does not
+  \ recognize any input, just issues error #1, "not
+  \ understood".
+
+  0 swap - there  ;
+  \ doc{
+  \
+  \ transient[  ( u -- )
+  \
+  \ Start transient code, reserving _u_ bytes for it (including
+  \ dictionary space and data stack).
+  \
+  \ This word must be used before compiling the transient code.
+  \ the compiled size of the transient code must be known in
+  \ advance.
+  \
+  \ See: `]transient`, `-transient`.
+  \
+  \ }doc
+
+
+: ]transient  ( -- )  old-dp @ there  old-np @ np !  ;
+
+  \ doc{
+  \
+  \ ]transient  ( -- )
+
+  \ End the transient code.
+  \
+  \ This word must be used after compiling the transient code.
+  \
+  \ See: `transient[`, `-transient`.
+  \
+  \ }doc
+
+: -transient  ( -- )
+  old-voc-link @ voc-link !
+  \ XXX TODO -- finish adapt to Solo Forth:
+  old-latest @ old-np @ >>link !s  ;
+
+  \ doc{
+  \
+  \ -transient  ( -- )
+  \
+  \ Remove the transient code, unlinking the dictionary space
+  \ that was reserved for it.
+  \
+  \ This word must be used when the transient code is not going
+  \ to be used any more.
+  \
+  \ The inner operation is: Store the _nt_ of the latest word
+  \ created before compiling the transient code, into the _lfa_
+  \ of the first word created after the transient code was
+  \ finished by `]transient`.
+  \
+  \ See: `transient[`, `]transient`.
+  \
+  \ }doc
+
+  \ See: `transient[`, `-transient`.
+  \ vim: filetype=soloforth

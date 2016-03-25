@@ -104,6 +104,7 @@ syn keyword soloforthDefine 2constant
 syn keyword soloforthDefine 2to
 syn keyword soloforthDefine 2value
 syn keyword soloforthDefine 2variable
+syn keyword soloforthDefine :noname
 syn keyword soloforthDefine ;
 syn keyword soloforthDefine ]
 syn keyword soloforthDefine alias
@@ -1124,6 +1125,8 @@ let b:current_syntax = "soloforth"
 " 2016-03-19: Added `there`, `system-bank`, `default-bank`,
 " `bank`, `bank-start`.  Renamed the words related to the names
 " bank.
+"
+" 2016-03-24: Added `:noname`.
 
 " --------------------------------------------------------------
 

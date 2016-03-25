@@ -1,0 +1,59 @@
+  \ memory.ports.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words for ports input and output.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( @p )
+
+code @p  ( a -- b )
+
+  \ Input byte _b_ from port _a_.
+
+  E1 c,           \ pop hl
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 68 c,     \ in l,(c)
+  C1 c,           \ pop bc
+  26 c, 00 c,     \ ld h,0x00
+  jppushhl        \ jp pushhl
+  end-code
+
+( !p )
+
+code !p  ( b a -- )
+
+  \ Output byte _b_ to port _a_.
+
+  E1 c,           \ pop hl
+  D1 c,           \ pop de ; char in e
+  C5 c,           \ push bc
+  48 05 + c,      \ ld c,l
+  40 04 + c,      \ ld b,h
+  ED c, 59 c,     \ out (c),e
+  C1 c,           \ pop bc
+  jpnext          \ jp (ix)
+
+  end-code
+
+  \ vim: filetype=soloforth

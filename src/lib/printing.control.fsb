@@ -1,0 +1,49 @@
+  \ printing.control.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160325
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related printing control characters.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( tabulate tab-stop )
+
+need column
+
+  \ 2015-12-14
+  \ XXX FIXME
+
+variable tab-stop  8 tab-stop !
+
+: tabulate  ( -- )  column 1+ tab-stop @ tuck mod - spaces  ;
+
+( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
+
+ 6 constant 'tab'
+ 8 constant 'bs'
+13 constant 'cr'
+
+: tab          ( -- )  'tab' emit  ;
+: backspace    ( -- )  'bs'  emit  ;
+
+: crs           ( n -- )  'cr'  emits  ;
+: tabs          ( n -- )  'tab' emits  ;
+: backspaces    ( n -- )  'bs'  emits  ;
+
+  \ vim: filetype=soloforth

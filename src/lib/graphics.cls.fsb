@@ -2,25 +2,32 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains words that clear the screen with special
-  \ effects.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words that clear the screen with special
+  \ effects.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( cls-chars0 )
 
   \ Clear the screen by rotating all bytes of the bitmap.
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from a routine written by Anselmo Moreno
   \ Lorente, published on Microhobby, issue 121 (1987-03), page
@@ -53,7 +60,7 @@ code cls-chars0  ( -- )
 
   \ Clear the screen by rotating all bytes of the bitmap.
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from a routine written by Antonio Adolfo Sanz,
   \ published on Microhobby, issue 197 (1990-03), page 24:
@@ -83,7 +90,7 @@ code cls-chars1  ( -- )
 
 ( horizontal-curtain )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from a routine written by Alejandro Mora,
   \ published on Microhobby, issue 128 (1987-05), page 7:
@@ -115,7 +122,7 @@ code horizontal-curtain  ( b -- )
 
 ( vertical-curtain )
 
-  \ Credits:
+  \ Credit:
   \
   \ Code adapted from a routine written by Alejandro Mora,
   \ published on Microhobby, issue 128 (1987-05), page 7:

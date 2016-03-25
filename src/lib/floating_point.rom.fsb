@@ -2,23 +2,15 @@
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains a floating point implementation that
-  \ uses the ROM calculator.
-  \
-  \ Copyright (C) 2015,2016 Marcos Cruz (programandala.net)
 
-  \ -------------------------------------------------------------
-  \ License
+  \ Last modified: 20160325
 
-  \ You may do whatever you want with this work, so long as you
-  \ retain all copyright notices, all credit notices, and this
-  \ license in all files of all redistributed copies and derived
-  \ works. There is no warranty.
-
-  \ -------------------------------------------------------------
+  \ -----------------------------------------------------------
   \ Description
 
+  \ A floating point implementation that uses the ROM
+  \ calculator.
+  \
   \ The ROM calculator is used for implementing most words of
   \ the Forth-2012 FLOATING and FLOATING EXT word sets, and
   \ some words not provided by Forth-2012.
@@ -27,6 +19,18 @@
 
   \ XXX FIXME -- The ROM calculator calls the BASIC error
   \ routines, what crashes the system.
+  
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
 
 ( fp-load )
 

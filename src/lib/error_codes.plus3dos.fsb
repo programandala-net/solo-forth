@@ -1,7 +1,14 @@
+  \ error_codes.plus3dos.fsb
+  \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
-  \ 
-  \ This file contains the error codes of +3DOS.
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Error codes of +3DOS.
 
 ( Non-recoverable +3DOS errors #-1020..#-1029)
 

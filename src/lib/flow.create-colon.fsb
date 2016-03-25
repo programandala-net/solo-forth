@@ -1,0 +1,36 @@
+  \ flow.create-colon.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `create:`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( create: )
+
+: create:  ( "name" -- )  create hide ]  ;
+  \ Create a word that will return the address of its pfa.
+
+  \ Credit:
+  \
+  \ The idea for this word was borrowed from CP/M-volksForth
+  \ 3.80a.
+
+  \ vim: filetype=soloforth
