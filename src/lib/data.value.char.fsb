@@ -1,4 +1,4 @@
-  \ value.forth-94.fsb
+  \ data.value.char.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -8,7 +8,7 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Forth-94 version of `value`.
+  \ `cvalue` and `cto`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -22,15 +22,14 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( value to )
 
-  \ Origin: Forth-94.
+( cvalue cto )
 
-: value  ( n "name"  -- )  constant  ;
+: cvalue  ( b "name"  -- )  cconstant  ;
 
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' >body compiling? if    postpone literal postpone !
-                     else  !  then  ; immediate
+: cto  ( Interpretation: b "name" -- )
+       ( Compilation: "name" -- )
+  ' >body compiling? if    postpone literal postpone c!
+                       else  c!  then  ; immediate
 
   \ vim: filetype=soloforth

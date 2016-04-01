@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,7 +46,7 @@ create circle-plot  ( -- a )
   de pop  bc pop  hl pop  ret
   end-asm
 
-code circle  ( xc yc radius -- )
+code circle  ( gx gy radius -- )
 
   \ d=x0
   \ e=y0

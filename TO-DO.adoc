@@ -1,16 +1,14 @@
 = Solo Forth TO-DO
-:revdate: 2016-03-19
+:revdate: 2016-04-01
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 // }}}
-== Inner ==
+== Misc ==
 // {{{
 
 .2016-03-25:
-
-Extract two <modules.X.fsb> from <compilation.fsb>.
 
 Check remaining "Copyright" and adjust the headers.
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,7 +28,7 @@
 
 need z80-asm  need (hires-emit)
 
-code hires-emit-udg  ( xc yc b -- )
+code hires-emit-udg  ( gx gy b -- )
 
   \ Display the user graphic character _b_ (0..255) at graphic
   \ coordinates _x y_. The system variable "UDG" is supossed to

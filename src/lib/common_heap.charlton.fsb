@@ -8,45 +8,8 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ A standard implementation of the common
-  \ heap, adapted from code written by Gordon Charlton.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( heap )
-
-  \ An implementation of the Forth-94 Memory-Allocation Word
-  \ Set.
-
-  \ XXX Note: 1614 bytes used!
-
-  \ XXX TODO use top of memory instead of dictionary space?
-  \ problem: memory banks could not be used at the same time.
-  \
-  \ XXX TODO use a memory bank instead of dictionary space?
-  \ problem: only words below 0xC000 could manipulate the heap.
-
-  \ Credit:
-  \
-  \ Adapted from code written by Gordon Charlton, 1994:
-
-  \ This is freeware, copyright Gordon Charlton, 12th of
-  \ September 1994.  Copy and distribute it. Use it. Don't mess
-  \ with this file. Acknowledge its use. I make no guarentees
-  \ as to its fitness for any purpose. Tell me about any bugs.
-  \ Tell me how much you like it.
-
-  \ <gordon at charlton dot demon dot co dot uk>
+  \ A standard implementation of the memory-allocation word
+  \ set.
 
   \ There are five broad areas that the program covers;
 
@@ -93,6 +56,45 @@
   \ succeeding. A final refinement is the use of the sign bit
   \ of the size field to mark "in-use" nodes so that they are
   \ disregarded without a separate test.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Copyright Gordon Charlton, 1994-09-12.
+
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ Solo Forth version of the code:
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ Original code:
+
+  \ This is freeware, copyright Gordon Charlton, 12th of
+  \ September 1994.  Copy and distribute it. Use it. Don't mess
+  \ with this file. Acknowledge its use. I make no guarentees
+  \ as to its fitness for any purpose. Tell me about any bugs.
+  \ Tell me how much you like it.  <gordon at charlton dot
+  \ demon dot co dot uk>
+
+( heap )
+
+
+  \ XXX Note: 1614 bytes used!
+
+  \ XXX TODO use top of memory instead of dictionary space?
+  \ problem: memory banks could not be used at the same time.
+  \
+  \ XXX TODO use a memory bank instead of dictionary space?
+  \ problem: only words below 0xC000 could manipulate the heap.
+
+
 
 also forth definitions
 need wid-of

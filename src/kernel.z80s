@@ -28,10 +28,10 @@ version_major:                equ 0
 version_minor:                equ 3
 version_patch:                equ 0
 
-version_release_candidate:    equ 7 ; zero if none
+version_release_candidate:    equ 8 ; zero if none
 
 version_build_high_part:      equ 0x0133
-version_build_low_part:       equ 0x9F45  ; build 20160325
+version_build_low_part:       equ 0x9F91  ; build 20160401
 
 ; ==============================================================
 ; History

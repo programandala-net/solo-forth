@@ -1850,45 +1850,8 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ -----------------------------------------------------------
   \ Description
 
-  \ A standard implementation of the common
-  \ heap, adapted from code written by Gordon Charlton.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( heap )
-
-  \ An implementation of the Forth-94 Memory-Allocation Word
-  \ Set.
-
-  \ XXX Note: 1614 bytes used!
-
-  \ XXX TODO use top of memory instead of dictionary space?
-  \ problem: memory banks could not be used at the same time.
-  \
-  \ XXX TODO use a memory bank instead of dictionary space?
-  \ problem: only words below 0xC000 could manipulate the heap.
-
-  \ Credit:
-  \
-  \ Adapted from code written by Gordon Charlton, 1994:
-
-  \ This is freeware, copyright Gordon Charlton, 12th of
-  \ September 1994.  Copy and distribute it. Use it. Don't mess
-  \ with this file. Acknowledge its use. I make no guarentees
-  \ as to its fitness for any purpose. Tell me about any bugs.
-  \ Tell me how much you like it.
-
-  \ <gordon at charlton dot demon dot co dot uk>
+  \ A standard implementation of the memory-allocation word
+  \ set.
 
   \ There are five broad areas that the program covers;
 
@@ -1935,6 +1898,45 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ succeeding. A final refinement is the use of the sign bit
   \ of the size field to mark "in-use" nodes so that they are
   \ disregarded without a separate test.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Copyright Gordon Charlton, 1994-09-12.
+
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ Solo Forth version of the code:
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ Original code:
+
+  \ This is freeware, copyright Gordon Charlton, 12th of
+  \ September 1994.  Copy and distribute it. Use it. Don't mess
+  \ with this file. Acknowledge its use. I make no guarentees
+  \ as to its fitness for any purpose. Tell me about any bugs.
+  \ Tell me how much you like it.  <gordon at charlton dot
+  \ demon dot co dot uk>
+
+( heap )
+
+
+  \ XXX Note: 1614 bytes used!
+
+  \ XXX TODO use top of memory instead of dictionary space?
+  \ problem: memory banks could not be used at the same time.
+  \
+  \ XXX TODO use a memory bank instead of dictionary space?
+  \ problem: only words below 0xC000 could manipulate the heap.
+
+
 
 also forth definitions
 need wid-of
@@ -2452,6 +2454,8 @@ forth-wordlist set-current
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
+  \ XXX UNDER DEVELOPMENT
+
   \ Last modified: 20160324
 
   \ -----------------------------------------------------------
@@ -2466,24 +2470,26 @@ forth-wordlist set-current
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ Based on "Gestor de memoria dinámica (version 1)" by Javier
+  \ Gil, from his book _Introducción a Forth_ (2007-01),
+  \ <http://disc.ua.es/~gil/#forth>.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( create-heap )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Inspired by:
-  \
-  \ Gestor de memoria dinámica (version 1)
-  \ By Javier Gil
-  \ From his book _Introducción a Forth_ (2007-01)
+  \ -----------------------------------------------------------
+  \ History
 
   \ 2015-11-18: Start.
   \ 2015-11-21: Changes.
+
+( create-heap )
 
 need value  need set-bit  need reset-bit  need bit?
 need reserve  need alias
@@ -2670,7 +2676,6 @@ need s=
 
 : [else]  ( "..." -- )
 
-  \ 1 begin   parse-name 2dup swap c@ and \ XXX OLD
   1 begin   parse-name dup
     while   2dup s" [if]" s=
             if    2drop 1+
@@ -2792,6 +2797,893 @@ variable here-backup
 
 
   \ vim: filetype=soloforth
+  \ data.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `associative:`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( associative: )
+
+  \ Credit:
+  \
+  \ Code adapted from F83.
+
+: associative:  ( n -- )
+  \ Create a table lookup word.
+  \ n = number of entries in the table
+  constant
+  does>  ( x -- index )
+    ( x pfa )
+    dup @ ( x pfa n ) -rot dup @ 0 ( n x pfa n 0 )
+    do ( n x pfa )
+      cell+ 2dup @ = ( n x pfa' flag )
+      if  2drop drop i unloop exit  then
+    loop 2drop ( n )  ;
+  \ An associative memory word.  It must be followed by a set
+  \ of values to be looked up.  At runtime, the values stored
+  \ in the parameter field are searched for a match.  If one if
+  \ found, the index to that value is returned.  If no match is
+  \ made, then the number of entries, ie max index + 1 is
+  \ returned.  This is the inverse of an array.
+
+  \ Usage example:
+
+  \ ----
+  \
+  \ 1000 constant zx1  200 constant zx2  30 constant zx3
+  \
+  \ 3 associative: unzx  ( value -- n )  zx1 , zx2 , zx3 ,
+  \
+  \ 1000 unzx .  \ prints 0
+  \ 200 unzx .   \ prints 1
+  \ 30 unzx .    \ prints 2
+  \ ----
+
+  \ vim: filetype=soloforth
+  \ data.associative-list.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201603241827
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ An associative list implemented with standard word lists.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Wil Baden, published on: Forth Dimensions (volume 17,
+  \ number 4, page 36, 1995-11).
+
+  \ Adapted and modified by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Recent changes
+
+  \ 2016-03-24: Comments.
+
+( associative-list )
+
+
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ XXX REMARK -- the items of original version returned its
+  \ pfa; this version was modified to return a counted string.
+  \
+  \ XXX TODO -- improve the code to define different types of
+  \ items.
+
+need words  need abort"
+
+: associative-list  ( "name" -- )  wordlist constant  ;
+  \ Create a new associative list "name".
+
+: entry  ( ca len wid "name" -- )
+  get-current >r set-current  create  s,  r> set-current
+  does>  ( -- ca len )  ( pfa ) count  ;
+  \ Create a new entry "name", with value _ca len_, in the
+  \ associative list _wid_,
+
+: item?  ( ca len wid -- 0 | xt )
+  search-wordlist dup if  drop  then  ;
+  \ Is _ca len_ an item of associative list _wid_?
+  \ If so return its _xt_, else return zero.
+
+: item  ( ca1 len1 wid -- ca2 len2 )
+  item? dup 0= abort" Not an item." execute  ;
+  \ Return value _ca2 len2_ of item _ca1 len1_ from associative
+  \ list _wid_.
+  \ XXX TODO -- use `throw` instead
+
+: items  ( wid -- )  >order words previous  ;
+  \ List items of associative list _wid_.
+
+  \ vim: filetype=soloforth
+  \ data.begin-stringtable.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `begin-stringtable end-stringtable`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( begin-stringtable end-stringtable )
+
+  \ Credit:
+  \
+  \ Code adapted from Forth Foundation Library (stt module).
+  \ XXX TODO Published under LGPL ?
+
+: begin-stringtable  ( "name" -- stringtable-sys )
+  \ Start a named stringtable definition.
+  create  here ( a1 ) cell allot here  ( a1 a2 )
+    \ stringtable-sys:
+    \   a1 = pointer (address of address) to the strings index
+    \   a2 = address of the compiled strings
+  does> ( n -- ca len )
+    \ Return the nth string.
+    ( n pfa )  @ swap cells + @ count  ;
+
+: end-stringtable  ( stringtable-sys -- )
+  \ End the stringtable definition.
+  \ stringtable-sys:
+  \   a1 = pointer (address of address) to the strings index
+  \   a2 = address of the compiled strings
+  ( a1 a2 )
+  here rot !   \ set the index
+  here swap  ( a3 a2 )
+  begin  2dup <>  while
+    dup ,   \ store the start of the string in the index
+    count chars +  \ move to the next string
+  repeat  2drop  ;
+
+  \ Usage example:
+  \
+  \ begin-stringtable esperanto-number
+  \   s" nulo" s,  s" unu" s,  s" du" s,  s" tri" s,
+  \ end-stringtable
+  \ 0 esperanto-number type
+  \ 3 esperanto-number type
+
+  \ vim: filetype=soloforth
+  \ data.begin-structure.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Forth-2012 structures.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( begin-structure +field field: 2field: cfield: )
+
+  \ Forth-2012.
+
+: begin-structure  ( "name" -- struct-sys 0 )
+  create  >mark 0
+  does>   ( -- n )  ( pfa ) @   ;
+
+: +field  ( n1 n2 "name" -- n3 )
+  create  over , +
+  does>   ( a -- a' )  ( a pfa ) @ +  ;
+
+: field:    ( n1 "name" -- n2 )  cell +field  ;
+: 2field:   ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
+: cfield:   ( n1 "name" -- n2 )  [ 1 chars ] literal +field  ;
+
+: end-structure  ( struct-sys n -- )  swap !  ;
+
+  \ vim: filetype=soloforth
+  \ data.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Misc words related to data structures.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( buffer: cvariable enum )
+
+[unneeded] buffer:
+?\ : buffer:  ( u "name" -- )  create allot  ;
+
+[unneeded] cvariable
+?\ : cvariable  ( "name"  -- )  create 1 allot  ;
+
+[unneeded] enum
+?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;
+
+( set )
+
+: set  ( x a "name" -- )
+  create  swap , ,
+  does>   ( pfa )  dup @ swap cell+ @ !  ;
+
+  \ doc{
+  \
+  \ set  ( x a "name" -- )
+  \
+  \ Define a word "name" which, when executed, will  cause  the
+  \ value _x_  to be stored at _a_.
+  \
+  \ Origin: Forth-79 (Reference Word Set); Forth-83 (Appendix
+  \ B.  Uncontrolled Reference Words).
+  \
+  \ }doc
+
+( link@ link, )
+
+  \ 2015-11-15
+
+  \ Credit:
+  \
+  \ Code written after the description by Rick VanNorman,
+  \ published on Forth Dimensions (volume 20, number 3, pages
+  \ 19-22, 1998-09).
+
+defer link@  ( node1 -- node2 )
+  ' @ ' link@ defer!
+  \ Fetch the linked list node _node_ is pointing to.
+
+: link,  ( node -- )  here over @ , swap !  ;
+  \ Create a new linked list node, pointing to _node_.
+
+  \ vim: filetype=soloforth
+  \ data.noble_arrays.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The Noble arrays.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( 1array ) \ noble-arrays
+
+  \ Toolset for one- and two-dimensional arrays by Julian V.
+  \ Noble
+
+  \ 2015-11-15
+
+  \ ---------------------------------------------------
+  \ (c) Copyright 2001 Julian V. Noble. \
+  \ Permission is granted by the author to \
+  \ use this software for any application pro- \
+  \ vided this copyright notice is preserved. \
+  \ ---------------------------------------------------
+
+  \ ...........................................................
+  \ References:
+  \
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
+
+  \ ...........................................................
+  \ Description:
+
+  \ Well, as I am sure everyone knows to the point of hurling
+  \ (regurgitating) by now, I chose a format that looks
+  \ somewhat like Fortran. I could not use the right
+  \ parenthesis, ) , because it was taken as the closure for a
+  \ parenthesized comment. Could not use the [ ]'s because they
+  \ also have a definite meaning (turn compiler off and on by
+  \ switching STATE).  So I was left with what I could do using
+  \ curly braces { and }.
+
+  \ Now why did I want an array notation that looks like
+  \ Fortran? There were several reasons:
+
+  \ 1. I wanted (at that time) to sell Forth to the Fortran
+  \ community.  (Silly me! But I was young then.)
+
+  \ 2. I wanted a notation that unequivocally said "I am an
+  \ array!" I had already written a number of linear equations
+  \ and other matrix ops programs and kept running into the
+  \ problems of
+
+  \  a. different constructors for each data type;
+  \
+  \  b. reading the program when it was done.
+
+  \ 3. I wanted something that would be completely transparent,
+  \ would permit address arithmetic, and would not require tons
+  \ of comments to be maintainable.
+
+  \ Eventually I hit on the Forthish solution of defining an
+  \ array with a header that contained its size and its data
+  \ size. Then I wrote a de-referencing operator that would dig
+  \ into the header and calculate the address of the datum
+  \ being indexed. The notation for this was
+
+  \ v{ I } ( -- adr of v[I] )
+
+  \ The left curly brace in an array's name was simply
+  \ syntactic sugar.  But at some point I realized that by
+  \ naming 2-dimensional arrays something like M{{ (2 curly
+  \ braces) I could have the name say "I am a 2-dimensional
+  \ array." Then one dereferences such by saying
+
+  \ m{{ i j }}
+
+  \ --that is, the 2-dim dereferencing operator expects a base
+  \ address and two indices and produces the correct address of
+  \ the I,Jth element.
+
+  \ For those who want it, go to my home page (under
+  \ construction) then to the link "Computational Methods in
+  \ the Physical Sciences", and thence to "Forth system and
+  \ example programs". There you can find the file arrays.f
+  \ that does all of this stuff. I have bounds checking in that
+  \ version because it was intended for student use.  Experts
+  \ can delete that stuff.
+
+  \ ...........................................................
+  \ Implementation:
+
+  \ words for 1-dimensional arrays
+
+need <=
+
+: long ; immediate
+
+: 1array ( len #bytes/datum --) \ ( #b len data ...)
+  create 2dup , , * allot ;
+
+: _len ( base_addr -- len)  cell+ @ ;
+  \ determine length of an array
+
+: } ( base_adr indx -- adr[indx] )
+  over _len over <= over 0< or #-272 ?throw
+    \ #-272 = array index out of range
+  over @ * + cell+ cell+ ;
+
+( 2array ) \ noble-arrays
+
+  \ words for 2-dimensional arrays
+
+need 1array
+
+: wide ; immediate
+
+: 2array ( hgt wid data_size --) \ ( wid #b len data ...)
+  create >r tuck , ( wid hgt)
+  r@ , * dup , r> * allot ;
+
+: }} ( base_adr m n -- adr[m,n] ) \ data stored row-wise
+  2>r cell+ dup cell- @
+  r> * r> + ( base_adr+cell m+n*w)
+  } ;
+
+  \ ...........................................................
+  \ Usage examples:
+
+  \ 20 long 2 floats 1array a{
+  \   \ complex vector
+  \
+  \ 20 long 20 wide 1 floats 2array m{{
+  \   \ real matrix
+  \
+  \ 20 long 1 cells 1array irow{
+  \   \ single-length, integer-valued vector
+  \
+  \ m{{ i j }} ( -- adr[m_ij] )
+  \   \ to dereference
+
+  \ vim: filetype=soloforth
+  \ data.value.char.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `cvalue` and `cto`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( cvalue cto )
+
+: cvalue  ( b "name"  -- )  cconstant  ;
+
+: cto  ( Interpretation: b "name" -- )
+       ( Compilation: "name" -- )
+  ' >body compiling? if    postpone literal postpone c!
+                       else  c!  then  ; immediate
+
+  \ vim: filetype=soloforth
+  \ data.value.double.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `2to` for a non-standard version of
+  \ `2value`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( 2value 2to )
+
+  \ Implementation of `2value` (from Forth-2012) but with
+  \ the non-standard word `2to`
+
+: 2value  ( d "name"  -- )  2constant  ;
+
+: 2to  ( Interpretation: d "name" -- )
+       ( Compilation: "name" -- )
+  ' >body compiling? if    postpone literal postpone 2!
+                     else  2!  then  ; immediate
+
+  \ vim: filetype=soloforth
+  \ data.value.forth-2012.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ A Forth-2012 implemention of `value`,
+  \ `2value` and `to`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( value 2value to )
+
+  \ Origin: Forth-2012.
+
+  \ This Forth-2012 implementation of `to` is provided as an
+  \ alternative, but it's bigger and slower than the Forth-94
+  \ `to` and the non-standard `2to`.
+
+: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
+: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' >body dup 1+ swap c@
+  compiling? if  swap postpone literal
+                 if  postpone 2!  else  postpone !  then  exit
+             then
+  if  2!  else  !  then
+  ; immediate
+
+  \ vim: filetype=soloforth
+  \ data.value.forth-94.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The Forth-94 version of `value`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( value to )
+
+  \ Origin: Forth-94.
+
+: value  ( n "name"  -- )  constant  ;
+
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' >body compiling? if    postpone literal postpone !
+                     else  !  then  ; immediate
+
+  \ vim: filetype=soloforth
+  \ data.value.non-parsing.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ A non-standard version of `value` with a
+  \ non-parsing `to`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( value to )
+
+  \ Non-standard implementation of `value` with non-parsing
+  \ `to`. This could be useful in special cases.
+
+  \ Credit:
+  \
+  \ Code inspired by lina.
+
+variable (value)  ['] @ (value) !
+: to    ( -- )  ['] ! (value) !  ;
+: value  ( n "name" -- )
+  create ,  does>   (value) perform  ['] @ (value) !  ;
+
+  \ vim: filetype=soloforth
+  \ data.wong_arrays.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The Wong arrays.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( array ato ) \ wong-arrays )
+
+  \ One-dimensional arrays by Leo Wong
+
+  \ 2015-11-15
+
+  \ ...........................................................
+  \ References:
+
+  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+
+  \ ...........................................................
+  \ Description:
+
+  \ This approach is unique in having no proponents. It is part
+  \ of Flight, a Forth scripting language. Several Flight
+  \ programs can be found by Googling comp.lang.forth. In
+  \ conformance with the design goals of Flight, bounds
+  \ checking is included.
+
+  \ ...........................................................
+  \ Main idea:
+
+  \ Treat arrays like values.
+
+    \ \ Example of use:
+    \ 4 array bar
+    \ 10 0 ato bar 20 1 ato bar 30 2 ato bar 40 3 ato bar
+
+    \ 3 bar .
+    \ 0 bar .
+    \ 123 3 ato bar
+    \ 3 bar .
+    \ 1 3 +ato bar
+    \ 3 bar .
+
+  \ Note that as in most Forth numerical arguments go before:
+
+    \ 1 3 +ato bar NOT: 1 +ato 3 bar
+
+  \ This approach can be extended to different-sized data
+  \ (including strings) and 2 or more dimensions by having
+  \ their own versions of array array> ato +ato. A Flight
+  \ scripter would not be expected to implement these words.
+
+  \ ...........................................................
+  \ Sample implementation:
+
+need within
+
+: array>  ( n 'array -- a )
+  2dup @ 0 swap within 0= #-272 ?throw
+    \ #-272 = array index out of range
+  cell+ swap cells +  ;
+  \ if in range, return element address, else abort
+
+: array  ( n "name" -- )
+  create dup , cells allot
+  does> ( n -- x ) ( n pfa ) array> @  ;
+  \ define array
+
+: (ato)  ( x n array -- )  >body array> !  ;
+  \ store to array
+
+: ato  ( x n "name" -- )
+  compiling?  if    postpone ['] postpone (ato)
+              else  ' (ato)  then ; immediate
+  \ store to array
+  \ usage: x n ato <name>
+
+: (+ato)  ( x n array -- )  >body array> +!  ;
+  \ add to array
+
+: +ato  ( n "name" -- )
+  compiling? if    postpone ['] postpone (+ato)
+             else  ' (+ato)  then  ; immediate
+  \ add to array
+
+  \ vim: filetype=soloforth
+  \ data.xstack.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `xstack`, an implementation of named
+  \ extra stacks.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( xstack )
+
+  \ Credit:
+  \
+  \ Code adapted from Galope (xstack module).
+
+  \ Creation and core manipulation of xstacks
+
+need value  need allocate  need free
+
+0 value xsize  0 value xp  0 value xp0
+  \ Values of the current xstack:
+  \ xsize = size in address units (constant)
+  \ xp = address of the xstack pointer (variable)
+  \ xp0 = initial value of the xstack pointer (constant)
+
+: xstack  ( n "name" -- )
+  \ Create a new xstack of _n_ cells.
+  create  cells dup allocate throw  cell - dup
+    , , ,
+    \ +0 = xp0
+    \ +2 = xp
+    \ +4 = xsize
+  does> ( -- )
+    \ Make an xstack the current one.
+    ( pfa ) dup @ to xp0  cell+ dup to xp  cell+ @ to xsize  ;
+
+: xp@  ( -- a )  xp @  ;
+
+: xp!  ( a -- )  xp !  ;
+
+: xp+!  ( n -- )  xp +!  ;
+
+: xclear  ( -- )  xp0 xp!  ;
+
+: xfree  ( -- )  xp0 free throw  ;
+
+( >x x@ xdrop x> xdup xpick )
+
+  \ xstack single-number operations
+
+need xstack
+
+: >x  ( x -- ) ( X: -- x )  cell xp+!  xp@ !   ;
+
+: x@  ( -- x ) ( X: x -- x )  xp@ @  ;
+
+: xdrop  ( X: x -- )  [ cell negate ] literal xp+!  ;
+
+: x>  ( -- x ) ( X: x -- )  x@ xdrop  ;
+
+: xdup  ( X: x -- x x )  x@ >x  ;
+
+: xpick  ( n -- x'n ) ( X: x'n ... x'0 -- x'n ... x'0 )
+  xp@ swap cells - @  ;
+
+: xover  ( X: x1 x2 -- x1 x2 x1 )  1 xpick >x  ;
+
+( 2x@ 2>x 2x> 2xdrop 2xdup )
+
+  \ xstack double-number operations
+
+need xstack  need x@  need >x  need xpick  need xover
+
+: 2x@  ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )  x@ 1 xpick swap  ;
+
+: 2>x  ( x1 x2 -- ) ( X: -- x1 x2 )  swap >x >x  ;
+
+: 2x>  ( -- x1 x2 ) ( X: x1 x2 -- )  x> x> swap  ;
+
+: 2xdrop  ( X: x1 x2 -- )  [ -2 cells ] literal xp+!  ;
+
+: 2xdup  ( X: x1 x2 -- x1 x2 x1 x2 )  xover xover  ;
+
+( xdepth .x )
+
+  \ xstack tools
+
+need xstack
+
+: xlen  ( -- n )  xp@ xp0 -  ;
+  \ Length of the current xstack, in address units.
+
+: xdepth  ( -- n )  xlen cell /  ;
+  \ Depth of the current xstack.
+
+: xdepth.  ( -- )  ." <"  s>d <# #s #> type  ." > "  ;
+
+: (.x)  ( -- )  xp0 cell+ xlen bounds ?do  i @ . cell +loop  ;
+  \ Display a list of the items in the xstack; TOS is the right-most item.
+: .x  ( -- )  xdepth dup xdepth. if  (.x)  then  ;
+  \ Display the number of items on the current xstack,
+  \ followed by a list of the items, if any; TOS is the right-most item.
   \ data_stack.fsb
   \
   \ This file is part of Solo Forth
@@ -3139,697 +4031,6 @@ code 2ndrop  ( dx1..dxn n -- )
   \ }doc
 
   \ vim: filetype=soloforth
-  \ data_structures.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ `associative:`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( associative: )
-
-  \ Credit:
-  \
-  \ Code adapted from F83.
-
-: associative:  ( n -- )
-  \ Create a table lookup word.
-  \ n = number of entries in the table
-  constant
-  does>  ( x -- index )
-    ( x pfa )
-    dup @ ( x pfa n ) -rot dup @ 0 ( n x pfa n 0 )
-    do ( n x pfa )
-      cell+ 2dup @ = ( n x pfa' flag )
-      if  2drop drop i unloop exit  then
-    loop 2drop ( n )  ;
-  \ An associative memory word.  It must be followed by a set
-  \ of values to be looked up.  At runtime, the values stored
-  \ in the parameter field are searched for a match.  If one if
-  \ found, the index to that value is returned.  If no match is
-  \ made, then the number of entries, ie max index + 1 is
-  \ returned.  This is the inverse of an array.
-
-  \ Usage example:
-
-  \ ----
-  \
-  \ 1000 constant zx1  200 constant zx2  30 constant zx3
-  \
-  \ 3 associative: unzx  ( value -- n )  zx1 , zx2 , zx3 ,
-  \
-  \ 1000 unzx .  \ prints 0
-  \ 200 unzx .   \ prints 1
-  \ 30 unzx .    \ prints 2
-  \ ----
-
-  \ vim: filetype=soloforth
-  \ data_structures.associative-list.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 201603241827
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ An associative list implemented with standard word lists.
-
-  \ -----------------------------------------------------------
-  \ Authors
-
-  \ Wil Baden, published on: Forth Dimensions (volume 17,
-  \ number 4, page 36, 1995-11).
-
-  \ Adapted and modified by Marcos Cruz (programandala.net),
-  \ 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ Recent changes
-
-  \ 2016-03-24: Comments.
-
-( associative-list )
-
-
-  \ XXX UNDER DEVELOPMENT
-  \
-  \ XXX REMARK -- the items of original version returned its
-  \ pfa; this version was modified to return a counted string.
-  \
-  \ XXX TODO -- improve the code to define different types of
-  \ items.
-
-need words  need abort"
-
-: associative-list  ( "name" -- )  wordlist constant  ;
-  \ Create a new associative list "name".
-
-: entry  ( ca len wid "name" -- )
-  get-current >r set-current  create  s,  r> set-current
-  does>  ( -- ca len )  ( pfa ) count  ;
-  \ Create a new entry "name", with value _ca len_, in the
-  \ associative list _wid_,
-
-: item?  ( ca len wid -- 0 | xt )
-  search-wordlist dup if  drop  then  ;
-  \ Is _ca len_ an item of associative list _wid_?
-  \ If so return its _xt_, else return zero.
-
-: item  ( ca1 len1 wid -- ca2 len2 )
-  item? dup 0= abort" Not an item." execute  ;
-  \ Return value _ca2 len2_ of item _ca1 len1_ from associative
-  \ list _wid_.
-  \ XXX TODO -- use `throw` instead
-
-: items  ( wid -- )  >order words previous  ;
-  \ List items of associative list _wid_.
-
-  \ vim: filetype=soloforth
-  \ data_structures.begin-stringtable.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ `begin-stringtable end-stringtable`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( begin-stringtable end-stringtable )
-
-  \ Credit:
-  \
-  \ Code adapted from Forth Foundation Library (stt module).
-  \ XXX TODO Published under LGPL ?
-
-: begin-stringtable  ( "name" -- stringtable-sys )
-  \ Start a named stringtable definition.
-  create  here ( a1 ) cell allot here  ( a1 a2 )
-    \ stringtable-sys:
-    \   a1 = pointer (address of address) to the strings index
-    \   a2 = address of the compiled strings
-  does> ( n -- ca len )
-    \ Return the nth string.
-    ( n pfa )  @ swap cells + @ count  ;
-
-: end-stringtable  ( stringtable-sys -- )
-  \ End the stringtable definition.
-  \ stringtable-sys:
-  \   a1 = pointer (address of address) to the strings index
-  \   a2 = address of the compiled strings
-  ( a1 a2 )
-  here rot !   \ set the index
-  here swap  ( a3 a2 )
-  begin  2dup <>  while
-    dup ,   \ store the start of the string in the index
-    count chars +  \ move to the next string
-  repeat  2drop  ;
-
-  \ Usage example:
-  \
-  \ begin-stringtable esperanto-number
-  \   s" nulo" s,  s" unu" s,  s" du" s,  s" tri" s,
-  \ end-stringtable
-  \ 0 esperanto-number type
-  \ 3 esperanto-number type
-
-  \ vim: filetype=soloforth
-  \ data_structures.begin-structure.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Forth-2012 structures.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( begin-structure +field field: 2field: cfield: )
-
-  \ Forth-2012.
-
-: begin-structure  ( "name" -- struct-sys 0 )
-  create  >mark 0
-  does>   ( -- n )  ( pfa ) @   ;
-
-: +field  ( n1 n2 "name" -- n3 )
-  create  over , +
-  does>   ( a -- a' )  ( a pfa ) @ +  ;
-
-: field:    ( n1 "name" -- n2 )  cell +field  ;
-: 2field:   ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
-: cfield:   ( n1 "name" -- n2 )  [ 1 chars ] literal +field  ;
-
-: end-structure  ( struct-sys n -- )  swap !  ;
-
-  \ vim: filetype=soloforth
-  \ data_structures.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Misc words related to data structures.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( buffer: cvariable enum )
-
-[unneeded] buffer:
-?\ : buffer:  ( u "name" -- )  create allot  ;
-
-[unneeded] cvariable
-?\ : cvariable  ( "name"  -- )  create 1 allot  ;
-
-[unneeded] enum
-?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;
-
-( set )
-
-: set  ( x a "name" -- )
-  create  swap , ,
-  does>   ( pfa )  dup @ swap cell+ @ !  ;
-
-  \ doc{
-  \
-  \ set  ( x a "name" -- )
-  \
-  \ Define a word "name" which, when executed, will  cause  the
-  \ value _x_  to be stored at _a_.
-  \
-  \ Origin: Forth-79 (Reference Word Set); Forth-83 (Appendix
-  \ B.  Uncontrolled Reference Words).
-  \
-  \ }doc
-
-( link@ link, )
-
-  \ 2015-11-15
-
-  \ Credit:
-  \
-  \ Code written after the description by Rick VanNorman,
-  \ published on Forth Dimensions (volume 20, number 3, pages
-  \ 19-22, 1998-09).
-
-defer link@  ( node1 -- node2 )
-  ' @ ' link@ defer!
-  \ Fetch the linked list node _node_ is pointing to.
-
-: link,  ( node -- )  here over @ , swap !  ;
-  \ Create a new linked list node, pointing to _node_.
-
-  \ vim: filetype=soloforth
-  \ data_structures.noble_arrays.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ The Noble arrays.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( 1array ) \ noble-arrays
-
-  \ Toolset for one- and two-dimensional arrays by Julian V.
-  \ Noble
-
-  \ 2015-11-15
-
-  \ ---------------------------------------------------
-  \ (c) Copyright 2001 Julian V. Noble. \
-  \ Permission is granted by the author to \
-  \ use this software for any application pro- \
-  \ vided this copyright notice is preserved. \
-  \ ---------------------------------------------------
-
-  \ ...........................................................
-  \ References:
-  \
-  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
-  \ http://forth.sourceforge.net/techniques/
-  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
-
-  \ ...........................................................
-  \ Description:
-
-  \ Well, as I am sure everyone knows to the point of hurling
-  \ (regurgitating) by now, I chose a format that looks
-  \ somewhat like Fortran. I could not use the right
-  \ parenthesis, ) , because it was taken as the closure for a
-  \ parenthesized comment. Could not use the [ ]'s because they
-  \ also have a definite meaning (turn compiler off and on by
-  \ switching STATE).  So I was left with what I could do using
-  \ curly braces { and }.
-
-  \ Now why did I want an array notation that looks like
-  \ Fortran? There were several reasons:
-
-  \ 1. I wanted (at that time) to sell Forth to the Fortran
-  \ community.  (Silly me! But I was young then.)
-
-  \ 2. I wanted a notation that unequivocally said "I am an
-  \ array!" I had already written a number of linear equations
-  \ and other matrix ops programs and kept running into the
-  \ problems of
-
-  \  a. different constructors for each data type;
-  \
-  \  b. reading the program when it was done.
-
-  \ 3. I wanted something that would be completely transparent,
-  \ would permit address arithmetic, and would not require tons
-  \ of comments to be maintainable.
-
-  \ Eventually I hit on the Forthish solution of defining an
-  \ array with a header that contained its size and its data
-  \ size. Then I wrote a de-referencing operator that would dig
-  \ into the header and calculate the address of the datum
-  \ being indexed. The notation for this was
-
-  \ v{ I } ( -- adr of v[I] )
-
-  \ The left curly brace in an array's name was simply
-  \ syntactic sugar.  But at some point I realized that by
-  \ naming 2-dimensional arrays something like M{{ (2 curly
-  \ braces) I could have the name say "I am a 2-dimensional
-  \ array." Then one dereferences such by saying
-
-  \ m{{ i j }}
-
-  \ --that is, the 2-dim dereferencing operator expects a base
-  \ address and two indices and produces the correct address of
-  \ the I,Jth element.
-
-  \ For those who want it, go to my home page (under
-  \ construction) then to the link "Computational Methods in
-  \ the Physical Sciences", and thence to "Forth system and
-  \ example programs". There you can find the file arrays.f
-  \ that does all of this stuff. I have bounds checking in that
-  \ version because it was intended for student use.  Experts
-  \ can delete that stuff.
-
-  \ ...........................................................
-  \ Implementation:
-
-  \ words for 1-dimensional arrays
-
-need <=
-
-: long ; immediate
-
-: 1array ( len #bytes/datum --) \ ( #b len data ...)
-  create 2dup , , * allot ;
-
-: _len ( base_addr -- len)  cell+ @ ;
-  \ determine length of an array
-
-: } ( base_adr indx -- adr[indx] )
-  over _len over <= over 0< or #-272 ?throw
-    \ #-272 = array index out of range
-  over @ * + cell+ cell+ ;
-
-( 2array ) \ noble-arrays
-
-  \ words for 2-dimensional arrays
-
-need 1array
-
-: wide ; immediate
-
-: 2array ( hgt wid data_size --) \ ( wid #b len data ...)
-  create >r tuck , ( wid hgt)
-  r@ , * dup , r> * allot ;
-
-: }} ( base_adr m n -- adr[m,n] ) \ data stored row-wise
-  2>r cell+ dup cell- @
-  r> * r> + ( base_adr+cell m+n*w)
-  } ;
-
-  \ ...........................................................
-  \ Usage examples:
-
-  \ 20 long 2 floats 1array a{
-  \   \ complex vector
-  \
-  \ 20 long 20 wide 1 floats 2array m{{
-  \   \ real matrix
-  \
-  \ 20 long 1 cells 1array irow{
-  \   \ single-length, integer-valued vector
-  \
-  \ m{{ i j }} ( -- adr[m_ij] )
-  \   \ to dereference
-
-  \ vim: filetype=soloforth
-  \ data_structures.wong_arrays.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ The Wong arrays.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( array ato ) \ wong-arrays )
-
-  \ One-dimensional arrays by Leo Wong
-
-  \ 2015-11-15
-
-  \ ...........................................................
-  \ References:
-
-  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
-  \ http://forth.sourceforge.net/techniques/
-
-  \ ...........................................................
-  \ Description:
-
-  \ This approach is unique in having no proponents. It is part
-  \ of Flight, a Forth scripting language. Several Flight
-  \ programs can be found by Googling comp.lang.forth. In
-  \ conformance with the design goals of Flight, bounds
-  \ checking is included.
-
-  \ ...........................................................
-  \ Main idea:
-
-  \ Treat arrays like values.
-
-    \ \ Example of use:
-    \ 4 array bar
-    \ 10 0 ato bar 20 1 ato bar 30 2 ato bar 40 3 ato bar
-
-    \ 3 bar .
-    \ 0 bar .
-    \ 123 3 ato bar
-    \ 3 bar .
-    \ 1 3 +ato bar
-    \ 3 bar .
-
-  \ Note that as in most Forth numerical arguments go before:
-
-    \ 1 3 +ato bar NOT: 1 +ato 3 bar
-
-  \ This approach can be extended to different-sized data
-  \ (including strings) and 2 or more dimensions by having
-  \ their own versions of array array> ato +ato. A Flight
-  \ scripter would not be expected to implement these words.
-
-  \ ...........................................................
-  \ Sample implementation:
-
-need within
-
-: array>  ( n 'array -- a )
-  2dup @ 0 swap within 0= #-272 ?throw
-    \ #-272 = array index out of range
-  cell+ swap cells +  ;
-  \ if in range, return element address, else abort
-
-: array  ( n "name" -- )
-  create dup , cells allot
-  does> ( n -- x ) ( n pfa ) array> @  ;
-  \ define array
-
-: (ato)  ( x n array -- )  >body array> !  ;
-  \ store to array
-
-: ato  ( x n "name" -- )
-  compiling?  if    postpone ['] postpone (ato)
-              else  ' (ato)  then ; immediate
-  \ store to array
-  \ usage: x n ato <name>
-
-: (+ato)  ( x n array -- )  >body array> +!  ;
-  \ add to array
-
-: +ato  ( n "name" -- )
-  compiling? if    postpone ['] postpone (+ato)
-             else  ' (+ato)  then  ; immediate
-  \ add to array
-
-  \ vim: filetype=soloforth
-  \ data_structures.xstack.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ `xstack`, an implementation of named
-  \ extra stacks.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( xstack )
-
-  \ Credit:
-  \
-  \ Code adapted from Galope (xstack module).
-
-  \ Creation and core manipulation of xstacks
-
-need value  need allocate  need free
-
-0 value xsize  0 value xp  0 value xp0
-  \ Values of the current xstack:
-  \ xsize = size in address units (constant)
-  \ xp = address of the xstack pointer (variable)
-  \ xp0 = initial value of the xstack pointer (constant)
-
-: xstack  ( n "name" -- )
-  \ Create a new xstack of _n_ cells.
-  create  cells dup allocate throw  cell - dup
-    , , ,
-    \ +0 = xp0
-    \ +2 = xp
-    \ +4 = xsize
-  does> ( -- )
-    \ Make an xstack the current one.
-    ( pfa ) dup @ to xp0  cell+ dup to xp  cell+ @ to xsize  ;
-
-: xp@  ( -- a )  xp @  ;
-
-: xp!  ( a -- )  xp !  ;
-
-: xp+!  ( n -- )  xp +!  ;
-
-: xclear  ( -- )  xp0 xp!  ;
-
-: xfree  ( -- )  xp0 free throw  ;
-
-( >x x@ xdrop x> xdup xpick )
-
-  \ xstack single-number operations
-
-need xstack
-
-: >x  ( x -- ) ( X: -- x )  cell xp+!  xp@ !   ;
-
-: x@  ( -- x ) ( X: x -- x )  xp@ @  ;
-
-: xdrop  ( X: x -- )  [ cell negate ] literal xp+!  ;
-
-: x>  ( -- x ) ( X: x -- )  x@ xdrop  ;
-
-: xdup  ( X: x -- x x )  x@ >x  ;
-
-: xpick  ( n -- x'n ) ( X: x'n ... x'0 -- x'n ... x'0 )
-  xp@ swap cells - @  ;
-
-: xover  ( X: x1 x2 -- x1 x2 x1 )  1 xpick >x  ;
-
-( 2x@ 2>x 2x> 2xdrop 2xdup )
-
-  \ xstack double-number operations
-
-need xstack  need x@  need >x  need xpick  need xover
-
-: 2x@  ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )  x@ 1 xpick swap  ;
-
-: 2>x  ( x1 x2 -- ) ( X: -- x1 x2 )  swap >x >x  ;
-
-: 2x>  ( -- x1 x2 ) ( X: x1 x2 -- )  x> x> swap  ;
-
-: 2xdrop  ( X: x1 x2 -- )  [ -2 cells ] literal xp+!  ;
-
-: 2xdup  ( X: x1 x2 -- x1 x2 x1 x2 )  xover xover  ;
-
-( xdepth .x )
-
-  \ xstack tools
-
-need xstack
-
-: xlen  ( -- n )  xp@ xp0 -  ;
-  \ Length of the current xstack, in address units.
-
-: xdepth  ( -- n )  xlen cell /  ;
-  \ Depth of the current xstack.
-
-: xdepth.  ( -- )  ." <"  s>d <# #s #> type  ." > "  ;
-
-: (.x)  ( -- )  xp0 cell+ xlen bounds ?do  i @ . cell +loop  ;
-  \ Display a list of the items in the xstack; TOS is the right-most item.
-: .x  ( -- )  xdepth dup xdepth. if  (.x)  then  ;
-  \ Display the number of items on the current xstack,
-  \ followed by a list of the items, if any; TOS is the right-most item.
   \ debugging.assert.fsb
   \
   \ This file is part of Solo Forth
@@ -4167,18 +4368,269 @@ need [if]
   \ to the word it's associated to.
 
   \ vim: filetype=soloforth
+  \ development_benchmarks.flow.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604011826
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Flow control benchmarks written during the development of
+  \ Solo Forth in order to choose from different implementation
+  \ options.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( case-benchs )
+
+  \ Comparison of case-like structures.
+  \
+  \ 2015-11-14: `case` (4 versions), `case:`, `options[` and
+  \ `cases:`.
+  \ 2015-12-14: Updated the comments: `case:` has been renamed
+  \ to `positional-case:`.
+
+need bench{
+
+warnings off
+
+: .used  ( u -- )  unused - cr u. ." B used " ;
+
+32767 constant iterations
+
+defer (case-bench)  ( -- )
+
+: case-bench  ( n xt -- )
+  cr ." ..."
+  ['] (case-bench) defer!
+  bench{
+  iterations 0 do  i %11 and (case-bench)  loop
+  }bench.  ;
+
+-->
+
+( case-benchs )
+
+cr .( case)
+unused need case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+cr .( eForth case)
+unused need eforth-case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+-->
+
+( case-benchs )
+
+cr .( case from the Forth-94 docs)
+unused need eforth-case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+cr .( Abersoft Forth case)
+unused need eforth-case .used  unused
+: case-example  ( n -- )
+  case
+  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
+  noop endcase  ;
+.used .( by its example)  ' case-example case-bench
+
+-->
+
+( case-benchs )
+
+  \ Note: the `positional-case:` structure is more specific
+  \ than the other structures: it lacks a default option and
+  \ its argument is positional.
+
+cr .( positional-case:)
+unused need positional-case: .used  unused
+positional-case:  positional-case:-example  ( n -- )
+  noop  noop  noop  noop ;
+.used .( by its example)  ' positional-case:-example case-bench
+
+cr .( options[)
+unused need options[ .used  unused
+: options[-example  ( n -- )
+  options[
+    0 option noop  1 option noop  2 option noop
+      default-option noop
+  ]options  ;
+.used .( by its example)  ' options[-example case-bench
+
+-->
+
+( case-benchs )
+
+cr .( cases:)
+unused need cases: .used  unused
+cases: cases:-example  ( n -- )
+  0 case> noop  1 case> noop  2 case> noop  other> noop
+.used .( by its example)  ' cases:-example case-bench
+
+cr .( baden-case)
+unused need baden-case .used  unused
+: baden-case-example  ( n -- )
+  case 0 = of  noop  endof
+  case 1 = of  noop  endof
+  case 2 = of  noop  endof
+           othercase noop  ;
+.used .( by its example)  ' baden-case-example case-bench
+
+-->
+
+( case-benchs )
+
+cr .( baden-case-like)
+unused .used  unused
+: baden-case-like-example  ( n -- )
+  dup 0 = if drop  noop  exit then
+  dup 1 = if drop  noop  exit then
+      2 = if       noop  exit then
+  noop  ;
+.used .( by its example)  ' baden-case-like-example case-bench
+
+cr .( vannorman-switch)
+unused need [switch .used  unused
+[switch vannorman-switch-example drop
+  0 runs noop  1 runs noop  2 runs noop
+switch]
+.used .( by its example)  ' vannorman-switch-example case-bench
+
+
+  \                        Bytes used            Speed (3)
+  \                        --------------------- --------------
+  \ Structure              Code (1)  Example (2) Frames Seconds
+  \ ---------              --------- ----------- ------ -------
+  \ case (7)                 48       62          1365   27
+  \ eforth-case (8)          54       62          1366   27
+  \ 94-doc-case (6)          54       62          1365   27
+  \ abersoft-case (5)        64       62          1365   27
+  \ positional-case: (4)     21       12           823   16
+  \ options[ (9)            166       24          3627   72
+  \ cases: (10)             109       18          3155   63
+  \ baden-case (11)          18       56          1472   29
+  \ baden-case (12)          36       56          1472   29
+  \ baden-case (13)           0       50          1353   27
+  \ vannorman-switch (14)   124       24          3573   71
+
+  \ (1) Bytes used by the compilation of the structure's code.
+  \
+  \ (2) Bytes used by the tested example: a structure with
+  \ three options plus default, that execute a `noop`.
+  \
+  \ (3) For 32767 iterations with parameter 0..3. One system
+  \ frame is 20 ms.
+
+  \ (4) A port of F83's `case:`. It is more specific than the
+  \ other structures: it lacks a default option and its
+  \ argument is positional.
+  \
+  \ (5) Eaker/Forth-94 `case` of Abersoft Forth, but with
+  \ compiler security removed.
+  \
+  \ (6) Eaker/Forth-94 `case` copied from the Forth-94
+  \ documentation.
+  \
+  \ (7) Eaker/Forth-94 `case` of eForth, with a little
+  \ simplification. This is the default `case` used in Solo
+  \ Forth.
+  \
+  \ (8) Eaker/Forth-94 `case` of eForth.
+  \
+  \ (9) A port of IsForth's `case:`.
+  \
+  \ (10) A port of a structure written by Dan Lerner, published
+  \ on Forth Dimensions (volume 3, number 6, page 189,
+  \ 1982-03).
+  \
+  \ (11) "Ultimate CASE Statement", written by Wil Baden,
+  \ published on Forth Dimensions (volume 8, number 5, page 29,
+  \ 1987-01).
+  \
+  \ (12) The same "Ultimate CASE Statement", by Wil Baden, with
+  \ two syntactic sugar words added: `endof` and `othercase`.
+  \
+  \ (13) The same "Ultimate CASE Statement", by Wil Baden,
+  \ emulated with standard words. This is a bit faster because,
+  \ without the syntactic sugar definitions, one `dup` and two
+  \ `drop` are saved.
+  \
+  \ (14) Code by Rick VanNorman, published on Forth Dimensions
+  \ (volume 20, number 3, pages 19..22, 1998-09).
+
+( do-bench )
+
+  \ 2015-12-17
+
+need bench{
+
+32767 0 2constant range
+
+: forth-83-do  ( -- )  bench{  range do83  loop83  }bench.  ;
+
+: forth-79-do  ( -- )  bench{  range do  loop  }bench.  ;
+
+: forth-83-i  ( -- )
+  bench{  range do83  i83 drop  loop83  }bench.  ;
+
+: forth-79-i  ( -- )
+  bench{  range do  i drop  loop  }bench.  ;
+
+: forth-83-+loop  ( -- )
+  bench{  range do83  2 +loop83  }bench.  ;
+
+: forth-79-+loop  ( -- )  bench{  range do  2 +loop  }bench.  ;
+
+: do-bench  ( -- )
+  forth-83-do forth-79-do
+  forth-83-i forth-79-i
+  forth-83-+loop forth-79-+loop  ;
+
+  \           Frames by 32767 iterations
+  \           --------------------------
+  \ Bench     Forth-79  Forth-83
+  \ --------  --------  --------
+  \ loop           143       109
+  \ i              264       258
+  \ +loop          108        97
+
+  \ Note: 1 frame = 50th of second
+
+  \ vim: filetype=soloforth
+
   \ development_benchmarks.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160325
+  \ Last modified: 201604011832
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Specific benchmarks written during the development of Solo
-  \ Forth in order to decide between different implementation
+  \ Misc benchmarks written during the development of Solo
+  \ Forth in order to choose from different implementation
   \ options.
 
   \ -----------------------------------------------------------
@@ -5080,196 +5532,6 @@ need bench{
   \ smith-d*  5139 (102 seconds)  1.0582
   \ dx-d*     4856 (97 seconds)   1.0000
 
-( case-benchs )
-
-  \ Comparison of case-like structures.
-  \
-  \ 2015-11-14: `case` (4 versions), `case:`, `options[` and
-  \ `cases:`.
-  \ 2015-12-14: Updated the comments: `case:` has been renamed
-  \ to `positional-case:`.
-
-need bench{
-
-warnings off
-
-: .used  ( u -- )  unused - cr u. ." B used " ;
-
-32767 constant iterations
-
-defer (case-bench)  ( -- )
-
-: case-bench  ( n xt -- )
-  cr ." ..."
-  ['] (case-bench) defer!
-  bench{
-  iterations 0 do  i %11 and (case-bench)  loop
-  }bench.  ;
-
--->
-
-( case-benchs )
-
-cr .( case)
-unused need case .used  unused
-: case-example  ( n -- )
-  case
-  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
-  noop endcase  ;
-.used .( by its example)  ' case-example case-bench
-
-cr .( eForth case)
-unused need eforth-case .used  unused
-: case-example  ( n -- )
-  case
-  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
-  noop endcase  ;
-.used .( by its example)  ' case-example case-bench
-
--->
-
-( case-benchs )
-
-cr .( case from the Forth-94 docs)
-unused need eforth-case .used  unused
-: case-example  ( n -- )
-  case
-  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
-  noop endcase  ;
-.used .( by its example)  ' case-example case-bench
-
-cr .( Abersoft Forth case)
-unused need eforth-case .used  unused
-: case-example  ( n -- )
-  case
-  0 of  noop  endof  1 of  noop  endof  2 of  noop  endof
-  noop endcase  ;
-.used .( by its example)  ' case-example case-bench
-
--->
-
-( case-benchs )
-
-  \ Note: the `positional-case:` structure is more specific
-  \ than the other structures: it lacks a default option and
-  \ its argument is positional.
-
-cr .( positional-case:)
-unused need positional-case: .used  unused
-positional-case:  positional-case:-example  ( n -- )
-  noop  noop  noop  noop ;
-.used .( by its example)  ' positional-case:-example case-bench
-
-cr .( options[)
-unused need options[ .used  unused
-: options[-example  ( n -- )
-  options[
-    0 option noop  1 option noop  2 option noop
-      default-option noop
-  ]options  ;
-.used .( by its example)  ' options[-example case-bench
-
--->
-
-( case-benchs )
-
-cr .( cases:)
-unused need cases: .used  unused
-cases: cases:-example  ( n -- )
-  0 case> noop  1 case> noop  2 case> noop  other> noop
-.used .( by its example)  ' cases:-example case-bench
-
-cr .( baden-case)
-unused need baden-case .used  unused
-: baden-case-example  ( n -- )
-  case 0 = of  noop  endof
-  case 1 = of  noop  endof
-  case 2 = of  noop  endof
-           othercase noop  ;
-.used .( by its example)  ' baden-case-example case-bench
-
--->
-
-( case-benchs )
-
-cr .( baden-case-like)
-unused .used  unused
-: baden-case-like-example  ( n -- )
-  dup 0 = if drop  noop  exit then
-  dup 1 = if drop  noop  exit then
-      2 = if       noop  exit then
-  noop  ;
-.used .( by its example)  ' baden-case-like-example case-bench
-
-cr .( vannorman-switch)
-unused need [switch .used  unused
-[switch vannorman-switch-example drop
-  0 runs noop  1 runs noop  2 runs noop
-switch]
-.used .( by its example)  ' vannorman-switch-example case-bench
-
-
-  \                        Bytes used            Speed (3)
-  \                        --------------------- --------------
-  \ Structure              Code (1)  Example (2) Frames Seconds
-  \ ---------              --------- ----------- ------ -------
-  \ case (7)                 48       62          1365   27
-  \ eforth-case (8)          54       62          1366   27
-  \ 94-doc-case (6)          54       62          1365   27
-  \ abersoft-case (5)        64       62          1365   27
-  \ positional-case: (4)     21       12           823   16
-  \ options[ (9)            166       24          3627   72
-  \ cases: (10)             109       18          3155   63
-  \ baden-case (11)          18       56          1472   29
-  \ baden-case (12)          36       56          1472   29
-  \ baden-case (13)           0       50          1353   27
-  \ vannorman-switch (14)   124       24          3573   71
-
-  \ (1) Bytes used by the compilation of the structure's code.
-  \
-  \ (2) Bytes used by the tested example: a structure with
-  \ three options plus default, that execute a `noop`.
-  \
-  \ (3) For 32767 iterations with parameter 0..3. One system
-  \ frame is 20 ms.
-
-  \ (4) A port of F83's `case:`. It is more specific than the
-  \ other structures: it lacks a default option and its
-  \ argument is positional.
-  \
-  \ (5) Eaker/Forth-94 `case` of Abersoft Forth, but with
-  \ compiler security removed.
-  \
-  \ (6) Eaker/Forth-94 `case` copied from the Forth-94
-  \ documentation.
-  \
-  \ (7) Eaker/Forth-94 `case` of eForth, with a little
-  \ simplification. This is the default `case` used in Solo
-  \ Forth.
-  \
-  \ (8) Eaker/Forth-94 `case` of eForth.
-  \
-  \ (9) A port of IsForth's `case:`.
-  \
-  \ (10) A port of a structure written by Dan Lerner, published
-  \ on Forth Dimensions (volume 3, number 6, page 189,
-  \ 1982-03).
-  \
-  \ (11) "Ultimate CASE Statement", written by Wil Baden,
-  \ published on Forth Dimensions (volume 8, number 5, page 29,
-  \ 1987-01).
-  \
-  \ (12) The same "Ultimate CASE Statement", by Wil Baden, with
-  \ two syntactic sugar words added: `endof` and `othercase`.
-  \
-  \ (13) The same "Ultimate CASE Statement", by Wil Baden,
-  \ emulated with standard words. This is a bit faster because,
-  \ without the syntactic sugar definitions, one `dup` and two
-  \ `drop` are saved.
-  \
-  \ (14) Code by Rick VanNorman, published on Forth Dimensions
-  \ (volume 20, number 3, pages 19..22, 1998-09).
-
 ( misc-benchs )
 
   \ Some misc speed benchs.
@@ -5408,44 +5670,6 @@ defer #spaces
 
   \ Note: 1 frame = 50th of second
 
-( do-bench )
-
-  \ 2015-12-17
-
-need bench{
-
-32767 0 2constant range
-
-: forth-83-do  ( -- )  bench{  range do83  loop83  }bench.  ;
-
-: forth-79-do  ( -- )  bench{  range do  loop  }bench.  ;
-
-: forth-83-i  ( -- )
-  bench{  range do83  i83 drop  loop83  }bench.  ;
-
-: forth-79-i  ( -- )
-  bench{  range do  i drop  loop  }bench.  ;
-
-: forth-83-+loop  ( -- )
-  bench{  range do83  2 +loop83  }bench.  ;
-
-: forth-79-+loop  ( -- )  bench{  range do  2 +loop  }bench.  ;
-
-: do-bench  ( -- )
-  forth-83-do forth-79-do
-  forth-83-i forth-79-i
-  forth-83-+loop forth-79-+loop  ;
-
-  \           Frames by 32767 iterations
-  \           --------------------------
-  \ Bench     Forth-79  Forth-83
-  \ --------  --------  --------
-  \ loop           143       109
-  \ i              264       258
-  \ +loop          108        97
-
-  \ Note: 1 frame = 50th of second
-
 ( emit-udg-bench )
 
   \ 2015-12-18
@@ -5462,6 +5686,872 @@ need bench{
   \ Iterations  emit        emit-udg
   \ ----------  ----------- -----------
   \ 32000       1904 (1.00) 1856 (0.97)
+
+  \ vim: filetype=soloforth
+  \ development_benchmarks.rng.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604011825
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ RNG benchmarks written during the development of Solo Forth
+  \ in order to choose the best implementations.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( rng-benchmark )
+
+  \ Random number generator benchmark
+
+need set-pixel  need bench{  need pixels  need u%  need 3dup
+
+256 192 * constant #pixels
+  \ number of pixels of the screen
+
+defer rng  ( n -- 0..n-1 )
+
+: pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
+  \ Print _u_ pixels as a percentage of the maximum
+  \ number of pixels.
+
+: .pixels  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
+  \ Print _u_ as the number of pixels.
+
+: .title  ( ca len -- )  ." Code: " type  ;
+
+variable cycles
+
+defer .cycles  ( -- )
+
+: (.cycles)  ( -- )
+  cycles ?  s" cycles" cycles @ 1 = + type  ;
+  \ Print the number of cycles.
+
+: .time  ( d -- )  bench. ." per cycle" cr  ;
+
+: .result  ( ca len d -- )
+  2>r pixels >r  .title cr  r> .pixels cr
+  2r> .time .cycles   ;
+  \ Calculate and print the result of the benchmark.
+  \ _d_ is the time in frames; _ca len_ is the title.
+
+-->
+
+( rng-benchmark )
+
+defer random-coords  ( -- gx gy )
+  \ Random graphic coordinates. Configurable depending on the
+  \ type of `random` to benchmark.
+
+: (random-coords)  ( -- gx gy )  256 rng 193 rng  ;
+  \ Default behaviour of `random-coords`.
+
+: fill-screen  ( -- )
+  #pixels 0 do  random-coords set-pixel  loop  ;
+  \ Fill the screen with random pixels.
+
+: signal  ( -- )  cycles @ %111 and border  ;
+  \ Change the border color according to the current count
+  \ of cycles, just to show that the benchmark is running.
+
+: (rng-benchmark)  ( -- d )
+  1 cycles +!  signal  bench{ fill-screen }bench  ;
+  \ Do the RNG benchmark of any cycle and return its result.
+
+: wait  ( -- )  key drop  ;
+
+: finish  ( ca len d -- )  0 border  .result  wait  ;
+  \ Finish the benchmark.
+  \ _d_ is the time in frames; _ca len_ is the title.
+
+: init  ( xt1 xt2 xt3 -- )
+  ['] random-coords defer!  ['] .cycles defer!  ['] rng defer!
+  page  -1 cycles !  ;
+
+defer finish?  ( i*x -- j*x f )
+  \ Finish the benchmark?
+
+: new-pixels?  ( n1 -- n2 f )  pixels tuck =  ;
+  \ Are there new pixels on the screen, comparing the previous
+  \ count _n1_ with the new count _n2_?
+
+' new-pixels? ' finish? defer!  -->
+
+( rng-benchmark )
+
+defer rng-benchmark  ( ca len xt -- )
+  \ Do a RNG benchmark for the `random` word _xt_ with title
+  \ _ca len_.
+
+: (rng-benchmark2)  ( ca len -- )
+  0 begin   (rng-benchmark) 2>r
+            finish? dup 0= if  2rdrop  then
+  until     drop 2r> finish  ;
+  \ Do a double RNG benchmark with title _ca len_: The time
+  \ required to complete one cycle (49152 random pixels), plus
+  \ the number of cycles required until the number of pixels
+  \ doesn't change.
+
+: rng-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] (random-coords) init  (rng-benchmark2)  ;
+  \ Do a double RNG benchmark for the `random` word _xt_ with
+  \ title _ca len_: The time required to complete one cycle
+  \ (49152 random pixels), plus the number of cycles required
+  \ until the number of pixels doesn't change.
+
+  \ The best `random` words need several cycles. In such cases
+  \ it's useful a simpler test to show only the pixels set at
+  \ the end of the first cycle:
+
+' rng-benchmark2 ' rng-benchmark defer!  \ default benchmark
+
+: (.cycle)  ( -- )  ." First cycle only"  ;
+
+: (rng-benchmark1)  ( ca len -- )
+  (rng-benchmark) .result wait  ;
+  \ Do a one-cycle RNG benchmark with title _ca len_: Only the
+  \ time required to complete one cycle (49152 random pixels).
+
+: rng-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] (random-coords) init  (rng-benchmark1)  ;
+  \ Do a one-cycle RNG benchmark for `random` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+-->
+
+( rng-benchmark )
+
+  \ Versions for 8-bit `rnd`.
+
+: crnd-coords  ( -- gx gy )  rng rng 192 min  ;
+  \ Random graphic coordinates for 8-bit `rnd`.
+
+: rng8-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] crnd-coords init  (rng-benchmark2)  ;
+  \ Do a double RNG benchmark for 8-bit `rnd` word _xt_ with
+  \ title _ca len_: The time required to complete one cycle
+  \ (49152 random pixels), plus the number of cycles required
+  \ until the number of pixels doesn't change.
+
+: rng8-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] crnd-coords init  (rng-benchmark1)  ;
+  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
+  \ title _ca len_: Only the time required to complete one
+  \ cycle (49152 random pixels).
+
+( 16-bit-rng-benchmarks )
+
+  \ Execute all of the 16-bit RNG benchmarks
+
+need rng-benchmark  need +thru  1 14 +thru
+
+ace-rng-benchmark   cgm-rng-benchmark   dx-rng-benchmark
+gf-rng-benchmark    jer-rng-benchmark   jml-rng-benchmark
+lb-rng-benchmark    lina-rng-benchmark  mb-rng-benchmark
+sf83-rng-benchmark  tt-rng-benchmark    vf-rng-benchmark
+z88-rng-benchmark   zh-rng-benchmark
+
+  \ Execute single-cycle benchmarks of RNG that need more than
+  \ one cycle to finish:
+
+' rng-benchmark1 ' rng-benchmark defer!
+
+cgm-rng-benchmark  dx-rng-benchmark  vf-rng-benchmark
+
+( ace-random )
+
+  \ Credit:
+  \
+  \ Adapted from ACE Forth, after the Jupiter ACE manual.
+  \ Also used by Abersoft Forth in its bundled game
+  \ "Bertie".
+
+need os-seed
+
+: ace-rnd  ( -- n )
+  os-seed @ 75 um* 75. d+ 2dup u< - - 1- dup os-seed !  ;
+
+: ace-random  ( n1 -- n2 )  ace-rnd um* nip  ;
+
+need rng-benchmark
+
+: ace-rng-benchmark  ( -- )
+  s" Jupiter ACE manual" ['] ace-random rng-benchmark  ;
+
+( cgm-random )
+
+  \ Random Number Generator by C. G. Montgomery
+
+  \ 2015-12-13: found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \
+  \ 2016-03-31: adapted to Solo Forth.
+
+need rng-benchmark
+
+2variable rloc  $111 rloc !  \ seed with nonzero
+
+: cgm-rnd  ( -- u )
+  rloc 2@ $61BF um* rot 0 d+ over rloc 2!  ;
+  \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
+
+: cgm-random  ( n -- 0..n-1 )  cgm-rnd um* nip  ;
+
+: cgm-rng-benchmark  ( -- )
+  s" C. G. Montgomery $61BF" ['] cgm-random rng-benchmark  ;
+
+' rng-benchmark2 ' rng-benchmark defer!
+
+cgm-rng-benchmark
+
+' rng-benchmark1 ' rng-benchmark defer!
+
+cgm-rng-benchmark
+
+( dx-random )
+
+  \ Credit:
+  \
+  \ Code from DX-Forth 4.13.
+
+2variable dx-seed  1. dx-seed 2!
+
+need d*
+
+: dx-rnd ( -- u )
+  dx-seed 2@ $15A4E35. d* 1. d+ tuck dx-seed 2!  ;
+  \ Get random number
+
+: dx-random ( u -- 0..u-1 )  dx-rnd um* nip  ;
+  \ Get random number between 0 and u-1
+
+need rng-benchmark
+
+: dx-rng-benchmark  ( -- )
+  s" DX-Forth" ['] dx-random rng-benchmark  ;
+
+( gf-random )
+
+  \ Credit:
+  \
+  \ Adapted from Gforth.
+
+need os-seed  need ud*
+
+: gf-rnd  ( -- n )
+  272958469. os-seed @ ud* d>s 1+ dup os-seed !  ;
+
+: gf-random  ( n1 -- n2 )  gf-rnd um* nip  ;
+
+need rng-benchmark
+
+: gf-rng-benchmark  ( -- )
+  s" Gforth" ['] gf-random rng-benchmark  ;
+
+( jer-random )
+
+  \ Credit:
+  \
+  \ Random number generator by J. E. Rickenbacker, published on
+  \ Forth Dimensions (volume 2, number 2, page 34, 1980-07).
+
+need os-seed
+
+: jer-rnd  ( -- n )
+  os-seed @ 259 * 3 + 32767 and dup os-seed !  ;
+
+: jer-random ( n1 -- n2 )
+  jer-rnd 32767 */  ;
+  \ Return a random number _n2_ (0 <= n2 < n1).
+
+  \ XXX Note: patterns
+
+need rng-benchmark
+
+: jer-rng-benchmark  ( -- )
+  s" J. E. Rickenbacker" ['] jer-random rng-benchmark  ;
+
+( jml-random )
+
+  \ Credit:
+  \
+  \ Adapted from code written by José Manuel Lazo,
+  \ published on Microhobby, issue 85 (1986-07), page 24:
+  \ http://microhobby.org/numero085.htm
+  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
+
+need z80-asm  need os-seed
+
+code jml-rnd  ( -- u )
+
+  os-seed fthl  hl push
+  hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
+  de pop  de addp  0029 de ldp#  de addp
+  os-seed sthl
+  jppushhl
+  end-code
+
+: jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
+
+need rng-benchmark
+
+: jml-rng-benchmark  ( -- )
+  s" J.M. Lazo" ['] jml-random rng-benchmark  ;
+
+( lb-random )
+
+  \ Credit:
+  \
+  \ Code adapted from Leo Brodie's _Starting Forth_.
+
+need os-seed
+
+: lb-rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
+
+: lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
+
+need rng-benchmark
+
+: lb-rng-benchmark  ( -- )
+  s" Leo Brodie" ['] lb-random rng-benchmark  ;
+
+( lina-random )
+
+need os-seed
+
+: lina-rnd  ( -- n )
+  os-seed @ 107465 * 234567 + dup os-seed !  ;
+
+: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
+
+need rng-benchmark
+
+: lina-rng-benchmark  ( -- )
+  s" lina" ['] lina-random rng-benchmark  ;
+
+( mb-random )
+
+  \ Credit:
+  \
+  \ Adapted from code published by Milos Bazelides:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+need z80-asm  need os-seed
+
+code mb-rnd  ( -- n )
+  os-seed de ftp
+  d a ld  e h ld  #253 l ld#
+  a or  de sbcp
+  0 sbc#  de sbcp
+  0 d ld#  d sbc  a e ld
+  de sbcp
+  cy if  hl incp  then
+  os-seed sthl
+  jppushhl   end-code
+
+: mb-random  ( n1 -- n2 )  mb-rnd um* nip  ;
+
+  \ Original code:
+
+  \ ----
+  \ ; Input: none
+  \ ; Output: HL = pseudo-random number, period 65536
+
+  \ Rand16:
+  \  ld  de,Seed    ; Seed is usually 0
+  \  ld  a,d
+  \  ld  h,e
+  \  ld  l,253
+  \  or  a
+  \  sbc  hl,de
+  \  sbc  a,0
+  \  sbc  hl,de
+  \  ld  d,0
+  \  sbc  a,d
+  \  ld  e,a
+  \  sbc  hl,de
+  \  jr  nc,Rand
+  \  inc  hl
+  \ Rand:
+  \  ld  (Rand16+1),hl
+  \  ret
+  \ ----
+
+need rng-benchmark
+
+: mb-rng-benchmark  ( -- )
+  s" Milos Bazelides" ['] mb-random rng-benchmark  ;
+
+( sf83-random )
+
+  \ Credit:
+  \
+  \ Code from Spectrum Forth-83.
+
+need os-seed  3 os-seed !
+
+: sf83-random  ( n -- 0..n-1 )
+  os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
+
+need rng-benchmark
+
+: sf83-rng-benchmark  ( -- )
+  s" Spectrum Forth-83" ['] sf83-random rng-benchmark  ;
+
+( tt-random )
+
+  \ Credit:
+  \
+  \ Code from tt.pfe, Tetris for terminals, redone in
+  \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
+
+need os-seed
+
+: tt-random   ( n -- 0..n-1 )
+    os-seed @ 13 * $7FFF and
+    dup os-seed !  swap mod ;
+
+need rng-benchmark
+
+: tt-rng-benchmark  ( -- )
+  s" Tetris for terminals" ['] tt-random rng-benchmark  ;
+
+( vf-random )
+
+  \ Credit:
+  \
+  \ Code from vForth.
+
+need os-frames
+
+: vf-random  ( n1 -- n2 )
+  1+ 8195 os-frames @ um* 1. d+
+  16383 um/mod drop
+  \ dup os-seed !
+  swap mod  ;
+
+need rng-benchmark
+
+: vf-rng-benchmark  ( -- )
+  s" vForth" ['] vf-random rng-benchmark  ;
+
+( z88-random )
+
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+need ud*  need os-seed
+
+: z88-random  ( u1 -- u2 )
+  1103515245. \ 20077 16838
+  os-seed @ ud* 12345. d+ over os-seed !
+  rot ud/mod 2drop  ;
+
+need rng-benchmark
+
+: z88-rng-benchmark  ( -- )
+  s" Z88 CamelForth" ['] z88-random rng-benchmark  ;
+
+( zh-random )
+
+  \ Credit:
+  \
+  \ Code adapted from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+
+need z80-asm  need os-seed
+
+code zh-rnd  ( -- n )
+
+  os-seed fthl
+    \ ld hl,(seed)
+  hl de ldp
+    \ ld c,l
+    \ ld b,h
+  hl addp  de addp  hl addp  de addp  hl addp
+  de addp  hl addp  hl addp  hl addp  hl addp  de addp
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,de
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,hl
+    \ add hl,de
+  h inc  hl incp
+    \ inc h
+    \ inc hl
+  os-seed sthl
+    \ ld (seed),hl
+  jppushhl   end-code
+
+: zh-random  ( n1 -- n2 )  zh-rnd um* nip  ;
+
+  \ Original code:
+
+  \ ----
+  \ PseudoRandWord:
+  \
+  \ ; this generates a sequence of pseudo-random values
+  \ ; that has a cycle of 65536 (so it will hit every
+  \ ; single number):
+  \
+  \ ;f(n+1)=241f(n)+257   ;65536
+  \ ;181 cycles, add 17 if called
+  \
+  \ ;Outputs:
+  \ ;     BC was the previous pseudorandom value
+  \ ;     HL is the next pseudorandom value
+  \ ;Notes:
+  \ ;     You can also use B,C,H,L as pseudorandom 8-bit values
+  \ ;     this will generate all 8-bit values
+  \      .db 21h    ;start of ld hl,**
+  \ randSeed:
+  \      .dw 0
+  \      ld c,l
+  \      ld b,h
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,bc
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,hl
+  \      add hl,bc
+  \      inc h
+  \      inc hl
+  \      ld (randSeed),hl
+  \      ret
+  \ ----
+
+need rng-benchmark
+
+: zh-rng-benchmark  ( -- )
+  s" Z80 Heaven" ['] zh-random rng-benchmark  ;
+
+( random-byte )
+
+code random-byte  ( -- b )
+  ED c, 5F c,     \ ld a,r
+  C3 c, pusha ,   \ jp pusha
+  end-code
+
+need bench{
+
+: random-byte-test  ( -- )
+  ['] random-byte ['] rng defer!  cls  bench{ pixels
+  do  rng rng 192 min set-pixel  loop  }bench.
+  ." Z80 R register" cr key drop ;
+
+( lcm-random )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Credit:
+  \
+  \ Adapted from code written by Everett F. Carter, published
+  \ on Forth Dimensions (volume 16, number 2, page 17,
+  \ 1994-08).
+
+need d*  need du/mod  need 2nip
+
+2variable 2seed
+
+2147483647. 2constant max32
+
+  \ Linear Congruential Method, the "minimal standard
+  \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
+  \ pp. 1192-1201
+: lcm-rnd  ( -- d )
+  \ XXX FIXME -- it always returns 0
+  2seed 2@ 16807. d*
+  max32 du/mod  2nip
+  2dup 2seed 2!  ;
+
+  \ \ Original code:
+  \ : lcm-rnd  ( -- d )
+  \   2seed 2@ 16807. umd*
+  \   max32 umd/mod
+  \   2drop 2seed 2!  ;
+
+: lcm-random  ( n1 -- n2 )  lcm-rnd d>s um* nip  ;
+
+need rng-benchmark
+
+: lcm-rng-benchmark  ( -- )
+  s" LCM" ['] lcm-random rng-benchmark  ;
+
+( 8-bit-rng-benchmarks )
+
+  \ Execute all of the 8-bit RNG benchmarks
+
+need rng-benchmark  need +thru  1 4 +thru
+
+' rng8-benchmark2 ' rng-benchmark defer!
+
+jw-rng-benchmark
+mb1-rng-benchmark
+mb2-rng-benchmark
+zh-rng-benchmark
+
+  \ Execute single-cycle benchmarks of RNG that need more than
+  \ one cycle to finish:
+
+' rng8-benchmark1 ' rng-benchmark defer!
+
+jw-rng-benchmark
+
+( jw-crnd )
+
+  \ 2015-12-25
+
+  \ Credit:
+  \
+  \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
+  \ Joe Wingbermuehle
+
+need os-seed
+
+code jw-crnd  ( -- b )
+
+  os-seed fthl
+    \ ld      hl,(randData)
+  ED c, 5F c,  a d ld  m e ld
+    \ ld      a,r
+    \ ld      d,a
+    \ ld      e,(hl)
+  de addp  l add  h xor
+    \ add     hl,de
+    \ add     a,l
+    \ xor     h
+  os-seed sthl
+    \ ld      (randData),hl
+  pusha jp
+    \ jp push_a
+  end-code
+
+need rng-benchmark
+
+: jw-rng-benchmark  ( -- )
+  s" Joe Wingbermuehle" ['] jw-crnd rng-benchmark  ;
+
+  \ Original code:
+
+  \ ----
+  \ ; ouput a=answer 0<=a<=255
+  \ ; all registers are preserved except: af
+  \ random:
+  \         push    hl
+  \         push    de
+  \         ld      hl,(randData)
+  \         ld      a,r
+  \         ld      d,a
+  \         ld      e,(hl)
+  \         add     hl,de
+  \         add     a,l
+  \         xor     h
+  \         ld      (randData),hl
+  \         pop     de
+  \         pop     hl
+  \         ret
+  \ ----
+
+( mb1-crandom )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-12-25
+
+  \ Credit:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+   \ This is a very simple linear congruential generator. The
+   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+   \ advantage is small size and simplicity. Due to nature of
+   \ such generators only a couple of higher bits should be
+   \ considered random.
+
+  \ Input: none
+  \ Output: A = pseudo-random number, period 256
+
+need z80-asm  need os-seed
+
+code mb1-crnd  ( -- b )
+
+  os-seed fta
+    \ ld  a,(seed) ; Seed is usually 0
+  a d ld  a add  a add  d add
+    \  ld  d,a
+    \  add  a,a
+    \  add  a,a
+    \  add  a,d
+  a inc  os-seed sta
+    \  inc  a    ; another possibility is ADD A,7
+    \  ld  (seed),a
+  pusha jp
+  end-code
+
+: mb1-crandom  ( n1 -- n2 )  mb1-crnd um* nip  ;
+  \ XXX FIXME -- it always return zero
+
+need rng-benchmark
+
+  \ : mb1-rng-benchmark  ( -- )
+  \   s" Milos Bazelides 1" ['] mb1-crandom rng-benchmark  ;
+
+: mb1-rng-benchmark  ( -- )
+  s" Milos Bazelides 1" ['] mb1-crnd rng-benchmark  ;
+
+( mb2-crandom )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2015-12-25
+
+  \ Credit:
+  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+
+   \ This is a very simple linear congruential generator. The
+   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+   \ advantage is small size and simplicity. Due to nature of
+   \ such generators only a couple of higher bits should be
+   \ considered random.
+
+  \ Input: none
+  \ Output: A = pseudo-random number, period 256
+
+need z80-asm  need os-seed
+
+code mb2-crnd  ( -- b )
+
+  os-seed fta
+    \ ld  a,(seed) ; Seed is usually 0
+  a d ld  a add  a add  d add
+    \  ld  d,a
+    \  add  a,a
+    \  add  a,a
+    \  add  a,d
+  07 add#  os-seed sta
+    \  add a,7
+    \  ld  (seed),a
+  pusha jp  end-code
+
+: mb2-crandom  ( n1 -- n2 )  mb2-crnd um* nip  ;
+  \ XXX FIXME -- it always return zero
+
+need rng-benchmark
+
+  \ : mb2-rng-benchmark  ( -- )
+  \   s" Milos Bazelides 2" ['] mb2-crandom rng-benchmark  ;
+
+: mb2-rng-benchmark  ( -- )
+  s" Milos Bazelides 2" ['] mb2-crnd rng-benchmark  ;
+
+( zh-crnd )
+
+  \ 2015-12-25
+
+  \ Credit:
+  \
+  \ Code adapted from:
+  \ http://z80-heaven.wikidot.com/math#toc40
+
+code zh-crnd  ( -- b )
+
+  os-seed fta  a e ld
+  a add  e add  a add  a add  e add  #83 add#
+  os-seed sta
+  pusha jp
+
+  end-code
+
+need rng-benchmark
+
+: zh-rng-benchmark  ( -- )
+  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-benchmark  ;
+
+  \ This is one of many variations of PRNGs. This routine is
+  \ not particularly useful for many games, but is fairly
+  \ useful for shuffling a deck of cards. It uses SMC, but that
+  \ can be fixed by defining randSeed elsewhere and using ld
+  \ a,(randSeed) at the beginning.
+
+  \ PseudoRandByte:
+  \ ;f(n+1)=13f(n)+83
+  \ ;97 cycles
+  \      .db 3Eh     ;start of ld a,*
+  \ randSeed:
+  \      .db 0
+  \      ld c,a
+  \      add a,a
+  \      add a,c
+  \      add a,a
+  \      add a,a
+  \      add a,c
+  \      add a,83
+  \      ld (randSeed),a
+  \      ret
+
+  \ 2016-03-31
+  \ Results for 16-bit versions of `random` :
+
+  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+
+  \ | Jupiter ACE manual     | 05937 (012%) | 07652 (153 s) | 1
+  \ | C. G. Montgomery $5E9B | 49151 (099%) | 06917 (138 s) | 11
+  \ | C. G. Montgomery $5E9B | 30985 (063%) | 06917 (138 s) | first only
+  \ | C. G. Montgomery $61BF | 49152 (100%) | 06916 (138 s) | 11
+  \ | C. G. Montgomery $61BF | 31024 (063%) | 06916 (138 s) | first only
+  \ | C. G. Montgomery $62DC | 49152 (100%) | 06917 (138 s) | 12
+  \ | C. G. Montgomery $62DC | 30964 (063%) | 06916 (138 s) | first only
+  \ | C. G. Montgomery $6363 | 49152 (100%) | 06917 (138 s) | 11
+  \ | C. G. Montgomery $6363 | 30917 (062%) | 06917 (138 s) | first only
+  \ | C. G. Montgomery $6594 | 49151 (099%) | 06917 (138 s) | 10
+  \ | C. G. Montgomery $6594 | 31009 (063%) | 06916 (138 s) | first only
+  \ | C. G. Montgomery $65E8 | 49152 (100%) | 06917 (138 s) | 12
+  \ | C. G. Montgomery $65E8 | 31006 (063%) | 06917 (138 s) | first only
+  \ | DX-Forth               | 49152 (100%) | 17733 (354 s) | 12
+  \ | DX-Forth               | 31076 (063%) | 17734 (354 s) | first only
+  \ | Gforth                 | 31189 (063%) | 09746 (194 s) | 1
+  \ | J. E. Rickenbacker     | 08149 (016%) | 18458 (369 s) | 1
+  \ | J.M. Lazo              | 12637 (025%) | 03349 (066 s) | 1
+  \ | Leo Brodie             | 20818 (042%) | 09150 (183 s) | 1
+  \ | lina                   | 23945 (048%) | 09179 (183 s) | 1
+  \ | Milos Bazelides        | 28465 (057%) | 03316 (066 s) | 1
+  \ | Spectrum Forth-83      | 05194 (010%) | 08741 (174 s) | 1
+  \ | Tetris for terminals   | 02038 (004%) | 14200 (284 s) | 1
+  \ | vForth                 | 27448 (055%) | 14806 (296 s) | 10
+  \ | vForth                 | 20804 (042%) | 14806 (296 s) | first only
+  \ | Z88 CamelForth         | 05496 (011%) | 15683 (313 s) | 1
+  \ | Z80 Heaven             | 32599 (066%) | 03371 (067 s) | 1
+
+  \ 2016-03-31
+  \ Results of the 8-bit versions of `rnd` :
+
+  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+
+  \ | Joe Wingbermuehle      | 49145 (099%) | 01076 (021 s) | 29
+  \ | Joe Wingbermuehle      | 25234 (051%) | 01075 (021 s) | first only
+  \ | Milos Bazelides 1      | 00096 (000%) | 01047 (020 s) | 1
+  \ | Milos Bazelides 2      | 00096 (000%) | 01048 (021 s) | 1
+  \ | Z80 Heaven             | 00096 (000%) | 01055 (021 s) | 1
 
   \ vim: filetype=soloforth
   \ development_tests.fsb
@@ -10458,7 +11548,7 @@ variable racket2-delay
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -10596,7 +11686,7 @@ char | star2-udg char>udg
 
 4 constant #stars
 
-: star-coords  ( -- xc yc )  last-column last-row  ;
+: star-coords  ( -- gx gy )  last-column last-row  ;
 
 : .star  ( c -- )
   [ last-column 1+ ] literal random last-row at-xy
@@ -12066,7 +13156,7 @@ code wipe-block  ( column row width height color -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -12109,7 +13199,7 @@ create circle-plot  ( -- a )
   de pop  bc pop  hl pop  ret
   end-asm
 
-code circle  ( xc yc radius -- )
+code circle  ( gx gy radius -- )
 
   \ d=x0
   \ e=y0
@@ -12415,7 +13505,7 @@ code vertical-curtain  ( b -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -12440,7 +13530,7 @@ code vertical-curtain  ( b -- )
 
 need z80-asm  need (hires-emit)
 
-code hires-emit-udg  ( xc yc b -- )
+code hires-emit-udg  ( gx gy b -- )
 
   \ Display the user graphic character _b_ (0..255) at graphic
   \ coordinates _x y_. The system variable "UDG" is supossed to
@@ -12515,7 +13605,7 @@ create (hires-emit)  ( -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -12534,7 +13624,6 @@ create (hires-emit)  ( -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-
 ( rdraw )
 
   \ Credit:
@@ -12543,11 +13632,11 @@ create (hires-emit)  ( -- )
 
 need z80-asm
 
-code rdraw  ( xc yc -- )
+code rdraw  ( gx gy -- )
 
   \ Draw a line relative to the current coordinates.
   \
-  \ xc yc = relative coordinates from the current ones
+  \ gx gy = relative coordinates from the current ones
 
   \ XXX FIXME -- use the whole screen
 
@@ -12662,29 +13751,35 @@ end-asm
   \
   \ Code adapted from Abersoft Forth's `DRAW`.
 
-need plot
+need plot  need os-coordx  need os-coordy
 
 2variable x1  2variable incx  2variable y1  2variable incy
 
-  \ System variables used:
-  \   23677 = COORDX
-  \   23678 = COORDY
-
-: adraw  ( xc yc -- )
+: adraw  ( gx gy -- )
 
   \ Draw a line from the current coordinates to the given
   \ absolute coordinates.
 
-  23678 c@ ( y0 ) dup 0 swap y1 2! - dup abs rot
+  [ os-coordy ] literal c@ ( y0 )
+  dup 0 swap y1 2! - dup abs rot
   \ ( +-ydiff ydiff x )
-  23677 c@ ( x0 ) dup 0 swap x1 2! - dup abs rot
+
+  [ os-coordx ] literal c@ ( x0 )
+  dup 0 swap x1 2! - dup abs rot
   \ ( +-ydiff +-xdiff xdiff ydiff )
+
   max >r dup 0<  \ negative xdiff?
   if    abs 0 swap r@ ud/mod dnegate
   else  0 swap r@ ud/mod  then
+
   incx 2! drop dup 0<  \ negative ydiff?
   if    abs 0 swap r@ ud/mod dnegate
   else  0 swap r@ ud/mod  then
+
+  -->
+
+( adraw )
+
   incy 2! drop r> 1+ 0
   do  x1 @ y1 @ plot
       x1 2@ incx 2@ d+ x1 2!
@@ -12856,7 +13951,7 @@ need os-chars  need os-udg
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -12882,7 +13977,7 @@ need (pixel-addr)
 
   \ XXX TODO use z80-asm
 
-code pixel-addr  ( xc yc -- n a )
+code pixel-addr  ( gx gy -- n a )
   \ Address of a pixel in the screen.
   \ x = 0..255
   \ y = 0..191
@@ -12990,7 +14085,7 @@ create (pixel-addr)  ( -- a )
 
 need (pixel-addr)
 
-code plot  ( xc yc -- )
+code plot  ( gx gy -- )
 
   D9 c,               \ exx ; save Forth IP
   E1 c,               \ pop hl
@@ -13022,7 +14117,7 @@ code plot  ( xc yc -- )
 
 need (pixel-addr)  need z80-asm
 
-code set-pixel  ( xc yc -- )
+code set-pixel  ( gx gy -- )
 
   \ XXX FIXME system halt?
 
@@ -13048,7 +14143,7 @@ code set-pixel  ( xc yc -- )
 
 need (pixel-addr)  need z80-asm
 
-code reset-pixel  ( xc yc -- )
+code reset-pixel  ( gx gy -- )
 
   hl pop  de pop  bc push
   l b ld  e c ld  (pixel-addr) call
@@ -13072,7 +14167,7 @@ code reset-pixel  ( xc yc -- )
 
 need (pixel-addr)  need z80-asm
 
-code toggle-pixel  ( xc yc -- )
+code toggle-pixel  ( gx gy -- )
 
   hl pop  de pop  bc push
   l b ld  e c ld  (pixel-addr) call
@@ -13087,7 +14182,7 @@ code toggle-pixel  ( xc yc -- )
 
 need (pixel-addr)  need z80-asm
 
-code test-pixel  ( xc yc -- f )
+code test-pixel  ( gx gy -- f )
   hl pop  de pop  bc push
   \ l = y coordinate
   \ e = x coordinate
@@ -17120,12 +18215,14 @@ variable print-width
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Random number generators.
+  \ Pseudo-random number generators.
+  \
+  \ See benchmark results in <development_benchmarks.rng.fsb>.
 
   \ -----------------------------------------------------------
   \ Author
@@ -17139,29 +18236,19 @@ variable print-width
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( randomize randomize0 )
+( rnd random )
 
-need os-seed
+  \ Random Number Generator by C. G. Montgomery
 
-[needed] randomize0 ?\ : randomize  ( n -- )  os-seed !  ;
-  \ Set the seed of the random number generator.
-
-need os-frames
-
-: randomize0  ( n -- )
-  ?dup 0=  if  os-frames @  then  os-seed !  ;
-  \ Set the seed of the random number generator;
-  \ if _n_ is zero use the system frames counter instead.
-
-( rnd random )  \ ==rng==
-
-  \ Credit:
+  \ 2015-12-13: Found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \
-  \ Code adapted from Leo Brodie's _Starting Forth_.
+  \ 2016-03-31: Adapted to Solo Forth.
 
-need os-seed
+2variable rnd-seed  $0111 rnd-seed !
 
-: rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
+: rnd  ( -- u )
+  rnd-seed 2@ $61BF um* rot 0 d+ over rnd-seed 2!  ;
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
@@ -17172,433 +18259,7 @@ need random
 : random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
   \ Return a random number from _n1_ (min) to _n2_ (max).
 
-( rng-benchmark )
-
-  \ Random number generator benchmark
-
-need set-pixel  need bench{  need pixels  need u%  need 3dup
-
-256 192 * constant #pixels
-  \ number of pixels of the screen
-
-defer rng  ( n -- 0..n-1 )
-
-: pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
-  \ Print _u_ pixels as a percentage of the maximum
-  \ number of pixels.
-
-: .pixels  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
-  \ Print _u_ as the number of pixels.
-
-: .title  ( ca len -- )  ." Code: " type  ;
-
-variable cycles
-
-defer .cycles  ( -- )
-
-: (.cycles)  ( -- )
-  cycles ?  s" cycles" cycles @ 1 = + type  ;
-  \ Print the number of cycles.
-
-: .time  ( d -- )  bench. ." per cycle" cr  ;
-
-: .result  ( ca len d -- )
-  2>r pixels >r  .title cr  r> .pixels cr
-  2r> .time .cycles   ;
-  \ Calculate and print the result of the benchmark.
-  \ _d_ is the time in frames; _ca len_ is the title.
-
--->
-
-( rng-benchmark )
-
-defer random-coords  ( -- xc yc )
-  \ Random graphic coordinates. Configurable depending on the
-  \ type of `random` to benchmark.
-
-: (random-coords)  ( -- xc yc )  256 rng 193 rng  ;
-  \ Default behaviour of `random-coords`.
-
-: fill-screen  ( -- )
-  #pixels 0 do  random-coords set-pixel  loop  ;
-  \ Fill the screen with random pixels.
-
-: signal  ( -- )  cycles @ %111 and border  ;
-  \ Change the border color according to the current count
-  \ of cycles, just to show that the benchmark is running.
-
-: (rng-benchmark)  ( -- d )
-  1 cycles +!  signal  bench{ fill-screen }bench  ;
-  \ Do the RNG benchmark of ony cycle and return its result.
-
-: wait  ( -- )  key drop  ;
-
-: finish  ( ca len d -- )  0 border  .result  wait  ;
-  \ Finish the benchmark.
-  \ _d_ is the time in frames; _ca len_ is the title.
-
-: init  ( xt1 xt2 x3 -- )
-  ['] random-coords defer!  ['] .cycles defer!  ['] rng defer!
-  page  -1 cycles !  ;
-
-defer finish?  ( i*x -- j*x f )
-  \ Finish the benchmark?
-
-: new-pixels?  ( n1 -- n2 f )  pixels tuck =  ;
-  \ Are there new pixels on the screen, comparing the previous
-  \ count _n1_ with the new count _n2_?
-
-' new-pixels? ' finish? defer!  -->
-
-( rng-benchmark )
-
-defer rng-benchmark  ( ca len xt -- )
-  \ Do a RNG benchmark for the `random` word _xt_ with title
-  \ _ca len_.
-
-: (rng-benchmark2)  ( ca len -- )
-  0 begin   (rng-benchmark) 2>r
-            finish? dup 0= if  2rdrop  then
-  until     drop 2r> finish  ;
-  \ Do a double RNG benchmark with title _ca len_: The time
-  \ required to complete one cycle (49152 random pixels), plus
-  \ the number of cycles required until the number of pixels
-  \ doesn't change.
-
-: rng-benchmark2  ( ca len xt -- )
-  ['] (.cycles) ['] (random-coords) init  (rng-benchmark2)  ;
-  \ Do a double RNG benchmark for the `random` word _xt_ with
-  \ title _ca len_: The time required to complete one cycle
-  \ (49152 random pixels), plus the number of cycles required
-  \ until the number of pixels doesn't change.
-
-  \ The best `random` words need several cycles. In such cases
-  \ it's useful a simpler test to show only the pixels set at
-  \ the end of the first cycle:
-
-' rng-benchmark2 ' rng-benchmark defer!  \ default benchmark
-
-: (.cycle)  ( -- )  ." First cycle only"  ;
-
-: (rng-benchmark1)  ( ca len -- )
-  (rng-benchmark) .result wait  ;
-  \ Do a one-cycle RNG benchmark with title _ca len_: Only the
-  \ time required to complete one cycle (49152 random pixels).
-
-: rng-benchmark1  ( ca len xt -- )
-  ['] (.cycle) ['] (random-coords) init  (rng-benchmark1)  ;
-  \ Do a one-cycle RNG benchmark for `random` word _xt_ with
-  \ title _ca len_: Only the time required to complete one
-  \ cycle (49152 random pixels).
-
--->
-
-( rng-benchmark )
-
-  \ Versions for 8-bit `rnd`.
-
-: crnd-coords  ( -- xc yc )  rng rng 192 min  ;
-  \ Random graphic coordinates for 8-bit `rnd`.
-
-: rng8-benchmark2  ( ca len xt -- )
-  ['] (.cycles) ['] crnd-coords init  (rng-benchmark2)  ;
-  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
-  \ title _ca len_: Only the time required to complete one
-  \ cycle (49152 random pixels).
-
-: rng8-benchmark1  ( ca len xt -- )
-  ['] (.cycle) ['] crnd-coords init  (rng-benchmark1)  ;
-  \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
-  \ title _ca len_: Only the time required to complete one
-  \ cycle (49152 random pixels).
-
-( all-rng-benchmarks )
-
-  \ Execute all 16-bit RNG benchmarks
-
-need rng-benchmark  need +thru  1 13 +thru
-
-ace-rng-benchmark   dx-rng-benchmark
-gf-rng-benchmark    jer-rng-benchmark
-jml-rng-benchmark   lb-rng-benchmark
-lina-rng-benchmark  mb-rng-benchmark
-sf83-rng-benchmark  tt-rng-benchmark
-vf-rng-benchmark    z88-rng-benchmark
-zh-rng-benchmark
-
-  \ Execute single-cycle benchmarks of RNG that need more than
-  \ one cycle to finish:
-
-' rng-benchmark1 ' rng-benchmark defer!
-
-dx-rng-benchmark  vf-rng-benchmark
-
-( ace-random )
-
-  \ Credit:
-  \
-  \ Adapted from ACE Forth, after the Jupiter ACE manual.
-  \ Also used by Abersoft Forth in its bundled game
-  \ "Bertie".
-
-need os-seed
-
-: ace-rnd  ( -- n )
-  os-seed @ 75 um* 75. d+ 2dup u< - - 1- dup os-seed !  ;
-
-: ace-random  ( n1 -- n2 )  ace-rnd um* nip  ;
-
-need rng-benchmark
-
-: ace-rng-benchmark  ( -- )
-  s" Jupiter ACE manual" ['] ace-random rng-benchmark  ;
-
-( dx-random )
-
-  \ Credit:
-  \
-  \ Code from DX-Forth 4.13.
-
-2variable dx-seed  1. dx-seed 2!
-
-need d*
-
-: dx-rnd ( -- u )
-  dx-seed 2@ $15A4E35. d* 1. d+ tuck dx-seed 2!  ;
-  \ Get random number
-
-: dx-random ( u -- 0..u-1 )  dx-rnd um* nip  ;
-  \ Get random number between 0 and u-1
-
-need rng-benchmark
-
-: dx-rng-benchmark  ( -- )
-  s" DX-Forth" ['] dx-random rng-benchmark  ;
-
-( gf-random )
-
-  \ Credit:
-  \
-  \ Adapted from Gforth.
-
-need os-seed  need ud*
-
-: gf-rnd  ( -- n )
-  272958469. os-seed @ ud* d>s 1+ dup os-seed !  ;
-
-: gf-random  ( n1 -- n2 )  gf-rnd um* nip  ;
-
-need rng-benchmark
-
-: gf-rng-benchmark  ( -- )
-  s" Gforth" ['] gf-random rng-benchmark  ;
-
-( jer-random )
-
-  \ Credit:
-  \
-  \ Random number generator by J. E. Rickenbacker, published on
-  \ Forth Dimensions (volume 2, number 2, page 34, 1980-07).
-
-need os-seed
-
-: jer-rnd  ( -- n )
-  os-seed @ 259 * 3 + 32767 and dup os-seed !  ;
-
-: jer-random ( n1 -- n2 )
-  jer-rnd 32767 */  ;
-  \ Return a random number _n2_ (0 <= n2 < n1).
-
-  \ XXX Note: patterns
-
-need rng-benchmark
-
-: jer-rng-benchmark  ( -- )
-  s" J. E. Rickenbacker" ['] jer-random rng-benchmark  ;
-
-( jml-random )
-
-  \ Credit:
-  \
-  \ Adapted from code written by JosÃ© Manuel Lazo,
-  \ published on Microhobby, issue 85 (1986-07), page 24:
-  \ http://microhobby.org/numero085.htm
-  \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
-
-need z80-asm  need os-seed
-
-code jml-rnd  ( -- u )
-
-  os-seed fthl  hl push
-  hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
-  de pop  de addp  0029 de ldp#  de addp
-  os-seed sthl
-  jppushhl
-  end-code
-
-: jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
-
-need rng-benchmark
-
-: jml-rng-benchmark  ( -- )
-  s" J.M. Lazo" ['] jml-random rng-benchmark  ;
-
-( lb-random )
-
-  \ Credit:
-  \
-  \ Code adapted from Leo Brodie's _Starting Forth_.
-
-need os-seed
-
-: lb-rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
-
-: lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
-
-need rng-benchmark
-
-: lb-rng-benchmark  ( -- )
-  s" Leo Brodie" ['] lb-random rng-benchmark  ;
-
-( lina-random )
-
-need os-seed
-
-: lina-rnd  ( -- n )
-  os-seed @ 107465 * 234567 + dup os-seed !  ;
-
-: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
-
-need rng-benchmark
-
-: lina-rng-benchmark  ( -- )
-  s" lina" ['] lina-random rng-benchmark  ;
-
-( mb-random )
-
-  \ Credit:
-  \
-  \ Adapted from code published by Milos Bazelides:
-  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
-
-need z80-asm  need os-seed
-
-code mb-rnd  ( -- n )
-  os-seed de ftp
-  d a ld  e h ld  #253 l ld#
-  a or  de sbcp
-  0 sbc#  de sbcp
-  0 d ld#  d sbc  a e ld
-  de sbcp
-  cy if  hl incp  then
-  os-seed sthl
-  jppushhl   end-code
-
-: mb-random  ( n1 -- n2 )  mb-rnd um* nip  ;
-
-  \ Original code:
-
-  \ ----
-  \ ; Input: none
-  \ ; Output: HL = pseudo-random number, period 65536
-
-  \ Rand16:
-  \  ld  de,Seed    ; Seed is usually 0
-  \  ld  a,d
-  \  ld  h,e
-  \  ld  l,253
-  \  or  a
-  \  sbc  hl,de
-  \  sbc  a,0
-  \  sbc  hl,de
-  \  ld  d,0
-  \  sbc  a,d
-  \  ld  e,a
-  \  sbc  hl,de
-  \  jr  nc,Rand
-  \  inc  hl
-  \ Rand:
-  \  ld  (Rand16+1),hl
-  \  ret
-  \ ----
-
-need rng-benchmark
-
-: mb-rng-benchmark  ( -- )
-  s" Milos Bazelides" ['] mb-random rng-benchmark  ;
-
-( sf83-random )
-
-  \ Credit:
-  \
-  \ Code from Spectrum Forth-83.
-
-need os-seed  3 os-seed !
-
-: sf83-random  ( n -- 0..n-1 )
-  os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
-
-need rng-benchmark
-
-: sf83-rng-benchmark  ( -- )
-  s" Spectrum Forth-83" ['] sf83-random rng-benchmark  ;
-
-( tt-random )
-
-  \ Credit:
-  \
-  \ Code from tt.pfe, Tetris for terminals, redone in
-  \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
-
-need os-seed
-
-: tt-random   ( n -- 0..n-1 )
-    os-seed @ 13 * $7FFF and
-    dup os-seed !  swap mod ;
-
-need rng-benchmark
-
-: tt-rng-benchmark  ( -- )
-  s" Tetris for terminals" ['] tt-random rng-benchmark  ;
-
-( vf-random )
-
-  \ Credit:
-  \
-  \ Code from vForth.
-
-need os-frames
-
-: vf-random  ( n1 -- n2 )
-  1+ 8195 os-frames @ um* 1. d+
-  16383 um/mod drop
-  \ dup os-seed !
-  swap mod  ;
-
-need rng-benchmark
-
-: vf-rng-benchmark  ( -- )
-  s" vForth" ['] vf-random rng-benchmark  ;
-
-( z88-random )
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-need ud*  need os-seed
-
-: z88-random  ( u1 -- u2 )
-  1103515245. \ 20077 16838
-  os-seed @ ud* 12345. d+ over os-seed !
-  rot ud/mod 2drop  ;
-
-need rng-benchmark
-
-: z88-rng-benchmark  ( -- )
-  s" Z88 CamelForth" ['] z88-random rng-benchmark  ;
-
-( zh-random )
+( fast-random )
 
   \ Credit:
   \
@@ -17607,7 +18268,7 @@ need rng-benchmark
 
 need z80-asm  need os-seed
 
-code zh-rnd  ( -- n )
+code fast-rnd  ( -- n )
 
   os-seed fthl
     \ ld hl,(seed)
@@ -17634,7 +18295,7 @@ code zh-rnd  ( -- n )
     \ ld (seed),hl
   jppushhl   end-code
 
-: zh-random  ( n1 -- n2 )  zh-rnd um* nip  ;
+: fast-random  ( n1 -- n2 )  fast-rnd um* nip  ;
 
   \ Original code:
 
@@ -17676,84 +18337,7 @@ code zh-rnd  ( -- n )
   \      ret
   \ ----
 
-need rng-benchmark
-
-: zh-rng-benchmark  ( -- )
-  s" Z80 Heaven" ['] zh-random rng-benchmark  ;
-
-( random-byte )
-
-code random-byte  ( -- b )
-  ED c, 5F c,     \ ld a,r
-  C3 c, pusha ,   \ jp pusha
-  end-code
-
-need bench{
-
-: random-byte-test  ( -- )
-  ['] random-byte ['] rng defer!  cls  bench{ pixels
-  do  rng rng 192 min set-pixel  loop  }bench.
-  ." Z80 R register" cr key drop ;
-
-( lcm-random )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Credit:
-  \
-  \ Adapted from code written by Everett F. Carter, published
-  \ on Forth Dimensions (volume 16, number 2, page 17,
-  \ 1994-08).
-
-need d*  need du/mod  need 2nip
-
-2variable 2seed
-
-2147483647. 2constant max32
-
-  \ Linear Congruential Method, the "minimal standard
-  \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
-  \ pp. 1192-1201
-: lcm-rnd  ( -- d )
-  \ XXX FIXME -- it always returns 0
-  2seed 2@ 16807. d*
-  max32 du/mod  2nip
-  2dup 2seed 2!  ;
-
-  \ \ Original code:
-  \ : lcm-rnd  ( -- d )
-  \   2seed 2@ 16807. umd*
-  \   max32 umd/mod
-  \   2drop 2seed 2!  ;
-
-: lcm-random  ( n1 -- n2 )  lcm-rnd d>s um* nip  ;
-
-need rng-benchmark
-
-: lcm-rng-benchmark  ( -- )
-  s" LCM" ['] lcm-random rng-benchmark  ;
-
-( all-rng-benchmarks )
-
-  \ Execute all 8-bit RNG benchmarks
-
-need rng-benchmark  need +thru  1 4 +thru
-
-' rng8-benchmark2 ' rng-benchmark defer!
-
-jw-rng-benchmark
-mb1-rng-benchmark
-mb2-rng-benchmark
-zh-rng-benchmark
-
-  \ Execute single-cycle benchmarks of RNG that need more than
-  \ one cycle to finish:
-
-' rng8-benchmark1 ' rng-benchmark defer!
-
-jw-rng-benchmark
-
-( jw-crnd )
+( crnd )
 
   \ 2015-12-25
 
@@ -17764,7 +18348,7 @@ jw-rng-benchmark
 
 need os-seed
 
-code jw-crnd  ( -- b )
+code crnd  ( -- b )
 
   os-seed fthl
     \ ld      hl,(randData)
@@ -17782,10 +18366,7 @@ code jw-crnd  ( -- b )
     \ jp push_a
   end-code
 
-need rng-benchmark
-
-: jw-rng-benchmark  ( -- )
-  s" Joe Wingbermuehle" ['] jw-crnd rng-benchmark  ;
+: crandom  ( n1 -- n2 )  crnd um* nip  ;
 
   \ Original code:
 
@@ -17808,141 +18389,19 @@ need rng-benchmark
   \         ret
   \ ----
 
-( mb1-crandom )
+( randomize randomize0 )
 
-  \ XXX UNDER DEVELOPMENT
+need os-seed
 
-  \ 2015-12-25
+[needed] randomize0 ?\ : randomize  ( n -- )  os-seed !  ;
+  \ Set the seed of the random number generator.
 
-  \ Credit:
-  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
+need os-frames
 
-   \ This is a very simple linear congruential generator. The
-   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
-   \ advantage is small size and simplicity. Due to nature of
-   \ such generators only a couple of higher bits should be
-   \ considered random.
-
-  \ Input: none
-  \ Output: A = pseudo-random number, period 256
-
-need z80-asm  need os-seed
-
-code mb1-crnd  ( -- b )
-
-  os-seed fta
-    \ ld  a,(seed) ; Seed is usually 0
-  a d ld  a add  a add  d add
-    \  ld  d,a
-    \  add  a,a
-    \  add  a,a
-    \  add  a,d
-  a inc  os-seed sta
-    \  inc  a    ; another possibility is ADD A,7
-    \  ld  (seed),a
-  pusha jp
-  end-code
-
-: mb1-crandom  ( n1 -- n2 )  mb1-crnd um* nip  ;
-  \ XXX FIXME -- it always return zero
-
-need rng-benchmark
-
-  \ : mb1-rng-benchmark  ( -- )
-  \   s" Milos Bazelides 1" ['] mb1-crandom rng-benchmark  ;
-
-: mb1-rng-benchmark  ( -- )
-  s" Milos Bazelides 1" ['] mb1-crnd rng-benchmark  ;
-
-( mb2-crandom )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ 2015-12-25
-
-  \ Credit:
-  \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
-
-   \ This is a very simple linear congruential generator. The
-   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
-   \ advantage is small size and simplicity. Due to nature of
-   \ such generators only a couple of higher bits should be
-   \ considered random.
-
-  \ Input: none
-  \ Output: A = pseudo-random number, period 256
-
-need z80-asm  need os-seed
-
-code mb2-crnd  ( -- b )
-
-  os-seed fta
-    \ ld  a,(seed) ; Seed is usually 0
-  a d ld  a add  a add  d add
-    \  ld  d,a
-    \  add  a,a
-    \  add  a,a
-    \  add  a,d
-  07 add#  os-seed sta
-    \  add a,7
-    \  ld  (seed),a
-  pusha jp  end-code
-
-: mb2-crandom  ( n1 -- n2 )  mb2-crnd um* nip  ;
-  \ XXX FIXME -- it always return zero
-
-need rng-benchmark
-
-  \ : mb2-rng-benchmark  ( -- )
-  \   s" Milos Bazelides 2" ['] mb2-crandom rng-benchmark  ;
-
-: mb2-rng-benchmark  ( -- )
-  s" Milos Bazelides 2" ['] mb2-crnd rng-benchmark  ;
-
-( zh-crnd )
-
-  \ 2015-12-25
-
-  \ Credit:
-  \
-  \ Code adapted from:
-  \ http://z80-heaven.wikidot.com/math#toc40
-
-code zh-crnd  ( -- b )
-
-  os-seed fta  a e ld
-  a add  e add  a add  a add  e add  #83 add#
-  os-seed sta
-  pusha jp
-
-  end-code
-
-need rng-benchmark
-
-: zh-rng-benchmark  ( -- )
-  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-benchmark  ;
-
-  \ This is one of many variations of PRNGs. This routine is
-  \ not particularly useful for many games, but is fairly
-  \ useful for shuffling a deck of cards. It uses SMC, but that
-  \ can be fixed by defining randSeed elsewhere and using ld
-  \ a,(randSeed) at the beginning.
-
-  \ PseudoRandByte:
-  \ ;f(n+1)=13f(n)+83
-  \ ;97 cycles
-  \      .db 3Eh     ;start of ld a,*
-  \ randSeed:
-  \      .db 0
-  \      ld c,a
-  \      add a,a
-  \      add a,c
-  \      add a,a
-  \      add a,a
-  \      add a,c
-  \      add a,83
-  \      ld (randSeed),a
-  \      ret
+: randomize0  ( n -- )
+  ?dup 0=  if  os-frames @  then  os-seed !  ;
+  \ Set the seed of the random number generator;
+  \ if _n_ is zero use the system frames counter instead.
 
   \ vim: filetype=soloforth
   \ return_stack.fsb
@@ -18479,7 +18938,7 @@ need os-chars  need os-chans
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603311653
 
   \ -----------------------------------------------------------
   \ Description
@@ -18523,7 +18982,7 @@ need fzx-emit
   \ need some changes before this mode can work fine, and the
   \ FZX driver as well.
 
-: fzx-at-xy  ( xc yc -- )  fzx-y c! fzx-x c!  ;
+: fzx-at-xy  ( gx gy -- )  fzx-y c! fzx-x c!  ;
 : fzx-cr  ( -- )  13 fzx-emit  ;
   \ : fzx-home  ( -- )  0 fzx-x !  ;  \ XXX TODO
 : fzx-home  ( -- )  0 191 fzx-at-xy  ;
@@ -19885,7 +20344,7 @@ wid-of replaces-voc constant wid-subst
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201603301710
 
   \ -----------------------------------------------------------
   \ Description
@@ -19929,6 +20388,18 @@ wid-of replaces-voc constant wid-subst
 [unneeded] os-udg      ?\ 23675 constant os-udg
   \ 1 cell:
   \ address of the User Defined Graphics (characters 128..255)
+
+[unneeded] os-coords      ?\ 23677 constant os-coords
+  \ 2 cells:
+  \ coordinates of last point plotted
+
+[unneeded] os-coordx      ?\ 23677 constant os-coordx
+  \ 1 cell:
+  \ x-coordinate of last point plotted
+
+[unneeded] os-coordy      ?\ 23678 constant os-coordy
+  \ 1 cell:
+  \ y-coordinate of last point plotted
 
   \ vim: filetype=soloforth
   \ tape.fsb
@@ -21864,202 +22335,6 @@ exit
   up fthl \ ld hl,(user_variables_pointer) \ XXX FIXME
   de addp  \ hl= address of the user variable
   jppushhl  end-asm
-
-  \ vim: filetype=soloforth
-  \ value.char.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ `cvalue` and `cto`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( cvalue cto )
-
-: cvalue  ( b "name"  -- )  cconstant  ;
-
-: cto  ( Interpretation: b "name" -- )
-       ( Compilation: "name" -- )
-  ' >body compiling? if    postpone literal postpone c!
-                       else  c!  then  ; immediate
-
-  \ vim: filetype=soloforth
-  \ value.double.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ `2to` for a non-standard version of
-  \ `2value`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( 2value 2to )
-
-  \ Implementation of `2value` (from Forth-2012) but with
-  \ the non-standard word `2to`
-
-: 2value  ( d "name"  -- )  2constant  ;
-
-: 2to  ( Interpretation: d "name" -- )
-       ( Compilation: "name" -- )
-  ' >body compiling? if    postpone literal postpone 2!
-                     else  2!  then  ; immediate
-
-  \ vim: filetype=soloforth
-  \ value.forth-2012.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ A Forth-2012 implemention of `value`,
-  \ `2value` and `to`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( value 2value to )
-
-  \ Origin: Forth-2012.
-
-  \ This Forth-2012 implementation of `to` is provided as an
-  \ alternative, but it's bigger and slower than the Forth-94
-  \ `to` and the non-standard `2to`.
-
-: value  ( n "name"  -- )  create  0 c, ,  does> 1+ @  ;
-: 2value  ( n "name"  -- )  create  1 c, , ,  does> 1+ 2@  ;
-
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' >body dup 1+ swap c@
-  compiling? if  swap postpone literal
-                 if  postpone 2!  else  postpone !  then  exit
-             then
-  if  2!  else  !  then
-  ; immediate
-
-  \ vim: filetype=soloforth
-  \ value.forth-94.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ The Forth-94 version of `value`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( value to )
-
-  \ Origin: Forth-94.
-
-: value  ( n "name"  -- )  constant  ;
-
-: to  ( Interpretation: n "name" -- )
-      ( Compilation: "name" -- )
-  ' >body compiling? if    postpone literal postpone !
-                     else  !  then  ; immediate
-
-  \ vim: filetype=soloforth
-  \ value.non-parsing.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ A non-standard version of `value` with a
-  \ non-parsing `to`.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( value to )
-
-  \ Non-standard implementation of `value` with non-parsing
-  \ `to`. This could be useful in special cases.
-
-  \ Credit:
-  \
-  \ Code inspired by lina.
-
-variable (value)  ['] @ (value) !
-: to    ( -- )  ['] ! (value) !  ;
-: value  ( n "name" -- )
-  create ,  does>   (value) perform  ['] @ (value) !  ;
 
   \ vim: filetype=soloforth
   \ word_lists.fsb

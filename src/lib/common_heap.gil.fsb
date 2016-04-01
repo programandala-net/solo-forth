@@ -3,6 +3,8 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
+  \ XXX UNDER DEVELOPMENT
+
   \ Last modified: 20160324
 
   \ -----------------------------------------------------------
@@ -17,24 +19,26 @@
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ Based on "Gestor de memoria dinámica (version 1)" by Javier
+  \ Gil, from his book _Introducción a Forth_ (2007-01),
+  \ <http://disc.ua.es/~gil/#forth>.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( create-heap )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Inspired by:
-  \
-  \ Gestor de memoria dinámica (version 1)
-  \ By Javier Gil
-  \ From his book _Introducción a Forth_ (2007-01)
+  \ -----------------------------------------------------------
+  \ History
 
   \ 2015-11-18: Start.
   \ 2015-11-21: Changes.
+
+( create-heap )
 
 need value  need set-bit  need reset-bit  need bit?
 need reserve  need alias

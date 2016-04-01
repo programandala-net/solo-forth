@@ -1,4 +1,4 @@
-  \ value.double.fsb
+  \ data.value.forth-94.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -8,8 +8,7 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ `2to` for a non-standard version of
-  \ `2value`.
+  \ The Forth-94 version of `value`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -23,16 +22,15 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( 2value 2to )
+( value to )
 
-  \ Implementation of `2value` (from Forth-2012) but with
-  \ the non-standard word `2to`
+  \ Origin: Forth-94.
 
-: 2value  ( d "name"  -- )  2constant  ;
+: value  ( n "name"  -- )  constant  ;
 
-: 2to  ( Interpretation: d "name" -- )
-       ( Compilation: "name" -- )
-  ' >body compiling? if    postpone literal postpone 2!
-                     else  2!  then  ; immediate
+: to  ( Interpretation: n "name" -- )
+      ( Compilation: "name" -- )
+  ' >body compiling? if    postpone literal postpone !
+                     else  !  then  ; immediate
 
   \ vim: filetype=soloforth

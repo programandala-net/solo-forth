@@ -33,7 +33,6 @@ need s=
 
 : [else]  ( "..." -- )
 
-  \ 1 begin   parse-name 2dup swap c@ and \ XXX OLD
   1 begin   parse-name dup
     while   2dup s" [if]" s=
             if    2drop 1+

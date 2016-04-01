@@ -4182,14 +4182,14 @@ variable_pfa	EQU 06E62H
 variable_xtp	EQU 0C724H
 version_	EQU 07859H
 version_build_high_part EQU 00133H
-version_build_low_part EQU 09F45H
+version_build_low_part EQU 09F91H
 version_lfa	EQU 0CFC9H
 version_major	EQU 00000H
 version_minor	EQU 00003H
 version_nt	EQU 0CFCBH
 version_patch	EQU 00000H
 version_pfa	EQU 0785CH
-version_release_candidate EQU 00007H
+version_release_candidate EQU 00008H
 version_xtp	EQU 0CFC7H
 voc_link.init_value EQU 05E0CH
 voc_link_	EQU 06F21H
