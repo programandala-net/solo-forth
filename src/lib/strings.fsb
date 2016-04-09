@@ -236,3 +236,46 @@ need suffix?
 
   \ }doc
 
+( string/ )
+
+code string/  ( ca1 len1 len2 -- ca2 len2 )
+    \                           ;   T  B
+    \                           ;  -- --
+  D9 c,  C1 c,  D1 c,  E1 c,
+    \ exx          ; save IP    ;  04 01
+    \ pop bc       ; len2       ;  10 01
+    \ pop de       ; len1       ;  10 01
+    \ pop hl       ; ca1        ;  10 01
+  19 c,  A7 c,  ED c, 42 c,
+    \ add hl,de                 ;  11 01
+    \ and a        ; cy=0       ;  04 01
+    \ sbc hl,bc    ; hl=ca2     ;  15 02
+  E5 c,  C5 c,
+    \ push hl                   ;  11 01
+    \ push bc                   ;  11 01
+  D9 c,  jpnext
+    \ exx          ; restore IP ;  04 01
+    \ jp (ix)                   ;  08 02
+    \                           ;  -- --
+    \                           ;  98 13 Total
+  end-code
+
+  \ doc{
+  \
+  \ string/  ( ca1 len1 len2 -- ca2 len2 )
+  \
+  \ Return the _len2_ ending characters of string _ca1 len1_.
+  \
+  \ }doc
+
+exit
+
+  \ Slower version, 1 byte shorter
+  \
+  \ Credit: code from Galope.
+
+: string/  ( ca1 len1 len2 -- ca2 len2 )
+  >r + r@ - r>  ;
+  \ Return the _len2_ ending characters of string _ca1 len1_.
+
+  \ vim: filetype=soloforth

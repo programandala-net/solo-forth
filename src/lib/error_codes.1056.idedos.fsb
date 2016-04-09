@@ -3,14 +3,15 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031805
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Error codes of IDEDOS.
+  \ The Forth system error codes (range -4095..-256) used for
+  \ IDEDOS (range -1066..-1056).
 
-( IDEDOS error codes #-1056..#-1066 )
+( IDEDOS error codes #-1056..#-1066)
 
 \ #-1056 IDEDOS: Invalid partition
 \ #-1057 IDEDOS: Partition already exists

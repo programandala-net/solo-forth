@@ -1,4 +1,4 @@
-  \ data.noble_arrays.fsb
+  \ data.array.noble.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -8,44 +8,8 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Noble arrays.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( 1array ) \ noble-arrays
-
   \ Toolset for one- and two-dimensional arrays by Julian V.
-  \ Noble
-
-  \ 2015-11-15
-
-  \ ---------------------------------------------------
-  \ (c) Copyright 2001 Julian V. Noble. \
-  \ Permission is granted by the author to \
-  \ use this software for any application pro- \
-  \ vided this copyright notice is preserved. \
-  \ ---------------------------------------------------
-
-  \ ...........................................................
-  \ References:
-  \
-  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
-  \ http://forth.sourceforge.net/techniques/
-  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
-
-  \ ...........................................................
-  \ Description:
+  \ Noble:
 
   \ Well, as I am sure everyone knows to the point of hurling
   \ (regurgitating) by now, I chose a format that looks
@@ -104,9 +68,47 @@
   \ can delete that stuff.
 
   \ ...........................................................
-  \ Implementation:
+  \ References
 
-  \ words for 1-dimensional arrays
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Copyright (C) 2001 Julian V. Noble
+
+  \ Modified for Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ License of the original version:
+
+  \ ---------------------------------------------------
+  \     (c) Copyright 2001  Julian V. Noble.          \
+  \       Permission is granted by the author to      \
+  \       use this software for any application pro-  \
+  \       vided this copyright notice is preserved.   \
+  \ ---------------------------------------------------
+
+  \ License of this version:
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-15: Adapted to Solo Forth.
+  \
+  \ 2016-04-03: Header reorganized after the original
+  \ documentation.
+
+( 1array )
 
 need <=
 

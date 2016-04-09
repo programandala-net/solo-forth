@@ -130,6 +130,8 @@
   \
   \ Load block _block_ if flag _f_ is true, else do nothing.
   \
+  \ Origin: Pygmy Forth.
+  \
   \ }doc
 
 [unneeded] reload
@@ -155,6 +157,8 @@
   \ loads  ( block n -- )
   \
   \ Load _n_ blocks starting from block _block_.
+  \
+  \ Origin: MMSFORTH.
   \
   \ }doc
 

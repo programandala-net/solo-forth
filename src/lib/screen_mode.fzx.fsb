@@ -11,9 +11,12 @@
   \ The FZX screen mode.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ FZX driver - Copyright (c) 2013 Einar Saukas
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License

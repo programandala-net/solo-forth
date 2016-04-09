@@ -3,39 +3,30 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
+  
+  \ Last modified: 201604032007
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The sample game Life.
+  \ Conway's Game of Life, or Occam's Razor Dulled
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Original ANS Forth version: Copyright (C) 1995 Leo Wong.
+  \
+  \ Version for kForth: K. Myneny, 2001-12-26.
+  \
+  \ Version for Solo Forth: Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
-  \ License
+  \ Credit
 
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( life )
-
-  \ XXX UNDER DEVELOPMENT
-  \
-  \ XXX -- works in Gforth, but freezes here.
-
-  \ Credit:
-  \
   \ Code adapted from kForth. Original Credit:
 
-  \ ____
-  \
-  \ Conway's Game of Life, or Occam's Razor Dulled
-  \
   \ The original ANS Forth version by Leo Wong (see bottom) has
   \ been modified slightly to allow it to run under kForth.
   \ Also, delays have been changed from 1000 ms to 100 ms for
@@ -45,7 +36,24 @@
   \ Copyright 1995 Leo Wong
   \ hello at albany dot net
   \ http://www.albany.net/~hello/
-  \ ____
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015: Start.
+  \
+  \ 2016-04-03: Header reorganized after the original credit.
+
+( life )
+
+  \ XXX FIXME -- works in Gforth, but freezes here.
 
 need ms  need c+!  need 2/
 

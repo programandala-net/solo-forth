@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031816
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,5 +15,13 @@
 (  )
 
 2 load
+
+  \ XXX TMP --
+  \ need 16-bit-random-pix-benchmarks  exit
+
+  \ XXX TMP --
+  \ need wordlist-words  need order
+  \ need bench{  need indexer
+  \ : iw  ( -- )  index-wordlist wordlist-words  ;
 
   \ vim: filetype=soloforth

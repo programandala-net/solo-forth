@@ -3,17 +3,31 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604032014
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Specforth Editor.
+  \ This is the editor included with Specforth (also known as
+  \ Artic Forth), a fig-Forth for ZX Spectrum.  Its original
+  \ name is "Specforth Editor V1.1".
+  \
+  \ It has been adapted to Solo Forth.
+  \
+  \ Word descriptions and stack comments have been added after
+  \ the Specforth manual, the Abersoft Forth manual and Dr.
+  \ C.H. Ting's book _Systems Guide to fig-Forth_. The word
+  \ `copy` has been adapted from Abersoft Forth. The word
+  \ `text` has been rewritten.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Copyright (C) 1983 by Artic Computing Ltd.
+  \ Written by Chris A. Thornton, 1983.
+
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -22,26 +36,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09-11: Adapted to Solo Forth.
+
 ( editor )
-
-  \ Description:
-
-  \ This is the editor included with Specforth (also known as
-  \ Artic Forth), a fig-Forth for ZX Spectrum. It has been
-  \ adapted to Solo Forth.
-  \
-  \ Word descriptions and stack comments have been added after
-  \ the Specforth manual, the Abersoft Forth manual and Dr.
-  \ C.H. Ting's book _Systems Guide to fig-Forth_. The word
-  \ `copy` has been adapted from Abersoft Forth. The word
-  \ `text` has been rewritten.
-
-  \ Credit:
-  \
-  \ Specforth Editor V1.1
-  \ Copyright (C) 1983 by Artic Computing Ltd.
-  \ Written by Chris A. Thornton, 1983
-  \ Modified by Marcos Cruz (programandala.net), 2015
 
 only forth definitions
 

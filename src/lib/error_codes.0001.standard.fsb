@@ -1,14 +1,14 @@
-  \ error_codes.forth.fsb
+  \ error_codes.0001.standard.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031748
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Forth system error codes.
+  \ The standard Forth error codes (range -255..-1).
 
   \ -----------------------------------------------------------
   \ Author
@@ -22,7 +22,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( Standard error codes #-01..#-15 )
+( Standard error codes #-01..#-15)
 
 \ #-01 ABORT
 \ #-02 ABORT"
@@ -40,7 +40,7 @@
 \ #-14 interpreting a compile-only word
 \ #-15 invalid FORGET
 
-( Standard error codes #-16..#-30 )
+( Standard error codes #-16..#-30)
 
 \ #-16 attempt to use zero-length string as a name
 \ #-17 pictured numeric output string overflow
@@ -58,7 +58,7 @@
 \ #-29 compiler nesting
 \ #-30 obsolescent feature
 
-( Standard error codes #-31..#-45 )
+( Standard error codes #-31..#-45)
 
 \ #-31 >BODY used on non-CREATEd definition
 \ #-32 invalid name argument
@@ -76,7 +76,7 @@
 \ #-44 floating-point stack overflow
 \ #-45 floating-point stack underflow
 
-( Standard error codes #-46..#-60 )
+( Standard error codes #-46..#-60)
 
 \ #-46 floating-point invalid argument
 \ #-47 compilation word list deleted
@@ -129,41 +129,5 @@
 \ #-88
 \ #-89
 \ #-90
-
-( System error codes #-256..#-270 )
-
-\ #-256 not a word nor a number
-\ #-257 warning: is not unique
-\ #-258 stack imbalance
-\ #-259 trying to load from block 0
-\ #-260 wrong digit
-\ #-261 deferred word is uninitialized
-\ #-262 assertion failed
-\ #-263 execution only
-\ #-264 definition not finished
-\ #-265 loading only
-\ #-266 off current editing block
-\ #-267 warning: not present, though required
-\ #-268 required, but not located
-\ #-269 relative jump too long
-\ #-270 text not found
-
-( System error codes #-271..#-285 )
-
-\ #-271 immediate word not allowed in this structure
-\ #-272 array index out of range
-\ #-273 invalid assembler condition
-\ #-274 command line history overflow
-\ #-275 wrong number
-\ #-276 dictionary reached the zone of memory banks
-\ #-277
-\ #-278
-\ #-279
-\ #-280
-\ #-281
-\ #-282
-\ #-283
-\ #-284
-\ #-285
 
   \ vim: filetype=soloforth

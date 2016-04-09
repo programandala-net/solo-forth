@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201603252355
+; Last modified: 201604090210
 
 ; ==============================================================
 ; Author
@@ -28,10 +28,10 @@ version_major:                equ 0
 version_minor:                equ 3
 version_patch:                equ 0
 
-version_release_candidate:    equ 8 ; zero if none
+version_release_candidate:    equ 0 ; zero if none
 
-version_build_high_part:      equ 0x0133
-version_build_low_part:       equ 0x9F91  ; build 20160401
+version_build_high_part:      equ $0133
+version_build_low_part:       equ $9F99  ; build 20160409
 
 ; ==============================================================
 ; History
@@ -133,22 +133,22 @@ developing: equ true
 ; ----------------------------------------------
 ; Forth
 
-origin:                           equ 0x5E00
+origin:                           equ $5E00
 
-false:                            equ 0x0000
-true:                             equ 0xFFFF ; -1
+false:                            equ $0000
+true:                             equ $FFFF ; -1
 
-cell:                             equ 0x02
+cell:                             equ $02
 
-cells_per_data_stack:             equ 0x50
-cells_per_return_stack:           equ 0x50
+cells_per_data_stack:             equ $50
+cells_per_return_stack:           equ $50
 
-bytes_per_terminal_input_buffer:  equ 0x50
+bytes_per_terminal_input_buffer:  equ $50
 
-bytes_per_sector:                 equ 0x0200 ; 512-byte sectors in G+DOS and +3DOS
-sectors_per_block:                equ 0x02
+bytes_per_sector:                 equ $0200 ; 512-byte sectors in G+DOS and +3DOS
+sectors_per_block:                equ $02
 
-bytes_per_buffer:                 equ 0x0400
+bytes_per_buffer:                 equ $0400
 
 if defined gplusdos
   blocks_per_disk:                  equ 800 ; KiB per disk in G+DOS
@@ -157,10 +157,10 @@ if defined plus3dos
   blocks_per_disk:                  equ 720 ; KiB per disk in +3DOS
 endif
 
-characters_per_line:              equ 0x40
-lines_per_screen:                 equ 0x10
-max_search_order:                 equ 0x08 ; maximum number of vocabularies in the search order
-bytes_per_user_variables:         equ 0x40
+characters_per_line:              equ $40
+lines_per_screen:                 equ $10
+max_search_order:                 equ $08 ; maximum number of vocabularies in the search order
+bytes_per_user_variables:         equ $40
 
 word_length_mask:                 equ %00011111
 smudge_mask:                      equ %00100000
@@ -172,9 +172,9 @@ valid_word_length_mask:           equ word_length_mask or smudge_mask
 
 csb_size:                         equ 256 ; bytes, size of the circular string buffer
 
-; Memory banks (0xC000..0xFFFF)
+; Memory banks ($C000..0xFFFF)
 
-bank_start                        equ 0xC000
+bank_start                        equ $C000
 
 default_bank:                     equ 0
 system_bank:                      equ 1
@@ -183,8 +183,8 @@ names_bank_address:               equ bank_start ; names pointers
 
 ; Charset
 
-charset_size:                     equ 224*8 ; 224 chars (0x20..0xFF) * 8 bitmap rows
-charset_address:                  equ 0xFFFF-charset_size+1
+charset_size:                     equ 224*8 ; 224 chars ($20..0xFF) * 8 bitmap rows
+charset_address:                  equ $FFFF-charset_size+1
 
 ; Error codes used in the kernel
 
@@ -215,14 +215,14 @@ include inc/zx_spectrum_rom_routines.z80s
 include inc/zx_spectrum_system_variables.z80s
 include inc/zx_spectrum_system_variables_offsets.z80s
 
-sys_screen:                 equ 0x4000 ; address
-sys_screen_size:            equ 0x1B00
-sys_screen_bitmap_size:     equ 0x1800
-sys_screen_attributes:      equ 0x5800 ; address
-sys_screen_attributes_size: equ 0x0300
+sys_screen:                 equ $4000 ; address
+sys_screen_size:            equ $1B00
+sys_screen_bitmap_size:     equ $1800
+sys_screen_attributes:      equ $5800 ; address
+sys_screen_attributes_size: equ $0300
 
-bank1_port:   equ 0x7FFD
-border_port:  equ 0xFE
+bank1_port:   equ $7FFD
+border_port:  equ $FE
 
 ; ==============================================================
 ; Macros
@@ -491,7 +491,7 @@ _z80_just_border: macro _color
   if debugging
     push af
     ld a,_color
-    out(0xFE),a
+    out($FE),a
     pop af
   endif
   endm
@@ -502,7 +502,7 @@ _z80_border: macro _color
     push af
     push bc
     ld a,_color
-    out(0xFE),a
+    out($FE),a
     ld bc,0
     _pause0:
     dec bc
@@ -519,7 +519,7 @@ _z80_border_wait: macro _color
     local _wait
     push af
     ld a,_color
-    out(0xFE),a
+    out($FE),a
     xor a
     ld (sys_last_k),a
     _wait:
@@ -628,10 +628,10 @@ _chk_ctype: macro _message
   org origin
 
 cold_entry:
-  ; Location (of the destination address): `0x01 +origin`
+  ; Location (of the destination address): `$01 +origin`
   jp cold_start
 warm_entry:
-  ; Location (of the destination address): `0x04 +origin`
+  ; Location (of the destination address): `$04 +origin`
   jp warm_start
 
 ; ==============================================================
@@ -641,40 +641,40 @@ warm_entry:
 
 latest_nt_in_root_voc.init_value:
   dw latest_nt_in_root_voc
-  ; `0x06 +origin`
+  ; `$06 +origin`
 
 latest_nt_in_forth_voc.init_value:
   dw latest_nt_in_forth_voc
-  ; `0x08 +origin`
+  ; `$08 +origin`
 
 if 1 ; assembler_core_in_kernel
 
 latest_nt_in_assembler_voc.init_value:
   dw latest_nt_in_assembler_voc
-  ; `0x0A +origin`
+  ; `$0A +origin`
 
 endif
 
 voc_link.init_value:
 if 1 ; assembler_core_in_kernel
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
-  ; `0x0C +origin`
+  ; `$0C +origin`
 else
   dw forth_vocabulary_link ; link to the latest vocabulary defined
-  ; `0x0C +origin`
+  ; `$0C +origin`
 endif
 
 user_variables_pointer:
   dw user_variables
-  ; `0x0E +origin`
+  ; `$0E +origin`
 
 return_stack_pointer:
   dw return_stack_bottom
-  ; `0x10 +origin`
+  ; `$10 +origin`
 
 default_color_attribute:
   dw 4 ; low byte: green paper, black ink; high byte: no mask
-  ; `0x12 +origin`
+  ; `$12 +origin`
 
   ; User variables default values
 
@@ -684,37 +684,37 @@ default_color_attribute:
 
 default_user_variables_start:
 
-sp0_init_value:                               ; +0x00
+sp0_init_value:                               ; +$00
   dw data_stack_bottom
-  ; `0x14 +origin`
-rp0_init_value:                               ; +0x02
+  ; `$14 +origin`
+rp0_init_value:                               ; +$02
   dw return_stack_bottom
-  ; `0x16 +origin`
-paren_wait_init_value:                        ; +0x04
+  ; `$16 +origin`
+paren_wait_init_value:                        ; +$04
   dw noop_
-  ; `0x18 +origin`
-width_init_value:                             ; +0x06
+  ; `$18 +origin`
+width_init_value:                             ; +$06
   dw max_word_length
-  ; `0x1A +origin`
-warnings_init_value:                          ; +0x08
+  ; `$1A +origin`
+warnings_init_value:                          ; +$08
   dw true
-  ; `0x1C +origin`
-; XXX TODO free                                    ; +0x0A
-  dw +0x0000
-  ; `0x1E +origin`
-dictionary_pointer_init_value:                ; +0x0C
+  ; `$1C +origin`
+; XXX TODO free                                    ; +$0A
+  dw +$0000
+  ; `$1E +origin`
+dictionary_pointer_init_value:                ; +$0C
   dw dictionary_pointer_after_cold
-  ; `0x1F +origin`
-user_data_pointer_init_value:                 ; +0x0E
+  ; `$1F +origin`
+user_data_pointer_init_value:                 ; +$0E
   dw user_data_pointer
-  ; `0x20 +origin`
+  ; `$20 +origin`
 
 default_user_variables_end:
 
 
 ip_backup: ; temporary copy of Forth IP
   dw 0
-  ; `0x22 +origin`
+  ; `$22 +origin`
 
 np: defl names_bank_address+1
 
@@ -723,14 +723,14 @@ names_pointer:
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
-  ; `0x24 +origin`
+  ; `$24 +origin`
 
 names_pointer_init_value:
   ; Init value of the names pointer, used by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
-  ; `0x26 +origin`
+  ; `$26 +origin`
 
 
 ; ==============================================================
@@ -742,58 +742,58 @@ user_variables:
   ; default values by `cold`.  They must be in the same order
   ; than their default values.
 
-sp0_value:                                    ; +0x00
+sp0_value:                                    ; +$00
   dw data_stack_bottom
-rp0_value:                                    ; +0x02
+rp0_value:                                    ; +$02
   dw return_stack_bottom
-paren_wait:                                   ; +0x04
-  dw 0x0000
-width_value:                                  ; +0x06
+paren_wait:                                   ; +$04
+  dw $0000
+width_value:                                  ; +$06
   dw max_word_length
-warnings_value:                               ; +0x08
-  dw 0x0000
-; XXX TODO free                                    ; +0x0A
-  dw 0x0000
-dictionary_pointer_value:                     ; +0x0C
+warnings_value:                               ; +$08
+  dw $0000
+; XXX TODO free                                    ; +$0A
+  dw $0000
+dictionary_pointer_value:                     ; +$0C
   dw dictionary_pointer_after_cold
-user_data_pointer_value:                      ; +0x0E
+user_data_pointer_value:                      ; +$0E
   dw user_data_pointer
-blk_value:                                    ; +0x10
-  dw 0x0000
-in_value:                                     ; +0x12
-  dw 0x0000
-hash_emit_value:                              ; +0x14
-  dw 0x0000
-scr_value:                                    ; +0x16
-  dw 0x0000
-r_hash_value:                                 ; +0x18
-  dw 0x0000 ; XXX OLD -- used by the editor, remove?
-hld_value:                                    ; +0x1A
-  dw 0x0000
-current_value:                                ; +0x1C
-  dw 0x0000
-state_value:                                  ; +0x1E
-  dw 0x0000
-base_value:                                   ; +0x20
-  dw 0x000A
-dpl_value:                                    ; +0x22
-  dw 0x0000
-csp_value:                                    ; +0x24
-  dw 0x0000
+blk_value:                                    ; +$10
+  dw $0000
+in_value:                                     ; +$12
+  dw $0000
+hash_emit_value:                              ; +$14
+  dw $0000
+scr_value:                                    ; +$16
+  dw $0000
+r_hash_value:                                 ; +$18
+  dw $0000 ; XXX OLD -- used by the editor, remove?
+hld_value:                                    ; +$1A
+  dw $0000
+current_value:                                ; +$1C
+  dw $0000
+state_value:                                  ; +$1E
+  dw $0000
+base_value:                                   ; +$20
+  dw $000A
+dpl_value:                                    ; +$22
+  dw $0000
+csp_value:                                    ; +$24
+  dw $0000
 
-context_value:                                ; +0x28..+0x36
+context_value:                                ; +$28..+$36
 
   dw forth_pfa
   dw root_pfa
   ds (max_search_order-2)*cell
 
-  dw 0x0000 ; end of search order, required by `find`
+  dw $0000 ; end of search order, required by `find`
             ; XXX TODO improve `find` and remove this
 
   ; Free space for more user variables:
 
 user_data_pointer: equ $-user_variables
-  ds bytes_per_user_variables-user_data_pointer,0xFF
+  ds bytes_per_user_variables-user_data_pointer,$FF
 
 ; XXX OLD
 ; if ($-user_variables) != bytes_per_user_variables
@@ -836,7 +836,7 @@ return_stack_bottom:
 ; ----------------------------------------------
 ; Disk buffer
 
-buffer_block_id_mask: equ 0x7FFF
+buffer_block_id_mask: equ $7FFF
 
 ; A block id is the number of the associated block, with the
 ; sign bit indicating, when it's set, that the buffer has been
@@ -869,6 +869,7 @@ if 1
   ;  flag CY set if HL < DE
   ;  flag Z set if HL = DE
 
+  ; Credit:
   ; Code from DZX-Forth
 
           ; T  B
@@ -886,6 +887,7 @@ else
 
   ; XXX TODO
 
+  ; Credit:
   ; Code from Z88 CamelForth.
 
   ; The routine is so short that it's better to use the
@@ -1051,7 +1053,7 @@ hl_multiplied_by_de_to_hlde_signed:
   call abs_hl
   ex de,hl
   call abs_hl
-  call hl_by_de_to_hlde_unsigned
+  call hl_multiplied_by_de_to_hlde_unsigned
   pop af
   ret nc
   jp negate_hlde ; XXX TODO
@@ -1303,8 +1305,8 @@ endif
 ;
 ; }doc
 
-  _literal 0xE5 ; opcode `push hl`
-  dw comma_
+  _literal $E5 ; opcode `push hl`
+  dw c_comma_
   dw branch_,jpnext_pfa
 
 ; ----------------------------------------------
@@ -1318,9 +1320,7 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO remove?
-
-  _literal 0xE9DD ; opcode `jp (ix)`
+  _literal $E9DD ; opcode `jp (ix)`
   dw comma_
   dw exit_
 
@@ -1501,11 +1501,15 @@ paren_set_order.loop_exit
 ; ----
 ; : >order  ( wid -- )  also context !  ;
 ; ----
+; 
+; Origin: Gforth.
 ;
 ; }doc
 
 ; Credit:
 ; Word from Gforth.
+
+  ; XXX FIXME --
 
   dw also_,context_,store_
   dw exit_
@@ -1601,7 +1605,7 @@ endif
 
   dw latest_nt_in_root_voc
 root_vocabulary_link:
-  dw 0x0000
+  dw $0000
   dw root_nt
 
 ; ----------------------------------------------
@@ -1743,7 +1747,7 @@ push_a:
 ; set-default-bank  ( +n -- )
 ;
 ; Set _+n_ (0..7) as the default memory bank to be paged at
-; 0xC000..0xFFFF.
+; $C000..0xFFFF.
 ;
 ; }doc
 
@@ -1762,7 +1766,7 @@ push_a:
 ; get-default-bank  ( -- +n )
 ;
 ; Get the current default bank _+n_ (0..7) paged at
-; 0xC000..0xFFFF.
+; $C000..0xFFFF.
 ;
 ; }doc
 
@@ -1776,7 +1780,7 @@ push_a:
 ;
 ; default-bank  ( -- )
 ;
-; Page the default memory bank in at 0xC000..0xFFFF.
+; Page the default memory bank in at $C000..0xFFFF.
 ;
 ; }doc
 
@@ -1790,7 +1794,7 @@ push_a:
 ;
 ; names-bank  ( -- )
 ;
-; Page the system bank in at 0xC000..0xFFFF.
+; Page the system bank in at $C000..0xFFFF.
 ; This memory bank is used to store the word names and,
 ; optionally, also the command line history.
 ;
@@ -1819,7 +1823,7 @@ push_a:
 ;
 ; bank  ( n -- )
 ;
-; Page memory bank _n_ (0..7) in at 0xC000..0xFFFF.
+; Page memory bank _n_ (0..7) in at $C000..0xFFFF.
 ;
 ; }doc
 
@@ -2310,14 +2314,14 @@ paren_do.de_hl:
   and a
   sbc hl,de                     ; hl=init-limit
   ld a,h
-  xor 0x80                      ; flip most significant bit
+  xor $80                      ; flip most significant bit
   ld d,a
   ld e,l
   pop hl                        ; hl=rp@
   dec hl
   ld (hl),d
   dec hl
-  ld (hl),e                     ; push (init-limit) xor 0x8000 on return stack
+  ld (hl),e                     ; push (init-limit) xor $8000 on return stack
   ld (return_stack_pointer),hl
   _jp_next
 
@@ -2335,7 +2339,7 @@ paren_do.de_hl:
 
   ld e,(hl)
   inc hl
-  ld d,(hl) ; de= current index, wich is: (index-limit) xor 0x8000
+  ld d,(hl) ; de= current index, wich is: (index-limit) xor $8000
   inc hl
   inc hl
   inc hl
@@ -2345,7 +2349,7 @@ paren_do.de_hl:
   inc hl
   ld a,(hl)
   adc a,d
-  xor 0x80  ; flip most significant bit, getting true index value
+  xor $80  ; flip most significant bit, getting true index value
   ld d,a
   push de ; result
   _jp_next
@@ -2406,7 +2410,7 @@ paren_do.de_hl:
   ; crossed, terminate loop.
 
   pop hl ; return stack pointer
-  ld de,0x0005
+  ld de,$0005
   add hl,de
   ld (return_stack_pointer),hl
   ; Increment return stack pointer by 5 (1 increment already done)
@@ -2441,12 +2445,12 @@ paren_loop.continue:
   ld d,(hl)   ; de = index value
   inc de      ; increment the index
   ld a,d
-  xor 0x80
-  or e        ; index=0x8000?
+  xor $80
+  or e        ; index=$8000?
   jp nz,paren_loop.continue
 
   ; limit reached
-  ld de,0x0005
+  ld de,$0005
   add hl,de ; increment RP by 5 (1 already done)
   ld (return_stack_pointer),hl
   _jp_next
@@ -2479,10 +2483,10 @@ paren_loop.continue:
   call ascii_upper.a
   sub '0' ; >="0"?
   jp c,false_ ; <"0" is invalid
-  cp 0x0A ; >"9"?
+  cp $0A ; >"9"?
   jp m,digit.test_value ; no, test value
-  sub 0x07 ; gap between "9" & "A", now "A"=0x0A
-  cp 0x0A ; >="A"?
+  sub $07 ; gap between "9" & "A", now "A"=$0A
+  cp $0A ; >="A"?
   jp c,false_ ; characters between "9" & "A" are invalid
 digit.test_value:
   cp l ; <base?
@@ -2878,7 +2882,7 @@ char_question.not:
   ld (find_name_from.string_address),de
 
   ; XXX FIXME the string searched for must be in the string
-  ; buffer, below 0xC000! This is not a problem now, during the
+  ; buffer, below $C000! This is not a problem now, during the
   ; development, because the dictionary is small.
 
 find_name_from.begin:
@@ -2886,11 +2890,11 @@ find_name_from.begin:
   ; hl = nt
   ld (find_name_from.nt_backup),hl ; save the nt for later
 find_name_from.string_address: equ $+1
-  ld de,0x0000 ; string address
+  ld de,$0000 ; string address
   ld a,(hl) ; length byte of the name field
   and valid_word_length_mask  ; mask the length and the smudge bit
 find_name_from.string_length: equ $+1
-  ld c,0x00 ; length of the string
+  ld c,$00 ; length of the string
   cp c ; same length?
   jr nz,find_name_from.not_a_match ; lengths differ
 
@@ -2913,7 +2917,7 @@ find_name_from.not_a_match:
 
 find_name_from.nt_backup: equ $+1
                                         ;  T  B
-  ld hl,0x0000 ; nt                      10 03
+  ld hl,$0000 ; nt                      10 03
   dec hl ; high address of lfa            06 01
   ld d,(hl) ; high part of the next nt    07 01
   dec hl ; low address of lfa             06 01
@@ -2937,7 +2941,7 @@ find_name_from.end:
   call bank.default ; page the default memory bank in
   exx
 find_name_from.ip_backup: equ $+1
-  ld bc,0x0000 ; restore the Forth IP
+  ld bc,$0000 ; restore the Forth IP
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -3145,8 +3149,8 @@ if 0
 
   pop hl
   ld a,l
-  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
-  rst 0x10
+  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
+  rst $10
   _jp_next
 
 endif
@@ -3170,8 +3174,8 @@ if 0
   dec h
   ld (sys_chars),hl
 mode32_emit.print_a
-  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
-  rst 0x10
+  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
+  rst $10
   pop hl
   ld (sys_chars),hl
   _jp_next
@@ -3187,14 +3191,14 @@ if 0
   pop hl
   push bc
 
-  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
 
   ld a,l
   cp 128 ; control or ASCII character?
   jp nc,mode32_emit.print_udg ; is not, jump
 
   ; use the ROM routine to print a control or ASCII character
-  rst 0x10
+  rst $10
   pop bc
   _jp_next
 
@@ -3219,8 +3223,8 @@ mode32_emit.print_udg_scan
 
   ; Update
   ld de,(sys_s_posn)
-  ld hl,0x1821 ; 0x18 = 24 - row
-               ; 0x21 = 33 - column
+  ld hl,$1821 ; $18 = 24 - row
+               ; $21 = 33 - column
   sbc hl,de
   ex de,hl
   inc e
@@ -3234,27 +3238,27 @@ mode32_emit.print_udg_scan
   cp 23 ; last row?
   jp c,mode32_emit.update2 ; if not, jump
   ; last row
-  call 0x0DFE ; ROM scroll routine
+  call $0DFE ; ROM scroll routine
   ; XXX FIXME wrong coords after the scroll
-  ld de, 0x1400
+  ld de, $1400
 
 mode32_emit.update2:
   push de
   ld a,d
-  and 0x07
+  and $07
   rrca
   rrca
   rrca
   or e
   ld e,a
   ld a,d
-  and 0x18
-  or 0x40
+  and $18
+  or $40
   ld d,a
   ld (sys_df_cc),de
   pop de
-  ld hl,0x1821 ; 0x18 = 24 - row
-               ; 0x21 = 33 - column
+  ld hl,$1821 ; $18 = 24 - row
+               ; $21 = 33 - column
   sbc hl,de
   ld (sys_s_posn),hl
   pop bc
@@ -3271,14 +3275,14 @@ if 1
   ; l = character code
   push bc
 
-  ld (iy+sys_scr_ct_offset),0xFF ; no scroll message
+  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
 
   ld a,l
   cp 128 ; control or ASCII character?
   jp nc,emit_udg.a ; if not, jump
 
   ; use the ROM routine to print a control or ASCII character
-  rst 0x10
+  rst $10
   pop bc
   _jp_next
 
@@ -3391,16 +3395,16 @@ default_key_translation_table:
 
 ;  dw 0 ; no chained table ; XXX TODO
               ; Symbol Shift + Letter --> new char
-  db 0xC6,'[' ; "Y" 198 (0xC6) "AND"  --> 091 (0x5B) "["
-  db 0xC5,']' ; "U" 197 (0xC5) "OR"   --> 093 (0x5D) "]"
-  db 0xE2,'~' ; "A" 226 (0xE2) "STOP" --> 126 (0x7E) "~"
-  db 0xC3,'|' ; "S" 195 (0xC3) "NOT"  --> 124 (0x7C) "|"
-  db 0xCD,'\' ; "D" 205 (0xCD) "STEP" --> 092 (0x5C) "\"
-  db 0xCC,'{' ; "F" 204 (0xCC) "TO"   --> 123 (0x7B) "{"
-  db 0xCB,'}' ; "G" 203 (0xCB) "THEN" --> 125 (0x7D) "}"
+  db $C6,'[' ; "Y" 198 ($C6) "AND"  --> 091 ($5B) "["
+  db $C5,']' ; "U" 197 ($C5) "OR"   --> 093 ($5D) "]"
+  db $E2,'~' ; "A" 226 ($E2) "STOP" --> 126 ($7E) "~"
+  db $C3,'|' ; "S" 195 ($C3) "NOT"  --> 124 ($7C) "|"
+  db $CD,'\' ; "D" 205 ($CD) "STEP" --> 092 ($5C) "\"
+  db $CC,'{' ; "F" 204 ($CC) "TO"   --> 123 ($7B) "{"
+  db $CB,'}' ; "G" 203 ($CB) "THEN" --> 125 ($7D) "}"
   db 0 ; end of data
 
-  ; "I" 172 (0xAC) "AT"   --> 127 (0x7F) "(C)" ; XXX TODO
+  ; "I" 172 ($AC) "AT"   --> 127 ($7F) "(C)" ; XXX TODO
 
 ; ----------------------------------------------
   _code_header translate_char_,'TRANSLATE-CHAR'
@@ -3554,7 +3558,7 @@ endif
   ; XXX -- This version works only when the system interrupts
   ; are on.
 
-  bit 5,(iy+0x01) ; new key available? (system variable FLAGS)
+  bit 5,(iy+$01) ; new key available? (system variable FLAGS)
   jp z,false_
   jp true_
 
@@ -3571,7 +3575,7 @@ endif
 ;
 ; }doc
 
-  db 0x5F ; char code
+  db $5F ; char code
 
 ; ----------------------------------------------
   _code_header key_,'KEY'
@@ -3597,7 +3601,7 @@ if 0
   ld a,(sys_last_k)
   and a
 else
-  bit 5,(iy+0x01) ; system variable FLAGS
+  bit 5,(iy+$01) ; system variable FLAGS
 endif
   jr z,key.begin
   ld hl,sys_last_k
@@ -3651,9 +3655,9 @@ endif
 
   ; Print cursor:
   ld a,(cursor_char_pfa) ; cursor char code
-  rst 0x10
+  rst $10
   ld a,backspace_char
-  rst 0x10
+  rst $10
 
 xkey.new_key:
   call wait_for_a_key
@@ -3663,7 +3667,7 @@ xkey.new_key:
   jr nz,xkey.translate
   ; toggle caps lock
   ld hl,sys_flags2
-  ld a,0x08
+  ld a,$08
   xor (hl)
   ld (hl),a
   jr xkey.new_key
@@ -3672,13 +3676,13 @@ xkey.translate:
   ; Translate some chars
   call translate_char.a ; XXX TMP
   ld l,a
-  ld h,0x00
+  ld h,$00
 
   ; delete the cursor
   ld a,space_char
-  rst 0x10
+  rst $10
   ld a,backspace_char
-  rst 0x10
+  rst $10
 
   pop bc
   _jp_pushhl
@@ -3852,8 +3856,8 @@ if 0 ; XXX OLD -- slower than the DZX-Forth code
   exx
   pop bc          ; BC = u2
   pop de          ; DE = u1
-  ld  hl,0x0000
-  ld  a,0x10
+  ld  hl,$0000
+  ld  a,$10
 u_m_star.1:
   add  hl,hl
   ex  de,hl
@@ -3946,7 +3950,7 @@ u_m_slash_mod.do:
   sbc hl,bc
   or a        ; clear cy to indicate sub ok
   jr u_m_slash_mod.4
-  ; case 2: 16 bit, cy:HL = 0xxxx
+  ; case 2: 16 bit, cy:HL = $xxx
 u_m_slash_mod.3:
   sbc hl,bc   ; try the subtract
   jr nc,u_m_slash_mod.4 ; if no cy, subtract ok
@@ -4118,7 +4122,7 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
-  ld hl,0x0000
+  ld hl,$0000
   add hl,sp
   _jp_pushhl
 
@@ -4427,7 +4431,7 @@ true_if_cy:
 
   pop de
                 ; t  B
-  ld hl,0x0000  ; 10 03
+  ld hl,$0000  ; 10 03
   and a         ; 04 01
   sbc hl,de     ; 15 02
                 ; 29 06 total
@@ -4461,13 +4465,13 @@ if 0
   sub a       ; zero                            ;  04 01
   sub e       ; two's complement to carry       ;  04 01
   ld e,a                                        ;  04 01
-  ld a,0x00                                     ;  07 02
+  ld a,$00                                     ;  07 02
   sbc a,d     ; two's complement with carry     ;  04 01
   ld d,a                                        ;  04 01
-  ld a,0x00                                     ;  07 02
+  ld a,$00                                     ;  07 02
   sbc a,l     ; two's complement with carry     ;  04 01
   ld l,a                                        ;  04 01
-  ld a,0x00                                     ;  07 02
+  ld a,$00                                     ;  07 02
   sbc a,h     ; two's complement with carry     ;  04 01
   ld h,a                                        ;  04 01
   jp push_hlde                                  ;  10 03
@@ -4490,12 +4494,12 @@ else
   pop     hl        ; high part                 ;  10 01
   pop     de        ; low part                  ;  10 01
   push    hl        ; save copy                 ;  11 01
-  ld      hl,0x0000                             ;  10 03
+  ld      hl,$0000                             ;  10 03
   and     a                                     ;  04 01
   sbc     hl,de     ; hl = negated low part     ;  15 02
   pop     de        ; high part                 ;  10 01
   push    hl        ; negated low part          ;  11 01
-  ld      hl,0x0000                             ;  10 03
+  ld      hl,$0000                             ;  10 03
   sbc     hl,de     ; hl = negated high part    ;  15 02
 if 0 ; XXX OLD
   jp push_hl                                    ;  10 03
@@ -4621,9 +4625,9 @@ endif
 ; }doc
 
   pop hl
-  ld (hl),0xFF
+  ld (hl),$FF
   inc hl
-  ld (hl),0xFF
+  ld (hl),$FF
   _jp_next
 
 ; ----------------------------------------------
@@ -4699,7 +4703,7 @@ fetch.hl:
   pop hl
 c_fetch.hl:
   ld l,(hl)
-  ld h,0x00
+  ld h,$00
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -4964,7 +4968,7 @@ do_user:
   inc de      ; de=pfa
   ex de,hl
   ld e,(hl)
-  ld d,0x00   ; de = index of the user variable
+  ld d,$00   ; de = index of the user variable
   ld hl,(user_variables_pointer)
   add hl,de   ; hl= address of the user variable
   _jp_pushhl
@@ -4989,7 +4993,7 @@ else
 do_user:
   pop hl
   ld e,(hl)
-  ld d,0x00   ; de = index of the user variable
+  ld d,$00   ; de = index of the user variable
   ld hl,(user_variables_pointer)
   add hl,de   ; hl= address of the user variable
   _jp_pushhl
@@ -5026,17 +5030,17 @@ endif
 ; ----------------------------------------------
   _c_constant_header zero_,'0'
 
-  db 0x00
+  db $00
 
 ; ----------------------------------------------
   _c_constant_header one_,'1'
 
-  db 0x01
+  db $01
 
 ; ----------------------------------------------
   _c_constant_header two_,'2'
 
-  db 0x02
+  db $02
 
 ; ----------------------------------------------
   _code_header false_,'FALSE'
@@ -5159,7 +5163,7 @@ endif
 ;
 ; }doc
 
-  db 0x00
+  db $00
 
 ; ----------------------------------------------
   _user_variable_header rp0_,'RP0'
@@ -5175,7 +5179,7 @@ endif
 ;
 ; }doc
 
-  db 0x02
+  db $02
 
 ; ----------------------------------------------
   _user_variable_header paren_wait_,'(WAIT)'
@@ -5191,7 +5195,7 @@ endif
 ;
 ; }doc
 
-  db 0x04
+  db $04
 
 ; ----------------------------------------------
   _user_variable_header width_,'WIDTH'
@@ -5212,7 +5216,7 @@ endif
 ;
 ; }doc
 
-  db 0x06
+  db $06
 
 ; ----------------------------------------------
   _user_variable_header warnings_,'WARNINGS'
@@ -5227,7 +5231,7 @@ endif
 ;
 ; }doc
 
-  db 0x08
+  db $08
 
 ; XXX OLD
 ; ; ----------------------------------------------
@@ -5243,7 +5247,7 @@ endif
 ; ;
 ; ; }doc
 
-;   db 0x0A
+;   db $0A
 
 ; ----------------------------------------------
   _user_variable_header dp_,'DP'
@@ -5260,7 +5264,7 @@ endif
 ;
 ; }doc
 
-  db 0x0C
+  db $0C
 
 ; ----------------------------------------------
   _user_variable_header udp_,'UDP'
@@ -5274,7 +5278,7 @@ endif
 ;
 ; }doc
 
-  db 0x0E
+  db $0E
 
 ; ----------------------------------------------
   _user_variable_header blk_,'BLK'
@@ -5291,7 +5295,7 @@ endif
 ;
 ; }doc
 
-  db 0x10
+  db $10
 
 ; ----------------------------------------------
   _user_variable_header to_in_,'>IN'
@@ -5306,7 +5310,7 @@ endif
 ;
 ; }doc
 
-  db 0x12
+  db $12
 
 ; ----------------------------------------------
   _user_variable_header hash_emit_,'#EMIT'
@@ -5324,7 +5328,7 @@ endif
 ;
 ; }doc
 
-  db 0x14
+  db $14
 
 ; ----------------------------------------------
   _user_variable_header scr_,'SCR'
@@ -5341,7 +5345,7 @@ endif
 ;
 ; }doc
 
-  db 0x16
+  db $16
 
 ; ----------------------------------------------
   _user_variable_header catcher_,'CATCHER'
@@ -5355,7 +5359,7 @@ endif
 ;
 ; }doc
 
-  db 0x18
+  db $18
 
 ; ----------------------------------------------
   _user_variable_header hld_,'HLD'
@@ -5371,7 +5375,7 @@ endif
 ;
 ; }doc
 
-  db 0x1A
+  db $1A
 
 ; ----------------------------------------------
   _user_variable_header current_,'CURRENT'
@@ -5384,7 +5388,7 @@ endif
 ;
 ; }doc
 
-  db 0x1C
+  db $1C
 
 ; ----------------------------------------------
   _user_variable_header state_,'STATE'
@@ -5397,7 +5401,7 @@ endif
 ;
 ; }doc
 
-  db 0x1E
+  db $1E
 
 ; ----------------------------------------------
   _user_variable_header base_,'BASE'
@@ -5410,7 +5414,7 @@ endif
 ;
 ; }doc
 
-  db 0x20
+  db $20
 
 ; ----------------------------------------------
   _user_variable_header dpl_,'DPL'
@@ -5423,7 +5427,7 @@ endif
 ;
 ; }doc
 
-  db 0x22
+  db $22
 
 ; ----------------------------------------------
   _user_variable_header csp_,'CSP'
@@ -5441,7 +5445,7 @@ endif
 ;
 ; }doc
 
-  db 0x24
+  db $24
 
 ; ----------------------------------------------
   _user_variable_header context_,'CONTEXT'
@@ -5454,7 +5458,7 @@ endif
 ;
 ; }doc
 
-  db 0x26
+  db $26
 
 ; ----------------------------------------------
   _variable_header voc_link_,'VOC-LINK'
@@ -5897,7 +5901,7 @@ u_less_than.de_hl:
   _compare_de_hl_unsigned
   sbc a,a         ; propagate carry flag through A
   ld h,a
-  ld l,a          ; HL = 0x0000 or 0xFFFF
+  ld l,a          ; HL = $0000 or $FFFF
   _jp_pushhl
 
 endif
@@ -6477,14 +6481,14 @@ postpone.end:
 ; ----------------------------------------------
   _colon_header hex_,'HEX'
 
-  _literal 0x10
+  _literal $10
   dw base_,store_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header decimal_,'DECIMAL'
 
-  _literal 0x0A
+  _literal $0A
   dw base_,store_
   dw exit_
 
@@ -6538,7 +6542,7 @@ postpone.end:
 do_does equ do_colon
 
   dw compile_,paren_semicolon_code_
-  _literal 0xCD ; Z80 opcode for "call"
+  _literal $CD ; Z80 opcode for "call"
   dw c_comma_ ; compile it
   dw lit_,do_does,comma_ ; compile the routine address
   dw exit_
@@ -7075,7 +7079,7 @@ fill.a:
   ;bit 7,b             ; negative count?
   ;jr nz,fill.done     ; if so, skip
 
-  ld hl,0xFFFF
+  ld hl,$FFFF
   or a                ; clear carry flag
   adc hl,bc           ; test for count=0 or 1
   jr nc,fill.done     ; no cy: count=0, skip
@@ -7142,7 +7146,7 @@ fill.done:
 ; }doc
 
   dw here_
-  _literal 0x44
+  _literal $44
   dw plus_
   dw exit_
 
@@ -7173,7 +7177,6 @@ fill.done:
 ; _n_ characters and is _len1_ minus _n_ characters long.
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
-;
 ;
 ; ----
 ; : /string  ( ca1 len1 n -- ca2 len2 )
@@ -7315,8 +7318,28 @@ parse.end:
 
   dw parse_name_
   dw question_name_too_short_
-;  dw two_dup_,type_,space_; XXX INFORMER
   dw header_comma_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header default_header_,'DEFAULT-HEADER'
+
+; doc{
+;
+; default-header  ( -- )
+
+; Set `header` to its default behaviour: `input-stream-header`.
+
+; ----
+; : default-header  ( -- )
+;   ['] input-stream-header ['] header defer!  ;
+; ----
+;
+; }doc
+
+  _literal input_stream_header_
+  _literal header_
+  dw defer_store_
   dw exit_
 
 ; ----------------------------------------------
@@ -7331,16 +7354,13 @@ parse.end:
 ;
 ; ----
 ; : nextname-header  ( -- )
-;   nextname-string 2@ header,
-;   ['] input-stream-header ['] header defer!  ;
+;   nextname-string 2@ header,  default-header  ;
 ; ----
 ;
 ; }doc
 
   dw nextname_string_,two_fetch_,header_comma_
-  _literal input_stream_header_
-  _literal header_
-  dw defer_store_ ; restore the default behaviour of `header`
+  dw default_header_ ; restore the default behaviour of `header`
   dw exit_
 
 ; ----------------------------------------------
@@ -7350,18 +7370,17 @@ parse.end:
 ;
 ; nextname  ( ca len -- )
 ;
-; ----
-; : nextname  ( ca len -- )
-;   nextname-string 2!
-;   ['] nextname-header ['] header defer!  ;
-;
 ; The next defined word will have the name _ca len_; the
 ; defining word will leave the input stream alone. `nextname`
 ; works with any defining word.
 ;
-; Origin: Gforth.
-;
 ; ----
+; : nextname  ( ca len -- )
+;   nextname-string 2!
+;   ['] nextname-header ['] header defer!  ;
+; ----
+;
+; Origin: Gforth.
 ;
 ; }doc
 
@@ -7631,7 +7650,7 @@ error.message:
 ;
 ; }doc
 
-  _literal 0xCD ; Z80 opcode for "call"
+  _literal $CD ; Z80 opcode for "call"
   dw c_comma_ ; compile it
   dw comma_  ; compile _a_
   dw exit_
@@ -8580,7 +8599,7 @@ quit.begin:
 ; }doc
 
   dw header_,reveal_
-  _literal 0xC3 ; Z80 opcode for `jp NN`
+  _literal $C3 ; Z80 opcode for `jp NN`
   dw c_comma_
   _literal paren_defer_ ; default xt to execute
   dw comma_
@@ -8833,7 +8852,8 @@ endif
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
 
-  dw only_,forth_,definitions_  ; search order
+  dw only_,forth_,definitions_  ; init the search order
+  dw default_header_ ; restore the default behaviour of `header`
   dw decimal_
 
   dw display_,default_colors_,page_
@@ -9147,14 +9167,21 @@ endif
 ;
 ; Divide _d_ by _n1_, giving the symmetric quotient _n3_ and the
 ; remainder _n2_. Input and output stack arguments are signed.
+  
+; [caption="Symmetric Division Example"]
 ;
+;  |===
+;  | Dividend   | Divisor  | Remainder  | Quotient
+
+; >|       10  >|      7  >|        3  >|        1
+; >|      -10  >|      7  >|       -3  >|       -1
+; >|       10  >|     -7  >|        3  >|       -1
+; >|      -10  >|     -7  >|       -3  >|        1
+;  |===
+
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 
-; }doc
-
-  ; XXX Note: This implementation, from Z88 CamelForth, is
-  ; slower than Abersoft Forth's, but works better.
-
+; ----
 ; : sm/rem  ( d1 n1 -- n2 n3 )
 ;   \ symmetric signed division
 ;   2dup xor >r  \  sign of quotient
@@ -9162,6 +9189,10 @@ endif
 ;   abs >r dabs r> um/mod
 ;   swap r> ?negate
 ;   swap r> ?negate  ;
+; ----
+
+; }doc
+
 
   dw two_dup_,xor_,to_r_
   dw over_,to_r_
@@ -9169,37 +9200,6 @@ endif
   dw swap_,from_r_,question_negate_
   dw swap_,from_r_,question_negate_
   dw exit_
-
-if 0
-
-  _colon_header s_m_slash_rem2_,'SM/REM2'  ; XXX TMP
-
-  ; Credit:
-  ;
-  ; Code of `m/` in Abersoft Forth's and White Lightning.
-  ;
-  ; XXX Note: This implementation is faster than Z88
-  ; CamelForth's, but has bugs.
-
-; ----
-; : sm/rem  ( d n1 -- n2 n3 )
-;   over >r >r dabs r@ abs um/mod
-;   r> r@ xor ?negate swap
-;   r> ?negate swap  ;
-; ----
-;
-  ; XXX FIXME
-  ; 16777216. 50 sm/rem  ( -1 -1 )
-
-  dw over_,to_r_,to_r_
-  dw d_abs_,r_fetch_,abs_
-  dw u_m_slash_mod_
-  dw from_r_,r_fetch_,xor_,question_negate_,swap_
-  dw from_r_,question_negate_,swap_
-  dw exit_
-
-
-endif
 
 ; ----------------------------------------------
   _colon_header star_,'*'
@@ -9778,7 +9778,7 @@ block.end:
   rst 8 ; G+DOS hook
 transfer_sector.command:
   ; G+DOS command already patched:
-  db 0x44 ; 0x44 = read ; 0x45 = write
+  db $44 ; $44 = read ; $45 = write
   pop bc ; restore the Forth IP
   ld ix,next
   _jp_next
@@ -9793,7 +9793,7 @@ transfer_sector.command:
 ; Set read or write mode for `transfer-sector` and
 ; `transfer-block`.
 ;
-; b = 0x44 (read) or 0x45 (write)
+; b = $44 (read) or $45 (write)
 ;
 ; }doc
 
@@ -9811,7 +9811,7 @@ transfer_sector.command:
 ;
 ; }doc
 
-  _literal 0x45 ; G+DOS write sector command
+  _literal $45 ; G+DOS write sector command
   dw transfer_mode_
   dw exit_
 
@@ -9826,7 +9826,7 @@ transfer_sector.command:
 ;
 ; }doc
 
-  _literal 0x44 ; G+DOS read sector command
+  _literal $44 ; G+DOS read sector command
   dw transfer_mode_
   dw exit_
 
@@ -9861,18 +9861,18 @@ convert_dos_error_code.hl:
   jp negate_hl
 
 get_current_drive:
-  ld a,0xFF
+  ld a,$FF
 
 set_current_drive:
-  ; a = drive (ASCII 'A'..'P' to set it; 0xFF to get it)
+  ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
   ld ix,dos_set_drive
   jr do_dos
 
 get_current_user:
-  ld a,0xFF
+  ld a,$FF
 
 set_current_user:
-  ; a = user (0x00..0x0F to set it; 0xFF to get it)
+  ; a = user ($00..0x0F to set it; $FF to get it)
   ld ix,dos_set_user
 
 ; ------------------------------
@@ -10459,7 +10459,7 @@ sign.end:
   jr c,to_digit.end
   add a,7
 to_digit.end
-  add a,0x30
+  add a,$30
   ld l,a
   _jp_pushhl
 
@@ -10729,7 +10729,7 @@ endif
   rra
   rra
   rra ; a = paper
-  out(0xFE),a ; set the border color
+  out($FE),a ; set the border color
 
   _jp_next
 
@@ -10749,8 +10749,8 @@ if 0
   ; XXX OLD -- This method works only with the default ROM
   ; printing routines.
 
-  ld hl,0x1821 ; 0x18 = 24 - row
-               ; 0x21 = 33 - column
+  ld hl,$1821 ; $18 = 24 - row
+               ; $21 = 33 - column
   ld (sys_s_posn),hl
   _jp_next
 
@@ -10762,11 +10762,11 @@ if 1
   ; associated to a chanel.
 
   ld a,at_char
-  rst 0x10
+  rst $10
   xor a
-  rst 0x10
+  rst $10
   xor a
-  rst 0x10
+  rst $10
   _jp_next
 
 endif
@@ -10776,7 +10776,7 @@ if 0
   ; XXX TODO -- adapt this from DZX-Forth?
   ; slower?
 
-  ld hl,0x0000
+  ld hl,$0000
   push hl
   push hl
   jp at_xy_
@@ -10822,7 +10822,7 @@ endif
   ld hl,sys_screen
   ld de,sys_screen+1
   ld bc,sys_screen_bitmap_size
-  ld (hl),l ; l=0 because sys_screen=0x4000
+  ld (hl),l ; l=0 because sys_screen=$4000
   ldir
   ; Color with the permanent attributes.
   ld bc,sys_screen_attributes_size-1
@@ -10872,7 +10872,7 @@ page.display
 ; ----------------------------------------------
   _code_header paren_bye_,'(BYE)'
 
-  ld (iy+sys_df_sz_offset),0x02 ; restore lines of the lower screen
+  ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
 
   im 1 ; interrupt mode 1, normal situation of the OS
 
@@ -10887,12 +10887,12 @@ system_stack_pointer: equ $+1
 ; machine code contain the address in SCANNING of the 'end-calc'
 ; instruction, 2758 hex (10072 decimal).
 
-  ld hl,0x2758
+  ld hl,$2758
   exx
 
   ; Exit to BASIC:
-  rst 0x08
-  db 0x08 ; "STOP" BASIC error
+  rst $08
+  db $08 ; "STOP" BASIC error
 
 ; ----------------------------------------------
   _defer_header default_mode_,'DEFAULT-MODE',,noop_
@@ -11197,10 +11197,10 @@ color:
   ; Input:
   ;   a = attribute control char
   ;   (tos) = color attribute value
-  rst 0x10
+  rst $10
   pop hl
   ld a,l
-  rst 0x10
+  rst $10
   call rom_set_permanent_colors_0x1CAD
   _jp_next
 
@@ -11321,6 +11321,8 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header catch_,'CATCH'
 
+  ; XXX TODO -- move to the library?
+
 ; doc{
 
 ; catch  ( xt -- 0 | err# )
@@ -11351,8 +11353,8 @@ do_two_constant:
 ;----
 ; }doc
 
-  ; Credit:
-  ; Code from DZX-Forth and MPE Forth for TiniARM.
+  ; Credit: Code from DZX-Forth, MPE Forth for TiniARM and
+  ; Forth-2012 documentation.
 
   dw sp_fetch_,to_r_ ; save data stack pointer
   dw catcher_,fetch_,to_r_ ; save previous catcher
@@ -11418,13 +11420,14 @@ throw.end:
   dw sp0_,fetch_,sp_store_
   dw boot_  ; XXX TODO -- not here?
   dw quit_
+  ; No return from `quit`, no need for `exit`.
 
 ; ----------------------------------------------
   _colon_header abort_,'ABORT'
 
   _literal -1
   dw throw_
-  dw exit_
+  ; No return from `-1 throw`, no need for `exit`.
 
 ; ----------------------------------------------
   _colon_header char_,'CHAR'

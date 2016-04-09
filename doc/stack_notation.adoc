@@ -1,6 +1,6 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-03-19
+:revdate: 2016-04-05
 
 |===
 | Symbol     | Data type                                     | Size
@@ -32,8 +32,8 @@
 | ud          | 32-bit unsigned double number                | 2 cells
 | xd          | 32-bit unspecified number                    | 2 cells
 
-| xc          | 8-bit graphic x coordinate (0..255)          | 1 cell
-| yc          | 8-bit graphic y coordinate (0..191)          | 1 cell
+| gx          | 8-bit graphic x coordinate (0..255)          | 1 cell
+| gy          | 8-bit graphic y coordinate (0..191)          | 1 cell
 | row         | 8-bit cursor row (0..n)                      | 1 cell
 | col         | 8-bit cursor column (0..n)                   | 1 cell
 

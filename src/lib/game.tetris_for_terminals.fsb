@@ -3,33 +3,28 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604022008
 
   \ -----------------------------------------------------------
   \ Description
 
   \ The sample game Tetris for Terminals.
+  \
+  \ An improved port of a game written in Forth-94 by Dirk Uwe
+  \ Zoller in 1994.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Dirk Uwe Zoller, 1994-05-05.  Look&feel stolen from Mike
+  \ Taylor's "Tetris for terminals".
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
-  \ License
+  \ Credit
 
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-.( tt ) blk @ .
-
-  \ tt (Tetris for terminals) is an improved port of a game
-  \ written in Forth-94 by Dirk Uwe Zoller in 1994.
-
-  \ Credit:
-
-  \ ----------------------------------------------------------
   \ tt.pfe  Tetris for terminals, redone in ANSI-Forth.
   \
   \ Written 05Apr94 by Dirk Uwe Zoller, e-mail duz AT roxi DOT
@@ -42,7 +37,15 @@
   \ notice.
   \
   \ Thank you.
-  \ ----------------------------------------------------------
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+.( tt )
 
 only forth also definitions
 
@@ -71,7 +74,7 @@ variable wiping
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
   \ c1 = left key
   \ c2 = right key
@@ -110,7 +113,7 @@ variable wiping
   [char] 6 [char] 7 [char] 8 [char] 9  bl edit-char  ;  -->
   \ Sinclair 2 joystick.
 
-.( tt ) blk @ .
+.( tt )
 
 6 constant max-keyset
   \ Maximum number of the keyset (first is zero).
@@ -129,7 +132,7 @@ positional-case: keyset>keys  ( n -- c1 c2 c3 c4 c5 c6 )
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 begin-stringtable keyset>name  ( n -- ca len )
   s" Cursor        " s,
@@ -145,7 +148,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 0 value quit-key  0 value pause-key  0 value drop-key
 0 value rot-key   0 value right-key  0 value left-key
@@ -167,7 +170,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 variable score
 variable pieces
@@ -195,7 +198,7 @@ variable brick-row  variable brick-col
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 wide deep * 2 * constant /pit
   \ Size of the pit in memory.
@@ -221,7 +224,7 @@ create 'pit /pit allot
   loop  draw-bottom  ;  -->
   \ Draw the frame of the pit.
 
-.( tt ) blk @ .
+.( tt )
 
 : bottom-msg  ( addr cnt -- )
   deep over 2/ wide swap - 2/ position 1 flash type 0 flash  ;
@@ -252,7 +255,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 : show-keys  ( -- )
   \ display the game keys
@@ -268,7 +271,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 : (show-help)  ( -- )
   0 0 at-xy
@@ -291,7 +294,7 @@ end-stringtable
   while  change-keyset  repeat  ;  -->
   \ Display some explanations and change the keyset.
 
-.( tt ) blk @ .
+.( tt )
 
 23 constant score-row
 

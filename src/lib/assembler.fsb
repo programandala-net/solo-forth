@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604021840
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,7 +72,9 @@ also assembler definitions hex
 
 -->
 
-( z80-asm, -- registers )
+( z80-asm, )
+
+  \ Registers
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
@@ -91,7 +93,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, -- defining words for z80 instructions)
+( z80-asm, )
+
+  \ Defining words for z80 instructions
 
 : m1  ( 8b "name" -- )
   create c, does>  ( -- )  ( pfa ) c@ c,  ;
@@ -119,7 +123,9 @@ DD constant ix-op  FD constant iy-op
 
   -->
 
-( z80-asm, -- defining words for z80 instructions)
+( z80-asm, )
+
+  \ Defining words for z80 instructions
 
 : m7  ( 8b "name" -- )
   create c, does>  ( r bit -- )
@@ -137,7 +143,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, -- defining words for z80 instructions)
+( z80-asm, )
+
+  \ Defining words for z80 instructions
 
 : ma  ( 8b "name" -- )
   create c, does>  ( disp rphl -- )
@@ -157,7 +165,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, -- opcodes)
+( z80-asm, )
+
+  \ Opcodes
 
   \ XXX FIXME ftap
 
@@ -172,7 +182,9 @@ rst, C9 m1 ret, CA m5 jpz, CD m5 call, CE m4 adc#, D2
 
 -->
 
-( z80-asm, -- opcodes)
+( z80-asm, )
+
+  \ Opcodes
 
 m5 jpnc, D3 m4 out, 41 m3 outbc, D6 m4 sub#, D9 m1 exx, DA m5
 jpc, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E2 m5 jppo, E3 m1
@@ -186,7 +198,9 @@ rld,
 
 -->
 
-( z80-asm, -- opcodes)
+( z80-asm, )
+
+  \ Opcodes
 
 : jpix,  ( -- )  ix-op c, jphl,  ;
 : ldp#,  ( 16b rp -- )  8* 1+ c, ,  ;
@@ -212,7 +226,9 @@ D7 m1 prt,  \ rst 0x16
 
 -->
 
-( z80-asm, -- index register opcodes)
+( z80-asm, )
+
+  \ Index register opcodes
 
 86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
 AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
@@ -227,7 +243,9 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
 -->
 
-( z80-asm, -- conditions)
+( z80-asm, )
+
+  \ Conditions
 
   \ Conditions are Z80 opcodes for the required jump
   \ instruction.
@@ -253,7 +271,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- conditional ret and call)
+( z80-asm, )
+
+  \ Conditional ret and call
 
   \ Conditional ret
 
@@ -279,7 +299,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- control structures with relative jumps)
+( z80-asm, )
+
+  \ Control structures with relative jumps
 
   \ XXX TODO document
 
@@ -298,7 +320,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- control structures with relative jumps)
+( z80-asm, )
+
+  \ Control structures with relative jumps
 
 : ahead  ( -- orig  )  18 , >relmark  ;
   \ Create a relative branch forward.
@@ -330,7 +354,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 : rstep    ( dest cs-id -- )  10 runtil  ;  -->
   \ compile `djnz`
 
-( z80-asm, -- control structures with absolute jumps)
+( z80-asm, )
+
+  \ Control structures with absolute jumps
 
   \ XXX TODO document
 
@@ -363,7 +389,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- last opcodes and macros)
+( z80-asm, )
+
+  \ Last opcodes and macros
 
   \ `and`, `or` and `xor` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -379,7 +407,9 @@ A0 m2 and,  B0 m2 or,  A8 m2 xor,
 
 -->
 
-( z80-asm, -- unresolved macro endm )
+( z80-asm, )
+
+  \ Unresolved macro endm 
 
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during
@@ -423,7 +453,9 @@ also assembler definitions hex
 
 -->
 
-( z80-asm -- registers )
+( z80-asm )
+
+  \ Registers 
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
@@ -442,7 +474,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- defining words for z80 instructions)
+( z80-asm )
+
+  \ Defining words for z80 instructions
 
 : m1  ( 8b "name" -- )
   \ 1-byte opcode without parameters.
@@ -470,7 +504,9 @@ DD constant ix-op  FD constant iy-op
 
   -->
 
-( z80-asm -- defining words for z80 instructions)
+( z80-asm )
+
+  \ Defining words for z80 instructions
 
 : m7  ( 8b "name" -- )
   \ Bit manipulation of registers.
@@ -492,7 +528,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- defining words for z80 instructions)
+( z80-asm )
+
+  \ Defining words for z80 instructions
 
 : ma  ( 8b "name" -- )
   \ Index registers with register.
@@ -516,7 +554,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- opcodes)
+( z80-asm )
+
+  \ Opcodes
 
   \ XXX FIXME ftap
 
@@ -536,7 +576,9 @@ cp# 00 m6 rlc 08 m6 rrc 10 m6 rl 18 m6 rr 20 m6 sla  28 m6 sra
 lddr 44ED m8 neg 57ED m8 ldai 47ED m8 ldia 56ED m8 im1 5EED m8
 im2 B1ED m8 cpir 6FED m8 rld -->
 
-( z80-asm -- opcodes)
+( z80-asm )
+
+  \ Opcodes
 
 : 0outbc  ( -- )  ED c, 71 c,  ;
 : jpix  ( -- )  ix-op c, jphl  ;
@@ -561,7 +603,9 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 CF m4 hook       \ rst 0x08
 D7 m1 prt  -->   \ rst 0x16
 
-( z80-asm -- index register opcodes)
+( z80-asm )
+
+  \ Index register opcodes
 
 86 ma addx 8E ma adcx 96 ma subx 9E ma sbcx A6 ma andx
 AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
@@ -576,7 +620,9 @@ AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
 
 -->
 
-( z80-asm -- conditional ret and call)
+( z80-asm )
+
+  \ Conditional ret and call
 
   \ Condition codes for relative jumps
 
@@ -615,7 +661,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( z80-asm -- control structures with relative jumps)
+( z80-asm )
+
+  \ Control structures with relative jumps
 
   \ XXX TODO document
 
@@ -661,7 +709,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 : step    ( dest cs-id -- )  10 until  ;  -->
   \ compile `djnz`
 
-( z80-asm -- control structures with absolute jumps)
+( z80-asm )
+
+  \ Control structures with absolute jumps
 
   \ XXX TODO document
 
@@ -692,7 +742,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( z80-asm -- last opcodes and macros)
+( z80-asm )
+
+  \ Last opcodes and macros
 
   \ `and`, `or` and `xor` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -710,7 +762,9 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
 -->
 
-( z80-asm -- unresolved macro endm )
+( z80-asm )
+
+  \ Unresolved macro endm 
 
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during

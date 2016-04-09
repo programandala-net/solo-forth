@@ -8,9 +8,8 @@
 == Misc ==
 // {{{
 
-.2016-03-25:
-
-Check remaining "Copyright" and adjust the headers.
+Homogenize the stack notations of double, triple and quadruple
+numbers.
 
 // }}}
 == Inner ==

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604071548
 
   \ -----------------------------------------------------------
   \ Description
@@ -254,18 +254,9 @@ code test-pixel  ( gx gy -- f )
 
 ( pixels )
 
-  \ Credit:
-  \
-  \ Original code written by Juan Antonio Paz,
-  \ published on Microhobby, issue 170 (1988-05), page 21:
-  \ http://microhobby.org/numero170.htm
-  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
-
 need z80-asm
 
 code pixels  ( -- u )
-
-  \ Return the number of pixels set on the screen.
 
   exx
   4000 hl ldp#  l b ld  l c ld
@@ -280,6 +271,23 @@ code pixels  ( -- u )
   exx
   jpnext
   end-code
+
+  \ doc{
+  \
+  \ pixels  ( -- u )
+  \
+  \ Number of pixels set on the screen.
+  \
+  \ }doc
+
+  \ 26 bytes used.
+
+  \ Credit:
+  \
+  \ Original code written by Juan Antonio Paz,
+  \ published on Microhobby, issue 170 (1988-05), page 21:
+  \ http://microhobby.org/numero170.htm
+  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
 
   \ Original code:
   \
@@ -301,5 +309,11 @@ code pixels  ( -- u )
   \ jr nz,byte
   \ ret
 
+( slow-pixels )
+
+  \ Slower version of `pixels`.
+
+need bits
+: pixels  ( -- u )  16384 6144 bits  ;
 
   \ vim: filetype=soloforth

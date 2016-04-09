@@ -1,4 +1,4 @@
-  \ data.wong_arrays.fsb
+  \ data.array.wong.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -8,35 +8,7 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Wong arrays.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( array ato ) \ wong-arrays )
-
-  \ One-dimensional arrays by Leo Wong
-
-  \ 2015-11-15
-
-  \ ...........................................................
-  \ References:
-
-  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
-  \ http://forth.sourceforge.net/techniques/
-
-  \ ...........................................................
-  \ Description:
+  \ The one-dimensional Wong arrays.
 
   \ This approach is unique in having no proponents. It is part
   \ of Flight, a Forth scripting language. Several Flight
@@ -44,7 +16,11 @@
   \ conformance with the design goals of Flight, bounds
   \ checking is included.
 
-  \ ...........................................................
+  \ References:
+
+  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+
   \ Main idea:
 
   \ Treat arrays like values.
@@ -66,11 +42,30 @@
 
   \ This approach can be extended to different-sized data
   \ (including strings) and 2 or more dimensions by having
-  \ their own versions of array array> ato +ato. A Flight
-  \ scripter would not be expected to implement these words.
+  \ their own versions of `array`, `array>` `ato` and `+ato`.
 
-  \ ...........................................................
-  \ Sample implementation:
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Leo Wong.
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-15: Adapted to Solo Forth.
+  \ 2016-04-02: Reorganized the description.
+
+( array ato )
 
 need within
 

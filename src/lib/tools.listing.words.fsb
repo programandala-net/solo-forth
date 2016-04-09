@@ -22,18 +22,19 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( more-words? )
 
-( words wordlist-words )
+: more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
+  \ A common factor of `words` and `words-like`.
+
+( words )
 
   \ Credit:
   \
   \ Code adapted from Spectrum Forth-83.
 
 need trail  need name>link  need tab  need nuf?
-
-[defined] more-words?
-?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
-     \ A common factor of `words` and `words-like`.
+need more-words?
 
 : words  ( -- )
   trail
@@ -41,7 +42,9 @@ need trail  need name>link  need tab  need nuf?
     dup .name tab  name>link @s
   repeat drop  ;
 
-[unneeded] wordlist-words ?exit
+( wordlist-words )
+
+need words
 
 : wordlist-words  ( wid -- )  >order  words  previous  ;
 
@@ -52,10 +55,7 @@ need trail  need name>link  need tab  need nuf?
   \ Code adapted from pForth.
 
 need trail  need name>link  need tab  need nuf?
-
-[defined] more-words?
-?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
-     \ A common factor of `words` and `words-like`.
+need more-words?
 
 [defined] contains
 ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;

@@ -21,7 +21,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031816
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,19 +34,35 @@
 
 2 load
 
+  \ XXX TMP --
+  \ need 16-bit-random-pix-benchmarks  exit
+
+  \ XXX TMP --
+  \ need wordlist-words  need order
+  \ need bench{  need indexer
+  \ : iw  ( -- )  index-wordlist wordlist-words  ;
+
   \ vim: filetype=soloforth
   \ 002_need.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031848
 
   \ -----------------------------------------------------------
   \ Description
 
   \ The `need` utility which manages the library dependencies.
   \ It must be at block 2 of the library.
+  \
+  \ The utility consists of words `need`, `needed`, `reneed`
+  \ and `reneeded`. All of them are deferred words. Their
+  \ default behaviour is set by `set-located-need`: locate the
+  \ required word searching the blocks of the library.
+  \
+  \ An alternative faster behaviour is provided by the
+  \ `indexer` tool, in other module.
 
   \ -----------------------------------------------------------
   \ Author
@@ -62,18 +78,13 @@
 
 ( contains delimited located )
 
-  \ XXX TMP
-  \ XXX INFORMER
-  \ : contains  ( ca1 len1 ca2 len2 -- f )  2dup cr type ." in"
-  \ 2over -trailing cr type ." ?" cr .s key drop search nip nip ;
-
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
 
   \ doc{
   \
   \ contains ( ca1 len1 ca2 len2 -- f )
   \
-  \ Does the string ca1 len1 contains the string ca2 len2?
+  \ Does string _ca1 len1_ contain string _ca2 len2_?
   \
   \ }doc
 
@@ -90,7 +101,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ delimited   ( ca1 len1 -- ca2 len2 )
   \
-  \ Add a leading space and trailing space to the string _ca1
+  \ Add one leading space and one trailing space to string _ca1
   \ len1_, returning the result _ca2 len2_ in the circular
   \ string buffer.
   \
@@ -102,15 +113,15 @@ variable last-locatable  blk/disk 1- last-locatable !
   do  0 i line>string 2over
       contains if  2drop i unloop exit  then
       break-key? ?leave
-  loop  2drop false  ;
+  loop  2drop 0  ;
 
   \ doc{
   \
-  \ located  ( ca len -- block | false )
+  \ located  ( ca len -- block | 0 )
   \
   \ Locate the first block whose header contains the string _ca
   \ len_ (but surrounded by spaces), and return its number. If
-  \ not found, return _false_.  The search is case-sensitive.
+  \ not found, return zero.  The search is case-sensitive.
   \
   \ }doc
 
@@ -127,21 +138,21 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ ?located ( f -- )
   \
-  \ If f is zero, throw an exception -268.
+  \ If f is zero, throw an exception -268 ("required, but not
+  \ located").
   \
   \ }doc
 
-: locate  ( "name" -- block | false )
+: locate  ( "name" -- block | 0 )
   parse-name save-string located  ;
 
   \ doc{
   \
-  \ locate  ( "name" -- block | false )
+  \ locate  ( "name" -- block | 0 )
   \
   \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and return its number. If not
-  \ found, return _false_.
-  \ The search is case-sensitive.
+  \ found, return zero.  The search is case-sensitive.
   \
   \ }doc
 
@@ -153,11 +164,14 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and set it the first one `located`
-  \ will search from. If not found, throw an exception -268.
+  \ will search from. If not found, throw an exception -268
+  \ ("required, but not located").
   \
   \ This word is intended to prevent undesired matches clashes
   \ during the execution of `need` and related words. "name" is
-  \ supposed to be a conventional marker. Usage examples:
+  \ supposed to be a conventional marker.
+  \
+  \ Usage examples:
 
   \ ----
   \ ( x )
@@ -180,32 +194,69 @@ variable last-locatable  blk/disk 1- last-locatable !
 
   \ }doc
 
-: reneeded  ( ca len -- )  located ?located load  ;
+defer reneeded  ( ca len -- )
 
   \ doc{
   \
   \ reneeded  ( ca len -- )
   \
-  \ Locate the first block whose header contains the string
-  \ _ca len_ (surrounded by spaces), and load it. If not found,
-  \ throw an exception -268.
+  \ Load the first block whose header contains the string _ca
+  \ len_ (surrounded by spaces).  If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-reneeded`.
   \
   \ }doc
 
-: reneed  ( "name" -- )  parse-name save-string reneeded  ;
+: locate-reneeded  ( ca len -- )  located ?located load  ;
+
+  \ doc{
+  \
+  \ locate-reneeded  ( ca len -- )
+  \
+  \ Locate the first block whose header contains the string _ca
+  \ len_ (but surrounded by spaces), and load it. If not found,
+  \ throw an exception -268 ("required, but not located").
+  \
+  \ This is the default behaviour of the deferred word
+  \ `reneeded`.
+  \
+  \ }doc
+
+defer reneed  ( "name" -- )
 
   \ doc{
   \
   \ reneed  ( ca len -- )
   \
-  \ Locate the first block whose header contains "name"
-  \ (surrounded by spaces), and load it.
+  \ Load the first block whose header contains "name" (but
+  \ surrounded by spaces).
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-reneed`.
+  \
+  \ }doc
+
+: locate-reneed  ( "name" -- )
+  parse-name save-string reneeded  ;
+
+  \ doc{
+  \
+  \ locate-reneed  ( ca len -- )
+  \
+  \ Locate the first block whose header contains "name" (but
+  \ surrounded by spaces), and load it.  If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is the default behaviour of the deferred word
+  \ `reneed`.
   \
   \ }doc
 
 -->
 
-( needed-word [needed] [unneeded] needed need )
+( needed-word [needed] [unneeded] )
 
 2variable needed-word
 
@@ -236,24 +287,51 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
-: needed  ( ca len -- )
-  needed-word 2@ 2>r
-  -trailing -leading save-string 2dup needed-word 2!
-  2dup undefined?
-  if  reneeded  else  2drop  then  2r> needed-word 2!  ;
+: new-needed-word  ( ca len -- ca len )
+  -trailing -leading save-string 2dup needed-word 2!  ;
+
+-->
+
+( needed need )
+
+defer needed  ( ca len -- )
 
   \ doc{
   \
   \ needed  ( ca len -- )
   \
   \ If the string _ca len_ is not the name of a word found in
-  \ the current search order, locate the first block of the
+  \ the current search order, load the first block of the
   \ library where "name" is included in the block header
-  \ (surrounded by spaces), and load it.
+  \ (but surrounded by spaces).
+  \ If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-needed`.
   \
   \ }doc
 
-: need  ( "name" -- )  parse-name needed  ;
+: locate-needed  ( ca len -- )
+  needed-word 2@ 2>r  new-needed-word  2dup undefined?
+  if  locate-reneeded  else  2drop  then  2r> needed-word 2!  ;
+
+  \ doc{
+  \
+  \ locate-needed  ( ca len -- )
+  \
+  \ If the string _ca len_ is not the name of a word found in
+  \ the current search order, locate the first block of the
+  \ library where "name" is included in the block header (but
+  \ surrounded by spaces), and load it.  If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is the default behaviour of the deferred word
+  \ `needed`.
+  \
+  \ }doc
+
+defer need  ( "name" -- )
 
   \ doc{
   \
@@ -261,9 +339,50 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ If "name" is not found in the current search order, locate
   \ the first block of the library where "name" is included is
-  \ the block header (surrounded by spaces), and load it.
+  \ the block header (but surrounded by spaces), and load it.
+  \ If not found, throw an exception -268 ("required, but not
+  \ located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-need`.
   \
   \ }doc
+
+: locate-need  ( "name" -- )  parse-name needed  ;
+
+  \ doc{
+  \
+  \ locate-need  ( "name" -- )
+  \
+  \ If "name" is not found in the current search order, locate
+  \ the first block of the library where "name" is included is
+  \ the block header (but surrounded by spaces), and load it.
+  \ If not found, throw an exception -268 ("required, but not
+  \ located").
+  \
+  \ This is the default behaviour of the deferred word `need`.
+  \
+  \ }doc
+
+: set-located-need  ( -- )
+  ['] locate-reneeded ['] reneeded  defer!
+  ['] locate-reneed   ['] reneed    defer!
+  ['] locate-need     ['] need      defer!
+  ['] locate-needed   ['] needed    defer!  ;
+
+  \ doc{
+  \
+  \ set-located-need  ( -- )
+  \ 
+  \ Set the default behaviour of `need`, `needed`, `reneed` and
+  \ `reneeded`: Use `locate` for searching the library.
+  \
+  \ The alternative, provided by the optional `indexer` tool,
+  \ is set by `set-indexed-need`.
+  \
+  \ }doc
+
+set-located-need
 
 blk @ 1+ dup default-first-locatable !  first-locatable !
 
@@ -389,7 +508,7 @@ exit
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604021840
 
   \ -----------------------------------------------------------
   \ Description
@@ -458,7 +577,9 @@ also assembler definitions hex
 
 -->
 
-( z80-asm, -- registers )
+( z80-asm, )
+
+  \ Registers
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
@@ -477,7 +598,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, -- defining words for z80 instructions)
+( z80-asm, )
+
+  \ Defining words for z80 instructions
 
 : m1  ( 8b "name" -- )
   create c, does>  ( -- )  ( pfa ) c@ c,  ;
@@ -505,7 +628,9 @@ DD constant ix-op  FD constant iy-op
 
   -->
 
-( z80-asm, -- defining words for z80 instructions)
+( z80-asm, )
+
+  \ Defining words for z80 instructions
 
 : m7  ( 8b "name" -- )
   create c, does>  ( r bit -- )
@@ -523,7 +648,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, -- defining words for z80 instructions)
+( z80-asm, )
+
+  \ Defining words for z80 instructions
 
 : ma  ( 8b "name" -- )
   create c, does>  ( disp rphl -- )
@@ -543,7 +670,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, -- opcodes)
+( z80-asm, )
+
+  \ Opcodes
 
   \ XXX FIXME ftap
 
@@ -558,7 +687,9 @@ rst, C9 m1 ret, CA m5 jpz, CD m5 call, CE m4 adc#, D2
 
 -->
 
-( z80-asm, -- opcodes)
+( z80-asm, )
+
+  \ Opcodes
 
 m5 jpnc, D3 m4 out, 41 m3 outbc, D6 m4 sub#, D9 m1 exx, DA m5
 jpc, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E2 m5 jppo, E3 m1
@@ -572,7 +703,9 @@ rld,
 
 -->
 
-( z80-asm, -- opcodes)
+( z80-asm, )
+
+  \ Opcodes
 
 : jpix,  ( -- )  ix-op c, jphl,  ;
 : ldp#,  ( 16b rp -- )  8* 1+ c, ,  ;
@@ -598,7 +731,9 @@ D7 m1 prt,  \ rst 0x16
 
 -->
 
-( z80-asm, -- index register opcodes)
+( z80-asm, )
+
+  \ Index register opcodes
 
 86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
 AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
@@ -613,7 +748,9 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
 -->
 
-( z80-asm, -- conditions)
+( z80-asm, )
+
+  \ Conditions
 
   \ Conditions are Z80 opcodes for the required jump
   \ instruction.
@@ -639,7 +776,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- conditional ret and call)
+( z80-asm, )
+
+  \ Conditional ret and call
 
   \ Conditional ret
 
@@ -665,7 +804,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- control structures with relative jumps)
+( z80-asm, )
+
+  \ Control structures with relative jumps
 
   \ XXX TODO document
 
@@ -684,7 +825,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- control structures with relative jumps)
+( z80-asm, )
+
+  \ Control structures with relative jumps
 
 : ahead  ( -- orig  )  18 , >relmark  ;
   \ Create a relative branch forward.
@@ -716,7 +859,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 : rstep    ( dest cs-id -- )  10 runtil  ;  -->
   \ compile `djnz`
 
-( z80-asm, -- control structures with absolute jumps)
+( z80-asm, )
+
+  \ Control structures with absolute jumps
 
   \ XXX TODO document
 
@@ -749,7 +894,9 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 -->
 
-( z80-asm, -- last opcodes and macros)
+( z80-asm, )
+
+  \ Last opcodes and macros
 
   \ `and`, `or` and `xor` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -765,7 +912,9 @@ A0 m2 and,  B0 m2 or,  A8 m2 xor,
 
 -->
 
-( z80-asm, -- unresolved macro endm )
+( z80-asm, )
+
+  \ Unresolved macro endm 
 
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during
@@ -809,7 +958,9 @@ also assembler definitions hex
 
 -->
 
-( z80-asm -- registers )
+( z80-asm )
+
+  \ Registers 
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
@@ -828,7 +979,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- defining words for z80 instructions)
+( z80-asm )
+
+  \ Defining words for z80 instructions
 
 : m1  ( 8b "name" -- )
   \ 1-byte opcode without parameters.
@@ -856,7 +1009,9 @@ DD constant ix-op  FD constant iy-op
 
   -->
 
-( z80-asm -- defining words for z80 instructions)
+( z80-asm )
+
+  \ Defining words for z80 instructions
 
 : m7  ( 8b "name" -- )
   \ Bit manipulation of registers.
@@ -878,7 +1033,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- defining words for z80 instructions)
+( z80-asm )
+
+  \ Defining words for z80 instructions
 
 : ma  ( 8b "name" -- )
   \ Index registers with register.
@@ -902,7 +1059,9 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm -- opcodes)
+( z80-asm )
+
+  \ Opcodes
 
   \ XXX FIXME ftap
 
@@ -922,7 +1081,9 @@ cp# 00 m6 rlc 08 m6 rrc 10 m6 rl 18 m6 rr 20 m6 sla  28 m6 sra
 lddr 44ED m8 neg 57ED m8 ldai 47ED m8 ldia 56ED m8 im1 5EED m8
 im2 B1ED m8 cpir 6FED m8 rld -->
 
-( z80-asm -- opcodes)
+( z80-asm )
+
+  \ Opcodes
 
 : 0outbc  ( -- )  ED c, 71 c,  ;
 : jpix  ( -- )  ix-op c, jphl  ;
@@ -947,7 +1108,9 @@ im2 B1ED m8 cpir 6FED m8 rld -->
 CF m4 hook       \ rst 0x08
 D7 m1 prt  -->   \ rst 0x16
 
-( z80-asm -- index register opcodes)
+( z80-asm )
+
+  \ Index register opcodes
 
 86 ma addx 8E ma adcx 96 ma subx 9E ma sbcx A6 ma andx
 AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
@@ -962,7 +1125,9 @@ AE ma xorx B6 ma orx  BE ma cpx  34 ma incx 35 ma decx
 
 -->
 
-( z80-asm -- conditional ret and call)
+( z80-asm )
+
+  \ Conditional ret and call
 
   \ Condition codes for relative jumps
 
@@ -1001,7 +1166,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( z80-asm -- control structures with relative jumps)
+( z80-asm )
+
+  \ Control structures with relative jumps
 
   \ XXX TODO document
 
@@ -1047,7 +1214,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 : step    ( dest cs-id -- )  10 until  ;  -->
   \ compile `djnz`
 
-( z80-asm -- control structures with absolute jumps)
+( z80-asm )
+
+  \ Control structures with absolute jumps
 
   \ XXX TODO document
 
@@ -1078,7 +1247,9 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 -->
 
-( z80-asm -- last opcodes and macros)
+( z80-asm )
+
+  \ Last opcodes and macros
 
   \ `and`, `or` and `xor` are defined at the end, in order to
   \ avoid name clashes with the Forth words that have the same
@@ -1096,7 +1267,9 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
 -->
 
-( z80-asm -- unresolved macro endm )
+( z80-asm )
+
+  \ Unresolved macro endm 
 
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during
@@ -1773,6 +1946,8 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \
   \ Load block _block_ if flag _f_ is true, else do nothing.
   \
+  \ Origin: Pygmy Forth.
+  \
   \ }doc
 
 [unneeded] reload
@@ -1798,6 +1973,8 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ loads  ( block n -- )
   \
   \ Load _n_ blocks starting from block _block_.
+  \
+  \ Origin: MMSFORTH.
   \
   \ }doc
 
@@ -1840,12 +2017,234 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ }doc
 
   \ vim: filetype=soloforth
+  \ blocks.indexer.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604031430
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ A blocks indexer that improves the default behaviour of
+  \ `need`, `needed`, `reneed` and `reneeded`: It creates a
+  \ word list from the names that are on the index (header)
+  \ line of every searchable block, ignoring duplicates.  These
+  \ words will load the block they belong to. This way, after
+  \ indexing all of the disk blocks only once, `need` will
+  \ search the word list and execute the word found, instead of
+  \ searching all of the blocks every time.
+
+  \ At the time of writing (2016-04-03) Indexing the whole
+  \ library (677 blocks) takes less than one minute and uses
+  \ 3600 bytes of dictionary space.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-02: Start.
+  \ 2016-04-03: First working version.
+
+( indexer )
+
+only forth definitions
+
+need loader  need s=  need alias  need string/
+need get-order  need set-order
+
+wordlist constant index-wordlist
+  \ Words of the blocks index.
+
+: search-index  ( ca len -- 0 | xt 1 | xt -1 )
+  index-wordlist search-wordlist  ;
+  \ Search the index for word _ca len_.
+
+: name-indexed?  ( ca len -- f )
+  search-index 0<> dup if  nip  then  ;
+  \ Is word _ca len_ in the index?
+
+variable indexed-block
+
+: (index-name)  ( ca len -- )
+  2dup name-indexed? if  2drop exit  then
+  nextname indexed-block @ loader  ;
+  \ Add word _ca len_ to the blocks index, if not done before.
+  \ The current word list is supposed to be `index-wordlist`.
+
+-->
+
+( indexer )
+
+wordlist dup constant indexer-wordlist set-current
+  \ Words to parse the block index lines.
+
+: (  ( "ccc<space><paren><space|eof>" -- )
+  begin  parse-name 2dup s" )" s= 0=
+  while  (index-name)  repeat  2drop  ;
+  \ Parse and index the names until the next right paren name.
+
+' ( alias .(
+
+: \  ( "ccc<space><backslash><space|eof>" -- )
+  begin  parse-name 2dup s" \" s= 0=
+  while  (index-name)  repeat  2drop  ;
+  \ Parse and index the names until the next backslash name.
+
+-->
+
+( indexer )
+
+forth-wordlist set-current
+
+: index-reneeded  ( ca len -- )
+  search-index 0= #-277 ?throw execute  ;
+
+  \ doc{
+  \
+  \ index-reneeded  ( ca len-- )
+  \
+  \ Search the index word list for word _ca len_. If found,
+  \ execute it, causing its associated block be loaded.  If not
+  \ found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `reneeded`.
+  \
+  \ }doc
+
+: index-reneed  ( "name" -- )  parse-name index-reneeded  ;
+
+  \ doc{
+  \
+  \ index-reneed  ( "name" -- )
+  \
+  \ Search the index word list for word "name". If found,
+  \ execute it, causing its associated block be loaded.  If not
+  \ found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `reneed`.
+  \
+  \ }doc
+
+: index-needed  ( ca len -- )
+  needed-word 2@ 2>r  new-needed-word  2dup undefined?
+  if  index-reneeded  else  2drop  then  2r> needed-word 2!  ;
+
+  \ doc{
+  \
+  \ index-needed ( ca len -- )
+  \
+  \ If word _ca len_ is found in the current search order, do
+  \ nothing. Otherwise search the index word list for it. If
+  \ found, execute it, causing its associated block be loaded.
+  \ If not found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `needed`.
+  \
+  \ }doc
+
+
+: index-need  ( "name" -- )  parse-name index-needed  ;
+
+  \ doc{
+  \
+  \ index-need  ( "name" -- )
+  \
+  \ If word "name" is found in the current search order, do
+  \ nothing. Otherwise search the index word list for it. If
+  \ found, execute it, causing its associated block be loaded.
+  \ If not found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `need`.
+  \
+  \ }doc
+
+: set-indexed-need  ( -- )
+  ['] index-reneeded ['] reneeded  defer!
+  ['] index-reneed   ['] reneed    defer!
+  ['] index-need     ['] need      defer!
+  ['] index-needed   ['] needed    defer!  ;
+
+  \ doc{
+  \
+  \ set-indexed-need  ( -- )
+  \
+  \ Set the alternative behaviour of `need`, `needed`, `reneed`
+  \ and `reneeded`: Use the library index created by `indexer`.
+  \ In fact `indexer` executes `set-indexed-need` after
+  \ creating the index.
+  \
+  \ The default behaviour can be restored by
+  \ `set-located-need`.
+  \
+  \ }doc
+
+-->
+
+( indexer )
+
+: valid-block-header?  ( ca len -- f )
+  -trailing dup 0= #-278 ?throw
+  2 string/ 2dup s"  )" s= >r s"  \" s= r> or  ;
+  \ Is block header _ca len_ valid?
+  \ Valid block headers end with " )" or " /".
+  \ If it's empty, throw error -278 in order to quit
+  \ the indexing.
+
+: index-block-header  ( ca len -- )
+  2dup valid-block-header? if  evaluate exit  then  2drop  ;
+  \ Index block header _ca len_, if it's valid.
+
+: index-block  ( +n -- )
+  dup indexed-block ! 0 swap line>string index-block-header  ;
+  \ Index block _+n_.
+
+: (indexer)  ( -- )
+  last-locatable @ 1+ first-locatable @
+  ?do  i index-block  loop  ;
+  \ Create the blocks index.
+
+: indexer  ( -- )
+  get-current  get-order
+  index-wordlist set-current  indexer-wordlist 1 set-order
+  ['] (indexer) catch  dup #-278 <> swap ?throw
+  set-order set-current  set-indexed-need  ;
+  \ doc{
+  \
+  \ indexer  ( -- )
+
+  \ Create the blocks index and activate it. The the current
+  \ word list and the current search order are preserved.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
   \ common_heap.charlton.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031945
 
   \ -----------------------------------------------------------
   \ Description
@@ -1928,15 +2327,13 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
 ( heap )
 
 
-  \ XXX Note: 1614 bytes used!
+  \ XXX REMARK: 1614 bytes used
 
   \ XXX TODO use top of memory instead of dictionary space?
   \ problem: memory banks could not be used at the same time.
   \
   \ XXX TODO use a memory bank instead of dictionary space?
   \ problem: only words below 0xC000 could manipulate the heap.
-
-
 
 also forth definitions
 need wid-of
@@ -2797,6 +3194,266 @@ variable here-backup
 
 
   \ vim: filetype=soloforth
+  \ data.array.noble.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Toolset for one- and two-dimensional arrays by Julian V.
+  \ Noble:
+
+  \ Well, as I am sure everyone knows to the point of hurling
+  \ (regurgitating) by now, I chose a format that looks
+  \ somewhat like Fortran. I could not use the right
+  \ parenthesis, ) , because it was taken as the closure for a
+  \ parenthesized comment. Could not use the [ ]'s because they
+  \ also have a definite meaning (turn compiler off and on by
+  \ switching STATE).  So I was left with what I could do using
+  \ curly braces { and }.
+
+  \ Now why did I want an array notation that looks like
+  \ Fortran? There were several reasons:
+
+  \ 1. I wanted (at that time) to sell Forth to the Fortran
+  \ community.  (Silly me! But I was young then.)
+
+  \ 2. I wanted a notation that unequivocally said "I am an
+  \ array!" I had already written a number of linear equations
+  \ and other matrix ops programs and kept running into the
+  \ problems of
+
+  \  a. different constructors for each data type;
+  \
+  \  b. reading the program when it was done.
+
+  \ 3. I wanted something that would be completely transparent,
+  \ would permit address arithmetic, and would not require tons
+  \ of comments to be maintainable.
+
+  \ Eventually I hit on the Forthish solution of defining an
+  \ array with a header that contained its size and its data
+  \ size. Then I wrote a de-referencing operator that would dig
+  \ into the header and calculate the address of the datum
+  \ being indexed. The notation for this was
+
+  \ v{ I } ( -- adr of v[I] )
+
+  \ The left curly brace in an array's name was simply
+  \ syntactic sugar.  But at some point I realized that by
+  \ naming 2-dimensional arrays something like M{{ (2 curly
+  \ braces) I could have the name say "I am a 2-dimensional
+  \ array." Then one dereferences such by saying
+
+  \ m{{ i j }}
+
+  \ --that is, the 2-dim dereferencing operator expects a base
+  \ address and two indices and produces the correct address of
+  \ the I,Jth element.
+
+  \ For those who want it, go to my home page (under
+  \ construction) then to the link "Computational Methods in
+  \ the Physical Sciences", and thence to "Forth system and
+  \ example programs". There you can find the file arrays.f
+  \ that does all of this stuff. I have bounds checking in that
+  \ version because it was intended for student use.  Experts
+  \ can delete that stuff.
+
+  \ ...........................................................
+  \ References
+
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Copyright (C) 2001 Julian V. Noble
+
+  \ Modified for Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ License of the original version:
+
+  \ ---------------------------------------------------
+  \     (c) Copyright 2001  Julian V. Noble.          \
+  \       Permission is granted by the author to      \
+  \       use this software for any application pro-  \
+  \       vided this copyright notice is preserved.   \
+  \ ---------------------------------------------------
+
+  \ License of this version:
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-15: Adapted to Solo Forth.
+  \
+  \ 2016-04-03: Header reorganized after the original
+  \ documentation.
+
+( 1array )
+
+need <=
+
+: long ; immediate
+
+: 1array ( len #bytes/datum --) \ ( #b len data ...)
+  create 2dup , , * allot ;
+
+: _len ( base_addr -- len)  cell+ @ ;
+  \ determine length of an array
+
+: } ( base_adr indx -- adr[indx] )
+  over _len over <= over 0< or #-272 ?throw
+    \ #-272 = array index out of range
+  over @ * + cell+ cell+ ;
+
+( 2array ) \ noble-arrays
+
+  \ words for 2-dimensional arrays
+
+need 1array
+
+: wide ; immediate
+
+: 2array ( hgt wid data_size --) \ ( wid #b len data ...)
+  create >r tuck , ( wid hgt)
+  r@ , * dup , r> * allot ;
+
+: }} ( base_adr m n -- adr[m,n] ) \ data stored row-wise
+  2>r cell+ dup cell- @
+  r> * r> + ( base_adr+cell m+n*w)
+  } ;
+
+  \ ...........................................................
+  \ Usage examples:
+
+  \ 20 long 2 floats 1array a{
+  \   \ complex vector
+  \
+  \ 20 long 20 wide 1 floats 2array m{{
+  \   \ real matrix
+  \
+  \ 20 long 1 cells 1array irow{
+  \   \ single-length, integer-valued vector
+  \
+  \ m{{ i j }} ( -- adr[m_ij] )
+  \   \ to dereference
+
+  \ vim: filetype=soloforth
+  \ data.array.wong.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The one-dimensional Wong arrays.
+
+  \ This approach is unique in having no proponents. It is part
+  \ of Flight, a Forth scripting language. Several Flight
+  \ programs can be found by Googling comp.lang.forth. In
+  \ conformance with the design goals of Flight, bounds
+  \ checking is included.
+
+  \ References:
+
+  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
+  \ http://forth.sourceforge.net/techniques/
+
+  \ Main idea:
+
+  \ Treat arrays like values.
+
+    \ \ Example of use:
+    \ 4 array bar
+    \ 10 0 ato bar 20 1 ato bar 30 2 ato bar 40 3 ato bar
+
+    \ 3 bar .
+    \ 0 bar .
+    \ 123 3 ato bar
+    \ 3 bar .
+    \ 1 3 +ato bar
+    \ 3 bar .
+
+  \ Note that as in most Forth numerical arguments go before:
+
+    \ 1 3 +ato bar NOT: 1 +ato 3 bar
+
+  \ This approach can be extended to different-sized data
+  \ (including strings) and 2 or more dimensions by having
+  \ their own versions of `array`, `array>` `ato` and `+ato`.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Leo Wong.
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-15: Adapted to Solo Forth.
+  \ 2016-04-02: Reorganized the description.
+
+( array ato )
+
+need within
+
+: array>  ( n 'array -- a )
+  2dup @ 0 swap within 0= #-272 ?throw
+    \ #-272 = array index out of range
+  cell+ swap cells +  ;
+  \ if in range, return element address, else abort
+
+: array  ( n "name" -- )
+  create dup , cells allot
+  does> ( n -- x ) ( n pfa ) array> @  ;
+  \ define array
+
+: (ato)  ( x n array -- )  >body array> !  ;
+  \ store to array
+
+: ato  ( x n "name" -- )
+  compiling?  if    postpone ['] postpone (ato)
+              else  ' (ato)  then ; immediate
+  \ store to array
+  \ usage: x n ato <name>
+
+: (+ato)  ( x n array -- )  >body array> +!  ;
+  \ add to array
+
+: +ato  ( n "name" -- )
+  compiling? if    postpone ['] postpone (+ato)
+             else  ' (+ato)  then  ; immediate
+  \ add to array
+
+  \ vim: filetype=soloforth
   \ data.fsb
   \
   \ This file is part of Solo Forth
@@ -3107,164 +3764,6 @@ defer link@  ( node1 -- node2 )
   \ Create a new linked list node, pointing to _node_.
 
   \ vim: filetype=soloforth
-  \ data.noble_arrays.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ The Noble arrays.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( 1array ) \ noble-arrays
-
-  \ Toolset for one- and two-dimensional arrays by Julian V.
-  \ Noble
-
-  \ 2015-11-15
-
-  \ ---------------------------------------------------
-  \ (c) Copyright 2001 Julian V. Noble. \
-  \ Permission is granted by the author to \
-  \ use this software for any application pro- \
-  \ vided this copyright notice is preserved. \
-  \ ---------------------------------------------------
-
-  \ ...........................................................
-  \ References:
-  \
-  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
-  \ http://forth.sourceforge.net/techniques/
-  \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
-
-  \ ...........................................................
-  \ Description:
-
-  \ Well, as I am sure everyone knows to the point of hurling
-  \ (regurgitating) by now, I chose a format that looks
-  \ somewhat like Fortran. I could not use the right
-  \ parenthesis, ) , because it was taken as the closure for a
-  \ parenthesized comment. Could not use the [ ]'s because they
-  \ also have a definite meaning (turn compiler off and on by
-  \ switching STATE).  So I was left with what I could do using
-  \ curly braces { and }.
-
-  \ Now why did I want an array notation that looks like
-  \ Fortran? There were several reasons:
-
-  \ 1. I wanted (at that time) to sell Forth to the Fortran
-  \ community.  (Silly me! But I was young then.)
-
-  \ 2. I wanted a notation that unequivocally said "I am an
-  \ array!" I had already written a number of linear equations
-  \ and other matrix ops programs and kept running into the
-  \ problems of
-
-  \  a. different constructors for each data type;
-  \
-  \  b. reading the program when it was done.
-
-  \ 3. I wanted something that would be completely transparent,
-  \ would permit address arithmetic, and would not require tons
-  \ of comments to be maintainable.
-
-  \ Eventually I hit on the Forthish solution of defining an
-  \ array with a header that contained its size and its data
-  \ size. Then I wrote a de-referencing operator that would dig
-  \ into the header and calculate the address of the datum
-  \ being indexed. The notation for this was
-
-  \ v{ I } ( -- adr of v[I] )
-
-  \ The left curly brace in an array's name was simply
-  \ syntactic sugar.  But at some point I realized that by
-  \ naming 2-dimensional arrays something like M{{ (2 curly
-  \ braces) I could have the name say "I am a 2-dimensional
-  \ array." Then one dereferences such by saying
-
-  \ m{{ i j }}
-
-  \ --that is, the 2-dim dereferencing operator expects a base
-  \ address and two indices and produces the correct address of
-  \ the I,Jth element.
-
-  \ For those who want it, go to my home page (under
-  \ construction) then to the link "Computational Methods in
-  \ the Physical Sciences", and thence to "Forth system and
-  \ example programs". There you can find the file arrays.f
-  \ that does all of this stuff. I have bounds checking in that
-  \ version because it was intended for student use.  Experts
-  \ can delete that stuff.
-
-  \ ...........................................................
-  \ Implementation:
-
-  \ words for 1-dimensional arrays
-
-need <=
-
-: long ; immediate
-
-: 1array ( len #bytes/datum --) \ ( #b len data ...)
-  create 2dup , , * allot ;
-
-: _len ( base_addr -- len)  cell+ @ ;
-  \ determine length of an array
-
-: } ( base_adr indx -- adr[indx] )
-  over _len over <= over 0< or #-272 ?throw
-    \ #-272 = array index out of range
-  over @ * + cell+ cell+ ;
-
-( 2array ) \ noble-arrays
-
-  \ words for 2-dimensional arrays
-
-need 1array
-
-: wide ; immediate
-
-: 2array ( hgt wid data_size --) \ ( wid #b len data ...)
-  create >r tuck , ( wid hgt)
-  r@ , * dup , r> * allot ;
-
-: }} ( base_adr m n -- adr[m,n] ) \ data stored row-wise
-  2>r cell+ dup cell- @
-  r> * r> + ( base_adr+cell m+n*w)
-  } ;
-
-  \ ...........................................................
-  \ Usage examples:
-
-  \ 20 long 2 floats 1array a{
-  \   \ complex vector
-  \
-  \ 20 long 20 wide 1 floats 2array m{{
-  \   \ real matrix
-  \
-  \ 20 long 1 cells 1array irow{
-  \   \ single-length, integer-valued vector
-  \
-  \ m{{ i j }} ( -- adr[m_ij] )
-  \   \ to dereference
-
-  \ vim: filetype=soloforth
   \ data.value.char.fsb
   \
   \ This file is part of Solo Forth
@@ -3459,111 +3958,6 @@ variable (value)  ['] @ (value) !
 : to    ( -- )  ['] ! (value) !  ;
 : value  ( n "name" -- )
   create ,  does>   (value) perform  ['] @ (value) !  ;
-
-  \ vim: filetype=soloforth
-  \ data.wong_arrays.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ The Wong arrays.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( array ato ) \ wong-arrays )
-
-  \ One-dimensional arrays by Leo Wong
-
-  \ 2015-11-15
-
-  \ ...........................................................
-  \ References:
-
-  \ http://forth.sourceforge.net/techniques/arrays-lw/index-v.txt
-  \ http://forth.sourceforge.net/techniques/
-
-  \ ...........................................................
-  \ Description:
-
-  \ This approach is unique in having no proponents. It is part
-  \ of Flight, a Forth scripting language. Several Flight
-  \ programs can be found by Googling comp.lang.forth. In
-  \ conformance with the design goals of Flight, bounds
-  \ checking is included.
-
-  \ ...........................................................
-  \ Main idea:
-
-  \ Treat arrays like values.
-
-    \ \ Example of use:
-    \ 4 array bar
-    \ 10 0 ato bar 20 1 ato bar 30 2 ato bar 40 3 ato bar
-
-    \ 3 bar .
-    \ 0 bar .
-    \ 123 3 ato bar
-    \ 3 bar .
-    \ 1 3 +ato bar
-    \ 3 bar .
-
-  \ Note that as in most Forth numerical arguments go before:
-
-    \ 1 3 +ato bar NOT: 1 +ato 3 bar
-
-  \ This approach can be extended to different-sized data
-  \ (including strings) and 2 or more dimensions by having
-  \ their own versions of array array> ato +ato. A Flight
-  \ scripter would not be expected to implement these words.
-
-  \ ...........................................................
-  \ Sample implementation:
-
-need within
-
-: array>  ( n 'array -- a )
-  2dup @ 0 swap within 0= #-272 ?throw
-    \ #-272 = array index out of range
-  cell+ swap cells +  ;
-  \ if in range, return element address, else abort
-
-: array  ( n "name" -- )
-  create dup , cells allot
-  does> ( n -- x ) ( n pfa ) array> @  ;
-  \ define array
-
-: (ato)  ( x n array -- )  >body array> !  ;
-  \ store to array
-
-: ato  ( x n "name" -- )
-  compiling?  if    postpone ['] postpone (ato)
-              else  ' (ato)  then ; immediate
-  \ store to array
-  \ usage: x n ato <name>
-
-: (+ato)  ( x n array -- )  >body array> +!  ;
-  \ add to array
-
-: +ato  ( n "name" -- )
-  compiling? if    postpone ['] postpone (+ato)
-             else  ' (+ato)  then  ; immediate
-  \ add to array
 
   \ vim: filetype=soloforth
   \ data.xstack.fsb
@@ -5693,7 +6087,7 @@ need bench{
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604011825
+  \ Last modified: 201604090210
 
   \ -----------------------------------------------------------
   \ Description
@@ -5708,9 +6102,45 @@ need bench{
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( rng-benchmark )
+( rnd-benchmark )
 
-  \ Random number generator benchmark
+  \ XXX UNDER DEVELOPMENT -- new benchmark
+  \ 2016-04-07: Start
+
+need bits  need u%
+
+$FFFF constant #sampled
+8 constant /byte  \ bits
+#sampled /byte / constant /sample
+
+create sample  /sample allot
+
+: -sample  ( -- )  sample /sample erase  ;
+  \ Erase the sample.
+
+: sampled  ( -- u )  sample /sample bits  ;
+  \ Count the bits of the sample.
+
+: remember  ( u -- )  /byte /mod sample + c!set-bits  ;
+  \ Remember random number _u_, by setting its associated bit
+  \ in the sample.
+
+: sampled%.  ( u -- )  #sampled u% 0.r ." %"  ;
+  \ Print _u_ sampled numbers as a percentage.
+
+: .sampled  ( u -- )  dup u. ." (" sampled%. ." )"  ;
+  \ Print _u_ as the number of sampled numbers.
+
+: report  ( ca len -- )  type sampled .sampled cr  ;
+
+: rnd-benchmark  ( ca len xt -- )
+  -sample
+  #sampled 0 do  dup execute remember  loop  drop
+  report  ;
+
+( random-pix-benchmark )
+
+  \ Random pixels benchmark
 
 need set-pixel  need bench{  need pixels  need u%  need 3dup
 
@@ -5720,8 +6150,8 @@ need set-pixel  need bench{  need pixels  need u%  need 3dup
 defer rng  ( n -- 0..n-1 )
 
 : pixels%.  ( u -- )  #pixels u% 0.r ." %"  ;
-  \ Print _u_ pixels as a percentage of the maximum
-  \ number of pixels.
+  \ Print _u_ pixels as a percentage of the maximum number of
+  \ pixels.
 
 : .pixels  ( u -- )  dup u. ." pixels (" pixels%. ." )"  ;
   \ Print _u_ as the number of pixels.
@@ -5746,13 +6176,13 @@ defer .cycles  ( -- )
 
 -->
 
-( rng-benchmark )
+( random-pix-benchmark )
 
 defer random-coords  ( -- gx gy )
   \ Random graphic coordinates. Configurable depending on the
   \ type of `random` to benchmark.
 
-: (random-coords)  ( -- gx gy )  256 rng 193 rng  ;
+: (random-coords)  ( -- gx gy )  256 rng 192 rng  ;
   \ Default behaviour of `random-coords`.
 
 : fill-screen  ( -- )
@@ -5763,9 +6193,9 @@ defer random-coords  ( -- gx gy )
   \ Change the border color according to the current count
   \ of cycles, just to show that the benchmark is running.
 
-: (rng-benchmark)  ( -- d )
+: (random-pix-benchmark)  ( -- d )
   1 cycles +!  signal  bench{ fill-screen }bench  ;
-  \ Do the RNG benchmark of any cycle and return its result.
+  \ Do one cycle of the benchmark and return its result.
 
 : wait  ( -- )  key drop  ;
 
@@ -5786,14 +6216,14 @@ defer finish?  ( i*x -- j*x f )
 
 ' new-pixels? ' finish? defer!  -->
 
-( rng-benchmark )
+( random-pix-benchmark )
 
-defer rng-benchmark  ( ca len xt -- )
+defer random-pix-benchmark  ( ca len xt -- )
   \ Do a RNG benchmark for the `random` word _xt_ with title
   \ _ca len_.
 
-: (rng-benchmark2)  ( ca len -- )
-  0 begin   (rng-benchmark) 2>r
+: (random-pix-benchmark2)  ( ca len -- )
+  0 begin   (random-pix-benchmark) 2>r
             finish? dup 0= if  2rdrop  then
   until     drop 2r> finish  ;
   \ Do a double RNG benchmark with title _ca len_: The time
@@ -5801,8 +6231,9 @@ defer rng-benchmark  ( ca len xt -- )
   \ the number of cycles required until the number of pixels
   \ doesn't change.
 
-: rng-benchmark2  ( ca len xt -- )
-  ['] (.cycles) ['] (random-coords) init  (rng-benchmark2)  ;
+: random-pix-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] (random-coords) init
+  (random-pix-benchmark2)  ;
   \ Do a double RNG benchmark for the `random` word _xt_ with
   \ title _ca len_: The time required to complete one cycle
   \ (49152 random pixels), plus the number of cycles required
@@ -5812,61 +6243,86 @@ defer rng-benchmark  ( ca len xt -- )
   \ it's useful a simpler test to show only the pixels set at
   \ the end of the first cycle:
 
-' rng-benchmark2 ' rng-benchmark defer!  \ default benchmark
+' random-pix-benchmark2 ' random-pix-benchmark defer!
+  \ default benchmark
 
 : (.cycle)  ( -- )  ." First cycle only"  ;
 
-: (rng-benchmark1)  ( ca len -- )
-  (rng-benchmark) .result wait  ;
+: (random-pix-benchmark1)  ( ca len -- )
+  (random-pix-benchmark) .result wait  ;
   \ Do a one-cycle RNG benchmark with title _ca len_: Only the
   \ time required to complete one cycle (49152 random pixels).
 
-: rng-benchmark1  ( ca len xt -- )
-  ['] (.cycle) ['] (random-coords) init  (rng-benchmark1)  ;
+: random-pix-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] (random-coords) init
+  (random-pix-benchmark1)  ;  -->
   \ Do a one-cycle RNG benchmark for `random` word _xt_ with
   \ title _ca len_: Only the time required to complete one
   \ cycle (49152 random pixels).
 
--->
-
-( rng-benchmark )
+( random-pix-benchmark )
 
   \ Versions for 8-bit `rnd`.
 
 : crnd-coords  ( -- gx gy )  rng rng 192 min  ;
   \ Random graphic coordinates for 8-bit `rnd`.
 
-: rng8-benchmark2  ( ca len xt -- )
-  ['] (.cycles) ['] crnd-coords init  (rng-benchmark2)  ;
+: crnd-pix-benchmark2  ( ca len xt -- )
+  ['] (.cycles) ['] crnd-coords init
+  (random-pix-benchmark2)  ;
   \ Do a double RNG benchmark for 8-bit `rnd` word _xt_ with
   \ title _ca len_: The time required to complete one cycle
   \ (49152 random pixels), plus the number of cycles required
   \ until the number of pixels doesn't change.
 
-: rng8-benchmark1  ( ca len xt -- )
-  ['] (.cycle) ['] crnd-coords init  (rng-benchmark1)  ;
+: crnd-pix-benchmark1  ( ca len xt -- )
+  ['] (.cycle) ['] crnd-coords init
+  (random-pix-benchmark1)  ;
   \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
   \ title _ca len_: Only the time required to complete one
   \ cycle (49152 random pixels).
 
-( 16-bit-rng-benchmarks )
+( 16-bit-random-pix-benchmarks )
 
-  \ Execute all of the 16-bit RNG benchmarks
+  \ Execute all of the 16-bit random pixels benchmarks
 
-need rng-benchmark  need +thru  1 14 +thru
+need random-pix-benchmark  need +thru  2 21 +thru
 
-ace-rng-benchmark   cgm-rng-benchmark   dx-rng-benchmark
-gf-rng-benchmark    jer-rng-benchmark   jml-rng-benchmark
-lb-rng-benchmark    lina-rng-benchmark  mb-rng-benchmark
-sf83-rng-benchmark  tt-rng-benchmark    vf-rng-benchmark
-z88-rng-benchmark   zh-rng-benchmark
+ace-random-pix-benchmark
+
+cgm-5E9B-random-pix-benchmark
+cgm-61BF-random-pix-benchmark
+cgm-62DC-random-pix-benchmark
+cgm-6363-random-pix-benchmark
+cgm-6594-random-pix-benchmark
+cgm-65E8-random-pix-benchmark
+
+dx-random-pix-benchmark gf-random-pix-benchmark
+jer-random-pix-benchmark jml-random-pix-benchmark
+lb-random-pix-benchmark lina-random-pix-benchmark
+mb-random-pix-benchmark
+
+  \ mm-random-pix-benchmark  \ XXX TMP --
+
+sf83-random-pix-benchmark tt-random-pix-benchmark
+vf-random-pix-benchmark z88-random-pix-benchmark
+zh-random-pix-benchmark  -->
+
+( 16-bit-random-pix-benchmarks )
 
   \ Execute single-cycle benchmarks of RNG that need more than
   \ one cycle to finish:
 
-' rng-benchmark1 ' rng-benchmark defer!
+' random-pix-benchmark1 ' random-pix-benchmark defer!
 
-cgm-rng-benchmark  dx-rng-benchmark  vf-rng-benchmark
+cgm-5E9B-random-pix-benchmark
+cgm-61BF-random-pix-benchmark
+cgm-62DC-random-pix-benchmark
+cgm-6363-random-pix-benchmark
+cgm-6594-random-pix-benchmark
+cgm-65E8-random-pix-benchmark
+
+dx-random-pix-benchmark  vf-random-pix-benchmark
 
 ( ace-random )
 
@@ -5878,17 +6334,18 @@ cgm-rng-benchmark  dx-rng-benchmark  vf-rng-benchmark
 
 need os-seed
 
-: ace-rnd  ( -- n )
+: ace-rnd  ( -- u )
   os-seed @ 75 um* 75. d+ 2dup u< - - 1- dup os-seed !  ;
 
-: ace-random  ( n1 -- n2 )  ace-rnd um* nip  ;
+: ace-random  ( n -- 0..n-1 )  ace-rnd um* nip  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: ace-rng-benchmark  ( -- )
-  s" Jupiter ACE manual" ['] ace-random rng-benchmark  ;
+: ace-random-pix-benchmark  ( -- )
+  os-seed off  s" Jupiter ACE manual"
+  ['] ace-random random-pix-benchmark  ;
 
-( cgm-random )
+( cgm-5E9B-random )
 
   \ Random Number Generator by C. G. Montgomery
 
@@ -5897,26 +6354,134 @@ need rng-benchmark
   \
   \ 2016-03-31: adapted to Solo Forth.
 
-need rng-benchmark
+2variable rloc  $111 rloc !  \ seed with nonzero
+
+: cgm-5E9B-rnd  ( -- u )
+  rloc 2@ $5E9B um* rot 0 d+ over rloc 2!  ;
+  \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
+
+: cgm-5E9B-random  ( n -- 0..n-1 )  cgm-5E9B-rnd um* nip  ;
+
+need random-pix-benchmark
+
+: cgm-5E9B-random-pix-benchmark  ( -- )
+  s" C. G. Montgomery $5E9B"
+  ['] cgm-5E9B-random random-pix-benchmark  ;
+
+( cgm-61BF-random )
+
+  \ Random Number Generator by C. G. Montgomery
+
+  \ 2015-12-13: found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \
+  \ 2016-03-31: adapted to Solo Forth.
 
 2variable rloc  $111 rloc !  \ seed with nonzero
 
-: cgm-rnd  ( -- u )
+: cgm-61BF-rnd  ( -- u )
   rloc 2@ $61BF um* rot 0 d+ over rloc 2!  ;
   \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
 
-: cgm-random  ( n -- 0..n-1 )  cgm-rnd um* nip  ;
+: cgm-61BF-random  ( n -- 0..n-1 )  cgm-61BF-rnd um* nip  ;
 
-: cgm-rng-benchmark  ( -- )
-  s" C. G. Montgomery $61BF" ['] cgm-random rng-benchmark  ;
+need random-pix-benchmark
 
-' rng-benchmark2 ' rng-benchmark defer!
+: cgm-61BF-random-pix-benchmark  ( -- )
+  s" C. G. Montgomery $61BF"
+  ['] cgm-61BF-random random-pix-benchmark  ;
 
-cgm-rng-benchmark
+( cgm-62DC-random )
 
-' rng-benchmark1 ' rng-benchmark defer!
+  \ Random Number Generator by C. G. Montgomery
 
-cgm-rng-benchmark
+  \ 2015-12-13: found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \
+  \ 2016-03-31: adapted to Solo Forth.
+
+2variable rloc  $111 rloc !  \ seed with nonzero
+
+: cgm-62DC-rnd  ( -- u )
+  rloc 2@ $62DC um* rot 0 d+ over rloc 2!  ;
+  \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
+
+: cgm-62DC-random  ( n -- 0..n-1 )  cgm-62DC-rnd um* nip  ;
+
+need random-pix-benchmark
+
+: cgm-62DC-random-pix-benchmark  ( -- )
+  s" C. G. Montgomery $62DC"
+  ['] cgm-62DC-random random-pix-benchmark  ;
+
+( cgm-6363-random )
+
+  \ Random Number Generator by C. G. Montgomery
+
+  \ 2015-12-13: found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \
+  \ 2016-03-31: adapted to Solo Forth.
+
+2variable rloc  $111 rloc !  \ seed with nonzero
+
+: cgm-6363-rnd  ( -- u )
+  rloc 2@ $6363 um* rot 0 d+ over rloc 2!  ;
+  \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
+
+: cgm-6363-random  ( n -- 0..n-1 )  cgm-6363-rnd um* nip  ;
+
+need random-pix-benchmark
+
+: cgm-6363-random-pix-benchmark  ( -- )
+  s" C. G. Montgomery $6363"
+  ['] cgm-6363-random random-pix-benchmark  ;
+
+( cgm-6594-random )
+
+  \ Random Number Generator by C. G. Montgomery
+
+  \ 2015-12-13: found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \
+  \ 2016-03-31: adapted to Solo Forth.
+
+2variable rloc  $111 rloc !  \ seed with nonzero
+
+: cgm-6594-rnd  ( -- u )
+  rloc 2@ $6594 um* rot 0 d+ over rloc 2!  ;
+  \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
+
+: cgm-6594-random  ( n -- 0..n-1 )  cgm-6594-rnd um* nip  ;
+
+need random-pix-benchmark
+
+: cgm-6594-random-pix-benchmark  ( -- )
+  s" C. G. Montgomery $6594"
+  ['] cgm-6594-random random-pix-benchmark  ;
+
+( cgm-65E8-random )
+
+  \ Random Number Generator by C. G. Montgomery
+
+  \ 2015-12-13: found here:
+  \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
+  \
+  \ 2016-03-31: adapted to Solo Forth.
+
+2variable rloc  $111 rloc !  \ seed with nonzero
+
+: cgm-65E8-rnd  ( -- u )
+  rloc 2@ $65E8 um* rot 0 d+ over rloc 2!  ;
+  \ good values for 16-bit systems: 61BF 62DC 6594 6363 5E9B 65E8
+
+: cgm-65E8-random  ( n -- 0..n-1 )  cgm-65E8-rnd um* nip  ;
+
+need random-pix-benchmark
+
+: cgm-65E8-random-pix-benchmark  ( -- )
+  s" C. G. Montgomery $65E8"
+  ['] cgm-65E8-random random-pix-benchmark  ;
 
 ( dx-random )
 
@@ -5935,10 +6500,10 @@ need d*
 : dx-random ( u -- 0..u-1 )  dx-rnd um* nip  ;
   \ Get random number between 0 and u-1
 
-need rng-benchmark
+need random-pix-benchmark
 
-: dx-rng-benchmark  ( -- )
-  s" DX-Forth" ['] dx-random rng-benchmark  ;
+: dx-random-pix-benchmark  ( -- )
+  s" DX-Forth" ['] dx-random random-pix-benchmark  ;
 
 ( gf-random )
 
@@ -5951,12 +6516,13 @@ need os-seed  need ud*
 : gf-rnd  ( -- n )
   272958469. os-seed @ ud* d>s 1+ dup os-seed !  ;
 
-: gf-random  ( n1 -- n2 )  gf-rnd um* nip  ;
+: gf-random  ( n -- 0..n-1 )  gf-rnd um* nip  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: gf-rng-benchmark  ( -- )
-  s" Gforth" ['] gf-random rng-benchmark  ;
+: gf-random-pix-benchmark  ( -- )
+  os-seed off  s" Gforth"
+  ['] gf-random random-pix-benchmark  ;
 
 ( jer-random )
 
@@ -5976,10 +6542,11 @@ need os-seed
 
   \ XXX Note: patterns
 
-need rng-benchmark
+need random-pix-benchmark
 
-: jer-rng-benchmark  ( -- )
-  s" J. E. Rickenbacker" ['] jer-random rng-benchmark  ;
+: jer-random-pix-benchmark  ( -- )
+  os-seed off  s" J. E. Rickenbacker"
+  ['] jer-random random-pix-benchmark  ;
 
 ( jml-random )
 
@@ -6003,10 +6570,11 @@ code jml-rnd  ( -- u )
 
 : jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: jml-rng-benchmark  ( -- )
-  s" J.M. Lazo" ['] jml-random rng-benchmark  ;
+: jml-random-pix-benchmark  ( -- )
+  os-seed off  s" J. M. Lazo"
+  ['] jml-random random-pix-benchmark  ;
 
 ( lb-random )
 
@@ -6016,14 +6584,15 @@ need rng-benchmark
 
 need os-seed
 
-: lb-rnd  ( -- n )  os-seed @ 31421 * 6927 + dup os-seed !  ;
+: lb-rnd  ( -- u )  os-seed @ 31421 * 6927 + dup os-seed !  ;
 
 : lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: lb-rng-benchmark  ( -- )
-  s" Leo Brodie" ['] lb-random rng-benchmark  ;
+: lb-random-pix-benchmark  ( -- )
+  os-seed off  s" Leo Brodie"
+  ['] lb-random random-pix-benchmark  ;
 
 ( lina-random )
 
@@ -6032,12 +6601,13 @@ need os-seed
 : lina-rnd  ( -- n )
   os-seed @ 107465 * 234567 + dup os-seed !  ;
 
-: lina-random  ( n1 -- n2 )  lina-rnd um* nip ;
+: lina-random  ( n -- 0..n-1 )  lina-rnd um* nip ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: lina-rng-benchmark  ( -- )
-  s" lina" ['] lina-random rng-benchmark  ;
+: lina-random-pix-benchmark  ( -- )
+  os-seed off  s" lina"
+  ['] lina-random random-pix-benchmark  ;
 
 ( mb-random )
 
@@ -6048,18 +6618,17 @@ need rng-benchmark
 
 need z80-asm  need os-seed
 
-code mb-rnd  ( -- n )
+code mb-rnd  ( -- u )
   os-seed de ftp
   d a ld  e h ld  #253 l ld#
   a or  de sbcp
   0 sbc#  de sbcp
-  0 d ld#  d sbc  a e ld
-  de sbcp
+  0 d ld#  d sbc  a e ld  de sbcp
   cy if  hl incp  then
   os-seed sthl
   jppushhl   end-code
 
-: mb-random  ( n1 -- n2 )  mb-rnd um* nip  ;
+: mb-random  ( n -- 0..n-1 )  mb-rnd um* nip  ;
 
   \ Original code:
 
@@ -6087,10 +6656,47 @@ code mb-rnd  ( -- n )
   \  ret
   \ ----
 
-need rng-benchmark
+need random-pix-benchmark
 
-: mb-rng-benchmark  ( -- )
-  s" Milos Bazelides" ['] mb-random rng-benchmark  ;
+: mb-random-pix-benchmark  ( -- )
+  os-seed off  s" Milos Bazelides"
+  ['] mb-random random-pix-benchmark  ;
+
+( mm-random )
+
+  \ Credit:
+  \ IsForth Random Number Generator, by Mark I Manning IV.
+
+  \ 2016-04-04: Adapted to Solo Forth. Strange negative
+  \ results.
+  \ XXX TODO -- check the original
+
+need cell/  need frames@
+
+variable seed1  variable seed2
+
+: randomize  ( -- )  frames@ seed1 ! seed2 !  ;
+
+: 0seed  ( -- )  seed1 off seed2 off  ;  0seed
+  \ Reset random number generator seed to zero.
+
+: mm-random  ( n1 --- n2 )
+  seed1 @ 123 * 234 + seed2 @ 234 * 123 +
+  2dup + seed2 ! 2dup xor seed1 !
+  + swap cells mod cell/ ;
+
+need random-pix-benchmark
+
+: mm-random-pix-benchmark  ( -- )
+  s" IsForth" ['] mm-random random-pix-benchmark  ;
+
+  \ ' random-pix-benchmark2 ' random-pix-benchmark defer!
+
+  \ mm-random-pix-benchmark
+
+  \ ' random-pix-benchmark1 ' random-pix-benchmark defer!
+
+  \ mm-random-pix-benchmark
 
 ( sf83-random )
 
@@ -6103,10 +6709,11 @@ need os-seed  3 os-seed !
 : sf83-random  ( n -- 0..n-1 )
   os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: sf83-rng-benchmark  ( -- )
-  s" Spectrum Forth-83" ['] sf83-random rng-benchmark  ;
+: sf83-random-pix-benchmark  ( -- )
+  s" Spectrum Forth-83"
+  ['] sf83-random random-pix-benchmark  ;
 
 ( tt-random )
 
@@ -6114,6 +6721,8 @@ need rng-benchmark
   \
   \ Code from tt.pfe, Tetris for terminals, redone in
   \ ANSI-Forth.  Written 1994-04-05 by Dirk Uwe Zoller.
+  \
+  \ Note: the seed can not be zero.
 
 need os-seed
 
@@ -6121,10 +6730,11 @@ need os-seed
     os-seed @ 13 * $7FFF and
     dup os-seed !  swap mod ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: tt-rng-benchmark  ( -- )
-  s" Tetris for terminals" ['] tt-random rng-benchmark  ;
+: tt-random-pix-benchmark  ( -- )
+  os-seed on  s" Tetris for terminals"
+  ['] tt-random random-pix-benchmark  ;
 
 ( vf-random )
 
@@ -6134,16 +6744,16 @@ need rng-benchmark
 
 need os-frames
 
-: vf-random  ( n1 -- n2 )
+: vf-random  ( n -- 0..n-1 )
   1+ 8195 os-frames @ um* 1. d+
   16383 um/mod drop
   \ dup os-seed !
   swap mod  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: vf-rng-benchmark  ( -- )
-  s" vForth" ['] vf-random rng-benchmark  ;
+: vf-random-pix-benchmark  ( -- )
+  s" vForth" ['] vf-random random-pix-benchmark  ;
 
 ( z88-random )
 
@@ -6153,15 +6763,16 @@ need rng-benchmark
 
 need ud*  need os-seed
 
-: z88-random  ( u1 -- u2 )
+: z88-random  ( n -- 0..n-1 )
   1103515245. \ 20077 16838
   os-seed @ ud* 12345. d+ over os-seed !
   rot ud/mod 2drop  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: z88-rng-benchmark  ( -- )
-  s" Z88 CamelForth" ['] z88-random rng-benchmark  ;
+: z88-random-pix-benchmark  ( -- )
+  os-seed off  s" Z88 CamelForth"
+  ['] z88-random random-pix-benchmark  ;
 
 ( zh-random )
 
@@ -6172,7 +6783,7 @@ need rng-benchmark
 
 need z80-asm  need os-seed
 
-code zh-rnd  ( -- n )
+code zh-rnd  ( -- u )
 
   os-seed fthl
     \ ld hl,(seed)
@@ -6199,7 +6810,7 @@ code zh-rnd  ( -- n )
     \ ld (seed),hl
   jppushhl   end-code
 
-: zh-random  ( n1 -- n2 )  zh-rnd um* nip  ;
+: zh-random  ( n -- 0..n-1 )  zh-rnd um* nip  ;
 
   \ Original code:
 
@@ -6241,10 +6852,11 @@ code zh-rnd  ( -- n )
   \      ret
   \ ----
 
-need rng-benchmark
+need random-pix-benchmark
 
-: zh-rng-benchmark  ( -- )
-  s" Z80 Heaven" ['] zh-random rng-benchmark  ;
+: zh-random-pix-benchmark  ( -- )
+  os-seed off  s" Z80 Heaven"
+  ['] zh-random random-pix-benchmark  ;
 
 ( random-byte )
 
@@ -6269,6 +6881,10 @@ need bench{
   \ Adapted from code written by Everett F. Carter, published
   \ on Forth Dimensions (volume 16, number 2, page 17,
   \ 1994-08).
+  \
+  \ Linear Congruential Method, the "minimal standard
+  \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
+  \ pp. 1192-1201
 
 need d*  need du/mod  need 2nip
 
@@ -6276,14 +6892,11 @@ need d*  need du/mod  need 2nip
 
 2147483647. 2constant max32
 
-  \ Linear Congruential Method, the "minimal standard
-  \ generator", Park & Miller, 1988, Comm of the ACM, 31(10),
-  \ pp. 1192-1201
 : lcm-rnd  ( -- d )
-  \ XXX FIXME -- it always returns 0
   2seed 2@ 16807. d*
   max32 du/mod  2nip
   2dup 2seed 2!  ;
+  \ XXX FIXME -- it always returns 0
 
   \ \ Original code:
   \ : lcm-rnd  ( -- d )
@@ -6291,32 +6904,35 @@ need d*  need du/mod  need 2nip
   \   max32 umd/mod
   \   2drop 2seed 2!  ;
 
-: lcm-random  ( n1 -- n2 )  lcm-rnd d>s um* nip  ;
+: lcm-random  ( n -- 0..n-1 )  lcm-rnd d>s um* nip  ;
 
-need rng-benchmark
+need random-pix-benchmark
 
-: lcm-rng-benchmark  ( -- )
-  s" LCM" ['] lcm-random rng-benchmark  ;
+: lcm-random-pix-benchmark  ( -- )
+  s" LCM" ['] lcm-random random-pix-benchmark  ;
 
-( 8-bit-rng-benchmarks )
+( 8-bit-random-pix-benchmarks )
 
-  \ Execute all of the 8-bit RNG benchmarks
+  \ Execute all of the 8-bit random pixels benchmarks
 
-need rng-benchmark  need +thru  1 4 +thru
+need random-pix-benchmark  need +thru  1 5 +thru
 
-' rng8-benchmark2 ' rng-benchmark defer!
+' crnd-pix-benchmark2 ' random-pix-benchmark defer!
 
-jw-rng-benchmark
-mb1-rng-benchmark
-mb2-rng-benchmark
-zh-rng-benchmark
+libzx-random-pix-benchmark
+
+  \ jw-random-pix-benchmark
+  \ mb1-random-pix-benchmark
+  \ mb2-random-pix-benchmark
+  \ zh-random-pix-benchmark
 
   \ Execute single-cycle benchmarks of RNG that need more than
   \ one cycle to finish:
 
-' rng8-benchmark1 ' rng-benchmark defer!
+' crnd-pix-benchmark1 ' random-pix-benchmark defer!
 
-jw-rng-benchmark
+  \ jw-random-pix-benchmark
+libzx-random-pix-benchmark
 
 ( jw-crnd )
 
@@ -6327,7 +6943,7 @@ jw-rng-benchmark
   \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
   \ Joe Wingbermuehle
 
-need os-seed
+need z80-asm  need os-seed
 
 code jw-crnd  ( -- b )
 
@@ -6347,10 +6963,11 @@ code jw-crnd  ( -- b )
     \ jp push_a
   end-code
 
-need rng-benchmark
+need random-pix-benchmark
 
-: jw-rng-benchmark  ( -- )
-  s" Joe Wingbermuehle" ['] jw-crnd rng-benchmark  ;
+: jw-random-pix-benchmark  ( -- )
+  os-seed off  s" Joe Wingbermuehle"
+  ['] jw-crnd random-pix-benchmark  ;
 
   \ Original code:
 
@@ -6382,11 +6999,11 @@ need rng-benchmark
   \ Credit:
   \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
 
-   \ This is a very simple linear congruential generator. The
-   \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
-   \ advantage is small size and simplicity. Due to nature of
-   \ such generators only a couple of higher bits should be
-   \ considered random.
+  \ This is a very simple linear congruential generator. The
+  \ formula is x[i + 1] = (5 * x[i] + 1) mod 256. Its only
+  \ advantage is small size and simplicity. Due to nature of
+  \ such generators only a couple of higher bits should be
+  \ considered random.
 
   \ Input: none
   \ Output: A = pseudo-random number, period 256
@@ -6411,13 +7028,14 @@ code mb1-crnd  ( -- b )
 : mb1-crandom  ( n1 -- n2 )  mb1-crnd um* nip  ;
   \ XXX FIXME -- it always return zero
 
-need rng-benchmark
+need random-pix-benchmark
 
-  \ : mb1-rng-benchmark  ( -- )
-  \   s" Milos Bazelides 1" ['] mb1-crandom rng-benchmark  ;
+  \ : mb1-random-pix-benchmark  ( -- )
+  \   s" Milos Bazelides 1" ['] mb1-crandom random-pix-benchmark  ;
 
-: mb1-rng-benchmark  ( -- )
-  s" Milos Bazelides 1" ['] mb1-crnd rng-benchmark  ;
+: mb1-random-pix-benchmark  ( -- )
+  os-seed off  s" Milos Bazelides 1"
+  ['] mb1-crnd random-pix-benchmark  ;
 
 ( mb2-crandom )
 
@@ -6456,13 +7074,14 @@ code mb2-crnd  ( -- b )
 : mb2-crandom  ( n1 -- n2 )  mb2-crnd um* nip  ;
   \ XXX FIXME -- it always return zero
 
-need rng-benchmark
+need random-pix-benchmark
 
-  \ : mb2-rng-benchmark  ( -- )
-  \   s" Milos Bazelides 2" ['] mb2-crandom rng-benchmark  ;
+  \ : mb2-random-pix-benchmark  ( -- )
+  \   s" Milos Bazelides 2" ['] mb2-crandom random-pix-benchmark  ;
 
-: mb2-rng-benchmark  ( -- )
-  s" Milos Bazelides 2" ['] mb2-crnd rng-benchmark  ;
+: mb2-random-pix-benchmark  ( -- )
+  os-seed off  s" Milos Bazelides 2"
+  ['] mb2-crnd random-pix-benchmark  ;
 
 ( zh-crnd )
 
@@ -6482,10 +7101,10 @@ code zh-crnd  ( -- b )
 
   end-code
 
-need rng-benchmark
+need random-pix-benchmark
 
-: zh-rng-benchmark  ( -- )
-  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-benchmark  ;
+: zh-random-pix-benchmark  ( -- )
+  s" Z80 Heaven (8 bit)" ['] zh-crnd random-pix-benchmark  ;
 
   \ This is one of many variations of PRNGs. This routine is
   \ not particularly useful for many games, but is fairly
@@ -6509,8 +7128,303 @@ need rng-benchmark
   \      ld (randSeed),a
   \      ret
 
+( opt3-libzx-crnd )
+
+  \ Credit:
+  \ Original code from the ZX Spectrum libzx library,
+  \ written by Sebastian Mihai, 2016
+
+  \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
+  \ the original code.
+
+need z80-asm  need os-seed  need random-pix-benchmark
+
+variable rom-pointer  rom-pointer off  os-seed off
+
+code opt3-libzx-crnd  ( -- b )
+
+  \ Gets an 8-bit random number.
+  \ It is computed using a combination of:
+  \     - the last returned random number
+  \     - a byte from ROM, in increasing order
+  \     - current values of various registers
+  \     - a flat incremented value
+
+  bc push  af push
+    \ save Forth IP and the AF register
+
+  \ 1) advance ROM pointer
+
+  rom-pointer hl ftp  hl incp
+  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+
+    \ ld hl,(romPointer)
+    \ inc hl
+    \ ld a, h
+    \ and %00111111
+    \ ld h, a     ; H := H mod %00111111
+    \             ; essentially, HL := HL mod 16384, to make sure
+    \             ; HL points at a ROM location
+    \ ld (romPointer), hl    ; save new location
+
+  \ 2) compute the random number
+
+  bc pop  c rlc  b rlc  os-seed fta
+    \ pop bc          ; BC := AF
+    \ rlc c
+    \ rlc b
+    \ ld a, (lastRandomNumber)
+  47 add#  b add  c add  d add  e add  h add  l add
+    \ add a, 47
+    \ add a, b  ; current register values are "pretty random"
+    \ add a, c  ; so add them in the mix
+    \ add a, d
+    \ add a, e
+    \ add a, h
+    \ add a, l
+
+  rom-pointer hl ldp#  m add
+    \ ld hl, romPointer
+    \ add a, (hl) ; the contents of the ROM are "pretty random"
+    \             ; so add it in the mix
+
+  os-seed sta  bc pop  pusha jp  end-code
+
+: libzx-random-pix-benchmark  ( -- )
+  rom-pointer off  os-seed off  s" libzx opt3 (8 bit)"
+  ['] opt3-libzx-crnd random-pix-benchmark  ;
+
+' crnd-pix-benchmark2 ' random-pix-benchmark defer!
+libzx-random-pix-benchmark  \ XXX TMP --
+
+( opt2-libzx-crnd )
+
+  \ Credit:
+  \ Original code from the ZX Spectrum libzx library,
+  \ written by Sebastian Mihai, 2016
+
+  \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
+  \ the original code.
+
+need z80-asm  need os-seed  need random-pix-benchmark
+
+variable rom-pointer  rom-pointer off  os-seed off
+
+code opt2-libzx-crnd  ( -- b )
+
+  \ Gets an 8-bit random number.
+  \ It is computed using a combination of:
+  \     - the last returned random number
+  \     - a byte from ROM, in increasing order
+  \     - current values of various registers
+  \     - a flat incremented value
+
+  bc push  af push
+    \ save Forth IP and the AF register
+
+  \ 1) advance ROM pointer
+
+  rom-pointer hl ftp  hl incp
+  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+
+    \ ld hl,(romPointer)
+    \ inc hl
+    \ ld a, h
+    \ and %00111111
+    \ ld h, a     ; H := H mod %00111111
+    \             ; essentially, HL := HL mod 16384, to make sure
+    \             ; HL points at a ROM location
+    \ ld (romPointer), hl    ; save new location
+
+  \ 2) compute the random number
+
+  bc pop  c rlc  b rlc  os-seed fta
+    \ pop bc          ; BC := AF
+    \ rlc c
+    \ rlc b
+    \ ld a, (lastRandomNumber)
+  47 add#  b add  c add  d add  e add  h add  l add
+    \ add a, 47
+    \ add a, b  ; current register values are "pretty random"
+    \ add a, c  ; so add them in the mix
+    \ add a, d
+    \ add a, e
+    \ add a, h
+    \ add a, l
+
+  rom-pointer hl ldp#  m add
+    \ ld hl, romPointer
+    \ add a, (hl) ; the contents of the ROM are "pretty random"
+    \             ; so add it in the mix
+
+  os-seed sta
+    \ ld (lastRandomNumber), a        ; save this number
+
+  bc pop  pusha jp  end-code
+
+: libzx-random-pix-benchmark  ( -- )
+  rom-pointer off  os-seed off  s" libzx opt2 (8 bit)"
+  ['] opt2-libzx-crnd random-pix-benchmark  ;
+
+libzx-random-pix-benchmark  \ XXX TMP --
+
+( opt1-libzx-crnd )
+
+  \ Credit:
+  \ Original code from the ZX Spectrum libzx library,
+  \ written by Sebastian Mihai, 2016
+
+  \ 2016-04-09: Adapted to Solo Forth. Optimized the original
+  \ code.
+
+need z80-asm  need os-seed  need random-pix-benchmark
+
+variable rom-pointer  3 rom-pointer !  33 os-seed c!
+
+code opt1-libzx-crnd  ( -- b )
+
+  \ Gets an 8-bit random number.
+  \ It is computed using a combination of:
+  \     - the last returned random number
+  \     - a byte from ROM, in increasing order
+  \     - current values of various registers
+  \     - a flat incremented value
+
+  bc push  af push
+    \ save Forth IP and the AF register
+
+  \ 1) advance ROM pointer
+
+  rom-pointer bc ftp 3 hl ldp#  bc addp
+
+    \ ld bc,(romPointer)
+    \ ld hl,3
+    \ add hl,bc ; HL := ROM pointer advanced by 3
+
+  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+
+    \ ld a, h
+    \ and %00111111
+    \ ld h, a     ; H := H mod %00111111
+    \             ; essentially, HL := HL mod 16384, to make sure
+    \             ; HL points at a ROM location
+    \ ld (romPointer), hl    ; save new location
+
+  \ 2) compute the random number
+
+  bc pop  c rlc  b rlc  os-seed fta
+    \ pop bc          ; BC := AF
+    \ rlc c
+    \ rlc b
+    \ ld a, (lastRandomNumber)
+  47 add#  b add  c add  d add  e add  h add  l add
+    \ add a, 47
+    \ add a, b  ; current register values are "pretty random"
+    \ add a, c  ; so add them in the mix
+    \ add a, d
+    \ add a, e
+    \ add a, h
+    \ add a, l
+
+  rom-pointer hl ldp#  m add
+    \ ld hl, romPointer
+    \ add a, (hl) ; the contents of the ROM are "pretty random"
+    \             ; so add it in the mix
+
+  os-seed sta
+    \ ld (lastRandomNumber), a        ; save this number
+
+  bc pop  pusha jp  end-code
+
+: libzx-random-pix-benchmark  ( -- )
+  3 rom-pointer !  33 os-seed c!
+  s" libzx opt1 (8 bit)"
+  ['] opt1-libzx-crnd random-pix-benchmark  ;
+
+( libzx-crnd )
+
+  \ Credit:
+  \ Original code from the ZX Spectrum libzx library,
+  \ written by Sebastian Mihai, 2016
+
+  \ 2016-04-09: Adapted to Solo Forth.
+
+need z80-asm  need os-seed  need random-pix-benchmark
+
+variable rom-pointer  3 rom-pointer !  33 os-seed c!
+
+code libzx-crnd  ( -- b )
+
+  \ Gets an 8-bit random number.
+  \ It is computed using a combination of:
+  \     - the last returned random number
+  \     - a byte from ROM, in increasing order
+  \     - current values of various registers
+  \     - a flat incremented value
+
+  bc push  af push
+    \ save Forth IP and the AF register
+
+  \ 1) advance ROM pointer
+
+  rom-pointer hl ldp#
+  m c ld  hl incp  m b ld  3 hl ldp#  bc addp
+    \ XXX TODO -- simpler
+    \ XXX REMARK -- original code is not optimized
+
+    \ ld hl, romPointer
+    \ ld c, (hl)
+    \ inc hl
+    \ ld b, (hl)        ; BC := word (romPointer)
+    \ ld hl, 3
+    \ add hl, bc        ; HL := ROM pointer advanced by 3
+
+  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+
+    \ ld a, h
+    \ and %00111111
+    \ ld h, a          ; H := H mod %00111111
+    \             ; essentially, HL := HL mod 16384, to make sure
+    \             ; HL points at a ROM location
+    \ ld (romPointer), hl    ; save new location
+
+  \ 2) compute the random number
+
+  bc pop  c rlc  b rlc  os-seed fta
+    \ pop bc          ; BC := AF
+    \ rlc c
+    \ rlc b
+    \ ld a, (lastRandomNumber)
+  47 add#  b add  c add  d add  e add  h add  l add
+    \ add a, 47
+    \ add a, b  ; current register values are "pretty random"
+    \ add a, c  ; so add them in the mix
+    \ add a, d
+    \ add a, e
+    \ add a, h
+    \ add a, l
+
+  rom-pointer hl ldp#  m add
+    \ ld hl, romPointer
+    \ add a, (hl) ; the contents of the ROM are "pretty random"
+    \             ; so add it in the mix
+
+  os-seed ldp#  m a ld
+    \ ld hl, lastRandomNumber
+    \ ld (hl), a        ; save this number
+    \ XXX REMARK -- original code is not optimized
+
+  bc pop  0 h ld#  a l ld  jppushhl end-code
+
+: libzx-random-pix-benchmark  ( -- )
+  3 rom-pointer !  33 os-seed c!
+  s" libzx (8 bit)" ['] libzx-crnd random-pix-benchmark  ;
+
+
+  \ ===========================================================
+
   \ 2016-03-31
-  \ Results for 16-bit versions of `random` :
+  \ Results of the 16-bit version of `random-pix-benchmark`:
 
   \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
 
@@ -6531,7 +7445,7 @@ need rng-benchmark
   \ | DX-Forth               | 31076 (063%) | 17734 (354 s) | first only
   \ | Gforth                 | 31189 (063%) | 09746 (194 s) | 1
   \ | J. E. Rickenbacker     | 08149 (016%) | 18458 (369 s) | 1
-  \ | J.M. Lazo              | 12637 (025%) | 03349 (066 s) | 1
+  \ | J. M. Lazo             | 12637 (025%) | 03349 (066 s) | 1
   \ | Leo Brodie             | 20818 (042%) | 09150 (183 s) | 1
   \ | lina                   | 23945 (048%) | 09179 (183 s) | 1
   \ | Milos Bazelides        | 28465 (057%) | 03316 (066 s) | 1
@@ -6543,7 +7457,7 @@ need rng-benchmark
   \ | Z80 Heaven             | 32599 (066%) | 03371 (067 s) | 1
 
   \ 2016-03-31
-  \ Results of the 8-bit versions of `rnd` :
+  \ Results of the 8-bit version of `random-pix-benchmark`:
 
   \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
 
@@ -6552,6 +7466,58 @@ need rng-benchmark
   \ | Milos Bazelides 1      | 00096 (000%) | 01047 (020 s) | 1
   \ | Milos Bazelides 2      | 00096 (000%) | 01048 (021 s) | 1
   \ | Z80 Heaven             | 00096 (000%) | 01055 (021 s) | 1
+
+  \ 2016-04-07
+  \ Results of the 16-bit version of `random-pix-benchmark`,
+  \ with `os-seed` initialized to zero every time, except when
+  \ the implementation needs a non-zero value:
+
+  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+
+  \ | Jupiter ACE manual     | 02272 (004%) | 07635 (152 s) | 1
+  \ | C. G. Montgomery $5E9B | 49151 (099%) | 06899 (137 s) | 11
+  \ | C. G. Montgomery $5E9B | 31064 (063%) | 06900 (138 s) | first only
+  \ | C. G. Montgomery $61BF | 49152 (100%) | 06899 (137 s) | 12
+  \ | C. G. Montgomery $61BF | 30983 (063%) | 06899 (137 s) | first only
+  \ | C. G. Montgomery $62DC | 49152 (100%) | 06900 (138 s) | 10
+  \ | C. G. Montgomery $62DC | 31054 (063%) | 06899 (137 s) | first only
+  \ | C. G. Montgomery $6363 | 49152 (100%) | 06899 (137 s) | 10
+  \ | C. G. Montgomery $6363 | 31063 (063%) | 06899 (137 s) | first only
+  \ | C. G. Montgomery $6594 | 49152 (100%) | 06900 (138 s) | 11
+  \ | C. G. Montgomery $6594 | 31084 (063%) | 06899 (137 s) | first only
+  \ | C. G. Montgomery $65E8 | 49151 (099%) | 06900 (138 s) | 11
+  \ | C. G. Montgomery $65E8 | 31123 (063%) | 06899 (137 s) | first only
+  \ | DX-Forth               | 49152 (100%) | 17717 (354 s) | 11
+  \ | DX-Forth               | 31031 (063%) | 17718 (354 s) | first only
+  \ | Gforth                 | 31104 (063%) | 09725 (194 s) | 1
+  \ | J. E. Rickenbacker     | 08192 (016%) | 18460 (369 s) | 1
+  \ | J. M. Lazo             | 12608 (025%) | 03325 (066 s) | 1
+  \ | Leo Brodie             | 20928 (042%) | 09131 (182 s) | 1
+  \ | lina                   | 24064 (048%) | 09161 (183 s) | 1
+  \ | Milos Bazelides        | 28715 (058%) | 03297 (065 s) | 1
+  \ | Spectrum Forth-83      | 05120 (010%) | 08723 (174 s) | 1
+  \ | Tetris for terminals   | 00096 (000%) | 14210 (284 s) | 1
+  \ | vForth                 | 29248 (059%) | 14807 (296 s) | 9
+  \ | vForth                 | 21694 (044%) | 14806 (296 s) | first only
+  \ | Z88 CamelForth         | 00384 (000%) | 15683 (313 s) | 1
+  \ | Z80 Heaven             | 32768 (066%) | 03352 (067 s) | 1
+
+  \ 2016-04-08
+  \ Results of the 8-bit version of `random-pix-benchmark`:
+
+  \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
+
+  \ | Joe Wingbermuehle      | 49140 (099%) | 01075 (021 s) | 27
+  \ | Joe Wingbermuehle      | 25308 (051%) | 01075 (021 s) | first only
+  \ | libzx                  | 25650 (052%) | 01389 (027 s) | 2
+  \ | libzx                  | 25380 (051%) | 01390 (027 s) | first only
+  \ | libzx (opt1)           | 25650 (052%) | 01389 (027 s) | 2
+  \ | libzx (opt2)           | 25784 (052%) | 01382 (027 s) | 2
+  \ | libzx (opt2)           | 25650 (052%) | 01382 (027 s) | first only
+  \ | Milos Bazelides 1      | 00096 (000%) | 01052 (021 s) | 1
+  \ | Milos Bazelides 2      | 00096 (000%) | 01055 (021 s) | 1
+  \ | Z80 Heaven             | 00096 (000%) | 01061 (021 s) | 1
+
 
   \ vim: filetype=soloforth
   \ development_tests.fsb
@@ -6749,7 +7715,7 @@ code if'-test  ( -- )
   286 256 do  i . i error>ordinal ."  -> " . cr  loop
   1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
 
-.( block x line 0 ) cr
+.( block x line 0)
   .( block x line 1 ) cr
   .( block x line 2 ) cr
   .( block x line 3 ) cr
@@ -6765,7 +7731,7 @@ code if'-test  ( -- )
   .( block x line 13 ) cr
   .( block x line 14 ) cr
   .( block x line 15 ) cr
-.( block x+1 line 0 ) cr
+.( block x+1 line 0)
   .( block x+1 line 1 ) cr
   .( block x+1 line 2 ) cr
   .( block x+1 line 3 ) cr
@@ -6782,18 +7748,14 @@ code if'-test  ( -- )
   .( block x+1 line 14 ) cr
   .( block x+1 line 15 ) cr
 
-( XXX TMP -- block for temporary tries )
+( XXX TMP -- block for temporary tries)
 
 need thru
 blk @ 1+ blk @ 2+ thru
 
-( XXX TMP -- block for temporary tries )
+( XXX TMP -- block for temporary tries)
 
 : hello  ( -- )
-
-( XXX TMP -- block for temporary tries )
-
-  ." hello"
 
   ;
 
@@ -7406,17 +8368,31 @@ code c!dosvar  ( b n -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604032014
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Specforth Editor.
+  \ This is the editor included with Specforth (also known as
+  \ Artic Forth), a fig-Forth for ZX Spectrum.  Its original
+  \ name is "Specforth Editor V1.1".
+  \
+  \ It has been adapted to Solo Forth.
+  \
+  \ Word descriptions and stack comments have been added after
+  \ the Specforth manual, the Abersoft Forth manual and Dr.
+  \ C.H. Ting's book _Systems Guide to fig-Forth_. The word
+  \ `copy` has been adapted from Abersoft Forth. The word
+  \ `text` has been rewritten.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Copyright (C) 1983 by Artic Computing Ltd.
+  \ Written by Chris A. Thornton, 1983.
+
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -7425,26 +8401,12 @@ code c!dosvar  ( b n -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09-11: Adapted to Solo Forth.
+
 ( editor )
-
-  \ Description:
-
-  \ This is the editor included with Specforth (also known as
-  \ Artic Forth), a fig-Forth for ZX Spectrum. It has been
-  \ adapted to Solo Forth.
-  \
-  \ Word descriptions and stack comments have been added after
-  \ the Specforth manual, the Abersoft Forth manual and Dr.
-  \ C.H. Ting's book _Systems Guide to fig-Forth_. The word
-  \ `copy` has been adapted from Abersoft Forth. The word
-  \ `text` has been rewritten.
-
-  \ Credit:
-  \
-  \ Specforth Editor V1.1
-  \ Copyright (C) 1983 by Artic Computing Ltd.
-  \ Written by Chris A. Thornton, 1983
-  \ Modified by Marcos Cruz (programandala.net), 2015
 
 only forth definitions
 
@@ -7738,17 +8700,17 @@ $50 constant stack-cells ( -- n )
 
 forth definitions  previous
 
-  \ error_codes.forth.fsb
+  \ error_codes.0001.standard.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031748
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The Forth system error codes.
+  \ The standard Forth error codes (range -255..-1).
 
   \ -----------------------------------------------------------
   \ Author
@@ -7762,7 +8724,7 @@ forth definitions  previous
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( Standard error codes #-01..#-15 )
+( Standard error codes #-01..#-15)
 
 \ #-01 ABORT
 \ #-02 ABORT"
@@ -7780,7 +8742,7 @@ forth definitions  previous
 \ #-14 interpreting a compile-only word
 \ #-15 invalid FORGET
 
-( Standard error codes #-16..#-30 )
+( Standard error codes #-16..#-30)
 
 \ #-16 attempt to use zero-length string as a name
 \ #-17 pictured numeric output string overflow
@@ -7798,7 +8760,7 @@ forth definitions  previous
 \ #-29 compiler nesting
 \ #-30 obsolescent feature
 
-( Standard error codes #-31..#-45 )
+( Standard error codes #-31..#-45)
 
 \ #-31 >BODY used on non-CREATEd definition
 \ #-32 invalid name argument
@@ -7816,7 +8778,141 @@ forth definitions  previous
 \ #-44 floating-point stack overflow
 \ #-45 floating-point stack underflow
 
-( Standard error codes #-46..#-60 )
+( Standard error codes #-46..#-60)
+
+\ #-46 floating-point invalid argument
+\ #-47 compilation word list deleted
+\ #-48 invalid POSTPONE
+\ #-49 search-order overflow
+\ #-50 search-order underflow
+\ #-51 compilation word list changed
+\ #-52 control-flow stack overflow
+\ #-53 exception stack overflow
+\ #-54 floating-point underflow
+\ #-55 floating-point unidentified fault
+\ #-56 QUIT
+\ #-57 exception in sending or receiving a character
+\ #-58 [IF], [ELSE], or [THEN] exception
+\ #-59 ALLOCATE
+\ #-60 FREE
+
+( Standard error codes #-61..#-75 )
+
+\ #-61 RESIZE
+\ #-62 CLOSE-FILE
+\ #-63 CREATE-FILE
+\ #-64 DELETE-FILE
+\ #-65 FILE-POSITION
+\ #-66 FILE-SIZE
+\ #-67 FILE-STATUS
+\ #-68 FLUSH-FILE
+\ #-69 OPEN-FILE
+\ #-70 READ-FILE
+\ #-71 READ-LINE
+\ #-72 RENAME-FILE
+\ #-73 REPOSITION-FILE
+\ #-74 RESIZE-FILE
+\ #-75 WRITE-FILE
+
+( Standard error codes #-76..#-79 )
+
+\ #-76 WRITE-LINE
+\ #-77 malformed xchar
+\ #-78 SUBSTITUTE
+\ #-79 REPLACES
+\ #-80
+\ #-81
+\ #-82
+\ #-83
+\ #-84
+\ #-85
+\ #-86
+\ #-87
+\ #-88
+\ #-89
+\ #-90
+
+  \ vim: filetype=soloforth
+  \ error_codes.0256.system.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604031748
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The Forth system error codes (range -4095..-256), except
+  \ those reserved for the OS and the DOS.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( Standard error codes #-01..#-15)
+
+\ #-01 ABORT
+\ #-02 ABORT"
+\ #-03 stack overflow
+\ #-04 stack underflow
+\ #-05 return stack overflow
+\ #-06 return stack underflow
+\ #-07 do-loops nested too deeply during execution
+\ #-08 dictionary overflow
+\ #-09 invalid memory address
+\ #-10 division by zero
+\ #-11 result out of range
+\ #-12 argument type mismatch
+\ #-13 undefined word
+\ #-14 interpreting a compile-only word
+\ #-15 invalid FORGET
+
+( Standard error codes #-16..#-30)
+
+\ #-16 attempt to use zero-length string as a name
+\ #-17 pictured numeric output string overflow
+\ #-18 parsed string overflow
+\ #-19 definition name too long
+\ #-20 write to a read-only location
+\ #-21 unsupported operation
+\ #-22 control structure mismatch
+\ #-23 address alignment exception
+\ #-24 invalid numeric argument
+\ #-25 return stack imbalance
+\ #-26 loop parameters unavailable
+\ #-27 invalid recursion
+\ #-28 user interrupt
+\ #-29 compiler nesting
+\ #-30 obsolescent feature
+
+( Standard error codes #-31..#-45)
+
+\ #-31 >BODY used on non-CREATEd definition
+\ #-32 invalid name argument
+\ #-33 block read exception
+\ #-34 block write exception
+\ #-35 invalid block number
+\ #-36 invalid file position
+\ #-37 file I/O exception
+\ #-38 non-existent file
+\ #-39 unexpected end of file
+\ #-40 invalid BASE for floating point conversion
+\ #-41 loss of precision
+\ #-42 floating-point divide by zero
+\ #-43 floating-point result out of range
+\ #-44 floating-point stack overflow
+\ #-45 floating-point stack underflow
+
+( Standard error codes #-46..#-60)
 
 \ #-46 floating-point invalid argument
 \ #-47 compilation word list deleted
@@ -7888,7 +8984,7 @@ forth definitions  previous
 \ #-269 relative jump too long
 \ #-270 text not found
 
-( System error codes #-271..#-285 )
+( System error codes #-271..#-285)
 
 \ #-271 immediate word not allowed in this structure
 \ #-272 array index out of range
@@ -7896,8 +8992,8 @@ forth definitions  previous
 \ #-274 command line history overflow
 \ #-275 wrong number
 \ #-276 dictionary reached the zone of memory banks
-\ #-277
-\ #-278
+\ #-277 required, but not indexed
+\ #-278 empty block found: quit indexing
 \ #-279
 \ #-280
 \ #-281
@@ -7907,6 +9003,7 @@ forth definitions  previous
 \ #-285
 
   \ vim: filetype=soloforth
+
   \ error_codes.gplusdos.fsb
   \
   \ This file is part of Solo Forth
@@ -7917,9 +9014,10 @@ forth definitions  previous
   \ -----------------------------------------------------------
   \ Description
 
-  \ Error codes of G+DOS.
+  \ The Forth system error codes (range -4095..-256) used for
+  \ G+DOS (range -1031..-1000).
 
-( G+DOS error codes #-1000..#-1014 )
+( G+DOS error codes #-1000..#-1014)
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
@@ -7940,7 +9038,7 @@ forth definitions  previous
 \ #-1013 G+DOS: Wrong file type
 \ #-1014 G+DOS: Merge error
 
-( G+DOS error codes #-1015..#-1029 )
+( G+DOS error codes #-1015..#-1029)
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
@@ -7961,7 +9059,7 @@ forth definitions  previous
 \ #-1028 G+DOS: File name used
 \ #-1029 G+DOS: No G+DOS loaded
 
-( G+DOS error codes #-1030..#-1031 )
+( G+DOS error codes #-1030..#-1031)
 
 \ #-1030 G+DOS: STREAM used
 \ #-1031 G+DOS: CHANNEL used
@@ -7972,14 +9070,17 @@ forth definitions  previous
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604031807
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Error codes of the ZX Spectrum OS.
+  \ The Forth system error codes (range -4095..-256) used for
+  \ ZX Spectrum OS (range -1154..-1128).
 
-( OS error codes #-1128..#-1142 )
+( OS error codes #-1128..#-1142)
 
   \ XXX TODO -- it seems OS error codes (there are 28 of them)
   \ may be returned by G+DOS.  they are detected and converted
@@ -8001,7 +9102,7 @@ forth definitions  previous
 \ #-1141 OS:
 \ #-1142 OS:
 
-( OS error codes #-1143..#-1154 )
+( OS error codes #-1143..#-1154)
 
 \ #-1143 OS:
 \ #-1144 OS:
@@ -8018,129 +9119,6 @@ forth definitions  previous
 \ #-1154 OS:
 
   \ vim: filetype=soloforth
-  \ exceptions.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ The management of exceptions.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( abort" )
-
-  \ Credit:
-  \
-  \ Code adapted from DZX-Forth.
-
-  \ XXX TODO use `error`, by modifying `throw`
-
-[defined] abort-message ?\ 2variable abort-message
-
-: (abort")  ( n -- )
-  r> count rot if  abort-message 2! -2 throw  then + >r  ;
-
-: abort"  ( Compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate compile-only
-
-( error>ordinal error>line )
-
-: error>ordinal  ( -n1 -- +n2 )
-  \ Convert an error code to its ordinal position in the
-  \ library.
-  \ -n1 =  -90..-1        \ Standard error codes
-  \        -285..-256     \ Solo Forth error codes
-  \        -1024..-1000   \ G+DOS error codes
-  \ +n2 =  1..146
-
-  \ XXX TODO  add OS codes
-
-  abs
-  dup 256 < ?exit
-  dup 1000 < if  [ 255 091 - ] literal - exit  then
-  [ 1000 286 - 255 091 - + ] literal -   ;
-
-: error>line  ( n1 -- n2 )
-  error>ordinal dup >r
-  begin
-    dup dup 16 / - r@ <>  while  1+
-  repeat  rdrop  ;
-
-\ msg-scr (.throw) \
-
-need error>line  need .line
-
-variable msg-scr
-s" Standard error codes" locate msg-scr !
-  \ XXX TODO rename!
-
-  \ doc{
-  \
-  \ msg-scr  ( -- a )
-  \
-  \ Variable that holds the block that holds the error
-  \ messages.
-  \
-  \ }doc
-
-: (.throw)  ( n -- )
-  msg-scr @
-  if  error>line msg-scr @ .line space  else  .throw#  then  ;
-
-' (.throw) ' .throw defer!
-
-  \ doc{
-  \
-  \ (.throw)  ( n -- )
-  \
-  \ Extended behaviour of the deferred word `.throw`:
-  \ Print the text of throw error _n_.  The variable `msg-scr`
-  \ contains the number of the first block where messages are
-  \ hold. If it contains zero, only the error number is printer.
-  \
-  \ }doc
-
-( ?compiling ?executing )
-
-[unneeded] ?compiling
-?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
-
-  \ doc{
-  \
-  \ ?compiling  ( -- )
-  \
-  \ Issue an error if not compiling.
-  \
-  \ }doc
-
-[unneeded] ?executing
-?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
-
-  \ doc{
-  \
-  \ ?executing  ( -- )
-  \
-  \ Issue an error if not executing.
-  \
-  \ }doc
-
-  \ vim: filetype=soloforth
-
   \ floating_point.rom.fsb
   \
   \ This file is part of Solo Forth
@@ -8722,13 +9700,13 @@ code call  ( a -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604021926
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Several implementations of the standard
-  \ `case` and some variants of `of`.
+  \ Several implementations of the standard Eaker's `case`
+  \ structure and some variants of `of`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -8762,12 +9740,12 @@ code call  ( a -- )
   postpone else  ; immediate compile-only
 
 : endcase
-  ( Compilation: 0 orig1..orign -- )
-  ( Run-time: x -- )
+  \ ( Compilation: 0 orig1..orign -- )
+  \ ( Run-time: x -- )
   postpone drop  begin  ?dup  while  [compile] then  repeat
   ; immediate compile-only
 
-( case )  \ eforth-case )
+( eforth-case )
 
   \ Credit:
   \
@@ -8794,7 +9772,7 @@ code call  ( a -- )
   ( Run-time: x -- )
   postpone drop (endcase)  ; immediate compile-only
 
-( case )  \ 94-doc-case )
+( 94-doc-case )
 
   \ Credit:
   \
@@ -8826,7 +9804,7 @@ code call  ( a -- )
   postpone drop  \ discard case value
   0 ?do  postpone then  loop  ; immediate compile-only
 
-( case )  \ abersoft-case )
+( abersoft-case )
 
   \ Credit:
   \
@@ -8983,8 +9961,7 @@ need any?
   \
   \ Code from Galope.  Originally based on code by Mark Willis
   \ posted to <lang.comp.forth>:
-  \ Message-ID:
-  \ <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
+  \ Message-ID: <64b90787-344c-4ee0-a0e4-4e2c12b3dec3@googlegroups.com>
   \ Date: Fri, 24 Jan 2014 02:08:22 -0800 (PST)
 
 : default-of  ( -- )
@@ -10846,39 +11823,30 @@ code 0exit  ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
+  
+  \ Last modified: 201604032007
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The sample game Life.
+  \ Conway's Game of Life, or Occam's Razor Dulled
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Original ANS Forth version: Copyright (C) 1995 Leo Wong.
+  \
+  \ Version for kForth: K. Myneny, 2001-12-26.
+  \
+  \ Version for Solo Forth: Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
-  \ License
+  \ Credit
 
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( life )
-
-  \ XXX UNDER DEVELOPMENT
-  \
-  \ XXX -- works in Gforth, but freezes here.
-
-  \ Credit:
-  \
   \ Code adapted from kForth. Original Credit:
 
-  \ ____
-  \
-  \ Conway's Game of Life, or Occam's Razor Dulled
-  \
   \ The original ANS Forth version by Leo Wong (see bottom) has
   \ been modified slightly to allow it to run under kForth.
   \ Also, delays have been changed from 1000 ms to 100 ms for
@@ -10888,7 +11856,24 @@ code 0exit  ( f -- ) ( R: nest-sys | -- nest-sys | )
   \ Copyright 1995 Leo Wong
   \ hello at albany dot net
   \ http://www.albany.net/~hello/
-  \ ____
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015: Start.
+  \
+  \ 2016-04-03: Header reorganized after the original credit.
+
+( life )
+
+  \ XXX FIXME -- works in Gforth, but freezes here.
 
 need ms  need c+!  need 2/
 
@@ -11851,33 +12836,28 @@ rows 2 / constant craft-y
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604022008
 
   \ -----------------------------------------------------------
   \ Description
 
   \ The sample game Tetris for Terminals.
+  \
+  \ An improved port of a game written in Forth-94 by Dirk Uwe
+  \ Zoller in 1994.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Dirk Uwe Zoller, 1994-05-05.  Look&feel stolen from Mike
+  \ Taylor's "Tetris for terminals".
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
-  \ License
+  \ Credit
 
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-.( tt ) blk @ .
-
-  \ tt (Tetris for terminals) is an improved port of a game
-  \ written in Forth-94 by Dirk Uwe Zoller in 1994.
-
-  \ Credit:
-
-  \ ----------------------------------------------------------
   \ tt.pfe  Tetris for terminals, redone in ANSI-Forth.
   \
   \ Written 05Apr94 by Dirk Uwe Zoller, e-mail duz AT roxi DOT
@@ -11890,7 +12870,15 @@ rows 2 / constant craft-y
   \ notice.
   \
   \ Thank you.
-  \ ----------------------------------------------------------
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+.( tt )
 
 only forth also definitions
 
@@ -11919,7 +12907,7 @@ variable wiping
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
   \ c1 = left key
   \ c2 = right key
@@ -11958,7 +12946,7 @@ variable wiping
   [char] 6 [char] 7 [char] 8 [char] 9  bl edit-char  ;  -->
   \ Sinclair 2 joystick.
 
-.( tt ) blk @ .
+.( tt )
 
 6 constant max-keyset
   \ Maximum number of the keyset (first is zero).
@@ -11977,7 +12965,7 @@ positional-case: keyset>keys  ( n -- c1 c2 c3 c4 c5 c6 )
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 begin-stringtable keyset>name  ( n -- ca len )
   s" Cursor        " s,
@@ -11993,7 +12981,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 0 value quit-key  0 value pause-key  0 value drop-key
 0 value rot-key   0 value right-key  0 value left-key
@@ -12015,7 +13003,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 variable score
 variable pieces
@@ -12043,7 +13031,7 @@ variable brick-row  variable brick-col
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 wide deep * 2 * constant /pit
   \ Size of the pit in memory.
@@ -12069,7 +13057,7 @@ create 'pit /pit allot
   loop  draw-bottom  ;  -->
   \ Draw the frame of the pit.
 
-.( tt ) blk @ .
+.( tt )
 
 : bottom-msg  ( addr cnt -- )
   deep over 2/ wide swap - 2/ position 1 flash type 0 flash  ;
@@ -12100,7 +13088,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 : show-keys  ( -- )
   \ display the game keys
@@ -12116,7 +13104,7 @@ end-stringtable
 
 -->
 
-.( tt ) blk @ .
+.( tt )
 
 : (show-help)  ( -- )
   0 0 at-xy
@@ -12139,7 +13127,7 @@ end-stringtable
   while  change-keyset  repeat  ;  -->
   \ Display some explanations and change the keyset.
 
-.( tt ) blk @ .
+.( tt )
 
 23 constant score-row
 
@@ -13951,7 +14939,7 @@ need os-chars  need os-udg
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604071548
 
   \ -----------------------------------------------------------
   \ Description
@@ -14202,18 +15190,9 @@ code test-pixel  ( gx gy -- f )
 
 ( pixels )
 
-  \ Credit:
-  \
-  \ Original code written by Juan Antonio Paz,
-  \ published on Microhobby, issue 170 (1988-05), page 21:
-  \ http://microhobby.org/numero170.htm
-  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
-
 need z80-asm
 
 code pixels  ( -- u )
-
-  \ Return the number of pixels set on the screen.
 
   exx
   4000 hl ldp#  l b ld  l c ld
@@ -14228,6 +15207,23 @@ code pixels  ( -- u )
   exx
   jpnext
   end-code
+
+  \ doc{
+  \
+  \ pixels  ( -- u )
+  \
+  \ Number of pixels set on the screen.
+  \
+  \ }doc
+
+  \ 26 bytes used.
+
+  \ Credit:
+  \
+  \ Original code written by Juan Antonio Paz,
+  \ published on Microhobby, issue 170 (1988-05), page 21:
+  \ http://microhobby.org/numero170.htm
+  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
 
   \ Original code:
   \
@@ -14249,6 +15245,12 @@ code pixels  ( -- u )
   \ jr nz,byte
   \ ret
 
+( slow-pixels )
+
+  \ Slower version of `pixels`.
+
+need bits
+: pixels  ( -- u )  16384 6144 bits  ;
 
   \ vim: filetype=soloforth
   \ graphics.screen_filters.fsb
@@ -16902,7 +17904,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604071520
 
   \ -----------------------------------------------------------
   \ Description
@@ -16980,6 +17982,15 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
 
   \ XXX TODO -- variant after PFE's `(under+)`:
   \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
+
+( cell/ )
+
+  \ Credit:
+  \
+  \ Idea from IsForth.
+
+need 2/ need alias
+' 2/ alias cell/
 
 ( within between )
 
@@ -17156,6 +18167,43 @@ code rshift  ( x1 u -- x2 )
   C3 c, ,         \ jp begin
   end-code
 
+( bits )
+
+need z80-asm
+
+code bits  ( ca len -- u )
+
+  0 hl ldp#  \ init bit count
+  exx  \ save IP and count
+  de pop  hl pop  \ memory zone
+  begin
+    d a ld  e or  nz if
+      08 b ld#  \ bits per byte
+      begin  m rrc  cy if  exx hl incp exx  then  step
+      hl incp  de decp  \ next byte
+  2swap again then
+    \ Note: `2swap` is needed because `begin again` and `if
+    \ then` are not nested.
+
+  exx jppushhl end-code
+
+  \ 29 bytes used.
+
+  \ doc{
+  \
+  \ bits  ( ca len -- u )
+  \
+  \ Count the number of bits set in memory zone _ca len_.
+  \
+  \ }doc
+
+  \ Credit:
+  \
+  \ Based on a pixels counter written by Juan Antonio Paz,
+  \ published on Microhobby, issue 170 (1988-05), page 21:
+  \ http://microhobby.org/numero170.htm
+  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
+
 ( 2/ )
 
   \ Credit:
@@ -17193,6 +18241,8 @@ code 2/  ( x1 -- x2 )
   \ Original code by Wil Baden, published on Forth Dimensions
   \ (volume 18, number 5, page 27, 1997-01).
 
+  \ XXX TODO -- benchmark
+
 need d2*  need 2/
 
 [defined] cell-bits ?\ 16 constant cell-bits
@@ -17218,6 +18268,10 @@ need d2*  need 2/
   \
   \ Adapted from Sinclair QL's Computer One Forth.
 
+  \ XXX TODO -- benchmark
+
+need 2/
+
 : sqrt  ( n1 -- n2 )
   dup 0< -24 ?throw  \ invalid numeric argument
   dup
@@ -17227,6 +18281,8 @@ need d2*  need 2/
   then  ;
 
 ( sm/rem )
+
+  \ XXX TODO -- remove, it's in the kernel
 
   \ Credit:
   \
@@ -17378,7 +18434,7 @@ variable (any?)
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604060043
 
   \ -----------------------------------------------------------
   \ Description
@@ -17758,6 +18814,13 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
 
 : dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
 
+( d10* )
+
+  \ Credit:
+  \ Code from Pygmy Forth.
+
+: d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
+
   \ vim: filetype=soloforth
   \ operators.3-cell.fsb
   \
@@ -17819,7 +18882,9 @@ need d-
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604060057
 
   \ -----------------------------------------------------------
   \ Description
@@ -17853,6 +18918,46 @@ need d2*
          else   d2* r> r>
          then  ;
 
+( q+ q- q0< q0= qu< qnegate qabs )
+
+  \ Credit:
+  \
+  \ copyright 1990-2007  Frank Sergeant
+  \ License:  http://pygmy.utoh.org/license.html
+
+code q+  ( nq1 nq2 -- nq3 )
+  \ XXX TODO -- port to Z80
+end-code
+
+code q-  ( nq1 nq2 -- nq3 )
+  \ XXX TODO -- port to Z80
+end-code
+
+: q0<  ( nq -- f )  0< push drop 2drop pop  ;
+: q0=  ( nq -- f )  or or or 0=  ;
+: qu<  ( uq uq -- f )  q- q0<  ;
+: qnegate  ( nq -- nq' )  0 0 0 0 4swap q-  ;
+: qabs  ( nq -- uq )  dup 0< if qnegate then  ;
+
+( udm* dm* )
+
+  \ Credit:
+  \
+  \ copyright 1990-2007  Frank Sergeant
+  \ License:  http://pygmy.utoh.org/license.html
+
+need qnegate
+
+code udm*  ( ud ud - quad )
+  \ XXX TODO -- port to Z80
+end-code
+
+: dm* ( nd nd - nq )
+  2>r dup 0< dup >r if  dnegate  then
+  r> 2r> dup 0< dup >r if  dnegate  then
+  rot >r udm* 2r> xor 0< if  qnegate  then  ;
+
+  \ vim: filetype=soloforth
   \ parsing.fsb
   \
   \ This file is part of Solo Forth
@@ -18215,7 +19320,7 @@ variable print-width
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604082315
 
   \ -----------------------------------------------------------
   \ Description
@@ -18244,11 +19349,14 @@ variable print-width
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \
   \ 2016-03-31: Adapted to Solo Forth.
+  \
+  \ 2016-04-08: Updated the constant after the latest
+  \ benchmarks.
 
 2variable rnd-seed  $0111 rnd-seed !
 
 : rnd  ( -- u )
-  rnd-seed 2@ $61BF um* rot 0 d+ over rnd-seed 2!  ;
+  rnd-seed 2@ $62DC um* rot 0 d+ over rnd-seed 2!  ;
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
@@ -18259,7 +19367,7 @@ need random
 : random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
   \ Return a random number from _n1_ (min) to _n2_ (max).
 
-( fast-random )
+( fast-rnd fast-random )
 
   \ Credit:
   \
@@ -18268,7 +19376,7 @@ need random
 
 need z80-asm  need os-seed
 
-code fast-rnd  ( -- n )
+code fast-rnd  ( -- u )
 
   os-seed fthl
     \ ld hl,(seed)
@@ -18295,7 +19403,7 @@ code fast-rnd  ( -- n )
     \ ld (seed),hl
   jppushhl   end-code
 
-: fast-random  ( n1 -- n2 )  fast-rnd um* nip  ;
+: fast-random  ( n -- 0..n-1 )  fast-rnd um* nip  ;
 
   \ Original code:
 
@@ -18337,7 +19445,7 @@ code fast-rnd  ( -- n )
   \      ret
   \ ----
 
-( crnd )
+( crnd crandom )
 
   \ 2015-12-25
 
@@ -18366,7 +19474,7 @@ code crnd  ( -- b )
     \ jp push_a
   end-code
 
-: crandom  ( n1 -- n2 )  crnd um* nip  ;
+: crandom  ( b -- 0..b-1 )  crnd um* nip  ;
 
   \ Original code:
 
@@ -18391,15 +19499,16 @@ code crnd  ( -- b )
 
 ( randomize randomize0 )
 
-need os-seed
-
-[needed] randomize0 ?\ : randomize  ( n -- )  os-seed !  ;
+[defined] randomize
+?\  need os-seed  : randomize  ( n -- )  os-seed !  ;
   \ Set the seed of the random number generator.
+
+[needed] randomize ?exit
 
 need os-frames
 
 : randomize0  ( n -- )
-  ?dup 0=  if  os-frames @  then  os-seed !  ;
+  ?dup 0=  if  os-frames @  then  randomize  ;
   \ Set the seed of the random number generator;
   \ if _n_ is zero use the system frames counter instead.
 
@@ -18946,9 +20055,12 @@ need os-chars  need os-chans
   \ The FZX screen mode.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ FZX driver - Copyright (c) 2013 Einar Saukas
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -20191,6 +21303,49 @@ need suffix?
 
   \ }doc
 
+( string/ )
+
+code string/  ( ca1 len1 len2 -- ca2 len2 )
+    \                           ;   T  B
+    \                           ;  -- --
+  D9 c,  C1 c,  D1 c,  E1 c,
+    \ exx          ; save IP    ;  04 01
+    \ pop bc       ; len2       ;  10 01
+    \ pop de       ; len1       ;  10 01
+    \ pop hl       ; ca1        ;  10 01
+  19 c,  A7 c,  ED c, 42 c,
+    \ add hl,de                 ;  11 01
+    \ and a        ; cy=0       ;  04 01
+    \ sbc hl,bc    ; hl=ca2     ;  15 02
+  E5 c,  C5 c,
+    \ push hl                   ;  11 01
+    \ push bc                   ;  11 01
+  D9 c,  jpnext
+    \ exx          ; restore IP ;  04 01
+    \ jp (ix)                   ;  08 02
+    \                           ;  -- --
+    \                           ;  98 13 Total
+  end-code
+
+  \ doc{
+  \
+  \ string/  ( ca1 len1 len2 -- ca2 len2 )
+  \
+  \ Return the _len2_ ending characters of string _ca1 len1_.
+  \
+  \ }doc
+
+exit
+
+  \ Slower version, 1 byte shorter
+  \
+  \ Credit: code from Galope.
+
+: string/  ( ca1 len1 len2 -- ca2 len2 )
+  >r + r@ - r>  ;
+  \ Return the _len2_ ending characters of string _ca1 len1_.
+
+  \ vim: filetype=soloforth
   \ strings.replaces.fsb
   \
   \ This file is part of Solo Forth
@@ -21393,6 +22548,8 @@ need 16hex.
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
+  \ XXX UNDER DEVELOPMENT
+
   \ Last modified: 20160324
 
   \ -----------------------------------------------------------
@@ -21774,7 +22931,7 @@ variable history
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604021142
 
   \ -----------------------------------------------------------
   \ Description
@@ -21827,7 +22984,7 @@ need .line  need nuf?
   \
   \ }doc
 
-  1+ swap do
+  1+ swap ?do
     cr i 3 .r space 0 i .line  nuf? ?leave
   loop  ;
 
@@ -21853,7 +23010,7 @@ need .index  need nuf?
   \ }doc
 
   parse-name 2swap
-  1+ swap do
+  1+ swap ?do
     0 i line>string 2over contains if  i .index  then
     nuf? ?leave
   loop  2drop  ;
@@ -21880,7 +23037,7 @@ need .index
   \ }doc
 
   parse-name save-string 2dup uppers
-  2swap 1+ swap do
+  2swap 1+ swap ?do
     save-string  0 i line>string save-string 2dup uppers
     2over contains if  i .index  then
     nuf? ?leave
@@ -21992,18 +23149,19 @@ need wid>name  need wid>link  need get-order
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+( more-words? )
 
-( words wordlist-words )
+: more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
+  \ A common factor of `words` and `words-like`.
+
+( words )
 
   \ Credit:
   \
   \ Code adapted from Spectrum Forth-83.
 
 need trail  need name>link  need tab  need nuf?
-
-[defined] more-words?
-?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
-     \ A common factor of `words` and `words-like`.
+need more-words?
 
 : words  ( -- )
   trail
@@ -22011,7 +23169,9 @@ need trail  need name>link  need tab  need nuf?
     dup .name tab  name>link @s
   repeat drop  ;
 
-[unneeded] wordlist-words ?exit
+( wordlist-words )
+
+need words
 
 : wordlist-words  ( wid -- )  >order  words  previous  ;
 
@@ -22022,10 +23182,7 @@ need trail  need name>link  need tab  need nuf?
   \ Code adapted from pForth.
 
 need trail  need name>link  need tab  need nuf?
-
-[defined] more-words?
-?\ : more-words?  ( -- f )  dup 0<>  nuf? 0= and  ;
-     \ A common factor of `words` and `words-like`.
+need more-words?
 
 [defined] contains
 ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;

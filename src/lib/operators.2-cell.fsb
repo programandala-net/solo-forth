@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604060043
 
   \ -----------------------------------------------------------
   \ Description
@@ -382,5 +382,12 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
   loop  cr .s 2rot 2drop  ;
 
 : dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
+
+( d10* )
+
+  \ Credit:
+  \ Code from Pygmy Forth.
+
+: d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
 
   \ vim: filetype=soloforth

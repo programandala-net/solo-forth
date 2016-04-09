@@ -8,9 +8,10 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ Error codes of G+DOS.
+  \ The Forth system error codes (range -4095..-256) used for
+  \ G+DOS (range -1031..-1000).
 
-( G+DOS error codes #-1000..#-1014 )
+( G+DOS error codes #-1000..#-1014)
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
@@ -31,7 +32,7 @@
 \ #-1013 G+DOS: Wrong file type
 \ #-1014 G+DOS: Merge error
 
-( G+DOS error codes #-1015..#-1029 )
+( G+DOS error codes #-1015..#-1029)
 
   \ G+DOS Error codes and messages.
   \ Some of them are useless for this implementation.
@@ -52,7 +53,7 @@
 \ #-1028 G+DOS: File name used
 \ #-1029 G+DOS: No G+DOS loaded
 
-( G+DOS error codes #-1030..#-1031 )
+( G+DOS error codes #-1030..#-1031)
 
 \ #-1030 G+DOS: STREAM used
 \ #-1031 G+DOS: CHANNEL used

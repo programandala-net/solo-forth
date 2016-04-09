@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604031945
 
   \ -----------------------------------------------------------
   \ Description
@@ -86,15 +86,13 @@
 ( heap )
 
 
-  \ XXX Note: 1614 bytes used!
+  \ XXX REMARK: 1614 bytes used
 
   \ XXX TODO use top of memory instead of dictionary space?
   \ problem: memory banks could not be used at the same time.
   \
   \ XXX TODO use a memory bank instead of dictionary space?
   \ problem: only words below 0xC000 could manipulate the heap.
-
-
 
 also forth definitions
 need wid-of

@@ -3,7 +3,9 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604060057
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,3 +39,43 @@ need d2*
          else   d2* r> r>
          then  ;
 
+( q+ q- q0< q0= qu< qnegate qabs )
+
+  \ Credit:
+  \
+  \ copyright 1990-2007  Frank Sergeant
+  \ License:  http://pygmy.utoh.org/license.html
+
+code q+  ( nq1 nq2 -- nq3 )
+  \ XXX TODO -- port to Z80
+end-code
+
+code q-  ( nq1 nq2 -- nq3 )
+  \ XXX TODO -- port to Z80
+end-code
+
+: q0<  ( nq -- f )  0< push drop 2drop pop  ;
+: q0=  ( nq -- f )  or or or 0=  ;
+: qu<  ( uq uq -- f )  q- q0<  ;
+: qnegate  ( nq -- nq' )  0 0 0 0 4swap q-  ;
+: qabs  ( nq -- uq )  dup 0< if qnegate then  ;
+
+( udm* dm* )
+
+  \ Credit:
+  \
+  \ copyright 1990-2007  Frank Sergeant
+  \ License:  http://pygmy.utoh.org/license.html
+
+need qnegate
+
+code udm*  ( ud ud - quad )
+  \ XXX TODO -- port to Z80
+end-code
+
+: dm* ( nd nd - nq )
+  2>r dup 0< dup >r if  dnegate  then
+  r> 2r> dup 0< dup >r if  dnegate  then
+  rot >r udm* 2r> xor 0< if  qnegate  then  ;
+
+  \ vim: filetype=soloforth

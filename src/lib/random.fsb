@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604082315
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,11 +32,14 @@
   \ http://web.archive.org/web/20060707001752/http://www.tinyboot.com/index.html
   \
   \ 2016-03-31: Adapted to Solo Forth.
+  \
+  \ 2016-04-08: Updated the constant after the latest
+  \ benchmarks.
 
 2variable rnd-seed  $0111 rnd-seed !
 
 : rnd  ( -- u )
-  rnd-seed 2@ $61BF um* rot 0 d+ over rnd-seed 2!  ;
+  rnd-seed 2@ $62DC um* rot 0 d+ over rnd-seed 2!  ;
 
 : random  ( n -- 0..n-1 )  rnd um* nip  ;
 
@@ -47,7 +50,7 @@ need random
 : random-range ( n1 n2 -- n3 ) over - 1+ random +  ;
   \ Return a random number from _n1_ (min) to _n2_ (max).
 
-( fast-random )
+( fast-rnd fast-random )
 
   \ Credit:
   \
@@ -56,7 +59,7 @@ need random
 
 need z80-asm  need os-seed
 
-code fast-rnd  ( -- n )
+code fast-rnd  ( -- u )
 
   os-seed fthl
     \ ld hl,(seed)
@@ -83,7 +86,7 @@ code fast-rnd  ( -- n )
     \ ld (seed),hl
   jppushhl   end-code
 
-: fast-random  ( n1 -- n2 )  fast-rnd um* nip  ;
+: fast-random  ( n -- 0..n-1 )  fast-rnd um* nip  ;
 
   \ Original code:
 
@@ -125,7 +128,7 @@ code fast-rnd  ( -- n )
   \      ret
   \ ----
 
-( crnd )
+( crnd crandom )
 
   \ 2015-12-25
 
@@ -154,7 +157,7 @@ code crnd  ( -- b )
     \ jp push_a
   end-code
 
-: crandom  ( n1 -- n2 )  crnd um* nip  ;
+: crandom  ( b -- 0..b-1 )  crnd um* nip  ;
 
   \ Original code:
 
@@ -179,15 +182,16 @@ code crnd  ( -- b )
 
 ( randomize randomize0 )
 
-need os-seed
-
-[needed] randomize0 ?\ : randomize  ( n -- )  os-seed !  ;
+[defined] randomize
+?\  need os-seed  : randomize  ( n -- )  os-seed !  ;
   \ Set the seed of the random number generator.
+
+[needed] randomize ?exit
 
 need os-frames
 
 : randomize0  ( n -- )
-  ?dup 0=  if  os-frames @  then  os-seed !  ;
+  ?dup 0=  if  os-frames @  then  randomize  ;
   \ Set the seed of the random number generator;
   \ if _n_ is zero use the system frames counter instead.
 

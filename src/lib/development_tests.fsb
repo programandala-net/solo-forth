@@ -193,7 +193,7 @@ code if'-test  ( -- )
   286 256 do  i . i error>ordinal ."  -> " . cr  loop
   1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
 
-.( block x line 0 ) cr
+.( block x line 0)
   .( block x line 1 ) cr
   .( block x line 2 ) cr
   .( block x line 3 ) cr
@@ -209,7 +209,7 @@ code if'-test  ( -- )
   .( block x line 13 ) cr
   .( block x line 14 ) cr
   .( block x line 15 ) cr
-.( block x+1 line 0 ) cr
+.( block x+1 line 0)
   .( block x+1 line 1 ) cr
   .( block x+1 line 2 ) cr
   .( block x+1 line 3 ) cr
@@ -226,18 +226,14 @@ code if'-test  ( -- )
   .( block x+1 line 14 ) cr
   .( block x+1 line 15 ) cr
 
-( XXX TMP -- block for temporary tries )
+( XXX TMP -- block for temporary tries)
 
 need thru
 blk @ 1+ blk @ 2+ thru
 
-( XXX TMP -- block for temporary tries )
+( XXX TMP -- block for temporary tries)
 
 : hello  ( -- )
-
-( XXX TMP -- block for temporary tries )
-
-  ." hello"
 
   ;
 
