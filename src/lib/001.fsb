@@ -17,7 +17,7 @@
 2 load
 
   \ XXX TMP --
-  \ need 16-bit-random-pix-benchmarks  exit
+  \ need 8-bit-random-pix-benchmarks  exit
 
   \ XXX TMP --
   \ need wordlist-words  need order

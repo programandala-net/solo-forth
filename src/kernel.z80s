@@ -26,7 +26,7 @@
 
 version_major:                equ 0
 version_minor:                equ 3
-version_patch:                equ 0
+version_patch:                equ 1
 
 version_release_candidate:    equ 0 ; zero if none
 

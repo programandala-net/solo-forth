@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-03
+:revdate: 2016-04-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -111,6 +111,16 @@ Developed from 2016-03-14 to 2016-04-03.
 - Improve the documentation of many words.
 - Add `cell/`, `d10*` and `bits` to the library.
 
+== 0.3.1
+
+Released en 2016-04-09.
+
+- Split the assembler library module into three files: z80-asm
+  assembler, z80-asm-comma assembler and common tools.
+- Fix the title of two 8-bit pseudo-random number generator
+  benchmarks.
+- Fix the name of the `base-execute` library module.
+
 // == 0.4.0
 
-// Under development since 2016-04-03.
+// Under development since 2016-04-09.

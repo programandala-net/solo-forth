@@ -835,11 +835,10 @@ need random-pix-benchmark  need +thru  1 5 +thru
 
 ' crnd-pix-benchmark2 ' random-pix-benchmark defer!
 
-libzx-random-pix-benchmark
-
+  \ libzx-random-pix-benchmark
   \ jw-random-pix-benchmark
-  \ mb1-random-pix-benchmark
-  \ mb2-random-pix-benchmark
+  mb1-random-pix-benchmark
+  mb2-random-pix-benchmark
   \ zh-random-pix-benchmark
 
   \ Execute single-cycle benchmarks of RNG that need more than
@@ -848,7 +847,7 @@ libzx-random-pix-benchmark
 ' crnd-pix-benchmark1 ' random-pix-benchmark defer!
 
   \ jw-random-pix-benchmark
-libzx-random-pix-benchmark
+  \ libzx-random-pix-benchmark
 
 ( jw-crnd )
 
@@ -906,7 +905,7 @@ need random-pix-benchmark
   \         ret
   \ ----
 
-( mb1-crandom )
+( mb1-crnd )
 
   \ XXX UNDER DEVELOPMENT
 
@@ -950,10 +949,10 @@ need random-pix-benchmark
   \   s" Milos Bazelides 1" ['] mb1-crandom random-pix-benchmark  ;
 
 : mb1-random-pix-benchmark  ( -- )
-  os-seed off  s" Milos Bazelides 1"
+  os-seed off  s" Milos Bazelides 1 (8 bit)"
   ['] mb1-crnd random-pix-benchmark  ;
 
-( mb2-crandom )
+( mb2-crnd )
 
   \ XXX UNDER DEVELOPMENT
 
@@ -996,7 +995,7 @@ need random-pix-benchmark
   \   s" Milos Bazelides 2" ['] mb2-crandom random-pix-benchmark  ;
 
 : mb2-random-pix-benchmark  ( -- )
-  os-seed off  s" Milos Bazelides 2"
+  os-seed off  s" Milos Bazelides 2 (8 bit)"
   ['] mb2-crnd random-pix-benchmark  ;
 
 ( zh-crnd )
