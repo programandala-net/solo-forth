@@ -1,5 +1,6 @@
 = Solo Forth TO-DO
-:revdate: 2016-04-01
+:author: Marcos Cruz (programandala.net)
+:revdate: 2016-04-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -27,7 +28,6 @@ numbers.
 But for compiling an external number inside a definition,
 a trick is `[ dup ] literal` and a `drop` after `;`.
 
-
 .2015-11-10:
 
 On +3DOS, reserve one memory bank for the name fields.
@@ -36,10 +36,6 @@ Move the circular string buffer to the top of memory.  Use `high` or
 similar, like fig-Forth, to protect the string buffer and the heap. In
 fact, the string buffer should be defined in the heap, but a small
 implementation of the heap is needed.
-
-.2015-11-04:
-
-`cold` must do `mode32`!
 
 .2015-06-09:
 
@@ -67,22 +63,22 @@ This way an alias bit will fit, and word names will be actual strings.
 
 Examples from Forth Dimensions:
 
-----
-                                         Vo   N   Pag Note
---------------------------------------   --   -   --- ----
-Turning the Stack into Local Variables   03   6   185 :) interesting, implement!
-Anonymous Variables                      06   1   033 :) interesting, implement!
-Local Definitions                        06   6   016 :( `privatize` is simpler
-Letter "Stack Your Locals"               07   5   005 :( modification of Vo06N6
-Local Variables                          09   4   009 :( complete but complex
-Letters "Local Variables"                09   5   005
-Letters "Code for Local Variables"       10   1   006 Implemented
-Headless Local Variables and Constants   10   1   019
-Letters "Local Variables Revisited"      10   5   005
-Local Variables and Arguments            11   1   013 Seen
-Local Variables - Another Technique      11   1   018 Seen
-Prefix Frame Operators                   11   1   023
-----
+|===
+| Title                                    | Vo  | N  | Pag | Note
+
+| Turning the Stack into Local Variables   | 03  | 6  | 185 | Implemented: locals.arguments.fsb
+| Anonymous Variables                      | 06  | 1  | 033 | Implemented: locals.anon.fsb
+| Local Definitions                        | 06  | 6  | 016 | :( `privatize` is simpler
+| Letter "Stack Your Locals"               | 07  | 5  | 005 | :( modification of Vo06N6
+| Local Variables                          | 09  | 4  | 009 | :( complete but complex, and not recursive
+| Letters "Local Variables"                | 09  | 5  | 005 | Implemented: locals.local.fsb
+| Letters "Code for Local Variables"       | 10  | 1  | 006 | Modification for Vo09N4
+| Headless Local Variables and Constants   | 10  | 1  | 019 | Interesting, but for F83
+| Letters "Local Variables Revisited"      | 10  | 5  | 005 |
+| Local Variables and Arguments            | 11  | 1  | 013 | Seen
+| Local Variables - Another Technique      | 11  | 1  | 018 | Seen
+| Prefix Frame Operators                   | 11  | 1  | 023 |
+|===
 
 // }}}
 == Control structures ==
@@ -100,7 +96,7 @@ ____
 
 LOOP         Test the top item on the return stack.  If it is zero,
 pop it off the return stack and continue executing the next
-instruction. ÊIf it is not zero, decrement it and jump to the address
+instruction. If it is not zero, decrement it and jump to the address
 specified in this instruction.  Address specifier is the same as in
 BRANCH.  LOOP is compiled by NEXT.
 
@@ -138,7 +134,7 @@ Simplify the origin of words: mention only the most recent standard.
 Study how to save and load the main code and the name bank apart, in
 two files. This way `turnkey` could be used also to save a modified
 copy of the system, not just Forth programs. Simpler solution: use the
-snapshop option of the +D.
+snapshop option of the +D, or save a snapshot from the emulator.
 
 .2015-08-31:
 
@@ -147,7 +143,8 @@ worse, it does not preserve G+DOS!
 
 Of course the +D own snapshots can be used to save the status of a
 game, but this means programs have to be started manually, typing
-`run` in BASIC to load G+DOS, and then loading the snapshot file.
+`run` in BASIC to load G+DOS, and then loading the snapshot file,
+or with an Autoload file.
 
 // }}}
 == Disk blocks ==
@@ -155,9 +152,11 @@ game, but this means programs have to be started manually, typing
 
 .2015-08-15:
 
-Idea: maybe 0 could be used instead of 0x7fff to init the block number of a buffer.
+Idea: maybe 0 could be used instead of 0x7fff to init the block number
+of a buffer.
 
-Idea: instead of update bit, `negate` the number. Then `abs` can be used.
+Idea: instead of the update bit, `negate` the number. Then `abs` can
+be used.
 
 .2015-08-31:
 
@@ -261,37 +260,6 @@ simpler `key` (`akey` from Afera).
 
 Change: modify `expect` after Spectrum Forth-83.
 
-Change: modify `key` after Forth-83 and ANS Forth.
-
-.2015-07-05:
-
-From F83:
-
-----
-: MAP  ( n pfa --- addr )
-  \ Given the pfa of a case word and the index n for case
-  \ selection, return the execution address selected. Abort if the
-  \ index is out of range.
-  2DUP @  \ Fetch the range from pfa.
-  U< IF  \ Is the index n within range?
-    2+ SWAP 2* +  \ Address of the execution code.
-  ELSE OUT  \ Abort if out of range.
-  THEN
-  ;
-
-: CASE:  ( n --- )
-  \ A positional case statement. The range n is used for error checking.  At runtime, the nth word is executed, depending on the value on stack when executed.
-  CONSTANT  \ Compile the range n as a constant.
-  HIDE  \ Smudge the name field as : would do.
-  ]  \ Now, use the colon compiler to compile the cases.
-     \ Compilation will be terminated by the ; command.
-  DOES>  ( index --- )  \ At runtime, use the index to find the execution address among the compiled cases and execute it.
-    MAP  \ Return the address pointing to one of the cases compiled.
-    PERFORM  \ Execute it.
-  ;
-----
-
-
 .2015-09-12:
 
 use bit 5 of FLAGS to detect and reset a new char.
@@ -307,21 +275,14 @@ New:
 - Create words in lowercase.
 - Improve `parse-name` with case conversion.
 
-Change: `parsed` to `>in +!` and choose a new name for `1+ ; parsed` or
-write as is.
-
 .2015-09-23:
 
 Fix: `where` shows the offending word uppercased. This means somewhere the
 original address hold in `parsed-word` is used by `uppers`.
 
-.2015-10-14:
-
-Make the decimal point char configurable.
-
 .2015-10-15:
 
-Adapt from Gforth: `nextname` and `noname`.
+Adapt from Gforth: `noname`.
 
 // }}}
 == Errors ==
@@ -362,6 +323,8 @@ ____
 
 Adapt all file words to standard _ior_; remove _f n_.
 
+2016-04-09: already done?
+
 .2015-09-18:
 
 New: `.files` (from Pygmy Forth).
@@ -370,18 +333,16 @@ New: `.files` (from Pygmy Forth).
 == Misc new words ==
 // {{{
 
-.2015-06-06:
-
-DZX-Forth implements `exit` simple as `compile (exit)`, and
-`exit` is the word called by `;`. Compare both implementations.
-
 .2015-06-10:
 
-Adapt this word from Spectrum Forth-83, that uses it in `cold` and `query`:
+Adapt this word from Spectrum Forth-83, which uses it in `cold` and
+`query`:
 
+----
   : TERMINAL ( --- )
     LIT PKEY (KEY) !    \ Set default handler for KEY.
     >S ;                \ And initialize screen output.
+----
 
 .2015-07-23:
 
@@ -406,10 +367,6 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
   base switch
 ----
 
-.2015-08-12:
-
-Solve `;s` vs `exit`. Compare CamelForth, DZX-Forth...
-
 .2015-09-12:
 
 ____
@@ -430,10 +387,6 @@ Z88 CamelForth does it. Also DX-Forth has this feature.
 .2015-09-13:
 
 `rp` should be a user variable.
-
-.2015-09-21:
-
-`-if` from Machine Forth: checks the sign bit.
 
 .2015-09-22:
 

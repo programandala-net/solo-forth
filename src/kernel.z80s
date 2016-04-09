@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604090210
+; Last modified: 201604091908
 
 ; ==============================================================
 ; Author
@@ -26,7 +26,7 @@
 
 version_major:                equ 0
 version_minor:                equ 3
-version_patch:                equ 1
+version_patch:                equ 2
 
 version_release_candidate:    equ 0 ; zero if none
 
@@ -10901,9 +10901,9 @@ system_stack_pointer: equ $+1
 ;
 ; default-mode  ( -- )
 ;
-; Activate the default screen mode. It's set to `noop` until the
-; first mode change is done. Then it's vectored to `mode32`.
-; It's used by `bye`.
+; A deferred word that activates the default screen mode. It's
+; set to `noop` until the first mode change is done. Then it's
+; vectored to `mode32`.  It's used by `bye`.
 ;
 ; }doc
 

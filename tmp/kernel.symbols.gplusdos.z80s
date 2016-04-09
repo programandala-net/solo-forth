@@ -4193,7 +4193,7 @@ version_lfa	EQU 0CFDCH
 version_major	EQU 00000H
 version_minor	EQU 00003H
 version_nt	EQU 0CFDEH
-version_patch	EQU 00001H
+version_patch	EQU 00002H
 version_pfa	EQU 07863H
 version_release_candidate EQU 00000H
 version_xtp	EQU 0CFDAH

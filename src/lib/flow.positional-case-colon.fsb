@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604092020
 
   \ -----------------------------------------------------------
   \ Description
@@ -11,9 +11,12 @@
   \ `positional-case:`.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Original code from F83's `case:`, by Henry Laxen and
+  \ Michael Perry.
+
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -22,12 +25,15 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-08-11: Adapted.
+  \ 2015-11-22: Modified to use `create:`. 
+  \ 2015-12-14: Renamed to `positional-case:`.
+  \ 2016-04-09: Fixed the file header. Documented.
 
 ( positional-case: )
-
-  \ Credit:
-  \
-  \ Code adapted from F83's `case:`.
 
 need create:
 
@@ -36,13 +42,18 @@ need create:
   does>   ( n -- )
           \ Execute the n-th word compiled.
           ( n pfa ) swap cells + perform  ;
-  \ Create a positional case word "name"
-  \ At runtime, the n-th word is
-  \ executed, depending upon the value on the stack. No
-  \ range checking.
 
-  \ Usage example:
+
+  \ doc{
   \
+  \ positional-case:  ( "name" -- )
+  \
+  \ Create a positional case word "name". At runtime, "name"
+  \ will execute the n-th word compiled in its definition,
+  \ depending upon the value on the stack. No range checking.
+  \
+  \ Usage example:
+
   \ ----
   \ : say0 ." nul"  ;
   \ : say1 ." unu"  ;
@@ -52,5 +63,7 @@ need create:
 
   \ 0 say cr 1 say cr 2 say cr
   \ ----
+
+  \ }doc
 
   \ vim: filetype=soloforth

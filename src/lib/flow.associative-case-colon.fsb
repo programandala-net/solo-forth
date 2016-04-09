@@ -11,9 +11,11 @@
   \ `associative-case:`.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Original code by Frank Sergeant, for Pygmy Forth.
+
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -22,12 +24,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-09: Fixed the file header.
 
 ( associative-case: )
-
-  \ Credit:
-  \
-  \ Code adapted from Pygmy Forth's `case:`
 
 need create:
 

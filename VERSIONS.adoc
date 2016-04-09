@@ -113,13 +113,21 @@ Developed from 2016-03-14 to 2016-04-03.
 
 == 0.3.1
 
-Released en 2016-04-09.
+Released on 2016-04-09.
 
 - Split the assembler library module into three files: z80-asm
   assembler, z80-asm-comma assembler and common tools.
 - Fix the title of two 8-bit pseudo-random number generator
   benchmarks.
 - Fix the name of the `base-execute` library module.
+
+== 0.3.2
+
+Released on 2016-04-09.
+
+Fix, improve and finish the `arguments` implementation of locals.
+
+Improve the documentation of some library modules.
 
 // == 0.4.0
 
