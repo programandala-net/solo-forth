@@ -109,6 +109,8 @@ Developed from 2016-03-14 to 2016-04-03.
 - Include only the best implementations of pseudo-random number
   generators.  Update the benchmarks of all of them.
 - Improve the documentation of many words.
+- Add `indexer`, a tool that indexes the library and makes `need`,
+  `needed`, `reneed` and `reneeded` much faster.
 - Add `cell/`, `d10*` and `bits` to the library.
 
 == 0.3.1
@@ -125,10 +127,17 @@ Released on 2016-04-09.
 
 Released on 2016-04-09.
 
-Fix, improve and finish the `arguments` implementation of locals.
+- Fix, improve and finish the `arguments` implementation of locals.
+- Improve the documentation of some library modules.
 
-Improve the documentation of some library modules.
+== 0.4.0
 
-// == 0.4.0
+Released on 2016-04-10.
+
+- Tape support.
+- New words: `nonfull-display`, `full-display`, `save-display` and
+  `restore-display`.
+
+// == 0.4.1
 
 // Under development since 2016-04-09.

@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-03-13
+" Updated:  2016-04-10
 
 " --------------------------------------------------------------
 " History
@@ -326,6 +326,8 @@ syn keyword soloforthGraphics border
 syn keyword soloforthGraphics bright
 syn keyword soloforthGraphics cls
 syn keyword soloforthGraphics default-colors
+syn keyword soloforthGraphics default-mode
+syn keyword soloforthGraphics display
 syn keyword soloforthGraphics flash
 syn keyword soloforthGraphics ink
 syn keyword soloforthGraphics inverse
@@ -333,6 +335,8 @@ syn keyword soloforthGraphics overprint
 syn keyword soloforthGraphics page
 syn keyword soloforthGraphics paper
 syn keyword soloforthGraphics reset-pixel
+syn keyword soloforthGraphics restore-mode
+syn keyword soloforthGraphics save-mode
 syn keyword soloforthGraphics set-pixel
 syn keyword soloforthGraphics test-pixel
 syn keyword soloforthGraphics toggle-pixel
@@ -1008,32 +1012,29 @@ let b:current_syntax = "soloforth"
 "
 " 2015-07-22: Updated: `l/scr'.
 "
-" 2015-07-23: Updated: `fetchhl'. 'fetchhl,', 'next,',
-" 'pushhl,', 'pushde,'.
+" 2015-07-23: Updated: `fetchhl'. 'fetchhl,', 'next,', 'pushhl,',
+" 'pushde,'.
 "
 " 2015-07-24: Updated: `parse-name` instead of `parse-word`.
 "
 " 2015-08-11: Added `compile,`.
 "
 " 2015-08-12: Updated: `?terminal` -> `break-key?`. Added
-" `nfa>string`, `upper`, `uppers`, `trail`. Removed `-find`,
-" `forget`. More changes.
+" `nfa>string`, `upper`, `uppers`, `trail`. Removed `-find`, `forget`.
+" More changes.
 "
-" 2015-08-14: Updated: `pushde` -> pushhlde`, `pushde,` ->
-" pushhlde,`
+" 2015-08-14: Updated: `pushde` -> pushhlde`, `pushde,` -> pushhlde,`
 "
-" 2015-08-15: Fixed: `blank`. Updated after the changes in the
-" disk buffers.
+" 2015-08-15: Fixed: `blank`. Updated after the changes in the disk
+" buffers.
 "
-" 2015-08-21: Updated with search order words defined in the
-" kernel.
+" 2015-08-21: Updated with search order words defined in the kernel.
 "
 " 2015-08-23: Updated.
 "
 " 2015-08-30: Updated: `pusha`.
 "
-" 2015-08-30: Updated: `asm`, `end-asm`, circular string
-" buffer.
+" 2015-08-30: Updated: `asm`, `end-asm`, circular string buffer.
 "
 " 2015-09-07: Added `don't` and `unnest`.
 "
@@ -1043,15 +1044,15 @@ let b:current_syntax = "soloforth"
 "
 " 2015-09-12: Updated, user area words.
 "
-" 2015-09-13: Updated: `umin`, `umax`; `require` and family
-" renamed to `need`.
+" 2015-09-13: Updated: `umin`, `umax`; `require` and family renamed to
+" `need`.
 "
 " 2015-09-19: Updated.
 "
 " 2015-09-22: Updated.
 "
-" 2015-09-24: Updated: number prefixes "#", "$" and "%";
-" `>number`, `number?`.
+" 2015-09-24: Updated: number prefixes "#", "$" and "%"; `>number`,
+" `number?`.
 "
 " 2015-09-26: Updated.
 "
@@ -1065,8 +1066,8 @@ let b:current_syntax = "soloforth"
 "
 " 2015-10-14: Updated: `catch`, `throw`, `abort"`, `?throw`.
 "
-" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed
-" `@p`, `!p`.
+" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed `@p`,
+" `!p`.
 "
 " 2015-10-21: Upadted: `compile-only`.
 "
@@ -1122,11 +1123,13 @@ let b:current_syntax = "soloforth"
 "
 " 2016-03-15: Added `evaluate`.
 "
-" 2016-03-19: Added `there`, `system-bank`, `default-bank`,
-" `bank`, `bank-start`.  Renamed the words related to the names
-" bank.
+" 2016-03-19: Added `there`, `system-bank`, `default-bank`, `bank`,
+" `bank-start`.  Renamed the words related to the names bank.
 "
 " 2016-03-24: Added `:noname`.
+"
+" 2016-04-10: Added `display`, `default-mode`, `save-mode` and
+" `restore-mode`.
 
 " --------------------------------------------------------------
 

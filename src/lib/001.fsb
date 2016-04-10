@@ -16,6 +16,9 @@
 
 2 load
 
+  need write-tape-file
+  16384 6912 s" screen" write-tape-file
+
   \ XXX TMP --
   \ need 8-bit-random-pix-benchmarks  exit
 

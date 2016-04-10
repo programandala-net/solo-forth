@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604091908
+; Last modified: 201604101726
 
 ; ==============================================================
 ; Author
@@ -25,13 +25,13 @@
 ; Semantic Versioning (http://semver.org)
 
 version_major:                equ 0
-version_minor:                equ 3
-version_patch:                equ 2
+version_minor:                equ 4
+version_patch:                equ 0
 
 version_release_candidate:    equ 0 ; zero if none
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $9F99  ; build 20160409
+version_build_low_part:       equ $9F9A  ; build 20160410
 
 ; ==============================================================
 ; History
@@ -1112,7 +1112,7 @@ negate_hl:
   ret
 endif
 
-if 0 
+if 0
 
   ; XXX TODO -- adapt
   ;
@@ -1497,11 +1497,11 @@ paren_set_order.loop_exit
 ; >order  ( wid -- )
 ;
 ; Push _wid_ on the search order.
-; 
+;
 ; ----
 ; : >order  ( wid -- )  also context !  ;
 ; ----
-; 
+;
 ; Origin: Gforth.
 ;
 ; }doc
@@ -1547,7 +1547,7 @@ if 1 ; XXX OLD
   dw plus_,off_
   dw exit_
 
-else ; XXX NEW 
+else ; XXX NEW
 
 ; doc{
 ;
@@ -1729,7 +1729,7 @@ push_a:
 ; doc{
 ;
 ; default-bank#  ( -- a )
-; 
+;
 ; An 8-bit variable holding the value of the default bank.  Note
 ; this variable must be set with `c!` and fetched with `c@`.
 ;
@@ -1809,7 +1809,7 @@ push_a:
 ; doc{
 ;
 ; bank-start  ( -- a )
-; 
+;
 ; A constant: Memory address where banks are paged in.
 ;
 ; }doc
@@ -2124,7 +2124,7 @@ question_csb_.enough:
 ;
 ; 0branch  ( f -- )
 ;
-; A run-time procedure to branch conditionally. If  _f_ 
+; A run-time procedure to branch conditionally. If  _f_
 ; is false (zero), the following in-line address is copied to IP
 ; to branch forward or backward.
 ;
@@ -3006,7 +3006,7 @@ find_name_from.ip_backup: equ $+1
 ;     then
 ;   loop  2drop false  ;
 ; ----
-; 
+;
 ; Origin: Gforth.
 ;
 ; }doc
@@ -5513,7 +5513,7 @@ endif
 ;
 ; _a_ is the address of a cell containing the number of
 ; characters in the terminal input buffer.
-; 
+;
 ; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
 ;
 ; }doc
@@ -6551,7 +6551,7 @@ do_does equ do_colon
   ; XXX UNDER DEVELOPMENT
   ; XXX FIXME
 ;  pop de
-;  push de 
+;  push de
 ;  push de
 ;  jp do_colon
 
@@ -6799,7 +6799,7 @@ endif
 ; doc{
 ;
 ; >history  ( -- ca len )
-; 
+;
 ; A deferred word. When command line history is activated,
 ; store string _ca len_ into it, else drop it.
 ;
@@ -6859,7 +6859,7 @@ endif
 ; doc{
 ;
 ; simple-accept  ( ca1 len1 -- len2 )
-; 
+;
 ; Default behaviour of the deferred word `accept`:
 ;
 ; Receive a string of at most _len1_ characters.  No characters
@@ -7638,7 +7638,7 @@ error.message:
 ; doc{
 ;
 ; code-field,  ( a -- )
-; 
+;
 ; Compile a code field for a high-level word, to execute the
 ; actual Z80 code at _a_.
 
@@ -8114,7 +8114,7 @@ search.string_1_addr equ $+1
 ; specification.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
- 
+
 ; ----
 ; : evaluate  ( i*x ca len -- j*x )
 ;   nest-source string>source interpret unnest-source  ;
@@ -8122,7 +8122,7 @@ search.string_1_addr equ $+1
 
 ; }doc
 
-  dw nest_source_ 
+  dw nest_source_
   dw string_to_source_
   dw interpret_
   dw unnest_source_
@@ -8369,7 +8369,7 @@ endif
 ;
 ; Compile the contents of a new word list.
 ; The structure is the following:
-; 
+;
 ; |===
 ; | +0 | _nt_ of last definition
 ; | +2 | _wid|0_, next wordlist in chain, or zero
@@ -8613,7 +8613,7 @@ quit.begin:
 ; doc{
 ;
 ; >defer  ( xt1 -- a )
-; 
+;
 ; Return the address _a_ that holds the xt currently associated
 ; to the deferred word _xt1_.
 ;
@@ -8683,7 +8683,7 @@ quit.begin:
 ; doc{
 ;
 ; .version  ( -- )
-; 
+;
 ; Print the Solo Forth version.
 ;
 ; }doc
@@ -8705,7 +8705,7 @@ endif
 dot_version.build
   _literal '+'
   dw emit_
-  dw one_plus_,two_fetch_,d_dot_ 
+  dw one_plus_,two_fetch_,d_dot_
 
   dw exit_
 
@@ -8874,11 +8874,10 @@ common_start:
   ; (SP) = xt of `cold` or `warm`
 
   im 1 ; interrupt mode 1
-  pop bc ; get the return address, that holds the xt of `cold` or `warm`
+  pop bc ; get the return address, which holds the xt of `cold` or `warm`
   ld (system_stack_pointer),sp ; save the system stack pointer
   ld sp,(sp0_init_value)
-  xor a
-  ld (iy+sys_df_sz_offset),a ; no lines at the bottom part of the screen
+  ld (iy+sys_df_sz_offset),0 ; no lines at the bottom part of the screen
   ld ix,next ; restore IX
   _jp_next ; jump to the xt pointed by the register pair BC
 
@@ -9167,7 +9166,7 @@ endif
 ;
 ; Divide _d_ by _n1_, giving the symmetric quotient _n3_ and the
 ; remainder _n2_. Input and output stack arguments are signed.
-  
+
 ; [caption="Symmetric Division Example"]
 ;
 ;  |===
@@ -9620,7 +9619,7 @@ block.end:
 ;
 ; Note: This word is called `><` or `cswap` in other Forth
 ; systems.
-; 
+;
 ; Origin: eForth.
 ;
 ; }doc
@@ -10039,7 +10038,7 @@ endif
 ; doc{
 ;
 ; block>source  ( u -- )
-; 
+;
 ; Set block _u_ as the current source.
 ;
 ; ----
@@ -10491,7 +10490,7 @@ to_digit.end
 ; doc{
 ;
 ; ud/mod ( ud1 u2 -- u3 ud4 )
-;  
+;
 ; An unsigned mixed magnitude math operation which leaves a
 ; double quotient _ud4_ and remainder _u3_, from a double
 ; dividend _ud1_ and single divisor _u2_.
