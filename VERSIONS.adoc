@@ -138,6 +138,14 @@ Released on 2016-04-10.
 - New words: `nonfull-display`, `full-display`, `save-display` and
   `restore-display`.
 
+== 0.4.1
+
+Released on 2016-04-11.
+
+- Fix and improve the tape support: The message "Start tape, then
+  press any key" does not appear anymore.
+- The tape module is fully documented.
+
 // == 0.4.1
 
 // Under development since 2016-04-09.

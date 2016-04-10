@@ -16,8 +16,11 @@
 
 2 load
 
-  need write-tape-file
-  16384 6912 s" screen" write-tape-file
+  \ XXX TMP -- for debugging the tape support
+  \ need write-tape-file
+  \ : savescr 16384 6912 s" screen" write-tape-file  ;
+  \ : savetxt s" TEXT" s" txt" write-tape-file  ;
+  \ hex  ' (write-tape-file) u.
 
   \ XXX TMP --
   \ need 8-bit-random-pix-benchmarks  exit

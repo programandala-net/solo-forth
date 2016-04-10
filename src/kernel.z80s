@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604101726
+; Last modified: 201604102203
 
 ; ==============================================================
 ; Author
@@ -26,12 +26,12 @@
 
 version_major:                equ 0
 version_minor:                equ 4
-version_patch:                equ 0
+version_patch:                equ 1
 
 version_release_candidate:    equ 0 ; zero if none
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $9F9A  ; build 20160410
+version_build_low_part:       equ $9F9B  ; build 20160411
 
 ; ==============================================================
 ; History
@@ -8724,7 +8724,7 @@ dot_version.build
   _string "Solo Forth\rVersion "
   dw dot_version_
   dw paren_dot_quote_
-  _string "\r\x7F 2015,2016 Marcos Cruz\r(programandala.net)\r"
+  _string "\rBy Marcos Cruz\r(programandala.net), 2015, 2016\r"
 
   dw unused_,u_dot_
   dw paren_dot_quote_
