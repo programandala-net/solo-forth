@@ -9,6 +9,11 @@
 == Misc ==
 // {{{
 
+.2016-04-13:
+
+Make Makefile modify the addresses used by BASIC loader,
+according to the origin address of the kernel.
+
 .2016-04-11:
 
 Homogenize the following stack notations:
@@ -463,7 +468,7 @@ etc.
 A new variable `#dpl` would hold the number of points.
 
 // }}}
-== Other ==
+== Time ==
 // {{{
 
 .2015-12-14

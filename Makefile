@@ -1,22 +1,30 @@
-# Solo Forth Makefile
-#
+# Makefile
+
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# By Marcos Cruz (programandala.net), 2015, 2016.
+# ==============================================================
+# Author
 
-# Copying and distribution of this file, with or without modification, are
-# permitted in any medium without royalty provided the copyright notice and
-# this notice are preserved.  This file is offered as-is, without any warranty.
+# Marcos Cruz (programandala.net), 2015, 2016.
+
+# ==============================================================
+# License
+
+# You may do whatever you want with this work, so long as you
+# retain every copyright, credit and authorship notice, and this
+# license.  There is no warranty.
 
 # ==============================================================
 # Requirements
 
 # head, cat and sort (from the GNU coreutils)
 
-# bas2tap (by Martijn van der Heide)
-#   Utilities section of
-#   http://worldofspectrum.org
+# zmakebas (by Russell Marks)
+#   Usually included in Linux distros. Also see:
+# 	http://sourceforge.net/p/emuscriptoria/code/HEAD/tree/desprot/ZMakeBas.c
+# 	https://github.com/catseye/zmakebas
+# 	http://zmakebas.sourcearchive.com/documentation/1.2-1/zmakebas_8c-source.html
 
 # bin2code (by Metalbrain)
 # 	http://metalbrain.speccy.org/link-eng.htm
@@ -26,6 +34,9 @@
 
 # mkmgt (by Marcos Cruz)
 # 	http://programandala.net/en.program.mkmgt.html
+
+# Forth Foundation Library (by Dick van Oudheusden)
+# 	http://irdvo.github.io/ffl/
 
 # ==============================================================
 # History
@@ -85,7 +96,11 @@ include Makefile.pasmo
 # ==============================================================
 # The loader
 
-tmp/loader.gplusdos.bas.tap: src/loader/gplusdos.bas
+tmp/loader.gplusdos.bas: \
+	src/loader/gplusdos.bas src/kernel.z80s
+	gforth tools/patch_the_loader.fs
+
+tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
 
 tmp/loader.plus3dos.bas.tap: src/loader/plus3dos.bas
@@ -312,3 +327,7 @@ oldbackup:
 # now it's built on its own directory.
 #
 # 2016-03-24: New partial backups.
+#
+# 2016-04-13: Improved: the BASIC loader is patched with the current
+# memory addresses, extracted from the Z80 symbols file. Updated the
+# requirements and the license.

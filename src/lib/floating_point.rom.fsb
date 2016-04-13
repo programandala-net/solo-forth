@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604131226
+  \ Last modified: 201604131555
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,15 +39,22 @@
 
   \ -----------------------------------------------------------
   \ To-do
- 
+
   \ XXX FIXME -- When the calculator stack is out of bounds,
   \ the calculator could issue a BASIC error. Test it.
+  \
+  \ XXX TODO -- Move the stack. The default location is limited
+  \ by the small free memory left to BASIC.
+  \
+  \ XXX FIXME -- Problems happen with non-integers:
+  \ `f0 fdup .fs f= .fs .s` works fine, but `fpi2/ fdup .fs f=`
+  \ crashes the system.
 
 ( --fp-rom-- )
 
 need +thru
 
-1 24 +thru
+1 27 +thru
 
 : --fp-rom-- ;
 
@@ -83,7 +90,7 @@ macro end-calc  ( -- )  calc-end D9 c,  endm
   \ exx    ; restore the Forth IP
   \ ----
 
-( calc-drop calc-dup calc-swap calc-over )
+( calc-drop calc-dup calc-swap calc-over calc>mem calc<mem )
 
 macro calc-drop  ( -- )  02 c,  endm
   \ Compile the `drop` ROM calculator command.
@@ -94,18 +101,20 @@ macro calc-dup  ( -- )  31 c,  endm
 macro calc-swap  ( -- )  01 c,  endm
   \ Compile the `swap` ROM calculator command.
 
+macro calc-over  ( -- )
+  2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
+  \ Compile the ROM calculator commands to do `over`.
+
 macro calc>mem  ( n -- )  C0 + c,  endm
-  \ Compile the `ST-MEM` ROM calculator command for memory
+  \ Compile the `st-mem` ROM calculator command for memory
   \ number _n_ (0..5). Note: The float stack TOS is copied, not
   \ moved.
 
 macro calc<mem  ( n -- )  E0 + c,  endm
-  \ Compile the `GET-MEM` ROM calculator command for memory
+  \ Compile the `get-mem` ROM calculator command for memory
   \ number _n_ (0..5).
 
-macro calc-over  ( -- )
-  2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
-  \ Compile the ROM calculator commands to do `over`.
+( calc-negate calc-not calc<> calc= calc> calc< calc<= calc>= )
 
 macro calc-negate  ( -- )  1B c,  endm
   \ Compile the `negate` ROM calculator command.
@@ -114,21 +123,40 @@ macro calc-not  ( -- )  30 c,  endm
   \ Compile the `not` ROM calculator command.
 
 macro calc<>  ( -- )  0B c,  endm
-  \ Compile the `<>` ROM calculator command.
+  \ Compile the `nos-neql` ROM calculator command.
 
 macro calc=  ( -- )  0E c,  endm
-  \ Compile the `=` ROM calculator command.
+  \ Compile the `nos-eql` ROM calculator command.
 
 macro calc>  ( -- )  0C c,  endm
-  \ Compile the `=` ROM calculator command.
+  \ Compile the `no-grtr` ROM calculator command.
+
+macro calc<  ( -- )  0D c,  endm
+  \ Compile the `no-less` ROM calculator command.
+
+macro calc<=  ( -- )  09 c,  endm
+  \ Compile the `no-l-eql` ROM calculator command.
+
+macro calc>=  ( -- )  0A c,  endm
+  \ Compile the `no-gr-eql` ROM calculator command.
+
+( calc0< calc0> )
+
+macro calc0>  ( -- )  36 c,  endm
+  \ Compile the `less-0` ROM calculator command.
+
+macro calc0<  ( -- )  37 c,  endm
+  \ Compile the `greater-0` ROM calculator command.
 
 ( calc-?branch calc-branch calc-mark> calc-resolve> )
 
+need alias
+
 macro calc-?branch  ( -- )  00 c,  endm
-  \ Compile the `JUMP-TRUE` ROM calculator command.
+  \ Compile the `jump-true` ROM calculator command.
 
 macro calc-branch  ( -- )  33 c,  endm
-  \ Compile the `JUMP` ROM calculator command.
+  \ Compile the `jump` ROM calculator command.
 
 : >calc-mark  ( -- a )  here 0 c,  ;
 
@@ -139,11 +167,30 @@ macro calc-branch  ( -- )  33 c,  endm
   \ Typically used after either `calc-branch` or
   \ `calc-?branch`.
 
-: >calc-resolve  ( a -- )  dup here - swap c!  ;
+: from-here  ( a -- n )  here swap -  ;
+  \ Calculate the displacement _n_ from the current data-space
+  \ pointer to address _a_.
+
+: >calc-resolve  ( a -- )  dup from-here swap c!  ;
 
   \ Resolve a ROM calculator forward branch by placing the
   \ displacement to the current position into the space
   \ compiled by `>calc-mark`.
+
+' here alias <calc-mark  ( -- a )
+
+  \ Leave the address of the current data-space pointer as the
+  \ destination of a ROM calculator backward branch which will
+  \ later be resolved by `<calc-resolve`.
+  \
+  \ Typically used before either `calc-branch` or
+  \ `calc-?branch`.
+
+: <calc-resolve  ( a -- )  from-here c,  ;
+
+  \ Resolve a ROM calculator backward branch by compiling the
+  \ displacement from the current position to the address left
+  \ by `<calc-mark`.
 
 ( f+ f- f* f/ f** )
 
@@ -157,7 +204,7 @@ code f-  ( F: r1 r2 -- r3 )
 
 code f*  ( F: r1 r2 -- r3 )
   calc 04 c, end-calc jpnext  end-code
-  \ XXX FIXME -- 
+  \ XXX FIXME --
   \ F: fp2/ 2 -- crash!
   \ F: 60000 0.5 -- 60000 0
   \ F: 1 0.5 -- 1 0
@@ -173,31 +220,54 @@ code f**  ( F: r1 -- r2 )
 code fsign  ( F: r1 -- r2 )
   calc 29 c, end-calc jpnext  end-code
 
-( fmax fmin )
-
-  \ XXX UNDER DEVELOPMENT
+( fmax )
 
 need calc  need calc-over  need calc>  need calc-drop
 need calc-swap  need calc-?branch  need calc-branch
 
 code fmax  ( F: r1 r2 -- r1|r2 )
   calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( a1 )
-        .( branch 1 ) .s cr \ XXX INFORMER
-        calc-drop  ( F: r1 ) calc-branch >calc-mark ( a1 a2 )
-        .( branch 2 ) .s cr \ XXX INFORMER
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-swap calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
         swap >calc-resolve  \ resolve the first branch
-        .( branch 1 resolved ) .s cr \ XXX INFORMER
-        calc-swap calc-drop  ( F: r2 )
+        calc-drop  ( F: r2 )
         >calc-resolve  \ resolve the second branch
-        .( branch 2 resolved ) .s cr \ XXX INFORMER
   end-calc jpnext  end-code
-  \ XXX FIXME -- 
 
 ( fmin )
 
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
 code fmin  ( F: r1 r2 -- r1|r2 )
-  calc end-calc jpnext  end-code
+  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-swap calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( xx2 xx3 xx1 )
+
+  \ XXX TMP -- for debugging
+
+need calc  need calc-branch
+
+code XX3  ( R: -- 0 )  calc calc-branch 3 c,
+  A0 c, A0 c, A0 c,  end-calc jpnext end-code
+
+code XX2  ( R: -- 0 0 0 )  calc calc-branch 2 c,
+  A0 c, A0 c, A0 c,  end-calc jpnext end-code
+
+code XX1  ( R: -- 0 0 0 )  calc calc-branch 1 c,
+  A0 c, A0 c, A0 c,  end-calc jpnext end-code
+
+code XX0  calc calc-branch 0 c,
+  A0 c, A0 c, A0 c,  end-calc jpnext end-code
+  \ XXX -- crash!
 
 ( fabs fln fexp fmod fnegate fsqrt )
 
@@ -271,7 +341,7 @@ code f>s  ( -- n ) ( F: r -- )
 
   \ code f>str  ( -- ca len ) ( F: r -- )
   \ end-code
-  \ XXX TODO --
+  \ XXX TODO -- command $2E
 
   \ : >float  ;
   \ XXX TODO --
@@ -296,24 +366,27 @@ macro end-calc-flag  ( -- wf ) ( F: 1|0 -- )
 
 ( f= f<> )
 
-need calc  need end-calc-flag  need calc=  need calc-not
+need calc  need end-calc-flag  need calc=  need calc<>
+need calc-not  \ XXX TMP --
 
 code f<>  ( -- wf ) ( F: r1 r2 -- )
-  \ calc calc<> end-calc-flag  end-code
+  calc calc<> end-calc-flag  end-code
+    \ XXX TODO -- test
     \ XXX FIXME -- always returns 0
-  calc calc= calc-not end-calc-flag  end-code
+  \ calc calc= calc-not end-calc-flag  end-code
 
 code f=  ( -- wf ) ( F: r1 r2 -- )
   calc calc= end-calc-flag  end-code
 
   \ code f~ \ XXX TODO
 
-( f0< f0= f0<> )
+( f0< f0= f0<> f0> )
 
-need calc  need end-calc-flag  need calc-not
+need calc  need end-calc-flag
+need calc-not  need calc0>  need calc0<
 
 code f0<  ( -- wf ) ( F: r -- )
-  calc 36 c, end-calc-flag  end-code
+  calc calc0< end-calc-flag  end-code
 
 code f0=  ( -- wf ) ( F: r -- )
   calc calc-not end-calc-flag  end-code
@@ -321,21 +394,25 @@ code f0=  ( -- wf ) ( F: r -- )
 code f0<>  ( -- wf ) ( F: r -- )
   calc calc-not calc-not end-calc-flag  end-code
 
+code f0>  ( -- wf ) ( F: r -- )
+  calc calc0> end-calc-flag  end-code
+
 ( f< f<= f> f>= )
 
-need calc  need end-calc-flag  need calc>
+need calc  need end-calc-flag
+need calc<  need calc>  need calc<=  need calc>=
 
 code f<  ( -- wf ) ( F: r1 r2 -- )
-  calc 0D c, end-calc-flag  end-code
+  calc calc< end-calc-flag  end-code
 
 code f<=  ( -- wf ) ( F: r1 r2 -- )
-  calc 09 c, end-calc-flag  end-code
+  calc calc<= end-calc-flag  end-code
 
 code f>  ( -- wf ) ( F: r1 r2 -- )
   calc calc> end-calc-flag  end-code
 
 code f>=  ( -- wf ) ( F: r1 r2 -- )
-  calc 0A c, end-calc-flag  end-code
+  calc calc>= end-calc-flag  end-code
 
 ( f! f@ )
 

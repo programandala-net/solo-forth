@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604130146
+; Last modified: 201604131729
 
 ; ==============================================================
 ; Author
@@ -28,7 +28,7 @@ version_major:                equ 0
 version_minor:                equ 5
 version_patch:                equ 0
 
-version_prerelease:           equ 1 ; zero if none
+version_prerelease:           equ 2 ; zero if none
 
 version_build_high_part:      equ $0133
 version_build_low_part:       equ $9F9D  ; build 20160413
@@ -133,7 +133,10 @@ developing: equ true
 ; ----------------------------------------------
 ; Forth
 
-origin:                           equ $5E00
+;origin:                           equ $5E00
+origin:                           equ $5F00 ; XXX TMP -- for debugging
+
+ramtop:                           equ origin-1 ; used by the BASIC loader
 
 false:                            equ $0000
 true:                             equ $FFFF ; -1
@@ -2055,7 +2058,7 @@ question_csb_.enough:
 ; >resolve  ( orig -- )
 ;
 ; Resolve a forward branch by placing the address of the current
-; dictionary pointer into the space compiled by `>mark`.
+; data-space pointer into the space compiled by `>mark`.
 ;
 ; Origin: Forth-83.
 ;
@@ -2071,7 +2074,7 @@ question_csb_.enough:
 ;
 ; <mark  ( -- a )
 ;
-; Leave the address of the current dictionary pointer, as the
+; Leave the address of the current data-space pointer, as the
 ; the destination of a backward branch.  _a_ is typically
 ; only used by `<resolve` to compile a branch address.
 ;
@@ -5256,9 +5259,9 @@ endif
 ;
 ; dp  ( -- a )
 ;
-; A variable, the dictionary pointer, which contains the address
-; of the next free memory above the dictionary. The value may be
-; read by `here` and altered by `there` and `allot`.
+; A variable, the data-space pointer, which contains its next
+; free address.  The value may be read by `here` and altered by
+; `there` and `allot`.
 ;
 ; Origin: fig-Forth (where `dp` is a user variable).
 ;

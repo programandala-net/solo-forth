@@ -1,23 +1,38 @@
-# Solo Forth included Makefile for Pasmo
+# Makefile.pasmo
 
-################################################################
+# This file is part of Solo Forth
+# http://programandala.net/en.program.solo_forth.html
+
+# ==============================================================
+# Author
+
+# Marcos Cruz (programandala.net), 2016.
+
+# ==============================================================
+# License
+
+# You may do whatever you want with this work, so long as you
+# retain every copyright, credit and authorship notice, and this
+# license.  There is no warranty.
+
+# ==============================================================
 # Requirements
 
 # Pasmo (by Julián Albo)
 #   http://pasmo.speccy.org/
 
-################################################################
-# Change history
+# ==============================================================
+# History
 
 # See at the end of the file.
 
-################################################################
+# ==============================================================
 # Config
 
 pasmo=/usr/local/bin/pasmo.054beta2
 #pasmo=/usr/local/bin/pasmo.053
 
-################################################################
+# ==============================================================
 # Main
 
 # A temporary name "forth.bin" is used because Pasmo does not
@@ -51,10 +66,12 @@ tmp/kernel.plus3dos.bin.tap: src/kernel.z80s
 	mv forth.bin ../tmp/kernel.plus3dos.bin.tap
 	cd ..
 
-################################################################
-# Change history
+# ==============================================================
+# History
 
 # 2015-08-20: Created with code from the main Makefile.
 #
 # 2016-03-19: Updated after the reorganization of files into
 # directories.
+#
+# 2016-04-13: Updated the header and the license.
