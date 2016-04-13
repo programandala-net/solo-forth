@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031816
+  \ Last modified: 201604111423
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,6 +15,14 @@
 (  )
 
 2 load
+
+  \ XXX TMP -- for debugging the floating point ROM
+  \ implementation
+  need --fp-rom--
+  100 s>f  200 s>f  300 s>f
+
+  \ XXX TMP -- for debugging the G+DOS support
+  \ need plusd-in  need plusd-in,
 
   \ XXX TMP -- for debugging the tape support
   \ need write-tape-file

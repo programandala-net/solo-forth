@@ -5,8 +5,8 @@
 
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
-  
-  \ Last modified: 201604091534
+
+  \ Last modified: 201604130136
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,12 +40,19 @@
   \ -------------------------------------------------------------
   \ History
 
-  \ 2015-12-25 First changes:
+  \ 2015-12-25: First changes:
   \
-  \ 1. "," suffixes in Z80 instructions;
-  \ 2. one single set of conditions;
-  \ 3. "a" and "r" prefixes in control structures;
+  \ 1. "," suffixes in Z80 instructions; 2. one single set of
+  \ conditions; 3. "a" and "r" prefixes in control structures;
   \ 4. condition "m" renamed to "ne".
+  \
+  \ 2016-04-11: Moved `macro` to its own module.
+  \
+  \ 2016-04-13: Made `calc` independent from the assembler and
+  \ moved it to the floating point module.  Fixed `execute-hl`,
+  \ then renamed it and `call-xt` with a trailing comma, to
+  \ avoid loading them instead of the versions written for the
+  \ first assembler.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -253,15 +260,20 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \ `jp nz`.
   \
   \ Control structures that compile relative jumps modify the
-  \ opcode accordingly. Example: `z rif` compiles a `jr nz `
+  \ opcode accordingly. Example: `z rif` compiles a `jr nz`,
+  \ while `z aif` compiles a `jp nz`.
 
 C2 constant z  CA constant nz D2 constant cy DA constant nc
 E2 constant pe EA constant po F2 constant ne  FA constant p
 
-  \ XXX FIXME condition `m` has been renamed to `ne` because of
-  \ the register `m`; but maybe all registers should be
+  \ XXX FIXME -- condition `m` has been renamed to `ne` because
+  \ of the register `m`; but maybe all registers should be
   \ renamed.
-  \ XXX TODO ne->ns and p->ps
+
+  \ XXX TODO -- ne->ns and p->ps?
+
+  \ XXX TODO -- add a "?" suffix and use the original names `c`
+  \ and `m`: z?, nz?, c?, nc?, pe?, po?, m?, p?.
 
 : jp>jr  ( op1 -- op2 )  dup nc > #-273 ?throw  A2 -  ;
   \ Convert an absolute-jump condition to a relative-jump
@@ -278,23 +290,23 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 : ?ret,  ( op -- )  8 xor 2- c,  ;
 
-: retc,  ( -- )  cy ?ret,  ;    : retnc,  ( -- )  nc ?ret,  ;
-: retz,  ( -- )  z ?ret,  ;     : retnz,  ( -- )  nz ?ret,  ;
-: retm,  ( -- )  ne ?ret,  ;     : retp,  ( -- )  p ?ret,  ;
-: retpe,  ( -- )  pe ?ret,  ;   : retpo,  ( -- )  po ?ret,  ;
+: retc,   ( -- )  cy ?ret,  ;    : retnc,  ( -- )  nc ?ret,  ;
+: retz,   ( -- )   z ?ret,  ;    : retnz,  ( -- )  nz ?ret,  ;
+: retm,   ( -- )  ne ?ret,  ;    : retp,   ( -- )   p ?ret,  ;
+: retpe,  ( -- )  pe ?ret,  ;    : retpo,  ( -- )  po ?ret,  ;
 
   \ Conditional call
 
 : ?call,  ( a op -- )  8 xor 2+ c, ,  ;
 
-: callc,  ( -- )  cy ?call, ;
+: callc,   ( -- )  cy ?call,  ;
 : callnc,  ( -- )  nc ?call,  ;
-: callz,  ( -- )  z ?call, ;
+: callz,   ( -- )   z ?call,  ;
 : callnz,  ( -- )  nz ?call,  ;
-: callm,  ( -- )  ne ?call, ;
-: callp,  ( -- )  p ?call,  ;
-: callpe,  ( -- )  pe ?call, ;
-: callpo, ( -- )  po ?call,  ;
+: callm,   ( -- )  ne ?call,  ;
+: callp,   ( -- )   p ?call,  ;
+: callpe,  ( -- )  pe ?call,  ;
+: callpo,  ( -- )  po ?call,  ;
 
 -->
 
@@ -302,7 +314,8 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
   \ Control structures with relative jumps
 
-  \ XXX TODO document
+  \ XXX TODO -- document
+  \ XXX TODO -- rename `rel...` to `r...`
 
 : >relmark  ( -- orig )  here 1-  ;
   \ Leave the origin address of a forward relative branch
@@ -328,6 +341,7 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
   \ Leave the origin address of a forward relative branch
   \ just compiled, to be resolved by `>relresolve`.
   \ Note: 0x18 is the Z80 opcode for `jr`.
+  \ XXX TODO -- rename to `rahead`.
 
 : rif  ( op -- orig cs-id )  jp>jr , >relmark 0A  ;
 
@@ -408,8 +422,6 @@ A0 m2 and,  B0 m2 or,  A8 m2 xor,
 
 ( z80-asm, )
 
-  \ Unresolved macro endm 
-
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during
   \ compilation. `pad` can not be used because it's transient
@@ -425,36 +437,9 @@ A0 m2 and,  B0 m2 or,  A8 m2 xor,
   \ and `drop` are used to pass the stack check at the end of
   \ the definition.
 
-only forth definitions also assembler
+decimal only forth definitions
 
-: macro  ( "name" -- )  : asm  ;
-: endm  ( -- )  end-asm postpone ;  ;  immediate
-
-decimal only forth
-
-( calc end-calc )
-
-need z80-asm,
-
-  \ current @  also assembler definitions
-  \ XXX OLD
-  \ XXX TODO
-
-macro calc  ( -- )  exx, EF c,  endm
-  \ 0xEF = `rst 0x28`, call the ROM calculator
-
-macro end-calc  ( -- )  38 c, exx,  next ix ldp,  endm
-  \ 0x38 = ROM calculator `end-calc` command
-  \
-  \ XXX TODO It seems IX is not used by the calculator,
-  \ so this code will work:
-  \ macro end-calc  ( -- )  38 c, exx  endm
-
-  \ current !  previous
-  \ XXX OLD
-  \ XXX TODO
-
-( execute-hl call-xt )
+( execute-hl, call-xt, )
 
   \ Assembler macros to call any Forth word from code words.
 
@@ -465,18 +450,20 @@ macro end-calc  ( -- )  38 c, exx,  next ix ldp,  endm
   \ variable.  The code was factored to two assembler macros in
   \ order to make it reusable.
 
-need z80-asm,
+need z80-asm,  need macro
 
-macro execute-hl  ( -- )
-  here 6 + bc ldp#,  \ point IP to phony_compiled_word
+macro execute-hl,  ( -- )
+  0000 bc stp,  |mark  \ save the Forth IP
+  0000 bc ldp#, |mark  \ point IP to phony_compiled_word
   jphl,          \ execute the xt in HL
-  \ phony_compiled_word:
+  >resolve \ phony_compiled_word
   here cell+ ,      \ point to the phony xt following
+  0000 bc ldp#  |resolve  \ restore the Forth IP
   endm
   \ Compile an `execute` with the xt hold in HL.
 
-macro call-xt  ( xt -- )
-  hl ldp#,  execute-hl
+macro call-xt,  ( xt -- )
+  hl ldp#,  execute-hl,
   endm
   \ Compile a call to _xt_.
   \ This is the low-level equivalent of `execute`.

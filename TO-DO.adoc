@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-09
+:revdate: 2016-04-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -9,8 +9,13 @@
 == Misc ==
 // {{{
 
-Homogenize the stack notations of double, triple and quadruple
-numbers.
+.2016-04-11:
+
+Homogenize the following stack notations:
+
+- double, triple and quadruple numbers (or include all used
+  conventions in the documentation).
+- flags: _f_ (--> _0f_) and _wf_ (--> _f_)?
 
 // }}}
 == Inner ==
@@ -72,7 +77,7 @@ Examples from Forth Dimensions:
 | Letter "Stack Your Locals"               | 07  | 5  | 005 | :( modification of Vo06N6
 | Local Variables                          | 09  | 4  | 009 | :( complete but complex, and not recursive
 | Letters "Local Variables"                | 09  | 5  | 005 | Implemented: locals.local.fsb
-| Letters "Code for Local Variables"       | 10  | 1  | 006 | Modification for Vo09N4
+| Letters "Code for Local Variables"       | 10  | 1  | 006 | Modification for FD Vo09N4
 | Headless Local Variables and Constants   | 10  | 1  | 019 | Interesting, but for F83
 | Letters "Local Variables Revisited"      | 10  | 5  | 005 |
 | Local Variables and Arguments            | 11  | 1  | 013 | Seen
@@ -318,6 +323,14 @@ ____
 // }}}
 == Files ==
 // {{{
+
+.2016-04-11:
+
+Make the tape words return a standard _ior_.
+
+Rename the tape and disk words after a common convention. Maybe after
+Gforth `slurp-file` and Galope `unslurpe-file`: `slurp-tape-file`,
+`unslurp-tape-file`, `slurp-file`, `unslurp-file`.
 
 .2016-03-02:
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604122314
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,25 +22,40 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( .s u.s )
-
-  \ Credit:
-  \
-  \ Code from Afera. Original algorithm from v.Forth.
+  \ -----------------------------------------------------------
+  \ History
 
   \ 2015-11-13: Modified `.depth` to print a signed number,
   \ better for debugging.
+  \
+  \ 2016-04-12: Divided into 3 blocks, in order to reuse
+  \ `.depth` for the floating point `.fs`. Fixed the check:
+  \ the stacks are not printed when their depth is negative.
 
-: .depth  ( n -- )  [char] < emit 0 .r [char] > space  ;
+( .depth )
+
+
+: .depth  ( n -- )  [char] < emit 0 .r [char] > emit space  ;
+
+( .s )
+
+  \ Credit:
+  \ Code from Afera. Original algorithm from v.Forth.
+
+need .depth
 
 : .s   ( -- )
-  depth dup .depth if
-    sp@ s0 @ cell- do i @ .  [ cell negate ] literal +loop
+  depth dup .depth 0> if
+    sp@ sp0 @ cell- do i @ .  [ cell negate ] literal +loop
   then  ;
 
+( u.s )
+
+need .depth
+
 : u.s   ( -- )
-  depth dup .depth if
-    sp@ s0 @ cell- do i @ u.  [ cell negate ] literal +loop
+  depth dup .depth 0> if
+    sp@ sp0 @ cell- do i @ u.  [ cell negate ] literal +loop
   then  ;
 
   \ vim: filetype=soloforth

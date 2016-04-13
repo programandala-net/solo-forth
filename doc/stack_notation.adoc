@@ -1,12 +1,18 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-09
+:revdate: 2016-04-12
 
+== Numbers
+
+[cols="4,10,6"]
 |===
 | Symbol     | Data type                                     | Size
 
 | a           | address                                      | 1 cell
+| aa          | cell-aligned address                         | 1 cell
 | ca          | character-aligned address                    | 1 cell
+| fa          | float-aligned address                        | 1 cell
+| dfa         | double-float-aligned address                 | 1 cell
 
 | f           | flag (false is 0; true is any other value)   | 1 cell
 | true        | true flag (-1)                               | 1 cell
@@ -17,23 +23,26 @@
 | c           | 8-bit character                              | 1 cell
 
 | u           | 16-bit unsigned number                       | 1 cell
-| len         | 16-bit unsigned number,                      | 1 cell
-|               length of memory zone or string              | 1 cell
+| len         | 16-bit unsigned number (string length)       | 1 cell
 | n           | 16-bit signed number                         | 1 cell
 | +n          | 16-bit non-negative number                   | 1 cell
-| n\|u        | 16-bit signed or unsigned number             | 1 cell
 | x           | 16-bit unspecified number                    | 1 cell
 
 | ca len      | string                                       | 2 cells
 
 | d           | 32-bit signed double number                  | 2 cells
-| d\|ud       | 32-bit signed or unsigned double number      | 2 cells
 | +d          | 32-bit non-negative double number            | 2 cells
 | ud          | 32-bit unsigned double number                | 2 cells
 | xd          | 32-bit unspecified number                    | 2 cells
 
+| t           | 48-bit signed triple number                  | 3 cells
+| ut          | 48-bit unsigned triple number                | 3 cells
+| q           | 64-bit signed quadruple number               | 4 cells
+| uq          | 64-bit unsigned quadruple number             | 4 cells
+
 | gx          | 8-bit graphic x coordinate (0..255)          | 1 cell
 | gy          | 8-bit graphic y coordinate (0..191)          | 1 cell
+
 | row         | 8-bit cursor row (0..n)                      | 1 cell
 | col         | 8-bit cursor column (0..n)                   | 1 cell
 
@@ -58,14 +67,19 @@
 | i*x         | any data type                                | 0 or more cells
 | j*x         | any data type                                | 0 or more cells
 | k*x         | any data type                                | 0 or more cells
+| u*x         | u elements of type x (eg. `u*wid`)           | 0 or more cells
+
+| r           | a floating point real number                 | 5 bytes (in the floating point stack)
 
 | op          | Z80 8-bit opcode, generally a jump           | 1 cell
 | r           | Z80 8-bit register identifier                | 1 cell
 | rp          | Z80 16-bit register pair identifier          | 1 cell
 |===
 
+== Parsed text
+
 |===
-| Parsed text notation
+| Symbol     | Description
 
 | <char>     | the delimiting character marking the end of the string being parsed
 | <chars>    | zero or more consecutive occurrences of the character char
@@ -75,6 +89,6 @@
 | <paren>    | a delimiting right parenthesis
 | <eol>      | an implied delimiter marking the end of a line
 | ccc        | a parsed sequence of arbitrary characters, excluding the delimiter character
-| name       | a token delimited by space, equivalent to ccc<space> or ccc<eol>.
+| name       | a token delimited by space, equivalent to `ccc<space>` or `ccc<eol>`.
 |===
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603252323
+  \ Last modified: 201604111518
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,7 +47,7 @@ need alias
   \
   \ }doc
 
-: named-wid ( wid -- )  (wid>name) latest swap !  ;
+: named-wid  ( wid -- )  (wid>name) latest swap !  ;
 
   \ doc{
   \
@@ -79,7 +79,7 @@ need alias
   \ XXX TODO use the actual number of vocs in context,
   \ not a trailing zero
 
-: get-order  ( -- u*wid u )  context order@ ;
+: get-order  ( -- u*wid u )  context order@  ;
 
 ( wid-of )
 
@@ -147,3 +147,4 @@ need alias
   \
   \ }doc
 
+  \ vim: filetype=soloforth

@@ -3,12 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604111420
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The words for G+DOS.
+  \ G+DOS support.
 
   \ -----------------------------------------------------------
   \ Author
@@ -21,6 +21,106 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015..2016: Main development.
+  \
+  \ 2016-04-11: Started `plusd-in`, plusd-out`, `plusd-in,`,
+  \ plusd-out,`.
+
+( plusd-in plusd-out )
+
+  \ XXX UNDER DEVELOPMENT -- second version
+
+need z80-asm  need --hook-codes--
+
+code plusd-in  ( -- )
+  patch hook
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ plusd-in  ( -- )
+  \
+  \ Page in the Plus D memory.
+  \
+  \ }doc
+
+code plusd-out  ( -- )
+  D3 c, #231 c,     \ out (231),a
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ plusd-out  ( -- )
+  \
+  \ Page out the Plus D memory.
+  \
+  \ }doc
+
+( plusd-in plusd-out )
+
+  \ XXX UNDER DEVELOPMENT -- first version
+
+code plusd-in  ( -- )
+  DB c, #231 c,     \ in a,(231)
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ plusd-in  ( -- )
+  \
+  \ Page in the Plus D memory.
+  \
+  \ }doc
+
+code plusd-out  ( -- )
+  D3 c, #231 c,     \ out (231),a
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ plusd-out  ( -- )
+  \
+  \ Page out the Plus D memory.
+  \
+  \ }doc
+
+( plusd-in, plusd-out, )
+
+  \ XXX UNDER DEVELOPMENT
+
+need macro
+
+macro plusd-in,  ( -- )
+  DB c, #231 c,     \ in a,(231)
+  endm
+
+  \ doc{
+  \
+  \ plusd-in,  ( -- )
+  \
+  \ Compile machine code to page in the Plus D memory.
+  \
+  \ }doc
+
+macro plusd-out,  ( -- )
+  D3 c, #231 c,     \ out (231),a
+  endm
+
+  \ doc{
+  \
+  \ plusd-out,  ( -- )
+  \
+  \ Compile machine code to page out the Plus D memory.
+  \
+  \ }doc
 
 ( ufia )
 
@@ -50,9 +150,7 @@ char d device c! \ "d" or "D"
 variable file-length   \ copy of `hd0b` used by `(<file)`
 variable file-address  \ copy of `hd0d` used by `(<file)`
 
-( --file-types-- --directory-descriptions-- )
-
-  \ File types
+( --file-types-- )
 
 0 constant basic-filetype
 1 constant data-array-filetype
@@ -61,7 +159,7 @@ variable file-address  \ copy of `hd0d` used by `(<file)`
 
 : --file-types--  ;
 
-  \ Directory descriptions
+( --directory-descriptions-- )
 
 01 constant basic-file-dir      02 constant data-array-dir
 03 constant string-array-dir    04 constant code-file-dir
@@ -74,17 +172,13 @@ variable file-address  \ copy of `hd0d` used by `(<file)`
 
 ( --hook-codes-- )
 
-hex
-
-33 constant hxfer  34 constant ofsm  35 constant hofile
-36 constant sbyte  37 constant hsvbk 38 constant cfsm
-39 constant pntp   3A constant cops  3B constant hgfile
-3C constant lbyte  3D constant hldbk 3E constant wsad
-3F constant sad    40 constant rest  41 constant heraz
-42 constant cops2  43 constant pcat  44 constant hrsad
-45 constant hwsad  46 constant otfoc 47 constant patch
-
-decimal
+$33 constant hxfer  $34 constant ofsm  $35 constant hofile
+$36 constant sbyte  $37 constant hsvbk $38 constant cfsm
+$39 constant pntp   $3A constant cops  $3B constant hgfile
+$3C constant lbyte  $3D constant hldbk $3E constant wsad
+$3F constant sad    $40 constant rest  $41 constant heraz
+$42 constant cops2  $43 constant pcat  $44 constant hrsad
+$45 constant hwsad  $46 constant otfoc $47 constant patch
 
 : --hook-codes--  ;
 
@@ -319,7 +413,7 @@ code (file>screen)  ( -- dosior )
   \ n         = error
   >ufia (file>screen) dosior>ior  ;
 
-( .000 )
+( .100 )
 
   \ XXX TMP -- for debugging
 

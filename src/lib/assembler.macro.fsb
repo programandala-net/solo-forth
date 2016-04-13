@@ -1,0 +1,46 @@
+  \ assembler.macro.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604111350
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `macro` and `endm`, compatible with any assembler.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -------------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -------------------------------------------------------------
+  \ History
+
+  \ 2016-04-11: Extracted from the assemblers `z80-asm` and
+  \ `z80-asm,`. The code was identical in both of them and it
+  \ can be useful without an assembler.
+
+( macro )
+
+need get-order
+
+get-order get-current
+
+only forth definitions  also assembler
+
+: macro  ( "name" -- )  : asm  ;
+: endm  ( -- )  end-asm postpone ;  ;  immediate
+
+set-current  set-order
+
+  \ vim: filetype=soloforth
+

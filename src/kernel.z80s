@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604102203
+; Last modified: 201604130146
 
 ; ==============================================================
 ; Author
@@ -25,13 +25,13 @@
 ; Semantic Versioning (http://semver.org)
 
 version_major:                equ 0
-version_minor:                equ 4
-version_patch:                equ 1
+version_minor:                equ 5
+version_patch:                equ 0
 
-version_release_candidate:    equ 0 ; zero if none
+version_prerelease:           equ 1 ; zero if none
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $9F9B  ; build 20160411
+version_build_low_part:       equ $9F9D  ; build 20160413
 
 ; ==============================================================
 ; History
@@ -8665,7 +8665,7 @@ quit.begin:
 ; +0: major (one byte)
 ; +1: minor (one byte)
 ; +2: patch (one byte)
-; +3: release candidate (one byte)
+; +3: pre-release (one byte), zero if none
 ; +4: build (two cells)
 ;
 ; }doc
@@ -8673,7 +8673,7 @@ quit.begin:
   db version_major
   db version_minor
   db version_patch
-  db version_release_candidate
+  db version_prerelease
   dw version_build_high_part
   dw version_build_low_part
 
@@ -8697,9 +8697,9 @@ quit.begin:
   dw emit_
   dw one_plus_,dup_,c_fetch_,zero_dot_r_
   dw one_plus_
-if version_release_candidate
+if version_prerelease
   dw paren_dot_quote_
-  _string "-rc."
+  _string "-pre."
   dw dup_,c_fetch_,zero_dot_r_
 endif
 dot_version.build
@@ -10664,7 +10664,7 @@ if 1 ; developing
   _colon_header dot_s_,'.S'
 
   ; XXX TMP -- only during the development, then remove
-  ; It is already on the disk.
+  ; It is in the library.
 
   dw depth_,dup_
   _literal '<'

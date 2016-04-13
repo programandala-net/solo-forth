@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604091523
+  \ Last modified: 201604130136
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,9 +34,22 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -------------------------------------------------------------
+  \ History
+
+  \ 2015: Adapted from Afera. Main development.
+  \
+  \ 2016-04-11: Moved `macro` to its own module.
+  \
+  \ 2016-04-13: Made `calc` independent from the assembler and
+  \ moved it to the floating point module. Fixed `execute-hl`.
+
 ( z80-asm )
 
   \ XXX TODO -- `get-order` here and `set-order` at the end.
+
+  \ .( in z80-asm latest is ) latest .name cr key drop
+  \ XXX INFORMER
 
 only forth definitions
 
@@ -52,7 +65,7 @@ also assembler definitions hex
 
 ( z80-asm )
 
-  \ Registers 
+  \ Registers
 
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
@@ -262,7 +275,8 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
   \ Control structures with relative jumps
 
-  \ XXX TODO document
+  \ XXX TODO -- document
+  \ XXX TODO -- rename `rel...` to `r...`
 
 : >relmark  ( -- orig )  here 1-  ;
   \ Leave the origin address of a forward relative branch
@@ -361,8 +375,6 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
 ( z80-asm )
 
-  \ Unresolved macro endm 
-
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during
   \ compilation. `pad` can not be used because it's transient
@@ -378,34 +390,7 @@ A0 m2 and  B0 m2 or  A8 m2 xor
   \ and `drop` are used to pass the stack check at the end of
   \ the definition.
 
-only forth definitions also assembler
-
-: macro  ( "name" -- )  : asm  ;
-: endm  ( -- )  end-asm postpone ;  ;  immediate
-
-decimal only forth
-
-( calc end-calc )
-
-need z80-asm
-
-  \ current @  also assembler definitions
-  \ XXX OLD
-  \ XXX TODO
-
-macro calc  ( -- )  exx EF c,  endm
-  \ 0xEF = `rst 0x28`, call the ROM calculator
-
-macro end-calc  ( -- )  38 c, exx  next ix ldp  endm
-  \ 0x38 = ROM calculator `end-calc` command
-  \
-  \ XXX TODO It seems IX is not used by the calculator,
-  \ so this code will work:
-  \ macro end-calc  ( -- )  38 c, exx  endm
-
-  \ current !  previous
-  \ XXX OLD
-  \ XXX TODO
+decimal only forth definitions
 
 ( execute-hl call-xt )
 
@@ -418,13 +403,15 @@ macro end-calc  ( -- )  38 c, exx  next ix ldp  endm
   \ variable.  The code was factored to two assembler macros in
   \ order to make it reusable.
 
-need z80-asm
+need z80-asm  need macro
 
 macro execute-hl  ( -- )
-  here 6 + bc ldp#  \ point IP to phony_compiled_word
+  0000 bc stp  |mark  \ save the Forth IP
+  0000 bc ldp# |mark  \ point IP to phony_compiled_word
   jphl          \ execute the xt in HL
-  \ phony_compiled_word:
+  >resolve \ phony_compiled_word
   here cell+ ,      \ point to the phony xt following
+  0000 bc ldp#  |resolve  \ restore the Forth IP
   endm
   \ Compile an `execute` with the xt hold in HL.
 
