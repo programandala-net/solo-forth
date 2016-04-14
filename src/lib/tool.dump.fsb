@@ -1,0 +1,68 @@
+  \ tool.dump.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Two versions of the `dump` tool.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( ascii-type )
+
+: ascii-type  ( ca len -- )
+  bounds ?do
+    i c@ 127 and dup bl < if  drop [char] .  then  emit
+  loop  ;
+
+( dump )
+
+need 16hex.  need ascii-type
+
+[defined] bs ?\ : bs  ( -- )  8 emit  ;
+
+  \ XXX FIXME -- when len=0 a row is shown; `wdump` does
+  \ nothing.
+
+: dump  ( ca len -- )
+  8 2dup mod - + 8 / 0
+  ?do
+    cr dup 16hex.
+    8 0 do  i over + @ flip 16hex.  cell +loop
+    \ 16 0 do  i over + c@ hexb.  loop  \ XXX OLD
+    dup bs 8 ascii-type
+    break-key? ?leave
+  8 + loop  drop  ;
+  \ Show the contents of _n_ bytes starting from _ca_.
+
+( wdump )
+
+need 16hex.
+
+[defined] bs ?\ : bs  ( -- )  8 emit  ;
+
+: wdump  ( a n -- )
+  \ Show the contents of _n_ cells starting from _a_.
+  0
+  ?do
+    i 4 mod 0= if  cr dup 16hex. space  then  \ show address
+    dup @ 16hex. cell+
+    break-key? ?leave
+  loop  drop  ;
+
+  \ vim: filetype=soloforth

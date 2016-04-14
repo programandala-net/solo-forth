@@ -4198,7 +4198,7 @@ version_minor	EQU 00005H
 version_nt	EQU 0CFDEH
 version_patch	EQU 00000H
 version_pfa	EQU 07963H
-version_prerelease EQU 00004H
+version_prerelease EQU 00005H
 version_xtp	EQU 0CFDAH
 voc_link.init_value EQU 05F0CH
 voc_link_	EQU 07021H

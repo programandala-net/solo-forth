@@ -1,0 +1,28 @@
+  \ exception.codes.idedos.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604031805
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The Forth system error codes (range -4095..-256) used for
+  \ IDEDOS (range -1066..-1056).
+
+( IDEDOS error codes #-1056..#-1066)
+
+\ #-1056 IDEDOS: Invalid partition
+\ #-1057 IDEDOS: Partition already exists
+\ #-1058 IDEDOS: Not implemented
+\ #-1059 IDEDOS: Partition open
+\ #-1060 IDEDOS: Out of partition handles
+\ #-1061 IDEDOS: Not a swap partition
+\ #-1062 IDEDOS: Drive already mapped
+\ #-1063 IDEDOS: Out of XDPBs
+\ #-1064 IDEDOS: No swap partition available
+\ #-1065 IDEDOS: Invalid device
+\ #-1066 IDEDOS: 8-bit data transfer
+
+  \ vim: filetype=soloforth

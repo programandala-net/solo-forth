@@ -1,0 +1,61 @@
+  \ tool.list.stack.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604122314
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words to examine the stack.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-13: Modified `.depth` to print a signed number,
+  \ better for debugging.
+  \
+  \ 2016-04-12: Divided into 3 blocks, in order to reuse
+  \ `.depth` for the floating point `.fs`. Fixed the check:
+  \ the stacks are not printed when their depth is negative.
+
+( .depth )
+
+
+: .depth  ( n -- )  [char] < emit 0 .r [char] > emit space  ;
+
+( .s )
+
+  \ Credit:
+  \ Code from Afera. Original algorithm from v.Forth.
+
+need .depth
+
+: .s   ( -- )
+  depth dup .depth 0> if
+    sp@ sp0 @ cell- do i @ .  [ cell negate ] literal +loop
+  then  ;
+
+( u.s )
+
+need .depth
+
+: u.s   ( -- )
+  depth dup .depth 0> if
+    sp@ sp0 @ cell- do i @ u.  [ cell negate ] literal +loop
+  then  ;
+
+  \ vim: filetype=soloforth

@@ -1,0 +1,345 @@
+  \ 002.need.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604031848
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The `need` utility which manages the library dependencies.
+  \ It must be at block 2 of the library.
+  \
+  \ The utility consists of words `need`, `needed`, `reneed`
+  \ and `reneeded`. All of them are deferred words. Their
+  \ default behaviour is set by `set-located-need`: locate the
+  \ required word searching the blocks of the library.
+  \
+  \ An alternative faster behaviour is provided by the
+  \ `indexer` tool, in other module.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( contains delimited located )
+
+: contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
+
+  \ doc{
+  \
+  \ contains ( ca1 len1 ca2 len2 -- f )
+  \
+  \ Does string _ca1 len1_ contain string _ca2 len2_?
+  \
+  \ }doc
+
+variable default-first-locatable  variable first-locatable
+variable last-locatable  blk/disk 1- last-locatable !
+  \ Variables that define the range of blocks to be searched
+  \ by `located` and its descendants.
+
+: delimited  ( ca1 len1 -- ca2 len2 )
+  dup 2+ dup allocate-string swap  ( ca1 len1 ca2 len2 )
+  2dup blank  2dup 2>r drop char+ smove 2r>  ;
+
+  \ doc{
+  \
+  \ delimited   ( ca1 len1 -- ca2 len2 )
+  \
+  \ Add one leading space and one trailing space to string _ca1
+  \ len1_, returning the result _ca2 len2_ in the circular
+  \ string buffer.
+  \
+  \ }doc
+
+: located  ( ca len -- block | false )
+  delimited  last-locatable @ 1+  first-locatable @
+  default-first-locatable @  first-locatable !
+  do  0 i line>string 2over
+      contains if  2drop i unloop exit  then
+      break-key? ?leave
+  loop  2drop 0  ;
+
+  \ doc{
+  \
+  \ located  ( ca len -- block | 0 )
+  \
+  \ Locate the first block whose header contains the string _ca
+  \ len_ (but surrounded by spaces), and return its number. If
+  \ not found, return zero.  The search is case-sensitive.
+  \
+  \ }doc
+
+-->
+
+( ?located locate from reneeded reneed )
+
+: ?located  ( block | 0 -- )  dup 0= #-268 ?throw  ;
+
+  \ XXX FIXME -- the word shown by the exception may have been
+  \ overwritten in the circular string buffer.
+
+  \ doc{
+  \
+  \ ?located ( f -- )
+  \
+  \ If f is zero, throw an exception -268 ("required, but not
+  \ located").
+  \
+  \ }doc
+
+: locate  ( "name" -- block | 0 )
+  parse-name save-string located  ;
+
+  \ doc{
+  \
+  \ locate  ( "name" -- block | 0 )
+  \
+  \ Locate the first block whose header contains "name"
+  \ (surrounded by spaces), and return its number. If not
+  \ found, return zero.  The search is case-sensitive.
+  \
+  \ }doc
+
+: from  ( "name" -- )  locate ?located first-locatable !  ;
+
+  \ doc{
+  \
+  \ from  ( "name" -- )
+  \
+  \ Locate the first block whose header contains "name"
+  \ (surrounded by spaces), and set it the first one `located`
+  \ will search from. If not found, throw an exception -268
+  \ ("required, but not located").
+  \
+  \ This word is intended to prevent undesired matches clashes
+  \ during the execution of `need` and related words. "name" is
+  \ supposed to be a conventional marker.
+  \
+  \ Usage examples:
+
+  \ ----
+  \ ( x )
+  \
+  \ : x  ( -- )  ." Wrong x!" ;
+  \
+  \ ( use-x )
+  \
+  \ from ==data-structures== need x
+  \
+  \ ( y )  ==data-structures==
+  \
+  \ : y ." Y data structure; ;
+  \
+  \ ( x )
+  \
+  \ : x ." X data structure; ;
+  \
+  \ ----
+
+  \ }doc
+
+defer reneeded  ( ca len -- )
+
+  \ doc{
+  \
+  \ reneeded  ( ca len -- )
+  \
+  \ Load the first block whose header contains the string _ca
+  \ len_ (surrounded by spaces).  If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-reneeded`.
+  \
+  \ }doc
+
+: locate-reneeded  ( ca len -- )  located ?located load  ;
+
+  \ doc{
+  \
+  \ locate-reneeded  ( ca len -- )
+  \
+  \ Locate the first block whose header contains the string _ca
+  \ len_ (but surrounded by spaces), and load it. If not found,
+  \ throw an exception -268 ("required, but not located").
+  \
+  \ This is the default behaviour of the deferred word
+  \ `reneeded`.
+  \
+  \ }doc
+
+defer reneed  ( "name" -- )
+
+  \ doc{
+  \
+  \ reneed  ( ca len -- )
+  \
+  \ Load the first block whose header contains "name" (but
+  \ surrounded by spaces).
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-reneed`.
+  \
+  \ }doc
+
+: locate-reneed  ( "name" -- )
+  parse-name save-string reneeded  ;
+
+  \ doc{
+  \
+  \ locate-reneed  ( ca len -- )
+  \
+  \ Locate the first block whose header contains "name" (but
+  \ surrounded by spaces), and load it.  If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is the default behaviour of the deferred word
+  \ `reneed`.
+  \
+  \ }doc
+
+-->
+
+( needed-word [needed] [unneeded] )
+
+2variable needed-word
+
+  \ XXX TODO -- make `[needed]` and `[unneeded]` optional.
+
+: [needed]  ( "name" -- wf )
+  parse-name needed-word 2@ 2dup or
+  if  compare 0=  exit  then  2drop 2drop true   ; immediate
+
+  \ doc{
+  \
+  \ [needed]  ( "name" -- wf )
+  \
+  \ Is "name" the needed word specified by the last execution
+  \ of `need` or `needed`?
+  \
+  \ }doc
+
+: [unneeded]  ( "name" -- wf )
+  postpone [needed] 0=  ; immediate
+
+  \ doc{
+  \
+  \ [unneeded]  ( "name" -- wf )
+  \
+  \ Is "name" different than the needed word specified by the
+  \ last execution of `need` or `needed`?
+  \
+  \ }doc
+
+: new-needed-word  ( ca len -- ca len )
+  -trailing -leading save-string 2dup needed-word 2!  ;
+
+-->
+
+( needed need )
+
+defer needed  ( ca len -- )
+
+  \ doc{
+  \
+  \ needed  ( ca len -- )
+  \
+  \ If the string _ca len_ is not the name of a word found in
+  \ the current search order, load the first block of the
+  \ library where "name" is included in the block header
+  \ (but surrounded by spaces).
+  \ If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-needed`.
+  \
+  \ }doc
+
+: locate-needed  ( ca len -- )
+  cr ." need " 2dup type  \ XXX INFORMER
+  needed-word 2@ 2>r  new-needed-word  2dup undefined?
+  if  locate-reneeded  else  2drop  then  2r> needed-word 2!  ;
+
+  \ doc{
+  \
+  \ locate-needed  ( ca len -- )
+  \
+  \ If the string _ca len_ is not the name of a word found in
+  \ the current search order, locate the first block of the
+  \ library where "name" is included in the block header (but
+  \ surrounded by spaces), and load it.  If not found, throw an
+  \ exception -268 ("required, but not located").
+  \
+  \ This is the default behaviour of the deferred word
+  \ `needed`.
+  \
+  \ }doc
+
+defer need  ( "name" -- )
+
+  \ doc{
+  \
+  \ need  ( "name" -- )
+  \
+  \ If "name" is not found in the current search order, locate
+  \ the first block of the library where "name" is included is
+  \ the block header (but surrounded by spaces), and load it.
+  \ If not found, throw an exception -268 ("required, but not
+  \ located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-need`.
+  \
+  \ }doc
+
+: locate-need  ( "name" -- )  parse-name needed  ;
+
+  \ doc{
+  \
+  \ locate-need  ( "name" -- )
+  \
+  \ If "name" is not found in the current search order, locate
+  \ the first block of the library where "name" is included is
+  \ the block header (but surrounded by spaces), and load it.
+  \ If not found, throw an exception -268 ("required, but not
+  \ located").
+  \
+  \ This is the default behaviour of the deferred word `need`.
+  \
+  \ }doc
+
+: set-located-need  ( -- )
+  ['] locate-reneeded ['] reneeded  defer!
+  ['] locate-reneed   ['] reneed    defer!
+  ['] locate-need     ['] need      defer!
+  ['] locate-needed   ['] needed    defer!  ;
+
+  \ doc{
+  \
+  \ set-located-need  ( -- )
+  \ 
+  \ Set the default behaviour of `need`, `needed`, `reneed` and
+  \ `reneeded`: Use `locate` for searching the library.
+  \
+  \ The alternative, provided by the optional `indexer` tool,
+  \ is set by `set-indexed-need`.
+  \
+  \ }doc
+
+set-located-need
+
+blk @ 1+ dup default-first-locatable !  first-locatable !
+
+  \ vim: filetype=soloforth

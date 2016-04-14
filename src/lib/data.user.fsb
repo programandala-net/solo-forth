@@ -1,0 +1,60 @@
+  \ data.user.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `user`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( user )
+
+  \ XXX UNDER DEVELOPMENT -- improved version, which uses the
+  \ first free offset.
+
+  \ doc{
+  \
+  \ user  ( +n "name" -- )
+  \
+  \ Create a user variable _name_.  _+n_ is the offset within
+  \ the user area where the value for _name_ is stored.
+  \ Execution of _name_ leaves its absolute user area storage
+  \ address.
+  \
+  \ Origin: Forth-79, Forth-83.
+  \
+  \ }doc
+
+: user  ( n "name -- )
+  create c,  does>  c@ up @ +  ;
+
+exit
+
+: user  ( n "name -- )
+  cconstant
+  ;code asm
+  de incp  \ de=pfa
+  exde
+  m e ld
+  00 d ld#  \ de = index of the user variable
+  up fthl \ ld hl,(user_variables_pointer) \ XXX FIXME
+  de addp  \ hl= address of the user variable
+  jppushhl  end-asm
+
+  \ vim: filetype=soloforth

@@ -12,10 +12,6 @@
 
   \ A floating point implementation that uses the ROM
   \ calculator.
-  \
-  \ It provides most words of the Forth-2012 FLOATING and
-  \ FLOATING EXT word sets, and some words not included in
-  \ Forth-2012.
 
   \ -----------------------------------------------------------
   \ Author
