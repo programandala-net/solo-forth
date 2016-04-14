@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604132012
+  \ Last modified: 201604140018
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,16 +41,31 @@
   \ To-do
 
   \ XXX FIXME -- When the calculator stack is out of bounds,
-  \ the calculator could issue a BASIC error. Test it.
+  \ the calculator could issue a BASIC error and crash the
+  \ system. Test it.
   \
-  \ XXX TODO -- Move the stack. The default location is limited
-  \ by the small free memory left to BASIC.
+  \ XXX TODO -- Move the stack and make it configurable. The
+  \ default location is limited by the small free memory left
+  \ to BASIC.
+  \
+  \ XXX FIXME -- Strange: When a non-integer number less than 1
+  \ is in the stack, every execution of `.fs` adds a zero to
+  \ the stack.
+  \
+  \ XXX TODO -- Write `fliteral`, `ffield:`, `fvalue`,
+  \ environmental queries.
+  \
+  \ XXX TODO -- Write safer alternatives for the ambiguous
+  \ conditions listed in Forth-2012.
+  \
+  \ XXX TODO -- Move the ROM calculator extensions to their own
+  \ module.
 
 ( --fp-rom-- )
 
 need +thru
 
-1 27 +thru
+1 28 +thru
 
 : --fp-rom-- ;
 
@@ -61,7 +76,7 @@ need +thru
 : float+  ( n1 -- n2 )  float +  ;
 : floats  ( n1 -- n2 )  float *  ;
 
-( calc end-calc )
+( calc calc-end end-calc )
 
 need macro
 
@@ -77,7 +92,7 @@ macro calc  ( -- )  C5 c, EF c,  endm
   \ ----
 
 macro calc-end  ( -- )  38 c,  endm
-  \ Compile the exit ROM calculator command.
+  \ Compile the `end-calc` ROM calculator command.
   \ ----
   \ db $38 ; exit the ROM calculator
   \ ----
@@ -85,7 +100,7 @@ macro calc-end  ( -- )  38 c,  endm
 macro end-calc  ( -- )  calc-end C1 c,  endm
   \ Compile the assembler instructions to exit the ROM calculator:
   \ ----
-  \ db $38 ; exit the ROM calculator
+  \ db $38 ; `end-calc` ROM calculator command
   \ pop bc ; restore the Forth IP
   \ ----
 
@@ -113,13 +128,15 @@ macro calc-over  ( -- )
   2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
   \ Compile the ROM calculator commands to do `over`.
 
-( calc-negate calc-not calc<> calc= calc> calc< calc<= calc>= )
+( calc-negate calc-not )
 
 macro calc-negate  ( -- )  1B c,  endm
   \ Compile the `negate` ROM calculator command.
 
 macro calc-not  ( -- )  30 c,  endm
   \ Compile the `not` ROM calculator command.
+
+( calc<> calc= calc> calc< calc<= calc>= )
 
 macro calc<>  ( -- )  0B c,  endm
   \ Compile the `nos-neql` ROM calculator command.
@@ -191,174 +208,25 @@ macro calc-branch  ( -- )  33 c,  endm
   \ displacement from the current position to the address left
   \ by `<calc-mark`.
 
-( f+ f- f* f/ f** )
+( fp0 fp (fp@ fp@ empty-fs fdepth )
 
-need calc
+need float
 
-code f+  ( F: r1 r2 -- r3 )
-  calc 0F c, end-calc jpnext  end-code
+23651 constant fp0  \ STKBOT system variable
+23653 constant fp   \ STKEND system variable
 
-code f-  ( F: r1 r2 -- r3 )
-  calc 03 c, end-calc jpnext  end-code
+  \ Note: The calculator stack grows towards higher memory, and
+  \ `fp` points to the first free position, therefore above top
+  \ of stack.
 
-code f*  ( F: r1 r2 -- r3 )
-  calc 04 c, end-calc jpnext  end-code
-  \ XXX FIXME --
-  \ F: fp2/ 2 -- crash!
-  \ F: 60000 0.5 -- 60000 0
-  \ F: 1 0.5 -- 1 0
-  \ F: 0.5 1 -- 0.5 0
+: (fp@  ( -- a )  fp @  ;
 
-code f/  ( F: r1 r2 -- r3 )
-  calc 05 c, end-calc jpnext  end-code
-  \ XXX FIXME -- BASIC "overflow" error when _r2_ is zero.
+: fp@  ( -- a )  (fp@ float -  ;
 
-code f**  ( F: r1 -- r2 )
-  calc 06 c, end-calc jpnext  end-code
+: empty-fs  ( -- )  fp0 @ fp !  ;
+  \ XXX TODO -- try alternative: ROM routine $16BF
 
-code fsign  ( F: r1 -- r2 )
-  calc 29 c, end-calc jpnext  end-code
-
-( fmax )
-
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
-
-code fmax  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-swap calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
-
-( fmin )
-
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
-
-code fmin  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-swap calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
-
-( xx2 xx3 xx1 )
-
-  \ XXX TMP -- for debugging
-
-need calc  need calc-branch
-
-code XX3  ( R: -- 0 )  calc calc-branch 3 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-
-code XX2  ( R: -- 0 0 0 )  calc calc-branch 2 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-
-code XX1  ( R: -- 0 0 0 )  calc calc-branch 1 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-
-code XX0  calc calc-branch 0 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-  \ XXX -- crash!
-
-( fabs fln fexp fmod fnegate fsqrt )
-
-need calc  need calc-negate
-
-code fabs  ( F: r1 -- r2 )
-  calc 2A c, end-calc jpnext  end-code
-
-code fln  ( F: r1 -- r2 )
-  calc 25 c, end-calc jpnext  end-code
-
-code fexp  ( F: r1 -- r2 )
-  calc 26 c, end-calc jpnext  end-code
-
-code fmod  ( F: r1 -- r2 )
-  calc 32 c, end-calc jpnext  end-code
-
-code fnegate  ( F: r1 -- r2 )
-  calc calc-negate end-calc jpnext  end-code
-
-code fsqrt  ( F: r1 -- r2 )
-  calc 28 c, end-calc jpnext  end-code
-
-( f0 f1 fhalf fpi2/ f10 )
-
-need calc
-
-code f0  ( F: -- r )
-  calc A0 c, end-calc jpnext  end-code
-
-code f1  ( F: -- r )
-  calc A1 c, end-calc jpnext  end-code
-
-code fhalf  ( F: -- r )
-  calc A2 c, end-calc jpnext  end-code
-
-code fpi2/  ( F: -- r )
-  calc A3 c, end-calc jpnext  end-code
-
-code f10  ( F: -- r )
-  calc A4 c, end-calc jpnext  end-code
-
-( b>f u>f s>f f>s )
-
-need calc  need fnegate
-
-code restack  ( F: r -- r' )
-  calc  3D c,  end-calc  jpnext end-code
-  \ XXX TMP -- for debugging
-
-code b>f  ( b -- ) ( F: -- r )
-  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
-    \ exx
-    \ pop hl
-    \ ld a,l
-    \ call $2D28 ; STACK_A ROM routine
-    \ exx
-  \ XXX TODO -- test
-
-code u>f  ( u -- ) ( F: -- r )
-  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
-    \ exx
-    \ pop bc
-    \ call $2D2B ; STACK_BC ROM routine
-    \ exx
-
-: s>f  ( n -- ) ( F: -- r )
-  dup 0< if  abs u>f fnegate  else  u>f  then  ;
-  \ XXX TODO -- test
-
-code f>s  ( -- n ) ( F: r -- )
-  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
-    \ exx
-    \ call $2DA2 ; FP_TO_BC ROM routine
-    \ push bc
-    \ exx
-  \ XXX TODO -- test
-
-  \ code f>d  ( -- d ) ( F: r -- )
-  \ end-code
-  \ XXX TODO
-
-  \ code d>f  ( d -- ) ( F: -- r )
-  \ end-code
-  \ XXX TODO
-
-  \ code f>string  ( -- ca len ) ( F: r -- )
-  \ end-code
-  \ XXX TODO -- command $2E
-
-  \ : >float  ;
-  \ XXX TODO --
+: fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
 
 ( end-calc-flag )
 
@@ -428,6 +296,213 @@ code f>  ( -- wf ) ( F: r1 r2 -- )
 code f>=  ( -- wf ) ( F: r1 r2 -- )
   calc calc>= end-calc-flag  end-code
 
+( fdrop fdup fswap fover )
+
+need calc  need calc-over  need calc-drop  need calc-dup
+need calc-swap
+
+code fdrop  ( F: r -- )
+  calc calc-drop end-calc jpnext  end-code
+
+code fdup  ( F: r -- r r )
+  calc calc-dup end-calc jpnext  end-code
+
+code fswap  ( F: r1 r2 -- r2 r1 )
+  calc calc-swap end-calc jpnext  end-code
+
+code fover  ( F: r1 r2 -- r1 r2 r1 )
+  calc calc-over end-calc jpnext  end-code
+
+( frot -frot )
+
+need calc  need calc>mem  need calc<mem  need calc-drop
+
+code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
+  calc 3 calc>mem calc-drop
+       2 calc>mem calc-drop
+       1 calc>mem calc-drop
+       2 calc<mem 3 calc<mem 1 calc<mem
+  end-calc jpnext  end-code
+
+code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
+  calc 3 calc>mem calc-drop
+       2 calc>mem calc-drop
+       1 calc>mem calc-drop
+       3 calc<mem 1 calc<mem 2 calc<mem
+  end-calc jpnext  end-code
+
+( f+ f- f* f/ fmod )
+
+need calc  need fdup  need f0=
+
+code f+  ( F: r1 r2 -- r3 )
+  calc 0F c, end-calc jpnext  end-code
+
+code f-  ( F: r1 r2 -- r3 )
+  calc 03 c, end-calc jpnext  end-code
+
+code f*  ( F: r1 r2 -- r3 )
+  calc 04 c, end-calc jpnext  end-code
+  \ XXX FIXME --
+  \ F: fp2/ 2 -- crash!
+  \ F: 60000 0.5 -- 60000 0
+  \ F: 1 0.5 -- 1 0
+  \ F: 0.5 1 -- 0.5 0
+
+code f/  ( F: r1 r2 -- r3 )
+  calc 05 c, end-calc jpnext  end-code
+  \ XXX FIXME -- when _r2_ is zero, the calculator issues
+  \ "number too big" BASIC error, what crashes the system.  It
+  \ could be trapped with G+DOS. A safe alternative `?f/` is
+  \ provided.
+
+: ?f/  ( F: r1 r2 -- r3 )  fdup f0= #-42 ?throw f/  ;
+  \ Safe version of `f/`. If _r2_ is zero, an exception
+  \ is thrown.
+
+code fmod  ( F: r1 -- r2 )
+  calc 32 c, end-calc jpnext  end-code
+
+( fmax )
+
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
+code fmax  ( F: r1 r2 -- r1|r2 )
+  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-swap calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( fmin )
+
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
+code fmin  ( F: r1 r2 -- r1|r2 )
+  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-swap calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( fsign fabs fnegate )
+
+need calc  need calc-negate
+
+code fsign  ( F: r1 -- r2 )
+  calc 29 c, end-calc jpnext  end-code
+
+code fabs  ( F: r1 -- r2 )
+  calc 2A c, end-calc jpnext  end-code
+
+code fnegate  ( F: r1 -- r2 )
+  calc calc-negate end-calc jpnext  end-code
+
+( fln fexp f** fsqrt )
+
+need calc  need fdup  need f0<
+
+code fln  ( F: r1 -- r2 )
+  calc 25 c, end-calc jpnext  end-code
+
+code fexp  ( F: r1 -- r2 )
+  calc 26 c, end-calc jpnext  end-code
+
+code f**  ( F: r1 -- r2 )
+  calc 06 c, end-calc jpnext  end-code
+
+code fsqrt  ( F: r1 -- r2 )
+  calc 28 c, end-calc jpnext  end-code
+
+  \ XXX FIXME -- when _r1_ is negative, the calculator issues
+  \ "invalid argument" BASIC error, what crashes the system.
+  \ It could be trapped with G+DOS. A safe alternative `?fsqrt`
+  \ is provided.
+
+: ?fsqrt  ( F: r1 -- r2 )  fdup f0< #-46 ?throw f/  ;
+  \ Safe version of `fsqrt`. If _r1_ is negative, an exception
+  \ is thrown.
+
+( f0 f1 fhalf fpi2/ f10 )
+
+need calc
+
+code f0  ( F: -- r )
+  calc A0 c, end-calc jpnext  end-code
+
+code f1  ( F: -- r )
+  calc A1 c, end-calc jpnext  end-code
+
+code fhalf  ( F: -- r )
+  calc A2 c, end-calc jpnext  end-code
+
+code fpi2/  ( F: -- r )
+  calc A3 c, end-calc jpnext  end-code
+
+code f10  ( F: -- r )
+  calc A4 c, end-calc jpnext  end-code
+
+( b>f u>f s>f f>s )
+
+need calc  need fnegate
+
+code restack  ( F: r -- r' )
+  calc  3D c,  end-calc  jpnext end-code
+  \ Restacks an integer in full floating point form.
+  \ XXX TODO -- Better name. Maybe `refloat`, `>f`.  "re-stack"
+  \ is the command of the ROM calculator.
+
+code b>f  ( b -- ) ( F: -- r )
+  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
+    \ exx
+    \ pop hl
+    \ ld a,l
+    \ call $2D28 ; STACK_A ROM routine
+    \ exx
+  \ XXX TODO -- test
+
+code u>f  ( u -- ) ( F: -- r )
+  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
+    \ exx
+    \ pop bc
+    \ call $2D2B ; STACK_BC ROM routine
+    \ exx
+
+: s>f  ( n -- ) ( F: -- r )
+  dup 0< if  abs u>f fnegate  else  u>f  then  ;
+  \ XXX TODO -- test
+
+code f>s  ( -- n ) ( F: r -- )
+  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
+    \ exx
+    \ call $2DA2 ; FP_TO_BC ROM routine
+    \ push bc
+    \ exx
+  \ XXX TODO -- test
+
+  \ code f>d  ( -- d ) ( F: r -- )
+  \ end-code
+  \ XXX TODO
+
+  \ code d>f  ( d -- ) ( F: -- r )
+  \ end-code
+  \ XXX TODO
+
+  \ code f>string  ( -- ca len ) ( F: r -- )
+  \ end-code
+  \ XXX TODO -- command $2E
+
+  \ : >float  ;
+  \ XXX TODO --
+
 ( f! f@ )
 
 need z80-asm
@@ -456,61 +531,6 @@ need f!
 
 : fvariable  ( "name" -- )  create  float allot  ;
 
-( fp0 fp (fp@ fp@ empty-fs fdepth )
-
-need float
-
-23651 constant fp0  \ STKBOT system variable
-23653 constant fp   \ STKEND system variable
-
-  \ Note: The calculator stack grows towards higher memory, and
-  \ `fp` points to the first free position, therefore above top
-  \ of stack.
-
-: (fp@  ( -- a )  fp @  ;
-
-: fp@  ( -- a )  (fp@ float -  ;
-
-: empty-fs  ( -- )  fp0 @ fp !  ;
-  \ XXX TODO -- try alternative: ROM routine $16BF
-
-: fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
-
-( fdrop fdup fswap fover )
-
-need calc  need calc-over  need calc-drop  need calc-dup
-need calc-swap
-
-code fdrop  ( F: r -- )
-  calc calc-drop end-calc jpnext  end-code
-
-code fdup  ( F: r -- r r )
-  calc calc-dup end-calc jpnext  end-code
-
-code fswap  ( F: r1 r2 -- r2 r1 )
-  calc calc-swap end-calc jpnext  end-code
-
-code fover  ( F: r1 r2 -- r1 r2 r1 )
-  calc calc-over end-calc jpnext  end-code
-
-( frot -frot )
-
-need calc  need calc-drop
-
-code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       2 calc<mem 3 calc<mem 1 calc<mem
-  end-calc jpnext  end-code
-
-code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       3 calc<mem 1 calc<mem 2 calc<mem
-  end-calc jpnext  end-code
-
 ( facos fasin fatan fcos fsin ftan )
 
 need calc
@@ -533,9 +553,9 @@ code fsin  ( F: r1 -- r2 )
 code ftan  ( F: r1 -- r2 )
   calc 21 c, end-calc jpnext  end-code
 
-( f. )
+( (f. f. )
 
-code (f.)  ( F: r -- )
+code (f.  ( F: r -- )
   C5 c,  CD c, 2DE3 ,  C1 c,
     \ push bc
     \ call $2DE3  ; PRINT_FP ROM routine
@@ -545,7 +565,12 @@ code (f.)  ( F: r -- )
   \ because the routine uses the alternative registers.  `bc`
   \ is saved on the stack instead.
 
-: f.  ( F: r -- )  (f.) space  ;
+: f.  ( F: r -- )  (f. space  ;
+
+  \ XXX Note: The Forth-2012 standard reads `f.` must use
+  \ fixed-point notation, but in this implementation the
+  \ decimal point is not shown at the end when the number is
+  \ integer.
 
 ( .fs dump-fs )
 
@@ -589,13 +614,15 @@ code fround  ( F: r1 -- r2 )
 
   \ Note: In Gforth: `: ftrunc f>d d>f ;`
 
-( falign faligned dfalign faligned )
+( falign faligned )
 
 need alias
 
 ' noop alias falign     ( -- )        immediate
 ' noop alias faligned   ( a -- fa )   immediate
-' noop alias dfalign    ( -- )        immediate
-' noop alias dfaligned  ( a -- dfa )  immediate
+  \ ' noop alias sfalign    ( -- )        immediate
+  \ ' noop alias sfaligned  ( a -- dfa )  immediate
+  \ ' noop alias dfalign    ( -- )        immediate
+  \ ' noop alias dfaligned  ( a -- dfa )  immediate
 
   \ vim: filetype=soloforth

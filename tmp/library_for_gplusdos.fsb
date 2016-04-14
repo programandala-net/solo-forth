@@ -327,6 +327,7 @@ defer needed  ( ca len -- )
   \ }doc
 
 : locate-needed  ( ca len -- )
+  cr ." need " 2dup type  \ XXX INFORMER
   needed-word 2@ 2>r  new-needed-word  2dup undefined?
   if  locate-reneeded  else  2drop  then  2r> needed-word 2!  ;
 
@@ -9112,7 +9113,7 @@ forth definitions  previous
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031748
+  \ Last modified: 201604140237
 
   \ -----------------------------------------------------------
   \ Description
@@ -9131,114 +9132,6 @@ forth definitions  previous
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
-( Standard error codes #-01..#-15)
-
-\ #-01 ABORT
-\ #-02 ABORT"
-\ #-03 stack overflow
-\ #-04 stack underflow
-\ #-05 return stack overflow
-\ #-06 return stack underflow
-\ #-07 do-loops nested too deeply during execution
-\ #-08 dictionary overflow
-\ #-09 invalid memory address
-\ #-10 division by zero
-\ #-11 result out of range
-\ #-12 argument type mismatch
-\ #-13 undefined word
-\ #-14 interpreting a compile-only word
-\ #-15 invalid FORGET
-
-( Standard error codes #-16..#-30)
-
-\ #-16 attempt to use zero-length string as a name
-\ #-17 pictured numeric output string overflow
-\ #-18 parsed string overflow
-\ #-19 definition name too long
-\ #-20 write to a read-only location
-\ #-21 unsupported operation
-\ #-22 control structure mismatch
-\ #-23 address alignment exception
-\ #-24 invalid numeric argument
-\ #-25 return stack imbalance
-\ #-26 loop parameters unavailable
-\ #-27 invalid recursion
-\ #-28 user interrupt
-\ #-29 compiler nesting
-\ #-30 obsolescent feature
-
-( Standard error codes #-31..#-45)
-
-\ #-31 >BODY used on non-CREATEd definition
-\ #-32 invalid name argument
-\ #-33 block read exception
-\ #-34 block write exception
-\ #-35 invalid block number
-\ #-36 invalid file position
-\ #-37 file I/O exception
-\ #-38 non-existent file
-\ #-39 unexpected end of file
-\ #-40 invalid BASE for floating point conversion
-\ #-41 loss of precision
-\ #-42 floating-point divide by zero
-\ #-43 floating-point result out of range
-\ #-44 floating-point stack overflow
-\ #-45 floating-point stack underflow
-
-( Standard error codes #-46..#-60)
-
-\ #-46 floating-point invalid argument
-\ #-47 compilation word list deleted
-\ #-48 invalid POSTPONE
-\ #-49 search-order overflow
-\ #-50 search-order underflow
-\ #-51 compilation word list changed
-\ #-52 control-flow stack overflow
-\ #-53 exception stack overflow
-\ #-54 floating-point underflow
-\ #-55 floating-point unidentified fault
-\ #-56 QUIT
-\ #-57 exception in sending or receiving a character
-\ #-58 [IF], [ELSE], or [THEN] exception
-\ #-59 ALLOCATE
-\ #-60 FREE
-
-( Standard error codes #-61..#-75 )
-
-\ #-61 RESIZE
-\ #-62 CLOSE-FILE
-\ #-63 CREATE-FILE
-\ #-64 DELETE-FILE
-\ #-65 FILE-POSITION
-\ #-66 FILE-SIZE
-\ #-67 FILE-STATUS
-\ #-68 FLUSH-FILE
-\ #-69 OPEN-FILE
-\ #-70 READ-FILE
-\ #-71 READ-LINE
-\ #-72 RENAME-FILE
-\ #-73 REPOSITION-FILE
-\ #-74 RESIZE-FILE
-\ #-75 WRITE-FILE
-
-( Standard error codes #-76..#-79 )
-
-\ #-76 WRITE-LINE
-\ #-77 malformed xchar
-\ #-78 SUBSTITUTE
-\ #-79 REPLACES
-\ #-80
-\ #-81
-\ #-82
-\ #-83
-\ #-84
-\ #-85
-\ #-86
-\ #-87
-\ #-88
-\ #-89
-\ #-90
 
 ( System error codes #-256..#-270 )
 
@@ -9393,6 +9286,162 @@ forth definitions  previous
 \ #-1154 OS:
 
   \ vim: filetype=soloforth
+  \ exceptions.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604140222
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ The management of exceptions.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09: Main development.
+  \
+  \ 2015-10: Fixes.
+  \
+  \ 2016-04-14: Restored the file from the repository. It was
+  \ removed from version 0.3.0+2016-04-09 by mistake. Updated
+  \ the headers and documentation.  Renamed `(.throw)` to
+  \ `.throw-message`, and `msg-scr` to `error-messages-block`.
+  \ Fixed `error>ordinal`.
+
+( abort" )
+
+  \ Credit:
+  \
+  \ Code adapted from DZX-Forth.
+
+  \ XXX TODO use `error`, by modifying `throw`
+
+[defined] abort-message ?\ 2variable abort-message
+
+: (abort")  ( n -- )
+  r> count rot if  abort-message 2! -2 throw  then + >r  ;
+
+: abort"  ( Compilation: "ccc<quote>" -- )
+  postpone (abort") ,"  ; immediate compile-only
+
+( error>ordinal error>line )
+
+: error>ordinal  ( -n1 -- +n2 )
+  abs
+  dup 256 < ?exit
+  dup 1000 < if  [ 256 091 - ] literal - exit  then
+  [ 1000 286 - 256 091 - + ] literal -   ;
+
+  \ XXX TODO  add OS codes
+
+  \ doc{
+  \
+  \ error>ordinal  ( -n1 -- +n2 )
+  \
+  \ Convert an error code _n1_ to its ordinal position _+n2_ in
+  \ the library.
+
+  \ ----
+  \ -n1 =  -90..-1        \ Standard error codes
+  \        -285..-256     \ Solo Forth error codes
+  \        -1024..-1000   \ G+DOS error codes
+  \ +n2 =  1..146
+  \ ----
+
+  \ }doc
+
+: error>line  ( -n1 -- n2 )
+  error>ordinal dup >r
+  begin
+    dup dup 16 / - r@ <>  while  1+
+  repeat  rdrop  ;
+
+  \ doc{
+  \
+  \ error>line  ( -n1 -- n2 )
+  \
+  \ Convert error code _-n1_ to line _n2_ relative to the block
+  \ that contains the error messages.
+  \
+  \ }doc
+
+( error-messages-block .throw-message )
+
+need error>line  need .line
+
+variable error-messages-block
+s" Standard error codes" located error-messages-block !
+  \ XXX TODO rename!
+
+  \ doc{
+  \
+  \ error-messages-block  ( -- a )
+  \
+  \ Variable that holds the block that holds the error
+  \ messages.
+  \
+  \ }doc
+
+: .throw-message  ( n -- )
+  error-messages-block @
+  if    error>line error-messages-block @ .line space
+  else  .throw#  then  ;
+
+' .throw-message ' .throw defer!
+
+  \ doc{
+  \
+  \ .throw-message  ( n -- )
+  \
+  \ Extended behaviour of the deferred word `.throw`: Print the
+  \ text of throw error _n_.  The variable
+  \ `error-messages-block` holds the number of the first
+  \ block where messages are hold. If it contains zero, only
+  \ the error number is printed.
+  \
+  \ }doc
+
+( ?compiling ?executing )
+
+[unneeded] ?compiling
+?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
+
+  \ doc{
+  \
+  \ ?compiling  ( -- )
+  \
+  \ Issue an error if not compiling.
+  \
+  \ }doc
+
+[unneeded] ?executing
+?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
+
+  \ doc{
+  \
+  \ ?executing  ( -- )
+  \
+  \ Issue an error if not executing.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
+
   \ floating_point.rom.fsb
   \
   \ This file is part of Solo Forth
@@ -9400,7 +9449,7 @@ forth definitions  previous
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604132012
+  \ Last modified: 201604140018
 
   \ -----------------------------------------------------------
   \ Description
@@ -9436,16 +9485,31 @@ forth definitions  previous
   \ To-do
 
   \ XXX FIXME -- When the calculator stack is out of bounds,
-  \ the calculator could issue a BASIC error. Test it.
+  \ the calculator could issue a BASIC error and crash the
+  \ system. Test it.
   \
-  \ XXX TODO -- Move the stack. The default location is limited
-  \ by the small free memory left to BASIC.
+  \ XXX TODO -- Move the stack and make it configurable. The
+  \ default location is limited by the small free memory left
+  \ to BASIC.
+  \
+  \ XXX FIXME -- Strange: When a non-integer number less than 1
+  \ is in the stack, every execution of `.fs` adds a zero to
+  \ the stack.
+  \
+  \ XXX TODO -- Write `fliteral`, `ffield:`, `fvalue`,
+  \ environmental queries.
+  \
+  \ XXX TODO -- Write safer alternatives for the ambiguous
+  \ conditions listed in Forth-2012.
+  \
+  \ XXX TODO -- Move the ROM calculator extensions to their own
+  \ module.
 
 ( --fp-rom-- )
 
 need +thru
 
-1 27 +thru
+1 28 +thru
 
 : --fp-rom-- ;
 
@@ -9456,7 +9520,7 @@ need +thru
 : float+  ( n1 -- n2 )  float +  ;
 : floats  ( n1 -- n2 )  float *  ;
 
-( calc end-calc )
+( calc calc-end end-calc )
 
 need macro
 
@@ -9472,7 +9536,7 @@ macro calc  ( -- )  C5 c, EF c,  endm
   \ ----
 
 macro calc-end  ( -- )  38 c,  endm
-  \ Compile the exit ROM calculator command.
+  \ Compile the `end-calc` ROM calculator command.
   \ ----
   \ db $38 ; exit the ROM calculator
   \ ----
@@ -9480,7 +9544,7 @@ macro calc-end  ( -- )  38 c,  endm
 macro end-calc  ( -- )  calc-end C1 c,  endm
   \ Compile the assembler instructions to exit the ROM calculator:
   \ ----
-  \ db $38 ; exit the ROM calculator
+  \ db $38 ; `end-calc` ROM calculator command
   \ pop bc ; restore the Forth IP
   \ ----
 
@@ -9508,13 +9572,15 @@ macro calc-over  ( -- )
   2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
   \ Compile the ROM calculator commands to do `over`.
 
-( calc-negate calc-not calc<> calc= calc> calc< calc<= calc>= )
+( calc-negate calc-not )
 
 macro calc-negate  ( -- )  1B c,  endm
   \ Compile the `negate` ROM calculator command.
 
 macro calc-not  ( -- )  30 c,  endm
   \ Compile the `not` ROM calculator command.
+
+( calc<> calc= calc> calc< calc<= calc>= )
 
 macro calc<>  ( -- )  0B c,  endm
   \ Compile the `nos-neql` ROM calculator command.
@@ -9586,174 +9652,25 @@ macro calc-branch  ( -- )  33 c,  endm
   \ displacement from the current position to the address left
   \ by `<calc-mark`.
 
-( f+ f- f* f/ f** )
+( fp0 fp (fp@ fp@ empty-fs fdepth )
 
-need calc
+need float
 
-code f+  ( F: r1 r2 -- r3 )
-  calc 0F c, end-calc jpnext  end-code
+23651 constant fp0  \ STKBOT system variable
+23653 constant fp   \ STKEND system variable
 
-code f-  ( F: r1 r2 -- r3 )
-  calc 03 c, end-calc jpnext  end-code
+  \ Note: The calculator stack grows towards higher memory, and
+  \ `fp` points to the first free position, therefore above top
+  \ of stack.
 
-code f*  ( F: r1 r2 -- r3 )
-  calc 04 c, end-calc jpnext  end-code
-  \ XXX FIXME --
-  \ F: fp2/ 2 -- crash!
-  \ F: 60000 0.5 -- 60000 0
-  \ F: 1 0.5 -- 1 0
-  \ F: 0.5 1 -- 0.5 0
+: (fp@  ( -- a )  fp @  ;
 
-code f/  ( F: r1 r2 -- r3 )
-  calc 05 c, end-calc jpnext  end-code
-  \ XXX FIXME -- BASIC "overflow" error when _r2_ is zero.
+: fp@  ( -- a )  (fp@ float -  ;
 
-code f**  ( F: r1 -- r2 )
-  calc 06 c, end-calc jpnext  end-code
+: empty-fs  ( -- )  fp0 @ fp !  ;
+  \ XXX TODO -- try alternative: ROM routine $16BF
 
-code fsign  ( F: r1 -- r2 )
-  calc 29 c, end-calc jpnext  end-code
-
-( fmax )
-
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
-
-code fmax  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-swap calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
-
-( fmin )
-
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
-
-code fmin  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-swap calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
-
-( xx2 xx3 xx1 )
-
-  \ XXX TMP -- for debugging
-
-need calc  need calc-branch
-
-code XX3  ( R: -- 0 )  calc calc-branch 3 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-
-code XX2  ( R: -- 0 0 0 )  calc calc-branch 2 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-
-code XX1  ( R: -- 0 0 0 )  calc calc-branch 1 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-
-code XX0  calc calc-branch 0 c,
-  A0 c, A0 c, A0 c,  end-calc jpnext end-code
-  \ XXX -- crash!
-
-( fabs fln fexp fmod fnegate fsqrt )
-
-need calc  need calc-negate
-
-code fabs  ( F: r1 -- r2 )
-  calc 2A c, end-calc jpnext  end-code
-
-code fln  ( F: r1 -- r2 )
-  calc 25 c, end-calc jpnext  end-code
-
-code fexp  ( F: r1 -- r2 )
-  calc 26 c, end-calc jpnext  end-code
-
-code fmod  ( F: r1 -- r2 )
-  calc 32 c, end-calc jpnext  end-code
-
-code fnegate  ( F: r1 -- r2 )
-  calc calc-negate end-calc jpnext  end-code
-
-code fsqrt  ( F: r1 -- r2 )
-  calc 28 c, end-calc jpnext  end-code
-
-( f0 f1 fhalf fpi2/ f10 )
-
-need calc
-
-code f0  ( F: -- r )
-  calc A0 c, end-calc jpnext  end-code
-
-code f1  ( F: -- r )
-  calc A1 c, end-calc jpnext  end-code
-
-code fhalf  ( F: -- r )
-  calc A2 c, end-calc jpnext  end-code
-
-code fpi2/  ( F: -- r )
-  calc A3 c, end-calc jpnext  end-code
-
-code f10  ( F: -- r )
-  calc A4 c, end-calc jpnext  end-code
-
-( b>f u>f s>f f>s )
-
-need calc  need fnegate
-
-code restack  ( F: r -- r' )
-  calc  3D c,  end-calc  jpnext end-code
-  \ XXX TMP -- for debugging
-
-code b>f  ( b -- ) ( F: -- r )
-  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
-    \ exx
-    \ pop hl
-    \ ld a,l
-    \ call $2D28 ; STACK_A ROM routine
-    \ exx
-  \ XXX TODO -- test
-
-code u>f  ( u -- ) ( F: -- r )
-  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
-    \ exx
-    \ pop bc
-    \ call $2D2B ; STACK_BC ROM routine
-    \ exx
-
-: s>f  ( n -- ) ( F: -- r )
-  dup 0< if  abs u>f fnegate  else  u>f  then  ;
-  \ XXX TODO -- test
-
-code f>s  ( -- n ) ( F: r -- )
-  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
-    \ exx
-    \ call $2DA2 ; FP_TO_BC ROM routine
-    \ push bc
-    \ exx
-  \ XXX TODO -- test
-
-  \ code f>d  ( -- d ) ( F: r -- )
-  \ end-code
-  \ XXX TODO
-
-  \ code d>f  ( d -- ) ( F: -- r )
-  \ end-code
-  \ XXX TODO
-
-  \ code f>string  ( -- ca len ) ( F: r -- )
-  \ end-code
-  \ XXX TODO -- command $2E
-
-  \ : >float  ;
-  \ XXX TODO --
+: fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
 
 ( end-calc-flag )
 
@@ -9823,6 +9740,213 @@ code f>  ( -- wf ) ( F: r1 r2 -- )
 code f>=  ( -- wf ) ( F: r1 r2 -- )
   calc calc>= end-calc-flag  end-code
 
+( fdrop fdup fswap fover )
+
+need calc  need calc-over  need calc-drop  need calc-dup
+need calc-swap
+
+code fdrop  ( F: r -- )
+  calc calc-drop end-calc jpnext  end-code
+
+code fdup  ( F: r -- r r )
+  calc calc-dup end-calc jpnext  end-code
+
+code fswap  ( F: r1 r2 -- r2 r1 )
+  calc calc-swap end-calc jpnext  end-code
+
+code fover  ( F: r1 r2 -- r1 r2 r1 )
+  calc calc-over end-calc jpnext  end-code
+
+( frot -frot )
+
+need calc  need calc>mem  need calc<mem  need calc-drop
+
+code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
+  calc 3 calc>mem calc-drop
+       2 calc>mem calc-drop
+       1 calc>mem calc-drop
+       2 calc<mem 3 calc<mem 1 calc<mem
+  end-calc jpnext  end-code
+
+code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
+  calc 3 calc>mem calc-drop
+       2 calc>mem calc-drop
+       1 calc>mem calc-drop
+       3 calc<mem 1 calc<mem 2 calc<mem
+  end-calc jpnext  end-code
+
+( f+ f- f* f/ fmod )
+
+need calc  need fdup  need f0=
+
+code f+  ( F: r1 r2 -- r3 )
+  calc 0F c, end-calc jpnext  end-code
+
+code f-  ( F: r1 r2 -- r3 )
+  calc 03 c, end-calc jpnext  end-code
+
+code f*  ( F: r1 r2 -- r3 )
+  calc 04 c, end-calc jpnext  end-code
+  \ XXX FIXME --
+  \ F: fp2/ 2 -- crash!
+  \ F: 60000 0.5 -- 60000 0
+  \ F: 1 0.5 -- 1 0
+  \ F: 0.5 1 -- 0.5 0
+
+code f/  ( F: r1 r2 -- r3 )
+  calc 05 c, end-calc jpnext  end-code
+  \ XXX FIXME -- when _r2_ is zero, the calculator issues
+  \ "number too big" BASIC error, what crashes the system.  It
+  \ could be trapped with G+DOS. A safe alternative `?f/` is
+  \ provided.
+
+: ?f/  ( F: r1 r2 -- r3 )  fdup f0= #-42 ?throw f/  ;
+  \ Safe version of `f/`. If _r2_ is zero, an exception
+  \ is thrown.
+
+code fmod  ( F: r1 -- r2 )
+  calc 32 c, end-calc jpnext  end-code
+
+( fmax )
+
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
+code fmax  ( F: r1 r2 -- r1|r2 )
+  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-swap calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( fmin )
+
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
+code fmin  ( F: r1 r2 -- r1|r2 )
+  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-swap calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( fsign fabs fnegate )
+
+need calc  need calc-negate
+
+code fsign  ( F: r1 -- r2 )
+  calc 29 c, end-calc jpnext  end-code
+
+code fabs  ( F: r1 -- r2 )
+  calc 2A c, end-calc jpnext  end-code
+
+code fnegate  ( F: r1 -- r2 )
+  calc calc-negate end-calc jpnext  end-code
+
+( fln fexp f** fsqrt )
+
+need calc  need fdup  need f0<
+
+code fln  ( F: r1 -- r2 )
+  calc 25 c, end-calc jpnext  end-code
+
+code fexp  ( F: r1 -- r2 )
+  calc 26 c, end-calc jpnext  end-code
+
+code f**  ( F: r1 -- r2 )
+  calc 06 c, end-calc jpnext  end-code
+
+code fsqrt  ( F: r1 -- r2 )
+  calc 28 c, end-calc jpnext  end-code
+
+  \ XXX FIXME -- when _r1_ is negative, the calculator issues
+  \ "invalid argument" BASIC error, what crashes the system.
+  \ It could be trapped with G+DOS. A safe alternative `?fsqrt`
+  \ is provided.
+
+: ?fsqrt  ( F: r1 -- r2 )  fdup f0< #-46 ?throw f/  ;
+  \ Safe version of `fsqrt`. If _r1_ is negative, an exception
+  \ is thrown.
+
+( f0 f1 fhalf fpi2/ f10 )
+
+need calc
+
+code f0  ( F: -- r )
+  calc A0 c, end-calc jpnext  end-code
+
+code f1  ( F: -- r )
+  calc A1 c, end-calc jpnext  end-code
+
+code fhalf  ( F: -- r )
+  calc A2 c, end-calc jpnext  end-code
+
+code fpi2/  ( F: -- r )
+  calc A3 c, end-calc jpnext  end-code
+
+code f10  ( F: -- r )
+  calc A4 c, end-calc jpnext  end-code
+
+( b>f u>f s>f f>s )
+
+need calc  need fnegate
+
+code restack  ( F: r -- r' )
+  calc  3D c,  end-calc  jpnext end-code
+  \ Restacks an integer in full floating point form.
+  \ XXX TODO -- Better name. Maybe `refloat`, `>f`.  "re-stack"
+  \ is the command of the ROM calculator.
+
+code b>f  ( b -- ) ( F: -- r )
+  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
+    \ exx
+    \ pop hl
+    \ ld a,l
+    \ call $2D28 ; STACK_A ROM routine
+    \ exx
+  \ XXX TODO -- test
+
+code u>f  ( u -- ) ( F: -- r )
+  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
+    \ exx
+    \ pop bc
+    \ call $2D2B ; STACK_BC ROM routine
+    \ exx
+
+: s>f  ( n -- ) ( F: -- r )
+  dup 0< if  abs u>f fnegate  else  u>f  then  ;
+  \ XXX TODO -- test
+
+code f>s  ( -- n ) ( F: r -- )
+  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
+    \ exx
+    \ call $2DA2 ; FP_TO_BC ROM routine
+    \ push bc
+    \ exx
+  \ XXX TODO -- test
+
+  \ code f>d  ( -- d ) ( F: r -- )
+  \ end-code
+  \ XXX TODO
+
+  \ code d>f  ( d -- ) ( F: -- r )
+  \ end-code
+  \ XXX TODO
+
+  \ code f>string  ( -- ca len ) ( F: r -- )
+  \ end-code
+  \ XXX TODO -- command $2E
+
+  \ : >float  ;
+  \ XXX TODO --
+
 ( f! f@ )
 
 need z80-asm
@@ -9851,61 +9975,6 @@ need f!
 
 : fvariable  ( "name" -- )  create  float allot  ;
 
-( fp0 fp (fp@ fp@ empty-fs fdepth )
-
-need float
-
-23651 constant fp0  \ STKBOT system variable
-23653 constant fp   \ STKEND system variable
-
-  \ Note: The calculator stack grows towards higher memory, and
-  \ `fp` points to the first free position, therefore above top
-  \ of stack.
-
-: (fp@  ( -- a )  fp @  ;
-
-: fp@  ( -- a )  (fp@ float -  ;
-
-: empty-fs  ( -- )  fp0 @ fp !  ;
-  \ XXX TODO -- try alternative: ROM routine $16BF
-
-: fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
-
-( fdrop fdup fswap fover )
-
-need calc  need calc-over  need calc-drop  need calc-dup
-need calc-swap
-
-code fdrop  ( F: r -- )
-  calc calc-drop end-calc jpnext  end-code
-
-code fdup  ( F: r -- r r )
-  calc calc-dup end-calc jpnext  end-code
-
-code fswap  ( F: r1 r2 -- r2 r1 )
-  calc calc-swap end-calc jpnext  end-code
-
-code fover  ( F: r1 r2 -- r1 r2 r1 )
-  calc calc-over end-calc jpnext  end-code
-
-( frot -frot )
-
-need calc  need calc-drop
-
-code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       2 calc<mem 3 calc<mem 1 calc<mem
-  end-calc jpnext  end-code
-
-code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       3 calc<mem 1 calc<mem 2 calc<mem
-  end-calc jpnext  end-code
-
 ( facos fasin fatan fcos fsin ftan )
 
 need calc
@@ -9928,9 +9997,9 @@ code fsin  ( F: r1 -- r2 )
 code ftan  ( F: r1 -- r2 )
   calc 21 c, end-calc jpnext  end-code
 
-( f. )
+( (f. f. )
 
-code (f.)  ( F: r -- )
+code (f.  ( F: r -- )
   C5 c,  CD c, 2DE3 ,  C1 c,
     \ push bc
     \ call $2DE3  ; PRINT_FP ROM routine
@@ -9940,7 +10009,12 @@ code (f.)  ( F: r -- )
   \ because the routine uses the alternative registers.  `bc`
   \ is saved on the stack instead.
 
-: f.  ( F: r -- )  (f.) space  ;
+: f.  ( F: r -- )  (f. space  ;
+
+  \ XXX Note: The Forth-2012 standard reads `f.` must use
+  \ fixed-point notation, but in this implementation the
+  \ decimal point is not shown at the end when the number is
+  \ integer.
 
 ( .fs dump-fs )
 
@@ -9984,14 +10058,16 @@ code fround  ( F: r1 -- r2 )
 
   \ Note: In Gforth: `: ftrunc f>d d>f ;`
 
-( falign faligned dfalign faligned )
+( falign faligned )
 
 need alias
 
 ' noop alias falign     ( -- )        immediate
 ' noop alias faligned   ( a -- fa )   immediate
-' noop alias dfalign    ( -- )        immediate
-' noop alias dfaligned  ( a -- dfa )  immediate
+  \ ' noop alias sfalign    ( -- )        immediate
+  \ ' noop alias sfaligned  ( a -- dfa )  immediate
+  \ ' noop alias dfalign    ( -- )        immediate
+  \ ' noop alias dfaligned  ( a -- dfa )  immediate
 
   \ vim: filetype=soloforth
   \ flow.associative-case-colon.fsb
@@ -21209,7 +21285,7 @@ code fzx-emit  ( c -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604140107
 
   \ -----------------------------------------------------------
   \ Description
@@ -21228,7 +21304,7 @@ code fzx-emit  ( c -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( sound-register-port sound-write-port )  \ ==sound128==
+( sound-register-port sound-write-port )
 
 65533 constant sound-register-port
 49149 constant sound-write-port
@@ -21481,7 +21557,7 @@ need sound:
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-  \ XXX FIXME -- this effects don't sound fine, though the data
+  \ XXX FIXME -- these effects don't sound fine, though the data
   \ are correct
 
 44 24 6 6 7 3 3 5 44 6 3 5 3 3 sound: rain1
@@ -21494,7 +21570,7 @@ need sound:
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604140114
 
   \ -----------------------------------------------------------
   \ Description
@@ -21513,20 +21589,38 @@ need sound:
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( bleep )  \ ==sound48==
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015: Main development.
+  \ 2016-04-14: Documented `bleep` and `beep>bleep`.
+
+( bleep )
 
   \ Credit:
   \
   \ Code modified from Abersoft Forth.
 
 code bleep  ( duration pitch -- )
-  E1 c, D1 c, C5 c,   \ pop hl / pop de / push bc
-  CD c, 03B5 ,        \ call rom_beeper
-  C1 c,               \ pop bc
-  DD c, 21 c, next ,  \ ld ix,next ; restore ix
-  jpnext              \ jp (ix)
+  E1 c,  D1 c,  C5 c,  CD c, 03B5 ,
+    \ pop hl
+    \ pop de
+    \ push bc ; save Forth IP
+    \ call rom_beeper
+  C1 c,  DD c, 21 c, next ,
+    \ pop bc ; restore Forth IP
+    \ ld ix,next ; restore ix
+  jpnext
   end-code
-  \ Produce a tone in the noise maker.
+
+  \ doc{
+  \
+  \ bleep  ( duration pitch -- )
+  \
+  \ Produce a tone in the internal beeper.
+  \
+  \ }doc
+
 
 ( beep>bleep )
 
@@ -21539,9 +21633,15 @@ code bleep  ( duration pitch -- )
 : beep>bleep  ( frequency duration1 -- duration2 pitch )
   over 1000 */ swap
   4375 100 rot */ 30 -  ;
-  \ Convert the parameters of the original ZX Spectrum's `beep`
-  \ command _frequency duration_ to those required by Solo
-  \ Forth's `bleep`.
+
+  \ doc{
+  \
+  \ beep>bleep  ( frequency duration1 -- duration2 pitch )
+  \
+  \ Convert the parameters of Sinclair BASIC `beep` to Solo
+  \ Forth `bleep`. See `bleep`.
+  \
+  \ }doc
 
 ( laser-gun )
 

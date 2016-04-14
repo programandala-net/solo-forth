@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604131729
+; Last modified: 201604141429
 
 ; ==============================================================
 ; Author
@@ -28,10 +28,10 @@ version_major:                equ 0
 version_minor:                equ 5
 version_patch:                equ 0
 
-version_prerelease:           equ 3 ; zero if none
+version_prerelease:           equ 4 ; zero if none
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $9F9D  ; build 20160413
+version_build_low_part:       equ $9F9E  ; build 20160414
 
 ; ==============================================================
 ; History

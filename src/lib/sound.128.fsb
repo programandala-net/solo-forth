@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604140107
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,7 +22,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( sound-register-port sound-write-port )  \ ==sound128==
+( sound-register-port sound-write-port )
 
 65533 constant sound-register-port
 49149 constant sound-write-port
@@ -275,7 +275,7 @@ need sound:
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-  \ XXX FIXME -- this effects don't sound fine, though the data
+  \ XXX FIXME -- these effects don't sound fine, though the data
   \ are correct
 
 44 24 6 6 7 3 3 5 44 6 3 5 3 3 sound: rain1
