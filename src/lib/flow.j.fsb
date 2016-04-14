@@ -1,0 +1,75 @@
+  \ flow.j.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604150138
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `j` and `k`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-15: Written.
+
+( j )
+
+code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
+  2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, (i) ,
+    \ ld hl,(return_stack_pointer)
+    \ ld de,3*cell
+    \ add hl,de
+    \ jp i.hl
+  end-code
+
+  \ doc{
+  \
+  \ j  ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+  \
+  \ Return a copy _n|u_ of the next-outer loop index.
+  \
+  \ Origin: Forth-83 (Required word set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).  Note: `k` was also in Forth-79
+  \ (Reference word set), but returned a signed number.
+  \
+  \ }doc
+
+( k )
+
+code k  ( -- n|u )
+  ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, (i) ,
+    \ ld hl,(return_stack_pointer)
+    \ ld de,6*cell
+    \ add hl,de
+    \ jp i.hl
+  end-code
+
+  \ doc{
+  \
+  \ k  ( -- n|u ) ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  \
+  \ Return a copy _n|u_ of the second outer loop index.
+  \
+  \ Origin: Forth-83 (Controlled reference words). Note: `k`
+  \ was also in Forth-79 (Reference word set), but returned a
+  \ signed number.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

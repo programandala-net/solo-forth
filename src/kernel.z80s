@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604141429
+; Last modified: 201604150148
 
 ; ==============================================================
 ; Author
@@ -28,7 +28,7 @@ version_major:                equ 0
 version_minor:                equ 5
 version_patch:                equ 0
 
-version_prerelease:           equ 6 ; zero if none
+version_prerelease:           equ 7 ; zero if none
 
 version_build_high_part:      equ $0133
 version_build_low_part:       equ $9F9F  ; build 20160415
@@ -2377,22 +2377,6 @@ i.hl: ; entry point for `j` and `k`
 ; }doc
 
   dw i.hl
-
-; ----------------------------------------------
-  _code_header j_,'J'
-
-  ld hl,(return_stack_pointer)
-  ld de,3*cell
-  add hl,de
-  jp i.hl
-
-; ----------------------------------------------
-  _code_header k_,'K'
-
-  ld hl,(return_stack_pointer)
-  ld de,6*cell
-  add hl,de
-  jp i.hl
 
 ; ----------------------------------------------
   _code_header question_leave_,'?LEAVE'
