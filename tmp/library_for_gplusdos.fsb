@@ -327,7 +327,7 @@ defer needed  ( ca len -- )
   \ }doc
 
 : locate-needed  ( ca len -- )
-  cr ." need " 2dup type  \ XXX INFORMER
+  \ cr ." need " 2dup type  \ XXX INFORMER
   needed-word 2@ 2>r  new-needed-word  2dup undefined?
   if  locate-reneeded  else  2drop  then  2r> needed-word 2!  ;
 
@@ -4198,6 +4198,8 @@ need bench{
 
 ( number-base-bench )
 
+  \ 2015-10-09
+
 : number-base-1  ( ca len -- ca' len' n )
   \ This is the current version defined in the kernel.
   over c@ [char] $ = if  1 /string 16  exit  then
@@ -5095,19 +5097,19 @@ need bench{
 need bench{  need 0if
 
 : bench1  ( n -- )
-  begin  ?dup if  1 - else exit then  again  ;
+  begin  ?dup if  1 - else  exit  then  again  ;
 
 : bench1a  ( n -- )
-  begin  ?dup if  1- else exit then  again  ;
+  begin  ?dup if  1- else  exit  then  again  ;
 
 : bench2  ( n -- )
-  begin  dup 0= if  drop exit then 1-  again  ;
+  begin  dup 0= if  drop  exit  then  1-  again  ;
 
 : bench2a  ( n -- )
-  begin  dup 0if  drop exit then 1-  again  ;
+  begin  dup 0if  drop exit  then  1-  again  ;
 
 : bench3  ( n -- )
-  begin  ?dup 0if  exit then 1-  again  ;
+   begin  ?dup 0if  exit  then  1-  again  ;
 
 
 : misc-benchs  ( -- )
@@ -5242,6 +5244,81 @@ need bench{
   \ Iterations  emit        emit-udg
   \ ----------  ----------- -----------
   \ 32000       1904 (1.00) 1856 (0.97)
+
+( m+-bench )
+
+  \ 2016-04-15
+
+need bench{  need m+
+
+: code-m+-bench  ( n -- )
+  bench{  0 do  i s>d i m+ 2drop  loop  }bench.  ;
+
+unused
+: high-m+  ( n -- )  s>d d+  ;
+unused - .( bytes of high M+ ) .
+
+: high-m+-bench  ( d1|ud1 n -- d2|ud2 )
+  bench{  0 do  i s>d i high-m+ 2drop  loop  }bench.  ;
+
+
+: run  ( n -- )
+  cr dup cr ." Code M+ ..." code-m+-bench
+         cr ." High M+ ..." high-m+-bench  ;
+
+  \ 10000 run  65535 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         code M+ (13 bytes)  high M+ (9 bytes)
+  \         ------------------  -----------------
+  \ 10000                  134         196 (1.44)
+  \ 65535                  883        1308 (1.48)
+
+( du<-bench )
+
+  \ 2016-04-15
+
+need bench{  need j
+
+unused
+  \ 2016-04-15: Current version in the library
+: dzx-forth-du<  ( ud1 ud2 -- f )
+  rot swap 2dup
+  u<  if  2drop 2drop -1 exit  then
+  -   if  2drop 0 exit  then  u<  ;  exit
+unused - cr .( DZX-Forth ) . .( bytes)
+
+unused
+: m3forth-du< ( ud1 ud2 -- f )
+  rot 2dup = if 2drop u< else u> nip nip then  ;
+unused - cr .( m3forth ) . .( bytes)
+
+-->
+
+( du<-bench )
+
+defer (u<)
+
+: u<-bench  ( n xt -- )
+  ['] (u<) defer!
+  bench{
+    dup 0 ?do  0 ?do  i s>d j s>d (u>) drop  loop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." DU< from:"
+  dup cr ." DZX-Forth ..." ['] dzx-forth-du< du<-bench
+      cr ." 3mforth ....." ['] 3mforth-du< du<-bench  ;
+
+  \ 10000 run  20000  run 65535 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         DZX-Forth DU< m3forth DU<
+  \         ------------- -----------
+  \ 10000   
+  \ 65535   
 
   \ vim: filetype=soloforth
   \ development_benchmarks.rng.fsb
@@ -10376,6 +10453,81 @@ code (step)  ( R: n -- n' )
   \
   \ }doc
 
+
+  \ vim: filetype=soloforth
+  \ flow.j.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604150138
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `j` and `k`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-15: Written.
+
+( j )
+
+code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
+  2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, (i) ,
+    \ ld hl,(return_stack_pointer)
+    \ ld de,3*cell
+    \ add hl,de
+    \ jp i.hl
+  end-code
+
+  \ doc{
+  \
+  \ j  ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+  \
+  \ Return a copy _n|u_ of the next-outer loop index.
+  \
+  \ Origin: Forth-83 (Required word set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).  Note: `k` was also in Forth-79
+  \ (Reference word set), but returned a signed number.
+  \
+  \ }doc
+
+( k )
+
+code k  ( -- n|u )
+  ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, (i) ,
+    \ ld hl,(return_stack_pointer)
+    \ ld de,6*cell
+    \ add hl,de
+    \ jp i.hl
+  end-code
+
+  \ doc{
+  \
+  \ k  ( -- n|u ) ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  \
+  \ Return a copy _n|u_ of the second outer loop index.
+  \
+  \ Origin: Forth-83 (Controlled reference words). Note: `k`
+  \ was also in Forth-79 (Reference word set), but returned a
+  \ signed number.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
   \ flow.negative_conditionals.fsb
@@ -19379,7 +19531,7 @@ need d*
 
 need z80-asm
 
-code m+  ( d1 n -- d2 )
+code m+  ( d1|ud1 n -- d2|ud2 )
   exx     \ save Forth IP
   bc pop  \ n
   de pop  \ d1 hi cell
@@ -19399,6 +19551,12 @@ code m+  ( d1 n -- d2 )
   \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
   \
   \ }doc
+
+exit
+
+  \ This alternative is slower (1.48), but saves 4 bytes.
+
+: m+  ( d1|ud1 n -- d2|ud2 )  s>d d+  ;
 
 ( m*/ )
 
@@ -24606,7 +24764,7 @@ need alias
   \ word list _wid_. If the definition is found, return its
   \ _nt_, else return zero.
   \
-  \ The search is case-sensitive.
+  \ The search is case-sensitive.  // XXX TODO -- confirm
   \
   \ }doc
 

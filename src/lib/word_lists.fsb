@@ -124,7 +124,7 @@ need alias
   \ word list _wid_. If the definition is found, return its
   \ _nt_, else return zero.
   \
-  \ The search is case-sensitive.
+  \ The search is case-sensitive.  // XXX TODO -- confirm
   \
   \ }doc
 

@@ -28,10 +28,10 @@ version_major:                equ 0
 version_minor:                equ 5
 version_patch:                equ 0
 
-version_prerelease:           equ 5 ; zero if none
+version_prerelease:           equ 6 ; zero if none
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $9F9E  ; build 20160414
+version_build_low_part:       equ $9F9F  ; build 20160415
 
 ; ==============================================================
 ; History
@@ -2328,7 +2328,6 @@ paren_do.de_hl:
   ld (return_stack_pointer),hl
   _jp_next
 
-
 ; ----------------------------------------------
   _code_header i_,'I'
 
@@ -2336,10 +2335,7 @@ paren_do.de_hl:
   ; Code adapted from Spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
-
-  ; Note: `j` and `k`jump here (body of `i` + 3), with updated
-  ; hl.
-
+i.hl: ; entry point for `j` and `k`
   ld e,(hl)
   inc hl
   ld d,(hl) ; de= current index, wich is: (index-limit) xor $8000
@@ -2356,6 +2352,47 @@ paren_do.de_hl:
   ld d,a
   push de ; result
   _jp_next
+
+; doc{
+;
+; i  ( -- n|u ) ( R: do-sys -- do-sys )
+;
+; Return a copy of the current (innermost) loop index.
+;
+; Origin: Forth-2012 (CORE).
+;
+; }doc
+
+; ----------------------------------------------
+  _constant_header paren_i,'(I)'
+
+; doc{
+;
+; (i)  ( -- a )
+;
+; A constant that holds the address of the machine code entry
+; point of `i` that calculates the `do` index from the address
+; pointed by the HL register. Used by `j` and `k`.
+;
+; }doc
+
+  dw i.hl
+
+; ----------------------------------------------
+  _code_header j_,'J'
+
+  ld hl,(return_stack_pointer)
+  ld de,3*cell
+  add hl,de
+  jp i.hl
+
+; ----------------------------------------------
+  _code_header k_,'K'
+
+  ld hl,(return_stack_pointer)
+  ld de,6*cell
+  add hl,de
+  jp i.hl
 
 ; ----------------------------------------------
   _code_header question_leave_,'?LEAVE'
@@ -10563,21 +10600,18 @@ hash_s.begin:
 ; Print a signed double number _d_ right justified in a field of
 ; _n_ characters.
 ;
+; ----
+; : d.r  ( d n -- )
+;   >r tuck dabs <# #s rot sign #> over - spaces type  ;
+; ----
+;
 ; }doc
 
-  dw to_r_ ; save n
-  ; Save the high order part of d under d,
-  ; to be used by `sign` to add a "-" sign to a negative number:
-  dw swap_,over_
-  dw d_abs_ ; convert d to its absolute value
-  ; Convert the absolute value to ASCII text with proper sign:
-  dw less_hash_
-  dw hash_s_
-  dw rot_,sign_
-  dw hash_greater_
-  dw from_r_ ; retrieve n
-  dw over_,minus_,spaces_ ; fill the output field with preceding blanks
-  dw type_ ; type out the number
+  dw to_r_ ; save _n_
+  dw tuck_  ; save the high part of _d_ to calculate the sign
+  dw d_abs_,less_hash_,hash_s_,rot_,sign_,hash_greater_
+  dw from_r_,over_,minus_,spaces_ ; preceding blanks
+  dw type_
   dw exit_
 
 ; ----------------------------------------------

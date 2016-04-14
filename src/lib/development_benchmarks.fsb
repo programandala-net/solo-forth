@@ -21,6 +21,8 @@
 
 ( number-base-bench )
 
+  \ 2015-10-09
+
 : number-base-1  ( ca len -- ca' len' n )
   \ This is the current version defined in the kernel.
   over c@ [char] $ = if  1 /string 16  exit  then
@@ -918,19 +920,19 @@ need bench{
 need bench{  need 0if
 
 : bench1  ( n -- )
-  begin  ?dup if  1 - else exit then  again  ;
+  begin  ?dup if  1 - else  exit  then  again  ;
 
 : bench1a  ( n -- )
-  begin  ?dup if  1- else exit then  again  ;
+  begin  ?dup if  1- else  exit  then  again  ;
 
 : bench2  ( n -- )
-  begin  dup 0= if  drop exit then 1-  again  ;
+  begin  dup 0= if  drop  exit  then  1-  again  ;
 
 : bench2a  ( n -- )
-  begin  dup 0if  drop exit then 1-  again  ;
+  begin  dup 0if  drop exit  then  1-  again  ;
 
 : bench3  ( n -- )
-  begin  ?dup 0if  exit then 1-  again  ;
+   begin  ?dup 0if  exit  then  1-  again  ;
 
 
 : misc-benchs  ( -- )
@@ -1065,5 +1067,80 @@ need bench{
   \ Iterations  emit        emit-udg
   \ ----------  ----------- -----------
   \ 32000       1904 (1.00) 1856 (0.97)
+
+( m+-bench )
+
+  \ 2016-04-15
+
+need bench{  need m+
+
+: code-m+-bench  ( n -- )
+  bench{  0 do  i s>d i m+ 2drop  loop  }bench.  ;
+
+unused
+: high-m+  ( n -- )  s>d d+  ;
+unused - .( bytes of high M+ ) .
+
+: high-m+-bench  ( d1|ud1 n -- d2|ud2 )
+  bench{  0 do  i s>d i high-m+ 2drop  loop  }bench.  ;
+
+
+: run  ( n -- )
+  cr dup cr ." Code M+ ..." code-m+-bench
+         cr ." High M+ ..." high-m+-bench  ;
+
+  \ 10000 run  65535 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         code M+ (13 bytes)  high M+ (9 bytes)
+  \         ------------------  -----------------
+  \ 10000                  134         196 (1.44)
+  \ 65535                  883        1308 (1.48)
+
+( du<-bench )
+
+  \ 2016-04-15
+
+need bench{  need j
+
+unused
+  \ 2016-04-15: Current version in the library
+: dzx-forth-du<  ( ud1 ud2 -- f )
+  rot swap 2dup
+  u<  if  2drop 2drop -1 exit  then
+  -   if  2drop 0 exit  then  u<  ;  exit
+unused - cr .( DZX-Forth ) . .( bytes)
+
+unused
+: m3forth-du< ( ud1 ud2 -- f )
+  rot 2dup = if 2drop u< else u> nip nip then  ;
+unused - cr .( m3forth ) . .( bytes)
+
+-->
+
+( du<-bench )
+
+defer (u<)
+
+: u<-bench  ( n xt -- )
+  ['] (u<) defer!
+  bench{
+    dup 0 ?do  0 ?do  i s>d j s>d (u>) drop  loop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." DU< from:"
+  dup cr ." DZX-Forth ..." ['] dzx-forth-du< du<-bench
+      cr ." 3mforth ....." ['] 3mforth-du< du<-bench  ;
+
+  \ 10000 run  20000  run 65535 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         DZX-Forth DU< m3forth DU<
+  \         ------------- -----------
+  \ 10000   
+  \ 65535   
 
   \ vim: filetype=soloforth

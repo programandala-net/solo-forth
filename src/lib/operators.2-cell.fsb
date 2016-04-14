@@ -310,7 +310,7 @@ need d*
 
 need z80-asm
 
-code m+  ( d1 n -- d2 )
+code m+  ( d1|ud1 n -- d2|ud2 )
   exx     \ save Forth IP
   bc pop  \ n
   de pop  \ d1 hi cell
@@ -330,6 +330,12 @@ code m+  ( d1 n -- d2 )
   \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
   \
   \ }doc
+
+exit
+
+  \ This alternative is slower (1.48), but saves 4 bytes.
+
+: m+  ( d1|ud1 n -- d2|ud2 )  s>d d+  ;
 
 ( m*/ )
 
