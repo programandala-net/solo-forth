@@ -49,13 +49,16 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # XXX FIXME -- when compilation fails, the rest of the process doesn't
 # stop (in the main Makefile).
 
-tmp/kernel.gplusdos.bin.tap: src/kernel.z80s
-	cd src
+.PHONY: tmp/kernel.symbols.gplusdos.z80s
+tmp/kernel.symbols.gplusdos.z80s: tmp/kernel.gplusdos.bin.tap
+
+tmp/kernel.gplusdos.bin.tap: src/kernel.z80s src/version.z80s
+	cd src 
 	$(pasmo) -v --tap \
 		--equ gplusdos \
 		kernel.z80s \
 		forth.bin \
-		../tmp/kernel.symbols.gplusdos.z80s
+		../tmp/kernel.symbols.gplusdos.z80s && \
 	mv forth.bin ../tmp/kernel.gplusdos.bin.tap
 	cd ..
 
@@ -78,3 +81,7 @@ tmp/kernel.plus3dos.bin.tap: src/kernel.z80s
 # directories.
 #
 # 2016-04-13: Updated the header and the license.
+#
+# 2016-04-16: Fix: the process didn't stop when the assembling of the
+# kernel failed. Fix: the patching of the loader needed a dependency
+# here.
