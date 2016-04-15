@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604152121
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,13 +22,32 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-15: Fixed `dump` (the loop printed one byte more
+  \ than requested). Improved `ascii-type` (now also characters
+  \ above 127 are printed as dots, not masked).
 
 ( ascii-type )
 
+: ascii-char?    ( c -- f )  128 <  ;
+: control-char?  ( c -- f )  bl <  ;
+
 : ascii-type  ( ca len -- )
   bounds ?do
-    i c@ 127 and dup bl < if  drop [char] .  then  emit
+    i c@ dup dup ascii-char? 0= swap control-char? or
+    if  drop '.'  then  emit
   loop  ;
+
+  \ doc{
+  \
+  \ ascii-type  ( ca len -- )
+  \
+  \ Type string _ca len_, replacing non-ASCII and control chars
+  \ with a dot.
+  \
+  \ }doc
 
 ( dump )
 
@@ -36,11 +55,8 @@ need 16hex.  need ascii-type
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
-  \ XXX FIXME -- when len=0 a row is shown; `wdump` does
-  \ nothing.
-
 : dump  ( ca len -- )
-  8 2dup mod - + 8 / 0
+  8 2dup mod - + 8 / 1- 0
   ?do
     cr dup 16hex.
     8 0 do  i over + @ flip 16hex.  cell +loop
