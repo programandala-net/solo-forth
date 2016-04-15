@@ -32,6 +32,8 @@
 ( ascii-type )
 
 : ascii-char?    ( c -- f )  128 <  ;
+  \ XXX TODO -- char 127?
+
 : control-char?  ( c -- f )  bl <  ;
 
 : ascii-type  ( ca len -- )

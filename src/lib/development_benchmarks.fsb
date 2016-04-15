@@ -1041,8 +1041,8 @@ defer #spaces
   dup ['] #spaces2 ['] #spaces defer! ." 2..." #spaces-bench
       ['] #spaces3 ['] #spaces defer! ." 3..." #spaces-bench  ;
 
-  \         Frames by iterations
-  \         --------------------
+  \         Frames
+  \         ----------------------------
   \ Version 10 iterations 100 iterations
   \ ------- ------------- --------------
   \ 1                 123           1231
@@ -1079,7 +1079,7 @@ need bench{  need m+
 
 unused
 : high-m+  ( n -- )  s>d d+  ;
-unused - .( bytes of high M+ ) .
+unused - cr .( bytes of high M+ ) .
 
 : high-m+-bench  ( d1|ud1 n -- d2|ud2 )
   bench{  0 do  i s>d i high-m+ 2drop  loop  }bench.  ;
@@ -1109,13 +1109,14 @@ unused
 : dzx-forth-du<  ( ud1 ud2 -- f )
   rot swap 2dup
   u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;  exit
-unused - cr .( DZX-Forth ) . .( bytes)
+  -   if  2drop 0 exit  then  u<  ;
+unused - cr .( DZX-Forth ) . .( bytes)  \ 41
 
 unused
 : m3forth-du< ( ud1 ud2 -- f )
   rot 2dup = if 2drop u< else u> nip nip then  ;
-unused - cr .( m3forth ) . .( bytes)
+unused - cr .( m3forth ) . .( bytes)  \ 29
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
 
 -->
 
@@ -1123,24 +1124,94 @@ unused - cr .( m3forth ) . .( bytes)
 
 defer (u<)
 
-: u<-bench  ( n xt -- )
+: du<-bench  ( n xt -- )
   ['] (u<) defer!
   bench{
-    dup 0 ?do  0 ?do  i s>d j s>d (u>) drop  loop  loop
+    dup 0 ?do  0 ?do  i s>d j s>d (u<) drop  loop  loop
   }bench.  ;
 
 : run  ( n -- )
       cr ." DU< from:"
   dup cr ." DZX-Forth ..." ['] dzx-forth-du< du<-bench
-      cr ." 3mforth ....." ['] 3mforth-du< du<-bench  ;
+      cr ." 3mforth ....." ['] m3forth-du< du<-bench  ;
 
-  \ 10000 run  20000  run 65535 run
+  \ 10 run
 
   \ Times   Frames (1 frame = 50th of second)
   \ -----   -----------------------------------
   \         DZX-Forth DU< m3forth DU<
   \         ------------- -----------
-  \ 10000   
-  \ 65535   
+  \ 10               3623      crash!
+
+( m*/-bench )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2016-04-15: Start.
+
+
+unused
+  \ 2016-04-15: This is the current implementation.
+  \ Credit: from Gforth 0.7.3.
+: gforth-m*/  ( d1 n1 +n2 -- d2 )
+  >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
+  rot tuck um* 2swap um* swap
+  >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
+  if     if     1 0 d+
+         then
+         dnegate
+  else   drop
+  then  ;
+unused - cr .( gforth ) . .( bytes)  \ 89 bytes
+
+-->
+
+( m*/-bench )
+
+  \ Alternative implementation of `m*/`
+  \
+  \ Credit:
+  \
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+unused
+need mt*  need tnegate  need ut/
+unused
+: coldforth-m*/  ( d1 n1 +n2 -- d2 )
+    >r mt* dup 0< if    tnegate r> ut/ dnegate
+                  else  r> ut/  then  ;
+         cr .( coldforth:)
+unused - cr .( m*/ only ) . .( bytes)  \ 33 bytes
+unused - cr .( with requirements) . .( bytes)  \ 185 bytes
+
+-->
+
+( m*/-bench )
+
+need bench{
+
+defer (m*/)
+
+: m*/-bench  ( n xt -- )
+  ['] (m*/) defer!
+  bench{
+    1+ 1 ?do  i s>d i i (m*/) 2drop  loop
+    \ XXX FIXME -- use better range of numbers
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." M*/ from:"
+  dup cr ." Gforth ......" ['] gforth-m*/ m*/-bench
+      cr ." ColdForth ..." ['] coldforth-m*/ m*/-bench  ;
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         Gforth M*/  ColdForth M*/
+  \         ----------  -------------
+  \ 10000         1690           1719 (1.01)
+  \ 20000         3381           3442 (1.01)
+  \ 65535        11621              0 \ XXX FIXME --
+  \
 
   \ vim: filetype=soloforth

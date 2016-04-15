@@ -17,23 +17,19 @@
 
 # 2016-03-23: Start.
 # 2016-04-13: File header.
+# 2016-04-15: Search the kearnel.
 
 # ==============================================================
 
 #vim -p -c ":call search(\"${1}\")" $(ack -l "$1" /usr/local/share/gforth/current/**/**.fs) 
-
 # works:
 #ack -l ": $1 " src/lib/*.fsb
 
 # XXX FIXME --
 #ack -l ':\|code $1 ' src/lib/*.fsb
 
-# XXX FIXME --
-# grep \
-#   -l \
-#   -e "\<: \+$1 " \
-#   -e "\<code \+$1 " \
-#   src/lib/*.fsb
+# XXX FIXME -- convert $1 to uppercase to search the kernel
+grep -e "'$1'" src/kernel.z80s
 
 grep \
   -e " 2constant \+$1 " \

@@ -46,6 +46,9 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # from the current directory, not the directory of the source.
 # That's why `cd src` is used.
 
+# XXX FIXME -- when compilation fails, the rest of the process doesn't
+# stop (in the main Makefile).
+
 tmp/kernel.gplusdos.bin.tap: src/kernel.z80s
 	cd src
 	$(pasmo) -v --tap \

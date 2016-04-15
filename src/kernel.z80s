@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604150214
+; Last modified: 201604160040
 
 include version.z80s
 
@@ -619,53 +619,50 @@ _chk_ctype: macro _message
   org origin
 
 cold_entry:
-  ; Location (of the destination address): `$01 +origin`
+  ; `$01 +origin` (destination address of the jump)
   jp cold_start
 warm_entry:
-  ; Location (of the destination address): `$04 +origin`
+  ; `$04 +origin` (destination address of the jump)
   jp warm_start
 
 ; ==============================================================
 ; Parameter area
 
-  ; XXX TODO document the `+origin` index
-
 latest_nt_in_root_voc.init_value:
-  dw latest_nt_in_root_voc
   ; `$06 +origin`
+  dw latest_nt_in_root_voc
 
 latest_nt_in_forth_voc.init_value:
-  dw latest_nt_in_forth_voc
   ; `$08 +origin`
+  dw latest_nt_in_forth_voc
 
+  ; `$0A +origin`
 if 1 ; assembler_core_in_kernel
-
 latest_nt_in_assembler_voc.init_value:
   dw latest_nt_in_assembler_voc
-  ; `$0A +origin`
-
+else
+  dw 0 ; XXX TMP --
 endif
 
 voc_link.init_value:
+  ; `$0C +origin`
 if 1 ; assembler_core_in_kernel
   dw assembler_vocabulary_link ; link to the latest vocabulary defined
-  ; `$0C +origin`
 else
   dw forth_vocabulary_link ; link to the latest vocabulary defined
-  ; `$0C +origin`
 endif
 
 user_variables_pointer:
-  dw user_variables
   ; `$0E +origin`
+  dw user_variables
 
 return_stack_pointer:
-  dw return_stack_bottom
   ; `$10 +origin`
+  dw return_stack_bottom
 
 default_color_attribute:
-  dw 4 ; low byte: green paper, black ink; high byte: no mask
   ; `$12 +origin`
+  dw 4 ; low byte: green paper, black ink; high byte: no mask
 
   ; User variables default values
 
@@ -676,52 +673,52 @@ default_color_attribute:
 default_user_variables_start:
 
 sp0_init_value:                               ; +$00
-  dw data_stack_bottom
   ; `$14 +origin`
+  dw data_stack_bottom
 rp0_init_value:                               ; +$02
-  dw return_stack_bottom
   ; `$16 +origin`
+  dw return_stack_bottom
 paren_wait_init_value:                        ; +$04
-  dw noop_
   ; `$18 +origin`
+  dw noop_
 width_init_value:                             ; +$06
   dw max_word_length
   ; `$1A +origin`
 warnings_init_value:                          ; +$08
-  dw true
   ; `$1C +origin`
-; XXX TODO free                                    ; +$0A
-  dw +$0000
+  dw true
+last_init_value:                              ; +$0A
   ; `$1E +origin`
+  dw $0000
 dictionary_pointer_init_value:                ; +$0C
-  dw dictionary_pointer_after_cold
   ; `$1F +origin`
+  dw dictionary_pointer_after_cold
 user_data_pointer_init_value:                 ; +$0E
-  dw user_data_pointer
   ; `$20 +origin`
+  dw user_data_pointer
 
 default_user_variables_end:
 
 
 ip_backup: ; temporary copy of Forth IP
-  dw 0
   ; `$22 +origin`
+  dw 0
 
 np: defl names_bank_address+1
 
 names_pointer:
+  ; `$24 +origin`
   ; First free address in the system bank,  restored by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
-  ; `$24 +origin`
 
 names_pointer_init_value:
+  ; `$26 +origin`
   ; Init value of the names pointer, used by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
-  ; `$26 +origin`
 
 
 ; ==============================================================
@@ -733,6 +730,8 @@ user_variables:
   ; default values by `cold`.  They must be in the same order
   ; than their default values.
 
+  ; User variables that are initialized by `cold`:
+
 sp0_value:                                    ; +$00
   dw data_stack_bottom
 rp0_value:                                    ; +$02
@@ -743,22 +742,25 @@ width_value:                                  ; +$06
   dw max_word_length
 warnings_value:                               ; +$08
   dw $0000
-; XXX TODO free                                    ; +$0A
+last_value:                                   ; +$0A
   dw $0000
 dictionary_pointer_value:                     ; +$0C
   dw dictionary_pointer_after_cold
 user_data_pointer_value:                      ; +$0E
   dw user_data_pointer
+
+  ; User variables that are not initialized by `cold`:
+
 blk_value:                                    ; +$10
   dw $0000
 in_value:                                     ; +$12
   dw $0000
-hash_emit_value:                              ; +$14
+; hash_emit_value:                              ; +$14 ; XXX OLD
   dw $0000
 scr_value:                                    ; +$16
   dw $0000
 r_hash_value:                                 ; +$18
-  dw $0000 ; XXX OLD -- used by the editor, remove?
+  dw $0000 ; XXX OLD -- used by the editor, remove
 hld_value:                                    ; +$1A
   dw $0000
 current_value:                                ; +$1C
@@ -3735,7 +3737,7 @@ endif
   _colon_header paren_cr_,'(CR)'
 
   _literal carriage_return_char
-  dw emit_,hash_emit_,off_ ; XXX OLD
+  dw emit_
   dw exit_
 
 ; ----------------------------------------------
@@ -4800,15 +4802,15 @@ store.de_into_hl_pointer:
   dw right_bracket_
   dw paren_semicolon_code_
 do_colon:
+  ; Save the Forth IP to the return stack
   ld hl,(return_stack_pointer)
   dec hl
   ld (hl),b
   dec hl
   ld (hl),c
-  ld (return_stack_pointer),hl ; save the updated IP
+  ld (return_stack_pointer),hl
+  ; Then point it to the pfa of the word that called here
   pop bc ; bc=pfa
-
-do_colon.end: ; XXX TMP for debugging
   _jp_next
 
 ; ----------------------------------------------
@@ -5149,10 +5151,9 @@ endif
 ;
 ; +origin  ( n -- a )
 ;
-; Leave the memory address relative by _n_ to the origin
-; parameter area.  _n_ is the minimum address unit, either byte
-; or word.  This definition is used to access or modify the
-; boot-up parameters at the origin area.
+; Leave the memory address relative by _n_ bytes to the origin
+; parameter area.  This definition is used to access or modify
+; the boot-up parameters at the origin area.
 ;
 ; Origin: fig-Forth.
 ;
@@ -5245,21 +5246,19 @@ endif
 
   db $08
 
-; XXX OLD
-; ; ----------------------------------------------
-;   _user_variable_header msg_scr_,'MSG-SCR'
+; ----------------------------------------------
+  _user_variable_header last_,'LAST'
 
-; ; doc{
-; ;
-; ; msg-scr  ( -- a )
-; ;
-; ; User variable that holds the screen number where the error
-; ; messages start, or zero. If it's zero, only the message number
-; ; will be shown.
-; ;
-; ; }doc
+; doc{
+;
+; last  ( -- a )
+;
+; User variable that holds the name token of the last word
+; defined.
+;
+; }doc
 
-;   db $0A
+  db $0A
 
 ; ----------------------------------------------
   _user_variable_header dp_,'DP'
@@ -5280,6 +5279,8 @@ endif
 
 ; ----------------------------------------------
   _user_variable_header udp_,'UDP'
+
+  ; XXX TODO -- use it
 
 ; doc{
 ;
@@ -5312,35 +5313,36 @@ endif
 ; ----------------------------------------------
   _user_variable_header to_in_,'>IN'
 
-  ; XXX TODO normal variable?
-
 ; doc{
 ;
 ; >in  ( -- a )
 ;
-; User variable that holds XXX TODO
+; A user variable that contains the offset in characters from
+; the start of the input buffer to the start of the parse area.
 ;
 ; }doc
 
   db $12
 
-; ----------------------------------------------
-  _user_variable_header hash_emit_,'#EMIT'
+; ; ----------------------------------------------
+;   _user_variable_header hash_emit_,'#EMIT'
 
-; doc{
-;
-; #emit  ( -- a )
-;
-; User variable that contains a value incremented by `emit`
-; and reseted by `cr`. The user may alter and examine `#emit` to
-; control display formating.
-;
-; Note: In fig-Forth it's called `out`; in Forth-83 it's called
-; `#out`.
-;
-; }doc
+; XXX OLD
 
-  db $14
+; ; doc{
+; ;
+; ; #emit  ( -- a )
+; ;
+; ; User variable that contains a value incremented by `emit`
+; ; and reseted by `cr`. The user may alter and examine `#emit` to
+; ; control display formating.
+; ;
+; ; Note: In fig-Forth it's called `out`; in Forth-83 it's called
+; ; `#out`.
+; ;
+; ; }doc
+
+;   db $14
 
 ; ----------------------------------------------
   _user_variable_header scr_,'SCR'
@@ -5583,6 +5585,8 @@ source.other:
 ; (CORE), Forth-2012 (CORE).
 ;
 ; }doc
+
+  ; XXX FIXME -- use `latestxt`, else words created with 
 
   dw latest_,from_name_,compile_comma_
   dw exit_
@@ -5958,13 +5962,53 @@ endif
 ;
 ; Leave the name token of the topmost word in the
 ; `current` vocabulary.
-;
-; Origin: Forth-94.
+; 
+; Origin: fig-Forth.
 ;
 ; }doc
 
+; XXX TMP -- 2016-04-15: This word is fig-Forth's `latest`,
+; which will be replaced with Gforth's `latest`. But some code
+; still depends on this.
+
   dw get_current_,fetch_
   dw exit_
+
+; ----------------------------------------------
+;  _colon_header latest_,'LATEST'
+
+; XXX TODO --
+
+; doc{
+;
+; latest ( -- nt )
+;
+; Leave the name token of the last word defined.
+;
+; Origin: Gforth.
+;
+; }doc
+
+;  dw last_,fetch_
+;  dw exit_
+
+; ; ----------------------------------------------
+;   _colon_header latestxt_,'LATESTXT'
+
+; ; doc{
+; ;
+; ; latestxt ( -- xt )
+; ;
+; ; Leave the execution token of the last word defined.
+; ;
+; ; Origin: Gforth.
+; ;
+; ; }doc
+
+;   dw lastxt_,fetch_
+;   dw exit_
+
+; XXX TODO --
 
 ; ----------------------------------------------
   _code_header from_body_,'BODY>'
@@ -6298,6 +6342,9 @@ to_name.end:
   dw drop_
   dw exit_
 
+; XXX TODO -- benchmark, compare to `swap 0<> and throw`
+; XXX TODO -- benchmark, compare to `and throw`
+
 ; ----------------------------------------------
   _colon_header compiling_question_,'COMPILING?'
 
@@ -6511,18 +6558,20 @@ postpone.end:
 ;
 ; (;code)  ( -- )
 ;
-; The run-time procedure compiled by `;code`. Rewrite the code
-; field of the most recently defined word to point to the
-; following machine code sequence.
+; Rewrite the code field of the most recently defined word to
+; point to the following machine code sequence.  This word is
+; the run-time procedure compiled by `;code`.
 
 ; ----
-; : (;code)  ( -- )
-;   r> latest name> 1+ !  ;
+; : (;code)  ( -- ) ( R: a -- )
+;   r> last @ name> 1+ !  ;
 ; ----
 
 ; }doc
 
-  dw from_r_,latest_,from_name_,one_plus_,store_
+  dw from_r_
+  dw last_,fetch_,from_name_,one_plus_
+  dw store_
   dw exit_
 
 ; ----------------------------------------------
@@ -6530,6 +6579,7 @@ postpone.end:
 
 ; XXX TODO move to the library?
 ; XXX TODO -- documentation
+; XXX TODO -- test
 ; doc{
 ;
 ; ;code  ( -- )
@@ -6558,14 +6608,6 @@ do_does equ do_colon
   dw c_comma_ ; compile it
   dw lit_,do_does,comma_ ; compile the routine address
   dw exit_
-
-;do_does:
-  ; XXX UNDER DEVELOPMENT
-  ; XXX FIXME
-;  pop de
-;  push de
-;  push de
-;  jp do_colon
 
 ; ----------------------------------------------
   _code_header count_,'COUNT'
@@ -7298,6 +7340,17 @@ parse.end:
 ; ----------------------------------------------
   _defer_header header_,'HEADER',,input_stream_header_
 
+; doc{
+;
+; header  ( "name" | -- )
+;
+; A deferred word that creates a dictionary header.  Its default
+; behaviour is `stream-name-header`, and it's set by
+; `default-header`. Its alternative temporary behaviour is
+; `nextname-header`.
+;
+; }doc
+
 ; ----------------------------------------------
   _colon_header question_name_too_short_,'?NAME-TOO-SHORT'
 
@@ -7318,11 +7371,10 @@ parse.end:
 ;
 ; input-stream-header  ( "name" -- )
 
-; Create a dictionary header "name" with its code field
-; pointing to its parameter field.
+; Create a dictionary header "name".
 ;
 ; ----
-; : input-stream-header  ( "name" | -- )
+; : input-stream-header  ( "name" -- )
 ;   parse-name ?name-too-short header,  ;
 ; ----
 ;
@@ -7361,13 +7413,11 @@ parse.end:
 ;
 ; nextname-header  ( -- )
 
-; Create a dictionary header with its code field pointing to its
-; parameter field, using the name string set by `nextname`.
+; Create a dictionary header using the name string set by
+; `nextname`.  Then restore the default behaviour of `header`.
 ;
-; ----
-; : nextname-header  ( -- )
-;   nextname-string 2@ header,  default-header  ;
-; ----
+; ---- : nextname-header  ( -- ) nextname-string 2@ header,
+; default-header  ; ----
 ;
 ; }doc
 
@@ -7710,7 +7760,10 @@ header_comma.continue:
   dw place_ ; store the name
   dw from_r_,count_,uppers_
 
-  dw np_fetch_,get_current_,store_ ; update contents of `latest` in the current vocabulary
+  dw np_fetch_,dup_
+  dw get_current_,store_ ; update the current vocabulary
+  dw last_,store_ ; and `last`
+
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
 
@@ -7719,16 +7772,16 @@ header_comma.continue:
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
 
-  ; XXX TODO factor `header reveal` to `visible-header`? it's
+  ; XXX TODO -- factor `header reveal` to `visible-header`? it's
   ; used also by `defer`.
 
-  dw header_
+  dw header_,reveal_
   dw lit_,do_create
   dw code_field_comma_
-  dw reveal_
   dw paren_semicolon_code_
 do_create:
-  ; XXX Note: `call do_create` already left the pfa on the stack.
+  ; Note: `call do_create`, compiled by `(;code)`,
+  ; already left the pfa on the stack.
   _jp_next
 
 ; ----------------------------------------------

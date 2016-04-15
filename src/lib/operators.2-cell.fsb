@@ -149,8 +149,11 @@ need 2nip
 
 : du<  ( ud1 ud2 -- f )
   rot swap 2dup
-  u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;  exit
+  u<  if  2drop 2drop [ true ] literal exit  then
+  -   if  2drop [ false ] literal exit  then  u<  ;  exit
+
+  \ Note: the flags are compiled with `literal` to make
+  \ execution a bit faster.
 
 [then]
 
@@ -165,6 +168,7 @@ need [if]
 [needed] dmin [if]
 : dmin  ( d1 d2 -- d1 | d2 )
   2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
+  \ XXX TODO -- use `d>` when available
 
 [needed] dmax [if]
 : dmax  ( d1 d2 -- d1 | d2 )
@@ -354,7 +358,29 @@ exit
   else   drop
   then  ;
 
-  \ XXX TODO document, see difference Gforth - Forth-94
+  \ doc{
+  \
+  \ m*/  ( d1 n1 +n2 -- d2 )
+  \
+  \ Multiply _d1_ by _n1_ producing the triple-cell
+  \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
+  \ double-cell quotient _d2_.
+  \
+  \ }doc
+
+  \ XXX TODO -- see difference Gforth - Forth-94
+
+( m*/ )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+need mt*  need tnegate  need ut/
+
+: m*/  ( d1 n1 +n2 -- d2 )
+    >r mt* dup 0< if    tnegate r> ut/ dnegate
+                  else  r> ut/  then  ;
 
 ( dsqrt )
 
