@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604151341
 
   \ -----------------------------------------------------------
   \ Description
@@ -16,25 +16,31 @@
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ This code was adapted and improved from Afera (2015), by
+  \ the same author.  The Afera version was adapted and deeply
+  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
+  \ by EHR), modified by Dennis L. Wilson.  The original code
+  \ was written by Robert Dudley Ackerman, published on Forth
+  \ Dimensions (volume 4, number 2, page 28, 1982-07).
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+  
+  \ 2015-12-24: Start converting from ITC to DTC.
+
+  \ 2016-04-15: Fixed `decode-compile`, which had not been
+  \ adapted from ITC to DTC.
+
 ( decode )
-
-  \ XXX UNDER DEVELOPMENT -- DTC version
-  \ 2015-12-24: Start adapting to DTC.
-
-  \ Credit:
-  \
-  \ This code was adapted and improved from Afera (2015), by
-  \ the same author.  The Afera version was adapted and deeply
-  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
-  \ by EHR), modified by Dennis L. Wilson.  The original code
-  \ was written by Robert Dudley Ackerman, published on Forth
-  \ Dimensions IV,#2 p28 (1982-07).
 
   \ Variables, indentation and pause control
 
@@ -65,8 +71,7 @@ variable decode-address  \ in the word being decoded
 : decode-sliteral  ( a1 -- a2 )
   cell+ dup count type  dup c@ + 1-  ;
 
-: decode-compile   ( a1 -- a2 )
-  cell+ dup @ cell+ body>name .name  ;
+: decode-compile   ( a1 -- a2 )  cell+ dup @ >name .name  ;
 
 -->
 

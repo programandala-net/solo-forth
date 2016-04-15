@@ -2773,7 +2773,7 @@ need within
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603241827
+  \ Last modified: 201604151244
 
   \ -----------------------------------------------------------
   \ Description
@@ -2786,8 +2786,8 @@ need within
   \ Wil Baden, published on: Forth Dimensions (volume 17,
   \ number 4, page 36, 1995-11).
 
-  \ Adapted and modified by Marcos Cruz (programandala.net),
-  \ 2015, 2016.
+  \ Adapted, modified and improved by Marcos Cruz
+  \ (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -2797,44 +2797,76 @@ need within
   \ this license.  There is no warranty.
 
   \ -----------------------------------------------------------
-  \ Recent changes
+  \ History
 
+  \ 2015-11-06: Start, adapted from Wil Baden's code.
+  \
   \ 2016-03-24: Comments.
-
-( associative-list )
-
-
-  \ XXX UNDER DEVELOPMENT
   \
-  \ XXX REMARK -- the items of original version returned its
-  \ pfa; this version was modified to return a counted string.
-  \
-  \ XXX TODO -- improve the code to define different types of
-  \ items.
+  \ 2016-04-15: Improved with different types of items.
 
-need words  need abort"
+( associative-list item? item )
 
 : associative-list  ( "name" -- )  wordlist constant  ;
   \ Create a new associative list "name".
 
-: entry  ( ca len wid "name" -- )
-  get-current >r set-current  create  s,  r> set-current
-  does>  ( -- ca len )  ( pfa ) count  ;
-  \ Create a new entry "name", with value _ca len_, in the
-  \ associative list _wid_,
-
-: item?  ( ca len wid -- 0 | xt )
-  search-wordlist dup if  drop  then  ;
+: item?  ( ca len wid -- false | xt true )
+  search-wordlist 0<> ;
   \ Is _ca len_ an item of associative list _wid_?
-  \ If so return its _xt_, else return zero.
+  \ If so return its _xt_ and _true_, else return _false_.
 
-: item  ( ca1 len1 wid -- ca2 len2 )
-  item? dup 0= abort" Not an item." execute  ;
-  \ Return value _ca2 len2_ of item _ca1 len1_ from associative
-  \ list _wid_.
-  \ XXX TODO -- use `throw` instead
+: item  ( ca len wid -- i*x )
+  item? 0= #-13 ?throw execute  ;
+  \ If _ca len_ is an item of associative list _wid_, return
+  \ its value _i*x_. Else throw exception -13, "undefined
+  \ word".
 
-: items  ( wid -- )  >order words previous  ;
+-->
+
+( entry char-entry double-entry string-entry )
+
+: create-entry  ( i*x wid xt "name" -- )
+  swap get-current >r set-current
+  create  execute
+  r> set-current  ;
+  \ Create a new entry "name" in associative list _wid_,
+  \ executing _xt_ to store its data.
+
+: entry  ( x wid "name" -- )
+  ['] , create-entry does>  ( -- x )  ( pfa ) @  ;
+  \ Create a cell entry "name" in associative list
+  \ _wid_, with value _x_.
+
+: char-entry  ( c wid "name" -- )
+  ['] c, create-entry does>  ( -- c )  ( pfa ) c@  ;
+  \ Create a character entry "name" in associative list
+  \ _wid_, with value _c_.
+
+: double-entry  ( dx wid "name" -- )
+  ['] 2, create-entry does>  ( -- dx )  ( pfa ) 2@  ;
+  \ Create a double-cell entry "name" in associative list
+  \ _wid_, with value _dx_.
+
+: string-entry  ( ca len wid "name" -- )
+  ['] s, create-entry does>  ( -- ca len )  ( pfa ) count  ;
+  \ Create a string entry "name" in associative list
+  \ _wid_, with value _ca len_.
+
+-->
+
+( test )
+
+associative-list stuff
+100 stuff entry cent
+char a stuff char-entry letter
+s" saluton" stuff string-entry hello
+314159. stuff double-entry pi
+
+( items )
+
+need alias  need wordlist-words
+
+' wordlist-words alias items  ( wid -- )
   \ List items of associative list _wid_.
 
   \ vim: filetype=soloforth
@@ -5218,8 +5250,8 @@ defer #spaces
   dup ['] #spaces2 ['] #spaces defer! ." 2..." #spaces-bench
       ['] #spaces3 ['] #spaces defer! ." 3..." #spaces-bench  ;
 
-  \         Frames by iterations
-  \         --------------------
+  \         Frames
+  \         ----------------------------
   \ Version 10 iterations 100 iterations
   \ ------- ------------- --------------
   \ 1                 123           1231
@@ -5256,7 +5288,7 @@ need bench{  need m+
 
 unused
 : high-m+  ( n -- )  s>d d+  ;
-unused - .( bytes of high M+ ) .
+unused - cr .( bytes of high M+ ) .
 
 : high-m+-bench  ( d1|ud1 n -- d2|ud2 )
   bench{  0 do  i s>d i high-m+ 2drop  loop  }bench.  ;
@@ -5286,13 +5318,14 @@ unused
 : dzx-forth-du<  ( ud1 ud2 -- f )
   rot swap 2dup
   u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;  exit
-unused - cr .( DZX-Forth ) . .( bytes)
+  -   if  2drop 0 exit  then  u<  ;
+unused - cr .( DZX-Forth ) . .( bytes)  \ 41
 
 unused
 : m3forth-du< ( ud1 ud2 -- f )
   rot 2dup = if 2drop u< else u> nip nip then  ;
-unused - cr .( m3forth ) . .( bytes)
+unused - cr .( m3forth ) . .( bytes)  \ 29
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
 
 -->
 
@@ -5300,25 +5333,95 @@ unused - cr .( m3forth ) . .( bytes)
 
 defer (u<)
 
-: u<-bench  ( n xt -- )
+: du<-bench  ( n xt -- )
   ['] (u<) defer!
   bench{
-    dup 0 ?do  0 ?do  i s>d j s>d (u>) drop  loop  loop
+    dup 0 ?do  0 ?do  i s>d j s>d (u<) drop  loop  loop
   }bench.  ;
 
 : run  ( n -- )
       cr ." DU< from:"
   dup cr ." DZX-Forth ..." ['] dzx-forth-du< du<-bench
-      cr ." 3mforth ....." ['] 3mforth-du< du<-bench  ;
+      cr ." 3mforth ....." ['] m3forth-du< du<-bench  ;
 
-  \ 10000 run  20000  run 65535 run
+  \ 10 run
 
   \ Times   Frames (1 frame = 50th of second)
   \ -----   -----------------------------------
   \         DZX-Forth DU< m3forth DU<
   \         ------------- -----------
-  \ 10000   
-  \ 65535   
+  \ 10               3623      crash!
+
+( m*/-bench )
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ 2016-04-15: Start.
+
+
+unused
+  \ 2016-04-15: This is the current implementation.
+  \ Credit: from Gforth 0.7.3.
+: gforth-m*/  ( d1 n1 +n2 -- d2 )
+  >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
+  rot tuck um* 2swap um* swap
+  >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
+  if     if     1 0 d+
+         then
+         dnegate
+  else   drop
+  then  ;
+unused - cr .( gforth ) . .( bytes)  \ 89 bytes
+
+-->
+
+( m*/-bench )
+
+  \ Alternative implementation of `m*/`
+  \
+  \ Credit:
+  \
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+unused
+need mt*  need tnegate  need ut/
+unused
+: coldforth-m*/  ( d1 n1 +n2 -- d2 )
+    >r mt* dup 0< if    tnegate r> ut/ dnegate
+                  else  r> ut/  then  ;
+         cr .( coldforth:)
+unused - cr .( m*/ only ) . .( bytes)  \ 33 bytes
+unused - cr .( with requirements) . .( bytes)  \ 185 bytes
+
+-->
+
+( m*/-bench )
+
+need bench{
+
+defer (m*/)
+
+: m*/-bench  ( n xt -- )
+  ['] (m*/) defer!
+  bench{
+    1+ 1 ?do  i s>d i i (m*/) 2drop  loop
+    \ XXX FIXME -- use better range of numbers
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." M*/ from:"
+  dup cr ." Gforth ......" ['] gforth-m*/ m*/-bench
+      cr ." ColdForth ..." ['] coldforth-m*/ m*/-bench  ;
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         Gforth M*/  ColdForth M*/
+  \         ----------  -------------
+  \ 10000         1690           1719 (1.01)
+  \ 20000         3381           3442 (1.01)
+  \ 65535        11621              0 \ XXX FIXME --
+  \
 
   \ vim: filetype=soloforth
   \ development_benchmarks.rng.fsb
@@ -15694,11 +15797,13 @@ need aborted?
   \ If no key is pressed return _false_.  If a key is pressed,
   \ discard it and wait for a second key. Then return _true_ if
   \ it's a carriage return, else return _false_.
-
+  \
   \ Usage example:
   \
+  \ ----
   \ : listing  ( -- )
   \   begin  ." bla " nuf?  until  ." Aborted"  ;
+  \ ----
   \
   \ }doc
 
@@ -15715,11 +15820,15 @@ need aborted?
   \ If no key is pressed return _false_.  If a key is pressed,
   \ discard it and wait for a second key. Then return _true_ if
   \ it's _c_, else return _false_.
-
+  \
+  \ This word is a useful factor of `nuf?`.
+  \
   \ Usage example:
   \
+  \ ----
   \ : listing  ( -- )
   \   begin  ." bla "  bl aborted?  until  ." Aborted"  ;
+  \ ----
   \
   \ }doc
 
@@ -19370,8 +19479,11 @@ need 2nip
 
 : du<  ( ud1 ud2 -- f )
   rot swap 2dup
-  u<  if  2drop 2drop -1 exit  then
-  -   if  2drop 0 exit  then  u<  ;  exit
+  u<  if  2drop 2drop [ true ] literal exit  then
+  -   if  2drop [ false ] literal exit  then  u<  ;  exit
+
+  \ Note: the flags are compiled with `literal` to make
+  \ execution a bit faster.
 
 [then]
 
@@ -19386,6 +19498,7 @@ need [if]
 [needed] dmin [if]
 : dmin  ( d1 d2 -- d1 | d2 )
   2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
+  \ XXX TODO -- use `d>` when available
 
 [needed] dmax [if]
 : dmax  ( d1 d2 -- d1 | d2 )
@@ -19575,7 +19688,29 @@ exit
   else   drop
   then  ;
 
-  \ XXX TODO document, see difference Gforth - Forth-94
+  \ doc{
+  \
+  \ m*/  ( d1 n1 +n2 -- d2 )
+  \
+  \ Multiply _d1_ by _n1_ producing the triple-cell
+  \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
+  \ double-cell quotient _d2_.
+  \
+  \ }doc
+
+  \ XXX TODO -- see difference Gforth - Forth-94
+
+( m*/ )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+need mt*  need tnegate  need ut/
+
+: m*/  ( d1 n1 +n2 -- d2 )
+    >r mt* dup 0< if    tnegate r> ut/ dnegate
+                  else  r> ut/  then  ;
 
 ( dsqrt )
 
@@ -19623,7 +19758,7 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604150254
 
   \ -----------------------------------------------------------
   \ Description
@@ -19671,6 +19806,92 @@ need d-
   >r rot >r  >r swap >r -borrow
   s>d r> r> -borrow d+ r> r> - +  ;
   \ Triple substract.
+
+( tnegate )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+: tnegate  ( t1 -- t2 )
+  invert >r
+  invert >r
+  invert 0 -1 -1 d+ s>d r> 0 d+
+  r> +  ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ tnegate  ( t1 -- t2 )
+  \
+  \ _t2_ is the negation of _t1_.
+  \
+  \ }doc
+
+( ut* )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+: ut*   ( ud u -- t )
+  swap >r dup >r
+  um* 0 r> r> um* d+  ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ ut*   ( ud u -- t )
+  \
+  \ _t_ is the signed product of _ud_ times _u_.
+  \
+  \ }doc
+
+( mt* )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+need ut*  need tnegate
+
+: mt*   ( d n -- t )
+  dup 0<
+  if   abs over 0< if   >r dabs r> ut*  else ut* tnegate then
+  else over 0< if  >r dabs r> ut* tnegate  else  ut*  then
+  then ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ mt*   ( d n -- t )
+  \
+  \ _t_ is the signed product of _d_ times _n_.
+  \
+  \ }doc
+
+( ut/ )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+: ut/   ( ut n -- d )
+  dup >r um/mod -rot r> um/mod nip swap  ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ ut/   ( ut n -- d )
+  \
+  \ Divide a triple unsigned number _ut_ by a single number _n_
+  \ giving the double number result _d_.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
   \ operators.4-cell.fsb
@@ -23414,7 +23635,7 @@ need [if]
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604151341
 
   \ -----------------------------------------------------------
   \ Description
@@ -23427,25 +23648,31 @@ need [if]
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ This code was adapted and improved from Afera (2015), by
+  \ the same author.  The Afera version was adapted and deeply
+  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
+  \ by EHR), modified by Dennis L. Wilson.  The original code
+  \ was written by Robert Dudley Ackerman, published on Forth
+  \ Dimensions (volume 4, number 2, page 28, 1982-07).
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+  
+  \ 2015-12-24: Start converting from ITC to DTC.
+
+  \ 2016-04-15: Fixed `decode-compile`, which had not been
+  \ adapted from ITC to DTC.
+
 ( decode )
-
-  \ XXX UNDER DEVELOPMENT -- DTC version
-  \ 2015-12-24: Start adapting to DTC.
-
-  \ Credit:
-  \
-  \ This code was adapted and improved from Afera (2015), by
-  \ the same author.  The Afera version was adapted and deeply
-  \ modified from: Z80 CP/M fig-Forth 1.1g (adaptative version
-  \ by EHR), modified by Dennis L. Wilson.  The original code
-  \ was written by Robert Dudley Ackerman, published on Forth
-  \ Dimensions IV,#2 p28 (1982-07).
 
   \ Variables, indentation and pause control
 
@@ -23476,8 +23703,7 @@ variable decode-address  \ in the word being decoded
 : decode-sliteral  ( a1 -- a2 )
   cell+ dup count type  dup c@ + 1-  ;
 
-: decode-compile   ( a1 -- a2 )
-  cell+ dup @ cell+ body>name .name  ;
+: decode-compile   ( a1 -- a2 )  cell+ dup @ >name .name  ;
 
 -->
 

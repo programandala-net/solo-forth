@@ -211,11 +211,13 @@ need aborted?
   \ If no key is pressed return _false_.  If a key is pressed,
   \ discard it and wait for a second key. Then return _true_ if
   \ it's a carriage return, else return _false_.
-
+  \
   \ Usage example:
   \
+  \ ----
   \ : listing  ( -- )
   \   begin  ." bla " nuf?  until  ." Aborted"  ;
+  \ ----
   \
   \ }doc
 
@@ -232,11 +234,15 @@ need aborted?
   \ If no key is pressed return _false_.  If a key is pressed,
   \ discard it and wait for a second key. Then return _true_ if
   \ it's _c_, else return _false_.
-
+  \
+  \ This word is a useful factor of `nuf?`.
+  \
   \ Usage example:
   \
+  \ ----
   \ : listing  ( -- )
   \   begin  ." bla "  bl aborted?  until  ." Aborted"  ;
+  \ ----
   \
   \ }doc
 
