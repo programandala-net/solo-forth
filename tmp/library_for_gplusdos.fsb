@@ -5447,6 +5447,35 @@ defer (m*/)
   \ 65535        11621              0 \ XXX FIXME --
   \
 
+( u<-bench )
+
+  \ 2016-04-16
+
+need bench{
+
+defer (u<)  need j
+
+: u<-bench  ( n xt -- )
+  ['] (u<) defer!
+  bench{
+    dup 0 ?do  0 ?do  i j (u<) drop  loop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." u< from:"
+  dup cr ." DZX-Forth .........." ['] dzxu< u<-bench
+      cr ." Z88 CamelForth ....." ['] u< u<-bench  ;
+
+  \ XXX FIXME -- Z88 CamelForth `u<` never ends
+
+  \ 10 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         DZX-Forth u<  Z88 CamelForth u<
+  \         ------------- -----------------
+  \ 10               
+
   \ vim: filetype=soloforth
   \ development_benchmarks.rng.fsb
   \
@@ -10044,7 +10073,7 @@ need any?
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604160145
 
   \ -----------------------------------------------------------
   \ Description
@@ -10063,13 +10092,25 @@ need any?
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-01: Written, a double-cell variant of `for step`.
+  \
+  \ 2015-03-23: Renamed `di` to `dfor-i`, after `for-i`,
+  \ because `i` cannot be used since the implementation of the
+  \ Forth-83 `do loop`.
+  \
+  \ 2016-04-16: Revised. Improved file header.  Fixed stack
+  \ notations.
+
 ( dfor dstep di )
 
-: (dstep)  ( R: x ud -- x ud' )
+: (dstep)  ( R: x d -- x d' )
 
   \ doc{
   \
-  \ (dstep)  ( R: x ud -- x ud' | x )
+  \ (dstep)  ( R: x d -- x d' | x )
   \
   \ The run-time procedure compiled by `dstep`.
   \
@@ -10088,13 +10129,13 @@ need any?
   then  >r  ;
     \ restore the return address
 
-: dfor  ( ud -- )  postpone 2>r <mark  ; immediate compile-only
+: dfor  ( d -- )  postpone 2>r <mark  ; immediate compile-only
 
   \ doc{
   \
   \ dfor
   \
-  \ Compilation: ( R: -- dest ) Run-time: ( ud -- )
+  \ Compilation: ( R: -- dest ) Run-time: ( d -- )
   \
   \ Start of a `dfor dstep` loop, that will iterate _ud+1_
   \ times, starting with _du_ and ending with 0.
@@ -10126,13 +10167,15 @@ need any?
   \
   \ }doc
 
-' 2r@ alias dfor-i  ( -- ud )
+need alias
+
+' 2r@ alias dfor-i  ( -- d )
 
   \ doc{
   \
-  \ dfor-i  ( -- ud )
+  \ dfor-i  ( -- d )
   \
-  \ Return the current index _ud_ of a `dfor` loop.
+  \ Return the current index _d_ of a `dfor` loop.
   \
   \ }doc
 
@@ -10462,7 +10505,7 @@ need dfor
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604160140
 
   \ -----------------------------------------------------------
   \ Description
@@ -10475,17 +10518,36 @@ need dfor
   \ Marcos Cruz (programandala.net), 2015, 2016.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ Adapted and modified from code written by Garry Lancaster
+  \ for Z88 CamelForth, 2001.
+
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-07-06: Adapted from Z88 CamelForth.
+  \
+  \ 2015-08-14: Checked. Removed the fig-Forth compiler
+  \ security.  Moved from the kernel to the library.  Improved
+  \ after Gforth: now the index is checked before decrementing
+  \ it.  Documented.
+  \
+  \ 2015-03-23: Added `for-i`, because `i` cannot be used since
+  \ the implementation of the Forth-83 `do loop`.
+  \
+  \ 2016-04-16: Revised. Improved file header. Fixed stack
+  \ notations.
 
 ( for step )
 
-  \ Credit:
-  \
   \ Code adapted from Z88 CamelForth. Modified to do the check
   \ before decrementing the index.
 
@@ -10497,7 +10559,7 @@ code (step)  ( R: n -- n' )
   \
   \ The run-time procedure compiled by `step`.
   \
-  \ Run-time:    ( R: u -- u' )
+  \ Run-time:    ( R: n -- n' )
   \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
@@ -10539,10 +10601,10 @@ code (step)  ( R: n -- n' )
 
   \ doc{
   \
-  \ for  Compilation: ( R: -- dest ) Run-time:    ( u -- )
+  \ for  Compilation: ( R: -- dest ) Run-time:    ( n -- )
   \
-  \ Start of a `for step` loop, that will iterate _u+1_ times,
-  \ starting with _u_ and ending with 0.
+  \ Start of a `for step` loop, that will iterate _n+1_ times,
+  \ starting with _n_ and ending with 0.
   \
   \ The current value of the index can be retrieved with
   \ `for-i`.
@@ -10561,7 +10623,7 @@ code (step)  ( R: n -- n' )
   \ Append the run-time semantics given below to the current
   \ definition. Resolve the destination of `for`.
   \
-  \ Run-time:    ( R: u -- u' )
+  \ Run-time:    ( R: n -- n' )
   \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
@@ -10570,16 +10632,17 @@ code (step)  ( R: n -- n' )
   \
   \ }doc
 
-' r@ alias for-i  ( -- ud )
+need alias
+
+' r@ alias for-i  ( -- n )
 
   \ doc{
   \
-  \ for-i  ( -- ud )
+  \ for-i  ( -- n )
   \
-  \ Return the current index _u_ of a `for` loop.
+  \ Return the current index _n_ of a `for` loop.
   \
   \ }doc
-
 
   \ vim: filetype=soloforth
   \ flow.j.fsb
@@ -11595,17 +11658,23 @@ need alias
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604161626
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `times`.
+  \ `times`, a control flow structure which executes _n_ times
+  \ the next word compiled.
 
   \ -----------------------------------------------------------
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ Credit
+
+  \ `times` was inspired by cmForth's `repeats`.
 
   \ -----------------------------------------------------------
   \ License
@@ -11614,97 +11683,42 @@ need alias
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015..2016: Several drafts, with different behaviours
+  \ during compilation.
+  \
+  \ 2016-04-16: Finished. Simplest version. Documented.
+
 ( times )
 
-  \ XXX UNDER DEVELOPMENT
-  \ XXX third version
-  \ No check is done during compilation.
+variable times-xt  \ the _xt_ executed by `times`
 
-  \ Credit:
+: times  ( i*x n -- j*x )
+  rp@ @  dup cell+ rp@ !  @ times-xt !
+  0 ?do  times-xt perform  loop  ; compile-only
+
+  \ doc{
   \
-  \ `(times)` was inspired by cmForth's `repeats`.
-
-: (times)  ( n -- )
-  rp@ @ dup cell+ rp@ ! @ swap
-  0 ?do  dup execute  loop  drop  ;
-
-: times  ( Compilation: "name" -- ) ( Run-time: n -- )
-  postpone (times)  ; immediate compile-only
-
-  \ Repeat the next instruction if the count on top of the
-  \ stack is not zero.  The count is also decremented.  If
-  \ count is zero, pop it and continue executing the following
-  \ instruction.
-
+  \ times  ( i*x n -- j*x )
+  \
+  \ Repeat the next compiled instruction _n_ times.  If _n_ is
+  \ zero, continue executing the following instruction.
+  \
   \ `times` is useful to implement complicated math operations,
   \ like shifts, multiply, divide and square root, from
   \ appropriate math step instructions.  It is also useful in
   \ repeating auto-indexing memory instructions.
-
-( times )
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX second version
-  \ Immediate words are not allowed.
-
-  \ Credit:
   \
-  \ `(times)` was inspired by cmForth's `repeats`.
-
-: (times)  ( n -- )
-  rp@ @ dup cell+ rp@ ! @ swap
-  0 ?do  dup execute  loop  drop  ;
-
-: times  ( Compilation: "name" -- ) ( Run-time: n -- )
-  postpone (times)
-  defined ( nt | 0 ) ?dup 0= -13 ?throw
-  name>immediate? ( xt f )  -271 ?throw  compile,
-  ; immediate compile-only
-
-  \ Repeat the next instruction if the count on top of the
-  \ stack is not zero.  The count is also decremented.  If
-  \ count is zero, pop it and continue executing the following
-  \ instruction.
-
-  \ `times` is useful to implement complicated math operations,
-  \ like shifts, multiply, divide and square root, from
-  \ appropriate math step instructions.  It is also useful in
-  \ repeating auto-indexing memory instructions.
-
-( times )
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX first version
-
-  \ Credit:
+  \ Usage example:
   \
-  \ `(times)` was inspired by cmForth's `repeats`.
-
-  \ XXX TODO
-  \ code (times)  ( n -- )
-  \   \ ld h,b
-  \   \ ld l,c
-  \   \ ld e,(hl)
-  \   \ inc hl
-  \   \ ld d,(hl) ; de = xt to execute
-  \   end-code
-
-: (times)  ( n -- )
-  rp@ @ dup cell+ rp@ ! @ swap
-  0 ?do  dup execute  loop  drop  ;
-
-: times  ( Compilation: "name" -- ) ( Run-time: n -- )
-  postpone (times) postpone [']  ; immediate compile-only
-
-  \ Repeat the next instruction if the count on top of the
-  \ stack is not zero.  The count is also decremented.  If
-  \ count is zero, pop it and continue executing the following
-  \ instruction.
-
-  \ `times` is useful to implement complicated math operations,
-  \ like shifts, multiply, divide and square root, from
-  \ appropriate math step instructions.  It is also useful in
-  \ repeating auto-indexing memory instructions.
+  \ ----
+  \ : blink  ( -- )  7 0 do  i border  loop  0 border  ;
+  \ : blinking  ( -- )  100 times blink  ." Done" cr  ;
+  \ ----
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
   \ flow.zero_conditions.fsb

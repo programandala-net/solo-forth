@@ -9,10 +9,15 @@
 == Misc ==
 // {{{
 
-.2016-04-15:
+.2016-04-16:
 
 Fix Makefile: when compilation of the kernel fails, the rest of the
-process doesn't stop.
+process doesn't stop. And now the disk is built when the sources have
+not changed.
+
+----
+behead  ( xt -- )
+----
 
 .2016-04-13:
 

@@ -451,7 +451,7 @@ _compare_de_hl_unsigned: macro
     ; different
 
     or a
-    sbc hl,de
+    sbc hl,de ; u1-u2 in HL, SZVC valid
 
   else
 
@@ -5893,8 +5893,10 @@ u_greater_than.hl:
 
 ; ----------------------------------------------
   _code_header u_less_than_,'U<'
+  ;_code_header dzxu_less_than_,'DZXU<'
 
-if 0 ; XXX OLD -- code adapted from DZX-Forth
+  ; XXX TMP -- for benchmarking
+  ; XXX TODO -- benchmark
 
   pop de
   pop hl
@@ -5907,20 +5909,27 @@ u_less_than.de_hl:
     jp false_
   endif
 
-else ; XXX NEW -- code adapted from Z88 CamelForth
+; ----------------------------------------------
+  ;_code_header u_less_than_,'U<'
+  _code_header z88u_less_than_,'Z88U<'
 
-  ; XXX TODO benchmark
+  ; XXX TMP -- for benchmarking
+  ; XXX TODO -- benchmark
 
   pop de
   pop hl
-u_less_than.de_hl:
-  _compare_de_hl_unsigned
+;u_less_than.de_hl:
+
+  ;_compare_de_hl_unsigned ; XXX OLD
+
+  ; XXX NEW -- 2016-04-16
+  or a
+  sbc hl,de
+
   sbc a,a         ; propagate carry flag through A
   ld h,a
   ld l,a          ; HL = $0000 or $FFFF
   _jp_pushhl
-
-endif
 
 ; ----------------------------------------------
   _code_header greater_than_,'>'
@@ -5968,8 +5977,9 @@ endif
 ; }doc
 
 ; XXX TMP -- 2016-04-15: This word is fig-Forth's `latest`,
-; which will be replaced with Gforth's `latest`. But some code
-; still depends on this.
+; which will be replaced with Gforth's `latest`, which fetchs
+; `last`. But some code still depends on this. Meanwhile, `last
+; @` is used `(;code)`.
 
   dw get_current_,fetch_
   dw exit_

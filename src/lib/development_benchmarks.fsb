@@ -1214,4 +1214,33 @@ defer (m*/)
   \ 65535        11621              0 \ XXX FIXME --
   \
 
+( u<-bench )
+
+  \ 2016-04-16
+
+need bench{
+
+defer (u<)  need j
+
+: u<-bench  ( n xt -- )
+  ['] (u<) defer!
+  bench{
+    dup 0 ?do  0 ?do  i j (u<) drop  loop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." u< from:"
+  dup cr ." DZX-Forth .........." ['] dzxu< u<-bench
+      cr ." Z88 CamelForth ....." ['] u< u<-bench  ;
+
+  \ XXX FIXME -- Z88 CamelForth `u<` never ends
+
+  \ 10 run
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   -----------------------------------
+  \         DZX-Forth u<  Z88 CamelForth u<
+  \         ------------- -----------------
+  \ 10               
+
   \ vim: filetype=soloforth
