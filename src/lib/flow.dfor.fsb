@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604160145
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,13 +22,25 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-01: Written, a double-cell variant of `for step`.
+  \
+  \ 2015-03-23: Renamed `di` to `dfor-i`, after `for-i`,
+  \ because `i` cannot be used since the implementation of the
+  \ Forth-83 `do loop`.
+  \
+  \ 2016-04-16: Revised. Improved file header.  Fixed stack
+  \ notations.
+
 ( dfor dstep di )
 
-: (dstep)  ( R: x ud -- x ud' )
+: (dstep)  ( R: x d -- x d' )
 
   \ doc{
   \
-  \ (dstep)  ( R: x ud -- x ud' | x )
+  \ (dstep)  ( R: x d -- x d' | x )
   \
   \ The run-time procedure compiled by `dstep`.
   \
@@ -47,13 +59,13 @@
   then  >r  ;
     \ restore the return address
 
-: dfor  ( ud -- )  postpone 2>r <mark  ; immediate compile-only
+: dfor  ( d -- )  postpone 2>r <mark  ; immediate compile-only
 
   \ doc{
   \
   \ dfor
   \
-  \ Compilation: ( R: -- dest ) Run-time: ( ud -- )
+  \ Compilation: ( R: -- dest ) Run-time: ( d -- )
   \
   \ Start of a `dfor dstep` loop, that will iterate _ud+1_
   \ times, starting with _du_ and ending with 0.
@@ -85,13 +97,15 @@
   \
   \ }doc
 
-' 2r@ alias dfor-i  ( -- ud )
+need alias
+
+' 2r@ alias dfor-i  ( -- d )
 
   \ doc{
   \
-  \ dfor-i  ( -- ud )
+  \ dfor-i  ( -- d )
   \
-  \ Return the current index _ud_ of a `dfor` loop.
+  \ Return the current index _d_ of a `dfor` loop.
   \
   \ }doc
 
