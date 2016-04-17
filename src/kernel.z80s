@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604160040
+; Last modified: 201604171328
 
 include version.z80s
 
@@ -1773,7 +1773,7 @@ push_a:
 ;
 ; default-bank  ( -- )
 ;
-; Page the default memory bank in at $C000..0xFFFF.
+; Page in the default memory bank at $C000..0xFFFF.
 ;
 ; }doc
 
@@ -1787,7 +1787,7 @@ push_a:
 ;
 ; names-bank  ( -- )
 ;
-; Page the system bank in at $C000..0xFFFF.
+; Page in the system bank at $C000..0xFFFF.
 ; This memory bank is used to store the word names and,
 ; optionally, also the command line history.
 ;
@@ -1816,7 +1816,7 @@ push_a:
 ;
 ; bank  ( n -- )
 ;
-; Page memory bank _n_ (0..7) in at $C000..0xFFFF.
+; Page in memory bank _n_ (0..7) at $C000..0xFFFF.
 ;
 ; }doc
 
@@ -2886,7 +2886,7 @@ char_question.not:
 
   ld (find_name_from.ip_backup),bc ; save the Forth IP
 
-  call bank.system ; page the memory bank in
+  call bank.system ; page in the memory bank
 
   pop hl ; nt
   pop bc ; C=len, B is supposed to be 0
@@ -2952,7 +2952,7 @@ find_name_from.end:
   ; If no match found:
   ;   hl = false
   exx
-  call bank.default ; page the default memory bank in
+  call bank.default ; page in the default memory bank
   exx
 find_name_from.ip_backup: equ $+1
   ld bc,$0000 ; restore the Forth IP
@@ -4075,7 +4075,9 @@ u_m_slash_mod.4:
 ;
 ; np  ( -- a )
 ;
-; Address of the names pointer.
+; Address that holds the names pointer. The names pointer points
+; to the next free address in the system memory bank, where the
+; next word header will be stored.
 ;
 ; }doc
 
@@ -4595,7 +4597,7 @@ endif
 ;
 ; }doc
 
-  pop hl ; variable address
+  pop hl ; address
   pop de ; number
   ld a,(hl)
   add a,e
@@ -5979,7 +5981,7 @@ u_less_than.de_hl:
 ; XXX TMP -- 2016-04-15: This word is fig-Forth's `latest`,
 ; which will be replaced with Gforth's `latest`, which fetchs
 ; `last`. But some code still depends on this. Meanwhile, `last
-; @` is used `(;code)`.
+; @` is used in `(;code)`.
 
   dw get_current_,fetch_
   dw exit_
@@ -6041,85 +6043,87 @@ u_less_than.de_hl:
 
 ; doc{
 ;
-; >name  ( xt -- nt )
-; >name  ( xt -- nt | 0 ) \ XXX TODO
+; >name  ( xt -- nt | 0 )
+; 
+; Try to find the name token _nt_ of the word represented by
+; execution token _xt_. Return 0 if it fails.
 ;
-; Warning: No check is done wether xt belongs to a definition
-; created with `:noname`; if so, the name assoctiated to _nt_,
-; returned by `name>string`, will be empty.
+; This word searches all headers, from the oldest to the newest,
+; for the first one whose _xtp_ (xt pointer) contains _xt_.
+;
+; Origin: Gforth.
 ;
 ; }doc
 
-  ; XXX FIXME -- make it return 0 if xt has no name associated
+  ; XXX TODO -- Search backwards from `last @`?
 
-  call bank.system ; page the memory bank in
+  call bank.system ; page in the memory bank
 
   pop de ; xt
-;  ld (to_name.xt),de ; save xt for later ; XXX OLD
-
-  ld a,(np_pfa) ; low byte of the names pointer
-  ld (to_name.names_pointer_low_byte),a ; save it for later
-  ld a,(np_pfa+1) ; hight byte of the names pointer
-  ld (to_name.names_pointer_high_byte),a ; save it for later
-
   push bc ; save Forth IP
+
+  ; save the names pointer for later:
+  ld a,(names_pointer)
+  ld (to_name.names_pointer_low_byte),a
+  ld a,(names_pointer+1)
+  ld (to_name.names_pointer_high_byte),a
+
   ld b,0
-  ld hl, names_bank_address-4
+  ld hl, names_bank_address
 
-to_name.begin_0:
-  ; hl = address of the xt pointer
+to_name.begin:
 
-  ; XXX NEW -- compare hl with  np: if equals, exit
-  ; XXX FIXME -- not working yet
-  ; XXX TODO use the Fuse's debugger
-
-  ; compare the xt pointer with the names pointer
+  ; compare HL with the names pointer
   ; if they are equals, there are no more names to check
 to_name.names_pointer_high_byte equ $+1
   ld a,0
   cp h
-  jr nz,to_name.names_not_finished
+  jr nz,to_name.check_xt
 to_name.names_pointer_low_byte equ $+1
   ld a,0
-  cp l
-  jr nz,to_name.names_not_finished
-  ; more names left, not found!
-  ld hl,0
+  sub l
+  jr nz,to_name.check_xt
+
+  ; no words left
+  ; a=0
+  ld h,a
+  ld l,a ; hl = 0
   jr to_name.end
 
-to_name.names_not_finished:
+to_name.check_xt
+  ; Check if the xt pointed by HL is the one searched for
+  ; hl = xtp
+  ld a,(hl) ; low byte of xt
   inc hl
-to_name.begin_1:
-  inc hl ; hl = lfa
+  cp e ; equal?
+  jr nz,to_name.next ; not equal
+  ld a,(hl) ; high byte of xt
+  cp d ; equal?
+  jr nz,to_name.next ; not equal
+
+  ; xt found
+  ; hl = xtp+1
+  inc hl ; lfa
   inc hl
-  inc hl ; hl = nt
+  inc hl ; nfa
+
+to_name.end:
+  ; hl = nt or zero
+  call bank.default ; page in the default memory bank
+  pop bc ; restore Forth IP
+  _jp_pushhl
+
+to_name.next:
+  ; hl = xtp+1
+  inc hl ; lfa
+  inc hl
+  inc hl ; nfa
   ld a,(hl) ; name field byte length
   and word_length_mask ; name length
   ld c,a ; name length
   inc c  ; plus the length byte
-  add hl,bc ; point to the xt pointer of the next word
-
-; XXX OLD
-; to_name.xt equ $+1
-;  ld de,0 ; xt searched for
-
-  ld a,(hl) ; low byte of xt
-  cp e ; equal?
-  jr nz,to_name.begin_0 ; not equal
-  inc hl
-  ld a,(hl) ; high byte of xt
-  cp d ; equal?
-  jr nz,to_name.begin_1 ; not equal
-
-  ; xt found
-  inc hl
-  inc hl
-  inc hl ; nt
-
-to_name.end:
-  call bank.default ; page the default memory bank
-  pop bc ; restore Forth IP
-  _jp_pushhl
+  add hl,bc ; xtp of the next word
+  jr to_name.begin
 
 ; ----------------------------------------------
 
@@ -11621,8 +11625,6 @@ move_name_fields_to_memory_bank:
   ret
 
   org names_bank_address
-
-  db 0 ; fake length byte, needed by the algorithm used in `>name`
 
 ; ==============================================================
 ; End
