@@ -3,6 +3,8 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
+# Last modified: 201604161830
+
 # ==============================================================
 # Author
 
@@ -46,30 +48,36 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # from the current directory, not the directory of the source.
 # That's why `cd src` is used.
 
-# XXX FIXME -- when compilation fails, the rest of the process doesn't
-# stop (in the main Makefile).
+# ----------------------------------------------
+# Kernel for G+DOS
 
 .PHONY: tmp/kernel.symbols.gplusdos.z80s
 tmp/kernel.symbols.gplusdos.z80s: tmp/kernel.gplusdos.bin.tap
 
 tmp/kernel.gplusdos.bin.tap: src/kernel.z80s src/version.z80s
-	cd src 
+	cd src && \
 	$(pasmo) -v --tap \
 		--equ gplusdos \
 		kernel.z80s \
 		forth.bin \
 		../tmp/kernel.symbols.gplusdos.z80s && \
-	mv forth.bin ../tmp/kernel.gplusdos.bin.tap
-	cd ..
+	mv forth.bin ../tmp/kernel.gplusdos.bin.tap && \
+	cd .. 
+
+# ----------------------------------------------
+# Kernel for +3DOS
+
+.PHONY: tmp/kernel.symbols.plus3dos.z80s
+tmp/kernel.symbols.plus3dos.z80s: tmp/kernel.plus3dos.bin.tap
 
 tmp/kernel.plus3dos.bin.tap: src/kernel.z80s
-	cd src
+	cd src && \
 	$(pasmo) -v --tap \
 		--equ plus3dos \
-		$(kernel_source_file) \
+		kernel.z80s \
 		forth.bin \
-		../tmp/kernel.symbols.plus3dos.z80s
-	mv forth.bin ../tmp/kernel.plus3dos.bin.tap
+		../tmp/kernel.symbols.plus3dos.z80s && \
+	mv forth.bin ../tmp/kernel.plus3dos.bin.tap && \
 	cd ..
 
 # ==============================================================

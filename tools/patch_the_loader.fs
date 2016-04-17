@@ -2,8 +2,6 @@
 
 \ patch_the_loader.fs
 
-\ XXX UNDER DEVELOPMENT
-
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
@@ -12,7 +10,7 @@
 
 \ This program patches the BASIC loader of Solo Forth with the
 \ proper code address, extracted from the Z80 symbols file
-\ created during the compilation.
+\ created during the compilation of the kernel.
 
 \ This program is written in Forth with Gforth
 \ (http://gnu.org/software/gforth/).
@@ -32,17 +30,13 @@
 \ ==============================================================
 \ History
 
-\ 2016-04-13: First version.
+\ 2016-04-13: First version, with hardcoded filenames.
+\ 2016-04-16: Improved: the filenames are get from arguments.
 
 \ ==============================================================
 \ Requirements
 
 only forth definitions
-
-\ Gforth path to user local sources
-\ required until Gforth supports <.gforthrc> (planned for v0.8);
-\ change to suit your own directory:
-fpath path+ ~/forth
 
 \ --------------------------------------------------------------
 \ From Forth Foundation Library
@@ -66,14 +60,11 @@ str-create tmp-str
   \ _ca1 len1_.
 
 \ ==============================================================
-\ Constants
+\ Arguments
 
-\ XXX FIXME -- make the path relative:
-s" ~/forth/solo_forth/"      2constant dir
-
-dir s" tmp/kernel.symbols.gplusdos.z80s" s+  2constant symbols-file
-dir s" src/loader/gplusdos.bas" s+           2constant raw-loader-file
-dir s" tmp/loader.gplusdos.bas" s+           2constant patched-loader-file
+1 arg 2constant symbols-file
+2 arg 2constant raw-loader-file
+3 arg 2constant patched-loader-file
 
 \ ==============================================================
 \ Main

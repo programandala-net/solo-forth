@@ -3,6 +3,8 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
+# Last modified: 201604161830
+
 # ==============================================================
 # Author
 
@@ -44,11 +46,18 @@
 # See at the end of the file.
 
 # ==============================================================
+# To-do
+
+# XXX FIXME -- the loader and the disk image are built even when the
+# sources are update, 
+
+# ==============================================================
 # Notes
 
-# $? list of dependencies changed more recently than current target
-# $@ name of current target
-# $< name of current dependency
+# $@ the name of the target of the rule
+# $< the name of the first prerequisite
+# $? the names of all the prerequisites that are newer than the target
+# $^ the names of all the prerequisites
 
 # ==============================================================
 # Config
@@ -57,7 +66,7 @@ VPATH = ./
 
 MAKEFLAGS = --no-print-directory
 
-.ONESHELL:
+#.ONESHELL:
 
 # ==============================================================
 # Main
@@ -73,19 +82,15 @@ gplusdos: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
 plus3dos: solo_forth_disk_a.dsk
 # plus3dos: solo_forth_disk_a.dsk solo_forth_disk_b.dsk
 
-.PHONY : clean
-clean:
-	@make cleantmp
-	rm -f solo_forth_disk_?.mgt solo_forth_disk_?.dsk
+clean: cleantmp
+	-rm -f solo_forth_disk_?.mgt solo_forth_disk_?.dsk
 
-.PHONY : cleantmp
 cleantmp:
-	rm -f tmp/*
+	-rm -f tmp/*
 
 include Makefile.pasmo
-#include Makefile.binutils
 
-# XXX TODO
+# XXX OLD
 # .PHONY : pasmo
 # pasmo:
 # 	@make Makefile.pasmo
@@ -94,24 +99,43 @@ include Makefile.pasmo
 # 	@make Makefile.binutils
 
 # ==============================================================
-# The loader
+# BASIC loader
+
+# The BASIC loader of the system is coded in plain text. The addresses
+# that depend on the kernel (its load adresses and entry points) are
+# represented in the source by labels. A Forth program replaces the
+# labels with the actual values, extracted from the symbols file
+# created by the assembler. Then zmakebas converts the patched loader
+# into a TAP file, ready to be copied to a disk image.
+
+# The
+
+# ----------------------------------------------
+# For G+DOS
 
 tmp/loader.gplusdos.bas: \
-	src/loader/gplusdos.bas \
-	src/kernel.z80s \
-	tmp/kernel.symbols.gplusdos.z80s
-	gforth tools/patch_the_loader.fs
+	tmp/kernel.symbols.gplusdos.z80s \
+	src/loader/gplusdos.bas
+	gforth tools/patch_the_loader.fs $^ $@
 
 tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
 
-tmp/loader.plus3dos.bas.tap: src/loader/plus3dos.bas
+# ----------------------------------------------
+# For +3DOS
+
+tmp/loader.plus3dos.bas: \
+	tmp/kernel.symbols.plus3dos.z80s \
+	src/loader/plus3dos.bas
+	gforth tools/patch_the_loader.fs $^ $@
+
+tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
 
 # ==============================================================
 # Font drivers
 
-# This drivers are not part of the Solo Forth library yet.
+# These drivers are not part of the Solo Forth library yet.
 # Meanwhile, their binary files are included in the first disk.
 
 # Note: an intermediate file called "4x8fd.bin" is used, in
@@ -122,8 +146,8 @@ tmp/loader.plus3dos.bas.tap: src/loader/plus3dos.bas
 
 # XXX WARNING -- 2016-03-19. bin2code returns error 97 when one
 # the filenames has a path, but it creates the tap file as
-# usual.  A hyphen at the beggining of the recipe line forces
-# Make to ignore the error.
+# usual.  A hyphen at the beginning of the recipe line forces
+# make to ignore the error.
 
 tmp/4x8fd.tap: src/modules/4x8fd.z80s
 	pasmo --tap $< 4x8fd.bin ; \
@@ -331,4 +355,7 @@ oldbackup:
 # requirements and the license.
 #
 # 2016-04-16: Fix: the patching of the loader didn't work after `make
-# clean`, because a dependency was missing.
+# clean`, because a prerequisite was missing.
+#
+# 2016-04-16: Also the +3DOS loader is patched with the current values
+# of the kernel.
