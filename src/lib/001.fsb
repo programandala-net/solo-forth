@@ -17,8 +17,8 @@
 2 load
 
   \ XXX TMP -- for debugging `associative-list`
-  need associative-list
-  exit
+  \ need associative-list
+  \ exit
 
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation

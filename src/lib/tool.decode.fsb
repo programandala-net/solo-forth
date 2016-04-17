@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604151341
+  \ Last modified: 201604171613
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,12 +33,33 @@
   \ this license.  There is no warranty.
 
   \ -----------------------------------------------------------
-  \ Latest changes
+  \ History
   
+  \ 2015-06-05: Copied from Afera. First changes to adapt it.
+  \
+  \ 2015-06-19: Added `?branch`.
+  \
+  \ 2015-07-23: Fix: `clit` was not included in the recognized
+  \ special cases.
+  \
+  \ 2015-08-14: Fixed a recent bug: `sp0 sp!` was used when
+  \ quitting, instead of `sp0 @ sp!`!
+  \
+  \ 2015-10-09: Fix: `slit` was missing from the special cases.
+  \
+  \ 2015-12-21: Fixed `decode-special` after the Forth-83
+  \ version of `do loop`: now the branch address is after `do`
+  \ or `?do`; also added `-branch` to it, in case it is already
+  \ defined during the compilation of `decode-special`.
+  \
   \ 2015-12-24: Start converting from ITC to DTC.
-
+  \
   \ 2016-04-15: Fixed `decode-compile`, which had not been
   \ adapted from ITC to DTC.
+  \
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore. Updated the history from the
+  \ development history of the project.
 
 ( decode )
 
@@ -47,6 +68,7 @@
 forth definitions decimal
 
 need body>name  need name>body  need case  need [if]
+need recurse
 
 variable decode-level  decode-level off \ depth of nesting
 variable decode-address  \ in the word being decoded

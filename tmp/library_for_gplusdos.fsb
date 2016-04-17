@@ -35,8 +35,8 @@
 2 load
 
   \ XXX TMP -- for debugging `associative-list`
-  need associative-list
-  exit
+  \ need associative-list
+  \ exit
 
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation
@@ -11160,6 +11160,57 @@ need cs-pick
   \ }doc
 
   \ vim: filetype=soloforth
+  \ flow.recurse.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604171545
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `recurse`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-06-05: Written in the kernel.
+  \ 2016-04-17: Moved to the library.
+
+( recurse )
+
+  \ XXX FIXME -- use `latestxt`, else words created with
+  \ `:noname` will not work
+
+: recurse  ( -- )
+  last @ >name compile,  ; immediate compile-only
+
+  \ doc{
+  \
+  \ recurse  ( -- )
+  \
+  \ Append the execution semantics of the current definition to
+  \ the current definition.
+  \
+  \ Origin: Forth-83 (Controlled Reference Words), Forth-94
+  \ (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
   \ flow.retry.fsb
   \
   \ This file is part of Solo Forth
@@ -13517,17 +13568,28 @@ create board  squares allot
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604171550
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ A sample game Towers of Hanoi.
+  \ Towers of Hanoi puzzle.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Raul Deluth Miller, original algorithm, published on
+  \ comp.lang.forth, 1994.
+
+  \ Marcel Hendrix and Brad Eckert, published on
+  \ comp.lang.forth, 2002-05-30.
+
+  \ K. Myneni, modified for kForth., 2002-05-30.
+
+  \ Marcos Cruz (programandala.net), version for Solo Forth,
+  \ 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -13536,36 +13598,19 @@ create board  squares allot
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015..2016: Start.
+
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore. Updated the file headers.
+
 ( hanoi )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Credit:
-  \
-  \ Code converted from hForth
-
-  \ -----------------------------------------------------------
-  \ hanoi.4th
-  \
-  \ Towers of Hanoi puzzle
-  \
-  \ From a posting to comp.lang.forth, 30 May 2002, by Marcel
-  \ Hendrix and Brad Eckert. According  to Marcel Hendrix, the
-  \ code for the HANOI algorithm was originally posted to clf
-  \ by Raul Deluth Miller in 1994.
-  \
-  \ -----------------------------------------------------------
-  \ kForth includes and defs  (2002-05-30  K. Myneni)
-  \ -----------------------------------------------------------
-
-  \ include strings
-  \ include ansi
-
-  \ -----------------------------------------------------------
 
 only forth definitions
 
-need don't  need ms  need mode64  need alloted
+need don't  need ms  need mode64  need alloted  need recurse
 
 vocabulary hanoi  also hanoi definitions
 
@@ -23801,7 +23846,7 @@ need [if]
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604151341
+  \ Last modified: 201604171613
 
   \ -----------------------------------------------------------
   \ Description
@@ -23831,12 +23876,33 @@ need [if]
   \ this license.  There is no warranty.
 
   \ -----------------------------------------------------------
-  \ Latest changes
+  \ History
   
+  \ 2015-06-05: Copied from Afera. First changes to adapt it.
+  \
+  \ 2015-06-19: Added `?branch`.
+  \
+  \ 2015-07-23: Fix: `clit` was not included in the recognized
+  \ special cases.
+  \
+  \ 2015-08-14: Fixed a recent bug: `sp0 sp!` was used when
+  \ quitting, instead of `sp0 @ sp!`!
+  \
+  \ 2015-10-09: Fix: `slit` was missing from the special cases.
+  \
+  \ 2015-12-21: Fixed `decode-special` after the Forth-83
+  \ version of `do loop`: now the branch address is after `do`
+  \ or `?do`; also added `-branch` to it, in case it is already
+  \ defined during the compilation of `decode-special`.
+  \
   \ 2015-12-24: Start converting from ITC to DTC.
-
+  \
   \ 2016-04-15: Fixed `decode-compile`, which had not been
   \ adapted from ITC to DTC.
+  \
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore. Updated the history from the
+  \ development history of the project.
 
 ( decode )
 
@@ -23845,6 +23911,7 @@ need [if]
 forth definitions decimal
 
 need body>name  need name>body  need case  need [if]
+need recurse
 
 variable decode-level  decode-level off \ depth of nesting
 variable decode-address  \ in the word being decoded
@@ -25053,7 +25120,7 @@ need marker
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604111518
+  \ Last modified: 201604171613
 
   \ -----------------------------------------------------------
   \ Description
@@ -25066,6 +25133,12 @@ need marker
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-17: Added the requisite of `recurse`, which is not
+  \ in the kernel anymore.
 
 ( wid>link wid>name named-wid wid>vocabulary )
 
@@ -25122,6 +25195,8 @@ need alias
 ( get-order order@ )
 
   \ Credit: Code from eForth.
+
+need recurse
 
 : order@  ( a -- u*wid u )
   dup @ dup if    >r cell+  recurse  r> swap 1+ exit

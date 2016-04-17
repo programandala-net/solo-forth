@@ -3342,8 +3342,15 @@ endif
 ; ----------------------------------------------
   _variable_header printing_,'PRINTING'
 
-; XXX TODO -- make it a user variable?
-; but the open channel would be common!
+; doc{
+;
+; printing  ( -- a )
+; 
+; _a_ is the address of a cell containing the printer flag.
+; This flag is set by `printer`, reset by `display` and checked
+; by `page`. It should not be changed directly.
+;
+; }doc
 
   dw false
 
