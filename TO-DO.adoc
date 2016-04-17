@@ -9,6 +9,10 @@
 == Misc ==
 // {{{
 
+.2016-04-17:
+
+Write `realias  ( xt "name" -- )` to change the xt of an alias.
+
 .2016-04-16:
 
 Fix Makefile: The loader and the disk are built when the sources have
@@ -134,10 +138,6 @@ ____
 
 Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
-
-.2016-03-19:
-
-Simplify the origin of words: mention only the most recent standard.
 
 // }}}
 == Turnkey ==

@@ -2286,7 +2286,7 @@ forth-wordlist set-current
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604172130
 
   \ -----------------------------------------------------------
   \ Description
@@ -2304,6 +2304,11 @@ forth-wordlist set-current
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-17: Added `name>>`.
 
 ( [false] [true] )
 
@@ -2330,7 +2335,7 @@ need s=
 
 : [then]  ( -- )  ; immediate
 
-( body>name name>body link>name name>link >>link name<name )
+( body>name name>body link>name name>link name<name )
 
 [unneeded] body>name
 ?\ : body>name  ( pfa -- nt ) body> >name  ;
@@ -2344,12 +2349,17 @@ need s=
 [unneeded] name>link dup  ?\ need alias
 ?\ ' cell- alias name>link  ( nt -- pfa )
 
-[unneeded] >>link dup  ?\ need alias
-?\ ' cell+ alias >>link  ( xtp -- lfa )
-
 [unneeded] name<name dup  ?\ need name>link
 ?\ : name<name  ( nt1 -- nt2 )  name>link @s  ;
   \ Get the previous _nt2_ from _nt1_.
+
+( >>link name>> )
+
+[unneeded] >>link dup  ?\ need alias
+?\ ' cell+ alias >>link  ( xtp -- lfa )
+
+[unneeded] name>>
+?\ : name>>  ( nt -- xtp )  [ 2 cells ] literal -  ;
 
 ( name>interpret name>compile )
 
@@ -3819,7 +3829,9 @@ code 2ndrop  ( dx1..dxn n -- )
 
 ( alias )
 
-: alias  ( xt "name" -- )  defer latest name> defer!  ;
+need name>>  need !s
+
+: alias  ( xt "name" -- )  header reveal latest name>> !s  ;
 
   \ doc{
   \
@@ -3827,12 +3839,9 @@ code 2ndrop  ( dx1..dxn n -- )
   \
   \ Create an alias _name_ that will execute _xt_.
   \
-  \ Aliases don't inherit the precedence (set by `immediate`)
-  \ and restricted (set by `compile-only`) attributes from the
-  \ original word.
-  \
-  \ Aliases have their own execution token, different from the
-  \ original _xt_.
+  \ Aliases have the execution token _xt_ of the original word,
+  \ but don't inherit its precedence (set by `immediate`) and
+  \ restricted (set by `compile-only`) attributes.
   \
   \ }doc
 
@@ -3842,7 +3851,7 @@ code 2ndrop  ( dx1..dxn n -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604172122
 
   \ -----------------------------------------------------------
   \ Description
@@ -3860,6 +3869,25 @@ code 2ndrop  ( dx1..dxn n -- )
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-17: Added `deferred`, using the old definition of
+  \ `alias`.
+
+( deferred )
+
+: deferred  ( xt "name" -- )  defer latest name> defer!  ;
+
+  \ doc{
+  \
+  \ deferred  ( xt "name" -- )
+  \
+  \ Create a deferred word _name_ that will execute _xt_.  The
+  \ effect is the same than `defer name  xt ' name defer!`.
+  \
+  \ }doc
 
 ( defers action-of )
 
@@ -3948,6 +3976,7 @@ need alias
   \ Create a definition for _newname_ with the the semantics
   \ defined below. _newname_ may be the same as _oldname_; when
   \ looking up _oldname_, _newname_ shall not be found.
+  \
 
   \ newname ( Interpretation: i*x -- j*x )
   \         Perform the interpretation semantics of _oldname_.
@@ -8659,7 +8688,7 @@ s" Standard error codes" located error-messages-block !
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604140018
+  \ Last modified: 201604171722
 
   \ -----------------------------------------------------------
   \ Description
@@ -8698,8 +8727,8 @@ s" Standard error codes" located error-messages-block !
   \ default location is limited by the small free memory left
   \ to BASIC.
   \
-  \ XXX FIXME -- Strange: When a non-integer number less than 1
-  \ is in the stack, every execution of `.fs` adds a zero to
+  \ XXX FIXME -- Strange: When a non-integer number lower than
+  \ 1 is in the stack, every execution of `.fs` adds a zero to
   \ the stack.
   \
   \ XXX TODO -- Write `fliteral`, `ffield:`, `fvalue`,
@@ -8710,10 +8739,15 @@ s" Standard error codes" located error-messages-block !
   \
   \ XXX TODO -- Move the ROM calculator extensions to their own
   \ module.
+  \
+  \ XXX TODO -- Use a word list for the calculator commands.
+  \ This way they will not need a prefix.
 
 ( --fp-rom-- )
 
-need +thru
+  \ XXX TMP -- for development
+
+need +thru  
 
 1 28 +thru
 
@@ -11196,7 +11230,7 @@ need cs-pick
   \ `:noname` will not work
 
 : recurse  ( -- )
-  last @ >name compile,  ; immediate compile-only
+  latest name> compile,  ; immediate compile-only
 
   \ doc{
   \

@@ -1395,6 +1395,9 @@ endif
 ;
 ; }doc
 
+; XXX TODO -- this word could be removed when the search order
+; if the search order would be improved, removing the zero cell
+; currently required to mark its end.
 
   dw context_
   _literal max_search_order*cell
@@ -1473,6 +1476,8 @@ paren_set_order.loop_exit
 ;
 ; }doc
 
+  ; XXX TODO -- rewrite after Gforth
+
   dw question_dup_
   dw zero_branch_,minus_order_pfa ; 0
   dw dup_
@@ -1498,8 +1503,6 @@ paren_set_order.loop_exit
 ; Origin: Gforth.
 ;
 ; }doc
-
-  ; XXX FIXME --
 
   dw also_,context_,store_
   dw exit_
@@ -1581,6 +1584,12 @@ endif
 ; : seal  ( -- )
 ;   context @ -order context !  ;
 ; ----
+; 
+; Remove all word list from the search order stack other than
+; the word list that is currently on top of the search order
+; stack.
+;
+; Origin: Gforth.
 ;
 ; }doc
 
@@ -1589,6 +1598,10 @@ endif
 
   dw context_,fetch_,minus_order_,context_,store_
   dw exit_
+
+  ; XXX TODO -- alternative definition, from Gforth
+  ;
+  ; : seal  ( -- )  context @ 1 set-order ;
 
 ; ----------------------------------------------
   _does_header root_,'ROOT',,do_vocabulary
@@ -5581,23 +5594,6 @@ source.other:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header recurse_,'RECURSE',immediate+compile_only
-
-; doc{
-;
-; recurse  ( -- )
-;
-; Origin: Forth-83 (Controlled Reference Words), Forth-94
-; (CORE), Forth-2012 (CORE).
-;
-; }doc
-
-  ; XXX FIXME -- use `latestxt`, else words created with 
-
-  dw latest_,from_name_,compile_comma_
-  dw exit_
-
-; ----------------------------------------------
   _code_header one_plus_,'1+'
 
   pop hl
@@ -6054,6 +6050,8 @@ u_less_than.de_hl:
 ;
 ; This word searches all headers, from the oldest to the newest,
 ; for the first one whose _xtp_ (xt pointer) contains _xt_.
+; This way, when a word has additional headers created by
+; `alias` or `synonym`, its original name is found first.
 ;
 ; Origin: Gforth.
 ;
@@ -7768,8 +7766,10 @@ header_comma.continue:
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
 
-  ; XXX TODO -- factor `header reveal` to `visible-header`? it's
-  ; used also by `defer`.
+  ; XXX TODO -- factor `header reveal` to `visible-header`?
+  ; This phrase is used also by `defer` and `alias`.
+  ; new word: 9 bytes used (3 for the call, plus 3 cells)
+  ; one cell saved in 3 words: 6 bytes saved
 
   dw header_,reveal_
   dw lit_,do_create
