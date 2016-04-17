@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604171432
+; Last modified: 201604171540
 
 include version.z80s
 
@@ -6559,7 +6559,6 @@ postpone.end:
 
 ; XXX TODO move to the library?
 ; XXX TODO -- documentation
-; XXX TODO -- test
 ; doc{
 ;
 ; ;code  ( -- )
@@ -6996,9 +6995,20 @@ simple_accept.end
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header source_id_,'SOURCE-ID'
+  _constant_header paren_source_id_,'(SOURCE-ID)'
 
-  ; XXX TODO -- move `value` to the kernel for this?
+  dw source_id_pfa
+
+; doc{
+;
+; (source-id)  ( -- a )
+;
+; A variable that contains the value returned by `source-id`.
+;
+; }doc
+
+; ----------------------------------------------
+  _constant_header source_id_,'SOURCE-ID'
 
 ; doc{
 ;
@@ -7028,21 +7038,13 @@ simple_accept.end
 
 ; }doc
 
-
-; XXX TMP -- From Z88 CamelForth (version w/o files)
-;   SOURCE-ID BLK @ OR 0= DUP
-;   IF  TIB DUP 80 ACCEPT SPACE
-; 'SOURCE 2!  0 >IN !
-;   THEN ;
-
   ; XXX NEW
   ; XXX TODO -- try, check, complete
 
 ; : refill ( -- f )
-;   loading?
-;   if    1 blk +!  >in off
-;   else  query
-;   then  true  ;
+;   loading?  if    1 blk +!  >in off
+;             else  query
+;             then  true  ;
 
   dw loading_question_ ; input stream from disk?
   dw zero_branch_,refill.terminal ; if not, branch
@@ -7058,6 +7060,12 @@ refill.terminal:
 refill.end:
   dw true_
   dw exit_
+
+; XXX TMP -- From Z88 CamelForth (version sans files)
+;   SOURCE-ID BLK @ OR 0= DUP
+;   IF  TIB DUP 80 ACCEPT SPACE
+; 'SOURCE 2!  0 >IN !
+;   THEN ;
 
 ; XXX TMP -- From Z88 CamelForth (version with files)
 ;X REFILL   -- f
@@ -7075,8 +7083,7 @@ refill.end:
 ;   THEN
 ;   DUP IF  >R 'SOURCE 2!  0 >IN ! R>  THEN ;
 
-; From hForth
-;
+; XXX TMP -- From hForth
 ;   : refill  ( f )
 ;     source-id true = if  0 exit  then
 ;     memtop [ size-of-pad chars ] literal - dup
@@ -8140,8 +8147,7 @@ search.string_1_addr equ $+1
   dw from_r_,blk_,store_
   dw from_r_,to_in_,store_
   dw from_r_
-  _literal source_id_pfa
-  dw store_
+  dw paren_source_id_,store_
   dw two_from_r_,input_buffer_,two_store_
   dw to_r_ ; restore the return address
   dw exit_
@@ -10056,8 +10062,7 @@ endif
 ; }doc
 
   dw blk_,off_
-  _literal source_id_pfa
-  dw on_
+  dw paren_source_id_,on_
   dw set_source_
   dw exit_
 
@@ -10080,8 +10085,7 @@ endif
 ; }doc
 
   dw blk_,off_
-  _literal source_id_pfa
-  dw off_
+  dw paren_source_id_,off_
   dw tib_,number_tib_,fetch_,set_source_
   dw exit_
 
