@@ -1,0 +1,53 @@
+  \ memory.bank.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604171421
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to memory banks.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-17: Moved `!s` and `!cs` from the kernel.
+
+( !s c!s )
+
+: !s  ( x a -- )  system-bank ! default-bank  ;
+
+  \ doc{
+  \
+  \ !s  ( x a -- )
+  \
+  \ Store _x_ into address _a_ of the system bank.
+  \
+  \ }doc
+
+: c!s  ( c ca -- )  system-bank c! default-bank  ;
+
+  \ doc{
+  \
+  \ c!s  ( c ca -- )
+  \
+  \ Store _c_ into address _ca_ of the system bank.
+  \
+  \ }doc
+
+
+  \ vim: filetype=soloforth

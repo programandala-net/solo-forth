@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604171328
+; Last modified: 201604171432
 
 include version.z80s
 
@@ -1499,9 +1499,6 @@ paren_set_order.loop_exit
 ;
 ; }doc
 
-; Credit:
-; Word from Gforth.
-
   ; XXX FIXME --
 
   dw also_,context_,store_
@@ -1785,7 +1782,7 @@ push_a:
 
 ; doc{
 ;
-; names-bank  ( -- )
+; system-bank  ( -- )
 ;
 ; Page in the system bank at $C000..0xFFFF.
 ; This memory bank is used to store the word names and,
@@ -1836,7 +1833,7 @@ bank.e:
   or e ; modify bits 0-2
   di
   ld (sys_bankm),a ; update BANKM
-  out (bank1_port),a ; page the bank
+  out (bank1_port),a ; page in the bank
   ei
   ret
 
@@ -6137,6 +6134,8 @@ to_name.next:
 ;
 ; }doc
 
+  ; XXX REMARK -- 13 bytes
+
   dw bank_,c_store_,default_bank_
   dw exit_
 
@@ -6174,6 +6173,7 @@ to_name.next:
 ; Fetch the 8-bit content of address _a_ of the bank _n_.
 ;
 ; }doc
+
 
   dw bank_,c_fetch_,default_bank_
   dw exit_
@@ -6225,7 +6225,7 @@ to_name.next:
 ;
 ; }doc
 
-  ; XXX 7 bytes:
+  ; XXX 11 bytes:
   _literal system_bank
   dw c_fetch_bank_
   dw exit_
@@ -6245,7 +6245,7 @@ to_name.next:
 ;
 ; }doc
 
-  ; XXX 7 bytes:
+  ; XXX 11 bytes:
   _literal system_bank
   dw fetch_bank_
   dw exit_
@@ -6253,40 +6253,6 @@ to_name.next:
   ; XXX TODO -- 5 bytes -- faster version:
   ; ld e,system_bank
   ; jp fetch_bank.e
-
-; ----------------------------------------------
-  _colon_header c_store_s_,'C!S'
-
-; doc{
-;
-; c!s  ( c a -- )
-;
-; Store _c_ into the _a_ address of the system bank.
-;
-; }doc
-
-  ; XXX TODO -- move to the library?
-
-  _literal system_bank
-  dw c_store_bank_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header store_s_,'!S'
-
-; doc{
-;
-; !s  ( x a -- )
-;
-; Store _x_ into the _a_ address of the system bank.
-;
-; }doc
-
-  ; XXX TODO -- move to the library?
-
-  _literal system_bank
-  dw store_bank_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header from_name_,'NAME>'
@@ -7781,6 +7747,8 @@ header_comma.continue:
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
 
+  dw default_bank_ ; XXX NEW -- 2016-04-17
+
   dw exit_
 
 ; ----------------------------------------------
@@ -8312,7 +8280,7 @@ interpret.end:
 
 ; doc{
 ;
-; lex?  ( nt b -- )
+; lex?  ( nt b -- f )
 ;
 ; Test the bits at _nt_ specified by the bitmask _b_.
 ; Return _true_ if the result is non-zero, else return _false_.
@@ -8327,6 +8295,12 @@ if 1
   dw exit_
 
 else  ; XXX TMP alternative without `c@test-bits?`
+
+  ; XXX TODO -- write a Z80 alternative, so `c@test-bits` can be
+  ; moved to the library
+  ;
+  ; XXX TODO -- better yet: move the lex bits off the length byte of
+  ; the name field
 
   dw system_bank_
   dw swap_,c_fetch_s_,and_,zero_not_equals_
