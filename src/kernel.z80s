@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604171540
+; Last modified: 201604180047
 
 include version.z80s
 
@@ -226,11 +226,16 @@ compile_only: equ compile_only_mask
 
 nt_of_the_previous_word: defl 0 ; link to previous Forth word
 
-_header: macro _base_label,_name,_flags
+_header: macro _base_label,_name,_flags,_xt
 
   ; In dictionary:
 
-  _base_label: ; execution token
+  if nul _xt
+    _base_label: ; execution token
+  else
+    _base_label equ _xt ; execution token of an alias
+  endif
+
   local _dp_backup
   local _name_address
   local _address_after_name
@@ -240,7 +245,11 @@ _header: macro _base_label,_name,_flags
 
   org np
   _base_label##xtp:
+  if nul _xt
     dw _base_label ; execution token pointer
+  else
+    dw _xt ; execution token pointer of an alias
+  endif
   _base_label##lfa: ; link field address
     dw nt_of_the_previous_word ; link field
   _base_label##nt: ; name token
@@ -286,8 +295,7 @@ _defer_header: macro _base_label,_name,_flags,_xt
 
 _alias_header: macro _base_label,_name,_flags,_xt
 
-  _header _base_label,_name,_flags
-  jp _xt
+  _header _base_label,_name,_flags,_xt
 
   endm
 
