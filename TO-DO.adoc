@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-15
+:revdate: 2016-04-16
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -11,13 +11,13 @@
 
 .2016-04-16:
 
-Fix Makefile: when compilation of the kernel fails, the rest of the
-process doesn't stop. And now the disk is built when the sources have
+Fix `>name`.
+
+Fix Makefile: The loader and the disk are built when the sources have
 not changed.
 
-----
-behead  ( xt -- )
-----
+Write `behead  ( xt -- )` or `behead  ( "name" -- )`. See DX-Forth and
+others.
 
 .2016-04-13:
 

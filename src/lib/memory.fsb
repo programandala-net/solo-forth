@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604171225
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,25 +22,55 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015..2016: Main development.
+  \ 2016-04-17: Added `-!`. Documented some words.
+
 ( exchange )  \  ==memory==
 
 [unneeded] exchange
 ?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
+( -! )
+
+code -!  ( n|u a -- )
+  E1 c,  D1 c,
+  \ pop hl ; address
+  \ pop de ; number
+  7E c,  90 03 + c,  70 07 + c,  23 c,
+  \ ld a,(hl)
+  \ sub a,e
+  \ ld (hl),a
+  \ inc hl
+  7E c,  98 02 + c,  70 07 + c,
+  \ ld a,(hl)
+  \ sbc a,d
+  \ ld (hl),a
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ -!  ( n|u a -- )
+  \
+  \ Subtract n|u from the single-cell number at _a_.
+  \
+  \ }doc
 
 ( c+! c@+ )
 
 need z80-asm
 
 [unneeded] c+! dup
-?\  code c+!  ( b ca -- )
+?\  code c+!  ( c ca -- )
 ?\    hl pop  de pop  e a ld  m a add  a m ld  jpnext  end-code
 
   \ doc{
   \
-  \ code c+!  ( b ca - )
+  \ code c+!  ( c ca - )
   \
-  \ Add _b_ to the 8-bit number at _ca_
+  \ Add _c_ to the char at _ca_
   \
   \ }doc
 
@@ -61,8 +91,8 @@ need z80-asm
   \
   \ code c@+  ( ca - ca+1 c )
   \
-  \ Fetch the byte at _ca_ a and increments the address.
-  \ This is handy for stepping through byte arrays.
+  \ Fetch the character at _ca_ a and increments the address.
+  \ This is handy for stepping through character arrays.
   \
   \ }doc
 
@@ -81,7 +111,7 @@ end-code
   \
   \ 1+!  ( a - )
   \
-  \ Increment the cell number at _a_.
+  \ Increment the single-cell number at _a_.
   \
   \ }doc
 
@@ -96,7 +126,7 @@ end-code
   \
   \ 1-!  ( a - )
   \
-  \ Decrement the cell number at _a_.
+  \ Decrement the single-cell number at _a_.
   \
   \ }doc
 
@@ -111,7 +141,7 @@ need z80-asm
   \
   \ c1+!  ( ca - )
   \
-  \ Increment the 8-bit number at _ca_.
+  \ Increment the char at _ca_.
   \
   \ }doc
 
@@ -122,7 +152,7 @@ need z80-asm
   \
   \ c1-!  ( ca - )
   \
-  \ Decrement the 8-bit number at _ca_.
+  \ Decrement the char at _ca_.
   \
   \ }doc
 
@@ -159,7 +189,7 @@ need 1+!  need 1-!
   \
   \ Fetch data from memory pointed to by the top item on the
   \ stack.  Data obtained is pushed below the top item.  The
-  \ top address is incremented by n.  Repeating this
+  \ top address is incremented by _n_.  Repeating this
   \ instruction pushes an array of data on the data stack below
   \ the address on top.
 
@@ -170,7 +200,7 @@ need 1+!  need 1-!
   \
   \ Fetch data from memory pointed to by the top item on the
   \ stack.  Data obtained is pushed below the top item.  The
-  \ top address is decremented by n.  Repeating this
+  \ top address is decremented by _n_.  Repeating this
   \ instruction pushes an array of data on the data stack below
   \ the address on top.
 
@@ -178,7 +208,7 @@ need 1+!  need 1-!
   \
   \ Pop the second item on the data stack and store it in the
   \ memory pointed to by the address on top of the stack.  The
-  \ address is then incremented by n.
+  \ address is then incremented by _n_.
 
   \ XXX TODO alternative found -- which one is cmForth?
   : !+  ( value a inc -- a+inc )  + tuck !  ;
@@ -187,39 +217,68 @@ need 1+!  need 1-!
   \
   \ Pop the second item on the data stack and store it in the
   \ memory pointed to by the address on top of the stack.  The
-  \ address is then decremented by n.
+  \ address is then decremented by _n_.
 
-  \ c@+  ( ca n -- b ca' )
+  \ c@+  ( ca n -- c ca' )
   \
-  \ Fetch a byte from memory and increment the address by n.
+  \ Fetch a character from memory and increment the address by _n_.
 
-  \ c@-  ( ca n -- b ca' )
+  \ c@-  ( ca n -- c ca' )
   \
-  \ Fetch a byte from memory and decrement the address by n.
+  \ Fetch a character from memory and decrement the address by _n_.
 
-  \ c!+  ( b ca n -- ca' )
+  \ c!+  ( c ca n -- ca' )
   \
-  \ Store a byte to memory and increment the address by n.
+  \ Store a character to memory and increment the address by _n_.
 
-  \ c!-  ( b ca n -- ca' )
+  \ c!-  ( c ca n -- ca' )
   \
-  \ Store a byte to memory and decrement the address by n.
+  \ Store a character to memory and decrement the address by _n_.
 
 ( bit? set-bit reset-bit )
 
 need lshift
 
 : bit>mask  ( n -- b )  1 swap lshift  ;
+
+  \ doc{
+  \
+  \ bit>mask  ( n -- b )
+  \
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
+  \
+  \ }doc
 
 : bit? ( b n -- f )  bit>mask and 0<> ;
+
+  \ doc{
+  \
+  \ bit? ( b n -- f )
+  \
   \ Is bit _n_ of _b_ set?
+  \
+  \ }doc
 
 : set-bit ( b1 n -- b2 )  bit>mask or ;
+
+  \ doc{
+  \
+  \ set-bit ( b1 n -- b2 )
+  \
   \ Set bit _n_ of _b1_, returning the result _b2_.
+  \
+  \ }doc
 
 : reset-bit ( b1 n -- b2 )  bit>mask invert and ;
+
+  \ doc{
+  \
+  \ reset-bit ( b1 n -- b2 )
+  \
   \ Reset bit _n_ of _b1_, returning the result _b2_.
+  \
+  \ }doc
+
 
 ( c@test-bits c!toggle-bits )
 
@@ -280,11 +339,27 @@ code c!toggle-bits  ( b ca -- )
 ( reserve alloted )
 
 : reserve  ( n -- a )  here tuck over erase allot  ;
-  \ Reserve a zone of _n_ bytes in the dictionary, erase it
-  \ and return its address _a_.
+
+  \ doc{
+  \
+  \ reserve  ( n -- a )
+  \
+  \ Reserve _n_ address units of data space, erase the zone and
+  \ return its address _a_.
+  \
+  \ }doc
 
 : allotted  ( n -- a )  here swap allot ;
-  \ Reserve a zone of _n_ bytes in the dictionary
+
+  \ doc{
+  \
+  \ allotted  ( n -- a )
+  \
+  \ Reserve _n_ address units of data space and return its
+  \ address _a_.
+  \
+  \ }doc
+
   \ and return its address _a_.
 
   \ vim: filetype=soloforth

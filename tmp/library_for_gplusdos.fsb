@@ -17693,7 +17693,7 @@ variable code-bank#  3 code-bank# !
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604171152
 
   \ -----------------------------------------------------------
   \ Description
@@ -17712,11 +17712,33 @@ variable code-bank#  3 code-bank# !
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015..2016: Main development.
+  \ 2016-04-17: Added `-!`. Documented some words.
+
 ( exchange )  \  ==memory==
 
 [unneeded] exchange
 ?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
+( -! )
+
+code -!  ( n a -- )
+  E1 c,  D1 c,
+  \ pop hl ; address
+  \ pop de ; number
+  7E c,  90 03 + c,  70 07 + c,  23 c,
+  \ ld a,(hl)
+  \ sub a,e
+  \ ld (hl),a
+  \ inc hl
+  7E c,  98 02 + c,  70 07 + c,
+  \ ld a,(hl)
+  \ sbc a,d
+  \ ld (hl),a
+  jpnext  end-code
 
 ( c+! c@+ )
 
@@ -17900,16 +17922,45 @@ need 1+!  need 1-!
 need lshift
 
 : bit>mask  ( n -- b )  1 swap lshift  ;
+
+  \ doc{
+  \
+  \ bit>mask  ( n -- b )
+  \
   \ Convert bit number _n_ to a bitmask _b_ with bit _n_ set.
+  \
+  \ }doc
 
 : bit? ( b n -- f )  bit>mask and 0<> ;
+
+  \ doc{
+  \
+  \ bit? ( b n -- f )
+  \
   \ Is bit _n_ of _b_ set?
+  \
+  \ }doc
 
 : set-bit ( b1 n -- b2 )  bit>mask or ;
+
+  \ doc{
+  \
+  \ set-bit ( b1 n -- b2 )
+  \
   \ Set bit _n_ of _b1_, returning the result _b2_.
+  \
+  \ }doc
 
 : reset-bit ( b1 n -- b2 )  bit>mask invert and ;
+
+  \ doc{
+  \
+  \ reset-bit ( b1 n -- b2 )
+  \
   \ Reset bit _n_ of _b1_, returning the result _b2_.
+  \
+  \ }doc
+
 
 ( c@test-bits c!toggle-bits )
 
@@ -17973,8 +18024,26 @@ code c!toggle-bits  ( b ca -- )
   \ Reserve a zone of _n_ bytes in the dictionary, erase it
   \ and return its address _a_.
 
+  \ doc{
+  \
+  \ reserve  ( n -- a )
+  \
+  \ Reserve _n_ address units of data space, erase the zone and
+  \ return its address _a_.
+  \
+  \ }doc
+
 : allotted  ( n -- a )  here swap allot ;
-  \ Reserve a zone of _n_ bytes in the dictionary
+
+  \ doc{
+  \
+  \ allotted  ( n -- a )
+  \
+  \ Reserve _n_ address units of data space and return its
+  \ address _a_.
+  \
+  \ }doc
+
   \ and return its address _a_.
 
   \ vim: filetype=soloforth
