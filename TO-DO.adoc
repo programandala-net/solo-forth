@@ -9,10 +9,6 @@
 == Misc ==
 // {{{
 
-.2016-04-17:
-
-Write `realias  ( xt "name" -- )` to change the xt of an alias.
-
 .2016-04-16:
 
 Fix Makefile: The loader and the disk are built when the sources have
@@ -446,6 +442,13 @@ Rename "csb" as "stringer" or "strings"?
 // }}}
 == Maths ==
 // {{{
+
+.2016-04-18:
+
+Modify `interpret` to be patched by a floating-point implementation in order
+to recognize floating-point numbers.
+
+Make `number?` deferred, in order to add floating-point support.
 
 .2016-04-17:
 
