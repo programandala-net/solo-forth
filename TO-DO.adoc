@@ -490,3 +490,10 @@ Update the date with interrupts.
 .2016-04-17:
 
 Improve tab control.
+
+// }}}
+== Assembler ==
+// {{{
+
+Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
+because _r_ is the standard for floating-point numbers.

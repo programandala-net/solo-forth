@@ -70,6 +70,7 @@
 | u*x         | u elements of type x (eg. `u*wid`)           | 0 or more cells
 
 | r           | a floating point real number                 | 5 bytes (in the floating point stack)
+| rf          | a floating point real number flag (0|1)      | 5 bytes (in the floating point stack)
 
 | op          | Z80 8-bit opcode, generally a jump           | 1 cell
 | r           | Z80 8-bit register identifier                | 1 cell

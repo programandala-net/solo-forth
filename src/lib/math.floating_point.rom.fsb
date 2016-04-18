@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604181324
+  \ Last modified: 201604182318
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,10 @@
   \
   \ XXX TODO -- Write safer alternatives for the ambiguous
   \ conditions listed in Forth-2012.
+  \
+  \ XXX TODO -- Test everything.
+  \
+  \ XXX TODO -- Document.
 
 ( --fp-rom-- )
 
@@ -62,7 +66,7 @@ need +thru
 
 5 constant float
 
-: float+  ( n1 -- n2 )  float +  ;
+: float+  ( fa1 -- fa2 )  float +  ;
 : floats  ( n1 -- n2 )  float *  ;
 
 ( fp0 fp (fp@ fp@ empty-fs fdepth )
@@ -85,129 +89,119 @@ need float
 
 : fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
 
-( end-calc-flag )
+( end-calculator-flag )
 
 need macro  need f>s  need call-xt
 
-: f>flag  ( -- f ) ( F: 1|0 -- )  f>s negate  ;
+: f>flag  ( -- f ) ( F: rf -- )  f>s negate  ;
 
-  \ Convert a ROM calculator flag in the float stack (_1|0_) to
-  \ an actual flag _wf_ in the stack.
+  \ Convert a floating-poing flag _rf_ (1|0) to an actual flag
+  \ _f_ in the data stack.
 
-macro end-calc-flag  ( -- wf ) ( F: 1|0 -- )
-  end-calc ['] f>flag call-xt  jpnext endm
+macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
+  [ calculator-wordlist >order ] end-calculator [ previous ]
+  ['] f>flag call-xt  jpnext endm
 
-  \ Exit the ROM calculator and convert a a flag calculated by
-  \ it (_1|0_) to an actual flag _wf_ in the stack.
+  \ Exit the ROM calculator and convert a flag calculated by
+  \ it (_1|0_) to a well-formed flag on the data stack.
   \
   \ This macro is a common factor of all floating point logical
   \ operators.
 
 ( f= f<> )
 
-need calc  need end-calc-flag  need calc=  need calc<>
-need calc-not  \ XXX TMP --
+need calculator  need end-calculator-flag
 
-code f<>  ( -- wf ) ( F: r1 r2 -- )
-  calc calc<> end-calc-flag  end-code
-    \ XXX TODO -- test
-    \ XXX FIXME -- always returns 0
-  \ calc calc= calc-not end-calc-flag  end-code
+code f<>  ( -- f ) ( F: r1 r2 -- )
+  calculator  <>  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
-code f=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc= end-calc-flag  end-code
+code f=  ( -- f ) ( F: r1 r2 -- )
+  calculator  =  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
   \ code f~ \ XXX TODO
 
 ( f0< f0= f0<> f0> )
 
-need calc  need end-calc-flag
-need calc-not  need calc0>  need calc0<
+need calculator  need end-calculator-flag
 
-code f0<  ( -- wf ) ( F: r -- )
-  calc calc0< end-calc-flag  end-code
+code f0<  ( -- f ) ( F: r -- )
+  calculator  0<  end-calculator-flag  end-code
 
-code f0=  ( -- wf ) ( F: r -- )
-  calc calc-not end-calc-flag  end-code
+code f0=  ( -- f ) ( F: r -- )
+  calculator  0=  end-calculator-flag  end-code
 
-code f0<>  ( -- wf ) ( F: r -- )
-  calc calc-not calc-not end-calc-flag  end-code
+code f0<>  ( -- f ) ( F: r -- )
+  calculator  0= 0=  end-calculator-flag  end-code
 
-code f0>  ( -- wf ) ( F: r -- )
-  calc calc0> end-calc-flag  end-code
+code f0>  ( -- f ) ( F: r -- )
+  calculator  0>  end-calculator-flag  end-code
 
 ( f< f<= f> f>= )
 
-need calc  need end-calc-flag
-need calc<  need calc>  need calc<=  need calc>=
 
-code f<  ( -- wf ) ( F: r1 r2 -- )
-  calc calc< end-calc-flag  end-code
+need calculator  need end-calculator-flag
 
-code f<=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc<= end-calc-flag  end-code
+code f<  ( -- f ) ( F: r1 r2 -- )
+  calculator  <  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
-code f>  ( -- wf ) ( F: r1 r2 -- )
-  calc calc> end-calc-flag  end-code
+code f<=  ( -- f ) ( F: r1 r2 -- )
+  calculator  <=  end-calculator-flag  end-code
 
-code f>=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc>= end-calc-flag  end-code
+code f>  ( -- f ) ( F: r1 r2 -- )
+  calculator  >  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
+
+code f>=  ( -- f ) ( F: r1 r2 -- )
+  calculator  >=  end-calculator-flag  end-code
 
 ( fdrop fdup fswap fover )
 
-need calc  need calc-over  need calc-drop  need calc-dup
-need calc-swap
+need calculator
 
 code fdrop  ( F: r -- )
-  calc calc-drop end-calc jpnext  end-code
+  calculator  drop  end-calculator  jpnext  end-code
 
 code fdup  ( F: r -- r r )
-  calc calc-dup end-calc jpnext  end-code
+  calculator  dup  end-calculator  jpnext  end-code
 
 code fswap  ( F: r1 r2 -- r2 r1 )
-  calc calc-swap end-calc jpnext  end-code
+  calculator  swap  end-calculator  jpnext  end-code
 
 code fover  ( F: r1 r2 -- r1 r2 r1 )
-  calc calc-over end-calc jpnext  end-code
+  calculator  over  end-calculator  jpnext  end-code
 
 ( frot -frot )
 
-need calc  need calc>mem  need calc<mem  need calc-drop
+need calculator
 
 code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       2 calc<mem 3 calc<mem 1 calc<mem
-  end-calc jpnext  end-code
+  calculator
+    1 >mem drop swap 1 mem> swap
+  end-calculator  jpnext  end-code
 
 code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       3 calc<mem 1 calc<mem 2 calc<mem
-  end-calc jpnext  end-code
+  calculator
+    swap 1 >mem drop swap 1 mem>
+  end-calculator  jpnext  end-code
 
 ( f+ f- f* f/ fmod )
 
-need calc  need fdup  need f0=
+need calculator  need fdup  need f0=
 
 code f+  ( F: r1 r2 -- r3 )
-  calc 0F c, end-calc jpnext  end-code
+  calculator  +  end-calculator  jpnext  end-code
 
 code f-  ( F: r1 r2 -- r3 )
-  calc 03 c, end-calc jpnext  end-code
+  calculator  -  end-calculator  jpnext  end-code
 
 code f*  ( F: r1 r2 -- r3 )
-  calc 04 c, end-calc jpnext  end-code
-  \ XXX FIXME --
-  \ F: fp2/ 2 -- crash!
-  \ F: 60000 0.5 -- 60000 0
-  \ F: 1 0.5 -- 1 0
-  \ F: 0.5 1 -- 0.5 0
+  calculator  *  end-calculator  jpnext  end-code
 
 code f/  ( F: r1 r2 -- r3 )
-  calc 05 c, end-calc jpnext  end-code
+  calculator  /  end-calculator  jpnext  end-code
   \ XXX FIXME -- when _r2_ is zero, the calculator issues
   \ "number too big" BASIC error, what crashes the system.  It
   \ could be trapped with G+DOS. A safe alternative `?f/` is
@@ -218,66 +212,60 @@ code f/  ( F: r1 r2 -- r3 )
   \ is thrown.
 
 code fmod  ( F: r1 -- r2 )
-  calc 32 c, end-calc jpnext  end-code
+  calculator  mod  end-calculator  jpnext  end-code
 
 ( fmax )
 
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
+need calculator
 
 code fmax  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-swap calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
+  calculator
+    2dup >  ( F: r1 r2 rf -- )
+    if    swap drop  ( F: r1 )
+    else  drop  ( F: r2 )
+    then
+  end-calculator  jpnext  end-code
 
 ( fmin )
 
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
+need calculator
 
 code fmin  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-swap calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
+  calculator
+    2dup <  ( F: r1 r2 rf -- )
+    if    drop  ( F: r1 )
+    else  swap drop  ( F: r2 )
+    then
+  end-calculator  jpnext  end-code
 
-( fsign fabs fnegate )
+( fsgn fabs fnegate )
 
-need calc  need calc-negate
+need calculator
 
-code fsign  ( F: r1 -- r2 )
-  calc 29 c, end-calc jpnext  end-code
+code fsgn  ( F: r1 -- -1|0|1 )
+  calculator  sgn  end-calculator  jpnext  end-code
 
 code fabs  ( F: r1 -- r2 )
-  calc 2A c, end-calc jpnext  end-code
+  calculator  abs  end-calculator  jpnext  end-code
 
 code fnegate  ( F: r1 -- r2 )
-  calc calc-negate end-calc jpnext  end-code
+  calculator  negate  end-calculator  jpnext  end-code
 
 ( fln fexp f** fsqrt )
 
-need calc  need fdup  need f0<
+need calculator  need fdup  need f0<
 
 code fln  ( F: r1 -- r2 )
-  calc 25 c, end-calc jpnext  end-code
+  calculator  ln  end-calculator  jpnext  end-code
 
 code fexp  ( F: r1 -- r2 )
-  calc 26 c, end-calc jpnext  end-code
+  calculator  exp  end-calculator  jpnext  end-code
 
 code f**  ( F: r1 -- r2 )
-  calc 06 c, end-calc jpnext  end-code
+  calculator  **  end-calculator  jpnext  end-code
 
 code fsqrt  ( F: r1 -- r2 )
-  calc 28 c, end-calc jpnext  end-code
+  calculator  sqrt  end-calculator  jpnext  end-code
 
   \ XXX FIXME -- when _r1_ is negative, the calculator issues
   \ "invalid argument" BASIC error, what crashes the system.
@@ -290,35 +278,30 @@ code fsqrt  ( F: r1 -- r2 )
 
 ( f0 f1 fhalf fpi2/ f10 )
 
-need calc
+need calculator
 
 code f0  ( F: -- r )
-  calc A0 c, end-calc jpnext  end-code
+  calculator  zero  end-calculator  jpnext  end-code
 
 code f1  ( F: -- r )
-  calc A1 c, end-calc jpnext  end-code
+  calculator  one  end-calculator  jpnext  end-code
 
 code fhalf  ( F: -- r )
-  calc A2 c, end-calc jpnext  end-code
+  calculator  half  end-calculator  jpnext  end-code
 
 code fpi2/  ( F: -- r )
-  calc A3 c, end-calc jpnext  end-code
+  calculator  pi2/  end-calculator  jpnext  end-code
 
 code f10  ( F: -- r )
-  calc A4 c, end-calc jpnext  end-code
+  calculator  ten  end-calculator  jpnext  end-code
 
-( b>f u>f s>f f>s )
+( frestack b>f u>f s>f f>s )
 
-need calc  need fnegate
+need calculator  need fnegate
 
-code restack  ( F: r -- r' )
-  calc  3D c,  end-calc  jpnext end-code
+code frestack  ( F: r -- r' )
+  calculator  re-stack  end-calculator  jpnext end-code
   \ Restacks an integer in full floating point form.
-  \
-  \ XXX TODO -- Better name. Maybe `refloat`, `>f`.  "re-stack"
-  \ is the command of the ROM calculator.
-  \
-  \ XXX TODO -- remove, keep only the calculator command
 
 code b>f  ( b -- ) ( F: -- r )
   D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
@@ -374,6 +357,16 @@ code f!  ( fa -- ) ( F: r -- )
                c m ld  hl incp  b m ld
   exx  jpnext end-code
 
+  \ doc{
+  \
+  \ f!  ( fa -- ) ( F: r -- )
+  \
+  \ Store _r_ at _fa_.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ }doc
+
 code f@  ( fa -- ) ( F: -- r )
   exx  hl pop m a ld  hl incp
               m e ld  hl incp  m d ld  hl incp
@@ -381,39 +374,73 @@ code f@  ( fa -- ) ( F: -- r )
               2AB6 call  \ STK_STORE ROM routine
   exx  jpnext end-code
 
+  \ doc{
+  \
+  \ f@  ( fa -- ) ( F: -- r )
+  \
+  \ _r_ is the value stored at _fa_.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ }doc
+
 ( f, fconstant fvariable )
 
 need f!
 
 : f,  ( -- ) ( F: r -- )  here float allot f!  ;
 
-: fconstant  ( "name" -- )  ( F: f -- )  create  f,  does>  ;
+  \ doc{
+  \
+  \ f,  ( -- ) ( F: r -- )
+  \
+  \ Reserve data space for one floating-point number and store
+  \ _r_ in that space.
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
+
+: fconstant  ( "name" -- )  ( F: r -- )  create  f,  does>  ;
+
+  \ doc{
+  \
+  \ fconstant  ( "name" -- )  ( F: r -- )
+  \
+  \ Create a floating-point constant called "name" with value
+  \ _r_.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ }doc
 
 : fvariable  ( "name" -- )  create  float allot  ;
 
 ( facos fasin fatan fcos fsin ftan )
 
-need calc
+need calculator
 
 code facos  ( F: r1 -- r2 )
-  calc 23 c, end-calc jpnext  end-code
+  calculator  acos  end-calculator  jpnext  end-code
 
 code fasin  ( F: r1 -- r2 )
-  calc 22 c, end-calc jpnext  end-code
+  calculator  asin  end-calculator  jpnext  end-code
 
 code fatan  ( F: r1 -- r2 )
-  calc 24 c, end-calc jpnext  end-code
+  calculator  atan  end-calculator  jpnext  end-code
 
 code fcos  ( F: r1 -- r2 )
-  calc 20 c, end-calc jpnext  end-code
+  calculator  cos  end-calculator  jpnext  end-code
 
 code fsin  ( F: r1 -- r2 )
-  calc 1F c, end-calc jpnext  end-code
+  calculator  sin  end-calculator  jpnext  end-code
 
 code ftan  ( F: r1 -- r2 )
-  calc 21 c, end-calc jpnext  end-code
+  calculator  tan  end-calculator  jpnext  end-code
 
 ( (f. f. )
+
+need fdepth  need fdrop
 
 code (f.  ( F: r -- )
   C5 c,  CD c, 2DE3 ,  C1 c,
@@ -432,9 +459,8 @@ code (f.  ( F: r -- )
   \ Note: the depth of the stack must be checked because
   \ there's a bug in the PRINT-FP ROM routine called "unbalaced
   \ stack error". When the number is a non-integer less than 1,
-  \ it's not removed from the stack at the end, and a zero is
-  \ pushed on the stack.  This bug is documented in the ROM
-  \ disassembly. Credit: Tony Stratton, 1982.
+  \ a zero is left on the stack.  This bug is documented in the
+  \ ZX Spectrum ROM disassembly. Credit: Tony Stratton, 1982.
 
   \ XXX FIXME -- The Forth-2012 standard reads `f.` must use
   \ fixed-point notation, but in this implementation the
@@ -455,12 +481,13 @@ need fdepth  need float  need float+  need .depth
   (fp@ fp0 @ ?do
     i dup cr u. float bounds ?do  i c@ 4 .r  loop
   float +loop  cr ." Top" cr  ;
+  \ XXX TODO -- improve: print the top at the top
 
 : dump-fs  ( -- )  fdepth dup .depth 0> if  (dump-fs  then  ;
 
 ( fround floor ftrunc )
 
-need calc  need f0=  need f0<  need fdup  need fnegate
+need calculator  need f0=  need f0<  need fdup  need fnegate
 
 : fround  ( F: r1 -- r2 )  ;
 
@@ -494,7 +521,7 @@ need calc  need f0=  need f0<  need fdup  need fnegate
 
 
 code ftrunc  ( F: r1 -- r2 )
-  calc 3A c, end-calc jpnext  end-code
+  calculator  truncate  end-calculator  jpnext  end-code
 
   \ doc{
   \

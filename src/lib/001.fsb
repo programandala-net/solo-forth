@@ -22,6 +22,8 @@
 
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation
+  \ need order
+  \ need fmax
   need --fp-rom--
   100 s>f  200 s>f  300 s>f
 

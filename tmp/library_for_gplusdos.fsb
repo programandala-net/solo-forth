@@ -40,6 +40,8 @@
 
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation
+  \ need order
+  \ need fmax
   need --fp-rom--
   100 s>f  200 s>f  300 s>f
 
@@ -16172,12 +16174,12 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604181319
+  \ Last modified: 201604182006
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Word to use the ROM calculator.
+  \ ROM calculator support.
 
   \ -----------------------------------------------------------
   \ Author
@@ -16201,8 +16203,9 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \
   \ 2016-04-13: Fixes and improvements. First usable version.
   \
-  \ 2016-04-18: Splitted from the floating point module, in
-  \ order to reuse it.
+  \ 2016-04-18: Extracted the code from the floating point
+  \ module, in order to reuse it. Much improved. Added `if then
+  \ else`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -16215,143 +16218,231 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \ the calculator could issue a BASIC error and crash the
   \ system. Test it.
   \
-  \ XXX TODO -- Use a word list for the calculator commands.
-  \ This way they will not need a prefix.
+  \ XXX TODO -- Add more control structures.
   \
-  \ XXX TODO -- Add control structures.
+  \ XXX TODO -- Document.
 
-( calc calc-end end-calc )
+( calculator )
 
-need macro
+need alias
 
-  \ Two assembler macros to make it easier to use the ROM
-  \ calculator.
+wordlist constant calculator-wordlist
 
-macro calc  ( -- )  C5 c, EF c,  endm
-  \ Compile the assembler instructions to start the ROM
+: calculator  ( -- )
+  calculator-wordlist >order  $C5 c, $EF c,  ;
+  \ Add `calculator-wordlist` to the search order and
+  \ compile the assembler instructions to start the ROM
   \ calculator:
   \ ----
   \ push bc ; save the Forth IP
   \ rst $28 ; call the ROM calculator
   \ ----
 
-macro calc-end  ( -- )  38 c,  endm
+calculator-wordlist >order
+get-current  calculator-wordlist set-current
+
+: end-calc  ( -- )  $38 c,  ;
   \ Compile the `end-calc` ROM calculator command.
   \ ----
   \ db $38 ; exit the ROM calculator
   \ ----
 
-macro end-calc  ( -- )  calc-end C1 c,  endm
-  \ Compile the assembler instructions to exit the ROM calculator:
+: end-calculator  ( -- )  previous end-calc $C1 c,  ;
+  \ Restore the search order and
+  \ compile the assembler instructions to exit the ROM calculator:
   \ ----
   \ db $38 ; `end-calc` ROM calculator command
   \ pop bc ; restore the Forth IP
   \ ----
 
-( calc-drop calc-dup calc-swap calc-over calc>mem calc<mem )
+-->
 
-macro calc-drop  ( -- )  02 c,  endm
-  \ Compile the `drop` ROM calculator command.
+( calculator )
 
-macro calc-dup  ( -- )  31 c,  endm
-  \ Compile the `dup` ROM calculator command.
+: +  ( -- )  $0F c,  ;
+  \ Compile the `addition` ROM calculator command.
+: -  ( -- )  $03 c,  ;
+  \ Compile the `subtract` ROM calculator command.
+: *  ( -- )  $04 c,  ;
+  \ Compile the `multiply` ROM calculator command.
+: /  ( -- )  $05 c,  ;
+  \ Compile the `division` ROM calculator command.
+: mod  ( -- )  $32 c,  ;
+  \ Compile the `n-mod-m` ROM calculator command.
 
-macro calc-swap  ( -- )  01 c,  endm
-  \ Compile the `swap` ROM calculator command.
+: **  ( -- )  $06 c,  ;
+  \ Compile the `to-power` ROM calculator command.
+: sqrt  ( -- )  $28 c,  ;
+  \ Compile the `sqr` ROM calculator command.
 
-macro calc>mem  ( n -- )  C0 + c,  endm
+-->
+
+( calculator )
+
+: sgn  ( -- )  $29 c,  ;
+  \ Compile the `sgn` ROM calculator command.
+: abs  ( -- )  $2A c,  ;
+  \ Compile the `abs` ROM calculator command.
+: truncate  ( -- )  $3A c,  ;
+  \ Compile the `truncate` ROM calculator command.
+: re-stack  ( r -- r' )  $3D c,  ;
+  \ Compile the `re-stack` ROM calculator command.
+
+: negate  ( -- )  $1B c,  ;
+  \ Compile the `negate` ROM calculator command.
+
+: zero  ( -- )  $A0 c,  ;
+  \ Compile the `` ROM calculator command.
+: one  ( -- )  $A1 c,  ;
+  \ Compile the `` ROM calculator command.
+: half  ( -- )  $A2 c,  ;
+  \ Compile the `` ROM calculator command.
+: pi2/  ( -- )  $A3 c,  ;
+  \ Compile the `` ROM calculator command.
+: ten  ( -- )  $A4 c,  ;
+  \ Compile the `` ROM calculator command.
+
+-->
+
+( calculator )
+
+: ln  ( -- )  $25 c,  ;
+  \ Compile the `ln` ROM calculator command.
+: exp  ( -- )  $26 c,  ;
+  \ Compile the `exp` ROM calculator command.
+
+: acos  ( -- )  $23 c,  ;
+  \ Compile the `acos` ROM calculator command.
+: asin  ( -- )  $22 c,  ;
+  \ Compile the `asin` ROM calculator command.
+: atan  ( -- )  $24 c,  ;
+  \ Compile the `atan` ROM calculator command.
+: cos  ( -- )  $20 c,  ;
+  \ Compile the `cos` ROM calculator command.
+: sin  ( -- )  $1F c,  ;
+  \ Compile the `sin` ROM calculator command.
+: tan  ( -- )  $21 c,  ;
+  \ Compile the `tan` ROM calculator command.
+
+-->
+
+( calculator )
+
+: drop  ( -- )  $02 c,  ;
+  \ Compile the `delete` ROM calculator command.
+
+: dup  ( -- )  $31 c,  ;
+  \ Compile the `duplicate` ROM calculator command.
+
+: swap  ( -- )  $01 c,  ;
+  \ Compile the `exchange` ROM calculator command.
+
+: >mem  ( n -- )  $C0 [ also forth ] + [ previous ] c,  ;
   \ Compile the `st-mem` ROM calculator command for memory
-  \ number _n_ (0..5). Note: The float stack TOS is copied, not
-  \ moved.
+  \ number _n_ (0..5). Note: The floating-point stack TOS is
+  \ copied, not moved.
 
-macro calc<mem  ( n -- )  E0 + c,  endm
+: mem>  ( n -- )  $E0 [ also forth ] + [ previous ] c,  ;
   \ Compile the `get-mem` ROM calculator command for memory
   \ number _n_ (0..5).
 
-macro calc-over  ( -- )
-  2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
+: over  ( -- )
+  2 >mem drop 1 >mem 2 mem> 1 mem>  ;
   \ Compile the ROM calculator commands to do `over`.
+  \ XXX TODO -- do not use the calculator memory
 
-( calc-negate calc-not )
+: 2dup  ( -- )  over over  ;
+  \ Compile the ROM calculator commands to do `2dup`.
 
-macro calc-negate  ( -- )  1B c,  endm
-  \ Compile the `negate` ROM calculator command.
+-->
 
-macro calc-not  ( -- )  30 c,  endm
+( calculator )
+
+: 0=  ( -- )  $30 c,  ;
   \ Compile the `not` ROM calculator command.
 
-( calc<> calc= calc> calc< calc<= calc>= )
-
-macro calc<>  ( -- )  0B c,  endm
+: <>  ( -- )  $0B c,  ;
   \ Compile the `nos-neql` ROM calculator command.
 
-macro calc=  ( -- )  0E c,  endm
+: =  ( -- )  $0E c,  ;
   \ Compile the `nos-eql` ROM calculator command.
 
-macro calc>  ( -- )  0C c,  endm
+: >  ( -- )  $0C c,  ;
   \ Compile the `no-grtr` ROM calculator command.
 
-macro calc<  ( -- )  0D c,  endm
+: <  ( -- )  $0D c,  ;
   \ Compile the `no-less` ROM calculator command.
 
-macro calc<=  ( -- )  09 c,  endm
+: <=  ( -- )  $09 c,  ;
   \ Compile the `no-l-eql` ROM calculator command.
 
-macro calc>=  ( -- )  0A c,  endm
+: >=  ( -- )  $0A c,  ;
   \ Compile the `no-gr-eql` ROM calculator command.
 
-( calc0< calc0> )
-
-macro calc0>  ( -- )  36 c,  endm
+: 0>  ( -- )  $36 c,  ;
   \ Compile the `less-0` ROM calculator command.
 
-macro calc0<  ( -- )  37 c,  endm
+: 0<  ( -- )  $37 c,  ;
   \ Compile the `greater-0` ROM calculator command.
 
-( calc-?branch calc-branch calc-mark> calc-resolve> )
+-->
 
-need alias
+( calculator )
 
-macro calc-?branch  ( -- )  00 c,  endm
+: ?branch  ( -- )  $00 c,  ;
   \ Compile the `jump-true` ROM calculator command.
 
-macro calc-branch  ( -- )  33 c,  endm
+: branch  ( -- )  $33 c,  ;
   \ Compile the `jump` ROM calculator command.
 
-: >calc-mark  ( -- a )  here 0 c,  ;
+: >mark  ( -- a )  here 0 c,  ;
 
   \ Compile space for the displacement of a ROM calculator
   \ forward branch which will later be resolved by
-  \ `>calc-resolve`.
+  \ `>resolve`.
   \
-  \ Typically used after either `calc-branch` or
-  \ `calc-?branch`.
+  \ Typically used after either `branch` or
+  \ `?branch`.
 
-: from-here  ( a -- n )  here swap -  ;
+: from-here  ( a -- n )
+  here [ also forth ] swap - [ previous ] ;
   \ Calculate the displacement _n_ from the current data-space
   \ pointer to address _a_.
 
-: >calc-resolve  ( a -- )  dup from-here swap c!  ;
+: >resolve  ( a -- )
+  [ also forth ] dup [ previous ] from-here
+  [ also forth ] swap [ previous ] c!  ;
 
   \ Resolve a ROM calculator forward branch by placing the
   \ displacement to the current position into the space
-  \ compiled by `>calc-mark`.
+  \ compiled by `>mark`.
 
-' here alias <calc-mark  ( -- a )
+' here alias <mark  ( -- a )
 
   \ Leave the address of the current data-space pointer as the
   \ destination of a ROM calculator backward branch which will
-  \ later be resolved by `<calc-resolve`.
+  \ later be resolved by `<resolve`.
   \
-  \ Typically used before either `calc-branch` or
-  \ `calc-?branch`.
+  \ Typically used before either `branch` or
+  \ `?branch`.
 
-: <calc-resolve  ( a -- )  from-here c,  ;
+: <resolve  ( a -- )  from-here c,  ;
 
   \ Resolve a ROM calculator backward branch by compiling the
   \ displacement from the current position to the address left
-  \ by `<calc-mark`.
+  \ by `<mark`.
 
+  \ XXX TODO -- test:
+
+: if  ( -- a )  ?branch >mark  ;
+
+: else  ( a1 -- a2 )
+  branch >mark [ also forth ] swap [ previous ] >resolve  ;
+
+' >resolve alias then  ( a -- )
+
+set-current  previous
+  \ restore the current word list and the search order
   \  math.floating_point.rom.fsb
   \
   \ This file is part of Solo Forth
@@ -16359,7 +16450,7 @@ macro calc-branch  ( -- )  33 c,  endm
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604181324
+  \ Last modified: 201604182006
 
   \ -----------------------------------------------------------
   \ Description
@@ -16439,129 +16530,118 @@ need float
 
 : fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
 
-( end-calc-flag )
+( end-calculator-flag )
 
 need macro  need f>s  need call-xt
 
-: f>flag  ( -- f ) ( F: 1|0 -- )  f>s negate  ;
+: f>flag  ( -- f ) ( F: rf -- )  f>s negate  ;
 
-  \ Convert a ROM calculator flag in the float stack (_1|0_) to
-  \ an actual flag _wf_ in the stack.
+  \ Convert a floating-poing flag _rf_ (1|0) to an actual flag
+  \ _f_ in the data stack.
 
-macro end-calc-flag  ( -- wf ) ( F: 1|0 -- )
-  end-calc ['] f>flag call-xt  jpnext endm
+macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
+  [ calculator-wordlist >order ] end-calculator [ previous ]
+  ['] f>flag call-xt  jpnext endm
 
-  \ Exit the ROM calculator and convert a a flag calculated by
-  \ it (_1|0_) to an actual flag _wf_ in the stack.
+  \ Exit the ROM calculator and convert a flag calculated by
+  \ it (_1|0_) to a well-formed flag on the data stack.
   \
   \ This macro is a common factor of all floating point logical
   \ operators.
 
 ( f= f<> )
 
-need calc  need end-calc-flag  need calc=  need calc<>
-need calc-not  \ XXX TMP --
+  \ XXX UNDER DEVELOPMENT
 
-code f<>  ( -- wf ) ( F: r1 r2 -- )
-  calc calc<> end-calc-flag  end-code
-    \ XXX TODO -- test
-    \ XXX FIXME -- always returns 0
-  \ calc calc= calc-not end-calc-flag  end-code
+need calculator  need end-calculator-flag
 
-code f=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc= end-calc-flag  end-code
+code f<>  ( -- f ) ( F: r1 r2 -- )
+  calculator  <>  end-calculator-flag  end-code
+
+code f=  ( -- f ) ( F: r1 r2 -- )
+  calculator  =  end-calculator-flag  end-code
 
   \ code f~ \ XXX TODO
 
 ( f0< f0= f0<> f0> )
 
-need calc  need end-calc-flag
-need calc-not  need calc0>  need calc0<
+need calculator  need end-calculator-flag
 
-code f0<  ( -- wf ) ( F: r -- )
-  calc calc0< end-calc-flag  end-code
+code f0<  ( -- f ) ( F: r -- )
+  calculator  0<  end-calculator-flag  end-code
 
-code f0=  ( -- wf ) ( F: r -- )
-  calc calc-not end-calc-flag  end-code
+code f0=  ( -- f ) ( F: r -- )
+  calculator  0=  end-calculator-flag  end-code
 
-code f0<>  ( -- wf ) ( F: r -- )
-  calc calc-not calc-not end-calc-flag  end-code
+code f0<>  ( -- f ) ( F: r -- )
+  calculator  0= 0=  end-calculator-flag  end-code
 
-code f0>  ( -- wf ) ( F: r -- )
-  calc calc0> end-calc-flag  end-code
+code f0>  ( -- f ) ( F: r -- )
+  calculator  0>  end-calculator-flag  end-code
 
 ( f< f<= f> f>= )
 
-need calc  need end-calc-flag
-need calc<  need calc>  need calc<=  need calc>=
+  \ XXX UNDER DEVELOPMENT
 
-code f<  ( -- wf ) ( F: r1 r2 -- )
-  calc calc< end-calc-flag  end-code
+need calculator  need end-calculator-flag
 
-code f<=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc<= end-calc-flag  end-code
+code f<  ( -- f ) ( F: r1 r2 -- )
+  calculator  <  end-calculator-flag  end-code
 
-code f>  ( -- wf ) ( F: r1 r2 -- )
-  calc calc> end-calc-flag  end-code
+code f<=  ( -- f ) ( F: r1 r2 -- )
+  calculator  <=  end-calculator-flag  end-code
 
-code f>=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc>= end-calc-flag  end-code
+code f>  ( -- f ) ( F: r1 r2 -- )
+  calculator  >  end-calculator-flag  end-code
+
+code f>=  ( -- f ) ( F: r1 r2 -- )
+  calculator  >=  end-calculator-flag  end-code
 
 ( fdrop fdup fswap fover )
 
-need calc  need calc-over  need calc-drop  need calc-dup
-need calc-swap
+need calculator
 
 code fdrop  ( F: r -- )
-  calc calc-drop end-calc jpnext  end-code
+  calculator  drop  end-calculator  jpnext  end-code
 
 code fdup  ( F: r -- r r )
-  calc calc-dup end-calc jpnext  end-code
+  calculator  dup  end-calculator  jpnext  end-code
 
 code fswap  ( F: r1 r2 -- r2 r1 )
-  calc calc-swap end-calc jpnext  end-code
+  calculator  swap  end-calculator  jpnext  end-code
 
 code fover  ( F: r1 r2 -- r1 r2 r1 )
-  calc calc-over end-calc jpnext  end-code
+  calculator  over  end-calculator  jpnext  end-code
 
 ( frot -frot )
 
-need calc  need calc>mem  need calc<mem  need calc-drop
+need calculator
 
 code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       2 calc<mem 3 calc<mem 1 calc<mem
-  end-calc jpnext  end-code
+  calculator
+    1 >mem drop swap 1 mem> swap
+  end-calculator  jpnext  end-code
 
 code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       3 calc<mem 1 calc<mem 2 calc<mem
-  end-calc jpnext  end-code
+  calculator
+    swap 1 >mem drop swap 1 mem>
+  end-calculator  jpnext  end-code
 
 ( f+ f- f* f/ fmod )
 
-need calc  need fdup  need f0=
+need calculator  need fdup  need f0=
 
 code f+  ( F: r1 r2 -- r3 )
-  calc 0F c, end-calc jpnext  end-code
+  calculator  +  end-calculator  jpnext  end-code
 
 code f-  ( F: r1 r2 -- r3 )
-  calc 03 c, end-calc jpnext  end-code
+  calculator  -  end-calculator  jpnext  end-code
 
 code f*  ( F: r1 r2 -- r3 )
-  calc 04 c, end-calc jpnext  end-code
-  \ XXX FIXME --
-  \ F: fp2/ 2 -- crash!
-  \ F: 60000 0.5 -- 60000 0
-  \ F: 1 0.5 -- 1 0
-  \ F: 0.5 1 -- 0.5 0
+  calculator  *  end-calculator  jpnext  end-code
 
 code f/  ( F: r1 r2 -- r3 )
-  calc 05 c, end-calc jpnext  end-code
+  calculator  /  end-calculator  jpnext  end-code
   \ XXX FIXME -- when _r2_ is zero, the calculator issues
   \ "number too big" BASIC error, what crashes the system.  It
   \ could be trapped with G+DOS. A safe alternative `?f/` is
@@ -16572,66 +16652,60 @@ code f/  ( F: r1 r2 -- r3 )
   \ is thrown.
 
 code fmod  ( F: r1 -- r2 )
-  calc 32 c, end-calc jpnext  end-code
+  calculator  mod  end-calculator  jpnext  end-code
 
 ( fmax )
 
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
+need calculator
 
 code fmax  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-swap calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
+  calculator
+    2dup >  ( F: r1 r2 rf -- )
+    if    swap drop  ( F: r1 )
+    else  drop  ( F: r2 )
+    then
+  end-calculator  jpnext  end-code
 
 ( fmin )
 
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
+need calculator
 
 code fmin  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-swap calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
+  calculator
+    2dup <  ( F: r1 r2 rf -- )
+    if    drop  ( F: r1 )
+    else  swap drop  ( F: r2 )
+    then
+  end-calculator  jpnext  end-code
 
-( fsign fabs fnegate )
+( fsgn fabs fnegate )
 
-need calc  need calc-negate
+need calculator
 
-code fsign  ( F: r1 -- r2 )
-  calc 29 c, end-calc jpnext  end-code
+code fsgn  ( F: r1 -- -1|0|1 )
+  calculator  sgn  end-calculator  jpnext  end-code
 
 code fabs  ( F: r1 -- r2 )
-  calc 2A c, end-calc jpnext  end-code
+  calculator  abs  end-calculator  jpnext  end-code
 
 code fnegate  ( F: r1 -- r2 )
-  calc calc-negate end-calc jpnext  end-code
+  calculator  negate  end-calculator  jpnext  end-code
 
 ( fln fexp f** fsqrt )
 
-need calc  need fdup  need f0<
+need calculator  need fdup  need f0<
 
 code fln  ( F: r1 -- r2 )
-  calc 25 c, end-calc jpnext  end-code
+  calculator  ln  end-calculator  jpnext  end-code
 
 code fexp  ( F: r1 -- r2 )
-  calc 26 c, end-calc jpnext  end-code
+  calculator  exp  end-calculator  jpnext  end-code
 
 code f**  ( F: r1 -- r2 )
-  calc 06 c, end-calc jpnext  end-code
+  calculator  **  end-calculator  jpnext  end-code
 
 code fsqrt  ( F: r1 -- r2 )
-  calc 28 c, end-calc jpnext  end-code
+  calculator  sqrt  end-calculator  jpnext  end-code
 
   \ XXX FIXME -- when _r1_ is negative, the calculator issues
   \ "invalid argument" BASIC error, what crashes the system.
@@ -16644,35 +16718,30 @@ code fsqrt  ( F: r1 -- r2 )
 
 ( f0 f1 fhalf fpi2/ f10 )
 
-need calc
+need calculator
 
 code f0  ( F: -- r )
-  calc A0 c, end-calc jpnext  end-code
+  calculator  zero  end-calculator  jpnext  end-code
 
 code f1  ( F: -- r )
-  calc A1 c, end-calc jpnext  end-code
+  calculator  one  end-calculator  jpnext  end-code
 
 code fhalf  ( F: -- r )
-  calc A2 c, end-calc jpnext  end-code
+  calculator  half  end-calculator  jpnext  end-code
 
 code fpi2/  ( F: -- r )
-  calc A3 c, end-calc jpnext  end-code
+  calculator  pi2/  end-calculator  jpnext  end-code
 
 code f10  ( F: -- r )
-  calc A4 c, end-calc jpnext  end-code
+  calculator  ten  end-calculator  jpnext  end-code
 
-( b>f u>f s>f f>s )
+( frestack b>f u>f s>f f>s )
 
-need calc  need fnegate
+need calculator  need fnegate
 
-code restack  ( F: r -- r' )
-  calc  3D c,  end-calc  jpnext end-code
+code frestack  ( F: r -- r' )
+  calculator  re-stack  end-calculator  jpnext end-code
   \ Restacks an integer in full floating point form.
-  \
-  \ XXX TODO -- Better name. Maybe `refloat`, `>f`.  "re-stack"
-  \ is the command of the ROM calculator.
-  \
-  \ XXX TODO -- remove, keep only the calculator command
 
 code b>f  ( b -- ) ( F: -- r )
   D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
@@ -16747,27 +16816,29 @@ need f!
 
 ( facos fasin fatan fcos fsin ftan )
 
-need calc
+need calculator
 
 code facos  ( F: r1 -- r2 )
-  calc 23 c, end-calc jpnext  end-code
+  calculator  acos  end-calculator  jpnext  end-code
 
 code fasin  ( F: r1 -- r2 )
-  calc 22 c, end-calc jpnext  end-code
+  calculator  asin  end-calculator  jpnext  end-code
 
 code fatan  ( F: r1 -- r2 )
-  calc 24 c, end-calc jpnext  end-code
+  calculator  atan  end-calculator  jpnext  end-code
 
 code fcos  ( F: r1 -- r2 )
-  calc 20 c, end-calc jpnext  end-code
+  calculator  cos  end-calculator  jpnext  end-code
 
 code fsin  ( F: r1 -- r2 )
-  calc 1F c, end-calc jpnext  end-code
+  calculator  sin  end-calculator  jpnext  end-code
 
 code ftan  ( F: r1 -- r2 )
-  calc 21 c, end-calc jpnext  end-code
+  calculator  tan  end-calculator  jpnext  end-code
 
 ( (f. f. )
+
+need fdepth  need fdrop
 
 code (f.  ( F: r -- )
   C5 c,  CD c, 2DE3 ,  C1 c,
@@ -16809,12 +16880,13 @@ need fdepth  need float  need float+  need .depth
   (fp@ fp0 @ ?do
     i dup cr u. float bounds ?do  i c@ 4 .r  loop
   float +loop  cr ." Top" cr  ;
+  \ XXX TODO -- improve: print the top at the top
 
 : dump-fs  ( -- )  fdepth dup .depth 0> if  (dump-fs  then  ;
 
 ( fround floor ftrunc )
 
-need calc  need f0=  need f0<  need fdup  need fnegate
+need calculator  need f0=  need f0<  need fdup  need fnegate
 
 : fround  ( F: r1 -- r2 )  ;
 
@@ -16848,7 +16920,7 @@ need calc  need f0=  need f0<  need fdup  need fnegate
 
 
 code ftrunc  ( F: r1 -- r2 )
-  calc 3A c, end-calc jpnext  end-code
+  calculator  truncate  end-calculator  jpnext  end-code
 
   \ doc{
   \

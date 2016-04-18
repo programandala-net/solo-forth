@@ -457,7 +457,6 @@ syn keyword soloforthOperator max
 syn keyword soloforthOperator min
 syn keyword soloforthOperator mod
 syn keyword soloforthOperator negate
-syn keyword soloforthOperator not
 syn keyword soloforthOperator or
 syn keyword soloforthOperator rshift
 syn keyword soloforthOperator s>d
@@ -1130,6 +1129,8 @@ let b:current_syntax = "soloforth"
 "
 " 2016-04-10: Added `display`, `default-mode`, `save-mode` and
 " `restore-mode`.
+"
+" 2016-04-18: Removed `not`.
 
 " --------------------------------------------------------------
 

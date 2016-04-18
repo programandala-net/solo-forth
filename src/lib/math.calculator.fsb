@@ -5,12 +5,12 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604181319
+  \ Last modified: 201604182318
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Word to use the ROM calculator.
+  \ ROM calculator support.
 
   \ -----------------------------------------------------------
   \ Author
@@ -35,7 +35,8 @@
   \ 2016-04-13: Fixes and improvements. First usable version.
   \
   \ 2016-04-18: Extracted the code from the floating point
-  \ module, in order to reuse it.
+  \ module, in order to reuse it. Much improved. Added `if then
+  \ else`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -48,140 +49,228 @@
   \ the calculator could issue a BASIC error and crash the
   \ system. Test it.
   \
-  \ XXX TODO -- Use a word list for the calculator commands.
-  \ This way they will not need a prefix.
+  \ XXX TODO -- Add more control structures.
   \
-  \ XXX TODO -- Add control structures.
+  \ XXX TODO -- Test everything.
+  \
+  \ XXX TODO -- Document.
 
-( calc calc-end end-calc )
+( calculator )
 
-need macro
+need alias
 
-  \ Two assembler macros to make it easier to use the ROM
-  \ calculator.
+wordlist constant calculator-wordlist
 
-macro calc  ( -- )  C5 c, EF c,  endm
-  \ Compile the assembler instructions to start the ROM
+: calculator  ( -- )
+  calculator-wordlist >order  $C5 c, $EF c,  ;
+  \ Add `calculator-wordlist` to the search order and
+  \ compile the assembler instructions to start the ROM
   \ calculator:
   \ ----
   \ push bc ; save the Forth IP
   \ rst $28 ; call the ROM calculator
   \ ----
 
-macro calc-end  ( -- )  38 c,  endm
+calculator-wordlist >order
+get-current  calculator-wordlist set-current
+
+: end-calc  ( -- )  $38 c,  ;
   \ Compile the `end-calc` ROM calculator command.
   \ ----
   \ db $38 ; exit the ROM calculator
   \ ----
 
-macro end-calc  ( -- )  calc-end C1 c,  endm
-  \ Compile the assembler instructions to exit the ROM calculator:
+: end-calculator  ( -- )  previous end-calc $C1 c,  ;
+  \ Restore the search order and
+  \ compile the assembler instructions to exit the ROM calculator:
   \ ----
   \ db $38 ; `end-calc` ROM calculator command
   \ pop bc ; restore the Forth IP
   \ ----
 
-( calc-drop calc-dup calc-swap calc-over calc>mem calc<mem )
+-->
 
-macro calc-drop  ( -- )  02 c,  endm
-  \ Compile the `drop` ROM calculator command.
+( calculator )
 
-macro calc-dup  ( -- )  31 c,  endm
-  \ Compile the `dup` ROM calculator command.
+: +  ( -- )  $0F c,  ;
+  \ Compile the `addition` ROM calculator command.
+: -  ( -- )  $03 c,  ;
+  \ Compile the `subtract` ROM calculator command.
+: *  ( -- )  $04 c,  ;
+  \ Compile the `multiply` ROM calculator command.
+: /  ( -- )  $05 c,  ;
+  \ Compile the `division` ROM calculator command.
+: mod  ( -- )  $32 c,  ;
+  \ Compile the `n-mod-m` ROM calculator command.
 
-macro calc-swap  ( -- )  01 c,  endm
-  \ Compile the `swap` ROM calculator command.
+: **  ( -- )  $06 c,  ;
+  \ Compile the `to-power` ROM calculator command.
+: sqrt  ( -- )  $28 c,  ;
+  \ Compile the `sqr` ROM calculator command.
 
-macro calc>mem  ( n -- )  C0 + c,  endm
+-->
+
+( calculator )
+
+: sgn  ( -- )  $29 c,  ;
+  \ Compile the `sgn` ROM calculator command.
+: abs  ( -- )  $2A c,  ;
+  \ Compile the `abs` ROM calculator command.
+: truncate  ( -- )  $3A c,  ;
+  \ Compile the `truncate` ROM calculator command.
+: re-stack  ( r -- r' )  $3D c,  ;
+  \ Compile the `re-stack` ROM calculator command.
+
+: negate  ( -- )  $1B c,  ;
+  \ Compile the `negate` ROM calculator command.
+
+: zero  ( -- )  $A0 c,  ;
+  \ Compile the `` ROM calculator command.
+: one  ( -- )  $A1 c,  ;
+  \ Compile the `` ROM calculator command.
+: half  ( -- )  $A2 c,  ;
+  \ Compile the `` ROM calculator command.
+: pi2/  ( -- )  $A3 c,  ;
+  \ Compile the `` ROM calculator command.
+: ten  ( -- )  $A4 c,  ;
+  \ Compile the `` ROM calculator command.
+
+-->
+
+( calculator )
+
+: ln  ( -- )  $25 c,  ;
+  \ Compile the `ln` ROM calculator command.
+: exp  ( -- )  $26 c,  ;
+  \ Compile the `exp` ROM calculator command.
+
+: acos  ( -- )  $23 c,  ;
+  \ Compile the `acos` ROM calculator command.
+: asin  ( -- )  $22 c,  ;
+  \ Compile the `asin` ROM calculator command.
+: atan  ( -- )  $24 c,  ;
+  \ Compile the `atan` ROM calculator command.
+: cos  ( -- )  $20 c,  ;
+  \ Compile the `cos` ROM calculator command.
+: sin  ( -- )  $1F c,  ;
+  \ Compile the `sin` ROM calculator command.
+: tan  ( -- )  $21 c,  ;
+  \ Compile the `tan` ROM calculator command.
+
+-->
+
+( calculator )
+
+: drop  ( -- )  $02 c,  ;
+  \ Compile the `delete` ROM calculator command.
+
+: dup  ( -- )  $31 c,  ;
+  \ Compile the `duplicate` ROM calculator command.
+
+: swap  ( -- )  $01 c,  ;
+  \ Compile the `exchange` ROM calculator command.
+
+: >mem  ( n -- )  $C0 [ also forth ] + [ previous ] c,  ;
   \ Compile the `st-mem` ROM calculator command for memory
-  \ number _n_ (0..5). Note: The float stack TOS is copied, not
-  \ moved.
+  \ number _n_ (0..5). Note: The floating-point stack TOS is
+  \ copied, not moved.
 
-macro calc<mem  ( n -- )  E0 + c,  endm
+: mem>  ( n -- )  $E0 [ also forth ] + [ previous ] c,  ;
   \ Compile the `get-mem` ROM calculator command for memory
   \ number _n_ (0..5).
 
-macro calc-over  ( -- )
-  2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
+: over  ( -- )
+  2 >mem drop 1 >mem 2 mem> 1 mem>  ;
   \ Compile the ROM calculator commands to do `over`.
+  \ XXX TODO -- do not use the calculator memory
 
-( calc-negate calc-not )
+: 2dup  ( -- )  over over  ;
+  \ Compile the ROM calculator commands to do `2dup`.
 
-macro calc-negate  ( -- )  1B c,  endm
-  \ Compile the `negate` ROM calculator command.
+-->
 
-macro calc-not  ( -- )  30 c,  endm
+( calculator )
+
+: 0=  ( -- )  $30 c,  ;
   \ Compile the `not` ROM calculator command.
 
-( calc<> calc= calc> calc< calc<= calc>= )
-
-macro calc<>  ( -- )  0B c,  endm
+: <>  ( -- )  $0B c,  ;
   \ Compile the `nos-neql` ROM calculator command.
 
-macro calc=  ( -- )  0E c,  endm
+: =  ( -- )  $0E c,  ;
   \ Compile the `nos-eql` ROM calculator command.
 
-macro calc>  ( -- )  0C c,  endm
+: >  ( -- )  $0C c,  ;
   \ Compile the `no-grtr` ROM calculator command.
 
-macro calc<  ( -- )  0D c,  endm
+: <  ( -- )  $0D c,  ;
   \ Compile the `no-less` ROM calculator command.
 
-macro calc<=  ( -- )  09 c,  endm
+: <=  ( -- )  $09 c,  ;
   \ Compile the `no-l-eql` ROM calculator command.
 
-macro calc>=  ( -- )  0A c,  endm
+: >=  ( -- )  $0A c,  ;
   \ Compile the `no-gr-eql` ROM calculator command.
 
-( calc0< calc0> )
-
-macro calc0>  ( -- )  36 c,  endm
+: 0<  ( -- )  $36 c,  ;
   \ Compile the `less-0` ROM calculator command.
 
-macro calc0<  ( -- )  37 c,  endm
+: 0>  ( -- )  $37 c,  ;
   \ Compile the `greater-0` ROM calculator command.
 
-( calc-?branch calc-branch calc-mark> calc-resolve> )
+-->
 
-need alias
+( calculator )
 
-macro calc-?branch  ( -- )  00 c,  endm
+: ?branch  ( -- )  $00 c,  ;
   \ Compile the `jump-true` ROM calculator command.
 
-macro calc-branch  ( -- )  33 c,  endm
+: branch  ( -- )  $33 c,  ;
   \ Compile the `jump` ROM calculator command.
 
-: >calc-mark  ( -- a )  here 0 c,  ;
+: >mark  ( -- a )  here 0 c,  ;
 
   \ Compile space for the displacement of a ROM calculator
   \ forward branch which will later be resolved by
-  \ `>calc-resolve`.
+  \ `>resolve`.
   \
-  \ Typically used after either `calc-branch` or
-  \ `calc-?branch`.
+  \ Typically used after either `branch` or
+  \ `?branch`.
 
-: from-here  ( a -- n )  here swap -  ;
+: from-here  ( a -- n )
+  here [ also forth ] swap - [ previous ] ;
   \ Calculate the displacement _n_ from the current data-space
   \ pointer to address _a_.
 
-: >calc-resolve  ( a -- )  dup from-here swap c!  ;
+: >resolve  ( a -- )
+  [ also forth ] dup [ previous ] from-here
+  [ also forth ] swap [ previous ] c!  ;
 
   \ Resolve a ROM calculator forward branch by placing the
   \ displacement to the current position into the space
-  \ compiled by `>calc-mark`.
+  \ compiled by `>mark`.
 
-' here alias <calc-mark  ( -- a )
+' here alias <mark  ( -- a )
 
   \ Leave the address of the current data-space pointer as the
   \ destination of a ROM calculator backward branch which will
-  \ later be resolved by `<calc-resolve`.
+  \ later be resolved by `<resolve`.
   \
-  \ Typically used before either `calc-branch` or
-  \ `calc-?branch`.
+  \ Typically used before either `branch` or
+  \ `?branch`.
 
-: <calc-resolve  ( a -- )  from-here c,  ;
+: <resolve  ( a -- )  from-here c,  ;
 
   \ Resolve a ROM calculator backward branch by compiling the
   \ displacement from the current position to the address left
-  \ by `<calc-mark`.
+  \ by `<mark`.
 
+: if  ( -- a )  ?branch >mark  ;
+
+: else  ( a1 -- a2 )
+  branch >mark [ also forth ] swap [ previous ] >resolve  ;
+
+' >resolve alias then  ( a -- )
+
+set-current  previous
+  \ restore the current word list and the search order

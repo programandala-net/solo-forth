@@ -1,6 +1,6 @@
 = Solo Forth README
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-03
+:revdate: 2016-04-18
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -18,7 +18,7 @@ The
 http://programandala.net/en.program.solo_forth.history.html[development
 history] started on 2015-05-30.
 
-As of 2016-04-03 Solo Forth is under active development, very usable
+As of 2016-04-18 Solo Forth is under active development, very usable
 and stable, though far from complete. It is already used to develop
 some other projects.
 
