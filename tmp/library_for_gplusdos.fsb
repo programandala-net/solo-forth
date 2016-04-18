@@ -8712,699 +8712,6 @@ s" Standard error codes" located error-messages-block !
 
   \ vim: filetype=soloforth
 
-  \ floating_point.rom.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Last modified: 201604180313
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ A floating point implementation that uses the ROM
-  \ calculator.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-  \ -----------------------------------------------------------
-  \ History
-
-  \ 2015-09-23: Start. Main development.
-  \ 2016-04-11: Revision. Code reorganized. First improvements.
-  \ 2016-04-12: Started `f.` and `f,`.
-  \ 2016-04-13: Fixes and improvements. First usable version.
-  \ 2016-04-18: Made `f.` immune to the ROM bug.
-
-  \ -----------------------------------------------------------
-  \ To-do
-
-  \ XXX FIXME -- When the calculator stack is out of bounds,
-  \ the calculator could issue a BASIC error and crash the
-  \ system. Test it.
-  \
-  \ XXX TODO -- Move the stack and make it configurable. The
-  \ default location is limited by the small free memory left
-  \ to BASIC.
-  \
-  \ XXX TODO -- Write `fliteral`, `ffield:`, `fvalue`,
-  \ environmental queries.
-  \
-  \ XXX TODO -- Write safer alternatives for the ambiguous
-  \ conditions listed in Forth-2012.
-  \
-  \ XXX TODO -- Move the ROM calculator extensions to their own
-  \ module.
-  \
-  \ XXX TODO -- Use a word list for the calculator commands.
-  \ This way they will not need a prefix.
-
-( --fp-rom-- )
-
-  \ XXX TMP -- for development
-
-need +thru
-
-1 28 +thru
-
-: --fp-rom-- ;
-
-( float float+ floats )
-
-5 constant float
-
-: float+  ( n1 -- n2 )  float +  ;
-: floats  ( n1 -- n2 )  float *  ;
-
-( calc calc-end end-calc )
-
-need macro
-
-  \ Two assembler macros to make it easier to use the ROM
-  \ calculator.
-
-macro calc  ( -- )  C5 c, EF c,  endm
-  \ Compile the assembler instructions to start the ROM
-  \ calculator:
-  \ ----
-  \ push bc ; save the Forth IP
-  \ rst $28 ; call the ROM calculator
-  \ ----
-
-macro calc-end  ( -- )  38 c,  endm
-  \ Compile the `end-calc` ROM calculator command.
-  \ ----
-  \ db $38 ; exit the ROM calculator
-  \ ----
-
-macro end-calc  ( -- )  calc-end C1 c,  endm
-  \ Compile the assembler instructions to exit the ROM calculator:
-  \ ----
-  \ db $38 ; `end-calc` ROM calculator command
-  \ pop bc ; restore the Forth IP
-  \ ----
-
-( calc-drop calc-dup calc-swap calc-over calc>mem calc<mem )
-
-macro calc-drop  ( -- )  02 c,  endm
-  \ Compile the `drop` ROM calculator command.
-
-macro calc-dup  ( -- )  31 c,  endm
-  \ Compile the `dup` ROM calculator command.
-
-macro calc-swap  ( -- )  01 c,  endm
-  \ Compile the `swap` ROM calculator command.
-
-macro calc>mem  ( n -- )  C0 + c,  endm
-  \ Compile the `st-mem` ROM calculator command for memory
-  \ number _n_ (0..5). Note: The float stack TOS is copied, not
-  \ moved.
-
-macro calc<mem  ( n -- )  E0 + c,  endm
-  \ Compile the `get-mem` ROM calculator command for memory
-  \ number _n_ (0..5).
-
-macro calc-over  ( -- )
-  2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
-  \ Compile the ROM calculator commands to do `over`.
-
-( calc-negate calc-not )
-
-macro calc-negate  ( -- )  1B c,  endm
-  \ Compile the `negate` ROM calculator command.
-
-macro calc-not  ( -- )  30 c,  endm
-  \ Compile the `not` ROM calculator command.
-
-( calc<> calc= calc> calc< calc<= calc>= )
-
-macro calc<>  ( -- )  0B c,  endm
-  \ Compile the `nos-neql` ROM calculator command.
-
-macro calc=  ( -- )  0E c,  endm
-  \ Compile the `nos-eql` ROM calculator command.
-
-macro calc>  ( -- )  0C c,  endm
-  \ Compile the `no-grtr` ROM calculator command.
-
-macro calc<  ( -- )  0D c,  endm
-  \ Compile the `no-less` ROM calculator command.
-
-macro calc<=  ( -- )  09 c,  endm
-  \ Compile the `no-l-eql` ROM calculator command.
-
-macro calc>=  ( -- )  0A c,  endm
-  \ Compile the `no-gr-eql` ROM calculator command.
-
-( calc0< calc0> )
-
-macro calc0>  ( -- )  36 c,  endm
-  \ Compile the `less-0` ROM calculator command.
-
-macro calc0<  ( -- )  37 c,  endm
-  \ Compile the `greater-0` ROM calculator command.
-
-( calc-?branch calc-branch calc-mark> calc-resolve> )
-
-need alias
-
-macro calc-?branch  ( -- )  00 c,  endm
-  \ Compile the `jump-true` ROM calculator command.
-
-macro calc-branch  ( -- )  33 c,  endm
-  \ Compile the `jump` ROM calculator command.
-
-: >calc-mark  ( -- a )  here 0 c,  ;
-
-  \ Compile space for the displacement of a ROM calculator
-  \ forward branch which will later be resolved by
-  \ `>calc-resolve`.
-  \
-  \ Typically used after either `calc-branch` or
-  \ `calc-?branch`.
-
-: from-here  ( a -- n )  here swap -  ;
-  \ Calculate the displacement _n_ from the current data-space
-  \ pointer to address _a_.
-
-: >calc-resolve  ( a -- )  dup from-here swap c!  ;
-
-  \ Resolve a ROM calculator forward branch by placing the
-  \ displacement to the current position into the space
-  \ compiled by `>calc-mark`.
-
-' here alias <calc-mark  ( -- a )
-
-  \ Leave the address of the current data-space pointer as the
-  \ destination of a ROM calculator backward branch which will
-  \ later be resolved by `<calc-resolve`.
-  \
-  \ Typically used before either `calc-branch` or
-  \ `calc-?branch`.
-
-: <calc-resolve  ( a -- )  from-here c,  ;
-
-  \ Resolve a ROM calculator backward branch by compiling the
-  \ displacement from the current position to the address left
-  \ by `<calc-mark`.
-
-( fp0 fp (fp@ fp@ empty-fs fdepth )
-
-need float
-
-23651 constant fp0  \ STKBOT system variable
-23653 constant fp   \ STKEND system variable
-
-  \ Note: The calculator stack grows towards higher memory, and
-  \ `fp` points to the first free position, therefore above top
-  \ of stack.
-
-: (fp@  ( -- a )  fp @  ;
-
-: fp@  ( -- a )  (fp@ float -  ;
-
-: empty-fs  ( -- )  fp0 @ fp !  ;
-  \ XXX TODO -- try alternative: ROM routine $16BF
-
-: fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
-
-( end-calc-flag )
-
-need macro  need f>s  need call-xt
-
-: f>flag  ( -- f ) ( F: 1|0 -- )  f>s negate  ;
-
-  \ Convert a ROM calculator flag in the float stack (_1|0_) to
-  \ an actual flag _wf_ in the stack.
-
-macro end-calc-flag  ( -- wf ) ( F: 1|0 -- )
-  end-calc ['] f>flag call-xt  jpnext endm
-
-  \ Exit the ROM calculator and convert a a flag calculated by
-  \ it (_1|0_) to an actual flag _wf_ in the stack.
-  \
-  \ This macro is a common factor of all floating point logical
-  \ operators.
-
-( f= f<> )
-
-need calc  need end-calc-flag  need calc=  need calc<>
-need calc-not  \ XXX TMP --
-
-code f<>  ( -- wf ) ( F: r1 r2 -- )
-  calc calc<> end-calc-flag  end-code
-    \ XXX TODO -- test
-    \ XXX FIXME -- always returns 0
-  \ calc calc= calc-not end-calc-flag  end-code
-
-code f=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc= end-calc-flag  end-code
-
-  \ code f~ \ XXX TODO
-
-( f0< f0= f0<> f0> )
-
-need calc  need end-calc-flag
-need calc-not  need calc0>  need calc0<
-
-code f0<  ( -- wf ) ( F: r -- )
-  calc calc0< end-calc-flag  end-code
-
-code f0=  ( -- wf ) ( F: r -- )
-  calc calc-not end-calc-flag  end-code
-
-code f0<>  ( -- wf ) ( F: r -- )
-  calc calc-not calc-not end-calc-flag  end-code
-
-code f0>  ( -- wf ) ( F: r -- )
-  calc calc0> end-calc-flag  end-code
-
-( f< f<= f> f>= )
-
-need calc  need end-calc-flag
-need calc<  need calc>  need calc<=  need calc>=
-
-code f<  ( -- wf ) ( F: r1 r2 -- )
-  calc calc< end-calc-flag  end-code
-
-code f<=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc<= end-calc-flag  end-code
-
-code f>  ( -- wf ) ( F: r1 r2 -- )
-  calc calc> end-calc-flag  end-code
-
-code f>=  ( -- wf ) ( F: r1 r2 -- )
-  calc calc>= end-calc-flag  end-code
-
-( fdrop fdup fswap fover )
-
-need calc  need calc-over  need calc-drop  need calc-dup
-need calc-swap
-
-code fdrop  ( F: r -- )
-  calc calc-drop end-calc jpnext  end-code
-
-code fdup  ( F: r -- r r )
-  calc calc-dup end-calc jpnext  end-code
-
-code fswap  ( F: r1 r2 -- r2 r1 )
-  calc calc-swap end-calc jpnext  end-code
-
-code fover  ( F: r1 r2 -- r1 r2 r1 )
-  calc calc-over end-calc jpnext  end-code
-
-( frot -frot )
-
-need calc  need calc>mem  need calc<mem  need calc-drop
-
-code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       2 calc<mem 3 calc<mem 1 calc<mem
-  end-calc jpnext  end-code
-
-code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
-  calc 3 calc>mem calc-drop
-       2 calc>mem calc-drop
-       1 calc>mem calc-drop
-       3 calc<mem 1 calc<mem 2 calc<mem
-  end-calc jpnext  end-code
-
-( f+ f- f* f/ fmod )
-
-need calc  need fdup  need f0=
-
-code f+  ( F: r1 r2 -- r3 )
-  calc 0F c, end-calc jpnext  end-code
-
-code f-  ( F: r1 r2 -- r3 )
-  calc 03 c, end-calc jpnext  end-code
-
-code f*  ( F: r1 r2 -- r3 )
-  calc 04 c, end-calc jpnext  end-code
-  \ XXX FIXME --
-  \ F: fp2/ 2 -- crash!
-  \ F: 60000 0.5 -- 60000 0
-  \ F: 1 0.5 -- 1 0
-  \ F: 0.5 1 -- 0.5 0
-
-code f/  ( F: r1 r2 -- r3 )
-  calc 05 c, end-calc jpnext  end-code
-  \ XXX FIXME -- when _r2_ is zero, the calculator issues
-  \ "number too big" BASIC error, what crashes the system.  It
-  \ could be trapped with G+DOS. A safe alternative `?f/` is
-  \ provided.
-
-: ?f/  ( F: r1 r2 -- r3 )  fdup f0= #-42 ?throw f/  ;
-  \ Safe version of `f/`. If _r2_ is zero, an exception
-  \ is thrown.
-
-code fmod  ( F: r1 -- r2 )
-  calc 32 c, end-calc jpnext  end-code
-
-( fmax )
-
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
-
-code fmax  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-swap calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
-
-( fmin )
-
-need calc  need calc-over  need calc>  need calc-drop
-need calc-swap  need calc-?branch  need calc-branch
-
-code fmin  ( F: r1 r2 -- r1|r2 )
-  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
-        calc-?branch >calc-mark ( Compilation: a1 )
-        calc-drop  ( F: r1 )
-        calc-branch >calc-mark ( Compilation: a1 a2 )
-        swap >calc-resolve  \ resolve the first branch
-        calc-swap calc-drop  ( F: r2 )
-        >calc-resolve  \ resolve the second branch
-  end-calc jpnext  end-code
-
-( fsign fabs fnegate )
-
-need calc  need calc-negate
-
-code fsign  ( F: r1 -- r2 )
-  calc 29 c, end-calc jpnext  end-code
-
-code fabs  ( F: r1 -- r2 )
-  calc 2A c, end-calc jpnext  end-code
-
-code fnegate  ( F: r1 -- r2 )
-  calc calc-negate end-calc jpnext  end-code
-
-( fln fexp f** fsqrt )
-
-need calc  need fdup  need f0<
-
-code fln  ( F: r1 -- r2 )
-  calc 25 c, end-calc jpnext  end-code
-
-code fexp  ( F: r1 -- r2 )
-  calc 26 c, end-calc jpnext  end-code
-
-code f**  ( F: r1 -- r2 )
-  calc 06 c, end-calc jpnext  end-code
-
-code fsqrt  ( F: r1 -- r2 )
-  calc 28 c, end-calc jpnext  end-code
-
-  \ XXX FIXME -- when _r1_ is negative, the calculator issues
-  \ "invalid argument" BASIC error, what crashes the system.
-  \ Maybe it could be trapped with G+DOS. A safe alternative
-  \ `?fsqrt` is provided.
-
-: ?fsqrt  ( F: r1 -- r2 )  fdup f0< #-46 ?throw f/  ;
-  \ Safe version of `fsqrt`. If _r1_ is negative, an exception
-  \ is thrown.
-
-( f0 f1 fhalf fpi2/ f10 )
-
-need calc
-
-code f0  ( F: -- r )
-  calc A0 c, end-calc jpnext  end-code
-
-code f1  ( F: -- r )
-  calc A1 c, end-calc jpnext  end-code
-
-code fhalf  ( F: -- r )
-  calc A2 c, end-calc jpnext  end-code
-
-code fpi2/  ( F: -- r )
-  calc A3 c, end-calc jpnext  end-code
-
-code f10  ( F: -- r )
-  calc A4 c, end-calc jpnext  end-code
-
-( b>f u>f s>f f>s )
-
-need calc  need fnegate
-
-code restack  ( F: r -- r' )
-  calc  3D c,  end-calc  jpnext end-code
-  \ Restacks an integer in full floating point form.
-  \
-  \ XXX TODO -- Better name. Maybe `refloat`, `>f`.  "re-stack"
-  \ is the command of the ROM calculator.
-  \
-  \ XXX TODO -- remove, keep only the calculator command
-
-code b>f  ( b -- ) ( F: -- r )
-  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
-    \ exx
-    \ pop hl
-    \ ld a,l
-    \ call $2D28 ; STACK_A ROM routine
-    \ exx
-  \ XXX TODO -- test
-
-code u>f  ( u -- ) ( F: -- r )
-  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
-    \ exx
-    \ pop bc
-    \ call $2D2B ; STACK_BC ROM routine
-    \ exx
-
-: s>f  ( n -- ) ( F: -- r )
-  dup 0< if  abs u>f fnegate  else  u>f  then  ;
-  \ XXX TODO -- test
-
-code f>s  ( -- n ) ( F: r -- )
-  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
-    \ exx
-    \ call $2DA2 ; FP_TO_BC ROM routine
-    \ push bc
-    \ exx
-  \ XXX TODO -- test
-
-  \ code f>d  ( -- d ) ( F: r -- )
-  \ end-code
-  \ XXX TODO
-
-  \ code d>f  ( d -- ) ( F: -- r )
-  \ end-code
-  \ XXX TODO
-
-  \ code f>string  ( -- ca len ) ( F: r -- )
-  \ end-code
-  \ XXX TODO -- command $2E
-
-  \ : >float  ;
-  \ XXX TODO --
-
-( f! f@ )
-
-need z80-asm
-
-code f!  ( fa -- ) ( F: r -- )
-  exx  2BF1 call  \ STK_FETCH ROM routine
-       hl pop  a m ld  hl incp
-               e m ld  hl incp  d m ld  hl incp
-               c m ld  hl incp  b m ld
-  exx  jpnext end-code
-
-code f@  ( fa -- ) ( F: -- r )
-  exx  hl pop m a ld  hl incp
-              m e ld  hl incp  m d ld  hl incp
-              m c ld  hl incp  m b ld
-              2AB6 call  \ STK_STORE ROM routine
-  exx  jpnext end-code
-
-( f, fconstant fvariable )
-
-need f!
-
-: f,  ( -- ) ( F: r -- )  here float allot f!  ;
-
-: fconstant  ( "name" -- )  ( F: f -- )  create  f,  does>  ;
-
-: fvariable  ( "name" -- )  create  float allot  ;
-
-( facos fasin fatan fcos fsin ftan )
-
-need calc
-
-code facos  ( F: r1 -- r2 )
-  calc 23 c, end-calc jpnext  end-code
-
-code fasin  ( F: r1 -- r2 )
-  calc 22 c, end-calc jpnext  end-code
-
-code fatan  ( F: r1 -- r2 )
-  calc 24 c, end-calc jpnext  end-code
-
-code fcos  ( F: r1 -- r2 )
-  calc 20 c, end-calc jpnext  end-code
-
-code fsin  ( F: r1 -- r2 )
-  calc 1F c, end-calc jpnext  end-code
-
-code ftan  ( F: r1 -- r2 )
-  calc 21 c, end-calc jpnext  end-code
-
-( (f. f. )
-
-code (f.  ( F: r -- )
-  C5 c,  CD c, 2DE3 ,  C1 c,
-    \ push bc
-    \ call $2DE3  ; PRINT_FP ROM routine
-    \ pop bc
-  jpnext  end-code
-  \ Note: `exx` can no be used to preserve `bc`, the Forth IP,
-  \ because the routine uses the alternative registers.  `bc`
-  \ is saved on the stack instead.
-
-: f.  ( F: r -- )
-  fdepth >r  (f. space
-  fdepth r> = if  fdrop  then  ;
-
-  \ Note: the depth of the stack must be checked because
-  \ there's a bug in the PRINT-FP ROM routine called "unbalaced
-  \ stack error". When the number is a non-integer less than 1,
-  \ it's not removed from the stack at the end, and a zero is
-  \ pushed on the stack.  This bug is documented in the ROM
-  \ disassembly. Credit: Tony Stratton, 1982.
-
-  \ XXX FIXME -- The Forth-2012 standard reads `f.` must use
-  \ fixed-point notation, but in this implementation the
-  \ decimal point is not shown at the end when the number is
-  \ integer.
-
-( .fs dump-fs )
-
-need (fp@  need fp0  need f@  need f.
-need fdepth  need float  need float+  need .depth
-
-: (.fs  ( -- )  (fp@ fp0 @ ?do  i f@ f.  float +loop  ;
-
-: .fs   ( -- )  fdepth dup .depth 0> if  (.fs  then  ;
-
-: (dump-fs  ( -- )
-  cr ." Bottom"
-  (fp@ fp0 @ ?do
-    i dup cr u. float bounds ?do  i c@ 4 .r  loop
-  float +loop  cr ." Top" cr  ;
-
-: dump-fs  ( -- )  fdepth dup .depth 0> if  (dump-fs  then  ;
-
-( fround floor ftrunc )
-
-need calc  need f0=  need f0<  need fdup  need fnegate
-
-: fround  ( F: r1 -- r2 )  ;
-
-  \ XXX TODO --
-
-  \ doc{
-  \
-  \ fround  ( r1 -- r2 )
-  \
-  \ Round _r1_ to an integral value using the "round to
-  \ nearest" rule, giving _r2_.
-  \
-  \ Origin: Forth-2012 (FLOATING).
-  \
-  \ }doc
-
-: floor  ( F: r1 -- r2 )  ;
-
-  \ XXX TODO --
-
-  \ doc{
-  \
-  \ floor  ( F: r1 -- r2 )
-  \
-  \ Round _r1_ to an integral value using the "round toward
-  \ negative infinity" rule, giving _r2_.
-  \
-  \ Origin: Forth-2012 (FLOATING).
-  \
-  \ }doc
-
-
-code ftrunc  ( F: r1 -- r2 )
-  calc 3A c, end-calc jpnext  end-code
-
-  \ doc{
-  \
-  \ floor  ( F: r1 -- r2 )
-  \
-  \ Round _r1_ to an integral value using the "round toward
-  \ zero" rule, giving _r2_.
-  \
-  \ Origin: Forth-2012 (FLOATING).
-  \
-  \ }doc
-
-  \ Example from the documentation of Forth-2012:
-
-  \ : ftrunc  ( F: r1 -- r2 )
-  \   fdup f0= 0= if
-  \     fdup f0< if  fnegate floor fnegate  else  floor  then
-  \   then  ;
-
-  \ From Gforth:
-  \
-  \ : ftrunc  ( F: r1 -- r2 )  f>d d>f ;
-
-( falign faligned )
-
-need alias
-
-' noop alias falign     ( -- )        immediate
-' noop alias faligned   ( a -- fa )   immediate
-  \ ' noop alias sfalign    ( -- )        immediate
-  \ ' noop alias sfaligned  ( a -- dfa )  immediate
-  \ ' noop alias dfalign    ( -- )        immediate
-  \ ' noop alias dfaligned  ( a -- dfa )  immediate
-
-( xx )
-
-  \ XXX TMP -- for debugging the bug of the PRINT-FP ROM
-  \ routine
-
-  \ List the floating-point stack, showing the value returned
-  \ by `fp@` after every step:
-
-: xx  ( -- )
-  (fp@ fp0 @ ?do
-    cr i fp@ u.
-    f@
-    \ the pointer is increased by `f@`
-    fp@ u.
-    '[' emit f. ']' emit
-    \ the pointer is restored after `f.`, except when
-    \ the printed float is non-integer and less than 1
-    fp@ u.
-  float +loop  ;
-
-  \ vim: filetype=soloforth
   \ flow.associative-case-colon.fsb
   \
   \ This file is part of Solo Forth
@@ -16858,6 +16165,2195 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
     \ restore return address
 
   \ vim: filetype=soloforth
+  \  math.calculator.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604181319
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Word to use the ROM calculator.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09-23: Start. Main development, as part of the
+  \ floating point implementation.
+  \
+  \ 2016-04-11: Revision. Code reorganized. Improvements.
+  \
+  \ 2016-04-13: Fixes and improvements. First usable version.
+  \
+  \ 2016-04-18: Splitted from the floating point module, in
+  \ order to reuse it.
+
+  \ -----------------------------------------------------------
+  \ To-do
+
+  \ XXX TODO -- Move the stack and make it configurable. The
+  \ default location is limited by the small free memory left
+  \ to BASIC.
+  \
+  \ XXX FIXME -- When the calculator stack is out of bounds,
+  \ the calculator could issue a BASIC error and crash the
+  \ system. Test it.
+  \
+  \ XXX TODO -- Use a word list for the calculator commands.
+  \ This way they will not need a prefix.
+  \
+  \ XXX TODO -- Add control structures.
+
+( calc calc-end end-calc )
+
+need macro
+
+  \ Two assembler macros to make it easier to use the ROM
+  \ calculator.
+
+macro calc  ( -- )  C5 c, EF c,  endm
+  \ Compile the assembler instructions to start the ROM
+  \ calculator:
+  \ ----
+  \ push bc ; save the Forth IP
+  \ rst $28 ; call the ROM calculator
+  \ ----
+
+macro calc-end  ( -- )  38 c,  endm
+  \ Compile the `end-calc` ROM calculator command.
+  \ ----
+  \ db $38 ; exit the ROM calculator
+  \ ----
+
+macro end-calc  ( -- )  calc-end C1 c,  endm
+  \ Compile the assembler instructions to exit the ROM calculator:
+  \ ----
+  \ db $38 ; `end-calc` ROM calculator command
+  \ pop bc ; restore the Forth IP
+  \ ----
+
+( calc-drop calc-dup calc-swap calc-over calc>mem calc<mem )
+
+macro calc-drop  ( -- )  02 c,  endm
+  \ Compile the `drop` ROM calculator command.
+
+macro calc-dup  ( -- )  31 c,  endm
+  \ Compile the `dup` ROM calculator command.
+
+macro calc-swap  ( -- )  01 c,  endm
+  \ Compile the `swap` ROM calculator command.
+
+macro calc>mem  ( n -- )  C0 + c,  endm
+  \ Compile the `st-mem` ROM calculator command for memory
+  \ number _n_ (0..5). Note: The float stack TOS is copied, not
+  \ moved.
+
+macro calc<mem  ( n -- )  E0 + c,  endm
+  \ Compile the `get-mem` ROM calculator command for memory
+  \ number _n_ (0..5).
+
+macro calc-over  ( -- )
+  2 calc>mem calc-drop 1 calc>mem 2 calc<mem 1 calc<mem  endm
+  \ Compile the ROM calculator commands to do `over`.
+
+( calc-negate calc-not )
+
+macro calc-negate  ( -- )  1B c,  endm
+  \ Compile the `negate` ROM calculator command.
+
+macro calc-not  ( -- )  30 c,  endm
+  \ Compile the `not` ROM calculator command.
+
+( calc<> calc= calc> calc< calc<= calc>= )
+
+macro calc<>  ( -- )  0B c,  endm
+  \ Compile the `nos-neql` ROM calculator command.
+
+macro calc=  ( -- )  0E c,  endm
+  \ Compile the `nos-eql` ROM calculator command.
+
+macro calc>  ( -- )  0C c,  endm
+  \ Compile the `no-grtr` ROM calculator command.
+
+macro calc<  ( -- )  0D c,  endm
+  \ Compile the `no-less` ROM calculator command.
+
+macro calc<=  ( -- )  09 c,  endm
+  \ Compile the `no-l-eql` ROM calculator command.
+
+macro calc>=  ( -- )  0A c,  endm
+  \ Compile the `no-gr-eql` ROM calculator command.
+
+( calc0< calc0> )
+
+macro calc0>  ( -- )  36 c,  endm
+  \ Compile the `less-0` ROM calculator command.
+
+macro calc0<  ( -- )  37 c,  endm
+  \ Compile the `greater-0` ROM calculator command.
+
+( calc-?branch calc-branch calc-mark> calc-resolve> )
+
+need alias
+
+macro calc-?branch  ( -- )  00 c,  endm
+  \ Compile the `jump-true` ROM calculator command.
+
+macro calc-branch  ( -- )  33 c,  endm
+  \ Compile the `jump` ROM calculator command.
+
+: >calc-mark  ( -- a )  here 0 c,  ;
+
+  \ Compile space for the displacement of a ROM calculator
+  \ forward branch which will later be resolved by
+  \ `>calc-resolve`.
+  \
+  \ Typically used after either `calc-branch` or
+  \ `calc-?branch`.
+
+: from-here  ( a -- n )  here swap -  ;
+  \ Calculate the displacement _n_ from the current data-space
+  \ pointer to address _a_.
+
+: >calc-resolve  ( a -- )  dup from-here swap c!  ;
+
+  \ Resolve a ROM calculator forward branch by placing the
+  \ displacement to the current position into the space
+  \ compiled by `>calc-mark`.
+
+' here alias <calc-mark  ( -- a )
+
+  \ Leave the address of the current data-space pointer as the
+  \ destination of a ROM calculator backward branch which will
+  \ later be resolved by `<calc-resolve`.
+  \
+  \ Typically used before either `calc-branch` or
+  \ `calc-?branch`.
+
+: <calc-resolve  ( a -- )  from-here c,  ;
+
+  \ Resolve a ROM calculator backward branch by compiling the
+  \ displacement from the current position to the address left
+  \ by `<calc-mark`.
+
+  \  math.floating_point.rom.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604181324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ A floating point implementation that uses the ROM
+  \ calculator.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09-23: Start. Main development.
+  \
+  \ 2016-04-11: Revision. Code reorganized. First improvements.
+  \
+  \ 2016-04-12: Started `f.` and `f,`.
+  \
+  \ 2016-04-13: Fixes and improvements. First usable version.
+  \
+  \ 2016-04-18: Made `f.` immune to the ROM bug. Fixed
+  \ `ftrunc`. Moved the ROM calculator to its own file.
+
+  \ -----------------------------------------------------------
+  \ To-do
+
+  \ XXX TODO -- Write `fliteral`, `ffield:`, `fvalue`,
+  \ environmental queries.
+  \
+  \ XXX TODO -- Write safer alternatives for the ambiguous
+  \ conditions listed in Forth-2012.
+
+( --fp-rom-- )
+
+  \ XXX TMP -- for development
+
+need +thru
+
+1 22 +thru
+
+: --fp-rom-- ;
+
+( float float+ floats )
+
+5 constant float
+
+: float+  ( n1 -- n2 )  float +  ;
+: floats  ( n1 -- n2 )  float *  ;
+
+( fp0 fp (fp@ fp@ empty-fs fdepth )
+
+need float
+
+23651 constant fp0  \ STKBOT system variable
+23653 constant fp   \ STKEND system variable
+
+  \ Note: The calculator stack grows towards higher memory, and
+  \ `fp` points to the first free position, therefore above top
+  \ of stack.
+
+: (fp@  ( -- a )  fp @  ;
+
+: fp@  ( -- a )  (fp@ float -  ;
+
+: empty-fs  ( -- )  fp0 @ fp !  ;
+  \ XXX TODO -- try alternative: ROM routine $16BF
+
+: fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
+
+( end-calc-flag )
+
+need macro  need f>s  need call-xt
+
+: f>flag  ( -- f ) ( F: 1|0 -- )  f>s negate  ;
+
+  \ Convert a ROM calculator flag in the float stack (_1|0_) to
+  \ an actual flag _wf_ in the stack.
+
+macro end-calc-flag  ( -- wf ) ( F: 1|0 -- )
+  end-calc ['] f>flag call-xt  jpnext endm
+
+  \ Exit the ROM calculator and convert a a flag calculated by
+  \ it (_1|0_) to an actual flag _wf_ in the stack.
+  \
+  \ This macro is a common factor of all floating point logical
+  \ operators.
+
+( f= f<> )
+
+need calc  need end-calc-flag  need calc=  need calc<>
+need calc-not  \ XXX TMP --
+
+code f<>  ( -- wf ) ( F: r1 r2 -- )
+  calc calc<> end-calc-flag  end-code
+    \ XXX TODO -- test
+    \ XXX FIXME -- always returns 0
+  \ calc calc= calc-not end-calc-flag  end-code
+
+code f=  ( -- wf ) ( F: r1 r2 -- )
+  calc calc= end-calc-flag  end-code
+
+  \ code f~ \ XXX TODO
+
+( f0< f0= f0<> f0> )
+
+need calc  need end-calc-flag
+need calc-not  need calc0>  need calc0<
+
+code f0<  ( -- wf ) ( F: r -- )
+  calc calc0< end-calc-flag  end-code
+
+code f0=  ( -- wf ) ( F: r -- )
+  calc calc-not end-calc-flag  end-code
+
+code f0<>  ( -- wf ) ( F: r -- )
+  calc calc-not calc-not end-calc-flag  end-code
+
+code f0>  ( -- wf ) ( F: r -- )
+  calc calc0> end-calc-flag  end-code
+
+( f< f<= f> f>= )
+
+need calc  need end-calc-flag
+need calc<  need calc>  need calc<=  need calc>=
+
+code f<  ( -- wf ) ( F: r1 r2 -- )
+  calc calc< end-calc-flag  end-code
+
+code f<=  ( -- wf ) ( F: r1 r2 -- )
+  calc calc<= end-calc-flag  end-code
+
+code f>  ( -- wf ) ( F: r1 r2 -- )
+  calc calc> end-calc-flag  end-code
+
+code f>=  ( -- wf ) ( F: r1 r2 -- )
+  calc calc>= end-calc-flag  end-code
+
+( fdrop fdup fswap fover )
+
+need calc  need calc-over  need calc-drop  need calc-dup
+need calc-swap
+
+code fdrop  ( F: r -- )
+  calc calc-drop end-calc jpnext  end-code
+
+code fdup  ( F: r -- r r )
+  calc calc-dup end-calc jpnext  end-code
+
+code fswap  ( F: r1 r2 -- r2 r1 )
+  calc calc-swap end-calc jpnext  end-code
+
+code fover  ( F: r1 r2 -- r1 r2 r1 )
+  calc calc-over end-calc jpnext  end-code
+
+( frot -frot )
+
+need calc  need calc>mem  need calc<mem  need calc-drop
+
+code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
+  calc 3 calc>mem calc-drop
+       2 calc>mem calc-drop
+       1 calc>mem calc-drop
+       2 calc<mem 3 calc<mem 1 calc<mem
+  end-calc jpnext  end-code
+
+code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
+  calc 3 calc>mem calc-drop
+       2 calc>mem calc-drop
+       1 calc>mem calc-drop
+       3 calc<mem 1 calc<mem 2 calc<mem
+  end-calc jpnext  end-code
+
+( f+ f- f* f/ fmod )
+
+need calc  need fdup  need f0=
+
+code f+  ( F: r1 r2 -- r3 )
+  calc 0F c, end-calc jpnext  end-code
+
+code f-  ( F: r1 r2 -- r3 )
+  calc 03 c, end-calc jpnext  end-code
+
+code f*  ( F: r1 r2 -- r3 )
+  calc 04 c, end-calc jpnext  end-code
+  \ XXX FIXME --
+  \ F: fp2/ 2 -- crash!
+  \ F: 60000 0.5 -- 60000 0
+  \ F: 1 0.5 -- 1 0
+  \ F: 0.5 1 -- 0.5 0
+
+code f/  ( F: r1 r2 -- r3 )
+  calc 05 c, end-calc jpnext  end-code
+  \ XXX FIXME -- when _r2_ is zero, the calculator issues
+  \ "number too big" BASIC error, what crashes the system.  It
+  \ could be trapped with G+DOS. A safe alternative `?f/` is
+  \ provided.
+
+: ?f/  ( F: r1 r2 -- r3 )  fdup f0= #-42 ?throw f/  ;
+  \ Safe version of `f/`. If _r2_ is zero, an exception
+  \ is thrown.
+
+code fmod  ( F: r1 -- r2 )
+  calc 32 c, end-calc jpnext  end-code
+
+( fmax )
+
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
+code fmax  ( F: r1 r2 -- r1|r2 )
+  calc  calc-over calc-over calc>  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-swap calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( fmin )
+
+need calc  need calc-over  need calc>  need calc-drop
+need calc-swap  need calc-?branch  need calc-branch
+
+code fmin  ( F: r1 r2 -- r1|r2 )
+  calc  calc-over calc-over calc<  ( F: r1 r2 rf -- )
+        calc-?branch >calc-mark ( Compilation: a1 )
+        calc-drop  ( F: r1 )
+        calc-branch >calc-mark ( Compilation: a1 a2 )
+        swap >calc-resolve  \ resolve the first branch
+        calc-swap calc-drop  ( F: r2 )
+        >calc-resolve  \ resolve the second branch
+  end-calc jpnext  end-code
+
+( fsign fabs fnegate )
+
+need calc  need calc-negate
+
+code fsign  ( F: r1 -- r2 )
+  calc 29 c, end-calc jpnext  end-code
+
+code fabs  ( F: r1 -- r2 )
+  calc 2A c, end-calc jpnext  end-code
+
+code fnegate  ( F: r1 -- r2 )
+  calc calc-negate end-calc jpnext  end-code
+
+( fln fexp f** fsqrt )
+
+need calc  need fdup  need f0<
+
+code fln  ( F: r1 -- r2 )
+  calc 25 c, end-calc jpnext  end-code
+
+code fexp  ( F: r1 -- r2 )
+  calc 26 c, end-calc jpnext  end-code
+
+code f**  ( F: r1 -- r2 )
+  calc 06 c, end-calc jpnext  end-code
+
+code fsqrt  ( F: r1 -- r2 )
+  calc 28 c, end-calc jpnext  end-code
+
+  \ XXX FIXME -- when _r1_ is negative, the calculator issues
+  \ "invalid argument" BASIC error, what crashes the system.
+  \ Maybe it could be trapped with G+DOS. A safe alternative
+  \ `?fsqrt` is provided.
+
+: ?fsqrt  ( F: r1 -- r2 )  fdup f0< #-46 ?throw f/  ;
+  \ Safe version of `fsqrt`. If _r1_ is negative, an exception
+  \ is thrown.
+
+( f0 f1 fhalf fpi2/ f10 )
+
+need calc
+
+code f0  ( F: -- r )
+  calc A0 c, end-calc jpnext  end-code
+
+code f1  ( F: -- r )
+  calc A1 c, end-calc jpnext  end-code
+
+code fhalf  ( F: -- r )
+  calc A2 c, end-calc jpnext  end-code
+
+code fpi2/  ( F: -- r )
+  calc A3 c, end-calc jpnext  end-code
+
+code f10  ( F: -- r )
+  calc A4 c, end-calc jpnext  end-code
+
+( b>f u>f s>f f>s )
+
+need calc  need fnegate
+
+code restack  ( F: r -- r' )
+  calc  3D c,  end-calc  jpnext end-code
+  \ Restacks an integer in full floating point form.
+  \
+  \ XXX TODO -- Better name. Maybe `refloat`, `>f`.  "re-stack"
+  \ is the command of the ROM calculator.
+  \
+  \ XXX TODO -- remove, keep only the calculator command
+
+code b>f  ( b -- ) ( F: -- r )
+  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
+    \ exx
+    \ pop hl
+    \ ld a,l
+    \ call $2D28 ; STACK_A ROM routine
+    \ exx
+  \ XXX TODO -- test
+
+code u>f  ( u -- ) ( F: -- r )
+  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
+    \ exx
+    \ pop bc
+    \ call $2D2B ; STACK_BC ROM routine
+    \ exx
+
+: s>f  ( n -- ) ( F: -- r )
+  dup 0< if  abs u>f fnegate  else  u>f  then  ;
+  \ XXX TODO -- test
+
+code f>s  ( -- n ) ( F: r -- )
+  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
+    \ exx
+    \ call $2DA2 ; FP_TO_BC ROM routine
+    \ push bc
+    \ exx
+  \ XXX TODO -- test
+
+  \ code f>d  ( -- d ) ( F: r -- )
+  \ end-code
+  \ XXX TODO
+
+  \ code d>f  ( d -- ) ( F: -- r )
+  \ end-code
+  \ XXX TODO
+
+  \ code f>string  ( -- ca len ) ( F: r -- )
+  \ end-code
+  \ XXX TODO -- command $2E
+
+  \ : >float  ;
+  \ XXX TODO --
+
+( f! f@ )
+
+need z80-asm
+
+code f!  ( fa -- ) ( F: r -- )
+  exx  2BF1 call  \ STK_FETCH ROM routine
+       hl pop  a m ld  hl incp
+               e m ld  hl incp  d m ld  hl incp
+               c m ld  hl incp  b m ld
+  exx  jpnext end-code
+
+code f@  ( fa -- ) ( F: -- r )
+  exx  hl pop m a ld  hl incp
+              m e ld  hl incp  m d ld  hl incp
+              m c ld  hl incp  m b ld
+              2AB6 call  \ STK_STORE ROM routine
+  exx  jpnext end-code
+
+( f, fconstant fvariable )
+
+need f!
+
+: f,  ( -- ) ( F: r -- )  here float allot f!  ;
+
+: fconstant  ( "name" -- )  ( F: f -- )  create  f,  does>  ;
+
+: fvariable  ( "name" -- )  create  float allot  ;
+
+( facos fasin fatan fcos fsin ftan )
+
+need calc
+
+code facos  ( F: r1 -- r2 )
+  calc 23 c, end-calc jpnext  end-code
+
+code fasin  ( F: r1 -- r2 )
+  calc 22 c, end-calc jpnext  end-code
+
+code fatan  ( F: r1 -- r2 )
+  calc 24 c, end-calc jpnext  end-code
+
+code fcos  ( F: r1 -- r2 )
+  calc 20 c, end-calc jpnext  end-code
+
+code fsin  ( F: r1 -- r2 )
+  calc 1F c, end-calc jpnext  end-code
+
+code ftan  ( F: r1 -- r2 )
+  calc 21 c, end-calc jpnext  end-code
+
+( (f. f. )
+
+code (f.  ( F: r -- )
+  C5 c,  CD c, 2DE3 ,  C1 c,
+    \ push bc
+    \ call $2DE3  ; PRINT_FP ROM routine
+    \ pop bc
+  jpnext  end-code
+  \ Note: `exx` can no be used to preserve `bc`, the Forth IP,
+  \ because the routine uses the alternative registers.  `bc`
+  \ is saved on the stack instead.
+
+: f.  ( F: r -- )
+  fdepth >r  (f. space
+  fdepth r> = if  fdrop  then  ;
+
+  \ Note: the depth of the stack must be checked because
+  \ there's a bug in the PRINT-FP ROM routine called "unbalaced
+  \ stack error". When the number is a non-integer less than 1,
+  \ it's not removed from the stack at the end, and a zero is
+  \ pushed on the stack.  This bug is documented in the ROM
+  \ disassembly. Credit: Tony Stratton, 1982.
+
+  \ XXX FIXME -- The Forth-2012 standard reads `f.` must use
+  \ fixed-point notation, but in this implementation the
+  \ decimal point is not shown at the end when the number is
+  \ integer.
+
+( .fs dump-fs )
+
+need (fp@  need fp0  need f@  need f.
+need fdepth  need float  need float+  need .depth
+
+: (.fs  ( -- )  (fp@ fp0 @ ?do  i f@ f.  float +loop  ;
+
+: .fs   ( -- )  fdepth dup .depth 0> if  (.fs  then  ;
+
+: (dump-fs  ( -- )
+  cr ." Bottom"
+  (fp@ fp0 @ ?do
+    i dup cr u. float bounds ?do  i c@ 4 .r  loop
+  float +loop  cr ." Top" cr  ;
+
+: dump-fs  ( -- )  fdepth dup .depth 0> if  (dump-fs  then  ;
+
+( fround floor ftrunc )
+
+need calc  need f0=  need f0<  need fdup  need fnegate
+
+: fround  ( F: r1 -- r2 )  ;
+
+  \ XXX TODO --
+
+  \ doc{
+  \
+  \ fround  ( r1 -- r2 )
+  \
+  \ Round _r1_ to an integral value using the "round to
+  \ nearest" rule, giving _r2_.
+  \
+  \ Origin: Forth-2012 (FLOATING).
+  \
+  \ }doc
+
+: floor  ( F: r1 -- r2 )  ;
+
+  \ XXX TODO --
+
+  \ doc{
+  \
+  \ floor  ( F: r1 -- r2 )
+  \
+  \ Round _r1_ to an integral value using the "round toward
+  \ negative infinity" rule, giving _r2_.
+  \
+  \ Origin: Forth-2012 (FLOATING).
+  \
+  \ }doc
+
+
+code ftrunc  ( F: r1 -- r2 )
+  calc 3A c, end-calc jpnext  end-code
+
+  \ doc{
+  \
+  \ floor  ( F: r1 -- r2 )
+  \
+  \ Round _r1_ to an integral value using the "round toward
+  \ zero" rule, giving _r2_.
+  \
+  \ Origin: Forth-2012 (FLOATING).
+  \
+  \ }doc
+
+  \ Example from the documentation of Forth-2012:
+
+  \ : ftrunc  ( F: r1 -- r2 )
+  \   fdup f0= 0= if
+  \     fdup f0< if  fnegate floor fnegate  else  floor  then
+  \   then  ;
+
+  \ From Gforth:
+  \
+  \ : ftrunc  ( F: r1 -- r2 )  f>d d>f ;
+
+( falign faligned )
+
+need alias
+
+' noop alias falign     ( -- )        immediate
+' noop alias faligned   ( a -- fa )   immediate
+  \ ' noop alias sfalign    ( -- )        immediate
+  \ ' noop alias sfaligned  ( a -- dfa )  immediate
+  \ ' noop alias dfalign    ( -- )        immediate
+  \ ' noop alias dfaligned  ( a -- dfa )  immediate
+
+  \ vim: filetype=soloforth
+  \  math.number.conversion.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160325
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to number conversion.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( number )
+
+: number  ( ca len -- n | d )  number? 0= #-275 ?throw  ;
+  \ doc{
+  \
+  \ number  ( ca len -- n | d )
+  \
+  \ Attempt to convert a string _ca len_ into a number. If
+  \ a valid point is found, return _d_; if there is no
+  \ valid point, return _n_. If conversion fails due to an
+  \ invalid character, an exception #-275 is thrown.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
+
+  \  math.number.point.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160324
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words to configure the charactes accepted as number point.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Wil Baden, published on Forth Dimensions (volume 20, number
+  \ 3 page 26, 1998-10).
+
+  \ Adapted by Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( standard-number-point? extended-number-point? )
+
+need [if]
+
+[needed] classic-number-point? [if]
+
+: classic-number-point?  ( c -- f )
+  dup [char] : = swap [char] , - 4 u< or  ;
+  \ doc{
+  \
+  \ standard-number-point?  ( c -- f )
+  \
+  \ Is character _c_ a classic number point?  Allowed
+  \ points are: comma, hyphen, period, slash and
+  \ colon.
+  \
+  \ This word is an alternative behaviour for the deferred word
+  \ `number-point?`, which is used in `number?`, and whose
+  \ default behaviour is `standard-number-point?`.
+  \
+  \ }doc
+
+[then]
+
+[needed] extended-number-point? [if]
+
+: extended-number-point?  ( c -- f )
+  dup [char] : = swap [char] + - 5 u< or  ;
+
+  \ doc{
+  \
+  \ extended-number-point?  ( c -- f )
+  \
+  \ Is character _c_ an extended number point?  Allowed points
+  \ are: plus sign, comma, hyphen, period, slash and colon,
+  \ after _Forth Programmer's Handbook_.
+  \
+  \ This word is an alternative behaviour for the deferred word
+  \ `number-point?`, which is used in `number?`, and whose
+  \ default behaviour is `standard-number-point?`.
+  \
+  \ }doc
+
+[then]
+
+  \ vim: filetype=soloforth
+
+  \  math.number.prefix.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160325
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Numeric prefix words. Solo Forth recognizes the standard
+  \ notations, but these words may be useful in some cases.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( base# b# d# h# )
+
+  \ Credit:
+  \
+  \ Based on code from eForth and code written by Wil Baden
+  \ (published on Forth Dimensions 20-3, p. 27).
+
+: base# ( -- ) ( "name" -- )
+  create c, immediate
+  does> c@
+  base c@ >r  base !    \ save and set radix
+  parse-name            \ get string
+  ['] evaluate catch    \ convert to number, set trap
+  r> base !  throw  ;   \ restore radix before error control
+
+ 2 base# b#
+10 base# d#
+16 base# h#
+
+( x# b# o# d# h# t# )
+
+  \ Credit:
+  \
+  \ Code from eForth.
+
+: x# ( -- ) ( "name" -- n | d )
+  does> c@              \ new radix
+  base @ >r  base !     \ save and set radix
+  parse-name            \ get string
+  ['] evaluate catch    \ convert to number, set trap
+  r> base !  throw  ;   \ restore radix before error control
+
+create b# ( "name" -- n | d )  2 c, x# immediate
+create o# ( "name" -- n | d )  2 c, x# immediate
+create d# ( "name" -- n | d ) 10 c, x# immediate
+create h# ( "name" -- n | d ) 16 c, x# immediate
+create t# ( "name" -- n | d ) 36 c, x# immediate
+
+( c# )
+
+  \ Credit:
+  \
+  \ Code inspired by eForth.
+
+: c#  ( "name" -- c )
+  parse-name drop c@
+  compiling? if  postpone literal  then  ; immediate
+
+  \ doc{
+  \
+  \ c#  ( "name" -- c )
+  \
+  \ Parse "name" and return the code _c_ of the its first
+  \ character.
+  \
+  \ This is a short and state-smart alternative to the standard
+  \ words `char` and `[char]`.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
+  \  math.number.print.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 20160325
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to number printing.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( ud.r ud. )
+
+  \ Credit:
+  \
+  \ Code adapted from Spectrum Forth-83.
+
+: ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+
+  \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
+
+: ud.  ( d -- )  0 ud.r space  ;
+
+( bin. dec. hex. )
+
+  \ Credit:
+  \
+  \ Code modified from eForth.
+
+[defined] base.
+?\ : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+
+[unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
+[unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
+
+[unneeded] dec.  [defined] dec.  or
+  \ XXX TMP -- `dec.` is in the kernel
+  ?\  create dec.  ( n -- )  10 c, base.
+
+( 8hex. 16hex. 32hex. <hex hex> )
+
+  \ Credit:
+  \
+  \ Code adapted from lina.
+
+[defined] base'  ?\ variable base'
+
+[defined] (d.)
+?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+
+: <hex  ( -- )  base @ base' ! hex ; \ switch to hex
+: hex>  ( -- )  base' @ base !     ; \ and back
+
+: (dhex.)  ( d n -- )  <hex (d.) hex> type space  ;
+: 32hex.    ( d -- )  8 (dhex.)  ;
+: 16hex.     ( n -- )  s>d 4 (dhex.)  ;
+: 8hex.    ( b -- )  s>d 2 (dhex.)  ;
+
+( binary 8bin. 16bin. 32bin. <bin bin> )
+
+  \ Credit:
+  \
+  \ Code inspired by lina.
+
+[defined] base'  ?\ variable base'
+
+[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+
+[defined] (d.)
+?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+
+: <bin  ( -- )  base @ base' ! binary ; \ switch to binary
+: bin>  ( -- )  base' @ base !        ; \ and back
+
+: (dbin.)  ( d n -- )  <bin (d.) bin> type space  ;
+: 32bin.    ( d -- )  32 (dbin.)  ;
+: 16bin.     ( n -- )  s>d 16 (dbin.)  ;
+: 8bin.    ( b -- )  s>d 8 (dbin.)  ;
+
+  \ vim: filetype=soloforth
+  \  math.operators.1-cell.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604071520
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Single-cell operators.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+
+( under+ )  \ ==operators==
+
+code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  D9 c,           \ exx
+  D1 c,           \ pop de
+  C1 c,           \ pop bc
+  E1 c,           \ pop hl
+  19 c,           \ add hl,de
+  E5 c,           \ push hl
+  C5 c,           \ push bc
+  D9 c,           \ exx
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  \
+  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ Origin: Comus.
+  \
+  \ ----
+  \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )
+  \   rot + swap  ;
+  \ ----
+  \
+  \ }doc
+
+( +under )
+
+code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  D9 c,           \ exx
+  C1 c,           \ pop bc
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  19 c,           \ add hl,de
+  E5 c,           \ push hl
+  C5 c,           \ push bc
+  D9 c,           \ exx
+  jpnext  end-code
+
+  \ doc{
+  \
+  \ +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  \
+  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ Origin: Comus.
+  \
+  \ ----
+  \ : +under  ( n1|u1 n2|u2 x -- n3|u3 x )
+  \   >r + r>  ;
+  \ ----
+  \
+  \ }doc
+
+  \ XXX TODO -- variant after PFE's `(under+)`:
+  \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
+
+( cell/ )
+
+  \ Credit:
+  \
+  \ Idea from IsForth.
+
+need 2/ need alias
+' 2/ alias cell/
+
+( within between )
+
+  \ Credit:
+  \
+  \ Code from DZX-Forth.
+
+[unneeded] within
+?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
+
+  \ doc{
+  \
+  \ within  ( n1|u1 n2|u2 n3|u3 -- f )
+  \
+  \ Perform a comparison of a test value n1|u1 with a lower
+  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
+  \ if either (n2|u2 < n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <
+  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 <= n1|u1 or n1|u1 <
+  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
+  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
+  \ all the same type.
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+[unneeded] between ?exit
+
+: between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
+
+  \ doc{
+  \
+  \ between  ( n1|u1 n2|u2 n3|u3 -- f )
+
+  \ Perform a comparison of a test value _n1|u1_ with a lower
+  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
+  \ if either (n2|u2 <= n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <=
+  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 < n1|u1 or n1|u1 <
+  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
+  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
+  \ all the same type.
+
+  \ name  ( -- )
+  \
+  \ }doc
+
+  \ Credit:
+  \
+  \ http://dxforth.netbay.com.au/between.html
+
+( polarity )
+
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+code polarity  ( n -- -1 | 0 | 1 )
+  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false ,
+    \ pop de
+    \ ld a,d
+    \ or e
+    \ jp z,false_code
+
+  CB c, 10 03 + c,  ED c, 62 c,
+    \ rl d ; set carry if DE -ve
+    \ sbc hl,hl ; HL=0 if DE +ve, or -1 if DE -ve
+
+  78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl
+    \ ld a,l
+    \ or 1
+    \ ld l,a ; HL=1 or -1
+    \ jp push_hl
+  end-code
+
+( u<= u>= <= >= 0>= 0<= )
+
+[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
+[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
+[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
+[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
+[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
+[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
+
+( lshift )
+
+need z80-asm
+
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+  \ 16 bytes used
+
+code lshift  ( x1 u -- x2 )
+
+  exx
+  bc pop  \ C = loop counter
+  c b ld
+  hl pop  \ hi 8 bits ignored!
+  b inc  ahead 0 unresolved !
+  begin  hl addp  0 unresolved @ >relresolve  step
+  hl push
+  exx
+  jpnext
+
+  end-code
+
+( lshift )
+
+  \ Credit:
+  \
+  \ Code adapted from DZX-Forth.
+
+  \ This version is smaller (13 bytes used) but slower (169%
+  \ the execution time of version adapted from Z88 CamelForth).
+
+code lshift  ( x1 u -- x2 )
+
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
+  29 c,           \ add hl,hl
+  C3 c, ,         \ jp begin
+
+  end-code
+
+( rshift )
+
+need z80-asm
+
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+  \ 19 bytes used
+
+code rshift  ( x1 u -- x2 )
+
+  exx
+  bc pop  \ C = loop counter
+  c b ld
+  hl pop  \ hi 8 bits ignored!
+
+  b inc  ahead 0 unresolved !
+
+  begin  h srl  l rr  0 unresolved @ >relresolve  step
+  hl push
+  exx
+  jpnext
+
+  end-code
+
+( rshift )
+
+  \ Credit:
+  \
+  \ Code adapted from DZX-Forth.
+
+  \ This version is smaller (16 bytes used) but slower (133%
+  \ the execution time of the version adapted from Z88 CamelForth).
+
+code rshift  ( x1 u -- x2 )
+  D1 c,           \ pop de
+  E1 c,           \ pop hl
+  1C c,           \ inc e
+  here            \ begin:
+  1D c,           \ dec e
+  CA c, pushhl ,  \ jp z,push_hl
+  CB c, 3C c,     \ srl h
+  CB c, 1D c,     \ rr l
+  C3 c, ,         \ jp begin
+  end-code
+
+( bits )
+
+need z80-asm
+
+code bits  ( ca len -- u )
+
+  0 hl ldp#  \ init bit count
+  exx  \ save IP and count
+  de pop  hl pop  \ memory zone
+  begin
+    d a ld  e or  nz if
+      08 b ld#  \ bits per byte
+      begin  m rrc  cy if  exx hl incp exx  then  step
+      hl incp  de decp  \ next byte
+  2swap again then
+    \ Note: `2swap` is needed because `begin again` and `if
+    \ then` are not nested.
+
+  exx jppushhl end-code
+
+  \ 29 bytes used.
+
+  \ doc{
+  \
+  \ bits  ( ca len -- u )
+  \
+  \ Count the number of bits set in memory zone _ca len_.
+  \
+  \ }doc
+
+  \ Credit:
+  \
+  \ Based on a pixels counter written by Juan Antonio Paz,
+  \ published on Microhobby, issue 170 (1988-05), page 21:
+  \ http://microhobby.org/numero170.htm
+  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
+
+( 2/ )
+
+  \ Credit:
+  \
+  \ Code from Spectrum Forth-83.
+  \ Documentation partly based on lina.
+
+code 2/  ( x1 -- x2 )
+  E1 c,           \ pop hl
+  CB c, 2C c,     \ sra h
+  CB c, 1D c,     \ rr l
+  jppushhl        \ jp pushhl
+  end-code
+
+  \ doc{
+  \
+  \ 2/  ( x1 -- x2 )
+  \
+  \ _x2_ is the result of shifting _x1_ one bit toward the
+  \ least-significant bit, leaving the most-significant bit
+  \ unchanged.
+  \
+  \ This is the same as `s>d 2 fm/mod swap drop`. It is not the
+  \ same as `2 /`, nor is it the same as `1 rshift`.
+  \
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+  \ Forth-2012 (CORE).
+  \
+  \ }doc
+
+( sqrt )
+
+  \ Credit:
+  \
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ (volume 18, number 5, page 27, 1997-01).
+
+  \ XXX TODO -- benchmark
+
+need d2*  need 2/
+
+[defined] cell-bits ?\ 16 constant cell-bits
+
+: (sqrt)  ( radicand -- remainder root )
+  0 0                           ( radicand remainder root )
+  [ cell-bits 2/ ] literal 0 do
+    >r d2* d2* r>               \ shift remainder left 2 bits
+    2*                          \ shift root left 1 bit
+    2dup 2* u> if               \ check for next bit of root
+      >r r@ 2* - 1- r>          \ reduce remainder
+      1+                        \ add a bit to root
+    then
+  loop  cr .s rot drop  ;
+
+: sqrt  ( radicand -- root )  (sqrt) nip  ;
+
+( sqrt )
+
+  \ Integer square root by Newton's method
+
+  \ Credit:
+  \
+  \ Adapted from Sinclair QL's Computer One Forth.
+
+  \ XXX TODO -- benchmark
+
+need 2/
+
+: sqrt  ( n1 -- n2 )
+  dup 0< -24 ?throw  \ invalid numeric argument
+  dup
+  if  dup 2/  20 0
+      do      2dup / + 2/
+      loop    swap drop
+  then  ;
+
+( sm/rem )
+
+  \ XXX TODO -- remove, it's in the kernel
+
+  \ Credit:
+  \
+  \ Code from Z88 CamelForth.
+
+: sm/rem  ( d1 n1 -- n2 n3 )
+  \ symmetric signed division
+  2dup xor >r  \  sign of quotient
+  over >r      \  sign of remainder
+  abs >r dabs r> um/mod
+  swap r> ?negate
+  swap r> ?negate  ;
+
+  \ doc{
+  \
+  \ sm/rem  ( d1 n1 -- n2 n3 )
+
+  \ Divide d1 by n1, giving the symmetric quotient n3 and the
+  \ remainder n2. Input and output stack arguments are signed.
+  \ An ambiguous condition exists if n1 is zero or if the
+  \ quotient lies outside the range of a single-cell signed
+  \ integer.
+
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+
+  \ [caption="Symmetric Division Example"]
+  \
+  \ |===
+  \ | Dividend  | Divisor | Remainder | Quotient
+
+  \ >|       10  >|      7  >|        3  >|        1
+  \ >|      -10  >|      7  >|       -3  >|       -1
+  \ >|       10  >|     -7  >|        3  >|       -1
+  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |===
+
+  \ }doc
+
+( /-rem /- -rem */-rem */- )
+
+  \ Symmetric-division operators
+
+  \ Credit:
+  \
+  \ Forth-94 documentation.
+
+: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
+
+: /-  (  n1 n2 -- n3 )  /-rem nip  ;
+
+: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
+
+: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
+
+: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
+
+( fm/mod )
+
+  \ Credit:
+  \
+  \ Code from Z88 CamelForth.
+
+: fm/mod  ( d1 n1 -- n2 n3 )
+  \ floored signed division
+  dup >r                \ save divisor
+  sm/rem
+  over 0<> over 0< and  \ quotient<0 and remainder<>0?
+  if
+    swap r> +           \ add divisor to remainder
+    swap 1-             \ decrement quotient
+  else r> drop then  ;
+
+  \ doc{
+  \
+  \ fm/mod  ( d1 n1 -- n2 n3 )
+  \
+  \ Floored division:
+  \
+  \ ----
+  \   d1 = n3*n1+n2
+  \   n1>n2>=0 or 0>=n2>n1
+  \ ----
+  \
+  \ Divide _d1_ by _n1_, giving the floored quotient _n3_ and
+  \ the remainder _n2_. Input and output stack arguments are
+  \ signed.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+
+  \ [caption="Floored Division Example"]
+  \
+  \ |===
+  \ | Dividend  | Divisor | Remainder | Quotient
+
+  \ >|       10  >|      7  >|        3  >|        1
+  \ >|      -10  >|      7  >|        4  >|       -2
+  \ >|       10  >|     -7  >|       -4  >|       -2
+  \ >|      -10  >|     -7  >|       -3  >|        1
+  \ |===
+  \
+  \ }doc
+
+( /_mod /_ _mod */_mod */_ )
+
+  \ Floored-division operators
+
+need fm/mod
+
+  \ Credit:
+  \
+  \ Forth-94 documentation.
+
+: /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
+
+: /_  ( n1 n2 -- n3 )  /_mod nip  ;
+
+: _mod  ( n1 n2 -- n3 )  /_mod drop  ;
+
+: */_mod  ( n1 n2 n3 -- n4 n5 )  >r m* r> fm/mod  ;
+
+: */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
+
+( any? )
+
+  \ Credit:
+  \
+  \ Code from F83.
+
+need roll
+
+variable (any?)
+
+: any?  ( x0 x1..xn n -- f )
+  dup 1+ roll (any?) !
+  0 swap 0 do  swap (any?) @ = or  loop  ;
+  \ Is any _x1..xn_ equal to _x0_?
+
+( % u% )
+
+: %  ( n1 n2 -- n3 )  100 swap */  ;
+  \ _n1_ is percentage _n3_ of _n2_
+
+: u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
+  \ _u1_ is percentage _u3_ of _u2_
+
+  \ vim: filetype=soloforth
+  \  math.operators.2-cell.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604060043
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Double-cell operators.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( ud* )
+
+  \ Credit:
+  \
+  \ Code from Z88 CamelForth.
+
+: ud*  ( ud1 u2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
+
+( d* )
+
+  \
+  \ Credit:
+  \
+  \ Code from DX-Forth 4.13.
+
+  \ This implementation uses 30 bytes.
+  \ Relative speed: 1.0000
+
+: d* ( d|ud1 d|ud2 -- d|ud3 )
+  >r swap >r 2dup um* rot r> * + rot r> * + ;
+
+  \ --------------------------------------------
+  \ Alternative implementation.
+  \
+  \ Credit:
+  \
+  \ Adapted from code written by Robert L. Smith,
+  \ published on Forth Dimensions (volume 4, number 1, page 3,
+  \ 1982-05).
+  \
+  \ This implementation uses 36 bytes.
+  \ Relative speed: 1.0582
+  \
+  \ : d*  ( d1 d2 -- d3 )
+  \  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
+
+  \ --------------------------------------------
+  \ Alternative implementation.
+
+  \ Credit:
+  \
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 33, 1998-04).
+
+  \ This implementation uses 30 bytes.
+  \ Relative speed: 1.0008
+
+  \ : d*  ( d1 d2 -- d3 )
+  \   >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
+  \   2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
+  \   r> * swap r> * + +  ; ( d1*d2 ) ( R: )
+
+( du/mod )
+
+  \ Credit:
+  \
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 34, 1998-04).
+
+need tum*  need t+  need t-  need tum/  need d2*  need lshift
+
+: normalize-divisor  ( d1 -- d1' shift )
+  0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
+
+  \ XXX TODO rename as `ud/mod`?
+  \ XXX TODO stack comments
+
+: du/mod  ( ud1 ud2 -- ud3 ud4 )
+
+  ?dup 0= if
+    \ there is a leading zero "digit" in divisor
+    >r  0 r@ um/mod  r> swap >r  um/mod  0 swap r>  exit
+  then
+
+  normalize-divisor dup >r rot rot 2>r
+  1 swap lshift tum*
+    \ normalize divisor and dividend
+
+  dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
+    \ guess leading "digit" of quotient
+
+  2r@  rot dup >r  tum*  t-
+    \ multiply divisor by trial quot and substract from
+    \ dividend
+
+  dup 0< if  r> 1-  2r@  rot >r  0 t+
+    \ if negative, decrement quot and add to dividend
+
+    dup 0< if  r> 1-  2r@  rot >r  0 t+  then
+    \ if still negative, do it one more time
+
+  then
+
+  r> 2r> 2drop  1 r>  rot >r  lshift tum/  r> 0  ;
+    \ undo nurmalization of dividend to get remainder
+
+  \ Double unsigned divide with remainder.  Given a dividend
+  \ _ud1_ and a divisor _ud2_, return remainder _ud3_ and
+  \ quotient _ud4_.
+
+( d0= d0< d< du< )
+
+  \ Credit:
+  \
+  \ Code from DZX-Forth.
+
+[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  exit
+
+[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; exit
+
+need [if]
+
+[needed] d< [if]
+
+need 2nip
+
+: d<  ( d1 d2 -- f )
+  rot 2dup = if  2drop u< exit  then  2nip >  ;  exit
+
+[then]
+
+[needed] du< [if]
+
+  \ XXX TODO rewrite in Z80
+
+: du<  ( ud1 ud2 -- f )
+  rot swap 2dup
+  u<  if  2drop 2drop [ true ] literal exit  then
+  -   if  2drop [ false ] literal exit  then  u<  ;  exit
+
+  \ Note: the flags are compiled with `literal` to make
+  \ execution a bit faster.
+
+[then]
+
+( dmin dmax )
+
+  \ Credit:
+  \
+  \ Code from DZX-Forth.
+
+need [if]
+
+[needed] dmin [if]
+: dmin  ( d1 d2 -- d1 | d2 )
+  2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
+  \ XXX TODO -- use `d>` when available
+
+[needed] dmax [if]
+: dmax  ( d1 d2 -- d1 | d2 )
+  2over 2over d< if  2swap  then  2drop  ;  [then]
+
+( d= d<> )
+
+  \ XXX TODO -- rewrite in Z80
+
+: d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
+
+: d=  ( d1 d2 -- f )  d<> 0=  ;
+
+  \ XXX OLD
+  \ XXX TODO benchmark
+  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
+  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
+( d- )
+
+need z80-asm
+
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
+
+  de pop          \ DE=d2hi
+  exx
+  de pop          \ DE'=d2lo
+  exx
+  hl pop          \ HL=d1hi,DE=d2hi
+  exx
+  hl pop          \ HL'=d1lo
+  de subp
+  hl push         \ 2OS=d1lo-d2lo
+  exx
+  de sbcp         \ HL=d1hi-d2hi-cy
+  jppushhl
+  end-code
+
+( d2* d2/ )
+
+  \ Credit:
+  \
+  \ Code converted to Z80 from the 8080 version
+  \ of DZX-Forth.
+
+need [if]
+
+[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+
+  D1 c, E1 c,
+    \ pop de / pop hl
+  29 c,  CB c, 13 c,  CB c, 12 c,
+    \ add hl,hl
+    \ rl e
+    \ rl d
+  EB c, C3 c, pushhlde ,
+    \ ex de,hl jp pushhlde
+
+  end-code  [then]
+
+[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+
+  E1 c, D1 c,
+    \ pop hl / pop de
+  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
+    \ sra h  /  rr h /  rr l
+  CB c, 1A c,  CB c, 1B c,
+    \ rr d /  rr e
+  EB c, C3 c, pushhlde ,
+    \ ex de,hl jp pushhlde
+
+  end-code  [then]
+
+( d2* d2/ )
+
+  \ Credit:
+  \
+  \ Code converted to Z80 from the 8080 version
+  \ of DZX-Forth.
+
+need [if]  need z80-asm
+
+[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+
+  de pop  hl pop
+  hl addp  e rl  d rl
+                              \ alternatives:
+  exde  pushhlde jp           \ smaller but slower
+  \ hl push  de push  jpnext  \ faster but bigger
+
+  end-code  [then]
+
+[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+
+  hl pop  de pop
+  h sra  l rr  d rr  e rr
+
+                              \ alternatives:
+  pushhlde jp                 \ smaller but slower
+  \ hl push  de push  jpnext  \ faster but bigger
+
+  end-code  [then]
+
+( dxor dor dand )
+
+  \ Credit:
+  \
+  \ Code written by Everett F. Carter, published on Forth
+  \ Dimensions (volume 16, number 2, page 17, 1994-08).
+
+[unneeded] dxor
+?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
+
+[unneeded] dor
+?\ : dor  ( d1 d2 -- d3 )  rot or -rot or swap  ;
+
+[unneeded] dand
+?\ : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
+
+( m* )
+
+  \ Credit:
+  \
+  \ Code by Robert L. Smith, published on Forth Dimensions
+  \ (volume 4, number 1, page 3, 1982-05).
+
+  \ XXX TODO benchmark with the version in the kernel
+
+need d*
+
+: m*  ( n1 n2 -- d )
+  >r s>d r> s>d d* ;
+
+( m+ )
+
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+need z80-asm
+
+code m+  ( d1|ud1 n -- d2|ud2 )
+  exx     \ save Forth IP
+  bc pop  \ n
+  de pop  \ d1 hi cell
+  hl pop  \ d1 lo cell
+  bc addp  hl push
+  cy if  de inc  then  de push
+  exx      \ restore Forth IP
+  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ m+  ( d1|ud1 n -- d2|ud2 )
+  \
+  \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
+  \
+  \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
+  \
+  \ }doc
+
+exit
+
+  \ This alternative is slower (1.48), but saves 4 bytes.
+
+: m+  ( d1|ud1 n -- d2|ud2 )  s>d d+  ;
+
+( m*/ )
+
+  \ Credit:
+  \
+  \ Code from Gforth 0.7.3.
+
+: m*/  ( d1 n1 +n2 -- d2 )
+
+  >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
+  rot tuck um* 2swap um* swap
+  >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
+  if     if     1 0 d+
+         then
+         dnegate
+  else   drop
+  then  ;
+
+  \ doc{
+  \
+  \ m*/  ( d1 n1 +n2 -- d2 )
+  \
+  \ Multiply _d1_ by _n1_ producing the triple-cell
+  \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
+  \ double-cell quotient _d2_.
+  \
+  \ }doc
+
+  \ XXX TODO -- see difference Gforth - Forth-94
+
+( m*/ )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+need mt*  need tnegate  need ut/
+
+: m*/  ( d1 n1 +n2 -- d2 )
+    >r mt* dup 0< if    tnegate r> ut/ dnegate
+                  else  r> ut/  then  ;
+
+( dsqrt )
+
+  \ Credit:
+  \
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ 18/5 p. 29 (1997-01).
+
+need q2*  need d2*  need d<  need m+  need d- need 2rot
+need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
+
+  \ XXX FIXME wrong results
+  \
+  \ It worked fine, but something got wrong
+  \ Perhaps because of some wrong dependency?
+  \ maybe `d<`?
+  \
+  \ It works in Gforth
+
+: (dsqrt)  ( radicand . -- remainder . root . )
+  0. 0.             ( radicand . remainder . root . )
+  cell-bits 0 do    ( radicand . remainder . root . )
+    cr .s  key drop  \ XXX INFORMER
+    2>r q2* q2* 2r>  d2*
+    2over 2over d2* 2swap
+      cr .s ." d< ?"  \ XXX INFORMER
+      d< if
+      cr .s ." d<"  \ XXX INFORMER
+      2dup 2>r d2* d- -1 m+ 2r>  1 m+
+    then
+  loop  cr .s 2rot 2drop  ;
+
+: dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
+
+( d10* )
+
+  \ Credit:
+  \ Code from Pygmy Forth.
+
+: d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
+
+  \ vim: filetype=soloforth
+  \  math.operators.3-cell.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604150254
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Triple-cell operators.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( tum* tum/ t+ t- )
+
+  \ Credit:
+  \
+  \ Code by Wil Baden, published on Forth Dimensions (volume
+  \ 19, number 6, page 34, 1998-04).
+
+  \ XXX TODO -- test
+
+need d-
+
+: +carry  ( n1 n2 -- n1+n2 carry )  0 tuck d+  ;
+
+: -borrow  ( n1 n2 -- n1-n2 borrow )  0 tuck d-  ;
+
+: tum*  ( d n -- t )  2>r  r@ um*  0 2r>  um* d+  ;
+  \ Triple unsigned mixed multiply.
+
+: tum/  ( t n -- d )  dup >r um/mod r> swap >r um/mod nip r>  ;
+  \ Triple unsigned mixed division.
+
+: t+  ( t1 t2 -- t3 )
+  >r rot >r  >r swap >r +carry  0 r> r> +carry d+ r> r> + +  ;
+  \ Triple add.
+
+: t-  ( t1 t2 -- t3 )
+  >r rot >r  >r swap >r -borrow
+  s>d r> r> -borrow d+ r> r> - +  ;
+  \ Triple substract.
+
+( tnegate )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+: tnegate  ( t1 -- t2 )
+  invert >r
+  invert >r
+  invert 0 -1 -1 d+ s>d r> 0 d+
+  r> +  ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ tnegate  ( t1 -- t2 )
+  \
+  \ _t2_ is the negation of _t1_.
+  \
+  \ }doc
+
+( ut* )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+: ut*   ( ud u -- t )
+  swap >r dup >r
+  um* 0 r> r> um* d+  ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ ut*   ( ud u -- t )
+  \
+  \ _t_ is the signed product of _ud_ times _u_.
+  \
+  \ }doc
+
+( mt* )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+need ut*  need tnegate
+
+: mt*   ( d n -- t )
+  dup 0<
+  if   abs over 0< if   >r dabs r> ut*  else ut* tnegate then
+  else over 0< if  >r dabs r> ut* tnegate  else  ut*  then
+  then ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ mt*   ( d n -- t )
+  \
+  \ _t_ is the signed product of _d_ times _n_.
+  \
+  \ }doc
+
+( ut/ )
+
+  \ Credit:
+  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
+
+: ut/   ( ut n -- d )
+  dup >r um/mod -rot r> um/mod nip swap  ;
+
+  \ XXX TODO -- test
+
+  \ doc{
+  \
+  \ ut/   ( ut n -- d )
+  \
+  \ Divide a triple unsigned number _ut_ by a single number _n_
+  \ giving the double number result _d_.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
+  \ math.operators.4-cell.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604060057
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Quadruple-cell operators.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+( q2* )
+
+  \ Credit:
+  \
+  \ Original code by Wil Baden, published on Forth Dimensions
+  \ 18/5 p. 29 (1997-01).
+
+need d2*
+
+: q2*  ( n . . . -- 2n . . . )
+  d2* >r >r
+  dup 0< if     d2* r> 1+ r>
+         else   d2* r> r>
+         then  ;
+
+( q+ q- q0< q0= qu< qnegate qabs )
+
+  \ Credit:
+  \
+  \ copyright 1990-2007  Frank Sergeant
+  \ License:  http://pygmy.utoh.org/license.html
+
+code q+  ( nq1 nq2 -- nq3 )
+  \ XXX TODO -- port to Z80
+end-code
+
+code q-  ( nq1 nq2 -- nq3 )
+  \ XXX TODO -- port to Z80
+end-code
+
+: q0<  ( nq -- f )  0< push drop 2drop pop  ;
+: q0=  ( nq -- f )  or or or 0=  ;
+: qu<  ( uq uq -- f )  q- q0<  ;
+: qnegate  ( nq -- nq' )  0 0 0 0 4swap q-  ;
+: qabs  ( nq -- uq )  dup 0< if qnegate then  ;
+
+( udm* dm* )
+
+  \ Credit:
+  \
+  \ copyright 1990-2007  Frank Sergeant
+  \ License:  http://pygmy.utoh.org/license.html
+
+need qnegate
+
+code udm*  ( ud ud - quad )
+  \ XXX TODO -- port to Z80
+end-code
+
+: dm* ( nd nd - nq )
+  2>r dup 0< dup >r if  dnegate  then
+  r> 2r> dup 0< dup >r if  dnegate  then
+  rot >r udm* 2r> xor 0< if  qnegate  then  ;
+
+  \ vim: filetype=soloforth
   \ memory.address_register.fsb
   \
   \ This file is part of Solo Forth
@@ -18843,1476 +20339,6 @@ need !dosvar  need @dosvar
 : -jiffy  ( -- )  8335 jiffy!  ;
   \ Deactivate the jiffy call, setting its default value
   \ (a noop routine in the RAM of the +D interface).
-
-  \ vim: filetype=soloforth
-  \ number.conversion.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160325
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Words related to number conversion.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( number )
-
-: number  ( ca len -- n | d )  number? 0= #-275 ?throw  ;
-  \ doc{
-  \
-  \ number  ( ca len -- n | d )
-  \
-  \ Attempt to convert a string _ca len_ into a number. If
-  \ a valid point is found, return _d_; if there is no
-  \ valid point, return _n_. If conversion fails due to an
-  \ invalid character, an exception #-275 is thrown.
-  \
-  \ }doc
-
-  \ vim: filetype=soloforth
-
-  \ number.point.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160324
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Words to configure the charactes accepted as number point.
-
-  \ -----------------------------------------------------------
-  \ Authors
-
-  \ Wil Baden, published on Forth Dimensions (volume 20, number
-  \ 3 page 26, 1998-10).
-
-  \ Adapted by Marcos Cruz (programandala.net), 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( standard-number-point? extended-number-point? )
-
-need [if]
-
-[needed] classic-number-point? [if]
-
-: classic-number-point?  ( c -- f )
-  dup [char] : = swap [char] , - 4 u< or  ;
-  \ doc{
-  \
-  \ standard-number-point?  ( c -- f )
-  \
-  \ Is character _c_ a classic number point?  Allowed
-  \ points are: comma, hyphen, period, slash and
-  \ colon.
-  \
-  \ This word is an alternative behaviour for the deferred word
-  \ `number-point?`, which is used in `number?`, and whose
-  \ default behaviour is `standard-number-point?`.
-  \
-  \ }doc
-
-[then]
-
-[needed] extended-number-point? [if]
-
-: extended-number-point?  ( c -- f )
-  dup [char] : = swap [char] + - 5 u< or  ;
-
-  \ doc{
-  \
-  \ extended-number-point?  ( c -- f )
-  \
-  \ Is character _c_ an extended number point?  Allowed points
-  \ are: plus sign, comma, hyphen, period, slash and colon,
-  \ after _Forth Programmer's Handbook_.
-  \
-  \ This word is an alternative behaviour for the deferred word
-  \ `number-point?`, which is used in `number?`, and whose
-  \ default behaviour is `standard-number-point?`.
-  \
-  \ }doc
-
-[then]
-
-  \ vim: filetype=soloforth
-
-  \ number.prefix.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160325
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Numeric prefix words. Solo Forth recognizes the standard
-  \ notations, but these words may be useful in some cases.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( base# b# d# h# )
-
-  \ Credit:
-  \
-  \ Based on code from eForth and code written by Wil Baden
-  \ (published on Forth Dimensions 20-3, p. 27).
-
-: base# ( -- ) ( "name" -- )
-  create c, immediate
-  does> c@
-  base c@ >r  base !    \ save and set radix
-  parse-name            \ get string
-  ['] evaluate catch    \ convert to number, set trap
-  r> base !  throw  ;   \ restore radix before error control
-
- 2 base# b#
-10 base# d#
-16 base# h#
-
-( x# b# o# d# h# t# )
-
-  \ Credit:
-  \
-  \ Code from eForth.
-
-: x# ( -- ) ( "name" -- n | d )
-  does> c@              \ new radix
-  base @ >r  base !     \ save and set radix
-  parse-name            \ get string
-  ['] evaluate catch    \ convert to number, set trap
-  r> base !  throw  ;   \ restore radix before error control
-
-create b# ( "name" -- n | d )  2 c, x# immediate
-create o# ( "name" -- n | d )  2 c, x# immediate
-create d# ( "name" -- n | d ) 10 c, x# immediate
-create h# ( "name" -- n | d ) 16 c, x# immediate
-create t# ( "name" -- n | d ) 36 c, x# immediate
-
-( c# )
-
-  \ Credit:
-  \
-  \ Code inspired by eForth.
-
-: c#  ( "name" -- c )
-  parse-name drop c@
-  compiling? if  postpone literal  then  ; immediate
-
-  \ doc{
-  \
-  \ c#  ( "name" -- c )
-  \
-  \ Parse "name" and return the code _c_ of the its first
-  \ character.
-  \
-  \ This is a short and state-smart alternative to the standard
-  \ words `char` and `[char]`.
-  \
-  \ }doc
-
-  \ vim: filetype=soloforth
-  \ number.print.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 20160325
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Words related to number printing.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( ud.r ud. )
-
-  \ Credit:
-  \
-  \ Code adapted from Spectrum Forth-83.
-
-: ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
-
-  \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
-
-: ud.  ( d -- )  0 ud.r space  ;
-
-( bin. dec. hex. )
-
-  \ Credit:
-  \
-  \ Code modified from eForth.
-
-[defined] base.
-?\ : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
-
-[unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
-[unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
-
-[unneeded] dec.  [defined] dec.  or
-  \ XXX TMP -- `dec.` is in the kernel
-  ?\  create dec.  ( n -- )  10 c, base.
-
-( 8hex. 16hex. 32hex. <hex hex> )
-
-  \ Credit:
-  \
-  \ Code adapted from lina.
-
-[defined] base'  ?\ variable base'
-
-[defined] (d.)
-?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
-
-: <hex  ( -- )  base @ base' ! hex ; \ switch to hex
-: hex>  ( -- )  base' @ base !     ; \ and back
-
-: (dhex.)  ( d n -- )  <hex (d.) hex> type space  ;
-: 32hex.    ( d -- )  8 (dhex.)  ;
-: 16hex.     ( n -- )  s>d 4 (dhex.)  ;
-: 8hex.    ( b -- )  s>d 2 (dhex.)  ;
-
-( binary 8bin. 16bin. 32bin. <bin bin> )
-
-  \ Credit:
-  \
-  \ Code inspired by lina.
-
-[defined] base'  ?\ variable base'
-
-[defined] binary  ?\ : binary  ( -- )  2 base !  ;
-
-[defined] (d.)
-?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
-
-: <bin  ( -- )  base @ base' ! binary ; \ switch to binary
-: bin>  ( -- )  base' @ base !        ; \ and back
-
-: (dbin.)  ( d n -- )  <bin (d.) bin> type space  ;
-: 32bin.    ( d -- )  32 (dbin.)  ;
-: 16bin.     ( n -- )  s>d 16 (dbin.)  ;
-: 8bin.    ( b -- )  s>d 8 (dbin.)  ;
-
-  \ vim: filetype=soloforth
-  \ operators.1-cell.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 201604071520
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Single-cell operators.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-
-( under+ )  \ ==operators==
-
-code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
-  D9 c,           \ exx
-  D1 c,           \ pop de
-  C1 c,           \ pop bc
-  E1 c,           \ pop hl
-  19 c,           \ add hl,de
-  E5 c,           \ push hl
-  C5 c,           \ push bc
-  D9 c,           \ exx
-  jpnext  end-code
-
-  \ doc{
-  \
-  \ under+  ( n1|u1 x n2|u2 -- n3|u3 x )
-  \
-  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
-  \
-  \ Origin: Comus.
-  \
-  \ ----
-  \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )
-  \   rot + swap  ;
-  \ ----
-  \
-  \ }doc
-
-( +under )
-
-code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
-  D9 c,           \ exx
-  C1 c,           \ pop bc
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  19 c,           \ add hl,de
-  E5 c,           \ push hl
-  C5 c,           \ push bc
-  D9 c,           \ exx
-  jpnext  end-code
-
-  \ doc{
-  \
-  \ +under  ( n1|u1 n2|u2 x -- n3|u3 x )
-  \
-  \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
-  \
-  \ Origin: Comus.
-  \
-  \ ----
-  \ : +under  ( n1|u1 n2|u2 x -- n3|u3 x )
-  \   >r + r>  ;
-  \ ----
-  \
-  \ }doc
-
-  \ XXX TODO -- variant after PFE's `(under+)`:
-  \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
-
-( cell/ )
-
-  \ Credit:
-  \
-  \ Idea from IsForth.
-
-need 2/ need alias
-' 2/ alias cell/
-
-( within between )
-
-  \ Credit:
-  \
-  \ Code from DZX-Forth.
-
-[unneeded] within
-?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
-
-  \ doc{
-  \
-  \ within  ( n1|u1 n2|u2 n3|u3 -- f )
-  \
-  \ Perform a comparison of a test value n1|u1 with a lower
-  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
-  \ if either (n2|u2 < n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <
-  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 <= n1|u1 or n1|u1 <
-  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
-  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
-  \ all the same type.
-  \
-  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
-  \
-  \ }doc
-
-[unneeded] between ?exit
-
-: between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
-
-  \ doc{
-  \
-  \ between  ( n1|u1 n2|u2 n3|u3 -- f )
-
-  \ Perform a comparison of a test value _n1|u1_ with a lower
-  \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
-  \ if either (n2|u2 <= n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <=
-  \ n3|u3)) or (n2|u2 > n3|u3 and (n2|u2 < n1|u1 or n1|u1 <
-  \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
-  \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
-  \ all the same type.
-
-  \ name  ( -- )
-  \
-  \ }doc
-
-  \ Credit:
-  \
-  \ http://dxforth.netbay.com.au/between.html
-
-( polarity )
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-code polarity  ( n -- -1 | 0 | 1 )
-  D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false ,
-    \ pop de
-    \ ld a,d
-    \ or e
-    \ jp z,false_code
-
-  CB c, 10 03 + c,  ED c, 62 c,
-    \ rl d ; set carry if DE -ve
-    \ sbc hl,hl ; HL=0 if DE +ve, or -1 if DE -ve
-
-  78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl
-    \ ld a,l
-    \ or 1
-    \ ld l,a ; HL=1 or -1
-    \ jp push_hl
-  end-code
-
-( u<= u>= <= >= 0>= 0<= )
-
-[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
-[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
-[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
-[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
-[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
-[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
-
-( lshift )
-
-need z80-asm
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-  \ 16 bytes used
-
-code lshift  ( x1 u -- x2 )
-
-  exx
-  bc pop  \ C = loop counter
-  c b ld
-  hl pop  \ hi 8 bits ignored!
-  b inc  ahead 0 unresolved !
-  begin  hl addp  0 unresolved @ >relresolve  step
-  hl push
-  exx
-  jpnext
-
-  end-code
-
-( lshift )
-
-  \ Credit:
-  \
-  \ Code adapted from DZX-Forth.
-
-  \ This version is smaller (13 bytes used) but slower (169%
-  \ the execution time of version adapted from Z88 CamelForth).
-
-code lshift  ( x1 u -- x2 )
-
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  1C c,           \ inc e
-  here            \ begin:
-  1D c,           \ dec e
-  CA c, pushhl ,  \ jp z,push_hl
-  29 c,           \ add hl,hl
-  C3 c, ,         \ jp begin
-
-  end-code
-
-( rshift )
-
-need z80-asm
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-  \ 19 bytes used
-
-code rshift  ( x1 u -- x2 )
-
-  exx
-  bc pop  \ C = loop counter
-  c b ld
-  hl pop  \ hi 8 bits ignored!
-
-  b inc  ahead 0 unresolved !
-
-  begin  h srl  l rr  0 unresolved @ >relresolve  step
-  hl push
-  exx
-  jpnext
-
-  end-code
-
-( rshift )
-
-  \ Credit:
-  \
-  \ Code adapted from DZX-Forth.
-
-  \ This version is smaller (16 bytes used) but slower (133%
-  \ the execution time of the version adapted from Z88 CamelForth).
-
-code rshift  ( x1 u -- x2 )
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  1C c,           \ inc e
-  here            \ begin:
-  1D c,           \ dec e
-  CA c, pushhl ,  \ jp z,push_hl
-  CB c, 3C c,     \ srl h
-  CB c, 1D c,     \ rr l
-  C3 c, ,         \ jp begin
-  end-code
-
-( bits )
-
-need z80-asm
-
-code bits  ( ca len -- u )
-
-  0 hl ldp#  \ init bit count
-  exx  \ save IP and count
-  de pop  hl pop  \ memory zone
-  begin
-    d a ld  e or  nz if
-      08 b ld#  \ bits per byte
-      begin  m rrc  cy if  exx hl incp exx  then  step
-      hl incp  de decp  \ next byte
-  2swap again then
-    \ Note: `2swap` is needed because `begin again` and `if
-    \ then` are not nested.
-
-  exx jppushhl end-code
-
-  \ 29 bytes used.
-
-  \ doc{
-  \
-  \ bits  ( ca len -- u )
-  \
-  \ Count the number of bits set in memory zone _ca len_.
-  \
-  \ }doc
-
-  \ Credit:
-  \
-  \ Based on a pixels counter written by Juan Antonio Paz,
-  \ published on Microhobby, issue 170 (1988-05), page 21:
-  \ http://microhobby.org/numero170.htm
-  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
-
-( 2/ )
-
-  \ Credit:
-  \
-  \ Code from Spectrum Forth-83.
-  \ Documentation partly based on lina.
-
-code 2/  ( x1 -- x2 )
-  E1 c,           \ pop hl
-  CB c, 2C c,     \ sra h
-  CB c, 1D c,     \ rr l
-  jppushhl        \ jp pushhl
-  end-code
-
-  \ doc{
-  \
-  \ 2/  ( x1 -- x2 )
-  \
-  \ _x2_ is the result of shifting _x1_ one bit toward the
-  \ least-significant bit, leaving the most-significant bit
-  \ unchanged.
-  \
-  \ This is the same as `s>d 2 fm/mod swap drop`. It is not the
-  \ same as `2 /`, nor is it the same as `1 rshift`.
-  \
-  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
-  \ Forth-2012 (CORE).
-  \
-  \ }doc
-
-( sqrt )
-
-  \ Credit:
-  \
-  \ Original code by Wil Baden, published on Forth Dimensions
-  \ (volume 18, number 5, page 27, 1997-01).
-
-  \ XXX TODO -- benchmark
-
-need d2*  need 2/
-
-[defined] cell-bits ?\ 16 constant cell-bits
-
-: (sqrt)  ( radicand -- remainder root )
-  0 0                           ( radicand remainder root )
-  [ cell-bits 2/ ] literal 0 do
-    >r d2* d2* r>               \ shift remainder left 2 bits
-    2*                          \ shift root left 1 bit
-    2dup 2* u> if               \ check for next bit of root
-      >r r@ 2* - 1- r>          \ reduce remainder
-      1+                        \ add a bit to root
-    then
-  loop  cr .s rot drop  ;
-
-: sqrt  ( radicand -- root )  (sqrt) nip  ;
-
-( sqrt )
-
-  \ Integer square root by Newton's method
-
-  \ Credit:
-  \
-  \ Adapted from Sinclair QL's Computer One Forth.
-
-  \ XXX TODO -- benchmark
-
-need 2/
-
-: sqrt  ( n1 -- n2 )
-  dup 0< -24 ?throw  \ invalid numeric argument
-  dup
-  if  dup 2/  20 0
-      do      2dup / + 2/
-      loop    swap drop
-  then  ;
-
-( sm/rem )
-
-  \ XXX TODO -- remove, it's in the kernel
-
-  \ Credit:
-  \
-  \ Code from Z88 CamelForth.
-
-: sm/rem  ( d1 n1 -- n2 n3 )
-  \ symmetric signed division
-  2dup xor >r  \  sign of quotient
-  over >r      \  sign of remainder
-  abs >r dabs r> um/mod
-  swap r> ?negate
-  swap r> ?negate  ;
-
-  \ doc{
-  \
-  \ sm/rem  ( d1 n1 -- n2 n3 )
-
-  \ Divide d1 by n1, giving the symmetric quotient n3 and the
-  \ remainder n2. Input and output stack arguments are signed.
-  \ An ambiguous condition exists if n1 is zero or if the
-  \ quotient lies outside the range of a single-cell signed
-  \ integer.
-
-  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
-
-  \ [caption="Symmetric Division Example"]
-  \
-  \ |===
-  \ | Dividend  | Divisor | Remainder | Quotient
-
-  \ >|       10  >|      7  >|        3  >|        1
-  \ >|      -10  >|      7  >|       -3  >|       -1
-  \ >|       10  >|     -7  >|        3  >|       -1
-  \ >|      -10  >|     -7  >|       -3  >|        1
-  \ |===
-
-  \ }doc
-
-( /-rem /- -rem */-rem */- )
-
-  \ Symmetric-division operators
-
-  \ Credit:
-  \
-  \ Forth-94 documentation.
-
-: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
-
-: /-  (  n1 n2 -- n3 )  /-rem nip  ;
-
-: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
-
-: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
-
-: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
-
-( fm/mod )
-
-  \ Credit:
-  \
-  \ Code from Z88 CamelForth.
-
-: fm/mod  ( d1 n1 -- n2 n3 )
-  \ floored signed division
-  dup >r                \ save divisor
-  sm/rem
-  over 0<> over 0< and  \ quotient<0 and remainder<>0?
-  if
-    swap r> +           \ add divisor to remainder
-    swap 1-             \ decrement quotient
-  else r> drop then  ;
-
-  \ doc{
-  \
-  \ fm/mod  ( d1 n1 -- n2 n3 )
-  \
-  \ Floored division:
-  \
-  \ ----
-  \   d1 = n3*n1+n2
-  \   n1>n2>=0 or 0>=n2>n1
-  \ ----
-  \
-  \ Divide _d1_ by _n1_, giving the floored quotient _n3_ and
-  \ the remainder _n2_. Input and output stack arguments are
-  \ signed.
-  \
-  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
-
-  \ [caption="Floored Division Example"]
-  \
-  \ |===
-  \ | Dividend  | Divisor | Remainder | Quotient
-
-  \ >|       10  >|      7  >|        3  >|        1
-  \ >|      -10  >|      7  >|        4  >|       -2
-  \ >|       10  >|     -7  >|       -4  >|       -2
-  \ >|      -10  >|     -7  >|       -3  >|        1
-  \ |===
-  \
-  \ }doc
-
-( /_mod /_ _mod */_mod */_ )
-
-  \ Floored-division operators
-
-need fm/mod
-
-  \ Credit:
-  \
-  \ Forth-94 documentation.
-
-: /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
-
-: /_  ( n1 n2 -- n3 )  /_mod nip  ;
-
-: _mod  ( n1 n2 -- n3 )  /_mod drop  ;
-
-: */_mod  ( n1 n2 n3 -- n4 n5 )  >r m* r> fm/mod  ;
-
-: */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
-
-( any? )
-
-  \ Credit:
-  \
-  \ Code from F83.
-
-need roll
-
-variable (any?)
-
-: any?  ( x0 x1..xn n -- f )
-  dup 1+ roll (any?) !
-  0 swap 0 do  swap (any?) @ = or  loop  ;
-  \ Is any _x1..xn_ equal to _x0_?
-
-( % u% )
-
-: %  ( n1 n2 -- n3 )  100 swap */  ;
-  \ _n1_ is percentage _n3_ of _n2_
-
-: u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
-  \ _u1_ is percentage _u3_ of _u2_
-
-  \ vim: filetype=soloforth
-  \ operators.2-cell.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 201604060043
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Double-cell operators.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( ud* )
-
-  \ Credit:
-  \
-  \ Code from Z88 CamelForth.
-
-: ud*  ( ud1 u2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
-
-( d* )
-
-  \
-  \ Credit:
-  \
-  \ Code from DX-Forth 4.13.
-
-  \ This implementation uses 30 bytes.
-  \ Relative speed: 1.0000
-
-: d* ( d|ud1 d|ud2 -- d|ud3 )
-  >r swap >r 2dup um* rot r> * + rot r> * + ;
-
-  \ --------------------------------------------
-  \ Alternative implementation.
-  \
-  \ Credit:
-  \
-  \ Adapted from code written by Robert L. Smith,
-  \ published on Forth Dimensions (volume 4, number 1, page 3,
-  \ 1982-05).
-  \
-  \ This implementation uses 36 bytes.
-  \ Relative speed: 1.0582
-  \
-  \ : d*  ( d1 d2 -- d3 )
-  \  over 4 pick um*  5 roll 3 roll * +  2swap * +  ;
-
-  \ --------------------------------------------
-  \ Alternative implementation.
-
-  \ Credit:
-  \
-  \ Code by Wil Baden, published on Forth Dimensions (volume
-  \ 19, number 6, page 33, 1998-04).
-
-  \ This implementation uses 30 bytes.
-  \ Relative speed: 1.0008
-
-  \ : d*  ( d1 d2 -- d3 )
-  \   >r swap >r            ( d1lo d2lo ) ( R: d2hi d1hi )
-  \   2dup um* 2swap        ( d1lo*d2lo d1lo d2lo )
-  \   r> * swap r> * + +  ; ( d1*d2 ) ( R: )
-
-( du/mod )
-
-  \ Credit:
-  \
-  \ Code by Wil Baden, published on Forth Dimensions (volume
-  \ 19, number 6, page 34, 1998-04).
-
-need tum*  need t+  need t-  need tum/  need d2*  need lshift
-
-: normalize-divisor  ( d1 -- d1' shift )
-  0 >r begin  dup 0< while  d2*  r> 1+ >r  repeat  r>  ;
-
-  \ XXX TODO rename as `ud/mod`?
-  \ XXX TODO stack comments
-
-: du/mod  ( ud1 ud2 -- ud3 ud4 )
-
-  ?dup 0= if
-    \ there is a leading zero "digit" in divisor
-    >r  0 r@ um/mod  r> swap >r  um/mod  0 swap r>  exit
-  then
-
-  normalize-divisor dup >r rot rot 2>r
-  1 swap lshift tum*
-    \ normalize divisor and dividend
-
-  dup  r@ = if   -1  else  2dup  r@ um/mod nip  then
-    \ guess leading "digit" of quotient
-
-  2r@  rot dup >r  tum*  t-
-    \ multiply divisor by trial quot and substract from
-    \ dividend
-
-  dup 0< if  r> 1-  2r@  rot >r  0 t+
-    \ if negative, decrement quot and add to dividend
-
-    dup 0< if  r> 1-  2r@  rot >r  0 t+  then
-    \ if still negative, do it one more time
-
-  then
-
-  r> 2r> 2drop  1 r>  rot >r  lshift tum/  r> 0  ;
-    \ undo nurmalization of dividend to get remainder
-
-  \ Double unsigned divide with remainder.  Given a dividend
-  \ _ud1_ and a divisor _ud2_, return remainder _ud3_ and
-  \ quotient _ud4_.
-
-( d0= d0< d< du< )
-
-  \ Credit:
-  \
-  \ Code from DZX-Forth.
-
-[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  exit
-
-[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; exit
-
-need [if]
-
-[needed] d< [if]
-
-need 2nip
-
-: d<  ( d1 d2 -- f )
-  rot 2dup = if  2drop u< exit  then  2nip >  ;  exit
-
-[then]
-
-[needed] du< [if]
-
-  \ XXX TODO rewrite in Z80
-
-: du<  ( ud1 ud2 -- f )
-  rot swap 2dup
-  u<  if  2drop 2drop [ true ] literal exit  then
-  -   if  2drop [ false ] literal exit  then  u<  ;  exit
-
-  \ Note: the flags are compiled with `literal` to make
-  \ execution a bit faster.
-
-[then]
-
-( dmin dmax )
-
-  \ Credit:
-  \
-  \ Code from DZX-Forth.
-
-need [if]
-
-[needed] dmin [if]
-: dmin  ( d1 d2 -- d1 | d2 )
-  2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
-  \ XXX TODO -- use `d>` when available
-
-[needed] dmax [if]
-: dmax  ( d1 d2 -- d1 | d2 )
-  2over 2over d< if  2swap  then  2drop  ;  [then]
-
-( d= d<> )
-
-  \ XXX TODO -- rewrite in Z80
-
-: d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
-
-: d=  ( d1 d2 -- f )  d<> 0=  ;
-
-  \ XXX OLD
-  \ XXX TODO benchmark
-  \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
-  \ : d<>  ( d1 d2 -- f )  d= 0=  ;
-
-( d- )
-
-need z80-asm
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
-
-  de pop          \ DE=d2hi
-  exx
-  de pop          \ DE'=d2lo
-  exx
-  hl pop          \ HL=d1hi,DE=d2hi
-  exx
-  hl pop          \ HL'=d1lo
-  de subp
-  hl push         \ 2OS=d1lo-d2lo
-  exx
-  de sbcp         \ HL=d1hi-d2hi-cy
-  jppushhl
-  end-code
-
-( d2* d2/ )
-
-  \ Credit:
-  \
-  \ Code converted to Z80 from the 8080 version
-  \ of DZX-Forth.
-
-need [if]
-
-[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
-
-  D1 c, E1 c,
-    \ pop de / pop hl
-  29 c,  CB c, 13 c,  CB c, 12 c,
-    \ add hl,hl
-    \ rl e
-    \ rl d
-  EB c, C3 c, pushhlde ,
-    \ ex de,hl jp pushhlde
-
-  end-code  [then]
-
-[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
-
-  E1 c, D1 c,
-    \ pop hl / pop de
-  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
-    \ sra h  /  rr h /  rr l
-  CB c, 1A c,  CB c, 1B c,
-    \ rr d /  rr e
-  EB c, C3 c, pushhlde ,
-    \ ex de,hl jp pushhlde
-
-  end-code  [then]
-
-( d2* d2/ )
-
-  \ Credit:
-  \
-  \ Code converted to Z80 from the 8080 version
-  \ of DZX-Forth.
-
-need [if]  need z80-asm
-
-[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
-
-  de pop  hl pop
-  hl addp  e rl  d rl
-                              \ alternatives:
-  exde  pushhlde jp           \ smaller but slower
-  \ hl push  de push  jpnext  \ faster but bigger
-
-  end-code  [then]
-
-[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
-
-  hl pop  de pop
-  h sra  l rr  d rr  e rr
-
-                              \ alternatives:
-  pushhlde jp                 \ smaller but slower
-  \ hl push  de push  jpnext  \ faster but bigger
-
-  end-code  [then]
-
-( dxor dor dand )
-
-  \ Credit:
-  \
-  \ Code written by Everett F. Carter, published on Forth
-  \ Dimensions (volume 16, number 2, page 17, 1994-08).
-
-[unneeded] dxor
-?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
-
-[unneeded] dor
-?\ : dor  ( d1 d2 -- d3 )  rot or -rot or swap  ;
-
-[unneeded] dand
-?\ : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
-
-( m* )
-
-  \ Credit:
-  \
-  \ Code by Robert L. Smith, published on Forth Dimensions
-  \ (volume 4, number 1, page 3, 1982-05).
-
-  \ XXX TODO benchmark with the version in the kernel
-
-need d*
-
-: m*  ( n1 n2 -- d )
-  >r s>d r> s>d d* ;
-
-( m+ )
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-need z80-asm
-
-code m+  ( d1|ud1 n -- d2|ud2 )
-  exx     \ save Forth IP
-  bc pop  \ n
-  de pop  \ d1 hi cell
-  hl pop  \ d1 lo cell
-  bc addp  hl push
-  cy if  de inc  then  de push
-  exx      \ restore Forth IP
-  jpnext
-  end-code
-
-  \ doc{
-  \
-  \ m+  ( d1|ud1 n -- d2|ud2 )
-  \
-  \ Add _n_ to _d1|ud1_, giving the sum _d2|ud2_.
-  \
-  \ Origin: Forth-94 (DOUBLE) Forth-2012 (DOUBLE).
-  \
-  \ }doc
-
-exit
-
-  \ This alternative is slower (1.48), but saves 4 bytes.
-
-: m+  ( d1|ud1 n -- d2|ud2 )  s>d d+  ;
-
-( m*/ )
-
-  \ Credit:
-  \
-  \ Code from Gforth 0.7.3.
-
-: m*/  ( d1 n1 +n2 -- d2 )
-
-  >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
-  rot tuck um* 2swap um* swap
-  >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
-  if     if     1 0 d+
-         then
-         dnegate
-  else   drop
-  then  ;
-
-  \ doc{
-  \
-  \ m*/  ( d1 n1 +n2 -- d2 )
-  \
-  \ Multiply _d1_ by _n1_ producing the triple-cell
-  \ intermediate result _t_.  Divide _t_ by _+n2_ giving the
-  \ double-cell quotient _d2_.
-  \
-  \ }doc
-
-  \ XXX TODO -- see difference Gforth - Forth-94
-
-( m*/ )
-
-  \ Credit:
-  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
-
-need mt*  need tnegate  need ut/
-
-: m*/  ( d1 n1 +n2 -- d2 )
-    >r mt* dup 0< if    tnegate r> ut/ dnegate
-                  else  r> ut/  then  ;
-
-( dsqrt )
-
-  \ Credit:
-  \
-  \ Original code by Wil Baden, published on Forth Dimensions
-  \ 18/5 p. 29 (1997-01).
-
-need q2*  need d2*  need d<  need m+  need d- need 2rot
-need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
-
-  \ XXX FIXME wrong results
-  \
-  \ It worked fine, but something got wrong
-  \ Perhaps because of some wrong dependency?
-  \ maybe `d<`?
-  \
-  \ It works in Gforth
-
-: (dsqrt)  ( radicand . -- remainder . root . )
-  0. 0.             ( radicand . remainder . root . )
-  cell-bits 0 do    ( radicand . remainder . root . )
-    cr .s  key drop  \ XXX INFORMER
-    2>r q2* q2* 2r>  d2*
-    2over 2over d2* 2swap
-      cr .s ." d< ?"  \ XXX INFORMER
-      d< if
-      cr .s ." d<"  \ XXX INFORMER
-      2dup 2>r d2* d- -1 m+ 2r>  1 m+
-    then
-  loop  cr .s 2rot 2drop  ;
-
-: dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
-
-( d10* )
-
-  \ Credit:
-  \ Code from Pygmy Forth.
-
-: d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
-
-  \ vim: filetype=soloforth
-  \ operators.3-cell.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ Last modified: 201604150254
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Triple-cell operators.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( tum* tum/ t+ t- )
-
-  \ Credit:
-  \
-  \ Code by Wil Baden, published on Forth Dimensions (volume
-  \ 19, number 6, page 34, 1998-04).
-
-  \ XXX TODO -- test
-
-need d-
-
-: +carry  ( n1 n2 -- n1+n2 carry )  0 tuck d+  ;
-
-: -borrow  ( n1 n2 -- n1-n2 borrow )  0 tuck d-  ;
-
-: tum*  ( d n -- t )  2>r  r@ um*  0 2r>  um* d+  ;
-  \ Triple unsigned mixed multiply.
-
-: tum/  ( t n -- d )  dup >r um/mod r> swap >r um/mod nip r>  ;
-  \ Triple unsigned mixed division.
-
-: t+  ( t1 t2 -- t3 )
-  >r rot >r  >r swap >r +carry  0 r> r> +carry d+ r> r> + +  ;
-  \ Triple add.
-
-: t-  ( t1 t2 -- t3 )
-  >r rot >r  >r swap >r -borrow
-  s>d r> r> -borrow d+ r> r> - +  ;
-  \ Triple substract.
-
-( tnegate )
-
-  \ Credit:
-  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
-
-: tnegate  ( t1 -- t2 )
-  invert >r
-  invert >r
-  invert 0 -1 -1 d+ s>d r> 0 d+
-  r> +  ;
-
-  \ XXX TODO -- test
-
-  \ doc{
-  \
-  \ tnegate  ( t1 -- t2 )
-  \
-  \ _t2_ is the negation of _t1_.
-  \
-  \ }doc
-
-( ut* )
-
-  \ Credit:
-  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
-
-: ut*   ( ud u -- t )
-  swap >r dup >r
-  um* 0 r> r> um* d+  ;
-
-  \ XXX TODO -- test
-
-  \ doc{
-  \
-  \ ut*   ( ud u -- t )
-  \
-  \ _t_ is the signed product of _ud_ times _u_.
-  \
-  \ }doc
-
-( mt* )
-
-  \ Credit:
-  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
-
-need ut*  need tnegate
-
-: mt*   ( d n -- t )
-  dup 0<
-  if   abs over 0< if   >r dabs r> ut*  else ut* tnegate then
-  else over 0< if  >r dabs r> ut* tnegate  else  ut*  then
-  then ;
-
-  \ XXX TODO -- test
-
-  \ doc{
-  \
-  \ mt*   ( d n -- t )
-  \
-  \ _t_ is the signed product of _d_ times _n_.
-  \
-  \ }doc
-
-( ut/ )
-
-  \ Credit:
-  \ Robert Smith (from COLDFORTH Version 0.8, GPL)
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
-
-: ut/   ( ut n -- d )
-  dup >r um/mod -rot r> um/mod nip swap  ;
-
-  \ XXX TODO -- test
-
-  \ doc{
-  \
-  \ ut/   ( ut n -- d )
-  \
-  \ Divide a triple unsigned number _ut_ by a single number _n_
-  \ giving the double number result _d_.
-  \
-  \ }doc
-
-  \ vim: filetype=soloforth
-  \ operators.4-cell.fsb
-  \
-  \ This file is part of Solo Forth
-  \ http://programandala.net/en.program.solo_forth.html
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ Last modified: 201604060057
-
-  \ -----------------------------------------------------------
-  \ Description
-
-  \ Quadruple-cell operators.
-
-  \ -----------------------------------------------------------
-  \ Author
-
-  \ Marcos Cruz (programandala.net), 2015, 2016.
-
-  \ -----------------------------------------------------------
-  \ License
-
-  \ You may do whatever you want with this work, so long as you
-  \ retain every copyright, credit and authorship notice, and
-  \ this license.  There is no warranty.
-
-( q2* )
-
-  \ Credit:
-  \
-  \ Original code by Wil Baden, published on Forth Dimensions
-  \ 18/5 p. 29 (1997-01).
-
-need d2*
-
-: q2*  ( n . . . -- 2n . . . )
-  d2* >r >r
-  dup 0< if     d2* r> 1+ r>
-         else   d2* r> r>
-         then  ;
-
-( q+ q- q0< q0= qu< qnegate qabs )
-
-  \ Credit:
-  \
-  \ copyright 1990-2007  Frank Sergeant
-  \ License:  http://pygmy.utoh.org/license.html
-
-code q+  ( nq1 nq2 -- nq3 )
-  \ XXX TODO -- port to Z80
-end-code
-
-code q-  ( nq1 nq2 -- nq3 )
-  \ XXX TODO -- port to Z80
-end-code
-
-: q0<  ( nq -- f )  0< push drop 2drop pop  ;
-: q0=  ( nq -- f )  or or or 0=  ;
-: qu<  ( uq uq -- f )  q- q0<  ;
-: qnegate  ( nq -- nq' )  0 0 0 0 4swap q-  ;
-: qabs  ( nq -- uq )  dup 0< if qnegate then  ;
-
-( udm* dm* )
-
-  \ Credit:
-  \
-  \ copyright 1990-2007  Frank Sergeant
-  \ License:  http://pygmy.utoh.org/license.html
-
-need qnegate
-
-code udm*  ( ud ud - quad )
-  \ XXX TODO -- port to Z80
-end-code
-
-: dm* ( nd nd - nq )
-  2>r dup 0< dup >r if  dnegate  then
-  r> 2r> dup 0< dup >r if  dnegate  then
-  rot >r udm* 2r> xor 0< if  qnegate  then  ;
 
   \ vim: filetype=soloforth
   \ parsing.fsb
