@@ -16174,7 +16174,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604182006
+  \ Last modified: 201604182350
 
   \ -----------------------------------------------------------
   \ Description
@@ -16205,7 +16205,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \
   \ 2016-04-18: Extracted the code from the floating point
   \ module, in order to reuse it. Much improved. Added `if then
-  \ else`.
+  \ else`. Added `int`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -16219,6 +16219,8 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \ system. Test it.
   \
   \ XXX TODO -- Add more control structures.
+  \
+  \ XXX TODO -- Test everything.
   \
   \ XXX TODO -- Document.
 
@@ -16279,6 +16281,8 @@ get-current  calculator-wordlist set-current
 
 ( calculator )
 
+: int  ( -- )  $27 c,  ;
+  \ Compile the `int` ROM calculator command.
 : sgn  ( -- )  $29 c,  ;
   \ Compile the `sgn` ROM calculator command.
 : abs  ( -- )  $2A c,  ;
@@ -16379,10 +16383,10 @@ get-current  calculator-wordlist set-current
 : >=  ( -- )  $0A c,  ;
   \ Compile the `no-gr-eql` ROM calculator command.
 
-: 0>  ( -- )  $36 c,  ;
+: 0<  ( -- )  $36 c,  ;
   \ Compile the `less-0` ROM calculator command.
 
-: 0<  ( -- )  $37 c,  ;
+: 0>  ( -- )  $37 c,  ;
   \ Compile the `greater-0` ROM calculator command.
 
 -->
@@ -16432,8 +16436,6 @@ get-current  calculator-wordlist set-current
   \ displacement from the current position to the address left
   \ by `<mark`.
 
-  \ XXX TODO -- test:
-
 : if  ( -- a )  ?branch >mark  ;
 
 : else  ( a1 -- a2 )
@@ -16450,7 +16452,7 @@ set-current  previous
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604182006
+  \ Last modified: 201604182350
 
   \ -----------------------------------------------------------
   \ Description
@@ -16483,6 +16485,7 @@ set-current  previous
   \
   \ 2016-04-18: Made `f.` immune to the ROM bug. Fixed
   \ `ftrunc`. Moved the ROM calculator to its own file.
+  \ Improved. Added `floor`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -16492,6 +16495,10 @@ set-current  previous
   \
   \ XXX TODO -- Write safer alternatives for the ambiguous
   \ conditions listed in Forth-2012.
+  \
+  \ XXX TODO -- Test everything.
+  \
+  \ XXX TODO -- Document.
 
 ( --fp-rom-- )
 
@@ -16507,7 +16514,7 @@ need +thru
 
 5 constant float
 
-: float+  ( n1 -- n2 )  float +  ;
+: float+  ( fa1 -- fa2 )  float +  ;
 : floats  ( n1 -- n2 )  float *  ;
 
 ( fp0 fp (fp@ fp@ empty-fs fdepth )
@@ -16551,15 +16558,15 @@ macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
 
 ( f= f<> )
 
-  \ XXX UNDER DEVELOPMENT
-
 need calculator  need end-calculator-flag
 
 code f<>  ( -- f ) ( F: r1 r2 -- )
   calculator  <>  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
 code f=  ( -- f ) ( F: r1 r2 -- )
   calculator  =  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
   \ code f~ \ XXX TODO
 
@@ -16581,18 +16588,19 @@ code f0>  ( -- f ) ( F: r -- )
 
 ( f< f<= f> f>= )
 
-  \ XXX UNDER DEVELOPMENT
 
 need calculator  need end-calculator-flag
 
 code f<  ( -- f ) ( F: r1 r2 -- )
   calculator  <  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
 code f<=  ( -- f ) ( F: r1 r2 -- )
   calculator  <=  end-calculator-flag  end-code
 
 code f>  ( -- f ) ( F: r1 r2 -- )
   calculator  >  end-calculator-flag  end-code
+  \ XXX FIXME -- it always return true
 
 code f>=  ( -- f ) ( F: r1 r2 -- )
   calculator  >=  end-calculator-flag  end-code
@@ -16797,6 +16805,16 @@ code f!  ( fa -- ) ( F: r -- )
                c m ld  hl incp  b m ld
   exx  jpnext end-code
 
+  \ doc{
+  \
+  \ f!  ( fa -- ) ( F: r -- )
+  \
+  \ Store _r_ at _fa_.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ }doc
+
 code f@  ( fa -- ) ( F: -- r )
   exx  hl pop m a ld  hl incp
               m e ld  hl incp  m d ld  hl incp
@@ -16804,13 +16822,45 @@ code f@  ( fa -- ) ( F: -- r )
               2AB6 call  \ STK_STORE ROM routine
   exx  jpnext end-code
 
+  \ doc{
+  \
+  \ f@  ( fa -- ) ( F: -- r )
+  \
+  \ _r_ is the value stored at _fa_.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ }doc
+
 ( f, fconstant fvariable )
 
 need f!
 
 : f,  ( -- ) ( F: r -- )  here float allot f!  ;
 
-: fconstant  ( "name" -- )  ( F: f -- )  create  f,  does>  ;
+  \ doc{
+  \
+  \ f,  ( -- ) ( F: r -- )
+  \
+  \ Reserve data space for one floating-point number and store
+  \ _r_ in that space.
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
+
+: fconstant  ( "name" -- )  ( F: r -- )  create  f,  does>  ;
+
+  \ doc{
+  \
+  \ fconstant  ( "name" -- )  ( F: r -- )
+  \
+  \ Create a floating-point constant called "name" with value
+  \ _r_.
+  \
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
+  \
+  \ }doc
 
 : fvariable  ( "name" -- )  create  float allot  ;
 
@@ -16857,9 +16907,8 @@ code (f.  ( F: r -- )
   \ Note: the depth of the stack must be checked because
   \ there's a bug in the PRINT-FP ROM routine called "unbalaced
   \ stack error". When the number is a non-integer less than 1,
-  \ it's not removed from the stack at the end, and a zero is
-  \ pushed on the stack.  This bug is documented in the ROM
-  \ disassembly. Credit: Tony Stratton, 1982.
+  \ a zero is left on the stack.  This bug is documented in the
+  \ ZX Spectrum ROM disassembly. Credit: Tony Stratton, 1982.
 
   \ XXX FIXME -- The Forth-2012 standard reads `f.` must use
   \ fixed-point notation, but in this implementation the
@@ -16903,9 +16952,8 @@ need calculator  need f0=  need f0<  need fdup  need fnegate
   \
   \ }doc
 
-: floor  ( F: r1 -- r2 )  ;
-
-  \ XXX TODO --
+code floor  ( F: r1 -- r2 )
+  calculator  int  end-calculator  jpnext  end-code
 
   \ doc{
   \

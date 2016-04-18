@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604182318
+  \ Last modified: 201604182350
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,7 @@
   \
   \ 2016-04-18: Made `f.` immune to the ROM bug. Fixed
   \ `ftrunc`. Moved the ROM calculator to its own file.
+  \ Improved. Added `floor`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -504,9 +505,8 @@ need calculator  need f0=  need f0<  need fdup  need fnegate
   \
   \ }doc
 
-: floor  ( F: r1 -- r2 )  ;
-
-  \ XXX TODO --
+code floor  ( F: r1 -- r2 )
+  calculator  int  end-calculator  jpnext  end-code
 
   \ doc{
   \

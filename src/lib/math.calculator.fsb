@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604182318
+  \ Last modified: 201604182350
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,7 +36,7 @@
   \
   \ 2016-04-18: Extracted the code from the floating point
   \ module, in order to reuse it. Much improved. Added `if then
-  \ else`.
+  \ else`. Added `int`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -112,6 +112,8 @@ get-current  calculator-wordlist set-current
 
 ( calculator )
 
+: int  ( -- )  $27 c,  ;
+  \ Compile the `int` ROM calculator command.
 : sgn  ( -- )  $29 c,  ;
   \ Compile the `sgn` ROM calculator command.
 : abs  ( -- )  $2A c,  ;
