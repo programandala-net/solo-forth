@@ -4219,14 +4219,14 @@ variable_pfa	EQU 06F54H
 variable_xtp	EQU 0C72CH
 version_	EQU 07938H
 version_build_high_part EQU 00133H
-version_build_low_part EQU 09FA2H
+version_build_low_part EQU 09FA3H
 version_lfa	EQU 0CFE2H
 version_major	EQU 00000H
 version_minor	EQU 00005H
 version_nt	EQU 0CFE4H
 version_patch	EQU 00000H
 version_pfa	EQU 0793BH
-version_prerelease EQU 00018H
+version_prerelease EQU 00019H
 version_xtp	EQU 0CFE0H
 voc_link.init_value EQU 05F0CH
 voc_link_	EQU 07013H

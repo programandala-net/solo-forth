@@ -22,10 +22,11 @@
 
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation
-  \ need order
-  \ need fmax
-  need --fp-rom--
-  100 s>f  200 s>f  300 s>f
+  need f0 need fpi2/  need f>s
+  need fmax  need fmin  need .fs
+  \ need --fp-rom--
+  f0 fpi2/
+  \ 100 s>f  200 s>f  300 s>f
 
   \ XXX TMP -- for debugging the G+DOS support
   \ need plusd-in  need plusd-in,

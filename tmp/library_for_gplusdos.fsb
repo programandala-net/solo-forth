@@ -40,10 +40,11 @@
 
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation
-  \ need order
-  \ need fmax
-  need --fp-rom--
-  100 s>f  200 s>f  300 s>f
+  need f0 need fpi2/  need f>s
+  need fmax  need fmin  need .fs
+  \ need --fp-rom--
+  f0 fpi2/
+  \ 100 s>f  200 s>f  300 s>f
 
   \ XXX TMP -- for debugging the G+DOS support
   \ need plusd-in  need plusd-in,
@@ -16167,7 +16168,7 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
     \ restore return address
 
   \ vim: filetype=soloforth
-  \  math.calculator.fsb
+  \ math.calculator.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -16445,14 +16446,14 @@ get-current  calculator-wordlist set-current
 
 set-current  previous
   \ restore the current word list and the search order
-  \  math.floating_point.rom.fsb
+  \ math.floating_point.rom.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604182350
+  \ Last modified: 201604190140
 
   \ -----------------------------------------------------------
   \ Description
@@ -16539,9 +16540,9 @@ need float
 
 ( end-calculator-flag )
 
-need macro  need f>s  need call-xt
+need macro  need (f>s  need call-xt
 
-: f>flag  ( -- f ) ( F: rf -- )  f>s negate  ;
+: f>flag  ( -- f ) ( F: rf -- )  (f>s negate  ;
 
   \ Convert a floating-poing flag _rf_ (1|0) to an actual flag
   \ _f_ in the data stack.
@@ -16652,7 +16653,7 @@ code f/  ( F: r1 r2 -- r3 )
   calculator  /  end-calculator  jpnext  end-code
   \ XXX FIXME -- when _r2_ is zero, the calculator issues
   \ "number too big" BASIC error, what crashes the system.  It
-  \ could be trapped with G+DOS. A safe alternative `?f/` is
+  \ may be trapped with G+DOS. A safe alternative `?f/` is
   \ provided.
 
 : ?f/  ( F: r1 r2 -- r3 )  fdup f0= #-42 ?throw f/  ;
@@ -16669,8 +16670,8 @@ need calculator
 code fmax  ( F: r1 r2 -- r1|r2 )
   calculator
     2dup >  ( F: r1 r2 rf -- )
-    if    swap drop  ( F: r1 )
-    else  drop  ( F: r2 )
+    if    drop  ( F: r1 )
+    else  swap drop  ( F: r2 )
     then
   end-calculator  jpnext  end-code
 
@@ -16743,9 +16744,25 @@ code fpi2/  ( F: -- r )
 code f10  ( F: -- r )
   calculator  ten  end-calculator  jpnext  end-code
 
+( (f>s )
+
+  \ XXX REMARK -- This word must be in other block than `f>s`,
+  \ to avoid a circular `need`.
+
+code (f>s  ( -- n ) ( F: r -- )
+  C5 c,  CD c, 2DA2 ,
+    \ push bc
+    \ call $2DA2 ; FP_TO_BC ROM routine
+  60 00 + c,  68 01 + c,  C1 c,  jppushhl
+    \ ld h,b
+    \ ld l,c
+    \ pop bc
+    \ jp push_hl
+  end-code
+
 ( frestack b>f u>f s>f f>s )
 
-need calculator  need fnegate
+need calculator  need fnegate  need fdup  need (f>s  need f0<
 
 code frestack  ( F: r -- r' )
   calculator  re-stack  end-calculator  jpnext end-code
@@ -16771,12 +16788,7 @@ code u>f  ( u -- ) ( F: -- r )
   dup 0< if  abs u>f fnegate  else  u>f  then  ;
   \ XXX TODO -- test
 
-code f>s  ( -- n ) ( F: r -- )
-  D9 c, CD c, 2DA2 , C5 c, D9 c,  jpnext  end-code
-    \ exx
-    \ call $2DA2 ; FP_TO_BC ROM routine
-    \ push bc
-    \ exx
+: f>s  ( -- n ) ( F: r -- )  fdup (f>s f0< ?negate  ;
   \ XXX TODO -- test
 
   \ code f>d  ( -- d ) ( F: r -- )
@@ -16789,10 +16801,10 @@ code f>s  ( -- n ) ( F: r -- )
 
   \ code f>string  ( -- ca len ) ( F: r -- )
   \ end-code
-  \ XXX TODO -- command $2E
+  \ XXX TODO -- ROM calculator command $2E
 
   \ : >float  ;
-  \ XXX TODO --
+  \ XXX TODO -- ROM calculator command `val`
 
 ( f! f@ )
 
@@ -17004,7 +17016,7 @@ need alias
   \ ' noop alias dfaligned  ( a -- dfa )  immediate
 
   \ vim: filetype=soloforth
-  \  math.number.conversion.fsb
+  \ math.number.conversion.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -17044,7 +17056,7 @@ need alias
 
   \ vim: filetype=soloforth
 
-  \  math.number.point.fsb
+  \ math.number.point.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -17118,7 +17130,7 @@ need [if]
 
   \ vim: filetype=soloforth
 
-  \  math.number.prefix.fsb
+  \ math.number.prefix.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -17204,7 +17216,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \ }doc
 
   \ vim: filetype=soloforth
-  \  math.number.print.fsb
+  \ math.number.print.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -17297,7 +17309,7 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
 : 8bin.    ( b -- )  s>d 8 (dbin.)  ;
 
   \ vim: filetype=soloforth
-  \  math.operators.1-cell.fsb
+  \ math.operators.1-cell.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -17827,7 +17839,7 @@ variable (any?)
   \ _u1_ is percentage _u3_ of _u2_
 
   \ vim: filetype=soloforth
-  \  math.operators.2-cell.fsb
+  \ math.operators.2-cell.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -18252,7 +18264,7 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
 : d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
 
   \ vim: filetype=soloforth
-  \  math.operators.3-cell.fsb
+  \ math.operators.3-cell.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
