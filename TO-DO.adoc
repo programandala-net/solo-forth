@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-17
+:revdate: 2016-04-20
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -443,6 +443,12 @@ Rename "csb" as "stringer" or "strings"?
 == Maths ==
 // {{{
 
+.2016-04-19:
+
+Floating-point words `flit`, `fliteral`. From PFE:
+`fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
+`f2*`.
+
 .2016-04-18:
 
 Modify `interpret` to be patched by a floating-point implementation in order
@@ -494,6 +500,10 @@ Improve tab control.
 // }}}
 == Assembler ==
 // {{{
+
+.2016-04-20:
+
+Make `call-xt` and `execute-hl` independent from the assemblers.
 
 Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
 because _r_ is the standard for floating-point numbers.

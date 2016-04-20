@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604190140
+  \ Last modified: 201604201706
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,13 @@
   \ 2016-04-18: Made `f.` immune to the ROM bug. Fixed
   \ `ftrunc`. Moved the ROM calculator to its own file.
   \ Improved. Added `floor`.
+  \
+  \ 2016-04-20: Added `fnip`, `ftuck`, `f2dup`, `f2drop`.
+  \ Wrote `calculator-command>flag` and rewrote `f=`, `f<>`,
+  \ `f<`, `f<=`, `f>` and `f>=` after it, because calling the
+  \ equivalents command of the ROM calculator directly always
+  \ returned a true flag; the details of the debugging are
+  \ noted in the ROM calculator module.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -47,7 +54,9 @@
   \ environmental queries.
   \
   \ XXX TODO -- Write safer alternatives for the ambiguous
-  \ conditions listed in Forth-2012.
+  \ conditions listed in Forth-2012, or better yet, use the
+  \ standard name for the safe version, and factor the faster
+  \ unsafe code.
   \
   \ XXX TODO -- Test everything.
   \
@@ -90,14 +99,17 @@ need float
 
 : fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
 
-( end-calculator-flag )
+( f>flag )
 
-need macro  need (f>s  need call-xt
+need (f>s
 
 : f>flag  ( -- f ) ( F: rf -- )  (f>s negate  ;
-
   \ Convert a floating-poing flag _rf_ (1|0) to an actual flag
   \ _f_ in the data stack.
+
+( end-calculator-flag )
+
+need macro  need f>flag  need call-xt
 
 macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
   [ calculator-wordlist >order ] end-calculator [ previous ]
@@ -109,19 +121,66 @@ macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
   \ This macro is a common factor of all floating point logical
   \ operators.
 
+( calculator-command>flag )
+
+need calculator  need f>flag  need call-xt
+
+: calculator-command>flag  ( b -- )
+  $C5 c,  $06 c, c,
+    \ push bc ; save the Forth IP
+    \ ld b,command
+  calculator  $3B c,
+    \ `fp-calc-2` calculator command, which executes the
+    \ calculator command stored in the b register.
+  [ calculator-wordlist >order ] end-calculator [ previous ]
+  $C1 c,
+    \ pop bc ; restore the Forth IP
+  ['] f>flag call-xt
+  [ also assembler ] jpnext [ previous ]  ;
+
+  \ doc{
+  \
+  \ calculator-command>flag  ( b -- )
+  \
+  \ Compile the assembler instructions needed to execute the
+  \ _b_ command of the ROM calculator and to return the
+  \ floating-point result as a flag on the data stack.
+  \
+  \ }doc
+
 ( f= f<> )
 
-need calculator  need end-calculator-flag
-
-code f<>  ( -- f ) ( F: r1 r2 -- )
-  calculator  <>  end-calculator-flag  end-code
-  \ XXX FIXME -- it always return true
+need calculator-command>flag
 
 code f=  ( -- f ) ( F: r1 r2 -- )
-  calculator  =  end-calculator-flag  end-code
-  \ XXX FIXME -- it always return true
+  0E calculator-command>flag  end-code
+  \ `nos-eql` calculator command
+
+code f<>  ( -- f ) ( F: r1 r2 -- )
+  0B calculator-command>flag  end-code
+  \ `nos-neql` calculator command
 
   \ code f~ \ XXX TODO
+
+( f< f<= f> f>= )
+
+need calculator-command>flag
+
+code f<  ( -- f ) ( F: r1 r2 -- )
+  0D calculator-command>flag  end-code
+  \ `no-less` calculator command
+
+code f<=  ( -- f ) ( F: r1 r2 -- )
+  09 calculator-command>flag  end-code
+  \ `no-l-eql` calculator command
+
+code f>  ( -- f ) ( F: r1 r2 -- )
+  0C calculator-command>flag  end-code
+  \ `no-grtr` calculator command
+
+code f>=  ( -- f ) ( F: r1 r2 -- )
+  0A calculator-command>flag  end-code
+  \ `no-gr-eql` calculator command
 
 ( f0< f0= f0<> f0> )
 
@@ -139,24 +198,6 @@ code f0<>  ( -- f ) ( F: r -- )
 code f0>  ( -- f ) ( F: r -- )
   calculator  0>  end-calculator-flag  end-code
 
-( f< f<= f> f>= )
-
-need calculator  need end-calculator-flag
-
-code f<  ( -- f ) ( F: r1 r2 -- )
-  calculator  <  end-calculator-flag  end-code
-  \ XXX FIXME -- it always return true
-
-code f<=  ( -- f ) ( F: r1 r2 -- )
-  calculator  <=  end-calculator-flag  end-code
-
-code f>  ( -- f ) ( F: r1 r2 -- )
-  calculator  >  end-calculator-flag  end-code
-  \ XXX FIXME -- it always return true
-
-code f>=  ( -- f ) ( F: r1 r2 -- )
-  calculator  >=  end-calculator-flag  end-code
-
 ( fdrop fdup fswap fover )
 
 need calculator
@@ -172,6 +213,26 @@ code fswap  ( F: r1 r2 -- r2 r1 )
 
 code fover  ( F: r1 r2 -- r1 r2 r1 )
   calculator  over  end-calculator  jpnext  end-code
+
+( f2dup f2drop )
+
+code f2dup  ( F: r -- r r )
+  calculator  2dup  end-calculator  jpnext  end-code
+
+code f2drop  ( F: r -- )
+  calculator  drop drop  end-calculator  jpnext  end-code
+
+( fnip ftuck )
+
+need calculator
+
+code fnip  ( F: r1 r2 -- r2 )
+  calculator  swap drop  end-calculator  jpnext
+  end-code
+
+code ftuck  ( F: r1 r2 -- r2 r1 r2 )
+  calculator  2 >mem swap 2 mem>  end-calculator  jpnext
+  end-code
 
 ( frot -frot )
 
@@ -218,7 +279,7 @@ code fmod  ( F: r1 -- r2 )
 
 need calculator
 
-  \ XXX FIXME --
+  \ XXX FIXME -- the problem is `>`, see the calculator module
 code fmax  ( F: r1 r2 -- r1|r2 )
   calculator
     2dup >  ( F: r1 r2 rf -- )
@@ -231,7 +292,7 @@ code fmax  ( F: r1 r2 -- r1|r2 )
 
 need calculator
 
-  \ XXX FIXME --
+  \ XXX FIXME -- the problem is `<`, see the calculator module
 code fmin  ( F: r1 r2 -- r1|r2 )
   calculator
     2dup <  ( F: r1 r2 rf -- )
@@ -259,6 +320,10 @@ need calculator  need fdup  need f0<
 
 code fln  ( F: r1 -- r2 )
   calculator  ln  end-calculator  jpnext  end-code
+  \ XXX FIXME -- The ROM calculator tests that the argument is
+  \ a positive non-zero number (address $3713). If not, it
+  \ throws a BASIC error "invalid argument". Test that here or
+  \ trap the error with G+DOS.
 
 code fexp  ( F: r1 -- r2 )
   calculator  exp  end-calculator  jpnext  end-code
@@ -274,7 +339,7 @@ code fsqrt  ( F: r1 -- r2 )
   \ Maybe it could be trapped with G+DOS. A safe alternative
   \ `?fsqrt` is provided.
 
-: ?fsqrt  ( F: r1 -- r2 )  fdup f0< #-46 ?throw f/  ;
+: ?fsqrt  ( F: r1 -- r2 )  fdup f0< #-46 ?throw fsqrt  ;
   \ Safe version of `fsqrt`. If _r1_ is negative, an exception
   \ is thrown.
 
@@ -319,7 +384,7 @@ need calculator  need fnegate  need fdup  need (f>s  need f0<
 
 code frestack  ( F: r -- r' )
   calculator  re-stack  end-calculator  jpnext end-code
-  \ Restacks an integer in full floating point form.
+  \ Restacks an integer in full floating-point form.
 
 code b>f  ( b -- ) ( F: -- r )
   D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
@@ -399,7 +464,7 @@ code f@  ( fa -- ) ( F: -- r )
 
 ( f, fconstant fvariable )
 
-need f!
+need f!  need f@
 
 : f,  ( -- ) ( F: r -- )  here float allot f!  ;
 
@@ -414,7 +479,8 @@ need f!
   \
   \ }doc
 
-: fconstant  ( "name" -- )  ( F: r -- )  create  f,  does>  ;
+: fconstant  ( "name" -- )  ( F: r -- )
+  create  f,  does>  f@  ;
 
   \ doc{
   \

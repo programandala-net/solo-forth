@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604182350
+  \ Last modified: 201604201706
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,8 @@
   \ 2016-04-18: Extracted the code from the floating point
   \ module, in order to reuse it. Much improved. Added `if then
   \ else`. Added `int`.
+  \
+  \ 2016-04-20: Improved `2dup`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -54,6 +56,49 @@
   \ XXX TODO -- Test everything.
   \
   \ XXX TODO -- Document.
+  \
+  \ XXX FIXME -- Many logical operators always return true, no
+  \ matter if the numbers are stored as small integers or
+  \ `restack` is used to convert them to actual floats.
+  \
+  \ After some research, it seems the reason is the numbers are
+  \ compared as strings.  Some commands of the ROM calculator
+  \ are used to compare numbers and strings, and the routine
+  \ checks the parameters before doing the comparison.
+  \
+  \ Somehow the ROM routine at $353B gets confused because the
+  \ command is not restored from $5C67 (the BREG system
+  \ variable BREG).
+  \
+  \ I examined the source of the ROM calculator and followed
+  \ its execution using the debugger of the Fuse emulator, in
+  \ BASIC and Forth. So far I got the following clues:
+  \
+  \ $335E: the command in B is saved to $5C67. This is at the
+  \ start of the calculator, so it doesn't makes sense the
+  \ first time, because the command is not in B. In Forth, B
+  \ contains the high part of the IP ($78 at the time of
+  \ writing). But this address is a re-entry point, forced by
+  \ the calculator by manipulating the Z80 stack.
+  \
+  \ $336C: the command is in A, ok.
+  \
+  \ $338C: the command is modified for indexing, ok.
+  \
+  \ $339D: the command should be restored by `ld bc,($5C66)`,
+  \ which is the low part of STKEND and the high part of BREG.
+  \ The register B should contain the command, but not right
+  \ after the first entry into the calculator.
+  \
+  \ $33A1: BREG is in B, which in Forth is $78, bad.
+  \
+  \ $33A1: Restore the ROM calculator literal: `ld a,($5C67)`.
+  \ This is not executed by Forth's `f=`, but it is when the
+  \ BASIC command `print 1=1` is interpreted.
+  \
+  \ $353B: B contains $78, not the command. The routine does a
+  \ string comparison. But in BASIC, at this point register B
+  \ contains the command.
 
 ( calculator )
 
@@ -96,6 +141,7 @@ get-current  calculator-wordlist set-current
   \ Compile the `addition` ROM calculator command.
 : -  ( -- )  $03 c,  ;
   \ Compile the `subtract` ROM calculator command.
+
 : *  ( -- )  $04 c,  ;
   \ Compile the `multiply` ROM calculator command.
 : /  ( -- )  $05 c,  ;
@@ -112,19 +158,20 @@ get-current  calculator-wordlist set-current
 
 ( calculator )
 
-: int  ( -- )  $27 c,  ;
-  \ Compile the `int` ROM calculator command.
+: negate  ( -- )  $1B c,  ;
+  \ Compile the `negate` ROM calculator command.
 : sgn  ( -- )  $29 c,  ;
   \ Compile the `sgn` ROM calculator command.
 : abs  ( -- )  $2A c,  ;
   \ Compile the `abs` ROM calculator command.
+
+: int  ( -- )  $27 c,  ;
+  \ Compile the `int` ROM calculator command.
 : truncate  ( -- )  $3A c,  ;
   \ Compile the `truncate` ROM calculator command.
+
 : re-stack  ( r -- r' )  $3D c,  ;
   \ Compile the `re-stack` ROM calculator command.
-
-: negate  ( -- )  $1B c,  ;
-  \ Compile the `negate` ROM calculator command.
 
 : zero  ( -- )  $A0 c,  ;
   \ Compile the `` ROM calculator command.
@@ -184,9 +231,9 @@ get-current  calculator-wordlist set-current
 : over  ( -- )
   2 >mem drop 1 >mem 2 mem> 1 mem>  ;
   \ Compile the ROM calculator commands to do `over`.
-  \ XXX TODO -- do not use the calculator memory
 
-: 2dup  ( -- )  over over  ;
+: 2dup  ( -- )  
+  2 >mem drop 1 >mem drop 1 mem> 2 mem>  1 mem> 2 mem>  ;
   \ Compile the ROM calculator commands to do `2dup`.
 
 -->

@@ -3999,7 +3999,7 @@ tuck_lfa	EQU 0C626H
 tuck_nt		EQU 0C628H
 tuck_xtp	EQU 0C624H
 two_		EQU 06F7FH
-two_comma.allot	EQU 0709CH
+two_comma.allot	EQU 0709AH
 two_comma_	EQU 07095H
 two_comma_lfa	EQU 0C970H
 two_comma_nt	EQU 0C972H
@@ -4226,7 +4226,7 @@ version_minor	EQU 00005H
 version_nt	EQU 0CFE4H
 version_patch	EQU 00000H
 version_pfa	EQU 0793BH
-version_prerelease EQU 00019H
+version_prerelease EQU 0001AH
 version_xtp	EQU 0CFE0H
 voc_link.init_value EQU 05F0CH
 voc_link_	EQU 07013H
