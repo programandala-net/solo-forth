@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604210012
+; Last modified: 201604210047
 
 include version.z80s
 
@@ -4499,36 +4499,7 @@ true_if_cy:
 ;
 ; }doc
 
-if 0
-
-  ; Credit:
-  ; Code from Abersoft Forth, also found in White Lightning.
-
-  ; XXX TODO optimize?
-
-                                                ; T   B
-                                                ; --- --
-  pop hl      ; high part                       ;  10 01
-  pop de      ; low part                        ;  10 01
-  sub a       ; zero                            ;  04 01
-  sub e       ; two's complement to carry       ;  04 01
-  ld e,a                                        ;  04 01
-  ld a,$00                                     ;  07 02
-  sbc a,d     ; two's complement with carry     ;  04 01
-  ld d,a                                        ;  04 01
-  ld a,$00                                     ;  07 02
-  sbc a,l     ; two's complement with carry     ;  04 01
-  ld l,a                                        ;  04 01
-  ld a,$00                                     ;  07 02
-  sbc a,h     ; two's complement with carry     ;  04 01
-  ld h,a                                        ;  04 01
-  jp push_hlde                                  ;  10 03
-                                                ;  11 00 push de
-                                                ;  11 00 push hl
-                                                ; --- --
-                                                ; 109 20
-
-else
+if size_optimization
 
   ; Credit:
   ; Code from Spectrum Forth-83.
@@ -4542,26 +4513,54 @@ else
   pop     hl        ; high part                 ;  10 01
   pop     de        ; low part                  ;  10 01
   push    hl        ; save copy                 ;  11 01
-  ld      hl,$0000                             ;  10 03
+  ld      hl,$0000                              ;  10 03
   and     a                                     ;  04 01
   sbc     hl,de     ; hl = negated low part     ;  15 02
   pop     de        ; high part                 ;  10 01
   push    hl        ; negated low part          ;  11 01
-  ld      hl,$0000                             ;  10 03
+  ld      hl,$0000                              ;  10 03
   sbc     hl,de     ; hl = negated high part    ;  15 02
-if 0 ; XXX OLD
-  jp push_hl                                    ;  10 03
-                                                ;  11 00 push hl
-                                                ; --- --
-                                                ; 127 19
-else ; XXX NEW
-  _jp_pushhl                                    ; 11 01 push hl
-                                                ; 08 02
+  _jp_pushhl                                    ;  11 01 push hl
+                                                ;  08 02 jp (ix)
                                                 ; --- --
                                                 ; 125 19
-endif
+else
+
+  ; Credit:
+  ; Code from Abersoft Forth, also found in White Lightning.
+
+  ; XXX TODO optimize?
+
+                                                ; T   B
+                                                ; --- --
+  pop hl      ; high part                       ;  10 01
+  pop de      ; low part                        ;  10 01
+  sub a       ; zero                            ;  04 01
+  sub e       ; two's complement to carry       ;  04 01
+  ld e,a                                        ;  04 01
+  ld a,$00                                      ;  07 02
+  sbc a,d     ; two's complement with carry     ;  04 01
+  ld d,a                                        ;  04 01
+  ld a,$00                                      ;  07 02
+  sbc a,l     ; two's complement with carry     ;  04 01
+  ld l,a                                        ;  04 01
+  ld a,$00                                      ;  07 02
+  sbc a,h     ; two's complement with carry     ;  04 01
+  ld h,a                                        ;  04 01
+  jp push_hlde                                  ;  10 03
+                                                ;  11 00 push de
+                                                ;  11 00 push hl
+                                                ; --- --
+                                                ; 109 20
 
 endif
+
+  ; Note: High level version from Z88 CamelForth (17 bytes):
+  ;
+  ; ----
+  ; : dnegate  ( d1 -- d2 )
+  ;   swap invert swap invert 1 m+  ;
+  ; ----
 
 ; ----------------------------------------------
   _code_header nip_,'NIP'

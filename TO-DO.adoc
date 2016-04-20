@@ -21,6 +21,12 @@ others. `hided  ( nt -- )` is already in the kernel.
 == Inner ==
 // {{{
 
+.2016-04-21:
+
+Make `jp pushhlde` a macro dependent of `size_optimization`: compile `jp
+pushhlde` or `push de / push hl / jp (ix)`. The second option needs one more
+byte but is 2 T-cycles faster.
+
 .2015-11-12:
 
 `+bal`, `-bal` or similar, to change `csp`:
