@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604201754
+; Last modified: 201604210012
 
 include version.z80s
 
@@ -1811,14 +1811,7 @@ push_a:
 ;
 ; }doc
 
-  ; XXX OLD
-                     ;  T  B
-  ; call bank.system ; 17 03
-  ; _jp_next         ; 08 02
-
-  ; XXX NEW
-                     ;  T  B
-  push ix            ; 15 02 ; make next `ret` jump to `next`
+  push ix ; make next `ret` jump to `next`
 
 bank.system:
   ld e,system_bank
@@ -1941,7 +1934,7 @@ bank.e:
 ; ----
 ; }doc
 
-  ; XXX TODO -- rename to `csb-room` or something
+  ; XXX TODO -- rename to `csb-room`, `(allocate-string)` or something
 
   dw dup_,unused_csb_,greater_than_
   dw zero_branch_,question_csb_.enough
@@ -3634,7 +3627,7 @@ endif
 ; }doc
 
 if 1
-  call wait_for_a_key
+  call wait_for_key
   call translate_char.a ; XXX TODO
   jp push_a
 endif
@@ -3705,7 +3698,7 @@ endif
   rst $10
 
 xkey.new_key:
-  call wait_for_a_key
+  call wait_for_key
   ; a = pressed key code
 
   cp caps_char ; toggle caps lock?
@@ -3732,34 +3725,42 @@ xkey.translate:
   pop bc
   _jp_pushhl
 
-if 0
+; ----------------------------------------------
+  _code_header wait_for_key_,'WAIT-FOR-KEY'
 
-  ; XXX OLD
+; doc{
+;
+; wait-for-key  ( -- )
+;
+; Wait for a valid key and discard it.
+;
+; }doc
 
-wait_for_a_key:
+  ; XXX TODO -- make it compatible with the future multitasking
+
+  push ix ; make next `ret` jump to `next`
+
+wait_for_key:
+  ; output: A = key code
+  bit 5,(iy+1)      ; FLAGS system variable: new key available?
+  jr z,wait_for_key
+  ld a,(sys_last_k) ; return the key in register A
+  res 5,(iy+1)      ; no new key available anymore
+  ret
+
+if 0  ; XXX OLD
+
+wait_for_key:
   ; call delete_last_key ; XXX OLD -- not Forth-94
-wait_for_a_key.begin:
+wait_for_key.begin:
   ld a,(sys_last_k)
   and a
-  jr z,wait_for_a_key.begin
+  jr z,wait_for_key.begin
 delete_last_key:
   push af
   xor a
   ld (sys_last_k),a
   pop af
-  ret
-
-else
-
-  ; XXX NEW
-  ; XXX TODO -- change this into a code word
-  ; XXX TODO -- make it compatible with the future multitasking
-
-wait_for_a_key:
-  bit 5,(iy+1) ; bit 5 of FLAGS?: new key available?
-  jr z,wait_for_a_key
-  ld a,(sys_last_k)
-  res 5,(iy+1) ; no new key available anymore
   ret
 
 endif
@@ -11329,8 +11330,8 @@ color:
   pop hl
   ld a,l
   rst $10
-  call rom_set_permanent_colors_0x1CAD
-  _jp_next
+  call rom_set_permanent_colors_0x1CAD ; 17 03
+  _jp_next                             ; 08 02
 
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
