@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604180047
+; Last modified: 201604201754
 
 include version.z80s
 
@@ -1592,7 +1592,7 @@ endif
 ; : seal  ( -- )
 ;   context @ -order context !  ;
 ; ----
-; 
+;
 ; Remove all word list from the search order stack other than
 ; the word list that is currently on top of the search order
 ; stack.
@@ -3366,7 +3366,7 @@ endif
 ; doc{
 ;
 ; printing  ( -- a )
-; 
+;
 ; _a_ is the address of a cell containing the printer flag.
 ; This flag is set by `printer`, reset by `display` and checked
 ; by `page`. It should not be changed directly.
@@ -5981,7 +5981,7 @@ u_less_than.de_hl:
 ;
 ; Leave the name token of the topmost word in the
 ; `current` vocabulary.
-; 
+;
 ; Origin: fig-Forth.
 ;
 ; }doc
@@ -6052,7 +6052,7 @@ u_less_than.de_hl:
 ; doc{
 ;
 ; >name  ( xt -- nt | 0 )
-; 
+;
 ; Try to find the name token _nt_ of the word represented by
 ; execution token _xt_. Return 0 if it fails.
 ;
@@ -8018,9 +8018,7 @@ search.string_1_addr equ $+1
 ;
 ; literal  ( n -- )
 ;
-; If compiling, then compile the stack value _n_ as a 16-bit literal.
-;
-; Origin: fig-Forth.
+; Compile _n_ in the current definition.
 ;
 ; }doc
 
@@ -8032,9 +8030,9 @@ search.string_1_addr equ $+1
 
 ; doc{
 ;
-; 2literal  ( d -- )  \ I
+; 2literal  ( d -- )
 ;
-; If compiling, then compile the stack value _d_ as a 32-bit literal.
+; Compile _d_ in the current definition.
 ;
 ; }doc
 

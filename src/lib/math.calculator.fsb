@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604201706
+  \ Last modified: 201604201956
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,17 +28,18 @@
   \ History
 
   \ 2015-09-23: Start. Main development, as part of the
-  \ floating point implementation.
+  \ floating-point module.
   \
   \ 2016-04-11: Revision. Code reorganized. Improvements.
   \
   \ 2016-04-13: Fixes and improvements. First usable version.
   \
-  \ 2016-04-18: Extracted the code from the floating point
+  \ 2016-04-18: Extracted the code from the floating-point
   \ module, in order to reuse it. Much improved. Added `if then
   \ else`. Added `int`.
   \
-  \ 2016-04-20: Improved `2dup`.
+  \ 2016-04-20: Improved `2dup`. Commented out `=`, `<>`, `<`,
+  \ `<=`, `>` and `>=`, which can not be used yet.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -57,48 +58,6 @@
   \
   \ XXX TODO -- Document.
   \
-  \ XXX FIXME -- Many logical operators always return true, no
-  \ matter if the numbers are stored as small integers or
-  \ `restack` is used to convert them to actual floats.
-  \
-  \ After some research, it seems the reason is the numbers are
-  \ compared as strings.  Some commands of the ROM calculator
-  \ are used to compare numbers and strings, and the routine
-  \ checks the parameters before doing the comparison.
-  \
-  \ Somehow the ROM routine at $353B gets confused because the
-  \ command is not restored from $5C67 (the BREG system
-  \ variable BREG).
-  \
-  \ I examined the source of the ROM calculator and followed
-  \ its execution using the debugger of the Fuse emulator, in
-  \ BASIC and Forth. So far I got the following clues:
-  \
-  \ $335E: the command in B is saved to $5C67. This is at the
-  \ start of the calculator, so it doesn't makes sense the
-  \ first time, because the command is not in B. In Forth, B
-  \ contains the high part of the IP ($78 at the time of
-  \ writing). But this address is a re-entry point, forced by
-  \ the calculator by manipulating the Z80 stack.
-  \
-  \ $336C: the command is in A, ok.
-  \
-  \ $338C: the command is modified for indexing, ok.
-  \
-  \ $339D: the command should be restored by `ld bc,($5C66)`,
-  \ which is the low part of STKEND and the high part of BREG.
-  \ The register B should contain the command, but not right
-  \ after the first entry into the calculator.
-  \
-  \ $33A1: BREG is in B, which in Forth is $78, bad.
-  \
-  \ $33A1: Restore the ROM calculator literal: `ld a,($5C67)`.
-  \ This is not executed by Forth's `f=`, but it is when the
-  \ BASIC command `print 1=1` is interpreted.
-  \
-  \ $353B: B contains $78, not the command. The routine does a
-  \ string comparison. But in BASIC, at this point register B
-  \ contains the command.
 
 ( calculator )
 
@@ -174,15 +133,15 @@ get-current  calculator-wordlist set-current
   \ Compile the `re-stack` ROM calculator command.
 
 : zero  ( -- )  $A0 c,  ;
-  \ Compile the `` ROM calculator command.
+  \ Compile the ROM calculator command that stacks 0.
 : one  ( -- )  $A1 c,  ;
-  \ Compile the `` ROM calculator command.
+  \ Compile the ROM calculator command that stacks 1.
 : half  ( -- )  $A2 c,  ;
-  \ Compile the `` ROM calculator command.
+  \ Compile the ROM calculator command that stacks 1/2.
 : pi2/  ( -- )  $A3 c,  ;
-  \ Compile the `` ROM calculator command.
+  \ Compile the ROM calculator command that stacks pi/2.
 : ten  ( -- )  $A4 c,  ;
-  \ Compile the `` ROM calculator command.
+  \ Compile the ROM calculator command that stacks 10.
 
 -->
 
@@ -243,11 +202,66 @@ get-current  calculator-wordlist set-current
 : 0=  ( -- )  $30 c,  ;
   \ Compile the `not` ROM calculator command.
 
-: <>  ( -- )  $0B c,  ;
-  \ Compile the `nos-neql` ROM calculator command.
+: 0<  ( -- )  $36 c,  ;
+  \ Compile the `less-0` ROM calculator command.
+
+: 0>  ( -- )  $37 c,  ;
+  \ Compile the `greater-0` ROM calculator command.
+
+-->
+
+( = <> < > <= >= )
+
+-->  \ XXX TMP -- ignore this block
+
+  \ XXX FIXME -- These commands always return true.
+  \
+  \ 2016-04-20:
+  \
+  \ After some research, it seems the reason is the numbers are
+  \ compared as strings.  Some commands of the ROM calculator
+  \ are used to compare numbers and strings, and the routine
+  \ checks the parameters before doing the comparison.
+  \
+  \ Somehow the ROM routine at $353B gets confused because the
+  \ command is not restored from $5C67 (the BREG system
+  \ variable BREG).
+  \
+  \ I examined the source of the ROM calculator and followed
+  \ its execution using the debugger of the Fuse emulator, in
+  \ BASIC and Forth. So far I got the following clues:
+  \
+  \ $335E: the command in B is saved to $5C67. This is at the
+  \ start of the calculator, so it doesn't makes sense the
+  \ first time, because the command is not in B. In Forth, B
+  \ contains the high part of the IP ($78 at the time of
+  \ writing). But this address is a re-entry point, forced by
+  \ the calculator by manipulating the Z80 stack.
+  \
+  \ $336C: the command is in A, ok.
+  \
+  \ $338C: the command is modified for indexing, ok.
+  \
+  \ $339D: the command should be restored by `ld bc,($5C66)`,
+  \ which is the low part of STKEND and the high part of BREG.
+  \ The register B should contain the command, but not right
+  \ after the first entry into the calculator.
+  \
+  \ $33A1: BREG is in B, which in Forth is $78, bad.
+  \
+  \ $33A1: Restore the ROM calculator literal: `ld a,($5C67)`.
+  \ This is not executed by Forth's `f=`, but it is when the
+  \ BASIC command `print 1=1` is interpreted.
+  \
+  \ $353B: B contains $78, not the command. The routine does a
+  \ string comparison. But in BASIC, at this point register B
+  \ contains the command.
 
 : =  ( -- )  $0E c,  ;
   \ Compile the `nos-eql` ROM calculator command.
+
+: <>  ( -- )  $0B c,  ;
+  \ Compile the `nos-neql` ROM calculator command.
 
 : >  ( -- )  $0C c,  ;
   \ Compile the `no-grtr` ROM calculator command.
@@ -261,12 +275,6 @@ get-current  calculator-wordlist set-current
 : >=  ( -- )  $0A c,  ;
   \ Compile the `no-gr-eql` ROM calculator command.
 
-: 0<  ( -- )  $36 c,  ;
-  \ Compile the `less-0` ROM calculator command.
-
-: 0>  ( -- )  $37 c,  ;
-  \ Compile the `greater-0` ROM calculator command.
-
 -->
 
 ( calculator )
@@ -274,8 +282,16 @@ get-current  calculator-wordlist set-current
 : ?branch  ( -- )  $00 c,  ;
   \ Compile the `jump-true` ROM calculator command.
 
+: 0branch  ( -- )  0= ?branch  ;
+  \ Compile the ROM calculator commands to do a branch if
+  \ the TOS of the calculator stack is zero.
+
 : branch  ( -- )  $33 c,  ;
   \ Compile the `jump` ROM calculator command.
+
+-->
+
+( calculator )
 
 : >mark  ( -- a )  here 0 c,  ;
 
@@ -305,16 +321,15 @@ get-current  calculator-wordlist set-current
   \ destination of a ROM calculator backward branch which will
   \ later be resolved by `<resolve`.
   \
-  \ Typically used before either `branch` or
-  \ `?branch`.
+  \ Typically used before either `branch` or `?branch`.
 
 : <resolve  ( a -- )  from-here c,  ;
 
   \ Resolve a ROM calculator backward branch by compiling the
-  \ displacement from the current position to the address left
-  \ by `<mark`.
+  \ displacement from the current position to address _a_,
+  \ which was left by `<mark`.
 
-: if  ( -- a )  ?branch >mark  ;
+: if  ( -- a )  0branch >mark  ;
 
 : else  ( a1 -- a2 )
   branch >mark [ also forth ] swap [ previous ] >resolve  ;

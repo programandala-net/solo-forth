@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604201706
+  \ Last modified: 201604201956
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,7 +45,8 @@
   \ `f<`, `f<=`, `f>` and `f>=` after it, because calling the
   \ equivalents command of the ROM calculator directly always
   \ returned a true flag; the details of the debugging are
-  \ noted in the ROM calculator module.
+  \ noted in the ROM calculator module. Fixed `fmax` and
+  \ `fmin`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -121,11 +122,11 @@ macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
   \ This macro is a common factor of all floating point logical
   \ operators.
 
-( calculator-command>flag )
+( calculator-command )
 
-need calculator  need f>flag  need call-xt
+need calculator
 
-: calculator-command>flag  ( b -- )
+: calculator-command  ( b -- )
   $C5 c,  $06 c, c,
     \ push bc ; save the Forth IP
     \ ld b,command
@@ -133,9 +134,24 @@ need calculator  need f>flag  need call-xt
     \ `fp-calc-2` calculator command, which executes the
     \ calculator command stored in the b register.
   [ calculator-wordlist >order ] end-calculator [ previous ]
-  $C1 c,
+  $C1 c,  ;
     \ pop bc ; restore the Forth IP
-  ['] f>flag call-xt
+
+  \ doc{
+  \
+  \ calculator-command  ( b -- )
+  \
+  \ Compile the assembler instructions needed to execute the
+  \ _b_ command of the ROM calculator.
+  \
+  \ }doc
+
+( calculator-command>flag )
+
+need calculator-command  need f>flag  need call-xt
+
+: calculator-command>flag  ( b -- )
+  calculator-command ['] f>flag call-xt
   [ also assembler ] jpnext [ previous ]  ;
 
   \ doc{
@@ -277,29 +293,55 @@ code fmod  ( F: r1 -- r2 )
 
 ( fmax )
 
-need calculator
+need calculator  need calculator-command
 
-  \ XXX FIXME -- the problem is `>`, see the calculator module
 code fmax  ( F: r1 r2 -- r1|r2 )
+  calculator  2dup  end-calculator
+  0C calculator-command  ( F: r1 r2 rf -- )
+    \ `no-grtr` ROM calculator command
   calculator
-    2dup >  ( F: r1 r2 rf -- )
     if    drop  ( F: r1 )
     else  swap drop  ( F: r2 )
     then
   end-calculator  jpnext  end-code
+
+  \ XXX OLD -- Original, simpler version. The problem is the
+  \ calculator's `>`. See the calculator module for details of
+  \ the problem.
+
+  \ code fmax  ( F: r1 r2 -- r1|r2 )
+  \   calculator
+  \     2dup >  ( F: r1 r2 rf -- )
+  \     if    drop  ( F: r1 )
+  \     else  swap drop  ( F: r2 )
+  \     then
+  \   end-calculator  jpnext  end-code
 
 ( fmin )
 
-need calculator
+need calculator  need calculator-command
 
-  \ XXX FIXME -- the problem is `<`, see the calculator module
 code fmin  ( F: r1 r2 -- r1|r2 )
+  calculator  2dup  end-calculator
+  0D calculator-command  ( F: r1 r2 rf -- )
+    \ `no-less` ROM calculator command
   calculator
-    2dup <  ( F: r1 r2 rf -- )
     if    drop  ( F: r1 )
     else  swap drop  ( F: r2 )
     then
   end-calculator  jpnext  end-code
+
+  \ XXX OLD -- Original, simpler version. The problem is the
+  \ calculator's `<`. See the calculator module for details of
+  \ the problem.
+
+  \ code fmin  ( F: r1 r2 -- r1|r2 )
+  \   calculator
+  \     2dup <  ( F: r1 r2 rf -- )
+  \     if    drop  ( F: r1 )
+  \     else  swap drop  ( F: r2 )
+  \     then
+  \   end-calculator  jpnext  end-code
 
 ( fsgn fabs fnegate )
 
