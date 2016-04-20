@@ -121,8 +121,8 @@ developing: equ true
 ; ----------------------------------------------
 ; Forth
 
-;origin:                           equ $5E00
-origin:                           equ $5F00 ; XXX TMP -- for debugging
+origin:                           equ $5E00
+;origin:                           equ $5F00 ; XXX TMP -- for debugging
 
 ramtop:                           equ origin-1 ; used by the BASIC loader
 
@@ -5991,6 +5991,8 @@ u_less_than.de_hl:
 ; `last`. But some code still depends on this. Meanwhile, `last
 ; @` is used in `(;code)`.
 
+; XXX TODO -- convert to standard `latest`.
+
   dw get_current_,fetch_
   dw exit_
 
@@ -7512,8 +7514,14 @@ parse_name.skip:
 
   pop hl
   ld a,l
-  call ascii_upper.a
-  jp push_a
+
+  ; XXX OLD
+  ; call ascii_upper.a  ; 17 03
+  ; jp push_a           ; 10 03
+
+  ; XXX NEW  -- faster and smaller
+  ld hl,push_a        ; 10 03 ; return address
+  push hl             ; 11 01 ; force it
 
 ascii_upper.a:
   ; Convert the ASCII char in the 'a' register to uppercase.
@@ -7547,7 +7555,11 @@ uppers.do:
   ld (hl),a
   inc hl
   dec de
-  jp uppers.do
+  if size_optimization
+    jr uppers.do
+  else
+    jp uppers.do
+  endif
 
 ; ----------------------------------------------
   _colon_header undefined_question_,'UNDEFINED?'
@@ -7808,11 +7820,13 @@ endif
   ; Forth-94
   ; Adapted from DZX-Forth
 
-  ; XXX TODO do not use compare_strings_case_sensitive,
-  ; because there will be no option to change it.
-  ; Use shorter internal code instead.
-  ; When case insensitive comparation is needed,
+  ; XXX TODO -- do not use compare_strings_case_sensitive, because
+  ; there will be no option to change it.  Use shorter internal
+  ; code instead.  When case insensitive comparation is needed,
   ; `uppers` can be used.
+  ;
+  ; XXX TODO -- study the version of Z88 CamelForth: `compare`
+  ; and `s=  ( ca1 ca2 len -- n )`.
 
   pop de      ; de = len2
   pop hl      ; hl = ca2
@@ -7878,6 +7892,54 @@ compare_strings_case_sensitive:
   jp compare_strings_case_sensitive
 
 ; ----------------------------------------------
+  _code_header compare2_,'COMPARE2'
+
+  ; XXX TMP -- for benchmarking
+  ; XXX TODO --
+
+  pop de      ; de = len2
+  pop hl      ; hl = ca2
+  ex (sp),hl  ; hl = len1 ; ( ca1 ca2 )
+  ld a,d
+  cp h
+  jr nz,compare2.lengths
+  ld a,e
+  cp l
+compare2.lengths:
+  ; cy = string2 is longer than string1?
+  jr c,compare2.ready
+  ex de,hl
+compare2.ready:
+  ; de = length of the short string
+  ; hl = length of the long string
+  ld l,c
+  ld h,b ; hl = Forth IP
+  pop bc ; bc = ca2
+  ex (sp),hl ; hl = ca1 ; save Forth IP
+  push af ; save carry flag
+compare2.compare_strings: equ $+1 ; XXX not used
+  call compare_strings_case_sensitive
+  jr nz,compare2.no_match
+
+compare2.match:
+  ; The smaller string matches.
+  pop af ; restore flags
+  jr compare2.end
+
+compare2.no_match:
+  ; The smaller string does not match.
+  pop bc ; useless carry flag
+
+compare2.end:
+  pop bc ; restore Forth IP
+  ld hl,1
+  jp c,push_hl
+  dec hl ; 0
+  jp z,push_hl ; string1 equals string2
+  dec hl ; -1
+  _jp_pushhl
+
+; ----------------------------------------------
   _code_header search_,'SEARCH'
 
   ; search  ( ca1 len1 ca2 len2 -- ca3 len3 -1 | ca1 len1 0 )
@@ -7894,7 +7956,7 @@ compare_strings_case_sensitive:
   ; XXX TODO --  2015-09-12: make the case mode comparison
   ; configurable seems a better option, easier than customize
   ; several version of the same code with `uppers`, not to
-  ; mention `uppers` with parsed strings must use tthe circular
+  ; mention `uppers` with parsed strings must use the circular
   ; string buffer, what is a limitation.
 
   exx ; save Forth IP
@@ -11313,6 +11375,8 @@ do_two_constant:
 
 ; ----------------------------------------------
   _code_header two_over_,'2OVER'
+
+  ; XXX TODO -- move to the library?
 
 ; doc{
 ;

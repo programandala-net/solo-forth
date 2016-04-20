@@ -16559,7 +16559,8 @@ set-current  previous
   \ `f<`, `f<=`, `f>` and `f>=` after it, because calling the
   \ equivalents command of the ROM calculator directly always
   \ returned a true flag; the details of the debugging are
-  \ noted in the ROM calculator module.
+  \ noted in the ROM calculator module. Fixed `fmax` and
+  \ `fmin`.
 
   \ -----------------------------------------------------------
   \ To-do
