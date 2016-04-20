@@ -1811,8 +1811,30 @@ push_a:
 ;
 ; }doc
 
-  call bank.system
-  _jp_next
+  ; XXX OLD
+                     ;  T  B
+  ; call bank.system ; 17 03
+  ; _jp_next         ; 08 02
+
+  ; XXX NEW
+                     ;  T  B
+  push ix            ; 15 02 ; make next `ret` jump to `next`
+
+bank.system:
+  ld e,system_bank
+  jr bank.e
+bank.default:
+address_of_default_bank equ $+1
+  ld e,default_bank
+bank.e:
+  ld a,(sys_bankm) ; get the saved status of BANKM
+  and %11111000 ; erase bits 0-2
+  or e ; modify bits 0-2
+  di
+  ld (sys_bankm),a ; update BANKM
+  out (bank1_port),a ; page in the bank
+  ei
+  ret
 
 ; ----------------------------------------------
   _constant_header bank_start_,'BANK-START'
@@ -1841,22 +1863,6 @@ push_a:
   pop de ; E = bank
   call bank.e
   _jp_next
-
-bank.system:
-  ld e,system_bank
-  jr bank.e
-bank.default:
-address_of_default_bank equ $+1
-  ld e,default_bank
-bank.e:
-  ld a,(sys_bankm) ; get the saved status of BANKM
-  and %11111000 ; erase bits 0-2
-  or e ; modify bits 0-2
-  di
-  ld (sys_bankm),a ; update BANKM
-  out (bank1_port),a ; page in the bank
-  ei
-  ret
 
 ; ----------------------------------------------
   _code_header unused_csb_,'UNUSED-CSB'
@@ -7514,14 +7520,8 @@ parse_name.skip:
 
   pop hl
   ld a,l
-
-  ; XXX OLD
-  ; call ascii_upper.a  ; 17 03
-  ; jp push_a           ; 10 03
-
-  ; XXX NEW  -- faster and smaller
-  ld hl,push_a        ; 10 03 ; return address
-  push hl             ; 11 01 ; force it
+  ld hl,push_a ; exit address
+  push hl      ; make next `ret` jump to push_a
 
 ascii_upper.a:
   ; Convert the ASCII char in the 'a' register to uppercase.
