@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604211849
+; Last modified: 201604220128
 
 include version.z80s
 
@@ -103,13 +103,8 @@ size_optimization: equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-  ; XXX the flag is harcoded in the code
-  ; XXX OLD
+  ; XXX OLD -- the flag is harcoded in the code
 ;assembler_core_in_kernel: equ true
-
-  ; XXX UNDER DEVELOPMENT
-;new_wordlists: false
-  ; new = simpler implementation of `wordlist`, based on eForth
 
 developing: equ true
   ; true = include some words needed during the development
@@ -763,12 +758,12 @@ blk_value:                                    ; +$10
   dw $0000
 in_value:                                     ; +$12
   dw $0000
-; hash_emit_value:                              ; +$14 ; XXX OLD
+; XXX not used                                ; +$14
   dw $0000
 scr_value:                                    ; +$16
   dw $0000
-r_hash_value:                                 ; +$18
-  dw $0000 ; XXX OLD -- used by the editor, remove
+; XXX not used                                ; +$18
+  dw $0000
 hld_value:                                    ; +$1A
   dw $0000
 current_value:                                ; +$1C
@@ -795,11 +790,6 @@ context_value:                                ; +$28..+$36
 
 user_data_pointer: equ $-user_variables
   ds bytes_per_user_variables-user_data_pointer
-
-; XXX OLD
-; if ($-user_variables) != bytes_per_user_variables
-;  .error "The space reserved for user variables is wrong."
-; endif
 
 ; ==============================================================
 ; Stacks and buffers
@@ -1566,7 +1556,9 @@ else ; XXX NEW
 ;
 ; }doc
 
-  ; XXX TODO -- `get-order` is in the library
+  ; XXX TODO -- `get-order` is in the library, and it needs
+  ; `recurse`; write a simpler version of `get-order`, after
+  ; Gforth, and put it in the kernel
 
   dw get_order_,nip_,one_minus_,set_order_
   dw exit_
@@ -1575,6 +1567,9 @@ else ; XXX NEW
 ;
 ; : previous  ( -- )
 ;   vp @ 1- dup 0= -50 ?throw vp !  ;
+
+; : get-order  
+;  vp @ 0 ?do  vp cell+ i cells + @  loop  vp @  ;
 
 endif
 
@@ -3163,143 +3158,11 @@ skip.end:
 
 ; doc{
 ;
-; mode32-emit  ( b -- )
+; mode32-emit  ( c -- )
 ;
-; Send the character _b_ to the current channel.
+; Send character _c_ to the current channel.
 ;
 ; }doc
-
-if 0
-
-  ; Credit:
-  ; Code from Spectrum Forth-83's `TOCH`.
-
-
-  ; XXX default printing system, with the ZX Spectrum charset
-  ; XXX OLD
-
-  pop hl
-  ld a,l
-  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
-  rst $10
-  _jp_next
-
-endif
-
-if 0
-
-  ; XXX alternative 1
-
-  ; XXX OLD -- this uses UDG as a fake charset, but it can not
-  ; work fine, because block chars and UDG are shown anyway,
-  ; with higher codes.
-
-  pop hl
-  ld a,l
-  ld hl,(sys_chars)
-  push hl
-  cp 128
-  jr c,mode32_emit.print_a
-  sub 96
-  ld hl,(sys_udg)
-  dec h
-  ld (sys_chars),hl
-mode32_emit.print_a
-  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
-  rst $10
-  pop hl
-  ld (sys_chars),hl
-  _jp_next
-
-endif
-
-if 0
-
-  ; XXX alternative 2
-  ; XXX OLD
-  ; the coords get wrong after printing UDGs and scrolling
-
-  pop hl
-  push bc
-
-  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
-
-  ld a,l
-  cp 128 ; control or ASCII character?
-  jp nc,mode32_emit.print_udg ; is not, jump
-
-  ; use the ROM routine to print a control or ASCII character
-  rst $10
-  pop bc
-  _jp_next
-
-mode32_emit.print_udg:
-  ; hl = UDG code (128..255)
-  sub 128
-  ld l,a ; hl = UDG index code (0..127)
-  ld de,(sys_udg)
-  add hl,hl
-  add hl,hl
-  add hl,hl
-  add hl,de
-  ex de,hl ; de = char address in the font
-  ld hl,(sys_df_cc) ; current screen address
-  ld b,8 ; char scans
-mode32_emit.print_udg_scan
-  ld a,(de) ; get UDG scan
-  ld (hl),a ; put it on the screen
-  inc de ; address of next scan of the UDG
-  inc h ; address of next pixel row on the screen
-  djnz mode32_emit.print_udg_scan
-
-  ; Update
-  ld de,(sys_s_posn)
-  ld hl,$1821 ; $18 = 24 - row
-               ; $21 = 33 - column
-  sbc hl,de
-  ex de,hl
-  inc e
-  ld a,e
-  cp 32 ; last col?
-  jp c,mode32_emit.update2 ; if not, jump
-  ; last col
-  ld e,0
-  inc d
-  ld a,d
-  cp 23 ; last row?
-  jp c,mode32_emit.update2 ; if not, jump
-  ; last row
-  call $0DFE ; ROM scroll routine
-  ; XXX FIXME wrong coords after the scroll
-  ld de, $1400
-
-mode32_emit.update2:
-  push de
-  ld a,d
-  and $07
-  rrca
-  rrca
-  rrca
-  or e
-  ld e,a
-  ld a,d
-  and $18
-  or $40
-  ld d,a
-  ld (sys_df_cc),de
-  pop de
-  ld hl,$1821 ; $18 = 24 - row
-               ; $21 = 33 - column
-  sbc hl,de
-  ld (sys_s_posn),hl
-  pop bc
-  _jp_next
-
-endif
-
-if 1
-
-  ; XXX alternative 3
 
   pop hl
   ; h = 0
@@ -3322,9 +3185,9 @@ if 1
 
 ; doc{
 ;
-; emit-udg  ( b -- )
+; emit-udg  ( c -- )
 ;
-; Print the User Defined Character _b_ (128..255).
+; Print the User Defined Character _c_ (128..255).
 ;
 ; }doc
 
@@ -3351,8 +3214,6 @@ emit_udg.a
   ld (sys_df_cc),hl
   pop bc
   _jp_next
-
-endif
 
 ; ----------------------------------------------
   _defer_header emit_,'EMIT',,mode32_emit_
@@ -3626,52 +3487,9 @@ endif
 ;
 ; }doc
 
-if 1
   call wait_for_key
   call translate_char.a ; XXX TODO
   jp push_a
-endif
-
-if 0 ; XXX OLD
-
-key.begin:
-if 0
-  ld a,(sys_last_k)
-  and a
-else
-  bit 5,(iy+$01) ; system variable FLAGS
-endif
-  jr z,key.begin
-  ld hl,sys_last_k
-  ld (hl),0
-  jp push_a
-
-endif
-
-if 0 ; XXX OLD
-
-; XXX -- This version works also when the system interrupts are off.
-; XXX TODO -- Add multitasker's `pause` when available.
-
-  ; XXX TODO move to the library; rename to `get-key`?
-
-  push bc
-key.begin:
-  call rom_key_scan
-  jr nz,key.begin
-  call rom_key_test
-  jr nc,key.begin
-  dec d
-  ld e,a
-  call rom_key_decode
-key.end:
-  ld hl,sys_last_k
-  ld (hl),0
-  ld ix,next ; XXX TMP
-  pop bc
-  jp push_a
-
-endif
 
 ; ----------------------------------------------
   _code_header xkey_,'XKEY'
@@ -3747,23 +3565,6 @@ wait_for_key:
   ld a,(sys_last_k) ; return the key in register A
   res 5,(iy+1)      ; no new key available anymore
   ret
-
-if 0  ; XXX OLD
-
-wait_for_key:
-  ; call delete_last_key ; XXX OLD -- not Forth-94
-wait_for_key.begin:
-  ld a,(sys_last_k)
-  and a
-  jr z,wait_for_key.begin
-delete_last_key:
-  push af
-  xor a
-  ld (sys_last_k),a
-  pop af
-  ret
-
-endif
 
 ; ----------------------------------------------
   _colon_header paren_cr_,'(CR)'
@@ -5304,26 +5105,6 @@ do_user:
 
   db $12
 
-; ; ----------------------------------------------
-;   _user_variable_header hash_emit_,'#EMIT'
-
-; XXX OLD
-
-; ; doc{
-; ;
-; ; #emit  ( -- a )
-; ;
-; ; User variable that contains a value incremented by `emit`
-; ; and reseted by `cr`. The user may alter and examine `#emit` to
-; ; control display formating.
-; ;
-; ; Note: In fig-Forth it's called `out`; in Forth-83 it's called
-; ; `#out`.
-; ;
-; ; }doc
-
-;   db $14
-
 ; ----------------------------------------------
   _user_variable_header scr_,'SCR'
 
@@ -6675,52 +6456,6 @@ minus_trailing.begin:
 
   dw exit_
 
-if 0 ; XXX OLD
-
-  ; This version allows `."` in interpretation mode.
-  ; This version needs 4 more bytes.
-
-; ----------------------------------------------
-  _colon_header dot_quote_,'."',immediate
-
-; doc{
-;
-; ."
-;
-; Interpretation: ( "ccc<quote>" -- )
-;
-; Parse "ccc" delimited by a double-quote and display it.
-;
-; Compilation: ( "ccc<quote>" -- )
-;
-; Parse "ccc" delimited by a double-quote. Append the run-time
-; semantics given below to the current definition.
-;
-;       Run-time: ( -- )
-;
-; Display "ccc".
-;
-; Origin: Forth-79, Forth-94 (CORE), Forth-2012 (CORE).
-;
-; }doc
-
-  _literal '"'
-  dw parse_ ; ( ca len )
-  dw compiling_question_
-  dw zero_branch_,dot_quote.interpreting
-  ; Compiling.
-  dw compile_,paren_dot_quote_,s_comma_
-  dw exit_
-dot_quote.interpreting:
-  dw type_
-  dw exit_
-
-else
-
-  ; This version causes an error when `."` is used in
-  ; interpretation mode.
-  ; This version saves 4 bytes.
-
 ; ----------------------------------------------
   _colon_header comma_quote_,',"'
 
@@ -6777,8 +6512,6 @@ else
   dw compile_,paren_dot_quote_,comma_quote_
   dw exit_
 
-endif
-
 ; ----------------------------------------------
   _variable_header span_,'SPAN'
 
@@ -6809,6 +6542,7 @@ endif
 ; ----------------------------------------------
   _colon_header s_quote_quote_,'S""'
 
+; XXX TODO -- move to the library
 ; XXX OLD
 
 ; doc{
@@ -6844,8 +6578,8 @@ endif
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; In Solo Forth `accept` is a deferred word. Its default
-; behaviour is `default-accept`, which provides only the basic
-; editing options Alternative definitions are provided in the
+; behaviour is `simple-accept`, which provides only the basic
+; editing options. Alternative definitions are provided in the
 ; library.
 ;
 ; }doc
@@ -9073,16 +8807,6 @@ question_d_negate.hl:
   push hl
   jp question_negate.hl
 
-if 0
-
-  ; XXX OLD -- from DZX-Forth
-
-  pop hl
-  call abs_hl
-  _jp_pushhl
-
-endif
-
 ; ----------------------------------------------
   _code_header d_abs_,'DABS'
 
@@ -9457,26 +9181,6 @@ endif
   dw plus_
   dw block_,plus_,c_slash_l_
   dw exit_
-
-; XXX OLD
-; ; ----------------------------------------------
-;   _colon_header warning_,'WARNING'
-
-; ; doc{
-; ;
-; ; warning  ( n -- )
-; ;
-; ; ----
-; ; : warning  ( n -- )
-; ;   warnings @ if  message  else  drop  then  ;
-; ; ----
-; ; }doc
-
-;   dw warnings_,fetch_
-;   dw question_branch_,message_pfa
-;   dw drop_
-;   dw exit_
-
 
 ; ----------------------------------------------
   _colon_header dec_dot_,'DEC.'
@@ -10789,7 +10493,7 @@ endif
   ld (sys_attr_t),hl ; temporary
 
   ; Set the system variable that holds the attributes of the
-  ; lower part of the screen.  It is needed only because G+DOS
+  ; lower part of the screen.  This must be done because G+DOS
   ; by default changes the border color during disk operations,
   ; and at the end restores it with the value of this system
   ; variable.
@@ -10813,7 +10517,7 @@ endif
 
 ; doc{
 ;
-; (mode32-home)  ( -- )
+; mode32-home  ( -- )
 ;
 ; Behaviour of `home` in `mode32`.
 ;
@@ -10824,7 +10528,7 @@ if 0
   ; XXX OLD -- This method works only with the default ROM
   ; printing routines.
 
-  ld hl,$1821 ; $18 = 24 - row
+  ld hl,$1821  ; $18 = 24 - row
                ; $21 = 33 - column
   ld (sys_s_posn),hl
   _jp_next
@@ -11198,35 +10902,6 @@ mode32_xy.end:
   pop hl
   ld a,l
   out (border_port),a
-
-  ; The system variable that holds the attributes of the lower
-  ; part of the screen, unnecessary in Solo Forth, must be
-  ; updated.  The reason is G+DOS, after disk operations that
-  ; make the border change, restores the border color with the
-  ; value of this system variable.  We use the border color as
-  ; paper and set a a contrast ink (black or white), to make
-  ; sure the lower part of the screen is usable after returning
-  ; to BASIC.
-
-if 0 ; XXX OLD
-
-  ; XXX TODO move this (contrast ink calculation) to `bye` or
-  ; simply remove it:
-
-  cp 4 ; cy = dark color (0..3)?
-  ld a,7 ; white ink
-  jr c,border.end
-  xor a ; black ink
-border.end:
-  ; Note: slower than shifting the register, but saves three bytes.
-  add hl,hl
-  add hl,hl
-  add hl,hl ; l = paper (bits 3..5)
-  or l ; combine with ink
-  ld (sys_bordcr),a
-
-endif
-
   _jp_next
 
 ; ----------------------------------------------
