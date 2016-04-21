@@ -1,6 +1,6 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-12
+:revdate: 2016-04-22
 
 == Numbers
 
@@ -14,10 +14,10 @@
 | fa          | float-aligned address                        | 1 cell
 | dfa         | double-float-aligned address                 | 1 cell
 
-| f           | flag (false is 0; true is any other value)   | 1 cell
+| f           | well-formed flag (false: 0; true: -1)        | 1 cell
+| 0f          | zero flag (false: 0; true: non-zero)         | 1 cell
 | true        | true flag (-1)                               | 1 cell
 | false       | false flag (0)                               | 1 cell
-| wf          | well-formed flag (false is 0; true is -1)    | 1 cell
 
 | b           | 8-bit byte                                   | 1 cell
 | c           | 8-bit character                              | 1 cell

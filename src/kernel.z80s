@@ -3587,7 +3587,7 @@ endif
 
 ; doc{
 ;
-; key?  ( -- wf )
+; key?  ( -- f )
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
@@ -4682,7 +4682,7 @@ endif
 
 ; doc{
 ;
-; c@test-bits?  ( b ca -- wf )
+; c@test-bits?  ( b ca -- f )
 ;
 ; Test the bits at _ca_ specified by the bitmask _b_.
 ; Return _true_ if the result is non-zero, else return _false_.
@@ -6298,10 +6298,10 @@ to_name.next:
 
 ; doc{
 ;
-; compiling?  ( -- wf )
+; compiling?  ( -- f )
 ;
 ; ----
-; : compiling?  ( -- wf )
+; : compiling?  ( -- f )
 ;   state @ 0<>  ;
 ; ----
 ;
@@ -6315,10 +6315,10 @@ to_name.next:
 
 ; doc{
 ;
-; executing?  ( -- wf )
+; executing?  ( -- f )
 ;
 ; ----
-; : executing?  ( -- wf )
+; : executing?  ( -- f )
 ;   state @ 0=  ;
 ; ----
 ;
@@ -7002,7 +7002,7 @@ simple_accept.end
 
 ; doc{
 
-; refill  ( -- wf )
+; refill  ( -- f )
 
 ; }doc
 
@@ -7513,7 +7513,7 @@ uppers.do:
 
 ; doc{
 ;
-; undefined?  ( ca len -- wf )
+; undefined?  ( ca len -- f )
 ;
 ; }doc
 
@@ -8380,7 +8380,7 @@ endif
 
 ; doc{
 ;
-; immediate?  ( nt -- wf )
+; immediate?  ( nt -- f )
 ;
 ; Does the word with the given _nt_ is immediate?
 ;
@@ -8394,7 +8394,7 @@ endif
 
 ; doc{
 ;
-; name>immediate?  ( nt -- xt wf )
+; name>immediate?  ( nt -- xt f )
 ;
 ; Does the word with the given _nt_ is immediate?
 ;
@@ -8405,7 +8405,7 @@ endif
   ; which converts a nt to a flag.
 
   dw dup_,from_name_,swap_ ; ( xt nt )
-  dw immediate_question_ ; ( xt wf )
+  dw immediate_question_ ; ( xt f )
   dw exit_
 
 ; ----------------------------------------------
@@ -8432,7 +8432,7 @@ endif
 
 ; doc{
 ;
-; compile-only?  ( nt -- wf )
+; compile-only?  ( nt -- f )
 ;
 ; Does the word with the given _nt_ is compile-only?
 ;
@@ -10252,10 +10252,10 @@ endif
 
 ; doc{
 ;
-; [defined]  ( "name" -- wf )
+; [defined]  ( "name" -- f )
 ;
 ; ----
-; : [defined]  ( "name" -- wf )
+; : [defined]  ( "name" -- f )
 ;   defined 0<>  ; immediate
 ; ----
 ;
@@ -10272,10 +10272,10 @@ endif
 
 ; doc{
 ;
-; [undefined]  ( "name" -- wf )
+; [undefined]  ( "name" -- f )
 ;
 ; ----
-; : [undefined]  ( "name" -- wf )
+; : [undefined]  ( "name" -- f )
 ;   [defined] 0=  ; immediate
 ; ----
 ;

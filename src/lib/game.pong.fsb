@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -265,15 +265,15 @@ rows 1- cconstant racket2-y
 
 ( pong )
 
-: ball-moving-right?  ( -- f )  direction c@ %10 and  ;
-: ball-moving-down?  ( -- f )  direction c@ %01 and  ;
-  \ : ball-at-right?  ( -- wf )  x @ columns 1- =  ;
-: ball-at-right?  ( -- wf )  x @ 247 >  ;
-: ball-at-left?  ( -- wf )  x @ 1 <  ;
-  \ : ball-at-bottom?  ( -- wf )  y @ rows 2- =  ;
-: ball-at-bottom?  ( -- wf )  y @ 16 <  ;
-  \ : ball-at-top?  ( -- wf )  y @ 1 =  ;
-: ball-at-top?  ( -- wf )  y @ 182 >  ;
+: ball-moving-right?  ( -- 0f )  direction c@ %10 and  ;
+: ball-moving-down?  ( -- 0f )  direction c@ %01 and  ;
+  \ : ball-at-right?  ( -- f )  x @ columns 1- =  ;
+: ball-at-right?  ( -- f )  x @ 247 >  ;
+: ball-at-left?  ( -- f )  x @ 1 <  ;
+  \ : ball-at-bottom?  ( -- f )  y @ rows 2- =  ;
+: ball-at-bottom?  ( -- f )  y @ 16 <  ;
+  \ : ball-at-top?  ( -- f )  y @ 1 =  ;
+: ball-at-top?  ( -- f )  y @ 182 >  ;
 
 : move-ball-x  ( -- )
   ball-moving-right?
@@ -303,19 +303,19 @@ rows 1- cconstant racket2-y
 
 [defined] 8* ?\ : 8*  ( n1 -- n2 )  2* 2* 2*  ;
 
-: hit-racket1?  ( -- wf )
+: hit-racket1?  ( -- f )
   x @ racket1-x @ 8* 1- >
   x @ racket1-x @ 8* racket-size 8* + <  and  ;
   \ Is racket1 hit by the ball?
   \ Is racket1-x <= x < racket1-x + racket-size?
 
-: hit-racket2?  ( -- wf )
+: hit-racket2?  ( -- f )
   x @ racket2-x @ 8* 1- >
   x @ racket2-x @ 8* racket-size 8* + <  and  ;
   \ Is racket2 hit by the ball?
   \ Is racket2-x <= x < racket2-x + racket-size?
 
-  \ : hit-racket?  ( a -- wf )
+  \ : hit-racket?  ( a -- f )
   \   \ XXX NEW -- alternative
   \   \ XXX TODO try
   \   \ a = address that holds the x coordinate of a racket

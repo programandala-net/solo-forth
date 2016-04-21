@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604220027
 
   \ -----------------------------------------------------------
   \ Description
@@ -101,12 +101,12 @@
   \ ( Run-time: x0 x1 -- )
   postpone over  postpone -  postpone if  ; immediate
 
-: (range)  ( x0 x1 x2 -- x0 wf )
+: (range)  ( x0 x1 x2 -- x0 f )
   2>r dup 2r> over - -rot - u<  ;
 
 : range
   \ ( Compilation: -- orig )
-  \ ( Run-time: x0 x1 x2 -- x0 wf )
+  \ ( Run-time: x0 x1 x2 -- x0 f )
   postpone (range)  postpone if  ; immediate
 
 ( select-test )

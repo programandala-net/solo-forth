@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031848
+  \ Last modified: 201604220026
 
   \ -----------------------------------------------------------
   \ Description
@@ -217,25 +217,25 @@ defer reneed  ( "name" -- )
 
   \ XXX TODO -- make `[needed]` and `[unneeded]` optional.
 
-: [needed]  ( "name" -- wf )
+: [needed]  ( "name" -- f )
   parse-name needed-word 2@ 2dup or
   if  compare 0=  exit  then  2drop 2drop true   ; immediate
 
   \ doc{
   \
-  \ [needed]  ( "name" -- wf )
+  \ [needed]  ( "name" -- f )
   \
   \ Is "name" the needed word specified by the last execution
   \ of `need` or `needed`?
   \
   \ }doc
 
-: [unneeded]  ( "name" -- wf )
+: [unneeded]  ( "name" -- f )
   postpone [needed] 0=  ; immediate
 
   \ doc{
   \
-  \ [unneeded]  ( "name" -- wf )
+  \ [unneeded]  ( "name" -- f )
   \
   \ Is "name" different than the needed word specified by the
   \ last execution of `need` or `needed`?

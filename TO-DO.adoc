@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-21
+:revdate: 2016-04-22
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -8,10 +8,6 @@
 // }}}
 == Misc ==
 // {{{
-
-.2016-04-21:
-
-Finish `user` and move it to the library. `(user)` must be in the kernel.
 
 .2016-04-16:
 
@@ -124,7 +120,6 @@ Homogenize the following stack notations:
 
 - double, triple and quadruple numbers (or include all used
   conventions in the documentation).
-- flags: _f_ (--> _0f_) and _wf_ (--> _f_)?
 
 .2015-07-23:
 

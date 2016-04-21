@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -94,7 +94,7 @@
 
 ( defined? )
 
-: defined?  ( ca len -- wf )  undefined? 0=  ;
+: defined?  ( ca len -- f )  undefined? 0=  ;
 
 ( save-input restore-input )
 
