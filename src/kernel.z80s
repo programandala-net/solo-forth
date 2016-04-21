@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604211657
+; Last modified: 201604211849
 
 include version.z80s
 
@@ -11075,8 +11075,8 @@ if 1 ; developing
 where.do_it:
   dw dup_
   dw paren_dot_quote_
-  _string 'Scr # '
-  dw decimal_,dot_
+  _string 'Scr #'
+  dw dec_dot_
   dw swap_,c_slash_l_,slash_mod_,c_slash_l_,star_
   dw rot_,block_,plus_
   dw c_slash_l_,cr_,type_,cr_
