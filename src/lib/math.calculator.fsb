@@ -225,7 +225,7 @@ get-current  calculator-wordlist set-current
   \
   \ Somehow the ROM routine at $353B gets confused because the
   \ command is not restored from $5C67 (the BREG system
-  \ variable BREG).
+  \ variable).
   \
   \ I examined the source of the ROM calculator and followed
   \ its execution using the debugger of the Fuse emulator, in
