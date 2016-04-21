@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604211625
+; Last modified: 201604211657
 
 include version.z80s
 
@@ -197,8 +197,6 @@ error.execution_only:               equ -263
 error.definition_not_finished:      equ -264
 error.loading_only:                 equ -265
 error.off_current_editing_screen:   equ -266
-error.user_area_overflow:           equ -279
-error.user_area_underflow:          equ -280
 
 ; ----------------------------------------------
 ; ZX Spectrum
@@ -5020,75 +5018,6 @@ do_user:
   ld hl,(user_variables_pointer)
   add hl,de   ; hl= address of the user variable
   _jp_pushhl
-
-; ----------------------------------------------
-  _colon_header question_user_,'?USER'
-
-; doc{
-;
-; ?user  ( -- )
-;
-; Throw an exception if the user area pointer is out of bounds.
-; 
-; ----
-; : ?user  ( -- )
-;   udp @ dup /user > #-279 ?throw
-;             0< #-280 ?throw  ;
-; ----
-; }doc
-
-  dw udp_,fetch_,dup_
-  dw slash_user_,greater_than_
-  _literal error.user_area_overflow
-  dw question_throw_
-  dw zero_less_than_
-  _literal error.user_area_underflow
-  dw question_throw_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header user_,'USER'
-
-; doc{
-;
-; user  ( n "name" -- )
-;
-; Create a user variable _name_ in the first available offset
-; within the user area.  Execution of _name_ leaves its absolute
-; user area storage address.
-;
-; }doc
-
-  dw udp_,fetch_,paren_user_
-  _literal cell
-  dw uallot_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header uallot_,'UALLOT'
-
-; doc{
-;
-; uallot  ( n -- )
-;
-; If _n_ is greater than zero, reserve _n_ address units of user
-; data space. If _n_ is less than zero, release _n_ address
-; units of user data space. If _n_ is zero, leave the user
-; data-space pointer unchanged. An exception is thrown if the
-; user-data pointer is out of bounds after the operation.
-;
-; ----
-; : uallot  ( n -- )
-;   udp +! ?user  ;
-; ----
-;
-; }doc
-
-; XXX REMARK -- In Gforth:
-; : uallot  ( n -- a )  udp @ swap udp +!  ;
-
-  dw udp_,plus_store_,question_user_
-  dw exit_
 
 ; ----------------------------------------------
   _c_constant_header zero_,'0'

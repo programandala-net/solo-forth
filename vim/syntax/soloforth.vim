@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-04-10
+" Updated:  2016-04-21
 
 " --------------------------------------------------------------
 " History
@@ -154,10 +154,11 @@ syn keyword soloforthDefine smudge-mask
 syn keyword soloforthDefine smudged
 syn keyword soloforthDefine synonym
 syn keyword soloforthDefine to
+syn keyword soloforthDefine udp
 syn keyword soloforthDefine undefined?
 syn keyword soloforthDefine up
 syn keyword soloforthDefine up0
-syn keyword soloforthDefine user
+syn keyword soloforthDefine (user)
 syn keyword soloforthDefine value
 syn keyword soloforthDefine variable
 syn keyword soloforthDefine word
@@ -1131,6 +1132,9 @@ let b:current_syntax = "soloforth"
 " `restore-mode`.
 "
 " 2016-04-18: Removed `not`.
+"
+" 2016-04-21: Updated the kernel words related to user data
+" space.
 
 " --------------------------------------------------------------
 
