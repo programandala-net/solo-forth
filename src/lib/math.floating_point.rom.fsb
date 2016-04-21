@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604211738
+  \ Last modified: 201604211854
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,7 +48,8 @@
   \ noted in the ROM calculator module. Fixed `fmax` and
   \ `fmin`.
   \
-  \ 2016-04-21: Added `fround`.
+  \ 2016-04-21: Added `fround`, `f~`, `f~abs`, `f~rel`,
+  \ `f~relabs` and `f==`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -67,11 +68,12 @@
   \
   \ XXX TODO -- Document.
 
-( float float+ floats )
+( float float+ float- floats )
 
 5 constant float
 
 : float+  ( fa1 -- fa2 )  float +  ;
+: float-  ( fa1 -- fa2 )  float -  ;
 : floats  ( n1 -- n2 )  float *  ;
 
 ( fp0 fp (fp@ fp@ empty-fs fdepth )
@@ -169,12 +171,110 @@ code f<>  ( -- f ) ( F: r1 r2 -- )
   0B calculator-command>flag  end-code
   \ `nos-neql` calculator command
 
+( f~abs f~rel f~relabs f== )
+
+  \ Credit:
+  \
+  \ Most of this code is based on the words `f~`, `f~abs` and
+  \ `f~rel` implemented in Gforth 0.7.3. Parts have been
+  \ factored and adapted.
+
+need frot  need f-  need fabs  need fswap  need f<  need fover
+need f+  need f*  need fp@  need float-  need float  need s=
+need fdrop  need fsgn
+
+: f~abs  ( -- f ) ( F: r1 r2 r3 -- )
+  frot frot f- fabs fswap f<  ;
+
+  \ doc{
+  \
+  \ f~abs  ( -- f ) ( F: r1 r2 r3 -- )
+  \
+  \ Approximate equality with absolute error: `|r1-r2|<r3`.
+  \
+  \ Flag _f_ is true if the absolute value of _r1-r2_ is less
+  \ than _r3_.
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
+
+: f~rel  ( -- f ) ( F: r1 r2 r3 -- )
+  frot frot fover fabs fover fabs f+
+  frot frot f- fabs frot frot f* f<  ;
+
+  \ doc{
+  \
+  \ f~rel  ( -- f ) ( F: r1 r2 r3 -- )
+  \
+  \ Approximate equality with relative error:
+  \ `|r1-r2|<r3*|r1+r2|`.
+  \
+  \ Flag _f_ is true if the absolute value of _r1-r2_ is less
+  \ than the value of _r3_ times the sum of the absolute values
+  \ of _r1_ and _r2_.
+  \
+  \ }doc
+
+: f~relabs  ( -- f ) ( F: r1 r2 r3 -- )  fabs f~rel  ;
+
+  \ XXX TODO -- better name
+
+  \ doc{
+  \
+  \ f~relabs  ( -- f ) ( F: r1 r2 r3 -- )
+  \
+  \ Approximate equality with relative error:
+  \ `|r1-r2|<|r3|*|r1+r2|`.
+  \
+  \ Flag _f_ is true if the absolute value of _r1-r2_ is less
+  \ than the absolute value of _r3_ times the sum of the
+  \ absolute values of _r1_ and _r2_.
+  \
+  \ }doc
+
+: f==  ( -- f ) ( F: r1 r2 -- )
+  fp@ dup float- float tuck s= fdrop fdrop  ;
+
+  \ doc{
+  \
+  \ f==  ( -- f ) ( F: r1 r2 -- )
+  \
+  \ Exact bitwise equality.
+  \
+  \ Are _r1_ and _r2_ exactly identical? Flag _f_ is true if
+  \ the bitwise comparison of _r1_ and _r2_ is succesful.
+  \
+  \ }doc
+
 ( f~ )
 
-  \ XXX TODO
-  \ code f~
-  \ code f~abs
-  \ code f~rel
+need f~abs  need f==  need f~relabs
+
+     ' f~abs ,
+here ' f== ,
+     ' f~relabs ,
+     
+      constant (f~) \ execution table of `f~` 
+
+: f~  ( -- f ) ( F: r1 r2 r3 -- )
+  fdup fsgn f>s cells (f~) + perform  ;
+
+  \ doc{
+  \
+  \ f~  ( -- f ) ( F: r1 r2 r3 -- )
+  \
+  \ Medley for comparing _r1_ and _r2_ for equality:
+  \
+  \ - _r3_>0: `f~abs`;
+  \ - _r3_=0: `f==`;
+  \ - _r3_<0: `f~relabs`.
+  \
+  \ See: `f~abs`, `f==`, `f~rel`,`f~relabs`.
+  \
+  \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
+  \
+  \ }doc
 
 ( f< f<= f> f>= )
 
@@ -618,7 +718,7 @@ code floor  ( F: r1 -- r2 )
   \ Round _r1_ to an integral value using the "round toward
   \ negative infinity" rule, giving _r2_.
   \
-  \ Origin: Forth-2012 (FLOATING).
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
   \ }doc
 
@@ -628,12 +728,12 @@ code ftrunc  ( F: r1 -- r2 )
 
   \ doc{
   \
-  \ floor  ( F: r1 -- r2 )
+  \ ftrunc  ( F: r1 -- r2 )
   \
   \ Round _r1_ to an integral value using the "round toward
   \ zero" rule, giving _r2_.
   \
-  \ Origin: Forth-2012 (FLOATING).
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
   \ }doc
 
@@ -646,7 +746,7 @@ code ftrunc  ( F: r1 -- r2 )
 
   \ From Gforth:
 
-  \ : ftrunc  ( F: r1 -- r2 )  f>d d>f ;
+  \ : ftrunc  ( F: r1 -- r2 )  f>d d>f  ;
 
 : fround  ( F: r1 -- r2 )  fdup fsgn fhalf f* f+ ftrunc  ;
 
@@ -657,7 +757,7 @@ code ftrunc  ( F: r1 -- r2 )
   \ Round _r1_ to an integral value using the "round to
   \ nearest" rule, giving _r2_.
   \
-  \ Origin: Forth-2012 (FLOATING).
+  \ Origin: Forth-94 (FLOATING), Forth-2012 (FLOATING).
   \
   \ }doc
 
