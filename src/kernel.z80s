@@ -6540,25 +6540,6 @@ minus_trailing.begin:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header s_quote_quote_,'S""'
-
-; XXX TODO -- move to the library
-; XXX OLD
-
-; doc{
-;
-; s""  ( -- ca len )
-;
-; Return an empty string in the circular string buffer.
-;
-; }doc
-
-  _literal 0
-  dw allocate_string_
-  _literal 0
-  dw exit_
-
-; ----------------------------------------------
   _defer_header accept_,'ACCEPT',,simple_accept_
 
 ; doc{

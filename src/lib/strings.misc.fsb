@@ -1,14 +1,14 @@
-  \ strings.fsb
+  \ strings.misc.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220029
+  \ Last modified: 201604220134
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ String words and tools.
+  \ Misc words related to strings.
 
   \ -----------------------------------------------------------
   \ Author
@@ -21,6 +21,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-22: Add `s""`, moved from the kernel.
 
 ( s= )
 
@@ -278,4 +283,17 @@ exit
   >r + r@ - r>  ;
   \ Return the _len2_ ending characters of string _ca1 len1_.
 
+( s"" )
+
+: s""  ( -- ca len )  0 allocate-string 0  ;
+
+  \ doc{
+  \
+  \ s""  ( -- ca len )
+  \
+  \ Return an empty string in the circular string buffer.
+  \
+  \ }doc
+
   \ vim: filetype=soloforth
+
