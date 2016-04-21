@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604201956
+  \ Last modified: 201604211738
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,8 @@
   \ returned a true flag; the details of the debugging are
   \ noted in the ROM calculator module. Fixed `fmax` and
   \ `fmin`.
+  \
+  \ 2016-04-21: Added `fround`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -59,19 +61,11 @@
   \ standard name for the safe version, and factor the faster
   \ unsafe code.
   \
+  \ XXX TODO -- `init-fs`, call to ROM routine STK_STK ($16C5).
+  \
   \ XXX TODO -- Test everything.
   \
   \ XXX TODO -- Document.
-
-( --fp-rom-- )
-
-  \ XXX TMP -- for development
-
-need +thru
-
-1 23 +thru
-
-: --fp-rom-- ;
 
 ( float float+ floats )
 
@@ -96,7 +90,6 @@ need float
 : fp@  ( -- a )  (fp@ float -  ;
 
 : empty-fs  ( -- )  fp0 @ fp !  ;
-  \ XXX TODO -- try alternative: ROM routine $16BF
 
 : fdepth  ( -- n )  (fp@ fp0 @ - float /  ;
 
@@ -176,7 +169,12 @@ code f<>  ( -- f ) ( F: r1 r2 -- )
   0B calculator-command>flag  end-code
   \ `nos-neql` calculator command
 
-  \ code f~ \ XXX TODO
+( f~ )
+
+  \ XXX TODO
+  \ code f~
+  \ code f~abs
+  \ code f~rel
 
 ( f< f<= f> f>= )
 
@@ -606,24 +604,9 @@ need fdepth  need float  need float+  need .depth
 
 : dump-fs  ( -- )  fdepth dup .depth 0> if  (dump-fs  then  ;
 
-( fround floor ftrunc )
+( floor ftrunc fround )
 
-need calculator  need f0=  need f0<  need fdup  need fnegate
-
-: fround  ( F: r1 -- r2 )  ;
-
-  \ XXX TODO --
-
-  \ doc{
-  \
-  \ fround  ( r1 -- r2 )
-  \
-  \ Round _r1_ to an integral value using the "round to
-  \ nearest" rule, giving _r2_.
-  \
-  \ Origin: Forth-2012 (FLOATING).
-  \
-  \ }doc
+need calculator  need fdup  need fsgn  need f*  need f+
 
 code floor  ( F: r1 -- r2 )
   calculator  int  end-calculator  jpnext  end-code
@@ -664,6 +647,19 @@ code ftrunc  ( F: r1 -- r2 )
   \ From Gforth:
 
   \ : ftrunc  ( F: r1 -- r2 )  f>d d>f ;
+
+: fround  ( F: r1 -- r2 )  fdup fsgn fhalf f* f+ ftrunc  ;
+
+  \ doc{
+  \
+  \ fround  ( r1 -- r2 )
+  \
+  \ Round _r1_ to an integral value using the "round to
+  \ nearest" rule, giving _r2_.
+  \
+  \ Origin: Forth-2012 (FLOATING).
+  \
+  \ }doc
 
 ( falign faligned )
 
