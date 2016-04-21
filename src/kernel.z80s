@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604210047
+; Last modified: 201604211625
 
 include version.z80s
 
@@ -197,6 +197,8 @@ error.execution_only:               equ -263
 error.definition_not_finished:      equ -264
 error.loading_only:                 equ -265
 error.off_current_editing_screen:   equ -266
+error.user_area_overflow:           equ -279
+error.user_area_underflow:          equ -280
 
 ; ----------------------------------------------
 ; ZX Spectrum
@@ -794,7 +796,7 @@ context_value:                                ; +$28..+$36
   ; Free space for more user variables:
 
 user_data_pointer: equ $-user_variables
-  ds bytes_per_user_variables-user_data_pointer,$FF
+  ds bytes_per_user_variables-user_data_pointer
 
 ; XXX OLD
 ; if ($-user_variables) != bytes_per_user_variables
@@ -4066,7 +4068,7 @@ u_m_slash_mod.4:
 ;
 ; /user  ( -- n )
 ;
-; Constant, the length of the user variables.
+; Constant, the length of the user area.
 ;
 ; }doc
 
@@ -4853,7 +4855,7 @@ do_colon:
 ;
 ; noname?  ( -- a )
 ;
-; A variable that holds a flag: was the word being defined
+; A variable that holds a flag: Was the word being defined
 ; created by `:noname`? This flag is set by `:noname` and reset
 ; by `;`.
 ;
@@ -4879,8 +4881,7 @@ do_colon:
   ; Credit:
   ; Code from the Afera library.
 
-  ; XXX TODO move to the library?
-  ; first `do_colon` must be defined as a constant
+  ; XXX TODO move to the library
 
   dw here_ ; xt
   dw store_csp_
@@ -4992,48 +4993,23 @@ do_constant:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header user_,'USER'
-
-if 0 ; old_user
+  _colon_header paren_user_,'(USER)'
 
 ; doc{
 ;
-; user  ( +n "name" -- )
+; (user)  ( +n "name" -- )
 ;
 ; Create a user variable _name_.  _+n_ is the offset within the
 ; user area where the value for _name_ is stored.  Execution of
 ; _name_ leaves its absolute user area storage address.
 ;
-; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; This is a factor of `user`. It works like `user` in:
+; fig-Forth, Forth-79 (Reference Word Set) and Forth-83
 ; (Uncontrolled Reference Words).
 ;
 ; }doc
 
-  dw c_constant_
-  dw paren_semicolon_code_
-do_user:
-  inc de      ; de=pfa
-  ex de,hl
-  ld e,(hl)
-  ld d,$00   ; de = index of the user variable
-  ld hl,(user_variables_pointer)
-  add hl,de   ; hl= address of the user variable
-  _jp_pushhl
-
-else
-
-; doc{
-;
-; user  ( "name" -- )
-;
-; Create a user variable _name_ in the first available offset
-; within the user area.  Execution of _name_ leaves its absolute
-; user area storage address.
-;
-; }doc
-
-  ; XXX UNDER DEVELOPMENT
-  ; XXX TODO
+  ; XXX TODO -- rename, maybe to `+user`?
 
   dw c_constant_
   dw paren_semicolon_code_
@@ -5045,12 +5021,50 @@ do_user:
   add hl,de   ; hl= address of the user variable
   _jp_pushhl
 
-endif
+; ----------------------------------------------
+  _colon_header question_user_,'?USER'
+
+; doc{
+;
+; ?user  ( -- )
+;
+; Throw an exception if the user area pointer is out of bounds.
+; 
+; ----
+; : ?user  ( -- )
+;   udp @ dup /user > #-279 ?throw
+;             0< #-280 ?throw  ;
+; ----
+; }doc
+
+  dw udp_,fetch_,dup_
+  dw slash_user_,greater_than_
+  _literal error.user_area_overflow
+  dw question_throw_
+  dw zero_less_than_
+  _literal error.user_area_underflow
+  dw question_throw_
+  dw exit_
 
 ; ----------------------------------------------
-if 0 ; old_user
-else
+  _colon_header user_,'USER'
 
+; doc{
+;
+; user  ( n "name" -- )
+;
+; Create a user variable _name_ in the first available offset
+; within the user area.  Execution of _name_ leaves its absolute
+; user area storage address.
+;
+; }doc
+
+  dw udp_,fetch_,paren_user_
+  _literal cell
+  dw uallot_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header uallot_,'UALLOT'
 
 ; doc{
@@ -5060,19 +5074,21 @@ else
 ; If _n_ is greater than zero, reserve _n_ address units of user
 ; data space. If _n_ is less than zero, release _n_ address
 ; units of user data space. If _n_ is zero, leave the user
-; data-space pointer unchanged.
+; data-space pointer unchanged. An exception is thrown if the
+; user-data pointer is out of bounds after the operation.
 ;
 ; ----
 ; : uallot  ( n -- )
-;   udp +!  ;
+;   udp +! ?user  ;
 ; ----
 ;
 ; }doc
 
-  dw udp_,plus_store_
-  dw exit_
+; XXX REMARK -- In Gforth:
+; : uallot  ( n -- a )  udp @ swap udp +!  ;
 
-endif
+  dw udp_,plus_store_,question_user_
+  dw exit_
 
 ; ----------------------------------------------
   _c_constant_header zero_,'0'
@@ -5092,7 +5108,8 @@ endif
 ; ----------------------------------------------
   _code_header false_,'FALSE'
 
-  ; XXX TODO -- convert to cconstant?
+  ; XXX TODO -- Convert to `cconstant`? I would be slower, but
+  ; would save 4 bytes.
 
 ; doc{
 ;
@@ -5106,7 +5123,8 @@ endif
 ; ----------------------------------------------
   _code_header true_,'TRUE'
 
-  ; XXX TODO -- convert to constant?
+  ; XXX TODO -- Convert to `constant`? I would be slower, but
+  ; would save 3 bytes.
 
 ; doc{
 ;
@@ -9822,7 +9840,7 @@ block.end:
 ;
 ; ----
 ; : read-block  ( n -- )
-;   disk> transfer-block  ;
+;   read-mode transfer-block  ;
 ; ----
 ;
 ; }doc
@@ -9841,7 +9859,7 @@ block.end:
 ;
 ; ----
 ; : write-block  ( n -- )
-;   >disk transfer-block  ;
+;   write-mode transfer-block  ;
 ; ----
 ;
 ; }doc
@@ -9859,7 +9877,7 @@ block.end:
 ; The block-level disk read-write linkage.
 ; Transfer block _n_ to or from disk.
 ; The read or write mode must be previously set
-; by `>disk` or `disk>`.
+; by `write-mode` or `read-mode`.
 ;
 ; }doc
 
@@ -9891,7 +9909,7 @@ block.end:
 ; The sector-level disk read-write linkage.
 ; Transfer sector _x_ to or from disk.
 ; The read or write mode must be previously set
-; by `>disk` or `disk>`.
+; by `write-mode` or `read-mode`.
 ;
 ; x = sector to read or write
 ;     high byte = track 0..79, +128 if side 1

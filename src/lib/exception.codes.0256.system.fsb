@@ -51,8 +51,8 @@
 \ #-276 dictionary reached the zone of memory banks
 \ #-277 required, but not indexed
 \ #-278 empty block found: quit indexing
-\ #-279
-\ #-280
+\ #-279 user area overflow
+\ #-280 user area underflow
 \ #-281
 \ #-282
 \ #-283
