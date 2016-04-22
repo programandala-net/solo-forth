@@ -9,6 +9,10 @@
 == Misc ==
 // {{{
 
+.2016-04-22:
+
+Document floating point and release 0.5.0.
+
 .2016-04-16:
 
 Fix Makefile: The loader and the main disk are built when the sources have not
@@ -429,6 +433,16 @@ above 0xC000 could not use the circular string buffer.
 // }}}
 == Maths ==
 // {{{
+
+.2016-04-22:
+
+Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
+locals. Problem: some calculator's words use them (eg. `over`).  They could be
+recursive, because their address can be changed with the system variable MEM;
+they could be pointed to a frame in the return stack.
+
+Simpler idea: use the calculator memories them as is, as temporary storage.
+The ROM allocates 6*5 bytes, but 32*5 can be used.
 
 .2016-04-19:
 

@@ -13990,7 +13990,7 @@ code f@  ( fa -- ) ( F: -- r )
 
 ( f, fconstant fvariable )
 
-need f!  need f@
+need float  need f!  need f@
 
 : f,  ( -- ) ( F: r -- )  here float allot f!  ;
 
@@ -14147,16 +14147,18 @@ code ftrunc  ( F: r1 -- r2 )
   \
   \ }doc
 
-( falign faligned )
+( falign faligned sfalign sfaligned dfalign dfaligned )
 
 need alias
 
 ' noop alias falign     ( -- )        immediate
 ' noop alias faligned   ( a -- fa )   immediate
-  \ ' noop alias sfalign    ( -- )        immediate
-  \ ' noop alias sfaligned  ( a -- dfa )  immediate
-  \ ' noop alias dfalign    ( -- )        immediate
-  \ ' noop alias dfaligned  ( a -- dfa )  immediate
+
+' noop alias sfalign    ( -- )        immediate
+' noop alias sfaligned  ( a -- dfa )  immediate
+
+' noop alias dfalign    ( -- )        immediate
+' noop alias dfaligned  ( a -- dfa )  immediate
 
   \ vim: filetype=soloforth
   \ math.number.conversion.fsb

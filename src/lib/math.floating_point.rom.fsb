@@ -254,8 +254,8 @@ need f~abs  need f==  need f~relabs
      ' f~abs ,
 here ' f== ,
      ' f~relabs ,
-     
-      constant (f~) \ execution table of `f~` 
+
+      constant (f~) \ execution table of `f~`
 
 : f~  ( -- f ) ( F: r1 r2 r3 -- )
   fdup fsgn f>s cells (f~) + perform  ;
@@ -533,7 +533,7 @@ need calculator  need fnegate  need fdup  need (f>s  need f0<
 
 code frestack  ( F: r -- r' )
   calculator  re-stack  end-calculator  jpnext end-code
-  \ Restacks an integer in full floating-point form.
+  \ Restack an integer in full floating-point form.
 
 code b>f  ( b -- ) ( F: -- r )
   D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
@@ -613,7 +613,7 @@ code f@  ( fa -- ) ( F: -- r )
 
 ( f, fconstant fvariable )
 
-need f!  need f@
+need float  need f!  need f@
 
 : f,  ( -- ) ( F: r -- )  here float allot f!  ;
 
@@ -770,15 +770,17 @@ code ftrunc  ( F: r1 -- r2 )
   \
   \ }doc
 
-( falign faligned )
+( falign faligned sfalign sfaligned dfalign dfaligned )
 
 need alias
 
 ' noop alias falign     ( -- )        immediate
 ' noop alias faligned   ( a -- fa )   immediate
-  \ ' noop alias sfalign    ( -- )        immediate
-  \ ' noop alias sfaligned  ( a -- dfa )  immediate
-  \ ' noop alias dfalign    ( -- )        immediate
-  \ ' noop alias dfaligned  ( a -- dfa )  immediate
+
+' noop alias sfalign    ( -- )        immediate
+' noop alias sfaligned  ( a -- dfa )  immediate
+
+' noop alias dfalign    ( -- )        immediate
+' noop alias dfaligned  ( a -- dfa )  immediate
 
   \ vim: filetype=soloforth
