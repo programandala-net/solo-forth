@@ -8405,7 +8405,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604231600
+  \ Last modified: 201604240101
 
   \ -----------------------------------------------------------
   \ Description
@@ -8427,7 +8427,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ <robost at telia dot com>
   \ Tested with IsForth, http://isforth.clss.net/
   \
-  \ Ported to to IsForth by Mark Manning, 2012.
+  \ Ported to IsForth by Mark Manning, 2012.
 
   \ -----------------------------------------------------------
   \ License
@@ -8444,21 +8444,34 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ 2015-11-11: Improve with delay counters and Z80 halts.
   \
   \ 2016-04-23: Improve file header. Add frames to the ball
-  \ graphic.
+  \ graphic. Adapt to new version of `g-emit-0udg`.
+  \
+  \ 2016-04-24: Compact the UDG definitions with `0udg[`.
+
+  \ -----------------------------------------------------------
+  \ To-do
+
+  \ XXX TODO -- bounce effect
+  \ XXX TODO -- sound
+  \ XXX TODO -- turnkey to tape
+  \ XXX TODO -- change the rotation of the ball after bounce
+  \ XXX TODO -- random bounce angle
 
 ( pong )
 
   \ XXX TODO slow the rackets
 
-need columns  need rows  need 0udg!  need rnd  need ??
+need columns  need rows  need 0udg[  need rnd  need ??
 3 constant /kk  need pressed?
+
 need cvariable  need 2/  need pixel-addr
-need g-emit-0udg  need c!toggle-bits
+need g-emit-0udg  need c!toggle-bits  need g-at-xy
 
 0 cconstant black  7 cconstant white
 
 8 cconstant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
+
 variable ball-delay
 
 4 cconstant racket-size
@@ -8519,181 +8532,46 @@ rows 1- cconstant racket2-y
 
 ( pong )
 
-  \ XXX OLD
-  \ %00111100
-  \ %01111110
-  \ %11111111
-  \ %11111111
-  \ %11111111
-  \ %11111111
-  \ %01111110
-  \ %00111100 0 0udg!
+0 0udg[
 
-%00111100
-%01111110
-%11111011
-%11111101
-%11111111
-%11111111
-%01111110
-%00111100 0 0udg!
+00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||
+01111110 | 01111110 | 01111110 | 01111110 | 01111110 ||
+11111011 | 11111111 | 11111111 | 11111111 | 11111111 ||
+11111101 | 11111101 | 11111111 | 11111111 | 11111111 ||
+11111111 | 11111101 | 11111101 | 11111111 | 11111111 ||
+11111111 | 11111111 | 11111011 | 11110011 | 11100111 ||
+01111110 | 01111110 | 01111110 | 01111110 | 01111110 ||
+00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||]
 
 -->
 
 ( pong )
 
-%00111100
-%01111110
-%11111111
-%11111101
-%11111101
-%11111111
-%01111110
-%00111100 1 0udg!
+5 0udg[
+
+00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||
+01111110 | 01111110 | 01111110 | 01111110 | 01011110 ||
+11111111 | 11111111 | 11111111 | 10111111 | 10111111 ||
+11111111 | 11111111 | 10111111 | 10111111 | 11111111 ||
+11111111 | 10111111 | 10111111 | 11111111 | 11111111 ||
+11001111 | 11011111 | 11111111 | 11111111 | 11111111 ||
+01111110 | 01111110 | 01111110 | 01111110 | 01111110 ||
+00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||]
 
 -->
 
 ( pong )
 
-%00111100
-%01111110
-%11111111
-%11111111
-%11111101
-%11111011
-%01111110
-%00111100 2 0udg!
+10 0udg[
 
--->
-
-( pong )
-
-%00111100
-%01111110
-%11111111
-%11111111
-%11111111
-%11110011
-%01111110
-%00111100 3 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01111110
-%11111111
-%11111111
-%11111111
-%11100111
-%01111110
-%00111100 4 0udg!
-
--->
-
-( pong )
-
-
-%00111100
-%01111110
-%11111111
-%11111111
-%11111111
-%11001111
-%01111110
-%00111100 5 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01111110
-%11111111
-%11111111
-%10111111
-%11011111
-%01111110
-%00111100 6 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01111110
-%11111111
-%10111111
-%10111111
-%11111111
-%01111110
-%00111100 7 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01111110
-%10111111
-%10111111
-%11111111
-%11111111
-%01111110
-%00111100 8 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01011110
-%10111111
-%11111111
-%11111111
-%11111111
-%01111110
-%00111100 9 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01001110
-%11111111
-%11111111
-%11111111
-%11111111
-%01111110
-%00111100 10 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01100110
-%11111111
-%11111111
-%11111111
-%11111111
-%01111110
-%00111100 11 0udg!
-
--->
-
-( pong )
-
-%00111100
-%01110110
-%11111011
-%11111111
-%11111111
-%11111111
-%01111110
-%00111100 12 0udg!
+00111100 | 00111100 | 00111100 ||
+01001110 | 01100110 | 01110110 ||
+11111111 | 11111111 | 11111011 ||
+11111111 | 11111111 | 11111111 ||
+11111111 | 11111111 | 11111111 ||
+11111111 | 11111111 | 11111111 ||
+01111110 | 01111110 | 01111110 ||
+00111100 | 00111100 | 00111100 ||]
 
 -->
 
@@ -8720,9 +8598,11 @@ variable ball-frame  first-ball-frame ball-frame !
 
 : ball-xy  ( -- x y )  x @ y @  ;
 
-: show-ball  ( -- )  ball-xy ball sync g-emit-0udg  ;
+: at-ball  ( -- )  ball-xy g-at-xy  ;
 
-: erase-ball  ( -- )  ball-xy ball sync g-emit-0udg  ;
+: show-ball  ( -- )  at-ball ball sync g-emit-0udg  ;
+
+: erase-ball  ( -- )  at-ball ball sync g-emit-0udg  ;
 
 -->
 
@@ -9039,7 +8919,7 @@ variable racket2-delay
   begin
   last-ball-frame 1+ 128 + first-ball-frame 128 + ?do
     home i emit  key drop
-  loop  
+  loop
   break-key? until  ;
 
   \ vim: filetype=soloforth
@@ -11086,7 +10966,7 @@ code vertical-curtain  ( b -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604231722
+  \ Last modified: 201604231907
 
   \ -----------------------------------------------------------
   \ Description
@@ -11113,18 +10993,102 @@ code vertical-curtain  ( b -- )
   \ 2016-04-23: Rename "hires-" prefix to "g-". Rename
   \ `g-emit-udg` to `g-emit-0udg`, because zero-index is used,
   \ instead of the default UDG char codes 128..255. Add
-  \ `g-emit-udg` for codes 0..128. Improve documentation.
+  \ `g-emit-udg` for codes 128..255. Improve documentation.
+  \ First versions of `g-emitted` and `g-cr`.
 
+( g-emit g-type )
+
+
+  \ XXX TODO -- `g-emit` use the current coordinates
+
+need z80-asm  need g-emit-routine  need g-emit-udg
+need os-chars  need os-coords  need g-emitted
+
+code (g-emit)  ( c -- )
+
+  hl pop  l a ld
+  bc push
+  os-coords bc ftp
+  os-chars de ftp
+  g-emit-routine call
+  bc pop  next ix ldp#  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ g-emit  ( c -- )
+  \
+  \ Display character _c_ (32..127) at the current graphic
+  \ coordinates.
+  \
+  \ The character is printed with overprinting (equivalent to `1
+  \ overprint`).
+  \
+  \ }doc
+
+: g-emit  ( c -- )
+  dup 127 > if  g-emit-udg  else  (g-emit)  then
+  g-emitted  ;
+
+  \ XXX TODO -- update the coordinates
+
+  \ doc{
+  \
+  \ g-emit  ( gx gy c -- )
+  \
+  \ Display character _c_ (32..255) at the current graphic
+  \ coordinates.  If _c_ is 32..127, it is printed from the
+  \ main font.  If _c_ is 128..255, it is printed from the UDG
+  \ font.
+  \
+  \ The character is printed with overprinting (equivalent to `1
+  \ overprint`).
+  \
+  \ }doc
+
+: g-type  ( ca len -- )
+  bounds ?do  i c@ g-emit  loop  drop  ;
+
+  \ doc{
+  \
+  \ g-type  ( ca len -- )
+  \
+  \ If _len_ is greater than zero, display the character string
+  \ _ca len_ at the current graphic coordinates.
+  \
+  \ }doc
+
+( g-cr g-emitted )
+
+  \ XXX UNDER DEVELOPMENT
+
+need g-x  need g-y
+need g-at-x  need g-at-y
+need c+!  need c-!
+
+: g-cr  ( -- )
+  0 g-at-x  8 (g-y) c-!  g-y 6 > ?exit  191 g-at-y  ;
+
+  \ Move the graphic coordinates to the next printing
+  \ position.
+
+: g-emitted  ( -- )
+  8 (g-x) c+!  g-x [ 255 6 - ] literal < ?exit  g-cr  ;
+
+  \ Update the current graphic coordinates after printing a
+  \ character at them. See `g-emit`, `g-cr`.
+ 
 ( g-emit-0udg )
 
-need z80-asm  need (g-emit)
+need z80-asm  need g-emit-routine  need os-udg  need os-coords
 
 code g-emit-0udg  ( gx gy b -- )
 
   hl pop  l a ld
-  de pop  hl pop  bc push  e b ld  l c ld
-  5C7B de ftp  \ system variable UDG
-  (g-emit) call
+  bc push
+  os-coords bc ftp
+  os-udg de ftp
+  g-emit-routine call
   bc pop  next ix ldp#  jpnext
   end-code
 
@@ -11132,25 +11096,27 @@ code g-emit-0udg  ( gx gy b -- )
   \
   \ g-emit-0udg  ( gx gy b -- )
   \
-  \ Display UDG _b_ (0..255) at graphic coordinates _gx gy_,
-  \ from the font pointed by system variable UDG, which
-  \ contains the address of the first UDG bitmap (0).
+  \ Display UDG _b_ (0..255) at the current graphic
+  \ coordinates, from the font pointed by system variable
+  \ `os-udg`, which contains the address of the first UDG
+  \ bitmap (0).
   \
-  \ The UDG character is printed with overwriting (equivalent
-  \ to `1 overwrite`).
+  \ The UDG character is printed with overprinting (equivalent
+  \ to `1 overprint`).
   \
   \ }doc
 
 ( g-emit-udg )
 
-need z80-asm  need (g-emit)
+need z80-asm  need g-emit-routine  need os-udg  need os-coords
 
-code g-emit-udg  ( gx gy c -- )
+code g-emit-udg  ( c -- )
 
-  hl pop  l a ld  80 a sub 
-  de pop  hl pop  bc push  e b ld  l c ld
-  5C7B de ftp  \ system variable UDG
-  (g-emit) call
+  hl pop  l a ld  80 sub#
+  bc push
+  os-coords bc ftp
+  os-udg de ftp
+  g-emit-routine call
   bc pop  next ix ldp#  jpnext
   end-code
 
@@ -11158,27 +11124,28 @@ code g-emit-udg  ( gx gy c -- )
   \
   \ g-emit-udg  ( gx gy c -- )
   \
-  \ Display UDG _c_ (127..255) at graphic coordinates _gx gy_,
-  \ from the font pointed by system variable UDG, which
-  \ contains the address of the first UDG bitmap (127).
+  \ Display UDG _c_ (127..255) at the current graphic
+  \ coordinates, from the font pointed by system variable
+  \ `os-udg`, which contains the address of the first UDG
+  \ bitmap (127).
   \
-  \ The UDG character is printed with overwriting (equivalent
-  \ to `1 overwrite`).
+  \ The UDG character is printed with overprinting (equivalent
+  \ to `1 overprint`).
   \
   \ }doc
 
-\ (g-emit) \
+( g-emit-routine )
 
 need z80-asm  need (pixel-addr)
 
   \ Credit:
   \
-  \ Code Adapted from "SMOOTH MOVE",
+  \ Code Adapted from "Smooth Move",
   \ written by Simon N. Goodwin,
   \ published on Todospectrum, issue 2 (1984-10), page 16.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-create (g-emit)  ( -- a )
+create g-emit-routine  ( -- a )
 
   asm
 
@@ -11207,7 +11174,7 @@ create (g-emit)  ( -- a )
 
   \ doc{
   \
-  \ (g-emit)  ( -- a )
+  \ g-emit-routine  ( -- a )
   \
   \ Address of a machine code routine that prints an 8x8 bits
   \ charater at graphic coordinates. Used by `g-emit-udg`
@@ -11223,6 +11190,56 @@ create (g-emit)  ( -- a )
   \ Modifies: AF BC HL IX DE
   \
   \ }doc
+
+  \ vim: filetype=soloforth
+  \ graphics.g-xy.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604231943
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words to manage the graphic coordinates.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-23: First version.
+
+( g-x g-y g-xy g-at-x g-at-y g-at-xy g-home )
+
+need os-coords  need os-coordx  need os-coordy  need alias
+
+' os-coords alias (g-xy)
+' os-coordx alias (g-x)
+' os-coordy alias (g-y)
+
+: g-x  ( -- gx )  (g-x) c@  ;
+: g-y  ( -- gy )  (g-y) c@  ;
+
+: g-xy  ( -- gx gy )  g-x g-y  ;
+
+: g-at-x  ( gx -- )  (g-x) c!  ;
+: g-at-y  ( gy -- )  (g-y) c!  ;
+
+: g-at-xy  ( gx gy -- )  g-at-y g-at-x  ;
+
+: g-home  ( -- )  (g-xy) off  ;
 
   \ vim: filetype=soloforth
   \ graphics.lines.fsb
@@ -12096,7 +12113,7 @@ code scroll-1px-up  ( -- )
   \ -----------------------------------------------------------
   \ Description
 
-  \ Word to define User Defined Graphics.
+  \ Words to define User Defined Graphics.
 
   \ -----------------------------------------------------------
   \ Author
@@ -12115,6 +12132,8 @@ code scroll-1px-up  ( -- )
 
   \ 2016-04-23: Add `0udg:`. Factor `0udg!` from `udg!`.
   \ Improve the documentation.
+  \
+  \ 2016-04-24: Add `udg[` and `0udg[`.
 
 ( 0udg! udg! 0udg: udg: )
 
@@ -12172,6 +12191,100 @@ need os-udg
 
   \ - b0 = first (top) scan
   \ - b7 = last (bottom) scan
+  \
+  \ }doc
+
+( 0udg[ udg[ )
+
+need os-udg
+
+variable first-udg
+variable current-udg
+variable current-scan
+
+[defined] binary ?\  : binary  ( -- )  2 base !  ;
+
+: 0udg[  ( b -- )
+  dup first-udg !  current-udg !  current-scan off  binary  ;
+
+  \ doc{
+  \
+  \ 0udg[  ( b -- )
+  \
+  \ Start a set of UDG definitions, from UDG number _b_
+  \ (0..255).
+  \
+  \ See: `udg[`, `|`, `||`, `||]`.
+  \
+  \ }doc
+
+: udg[  ( c -- )  128 - 0udg[  ;
+
+  \ doc{
+  \
+  \ udg[  ( c -- )
+  \
+  \ Start a set of UDG definitions, from UDG character _c_
+  \ (128..255).
+  \
+  \ See: `0udg[`, `|`, `||`, `||]`.
+  \
+  \ Usage example:
+  \
+  \ ----
+  \ 140 udg[  \ define UDG 140..144
+  \
+  \ 00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||
+  \ 01111110 | 01111110 | 01111110 | 01111110 | 01011110 ||
+  \ 11111111 | 11111111 | 11111111 | 10111111 | 10111111 ||
+  \ 11111111 | 11111111 | 10111111 | 10111111 | 11111111 ||
+  \ 11111111 | 10111111 | 10111111 | 11111111 | 11111111 ||
+  \ 11001111 | 11011111 | 11111111 | 11111111 | 11111111 ||
+  \ 01111110 | 01111110 | 01111110 | 01111110 | 01111110 ||
+  \ 00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||]
+  \ ----
+  \
+  \ }doc
+
+: |  ( b -- )
+  os-udg @ current-udg @ 8 * current-scan @ + + c!
+  1 current-udg +!  ;
+
+  \ doc{
+  \
+  \ |  ( b -- )
+  \
+  \ Store scan _b_ into the current UDG being defined.
+  \
+  \ See: `0udg[`, `udg[`, `||`, `||]`.
+  \
+  \ }doc
+
+: || ( b -- )
+  |  1 current-scan +!  first-udg @ current-udg !  ;
+
+  \ doc{
+  \
+  \ || ( b -- )
+  \
+  \ Store scan _b_ into the current UDG being defined and start
+  \ a new row of scans.
+  \
+  \ See: `0udg[`, `udg[`, `|`, `||]`.
+  \
+  \ }doc
+
+
+: ||]  ( b -- )  ||  decimal  ;
+
+  \ doc{
+  \
+  \ ||]  ( b -- )
+  \
+  \ Store scan _b_ into the current UDG being defined and stop
+  \ defining UDGs.
+  \
+  \ See: `0udg[`, `udg[`, `|`, `||`.
   \
   \ }doc
 
@@ -16930,12 +17043,12 @@ variable code-bank#  3 code-bank# !
 ?bank
 
   \ vim: filetype=soloforth
-  \ memory.fsb
+  \ memory.misc.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220028
+  \ Last modified: 201604232035
 
   \ -----------------------------------------------------------
   \ Description
@@ -16959,8 +17072,9 @@ variable code-bank#  3 code-bank# !
 
   \ 2015..2016: Main development.
   \ 2016-04-17: Added `-!`. Documented some words.
+  \ 2016-04-23: Added `c-!`.
 
-( exchange )  \  ==memory==
+( exchange )
 
 [unneeded] exchange
 ?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
@@ -16990,13 +17104,14 @@ code -!  ( n|u a -- )
   \
   \ }doc
 
-( c+! c@+ )
+( c+! c-! c@+ )
 
-need z80-asm
+need z80-asm  need [if]
 
-[unneeded] c+! dup
-?\  code c+!  ( c ca -- )
-?\    hl pop  de pop  e a ld  m a add  a m ld  jpnext  end-code
+[needed] c+! [if]
+
+code c+!  ( c ca -- )
+  hl pop  de pop  e a ld  m add  a m ld  jpnext  end-code
 
   \ doc{
   \
@@ -17006,18 +17121,34 @@ need z80-asm
   \
   \ }doc
 
-[unneeded] c@+ dup
-?\ code c@+  ( ca - ca+1 c )
+[then]
+
+[needed] c-! [if]
+
+code c-!  ( c ca -- )
+  hl pop  de pop  m a ld  e sub  a m ld  jpnext  end-code
+
+  \ doc{
+  \
+  \ c-!  ( c ca - )
+  \
+  \ Subtract _c_ from the char at _ca_
+  \
+  \ }doc
+
+[then]
+
+[needed] c@+ [if]
+
+code c@+  ( ca - ca+1 c )
+  hl pop  m a ld  hl incp  hl push  pusha jp  end-code
 
   \ Credit:
   \
   \ Code adapted from Pygmy Forth.
 
-  \ First version
+  \ XXX OLD -- First version
   \ de pop  de ftap  de incp  0 h ld# a l ld  pushhlde jp
-
-  \ Second version
-?\  hl pop  m a ld  hl incp  hl push  pusha jp  end-code
 
   \ doc{
   \
@@ -17028,15 +17159,19 @@ need z80-asm
   \
   \ }doc
 
+[then]
+
 ( 1+! 1-! )
 
 need z80-asm  need [if]
 
 [needed] 1+! [if]
+
 code 1+!  ( a -- )
   hl pop  m e ld  hl incp  m d ld  de incp
   d m ld  hl decp  e m ld  jpnext
 end-code
+
 [then]
 
   \ doc{
@@ -17048,10 +17183,12 @@ end-code
   \ }doc
 
 [needed] 1-! [if]
+
 code 1-!  ( a -- )
   hl pop  m e ld  hl incp  m d ld  de decp
   d m ld  hl decp  e m ld  jpnext
 end-code
+
 [then]
 
   \ doc{
@@ -23617,7 +23754,7 @@ wid-of replaces-voc constant wid-subst
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603301710
+  \ Last modified: 201604231950
 
   \ -----------------------------------------------------------
   \ Description
@@ -23635,6 +23772,12 @@ wid-of replaces-voc constant wid-subst
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-23: Fix: graphic coordinates variables were not
+  \ included in the block title.
 
 ( os-chars os-chans os-flags2 os-seed os-frames os-udg )
 
@@ -23661,6 +23804,8 @@ wid-of replaces-voc constant wid-subst
 [unneeded] os-udg      ?\ 23675 constant os-udg
   \ 1 cell:
   \ address of the User Defined Graphics (characters 128..255)
+
+( os-coords os-coordx os-coordy )
 
 [unneeded] os-coords      ?\ 23677 constant os-coords
   \ 2 cells:

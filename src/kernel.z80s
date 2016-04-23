@@ -6379,21 +6379,25 @@ do_does equ do_colon
 ; ----------------------------------------------
   _colon_header type_,'TYPE'
 
-  ; XXX TODO Rewrite in Z80, with the ROM routine?
+; doc{
+;
+; type  ( ca len -- )
+; 
+; If _len_ is greater than zero, display the character string
+; _ca len_.
+;
+;----
+; : type  ( ca len -- )
+;   bounds ?do  i c@ emit  loop  drop  ;
+;----
 
-  dw question_dup_
-  dw zero_branch_,type.empty_string
+; }doc
 
   dw bounds_
-  dw paren_do_,type.loop_exit ; do
+  dw paren_question_do_,type.loop_exit ; ?do
   dw i_,c_fetch_,emit_
   dw paren_loop_ ; loop
 type.loop_exit
-  dw exit_
-
-type.empty_string:
-  dw drop_
-type.end:
   dw exit_
 
 ; ----------------------------------------------

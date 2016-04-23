@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603301710
+  \ Last modified: 201604231950
 
   \ -----------------------------------------------------------
   \ Description
@@ -21,6 +21,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-23: Fix: graphic coordinates variables were not
+  \ included in the block title.
 
 ( os-chars os-chans os-flags2 os-seed os-frames os-udg )
 
@@ -47,6 +53,8 @@
 [unneeded] os-udg      ?\ 23675 constant os-udg
   \ 1 cell:
   \ address of the User Defined Graphics (characters 128..255)
+
+( os-coords os-coordx os-coordy )
 
 [unneeded] os-coords      ?\ 23677 constant os-coords
   \ 2 cells:

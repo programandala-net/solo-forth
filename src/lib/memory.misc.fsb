@@ -1,9 +1,9 @@
-  \ memory.fsb
+  \ memory.misc.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220028
+  \ Last modified: 201604232035
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,8 +27,9 @@
 
   \ 2015..2016: Main development.
   \ 2016-04-17: Added `-!`. Documented some words.
+  \ 2016-04-23: Added `c-!`.
 
-( exchange )  \  ==memory==
+( exchange )
 
 [unneeded] exchange
 ?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
@@ -58,13 +59,14 @@ code -!  ( n|u a -- )
   \
   \ }doc
 
-( c+! c@+ )
+( c+! c-! c@+ )
 
-need z80-asm
+need z80-asm  need [if]
 
-[unneeded] c+! dup
-?\  code c+!  ( c ca -- )
-?\    hl pop  de pop  e a ld  m a add  a m ld  jpnext  end-code
+[needed] c+! [if]
+
+code c+!  ( c ca -- )
+  hl pop  de pop  e a ld  m add  a m ld  jpnext  end-code
 
   \ doc{
   \
@@ -74,18 +76,34 @@ need z80-asm
   \
   \ }doc
 
-[unneeded] c@+ dup
-?\ code c@+  ( ca - ca+1 c )
+[then]
+
+[needed] c-! [if]
+
+code c-!  ( c ca -- )
+  hl pop  de pop  m a ld  e sub  a m ld  jpnext  end-code
+
+  \ doc{
+  \
+  \ c-!  ( c ca - )
+  \
+  \ Subtract _c_ from the char at _ca_
+  \
+  \ }doc
+
+[then]
+
+[needed] c@+ [if]
+
+code c@+  ( ca - ca+1 c )
+  hl pop  m a ld  hl incp  hl push  pusha jp  end-code
 
   \ Credit:
   \
   \ Code adapted from Pygmy Forth.
 
-  \ First version
+  \ XXX OLD -- First version
   \ de pop  de ftap  de incp  0 h ld# a l ld  pushhlde jp
-
-  \ Second version
-?\  hl pop  m a ld  hl incp  hl push  pusha jp  end-code
 
   \ doc{
   \
@@ -96,15 +114,19 @@ need z80-asm
   \
   \ }doc
 
+[then]
+
 ( 1+! 1-! )
 
 need z80-asm  need [if]
 
 [needed] 1+! [if]
+
 code 1+!  ( a -- )
   hl pop  m e ld  hl incp  m d ld  de incp
   d m ld  hl decp  e m ld  jpnext
 end-code
+
 [then]
 
   \ doc{
@@ -116,10 +138,12 @@ end-code
   \ }doc
 
 [needed] 1-! [if]
+
 code 1-!  ( a -- )
   hl pop  m e ld  hl incp  m d ld  de decp
   d m ld  hl decp  e m ld  jpnext
 end-code
+
 [then]
 
   \ doc{

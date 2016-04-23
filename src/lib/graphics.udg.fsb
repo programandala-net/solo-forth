@@ -8,7 +8,7 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ Word to define User Defined Graphics.
+  \ Words to define User Defined Graphics.
 
   \ -----------------------------------------------------------
   \ Author
@@ -27,6 +27,8 @@
 
   \ 2016-04-23: Add `0udg:`. Factor `0udg!` from `udg!`.
   \ Improve the documentation.
+  \
+  \ 2016-04-24: Add `udg[` and `0udg[`.
 
 ( 0udg! udg! 0udg: udg: )
 
@@ -84,6 +86,100 @@ need os-udg
 
   \ - b0 = first (top) scan
   \ - b7 = last (bottom) scan
+  \
+  \ }doc
+
+( 0udg[ udg[ )
+
+need os-udg
+
+variable first-udg
+variable current-udg
+variable current-scan
+
+[defined] binary ?\  : binary  ( -- )  2 base !  ;
+
+: 0udg[  ( b -- )
+  dup first-udg !  current-udg !  current-scan off  binary  ;
+
+  \ doc{
+  \
+  \ 0udg[  ( b -- )
+  \
+  \ Start a set of UDG definitions, from UDG number _b_
+  \ (0..255).
+  \
+  \ See: `udg[`, `|`, `||`, `||]`.
+  \
+  \ }doc
+
+: udg[  ( c -- )  128 - 0udg[  ;
+
+  \ doc{
+  \
+  \ udg[  ( c -- )
+  \
+  \ Start a set of UDG definitions, from UDG character _c_
+  \ (128..255).
+  \
+  \ See: `0udg[`, `|`, `||`, `||]`.
+  \
+  \ Usage example:
+  \
+  \ ----
+  \ 140 udg[  \ define UDG 140..144
+  \
+  \ 00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||
+  \ 01111110 | 01111110 | 01111110 | 01111110 | 01011110 ||
+  \ 11111111 | 11111111 | 11111111 | 10111111 | 10111111 ||
+  \ 11111111 | 11111111 | 10111111 | 10111111 | 11111111 ||
+  \ 11111111 | 10111111 | 10111111 | 11111111 | 11111111 ||
+  \ 11001111 | 11011111 | 11111111 | 11111111 | 11111111 ||
+  \ 01111110 | 01111110 | 01111110 | 01111110 | 01111110 ||
+  \ 00111100 | 00111100 | 00111100 | 00111100 | 00111100 ||]
+  \ ----
+  \
+  \ }doc
+
+: |  ( b -- )
+  os-udg @ current-udg @ 8 * current-scan @ + + c!
+  1 current-udg +!  ;
+
+  \ doc{
+  \
+  \ |  ( b -- )
+  \
+  \ Store scan _b_ into the current UDG being defined.
+  \
+  \ See: `0udg[`, `udg[`, `||`, `||]`.
+  \
+  \ }doc
+
+: || ( b -- )
+  |  1 current-scan +!  first-udg @ current-udg !  ;
+
+  \ doc{
+  \
+  \ || ( b -- )
+  \
+  \ Store scan _b_ into the current UDG being defined and start
+  \ a new row of scans.
+  \
+  \ See: `0udg[`, `udg[`, `|`, `||]`.
+  \
+  \ }doc
+
+
+: ||]  ( b -- )  ||  decimal  ;
+
+  \ doc{
+  \
+  \ ||]  ( b -- )
+  \
+  \ Store scan _b_ into the current UDG being defined and stop
+  \ defining UDGs.
+  \
+  \ See: `0udg[`, `udg[`, `|`, `||`.
   \
   \ }doc
 

@@ -182,6 +182,7 @@ Possible names for text and graphic cursor words.
 | at-xy      | xy         | at-coord        | coord           | home-coord 
 | at-xy      | xy         | at-coords       | coords          | coords-home
 | at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-g-xy         | g-xy            | g-home
 | at-xy      | xy         | at-gxy          | gxy             | ghome
 | at-xy      | xy@        | at-coords       | coords@         | home-coords
 | at-xy      | xy@        | at-gxy          | gxy@            | ghome
@@ -196,7 +197,7 @@ Possible names for text and graphic cursor words.
 | set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
 |===
 
-So far (2015-09-15, 2015-12-23) the best are:
+So far (2016-04-23) the best are:
 
 |===
 | set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
@@ -206,6 +207,7 @@ So far (2015-09-15, 2015-12-23) the best are:
 | at-xy      | xy         | at-coords       | coords          | coords-home
 | at-xy      | xy         | at-coords       | coords          | home-coords
 | at-xy      | xy         | at-gxy          | gxy             | ghome
+| at-xy      | xy         | at-g-xy         | g-xy            | g-home
 |===
 
 .2015-09-05:
@@ -239,8 +241,8 @@ Idea: screen modes table?
 - 5: 51 cpl
 - 6: 64 cpl
 
-It seems more versatile to create different words to switch the modes
-on and provide a common user interface to row, column, cpl, window...
+It seems more versatile to create one word to select every mode and provide a
+common user interface to row, column, cpl, window...
 
 // }}}
 == Keyboard ==
