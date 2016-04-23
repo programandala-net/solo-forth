@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604220128
+; Last modified: 201604231734
 
 include version.z80s
 
@@ -3200,7 +3200,28 @@ emit_udg.a
   ; a = UDG code (128..255)
   ; h = 0
   sub 128
-  ld l,a ; hl = UDG index code (0..127)
+  jr emit_0udg.a
+
+; ----------------------------------------------
+  _code_header emit_0udg_,'EMIT-0UDG'
+
+; doc{
+;
+; emit-0udg  ( b -- )
+;
+; Print the User Defined Character _b_ (0..255).
+;
+; }doc
+
+  pop hl
+  push bc
+  ; h = 0
+  ld a,l
+
+emit_0udg.a
+  ; a = UDG code (0..255)
+  ; h = 0
+  ld l,a ; hl = UDG index code (0..255)
   ld de,(sys_udg)
   add hl,hl
   add hl,hl

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604231622
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,34 +22,68 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( udg! udg: )
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-23: Add `0udg:`. Factor `0udg!` from `udg!`.
+  \ Improve the documentation.
+
+( 0udg! udg! 0udg: udg: )
 
 need os-udg
 
-: udg!  ( b0..b7 c -- )
-  128 - 8 * os-udg @ + dup 7 + do  i c!  -1 +loop  ;
+: 0udg!  ( b0..b7 n -- )
+  8 * os-udg @ + dup 7 + do  i c!  -1 +loop  ;
+
+  \ doc{
+  \
+  \ udg!  ( b0..b7 n -- )
+  \
+  \ Store the given 8 bytes into UDG number _n_ (0..127).
+  \
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
+  \
+  \ }doc
+
+: udg!  ( b0..b7 c -- )  128 - 0udg!  ;
+
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
   \
-  \ Store the given 8 bytes into the UDG char _c_.
-  \ b0 = first (top) scan
-  \ b7 = last (bottom) scan
-  \ c = 128..255
+  \ Store the given 8 bytes into UDG char _c_ (128..255).
+  \
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
   \
   \ }doc
 
 : udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;
+
   \ doc{
   \
   \ udg:  ( b0..b7 c "name" -- )
   \
-  \ Create a constant called "name" for the UDG char _c_.
-  \ Store the given 8 bytes into the UDG char _c_.
+  \ Create a constant "name" for UDG char _c_ (128..255) and
+  \ store the given 8 bytes into that UDG char.
+
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
   \
-  \ b0 = first (top) scan
-  \ b7 = last (bottom) scan
-  \ c = 128..255
+  \ }doc
+
+: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ;
+
+  \ doc{
+  \
+  \ 0udg:  ( b0..b7 n "name" -- )
+  \
+  \ Create a constant "name" for UDG number _n_ (0..127) and
+  \ store the given 8 bytes into UDG char _128+n_.
+
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
   \
   \ }doc
 

@@ -8403,17 +8403,31 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220028
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201604231600
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The sample game Pong.
+  \ The Pong game.
 
   \ -----------------------------------------------------------
   \ Author
 
   \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ Credit
+
+  \ Based on code included in IsForth (version 1.23v):
+  \
+  \ pong.f
+  \ Written june 2002 by Robert Oestling
+  \ <robost at telia dot com>
+  \ Tested with IsForth, http://isforth.clss.net/
+  \
+  \ Ported to to IsForth by Mark Manning, 2012.
 
   \ -----------------------------------------------------------
   \ License
@@ -8422,41 +8436,30 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-09: First working version.
+  \
+  \ 2015-11-11: Improve with delay counters and Z80 halts.
+  \
+  \ 2016-04-23: Improve file header. Add frames to the ball
+  \ graphic.
 
 ( pong )
 
-  \ XXX UNDER DEVELOPMENT
-
   \ XXX TODO slow the rackets
 
-  \ Credit:
-  \
-  \ Code adapted from IsForth (version 1.23v).
-
-  \ ____
-  \
-  \ pong.f
-  \ Written june 2002 by Robert Oestling
-  \ <robost at telia dot com>
-  \ Tested with IsForth, http://isforth.clss.net/
-  \ ____
-
-need columns  need rows  need udg:  need rnd  need ??
+need columns  need rows  need 0udg!  need rnd  need ??
 3 constant /kk  need pressed?
 need cvariable  need 2/  need pixel-addr
-need hires-emit-udg  need c!toggle-bits
+need g-emit-0udg  need c!toggle-bits
 
 0 cconstant black  7 cconstant white
-
-  \ XXX OLD
-  \ 500 constant initial-speed
-  \ variable speed
-  \ Delay in milliseconds.
 
 8 cconstant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
 variable ball-delay
-  \ XXX NEW
 
 4 cconstant racket-size
 
@@ -8516,61 +8519,210 @@ rows 1- cconstant racket2-y
 
 ( pong )
 
+  \ XXX OLD
+  \ %00111100
+  \ %01111110
+  \ %11111111
+  \ %11111111
+  \ %11111111
+  \ %11111111
+  \ %01111110
+  \ %00111100 0 0udg!
+
+%00111100
+%01111110
+%11111011
+%11111101
+%11111111
+%11111111
+%01111110
+%00111100 0 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01111110
+%11111111
+%11111101
+%11111101
+%11111111
+%01111110
+%00111100 1 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01111110
+%11111111
+%11111111
+%11111101
+%11111011
+%01111110
+%00111100 2 0udg!
+
+-->
+
+( pong )
+
 %00111100
 %01111110
 %11111111
 %11111111
 %11111111
+%11110011
+%01111110
+%00111100 3 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01111110
+%11111111
+%11111111
+%11111111
+%11100111
+%01111110
+%00111100 4 0udg!
+
+-->
+
+( pong )
+
+
+%00111100
+%01111110
+%11111111
+%11111111
+%11111111
+%11001111
+%01111110
+%00111100 5 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01111110
+%11111111
+%11111111
+%10111111
+%11011111
+%01111110
+%00111100 6 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01111110
+%11111111
+%10111111
+%10111111
 %11111111
 %01111110
-%00111100 128 udg: (ball)  0 cconstant ball \ XXX TMP
+%00111100 7 0udg!
 
-  \ XXX TODO -- frames
+-->
 
-  \ %00111100
-  \ %01111110
-  \ %11111011
-  \ %11111101
-  \ %11111111
-  \ %11111111
-  \ %01111110
-  \ %00111100 128 udg: ball0
+( pong )
 
-  \ %00111100
-  \ %01111110
-  \ %11111111
-  \ %11111101
-  \ %11111101
-  \ %11111111
-  \ %01111110
-  \ %00111100 130 udg: ball1
+%00111100
+%01111110
+%10111111
+%10111111
+%11111111
+%11111111
+%01111110
+%00111100 8 0udg!
 
-  \ %00111100
-  \ %01111110
-  \ %11111111
-  \ %11111111
-  \ %11111101
-  \ %11111011
-  \ %01111110
-  \ %00111100 130 udg: ball1
+-->
 
-  \ %00111100
-  \ %01111110
-  \ %11111111
-  \ %11111111
-  \ %11111111
-  \ %11100111
-  \ %01111110
-  \ %00111100 130 udg: ball1
+( pong )
 
-  \ %00111100
-  \ %01111110
-  \ %11111111
-  \ %11111111
-  \ %11111111
-  \ %11110011
-  \ %01111110
-  \ %00111100 130 udg: ball1
+%00111100
+%01011110
+%10111111
+%11111111
+%11111111
+%11111111
+%01111110
+%00111100 9 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01001110
+%11111111
+%11111111
+%11111111
+%11111111
+%01111110
+%00111100 10 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01100110
+%11111111
+%11111111
+%11111111
+%11111111
+%01111110
+%00111100 11 0udg!
+
+-->
+
+( pong )
+
+%00111100
+%01110110
+%11111011
+%11111111
+%11111111
+%11111111
+%01111110
+%00111100 12 0udg!
+
+-->
+
+( pong )
+
+ 0 constant first-ball-frame
+12 constant last-ball-frame
+
+variable ball-frame  first-ball-frame ball-frame !
+  \ UDG number (0..127) of the current frame of the ball
+  \ graphic.
+
+: ball  ( -- n )  ball-frame @  ;
+  \ Return the UDG number _n_ (0..127) of the current frame
+  \ of the ball graphic.
+
+: last-ball-frame?  ( -- f )  ball last-ball-frame =  ;
+  \ Is the current frame of the ball graphic the last one?
+
+: next-ball-frame  ( -- )
+  last-ball-frame? if     first-ball-frame ball-frame !
+                   else   1 ball-frame +!  then  ;
+  \ Update the current frame of the ball graphic.
+
+: ball-xy  ( -- x y )  x @ y @  ;
+
+: show-ball  ( -- )  ball-xy ball sync g-emit-0udg  ;
+
+: erase-ball  ( -- )  ball-xy ball sync g-emit-0udg  ;
 
 -->
 
@@ -8579,12 +8731,6 @@ rows 1- cconstant racket2-y
 : restore-screen  ( -- )  default-colors page  ;
 
 : init-screen  ( -- )  restore-screen white ink  ;
-
-: ball-xy  ( -- x y )  x @ y @  ;
-
-: show-ball  ( -- )  ball-xy ball sync hires-emit-udg  ;
-
-: erase-ball  ( -- )  ball-xy ball sync hires-emit-udg  ;
 
 : (border)  ( a -- )
   columns [ white paper-color ] literal sync fill  ;
@@ -8755,19 +8901,25 @@ variable racket2-delay
 : ?move-ball  ( -- )
   -1 ball-delay +!  ball-delay @ if  unnest  exit  then
   ball-delay0 ball-delay !  ;
+  \ Update the delay of the ball.
+  \ If the ball must not be moved, exit from the calling word.
 
 : move-ball  ( -- )
-  ?move-ball
-  erase-ball move-ball-x move-ball-y show-ball  ;
+  ?move-ball erase-ball move-ball-x move-ball-y
+             next-ball-frame show-ball  ;
+  \ Move the ball.
 
 : frame  ( -- )  white border  top-border bottom-border  ;
+  \ Draw the frame of the arena.
 
 : arena-line  ( -- )
   [ 0 96 pixel-addr nip ] literal columns %10101010 fill
   [ 0 95 pixel-addr nip ] literal columns %01010101 fill  ;
+  \ Draw the line of the arena.
 
 : arena  ( -- )
   cls  frame arena-line show-rackets print-points show-ball  ;
+  \ Draw the arena.
 
 -->
 
@@ -8824,12 +8976,12 @@ variable racket2-delay
   restore-screen  ." Player 1 score: " points1 ? cr
                   ." Player 2 score: " points2 ?  quit  ;
 
-  : keypress  ( key -- )
-    left1-key     pressed? ?? move-racket1-left
-    right1-key    pressed? ?? move-racket1-right
-    left2-key     pressed? ?? move-racket2-left
-    right2-key    pressed? ?? move-racket2-right
-                break-key? ?? quit-game  ;  -->
+: keypress  ( key -- )
+  left1-key     pressed? ?? move-racket1-left
+  right1-key    pressed? ?? move-racket1-right
+  left2-key     pressed? ?? move-racket2-left
+  right2-key    pressed? ?? move-racket2-right
+              break-key? ?? quit-game  ;  -->
 
 ( pong )
 
@@ -8851,14 +9003,15 @@ variable racket2-delay
 : show-credits  ( -- )
 
   \  <------------------------------>
-  ." Forth Pong" cr cr
+  ." Pong" cr cr
   ." Original code by:" cr
   ."   Robert Oestling, 2002" cr
   ." Ported to IsForth by:" cr
   ."   Mark Manning, 2012" cr
   ." Rewritten for Solo Forth by:" cr
   ."   Marcos Cruz" cr
-  ."   (programandala.net), 2015" cr  ;
+  ."   (programandala.net), 2015," cr
+  ."   2016." cr  ;
   \  <------------------------------>
 
 : press-any-key  ( -- )
@@ -8875,8 +9028,19 @@ variable racket2-delay
 : pong  ( -- )
   init-game welcome page arena
   begin  move-ball
-  \ begin key? until key drop  \ XXX TMP -- for debugging
+    \ begin key? until key drop  \ XXX TMP -- for debugging
   keypress  again  ;
+
+( pong-test )
+
+  \ XXX TMP -- for debugging
+
+: pong-test  ( -- )
+  begin
+  last-ball-frame 1+ 128 + first-ball-frame 128 + ?do
+    home i emit  key drop
+  loop  
+  break-key? until  ;
 
   \ vim: filetype=soloforth
   \ game.siderator_2.fsb
@@ -10917,18 +11081,17 @@ code vertical-curtain  ( b -- )
   \ }doc
 
   \ vim: filetype=soloforth
-  \ graphics.hires-emit.fsb
+  \ graphics.g-emit.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604231722
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Words to print characters at high resolution
-  \ coordinates.
+  \ Words to print characters at high resolution coordinates.
 
   \ -----------------------------------------------------------
   \ Author
@@ -10942,54 +11105,80 @@ code vertical-curtain  ( b -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
 
-( hires-emit-udg )
+  \ 2015-09-03: First version.
 
-need z80-asm  need (hires-emit)
+  \ 2016-04-23: Rename "hires-" prefix to "g-". Rename
+  \ `g-emit-udg` to `g-emit-0udg`, because zero-index is used,
+  \ instead of the default UDG char codes 128..255. Add
+  \ `g-emit-udg` for codes 0..128. Improve documentation.
 
-code hires-emit-udg  ( gx gy b -- )
+( g-emit-0udg )
 
-  \ Display the user graphic character _b_ (0..255) at graphic
-  \ coordinates _x y_. The system variable "UDG" is supossed to
-  \ hold the address of a graphic charset (the address of the
-  \ char 0 bitmap).
-  \
-  \ The UDG character will be printed with overwritting
-  \ (equivalent to `1 overwrite`).
+need z80-asm  need (g-emit)
 
-  \ XXX FIXME  -- crash?
+code g-emit-0udg  ( gx gy b -- )
 
   hl pop  l a ld
   de pop  hl pop  bc push  e b ld  l c ld
   5C7B de ftp  \ system variable UDG
-  (hires-emit) call
+  (g-emit) call
   bc pop  next ix ldp#  jpnext
   end-code
 
-\ (hires-emit) \
+  \ doc{
+  \
+  \ g-emit-0udg  ( gx gy b -- )
+  \
+  \ Display UDG _b_ (0..255) at graphic coordinates _gx gy_,
+  \ from the font pointed by system variable UDG, which
+  \ contains the address of the first UDG bitmap (0).
+  \
+  \ The UDG character is printed with overwriting (equivalent
+  \ to `1 overwrite`).
+  \
+  \ }doc
+
+( g-emit-udg )
+
+need z80-asm  need (g-emit)
+
+code g-emit-udg  ( gx gy c -- )
+
+  hl pop  l a ld  80 a sub 
+  de pop  hl pop  bc push  e b ld  l c ld
+  5C7B de ftp  \ system variable UDG
+  (g-emit) call
+  bc pop  next ix ldp#  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ g-emit-udg  ( gx gy c -- )
+  \
+  \ Display UDG _c_ (127..255) at graphic coordinates _gx gy_,
+  \ from the font pointed by system variable UDG, which
+  \ contains the address of the first UDG bitmap (127).
+  \
+  \ The UDG character is printed with overwriting (equivalent
+  \ to `1 overwrite`).
+  \
+  \ }doc
+
+\ (g-emit) \
 
 need z80-asm  need (pixel-addr)
 
   \ Credit:
   \
   \ Code Adapted from "SMOOTH MOVE",
-  \ written by Simon N.  Goodwin,
+  \ written by Simon N. Goodwin,
   \ published on Todospectrum, issue 2 (1984-10), page 16.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-create (hires-emit)  ( -- )
-
-  \ Print a 8x8 bits char at high resolution coordinates.
-
-  \ Input:
-  \   DE = address of the first char (0) bitmap in a charset
-  \   A = char code (0..255)
-  \   B = y coordinate
-  \   C = x coordinate
-  \ Modifies:
-  \   AF BC HL IX DE
-
-  \ XXX FIXME  -- crash?
+create (g-emit)  ( -- a )
 
   asm
 
@@ -11015,6 +11204,25 @@ create (hires-emit)  ( -- )
       \ next char scan, one screen line less
 
   z until  hl pop  ret  end-asm
+
+  \ doc{
+  \
+  \ (g-emit)  ( -- a )
+  \
+  \ Address of a machine code routine that prints an 8x8 bits
+  \ charater at graphic coordinates. Used by `g-emit-udg`
+  \ and `g-emit-0udg`.
+  \ 
+  \ Input registers:
+  \
+  \ - DE = address of the first char (0) bitmap in a charset
+  \ - A = char code (0..255)
+  \ - B = y coordinate
+  \ - C = x coordinate
+  \
+  \ Modifies: AF BC HL IX DE
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
   \ graphics.lines.fsb
@@ -11883,7 +12091,7 @@ code scroll-1px-up  ( -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604231622
 
   \ -----------------------------------------------------------
   \ Description
@@ -11902,34 +12110,68 @@ code scroll-1px-up  ( -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( udg! udg: )
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-23: Add `0udg:`. Factor `0udg!` from `udg!`.
+  \ Improve the documentation.
+
+( 0udg! udg! 0udg: udg: )
 
 need os-udg
 
-: udg!  ( b0..b7 c -- )
-  128 - 8 * os-udg @ + dup 7 + do  i c!  -1 +loop  ;
+: 0udg!  ( b0..b7 n -- )
+  8 * os-udg @ + dup 7 + do  i c!  -1 +loop  ;
+
+  \ doc{
+  \
+  \ udg!  ( b0..b7 n -- )
+  \
+  \ Store the given 8 bytes into UDG number _n_ (0..127).
+  \
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
+  \
+  \ }doc
+
+: udg!  ( b0..b7 c -- )  128 - 0udg!  ;
+
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
   \
-  \ Store the given 8 bytes into the UDG char _c_.
-  \ b0 = first (top) scan
-  \ b7 = last (bottom) scan
-  \ c = 128..255
+  \ Store the given 8 bytes into UDG char _c_ (128..255).
+  \
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
   \
   \ }doc
 
 : udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;
+
   \ doc{
   \
   \ udg:  ( b0..b7 c "name" -- )
   \
-  \ Create a constant called "name" for the UDG char _c_.
-  \ Store the given 8 bytes into the UDG char _c_.
+  \ Create a constant "name" for UDG char _c_ (128..255) and
+  \ store the given 8 bytes into that UDG char.
+
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
   \
-  \ b0 = first (top) scan
-  \ b7 = last (bottom) scan
-  \ c = 128..255
+  \ }doc
+
+: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ;
+
+  \ doc{
+  \
+  \ 0udg:  ( b0..b7 n "name" -- )
+  \
+  \ Create a constant "name" for UDG number _n_ (0..127) and
+  \ store the given 8 bytes into UDG char _128+n_.
+
+  \ - b0 = first (top) scan
+  \ - b7 = last (bottom) scan
   \
   \ }doc
 

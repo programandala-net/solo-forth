@@ -1,0 +1,144 @@
+  \ graphics.g-emit.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604231722
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words to print characters at high resolution coordinates.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09-03: First version.
+
+  \ 2016-04-23: Rename "hires-" prefix to "g-". Rename
+  \ `g-emit-udg` to `g-emit-0udg`, because zero-index is used,
+  \ instead of the default UDG char codes 128..255. Add
+  \ `g-emit-udg` for codes 0..128. Improve documentation.
+
+( g-emit-0udg )
+
+need z80-asm  need (g-emit)
+
+code g-emit-0udg  ( gx gy b -- )
+
+  hl pop  l a ld
+  de pop  hl pop  bc push  e b ld  l c ld
+  5C7B de ftp  \ system variable UDG
+  (g-emit) call
+  bc pop  next ix ldp#  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ g-emit-0udg  ( gx gy b -- )
+  \
+  \ Display UDG _b_ (0..255) at graphic coordinates _gx gy_,
+  \ from the font pointed by system variable UDG, which
+  \ contains the address of the first UDG bitmap (0).
+  \
+  \ The UDG character is printed with overwriting (equivalent
+  \ to `1 overwrite`).
+  \
+  \ }doc
+
+( g-emit-udg )
+
+need z80-asm  need (g-emit)
+
+code g-emit-udg  ( gx gy c -- )
+
+  hl pop  l a ld  80 a sub 
+  de pop  hl pop  bc push  e b ld  l c ld
+  5C7B de ftp  \ system variable UDG
+  (g-emit) call
+  bc pop  next ix ldp#  jpnext
+  end-code
+
+  \ doc{
+  \
+  \ g-emit-udg  ( gx gy c -- )
+  \
+  \ Display UDG _c_ (127..255) at graphic coordinates _gx gy_,
+  \ from the font pointed by system variable UDG, which
+  \ contains the address of the first UDG bitmap (127).
+  \
+  \ The UDG character is printed with overwriting (equivalent
+  \ to `1 overwrite`).
+  \
+  \ }doc
+
+\ (g-emit) \
+
+need z80-asm  need (pixel-addr)
+
+  \ Credit:
+  \
+  \ Code Adapted from "SMOOTH MOVE",
+  \ written by Simon N. Goodwin,
+  \ published on Todospectrum, issue 2 (1984-10), page 16.
+  \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
+
+create (g-emit)  ( -- a )
+
+  asm
+
+  0 h ld#  a l ld  hl addp  hl addp  hl addp  de addp
+  hl push  ix pop  bc hl ldp  hl push  8 c ld#
+
+  begin
+
+    hl pop  h dec  hl push  h inc
+      \ next line
+
+    bc push  hl bc ldp  (pixel-addr) call  bc pop
+      \ convert the coords H (x) and L (y) to an address in HL
+      \ and a bit in A
+
+    a b ld  a xor  b or  0 ix a ftx
+    nz if   exde  0 h ld#  a l ld  8 a ld#  b sub  a b ld
+            begin  hl addp  step  exde
+            m a ld  d xor  a m ld
+            hl incp  e a ld  then
+
+    m xor  a m ld  ix incp  c dec
+      \ next char scan, one screen line less
+
+  z until  hl pop  ret  end-asm
+
+  \ doc{
+  \
+  \ (g-emit)  ( -- a )
+  \
+  \ Address of a machine code routine that prints an 8x8 bits
+  \ charater at graphic coordinates. Used by `g-emit-udg`
+  \ and `g-emit-0udg`.
+  \ 
+  \ Input registers:
+  \
+  \ - DE = address of the first char (0) bitmap in a charset
+  \ - A = char code (0..255)
+  \ - B = y coordinate
+  \ - C = x coordinate
+  \
+  \ Modifies: AF BC HL IX DE
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
