@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604090210
+  \ Last modified: 201604242022
 
   \ -----------------------------------------------------------
   \ Description
@@ -17,6 +17,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Add `need 2rdrop`, because `2rdrop` has been
+  \ moved from the kernel to the library.
 
 ( rnd-benchmark )
 
@@ -677,7 +683,7 @@ need random-pix-benchmark
   \
   \ Code adapted from Z88 CamelForth.
 
-need ud*  need os-seed
+need ud*  need os-seed  need 2rdrop
 
 : z88-random  ( n -- 0..n-1 )
   1103515245. \ 20077 16838

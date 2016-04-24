@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242023
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,7 +22,14 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( n>r )  \ ==returnstack==
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-09-10: Add `n>r`, `nr>`.
+  \ 2015-10-27: Add `r'@`.
+  \ 2016-04-24: Move `2rdrop` from the kernel.
+
+( n>r )
 
 need z80-asm
 
@@ -95,9 +102,10 @@ need n>r
   \
   \ `r'@` from Wil Baden.
 
-[unneeded] r'@ dup
-?\ : r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
-?\   r> 2r@ drop swap >r  ;
+[unneeded] r'@ ?exit
+
+: r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
+  r> 2r@ drop swap >r  ;
 
   \ doc{
   \
@@ -105,17 +113,25 @@ need n>r
   \
   \ }doc
 
-  \ }}} =======================================================
-  \ User variables {{{
+( 2rdrop )
 
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO
 
-: uallot ( n -- )  udp @ swap udp +!  ;
-  \ XXX from Gforth
-
-: user  ( "name" -- )  create cell uallot , does> @ up @ +  ;
-
-: user  ( "name" -- )  create cell uallot c, does> c@ up @ +  ;
+code 2rdrop  ( R: x1 x2 -- )
+  2A c, rp ,
+    \ ld hl,(return_stack_pointer)
+  11 c, 02 cells ,
+    \ ld de,cell*2
+  19 c,
+    \ add hl,de
+  22 c, rp ,
+    \ ld (return_stack_pointer),hl
+  jpnext
+  end-code
+ 
+  \ doc{
+  \
+  \ 2rdrop  ( R: x1 x2 -- )
+  \
+  \ }doc
 
   \ vim: filetype=soloforth

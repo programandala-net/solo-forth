@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604241844
+; Last modified: 201604242023
 
 include version.z80s
 
@@ -4057,23 +4057,6 @@ u_m_slash_mod.4:
   inc hl
   ld (return_stack_pointer),hl
   push de
-  _jp_next
-
-; ----------------------------------------------
-  _code_header two_r_drop_,'2RDROP'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; 2rdrop  ( R: x1 x2 -- )
-;
-; }doc
-
-  ld hl,(return_stack_pointer)
-  ld de,cell*2
-  add hl,de
-  ld (return_stack_pointer),hl
   _jp_next
 
 ; ----------------------------------------------
@@ -10886,7 +10869,10 @@ do_two_constant:
 ; ----------------------------------------------
   _code_header two_over_,'2OVER'
 
-  ; XXX TODO -- move to the library?
+  ; XXX TODO -- Move to the library? But the Z80 label
+  ; `two_fetch.hl` should be returned by a constant.
+  ; Alternatives: write it in Forth; write it in Z80 with a call
+  ; to `2@`, using `execute-xt`.
 
 ; doc{
 ;
