@@ -538,7 +538,10 @@ syn keyword soloforthVocs forth
 syn keyword soloforthVocs forth-wordlist
 syn keyword soloforthVocs get-current
 syn keyword soloforthVocs get-order
+syn keyword soloforthVocs last
+syn keyword soloforthVocs lastxt
 syn keyword soloforthVocs latest
+syn keyword soloforthVocs latestxt
 syn keyword soloforthVocs only
 syn keyword soloforthVocs previous
 syn keyword soloforthVocs root
@@ -1142,7 +1145,7 @@ let b:current_syntax = "soloforth"
 " space.
 "
 " 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
-" `noname?`.
+" `noname?`, `last`, `lastxt`, `latestxt`.
 
 " --------------------------------------------------------------
 

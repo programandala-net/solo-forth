@@ -4081,7 +4081,7 @@ need name>>  need !s
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241708
+  \ Last modified: 201604241823
 
   \ -----------------------------------------------------------
   \ Description
@@ -4107,12 +4107,9 @@ need name>>  need !s
 
 ( :noname )
 
-  \ Credit:
-  \
-  \ Code adapted from the Afera library.
-
 : :noname  ( -- xt )
-  here !csp docolon code-field,
+  here  dup lastxt !  last off  !csp
+  docolon code-field,
   noname? on  ]  ;
 
   \ XXX TODO -- documentation
@@ -7768,7 +7765,7 @@ need cs-pick
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604171545
+  \ Last modified: 201604241816
 
   \ -----------------------------------------------------------
   \ Description
@@ -7791,15 +7788,15 @@ need cs-pick
   \ History
 
   \ 2015-06-05: Written in the kernel.
+  \
   \ 2016-04-17: Moved to the library.
+  \
+  \ 2016-04-24: Fixed with `latestxt`: now it can be used
+  \ in words created with `:noname`.
 
 ( recurse )
 
-  \ XXX FIXME -- use `latestxt`, else words created with
-  \ `:noname` will not work
-
-: recurse  ( -- )
-  latest name> compile,  ; immediate compile-only
+: recurse  ( -- )  latestxt compile,  ; immediate compile-only
 
   \ doc{
   \

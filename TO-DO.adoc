@@ -9,9 +9,9 @@
 == Misc ==
 // {{{
 
-.2016-04-22:
+.2016-04-24:
 
-Document floating point and release 0.5.0.
+Add `noname`, after `nextname`.
 
 .2016-04-16:
 
@@ -435,6 +435,10 @@ above 0xC000 could not use the circular string buffer.
 // }}}
 == Maths ==
 // {{{
+
+.2016-04-22:
+
+Document floating point.
 
 .2016-04-22:
 

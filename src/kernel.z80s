@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604241708
+; Last modified: 201604241735
 
 include version.z80s
 
@@ -669,7 +669,7 @@ default_color_attribute:
 
   ; User variables default values
 
-  ; The first 8 user variables have default values.  They are
+  ; The first 9 user variables have default values.  They are
   ; used by `cold` to overwrite the actual user variables and
   ; must be in the same order than them.
 
@@ -699,12 +699,14 @@ dictionary_pointer_init_value:                ; +$0C
 user_data_pointer_init_value:                 ; +$0E
   ; `$20 +origin`
   dw user_data_pointer
+lastxt_init_value:                            ; +$10
+  ; `$22 +origin`
+  dw $0000
 
 default_user_variables_end:
 
-
 ip_backup: ; temporary copy of Forth IP
-  ; `$22 +origin`
+  ; `$24 +origin`
   dw 0
 
 np: defl names_bank_address+1
@@ -729,7 +731,7 @@ names_pointer_init_value:
 
 user_variables:
 
-  ; Note: the first 8 user variables are initialized with
+  ; Note: the first 9 user variables are initialized with
   ; default values by `cold`.  They must be in the same order
   ; than their default values.
 
@@ -751,14 +753,14 @@ dictionary_pointer_value:                     ; +$0C
   dw dictionary_pointer_after_cold
 user_data_pointer_value:                      ; +$0E
   dw user_data_pointer
+lastxt_value:                                 ; +$10
+  dw $0000
 
   ; User variables that are not initialized by `cold`:
 
-blk_value:                                    ; +$10
-  dw $0000
 in_value:                                     ; +$12
   dw $0000
-; XXX not used                                ; +$14
+blk_value:                                    ; +$14
   dw $0000
 scr_value:                                    ; +$16
   dw $0000
@@ -4653,7 +4655,7 @@ do_colon:
   dw false
 
 ; ----------------------------------------------
-  _colon_header finish_code_,'FINISH-CODE',compile_only
+  _colon_header finish_code_,'FINISH-CODE'
 
 ; doc{
 ;
@@ -5037,17 +5039,14 @@ do_user:
   db $0E
 
 ; ----------------------------------------------
-  _user_variable_header blk_,'BLK'
-
-  ; XXX TODO normal variable?
+  _user_variable_header lastxt_,'LASTXT'
 
 ; doc{
 ;
-; blk  ( -- a )
+; lastxt  ( -- a )
 ;
-; User variable that holds de number of the disk block being
-; interpreted. A disk block holds 1024 bytes. One source screen
-; consists of one disk block.
+; User variable that holds the execution token of the last word
+; defined.
 ;
 ; }doc
 
@@ -5066,6 +5065,23 @@ do_user:
 ; }doc
 
   db $12
+
+; ----------------------------------------------
+  _user_variable_header blk_,'BLK'
+
+  ; XXX TODO normal variable?
+
+; doc{
+;
+; blk  ( -- a )
+;
+; User variable that holds de number of the disk block being
+; interpreted. A disk block holds 1024 bytes. One source screen
+; consists of one disk block.
+;
+; }doc
+
+  db $14
 
 ; ----------------------------------------------
   _user_variable_header scr_,'SCR'
@@ -5703,23 +5719,21 @@ u_less_than.de_hl:
 ;  dw last_,fetch_
 ;  dw exit_
 
-; ; ----------------------------------------------
-;   _colon_header latestxt_,'LATESTXT'
+; ----------------------------------------------
+  _colon_header latestxt_,'LATESTXT'
 
-; ; doc{
-; ;
-; ; latestxt ( -- xt )
-; ;
-; ; Leave the execution token of the last word defined.
-; ;
-; ; Origin: Gforth.
-; ;
-; ; }doc
+; doc{
+;
+; latestxt ( -- xt )
+;
+; Leave the execution token of the last word defined.
+;
+; Origin: Gforth.
+;
+; }doc
 
-;   dw lastxt_,fetch_
-;   dw exit_
-
-; XXX TODO --
+  dw lastxt_,fetch_
+  dw exit_
 
 ; ----------------------------------------------
   _code_header from_body_,'BODY>'
@@ -6252,6 +6266,8 @@ postpone.end:
 ; ----
 
 ; }doc
+
+  ; XXX TODO -- use `latest` instead of `last @` when possible
 
   dw from_r_
   dw last_,fetch_,from_name_,one_plus_
@@ -6954,6 +6970,8 @@ parse.end:
 ; ----------------------------------------------
   _two_variable_header nextname_string_,'NEXTNAME-STRING'
 
+  ; XXX TODO -- move to the library
+
 ; doc{
 ;
 ; next-name  ( -- a )
@@ -7038,6 +7056,8 @@ parse.end:
 ; ----------------------------------------------
   _colon_header nextname_header_,'NEXTNAME-HEADER'
 
+  ; XXX TODO -- move to the library
+
 ; doc{
 ;
 ; nextname-header  ( -- )
@@ -7056,6 +7076,8 @@ parse.end:
 
 ; ----------------------------------------------
   _colon_header nextname_,'NEXTNAME'
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;
@@ -7382,6 +7404,7 @@ header_comma.continue:
 
   ; ( ca len )
 
+  dw here_,lastxt_,store_ ; update `lastxt`
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
   dw system_bank_
@@ -8353,7 +8376,7 @@ quit.begin:
 ; }doc
 
   dw header_,reveal_
-  _literal $C3 ; Z80 opcode for `jp NN`
+  _literal $C3 ; Z80 opcode for `jp`
   dw c_comma_
   _literal paren_defer_ ; default xt to execute
   dw comma_
