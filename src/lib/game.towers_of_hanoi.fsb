@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604171550
+  \ Last modified: 201604242143
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,9 +37,12 @@
   \ History
 
   \ 2015..2016: Start.
-
+  \
   \ 2016-04-17: Added the requisite of `recurse`, which is not
   \ in the kernel anymore. Updated the file headers.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( hanoi )
 
@@ -78,7 +81,7 @@ create PegStacks  30 chars allot
 
 : show-disk  ( level diameter peg -- )
   22 * 10 + over -  rot 10 swap - at-xy
-  2* [char] * emits ;
+  2* '*' emits ;
 
 : show-peg   ( peg -- )
   dup >r PegStack

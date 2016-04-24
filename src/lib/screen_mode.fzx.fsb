@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604242159
 
   \ -----------------------------------------------------------
   \ Description
@@ -24,6 +24,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( fzx-test )
 
@@ -161,7 +167,7 @@ create (fzx-emit)  ( -- )
 
   \ UNDEF_CHAR:
 
-  char ? 20 - a ld#  \ print '?' instead of invalid character
+  '?' 20 - a ld#  \ print '?' instead of invalid character
 
     then
 

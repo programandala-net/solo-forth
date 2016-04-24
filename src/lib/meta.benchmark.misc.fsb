@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604011832
+  \ Last modified: 201604242145
 
   \ -----------------------------------------------------------
   \ Description
@@ -19,27 +19,33 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+
 ( number-base-bench )
 
   \ 2015-10-09
 
 : number-base-1  ( ca len -- ca' len' n )
   \ This is the current version defined in the kernel.
-  over c@ [char] $ = if  1 /string 16  exit  then
-  over c@ [char] % = if  1 /string  2  exit  then
-  over c@ [char] # = if  1 /string 10  exit  then  base @  ;
+  over c@ '$' = if  1 /string 16  exit  then
+  over c@ '%' = if  1 /string  2  exit  then
+  over c@ '#' = if  1 /string 10  exit  then  base @  ;
 
 : number-base-2  ( ca len -- ca' len' n )
   over c@ >r
-  r@ [char] $ = if  1 /string 16  rdrop exit  then
-  r@ [char] % = if  1 /string  2  rdrop exit  then
-  r> [char] # = if  1 /string 10  exit  then  base @  ;
+  r@ '$' = if  1 /string 16  rdrop exit  then
+  r@ '%' = if  1 /string  2  rdrop exit  then
+  r> '#' = if  1 /string 10  exit  then  base @  ;
 
 : number-base-3  ( ca len -- ca' len' n )
   over c@
-  dup >r [char] $ = if  1 /string 16  rdrop exit  then
-      r@ [char] % = if  1 /string  2  rdrop exit  then
-      r> [char] # = if  1 /string 10  exit  then  base @  ;
+  dup >r '$' = if  1 /string 16  rdrop exit  then
+      r@ '%' = if  1 /string  2  rdrop exit  then
+      r> '#' = if  1 /string 10  exit  then  base @  ;
 
 -->
 
@@ -47,9 +53,9 @@
 
 : number-base-4  ( ca len -- ca' len' n )
   over c@
-  dup [char] $ = if  drop 1 /string 16  exit  then
-  dup [char] % = if  drop 1 /string  2  exit  then
-      [char] # = if  1 /string 10  exit  then  base @  ;
+  dup '$' = if  drop 1 /string 16  exit  then
+  dup '%' = if  drop 1 /string  2  exit  then
+      '#' = if  1 /string 10  exit  then  base @  ;
 
 need frames@  need reset-frames  defer (number-base)
 

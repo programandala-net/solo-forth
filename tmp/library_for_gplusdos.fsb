@@ -5169,7 +5169,7 @@ code c!dosvar  ( b n -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604032014
+  \ Last modified: 201604242138
 
   \ -----------------------------------------------------------
   \ Description
@@ -5206,6 +5206,8 @@ code c!dosvar  ( b n -- )
   \ History
 
   \ 2015-09-11: Adapted to Solo Forth.
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( editor )
 
@@ -5277,7 +5279,7 @@ variable r#
   \ as all statements move up one line.
 
 : m  ( n -- )
-  r# +! cr space #lead type [char] _ emit
+  r# +! cr space #lead type '_' emit
   #lag type #locate . drop  ;
   \ Move the cursor by _n_ characters. The position of the
   \ cursor on its line is shown by a "_" (underline).
@@ -6079,7 +6081,7 @@ need create:
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242140
 
   \ -----------------------------------------------------------
   \ Description
@@ -6098,6 +6100,11 @@ need create:
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( begincase )
 
@@ -6121,9 +6128,9 @@ need cs-push  need cs-pop
 : test
   begincase
     cr ." press a key ('2' '4' '9' exits) : " key
-    [char] 2 of  ." ... 2 "  endof
-    [char] 4 of  ." ... 4 "  endof
-    [char] 9 of  ." ... 9 "  endof
+    '2' of  ." ... 2 "  endof
+    '4' of  ." ... 4 "  endof
+    '9' of  ." ... 9 "  endof
       dup emit ."  try again"
   nextcase  ;
 
@@ -6133,7 +6140,7 @@ need cs-push  need cs-pop
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241957
+  \ Last modified: 201604242142
 
   \ -----------------------------------------------------------
   \ Description
@@ -6157,6 +6164,9 @@ need cs-push  need cs-pop
 
   \ 2016-04-24: Add `need :noname` and `need pick`, because
   \ those words have been moved from the kernel to the library.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( [switch switch] )
 
@@ -6222,7 +6232,7 @@ exit
 need :noname
 
 : run:  ( head n "ccc<semicolon>" -- )
-  :noname [char] ; parse evaluate postpone ; ( xt )
+  :noname ';' parse evaluate postpone ; ( xt )
   swap >switch  ;
 
 ( [switch-test ) \ without syntactic sugar
@@ -8060,7 +8070,7 @@ need name>body
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220027
+  \ Last modified: 201604242202
 
   \ -----------------------------------------------------------
   \ Description
@@ -8079,6 +8089,11 @@ need name>body
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( select )
 
@@ -8189,11 +8204,11 @@ need name>body
 
 cr cr .( Running 'select' test...)
 
-cr  char a  .(   ) dup emit  select-test
-cr  char ,  .(   ) dup emit  select-test
-cr  char 8  .(   ) dup emit  select-test
-cr  char ?  .(   ) dup emit  select-test
-cr  char K  .(   ) dup emit  select-test
+cr  'a'  .(   ) dup emit  select-test
+cr  ','  .(   ) dup emit  select-test
+cr  '8'  .(   ) dup emit  select-test
+cr  '?'  .(   ) dup emit  select-test
+cr  'K'  .(   ) dup emit  select-test
 cr  0              dup 3 .r  select-test
 cr  127            dup 3 .r  select-test
 cr  128            dup 3 .r  select-test
@@ -8580,7 +8595,7 @@ variable times-xt  \ the _xt_ executed by `times`
 
   \ XXX UNDER DEVELOPMENT
   
-  \ Last modified: 201604032007
+  \ Last modified: 201604242201
 
   \ -----------------------------------------------------------
   \ Description
@@ -8625,6 +8640,9 @@ variable times-xt  \ the _xt_ executed by `times`
   \ 2015: Start.
   \
   \ 2016-04-03: Header reorganized after the original credit.
+  \
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library. Change the stack notation.
 
 ( life )
 
@@ -8664,15 +8682,15 @@ $10 CONSTANT Alive  \ 0y = not alive
   \ a life depends on the number of its next-door neighbors
 
   \ it dies if it has fewer than 2 neighbors
-: Lonely  ( char -- flag )  $12 < ;
+: Lonely  ( c -- f )  $12 < ;
 
   \ it dies if it has more than 3 neighbors
-: Crowded  ( char -- flag )  $13 > ;
+: Crowded  ( c -- f )  $13 > ;
 
-: -Sustaining  ( char -- flag )  DUP Lonely  SWAP Crowded  OR ;
+: -Sustaining  ( c -- f )  DUP Lonely  SWAP Crowded  OR ;
 
   \ it is born if it has exactly 3 neighbors
-: Quickening  ( char -- flag )  $03 = ;
+: Quickening  ( c -- f )  $03 = ;
 
 -->
 
@@ -8696,13 +8714,13 @@ $10 CONSTANT Alive  \ 0y = not alive
   2DUP Home+!  Neighbors+! ;
 
   \ mortal coils
-CHAR ? CONSTANT Soul  BL CONSTANT Body
+'?' CONSTANT Soul  BL CONSTANT Body
 
 -->
 
 ( life )
 
-: Home  ( char i -- )  How-Wide /MOD AT-XY  EMIT ;
+: Home  ( c i -- )  How-Wide /MOD AT-XY  EMIT ;
 
 : Is-Born  ( i -- )
   Soul OVER Home  1 SWAP Bureau-of-Vital-Statistics ;
@@ -8783,7 +8801,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 : Meditation  ( -- )  Images MS ;
 
   \ free will
-: Action  ( -- char )
+: Action  ( -- c )
   KEY? DUP
   IF  DROP KEY  DUP BL = IF  Creation  THEN
   THEN ;
@@ -8809,7 +8827,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604240101
+  \ Last modified: 201604242200
 
   \ -----------------------------------------------------------
   \ Description
@@ -8851,6 +8869,9 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
   \ graphic. Adapt to new version of `g-emit-0udg`.
   \
   \ 2016-04-24: Compact the UDG definitions with `0udg[`.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -8901,12 +8922,12 @@ code sync  ( -- )  78 c,  jpnext  end-code
   \ high part = bitmask
   \ low part = port of the keyboard row
 
-$01 $F7FE 2constant left1-key   char 1 cconstant left1-char
-$02 $F7FE 2constant right1-key  char 2 cconstant right1-char
+$01 $F7FE 2constant left1-key   '1' cconstant left1-char
+$02 $F7FE 2constant right1-key  '2' cconstant right1-char
   \ Player 1 keys.
 
-$10 $EFFE 2constant left2-key   char 6 cconstant left2-char
-$08 $EFFE 2constant right2-key  char 7 cconstant right2-char
+$10 $EFFE 2constant left2-key   '6' cconstant left2-char
+$08 $EFFE 2constant right2-key  '7' cconstant right2-char
   \ Player 2 keys.
 
 variable x  variable y
@@ -9635,7 +9656,7 @@ rows 2 / constant craft-y
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604022008
+  \ Last modified: 201604242142
 
   \ -----------------------------------------------------------
   \ Description
@@ -9676,6 +9697,12 @@ rows 2 / constant craft-y
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 .( tt )
 
@@ -9723,26 +9750,26 @@ variable wiping
   \ keys
 
 : spanish-dvorak-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] C [char] H [char] . [char] A bl edit-char  ;
+  'C' 'H' '.' 'A' bl edit-char  ;
   \ QWERTY layout, as found in many ZX Spectrum games.
 
 : dvorak-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] C [char] R [char] ' [char] A bl edit-char  ;
+  'C' 'R' ''' 'A' bl edit-char  ;
 
 : qwerty-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] O [char] P [char] Q [char] A bl edit-char ;
+  'O' 'P' 'Q' 'A' bl edit-char ;
   \ QWERTY layout, as found in many ZX Spectrum games.
 
 : cursor-digits-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] 5 [char] 8 [char] 7 [char] 6 bl edit-char  ;
+  '5' '8' '7' '6' bl edit-char  ;
   \ Cursor keys, actually the digits keys they are associated with.
 
 : sinclair1-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] 1 [char] 2 [char] 3 [char] 4  bl edit-char  ;
+  '1' '2' '3' '4'  bl edit-char  ;
   \ Sinclair 1 joystick.
 
 : sinclair2-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] 6 [char] 7 [char] 8 [char] 9  bl edit-char  ;  -->
+  '6' '7' '8' '9'  bl edit-char  ;  -->
   \ Sinclair 2 joystick.
 
 .( tt )
@@ -9845,14 +9872,14 @@ create 'pit /pit allot
   \ Empty the pit.
 
 : draw-bottom  ( -- )
-  deep -1 position  [char] + dup stone
-  wide 0 do  [char] = dup stone  loop
-  [char] + dup stone  ;
+  deep -1 position  '+' dup stone
+  wide 0 do  '=' dup stone  loop
+  '+' dup stone  ;
   \ Draw the bottom of the pit.
 
 : draw-frame  ( -- )
-  deep 0 do   i -1   position [char] | dup stone
-              i wide position [char] | dup stone
+  deep 0 do   i -1   position '|' dup stone
+              i wide position '|' dup stone
   loop  draw-bottom  ;  -->
   \ Draw the frame of the pit.
 
@@ -10324,7 +10351,7 @@ create board  squares allot
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604171550
+  \ Last modified: 201604242143
 
   \ -----------------------------------------------------------
   \ Description
@@ -10356,9 +10383,12 @@ create board  squares allot
   \ History
 
   \ 2015..2016: Start.
-
+  \
   \ 2016-04-17: Added the requisite of `recurse`, which is not
   \ in the kernel anymore. Updated the file headers.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( hanoi )
 
@@ -10397,7 +10427,7 @@ create PegStacks  30 chars allot
 
 : show-disk  ( level diameter peg -- )
   22 * 10 + over -  rot 10 swap - at-xy
-  2* [char] * emits ;
+  2* '*' emits ;
 
 : show-peg   ( peg -- )
   dup >r PegStack
@@ -12737,7 +12767,7 @@ need c!reset-bits   need c!reset-bits
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242157
 
   \ -----------------------------------------------------------
   \ Description
@@ -12756,8 +12786,11 @@ need c!reset-bits   need c!reset-bits
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ }}} =======================================================
-  \ Keyboard {{{
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( at-accept clear-accept set-accept )
 
@@ -13152,14 +13185,14 @@ drop
 
 create kk-chars
 
-char 1 c,  char 2 c,  char 3 c,  char 4 c,  char 5 c,
-char q c,  char w c,  char e c,  char r c,  char t c,
-char a c,  char s c,  char d c,  char f c,  char g c,
-128    c,  char z c,  char x c,  char c c,  char v c,
-char 0 c,  char 9 c,  char 8 c,  char 7 c,  char 6 c,
-char p c,  char o c,  char i c,  char u c,  char y c,
-129    c,  char l c,  char k c,  char j c,  char h c,
-130    c,  131    c,  char m c,  char n c,  char b c,
+'1' c,  '2' c,  '3' c,  '4' c,  '5' c,
+'q' c,  'w' c,  'e' c,  'r' c,  't' c,
+'a' c,  's' c,  'd' c,  'f' c,  'g' c,
+128 c,  'z' c,  'x' c,  'c' c,  'v' c,
+'0' c,  '9' c,  '8' c,  '7' c,  '6' c,
+'p' c,  'o' c,  'i' c,  'u' c,  'y' c,
+129 c,  'l' c,  'k' c,  'j' c,  'h' c,
+130 c,  131 c,  'm' c,  'n' c,  'b' c,
 
 ( pressed pressed? )
 
@@ -13430,6 +13463,11 @@ code inkey  ( -- c | 0 )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( y/n? y/n no? yes? )
 
@@ -13439,7 +13477,7 @@ code inkey  ( -- c | 0 )
 
 need value
 
-char Y value "y"  char N value "n"
+'Y' value "y"  'N' value "n"
   \ Default (uppercase) letters for "yes" and "no".
 
 : y/n?  ( c -- f )  dup "y" = swap "n" = or  ;
@@ -14970,7 +15008,7 @@ need alias
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242143
 
   \ -----------------------------------------------------------
   \ Description
@@ -14992,6 +15030,12 @@ need alias
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+
 ( standard-number-point? extended-number-point? )
 
 need [if]
@@ -14999,7 +15043,7 @@ need [if]
 [needed] classic-number-point? [if]
 
 : classic-number-point?  ( c -- f )
-  dup [char] : = swap [char] , - 4 u< or  ;
+  dup ':' = swap ',' - 4 u< or  ;
   \ doc{
   \
   \ standard-number-point?  ( c -- f )
@@ -15019,7 +15063,7 @@ need [if]
 [needed] extended-number-point? [if]
 
 : extended-number-point?  ( c -- f )
-  dup [char] : = swap [char] + - 5 u< or  ;
+  dup ':' = swap '+' - 5 u< or  ;
 
   \ doc{
   \
@@ -17151,7 +17195,7 @@ forth-wordlist set-current
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242144
 
   \ -----------------------------------------------------------
   \ Description
@@ -17183,6 +17227,8 @@ forth-wordlist set-current
 
   \ 2015-11-18: Start.
   \ 2015-11-21: Changes.
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( create-heap )
 
@@ -17328,7 +17374,7 @@ need reserve  need alias
 
 : .heap ( -- )
   heap-chunks @ 0 do
-    i used-chunk? if  [char] x  else  [char] -  then  emit
+    i used-chunk? if  'x'  else  '-'  then  emit
   loop  ;
 
   \ Print the map of the current heap. Occupied chunks are
@@ -17484,7 +17530,7 @@ variable code-bank#  3 code-bank# !
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604232035
+  \ Last modified: 201604242158
 
   \ -----------------------------------------------------------
   \ Description
@@ -17509,6 +17555,8 @@ variable code-bank#  3 code-bank# !
   \ 2015..2016: Main development.
   \ 2016-04-17: Added `-!`. Documented some words.
   \ 2016-04-23: Added `c-!`.
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( exchange )
 
@@ -17811,7 +17859,7 @@ need z80-asm  need [if]
   \ XXX FIXME
 
   \ XXX INFORMER
-  \ cr needed-word 2@ .s char < emit type char > emit cr
+  \ cr needed-word 2@ .s '<' emit type '>' emit cr
 
 [needed] c@test-bits [if]
 code c@test-bits  ( b1 ca -- b2 )
@@ -18183,7 +18231,7 @@ need bench{
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604011832
+  \ Last modified: 201604242145
 
   \ -----------------------------------------------------------
   \ Description
@@ -18199,27 +18247,33 @@ need bench{
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+
 ( number-base-bench )
 
   \ 2015-10-09
 
 : number-base-1  ( ca len -- ca' len' n )
   \ This is the current version defined in the kernel.
-  over c@ [char] $ = if  1 /string 16  exit  then
-  over c@ [char] % = if  1 /string  2  exit  then
-  over c@ [char] # = if  1 /string 10  exit  then  base @  ;
+  over c@ '$' = if  1 /string 16  exit  then
+  over c@ '%' = if  1 /string  2  exit  then
+  over c@ '#' = if  1 /string 10  exit  then  base @  ;
 
 : number-base-2  ( ca len -- ca' len' n )
   over c@ >r
-  r@ [char] $ = if  1 /string 16  rdrop exit  then
-  r@ [char] % = if  1 /string  2  rdrop exit  then
-  r> [char] # = if  1 /string 10  exit  then  base @  ;
+  r@ '$' = if  1 /string 16  rdrop exit  then
+  r@ '%' = if  1 /string  2  rdrop exit  then
+  r> '#' = if  1 /string 10  exit  then  base @  ;
 
 : number-base-3  ( ca len -- ca' len' n )
   over c@
-  dup >r [char] $ = if  1 /string 16  rdrop exit  then
-      r@ [char] % = if  1 /string  2  rdrop exit  then
-      r> [char] # = if  1 /string 10  exit  then  base @  ;
+  dup >r '$' = if  1 /string 16  rdrop exit  then
+      r@ '%' = if  1 /string  2  rdrop exit  then
+      r> '#' = if  1 /string 10  exit  then  base @  ;
 
 -->
 
@@ -18227,9 +18281,9 @@ need bench{
 
 : number-base-4  ( ca len -- ca' len' n )
   over c@
-  dup [char] $ = if  drop 1 /string 16  exit  then
-  dup [char] % = if  drop 1 /string  2  exit  then
-      [char] # = if  1 /string 10  exit  then  base @  ;
+  dup '$' = if  drop 1 /string 16  exit  then
+  dup '%' = if  drop 1 /string  2  exit  then
+      '#' = if  1 /string 10  exit  then  base @  ;
 
 need frames@  need reset-frames  defer (number-base)
 
@@ -20872,7 +20926,7 @@ code libzx-crnd  ( -- b )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242153
 
   \ -----------------------------------------------------------
   \ Description
@@ -20890,6 +20944,12 @@ code libzx-crnd  ( -- b )
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+ 
+  \ 2016-04-24: Remove `[char]` and `char`, which have been
+  \ moved to the library.
 
 ( alias-test synonym-test )
 
@@ -20986,16 +21046,16 @@ code if'-test  ( -- )
 
 : test  ( c -- )
   options[
-    char a option o1  char b option o2  char c option o3
+    'a' option o1  'b' option o2  'c' option o3
   ]options  ." end of test" cr   ;
 
-: retest  ( -- )  [char] a test ." end of retest" cr  ;
+: retest  ( -- )  'a' test ." end of retest" cr  ;
 
 : o0 ." default" ;
 
 : testd  ( c -- )
   options[
-    char a option o1  char b option o2  char c option o3
+    'a' option o1  'b' option o2  'c' option o3
     default-option o0
   ]options  ;
 
@@ -21036,7 +21096,7 @@ code if'-test  ( -- )
   \ Code from MPE Forth for TiniARM User Manual.
 
 : could-fail  ( -- c )
-  key dup [char] q =
+  key dup 'q' =
   if  -1 throw  then  ;
 
 : do-it  ( a b -- c )
@@ -21618,7 +21678,7 @@ need !dosvar  need @dosvar
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220028
+  \ Last modified: 201604242134
 
   \ -----------------------------------------------------------
   \ Description
@@ -21637,11 +21697,17 @@ need !dosvar  need @dosvar
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( parse-line )
+  \ -----------------------------------------------------------
+  \ History
 
-  \ XXX OLD -- 2015-09-13: moved to kernel
-  \ : source  ( -- a len )  \ Forth-94
-  \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+  \ 2015-09-13: Add `parse-char`.
+  \ 2015-10-06: Move `word` from the kernel.
+  \ 2015-10-18: Move `command` from the editor and rename it to
+  \ `parse-line`.
+  \ 2015-10-22: Fix `parse-char`.
+  \ 2016-04-24: Move `char` and `[char]` from the kernel.
+
+( parse-line )
 
 : parse-line  ( "ccc<eol>" -- ca len )
   source span @ min c/l min  >in @ span @ min /string
@@ -21651,8 +21717,9 @@ need !dosvar  need @dosvar
   \
   \ parse-line  ( "ccc<eol>" -- ca len )
   \
-  \ Get the text string until the end of line.  Note: this is a
-  \ factor of the editor's `text`.
+  \ Get the text string until the end of line.
+  \
+  \ This word is a useful factor of Specforth editor's `text`.
   \
   \ }doc
 
@@ -21728,6 +21795,7 @@ need !dosvar  need @dosvar
   ;
 
 -->
+
 ( save-input restore-input )
 
 : restore-input ( xn ... x1 n -- f )
@@ -21740,6 +21808,45 @@ need !dosvar  need @dosvar
      drop >in ! blk ! false
   then
   ;
+
+
+( char [char] )
+
+need cliteral
+
+: char  ( "name" -- c )  parse-name drop c@  ;
+  
+  \ doc{
+  \
+  \ char  ( "name" -- c )
+  \ 
+  \ Parse "name" and put the value of its first character on
+  \ the stack.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
+
+: [char]  ( "name" -- c )
+  char cliteral  ; immediate compile-only
+
+  \ doc{
+  \
+  \ [char]
+  \ 
+  \ Compilation: ( "name" -- )
+  \
+  \ Parse "name" and append the run-time semantics given below
+  \ to the current definition.
+  \
+  \ Run-time: ( -- c )
+  \
+  \ Place _c_, the value of the first character of _name_, on
+  \ the stack.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
   \ printing.control.fsb
@@ -22718,7 +22825,7 @@ need os-chars  need os-chans
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201604242159
 
   \ -----------------------------------------------------------
   \ Description
@@ -22739,6 +22846,12 @@ need os-chars  need os-chans
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( fzx-test )
 
@@ -22876,7 +22989,7 @@ create (fzx-emit)  ( -- )
 
   \ UNDEF_CHAR:
 
-  char ? 20 - a ld#  \ print '?' instead of invalid character
+  '?' 20 - a ld#  \ print '?' instead of invalid character
 
     then
 
@@ -23555,7 +23668,7 @@ code ambulance  ( n -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242147
 
   \ -----------------------------------------------------------
   \ Description
@@ -23575,6 +23688,11 @@ code ambulance  ( n -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( cslit csliteral c" )
 
@@ -23607,7 +23725,7 @@ code ambulance  ( n -- )
 
 : c"  ( Compilation: "ccc<quote>" -- )
       ( Run-time: -- ca )
-  [char] " parse postpone csliteral  ; immediate compile-only
+  '"' parse postpone csliteral  ; immediate compile-only
   \ doc{
   \
   \ c"  ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
@@ -23637,7 +23755,7 @@ code ambulance  ( n -- )
 
 : c"  ( Compilation: "ccc<quote>" -- )
       ( Run-time: -- ca )
-  [char] " parse postpone csliteral  ; immediate compile-only
+  '"' parse postpone csliteral  ; immediate compile-only
 
   \ vim: filetype=soloforth
   \ strings.escaped.fsb
@@ -23645,7 +23763,7 @@ code ambulance  ( n -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242153
 
   \ -----------------------------------------------------------
   \ Description
@@ -23664,6 +23782,11 @@ code ambulance  ( n -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]` and `char`, which have been
+  \ moved to the library.
 
 ( parse-escaped-string )
 
@@ -23689,14 +23812,14 @@ also escaped-voc definitions
   \ \f = form feed
   \ \l = line feed
   \ \n = new line (implementation dependent)
-char " 1 2constant q  13 1 2constant r  9 1 2constant t
+'"' 1 2constant q  13 1 2constant r  9 1 2constant t
   \ \q = double quote
   \ \r = carriage return
   \ \t = horizontal tab
 11 1 2constant v  0 1 2constant z
   \ \v = vertical tab
   \ \z = null character
-char " 1 2constant "  char \ 1 2constant \
+'"' 1 2constant "  '\' 1 2constant \
   \ \" = double quote
   \ \\ = backslash
 
@@ -23720,7 +23843,7 @@ only forth definitions  need char>string   need search-wordlist
 
 : unescape-char  ( c -- c1..cn n )
   dup char>string escaped-wordlist search-wordlist
-  if  nip execute  else  [char] \ 2  then  ;
+  if  nip execute  else  '\' 2  then  ;
   \ Translate a escaped char to a number of chars and their
   \ count.
   \ c1..cn = chars to make the string with
@@ -23729,8 +23852,8 @@ only forth definitions  need char>string   need search-wordlist
 
 : parse-escaped-string  ( "ccc<quote>"  -- ca len )
   0 0  \ dummy empty string to start with
-  begin  parse-char dup [char] " <>  while  \ not finished?
-    dup [char] \ =  \ possibly escaped char?
+  begin  parse-char dup '"' <>  while  \ not finished?
+    dup '\' =  \ possibly escaped char?
     if    drop parse-char unescape-char
     else  1  then  chars>string s+
   repeat  drop  ;
@@ -24183,7 +24306,7 @@ wid-of replaces-voc constant wid-subst
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242149
 
   \ -----------------------------------------------------------
   \ Description
@@ -24202,6 +24325,11 @@ wid-of replaces-voc constant wid-subst
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( s' )
 
@@ -24220,7 +24348,7 @@ wid-of replaces-voc constant wid-subst
   \ }doc
 
 : s'  ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
-  [char] ' parse-string  ; immediate
+  ''' parse-string  ; immediate
 
   \ vim: filetype=soloforth
   \ system_variables.fsb
@@ -25287,7 +25415,7 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604211847
+  \ Last modified: 201604242149
 
   \ -----------------------------------------------------------
   \ Description
@@ -25310,6 +25438,9 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ Latest changes
 
   \ 2016-04-21: 3 bytes shorter.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( where )
 
@@ -25328,7 +25459,7 @@ need [if]
     dup scr !
     ." Scr #" dec. cr
     swap c/l /mod c/l * rot block + c/l type cr
-    here c@ - spaces [char] ^ emit
+    here c@ - spaces '^' emit
   else  2drop  then  ;
 
   \ vim: filetype=soloforth
@@ -25337,7 +25468,7 @@ need [if]
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241346
+  \ Last modified: 201604242150
 
   \ -----------------------------------------------------------
   \ Description
@@ -25396,6 +25527,9 @@ need [if]
   \ development history of the project.
   \
   \ 2016-04-24: Add support for `2lit`.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( decode )
 
@@ -25506,8 +25640,8 @@ variable decode-address  \ in the word being decoded
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
       >body ( pfa+n pfa' ) dup indent+  body>name .name
-      key case  [char] q  of  sp0 @ sp! quit  endof
-                      bl  of  drop            endof
+      key case  'q' of  sp0 @ sp! quit  endof
+                bl  of  drop            endof
                 swap recurse  \ default
           endcase  decode-special  cell+  -1 decode-level +!
     repeat  indent >name .name
@@ -26217,7 +26351,7 @@ need wid>name  need get-order
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604122314
+  \ Last modified: 201604242150
 
   \ -----------------------------------------------------------
   \ Description
@@ -26243,13 +26377,16 @@ need wid>name  need get-order
   \ better for debugging.
   \
   \ 2016-04-12: Divided into 3 blocks, in order to reuse
-  \ `.depth` for the floating point `.fs`. Fixed the check:
-  \ the stacks are not printed when their depth is negative.
+  \ `.depth` for the floating point `.fs`. Fixed the check: the
+  \ stacks are not printed when their depth is negative.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( .depth )
 
 
-: .depth  ( n -- )  [char] < emit 0 .r [char] > emit space  ;
+: .depth  ( n -- )  '<' emit 0 .r '>' emit space  ;
 
 ( .s )
 

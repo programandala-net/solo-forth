@@ -22,6 +22,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( y/n? y/n no? yes? )
 
@@ -31,7 +36,7 @@
 
 need value
 
-char Y value "y"  char N value "n"
+'Y' value "y"  'N' value "n"
   \ Default (uppercase) letters for "yes" and "no".
 
 : y/n?  ( c -- f )  dup "y" = swap "n" = or  ;

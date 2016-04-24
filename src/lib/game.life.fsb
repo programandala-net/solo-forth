@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
   
-  \ Last modified: 201604032007
+  \ Last modified: 201604242201
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \ 2015: Start.
   \
   \ 2016-04-03: Header reorganized after the original credit.
+  \
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library. Change the stack notation.
 
 ( life )
 
@@ -89,15 +92,15 @@ $10 CONSTANT Alive  \ 0y = not alive
   \ a life depends on the number of its next-door neighbors
 
   \ it dies if it has fewer than 2 neighbors
-: Lonely  ( char -- flag )  $12 < ;
+: Lonely  ( c -- f )  $12 < ;
 
   \ it dies if it has more than 3 neighbors
-: Crowded  ( char -- flag )  $13 > ;
+: Crowded  ( c -- f )  $13 > ;
 
-: -Sustaining  ( char -- flag )  DUP Lonely  SWAP Crowded  OR ;
+: -Sustaining  ( c -- f )  DUP Lonely  SWAP Crowded  OR ;
 
   \ it is born if it has exactly 3 neighbors
-: Quickening  ( char -- flag )  $03 = ;
+: Quickening  ( c -- f )  $03 = ;
 
 -->
 
@@ -121,13 +124,13 @@ $10 CONSTANT Alive  \ 0y = not alive
   2DUP Home+!  Neighbors+! ;
 
   \ mortal coils
-CHAR ? CONSTANT Soul  BL CONSTANT Body
+'?' CONSTANT Soul  BL CONSTANT Body
 
 -->
 
 ( life )
 
-: Home  ( char i -- )  How-Wide /MOD AT-XY  EMIT ;
+: Home  ( c i -- )  How-Wide /MOD AT-XY  EMIT ;
 
 : Is-Born  ( i -- )
   Soul OVER Home  1 SWAP Bureau-of-Vital-Statistics ;
@@ -208,7 +211,7 @@ CHAR ? CONSTANT Soul  BL CONSTANT Body
 : Meditation  ( -- )  Images MS ;
 
   \ free will
-: Action  ( -- char )
+: Action  ( -- c )
   KEY? DUP
   IF  DROP KEY  DUP BL = IF  Creation  THEN
   THEN ;

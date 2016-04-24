@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242153
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,6 +22,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]` and `char`, which have been
+  \ moved to the library.
 
 ( parse-escaped-string )
 
@@ -47,14 +52,14 @@ also escaped-voc definitions
   \ \f = form feed
   \ \l = line feed
   \ \n = new line (implementation dependent)
-char " 1 2constant q  13 1 2constant r  9 1 2constant t
+'"' 1 2constant q  13 1 2constant r  9 1 2constant t
   \ \q = double quote
   \ \r = carriage return
   \ \t = horizontal tab
 11 1 2constant v  0 1 2constant z
   \ \v = vertical tab
   \ \z = null character
-char " 1 2constant "  char \ 1 2constant \
+'"' 1 2constant "  '\' 1 2constant \
   \ \" = double quote
   \ \\ = backslash
 
@@ -78,7 +83,7 @@ only forth definitions  need char>string   need search-wordlist
 
 : unescape-char  ( c -- c1..cn n )
   dup char>string escaped-wordlist search-wordlist
-  if  nip execute  else  [char] \ 2  then  ;
+  if  nip execute  else  '\' 2  then  ;
   \ Translate a escaped char to a number of chars and their
   \ count.
   \ c1..cn = chars to make the string with
@@ -87,8 +92,8 @@ only forth definitions  need char>string   need search-wordlist
 
 : parse-escaped-string  ( "ccc<quote>"  -- ca len )
   0 0  \ dummy empty string to start with
-  begin  parse-char dup [char] " <>  while  \ not finished?
-    dup [char] \ =  \ possibly escaped char?
+  begin  parse-char dup '"' <>  while  \ not finished?
+    dup '\' =  \ possibly escaped char?
     if    drop parse-char unescape-char
     else  1  then  chars>string s+
   repeat  drop  ;

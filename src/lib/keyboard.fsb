@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242157
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,8 +22,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ }}} =======================================================
-  \ Keyboard {{{
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( at-accept clear-accept set-accept )
 
@@ -418,14 +421,14 @@ drop
 
 create kk-chars
 
-char 1 c,  char 2 c,  char 3 c,  char 4 c,  char 5 c,
-char q c,  char w c,  char e c,  char r c,  char t c,
-char a c,  char s c,  char d c,  char f c,  char g c,
-128    c,  char z c,  char x c,  char c c,  char v c,
-char 0 c,  char 9 c,  char 8 c,  char 7 c,  char 6 c,
-char p c,  char o c,  char i c,  char u c,  char y c,
-129    c,  char l c,  char k c,  char j c,  char h c,
-130    c,  131    c,  char m c,  char n c,  char b c,
+'1' c,  '2' c,  '3' c,  '4' c,  '5' c,
+'q' c,  'w' c,  'e' c,  'r' c,  't' c,
+'a' c,  's' c,  'd' c,  'f' c,  'g' c,
+128 c,  'z' c,  'x' c,  'c' c,  'v' c,
+'0' c,  '9' c,  '8' c,  '7' c,  '6' c,
+'p' c,  'o' c,  'i' c,  'u' c,  'y' c,
+129 c,  'l' c,  'k' c,  'j' c,  'h' c,
+130 c,  131 c,  'm' c,  'n' c,  'b' c,
 
 ( pressed pressed? )
 

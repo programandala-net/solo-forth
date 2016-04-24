@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604242034
+; Last modified: 201604242134
 
 include version.z80s
 
@@ -2963,9 +2963,6 @@ find_name_from.ip_backup: equ $+1
 ;
 ; }doc
 
-  ; XXX -- can not be moved to the library because `header` uses
-  ; it.
-
   dw fetch_,find_name_from_  ; ( nt | 0 )
   dw dup_,zero_equals_  ; ( nt false | 0 true )
   dw question_exit_  ; ( nt )
@@ -4104,7 +4101,9 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _code_header two_r_fetch_,'2R@'
 
-  ; XXX TODO -- move to the library?
+  ; XXX TODO -- Move to the library? But the Z80 label
+  ; `two_fetch.hl` should be returned by a constant.
+  ; Alternative: write it in Forth.
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
@@ -7666,13 +7665,13 @@ search.string_1_addr equ $+1
   _colon_header not_understood_,'NOT-UNDERSTOOD'
 
   _literal error.not_understood
-  dw throw_
+  dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
   _colon_header compilation_only_,'COMPILATION-ONLY'
 
   _literal error.compilation_only
-  dw throw_
+  dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
   _colon_header nest_source_,'NEST-SOURCE',compile_only
@@ -8077,10 +8076,6 @@ endif
 
 ; XXX TODO -- Check what Forth-83 systems do when the search
 ; order is empty and a vocabulary is executed.
-
-; XXX REMARK -- This word can not be moved to the library,
-; because `root`, `forth` and `assembler` are vocabularies,
-; and they point to `do_vocabulary`:
 
   dw create_,wordlist_comma_
   dw paren_semicolon_code_
@@ -9801,8 +9796,8 @@ endif
 ; ----------------------------------------------
   _colon_header bracket_undefined_,'[UNDEFINED]',immediate
 
-  ; XXX TODO make this the main word, not `[defined]`, and move
-  ; `[defined]` to the library
+  ; XXX TODO make this the main word instead of `[defined]`, and
+  ; move `[defined]` to the library?
 
 ; doc{
 ;
@@ -9810,7 +9805,7 @@ endif
 ;
 ; ----
 ; : [undefined]  ( "name" -- f )
-;   [defined] 0=  ; immediate
+;   postpone [defined] 0=  ; immediate
 ; ----
 ;
 ; }doc
@@ -10839,7 +10834,7 @@ do_two_constant:
 ;
 ; }doc
 
-  ld hl,4
+  ld hl,$0004
   add hl,sp
   jp two_fetch.hl
 
@@ -11011,20 +11006,7 @@ throw.end:
   _colon_header abort_,'ABORT'
 
   _literal -1
-  dw throw_
-  ; No return from `-1 throw`, no need for `exit`.
-
-; ----------------------------------------------
-  _colon_header char_,'CHAR'
-
-  dw parse_name_,drop_,c_fetch_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header bracket_char_,'[CHAR]',immediate+compile_only
-
-  dw char_,literal_
-  dw exit_
+  dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
   _colon_header s_quote_,'S"',immediate

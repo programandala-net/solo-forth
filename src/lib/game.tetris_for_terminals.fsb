@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604022008
+  \ Last modified: 201604242142
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 .( tt )
 
@@ -91,26 +97,26 @@ variable wiping
   \ keys
 
 : spanish-dvorak-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] C [char] H [char] . [char] A bl edit-char  ;
+  'C' 'H' '.' 'A' bl edit-char  ;
   \ QWERTY layout, as found in many ZX Spectrum games.
 
 : dvorak-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] C [char] R [char] ' [char] A bl edit-char  ;
+  'C' 'R' ''' 'A' bl edit-char  ;
 
 : qwerty-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] O [char] P [char] Q [char] A bl edit-char ;
+  'O' 'P' 'Q' 'A' bl edit-char ;
   \ QWERTY layout, as found in many ZX Spectrum games.
 
 : cursor-digits-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] 5 [char] 8 [char] 7 [char] 6 bl edit-char  ;
+  '5' '8' '7' '6' bl edit-char  ;
   \ Cursor keys, actually the digits keys they are associated with.
 
 : sinclair1-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] 1 [char] 2 [char] 3 [char] 4  bl edit-char  ;
+  '1' '2' '3' '4'  bl edit-char  ;
   \ Sinclair 1 joystick.
 
 : sinclair2-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  [char] 6 [char] 7 [char] 8 [char] 9  bl edit-char  ;  -->
+  '6' '7' '8' '9'  bl edit-char  ;  -->
   \ Sinclair 2 joystick.
 
 .( tt )
@@ -213,14 +219,14 @@ create 'pit /pit allot
   \ Empty the pit.
 
 : draw-bottom  ( -- )
-  deep -1 position  [char] + dup stone
-  wide 0 do  [char] = dup stone  loop
-  [char] + dup stone  ;
+  deep -1 position  '+' dup stone
+  wide 0 do  '=' dup stone  loop
+  '+' dup stone  ;
   \ Draw the bottom of the pit.
 
 : draw-frame  ( -- )
-  deep 0 do   i -1   position [char] | dup stone
-              i wide position [char] | dup stone
+  deep 0 do   i -1   position '|' dup stone
+              i wide position '|' dup stone
   loop  draw-bottom  ;  -->
   \ Draw the frame of the pit.
 

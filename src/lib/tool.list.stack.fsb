@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604122314
+  \ Last modified: 201604242150
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,13 +29,16 @@
   \ better for debugging.
   \
   \ 2016-04-12: Divided into 3 blocks, in order to reuse
-  \ `.depth` for the floating point `.fs`. Fixed the check:
-  \ the stacks are not printed when their depth is negative.
+  \ `.depth` for the floating point `.fs`. Fixed the check: the
+  \ stacks are not printed when their depth is negative.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( .depth )
 
 
-: .depth  ( n -- )  [char] < emit 0 .r [char] > emit space  ;
+: .depth  ( n -- )  '<' emit 0 .r '>' emit space  ;
 
 ( .s )
 

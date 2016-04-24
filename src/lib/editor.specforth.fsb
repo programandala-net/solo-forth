@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604032014
+  \ Last modified: 201604242138
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
   \ History
 
   \ 2015-09-11: Adapted to Solo Forth.
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( editor )
 
@@ -111,7 +113,7 @@ variable r#
   \ as all statements move up one line.
 
 : m  ( n -- )
-  r# +! cr space #lead type [char] _ emit
+  r# +! cr space #lead type '_' emit
   #lag type #locate . drop  ;
   \ Move the cursor by _n_ characters. The position of the
   \ cursor on its line is shown by a "_" (underline).

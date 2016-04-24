@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241957
+  \ Last modified: 201604242142
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,9 @@
 
   \ 2016-04-24: Add `need :noname` and `need pick`, because
   \ those words have been moved from the kernel to the library.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( [switch switch] )
 
@@ -92,7 +95,7 @@ exit
 need :noname
 
 : run:  ( head n "ccc<semicolon>" -- )
-  :noname [char] ; parse evaluate postpone ; ( xt )
+  :noname ';' parse evaluate postpone ; ( xt )
   swap >switch  ;
 
 ( [switch-test ) \ without syntactic sugar

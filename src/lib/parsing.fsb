@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220028
+  \ Last modified: 201604242134
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,11 +22,17 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( parse-line )
+  \ -----------------------------------------------------------
+  \ History
 
-  \ XXX OLD -- 2015-09-13: moved to kernel
-  \ : source  ( -- a len )  \ Forth-94
-  \   blk @ ?dup if  block b/buf  else  tib #tib @  then  ;
+  \ 2015-09-13: Add `parse-char`.
+  \ 2015-10-06: Move `word` from the kernel.
+  \ 2015-10-18: Move `command` from the editor and rename it to
+  \ `parse-line`.
+  \ 2015-10-22: Fix `parse-char`.
+  \ 2016-04-24: Move `char` and `[char]` from the kernel.
+
+( parse-line )
 
 : parse-line  ( "ccc<eol>" -- ca len )
   source span @ min c/l min  >in @ span @ min /string
@@ -36,8 +42,9 @@
   \
   \ parse-line  ( "ccc<eol>" -- ca len )
   \
-  \ Get the text string until the end of line.  Note: this is a
-  \ factor of the editor's `text`.
+  \ Get the text string until the end of line.
+  \
+  \ This word is a useful factor of Specforth editor's `text`.
   \
   \ }doc
 
@@ -113,6 +120,7 @@
   ;
 
 -->
+
 ( save-input restore-input )
 
 : restore-input ( xn ... x1 n -- f )
@@ -125,5 +133,44 @@
      drop >in ! blk ! false
   then
   ;
+
+
+( char [char] )
+
+need cliteral
+
+: char  ( "name" -- c )  parse-name drop c@  ;
+  
+  \ doc{
+  \
+  \ char  ( "name" -- c )
+  \ 
+  \ Parse "name" and put the value of its first character on
+  \ the stack.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
+
+: [char]  ( "name" -- c )
+  char cliteral  ; immediate compile-only
+
+  \ doc{
+  \
+  \ [char]
+  \ 
+  \ Compilation: ( "name" -- )
+  \
+  \ Parse "name" and append the run-time semantics given below
+  \ to the current definition.
+  \
+  \ Run-time: ( -- c )
+  \
+  \ Place _c_, the value of the first character of _name_, on
+  \ the stack.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
 
   \ vim: filetype=soloforth

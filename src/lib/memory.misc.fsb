@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604232035
+  \ Last modified: 201604242158
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,8 @@
   \ 2015..2016: Main development.
   \ 2016-04-17: Added `-!`. Documented some words.
   \ 2016-04-23: Added `c-!`.
+  \ 2016-04-24: Remove `char`, which has been moved to the
+  \ library.
 
 ( exchange )
 
@@ -330,7 +332,7 @@ need z80-asm  need [if]
   \ XXX FIXME
 
   \ XXX INFORMER
-  \ cr needed-word 2@ .s char < emit type char > emit cr
+  \ cr needed-word 2@ .s '<' emit type '>' emit cr
 
 [needed] c@test-bits [if]
 code c@test-bits  ( b1 ca -- b2 )

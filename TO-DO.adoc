@@ -13,8 +13,7 @@
 
 Faster, Z80 versions of words that fetch from and store to memory banks.
 
-Move the following words to the library: `there`, `cliteral`,
-`2over`.
+Move the following words to the library: `there`, `catch`.
 
 Study how to move `line>string` and `undefined?` to the library.  They are not
 used in the kernel, but the are needed by the `need` utility.

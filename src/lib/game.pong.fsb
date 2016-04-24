@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604240101
+  \ Last modified: 201604242200
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,9 @@
   \ graphic. Adapt to new version of `g-emit-0udg`.
   \
   \ 2016-04-24: Compact the UDG definitions with `0udg[`.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -97,12 +100,12 @@ code sync  ( -- )  78 c,  jpnext  end-code
   \ high part = bitmask
   \ low part = port of the keyboard row
 
-$01 $F7FE 2constant left1-key   char 1 cconstant left1-char
-$02 $F7FE 2constant right1-key  char 2 cconstant right1-char
+$01 $F7FE 2constant left1-key   '1' cconstant left1-char
+$02 $F7FE 2constant right1-key  '2' cconstant right1-char
   \ Player 1 keys.
 
-$10 $EFFE 2constant left2-key   char 6 cconstant left2-char
-$08 $EFFE 2constant right2-key  char 7 cconstant right2-char
+$10 $EFFE 2constant left2-key   '6' cconstant left2-char
+$08 $EFFE 2constant right2-key  '7' cconstant right2-char
   \ Player 2 keys.
 
 variable x  variable y

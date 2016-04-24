@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242144
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,8 @@
 
   \ 2015-11-18: Start.
   \ 2015-11-21: Changes.
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( create-heap )
 
@@ -182,7 +184,7 @@ need reserve  need alias
 
 : .heap ( -- )
   heap-chunks @ 0 do
-    i used-chunk? if  [char] x  else  [char] -  then  emit
+    i used-chunk? if  'x'  else  '-'  then  emit
   loop  ;
 
   \ Print the map of the current heap. Occupied chunks are

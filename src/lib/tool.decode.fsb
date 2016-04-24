@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241346
+  \ Last modified: 201604242150
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,6 +62,9 @@
   \ development history of the project.
   \
   \ 2016-04-24: Add support for `2lit`.
+  \
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( decode )
 
@@ -172,8 +175,8 @@ variable decode-address  \ in the word being decoded
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
       >body ( pfa+n pfa' ) dup indent+  body>name .name
-      key case  [char] q  of  sp0 @ sp! quit  endof
-                      bl  of  drop            endof
+      key case  'q' of  sp0 @ sp! quit  endof
+                bl  of  drop            endof
                 swap recurse  \ default
           endcase  decode-special  cell+  -1 decode-level +!
     repeat  indent >name .name

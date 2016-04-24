@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242147
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
 
 ( cslit csliteral c" )
 
@@ -55,7 +60,7 @@
 
 : c"  ( Compilation: "ccc<quote>" -- )
       ( Run-time: -- ca )
-  [char] " parse postpone csliteral  ; immediate compile-only
+  '"' parse postpone csliteral  ; immediate compile-only
   \ doc{
   \
   \ c"  ( Compilation: "ccc<quote>" -- ) ( Run-time: -- ca )
@@ -85,6 +90,6 @@
 
 : c"  ( Compilation: "ccc<quote>" -- )
       ( Run-time: -- ca )
-  [char] " parse postpone csliteral  ; immediate compile-only
+  '"' parse postpone csliteral  ; immediate compile-only
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604242143
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,6 +25,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Remove `[char]`, which has been moved to the
+  \ library.
+
 ( standard-number-point? extended-number-point? )
 
 need [if]
@@ -32,7 +38,7 @@ need [if]
 [needed] classic-number-point? [if]
 
 : classic-number-point?  ( c -- f )
-  dup [char] : = swap [char] , - 4 u< or  ;
+  dup ':' = swap ',' - 4 u< or  ;
   \ doc{
   \
   \ standard-number-point?  ( c -- f )
@@ -52,7 +58,7 @@ need [if]
 [needed] extended-number-point? [if]
 
 : extended-number-point?  ( c -- f )
-  dup [char] : = swap [char] + - 5 u< or  ;
+  dup ':' = swap '+' - 5 u< or  ;
 
   \ doc{
   \
