@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-04-21
+" Updated:  2016-04-24
 
 " --------------------------------------------------------------
 " History
@@ -101,6 +101,8 @@ syn keyword soloforthDefine '
 syn keyword soloforthDefine ,
 syn keyword soloforthDefine /user
 syn keyword soloforthDefine 2constant
+syn keyword soloforthDefine 2lit
+syn keyword soloforthDefine 2literal
 syn keyword soloforthDefine 2to
 syn keyword soloforthDefine 2value
 syn keyword soloforthDefine 2variable
@@ -1135,6 +1137,8 @@ let b:current_syntax = "soloforth"
 "
 " 2016-04-21: Updated the kernel words related to user data
 " space.
+"
+" 2016-04-24: Add `2literal`, `2lit`.
 
 " --------------------------------------------------------------
 

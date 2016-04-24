@@ -162,5 +162,152 @@ variable here-backup
 : save-here  ( -- )  here here-backup !  ;
 : restore-here  ( -- )  here-backup there  ;
 
+  \ XXX TODO -- behead `here-backup`
+
+( ]l ]2l exec eval )
+
+need [if]
+
+[needed] ]l [if]
+
+: ]l  ( x -- )  ] postpone literal  ; immediate compile-only
+
+  \ doc{
+  \
+  \ ]l  ( x -- )
+  \
+  \ A short form of the idiom `] literal`.
+  \
+  \ }doc
+
+[then]
+
+[needed] ]2l [if]
+
+: ]2l  ( xd -- )  ] postpone 2literal  ; immediate compile-only
+
+  \ doc{
+  \
+  \ ]2l  ( xd -- )
+  \
+  \ A short form of the idiom `] 2literal`.
+  \
+  \ }doc
+
+[then]
+
+[needed] exec [if]
+
+: exec  ( "name" -- i*x )
+  parse-name find-name ?dup 0= #-13 ?throw  name> execute  ;
+
+  \ doc{
+  \
+  \ exec  ( "name" -- i*x )
+  \
+  \ Parse, find and execute "name".
+  \
+  \ }doc
+
+[then]
+
+[needed] eval [if]
+
+: eval  ( i*x "name" -- j*x )  parse-name evaluate  ;
+
+  \ doc{
+  \
+  \ exec  ( i*x "name" -- j*x )
+  \
+  \ Parse and evaluate "name".
+  \ 
+  \ This is a common factor of `[const]`, `[2const]` and
+  \ `[cconst]`.
+  \
+  \ }doc
+
+[then]
+
+( [const] [2const] [cconst] )
+
+need eval  need [if]
+
+[needed] [const] [if]
+
+: [const]  ( "name" -- )
+  eval postpone literal  ; immediate compile-only
+
+  \ doc{
+  \
+  \ [const]  ( "name" -- )
+  \
+  \ Evaluate "name". Then compile the single-cell value left on
+  \ the stack.
+  \
+  \ This word is intented to compile constants as literals, in
+  \ order to gain execution speed.
+  \
+  \ Usage example:
+  \ 
+  \ ----
+  \ 48 constant zx
+  \ : test  ( -- )  [const] zx .  ;
+  \ ----
+  \
+  \ }doc
+
+[then]
+
+[needed] [2const] [if]
+
+: [2const]  ( "name" -- )
+  eval postpone 2literal  ; immediate compile-only
+
+  \ doc{
+  \
+  \ [2const]  ( "name" -- )
+  \
+  \ Evaluate "name". Then compile the double-cell value left on
+  \ the stack.
+  \
+  \ This word is intented to compile double-cell constants as
+  \ literals, in order to gain execution speed.
+  \
+  \ Usage example:
+  \ 
+  \ ----
+  \ 48. 2constant zx
+  \ : test  ( -- )  [2const] zx d.  ;
+  \ ----
+  \
+  \ }doc
+
+[then]
+
+[needed] [cconst] [if]
+
+: [cconst]  ( "name" -- )
+  eval postpone cliteral  ; immediate compile-only
+
+  \ doc{
+  \
+  \ [cconst]  ( "name" -- )
+  \
+  \ Evaluate "name". Then compile the char left
+  \ on the stack.
+  \
+  \ This word is intented to compile char constants as literals, in
+  \ order to gain execution speed.
+  \
+  \ Usage example:
+  \
+  \ ----
+  \ 48 cconstant zx
+  \ : test  ( -- )  [cconst] zx emit  ;
+  \ ----
+  \
+  \ }doc
+
+[then]
 
   \ vim: filetype=soloforth

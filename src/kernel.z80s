@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604231734
+; Last modified: 201604241358
 
 include version.z80s
 
@@ -1157,13 +1157,8 @@ endif
 
 push_hlde:
   push de
-
 push_hl:
   push hl
-
-  ; XXX TODO -- replace `jp push_hl` (3 bytes, 10+11 T) with
-  ; faster `push hl` and `jp (ix)` (3 bytes in total 11+8 T).
-
 next:
   ; Execute the word whose xt is in the address pointed by the bc register.
   ; Forth: W  <-- (IP)
@@ -1711,10 +1706,15 @@ push_a:
   ld l,a
   inc bc
   ld a,(bc)
-  ld h,a
+  ld h,a ; hl = high part
   inc bc
-  push hl
-  jp lit_
+  ld a,(bc)
+  ld e,a
+  inc bc
+  ld a,(bc)
+  ld d,a ; de = low part
+  inc bc
+  jp push_hlde
 
 ; ----------------------------------------------
   _code_header lit_,'LIT',compile_only
@@ -5479,6 +5479,8 @@ source.other:
 ; ----------------------------------------------
   _colon_header there_,'THERE'
 
+  ; XXX TODO -- move to the library?
+
 ; doc{
 ;
 ; there  ( a -- )
@@ -5540,20 +5542,11 @@ source.other:
 ; ----------------------------------------------
   _colon_header two_comma_,'2,'
 
-if size_optimization
-
-  dw comma_,comma_
-  dw exit_
-
-else
-
   dw here_,two_store_
 two_comma.allot:
   _literal 2*cell
   dw allot_
   dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header comma_,','
@@ -7785,8 +7778,7 @@ search.string_1_addr equ $+1
 ;
 ; }doc
 
-  dw compile_,two_lit_
-  dw swap_,comma_,comma_
+  dw compile_,two_lit_,two_comma_
   dw exit_
 
 ; ----------------------------------------------

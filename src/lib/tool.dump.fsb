@@ -28,6 +28,9 @@
   \ 2016-04-15: Fixed `dump` (the loop printed one byte more
   \ than requested). Improved `ascii-type` (now also characters
   \ above 127 are printed as dots, not masked).
+  \
+  \ 2016-04-24: Fix `dump`: nothing was printed when length was
+  \ less than 8.
 
 ( ascii-type )
 
@@ -58,7 +61,7 @@ need 16hex.  need ascii-type
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
 : dump  ( ca len -- )
-  8 2dup mod - + 8 / 1- 0
+  8 max 8 2dup mod - + 8 / 1- 0
   ?do
     cr dup 16hex.
     8 0 do  i over + @ flip 16hex.  cell +loop
