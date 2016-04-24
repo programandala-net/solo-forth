@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604180106
+  \ Last modified: 201604241841
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,10 +32,14 @@
   \ first version, just in case.
   \
   \ 2016-04-18: Removed the old first version.
+  \
+  \ 2016-04-24: Add `need nextname`, because `nextname` has been
+  \ moved from the kernel to the library.
+
 
 ( synonym )
 
-need alias
+need alias  need nextname
 
 : synonym  ( "newname" "oldname" -- )
   parse-name nextname ' dup >r alias

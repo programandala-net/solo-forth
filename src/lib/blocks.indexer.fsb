@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031430
+  \ Last modified: 201604241840
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,14 +37,19 @@
   \ History
 
   \ 2016-04-02: Start.
+  \
   \ 2016-04-03: First working version.
+  \
+  \ 2016-04-24: Add `need nextname`, because `nextname` has been
+  \ moved from the kernel to the library.
+
 
 ( indexer )
 
 only forth definitions
 
 need loader  need s=  need alias  need string/
-need get-order  need set-order
+need get-order  need set-order  need nextname
 
 wordlist constant index-wordlist
   \ Words of the blocks index.

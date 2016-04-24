@@ -141,9 +141,9 @@ syn keyword soloforthDefine input-stream-header
 syn keyword soloforthDefine interpret
 syn keyword soloforthDefine lit
 syn keyword soloforthDefine literal
-syn keyword soloforthDefine nextname
-syn keyword soloforthDefine nextname-header
-syn keyword soloforthDefine nextname-string
+" syn keyword soloforthDefine nextname
+" syn keyword soloforthDefine nextname-header
+" syn keyword soloforthDefine nextname-string
 syn keyword soloforthDefine noname?
 syn keyword soloforthDefine parse
 syn keyword soloforthDefine parse-name

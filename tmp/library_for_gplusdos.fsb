@@ -2071,7 +2071,7 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031430
+  \ Last modified: 201604241840
 
   \ -----------------------------------------------------------
   \ Description
@@ -2105,14 +2105,19 @@ vsize vector vec1  vsize vector vec2  vsize vector vec3
   \ History
 
   \ 2016-04-02: Start.
+  \
   \ 2016-04-03: First working version.
+  \
+  \ 2016-04-24: Add `need nextname`, because `nextname` has been
+  \ moved from the kernel to the library.
+
 
 ( indexer )
 
 only forth definitions
 
 need loader  need s=  need alias  need string/
-need get-order  need set-order
+need get-order  need set-order  need nextname
 
 wordlist constant index-wordlist
   \ Words of the blocks index.
@@ -4213,12 +4218,87 @@ need name>>  need !s
   \ to the word it's associated to.
 
   \ vim: filetype=soloforth
+  \ define.nextname.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604152121
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words to define words with specific names.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+( nextname )
+
+2variable nextname-string
+
+  \ doc{
+  \
+  \ next-name  ( -- a )
+  \
+  \ A double variable that may hold the address and length of a
+  \ name to be used by the next defining word.  This variable is
+  \ set by `nextname`.
+  \
+  \ }doc
+
+: nextname-header  ( -- )
+  nextname-string 2@ header, default-header  ;
+  
+  \ doc{
+  \
+  \ nextname-header  ( -- )
+  \
+  \ Create a dictionary header using the name string set by
+  \ `nextname`.  Then restore the default behaviour of `header`.
+  \
+  \
+  \ }doc
+
+: nextname  ( ca len -- )
+  nextname-string 2!
+  ['] nextname-header ['] header defer!  ;
+
+  \ doc{
+  \
+  \ nextname  ( ca len -- )
+  \
+  \ The next defined word will have the name _ca len_; the
+  \ defining word will leave the input stream alone. `nextname`
+  \ works with any defining word.
+  \
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
+
+  \ Credit:
+  \ This word is borrowed from Gforth.
+
+  \ vim: filetype=soloforth
   \ define.synonym.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604180106
+  \ Last modified: 201604241841
 
   \ -----------------------------------------------------------
   \ Description
@@ -4247,10 +4327,14 @@ need name>>  need !s
   \ first version, just in case.
   \
   \ 2016-04-18: Removed the old first version.
+  \
+  \ 2016-04-24: Add `need nextname`, because `nextname` has been
+  \ moved from the kernel to the library.
+
 
 ( synonym )
 
-need alias
+need alias  need nextname
 
 : synonym  ( "newname" "oldname" -- )
   parse-name nextname ' dup >r alias

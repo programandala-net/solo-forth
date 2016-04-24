@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604241735
+; Last modified: 201604241844
 
 include version.z80s
 
@@ -6968,23 +6968,6 @@ parse.end:
   dw 0,0
 
 ; ----------------------------------------------
-  _two_variable_header nextname_string_,'NEXTNAME-STRING'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; next-name  ( -- a )
-;
-; A double variable that may hold the address and length of a
-; name to be used by the next defining word.  This variable is
-; set by `nextname`.
-;
-; }doc
-
-  dw 0,0
-
-; ----------------------------------------------
   _defer_header header_,'HEADER',,input_stream_header_
 
 ; doc{
@@ -7051,59 +7034,6 @@ parse.end:
   _literal input_stream_header_
   _literal header_
   dw defer_store_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header nextname_header_,'NEXTNAME-HEADER'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; nextname-header  ( -- )
-
-; Create a dictionary header using the name string set by
-; `nextname`.  Then restore the default behaviour of `header`.
-;
-; ---- : nextname-header  ( -- ) nextname-string 2@ header,
-; default-header  ; ----
-;
-; }doc
-
-  dw nextname_string_,two_fetch_,header_comma_
-  dw default_header_ ; restore the default behaviour of `header`
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header nextname_,'NEXTNAME'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; nextname  ( ca len -- )
-;
-; The next defined word will have the name _ca len_; the
-; defining word will leave the input stream alone. `nextname`
-; works with any defining word.
-;
-; ----
-; : nextname  ( ca len -- )
-;   nextname-string 2!
-;   ['] nextname-header ['] header defer!  ;
-; ----
-;
-; Origin: Gforth.
-;
-; }doc
-
-  ; Credit:
-  ; This word is borrowed from Gforth.
-
-  dw nextname_string_,two_store_
-  _literal nextname_header_
-  _literal header_
-  dw defer_store_ ; change the default behaviour of `header`
   dw exit_
 
 ; ----------------------------------------------
