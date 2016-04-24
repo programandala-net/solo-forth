@@ -118,6 +118,7 @@ syn keyword soloforthDefine compile,
 syn keyword soloforthDefine compile-only
 syn keyword soloforthDefine compile-only-mask
 syn keyword soloforthDefine compile-only?
+syn keyword soloforthDefine code-field,
 syn keyword soloforthDefine constant
 syn keyword soloforthDefine create
 syn keyword soloforthDefine cvariable
@@ -127,6 +128,7 @@ syn keyword soloforthDefine defer@
 syn keyword soloforthDefine defined
 syn keyword soloforthDefine defined?
 syn keyword soloforthDefine dliteral
+syn keyword soloforthDefine docolon
 syn keyword soloforthDefine does>
 syn keyword soloforthDefine header
 syn keyword soloforthDefine header,
@@ -142,6 +144,7 @@ syn keyword soloforthDefine literal
 syn keyword soloforthDefine nextname
 syn keyword soloforthDefine nextname-header
 syn keyword soloforthDefine nextname-string
+syn keyword soloforthDefine noname?
 syn keyword soloforthDefine parse
 syn keyword soloforthDefine parse-name
 syn keyword soloforthDefine parse-string
@@ -1138,7 +1141,8 @@ let b:current_syntax = "soloforth"
 " 2016-04-21: Updated the kernel words related to user data
 " space.
 "
-" 2016-04-24: Add `2literal`, `2lit`.
+" 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
+" `noname?`.
 
 " --------------------------------------------------------------
 

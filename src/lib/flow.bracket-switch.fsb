@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604241710
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,6 +22,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Add `need :noname`, because `:noname` has been
+  \ moved from the kernel to the library.
 
 ( [switch switch] )
 
@@ -84,11 +89,15 @@ exit
 
   \ XXX TODO -- `run:`
 
+need :noname
+
 : run:  ( head n "ccc<semicolon>" -- )
   :noname [char] ; parse evaluate postpone ; ( xt )
   swap >switch  ;
 
 ( [switch-test ) \ without syntactic sugar
+
+need :noname
 
 : one    ( -- )  ." unu " ;
 : two    ( -- )  ." du "  ;

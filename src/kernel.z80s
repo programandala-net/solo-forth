@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604241652
+; Last modified: 201604241708
 
 include version.z80s
 
@@ -4651,31 +4651,6 @@ do_colon:
 ; The idea for this variable was taken from hForth.
 
   dw false
-
-; ----------------------------------------------
-  _colon_header colon_no_name_,':NONAME',immediate
-
-; doc{
-;
-; :noname  ( -- xt )
-;
-; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
-;
-; ----
-; }doc
-
-  ; Credit:
-  ; Code from the Afera library.
-
-  ; XXX TODO move to the library
-
-  dw here_ ; xt
-  dw store_csp_
-  dw lit_,do_colon
-  dw code_field_comma_ ; create the code field
-  dw noname_question_,on_
-  dw right_bracket_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header finish_code_,'FINISH-CODE',compile_only

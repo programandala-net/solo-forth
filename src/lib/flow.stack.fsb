@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604241713
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,7 +22,6 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
 
 ( cs-pick cs-roll cs-swap cs-drop )
 
@@ -94,13 +93,13 @@ need alias  need pick  need roll
   \ item becomes the top.  An ambiguous condition exists if the
   \ control-flow stack is empty before `cs-pop` is executed.
 
-  \ XXX TODO implement this in the kernel:
+  \ XXX TODO implement this:
 
-  : : ( "name" -- ) ... ( !csp bal off) !cfs ;
-  : :noname ( -- xt ) ... ( xt ) ( !csp bal off) !cfs ;
+  \  : : ( "name" -- ) ... ( !csp bal off) !cfs ;
+  \  : :noname ( -- xt ) ... ( xt ) ( !csp bal off) !cfs ;
 
-  \ start Forth with control flow base set to a safe value
-  : cold ( -- ) ... !cfs ;
+  \ start Forth with control flow base set to a safe value:
+  \  : cold ( -- ) ... !cfs ;
 
 ( cs-pick cs-roll )
 

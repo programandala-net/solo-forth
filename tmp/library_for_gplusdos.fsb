@@ -4076,6 +4076,56 @@ need name>>  need !s
   \ }doc
 
   \ vim: filetype=soloforth
+  \ define.colon-no-name.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604241708
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `:name`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Moved `:noname` from the library.
+
+( :noname )
+
+  \ Credit:
+  \
+  \ Code adapted from the Afera library.
+
+: :noname  ( -- xt )
+  here !csp docolon code-field,
+  noname? on  ]  ;
+
+  \ XXX TODO -- documentation
+
+  \ doc{
+  \
+  \ :noname  ( -- xt )
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
   \ define.deferred.fsb
   \
   \ This file is part of Solo Forth
@@ -5897,7 +5947,7 @@ need cs-push  need cs-pop
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604241710
 
   \ -----------------------------------------------------------
   \ Description
@@ -5916,6 +5966,11 @@ need cs-push  need cs-pop
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Add `need :noname`, because `:noname` has been
+  \ moved from the kernel to the library.
 
 ( [switch switch] )
 
@@ -5978,11 +6033,15 @@ exit
 
   \ XXX TODO -- `run:`
 
+need :noname
+
 : run:  ( head n "ccc<semicolon>" -- )
   :noname [char] ; parse evaluate postpone ; ( xt )
   swap >switch  ;
 
 ( [switch-test ) \ without syntactic sugar
+
+need :noname
 
 : one    ( -- )  ." unu " ;
 : two    ( -- )  ." du "  ;
@@ -7946,7 +8005,7 @@ cr  128            dup 3 .r  select-test
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604241713
 
   \ -----------------------------------------------------------
   \ Description
@@ -7965,7 +8024,6 @@ cr  128            dup 3 .r  select-test
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
 
 ( cs-pick cs-roll cs-swap cs-drop )
 
@@ -8037,13 +8095,13 @@ need alias  need pick  need roll
   \ item becomes the top.  An ambiguous condition exists if the
   \ control-flow stack is empty before `cs-pop` is executed.
 
-  \ XXX TODO implement this in the kernel:
+  \ XXX TODO implement this:
 
-  : : ( "name" -- ) ... ( !csp bal off) !cfs ;
-  : :noname ( -- xt ) ... ( xt ) ( !csp bal off) !cfs ;
+  \  : : ( "name" -- ) ... ( !csp bal off) !cfs ;
+  \  : :noname ( -- xt ) ... ( xt ) ( !csp bal off) !cfs ;
 
-  \ start Forth with control flow base set to a safe value
-  : cold ( -- ) ... !cfs ;
+  \ start Forth with control flow base set to a safe value:
+  \  : cold ( -- ) ... !cfs ;
 
 ( cs-pick cs-roll )
 
@@ -13468,10 +13526,15 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \ History
  
   \ 2015-11-14: Adapted from the original code.
+  \
   \ 2016-03-24: An alternative implementation with `:noname`.
+  \
+  \ 2016-04-24: Add `need :noname`, because `:noname` has been
+  \ moved from the kernel to the library.
 
 ( local )
 
+need :noname
 
 :noname  \ Compilation: ( -- xt )
          \ Run-time:    ( -- ) ( R: a x -- )
@@ -24981,6 +25044,7 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ Compile debugging code.
   \ This word was inspired by Gforth's `~~`.
 
+  \ vim: filetype=soloforth
   \ tool.debug.where.fsb
   \
   \ This file is part of Solo Forth

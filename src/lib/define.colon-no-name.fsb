@@ -1,0 +1,50 @@
+  \ define.colon-no-name.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604241708
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `:name`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Moved `:noname` from the library.
+
+( :noname )
+
+  \ Credit:
+  \
+  \ Code adapted from the Afera library.
+
+: :noname  ( -- xt )
+  here !csp docolon code-field,
+  noname? on  ]  ;
+
+  \ XXX TODO -- documentation
+
+  \ doc{
+  \
+  \ :noname  ( -- xt )
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

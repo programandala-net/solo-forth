@@ -69,3 +69,4 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ Compile debugging code.
   \ This word was inspired by Gforth's `~~`.
 
+  \ vim: filetype=soloforth
