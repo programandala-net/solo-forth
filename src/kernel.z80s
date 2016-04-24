@@ -7561,24 +7561,6 @@ search.string_1_addr equ $+1
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header c_literal_,'CLITERAL',immediate+compile_only
-
-; doc{
-;
-; cliteral  ( b -- )
-;
-; If compiling, then compile the stack value _b_ as a 8-bit literal.
-; `cliteral` does the same than `literal` but saves one byte of
-; dictionary space.
-;
-; }doc
-
-  ; XXX TODO -- move to the library?
-
-  dw compile_,c_lit_,c_comma_
-  dw exit_
-
-; ----------------------------------------------
 
   ; XXX TODO not used yet
   ; XXX TODO rename to `byte?` (there's a `char?` used by

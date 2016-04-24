@@ -2298,7 +2298,7 @@ forth-wordlist set-current
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604172130
+  \ Last modified: 201604242056
 
   \ -----------------------------------------------------------
   \ Description
@@ -2318,9 +2318,21 @@ forth-wordlist set-current
   \ this license.  There is no warranty.
 
   \ -----------------------------------------------------------
-  \ Latest changes
+  \ History
 
-  \ 2016-04-17: Added `name>>`.
+  \ 2015-06-04: Add `[if] [else] [then]`, adapted from Afera.
+  \ 2015-06-17: Add `[true]`, `[false]`.
+  \ 2015-06-25: Finish `[if] [else] [then]`.
+  \ 2015-10-22: Rename words that convert header addresses.
+  \ 2015-10-24: Move `body>name`, `name>link`, `link>name` and
+  \ `>>link` from the kernel.
+  \ 2015-10-29: Move `smudge` and `smudged` from the kernel.
+  \ 2015-11-13: Move `?pairs` from the kernel.
+  \ 2016-03-19: Add `save-here` and `restore-here`.
+  \ 2016-04-17: Add `name>>`.
+  \ 2016-04-24: Add `]l`, `]2l`, `exec`, `eval`.
+  \ 2016-04-24: Add `[const]`, `[2const]`, `[cconst]`.
+  \ 2016-04-24: Move `cliteral` from the kernel.
 
 ( [false] [true] )
 
@@ -2604,6 +2616,23 @@ need eval  need [if]
   \ }doc
 
 [then]
+
+( cliteral )
+
+: cliteral  ( b -- )  compile clit c,  ; immediate compile-only
+
+  \ doc{
+  \
+  \ cliteral  ( b -- )
+  \
+  \ Compile _b_ in the current definition.
+  \
+  \ This word does the same than `literal` but saves one byte
+  \ of data space.
+  \
+  \ Origin: Comus.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
   \ data.array.noble.fsb
