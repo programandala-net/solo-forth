@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-22
+:revdate: 2016-04-24
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -13,7 +13,7 @@
 
 Faster, Z80 versions of words that fetch from and store to memory banks.
 
-Move the following words to the library: `there`, `;code`, `cliteral`,
+Move the following words to the library: `there`, `cliteral`,
 `2over`.
 
 Study how to move `line>string` and `undefined?` to the library.  They are not

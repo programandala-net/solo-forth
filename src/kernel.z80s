@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604242023
+; Last modified: 201604242034
 
 include version.z80s
 
@@ -6251,29 +6251,6 @@ postpone.end:
   dw from_r_
   dw last_,fetch_,from_name_,one_plus_
   dw store_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header semicolon_code_,';CODE',immediate+compile_only
-
-; XXX TODO move to the library?
-; XXX TODO -- documentation
-; doc{
-;
-; ;code  ( -- )
-;
-; Stop compilation and terminate a new defining word by
-; compiling the run-time routine `(;code)`.
-;
-; ----
-; : ;code  ( -- )
-;   postpone (;code)  finish-code  ;
-; ----
-;
-; }doc
-
-  dw compile_,paren_semicolon_code_
-  dw finish_code_
   dw exit_
 
 ; ----------------------------------------------
