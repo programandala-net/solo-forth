@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241710
+  \ Last modified: 201604241957
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,8 +25,8 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-24: Add `need :noname`, because `:noname` has been
-  \ moved from the kernel to the library.
+  \ 2016-04-24: Add `need :noname` and `need pick`, because
+  \ those words have been moved from the kernel to the library.
 
 ( [switch switch] )
 
@@ -37,7 +37,7 @@
   \ Original code by Rick VanNorman, published on Forth
   \ Dimensions (volume 20, number 3, pages 19..22, 1998-09).
 
-need link@  need link,
+need link@  need link,  need pick
 
 : switcher  ( i*x n head -- j*x )
   dup cell+ @ >r  \ save default xt

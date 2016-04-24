@@ -3657,7 +3657,7 @@ need xstack
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604241952
 
   \ -----------------------------------------------------------
   \ Description
@@ -3676,7 +3676,19 @@ need xstack
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( 2nip )  \ ==datastack==
+  \ -----------------------------------------------------------
+  \ History
+  
+  \ 2015-06-22: Add `2nip`.
+  \ 2015-10-16: Move `roll` from the kernel.
+  \ 2015-11-09: Add `swapped`.
+  \ 2015-11-22: Add `3drop`, `4drop`.
+  \ 2015-12-16: Add `nup`, `drup`, `dip`.
+  \ 2015-12-22: Move `3dup` from the assembler and rewrite in Z80.
+  \ 2016-02-26: Add `ndrop`, `2ndrop`.
+  \ 2016-04-24: Move `pick` from the kernel.
+
+( 2nip )
 
   \ Credit:
   \
@@ -3698,13 +3710,23 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   \
   \ }doc
 
-( roll )
+( pick )
+
+code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
+  E1 c,  29 c,  39 c,  C3 c, fetchhl ,
+    \ pop hl
+    \ add hl,hl
+    \ add hl,sp
+    \ jp fetch.hl
+  end-code
 
   \ doc{
   \
-  \ roll  ( xu xn .. x0 u -- xn .. x0 xu )
+  \ pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ }doc
+
+( roll )
 
   \ Credit:
   \
@@ -3756,6 +3778,12 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
   jpnext
 
   end-code
+
+  \ doc{
+  \
+  \ roll  ( xu xn .. x0 u -- xn .. x0 xu )
+  \
+  \ }doc
 
 ( 3drop 4drop )
 
@@ -6028,7 +6056,7 @@ need cs-push  need cs-pop
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241710
+  \ Last modified: 201604241957
 
   \ -----------------------------------------------------------
   \ Description
@@ -6050,8 +6078,8 @@ need cs-push  need cs-pop
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-24: Add `need :noname`, because `:noname` has been
-  \ moved from the kernel to the library.
+  \ 2016-04-24: Add `need :noname` and `need pick`, because
+  \ those words have been moved from the kernel to the library.
 
 ( [switch switch] )
 
@@ -6062,7 +6090,7 @@ need cs-push  need cs-pop
   \ Original code by Rick VanNorman, published on Forth
   \ Dimensions (volume 20, number 3, pages 19..22, 1998-09).
 
-need link@  need link,
+need link@  need link,  need pick
 
 : switcher  ( i*x n head -- j*x )
   dup cell+ @ >r  \ save default xt
@@ -6214,7 +6242,7 @@ code call  ( a -- )
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604021926
+  \ Last modified: 201604241958
 
   \ -----------------------------------------------------------
   \ Description
@@ -6233,6 +6261,12 @@ code call  ( a -- )
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
 
 ( case )
 
@@ -6451,7 +6485,7 @@ need within
 
 ( any-of )
 
-need any?
+need any?  need pick
 
 : (any-of)  ( x0 x1..xn n -- x0 x0 | x0 0 )
   dup 1+ pick >r any? r> tuck and  ;
@@ -18060,7 +18094,7 @@ need bench{
 
   \ vim: filetype=soloforth
 
-  \ meta.benchmark.fsb
+  \ meta.benchmark.misc.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
@@ -22969,6 +23003,12 @@ code fzx-emit  ( c -- )
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
+
 ( sound-register-port sound-write-port )
 
 65533 constant sound-register-port
@@ -22996,7 +23036,7 @@ need !p  need sound-register-port  need sound-write-port
 ( music )
 
 need ms  vocabulary music  current @  also music definitions
-need roll
+need roll  need pick
 
   \ Credit:
   \
@@ -23625,7 +23665,7 @@ need parse-escaped-string
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220134
+  \ Last modified: 201604242001
 
   \ -----------------------------------------------------------
   \ Description
@@ -23648,6 +23688,8 @@ need parse-escaped-string
   \ Latest changes
 
   \ 2016-04-22: Add `s""`, moved from the kernel.
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
 
 ( s= )
 
@@ -23691,6 +23733,8 @@ need parse-escaped-string
   \ Credit:
   \
   \ Code adapted from Afera.
+
+need pick
 
 [defined] lengths
 ?\ : lengths   2over nip over  ;
@@ -23789,7 +23833,9 @@ need s=  need [if]
   \ string-prefix-question.fs).
 
 [needed] prefix? [if]
+
 : prefix?  ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> s=  ;
+
 [then]
 
   \ Credit:
@@ -23797,9 +23843,13 @@ need s=  need [if]
   \ Code from Galope (module string-suffix-question.fs).
 
 [needed] suffix? [if]
+
+need pick
+
 : suffix? ( ca1 len1 ca2 len2 -- f )
   \ Is string _ca2 len2_ the end of string _ca1 len1_?
   2swap dup 3 pick - /string s=  ;
+
 [then]
 
 ( -prefix )

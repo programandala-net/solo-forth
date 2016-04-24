@@ -11,7 +11,15 @@
 
 .2016-04-24:
 
-Add `noname`, after `nextname`.
+Faster, Z80 versions of words that fetch from and store to memory banks.
+
+Move to the library: `there`, `;code`, `cliteral`,
+`2over`, `2rdrop`.
+
+Study how to move `line>string` and `undefined?` to the library.  They are not
+used in the kernel, but the are needed by the `need` utility.
+
+Add `noname`, analogous to `nextname`, after Gforth.
 
 .2016-04-16:
 

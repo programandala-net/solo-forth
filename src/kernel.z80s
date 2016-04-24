@@ -4024,23 +4024,6 @@ u_m_slash_mod.4:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header pick_,'PICK'
-
-; doc{
-;
-; pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
-;
-; }doc
-
-  ; XXX TODO move to the library, use `fetchhl`.
-  ; but maybe `acceptx` needs `pick`.
-
-  pop hl
-  add hl,hl
-  add hl,sp
-  jp fetch.hl
-
-; ----------------------------------------------
   _code_header to_r_,'>R'
 
 ; doc{
@@ -4078,6 +4061,8 @@ u_m_slash_mod.4:
 
 ; ----------------------------------------------
   _code_header two_r_drop_,'2RDROP'
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;
@@ -4135,6 +4120,8 @@ u_m_slash_mod.4:
 
 ; ----------------------------------------------
   _code_header two_r_fetch_,'2R@'
+
+  ; XXX TODO -- move to the library?
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
@@ -4479,6 +4466,9 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- rename
+  ; XXX TODO -- move to the library, when possible.
+
   pop hl ; address
   pop de ; e = bitmask
   ld a,e
@@ -4497,6 +4487,9 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- rename
+  ; XXX TODO -- move to the library, when possible.
+
   pop hl ; address
   pop de ; e = bitmask
   ld a,e
@@ -4514,6 +4507,9 @@ endif
 ; Reset the bits at _ca_ specified by the bitmask _b_.
 ;
 ; }doc
+
+  ; XXX TODO -- rename
+  ; XXX TODO -- move to the library, when possible.
 
   pop hl ; address
   pop de ; e = bitmask
@@ -6644,7 +6640,7 @@ simple_accept.end
 ; variable have been received. One or more nulls are added at
 ; the end of the text.
 ;
-  ; XXX TODO move to the library
+  ; XXX TODO move to the library, when possible
 
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer

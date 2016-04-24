@@ -22,6 +22,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
+
 ( sound-register-port sound-write-port )
 
 65533 constant sound-register-port
@@ -49,7 +55,7 @@ need !p  need sound-register-port  need sound-write-port
 ( music )
 
 need ms  vocabulary music  current @  also music definitions
-need roll
+need roll  need pick
 
   \ Credit:
   \

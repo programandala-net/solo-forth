@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220134
+  \ Last modified: 201604242001
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,8 @@
   \ Latest changes
 
   \ 2016-04-22: Add `s""`, moved from the kernel.
+  \ 2016-04-24: Add `need pick`, because `pick` has been moved
+  \ from the kernel to the library.
 
 ( s= )
 
@@ -69,6 +71,8 @@
   \ Credit:
   \
   \ Code adapted from Afera.
+
+need pick
 
 [defined] lengths
 ?\ : lengths   2over nip over  ;
@@ -167,7 +171,9 @@ need s=  need [if]
   \ string-prefix-question.fs).
 
 [needed] prefix? [if]
+
 : prefix?  ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> s=  ;
+
 [then]
 
   \ Credit:
@@ -175,9 +181,13 @@ need s=  need [if]
   \ Code from Galope (module string-suffix-question.fs).
 
 [needed] suffix? [if]
+
+need pick
+
 : suffix? ( ca1 len1 ca2 len2 -- f )
   \ Is string _ca2 len2_ the end of string _ca1 len1_?
   2swap dup 3 pick - /string s=  ;
+
 [then]
 
 ( -prefix )

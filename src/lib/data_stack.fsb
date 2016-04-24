@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604241952
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,7 +22,19 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( 2nip )  \ ==datastack==
+  \ -----------------------------------------------------------
+  \ History
+  
+  \ 2015-06-22: Add `2nip`.
+  \ 2015-10-16: Move `roll` from the kernel.
+  \ 2015-11-09: Add `swapped`.
+  \ 2015-11-22: Add `3drop`, `4drop`.
+  \ 2015-12-16: Add `nup`, `drup`, `dip`.
+  \ 2015-12-22: Move `3dup` from the assembler and rewrite in Z80.
+  \ 2016-02-26: Add `ndrop`, `2ndrop`.
+  \ 2016-04-24: Move `pick` from the kernel.
+
+( 2nip )
 
   \ Credit:
   \
@@ -44,13 +56,23 @@ code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
   \
   \ }doc
 
-( roll )
+( pick )
+
+code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
+  E1 c,  29 c,  39 c,  C3 c, fetchhl ,
+    \ pop hl
+    \ add hl,hl
+    \ add hl,sp
+    \ jp fetch.hl
+  end-code
 
   \ doc{
   \
-  \ roll  ( xu xn .. x0 u -- xn .. x0 xu )
+  \ pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ }doc
+
+( roll )
 
   \ Credit:
   \
@@ -102,6 +124,12 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
   jpnext
 
   end-code
+
+  \ doc{
+  \
+  \ roll  ( xu xn .. x0 u -- xn .. x0 xu )
+  \
+  \ }doc
 
 ( 3drop 4drop )
 
