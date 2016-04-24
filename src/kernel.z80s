@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604241358
+; Last modified: 201604241652
 
 include version.z80s
 
@@ -1739,45 +1739,11 @@ push_a:
 ; An 8-bit variable holding the value of the default bank.  Note
 ; this variable must be set with `c!` and fetched with `c@`.
 ;
+; See: `set-default-bank`, `get-default-bank`.
+;
 ; }doc
 
   dw address_of_default_bank
-
-; ----------------------------------------------
-  _code_header set_default_bank_,'SET-DEFAULT-BANK'
-
-  ; XXX TMP --
-
-; doc{
-;
-; set-default-bank  ( +n -- )
-;
-; Set _+n_ (0..7) as the default memory bank to be paged at
-; $C000..0xFFFF.
-;
-; }doc
-
-  pop hl
-  ld a,l
-  ld (address_of_default_bank),a
-  _jp_next
-
-; ----------------------------------------------
-  _code_header get_default_bank_,'GET-DEFAULT-BANK'
-
-  ; XXX TMP --
-
-; doc{
-;
-; get-default-bank  ( -- +n )
-;
-; Get the current default bank _+n_ (0..7) paged at
-; $C000..0xFFFF.
-;
-; }doc
-
-  ld a,(address_of_default_bank)
-  jp push_a
 
 ; ----------------------------------------------
   _code_header default_bank_,'DEFAULT-BANK'
