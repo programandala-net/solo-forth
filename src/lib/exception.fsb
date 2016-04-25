@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604141453
+  \ Last modified: 201604250856
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,9 @@
   \ the headers and documentation.  Renamed `(.throw)` to
   \ `.throw-message`, and `msg-scr` to `error-messages-block`.
   \ Fixed `error>ordinal`.
+  \
+  \ 2016-04-25: Add carriage return before the exception
+  \ message in `.throw-message`.
 
 ( abort" )
 
@@ -108,7 +111,7 @@ s" Standard error codes" located error-messages-block !
 
 : .throw-message  ( n -- )
   error-messages-block @
-  if    error>line error-messages-block @ .line space
+  if    cr error>line error-messages-block @ .line space
   else  .throw#  then  ;
 
 ' .throw-message ' .throw defer!

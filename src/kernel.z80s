@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604250848
+; Last modified: 201604250902
 
 include version.z80s
 
@@ -7219,7 +7219,7 @@ uppers.do:
 error.message:
   dw parsed_name_,two_fetch_,cr_,type_ ; last parsed word
   dw paren_dot_quote_
-  _string '? '
+  _string ' ? '
   dw dot_throw_,paren_abort_
   ; No return from `(abort)`.
 
@@ -9036,7 +9036,7 @@ endif
 ; }doc
 
   dw paren_dot_quote_
-  _string "\rException #"
+  _string "\r\\ #" ; carriage return, backslash, space and hash
   dw dec_dot_
   dw exit_
 
