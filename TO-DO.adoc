@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-24
+:revdate: 2016-04-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -9,11 +9,18 @@
 == Misc ==
 // {{{
 
+.2016-04-25:
+
+Finish `marker`.
+
+Benchmark the system without constants `0`, `1` and `2`.
+
 .2016-04-24:
 
-Faster, Z80 versions of words that fetch from and store to memory banks.
+Write faster, Z80 versions of words that fetch from and store to memory banks.
 
-Move the following words to the library: `there`, `catch`.
+Words that can be moved to the library: `there`, `catch`, `printer`, `?\`,
+`[defined]`, `[undefined]`.
 
 Study how to move `line>string` and `undefined?` to the library.  They are not
 used in the kernel, but the are needed by the `need` utility.

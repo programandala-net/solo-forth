@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242056
+  \ Last modified: 201604250135
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,9 @@
   \ 2016-04-24: Add `]l`, `]2l`, `exec`, `eval`.
   \ 2016-04-24: Add `[const]`, `[2const]`, `[cconst]`.
   \ 2016-04-24: Move `cliteral` from the kernel.
+  \ 2016-04-24: Mave `n,` from module "tool.marker.fsb".
+  \ 2016-04-25: Simplify `exec`, move `possibly` from the
+  \ module "tool.marker.fsb".
 
 ( [false] [true] )
 
@@ -208,10 +211,19 @@ need [if]
 
 [then]
 
+( possibly exec eval )
+
+  \ Credit:
+  \
+  \ Code of `possibly` adapted from Wil Baden.
+
+: possibly  ( "name" -- )
+  defined ?dup if  name> execute  then  ;
+
 [needed] exec [if]
 
 : exec  ( "name" -- i*x )
-  parse-name find-name ?dup 0= #-13 ?throw  name> execute  ;
+  defined ?dup 0= #-13 ?throw  name> execute  ;
 
   \ doc{
   \
@@ -322,9 +334,22 @@ need eval  need [if]
 
 [then]
 
-( cliteral )
+( n, cliteral )
+
+need [if]
+
+[needed] cliteral [if]
 
 : cliteral  ( b -- )  compile clit c,  ; immediate compile-only
+
+[then]
+
+[needed] n, [if]
+
+: n,  ( x1..xn n -- )  0 ?do  ,  loop  ;
+  \ Compile _n_ cells.
+
+[then]
 
   \ doc{
   \

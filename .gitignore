@@ -1,5 +1,7 @@
 _doc/
 _meta/
-solo-forth*.sna
-solo-forth*.szx
-solo-forth*.z80
+*.sna
+*.szx
+*.z80
+*.mgt
+tmp/
