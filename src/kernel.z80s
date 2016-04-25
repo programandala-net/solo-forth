@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604250902
+; Last modified: 201604260152
 
 include version.z80s
 
@@ -7289,7 +7289,7 @@ error.message:
   dw zero_branch_,header_comma.continue
   ; the word is not unique in `current`
   ; ( ca len xt )
-  dw to_name_,dot_name_
+  dw to_name_,cr_,dot_name_
   _literal error.not_unique
   dw dot_throw_ ; XXX TMP -- `warning`?
 
