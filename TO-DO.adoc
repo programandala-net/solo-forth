@@ -11,6 +11,9 @@
 
 .2016-04-25:
 
+Idea: Add `where` to the default exception message. In order to save space,
+`where` should be in the library and patch itself into the default message.
+
 Finish `marker`.
 
 Benchmark the system without constants `0`, `1` and `2`.
