@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603252238
+  \ Last modified: 201604262155
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-09: First version, adapted from Galope.
 
 ( begin-module: begin-module public private end-module )
 

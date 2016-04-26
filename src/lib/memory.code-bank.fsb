@@ -3,7 +3,9 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160325
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 20160326
 
   \ -----------------------------------------------------------
   \ Description
@@ -24,6 +26,10 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-03-19: First version.
 
 ( code-bank )
 
@@ -48,9 +54,9 @@ variable code-bank#  3 code-bank# !
   \ End compiling code into the code bank.
 
 : ?bank  ( -- )  bank-start here u< #-276 ?throw  ;
-  \ Issue error -276 if the dictionary has reached
-  \ the zone of memory banks. This check is required after
-  \ compiling code that manipulates memory banks.
+  \ If the dictionary has reached the zone of memory banks,
+  \ throw error #-276; else do nothing.  This check is required
+  \ after compiling code that manipulates memory banks.
 
 : code-bank-caller  ( i*x a "name" -- j*x )
   create ?bank ,

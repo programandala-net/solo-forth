@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604250121
+  \ Last modified: 201604251942
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,115 @@
   \ 2016-04-25: First working version of `marker`. Move
   \ `possibly` to the module "compilation.fsb".
 
+( marker )
+
+  \ XXX TODO -- save and restore also the nt associated (+4):
+  \ |===
+  \ | +0 | _nt_ of last definition
+  \ | +2 | _wid|0_, next wordlist in chain, or zero
+  \ | +4 | _nt|0_, word list name pointer, or zero
+  \ |===
+
+: wordlists,  ( -- )
+  voc-link @ begin
+    dup cell- @  ( a nt ) , @
+  ?dup 0= until  ;
+
+  \ doc{
+  \
+  \ wordlists,  ( -- )
+  \
+  \ Store the latest definition of every word list in the data
+  \ space.
+  \
+  \ }doc
+
+: @wordlists  ( a -- )
+  voc-link @ begin
+    2dup  swap @ swap cell- !
+    swap cell+ swap  @
+  ?dup 0= until  drop  ;
+
+  \ doc{
+  \
+  \ @wordlists  ( a -- )
+  \
+  \ Fetch the latest definition of every word list from _a_.
+  \
+  \ }doc
+
+-->
+
+( marker )
+
+  \ Credit:
+  \
+  \ Code partly inspired by m3forth's `marker`:
+  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
+
+need get-order  need @cell+  need nn,  need nn@
+
+: @order  ( a -- )  nn@ set-order  ;
+
+: unmarker  ( a -- )
+  dup there
+  @cell+ np!  @cell+ last !  @cell+ lastxt !  @cell+ voc-link !
+  @cell+ set-current
+  dup dup @ 1+ cells + >r  @order  r> @wordlists  ;
+
+  \ doc{
+  \
+  \ unmarker  ( a -- )
+  \
+  \ Set the data-space pointer to _a_ and restore the names
+  \ pointer, the latest definition pointers, the word lists
+  \ pointer, the compilation word list, the search order and
+  \ the configuration of word lists that were saved at _a_ by
+  \ `marker,`.
+  \
+  \ This word is a factor of `marker`.
+  \
+  \ }doc
+
+: order,  ( -- )  get-order nn,  ;
+
+: marker,  ( -- a )
+  here  np@ ,  last @ ,  lastxt @ ,  voc-link @ ,
+        get-current ,  order,  wordlists,  ;
+        
+  \ doc{
+  \
+  \ marker,  ( -- a )
+  \
+  \ Store the names pointer, the latest definition pointers,
+  \ the word lists pointer, the current compilation word list,
+  \ the search order and the configuration of word lists at the
+  \ current data-space pointer, and return its address _a_, for
+  \ later restoration by `unmarker`.
+  \
+  \ This word is a factor of `marker`.
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+: marker  ( "name" -- )
+  marker, create ,  does>  ( -- )  ( pfa ) @ unmarker  ;
+
+  \ doc{
+  \
+  \ marker  ( "name" -- )
+  \
+  \ Create a definition "name". When "name" is executed, it
+  \ will restore the data-space pointer, the word lists
+  \ pointer, the compilation word list, the search order and
+  \ the configuration of word lists to the state they had just
+  \ prior to the definition of "name".
+  \
+  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
 ( anew )
 
 need possibly  need marker
@@ -51,240 +160,5 @@ need possibly  need marker
   \ possible
 
 : anew  ( "name" -- )  >in @  possibly  >in !  marker  ;
-
-( marker )
-
-  \ XXX TODO -- third approach, works fine, but doesn't save
-  \ all data yet
-
-  \ Credit;
-  \
-  \ Code based on m3forth
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
-
-need get-order
-
-  \ XXX TODO -- Include the latest words from all word lists.
-  \ Now only those words whose word lists are in the search
-  \ order are included.
-  \
-  \ XXX TODO -- Include `last` and `lastxt`.
-
-: marker,  ( -- a )
-  here  np@ ,  voc-link @ ,  get-current ,
-        get-order dup , 0 ?do  dup , @ ,  loop  ;
-
-  \ doc{
-  \
-  \ marker,  ( -- a )
-  \
-  \ Store
-  \ the names pointer,
-  \ the word lists pointer,
-  \ the current compilation word list
-  \ and
-  \ the current search order
-  \ at the current data-space pointer,
-  \ and return its address _a_,
-  \ for later restoration by `unmarker`.
-  \
-  \ This word is a factor of `marker`.
-  \
-  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
-  \
-  \ }doc
-
-: unmarker  ( a -- )
-  dup there  dup @ np! cell+  dup @ voc-link ! cell+
-  dup @ set-current cell+
-  dup @ >r r@ cells 2* + cell-
-  r@ 0 ?do
-    dup dup @ swap cell+ @ over ! swap [ 2 cells ] literal -
-  loop
-  drop r> set-order  ;
-
-  \ doc{
-  \
-  \ unmarker  ( a -- )
-  \
-  \ Set
-  \ the data-space pointer to _a_
-  \ and restore
-  \ the names pointer,
-  \ the word lists pointer,
-  \ the compilation word list
-  \ and the
-  \ search order
-  \ that were saved at _a_ by `marker,`.
-  \
-  \ This word is a factor of `marker`.
-  \
-  \ }doc
-
-: marker  ( "name" -- )
-  marker, create ,  does>  ( -- ) ( pfa ) @ unmarker  ;
-
-  \ doc{
-  \
-  \ marker  ( "name" -- )
-  \
-  \ Create a definition "name". When "name" is executed, it
-  \ will restore the data-space pointer, the word lists
-  \ pointer, the compilation word list and search order to the
-  \ state they had just prior to the definition of "name".
-  \
-  \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
-  \
-  \ }doc
-
-( save-voc-links restore-voc-links )
-
-  \ XXX UNDER DEVELOPMENT -- to include into `marker`
-
-: save-voc-links  ( -- )
-  voc-link @ begin
-    dup cell- @  ( a nt ) , @
-  ?dup 0= until  ;
-  \ Save the latest definition of every vocabulary.
-
-: restore-voc-links  ( a -- )
-  voc-link @ begin
-    2dup  swap @ swap cell- !
-    swap cell+ swap  @
-  ?dup 0= until  drop  ;
-  \ Restore the latest definition of every vocabulary.
-
-( marker )
-
-  \ XXX OLD -- second approach, unfinished
-
-: marker,  ( -- a )
-  here  voc-link @ dup ,
-  begin
-    dup cell- @  ( a nt ) swap @
-  dup 0= until  drop
-  np@ ,  ;
-  \ Compile the data required by a marker and return its
-  \ address.
-
-: unmarker  ( a -- )
-  ;
-  \ Restore the data preserved at _a_ by a marker word.
-
-: marker  ( "name" -- )
-  marker, create ,  does>  ( -- ) ( pfa )  @ unmarker  ;
-  \ Create a definition for "name" that will remove itself and
-  \ everything defined after it, restoring all dictionary
-  \ allocation and search order pointers to the state they had
-  \ just prior to the definition of "name".
-
-( marker )
-
-  \ XXX OLD -- first approach, unfinished
-
-  \ XXX TODO -- add search order
-  \ XXX TODO -- add latest of all vocs
-
-: get-every-latest  ( -- nt0..ntn | nt )
-  voc-link @ begin
-    dup cell - @  ( a nt ) swap @
-  dup 0= until  drop  ;
-  \ Get the latest definition of every vocabulary.
-
-: set-every-latest  ( nt0..ntn | nt -- )
-  voc-link @ begin
-    dup cell - @  ( a nt ) swap @
-  dup 0= until  drop  ;
-  \ Set the latest definition of every vocabulary.
-
-: marker@  ( -- x1..xn1 n1 nt1..ntn2 n2 )
-  depth >r  here np@ voc-link @
-  depth r> - get-every-latest  ;
-  \ Get the data a marker word must preserve.
-  \ n = number of data cells on the stack
-
-: marker!  ( a -- )
-  dup @ dup voc-link !  cell+ dup @ np!  cell+ @ there  ;
-  \ Restore the data preserved by a marker word.
-
--->
-
-( marker )
-
-need n,
-
-: marker  ( "name" -- )
-  marker@ create n,  does>  ( -- ) ( pfa )  marker!  ;
-  \ Create a definition for "name" that will remove itself and
-  \ everything defined after it, restoring all dictionary
-  \ allocation and search order pointers to the state they had
-  \ just prior to the definition of "name".
-
-( m3forth-marker )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ 2016-01-01: example taken from m3forth
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
-
-need get-order
-
-: MARKER ( "name" -- )
-  here
-  get-current ,
-  get-order dup , 0 ?do dup , @ , loop
-  create ,
-  does> @ dup \ only
-  dup @ set-current cell+
-  dup @ >r r@ cells 2* + 1 cells - r@ 0
-  ?do dup dup @ swap cell+ @ over ! swap 2 cells - loop
-  drop r> set-order
-  there
-  ;
-
-( eforth-marker )
-
-  \ Code from eForth, for reference.
-
-: _MARKER ( -- ) ( R: dfa -- ) \ ???
-
-  R> 2@ ( * ) DUP @ FOLLOWER !  DUP CONTEXT
-
-  BEGIN >R CELL+ DUP @ DUP R@ ! WHILE R> CELL+ REPEAT
-  ( search order )
-
-  CELL+ DUP 2@ CURRENT 2!  CELL+ DUP @ ( cur wid & head )
-
-  BEGIN >R  CELL+ DUP @ R@ !  R> CELL+ @ ?DUP 0= UNTIL
-  ( wid last na's )
-
-  R> 2DROP ( * ) DP 2! ; COMPILE-ONLY
-
-: MARKER ( "name" -- ) \ ???
-  ALIGN DP 2@ ( * ) FOLLOWER @ ,  CONTEXT
-  BEGIN DUP @ DUP , WHILE CELL+ REPEAT  DROP ( search order )
-  CURRENT 2@ , DUP , ( cur wid & head )
-  BEGIN DUP @ , CELL+ @ ?DUP 0= UNTIL ( wid last na's )
-  ['] _MARKER : REVEAL COMPILE, ( * ) , , ;
-
-( gforth-marker )
-
-  \ Code from Gforth, for reference:
-
-: marker,
-  here included-files-mark , dup , voclink @ , voclink
-  BEGIN  @ dup
-  WHILE  dup 0 8 + - 4 + @ ,
-  REPEAT
-  drop udp @ , here 147940 , compile-prim1 finish-code ;
-
-: marker
-  marker, Create , 1990263700 (does>2) ;
-
-( lina-marker )
-
-
-: MARKER  CREATE   DOES>   BODY>   'FORGET-VOC FOR-VOCS
-  >NFA @ DP ! ;
 
   \ vim: filetype=soloforth

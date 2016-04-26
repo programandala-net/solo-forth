@@ -48,9 +48,6 @@
 
   \ XXX TODO -- `get-order` here and `set-order` at the end.
 
-  \ .( in z80-asm latest is ) latest .name cr key drop
-  \ XXX INFORMER
-
 only forth definitions
 
 need ?pairs  need 3dup
