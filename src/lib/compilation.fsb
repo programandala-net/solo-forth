@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604262114
+  \ Last modified: 201604270150
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,6 +46,7 @@
   \ 2016-04-26: Fix `restore-here`. Add `name>interpret`,
   \ `name>compile`.  Move `current-latest` from the kernel,
   \ formerly called `latest`.
+  \ 2016-04-27: Add `comp'`, `[comp']`.
 
 ( [false] [true] )
 
@@ -98,10 +99,7 @@ need s=
 [unneeded] name>>
 ?\ : name>>  ( nt -- xtp )  [ 2 cells ] literal -  ;
 
-( name>interpret name>compile )
-
-  \ XXX UNDER DEVELOPMENT
-  \ XXX TODO -- test
+( name>interpret name>compile comp' [comp'] )
 
 : name>interpret  ( nt -- xt | 0 )
   dup name> swap compile-only? 0= and  ;
@@ -110,29 +108,65 @@ need s=
   \
   \ name>interpret  ( nt -- xt | 0 )
   \
-  \ Return a _xt_ that represents the interpretation semantics
-  \ of the word _nt_. If _nt_ has no interpretation
-  \ semantics, return zero.
+  \ Return _xt_ that represents the interpretation semantics of
+  \ the word _nt_. If _nt_ has no interpretation semantics,
+  \ return zero.
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
   \ }doc
 
-: name>compile  ( nt -- x xt )
-  dup name> swap immediate?  if    ['] execute
-                             else  ['] compile,  then  ;
+[needed] name>interpret ?exit
+
+: (comp')  ( nt -- xt )
+  immediate?  if    ['] execute
+              else  ['] compile,  then  ;
+
+: name>compile  ( nt -- x xt )  dup name> swap (comp')  ;
 
   \ doc{
   \
   \ name>compile  ( nt -- x xt )
   \
-  \ Return _x xt_ that represents the compilation semantics
-  \ of the word _nt_. The  returned _xt_ has the stack
-  \ effect ( i*x  x -- j*x  ).  Executing _xt_ consumes
+  \ Compilation token _x xt_ represents the compilation
+  \ semantics of the word _nt_. The  returned _xt_ has the
+  \ stack effect ( i*x  x -- j*x  ).  Executing _xt_ consumes
   \ _x_ and performs the compilation semantics of the word
   \ represented by _nt_.
   \
   \ Origin: Forth-2012 (TOOLS EXT).
+  \
+  \ }doc
+
+[needed] name>compile ?exit
+
+: comp'  ( "name" -- x xt )
+  defined dup ?defined name>compile  ;
+
+  \ doc{
+  \
+  \ comp'  ( "name" -- x xt )
+  \
+  \ Compilation token _x xt_ represents the compilation
+  \ semantics of "name".
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
+
+[needed] comp' ?exit
+
+: [comp']  ( Compilation: "name" -- ) ( Run-time: -- x xt )
+  comp' postpone 2literal  ; immediate compile-only
+
+  \ doc{
+  \
+  \ [comp']  ( Compilation: "name" -- ) ( Run-time: -- x xt )
+  \
+  \ Compilation token _x xt_ represents the compilation
+  \ semantics of "name".
+  \
+  \ Origin: Gforth.
   \
   \ }doc
 

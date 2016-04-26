@@ -108,17 +108,18 @@ syn keyword soloforthDefine 2value
 syn keyword soloforthDefine 2variable
 syn keyword soloforthDefine :noname
 syn keyword soloforthDefine ;
+syn keyword soloforthDefine ?defined
 syn keyword soloforthDefine ]
 syn keyword soloforthDefine alias
 syn keyword soloforthDefine cconstant
 syn keyword soloforthDefine clit
 syn keyword soloforthDefine cliteral
+syn keyword soloforthDefine code-field,
 syn keyword soloforthDefine compile
 syn keyword soloforthDefine compile,
 syn keyword soloforthDefine compile-only
 syn keyword soloforthDefine compile-only-mask
 syn keyword soloforthDefine compile-only?
-syn keyword soloforthDefine code-field,
 syn keyword soloforthDefine constant
 syn keyword soloforthDefine create
 syn keyword soloforthDefine cvariable
@@ -126,7 +127,6 @@ syn keyword soloforthDefine defer
 syn keyword soloforthDefine defer!
 syn keyword soloforthDefine defer@
 syn keyword soloforthDefine defined
-syn keyword soloforthDefine defined?
 syn keyword soloforthDefine dliteral
 syn keyword soloforthDefine docolon
 syn keyword soloforthDefine does>
@@ -1146,6 +1146,8 @@ let b:current_syntax = "soloforth"
 "
 " 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
 " `noname?`, `last`, `lastxt`, `latestxt`.
+" 
+" 2016-04-27: Remove `defined?`, add `?defined`.
 
 " --------------------------------------------------------------
 
