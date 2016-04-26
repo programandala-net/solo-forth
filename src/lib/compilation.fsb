@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604250135
+  \ Last modified: 201604250943
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,9 +38,12 @@
   \ 2016-04-24: Add `]l`, `]2l`, `exec`, `eval`.
   \ 2016-04-24: Add `[const]`, `[2const]`, `[cconst]`.
   \ 2016-04-24: Move `cliteral` from the kernel.
-  \ 2016-04-24: Mave `n,` from module "tool.marker.fsb".
+  \ 2016-04-24: Move `n,` from module "tool.marker.fsb".
   \ 2016-04-25: Simplify `exec`, move `possibly` from the
   \ module "tool.marker.fsb".
+  \ 2016-04-25: Move `n,`, `n@`, `n!` to the module
+  \ "memory.misc.fsb".
+  \ 2016-04-26: Fix `restore-here`.
 
 ( [false] [true] )
 
@@ -168,14 +171,20 @@ need c!toggle-bits
 ( ?pairs )
 
 : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;
-  \ If _x1_ not equals _x2_ throw an error -22 (control
-  \ structure mismatch).
+  \ doc{
+  \
+  \ ?pairs  ( x1 x2 -- )
+  \
+  \ If _x1_ not equals _x2_ throw error #-22 (control structure
+  \ mismatch).
+  \
+  \ }doc
 
 ( save-here restore-here )
 
 variable here-backup
 : save-here  ( -- )  here here-backup !  ;
-: restore-here  ( -- )  here-backup there  ;
+: restore-here  ( -- )  here-backup @ there  ;
 
   \ XXX TODO -- behead `here-backup`
 
@@ -217,8 +226,23 @@ need [if]
   \
   \ Code of `possibly` adapted from Wil Baden.
 
+need [if]
+
+[needed] possibly [if]
+
 : possibly  ( "name" -- )
   defined ?dup if  name> execute  then  ;
+
+  \ doc{
+  \
+  \ possibly  ( "name" -- )
+  \
+  \ Parse "name".  If "name" is the name of a word in the
+  \ current search order, execute it; else do nothing.
+  \
+  \ }doc
+
+[then]
 
 [needed] exec [if]
 
@@ -229,7 +253,9 @@ need [if]
   \
   \ exec  ( "name" -- i*x )
   \
-  \ Parse, find and execute "name".
+  \ Parse "name".  If "name" is the name of a word in the
+  \ current search order, execute it; else throw exception
+  \ #-13.
   \
   \ }doc
 
@@ -269,7 +295,9 @@ need eval  need [if]
   \ the stack.
   \
   \ This word is intented to compile constants as literals, in
-  \ order to gain execution speed.
+  \ order to gain execution speed. "name" can be any word, as
+  \ long as its execution returns a single-cell value on the
+  \ stack.
   \
   \ Usage example:
   \ 
@@ -334,22 +362,9 @@ need eval  need [if]
 
 [then]
 
-( n, cliteral )
-
-need [if]
-
-[needed] cliteral [if]
+( cliteral )
 
 : cliteral  ( b -- )  compile clit c,  ; immediate compile-only
-
-[then]
-
-[needed] n, [if]
-
-: n,  ( x1..xn n -- )  0 ?do  ,  loop  ;
-  \ Compile _n_ cells.
-
-[then]
 
   \ doc{
   \
