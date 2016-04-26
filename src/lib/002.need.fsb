@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220026
+  \ Last modified: 201604261957
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,45 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-06: First version, partly based on code from Afera.
+  \
+  \ 2015-06-25: Fix: `require` and `locate` needed to save the
+  \ parsed words to the circular string buffer.
+  \
+  \ 2015-09-13: Rename `require` to `need`, and all related
+  \ words accordingly.  The reason is `require` and `required`
+  \ are standard words (in Forth-94 and Forth-2012), and should
+  \ not be used for different purposes.
+  \
+  \ 2015-10-05: Fix `needed`. The trailing and leading spaces
+  \ of the string, sometimes used to prevent name clashes, had
+  \ to be removed before `undefined?`. `-leading` has to be
+  \ moved to the kernel.
+  \
+  \ 2015-10-16: Add `[needed]`.  It allows selective
+  \ compilation depending on the word specified by `need` or
+  \ `needed`.  Improve `located`: now the string searched for
+  \ is delimited with spaces. This prevents name clashes and
+  \ makes it unnecessary to add the spaces explicitly in risky
+  \ cases.
+  \
+  \ 2015-10-25: Improve `need` and `needed` a bit.
+  \
+  \ 2016-04-02: Factor `new-needed-word` from `needed`.  This
+  \ change was needed for `indexer`.
+  \
+  \ 2016-04-03: Make `need` and related words deferred. Factor
+  \ `new-needed-word` from `needed`. These changes were needed
+  \ for `indexer`.
+  \
+  \ 2016-04-26: Improve `located`: when the user press the
+  \ break key, throw exception #-28 ("user interrupt");
+  \ formerly the ordinary #-268 ("required, but not located")
+  \ was thrown by the calling word.
 
 ( contains delimited located )
 
@@ -67,7 +106,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over
       contains if  2drop i unloop exit  then
-      break-key? ?leave
+      break-key? #-28 ?throw \ "user interrupt"
   loop  2drop 0  ;
 
   \ doc{
@@ -329,7 +368,7 @@ defer need  ( "name" -- )
   \ doc{
   \
   \ set-located-need  ( -- )
-  \ 
+  \
   \ Set the default behaviour of `need`, `needed`, `reneed` and
   \ `reneeded`: Use `locate` for searching the library.
   \
