@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604260152
+; Last modified: 201604262034
 
 include version.z80s
 
@@ -692,7 +692,7 @@ warnings_init_value:                          ; +$08
   dw true
 last_init_value:                              ; +$0A
   ; `$1E +origin`
-  dw $0000
+  dw latest_nt_in_forth_voc
 dictionary_pointer_init_value:                ; +$0C
   ; `$1F +origin`
   dw dictionary_pointer_after_cold
@@ -701,7 +701,7 @@ user_data_pointer_init_value:                 ; +$0E
   dw user_data_pointer
 lastxt_init_value:                            ; +$10
   ; `$22 +origin`
-  dw $0000
+  dw latest_xt_in_forth_voc
 
 default_user_variables_end:
 
@@ -748,13 +748,13 @@ width_value:                                  ; +$06
 warnings_value:                               ; +$08
   dw $0000
 last_value:                                   ; +$0A
-  dw $0000
+  dw latest_nt_in_forth_voc
 dictionary_pointer_value:                     ; +$0C
   dw dictionary_pointer_after_cold
 user_data_pointer_value:                      ; +$0E
   dw user_data_pointer
 lastxt_value:                                 ; +$10
-  dw $0000
+  dw latest_xt_in_forth_voc
 
   ; User variables that are not initialized by `cold`:
 
@@ -1197,6 +1197,8 @@ nt_of_the_previous_word: defl 0
 ; ----------------------------------------------
   _alias_header root_set_order_,'SET-ORDER',,set_order_
 
+  ; This symbol must be set with the value of the 
+  ; latest word defined in the `root` vocabulary:
 latest_nt_in_root_voc: equ root_set_order_nt
 
 if 1 ; assembler_core_in_kernel
@@ -1312,6 +1314,8 @@ endif
   dw comma_
   dw exit_
 
+  ; This symbol must be set with the value of the 
+  ; latest word defined in the `assembler` vocabulary:
 latest_nt_in_assembler_voc: equ jpnext_nt
 
 endif
@@ -1675,7 +1679,7 @@ endif
 
 ; doc{
 ;
-; parse-string ( compilation: c "ccc<char>" -- ) ( run-time:  -- ca len )
+; parse-string ( Compilation: c "ccc<char>" -- ) ( Run-time:  -- ca len )
 ;
 ; }doc
 
@@ -2505,9 +2509,9 @@ digit.test_value:
 ; : number-base  ( ca len -- ca' len' n )
 ;   dup if
 ;    over c@
-;    dup [char] $ = if  drop 1 /string 16  exit  then
-;    dup [char] % = if  drop 1 /string  2  exit  then
-;        [char] # = if       1 /string 10  exit  then
+;    dup '$' = if  drop 1 /string 16  exit  then
+;    dup '%' = if  drop 1 /string  2  exit  then
+;        '#' = if       1 /string 10  exit  then
 ;   then
 ;   base @  ;
 ; ----
@@ -5662,40 +5666,14 @@ u_less_than.de_hl:
 ;
 ; latest ( -- nt )
 ;
-; Leave the name token of the topmost word in the
-; `current` vocabulary.
-;
-; Origin: fig-Forth.
-;
-; }doc
-
-; XXX TMP -- 2016-04-15: This word is fig-Forth's `latest`,
-; which will be replaced with Gforth's `latest`, which fetchs
-; `last`. But some code still depends on this. Meanwhile, `last
-; @` is used in `(;code)`.
-
-; XXX TODO -- convert to standard `latest`.
-
-  dw get_current_,fetch_
-  dw exit_
-
-; ----------------------------------------------
-;  _colon_header latest_,'LATEST'
-
-; XXX TODO --
-
-; doc{
-;
-; latest ( -- nt )
-;
 ; Leave the name token of the last word defined.
 ;
 ; Origin: Gforth.
 ;
 ; }doc
 
-;  dw last_,fetch_
-;  dw exit_
+  dw last_,fetch_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header latestxt_,'LATESTXT'
@@ -6171,6 +6149,20 @@ postpone.end:
   dw latest_,revealed_
   dw exit_
 
+; XXX TODO -- Improve after Gforth:
+;
+; : reveal  
+;   last? 
+;   IF     dup @ 1 and 
+;          IF     dup @ 1 xor 2dup >r name>string r> check-shadow dup 0 + @ 4 + 
+;                 perform 
+;          ELSE   drop 
+;          THEN 
+;   THEN ;
+;
+; : last?  
+;   latest ?dup ;
+
 ; ----------------------------------------------
   _colon_header hided_,'HIDED'
 
@@ -6240,15 +6232,13 @@ postpone.end:
 
 ; ----
 ; : (;code)  ( -- ) ( R: a -- )
-;   r> last @ name> 1+ !  ;
+;   r> latest name> 1+ !  ;
 ; ----
 
 ; }doc
 
-  ; XXX TODO -- use `latest` instead of `last @` when possible
-
   dw from_r_
-  dw last_,fetch_,from_name_,one_plus_
+  dw latest_,from_name_,one_plus_
   dw store_
   dw exit_
 
@@ -8475,8 +8465,6 @@ warm_start:
   dw lit_,names_pointer_init_value,fetch_
   dw lit_,names_pointer,store_
 
-;  _brk 'cold -- before empty-buffers' ; XXX INFORMER
-
   ; Init the disk buffers.
   dw empty_buffers_
 
@@ -9869,7 +9857,7 @@ endif
 
 ; doc{
 ;
-; begin  ( compilation: -- a n )
+; begin  ( Compilation: -- a n )
 ;
 ; At compile time `begin` leaves the dictionary address on
 ; stack with an error checking number _n_.  It does not compile
@@ -9892,7 +9880,7 @@ endif
 
 ; doc{
 ;
-; again  ( compilation: a n -- )
+; again  ( Compilation: a -- )
 ;
 ; End of an infinite loop.  Compile an unconditional jump
 ; instruction to branch backward to _a_.
@@ -11022,8 +11010,8 @@ throw.end:
 ; ----------------------------------------------
   _colon_header s_quote_,'S"',immediate
 
-  ; : s"  ( compilation: "ccc<">" -- ) ( run-time:  -- ca len )
-  ;  [char] " parse-string  ; immediate
+  ; : s"  ( Compilation: "ccc<">" -- ) ( Run-time:  -- ca len )
+  ;   '"' parse-string  ; immediate
 
   _literal '"'
   dw parse_string_
@@ -11090,7 +11078,10 @@ backslash.loading:
   dw parse_,type_
   dw exit_
 
+  ; These symbols must be set with the values of the 
+  ; latest word defined in the `forth` vocabulary:
 latest_nt_in_forth_voc: equ dot_paren_nt
+latest_xt_in_forth_voc: equ dot_paren_
 
 dictionary_pointer_after_cold:
 
