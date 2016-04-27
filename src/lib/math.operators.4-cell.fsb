@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604060057
+  \ Last modified: 201604271709
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2015-11-13: Add `q2*`.
 
 ( q2* )
 
