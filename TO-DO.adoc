@@ -11,6 +11,9 @@
 
 .2016-04-27:
 
+Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
+used only for `list`.
+
 Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
 `name>int`, etc. Factor `defined` and `comp'` accordingly.
 

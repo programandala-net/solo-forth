@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-09
+:revdate: 2016-04-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -179,3 +179,39 @@ Released on 2016-04-22.
 - Fix `decode-compile`
 - Rename library files
 - Documentation: Change the stack notation for flags
+
+== 0.6.0 ==
+
+Released on 2016-04-27.
+
+=== Main changes ===
+
+- Add `marker`
+- Add modern `latest` (old `latest` is renamed to `current-latest`)
+- Add `latestxt` and `lastxt`
+- Fix `recurse` and `:noname`, which used the old `latest`
+- Add `name>interpret`, `name>compile`
+- Add `comp'` and `[comp']`
+- Fix `restore-here`
+- Fix and improve compilation of literals
+- Add `char-position?` and `char-in-string?`
+- Rename `ascii-type` to `type-ascii`
+- Improve definition of UDGs
+- Improve printing of UDGs at graphic coordinates
+
+=== Other changes ===
+
+- Add `/!`, `*!`, `2/!`, `2*!`
+- Move `char` and `[char]` to the library
+- Move `cliteral` to the library
+- Move `;code` to the library
+- Move `2rdrop` to the library
+- Move `pick` to the library
+- Move `nextname` to the library
+- Move `:noname` to the library
+- Move `get-default-bank` and `set-default-bank` to the library
+- Improve the error code of `located`
+- Replace `bs` with `backspace` in `dump`
+- Fix description of `defined`
+- Clearer warning and exception messages
+- Update the Pong game
