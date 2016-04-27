@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604152121
+  \ Last modified: 2016042715
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,32 +31,14 @@
   \
   \ 2016-04-24: Fix `dump`: nothing was printed when length was
   \ less than 8.
-
-( ascii-type )
-
-: ascii-char?    ( c -- f )  128 <  ;
-  \ XXX TODO -- char 127?
-
-: control-char?  ( c -- f )  bl <  ;
-
-: ascii-type  ( ca len -- )
-  bounds ?do
-    i c@ dup dup ascii-char? 0= swap control-char? or
-    if  drop '.'  then  emit
-  loop  ;
-
-  \ doc{
   \
-  \ ascii-type  ( ca len -- )
-  \
-  \ Type string _ca len_, replacing non-ASCII and control chars
-  \ with a dot.
-  \
-  \ }doc
+  \ 2016-04-27: Move `ascii-char?` and `control-char?` to
+  \ module "chars.fsb".  Move `ascii-type` to module
+  \ "printing.type.fsb" and rename it to `type-ascii`.
 
 ( dump )
 
-need 16hex.  need ascii-type
+need 16hex.  need type-ascii
 
 [defined] bs ?\ : bs  ( -- )  8 emit  ;
 
@@ -66,7 +48,7 @@ need 16hex.  need ascii-type
     cr dup 16hex.
     8 0 do  i over + @ flip 16hex.  cell +loop
     \ 16 0 do  i over + c@ hexb.  loop  \ XXX OLD
-    dup bs 8 ascii-type
+    dup bs 8 type-ascii
     break-key? ?leave
   8 + loop  drop  ;
   \ Show the contents of _n_ bytes starting from _ca_.

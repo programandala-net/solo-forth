@@ -1,0 +1,50 @@
+  \ chars.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604271451
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Misc words related to characters.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-27: Move `ascii-type` from module "tool.dump.fsb"
+  \ and rename it to `type-ascii`.
+  
+( type-ascii )
+
+need ascii-char?  need control-char?
+
+: type-ascii  ( ca len -- )
+  bounds ?do
+    i c@ dup dup ascii-char? 0= swap control-char? or
+    if  drop '.'  then  emit
+  loop  ;
+
+  \ doc{
+  \
+  \ type-ascii  ( ca len -- )
+  \
+  \ Type string _ca len_, replacing non-ASCII and control chars
+  \ with a dot.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

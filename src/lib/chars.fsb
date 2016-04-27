@@ -1,0 +1,54 @@
+  \ chars.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201604271451
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Misc words related to characters.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-27: Move `ascii-char?` and `control-char?` from
+  \ module "tool.dump.fsb".
+  
+( ascii-char? control-char? )
+
+: ascii-char?    ( c -- f )  128 <  ;
+
+  \ doc{
+  \
+  \ ascii-char?    ( c -- f )
+  \
+  \ Is character _c_ an ASCII character?
+  \
+  \ }doc
+
+
+: control-char?  ( c -- f )  bl <  ;
+
+  \ doc{
+  \
+  \ control-char?    ( c -- f )
+  \
+  \ Is character _c_ a control character?
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
