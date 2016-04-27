@@ -6,10 +6,10 @@
 ; Solo Forth version after Semantic Versioning (http://semver.org)
 
 version_major:                equ 0
-version_minor:                equ 6
+version_minor:                equ 7
 version_patch:                equ 0
 
-version_prerelease:           equ 0 ; zero if none
+version_prerelease:           equ 1 ; zero if none
 
 version_build_high_part:      equ $0133
 version_build_low_part:       equ $9FAB  ; build 20160427
