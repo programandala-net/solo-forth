@@ -9746,8 +9746,8 @@ endif
 ;
 ; Parse "name" and find its definition.  If the definition is
 ; not found after searching all the word lists in the search
-; order, return _ca len_ and _false_.  If the definition is found,
-; return its _xt_, its length byte _b_ and _true_.
+; order, return zero. If the definition is found,
+; return its _nt_.
 ;
 ; ----
 ; : defined  ( "name" -- nt | 0 )
