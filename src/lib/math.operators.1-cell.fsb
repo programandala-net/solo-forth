@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604271729
+  \ Last modified: 201604271804
 
   \ -----------------------------------------------------------
   \ Description
@@ -581,6 +581,10 @@ variable (any?)
   \
   \ Code from IsForth (version 1.23b).
 
+need [if]
+
+[needed] either [if]
+
 : either  ( n1|u1 n2|u2 n3|u3 -- f )
   -rot over = -rot = or  ;
 
@@ -593,6 +597,10 @@ variable (any?)
   \
   \ }doc
 
+[then]
+
+[needed] neither [if]
+
 : neither  ( n1|u1 n2|u2 n3|u3 -- f )
   -rot over <> -rot <> and  ;
 
@@ -604,5 +612,7 @@ variable (any?)
   \ _n3|u3_; else return _false_.
   \
   \ }doc
+
+[then]
 
   \ vim: filetype=soloforth
