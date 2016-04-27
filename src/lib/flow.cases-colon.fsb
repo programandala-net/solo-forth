@@ -8,12 +8,21 @@
   \ -----------------------------------------------------------
   \ Description
 
-  \ `cases:`.
+  \ `cases:` structure, an alternative to the standard `case`.
+  \
+  \ The `cases:` structure is named.  It's built as an array of
+  \ pairs (value and associated vector).  It saves space, but
+  \ is slower than standard `case`. The default case of the
+  \ structure is mandatory.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Original code written by Dan Lerner, published on Forth
+  \ Dimensions (volume 3, number 6, page 189, 1982-03).
+
+  \ Marcos Cruz (programandala.net), adapted, renamed and
+  \ commented the original code, 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -22,19 +31,14 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-14: First version.
+  \ 2016-04-27: Rename `other>` to `othercase>`. Improve
+  \ documentation and file header.
 
 ( cases: )
-
-  \ `cases:` structure, alternative to the standard `case`.
-  \ It saves space, but is slower.
-
-  \ 2015-11-14
-
-  \ Credit:
-  \
-  \ Adapted, renamed and commented from code written by Dan
-  \ Lerner, published on Forth Dimensions (volume 3, number 6,
-  \ page 189, 1982-03).
 
   \ 109 bytes used
 
@@ -62,16 +66,16 @@
   \ Usage example:
   \
   \ ----
-  \ : say10     ." dek"  ;
-  \ : say100    ." cent" ;
-  \ : say1000   ." mil"  ;
+  \ : say10      ." dek"  ;
+  \ : say100     ." cent" ;
+  \ : say1000    ." mil"  ;
   \ : say-other  ." alia" ;
   \
   \ cases: say  ( n -- )
-  \     10 case>  say10
-  \    100 case>  say100
-  \   1000 case>  say1000
-  \        other> say-other
+  \     10 case>      say10
+  \    100 case>      say100
+  \   1000 case>      say1000
+  \        othercase> say-other
   \
   \ 10 say  100 say  1000 say  1001 say
   \ ----
@@ -92,18 +96,16 @@
   \
   \ }doc
 
-: other>  ( orig counter "name" -- )  ' compile, swap !  ;
-
-  \ XXX TODO -- rename? `anycase>`, `othercase>`...
+: othercase>  ( orig counter "name" -- )  ' compile, swap !  ;
 
   \ doc{
   \
-  \ other>  ( orig counter "name" -- )
+  \ othercase>  ( orig counter "name" -- )
   \
   \ Compile the default option of a `cases:` to be the word
   \ "name" . This must be the last option of the structure and
-  \ is mandatory.  When no default action is required, `other>
-  \ noop` can be used.
+  \ is mandatory.  When no default action is required,
+  \ `othercase> noop` can be used.
   \
   \ See `cases:` for an usage example.
   \
