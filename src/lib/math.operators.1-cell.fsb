@@ -23,7 +23,7 @@
   \ this license.  There is no warranty.
 
 
-( under+ )  \ ==operators==
+( under+ )
 
 code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   D9 c,           \ exx
@@ -41,6 +41,8 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \ under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \
   \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ See `+under`.
   \
   \ Origin: Comus.
   \
@@ -69,6 +71,8 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ Add _n2|u2_ to _n1|u2_, giving the sum _n3|u3_.
+  \
+  \ See `under+`
   \
   \ Origin: Comus.
   \
@@ -118,12 +122,16 @@ need 2/ need alias
 
 [unneeded] between ?exit
 
+  \ Credit:
+  \
+  \ http://dxforth.netbay.com.au/between.html
+
 : between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
   \ doc{
   \
   \ between  ( n1|u1 n2|u2 n3|u3 -- f )
-
+  \
   \ Perform a comparison of a test value _n1|u1_ with a lower
   \ limit _n2|u2_ and an upper limit _n3|u3_, returning _true_
   \ if either (n2|u2 <= n3|u3 and (n2|u2 <= n1|u1 and n1|u1 <=
@@ -131,14 +139,8 @@ need 2/ need alias
   \ n3|u3)) is true, returning _false_ otherwise. An ambiguous
   \ condition exists if _n1|u1_, _n2|u2_, and _n3|u3_ are not
   \ all the same type.
-
-  \ name  ( -- )
   \
   \ }doc
-
-  \ Credit:
-  \
-  \ http://dxforth.netbay.com.au/between.html
 
 ( polarity )
 

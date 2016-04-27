@@ -1,6 +1,6 @@
 = Acknowledgments
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-03-19
+:revdate: 2016-04-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -19,34 +19,35 @@ alphabetical order:
 
 - Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele, 1983.
 - Afera (library for Abersoft Forth), by Marcos Cruz, 2015.
-- CamelForth (for Z80), by Bradford J. Rodriguez, 1994-1995.
+- CamelForth (for Z80), by Bradford J. Rodriguez, 1994..1995.
+- Computer One Forth (for QL), by Computer One Ldt., 1984.
 - CP/M fig-Forth 1.1g (for Z80 CP/M), adaptative version by EHR et
-  al., 1980-1984.
-- DX-Forth (version 4.x for CP/M), by Ed, 2013-2015.
-- DZX-Forth (for ZX Spectrum +3e), by Marcos Cruz, 2014-2015 (under
+  al., 1980..1984.
+- DX-Forth (version 4.x for CP/M), by Ed, 2013..2015.
+- DZX-Forth (for ZX Spectrum +3e), by Marcos Cruz, 2014..2015 (under
   development).
-- eForth (for DOS), by Bill Muench, 1989-1997.
+- eForth (for DOS), by Bill Muench, 1989..1997.
 - F83 (for CP/M and DOS), by Mike Perry and Henry Laxen, 1984.
-- Forth Foundation Library, by Dick van Oudheusden, <2006-2015.
-- Galope (library for Gforth), by Marcos Cruz, 2012-2015.
-- Gforth, by Anton Ertl, Bernd Paysan et al., 1995-2015.
+- Forth Foundation Library, by Dick van Oudheusden, <2006..2015.
+- Galope (library for Gforth), by Marcos Cruz, 2012..2015.
+- Gforth, by Anton Ertl, Bernd Paysan et al., 1995..2015.
 - hForth (Z80 RAM model v0.9.9), by Wonyong Koh, 1995.
-- IsForth (version 1.23b for Linux), by Mark Manning, c. 2001-2012.
-- kForth (for Linux, v1.5.2), by  Krishna Myneni, 1999-2010.
-- lina (for x86 Linux), by Albert van der Horst, 2000-2004.
-- lpForth (for Linux), by Jih-tung Pai, 1999-2001.
+- IsForth (version 1.23b for Linux), by Mark Manning, c. 2001..2012.
+- kForth (for Linux, v1.5.2), by  Krishna Myneni, 1999..2010.
+- lina (for x86 Linux), by Albert van der Horst, 2000..2004.
+- lpForth (for Linux), by Jih-tung Pai, 1999..2001.
 - MPE Forth for TiniARM, by MicroProcessor Engineering Limited,
-  1996-2004.
+  1996..2004.
 - PFE (Portable Forth Environment), by Dirk Zoller and Guido U.
-  Draheim, 1993-2009.
+  Draheim, 1993..2009.
 - pForth (a portable ANS-like Forth written in ANSI C), by Phil Burk,
   1998.
-- Pygmy Forth (for DOS), by Frank C. Sergeant, 1989-2007.
+- Pygmy Forth (for DOS), by Frank C. Sergeant, 1989..2007.
 - Spectrum Forth-83 (for ZX Spectrum 48K/128K), by Lennart Benschop,
   1988.
 - v.Forth (for ZX Spectrum 48K/128K with Interface 1), by Matteo
-  Vitturi, 1990-2015.
-- volksFORTH 3.80a (for C/PM), by Forth Gesellschaft e.V., 1985-2006.
+  Vitturi, 1990..2015.
+- volksFORTH 3.80a (for C/PM), by Forth Gesellschaft e.V., 1985..2006.
 - Z88 CamelForth 3.04 (for Cambridge Z88), by Garry Lancaster, 2001.
 
 Specific credits and acknowledgment notes are included in the source.
