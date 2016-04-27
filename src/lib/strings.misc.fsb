@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242001
+  \ Last modified: 201604271507
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,7 @@
   \ 2016-04-22: Add `s""`, moved from the kernel.
   \ 2016-04-24: Add `need pick`, because `pick` has been moved
   \ from the kernel to the library.
+  \ 2016-04-27: Add `char-in-string?` and `char-position?`.
 
 ( s= )
 
@@ -304,6 +305,45 @@ exit
   \ Return an empty string in the circular string buffer.
   \
   \ }doc
+
+( char-in-string? char-position? )
+
+need -rot  need [if]
+
+[needed] char-in-string? [if]
+
+: char-in-string? ( ca len c -- f )
+  -rot bounds
+  ?do  dup i c@ = if  drop true unloop exit  then  loop
+  drop false  ;
+
+  \ doc{
+  \
+  \ char-in-string? ( ca len c -- f )
+  \
+  \ Is char _c_ in string _ca len_?
+  \
+  \ }doc
+
+[then]
+
+[needed] char-position? [if]
+
+: char-position?  ( ca len c -- +n true | false )
+  -rot 0 ?do
+    2dup i + c@ = if  2drop i true unloop exit  then
+  loop  2drop false  ;
+
+  \ doc{
+  \
+  \ char-position?  ( ca len c -- +n true | false )
+  \
+  \ If char _c_ is in string _ca len_, return its first
+  \ position _+n_ and _true_; else return _false_.
+  \
+  \ }doc
+
+[then]
 
   \ vim: filetype=soloforth
 
