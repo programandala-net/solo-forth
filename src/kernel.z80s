@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604262034
+; Last modified: 201604272221
 
 include version.z80s
 
@@ -2945,6 +2945,9 @@ find_name_from.ip_backup: equ $+1
 ; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
 
+  ; XXX TODO -- move to the library, with `warnings`
+  ; and the check done in `header,`.
+
 ; doc{
 ;
 ; search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
@@ -4959,6 +4962,8 @@ do_user:
   db $06
 
 ; ----------------------------------------------
+if 1 ; XXX TMP -- during the development
+
   _user_variable_header warnings_,'WARNINGS'
 
 ; doc{
@@ -4972,6 +4977,8 @@ do_user:
 ; }doc
 
   db $08
+
+endif
 
 ; ----------------------------------------------
   _user_variable_header last_,'LAST'
@@ -7169,6 +7176,14 @@ uppers.do:
   dw 0 ; value of `>in`
 
 ; ----------------------------------------------
+  _colon_header dot_error_word_,'.ERROR-WORD'
+
+  dw parsed_name_,two_fetch_,cr_,type_ ; last parsed word
+  dw paren_dot_quote_
+  _string ' ? '
+  dw exit_
+
+; ----------------------------------------------
   _colon_header error_,'ERROR'
 
 ; doc{
@@ -7207,9 +7222,7 @@ uppers.do:
   ; No return from `(abort)`.
 
 error.message:
-  dw parsed_name_,two_fetch_,cr_,type_ ; last parsed word
-  dw paren_dot_quote_
-  _string ' ? '
+  dw dot_error_word_
   dw dot_throw_,paren_abort_
   ; No return from `(abort)`.
 
@@ -7256,6 +7269,9 @@ error.message:
   dw exit_
 
 ; ----------------------------------------------
+  _defer_header warn_,'WARN',,noop_
+
+; ----------------------------------------------
   _colon_header header_comma_,'HEADER,'
 
 ; doc{
@@ -7271,6 +7287,8 @@ error.message:
   dw dup_,zero_equals_
   _question_throw error.zero_length_name
 
+if 1 ; XXX TMP -- during the development
+
   dw warnings_,fetch_
   dw zero_branch_,header_comma.continue
 
@@ -7279,9 +7297,15 @@ error.message:
   dw zero_branch_,header_comma.continue
   ; the word is not unique in `current`
   ; ( ca len xt )
-  dw to_name_,cr_,dot_name_
-  _literal error.not_unique
-  dw dot_throw_ ; XXX TMP -- `warning`?
+  dw paren_dot_quote_
+  _string "redefined "
+  dw to_name_,dot_name_
+
+else ; XXX NEW
+
+  dw warn_
+
+endif
 
 header_comma.continue:
 
@@ -10262,8 +10286,7 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-
-if 1 ; developing
+if 1 ; XXX TMP -- during the development
 
   _colon_header dot_s_,'.S'
 
@@ -10587,7 +10610,7 @@ system_stack_pointer: equ $+1
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; developing
+if 1 ; XXX TMP -- during the development
 
   _colon_header where_,'WHERE'
 

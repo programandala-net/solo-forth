@@ -283,6 +283,7 @@ syn keyword soloforthForth (find)
 syn keyword soloforthForth (loop)
 syn keyword soloforthForth (number)
 syn keyword soloforthForth +origin
+syn keyword soloforthForth .error-word
 syn keyword soloforthForth ;code
 syn keyword soloforthForth <mark
 syn keyword soloforthForth <resolve
@@ -1147,7 +1148,7 @@ let b:current_syntax = "soloforth"
 " 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
 " `noname?`, `last`, `lastxt`, `latestxt`.
 " 
-" 2016-04-27: Remove `defined?`, add `?defined`.
+" 2016-04-27: Remove `defined?`, add `?defined`. Add `.error-word`.
 
 " --------------------------------------------------------------
 
