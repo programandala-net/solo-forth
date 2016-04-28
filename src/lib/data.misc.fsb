@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281341
+  \ Last modified: 201604281353
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,7 +25,9 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-28: Rename `set` to `storer` and improve it.
+  \ 2015-11-15: Add `link@` and `link,`.
+  \ 2016-04-28: Rename `set` to `storer` and improve it. Add
+  \ `cstorer`.
 
 ( buffer: cvariable enum )
 
@@ -38,7 +40,11 @@
 [unneeded] enum
 ?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;
 
-( storer )
+( storer cstorer )
+
+need [if]
+
+[needed] storer [if]
 
 : storer  ( x a "name" -- )
   create  2,
@@ -56,9 +62,31 @@
   \
   \ }doc
 
+[then]
+
+[needed] cstorer [if]
+
+: cstorer  ( c ca "name" -- )
+  create  2,
+  does>   ( -- ) ( pfa )  2@ c!  ;
+
+  \ doc{
+  \
+  \ cstorer  ( c ca "name" -- )
+  \
+  \ Define a word "name" which, when executed, will  cause _c_
+  \ to be stored at _ca_.
+  \
+  \ Origin: variant of the word `set` found in Forth-79
+  \ (Reference Word Set) and Forth-83 (Appendix B.
+  \ Uncontrolled Reference Words).
+  \
+  \ }doc
+
+[then]
+
 ( link@ link, )
 
-  \ 2015-11-15
 
   \ Credit:
   \
