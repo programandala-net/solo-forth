@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604280108
+; Last modified: 201604281318
 
 include version.z80s
 
@@ -1290,8 +1290,10 @@ endif
 ;
 ; Compile a Z80 jump to `pushhl`.
 ;
-; Actually two instructions are compiled, which is faster: `push
-; hl` and `jp (ix)`.
+; Actually two instructions are compiled: `push hl` and `jp
+; (ix)`. The execution of these instructions is faster than an
+; absolute jump to a push, and they use also 3 bytes, same as a
+; jump.
 ;
 ; }doc
 
