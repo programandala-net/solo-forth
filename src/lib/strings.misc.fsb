@@ -345,5 +345,18 @@ need -rot  need [if]
 
 [then]
 
+( ruler )
+
+: ruler  ( c len -- ca len )
+  dup allocate-string swap 2dup 2>r rot fill 2r>  ;
+
+  \ doc{
+  \
+  \ ruler  ( c len -- ca len )
+  \
+  \ Return a string of _len_ characters _c_.
+  \
+  \ }doc
+
   \ vim: filetype=soloforth
 
