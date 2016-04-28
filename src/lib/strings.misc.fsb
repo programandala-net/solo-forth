@@ -354,7 +354,7 @@ need -rot  need [if]
   \
   \ ruler  ( c len -- ca len )
   \
-  \ Return a string of _len_ characters _c_.
+  \ Return a string _ca len_ of characters _c_.
   \
   \ }doc
 
