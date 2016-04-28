@@ -3,17 +3,22 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281631
+  \ Last modified: 201604281721
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `?ccase` control structure, which is a positional `case`
-  \ that uses the position of a character in a string as key,
-  \ and has no default option.
+  \ `ccase` is a positional control structure that uses the
+  \ position of a character in a string as key, and has a
+  \ mandatory default option at the end.  Data space used
+  \ (without requirements): 69 bytes.
   \
-  \ `ccase0` is a variant that uses the first compiled option
-  \ as default, and the next options for matches.
+  \ `ccase0` is a simpler variant of `ccase` that uses the
+  \ first compiled option as a mandatory default option.  Data
+  \ space used (without requirements): 44 bytes.
+  \
+  \ `?ccase` is a simpler variant of `ccase` with no default
+  \ option.  Data space used (without requirements): 34 bytes.
 
   \ -----------------------------------------------------------
   \ Author
@@ -124,8 +129,12 @@ need alias  need char-position?
   \ }doc
 
 : (ccase0)  ( c ca len -- )
-  rot char-position? if    3 + \ found, skip default
-                     else  2   \ not found, default
+  rot char-position? if    ( +n ) 3 +
+                           \ character found:
+                           \ calculate the cells offset to the option
+                     else  2
+                           \ character not found:
+                           \ leave cells offset to the default option
                      then  cells r@ + perform  ;
 
   \ doc{
@@ -170,6 +179,89 @@ need alias  need char-position?
   \
   \ : letter  ( c -- )
   \   s" abc" ccase0  .nope .a .b .c  endccase0
+  \   ."  The End" cr  ;
+  \ ----
+  \
+  \ }doc
+
+( ccase )
+
+need char-position?
+
+: endccase
+  \ Compilation: ( C: orig1 orig2 -- )
+  \ Run-time: ( -- )
+  here cell- swap !
+    \ resolve _orig2_, the address of the default option
+  >resolve
+    \ resolve _orig1_, the branch to `endccase`
+  ; immediate compile-only
+
+  \ doc{
+  \
+  \ endccase
+  \
+  \   Compilation: ( C: orig1 orig2 -- )
+  \   Run-time: ( -- )
+  \
+  \ End of a `ccase` control structure.
+  \ See `ccase` for a usage example.
+  \
+  \ }doc
+
+: (ccase)  ( c ca len -- )
+  rot char-position? if    ( +n ) 3 + cells r@ +
+                           \ character found:
+                           \ calculate address of the option
+                     else  [ 2 cells ] literal r@ + @
+                           \ character not found:
+                           \ calculate address of the default option
+                     then  perform  ;
+
+  \ doc{
+  \
+  \ (ccase) ( c ca len -- )
+  \ 
+  \ Run-time procedure compiled by `ccase`.  If _c_ is in the
+  \ string _ca len_, execute the n-th word compiled after
+  \ `ccase`, where _n_ is the position of the first _c_ in the
+  \ string (0..len-1).  If _c_ is not in _ca len_, 
+  \ execute the word compiled right before `endccase`.
+  \ 
+  \ See: `ccase`.
+  \
+  \ }doc
+
+: ccase
+  \ Compilation: ( C: -- orig1 orig2 )
+  \ Run-time: ( c ca len -- )
+  postpone (ccase)  postpone ahead  >mark
+  ; immediate compile-only
+
+  \ doc{
+  \
+  \ ccase
+  \
+  \ Compilation: ( C: -- orig1 orig2 )
+  \ Run-time: ( c ca len -- )
+  \ 
+  \ Start a `ccase endccase` structure. If _c_ is in the
+  \ string _ca len_, execute the n-th word compiled after
+  \ `ccase`, where _n_ is the position of the first _c_ in the
+  \ string (0..len-1) plus 1, then continue after `endcase`.
+  \ If _c_ is not in _ca len_, execute the word compiled right
+  \ after `ccase`, then continue after `endccase`.
+  \ 
+  \ Usage example:
+
+  \ ----
+  \ : .a     ( -- )  ." Letter A"  ;
+  \ : .b     ( -- )  ." Letter B"  ;
+  \ : .c     ( -- )  ." Letter C"  ;
+  \ : .nope  ( -- )  ." Nope!"  ;
+  \
+  \ : letter  ( c -- )
+  \   s" abc" ccase  .a .b .c .nope  endccase
   \   ."  The End" cr  ;
   \ ----
   \

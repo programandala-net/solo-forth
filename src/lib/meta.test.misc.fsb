@@ -247,17 +247,33 @@ need ?ccase  need ccase0
 : .nope  ( -- )  ." Nope!"  ;
 : .end   ( -- )  ."  The End" cr  ;
 
-: letter  ( c -- )
-  cr ." Letter... " key drop
+: ?letter  ( c -- )
+  cr ." ?letter... " key drop
   s" abc" ?ccase  .a .b .c  end?ccase  .end  ;
 
-'a' letter  'b' letter  'c' letter  'x' letter
+'a' ?letter  'b' ?letter  'c' ?letter  'x' ?letter
 
 : letter0  ( c -- )
-  cr ." Letter0... " key drop
+  cr ." letter0... " key drop
   s" abc" ccase0 .nope  .a .b .c  endccase0  .end  ;
 
 'a' letter0  'b' letter0  'c' letter0  'x' letter0
+
+( ccase-test )
+
+need ccase
+
+: .a     ( -- )  ." Letter A"  ;
+: .b     ( -- )  ." Letter B"  ;
+: .c     ( -- )  ." Letter C"  ;
+: .nope  ( -- )  ." Nope!"  ;
+: .end   ( -- )  ."  The End" cr  ;
+
+: letter  ( c -- )
+  cr ." letter... " key drop
+  s" abc" ccase  .a .b .c  .nope  endccase  .end  ;
+
+'a' letter  'b' letter  'c' letter  'x' letter
 
 .( block x line 0)
   .( block x line 1 ) cr
