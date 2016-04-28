@@ -1,14 +1,14 @@
-  \ chars.fsb
+  \ printing.type.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604271451
+  \ Last modified: 201604280242
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Misc words related to characters.
+  \ Versions of `type`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -27,7 +27,13 @@
 
   \ 2016-04-27: Move `ascii-type` from module "tool.dump.fsb"
   \ and rename it to `type-ascii`.
-  
+  \
+  \ 2016-04-27: Start `type-center`, `type-left` and
+  \ `type-right`.
+  \
+  \ 2016-04-28: First working versions of `type-center`,
+  \ `type-left` and `type-right`.
+
 ( type-ascii )
 
 need ascii-char?  need control-char?
@@ -44,6 +50,129 @@ need ascii-char?  need control-char?
   \
   \ Type string _ca len_, replacing non-ASCII and control chars
   \ with a dot.
+  \
+  \ }doc
+
+( drop-type padding-spaces type-left )
+
+[unneeded] drop-type
+?\ : drop-type  ( ca len x -- )  drop type  ;  exit
+
+: padding-spaces  ( len1 len2 -- )
+  swap - 0 max spaces  ;
+
+  \ doc{
+  \
+  \ : padding-spaces  ( len1 len2 -- )
+  \
+  \ If _len2_ minus _len1_ is a positive number, print that
+  \ number of spaces; else do nothing.
+  \
+  \ }doc
+
+[needed] padding-spaces ?exit
+
+: type-left  ( ca len1 len2 -- )
+  2dup 2>r min type 2r> padding-spaces  ;
+
+  \ doc{
+  \
+  \ type-left  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the left of a field of _len2_
+  \ characters.
+  \
+  \ }doc
+
+( type-right )
+
+need padding-spaces  need drop-type  need <=>
+
+: type-right-crop  ( ca len1 len2 -- )
+  over swap - /string type  ;
+
+  \ doc{
+  \
+  \ type-right-crop  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the right of a field of _len2_
+  \ characters, which is shorter than the string.
+  \
+  \ }doc
+
+: type-right-fit  ( ca len1 len2 -- )
+  2dup 2>r padding-spaces 2r> min type  ;
+
+  \ doc{
+  \
+  \ type-right-fit  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the right of a field of _len2_
+  \ characters, which is longer than the string.
+  \
+  \ }doc
+
+      ' type-right-fit ,
+here  ' drop-type ,
+      ' type-right-crop ,
+constant type-right-cases
+  \ Execution table of `type-right`.
+
+: type-right  ( ca len1 len2 -- )
+  2dup <=> cells type-right-cases + perform  ;
+
+  \ doc{
+  \
+  \ type-right  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the right of a field of _len2_
+  \ characters.
+  \
+  \ }doc
+
+( type-center )
+
+need drop-type  need <=>
+
+: type-center-fit  ( ca len1 len2 -- )
+  over - 2 /mod dup >r + spaces type r> spaces  ;
+
+  \ doc{
+  \
+  \ type-center-fit  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the center of a field of _len2_
+  \ characters, which is longer than the string.
+  \
+  \ }doc
+
+: type-center-crop  ( ca len1 len2 -- )
+  over swap - 2 /mod dup >r + /string r> - type  ;
+
+  \ doc{
+  \
+  \ type-center-crop  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the center of a field of _len2_
+  \ characters, which is shorter than the string.
+  \
+  \ }doc
+
+      ' type-center-fit ,
+here  ' drop-type ,
+      ' type-center-crop ,
+constant type-center-cases
+  \ Execution table of `type-center`.
+
+: type-center  ( ca len1 len2 -- )
+  2dup <=> cells type-center-cases + perform  ;
+
+  \ doc{
+  \
+  \ type-center  ( ca len1 len2 -- )
+  \
+  \ Type string _ca len1_ at the center of a field of _len2_
+  \ characters.
   \
   \ }doc
 
