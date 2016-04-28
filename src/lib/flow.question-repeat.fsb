@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201604281437
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,21 +22,27 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-03-04: Copy from the Forth-2012 documentation.
+  \ 2016-04-28: Fix the stack notation.
+
 ( ?repeat )
 
 need cs-pick
 
-: ?repeat  ( dest -- dest ) \ Compilation
-           ( flag -- )      \ Execution
+: ?repeat  ( C: dest -- dest ) \ Compilation
+           ( f -- )            \ Execution
     0 cs-pick   postpone until
   ; immediate
 
   \ doc{
   \
-  \ ?repeat  Compilation: ( dest -- dest )
-  \          Execution:   ( flag -- )
-
-  \ Example use:
+  \ ?repeat  Compilation: ( C: dest -- dest )
+  \          Execution:   ( f -- )
+  \
+  \ Usage example:
 
   \ ----
   \ : xx  ( -- )
