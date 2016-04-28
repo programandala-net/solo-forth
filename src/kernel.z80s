@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604281318
+; Last modified: 201604281334
 
 include version.z80s
 
@@ -4039,6 +4039,7 @@ u_m_slash_mod.4:
 ; }doc
 
   pop de
+to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   ld hl,(return_stack_pointer)
   dec hl
   ld (hl),d
@@ -8264,15 +8265,17 @@ quit.begin:
 
 ; doc{
 ;
-; >defer  ( xt1 -- a )
+; >defer  ( xt -- a )
 ;
 ; Return the address _a_ that holds the xt currently associated
-; to the deferred word _xt1_.
+; to the deferred word _xt_.
 ;
 ; }doc
 
 ; ----------------------------------------------
   _colon_header defer_fetch_,'DEFER@'
+
+  ; XXX TODO -- Move to the library?
 
 ; doc{
 ;
