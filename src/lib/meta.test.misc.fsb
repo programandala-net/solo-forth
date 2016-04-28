@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604280238
+  \ Last modified: 201604281618
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,7 @@
   \
   \ 2016-04-28: Move the tests of `type-center`, `type-left`
   \ and `type-right` from the module "printing.type.fsb".
+  \ Add `?ccase-test`, `ccase0-test`.
 
 ( alias-test synonym-test )
 
@@ -235,6 +236,28 @@ s" La Mancha" 2constant lm
 
 : tr  ( ca len1 len2 -- )
   2dup <=> cells type-right-cases + @ >name .name  ;
+
+( ?ccase-test ccase0-test )
+
+need ?ccase  need ccase0
+
+: .a     ( -- )  ." Letter A"  ;
+: .b     ( -- )  ." Letter B"  ;
+: .c     ( -- )  ." Letter C"  ;
+: .nope  ( -- )  ." Nope!"  ;
+: .end   ( -- )  ."  The End" cr  ;
+
+: letter  ( c -- )
+  cr ." Letter... " key drop
+  s" abc" ?ccase  .a .b .c  end?ccase  .end  ;
+
+'a' letter  'b' letter  'c' letter  'x' letter
+
+: letter0  ( c -- )
+  cr ." Letter0... " key drop
+  s" abc" ccase0 .nope  .a .b .c  endccase0  .end  ;
+
+'a' letter0  'b' letter0  'c' letter0  'x' letter0
 
 .( block x line 0)
   .( block x line 1 ) cr
