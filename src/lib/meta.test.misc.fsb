@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281618
+  \ Last modified: 201604281738
 
   \ -----------------------------------------------------------
   \ Description
@@ -207,11 +207,13 @@ code if'-test  ( -- )
 
 need type-left  need type-center  need type-right
 
-s" La Mancha" 2constant lm
+s" La Mancha" 2constant text
 
-: ruler  ( -- )
+: ruler  ( -- )  home '-' 32 emits home  ;
+
+: ready  ( -- )
   0 1 at-xy ." Press any key to continue"
-  key drop home '-' 32 emits home  ;
+  key drop ruler  ;
 
 -->
 
@@ -219,17 +221,17 @@ s" La Mancha" 2constant lm
 
 : test  ( -- )  page
 
-  ruler lm lm nip type-left
-  ruler lm 32 type-left
-  ruler lm 5 type-left
+  ready text text nip type-left
+  ready text 32 type-left
+  ready text 5 type-left
 
-  ruler lm lm nip type-center
-  ruler lm 32 type-center
-  ruler lm 5 type-center
+  ready text text nip type-center
+  ready text 32 type-center
+  ready text 5 type-center
 
-  ruler lm lm nip type-right
-  ruler lm 32 type-right
-  ruler lm 5 type-right  ;
+  ready text text nip type-right
+  ready text 32 type-right
+  ready text 5 type-right  ;
 
 : tc  ( ca len1 len2 -- )
   2dup <=> cells type-center-cases + @ >name .name  ;

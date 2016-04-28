@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604280242
+  \ Last modified: 201604281733
 
   \ -----------------------------------------------------------
   \ Description
@@ -86,7 +86,7 @@ need ascii-char?  need control-char?
 
 ( type-right )
 
-need padding-spaces  need drop-type  need <=>
+need drop-type  need <=>
 
 : type-right-crop  ( ca len1 len2 -- )
   over swap - /string type  ;
@@ -100,8 +100,7 @@ need padding-spaces  need drop-type  need <=>
   \
   \ }doc
 
-: type-right-fit  ( ca len1 len2 -- )
-  2dup 2>r padding-spaces 2r> min type  ;
+: type-right-fit  ( ca len1 len2 -- )  over - spaces type  ;
 
   \ doc{
   \
