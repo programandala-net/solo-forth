@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281738
+  \ Last modified: 201604282018
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,7 +30,7 @@
   \
   \ 2016-04-28: Move the tests of `type-center`, `type-left`
   \ and `type-right` from the module "printing.type.fsb".
-  \ Add `?ccase-test`, `ccase0-test`.
+  \ Add `?ccase-test`, `ccase0-test`. Add `jk-test`.
 
 ( alias-test synonym-test )
 
@@ -276,6 +276,21 @@ need ccase
   s" abc" ccase  .a .b .c  .nope  endccase  .end  ;
 
 'a' letter  'b' letter  'c' letter  'x' letter
+
+( jk-test )
+
+need j  need k
+
+: jk-test  ( -- )
+  3 0 do
+    13 10 do
+      23 20 do
+        k . j . i . cr
+      loop
+    loop
+  loop  ;
+
+cr jk-test
 
 .( block x line 0)
   .( block x line 1 ) cr

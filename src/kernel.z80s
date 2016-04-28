@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604281602
+; Last modified: 201604282020
 
 include version.z80s
 
@@ -2311,7 +2311,7 @@ paren_do.de_hl:
   ; Code adapted from Spectrum Forth-83.
 
   ld hl,(return_stack_pointer)
-i.hl: ; entry point for `j` and `k`
+i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   ld e,(hl)
   inc hl
   ld d,(hl) ; de= current index, wich is: (index-limit) xor $8000
@@ -2338,21 +2338,6 @@ i.hl: ; entry point for `j` and `k`
 ; Origin: Forth-2012 (CORE).
 ;
 ; }doc
-
-; ----------------------------------------------
-  _constant_header paren_i,'(I)'
-
-; doc{
-;
-; (i)  ( -- a )
-;
-; A constant that holds the address of the machine code entry
-; point of `i` that calculates the `do` index from the address
-; pointed by the HL register. Used by `j` and `k`.
-;
-; }doc
-
-  dw i.hl
 
 ; ----------------------------------------------
   _code_header question_leave_,'?LEAVE'

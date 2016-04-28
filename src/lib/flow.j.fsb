@@ -26,15 +26,19 @@
   \ History
 
   \ 2016-04-15: Written.
+  \ 2016-04-28: Calculate the secondary entry point of `i`,
+  \ instead of using the constant `(i)`, which has been
+  \ removed from the kernel.
 
 ( j )
 
 code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
-  2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, (i) ,
+  2A c, rp ,  11 c, 3 cells ,  19 c,
     \ ld hl,(return_stack_pointer)
     \ ld de,3*cell
     \ add hl,de
-    \ jp i.hl
+  C3 c, ' i 3 + ,
+    \ jp i.hl ; secondary entry point in `i`
   end-code
 
   \ doc{
@@ -53,11 +57,12 @@ code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 
 code k  ( -- n|u )
   ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
-  2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, (i) ,
+  2A c, rp ,  11 c, 6 cells ,  19 c,
     \ ld hl,(return_stack_pointer)
     \ ld de,6*cell
     \ add hl,de
-    \ jp i.hl
+  C3 c, ' i 3 + ,
+    \ jp i.hl ; secondary entry point in `i`
   end-code
 
   \ doc{
