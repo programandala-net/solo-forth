@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604281334
+; Last modified: 201604281602
 
 include version.z80s
 
@@ -9952,9 +9952,11 @@ if.do:
 ; doc{
 ;
 ; ahead
-;   Compilation: ( -- )
 ;
-; Origin: Forth-94, Forth-2012.
+;   Compilation: ( C: -- orig )
+;   Run-time: ( -- )
+;
+; Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
 ;
 ; }doc
 
