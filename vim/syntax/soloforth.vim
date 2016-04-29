@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-04-24
+" Updated:  2016-04-29
 
 " --------------------------------------------------------------
 " History
@@ -182,6 +182,7 @@ syn keyword soloforthFiles blk
 syn keyword soloforthFiles blk/disk
 syn keyword soloforthFiles block
 syn keyword soloforthFiles block-number
+syn keyword soloforthFiles block>source
 syn keyword soloforthFiles buffer
 syn keyword soloforthFiles buffer-block
 syn keyword soloforthFiles buffer-data
@@ -316,12 +317,14 @@ syn keyword soloforthForth name>body
 syn keyword soloforthForth name>immediate?
 syn keyword soloforthForth name>link
 syn keyword soloforthForth name>string
+syn keyword soloforthForth nest-source
 syn keyword soloforthForth next-name
 syn keyword soloforthForth noop
 syn keyword soloforthForth pad
 syn keyword soloforthForth source
 syn keyword soloforthForth state
 syn keyword soloforthForth stream
+syn keyword soloforthForth unnest-source
 syn keyword soloforthForth unused
 syn keyword soloforthForth warnings
 syn keyword soloforthForth width
@@ -1149,6 +1152,8 @@ let b:current_syntax = "soloforth"
 " `noname?`, `last`, `lastxt`, `latestxt`.
 " 
 " 2016-04-27: Remove `defined?`, add `?defined`. Add `.error-word`.
+"
+" 2016-04-29: Add `nest-source`, `unnest-source`, `block>source`.
 
 " --------------------------------------------------------------
 

@@ -292,6 +292,26 @@ need j  need k
 
 cr jk-test
 
+( lineload-test )
+
+  \ Do `n locate line-load-test lineload` where "n" is the line
+  \ number of this block.
+
+  .( line 1 ) cr
+  .( line 2 ) cr
+  .( line 3 ) cr
+  .( line 4 ) cr
+  .( line 5 ) cr
+  .( line 6 ) cr
+  .( line 7 ) cr
+  .( line 8 ) cr
+  .( line 9 ) cr
+  .( line 10 ) cr
+  .( line 11 ) cr
+  .( line 12 ) cr
+  .( line 13 ) cr
+  .( line 14 ) cr
+  .( line 15 ) cr
 .( block x line 0)
   .( block x line 1 ) cr
   .( block x line 2 ) cr

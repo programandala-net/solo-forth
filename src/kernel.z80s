@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604282020
+; Last modified: 201604290028
 
 include version.z80s
 
@@ -1930,6 +1930,9 @@ question_csb_.enough:
 ; ----
 ;
 ; }doc
+
+  ; XXX TODO -- return a ior; _len_ could be too big for the
+  ; buffer
 
   dw question_csb_
   dw csb0_,unused_csb_,plus_
@@ -9707,7 +9710,7 @@ endif
 ;
 ; ----
 ; : load  ( u -- )
-;   dup 0= 9 ?throw  dup scr !
+;   dup 0= #-259 ?throw  dup scr !
 ;   nest-source (load) unnest-source  ;
 ; ----
 ;

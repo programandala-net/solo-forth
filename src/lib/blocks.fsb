@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604111453
+  \ Last modified: 201604291251
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,7 @@
   \ History
 
   \ 2015..2016: Main development.
+  \ 2016-04-29: Add `lineload` and `lineblock>source`.
 
 ( ?--> )
 
@@ -173,7 +174,6 @@
 [unneeded] +thru
 ?\ : +thru  ( n1 n2 -- )  1+ swap do  i +load  loop  ;
 
-
 [unneeded] loader ?exit
 
 : loader  ( block "name" -- )
@@ -191,9 +191,11 @@
   \
   \ }doc
 
-( .line )
+( .line lineblock>source lineload )
 
-: .line  ( n1 n2 -- )  line>string -trailing type  ;
+[unneeded] .line
+
+?\ : .line  ( n1 n2 -- )  line>string -trailing type  ;
 
   \ doc{
   \
@@ -202,6 +204,35 @@
   \ Print line _n1_ from block _n2_, without trailing spaces.
   \
   \ Origin: fig-Forth.
+  \
+  \ }doc
+
+[needed] .line ?exit
+
+: lineblock>source  ( n1 n2 -- )  blk !  c/l * >in !  ;
+
+  \ doc{
+  \
+  \ lineblock>source  ( n1 n2 -- )
+  \
+  \ Set block _n2_ as the current source, starting from its
+  \ line _n1_.
+  \
+  \ }doc
+
+[unneeded] lineload ?exit
+
+: lineload  ( n1 n2 -- )
+  dup 0= #-259 ?throw
+  nest-source lineblock>source interpret unnest-source  ;
+
+  \ doc{
+  \
+  \ lineload  ( n1 n2 -- )
+  \
+  \ Begin interpretation at line _n1_ of block _n2_.
+  \
+  \ Origin: Forth-83 (Uncontrolled Reference Words).
   \
   \ }doc
 
