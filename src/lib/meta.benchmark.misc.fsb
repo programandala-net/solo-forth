@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242145
+  \ Last modified: 201604291627
 
   \ -----------------------------------------------------------
   \ Description
@@ -24,6 +24,9 @@
 
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \
+  \ 2016-04-29: Add benchmark of two versions of `u<=` and
+  \ `u>=`.  Fix benchmark of `u<`.
 
 ( number-base-bench )
 
@@ -1222,31 +1225,81 @@ defer (m*/)
 
 ( u<-bench )
 
-  \ 2016-04-16
+  \ 2016-04-16: Start.
+  \ 2016-04-29: Fix the loop. First working version.
 
-need bench{
+need bench{  need j
 
-defer (u<)  need j
+defer (u<)
+
+variable times
 
 : u<-bench  ( n xt -- )
-  ['] (u<) defer!
+  ['] (u<) defer!  times !
   bench{
-    dup 0 ?do  0 ?do  i j (u<) drop  loop  loop
+    times @ 0 ?do  times @ 0 ?do  i j
+    \ 2dup . . key drop  \ XXX INFORMER
+    (u<) drop  loop  loop
   }bench.  ;
 
 : run  ( n -- )
-      cr ." u< from:"
-  dup cr ." DZX-Forth .........." ['] dzxu< u<-bench
-      cr ." Z88 CamelForth ....." ['] u< u<-bench  ;
+      cr ." Implementation of U<"
+  dup cr ."   DZX-Forth .........." ['] u< u<-bench
+      cr ."   Z88 CamelForth ....." ['] z88u< u<-bench  ;
 
-  \ XXX FIXME -- Z88 CamelForth `u<` never ends
+  \ 2016-04-29
 
-  \ 10 run
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   --------------------------------------
+  \         DZX-Forth u<  Z88 CamelForth u<
+  \         ------------- ------------------------
+  \   50               31                30 (0.96)
+  \  100              125               120 (0.96)
+  \  250              773               744 (0.96)
+  \ 1000            12148             11869 (0.97)
+
+( u<=-bench u>=-bench )
+
+  \ 2016-04-29
+
+need alias  need alias!  need j  need bench{  need }bench.
+
+: 0(u<=)  ( u1 u2 -- f )  u> 0=  ;
+: 1(u<=)  ( u1 u2 -- f )  1+ u<  ;
+
+: 0(u>=)  ( u1 u2 -- f )  u< 0=  ;
+: 1(u>=)  ( u1 u2 -- f )  1- u>  ;
+
+' drop alias operator
+latest constant operator-nt
+
+variable times
+
+: operator-bench  ( n xt -- )
+  operator-nt alias!  times !
+  bench{
+    times @ 0 ?do  times @ 0 ?do  i j operator drop  loop  loop
+  }bench.  ;
+
+-->
+
+( u<=-bench u>=-bench )
+
+: run  ( n -- )
+      cr ." Implementation of U<="
+  dup cr ."   u> 0= ..." ['] 0(u<=) operator-bench
+  dup cr ."   1+ u< ..." ['] 1(u<=) operator-bench
+      cr ." Implementation of U>="
+  dup cr ."   u< 0= ..." ['] 0(u>=) operator-bench
+      cr ."   1- u< ..." ['] 1(u>=) operator-bench  ;
 
   \ Times   Frames (1 frame = 50th of second)
   \ -----   -----------------------------------
-  \         DZX-Forth u<  Z88 CamelForth u<
-  \         ------------- -----------------
-  \ 10               
+  \         u<=             u>=
+  \         ------------    ------------
+  \         u> 0=  1+ u<    u< 0=  1- u<
+  \         -----  -----    -----  -----
+  \  100      106    107      107    107
+  \ 1000    10560  10560    10560  10560
 
   \ vim: filetype=soloforth

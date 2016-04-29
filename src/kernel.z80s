@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604290028
+; Last modified: 201604291627
 
 include version.z80s
 
@@ -5588,39 +5588,16 @@ u_greater_than.hl:
 
 ; ----------------------------------------------
   _code_header u_less_than_,'U<'
-  ;_code_header dzxu_less_than_,'DZXU<'
 
-  ; XXX TMP -- for benchmarking
-  ; XXX TODO -- benchmark
+  ; Credit:
+  ;
+  ; Code adapted from Z88 CamelForth.
 
   pop de
   pop hl
 u_less_than.de_hl:
-  _compare_de_hl_unsigned
-  if size_optimization
-    jp true_if_cy
-  else
-    jp c,true_
-    jp false_
-  endif
-
-; ----------------------------------------------
-  ;_code_header u_less_than_,'U<'
-  _code_header z88u_less_than_,'Z88U<'
-
-  ; XXX TMP -- for benchmarking
-  ; XXX TODO -- benchmark
-
-  pop de
-  pop hl
-;u_less_than.de_hl:
-
-  ;_compare_de_hl_unsigned ; XXX OLD
-
-  ; XXX NEW -- 2016-04-16
   or a
   sbc hl,de
-
   sbc a,a         ; propagate carry flag through A
   ld h,a
   ld l,a          ; HL = $0000 or $FFFF
@@ -5724,7 +5701,7 @@ u_less_than.de_hl:
 ;
 ; }doc
 
-  ; XXX TODO -- Search backwards from `last @`?
+  ; XXX TODO -- Search backwards from `latest`?
 
   call bank.system ; page in the memory bank
 
