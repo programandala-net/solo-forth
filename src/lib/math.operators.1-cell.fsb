@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281315
+  \ Last modified: 201604291412
 
   \ -----------------------------------------------------------
   \ Description
@@ -196,7 +196,8 @@ code polarity  ( n -- -1 | 0 | 1 )
 ( 0max )
 
   \ Credit:
-  \ Idea taken from IsForth.
+  \
+  \ Idea from IsForth.
 
 code 0max  ( n -- n | 0 )
   E1 c,
@@ -251,13 +252,13 @@ code 0max  ( n -- n | 0 )
 
 ( lshift )
 
-need z80-asm
-
   \ Credit:
   \
   \ Code adapted from Z88 CamelForth.
 
-  \ 16 bytes used
+  \ Data space used: 16 bytes.
+
+need z80-asm
 
 code lshift  ( x1 u -- x2 )
 
@@ -303,7 +304,7 @@ need z80-asm
   \
   \ Code adapted from Z88 CamelForth.
 
-  \ 19 bytes used
+  \ Data space used: 19 bytes.
 
 code rshift  ( x1 u -- x2 )
 
@@ -327,8 +328,10 @@ code rshift  ( x1 u -- x2 )
   \
   \ Code adapted from DZX-Forth.
 
-  \ This version is smaller (16 bytes used) but slower (133%
-  \ the execution time of the version adapted from Z88 CamelForth).
+  \ This version is 3 bytes smaller but slower (133% the
+  \ execution time of the version adapted from Z88 CamelForth).
+
+  \ Data space used: 16 bytes.
 
 code rshift  ( x1 u -- x2 )
   D1 c,           \ pop de
@@ -343,6 +346,15 @@ code rshift  ( x1 u -- x2 )
   end-code
 
 ( bits )
+
+  \ Credit:
+  \
+  \ Based on a pixels counter written by Juan Antonio Paz,
+  \ published on Microhobby, issue 170 (1988-05), page 21:
+  \ http://microhobby.org/numero170.htm
+  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
+
+  \ Data space used: 29 bytes.
 
 need z80-asm
 
@@ -362,8 +374,6 @@ code bits  ( ca len -- u )
 
   exx jppushhl end-code
 
-  \ 29 bytes used.
-
   \ doc{
   \
   \ bits  ( ca len -- u )
@@ -371,13 +381,6 @@ code bits  ( ca len -- u )
   \ Count the number of bits set in memory zone _ca len_.
   \
   \ }doc
-
-  \ Credit:
-  \
-  \ Based on a pixels counter written by Juan Antonio Paz,
-  \ published on Microhobby, issue 170 (1988-05), page 21:
-  \ http://microhobby.org/numero170.htm
-  \ http://microhobby.speccy.cz/mhf/170/MH170_21.jpg
 
 ( 2/ )
 
@@ -564,11 +567,11 @@ need 2/
 
   \ Floored-division operators
 
-need fm/mod
-
   \ Credit:
   \
   \ Forth-94 documentation.
+
+need fm/mod
 
 : /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
 
@@ -642,5 +645,61 @@ need [if]
   \ }doc
 
 [then]
+
+( split join )
+
+  \ Credit:
+  \
+  \ Idea from IsForth.
+
+code split  ( x -- b1 b2 )
+  E1 c,
+    \ pop hl
+  16 c, 00 c,  58 05 + c,
+    \ ld d,0
+    \ ld e,l
+  68 04 + c,  26 c, 00 c,
+    \ ld l,h
+    \ ld h,0
+  C3 c, pushhlde ,
+    \ jp push_hlde
+  end-code
+
+  \ doc{
+  \
+  \ split  ( x -- b1 b2 )
+  \
+  \ Get _b1_ and _b2_ from the 2 bytes which compose _x_: _b1_
+  \ is the high-order byte and _b2_ is the low-order byte.
+  \
+  \ See `join`.
+  \
+  \ Origin: IsForth.
+  \
+  \ }doc
+
+
+code join  ( b1 b2 -- x )
+  D1 c,  60 03 + c,  D1 c,  68 03 + c,
+    \ pop de
+    \ ld h,e
+    \ pop de
+    \ ld l,e
+  jppushhl
+    \ jp push_hl
+  end-code
+
+  \ doc{
+  \
+  \ join  ( b1 b2 -- x )
+  \
+  \ _b1_ is the low-order byte of _x_, and _b2_ is the
+  \ high-order byte of _x_.
+  \
+  \ See `split`.
+  \
+  \ Origin: IsForth.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
