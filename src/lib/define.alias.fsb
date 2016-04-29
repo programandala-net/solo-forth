@@ -3,12 +3,19 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604180026
+  \ Last modified: 201604291453
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ An implementation of `alias`.
+  \ Implementation of `alias`.  Features of an alias defined with
+  \ `alias`:
+  \
+  \ - It has the execution token of the original word.
+  \ - It does not inherit the attributes of the original word,
+  \   which can be set with `immediate` and `compile-only`.
+  \ - It does not use data space memory.
+  \ - Its behaviour can be reconfigured with `realias` and `alias!`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -43,12 +50,27 @@
   \ of the original word.
   \
   \ 2016-04-18: Wrote `realias`.
+  \
+  \ 2016-04-29: Add `alias!`, a useful common factor of
+  \ `alias` and `realias`.
 
-( alias realias )
+( alias! alias realias )
 
 need name>>  need !s
 
-: alias  ( xt "name" -- )  header reveal latest name>> !s  ;
+: alias!  ( xt nt -- )  name>> !s  ;
+
+  \ doc{
+  \
+  \ alias!  ( xt nt -- )
+  \
+  \ Set the alias _nt_ to execute _xt_.
+  \
+  \ See `alias`, `realias`.
+  \
+  \ }doc
+
+: alias  ( xt "name" -- )  header reveal latest alias!  ;
 
   \ doc{
   \
@@ -60,14 +82,14 @@ need name>>  need !s
   \ but don't inherit its precedence (set by `immediate`) and
   \ restricted (set by `compile-only`) attributes.
   \
-  \ See `realias`.
+  \ See `realias`, `alias!`.
   \
   \ Origin: Gforth.
   \
   \ }doc
 
 : realias  ( xt "name" -- )
-  defined dup 0= #-13 ?throw name>> !s  ;
+  defined dup 0= #-13 ?throw alias!  ;
 
   \ doc{
   \
@@ -75,7 +97,7 @@ need name>>  need !s
   \
   \ Set the alias _name_ to execute _xt_.
   \
-  \ See `alias`.
+  \ See `alias`, `alias!`.
   \
   \ }doc
 
