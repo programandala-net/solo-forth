@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604272225
+  \ Last modified: 201605020017
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,13 +49,13 @@
   \ 2016-04-27: Add `comp'`, `[comp']`. Move `warning` from the
   \ kernel. Add `warn.throw`, `warn.message`, `warn-throw`
   \ and common factors.
+  \ 2016-04-29: Add `string-parameter`.
+  \ 2016-05-02: Join several blocks to save space.
 
-( [false] [true] )
+( [false] [true] [if] [else] [then] )
 
-         0 constant [false] immediate
-[false] 0= constant [true]  immediate
-
-( [if] [else] [then] )
+[unneeded] [true]  ?\   0 constant [false] immediate exit 
+[unneeded] [false] ?\  -1 constant [true]  immediate exit
 
 need s=
 
@@ -172,7 +172,19 @@ need s=
   \
   \ }doc
 
-( smudge smudged )
+( ?pairs smudge smudged )
+
+[unneeded] ?pairs
+?\ : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;  exit
+
+  \ doc{
+  \
+  \ ?pairs  ( x1 x2 -- )
+  \
+  \ If _x1_ not equals _x2_ throw error #-22 (control structure
+  \ mismatch).
+  \
+  \ }doc
 
 need c!toggle-bits
 
@@ -208,28 +220,7 @@ need c!toggle-bits
   \
   \ }doc
 
-( ?pairs )
-
-: ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;
-
-  \ doc{
-  \
-  \ ?pairs  ( x1 x2 -- )
-  \
-  \ If _x1_ not equals _x2_ throw error #-22 (control structure
-  \ mismatch).
-  \
-  \ }doc
-
-( save-here restore-here )
-
-variable here-backup
-: save-here  ( -- )  here here-backup !  ;
-: restore-here  ( -- )  here-backup @ there  ;
-
-  \ XXX TODO -- behead `here-backup`
-
-( ]l ]2l exec eval )
+( ]l ]2l exec eval save-here restore-here )
 
 need [if]
 
@@ -258,6 +249,16 @@ need [if]
   \ A short form of the idiom `] 2literal`.
   \
   \ }doc
+
+[then]
+
+[needed] save-here [needed] restore-here or [if]
+
+variable here-backup
+: save-here  ( -- )  here here-backup !  ;
+: restore-here  ( -- )  here-backup @ there  ;
+
+  \ XXX TODO -- behead `here-backup`
 
 [then]
 
@@ -403,7 +404,23 @@ need eval  need [if]
 
 [then]
 
-( cliteral )
+( current-latest cliteral )
+
+[unneeded] current-latest
+?\ : current-latest  ( -- nt )  get-current @  ;  exit
+
+  \ doc{
+  \
+  \ current-latest ( -- nt )
+  \
+  \ Leave the name token of the topmost word in the current
+  \ compilation word list.  This is different from `latest`,
+  \ which returns the name token of the latest word defined in
+  \ the system.
+  \
+  \ Origin: fig-Forth `latest`.
+  \
+  \ }doc
 
 : cliteral  ( b -- )  compile clit c,  ; immediate compile-only
 
@@ -417,23 +434,6 @@ need eval  need [if]
   \ of data space.
   \
   \ Origin: Comus.
-  \
-  \ }doc
-
-( current-latest )
-
-: current-latest  ( -- nt )  get-current @  ;
-
-  \ doc{
-  \
-  \ current-latest ( -- nt )
-  \
-  \ Leave the name token of the topmost word in the current
-  \ compilation word list.  This is different from `latest`,
-  \ which returns the name token of the latest word defined in
-  \ the system.
-  \
-  \ Origin: fig-Forth `latest`.
   \
   \ }doc
 
@@ -570,5 +570,63 @@ need warnings  need [if]
 ' warn-throw ' warn defer!  warnings on
 
 [then]
+
+( string-parameter )
+
+  \ Credit:
+  \
+  \ Inspired by pForth's `param`.
+
+: string-parameter  ( -- ca len )
+  rp@ cell+ dup >r    ( a1 ) ( R: a1 )
+    \ get the address, in the return stack,
+    \ that contains the return address of the calling word,
+    \ which contains the address of the compiled string
+  @ count             ( ca len ) ( R: a1 )
+    \ get the string
+  dup char+ r@ @ +    ( ca len a2 ) ( R: a1 )
+    \ calculate the new return address of the calling word,
+    \ in order to skip the string
+  r> !  ;
+    \ update the return address of the calling word,
+
+  \ XXX TODO -- benchmark this alternative:
+
+: string-parameter2  ( -- ca len )
+  rp@ cell+ dup >r    ( a1 ) ( R: a1 )
+    \ get the address, in the return stack,
+    \ that contains the return address of the calling word,
+    \ which contains the address of the compiled string
+  dup @ count         ( a1 ca len ) ( R: a1 )
+    \ get the string
+  dup char+ rot +    ( ca len a2 ) ( R: a1 )
+    \ calculate the new return address of the calling word,
+    \ in order to skip the string
+  r> !  ;
+    \ update the return address of the calling word,
+
+: string-parameter3  ( -- ca len )
+  \ XXX UNDER DEVELOPMENT
+  rp@ cell+ dup       ( a1 )
+    \ get the address, in the return stack,
+    \ that contains the return address of the calling word,
+    \ which contains the address of the compiled string
+  dup @ count         ( a1 ca len )
+    \ get the string
+  rot dup >r over char+ over +    ( ca len a2 )
+    \ calculate the new return address of the calling word,
+    \ in order to skip the string
+  r> !  ;
+    \ update the return address of the calling word,
+
+  \ doc{
+  \
+  \ string-param  ( -- ca len )
+  \
+  \ Return a string compiled after the calling word.
+  \
+  \ See `warning"` and `(warning")` for a usage example.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
