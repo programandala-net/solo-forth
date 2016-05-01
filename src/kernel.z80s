@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605011738
+; Last modified: 201605011806
 
 include version.z80s
 
@@ -10341,18 +10341,6 @@ if 0
 endif
 
 ; ----------------------------------------------
-  _defer_header home_,'HOME',,mode32_home_
-
-; doc{
-;
-; home  ( -- )
-;
-; Set the cursor position at the top left position (column 0,
-; row 0).
-;
-; }doc
-
-; ----------------------------------------------
   _code_header cls_,'CLS'
 
 ; doc{
@@ -10389,7 +10377,7 @@ endif
   ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
 
-  jp home_ ; continue at `home`
+  ; execution continues at `home`
 
   ; The Z80 version above uses 29 bytes;
   ; the following Forth version uses 30 bytes:
@@ -10400,6 +10388,18 @@ endif
   ; dw lit_,sys_attr_p,c_fetch_,fill_
   ; dw home_
   ; dw exit_
+
+; ----------------------------------------------
+  _defer_header home_,'HOME',,mode32_home_
+
+; doc{
+;
+; home  ( -- )
+;
+; Set the cursor position at the top left position (column 0,
+; row 0).
+;
+; }doc
 
 ; ----------------------------------------------
   _colon_header page_,'PAGE'
