@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604291412
+  \ Last modified: 201605012247
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,7 @@
   \ 2016-04-07: Add `bits`, generic version of `pixels`.
   \ 2016-04-27: Add `sgn`, `<=>`, `either`, `neither`.
   \ 2016-04-28: Fix `<=>`. Add `0max`.
+  \ 2016-05-01: Add `clshift`.
 
 ( under+ )
 
@@ -343,6 +344,26 @@ code rshift  ( x1 u -- x2 )
   CB c, 3C c,     \ srl h
   CB c, 1D c,     \ rr l
   C3 c, ,         \ jp begin
+  end-code
+
+( clshift )
+
+code clshift  ( b1 u -- b2 )
+
+  D1 c,  E1 c,  78 05 + c,  1C c,           
+    \ pop de
+    \ pop hl
+    \ ld a,l
+    \ inc e
+  here            
+    \ begin:
+  1D c,  CA c, pusha ,   
+    \ dec e
+    \ jp z,push_a
+  80 07 + c,  C3 c, ,
+    \ add a,a
+    \ jp begin
+
   end-code
 
 ( bits )
