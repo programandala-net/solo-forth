@@ -10726,8 +10726,34 @@ mode32_xy.end:
 ; ----------------------------------------------
   _code_header overprint_,'OVERPRINT'
 
+; doc{
+;
+; overprint  ( f -- )
+;
+; If _f_ is zero, turn the overprint mode off; else turn it on.
+;
+; }doc
+
+  ; XXX TODO -- move to the library
+
+if 1 ; XXX NEW
+
+  pop hl
+  ld a,h
+  or l
+  jr z,overprint.off
+  set 0,(iy+sys_p_flag_offset) ; temporary over flag
+  _jp_next
+overprint.off
+  res 0,(iy+sys_p_flag_offset) ; temporary over flag
+  _jp_next
+
+else ; XXX OLD
+
   ld a,over_char
   jr color
+
+endif
 
 ; ----------------------------------------------
   _code_header flash_,'FLASH'
