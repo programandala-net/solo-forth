@@ -10291,47 +10291,6 @@ dot_s.end:
 endif
 
 ; ----------------------------------------------
-  _code_header default_colors_,'DEFAULT-COLORS'
-
-; doc{
-;
-; colors0  ( -- )
-;
-; Set the screen colors to the default values.
-;
-; }doc
-
-  ; XXX TODO deactivate inverse mode.
-
-  ; Set the colors and their masks.
-
-  ld hl,(default_color_attribute)
-  ; l = 128*flash + 64*bright + 8*paper + ink
-  ; h = mask
-  ld (sys_attr_p),hl ; permanent
-  ld (sys_attr_t),hl ; temporary
-
-  ; Set the system variable that holds the attributes of the
-  ; lower part of the screen.  This must be done because G+DOS
-  ; by default changes the border color during disk operations,
-  ; and at the end restores it with the value of this system
-  ; variable.
-
-  ld a,l
-  ld (sys_bordcr),a ; lower screen colors
-
-  ; Set the border color to the paper color.
-
-  ; a = 128*flash + 64*bright + 8*paper + ink
-  and a ; cy=0
-  rra
-  rra
-  rra ; a = paper
-  out($FE),a ; set the border color
-
-  _jp_next
-
-; ----------------------------------------------
   _code_header mode32_home_,'MODE32-HOME'
 
 ; doc{
@@ -10708,6 +10667,45 @@ mode32_xy.end:
 ; }doc
 
 ; ----------------------------------------------
+  _code_header default_colors_,'DEFAULT-COLORS'
+
+; doc{
+;
+; default-colors  ( -- )
+;
+; Set the screen colors to the default values.
+;
+; }doc
+
+  ; XXX TODO deactivate inverse mode.
+
+  ; Set the colors and their masks.
+
+  ld hl,(default_color_attribute)
+  ; l = 128*flash + 64*bright + 8*paper + ink
+  ; h = mask
+  ld (sys_attr_p),hl ; permanent
+  ld (sys_attr_t),hl ; temporary
+
+  ; Set the system variable that holds the attributes of the
+  ; lower part of the screen.  This must be done because G+DOS
+  ; by default changes the border color during disk operations,
+  ; and at the end restores it with the value of this system
+  ; variable.
+
+  ld a,l
+  ld (sys_bordcr),a ; lower screen colors
+
+  ; Set the border color to the paper color.
+
+  ; a = 128*flash + 64*bright + 8*paper + ink
+  and a ; cy=0
+  rra
+  rra
+  rra ; a = paper
+  jr border.a
+
+; ----------------------------------------------
   _code_header border_,'BORDER'
 
 ; doc{
@@ -10720,6 +10718,8 @@ mode32_xy.end:
 
   pop hl
   ld a,l
+border.a:
+  ; XXX TODO -- mask the higher bits if they do something
   out (border_port),a
   _jp_next
 
