@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605010344
+; Last modified: 201605011717
 
 include version.z80s
 
@@ -10097,12 +10097,18 @@ to_digit.end
 ;   >r 0 r@ um/mod -rot r> um/mod rot  ;
 ; ----
 ;
-; Origin: fig-Forth (`m/mod`), comus: Gforth, Z88 CameForth.
+; Origin: fig-Forth (`m/mod`), Gforth, Z88 CameForth.
 ;
 ; }doc
 
   ; Credit:
   ; Code modified from Z88 CamelForth.
+
+; XXX TODO -- compare with this version from Gforth
+; and save `-rot` in the kernel:
+;
+; : ud/mod  
+;   >r 0 r@ um/mod r> swap >r um/mod r> ;
 
   dw to_r_
   _literal 0
@@ -10750,8 +10756,6 @@ mode32_xy.end:
 ; ----------------------------------------------
   _code_header ink_,'INK'
 
-  ; XXX FIXME -- crash when out of range
-
   ld a,ink_char
 
 color:
@@ -10760,6 +10764,11 @@ color:
   ; Input:
   ;   a = attribute control char
   ;   (tos) = color attribute value
+
+  ; XXX FIXME -- Crash when TOS is out of range.  The reason is
+  ; the BASIC error "invalid color" at ROM addreess $2244.
+  ; Possible solution: manipulate the system variables directly.
+
   rst $10
   pop hl
   ld a,l
