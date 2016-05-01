@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
   
-  \ Last modified: 201604242201
+  \ Last modified: 201605020146
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,9 @@
   \
   \ 2016-04-24: Remove `char`, which has been moved to the
   \ library. Change the stack notation.
+  \
+  \ 2016-05-02: Compact two blocks to save space in the
+  \ library.
 
 ( life )
 
@@ -65,9 +68,7 @@ need ms  need c+!  need 2/
   \ the universal pattern
 32 CONSTANT How-Deep  24 CONSTANT How-Wide
 
-How-Wide How-Deep *
-  \  1-  \ 1- prevents scrolling on my screen \ XXX OLD
-   CONSTANT Homes
+How-Wide How-Deep * CONSTANT Homes
 
   \ world wrap
 : World  ( "name" -- )
@@ -76,10 +77,6 @@ How-Wide How-Deep *
     ( u pfa ) SWAP Homes +  Homes MOD  CHARS + ;
 
 World old  World new
-
--->
-
-( life )
 
   \ biostatistics
 
@@ -140,10 +137,6 @@ $10 CONSTANT Alive  \ 0y = not alive
 
 : One  ( c-addr -- i )  0 old -  /Char / ;
 
--->
-
-( life )
-
 : there  ( -- )  How-Wide 1- 0 AT-XY ;
 
 : Everything  ( -- )
@@ -153,10 +146,7 @@ $10 CONSTANT Alive  \ 0y = not alive
      IF   -Sustaining IF  OVER One Dies     THEN
      ELSE  Quickening IF  OVER One Is-Born  THEN THEN
      1 /STRING
-  REPEAT  2DROP
-  there  ;
-
--->
+  REPEAT  2DROP  there  ;  -->
 
 ( life )
 
@@ -190,11 +180,8 @@ $10 CONSTANT Alive  \ 0y = not alive
   R>  CMOVE
   0 old  Homes 0
   DO  COUNT BL <>
-      DUP IF  Soul I Home  THEN
-      Alive AND  I new C!
-  LOOP  DROP
-  Serpent
-  Innocence Passes ;
+      DUP IF  Soul I Home  THEN  Alive AND  I new C!
+  LOOP  DROP  Serpent Innocence Passes ;
 
 -->
 
@@ -213,8 +200,7 @@ $10 CONSTANT Alive  \ 0y = not alive
   \ free will
 : Action  ( -- c )
   KEY? DUP
-  IF  DROP KEY  DUP BL = IF  Creation  THEN
-  THEN ;
+  IF  DROP KEY  DUP BL = IF  Creation  THEN  THEN ;
 
   \ environmental dependence
 7 CONSTANT Escape
