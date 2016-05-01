@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160325
+  \ Last modified: 201605010407
 
   \ -----------------------------------------------------------
   \ Description
@@ -21,6 +21,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-05-01: Add `holds`.
 
 ( ud.r ud. )
 
@@ -89,5 +94,24 @@
 : 32bin.    ( d -- )  32 (dbin.)  ;
 : 16bin.     ( n -- )  s>d 16 (dbin.)  ;
 : 8bin.    ( b -- )  s>d 8 (dbin.)  ;
+
+( holds )
+
+  \ Credit:
+  \ Code from the documentation of Forth-2012.
+
+: holds  ( ca len -- )
+  begin  dup  while  1- 2dup + c@ hold  repeat
+  2drop  ;
+
+  \ doc{
+  \
+  \ holds  ( ca len -- )
+  \
+  \ Add string _ca len_ to the pictured numeric output string.
+  \
+  \ Origin: Forth-2012 (CORE EXT).
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
