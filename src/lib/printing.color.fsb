@@ -1,0 +1,191 @@
+  \ printing.color.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201605011813
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to color.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-05-01: Start. `!color`, `color`, `2!color`, `2color`,
+  \ `!permcolor`, `permcolor`, `2!permcolor`, `2permcolor`.
+
+  \ -----------------------------------------------------------
+  \ Documentation
+
+  \ (From the ZX Spectrum +3 manual transcribed by Russell
+  \ Marks et al.; and from the ZX Spectrum ROM disassembly.)
+
+  \ System variables:
+
+  \ 23693 = ATTR_P -- permanent colors
+
+  \         {fl}{br}{   paper   }{  ink    }
+  \          ___ ___ ___ ___ ___ ___ ___ ___
+  \ ATTR_P  |   |   |   |   |   |   |   |   |
+  \         |   |   |   |   |   |   |   |   |
+  \ 23693   |___|___|___|___|___|___|___|___|
+  \           7   6   5   4   3   2   1   0
+
+  \ 23694 = MASK_P -- permanent mask
+  \ MASK_P is used for transparent colours. Any bit that is 1
+  \ shows that the corresponding attribute is taken not from
+  \ ATTR_P but from what is already on the screen.
+
+  \         {fl}{br}{   paper   }{  ink    }
+  \          ___ ___ ___ ___ ___ ___ ___ ___
+  \ MASK_P  |   |   |   |   |   |   |   |   |
+  \         |   |   |   |   |   |   |   |   |
+  \ 23694   |___|___|___|___|___|___|___|___|
+  \           7   6   5   4   3   2   1   0
+
+  \ 23695 = ATTR_T -- temporary colors
+
+  \         {fl}{br}{   paper   }{  ink    }
+  \          ___ ___ ___ ___ ___ ___ ___ ___
+  \ ATTR_T  |   |   |   |   |   |   |   |   |
+  \         |   |   |   |   |   |   |   |   |
+  \ 23695   |___|___|___|___|___|___|___|___|
+  \           7   6   5   4   3   2   1   0
+
+  \ 23696 = MASK_T -- temporary mask
+  \ MASK_T is used for transparent colours. Any bit that is 1
+  \ shows that the corresponding attribute is taken not from
+  \ ATTR_T but from what is already on the screen.
+
+  \         {fl}{br}{   paper   }{  ink    }
+  \          ___ ___ ___ ___ ___ ___ ___ ___
+  \ MASK_T  |   |   |   |   |   |   |   |   |
+  \         |   |   |   |   |   |   |   |   |
+  \ 23696   |___|___|___|___|___|___|___|___|
+  \           7   6   5   4   3   2   1   0
+
+  \ P_FLAG holds the print flags.  Even bits are the temporary
+  \ flags; odd bits are the permanent flags.
+
+  \         {paper9 }{ ink9 }{ inv1 }{ over1}
+  \          ___ ___ ___ ___ ___ ___ ___ ___
+  \ P_FLAG  |   |   |   |   |   |   |   |   |
+  \         | p | t | p | t | p | t | p | t |
+  \ 23697   |___|___|___|___|___|___|___|___|
+  \           7   6   5   4   3   2   1   0
+
+( set-color set-color-mask color 2color )
+
+need os-attr-t  need os-mask-t
+
+: set-color  ( b -- )  os-attr-t c!  ;
+
+  \ doc{
+  \
+  \ set-color  ( b -- )
+  \
+  \ Set temporary color attribute _b_.
+  \
+  \ }doc
+
+: set-color-mask  ( b -- )  os-mask-t c!  ;
+
+  \ doc{
+  \
+  \ set-color-mask  ( b -- )
+  \
+  \ Set temporary color attribute mask _b_.
+  \
+  \ }doc
+
+: color  ( b "name" -- )
+  create ,
+  does>  ( -- ) ( pfa ) @ set-color  ;
+
+  \ doc{
+  \
+  \ color  ( b "name" -- )
+  \
+  \ Create a definition "name" that, when executed, will
+  \ set temporary color attribute _b_.
+  \
+  \ }doc
+
+: 2color  ( b1 b2 "name" -- )
+  create 2,
+  does>  ( -- ) ( pfa ) 2@ set-color set-color-mask  ;
+  
+  \ doc{
+  \
+  \ 2color  ( b1 b2 "name" -- )
+  \
+  \ Create a definition "name" that, when executed, will
+  \ set temporary color attribute _b2_ and mask _b1_.
+  \
+  \ }doc
+  
+( set-permcolor set-permcolor-mask permcolor 2permcolor )
+
+need os-attr-p  need os-mask-p
+
+: set-permcolor  ( b -- )  os-attr-p c!  ;
+
+  \ doc{
+  \
+  \ set-permcolor  ( b -- )
+  \
+  \ Set permanent color attribute _b_.
+  \
+  \ }doc
+
+: set-permcolor-mask  ( b -- )  os-mask-p c!  ;
+
+  \ doc{
+  \
+  \ set-permcolor-mask  ( b -- )
+  \
+  \ Set permanent color attribute mask _b_.
+  \
+  \ }doc
+
+: permcolor  ( b "name" -- )
+  create ,
+  does>  ( -- ) ( pfa ) @ set-permcolor  ;
+
+  \ doc{
+  \
+  \ permcolor  ( b "name" -- )
+  \
+  \ Create a definition "name" that, when executed, will
+  \ set permanent color attribute _b_.
+  \
+  \ }doc
+
+: 2permcolor  ( b1 b2 "name" -- )
+  create 2,
+  does>  ( -- ) ( pfa ) 2@ set-permcolor set-permcolor-mask  ;
+  
+  \ doc{
+  \
+  \ 2permcolor  ( b1 b2 "name" -- )
+  \
+  \ Create a definition "name" that, when executed, will
+  \ set permanent color attribute _b2_ and mask _b1_.
+  \
+  \ }doc
+ 
+  \ vim: filetype=soloforth
