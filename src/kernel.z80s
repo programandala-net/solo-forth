@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605011858
+; Last modified: 201605012020
 
 include version.z80s
 
@@ -10374,16 +10374,6 @@ endif
 
   ; execution continues at `home`
 
-  ; The Z80 version above uses 29 bytes;
-  ; the following Forth version uses 30 bytes:
-
-  ; _colon_header cls_,'CLS'
-  ; dw lit_,sys_screen,lit_,sys_screen_bitmap_size,erase
-  ; dw lit_,sys_screen_attributes,lit_,sys_screen_attributes_size
-  ; dw lit_,sys_attr_p,c_fetch_,fill_
-  ; dw home_
-  ; dw exit_
-
 ; ----------------------------------------------
   _defer_header home_,'HOME',,mode32_home_
 
@@ -10407,7 +10397,8 @@ endif
 ; the screen and resets the cursor position to the upper left
 ; corner. On a printer, `page` performs a form feed.
 ;
-; Origin: Forth-94.
+; Origin: Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
+; Reference Words), Forth-94 (FACILITY), Forth-2012 (FACILITY).
 ;
 ; }doc
 
@@ -10682,18 +10673,9 @@ mode32_xy.end:
   ld (sys_attr_p),hl ; permanent
   ld (sys_attr_t),hl ; temporary
 
-  ; Set the system variable that holds the attributes of the
-  ; lower part of the screen.  This must be done because G+DOS
-  ; by default changes the border color during disk operations,
-  ; and at the end restores it with the value of this system
-  ; variable.
-
-  ld a,l
-  ld (sys_bordcr),a ; lower screen colors
-
   ; Set the border color to the paper color.
 
-  ; a = 128*flash + 64*bright + 8*paper + ink
+  ld a,l ; 128*flash + 64*bright + 8*paper + ink
   and a ; cy=0
   rra
   rra
@@ -10705,18 +10687,28 @@ mode32_xy.end:
 
 ; doc{
 ;
-; border  ( +n -- )
+; border  ( n -- )
 ;
-; Set the border of the screen to color to _+n_ (0..7).
+; Set the border of the screen to color to _n_.  Only the 3
+; lower bits of _n_ are used (for colors 0..7).
 ;
 ; }doc
 
   pop hl
   ld a,l
 border.a:
-  ; XXX TODO -- mask the higher bits if they do something
-  out (border_port),a
+  and %00000111 ; force value 0..7
+  call $229B ; secondary entry point in the "BORDER" ROM routine
   _jp_next
+
+  ; Note: The ROM routine at $229B also sets the system variable
+  ; BORDCR, which holds the attributes of the lower part of the
+  ; screen (paper color as border, and calculated constrast ink
+  ; color).  This is needed because: 1) G+DOS by default changes
+  ; the border color during disk operations, and at the end
+  ; restores it with the value of this system variable; 2) The
+  ; lower screen will have contrast ink after returning to
+  ; BASIC, no matter the border color used in Forth.
 
 ; ----------------------------------------------
   _code_header overprint_,'OVERPRINT'
