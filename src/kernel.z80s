@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605011806
+; Last modified: 201605011858
 
 include version.z80s
 
@@ -665,7 +665,9 @@ return_stack_pointer:
 
 default_color_attribute:
   ; `$12 +origin`
-  dw 4 ; low byte: green paper, black ink; high byte: no mask
+  db 4          ; low byte: green paper, black ink
+  ; `$13 +origin`
+  db %00000000  ; high byte: no mask
 
   ; User variables default values
 
@@ -724,7 +726,6 @@ names_pointer_init_value:
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
-
 
 ; ==============================================================
 ; User variables
@@ -1197,7 +1198,7 @@ nt_of_the_previous_word: defl 0
 ; ----------------------------------------------
   _alias_header root_set_order_,'SET-ORDER',,set_order_
 
-  ; This symbol must be set with the value of the 
+  ; This symbol must be set with the value of the
   ; latest word defined in the `root` vocabulary:
 latest_nt_in_root_voc: equ root_set_order_nt
 
@@ -1316,7 +1317,7 @@ endif
   dw comma_
   dw exit_
 
-  ; This symbol must be set with the value of the 
+  ; This symbol must be set with the value of the
   ; latest word defined in the `assembler` vocabulary:
 latest_nt_in_assembler_voc: equ jpnext_nt
 
@@ -5222,7 +5223,6 @@ endif
 
   dw terminal_input_buffer
 
-
 ; ----------------------------------------------
   _c_constant_header slash_tib_,'/TIB'
 
@@ -5823,7 +5823,6 @@ to_name.next:
 ;
 ; }doc
 
-
   dw bank_,c_fetch_,default_bank_
   dw exit_
 
@@ -6126,16 +6125,16 @@ postpone.end:
 
 ; XXX TODO -- Improve after Gforth:
 ;
-; : reveal  
-;   last? 
-;   IF     dup @ 1 and 
-;          IF     dup @ 1 xor 2dup >r name>string r> check-shadow dup 0 + @ 4 + 
-;                 perform 
-;          ELSE   drop 
-;          THEN 
+; : reveal
+;   last?
+;   IF     dup @ 1 and
+;          IF     dup @ 1 xor 2dup >r name>string r> check-shadow dup 0 + @ 4 +
+;                 perform
+;          ELSE   drop
+;          THEN
 ;   THEN ;
 ;
-; : last?  
+; : last?
 ;   latest ?dup ;
 
 ; ----------------------------------------------
@@ -6860,7 +6859,6 @@ fill.done:
 ; ----
 ;
 ; }doc
-
 
   dw stream_,two_dup_,two_to_r_,rot_,scan_
   dw dup_,zero_branch_,parse.end
@@ -8223,7 +8221,6 @@ quit.begin:
 
   dw exit_
 
-
 ; ----------------------------------------------
   _alias_header to_defer_,'>DEFER',,one_plus_
 
@@ -8356,7 +8353,7 @@ dot_version.build
 ;
 ; Display the amount of space remaining in the region addressed
 ; by `here`, in address units.
-; 
+;
 ; ----
 ; : .unused  ( -- )
 ;   unused u. ." B free"  ;
@@ -8716,7 +8713,7 @@ max.2:
 ;
 ; Multiply _n1_ by _n2_ producing the result _d_.
 ;
-; Origin: fig-Forth, Forth-94, Forth-2012.
+; Origin: fig-Forth, Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; ----
 ; : m*  ( n1 n2 -- d )
@@ -8815,7 +8812,6 @@ endif
 
 ; }doc
 
-
   dw two_dup_,xor_,to_r_
   dw over_,to_r_
   dw abs_,to_r_,d_abs_,from_r_,u_m_slash_mod_
@@ -8825,7 +8821,6 @@ endif
 
 ; ----------------------------------------------
   _colon_header star_,'*'
-
 
 ; doc{
 ;
@@ -10107,7 +10102,7 @@ to_digit.end
 ; XXX TODO -- compare with this version from Gforth
 ; and save `-rot` in the kernel:
 ;
-; : ud/mod  
+; : ud/mod
 ;   >r 0 r@ um/mod r> swap >r um/mod r> ;
 
   dw to_r_
@@ -10825,8 +10820,21 @@ color:
   pop hl
   ld a,l
   rst $10
-  call rom_set_permanent_colors_0x1CAD ; 17 03
-  _jp_next                             ; 08 02
+  ; execution continues at `permanent-colors`
+
+; ----------------------------------------------
+  _code_header permanent_colors_,'PERMANENT-COLORS'
+
+; doc{
+;
+; permanent-colors  ( -- )
+;
+; Make the current temporary color attributes permanent.
+;
+; }doc
+
+  call rom_set_permanent_colors_0x1CAD
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
@@ -11126,7 +11134,7 @@ backslash.loading:
   dw parse_,type_
   dw exit_
 
-  ; These symbols must be set with the values of the 
+  ; These symbols must be set with the values of the
   ; latest word defined in the `forth` vocabulary:
 latest_nt_in_forth_voc: equ dot_paren_nt
 latest_xt_in_forth_voc: equ dot_paren_
