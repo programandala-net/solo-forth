@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605012020
+; Last modified: 201605012035
 
 include version.z80s
 
@@ -10663,7 +10663,11 @@ mode32_xy.end:
 ;
 ; }doc
 
-  ; XXX TODO deactivate inverse mode.
+  ; Deactivate temporary and permanent print flags (over,
+  ; inverse, contrast ink, contrast paper).
+
+  xor a
+  ld (sys_p_flag),a
 
   ; Set the colors and their masks.
 
@@ -10703,8 +10707,8 @@ border.a:
 
   ; Note: The ROM routine at $229B also sets the system variable
   ; BORDCR, which holds the attributes of the lower part of the
-  ; screen (paper color as border, and calculated constrast ink
-  ; color).  This is needed because: 1) G+DOS by default changes
+  ; screen (paper after the border, and calculated constrast
+  ; ink).  This is needed because: 1) G+DOS by default changes
   ; the border color during disk operations, and at the end
   ; restores it with the value of this system variable; 2) The
   ; lower screen will have contrast ink after returning to
