@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604171613
+  \ Last modified: 201605020027
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,6 +22,8 @@
 
   \ 2016-04-17: Added the requisite of `recurse`, which is not
   \ in the kernel anymore.
+  \
+  \ 2016-05-02: Join several blocks, to save space.
 
 ( wid>link wid>name named-wid wid>vocabulary )
 
@@ -89,19 +91,18 @@ need recurse
 
 : get-order  ( -- u*wid u )  context order@  ;
 
-( wid-of )
+( wid-of swap-current trail find-name-in find )
 
+[unneeded] wid-of
+?\ : wid-of  ( "name" -- wid )  ' >body  ;  exit
+  \ Return the _wid_ of vocabulary "name".
+  
   \ Credit:
   \
   \ Adapted from eForth's `widof`.
 
-: wid-of  ( "name" -- wid )  ' >body  ;
-  \ Return the _wid_ of vocabulary "name".
-
-( swap-current trail )
-
 [unneeded] trail
-?\ : trail  ( -- nt )  context @ @  ;
+?\ : trail  ( -- nt )  context @ @  ;  exit
 
   \ doc{
   \
@@ -112,16 +113,16 @@ need recurse
   \
   \ }doc
 
-[unneeded] swap-current ?\ exit
+need [if]     [needed] swap-current [if]
+
 : swap-current  ( wid1 -- wid2 )
-  get-current swap set-current  ;
+  get-current swap set-current  ;    [then]
 
   \ Credit:
   \
   \ Idea from lpForth.
 
-( find-name-in find )
-
+[needed] find-name-in [if]
 : find-name-in  ( ca len wid -- nt | 0 )  @ find-name-from  ;
 
   \ doc{
@@ -136,9 +137,12 @@ need recurse
   \
   \ }doc
 
+[then]
+
+[needed] find [if]
 : find  ( ca -- ca 0 | xt 1 | xt -1 )
   dup count find-name dup
-  if  nip name>immediate? 1 or negate  then  ;
+  if  nip name>immediate? 1 or negate  then  ;  [then]
 
   \ doc{
   \

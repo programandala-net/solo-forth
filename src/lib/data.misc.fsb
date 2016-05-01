@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281353
+  \ Last modified: 201605020054
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,17 +28,32 @@
   \ 2015-11-15: Add `link@` and `link,`.
   \ 2016-04-28: Rename `set` to `storer` and improve it. Add
   \ `cstorer`.
+  \ 2016-05-02: Join two blocks to save space.
 
-( buffer: cvariable enum )
+( buffer: cvariable enum link@ link, )
 
 [unneeded] buffer:
-?\ : buffer:  ( u "name" -- )  create allot  ;
+?\ : buffer:  ( u "name" -- )  create allot  ;  exit
 
 [unneeded] cvariable
-?\ : cvariable  ( "name"  -- )  create 1 allot  ;
+?\ : cvariable  ( "name"  -- )  create 1 allot  ;  exit
 
 [unneeded] enum
-?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;
+?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;  exit
+
+[unneeded] link@  [unneeded] link, and ?exit
+
+  \ Credit:
+  \
+  \ Code of `link@` and `link,` written after the description
+  \ by Rick VanNorman, published on Forth Dimensions (volume
+  \ 20, number 3, pages 19-22, 1998-09).
+
+defer link@  ( node1 -- node2 )  ' @ ' link@ defer!
+  \ Fetch the linked list node _node_ is pointing to.
+
+: link,  ( node -- )  here over @ , swap !  ;
+  \ Create a new linked list node, pointing to _node_.
 
 ( storer cstorer )
 
@@ -47,8 +62,7 @@ need [if]
 [needed] storer [if]
 
 : storer  ( x a "name" -- )
-  create  2,
-  does>   ( -- ) ( pfa )  2@ !  ;
+  create  2,  does>   ( -- ) ( pfa )  2@ !  ;
 
   \ doc{
   \
@@ -67,8 +81,7 @@ need [if]
 [needed] cstorer [if]
 
 : cstorer  ( c ca "name" -- )
-  create  2,
-  does>   ( -- ) ( pfa )  2@ c!  ;
+  create  2,  does>   ( -- ) ( pfa )  2@ c!  ;
 
   \ doc{
   \
@@ -84,21 +97,5 @@ need [if]
   \ }doc
 
 [then]
-
-( link@ link, )
-
-
-  \ Credit:
-  \
-  \ Code written after the description by Rick VanNorman,
-  \ published on Forth Dimensions (volume 20, number 3, pages
-  \ 19-22, 1998-09).
-
-defer link@  ( node1 -- node2 )
-  ' @ ' link@ defer!
-  \ Fetch the linked list node _node_ is pointing to.
-
-: link,  ( node -- )  here over @ , swap !  ;
-  \ Create a new linked list node, pointing to _node_.
 
   \ vim: filetype=soloforth

@@ -1,14 +1,14 @@
-  \ tool.list.order.fsb
+  \ tool.list.word_lists.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604111513
+  \ Last modified: 201605020059
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `order`.
+  \ Tool words to list word lists.
 
   \ -----------------------------------------------------------
   \ Author
@@ -21,14 +21,29 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
-
+  
   \ -----------------------------------------------------------
   \ History
 
   \ 2015..2016: Main development.
   \ 2016-04-11: Documented.
+  \ 2016-05-01: Update.
+  \ 2016-05-02: Join two blocks to save space.
 
-( .current .context order )
+( wordlists .wid .current .context order )
+
+need [if]
+
+
+[needed] wordlists [if]
+
+: wordlists  ( -- )
+  voc-link
+  begin  @ ?dup  while  dup .wid wid>link  repeat  ;
+  \ List all wordlists.
+  \ XXX FIXME -- prints only one
+
+exit [then]
 
 need wid>name  need get-order
 
@@ -68,7 +83,7 @@ need wid>name  need get-order
   \ }doc
 
 : order  ( -- )
-  cr ." Search: " .context cr ." Define: " .current  ;
+  cr ." Search: " .context cr ." Compile: " .current  ;
 
   \ Display the search order currently in effect and the name
   \ of the `current` vocabulary.
