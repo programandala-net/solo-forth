@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201604291627
+; Last modified: 201605010344
 
 include version.z80s
 
@@ -1668,12 +1668,13 @@ endif
 ;
 ; ----
 ; : slit  ( -- ca len )
-;   r@ count dup 1+ r> + >r  ;
+;   r@ count dup char+ r> + >r  ;
 ; ----
 ;
 ; }doc
 
-  dw r_fetch_,count_,dup_,one_plus_,from_r_,plus_,to_r_
+  dw r_fetch_,count_ ; ( ca len )
+  dw dup_,char_plus_,from_r_,plus_,to_r_ ; skip the string after return
   dw exit_
 
 ; ----------------------------------------------
@@ -5288,7 +5289,8 @@ endif
   dw blk_,fetch_,question_dup_
   dw zero_branch_,source.other
   ; disk block
-  dw block_,b_slash_buf_,exit_
+  dw block_,b_slash_buf_
+  dw exit_
 source.other:
   dw input_buffer_,two_fetch_
   dw exit_
@@ -5362,7 +5364,7 @@ source.other:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header chars_,'CHARS',immediate
+  _alias_header chars_,'CHARS',immediate,noop_
 
 ; doc{
 ;
@@ -5375,8 +5377,6 @@ source.other:
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
-
-  _jp_next
 
 ; ----------------------------------------------
   _alias_header cells_,'CELLS',,two_star_
@@ -6333,21 +6333,20 @@ minus_trailing.begin:
 ; Type the compiled string that follows.
 ;
 ; ----
-; : (.")  ( -- ca len )
-;   r@ count dup 1+ r> + >r type  ;
+; : (.")  ( -- )
+;   r@ count dup char+ r> + >r type  ;
 ; ----
 ;
 ; }doc
 
   dw r_fetch_,count_ ; ( ca len )
-  dw dup_,one_plus_,from_r_,plus_,to_r_ ; skip the string after return
+  dw dup_,char_plus_,from_r_,plus_,to_r_ ; skip the string after return
   dw type_
 
   ; XXX TODO --
-  ;   `r@ count dup 1+ r> + >r` is what `slit` does, but
-  ;   calling `slit` here can not work:
-  ;
-  ; dw s_lit_,type_ ; XXX TODO -- this alternative can not work
+  ;   `r@ count dup char+ r> + >r` is what `slit` does, but
+  ;   calling `slit` here can not work.
+  ;   see `string-param` in the library for a possible factor
 
   dw exit_
 
