@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605011717
+; Last modified: 201605011738
 
 include version.z80s
 
@@ -10764,8 +10764,34 @@ endif
 ; ----------------------------------------------
   _code_header inverse_,'INVERSE'
 
+; doc{
+;
+; inverse  ( f -- )
+;
+; If _f_ is zero, turn the inverse mode off; else turn it on.
+;
+; }doc
+
+  ; XXX TODO -- move to the library
+
+if 1 ; XXX NEW
+
+  pop hl
+  ld a,h
+  or l
+  jr z,inverse.off
+  set 2,(iy+sys_p_flag_offset) ; temporary inverse flag
+  _jp_next
+inverse.off
+  res 2,(iy+sys_p_flag_offset) ; temporary inverse flag
+  _jp_next
+
+else ; XXX OLD
+
   ld a,inverse_char
   jr color
+
+endif
 
 ; ----------------------------------------------
   _code_header bright_,'BRIGHT'
