@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605012035
+; Last modified: 201605020124
 
 include version.z80s
 
@@ -7323,6 +7323,8 @@ endif
   _code_header compare_,'COMPARE'
 
   ; Forth-94
+  ;
+  ; Credit:
   ; Adapted from DZX-Forth
 
   ; XXX TODO -- do not use compare_strings_case_sensitive, because
@@ -7518,12 +7520,6 @@ search.string_1_len equ $+1
 search.string_1_addr equ $+1
   ld hl,0  ; address of the first string
   jp search.end
-
-; ----------------------------------------------
-  _colon_header bracket_compile_,'[COMPILE]',immediate
-
-  dw tick_,compile_comma_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header s_literal_,'SLITERAL',immediate+compile_only
@@ -10747,12 +10743,6 @@ else ; XXX OLD
 endif
 
 ; ----------------------------------------------
-  _code_header flash_,'FLASH'
-
-  ld a,flash_char
-  jr color
-
-; ----------------------------------------------
   _code_header inverse_,'INVERSE'
 
 ; doc{
@@ -10785,36 +10775,90 @@ else ; XXX OLD
 endif
 
 ; ----------------------------------------------
+  _code_header flash_,'FLASH'
+
+; doc{
+;
+; flash  ( n -- )
+;
+; If _n_ is zero, reset the flash color attribute.
+; If bit 0 of _n_ is set, set the flash color attribute.
+;
+; }doc
+
+  ld a,flash_char
+  jr color1
+
+; ----------------------------------------------
   _code_header bright_,'BRIGHT'
 
+; doc{
+;
+; bright  ( n -- )
+;
+; If _n_ is zero, reset the bright color attribute.
+; If bit 0 of _n_ is set, set the bright color attribute.
+;
+; }doc
+
   ld a,bright_char
-  jr color
 
-; ----------------------------------------------
-  _code_header paper_,'PAPER'
+color1:
 
-  ld a,paper_char
-  jr color
-
-; ----------------------------------------------
-  _code_header ink_,'INK'
-
-  ld a,ink_char
-
-color:
-  ; Set a color attribute (ink, paper, bright, flash, inverse or
-  ; overprint).
+  ; Set a boolean color attribute (bright, flash)
+  ;
   ; Input:
   ;   a = attribute control char
   ;   (tos) = color attribute value
 
-  ; XXX FIXME -- Crash when TOS is out of range.  The reason is
-  ; the BASIC error "invalid color" at ROM addreess $2244.
-  ; Possible solution: manipulate the system variables directly.
+  rst $10
+  pop hl
+  ld a,l
+  and %00000001 ; force value 0..1
+  rst $10
+  jr permanent_colors_
+
+; ----------------------------------------------
+  _code_header paper_,'PAPER'
+
+; doc{
+;
+; paper  ( n -- )
+;
+; Set paper color to _n_ (0..7).
+;
+; }doc
+
+  ld a,paper_char
+  jr color7
+
+; ----------------------------------------------
+  _code_header ink_,'INK'
+
+; doc{
+;
+; ink  ( n -- )
+;
+; Set ink color to _n_ (0..7).
+;
+; }doc
+
+  ld a,ink_char
+
+color7:
+
+  ; Set a color attribute (ink, paper)
+  ;
+  ; Input:
+  ;   a = attribute control char
+  ;   (tos) = color attribute value
+
+  ; XXX FIXME -- values 8 and 9 are not allowed
 
   rst $10
   pop hl
   ld a,l
+  and %00000111 ; force value 0..7
   rst $10
   ; execution continues at `permanent-colors`
 

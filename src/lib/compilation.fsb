@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020017
+  \ Last modified: 201605020124
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,7 @@
   \ and common factors.
   \ 2016-04-29: Add `string-parameter`.
   \ 2016-05-02: Join several blocks to save space.
+  \ 2016-05-02: Move `[compile]` from the kernel.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -172,7 +173,7 @@ need s=
   \
   \ }doc
 
-( ?pairs smudge smudged )
+( ?pairs [compile] smudge smudged )
 
 [unneeded] ?pairs
 ?\ : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;  exit
@@ -185,6 +186,9 @@ need s=
   \ mismatch).
   \
   \ }doc
+
+[unneeded] [compile]
+?\ : [compile]  ( "name" -- )  ' compile,  ; immediate  exit
 
 need c!toggle-bits
 
