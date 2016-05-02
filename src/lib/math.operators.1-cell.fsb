@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605012247
+  \ Last modified: 201605020257
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,18 +41,25 @@
   \ 2016-04-27: Add `sgn`, `<=>`, `either`, `neither`.
   \ 2016-04-28: Fix `<=>`. Add `0max`.
   \ 2016-05-01: Add `clshift`.
+  \ 2016-05-02: Compact the blocks to save space. Remove `sgn`
+  \ because `polarity` does the same already.
 
-( under+ )
+( under+ +under )
+
+need [if]
+
+[needed] under+ [if]
 
 code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
-  D9 c,           \ exx
-  D1 c,           \ pop de
-  C1 c,           \ pop bc
-  E1 c,           \ pop hl
-  19 c,           \ add hl,de
-  E5 c,           \ push hl
-  C5 c,           \ push bc
-  D9 c,           \ exx
+  D9 c, D1 c, C1 c, E1 c, 19 c, E5 c, C5 c, D9 c,
+  \ exx
+  \ pop de
+  \ pop bc
+  \ pop hl
+  \ add hl,de
+  \ push hl
+  \ push bc
+  \ exx
   jpnext  end-code
 
   \ doc{
@@ -65,6 +72,9 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \
   \ Origin: Comus.
   \
+  \ The word is written in Z80. This is an example
+  \ implementation in Forth:
+  \
   \ ----
   \ : under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \   rot + swap  ;
@@ -72,17 +82,20 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \
   \ }doc
 
-( +under )
+[then]
+
+[needed] +under [if]
 
 code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
-  D9 c,           \ exx
-  C1 c,           \ pop bc
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  19 c,           \ add hl,de
-  E5 c,           \ push hl
-  C5 c,           \ push bc
-  D9 c,           \ exx
+  D9 c, C1 c, D1 c, E1 c, 19 c, E5 c, C5 c, D9 c,
+  \ exx
+  \ pop bc
+  \ pop de
+  \ pop hl
+  \ add hl,de
+  \ push hl
+  \ push bc
+  \ exx
   jpnext  end-code
 
   \ doc{
@@ -95,6 +108,9 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ Origin: Comus.
   \
+  \ The word is written in Z80. This is an example
+  \ implementation in Forth:
+  \
   \ ----
   \ : +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \   >r + r>  ;
@@ -102,26 +118,19 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \
   \ }doc
 
+[then]
+
   \ XXX TODO -- variant after PFE's `(under+)`:
   \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
 
-( cell/ )
+( within between % u% )
 
-  \ Credit:
-  \
-  \ Idea from IsForth.
-
-need 2/ need alias
-' 2/ alias cell/
-
-( within between )
+[unneeded] within
+?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
 
   \ Credit:
   \
   \ Code from DZX-Forth.
-
-[unneeded] within
-?\ : within  ( n1|u1 n2|u2 n3|u3 -- f )  over - >r - r> u<  ;
 
   \ doc{
   \
@@ -141,11 +150,11 @@ need 2/ need alias
 
 [unneeded] between ?exit
 
+: between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
+
   \ Credit:
   \
   \ http://dxforth.netbay.com.au/between.html
-
-: between  ( n1|u1 n2|u2 n3|u3 -- f )  over - -rot - u< 0=  ;
 
   \ doc{
   \
@@ -161,11 +170,15 @@ need 2/ need alias
   \
   \ }doc
 
-( polarity )
+[unneeded] %
+?\ : %  ( n1 n2 -- n3 )  100 swap */  ;
+  \ _n1_ is percentage _n3_ of _n2_
 
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
+[unneeded] u%
+?\ : u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
+  \ _u1_ is percentage _u3_ of _u2_
+
+( polarity <=> )
 
 code polarity  ( n -- -1 | 0 | 1 )
   D1 c, 78 02 + c,  B0 03 + c,  CA c, ' false ,
@@ -173,11 +186,9 @@ code polarity  ( n -- -1 | 0 | 1 )
     \ ld a,d
     \ or e
     \ jp z,false_code
-
   CB c, 10 03 + c,  ED c, 62 c,
     \ rl d ; set carry if DE -ve
     \ sbc hl,hl ; HL=0 if DE +ve, or -1 if DE -ve
-
   78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl
     \ ld a,l
     \ or 1
@@ -185,61 +196,31 @@ code polarity  ( n -- -1 | 0 | 1 )
     \ jp push_hl
   end-code
 
-( u<= u>= <= >= 0>= 0<= )
-
-[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
-[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
-[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
-[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
-[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
-[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
-
-( 0max )
-
-  \ Credit:
-  \
-  \ Idea from IsForth.
-
-code 0max  ( n -- n | 0 )
-  E1 c,
-    \ pop hl
-  CB c, 10 05 + c,
-    \ rl h ; negative?
-  DA c, ' false ,
-    \ jp c,false_
-  CB c, 18 05 + c,
-    \ rr h
-  jppushhl
-    \ jp push_hl
-  end-code
-
   \ doc{
   \
-  \ 0max  ( n -- n | 0 )
-  \
-  \ If _n_ is negative, return 0; else return _n_.
-  \ This is a faster alternative to the idiom `0 max`.
-  \
-  \ }doc
-
-( sgn <=> )
-
-: sgn  ( n -- -1|0|1 )
-  dup 0= ?exit  0< ?dup ?exit  1  ;
-
-  \ doc{
-  \
-  \ sgn  ( n -- -1|0|1 )
+  \ polarity  ( n -- -1|0|1 )
   \
   \ If _n_ is zero, return zero.
   \ If _n_ is negative, return negative one.
   \ If _n_ is positive, return positive one.
   \
+  \ The word is written in Z80. This is an example
+  \ implementation in Forth:
+  \
+  \ ----
+  \ : polarity  ( n -- -1|0|1 )
+  \   dup 0= ?exit  0< ?dup ?exit  1  ;
+  \ ----
+  \
   \ }doc
 
-[unneeded] <=> ?exit
+  \ Credit:
+  \
+  \ Assembler version of `polarity` adapted from Z88
+  \ CamelForth.
 
-: <=>  ( n1 n2 -- -1|0|1 )  - sgn  ;
+[unneeded] <=>
+?\ : <=>  ( n1 n2 -- -1|0|1 )  - polarity  ;
 
   \ doc{
   \
@@ -248,6 +229,39 @@ code 0max  ( n -- n | 0 )
   \ If _n1_ equals _n2_, return zero.
   \ If _n1_ is less than _n2_, return negative one.
   \ If _n1_ is greater than _n2_, return positive one.
+  \
+  \ }doc
+
+( u<= u>= <= >= 0>= 0<= 0max )
+
+[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
+[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
+[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
+[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
+[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
+[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;  exit
+
+[unneeded] 0max ?exit
+
+code 0max  ( n -- n | 0 )
+  E1 c,  CB c, 10 05 + c,  DA c, ' false ,  CB c, 18 05 + c,
+    \ pop hl
+    \ rl h ; negative?
+    \ jp c,false_
+    \ rr h
+  jppushhl  end-code
+    \ jp push_hl
+
+  \ Credit:
+  \
+  \ Idea from IsForth.
+
+  \ doc{
+  \
+  \ 0max  ( n -- n | 0 )
+  \
+  \ If _n_ is negative, return 0; else return _n_.
+  \ This is a faster alternative to the idiom `0 max`.
   \
   \ }doc
 
@@ -350,18 +364,39 @@ code rshift  ( x1 u -- x2 )
 
 code clshift  ( b1 u -- b2 )
 
-  D1 c,  E1 c,  78 05 + c,  1C c,           
+  D1 c,  E1 c,  78 05 + c,  1C c,
     \ pop de
     \ pop hl
     \ ld a,l
     \ inc e
-  here            
+  here
     \ begin:
-  1D c,  CA c, pusha ,   
+  1D c,  CA c, pusha ,  80 07 + c,  C3 c, ,
     \ dec e
     \ jp z,push_a
-  80 07 + c,  C3 c, ,
     \ add a,a
+    \ jp begin
+  end-code
+
+( crshift )
+
+  \ XXX UNDER DEVELOPMENT -- 2016-05-01
+
+code crshift  ( b1 u -- b2 )
+
+  D1 c,  E1 c,  78 05 + c,  1C c,
+    \ pop de
+    \ pop hl
+    \ ld a,l
+    \ inc e
+  here
+    \ begin:
+  1D c,  CA c, pusha ,
+    \ dec e
+    \ jp z,push_a
+  \ 80 07 + c,
+    \ rra
+  C3 c, ,
     \ jp begin
 
   end-code
@@ -403,12 +438,16 @@ code bits  ( ca len -- u )
   \
   \ }doc
 
-( 2/ )
+( 2/ cell/ )
 
   \ Credit:
   \
   \ Code from Spectrum Forth-83.
   \ Documentation partly based on lina.
+
+need [if]
+
+[needed] 2/ [needed] cell/ or [if]
 
 code 2/  ( x1 -- x2 )
   E1 c,           \ pop hl
@@ -432,6 +471,13 @@ code 2/  ( x1 -- x2 )
   \ Forth-2012 (CORE).
   \
   \ }doc
+
+[then]
+
+[unneeded] cell/  ?\ need alias  ' 2/ alias cell/
+  \ Credit:
+  \
+  \ Idea from IsForth.
 
 ( sqrt )
 
@@ -528,6 +574,8 @@ need 2/
   \
   \ Forth-94 documentation.
 
+need sm/rem
+
 : /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
 
 : /-  (  n1 n2 -- n3 )  /-rem nip  ;
@@ -604,36 +652,35 @@ need fm/mod
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
 
-( any? )
+( any? either neither )
+
+need [if]
+
+[needed] any? [if]  need roll  variable (any?)
+
+: any?  ( x0 x1..xn n -- f )
+  dup 1+ roll (any?) !
+  0 swap 0 do  swap (any?) @ = or  loop  ;
+
+  \ doc{
+  \
+  \ any?  ( x0 x1..xn n -- f )
+  \
+  \ Is any _x1..xn_ equal to _x0_?
+  \
+  \ Origin: F83.
+  \
+  \ }doc
 
   \ Credit:
   \
   \ Code from F83.
 
-need roll
-
-variable (any?)
-
-: any?  ( x0 x1..xn n -- f )
-  dup 1+ roll (any?) !
-  0 swap 0 do  swap (any?) @ = or  loop  ;
-  \ Is any _x1..xn_ equal to _x0_?
-
-( % u% )
-
-: %  ( n1 n2 -- n3 )  100 swap */  ;
-  \ _n1_ is percentage _n3_ of _n2_
-
-: u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
-  \ _u1_ is percentage _u3_ of _u2_
-
-( either neither )
+[then]
 
   \ Credit:
   \
   \ Code from IsForth (version 1.23b).
-
-need [if]
 
 [needed] either [if]
 
@@ -669,22 +716,24 @@ need [if]
 
 ( split join )
 
-  \ Credit:
-  \
-  \ Idea from IsForth.
+need [if]
+
+[needed] split [if]
 
 code split  ( x -- b1 b2 )
   E1 c,
     \ pop hl
-  16 c, 00 c,  58 05 + c,
+  16 c, 00 c,  58 05 + c,  68 04 + c,  26 c, 00 c,
     \ ld d,0
     \ ld e,l
-  68 04 + c,  26 c, 00 c,
     \ ld l,h
     \ ld h,0
-  C3 c, pushhlde ,
+  C3 c, pushhlde ,  end-code
     \ jp push_hlde
-  end-code
+
+  \ Credit:
+  \
+  \ Idea from IsForth.
 
   \ doc{
   \
@@ -699,6 +748,9 @@ code split  ( x -- b1 b2 )
   \
   \ }doc
 
+[then]
+
+[needed] join [if]
 
 code join  ( b1 b2 -- x )
   D1 c,  60 03 + c,  D1 c,  68 03 + c,
@@ -706,9 +758,8 @@ code join  ( b1 b2 -- x )
     \ ld h,e
     \ pop de
     \ ld l,e
-  jppushhl
+  jppushhl  end-code
     \ jp push_hl
-  end-code
 
   \ doc{
   \
@@ -722,5 +773,7 @@ code join  ( b1 b2 -- x )
   \ Origin: IsForth.
   \
   \ }doc
+
+[then]
 
   \ vim: filetype=soloforth
