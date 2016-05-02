@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201604161830
+# Last modified: 201605020227
 
 # ==============================================================
 # Author
@@ -76,14 +76,16 @@ all: gplusdos
 #all: gplusdos plus3dos
 
 .PHONY: gplusdos
-gplusdos: solo_forth_disk_1.mgt solo_forth_disk_2.mgt
+gplusdos: solo_forth_disk_1.mgt \
+	solo_forth_disk_2.mgt \
+	solo_forth_disk_2_with_games.mgt
 
 .PHONY: plus3dos
 plus3dos: solo_forth_disk_a.dsk
 # plus3dos: solo_forth_disk_a.dsk solo_forth_disk_b.dsk
 
 clean: cleantmp
-	-rm -f solo_forth_disk_?.mgt solo_forth_disk_?.dsk
+	-rm -f solo_forth_disk_*.mgt solo_forth_disk_*.dsk
 
 cleantmp:
 	-rm -f tmp/*
@@ -230,32 +232,46 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 # source blocks of the library. The blocks are stored on the
 # disk sectors, without file system.
 
-library_files = $(sort $(wildcard src/lib/*.fsb))
+all_library_files = $(sort $(wildcard src/lib/*.fsb))
+game_library_files = $(sort $(wildcard src/lib/game.*.fsb))
+meta_library_files = $(sort $(wildcard src/lib/meta.*.fsb))
+core_library_files = \
+	$(filter-out $(game_library_files) $(meta_library_files), \
+			$(all_library_files))
 
 # Library disk for G+DOS
 
 # XXX WARNING -- `%` in filter patterns works only at the start
-# of the pattern?
+# of the pattern
 
-gplusdos_library_files = \
-	$(filter-out %plus3dos.fsb %idedos.fsb , $(library_files))
+gplusdos_core_library_files = \
+	$(filter-out %plus3dos.fsb %idedos.fsb , $(core_library_files))
 
-tmp/library_for_gplusdos.fsb: $(gplusdos_library_files)
+tmp/library_for_gplusdos.fsb: $(gplusdos_core_library_files) $(meta_library_files)
 	cat \
-		$(gplusdos_library_files) \
+		$(gplusdos_core_library_files) $(meta_library_files) \
 		> tmp/library_for_gplusdos.fsb
 
 solo_forth_disk_2.mgt: tmp/library_for_gplusdos.fsb
 	fsb2-mgt tmp/library_for_gplusdos.fsb ;\
 	mv tmp/library_for_gplusdos.mgt solo_forth_disk_2.mgt
 
+tmp/library_for_gplusdos_with_games.fsb: $(gplusdos_core_library_files) $(game_library_files)
+	cat \
+		$(gplusdos_core_library_files) $(game_library_files) \
+		> tmp/library_for_gplusdos_with_games.fsb
+
+solo_forth_disk_2_with_games.mgt: tmp/library_for_gplusdos_with_games.fsb
+	fsb2-mgt tmp/library_for_gplusdos_with_games.fsb ;\
+	mv tmp/library_for_gplusdos_with_games.mgt solo_forth_disk_2_with_games.mgt
+
 # Library disk for +3DOS
 
-plus3dos_library_files = $(filter-out %gplusdos.fsb,$(library_files))
+plus3dos_core_library_files = $(filter-out %gplusdos.fsb,$(core_library_files))
 
-tmp/library_for_plus3dos.fsb: $(plus3dos_library_files)
+tmp/library_for_plus3dos.fsb: $(plus3dos_core_library_files) $(meta_library_files)
 	cat \
-		$(gplusdos_library_files) \
+		$(gplusdos_core_library_files) $(meta_library_files) \
 		> tmp/library_for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
@@ -359,3 +375,8 @@ oldbackup:
 #
 # 2016-04-16: Also the +3DOS loader is patched with the current values
 # of the kernel.
+#
+# 2016-05-02: Make two library disks: the main one, now without games;
+# a new one, with games but without the meta benchamarks/tests. This
+# is needed, because the library has grown too much, and it's near the
+# limit of a G+DOS disk (800 KiB).
