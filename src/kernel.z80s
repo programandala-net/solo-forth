@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605020124
+; Last modified: 201605040125
 
 include version.z80s
 
@@ -10711,70 +10711,6 @@ border.a:
   ; BASIC, no matter the border color used in Forth.
 
 ; ----------------------------------------------
-  _code_header overprint_,'OVERPRINT'
-
-; doc{
-;
-; overprint  ( f -- )
-;
-; If _f_ is zero, turn the overprint mode off; else turn it on.
-;
-; }doc
-
-  ; XXX TODO -- move to the library
-
-if 1 ; XXX NEW
-
-  pop hl
-  ld a,h
-  or l
-  jr z,overprint.off
-  set 0,(iy+sys_p_flag_offset) ; temporary over flag
-  _jp_next
-overprint.off
-  res 0,(iy+sys_p_flag_offset) ; temporary over flag
-  _jp_next
-
-else ; XXX OLD
-
-  ld a,over_char
-  jr color
-
-endif
-
-; ----------------------------------------------
-  _code_header inverse_,'INVERSE'
-
-; doc{
-;
-; inverse  ( f -- )
-;
-; If _f_ is zero, turn the inverse mode off; else turn it on.
-;
-; }doc
-
-  ; XXX TODO -- move to the library
-
-if 1 ; XXX NEW
-
-  pop hl
-  ld a,h
-  or l
-  jr z,inverse.off
-  set 2,(iy+sys_p_flag_offset) ; temporary inverse flag
-  _jp_next
-inverse.off
-  res 2,(iy+sys_p_flag_offset) ; temporary inverse flag
-  _jp_next
-
-else ; XXX OLD
-
-  ld a,inverse_char
-  jr color
-
-endif
-
-; ----------------------------------------------
   _code_header flash_,'FLASH'
 
 ; doc{
@@ -10825,12 +10761,13 @@ color1:
 ;
 ; paper  ( n -- )
 ;
-; Set paper color to _n_ (0..7).
+; Set paper color to _n_ (0..9). If _n_ is greater than 9, 9 is
+; used.
 ;
 ; }doc
 
   ld a,paper_char
-  jr color7
+  jr color9
 
 ; ----------------------------------------------
   _code_header ink_,'INK'
@@ -10839,13 +10776,14 @@ color1:
 ;
 ; ink  ( n -- )
 ;
-; Set ink color to _n_ (0..7).
+; Set ink color to _n_ (0..9). If _n_ is greater than 9, 9 is
+; used.
 ;
 ; }doc
 
   ld a,ink_char
 
-color7:
+color9:
 
   ; Set a color attribute (ink, paper)
   ;
@@ -10853,12 +10791,13 @@ color7:
   ;   a = attribute control char
   ;   (tos) = color attribute value
 
-  ; XXX FIXME -- values 8 and 9 are not allowed
-
   rst $10
   pop hl
   ld a,l
-  and %00000111 ; force value 0..7
+  cp $0A ; value is 0..9?
+  jr c,color9.valid
+  ld a,$09
+color9.valid:
   rst $10
   ; execution continues at `permanent-colors`
 
