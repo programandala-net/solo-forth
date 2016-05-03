@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605040125
+; Last modified: 201605040136
 
 include version.z80s
 
@@ -3099,7 +3099,7 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header chan_,'CHAN'
+  _code_header channel_,'CHANNEL'
 
 ; doc{
 ;
@@ -3221,24 +3221,6 @@ emit_0udg.a
   dw false
 
 ; ----------------------------------------------
-  _colon_header printer_,'PRINTER'
-
-; doc{
-;
-; printer  ( -- )
-;
-; Select the printer as output.
-;
-; }doc
-
-; XXX TODO -- move to the library?
-
-  _literal 3
-  dw chan_
-  dw printing_,on_
-  dw exit_
-
-; ----------------------------------------------
   _colon_header display_,'DISPLAY'
 
 ; doc{
@@ -3250,7 +3232,7 @@ emit_0udg.a
 ; }doc
 
   _literal 2
-  dw chan_
+  dw channel_
   dw printing_,off_
   dw exit_
 
