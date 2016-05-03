@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605040136
+; Last modified: 201605040150
 
 include version.z80s
 
@@ -8210,25 +8210,6 @@ quit.begin:
 ; to the deferred word _xt_.
 ;
 ; }doc
-
-; ----------------------------------------------
-  _colon_header defer_fetch_,'DEFER@'
-
-  ; XXX TODO -- Move to the library?
-
-; doc{
-;
-; defer@  ( xt1 -- xt2 )
-;
-; Return the word _xt2_ currently associated to the deferred
-; word _xt1_.
-;
-; Origin: Forth-2012 (CORE EXT).
-;
-; }doc
-
-  dw to_defer_,fetch_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header defer_store_,'DEFER!'
