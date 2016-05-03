@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604250856
+  \ Last modified: 201605032252
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,10 @@
   \
   \ 2016-04-25: Add carriage return before the exception
   \ message in `.throw-message`.
+  \
+  \ 2016-04-29: Add `warning"`.
+  \
+  \ 2016-05-03: Document `warning"`.
 
 ( abort" )
 
@@ -79,9 +83,7 @@
 
 : error>line  ( -n1 -- n2 )
   error>ordinal dup >r
-  begin
-    dup dup 16 / - r@ <>  while  1+
-  repeat  rdrop  ;
+  begin  dup dup 16 / - r@ <>  while  1+  repeat  rdrop  ;
 
   \ doc{
   \
@@ -149,6 +151,46 @@ s" Standard error codes" located error-messages-block !
   \ ?executing  ( -- )
   \
   \ Issue an error if not executing.
+  \
+  \ }doc
+
+( warning" )
+
+  \ Credit:
+  \
+  \ Adapted from pForth and modified.
+
+need string-parameter
+
+: (warning")  ( f -- )
+  string-parameter rot if  type  else  2drop  then  ;
+
+  \ doc{
+  \
+  \ (warning") ( f -- )
+  \
+  \ Inner procedure compiled by `warning"`.  If _f_ is not
+  \ zero, print the compiled message; else do nothing.
+  \
+  \ }doc
+
+: warning"
+  \ Compilation: ( "ccc<quote>" -- )
+  \ Execution:   ( f -- )
+  postpone (warning") ,"  ; immediate compile-only
+
+  \ doc{
+  \
+  \ warning"
+  \ 
+  \ Compilation: ( "ccc<quote>" -- )
+  \
+  \ Parse and compile a message.
+  \
+  \ Execution:   ( f -- )
+  \
+  \ If _f_ is not zero, print the compiled message; else do
+  \ nothing.
   \
   \ }doc
 
