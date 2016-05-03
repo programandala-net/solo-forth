@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020124
+  \ Last modified: 201605040037
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,7 @@
   \ 2016-04-29: Add `string-parameter`.
   \ 2016-05-02: Join several blocks to save space.
   \ 2016-05-02: Move `[compile]` from the kernel.
+  \ 2016-05-04: Compact the blocks.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -324,14 +325,15 @@ need [if]
 
 [then]
 
-( [const] [2const] [cconst] )
+( [const] [2const] [cconst] current-latest cliteral )
 
 need eval  need [if]
 
 [needed] [const] [if]
 
 : [const]  ( "name" -- )
-  eval postpone literal  ; immediate compile-only
+  eval postpone literal  ; immediate compile-only  [then]
+
 
   \ doc{
   \
@@ -354,12 +356,10 @@ need eval  need [if]
   \
   \ }doc
 
-[then]
-
 [needed] [2const] [if]
 
 : [2const]  ( "name" -- )
-  eval postpone 2literal  ; immediate compile-only
+  eval postpone 2literal  ; immediate compile-only  [then]
 
   \ doc{
   \
@@ -380,12 +380,10 @@ need eval  need [if]
   \
   \ }doc
 
-[then]
-
 [needed] [cconst] [if]
 
 : [cconst]  ( "name" -- )
-  eval postpone cliteral  ; immediate compile-only
+  eval postpone cliteral  ; immediate compile-only  [then]
 
   \ doc{
   \
@@ -405,10 +403,6 @@ need eval  need [if]
   \ ----
   \
   \ }doc
-
-[then]
-
-( current-latest cliteral )
 
 [unneeded] current-latest
 ?\ : current-latest  ( -- nt )  get-current @  ;  exit
@@ -499,7 +493,7 @@ user warnings  \ flag
   \
   \ }doc
 
-( warn.throw warn.message )
+( warn.throw warn.message warn-throw )
 
 need warnings  need [if]
 
@@ -522,9 +516,7 @@ need warnings  need [if]
   \
   \ }doc
 
-' warn.throw ' warn defer!  warnings on
-
-[then]
+' warn.throw ' warn defer!  warnings on   [then]
 
 [needed] warn.message [if]
 
@@ -544,13 +536,7 @@ need warnings  need [if]
   \
   \ }doc
 
-' warn.message ' warn defer!  warnings on
-
-[then]
-
-( warn-throw )
-
-need warnings  need [if]
+' warn.message ' warn defer!  warnings on  [then]
 
 [needed] warn-throw [if]
 
@@ -571,9 +557,7 @@ need warnings  need [if]
   \
   \ }doc
 
-' warn-throw ' warn defer!  warnings on
-
-[then]
+' warn-throw ' warn defer!  warnings on  [then]
 
 ( string-parameter )
 
