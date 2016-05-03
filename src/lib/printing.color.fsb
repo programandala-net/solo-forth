@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605011813
+  \ Last modified: 201605012335
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,8 +25,12 @@
   \ -----------------------------------------------------------
   \ History
 
-  \ 2016-05-01: Start. `!color`, `color`, `2!color`, `2color`,
-  \ `!permcolor`, `permcolor`, `2!permcolor`, `2permcolor`.
+  \ 2016-05-01: Start. New words:
+
+  \   color@ color! color-mask@ color-mask! color 2color
+  \   permcolor@ permcolor! permcolor-mask@ permcolor-mask!
+  \   permcolor 2permcolor paper@ paper! ink@ ink!  bright@
+  \   bright! flash! flash@
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -88,33 +92,52 @@
   \ 23697   |___|___|___|___|___|___|___|___|
   \           7   6   5   4   3   2   1   0
 
-( set-color set-color-mask color 2color )
+( color@ color! color-mask@ color-mask! color 2color )
 
 need os-attr-t  need os-mask-t
 
-: set-color  ( b -- )  os-attr-t c!  ;
+: color@  ( -- b )  os-attr-t c@  ;
 
   \ doc{
   \
-  \ set-color  ( b -- )
+  \ color!  ( b -- )
   \
   \ Set temporary color attribute _b_.
   \
   \ }doc
 
-: set-color-mask  ( b -- )  os-mask-t c!  ;
+: color!  ( b -- )  os-attr-t c!  ;
 
   \ doc{
   \
-  \ set-color-mask  ( b -- )
+  \ color!  ( b -- )
+  \
+  \ Set temporary color attribute _b_.
+  \
+  \ }doc
+
+: color-mask@  ( -- b )  os-mask-t c@  ;
+
+  \ doc{
+  \
+  \ color-mask!  ( b -- )
+  \
+  \ Set temporary color attribute mask _b_.
+  \
+  \ }doc
+
+: color-mask!  ( b -- )  os-mask-t c!  ;
+
+  \ doc{
+  \
+  \ color-mask!  ( b -- )
   \
   \ Set temporary color attribute mask _b_.
   \
   \ }doc
 
 : color  ( b "name" -- )
-  create ,
-  does>  ( -- ) ( pfa ) @ set-color  ;
+  create ,  does>  ( -- ) ( pfa ) @ color!  ;
 
   \ doc{
   \
@@ -126,8 +149,7 @@ need os-attr-t  need os-mask-t
   \ }doc
 
 : 2color  ( b1 b2 "name" -- )
-  create 2,
-  does>  ( -- ) ( pfa ) 2@ set-color set-color-mask  ;
+  create 2,  does>  ( -- ) ( pfa ) 2@ color! color-mask!  ;
   
   \ doc{
   \
@@ -138,33 +160,57 @@ need os-attr-t  need os-mask-t
   \
   \ }doc
   
-( set-permcolor set-permcolor-mask permcolor 2permcolor )
+( permcolor@ permcolor! permcolor-mask@ permcolor-mask! )
 
 need os-attr-p  need os-mask-p
 
-: set-permcolor  ( b -- )  os-attr-p c!  ;
+: permcolor@  ( -- b )  os-attr-p c@  ;
 
   \ doc{
   \
-  \ set-permcolor  ( b -- )
+  \ permcolor!  ( -- b )
+  \
+  \ Get permanent color attribute _b_.
+  \
+  \ }doc
+
+: permcolor!  ( b -- )  os-attr-p c!  ;
+
+  \ doc{
+  \
+  \ permcolor!  ( b -- )
   \
   \ Set permanent color attribute _b_.
   \
   \ }doc
 
-: set-permcolor-mask  ( b -- )  os-mask-p c!  ;
+: permcolor-mask@  ( -- b )  os-mask-p c@  ;
 
   \ doc{
   \
-  \ set-permcolor-mask  ( b -- )
+  \ permcolor-mask@  ( -- b )
+  \
+  \ Get permanent color attribute mask _b_.
+  \
+  \ }doc
+
+: permcolor-mask!  ( b -- )  os-mask-p c!  ;
+
+  \ doc{
+  \
+  \ permcolor-mask!  ( b -- )
   \
   \ Set permanent color attribute mask _b_.
   \
   \ }doc
 
+( permcolor 2permcolor )
+
+need permcolor!  need permcolor-mask!
+
 : permcolor  ( b "name" -- )
   create ,
-  does>  ( -- ) ( pfa ) @ set-permcolor  ;
+  does>  ( -- ) ( pfa ) @ permcolor!  ;
 
   \ doc{
   \
@@ -177,7 +223,7 @@ need os-attr-p  need os-mask-p
 
 : 2permcolor  ( b1 b2 "name" -- )
   create 2,
-  does>  ( -- ) ( pfa ) 2@ set-permcolor set-permcolor-mask  ;
+  does>  ( -- ) ( pfa ) 2@ permcolor! permcolor-mask!  ;
   
   \ doc{
   \
@@ -187,5 +233,38 @@ need os-attr-p  need os-mask-p
   \ set permanent color attribute _b2_ and mask _b1_.
   \
   \ }doc
+
+( paper@ paper! ink@ ink! )
+
+need lshift  need rshift  need color@  need color!
+
+: paper>  ( n1 -- n2 )  %00111000 and 3 rshift  ;
+: >paper  ( n1 -- n2 )  %00000111 and 3 lshift  ;
+
+: paper@  ( -- b )  color@ paper>  ;
+
+: paper!  ( b -- )  >paper color@ %11000111 and or color!  ;
+
+: ink@  ( -- b )
+  color@ %00000111 and  ;
+
+: ink!  ( b -- )
+  %00000111 and color@ %11111000 and or color!  ;
+
+( bright@ bright! flash! flash@ )
+
+need color@  need color!
+
+: bright@  ( -- f )
+  color@ %01000000 and 0=  ;
+
+: bright!  ( f -- )
+  %10000000 and color@ %10111111 and or color!  ;
+
+: flash@  ( -- f )
+  color@ %10000000 and 0=  ;
+
+: flash!  ( f -- )
+  %10000000 and color@ %01111111 and or color!  ;
  
   \ vim: filetype=soloforth
