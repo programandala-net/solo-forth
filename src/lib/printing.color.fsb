@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605040106
+  \ Last modified: 201605040109
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,6 +31,8 @@
   \   permcolor@ permcolor! permcolor-mask@ permcolor-mask!
   \   permcolor 2permcolor paper@ paper! ink@ ink!  bright@
   \   bright! flash! flash@
+  \
+  \ 2016-05-04: Move `inverse` and `overprint` from the kernel.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -267,7 +269,7 @@ need color@  need color!
 : flash!  ( f -- )
   %10000000 and color@ %01111111 and or color!  ;
 
-( inverse )
+( inverse overprint )
 
 code inverse  ( f -- )
   E1 c,  78 04 + c,  B0 05 + c,  28 c, 06 c,
@@ -288,6 +290,29 @@ code inverse  ( f -- )
   \ inverse  ( f -- )
   \
   \ If _f_ is zero, turn the inverse mode off; else turn it on.
+  \
+  \ }doc
+
+code overprint  ( f -- )
+  E1 c,  78 04 + c,  B0 05 + c,  28 c, 06 c,
+    \ pop hl
+    \ ld a,h
+    \ or l
+    \ jr z,overprint.off
+  FD c, CB c, 57 c, C6 08 00 * + c,  jpnext
+    \ set 0,(iy+sys_p_flag_offset) ; temporary overprint flag
+    \ _jp_next
+    \ overprint.off:
+  FD c, CB c, 57 c, 86 08 00 * + c,  jpnext  end-code
+    \ res 0,(iy+sys_p_flag_offset) ; temporary overprint flag
+    \ _jp_next
+
+  \ doc{
+  \
+  \ overprint  ( f -- )
+  \
+  \ If _f_ is zero, turn the overprint mode off; else turn it
+  \ on.
   \
   \ }doc
 
