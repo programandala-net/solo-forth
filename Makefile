@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201605020227
+# Last modified: 201605032320
 
 # ==============================================================
 # Author
@@ -78,6 +78,7 @@ all: gplusdos
 .PHONY: gplusdos
 gplusdos: solo_forth_disk_1.mgt \
 	solo_forth_disk_2.mgt \
+	solo_forth_disk_2_with_meta_tools.mgt \
 	solo_forth_disk_2_with_games.mgt
 
 .PHONY: plus3dos
@@ -234,9 +235,9 @@ solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
 
 all_library_files = $(sort $(wildcard src/lib/*.fsb))
 game_library_files = $(sort $(wildcard src/lib/game.*.fsb))
-meta_library_files = $(sort $(wildcard src/lib/meta.*.fsb))
+meta_tools_library_files = $(sort $(wildcard src/lib/meta.*.fsb))
 core_library_files = \
-	$(filter-out $(game_library_files) $(meta_library_files), \
+	$(filter-out $(game_library_files) $(meta_tools_library_files), \
 			$(all_library_files))
 
 # Library disk for G+DOS
@@ -247,9 +248,9 @@ core_library_files = \
 gplusdos_core_library_files = \
 	$(filter-out %plus3dos.fsb %idedos.fsb , $(core_library_files))
 
-tmp/library_for_gplusdos.fsb: $(gplusdos_core_library_files) $(meta_library_files)
+tmp/library_for_gplusdos.fsb: $(gplusdos_core_library_files)
 	cat \
-		$(gplusdos_core_library_files) $(meta_library_files) \
+		$(gplusdos_core_library_files) \
 		> tmp/library_for_gplusdos.fsb
 
 solo_forth_disk_2.mgt: tmp/library_for_gplusdos.fsb
@@ -265,13 +266,22 @@ solo_forth_disk_2_with_games.mgt: tmp/library_for_gplusdos_with_games.fsb
 	fsb2-mgt tmp/library_for_gplusdos_with_games.fsb ;\
 	mv tmp/library_for_gplusdos_with_games.mgt solo_forth_disk_2_with_games.mgt
 
+tmp/library_for_gplusdos_with_meta_tools.fsb: $(gplusdos_core_library_files) $(meta_tools_library_files)
+	cat \
+		$(gplusdos_core_library_files) $(meta_tools_library_files) \
+		> tmp/library_for_gplusdos_with_meta_tools.fsb
+
+solo_forth_disk_2_with_meta_tools.mgt: tmp/library_for_gplusdos_with_meta_tools.fsb
+	fsb2-mgt tmp/library_for_gplusdos_with_meta_tools.fsb ;\
+	mv tmp/library_for_gplusdos_with_meta_tools.mgt solo_forth_disk_2_with_meta_tools.mgt
+
 # Library disk for +3DOS
 
 plus3dos_core_library_files = $(filter-out %gplusdos.fsb,$(core_library_files))
 
-tmp/library_for_plus3dos.fsb: $(plus3dos_core_library_files) $(meta_library_files)
+tmp/library_for_plus3dos.fsb: $(plus3dos_core_library_files) $(meta_tools_library_files)
 	cat \
-		$(gplusdos_core_library_files) $(meta_library_files) \
+		$(gplusdos_core_library_files) $(meta_tools_library_files) \
 		> tmp/library_for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
@@ -380,3 +390,7 @@ oldbackup:
 # a new one, with games but without the meta benchamarks/tests. This
 # is needed, because the library has grown too much, and it's near the
 # limit of a G+DOS disk (800 KiB).
+#
+# 2016-05-03: Make three library disks: 1) only with the core library;
+# 2) the core library plus the meta tools (benchmarks and tests for
+# Solo Forth itself); 3) the core library plus the sample games.
