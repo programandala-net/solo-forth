@@ -71,7 +71,7 @@
   \ 1 cell:
   \ y-coordinate of last point plotted
 
-( os-attr-p os-mask-p os-attr-t os-mask-t )
+( os-attr-p os-mask-p os-attr-t os-mask-t os-p-flag )
 
 [unneeded] os-attr-p      ?\ 23693 constant os-attr-p
   \ 1 cell:
@@ -88,5 +88,9 @@
 [unneeded] os-mask-t      ?\ 23696 constant os-mask-t
   \ 1 cell:
   \ temporary transparent color attribute mask
+
+[unneeded] os-p-flag      ?\ 23697 constant os-mask-t
+  \ 1 cell:
+  \ print flags
 
   \ vim: filetype=soloforth

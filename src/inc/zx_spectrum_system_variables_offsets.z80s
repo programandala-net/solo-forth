@@ -4,9 +4,12 @@
 
 ; 2015-09-06: Extracted from <zx_spectrum_system_variables.z80s>, because the
 ; z80dasm disassembler does not accept calculations in its input symbols file.
+;
+; 2016-05-01: Add `sys_p_flag_offset`.
 
 ; This file needs <zx_spectrum_system_variables.z80s>.
 
 sys_df_sz_offset:  equ sys_df_sz-sys_err_nr
 sys_last_k_offset: equ sys_last_k-sys_err_nr
 sys_scr_ct_offset: equ sys_scr_ct-sys_err_nr
+sys_p_flag_offset: equ sys_p_flag-sys_err_nr

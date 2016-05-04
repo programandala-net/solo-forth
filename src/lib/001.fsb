@@ -17,8 +17,7 @@
 2 load
 
   \ XXX TMP -- for debugging `marker`
-  
-  need wdump  need save-voc-links
+  \ need wdump  need save-voc-links
 
   \ XXX TMP -- for debugging `associative-list`
   \ need associative-list

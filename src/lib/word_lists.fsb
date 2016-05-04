@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020027
+  \ Last modified: 201605042148
 
   \ -----------------------------------------------------------
   \ Description
@@ -24,6 +24,8 @@
   \ in the kernel anymore.
   \
   \ 2016-05-02: Join several blocks, to save space.
+  \
+  \ 2016-05-04: Improve the documentation of `trail`.
 
 ( wid>link wid>name named-wid wid>vocabulary )
 
@@ -108,8 +110,8 @@ need recurse
   \
   \ trail ( -- nt )
   \
-  \ Leave the _nt_ of the topmost word in the
-  \ `context` vocabulary.
+  \ Leave the _nt_ of the topmost word in the first word list
+  \ of the search order.
   \
   \ }doc
 

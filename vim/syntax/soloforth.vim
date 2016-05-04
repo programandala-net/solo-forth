@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-04-29
+" Updated:  2016-05-04
 
 " --------------------------------------------------------------
 " History
@@ -80,7 +80,7 @@ syn keyword soloforthCharacterOutput d.r
 syn keyword soloforthCharacterOutput emit
 syn keyword soloforthCharacterOutput emits
 syn keyword soloforthCharacterOutput home
-syn keyword soloforthCharacterOutput out
+syn keyword soloforthCharacterOutput printing
 syn keyword soloforthCharacterOutput space
 syn keyword soloforthCharacterOutput spaces
 syn keyword soloforthCharacterOutput type
@@ -89,6 +89,7 @@ syn keyword soloforthCharacterOutput u.r
 syn keyword soloforthConversion #
 syn keyword soloforthConversion #>
 syn keyword soloforthConversion #s
+syn keyword soloforthConversion /hold
 syn keyword soloforthConversion <#
 syn keyword soloforthConversion >number
 syn keyword soloforthConversion digit?
@@ -351,6 +352,7 @@ syn keyword soloforthGraphics set-pixel
 syn keyword soloforthGraphics test-pixel
 syn keyword soloforthGraphics toggle-pixel
 syn keyword soloforthGraphics xy
+syn keyword soloforthHardware channel
 syn keyword soloforthHardware !p
 syn keyword soloforthHardware @p
 syn keyword soloforthMath base
@@ -1154,6 +1156,8 @@ let b:current_syntax = "soloforth"
 " 2016-04-27: Remove `defined?`, add `?defined`. Add `.error-word`.
 "
 " 2016-04-29: Add `nest-source`, `unnest-source`, `block>source`.
+"
+" 2016-05-04: Add `channel`, `printing`, `/hold`; remove `out`.
 
 " --------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-27
+:revdate: 2016-04-29
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -10,6 +10,9 @@
 // {{{
 
 .2016-04-27:
+
+Fix compilation of `mode42` and `mode64`: It seems a circular requirement
+makes part of the assembler be compiled twice.
 
 Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
 used only for `list`.
@@ -29,10 +32,10 @@ Benchmark the system without constants `0`, `1` and `2`.
 Write faster, Z80 versions of words that fetch from and store to memory banks.
 
 Words that can be moved to the library: `there`, `catch`, `printer`, `?\`,
-`[defined]`, `[undefined]`.
+`[defined]`, `[undefined]`...
 
 Study how to move `line>string` and `undefined?` to the library.  They are not
-used in the kernel, but the are needed by the `need` utility.
+used in the kernel, but they are needed by the `need` utility.
 
 Add `noname`, analogous to `nextname`, after Gforth.
 
@@ -45,8 +48,17 @@ Write `behead  ( xt -- )` or `behead  ( "name" -- )`. See DX-Forth and
 others. `hided  ( nt -- )` is already in the kernel.
 
 // }}}
-== Inner ==
+== Compilation ==
 // {{{
+
+.2016-04-29:
+
+Factor the return stack manipulation done by `(.")` in order to
+reuse it in `(abort")` and `(warning")`. Use a variant of pForth's `param`.
+
+.2016-04-28:
+
+Finish the implementation of control stack words.
 
 .2016-04-21:
 
@@ -73,14 +85,20 @@ the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
 
 .2015-06-30:
 
-New: command history, stored in the names bank.
-
 Change: compare the user variables with those of Spectrum Forth-83.
 
 .2016-03-19:
 
 Separate header flags from the length byte of the name field.
 This way an alias bit will fit, and word names will be actual strings.
+
+// }}}
+== User interface ==
+// {{{
+
+.2015-06-30:
+
+New: command history, stored in the names bank.
 
 // }}}
 == Local variables ==
@@ -140,6 +158,14 @@ ____
 // }}}
 == Documentation ==
 // {{{
+
+.2016-04-29:
+
+Homogenize the stack notation for blocks and block lines.
+
+.2016-04-28:
+
+Homogenize the notation "Run-time" to "Execution".
 
 .2016-04-11:
 
@@ -458,6 +484,15 @@ above 0xC000 could not use the circular string buffer.
 // }}}
 == Maths ==
 // {{{
+
+.2016-05-01:
+
+Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp 103..105.
+
+.2016-04-27:
+
+Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
+"math.operators.4-cell.fsb".
 
 .2016-04-22:
 

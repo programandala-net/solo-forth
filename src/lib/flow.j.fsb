@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604150138
+  \ Last modified: 201605041254
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,17 +29,22 @@
   \ 2016-04-28: Calculate the secondary entry point of `i`,
   \ instead of using the constant `(i)`, which has been
   \ removed from the kernel.
+  \ 2016-05-04: Compact two blocks into one.
 
-( j )
+( j k )
+
+need [if]
+
+[needed] j [if]
 
 code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
-  2A c, rp ,  11 c, 3 cells ,  19 c,
+  2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, ' i 3 + ,  end-code
     \ ld hl,(return_stack_pointer)
     \ ld de,3*cell
     \ add hl,de
-  C3 c, ' i 3 + ,
     \ jp i.hl ; secondary entry point in `i`
-  end-code
+
+[then]
 
   \ doc{
   \
@@ -53,17 +58,17 @@ code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ }doc
 
-( k )
+[needed] k [if]
 
 code k  ( -- n|u )
   ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
-  2A c, rp ,  11 c, 6 cells ,  19 c,
+  2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, ' i 3 + ,  end-code
     \ ld hl,(return_stack_pointer)
     \ ld de,6*cell
     \ add hl,de
-  C3 c, ' i 3 + ,
     \ jp i.hl ; secondary entry point in `i`
-  end-code
+
+[then]
 
   \ doc{
   \

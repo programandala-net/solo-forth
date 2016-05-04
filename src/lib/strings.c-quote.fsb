@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242147
+  \ Last modified: 201604290255
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,12 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
+  \ 2016-03-14: Write `c"` with a new, system-independent
+  \ implementation of `csliteral`.
+  \
+  \ 2016-03-15: Set the previous, system-dependent
+  \ implementation of `csliteral` as default.
+  \
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
 
@@ -35,7 +41,7 @@
   \ system-dependent `cslit`, which makes it possible to decode
   \ `c"`.
 
-  \ XXX REMARK -- 43 bytes used
+  \ Data space used: 43 bytes.
 
 : cslit  ( -- ca )  r@ dup c@ 1+ r> + >r  ;
   \ doc{
@@ -79,7 +85,7 @@
   \ This is an alternative system-independent definition of
   \ `csliteral`.
 
-  \ XXX REMARK -- 43 bytes used
+  \ Data space used: 43 bytes.
 
 : csliteral  ( Compilation: ca len -- )
              ( Run-time: -- ca )

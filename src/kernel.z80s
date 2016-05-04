@@ -3391,6 +3391,8 @@ endif
 ; default-break-key?  ( -- f )
 ;
 ; Is the default break key (Shift+Space) pressed?
+; This is the default behaviour of the deferred word
+; `break-key?`.
 ;
 ; }doc
 
@@ -3405,8 +3407,8 @@ endif
 ;
 ; break-key?  ( -- f )
 ;
-; Is the break key pressed? This is a deferred work that bye
-; default checks the standard break key (Shift+Space).
+; Is the break key pressed? This is a deferred work that by
+; default executes `default-break-key?`.
 ;
 ; }doc
 
@@ -3436,7 +3438,7 @@ endif
 ; cursor-char  ( -- a )
 ;
 ; A byte variable that holds the character code of the cursor
-; used by `xkey`. Note this is a _byte_ variable, thus it has to
+; used by `xkey`. Note this is a character variable, thus it has to
 ; be fetched with `c@` and modified with `c!`.
 ;
 ; }doc
