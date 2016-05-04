@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605040037
+  \ Last modified: 201605050022
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,22 +53,23 @@
   \ 2016-05-02: Join several blocks to save space.
   \ 2016-05-02: Move `[compile]` from the kernel.
   \ 2016-05-04: Compact the blocks.
+  \ 2016-05-05: Update `s=` to `str=`.
 
 ( [false] [true] [if] [else] [then] )
 
 [unneeded] [true]  ?\   0 constant [false] immediate exit 
 [unneeded] [false] ?\  -1 constant [true]  immediate exit
 
-need s=
+need str=
 
 : [else]  ( "..." -- )
 
   1 begin   parse-name dup
-    while   2dup s" [if]" s=
+    while   2dup s" [if]" str=
             if    2drop 1+
-            else  2dup s" [else]" s=
+            else  2dup s" [else]" str=
                   if    2drop 1- dup if  1+  then
-                  else  s" [then]" s= if  1-  then
+                  else  s" [then]" str= if  1-  then
                   then
             then  ?dup 0= if  exit  then
   repeat  2drop drop  ; immediate

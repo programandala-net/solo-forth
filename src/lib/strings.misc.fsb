@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604271507
+  \ Last modified: 201605050040
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,10 +29,18 @@
   \ 2016-04-24: Add `need pick`, because `pick` has been moved
   \ from the kernel to the library.
   \ 2016-04-27: Add `char-in-string?` and `char-position?`.
+  \ 2016-05-05: Rename `s=` to `str=`. Add `str<` and `str>`.
 
-( s= )
+( str= str< str> )
 
-: s=  ( ca1 len1 ca2 len2 -- f )  compare 0=  ;
+[unneeded] str=
+?\ : str=  ( ca1 len1 ca2 len2 -- f )  compare 0=  ;  exit
+
+[unneeded] str<
+?\ : str<  ( ca1 len1 ca2 len2 -- f )  compare 0<  ;  exit
+
+[unneeded] str>
+?\ : str>  ( ca1 len1 ca2 len2 -- f )  compare 0>  ;  exit
 
 ( sconstant )
 
@@ -164,7 +172,7 @@ need under+
 
 ( prefix? suffix? )
 
-need s=  need [if]
+need str=  need [if]
 
   \ Credit:
   \
@@ -173,7 +181,7 @@ need s=  need [if]
 
 [needed] prefix? [if]
 
-: prefix?  ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> s=  ;
+: prefix?  ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> str=  ;
 
 [then]
 
@@ -187,7 +195,7 @@ need pick
 
 : suffix? ( ca1 len1 ca2 len2 -- f )
   \ Is string _ca2 len2_ the end of string _ca1 len1_?
-  2swap dup 3 pick - /string s=  ;
+  2swap dup 3 pick - /string str=  ;
 
 [then]
 

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604211946
+  \ Last modified: 201605050022
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,8 @@
   \
   \ 2016-04-21: Added `fround`, `f~`, `f~abs`, `f~rel`,
   \ `f~relabs`, `f==`, `flnp1`, `?fln`, `'?flnp1`.
+  \
+  \ 2016-05-05: Update `s=` to `str=`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -180,7 +182,7 @@ code f<>  ( -- f ) ( F: r1 r2 -- )
   \ factored and adapted.
 
 need frot  need f-  need fabs  need fswap  need f<  need fover
-need f+  need f*  need fp@  need float-  need float  need s=
+need f+  need f*  need fp@  need float-  need float  need str=
 need fdrop  need fsgn
 
 : f~abs  ( -- f ) ( F: r1 r2 r3 -- )
@@ -234,7 +236,7 @@ need fdrop  need fsgn
   \ }doc
 
 : f==  ( -- f ) ( F: r1 r2 -- )
-  fp@ dup float- float tuck s= fdrop fdrop  ;
+  fp@ dup float- float tuck str= fdrop fdrop  ;
 
   \ doc{
   \

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 20160324
+  \ Last modified: 201605050021
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+  
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-05-05: Update `s=` to `str=`.
 
 ( history )
 
@@ -106,7 +111,7 @@ variable browsed-history
 
 ( history )
 
-need s=
+need str=
 
 : history-empty?  ( -- f )  used-history 0=  ;
   \ Is the history empty?
@@ -129,7 +134,7 @@ need s=
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
 
-: duplicated-history?  ( ca len -- f )  latest-history$ s=  ;
+: duplicated-history?  ( ca len -- f )  latest-history$ str=  ;
   \ Is string _ca len_ identical to the latest string in
   \ the command line history?
 
@@ -283,7 +288,7 @@ init-history  -->
 
 ( history )  \ XXX OLD
 
-need s=
+need str=
 
 : allot-history  ( +n -- )  negate hp +!  ;
   \ Reserve _+n_ bytes in the history.
@@ -322,7 +327,7 @@ need s=
 
 ( history )  \ XXX OLD
 
-: duplicated-history?  ( ca len -- f )  latest-history s=  ;
+: duplicated-history?  ( ca len -- f )  latest-history str=  ;
   \ Is string _ca len_ identical to the latest string in
   \ the command line history?
 

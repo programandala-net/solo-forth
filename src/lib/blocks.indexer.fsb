@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241840
+  \ Last modified: 201605050030
 
   \ -----------------------------------------------------------
   \ Description
@@ -17,9 +17,9 @@
   \ search the word list and execute the word found, instead of
   \ searching all of the blocks every time.
 
-  \ At the time of writing (2016-04-03) Indexing the whole
-  \ library (677 blocks) takes less than one minute and uses
-  \ 3600 bytes of dictionary space.
+  \ 2016-04-03: Indexing the whole library (677 blocks) takes
+  \ less than one minute and uses 3600 bytes of dictionary
+  \ space.
 
   \ -----------------------------------------------------------
   \ Author
@@ -42,17 +42,18 @@
   \
   \ 2016-04-24: Add `need nextname`, because `nextname` has been
   \ moved from the kernel to the library.
-
+  \
+  \ 2016-05-05: Update `s=` to `str=`. Improve documentation.
 
 ( indexer )
 
 only forth definitions
 
-need loader  need s=  need alias  need string/
+need loader  need str=  need alias  need string/
 need get-order  need set-order  need nextname
 
 wordlist constant index-wordlist
-  \ Words of the blocks index.
+  \ Word list for the indexed words.
 
 : search-index  ( ca len -- 0 | xt 1 | xt -1 )
   index-wordlist search-wordlist  ;
@@ -64,7 +65,7 @@ wordlist constant index-wordlist
 
 variable indexed-block
 
-: (index-name)  ( ca len -- )
+: index-name  ( ca len -- )
   2dup name-indexed? if  2drop exit  then
   nextname indexed-block @ loader  ;
   \ Add word _ca len_ to the blocks index, if not done before.
@@ -75,25 +76,23 @@ variable indexed-block
 ( indexer )
 
 wordlist dup constant indexer-wordlist set-current
-  \ Words to parse the block index lines.
+  \ Word list for the words that parse the block index lines.
 
 : (  ( "ccc<space><paren><space|eof>" -- )
-  begin  parse-name 2dup s" )" s= 0=
-  while  (index-name)  repeat  2drop  ;
+  begin  parse-name 2dup s" )" str= 0=
+  while  index-name  repeat  2drop  ;
   \ Parse and index the names until the next right paren name.
 
 ' ( alias .(
 
 : \  ( "ccc<space><backslash><space|eof>" -- )
-  begin  parse-name 2dup s" \" s= 0=
-  while  (index-name)  repeat  2drop  ;
+  begin  parse-name 2dup s" \" str= 0=
+  while  index-name  repeat  2drop  ;
   \ Parse and index the names until the next backslash name.
 
--->
+forth-wordlist set-current  -->
 
 ( indexer )
-
-forth-wordlist set-current
 
 : index-reneeded  ( ca len -- )
   search-index 0= #-277 ?throw execute  ;
@@ -191,11 +190,18 @@ forth-wordlist set-current
 
 : valid-block-header?  ( ca len -- f )
   -trailing dup 0= #-278 ?throw
-  2 string/ 2dup s"  )" s= >r s"  \" s= r> or  ;
+  2 string/ 2dup s"  )" str= >r s"  \" str= r> or  ;
+
+  \ doc{
+  \
+  \ valid-block-header?  ( ca len -- f )
+  \
   \ Is block header _ca len_ valid?
   \ Valid block headers end with " )" or " /".
   \ If it's empty, throw error -278 in order to quit
   \ the indexing.
+  \
+  \ }doc
 
 : index-block-header  ( ca len -- )
   2dup valid-block-header? if  evaluate exit  then  2drop  ;
@@ -215,10 +221,11 @@ forth-wordlist set-current
   index-wordlist set-current  indexer-wordlist 1 set-order
   ['] (indexer) catch  dup #-278 <> swap ?throw
   set-order set-current  set-indexed-need  ;
+
   \ doc{
   \
   \ indexer  ( -- )
-
+  \
   \ Create the blocks index and activate it. The the current
   \ word list and the current search order are preserved.
   \
