@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605040150
+; Last modified: 201605040221
 
 include version.z80s
 
@@ -6730,6 +6730,20 @@ fill.done:
   dw exit_
 
 ; ----------------------------------------------
+  _variable_header slash_hold_,'/HOLD'
+
+; doc{
+;
+; /hold  ( -- a )
+;
+; Variable that holds the length of the pictured output string
+; buffer, which is located right below `pad`.
+;
+; }doc
+
+  dw 68
+
+; ----------------------------------------------
   _colon_header pad_,'PAD'
 
 ; doc{
@@ -6742,11 +6756,12 @@ fill.done:
 ; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT),
 ; Forth-2012 (CORE EXT).
 ;
+; : pad  ( -- ca )
+;   here /hold @ +  ;
+;
 ; }doc
 
-  dw here_
-  _literal $44
-  dw plus_
+  dw here_,slash_hold_,fetch_,plus_
   dw exit_
 
 ; ----------------------------------------------
@@ -9940,8 +9955,6 @@ emits.loop_exit:
 ; ----------------------------------------------
   _colon_header less_hash_,'<#'
 
-  ; XXX FIXME -- don't use `pad`
-
   dw pad_,hld_,store_
   dw exit_
 
@@ -9950,9 +9963,7 @@ emits.loop_exit:
 
   dw two_drop_
   dw hld_,fetch_
-  dw pad_
-  dw over_
-  dw minus_
+  dw pad_,over_,minus_
   dw exit_
 
 ; ----------------------------------------------
@@ -9965,9 +9976,9 @@ emits.loop_exit:
 ; If _n_ is negative, add a minus sign to the beginning of the
 ; pictured numeric output string.
 ;
-; Origin: Forth 94 (CORE), Forth-2012 (CORE).
-;
 ; See: `<#`, `#>`.
+;
+; Origin: Forth 94 (CORE), Forth-2012 (CORE).
 ;
 ; ----
 ; : sign  ( n -- )
