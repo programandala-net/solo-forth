@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241958
+  \ Last modified: 201605060116
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,9 @@
 
   \ 2016-04-24: Add `need pick`, because `pick` has been moved
   \ from the kernel to the library.
+  \
+  \ 2016-05-06: Replace two remaining `[compile]` with
+  \ `postpone`.
 
 ( case )
 
@@ -51,7 +54,7 @@
 : endcase
   \ ( Compilation: 0 orig1..orign -- )
   \ ( Run-time: x -- )
-  postpone drop  begin  ?dup  while  [compile] then  repeat
+  postpone drop  begin  ?dup  while  postpone then  repeat
   ; immediate compile-only
 
 ( eforth-case )
@@ -74,7 +77,7 @@
   postpone else  ; immediate compile-only
 
 : (endcase) ( 0 orig1..orign -- )
-  begin  ?dup  while  [compile] then  repeat  ;
+  begin  ?dup  while  postpone then  repeat  ;
 
 : endcase
   ( Compilation: 0 orig1..orign -- )
