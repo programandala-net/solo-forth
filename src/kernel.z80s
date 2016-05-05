@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605040221
+; Last modified: 201605051551
 
 include version.z80s
 
@@ -7190,6 +7190,9 @@ error.message:
 ; ----------------------------------------------
   _colon_header dot_name_,'.NAME'
 
+  ; XXX TODO -- move to the library, with `warnings`
+  ; and the check done in `header,`.
+
   dw name_to_string_,type_,space_
   dw exit_
 
@@ -7321,6 +7324,8 @@ endif
 ; ----------------------------------------------
   _code_header compare_,'COMPARE'
 
+  ; XXX TODO -- move to the library
+
   ; Forth-94
   ;
   ; Credit:
@@ -7377,6 +7382,9 @@ compare.end:
   _jp_pushhl
 
 compare_strings_case_sensitive:
+  
+  ; XXX TODO -- move to the library
+
   ; Used by 'compare' and 'search'.
   ; Input:
   ;   HL = a1
@@ -7445,15 +7453,54 @@ compare2.end:
   dec hl ; -1
   _jp_pushhl
 
+
+  ; XXX TODO -- Adapt this version from Z88 CamelForth:
+
+; ;Z S=    c-addr1 c-addr2 u -- n   string compare
+; ;Z             n<0: s1<s2, n=0: s1=s2, n>0: s1>s2
+;     head SEQUAL,2,"S=",docode,0,0
+;         push bc
+;         exx
+;         pop bc      ; count
+;         pop hl      ; addr2
+;         pop de      ; addr1
+;         ld a,b      ; test for count=0
+;         or c
+;         jr z,smatch     ; by definition, match!
+; .sloop  ld a,(de)
+;         inc de
+;         cpi
+;         jr nz,sdiff     ; char mismatch: exit
+;         jp pe,sloop     ; count not exhausted
+; .smatch ; count exhausted & no mismatch found
+;         exx
+;         ld bc,0         ; bc=0000  (s1=s2)
+;         jr snext
+; .sdiff  ; mismatch!  undo last 'cpi' increment
+;         dec hl          ; point at mismatch char
+;         cp (hl)         ; set cy if char1 < char2
+;         sbc a,a         ; propagate cy thru A
+;         exx
+;         ld b,a          ; bc=FFFF if cy (s1<s2)
+;         or 1            ; bc=0001 if ncy (s1>s2)
+;         ld c,a
+; .snext
+;         next
+
 ; ----------------------------------------------
   _code_header search_,'SEARCH'
+
+  ; XXX TODO -- move to the library
 
   ; search  ( ca1 len1 ca2 len2 -- ca3 len3 -1 | ca1 len1 0 )
 
   ; Forth-94
 
+  ; XXX OLD
+
   ; Adapted from DZX-Forth.
-  ;
+
+
   ; XXX TODO -- do not use compare_strings_case_sensitive,
   ; because there will be no option to change it.  Use shorter
   ; internal code instead.  When case insensitive comparation is
@@ -7464,6 +7511,25 @@ compare2.end:
   ; several version of the same code with `uppers`, not to
   ; mention `uppers` with parsed strings must use the circular
   ; string buffer, what is a limitation.
+
+  ; XXX FIXME -- 2016-05-05: Strange bug found: a wrong match
+  ; happens with `locate order`: the string " order " is found
+  ; in the index line of the second block of the `indexer`
+  ; utility (identical to the previous one: "(
+  ; indexer)<spaces>"). The match happens at the last char of
+  ; the searched string (character 64, a space). Later
+  ; executions with the very same strings (using the same string
+  ; addresses; the strings are fine, they are not corrupted)
+  ; return the same wrong match. But with the same strings at
+  ; different memory addresses the result is good: no match.
+  ;
+  ; Found the bug conditions: "order " was at the start of the
+  ; second line of the block. That's why " order " matched at
+  ; the last char of the first line. It seems the code does not
+  ; detect the end of the longer string.
+  ;
+  ; A test has been written in "src/lib/meta.test.misc.fsb", in
+  ; order to confirm the error conditions.
 
   exx ; save Forth IP
   pop hl
@@ -7519,6 +7585,181 @@ search.string_1_len equ $+1
 search.string_1_addr equ $+1
   ld hl,0  ; address of the first string
   jp search.end
+
+
+; ----------------------------------------------
+  _code_header search881_,'SEARCH881'
+
+  ; XXX TMP -- Version adapted from Z88 CamelForth
+  ; Temporary port, not optimized, just to make it work
+
+  ld (ip_backup1),bc ; save IP
+  ld (ip_backup2),bc ; save IP
+
+  pop bc ; XXX TMP --
+
+  pop hl    ; HL/BC=substring
+  ld a,b
+  or c
+  jr z,search3  ; if zero length substring, immediate match
+
+  exx
+  pop bc
+  pop hl
+  push hl
+  push bc   ; HL'/BC'=main string
+
+search1:
+  ld a,b
+  or c
+  jr z,search5  ; no match if end of main string
+
+  exx
+  ld a,(hl)
+  exx
+  cpir    ; search for first substring char
+  jr nz,search5 ; no match if not found
+  dec hl    ; backup to matching char
+  inc bc
+  push bc
+  exx
+  ex (sp),hl
+  and a
+  sbc hl,bc ; test length left against substring length
+  pop hl
+  exx
+  jr c,search5  ; no match if not long enough
+  push hl
+  exx
+  ex de,hl
+  ex (sp),hl  ; save IP, get HL=main string, DE=substring
+  push de   ; save substring
+  push bc
+
+search2:
+  ld a,(de)
+  cp (hl)
+  jr nz,search4 ; stop trying if char mismatch
+  inc de
+  inc hl
+  dec bc
+  ld a,b
+  or c
+  jr nz,search2 ; for rest of substring
+  pop de
+  pop de    ; discard substring
+  pop bc    ; restore IP
+  pop de
+  pop de    ; discard caddr1/u1
+  exx
+  push hl   ; stack caddr3/u3
+  push bc
+  exx
+
+search3:
+ip_backup1 equ $+1
+  ld bc,$0000
+  jp true_
+
+search4:
+  pop bc         ; restore substring
+  pop hl
+  pop de    ; restore IP
+  exx
+  inc hl    ; move past first matching char
+  dec bc
+  jr search1  ; back for another try
+
+search5:
+  exx
+ip_backup2 equ $+1
+  ld bc,$0000
+  jp false_
+
+; ----------------------------------------------
+  _code_header search88_,'SEARCH88'
+
+  ; XXX TODO -- Improve this second port from Z88 CamelForth
+
+  ld d,b
+  ld e,c ; save IP in DE
+
+  pop bc
+
+  pop hl    ; HL/BC=substring
+  ld a,b
+  or c
+  jr z,search88.3 ; if zero length substring, immediate match
+
+  exx
+  pop bc
+  pop hl
+  push hl
+  push bc   ; HL'/BC'=main string
+
+search88.1:
+  ld a,b
+  or c
+  jr z,search88.5 ; no match if end of main string
+
+  exx
+  ld a,(hl)
+  exx
+  cpir    ; search for first substring char
+  jr nz,search88.5  ; no match if not found
+  dec hl    ; backup to matching char
+  inc bc
+  push bc
+  exx
+  ex (sp),hl
+  and a
+  sbc hl,bc ; test length left against substring length
+  pop hl
+  exx
+  jr c,search88.5 ; no match if not long enough
+  push hl
+  exx
+  ex de,hl
+  ex (sp),hl  ; save IP, get HL=main string, DE=substring
+  push de   ; save substring
+  push bc
+search88.2:
+  ld a,(de)
+  cp (hl)
+  jr nz,search88.4  ; stop trying if char mismatch
+  inc de
+  inc hl
+  dec bc
+  ld a,b
+  or c
+  jr nz,search88.2  ; for rest of substring
+  pop de
+  pop de    ; discard substring
+  pop bc    ; restore IP
+  pop de
+  pop de    ; discard caddr1/u1
+  exx
+  push hl   ; stack caddr3/u3
+  push bc
+  exx
+
+search88.3:
+  jp true_
+
+search88.4:
+  pop bc         ; restore substring
+  pop hl
+  pop de    ; restore IP
+  exx
+  inc hl    ; move past first matching char
+  dec bc
+  jr search88.1 ; back for another try
+
+search88.5:
+  exx
+  ld b,d
+  ld c,e ; restore IP
+  jp false_
 
 ; ----------------------------------------------
   _colon_header s_literal_,'SLITERAL',immediate+compile_only
