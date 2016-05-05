@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605051551
+  \ Last modified: 201605060007
 
   \ -----------------------------------------------------------
   \ Description
@@ -1335,19 +1335,19 @@ need bench{  need }bench.  need clshift
 
 need bench{  need }bench.  need alias  need alias!
 
-  \ 512 constant length
-  \ create (string)  length allot  (string) length blank
-  \ (string) length 2constant string
+0 $FFFF 2constant haystack
+  \ String to search: the whole memory
 
-0 $FFFF 2constant string
-s" SoloForth" 2constant substring
-substring $FF00 place
+s" Need" $FF00 1- place 'l' $FF04 c! 'e' $FF05 c!
+  \ Store "Needle" at $FF00, but hide it in this block
 
-' search alias (search)
+$FF00 6 2constant needle
+
+defer do-search
 
 : search-bench  ( n xt -- )
-  [ defined (search) ] literal alias!
-  bench{  0 do  string substring (search) drop 2drop   loop
+  ['] do-search defer!
+  bench{  0 do  haystack needle do-search drop 2drop   loop
   }bench.  ;
 
 : run  ( n -- )
@@ -1359,7 +1359,14 @@ substring $FF00 place
   \ -----  -----------------------------------------------
   \        DZX-Forth  Z88 CamelForth 1  Z88 CamelForth 2
   \        ---------  ----------------  ----------------
+  \     1        207                24                24
+  \   100      20704              2396              2395
+  \   200                         4790              4791
 
-  \ XXX NOTE -- the results are identical
+  \                   Bytes free
+  \                   ----------
+  \ DZX-Forth              32797
+  \ Z88 CamelForth 1       32776
+  \ Z88 CamelForth 2       32786
 
   \ vim: filetype=soloforth
