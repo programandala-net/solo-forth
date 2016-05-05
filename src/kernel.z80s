@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605060003
+; Last modified: 201605060110
 
 include version.z80s
 
@@ -7324,20 +7324,31 @@ endif
 ; ----------------------------------------------
   _code_header compare_,'COMPARE'
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library -- but needed by `[needed]`
 
-  ; Forth-94
-  ;
-  ; Credit:
-  ; Adapted from DZX-Forth
+; doc{
+;
+; compare ( ca1 len1 ca2 len2 -- n )
+;
+; Compare the string _ca1 len1_ to the string _ca2 len2_. The
+; strings are compared, beginning at the given addresses,
+; character by character, up to the length of the shorter string
+; or until a difference is found. If the two strings are
+; identical, _n_ is zero. If the two strings are identical up to
+; the length of the shorter string, _n_ is minus-one (-1) if
+; _len1_ is less than _len2_ and one (1) otherwise. If the two
+; strings are not identical up to the length of the shorter
+; string, _n_ is minus-one (-1) if the first non-matching
+; character in the string _ca1 len1_ has a lesser numeric value
+; than the corresponding character in the string _ca2 len2_ and
+; one (1) otherwise.
+;
+; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+;
+; }doc
 
-  ; XXX TODO -- do not use compare_strings_case_sensitive, because
-  ; there will be no option to change it.  Use shorter internal
-  ; code instead.  When case insensitive comparation is needed,
-  ; `uppers` can be used.
-  ;
-  ; XXX TODO -- study the version of Z88 CamelForth: `compare`
-  ; and `s=  ( ca1 ca2 len -- n )`.
+; Credit:
+; Adapted from DZX-Forth
 
   pop de      ; de = len2
   pop hl      ; hl = ca2
@@ -7352,20 +7363,31 @@ compare.lengths:
   jr c,compare.ready
   ex de,hl
 compare.ready:
-  ; de = length of the short string
-  ; hl = length of the long string
+  ; de = length of the shorter string
+  ; hl = length of the longer string
   ld l,c
   ld h,b ; hl = Forth IP
   pop bc ; bc = ca2
   ex (sp),hl ; hl = ca1 ; save Forth IP
-  push af ; save carry flag
-compare.compare_strings: equ $+1 ; XXX not used
-  call compare_strings_case_sensitive
-  jr nz,compare.no_match
+  push af ; save cy (string2 is longer than string1?)
+  ; hl = ca1
+  ; bc = ca2
+  ; de = length of the shorter string
+compare.char
+  ld a,e
+  or d ; end of string?
+  jr z,compare.match ; is so, all chars matched
+  ld a,(bc)
+  cp (hl)
+  jr nz,compare.no_match ; a char doesn't match
+  inc hl
+  inc bc
+  dec de
+  jp compare.char
 
 compare.match:
   ; The smaller string matches.
-  pop af ; restore flags
+  pop af ; restore cy (string2 is longer than string1?)
   jr compare.end
 
 compare.no_match:
@@ -7375,122 +7397,16 @@ compare.no_match:
 compare.end:
   pop bc ; restore Forth IP
   ld hl,1
-  jp c,push_hl
+  jp c,push_hl ; jump if string2 is longer than string1?
   dec hl ; 0
-  jp z,push_hl ; string1 equals string2
+  jp z,push_hl ; jump if string1 equals string2
   dec hl ; -1
-  _jp_pushhl
-
-compare_strings_case_sensitive:
-  
-  ; XXX TODO -- move to the library
-
-  ; Used by 'compare' and 'search'.
-  ; Input:
-  ;   HL = a1
-  ;   BC = a2
-  ;   DE = len
-  ; Output:
-  ;   Z = match?
-  ; Credit:
-  ; Code from DZX-Forth.
-  ld a,e
-  or d
-  ret z
-  ld a,(bc)
-  cp (hl)
-  ret nz
-  inc hl
-  inc bc
-  dec de
-  jp compare_strings_case_sensitive
-
-; ----------------------------------------------
-  _code_header compare2_,'COMPARE2'
-
-  ; XXX TMP -- for benchmarking
-  ; XXX TODO --
-
-  pop de      ; de = len2
-  pop hl      ; hl = ca2
-  ex (sp),hl  ; hl = len1 ; ( ca1 ca2 )
-  ld a,d
-  cp h
-  jr nz,compare2.lengths
-  ld a,e
-  cp l
-compare2.lengths:
-  ; cy = string2 is longer than string1?
-  jr c,compare2.ready
-  ex de,hl
-compare2.ready:
-  ; de = length of the short string
-  ; hl = length of the long string
-  ld l,c
-  ld h,b ; hl = Forth IP
-  pop bc ; bc = ca2
-  ex (sp),hl ; hl = ca1 ; save Forth IP
-  push af ; save carry flag
-compare2.compare_strings: equ $+1 ; XXX not used
-  call compare_strings_case_sensitive
-  jr nz,compare2.no_match
-
-compare2.match:
-  ; The smaller string matches.
-  pop af ; restore flags
-  jr compare2.end
-
-compare2.no_match:
-  ; The smaller string does not match.
-  pop bc ; useless carry flag
-
-compare2.end:
-  pop bc ; restore Forth IP
-  ld hl,1
-  jp c,push_hl
-  dec hl ; 0
-  jp z,push_hl ; string1 equals string2
-  dec hl ; -1
-  _jp_pushhl
-
-
-  ; XXX TODO -- Adapt this version from Z88 CamelForth:
-
-; ;Z S=    c-addr1 c-addr2 u -- n   string compare
-; ;Z             n<0: s1<s2, n=0: s1=s2, n>0: s1>s2
-;     head SEQUAL,2,"S=",docode,0,0
-;         push bc
-;         exx
-;         pop bc      ; count
-;         pop hl      ; addr2
-;         pop de      ; addr1
-;         ld a,b      ; test for count=0
-;         or c
-;         jr z,smatch     ; by definition, match!
-; .sloop  ld a,(de)
-;         inc de
-;         cpi
-;         jr nz,sdiff     ; char mismatch: exit
-;         jp pe,sloop     ; count not exhausted
-; .smatch ; count exhausted & no mismatch found
-;         exx
-;         ld bc,0         ; bc=0000  (s1=s2)
-;         jr snext
-; .sdiff  ; mismatch!  undo last 'cpi' increment
-;         dec hl          ; point at mismatch char
-;         cp (hl)         ; set cy if char1 < char2
-;         sbc a,a         ; propagate cy thru A
-;         exx
-;         ld b,a          ; bc=FFFF if cy (s1<s2)
-;         or 1            ; bc=0001 if ncy (s1>s2)
-;         ld c,a
-; .snext
-;         next
+  _jp_pushhl ; string2 is longer than string2
 
 ; ----------------------------------------------
   _code_header search_,'SEARCH'
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library -- but needed by `contains`
 
 ; doc{
 ;
