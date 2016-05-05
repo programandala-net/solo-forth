@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604291453
+  \ Last modified: 201605052257
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,7 +15,8 @@
   \ - It does not inherit the attributes of the original word,
   \   which can be set with `immediate` and `compile-only`.
   \ - It does not use data space memory.
-  \ - Its behaviour can be reconfigured with `realias` and `alias!`.
+  \ - It can be reconfigured with `realias` and `alias!`, but
+  \   the compiled aliases don't change.
 
   \ -----------------------------------------------------------
   \ Author
@@ -53,12 +54,16 @@
   \
   \ 2016-04-29: Add `alias!`, a useful common factor of
   \ `alias` and `realias`.
+  \
+  \ 2016-05-05: Add conditional compilation. Improve
+  \ documentation.
 
 ( alias! alias realias )
 
 need name>>  need !s
 
-: alias!  ( xt nt -- )  name>> !s  ;
+[defined] alias!
+?\ : alias!  ( xt nt -- )  name>> !s  ;
 
   \ doc{
   \
@@ -70,7 +75,8 @@ need name>>  need !s
   \
   \ }doc
 
-: alias  ( xt "name" -- )  header reveal latest alias!  ;
+[unneeded] alias
+?\ : alias  ( xt "name" -- )  header reveal latest alias!  ;
 
   \ doc{
   \
@@ -87,6 +93,8 @@ need name>>  need !s
   \ Origin: Gforth.
   \
   \ }doc
+
+[unneeded] realias ?exit
 
 : realias  ( xt "name" -- )
   defined dup 0= #-13 ?throw alias!  ;
