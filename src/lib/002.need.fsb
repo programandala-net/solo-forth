@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604261957
+  \ Last modified: 201605060113
 
   \ -----------------------------------------------------------
   \ Description
@@ -69,8 +69,11 @@
   \ break key, throw exception #-28 ("user interrupt");
   \ formerly the ordinary #-268 ("required, but not located")
   \ was thrown by the calling word.
+  \
+  \ 2016-05-06: Make `from` and `locate` optional. Compact the
+  \ blocks.
 
-( contains delimited located )
+( contains delimited located ?located )
 
 : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
 
@@ -93,7 +96,7 @@ variable last-locatable  blk/disk 1- last-locatable !
 
   \ doc{
   \
-  \ delimited   ( ca1 len1 -- ca2 len2 )
+  \ delimited  ( ca1 len1 -- ca2 len2 )
   \
   \ Add one leading space and one trailing space to string _ca1
   \ len1_, returning the result _ca2 len2_ in the circular
@@ -119,14 +122,10 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
--->
-
-( ?located locate from reneeded reneed )
-
 : ?located  ( block | 0 -- )  dup 0= #-268 ?throw  ;
 
-  \ XXX FIXME -- the word shown by the exception may have been
-  \ overwritten in the circular string buffer.
+  \ XXX FIXME -- Some times the word shown by the exception has
+  \ been overwritten in the circular string buffer.
 
   \ doc{
   \
@@ -137,56 +136,9 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
-: locate  ( "name" -- block | 0 )
-  parse-name save-string located  ;
+-->
 
-  \ doc{
-  \
-  \ locate  ( "name" -- block | 0 )
-  \
-  \ Locate the first block whose header contains "name"
-  \ (surrounded by spaces), and return its number. If not
-  \ found, return zero.  The search is case-sensitive.
-  \
-  \ }doc
-
-: from  ( "name" -- )  locate ?located first-locatable !  ;
-
-  \ doc{
-  \
-  \ from  ( "name" -- )
-  \
-  \ Locate the first block whose header contains "name"
-  \ (surrounded by spaces), and set it the first one `located`
-  \ will search from. If not found, throw an exception -268
-  \ ("required, but not located").
-  \
-  \ This word is intended to prevent undesired matches clashes
-  \ during the execution of `need` and related words. "name" is
-  \ supposed to be a conventional marker.
-  \
-  \ Usage examples:
-
-  \ ----
-  \ ( x )
-  \
-  \ : x  ( -- )  ." Wrong x!" ;
-  \
-  \ ( use-x )
-  \
-  \ from ==data-structures== need x
-  \
-  \ ( y )  ==data-structures==
-  \
-  \ : y ." Y data structure; ;
-  \
-  \ ( x )
-  \
-  \ : x ." X data structure; ;
-  \
-  \ ----
-
-  \ }doc
+( reneeded reneed needed-word [needed] [unneeded] )
 
 defer reneeded  ( ca len -- )
 
@@ -248,17 +200,11 @@ defer reneed  ( "name" -- )
   \
   \ }doc
 
--->
-
-( needed-word [needed] [unneeded] )
-
 2variable needed-word
-
-  \ XXX TODO -- make `[needed]` and `[unneeded]` optional.
 
 : [needed]  ( "name" -- f )
   parse-name needed-word 2@ 2dup or
-  if  compare 0=  exit  then  2drop 2drop true   ; immediate
+  if  compare 0=  exit  then  2drop 2drop true  ; immediate
 
   \ doc{
   \
@@ -380,5 +326,60 @@ defer need  ( "name" -- )
 set-located-need
 
 blk @ 1+ dup default-first-locatable !  first-locatable !
+
+( locate from )
+
+[defined] locate
+?\ : locate  ( "name" -- n )  parse-name save-string located  ;
+
+  \ doc{
+  \
+  \ locate  ( "name" -- n )
+  \
+  \ Locate the first block whose header contains "name"
+  \ (surrounded by spaces), and return its number. If not
+  \ found, return zero.  The search is case-sensitive.
+  \
+  \ }doc
+
+[unneeded] from ?exit
+
+: from  ( "name" -- )  locate ?located first-locatable !  ;
+
+  \ doc{
+  \
+  \ from  ( "name" -- )
+  \
+  \ Locate the first block whose header contains "name"
+  \ (surrounded by spaces), and set it the first one `located`
+  \ will search from. If not found, throw an exception -268
+  \ ("required, but not located").
+  \
+  \ This word is intended to prevent undesired name clashes
+  \ during the execution of `need` and related words. "name" is
+  \ supposed to be a conventional marker.
+  \
+  \ Usage examples:
+
+  \ ----
+  \ ( x )
+  \
+  \ : x  ( -- )  ." Wrong x!" ;
+  \
+  \ ( use-x )
+  \
+  \ from ==data-structures==  need x
+  \
+  \ ( y )  ==data-structures==
+  \
+  \ : y ." Y data structure; ;
+  \
+  \ ( x )
+  \
+  \ : x ." X data structure; ;
+  \
+  \ ----
+
+  \ }doc
 
   \ vim: filetype=soloforth
