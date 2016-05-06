@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605060319
+; Last modified: 201605060325
 
 include version.z80s
 
@@ -2080,28 +2080,6 @@ question_csb_.enough:
 ; }doc
 
 ; ----------------------------------------------
-  _code_header branch_,'BRANCH'
-
-; doc{
-;
-; branch  ( -- )
-;
-; The run-time procedure to branch unconditionally. The
-; following in-line address is copied to IP to branch forward or
-; backward.
-;
-; Origin: Forth-83 (System Extension Word Set).
-;
-; }doc
-
-  ld h,b
-  ld l,c ; hl = Forth IP, containing the address to jump to
-  ld c,(hl)
-  inc hl
-  ld b,(hl) ; bc = New Forth IP
-  _jp_next
-
-; ----------------------------------------------
   _code_header zero_branch_,'0BRANCH'
 
 ; doc{
@@ -2377,7 +2355,29 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   ld (return_stack_pointer),hl ; write updated return stack pointer (6 was added)
   dec bc
   dec bc ; point IP to forward branch address
-  jp branch_
+  ; Execution continues in `branch`:
+
+; ----------------------------------------------
+  _code_header branch_,'BRANCH'
+
+; doc{
+;
+; branch  ( -- )
+;
+; The run-time procedure to branch unconditionally. The
+; following in-line address is copied to IP to branch forward or
+; backward.
+;
+; Origin: Forth-83 (System Extension Word Set).
+;
+; }doc
+
+  ld h,b
+  ld l,c ; hl = Forth IP, containing the address to jump to
+  ld c,(hl)
+  inc hl
+  ld b,(hl) ; bc = New Forth IP
+  _jp_next
 
 ; ----------------------------------------------
   _code_header paren_plus_loop_,'(+LOOP)'
@@ -5516,6 +5516,9 @@ true_if_z: ; XXX entry not used yet
 ; ----------------------------------------------
   _code_header less_than_,'<'
 
+if 0 ; XXX OLD
+
+
   pop de
   pop hl
 less_than.de_hl:
@@ -5527,17 +5530,15 @@ less_than.de_hl:
     jp false_
   endif
 
-if 1
+else ; XXX NEW
 
-  _code_header less_than88_,'<88' ; XXX TMP --
-
-  ; XXX TODO
-  ;
   ; Code adapted from Z88 CamelForth
+  ; - Faster
+  ; - 9 more bytes
 
   pop de
   pop hl
-less_than88.de_hl:
+less_than.de_hl:
   or a
   sbc hl,de       ; n1-n2 in HL, SZVC valid
 
