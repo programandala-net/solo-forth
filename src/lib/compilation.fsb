@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605050022
+  \ Last modified: 201605060222
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,7 @@
   \ 2016-05-02: Move `[compile]` from the kernel.
   \ 2016-05-04: Compact the blocks.
   \ 2016-05-05: Update `s=` to `str=`.
+  \ 2016-05-06: Move `current-latest` back to the kernel.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -326,7 +327,7 @@ need [if]
 
 [then]
 
-( [const] [2const] [cconst] current-latest cliteral )
+( [const] [2const] [cconst] cliteral )
 
 need eval  need [if]
 
@@ -402,22 +403,6 @@ need eval  need [if]
   \ 48 cconstant zx
   \ : test  ( -- )  [cconst] zx emit  ;
   \ ----
-  \
-  \ }doc
-
-[unneeded] current-latest
-?\ : current-latest  ( -- nt )  get-current @  ;  exit
-
-  \ doc{
-  \
-  \ current-latest ( -- nt )
-  \
-  \ Leave the name token of the topmost word in the current
-  \ compilation word list.  This is different from `latest`,
-  \ which returns the name token of the latest word defined in
-  \ the system.
-  \
-  \ Origin: fig-Forth `latest`.
   \
   \ }doc
 

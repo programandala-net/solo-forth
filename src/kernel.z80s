@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605060110
+; Last modified: 201605060221
 
 include version.z80s
 
@@ -5635,6 +5635,30 @@ u_less_than.de_hl:
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header current_latest_,'CURRENT-LATEST'
+
+; doc{
+;
+; current-latest ( -- nt )
+;
+; Leave the name token of the topmost word in the current
+; compilation word list.  This is different from `latest`,
+; which returns the name token of the latest word defined in
+; the system.
+;
+; Origin: fig-Forth `latest`.
+;
+; ----
+; : current-latest  ( -- nt )
+;   get-current @  ;
+; ----
+;
+; }doc
+
+  dw get_current_,fetch_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header latestxt_,'LATESTXT'
 
 ; doc{
@@ -7275,7 +7299,7 @@ header_comma.continue:
   dw tuck_ ; ( len ca len )
   dw system_bank_
   dw here_,comma_np_ ; store a pointer to the xt
-  dw latest_,comma_np_ ; link field
+  dw current_latest_,comma_np_ ; link field
   ; Now `np` contains the address of the nt.
   dw np_fetch_
   dw dup_,to_r_
