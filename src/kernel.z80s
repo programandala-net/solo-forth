@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605061643
+; Last modified: 201605061650
 
 include version.z80s
 
@@ -4154,22 +4154,7 @@ zero_equals.hl:
   ld a,l
   or h
   jp z,false_
-  ; Execution continues in `true`:
-
-  ; XXX TODO -- move `false` after `=`, which is more used than
-  ; `0<>`
-
-; ----------------------------------------------
-  _code_header true_,'TRUE'
-
-; doc{
-;
-; true  ( -- true )
-;
-; }doc
-
-  ld hl,true
-  _jp_pushhl
+  jp true_
 
 ; ----------------------------------------------
   _code_header zero_less_than_,'0<'
@@ -5521,8 +5506,20 @@ two_comma.allot:
   pop hl
   or a
   sbc hl,de
-  jp z,true_
-  jp false_
+  jp nz,false_
+  ; Execution continues in `true`:
+
+; ----------------------------------------------
+  _code_header true_,'TRUE'
+
+; doc{
+;
+; true  ( -- true )
+;
+; }doc
+
+  ld hl,true
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header less_than_,'<'
