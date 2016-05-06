@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605060221
+; Last modified: 201605060319
 
 include version.z80s
 
@@ -4106,7 +4106,19 @@ zero_equals.hl:
   ld a,l
   or h
   jp z,true_
-  jp false_
+  ; Execution continues in `false`:
+
+; ----------------------------------------------
+  _code_header false_,'FALSE'
+
+; doc{
+;
+; false  ( -- false )
+;
+; }doc
+
+  ld hl,false
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
@@ -4115,7 +4127,19 @@ zero_equals.hl:
   ld a,l
   or h
   jp z,false_
-  jp true_
+  ; Execution continues in `true`:
+
+; ----------------------------------------------
+  _code_header true_,'TRUE'
+
+; doc{
+;
+; true  ( -- true )
+;
+; }doc
+
+  ld hl,true
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header zero_less_than_,'0<'
@@ -4141,7 +4165,7 @@ true_if_cy:
 
   pop de
   ld hl,0
-  jp is_de_less_than_hl
+  jp less_than.de_hl
 
 ; ----------------------------------------------
   _code_header plus_,'+'
@@ -4760,36 +4784,6 @@ do_user:
   _c_constant_header two_,'2'
 
   db $02
-
-; ----------------------------------------------
-  _code_header false_,'FALSE'
-
-  ; XXX TODO -- Convert to `cconstant`? I would be slower, but
-  ; would save 4 bytes.
-
-; doc{
-;
-; false  ( -- false )
-;
-; }doc
-
-  ld hl,false
-  _jp_pushhl
-
-; ----------------------------------------------
-  _code_header true_,'TRUE'
-
-  ; XXX TODO -- Convert to `constant`? I would be slower, but
-  ; would save 3 bytes.
-
-; doc{
-;
-; true  ( -- true )
-;
-; }doc
-
-  ld hl,true
-  _jp_pushhl
 
 ; ----------------------------------------------
   _c_constant_header b_l_,'BL'
@@ -5524,7 +5518,7 @@ true_if_z: ; XXX entry not used yet
 
   pop de
   pop hl
-is_de_less_than_hl:
+less_than.de_hl:
   call compare_de_hl_signed
   if size_optimization
     jp true_if_cy
@@ -5533,7 +5527,9 @@ is_de_less_than_hl:
     jp false_
   endif
 
-if 0
+if 1
+
+  _code_header less_than88_,'<88' ; XXX TMP --
 
   ; XXX TODO
   ;
@@ -5541,6 +5537,7 @@ if 0
 
   pop de
   pop hl
+less_than88.de_hl:
   or a
   sbc hl,de       ; n1-n2 in HL, SZVC valid
 
@@ -5592,7 +5589,7 @@ u_less_than.de_hl:
 
   pop hl
   pop de
-  jp is_de_less_than_hl
+  jp less_than.de_hl
 
 ; ----------------------------------------------
   _code_header rot_,'ROT'
