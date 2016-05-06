@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605060007
+  \ Last modified: 201605061643
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,6 +32,8 @@
   \ `8 *`.
   \
   \ 2016-05-05: Add benchmark for `search`.
+  \
+  \ 2016-05-06: Add benchmarks for `<` and `=`.
 
 ( number-base-bench )
 
@@ -1368,5 +1370,83 @@ defer do-search
   \ DZX-Forth              32797
   \ Z88 CamelForth 1       32776
   \ Z88 CamelForth 2       32786
+
+( <-bench )
+
+  \ 2016-05-06
+
+need bench{  need j
+
+defer (<)
+
+variable times
+
+: <-bench  ( n xt -- )
+  ['] (<) defer!  times !
+  bench{
+    times @ 0 ?do  times @ 0 ?do  i j
+    (<) drop  loop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." Implementation of <"
+  dup cr ."   DZX-Forth .........." ['] < <-bench
+      cr ."   Z88 CamelForth ....." ['] <88 <-bench  ;
+
+  \ 2016-05-06
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   --------------------------------------
+  \         DZX-Forth `<`  Z88 CamelForth `<`
+  \         ------------- ------------------------
+  \   50               33                31 (0.93)
+  \  100              129               122 (0.94)
+  \  250              803               755 (0.94)
+  \ 1000            12534             12049 (0.96)
+
+( =-bench )
+
+  \ 2016-05-06
+
+need bench{
+
+defer (=)
+
+variable times
+
+: <-bench  ( n xt -- )
+  ['] (=) defer!  times !
+  bench{
+    times @ 0 ?do  2 2 (=) 1 0 (=) 2drop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." Implementation of ="
+  dup cr ."   DZX-Forth .........." ['] = <-bench
+      cr ."   Z88 CamelForth ....." ['] =88 <-bench  ;
+
+  \ 2016-05-06
+
+  \ _code_header equals_,'='
+  \ pop de
+  \ pop hl
+  \ call compare_de_hl_unsigned
+  \ jp z,true_
+  \ jp false_
+
+  \ _code_header equals88_,'=88'
+  \ pop de
+  \ pop hl
+  \ or a
+  \ sbc hl,de
+  \ jp z,true_
+  \ jp false_
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   --------------------------------------
+  \         DZX-Forth `=`  Z88 CamelForth `=`
+  \         ------------- ------------------------
+  \ 10000             175               164 (0.93)
+  \ 65535            1148              1073 (0.93)
 
   \ vim: filetype=soloforth

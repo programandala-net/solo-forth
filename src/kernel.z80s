@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605060337
+; Last modified: 201605061643
 
 include version.z80s
 
@@ -4156,6 +4156,9 @@ zero_equals.hl:
   jp z,false_
   ; Execution continues in `true`:
 
+  ; XXX TODO -- move `false` after `=`, which is more used than
+  ; `0<>`
+
 ; ----------------------------------------------
   _code_header true_,'TRUE'
 
@@ -5506,8 +5509,8 @@ two_comma.allot:
 
   pop de
   pop hl
-  _compare_de_hl_unsigned
-false_if_z: ; XXX entry not used yet
+  or a
+  sbc hl,de
   jp z,false_
   jp true_
 
@@ -5516,8 +5519,8 @@ false_if_z: ; XXX entry not used yet
 
   pop de
   pop hl
-  _compare_de_hl_unsigned
-true_if_z: ; XXX entry not used yet
+  or a
+  sbc hl,de
   jp z,true_
   jp false_
 
@@ -5525,7 +5528,6 @@ true_if_z: ; XXX entry not used yet
   _code_header less_than_,'<'
 
 if 0 ; XXX OLD
-
 
   pop de
   pop hl
@@ -5590,7 +5592,7 @@ u_less_than.de_hl:
   sbc hl,de
   sbc a,a         ; propagate carry flag through A
   ld h,a
-  ld l,a          ; HL = $0000 or $FFFF
+  ld l,a          ; HL = $0000 (false) or $FFFF (true)
   _jp_pushhl
 
 ; ----------------------------------------------
