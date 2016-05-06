@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605061650
+; Last modified: 201605061744
 
 include version.z80s
 
@@ -441,29 +441,6 @@ _jump_z: macro _address
   endm
 
 ; ----------------------------------------------
-; Code macros
-
-_compare_de_hl_unsigned: macro
-
-  ; XXX TODO -- confirm that everything is fine, and use the
-  ; code directly
-
-  if 0
-
-    ; XXX TODO -- can not work, because the ouput flags are
-    ; different
-
-    or a
-    sbc hl,de ; u1-u2 in HL, SZVC valid
-
-  else
-
-    call compare_de_hl_unsigned
-
-  endif
-  endm
-
-; ----------------------------------------------
 ; Error message macros
 
 _question_throw: macro _error
@@ -845,18 +822,16 @@ disk_buffer:
 ; ==============================================================
 ; Misc routines
 
-; Credit:
-; Code from DZX-Forth.
-
 ; XXX TODO -- investigate if the code is optimized for Z80;
 ; the code of DZX-Forth is generic, also for 8080.
 
 ; ----------------------------------------------
-; Compare de and hl
+; Compare DE and HL
+
+; Credit:
+; Code from DZX-Forth.
 
 compare_de_hl_unsigned:
-
-if 1
 
   ; Input:  DE, HL
   ; Output:
@@ -877,36 +852,6 @@ if 1
           ; -- --  -- --
           ; 37 06  31 06
 
-else
-
-  ; XXX TODO
-
-  ; Credit:
-  ; Code from Z88 CamelForth.
-
-  ; The routine is so short that it's better to use the
-  ; instructions directly. The problem is the output flags are
-  ; different from the DZX-Forth version, and more complex to
-  ; use. Beside, it modifies HL.
-
-  ; Input:  DE, HL
-  ; Output:
-  ;   negative & not OV:  HL<DE
-  ;   negative & OV:      HL +ve, DE -ve, result -ve, so HL>DE
-  ;   positive & not OV:  HL>=DE
-  ;   positive & OV:      HL -ve, DE +ve, result +ve, so HL<DE
-  ;   thus OV reverses the sense of the sign bit
-
-            ; T  B
-            ; -- --
-  or a      ; 04 01
-  sbc hl,de ; 15 02
-  ret       ; 10 01
-            ; -- --
-            ; 29 04
-
-endif
-
 compare_de_hl_signed:
 
   ; Input:  DE, HL
@@ -924,6 +869,9 @@ compare_de_hl_signed:
 ; ----------------------------------------------
 ; Move block
 
+; Credit:
+; Code from DZX-Forth.
+
 move_block:
 
   ; Input:
@@ -936,11 +884,14 @@ move_block:
   ; completes, the bc consecutive address units at de contain exactly what the
   ; bc consecutive address units at hl contained before the move.
 
-  _compare_de_hl_unsigned
+  call compare_de_hl_unsigned
   jp c,move_block_downwards
 
 ; ----------------------------------------------
 ; Move block upwards
+
+; Credit:
+; Code from DZX-Forth.
 
 move_block_upwards:
 
@@ -961,6 +912,9 @@ move_block_upwards:
 
 ; ----------------------------------------------
 ; Move block downwards
+
+; Credit:
+; Code from DZX-Forth.
 
   ; Input:
   ; hl = source
@@ -987,6 +941,9 @@ move_block_downwards:
 
 ; ----------------------------------------------
 ; Multiplication primitives
+
+; Credit:
+; Code from DZX-Forth.
 
 ; AHL <- A * DE
 
@@ -5494,7 +5451,7 @@ two_comma.allot:
 
   pop de
   pop hl
-  or a
+  or a ; cy=0
   sbc hl,de
   jp z,false_
   jp true_
@@ -5504,7 +5461,7 @@ two_comma.allot:
 
   pop de
   pop hl
-  or a
+  or a ; cy=0
   sbc hl,de
   jp nz,false_
   ; Execution continues in `true`:
@@ -5524,30 +5481,18 @@ two_comma.allot:
 ; ----------------------------------------------
   _code_header less_than_,'<'
 
-if 0 ; XXX OLD
-
-  pop de
-  pop hl
-less_than.de_hl:
-  call compare_de_hl_signed
-  if size_optimization
-    jp true_if_cy
-  else
-    jp c,true_
-    jp false_
-  endif
-
-else ; XXX NEW
-
+  ; Credit:
+  ;
   ; Code adapted from Z88 CamelForth
-  ; - Faster
-  ; - 9 more bytes
 
   pop de
   pop hl
 less_than.de_hl:
-  or a
-  sbc hl,de       ; n1-n2 in HL, SZVC valid
+
+            ;  T  B
+            ; -- --
+  or a      ; 04 01 ; cy=0
+  sbc hl,de ; 15 02 ; n1-n2 in HL, SZVC valid
 
   ; negative & not OV:  HL<DE
   ; negative & OV:      HL +ve, DE -ve, result -ve, so HL>DE
@@ -5564,8 +5509,6 @@ less_than.reverse
   ; overflow
   jp m,false_    ; if -ve, result false
   jp true_       ; if +ve, result true
-
-endif
 
 ; ----------------------------------------------
   _code_header u_greater_than_,'U>'
@@ -5585,7 +5528,7 @@ u_greater_than.hl:
   pop de
   pop hl
 u_less_than.de_hl:
-  or a
+  or a            ; cy=0
   sbc hl,de
   sbc a,a         ; propagate carry flag through A
   ld h,a
@@ -8637,7 +8580,7 @@ question_d_negate.hl:
 
   pop de
   pop hl
-  _compare_de_hl_unsigned
+  call compare_de_hl_unsigned
   jp max.1
 
 ; ----------------------------------------------
@@ -8654,7 +8597,7 @@ question_d_negate.hl:
 
   pop de
   pop hl
-  _compare_de_hl_unsigned
+  call compare_de_hl_unsigned
   jp max.2
 
 ; ----------------------------------------------
