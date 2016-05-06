@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242142
+  \ Last modified: 201605070023
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
   \
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
 
 ( [switch switch] )
 
@@ -98,7 +100,9 @@ need :noname
   :noname ';' parse evaluate postpone ; ( xt )
   swap >switch  ;
 
-( [switch-test ) \ without syntactic sugar
+( [switch-test )
+
+  \ without syntactic sugar
 
 need :noname
 
@@ -123,7 +127,9 @@ cr 1 numbers 2 numbers 3 numbers 4 numbers
 
 -->
 
-( [switch-test ) \ with syntactic sugar
+( [switch-test )
+
+  \ with syntactic sugar
 
 [switch sugar-numbers many
   1 runs one

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031805
+  \ Last modified: 201605070018
 
   \ -----------------------------------------------------------
   \ Description
@@ -11,7 +11,7 @@
   \ The Forth system error codes (range -4095..-256) used for
   \ +3DOS (range -1036..-1015).
 
-( Non-recoverable +3DOS errors #-1015..#-1029)
+( Non-recoverable +3DOS errors #-1015..#-1029 )
 
 \ #-1015
 \ #-1016
@@ -29,7 +29,7 @@
 \ #-1028 +3DOS: Read-only file
 \ #-1029 +3DOS: File number not open (or with wrong access)
 
-( Non-recoverable +3DOS error codes #-1030..#-1036)
+( Non-recoverable +3DOS error codes #-1030..#-1036 )
 
 \ #-1030 +3DOS: Access denied (file is in use already)
 \ #-1031 +3DOS: Cannot rename between drives

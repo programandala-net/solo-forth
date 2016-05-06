@@ -11,7 +11,7 @@
   \ The Forth system error codes (range -4095..-256) used for
   \ IDEDOS (range -1066..-1056).
 
-( IDEDOS error codes #-1056..#-1066)
+( IDEDOS error codes #-1056..#-1066 )
 
 \ #-1056 IDEDOS: Invalid partition
 \ #-1057 IDEDOS: Partition already exists

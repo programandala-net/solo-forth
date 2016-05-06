@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604140237
+  \ Last modified: 201605070017
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,7 +41,7 @@
 \ #-269 relative jump too long
 \ #-270 text not found
 
-( System error codes #-271..#-285)
+( System error codes #-271..#-285 )
 
 \ #-271 immediate word not allowed in this structure
 \ #-272 array index out of range

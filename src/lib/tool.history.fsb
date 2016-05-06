@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605050021
+  \ Last modified: 201605070041
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,8 @@
   \ Latest changes
 
   \ 2016-05-05: Update `s=` to `str=`.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
 
 ( history )
 
@@ -211,7 +213,7 @@ need dump
 
 \ history-on
 
-( history )  \ XXX OLD
+( history-xxx-old )
 
   \ XXX OLD -- downwards version
 
@@ -259,7 +261,7 @@ variable /history  1024 /history !
 
 -->
 
-( history )  \ XXX OLD
+( history-xxx-old )
 
 variable previously-browsed-history
   \ Address of the history string previously browsed.
@@ -286,7 +288,7 @@ variable currently-browsed-history
 
 init-history  -->
 
-( history )  \ XXX OLD
+( history-xxx-old )
 
 need str=
 
@@ -325,7 +327,7 @@ need str=
   \ as _ca len_ in the circular string buffer.
   \ XXX TODO -- adapt the browser variables
 
-( history )  \ XXX OLD
+( history-xxx-old )
 
 : duplicated-history?  ( ca len -- f )  latest-history str=  ;
   \ Is string _ca len_ identical to the latest string in
@@ -350,7 +352,7 @@ need str=
 
 -->
 
-( history )  \ XXX OLD
+( history-xxx-old )
 
 : get-history   ( -- ca )  browsed-history set-accept  ;
 : (history-up)    ( -- ca )  get-history older-history  ;

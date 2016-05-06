@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031748
+  \ Last modified: 201605070017
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,7 +22,7 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( Standard error codes #-01..#-15)
+( Standard error codes #-01..#-15 )
 
 \ #-01 ABORT
 \ #-02 ABORT"
@@ -40,7 +40,7 @@
 \ #-14 interpreting a compile-only word
 \ #-15 invalid FORGET
 
-( Standard error codes #-16..#-30)
+( Standard error codes #-16..#-30 )
 
 \ #-16 attempt to use zero-length string as a name
 \ #-17 pictured numeric output string overflow
@@ -58,7 +58,7 @@
 \ #-29 compiler nesting
 \ #-30 obsolescent feature
 
-( Standard error codes #-31..#-45)
+( Standard error codes #-31..#-45 )
 
 \ #-31 >BODY used on non-CREATEd definition
 \ #-32 invalid name argument
@@ -76,7 +76,7 @@
 \ #-44 floating-point stack overflow
 \ #-45 floating-point stack underflow
 
-( Standard error codes #-46..#-60)
+( Standard error codes #-46..#-60 )
 
 \ #-46 floating-point invalid argument
 \ #-47 compilation word list deleted

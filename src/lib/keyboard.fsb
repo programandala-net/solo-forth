@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242157
+  \ Last modified: 201605070030
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,8 @@
 
   \ 2016-04-24: Remove `char`, which has been moved to the
   \ library.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
 
 ( at-accept clear-accept set-accept )
 
@@ -258,7 +260,7 @@ need aborted?
 : break?  ( -- f )
   key? dup if  key 2drop break-key?  then  ;
 
-( Keyboard rows ports)
+( kk-ports kk, kk@ )
 
   \ Adapted from Afera.
   \ XXX UNDER DEVELOPMENT
@@ -277,8 +279,6 @@ need aborted?
   \ combinations.
   \
   \ -----------------------------------------------------------
-
-( kk-ports kk, kk@ )
 
   \ There are two versions of `kk,` and `kk@`. They depend on the
   \ value of `/kk`, a constant that holds the bytes ocuppied by

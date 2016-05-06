@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603311653
+  \ Last modified: 201605070026
 
   \ -----------------------------------------------------------
   \ Description
@@ -21,6 +21,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+ 
+  \ -----------------------------------------------------------
+  \ Latest changes
+ 
+  \ 2016-05-07: Make block titles compatible with `indexer`.
 
 ( rdraw )
 
@@ -58,7 +63,7 @@ code rdraw  ( gx gy -- )
 
   jpnext end-code
 
-\ (rdraw) \
+( (rdraw )
 
   \ XXX UNDER DEVELOPMENT
 
@@ -66,7 +71,7 @@ code rdraw  ( gx gy -- )
 
 need z80-asm
 
-create (rdraw)
+create (rdraw
 asm
 
 
@@ -143,7 +148,7 @@ asm
 
 end-asm
 
-( adraw ) \ from Abersoft Forth
+( adraw )
 
   \ Credit:
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201605070036
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,7 +22,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( ms )  \ ==time==
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-05-07: Make block titles compatible with `indexer`.
+
+( ms )
 
 need os-frames
 

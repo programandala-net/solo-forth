@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201605070042
 
   \ -----------------------------------------------------------
   \ Description
@@ -107,6 +107,8 @@
   \
   \ 2016-04-03: Header reorganized after the original
   \ documentation.
+  \
+  \ 2016-05-07: Make block titles compatible with `indexer`.
 
 ( 1array )
 
@@ -125,7 +127,7 @@ need <=
     \ #-272 = array index out of range
   over @ * + cell+ cell+ ;
 
-( 2array ) \ noble-arrays
+( 2array )
 
   \ words for 2-dimensional arrays
 
