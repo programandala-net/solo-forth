@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201605071336
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,40 +23,32 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( columns rows )
+  \ -----------------------------------------------------------
+  \ Latest changes
 
-need value
+  \ 2016-05-07: Compact the blocks.
 
-32 value columns  24 value rows
+( columns rows set-mode-output set-font )
 
-( set-banked-mode-output )
+[unneeded] columns [unneeded] rows and
+?\ need value  32 value columns  24 value rows  exit
 
-need set-mode-output
+[unneeded] set-font
+?\ need os-chars  : set-font  ( a -- )  os-chars !  ;  exit
 
-0 constant (output-routine)
+  \ doc{
+  \
+  \ set-font  ( a -- )
+  \
+  \ Set the system font to _a_.  This is used by all modes:
+  \ `mode32`, `mode42` and `mode64`. The value of _a_ depends
+  \ on the mode: In `mode32` and `mode42`, _a_ is the address
+  \ of char 0, i.e. 256 bytes below the space char; In `mode64`
+  \ _a_ is the address of space char.
+  \
+  \ }doc
 
-code (banked-mode-output)  ( -- )
-  C5 c,                 \ push bc ; save Forth IP
-  CD c, 0 ,             \ call output_routine ; to be patched
-
-  here cell- ' (output-routine) >body !
-    \ Store the address where the address of the output routine
-    \ must be stored, into the constant `(output-routine)`.
-
-  C1 c,                 \ pop bc ; restore Forth IP
-  DD c, 21 c, next ,    \ ld ix,next ; restore IX, just in case
-  jpnext  end-code
-
-: set-banked-mode-output  ( a -- )
-  (output-routine) !  \ patch `(banked-mode-output)`
-  ['] (banked-mode-output) set-mode-output  ;
-  \ Associate the output routine at _a_ (which is in the code
-  \ bank) to the system channels "K", "S" and "P", using and
-  \ intermediate routine to page the code bank in and out.
-
-( set-mode-output set-font )
-
-need os-chars  need os-chans
+need os-chans
 
 : set-mode-output  ( a -- )
   os-chans @ 2dup ! 2dup 5 + ! 15 + !  ;
@@ -71,18 +63,29 @@ need os-chars  need os-chans
   \ }doc
   \ XXX TODO -- why also "P"?
 
-: set-font  ( a -- )  os-chars !  ;
+( set-banked-mode-output )
 
-  \ doc{
-  \
-  \ set-font  ( a -- )
-  \
-  \ Set the system font to _a_.  This is used by all modes:
-  \ `mode32`, `mode42` and `mode64`. The value of _a_ depends
-  \ on the mode: In `mode32` and `mode42`, _a_ is the address
-  \ of char 0, i.e. 256 bytes below the space char; In `mode64`
-  \ _a_ is the address of space char.
-  \
-  \ }doc
+need set-mode-output
+
+0 constant (output-routine)
+
+code (banked-mode-output)  ( -- )
+  C5 c,  CD c, 0 ,
+    \ push bc ; save Forth IP
+    \ call output_routine ; to be patched
+  here cell- ' (output-routine) >body !
+    \ Store the address where the address of the output routine
+    \ must be stored, into the constant `(output-routine)`.
+  C1 c,  DD c, 21 c, next ,  jpnext  end-code
+    \ pop bc ; restore Forth IP
+    \ ld ix,next ; restore IX, just in case
+    \ jp next
+
+: set-banked-mode-output  ( a -- )
+  (output-routine) !  \ patch `(banked-mode-output)`
+  ['] (banked-mode-output) set-mode-output  ;
+  \ Associate the output routine at _a_ (which is in the code
+  \ bank) to the system channels "K", "S" and "P", using and
+  \ intermediate routine to page the code bank in and out.
 
   \ vim: filetype=soloforth

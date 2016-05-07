@@ -3,17 +3,23 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604262105
+  \ Last modified: 201605071351
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The screen mode 64.
+  \ A 64 CPL screen mode.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Author of the original code: Andrew Owen.
+  \ Published on the World of Spectrum forum:
+  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
+  \ Modified and adapted to Solo Forth by Marcos Cruz.
+
+  \ Marcos Cruz (programandala.net) integrated it into Solo
+  \ Forth, 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -25,22 +31,18 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-26: Change `latest >name` to `latestxt`.
+  \ 2016-04-26: Update `latest name>` to `latestxt`.
+  \ 2016-05-07: Improve the file header.
+
+  \ -----------------------------------------------------------
+  \ To-do
+  
+  \ XXX TODO -- integrate the source of the driver
 
 ( mode64 )
 
-  \ A 64 CPL mode
-
-  \ Credit:
-  \
-  \ Author of the original code: Andrew Owen.
-  \ Published on the World of Spectrum forum:
-  \ http://www.worldofspectrum.org/forums/discussion/14526/redirect/p1
-  \ Modified and adapted to Solo Forth by Marcos Cruz.
-
-  \ XXX TMP -- The driver is loaded from disk into and the
-  \ memory address 60000.
-  \ XXX TODO -- Integrate the driver into the library.
+  \ XXX TMP -- The driver is loaded from disk to memory address
+  \ 60000.
 
 need mode32  need <file-as-is  need 4x8font
 

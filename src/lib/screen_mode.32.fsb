@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604262102
+  \ Last modified: 201605071629
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,8 @@
   \ Latest changes
 
   \ 2016-04-26: Change `latest >name` to `latestxt`.
+  \ 
+  \ 2016-05-07: Improve documentation.
 
 ( mode32 )
 
@@ -37,9 +39,19 @@ need columns  need rows  need set-font  need set-mode-output
   32 to columns  24 to rows
   ['] mode32-xy ['] xy defer!
   ['] mode32-at-xy ['] at-xy defer!  ;
+
+  \ doc{
+  \
+  \ mode32 ( -- )
+  \
   \ Set the default printing mode: the 32 cpl ROM routine, the
   \ ROM font, and the special code for `at-xy` (required to
   \ use the whole screen).
+  \
+  \ This word is loaded when `mode42` or `mode64` are loaded,
+  \ in order to make it the default mode.
+  \
+  \ }doc
 
 ' mode32 ' default-mode defer!
 
