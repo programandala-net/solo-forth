@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605061744
+; Last modified: 201605071626
 
 include version.z80s
 
@@ -145,7 +145,7 @@ endif
 
 characters_per_line:              equ $40
 lines_per_screen:                 equ $10
-max_search_order:                 equ $08 ; maximum number of vocabularies in the search order
+max_search_order:                 equ $08 ; maximum number of word lists in the search order
 bytes_per_user_variables:         equ $40
 
 word_length_mask:                 equ %00011111
@@ -156,7 +156,7 @@ compile_only_mask:                equ %10000000
 max_word_length:                  equ word_length_mask
 valid_word_length_mask:           equ word_length_mask or smudge_mask
 
-csb_size:                         equ 256 ; bytes, size of the circular string buffer
+csb_size:                         equ 512 ; bytes, size of the circular string buffer
 
 ; Memory banks ($C000..0xFFFF)
 
@@ -166,11 +166,6 @@ default_bank:                     equ 0
 system_bank:                      equ 1
 
 names_bank_address:               equ bank_start ; names pointers
-
-; Charset
-
-charset_size:                     equ 224*8 ; 224 chars ($20..0xFF) * 8 bitmap rows
-charset_address:                  equ $FFFF-charset_size+1
 
 ; Error codes used in the kernel
 
@@ -941,6 +936,9 @@ move_block_downwards:
 
 ; ----------------------------------------------
 ; Multiplication primitives
+
+; XXX TODO -- Improve -- the DZX-Forth routines are for 8080,
+; not Z80
 
 ; Credit:
 ; Code from DZX-Forth.
@@ -2817,9 +2815,11 @@ char_question.not:
 ;
 ; find-name-from  ( ca len nt -- nt | 0 )
 ;
-; Find the definition named in the string at _ca len_, starting
+; Find the definition named in the string _ca len_, starting
 ; at _nt_. If the definition is found, return its _nt_, else
 ; return zero.
+;
+; String _ca len_ must be below memory address $C000.
 ;
 ; The search is case-sensitive.
 ;
@@ -2835,10 +2835,6 @@ char_question.not:
   ld (find_name_from.string_length),a
   pop de ; ca
   ld (find_name_from.string_address),de
-
-  ; XXX FIXME the string searched for must be in the string
-  ; buffer, below $C000! This is not a problem now, during the
-  ; development, because the dictionary is small.
 
 find_name_from.begin:
   ; Compare the string with a new word.
@@ -7538,7 +7534,7 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dictionary_stack_,'?DICTIONARY'
+  _colon_header question_dictionary_,'?DICTIONARY'
 
 ; doc{
 ;

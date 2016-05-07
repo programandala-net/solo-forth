@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605060113
+  \ Last modified: 201605071625
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,8 @@
   \
   \ 2016-05-06: Make `from` and `locate` optional. Compact the
   \ blocks.
+  \
+  \ 2016-05-07: Improve documentation.
 
 ( contains delimited located ?located )
 
@@ -117,8 +119,8 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ located  ( ca len -- block | 0 )
   \
   \ Locate the first block whose header contains the string _ca
-  \ len_ (but surrounded by spaces), and return its number. If
-  \ not found, return zero.  The search is case-sensitive.
+  \ len_ (surrounded by spaces), and return its number. If not
+  \ found, return zero.  The search is case-sensitive.
   \
   \ }doc
 
@@ -162,7 +164,7 @@ defer reneeded  ( ca len -- )
   \ locate-reneeded  ( ca len -- )
   \
   \ Locate the first block whose header contains the string _ca
-  \ len_ (but surrounded by spaces), and load it. If not found,
+  \ len_ (surrounded by spaces), and load it. If not found,
   \ throw an exception -268 ("required, but not located").
   \
   \ This is the default behaviour of the deferred word
@@ -204,14 +206,16 @@ defer reneed  ( "name" -- )
 
 : [needed]  ( "name" -- f )
   parse-name needed-word 2@ 2dup or
-  if  compare 0=  exit  then  2drop 2drop true  ; immediate
+  if  compare 0= exit  then  2drop 2drop true  ; immediate
 
   \ doc{
   \
   \ [needed]  ( "name" -- f )
   \
-  \ Is "name" the needed word specified by the last execution
-  \ of `need` or `needed`?
+  \ Parse "name".  If there's no unresolved `need`, `needed`,
+  \ `reneed` or `reneeded`, return true.  Otherwise, if "name"
+  \ is the needed word specified by the last execution of
+  \ `need` or `needed`, return _true_, else return _false_.
   \
   \ }doc
 
@@ -221,14 +225,27 @@ defer reneed  ( "name" -- )
   \ doc{
   \
   \ [unneeded]  ( "name" -- f )
-  \
-  \ Is "name" different than the needed word specified by the
-  \ last execution of `need` or `needed`?
+  \ 
+  \ Parse "name".  If there's no unresolved `need`, `needed`,
+  \ `reneed` or `reneeded`, return false.  Otherwise, if "name"
+  \ is the needed word specified by the last execution of
+  \ `need` or `needed`, return _false_, else return _true_.
   \
   \ }doc
 
-: new-needed-word  ( ca len -- ca len )
+: new-needed-word  ( ca len -- ca' len' )
   -trailing -leading save-string 2dup needed-word 2!  ;
+
+  \ doc{
+  \
+  \ new-needed-word  ( ca1 len -- ca2 len' )
+  \ 
+  \ Remove trailing and leading spaces from the word _ca1 len_,
+  \ which is the parameter of the latest `need` `needed`,
+  \ `reneed` or `reneeded`, store it in the circular string
+  \ buffer and return it as _ca2 len'_ for further processing.
+  \
+  \ }doc
 
 -->
 
@@ -242,10 +259,9 @@ defer needed  ( ca len -- )
   \
   \ If the string _ca len_ is not the name of a word found in
   \ the current search order, load the first block of the
-  \ library where "name" is included in the block header
-  \ (but surrounded by spaces).
-  \ If not found, throw an
-  \ exception -268 ("required, but not located").
+  \ library where "name" is included in the block header (but
+  \ surrounded by spaces).  If not found, throw an exception
+  \ -268 ("required, but not located").
   \
   \ This is a deferred word whose default behaviour is
   \ `locate-needed`.
@@ -280,8 +296,8 @@ defer need  ( "name" -- )
   \
   \ If "name" is not found in the current search order, locate
   \ the first block of the library where "name" is included is
-  \ the block header (but surrounded by spaces), and load it.
-  \ If not found, throw an exception -268 ("required, but not
+  \ the block header (surrounded by spaces), and load it.  If
+  \ not found, throw an exception -268 ("required, but not
   \ located").
   \
   \ This is a deferred word whose default behaviour is
@@ -297,8 +313,8 @@ defer need  ( "name" -- )
   \
   \ If "name" is not found in the current search order, locate
   \ the first block of the library where "name" is included is
-  \ the block header (but surrounded by spaces), and load it.
-  \ If not found, throw an exception -268 ("required, but not
+  \ the block header (surrounded by spaces), and load it.  If
+  \ not found, throw an exception -268 ("required, but not
   \ located").
   \
   \ This is the default behaviour of the deferred word `need`.

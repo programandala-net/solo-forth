@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605051551
+  \ Last modified: 201605071623
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,8 @@
   \ 2016-05-01: `color-test`.
   \
   \ 2016-05-05: `search-test`.
+  \
+  \ 2016-05-07: `need-test`.
 
 ( alias-test synonym-test )
 
@@ -341,6 +343,20 @@ s"  zx " 2constant substring
   cr ." Search at 32:" 32 search-at  ;
 
   \ XXX NOTE: In fact, the substring is found at any position.
+
+( foo3 foo4 )
+
+cr .( foo3)
+cr .( foo4)
+
+( need-test foo1 foo2 )
+
+need foo3 need [if]
+
+[needed] foo1 [if] need foo4
+cr .( foo1) exit [then]
+
+cr .( foo2)
 
 ( lineload-test )
 
