@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605071626
+; Last modified: 201605071845
 
 include version.z80s
 
@@ -7123,8 +7123,8 @@ uppers.do:
 ;   dup error-number !
 ;   >in @ blk @ error-pos 2!
 ;   dup -1 = if  (abort)  then
-;   dup -2 = if  abort-message 2@ type (abort)  then
-;   parsed-name 2@ type ." ? " .throw  (abort)  ;
+;   dup -2 = if  space abort-message 2@ type (abort)  then
+;   .error-word .throw  (abort)  ;
 ; ----
 ;
 ; }doc
@@ -7146,8 +7146,7 @@ uppers.do:
   ; No return from `(abort)`.
 
 error.message:
-  dw dot_error_word_
-  dw dot_throw_,paren_abort_
+  dw dot_error_word_,dot_throw_,paren_abort_
   ; No return from `(abort)`.
 
 ; ----------------------------------------------
