@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201604130136
+  \ Last modified: 201605080154
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,16 +53,28 @@
   \ then renamed it and `call-xt` with a trailing comma, to
   \ avoid loading them instead of the versions written for the
   \ first assembler.
+  \
+  \ 2016-05-08: 
+  \ - Rename conditions to the original names plus "?".
+  \ - Rename `|mark` to `>amark`.
+  \ - Rename `|resolve` to `>aresolve`.
+  \ - Rename "resmark"-like words to "rmark"-like.
+  \ - Rename "resresolve"-like words to "rresolve"-like.
+  \ - Remove "retCOND"-like and "callCOND"-like macros.
+  \ - Compact the blocks.
+  \ - Add `?jp` and `?jr` for conditional jumps.
+  \ - Remove "jpCOND"-like and "jrCOND"-like opcodes.
+  \ - Changed the opcode values of the conditions.
+  \ - Rename `?page` to `?jr-range`.
+  \ - Rename `clr,` to `clrp,`; add new `clr,`.
 
   \ -------------------------------------------------------------
   \ XXX TODO
 
-  \ - combine changes 2..4 with the previous version.
-  \ - rename `|mark` and `|resolve`.
-  \ - remove all "retCOND" and "callCOND" and "jpCOND"
-  \   (or make them optional.
-  \ - make absolute-jump control structures optional.
-  \ - `get-order` at the start and `set-order` at the end.
+  \ - Combine changes 2..4 with the previous version.
+  \ - Make absolute-jump control structures optional.
+  \ - Use `get-order` at the start and `set-order` at the end.
+  \ - Document.
 
 ( z80-asm, )
 
@@ -75,10 +87,6 @@ need ?pairs  need 3dup
 : z80-asm,  ( -- )  assembler  ;
 
 also assembler definitions hex
-
--->
-
-( z80-asm, )
 
   \ Registers
 
@@ -94,7 +102,7 @@ DD constant ix-op  FD constant iy-op
 : ix  ( -- rphl )  ix-op c, hl  ;
 : iy  ( -- rphl )  iy-op c, hl  ;
 
-: ?page  ( n -- n )  dup 80 + FF swap u< #-269 ?throw  ;
+: ?jr-range  ( n -- n )  dup 80 + FF swap u< #-269 ?throw  ;
   \ Branch too long?
 
 -->
@@ -104,27 +112,27 @@ DD constant ix-op  FD constant iy-op
   \ Defining words for z80 instructions
 
 : m1  ( 8b "name" -- )
-  create c, does>  ( -- )  ( pfa ) c@ c,  ;
+  create c, does>  ( -- ) ( pfa ) c@ c,  ;
   \ 1-byte opcode without parameters.
 
 : m2  ( 8b "name" -- )
-  create c, does>  ( r -- )  ( r pfa ) c@ + c,  ;
+  create c, does>  ( r -- ) ( r pfa ) c@ + c,  ;
   \ 1-byte opcode with register encoded in bits 0-3.
 
 : m3  ( 8b "name" -- )
-  create c, does>  ( r -- )  ( r pfa ) c@ swap 8* + c,  ;
+  create c, does>  ( r -- ) ( r pfa ) c@ swap 8* + c,  ;
   \ 1-byte opcode with register encoded in bits 3-5.
 
 : m4  ( 8b "name" -- )
-  create c, does>  ( 8b -- )  ( 8b pfa ) c@ c, c,  ;
+  create c, does>  ( 8b -- ) ( 8b pfa ) c@ c, c,  ;
   \ 1-byte opcode with 1-byte parameter.
 
 : m5  ( 8b "name" -- )
-  create c, does>  ( 16b -- )  ( 16b pfa ) c@ c, ,  ;
+  create c, does>  ( 16b -- ) ( 16b pfa ) c@ c, ,  ;
   \ 1-byte opcode with 2-byte parameter.
 
 : m6  ( 8b "name" -- )
-  create c, does>  ( r -- )  ( r pfa ) CB c, c@ + c,  ;
+  create c, does>  ( r -- ) ( r pfa ) CB c, c@ + c,  ;
   \ Rotation of registers.
 
   -->
@@ -138,13 +146,14 @@ DD constant ix-op  FD constant iy-op
     ( r bit pfa ) CB c, c@ swap 8* + + c,  ;
   \ Bit manipulation of registers.
 
-: m8  ( 16b "name" -- )
-  create , does>  ( -- )  ( pfa ) @ ,  ;
+: m8  ( 16b "name" -- ) create , does>  ( -- ) ( pfa ) @ ,  ;
   \ 2-byte opcodes.
 
+: (jr,)  ( a op -- )  c, here 1+ - ?jr-range c,  ;
+  \ Compile a relative jump _op_ to absolute address _a_.
+
 : m9  ( 8b "name" -- )
-  create c, does>  ( a -- )
-    ( a pfa )  c@ c, here 1+ - ?page c,  ;
+  create c, does>  ( a -- ) ( a pfa )  c@ (jr,)  ;
   \ Relative jumps.
 
 -->
@@ -179,30 +188,19 @@ DD constant ix-op  FD constant iy-op
 
 00 m1 nop, 02 m3 stap, 03 m3 incp, 04 m3 inc, 05 m3 dec, 07 m1
 rlca, 08 m1 exaf, 09 m3 addp, 0A m3 ftap, 0B m3 decp, 0F m1
-rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 20 m9 jrnz,
-22 m5 sthl, 27 m1 daa, 28 m9 jrz, 2A m5 fthl, 2F m1 cpl, 30 m9
-jrnc, 32 m5 sta, 37 m1 scf, 38 m9 jrc, 3A m5 fta, 3F m1 ccf, 76
-m1 halt, 80 m2 add, 88 m2 adc, 90 m2 sub, 98 m2 sbc, B8 m2 cp,
-C1 m3 pop, C2 m5 jpnz, C3 m5 jp, C5 m3 push, C6 m4 add#, C7 m2
-rst, C9 m1 ret, CA m5 jpz, CD m5 call, CE m4 adc#, D2
-
--->
-
-( z80-asm, )
-
-  \ Opcodes
-
-m5 jpnc, D3 m4 out, 41 m3 outbc, D6 m4 sub#, D9 m1 exx, DA m5
-jpc, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E2 m5 jppo, E3 m1
-exsp, E6 m4 and#, E9 m1 jphl, EA m5 jppe, EB m1 exde, EE m4
-xor#, F2 m5 jpp, F3 m1 di,  F6 m4 or#, F9 m1 ldsp, FA m5 jpm,
-FB m1 ei, FE m4 cp#, 00 m6 rlc, 08 m6 rrc, 10 m6 rl, 18 m6
-rr, 20 m6 sla,  28 m6 sra, 38 m6 srl,  40 m7 bit, 80 m7 res, C0
-m7 set, B0ED m8 ldir, B8ED m8 lddr, 44ED m8 neg, 57ED m8 ldai,
-47ED m8 ldia, 56ED m8 im1 5EED m8 im2 B1ED m8 cpir, 6FED m8
-rld,
-
--->
+rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 22 m5 sthl,
+27 m1 daa, 2A m5 fthl, 2F m1 cpl, 32 m5 sta, 37 m1 scf, 3A m5
+fta, 3F m1 ccf, 76 m1 halt, 80 m2 add, 88 m2 adc, 90 m2 sub, 98
+m2 sbc, B8 m2 cp, C1 m3 pop, C3 m5 jp, C5 m3 push, C6 m4 add#,
+C7 m2 rst, C9 m1 ret, CD m5 call, CE m4 adc#, D3 m4 out, 41 m3
+outbc, D6 m4 sub#, D9 m1 exx, DB m4 in, 40 m3 inbc, 0DE m4
+sbc#, E3 m1 exsp, E6 m4 and#, E9 m1 jphl, EB m1 exde, EE m4
+xor#, F3 m1 di,  F6 m4 or#, F9 m1 ldsp, FB m1 ei, FE m4 cp#, 00
+m6 rlc, 08 m6 rrc, 10 m6 rl, 18 m6 rr, 20 m6 sla, 28 m6 sra, 38
+m6 srl,  40 m7 bit, 80 m7 res, C0 m7 set, B0ED m8 ldir, B8ED m8
+lddr, 44ED m8 neg, 57ED m8 ldai, 47ED m8 ldia, 56ED m8 im1 5EED
+m8 im2 B1ED m8 cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2
+xor, -->
 
 ( z80-asm, )
 
@@ -222,15 +220,21 @@ rld,
 
   \ Macros
 
-: clr,  ( rp -- )  0 swap ldp#,  ;
+: clr,  ( rp -- )  0 swap ld#,  ;
+  \ Macro to clear an 8-bit register with zero.
+: clrp,  ( rp -- )  0 swap ldp#,  ;
+  \ Macro to clear a 16-bit register with zero.
 : ldp,  ( rp1 rp2 -- )  2dup ld, 1+ swap 1+ swap ld,  ;
+  \ Macro, 16-bit register load.
+: subp,  ( rp -- )  a and, sbcp,  ;
+  \ Macro, 16-bit subtract.
+: tstp,  ( rp -- )  dup a ld, 1+ or,  ;
+  \ Macro to test 16-bit register for zero.
 
-  \ ZX Spectrum specific
-
-CF m4 hook, \ rst 0x08
-D7 m1 prt,  \ rst 0x16
-
--->
+  \ ZX Spectrum specific:
+  CF m4 hook,  D7 m1 prt,  -->
+    \ rst $08
+    \ rst $16
 
 ( z80-asm, )
 
@@ -253,81 +257,42 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
   \ Conditions
 
-  \ Conditions are Z80 opcodes for the required jump
+  \ Conditions are Z80 opcodes for the required absolute jump
   \ instruction.
-  \
-  \ Example: `z aif` compiles a `jp nz`, so `z` is the code for
-  \ `jp nz`.
-  \
-  \ Control structures that compile relative jumps modify the
-  \ opcode accordingly. Example: `z rif` compiles a `jr nz`,
-  \ while `z aif` compiles a `jp nz`.
 
-C2 constant z  CA constant nz D2 constant cy DA constant nc
-E2 constant pe EA constant po F2 constant ne  FA constant p
+CA constant z?  C2 constant nz? DA constant c? D2 constant nc?
+EA constant pe? E2 constant po? FA constant m? F2 constant p?
 
-  \ XXX FIXME -- condition `m` has been renamed to `ne` because
-  \ of the register `m`; but maybe all registers should be
-  \ renamed.
-
-  \ XXX TODO -- ne->ns and p->ps?
-
-  \ XXX TODO -- add a "?" suffix and use the original names `c`
-  \ and `m`: z?, nz?, c?, nc?, pe?, po?, m?, p?.
-
-: jp>jr  ( op1 -- op2 )  dup nc > #-273 ?throw  A2 -  ;
+: jp>jr  ( op1 -- op2 )  dup nc? > #-273 ?throw  A2 -  ;
   \ Convert an absolute-jump condition to a relative-jump
   \ condition.  Throw error #-273 if the condition is
   \ invalid.
 
--->
-
-( z80-asm, )
-
-  \ Conditional ret and call
-
+: ?ret,  ( op -- )  2- c,  ;
   \ Conditional ret
 
-: ?ret,  ( op -- )  8 xor 2- c,  ;
-
-: retc,   ( -- )  cy ?ret,  ;    : retnc,  ( -- )  nc ?ret,  ;
-: retz,   ( -- )   z ?ret,  ;    : retnz,  ( -- )  nz ?ret,  ;
-: retm,   ( -- )  ne ?ret,  ;    : retp,   ( -- )   p ?ret,  ;
-: retpe,  ( -- )  pe ?ret,  ;    : retpo,  ( -- )  po ?ret,  ;
-
+: ?call,  ( a op -- )  2+ c, ,  ;
   \ Conditional call
 
-: ?call,  ( a op -- )  8 xor 2+ c, ,  ;
+: ?jp,  ( a op -- )  c, ,  ;
+  \ Conditional absolute jump
 
-: callc,   ( -- )  cy ?call,  ;
-: callnc,  ( -- )  nc ?call,  ;
-: callz,   ( -- )   z ?call,  ;
-: callnz,  ( -- )  nz ?call,  ;
-: callm,   ( -- )  ne ?call,  ;
-: callp,   ( -- )   p ?call,  ;
-: callpe,  ( -- )  pe ?call,  ;
-: callpo,  ( -- )  po ?call,  ;
-
--->
-
-( z80-asm, )
+: ?jr,  ( a op -- )  jp>jr (jr,)  ;
+  \ Conditional relative jump
 
   \ Control structures with relative jumps
 
-  \ XXX TODO -- document
-  \ XXX TODO -- rename `rel...` to `r...`
-
-: >relmark  ( -- orig )  here 1-  ;
+: >rmark  ( -- orig )  here 1-  ;
   \ Leave the origin address of a forward relative branch
-  \ just compiled, to be resolved by `>relresolve`.
+  \ just compiled, to be resolved by `>rresolve`.
 
-: relresolve  ( orig dest -- )  1- over - ?page swap c!  ;
+: rresolve  ( orig dest -- )  1- over - ?jr-range swap c!  ;
   \ Resolve a relative branch.
 
-: >relresolve  ( orig -- )  here relresolve  ;
+: >rresolve  ( orig -- )  here rresolve  ;
   \ Resolve a forward relative branch.
 
-: <relresolve  ( dest -- )  here 1- swap relresolve  ;
+: <rresolve  ( dest -- )  here 1- swap rresolve  ;
   \ Resolve a backward relative branch.
 
 -->
@@ -336,50 +301,56 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
   \ Control structures with relative jumps
 
-: ahead  ( -- orig  )  18 , >relmark  ;
+: inverse-cond  ( op1 -- op2 )  8 xor  ;
+  \ Convert a condition flag (actually, an absolute jump
+  \ opcode) to its opposite.
+  \
+  \ Examples: `c?` to `nc?` (jpc to jpnc); nz? to z? (jpnz to
+  \ jpz); etc.
+
+: rahead  ( -- orig  )  18 , >rmark  ;
   \ Create a relative branch forward.
   \ Leave the origin address of a forward relative branch
-  \ just compiled, to be resolved by `>relresolve`.
-  \ Note: 0x18 is the Z80 opcode for `jr`.
-  \ XXX TODO -- rename to `rahead`.
+  \ just compiled, to be resolved by `>rresolve`.
+  \ Note: $18 is the Z80 opcode for `jr`.
 
-: rif  ( op -- orig cs-id )  jp>jr , >relmark 0A  ;
+: rif  ( op -- orig cs-id )  jp>jr inverse-cond , >rmark 0A  ;
 
-: rthen  ( orig cs-id -- )  0A ?pairs >relresolve  ;
+: rthen  ( orig cs-id -- )  0A ?pairs >rresolve  ;
 
-: relse  ( orig cs-id -- cs-id ) \ XXX TODO document
+: relse  ( orig cs-id -- cs-id )
   0A ?pairs 18 rif rot swap rthen 0A  ;
-  \ Note 0x18 is the opcode of `jr`.
+  \ Note: $18 is the opcode of `jr`.
 
 : rbegin  (  -- dest cs-id )  <mark 0B  ;
 
 : rwhile  (  op -- orig cs-id )  jp>jr rif 2+  ;
 
-: runtil  (  dest cs-id op -- )  , 0B ?pairs <relresolve  ;
+: runtil  (  dest cs-id op -- )  , 0B ?pairs <rresolve  ;
   \ compile a relative conditional jump
 
 : ragain  (  dest cs-id -- )  18 runtil  ;
   \ compile `jr`
+  \ Note: $18 is the opcode of `jr`.
 
 : rrepeat  (  dest cs-id1 orig cs-id2 )
   2swap ragain 2- rthen  ;
 
 : rstep    ( dest cs-id -- )  10 runtil  ;  -->
   \ compile `djnz`
+  \ Note: $10 is the Z80 opcode for `djnz`.
 
 ( z80-asm, )
 
   \ Control structures with absolute jumps
 
-  \ XXX TODO document
-
-: aif  (  op -- orig cs-id )  c, >mark 08  ;
+: aif  (  op -- orig cs-id )  inverse-cond c, >mark 08  ;
 
 : athen  (  orig cs-id -- )  08 ?pairs >resolve  ;
 
 : aelse  (  cs-id -- cs-id )
   08 ?pairs C3 aif rot swap athen 08  ;
-  \ C3 = opcode of `jp`
+  \ Note: $C3 is the opcode of `jp`
 
 : abegin  (  -- dest cs-id )  <mark 09  ;
 
@@ -390,37 +361,16 @@ E2 constant pe EA constant po F2 constant ne  FA constant p
 
 : aagain  (  cs-id -- )  C3 auntil  ;
   \ Compile an absolute jump.
+  \ Note: $C3 is the opcode of `jp`
 
 : arepeat  (  dest cs-id1 orig cs-id2 )
   2swap aagain 2- athen  ;
 
-: |mark  ( -- a )  here 2-  ;
+: >amark  ( -- a )  here 2-  ;
   \ Leave the address of an absolute forward reference.
 
-: |resolve  ( a -- )  |mark swap !  ;
+: >aresolve  ( a -- )  >amark swap !  ;
   \ Resolve an absolute forward reference.
-
--->
-
-( z80-asm, )
-
-  \ Last opcodes and macros
-
-  \ `and`, `or` and `xor` are defined at the end, in order to
-  \ avoid name clashes with the Forth words that have the same
-  \ name:
-
-A0 m2 and,  B0 m2 or,  A8 m2 xor,
-
-  \ Macro, 16-bit subtract:
-: subp,  ( rp -- )  a and sbcp,  ;
-
-  \ Macro to test 16-bit register for zero:
-: tstp,  ( rp -- )  dup a ld, 1+ or,  ;
-
--->
-
-( z80-asm, )
 
 6 cells allocate-string
   \ Temporary space to store unresolved addresses during
@@ -453,12 +403,12 @@ decimal only forth definitions
 need z80-asm,  need macro
 
 macro execute-hl,  ( -- )
-  0000 bc stp,  |mark  \ save the Forth IP
-  0000 bc ldp#, |mark  \ point IP to phony_compiled_word
-  jphl,          \ execute the xt in HL
-  >resolve \ phony_compiled_word
-  here cell+ ,      \ point to the phony xt following
-  0000 bc ldp#  |resolve  \ restore the Forth IP
+  0000 bc stp,  >amark      \ save the Forth IP
+  0000 bc ldp#, >amark      \ point IP to phony_compiled_word
+  jphl,                     \ execute the xt in HL
+  >resolve                  \ phony_compiled_word
+  here cell+ ,              \ point to the phony xt following
+  0000 bc ldp#  >aresolve   \ restore the Forth IP
   endm
   \ Compile an `execute` with the xt hold in HL.
 
