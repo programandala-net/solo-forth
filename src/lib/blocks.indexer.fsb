@@ -3,7 +3,11 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605050030
+  \ XXX UNDER DEVELOPMENT -- It works fine, but the indexed
+  \ words (all words from the library) fill the memory bank.
+  \ The solution is a configurable system bank.
+
+  \ Last modified: 201605071324
 
   \ -----------------------------------------------------------
   \ Description
@@ -16,10 +20,6 @@
   \ indexing all of the disk blocks only once, `need` will
   \ search the word list and execute the word found, instead of
   \ searching all of the blocks every time.
-
-  \ 2016-04-03: Indexing the whole library (677 blocks) takes
-  \ less than one minute and uses 3600 bytes of dictionary
-  \ space.
 
   \ -----------------------------------------------------------
   \ Author
@@ -44,12 +44,17 @@
   \ moved from the kernel to the library.
   \
   \ 2016-05-05: Update `s=` to `str=`. Improve documentation.
+  \
+  \ 2016-05-07: New method: the indexed word is an alias, which
+  \ doesn't use data space, and its execution token is the
+  \ block it's associated to. This way, no data space is used
+  \ by the index.
 
 ( indexer )
 
 only forth definitions
 
-need loader  need str=  need alias  need string/
+need str=  need alias  need string/
 need get-order  need set-order  need nextname
 
 wordlist constant index-wordlist
@@ -65,9 +70,13 @@ wordlist constant index-wordlist
 
 variable indexed-block
 
+  \ variable counter counter off  \ XXX INFORMER
+
 : index-name  ( ca len -- )
   2dup name-indexed? if  2drop exit  then
-  nextname indexed-block @ loader  ;
+  \ 1 counter +! counter ? 2dup type space np@ u.
+  \ XXX INFORMER
+  nextname indexed-block @ alias  ;
   \ Add word _ca len_ to the blocks index, if not done before.
   \ The current word list is supposed to be `index-wordlist`.
 
@@ -95,16 +104,15 @@ forth-wordlist set-current  -->
 ( indexer )
 
 : index-reneeded  ( ca len -- )
-  search-index 0= #-277 ?throw execute  ;
+  search-index 0= #-277 ?throw load  ;
 
   \ doc{
   \
   \ index-reneeded  ( ca len-- )
   \
   \ Search the index word list for word _ca len_. If found,
-  \ execute it, causing its associated block be loaded.  If not
-  \ found, throw an exception -277 ("required, but not
-  \ indexed").
+  \ load the block it's associated to.  If not found, throw an
+  \ exception -277 ("required, but not indexed").
   \
   \ This is an alternative behaviour of the deferred word
   \ `reneeded`.
@@ -145,7 +153,6 @@ forth-wordlist set-current  -->
   \ `needed`.
   \
   \ }doc
-
 
 : index-need  ( "name" -- )  parse-name index-needed  ;
 
@@ -188,10 +195,12 @@ forth-wordlist set-current  -->
 
 ( indexer )
 
-: valid-block-header?  ( ca len -- f )
-  -trailing dup 0= #-278 ?throw
-  2 string/ 2dup s"  )" str= >r s"  \" str= r> or  ;
+  \ : valid-block-header?  ( ca len -- f )
+  \   -trailing dup 0= #-278 ?throw
+  \   2 string/ 2dup s"  )" str= >r s"  \" str= r> or  ;
+  \ XXX TODO -- remove
 
+  \ XXX OLD
   \ doc{
   \
   \ valid-block-header?  ( ca len -- f )
@@ -203,17 +212,20 @@ forth-wordlist set-current  -->
   \
   \ }doc
 
-: index-block-header  ( ca len -- )
-  2dup valid-block-header? if  evaluate exit  then  2drop  ;
+  \ XXX OLD
+  \ : index-block-header  ( ca len -- )
+  \   2dup valid-block-header? if  evaluate exit  then  2drop  ;
   \ Index block header _ca len_, if it's valid.
 
 : index-block  ( +n -- )
-  dup indexed-block ! 0 swap line>string index-block-header  ;
+  dup indexed-block ! 0 swap line>string evaluate  ;
   \ Index block _+n_.
 
-: (indexer)  ( -- )
-  last-locatable @ 1+ first-locatable @
-  ?do  i index-block  loop  ;
+  \ XXX OLD
+  \ dup indexed-block ! 0 swap line>string index-block-header  ;
+
+: (indexer)  ( -- )  last-locatable @ 1+ first-locatable @
+                     ?do  i index-block  loop  ;
   \ Create the blocks index.
 
 : indexer  ( -- )
@@ -226,7 +238,7 @@ forth-wordlist set-current  -->
   \
   \ indexer  ( -- )
   \
-  \ Create the blocks index and activate it. The the current
+  \ Create the blocks index and activate it. The current
   \ word list and the current search order are preserved.
   \
   \ }doc
