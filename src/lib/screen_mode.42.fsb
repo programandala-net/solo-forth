@@ -3,17 +3,25 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604262105
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201605071346
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The screen mode 42.
+  \ A 42 CPL screen mode.
 
   \ -----------------------------------------------------------
-  \ Author
+  \ Authors
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
+  \ Published on Microhobby, issue 66 (1986-02), page 24:
+  \ http://microhobby.org/numero066.htm
+  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+  \ Marcos Cruz (programandala.net) integrated it into Solo
+  \ Forth, 2015, 2016.
 
   \ -----------------------------------------------------------
   \ License
@@ -25,75 +33,61 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-26: Change `latest >name` to `latestxt`.
+  \ 2016-04-26: Update `latest >name` to `latestxt`.
+  \ 2016-05-07: Compact the blocks. Improve the file header.
+  \ Fix: `need mode32` was missing.
 
-( mode42 )
-
-  \ XXX UNDER DEVELOPMENT -- a 42 CPL mode
-
-  \ Credit:
-  \
-  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
-  \ Published on Microhobby, issue 66 (1986-02), page 24:
-  \ http://microhobby.org/numero066.htm
-  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
-
-  \ XXX TODO -- integrate the driver
+  \ -----------------------------------------------------------
+  \ To-do
+  
+  \ XXX TODO -- integrate the source of the driver
 
   \ XXX TODO -- check how the UDG are printed (8 pixels width?)
 
   \ XXX FIXME -- a pixel of the cursor is not deleted when
   \ backspace is used on the command line
 
-need set-mode-output  need <file-as-is  need (mode42
+( mode42 banked-mode42 )
 
-: mode42  ( -- )
-  [ latestxt ] literal current-mode !
-  (mode42 set-mode-output  ;
+  \ ............................
+  \ Common requirements
+
+need mode32  need <file-as-is need (mode42 need [if]
+
+[needed] mode42 [if]  need set-mode-output
+
+  \ ............................
+  \ mode42
+
+: mode42  ( -- )  [ latestxt ] literal current-mode !
+                  (mode42 set-mode-output  ;
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
-get-drive 1 set-drive
-s" prnt42.bin" <file-as-is throw
-s" ea5aky.f42" <file-as-is throw
-set-drive
+get-drive 1 set-drive  s" prnt42.bin" <file-as-is throw
+                       s" ea5aky.f42" <file-as-is throw
+            set-drive
   \ Load the driver and the font.
 
-( banked-mode42 )
+exit [then]
+
+  \ ............................
+  \ banked-mode42
 
   \ XXX UNDER DEVELOPMENT -- A variant of `mode42` that stores
   \ the driver and the font in the code bank.
 
-  \ Credit:
-  \
-  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
-  \ Published on Microhobby, issue 66 (1986-02), page 24:
-  \ http://microhobby.org/numero066.htm
-  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
-
-  \ XXX TODO -- integrate the driver
-
-  \ XXX TODO -- check how the UDG are printed (8 pixels width?)
-
-  \ XXX FIXME -- a pixel of the cursor is not deleted when
-  \ backspace is used on the command line
-
-need set-banked-mode-output  need <file-as-is
-need (mode42  need code-bank
-
-: banked-mode42  ( -- )
-  [ latestxt ] literal current-mode !
-  (mode42 set-banked-mode-output  ;
-  \ Set the 42 cpl printing mode: the driver, the font
-  \ and `at-xy`.
   \ XXX FIXME -- crash!
 
-code-bank{
-  get-drive 1 set-drive
-  s" prnt42.bin" <file-as-is throw
-  s" ea5aky.f42" <file-as-is throw
-  set-drive
-}code-bank
+need set-banked-mode-output  need code-bank
+
+: banked-mode42  ( -- )  [ latestxt ] literal current-mode !
+                         (mode42 set-banked-mode-output  ;
+
+code-bank{  get-drive 1 set-drive
+            s" prnt42.bin" <file-as-is throw
+            s" ea5aky.f42" <file-as-is throw
+            set-drive  }code-bank
   \ Load the driver and the font into the code bank.
 
 ( (mode42 )
