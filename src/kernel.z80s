@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605071845
+; Last modified: 201605090111
 
 include version.z80s
 
@@ -7227,6 +7227,11 @@ if 1 ; XXX TMP -- during the development
   _string "redefined "
   dw to_name_,dot_name_
 
+  ; XXX TMP -- for debugging:
+  ; dw paren_dot_quote_
+  ; _string "latest "
+  ; dw latest_,dot_name_
+
 else ; XXX NEW
 
   dw warn_
@@ -9283,6 +9288,7 @@ block.end:
   pop de ; d = track 0..79, +128 if side 1
          ; e = sector 1..10
   push bc ; save the Forth IP
+transfer_sector.drive equ $+1 ; XXX TODO -- not used yet
   ld a,2 ; drive
   rst 8 ; G+DOS hook
 transfer_sector.command:
@@ -9291,23 +9297,6 @@ transfer_sector.command:
   pop bc ; restore the Forth IP
   ld ix,next
   _jp_next
-
-; ----------------------------------------------
-  _colon_header transfer_mode_,'TRANSFER-MODE'
-
-; doc{
-;
-; transfer-mode  ( b -- )
-;
-; Set read or write mode for `transfer-sector` and
-; `transfer-block`.
-;
-; b = $44 (read) or $45 (write)
-;
-; }doc
-
-  dw lit_,transfer_sector.command,c_store_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'
@@ -9321,8 +9310,7 @@ transfer_sector.command:
 ; }doc
 
   _literal $45 ; G+DOS write sector command
-  dw transfer_mode_
-  dw exit_
+  dw branch_,transfer_mode
 
 ; ----------------------------------------------
   _colon_header read_mode_,'READ-MODE'
@@ -9336,7 +9324,8 @@ transfer_sector.command:
 ; }doc
 
   _literal $44 ; G+DOS read sector command
-  dw transfer_mode_
+transfer_mode:
+  dw lit_,transfer_sector.command,c_store_
   dw exit_
 
 ; **************************************************************
