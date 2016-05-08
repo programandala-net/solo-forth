@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605071836
+  \ Last modified: 201605080207
 
   \ -----------------------------------------------------------
   \ Description
@@ -304,7 +304,7 @@ defer need  ( "name" -- )
   \
   \ }doc
 
-: locate-need  ( "name" -- )  parse-name needed  ;
+: locate-need  ( "name" -- )  parse-name locate-needed  ;
 
   \ doc{
   \
@@ -342,9 +342,9 @@ set-located-need
 
 blk @ 1+ dup default-first-locatable !  first-locatable !
 
-( locate from )
+( locate from need-here )
 
-[defined] locate
+[unneeded] locate [unneeded] from and
 ?\ : locate  ( "name" -- n )  parse-name save-string located  ;
 
   \ doc{
@@ -357,9 +357,8 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
   \
   \ }doc
 
-[unneeded] from ?exit
-
-: from  ( "name" -- )  locate ?located first-locatable !  ;
+[unneeded] from
+?\ : from  ( "name" -- )  locate ?located first-locatable !  ;
 
   \ doc{
   \
@@ -395,6 +394,26 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
   \
   \ ----
 
+  \ }doc
+
+[unneeded] need-here ?exit
+
+: need-here  ( "name" -- )
+  parse-name
+  needed-word 2@ 2>r  new-needed-word  2dup undefined?
+  if  blk @ load  else  2drop  then  2r> needed-word 2!  ;
+    
+  \ doc{
+  \
+  \ need-here  ( "name" -- )
+  \
+  \ If "name" is not a word found in the current search order,
+  \ load the current block.
+  \
+  \ This is a faster alternative to `need`, when the needed
+  \ word is in the same block, and conditional compilation is
+  \ used with `?\`, `?(` or `[if]`.
+  \
   \ }doc
 
   \ vim: filetype=soloforth
