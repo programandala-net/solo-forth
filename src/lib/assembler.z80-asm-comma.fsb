@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201605080154
+  \ Last modified: 201605090108
 
   \ -----------------------------------------------------------
   \ Description
@@ -228,15 +228,15 @@ xor, -->
   \ Macro, 16-bit register load.
 : subp,  ( rp -- )  a and, sbcp,  ;
   \ Macro, 16-bit subtract.
-: tstp,  ( rp -- )  dup a ld, 1+ or,  ;
+: tstp,  ( rp -- )  dup a ld, 1+ or,  ;  -->
   \ Macro to test 16-bit register for zero.
 
-  \ ZX Spectrum specific:
-  CF m4 hook,  D7 m1 prt,  -->
-    \ rst $08
-    \ rst $16
-
 ( z80-asm, )
+
+  \ ZX Spectrum specific
+
+CF m4 hook,  \ rst $08
+D7 m1 prt,   \ rst $16
 
   \ Index register opcodes
 
