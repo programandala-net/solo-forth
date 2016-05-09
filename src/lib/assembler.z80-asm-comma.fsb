@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201605090108
+  \ Last modified: 201605092127
 
   \ -----------------------------------------------------------
   \ Description
@@ -67,6 +67,9 @@
   \ - Changed the opcode values of the conditions.
   \ - Rename `?page` to `?jr-range`.
   \ - Rename `clr,` to `clrp,`; add new `clr,`.
+  \
+  \ 2016-05-09: Save and restore the compile word list, the
+  \ current radix and the search order.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -78,7 +81,7 @@
 
 ( z80-asm, )
 
-only forth definitions
+get-current forth-wordlist set-current
 
 need ?pairs  need 3dup
 
@@ -86,7 +89,7 @@ need ?pairs  need 3dup
 
 : z80-asm,  ( -- )  assembler  ;
 
-also assembler definitions hex
+also assembler definitions base @ hex
 
   \ Registers
 
@@ -387,7 +390,7 @@ EA constant pe? E2 constant po? FA constant m? F2 constant p?
   \ and `drop` are used to pass the stack check at the end of
   \ the definition.
 
-decimal only forth definitions
+base ! set-current previous
 
 ( execute-hl, call-xt, )
 
