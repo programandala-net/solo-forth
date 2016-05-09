@@ -114,7 +114,7 @@ need c+!  need c-!
 
   \ Update the current graphic coordinates after printing a
   \ character at them. See `g-emit`, `g-cr`.
- 
+
 ( g-emit-0udg )
 
 need z80-asm  need g-emit-routine  need os-udg  need os-coords
@@ -216,7 +216,7 @@ create g-emit-routine  ( -- a )
   \ Address of a machine code routine that prints an 8x8 bits
   \ charater at graphic coordinates. Used by `g-emit-udg`
   \ and `g-emit-0udg`.
-  \ 
+  \
   \ Input registers:
   \
   \ - DE = address of the first char (0) bitmap in a charset

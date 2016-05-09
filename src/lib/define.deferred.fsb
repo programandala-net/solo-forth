@@ -33,7 +33,7 @@
 
 ( deferred defers defer@ action-of )
 
-[unneeded] deferred 
+[unneeded] deferred
 ?\ : deferred  ( xt "name" -- )  defer latest name> defer!  ;
 
   \ doc{
@@ -47,7 +47,7 @@
 
 [unneeded] defers
 ?\ : defers  ( "name" -- )  ' defer@ compile,  ; immediate
-  
+
   \ doc{
   \
   \ defers  ( Compilation: "name" -- )
@@ -78,7 +78,7 @@
   \
   \ }doc
 
-[unneeded] deferred? 
+[unneeded] deferred?
 ?\ : deferred?  ( xt -- f )  c@ $C3 =  ;
 
   \ doc{

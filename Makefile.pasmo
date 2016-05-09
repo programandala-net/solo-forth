@@ -42,7 +42,7 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # header; it uses the name of the target file. This file must
 # be in the current directory, because the path specified in
 # the command will be part of the filename in the TAP header.
-# 
+#
 # Pasmo must be executed in the directory of the kernel source,
 # because the `include` Z80 directives calculate relative paths
 # from the current directory, not the directory of the source.
@@ -62,7 +62,7 @@ tmp/kernel.gplusdos.bin.tap: src/kernel.z80s src/version.z80s
 		forth.bin \
 		../tmp/kernel.symbols.gplusdos.z80s && \
 	mv forth.bin ../tmp/kernel.gplusdos.bin.tap && \
-	cd .. 
+	cd ..
 
 # ----------------------------------------------
 # Kernel for +3DOS

@@ -182,7 +182,7 @@ need string-parameter
   \ doc{
   \
   \ warning"
-  \ 
+  \
   \ Compilation: ( "ccc<quote>" -- )
   \
   \ Parse and compile a message.

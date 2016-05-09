@@ -82,10 +82,10 @@ and and ?\ 8 constant 'bs'
 
 [unneeded] 'cr' [unneeded] crs and ?\ 13 constant 'cr'
 
-[unneeded] tab [unneeded] tabs and 
+[unneeded] tab [unneeded] tabs and
 ?\ : tab  ( -- )  'tab' emit  ;
 
-[unneeded] backspace [unneeded] backspaces and 
+[unneeded] backspace [unneeded] backspaces and
 ?\ : backspace    ( -- )  'bs'  emit  ;
 
 [unneeded] crs  ?\ : crs   ( n -- )  'cr'  emits  ;

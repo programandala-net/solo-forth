@@ -113,7 +113,7 @@ need get-order  need @cell+  need nn,  need nn@
 : marker,  ( -- a )
   here  np@ ,  last @ ,  lastxt @ ,  voc-link @ ,
         get-current ,  order,  wordlists,  ;
-        
+
   \ doc{
   \
   \ marker,  ( -- a )

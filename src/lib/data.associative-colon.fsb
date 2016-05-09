@@ -44,11 +44,11 @@
     loop 2drop ( n )  ;
 
   \ doc{
- 
+
   \ associative:  ( n "name" -- )
 
   \ Create a table lookup "name" with _n_ entries.
-  \ 
+  \
   \ An associative memory word.  It must be followed by a set
   \ of values to be looked up.  At runtime, the values stored
   \ in the parameter field are searched for a match.  If one if

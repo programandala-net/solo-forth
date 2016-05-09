@@ -21,7 +21,7 @@
 
 # ==============================================================
 
-#vim -p -c ":call search(\"${1}\")" $(ack -l "$1" /usr/local/share/gforth/current/**/**.fs) 
+#vim -p -c ":call search(\"${1}\")" $(ack -l "$1" /usr/local/share/gforth/current/**/**.fs)
 # works:
 #ack -l ": $1 " src/lib/*.fsb
 

@@ -44,7 +44,7 @@
 
 ( ?ccase )
 
-need alias  need char-position?  
+need alias  need char-position?
 
 ' >resolve alias end?ccase  immediate compile-only
   \ Compilation: ( C: orig -- )
@@ -68,17 +68,17 @@ need alias  need char-position?
   \ doc{
   \
   \ (?ccase) ( c ca len -- )
-  \ 
+  \
   \ Run-time procedure compiled by `?ccase`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
   \ `?ccase`, where _n_ is the position of the first _c_ in the
   \ string (0..len-1).  If _c_ is not in _ca len_, do nothing.
-  \ 
+  \
   \ See: `?ccase`.
   \
   \ }doc
 
-: ?ccase 
+: ?ccase
   \ Compilation: ( C: -- orig )
   \ Run-time: ( c ca len -- )
   postpone (?ccase) postpone ahead  ; immediate compile-only
@@ -88,13 +88,13 @@ need alias  need char-position?
   \ ?ccase
   \
   \ Compilation: ( C: -- orig ) Run-time: ( c ca len -- )
-  \ 
+  \
   \ Start a `?ccase end?ccase` structure. If _c_ is in the string
   \ _ca len_, execute the n-th word compiled after `?ccase`,
   \ where _n_ is the position of the first _c_ in the string
   \ (0..len-1), then continue after `endcase`.  If _c_ is not
   \ in _ca len_, just continue after `end?ccase`.
-  \ 
+  \
   \ Usage example:
 
   \ ----
@@ -140,13 +140,13 @@ need alias  need char-position?
   \ doc{
   \
   \ (ccase0) ( c ca len -- )
-  \ 
+  \
   \ Run-time procedure compiled by `ccase0`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
   \ `ccase0`, where _n_ is the position of the first _c_ in the
-  \ string (0..len-1) plus 1.  If _c_ is not in _ca len_, 
+  \ string (0..len-1) plus 1.  If _c_ is not in _ca len_,
   \ execute the word compiled right after `ccase0`.
-  \ 
+  \
   \ See: `ccase0`.
   \
   \ }doc
@@ -161,14 +161,14 @@ need alias  need char-position?
   \ ccase0
   \
   \ Compilation: ( C: -- orig ) Run-time: ( c ca len -- )
-  \ 
+  \
   \ Start a `ccase0 endccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
   \ `ccase`, where _n_ is the position of the first _c_ in the
   \ string (0..len-1) plus 1, then continue after `endcase`.
   \ If _c_ is not in _ca len_, execute the word compiled right
   \ after `ccase0`, then continue after `endccase`.
-  \ 
+  \
   \ Usage example:
 
   \ ----
@@ -221,13 +221,13 @@ need char-position?
   \ doc{
   \
   \ (ccase) ( c ca len -- )
-  \ 
+  \
   \ Run-time procedure compiled by `ccase`.  If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
   \ `ccase`, where _n_ is the position of the first _c_ in the
-  \ string (0..len-1).  If _c_ is not in _ca len_, 
+  \ string (0..len-1).  If _c_ is not in _ca len_,
   \ execute the word compiled right before `endccase`.
-  \ 
+  \
   \ See: `ccase`.
   \
   \ }doc
@@ -244,14 +244,14 @@ need char-position?
   \
   \ Compilation: ( C: -- orig1 orig2 )
   \ Run-time: ( c ca len -- )
-  \ 
+  \
   \ Start a `ccase endccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
   \ `ccase`, where _n_ is the position of the first _c_ in the
   \ string (0..len-1) plus 1, then continue after `endcase`.
   \ If _c_ is not in _ca len_, execute the word compiled right
   \ after `ccase`, then continue after `endccase`.
-  \ 
+  \
   \ Usage example:
 
   \ ----

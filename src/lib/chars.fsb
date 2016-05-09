@@ -27,7 +27,7 @@
 
   \ 2016-04-27: Move `ascii-char?` and `control-char?` from
   \ module "tool.dump.fsb".
-  
+
 ( ascii-char? control-char? )
 
 : ascii-char?    ( c -- f )  128 <  ;

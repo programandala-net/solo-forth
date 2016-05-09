@@ -1461,4 +1461,37 @@ variable times
   \ 10000         175       164 (0.93)       162 (0.92)
   \ 65535        1148      1073 (0.93)      1060 (0.92)
 
+( min-bench )
+
+  \ 2016-05-06
+
+need bench{  need j
+
+defer (<)
+
+variable times
+
+: <-bench  ( n xt -- )
+  ['] (<) defer!  times !
+  bench{
+    times @ 0 ?do  times @ 0 ?do  i j
+    (<) drop  loop  loop
+  }bench.  ;
+
+: run  ( n -- )
+      cr ." Implementation of <"
+  dup cr ."   DZX-Forth .........." ['] < <-bench
+      cr ."   Z88 CamelForth ....." ['] <88 <-bench  ;
+
+  \ 2016-05-06
+
+  \ Times   Frames (1 frame = 50th of second)
+  \ -----   --------------------------------------
+  \         DZX-Forth `<`  Z88 CamelForth `<`
+  \         ------------- ------------------------
+  \   50               33                31 (0.93)
+  \  100              129               122 (0.94)
+  \  250              803               755 (0.94)
+  \ 1000            12534             12049 (0.96)
+
   \ vim: filetype=soloforth

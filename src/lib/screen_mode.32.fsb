@@ -26,7 +26,7 @@
   \ Latest changes
 
   \ 2016-04-26: Change `latest >name` to `latestxt`.
-  \ 
+  \
   \ 2016-05-07: Improve documentation.
 
 ( mode32 )

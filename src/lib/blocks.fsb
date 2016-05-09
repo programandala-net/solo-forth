@@ -147,7 +147,7 @@
   \
   \ reload  ( -- )
   \
-  \ Load the most recently loader or listed block.
+  \ Load the most recently loaded or listed block.
   \
   \ }doc
 

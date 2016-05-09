@@ -54,7 +54,7 @@
   \ avoid loading them instead of the versions written for the
   \ first assembler.
   \
-  \ 2016-05-08: 
+  \ 2016-05-08:
   \ - Rename conditions to the original names plus "?".
   \ - Rename `|mark` to `>amark`.
   \ - Rename `|resolve` to `>aresolve`.

@@ -28,9 +28,9 @@
   \ Implementation of `2value` (from Forth-2012) but with
   \ the non-standard word `2to`
 
-: 2value  ( d "name"  -- )  2constant  ;
+: 2value  ( xd "name"  -- )  2constant  ;
 
-: 2to  ( Interpretation: d "name" -- )
+: 2to  ( Interpretation: xd "name" -- )
        ( Compilation: "name" -- )
   ' >body compiling? if    postpone literal postpone 2!
                      else  2!  then  ; immediate

@@ -144,11 +144,11 @@
 need cliteral
 
 : char  ( "name" -- c )  parse-name drop c@  ;
-  
+
   \ doc{
   \
   \ char  ( "name" -- c )
-  \ 
+  \
   \ Parse "name" and put the value of its first character on
   \ the stack.
   \
@@ -162,7 +162,7 @@ need cliteral
   \ doc{
   \
   \ [char]
-  \ 
+  \
   \ Compilation: ( "name" -- )
   \
   \ Parse "name" and append the run-time semantics given below

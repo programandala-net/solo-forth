@@ -128,7 +128,7 @@ code 2rdrop  ( R: x1 x2 -- )
     \ ld (return_stack_pointer),hl
   jpnext
   end-code
- 
+
   \ doc{
   \
   \ 2rdrop  ( R: x1 x2 -- )

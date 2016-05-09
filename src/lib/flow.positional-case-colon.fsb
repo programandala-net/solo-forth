@@ -29,7 +29,7 @@
   \ History
 
   \ 2015-08-11: Adapted.
-  \ 2015-11-22: Modified to use `create:`. 
+  \ 2015-11-22: Modified to use `create:`.
   \ 2015-12-14: Renamed to `positional-case:`.
   \ 2016-04-09: Fixed the file header. Documented.
 

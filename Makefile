@@ -49,7 +49,7 @@
 # To-do
 
 # XXX FIXME -- the loader and the disk image are built even when the
-# sources are update, 
+# sources are update,
 
 # ==============================================================
 # Notes

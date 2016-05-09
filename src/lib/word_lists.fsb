@@ -98,7 +98,7 @@ need recurse
 [unneeded] wid-of
 ?\ : wid-of  ( "name" -- wid )  ' >body  ;  exit
   \ Return the _wid_ of vocabulary "name".
-  
+
   \ Credit:
   \
   \ Adapted from eForth's `widof`.

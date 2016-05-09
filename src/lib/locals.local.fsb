@@ -29,7 +29,7 @@
 
   \ -----------------------------------------------------------
   \ History
- 
+
   \ 2015-11-14: Adapted from the original code.
   \
   \ 2016-03-24: An alternative implementation with `:noname`.

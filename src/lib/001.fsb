@@ -26,13 +26,13 @@
   \ XXX TMP -- for debugging the floating point ROM
   \ implementation
   \ need f0 need .fs
-  \ need f>s 
+  \ need f>s
   \ need ftuck
   \ need fmax  need fmin
   \ need --fp-rom--
   \ f1 f0 fpi2/ f1 f1
   \ need f=  need f<
-  \ f1 f0 f1 f0 f1 f0 
+  \ f1 f0 f1 f0 f1 f0
   \ 100 s>f  200 s>f  300 s>f
 
   \ XXX TMP -- for debugging the G+DOS support

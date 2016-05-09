@@ -21,10 +21,10 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
- 
+
   \ -----------------------------------------------------------
   \ Latest changes
- 
+
   \ 2016-05-07: Make block titles compatible with `indexer`.
 
 ( rdraw )

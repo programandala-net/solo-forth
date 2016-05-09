@@ -59,7 +59,7 @@
 
 ( [false] [true] [if] [else] [then] )
 
-[unneeded] [true]  ?\   0 constant [false] immediate exit 
+[unneeded] [true]  ?\   0 constant [false] immediate exit
 [unneeded] [false] ?\  -1 constant [true]  immediate exit
 
 need str=
@@ -125,8 +125,11 @@ need str=
 
 ( name>interpret name>compile comp' [comp'] )
 
+need ?(
+
+[unneeded] name>interpret ?(
 : name>interpret  ( nt -- xt | 0 )
-  dup name> swap compile-only? 0= and  ;
+  dup name> swap compile-only? 0= and  ;  ?)
 
   \ doc{
   \
@@ -140,13 +143,13 @@ need str=
   \
   \ }doc
 
-[needed] name>interpret ?exit
+[unneeded] name>compile ?(
 
 : (comp')  ( nt -- xt )
   immediate?  if    ['] execute
               else  ['] compile,  then  ;
 
-: name>compile  ( nt -- x xt )  dup name> swap (comp')  ;
+: name>compile  ( nt -- x xt )  dup name> swap (comp')  ;  ?)
 
   \ doc{
   \
@@ -162,10 +165,10 @@ need str=
   \
   \ }doc
 
-[needed] name>compile ?exit
+[unneeded] comp' ?(  need need-here  need-here name>compile
 
 : comp'  ( "name" -- x xt )
-  defined dup ?defined name>compile  ;
+  defined dup ?defined name>compile  ;  ?)
 
   \ doc{
   \
@@ -178,10 +181,10 @@ need str=
   \
   \ }doc
 
-[needed] comp' ?exit
+[unneeded] [comp'] ?(  need need-here  need-here comp'
 
 : [comp']  ( Compilation: "name" -- ) ( Run-time: -- x xt )
-  comp' postpone 2literal  ; immediate compile-only
+  comp' postpone 2literal  ; immediate compile-only  ?)
 
   \ doc{
   \
@@ -211,10 +214,12 @@ need str=
 [unneeded] [compile]
 ?\ : [compile]  ( "name" -- )  ' compile,  ; immediate  exit
 
-need c!toggle-bits
 
+need ?(
+
+[unneeded] smudged ?(  need c!toggle-bits
 : smudged  ( nt -- )
-  smudge-mask swap system-bank c!toggle-bits default-bank  ;
+  smudge-mask swap system-bank c!toggle-bits default-bank  ; ?)
 
   \ doc{
   \
@@ -227,7 +232,8 @@ need c!toggle-bits
   \
   \ }doc
 
- : smudge  ( -- )  latest smudged  ;
+[unneeded] smudge ?(  need need-here  need-here smudged
+: smudge  ( -- )  latest smudged  ;  ?)
 
   \ doc{
   \
@@ -337,7 +343,7 @@ need [if]
   \ exec  ( i*x "name" -- j*x )
   \
   \ Parse and evaluate "name".
-  \ 
+  \
   \ This is a common factor of `[const]`, `[2const]` and
   \ `[cconst]`.
   \
@@ -368,7 +374,7 @@ need eval  need [if]
   \ stack.
   \
   \ Usage example:
-  \ 
+  \
   \ ----
   \ 48 constant zx
   \ : test  ( -- )  [const] zx .  ;
@@ -392,7 +398,7 @@ need eval  need [if]
   \ literals, in order to gain execution speed.
   \
   \ Usage example:
-  \ 
+  \
   \ ----
   \ 48. 2constant zx
   \ : test  ( -- )  [2const] zx d.  ;
@@ -471,7 +477,7 @@ user warnings  \ flag
   \ doc{
   \
   \ not-redefined?  ( ca len -- ca len xt false | ca len true )
-  \ 
+  \
   \ Is the word name _ca len_ not yet defined in the
   \ current compilation word list?
   \

@@ -50,7 +50,7 @@ need alias
   \ doc{
   \
   \ ifcase  ( x f -- )
-  \ 
+  \
   \ Part of a `thiscase ifcase
   \ exitcase` structure that checks _x_.
   \
@@ -61,11 +61,11 @@ need alias
 
 : exitcase  ( -- )
   postpone exit  postpone then  ; immediate compile-only
-  
+
   \ doc{
   \
   \ exitcase  ( -- )
-  \ 
+  \
   \ Part of a `thiscase ifcase exitcase` structure.
   \
   \ See `thiscase` for a usage example.
@@ -78,7 +78,7 @@ need alias
   \ doc{
   \
   \ thiscase  ( x -- x x )
-  \ 
+  \
   \ Mark the start of a `thiscase ifcase exitcase` structure
   \ that checks _x_.
   \
@@ -106,7 +106,7 @@ need alias
   \ doc{
   \
   \ othercase  ( x -- )
-  \ 
+  \
   \ Mark the start of the default option of a `thiscase ifcase
   \ exitcase` structure that checks _x_.
   \

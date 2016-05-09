@@ -191,7 +191,7 @@ get-current  calculator-wordlist set-current
   2 >mem drop 1 >mem 2 mem> 1 mem>  ;
   \ Compile the ROM calculator commands to do `over`.
 
-: 2dup  ( -- )  
+: 2dup  ( -- )
   2 >mem drop 1 >mem drop 1 mem> 2 mem>  1 mem> 2 mem>  ;
   \ Compile the ROM calculator commands to do `2dup`.
 

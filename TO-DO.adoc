@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-29
+:revdate: 2016-05-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -9,10 +9,22 @@
 == Misc ==
 // {{{
 
-.2016-04-27:
+.2016-05-07:
 
-Fix compilation of `mode42` and `mode64`: It seems a circular requirement
-makes part of the assembler be compiled twice.
+Fix the `indexer` tool: indexing all words from the library (>800) fills the
+system memory bank were headers are created.  The solution is a configurable
+system bank: the indexer could use a different system bank, and reset the
+names pointer temporarily.
+
+Compact the blocks of the address register and add conditional compilation.
+
+Compact and document the Noble arrays.
+
+.2016-05-06:
+
+Remove the routine `compare_de_hl_signed`, if possible.
+
+.2016-04-27:
 
 Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
 used only for `list`.
@@ -31,8 +43,8 @@ Benchmark the system without constants `0`, `1` and `2`.
 
 Write faster, Z80 versions of words that fetch from and store to memory banks.
 
-Words that can be moved to the library: `there`, `catch`, `printer`, `?\`,
-`[defined]`, `[undefined]`...
+Words that can be moved to the library: `there`, `catch`, `?\`,
+`[defined]`, `[undefined]`, `umin`, `umax`...
 
 Study how to move `line>string` and `undefined?` to the library.  They are not
 used in the kernel, but they are needed by the `need` utility.
@@ -50,6 +62,11 @@ others. `hided  ( nt -- )` is already in the kernel.
 // }}}
 == Compilation ==
 // {{{
+
+.2016-05-09:
+
+Idea: in DX-Forth, `last` is a 2-cell variable that holds both the nt and the
+xt: `last @ ( nt )` and `last 2@ ( xt nfa )`.
 
 .2016-04-29:
 
@@ -127,9 +144,23 @@ Examples from Forth Dimensions:
 == Control structures ==
 // {{{
 
+.2016-05-07:
+
+Idea: Rename `branch`, `0branch` and `?branch` to `(branch)`, `(0branch)` and
+`(?branch)`.  Then write `branch`, `0branch` and `?branch` to compile them, as
+control structures.
+
+----
+: branch  ( a -- )  postpone (branch) ,  ; immediate compile-only
+: ?branch  ( a -- )  postpone (?branch) ,  ; immediate compile-only
+: 0branch  ( a -- )  postpone (0branch) ,  ; immediate compile-only
+----
+
+Also `-branch`, in the library.
+
 .2015-11-14:
 
-Forth Dimensions v06n1p26: `it endit` control structure. 
+Forth Dimensions v06n1p26: `it endit` control structure.
 
 .2015-10-25:
 
@@ -210,10 +241,6 @@ Fix: `transfer-block` changes the current drive to 2!
 == Graphics ==
 // {{{
 
-.2015-08-02:
-
-Fix: `attr`.
-
 .2015-09-01:
 
 Possible names for text and graphic cursor words.
@@ -228,7 +255,7 @@ Possible names for text and graphic cursor words.
 | at-xy      | ?at        | gat-xy          | ?gat            | ghome
 | at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
 | at-xy      | xy         | at-coord        | coord           | coord-home
-| at-xy      | xy         | at-coord        | coord           | home-coord 
+| at-xy      | xy         | at-coord        | coord           | home-coord
 | at-xy      | xy         | at-coords       | coords          | coords-home
 | at-xy      | xy         | at-coords       | coords          | home-coords
 | at-xy      | xy         | at-g-xy         | g-xy            | g-home
@@ -252,7 +279,7 @@ So far (2016-04-23) the best are:
 | set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
 
 | at-xy      | xy         | at-coord        | coord           | coord-home
-| at-xy      | xy         | at-coord        | coord           | home-coord 
+| at-xy      | xy         | at-coord        | coord           | home-coord
 | at-xy      | xy         | at-coords       | coords          | coords-home
 | at-xy      | xy         | at-coords       | coords          | home-coords
 | at-xy      | xy         | at-gxy          | gxy             | ghome
@@ -272,12 +299,6 @@ Name for graphic fill: `flood`.
 There's an example how to change and restore a channel in print-42, by
 Ricardo Serral Wigge. Beside, it supports many (all?) control
 characters, unlike the implementation by Andy Jenkinson.
-
-.2015-09-08:
-
-Fix: `bye` resets the system when `mode42` is on. Move `mode32` to the
-kernel and set it before going back to BASIC. Restore the previous
-mode after a warm entry.
 
 .2015-09-11:
 
@@ -305,10 +326,6 @@ simpler `key` (`akey` from Afera).
 .2015-06-30:
 
 Change: modify `expect` after Spectrum Forth-83.
-
-.2015-09-12:
-
-use bit 5 of FLAGS to detect and reset a new char.
 
 // }}}
 == Parsing ==
@@ -430,7 +447,7 @@ ROTATE         n1 n2 -- n3
      Rotate  the value n1 left n2 bits if n2 is positive, right  n2
      bits  if n2 is negative.  Bits shifted out of one end  of  the
      cell are shifted back in at the opposite end.
-  
+
   \ Standard: Forth-79 (Reference Word Set); Forth-83 (Appendix
   \ B.  Uncontrolled Reference Words).
 ____
@@ -460,17 +477,27 @@ something to do with the new loops?
 == Strings ==
 // {{{
 
-Rename "csb" as "stringer" or "strings"?
+.2016-05-09:
+
+Simplify the circular string buffer:
+
+- convert `>csb` to a variable, and remove the extra cell at the start of the
+  actual buffer.
+- convert `csb0` to a variable, so the buffer can be moved.
+
+.2016-05-09:
+
+Rename "csb" as "stringer":
 
 |===
-| Now         | "strings"      | "stringer"
+| Now         | "stringer"
 
-| >csb        | >strings       | >stringer
-| ?csb        | ?strings       | ?stringer
-| csb-size    | strings-size   | stringer-size
-| csb0        | strings0       | stringer0
-| empty-csb   | empty-strings  | empty-stringer
-| unused-csb  | unused-strings | unused-stringer
+| >csb        | >stringer
+| ?csb        | ?stringer
+| csb-size    | /stringer
+| csb0        | stringer
+| empty-csb   | empty-stringer
+| unused-csb  | unused-stringer
 |===
 
 .2015-11-10:
@@ -484,6 +511,10 @@ above 0xC000 could not use the circular string buffer.
 // }}}
 == Maths ==
 // {{{
+
+.2016-05-07:
+
+Implement 2-cell operators from Spectrum Forth-83. Most of them are written in Z80.
 
 .2016-05-01:
 

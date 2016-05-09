@@ -119,7 +119,7 @@ variable #options
   \ options[
   \
   \ Compilation: ( -- a1 a2 a3 )
-  \ 
+  \
   \ Start an `options[ ]options` structure.
   \
   \ The addresses left on the stack will be resolved by
@@ -152,7 +152,7 @@ variable #options
 
 : option  ( x "name" -- )
   ,  ' compile,  1 #options +!  ;
-  
+
   \ doc{
   \
   \ option  ( x "name" -- )

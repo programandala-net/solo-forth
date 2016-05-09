@@ -463,7 +463,7 @@ code c!toggle-bits  ( b ca -- )
   \ doc{
   \
   \ *!  ( n|u a -- )
-  \ 
+  \
   \ Multiply _n|u_ by the single-cell number at _a_ and store
   \ the product in _a_
   \

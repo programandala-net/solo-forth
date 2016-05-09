@@ -1,80 +1,80 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-04-22
+:revdate: 2016-05-09
 
 == Numbers
 
 [cols="4,10,6"]
 |===
-| Symbol     | Data type                                     | Size
+| Symbol     | Data type                                     | Size   | Range
 
-| a           | address                                      | 1 cell
-| aa          | cell-aligned address                         | 1 cell
-| ca          | character-aligned address                    | 1 cell
-| fa          | float-aligned address                        | 1 cell
-| dfa         | double-float-aligned address                 | 1 cell
+| a           | address                                      | 1 cell | 0..65535
+| aa          | cell-aligned address                         | 1 cell | 0..65535
+| ca          | character-aligned address                    | 1 cell | 0..65535
+| fa          | float-aligned address                        | 1 cell | 0..65535
 
-| f           | well-formed flag (false: 0; true: -1)        | 1 cell
-| 0f          | zero flag (false: 0; true: non-zero)         | 1 cell
-| true        | true flag (-1)                               | 1 cell
-| false       | false flag (0)                               | 1 cell
+| f           | well-formed flag (false: 0; true: -1)        | 1 cell | -1..0
+| 0f          | zero flag (false: 0; true: non-zero)         | 1 cell | -32768..0..65535
+| true        | true flag (-1)                               | 1 cell | -1
+| false       | false flag (0)                               | 1 cell | 0
 
-| b           | 8-bit byte                                   | 1 cell
-| c           | 8-bit character                              | 1 cell
+| b           | 8-bit byte                                   | 1 cell | 0..255
+| c           | 8-bit character                              | 1 cell | 0..255
 
-| u           | 16-bit unsigned number                       | 1 cell
-| len         | 16-bit unsigned number (string length)       | 1 cell
-| n           | 16-bit signed number                         | 1 cell
-| +n          | 16-bit non-negative number                   | 1 cell
-| x           | 16-bit unspecified number                    | 1 cell
+| u           | 16-bit unsigned number                       | 1 cell | 0..65535
+| len         | 16-bit unsigned number (string length)       | 1 cell | 0..65335
+| n           | 16-bit signed number                         | 1 cell | -32768..32767
+| +n          | 16-bit non-negative number                   | 1 cell | 0..32767
+| x           | 16-bit unspecified number                    | 1 cell | -32768..65535
 
-| ca len      | string                                       | 2 cells
+| ca len      | string                                       | 2 cells |
 
-| d           | 32-bit signed double number                  | 2 cells
-| +d          | 32-bit non-negative double number            | 2 cells
-| ud          | 32-bit unsigned double number                | 2 cells
-| xd          | 32-bit unspecified number                    | 2 cells
+| d           | 32-bit signed double number                  | 2 cells | -2147483648..2147483647
+| +d          | 32-bit non-negative double number            | 2 cells | 0..2147483647
+| ud          | 32-bit unsigned double number                | 2 cells | 0..4294697295
+| xd          | 32-bit unspecified number                    | 2 cells | -2147483648..2147483647
 
-| t           | 48-bit signed triple number                  | 3 cells
-| ut          | 48-bit unsigned triple number                | 3 cells
-| q           | 64-bit signed quadruple number               | 4 cells
-| uq          | 64-bit unsigned quadruple number             | 4 cells
+| t           | 48-bit signed triple number                  | 3 cells |
+| ut          | 48-bit unsigned triple number                | 3 cells |
+| q           | 64-bit signed quadruple number               | 4 cells |
+| uq          | 64-bit unsigned quadruple number             | 4 cells |
 
-| gx          | 8-bit graphic x coordinate (0..255)          | 1 cell
-| gy          | 8-bit graphic y coordinate (0..191)          | 1 cell
+| gx          | 8-bit graphic x coordinate                   | 1 cell | 0..255
+| gy          | 8-bit graphic y coordinate                   | 1 cell | 0..191
 
-| row         | 8-bit cursor row (0..n)                      | 1 cell
-| col         | 8-bit cursor column (0..n)                   | 1 cell
+| row         | 8-bit cursor row                             | 1 cell | 0..n
+| col         | 8-bit cursor column                          | 1 cell | 0..n
 
-| xt          | execution token (=cfa)                       | 1 cell
-| cfa         | code field address (=xt)                     | 1 cell
-| lfa         | link field address                           | 1 cell
-| nt          | name token (=nfa)                            | 1 cell
-| nfa         | name field address (=nt)                     | 1 cell
-| pfa         | parameter field address                      | 1 cell
-| xtp         | execution token pointer                      | 1 cell
+| xt          | execution token (=cfa)                       | 1 cell |
+| cfa         | code field address (=xt)                     | 1 cell |
+| lfa         | link field address                           | 1 cell |
+| nt          | name token (=nfa)                            | 1 cell |
+| nfa         | name field address (=nt)                     | 1 cell |
+| pfa         | parameter field address                      | 1 cell |
+| xtp         | execution token pointer                      | 1 cell |
 
-| wid         | wordlist identifier                          | 1 cell
+| wid         | wordlist identifier                          | 1 cell |
 
-| orig        | address of an unresolved forward branch      | 1 cell
-| dest        | address of a backward branch target          | 1 cell
+| orig        | address of an unresolved forward branch      | 1 cell | 0..65535
+| dest        | address of a backward branch target          | 1 cell | 0..65535
 
-| cs-id       | control structure identifier                 | 1 cell
-| loop-sys    | loop control parameters                      | 2 cells
-| nest-sys    | definition call                              | 1 cell
-| source-sys  | source identifier                            | n cells
+| cs-id       | control structure identifier                 | 1 cell |
+| loop-sys    | loop control parameters                      | 2 cells |
+| nest-sys    | definition call                              | 1 cell |
+| source-sys  | source identifier                            | n cells |
 
-| i*x         | any data type                                | 0 or more cells
-| j*x         | any data type                                | 0 or more cells
-| k*x         | any data type                                | 0 or more cells
-| u*x         | u elements of type x (eg. `u*wid`)           | 0 or more cells
+| i*x         | any data type                                | 0 or more cells |
+| j*x         | any data type                                | 0 or more cells |
+| k*x         | any data type                                | 0 or more cells |
+| u*x         | u elements of type x (eg. `u*wid`)           | 0 or more cells |
 
-| r           | a floating point real number                 | 5 bytes (in the floating point stack)
-| rf          | a floating point real number flag (0|1)      | 5 bytes (in the floating point stack)
+| r           | a floating point real number                 | 5 bytes (in the floating point stack) | 1E-38..1E38
+| rf          | a floating point real number flag (0|1)      | 5 bytes (in the floating point stack) | 0..1
 
-| op          | Z80 8-bit opcode, generally a jump           | 1 cell
-| r           | Z80 8-bit register identifier                | 1 cell
-| rp          | Z80 16-bit register pair identifier          | 1 cell
+| op          | Z80 8-bit opcode, generally a jump           | 1 cell | 0..255
+| r           | Z80 8-bit register identifier                | 1 cell | 0..7
+| rp          | Z80 16-bit register pair identifier          | 1 cell | 0, 2, 4
+| rphl        | Z80 16-bit HL register pair                  | 1 cell | 4
 |===
 
 == Parsed text

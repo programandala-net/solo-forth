@@ -82,17 +82,15 @@ include version.z80s
 ; ==============================================================
 ; Configuration
 
-  ; XXX FIXME Pasmo gives strange errors (symbols not found)
-  ; when some config flags are used in nested `if`. A literal
+  ; XXX Note: Pasmo issues strange errors (symbols not found)
+  ; when some config flags are used in a nested `if`. A literal
   ; flag (0/1) is used instead, with the flag name in a comment;
-  ; it is changed with a text substitution.  Some Vim mappings
-  ; are created to turn them on and off.
+  ; it is changed with a text substitution.
 
-  ; Solo Forth can be compiled for G+DOS or +3DOS.
-  ; This depends on two labels, `gplusdos` and `plus3dos`,
-  ; defined with a parameter of the Pasmo assembler. See the
-  ; Makefile files for details. Support for +3DOS is not
-  ; finished yet.
+  ; Solo Forth can be compiled for G+DOS or +3DOS.  This depends
+  ; on two labels, `gplusdos` and `plus3dos`, defined with a
+  ; parameter of the Pasmo assembler. See the Makefile files for
+  ; details. Support for +3DOS is not finished yet.
 
 if (!defined gplusdos) and (!defined plus3dos)
   gplusdos equ true ; G+DOS by default
@@ -812,7 +810,7 @@ disk_buffer:
 
   dw buffer_block_id_mask     ; Block id used when the  buffer
                               ; is not associated with a block.
-  ds bytes_per_buffer    ; Actual content of the block.
+  ds bytes_per_buffer         ; Actual content of the block.
 
 ; ==============================================================
 ; Misc routines
@@ -2341,7 +2339,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; ----------------------------------------------
   _code_header paren_plus_loop_,'(+LOOP)'
 
-  ; XXX TODO -- move to the library 
+  ; XXX TODO -- move to the library
   ; (it's only used by `.s`, which will be removed from the kernel
   ; after the development)
 
@@ -5605,6 +5603,8 @@ u_less_than.de_hl:
 ; ----------------------------------------------
   _colon_header latestxt_,'LATESTXT'
 
+  ; XXX TODO -- move to the library
+
 ; doc{
 ;
 ; latestxt ( -- xt )
@@ -5620,6 +5620,9 @@ u_less_than.de_hl:
 
 ; ----------------------------------------------
   _code_header from_body_,'BODY>'
+
+  ; XXX TODO -- move to the library
+
   pop hl
   dec hl
   dec hl
@@ -5628,6 +5631,9 @@ u_less_than.de_hl:
 
 ; ----------------------------------------------
   _code_header to_body_,'>BODY'
+
+  ; XXX TODO -- move to the library
+
   pop hl
   inc hl
   inc hl
@@ -5636,6 +5642,9 @@ u_less_than.de_hl:
 
 ; ----------------------------------------------
   _code_header to_name_,'>NAME'
+
+  ; XXX TODO -- move to the library, when the temporary code of
+  ; the warning in `header,` is removed
 
 ; doc{
 ;
@@ -5667,7 +5676,7 @@ u_less_than.de_hl:
   ld (to_name.names_pointer_high_byte),a
 
   ld b,0
-  ld hl, names_bank_address
+  ld hl,names_bank_address
 
 to_name.begin:
 
@@ -5724,8 +5733,9 @@ to_name.next:
   jr to_name.begin
 
 ; ----------------------------------------------
-
   _colon_header c_store_bank_,'C!BANK'
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;
@@ -5752,6 +5762,8 @@ to_name.next:
 
 ; ----------------------------------------------
   _colon_header store_bank_,'!BANK'
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;

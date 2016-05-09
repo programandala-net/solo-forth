@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605071744
+  \ Last modified: 201605072052
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,7 +28,7 @@
   \ 2015-10-14: Add `column`, `row`, `at-x`, `at-y`, adapted
   \ from Galope.
   \ 2016-05-01: Add conditional compilation and documentation.
-  \ 2016-05-07: Fix typos.
+  \ 2016-05-07: Fix typos and conditional compilation.
 
 ( column last-column row last-row at-x at-y )
 
@@ -63,7 +63,7 @@
   \
   \ }doc
 
-[unneeded] row [unneeded] last-row
+[unneeded] last-row
 ?\ : last-row  ( -- row  )  row 1-  ;
   \ doc{
   \

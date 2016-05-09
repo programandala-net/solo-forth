@@ -224,7 +224,7 @@ defer reneed  ( "name" -- )
   \ doc{
   \
   \ [unneeded]  ( "name" -- f )
-  \ 
+  \
   \ Parse "name".  If there's no unresolved `need`, `needed`,
   \ `reneed` or `reneeded`, return false.  Otherwise, if "name"
   \ is the needed word specified by the last execution of
@@ -238,7 +238,7 @@ defer reneed  ( "name" -- )
   \ doc{
   \
   \ new-needed-word  ( ca1 len -- ca2 len' )
-  \ 
+  \
   \ Remove trailing and leading spaces from the word _ca1 len_,
   \ which is the parameter of the latest `need` `needed`,
   \ `reneed` or `reneeded`, store it in the circular string
@@ -402,7 +402,7 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
   parse-name
   needed-word 2@ 2>r  new-needed-word  2dup undefined?
   if  blk @ load  else  2drop  then  2r> needed-word 2!  ;
-    
+
   \ doc{
   \
   \ need-here  ( "name" -- )

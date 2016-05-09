@@ -31,23 +31,24 @@
 
   \ doc{
   \
-  \ next-name  ( -- a )
+  \ nextname-string  ( -- a )
   \
   \ A double variable that may hold the address and length of a
-  \ name to be used by the next defining word.  This variable is
-  \ set by `nextname`.
+  \ name to be used by the next defining word.  This variable
+  \ is set by `nextname`.
   \
   \ }doc
 
 : nextname-header  ( -- )
   nextname-string 2@ header, default-header  ;
-  
+
   \ doc{
   \
   \ nextname-header  ( -- )
   \
   \ Create a dictionary header using the name string set by
-  \ `nextname`.  Then restore the default behaviour of `header`.
+  \ `nextname`.  Then restore the default behaviour of
+  \ `header`.
   \
   \
   \ }doc
