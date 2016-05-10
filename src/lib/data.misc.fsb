@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020054
+  \ Last modified: 201605102225
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,7 @@
   \ 2016-04-28: Rename `set` to `storer` and improve it. Add
   \ `cstorer`.
   \ 2016-05-02: Join two blocks to save space.
+  \ 2016-05-10: Add `2storer`.
 
 ( buffer: cvariable enum link@ link, )
 
@@ -55,40 +56,38 @@ defer link@  ( node1 -- node2 )  ' @ ' link@ defer!
 : link,  ( node -- )  here over @ , swap !  ;
   \ Create a new linked list node, pointing to _node_.
 
-( storer cstorer )
+( storer cstorer 2storer )
 
-need [if]
+need ?(
 
-[needed] storer [if]
+[unneeded] storer ?(
 
 : storer  ( x a "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ !  ;
+  create  2,  does>   ( -- ) ( pfa )  2@ !  ; ?)
 
   \ doc{
   \
   \ storer  ( x a "name" -- )
   \
-  \ Define a word "name" which, when executed, will  cause  the
-  \ value _x_  to be stored at _a_.
+  \ Define a word "name" which, when executed, will cause that
+  \ _x_ be stored at _a_.
   \
   \ Origin: word `set` found in Forth-79 (Reference Word Set)
   \ and Forth-83 (Appendix B.  Uncontrolled Reference Words).
   \
   \ }doc
 
-[then]
-
-[needed] cstorer [if]
+[unneeded] cstorer ?(
 
 : cstorer  ( c ca "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ c!  ;
+  create  2,  does>   ( -- ) ( pfa )  2@ c!  ; ?)
 
   \ doc{
   \
   \ cstorer  ( c ca "name" -- )
   \
-  \ Define a word "name" which, when executed, will  cause _c_
-  \ to be stored at _ca_.
+  \ Define a word "name" which, when executed, will cause that
+  \ _c_ be stored at _ca_.
   \
   \ Origin: variant of the word `set` found in Forth-79
   \ (Reference Word Set) and Forth-83 (Appendix B.
@@ -96,6 +95,23 @@ need [if]
   \
   \ }doc
 
-[then]
+[unneeded] 2storer ?(
+
+: 2storer  ( xd a "name" -- )
+  create  , 2,
+  does>   ( -- ) ( pfa )  dup cell+ 2@ rot @ 2!  ; ?)
+
+  \ doc{
+  \
+  \ 2storer  ( xd a "name" -- )
+  \
+  \ Define a word "name" which, when executed, will cause that
+  \ _xd_ be stored at _a_.
+  \
+  \ Origin: variant of the word `set` found in Forth-79
+  \ (Reference Word Set) and Forth-83 (Appendix B.
+  \ Uncontrolled Reference Words).
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
