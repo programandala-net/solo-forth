@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605070032
+  \ Last modified: 201605101814
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,114 +34,233 @@
 
   \ -----------------------------------------------------------
   \ Latest changes
-
+  
+  \ 2015-07-20: Copy the code from Z88 CamelForth. Start
+  \ adapting it.
+  \ 2015-07-21: Finish the adaption. Not tested yet.
+  \ 2015-07-22: Let independent loading of the words.
   \ 2016-05-07: Make block titles compatible with `indexer`.
+  \ 2016-05-10: Compact the blocks. Fix `!a`, `!a+`, `c@a+`.
+  \ Document.
 
-( a! a@ )
+( a a! a@ )
 
 variable a
 
-code a!  ( a -- )
-  \ Set the address register.
-  E1 c,  22 c, a ,  jpnext
+  \ doc{
+  \
+  \ a  ( -- a )
+  \
+  \ A variable that holds the address register.
+  \
+  \ See `a!`, `a@`,
+  \ `!a`, `@a`, `c!a`, `c@a`, `!a+`, `@a+`, `c!a+`, `c@a+`.
+  \
+  \ }doc
+
+code a!  ( a0 -- )  E1 c, 22 c, a , jpnext  end-code
     \ pop hl
     \ ld (a),hl
-    \ jp (ix)
-  end-code
+    \ jp next
 
-code a@  ( -- a )
-  \ Get the address register.
-  2A c, a ,  C3 c, pushhl ,
+  \ doc{
+  \
+  \ a!  ( a -- )
+  \
+  \ Set the address register.
+  \
+  \ See `a`, `a@`.
+  \
+  \ }doc
+
+code a@  ( -- a0 )  2A c, a , C3 c, pushhl ,  end-code
     \ ld hl,(a)
     \ jp pushhl
-  end-code
 
-( !a @a )
+  \ doc{
+  \
+  \ a@  ( -- a )
+  \
+  \ Get the address register.
+  \
+  \ See `a`, `a!`.
+  \
+  \ }doc
 
-need a!
+( !a @a c!a c@a )
 
-code !a  ( u -- )
-  \ Store cell at `a`.
-  D1 c,  2A c, a ,  70 03 + c,  23 c,  70 04 + c,  jpnext
+need a  need ?(
+
+[unneeded] !a ?(
+code !a  ( x -- )  D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
+                   jpnext  end-code ?)
     \ pop de
     \ ld hl,(a)
     \ ld (hl),e
     \ inc hl
     \ ld (hl),d
-    \ jp (ix)
-  end-code
+    \ jp next
 
-code @a  ( -- u )
-  \ Fetch cell at `a`.
-  2A c, a ,  5E c,  23 c,  66 c,  68 03 + c,  C3 c, pushhl ,
+  \ doc{
+  \
+  \ !a  ( x -- )
+  \
+  \ Store _x_ at the address register.
+  \
+  \ See `a`, `@a`.
+  \
+  \ }doc
+
+[unneeded] @a ?(
+code @a  ( -- x )  2A c, a , 5E c, 23 c, 66 c, 68 03 + c,
+                   C3 c, pushhl ,  end-code ?)
     \ ld hl,(a)
     \ ld e,(hl)
     \ inc hl
     \ ld h,(hl)
     \ ld l,e
     \ jp pushhl
-  end-code
 
-( c!a c@a )
+  \ doc{
+  \
+  \ @a ( -- x )
+  \
+  \ Fetch _x_ at the address register.
+  \
+  \ See `a`, `!a`.
+  \
+  \ }doc
 
-need a!
+[unneeded] c!a ?(
+code c!a  ( c -- )  D1 c, 2A c, a , 70 03 + c, jpnext
+                    end-code ?)
+    \ pop de
+    \ ld hl,(a)
+    \ ld (hl),e
+    \ jp next
 
-code c!a  ( c -- )
-  \ Store char at `a`.
-  D1 c,                 \ pop de
-  2A c, a ,             \ ld hl,(a)
-  70 03 + c,            \ ld (hl),e
-  jpnext                \ jp (ix)
-  end-code
+  \ doc{
+  \
+  \ c!a  ( c -- )
+  \
+  \ Store _c_ at the address register.
+  \
+  \ See `a`, `c@a`.
+  \
+  \ }doc
 
-code c@a  ( -- c )
-  \ Fetch char at `a`.
-  2A c, a ,             \ ld hl,(a)
-  6E c,                 \ ld l,(hl)
-  26 c, 00 c,           \ ld h,0
-  C3 c, pushhl ,        \ jp pushhl
-  end-code
+[unneeded] c@a ?(
+code c@a  ( -- c )  2A c, a , 6E c, 26 c, 00 c, C3 c, pushhl ,
+                    end-code ?)
+    \ ld hl,(a)
+    \ ld l,(hl)
+    \ ld h,0
+    \ jp pushhl
 
-( !a+ @a+ )
+  \ doc{
+  \
+  \ c@a ( -- c )
+  \
+  \ Fetch _c_ at the address register.
+  \
+  \ See `a`, `c!a`.
+  \
+  \ }doc
 
-need a!
+( !a+ @a+ c!a+ c@a+ )
 
-code !a+  ( u -- )
-  \ Store cell at `a` with increment.
-  D1 c,                 \ pop de
-  2A c, a ,             \ ld hl,(a)
-  70 03 + c,  23 c,     \ ld (hl),e  inc hl
-  70 04 + c,  23 c,     \ ld (hl),d  inc hl
-  22 c, a ,  jpnext     \ ld (a),hl  jp (ix)
-  end-code
+need a  need ?(
 
-code @a+  ( -- u )      \ Fetch cell at `a` with increment.
-  2A c, a ,             \ ld hl,(a)
-  5E c,  23 c,          \ ld e,(hl)  inc hl
-  56 c,  23 c,          \ ld d,(hl)  inc hl
-  22 c, a ,             \ ld (a),hl
-  D5 c,  jpnext         \ push de  jp (ix)
-  end-code
+[unneeded] !a+ ?(
+code !a+  ( x -- )
+  D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c, 23 c, 22 c, a ,
+  jpnext  end-code ?)
+    \ pop de
+    \ ld hl,(a)
+    \ ld (hl),e
+    \ inc hl
+    \ ld (hl),d
+    \ inc hl
+    \ ld (a),hl
+    \ jp next
 
-( c!a+ c@a+ )
+  \ doc{
+  \
+  \ !a+  ( x -- )
+  \
+  \ Store _x_ at the address register and increment the address
+  \ register by one cell.
+  \
+  \ See `a`, `@a+`.
+  \
+  \ }doc
 
-need a!
+[unneeded] @a+ ?(
+code @a+  ( -- x )
+  2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a , D5 c, jpnext
+  end-code ?)
+    \ ld hl,(a)
+    \ ld e,(hl)
+    \ inc hl
+    \ ld d,(hl)
+    \ inc hl
+    \ ld (a),hl
+    \ push de
+    \ jp next
 
-code c!a+  ( c -- )
-  \ Store char at `a` with increment.
-  D1 c,                 \ pop de
-  2A c, a ,             \ ld hl,(a)
-  70 03 + c,  23 c,     \ ld (hl),e  inc hl
-  22 c, a ,  jpnext     \ ld (a),hl  jp (ix)
-  end-code
+  \ doc{
+  \
+  \ @a+ ( -- x )
+  \
+  \ Fetch cell at the address register and increment the
+  \ address register by one cell.
+  \
+  \ See `a`, `!a+`.
+  \
+  \ }doc
 
-code c@a+  ( -- c )
-  \ Fetch char at `a` with increment.
-  2A c, a ,             \ ld hl,(a)
-  5E c,  23 c,          \ ld e,(hl)  inc hl
-  06 c, 00 c,           \ ld d,0
-  22 c, a ,             \ ld (a),hl
-  D5 c,  jpnext         \ push de  jp (ix)
-  end-code
+
+[unneeded] c!a+ ?(
+code c!a+  ( c -- )  D1 c, 2A c, a , 70 03 + c, 23 c,
+                     22 c, a , jpnext  end-code ?)
+    \ pop de
+    \ ld hl,(a)
+    \ ld (hl),e
+    \ inc hl
+    \ ld (a),hl
+    \ jp next
+
+  \ doc{
+  \
+  \ c!a+  ( c -- )
+  \
+  \ Store _c_ at the address register and increment the address
+  \ register by one address unit.
+  \
+  \ See `a`, `c@a+`.
+  \
+  \ }doc
+
+[unneeded] c@a+ ?(
+code c@a+  ( -- c )  2A c, a , 5E c, 23 c, 16 c, 00 c,
+                     22 c, a , D5 c, jpnext  end-code ?)
+    \ ld hl,(a)
+    \ ld e,(hl)
+    \ inc hl
+    \ ld d,0
+    \ ld (a),hl
+    \ push de
+    \ jp next
+
+  \ doc{
+  \
+  \ c@a+  ( -- c )
+  \
+  \ Fetch _c_ at the address register and increment the address
+  \ register by one address unit.
+  \
+  \ See `a`, `c!a+`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
