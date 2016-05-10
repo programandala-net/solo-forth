@@ -9,6 +9,10 @@
 == Misc ==
 // {{{
 
+.2016-05-09:
+
+Compact the memory.misc module
+
 .2016-05-07:
 
 Fix the `indexer` tool: indexing all words from the library (>800) fills the
