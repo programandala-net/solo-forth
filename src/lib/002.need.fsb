@@ -75,6 +75,9 @@
   \
   \ 2016-05-07: Improve documentation. Fix the word shown when
   \ `?locate` throws an error.
+  \
+  \ 2016-05-10: Fix a harmless bug: `locate-reneed` called the
+  \ deferred `reneeded` instead of `locate-reneeded`.
 
 ( contains delimited located ?located )
 
@@ -188,7 +191,7 @@ defer reneed  ( "name" -- )
   \ }doc
 
 : locate-reneed  ( "name" -- )
-  parse-name save-string reneeded  ;
+  parse-name save-string locate-reneeded  ;
 
   \ doc{
   \
@@ -268,7 +271,6 @@ defer needed  ( ca len -- )
   \ }doc
 
 : locate-needed  ( ca len -- )
-  \ cr ." need " 2dup type  \ XXX INFORMER
   needed-word 2@ 2>r  new-needed-word  2dup undefined?
   if  locate-reneeded  else  2drop  then  2r> needed-word 2!  ;
 
