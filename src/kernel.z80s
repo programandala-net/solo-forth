@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605090111
+; Last modified: 201605102150
 
 include version.z80s
 
@@ -156,7 +156,7 @@ valid_word_length_mask:           equ word_length_mask or smudge_mask
 
 csb_size:                         equ 512 ; bytes, size of the circular string buffer
 
-; Memory banks ($C000..0xFFFF)
+; Memory banks ($C000..$FFFF)
 
 bank_start                        equ $C000
 
@@ -770,12 +770,8 @@ user_data_pointer: equ $-user_variables
 ; ----------------------------------------------
 ; Circular string buffer
 
-csb:
-to_csb:
-  dw csb_size ; unused space in the buffer
 csb0:
   ds csb_size
-csb_total_size: equ $-csb
 
 ; ----------------------------------------------
 ; Data stack
@@ -1715,7 +1711,7 @@ push_a:
 ;
 ; default-bank  ( -- )
 ;
-; Page in the default memory bank at $C000..0xFFFF.
+; Page in the default memory bank at $C000..$FFFF.
 ;
 ; }doc
 
@@ -1729,7 +1725,7 @@ push_a:
 ;
 ; system-bank  ( -- )
 ;
-; Page in the system bank at $C000..0xFFFF.
+; Page in the system bank at $C000..$FFFF.
 ; This memory bank is used to store the word names and,
 ; optionally, also the command line history.
 ;
@@ -1760,7 +1756,7 @@ bank.e:
 ;
 ; bank-start  ( -- a )
 ;
-; A constant: Memory address where banks are paged in.
+; A constant: Memory address where banks are paged in: $C000.
 ;
 ; }doc
 
@@ -1773,7 +1769,7 @@ bank.e:
 ;
 ; bank  ( n -- )
 ;
-; Page in memory bank _n_ (0..7) at $C000..0xFFFF.
+; Page in memory bank _n_ (0..7) at $C000..$FFFF.
 ;
 ; }doc
 
@@ -1797,7 +1793,7 @@ bank.e:
 ;
 ; }doc
 
-  ld hl,(to_csb)
+  ld hl,(to_csb_pfa)
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -1814,19 +1810,19 @@ bank.e:
   dw csb_size
 
 ; ----------------------------------------------
-  _constant_header to_csb_,'>CSB'
+  _variable_header to_csb_,'>CSB'
 
 ; doc{
 ;
 ; to_csb  ( -- a )
 ;
-; Address of the circular string buffer pointer. It holds an
+; A variable that holds the circular string buffer pointer, an
 ; offset to the first free address in the buffer; the offset
 ; coincides with the number of free chars.
 ;
 ; }doc
 
-  dw to_csb
+  dw csb_size
 
 ; ----------------------------------------------
   _constant_header csb0_,'CSB0'
@@ -1854,7 +1850,7 @@ bank.e:
 ; ----
 ; : ?csb  ( len -- )
 ;   dup unused-csb >  \ not enough free space?
-;   if  csb-size >csb !  then  negate >csb +!  ;
+;   if  empty-csb >csb !  then  negate >csb +!  ;
 ; ----
 ; }doc
 
@@ -1863,7 +1859,7 @@ bank.e:
   dw dup_,unused_csb_,greater_than_
   dw zero_branch_,question_csb_.enough
   ; not enough space
-  dw csb_size_,to_csb_,store_ ; reset the pointer ; XXX TODO -- factor out
+  dw empty_csb_
 
 question_csb_.enough:
   dw negate_,to_csb_,plus_store_
@@ -1922,13 +1918,13 @@ question_csb_.enough:
 ;
 ; empty-csb  ( -- )
 ;
-; Empty the circular string buffer.
+; Empty the circular string buffer,
+; by initializing its pointer to the size of the buffer.
+; The contents of the buffer are not modifed.
 ;
 ; }doc
 
-  _literal csb
-  _literal csb_total_size
-  dw erase_
+  dw csb_size_,to_csb_,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -9382,7 +9378,7 @@ get_current_user:
   ld a,$FF
 
 set_current_user:
-  ; a = user ($00..0x0F to set it; $FF to get it)
+  ; a = user ($00..$0F to set it; $FF to get it)
   ld ix,dos_set_user
 
 ; ------------------------------
