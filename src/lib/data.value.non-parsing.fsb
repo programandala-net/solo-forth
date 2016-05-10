@@ -3,13 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201605102219
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ A non-standard version of `value` with a
-  \ non-parsing `to`.
+  \ A non-standard implementation of `value` with a non-parsing
+  \ `to`.  It could be useful in special cases.
 
   \ -----------------------------------------------------------
   \ Author
@@ -23,16 +23,21 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( value to )
+  \ -----------------------------------------------------------
+  \ History
 
-  \ Non-standard implementation of `value` with non-parsing
-  \ `to`. This could be useful in special cases.
+  \ 2015-09-08: First versions.
+  \ 2015-09-25: Benchmarked. `perform` and flag versions are
+  \ faster than the `defer` version.
+  \ 2016-05-10: Typo. Improve documentation.
+
+( value to )
 
   \ Credit:
   \
   \ Code inspired by lina.
 
-variable (value)  ['] @ (value) !
+variable (value)  ' @ (value) !
 : to    ( -- )  ['] ! (value) !  ;
 : value  ( n "name" -- )
   create ,  does>   (value) perform  ['] @ (value) !  ;
