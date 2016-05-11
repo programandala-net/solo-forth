@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605120130
+; Last modified: 201605120143
 
 include version.z80s
 
@@ -7838,24 +7838,9 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header set_latest_lex_,'SET-LATEST-LEX'
-
-; doc{
-;
-; set-latest-lex  ( b -- )
-;
-; Set the bits of the mask _b_ in the length byte of the latest
-; defined word.
-;
-; }doc
-
-  dw latest_,lex_store_
-  dw exit_
-
-; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
 
-  dw immediate_mask_,set_latest_lex_
+  dw immediate_mask_,latest_,lex_store_
   dw exit_
 
 ; ----------------------------------------------
@@ -7907,7 +7892,7 @@ endif
 ; ----------------------------------------------
   _colon_header compile_only_,'COMPILE-ONLY'
 
-  dw compile_only_mask_,set_latest_lex_
+  dw compile_only_mask_,latest_,lex_store_
   dw exit_
 
 ; ----------------------------------------------
