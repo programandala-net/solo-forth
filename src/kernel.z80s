@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605120143
+; Last modified: 201605120154
 
 include version.z80s
 
@@ -6109,8 +6109,7 @@ postpone.end:
 ;
 ; }doc
 
-  dw smudge_mask_,swap_
-  dw system_bank_,c_store_set_bits_,default_bank_
+  dw smudge_mask_,swap_,lex_store_
   dw exit_
 
 ; ----------------------------------------------
