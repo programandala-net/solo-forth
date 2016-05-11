@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605102150
+; Last modified: 201605120130
 
 include version.z80s
 
@@ -174,6 +174,7 @@ error.not_found:                    equ -013
 error.compilation_only:             equ -014
 error.zero_length_name:             equ -016
 error.conditionals_not_paired:      equ -022
+error.invalid_block_number:         equ -035
 error.not_understood:               equ -256
 error.not_unique:                   equ -257
 error.stack_unbalanced:             equ -258
@@ -5187,7 +5188,7 @@ endif
 ;
 ; }doc
 
-  dw 0 ; len
+  dw 0 ; length
   dw 0 ; address
 
 ; ----------------------------------------------
@@ -6564,67 +6565,63 @@ simple_accept.end
   dw 0
 
 ; ----------------------------------------------
-  _colon_header refill_,'REFILL'
-
-  ; XXX UNDER DEVELOPMENT
+  _constant_header blocks_,'BLOCKS'
 
 ; doc{
-
-; refill  ( -- f )
-
+;
+; blocks  ( -- u )
+;
+; A constant. Number of blocks per disk.
+;
 ; }doc
 
-  ; XXX NEW
-  ; XXX TODO -- try, check, complete
+  dw blocks_per_disk
 
-; : refill ( -- f )
-;   loading?  if    1 blk +!  >in off
-;             else  query
-;             then  true  ;
+; ----------------------------------------------
+  _colon_header block_question_,'BLOCK?'
 
-  dw loading_question_ ; input stream from disk?
-  dw zero_branch_,refill.terminal ; if not, branch
 
-refill.block:
-  _literal 1
-  dw blk_,plus_store_
-  dw to_in_,off_
-  dw branch_,refill.end
+; doc{
+;
+; block?  ( u -- f )
+;
+; Is _u_ a valid block number?
+;
+; }doc
 
-refill.terminal:
-  dw query_
-refill.end:
-  dw true_
+  dw blocks_,u_less_than_
   dw exit_
 
-; XXX TMP -- From Z88 CamelForth (version sans files)
-;   SOURCE-ID BLK @ OR 0= DUP
-;   IF  TIB DUP 80 ACCEPT SPACE
-; 'SOURCE 2!  0 >IN !
-;   THEN ;
+; ----------------------------------------------
+  _colon_header refill_,'REFILL'
 
-; XXX TMP -- From Z88 CamelForth (version with files)
-;X REFILL   -- f
-;   BLK @ IF  1 BLK +!                          ; for block input, use next
-;       BLK @ BLOCK PAUSE 1024 TRUE
-;   ELSE
-;   SOURCE-ID CASE
-;     0 OF  TIB DUP 80 ACCEPT SPACE TRUE  ENDOF
-;    -1 OF  FALSE  ENDOF
-;    >R
-;    INPUT-FBUF INPUT-FLEN R@ READ-LINE THROW PAUSE ; read a line
-;    IF  INPUT-FBUF SWAP TRUE  THEN   ; leave source-spec
-;    R>
-;   ENDCASE
-;   THEN
-;   DUP IF  >R 'SOURCE 2!  0 >IN ! R>  THEN ;
+; doc{
+;
+; refill  ( -- f )
+;
+; ----
+; : refill ( -- f )
+;   loading? if  blk @ 1+ dup block>source block? exit  then
+;   source-id dup negate ?exit  query  ;
+; ----
+;
+; Origin: Forth-94 (CORE EXT, BLOCK EXT); Forth-2012 (CORE EXT,
+; BLOCK EXT).
+;
+; }doc
 
-; XXX TMP -- From hForth
-;   : refill  ( f )
-;     source-id true = if  0 exit  then
-;     memtop [ size-of-pad chars ] literal - dup
-;     size-of-pad accept sourcevar 2!
-;     >in off  true  ;
+  dw loading_question_ ; input source is a block?
+  dw zero_branch_,refill.not_loading ; if not, branch
+
+refill.block:
+  dw blk_,fetch_,one_plus_,dup_,block_to_source_
+  dw block_question_
+  dw exit_
+
+refill.not_loading
+  dw source_id_,dup_,negate_,question_exit_
+  dw query_
+  dw exit_
 
 ; ----------------------------------------------
   _code_header fill_,'FILL'
@@ -6672,7 +6669,6 @@ fill.done:
   _jp_next
 
 ; ----------------------------------------------
-
   _code_header erase_,'ERASE'
 
   exx
@@ -7644,7 +7640,7 @@ search.failed:
 ;   r> #tib !
 ;   r> blk !
 ;   r> >in !
-;   r> [ ' source-id >body ] literal !
+;   r> (source-id) !
 ;   2r> input-buffer 2!
 ;   >r  ; compile-only
 ; ----
@@ -8214,7 +8210,7 @@ quit.begin:
 ; +1: minor (one byte)
 ; +2: patch (one byte)
 ; +3: pre-release (one byte), zero if none
-; +4: build (two cells)
+; +4: build (double-cell number)
 ;
 ; }doc
 
@@ -8222,8 +8218,7 @@ quit.begin:
   db version_minor
   db version_patch
   db version_prerelease
-  dw version_build_high_part
-  dw version_build_low_part
+  dw version_build_high_part,version_build_low_part
 
 ; ----------------------------------------------
   _colon_header dot_version_,'.VERSION'
@@ -8269,14 +8264,17 @@ dot_version.build
 ; }doc
 
   dw paren_dot_quote_
-  _string "Solo Forth\rVersion "
+  _string "Solo Forth\rv"
   dw dot_version_
   dw paren_dot_quote_
   _string "\rBy Marcos Cruz\r(programandala.net), 2015, 2016\r"
+if 1 ; XXX TMP -- during the development
   dw dot_unused_
+endif
   dw exit_
 
 ; ----------------------------------------------
+if 1 ; XXX TMP -- during the development
   _colon_header dot_unused_,'.UNUSED'
 
 ; doc{
@@ -8298,6 +8296,7 @@ dot_version.build
   _string "B free"
   dw exit_
 
+endif
 ; ----------------------------------------------
   _defer_header boot_,'BOOT',,noop_
 
@@ -9503,15 +9502,11 @@ endif
 ;
 ; ----
 ; : string>source  ( ca len -- )
-;   blk off
-;   [ ' source-id >body ] literal on
-;   set-source  ;
+;   blk off  (source-id) on  set-source  ;
 ; ----
 ; }doc
 
-  dw blk_,off_
-  dw paren_source_id_,on_
-  dw set_source_
+  dw blk_,off_,paren_source_id_,on_,set_source_
   dw exit_
 
 ; ----------------------------------------------
@@ -9525,15 +9520,12 @@ endif
 ;
 ; ----
 ; : terminal>source  ( -- )
-;   blk off
-;   [ ' source-id >body ] literal off
-;   tib #tib @ set-source  ;
+;   blk off  (source-id) off  tib #tib @ set-source  ;
 ; ----
 ;
 ; }doc
 
-  dw blk_,off_
-  dw paren_source_id_,off_
+  dw blk_,off_,paren_source_id_,off_
   dw tib_,number_tib_,fetch_,set_source_
   dw exit_
 
@@ -9616,23 +9608,22 @@ endif
 ;
 ; -->  ( -- )  \ "next-screen"
 ;
-; Continue interpretation with the next disk screen.
+; Continue interpretation with the next block.
 ;
 ; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
 ; (Controlled Reference Words).
 ;
 ; ----
 ; : -->  ( -- )
-;   ?loading  blk @ 1+ block>source  ; immediate
+;   ?loading refill 0= #-35 ?throw  ; immediate
 ; ----
 ;
 ; }doc
 
-  ; XXX TODO -- In Gforth the definition is `refill drop`
-
   dw question_loading_
-  dw blk_,fetch_,one_plus_
-  dw block_to_source_
+  dw refill_,zero_equals_
+  _literal error.invalid_block_number
+  dw question_throw_
   dw exit_
 
 ; ----------------------------------------------
