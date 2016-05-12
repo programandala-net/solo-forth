@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605071928
+  \ Last modified: 201605120210
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,6 +56,7 @@
   \ 2016-05-05: Update `s=` to `str=`.
   \ 2016-05-06: Move `current-latest` back to the kernel.
   \ 2016-05-07: Add `?(`, a simpler alternative to `[if]`.
+  \ 2016-05-12: Fix requirements of `[cconst]`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -293,18 +294,18 @@ variable here-backup
 
 [then]
 
-( possibly exec eval )
+( possibly exec eval cliteral )
 
   \ Credit:
   \
   \ Code of `possibly` adapted from Wil Baden.
 
-need [if]
+need ?(
 
-[needed] possibly [if]
+[unneeded] possibly ?(
 
 : possibly  ( "name" -- )
-  defined ?dup if  name> execute  then  ;
+  defined ?dup if  name> execute  then  ; ?)
 
   \ doc{
   \
@@ -315,12 +316,10 @@ need [if]
   \
   \ }doc
 
-[then]
-
-[needed] exec [if]
+[unneeded] exec ?(
 
 : exec  ( "name" -- i*x )
-  defined ?dup 0= #-13 ?throw  name> execute  ;
+  defined ?dup 0= #-13 ?throw  name> execute  ; ?)
 
   \ doc{
   \
@@ -332,11 +331,9 @@ need [if]
   \
   \ }doc
 
-[then]
+[unneeded] eval ?(
 
-[needed] eval [if]
-
-: eval  ( i*x "name" -- j*x )  parse-name evaluate  ;
+: eval  ( i*x "name" -- j*x )  parse-name evaluate  ; ?)
 
   \ doc{
   \
@@ -349,16 +346,32 @@ need [if]
   \
   \ }doc
 
-[then]
+[unneeded] cliteral ?(
 
-( [const] [2const] [cconst] cliteral )
+: cliteral  ( b -- )
+  compile clit c,  ; immediate compile-only ?)
 
-need eval  need [if]
+  \ doc{
+  \
+  \ cliteral  ( b -- )
+  \
+  \ Compile _b_ in the current definition.
+  \
+  \ This word does the same than `literal` but saves one byte
+  \ of data space.
+  \
+  \ Origin: Comus.
+  \
+  \ }doc
 
-[needed] [const] [if]
+( [const] [2const] [cconst] )
+
+need ?(
+
+[unneeded] [const] ?(  need eval
 
 : [const]  ( "name" -- )
-  eval postpone literal  ; immediate compile-only  [then]
+  eval postpone literal  ; immediate compile-only  ?)
 
 
   \ doc{
@@ -382,10 +395,10 @@ need eval  need [if]
   \
   \ }doc
 
-[needed] [2const] [if]
+[unneeded] [2const] ?(  need eval
 
 : [2const]  ( "name" -- )
-  eval postpone 2literal  ; immediate compile-only  [then]
+  eval postpone 2literal  ; immediate compile-only  ?)
 
   \ doc{
   \
@@ -406,10 +419,10 @@ need eval  need [if]
   \
   \ }doc
 
-[needed] [cconst] [if]
+[unneeded] [cconst] ?(  need eval  need cliteral
 
 : [cconst]  ( "name" -- )
-  eval postpone cliteral  ; immediate compile-only  [then]
+  eval postpone cliteral  ; immediate compile-only  ?)
 
   \ doc{
   \
@@ -427,21 +440,6 @@ need eval  need [if]
   \ 48 cconstant zx
   \ : test  ( -- )  [cconst] zx emit  ;
   \ ----
-  \
-  \ }doc
-
-: cliteral  ( b -- )  compile clit c,  ; immediate compile-only
-
-  \ doc{
-  \
-  \ cliteral  ( b -- )
-  \
-  \ Compile _b_ in the current definition.
-  \
-  \ This word does the same than `literal` but saves one byte
-  \ of data space.
-  \
-  \ Origin: Comus.
   \
   \ }doc
 
