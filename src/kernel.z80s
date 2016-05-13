@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605132302
+; Last modified: 201605140135
 
 include version.z80s
 
@@ -6603,7 +6603,7 @@ simple_accept.end
 ; ----
 ; : refill ( -- f )
 ;   loading? if  blk @ 1+ dup block>source block? exit  then
-;   source-id dup negate ?exit  query  ;
+;   false source-id ?exit 0= query  ;
 ; ----
 ;
 ; Origin: Forth-94 (CORE EXT, BLOCK EXT); Forth-2012 (CORE EXT,
@@ -6620,8 +6620,8 @@ refill.block:
   dw exit_
 
 refill.not_loading
-  dw source_id_,dup_,negate_,question_exit_
-  dw query_
+  dw false_,source_id_,question_exit_
+  dw zero_equals_,query_
   dw exit_
 
 ; ----------------------------------------------
