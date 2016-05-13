@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020009
+  \ Last modified: 201605131208
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,7 @@
   \ 2015..2016: Main development.
   \ 2016-04-29: Add `lineload` and `lineblock>source`.
   \ 2016-05-02: Join two blocks to save space.
+  \ 2016-05-13: Add `load-section`.
 
 ( ?--> update flush thru )
 
@@ -191,10 +192,10 @@
   \
   \ }doc
 
-( .line lineblock>source lineload )
+( .line lineblock>source lineload load-section )
 
 [unneeded] .line
-?\ : .line  ( n1 n2 -- )  line>string -trailing type  ;
+?\ : .line  ( n1 n2 -- )  line>string -trailing type  ;  exit
 
   \ doc{
   \
@@ -206,9 +207,8 @@
   \
   \ }doc
 
-[needed] .line ?exit
-
-: lineblock>source  ( n1 n2 -- )  blk !  c/l * >in !  ;
+[unneeded] lineblock>source [unneeded] lineload and
+?\ : lineblock>source  ( n1 n2 -- )  blk !  c/l * >in !  ;
 
   \ doc{
   \
@@ -219,11 +219,11 @@
   \
   \ }doc
 
-[unneeded] lineload ?exit
+need ?( [unneeded] lineload ?(
 
 : lineload  ( n1 n2 -- )
   dup 0= #-259 ?throw
-  nest-source lineblock>source interpret unnest-source  ;
+  nest-source lineblock>source interpret unnest-source  ; ?)
 
   \ doc{
   \
@@ -232,6 +232,51 @@
   \ Begin interpretation at line _n1_ of block _n2_.
   \
   \ Origin: Forth-83 (Uncontrolled Reference Words).
+  \
+  \ }doc
+
+[unneeded] load-section ?( need locate
+variable loading-section
+
+  \ doc{
+  \
+  \ loading-section ( -- a )
+  \ 
+  \ A variable that holds a flag: Is a section of the library
+  \ being loaded? This flag is modified by `load-section` and
+  \ `end-section`.
+  \
+  \ See `load-section`, `end-section`.
+  \
+  \ }doc
+
+: end-section  ( -- )  loading-section off  ;  end-section
+
+  \ doc{
+  \
+  \ end-section  ( -- )
+  \
+  \ End a section of the library.
+  \
+  \ See `load-section`, `loading-section`.
+  \
+  \ }doc
+
+: load-section  ( "name" -- )
+  loading-section on
+  blocks locate ?do   loading-section @ 0= ?leave  i load
+                loop  end-section  ; ?)
+
+  \ doc{
+  \
+  \ load-section  ( "name" -- )
+  \ 
+  \ Load a section of the library, starting from the first
+  \ block that has "name" in its header line. Load all
+  \ following blocks of the library or until `end-section` is
+  \ executed`.
+  \
+  \ See `end-section`, `loading-section`.
   \
   \ }doc
 
