@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605120154
+; Last modified: 201605132302
 
 include version.z80s
 
@@ -5879,6 +5879,8 @@ to_name.next:
 ; ----------------------------------------------
   _colon_header name_to_string_,'NAME>STRING'
 
+  ; XXX TODO -- move to the library, with `.name`
+
 ; doc{
 ;
 ; name>string  ( nt -- ca len )
@@ -6627,17 +6629,15 @@ refill.not_loading
 
 ; doc{
 ;
-; fill  ( a u b -- )
+; fill  ( ca len b -- )
 ;
 ; If _u_ is not zero, store _b_ in each of _u_
 ; consecutive characters of memory beginning at _a_.
 ;
-; Origin: fig-Forth, Forth-83.
+; Origin: fig-Forth, Forth-83 (Required Word Set), Forth-94
+; (CORE), Forth-2012 (CORE).
 ;
 ; }doc
-
-  ; XXX TODO consult in clf the differences of the standards and
-  ; the Forth-2012 stack notation, also for `erase` and `blank`.
 
   exx                 ; save the Forth IP
   pop bc
@@ -6645,12 +6645,6 @@ refill.not_loading
 fill.a:
   pop bc              ; BC = count
   pop de              ; DE = address
-
-  ; XXX TODO -- this check is necessary for Forth-94 and
-  ; Forth-2012:
-
-  ;bit 7,b             ; negative count?
-  ;jr nz,fill.done     ; if so, skip
 
   ld hl,$FFFF
   or a                ; clear carry flag
@@ -6670,12 +6664,36 @@ fill.done:
 ; ----------------------------------------------
   _code_header erase_,'ERASE'
 
+; doc{
+;
+; erase  ( ca len -- )
+;
+; If _len_ is greater than zero, clear all bits in each ol _len_
+; consecutive address units of memory beginning at _ca_.
+;
+; Origin: fig-Forth, Forth-83 (Controlled Reference Words), Forth-94
+; (CORE EXT), Forth-2012 (CORE EXT).
+;
+; }doc
+
   exx
   xor a
   jp fill.a
 
 ; ----------------------------------------------
   _code_header blank_,'BLANK'
+
+; doc{
+;
+; blank  ( ca len -- )
+;
+; If _len_ is greater than zero, store the character value for
+; space in _len_ consecutive character positions of memory
+; beginning at _ca_.
+;
+; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+;
+; }doc
 
   exx
   ld a,space_char
