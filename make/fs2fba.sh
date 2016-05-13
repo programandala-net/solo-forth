@@ -1,5 +1,5 @@
 #!/bin/sh
-# fs2fb-section.sh 
+# fs2fba.sh 
 
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
@@ -39,7 +39,7 @@
 # --------------------------------------------------------------
 
 if [ "$#" = "0" ]; then
-	echo 'fs2fb-section'
+	echo 'fs2fba'
 	echo 'Usage:'
 	echo "  ${0##*/} <filename> [<filename>] ..."
 	exit 1
@@ -49,7 +49,7 @@ for file in $*
 do
 
   base_filename=${file%.*}
-  output_file="$base_filename.fb"
+  output_file="$base_filename.fba"
   tmp_file=$(mktemp --suffix=.tmp $base_filename-XXX)
 
   # Remove empty lines and metacomments:

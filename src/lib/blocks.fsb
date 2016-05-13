@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605131208
+  \ Last modified: 201605132325
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,7 +28,7 @@
   \ 2015..2016: Main development.
   \ 2016-04-29: Add `lineload` and `lineblock>source`.
   \ 2016-05-02: Join two blocks to save space.
-  \ 2016-05-13: Add `load-section`.
+  \ 2016-05-13: Add `load-app`.
 
 ( ?--> update flush thru )
 
@@ -192,7 +192,7 @@
   \
   \ }doc
 
-( .line lineblock>source lineload load-section )
+( .line lineblock>source lineload load-app )
 
 [unneeded] .line
 ?\ : .line  ( n1 n2 -- )  line>string -trailing type  ;  exit
@@ -235,48 +235,51 @@ need ?( [unneeded] lineload ?(
   \
   \ }doc
 
-[unneeded] load-section ?( need locate
-variable loading-section
+[unneeded] load-app ?( need locate
+variable loading-app
 
   \ doc{
   \
-  \ loading-section ( -- a )
+  \ loading-app ( -- a )
   \ 
-  \ A variable that holds a flag: Is a section of the library
-  \ being loaded? This flag is modified by `load-section` and
-  \ `end-section`.
+  \ A variable that holds a flag: Is an application being
+  \ loaded?  This flag is modified by `load-app` and `end-app`.
   \
-  \ See `load-section`, `end-section`.
+  \ See `load-app`, `end-app`.
   \
   \ }doc
 
-: end-section  ( -- )  loading-section off  ;  end-section
+: end-app  ( -- )  loading-app off  ;  end-app
 
   \ doc{
   \
-  \ end-section  ( -- )
+  \ end-app  ( -- )
   \
-  \ End a section of the library.
+  \ End a app of the library.
   \
-  \ See `load-section`, `loading-section`.
+  \ See `load-app`, `loading-app`.
   \
   \ }doc
 
-: load-section  ( "name" -- )
-  loading-section on
-  blocks locate ?do   loading-section @ 0= ?leave  i load
-                loop  end-section  ; ?)
+: load-app  ( "name" -- )
+  loading-app on
+  blocks locate ?do   loading-app @ 0= ?leave  i load
+                loop  end-app  ; ?)
 
   \ doc{
   \
-  \ load-section  ( "name" -- )
+  \ load-app  ( "name" -- )
   \ 
-  \ Load a section of the library, starting from the first
-  \ block that has "name" in its header line. Load all
-  \ following blocks of the library or until `end-section` is
-  \ executed`.
+  \ Load an application from the blocks disk.  An application
+  \ is a set of blocks that are loaded as a whole. They don't
+  \ have block headers except the first one, which contains
+  \ "name", and therefore they don't have internal requisites.
+  \ Applications dont't need `-->` or any other word to change
+  \ the loading: The loading starts from the first block of the
+  \ disk that has "name" in its header, and continues until the
+  \ last block of the disk or until `end-app` is executed.
   \
-  \ See `end-section`, `loading-section`.
+  \ See `end-app`, `loading-app`.
   \
   \ }doc
 
