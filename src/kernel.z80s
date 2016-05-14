@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605140231
+; Last modified: 201605150100
 
 include version.z80s
 
@@ -1529,6 +1529,8 @@ endif
 
 ; ----------------------------------------------
   _colon_header seal_,'SEAL'
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;
@@ -6144,14 +6146,37 @@ postpone.end:
 ; ----------------------------------------------
   _colon_header hex_,'HEX'
 
+; doc{
+;
+; hex  ( -- )
+;
+; Set contents of `base` to sixteen.
+;
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Controlled Reference Words), Forth-94 (CORE EXT), Forth-2012
+; (CORE EXT).
+;
+; }doc
+
   _literal $10
-  dw base_,store_
-  dw exit_
+  dw branch_,base_store
 
 ; ----------------------------------------------
   _colon_header decimal_,'DECIMAL'
 
+; doc{
+;
+; decimal  ( -- )
+;
+; Set contents of `base` to ten.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
   _literal $0A
+base_store:
   dw base_,store_
   dw exit_
 
