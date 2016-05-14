@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605140135
+; Last modified: 201605140231
 
 include version.z80s
 
@@ -7675,35 +7675,6 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header evaluate_,'EVALUATE'
-
-; doc{
-;
-; evaluate  ( i*x ca len -- j*x )
-;
-; Save the current input source specification. Store minus-one
-; (-1) in `source-id`. Make the  string
-; described by _ca len_ both the input source and input
-; buffer,  set `>in` to zero,  and interpret.  When the  parse
-; area  is  empty, restore the prior input source
-; specification.
-;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-
-; ----
-; : evaluate  ( i*x ca len -- j*x )
-;   nest-source string>source interpret unnest-source  ;
-; ----
-
-; }doc
-
-  dw nest_source_
-  dw string_to_source_
-  dw interpret_
-  dw unnest_source_
-  dw exit_
-
-; ----------------------------------------------
   _variable_header interpret_table_,'INTERPRET-TABLE'
 
 ; doc{
@@ -9491,24 +9462,6 @@ endif
 
   dw input_buffer_,two_store_
   dw to_in_,off_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header string_to_source_,'STRING>SOURCE'
-
-; doc{
-;
-; string>source  ( ca len -- )
-;
-; Set the string _ca len_ as the current source.
-;
-; ----
-; : string>source  ( ca len -- )
-;   blk off  (source-id) on  set-source  ;
-; ----
-; }doc
-
-  dw blk_,off_,paren_source_id_,on_,set_source_
   dw exit_
 
 ; ----------------------------------------------

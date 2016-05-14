@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605101419
+  \ Last modified: 201605140242
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
 
   \ 2016-05-09: Start.
   \ 2016-05-10: First working version.
+  \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
 
 ( hayes-test )
 
@@ -604,6 +606,8 @@ testing( : ; constant variable create does> >body)
 ( hayes-test )
 
 testing( evaluate)
+
+need evaluate
 
 : ge1 s" 123" ; immediate   : ge2 s" 123 1+" ; immediate
 : ge3 s" : ge4 345 ;" ;     : ge5 evaluate ; immediate

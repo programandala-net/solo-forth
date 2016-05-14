@@ -7,7 +7,7 @@
   \ words (all words from the library) fill the memory bank.
   \ The solution is a configurable system bank.
 
-  \ Last modified: 201605071324
+  \ Last modified: 201605140237
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,8 +40,8 @@
   \
   \ 2016-04-03: First working version.
   \
-  \ 2016-04-24: Add `need nextname`, because `nextname` has been
-  \ moved from the kernel to the library.
+  \ 2016-04-24: Add `need nextname`, because `nextname` has
+  \ been moved from the kernel to the library.
   \
   \ 2016-05-05: Update `s=` to `str=`. Improve documentation.
   \
@@ -49,6 +49,9 @@
   \ doesn't use data space, and its execution token is the
   \ block it's associated to. This way, no data space is used
   \ by the index.
+  \
+  \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
 
 ( indexer )
 
@@ -216,6 +219,8 @@ forth-wordlist set-current  -->
   \ : index-block-header  ( ca len -- )
   \   2dup valid-block-header? if  evaluate exit  then  2drop  ;
   \ Index block header _ca len_, if it's valid.
+
+need evaluate
 
 : index-block  ( +n -- )
   dup indexed-block ! 0 swap line>string evaluate  ;
