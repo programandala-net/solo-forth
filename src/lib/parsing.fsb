@@ -33,10 +33,9 @@
   \ 2016-04-24: Move `char` and `[char]` from the kernel.
   \ 2016-05-10: Fix `[char]`.
   \ 2016-05-14: Compact the blocks. Fix `parse-line` and rename
-  \ it to `parse-all`.
+  \ it to `parse-all`. Finish and document `execute-parsing`.
 
 ( defined? parse-char parse-all execute-parsing )
-
 
 [unneeded] defined?
 ?\ : defined?  ( ca len -- f )  undefined? 0=  ; exit
@@ -63,8 +62,17 @@ need ?(  [unneeded] parse-all ?(
 [unneeded] execute-parsing ?(
 : execute-parsing  ( ca len xt -- )
   nest-source >r string>source r> execute unnest-source  ; ?)
-  \ XXX UNDER DEVELOPMENT
+
+  \ doc{
+  \
+  \ execute-parsing  ( ca len xt -- )
+  \
+  \ Make _ca len_ the current input source, execute _xt_, then
+  \ restore the previous input source.
+  \
   \ Origin: Gforth.
+  \
+  \ }doc
 
 ( char [char] word )
 
