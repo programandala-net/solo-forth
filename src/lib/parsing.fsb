@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605100012
+  \ Last modified: 201605140150
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,55 +32,93 @@
   \ 2015-10-22: Fix `parse-char`.
   \ 2016-04-24: Move `char` and `[char]` from the kernel.
   \ 2016-05-10: Fix `[char]`.
+  \ 2016-05-14: Compact the blocks. Fix `parse-line` and rename
+  \ it to `parse-all`.
 
-( parse-line )
+( defined? parse-char parse-all execute-parsing )
 
-: parse-line  ( "ccc<eol>" -- ca len )
-  source span @ min c/l min  >in @ span @ min /string
-  dup >in +! save-string  ;
+
+[unneeded] defined?
+?\ : defined?  ( ca len -- f )  undefined? 0=  ; exit
+
+[unneeded] parse-char
+?\ : parse-char  ( "c"  -- c )  stream drop c@ 1 parsed  ; exit
+  \ Parse the next char in the input stream and return its
+  \ code.
+
+need ?(  [unneeded] parse-all ?(
+: parse-all  ( "ccc<eol>" -- ca len )
+  stream dup parsed save-string  ; ?)
 
   \ doc{
   \
-  \ parse-line  ( "ccc<eol>" -- ca len )
+  \ parse-all  ( "ccc" -- ca len )
   \
-  \ Get the text string until the end of line.
+  \ Parse the rest of the source.
   \
   \ This word is a useful factor of Specforth editor's `text`.
   \
   \ }doc
 
-( evaluate )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ XXX Gforth:
+[unneeded] execute-parsing ?(
 : execute-parsing  ( ca len xt -- )
-  >in @ >r >in off
-  source >r >r ;
+  nest-source >r string>source r> execute unnest-source  ; ?)
+  \ XXX UNDER DEVELOPMENT
+  \ Origin: Gforth.
 
-: evaluate  ( ca len -- )  ['] interpret execute-parsing  ;
+( char [char] word )
 
-( parse-char )
+[unneeded] char [unneded] char and
+?\ : char  ( "name" -- c )  parse-name drop c@  ;
+[needed] char ?exit
 
-: parse-char  ( "c"  -- c )  stream drop c@ 1 parsed  ;
-  \ Parse the next char in the input stream and return its
-  \ code.
+  \ doc{
+  \
+  \ char  ( "name" -- c )
+  \
+  \ Parse "name" and put the value of its first character on
+  \ the stack.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
 
-( word )
+need ?(  [uneeded] [char]  ?(  need cliteral
+
+: [char]  ( "name" -- c )
+  char postpone cliteral  ; immediate compile-only  ?)
+
+  \ doc{
+  \
+  \ [char]
+  \
+  \ Compilation: ( "name" -- )
+  \
+  \ Parse "name" and append the run-time semantics given below
+  \ to the current definition.
+  \
+  \ Run-time: ( -- c )
+  \
+  \ Place _c_, the value of the first character of _name_, on
+  \ the stack.
+  \
+  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ }doc
 
   \ Credit:
   \
   \ Code from Z88 CamelForth.
 
+[unneeded] word
 : word  ( c "<chars>ccc<char>" -- ca )
   dup  stream                 ( c c ca len )
   dup >r   rot skip           ( c ca' len' )
   over >r  rot scan           ( ca" len" )
   dup if  char-  then         \ skip trailing delimiter
   r> r> rot -   >in +!        \ update `>in`
-  tuck -                      ( ca' len )
-  here place  here            ( ca )
-  bl over count + c!  ;       \ append trailing blank
+  tuck -  ( ca' len ) here place  here ( ca )
+  bl over count + c!  ; ?)    \ append trailing blank
 
   \  doc{
   \
@@ -99,10 +137,6 @@
   \  Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \
   \  }doc
-
-( defined? )
-
-: defined?  ( ca len -- f )  undefined? 0=  ;
 
 ( save-input restore-input )
 
@@ -139,43 +173,5 @@
      drop >in ! blk ! false
   then
   ;
-
-( char [char] )
-
-need cliteral
-
-: char  ( "name" -- c )  parse-name drop c@  ;
-
-  \ doc{
-  \
-  \ char  ( "name" -- c )
-  \
-  \ Parse "name" and put the value of its first character on
-  \ the stack.
-  \
-  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
-  \
-  \ }doc
-
-: [char]  ( "name" -- c )
-  char postpone cliteral  ; immediate compile-only
-
-  \ doc{
-  \
-  \ [char]
-  \
-  \ Compilation: ( "name" -- )
-  \
-  \ Parse "name" and append the run-time semantics given below
-  \ to the current definition.
-  \
-  \ Run-time: ( -- c )
-  \
-  \ Place _c_, the value of the first character of _name_, on
-  \ the stack.
-  \
-  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
-  \
-  \ }doc
 
   \ vim: filetype=soloforth

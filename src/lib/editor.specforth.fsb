@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242138
+  \ Last modified: 201605140159
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,12 +42,14 @@
   \ 2015-09-11: Adapted to Solo Forth.
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \ 2016-05-14: Update with `parse-all`, a fixed version of old
+  \ `parse-line`.
 
 ( editor )
 
 only forth definitions
 
-need list  need update  need flush  need parse-line
+need list  need update  need flush  need parse-all
 
 vocabulary editor  also editor definitions  hex
 
@@ -61,7 +63,7 @@ vocabulary editor  also editor definitions  hex
   \ characters.
 
 : text  ( "ccc<eol>" -- )
-  pad c/l 1+ blank  parse-line  pad place  ;
+  pad c/l 1+ blank  parse-all  pad place  ;
   \ Get the text string until end of line and store it
   \ into `pad` as a counted string, blank-filling the remainder
   \ of `pad` to `c/l` characters.
