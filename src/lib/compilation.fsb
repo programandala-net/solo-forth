@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605140238 
+  \ Last modified: 201605150118
 
   \ -----------------------------------------------------------
   \ Description
@@ -60,6 +60,7 @@
   \ 2016-05-13: Improve `[else]` with `refill`.
   \ 2016-05-14: Update: `evaluate` has been moved to the
   \ library.
+  \ 2016-05-15: Update comment.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -230,7 +231,7 @@ need ?(
   \
   \ Toggle the "smudge bit" of the given _nt_.
   \
-  \ This word is obsolete. `hided` and `revealed` are used
+  \ This word is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
   \ }doc

@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605150100
+; Last modified: 201605150117
 
 include version.z80s
 
@@ -6103,11 +6103,11 @@ postpone.end:
 ;   latest ?dup ;
 
 ; ----------------------------------------------
-  _colon_header hided_,'HIDED'
+  _colon_header hidden_,'HIDDEN'
 
 ; doc{
 ;
-; hided  ( nt -- )
+; hidden  ( nt -- )
 ;
 ; Hide the definition _nt_ by setting its smudge bit.
 ;
@@ -6127,7 +6127,7 @@ postpone.end:
 ;
 ; }doc
 
-  dw latest_,hided_
+  dw latest_,hidden_
   dw exit_
 
 ; ----------------------------------------------
