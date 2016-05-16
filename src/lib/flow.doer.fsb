@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201605170049
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,15 +25,22 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+  
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
 
 ( doer )
+
+need >body
 
 : doer-noop ;
 
 : doer  ( "name" -- )
+  create  ['] doer-noop >body ,  does>  ( pfa ) @ >r ;
   \ Define a word whose behaviour is vectorable.
-  create  ['] doer-noop >body ,
-  does>  ( pfa ) @ >r ;
 
 : (make)
   \ Stuff the address of further code into the parameter field

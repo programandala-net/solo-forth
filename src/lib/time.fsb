@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605070036
+  \ Last modified: 201605170054
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,9 @@
   \ Latest changes
 
   \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
 
 ( ms )
 
@@ -248,7 +251,7 @@ code pause ( u -- )
   \
   \ Code adapted from Spectrum Forth-83.
 
-need z80-asm  need execute-hl
+need z80-asm  need execute-hl  need >body
 
 variable (wait)  ' noop (wait) !
 
@@ -271,7 +274,7 @@ code pause ( u -- )
   \ Variant: `(wait)` is a variable and the calling is not
   \ factored.
 
-need z80-asm  need execute-hl
+need z80-asm  need execute-hl  need >body
 
 variable (wait)  ' noop (wait) !
 

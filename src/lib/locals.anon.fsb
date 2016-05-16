@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604091917
+  \ Last modified: 201605170056
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,8 +32,12 @@
 
   \ 2015-11-14: Adapted from the original code.
   \ 2016-04-09: Fixed the file header.
+  \ 2016-05-17: Need `body>`, which has been moved to the
+  \ library.
 
 ( create-anon anon +anon n>anon )
+
+need body>
 
 variable (anon)  ( -- a )
   \ xt of the latest anonymous variable.

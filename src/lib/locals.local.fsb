@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201603242022
+  \ Last modified: 201605170051
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,10 +36,13 @@
   \
   \ 2016-04-24: Add `need :noname`, because `:noname` has been
   \ moved from the kernel to the library.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
 
 ( local )
 
-need :noname
+need :noname  need >body
 
 :noname  \ Compilation: ( -- xt )
          \ Run-time:    ( -- ) ( R: a x -- )

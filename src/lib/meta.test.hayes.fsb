@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605140242
+  \ Last modified: 201605170051
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,8 @@
   \ 2016-05-09: Start.
   \ 2016-05-10: First working version.
   \ 2016-05-14: Update: `evaluate` has been moved to the
+  \ library.
+  \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
 
 ( hayes-test )
@@ -584,6 +586,8 @@ testing( do loop +loop i j unloop leave exit)  need j
 ( hayes-test )
 
 testing( : ; constant variable create does> >body)
+
+need >body
 
 { 123 constant x123 -> } { x123 -> 123 }
 { : equ constant ; -> } { x123 equ y123 -> } { y123 -> 123 }

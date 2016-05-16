@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242142
+  \ Last modified: 201605170050
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
 
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
 
 .( tt )
 
@@ -62,6 +65,7 @@ only forth also definitions
 need random  need j  need >=  need <=  need 2/  need value
 need d<>  need d=  need case  need ms  need frames@  need yes?
 need begin-stringtable  need positional-case:  need tab
+need >body
 
 vocabulary tt  also tt definitions  decimal
 

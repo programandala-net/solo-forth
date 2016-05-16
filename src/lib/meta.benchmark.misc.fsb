@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605131349
+  \ Last modified: 201605170051
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,9 @@
   \ 2016-05-06: Add benchmarks for `<` and `=`.
   \
   \ 2016-05-13: Add benchmark for `?throw`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
 
 ( number-base-bench )
 
@@ -1503,7 +1506,7 @@ variable times
 
 ( ?throw-bench )
 
-need bench{  need }bench.
+need >body  need bench{  need }bench.
 
 : ?throw0  ( f n -- )  swap if  throw  else  drop  then  ;
 : ?throw1  ( f n -- )

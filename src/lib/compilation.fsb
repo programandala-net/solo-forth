@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605150118
+  \ Last modified: 201605170044
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,7 @@
   \ 2016-05-14: Update: `evaluate` has been moved to the
   \ library.
   \ 2016-05-15: Update comment.
+  \ 2016-05-17: Move `body>` and `>body` from the kernel.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -104,10 +105,10 @@ need str=
 ( body>name name>body link>name name>link name<name )
 
 [unneeded] body>name
-?\ : body>name  ( pfa -- nt ) body> >name  ;
+?\ need body>  : body>name  ( pfa -- nt )  body> >name  ;
 
 [unneeded] name>body
-?\ : name>body  ( nt -- pfa ) name> >body  ;
+?\ need >body  : name>body  ( nt -- pfa )  name> >body  ;
 
 [unneeded] link>name
 ?\ need alias  ' cell+ alias link>name  ( nt -- pfa )
@@ -119,13 +120,33 @@ need str=
 ?\ need name>link  : name<name  ( nt1 -- nt2 )  name>link @s  ;
   \ Get the previous _nt2_ from _nt1_.
 
-( >>link name>> )
+( >>link name>> >body body> )
 
 [unneeded] >>link
-?\ need alias  ' cell+ alias >>link  ( xtp -- lfa )
+?\ need alias  ' cell+ alias >>link  ( xtp -- lfa ) exit
 
 [unneeded] name>>
-?\ : name>>  ( nt -- xtp )  [ 2 cells ] literal -  ;
+?\ : name>>  ( nt -- xtp )  [ 2 cells ] literal -  ; exit
+
+need ?(
+
+[unneeded] >body ?(
+code >body  ( xt -- pfa )
+  E1 c, 2B c, 2B c, 2B c, jppushhl  end-code  exit ?)
+  \ pop hl
+  \ dec hl
+  \ dec hl
+  \ dec hl
+  \ jp pushhl
+
+[unneeded] body> ?(
+code body>  ( pfa -- xt )
+  E1 c, 23 c, 23 c, 23 c, jppushhl  end-code ?)
+  \ pop hl
+  \ inc hl
+  \ inc hl
+  \ inc hl
+  \ jp pushhl
 
 ( name>interpret name>compile comp' [comp'] )
 

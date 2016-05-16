@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605150117
+; Last modified: 201605170045
 
 include version.z80s
 
@@ -5616,28 +5616,6 @@ u_less_than.de_hl:
 
   dw lastxt_,fetch_
   dw exit_
-
-; ----------------------------------------------
-  _code_header from_body_,'BODY>'
-
-  ; XXX TODO -- move to the library
-
-  pop hl
-  dec hl
-  dec hl
-  dec hl
-  _jp_pushhl
-
-; ----------------------------------------------
-  _code_header to_body_,'>BODY'
-
-  ; XXX TODO -- move to the library
-
-  pop hl
-  inc hl
-  inc hl
-  inc hl
-  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header to_name_,'>NAME'

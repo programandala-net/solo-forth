@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605042148
+  \ Last modified: 201605170055
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,9 @@
   \ 2016-05-02: Join several blocks, to save space.
   \
   \ 2016-05-04: Improve the documentation of `trail`.
+  \
+  \ 2016-05-17: Need `>body`, which has been moved to the
+  \ library.
 
 ( wid>link wid>name named-wid wid>vocabulary )
 
@@ -96,7 +99,7 @@ need recurse
 ( wid-of swap-current trail find-name-in find )
 
 [unneeded] wid-of
-?\ : wid-of  ( "name" -- wid )  ' >body  ;  exit
+?\ need >body  : wid-of  ( "name" -- wid )  ' >body  ;  exit
   \ Return the _wid_ of vocabulary "name".
 
   \ Credit:
