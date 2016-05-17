@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605170045
+; Last modified: 201605171630
 
 include version.z80s
 
@@ -626,18 +626,14 @@ else
   dw forth_vocabulary_link ; link to the latest vocabulary defined
 endif
 
-user_variables_pointer:
-  ; `$0E +origin`
-  dw user_variables
-
 return_stack_pointer:
-  ; `$10 +origin`
+  ; `$0E +origin`
   dw return_stack_bottom
 
 default_color_attribute:
-  ; `$12 +origin`
+  ; `$10 +origin`
   db 4          ; low byte: green paper, black ink
-  ; `$13 +origin`
+  ; `$11 +origin`
   db %00000000  ; high byte: no mask
 
   ; User variables default values
@@ -649,25 +645,25 @@ default_color_attribute:
 default_user_variables_start:
 
 sp0_init_value:                               ; +$00
-  ; `$14 +origin`
+  ; `$12 +origin`
   dw data_stack_bottom
 rp0_init_value:                               ; +$02
-  ; `$16 +origin`
+  ; `$14 +origin`
   dw return_stack_bottom
 paren_wait_init_value:                        ; +$04
-  ; `$18 +origin`
+  ; `$16 +origin`
   dw noop_
 width_init_value:                             ; +$06
   dw max_word_length
-  ; `$1A +origin`
+  ; `$18 +origin`
 warnings_init_value:                          ; +$08
-  ; `$1C +origin`
+  ; `$1A +origin`
   dw true
 last_init_value:                              ; +$0A
-  ; `$1E +origin`
+  ; `$1C +origin`
   dw latest_nt_in_forth_voc
 dictionary_pointer_init_value:                ; +$0C
-  ; `$1F +origin`
+  ; `$1E +origin`
   dw dictionary_pointer_after_cold
 user_data_pointer_init_value:                 ; +$0E
   ; `$20 +origin`
@@ -3801,19 +3797,19 @@ u_m_slash_mod.4:
   dw bytes_per_user_variables
 
 ; ----------------------------------------------
-  _constant_header up_,'UP'
+  _variable_header up_,'UP'
 
 ; doc{
 ;
 ; up  ( -- a )
 ;
-; Constant, the address of the user area pointer.
+; A variable. _a_ holds the address of the user area pointer.
 ;
 ; Origin: fig-Forth.
 ;
 ; }doc
 
-  dw user_variables_pointer
+  dw user_variables
 
 ; ----------------------------------------------
   _constant_header up0_,'UP0'
@@ -4698,22 +4694,22 @@ do_constant:
 ; user area where the value for _name_ is stored.  Execution of
 ; _name_ leaves its absolute user area storage address.
 ;
-; This is a factor of `user`. It works like `user` in:
-; fig-Forth, Forth-79 (Reference Word Set) and Forth-83
-; (Uncontrolled Reference Words).
+; This word is a factor of `user`.
+;
+; Origin: This word is called `user` in fig-Forth, Forth-79
+; (Reference Word Set) and Forth-83 (Uncontrolled Reference
+; Words).
 ;
 ; }doc
-
-  ; XXX TODO -- rename, maybe to `+user`?
 
   dw c_constant_
   dw paren_semicolon_code_
 do_user:
   pop hl
   ld e,(hl)
-  ld d,$00   ; de = index of the user variable
-  ld hl,(user_variables_pointer)
-  add hl,de   ; hl= address of the user variable
+  ld d,$00        ; de = index of the user variable
+  ld hl,(up_pfa)  ; hl = address of the user area (the value of `up`)
+  add hl,de       ; hl = address of the user variable
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -4930,8 +4926,6 @@ endif
 
 ; ----------------------------------------------
   _user_variable_header udp_,'UDP'
-
-  ; XXX TODO -- use it
 
 ; doc{
 ;
