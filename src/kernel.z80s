@@ -1452,6 +1452,8 @@ paren_set_order.loop_exit
 ;
 ; }doc
 
+  ; XXX TODO -- add check to `also`; see Gforth
+
   dw also_,context_,store_
   dw exit_
 
@@ -1509,6 +1511,8 @@ else ; XXX NEW
   ; XXX TODO -- `get-order` is in the library, and it needs
   ; `recurse`; write a simpler version of `get-order`, after
   ; Gforth, and put it in the kernel
+  ;
+  ; XXX TODO -- add check
 
   dw get_order_,nip_,one_minus_,set_order_
   dw exit_
@@ -1559,7 +1563,7 @@ endif
   ; : seal  ( -- )  context @ 1 set-order ;
 
 ; ----------------------------------------------
-  _does_header root_,'ROOT',,do_vocabulary
+  _variable_header root_wordlist_,'ROOT-WORDLIST'
 
   dw latest_nt_in_root_voc
 root_vocabulary_link:
@@ -1567,16 +1571,12 @@ root_vocabulary_link:
   dw root_nt
 
 ; ----------------------------------------------
-  _does_header forth_,'FORTH',,do_vocabulary
+  _does_header root_,'ROOT',,do_vocabulary
 
-forth_wid:
-  dw latest_nt_in_forth_voc
-forth_vocabulary_link:
-  dw root_vocabulary_link
-  dw forth_nt
+  dw root_wordlist_pfa
 
 ; ----------------------------------------------
-  _constant_header forth_wordlist_,'FORTH-WORDLIST'
+  _variable_header forth_wordlist_,'FORTH-WORDLIST'
 
 ; doc{
 ;
@@ -1591,17 +1591,29 @@ forth_vocabulary_link:
 ;
 ; }doc
 
-  dw forth_wid
+  dw latest_nt_in_forth_voc
+forth_vocabulary_link:
+  dw root_vocabulary_link
+  dw forth_nt
+
+; ----------------------------------------------
+  _does_header forth_,'FORTH',,do_vocabulary
+
+  dw forth_wordlist_pfa
 
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
 
-  _does_header assembler_,'ASSEMBLER',,do_vocabulary
+  _variable_header assembler_wordlist_,'ASSEMBLER-WORDLIST'
 
   dw latest_nt_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
   dw assembler_nt
+
+  _does_header assembler_,'ASSEMBLER',,do_vocabulary
+
+  dw assembler_wordlist_pfa
 
 endif
 
@@ -7959,8 +7971,8 @@ endif
 ;
 ; ----
 ; : vocabulary  ( "name" -- )
-;   create  wordlist,
-;   does>   ( -- )  ( pfa ) context !  ;
+;   wordlist create ,
+;   does>   ( -- )  ( pfa ) @ context !  ;
 ; ----
 ;
 ; }doc
@@ -7970,12 +7982,12 @@ endif
 ; XXX TODO -- Check what Forth-83 systems do when the search
 ; order is empty and a vocabulary is executed.
 
-  dw create_,wordlist_comma_
+  dw wordlist_,create_,comma_
   dw paren_semicolon_code_
 do_vocabulary:
   call do_does
   ; The following words are to be executed when the vocabulary is invoked.
-  dw context_,store_
+  dw fetch_,context_,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -8374,9 +8386,9 @@ warm_start:
 
   ; Restore the vocabularies to the default state.
   dw lit_,latest_nt_in_root_voc.init_value,fetch_
-  dw lit_,root_pfa,store_
+  dw lit_,root_wordlist_pfa,store_
   dw lit_,latest_nt_in_forth_voc.init_value,fetch_
-  dw lit_,forth_pfa,store_
+  dw lit_,forth_wordlist_pfa,store_
 if 1 ; assembler_core_in_kernel
   dw lit_,latest_nt_in_assembler_voc.init_value,fetch_
   dw lit_,assembler_pfa,store_
