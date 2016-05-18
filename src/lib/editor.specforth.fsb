@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605140159
+  \ Last modified: 201605181518
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,16 +40,22 @@
   \ History
 
   \ 2015-09-11: Adapted to Solo Forth.
+  \
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \
   \ 2016-05-14: Update with `parse-all`, a fixed version of old
   \ `parse-line`.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
 
 ( editor )
 
 only forth definitions
 
 need list  need update  need flush  need parse-all
+need vocabulary
 
 vocabulary editor  also editor definitions  hex
 

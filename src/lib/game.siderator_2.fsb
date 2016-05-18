@@ -33,6 +33,9 @@
   \
   \ 2016-05-02: Compact two blocks to save space in the
   \ library.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -47,7 +50,7 @@ only forth definitions  decimal
 need random  need randomize  need udg:  need inkey
 need between  need ocr  need frames@
 need j  need between  need rows  need last-column
-need last-row
+need last-row  need vocabulary
 
 vocabulary siderator
 also siderator definitions

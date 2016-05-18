@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605171849
+  \ Last modified: 201605181258
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,30 +29,30 @@
   \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library. Improve conditional compilation.
+  \
+  \ 2016-05-18: Simplify conditional compilation. Move
+  \ `vocabulary` from the kernel and rewrite it after
+  \ `wid>vocabulary` and the new word `dovocabulary`.
 
-( wid>link wid>name named-wid wid>vocabulary )
-
-  \ XXX TODO -- test
+( wid>link (wid>name wid>name )
 
 [unneeded] wid>link
 ?\ need alias  ' cell+ alias wid>link  ( wid -- a ) exit
 
-[unneeded] (wid>name)
-?\ : (wid>name)  ( wid -- a )  [ 2 cells ] literal +  ;
+[unneeded] (wid>name
+?\ : (wid>name  ( wid -- a )  [ 2 cells ] literal +  ; exit
 
   \ doc{
   \
-  \ (wid>name)  ( wid -- a )
+  \ (wid>name  ( wid -- a )
   \
   \ Return the address _a_ which holds the _nt_ of word list
   \ _wid_ (or zero if the word list has no associated name).
   \
   \ }doc
 
-need ?(
-
-[unneeded] wid>name ?(  need need-here  need-here (wid>name)
-: wid>name  ( wid -- nt|0 )  (wid>name) @  ; ?)
+[unneeded] wid>name
+?\ need (wid>name : wid>name  ( wid -- nt|0 )  (wid>name @  ;
 
   \ doc{
   \
@@ -63,8 +63,10 @@ need ?(
   \
   \ }doc
 
-[unneeded] named-wid ?(  need need-here  need-here wid>name
-: named-wid  ( wid -- )  (wid>name) latest swap !  ; ?)
+( named-wid wid>vocabulary vocabulary )
+
+need ?(  [unneeded] named-wid ?(  need (wid>name
+: named-wid  ( wid -- )  (wid>name latest swap !  ; ?)
 
   \ doc{
   \
@@ -74,17 +76,34 @@ need ?(
   \
   \ }doc
 
-[unneeded] wid>vocabulary ?(
-need need-here  need-here named-wid
+[unneeded] wid>vocabulary ?(  need named-wid
 : wid>vocabulary  ( wid "name" -- )
-  create dup , named-wid
-  does>  ( -- )  ( pfa )  @ context !  ; ?)
+  create dup , named-wid dovocabulary  ; ?)
 
   \ doc{
   \
   \ wid>vocabulary  ( wid "name" -- )
   \
   \ Create a vocabulary "name" for the word list _wid_.
+  \
+  \ }doc
+
+[unneeded] vocabulary ?(  need wid>vocabulary
+: vocabulary  ( "name" -- )  wordlist wid>vocabulary  ; ?)
+
+  \ doc{
+  \
+  \ vocabulary  ( "name" -- )
+  \
+  \ Create a vocabulary _name_. A vocabulary is a named word
+  \ list. Subsequent execution of `name` replaces the first
+  \ entry in the search order with the word list associated to
+  \ `name`. When `name` becomes the compilation word list new
+  \ definitions will be appended to `name`'s word list.
+  \
+  \ See: `wordlist`, `definitions`.
+  \
+  \ Origin: Forth-83 (Required Word Set).
   \
   \ }doc
 
@@ -102,29 +121,9 @@ need recurse
 
 : get-order  ( -- u*wid u )  context order@  ;
 
-( wid-of swap-current trail find-name-in find )
+( trail find-name-in find swap-current wid-of )
 
-[unneeded] wid-of
-?\ need >body  : wid-of  ( "name" -- wid )  ' >body  ;  exit
-
-  \ doc{
-  \
-  \ wid-of  ( "name" -- wid )
-  \
-  \ Return the _wid_ of vocabulary "name".
-  \
-  \ Note: this word works with original vocabularies created
-  \ with `vocabulary`, but not with those created with
-  \ `wid>vocabulary`.
-  \
-  \ }doc
-
-  \ Credit:
-  \
-  \ Adapted from eForth's `widof`.
-
-[unneeded] trail
-?\ : trail  ( -- nt )  context @ @  ;  exit
+[unneeded] trail ?\ : trail  ( -- nt )  context @ @  ;  exit
 
   \ doc{
   \
@@ -135,17 +134,8 @@ need recurse
   \
   \ }doc
 
-need ?(  [unneeded] swap-current ?(
-: swap-current  ( wid1 -- wid2 )
-  get-current swap set-current  ; ?)
-
-  \ Credit:
-  \
-  \ Idea from lpForth.
-
-[unneeded] find-name-in ?(
-: find-name-in  ( ca len wid -- nt | 0 )
-  @ find-name-from  ; ?)
+[unneeded] find-name-in
+?\ : find-name-in  ( ca len wid -- nt | 0 ) @ find-name-from  ;
 
   \ doc{
   \
@@ -159,7 +149,7 @@ need ?(  [unneeded] swap-current ?(
   \
   \ }doc
 
-[unneeded] find ?(
+need ?(  [unneeded] find ?(
 : find  ( ca -- ca 0 | xt 1 | xt -1 )
   dup count find-name dup
   if  nip name>immediate? 1 or negate  then  ; ?)
@@ -176,6 +166,27 @@ need ?(  [unneeded] swap-current ?(
   \
   \ Origin: Forth-83 (Required word set), Forth-94 (CORE,
   \ SEARCH), Forth-2012 (CORE, SEARCH).
+  \
+  \ }doc
+
+[unneeded] swap-current ?(
+: swap-current  ( wid1 -- wid2 )
+  get-current swap set-current  ; ?)
+
+  \ Credit:
+  \
+  \ Idea for `swap-current` from lpForth.
+
+[unneeded] wid-of ?( need >body
+  : wid-of  ( "name" -- wid )  ' >body @  ; ?)
+
+  \ doc{
+  \
+  \ wid-of  ( "name" -- wid )
+  \
+  \ Return the _wid_ associated to vocabulary "name".
+  \
+  \ Origin: eForth's `widof`.
   \
   \ }doc
 

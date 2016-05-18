@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604140107
+  \ Last modified: 201605181529
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,8 +25,11 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-24: Add `need pick`, because `pick` has been moved
-  \ from the kernel to the library.
+  \ 2016-04-24: Need `pick`, whic has been moved to the
+  \ library.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
 
 ( sound-register-port sound-write-port )
 
@@ -54,8 +57,8 @@ need !p  need sound-register-port  need sound-write-port
 
 ( music )
 
-need ms  vocabulary music  current @  also music definitions
-need roll  need pick
+need ms  need roll  need pick  need vocabulary 
+vocabulary music  current @  also music definitions
 
   \ Credit:
   \

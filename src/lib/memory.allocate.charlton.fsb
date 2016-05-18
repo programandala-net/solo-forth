@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604031945
+  \ Last modified: 201605181528
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,6 +83,12 @@
   \ Tell me how much you like it.  <gordon at charlton dot
   \ demon dot co dot uk>
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
+
 ( heap )
 
 
@@ -95,7 +101,7 @@
   \ problem: only words below 0xC000 could manipulate the heap.
 
 also forth definitions
-need wid-of
+need vocabulary  need wid-of
 vocabulary heap-voc  wid-of heap-voc constant heap-wordlist
 also heap-voc definitions
 

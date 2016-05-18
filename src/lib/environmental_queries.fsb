@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201605181523
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,19 +22,25 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2015-11-13: Start: only the Forth-2012 queries, not the
+  \ obsolescent word set queries of Forth-94.
+  \
+  \ 2016-05-18: Update: use `wordlist` instead of `vocabulary`,
+  \ which has been moved to the library.
+
 ( environment? )
 
-need wid-of
-
-vocabulary environment ( -- )
-wid-of environment constant environment-wordlist ( -- wid )
+wordlist constant environment-wordlist ( -- wid )
   \ Wordlist that is searched by environmental queries.
 
 : environment? ( ca len -- false | i*x true )
   environment-wordlist search-wordlist
   if  execute true  else  false  then  ;
 
-also environment definitions
+get-current  environment-wordlist dup >order set-current
 
 8 constant address-unit-bits ( -- n )
   \ Size of one address unit, in bits.
@@ -88,5 +94,6 @@ $50 constant stack-cells ( -- n )
 
   \ XXX TODO -- add "#locals" when needed
 
-forth definitions  previous
+set-order previous
 
+  \ vim: filetype=soloforth

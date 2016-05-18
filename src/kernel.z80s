@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605181045
+; Last modified: 201605181511
 
 include version.z80s
 
@@ -1438,6 +1438,8 @@ paren_set_order.loop_exit
 ; ----------------------------------------------
   _colon_header to_order_,'>ORDER'
 
+  ; XXX TODO -- move to the library
+
 ; doc{
 ;
 ; >order  ( wid -- )
@@ -1459,6 +1461,8 @@ paren_set_order.loop_exit
 
 ; ----------------------------------------------
   _colon_header previous_,'PREVIOUS'
+
+  ; XXX TODO -- move to the library -- but it's used by `asm`
 
 if 1 ; XXX OLD
 
@@ -1610,6 +1614,11 @@ if 1 ; assembler_core_in_kernel
 assembler_vocabulary_link:
   dw forth_vocabulary_link
   dw assembler_nt
+
+endif
+
+; ----------------------------------------------
+if 1 ; assembler_core_in_kernel
 
   _does_header assembler_,'ASSEMBLER',,do_vocabulary
 
@@ -7958,35 +7967,28 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header vocabulary_,'VOCABULARY'
+  _colon_header do_vocabulary_,'DOVOCABULARY'
 
 ; doc{
 ;
-; vocabulary  ( "name" -- )
+; dovocabulary  ( -- )
+; 
+; Change the behaviour of the latest word defined: 
+; Replace the first word list in the search order with
+; the _wid_ stored in its body.
 ;
-; Create a dictionary entry for "name" which specifies a new
-; ordered list of word definitions.  Subsequent execution of
-; "name" replaces the first vocabulary in the search order with
-; "name", or just add it if the search order is empty.
+; See `vocabulary`, `wid>vocabulary`, `wordlist`.
 ;
 ; ----
-; : vocabulary  ( "name" -- )
-;   wordlist create ,
+; : dovocabulary  ( -- )
 ;   does>   ( -- )  ( pfa ) @ context !  ;
 ; ----
 ;
 ; }doc
 
-; XXX TODO -- Improve the documentation.
-
-; XXX TODO -- Check what Forth-83 systems do when the search
-; order is empty and a vocabulary is executed.
-
-  dw wordlist_,create_,comma_
   dw paren_semicolon_code_
 do_vocabulary:
   call do_does
-  ; The following words are to be executed when the vocabulary is invoked.
   dw fetch_,context_,store_
   dw exit_
 
@@ -8391,7 +8393,7 @@ warm_start:
   dw lit_,forth_wordlist_pfa,store_
 if 1 ; assembler_core_in_kernel
   dw lit_,latest_nt_in_assembler_voc.init_value,fetch_
-  dw lit_,assembler_pfa,store_
+  dw lit_,assembler_wordlist_pfa,store_
 endif
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_

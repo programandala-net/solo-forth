@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604242143
+  \ Last modified: 201605181526
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,6 +49,7 @@
 only forth definitions
 
 need don't  need ms  need mode64  need alloted  need recurse
+need vocabulary
 
 vocabulary hanoi  also hanoi definitions
 
