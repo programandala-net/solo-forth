@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605181511
+; Last modified: 201605181559
 
 include version.z80s
 
@@ -8929,7 +8929,7 @@ endif
 ; }doc
 
   dw paren_dot_quote_
-  _string "\r\\ #" ; carriage return, backslash, space and hash
+  _string "\r#" ; carriage return, backslash, space and hash
   dw dec_dot_
   dw exit_
 
