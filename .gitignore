@@ -3,5 +3,5 @@ _meta/
 *.sna
 *.szx
 *.z80
-#*.mgt
-#tmp/
+*.mgt
+tmp/
