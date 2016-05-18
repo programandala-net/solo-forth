@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-05-09
+:revdate: 2016-05-17
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -9,9 +9,27 @@
 == Misc ==
 // {{{
 
-.2016-05-09:
+.2016-05-17:
 
-Compact the memory.misc module
+Version 0.10.0: Improve the search order words, after Forth-2012.
+
+.2016-05-17:
+
+Add conditional compilation to the `user` module.
+
+.2016-05-13:
+
+Version 0.11.0: Convert the sample games to .fs.
+
+.2016-05-13:
+
+Improve `?(` with `refill`, to cross block boundaries?
+This would be needed  for `load-add`. Maybe two versions:
+if `load-app` has been compiled, then compile the improved version of `?(`.
+
+.2016-05-11:
+
+Compact "strings.misc.fsb" and make `lengths` needed.
 
 .2016-05-07:
 
@@ -60,12 +78,20 @@ Add `noname`, analogous to `nextname`, after Gforth.
 Fix Makefile: The loader and the main disk are built when the sources have not
 changed.
 
-Write `behead  ( xt -- )` or `behead  ( "name" -- )`. See DX-Forth and
-others. `hided  ( nt -- )` is already in the kernel.
+Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
+`hided  ( nt -- )` is already in the kernel.
+
+// }}}
+== Data ==
+// {{{
 
 // }}}
 == Compilation ==
 // {{{
+
+.2016-05-15:
+
+Check if `current-latest`, used in the library, can be replaced with `latest`.
 
 .2016-05-09:
 
@@ -110,8 +136,9 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 .2016-03-19:
 
-Separate header flags from the length byte of the name field.
-This way an alias bit will fit, and word names will be actual strings.
+Separate header flags from the length byte of the name field.  This way more
+bits will fit (alias, deferred, special behaviour), and word names will be
+actual strings.
 
 // }}}
 == User interface ==
@@ -193,6 +220,10 @@ ____
 // }}}
 == Documentation ==
 // {{{
+
+.2016-05-11:
+
+Homogenize the stack notation for character/bytes: only _c_.
 
 .2016-04-29:
 
@@ -489,7 +520,7 @@ Simplify the circular string buffer:
   actual buffer.
 - convert `csb0` to a variable, so the buffer can be moved.
 
-.2016-05-09:
+.2016-06-10:
 
 Rename "csb" as "stringer":
 

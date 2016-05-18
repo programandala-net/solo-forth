@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605171630
+; Last modified: 201605181045
 
 include version.z80s
 
@@ -4841,6 +4841,7 @@ do_user:
   _user_variable_header paren_wait_,'(WAIT)'
 
 ; XXX TMP -- from Spectrum Forth-83.
+; XXX TODO --
 
 ; doc{
 ;
@@ -8237,7 +8238,7 @@ dot_version.build
   _string "Solo Forth\rv"
   dw dot_version_
   dw paren_dot_quote_
-  _string "\rBy Marcos Cruz\r(programandala.net), 2015, 2016\r"
+  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2016\r"
 if 1 ; XXX TMP -- during the development
   dw dot_unused_
 endif

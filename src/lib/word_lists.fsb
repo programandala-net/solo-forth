@@ -49,7 +49,7 @@
   \
   \ }doc
 
-need ?(  
+need ?(
 
 [unneeded] wid>name ?(  need need-here  need-here (wid>name)
 : wid>name  ( wid -- nt|0 )  (wid>name) @  ; ?)
@@ -118,7 +118,7 @@ need recurse
   \ `wid>vocabulary`.
   \
   \ }doc
- 
+
   \ Credit:
   \
   \ Adapted from eForth's `widof`.

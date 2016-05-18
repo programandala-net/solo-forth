@@ -37,7 +37,7 @@
   \ History
 
   \ 2016-05-09: First version.
-  
+
 ( hayes-tester )
 
 need where
@@ -79,7 +79,7 @@ create actual-results $20 cells allot
   depth actual-depth @ = if  \ depths match
     depth ?dup if  \ there is something on the stack
       0 do  \ for each stack item
-        actual-results i cells + @ 
+        actual-results i cells + @
           \ compare actual with expected
         <> if  cr ." Incorrect result" test-error leave  then
       loop

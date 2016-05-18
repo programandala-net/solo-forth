@@ -241,7 +241,7 @@ variable loading-app
   \ doc{
   \
   \ loading-app ( -- a )
-  \ 
+  \
   \ A variable that holds a flag: Is an application being
   \ loaded?  This flag is modified by `load-app` and `end-app`.
   \
@@ -269,7 +269,7 @@ variable loading-app
   \ doc{
   \
   \ load-app  ( "name" -- )
-  \ 
+  \
   \ Load an application from the blocks disk.  An application
   \ is a set of blocks that are loaded as a whole. They don't
   \ have block headers except the first one, which contains

@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-05-10
+:revdate: 2016-05-18
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -315,3 +315,60 @@ Released on 2016-05-10.
 - Add `align` and `aligned`.
 - Fix `[char]`.
 
+== 0.9.0 ==
+
+Released on 2016-05-18.
+
+=== Main changes ===
+
+- Finish `refill`, improve `-->`.  Now `refill` supports blocks. `-->`
+  has been rewritten after it.
+- Fix `[else]` with `refill`: Now `[if]` can cross block boundaries.
+- Fix `to`, `2to` and `cto`.
+- Add `load-app`.
+- Fix `parse-all` (was `parse-line`); finish `execute-parsing`.
+- Move `evaluate` and `string>source` to the library: These words are
+  not used in the kernel, and `evaluate` can be rewritten after
+  `execute-parsing`, which is in the library. This saves 28 bytes in
+  the kernel.
+- Add `!>`, `2!>` and `c!>`: Words that change the value of constants,
+  inspired by IsForth's `!>`.
+- Improve `value`, `to` and their variants: The default versions
+  (standard `value` and `to`, and non-standard `2value`, `2to`,
+  `cvalue` and `cto`) have been combined into one single module,
+  rewritten as aliases and documented.  The standard alternative
+  versions of `value`, `2value` and `to` have been documented.
+- Rename non-parsing `value`/`to` to `val`/`toval`.
+
+== Other changes ==
+
+- Fix harmless bug in `locate-reneed`.
+- Improve compilation of "memory.misc.fsb": Remove dependency on the
+  assembler. Add conditional compilation. Compact the blocks. Remove
+  unused code.
+- Rename `@cell+` to `@+`, add `2@+`.
+- Fix `!a`, `!a+`, `c@a+`: The module of the address register has been
+  compacted and documented.  During the process three bugs, caused by
+  wrong Z80 opcodes, were discovered and fixed.
+- Simplify the circular string buffer: So far the internal offset of
+  the buffer was stored before the buffer data. It has been moved to
+  `>csb`, which formerly was a fake variable, a constant that returned
+  the address of the offset, and now is an actual variable. This saves
+  a cell and is more versatile. In total, ten bytes are saved with
+  some related changes.
+- Add `2storer`.
+- Remove `set-latest-lex`: A factor of `interpret` and `compile-only`
+  that was not useful, because there are no more flags to set.
+  Removing it saves 5 bytes.
+- Improve `hided`.
+- Fix requirements of `[cconst]`.
+- Add benchmark for `?throw'.
+- Document `fill`, `erase`, `blank`.
+- Shorten `hex`: A branch saves one cell, more important than speed in
+  this case.  `hex` and `decimal` have been documented.
+- Rename `hided` to the correct `hidden`.
+- Move `>body` and `body>` to the library.
+- Improve `up`: Now `up` is a variable, not a constant that returns
+  the address where the value is stored.  This change is necessary to
+  implement multitasking, and it saves one cell.
+- Improve conditional compilation of word lists tools.

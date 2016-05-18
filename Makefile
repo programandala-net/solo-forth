@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201605032320
+# Last modified: 201605150109
 
 # ==============================================================
 # Author
@@ -176,8 +176,10 @@ bin/fonts/fzx_fonts.tap : $(fzx_fonts)
 		bin2code $$file $$file.tap; \
 	done; \
 	cat *.fzx.tap > fzx_fonts.tap ; \
-	rm -f *.fzx.tap ; \
 	cd -
+	
+	# XXX OLD -- 2016-05-15: was done after `cat`, above
+	# rm -f *.fzx.tap ; \
 
 # ==============================================================
 # The disk images

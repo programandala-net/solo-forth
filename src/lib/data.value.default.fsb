@@ -13,7 +13,7 @@
   \ - Standard `value` and `to` for single-cell values.
   \ - Non-standard `2value` and `2to` for double-cell values.
   \ - Non-standard `cvalue` and `cto` for character values.
-  \ 
+  \
   \ Note: There's a standard implementation of `value`,
   \ `2value` and `to` in module "data.value.forth-2012.fsb",
   \ but it's bigger and slower.
@@ -61,7 +61,7 @@ need alias  need ?(
   \
   \ Create a definition "name" with the following execution
   \ semantics: place _x_ on the stack.
-  \ 
+  \
   \ See `to`.
   \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
@@ -86,7 +86,7 @@ need !>  ' !> alias to immediate ?)
   \ current definition.
   \
   \ Execution: ( x -- )
-  \ 
+  \
   \ Make _x_ the current value of value "name".
   \
   \ }doc
@@ -106,7 +106,7 @@ need !>  ' !> alias to immediate ?)
   \ and Forth-2012. In Solo Forth, words created with this
   \ version of `2value` must be modified using the non-standard
   \ word `2to` instead of `to`.
-  \ 
+  \
   \ See `2to`.
   \
   \ }doc
@@ -129,7 +129,7 @@ need 2!>  ' 2!> alias 2to immediate ?)
   \ current definition.
   \
   \ Execution: ( xd -- )
-  \ 
+  \
   \ Make _xd_ the current value of double-cell value "name".
   \
   \ }doc
@@ -167,7 +167,7 @@ need c!>  ' c!> alias cto immediate ?)
   \ current definition.
   \
   \ Execution: ( c -- )
-  \ 
+  \
   \ Make _c_ the current value of the character value
   \ "name".
   \

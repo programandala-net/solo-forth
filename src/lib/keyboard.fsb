@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605070030
+  \ Last modified: 201605132207
 
   \ -----------------------------------------------------------
   \ Description
@@ -199,9 +199,7 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \ Code adapted from lpForth and Forth Dimensions (volume 10,
   \ number 1, page 29, 1988-05).
 
-need aborted?
-
-[defined] 'cr' ?\ 13 constant 'cr' \ code of carriage return
+need aborted?  need 'cr'
 
 : nuf?  ( -- f )  'cr' aborted?  ;
 
@@ -280,9 +278,9 @@ need aborted?
   \
   \ -----------------------------------------------------------
 
-  \ There are two versions of `kk,` and `kk@`. They depend on the
-  \ value of `/kk`, a constant that holds the bytes ocuppied by
-  \ every key in `kk-ports`, 3 or 4.
+  \ There are two versions of `kk,` and `kk@`. They depend on
+  \ the value of `/kk`, a constant that holds the bytes
+  \ ocuppied by every key in `kk-ports`, 3 or 4.
   \
   \ The application must define `/kk` before loading this
   \ block.

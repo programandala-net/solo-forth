@@ -34,7 +34,7 @@
 
   \ -----------------------------------------------------------
   \ Latest changes
-  
+
   \ 2015-07-20: Copy the code from Z88 CamelForth. Start
   \ adapting it.
   \ 2015-07-21: Finish the adaption. Not tested yet.

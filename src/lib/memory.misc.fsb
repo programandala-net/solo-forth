@@ -476,7 +476,7 @@ code c!toggle-bits  ( b ca -- )
   \
   \ }doc
 
-[unneeded] 2/! 
+[unneeded] 2/!
 ?\ need 2/  : 2/!  ( a -- )  dup @ 2/ swap !  ;
 
   \ doc{

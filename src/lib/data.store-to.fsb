@@ -58,7 +58,7 @@ need ?(  need >body
   \ current definition.
   \
   \ Execution: ( x -- )
-  \ 
+  \
   \ Make _x_ the current value of constant "name".
   \
   \ Origin: IsForth.
@@ -69,7 +69,7 @@ need ?(  need >body
 : 2!>  ( Int: xd "name" -- ) ( Comp: "name" -- ) ( Exe: xd -- )
   ' >body compiling? if    postpone literal postpone 2! exit
                      then  2!  ; immediate ?)
-  
+
   \ doc{
   \
   \ 2!>
@@ -86,7 +86,7 @@ need ?(  need >body
   \ current definition.
   \
   \ Execution: ( xd -- )
-  \ 
+  \
   \ Make _xd_ the current value of double-cell constant "name".
   \
   \ Origin: IsForth `!>`.
@@ -114,7 +114,7 @@ need ?(  need >body
   \ current definition.
   \
   \ Execution: ( c -- )
-  \ 
+  \
   \ Make _c_ the current value of the character constant
   \ "name".
   \

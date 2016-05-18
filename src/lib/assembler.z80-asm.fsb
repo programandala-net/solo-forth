@@ -59,7 +59,7 @@ need ?pairs  need 3dup
 
 : z80-asm  ( -- )  assembler  ;
 
-also assembler definitions base @ hex 
+also assembler definitions base @ hex
 
 -->
 
