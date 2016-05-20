@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605170054
+  \ Last modified: 201605210052
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,6 +68,10 @@
   \
   \ 2016-05-17: Need `>body` and `body>`, which has been moved
   \ to the library.
+  \
+  \ 2016-05-18: Improve `colon-cfa?`. Compact `decode-special`.
+  \ Fix `decode`, which showed the usage instructions before
+  \ checking the word.
 
 ( decode )
 
@@ -111,10 +115,7 @@ variable decode-address  \ in the word being decoded
 
   \ Special cases dispatcher
 
-: decode-special  ( a1 -- a1 | a2 )
-
-  dup @ case
-
+: decode-special  ( a1 -- a1 | a2 )  dup @ case
     ['] compile   of  decode-compile    endof
     ['] lit       of  decode-literal    endof
     ['] 2lit      of  decode-2literal   endof
@@ -126,18 +127,8 @@ variable decode-address  \ in the word being decoded
     ['] (do)      of  decode-branch     endof
     ['] (?do)     of  decode-branch     endof
     ['] (.")      of  decode-sliteral   endof
-
--->
-
-( decode )
-
-    [defined] cslit [if]
-      ['] cslit     of  decode-sliteral  endof
-    [then]
-    [defined] -branch [if]
-      ['] -branch   of  decode-branch     endof
-    [then]
-
+    [undefined] cslit   ?\ ['] cslit   of decode-sliteral endof
+    [undefined] -branch ?\ ['] -branch of decode-branch   endof
   endcase  ;  -->
 
 ( decode )
@@ -149,8 +140,7 @@ variable decode-address  \ in the word being decoded
   \ Is the given xt the end of a definition?
 
 : colon-cfa?  ( cfa -- f )
-  dup c@ $CD <> if  drop false exit  then
-  1+ @  docolon =  ;
+  dup c@ $CD = swap 1+ @ docolon = and  ;
   \ Is _cfa_ a colon definition?
   \ First, its first byte must be $CD (the Z80 call opcode);
   \ second, its jump address must be the colon interpreter.
@@ -195,8 +185,8 @@ variable decode-address  \ in the word being decoded
   cr ." Keys: space=more, q=quit, other=deeper." cr  ;
 
 : decode  ( "name" -- )
-  decode-usage
   defined  ( nt | 0 )  dup 0= -13 ?throw
-  name>body  0 decode-level !  (decode)  ;
+  decode-usage
+  name>body  decode-level off  (decode)  ;
 
   \ vim: filetype=soloforth
