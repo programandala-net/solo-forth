@@ -116,6 +116,15 @@ Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
 == Compilation ==
 // {{{
 
+.2016-05-31:
+
+Write `1literal` and make `interpret` call it instead of `literal`:
+
+----
+: 1literal  ( n | b -- )
+  dup 256 u< if  postpone cliteral exit  then  postpone literal  ;
+----
+
 .2016-05-15:
 
 Check if `current-latest`, used in the library, can be replaced with `latest`.

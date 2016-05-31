@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605311248
+; Last modified: 201605311359
 
 include version.z80s
 
@@ -7748,29 +7748,47 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
+  _code_header byte_question_,'BYTE?'
 
-  ; XXX TODO not used yet
-  ; XXX TODO rename to `byte?` (there's a `char?` used by
-  ; `number?`)
+; doc{
+;
+; byte?  ( n|b -- f )
+;
+; Is _n|b_ an 8-bit number?
+;
+; }doc
 
-  ; _code_header char_question_,'CHAR?'
+  ; Credit:
+  ; Word adapted from DZX-Forth.
 
-  ; ; Credit:
-  ; ; Word adapted from DZX-Forth.
+  pop hl
+  ld l,h
+  jp zero_equals.hl
 
-; ; doc{
-; ;
-; ; char?  ( n -- f )
-; ;
-; ; Is _n_ an 8-bit number?
-; ;
-; ; }doc
+; ----------------------------------------------
+  _colon_header c_literal_,'CLITERAL',immediate+compile_only
 
-  ; ; XXX TODO -- use with `interpret` or `literal`?
+; doc{
+;
+; cliteral  ( b -- )
+;
+; Compile _b_ in the current definition.
+;  
+; This word does the same than `literal` but saves one byte
+; of data space and is a bit faster at run-time (0.97 of
+; execution speed).
+;
+; ----
+; : cliteral  ( b -- )
+;   postpone clit c,  ;
+; ----
+;
+; Origin: Comus.
+;
+; }doc
 
-  ; pop hl
-  ; ld l,h
-  ; jp zero_equals.hl
+  dw compile_,c_lit_,c_comma_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header literal_,'LITERAL',immediate+compile_only
@@ -7781,10 +7799,35 @@ search.failed:
 ;
 ; Compile _n_ in the current definition.
 ;
+; ----
+; : literal  ( n -- )
+;   postpone lit ,  ;
+; ----
+;
 ; }doc
 
   dw compile_,lit_,comma_
   dw exit_
+
+; ----------------------------------------------
+  _colon_header one_literal_,'1LITERAL',immediate+compile_only
+
+; doc{
+;
+; 1literal  ( n|b -- )
+;
+; Compile _n|b_ in the current definition.
+;
+; ----
+; : 1literal  ( n|b -- )
+;   dup byte? if  postpone cliteral exit  then  postpone literal  ;
+; ----
+;
+; }doc
+
+  dw dup_,byte_question_
+  dw zero_branch_,literal_pfa
+  dw branch_,c_literal_pfa
 
 ; ----------------------------------------------
   _colon_header two_literal_,'2LITERAL',immediate+compile_only
@@ -7795,16 +7838,28 @@ search.failed:
 ;
 ; Compile _d_ in the current definition.
 ;
+; ----
+; : 2literal  ( d -- )
+;   postpone 2lit 2,  ;
+; ----
+;
 ; }doc
 
   dw compile_,two_lit_,two_comma_
   dw exit_
 
 ; ----------------------------------------------
+if 1 ; XXX TMP -- during the development
+
   _colon_header depth_,'DEPTH'
+
+  ; XXX TMP -- only during the development, then move to the
+  ; library.
 
   dw sp_fetch_,sp0_,fetch_,minus_,lit_,-2,slash_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header question_dictionary_,'?DICTIONARY'
@@ -7943,7 +7998,7 @@ search.failed:
   dw execute_           ; ...immediate word
   dw compile_comma_     ; ...ordinary word
   dw two_literal_       ; ...2-cell number
-  dw literal_           ; ...1-cell number
+  dw one_literal_       ; ...1-cell number
 
 interpret_table.0:
   dw not_understood_    ; not a number (error)
