@@ -835,6 +835,11 @@ need bench{  need }bench.
   \ 2016-05-31   1000         7        7
   \             10000        68       64
   \             65535       448      417
+  \ (1)         65535       435      417
+
+  \ Notes:
+  \ (1) Same date, after improving `2constant`
+  \     (version 0.10.0-pre.13+20160531).
 
 ( literal-bench cliteral-bench constant-bench cconstant-bench )
 
