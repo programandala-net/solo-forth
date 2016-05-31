@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605181559
+; Last modified: 201605311248
 
 include version.z80s
 
@@ -369,14 +369,18 @@ _literal: macro _n
   ; Note: parenthesis are needed to prevent a strange problem of
   ; Pasmo with signs.
 
+if 0 ; small_number_constants
+
+  ; XXX TMP --
+
   if (_n)=0
-    dw zero_
+;    dw zero_
   else
     if (_n)=1
-      dw one_
+;      dw one_
     else
       if (_n)=2
-        dw two_
+;        dw two_
       else
         if (_n)>=0 && (_n)<=255
           dw c_lit_
@@ -388,6 +392,19 @@ _literal: macro _n
       endif
     endif
   endif
+
+else
+
+  if (_n)>=0 && (_n)<=255
+    dw c_lit_
+    db _n
+  else
+    dw lit_
+    dw _n
+  endif
+
+endif
+
   endm
 
 ; ----------------------------------------------
@@ -682,7 +699,7 @@ np: defl names_bank_address+1
 
 names_pointer:
   ; `$24 +origin`
-  ; First free address in the system bank,  restored by `cold`.
+  ; First free address in the system bank, restored by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw np
@@ -709,7 +726,7 @@ sp0_value:                                    ; +$00
   dw data_stack_bottom
 rp0_value:                                    ; +$02
   dw return_stack_bottom
-paren_wait:                                   ; +$04
+paren_wait:                                   ; +$04 ; XXX OLD
   dw $0000
 width_value:                                  ; +$06
   dw max_word_length
@@ -746,6 +763,8 @@ dpl_value:                                    ; +$22
   dw $0000
 csp_value:                                    ; +$24
   dw $0000
+hash_order_value:                             ; +$26
+  dw $0000
 
 context_value:                                ; +$28..+$36
 
@@ -753,8 +772,10 @@ context_value:                                ; +$28..+$36
   dw root_pfa
   ds (max_search_order-2)*cell
 
+if 0 ; old_search_order
   dw $0000 ; end of search order, required by `find`
             ; XXX TODO improve `find` and remove this
+endif
 
   ; Free space for more user variables:
 
@@ -1301,6 +1322,8 @@ endif
 ; ----------------------------------------------
   _colon_header also_,'ALSO'
 
+if 0 ; old_search_order
+
 ; doc{
 ;
 ; also  ( -- )
@@ -1324,10 +1347,30 @@ endif
   dw c_move_up_
   dw exit_
 
-  ; XXX TODO rewrite after eForth:
-  ; : also ( -- ) get-order over swap 1+ set-order ;
+else
+
+; doc{
+;
+; also  ( -- )
+;
+; Duplicate the vocabulary at the top of the search order.
+;
+; ----
+; : also  ( -- )
+;   get-order over swap 1+ set-order ;
+; ----
+;
+; }doc
+
+  ; XXX TODO -- check the limit
+
+  dw get_order_,over_,swap_,one_plus_,set_order_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
+if 0 ; old_search_order
   _colon_header minus_order_,'-ORDER'
 
 ; doc{
@@ -1351,9 +1394,12 @@ endif
   _literal max_search_order*cell
   dw erase_
   dw exit_
+endif
 
 ; ----------------------------------------------
   _colon_header only_,'ONLY'
+
+if 0 ; old_search_order
 
 ; doc{
 ;
@@ -1372,8 +1418,27 @@ endif
   dw minus_order_,root_,also_
   dw exit_
 
-  ; XXX TODO rewrite `only` and `set-order`?
-  ; : only ( -- ) -1 set-order ;
+else
+
+; doc{
+;
+; only  ( -- )
+;
+; Set the search order to the minimum search order: Forces the
+; `root` vocabulary to be the first and second.
+;
+; ----
+; : only  ( -- )
+;   -1 set-order  ;
+; ----
+;
+; }doc
+
+  _literal -1
+  dw set_order_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header paren_set_order_,'(SET-ORDER)'
@@ -1401,7 +1466,30 @@ paren_set_order.loop_exit
   dw exit_
 
 ; ----------------------------------------------
+if 0 ; old_search_order
+else
+  _colon_header get_order_,'GET-ORDER'
+
+; : get-order  ( -- 0 | widn..wid1 n )
+;   #order @ 0 ?do
+;     #order @ i - 1- cells context + @
+;   loop  #order @  ;
+
+  dw hash_order_,fetch_
+  _literal 0
+  dw paren_question_do_,get_order.exit
+  dw hash_order_,fetch_,i_,minus_,one_minus_,cells_
+  dw context_,plus_,fetch_
+  dw paren_loop_
+get_order.exit
+  dw hash_order_,fetch_
+  dw exit_
+endif
+
+; ----------------------------------------------
   _colon_header set_order_,'SET-ORDER'
+
+if 0 ; old_search_order
 
 ; doc{
 ;
@@ -1424,8 +1512,6 @@ paren_set_order.loop_exit
 ;
 ; }doc
 
-  ; XXX TODO -- rewrite after Gforth
-
   dw question_dup_
   dw zero_branch_,minus_order_pfa ; 0
   dw dup_
@@ -1434,6 +1520,47 @@ paren_set_order.loop_exit
   dw zero_branch_,paren_set_order_pfa ; <>-1
   dw drop_,only_ ; -1
   dw exit_
+
+else
+
+; doc{
+;
+; set-order  ( -1 | 0 | widn..wid1 n -- )
+;
+; Set the search order to the word lists identified by
+; _widn..wid1_. Subsequently, word list _wid1_ will be
+; searched first, and word list _widn_ searched last. If _n_
+; is zero, empty the search order. If _n_ is minus one, set
+; the search order to the implementation-defined minimum
+; search order.
+;
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+;
+; ----
+; : set-order  ( -1 | 0 | widn..wid1 n -- )
+;   dup -1 = if  drop root-wordlist dup 2  then
+;   dup #order !
+;   0 ?do  i cells context + !  loop  ;
+; ----
+;
+; }doc
+
+  dw dup_
+  _literal -1
+  dw equals_
+  dw zero_branch_,set_order.do
+  dw drop_,root_wordlist_,dup_
+  _literal 2
+set_order.do
+  dw dup_,hash_order_,store_
+  _literal 0
+  dw paren_question_do_,set_order.exit
+  dw i_,cells_,context_,plus_,store_
+  dw paren_loop_
+set_order.exit
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header to_order_,'>ORDER'
@@ -1464,7 +1591,7 @@ paren_set_order.loop_exit
 
   ; XXX TODO -- move to the library -- but it's used by `asm`
 
-if 1 ; XXX OLD
+if 0 ; old_search_order
 
 ; doc{
 ;
@@ -1536,6 +1663,8 @@ endif
 
   ; XXX TODO -- move to the library
 
+if 0 ; old_search_order
+
 ; doc{
 ;
 ; seal  ( -- )
@@ -1562,9 +1691,37 @@ endif
   dw context_,fetch_,minus_order_,context_,store_
   dw exit_
 
+else
+
+; doc{
+;
+; seal  ( -- )
+;
+; Change the search order such that only the vocabulary at the
+; top of the search order will be searched.
+;
+; ----
+; : seal  ( -- )
+;   1 #order ! ;
+; ----
+;
+; Remove all word list from the search order stack other than
+; the word list that is currently on top of the search order
+; stack.
+;
+; Origin: Gforth.
+;
+; }doc
+
+  _literal 1
+  dw hash_order_,store_
+  dw exit_
+
   ; XXX TODO -- alternative definition, from Gforth
   ;
   ; : seal  ( -- )  context @ 1 set-order ;
+
+endif
 
 ; ----------------------------------------------
   _variable_header root_wordlist_,'ROOT-WORDLIST'
@@ -1997,7 +2154,9 @@ question_csb_.enough:
 ;
 ; }doc
 
-  dw here_,zero_,comma_
+  dw here_
+  _literal 0
+  dw comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -2575,7 +2734,8 @@ to_number.begin: ; begin
   dw u_m_star_
   dw d_plus_
   dw two_swap_
-  dw one_,slash_string_
+  _literal 1
+  dw slash_string_
   ; dw one_,dpl_,plus_store_ ; XXX TODO why this?
   dw branch_,to_number.begin  ; repeat
 to_number.end:
@@ -2835,8 +2995,6 @@ char_question.not:
 ;
 ; String _ca len_ must be below memory address $C000.
 ;
-; The search is case-sensitive.
-;
 ; }doc
 
   ld (find_name_from.ip_backup),bc ; save the Forth IP
@@ -2882,7 +3040,7 @@ find_name_from.not_a_match:
 
 find_name_from.nt_backup: equ $+1
                                         ;  T  B
-  ld hl,$0000 ; nt                      10 03
+  ld hl,$0000 ; nt                        10 03
   dec hl ; high address of lfa            06 01
   ld d,(hl) ; high part of the next nt    07 01
   dec hl ; low address of lfa             06 01
@@ -2925,8 +3083,6 @@ find_name_from.ip_backup: equ $+1
 ; one (1) if the definition is immediate, minus-one (-1)
 ; otherwise.
 ;
-; The search is case-insensitive.
-;
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; ----
@@ -2949,6 +3105,8 @@ find_name_from.ip_backup: equ $+1
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
 
+if 0 ; old_search_order
+
 ; doc{
 
 ; find-name  ( ca len -- nt | 0 )
@@ -2958,11 +3116,8 @@ find_name_from.ip_backup: equ $+1
 ; searching all the vocabularies in the search order, return
 ; zero.  If the definition is found, return its _nt_.
 ;
-; The search is case-insensitive.
-;
 ; ----
 ; : find-name  ( ca len -- nt | 0 )
-;   2dup uppers
 ;   #vocs 0 do
 ;     context i cells + @  ?dup
 ;     if  @ >r 2dup r> @ find-name-from ?dup
@@ -2976,8 +3131,8 @@ find_name_from.ip_backup: equ $+1
 ;
 ; }doc
 
-;  _chk_type 'find-name -- start' ; XXX INFORMER
-  dw hash_vocs_,zero_
+  dw hash_vocs_
+  _literal 0
   dw paren_do_,find_name.loop_exit ; do
 
   ; ( ca len )
@@ -2999,6 +3154,48 @@ find_name.loop_exit:
 
   dw two_drop_,false_
   dw exit_
+
+else
+
+; doc{
+
+; find-name  ( ca len -- nt | 0 )
+;
+; Find the definition identified by the string _ca len_ in the
+; current search order. If the definition is not found after
+; searching all the vocabularies in the search order, return
+; zero.  If the definition is found, return its _nt_.
+;
+; ----
+; : find-name  ( ca len -- nt | 0 )
+;   #order @ 0 do
+;     2dup context i cells + @ @ find-name-from ?dup
+;     ( ca len nt nt | ca len 0 )
+;     if  nip nip unloop exit  then
+;   loop  2drop false  ;
+; ----
+;
+; Origin: Gforth.
+;
+; }doc
+
+  dw hash_order_,fetch_
+  _literal 0
+  dw paren_do_,find_name.loop_exit ; do
+
+  ; ( ca len )
+  dw two_dup_,context_,i_,cells_,plus_,fetch_,fetch_
+  dw find_name_from_,question_dup_ ; ( ca len nt nt | ca len 0 )
+  dw zero_branch_,find_name.loop
+  dw nip_,nip_,unloop_,exit_
+find_name.loop:
+  dw paren_loop_ ; loop
+find_name.loop_exit:
+
+  dw two_drop_,false_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
@@ -3298,7 +3495,7 @@ if 0 ; XXX UNDER DEVELOPMENT
   dw key_translation_table_
   dw fetch_
   dw question_dup_
-  dw zero_
+  _literal 0
 
 translate_char.do_it
   dw cell_plus_
@@ -3901,7 +4098,9 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
-  dw np_fetch_,store_,two_,np_,plus_store_
+  dw np_fetch_,store_
+  _literal 2
+  dw np_,plus_store_
   dw exit_
 
 ; ----------------------------------------------
@@ -4733,6 +4932,9 @@ do_user:
   add hl,de       ; hl = address of the user variable
   _jp_pushhl
 
+
+if 0 ; small_number_constants
+
 ; ----------------------------------------------
   _c_constant_header zero_,'0'
 
@@ -4747,6 +4949,8 @@ do_user:
   _c_constant_header two_,'2'
 
   db $02
+
+endif
 
 ; ----------------------------------------------
   _c_constant_header b_l_,'BL'
@@ -4802,11 +5006,13 @@ do_user:
   dw blocks_per_disk
 
 ; ----------------------------------------------
+if 0 ; old_search_order
   _c_constant_header hash_vocs_,'#VOCS'
 
   ; XXX TODO -- rename to `/order`?
 
   db max_search_order
+endif
 
 ; ----------------------------------------------
   _colon_header plus_origin_,'+ORIGIN'
@@ -5123,6 +5329,23 @@ endif
   db $24
 
 ; ----------------------------------------------
+if 0 ; old_search_order
+else
+  _user_variable_header hash_order_,'#ORDER'
+
+; doc{
+;
+; #order  ( -- a )
+;
+; User variable that holds the number of word lists in the
+; search order.
+;
+; }doc
+
+  db $26
+endif
+
+; ----------------------------------------------
   _user_variable_header context_,'CONTEXT'
 
 ; doc{
@@ -5133,7 +5356,7 @@ endif
 ;
 ; }doc
 
-  db $26
+  db $28
 
 ; ----------------------------------------------
   _variable_header voc_link_,'VOC-LINK'
@@ -5245,10 +5468,14 @@ source.other:
 ; ----------------------------------------------
   _code_header two_plus_,'2+'
 
-  pop hl
-  inc hl
-  inc hl
-  _jp_pushhl
+              ;  T  B
+              ; -- --
+  pop hl      ; 10 01
+  inc hl      ; 06 01
+  inc hl      ; 06 01
+  _jp_pushhl  ; 11 01 push hl
+              ; 08 02 jp (ix)
+              ; 41 06 TOTAL
 
 ; ----------------------------------------------
   _alias_header cell_minus_,'CELL-',,two_minus_
@@ -5443,7 +5670,9 @@ two_comma.allot:
 ; ----------------------------------------------
   _colon_header c_comma_,'C,'
 
-  dw here_,c_store_,one_,allot_
+  dw here_,c_store_
+  _literal 1
+  dw allot_
   dw exit_
 
 ; ----------------------------------------------
@@ -7590,7 +7819,7 @@ search.failed:
 
   ; XXX UNDER DEVELOPMENT
 
-  dw zero_ ; XXX TMP
+  _literal 0 ; XXX TMP
   _question_throw error.dictionary_overflow
   dw exit_
 
@@ -7972,8 +8201,8 @@ endif
 ; doc{
 ;
 ; dovocabulary  ( -- )
-; 
-; Change the behaviour of the latest word defined: 
+;
+; Change the behaviour of the latest word defined:
 ; Replace the first word list in the search order with
 ; the _wid_ stored in its body.
 ;
@@ -8399,7 +8628,7 @@ endif
   dw lit_,voc_link_pfa,store_
 
   dw only_,forth_,definitions_  ; init the search order
-  dw default_header_ ; restore the default behaviour of `header`
+  dw default_header_ ; set the default behaviour of `header`
   dw decimal_
 
   dw display_,default_colors_,page_
@@ -9175,7 +9404,9 @@ block.end:
   _literal 20
   dw slash_,swap_
   _literal 10
-  dw slash_,one_,and_
+  dw slash_
+  _literal 1
+  dw and_
 
   dw negate_
   _literal 128
@@ -9844,7 +10075,9 @@ if.do:
 ;
 ; }doc
 
-  dw zero_,max_,zero_
+  _literal 0
+  dw max_
+  _literal 0
   dw paren_question_do_,emits.loop_exit ; do
   dw dup_,emit_
   dw paren_loop_ ; loop
@@ -10119,7 +10352,8 @@ hash_s.begin:
 ; ----------------------------------------------
   _colon_header u_dot_,'U.'
 
-  dw zero_,d_dot_
+  _literal 0
+  dw d_dot_
   dw exit_
 
 ; ----------------------------------------------
@@ -10452,7 +10686,9 @@ endif
   dw exit_ ; XXX TODO exit_
 
 at_pfa.last_line:
-  dw one_minus_,dup_,mode32_emit_,mode32_emit_,zero_,mode32_emit_
+  dw one_minus_,dup_,mode32_emit_,mode32_emit_
+  _literal 0
+  dw mode32_emit_
   dw cr_
   dw dup_
   dw lit_,sys_df_cc ; address in display file of print position
@@ -10727,7 +10963,9 @@ do_two_constant:
 ; ----------------------------------------------
   _colon_header u_dot_r_,'U.R'
 
-  dw to_r_,zero_,from_r_,d_dot_r_
+  dw to_r_
+  _literal 0
+  dw from_r_,d_dot_r_
   dw exit_
 
 ; ----------------------------------------------
