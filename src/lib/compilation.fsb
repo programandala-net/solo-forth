@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605311341
+  \ Last modified: 201605312025
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,7 +65,7 @@
   \ 2016-05-18: Fix `body>` and `>body`: their codes were
   \ exchanged.
   \ 2016-05-31: Update: `cliteral` has been moved to the
-  \ kernel.
+  \ kernel. Add `''` and `>>name`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -124,7 +124,7 @@ need str=
 ?\ need name>link  : name<name  ( nt1 -- nt2 )  name>link @s  ;
   \ Get the previous _nt2_ from _nt1_.
 
-( >>link name>> >body body> )
+( >>link name>> >>name '' >body body> )
 
 [unneeded] >>link
 ?\ need alias  ' cell+ alias >>link  ( xtp -- lfa ) exit
@@ -132,7 +132,13 @@ need str=
 [unneeded] name>>
 ?\ : name>>  ( nt -- xtp )  [ 2 cells ] literal -  ; exit
 
+[unneeded] >>name
+?\ : >>name  ( xtp -- nt )  [ 2 cells ] literal +  ; exit
+
 need ?(
+
+[unneeded] '' ?(  need need-here  need-here name>>
+: ''  ( "name" -- xtp )  defined dup ?defined name>>  ; exit ?)
 
 [unneeded] >body ?(
 code >body  ( xt -- pfa )
