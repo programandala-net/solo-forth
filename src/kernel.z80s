@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605311832
+; Last modified: 201605311859
 
 include version.z80s
 
@@ -368,6 +368,8 @@ _literal: macro _n
 
   ; Note: parenthesis are needed to prevent a strange problem of
   ; Pasmo with signs.
+
+  ; XXX TODO -- compile `true` for -1? This would save 5 cells.
 
   if (_n)=0
     dw zero_
@@ -4264,23 +4266,28 @@ zero_equals.hl:
   ld a,l
   or h
   jp z,true_
-  ; Execution continues in `false`:
+  ; Execution continues in `0`, which is `false`:
 
 ; ----------------------------------------------
-  _code_header false_,'FALSE'
+  _code_header zero_,'0'
+
+; doc{
+;
+; 0  ( -- 0 )
+;
+; }doc
+
+  ld hl,0
+  _jp_pushhl
+
+; ----------------------------------------------
+  _alias_header false_,'FALSE',,zero_
 
 ; doc{
 ;
 ; false  ( -- false )
 ;
 ; }doc
-
-  ; XXX TODO -- make this an alias of `0` and create a
-  ; label for the Z80 jumps to the code field address of
-  ; `false`.
-  
-  ld hl,false
-  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
@@ -4422,8 +4429,8 @@ if size_optimization
   ; Code from Spectrum Forth-83.
   ;
   ; Comparison to the Abersoft Forth version:
-  ; Speed: 1.04
-  ; Size:  -1
+  ; Time:  1.04
+  ; Size: -1
 
                                                 ; T   B
                                                 ; --- --
@@ -4540,8 +4547,8 @@ endif
 ;
 ; Add _n|u_ to the single-cell number at _a_.
 ;
-; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
-; Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -4898,22 +4905,6 @@ do_user:
   ld hl,(up_pfa)  ; hl = address of the user area (the value of `up`)
   add hl,de       ; hl = address of the user variable
   _jp_pushhl
-
-
-; ----------------------------------------------
-  _alias_header zero_,'0',,false_
-
-; doc{
-;
-; 0  ( -- 0 )
-;
-; }doc
-
-; Note: This word is an alias of `false`, instead of the other
-; way around (what would be more logical), because the code
-; field address of `false` is used several times by Z80 jumps.
-; In practice there's no difference, which word is the alias of
-; the other word.
 
 ; ----------------------------------------------
   _code_header one_,'1'
