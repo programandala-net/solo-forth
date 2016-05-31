@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605311859
+; Last modified: 201605312014
 
 include version.z80s
 
@@ -369,23 +369,25 @@ _literal: macro _n
   ; Note: parenthesis are needed to prevent a strange problem of
   ; Pasmo with signs.
 
-  ; XXX TODO -- compile `true` for -1? This would save 5 cells.
-
-  if (_n)=0
-    dw zero_
+  if (_n)=(-1)
+    dw minus_one_
   else
-    if (_n)=1
-      dw one_
+    if (_n)=0
+      dw zero_
     else
-      if (_n)=2
-        dw two_
+      if (_n)=1
+        dw one_
       else
-        if (_n)>=0 && (_n)<=255
-          dw c_lit_
-          db _n
+        if (_n)=2
+          dw two_
         else
-          dw lit_
-          dw _n
+          if (_n)>=0 && (_n)<=255
+            dw c_lit_
+            db _n
+          else
+            dw lit_
+            dw _n
+          endif
         endif
       endif
     endif
@@ -5692,16 +5694,25 @@ two_comma.allot:
   ; Execution continues in `true`:
 
 ; ----------------------------------------------
-  _code_header true_,'TRUE'
+  _code_header minus_one_,'-1'
+
+; doc{
+;
+; -1  ( -- -1 )
+;
+; }doc
+
+  ld hl,-1
+  _jp_pushhl
+
+; ----------------------------------------------
+  _alias_header true_,'TRUE',,minus_one_
 
 ; doc{
 ;
 ; true  ( -- true )
 ;
 ; }doc
-
-  ld hl,true
-  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header less_than_,'<'

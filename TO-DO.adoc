@@ -9,6 +9,17 @@
 == Misc ==
 // {{{
 
+.2016-05-31:
+
+----
+code -1=  ( n -- f )
+    pop hl
+    dec hl
+    jp z,true_
+    jp false_
+----
+
+
 .2016-05-18:
 
 Remove the `root` word list. Set the minimum search order to `forth`.
@@ -115,6 +126,15 @@ Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
 // }}}
 == Compilation ==
 // {{{
+
+.2016-05-31:
+
+`''` to get the execution token pointer of a name, so the actual name of an alias could be get
+this way:
+
+----
+'' wordname >>name .name
+----
 
 .2016-05-15:
 
