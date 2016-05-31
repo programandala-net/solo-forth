@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605311642
+; Last modified: 201605311743
 
 include version.z80s
 
@@ -369,18 +369,14 @@ _literal: macro _n
   ; Note: parenthesis are needed to prevent a strange problem of
   ; Pasmo with signs.
 
-if 0 ; small_number_constants
-
-  ; XXX TMP --
-
   if (_n)=0
-;    dw zero_
+    dw zero_
   else
     if (_n)=1
-;      dw one_
+      dw one_
     else
       if (_n)=2
-;        dw two_
+        dw two_
       else
         if (_n)>=0 && (_n)<=255
           dw c_lit_
@@ -392,18 +388,6 @@ if 0 ; small_number_constants
       endif
     endif
   endif
-
-else
-
-  if (_n)>=0 && (_n)<=255
-    dw c_lit_
-    db _n
-  else
-    dw lit_
-    dw _n
-  endif
-
-endif
 
   endm
 
@@ -4302,13 +4286,16 @@ zero_equals.hl:
   ; Execution continues in `false`:
 
 ; ----------------------------------------------
-  _alias_header false_,'FALSE',,zero_
+  _code_header false_,'FALSE'
 
 ; doc{
 ;
 ; false  ( -- false )
 ;
 ; }doc
+  
+  ld hl,false
+  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
@@ -4935,7 +4922,7 @@ do_user:
 
 
 ; ----------------------------------------------
-  _code_header zero_,'0'
+  _alias_header zero_,'0',,false_
 
 ; doc{
 ;
@@ -4943,22 +4930,35 @@ do_user:
 ;
 ; }doc
 
-  ld hl,0
+; Note: This word is an alias of `false`, instead of the other
+; way around (what would be more logical), because the code
+; field address of `false` is used several times by Z80 jumps.
+; In practice there's no difference, which word is the alias of
+; the other word.
+
+; ----------------------------------------------
+  _code_header one_,'1'
+
+; doc{
+;
+; 1  ( -- 1 )
+;
+; }doc
+
+  ld hl,1
   _jp_pushhl
 
-if 0 ; small_number_constants
-
 ; ----------------------------------------------
-  _c_constant_header one_,'1'
+  _code_header two_,'2'
 
-  db $01
+; doc{
+;
+; 2  ( -- 2 )
+;
+; }doc
 
-; ----------------------------------------------
-  _c_constant_header two_,'2'
-
-  db $02
-
-endif
+  ld hl,2
+  _jp_pushhl
 
 ; ----------------------------------------------
   _c_constant_header b_l_,'BL'
@@ -5567,9 +5567,18 @@ source.other:
 ; }doc
 
 ; ----------------------------------------------
-  _c_constant_header cell_,'CELL'
+  _alias_header cell_,'CELL',,two_
 
-  db cell
+; doc{
+;
+; cell  ( -- n )
+;
+; _n_ is the size in address units of one cell. This word
+; returns 2 in Solo Forth.
+;
+; Origin: Comus.
+;
+; }doc
 
 ; ----------------------------------------------
   _colon_header here_,'HERE'
@@ -7781,7 +7790,7 @@ search.failed:
 ; cliteral  ( b -- )
 ;
 ; Compile _b_ in the current definition.
-;  
+;
 ; This word does the same than `literal` but saves one byte
 ; of data space and is a bit faster at run-time (0.97 of
 ; execution speed).
