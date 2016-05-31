@@ -11,14 +11,47 @@
 
 .2016-05-31:
 
+The idiom `-1 =` is used 3 times in the kernel. It could be defined this way:
+
 ----
-code -1=  ( n -- f )
-    pop hl
-    dec hl
-    jp z,true_
-    jp false_
+; ----------------------------------------------
+  _code_header minus_one_equals_,'-1='
+
+  pop hl
+minus_one_equals.hl:
+  ld a,$FF
+  cp h
+  jp nz,false_
+  cp l
+  jp nz,false_
+  jp true_
+
+  ; 14 B
 ----
 
+Or:
+
+----
+; ----------------------------------------------
+  _code_header rminus_one_equals_,'-1='
+
+  pop hl
+minus_one_equals.hl:
+  ld a,$FF
+  cp h
+  jr nz,false_
+  cp l
+  jr nz,false_
+  jr true_
+
+  ; 11 B
+
+----
+
+And an alias `true=` could be defined.
+
+6 bytes would be saved in the kernel thanks to any of these definitions, but
+they need 14 or 11 bytes...
 
 .2016-05-18:
 

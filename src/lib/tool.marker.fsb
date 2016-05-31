@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604251942
+  \ Last modified: 201606010102
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,9 @@
   \
   \ 2016-04-25: First working version of `marker`. Move
   \ `possibly` to the module "compilation.fsb".
+  \
+  \ 2016-06-01: Update: `there` was moved from the kernel to
+  \ the library.
 
 ( marker )
 
@@ -84,7 +87,7 @@
   \ Code partly inspired by m3forth's `marker`:
   \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
 
-need get-order  need @cell+  need nn,  need nn@
+need get-order  need @cell+  need nn,  need nn@  need there
 
 : @order  ( a -- )  nn@ set-order  ;
 

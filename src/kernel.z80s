@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605312014
+; Last modified: 201606010050
 
 include version.z80s
 
@@ -4990,6 +4990,7 @@ if 0 ; old_search_order
   _c_constant_header hash_vocs_,'#VOCS'
 
   ; XXX TODO -- rename to `/order`?
+  ; XXX TODO -- useful also for the new search order, for checks
 
   db max_search_order
 endif
@@ -5567,22 +5568,6 @@ source.other:
 ; }doc
 
   dw dp_,fetch_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header there_,'THERE'
-
-  ; XXX TODO -- move to the library?
-
-; doc{
-;
-; there  ( a -- )
-;
-; Set the address of the data-space pointer.
-;
-; }doc
-
-  dw dp_,store_
   dw exit_
 
 ; ----------------------------------------------

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605312025
+  \ Last modified: 201606010058
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,6 +66,7 @@
   \ exchanged.
   \ 2016-05-31: Update: `cliteral` has been moved to the
   \ kernel. Add `''` and `>>name`.
+  \ 2016-06-01: Move `there` from the kernel. Update.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -232,7 +233,19 @@ need ?(
   \
   \ }doc
 
-( ?pairs [compile] smudge smudged )
+( there ?pairs [compile] smudge smudged )
+
+[unneeded] there
+?\ : there  ( a -- )  dp !  ;  exit
+
+  \ doc{
+  \
+  \ there  ( a -- )
+  \
+  \ Set _a_ as the address of the data-space pointer.
+  \ A non-standard counterpart of `here`.
+  \
+  \ }doc
 
 [unneeded] ?pairs
 ?\ : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;  exit
@@ -288,11 +301,11 @@ need ?(
 
 ( ]l ]2l exec eval save-here restore-here )
 
-need [if]
+need ?(
 
-[needed] ]l [if]
+[needed] ]l ?(
 
-: ]l  ( x -- )  ] postpone literal  ; immediate compile-only
+: ]l  ( x -- )  ] postpone literal  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -302,9 +315,7 @@ need [if]
   \
   \ }doc
 
-[then]
-
-[needed] ]2l [if]
+[needed] ]2l ?(
 
 : ]2l  ( xd -- )  ] postpone 2literal  ; immediate compile-only
 
@@ -316,17 +327,15 @@ need [if]
   \
   \ }doc
 
-[then]
+?)
 
-[needed] save-here [needed] restore-here or [if]
+[needed] save-here [needed] restore-here or ?(  need there
 
 variable here-backup
 : save-here  ( -- )  here here-backup !  ;
-: restore-here  ( -- )  here-backup @ there  ;
+: restore-here  ( -- )  here-backup @ there  ;  ?)
 
   \ XXX TODO -- behead `here-backup`
-
-[then]
 
 ( possibly exec eval )
 

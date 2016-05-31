@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604262043
+  \ Last modified: 201606010101
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,6 +33,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-06-01: Update: `there` was moved from the kernel to
+  \ the library.
+
 ( transient[ )
 
   \ XXX UNDER DEVELOPMENT
@@ -43,7 +49,7 @@
   \ `latest`) must be used instead of `latest`, which now
   \ (2016-04-26) is standard.
 
-need >>link
+need >>link  need there
 
 variable old-dp
 variable old-np
@@ -117,4 +123,5 @@ variable old-voc-link
   \ }doc
 
   \ See: `transient[`, `-transient`.
+
   \ vim: filetype=soloforth
