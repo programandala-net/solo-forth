@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605311757
+  \ Last modified: 201605311822
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,7 +48,7 @@
   \ 2016-05-31: Add new benchmarks for `cliteral`, `literal`,
   \ `2literal`, `2constant`, `constant`, `cconstant` and code
   \ constants (like `true` and the new versions of `0`, `1` and
-  \ `2`).
+  \ `2`). Combine previous code.
 
 ( number-base-bench )
 
@@ -809,32 +809,6 @@ noop noop noop noop noop noop noop noop noop noop noop noop ;
 
   \ 1 frame = 50th of second
 
-( constant-bench )
-
-  \ Compare a constant and a literal.
-
-  \ 2016-02-16: New version.
-
-need bench{ need }bench.
-
-3 constant const1
-
-: bench1  ( n -- )
-  bench{ 0 do  const1 drop  loop }bench.  ;
-
-: bench2  ( n -- )
-  bench{ 0 do  3 drop  loop }bench.  ;
-
-: constant-bench  ( n -- )  dup cr bench1 cr bench2  ;
-
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ---------------------------------
-  \                       bench1 bench2
-  \                       ------ ------
-  \  1000                      6      5
-  \ 52000                    307    284
-  \ 65535                    386    358
-
 ( 2constant-bench 2literal-bench )
 
 need bench{  need }bench.
@@ -866,7 +840,10 @@ need bench{  need }bench.
 
 need bench{  need }bench.
 
-  \ 2016-05-31
+  \ 2015: `constant` vs `cconstant`.
+  \ 2016-02-16: `constant` vs `literal`.
+  \ 2016-05-31: Combined, improved and completed with
+  \ `cliteral` and code constants.
 
 1000 constant thousand  100 cconstant hundred
 
@@ -901,11 +878,21 @@ need bench{  need }bench.
   \ ----------  ----- -------------------------------------
   \                   const. cconst. code const. lit. clit.
   \                   ------ ------- ----------- ---- -----
-  \ 2015 (*)    32000            251         236
+  \
+  \ 2015 (1)    32000            251         236
+  \
+  \ 2015-02-16   1000      6                        5 
+  \             52000    307                      284
+  \             65535    386                      358
+  \
   \ 2016-05-31  32000    189     187         161  173   169
   \             65535    387     383         330  355   346
+  \ (2)         65535    371     366         330  355   346
 
-  \ (*) With the old fig-Forth `do loop` structure.
+  \ Notes:
+  \ (1) With the old fig-Forth `do loop` structure.
+  \ (2) Same date, after improving `constant` and `cconstant`
+  \     (version 0.10.0-pre.12+20160531).
 
 ( d*-bench )
 

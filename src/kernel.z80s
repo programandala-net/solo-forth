@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605311743
+; Last modified: 201605311819
 
 include version.z80s
 
@@ -4240,6 +4240,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   ld (return_stack_pointer),hl
   ; Execution continues in `2@`:
 
+  ; XXX TODO -- move `2constant` here
+
 ; ----------------------------------------------
   _code_header two_fetch_,'2@'
 
@@ -4675,26 +4677,6 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header fetch_,'@'
-
-  pop hl
-fetch.hl:
-  ld e,(hl)
-  inc hl
-  ld d,(hl)
-  push de
-  _jp_next
-
-; ----------------------------------------------
-  _code_header c_fetch_,'C@'
-
-  pop hl
-c_fetch.hl:
-  ld l,(hl)
-  ld h,$00
-  _jp_pushhl
-
-; ----------------------------------------------
   _code_header two_store_,'2!'
 
   pop hl
@@ -4849,10 +4831,16 @@ do_colon:
   dw create_,c_comma_
   dw paren_semicolon_code_
 do_c_constant:
-  pop hl
-  jp c_fetch.hl
+  ; Execution continues in `c@`:
 
-; XXX TODO -- improve: run into `c@`
+; ----------------------------------------------
+  _code_header c_fetch_,'C@'
+
+  pop hl
+c_fetch.hl:
+  ld l,(hl)
+  ld h,$00
+  _jp_pushhl
 
 ; ----------------------------------------------
   _colon_header constant_,'CONSTANT'
@@ -4860,10 +4848,18 @@ do_c_constant:
   dw create_,comma_
   dw paren_semicolon_code_
 do_constant:
-  pop hl
-  jp fetch.hl
+  ; Execution continues in `@`:
 
-; XXX TODO -- improve: run into `@`
+; ----------------------------------------------
+  _code_header fetch_,'@'
+
+  pop hl
+fetch.hl:
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  push de
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header variable_,'VARIABLE'
