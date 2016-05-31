@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201605311359
+; Last modified: 201605311642
 
 include version.z80s
 
@@ -4302,16 +4302,13 @@ zero_equals.hl:
   ; Execution continues in `false`:
 
 ; ----------------------------------------------
-  _code_header false_,'FALSE'
+  _alias_header false_,'FALSE',,zero_
 
 ; doc{
 ;
 ; false  ( -- false )
 ;
 ; }doc
-
-  ld hl,false
-  _jp_pushhl
 
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
@@ -4868,6 +4865,8 @@ do_c_constant:
   pop hl
   jp c_fetch.hl
 
+; XXX TODO -- improve: run into `c@`
+
 ; ----------------------------------------------
   _colon_header constant_,'CONSTANT'
 
@@ -4876,6 +4875,8 @@ do_c_constant:
 do_constant:
   pop hl
   jp fetch.hl
+
+; XXX TODO -- improve: run into `@`
 
 ; ----------------------------------------------
   _colon_header variable_,'VARIABLE'
@@ -4933,12 +4934,19 @@ do_user:
   _jp_pushhl
 
 
-if 0 ; small_number_constants
-
 ; ----------------------------------------------
-  _c_constant_header zero_,'0'
+  _code_header zero_,'0'
 
-  db $00
+; doc{
+;
+; 0  ( -- 0 )
+;
+; }doc
+
+  ld hl,0
+  _jp_pushhl
+
+if 0 ; small_number_constants
 
 ; ----------------------------------------------
   _c_constant_header one_,'1'
