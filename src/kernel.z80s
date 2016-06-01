@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201606010050
+; Last modified: 201606011410
 
 include version.z80s
 
@@ -2123,6 +2123,17 @@ question_csb_.enough:
   ld l,a
   or h
   jp nz,execute_hl
+  ; Execution continues in `noop`:
+
+; ----------------------------------------------
+  _code_header noop_,'NOOP'
+
+; doc{
+;
+; noop  ( -- )
+;
+; }doc
+
   _jp_next
 
 ; ----------------------------------------------
@@ -2349,6 +2360,10 @@ question_csb_.enough:
 ; ----------------------------------------------
   _colon_header plus_loop_,'+LOOP',immediate+compile_only
 
+  ; XXX TODO -- move to the library
+  ; (it's only used by `.s`, which will be removed from the kernel
+  ; after the development)
+
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
@@ -2458,7 +2473,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; ----------------------------------------------
   _code_header leave_,'LEAVE'
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library?
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -4807,17 +4822,6 @@ do_colon:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header noop_,'NOOP'
-
-; doc{
-;
-; noop  ( -- )
-;
-; }doc
-
-  _jp_next
-
-; ----------------------------------------------
   _colon_header c_constant_,'CCONSTANT'
 
   dw create_,c_comma_
@@ -5084,7 +5088,9 @@ endif
   db $06
 
 ; ----------------------------------------------
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  
+  ; XXX TMP -- during the development
 
   _user_variable_header warnings_,'WARNINGS'
 
@@ -6033,6 +6039,9 @@ to_name.next:
 
 ; ----------------------------------------------
   _colon_header c_fetch_s_,'C@S'
+
+  ; XXX TODO -- move to the library?
+  ; Used only by an alternative version of `lex?`
 
 ; doc{
 ;
@@ -7465,7 +7474,9 @@ error.message:
   dw dup_,zero_equals_
   _question_throw error.zero_length_name
 
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  
+  ; XXX TMP -- during the development
 
   dw warnings_,fetch_
   dw zero_branch_,header_comma.continue
@@ -7832,7 +7843,9 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  
+  ; XXX TMP -- during the development
 
   _colon_header depth_,'DEPTH'
 
@@ -8328,6 +8341,11 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header paren_,'(',immediate
 
+  ; XXX TODO -- make this word deferred and factor its default
+  ; behaviour to `core-(` (Forth-2012 CORE word set), in order
+  ; to let `load-app` change it to `file-(` (Forth-2012 FILE
+  ; word set).
+
 ; doc{
 ;
 ; (  ( f "ccc<paren>" -- )
@@ -8520,13 +8538,15 @@ dot_version.build
   dw dot_version_
   dw paren_dot_quote_
   _string "\rBy Marcos Cruz\r(programandala.net), 2015-2016\r"
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  ; XXX TMP -- during the development
   dw dot_unused_
 endif
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  ; XXX TMP -- during the development
   _colon_header dot_unused_,'.UNUSED'
 
 ; doc{
@@ -10395,7 +10415,8 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  ; XXX TMP -- during the development
 
   _colon_header dot_s_,'.S'
 
@@ -10669,7 +10690,8 @@ system_stack_pointer: equ $+1
   dw exit_
 
 ; ----------------------------------------------
-if 1 ; XXX TMP -- during the development
+if 1 ; developing
+  ; XXX TMP -- during the development
 
   _colon_header where_,'WHERE'
 

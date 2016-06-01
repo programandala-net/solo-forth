@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-05-31
+:revdate: 2016-06-01
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -301,6 +301,10 @@ ____
 == Documentation ==
 // {{{
 
+.2016-06-01:
+
+Put the "Origin" section of the glossary entries at the end of each entry.
+
 .2016-05-11:
 
 Homogenize the stack notation for character/bytes: only _c_.
@@ -445,6 +449,11 @@ Change: modify `expect` after Spectrum Forth-83.
 // }}}
 == Parsing ==
 // {{{
+
+.2016-06-01:
+
+When loading an app with `load-app`, make `(` behave like in the
+Forth-2012 FILE word set.
 
 .2015-06-17:
 
