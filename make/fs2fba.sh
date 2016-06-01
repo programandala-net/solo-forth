@@ -12,12 +12,12 @@
 # makes it possible to write a Forth program in ordinary text format,
 # without the constraints imposed by the intermediate format FSB, and
 # then integrate it into the Solo Forth library disk, in order to load
-# it as a whole with `load-section name`.
+# it as a whole with `load-app name`.
 #
 # The only requisite of the source is that its first actual line of
 # code (the first line that is not empty or an FSB metacomment) must
 # be a block header, with a name as identifier (a word surrounded by
-# spaces), which will be used with `load-section`.
+# spaces), which will be used with `load-app`.
 
 # --------------------------------------------------------------
 # Author
@@ -35,6 +35,7 @@
 # History
 
 # 2016-05-13: Start, based on <fs2fb.sh>, by the same author.
+# 2016-06-01: Fix description.
 
 # --------------------------------------------------------------
 

@@ -11,13 +11,16 @@
 # This program converts a Forth source file blocks format to an
 # MGT disk image.
 #
-# This is an alternative to fsb2mgt.sh (part of fsb, see
-# http://programandala.net/en.program.fsb2.html), which checks
+# This is an alternative to fsb-mgt.sh (part of fsb, see
+# http://programandala.net/en.program.fsb.html), and fsb2-mgt.sh
+# (part of fsb2, see
+# http://programandala.net/en.program.fsb2.html), which check
 # the blocks of the FSB before creating the MGT.
 #
 # fb2mgt.sh does not check the blocks of the source file.  It is
-# intended to be used in combination with <fs2fsb.sh>.  some of
-# which may have no header lines.
+# intended to be used in combination with <fs2fba.sh>. The FBA
+# format is a Forth blocks file, but only the first line is a
+# block header.
 #
 # Usage
 #
@@ -40,6 +43,8 @@
 
 # 2016-05-13: Extracted from fsb2-mgt.sh, a converter included
 # in fsb2 (http://programandala.net/en.program.fsb2.html).
+#
+# 2016-06-01: Fix description.
 
 # --------------------------------------------------------------
 # Error checking
