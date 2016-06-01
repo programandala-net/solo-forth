@@ -303,6 +303,25 @@ ____
 
 .2016-06-01:
 
+Change the stack notation back to classic Forth?:
+
+- xt -> cfa
+- nt -> nfa
+- pfa
+- lfa
+
+And change also:
+
+- xtp -> cfaa
+
+The problem with the standard notation is it does not has alternatives to pfa
+and lfa, because they are system dependent and may not exist in all systems.
+This make the notations xt, nt, pfa, lfa look heterogeneous. Beside, xt and nt
+are abstract terms, while cfa and nfa are precise definitions for the
+implemention.
+
+.2016-06-01:
+
 Put the "Origin" section of the glossary entries at the end of each entry.
 
 .2016-05-11:

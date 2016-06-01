@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201606011410
+; Last modified: 201606011752
 
 include version.z80s
 
@@ -1345,15 +1345,18 @@ else
 ;
 ; ----
 ; : also  ( -- )
-;   get-order over swap 1+ set-order ;
+;   get-order over swap 1+ set-order  ;
 ; ----
 ;
 ; }doc
 
-  ; XXX TODO -- check the limit
+  ; XXX TODO -- check the limit, see Gforth
 
   dw get_order_,over_,swap_,one_plus_,set_order_
   dw exit_
+
+  ; XXX TODO -- in Gforth:
+  ; : also  ( -- )  context @ >order  ;
 
 endif
 
@@ -1412,8 +1415,7 @@ else
 ;
 ; only  ( -- )
 ;
-; Set the search order to the minimum search order: Forces the
-; `root` vocabulary to be the first and second.
+; Set the search order to the minimum search order.
 ;
 ; ----
 ; : only  ( -- )
@@ -1533,6 +1535,9 @@ else
 ;
 ; }doc
 
+  ; XXX TODO -- Factor `root-wordlist dup 2` to `only-order`?
+  ; Probably it will be changed to `forth-wordlist 1` anyway.
+
   dw dup_
   _literal -1
   dw equals_
@@ -1569,7 +1574,9 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- add check to `also`; see Gforth
+  ; XXX TODO -- alternative:
+  ;
+  ; : >order  ( wid -- )  get-order 1+ swap set-order  ;
 
   dw also_,context_,store_
   dw exit_
@@ -2241,7 +2248,7 @@ question_csb_.enough:
 ; IP to branch forward or backward.
 ;
 ; Note: This is not Forth-83's `?branch`, which is equivalent to
-; '0branch` in fig-Forth's and Solo Forth.
+; '0branch` in fig-Forth and Solo Forth.
 ;
 ; }doc
 
@@ -3171,7 +3178,7 @@ else
 ;
 ; ----
 ; : find-name  ( ca len -- nt | 0 )
-;   #order @ 0 do
+;   #order @ 0 ?do
 ;     2dup context i cells + @ @ find-name-from ?dup
 ;     ( ca len nt nt | ca len 0 )
 ;     if  nip nip unloop exit  then
@@ -3184,7 +3191,7 @@ else
 
   dw hash_order_,fetch_
   _literal 0
-  dw paren_do_,find_name.loop_exit ; do
+  dw paren_question_do_,find_name.loop_exit ; do
 
   ; ( ca len )
   dw two_dup_,context_,i_,cells_,plus_,fetch_,fetch_
