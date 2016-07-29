@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020257
+  \ Last modified: 201607291908
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \ 2016-05-01: Add `clshift`.
   \ 2016-05-02: Compact the blocks to save space. Remove `sgn`
   \ because `polarity` does the same already.
+  \ 2016-07-14: Fix and complete credits of `any?`.
+  \ 2016-07-29: Add `gcd`.
 
 ( under+ +under )
 
@@ -177,6 +179,14 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
 [unneeded] u%
 ?\ : u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
   \ _u1_ is percentage _u3_ of _u2_
+
+[unneeded] gcd  ?exit
+
+: gcd  ( n1 n2 -- n3 )  begin  ?dup  while  tuck mod  repeat  ;
+  \ Greatest common divisor.
+  \
+  \ Code by Will Baden (1986-04-10), from:
+  \ <http://atariwiki.strotmann.de/wiki/Wiki.jsp?page=Local%20Variables>
 
 ( polarity <=> )
 
@@ -668,13 +678,15 @@ need [if]
   \
   \ Is any _x1..xn_ equal to _x0_?
   \
-  \ Origin: F83.
+  \ Origin: John A. Peters' tools for CP/M F83 2.1.1, 1984.
   \
   \ }doc
 
   \ Credit:
   \
-  \ Code from F83.
+  \ Originally written by John A. Peters in 1984 as part of a
+  \ tool set for the CP/M implementation of Laxen&Perry's F83
+  \ 2.1.1.
 
 [then]
 
