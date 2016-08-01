@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605101657
+  \ Last modified: 201608011918
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,8 +39,9 @@
   \ 2016-05-10: Remove the dependency on the assembler.
   \ Compact the blocks. Remove unfinished words from cmForth.
   \ Rename `@cell+` to `@+`. Add `2@+`.
+  \ 2016-08-01: Fix header line.
 
-( -! c+! c-! c@+ )
+( -! c+! c-! )
 
 need ?(
 
