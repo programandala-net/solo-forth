@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605181529
+  \ Last modified: 201608011923
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,12 +31,20 @@
   \ 2016-05-18: Need `vocabulary`, which has been moved to the
   \ library.
 
-( sound-register-port sound-write-port )
+( sound-register-port sound-write-port !sound )
 
-65533 constant sound-register-port
-49149 constant sound-write-port
+#65533 constant sound-register-port
+#49149 constant sound-write-port
 
-( !sound vol shutup noise )
+[unneded] !sound ?exit
+
+need !p
+
+: !sound  ( b1 b2 -- )
+  sound-register-port !p sound-write-port !p  ;
+  \ Set sound register _b2_ (0...13) to value _b1_.
+
+( vol shutup noise )
 
   \ Credit:
   \
@@ -44,21 +52,18 @@
 
   \ XXX TODO finish, document and test
 
-need !p  need sound-register-port  need sound-write-port
+need !sound
 
-: !sound  ( b1 b2 -- )
-  \ b1 = sound datum
-  \ b2 = sound register number (0..13)
-  sound-register-port !p sound-write-port !p  ;
-
-: vol  ( n1 n2 -- )  8 + !sound  ;
-: shutup  ( -- )  -1 7 !sound  ;  \ XXX FIXME
+: vol  ( b1 b2 -- )  8 + !sound  ;
+: shutup  ( -- )  -1 7 !sound  ;
 : noise  ( -- )  7 7 !sound  ;
 
 ( music )
 
-need ms  need roll  need pick  need vocabulary 
-vocabulary music  current @  also music definitions
+need ms  need roll  need pick  need vocabulary
+need !sound  need vol
+
+vocabulary music  get-current  also music definitions
 
   \ Credit:
   \
@@ -71,14 +76,14 @@ vocabulary music  current @  also music definitions
   1+ !sound  swap !sound  ;
 
 variable len  variable tempo  variable octave  variable volume
+
 2 len !  200 tempo !  8 octave !  15 volume ! 1 15 vol
 
 : tones  ( -- )  56 7 !sound  ;
 
 : note  ( n "name" -- )
-  create  ,
-  does>   @ octave @ * 16 /  1 freq tones
-          tempo @ len @ * ms shutup  ;
+  create  ,  does>   @ octave @ * 16 /  1 freq tones
+                     tempo @ len @ * ms shutup  ;
 
 523 note c  554 note c# 583 note d  622 note d#
 659 note e  698 note f  740 note f# 784 note g
@@ -99,61 +104,66 @@ variable len  variable tempo  variable octave  variable volume
 : >>  ( -- )    1 volume @ 1+ vol 1 volume +!  ;
 : <<  ( -- )    1 volume @ 1- vol -1 volume +!  ;
 
-current ! previous
+set-current previous
 
 ( play sound: sound, )
 
   \ Credit:
   \
-  \ Code inspired by the article
-  \ "Las posibilidades sonoras del 128 K",
-  \ written by Juan José Rosado Recio,
-  \ published on Microhobby, issue 147 (1987-10), page 24:
+  \ Code inspired by the article "Las posibilidades sonoras del
+  \ 128 K", written by Juan José Rosado Recio, published on
+  \ Microhobby, issue 147 (1987-10), page 24:
+  \
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
-need !p  need sound-register-port  need sound-write-port
+need !p  need !sound
 
-14 constant /sound
+[defined] /sound ?\ 14 constant /sound
 
 : play  ( a -- )
-  \ a = address of a table with 14 bytes
-  /sound 0 do
-    i sound-register-port !p  dup c@ sound-write-port !p 1+
-  loop  drop  ;
+  /sound 0 do  dup c@ i !sound 1+  loop  drop  ;
+  \ Play a sound whose 14 bytes are stored at _a_.
 
 : sound,  ( b0 ... b13 -- )
   here /sound allot here 1- do  i c!  -1 +loop  ;
+  \ Compile the 14 bytes _b0 ... b13_ of a sound.
 
 : sound:  ( b0 ... b13 "name" -- )  create  sound,  ;
+  \ Create a word _name_ that will return the address of
+  \ the 14 bytes _b0 ... b13_ of a sound.
 
-( play sound: sound, )
+( sound: sound, )
 
   \ XXX TODO -- alternative:
 
 need roll
 
-: sound:  ( b0 ... b13 "name" -- )
-  create  14 0 do  14 i - roll ,  loop  ;
+: sound,  ( b0 ... b13 -- )
+  /sound 0 do  /sound i - 1- roll c,  loop  ;
 
-: sound,  ( b0 ... b13 -- a )
-  here >r 14 0 do  14 i - roll ,  loop  r>  ;
+: sound:  ( b0 ... b13 "name" -- )  create  here >r sound, r> ;
 
-( play )
+( fplay )
 
-  \ Faster version of the previous `play`, using `c@+`,
-  \ which requires the assembler.
+  \ XXX TMP --
+
+  \ Faster version of the previous `play`, using `c@+`
 
 need !p  need c@+
 need sound-register-port  need sound-write-port
 
-: play  ( a -- )
-  \ a = address of a table with 14 bytes
-  14 0 do
+[defined] /sound ?\ 14 constant /sound
+
+: fplay  ( a -- )
+  /sound 0 do
     i sound-register-port !p  c@+ sound-write-port !p
   loop  drop  ;
+  \ Play a sound whose 14 bytes are stored at _a_.
 
-( play )
+( zplay )
+
+  \ XXX TMP --
 
   \ Z80 version of the previous `play`.
 
@@ -161,15 +171,11 @@ need z80-asm
 
 need sound-register-port  need sound-write-port
 
-code play  ( a -- )
+[defined] /sound ?\ 14 constant /sound
 
-  \ a = address of a table with 14 bytes
-
-  \ XXX FIXME
-
+code zplay  ( a -- )
   hl pop  bc push
-
-  0E b ld#  00 e ld#
+  /sound b ld#  00 e ld#
     \ b = loop counter
     \ e = register number
   begin   bc push
@@ -179,43 +185,63 @@ code play  ( a -- )
             \ store the datum
           hl incp  e inc  bc pop  \ next
   step
+  bc pop  jpnext  end-code
+  \ Play a sound whose 14 bytes are stored at _a_.
+  \ XXX FIXME -- no sound! maybe `outbc` has a bug in the
+  \ assembler
 
-  bc pop  jpnext
-  end-code
-
-( waves shoot helicopter1 train )
+( waves shoot helicopter1 train airplane helicopter2 )
 
   \ Sounds to be played with `play`.
 
-need sound:
+need sound:  hex
 
   \ Credit:
   \
-  \ `waves` and `shoot` are
-  \ adapted from code written by Juan José Ruiz,
-  \ published on Microhobby, issue 139 (1987-07), page 7:
+  \ `waves` and `shoot` are adapted from code written by Juan
+  \ José Ruiz, published on Microhobby, issue 139 (1987-07),
+  \ page 7:
+  \
   \ http://microhobby.org/numero139.htm
   \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
 
-0  0  0  0  0  0  7 71  20  20  20  0  38  14
-sound: waves
+[unneeded] waves
+?\ 00 00 00 00 00 00 07 47 14 14 14 00 26 0E sound: waves
 
-10  0  177  0  191  0  31 71  20  20  20  92  28  3
-sound: shoot
+[unneeded] shoot
+?\ 0A 00 B1 00 BF 00 1F 47 14 14 14 5C 1C 03 sound: shoot
 
   \ Credit:
   \
-  \ `helicopter` and `train` are
-  \ adapted from code written by José Ángel Martín,
-  \ published on Microhobby, issue 172 (1988-09), page 22:
+  \ `helicopter1` and `train` are adapted from code written by
+  \ José Ángel Martín, published on Microhobby, issue 172
+  \ (1988-09), page 22:
+  \
   \ http://microhobby.org/numero172.htm
   \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
 
-200  15  200  15  200  15  0 7 23  23  23  255  1  12
-sound: helicopter1
+[unneeded] helicopter1
+?\ C8 0F C8 0F C8 0F 00 07 17 17 17 FF 01 0C sound: helicopter1
 
-100  120  48  97  12  200  55 15  9  11  55  180  4  8
-sound: train
+[unneeded] train
+?\ 64 78 30 61 0C C8 37 0F 09 0B 37 B4 04 08 sound: train
+
+  \ Credit:
+  \
+  \ `airplane` and 'helicopter2' are extracted from a program
+  \ written by Juan José Rosado Recio, published on Microhobby,
+  \ issue 147 (1987-10), page 24:
+  \
+  \ http://microhobby.org/numero147.htm
+  \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
+
+[unneeded] airplane
+?\ 0C 1F 00 00 00 1F 07 E8 0F 10 0F 9A 00 18 sound: airplane
+
+[unneeded] helicopter2
+?\ 09 00 00 06 0C 00 0B C0 10 0E 10 3A 02 1C sound: helicopter2
+
+decimal
 
 ( bomber whip metalic rain2 lightning1 lighting2 )
 
@@ -228,46 +254,93 @@ sound: train
   \ http://microhobby.org/numero194.htm
   \ http://microhobby.speccy.cz/mhf/194/MH194_26.jpg
 
-need sound:
+need sound:  hex
 
-73 82 62 165 90 138 159 140 102 77 100 162 87 201 sound: bomber
+[unneeded] bomber
+?\ 49 52 3E A5 5A 8A 9F 8C 66 4D 64 A2 57 C9 sound: bomber
 
-5 18 8 6 19 11 5 11 0 19 3 24 21 1 sound: whip
+[unneeded] whip
+?\ 05 12 08 06 13 0B 05 0B 00 13 03 18 15 01 sound: whip
 
-149 64 104 236 210 180 0 32 0 194 146 73 81 177 sound: metalic
+[unneeded] metalic
+?\ 95 40 68 EC D2 B4 00 20 00 C2 92 49 51 B1 sound: metalic
 
-16 17 25 10 19 9 4 31 245 1 6 30 2 sound: rain2
+[unneeded] ligthing1
+?\ 01 04 00 10 24 43 08 04 1F F5 01 06 1E 02 sound: lighting1
 
-1 4 0 16 36 67 8 4 31 245 1 6 30 2 sound: lighting1
+[unneeded] lighting2
+?\ 00 00 00 00 00 FF 07 04 FF 19 00 3C 3C 03 sound: lighting2
 
-0 0 0 0 0 255 7 4 255 25 0 60 60 3 sound: lighting2
+  \ #16 #17 #25 #10 #19 #9 #4 #31 #245 #1 #6 #30 #2 sound: rain2
+  \ 10 11 19 0A 13 09 04 1F F5 01 06 1E 02 sound: rain2
+  \ XXX FIXME -- one number is missing
 
-( Sound effects )
+decimal
+
+( bell1 bell2 bell3 rap drum cymbal )
 
   \ Sounds to be played with `play`.
 
   \ Credit:
   \
-  \ Data extracted a program written by Juan José Rosado Recio,
-  \ published on Microhobby, issue 147 (1987-10), page 24:
+  \ Data extracted from a program written by Juan José Rosado
+  \ Recio, published on Microhobby, issue 147 (1987-10), page
+  \ 24
+  \
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
 need sound:  hex
 
-00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18 sound: aplausse
-1B 00 09 00 00 00 1F C8 10 10 10 00 6B 10 sound: hammer
-AB 03 2A 02 0C 01 00 F8 10 10 10 00 71 10 sound: bell1
-66 00 4B 00 45 00 00 F8 10 10 10 00 22 10 sound: bell2
-FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound: bell3
-0C 1F 00 00 00 1F 07 E8 0F 10 0F 9A 00 18 sound: airplane
-09 00 00 06 0C 00 0B C0 10 0E 10 3A 02 1C sound: helicopter2
-03 05 FC 04 0C 05 00 F8 10 10 10 FF FF 0E sound: background
-00 00 00 00 00 00 06 C0 10 10 10 00 05 18 sound: rap
-00 06 00 00 00 05 11 E8 10 10 10 00 0A 10 sound: drum
-09 00 00 00 00 00 00 C0 10 10 10 03 09 10 sound: cymbal
-00 00 00 00 00 00 0F C0 0B 10 10 FF 50 0E sound: beach
-24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound: waterdrop2
+[unneeded] bell1
+?\ AB 03 2A 02 0C 01 00 F8 10 10 10 00 71 10 sound: bell1
+
+[unneeded] bell2
+?\ 66 00 4B 00 45 00 00 F8 10 10 10 00 22 10 sound: bell2
+
+[unneeded] bell3
+?\ FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound: bell3
+
+[unneeded] rap
+?\ 00 00 00 00 00 00 06 C0 10 10 10 00 05 18 sound: rap
+
+[unneeded] drum
+?\ 00 06 00 00 00 05 11 E8 10 10 10 00 0A 10 sound: drum
+
+[unneeded] cymbal
+?\ 09 00 00 00 00 00 00 C0 10 10 10 03 09 10 sound: cymbal
+
+decimal
+
+( applause hammer background beach waterdrop2 )
+
+  \ Sounds to be played with `play`.
+
+  \ Credit:
+  \
+  \ Data extracted from a program written by Juan José Rosado
+  \ Recio, published on Microhobby, issue 147 (1987-10), page
+  \ 24
+  \
+  \ http://microhobby.org/numero147.htm
+  \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
+
+need sound:  hex
+
+[unneeded] applausse
+?\ 00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18 sound: aplausse
+
+[unneeded] hammer
+?\ 1B 00 09 00 00 00 1F C8 10 10 10 00 6B 10 sound: hammer
+
+[unneeded] background
+?\ 03 05 FC 04 0C 05 00 F8 10 10 10 FF FF 0E sound: background
+
+[unneeded] beach
+?\ 00 00 00 00 00 00 0F C0 0B 10 10 FF 50 0E sound: beach
+
+[unneeded] waterdrop2
+?\ 24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound: waterdrop2
 
 decimal
 
@@ -275,20 +348,23 @@ decimal
 
   \ Sounds to be played with `play`.
 
-need sound:
+need sound:  hex
 
   \ Credit:
   \
-  \ Data extracted from a program written by Carlos Ventura,
-  \ published on Microhobby, issue 198 (1990-05), page 16:
+  \ `rain1` and `waterdrop1` are extracted from a program
+  \ written by Carlos Ventura, published on Microhobby, issue
+  \ 198 (1990-05), page 16:
+  \
   \ http://microhobby.org/numero198.htm
   \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
 
-  \ XXX FIXME -- these effects don't sound fine, though the data
-  \ are correct
+[unneeded] rain1
+?\ 2C 18 06 06 07 03 03 05 2C 06 03 05 03 03 sound: rain1
 
-44 24 6 6 7 3 3 5 44 6 3 5 3 3 sound: rain1
+[unneeded] waterdrop1
+?\ 14 53 5E 27 00 08 1F 47 17 17 16 5A 00 00 sound: waterdrop1
 
-20 83 94 39 0 8 31 71 23 23 22 90 0 0 sound: waterdrop1
+decimal
 
   \ vim: filetype=soloforth
