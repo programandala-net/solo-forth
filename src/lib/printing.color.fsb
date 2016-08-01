@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605040109
+  \ Last modified: 201608011328
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,13 +26,17 @@
   \ History
 
   \ 2016-05-01: Start. New words:
-
+  \
   \   color@ color! color-mask@ color-mask! color 2color
   \   permcolor@ permcolor! permcolor-mask@ permcolor-mask!
   \   permcolor 2permcolor paper@ paper! ink@ ink!  bright@
   \   bright! flash! flash@
   \
   \ 2016-05-04: Move `inverse` and `overprint` from the kernel.
+  \
+  \ 2016-08-01: Move color constants, `papery`, `brighty` and
+  \ `flashy` from _Nuclear Invaders_
+  \ (http://programandala.net/en.program.nuclear_invaders.html).
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -94,6 +98,23 @@
   \ 23697   |___|___|___|___|___|___|___|___|
   \           7   6   5   4   3   2   1   0
 
+( black blue red magenta green cyan yellow white )
+
+0 cconstant black    1 cconstant blue   2 cconstant red
+3 cconstant magenta  4 cconstant green  5 cconstant cyan
+6 cconstant yellow   7 cconstant white
+
+( papery brighty flashy )
+
+[unneeded] papery
+?\ : papery   ( color -- paper-attribute )           8 *  ;
+
+[unneeded] brighty
+?\ : brighty  ( attribute -- brighty-attribute )   64 or  ;
+
+[unneeded] flashy
+?\ : flashy   ( attribute -- flashy-attribute )   128 or  ;
+
 ( color@ color! color-mask@ color-mask! color 2color )
 
 need os-attr-t  need os-mask-t
@@ -104,7 +125,7 @@ need os-attr-t  need os-mask-t
   \
   \ color!  ( b -- )
   \
-  \ Set temporary color attribute _b_.
+  \ Get temporary color attribute _b_.
   \
   \ }doc
 
@@ -124,7 +145,7 @@ need os-attr-t  need os-mask-t
   \
   \ color-mask!  ( b -- )
   \
-  \ Set temporary color attribute mask _b_.
+  \ Get temporary color attribute mask _b_.
   \
   \ }doc
 
@@ -139,7 +160,7 @@ need os-attr-t  need os-mask-t
   \ }doc
 
 : color  ( b "name" -- )
-  create ,  does>  ( -- ) ( pfa ) @ color!  ;
+  create c,  does>  ( -- ) ( pfa ) c@ color!  ;
 
   \ doc{
   \
