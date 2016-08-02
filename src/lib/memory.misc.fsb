@@ -40,6 +40,7 @@
   \ Compact the blocks. Remove unfinished words from cmForth.
   \ Rename `@cell+` to `@+`. Add `2@+`.
   \ 2016-08-01: Fix header line.
+  \ 2016-08-02: Fix requiring `c1+!`, `c1-!`, `1+!` and `1-!`.
 
 ( -! c+! c-! )
 
@@ -107,7 +108,35 @@ code c-!  ( c ca -- )
   \
   \ }doc
 
-( 1+! 1-! c1+! c1-! )
+( c1+! c1-! 1+! 1-! )
+
+[unneeded] c1+!
+?\  code c1+!  ( ca -- )  E1 c, 34 c, jpnext  end-code  exit
+    \ pop hl
+    \ inc (hl)
+    \ jp next
+
+  \ doc{
+  \
+  \ c1+!  ( ca - )
+  \
+  \ Increment the char at _ca_.
+  \
+  \ }doc
+
+[unneeded] c1-!
+?\  code c1-!  ( ca -- )  E1 c, 35 c, jpnext  end-code  exit
+    \ pop hl
+    \ dec (hl)
+    \ jp next
+
+  \ doc{
+  \
+  \ c1-!  ( ca - )
+  \
+  \ Decrement the char at _ca_.
+  \
+  \ }doc
 
 need ?(
 
@@ -115,7 +144,7 @@ need ?(
 
 code 1+!  ( a -- )
   E1 c, 5E c, 23 c, 56 c, 13 c, 70 02 + c, 2B c, 70 03 + c,
-  jpnext end-code
+  jpnext end-code  ?)
     \ pop hl
     \ ld e,(hl)
     \ inc hl
@@ -138,7 +167,7 @@ code 1+!  ( a -- )
 
 code 1-!  ( a -- )
   E1 c, 5E c, 23 c, 56 c, 1B c, 70 02 + c, 2B c, 70 03 + c,
-  jpnext end-code
+  jpnext end-code  ?)
     \ pop hl
     \ ld e,(hl)
     \ inc hl
@@ -154,34 +183,6 @@ code 1-!  ( a -- )
   \ 1-!  ( a - )
   \
   \ Decrement the single-cell number at _a_.
-  \
-  \ }doc
-
-[unneeded] c1+!
-?\  code c1+!  ( ca -- )  E1 c, 34 c, jpnext  end-code
-    \ pop hl
-    \ inc (hl)
-    \ jp next
-
-  \ doc{
-  \
-  \ c1+!  ( ca - )
-  \
-  \ Increment the char at _ca_.
-  \
-  \ }doc
-
-[unneeded] c1-!
-?\  code c1-!  ( ca -- )  E1 c, 35 c, jpnext  end-code
-    \ pop hl
-    \ dec (hl)
-    \ jp next
-
-  \ doc{
-  \
-  \ c1-!  ( ca - )
-  \
-  \ Decrement the char at _ca_.
   \
   \ }doc
 
