@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605132232
+  \ Last modified: 201608021654
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,7 +15,7 @@
   \ - Non-standard `cvalue` and `cto` for character values.
   \
   \ Note: There's a standard implementation of `value`,
-  \ `2value` and `to` in module "data.value.forth-2012.fsb",
+  \ `2value` and `to` in module "data.value.standard.fsb",
   \ but it's bigger and slower.
 
   \ -----------------------------------------------------------
@@ -46,6 +46,8 @@
   \
   \ 2016-05-13: Fix `to`, `2to` and `cto`: `immediate` was
   \ missing.
+  \
+  \ 2016-08-02: Fix comment.
 
 ( value to 2value 2to cvalue cto )
 
