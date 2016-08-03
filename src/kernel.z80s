@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608030239
+; Last modified: 201608031414
 
 include version.z80s
 
@@ -93,16 +93,16 @@ include version.z80s
   ; Makefile files for details. Support for +3DOS and TR-DOS is
   ; not finished yet.
 
-if (!defined gplusdos) and (!defined plus3dos)
+if (!defined gplusdos) and (!defined plus3dos) and (!defined trdos)
   gplusdos equ true ; G+DOS by default
 endif
 
-  ; XXX experimental
+  ; XXX experimental:
 size_optimization: equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-  ; XXX OLD -- the flag is harcoded in the code
+  ; XXX OLD -- the flag is harcoded in the code:
 ;assembler_core_in_kernel: equ true
 
 developing: equ true
@@ -118,9 +118,18 @@ developing: equ true
 default_origin:                   equ $5E00
 
 if defined trdos
-  origin:                         equ default_origin+113
+
+ ; TR-DOS needs 112 ($70) bytes of RAM for its system variables.
+ ; It also uses a 256 ($100) bytes buffer when accessing the
+ ; disk.  This buffer is allocated dynamically. Therefore, the
+ ; default origin of the Forth system must be moved up.
+
+  origin:                         equ default_origin+$170
+
 else
+
   origin:                         equ default_origin
+
 endif
 
 ramtop:                           equ origin-1 ; used by the BASIC loader
@@ -145,6 +154,9 @@ if defined gplusdos
 endif
 if defined plus3dos
   blocks_per_disk:                  equ 720 ; KiB per disk in +3DOS
+endif
+if defined trdos
+  blocks_per_disk:                  equ 640 ; KiB per disk in TR-DOS
 endif
 
 characters_per_line:              equ $40
