@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201608031425
+; Last modified: 201608032039
 
 ; ==============================================================
 ; Description
@@ -33,48 +33,54 @@
 if defined gplusdos
 
 ; ----------------------------------------------
+  _constant_header rec_slash_track_,'REC/TRACK'
+
+; doc{
+;
+; rec/track  ( -- n )
+;
+; Records (sectors) per disk track.
+;
+; }doc
+  dw 10
+
+; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
 
 ; doc{
 
-; sector-id  ( n1 -- n2 )
+; sector-id  ( n -- x )
 
-; Convert the sequential disk sector _n1_ to the disk sector id
-; _n2_, in the format required by G+DOS: The high byte of _n2_
-; is the track (0..79 for side 0; 128..207 for side 1); the low
-; byte of _n2_ is the sector (1..10).
+; Convert the sequential disk sector _n_ to the disk sector id
+; _x_, in the format required by G+DOS: The high byte of _x_
+; is the track (0..79 for side 0; 128..207 for side 1); its low
+; byte is the sector (1..10).
 ;
 ; ----
-; : sector-id  ( n1 -- n2 )
-;   \ n2 (high byte) = track 0..79 for side 0, 128..207 for side 1
-;   \    (low byte)  = sector 1..10
-;   \ track0 = 0..79
-;   \ track = 0..207
-;   \ side = 0..1
-;   dup 10 mod 1+       ( n1 sector )
-;   swap dup 20 /       ( sector n1 track0 )
-;   swap 10 / 1 and     ( sector track0 side )
-;   128                 ( sector track 128 )
-;   negate 128 and or   ( sector track )
+; : sector-id  ( n -- x )
+;   \ x (high byte) = track 0..79 for side 0, 128..207 for side 1
+;   \   (low byte)  = sector 1..10
+;   \ track0        = 0..79
+;   \ track         = 0..207
+;   \ side          = 0..1
+;   dup sectors/track mod 1+    ( n sector )
+;   swap dup 20 /               ( sector n track0 )
+;   swap sectors/track / 1 and  ( sector track0 side )
+;   negate 128 and or           ( sector track )
 ;   flip or  ;
 ; ----
 ;
 ; }doc
 
-  dw dup_
-  _literal 10
-  dw mod_,one_plus_,swap_,dup_
+  dw dup_,rec_slash_track_,mod_,one_plus_,swap_,dup_
   _literal 20
-  dw slash_,swap_
-  _literal 10
   dw slash_
+  dw swap_,rec_slash_track_,slash_
   _literal 1
   dw and_
-
   dw negate_
   _literal 128
   dw and_,or_
-
   dw flip_,or_
   dw exit_
 
