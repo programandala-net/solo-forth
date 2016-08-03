@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608031414
+; Last modified: 201608031450
 
 include version.z80s
 
@@ -144,20 +144,22 @@ cells_per_return_stack:           equ $50
 
 bytes_per_terminal_input_buffer:  equ $50
 
-bytes_per_sector:                 equ $0200 ; 512-byte sectors in G+DOS and +3DOS
-sectors_per_block:                equ $02
-
 bytes_per_buffer:                 equ $0400
 
 if defined gplusdos
-  blocks_per_disk:                  equ 800 ; KiB per disk in G+DOS
+  blocks_per_disk:                  equ 800
+  sectors_per_block:                equ $02
 endif
 if defined plus3dos
-  blocks_per_disk:                  equ 720 ; KiB per disk in +3DOS
+  blocks_per_disk:                  equ 720
+  sectors_per_block:                equ $02
 endif
 if defined trdos
-  blocks_per_disk:                  equ 640 ; KiB per disk in TR-DOS
+  blocks_per_disk:                  equ 640 ; XXX FIXME -- library file only
+  sectors_per_block:                equ $04
 endif
+
+bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
 
 characters_per_line:              equ $40
 lines_per_screen:                 equ $10
@@ -1300,6 +1302,17 @@ endif
 ; Start compiling in the `forth` vocabulary
 
 nt_of_the_previous_word: defl 0
+
+; ----------------------------------------------
+; DOS
+
+; Note: Conditional `include` is not allowed in the Pasmo
+; assembler. That's why all files are included, and they
+; check its own condition.
+
+  include kernel.gplusdos.z80s
+;  include kernel.plus3dos.z80s ; XXX TODO --
+  include kernel.trdos.z80s
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -9451,296 +9464,6 @@ block.end:
   ld h,l
   ld l,a
   _jp_pushhl
-
-; ----------------------------------------------
-  _colon_header sector_id_,'SECTOR-ID'
-
-; doc{
-
-; sector-id  ( n1 -- n2 )
-
-; Convert the sequential disk sector _n1_ to the disk sector id
-; _n2_, in the format required by G+DOS: The high byte of _n2_
-; is the track (0..79 for side 0; 128..207 for side 1); the low
-; byte of _n2_ is the sector (1..10).
-;
-; ----
-; : sector-id  ( n1 -- n2 )
-;   \ n2 (high byte) = track 0..79 for side 0, 128..207 for side 1
-;   \    (low byte)  = sector 1..10
-;   \ track0 = 0..79
-;   \ track = 0..207
-;   \ side = 0..1
-;   dup 10 mod 1+       ( n1 sector )
-;   swap dup 20 /       ( sector n1 track0 )
-;   swap 10 / 1 and     ( sector track0 side )
-;   128                 ( sector track 128 )
-;   negate 128 and or   ( sector track )
-;   flip or  ;
-; ----
-;
-; }doc
-
-  dw dup_
-  _literal 10
-  dw mod_,one_plus_,swap_,dup_
-  _literal 20
-  dw slash_,swap_
-  _literal 10
-  dw slash_
-  _literal 1
-  dw and_
-
-  dw negate_
-  _literal 128
-  dw and_,or_
-
-  dw flip_,or_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header read_block_,'READ-BLOCK'
-
-; doc{
-;
-; read-block  ( n -- )
-;
-; Read disk block _n_ to the buffer.
-;
-; ----
-; : read-block  ( n -- )
-;   read-mode transfer-block  ;
-; ----
-;
-; }doc
-
-  dw read_mode_,transfer_block_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header write_block_,'WRITE-BLOCK'
-
-; doc{
-;
-; write-block  ( n -- )
-;
-; Write the buffer to disk block _n_.
-;
-; ----
-; : write-block  ( n -- )
-;   write-mode transfer-block  ;
-; ----
-;
-; }doc
-
-  dw write_mode_,transfer_block_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header transfer_block_,'TRANSFER-BLOCK'
-
-; doc{
-;
-; transfer-block  ( n -- )
-;
-; The block-level disk read-write linkage.
-; Transfer block _n_ to or from disk.
-; The read or write mode must be previously set
-; by `write-mode` or `read-mode`.
-;
-; }doc
-
-  ; XXX TODO restore the current drive
-
-  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
-  dw dup_
-  dw sector_id_
-  dw buffer_data_
-  dw transfer_sector_
-
-  dw one_plus_,sector_id_
-
-  ; XXX TODO -- benchmark again
-  dw buffer_data_,b_slash_rec_,plus_ ; XXX 23768 frames
-  ;_literal disk_buffer+cell+bytes_per_sector ; XXX 24425 frames??
-
-  dw transfer_sector_
-
-  dw exit_
-
-; ----------------------------------------------
-  _code_header transfer_sector_,'TRANSFER-SECTOR'
-
-; doc{
-;
-; transfer-sector  ( x a -- )
-;
-; The sector-level disk read-write linkage.
-; Transfer sector _x_ to or from disk.
-; The read or write mode must be previously set
-; by `write-mode` or `read-mode`.
-;
-; x = sector to read or write
-;     high byte = track 0..79, +128 if side 1
-;     low byte  = sector 1..10
-; a = source or destination address
-;
-; }doc
-
-; XXX TODO -- format the parameters list of the documentation,
-; and other similar cases as well
-
-  pop ix ; address
-  pop de ; d = track 0..79, +128 if side 1
-         ; e = sector 1..10
-  push bc ; save the Forth IP
-transfer_sector.drive equ $+1 ; XXX TODO -- not used yet
-  ld a,2 ; drive
-  rst 8 ; G+DOS hook
-transfer_sector.command:
-  ; G+DOS command already patched:
-  db $44 ; $44 = read ; $45 = write
-  pop bc ; restore the Forth IP
-  ld ix,next
-  _jp_next
-
-; ----------------------------------------------
-  _colon_header write_mode_,'WRITE-MODE'
-
-; doc{
-;
-; write-mode  ( -- )
-;
-; Set the write mode for `transfer-sector` and `transfer-block`.
-;
-; }doc
-
-  _literal $45 ; G+DOS write sector command
-  dw branch_,transfer_mode
-
-; ----------------------------------------------
-  _colon_header read_mode_,'READ-MODE'
-
-; doc{
-;
-; read-mode  ( -- )
-;
-; Set the read mode for `transfer-sector` and `transfer-block`.
-;
-; }doc
-
-  _literal $44 ; G+DOS read sector command
-transfer_mode:
-  dw lit_,transfer_sector.command,c_store_
-  dw exit_
-
-; **************************************************************
-; +3DOS
-
-; XXX UNDER DEVELOPMENT
-
-if defined plus3dos and false  ; XXX TMP
-
-back_from_dos:
-  ; cy = no error?
-  ; a  = error code
-  jp c,false_   ; no error
-
-back_from_dos.error:
-  ; a = error code
-  call convert_dos_error_code
-  ; hl = error code
-  _jp_pushhl
-
-convert_dos_error_code:
-  ; Input:   a  = original DOS error code (0..36)
-  ; Outptut: hl = DOS error code converted to Forth range (-1000..-1036)
-  ; XXX TODO use standard codes?
-  ; XXX TODO make a Forth word to access this code?
-  ld h,0
-  ld l,a
-convert_dos_error_code.hl:
-  ld de,1000
-  add hl,de
-  jp negate_hl
-
-get_current_drive:
-  ld a,$FF
-
-set_current_drive:
-  ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
-  ld ix,dos_set_drive
-  jr do_dos
-
-get_current_user:
-  ld a,$FF
-
-set_current_user:
-  ; a = user ($00..$0F to set it; $FF to get it)
-  ld ix,dos_set_user
-
-; ------------------------------
-; DOS call
-
-dos:
-
-  ; Adapted from the ZX Spectrum +3 manual.
-
-  ; IX holds the address of the DOS routine to be run. All other registers are
-  ; passed intact to the DOS routine and are returned from it.
-
-  ; Stack must be somewhere in central 32K (conforming to DOS requirements), so
-  ; saved AF and BC will not be switched out.
-
-  push af
-  push bc                  ; temp save registers while switching
-  ld   a,(sys_bankm)       ; RAM/ROM switching system variable
-  or   7                   ; want RAM page 7
-  res  4,a                 ; and DOS ROM
-  ld   bc,bank1_port       ; port used for horiz ROM switch and RAM paging
-  di
-  ld   (sys_bankm),a       ; keep system variables up to date
-  out  (c),a               ; RAM page 7 to top and DOS ROM
-  ei
-  pop  bc
-  pop  af
-
-  call call_dos.ix         ; go sub routine address in IX
-
-  push af
-  push bc
-  ld   a,(sys_bankm)
-  and  0F8h                ; reset bits for page 0
-  set  4,a                 ; switch to ROM 3 (48 BASIC)
-  ld   bc,bank1_port
-  di
-  ld   (sys_bankm),a
-  out  (c),a               ; switch back to RAM page 0 and 48 BASIC
-  ei
-  pop  bc
-  pop  af
-  ret
-
-call_dos.ix:
-
-  jp   (ix)                ; standard way to CALL (IX), by calling this jump
-
-; ------------------------------
-; DOS call preserving the Forth IP
-
-; This is used when the BC register (the Forth IP) is not a parameter of the
-; DOS routine
-
-do_dos:
-  ; IX = DOS routine to run
-  push bc
-  call dos
-  pop bc
-  ret
-
-; **************************************************************
-
-endif
 
 ; ----------------------------------------------
   _colon_header save_buffers_,'SAVE-BUFFERS'

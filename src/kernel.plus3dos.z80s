@@ -1,0 +1,137 @@
+; kernel.plus3dos.z80s
+
+; This file is part of Solo Forth
+; http://programandala.net/en.program.solo_forth.html
+
+; XXX UNDER DEVELOPMENT
+
+; Last modified: 201608031426
+
+; ==============================================================
+; Description
+
+; The part of the Solo Forth's kernel that is specific to +3DOS.
+; Not finished.
+
+; ==============================================================
+; Author
+
+; Marcos Cruz (programandala.net), 2015, 2016.
+
+; ==============================================================
+; License
+
+; You may do whatever you want with this work, so long as you
+; retain every copyright, credit and authorship notice, and this
+; license.  There is no warranty.
+
+; ==============================================================
+; History
+
+; See
+; http://programandala.net/en.program.solo_forth.history.html
+
+; ==============================================================
+
+if defined plus3dos
+
+back_from_dos:
+  ; cy = no error?
+  ; a  = error code
+  jp c,false_   ; no error
+
+back_from_dos.error:
+  ; a = error code
+  call convert_dos_error_code
+  ; hl = error code
+  _jp_pushhl
+
+convert_dos_error_code:
+  ; Input:   a  = original DOS error code (0..36)
+  ; Outptut: hl = DOS error code converted to Forth range (-1000..-1036)
+  ; XXX TODO use standard codes?
+  ; XXX TODO make a Forth word to access this code?
+  ld h,0
+  ld l,a
+convert_dos_error_code.hl:
+  ld de,1000
+  add hl,de
+  jp negate_hl
+
+get_current_drive:
+  ld a,$FF
+
+set_current_drive:
+  ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
+  ld ix,dos_set_drive
+  jr do_dos
+
+get_current_user:
+  ld a,$FF
+
+set_current_user:
+  ; a = user ($00..$0F to set it; $FF to get it)
+  ld ix,dos_set_user
+
+; ------------------------------
+; DOS call
+
+dos:
+
+  ; Adapted from the ZX Spectrum +3 manual.
+
+  ; IX holds the address of the DOS routine to be run. All other registers are
+  ; passed intact to the DOS routine and are returned from it.
+
+  ; Stack must be somewhere in central 32K (conforming to DOS requirements), so
+  ; saved AF and BC will not be switched out.
+
+  push af
+  push bc                  ; temp save registers while switching
+  ld   a,(sys_bankm)       ; RAM/ROM switching system variable
+  or   7                   ; want RAM page 7
+  res  4,a                 ; and DOS ROM
+  ld   bc,bank1_port       ; port used for horiz ROM switch and RAM paging
+  di
+  ld   (sys_bankm),a       ; keep system variables up to date
+  out  (c),a               ; RAM page 7 to top and DOS ROM
+  ei
+  pop  bc
+  pop  af
+
+  call call_dos.ix         ; go sub routine address in IX
+
+  push af
+  push bc
+  ld   a,(sys_bankm)
+  and  0F8h                ; reset bits for page 0
+  set  4,a                 ; switch to ROM 3 (48 BASIC)
+  ld   bc,bank1_port
+  di
+  ld   (sys_bankm),a
+  out  (c),a               ; switch back to RAM page 0 and 48 BASIC
+  ei
+  pop  bc
+  pop  af
+  ret
+
+call_dos.ix:
+
+  jp   (ix)                ; standard way to CALL (IX), by calling this jump
+
+; ------------------------------
+; DOS call preserving the Forth IP
+
+; This is used when the BC register (the Forth IP) is not a parameter of the
+; DOS routine
+
+do_dos:
+  ; IX = DOS routine to run
+  push bc
+  call dos
+  pop bc
+  ret
+
+endif
+
+; vim: filetype=z80:textwidth=64
