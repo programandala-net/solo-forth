@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608031908
+# Last modified: 201608032047
 
 # ==============================================================
 # Author
@@ -91,8 +91,11 @@ plus3dos: solo_forth_disk_a.dsk
 .PHONY: trdos
 trdos: solo_forth_disk_a.trd \
 	solo_forth_disk_b_library.trd \
-	solo_forth_disk_c_library_with_games.trd \
-	solo_forth_disk_d_library_with_meta_tools.trd
+	solo_forth_disk_c_library_with_games.trd
+
+# XXX TMP -- too large
+# XXX TODO -- split into benchmarks and tests
+#	solo_forth_disk_d_library_with_meta_tools.trd
 
 clean: cleantmp
 	-rm -f solo_forth_disk_*.mgt solo_forth_disk_*.dsk solo_forth_disk_*.trd
@@ -111,7 +114,7 @@ include Makefile.pasmo
 # 	@make Makefile.binutils
 
 # ==============================================================
-# BASIC loader
+# Loader
 
 # The BASIC loader of the system is coded in plain text. The addresses
 # that depend on the kernel (its load adresses and entry points) are
@@ -120,10 +123,8 @@ include Makefile.pasmo
 # created by the assembler. Then zmakebas converts the patched loader
 # into a TAP file, ready to be copied to a disk image.
 
-# The
-
 # ----------------------------------------------
-# For G+DOS
+# G+DOS loader
 
 tmp/loader.gplusdos.bas: \
 	tmp/kernel.symbols.gplusdos.z80s \
@@ -134,7 +135,7 @@ tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
 
 # ----------------------------------------------
-# For +3DOS
+# +3DOS loader
 
 tmp/loader.plus3dos.bas: \
 	tmp/kernel.symbols.plus3dos.z80s \
@@ -145,7 +146,7 @@ tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
 
 # ----------------------------------------------
-# For TR-DOS
+# TR-DOS loader
 
 tmp/loader.trdos.bas: \
 	tmp/kernel.symbols.trdos.z80s \
@@ -197,7 +198,7 @@ bin/fonts/fzx_fonts.tap : $(fzx_fonts)
 	done; \
 	cat *.fzx.tap > fzx_fonts.tap ; \
 	cd -
-	
+
 	# XXX OLD -- 2016-05-15: was done after `cat`, above
 	# rm -f *.fzx.tap ; \
 
@@ -330,8 +331,10 @@ solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
 # ----------------------------------------------
 # TR-DOS library disks
 
-# XXX FIXME -- The library can not be saved as a blocks file, because
-# TR-DOS does not accept files longer than $FF00 bytes!
+# XXX FIXME -- 2016-08-03: The library disks can not be used with the
+# Fuse emulator.  Probably the solution is to use the track 0 from a
+# formated disk image.  A custom version of `fsb2-trd` is needed for
+# that.
 
 trdos_core_library_files = \
 	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb , $(core_library_files))
@@ -341,57 +344,27 @@ tmp/library_for_trdos.fsb: $(trdos_core_library_files)
 		$(trdos_core_library_files) \
 		> tmp/library_for_trdos.fsb
 
-tmp/library_for_trdos.fsb.fb: tmp/library_for_trdos.fsb
-	fsb2 $<
-
-solo_forth_disk_b_library.trd: tmp/library_for_trdos.fsb.fb
-	cd tmp && ln -sf $(notdir $<) LIBRARY && cd -
-	rm -f $@
-	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
-	cd tmp && \
-	echo "EMPTYTRD.EXE SOLO_FORTH_B.TRD" > mktrd.bat && \
-	echo "WRITETRD.EXE SOLO_FORTH_B.TRD LIBRARY" >> mktrd.bat && \
-	dosbox -exit mktrd.bat && \
-	cd -
-	mv tmp/SOLO_FOR.TRD $@
+solo_forth_disk_b_library.trd: tmp/library_for_trdos.fsb
+	fsb2-trd tmp/library_for_trdos.fsb ;\
+	mv tmp/library_for_trdos.trd $@
 
 tmp/library_for_trdos_with_games.fsb: $(trdos_core_library_files) $(game_library_files)
 	cat \
 		$(trdos_core_library_files) $(game_library_files) \
 		> tmp/library_for_trdos_with_games.fsb
 
-tmp/library_for_trdos_with_games.fsb.fb: tmp/library_for_trdos_with_games.fsb
-	fsb2 $<
-
-solo_forth_disk_c_library_with_games.trd: tmp/library_for_trdos_with_games.fsb.fb
-	cd tmp && ln -sf $(notdir $<) LIBRARY && cd -
-	rm -f $@
-	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
-	cd tmp && \
-	echo "EMPTYTRD.EXE SOLO_FORTH_C.TRD" > mktrd.bat && \
-	echo "WRITETRD.EXE SOLO_FORTH_C.TRD LIBRARY" >> mktrd.bat && \
-	dosbox -exit mktrd.bat && \
-	cd -
-	mv tmp/SOLO_FOR.TRD $@
+solo_forth_disk_c_library_with_games.trd: tmp/library_for_trdos_with_games.fsb
+	fsb2-trd tmp/library_for_trdos_with_games.fsb ;\
+	mv tmp/library_for_trdos_with_games.trd $@
 
 tmp/library_for_trdos_with_meta_tools.fsb: $(trdos_core_library_files) $(meta_tools_library_files)
 	cat \
 		$(trdos_core_library_files) $(meta_tools_library_files) \
 		> tmp/library_for_trdos_with_meta_tools.fsb
 
-tmp/library_for_trdos_with_meta_tools.fsb.fb: tmp/library_for_trdos_with_meta_tools.fsb
-	fsb2 $<
-
-solo_forth_disk_d_library_with_meta_tools.trd: tmp/library_for_trdos_with_meta_tools.fsb.fb
-	cd tmp && ln -sf $(notdir $<) LIBRARY && cd -
-	rm -f $@
-	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
-	cd tmp && \
-	echo "EMPTYTRD.EXE SOLO_FORTH_D.TRD" > mktrd.bat && \
-	echo "WRITETRD.EXE SOLO_FORTH_D.TRD LIBRARY" >> mktrd.bat && \
-	dosbox -exit mktrd.bat && \
-	cd -
-	mv tmp/SOLO_FOR.TRD $@
+solo_forth_disk_d_library_with_meta_tools.trd: tmp/library_for_trdos_with_meta_tools.fsb
+	fsb2-trd tmp/library_for_trdos_with_meta_tools.fsb ;\
+	mv tmp/library_for_trdos_with_meta_tools.trd $@
 
 # ==============================================================
 # Backup

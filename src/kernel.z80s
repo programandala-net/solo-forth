@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608031450
+; Last modified: 201608032039
 
 include version.z80s
 
@@ -160,6 +160,7 @@ if defined trdos
 endif
 
 bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
+; XXX TODO -- move to the library
 
 characters_per_line:              equ $40
 lines_per_screen:                 equ $10
@@ -5014,6 +5015,7 @@ do_user:
   _constant_header b_slash_rec_,'B/REC'
 
   ; XXX TODO -- remove? used only once, and may be harcoded
+  ; XXX TODO -- move to the library
 
   dw bytes_per_sector
 

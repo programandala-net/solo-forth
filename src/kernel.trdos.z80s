@@ -4,9 +4,8 @@
 ; http://programandala.net/en.program.solo_forth.html
 
 ; XXX UNDER DEVELOPMENT
-; XXX TODO -- convert the code from G+DOS to TR-DOS
 
-; Last modified: 201608031448
+; Last modified: 201608032039
 
 ; ==============================================================
 ; Description
@@ -17,7 +16,7 @@
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016.
+; Marcos Cruz (programandala.net), 2016.
 
 ; ==============================================================
 ; License
@@ -36,49 +35,57 @@
 
 if defined trdos
 
+
+trdos_do_command equ $3D13
+  ; Routine to execute a TR-DOS command.
+  ; Input:
+  ;   C = command
+
+trdos_read_sectors_command equ $05
+trdos_write_sectors_command equ $06
+
+; ----------------------------------------------
+  _constant_header rec_slash_track_,'REC/TRACK'
+
+; doc{
+;
+; rec/track  ( -- n )
+;
+; Records (sectors) per disk track.
+;
+; }doc
+
+  dw 16
+
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
 
 ; doc{
 
-; sector-id  ( n1 -- n2 )
+; sector-id  ( n -- x )
 
-; Convert the sequential disk sector _n1_ to the disk sector id
-; _n2_, in the format required by G+DOS: The high byte of _n2_
-; is the track (0..79 for side 0; 128..207 for side 1); the low
-; byte of _n2_ is the sector (1..10).
+; Convert the sequential disk sector _n_ to the disk sector id
+; _x_, in the format required by TR-DOS: The high byte of _x_
+; is the track (0..79 for side 0; 80..159 for side 1); its low
+; byte is the sector (0..15).
 ;
 ; ----
-; : sector-id  ( n1 -- n2 )
-;   \ n2 (high byte) = track 0..79 for side 0, 128..207 for side 1
-;   \    (low byte)  = sector 1..10
-;   \ track0 = 0..79
-;   \ track = 0..207
-;   \ side = 0..1
-;   dup 10 mod 1+       ( n1 sector )
-;   swap dup 20 /       ( sector n1 track0 )
-;   swap 10 / 1 and     ( sector track0 side )
-;   128                 ( sector track 128 )
-;   negate 128 and or   ( sector track )
+; : sector-id  ( n -- x )
+;   \ x (high byte) = track 0..79 for side 0, 80..159 for side 1
+;   \   (low byte)  = sector 0..15
+;   \ track0        = 0..79
+;   \ track         = 0..159
+;   \ side          = 0..1
+;   dup sectors/track mod        ( n sector )
+;   swap sectors/track /         ( sector track )
 ;   flip or  ;
 ; ----
 ;
 ; }doc
 
-  dw dup_
-  _literal 10
-  dw mod_,one_plus_,swap_,dup_
-  _literal 20
-  dw slash_,swap_
-  _literal 10
-  dw slash_
-  _literal 1
-  dw and_
-
-  dw negate_
-  _literal 128
-  dw and_,or_
-
+  ; XXX TODO --
+  dw dup_,rec_slash_track_,mod_
+  dw swap_,rec_slash_track_,slash_
   dw flip_,or_
   dw exit_
 
@@ -137,55 +144,38 @@ if defined trdos
   ; XXX TODO restore the current drive
 
   dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
-  dw dup_
   dw sector_id_
   dw buffer_data_
-  dw transfer_sector_
-
-  dw one_plus_,sector_id_
-
-  ; XXX TODO -- benchmark again
-  dw buffer_data_,b_slash_rec_,plus_ ; XXX 23768 frames
-  ;_literal disk_buffer+cell+bytes_per_sector ; XXX 24425 frames??
-
-  dw transfer_sector_
-
+  dw rec_slash_blk_
+  dw transfer_sectors_
   dw exit_
 
 ; ----------------------------------------------
-  _code_header transfer_sector_,'TRANSFER-SECTOR'
+  _code_header transfer_sectors_,'TRANSFER-SECTORS'
 
 ; doc{
 ;
-; transfer-sector  ( x a -- )
+; transfer-sector  ( x a n -- )
 ;
-; The sector-level disk read-write linkage.
-; Transfer sector _x_ to or from disk.
-; The read or write mode must be previously set
-; by `write-mode` or `read-mode`.
-;
-; x = sector to read or write
-;     high byte = track 0..79, +128 if side 1
-;     low byte  = sector 1..10
-; a = source or destination address
+; The sector-level disk read-write linkage.  Transfer _n_ sectors from
+; memory address _a_ to disk sector _x_ or the other way around.  The
+; read or write mode must be previously set by `write-mode` or
+; `read-mode`.
 ;
 ; }doc
 
-; XXX TODO -- format the parameters list of the documentation,
-; and other similar cases as well
-
-  pop ix ; address
-  pop de ; d = track 0..79, +128 if side 1
-         ; e = sector 1..10
+  push ix ; save the address of `next`
+  pop hl
+  ld b,l ; b= number of sectors
+  pop hl ; address
+  pop de ; d = track 0..159
+         ; e = sector 1..16
   push bc ; save the Forth IP
-transfer_sector.drive equ $+1 ; XXX TODO -- not used yet
-  ld a,2 ; drive
-  rst 8 ; G+DOS hook
-transfer_sector.command:
-  ; G+DOS command already patched:
-  db $44 ; $44 = read ; $45 = write
+transfer_sectors.command equ $+1
+  ld c,trdos_read_sectors_command
+  call trdos_do_command
   pop bc ; restore the Forth IP
-  ld ix,next
+  pop ix ; restore the address of `next`
   _jp_next
 
 ; ----------------------------------------------
@@ -195,11 +185,11 @@ transfer_sector.command:
 ;
 ; write-mode  ( -- )
 ;
-; Set the write mode for `transfer-sector` and `transfer-block`.
+; Set the write mode for `transfer-sectors` and `transfer-block`.
 ;
 ; }doc
 
-  _literal $45 ; G+DOS write sector command
+  _literal trdos_write_sectors_command
   dw branch_,transfer_mode
 
 ; ----------------------------------------------
@@ -209,13 +199,14 @@ transfer_sector.command:
 ;
 ; read-mode  ( -- )
 ;
-; Set the read mode for `transfer-sector` and `transfer-block`.
+; Set the read mode for `transfer-sectors` and `transfer-block`.
 ;
 ; }doc
 
-  _literal $44 ; G+DOS read sector command
+  _literal trdos_read_sectors_command
 transfer_mode:
-  dw lit_,transfer_sector.command,c_store_
+  _literal transfer_sectors.command
+  dw c_store_
   dw exit_
 
 endif
