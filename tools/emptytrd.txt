@@ -1,0 +1,11 @@
+
+EmptyTRD by Iggy v1.00 (5.1.1997)
+	Usage   : EMPTYTRD dump_file_name[.TRD] [format]
+	Function: Creation of empty TR-DOS disk image file
+	Format  : 40S ... 40 tracks, single sided
+	          40D ... 40 tracks, double sided
+	          80S ... 80 tracks, single sided
+	          80D ... 80 tracks, double sided (default)
+	Format is optional, case insensitive and TRD extension, too
+	Examples: EMPTYTRD disk_a 40D
+	          EMPTYTRD disk_b.trd

@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201604161830
+# Last modified: 201608030250
 
 # ==============================================================
 # Author
@@ -80,6 +80,22 @@ tmp/kernel.plus3dos.bin.tap: src/kernel.z80s
 	mv forth.bin ../tmp/kernel.plus3dos.bin.tap && \
 	cd ..
 
+# ----------------------------------------------
+# Kernel for TR-DOS
+
+.PHONY: tmp/kernel.symbols.trdos.z80s
+tmp/kernel.symbols.trdos.z80s: tmp/kernel.trdos.bin.tap
+
+tmp/kernel.trdos.bin.tap: src/kernel.z80s
+	cd src && \
+	$(pasmo) -v --tap \
+		--equ trdos \
+		kernel.z80s \
+		forth.bin \
+		../tmp/kernel.symbols.trdos.z80s && \
+	mv forth.bin ../tmp/kernel.trdos.bin.tap && \
+	cd ..
+
 # ==============================================================
 # History
 
@@ -93,3 +109,5 @@ tmp/kernel.plus3dos.bin.tap: src/kernel.z80s
 # 2016-04-16: Fix: the process didn't stop when the assembling of the
 # kernel failed. Fix: the patching of the loader needed a dependency
 # here.
+#
+# 2016-08-03: First changes to support TR-DOS.

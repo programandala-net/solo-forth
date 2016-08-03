@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201605150109
+# Last modified: 201608030250
 
 # ==============================================================
 # Author
@@ -40,6 +40,9 @@
 # Forth Foundation Library (by Dick van Oudheusden)
 # 	http://irdvo.github.io/ffl/
 
+# DOSBox (by The DOSBox Team)
+#   http://www.dosbox.com
+
 # ==============================================================
 # History
 
@@ -72,7 +75,7 @@ MAKEFLAGS = --no-print-directory
 # Main
 
 .PHONY: all
-all: gplusdos
+all: gplusdos trdos
 #all: gplusdos plus3dos
 
 .PHONY: gplusdos
@@ -84,6 +87,9 @@ gplusdos: solo_forth_disk_1.mgt \
 .PHONY: plus3dos
 plus3dos: solo_forth_disk_a.dsk
 # plus3dos: solo_forth_disk_a.dsk solo_forth_disk_b.dsk
+
+.PHONY: trdos
+trdos: solo_forth_disk_a.trd
 
 clean: cleantmp
 	-rm -f solo_forth_disk_*.mgt solo_forth_disk_*.dsk
@@ -134,6 +140,17 @@ tmp/loader.plus3dos.bas: \
 
 tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
+
+# ----------------------------------------------
+# For TR-DOS
+
+tmp/loader.trdos.bas: \
+	tmp/kernel.symbols.trdos.z80s \
+	src/loader/trdos.bas
+	gforth tools/patch_the_loader.fs $^ $@
+
+tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
+	zmakebas -n boot -a 1 -o $@ $<
 
 # ==============================================================
 # Font drivers
@@ -198,35 +215,41 @@ solo_forth_disk_1.mgt: \
 		tmp/4x8fd.tap \
 		bin/fonts/ea5aky-font42.tap \
 		tmp/prnt42.tap
-	mkmgt solo_forth_disk_1.mgt \
-		bin/sys/gplusdos-sys-2a.tap \
-		tmp/loader.gplusdos.bas.tap \
-		tmp/kernel.gplusdos.bin.tap \
-		tmp/4x8fd.tap \
-		bin/fonts/ea5aky-font42.tap \
-		tmp/prnt42.tap \
-		bin/fonts/*.fzx
+	mkmgt $@ bin/sys/gplusdos-sys-2a.tap $^ bin/fonts/*.fzx
 
-tmp/solo_forth_disk_a.tap: \
+tmp/solo_forth_plus3dos_disk_a.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
 		tmp/4x8fd.tap \
 		bin/fonts/ea5aky-font42.tap \
 		tmp/prnt42.tap \
 		bin/fonts/fzx_fonts.tap
-	cat \
-		tmp/loader.plus3dos.bas.tap \
-		tmp/kernel.plus3dos.bin.tap \
+	cat $^ > $@
+
+solo_forth_disk_a.dsk: tmp/solo_forth_plus3dos_disk_a.tap
+	tap2dsk -720 -label SoloForth $< $@
+
+tmp/solo_forth_trdos_disk_a.tap: \
+		tmp/loader.trdos.bas.tap \
+		tmp/kernel.trdos.bin.tap \
 		tmp/4x8fd.tap \
 		bin/fonts/ea5aky-font42.tap \
 		tmp/prnt42.tap \
-		bin/fonts/fzx_fonts.tap \
-		> tmp/solo_forth_disk_a.tap
+		bin/fonts/fzx_fonts.tap
+	cat $^ > $@
 
-solo_forth_disk_a.dsk: tmp/solo_forth_disk_a.tap
-	tap2dsk -720 -label SoloForth \
-		tmp/solo_forth_disk_a.tap \
-		solo_forth_disk_a.dsk
+solo_forth_disk_a.trd: tmp/solo_forth_trdos_disk_a.tap
+	cd tmp && ln -sf $(notdir $<) TRDOS-A.TAP && cd -
+	rm -f $@
+	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
+	cd tmp && \
+	echo "EMPTYTRD.EXE SOLO_FORTH.TRD" > emptytrd.bat && \
+	echo "WRITETRD.EXE SOLO_FORTH.TRD TRDOS-A.TAP" >> emptytrd.bat && \
+	dosbox -exit emptytrd.bat && \
+	cd -
+	mv tmp/SOLO_FOR.TRD $@
+
+# XXX TODO -- finish .TRD
 
 # ----------------------------------------------
 # Library disk
@@ -276,6 +299,11 @@ tmp/library_for_gplusdos_with_meta_tools.fsb: $(gplusdos_core_library_files) $(m
 solo_forth_disk_2_with_meta_tools.mgt: tmp/library_for_gplusdos_with_meta_tools.fsb
 	fsb2-mgt tmp/library_for_gplusdos_with_meta_tools.fsb ;\
 	mv tmp/library_for_gplusdos_with_meta_tools.mgt solo_forth_disk_2_with_meta_tools.mgt
+
+# XXX TODO -- convert games to FBA
+# tmp/nuclear_invaders.fba: src/nuclear_invaders.fs
+# 	./make/fs2fba.sh $< ;\
+# 	mv $(basename $<).fba $@
 
 # Library disk for +3DOS
 
@@ -396,3 +424,5 @@ oldbackup:
 # 2016-05-03: Make three library disks: 1) only with the core library;
 # 2) the core library plus the meta tools (benchmarks and tests for
 # Solo Forth itself); 3) the core library plus the sample games.
+#
+# 2016-08-03: First changes to support TR-DOS.

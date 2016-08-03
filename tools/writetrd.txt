@@ -1,0 +1,34 @@
+
+				WRITETRD  v1.0
+				==============
+
+		MS-DOS or .TAP file to Betadisk image writer.
+				(public domain)
+ Syntax: WRITETRD image_file file
+ 	 where image_file is a raw dump of Betadisk (TR-DOS) formatted
+	 diskette (without sector IDs)
+	 and file is the name of converted file.
+
+ Function: This program writes a specified file to a Betadisk diskette
+	   image file for futher use in some TR-DOS Spectrum emulator
+	   under MS-DOS or writing back to a TR-DOS diskette.
+
+	Normal MS-DOS file writes it as CODE file, the blocks of .TAP
+	file as BASIC, CODE or DATA file. Special case is a headerless
+	file. Headerless file is written using the standard invented by
+	the author: filename is "NoHeader", type "CODE", in start field
+	is stored the flagbyte and in length field the filelength.
+
+ Error messages: A error message is given when image_file or file doesn't
+		 exist, or specified image_file isn't a valid image file.
+		 For writing files there are these limitations:
+		 1) The written file may not be longer than 0xff00 bytes
+		 2) In the dump directory can't be more than 128 files
+		 3) On the disk image must be enough free space for a file.
+		 If any of these conditions fails, a error message appears
+		 and the writing process terminates. The conditions are
+		 tested before processing each block of .TAP file.
+
+ Note: The program doesn't handle snapshot file formats .SNA, .Z80, .SP etc.
+
+Bugreports, coments, etc. to eged@elf.stuba.sk ( only till august 1996 :( )

@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201606011752
+; Last modified: 201608030239
 
 include version.z80s
 
@@ -87,10 +87,11 @@ include version.z80s
   ; flag (0/1) is used instead, with the flag name in a comment;
   ; it is changed with a text substitution.
 
-  ; Solo Forth can be compiled for G+DOS or +3DOS.  This depends
-  ; on two labels, `gplusdos` and `plus3dos`, defined with a
-  ; parameter of the Pasmo assembler. See the Makefile files for
-  ; details. Support for +3DOS is not finished yet.
+  ; Solo Forth can be compiled for G+DOS, +3DOS or TR-DOS.  This
+  ; depends on three labels, `gplusdos`, `plus3dos` and `trdos`,
+  ; defined with a parameter of the Pasmo assembler. See the
+  ; Makefile files for details. Support for +3DOS and TR-DOS is
+  ; not finished yet.
 
 if (!defined gplusdos) and (!defined plus3dos)
   gplusdos equ true ; G+DOS by default
@@ -114,8 +115,13 @@ developing: equ true
 ; ----------------------------------------------
 ; Forth
 
-origin:                           equ $5E00
-;origin:                           equ $5F00 ; XXX TMP -- for debugging
+default_origin:                   equ $5E00
+
+if defined trdos
+  origin:                         equ default_origin+113
+else
+  origin:                         equ default_origin
+endif
 
 ramtop:                           equ origin-1 ; used by the BASIC loader
 
