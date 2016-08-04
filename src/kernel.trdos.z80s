@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608032039
+; Last modified: 201608041725
 
 ; ==============================================================
 ; Description
@@ -56,6 +56,7 @@ trdos_write_sectors_command equ $06
 ; }doc
 
   dw 16
+  ; XXX TODO -- use a label and move to the kernel
 
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
@@ -73,17 +74,15 @@ trdos_write_sectors_command equ $06
 ; : sector-id  ( n -- x )
 ;   \ x (high byte) = track 0..79 for side 0, 80..159 for side 1
 ;   \   (low byte)  = sector 0..15
-;   \ track0        = 0..79
-;   \ track         = 0..159
-;   \ side          = 0..1
-;   dup sectors/track mod        ( n sector )
-;   swap sectors/track /         ( sector track )
+;   rec/track +             \ the first track is not used
+;   dup sectors/track mod   ( n sector )
+;   swap sectors/track /    ( sector track )
 ;   flip or  ;
 ; ----
 ;
 ; }doc
 
-  ; XXX TODO --
+  dw rec_slash_track_,plus_  ; the first track is not used
   dw dup_,rec_slash_track_,mod_
   dw swap_,rec_slash_track_,slash_
   dw flip_,or_
@@ -139,6 +138,11 @@ trdos_write_sectors_command equ $06
 ; The read or write mode must be previously set
 ; by `write-mode` or `read-mode`.
 ;
+; ----
+; : transfer-block  ( n -- )
+;   rec/blk * sector-id buffer-data rec/blk transfer-sectors  ;
+;
+; ----
 ; }doc
 
   ; XXX TODO restore the current drive
@@ -155,28 +159,63 @@ trdos_write_sectors_command equ $06
 
 ; doc{
 ;
-; transfer-sector  ( x a n -- )
+; transfer-sectors  ( x a n -- )
 ;
 ; The sector-level disk read-write linkage.  Transfer _n_ sectors from
 ; memory address _a_ to disk sector _x_ or the other way around.  The
 ; read or write mode must be previously set by `write-mode` or
 ; `read-mode`.
 ;
+; The high byte of _x_ is the track (0..79 for side 0; 80..159 for
+; side 1); its low byte is the sector (0..15).
+;
+; See `sector-id`.
+;
 ; }doc
 
-  push ix ; save the address of `next`
   pop hl
-  ld b,l ; b= number of sectors
-  pop hl ; address
-  pop de ; d = track 0..159
-         ; e = sector 1..16
-  push bc ; save the Forth IP
+  ld a,l    ; number of sectors
+  pop hl    ; address
+  pop de    ; d = track 0..159; e = sector 0..15
+  push ix   ; save the address of `next`
+  push bc   ; save the Forth IP
+  ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
   ld c,trdos_read_sectors_command
+  ;_z80_border_wait 4 ; XXX INFORMER
   call trdos_do_command
-  pop bc ; restore the Forth IP
-  pop ix ; restore the address of `next`
+  ;_z80_border_wait 2 ; XXX INFORMER
+  ; XXX TODO -- check error code returned in bc
+  pop bc    ; restore the Forth IP
+  pop ix    ; restore the address of `next`
+  _z80_border_wait 1 ; XXX INFORMER
   _jp_next
+
+; ----------------------------------------------
+;  _colon_header library_disk_,'LIBRARY-DISK'
+
+; doc{
+;
+; library-disk  ( c -- )
+;
+; Set disk drive _c_ ('a', 'b', 'c' or 'd') as the current library
+; disk.  By default it's disk drive 'b'.
+;
+; }doc
+
+  ; XXX TMP -- for debugging
+
+  _colon_header set_drive_,'SET-DRIVE'
+  ; _literal transfer_sector.drive
+  _literal 23833
+  dw c_store_
+  dw exit_
+  
+  _colon_header get_drive_,'GET-DRIVE'
+  ; _literal transfer_sector.drive
+  _literal 23833
+  dw c_fetch_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'

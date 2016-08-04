@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604260229
+  \ Last modified: 201608041731
 
   \ -----------------------------------------------------------
   \ Description
@@ -229,7 +229,6 @@ $45 constant hwsad  $46 constant otfoc $47 constant patch
 need z80-asm  need --hook-codes--
 
 code get-drive  ( -- n )
-  \ Get the current drive (1 or 2).
   bc push  \ save the Forth IP
   patch hook
   3ACE fta  \ XXX NEW
@@ -238,14 +237,15 @@ code get-drive  ( -- n )
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
   pusha jp  end-code
+  \ Get the current drive _n_ (1 or 2).
 
 code set-drive  ( n -- )
-  \ Set the current drive (1 or 2).
   hl pop
   bc push  \ save the Forth IP
   l a ld  21 hook   \ select drive in a
   bc pop   next ix ldp#  \ restore the Forth registers
   jpnext  end-code
+  \ Set the current drive _n_ (1 or 2).
 
 ( delete-file )
 

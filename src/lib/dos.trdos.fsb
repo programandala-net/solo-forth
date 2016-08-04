@@ -1,0 +1,41 @@
+  \ dos.trdos.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201608041546
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ TR-DOS support.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-08-04: Start.
+
+( get-drive set-drive )
+
+23833 constant dos-drive
+
+: get-drive  ( -- b )  dos-drive c@  ;
+  \ Get the current drive _b_ (0..3).
+
+: set-drive  ( b -- )  dos-drive c!  ;
+  \ Set the current drive _b_ (0..3).
+
+  \ vim: filetype=soloforth
+

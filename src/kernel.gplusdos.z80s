@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201608032039
+; Last modified: 201608041730
 
 ; ==============================================================
 ; Description
@@ -42,7 +42,9 @@ if defined gplusdos
 ; Records (sectors) per disk track.
 ;
 ; }doc
+
   dw 10
+  ; XXX TODO -- use a label and move to the kernel
 
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
@@ -186,9 +188,48 @@ transfer_sector.drive equ $+1 ; XXX TODO -- not used yet
 transfer_sector.command:
   ; G+DOS command already patched:
   db $44 ; $44 = read ; $45 = write
+  ; XXX TODO -- check error code
   pop bc ; restore the Forth IP
   ld ix,next
   _jp_next
+
+; ----------------------------------------------
+  _colon_header set_library_drive_,'SET-LIBRARY-DRIVE'
+
+; doc{
+;
+; set-library-drive  ( b -- )
+;
+; Set disk drive _b_ (1 or 2) as the library drive.  By default
+; it's drive 2.
+;
+; See `get-library-drive`.
+;
+; }doc
+
+  _literal transfer_sector.drive
+  dw c_store_
+  dw exit_
+
+  ; XXX TODO -- do not patch `transfer-sector`, but a higher level.
+
+; ----------------------------------------------
+  _colon_header get_library_drive_,'GET-LIBRARY-DRIVE'
+
+; doc{
+;
+; get-library-drive  ( b -- )
+;
+; Get the disk drive _b_ (1 or 2) used the library drive.  By default
+; it's drive 2.
+;
+; See `set-library-drive`.
+;
+; }doc
+
+  _literal transfer_sector.drive
+  dw c_store_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'

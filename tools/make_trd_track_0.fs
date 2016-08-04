@@ -5,7 +5,7 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified: 201608040216
+\ Last modified: 201608041627
 
 \ Description: Create a file with the contents of track 0 of an empty
 \ TRD disk image.
@@ -42,25 +42,39 @@
   \ Write a 16-bit number _16b_ to file _fid_, in Z80 format (LSB
   \ first).
 
+8 constant /disk-label
+  \ Max characters per disk label.
+
+create disk-label /disk-label chars allot
+  \ Create a buffer for the disk-label string.
+
+: disk-label$  ( -- ca len )  disk-label /disk-label  ;
+  \ Return the disk-label string.
+
+: >disk-label$  ( ca1 len1 -- ca2 len2 )
+  disk-label$  2dup blank  rot max chars move  disk-label$ ;
+  \ Return disk label _ca1 len1_, padded with spaces to its maximum
+  \ length.
+
 : sector-8  ( ca len fid -- )
   >r
-  0 r@ 8b>file               \ end of directory
-  224 >nulls$ r@ str>file    \ unused
-  0 r@ 8b>file               \ first free sector of first free track
-  1 r@ 8b>file               \ first free track
-  $16 r@ 8b>file             \ disk type: 80 tracks, double sided
-  0 r@ 8b>file               \ number of files on disk
-  $09F0 r@ 16b>file          \ number of free sectors
-  $10 r@ 8b>file             \ TR-DOS id byte
-  0 r@ 8b>file               \ unused
-  9 >spaces$ r@ str>file     \ unused
-  0 r@ 8b>file               \ unused
-  0 r@ 8b>file               \ number of deleted files
-  r@ str>file  \ disk name
-  3 >nulls$ r> str>file      \ unused
+  0 r@ 8b>file                  \ end of directory
+  224 >nulls$ r@ str>file       \ unused
+  0 r@ 8b>file                  \ first free sector of first free track
+  1 r@ 8b>file                  \ first free track
+  $16 r@ 8b>file                \ disk type: 80 tracks, double sided
+  0 r@ 8b>file                  \ number of files on disk
+  $09F0 r@ 16b>file             \ number of free sectors
+  $10 r@ 8b>file                \ TR-DOS id byte
+  2 >nulls$ r@ str>file         \ unused
+  9 >spaces$ r@ str>file        \ unused
+  0 r@ 8b>file                  \ unused
+  0 r@ 8b>file                  \ number of deleted files
+  >disk-label$ r@ str>file      \ disk label
+  3 >nulls$ r> str>file         \ unused
   ;
   \ Save to file _fid_ the contents of sector 8 of track 0 of an empty
-  \ TRD disk image with disk name _ca len_.
+  \ TRD disk image with disk label _ca len_.
 
 : empty-sectors  ( n fid -- )  swap /sector * >nulls$ rot str>file  ;
   \ Write _n_ empty sectors to file _fid_.

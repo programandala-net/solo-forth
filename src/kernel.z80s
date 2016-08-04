@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608032039
+; Last modified: 201608041731
 
 include version.z80s
 
@@ -9389,7 +9389,7 @@ free_buffer.end:
 ; ----
 ; : buffer  ( n -- a )
 ;   dup buffer-block =
-;   if  drop  else  (buffer)  then  buffer-data  ;
+;   if  drop  else  free-buffer  then  buffer-data  ;
 ; ----
 ;
 ; }doc
@@ -9398,7 +9398,7 @@ free_buffer.end:
   dw zero_branch_,buffer.not_equals
   ; The requested block is the one already in the buffer.
   dw drop_
-  dw branch_,buffer.end
+  dw branch_,buffer.end  ; XXX TODO -- exit, faster?
 buffer.not_equals:
   dw free_buffer_
 buffer.end:
@@ -9561,7 +9561,7 @@ block.end:
 ;
 ; (load)  ( u -- )
 ;
-; Making block _u_ the current input source and interpret it.
+; Make block _u_ the current input source and interpret it.
 
 ; This word is a common factor of `load` and `continued`.
 ;
