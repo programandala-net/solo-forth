@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608041725
+; Last modified: 201608041923
 
 ; ==============================================================
 ; Description
@@ -35,14 +35,18 @@
 
 if defined trdos
 
-
-trdos_do_command equ $3D13
+trdos_routine.execute_command equ $3D13
   ; Routine to execute a TR-DOS command.
   ; Input:
   ;   C = command
 
-trdos_read_sectors_command equ $05
-trdos_write_sectors_command equ $06
+trdos_command.init_drive    equ $01
+trdos_command.read_sectors  equ $05
+trdos_command.write_sectors equ $06
+
+
+trdos_variable.current_drive  equ 23798
+trdos_variable.default_drive  equ 23833
 
 ; ----------------------------------------------
   _constant_header rec_slash_track_,'REC/TRACK'
@@ -181,15 +185,17 @@ trdos_write_sectors_command equ $06
   push bc   ; save the Forth IP
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
-  ld c,trdos_read_sectors_command
+  ld c,trdos_command.read_sectors
   ;_z80_border_wait 4 ; XXX INFORMER
-  call trdos_do_command
+  call trdos_routine.execute_command
   ;_z80_border_wait 2 ; XXX INFORMER
   ; XXX TODO -- check error code returned in bc
   pop bc    ; restore the Forth IP
   pop ix    ; restore the address of `next`
-  _z80_border_wait 1 ; XXX INFORMER
+  ; _z80_border_wait 1 ; XXX INFORMER
   _jp_next
+
+; XXX TODO -- flash the border, like G+DOS
 
 ; ----------------------------------------------
 ;  _colon_header library_disk_,'LIBRARY-DISK'
@@ -205,15 +211,49 @@ transfer_sectors.command equ $+1
 
   ; XXX TMP -- for debugging
 
+  _code_header init_drive_,'INIT-DRIVE'
+
+
+; doc{
+;
+; init-drive  ( n -- )
+;
+; }doc
+
+; Note: this TR-DOS routine stores the drive number in
+; `trdos_variable.current_drive`.
+
+  pop hl
+  ld a,l    ; drive number (0..3)
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ld c,trdos_command.init_drive
+  call trdos_routine.execute_command
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _jp_next
+
   _colon_header set_drive_,'SET-DRIVE'
-  ; _literal transfer_sector.drive
-  _literal 23833
+
+  ; XXX FIXME -- hang:
+  ;_literal trdos_variable.current_drive
+  ;dw c_store_
+
+  ; XXX FIXME -- no effect:
+  _literal trdos_variable.default_drive
   dw c_store_
+
+  ; XXX FIXME -- hang:
+  ; dw dup_,init_drive_
+  ; _literal trdos_variable.default_drive
+  ; dw c_store_
+ 
+  ; XXX TODO -- how to set the default drive?
+  
   dw exit_
   
   _colon_header get_drive_,'GET-DRIVE'
-  ; _literal transfer_sector.drive
-  _literal 23833
+  _literal trdos_variable.current_drive
   dw c_fetch_
   dw exit_
 
@@ -228,7 +268,7 @@ transfer_sectors.command equ $+1
 ;
 ; }doc
 
-  _literal trdos_write_sectors_command
+  _literal trdos_command.write_sectors
   dw branch_,transfer_mode
 
 ; ----------------------------------------------
@@ -242,10 +282,74 @@ transfer_sectors.command equ $+1
 ;
 ; }doc
 
-  _literal trdos_read_sectors_command
+  _literal trdos_command.read_sectors
 transfer_mode:
   _literal transfer_sectors.command
   dw c_store_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header type_ascii_,'TYPE-ASCII'
+
+  ; XXX TMP -- for debugging
+
+; : type-ascii  ( ca len -- )
+;   bounds ?do
+;     i c@ dup dup ascii-char? 0= swap control-char? or
+;     if  drop '.'  then  emit
+;   loop  ;
+
+  dw bounds_
+  dw paren_question_do_,type_ascii.loop_exit
+  dw i_,c_fetch_,dup_,dup_
+  _literal 127
+  dw greater_than_
+  dw swap_,b_l_,less_than_,or_
+  dw zero_branch_,type_ascii.then
+  dw drop_
+  _literal '.'
+type_ascii.then
+  dw emit_
+  dw paren_loop_
+type_ascii.loop_exit
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header trdos_tester_,'TRDOS-TESTER'
+
+  ; XXX TMP -- for debugging
+  
+; : trdos-tester  ( u1 u2 -- )
+;   page
+;   1+ swap ?do
+;     i block drop
+;     i 3 .r space buffer-data 28 type-ascii
+;     key 'q' = if  unloop exit  then
+;   loop  ;
+; ----
+
+; Read a range of blocks, waiting for a key after every block is read,
+; in order to check if they are right, using the memory viewer of the
+; Fuse emulator.
+
+  dw page_
+  dw one_plus_,swap_
+  dw paren_question_do_,trdos_tester.loop_exit
+  dw i_,block_,drop_
+  dw i_
+  _literal 3
+  dw dot_r_,space_
+  dw buffer_data_
+  _literal 28
+  dw type_ascii_
+  dw key_
+  _literal 'q'
+  dw equals_
+  dw zero_branch_,trdos_tester.continue
+  dw unloop_,exit_
+trdos_tester.continue
+  dw paren_loop_
+trdos_tester.loop_exit
   dw exit_
 
 endif
