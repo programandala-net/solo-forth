@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608032047
+# Last modified: 201608040212
 
 # ==============================================================
 # Author
@@ -336,6 +336,10 @@ solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
 # formated disk image.  A custom version of `fsb2-trd` is needed for
 # that.
 
+# XXX TODO -- 2016-08-04: use <tools/make_trd_track_0.fs> to create
+# the track 0 files, and concatenate them to the TRD disk library
+# files.
+
 trdos_core_library_files = \
 	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb , $(core_library_files))
 
@@ -344,27 +348,41 @@ tmp/library_for_trdos.fsb: $(trdos_core_library_files)
 		$(trdos_core_library_files) \
 		> tmp/library_for_trdos.fsb
 
-solo_forth_disk_b_library.trd: tmp/library_for_trdos.fsb
-	fsb2-trd tmp/library_for_trdos.fsb ;\
-	mv tmp/library_for_trdos.trd $@
+%_track_0.bin:
+	tools/make_trd_track_0.fs
 
-tmp/library_for_trdos_with_games.fsb: $(trdos_core_library_files) $(game_library_files)
+solo_forth_disk_b_library.trd: \
+	tmp/library_for_trdos.fsb tmp/trdos_disk_b_track_0.bin
+	tools/fsb2-trd-library.sh tmp/library_for_trdos.fsb ;\
+	cat \
+		tmp/trdos_disk_b_track_0.bin \
+		tmp/library_for_trdos.trd > $@
+
+tmp/library_for_trdos_with_games.fsb: \
+	$(trdos_core_library_files) $(game_library_files)
 	cat \
 		$(trdos_core_library_files) $(game_library_files) \
 		> tmp/library_for_trdos_with_games.fsb
 
-solo_forth_disk_c_library_with_games.trd: tmp/library_for_trdos_with_games.fsb
-	fsb2-trd tmp/library_for_trdos_with_games.fsb ;\
-	mv tmp/library_for_trdos_with_games.trd $@
+solo_forth_disk_c_library_with_games.trd: \
+	tmp/library_for_trdos_with_games.fsb tmp/trdos_disk_c_track_0.bin
+	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_games.fsb ;\
+	cat \
+		tmp/trdos_disk_c_track_0.bin \
+		tmp/library_for_trdos_with_games.trd > $@
 
-tmp/library_for_trdos_with_meta_tools.fsb: $(trdos_core_library_files) $(meta_tools_library_files)
+tmp/library_for_trdos_with_meta_tools.fsb: \
+	$(trdos_core_library_files) $(meta_tools_library_files)
 	cat \
 		$(trdos_core_library_files) $(meta_tools_library_files) \
 		> tmp/library_for_trdos_with_meta_tools.fsb
 
-solo_forth_disk_d_library_with_meta_tools.trd: tmp/library_for_trdos_with_meta_tools.fsb
-	fsb2-trd tmp/library_for_trdos_with_meta_tools.fsb ;\
-	mv tmp/library_for_trdos_with_meta_tools.trd $@
+solo_forth_disk_d_library_with_meta_tools.trd: \
+	tmp/library_for_trdos_with_meta_tools.fsb tmp/trdos_disk_d_track_0.bin
+	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_meta_tools.fsb ;\
+	cat \
+		tmp/trdos_disk_d_track_0.bin \
+		tmp/library_for_trdos_with_meta_tools.trd > $@
 
 # ==============================================================
 # Backup
@@ -472,4 +490,6 @@ oldbackup:
 # 2) the core library plus the meta tools (benchmarks and tests for
 # Solo Forth itself); 3) the core library plus the sample games.
 #
-# 2016-08-03: First changes to support TR-DOS.
+# 2016-08-03: Make first changes to support TR-DOS.
+#
+# 2016-08-04: Fix TRD library disks with a track 0.
