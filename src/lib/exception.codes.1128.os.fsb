@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605181602
+  \ Last modified: 201608042151
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,37 +23,44 @@
   \ XXX TODO -- it seems OS error codes (there are 28 of them)
   \ may be returned by G+DOS.  they are detected and converted
   \ by `ior>error`.
+  \
+  \ XXX TODO -- Move this to the G+DOS file and integrate the
+  \ calculation. Study in the G+DOS documentation, which OS
+  \ errors can be actually issued by DOS operations, not by DOS
+  \ commands entered in the BASIC CLI.
 
-#-1128 \ OS:
-#-1129 \ OS:
-#-1130 \ OS:
-#-1131 \ OS:
-#-1132 \ OS:
-#-1133 \ OS:
-#-1134 \ OS:
-#-1135 \ OS:
-#-1136 \ OS:
-#-1137 \ OS:
-#-1138 \ OS:
-#-1139 \ OS:
-#-1140 \ OS:
-#-1141 \ OS:
-#-1142 \ OS:
+#-1128 \ OS: OK
+#-1129 \ OS: NEXT without FOR
+#-1130 \ OS: Variable not found
+#-1131 \ OS: Subscript wrong
+#-1132 \ OS: Out of memory
+#-1133 \ OS: Out of screen
+#-1134 \ OS: Number too big
+#-1135 \ OS: RETURN without GO SUB
+#-1136 \ OS: End of file
+#-1137 \ OS: STOP statement
+#-1138 \ OS: Invalid argument
+#-1139 \ OS: Integer out of range
+#-1140 \ OS: Nonsense in BASIC
+#-1141 \ OS: BREAK - CONT repeats
+#-1142 \ OS: Out of DATA
 
 ( OS error codes #-1143..#-1154 )
 
-#-1143 \ OS:
-#-1144 \ OS:
-#-1145 \ OS:
-#-1146 \ OS:
-#-1147 \ OS:
-#-1148 \ OS:
-#-1149 \ OS:
-#-1150 \ OS:
-#-1151 \ OS:
-#-1151 \ OS:
-#-1152 \ OS:
-#-1153 \ OS:
-#-1154 \ OS:
+#-1143 \ OS: Invalid file name
+#-1144 \ OS: No room for line
+#-1145 \ OS: STOP in INPUT
+#-1146 \ OS: FOR without NEXT
+#-1147 \ OS: Invalid I/O device
+#-1148 \ OS: Invalid colour
+#-1149 \ OS: BREAK into program
+#-1150 \ OS: RAMTOP no good
+#-1151 \ OS: Statement lost
+#-1151 \ OS: Invalid stream
+#-1152 \ OS: FN without DEF
+#-1153 \ OS: Parameter error
+#-1154 \ OS: Tape loading error
 
   \ vim: filetype=soloforth
+  \
+  

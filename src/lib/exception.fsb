@@ -59,11 +59,18 @@
 ( error>ordinal error>line )
 
 : error>ordinal  ( -n1 -- +n2 )
-  abs dup 256 < ?exit
-      dup 1000 < if  [ 256 091 - ] literal - exit  then
-      [ 1000 286 - 256 091 - + ] literal -   ;
-
-  \ XXX TODO  add OS codes
+  abs
+  dup 256 < ?exit  \ standard
+  dup 1000 < if  [ 256 91 - ] literal - exit  then  \
+  [ 1000 286 - 256 91 - + ] literal -   ;
+  \ Legend:
+  \   -90 = lowest error defined
+  \         in the standard range (-255..-1)
+  \  -285 = lowest error reserved for the Forth system
+  \         (not including the DOS)
+  \         in the standard range (-4095..-256)
+  \ -1000 = first (highest) error reserved for the DOS
+  \         in the standard range (-4095..-256)
 
   \ doc{
   \
@@ -83,7 +90,7 @@
 
 : error>line  ( -n1 -- n2 )
   error>ordinal dup >r
-  begin  dup dup 16 / - r@ <>  while  1+  repeat  rdrop  ;
+  begin  dup dup l/scr / - r@ <>  while  1+  repeat  rdrop  ;
 
   \ doc{
   \
@@ -106,7 +113,7 @@ s" Standard error codes" located error-messages-block !
   \
   \ error-messages-block  ( -- a )
   \
-  \ Variable that holds the block that holds the error
+  \ Variable that contains the block that holds the error
   \ messages.
   \
   \ }doc

@@ -9,7 +9,7 @@
   \ Description
 
   \ The Forth system error codes (range -4095..-256) used for
-  \ G+DOS (range -1031..-1000).
+  \ G+DOS.
 
   \ -----------------------------------------------------------
   \ Latest changes
