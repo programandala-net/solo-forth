@@ -1,8 +1,8 @@
-_meta/
+*.dsk
+*.mgt
 *.sna
 *.szx
-*.z80
-*.mgt
 *.trd
-*.dsk
+*.z80
+_meta/
 tmp/

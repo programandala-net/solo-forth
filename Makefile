@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608040212
+# Last modified: 201608050125
 
 # ==============================================================
 # Author
@@ -79,27 +79,38 @@ all: gplusdos trdos
 #all: gplusdos plus3dos
 
 .PHONY: gplusdos
-gplusdos: solo_forth_disk_1.mgt \
-	solo_forth_disk_2_library.mgt \
-	solo_forth_disk_2_library_with_games.mgt \
-	solo_forth_disk_2_library_with_meta_tools.mgt
+gplusdos: \
+	disks/gplusdos/solo_forth_disk_1.mgt \
+	disks/gplusdos/solo_forth_disk_2_library.mgt \
+	disks/gplusdos/solo_forth_disk_2_library_with_games.mgt \
+	disks/gplusdos/solo_forth_disk_2_library_with_meta_tools.mgt
 
 .PHONY: plus3dos
-plus3dos: solo_forth_disk_a.dsk
-# solo_forth_disk_b_library.dsk
+plus3dos: \
+	disks/plus3dos/solo_forth_disk_a.dsk
+# disks/plus3dos/solo_forth_disk_b_library.dsk
 
 .PHONY: trdos
-trdos: solo_forth_disk_a.trd \
-	solo_forth_disk_b_library.trd \
-	solo_forth_disk_c_library_with_games.trd
+trdos: \
+	disks/trdos/solo_forth_disk_a.trd \
+	disks/trdos/solo_forth_disk_b_library.trd \
+	disks/trdos/solo_forth_disk_c_library_with_games.trd
 
 # XXX TMP -- too large
 # XXX TODO -- split into benchmarks and tests
 #	solo_forth_disk_d_library_with_meta_tools.trd
 
-clean: cleantmp
-	-rm -f solo_forth_disk_*.mgt solo_forth_disk_*.dsk solo_forth_disk_*.trd
+.PHONY: clean
+clean: cleantmp cleandisks
 
+.PHONY: cleandisks
+cleandisks:
+	rm -f \
+		disks/gplusdos/*.mgt \
+		disks/plus3dos/*.dsk \
+		disks/trdos/*.trd
+
+.PHONY: cleantmp
 cleantmp:
 	-rm -f tmp/*
 
@@ -212,7 +223,7 @@ bin/fonts/fzx_fonts.tap : $(fzx_fonts)
 # ----------------------------------------------
 # G+DOS main disk
 
-solo_forth_disk_1.mgt: \
+disks/gplusdos/solo_forth_disk_1.mgt: \
 		tmp/loader.gplusdos.bas.tap \
 		tmp/kernel.gplusdos.bin.tap \
 		tmp/4x8fd.tap \
@@ -232,7 +243,7 @@ tmp/solo_forth_plus3dos_disk_a.tap: \
 		bin/fonts/fzx_fonts.tap
 	cat $^ > $@
 
-solo_forth_disk_a.dsk: tmp/solo_forth_plus3dos_disk_a.tap
+disks/plus3dos/solo_forth_disk_a.dsk: tmp/solo_forth_plus3dos_disk_a.tap
 	tap2dsk -720 -label SoloForth $< $@
 
 # ----------------------------------------------
@@ -247,7 +258,7 @@ tmp/solo_forth_trdos_disk_a.tap: \
 		bin/fonts/fzx_fonts.tap
 	cat $^ > $@
 
-solo_forth_disk_a.trd: tmp/solo_forth_trdos_disk_a.tap
+disks/trdos/solo_forth_disk_a.trd: tmp/solo_forth_trdos_disk_a.tap
 	cd tmp && ln -sf $(notdir $<) TRDOS-A.TAP && cd -
 	rm -f $@
 	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
@@ -286,7 +297,7 @@ tmp/library_for_gplusdos.fsb: $(gplusdos_core_library_files)
 		$(gplusdos_core_library_files) \
 		> tmp/library_for_gplusdos.fsb
 
-solo_forth_disk_2_library.mgt: tmp/library_for_gplusdos.fsb
+disks/gplusdos/solo_forth_disk_2_library.mgt: tmp/library_for_gplusdos.fsb
 	fsb2-mgt tmp/library_for_gplusdos.fsb ;\
 	mv tmp/library_for_gplusdos.mgt $@
 
@@ -295,7 +306,7 @@ tmp/library_for_gplusdos_with_games.fsb: $(gplusdos_core_library_files) $(game_l
 		$(gplusdos_core_library_files) $(game_library_files) \
 		> tmp/library_for_gplusdos_with_games.fsb
 
-solo_forth_disk_2_library_with_games.mgt: tmp/library_for_gplusdos_with_games.fsb
+disks/gplusdos/solo_forth_disk_2_library_with_games.mgt: tmp/library_for_gplusdos_with_games.fsb
 	fsb2-mgt tmp/library_for_gplusdos_with_games.fsb ;\
 	mv tmp/library_for_gplusdos_with_games.mgt $@
 
@@ -304,7 +315,7 @@ tmp/library_for_gplusdos_with_meta_tools.fsb: $(gplusdos_core_library_files) $(m
 		$(gplusdos_core_library_files) $(meta_tools_library_files) \
 		> tmp/library_for_gplusdos_with_meta_tools.fsb
 
-solo_forth_disk_2_library_with_meta_tools.mgt: tmp/library_for_gplusdos_with_meta_tools.fsb
+disks/gplusdos/solo_forth_disk_2_library_with_meta_tools.mgt: tmp/library_for_gplusdos_with_meta_tools.fsb
 	fsb2-mgt tmp/library_for_gplusdos_with_meta_tools.fsb ;\
 	mv tmp/library_for_gplusdos_with_meta_tools.mgt $@
 
@@ -324,7 +335,7 @@ tmp/library_for_plus3dos.fsb: $(plus3dos_core_library_files) $(meta_tools_librar
 		> tmp/library_for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
-solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
+disks/plus3dos/solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
 	fsb2-dsk tmp/library_for_plus3dos.fsb ;\
 	mv tmp/library_for_plus3dos.dsk solo_forth_disk_b.dsk
 
@@ -351,7 +362,7 @@ tmp/library_for_trdos.fsb: $(trdos_core_library_files)
 %_track_0.bin:
 	tools/make_trd_track_0.fs
 
-solo_forth_disk_b_library.trd: \
+disks/trdos/solo_forth_disk_b_library.trd: \
 	tmp/library_for_trdos.fsb tmp/trdos_disk_b_track_0.bin
 	tools/fsb2-trd-library.sh tmp/library_for_trdos.fsb ;\
 	cat \
@@ -364,7 +375,7 @@ tmp/library_for_trdos_with_games.fsb: \
 		$(trdos_core_library_files) $(game_library_files) \
 		> tmp/library_for_trdos_with_games.fsb
 
-solo_forth_disk_c_library_with_games.trd: \
+disks/trdos/solo_forth_disk_c_library_with_games.trd: \
 	tmp/library_for_trdos_with_games.fsb tmp/trdos_disk_c_track_0.bin
 	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_games.fsb ;\
 	cat \
@@ -377,7 +388,7 @@ tmp/library_for_trdos_with_meta_tools.fsb: \
 		$(trdos_core_library_files) $(meta_tools_library_files) \
 		> tmp/library_for_trdos_with_meta_tools.fsb
 
-solo_forth_disk_d_library_with_meta_tools.trd: \
+disks/trdos/solo_forth_disk_d_library_with_meta_tools.trd: \
 	tmp/library_for_trdos_with_meta_tools.fsb tmp/trdos_disk_d_track_0.bin
 	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_meta_tools.fsb ;\
 	cat \
@@ -493,3 +504,5 @@ oldbackup:
 # 2016-08-03: Make first changes to support TR-DOS.
 #
 # 2016-08-04: Fix TRD library disks with a track 0.
+#
+# 2016-08-05: Create the disks images in <disks/DOSNAME>.

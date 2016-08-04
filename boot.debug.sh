@@ -8,14 +8,15 @@
 # Boot Solo Forth on the Fuse emulator with breakpoints
 
 # 2015-08-16: Start.
+# 2016-08-05: Update with directories.
 
 # 2016-04-20: Debug the ROM calculator support
 fuse-gtk \
-  solo_forth_disk_1.mgt \
+  disks/gplusdos/solo_forth_disk_1.mgt \
   --debugger-command "break 0x353B"\
  &
 # fuse-gtk \
-#   solo_forth_disk_1.mgt \
+#   disks/gplusdos/solo_forth_disk_1.mgt \
 #   --debugger-command "break 0x336C
 #   break 0x338C
 #   break 0x33A1
@@ -25,7 +26,7 @@ fuse-gtk \
 # 2016-04-10: Debug the tape support
 #
 # fuse-gtk \
-#   solo_forth_disk_1.mgt \
+#   disks/gplusdos/solo_forth_disk_1.mgt \
 #   --debugger-command "break 0x04C2
 #   break 0x053C
 #   break 0x0991
