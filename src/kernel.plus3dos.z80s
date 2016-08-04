@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608031426
+; Last modified: 201608050044
 
 ; ==============================================================
 ; Description
@@ -49,7 +49,6 @@ back_from_dos.error:
 convert_dos_error_code:
   ; Input:   a  = original DOS error code (0..36)
   ; Outptut: hl = DOS error code converted to Forth range (-1000..-1036)
-  ; XXX TODO use standard codes?
   ; XXX TODO make a Forth word to access this code?
   ld h,0
   ld l,a

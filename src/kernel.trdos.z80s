@@ -5,13 +5,12 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608041923
+; Last modified: 201608042240
 
 ; ==============================================================
 ; Description
 
 ; The part of the Solo Forth's kernel that is specific to TR-DOS.
-; Not finished.
 
 ; ==============================================================
 ; Author
@@ -35,18 +34,99 @@
 
 if defined trdos
 
-trdos_routine.execute_command equ $3D13
-  ; Routine to execute a TR-DOS command.
-  ; Input:
-  ;   C = command
+; ==============================================================
+; TR-DOS Commands
 
-trdos_command.init_drive    equ $01
-trdos_command.read_sectors  equ $05
-trdos_command.write_sectors equ $06
+trdos_routine.execute_command             equ 15635 ; $3D13
+  ; Routine to execute a TR-DOS command, whose code is in the C
+  ; register.
 
+trdos_command.init_drive                  equ $01
+trdos_command.read_sectors                equ $05
+trdos_command.write_sectors               equ $06
+trdos_command.cat                         equ $07
+trdos_command.read_file_descriptor        equ $08
+trdos_command.write_file_descriptor       equ $09
+trdos_command.find_file                   equ $0A
+trdos_command.save_code_file              equ $0B
+trdos_command.save_basic_program          equ $0C
+trdos_command.delete_file                 equ $12
+trdos_command.copy_from_hl_to_descriptor  equ $13
+trdos_command.copy_from_descriptor_to_hl  equ $14
+trdos_command.test_track                  equ $15
+trdos_command.select_bottom_side          equ $16
+trdos_command.selet_top_side              equ $17
+trdos_command.read_system_track           equ $18
 
-trdos_variable.current_drive  equ 23798
-trdos_variable.default_drive  equ 23833
+; ==============================================================
+; TR-DOS variables
+
+trdos_variable.current_drive              equ 23798
+trdos_variable.default_drive              equ 23833
+
+; ==============================================================
+; Routines
+
+; ------------------------------
+; DOS call
+
+dos:
+
+if 0
+
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+dos.command equ $+1
+  ld c,0    ; DOS command (must be patched before calling)
+  call trdos_routine.execute_command
+  ld a,c    ; error code
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  ret
+
+else
+
+; Input:
+;   (dos.command) = command
+; Output:
+;   A  = error code or zero
+;   BC = error code or zero
+;   Z  = no error?
+
+dos.command equ $+1
+  ld c,0    ; DOS command (must be patched before calling)
+  call trdos_routine.execute_command
+  ld a,c    ; error code
+  and a
+  ret
+
+endif
+
+back_from_dos:
+;   A  = error code or zero
+;   Z  = no error?
+  jp z,false_
+
+back_from_dos.error:
+  ; a = error code
+  call convert_dos_error_code
+  ; hl = error code
+  _jp_pushhl
+
+convert_dos_error_code:
+  ; Input:   a  = original DOS error code (0..12)
+  ; Outptut: hl = DOS error code converted to Forth range (-1012..-1000)
+  ; XXX TODO make a Forth word to access this code?
+  ld h,0
+  ld l,a
+convert_dos_error_code.hl:
+  ld de,1000
+  add hl,de
+  _z80_border_wait 2 ; XXX INFORMER
+  jp negate_hl
+
+; ==============================================================
+; Dictionary
 
 ; ----------------------------------------------
   _constant_header rec_slash_track_,'REC/TRACK'
@@ -161,6 +241,8 @@ trdos_variable.default_drive  equ 23833
 ; ----------------------------------------------
   _code_header transfer_sectors_,'TRANSFER-SECTORS'
 
+if 0
+
 ; doc{
 ;
 ; transfer-sectors  ( x a n -- )
@@ -186,14 +268,52 @@ trdos_variable.default_drive  equ 23833
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
   ld c,trdos_command.read_sectors
-  ;_z80_border_wait 4 ; XXX INFORMER
   call trdos_routine.execute_command
-  ;_z80_border_wait 2 ; XXX INFORMER
   ; XXX TODO -- check error code returned in bc
   pop bc    ; restore the Forth IP
   pop ix    ; restore the address of `next`
-  ; _z80_border_wait 1 ; XXX INFORMER
   _jp_next
+
+else
+
+; doc{
+;
+; transfer-sectors  ( x a n -- ior )
+;
+; The sector-level disk read-write linkage.  Transfer _n_ sectors from
+; memory address _a_ to disk sector _x_ or the other way around.  The
+; read or write mode must be previously set by `write-mode` or
+; `read-mode`.
+;
+; The high byte of _x_ is the track (0..79 for side 0; 80..159 for
+; side 1); its low byte is the sector (0..15).
+;
+; See `sector-id`.
+;
+; }doc
+
+  ; XXX FIXME -- when there's no disk in the drive, the system never
+  ; returns from the DOS.
+
+transfer_sectors.command equ $+1
+  ld a,trdos_command.read_sectors
+  ld (dos.command),a
+  pop hl
+  ld a,l    ; number of sectors
+  pop hl    ; address
+  pop de    ; d = track 0..159; e = sector 0..15
+  push ix   ; save the address of `next`
+  push bc   ; save the Forth IP
+  ld b,a    ; number of sectors
+  call dos
+  ; XXX TODO -- check error code returned in bc
+  pop bc    ; restore the Forth IP
+  pop ix    ; restore the address of `next`
+  jp back_from_dos
+
+endif
+
+
 
 ; XXX TODO -- flash the border, like G+DOS
 
@@ -211,8 +331,10 @@ transfer_sectors.command equ $+1
 
   ; XXX TMP -- for debugging
 
+; ----------------------------------------------
   _code_header init_drive_,'INIT-DRIVE'
 
+if 0
 
 ; doc{
 ;
@@ -233,6 +355,35 @@ transfer_sectors.command equ $+1
   pop bc    ; restore the Forth IP
   _jp_next
 
+else
+
+; doc{
+;
+; init-drive  ( n -- ior )
+;
+; }doc
+
+; Note: this TR-DOS routine stores the drive number in
+; `trdos_variable.current_drive`.
+
+  ; XXX FIXME -- when there's no disk in the drive, the system never
+  ; returns from the DOS.
+
+  ld a,trdos_command.init_drive
+  ld (dos.command),a
+  pop hl
+  ld a,l    ; drive number (0..3)
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  call dos
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _z80_border_wait 1 ; XXX INFORMER
+  jp back_from_dos
+
+endif
+
+; ----------------------------------------------
   _colon_header set_drive_,'SET-DRIVE'
 
   ; XXX FIXME -- hang:
@@ -240,22 +391,41 @@ transfer_sectors.command equ $+1
   ;dw c_store_
 
   ; XXX FIXME -- no effect:
-  _literal trdos_variable.default_drive
-  dw c_store_
+  ; _literal trdos_variable.default_drive
+  ; dw c_store_
 
   ; XXX FIXME -- hang:
   ; dw dup_,init_drive_
   ; _literal trdos_variable.default_drive
   ; dw c_store_
- 
+
   ; XXX TODO -- how to set the default drive?
-  
+
+  ; XXX FIXME -- no effect:
+  dw dup_
+  _literal trdos_variable.default_drive
+  dw c_store_
+  _literal trdos_variable.current_drive
+  dw c_store_
+
   dw exit_
-  
+
+; ----------------------------------------------
   _colon_header get_drive_,'GET-DRIVE'
+
   _literal trdos_variable.current_drive
   dw c_fetch_
   dw exit_
+
+; Value of some TR-DOS variables after changing the default drive with
+; command `*"a"`, `*"b"`, etc.
+;
+;        A  B  C  D
+;
+; 23798  0  1  2  3  = current drive
+; 23800  0  0  0  0
+; 23801  0  0  0  0
+; 23833  0  1  2  3  = default drive
 
 ; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'
@@ -318,7 +488,7 @@ type_ascii.loop_exit
   _colon_header trdos_tester_,'TRDOS-TESTER'
 
   ; XXX TMP -- for debugging
-  
+
 ; : trdos-tester  ( u1 u2 -- )
 ;   page
 ;   1+ swap ?do

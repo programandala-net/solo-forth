@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608041731
+; Last modified: 201608050043
 
 include version.z80s
 
@@ -1058,7 +1058,7 @@ negate_hl.1:
 
 endif
 
-if 0
+negate_hl:
 
   ; Credit:
   ;
@@ -1068,7 +1068,6 @@ if 0
   ;ouput: hl negated
   ;destroys a
 
-negate_hl:
   ;       ; T  B
   ;       ; -- --
   xor a   ; 04 01
@@ -1079,8 +1078,8 @@ negate_hl:
   ld h,a  ; 04 01
           ; -- --
           ; 24 06
+  _z80_border_wait 3 ; XXX INFORMER
   ret
-endif
 
 if 0
 

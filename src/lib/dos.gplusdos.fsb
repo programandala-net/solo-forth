@@ -195,15 +195,21 @@ $45 constant hwsad  $46 constant otfoc $47 constant patch
   swap flip %11111111 and   \ get upper 8 bits
   1000 + negate and  ;
   \ Convert a DOS ior to a Forth ior.
-  \ dosior = the AF register returned by a DOS command:
+  \
+  \ dosior = the error number returned by DOS commands in the
+  \ AF register:
   \     bit 0     = set: error
   \     bits 8-14 = error code
   \     bit 15    = set: OS error; unset: DOS error
-  \ ior = error number:
+  \
+  \ ior = exception code:
   \     0: no error
   \     -1000..-1031: G+DOS error number 0..31
-  \     -1128..-1154: OS error number 0..26
+  \     -1128..-1154: OS error number 0..27
+  \
   \ XXX TODO -- check
+  \ XXX TODO -- remove the gap between G+DOS and OS error
+  \ numbers
 
 ( get-drive set-drive )
 

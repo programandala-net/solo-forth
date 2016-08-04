@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201608041730
+; Last modified: 201608050023
 
 ; ==============================================================
 ; Description
@@ -30,7 +30,12 @@
 
 ; ==============================================================
 
+; XXX TODO -- implement _ior_ in DOS calls
+
 if defined gplusdos
+
+; ==============================================================
+; Dictionary
 
 ; ----------------------------------------------
   _constant_header rec_slash_track_,'REC/TRACK'
@@ -212,6 +217,7 @@ transfer_sector.command:
   dw exit_
 
   ; XXX TODO -- do not patch `transfer-sector`, but a higher level.
+  ; XXX TODO -- move to the library
 
 ; ----------------------------------------------
   _colon_header get_library_drive_,'GET-LIBRARY-DRIVE'
@@ -230,6 +236,8 @@ transfer_sector.command:
   _literal transfer_sector.drive
   dw c_store_
   dw exit_
+
+  ; XXX TODO -- move to the library
 
 ; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'
