@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608050043
+; Last modified: 201608050113
 
 include version.z80s
 
@@ -1304,15 +1304,38 @@ endif
 nt_of_the_previous_word: defl 0
 
 ; ----------------------------------------------
-; DOS
+  _colon_header dos_,'DOS'
+
+; doc{
+;
+; dos  ( -- ca len )
+; 
+; Return the name of the DOS.
+;
+; }doc
+
+  dw s_lit_
+if defined gplusdos
+  _string 'G+DOS'
+endif
+if defined trdos
+  _string 'TR-DOS'
+endif
+if defined plus3dos
+  _string '+3DOS'
+endif
+  dw exit_
+
+; ----------------------------------------------
 
 ; Note: Conditional `include` is not allowed in the Pasmo
 ; assembler. That's why all files are included, and they
 ; check its own condition.
 
   include kernel.gplusdos.z80s
-;  include kernel.plus3dos.z80s ; XXX TODO --
   include kernel.trdos.z80s
+;  include kernel.plus3dos.z80s ; XXX TODO --
+
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -8452,6 +8475,8 @@ quit.begin:
 ;
 ; }doc
 
+; XXX TODO -- move to the library
+
   _literal error.deferred_word_uninitialized
   dw error_
   dw exit_
@@ -8468,6 +8493,8 @@ quit.begin:
 ; Origin: Forth-2012 (CORE EXT).
 ;
 ; }doc
+
+; XXX TODO -- move to the library
 
   dw header_,reveal_
   _literal $C3 ; Z80 opcode for `jp`
@@ -8558,7 +8585,6 @@ dot_version.build
   _literal '+'
   dw emit_
   dw one_plus_,two_fetch_,d_dot_
-
   dw exit_
 
 ; ----------------------------------------------
@@ -8575,6 +8601,7 @@ dot_version.build
   dw paren_dot_quote_
   _string "Solo Forth\rv"
   dw dot_version_
+  dw dos_,type_
   dw paren_dot_quote_
   _string "\rBy Marcos Cruz\r(programandala.net), 2015-2016\r"
 if 1 ; developing
