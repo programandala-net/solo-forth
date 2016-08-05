@@ -5,13 +5,14 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified: 201608041627
+\ Last modified: 201608051647
 
-\ Description: Create a file with the contents of track 0 of an empty
+\ Description: Create files with the contents of track 0 of an empty
 \ TRD disk image.
 
 \ History:
 \ 2016-08-04: Start.
+\ 2016-08-05: Add a fourth track 0 file.
 
 256 constant /sector
   \ Bytes per sector.
@@ -70,7 +71,7 @@ create disk-label /disk-label chars allot
   9 >spaces$ r@ str>file        \ unused
   0 r@ 8b>file                  \ unused
   0 r@ 8b>file                  \ number of deleted files
-  >disk-label$ r@ str>file      \ disk label
+  >disk-label$ r@ str>file      \ 8-char disk label
   3 >nulls$ r> str>file         \ unused
   ;
   \ Save to file _fid_ the contents of sector 8 of track 0 of an empty
@@ -86,11 +87,12 @@ create disk-label /disk-label chars allot
 
 : make-track  ( ca1 len1 ca2 len2 -- )
   new-file dup >r fill-track r> close-file throw  ;
-  \ Make file _ca2 len2_ containing the track 0 of an empty TRD disk
-  \ image with disk name _ca1 len1_.
+  \ Create file _ca2 len2_ with the contents of track 0 of an empty
+  \ TRD disk image with disk name _ca1 len1_.
 
 s" SoloFthB" s" tmp/trdos_disk_b_track_0.bin" make-track
 s" SoloFthC" s" tmp/trdos_disk_c_track_0.bin" make-track
 s" SoloFthD" s" tmp/trdos_disk_d_track_0.bin" make-track
+s" SoloFthE" s" tmp/trdos_disk_e_track_0.bin" make-track
 
 bye

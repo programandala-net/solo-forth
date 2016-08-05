@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608050125
+# Last modified: 201608051650
 
 # ==============================================================
 # Author
@@ -76,29 +76,28 @@ MAKEFLAGS = --no-print-directory
 
 .PHONY: all
 all: gplusdos trdos
-#all: gplusdos plus3dos
 
 .PHONY: gplusdos
 gplusdos: \
 	disks/gplusdos/solo_forth_disk_1.mgt \
 	disks/gplusdos/solo_forth_disk_2_library.mgt \
 	disks/gplusdos/solo_forth_disk_2_library_with_games.mgt \
-	disks/gplusdos/solo_forth_disk_2_library_with_meta_tools.mgt
+	disks/gplusdos/solo_forth_disk_2_library_with_tests.mgt \
+	disks/gplusdos/solo_forth_disk_2_library_with_benchmarks.mgt
 
 .PHONY: plus3dos
 plus3dos: \
 	disks/plus3dos/solo_forth_disk_a.dsk
 # disks/plus3dos/solo_forth_disk_b_library.dsk
+# XXX TODO --
 
 .PHONY: trdos
 trdos: \
 	disks/trdos/solo_forth_disk_a.trd \
 	disks/trdos/solo_forth_disk_b_library.trd \
-	disks/trdos/solo_forth_disk_c_library_with_games.trd
-
-# XXX TMP -- too large
-# XXX TODO -- split into benchmarks and tests
-#	solo_forth_disk_d_library_with_meta_tools.trd
+	disks/trdos/solo_forth_disk_c_library_with_games.trd \
+	disks/trdos/solo_forth_disk_d_library_with_tests.trd \
+	disks/trdos/solo_forth_disk_d_library_with_benchmarks.trd
 
 .PHONY: clean
 clean: cleantmp cleandisks
@@ -279,6 +278,8 @@ disks/trdos/solo_forth_disk_a.trd: tmp/solo_forth_trdos_disk_a.tap
 all_library_files = $(sort $(wildcard src/lib/*.fsb))
 game_library_files = $(sort $(wildcard src/lib/game.*.fsb))
 meta_tools_library_files = $(sort $(wildcard src/lib/meta.*.fsb))
+benchmark_library_files = $(sort $(wildcard src/lib/meta.benchmark*.fsb))
+test_library_files = $(sort $(wildcard src/lib/meta.test*.fsb))
 core_library_files = \
 	$(filter-out $(game_library_files) $(meta_tools_library_files), \
 			$(all_library_files))
@@ -310,14 +311,23 @@ disks/gplusdos/solo_forth_disk_2_library_with_games.mgt: tmp/library_for_gplusdo
 	fsb2-mgt tmp/library_for_gplusdos_with_games.fsb ;\
 	mv tmp/library_for_gplusdos_with_games.mgt $@
 
-tmp/library_for_gplusdos_with_meta_tools.fsb: $(gplusdos_core_library_files) $(meta_tools_library_files)
+tmp/library_for_gplusdos_with_tests.fsb: $(gplusdos_core_library_files) $(test_library_files)
 	cat \
-		$(gplusdos_core_library_files) $(meta_tools_library_files) \
-		> tmp/library_for_gplusdos_with_meta_tools.fsb
+		$(gplusdos_core_library_files) $(test_library_files) \
+		> tmp/library_for_gplusdos_with_tests.fsb
 
-disks/gplusdos/solo_forth_disk_2_library_with_meta_tools.mgt: tmp/library_for_gplusdos_with_meta_tools.fsb
-	fsb2-mgt tmp/library_for_gplusdos_with_meta_tools.fsb ;\
-	mv tmp/library_for_gplusdos_with_meta_tools.mgt $@
+disks/gplusdos/solo_forth_disk_2_library_with_tests.mgt: tmp/library_for_gplusdos_with_tests.fsb
+	fsb2-mgt tmp/library_for_gplusdos_with_tests.fsb ;\
+	mv tmp/library_for_gplusdos_with_tests.mgt $@
+
+tmp/library_for_gplusdos_with_benchmarks.fsb: $(gplusdos_core_library_files) $(benchmark_library_files)
+	cat \
+		$(gplusdos_core_library_files) $(benchmark_library_files) \
+		> tmp/library_for_gplusdos_with_benchmarks.fsb
+
+disks/gplusdos/solo_forth_disk_2_library_with_benchmarks.mgt: tmp/library_for_gplusdos_with_benchmarks.fsb
+	fsb2-mgt tmp/library_for_gplusdos_with_benchmarks.fsb ;\
+	mv tmp/library_for_gplusdos_with_benchmarks.mgt $@
 
 # XXX TODO -- convert games to FBA
 # tmp/nuclear_invaders.fba: src/nuclear_invaders.fs
@@ -326,6 +336,8 @@ disks/gplusdos/solo_forth_disk_2_library_with_meta_tools.mgt: tmp/library_for_gp
 
 # ----------------------------------------------
 # +3DOS library disks
+
+# XXX UNDER DEVELOPMENT
 
 plus3dos_core_library_files = $(filter-out %trdos.fsb %gplusdos.fsb,$(core_library_files))
 
@@ -341,15 +353,6 @@ disks/plus3dos/solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
 
 # ----------------------------------------------
 # TR-DOS library disks
-
-# XXX FIXME -- 2016-08-03: The library disks can not be used with the
-# Fuse emulator.  Probably the solution is to use the track 0 from a
-# formated disk image.  A custom version of `fsb2-trd` is needed for
-# that.
-
-# XXX TODO -- 2016-08-04: use <tools/make_trd_track_0.fs> to create
-# the track 0 files, and concatenate them to the TRD disk library
-# files.
 
 trdos_core_library_files = \
 	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb , $(core_library_files))
@@ -382,18 +385,31 @@ disks/trdos/solo_forth_disk_c_library_with_games.trd: \
 		tmp/trdos_disk_c_track_0.bin \
 		tmp/library_for_trdos_with_games.trd > $@
 
-tmp/library_for_trdos_with_meta_tools.fsb: \
-	$(trdos_core_library_files) $(meta_tools_library_files)
+tmp/library_for_trdos_with_tests.fsb: \
+	$(trdos_core_library_files) $(test_library_files)
 	cat \
-		$(trdos_core_library_files) $(meta_tools_library_files) \
-		> tmp/library_for_trdos_with_meta_tools.fsb
+		$(trdos_core_library_files) $(test_library_files) \
+		> tmp/library_for_trdos_with_tests.fsb
 
-disks/trdos/solo_forth_disk_d_library_with_meta_tools.trd: \
-	tmp/library_for_trdos_with_meta_tools.fsb tmp/trdos_disk_d_track_0.bin
-	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_meta_tools.fsb ;\
+disks/trdos/solo_forth_disk_d_library_with_tests.trd: \
+	tmp/library_for_trdos_with_tests.fsb tmp/trdos_disk_d_track_0.bin
+	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_tests.fsb ;\
 	cat \
 		tmp/trdos_disk_d_track_0.bin \
-		tmp/library_for_trdos_with_meta_tools.trd > $@
+		tmp/library_for_trdos_with_tests.trd > $@
+
+tmp/library_for_trdos_with_benchmarks.fsb: \
+	$(trdos_core_library_files) $(benchmark_library_files)
+	cat \
+		$(trdos_core_library_files) $(benchmark_library_files) \
+		> tmp/library_for_trdos_with_benchmarks.fsb
+
+disks/trdos/solo_forth_disk_d_library_with_benchmarks.trd: \
+	tmp/library_for_trdos_with_benchmarks.fsb tmp/trdos_disk_e_track_0.bin
+	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_benchmarks.fsb ;\
+	cat \
+		tmp/trdos_disk_e_track_0.bin \
+		tmp/library_for_trdos_with_benchmarks.trd > $@
 
 # ==============================================================
 # Backup
