@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201606011706
+  \ Last modified: 201608051303
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,6 +68,8 @@
   \ kernel. Add `''` and `>>name`.
   \ 2016-06-01: Move `there` from the kernel. Update. Add
   \ `['']`.
+  \ 2016-08-05: Fix requiring of `]l`, `]2l`, `exec` ,`eval`,
+  \ `save-here` and `restore-here`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -162,8 +164,8 @@ need ?(
 
 [unneeded] [''] ?(  need need-here  need-here ''
 : ['']  '' postpone literal  ; immediate compile-only exit ?)
-  \ Compilation: ( "name" -- )  
-  \ Execution: ( -- xtp )  
+  \ Compilation: ( "name" -- )
+  \ Execution: ( -- xtp )
 
 ( name>interpret name>compile comp' [comp'] )
 
@@ -305,11 +307,11 @@ need ?(
   \
   \ }doc
 
-( ]l ]2l exec eval save-here restore-here )
+( ]l ]2l save-here restore-here )
 
 need ?(
 
-[needed] ]l ?(
+[unneeded] ]l ?(
 
 : ]l  ( x -- )  ] postpone literal  ; immediate compile-only ?)
 
@@ -321,7 +323,7 @@ need ?(
   \
   \ }doc
 
-[needed] ]2l ?(
+[unneeded] ]2l ?(
 
 : ]2l  ( xd -- )  ] postpone 2literal  ; immediate compile-only
 
@@ -335,7 +337,7 @@ need ?(
 
 ?)
 
-[needed] save-here [needed] restore-here or ?(  need there
+[unneeded] save-here [unneeded] restore-here and ?(  need there
 
 variable here-backup
 : save-here  ( -- )  here here-backup !  ;
