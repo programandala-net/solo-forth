@@ -5,14 +5,16 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
-\ Last modified: 201608051647
+\ Last modified: 201608051900
 
 \ Description: Create files with the contents of track 0 of an empty
 \ TRD disk image.
 
 \ History:
 \ 2016-08-04: Start.
-\ 2016-08-05: Add a fourth track 0 file.
+\ 2016-08-05: Add a fourth track 0 file. Rename output files after the
+\ changes in Makefile. Add disk9 track, for the disk9 debugging disk
+\ image.
 
 256 constant /sector
   \ Bytes per sector.
@@ -90,9 +92,10 @@ create disk-label /disk-label chars allot
   \ Create file _ca2 len2_ with the contents of track 0 of an empty
   \ TRD disk image with disk name _ca1 len1_.
 
-s" SoloFthB" s" tmp/trdos_disk_b_track_0.bin" make-track
-s" SoloFthC" s" tmp/trdos_disk_c_track_0.bin" make-track
-s" SoloFthD" s" tmp/trdos_disk_d_track_0.bin" make-track
-s" SoloFthE" s" tmp/trdos_disk_e_track_0.bin" make-track
+s" SoloFth1" s" tmp/trdos_disk1_track_0.bin" make-track
+s" SoloFth2" s" tmp/trdos_disk2_track_0.bin" make-track
+s" SoloFth3" s" tmp/trdos_disk3_track_0.bin" make-track
+s" SoloFth4" s" tmp/trdos_disk4_track_0.bin" make-track
+s" SoloFth9" s" tmp/trdos_disk9_track_0.bin" make-track
 
 bye

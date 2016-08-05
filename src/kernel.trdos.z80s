@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608042240
+; Last modified: 201608051900
 
 ; ==============================================================
 ; Description
@@ -35,11 +35,18 @@
 if defined trdos
 
 ; ==============================================================
-; TR-DOS Commands
+; TR-DOS routines
+
+trdos_routine.interpret_command           equ 15363 ; $3C03
+  ; Routine to interpret a TR-DOS REM-command pointed by the system
+  ; variable CH ADD (23645).
 
 trdos_routine.execute_command             equ 15635 ; $3D13
   ; Routine to execute a TR-DOS command, whose code is in the C
   ; register.
+
+; ==============================================================
+; TR-DOS commands
 
 trdos_command.init_drive                  equ $01
 trdos_command.read_sectors                equ $05
@@ -62,7 +69,21 @@ trdos_command.read_system_track           equ $18
 ; TR-DOS variables
 
 trdos_variable.current_drive              equ 23798
+trdos_variable.two_files_drive            equ 23800
+trdos_variable.cat_drive                  equ 23801
 trdos_variable.default_drive              equ 23833
+
+; ==============================================================
+; ZX Spectrum BASIC tokens
+
+
+token.cat   equ 207
+token.new   equ 230
+token.rem   equ 234
+token.load  equ 239
+token.list  equ 240
+token.poke  equ 244
+token.save  equ 248
 
 ; ==============================================================
 ; Routines
@@ -241,7 +262,7 @@ convert_dos_error_code.hl:
 ; ----------------------------------------------
   _code_header transfer_sectors_,'TRANSFER-SECTORS'
 
-if 0
+if 1
 
 ; doc{
 ;
@@ -334,7 +355,7 @@ endif
 ; ----------------------------------------------
   _code_header init_drive_,'INIT-DRIVE'
 
-if 0
+if 1
 
 ; doc{
 ;
@@ -380,6 +401,121 @@ else
   pop bc    ; restore the Forth IP
   _z80_border_wait 1 ; XXX INFORMER
   jp back_from_dos
+
+endif
+
+; ----------------------------------------------
+  _code_header cat_,'CAT'
+
+
+if 0
+
+  ; XXX FIXME -- hang!
+
+; doc{
+;
+; cat  ( -- ior )
+;
+; }doc
+
+  ld a,trdos_command.cat
+  ld (dos.command),a
+  ld a,(trdos_variable.current_drive)
+  ld (trdos_variable.two_files_drive),a
+  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.default_drive),a
+  ld a,2    ; stream: screen
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  call dos
+  _z80_border_wait 4 ; XXX INFORMER
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  jp back_from_dos
+
+endif
+
+if 0
+
+  ; XXX FIXME -- hang!
+
+; doc{
+;
+; cat  ( -- )
+;
+; }doc
+
+  ld a,(trdos_variable.current_drive)
+  ld (trdos_variable.two_files_drive),a
+  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.default_drive),a
+  ld a,2    ; stream: screen
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ld c,trdos_command.cat
+  call trdos_routine.execute_command
+  _z80_border_wait 4 ; XXX INFORMER
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _jp_next
+
+
+endif
+
+if 0
+
+  ; XXX FIXME -- hang!
+
+; doc{
+;
+; cat  ( -- )
+;
+; }doc
+
+  ld a,2    ; stream: screen
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ld c,trdos_command.cat
+  call trdos_routine.execute_command
+  _z80_border_wait 4 ; XXX INFORMER
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _jp_next
+
+endif
+
+if 1
+
+; doc{
+;
+; cat  ( -- )
+;
+; }doc
+
+  ; XXX FIXME -- no effect!
+
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ld hl,(sys_ch_add)
+  push hl
+  ld hl,cat.command_line
+  ld (sys_ch_add),hl
+  call trdos_routine.interpret_command
+  ;_z80_border_wait 4 ; XXX INFORMER
+
+  ; XXX INFORMER:
+  ; push bc ; error code
+  ; pop hl
+  ; ld (22528),hl ; it's meaningless, why?
+
+  pop hl
+  ld (sys_ch_add),hl
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _jp_next
+
+cat.command_line:
+  db token.rem,':',token.cat,13
 
 endif
 
@@ -456,70 +592,6 @@ endif
 transfer_mode:
   _literal transfer_sectors.command
   dw c_store_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header type_ascii_,'TYPE-ASCII'
-
-  ; XXX TMP -- for debugging
-
-; : type-ascii  ( ca len -- )
-;   bounds ?do
-;     i c@ dup dup ascii-char? 0= swap control-char? or
-;     if  drop '.'  then  emit
-;   loop  ;
-
-  dw bounds_
-  dw paren_question_do_,type_ascii.loop_exit
-  dw i_,c_fetch_,dup_,dup_
-  _literal 127
-  dw greater_than_
-  dw swap_,b_l_,less_than_,or_
-  dw zero_branch_,type_ascii.then
-  dw drop_
-  _literal '.'
-type_ascii.then
-  dw emit_
-  dw paren_loop_
-type_ascii.loop_exit
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header trdos_tester_,'TRDOS-TESTER'
-
-  ; XXX TMP -- for debugging
-
-; : trdos-tester  ( u1 u2 -- )
-;   page
-;   1+ swap ?do
-;     i block drop
-;     i 3 .r space buffer-data 28 type-ascii
-;     key 'q' = if  unloop exit  then
-;   loop  ;
-; ----
-
-; Read a range of blocks, waiting for a key after every block is read,
-; in order to check if they are right, using the memory viewer of the
-; Fuse emulator.
-
-  dw page_
-  dw one_plus_,swap_
-  dw paren_question_do_,trdos_tester.loop_exit
-  dw i_,block_,drop_
-  dw i_
-  _literal 3
-  dw dot_r_,space_
-  dw buffer_data_
-  _literal 28
-  dw type_ascii_
-  dw key_
-  _literal 'q'
-  dw equals_
-  dw zero_branch_,trdos_tester.continue
-  dw unloop_,exit_
-trdos_tester.continue
-  dw paren_loop_
-trdos_tester.loop_exit
   dw exit_
 
 endif

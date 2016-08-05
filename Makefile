@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608051650
+# Last modified: 201608051900
 
 # ==============================================================
 # Author
@@ -79,25 +79,37 @@ all: gplusdos trdos
 
 .PHONY: gplusdos
 gplusdos: \
-	disks/gplusdos/solo_forth_disk_1.mgt \
-	disks/gplusdos/solo_forth_disk_2_library.mgt \
-	disks/gplusdos/solo_forth_disk_2_library_with_games.mgt \
-	disks/gplusdos/solo_forth_disk_2_library_with_tests.mgt \
-	disks/gplusdos/solo_forth_disk_2_library_with_benchmarks.mgt
+	disks/gplusdos/disk0.mgt \
+	disks/gplusdos/disk1_lib.mgt \
+	disks/gplusdos/disk2_lib+games.mgt \
+	disks/gplusdos/disk3_lib+benchmarks.mgt \
+	disks/gplusdos/disk4_lib+tests.mgt
 
 .PHONY: plus3dos
 plus3dos: \
-	disks/plus3dos/solo_forth_disk_a.dsk
-# disks/plus3dos/solo_forth_disk_b_library.dsk
+	disks/plus3dos/disk_a.dsk
+# disks/plus3dos/disk_b_lib.dsk
 # XXX TODO --
 
 .PHONY: trdos
 trdos: \
-	disks/trdos/solo_forth_disk_a.trd \
-	disks/trdos/solo_forth_disk_b_library.trd \
-	disks/trdos/solo_forth_disk_c_library_with_games.trd \
-	disks/trdos/solo_forth_disk_d_library_with_tests.trd \
-	disks/trdos/solo_forth_disk_d_library_with_benchmarks.trd
+	disks/trdos/disk0.trd \
+	disks/trdos/disk1_lib.trd \
+	disks/trdos/disk2_lib+games.trd \
+	disks/trdos/disk3_lib+benchmarks.trd \
+	disks/trdos/disk4_lib+tests.trd
+
+.PHONY: disk9
+disk9: \
+	disks/gplusdos/disk9_lib_without_dos.mgt \
+	disks/trdos/disk9_lib_without_dos.trd
+
+# Note: disk9 is a special disk image used for debugging. It contains
+# the core library except the DOS modules. This means disk9 contains
+# exactly the same blocks in all DOS implementations. This is useful
+# to check if disk access works fine when a new DOS is implemented,
+# comparing the output of `blks` (a debug tool, temporarily included
+# in the kernel) to a different DOS.
 
 .PHONY: clean
 clean: cleantmp cleandisks
@@ -122,6 +134,9 @@ include Makefile.pasmo
 # .PHONY : as
 # as:
 # 	@make Makefile.binutils
+
+# ==============================================================
+# Debug
 
 # ==============================================================
 # Loader
@@ -222,7 +237,7 @@ bin/fonts/fzx_fonts.tap : $(fzx_fonts)
 # ----------------------------------------------
 # G+DOS main disk
 
-disks/gplusdos/solo_forth_disk_1.mgt: \
+disks/gplusdos/disk0.mgt: \
 		tmp/loader.gplusdos.bas.tap \
 		tmp/kernel.gplusdos.bin.tap \
 		tmp/4x8fd.tap \
@@ -233,7 +248,7 @@ disks/gplusdos/solo_forth_disk_1.mgt: \
 # ----------------------------------------------
 # +3DOS main disk
 
-tmp/solo_forth_plus3dos_disk_a.tap: \
+tmp/solo_forth_plus3dos_disk0.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
 		tmp/4x8fd.tap \
@@ -242,13 +257,13 @@ tmp/solo_forth_plus3dos_disk_a.tap: \
 		bin/fonts/fzx_fonts.tap
 	cat $^ > $@
 
-disks/plus3dos/solo_forth_disk_a.dsk: tmp/solo_forth_plus3dos_disk_a.tap
+disks/plus3dos/disk0.dsk: tmp/solo_forth_plus3dos_disk0.tap
 	tap2dsk -720 -label SoloForth $< $@
 
 # ----------------------------------------------
 # TR-DOS main disk
 
-tmp/solo_forth_trdos_disk_a.tap: \
+tmp/solo_forth_trdos_disk0.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.bin.tap \
 		tmp/4x8fd.tap \
@@ -257,16 +272,20 @@ tmp/solo_forth_trdos_disk_a.tap: \
 		bin/fonts/fzx_fonts.tap
 	cat $^ > $@
 
-disks/trdos/solo_forth_disk_a.trd: tmp/solo_forth_trdos_disk_a.tap
-	cd tmp && ln -sf $(notdir $<) TRDOS-A.TAP && cd -
+disks/trdos/disk0.trd: tmp/solo_forth_trdos_disk0.tap
+	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
 	rm -f $@
 	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
 	cd tmp && \
-	echo "EMPTYTRD.EXE SOLO_FORTH.TRD" > mktrd.bat && \
-	echo "WRITETRD.EXE SOLO_FORTH.TRD TRDOS-A.TAP" >> mktrd.bat && \
+	echo "EMPTYTRD.EXE SoloFth0.TRD" > mktrd.bat && \
+	echo "WRITETRD.EXE SoloFth0.TRD TRDOS-D0.TAP" >> mktrd.bat && \
 	dosbox -exit mktrd.bat && \
 	cd -
-	mv tmp/SOLO_FOR.TRD $@
+	mv tmp/SOLOFTH0.TRD $@
+
+# XXX TODO -- write a program in Gforth to create an empty TRD disk
+# image, so the lowercase letters of the disk label are preserved.
+# `emptytrd.exe` makes the label uppercase.
 
 # ==============================================================
 # Library disks
@@ -275,14 +294,20 @@ disks/trdos/solo_forth_disk_a.trd: tmp/solo_forth_trdos_disk_a.tap
 # Depending on the DOS, the blocks are stored in a blocks file or
 # directly in the disk sectors.
 
-all_library_files = $(sort $(wildcard src/lib/*.fsb))
-game_library_files = $(sort $(wildcard src/lib/game.*.fsb))
-meta_tools_library_files = $(sort $(wildcard src/lib/meta.*.fsb))
-benchmark_library_files = $(sort $(wildcard src/lib/meta.benchmark*.fsb))
-test_library_files = $(sort $(wildcard src/lib/meta.test*.fsb))
-core_library_files = \
-	$(filter-out $(game_library_files) $(meta_tools_library_files), \
-			$(all_library_files))
+all_lib_files = $(sort $(wildcard src/lib/*.fsb))
+dos_lib_files = $(sort $(wildcard src/lib/dos.*.fsb))
+game_lib_files = $(sort $(wildcard src/lib/game.*.fsb))
+meta_tools_lib_files = $(sort $(wildcard src/lib/meta.*.fsb))
+benchmark_lib_files = $(sort $(wildcard src/lib/meta.benchmark*.fsb))
+test_lib_files = $(sort $(wildcard src/lib/meta.test*.fsb))
+core_lib_files = \
+	$(filter-out $(game_lib_files) $(meta_tools_lib_files), \
+			$(all_lib_files))
+no_dos_core_lib_files = \
+	$(filter-out $(dos_lib_files), $(core_lib_files))
+
+tmp/library_without_dos.fsb: $(no_dos_core_lib_files)
+	cat $(no_dos_core_lib_files) > $@
 
 # ----------------------------------------------
 # G+DOS library disks
@@ -290,44 +315,40 @@ core_library_files = \
 # XXX WARNING -- `%` in filter patterns works only at the start
 # of the pattern
 
-gplusdos_core_library_files = \
-	$(filter-out %trdos.fsb %plus3dos.fsb %idedos.fsb , $(core_library_files))
+gplusdos_core_lib_files = \
+	$(filter-out %trdos.fsb %plus3dos.fsb %idedos.fsb , $(core_lib_files))
 
-tmp/library_for_gplusdos.fsb: $(gplusdos_core_library_files)
-	cat \
-		$(gplusdos_core_library_files) \
-		> tmp/library_for_gplusdos.fsb
+tmp/library_for_gplusdos.fsb: $(gplusdos_core_lib_files)
+	cat $(gplusdos_core_lib_files) > $@
 
-disks/gplusdos/solo_forth_disk_2_library.mgt: tmp/library_for_gplusdos.fsb
+disks/gplusdos/disk1_lib.mgt: tmp/library_for_gplusdos.fsb
 	fsb2-mgt tmp/library_for_gplusdos.fsb ;\
 	mv tmp/library_for_gplusdos.mgt $@
 
-tmp/library_for_gplusdos_with_games.fsb: $(gplusdos_core_library_files) $(game_library_files)
-	cat \
-		$(gplusdos_core_library_files) $(game_library_files) \
-		> tmp/library_for_gplusdos_with_games.fsb
+tmp/library_for_gplusdos+games.fsb: $(gplusdos_core_lib_files) $(game_lib_files)
+	cat $(gplusdos_core_lib_files) $(game_lib_files) > $@
 
-disks/gplusdos/solo_forth_disk_2_library_with_games.mgt: tmp/library_for_gplusdos_with_games.fsb
-	fsb2-mgt tmp/library_for_gplusdos_with_games.fsb ;\
-	mv tmp/library_for_gplusdos_with_games.mgt $@
+disks/gplusdos/disk2_lib+games.mgt: tmp/library_for_gplusdos+games.fsb
+	fsb2-mgt $< ;\
+	mv tmp/library_for_gplusdos+games.mgt $@
 
-tmp/library_for_gplusdos_with_tests.fsb: $(gplusdos_core_library_files) $(test_library_files)
-	cat \
-		$(gplusdos_core_library_files) $(test_library_files) \
-		> tmp/library_for_gplusdos_with_tests.fsb
+tmp/library_for_gplusdos+benchmarks.fsb: $(gplusdos_core_lib_files) $(benchmark_lib_files)
+	cat $(gplusdos_core_lib_files) $(benchmark_lib_files) > $@
 
-disks/gplusdos/solo_forth_disk_2_library_with_tests.mgt: tmp/library_for_gplusdos_with_tests.fsb
-	fsb2-mgt tmp/library_for_gplusdos_with_tests.fsb ;\
-	mv tmp/library_for_gplusdos_with_tests.mgt $@
+disks/gplusdos/disk3_lib+benchmarks.mgt: tmp/library_for_gplusdos+benchmarks.fsb
+	fsb2-mgt $< ;\
+	mv tmp/library_for_gplusdos+benchmarks.mgt $@
 
-tmp/library_for_gplusdos_with_benchmarks.fsb: $(gplusdos_core_library_files) $(benchmark_library_files)
-	cat \
-		$(gplusdos_core_library_files) $(benchmark_library_files) \
-		> tmp/library_for_gplusdos_with_benchmarks.fsb
+tmp/library_for_gplusdos+tests.fsb: $(gplusdos_core_lib_files) $(test_lib_files)
+	cat $(gplusdos_core_lib_files) $(test_lib_files) > $@
 
-disks/gplusdos/solo_forth_disk_2_library_with_benchmarks.mgt: tmp/library_for_gplusdos_with_benchmarks.fsb
-	fsb2-mgt tmp/library_for_gplusdos_with_benchmarks.fsb ;\
-	mv tmp/library_for_gplusdos_with_benchmarks.mgt $@
+disks/gplusdos/disk4_lib+tests.mgt: tmp/library_for_gplusdos+tests.fsb
+	fsb2-mgt $< ;\
+	mv tmp/library_for_gplusdos+tests.mgt $@
+
+disks/gplusdos/disk9_lib_without_dos.mgt: tmp/library_without_dos.fsb
+	fsb2-mgt $< ;\
+	mv tmp/library_without_dos.mgt $@
 
 # XXX TODO -- convert games to FBA
 # tmp/nuclear_invaders.fba: src/nuclear_invaders.fs
@@ -339,77 +360,76 @@ disks/gplusdos/solo_forth_disk_2_library_with_benchmarks.mgt: tmp/library_for_gp
 
 # XXX UNDER DEVELOPMENT
 
-plus3dos_core_library_files = $(filter-out %trdos.fsb %gplusdos.fsb,$(core_library_files))
+plus3dos_core_lib_files = $(filter-out %trdos.fsb %gplusdos.fsb,$(core_lib_files))
 
-tmp/library_for_plus3dos.fsb: $(plus3dos_core_library_files) $(meta_tools_library_files)
+tmp/library_for_plus3dos.fsb: $(plus3dos_core_lib_files) $(meta_tools_lib_files)
 	cat \
-		$(gplusdos_core_library_files) $(meta_tools_library_files) \
+		$(gplusdos_core_lib_files) $(meta_tools_lib_files) \
 		> tmp/library_for_plus3dos.fsb
 
 # XXX TODO -- `fsb2-dsk` is not ready yet.
-disks/plus3dos/solo_forth_disk_b.dsk: tmp/library_for_plus3dos.fsb
+disks/plus3dos/disk1.dsk: tmp/library_for_plus3dos.fsb
 	fsb2-dsk tmp/library_for_plus3dos.fsb ;\
-	mv tmp/library_for_plus3dos.dsk solo_forth_disk_b.dsk
+	mv tmp/library_for_plus3dos.dsk disk1.dsk
 
 # ----------------------------------------------
 # TR-DOS library disks
 
-trdos_core_library_files = \
-	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb , $(core_library_files))
+trdos_core_lib_files = \
+	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb , $(core_lib_files))
 
-tmp/library_for_trdos.fsb: $(trdos_core_library_files)
-	cat \
-		$(trdos_core_library_files) \
-		> tmp/library_for_trdos.fsb
+tmp/library_for_trdos.fsb: $(trdos_core_lib_files)
+	cat $(trdos_core_lib_files) > $@
 
 %_track_0.bin:
 	tools/make_trd_track_0.fs
 
-disks/trdos/solo_forth_disk_b_library.trd: \
-	tmp/library_for_trdos.fsb tmp/trdos_disk_b_track_0.bin
-	tools/fsb2-trd-library.sh tmp/library_for_trdos.fsb ;\
+disks/trdos/disk1_lib.trd: \
+	tmp/library_for_trdos.fsb tmp/trdos_disk1_track_0.bin
+	tools/fsb2-trd-library.sh $< ;\
 	cat \
-		tmp/trdos_disk_b_track_0.bin \
+		tmp/trdos_disk1_track_0.bin \
 		tmp/library_for_trdos.trd > $@
 
-tmp/library_for_trdos_with_games.fsb: \
-	$(trdos_core_library_files) $(game_library_files)
-	cat \
-		$(trdos_core_library_files) $(game_library_files) \
-		> tmp/library_for_trdos_with_games.fsb
+tmp/library_for_trdos+games.fsb: \
+	$(trdos_core_lib_files) $(game_lib_files)
+	cat $(trdos_core_lib_files) $(game_lib_files) > $@
 
-disks/trdos/solo_forth_disk_c_library_with_games.trd: \
-	tmp/library_for_trdos_with_games.fsb tmp/trdos_disk_c_track_0.bin
-	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_games.fsb ;\
+disks/trdos/disk2_lib+games.trd: \
+	tmp/library_for_trdos+games.fsb tmp/trdos_disk2_track_0.bin
+	tools/fsb2-trd-library.sh $< ;\
 	cat \
-		tmp/trdos_disk_c_track_0.bin \
-		tmp/library_for_trdos_with_games.trd > $@
+		tmp/trdos_disk2_track_0.bin \
+		tmp/library_for_trdos+games.trd > $@
 
-tmp/library_for_trdos_with_tests.fsb: \
-	$(trdos_core_library_files) $(test_library_files)
-	cat \
-		$(trdos_core_library_files) $(test_library_files) \
-		> tmp/library_for_trdos_with_tests.fsb
+tmp/library_for_trdos+benchmarks.fsb: \
+	$(trdos_core_lib_files) $(benchmark_lib_files)
+	cat $(trdos_core_lib_files) $(benchmark_lib_files) > $@
 
-disks/trdos/solo_forth_disk_d_library_with_tests.trd: \
-	tmp/library_for_trdos_with_tests.fsb tmp/trdos_disk_d_track_0.bin
-	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_tests.fsb ;\
+disks/trdos/disk3_lib+benchmarks.trd: \
+	tmp/library_for_trdos+benchmarks.fsb tmp/trdos_disk3_track_0.bin
+	tools/fsb2-trd-library.sh $< ;\
 	cat \
-		tmp/trdos_disk_d_track_0.bin \
-		tmp/library_for_trdos_with_tests.trd > $@
+		tmp/trdos_disk3_track_0.bin \
+		tmp/library_for_trdos+benchmarks.trd > $@
 
-tmp/library_for_trdos_with_benchmarks.fsb: \
-	$(trdos_core_library_files) $(benchmark_library_files)
-	cat \
-		$(trdos_core_library_files) $(benchmark_library_files) \
-		> tmp/library_for_trdos_with_benchmarks.fsb
+tmp/library_for_trdos+tests.fsb: \
+	$(trdos_core_lib_files) $(test_lib_files)
+	cat $(trdos_core_lib_files) $(test_lib_files) > $@
 
-disks/trdos/solo_forth_disk_d_library_with_benchmarks.trd: \
-	tmp/library_for_trdos_with_benchmarks.fsb tmp/trdos_disk_e_track_0.bin
-	tools/fsb2-trd-library.sh tmp/library_for_trdos_with_benchmarks.fsb ;\
+disks/trdos/disk4_lib+tests.trd: \
+	tmp/library_for_trdos+tests.fsb tmp/trdos_disk4_track_0.bin
+	tools/fsb2-trd-library.sh tmp/library_for_trdos+tests.fsb ;\
 	cat \
-		tmp/trdos_disk_e_track_0.bin \
-		tmp/library_for_trdos_with_benchmarks.trd > $@
+		tmp/trdos_disk4_track_0.bin \
+		tmp/library_for_trdos+tests.trd > $@
+
+disks/trdos/disk9_lib_without_dos.trd: \
+	tmp/library_without_dos.fsb tmp/trdos_disk9_track_0.bin
+	tools/fsb2-trd-library.sh $< ; \
+	cat \
+		tmp/trdos_disk4_track_0.bin \
+		tmp/library_without_dos.trd > $@
 
 # ==============================================================
 # Backup
@@ -423,7 +443,7 @@ backupsrc:
 
 .PHONY: backuplib
 backuplib:
-	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth_library.tar.xz \
+	tar -cJf backups/$$(date +%Y%m%d%H%M)_solo_forth_lib.tar.xz \
 		src/lib/*.fsb
 
 # XXX TODO --
@@ -521,4 +541,7 @@ oldbackup:
 #
 # 2016-08-04: Fix TRD library disks with a track 0.
 #
-# 2016-08-05: Create the disks images in <disks/DOSNAME>.
+# 2016-08-05: Create the disks images in <disks/DOSNAME>. Split the
+# meta tools disk into two: tests and benchmarks. Rename all disk
+# image files after a shorter and clearer format. Add disk9 for
+# debugging.

@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608050113
+; Last modified: 201608051900
 
 include version.z80s
 
@@ -10220,6 +10220,79 @@ if 1 ; developing
 dot_s.loop_exit:
 
 dot_s.end:
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header type_ascii_,'TYPE-ASCII'
+
+; : type-ascii  ( ca len -- )
+;   bounds ?do
+;     i c@ dup dup ascii-char? 0= swap control-char? or
+;     if  drop '.'  then  emit
+;   loop  ;
+
+; XXX REMARK -- This word is in the library. It's also here because
+; it's needed by `blks`.
+
+  dw bounds_
+  dw paren_question_do_,type_ascii.loop_exit
+  dw i_,c_fetch_,dup_,dup_
+  _literal 127
+  dw greater_than_
+  dw swap_,b_l_,less_than_,or_
+  dw zero_branch_,type_ascii.then
+  dw drop_
+  _literal '.'
+type_ascii.then
+  dw emit_
+  dw paren_loop_
+type_ascii.loop_exit
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header blks_,'BLKS'
+
+  ; XXX TMP -- for debugging
+
+; : blks  ( u -- )
+;   page
+;   20 bounds ?do
+;     i block drop
+;     i 3 .r space buffer-data 28 type-ascii
+;     \ key 'q' = if  unloop exit  then  \ XXX OLD
+;   loop  ;
+; ----
+
+; Read 20 blocks, starting from block _u_, and prints the start
+; of their first lines.  This tool is useful when a new DOS is
+; implemented, in order to check the disk access calculations.
+
+  dw page_
+  _literal 20
+  dw bounds_
+  dw paren_question_do_,trdos_tester.loop_exit
+  dw i_,block_,drop_
+  dw i_
+  _literal 3
+  dw dot_r_,space_
+  dw buffer_data_
+  _literal 28
+  dw type_ascii_
+
+if 0
+
+  ; XXX OLD
+  dw key_
+  _literal 'q'
+  dw equals_
+  dw zero_branch_,trdos_tester.continue
+  dw unloop_,exit_
+trdos_tester.continue
+
+endif
+
+  dw paren_loop_
+trdos_tester.loop_exit
   dw exit_
 
 endif
