@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051638
+  \ Last modified: 201608051851
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,20 +39,23 @@
   \
   \ 2016-06-01: Replace `char` with char notation.
   \
-  \ 2016-08-05: Compact the code, but no block is saved.
+  \ 2016-08-05: Compact the code, but no block is saved. Add
+  \ missing `need inverse`.
 
   \ -----------------------------------------------------------
   \ To-do
 
   \ XXX TODO -- less stars!
   \ XXX FIXME -- The craft's autodestruction creates a new star.
+  \ XXX FIXME -- 2016-08-05: now stars appear at the middle of
+  \ the screen
 
 ( siderator )
 
 only forth definitions  decimal
 
 need random  need randomize  need udg:  need inkey
-need between  need ocr  need frames@
+need between  need ocr  need frames@  need inverse
 need j  need between  need rows  need last-column
 need last-row  need vocabulary
 
