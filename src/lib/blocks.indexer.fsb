@@ -7,7 +7,7 @@
   \ words (all words from the library) fill the memory bank.
   \ The solution is a configurable system bank.
 
-  \ Last modified: 201605140237
+  \ Last modified: 201608051257
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,8 @@
   \
   \ 2016-05-14: Update: `evaluate` has been moved to the
   \ library.
+  \
+  \ 2016-08-05: Compact the code to save one block.
 
 ( indexer )
 
@@ -83,28 +85,22 @@ variable indexed-block
   \ Add word _ca len_ to the blocks index, if not done before.
   \ The current word list is supposed to be `index-wordlist`.
 
--->
+wordlist dup constant indexer-wordlist set-current  -->
+  \ Word list for the words that parse the block index lines.
 
 ( indexer )
 
-wordlist dup constant indexer-wordlist set-current
-  \ Word list for the words that parse the block index lines.
-
 : (  ( "ccc<space><paren><space|eof>" -- )
   begin  parse-name 2dup s" )" str= 0=
-  while  index-name  repeat  2drop  ;
+  while  index-name  repeat  2drop  ;  ' ( alias .(
   \ Parse and index the names until the next right paren name.
-
-' ( alias .(
 
 : \  ( "ccc<space><backslash><space|eof>" -- )
   begin  parse-name 2dup s" \" str= 0=
   while  index-name  repeat  2drop  ;
   \ Parse and index the names until the next backslash name.
 
-forth-wordlist set-current  -->
-
-( indexer )
+forth-wordlist set-current
 
 : index-reneeded  ( ca len -- )
   search-index 0= #-277 ?throw load  ;
@@ -157,7 +153,7 @@ forth-wordlist set-current  -->
   \
   \ }doc
 
-: index-need  ( "name" -- )  parse-name index-needed  ;
+: index-need  ( "name" -- )  parse-name index-needed  ;  -->
 
   \ doc{
   \
@@ -173,6 +169,8 @@ forth-wordlist set-current  -->
   \ `need`.
   \
   \ }doc
+
+( indexer )
 
 : set-indexed-need  ( -- )
   ['] index-reneeded ['] reneeded  defer!
@@ -193,10 +191,6 @@ forth-wordlist set-current  -->
   \ `set-located-need`.
   \
   \ }doc
-
--->
-
-( indexer )
 
   \ : valid-block-header?  ( ca len -- f )
   \   -trailing dup 0= #-278 ?throw

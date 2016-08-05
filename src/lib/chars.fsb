@@ -28,6 +28,8 @@
   \ 2016-04-27: Move `ascii-char?` and `control-char?` from
   \ module "tool.dump.fsb".
 
+  \ XXX TODO -- move to <strings.misc.fsb>.
+
 ( ascii-char? control-char? )
 
 : ascii-char?    ( c -- f )  128 <  ;

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605170052
+  \ Last modified: 201608051559
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,9 @@
   \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
+  \
+  \ 2016-08-05: Move `begincase-test` from
+  \ <lib/flow.begincase.fsb>.
 
 ( alias-test synonym-test )
 
@@ -285,6 +288,19 @@ need ccase
   s" abc" ccase  .a .b .c  .nope  endccase  .end  ;
 
 'a' letter  'b' letter  'c' letter  'x' letter
+
+( begincase-test )
+
+need begincase
+
+: test
+  begincase
+    cr ." press a key ('2' '4' '9' exits) : " key
+    '2' of  ." ... 2 "  endof
+    '4' of  ." ... 4 "  endof
+    '9' of  ." ... 9 "  endof
+      dup emit ."  try again"
+  repeatcase  ;
 
 ( jk-test )
 

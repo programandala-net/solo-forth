@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605110243
+  \ Last modified: 201608051628
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,43 +31,37 @@
   \ 2016-04-27: Add `char-in-string?` and `char-position?`.
   \ 2016-05-05: Rename `s=` to `str=`. Add `str<` and `str>`.
   \ 2016-05-11: Fix `-prefix`. Start compacting the blocks.
+  \ 2016-08-02: Improve comment of `hunt`. Comment the string
+  \ comparison operators.
+  \ 2016-08-05: Reorganize and compact the code to save one
+  \ block.
 
-( str= str< str> trim )
+( str= str< str> trim +place hunt )
 
 [unneeded] str=
 ?\ : str=  ( ca1 len1 ca2 len2 -- f )  compare 0=  ;  exit
+  \ Is string _ca1 len1_ lexicographically equal to string _ca2
+  \ len2_?
 
 [unneeded] str<
 ?\ : str<  ( ca1 len1 ca2 len2 -- f )  compare 0<  ;  exit
+  \ Is string _ca1 len1_ lexicographically smaller than string
+  \ _ca2 len2_?
 
 [unneeded] str>
 ?\ : str>  ( ca1 len1 ca2 len2 -- f )  compare 0>  ;  exit
+  \ Is string _ca1 len1_ lexicographically larger than string
+  \ _ca2 len2_?
 
-[unneeded] trim
-: trim ( ca1 len1 -- ca2 len2 )  -leading -trailing  ;
+[unneded] trim
+?\ : trim ( ca1 len1 -- ca2 len2 )  -leading -trailing  ;
   \ Remove leading and trailing spaces from a string.
 
-( sconstant char>string chars>string +place hunt )
+need ?(
 
-: sconstant  ( ca len "name" -- )
-  here >r s, r> count 2constant  ;
-
-: char>string  ( c -- ca len )  1 allocate-string tuck c! 1  ;
-  \ Convert the char _c_ to a string _ca len_ in the circular
-  \ string buffer.
-
-: chars>string  ( c1..cn n -- ca len )
-  dup if    dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
-            bounds do  i c!  loop  2r>
-      else  pad swap  then  ;
-  \ Convert _n_ chars to a string _ca len_ in the circular
-  \ string buffer.
-  \ c1..cn = chars to make the string with
-  \          (_c1_ is the last one)
-  \ n = number of chars
-
+[unneeded] +place ?(
 : +place  ( ca1 len1 ca2 )
-  2dup c@ + over c!  dup c@ 1+ + smove  ;
+  2dup c@ + over c!  dup c@ 1+ + smove  ; ?)
   \ Add the string _ca1 len1_ to the end of the counted string
   \ _ca2_.
 
@@ -75,8 +69,9 @@
   \
   \ Code from Afera.
 
+[unneeded] hunt ?(
 : hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
-  search 0= if  chars + 0  then  ;
+  search 0= if  chars + 0  then  ; ?)
 
   \ Credit:
   \
@@ -89,13 +84,45 @@
 
   \ Search a string _ca1 len1_ for a substring _ca2 len2_.
   \ Return the part of _ca1 len1_ that starts with the first
-  \ occurence of _ca2 len2_.
-  \
-  \ ca1 len1 = string
-  \ ca2 len2 = substring
-  \ ca3 len3 = ca1+i len1-i
+  \ occurence of _ca2 len2_. Therefore _ca3 len3_ = _ca1+n
+  \ len1-n_.
   \
   \ }doc
+
+( ud>str d>str char>string chars>string )
+
+[unneeded] ud>str
+?\ : ud>str  ( ud -- ca len )  <# #s #>  ;
+
+  \ Credit:
+  \
+  \ Code from Galope (module ud-to-str.fs).
+
+[unneeded] d>str
+?\ : d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
+
+  \ Credit:
+  \
+  \ Code from Galope (module d-to-str.fs).
+
+need ?(
+
+[unneeded] char>string ?(
+: char>string  ( c -- ca len )
+  1 allocate-string tuck c! 1  ; ?)
+  \ Convert the char _c_ to a string _ca len_ in the circular
+  \ string buffer.
+
+[unneeded] chars>string ?(
+: chars>string  ( c1..cn n -- ca len )
+  dup if    dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
+            bounds do  i c!  loop  2r>
+      else  pad swap  then  ; ?)
+  \ Convert _n_ chars to a string _ca len_ in the circular
+  \ string buffer.
+  \ c1..cn = chars to make the string with
+  \          (_c1_ is the last one)
+  \ n = number of chars
 
 ( s+ )
 
@@ -124,9 +151,12 @@ need pick
 
 need under+
 
+  \ XXX TODO -- finish and benchmark. rewrite `#spaces` after
+  \ `#chars`? add `#nulls`
+
 : #spaces  ( ca len -- +n )
   0 rot rot  0 do  count bl = under+  loop  drop abs  ;
-  \ Count spaces in a string.
+  \ Count spaces in a string _ca len_.
 
   \ Credit:
   \
@@ -138,109 +168,95 @@ need under+
 : #chars  ( ca len c -- +n )
   0 2swap 0 do
     ( c count ca ) count over = under+  loop  2drop abs  ;
-  \ Count spaces in a string.
+  \ Count chars _c_ in a string _ca len_.
 
-( /name first-name trim last-name )
+( /name first-name last-name )
 
   \ Credit:
   \
   \ Code from Galope.
 
-: /name  ( ca1 len1 -- ca2 len2 ca3 len3 )
-  bl skip 2dup bl scan  ;
-  \ ca1 len1 = Text.
-  \ ca2 len2 = Same text, from the start of its first name.
-  \ ca3 len3 = Same text, from the char after its first name.
+need ?(  [unneeded] last-name ?(  need trim
 
-: first-name  ( ca1 len1 -- ca2 len2 )  /name nip -  ;
-  \ Get the first name from a string.
-  \ A name is a substring separated by spaces.
-
-need trim
 : last-name  ( ca1 len1 -- ca2 len2 )
   trim  begin  2dup bl scan bl skip dup
-        while  2nip  repeat  2drop  ;
-  \ Get the last name from a string.
-  \ A name is a substring separated by spaces.
+        while  2nip  repeat  2drop  ;  exit ?)
+  \ Get the last name _ca2 len2_ from string _ca1 len1_.  A
+  \ name is a substring separated by spaces.
 
-( prefix? suffix? )
+: /name  ( ca1 len1 -- ca2 len2 ca3 len3 )
+  bl skip 2dup bl scan  ;
+  \ Split string _ca1 len1_ into _ca2 len2_ (from the start of
+  \ the first name in _ca1 len1_) and _ca3 len3_ (from the char
+  \ after the first name in _ca1 len1).  A name is a substring
+  \ separated by spaces.
 
-need str=  need ?(
+[unneeded] first-name ?exit
 
-  \ Credit:
-  \
-  \ Code adapted from Galope (module
-  \ string-prefix-question.fs).
+: first-name  ( ca1 len1 -- ca2 len2 )  /name nip -  ;
+  \ Return the first name _ca2 len2_ from string _ca1 len1_.  A
+  \ name is a substring separated by spaces.
 
-[unneeded] prefix? ?(
+( prefix? suffix? -prefix -suffix )
+
+need ?(
+
+[unneeded] prefix? ?(  need str=  
 
 : prefix?  ( ca1 len1 ca2 len2 -- f )
   tuck 2>r min 2r> str=  ; ?)
+  \ Is string _ca2 len2_ the prefix of string _ca1 len1_?
+  
+  \ Credit:
+  \
+  \ Code adapted from Galope (module string-prefix-question.fs).
 
+[unneeded] suffix? (?  need pick  need str=  
+
+: suffix? ( ca1 len1 ca2 len2 -- f )
+  2swap dup 3 pick - /string str=  ; ?)
+  \ Is string _ca2 len2_ the suffix of string _ca1 len1_?
+  
   \ Credit:
   \
   \ Code from Galope (module string-suffix-question.fs).
 
-[unneeded] suffix? (?
-
-need pick
-
-: suffix? ( ca1 len1 ca2 len2 -- f )
-  \ Is string _ca2 len2_ the end of string _ca1 len1_?
-  2swap dup 3 pick - /string str=  ; ?)
-
-( -prefix -suffix )
-
-  \ Credit:
-  \
-  \ Code from Galope (module minus-prefix.fs).
-
-need ?(
 
 [unneeded] -prefix ?(  need prefix?
 
 : -prefix  ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
-  \ Remove a prefix _ca2 len2_ from a string _ca1 len1_.
   dup >r 2over 2swap prefix?
   if  swap r@ + swap r> -  else  rdrop  then  ; ?)
+  \ Remove prefix _ca2 len2_ from string _ca1 len1_.
+  
+  \ Credit:
+  \
+  \ Code from Galope (module minus-prefix.fs).
+
+[unneeded] -suffix ?(  need suffix?
+
+: -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
+  dup >r 2over 2swap suffix?
+  if  r> -  else  rdrop  then  ; ?)
+  \ Remove suffix _ca2 len2_ from string _ca1 len1_.
 
   \ Credit:
   \
   \ Code from Galope (module minus-suffix.fs).
 
-[unneeded] -suffix ?(  need suffix?
+( chop s"" sconstant save-counted-string )
 
-: -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
-  \ Remove a suffix _ca2 len2_ from a string _ca1 len1_.
-  dup >r 2over 2swap suffix?
-  if  r> -  else  rdrop  then  ; ?)
-
-( ud>str d>str chop s"" )
-
-  \ Credit:
+[unneeded] chop
+?\ : chop  ( ca len -- ca' len' )  1- swap char+ swap  ;  exit
+  \ Remove the last character from string _ca len_.
   \
-  \ Code from Galope (module ud-to-str.fs).
-
-[unneeded] ud>str
-?\ : ud>str  ( ud -- ca len )  <# #s #>  ;
-
-  \ Credit:
-  \
-  \ Code from Galope (module d-to-str.fs).
-
-[unneeded] d>str
-?\ : d>str  ( ud -- ca len )  tuck dabs <# #s rot sign #>  ;
-
   \ Credit:
   \
   \ Code from Galope (module chop.fs).
 
-[unneeded] chop
-?\ : chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
-  \ Remove the last character from string _ca len_.
 
 [unneeded] s""
-?\ : s""  ( -- ca len )  0 allocate-string 0  ;
+?\ : s""  ( -- ca len )  0 allocate-string 0  ;  exit
 
   \ doc{
   \
@@ -250,10 +266,13 @@ need ?(
   \
   \ }doc
 
-( save-counted-string )
+need ?(  [unneeded] sconstant ?(
+: sconstant  ( ca len "name" -- )
+  here >r s, r> count 2constant  ; ?)
 
+[unneeded] save-counted-string ?(
 : save-counted-string  ( ca1 len1 -- ca2 )
-  dup 1+ allocate-string dup >r place r>  ;
+  dup 1+ allocate-string dup >r place r>  ; ?)
 
   \ doc{
 
