@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608041835
+# Last modified: 201608062149
 
 # ==============================================================
 # Author
@@ -35,18 +35,19 @@ pasmo=/usr/local/bin/pasmo.054beta2
 #pasmo=/usr/local/bin/pasmo.053
 
 # ==============================================================
-# Main
+# Kernel
 
-# A temporary name "forth.bin" is used because Pasmo does not
-# have an option to choose the filename used in the TAP file
-# header; it uses the name of the target file. This file must
-# be in the current directory, because the path specified in
-# the command will be part of the filename in the TAP header.
+# A temporary name ("forth.bin" for G+DOS and +3DOS, "forth" for
+# TR-DOS) is used because Pasmo does not have an option to choose the
+# filename used in the TAP file header; it uses the name of the target
+# file. This file must be in the current directory, because the path
+# specified in the command will be part of the filename in the TAP
+# header.
 #
 # Pasmo must be executed in the directory of the kernel source,
-# because the `include` Z80 directives calculate relative paths
-# from the current directory, not the directory of the source.
-# That's why `cd src` is used.
+# because the `include` Z80 directives calculate relative paths from
+# the current directory, not from the directory of the source.  That's
+# why `cd src` is used.
 
 # ----------------------------------------------
 # Kernel for G+DOS
@@ -94,9 +95,9 @@ tmp/kernel.trdos.bin.tap: \
 	$(pasmo) -v --tap \
 		--equ trdos \
 		kernel.z80s \
-		forth.bin \
+		forth \
 		../tmp/kernel.symbols.trdos.z80s && \
-	mv forth.bin ../tmp/kernel.trdos.bin.tap && \
+	mv forth ../tmp/kernel.trdos.bin.tap && \
 	cd ..
 
 # ==============================================================
@@ -117,3 +118,6 @@ tmp/kernel.trdos.bin.tap: \
 #
 # 2016-08-04: Fix requisites: the new DOS modules of the kernel were
 # missing.
+#
+# 2016-08-06: Rename the kernel file in TR-DOS, which only accepts 8
+# characters.
