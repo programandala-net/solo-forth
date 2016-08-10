@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608051900
+# Last modified: 201608102152
 
 # ==============================================================
 # Author
@@ -75,7 +75,7 @@ MAKEFLAGS = --no-print-directory
 # Main
 
 .PHONY: all
-all: gplusdos trdos
+all: gplusdos trdos plus3dos
 
 .PHONY: gplusdos
 gplusdos: \
@@ -87,8 +87,8 @@ gplusdos: \
 
 .PHONY: plus3dos
 plus3dos: \
-	disks/plus3dos/disk_a.dsk
-# disks/plus3dos/disk_b_lib.dsk
+	disks/plus3dos/disk0.dsk
+# disks/plus3dos/disk1_lib.dsk
 # XXX TODO --
 
 .PHONY: trdos
@@ -545,3 +545,5 @@ oldbackup:
 # meta tools disk into two: tests and benchmarks. Rename all disk
 # image files after a shorter and clearer format. Add disk9 for
 # debugging.
+#
+# 2016-08-10: Activate disk0 of +3DOS.

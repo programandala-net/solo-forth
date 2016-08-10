@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608101237
+; Last modified: 201608102156
 
 include version.z80s
 
@@ -1455,7 +1455,7 @@ get_lib_order.exit
 
   include kernel.gplusdos.z80s
   include kernel.trdos.z80s
-;  include kernel.plus3dos.z80s ; XXX TODO --
+  include kernel.plus3dos.z80s
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -2081,17 +2081,41 @@ push_a:
 
 bank.system:
   ld e,system_bank
+
+  ; XXX FIXME -- memory:
+  ; 128K rom1-ram5-ram2-ram0
+  ; +3   rom3-ram5-ram2-ram0
+
   jr bank.e
 bank.default:
 address_of_default_bank equ $+1
   ld e,default_bank
 bank.e:
   ld a,(sys_bankm) ; get the saved status of BANKM
+
+  ; XXX FIXME --
+  ; G+DOS A = $10 = %10000
+  ; +3DOS A = $10 = %10000
+
   and %11111000 ; erase bits 0-2
   or e ; modify bits 0-2
+
+  ; XXX FIXME --
+  ; G+DOS A = $11 = %10001
+  ; +3DOS A = $11 = %10001
+ 
+  ; XXX FIXME -- memory:
+  ; 128K rom1-ram5-ram2-ram0
+  ; +3   rom3-ram5-ram2-ram0
+
   di
   ld (sys_bankm),a ; update BANKM
   out (bank1_port),a ; page in the bank
+
+  ; XXX FIXME -- memory:
+  ; 128K  rom1-ram5-ram2-ram1
+  ; +3DOS rom0-ram1-ram2-ram3
+
   ei
   ret
 

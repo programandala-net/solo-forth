@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608050044
+; Last modified: 201608102151
 
 ; ==============================================================
 ; Description
@@ -34,6 +34,9 @@
 ; ==============================================================
 
 if defined plus3dos
+
+dos_set_drive equ 0 ; XXX TODO --
+dos_set_user equ 0 ; XXX TODO --
 
 back_from_dos:
   ; cy = no error?
@@ -130,6 +133,173 @@ do_dos:
   call dos
   pop bc
   ret
+
+; ==============================================================
+; Dictionary
+
+; ----------------------------------------------
+_colon_header dosior_to_ior_,'DOSIOR>IOR'
+
+; doc{
+;
+; dosior>ior ( dosior -- ior )
+;
+; Convert a DOS _dosior_ to a Forth _ior_.
+;
+; }doc
+
+  ; XXX TODO --
+
+  dw exit_
+
+; ----------------------------------------------
+  _constant_header rec_slash_track_,'REC/TRACK'
+
+; doc{
+;
+; rec/track  ( -- n )
+;
+; Records (sectors) per disk track.
+;
+; }doc
+
+  dw 9
+  ; XXX TODO -- use a label and move to the kernel
+
+; ----------------------------------------------
+  _colon_header sector_id_,'SECTOR-ID'
+
+; doc{
+
+; sector-id  ( n -- x )
+
+; Convert the sequential disk sector _n_ to the disk sector id
+; _x_, in the format required by +3DOS.
+;
+; ----
+;
+; }doc
+
+  ; XXX TODO --
+
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header read_block_,'READ-BLOCK'
+
+; doc{
+;
+; read-block  ( n -- )
+;
+; Read disk block _n_ to the buffer.
+;
+; ----
+; : read-block  ( n -- )
+;   read-mode transfer-block  ;
+; ----
+;
+; }doc
+
+  dw read_mode_,transfer_block_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header write_block_,'WRITE-BLOCK'
+
+; doc{
+;
+; write-block  ( n -- )
+;
+; Write the buffer to disk block _n_.
+;
+; ----
+; : write-block  ( n -- )
+;   write-mode transfer-block  ;
+; ----
+;
+; }doc
+
+  dw write_mode_,transfer_block_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header transfer_block_,'TRANSFER-BLOCK'
+
+; doc{
+;
+; transfer-block  ( n -- )
+;
+; The block-level disk read-write linkage.
+; Transfer block _n_ to or from disk.
+; The read or write mode must be previously set
+; by `write-mode` or `read-mode`.
+;
+; }doc
+
+  ; XXX TODO restore the current drive
+
+  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
+  dw dup_
+  dw sector_id_
+  dw buffer_data_
+  dw transfer_sector_,throw_
+
+  dw one_plus_,sector_id_
+
+  ; XXX TODO -- benchmark again
+  dw buffer_data_,b_slash_rec_,plus_ ; XXX 23768 frames
+  ;_literal disk_buffer+cell+bytes_per_sector ; XXX 24425 frames??
+
+  dw transfer_sector_,throw_
+
+  dw exit_
+
+; ----------------------------------------------
+  _code_header transfer_sector_,'TRANSFER-SECTOR'
+
+; doc{
+;
+; transfer-sector  ( x a -- ior )
+;
+; The sector-level disk read-write linkage.  Transfer sector _x_ to or
+; from disk.  The read or write mode must be previously set by
+; `write-mode` or `read-mode`.
+;
+; x = sector to read or write a = source or destination address
+;
+; }doc
+
+; XXX TODO --
+
+  jp false_
+
+; ----------------------------------------------
+  _colon_header write_mode_,'WRITE-MODE'
+
+; doc{
+;
+; write-mode  ( -- )
+;
+; Set the write mode for `transfer-sector` and `transfer-block`.
+;
+; }doc
+
+  ; XXX TODO --
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header read_mode_,'READ-MODE'
+
+; doc{
+;
+; read-mode  ( -- )
+;
+; Set the read mode for `transfer-sector` and `transfer-block`.
+;
+; }doc
+
+  ; XXX TODO --
+  dw exit_
 
 endif
 
