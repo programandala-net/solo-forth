@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608051900
+; Last modified: 201608102218
 
 ; ==============================================================
 ; Description
@@ -35,15 +35,22 @@
 if defined trdos
 
 ; ==============================================================
-; TR-DOS routines
+; TR-DOS entry points
 
-trdos_routine.interpret_command           equ 15363 ; $3C03
-  ; Routine to interpret a TR-DOS REM-command pointed by the system
+trdos_entry.interpret_command           equ 15619 ; $3D03
+  ; Interpret a TR-DOS REM-command pointed by the system
   ; variable CH ADD (23645).
 
-trdos_routine.execute_command             equ 15635 ; $3D13
-  ; Routine to execute a TR-DOS command, whose code is in the C
-  ; register.
+trdos_entry.execute_command             equ 15635 ; $3D13
+  ; Execute a TR-DOS command, whose code is in the C register.
+
+trdos_entry.call_pushed_address         equ 15663 ; $3D2F
+  ; Execute the TR-DOS routine whose address is on top of stack.
+
+; trdos_entry.XXX equ 15622 ; $3D06
+; trdos_entry.XXX equ 15629 ; $3D0D
+; trdos_entry.XXX equ 15632 ; $3D10
+; trdos_entry.XXX equ 15652 ; $3D24
 
 ; ==============================================================
 ; TR-DOS commands
@@ -55,8 +62,9 @@ trdos_command.cat                         equ $07
 trdos_command.read_file_descriptor        equ $08
 trdos_command.write_file_descriptor       equ $09
 trdos_command.find_file                   equ $0A
-trdos_command.save_code_file              equ $0B
+trdos_command.create_file                 equ $0B
 trdos_command.save_basic_program          equ $0C
+trdos_command.read_file                   equ $0E
 trdos_command.delete_file                 equ $12
 trdos_command.copy_from_hl_to_descriptor  equ $13
 trdos_command.copy_from_descriptor_to_hl  equ $14
@@ -71,11 +79,12 @@ trdos_command.read_system_track           equ $18
 trdos_variable.current_drive              equ 23798
 trdos_variable.two_files_drive            equ 23800
 trdos_variable.cat_drive                  equ 23801
+trdos_variable.load_verify_flag           equ 23801
+trdos_variable.last_error                 equ 23824
 trdos_variable.default_drive              equ 23833
 
 ; ==============================================================
 ; ZX Spectrum BASIC tokens
-
 
 token.cat   equ 207
 token.new   equ 230
@@ -95,17 +104,23 @@ dos:
 
 if 0
 
+; XXX OLD
+
   push bc   ; save the Forth IP
   push ix   ; save the address of `next`
 dos.command equ $+1
   ld c,0    ; DOS command (must be patched before calling)
-  call trdos_routine.execute_command
+  call trdos_entry.execute_command
   ld a,c    ; error code
   pop ix    ; restore the address of `next`
   pop bc    ; restore the Forth IP
   ret
 
-else
+endif
+
+if 1
+
+; XXX OLD
 
 ; Input:
 ;   (dos.command) = command
@@ -116,12 +131,47 @@ else
 
 dos.command equ $+1
   ld c,0    ; DOS command (must be patched before calling)
-  call trdos_routine.execute_command
+  _z80_border_wait 3 ; XXX INFORMER
+  call trdos_entry.execute_command
+  _z80_border_wait 4 ; XXX INFORMER
   ld a,c    ; error code
   and a
   ret
 
 endif
+
+; ------------------------------
+
+if 1
+
+; Input:
+;   C = command
+; Output:
+;   A  = error code or zero
+;   BC = error code or zero
+;   Z  = no error?
+
+trdos.execute_command:
+  ; XXX NEW -- experimental
+  push af
+  xor a
+  ld (trdos_variable.last_error),a
+  pop af
+  call trdos_entry.execute_command
+  ld a,c    ; error code
+  and a
+  ret
+
+endif
+
+; ------------------------------
+
+dos.hl:
+  push hl
+  jp trdos_entry.call_pushed_address
+
+
+; ------------------------------
 
 back_from_dos:
 ;   A  = error code or zero
@@ -148,6 +198,12 @@ convert_dos_error_code.hl:
 
 ; ==============================================================
 ; Dictionary
+
+; : dosior>ior  ( dosior -- ior )
+;   dup 1 and negate          \ error?
+;   swap flip %11111111 and   \ get upper 8 bits
+;   1000 + negate and  ;
+;   \ Convert a DOS ior to a Forth ior.
 
 ; ----------------------------------------------
   _constant_header rec_slash_track_,'REC/TRACK'
@@ -177,8 +233,6 @@ convert_dos_error_code.hl:
 ;
 ; ----
 ; : sector-id  ( n -- x )
-;   \ x (high byte) = track 0..79 for side 0, 80..159 for side 1
-;   \   (low byte)  = sector 0..15
 ;   rec/track +             \ the first track is not used
 ;   dup sectors/track mod   ( n sector )
 ;   swap sectors/track /    ( sector track )
@@ -289,8 +343,14 @@ if 1
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
   ld c,trdos_command.read_sectors
-  call trdos_routine.execute_command
+  call trdos_entry.execute_command
+
+  ; XXX FIXME -- when there's no disk in the drive, the call never
+  ; returns, and the system hangs.
+  ;
   ; XXX TODO -- check error code returned in bc
+  ;ld (22528),bc  ; XXX INFORMER  XXX TMP --
+
   pop bc    ; restore the Forth IP
   pop ix    ; restore the address of `next`
   _jp_next
@@ -313,9 +373,6 @@ else
 ;
 ; }doc
 
-  ; XXX FIXME -- when there's no disk in the drive, the system never
-  ; returns from the DOS.
-
 transfer_sectors.command equ $+1
   ld a,trdos_command.read_sectors
   ld (dos.command),a
@@ -327,16 +384,16 @@ transfer_sectors.command equ $+1
   push bc   ; save the Forth IP
   ld b,a    ; number of sectors
   call dos
+
+  ; XXX FIXME -- when there's no disk in the drive, the call never
+  ; returns, and the system hangs.
   ; XXX TODO -- check error code returned in bc
+
   pop bc    ; restore the Forth IP
   pop ix    ; restore the address of `next`
   jp back_from_dos
 
 endif
-
-
-
-; XXX TODO -- flash the border, like G+DOS
 
 ; ----------------------------------------------
 ;  _colon_header library_disk_,'LIBRARY-DISK'
@@ -355,29 +412,6 @@ endif
 ; ----------------------------------------------
   _code_header init_drive_,'INIT-DRIVE'
 
-if 1
-
-; doc{
-;
-; init-drive  ( n -- )
-;
-; }doc
-
-; Note: this TR-DOS routine stores the drive number in
-; `trdos_variable.current_drive`.
-
-  pop hl
-  ld a,l    ; drive number (0..3)
-  push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
-  ld c,trdos_command.init_drive
-  call trdos_routine.execute_command
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
-  _jp_next
-
-else
-
 ; doc{
 ;
 ; init-drive  ( n -- ior )
@@ -390,23 +424,18 @@ else
   ; XXX FIXME -- when there's no disk in the drive, the system never
   ; returns from the DOS.
 
-  ld a,trdos_command.init_drive
-  ld (dos.command),a
   pop hl
   ld a,l    ; drive number (0..3)
   push bc   ; save the Forth IP
   push ix   ; save the address of `next`
-  call dos
+  ld c,trdos_command.init_drive
+  call trdos.execute_command
   pop ix    ; restore the address of `next`
   pop bc    ; restore the Forth IP
-  _z80_border_wait 1 ; XXX INFORMER
   jp back_from_dos
-
-endif
 
 ; ----------------------------------------------
   _code_header cat_,'CAT'
-
 
 if 0
 
@@ -453,7 +482,7 @@ if 0
   push bc   ; save the Forth IP
   push ix   ; save the address of `next`
   ld c,trdos_command.cat
-  call trdos_routine.execute_command
+  call trdos_entry.execute_command
   _z80_border_wait 4 ; XXX INFORMER
   pop ix    ; restore the address of `next`
   pop bc    ; restore the Forth IP
@@ -476,7 +505,7 @@ if 0
   push bc   ; save the Forth IP
   push ix   ; save the address of `next`
   ld c,trdos_command.cat
-  call trdos_routine.execute_command
+  call trdos_entry.execute_command
   _z80_border_wait 4 ; XXX INFORMER
   pop ix    ; restore the address of `next`
   pop bc    ; restore the Forth IP
@@ -484,7 +513,7 @@ if 0
 
 endif
 
-if 1
+if 0
 
 ; doc{
 ;
@@ -492,7 +521,8 @@ if 1
 ;
 ; }doc
 
-  ; XXX FIXME -- no effect!
+  ; XXX FIXME -- call 15363 -- no effect
+  ; XXX FIXME -- call 15619 -- hang
 
   push bc   ; save the Forth IP
   push ix   ; save the address of `next`
@@ -500,8 +530,8 @@ if 1
   push hl
   ld hl,cat.command_line
   ld (sys_ch_add),hl
-  call trdos_routine.interpret_command
-  ;_z80_border_wait 4 ; XXX INFORMER
+  call trdos_entry.interpret_command
+  _z80_border_wait 4 ; XXX INFORMER
 
   ; XXX INFORMER:
   ; push bc ; error code
@@ -519,8 +549,142 @@ cat.command_line:
 
 endif
 
+if 0
+
+; doc{
+;
+; cat  ( -- )
+;
+; }doc
+
+  ; XXX FIXME -- no effect
+
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ld hl,$0429 ; `CAT`
+  call dos.hl
+  _z80_border_wait 4 ; XXX INFORMER
+
+  ; XXX INFORMER:
+  ; push bc ; error code
+  ; pop hl
+  ; ld (22528),hl ; it's meaningless, why?
+
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _jp_next
+
+
+endif
+
+if 0
+
+; doc{
+;
+; cat  ( -- )
+;
+; }doc
+
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ld c,$07
+  call dos.hl
+  _z80_border_wait 4 ; XXX INFORMER
+
+  ; XXX INFORMER:
+  ; push bc ; error code
+  ; pop hl
+  ; ld (22528),hl ; it's meaningless, why?
+
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _jp_next
+
+endif
+
+if 0
+
+  ; XXX FIXME -- hang!
+
+; doc{
+;
+; cat  ( -- ior )
+;
+; }doc
+
+  ; ld a,trdos_command.cat
+  ; ld (dos.command),a
+
+  ; ld a,0; drive
+  ; ld (trdos_variable.current_drive),a
+
+  ld a,(trdos_variable.current_drive)
+
+  ld (trdos_variable.two_files_drive),a
+  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.default_drive),a
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  _z80_border_wait 1 ; XXX INFORMER
+
+;  call dos
+
+  ;XXX REMARK -- this init makes no difference:
+  ;ld c,trdos_command.init_drive
+  ;call trdos_entry.execute_command
+
+  ld a,2    ; stream: screen
+  ld c,trdos_command.cat
+  call trdos_entry.execute_command
+
+  _z80_border_wait 2 ; XXX INFORMER
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  _z80_border_wait 5 ; XXX INFORMER
+  jp back_from_dos
+
+endif
+
+if 1
+
+; doc{
+;
+; cat  ( -- ior )
+;
+; }doc
+
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+
+  ld a,(trdos_variable.current_drive)
+  ld (trdos_variable.two_files_drive),a
+  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.default_drive),a
+  ;_z80_border_wait 1 ; XXX INFORMER
+
+  ;ld a,2    ; stream: screen; XXX FIXME -- hang
+
+  ld a,3    ; stream: printer; XXX FIXME -- it works, but channel is not restored
+
+  ld c,trdos_command.cat
+  call trdos.execute_command
+
+  ;_z80_border_wait 2 ; XXX INFORMER
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  ;_z80_border_wait 5 ; XXX INFORMER
+  jp back_from_dos
+
+endif
+
 ; ----------------------------------------------
   _colon_header set_drive_,'SET-DRIVE'
+
+; doc{
+;
+; set-drive  ( n -- ior )
+;
+; }doc
 
   ; XXX FIXME -- hang:
   ;_literal trdos_variable.current_drive
@@ -538,16 +702,30 @@ endif
   ; XXX TODO -- how to set the default drive?
 
   ; XXX FIXME -- no effect:
+  ; dw dup_
+  ; _literal trdos_variable.default_drive
+  ; dw c_store_
+  ; _literal trdos_variable.current_drive
+  ; dw c_store_
+  ; dw exit_
+
   dw dup_
   _literal trdos_variable.default_drive
   dw c_store_
+  dw dup_
   _literal trdos_variable.current_drive
   dw c_store_
-
+  dw init_drive_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header get_drive_,'GET-DRIVE'
+
+; doc{
+;
+; get-drive ( -- n )
+;
+; }doc
 
   _literal trdos_variable.current_drive
   dw c_fetch_
@@ -593,6 +771,54 @@ transfer_mode:
   _literal transfer_sectors.command
   dw c_store_
   dw exit_
+
+; ----------------------------------------------
+  _code_header xxx_,'XXX'
+
+  ; XXX TMP -- for debugging
+  ; XXX REMARK -- it works
+
+  push bc   ; save the Forth IP
+  push ix   ; save the address of `next`
+  ;ld (backup_bc),bc
+
+  ld c,trdos_command.read_system_track
+  call trdos.execute_command
+  _z80_border_wait 1 ; XXX INFORMER
+
+  ld hl, name
+  ld c,trdos_command.copy_from_hl_to_descriptor
+  call trdos.execute_command
+  _z80_border_wait 2 ; XXX INFORMER
+  ld c,trdos_command.find_file
+  call trdos.execute_command
+  _z80_border_wait 3 ; XXX INFORMER
+  ld a, c ; entry number of the file or $FF
+  inc c ; $FF?
+  jr z, exit  ; not found
+  ld c,trdos_command.read_file_descriptor
+  call trdos.execute_command
+  _z80_border_wait 4 ; XXX INFORMER
+  xor a
+  ld (trdos_variable.load_verify_flag),a ; set load flag
+  ld hl,16384      ; load address
+  ld a, $ff        ; take length from the directory
+  ld c,trdos_command.read_file
+  _z80_border_wait 5 ; XXX INFORMER
+  call trdos.execute_command
+  _z80_border_wait 6 ; XXX INFORMER
+
+exit:
+  pop ix    ; restore the address of `next`
+  pop bc    ; restore the Forth IP
+  ;ld ix,next
+;backup_bc equ $+1
+;  ld bc,0
+  jp back_from_dos
+
+
+name:
+  defm "4x8fd.biC" ; nombre y tipo del archivo cargado
 
 endif
 
