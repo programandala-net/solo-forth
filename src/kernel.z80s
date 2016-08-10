@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608051900
+; Last modified: 201608101237
 
 include version.z80s
 
@@ -124,7 +124,8 @@ if defined trdos
  ; disk.  This buffer is allocated dynamically. Therefore, the
  ; default origin of the Forth system must be moved up.
 
-  origin:                         equ default_origin+$170
+  ;origin:                         equ default_origin+$170
+  origin:                         equ default_origin+$800 ; XXX TMP --
 
 else
 
@@ -149,14 +150,17 @@ bytes_per_buffer:                 equ $0400
 if defined gplusdos
   blocks_per_disk:                  equ 800
   sectors_per_block:                equ $02
+  max_drives:                       equ 2
 endif
 if defined plus3dos
   blocks_per_disk:                  equ 720
   sectors_per_block:                equ $02
+  max_drives:                       equ 2
 endif
 if defined trdos
-  blocks_per_disk:                  equ 640 ; XXX FIXME -- library file only
+  blocks_per_disk:                  equ 636 ; 640 minus 4 KiB of sector 0
   sectors_per_block:                equ $04
+  max_drives:                       equ 4
 endif
 
 bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
@@ -783,7 +787,6 @@ context_value:                                ; +$28..+$36
 
 if 0 ; old_search_order
   dw $0000 ; end of search order, required by `find`
-            ; XXX TODO improve `find` and remove this
 endif
 
   ; Free space for more user variables:
@@ -1327,15 +1330,132 @@ endif
   dw exit_
 
 ; ----------------------------------------------
+  _c_constant_header max_drives_,'MAX-DRIVES'
+
+  db max_drives
+
+; doc{
+;
+; max-drives ( -- b )
+;
+; A constant that returns the maximum number of drives
+; available in the DOS.
+;
+; }doc
+
+; ----------------------------------------------
+  _variable_header lib_order_,'LIB-ORDER'
+
+; XXX NEW -- not used yet by `need`
+
+if defined gplusdos
+  db 1,2,0
+endif
+if defined plus3dos
+  db 1,'b',0
+endif
+if defined trdos
+  db 1,1,0,0,0
+endif
+
+; doc{
+;
+; lib-order  ( -- a )
+;
+; Address of the library order, which has the following
+; structure: 
+;
+; |===
+; | Offset | Bytes        | Description
+;
+; | 0      | 1            | Number of library disks to be searched.
+; | 1      | `max-drives` | Drives to search, in searching order.
+; |===
+;
+; The value of `max-drives` depends on the DOS.  The
+; format of the drive identifiers also depends on the DOS, as
+; follows:
+;
+; - G+DOS: drives 1..2
+; - +3DOS: drives 'A'..'B'
+; - TR-DOS: drives 0..3
+;
+; }doc
+
+; ----------------------------------------------
+  _colon_header set_lib_order_,'SET-LIB-ORDER'
+
+; XXX NEW -- not used yet by `need`
+
+; doc{
+;
+; set-lib-order  ( b[n] ... b[1] n -- )
+;
+; Set the library search order to the drives identified by
+; _b[n]_ ... _b[1]_.  Subsequently, drive _b[1]_ will be
+; searched first, and drive _b[n]_ searched last. If _n_  is
+; zero, empty  the library search order.  
+
+; ----
+; : set-lib-order  ( b[n] ... b[1] n -- )
+;   dup lib-order c!
+;   0 ?do  [ lib-order char+ ] literal i chars + c!  loop  ;
+; ----
+;
+; }doc
+
+  dw dup_,lib_order_,c_store_
+  _literal 0
+  dw paren_question_do_,set_lib_order.exit
+  _literal lib_order_pfa+1
+  dw i_,plus_,c_store_
+  dw paren_loop_
+set_lib_order.exit
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header get_lib_order_,'GET-LIB-ORDER'
+
+; XXX NEW -- not used yet by `need`
+
+; doc{
+;
+; get-lib-order  ( -- b[n] ... b[1] n )
+;
+; Return the number of drives _n_ in the library search order
+; and the drive identifiers _b[n] ... b[1]_ identifying these
+; drives. _b[1]_ identifies the drive that is searched first,
+; and _b[n]_ the drive that is searched last. The library search
+; order is unaffected.
+
+; ----
+; : get-lib-order  ( -- b[n] ... b[1] n )
+;   lib-order c@ 0 ?do
+;     lib-order c@ i - lib-order + c@
+;   loop  lib-order c@  ;
+; ----
+;
+; }doc
+
+  dw lib_order_,c_fetch_
+  _literal 0
+  dw paren_question_do_,get_lib_order.exit
+  dw lib_order_,c_fetch_,i_,minus_
+  dw lib_order_,plus_,c_fetch_
+  dw paren_loop_
+get_lib_order.exit
+  dw lib_order_,c_fetch_
+  dw exit_
+
+; ----------------------------------------------
 
 ; Note: Conditional `include` is not allowed in the Pasmo
-; assembler. That's why all files are included, and they
+; assembler. That's why all DOS files are included, and they
 ; check its own condition.
 
   include kernel.gplusdos.z80s
   include kernel.trdos.z80s
 ;  include kernel.plus3dos.z80s ; XXX TODO --
-
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
