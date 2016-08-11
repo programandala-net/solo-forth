@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608111558
+# Last modified: 201608111620
 
 # ==============================================================
 # Author
@@ -210,11 +210,11 @@ tmp/4x8fd.tap: src/modules/4x8fd.z80s
 	pasmo --tap $< 4x8fd.bin ; \
 	mv 4x8fd.bin $@
 
-tmp/prnt42.tap: bin/modules/prnt42.bin
+tmp/pr42.tap: bin/modules/pr42.bin
 	cd bin/modules/ ; \
-	bin2code prnt42.bin prnt42.tap 63610 ; \
+	bin2code pr42.bin pr42.tap 63610 ; \
 	cd - ; \
-	mv bin/modules/prnt42.tap tmp/prnt42.tap
+	mv bin/modules/pr42.tap tmp/pr42.tap
 
 # ==============================================================
 # Fonts
@@ -247,8 +247,8 @@ disks/gplusdos/disk0.mgt: \
 		tmp/loader.gplusdos.bas.tap \
 		tmp/kernel.gplusdos.bin.tap \
 		tmp/4x8fd.tap \
-		bin/fonts/ea5aky-font42.tap \
-		tmp/prnt42.tap \
+		tmp/pr42.tap \
+		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
 	mkmgt $@ bin/sys/gplusdos-sys-2a.tap $^
 
@@ -259,8 +259,8 @@ tmp/disk0.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
 		tmp/4x8fd.tap \
-		bin/fonts/ea5aky-font42.tap \
-		tmp/prnt42.tap \
+		tmp/pr42.tap \
+		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
@@ -274,8 +274,8 @@ tmp/disk0.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.bin.tap \
 		tmp/4x8fd.tap \
-		bin/fonts/ea5aky-font42.tap \
-		tmp/prnt42.tap \
+		tmp/pr42.tap \
+		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
@@ -541,4 +541,5 @@ oldbackup:
 # fsb2-trd, which now creates a sector 0, instead of the ad hoc
 # solution.
 #
-# 2016-08-11: 
+# 2016-08-11: Improve copying the FZX fonts to the disks. Rename the
+# 42 cpl driver and font to make them fit in TR-DOS.

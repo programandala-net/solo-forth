@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605071346
+  \ Last modified: 201608111612
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,6 +36,8 @@
   \ 2016-04-26: Update `latest >name` to `latestxt`.
   \ 2016-05-07: Compact the blocks. Improve the file header.
   \ Fix: `need mode32` was missing.
+  \ 2016-08-11: Rename the filenames of the driver and the
+  \ font.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -64,8 +66,8 @@ need mode32  need <file-as-is need (mode42 need [if]
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
-get-drive 1 set-drive  s" prnt42.bin" <file-as-is throw
-                       s" ea5aky.f42" <file-as-is throw
+get-drive 1 set-drive  s" pr42.bin" <file-as-is throw
+                       s" ea5a.f42" <file-as-is throw
             set-drive
   \ Load the driver and the font.
 
@@ -85,8 +87,8 @@ need set-banked-mode-output  need code-bank
                          (mode42 set-banked-mode-output  ;
 
 code-bank{  get-drive 1 set-drive
-            s" prnt42.bin" <file-as-is throw
-            s" ea5aky.f42" <file-as-is throw
+            s" pr42.bin" <file-as-is throw
+            s" ea5a.f42" <file-as-is throw
             set-drive  }code-bank
   \ Load the driver and the font into the code bank.
 
