@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608102152
+# Last modified: 201608111235
 
 # ==============================================================
 # Author
@@ -115,11 +115,19 @@ disk9: \
 clean: cleantmp cleandisks
 
 .PHONY: cleandisks
-cleandisks:
-	rm -f \
-		disks/gplusdos/*.mgt \
-		disks/plus3dos/*.dsk \
-		disks/trdos/*.trd
+cleandisks: cleangplusdos cleanplus3dos cleantrdos
+
+.PHONY: cleangplusdos
+cleangplusdos:
+	rm -f disks/gplusdos/*.mgt
+
+.PHONY: cleanplus3dos
+cleanplus3dos:
+	rm -f disks/plus3dos/*.dsk
+
+.PHONY: cleantrdos
+cleantrdos:
+	rm -f disks/trdos/*.trd
 
 .PHONY: cleantmp
 cleantmp:
@@ -381,55 +389,37 @@ trdos_core_lib_files = \
 tmp/library_for_trdos.fsb: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
 
-%_track_0.bin:
-	tools/make_trd_track_0.fs
-
-disks/trdos/disk1_lib.trd: \
-	tmp/library_for_trdos.fsb tmp/trdos_disk1_track_0.bin
-	tools/fsb2-trd-library.sh $< ;\
-	cat \
-		tmp/trdos_disk1_track_0.bin \
-		tmp/library_for_trdos.trd > $@
+disks/trdos/disk1_lib.trd: tmp/library_for_trdos.fsb 
+	fsb2-trd $< SoloFth1 ; \
+	mv $(basename $<).trd $@
 
 tmp/library_for_trdos+games.fsb: \
 	$(trdos_core_lib_files) $(game_lib_files)
 	cat $(trdos_core_lib_files) $(game_lib_files) > $@
 
-disks/trdos/disk2_lib+games.trd: \
-	tmp/library_for_trdos+games.fsb tmp/trdos_disk2_track_0.bin
-	tools/fsb2-trd-library.sh $< ;\
-	cat \
-		tmp/trdos_disk2_track_0.bin \
-		tmp/library_for_trdos+games.trd > $@
+disks/trdos/disk2_lib+games.trd: tmp/library_for_trdos+games.fsb
+	fsb2-trd $< SoloFth2 ; \
+	mv $(basename $<).trd $@
 
 tmp/library_for_trdos+benchmarks.fsb: \
 	$(trdos_core_lib_files) $(benchmark_lib_files)
 	cat $(trdos_core_lib_files) $(benchmark_lib_files) > $@
 
-disks/trdos/disk3_lib+benchmarks.trd: \
-	tmp/library_for_trdos+benchmarks.fsb tmp/trdos_disk3_track_0.bin
-	tools/fsb2-trd-library.sh $< ;\
-	cat \
-		tmp/trdos_disk3_track_0.bin \
-		tmp/library_for_trdos+benchmarks.trd > $@
+disks/trdos/disk3_lib+benchmarks.trd: tmp/library_for_trdos+benchmarks.fsb
+	fsb2-trd $< SoloFth3 ; \
+	mv $(basename $<).trd $@
 
 tmp/library_for_trdos+tests.fsb: \
 	$(trdos_core_lib_files) $(test_lib_files)
 	cat $(trdos_core_lib_files) $(test_lib_files) > $@
 
-disks/trdos/disk4_lib+tests.trd: \
-	tmp/library_for_trdos+tests.fsb tmp/trdos_disk4_track_0.bin
-	tools/fsb2-trd-library.sh tmp/library_for_trdos+tests.fsb ;\
-	cat \
-		tmp/trdos_disk4_track_0.bin \
-		tmp/library_for_trdos+tests.trd > $@
+disks/trdos/disk4_lib+tests.trd: tmp/library_for_trdos+tests.fsb
+	fsb2-trd $< SoloFth4 ; \
+	mv $(basename $<).trd $@
 
-disks/trdos/disk9_lib_without_dos.trd: \
-	tmp/library_without_dos.fsb tmp/trdos_disk9_track_0.bin
-	tools/fsb2-trd-library.sh $< ; \
-	cat \
-		tmp/trdos_disk4_track_0.bin \
-		tmp/library_without_dos.trd > $@
+disks/trdos/disk9_liblib_without_dos.trd: tmp/library_without_dos.fsb
+	fsb2-trd $< SoloFth9 ; \
+	mv $(basename $<).trd $@
 
 # ==============================================================
 # Backup
@@ -547,3 +537,7 @@ oldbackup:
 # debugging.
 #
 # 2016-08-10: Activate disk0 of +3DOS.
+#
+# 2016-08-11: Make TRD disk images with the improved version of
+# fsb2-trd, which now creates a sector 0, instead of the ad hoc
+# solution.
