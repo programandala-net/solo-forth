@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608102218
+; Last modified: 201608111301
 
 ; ==============================================================
 ; Description
@@ -106,14 +106,13 @@ if 0
 
 ; XXX OLD
 
-  push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
+  push bc     ; save the Forth IP
 dos.command equ $+1
-  ld c,0    ; DOS command (must be patched before calling)
+  ld c,0      ; DOS command (must be patched before calling)
   call trdos_entry.execute_command
-  ld a,c    ; error code
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  ld a,c      ; error code
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   ret
 
 endif
@@ -338,7 +337,6 @@ if 1
   ld a,l    ; number of sectors
   pop hl    ; address
   pop de    ; d = track 0..159; e = sector 0..15
-  push ix   ; save the address of `next`
   push bc   ; save the Forth IP
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
@@ -351,8 +349,8 @@ transfer_sectors.command equ $+1
   ; XXX TODO -- check error code returned in bc
   ;ld (22528),bc  ; XXX INFORMER  XXX TMP --
 
-  pop bc    ; restore the Forth IP
-  pop ix    ; restore the address of `next`
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   _jp_next
 
 else
@@ -380,7 +378,6 @@ transfer_sectors.command equ $+1
   ld a,l    ; number of sectors
   pop hl    ; address
   pop de    ; d = track 0..159; e = sector 0..15
-  push ix   ; save the address of `next`
   push bc   ; save the Forth IP
   ld b,a    ; number of sectors
   call dos
@@ -389,8 +386,8 @@ transfer_sectors.command equ $+1
   ; returns, and the system hangs.
   ; XXX TODO -- check error code returned in bc
 
-  pop bc    ; restore the Forth IP
-  pop ix    ; restore the address of `next`
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   jp back_from_dos
 
 endif
@@ -427,11 +424,10 @@ endif
   pop hl
   ld a,l    ; drive number (0..3)
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   ld c,trdos_command.init_drive
   call trdos.execute_command
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   jp back_from_dos
 
 ; ----------------------------------------------
@@ -455,11 +451,10 @@ if 0
   ld (trdos_variable.default_drive),a
   ld a,2    ; stream: screen
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   call dos
   _z80_border_wait 4 ; XXX INFORMER
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   jp back_from_dos
 
 endif
@@ -480,12 +475,11 @@ if 0
   ld (trdos_variable.default_drive),a
   ld a,2    ; stream: screen
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   ld c,trdos_command.cat
   call trdos_entry.execute_command
   _z80_border_wait 4 ; XXX INFORMER
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   _jp_next
 
 
@@ -501,14 +495,13 @@ if 0
 ;
 ; }doc
 
-  ld a,2    ; stream: screen
-  push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
+  ld a,2      ; stream: screen
+  push bc     ; save the Forth IP
   ld c,trdos_command.cat
   call trdos_entry.execute_command
   _z80_border_wait 4 ; XXX INFORMER
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   _jp_next
 
 endif
@@ -525,7 +518,6 @@ if 0
   ; XXX FIXME -- call 15619 -- hang
 
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   ld hl,(sys_ch_add)
   push hl
   ld hl,cat.command_line
@@ -540,8 +532,8 @@ if 0
 
   pop hl
   ld (sys_ch_add),hl
-  pop ix    ; restore the address of `next`
   pop bc    ; restore the Forth IP
+  ld ix,next  ; restore IX
   _jp_next
 
 cat.command_line:
@@ -560,7 +552,6 @@ if 0
   ; XXX FIXME -- no effect
 
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   ld hl,$0429 ; `CAT`
   call dos.hl
   _z80_border_wait 4 ; XXX INFORMER
@@ -570,8 +561,8 @@ if 0
   ; pop hl
   ; ld (22528),hl ; it's meaningless, why?
 
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   _jp_next
 
 
@@ -586,7 +577,6 @@ if 0
 ; }doc
 
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   ld c,$07
   call dos.hl
   _z80_border_wait 4 ; XXX INFORMER
@@ -596,8 +586,8 @@ if 0
   ; pop hl
   ; ld (22528),hl ; it's meaningless, why?
 
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   _jp_next
 
 endif
@@ -624,7 +614,6 @@ if 0
   ld (trdos_variable.cat_drive),a
   ld (trdos_variable.default_drive),a
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   _z80_border_wait 1 ; XXX INFORMER
 
 ;  call dos
@@ -638,8 +627,8 @@ if 0
   call trdos_entry.execute_command
 
   _z80_border_wait 2 ; XXX INFORMER
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   _z80_border_wait 5 ; XXX INFORMER
   jp back_from_dos
 
@@ -654,7 +643,6 @@ if 1
 ; }doc
 
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
 
   ld a,(trdos_variable.current_drive)
   ld (trdos_variable.two_files_drive),a
@@ -670,8 +658,8 @@ if 1
   call trdos.execute_command
 
   ;_z80_border_wait 2 ; XXX INFORMER
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   ;_z80_border_wait 5 ; XXX INFORMER
   jp back_from_dos
 
@@ -779,7 +767,6 @@ transfer_mode:
   ; XXX REMARK -- it works
 
   push bc   ; save the Forth IP
-  push ix   ; save the address of `next`
   ;ld (backup_bc),bc
 
   ld c,trdos_command.read_system_track
@@ -809,8 +796,8 @@ transfer_mode:
   _z80_border_wait 6 ; XXX INFORMER
 
 exit:
-  pop ix    ; restore the address of `next`
-  pop bc    ; restore the Forth IP
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   ;ld ix,next
 ;backup_bc equ $+1
 ;  ld bc,0
