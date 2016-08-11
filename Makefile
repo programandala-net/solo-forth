@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608111235
+# Last modified: 201608111558
 
 # ==============================================================
 # Author
@@ -224,16 +224,14 @@ tmp/prnt42.tap: bin/modules/prnt42.bin
 
 fzx_fonts = $(wildcard bin/fonts/*.fzx)
 
-bin/fonts/fzx_fonts.tap : $(fzx_fonts)
+tmp/fzx_fonts.tap : $(fzx_fonts)
 	cd bin/fonts ; \
-	for file in $$(ls -1 *.fzx); do \
+	for file in $(notdir $(fzx_fonts)); do \
 		bin2code $$file $$file.tap; \
 	done; \
-	cat *.fzx.tap > fzx_fonts.tap ; \
 	cd -
-
-	# XXX OLD -- 2016-05-15: was done after `cat`, above
-	# rm -f *.fzx.tap ; \
+	cat $(addsuffix .tap,$(fzx_fonts)) > $@ ; \
+	rm -f $(addsuffix .tap, $(fzx_fonts)) 
 
 # ==============================================================
 # Main disk
@@ -250,37 +248,38 @@ disks/gplusdos/disk0.mgt: \
 		tmp/kernel.gplusdos.bin.tap \
 		tmp/4x8fd.tap \
 		bin/fonts/ea5aky-font42.tap \
-		tmp/prnt42.tap
-	mkmgt $@ bin/sys/gplusdos-sys-2a.tap $^ bin/fonts/*.fzx
+		tmp/prnt42.tap \
+		tmp/fzx_fonts.tap
+	mkmgt $@ bin/sys/gplusdos-sys-2a.tap $^
 
 # ----------------------------------------------
 # +3DOS main disk
 
-tmp/solo_forth_plus3dos_disk0.tap: \
+tmp/disk0.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
 		tmp/4x8fd.tap \
 		bin/fonts/ea5aky-font42.tap \
 		tmp/prnt42.tap \
-		bin/fonts/fzx_fonts.tap
+		tmp/fzx_fonts.tap
 	cat $^ > $@
 
-disks/plus3dos/disk0.dsk: tmp/solo_forth_plus3dos_disk0.tap
+disks/plus3dos/disk0.dsk: tmp/disk0.plus3dos.tap
 	tap2dsk -720 -label SoloForth $< $@
 
 # ----------------------------------------------
 # TR-DOS main disk
 
-tmp/solo_forth_trdos_disk0.tap: \
+tmp/disk0.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.bin.tap \
 		tmp/4x8fd.tap \
 		bin/fonts/ea5aky-font42.tap \
 		tmp/prnt42.tap \
-		bin/fonts/fzx_fonts.tap
+		tmp/fzx_fonts.tap
 	cat $^ > $@
 
-disks/trdos/disk0.trd: tmp/solo_forth_trdos_disk0.tap
+disks/trdos/disk0.trd: tmp/disk0.trdos.tap
 	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
 	rm -f $@
 	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
@@ -541,3 +540,5 @@ oldbackup:
 # 2016-08-11: Make TRD disk images with the improved version of
 # fsb2-trd, which now creates a sector 0, instead of the ad hoc
 # solution.
+#
+# 2016-08-11: 

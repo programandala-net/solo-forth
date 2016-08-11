@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-08-10
+:revdate: 2016-08-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -8,6 +8,11 @@
 // }}}
 == Misc ==
 // {{{
+
+.2016-08-11:
+
+Change the names of the font drivers to make them fit the 8 characters allowed
+by TR-DOS. This way the library code can be shared.
 
 .2016-08-09:
 
@@ -17,14 +22,6 @@ Change the format of stack notation:
 xn..x1 --> x[n] ... x[1] 
        --> x[n]..x[1] 
 ----
-
-.2016-08-05:
-
-Fix building of the +3DOS version, even if the library can not be used.
-
-.2016-08-05:
-
-Move `fsb2-trd-library.sh` and `make_trd_track_0.fs` to the fsb2 project.
 
 .2016-06-01:
 
@@ -816,6 +813,22 @@ Investigate how to use the free memory of the Plus D RAM.
 .2015-11-10:
 
 On +3DOS, reserve one memory bank for the name fields.
+
+.2016-08-11:
+
+Create also 180 KiB disk 0.
+
+// }}}
+== TR-DOS ==
+// {{{
+
+.2016-08-11:
+
+Investigate if TR-DOS uses the IX register. If not, remove the restorings.
+
+.2016-08-11:
+
+Adapt the file names of fonts.
 
 // }}}
 == Sound ==
