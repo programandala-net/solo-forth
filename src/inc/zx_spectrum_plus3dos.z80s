@@ -1,0 +1,2443 @@
+; ZX Spectrum +3DOS
+
+; By Marcos Cruz (programandala.net)
+
+; This file is Part 27 of Chapter 8 of the ZX Spectrum +3 manual,
+; published in HTML format in <http://worldofspectrum.org>.
+; I simply converted it be usable as Z80 source.
+
+; --------------------------------------------------------------
+; Change history
+
+; 2015-01-12: Start.
+;
+; 2015-07-13: Added labels for DOS GET 1346 and DOS SET 1346. Fixed typos (also
+; in the original HTML document).
+
+; --------------------------------------------------------------
+
+; Part 27
+; Guide to +3DOS
+;
+; Subjects covered...
+;
+;         ROMs
+;         +3DOS interface
+;         File attributes and headers
+;         Disk format and specification
+;         Tracks and sectors
+;         Disk parameter blocks
+;         CP/M file compatibility
+;         Changing disks
+;         Logical to physical drive mapping
+;         +3DOS messages and requirements
+;         +3DOS routines
+;
+;
+; This section describes +3DOS - the disk operating system of the
+; +3. The information will probably be of most interest to people
+; familiar with assembly language (machine code) programming (see part
+; 26 of this chapter for more information on this subject). What follows
+; is highly technical, and should not be used by the uninitiated.
+;
+; The operating software of the +3 is, in effect, held in four ROMs
+; (though the information is actually contained in just two ICs). All
+; four ROMs are addressed between 0000h and 3FFFh, although only one is
+; switched in at a time.
+;
+; ROM 0 is the 'editor' ROM and is the one entered when the +3 is first
+; switched on. This controls the high level 'menuing' and editing
+; functions.
+;
+; ROM 1 is the 'syntax' ROM and handles the high level control of +3
+; BASIC. It contains the code for the BASIC parts of most of the disk
+; based commands.
+;
+; ROM 3 is the '48 BASIC' ROM and is virtually identical to the ROM used
+; in the very first Spectrum. The only real area where it is different
+; is in the code executed when an interrupt occurs. If non-zero, a
+; 'ticker' variable is decremented every second interrupt, and when it
+; reaches zero, the disk motor is switched off. This variable is held in
+; page 7 along with some of the editor and DOS variables. Page 7 will
+; only be switched in (and this variable decremented) if bit 4 in the
+; FLAGS system variable is set - this is used by the software to
+; identify whether it is running 48 BASIC or +3 BASIC. When 48 BASIC is
+; selected (from the main menu or by the SPECTRUM command), this bit is
+; reset so that this page-switching and ticker-decrementing won't
+; happen. However, if bit 4 in the FLAGS system variable is subsequently
+; set by your own program, this process will start again while interrupt
+; mode 1 is still selected.
+;
+; The keypad scanning routines of the Spectrum 128 and +2 have been
+; removed from ROM 3 in the +3.
+;
+; A 'bug' in the original 48 BASIC ROM has been fixed in the +3. When a
+; non-maskable interrupt (NMI) occurs, a jump is made to location
+; 66h. This now checks the contents of the NMIADD system variable. If it
+; is zero, a RETN is executed, otherwise a jump is made to the routine
+; address held in NMIADD. The NMI code in ROM 2 consists of just a RETN.
+;
+; ROM 3 not only provides the 48 BASIC mode for program compatibility,
+; but executes the majority of +3 BASIC commands that don't make use of
+; the more advanced hardware of the +3.
+;
+; The fourth ROM (ROM 2) holds +3DOS - the disk operating system. This
+; is the subject of this section. Unlike the other ROMs, which are
+; unlikely to be of much use for assembler programmers (except the 48
+; BASIC ROM perhaps), the +3DOS ROM has a wealth of routines that may
+; well be of use in your own programs. We strongly recommend that any
+; software that uses the disk drives makes use of these routines as they
+; provide most of the facilities that one could wish for (more than are
+; currently used by BASIC, in fact). Furthermore, the routines should
+; only be accessed via the jump block. This not only makes it easier to
+; write software that can be adapted to and from the AMSTRAD CPC range
+; of computers, but also affords upwards compatibility for the
+; future. The entry points for each routine are held in a jump table at
+; address 0100h (256) in the ROM. Part 26 of this chapter gave a couple
+; of examples of the way in which these routines can be called.
+;
+; +3DOS provides the following facilities:
+;
+;         - Support for one or two floppy disk drives and a RAMdisk.
+;         - CP/M Plus and CP/M 2.2 file compatibility.
+;         - AMSTRAD CPC range and PCW range file and media
+;             compatibility.
+;         - Up to 16 files open at the same time.
+;         - Reading and writing files to or from any page in memory.
+;         - Byte level random access.
+;         - Deleting disk files; renaming disk files; changing disk
+;             files' attributes.
+;         - Selecting the default drive and user.
+;         - Booting a game or operating system.
+;         - Low level access to floppy disk driver.
+;         - Optional mapping of two logical drives (A: or B:) onto one
+;             physical drive (unit 0).
+;
+;
+; +3DOS interface
+;
+; +3DOS's interface is a set of routines accessed via a jump block. The
+; routines provided fall into three categories:
+;
+;         - Essential filing system routines.
+;         - Additional routines for games and operating systems.
+;         - Low level floppy disk access routines for disk formatting,
+;             copying, etc.
+;
+; The following is a list of the routines in each of these categories
+; (together with brief descriptions of the routines' functions):
+;
+;
+; Essential filing system routines
+;
+; NAME OF ROUTINE         FUNCTION
+;
+; DOS INITIALISE          Initialise +3DOS
+; DOS VERSION             Get +3DOS issue and version numbers
+; DOS OPEN                Create and/or open a file
+; DOS CLOSE               Close a file
+; DOS ABANDON             Abandon a file
+; DOS REF HEAD            Point at the header data for this file
+; DOS READ                Read bytes into memory
+; DOS WRITE               Write bytes from memory
+; DOS BYTE READ           Read a byte
+; DOS BYTE WRITE          Write a byte
+; DOS CATALOG             Catalog disk directory
+; DOS FREE SPACE          Free space on disk
+; DOS DELETE              Delete a file
+; DOS RENAME              Rename a file
+; DOS BOOT                Boot an operating system or other program
+; DOS SET DRIVE           Set/get default drive
+; DOS SET USER            Set/get default user number
+;
+;
+; Additional routines for games and operating systems
+;
+; NAME OF ROUTINE         FUNCTION
+;
+; DOS GET POSITION        Get file pointer for random access
+; DOS SET POSITION        Set file pointer for random access
+; DOS GET EOF             Get end of file position for random access
+; DOS GET 1346            Get memory usage in pages 1, 3, 4, 6
+; DOS SET 1346            Re-allocate memory usage in pages 1, 3, 4, 6
+; DOS FLUSH               Bring disk up to date
+; DOS SET ACCESS          Change open file's access mode
+; DOS SET ATTRIBUTES      Change a file's attributes
+; DOS OPEN DRIVE          Open a drive as a single file
+; DOS SET MESSAGE         Enable/disable error messages
+; DOS REF XDPB            Point at XDPB for low level disk access
+; DOS MAP B               Map B: onto unit 0 or 1
+;
+;
+; Low level floppy disk driving routines
+;
+; NAME OF ROUTINE         FUNCTION
+;
+; DD INTERFACE            Is the floppy disk driver interface present?
+; DD INIT                 Initialise disk driver
+; DD SETUP                Specify drive parameters
+; DD SET RETRY            Set try/retry count
+; DD READ SECTOR          Read a sector
+; DD WRITE SECTOR         Write a sector
+; DD CHECK SECTOR         Check a sector
+; DD FORMAT               Format a track
+; DD READ ID              Read a sector identifier
+; DD TEST UNSUITABLE      Test media suitability
+; DD LOGIN                Log in disk, initialise XDPB
+; DD SEL FORMAT           Pre-initialise XDPB for DD FORMAT
+; DD ASK 1                Is unit 1 (external drive) present?
+; DD DRIVE STATUS         Fetch drive status
+; DD EQUIPMENT            What type of drive?
+; DD ENCODE               Set intercept routine for copy protection
+; DD L XDPB               Initialise an XDPB from a disk specification
+; DD L DPB                Initialise a DPB from a disk specification
+; DD L SEEK               uPD765A seek driver
+; DD L READ               uPD765A read driver
+; DD L WRITE              uPD765A write driver
+; DD L ON MOTOR           Motor on, wait for motor-on time
+; DD L T OFF MOTOR        Start the motor-off ticker
+; DD L OFF MOTOR          Turn the motor off
+;
+;
+; Games and other non-BASIC programs
+;
+; +3DOS provides facilities specifically for non-BASIC programs:
+;
+; - Use DOS BOOT to load a single bootstrap sector, then take over the
+; whole machine (see the second example in part 26 of this chapter).
+;
+; - Claim some store from +3DOS using DOS SET 1346. This enables a
+; non-BASIC program to take control of the machine but still use the
+; facilities of +3DOS if required. If +3DOS is not required, then the
+; non-BASIC program should call DD L OFF MOTOR to force the drive motor
+; off and disable the motor ticker. Bit 4 in the FLAGS system variable
+; should be reset to prevent any back switching/variable decrementing on
+; interrupt.
+;
+; - A drive can be opened as a single file. This enables files and
+; directories to be examined without going via the file structure.
+;
+;
+; Using +3DOS without a floppy disk interface
+;
+; [This is the case on a +2A.]
+;
+; Even if the floppy disk interface were not present, +3DOS could still
+; be used as follows:
+;
+;         - Only drive M: is available (the RAMdisk).
+;         - The default drive for filenames is initialised to M: rather
+;             than A:.
+;         - Any attempt to use drives A: or B: will fail with error '22
+;             - Drive not found'.
+;         - As the sector cache is not required for use with the
+;             RAMdisk, is increased to 64K (the whole of pages 1, 3, 4,
+;             6). This will give 62K of data and 2K of directory (64
+;             entries).
+;         - The presence of the floppy disk interface can be determined
+;             by calling DD INTERFACE. If the interface were not
+;             present, then none of the other low level floppy disk
+;             routines (DD... etc.) could be called; the effect of doing
+;             so is undefined.
+;
+;
+; File attributes
+;
+; Bit 7 of the name and type field characters are the file
+; attributes. The top bits of the name field characters are denoted
+; f1...f8. The top bits of the type field characters are denoted
+; t1...t3. They have the following meanings:
+;
+;         f1...f4 - Available to the user
+;         f5...f8 - Reserved (always 0)
+;              t1 - 0 means file is read-write; 1 means file is
+;                     read-only
+;              t2 - 0 means not system file; 1 means system file
+;              t3 - 0 means not archived; 1 means archived
+;
+; A read-only file cannot be written to, erased or renamed. System files
+; can, optionally, be omitted from the directory catalog. The archive
+; attribute is ignored by +3DOS.
+;
+; Newly created files have all attributes set to 0. An existing file's
+; attributes can only be changed by DOS SET ATTRIBUTES (as used by
+; BASIC's MOVE command).
+;
+;
+; File headers
+;
+; Tape files have headers which contain some system information. +3DOS
+; files may, or may not, have headers. All files created by BASIC's SAVE
+; command will have headers.
+;
+; The +3DOS header mechanism provides a dedicated 8 byte area in each
+; headed file reserved for BASIC's use. The remainder of the header is
+; reserved for +3DOS. This 8 byte header is utilised in files created by
+; BASIC commands (see DOS OPEN description).
+;
+; +3DOS files may have a single header in the first 128 bytes of the
+; file - the header record. These headers are detected by a 'signature'
+; and checksum. If the signature and checksum are as expected, then a
+; header is present; if not, these is no header. Thus, it is possible,
+; but unlikely, that a file without a header could be mistaken for one
+; with a header.
+;
+; The format of the header record is as follows:
+;
+;         Bytes 0...7     - +3DOS signature - 'PLUS3DOS'
+;         Byte 8          - 1Ah (26) Soft-EOF (end of file)
+;         Byte 9          - Issue number
+;         Byte 10         - Version number
+;         Bytes 11...14   - Length of the file in bytes, 32 bit number,
+;                             least significant byte in lowest address
+;         Bytes 15...22   - +3 BASIC header data
+;         Bytes 23...126  - Reserved (set to 0)
+;         Byte 127        - Checksum (sum of bytes 0...126 modulo 256)
+;
+; The issue and version numbers are provided for any future
+; expansion. The issue number must equal the software's issue number;
+; the version number must be less than or equal to the software's
+; version number.
+;
+; +3DOS performs all the necessary header 'house-keeping'. A pointer to
+; +3 BASIC's 8 byte header area may be returned using DOS REF HEAD. It
+; is never necessary to write directly to the 128 byte header.
+;
+; AMSDOS headers (as used on the AMSTRAD CPC range of computers) will
+; not be recognised. AMSDOS files will be treated by +3DOS as
+; headerless, and vice versa.
+;
+;
+; Disk formats
+;
+; +3DOS supports exactly the same disk format as CP/M Plus and
+; LocoScript on the AMSTRAD PCW range of computer/word processors
+; (i.e. the first format listed below).
+;
+; The following formats are automatically detected when the disk is
+; first accessed:
+;
+;         - AMSTRAD PCW range single track (e.g. as used on model
+;             PCW8256)
+;         - AMSTRAD PCW range double track (e.g. as used on model
+;             PCW8512)
+;         - AMSTRAD CPC range system format
+;         - AMSTRAD CPC range vendor format
+;         - AMSTRAD CPC range data only format
+;
+; Note that the AMSTRAD CPC range's IBM format is not supported.
+;
+; Other disk formats can be used by patching the XDPB for a drive. The
+; XDPB is the same as for the first format listed above; it is not the
+; same as on the CPC range.
+;
+; Disk formats are subject to the following restrictions:
+;
+;         - 512 byte sector size
+;         - Maximum of 255 sectors per track
+;         - Maximum of 255 tracks
+;         - Maximum of 256 directory entries
+;         - Maximum of 360 allocation units
+;
+;
+; Logical tracks and sectors
+;
+; The disk driver routines require 'logical' tracks and sectors. These
+; are used to hide information concerning the number of sides and the
+; actual sector numbers from +3DOS, which knows nothing about them.
+;
+; Logical track numbers on a single sided disk are the same as physical
+; track numbers.
+;
+; For double sided disks, two options are available:
+;
+; 1. Alternating sides...
+;
+;         side 0 track 0 = logical track 0
+;         side 1 track 0 = logical track 1
+;         side 0 track 1 = logical track 2
+;         side 1 track 1 = logical track 3
+;         ...to...
+;         side 0 last track = logical track n-1
+;         side 1 last track = logical track n
+;
+; 2. Successive sides...
+;
+;         side 0 track 0 = logical track 0
+;         side 0 track 1 = logical track 1
+;         side 0 track 2 = logical track 2
+;         ...to...
+;         side 0 last track = logical track n/2-1
+;         ...and then...
+;         side 1 last track-1 = logical track n/2
+;         side 1 last track-2 = logical track n/2+1
+;         side 1 last track-3 = logical track n/2+2
+;         ...to...
+;         side 1 track 0 = logical track n
+;
+; ...where n is the total number of logical tracks (i.e. 2 x number of
+; tracks per side).
+;
+; Logical sectors hide the actual physical sector numbers. Logical
+; sector numbers always start from 0.
+;
+;         Logical sector = physical sector - first sector
+;
+;
+; Disk specification
+;
+; The PCW range disk format (used by the +3) is, in fact, a family of
+; formats the precise member of which is defined in the 'disk
+; specification' which is recorded on bytes 0...15 of sector 1, track 0
+; side 0. The format used on the +3 is the same as disk type 0
+; below. The sector holding this specification is also that used for a
+; bootstrap program. An example of how it may be set up is shown in the
+; second example in part 26 of this chapter.
+;
+; Byte 0          Disk type
+;                         0 = Standard PCW range DD SS ST (and +3)
+;                         1 = Standard CPC range DD SS ST system format
+;                         2 = Standard CPC range DD SS ST data only format
+;                         3 = Standard PCW range DD DS DT
+;                         All other values reserved
+;
+; Byte 1          Bits 0...1 Sidedness
+;                         0 = Single sided
+;                         1 = Double sided (alternating sides)
+;                         2 = Double sided (successive sides)
+;                 Bits 2...6 Reserved (set to 0)
+;                 Bit 7 Double track
+;
+; Byte 2          Number of tracks per side
+;
+; Byte 3          Number of sectors per track
+;
+; Byte 4          Log2(sector size) - 7
+;
+; Byte 5          Number of reserved tracks
+;
+; Byte 6          Log2(block size / 128)
+;
+; Byte 7          Number of directory blocks
+;
+; Byte 8          Gap length (read/write)
+;
+; Byte 9          Gap length (format)
+;
+; Bytes 10...14   Reserved
+;
+; Byte 15         Checksum (used only if disk is bootable)
+;
+;
+; When a disk is logged on, the disk specification is used to initialise
+; the relevant XDPB.
+;
+;
+; Extended disk parameter blocks (XDPB)
+;
+; Associated with each (logical) drive is an extended disk parameter
+; block (XDPB). This contains a standard DPB which is the same as that
+; used by CP/M Plus. It also contains information required by +3DOS to
+; support the different formats. It may be patched in order to use
+; differently formatted disks (provided that the restrictions detailed
+; in the previous table are obeyed).
+;
+; XDPB structure:
+;
+; Bytes 0...1     SPT records per track
+; Byte 2          BSH log2(block size / 128)
+; Byte 3          BLM block size / 128 - 1
+; Byte 4          EXM extent mask
+; Bytes 5...6     DSM last block number
+; Bytes 7...8     DRM last directory entry number
+; Byte 9          AL0 directory bit map
+; Byte 10         AL1 directory bit map
+; Bytes 11...12   CKS size of checksum vector (bit 15 = permanent)
+; Bytes 13...14   OFF number of reserved tracks
+; Byte 15         PSH log2(sector size / 128)
+; Byte 16         PHM sector size / 128 - 1
+; Byte 17         Bits 0...1 Sidedness
+;                         0 = Single sided
+;                         1 = Double sided (alternating sides)
+;                         2 = Double sided (successive sides)
+;                 Bits 2...6 Reserved (set to 0)
+;                 Bit 7 Double track
+; Byte 18         Number of tracks per side
+; Byte 19         Number of sectors per track
+; Byte 20         First sector number
+; Bytes 21...22   Sector size
+; Byte 23         Gap length (read/write)
+; Byte 24         Gap length (format)
+; Byte 25         Bit 7 Multi-track operation
+;                         1 = multi-track
+;                         0 = single track
+;                 Bit 6 Modulation mode
+;                         1 = MFM mode
+;                         0 = FM mode
+;                 Bit 5 Skip deleted data address mark
+;                         1 = skip deleted data address mark
+;                         0 = don't skip deleted address mark
+;                 Bits 0...4 = 0
+; Byte 26         Freeze flag
+;                         00h (0) = auto-detect disk format
+;                         FFh (255) = don't auto-detect disk format
+;
+; Byte 25 is normally set to 60h (96). Multi-track operation is not
+; recommended.
+;
+; Setting the freeze flag (byte 26) prevents +3DOS from trying to
+; determine the format of a disk. This should be used when patching an
+; XDPB for a non-standard format.
+;
+; The XDPBs for the three main formats are as follows:
+;
+; AMSTRAD PCW range single track format (type 0)
+; (As used by the +3)
+;
+; 36              SPT, records per track
+; 3               BSH, block shift
+; 7               BLM, block mask
+; 0               EXM, extent mask
+; 174             DSM, number of blocks - 1
+; 63              DRM, number of directory entries - 1
+; C0h (192)       AL0, 2 directory blocks
+; 00h (0)         AL1
+; 16              CKS, size of checksum vector
+; 1               OFF, reserved tracks
+; 2               PSH, physical sector shift
+; 3               PHM, physical sector mask
+;
+; 0               Single sided
+; 40              Tracks per side
+; 9               Sectors per track
+; 1               First sector number
+; 512             Sector size
+; 42              Gap length (read/write)
+; 82              Gap length (format)
+; 60h (96)        MFM mode, skip deleted data address mark
+; 0               Do auto select format
+;
+;
+; AMSTRAD CPC range SYSTEM format (type 1)
+;
+; 36              SPT, records per track
+; 3               BSH, block shift
+; 7               BLM, block mask
+; 0               EXM, extent mask
+; 170             DSM, number of blocks - 1
+; 63              DRM, number of directory entries - 1
+; C0h (192)       AL0, 2 directory blocks
+; 00h (0)         AL1
+; 16              CKS, size of checksum vector
+; 2               OFF, reserved tracks
+; 2               PSH, physical sector shift
+; 3               PHM, physical sector mask
+;
+; 0               Single sided
+; 40              Tracks per side
+; 9               Sectors per track
+; 41h (65)        First sector number
+; 512             Sector size
+; 42              Gap length (read/write)
+; 82              Gap length (format)
+; 60h (96)        MFM mode, skip deleted data address mark
+; 0               Do auto select format
+;
+;
+; AMSTRAD CPC range DATA ONLY format (type 2)
+;
+; 36              SPT, records per track
+; 3               BSH, block shift
+; 7               BLM, block mask
+; 0               EXM, extent mask
+; 179             DSM, number of blocks - 1
+; 63              DRM, number of directory entries - 1
+; C0h (192)       AL0, 2 directory blocks
+; 00h (0)         AL1
+; 16              CKS, size of checksum vector
+; 0               OFF, reserved tracks
+; 2               PSH, physical sector shift
+; 3               PHM, physical sector mask
+;
+; 0               Single sided
+; 40              Tracks per side
+; 9               Sectors per track
+; C1h (193)       First sector number
+; 512             Sector size
+; 42              Gap length (read/write)
+; 82              Gap length (format)
+; 60h (96)        MFM mode, skip deleted data address mark
+; 0               Do auto select format
+;
+;
+; CP/M File compatibility
+;
+; +3DOS uses the CP/M file structure, subject to the following
+; restrictions:
+;
+;         - Maximum file size of 8 megabytes (CP/M Plus supports a
+;             maximum of 32 megabytes).
+;
+;         - Maximum drive size of 8 megabytes (CP/M Plus supports a
+;             maximum of 128 megabytes).
+;
+;         - Directory labels are ignored.
+;
+;         - No passwords. XFCBs will be erased, renamed, etc., along
+;             with their file(s) but are otherwise ignored.
+;
+;         - No date and time stamps. SFCBs are initialised to zero when
+;             a file is created, but are otherwise ignored.
+;
+;         - The archive file attribute is ignored, i.e. it is unaffected
+;             by all routines except DOS SET ATTRIBUTES.
+;
+;
+; File model
+;
+; A file is an array of bytes which may be of any length from 0 to 8
+; megabytes. Associated with each open file is a 24 bit file
+; pointer. The file pointer is the address of the next byte to be
+; written or read. The file pointer is automatically advanced after each
+; read or write operation, however, the user may set it to any value
+; required for random access.
+;
+; The end of file position (EOF) is the lowest byte position that is
+; greater than all written byte positions. Files without headers can
+; only record their EOF position to the start of the next 128 byte
+; record, i.e. ceiling(EOF/128). Files with headers have their EOF
+; position recorded exactly.
+;
+; Writing a byte after the EOF position will extend the file and advance
+; the EOF position.
+;
+; Reading a byte at (or beyond) the EOF position will return an EOF
+; error.
+;
+; Reading an unwritten byte below the EOF position will either return a
+; nonsensical byte or an EOF error. (Reading unwritten bytes is not
+; recommended.)
+;
+;
+; Changing disks
+;
+; Under +3DOS, a disk may be changed or removed whenever the drive is
+; not being accessed (and there are no files open on that drive). There
+; is no need to log in a disk.
+;
+; A disk should not be changed while there are files open on it. If,
+; however, a disk is changed while there are still files open on it,
+; then as soon as +3DOS detects this, the user will be prompted to
+; insert the correct disk. +3DOS can only detect this changed when it
+; reads the directory from the disk.
+;
+; Note that changing a disk while it is still being written to may
+; corrupt the data on the disk.
+;
+;
+; Logical to physical drive mapping
+;
+; If required, two logical drives (A: and B:) can be mapped onto a
+; single physical drive (unit 0). This may be useful for single disk
+; drive systems.
+;
+; To enable this mapping, the routine DOS MAP B is called, passing to it
+; the address of a routine CHANGE DISK. Whenever unit 0 is accessed, a
+; check is made to see if the disk in unit 0 is for the required logical
+; drive. If not, then CHANGE DISK is called. CHANGE DISK is passed the
+; address of a message and the required logical drive, and the user
+; should be prompted with the message...
+;
+;         Please put the disk for x: into the drive then press any key
+;
+; ...(where x is the name of the logical drive, e.g. 'A:' or 'B:'). The
+; routine should then wait for a key to be pressed before returning,
+; after which it is assumed that the disk in unit 0 is for the required
+; logical drive.
+;
+; DOS MAP B can also be used to re-map B onto unit 1. If unit 1 does not
+; exist, then drive B: is disabled.
+;
+;
+; +3DOS Error codes
+;
+; Many +3DOS routines can fail. This is indicated with 'carry' false and
+; an error code in the A register. The error codes are...
+;
+; Recoverable disk errors:
+;
+; 0       Drive not ready
+; 1       Disk is write protected
+; 2       Seek fail
+; 3       CRC data error
+; 4       No data
+; 5       Missing address mark
+; 6       Unrecognised disk format
+; 7       Unknown disk error
+; 8       Disk changed whilst +3DOS was using it
+; 9       Unsuitable media for drive
+;
+; Non-recoverable errors:
+;
+; 20      Bad filename
+; 21      Bad parameter
+; 22      Drive not found
+; 23      File not found
+; 24      File already exists
+; 25      End of file
+; 26      Disk full
+; 27      Directory full
+; 28      Read-only file
+; 29      File number not open (or open with wrong access)
+; 30      Access denied (file is in use already)
+; 31      Cannot rename between drives
+; 32      Extent missing (which should be there)
+; 33      Uncached (software error)
+; 34      File too big (trying to read or write past 8 megabytes)
+; 35      Disk not bootable (boot sector is not acceptable to DOS BOOT)
+; 36      Drive in use (trying to re-map or remove a drive with files
+;           open)
+;
+; As an example, the report 'Unsuitable media for drive' is caused by
+; trying to write to a single track disk in a double track drive, or
+; trying to read or write a double track disk in a single track drive.
+;
+; The report 'Missing address mark' is the error returned when trying to
+; access a disk that is not formatted (although this is not the sole
+; reason for the error).
+;
+;
+; +3DOS Messages
+;
+; If error messages are enabled (DOS SET MESSAGE) then, in the event of
+; a recoverable disk error, +3DOS will pass the ALERT routine a message
+; and the user should be prompted to '- Retry, Ignore or Cancel?' If the
+; user replies 'R', then the disk operation is retried. If the reply is
+; 'I', then the error is ignored, and if the reply is 'C', then the
+; operation is cancelled and an error condition is returned to the
+; caller. If error messages are disabled or if the error is not
+; recoverable, then no message is displayed and an error condition is
+; returned to the caller.
+;
+;
+; Essential filing system routines
+;
+
+dos_initialise: equ 0x0100 ; (256)
+
+; Initialise +3DOS.
+; Initialise disk drivers.
+; Initialise cache and the RAMdisk.
+; All files closed.
+; All drives logged out.
+; Default drive A: (if disk interface present), else M:.
+; Default user 0.
+; Retry count 15.
+; Error messages disabled.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A=Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_version: equ 0x0103 ; (259)
+
+; Get the DOS issue and version numbers.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;                 D=Issue
+;                 E=Version (within issue)
+;         Always:
+;                 AF BC HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_open: equ 0x0106 ; (262)
+
+; Create and/or open a file
+;
+; There is a choice of action depending on whether or not the file
+; already exists. The choices are 'open action' or 'create action', and
+; are specified in DE. If the file already exists, then the open action
+; is followed; otherwise the create action is followed.
+;
+; Open action
+;
+;         0. Error - File already exists.
+;
+;         1. Open the file, read the header (if any). Position file
+;            pointer after header.
+;
+;         2. Open the file, ignore any header. Position file pointer at
+;            000000h (0).
+;
+;         3. Assume given filename is 'filename.type'. Erase
+;            'filename.BAK' (if it exists). Rename 'filename.type' to
+;            'filename.BAK'. Follow create action.
+;
+;         4. Erase existing version. Follow create action.
+;
+; Create action
+;
+;         0. Error - File does not exist.
+;
+;         1. Create and open new file with a header. Position file
+;            pointer after header.
+;
+;         2. Create and open new file without a header. Position file
+;            pointer at 000000h (0).
+;
+; (Example: To simulate the tape action of... 'if the file exists open
+; it, otherwise create it with a header', set open action = 1, create
+; action = 1.)
+;
+; (Example: To open a file and report an error if it does not exist, set
+; open action = 1, create action = 0.)
+;
+; (Example: To create a new file with a header, first renaming any
+; existing version to '.BAK', set open action = 3, create action = 1.)
+;
+; Files with headers have their EOF position recorded as the smallest
+; byte position greater than all written byte positions.
+;
+; Files without headers have their EOF position recorded as the byte at
+; the start of the smallest 128 byte record position greater than all
+; written record positions.
+;
+; Soft-EOF is the character 1Ah (26) and is nothing to do with the EOF
+; position, only the routine DOS BYTE READ knows about soft-EOF.
+;
+; The header data area is 8 bytes long and may be used by the caller for
+; any purpose whatsoever. If open action = 1, and the file exists (and
+; has a header), then the header data is read from the file, otherwise
+; the header data is zeroised. The header data is available even if the
+; file does not have a header. Call DOS REF HEAD to access the header
+; data.
+;
+; Note that +3 BASIC makes use of the first 7 of these 8 bytes as
+; follows:
+;
+; +---------------+-------+-------+-------+-------+-------+-------+-------+
+; | BYTE          |   0   |   1   |   2   |   3   |   4   |   5   |   6   |
+; +---------------+-------+-------+-------+-------+-------+-------+-------+
+; | Program           0   file length     8000h or LINE   offset to prog  |
+; | Numeric array     1   file length     xxx     name    xxx     xxx     |
+; | Character array   2   file length     xxx     name    xxx     xxx     |
+; | CODE or SCREEN$   3   file length     load address    xxx     xxx     |
+; +-----------------------------------------------------------------------+
+;
+; (xxx = doesn't matter)
+;
+; If creating a file that will subsequently be LOADed within BASIC, then
+; these bytes should be filled with the relevant values.
+;
+; If the file is opened with exclusive-write or exclusive-read-write
+; access (and the file has a header), then the header is updated when
+; the file is closed.
+;
+; A file that is already open for shared-read access on another file
+; number may only be opened for shared-read access on this file number.
+;
+; A file that is already open for exclusive-read or exclusive-write or
+; exclusive-read-write access on another file number may not be opened
+; on this file number.
+;
+; ENTRY CONDITIONS
+;         B = File number 0...15
+;         C = Access mode required
+;                 Bits 0...2 values:
+;                         1 = exclusive-read
+;                         2 = exclusive-write
+;                         3 = exclusive-read-write
+;                         5 = shared-read
+;                 Bits 3...7 = 0 (reserved)
+;         D = Create action
+;         E = Open action
+;         HL = Address of filename (no wildcards)
+;
+; EXIT CONDITIONS
+;         If file newly created:
+;                 Carry true
+;                 Zero true
+;                 A corrupt
+;         If existing file opened:
+;                 Carry true
+;                 Zero false
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_close: equ 0x0109 ; (265)
+
+; Close a file.
+;
+; Write the header (if there is one).
+;
+; Write any outstanding data.
+;
+; Update the directory.
+;
+; Release the file number.
+;
+; All opened files must eventually be closed (or abandoned). A file
+; number cannot be reused until it is closed (or abandoned).
+;
+; ENTRY CONDITIONS
+;         B = File number
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_abandon: equ 0x010C ; (268)
+
+; Abandon a file.
+;
+; Similar to DOS CLOSE, except that any header, or data, or directory
+; data yet to be written to disk is discarded. This routine should only
+; be used to force a file closed in the event that DOS CLOSE is unable
+; to close the file (for example, if the media is damaged or permanently
+; changed or removed).
+;
+; ENTRY CONDITIONS
+;         B = File number
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_ref_head: equ 0x010F ; (271)
+
+; Point at the header data for this file.
+;
+; The header data area is 8 bytes long and may be used by the caller for
+; any purpose whatsoever. It is available even if the file does not have
+; a header; however, only files with a header and opened with write
+; access will have the header data recorded on disk.
+;
+; Note that +3 BASIC uses these 8 bytes (see the note under DOS OPEN
+; which gives the details). If creating a file that will subsequently be
+; LOADed within BASIC, then those bytes should be filled with the
+; relevant values.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;
+; EXIT CONDITIONS
+;         If OK, but file doesn't have a header:
+;                 Carry true
+;                 Zero true
+;                 A corrupt
+;                 IX = Address of header data in page 7
+;         If OK, file has a header:
+;                 Carry true
+;                 Zero false
+;                 A corrupt
+;                 IX = Address of header data in page 7
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 IX corrupt
+;         Always:
+;                 BC DE HL corrupt
+;                 All other registers preserved
+;
+;
+
+dos_read: equ 0x0112 ; (274)
+
+; Read bytes from a file into memory.
+;
+; Advance the file pointer.
+;
+; The destination buffer is in the following memory configuration:
+;
+;         C000h...FFFFh (49152...65535)   - Page specified in C
+;         8000h...BFFFh (32768...49151)   - Page 2
+;         4000h...7FFFh (16384...32767)   - Page 5
+;         0000h...3FFFh (0...16383)       - DOS ROM
+;
+; The routine does not consider soft-EOF.
+;
+; Reading EOF will produce an error.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;         C = Page for C000h (49152)...FFFFh (65535)
+;         DE = Number of bytes to read (0 means 64K)
+;         HL = Address for bytes to be read
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A DE corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 DE = Number of bytes remaining unread
+;         Always:
+;                 BC HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_write: equ 0x0115 ; (277)
+
+; Write bytes to a file from memory.
+;
+; Advance the file pointer.
+;
+; The source buffer is in the following memory configuration:
+;
+;         C000h...FFFFh (49152...65535)   - Page specified in C
+;         8000h...BFFFh (32768...49151)   - Page 2
+;         4000h...7FFFh (16384...32767)   - Page 5
+;         0000h...3FFFh (0...16383)       - DOS ROM
+;
+; ENTRY CONDITIONS
+;         B = File number
+;         C = Page for C000h (49152)...FFFFh (65535)
+;         DE = Number of bytes to write (0 means 64K)
+;         HL = Address for bytes to write
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A DE corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 DE = Number of bytes remaining unwritten
+;         Always:
+;                 BC HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_byte_read: equ 0x0118 ; (280)
+
+; Read a byte from a file.
+;
+; Advance the file pointer.
+;
+; Tests for soft-EOF (1Ah (26)). As this condition is not latched, it is
+; possible to read past soft-EOF.
+;
+; EOF is latched.
+;
+; The caller must decide whether or not soft-EOF is of interest. This
+; would normally be the case only when reading an ASCII file.
+;
+; Reading EOF will produce an error.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;
+; EXIT CONDITIONS
+;         If OK - Byte <> 1Ah (26) (soft-EOF)
+;                 Carry true
+;                 Zero false
+;                 A corrupt
+;                 C = Byte
+;         If OK - Byte = 1Ah (26) (soft-EOF)
+;                 Carry true
+;                 Zero true
+;                 A corrupt
+;                 C = Byte
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 C corrupt
+;         Always:
+;                 B DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_byte_write: equ 0x011B ; (283)
+
+; Write a byte to a file.
+;
+; Advance the file pointer.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;         C = Byte to write
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All otehr registers preserved
+;
+;
+
+dos_catalog: equ 0x011E ; (286)
+
+; Fills a buffer with part of the directory (sorted).
+;
+; The filename specifies the drive, user and a (possibly ambiguous)
+; filename.
+;
+; Since the size of a directory is variable (and may be quite large),
+; this routine permits the directory to be catalogued in a number of
+; small sections. The caller passes a buffer pre-loaded with the first
+; required filename, or zeroes for the start of the directory. The
+; buffer is loaded with part (or all, if it fits) of the directory
+; sorted in ASCII order. If more of the directory is required, this
+; routine is re-called with the buffer re-initialised with the last file
+; previously returned. This procedure is followed repeatedly until all
+; of the directory has been catalogued.
+;
+; Note that +3DOS format disks (which are the same as single-sided,
+; single track AMSTRAD PCW range format disks) may have a maximum of 64
+; directory entries.
+;
+; Buffer format:
+;
+;         Entry 0
+;         Entry 1
+;         Entry 2
+;         Entry 3
+;         ...to...
+;         Entry n
+;
+; Entry 0 must be preloaded with the first 'filename.type'
+; required. Entry 1 will contain the first matching filename greater
+; than the preloaded entry (if any). A zeroised preload entry is OK.
+;
+; If the buffer is too small for the directory, this routine can be
+; called again with entry 0 replaced by entry n to fetch the next part
+; of the directory.
+;
+; Entry format (13 bytes long):
+;
+;         Bytes 0...7     - Filename (ASCII) left justified, space
+;                            filled
+;         Bytes 6...10    - Type (ASCII) left justified, space filledd
+;         Bytes 11...12   - Size in kilobytes (binary)
+;
+; The file size is the amount of disk space allocated to the file, not
+; necessarily the same as the amount used by the file.
+;
+; ENTRY CONDITIONS
+;         B = n+1, size of buffer in entries, >=2
+;         C = Filter
+;                 bit 0 = include system files (is set)
+;                 bits 1...7 = 0 (reserved)
+;         DE = Address of buffer (first entry initialised)
+;         HL = Address of filename (wildcards permitted)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;                 B = Number of completed entries in buffer, 0...n.
+;                     (If B = n, there may be more to come).
+;
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 B corrupt
+;         Always:
+;                 C DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_free_space: equ 0x0121 ; (289)
+
+; How much free space is there on this drive?
+;
+; ENTRY CONDITIONS
+;         A = Drive, ASCII 'A'...'P'
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;                 HL = Free space (in kilobytes)
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 HL corrupt
+;         Always:
+;                 BC DE IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_delete: equ 0x0124 ; (292)
+
+; XXX This call is not documented in the WoS' HTML version of the +3 manual,
+; but first guessed and finally confirmet it with the original Spanish manual.
+
+; Delete an existing file.
+;
+; File must not be open on any file number.
+;
+; ENTRY CONDITIONS HL = Address of filename (wildcards permitted)
+;
+; EXIT CONDITIONS If OK: Carry true A corrupt Otherwise: Carry false A = Error
+; code Always: BC DE HL IX corrupt All other registers preserved
+
+dos_rename: equ 0x0127 ; (295)
+
+; Rename an existing file.
+;
+; File must not be open on any file number. A file with the new filename
+; must not exist. The new name must specify, or default to, the sme
+; drive as the old name.
+;
+; ENTRY CONDITIONS
+;         DE = Address of new filename (no wildcards)
+;         HL = Address of old filename (no wildcards)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_boot: equ 0x012A ; (298)
+
+; Boot from disk.
+;
+; This routine loads a single bootstrap sector from the disk in drive A:
+; into memory and enters it. This is for loading games or other
+; operating systems.
+;
+; Bootstrap environment:
+;
+;         C000h...FFFFh (49152...65535)   - Page 3
+;         8000h...BFFFh (32768...49151)   - Page 6
+;         4000h...7FFFh (16384...32767)   - Page 7
+;         0000h...3FFFh (0...16383)       - Page 4
+;
+; The bootstrap sector is on side 0, track 0, sector 1. It is loaded at
+; FE00h (65024) and entered at FE10h (65040). Interrupts are disabled.
+; SP is at FE00h (65024). The sum of all bytes in the sector must equal
+; 3 MOD 256 (byte 15 can be set to the required value to achieve this).
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 No exit (as the bootstrap will be entered)
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_set_drive: equ 0x012D ; (301)
+
+; Set the default drive (i.e. the drive implied by all filenames that do
+; not specify a drive).
+;
+; The default drive is initially A:.
+;
+; Does not access the drive, but merely checks that there is a driver
+; for it (which does not imply that the drive exists).
+;
+; This only affects routines that take filename parameters.
+;
+; ENTRY CONDITIONS
+;         A = Drive, ASCII 'A'...'P' (FFh (255) = get default drive)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Default drive
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_set_user: equ 0x0130 ; (304)
+
+; Set the default user area, i.e. the user area implied by all filenames
+; that do not specify a user number.
+;
+; The default user number is intially 0.
+;
+; This only affects routines that take filename parameters.
+;
+; ENTRY CONDITIONS
+;         A = User 0...15 (FFh (255) = get default user)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Default user
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+;
+; Additional routines for games and operating systems
+;
+
+dos_get_position: equ 0x0133 ; (307)
+
+; Get the file pointer.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;                 E HL = File pointer 000000h...FFFFFFh (0...16777215)
+;                 (E holds most significant byte; L holds leat
+;                 significant byte)
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 E HL corrupt
+;         Always:
+;                 BC D IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_set_position: equ 0x0136 ; (310)
+
+; Set the file pointer.
+;
+; Does not access the disk.
+;
+; Does not check (or care) if pointer is >= 8 megabytes.
+;
+; ENTRY CONDITIONS
+;         B = File numbers
+;         E HL = File pointer 000000h...FFFFFFh (0...16777215)
+;         (E holds most significant byte; L holds leat
+;         significant byte)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_get_eof: equ 0x0139 ; (313)
+
+; Get the end of file (EOF) file position greater than all written byte
+; positions.
+;
+; Does not affect the file pointer.
+;
+; Does not consider soft-EOF.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;
+; EXIT CONDTITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;                 E HL = File pointer 000000h...FFFFFFh (0...16777215)
+;                 (E holds most significant byte; L holds leat
+;                 significant byte)
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 E HL Corrupt
+;         Always:
+;                 BC D IX corrupt
+;                 All other registers preserved
+;
+;
+dos_get_1346: equ 0x013C ; (316)
+;
+; Get the current location of the cache and RAMdisk.
+;
+; Pages 1, 3, 4, 6 are considered as an array of 128 sector buffers
+; (numbered 0...127), each of 512 bytes. The cache and RAMdisk occupy
+; two separate (contiguous) areas of this array.
+;
+; Any unused sector buffers may be used by the caller.
+;
+; Note that the sizes may be smaller than those specified in DOS SET
+; 1346, as there is an (unpublished) maximum size of cache and a minimum
+; size of RAMdisk (4 sectors).
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;                 D = First buffer of cache
+;                 E = Number of cache sector buffers
+;                 H = First buffer of RAMdisk
+;                 L = Number of RAMdisk sector buffers
+;         Always:
+;                 AF BC IX corrupt
+;                 All other registers preserved
+;
+;
+dos_set_1346: equ 0x013F ; (319)
+;
+; Rebuild the sector cache and RAMdisk.
+;
+; This routine is used to make some store available to the user, or to
+; return store to DOS.
+;
+; Note that if the RAMdisk is moved, ot its size is changed, then all
+; files thereon are erased.
+;
+; Pages 1, 3, 4, 6 are considered as an array of 128 sector buffers
+; (numbered 0...127), each of 512 bytes. The cache and RAMdisk occupy
+; two separate (contiguous) areas of this array.
+;
+; The location and size of the cache and RAMdisk can be specified
+; separately; any remaining buffers are unused by DOS and are available
+; to the caller.
+;
+; Note that the sizes actually used may be smaller than those specified
+; as in practice, there is a maximum cache size and a minimum size of
+; RAMdisk (4 sectors).
+;
+; A cache size of 0 will still work but will seriously impair the floppy
+; disk performance.
+;
+; This routine will fail if there are any files open on drive M:.
+;
+; ENTRY CONDITIONS
+;         D = First buffer for cache
+;         E = Number of cache sector buffers
+;         H = First buffer for RAMdisk
+;         L = Number of RAMdisk sector buffers
+;         (Note that E + L <= 128)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_flush: equ 0x0142 ; (322)
+
+; Write any pending headers, data, directory entries for this drive.
+;
+; This routine ensures that the disk is up to date. It can be called at
+; any time, even when files are open.
+;
+; ENTRY CONDITIONS
+;         A = Drive, ASCII 'A'...'P'
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_set_access: equ 0x0145 ; (325)
+
+; Try to change the access mode of an open file.
+;
+; This routine will fail if the file is already open, in an incompatible
+; access mode, or if write access is required for a read-only file or
+; disk.
+;
+; ENTRY CONDITIONS
+;         B = File number
+;         C = Access mode required
+;                 Bits 0...2 values:
+;                         1 = exclusive-read
+;                         2 = exclusive-write
+;                         3 = exclusive-read-write
+;                         5 = shared-read
+;                         (all other bit settings reserved)
+;                 Bits 3...7 = 0 (reserved)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_set_attributes: equ 0x0148 ; (328)
+
+; Set a file's attributes.
+;
+; Only the file attributes f1'...f4', t1'...t3' can be set or
+; cleared. The interface attributes f5'...f8' are always 0.
+;
+; This routine first sets the attributes specified in D, then clears
+; those attributes specified in E, i.e. E has priority.
+;
+; ENTRY CONDITIONS
+;         D = Attributes to set
+;                 bit 0 = t3' Archive
+;                 bit 1 = t2' System
+;                 bit 2 = t1' Read-only
+;                 bit 3 = f4'
+;                 bit 4 = f3'
+;                 bit 5 = f2'
+;                 bit 6 = f1'
+;         E = Attributes to clear
+;                 bit 0 = t3' Archive
+;                 bit 1 = t2' System
+;                 bit 2 = t1' Read-only
+;                 bit 3 = f4'
+;                 bit 4 = f3'
+;                 bit 5 = f2'
+;                 bit 6 = f1'
+;         HL = Address of filename (wildcards permitted)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+
+dos_open_drive: equ 0x014B ; (331)
+
+; Open the disk in this drive as a single file.
+;
+; The whole disk is presented as a single file regardless of any real
+; files on the disk. This routine can be used to examine/poke
+; directories, files, etc. It should not be used by the uninitiated, the
+; faint hearted, or by anyone who values their files!
+;
+; Sets file pointer to 000000h (0).
+;
+; If there are any files open on this drive from other file numbers with
+; shared-read access, then the disk can only be opened with shared-read
+; access from this file number.
+;
+; If there are any file open on this drive from other file numbers with
+; exclusive access, then the disk cannot be opened from this file
+; number.
+;
+; ENTRY CONDITIONS
+;         A = Drive, ASCII 'A'...'P'
+;         B = File number
+;         C = Access mode required
+;                 Bits 0...2 values:
+;                         1 = exclusive-read
+;                         2 = exclusive-write
+;                         3 = exclusive-read-write
+;                         5 = shared-read
+;                         (all other bit settings reserved)
+;                 Bits 3...7 = 0 (reserved)
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL corrupt
+;                 All other registers preserved
+;
+;
+
+dos_set_message: equ 0x014E ; (334)
+
+; Enable/disable disk error messages.
+;
+; This should be used to make +3DOS aware of your own ALERT subroutine.
+; When +3DOS detects an error, it will call your ALERT subroutine,
+; passing to it the values documented below. The ALERT subroutine should
+; print the text of the message that +3DOS passes it, then should wait
+; for the user to press a key. If the key is in the reply string (that
+; +3DOS also passes - version V1.0 only), then a 'ret' should be made
+; with A = 0, 1 or 2, or containing the character (depending on the
+; version of +3DOS).
+;
+; ENTRY CONDITIONS
+;         A = Enable/disable
+;                 FFh (255) = enable
+;                 00h (0) = disable
+;         HL = Address of ALERT routine (if enabled)
+;
+; EXIT CONDITIONS
+;         HL = address of previous ALERT routine (0 if none)
+; Always:
+;         AF BC DE IX corrupt
+;         All other registers preserved
+;
+; NOTE
+;
+;         Note that if you are substituting your own ALERT subroutine,
+;         the 'entry conditions' are the conditions passed to your
+;         subroutine and the 'exit conditions' are the values that your
+;         subroutine must produce and the registers you are allowed to
+;         corrupt.
+;
+;         Note that there are two routine interfaces for ALERT. The
+;         first, (which is used in machines with +3DOS version V1.0)
+;         should have the entry and exit conditions shown ahead.
+;
+;         ALERT (VERSION V1.0 ONLY)
+;
+;         ENTRY CONDITIONS
+;                 DE = Address of reply string (in page 7) terminated by
+;                         FFh (255)
+;                 HL = Address of error message (in page 7) terminated
+;                         by FFh (255)
+;
+;         EXIT CONDITIONS
+;                         A = Reply character
+;                 Always:
+;                         F BC DE HL IX corrupt
+;                         All other registers preserved
+;
+;         The second version of ALERT, which allows the user to provide
+;         non-UK error messages and is generally more flexible, is
+;         present in +3DOS versions V1.1 and upwards.
+;
+;         ALERT (VERSION V1.1 AND ABOVE)
+;
+;         ENTRY CONDITIONS
+;                 B = Error number
+;                 C = Drive, ASCII 'A'...'P'
+;                 D = Logical track (if required for message)
+;                 E = Logical sector (if required for message)
+;                 HL = Address of UK error message (page 7) terminated
+;                         by FFh (255)
+;
+;         EXIT CONDITIONS
+;                         A = Reply
+;                                 0 = cancel
+;                                 1 = retry
+;                                 2 = ignore
+;                 Always:
+;                         F BC DE HL IX corrupt
+;                         All other registers preserved
+;
+;         If you provide an ALERT function, you should have two
+;         subroutines (or one with switchable entry and exit
+;         conditions), and check the +3DOS version number before
+;         deciding which one to use.
+;
+;
+
+dos_ref_xdpb: equ 0x0151 ; (337)
+
+; Point at the XDPB for this drive. (The XDPB is required by the floppy
+; disk driver routines.)
+;
+; ENTRY CONDITIONS
+;         A = Drive, ASCII 'A'...'P'
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;                 IX = Address of XDPB
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 IX corrupt
+;         Always:
+;                 BC DE HL corrupt
+;                 All other registers preserved
+;
+;
+
+dos_map_b: equ 0x0154 ; (340)
+
+; Map drive B: to unit 0 or unit 1. (This routine will fail if drive B:
+; has files open.)
+;
+; If mapping B: to unit 0, then each time unit 0 is accessed, a check is
+; made that the drive mapping is correct. If it isn't, then a reverse
+; call to CHANGE DISK is made, to ask the user to change the disk in
+; unit 0.
+;
+; If mapping B: to unit 1, then if unit 1 does not exist, drive B: is
+; disabled.
+;
+; ENTRY CONDITIONS
+;         C = Unit (0/1)
+;         HL = Address of CHANGE DISK routine if unit = 0
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;                 HL = Address of previous CHANGE DISK routine (0 if
+;                         none)
+;         Otherwise:
+;                 Carry false
+;                 A HL corrupt
+;         Always
+;                 BC DE IX corrupt
+;                 All other registers preserved
+;
+; NOTE
+;         The definition of the subroutine CHANGE DISK is as shown
+;         ahead. Note that if you are substituting your own CHANGE DISK
+;         subroutine, the 'entry conditions' are the conditions passed
+;         to your subroutine, and the 'exit conditions' are registers
+;         you are allowed to corrupt.
+;
+;         CHANGE DISK
+;
+;         Ask the user to change the disk in unit 0.
+;
+;         Wait for the user to acknowledge the change.
+;
+;         ENTRY CONDITIONS
+;                 A = Logical drive, ASCII 'A'...'P'
+;                 HL = Address of message (page 7) terminated by FFh
+;                         (255)
+;
+;         EXIT CONDITIONS
+;                 Always:
+;                         AF BC DE HL IX corrupt
+;                         All other registers preserved
+;
+;
+;
+; Low level floppy disk driving routines
+;
+; The following are the floppy disk driver routines. The unit number is
+; 0...3 for the uPD765A. On the +3, unit 0 is drive A: and unit 1 is
+; drive B:, or optionally, both A: and B: may be mapped onto unit 0.
+; Units 2 and 3 are not used.
+;
+; With the exception of DD INTERFACE, none of these routines may be
+; called if the floppy disk interface is not present.
+;
+; All routines assume that interrupts are enabled on entry, and will
+; still be enabled on exit.
+;
+;
+; DD INTERFACE
+; 0157h (343)
+;
+; Is the floppy disk drive interface present? (This information is also
+; held by BASIC in bit 4 of the FLAGS3 system variable.)
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         If present:
+;                 Carry true
+;         Otherwise:
+;                 Carry false
+;         Always:
+;                 A BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD INIT
+; 015Ah (346)
+;
+; Initialise the disk driver.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         Always:
+;                 AF BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD SETUP
+; 015Dh (349)
+;
+; Set up disk parameters.
+;
+; Send a specify command.
+;
+; Parameter block format:
+;
+;         Byte 0 - Motor on time (in 100 mS units)
+;         Byte 1 - Motor off time (in 100 mS units)
+;         Byte 2 - Write off time (in 10 uS units)
+;         Byte 3 - Head settle time (in mS units)
+;         Byte 4 - Step rate (in mS units)
+;         Byte 5 - Head unload time (in 32 mS units, 32...480)
+;         Byte 6 - (Head load time x 2) + 1, (in 4 mS units, 4...508)
+;
+; ENTRY CONDITIONS
+;         HL = Address of parameter block
+;
+; EXIT CONDITIONS
+;         Always:
+;                 AF BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD SET RETRY
+; 0160h (352)
+;
+; Set the try and retry count. (A value of 1 will try the operation
+; once, i.e. no retry.)
+;
+; ENTRY CONDITIONS
+;         A = Try/retry count >= 1
+;
+; EXIT CONDITIONS
+;         Always:
+;                 AF BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD READ SECTOR
+; 0163h (355)
+;
+; Read a sector.
+;
+; ENTRY CONDITIONS
+;         B = Page for C000h (49152)...FFFFh (65535)
+;         C = Unit (0/1)
+;         D = Logical track, 0 base
+;         E = Logical sector, 0 base
+;         HL = Address of buffer
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD WRITE SECTOR
+; 0166h (358)
+;
+; Write a sector.
+;
+; ENTRY CONDITIONS
+;         B = Page for C000h (49152)...FFFFh (65535)
+;         C = Unit (0/1)
+;         D = Logical track, 0 base
+;         E = Logical sector, 0 base
+;         HL = Address of buffer
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD CHECK SECTOR
+; 0169h (361)
+;
+; Check a sector. (Uses the uPD765A scan equal command.)
+;
+; Checks that the sector on disk is the same as the copy in memory.
+;
+; Note that FFh (255) on disk or in memory always matches anything (see
+; uPD765A specification for further details).
+;
+; ENTRY CONDITIONS
+;         B = Page for C000h (49152)...FFFFh (65535)
+;         C = Unit (0/1)
+;         D = Logical track, 0 base
+;         E = Logical sector, 0 base
+;         HL = Address of copy of sector
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK (equal):
+;                 Carry true
+;                 Zero true
+;                 A corrupt
+;         If OK (not equal):
+;                 Carry true
+;                 Zero false
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD FORMAT
+; 016Ch (364)
+;
+; Format a track. (Uses the uPD765A format track command.)
+;
+; Buffer contains 4 bytes for each sector as follows:
+;
+;         C - Track number        (0...39)
+;         H - Head number         (always 0 on the +3's single-sided
+;                                 drives)
+;         R - Sector number       (0...255)
+;         N - Log2(sector size)-7 (2 for 512 byte sectors)
+;
+; ENTRY CONDITIONS
+;         B = Page for C000h (49152)...FFFFh (65535)
+;         C = Unit (0/1)
+;         D = Logical track, 0 base
+;         E = Filler byte, usually E5h (229)
+;         HL = Address of format buffer
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD READ ID
+; 016Fh (367)
+;
+; Read a sector identifier.
+;
+; ENTRY CONDITIONS
+;         C = Unit (0/1)
+;         D = Logical track, 0 base
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Sector number from identifier
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 HL = Address of result buffer in page 7
+;                 BC DE IX corrupt
+;                 All other registers preserved
+;
+;
+; DD TEST UNSUITABLE
+; 0172h (370)
+;
+; Check that disk is suitable to write to.
+;
+; A single track disk will not work in a double track drive, and vice
+; versa.
+;
+; ENTRY CONDITIONS
+;         C = Unit (0/1)
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If suitable:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD LOGIN
+; 0175h (373)
+;
+; Log in a new disk.
+;
+; Initialise the XDPB.
+;
+; This routine does not affect or consider the freeze flag.
+;
+; ENTRY CONDITIONS
+;         C = Unit (0/1)
+;         IX = Address of destination XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Disk type
+;                 DE = Size of allocation vector
+;                 HL = Size of hash table
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 DE HL corrupt
+;         Always:
+;                 BC IX corrupt
+;                 All other registers preserved
+;
+;
+; DD SEL FORMAT
+; 0178h (376)
+;
+; Initialise an XDPB for a standard format.
+;
+; This routine does not affect or consider the freeze flag.
+;
+; ENTRY CONDITIONS
+;         A = Disk type
+;                 0 = Spectrum +3 format (AMSTRAD PCW range - DD SS ST)
+;                 1 = AMSTRAD CPC range system format
+;                 2 = AMSTRAD CPC range data-only format
+;                 3 = AMSTRAD PCW range - DD SS DT
+;                 (other values = error)
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Disk type
+;                 DE = Size of 2 bit allocation vector
+;                 HL = Size of hash table
+;         Otherwise:
+;                 Carry false
+;                 A = Error code
+;                 DE HL corrupt
+;         Always:
+;                 BC IX corrupt
+;                 All other registers preserved
+;
+;
+; DD ASK 1
+; 017Bh (379)
+;
+; Check to see if unit 1 is present. (BASIC holds this information in
+; bit 5 of the FLAGS3 system variable.)
+;
+; Turn motor on.
+;
+; Fetch drive status.
+;
+; If unit 1 is not-ready and write-protected, then unit 1 is missing.
+; Start motor off timeout.
+;
+; Note that this routine can be fooled by disks which are almost, but
+; not quite, inserted in the drive.
+;
+; This routine assumes that when a disk is not in the drive, then
+; write-protect is true. This is indeed the case for 3 inch and 8 inch
+; disk drives, but is not the case for 5 1/4 inch disk drives.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         If unit 1 present:
+;                 Carry true
+;         Otherwise:
+;                 Carry false
+;         Always:
+;                 A BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD DRIVE STATUS
+; 017Eh (382)
+;
+; Issue a sense drive status command.
+;
+; ENTRY CONDITIONS
+;         C = Unit/head
+;                 bits 0...1 = unit
+;                 bit 2 = head
+;                 bits 3...7 = 0
+;
+; EXIT CONDITIONS
+;                 A = ST3 (Status register 3 of uPD765A)
+;         Always:
+;                 F BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD EQUIPMENT
+; 0181h (385)
+;
+; Ask what type of drive this is (i.e. single/double track,
+; single/double sided).
+;
+; Track information can only be determined once a disk has been seen and
+; had its type identified during logging in.
+;
+; Side information can only be detected after a double sided disk has
+; been seen and has its type identified during logging in.
+;
+; ENTRY CONDITIONS
+;         C = Unit (0/1)
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;                 A = Side/track information
+;                         bits 0...1 = side information
+;                                 0 = unknown
+;                                 1 = single sided
+;                                 2 = double sided
+;                         bits 2...3 = track information
+;                                 0 = unknown
+;                                 1 = single track
+;                                 2 = double track
+;         Always:
+;                 F BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD ENCODE
+; 0184h (388)
+;
+; Set the copy protection ENCODE subroutine.
+;
+; Copy protected disks have some of their track and sector numbers
+; encoded on disk. Before each disk access, the ENCODE subroutine is
+; called to encode the physical track and sector numbers.
+;
+; These encoded track and sector numbers must match those in the sector
+; identifier.
+;
+; Note that tracks 0...2 on either side of a disk should not be encoded.
+;
+; ENTRY CONDTIONS
+;         A = Enable/disable
+;                 00h (0) = disable
+;                 FFh (255) = enable
+;         HL = (If enabled) address of ENCODE subroutine
+;
+; EXIT CONDITIONS
+;                 HL = Address of previous ENCODE subroutine (0 if none)
+;         Always:
+;                 AF BC DE IX corrupt
+;                 All other registers preserved
+;
+; NOTE
+;         The definition of the subroutine ENCODE is as shown ahead.
+;         Note that if you are substituting your own ENCODE subroutine,
+;         the 'entry conditions' are the conditions passed to your
+;         subroutine, and the 'exit conditions' are the values that your
+;         subroutine must produce and the registers you are allowed to
+;         corrupt.
+;
+;         ENCODE
+;
+;         ENTRY CONDITIONS
+;                 C = Unit/side
+;                         bits 0...1 = unit
+;                         bit 2 = side
+;                         bits 3...7 = 0
+;                 D = Physical track
+;                 E = Physical sector
+;                 IX = Address of DPB
+;
+;         EXIT CONDITIONS
+;                         D = Encoded physical track
+;                         E = Encoded physical sector
+;                 Always:
+;                         AF corrupt
+;                         All other registers preserved
+;
+;
+; DD L XDPB
+; 0187h (391)
+; Initialise an XDPB for a given format.
+;
+; This routine does not affect or consider the freeze flag.
+;
+; ENTRY CONDITIONS
+;         IX = Address of destination XDPB
+;         HL = Address of source disk specification
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Disk type recorded on disk
+;                 DE = Size of allocation vector
+;                 HL = Size of hash table
+;         If bad format:
+;                 Carry false
+;                 A = Error code
+;                 DE HL corrupt
+;         Always:
+;                 BC IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L DPB
+; 018Ah (394)
+;
+; Initialise a DPB for a given format.
+;
+; This routine does not affect or consider the freeze flag.
+;
+; ENTRY CONDITIONS
+;         IX = Address of destination DPB
+;         HL = Address of source disk specification
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A = Disk type recorded on disk
+;                 DE = Size of allocation vector
+;                 HL = Size of hash table
+;         If bad format:
+;                 Carry false
+;                 A = Error code
+;                 DE HL corrupt
+;         Always:
+;                 BC IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L SEEK
+; 018Dh (397)
+;
+; Seek to required track.
+;
+; Retry if fails.
+;
+; ENTRY CONDITIONS
+;         C = Unit/head
+;                 bits 0...1 = unit
+;                 bit 2 = head
+;                 bits 3...7 = 0
+;         D = Track
+;         IX = Address of XDPB
+;
+; EXIT CONDITIONS
+;         If OK:
+;                 Carry true
+;                 A corrupt
+;         Otherwise:
+;                 Carry false
+;                 A = Error report
+;         Always:
+;                 BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L READ
+; 0190h (400)
+;
+; Low level uPD765A read command.
+;
+; Read data.
+;
+; Read deleted data.
+;
+; Read a track.
+;
+; Parameter block format:
+;
+;         Byte 0          - Page for C000h (49152)...FFFFh (65535)
+;         Bytes 1...2     - Address of buffer
+;         Bytes 3...4     - Number of bytes to transfer
+;         Byte 5          - Number of command bytes
+;         Bytes 6...      - Command bytes
+;
+; Writes commands.
+;
+; Reads data.
+;
+; Reads results.
+;
+; Motor must be running.
+;
+; ENTRY CONDITIONS
+;         HL = Address of parameter block
+;
+; EXIT CONDITIONS
+;                 HL = Address of result buffer in page 7
+;         Always:
+;                 AF BC DE IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L WRITE
+; 0193h (403)
+;
+; Low level uPD765A write command.
+;
+; Write data.
+;
+; Write deleted data.
+;
+; Format a track.
+;
+; Scan equal.
+;
+; Scan low or equal.
+;
+; Scan high or equal.
+;
+; Parameter block format:
+;
+;         Byte 0          - Page for C000h (49152)...FFFFh (65535)
+;         Bytes 1...2     - Address of buffer
+;         Bytes 3...4     - Number of bytes to transfer
+;         Byte 5          - Number of command bytes
+;         Bytes 6...      - Command bytes
+;
+; Writes commands.
+;
+; Writes data.
+;
+; Reads results.
+;
+; Motor must be running.
+;
+; ENTRY CONDITIONS
+;         HL = Address of parameter block
+;
+; EXIT CONDITIONS
+;                 HL = Address of result buffer in page 7
+;         Always:
+;                 AF BC DE IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L ON MOTOR
+; 0196h (406)
+;
+; Turn on the motor.
+;
+; Wait for the motor on time as set by DD SETUP.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         Always:
+;                 AF BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L T OFF MOTOR
+; 0199h (409)
+;
+; Start the motor off time-out.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         Always:
+;                 AF BC DE HL IX corrupt
+;                 All other registers preserved
+;
+;
+; DD L OFF MOTOR
+; 019Ch (412)
+;
+; Turn off the motor.
+;
+; ENTRY CONDITIONS
+;         None
+;
+; EXIT CONDITIONS
+;         Always:
+;                 AF BC DE HL IX corrupt
+;                 All other registers preserved

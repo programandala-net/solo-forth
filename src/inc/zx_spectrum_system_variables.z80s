@@ -17,6 +17,8 @@
 ; 2015-09-06: Offset extracted to <zx_spectrum_system_variables_offsets.z80s>,
 ; because the z80dasm disassembler does not accept calculations in its input
 ; symbols file.
+;
+; 2016-08-05: Remove useless comment.
 
 ; --------------------------------------------------------------
 ; ZX Spectrum +3
@@ -218,9 +220,7 @@ sys_nxtlin:      equ 23637 ; (x2) Address of next line in program.
 sys_datadd:      equ 23639 ; (x2) Address of terminator of last DATA item.
 sys_e_line:      equ 23641 ; (x2) Address of command being typed in.
 sys_k_cur:       equ 23643 ; (2) Address of cursor.
-sys_ch_add:      equ 23645 ; (x2) Address of the next character to be interpreted:
-                           ; the character after the argument of PEEK,
-                           ; or the NEWLINE at the end of a POKE statement.
+sys_ch_add:      equ 23645 ; (x2) Address of the next character to be interpreted.
 sys_x_ptr:       equ 23647 ; (2) Address of the character after the ? marker.
 sys_worksp:      equ 23649 ; (x2) Address of temporary work space.
 sys_stkbot:      equ 23651 ; (x2) Address of bottom of calculator stack.

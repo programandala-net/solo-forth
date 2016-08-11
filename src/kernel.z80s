@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608111949
+; Last modified: 201608112113
 
 include version.z80s
 
@@ -11294,6 +11294,27 @@ move_name_fields_to_memory_bank:
 
   ; The whole screen is used as intermediate buffer for copying
   ; the data.
+
+if defined plus3dos
+
+  ; +3DOS uses RAM pages 1, 3, 4 and 6 as an array of 128 sector
+  ; buffers (numbered 0...127), each of 512 bytes, thus 32
+  ; buffers per RAM page. The cache and RAM disk occupy two
+  ; separate (contiguous) areas of this array. In order to free
+  ; RAM page 1 for Solo Forth, the default configuration must be
+  ; modified, moving everything up and making the RAM disk 32
+  ; buffers smaller:
+
+if system_bank!=1
+  .error "`system_bank` is not 1. +3DOS's cold start must be reconfigured."
+endif
+
+  ld de,$2008 ; $08 sectors for the cache, from sector $20
+  ld hl,$2858 ; $58 sectors for the RAM disk, from sector $28
+  ld ix,dos_set_1346 ; set RAM pages 1, 3 , 4 and 6
+  call dos
+
+endif
 
   ld hl,names_bank_address ; origin
   ld de,sys_screen ; destination

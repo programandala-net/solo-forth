@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608102151
+; Last modified: 201608112105
 
 ; ==============================================================
 ; Description
@@ -35,8 +35,7 @@
 
 if defined plus3dos
 
-dos_set_drive equ 0 ; XXX TODO --
-dos_set_user equ 0 ; XXX TODO --
+include inc/zx_spectrum_plus3dos.z80s
 
 back_from_dos:
   ; cy = no error?
@@ -45,17 +44,18 @@ back_from_dos:
 
 back_from_dos.error:
   ; a = error code
-  call convert_dos_error_code
+  call dosior_to_ior
   ; hl = error code
   _jp_pushhl
 
-convert_dos_error_code:
+dosior_to_ior:
   ; Input:   a  = original DOS error code (0..36)
-  ; Outptut: hl = DOS error code converted to Forth range (-1000..-1036)
-  ; XXX TODO make a Forth word to access this code?
+  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
   ld h,0
   ld l,a
-convert_dos_error_code.hl:
+dosior_to_ior.hl:
+  ; Input:   hl  = original DOS error code (0..36)
+  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
   ld de,1000
   add hl,de
   jp negate_hl
@@ -66,7 +66,7 @@ get_current_drive:
 set_current_drive:
   ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
   ld ix,dos_set_drive
-  jr do_dos
+  jr dos.preserve_ip
 
 get_current_user:
   ld a,$FF
@@ -91,7 +91,7 @@ dos:
   push af
   push bc                  ; temp save registers while switching
   ld   a,(sys_bankm)       ; RAM/ROM switching system variable
-  or   7                   ; want RAM page 7
+  or   %00000111           ; set bits 0-3: RAM 7
   res  4,a                 ; and DOS ROM
   ld   bc,bank1_port       ; port used for horiz ROM switch and RAM paging
   di
@@ -101,12 +101,12 @@ dos:
   pop  bc
   pop  af
 
-  call call_dos.ix         ; go sub routine address in IX
+  call call_dos.ix         ; call routine in IX
 
   push af
   push bc
   ld   a,(sys_bankm)
-  and  0F8h                ; reset bits for page 0
+  and  %11111000           ; reset bits 0-3: RAM 0
   set  4,a                 ; switch to ROM 3 (48 BASIC)
   ld   bc,bank1_port
   di
@@ -127,7 +127,7 @@ call_dos.ix:
 ; This is used when the BC register (the Forth IP) is not a parameter of the
 ; DOS routine
 
-do_dos:
+dos.preserve_ip:
   ; IX = DOS routine to run
   push bc
   call dos
@@ -138,19 +138,24 @@ do_dos:
 ; Dictionary
 
 ; ----------------------------------------------
-_colon_header dosior_to_ior_,'DOSIOR>IOR'
+_code_header dosior_to_ior_,'DOSIOR>IOR'
 
 ; doc{
 ;
-; dosior>ior ( dosior -- ior )
+; dosior>ior  ( dosior -- ior )
 ;
-; Convert a DOS _dosior_ to a Forth _ior_.
-;
+; Convert a DOS ior to a Forth ior.
+
+; ----
+; : dosior>ior  ( dosior -- ior )
+;   1000 + negate  ;
+; ----
+
 ; }doc
 
-  ; XXX TODO --
-
-  dw exit_
+  pop hl
+  call dosior_to_ior.hl
+  _jp_pushhl
 
 ; ----------------------------------------------
   _constant_header rec_slash_track_,'REC/TRACK'
@@ -165,6 +170,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
 
   dw 9
   ; XXX TODO -- use a label and move to the kernel
+  ; XXX TODO -- not used in TR-DOS
 
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
@@ -300,6 +306,56 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
 
   ; XXX TODO --
   dw exit_
+
+; ----------------------------------------------
+  _code_header dos_get_1346_,'DOS-GET-1346'
+
+; doc{
+;
+; dos-get-1346  ( -- n1 n2 n3 n4 )
+;
+; }doc
+
+; XXX TODO -- move to the library
+
+  ld (dos_get_1346.ip_backup),bc
+  ld ix,dos_get_1346
+  call dos
+  ld b,0
+  ld c,d ; first buffer of cache
+  push bc
+  ld c,e ; number of cache sector buffers
+  push bc
+  ld c,h ; first buffer of RAM disk
+  push bc
+  ld c,l ; number of RAM disk sector buffers
+  push bc
+dos_get_1346.ip_backup equ $+1
+  ld bc,0 ; restore Forth IP
+  ld ix,next ; restore IX
+  _jp_next
+
+; ----------------------------------------------
+  _code_header dos_set_1346_,'DOS-SET-1346'
+
+; doc{
+;
+; dos-set-1346  ( n1 n2 n3 n4 -- )
+;
+; }doc
+
+; XXX TODO -- move to the library
+
+  pop hl ; L = number of RAM disk sector buffers
+  pop af
+  ld h,a ; H = first buffer of RAM disk
+  pop de ; E = number of cache sector buffers
+  pop af
+  ld d,a ; D = first buffer of cache
+  ld ix,dos_set_1346
+  call dos.preserve_ip
+  ld ix,next ; restore IX
+  _jp_next
 
 endif
 
