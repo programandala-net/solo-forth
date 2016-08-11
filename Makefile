@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608111620
+# Last modified: 201608111625
 
 # ==============================================================
 # Author
@@ -195,7 +195,7 @@ tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
 # These drivers are not part of the Solo Forth library yet.
 # Meanwhile, their binary files are included in the first disk.
 
-# Note: an intermediate file called "4x8fd.bin" is used, in
+# Note: an intermediate file called "pr64.bin" is used, in
 # order to force that filename in the TAP header and therefore
 # in the disk image.  This file must be in the current
 # directory, because the path specified in the command will be
@@ -206,9 +206,9 @@ tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
 # usual.  A hyphen at the beginning of the recipe line forces
 # make to ignore the error.
 
-tmp/4x8fd.tap: src/modules/4x8fd.z80s
-	pasmo --tap $< 4x8fd.bin ; \
-	mv 4x8fd.bin $@
+tmp/pr64.tap: src/modules/pr64.z80s
+	pasmo --tap $< pr64.bin ; \
+	mv pr64.bin $@
 
 tmp/pr42.tap: bin/modules/pr42.bin
 	cd bin/modules/ ; \
@@ -246,7 +246,7 @@ tmp/fzx_fonts.tap : $(fzx_fonts)
 disks/gplusdos/disk0.mgt: \
 		tmp/loader.gplusdos.bas.tap \
 		tmp/kernel.gplusdos.bin.tap \
-		tmp/4x8fd.tap \
+		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
@@ -258,7 +258,7 @@ disks/gplusdos/disk0.mgt: \
 tmp/disk0.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
-		tmp/4x8fd.tap \
+		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
@@ -273,7 +273,7 @@ disks/plus3dos/disk0.dsk: tmp/disk0.plus3dos.tap
 tmp/disk0.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.bin.tap \
-		tmp/4x8fd.tap \
+		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
@@ -542,4 +542,5 @@ oldbackup:
 # solution.
 #
 # 2016-08-11: Improve copying the FZX fonts to the disks. Rename the
-# 42 cpl driver and font to make them fit in TR-DOS.
+# 42 cpl driver and font to make them fit in TR-DOS. Rename the 64 cpl
+# driver for the same reason.
