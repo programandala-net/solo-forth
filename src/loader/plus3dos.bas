@@ -9,7 +9,7 @@
 # are converted to their actual values, extracted from the Z80 symbols
 # file by a Forth program called by Makefile.
 
-1 CLEAR VAL "ramtop": LOAD "forth.bin" CODE VAL"origin"
+1 CLEAR VAL "ramtop": LOAD "solo.bin" CODE VAL"origin"
 2 RANDOMIZE USR VAL "cold_entry": REM cold
 3 RANDOMIZE USR VAL"warm_entry": REM warm
 

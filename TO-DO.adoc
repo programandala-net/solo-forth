@@ -14,11 +14,6 @@
 Remove the 64 cpl font from the library (4 blocks), and use the binary file
 (336 bytes) instead?
 
-.2016-08-11:
-
-Change the names of the font drivers to make them fit the 8 characters allowed
-by TR-DOS. This way the library code can be shared.
-
 .2016-08-09:
 
 Change the format of stack notation:
@@ -830,10 +825,6 @@ Create also 180 KiB disk 0.
 .2016-08-11:
 
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
-
-.2016-08-11:
-
-Adapt the file names of fonts.
 
 // }}}
 == Sound ==
