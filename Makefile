@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608111625
+# Last modified: 201608111656
 
 # ==============================================================
 # Author
@@ -87,7 +87,8 @@ gplusdos: \
 
 .PHONY: plus3dos
 plus3dos: \
-	disks/plus3dos/disk0.dsk
+	disks/plus3dos/disk0.180.dsk \
+	disks/plus3dos/disk0.720.dsk
 # disks/plus3dos/disk1_lib.dsk
 # XXX TODO --
 
@@ -264,8 +265,11 @@ tmp/disk0.plus3dos.tap: \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
-disks/plus3dos/disk0.dsk: tmp/disk0.plus3dos.tap
+disks/plus3dos/disk0.720.dsk: tmp/disk0.plus3dos.tap
 	tap2dsk -720 -label SoloForth $< $@
+
+disks/plus3dos/disk0.180.dsk: tmp/disk0.plus3dos.tap
+	tap2dsk -180 -label SoloForth $< $@
 
 # ----------------------------------------------
 # TR-DOS main disk
@@ -289,10 +293,6 @@ disks/trdos/disk0.trd: tmp/disk0.trdos.tap
 	dosbox -exit mktrd.bat && \
 	cd -
 	mv tmp/SOLOFTH0.TRD $@
-
-# XXX TODO -- write a program in Gforth to create an empty TRD disk
-# image, so the lowercase letters of the disk label are preserved.
-# `emptytrd.exe` makes the label uppercase.
 
 # ==============================================================
 # Library disks
@@ -541,6 +541,9 @@ oldbackup:
 # fsb2-trd, which now creates a sector 0, instead of the ad hoc
 # solution.
 #
-# 2016-08-11: Improve copying the FZX fonts to the disks. Rename the
-# 42 cpl driver and font to make them fit in TR-DOS. Rename the 64 cpl
-# driver for the same reason.
+# 2016-08-11: Improve copying the FZX fonts to the disks.
+#
+# 2016-08-11: Rename the 42 cpl driver and font to make them fit in
+# TR-DOS. Rename the 64 cpl driver for the same reason.
+#
+# 2016-08-11: Make also a 180 KiB disk 0 for +3DOS.

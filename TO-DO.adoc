@@ -810,14 +810,6 @@ Investigate how to use the free memory of the Plus D RAM.
 == +3DOS ==
 // {{{
 
-.2015-11-10:
-
-On +3DOS, reserve one memory bank for the name fields.
-
-.2016-08-11:
-
-Create also 180 KiB disk 0.
-
 // }}}
 == TR-DOS ==
 // {{{
@@ -825,6 +817,12 @@ Create also 180 KiB disk 0.
 .2016-08-11:
 
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
+
+.2016-08-11:
+
+Write a program in Gforth to create an empty TRD disk image in
+<Makefile.pasmo>, so the lowercase letters of the disk label are preserved.
+`emptytrd.exe` makes the label uppercase.
 
 // }}}
 == Sound ==
