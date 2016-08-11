@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608110017
+; Last modified: 201608111949
 
 include version.z80s
 
@@ -1081,7 +1081,6 @@ negate_hl:
   ld h,a  ; 04 01
           ; -- --
           ; 24 06
-  _z80_border_wait 3 ; XXX INFORMER
   ret
 
 if 0
@@ -4606,12 +4605,8 @@ true_if_cy:
 ;
 ; }doc
 
-  pop de
-                ; t  B
-  ld hl,$0000  ; 10 03
-  and a         ; 04 01
-  sbc hl,de     ; 15 02
-                ; 29 06 total
+  pop hl
+  call negate_hl
   _jp_pushhl
 
 ; ----------------------------------------------

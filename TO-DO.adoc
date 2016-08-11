@@ -816,6 +816,10 @@ Investigate how to use the free memory of the Plus D RAM.
 
 .2016-08-11:
 
+Make also 40S, 40D and 80S TRD disk images?
+
+.2016-08-11:
+
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 
 .2016-08-11:
