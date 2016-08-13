@@ -5,6 +5,10 @@
 ; 2015-01-11: Start. Created from sources of two projects. That's why there
 ; are synonyms.
 ; 2015-01-14: Label fixed.
+; 2016-08-13: New label format for chars. First 7 tokens.
+
+; --------------------------------------------------------------
+; Characters (old format)
 
 caps_char:                  equ 0x06 ; toggle caps lock
 print_comma_char:           equ 0x06 ; (when printed)
@@ -39,3 +43,51 @@ space_char:                 equ 0x20
 sp_char:                    equ 0x20 ; space
 copy_char:                  equ 0x7f ; copyright sign
 copyright_char:             equ 0x7f ; copyright sign
+
+; --------------------------------------------------------------
+; Characters (new format)
+
+char.caps:                  equ 0x06 ; toggle caps lock
+char.print_comma:           equ 0x06 ; (when printed)
+char.edit:                  equ 0x07 ; edit
+char.esc:                   equ 0x07 ; escape
+char.cursor_left:           equ 0x08
+char.backspace:             equ 0x08
+char.bs:                    equ 0x08 ; backspace
+char.left:                  equ 0x08 ; cursor left
+char.cursor_right:          equ 0x09
+char.right:                 equ 0x09 ; cursor right
+char.cursor_down:           equ 0x0a
+char.down:                  equ 0x0a ; cursor down
+char.cursor_up:             equ 0x0b
+char.up:                    equ 0x0b ; cursor up
+char.delete_left:           equ 0x0c
+char.delete:                equ 0x0c ; delete (backspace)
+char.form_feed:             equ 0x0c ; used for printing
+char.carriage_return:       equ 0x0d
+char.cr:                    equ 0x0d ; carriage return (enter key)
+char.extended_mode:         equ 0x0e ; Fuse associates it to the host's Tab key
+char.graphics:              equ 0x0f ; toggle graphics mode
+char.ink:                   equ 0x10
+char.paper:                 equ 0x11
+char.flash:                 equ 0x12
+char.bright:                equ 0x13
+char.inverse:               equ 0x14
+char.over:                  equ 0x15
+char.at:                    equ 0x16
+char.tab:                   equ 0x17 ; tab (screen only)
+char.space:                 equ 0x20
+char.sp:                    equ 0x20 ; space
+char.copy:                  equ 0x7f ; copyright sign
+char.copyright:             equ 0x7f ; copyright sign
+
+; --------------------------------------------------------------
+; Tokens
+
+token.cat   equ 207
+token.new   equ 230
+token.rem   equ 234
+token.load  equ 239
+token.list  equ 240
+token.poke  equ 244
+token.save  equ 248

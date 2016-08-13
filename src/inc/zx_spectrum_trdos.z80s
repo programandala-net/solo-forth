@@ -1,0 +1,66 @@
+; ZX Spectrum TR-DOS
+
+; By Marcos Cruz (programandala.net)
+
+; --------------------------------------------------------------
+; Change history
+
+; 2016-08-13: Start, from information compiled for Solo Forth
+; (http://programandala.net/en.program.solo_forth.html).
+
+; --------------------------------------------------------------
+; TR-DOS entry points
+
+trdos_entry.interpret_command           equ 15619 ; $3D03
+  ; Interpret a TR-DOS REM-command pointed by the system variable CH
+  ; ADD (23645).
+  ;
+  ; XXX REMARK -- The Beta Disk and Beta 128 Disk manuals use address
+  ; 15363 in the assembly examples, but it's a mistake. In fact 15363
+  ; ($3C03) is out of the range of addresses that make the TR-DOS
+  ; memory page in ($3D00..$3DFF). Probably the confusion was caused
+  ; by a typo in hex ($3D03 and $3C03).
+
+trdos_entry.execute_command             equ 15635 ; $3D13
+  ; Execute a TR-DOS command, whose code is in the C register.
+
+trdos_entry.call_pushed_address         equ 15663 ; $3D2F
+  ; Execute the TR-DOS routine whose address is on top of stack.
+
+; trdos_entry.XXX equ 15622 ; $3D06
+; trdos_entry.XXX equ 15629 ; $3D0D
+; trdos_entry.XXX equ 15632 ; $3D10
+; trdos_entry.XXX equ 15652 ; $3D24
+
+; --------------------------------------------------------------
+; TR-DOS commands
+
+trdos_command.init_drive                  equ $01
+trdos_command.read_sectors                equ $05
+trdos_command.write_sectors               equ $06
+trdos_command.cat                         equ $07
+trdos_command.read_file_descriptor        equ $08
+trdos_command.write_file_descriptor       equ $09
+trdos_command.find_file                   equ $0A
+trdos_command.create_file                 equ $0B
+trdos_command.save_basic_program          equ $0C
+trdos_command.read_file                   equ $0E
+trdos_command.delete_file                 equ $12
+trdos_command.copy_from_hl_to_descriptor  equ $13
+trdos_command.copy_from_descriptor_to_hl  equ $14
+trdos_command.test_track                  equ $15
+trdos_command.select_bottom_side          equ $16
+trdos_command.selet_top_side              equ $17
+trdos_command.read_system_track           equ $18
+
+; --------------------------------------------------------------
+; TR-DOS variables
+
+trdos_variable.current_drive              equ 23798
+trdos_variable.two_files_drive            equ 23800
+trdos_variable.cat_drive                  equ 23801
+trdos_variable.load_verify_flag           equ 23801
+trdos_variable.last_error                 equ 23824
+trdos_variable.default_drive              equ 23833
+
+
