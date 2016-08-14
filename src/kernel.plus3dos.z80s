@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608112105
+; Last modified: 201608141426
 
 ; ==============================================================
 ; Description
@@ -48,17 +48,9 @@ back_from_dos.error:
   ; hl = error code
   _jp_pushhl
 
-dosior_to_ior:
-  ; Input:   a  = original DOS error code (0..36)
-  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
-  ld h,0
-  ld l,a
-dosior_to_ior.hl:
-  ; Input:   hl  = original DOS error code (0..36)
-  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
-  ld de,1000
-  add hl,de
-  jp negate_hl
+if 0
+
+  ; XXX TODO -- move to the library
 
 get_current_drive:
   ld a,$FF
@@ -74,6 +66,8 @@ get_current_user:
 set_current_user:
   ; a = user ($00..$0F to set it; $FF to get it)
   ld ix,dos_set_user
+
+endif
 
 ; ------------------------------
 ; DOS call
@@ -101,7 +95,7 @@ dos:
   pop  bc
   pop  af
 
-  call call_dos.ix         ; call routine in IX
+  call dos.jp_ix           ; call routine in IX
 
   push af
   push bc
@@ -117,15 +111,15 @@ dos:
   pop  af
   ret
 
-call_dos.ix:
+dos.jp_ix:
 
   jp   (ix)                ; standard way to CALL (IX), by calling this jump
 
 ; ------------------------------
 ; DOS call preserving the Forth IP
 
-; This is used when the BC register (the Forth IP) is not a parameter of the
-; DOS routine
+; This is used when the BC register (the Forth IP) is not a parameter
+; of the DOS routine
 
 dos.preserve_ip:
   ; IX = DOS routine to run
@@ -157,6 +151,18 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   call dosior_to_ior.hl
   _jp_pushhl
 
+dosior_to_ior:
+  ; Input:   a  = original DOS error code (0..36)
+  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
+  ld h,0
+  ld l,a
+dosior_to_ior.hl:
+  ; Input:   hl  = original DOS error code (0..36)
+  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
+  ld de,1000
+  add hl,de
+  jp negate_hl
+
 ; ----------------------------------------------
   _constant_header rec_slash_track_,'REC/TRACK'
 
@@ -170,7 +176,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
 
   dw 9
   ; XXX TODO -- use a label and move to the kernel
-  ; XXX TODO -- not used in TR-DOS
+  ; XXX TODO -- not used in +3DOS
 
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
@@ -233,51 +239,94 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
 
 ; doc{
 ;
-; transfer-block  ( n -- )
+; transfer-block  ( n -- ior )
 ;
-; The block-level disk read-write linkage.
-; Transfer block _n_ to or from disk.
-; The read or write mode must be previously set
-; by `write-mode` or `read-mode`.
-;
-; }doc
-
-  ; XXX TODO restore the current drive
-
-  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
-  dw dup_
-  dw sector_id_
-  dw buffer_data_
-  dw transfer_sector_,throw_
-
-  dw one_plus_,sector_id_
-
-  ; XXX TODO -- benchmark again
-  dw buffer_data_,b_slash_rec_,plus_ ; XXX 23768 frames
-  ;_literal disk_buffer+cell+bytes_per_sector ; XXX 24425 frames??
-
-  dw transfer_sector_,throw_
-
-  dw exit_
-
-; ----------------------------------------------
-  _code_header transfer_sector_,'TRANSFER-SECTOR'
-
-; doc{
-;
-; transfer-sector  ( x a -- ior )
-;
-; The sector-level disk read-write linkage.  Transfer sector _x_ to or
+; The block-level disk read-write linkage.  Transfer block _n_ to or
 ; from disk.  The read or write mode must be previously set by
 ; `write-mode` or `read-mode`.
 ;
-; x = sector to read or write a = source or destination address
+; }doc
+
+  dw b_slash_buf_,u_m_star_
+  dw library_file_,fetch_
+  dw reposition_file_
+  dw question_dup_,question_exit_
+  _literal default_bank
+  dw buffer_data_,b_slash_buf_
+  dw library_file_,fetch_
+  dw transfer_bytes_
+  dw exit_
+
+; ----------------------------------------------
+  _code_header reposition_file_,'REPOSITION-FILE'
+
+; doc{
+;
+; reposition-file ( ud fid -- ior )
 ;
 ; }doc
 
-; XXX TODO --
+  ld (reposition_file.backup_ip),bc ; save Forth IP
+  pop bc
+  ld b,c ; fid
+  pop de ;
+  pop hl ; EHL = file pointer
+  ld ix,dos_set_position
+  call dos
+reposition_file.backup_ip equ $+1
+  ld bc,0 ; restore Forth IP
+  ld ix,next ; restore IX
+  jp back_from_dos
 
-  jp false_
+; ----------------------------------------------
+  _code_header file_position_,'FILE-POSITION'
+
+; doc{
+;
+; file-position ( fid -- ud ior )
+;
+; }doc
+
+; XXX TODO -- move to the library
+
+  pop hl ; L = fid
+  push bc ; save Forth IP
+  ld b,l ; fid
+  ld ix,dos_get_eof
+  call dos
+  pop bc ; restore Forth IP
+  push hl ; low part of _ud_
+  push de ; high part of _ud_
+  ld ix,next ; restore IX
+  jp back_from_dos
+
+; ----------------------------------------------
+  _code_header transfer_bytes_,'TRANSFER-BYTES'
+
+; doc{
+;
+; transfer-bytes  ( n ca len fid -- ior )
+;
+; Transfer _len_ bytes to/from file _fid_ to/from memory, using _n_ as
+; page $C000..$FFFF.  The read or write mode must be previously set by
+; `write-mode` or `read-mode`.
+;
+; }doc
+
+  ld (transfer_bytes.backup_ip),bc ; save Forth IP
+  pop bc ; C = fid
+  ld a,c ; A = fid
+  pop de ; length
+  pop hl ; address
+  pop bc ; C = page
+  ld b,a ; B = fid
+transfer_bytes.command equ $+2
+  ld ix,dos_write
+  call dos
+transfer_bytes.backup_ip equ $+1
+  ld bc,0 ; restore Forth IP
+  ld ix,next ; restore IX
+  jp back_from_dos
 
 ; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'
@@ -290,8 +339,8 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
 ;
 ; }doc
 
-  ; XXX TODO --
-  dw exit_
+  _literal dos_write
+  dw branch_,transfer_mode
 
 ; ----------------------------------------------
   _colon_header read_mode_,'READ-MODE'
@@ -304,7 +353,10 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
 ;
 ; }doc
 
-  ; XXX TODO --
+  _literal dos_read
+transfer_mode:
+  _literal transfer_bytes.command
+  dw store_
   dw exit_
 
 ; ----------------------------------------------
@@ -356,6 +408,82 @@ dos_get_1346.ip_backup equ $+1
   call dos.preserve_ip
   ld ix,next ; restore IX
   _jp_next
+
+; ----------------------------------------------
+  _code_header close_file_,'CLOSE-FILE'
+
+; doc{
+;
+; close-file  ( fid -- ior )
+;
+; Close the file _fid_ (0..15).
+;
+; }doc
+
+  pop hl ; l = file number
+  push bc ; save Forth IP
+  ld b,l ; file number
+  ld ix,dos_close
+  call dos
+  pop bc ; restore Forth IP
+  ld ix,next ; restore IX
+  jp back_from_dos
+
+; ----------------------------------------------
+  _code_header open_disk_,'OPEN-DISK'
+
+; doc{
+;
+; open-disk  ( c n -- ior )
+;
+; Open disk _c_ ('A'..'P') as a single file _n_ (0..15).
+;
+; }doc
+
+  pop hl ; l = file number
+  pop de ; e = drive
+  push bc ; save Forth IP
+  ld a,e ; drive
+  ld b,l ; file number
+  ld c,%011 ; access mode: exclusive-read-write ; XXX TMP --
+  ld ix,dos_open_drive
+  call dos
+  pop bc ; restore Forth IP
+  ld ix,next ; restore IX
+  jp back_from_dos
+
+; ----------------------------------------------
+  _variable_header library_file_,'LIBRARY-FILE'
+
+; doc{
+;
+; library-file  ( -- a )
+;
+; A variable that holds the fid (0..15) used to open the library disks
+; as a single file.
+;
+; }doc
+
+  dw 0
+
+; ----------------------------------------------
+  _colon_header set_drive_,'SET-DRIVE'
+
+; doc{
+;
+; set-drive  ( c -- ior )
+;
+; Sed drive _c_ ('A'..'P') as the current library drive.
+;
+; }doc
+
+  dw library_file_,fetch_,dup_,close_file_
+  dw dup_
+  _literal -1029 ; exception code: "file number not open"
+  dw not_equals_,question_exit_ ; other errors force an exit
+  dw drop_ ; discard -1029
+  dw open_disk_
+  dw exit_
 
 endif
 

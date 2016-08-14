@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608111656
+# Last modified: 201608141323
 
 # ==============================================================
 # Author
@@ -88,9 +88,11 @@ gplusdos: \
 .PHONY: plus3dos
 plus3dos: \
 	disks/plus3dos/disk0.180.dsk \
-	disks/plus3dos/disk0.720.dsk
-# disks/plus3dos/disk1_lib.dsk
-# XXX TODO --
+	disks/plus3dos/disk0.720.dsk \
+	disks/plus3dos/disk1_lib.dsk \
+	disks/plus3dos/disk2_lib+games.dsk \
+	disks/plus3dos/disk3_lib+benchmarks.dsk \
+	disks/plus3dos/disk4_lib+tests.dsk
 
 .PHONY: trdos
 trdos: \
@@ -330,28 +332,28 @@ tmp/library_for_gplusdos.fsb: $(gplusdos_core_lib_files)
 
 disks/gplusdos/disk1_lib.mgt: tmp/library_for_gplusdos.fsb
 	fsb2-mgt tmp/library_for_gplusdos.fsb ;\
-	mv tmp/library_for_gplusdos.mgt $@
+	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos+games.fsb: $(gplusdos_core_lib_files) $(game_lib_files)
 	cat $(gplusdos_core_lib_files) $(game_lib_files) > $@
 
 disks/gplusdos/disk2_lib+games.mgt: tmp/library_for_gplusdos+games.fsb
 	fsb2-mgt $< ;\
-	mv tmp/library_for_gplusdos+games.mgt $@
+	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos+benchmarks.fsb: $(gplusdos_core_lib_files) $(benchmark_lib_files)
 	cat $(gplusdos_core_lib_files) $(benchmark_lib_files) > $@
 
 disks/gplusdos/disk3_lib+benchmarks.mgt: tmp/library_for_gplusdos+benchmarks.fsb
 	fsb2-mgt $< ;\
-	mv tmp/library_for_gplusdos+benchmarks.mgt $@
+	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos+tests.fsb: $(gplusdos_core_lib_files) $(test_lib_files)
 	cat $(gplusdos_core_lib_files) $(test_lib_files) > $@
 
 disks/gplusdos/disk4_lib+tests.mgt: tmp/library_for_gplusdos+tests.fsb
 	fsb2-mgt $< ;\
-	mv tmp/library_for_gplusdos+tests.mgt $@
+	mv $(basename $<).mgt $@
 
 disks/gplusdos/disk9_lib_without_dos.mgt: tmp/library_without_dos.fsb
 	fsb2-mgt $< ;\
@@ -367,23 +369,45 @@ disks/gplusdos/disk9_lib_without_dos.mgt: tmp/library_without_dos.fsb
 
 # XXX UNDER DEVELOPMENT
 
-plus3dos_core_lib_files = $(filter-out %trdos.fsb %gplusdos.fsb,$(core_lib_files))
+plus3dos_core_lib_files = $(filter-out %trdos.fsb %gplusdos.fsb, $(core_lib_files))
 
-tmp/library_for_plus3dos.fsb: $(plus3dos_core_lib_files) $(meta_tools_lib_files)
-	cat \
-		$(gplusdos_core_lib_files) $(meta_tools_lib_files) \
-		> tmp/library_for_plus3dos.fsb
+tmp/library_for_plus3dos.fsb: $(plus3dos_core_lib_files)
+	cat $(gplusdos_core_lib_files) > $@
 
-# XXX TODO -- `fsb2-dsk` is not ready yet.
-disks/plus3dos/disk1.dsk: tmp/library_for_plus3dos.fsb
+disks/plus3dos/disk1_lib.dsk: tmp/library_for_plus3dos.fsb
 	fsb2-dsk tmp/library_for_plus3dos.fsb ;\
-	mv tmp/library_for_plus3dos.dsk disk1.dsk
+	mv $(basename $<).dsk $@
+
+tmp/library_for_plus3dos+games.fsb: $(plus3dos_core_lib_files) $(game_lib_files)
+	cat $(plus3dos_core_lib_files) $(game_lib_files) > $@
+
+disks/plus3dos/disk2_lib+games.dsk: tmp/library_for_plus3dos+games.fsb
+	fsb2-dsk $< ;\
+	mv $(basename $<).dsk $@
+
+tmp/library_for_plus3dos+benchmarks.fsb: $(plus3dos_core_lib_files) $(benchmark_lib_files)
+	cat $(plus3dos_core_lib_files) $(benchmark_lib_files) > $@
+
+disks/plus3dos/disk3_lib+benchmarks.dsk: tmp/library_for_plus3dos+benchmarks.fsb
+	fsb2-dsk $< ;\
+	mv $(basename $<).dsk $@
+
+tmp/library_for_plus3dos+tests.fsb: $(plus3dos_core_lib_files) $(test_lib_files)
+	cat $(plus3dos_core_lib_files) $(test_lib_files) > $@
+
+disks/plus3dos/disk4_lib+tests.dsk: tmp/library_for_plus3dos+tests.fsb
+	fsb2-dsk $< ;\
+	mv $(basename $<).dsk $@
+
+disks/plus3dos/disk9_lib_without_dos.dsk: tmp/library_without_dos.fsb
+	fsb2-dsk $< ;\
+	mv $(basename $<).dsk $@
 
 # ----------------------------------------------
 # TR-DOS library disks
 
 trdos_core_lib_files = \
-	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb , $(core_lib_files))
+	$(filter-out %gplusdos.fsb %plus3dos.fsb %idedos.fsb, $(core_lib_files))
 
 tmp/library_for_trdos.fsb: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@

@@ -810,6 +810,12 @@ Investigate how to use the free memory of the Plus D RAM.
 == +3DOS ==
 // {{{
 
+.2016-08-14:
+
+`set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
+"b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
+is problem of fsb2's fb2dsk.
+
 // }}}
 == TR-DOS ==
 // {{{
