@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608042201
+  \ Last modified: 201608141303
 
   \ -----------------------------------------------------------
   \ Description
@@ -20,16 +20,16 @@
 
 ( +3DOS error codes #-1000..#-1014 )
 
-#-1000 \ +3DOS: (Unused error)
-#-1001 \ +3DOS: (Unused error)
-#-1002 \ +3DOS: (Unused error)
-#-1003 \ +3DOS: (Unused error)
-#-1004 \ +3DOS: (Unused error)
-#-1005 \ +3DOS: (Unused error)
-#-1006 \ +3DOS: (Unused error)
-#-1007 \ +3DOS: (Unused error)
-#-1008 \ +3DOS: (Unused error)
-#-1009 \ +3DOS: (Unused error)
+#-1000 \ +3DOS: Drive not ready
+#-1001 \ +3DOS: Disk is write protected
+#-1002 \ +3DOS: Seek fail
+#-1003 \ +3DOS: CRC data error
+#-1004 \ +3DOS: No data
+#-1005 \ +3DOS: Missing address mark
+#-1006 \ +3DOS: Unrecognised disk format
+#-1007 \ +3DOS: Unknown disk error
+#-1008 \ +3DOS: Disk changed whilst +3DOS was using it
+#-1009 \ +3DOS: Unsuitable media for drive
 #-1010 \ +3DOS: (Unused error)
 #-1011 \ +3DOS: (Unused error)
 #-1012 \ +3DOS: (Unused error)
@@ -60,16 +60,8 @@
 #-1031 \ +3DOS: Cannot rename between drives
 #-1032 \ +3DOS: Extent missing (which should be there)
 #-1033 \ +3DOS: Uncached (software error)
-#-1034 \ +3DOS: File too big (trying read/write past 8 MB)
+#-1034 \ +3DOS: File too big (trying to read/write past 8 MB)
 #-1035 \ +3DOS: Disk not bootable (boot sector not acceptable)
-#-1036 \ +3DOS: Drive in use
-#-1037 \ +3DOS: (Unused error)
-#-1038 \ +3DOS: (Unused error)
-#-1039 \ +3DOS: (Unused error)
-#-1040 \ +3DOS: (Unused error)
-#-1041 \ +3DOS: (Unused error)
-#-1042 \ +3DOS: (Unused error)
-#-1043 \ +3DOS: (Unused error)
-#-1044 \ +3DOS: (Unused error)
+#-1036 \ +3DOS: Drive in use (remap/remove with files open)
 
   \ vim: filetype=soloforth
