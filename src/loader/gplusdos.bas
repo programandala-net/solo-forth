@@ -5,6 +5,9 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
+# This file is written in Sinclair BASIC, in Russell Marks' zmakebas
+# format.
+
 # Note: The symbols `ramtop`, `origin`, `cold_entry` and `warm_entry`
 # are converted to their actual values, extracted from the Z80 symbols
 # file by a Forth program called by Makefile.
