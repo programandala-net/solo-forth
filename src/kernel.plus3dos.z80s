@@ -181,19 +181,31 @@ dosior_to_ior.hl:
 ; ----------------------------------------------
   _colon_header sector_id_,'SECTOR-ID'
 
+  ; XXX TODO --
+
 ; doc{
 
 ; sector-id  ( n -- x )
 
 ; Convert the sequential disk sector _n_ to the disk sector id
-; _x_, in the format required by +3DOS.
+; _x_, in the format required by +3DOS: The high byte of _x_
+; is the logical track (0..79 for side 0; ...); its low
+; byte is the logical sector (0..).
 ;
+; ----
+; : sector-id  ( n -- x )
+;   rec/track +             \ the first track is not used
+;   dup sectors/track mod   ( n sector )
+;   swap sectors/track /    ( sector track )
+;   flip or  ;
 ; ----
 ;
 ; }doc
 
-  ; XXX TODO --
-
+  dw rec_slash_track_,plus_  ; the first track is not used
+  dw dup_,rec_slash_track_,mod_
+  dw swap_,rec_slash_track_,slash_
+  dw flip_,or_
   dw exit_
 
 ; ----------------------------------------------
@@ -484,6 +496,25 @@ dos_get_1346.ip_backup equ $+1
   dw drop_ ; discard -1029
   dw open_disk_
   dw exit_
+
+; ----------------------------------------------
+  _code_header ref_xdbp_,'REF-XDPB'
+
+; doc{
+;
+; ref-xdbp ( c -- a ior )
+;
+; Return the address _a_ of the XDPB of drive _c_ ('A'..'P').
+;
+; }doc
+
+  pop hl
+  ld a,l ; fid
+  ld ix,dos_ref_xdpb
+  call dos.preserve_ip
+  push ix
+  ld ix,next ; restore IX
+  jp back_from_dos
 
 endif
 
