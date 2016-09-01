@@ -118,10 +118,10 @@ variable last-locatable  blk/disk 1- last-locatable !
 : located  ( ca len -- block | false )
   delimited  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
-  do  0 i line>string 2over
-      contains if  2drop i unloop exit  then
-      break-key? #-28 ?throw \ "user interrupt"
+  do  0 i line>string 2over contains
+      if  2drop i unloop exit  then  break-key? #-28 ?throw
   loop  2drop 0  ;
+  \ Note: Error #-28 is "user interrupt".
 
   \ doc{
   \
@@ -133,9 +133,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \
   \ }doc
 
-2variable needed-word
-
--->
+2variable needed-word  -->
 
 ( ?located reneeded reneed needed-word [needed] [unneeded] )
 
