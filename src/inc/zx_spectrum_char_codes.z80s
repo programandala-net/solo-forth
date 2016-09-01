@@ -4,8 +4,9 @@
 
 ; 2015-01-11: Start. Created from sources of two projects. That's why there
 ; are synonyms.
-; 2015-01-14: Label fixed.
+; 2015-01-14: Fix label.
 ; 2016-08-13: New label format for chars. First 7 tokens.
+; 2016-09-01: Complete the tokens. Add the UDG.
 
 ; --------------------------------------------------------------
 ; Characters (old format)
@@ -20,17 +21,17 @@ bs_char:                    equ 0x08 ; backspace
 left_char:                  equ 0x08 ; cursor left
 cursor_right_char:          equ 0x09
 right_char:                 equ 0x09 ; cursor right
-cursor_down_char:           equ 0x0a
-down_char:                  equ 0x0a ; cursor down
-cursor_up_char:             equ 0x0b
-up_char:                    equ 0x0b ; cursor up
-delete_left_char:           equ 0x0c
-delete_char:                equ 0x0c ; delete (backspace)
-form_feed_char:             equ 0x0c ; used for printing
-carriage_return_char:       equ 0x0d
-cr_char:                    equ 0x0d ; carriage return (enter key)
-extended_mode_char:         equ 0x0e ; Fuse associates it to the host's Tab key
-graphics_char:              equ 0x0f ; toggle graphics mode
+cursor_down_char:           equ 0x0A
+down_char:                  equ 0x0A ; cursor down
+cursor_up_char:             equ 0x0B
+up_char:                    equ 0x0B ; cursor up
+delete_left_char:           equ 0x0C
+delete_char:                equ 0x0C ; delete (backspace)
+form_feed_char:             equ 0x0C ; used for printing
+carriage_return_char:       equ 0x0D
+cr_char:                    equ 0x0D ; carriage return (enter key)
+extended_mode_char:         equ 0x0E ; Fuse associates it to the host's Tab key
+graphics_char:              equ 0x0F ; toggle graphics mode
 ink_char:                   equ 0x10
 paper_char:                 equ 0x11
 flash_char:                 equ 0x12
@@ -41,8 +42,8 @@ at_char:                    equ 0x16
 tab_char:                   equ 0x17 ; tab (screen only)
 space_char:                 equ 0x20
 sp_char:                    equ 0x20 ; space
-copy_char:                  equ 0x7f ; copyright sign
-copyright_char:             equ 0x7f ; copyright sign
+copy_char:                  equ 0x7F ; copyright sign
+copyright_char:             equ 0x7F ; copyright sign
 
 ; --------------------------------------------------------------
 ; Characters (new format)
@@ -57,17 +58,17 @@ char.bs:                    equ 0x08 ; backspace
 char.left:                  equ 0x08 ; cursor left
 char.cursor_right:          equ 0x09
 char.right:                 equ 0x09 ; cursor right
-char.cursor_down:           equ 0x0a
-char.down:                  equ 0x0a ; cursor down
-char.cursor_up:             equ 0x0b
-char.up:                    equ 0x0b ; cursor up
-char.delete_left:           equ 0x0c
-char.delete:                equ 0x0c ; delete (backspace)
-char.form_feed:             equ 0x0c ; used for printing
-char.carriage_return:       equ 0x0d
-char.cr:                    equ 0x0d ; carriage return (enter key)
-char.extended_mode:         equ 0x0e ; Fuse associates it to the host's Tab key
-char.graphics:              equ 0x0f ; toggle graphics mode
+char.cursor_down:           equ 0x0A
+char.down:                  equ 0x0A ; cursor down
+char.cursor_up:             equ 0x0B
+char.up:                    equ 0x0B ; cursor up
+char.delete_left:           equ 0x0C
+char.delete:                equ 0x0C ; delete (backspace)
+char.form_feed:             equ 0x0C ; used for printing
+char.carriage_return:       equ 0x0D
+char.cr:                    equ 0x0D ; carriage return (enter key)
+char.extended_mode:         equ 0x0E ; Fuse associates it to the host's Tab key
+char.graphics:              equ 0x0F ; toggle graphics mode
 char.ink:                   equ 0x10
 char.paper:                 equ 0x11
 char.flash:                 equ 0x12
@@ -78,16 +79,127 @@ char.at:                    equ 0x16
 char.tab:                   equ 0x17 ; tab (screen only)
 char.space:                 equ 0x20
 char.sp:                    equ 0x20 ; space
-char.copy:                  equ 0x7f ; copyright sign
-char.copyright:             equ 0x7f ; copyright sign
+char.copy:                  equ 0x7F ; copyright sign
+char.copyright:             equ 0x7F ; copyright sign
+
+; --------------------------------------------------------------
+; User Defined Graphics
+
+udg.a: equ 0x90
+udg.b: equ 0x91
+udg.c: equ 0x92
+udg.d: equ 0x93
+udg.e: equ 0x94
+udg.f: equ 0x95
+udg.g: equ 0x96
+udg.h: equ 0x97
+udg.i: equ 0x98
+udg.j: equ 0x99
+udg.k: equ 0x9A
+udg.l: equ 0x9B
+udg.m: equ 0x9C
+udg.n: equ 0x9D
+udg.o: equ 0x9E
+udg.p: equ 0x9F
+udg.q: equ 0xA0
+udg.r: equ 0xA1
+udg.s: equ 0xA2
+udg.t: equ 0xA3
+udg.u: equ 0xA4
 
 ; --------------------------------------------------------------
 ; Tokens
 
-token.cat   equ 207
-token.new   equ 230
-token.rem   equ 234
-token.load  equ 239
-token.list  equ 240
-token.poke  equ 244
-token.save  equ 248
+token.spectrum:          equ 0xA3
+token.play:              equ 0xA4
+token.rnd:               equ 0xA5
+token.inkey_dollar:      equ 0xA6
+token.pi:                equ 0xA7
+token.fn:                equ 0xA8
+token.point:             equ 0xA9
+token.screen_dollar:     equ 0xAA
+token.attr:              equ 0xAB
+token.at:                equ 0xAC
+token.tab:               equ 0xAD
+token.val_dollar:        equ 0xAE
+token.code:              equ 0xAF
+token.val:               equ 0xB0
+token.len:               equ 0xB1
+token.sin:               equ 0xB2
+token.cos:               equ 0xB3
+token.tan:               equ 0xB4
+token.asn:               equ 0xB5
+token.acs:               equ 0xB6
+token.atn:               equ 0xB7
+token.ln:                equ 0xB8
+token.exp:               equ 0xB9
+token.int:               equ 0xBA
+token.sqr:               equ 0xBB
+token.sgn:               equ 0xBC
+token.abs:               equ 0xBD
+token.peek:              equ 0xBE
+token.in:                equ 0xBF
+token.usr:               equ 0xC0
+token.str_dollar:        equ 0xC1
+token.chr_dollar:        equ 0xC2
+token.not:               equ 0xC3
+token.bin:               equ 0xC4
+token.or:                equ 0xC5
+token.and:               equ 0xC6
+token.less_or_equal:     equ 0xC7
+token.greater_or_equal:  equ 0xC8
+token.not_equal:         equ 0xC9
+token.line:              equ 0xCA
+token.then:              equ 0xCB
+token.to:                equ 0xCC
+token.step:              equ 0xCD
+token.def_fn:            equ 0xCE
+token.cat:               equ 0xCF
+token.format:            equ 0xD0
+token.move:              equ 0xD1
+token.erase:             equ 0xD2
+token.open_channel:      equ 0xD3
+token.close_channel:     equ 0xD4
+token.merge:             equ 0xD5
+token.verify:            equ 0xD6
+token.beep:              equ 0xD7
+token.circle:            equ 0xD8
+token.ink:               equ 0xD9
+token.paper:             equ 0xDA
+token.flash:             equ 0xDB
+token.bright:            equ 0xDC
+token.inverse:           equ 0xDD
+token.over:              equ 0xDE
+token.out:               equ 0xDF
+token.lprint:            equ 0xE0
+token.llist:             equ 0xE1
+token.stop:              equ 0xE2
+token.read:              equ 0xE3
+token.data:              equ 0xE4
+token.restore:           equ 0xE5
+token.new:               equ 0xE6
+token.border:            equ 0xE7
+token.continue:          equ 0xE8
+token.dim:               equ 0xE9
+token.rem:               equ 0xEA
+token.for:               equ 0xEB
+token.go_to:             equ 0xEC
+token.go_sub:            equ 0xED
+token.input:             equ 0xEE
+token.load:              equ 0xEF
+token.list:              equ 0xF0
+token.let:               equ 0xF1
+token.pause:             equ 0xF2
+token.next:              equ 0xF3
+token.poke:              equ 0xF4
+token.print:             equ 0xF5
+token.plot:              equ 0xF6
+token.run:               equ 0xF7
+token.save:              equ 0xF8
+token.randomize:         equ 0xF9
+token.if:                equ 0xFA
+token.cls:               equ 0xFB
+token.draw:              equ 0xFC
+token.clear:             equ 0xFD
+token.return:            equ 0xFE
+token.copy:              equ 0xFF
