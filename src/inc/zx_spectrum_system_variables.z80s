@@ -19,6 +19,9 @@
 ; symbols file.
 ;
 ; 2016-08-05: Remove useless comment.
+;
+; 2016-08-15: Add individual bytes of sys_k_state; the second one is addressed
+; by TR-DOS 5.03.
 
 ; --------------------------------------------------------------
 ; ZX Spectrum +3
@@ -170,6 +173,13 @@ sys_tstack:         equ 23551 ; (0x5BFF) (X115)
 ; ZX Spectrum 48K
 
 sys_kstate:      equ 23552 ; (n8) Used in reading the keyboard.
+sys_kstate.1:    equ 23553
+sys_kstate.2:    equ 23554
+sys_kstate.3:    equ 23555
+sys_kstate.4:    equ 23556
+sys_kstate.5:    equ 23557
+sys_kstate.6:    equ 23558
+sys_kstate.7:    equ 23559
 sys_last_k:      equ 23560 ; (nl) Stores newly pressed key.
 sys_last_key:    equ 23560
 sys_repdel:      equ 23561 ; (1) Time (in 50ths of a second
@@ -283,4 +293,5 @@ sys_unused1:     equ 23728 ; (1) Not used.
 sys_unused2:     equ 23729 ; (1) Not used.
 sys_ramtop:      equ 23730 ; (2) Address of last byte of BASIC system area.
 sys_p_ramt:      equ 23732 ; (2) Address of last byte of physical RAM.
+sys_p_ramt.high: equ 23733
 

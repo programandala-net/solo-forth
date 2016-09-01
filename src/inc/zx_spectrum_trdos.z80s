@@ -7,6 +7,8 @@
 
 ; 2016-08-13: Start, from information compiled for Solo Forth
 ; (http://programandala.net/en.program.solo_forth.html).
+;
+; 2016-09-01: Add drive step rate variables.
 
 ; --------------------------------------------------------------
 ; TR-DOS entry points
@@ -60,7 +62,10 @@ trdos_variable.current_drive              equ 23798
 trdos_variable.two_files_drive            equ 23800
 trdos_variable.cat_drive                  equ 23801
 trdos_variable.load_verify_flag           equ 23801
+trdos_variable.drive_a_step_rate          equ 23802
+trdos_variable.drive_b_step_rate          equ 23803
+trdos_variable.drive_c_step_rate          equ 23804
+trdos_variable.drive_d_step_rate          equ 23805
 trdos_variable.last_error                 equ 23824
 trdos_variable.default_drive              equ 23833
-
 

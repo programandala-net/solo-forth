@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608132208
+; Last modified: 201609011340
 
 ; ==============================================================
 ; Description
@@ -99,7 +99,7 @@ trdos.execute_command:
   ld (trdos_variable.last_error),a
   pop af
   call trdos_entry.execute_command
-  ld (22530),bc ; XXX INFORMER
+;  ld (22530),bc ; XXX INFORMER
   ld a,c    ; error code
   and a
   ret
@@ -424,7 +424,6 @@ if 1
 
   ; XXX FIXME -- hang!
 
-
   ld a,(trdos_variable.current_drive)
   ld (trdos_variable.two_files_drive),a
   ld (trdos_variable.cat_drive),a
@@ -438,7 +437,6 @@ if 1
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
   _jp_next
-
 
 endif
 
@@ -494,7 +492,6 @@ if 1
 
   _code_header cat5_,'CAT5'
 
-
   ; XXX FIXME -- no effect
 
   push bc   ; save the Forth IP
@@ -511,13 +508,11 @@ if 1
   ld ix,next  ; restore IX
   _jp_next
 
-
 endif
 
 if 1
 
   _code_header cat6_,'CAT6'
-
 
   push bc   ; save the Forth IP
   ld c,$07
@@ -576,7 +571,6 @@ endif
 if 1
 
   _code_header cat8_,'CAT8'
-
 
   push bc   ; save the Forth IP
 
@@ -649,7 +643,7 @@ endif
 
 ; doc{
 ;
-; set-drive  ( n -- ior )
+; set-drive  ( n -- )
 ;
 ; }doc
 
@@ -674,34 +668,44 @@ endif
   ; dw c_store_
   ; _literal trdos_variable.current_drive
   ; dw c_store_
-  ; dw exit_
 
   ; XXX FIXME -- no effect:
-  dw dup_
-  _literal trdos_variable.default_drive
-  dw c_store_
-  dw dup_
-  _literal trdos_variable.current_drive
-  dw c_store_
-  dw init_drive_
-  dw exit_
+  ; dw dup_
+  ; _literal trdos_variable.default_drive
+  ; dw c_store_
+  ; dw dup_
+  ; _literal trdos_variable.current_drive
+  ; dw c_store_
+  ; dw init_drive_
 
-; ----------------------------------------------
-  _code_header set_drive2_,'SET-DRIVE2'
+if 0
 
-; XXX TMP -- for debugging
+; XXX FIXME -- 2016-08-13: Crash! But the same code works outside
+; Forth, why?
 
-; doc{
+; XXX REMARK -- 2016-08-13: The problem is found in routine $3E08: The
+; step rates of the drives (variables 23802..23805) contain $FF except
+; the first one, which contains $08.
 ;
-; set-drive2  ( n -- )
+; Variable     Drive  From BASIC(1)  From Forth(2)
+; -----------  -----  -------------  -------------
+; 23802 $5CFA  A      $FF            $08
+; 23803 $5CFB  B      $08            $FF
+; 23804 $5CFC  C      $FF            $FF
+; 23805 $5CFD  D      $FF            $FF
 ;
-; }doc
+; 1 = Contents when the code is directly called from BASIC
+; 2 = Contents when `set-drive` is executed
 
-  ; XXX FIXME -- 2016-08-13: Crash! But the same code works outside
-  ; Forth, why?
+; $5CFB is set to 8 at $3E1D (Beta 128 Disk ROM). But then it's
+; modified by ROM 48 at $19F7 (`ldir`), which is part of the RECLAIM
+; routine. The problem seems TR-DOS moves up and down BASIC. But this
+; should not affect the zone above RAMTOP.
 
-  pop hl
-  ld a,l ; drive 0..3
+;  pop hl
+;  ld a,l ; drive 0..3
+
+  ld a,1  ; XXX TMP --
   add a,'A' ; drive 'A'..'D'
   ld (set_drive2.command_line.drive),a
   push bc   ; save the Forth IP
@@ -709,10 +713,10 @@ endif
   push hl
   ld hl,set_drive2.command_line
   ld (sys_ch_add),hl
-  _z80_border_wait 1 ; XXX INFORMER
+  ;_z80_border_wait 1 ; XXX INFORMER
   call trdos_entry.interpret_command
   ; XXX FIXME -- crash before getting here
-  _z80_border_wait 2 ; XXX INFORMER
+  ;_z80_border_wait 2 ; XXX INFORMER
 
   ; XXX INFORMER:
   ; push bc ; error code
@@ -729,6 +733,43 @@ set_drive2.command_line:
 set_drive2.command_line.drive equ $+4
   db token.rem,':*"A"',13
 
+endif
+
+if 0
+
+; doc{
+;
+; set-drive  ( n -- )
+;
+; }doc
+
+  dw dup_,init_drive_,throw_
+  dw dup_
+  _literal trdos_variable.default_drive
+  dw c_store_
+  _literal trdos_variable.current_drive
+  dw c_store_
+
+else
+
+; doc{
+;
+; set-drive  ( n -- ior )
+;
+; }doc
+
+  dw dup_,init_drive_,question_dup_,question_exit_
+  dw dup_
+  _literal trdos_variable.default_drive
+  dw c_store_
+  _literal trdos_variable.current_drive
+  dw c_store_
+  _literal 0
+
+endif
+
+  dw exit_
+
 ; ----------------------------------------------
   _colon_header get_drive_,'GET-DRIVE'
 
@@ -743,13 +784,13 @@ set_drive2.command_line.drive equ $+4
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dot_drive_,'.DRIVE'
+  _colon_header dot_drives_,'.DRIVES'
 
   ; XXX TMP -- for debugging
 
 ; doc{
 ;
-; .drive ( -- )
+; .drives ( -- )
 ;
 ; }doc
 
@@ -801,6 +842,40 @@ set_drive2.command_line.drive equ $+4
 ; 23833  1  = default drive
 
 ; ----------------------------------------------
+  _colon_header dot_step_rates_,'.STEP-RATES'
+
+  ; XXX TMP -- for debugging
+
+; doc{
+;
+; .step-rates ( -- )
+;
+; }doc
+
+  dw cr_
+  dw paren_dot_quote_
+  _string ' Drive A: '
+  _literal trdos_variable.drive_a_step_rate
+  dw dup_,dot_,c_fetch_,dot_
+  dw cr_
+  dw paren_dot_quote_
+  _string ' Drive B: '
+  _literal trdos_variable.drive_b_step_rate
+  dw dup_,dot_,c_fetch_,dot_
+  dw cr_
+  dw paren_dot_quote_
+  _string ' Drive C: '
+  _literal trdos_variable.drive_c_step_rate
+  dw dup_,dot_,c_fetch_,dot_
+  dw cr_
+  dw paren_dot_quote_
+  _string ' Drive D: '
+  _literal trdos_variable.drive_d_step_rate
+  dw dup_,dot_,c_fetch_,dot_
+  dw cr_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header write_mode_,'WRITE-MODE'
 
 ; doc{
@@ -850,7 +925,7 @@ transfer_mode:
   call trdos.execute_command
   _z80_border_wait 1 ; XXX INFORMER
 
-  ld hl, name
+  ld hl,name_and_type
   ld c,trdos_command.copy_from_hl_to_descriptor
   call trdos.execute_command
   jr nz,xxx.exit ; error
@@ -891,12 +966,9 @@ xxx.exit:
 ;  ld bc,0
   jp back_from_dos
 
-
-name:
-  ;defm "4x8fd.biC" ; nombre y tipo del archivo cargado
-  defm "pr64.binC" ; nombre y tipo del archivo cargado
+name_and_type:
+  defm "pr64.binC" 
 
 endif
-
 
 ; vim: filetype=z80:textwidth=64
