@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201609011340
+; Last modified: 201610042357
 
 ; ==============================================================
 ; Description
@@ -51,7 +51,7 @@ if 0
   push bc     ; save the Forth IP
 dos.command equ $+1
   ld c,0      ; DOS command (must be patched before calling)
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
   ld a,c      ; error code
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
@@ -73,7 +73,7 @@ if 1
 dos.command equ $+1
   ld c,0    ; DOS command (must be patched before calling)
   ; _z80_border_wait 3 ; XXX INFORMER
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
   ; _z80_border_wait 4 ; XXX INFORMER
   ld a,c    ; error code
   and a
@@ -96,9 +96,9 @@ trdos.execute_command:
   ; XXX NEW -- experimental
   push af
   xor a
-  ld (trdos_variable.last_error),a
+  ld (trdos_variable.error_code),a
   pop af
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
 ;  ld (22530),bc ; XXX INFORMER
   ld a,c    ; error code
   and a
@@ -297,7 +297,7 @@ if 1
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
   ld c,trdos_command.read_sectors
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
 
   ; XXX FIXME -- when there's no disk in the drive, the call never
   ; returns, and the system hangs.
@@ -372,7 +372,7 @@ endif
 ; }doc
 
 ; Note: this TR-DOS routine stores the drive number in
-; `trdos_variable.current_drive`.
+; `trdos_variable.current_temporary_drive`.
 
   ; XXX FIXME -- when there's no disk in the drive, the system never
   ; returns from the DOS.
@@ -403,9 +403,9 @@ if 1
 
   ld a,trdos_command.cat
   ld (dos.command),a
-  ld a,(trdos_variable.current_drive)
+  ld a,(trdos_variable.current_temporary_drive)
   ld (trdos_variable.two_files_drive),a
-  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.cat_drive_or_read_verify_flag),a
   ld (trdos_variable.default_drive),a
   ld a,2    ; stream: screen
   push bc   ; save the Forth IP
@@ -424,15 +424,15 @@ if 1
 
   ; XXX FIXME -- hang!
 
-  ld a,(trdos_variable.current_drive)
+  ld a,(trdos_variable.current_temporary_drive)
   ld (trdos_variable.two_files_drive),a
-  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.cat_drive_or_read_verify_flag),a
   ld (trdos_variable.default_drive),a
   ld a,2    ; stream: screen
   push bc   ; save the Forth IP
   ld c,trdos_command.cat
   _z80_border_wait 1 ; XXX INFORMER
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
   _z80_border_wait 2 ; XXX INFORMER
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
@@ -450,7 +450,7 @@ if 1
   push bc     ; save the Forth IP
   ld c,trdos_command.cat
   _z80_border_wait 1 ; XXX INFORMER
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
   _z80_border_wait 2 ; XXX INFORMER
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
@@ -468,7 +468,7 @@ if 1
   ld hl,cat.command_line
   ld (sys_ch_add),hl
   _z80_border_wait 1 ; XXX INFORMER
-  call trdos_entry.interpret_command
+  call trdos_entry.interpret_rem_command
   ; XXX FIXME -- hang -- no return here
   _z80_border_wait 2 ; XXX INFORMER
 
@@ -540,12 +540,12 @@ if 1
   ; ld (dos.command),a
 
   ; ld a,0; drive
-  ; ld (trdos_variable.current_drive),a
+  ; ld (trdos_variable.current_temporary_drive),a
 
-  ld a,(trdos_variable.current_drive)
+  ld a,(trdos_variable.current_temporary_drive)
 
   ld (trdos_variable.two_files_drive),a
-  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.cat_drive_or_read_verify_flag),a
   ld (trdos_variable.default_drive),a
   push bc   ; save the Forth IP
   _z80_border_wait 1 ; XXX INFORMER
@@ -554,11 +554,11 @@ if 1
 
   ;XXX REMARK -- this init makes no difference:
   ;ld c,trdos_command.init_drive
-  ;call trdos_entry.execute_command
+  ;call trdos_entry.execute_command_in_c
 
   ld a,2    ; stream: screen
   ld c,trdos_command.cat
-  call trdos_entry.execute_command
+  call trdos_entry.execute_command_in_c
 
   _z80_border_wait 2 ; XXX INFORMER
   pop bc      ; restore the Forth IP
@@ -574,9 +574,9 @@ if 1
 
   push bc   ; save the Forth IP
 
-  ld a,(trdos_variable.current_drive)
+  ld a,(trdos_variable.current_temporary_drive)
   ld (trdos_variable.two_files_drive),a
-  ld (trdos_variable.cat_drive),a
+  ld (trdos_variable.cat_drive_or_read_verify_flag),a
   ld (trdos_variable.default_drive),a
   ;_z80_border_wait 1 ; XXX INFORMER
 
@@ -648,7 +648,7 @@ endif
 ; }doc
 
   ; XXX FIXME -- hang:
-  ;_literal trdos_variable.current_drive
+  ;_literal trdos_variable.current_temporary_drive
   ;dw c_store_
 
   ; XXX FIXME -- no effect:
@@ -666,7 +666,7 @@ endif
   ; dw dup_
   ; _literal trdos_variable.default_drive
   ; dw c_store_
-  ; _literal trdos_variable.current_drive
+  ; _literal trdos_variable.current_temporary_drive
   ; dw c_store_
 
   ; XXX FIXME -- no effect:
@@ -674,7 +674,7 @@ endif
   ; _literal trdos_variable.default_drive
   ; dw c_store_
   ; dw dup_
-  ; _literal trdos_variable.current_drive
+  ; _literal trdos_variable.current_temporary_drive
   ; dw c_store_
   ; dw init_drive_
 
@@ -714,7 +714,7 @@ if 0
   ld hl,set_drive2.command_line
   ld (sys_ch_add),hl
   ;_z80_border_wait 1 ; XXX INFORMER
-  call trdos_entry.interpret_command
+  call trdos_entry.interpret_rem_command
   ; XXX FIXME -- crash before getting here
   ;_z80_border_wait 2 ; XXX INFORMER
 
@@ -747,10 +747,12 @@ if 0
   dw dup_
   _literal trdos_variable.default_drive
   dw c_store_
-  _literal trdos_variable.current_drive
+  _literal trdos_variable.current_temporary_drive
   dw c_store_
 
-else
+endif
+
+if 0
 
 ; doc{
 ;
@@ -762,9 +764,27 @@ else
   dw dup_
   _literal trdos_variable.default_drive
   dw c_store_
-  _literal trdos_variable.current_drive
+  _literal trdos_variable.current_temporary_drive
   dw c_store_
   _literal 0
+
+endif
+
+if 1
+
+; XXX REMARK -- 2016-09-01: New version, based on the disassembly of
+; TR-DOS (project under development)
+
+; doc{
+;
+; set-drive  ( n -- ior )
+;
+; }doc
+
+  dw dup_
+  _literal trdos_variable.default_drive
+  dw c_store_
+  dw init_drive_
 
 endif
 
@@ -779,7 +799,7 @@ endif
 ;
 ; }doc
 
-  _literal trdos_variable.current_drive
+  _literal trdos_variable.current_temporary_drive
   dw c_fetch_
   dw exit_
 
@@ -795,7 +815,7 @@ endif
 ; }doc
 
   dw cr_
-  _literal trdos_variable.current_drive
+  _literal trdos_variable.current_temporary_drive
   dw dup_,dot_,c_fetch_,dot_
   dw paren_dot_quote_
   _string ' current'
@@ -805,7 +825,7 @@ endif
   dw paren_dot_quote_
   _string ' two files'
   dw cr_
-  _literal trdos_variable.cat_drive
+  _literal trdos_variable.cat_drive_or_read_verify_flag
   dw dup_,dot_,c_fetch_,dot_
   dw paren_dot_quote_
   _string ' cat'
@@ -854,22 +874,22 @@ endif
 
   dw cr_
   dw paren_dot_quote_
-  _string ' Drive A: '
+  _string 'Drive A: '
   _literal trdos_variable.drive_a_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw paren_dot_quote_
-  _string ' Drive B: '
+  _string 'Drive B: '
   _literal trdos_variable.drive_b_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw paren_dot_quote_
-  _string ' Drive C: '
+  _string 'Drive C: '
   _literal trdos_variable.drive_c_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
   dw paren_dot_quote_
-  _string ' Drive D: '
+  _string 'Drive D: '
   _literal trdos_variable.drive_d_step_rate
   dw dup_,dot_,c_fetch_,dot_
   dw cr_
@@ -947,7 +967,7 @@ xxx.file_found:
 ;  jr nz,xxx.exit ; error
   _z80_border_wait 4 ; XXX INFORMER
   xor a
-  ld (trdos_variable.load_verify_flag),a ; set load flag
+  ld (trdos_variable.cat_drive_or_read_verify_flag),a ; set load flag
   ld hl,16384      ; load address
   ld a, $ff        ; take length from the directory
   ld c,trdos_command.read_file
