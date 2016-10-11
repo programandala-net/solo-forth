@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608112113
+; Last modified: 201610111946
 
 include version.z80s
 
@@ -7035,6 +7035,11 @@ simple_accept.end
 ;
 ; }doc
 
+  ; XXX INFORMER {{{
+  ; dw paren_dot_quote_
+  ; _string "REFILL "
+  ; XXX INFORMER }}}
+
   dw loading_question_ ; input source is a block?
   dw zero_branch_,refill.not_loading ; if not, branch
 
@@ -9698,6 +9703,18 @@ block.end:
 ; ----
 ;
 ; }doc
+
+  ; XXX INFORMER {{{
+  ; _literal '['
+  ; dw emit_
+  ; dw dup_,base_,fetch_
+  ; _literal 10
+  ; dw base_,store_
+  ; dw swap_,dot_,base_,store_
+  ; _literal ']'
+  ; dw emit_
+  ; XXX INFORMER }}}
+
 
   dw blk_,store_,to_in_,off_
   dw exit_

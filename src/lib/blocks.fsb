@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605132325
+  \ Last modified: 201610111953
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,10 @@
   \ 2016-04-29: Add `lineload` and `lineblock>source`.
   \ 2016-05-02: Join two blocks to save space.
   \ 2016-05-13: Add `load-app`.
+  \ 2016-10-04: Start a new version of `load-app`,
+  \ compatible with `[if]` and other words that use `refill`.
+  \ 2016-10-11: Finish the new version of `load-app`,
+  \ compatible with `[if]` and other words that use `refill`.
 
 ( ?--> update flush thru )
 
@@ -235,8 +239,7 @@ need ?( [unneeded] lineload ?(
   \
   \ }doc
 
-[unneeded] load-app ?( need locate
-variable loading-app
+[unneeded] load-app ?( need locate  variable loading-app
 
   \ doc{
   \
@@ -261,10 +264,17 @@ variable loading-app
   \
   \ }doc
 
+  \ : load-app  ( "name" -- )
+  \   loading-app on
+  \   blocks locate ?do   loading-app @ 0= ?leave  i load
+  \                 loop  end-app  ; ?)
+  \   \ XXX OLD -- incompatible with words that use `refill`
+
 : load-app  ( "name" -- )
-  loading-app on
-  blocks locate ?do   loading-app @ 0= ?leave  i load
-                loop  end-app  ; ?)
+  loading-app on  locate blk !
+  begin   loading-app @  blk @ blocks <  and  while
+          blk @ (load) 1 blk +!
+  repeat  end-app  ; ?)
 
   \ doc{
   \
