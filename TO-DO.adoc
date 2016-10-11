@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-08-11
+:revdate: 2016-10-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -819,6 +819,11 @@ is problem of fsb2's fb2dsk.
 // }}}
 == TR-DOS ==
 // {{{
+
+.2016-09-01:
+
+`read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
+transfer-sectors` hangs. `0 set-drive` or `1 set-drive` makes no difference.
 
 .2016-08-11:
 

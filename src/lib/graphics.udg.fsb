@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604231622
+  \ Last modified: 201610111959
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,10 +29,14 @@
   \ Improve the documentation.
   \
   \ 2016-04-24: Add `udg[` and `0udg[`.
+  \
+  \ 2016-10-11: Add `udg-row[`.
 
 ( 0udg! udg! 0udg: udg: )
 
 need os-udg
+
+[defined] first-udg ?\ #128 constant first-udg
 
 : 0udg!  ( b0..b7 n -- )
   8 * os-udg @ + dup 7 + do  i c!  -1 +loop  ;
@@ -48,7 +52,7 @@ need os-udg
   \
   \ }doc
 
-: udg!  ( b0..b7 c -- )  128 - 0udg!  ;
+: udg!  ( b0..b7 c -- )  first-udg - 0udg!  ;
 
   \ doc{
   \
@@ -93,14 +97,15 @@ need os-udg
 
 need os-udg
 
-variable first-udg
+[defined] first-udg ?\ #128 constant first-udg
+variable udg0
 variable current-udg
 variable current-scan
 
 [defined] binary ?\  : binary  ( -- )  2 base !  ;
 
 : 0udg[  ( b -- )
-  dup first-udg !  current-udg !  current-scan off  binary  ;
+  dup udg0 !  current-udg !  current-scan off  binary  ;
 
   \ doc{
   \
@@ -113,7 +118,7 @@ variable current-scan
   \
   \ }doc
 
-: udg[  ( c -- )  128 - 0udg[  ;
+: udg[  ( c -- )  first-udg - 0udg[  ;
 
   \ doc{
   \
@@ -156,7 +161,7 @@ variable current-scan
   \ }doc
 
 : || ( b -- )
-  |  1 current-scan +!  first-udg @ current-udg !  ;
+  |  1 current-scan +!  udg0 @ current-udg !  ;
 
   \ doc{
   \
@@ -180,6 +185,149 @@ variable current-scan
   \ defining UDGs.
   \
   \ See: `0udg[`, `udg[`, `|`, `||`.
+  \
+  \ }doc
+
+( udg-block[ )
+
+  \ XXX UNDER DEVELOPMENT
+  \ 2016-10-04
+
+need s=
+
+: udg-block[  ( c "ccc" -- )
+  begin   parse-name 2dup s" ]udg-block" compare
+  while   dup 8 mod dup abort" Wrong scan length"
+
+  repeat  ;
+
+: ]udg-block ;
+
+  \ doc{
+  \
+  \ udg-block[  ( c "ccc" -- )
+  \
+  \ Start a set of UDG definitions that form a sprite, from UDG
+  \ character _c_ (128..255).
+
+  \ Usage example:
+  \
+  \ ----
+  \ 140 udg-block[
+  \
+  \ 0011110000111100001111000011110000111100
+  \ 0111111001111110011111100111111001011110
+  \ 1111111111111111111111111011111110111111
+  \ 1111111111111111101111111011111111111111
+  \ 1111111110111111101111111111111111111111
+  \ 1100111111011111111111111111111111111111
+  \ 0111111001111110011111100111111001111110
+  \ 0011110000111100001111000011110000111100
+  \
+  \ ]udg-block
+  \ ----
+  \
+  \ }doc
+
+( udg-row[ )
+
+need os-udg  need evaluate
+[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+
+8 constant udg-height  8 constant udg-width
+  \ height in bytes (scans)
+  \ width in pixels
+
+variable udg-row-height  variable udg-row-width
+  \ height in scans
+  \ width in characters
+
+variable udg-row-first-udg
+
+: ?block-scan-length  ( n -- )
+  dup udg-width mod abort" Wrong block scan length"
+  udg-width / udg-row-width @ ?dup
+  if    <> abort" Wrong block width"
+          \ not the first scan, so check the width
+  else  udg-row-width !  then  ;
+          \ first scan, so save the width
+
+: udg-row-current-row  ( -- n )
+  udg-row-height @ udg-height /  ;
+
+: udg-current-scan  ( -- n )
+  udg-row-height @ udg-height mod  ;  -->
+
+( udg-row[ )
+
+[defined] first-udg ?\ #128 constant first-udg
+
+: >udg-scan  ( n -- a )
+  udg-height * udg-current-scan +
+  udg-row-first-udg @ first-udg - udg-height * +  os-udg @ +  ;
+  \ Convert column _n_ of the current UDG row to address _a_
+  \ of the scan of the current UDG.
+
+: udg-scan!  ( b n -- )  >udg-scan c!  ;
+  \ Store UDG scan _b_, which is at column _n_ of the current UDG
+  \ block.
+
+: udg-row-scan  ( ca len -- )
+  base @ >r binary  dup ?block-scan-length
+  dup udg-width / 0 do  over udg-width
+    evaluate i udg-scan!  udg-width /string
+  loop  2drop  r> base !  1 udg-row-height +!  ;
+  \ Manage a UDG row scan _ca len_, extracting the individual
+  \ UDG scans from it.
+
+: ]udg-row  ( ca len -- )
+  2drop  udg-row-height @ udg-height <>
+  abort" The height of the UDG row is wrong"  ;
+  \ End a UDG row. Check its height.
+
+: udg-row-scan?  ( ca len -- f )  s" ]udg-row" compare 0<>  ;
+  \ Is the string _ca len_ a UDG row scan
+  \ instead of the end of the UDG row?
+
+-->
+
+( udg-row[ )
+
+: parse-udg-row-scan  ( "ccc" -- ca len )
+  begin   parse-name dup 0=
+  while   2drop refill 0= abort" UDG row scan is missing"
+  repeat  ;
+
+: udg-row[  ( c "ccc" -- )
+  udg-row-first-udg !  udg-row-height off  udg-row-width off
+  begin   parse-udg-row-scan 2dup udg-row-scan?
+  while   udg-row-scan
+  repeat  ]udg-row  ;
+
+  \ doc{
+  \
+  \ udg-row[  ( c "ccc" -- )
+  \
+  \ Start a UDG row (a graphic formed by a row of UDG). Parse
+  \ its scans, extract the individual UDG scans and store them
+  \ starting from UDG code _c_ (128..255).
+
+  \ Usage example:
+  \
+  \ ----
+  \ 140 udg-row[
+  \
+  \ 0011110000111100001111000011110000111100
+  \ 0111111001111110011111100111111001011110
+  \ 1111111111111111111111111011111110111111
+  \ 1111111111111111101111111011111111111111
+  \ 1111111110111111101111111111111111111111
+  \ 1100111111011111111111111111111111111111
+  \ 0111111001111110011111100111111001111110
+  \ 0011110000111100001111000011110000111100
+  \
+  \ ]udg-row
+  \ ----
   \
   \ }doc
 
