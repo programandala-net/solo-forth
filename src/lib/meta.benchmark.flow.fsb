@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051249
+  \ Last modified: 201610121859
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,7 @@
   \ Latest changes
 
   \ 2016-08-05: Compact the code to save one block.
+  \ 2016-10-12: Add `exec-bench`.
 
 ( case-benchs )
 
@@ -231,3 +232,44 @@ need bench{
 
   \ vim: filetype=soloforth
 
+( exec-bench )
+
+  \ 2016-10-12
+  \
+  \ This bench compares the execution time of executing two
+  \ pieces of code depending on a flag, using three methods:
+  \
+  \ - A conditional structure with `else`
+  \ - A conditional structure with `exit` instead of `else`
+  \ - An execution table that uses the flag as offset
+
+need bench{
+
+: 7border  ( -- )  7 border  ;  : 2border  ( -- )  2 border  ;
+
+' 7border ,  here  ' 2border ,  constant execution-table
+
+: do-table  ( f -- )  cells execution-table + perform  ;
+
+: do-cond-else  ( f -- )  if  7 border  else  2 border  then  ;
+
+: do-cond-exit  ( f -- )  if  7 border exit  then  2 border  ;
+
+: exec-bench  ( n -- )
+  dup  cr ." Conditional structure with else: "  bench{  0 do
+            true do-cond-else false do-cond-else
+          loop  }bench.
+  dup  cr ." Conditional structure with exit: "  bench{  0 do
+            true do-cond-exit false do-cond-exit
+          loop  }bench.
+       cr ." Execution table:       "  bench{  0 do
+            true do-table false do-table  loop  }bench.  ;
+
+  \         Frames
+  \         -------------------------------------------------
+  \  Times  Conditional+else Conditional+exit Execution table
+  \  -----  ---------------- ---------------- ---------------
+  \    10                  1                0               0
+  \   100                  2                2               4
+  \  1000                 26               24              40
+  \ 10000                252              239             395
