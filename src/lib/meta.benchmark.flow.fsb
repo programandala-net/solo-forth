@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610121859
+  \ Last modified: 201610121913
 
   \ -----------------------------------------------------------
   \ Description
@@ -256,14 +256,14 @@ need bench{
 : do-cond-exit  ( f -- )  if  7 border exit  then  2 border  ;
 
 : exec-bench  ( n -- )
-  dup  cr ." Conditional structure with else: "  bench{  0 do
+  dup  cr ." Conditional structure with else:" cr bench{  0 do
             true do-cond-else false do-cond-else
           loop  }bench.
-  dup  cr ." Conditional structure with exit: "  bench{  0 do
+  dup  cr ." Conditional structure with exit:" cr bench{  0 do
             true do-cond-exit false do-cond-exit
           loop  }bench.
-       cr ." Execution table:       "  bench{  0 do
-            true do-table false do-table  loop  }bench.  ;
+       cr ." Execution table:" cr bench{  0 do
+            true do-table false do-table  loop  }bench. cr  ;
 
   \         Frames
   \         -------------------------------------------------
