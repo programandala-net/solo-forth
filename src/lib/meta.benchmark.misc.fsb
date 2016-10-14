@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051241
+  \ Last modified: 201610140205
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,9 @@
   \ `2`). Combine previous code.
   \
   \ 2016-08-05: Combine some blocks in order to save space.
+  \
+  \ 2016-10-14: Add new benchmarks for fetching variables and
+  \ double variables.
 
 ( number-base-bench )
 
@@ -179,38 +182,64 @@ defer (fill)
   \ 01000  1693  1795    898
   \ 30000 50770 53863  26933
 
-( value-bench 2value-bench )
+( value-bench 2value-bench variable-bench 2variable-bench )
 
-need frames@  need reset-frames
+  \ This benchmark compares the time needed to get the contents
+  \ of values and variables.
 
-0 value v1
+  \ 2016-10-14: Update. Add `variable-bench` and
+  \ `2variable-bench`.
 
-: value-bench  ( n -- )
-  reset-frames  0 do  v1 drop  loop  frames@ cr d.  ;
+need value  need 2value  need bench{  need }bench.
 
-0. 2value v2
+0 value val1  : value-bench  ( n -- )
+                bench{  0 do  val1 drop  loop  }bench.  ;
 
-: 2value-bench  ( n -- )
-  reset-frames  0 do  v2 2drop  loop  frames@ cr d.  ;
+0. 2value val2  : 2value-bench  ( n -- )
+                  bench{  0 do  val2 2drop  loop  }bench.  ;
+
+variable var1  : variable-bench  ( n -- )
+                 bench{  0 do  var1 @ drop  loop  }bench.  ;
+
+2variable var2  : 2variable-bench  ( n -- )
+                  bench{  0 do  var2 2@ 2drop  loop  }bench.  ;
+
+: run  ( n -- )
+  cr dup ." value     " value-bench cr
+     dup ." 2value    " 2value-bench cr
+     dup ." variable  " variable-bench cr
+         ." 2variable " 2variable-bench cr  ;
+
+  \ Date            Times Frames (1 frame = 50th of second)
+  \ --------------  ----- ---------------------------------
+  \                           value   2value variable 2variable
+  \                       --------- -------- -------- ---------
+  \ 2016-10-14 (1)   1000         6        6        6         7
+  \                 10000        57       64       64        73
+  \                 65535       371      423      418       476
+
+
+  \ Notes:
+  \ (1) Version 0.10.0-pre.79+20161014.
 
 ( to-value-bench to-2value-bench 2to-2value-bench )
 
-need frames@  need reset-frames
+need value  need 2value  need bench{  need }bench.
 
 0 value v1
 
 : to-value-bench  ( n -- )
-  reset-frames  0 do  0 to v1  loop  frames@ cr d.  ;
+  bench{  0 do  0 to v1  loop  }bench.  ;
 
 0. 2value v2
 
 : to-2value-bench  ( n -- )
-  reset-frames  0 do  0. to v2  loop  frames@ cr d.  ;
+  bench{  0 do  0. to v2  loop  }bench.  ;
 
 0. 2value v2
 
 : 2to-2value-bench  ( n -- )
-  reset-frames  0 do  0. 2to v2   loop  frames@ cr d.  ;
+  bench{  0 do  0. 2to v2   loop  }bench.  ;
 
 ( rshift-bench lshift-bench )
 
@@ -866,25 +895,31 @@ need bench{  need }bench.
   dup ." literal       " literal-bench cr
       ." cliteral      " cliteral-bench cr  ;
 
-  \ Date        Times Frames (1 frame = 50th of second)
-  \ ----------  ----- -------------------------------------
-  \                   const. cconst. code const. lit. clit.
-  \                   ------ ------- ----------- ---- -----
+  \ Date            Times Frames (1 frame = 50th of second)
+  \ --------------- ----- -------------------------------------
+  \                        const. cconst. code const. lit. clit.
+  \                       ------ ------- ----------- ---- -----
   \
-  \ 2015 (1)    32000            251         236
+  \ 2015 (1)        32000            251         236
   \
-  \ 2015-02-16   1000      6                        5
-  \             52000    307                      284
-  \             65535    386                      358
+  \ 2015-02-16       1000      6                        5
+  \                 52000    307                      284
+  \                 65535    386                      358
   \
-  \ 2016-05-31  32000    189     187         161  173   169
-  \             65535    387     383         330  355   346
-  \ (2)         65535    371     366         330  355   346
+  \ 2016-05-31      32000    189     187         161  173   169
+  \                 65535    387     383         330  355   346
+  \ (2)             65535    371     366         330  355   346
+  \
+  \ 2016-10-14 (3)   1000      6
+  \                 10000     57
+  \                 52000    294
+  \                 65535    371     366         330  355   346
 
   \ Notes:
   \ (1) With the old fig-Forth `do loop` structure.
   \ (2) Same date, after improving `constant` and `cconstant`
   \     (version 0.10.0-pre.12+20160531).
+  \ (3) Version 0.10.0-pre.79+20161014.
 
 ( d*-bench )
 
