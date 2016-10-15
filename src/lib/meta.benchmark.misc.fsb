@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610140205
+  \ Last modified: 201610151316
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,8 @@
   \
   \ 2016-10-14: Add new benchmarks for fetching variables and
   \ double variables.
+  \
+  \ 2016-10-15: Add `fetch-bench`.
 
 ( number-base-bench )
 
@@ -217,6 +219,46 @@ variable var1  : variable-bench  ( n -- )
   \ 2016-10-14 (1)   1000         6        6        6         7
   \                 10000        57       64       64        73
   \                 65535       371      423      418       476
+
+
+  \ Notes:
+  \ (1) Version 0.10.0-pre.79+20161014.
+
+( fetch-bench )
+
+  \ This benchmark compares the time needed to get the contents
+  \ of values and variables.
+
+  \ 2016-10-15: Start.
+
+need value  need cvalue  need cvariable
+need bench{  need }bench.
+
+0 value val  : value-bench  ( n -- )
+                bench{  0 do  val drop  loop  }bench.  ;
+
+0 cvalue cval  : cvalue-bench  ( n -- )
+                  bench{  0 do  cval drop  loop  }bench.  ;
+
+variable var  : variable-bench  ( n -- )
+                 bench{  0 do  var @ drop  loop  }bench.  ;
+
+cvariable cvar  : cvariable-bench  ( n -- )
+                  bench{  0 do  cvar c@ drop  loop  }bench.  ;
+
+: run  ( n -- )
+  cr dup ." value     " value-bench cr
+     dup ." cvalue    " cvalue-bench cr
+     dup ." variable  " variable-bench cr
+         ." cvariable " cvariable-bench cr  ;
+
+  \ Date            Times Frames (1 frame = 50th of second)
+  \ --------------  ----- ---------------------------------
+  \                           value   cvalue variable cvariable
+  \                       --------- -------- -------- ---------
+  \ 2016-10-15 (1)   1000         6        5        6         6
+  \                 10000        57       56       64        63
+  \                 65535       371      366      418       413
 
 
   \ Notes:
@@ -1570,5 +1612,6 @@ need >body  need bench{  need }bench.
   \  1000         15       15       23       20       15
   \ 10000        149      148      230      198      150
   \ 65535        979      969     1507     1294      978
+
 
   \ vim: filetype=soloforth
