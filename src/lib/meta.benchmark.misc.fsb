@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610151407
+  \ Last modified: 201610151612
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,7 +55,8 @@
   \ 2016-10-14: Add new benchmarks for fetching variables and
   \ double variables.
   \
-  \ 2016-10-15: Add `fetch-bench` and `set-pixel-bench`.
+  \ 2016-10-15: Add `fetch-bench`, `set-pixel-bench`,
+  \ `pixels-bench`.
 
 ( number-base-bench )
 
@@ -1615,7 +1616,7 @@ need >body  need bench{  need }bench.
 
 ( set-pixel-bench )
 
-need bench{  need }bench.
+need bench{  need }bench  need bench.
 need slow-(pixel-addr)  need fast-(pixel-addr)  need set-pixel
 need j
 
@@ -1625,7 +1626,7 @@ need j
   }bench  ;
 
 : mode  ( xt -- )  ['] (pixel-addr) defer!  ;
-: slow  ( -- )  ['] slow-(pixel-addr) mode ;
+: slow  ( -- )  ['] slow-(pixel-addr) mode  ;
 : fast  ( -- )  ['] fast-(pixel-addr) mode  ;
 
 : run  ( -- )
@@ -1636,11 +1637,41 @@ need j
 
   \ Date            Frames (1 frame = 50th of second)
   \ --------------  ---------------------------------
-  \                 slow set-pixel slow set-pixel
+  \                 slow set-pixel fast set-pixel
   \                 -------------- --------------
   \ 2016-10-15 (1)      683 (1.00)     682 (0.99)
 
   \ Notes:
   \ (1) Version 0.10.0-pre.80+20161015.
+
+( pixels-bench )
+
+need bench{  need }bench  need bench.
+need slow-pixels  need fast-pixels
+
+: garbage  ( -- )  0 16384 6144 move  ;
+  \ Fill the screen bitmap with the start of the ROM.
+
+: pixels-bench  ( -- d )
+  cls garbage bench{ pixels }bench rot drop  ;
+
+: mode  ( xt -- )  ['] pixels defer!  ;
+: slow  ( -- )  ['] slow-pixels mode  ;
+: fast  ( -- )  ['] fast-pixels mode  ;
+
+: run  ( -- )
+  fast pixels-bench slow pixels-bench cls
+  ." Results of pixels in frames:" cr
+  ." slow-pixels:" bench. cr
+  ." fast-pixels:" bench. cr  ;
+
+  \ Date            Frames (1 frame = 50th of second)
+  \ --------------  ---------------------------------
+  \                 slow-pixels fast pixels
+  \                 ----------- -----------
+  \ 2016-10-15 (1)    37 (1.00)   36 (0.97)
+
+  \ Notes:
+  \ (1) Version 0.10.0-pre.81+20161015.
 
   \ vim: filetype=soloforth
