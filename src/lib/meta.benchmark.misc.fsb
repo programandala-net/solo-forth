@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610151316
+  \ Last modified: 201610151407
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,7 +55,7 @@
   \ 2016-10-14: Add new benchmarks for fetching variables and
   \ double variables.
   \
-  \ 2016-10-15: Add `fetch-bench`.
+  \ 2016-10-15: Add `fetch-bench` and `set-pixel-bench`.
 
 ( number-base-bench )
 
@@ -1613,5 +1613,34 @@ need >body  need bench{  need }bench.
   \ 10000        149      148      230      198      150
   \ 65535        979      969     1507     1294      978
 
+( set-pixel-bench )
+
+need bench{  need }bench.
+need slow-(pixel-addr)  need fast-(pixel-addr)  need set-pixel
+need j
+
+: set-pixel-bench  ( -- d )
+  bench{
+    192 0 do  256 0 do  i j set-pixel  loop  loop
+  }bench  ;
+
+: mode  ( xt -- )  ['] (pixel-addr) defer!  ;
+: slow  ( -- )  ['] slow-(pixel-addr) mode ;
+: fast  ( -- )  ['] fast-(pixel-addr) mode  ;
+
+: run  ( -- )
+  cls fast set-pixel-bench cls slow set-pixel-bench cls
+  ." Results of set-pixel in frames:" cr
+  ." slow-(pixel-addr):" bench. cr
+  ." fast-(pixel-addr):" bench. cr  ;
+
+  \ Date            Frames (1 frame = 50th of second)
+  \ --------------  ---------------------------------
+  \                 slow set-pixel slow set-pixel
+  \                 -------------- --------------
+  \ 2016-10-15 (1)      683 (1.00)     682 (0.99)
+
+  \ Notes:
+  \ (1) Version 0.10.0-pre.80+20161015.
 
   \ vim: filetype=soloforth
