@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610151612
+  \ Last modified: 201610161251
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,8 @@
   \
   \ 2016-10-15: Add `fetch-bench`, `set-pixel-bench`,
   \ `pixels-bench`.
+  \
+  \ 2016-10-16: Add `store-bench`.
 
 ( number-base-bench )
 
@@ -236,13 +238,13 @@ need value  need cvalue  need cvariable
 need bench{  need }bench.
 
 0 value val  : value-bench  ( n -- )
-                bench{  0 do  val drop  loop  }bench.  ;
+               bench{  0 do  val drop  loop  }bench.  ;
 
 0 cvalue cval  : cvalue-bench  ( n -- )
-                  bench{  0 do  cval drop  loop  }bench.  ;
+                 bench{  0 do  cval drop  loop  }bench.  ;
 
 variable var  : variable-bench  ( n -- )
-                 bench{  0 do  var @ drop  loop  }bench.  ;
+                bench{  0 do  var @ drop  loop  }bench.  ;
 
 cvariable cvar  : cvariable-bench  ( n -- )
                   bench{  0 do  cvar c@ drop  loop  }bench.  ;
@@ -254,7 +256,7 @@ cvariable cvar  : cvariable-bench  ( n -- )
          ." cvariable " cvariable-bench cr  ;
 
   \ Date            Times Frames (1 frame = 50th of second)
-  \ --------------  ----- ---------------------------------
+  \ --------------  ----- -------------------------------------
   \                           value   cvalue variable cvariable
   \                       --------- -------- -------- ---------
   \ 2016-10-15 (1)   1000         6        5        6         6
@@ -264,6 +266,46 @@ cvariable cvar  : cvariable-bench  ( n -- )
 
   \ Notes:
   \ (1) Version 0.10.0-pre.79+20161014.
+
+( store-bench )
+
+  \ This benchmark compares the time needed to store into
+  \ values and variables.
+
+  \ 2016-10-16: Start.
+
+need value  need cvalue  need cvariable
+need bench{  need }bench.
+
+0 value val  0 cvalue cval  variable var  cvariable cvar  
+
+: value-bench  ( n -- )
+  bench{  0 do  i to val  loop  }bench.  ;
+
+: cvalue-bench  ( n -- )
+  bench{  0 do  i cto cval  loop  }bench.  ;
+
+: variable-bench  ( n -- )
+  bench{  0 do  i var !  loop  }bench.  ;
+
+: cvariable-bench  ( n -- )
+  bench{  0 do  i cvar c!  loop  }bench.  ;
+
+: run  ( n -- )  cr dup ." value     " value-bench cr
+                    dup ." cvalue    " cvalue-bench cr
+                    dup ." variable  " variable-bench cr
+                        ." cvariable " cvariable-bench cr  ;
+
+  \ Date            Times Frames (1 frame = 50th of second)
+  \ --------------  ----- -------------------------------------
+  \                           value   cvalue variable cvariable
+  \                       --------- -------- -------- ---------
+  \ 2016-10-16 (1)   1000         9        8        8         8
+  \                 10000        87       84       81        79
+  \                 65535       568      552      532       519
+
+  \ Notes:
+  \ (1) Version 0.10.0-pre.84+20161015.
 
 ( to-value-bench to-2value-bench 2to-2value-bench )
 
