@@ -146,3 +146,5 @@ need x@  need >x  need xpick  need xover
 : .x  ( -- )  xdepth dup xdepth. if  (.x)  then  ;
   \ Display the number of items on the current xstack, followed
   \ by a list of the items, if any; TOS is the right-most item.
+
+  \ vim: filetype=soloforth

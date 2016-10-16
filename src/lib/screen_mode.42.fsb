@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201608111612
+  \ Last modified: 201610161048
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,7 @@
   \ Fix: `need mode32` was missing.
   \ 2016-08-11: Rename the filenames of the driver and the
   \ font.
+  \ 2016-10-16: Typo.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -107,6 +108,6 @@ need columns  need rows  need set-font
   ['] (at-xy) ['] at-xy defer!
   [ 64600 256 - ] literal set-font 63900  ;
   \ Set the 42 cpl font and `at-xy`;
-  \ Return the address of the output routine.
+  \ return the address of the output routine.
 
   \ vim: filetype=soloforth
