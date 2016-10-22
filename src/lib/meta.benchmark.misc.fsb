@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610161251
+  \ Last modified: 201610161627
 
   \ -----------------------------------------------------------
   \ Description
@@ -993,7 +993,7 @@ need bench{  need }bench.
   \
   \ 2016-05-31      32000    189     187         161  173   169
   \                 65535    387     383         330  355   346
-  \ (2)             65535    371     366         330  355   346
+  \ 2016-05-31 (2)  65535    371     366         330  355   346
   \
   \ 2016-10-14 (3)   1000      6
   \                 10000     57
@@ -1002,7 +1002,7 @@ need bench{  need }bench.
 
   \ Notes:
   \ (1) With the old fig-Forth `do loop` structure.
-  \ (2) Same date, after improving `constant` and `cconstant`
+  \ (2) After improving `constant` and `cconstant`
   \     (version 0.10.0-pre.12+20160531).
   \ (3) Version 0.10.0-pre.79+20161014.
 

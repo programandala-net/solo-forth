@@ -3,14 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604082315
+  \ Last modified: 201610181359
 
   \ -----------------------------------------------------------
   \ Description
 
   \ Pseudo-random number generators.
   \
-  \ See benchmark results in <development_benchmarks.rng.fsb>.
+  \ See benchmark results in <meta.benchmark.rng.fsb>.
 
   \ -----------------------------------------------------------
   \ Author
@@ -23,6 +23,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-10-18: Update the name of the benchmarks library
+  \ module.
 
 ( rnd random )
 
