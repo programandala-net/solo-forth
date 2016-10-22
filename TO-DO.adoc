@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-10-15
+:revdate: 2016-10-22
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -12,7 +12,7 @@
 .2016-08-11:
 
 Remove the 64 cpl font from the library (4 blocks), and use the binary file
-(336 bytes) instead?
+(336 bytes) instead? Or provide the file as an alternative.
 
 .2016-08-09:
 
@@ -65,7 +65,6 @@ minus_one_equals.hl:
   ; 11 B
 
 ----
-
 
 And an alias `true=` could be defined.
 
@@ -125,7 +124,7 @@ Factor `new-needed-word  2dup undefined?`.
 
 .2016-05-17:
 
-Version 0.10.0: Improve the search order words, after Forth-2012.
+Improve the search order words, after Forth-2012.
 
 .2016-05-17:
 
@@ -133,7 +132,7 @@ Add conditional compilation to the `user` module.
 
 .2016-05-13:
 
-Version 0.11.0: Convert the sample games to .fs.
+Convert the sample games to .fs.
 
 .2016-05-13:
 
@@ -210,6 +209,11 @@ Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
 // }}}
 == Compilation ==
 // {{{
+
+.2016-10-22:
+
+16 KiB for the headers is not enough in some cases.
+Make a second bank usable...
 
 .2016-05-31:
 
@@ -851,3 +855,7 @@ Write a program in Gforth to create an empty TRD disk image in
 .2016-08-01:
 
 Rename `sound:` to `sound` and make the sounds sound when executed.
+
+.2016-10-10:
+
+Finish the conversion of 128K sound explosions. More details in the source.
