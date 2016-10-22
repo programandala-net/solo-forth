@@ -1,15 +1,23 @@
 = Solo Forth README
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-10-12
+:revdate: 2016-10-22
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 == Description
 
-Solo Forth is a Forth system for ZX Spectrum 128 and later models.
-It's focused on development of Forth programs for this platform, but
-using modern development tools.
+Solo Forth is a modern Forth system for ZX Spectrum 128 and later
+models.
+
+Solo Forth is focused on cross development of Forth programs for the
+platform, using a ZX Spectrum emulator and all modern development
+tools provided by the host OS.
+
+Solo Forth could be used also to write Forth programs using its own
+block editor, on a ZX Spectrum emulator or the real machine (provided
+the disk images are converted to actual disks).  But it's not what
+Solo Forth was developed for.
 
 Home page: http://programandala.net/en.program.solo_forth.html
 
@@ -19,7 +27,7 @@ The
 http://programandala.net/en.program.solo_forth.history.html[development
 history] started on 2015-05-30.
 
-As of 2016-10-12 Solo Forth is under active development. It's very
+As of 2016-10-22 Solo Forth is under active development. It's very
 usable and stable on G+DOS, and it's already used to develop some
 projects in Forth.
 
@@ -95,7 +103,7 @@ In order to use the library disk, follow these steps:
 3. Type `need name` in Forth, were "name" is the name of the word or
    tool you want to load from the library.
 
-=== ZX Spectrum +3
+=== ZX Spectrum +3 (or ZX Spectrum +3e)
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3.
 2. "Insert" the file <disks/plus3dos/disk0.180.dsk> as disk A of the
@@ -110,13 +118,9 @@ almost useless on +3DOS.
 
 If you modify the kernel or the library, you need to build the system.
 
-See the requirements in the header of the Makefile. Then enter the
-project directory and use the following command to build the disk
-images for every supported DOS:
-
-----
-make
-----
+See the requirements listed in the header of the Makefile and install
+the required programs. Then enter the project directory and use the
+`make` command to build the disk images for every supported DOS.
 
 Alternatively, you can build only the disk images of one DOS:
 
