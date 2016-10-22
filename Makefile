@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201608141323
+# Last modified: 201610222038
 
 # ==============================================================
 # Author
@@ -82,8 +82,10 @@ gplusdos: \
 	disks/gplusdos/disk0.mgt \
 	disks/gplusdos/disk1_lib.mgt \
 	disks/gplusdos/disk2_lib+games.mgt \
-	disks/gplusdos/disk3_lib+benchmarks.mgt \
-	disks/gplusdos/disk4_lib+tests.mgt
+	disks/gplusdos/disk3_lib+misc_benchmarks.mgt \
+	disks/gplusdos/disk4_lib+rng_benchmarks.mgt \
+	disks/gplusdos/disk5_lib+flow_benchmarks.mgt \
+	disks/gplusdos/disk6_lib+tests.mgt
 
 .PHONY: plus3dos
 plus3dos: \
@@ -91,20 +93,25 @@ plus3dos: \
 	disks/plus3dos/disk0.720.dsk \
 	disks/plus3dos/disk1_lib.dsk \
 	disks/plus3dos/disk2_lib+games.dsk \
-	disks/plus3dos/disk3_lib+benchmarks.dsk \
-	disks/plus3dos/disk4_lib+tests.dsk
+	disks/plus3dos/disk3_lib+misc_benchmarks.dsk \
+	disks/plus3dos/disk4_lib+rng_benchmarks.dsk \
+	disks/plus3dos/disk5_lib+flow_benchmarks.dsk \
+	disks/plus3dos/disk6_lib+tests.dsk
 
 .PHONY: trdos
 trdos: \
 	disks/trdos/disk0.trd \
 	disks/trdos/disk1_lib.trd \
 	disks/trdos/disk2_lib+games.trd \
-	disks/trdos/disk3_lib+benchmarks.trd \
-	disks/trdos/disk4_lib+tests.trd
+	disks/trdos/disk3_lib+misc_benchmarks.trd \
+	disks/trdos/disk4_lib+rng_benchmarks.trd \
+	disks/trdos/disk5_lib+flow_benchmarks.trd \
+	disks/trdos/disk6_lib+tests.trd
 
 .PHONY: disk9
 disk9: \
 	disks/gplusdos/disk9_lib_without_dos.mgt \
+	disks/plu3sdos/disk9_lib_without_dos.dsk \
 	disks/trdos/disk9_lib_without_dos.trd
 
 # Note: disk9 is a special disk image used for debugging. It contains
@@ -153,7 +160,7 @@ include Makefile.pasmo
 # Loader
 
 # The BASIC loader of the system is coded in plain text. The addresses
-# that depend on the kernel (its load adresses and entry points) are
+# that depend on the kernel (its load address and entry points) are
 # represented in the source by labels. A Forth program replaces the
 # labels with the actual values, extracted from the symbols file
 # created by the assembler. Then zmakebas converts the patched loader
@@ -205,9 +212,9 @@ tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
 # part of the filename in the TAP header.
 
 # XXX WARNING -- 2016-03-19. bin2code returns error 97 when one
-# the filenames has a path, but it creates the tap file as
+# of the filenames has a path, but it creates the tap file as
 # usual.  A hyphen at the beginning of the recipe line forces
-# make to ignore the error.
+# `make` to ignore the error.
 
 tmp/pr64.tap: src/modules/pr64.z80s
 	pasmo --tap $< pr64.bin ; \
@@ -299,24 +306,24 @@ disks/trdos/disk0.trd: tmp/disk0.trdos.tap
 # ==============================================================
 # Library disks
 
-# The library disks contains the source blocks of the library.
-# Depending on the DOS, the blocks are stored in a blocks file or
-# directly in the disk sectors.
+# The library disks contain the source blocks of the library.
 
-all_lib_files = $(sort $(wildcard src/lib/*.fsb))
+lib_files = $(sort $(wildcard src/lib/*.fsb))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fsb))
 game_lib_files = $(sort $(wildcard src/lib/game.*.fsb))
-meta_tools_lib_files = $(sort $(wildcard src/lib/meta.*.fsb))
-benchmark_lib_files = $(sort $(wildcard src/lib/meta.benchmark*.fsb))
-test_lib_files = $(sort $(wildcard src/lib/meta.test*.fsb))
+meta_lib_files = $(sort $(wildcard src/lib/meta.*.fsb))
+meta_benchmark_misc_lib_files = $(sort $(wildcard src/lib/meta.benchmark.misc.fsb))
+meta_benchmark_misc_lib_files = $(sort $(wildcard src/lib/meta.benchmark.rng.fsb))
+meta_benchmark_misc_lib_files = $(sort $(wildcard src/lib/meta.benchmark.flow.fsb))
+meta_test_lib_files = $(sort $(wildcard src/lib/meta.test*.fsb))
 core_lib_files = \
-	$(filter-out $(game_lib_files) $(meta_tools_lib_files), \
-			$(all_lib_files))
+	$(filter-out $(game_lib_files) $(meta_lib_files), \
+			$(lib_files))
 no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
 
 tmp/library_without_dos.fsb: $(no_dos_core_lib_files)
-	cat $(no_dos_core_lib_files) > $@
+	cat $^ > $@
 
 # ----------------------------------------------
 # G+DOS library disks
@@ -341,23 +348,37 @@ disks/gplusdos/disk2_lib+games.mgt: tmp/library_for_gplusdos+games.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-tmp/library_for_gplusdos+benchmarks.fsb: $(gplusdos_core_lib_files) $(benchmark_lib_files)
-	cat $(gplusdos_core_lib_files) $(benchmark_lib_files) > $@
+tmp/library_for_gplusdos+misc_benchmarks.fsb: $(gplusdos_core_lib_files) $(meta_benchmark_misc_lib_files)
+	cat $^ > $@
 
-disks/gplusdos/disk3_lib+benchmarks.mgt: tmp/library_for_gplusdos+benchmarks.fsb
+disks/gplusdos/disk3_lib+misc_benchmarks.mgt: tmp/library_for_gplusdos+misc_benchmarks.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-tmp/library_for_gplusdos+tests.fsb: $(gplusdos_core_lib_files) $(test_lib_files)
-	cat $(gplusdos_core_lib_files) $(test_lib_files) > $@
+tmp/library_for_gplusdos+rng_benchmarks.fsb: $(gplusdos_core_lib_files) $(meta_benchmark_rng_lib_files)
+	cat $^ > $@
 
-disks/gplusdos/disk4_lib+tests.mgt: tmp/library_for_gplusdos+tests.fsb
+disks/gplusdos/disk4_lib+rng_benchmarks.mgt: tmp/library_for_gplusdos+rng_benchmarks.fsb
+	fsb2-mgt $< ;\
+	mv $(basename $<).mgt $@
+
+tmp/library_for_gplusdos+flow_benchmarks.fsb: $(gplusdos_core_lib_files) $(meta_benchmark_flow_lib_files)
+	cat $^ > $@
+
+disks/gplusdos/disk5_lib+flow_benchmarks.mgt: tmp/library_for_gplusdos+flow_benchmarks.fsb
+	fsb2-mgt $< ;\
+	mv $(basename $<).mgt $@
+
+tmp/library_for_gplusdos+tests.fsb: $(gplusdos_core_lib_files) $(meta_test_lib_files)
+	cat $^ > $@
+
+disks/gplusdos/disk6_lib+tests.mgt: tmp/library_for_gplusdos+tests.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 disks/gplusdos/disk9_lib_without_dos.mgt: tmp/library_without_dos.fsb
 	fsb2-mgt $< ;\
-	mv tmp/library_without_dos.mgt $@
+	mv $(basename $<).mgt $@
 
 # XXX TODO -- convert games to FBA
 # tmp/nuclear_invaders.fba: src/nuclear_invaders.fs
@@ -385,17 +406,31 @@ disks/plus3dos/disk2_lib+games.dsk: tmp/library_for_plus3dos+games.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
-tmp/library_for_plus3dos+benchmarks.fsb: $(plus3dos_core_lib_files) $(benchmark_lib_files)
-	cat $(plus3dos_core_lib_files) $(benchmark_lib_files) > $@
+tmp/library_for_plus3dos+misc_benchmarks.fsb: $(plus3dos_core_lib_files) $(meta_benchmark_misc_lib_files)
+	cat $^ > $@
 
-disks/plus3dos/disk3_lib+benchmarks.dsk: tmp/library_for_plus3dos+benchmarks.fsb
+disks/plus3dos/disk3_lib+misc_benchmarks.dsk: tmp/library_for_plus3dos+misc_benchmarks.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
-tmp/library_for_plus3dos+tests.fsb: $(plus3dos_core_lib_files) $(test_lib_files)
-	cat $(plus3dos_core_lib_files) $(test_lib_files) > $@
+tmp/library_for_plus3dos+rng_benchmarks.fsb: $(plus3dos_core_lib_files) $(meta_benchmark_rng_lib_files)
+	cat $^ > $@
 
-disks/plus3dos/disk4_lib+tests.dsk: tmp/library_for_plus3dos+tests.fsb
+disks/plus3dos/disk4_lib+rng_benchmarks.dsk: tmp/library_for_plus3dos+rng_benchmarks.fsb
+	fsb2-dsk $< ;\
+	mv $(basename $<).dsk $@
+
+tmp/library_for_plus3dos+flow_benchmarks.fsb: $(plus3dos_core_lib_files) $(meta_benchmark_flow_lib_files)
+	cat $^ > $@
+
+disks/plus3dos/disk5_lib+flow_benchmarks.dsk: tmp/library_for_plus3dos+flow_benchmarks.fsb
+	fsb2-dsk $< ;\
+	mv $(basename $<).dsk $@
+
+tmp/library_for_plus3dos+tests.fsb: $(plus3dos_core_lib_files) $(meta_test_lib_files)
+	cat $^ > $@
+
+disks/plus3dos/disk6_lib+tests.dsk: tmp/library_for_plus3dos+tests.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
@@ -413,7 +448,7 @@ tmp/library_for_trdos.fsb: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
 
 disks/trdos/disk1_lib.trd: tmp/library_for_trdos.fsb 
-	fsb2-trd $< SoloFth1 ; \
+	fsb2-trd $< SoloFh1 ; \
 	mv $(basename $<).trd $@
 
 tmp/library_for_trdos+games.fsb: \
@@ -424,23 +459,35 @@ disks/trdos/disk2_lib+games.trd: tmp/library_for_trdos+games.fsb
 	fsb2-trd $< SoloFth2 ; \
 	mv $(basename $<).trd $@
 
-tmp/library_for_trdos+benchmarks.fsb: \
-	$(trdos_core_lib_files) $(benchmark_lib_files)
-	cat $(trdos_core_lib_files) $(benchmark_lib_files) > $@
+tmp/library_for_trdos+misc_benchmarks.fsb: $(trdos_core_lib_files) $(meta_benchmark_misc_lib_files)
+	cat $^ > $@
 
-disks/trdos/disk3_lib+benchmarks.trd: tmp/library_for_trdos+benchmarks.fsb
-	fsb2-trd $< SoloFth3 ; \
+disks/trdos/disk3_lib+misc_benchmarks.trd: tmp/library_for_trdos+misc_benchmarks.fsb
+	fsb2-trd $< SoloFth3 ;\
 	mv $(basename $<).trd $@
 
-tmp/library_for_trdos+tests.fsb: \
-	$(trdos_core_lib_files) $(test_lib_files)
-	cat $(trdos_core_lib_files) $(test_lib_files) > $@
+tmp/library_for_trdos+rng_benchmarks.fsb: $(trdos_core_lib_files) $(meta_benchmark_rng_lib_files)
+	cat $^ > $@
 
-disks/trdos/disk4_lib+tests.trd: tmp/library_for_trdos+tests.fsb
-	fsb2-trd $< SoloFth4 ; \
+disks/trdos/disk4_lib+rng_benchmarks.trd: tmp/library_for_trdos+rng_benchmarks.fsb
+	fsb2-trd $< SoloFth4 ;\
 	mv $(basename $<).trd $@
 
-disks/trdos/disk9_liblib_without_dos.trd: tmp/library_without_dos.fsb
+tmp/library_for_trdos+flow_benchmarks.fsb: $(trdos_core_lib_files) $(meta_benchmark_flow_lib_files)
+	cat $^ > $@
+
+disks/trdos/disk5_lib+flow_benchmarks.trd: tmp/library_for_trdos+flow_benchmarks.fsb
+	fsb2-trd $< SoloFth5 ;\
+	mv $(basename $<).trd $@
+
+tmp/library_for_trdos+tests.fsb: $(trdos_core_lib_files) $(meta_test_lib_files)
+	cat $^ > $@
+
+disks/trdos/disk6_lib+tests.trd: tmp/library_for_trdos+tests.fsb
+	fsb2-trd $< SoloFth6 ; \
+	mv $(basename $<).trd $@
+
+disks/trdos/disk9_lib_without_dos.trd: tmp/library_without_dos.fsb
 	fsb2-trd $< SoloFth9 ; \
 	mv $(basename $<).trd $@
 
@@ -571,3 +618,6 @@ oldbackup:
 # TR-DOS. Rename the 64 cpl driver for the same reason.
 #
 # 2016-08-11: Make also a 180 KiB disk 0 for +3DOS.
+#
+# 2016-10-22: Split the benchmarks disk into 3 disks, else it didn't
+# fit in a TR-DOS disk image.
