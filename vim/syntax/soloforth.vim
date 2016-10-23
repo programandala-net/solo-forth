@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-05-04
+" Updated:  2016-10-16
 
 " --------------------------------------------------------------
 " History
@@ -419,7 +419,6 @@ syn keyword soloforthMemory sp!
 syn keyword soloforthMemory sp0
 syn keyword soloforthMemory sp@
 syn keyword soloforthMemory system-bank
-syn keyword soloforthMemory there
 syn keyword soloforthMemory unused-csb
 syn keyword soloforthOperator *
 syn keyword soloforthOperator */
@@ -528,6 +527,7 @@ syn keyword soloforthString search
 syn keyword soloforthString skip
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
+syn keyword soloforthTool ms
 syn keyword soloforthVocs (find-name)
 syn keyword soloforthVocs -order
 syn keyword soloforthVocs .name
@@ -994,6 +994,7 @@ hi def link soloforthReturnStack Special
 hi def link soloforthStack Special
 hi def link soloforthString String
 hi def link soloforthTodo Todo
+hi def link soloforthTool Statement
 hi def link soloforthVocs Statement
 
 let b:current_syntax = "soloforth"
@@ -1152,12 +1153,16 @@ let b:current_syntax = "soloforth"
 "
 " 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
 " `noname?`, `last`, `lastxt`, `latestxt`.
-" 
+"
 " 2016-04-27: Remove `defined?`, add `?defined`. Add `.error-word`.
 "
 " 2016-04-29: Add `nest-source`, `unnest-source`, `block>source`.
 "
 " 2016-05-04: Add `channel`, `printing`, `/hold`; remove `out`.
+"
+" 2016-06-01: Remove `there`.
+"
+" 2016-10-16: Add `ms`.
 
 " --------------------------------------------------------------
 
