@@ -1,4 +1,5 @@
 *.bin binary
+*.dsk binary
 *.fba linguist-language=Forth
 *.fs linguist-language=Forth
 *.fsb linguist-language=Forth
@@ -7,5 +8,6 @@
 *.sna binary
 *.szx binary
 *.tap binary
+*.trd binary
 *.z80 binary
 *.z80s linguist-language=Assembly
