@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610111946
+; Last modified: 201610241133
 
 include version.z80s
 
@@ -785,10 +785,6 @@ context_value:                                ; +$28..+$36
   dw root_pfa
   ds (max_search_order-2)*cell
 
-if 0 ; old_search_order
-  dw $0000 ; end of search order, required by `find`
-endif
-
   ; Free space for more user variables:
 
 user_data_pointer: equ $-user_variables
@@ -1483,33 +1479,6 @@ endif
 ; ----------------------------------------------
   _colon_header also_,'ALSO'
 
-if 0 ; old_search_order
-
-; doc{
-;
-; also  ( -- )
-;
-; Duplicate the vocabulary at the top of the search order.
-;
-; ----
-; : also  ( -- )
-;   context dup cell+ [ #vocs 2- cells ] literal cmove>  ;
-; ----
-;
-; }doc
-
-  ; Credit:
-  ; Code adapted from F83.
-
-  ; XXX TODO -- check the limit
-
-  dw context_,dup_,cell_plus_
-  _literal (max_search_order-cell)*cell
-  dw c_move_up_
-  dw exit_
-
-else
-
 ; doc{
 ;
 ; also  ( -- )
@@ -1531,58 +1500,8 @@ else
   ; XXX TODO -- in Gforth:
   ; : also  ( -- )  context @ >order  ;
 
-endif
-
-; ----------------------------------------------
-if 0 ; old_search_order
-  _colon_header minus_order_,'-ORDER'
-
-; doc{
-;
-; -order  ( -- )
-;
-; Erase the search order.
-;
-; ----
-; : -order  ( -- )
-;   context [ #vocs cells ] literal erase  ;
-; ----
-;
-; }doc
-
-; XXX TODO -- this word could be removed when the search order
-; if the search order would be improved, removing the zero cell
-; currently required to mark its end.
-
-  dw context_
-  _literal max_search_order*cell
-  dw erase_
-  dw exit_
-endif
-
 ; ----------------------------------------------
   _colon_header only_,'ONLY'
-
-if 0 ; old_search_order
-
-; doc{
-;
-; only  ( -- )
-;
-; Set the search order to the minimum search order: Forces the
-; `root` vocabulary to be the first and second.
-;
-; ----
-; : only  ( -- )
-;   -order root also  ;
-; ----
-;
-; }doc
-
-  dw minus_order_,root_,also_
-  dw exit_
-
-else
 
 ; doc{
 ;
@@ -1600,8 +1519,6 @@ else
   _literal -1
   dw set_order_
   dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header paren_set_order_,'(SET-ORDER)'
@@ -1629,8 +1546,6 @@ paren_set_order.loop_exit
   dw exit_
 
 ; ----------------------------------------------
-if 0 ; old_search_order
-else
   _colon_header get_order_,'GET-ORDER'
 
 ; : get-order  ( -- 0 | widn..wid1 n )
@@ -1647,44 +1562,9 @@ else
 get_order.exit
   dw hash_order_,fetch_
   dw exit_
-endif
 
 ; ----------------------------------------------
   _colon_header set_order_,'SET-ORDER'
-
-if 0 ; old_search_order
-
-; doc{
-;
-; set-order  ( -1 | 0 | widn..wid1 n -- )
-;
-; Set the search order to the word lists identified by
-; _widn..wid1_. Subsequently, word list _wid1_ will be
-; searched first, and word list _widn_ searched last. If _n_
-; is zero, empty the search order. If _n_ is minus one, set
-; the search order to the implementation-defined minimum
-; search order.
-;
-; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
-;
-; ----
-; : set-order  ( -1 | 0 | widn..wid1 n -- )
-;   ?dup if    dup -1 = if  drop only  else  (set-order)  then
-;        else  -order  then  ;
-; ----
-;
-; }doc
-
-  dw question_dup_
-  dw zero_branch_,minus_order_pfa ; 0
-  dw dup_
-  _literal -1
-  dw equals_
-  dw zero_branch_,paren_set_order_pfa ; <>-1
-  dw drop_,only_ ; -1
-  dw exit_
-
-else
 
 ; doc{
 ;
@@ -1726,8 +1606,6 @@ set_order.do
 set_order.exit
   dw exit_
 
-endif
-
 ; ----------------------------------------------
   _colon_header to_order_,'>ORDER'
 
@@ -1758,38 +1636,6 @@ endif
   _colon_header previous_,'PREVIOUS'
 
   ; XXX TODO -- move to the library -- but it's used by `asm`
-
-if 0 ; old_search_order
-
-; doc{
-;
-; previous  ( -- )
-;
-; Remove the most recently referenced vocabulary from the search
-; order.
-;
-; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
-;
-; ----
-; : previous  ( -- )
-;   context dup cell+ swap [ #vocs 2- cells dup ] literal cmove
-;   context literal + off  ;
-; ----
-;
-; }doc
-
-  ; Credit:
-  ; Code adapted from F83.
-
-  dw context_,dup_,cell_plus_,swap_
-  _literal (max_search_order-cell)*cell
-  dw c_move_
-  dw context_
-  _literal (max_search_order-cell)*cell
-  dw plus_,off_
-  dw exit_
-
-else ; XXX NEW
 
 ; doc{
 ;
@@ -1824,42 +1670,10 @@ else ; XXX NEW
 ; : get-order
 ;  vp @ 0 ?do  vp cell+ i cells + @  loop  vp @  ;
 
-endif
-
 ; ----------------------------------------------
   _colon_header seal_,'SEAL'
 
   ; XXX TODO -- move to the library
-
-if 0 ; old_search_order
-
-; doc{
-;
-; seal  ( -- )
-;
-; Change the search order such that only the vocabulary at the
-; top of the search order will be searched.
-;
-; ----
-; : seal  ( -- )
-;   context @ -order context !  ;
-; ----
-;
-; Remove all word list from the search order stack other than
-; the word list that is currently on top of the search order
-; stack.
-;
-; Origin: Gforth.
-;
-; }doc
-
-  ; Credit:
-  ; Code adapted from F83.
-
-  dw context_,fetch_,minus_order_,context_,store_
-  dw exit_
-
-else
 
 ; doc{
 ;
@@ -1888,8 +1702,6 @@ else
   ; XXX TODO -- alternative definition, from Gforth
   ;
   ; : seal  ( -- )  context @ 1 set-order ;
-
-endif
 
 ; ----------------------------------------------
   _variable_header root_wordlist_,'ROOT-WORDLIST'
@@ -3295,58 +3107,6 @@ find_name_from.ip_backup: equ $+1
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
 
-if 0 ; old_search_order
-
-; doc{
-
-; find-name  ( ca len -- nt | 0 )
-;
-; Find the definition identified by the string _ca len_ in the
-; current search order. If the definition is not found after
-; searching all the vocabularies in the search order, return
-; zero.  If the definition is found, return its _nt_.
-;
-; ----
-; : find-name  ( ca len -- nt | 0 )
-;   #vocs 0 do
-;     context i cells + @  ?dup
-;     if  @ >r 2dup r> @ find-name-from ?dup
-;         ( ca len nt nt | ca len 0 )
-;         if  nip nip unloop exit  then
-;     then
-;   loop  2drop false  ;
-; ----
-;
-; Origin: Gforth.
-;
-; }doc
-
-  dw hash_vocs_
-  _literal 0
-  dw paren_do_,find_name.loop_exit ; do
-
-  ; ( ca len )
-  dw context_,i_,cells_,plus_,fetch_
-  dw question_dup_ ; a vocabulary in the search order?
-
-  dw zero_branch_,find_name.loop ; if not, next
-  ; ( ca len wid )
-  ; valid vocabulary in the search order
-  dw fetch_,to_r_,two_dup_,from_r_
-;  _chk 'find-name -- before find-name-from' ; XXX INFORMER
-  dw find_name_from_,question_dup_ ; ( nt nt | 0 ) word found?
-  dw zero_branch_,find_name.loop
-;  _chk 'find-name -- found' ; XXX INFORMER
-  dw nip_,nip_,unloop_,exit_
-find_name.loop:
-  dw paren_loop_ ; loop
-find_name.loop_exit:
-
-  dw two_drop_,false_
-  dw exit_
-
-else
-
 ; doc{
 
 ; find-name  ( ca len -- nt | 0 )
@@ -3384,8 +3144,6 @@ find_name.loop_exit:
 
   dw two_drop_,false_
   dw exit_
-
-endif
 
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
@@ -5174,16 +4932,6 @@ do_user:
   dw blocks_per_disk
 
 ; ----------------------------------------------
-if 0 ; old_search_order
-  _c_constant_header hash_vocs_,'#VOCS'
-
-  ; XXX TODO -- rename to `/order`?
-  ; XXX TODO -- useful also for the new search order, for checks
-
-  db max_search_order
-endif
-
-; ----------------------------------------------
   _colon_header plus_origin_,'+ORIGIN'
 
 ; doc{
@@ -5500,8 +5248,6 @@ endif
   db $24
 
 ; ----------------------------------------------
-if 0 ; old_search_order
-else
   _user_variable_header hash_order_,'#ORDER'
 
 ; doc{
@@ -5514,7 +5260,6 @@ else
 ; }doc
 
   db $26
-endif
 
 ; ----------------------------------------------
   _user_variable_header context_,'CONTEXT'
