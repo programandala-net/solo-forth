@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610241133
+; Last modified: 201610241200
 
 include version.z80s
 
@@ -890,14 +890,14 @@ compare_de_hl_signed:
 move_block:
 
   ; Input:
-  ; hl = source
-  ; de = destination
-  ; bc = count
+  ; HL = source
+  ; DE = destination
+  ; BC = count
 
-  ; If bc is greater than zero, copy the contents of bc consecutive address
-  ; units at hl to the bc consecutive address units at de. After the move
-  ; completes, the bc consecutive address units at de contain exactly what the
-  ; bc consecutive address units at hl contained before the move.
+  ; If BC is greater than zero, copy the contents of BC consecutive address
+  ; units at HL to the BC consecutive address units at de. After the move
+  ; completes, the BC consecutive address units at DE contain exactly what the
+  ; BC consecutive address units at HL contained before the move.
 
   call compare_de_hl_unsigned
   jp c,move_block_downwards
@@ -911,12 +911,12 @@ move_block:
 move_block_upwards:
 
   ; Input:
-  ; hl = source
-  ; de = destination
-  ; bc = count
+  ; HL = source
+  ; DE = destination
+  ; BC = count
 
-  ; If bc is greater than zero, copy bc consecutive characters from the data
-  ; space starting at hl to that starting at de, proceeding
+  ; If BC is greater than zero, copy BC consecutive characters from the data
+  ; space starting at HL to that starting at DE, proceeding
   ; character-by-character from lower addresses to higher addresses.
 
   ld a,c
@@ -932,12 +932,12 @@ move_block_upwards:
 ; Code from DZX-Forth.
 
   ; Input:
-  ; hl = source
-  ; de = destination
-  ; bc = count
+  ; HL = source
+  ; DE = destination
+  ; BC = count
 
-  ; If bc is greater than zero, copy bc consecutive characters from the data
-  ; space starting at hl to that starting at de, proceeding
+  ; If BC is greater than zero, copy BC consecutive characters from the data
+  ; space starting at HL to that starting at DE, proceeding
   ; character-by-character from higher addresses to lower addresses.
 
 move_block_downwards:
@@ -1136,22 +1136,22 @@ push_hlde:
 push_hl:
   push hl
 next:
-  ; Execute the word whose xt is in the address pointed by the bc register.
+  ; Execute the word whose xt is in the address pointed by the BC register.
   ; Forth: W  <-- (IP)
-  ; Z80:   hl <-- (bc)
+  ; Z80:   HL <-- (BC)
   ld a,(bc)
   ld l,a
   inc bc ; inc IP
   ld a,(bc)
   ld h,a
   inc bc ; inc IP
-  ; bc = address of the next xt
-  ; hl = xt
+  ; BC = address of the next xt
+  ; HL = xt
 
 execute_hl:
-  ; Execute the word whose xt is in the hl register.
+  ; Execute the word whose xt is in the HL register.
   ; Forth: PC <-- (W)
-  ; Z80:   pc <-- (hl)
+  ; Z80:   pc <-- (HL)
   jp (hl)
 
 ; ==============================================================
@@ -1822,13 +1822,13 @@ push_a:
   ld l,a
   inc bc
   ld a,(bc)
-  ld h,a ; hl = high part
+  ld h,a ; HL = high part
   inc bc
   ld a,(bc)
   ld e,a
   inc bc
   ld a,(bc)
-  ld d,a ; de = low part
+  ld d,a ; DE = low part
   inc bc
   jp push_hlde
 
@@ -2402,14 +2402,14 @@ paren_do.de_hl:
   ld (hl),B
   dec hl
   ld (hl),c                     ; push IP on return stack
-  ex (sp),hl                    ; hl=init, (sp)=rp@
+  ex (sp),hl                    ; HL=init, (SP)=rp@
   and a
-  sbc hl,de                     ; hl=init-limit
+  sbc hl,de                     ; HL=init-limit
   ld a,h
   xor $80                      ; flip most significant bit
   ld d,a
   ld e,l
-  pop hl                        ; hl=rp@
+  pop hl                        ; HL=rp@
   dec hl
   ld (hl),d
   dec hl
@@ -2427,7 +2427,7 @@ paren_do.de_hl:
 i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   ld e,(hl)
   inc hl
-  ld d,(hl) ; de= current index, wich is: (index-limit) xor $8000
+  ld d,(hl) ; DE= current index, wich is: (index-limit) xor $8000
   inc hl
   inc hl
   inc hl
@@ -2482,7 +2482,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   inc hl
   ld c,(hl)
   inc hl
-  ld b,(hl) ; bc = start address
+  ld b,(hl) ; BC = start address
   inc hl
   inc hl
   inc hl
@@ -2507,10 +2507,10 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; }doc
 
   ld h,b
-  ld l,c ; hl = Forth IP, containing the address to jump to
+  ld l,c ; HL = Forth IP, containing the address to jump to
   ld c,(hl)
   inc hl
-  ld b,(hl) ; bc = New Forth IP
+  ld b,(hl) ; BC = New Forth IP
   _jp_next
 
 ; ----------------------------------------------
@@ -2526,8 +2526,8 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
-  ld d,(hl)   ; de = current index
-  ex (sp),hl  ; hl = the increment value
+  ld d,(hl)   ; DE = current index
+  ex (sp),hl  ; HL = the increment value
 
   and a
   adc hl,de   ; add increment to index
@@ -2546,7 +2546,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 
 paren_plus_loop.continue:
   ld d,h
-  ld e,l ; de = updated index
+  ld e,l ; DE = updated index
   pop hl ; return stack pointer
 
 paren_loop.continue:
@@ -2570,7 +2570,7 @@ paren_loop.continue:
   ld hl,(return_stack_pointer)
   ld e,(hl)
   inc hl
-  ld d,(hl)   ; de = index value
+  ld d,(hl)   ; DE = index value
   inc de      ; increment the index
   ld a,d
   xor $80
@@ -2606,7 +2606,7 @@ paren_loop.continue:
 ;   DUP BASE @ U< ;
 
   pop hl  ; l=base
-  pop de  ; e=character
+  pop de  ; E=character
   ld a,e  ; character
   call ascii_upper.a
   sub '0' ; >="0"?
@@ -2989,10 +2989,10 @@ char_question.not:
 
 ; doc{
 ;
-; find-name-from  ( ca len nt -- nt | 0 )
+; find-name-from  ( ca len nt1 -- nt2 | 0 )
 ;
-; Find the definition named in the string _ca len_, starting
-; at _nt_. If the definition is found, return its _nt_, else
+; Find the definition named in the string _ca len_, starting at
+; _nt1_. If the definition is found, return its _nt2_, else
 ; return zero.
 ;
 ; String _ca len_ must be below memory address $C000.
@@ -3012,7 +3012,7 @@ char_question.not:
 
 find_name_from.begin:
   ; Compare the string with a new word.
-  ; hl = nt
+  ; HL = nt
   ld (find_name_from.nt_backup),hl ; save the nt for later
 find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
@@ -3059,9 +3059,9 @@ find_name_from.nt_backup: equ $+1
 
 find_name_from.end:
   ; If match found:
-  ;   hl = nt
+  ;   HL = nt
   ; If no match found:
-  ;   hl = false
+  ;   HL = false
   exx
   call bank.default ; page in the default memory bank
   exx
@@ -3305,13 +3305,13 @@ emit_udg.a
 emit_0udg.a
   ; a = UDG code (0..255)
   ; h = 0
-  ld l,a ; hl = UDG index code (0..255)
+  ld l,a ; HL = UDG index code (0..255)
   ld de,(sys_udg)
   add hl,hl
   add hl,hl
   add hl,hl
   add hl,de
-  ex de,hl ; de = char address in the font
+  ex de,hl ; DE = char address in the font
   ld bc,(sys_s_posn) ; cursor position
   ld hl,(sys_df_cc) ; current screen address
   call rom_pr_all
@@ -3767,7 +3767,7 @@ if 0 ; XXX OLD -- slower than the DZX-Forth code
   pop de      ; u1 in DE
   ld hl,0     ; result will be in HLDE
   ld a,17     ; loop counter
-  or a        ; clear cy
+  or a        ; clear CY
 u_m_star.do:
   rr h
   rr l
@@ -3881,20 +3881,20 @@ endif
 u_m_slash_mod.do:
   adc hl,hl   ; rot left w/ carry
   jr nc,u_m_slash_mod.3
-  ; case 1: 17 bit, cy:HL = 1xxxx
+  ; case 1: 17 bit, CY:HL = 1xxxx
   or a        ; we know we can subtract
   sbc hl,bc
-  or a        ; clear cy to indicate sub ok
+  or a        ; clear CY to indicate sub ok
   jr u_m_slash_mod.4
-  ; case 2: 16 bit, cy:HL = $xxx
+  ; case 2: 16 bit, CY:HL = $xxx
 u_m_slash_mod.3:
   sbc hl,bc   ; try the subtract
-  jr nc,u_m_slash_mod.4 ; if no cy, subtract ok
+  jr nc,u_m_slash_mod.4 ; if no CY, subtract ok
   add hl,bc   ; else cancel the subtract
-  scf         ;   and set cy to indicate
+  scf         ;   and set CY to indicate
 u_m_slash_mod.4:
   rl e        ; rotate result bit into DE,
-  rl d        ; and next bit of DE into cy
+  rl d        ; and next bit of DE into CY
   dec a
   jr nz,u_m_slash_mod.do
   ; now have complemented quotient in DE,
@@ -4320,7 +4320,7 @@ true_if_cy:
   add hl,de             ;  11 01
   push hl               ;  11 01 ; 2OS=d1lo+d2lo=d3lo
   exx                   ;  04 01
-  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+cy=d3hi
+  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+CY=d3hi
   push hl               ;  11 01
   _jp_next              ;  08 02
                         ;  -- --
@@ -4397,11 +4397,11 @@ if size_optimization
   push    hl        ; save copy                 ;  11 01
   ld      hl,$0000                              ;  10 03
   and     a                                     ;  04 01
-  sbc     hl,de     ; hl = negated low part     ;  15 02
+  sbc     hl,de     ; HL = negated low part     ;  15 02
   pop     de        ; high part                 ;  10 01
   push    hl        ; negated low part          ;  11 01
   ld      hl,$0000                              ;  10 03
-  sbc     hl,de     ; hl = negated high part    ;  15 02
+  sbc     hl,de     ; HL = negated high part    ;  15 02
   _jp_pushhl                                    ;  11 01 push hl
                                                 ;  08 02 jp (ix)
                                                 ; --- --
@@ -4575,7 +4575,7 @@ endif
   ; XXX TODO -- move to the library, when possible.
 
   pop hl ; address
-  pop de ; e = bitmask
+  pop de ; E = bitmask
   ld a,e
   and (hl)
   jp nz,true_
@@ -4596,7 +4596,7 @@ endif
   ; XXX TODO -- move to the library, when possible.
 
   pop hl ; address
-  pop de ; e = bitmask
+  pop de ; E = bitmask
   ld a,e
   or (hl)
   ld (hl),a
@@ -4617,7 +4617,7 @@ endif
   ; XXX TODO -- move to the library, when possible.
 
   pop hl ; address
-  pop de ; e = bitmask
+  pop de ; E = bitmask
   ld a,e
   cpl
   and (hl)
@@ -4695,7 +4695,7 @@ do_colon:
   ld (hl),c
   ld (return_stack_pointer),hl
   ; Then point it to the pfa of the word that called here
-  pop bc ; bc=pfa
+  pop bc ; BC=pfa
   _jp_next
 
 ; ----------------------------------------------
@@ -4848,9 +4848,9 @@ fetch.hl:
 do_user:
   pop hl
   ld e,(hl)
-  ld d,$00        ; de = index of the user variable
-  ld hl,(up_pfa)  ; hl = address of the user area (the value of `up`)
-  add hl,de       ; hl = address of the user variable
+  ld d,$00        ; DE = index of the user variable
+  ld hl,(up_pfa)  ; HL = address of the user area (the value of `up`)
+  add hl,de       ; HL = address of the user variable
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -5122,7 +5122,7 @@ endif
 ;
 ; blk  ( -- a )
 ;
-; User variable that holds de number of the disk block being
+; User variable that holds the number of the disk block being
 ; interpreted. A disk block holds 1024 bytes. One source screen
 ; consists of one disk block.
 ;
@@ -5598,7 +5598,7 @@ two_comma.allot:
 
   pop de
   pop hl
-  or a ; cy=0
+  or a ; CY=0
   sbc hl,de
   jp z,false_
   jp true_
@@ -5608,7 +5608,7 @@ two_comma.allot:
 
   pop de
   pop hl
-  or a ; cy=0
+  or a ; CY=0
   sbc hl,de
   jp nz,false_
   ; Execution continues in `true`:
@@ -5647,7 +5647,7 @@ less_than.de_hl:
 
             ;  T  B
             ; -- --
-  or a      ; 04 01 ; cy=0
+  or a      ; 04 01 ; CY=0
   sbc hl,de ; 15 02 ; n1-n2 in HL, SZVC valid
 
   ; negative & not OV:  HL<DE
@@ -5684,7 +5684,7 @@ u_greater_than.hl:
   pop de
   pop hl
 u_less_than.de_hl:
-  or a            ; cy=0
+  or a            ; CY=0
   sbc hl,de
   sbc a,a         ; propagate carry flag through A
   ld h,a
@@ -5834,12 +5834,12 @@ to_name.names_pointer_low_byte equ $+1
   ; no words left
   ; a=0
   ld h,a
-  ld l,a ; hl = 0
+  ld l,a ; HL = 0
   jr to_name.end
 
 to_name.check_xt
   ; Check if the xt pointed by HL is the one searched for
-  ; hl = xtp
+  ; HL = xtp
   ld a,(hl) ; low byte of xt
   inc hl
   cp e ; equal?
@@ -5849,19 +5849,19 @@ to_name.check_xt
   jr nz,to_name.next ; not equal
 
   ; xt found
-  ; hl = xtp+1
+  ; HL = xtp+1
   inc hl ; lfa
   inc hl
   inc hl ; nfa
 
 to_name.end:
-  ; hl = nt or zero
+  ; HL = nt or zero
   call bank.default ; page in the default memory bank
   pop bc ; restore Forth IP
   _jp_pushhl
 
 to_name.next:
-  ; hl = xtp+1
+  ; HL = xtp+1
   inc hl ; lfa
   inc hl
   inc hl ; nfa
@@ -6425,8 +6425,8 @@ type.loop_exit
   push hl
   add hl,de
   ex de,hl
-  ; de = address after the string
-  ; hl = length of the string
+  ; DE = address after the string
+  ; HL = length of the string
 minus_trailing.begin:
   ld a,l
   or h ; exhausted?
@@ -6823,7 +6823,7 @@ fill.a:
   ld hl,$FFFF
   or a                ; clear carry flag
   adc hl,bc           ; test for count=0 or 1
-  jr nc,fill.done     ; no cy: count=0, skip
+  jr nc,fill.done     ; no CY: count=0, skip
   ld (de),a           ; fill first byte
   jr z,fill.done      ; z: count=1, done
   dec bc              ; else adjust count
@@ -6970,11 +6970,11 @@ fill.done:
 
   pop de                  ; n
   pop hl                  ; len1
-  and a                   ; cy=0
-  sbc hl,de               ; hl=len2
-  ex (sp),hl              ; (sp)=len2 hl=ca1
-  add hl,de               ; hl=ca2
-  ex (sp),hl              ; (sp)=ca2 hl=len2
+  and a                   ; CY=0
+  sbc hl,de               ; HL=len2
+  ex (sp),hl              ; (SP)=len2 HL=ca1
+  add hl,de               ; HL=ca2
+  ex (sp),hl              ; (SP)=ca2 HL=len2
   _jp_pushhl
 
 ; ----------------------------------------------
@@ -7247,15 +7247,15 @@ uppers.do:
   ; Code from DZX-Forth's `packed`.
 
   exx         ; save Forth IP
-  pop de      ; de=ca2
-  pop bc      ; c=len1
-  pop hl      ; hl=ca1
+  pop de      ; DE=ca2
+  pop bc      ; C=len1
+  pop hl      ; HL=ca1
   push bc     ; len1
   push de     ; ca2
   inc  de
   call move_block
   pop hl      ; ca2
-  pop de      ; e=len1
+  pop de      ; E=len1
   ld (hl),e
   exx         ; restore Forth IP
   _jp_next
@@ -7519,29 +7519,29 @@ endif
 ; Credit:
 ; Adapted from DZX-Forth
 
-  pop de      ; de = len2
-  pop hl      ; hl = ca2
-  ex (sp),hl  ; hl = len1 ; ( ca1 ca2 )
+  pop de      ; DE = len2
+  pop hl      ; HL = ca2
+  ex (sp),hl  ; HL = len1 ; ( ca1 ca2 )
   ld a,d
   cp h
   jr nz,compare.lengths
   ld a,e
   cp l
 compare.lengths:
-  ; cy = string2 is longer than string1?
+  ; CY = string2 is longer than string1?
   jr c,compare.ready
   ex de,hl
 compare.ready:
-  ; de = length of the shorter string
-  ; hl = length of the longer string
+  ; DE = length of the shorter string
+  ; HL = length of the longer string
   ld l,c
-  ld h,b ; hl = Forth IP
-  pop bc ; bc = ca2
-  ex (sp),hl ; hl = ca1 ; save Forth IP
-  push af ; save cy (string2 is longer than string1?)
-  ; hl = ca1
-  ; bc = ca2
-  ; de = length of the shorter string
+  ld h,b ; HL = Forth IP
+  pop bc ; BC = ca2
+  ex (sp),hl ; HL = ca1 ; save Forth IP
+  push af ; save CY (string2 is longer than string1?)
+  ; HL = ca1
+  ; BC = ca2
+  ; DE = length of the shorter string
 compare.char
   ld a,e
   or d ; end of string?
@@ -7556,7 +7556,7 @@ compare.char
 
 compare.match:
   ; The smaller string matches.
-  pop af ; restore cy (string2 is longer than string1?)
+  pop af ; restore CY (string2 is longer than string1?)
   jr compare.end
 
 compare.no_match:
@@ -10376,11 +10376,11 @@ system_stack_pointer: equ $+1
                       ; T   B
                       ; --- --
   exx                 ;  04 01
-  pop hl  ; hl'=x4    ;  10 01
-  pop de  ; de'=x3    ;  10 01
+  pop hl  ; HL'=x4    ;  10 01
+  pop de  ; DE'=x3    ;  10 01
   exx                 ;  04 01
-  pop hl  ; hl=x2     ;  10 01
-  pop de  ; de=x1     ;  10 01
+  pop hl  ; HL=x2     ;  10 01
+  pop de  ; DE=x1     ;  10 01
   exx                 ;  04 01
   push de ; x3        ;  11 01
   push hl ; x4        ;  11 01
@@ -10579,7 +10579,7 @@ mode32_xy.end:
   ; Set the border color to the paper color.
 
   ld a,l ; 128*flash + 64*bright + 8*paper + ink
-  and a ; cy=0
+  and a ; CY=0
   rra
   rra
   rra ; a = paper
@@ -10647,7 +10647,7 @@ color1:
   ; Set a boolean color attribute (bright, flash)
   ;
   ; Input:
-  ;   a = attribute control char
+  ;   A = attribute control char
   ;   (tos) = color attribute value
 
   rst $10
@@ -10691,7 +10691,7 @@ color9:
   ; Set a color attribute (ink, paper)
   ;
   ; Input:
-  ;   a = attribute control char
+  ;   A = attribute control char
   ;   (tos) = color attribute value
 
   rst $10
@@ -10733,12 +10733,12 @@ do_two_constant:
 two_fetch.hl:
   ld e,(hl)     ; 07t  1
   inc hl        ; 06t  1
-  ld d,(hl)     ; 07t  1 ; de = low part
+  ld d,(hl)     ; 07t  1 ; DE = low part
   inc hl        ; 06t  1
   ld a,(hl)     ; 07t  1
   inc hl        ; 06t  1
   ld h,(hl)     ; 07t  1
-  ld l,a        ; 04t  1 ; hl = high part
+  ld l,a        ; 04t  1 ; HL = high part
   ex de,hl      ; 04t  1
   jp push_hlde  ; 10t  3
                 ; 11t  0 push de
@@ -10925,7 +10925,7 @@ two_fetch.hl:
 ;     if  error  then     \ `error` does not return
 ;     rp!                 \ restore previous return stack
 ;     r> catcher !        ( n )  \ restore previous catcher
-;     r> swap >r          ( saved-sp ) ( R: n )
+;     r> swap >r          ( saved-SP ) ( R: n )
 ;     sp! drop r>         ( n )  \ restore stack
 ;     \ Return to the caller of `catch` because return stack is
 ;     \ restored to the state that existed when `catch` began
@@ -10944,7 +10944,7 @@ two_fetch.hl:
 throw.catcher:
   dw rp_store_                ; restore previous return stack
   dw from_r_,catcher_,store_  ; ( n )  restore previous catcher
-  dw from_r_,swap_,to_r_      ; ( saved-sp ) ( R: n )
+  dw from_r_,swap_,to_r_      ; ( saved-SP ) ( R: n )
   dw sp_store_,drop_,from_r_  ; ( n )  restore stack
 
   ; Return to the caller of `catch` because return stack is
