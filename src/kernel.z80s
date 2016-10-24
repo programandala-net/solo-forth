@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610241222
+; Last modified: 201610241743
 
 include version.z80s
 
@@ -5956,7 +5956,7 @@ to_name.next:
 
   ; XXX TODO -- faster version:
   ; pop de
-  ; fetch_bank.e
+  ; fetch_bank.e:
   ; call bank.e
   ; pop hl
   ; ld a,(hl)
@@ -8676,6 +8676,8 @@ common_start:
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
+; See: `u>ud`.
+;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; ----
@@ -9913,7 +9915,7 @@ to_digit.end
 ;   >r 0 r@ um/mod -rot r> um/mod rot  ;
 ; ----
 ;
-; Origin: fig-Forth (`m/mod`), Gforth, Z88 CameForth.
+; Origin: fig-Forth (`m/mod`), Gforth, Z88 CamelForth.
 ;
 ; }doc
 

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-10-22
+:revdate: 2016-10-24
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -210,6 +210,11 @@ Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
 == Compilation ==
 // {{{
 
+.2016-10-24:
+
+Change `need [if]` to `need ?(` in the library, when `[else]` is not needed.
+`?(` is smaller and faster than `[if]`.
+
 .2016-10-22:
 
 16 KiB for the headers is not enough in some cases.
@@ -217,8 +222,8 @@ Make a second bank usable...
 
 .2016-05-31:
 
-`''` to get the execution token pointer of a name, so the actual name of an alias could be get
-this way:
+Add `''` to get the execution token pointer of a name, so the actual name of
+an alias could be get this way:
 
 ----
 '' wordname >>name .name
@@ -355,6 +360,11 @@ ____
 // }}}
 == Documentation ==
 // {{{
+
+.2016-10-24:
+
+Common notation for text coordinates: "col row" --> "x y"?
+Common notation for graphic coordinates: "x y" --> "gx gy"?
 
 .2016-06-01:
 
@@ -841,12 +851,6 @@ Make also 40S, 40D and 80S TRD disk images?
 .2016-08-11:
 
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
-
-.2016-08-11:
-
-Write a program in Gforth to create an empty TRD disk image in
-<Makefile.pasmo>, so the lowercase letters of the disk label are preserved.
-`emptytrd.exe` makes the label uppercase.
 
 // }}}
 == Sound ==

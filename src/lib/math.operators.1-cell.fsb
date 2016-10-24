@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610241821
+  \ Last modified: 201610241826
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,6 +48,7 @@
   \ 2016-10-16: Document `%`, `u%` and `gcd`.
   \ 2016-10-24: Fix description of `split`.
   \ 2016-10-24: Fix requiring `gcd`, `%` and `u%`.
+  \ 2016-10-24: Add `u>ud`.
 
 ( under+ +under )
 
@@ -128,7 +129,7 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ XXX TODO -- variant after PFE's `(under+)`:
   \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
 
-( % u% within between gcd )
+( % u% u>ud within between gcd )
 
 [unneeded] %
 ?\ : %  ( n1 n2 -- n3 )  100 swap */  ;  exit
@@ -149,6 +150,20 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ u% ( u1 u2 -- u3 )
   \
   \ _u1_ is percentage _u3_ of _u2_
+  \
+  \ }doc
+
+[unneeded] u>ud
+?\ need alias  ' 0 alias u>ud ( u -- ud )  exit
+
+  \ doc{
+  \
+  \ u>ud  ( u -- ud )
+  \
+  \ Extend a single unsigned number _u_ to form a double
+  \ unsigned number _ud_. This word is just an alias of `0`.
+  \
+  \ See: `s>d`.
   \
   \ }doc
 
