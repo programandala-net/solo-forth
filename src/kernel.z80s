@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610241200
+; Last modified: 201610241222
 
 include version.z80s
 
@@ -51,11 +51,11 @@ include version.z80s
 ; The name and link fields are created in a memory bank:
 
 ; xtp: dw xt               ; Pointer to xt in main memory.
-; lfa:  dw nt of the previous word
+; lfa: dw nt of the previous word
 ; nt:  db length+flags     ; Bits:      76543210
                            ; Bit names: CPSLLLLL
                            ; Legend:
-                           ;   C: Compile-ony bit.
+                           ;   C: Compile-only bit.
                            ;      0 = non-restricted word
                            ;      1 = compile-only word
                            ;   P: Immediate bit.
@@ -67,10 +67,10 @@ include version.z80s
                            ;   LLLLL: name length (0..31).
 ;       ds length          ; name
 
-; The code and parameter fields are created in the dictionary:
+; The code and parameter fields are created in the data space:
 
-; xt: dw code_address
-; pfa:    ...              ; data or code
+; xt:  code
+; pfa: ...
 
 ; ==============================================================
 ; Glossary
@@ -233,7 +233,7 @@ border_port:    equ $FE
 ; Macros
 
 ; ----------------------------------------------
-; Header macros
+; Macros for headers
 
 immediate:    equ immediate_mask
 compile_only: equ compile_only_mask
@@ -242,7 +242,7 @@ nt_of_the_previous_word: defl 0 ; link to previous Forth word
 
 _header: macro _base_label,_name,_flags,_xt
 
-  ; In dictionary:
+  ; In data space:
 
   if nul _xt
     _base_label: ; execution token
@@ -377,7 +377,7 @@ _two_variable_header: macro _base_label,_name,_flags
   endm
 
 ; ----------------------------------------------
-; Literals macros
+; Macros for literals
 
 _string: macro text
 
@@ -421,7 +421,7 @@ _literal: macro _n
   endm
 
 ; ----------------------------------------------
-; Jump macros
+; Macros for jumps
 
 _jp_next: macro
 
@@ -465,7 +465,7 @@ _jump_z: macro _address
   endm
 
 ; ----------------------------------------------
-; Error message macros
+; Macros for error messages
 
 _question_throw: macro _error
   _literal (_error)
@@ -478,7 +478,7 @@ _message: macro _error
   endm
 
 ; ----------------------------------------------
-; Debug macros
+; Macros for debugging
 
 debugging: equ 1
 
@@ -1129,7 +1129,7 @@ de_multiplied_by_bc_to_dehl_unsigned.end:
 endif
 
 ; ==============================================================
-; :Inner interpreter
+; Inner interpreter
 
 push_hlde:
   push de
