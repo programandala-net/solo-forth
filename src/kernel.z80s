@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610241743
+; Last modified: 201610261305
 
 include version.z80s
 
@@ -431,7 +431,7 @@ _jp_next: macro
 
 _jp_pushhl macro
 
-  ; Faster (2 T less) than `jp push_hl`.
+  ; Faster (2 T State) and smaller (1 byte) than `jp push_hl`.
 
   push hl
   _jp_next
@@ -440,7 +440,7 @@ _jp_pushhl macro
 
 ; Create relative or absolute jumps, depending on the configured optimization
 
-_jump: macro _address
+_jump: macro _address ; XXX TODO -- not used yet
   if size_optimization
     jr _address
   else
@@ -448,7 +448,7 @@ _jump: macro _address
   endif
   endm
 
-_jump_nc: macro _address
+_jump_nc: macro _address ; XXX TODO -- not used yet
   if size_optimization
     jr nc,_address
   else
@@ -456,7 +456,7 @@ _jump_nc: macro _address
   endif
   endm
 
-_jump_z: macro _address
+_jump_z: macro _address ; XXX TODO -- not used yet
   if size_optimization
     jr z,_address
   else
@@ -1307,7 +1307,7 @@ nt_of_the_previous_word: defl 0
 ; doc{
 ;
 ; dos  ( -- ca len )
-; 
+;
 ; Return the name of the DOS.
 ;
 ; }doc
@@ -1358,7 +1358,7 @@ endif
 ; lib-order  ( -- a )
 ;
 ; Address of the library order, which has the following
-; structure: 
+; structure:
 ;
 ; |===
 ; | Offset | Bytes        | Description
@@ -1377,6 +1377,9 @@ endif
 ;
 ; }doc
 
+; XXX TODO -- make TR-DOS drives 'A'..'C'; 0..3 is the internal
+; format, but letters are used in filenames.
+
 ; ----------------------------------------------
   _colon_header set_lib_order_,'SET-LIB-ORDER'
 
@@ -1389,7 +1392,7 @@ endif
 ; Set the library search order to the drives identified by
 ; _b[n]_ ... _b[1]_.  Subsequently, drive _b[1]_ will be
 ; searched first, and drive _b[n]_ searched last. If _n_  is
-; zero, empty  the library search order.  
+; zero, empty  the library search order.
 
 ; ----
 ; : set-lib-order  ( b[n] ... b[1] n -- )
@@ -1451,6 +1454,83 @@ get_lib_order.exit
   include kernel.gplusdos.z80s
   include kernel.trdos.z80s
   include kernel.plus3dos.z80s
+
+; ----------------------------------------------
+  _variable_header extra_memory_,'EXTRA-MEMORY'
+
+  db 1,3,4,7
+
+; doc{
+;
+; extra-memory  ( -- ca )
+;
+; Address of an array of four bytes. It holds the memory
+; banks used as extra memory, which is a virtual 64-KiB
+; continuous space: The first bank in the array is used for
+; addresses $0000..$3FFF, the second one for $4000..$7999,
+; the third one for $8000..$BFFF and the fourth one for
+; $C000..$FFFF.
+;
+; }doc
+
+; XXX TODO -- These banks are for ZX Spectrum 128K and +2.
+; They are different for +2A, +3 and +3e.
+
+; ----------------------------------------------
+  _code_header a_to_e_,'A>E'
+
+; doc{
+;
+; a>e  ( a1 -- a2 )
+;
+; Convert an extra memory address _a1_ ($0000..$FFFF) to its
+; actual equivalent _a2_ ($C000..$FFFF) and page in the
+; correspondent memory bank.
+;
+; This word is written in Z80, but the equivalent Forth code is
+; the following:
+;
+; ----
+; : a>e  ( a1 -- a2 )
+;   u>ud $4000 um/mod  extra-memory + c@ bank  $C000 +  ;
+; ----
+;
+; }doc
+
+  pop hl
+  call a_to_e.hl
+  _jp_pushhl
+
+a_to_e.hl:
+
+  ; Convert an extra memory address _a1_ ($0000..$FFFF) to its
+  ; actual equivalent _a2_ ($C000..$FFFF) and page in the
+  ; correspondent memory bank.
+  ;
+  ; Input: HL = extra memory address ($0000..$FFFF)
+  ;
+  ; Output: HL = actual memory address ($C000..$FFFF)
+
+  ld e,h
+  srl e
+  srl e
+  srl e
+  srl e
+  srl e
+  srl e ; E = 0..3 (bank index)
+  push hl
+  ld hl,extra_memory_pfa
+  ld d,0
+  add hl,de
+  ld e,(hl) ; E = bank
+  call bank.e
+  pop hl ; HL = extra memory address ($0000..$FFFF)
+  ld a,h
+a_to_e.hl.mod:
+  sub $40 ; substract $4000 (16 KiB)...
+  jr nc,a_to_e.hl.mod ; ...as many times as needed
+  ld h,a ; HL = actual memory address ($C000..$FFFF)
+  ret
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -1872,8 +1952,22 @@ push_a:
 ;
 ; }doc
 
-  call bank.default
-  _jp_next
+
+if size_optimization
+
+                    ;  T  B
+  push ix           ; 15 02 ; make next `ret` jump to `next`
+  jr bank.default   ; 12 02
+                    ; 27 04 TOTAL
+
+else
+
+                    ;  T  B
+  call bank.default ; 17 03
+  _jp_next          ; 08 02
+                    ; 25 05 TOTAL
+
+endif
 
 ; ----------------------------------------------
   _code_header system_bank_,'SYSTEM-BANK'
@@ -1893,9 +1987,11 @@ push_a:
 bank.system:
   ld e,system_bank
   jr bank.e
+
 bank.default:
 address_of_default_bank equ $+1
   ld e,default_bank
+
 bank.e:
   ld a,(sys_bankm) ; get the saved status of BANKM
   and %11111000 ; reset bits 0-2
@@ -5021,7 +5117,7 @@ do_user:
 
 ; ----------------------------------------------
 if 1 ; developing
-  
+
   ; XXX TMP -- during the development
 
   _user_variable_header warnings_,'WARNINGS'
@@ -7409,7 +7505,7 @@ error.message:
   _question_throw error.zero_length_name
 
 if 1 ; developing
-  
+
   ; XXX TMP -- during the development
 
   dw warnings_,fetch_
@@ -7778,7 +7874,7 @@ search.failed:
 
 ; ----------------------------------------------
 if 1 ; developing
-  
+
   ; XXX TMP -- during the development
 
   _colon_header depth_,'DEPTH'
@@ -8378,6 +8474,9 @@ quit.begin:
 
 ; ----------------------------------------------
   _alias_header to_defer_,'>DEFER',,one_plus_
+
+; XXX TODO -- rename to `>action`, after the standard
+; `action-of`?
 
 ; doc{
 ;

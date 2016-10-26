@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051559
+  \ Last modified: 201610261233
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \
   \ 2016-08-05: Move `begincase-test` from
   \ <lib/flow.begincase.fsb>.
+  \
+  \ 2016-10-26: Add `a>e-test`.
 
 ( alias-test synonym-test )
 
@@ -397,6 +399,26 @@ nope
  ." zx1c"
  ; : zx1d
  ; ?)
+
+( a>e-test )
+
+  \ 2016-10-26
+  \
+  \ This test compares the results of the new version of `a>e`,
+  \ written in Z80 in the kernel, with the previous version
+  \ written in Forth.
+
+need u>ud
+
+: high-a>e  ( a1 -- a2 )
+  u>ud $4000 um/mod  extra-memory + c@ bank  $C000 +  ;
+  \ High-level version of `a>e`.
+
+: a>e-test  ( -- )
+  hex $FFFF 1+ $0000 do
+    home i 4 .r  i a>e i high-a>e <>
+    if  cr ." Mismatch in address " u. abort  then
+  loop  decimal  ;
 
 ( lineload-test )
 
