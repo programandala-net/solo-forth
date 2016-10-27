@@ -11,6 +11,10 @@
 
 .2016-10-27:
 
+Make `noop` an alias, using `next` as xt. This saves `jp (ix)`.
+
+Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
+
 Finish the extra memory system in the kernel.
 
 Remove `join` and `split` from the library, moved to the kernel because of the
@@ -775,6 +779,10 @@ Update the date with interrupts.
 // }}}
 == Printing ==
 // {{{
+
+.2016-10-27:
+
+Add `vemits`, inspired by TI BASIC's `call vchar()`.
 
 .2016-04-17:
 

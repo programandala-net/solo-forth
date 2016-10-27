@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610271719
+; Last modified: 201610280047
 
 include version.z80s
 
@@ -3330,81 +3330,83 @@ if 0 ; extra_memory
 
   ld (find_name_from.ip),bc ; save the Forth IP
   pop hl ; nt
-  pop bc ; C=len, B is supposed to be 0
+  pop bc ; len; B is supposed to be 0
+  ld (find_name_from.string_length.16_bits),bc
   ld a,c
-  ld (find_name_from.string_length),a
+  ld (find_name_from.string_length.8_bits),a
   pop de ; ca
   ld (find_name_from.string_address),de
 
-find_name_from.first_word:
+find_name_from.begin:
   ; Compare the string with a word pointed by its nt.
   ; HL = nt of the word to compare with
-  ld (find_name_from.nt),hl ; save the nt for later
+  ;      (or zero if the end of the word list has been reached)
+  ld (find_name_from.result),hl
+  ld a,h
+  or l ; end of word list? (nt=0)
+  jr z,find_name_from.end
   call a_to_e.hl
-
-find_name_from.new_word:
-  ; Compare the string with a new word pointed by its nt.
   ; HL = actual address of the nt in the extra memory, which is
   ;      paged in
+  ld (find_name_from.converted_nt),hl
 
   ld a,(hl) ; length byte of the name field
   and valid_word_length_mask  ; mask the length and the smudge bit
-find_name_from.string_length: equ $+1
-  ld c,$00 ; length of the string
-  cp c ; same length?
-  jr nz,find_name_from.not_a_match ; lengths differ
+find_name_from.string_length.8_bits: equ $+1
+  cp $00 ; length of the string
+  ; XXX TODO -- use a harcoded `cp len` instead (faster, and
+  ; executed once for every word), and a harcoded `ld bc,len`
+  ; below, before the `cpi` loop (slower, but executed only once
+  ; for words whose lengths match the string); compare the speed
+  ; of this method with the current one
 
+  jr z,find_name_from.compare_characters
+  ; Lengths differ.
+
+find_name_from.not_a_match:
+  ; Not a match, try the next word.
+find_name_from.converted_nt: equ $+1
+  ld hl,$0000 ; actual address of the nt in the extra memory
+  dec hl ; high address of the lfa
+  call question_previous_bank
+  ld b,(hl) ; high part of the next nt
+  dec hl ; low address of the lfa
+  call question_previous_bank
+  ld l,(hl) ; low part of the next nt
+  ld h,b ; HL = nt of the previous word
+  jp find_name_from.begin ; continue
+
+find_name_from.compare_characters:
   ; Lengths match, compare the characters.
-  inc hl ; point to the first char of the name in the dictionary
+  inc hl ; point to the first char of the name
   call question_next_bank
 find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
-  ; BC = string length
+find_name_from.string_length.16_bits: equ $+1
+  ld bc,$0000 ; string length
 find_name_from.compare_next_char:
   ld a,(de)
-  call ascii_upper.a ; XXX NEW experimental
+  call ascii_upper.a
   cpi
   push af
   push de
   call question_next_bank ; XXX TODO -- move after the next `jp`
   pop de
   pop af
+  jr nz,find_name_from.not_a_match ; jump if the chars are different
+  ; XXX TODO -- move right after cpi, to save time
   inc de ; point to next character of the string
-  jp nz,find_name_from.not_a_match ; mismatch
-  jp pe,find_name_from.compare_next_char ; count not exhausted
-
-  ; The string matches.
-  ld hl,(find_name_from.nt)
-  jr find_name_from.end
-
-find_name_from.not_a_match:
-  ; Not a match, try the next word.
-
-find_name_from.nt: equ $+1
-  ld hl,$0000 ; nt
-  dec hl ; high address of lfa
-  call a_to_e.hl
-  ld b,(hl) ; high part of the next nt
-  dec hl ; low address of lfa
-  call question_previous_bank
-  ld l,(hl) ; low part of the next nt
-  ld h,b ; HL = next nt
-  ld a,h
-  or l ; end of dictionary? (next nt=0)
-
-  jp nz,find_name_from.new_word ; if not, continue
-
-  ; End of dictionary, no match found.
-  ld hl,false
+  jp pe,find_name_from.compare_next_char ; jump if length is not exhausted
+  ; The length is exhausted, so the string and the name equal.
 
 find_name_from.end:
+  call bank.default ; page in the default memory bank
+find_name_from.result: equ $+1
+  ld hl,$0000 ; result
   ; If match found:
-  ;   HL = nt
+  ;   HL = nt of the word found
   ; If no match found:
   ;   HL = false
-  exx
-  call bank.default ; page in the default memory bank
-  exx
 find_name_from.ip: equ $+1
   ld bc,$0000 ; restore the Forth IP
   _jp_pushhl
@@ -3439,7 +3441,7 @@ find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
 find_name_from.compare_next_char:
   ld a,(de)
-  call ascii_upper.a ; XXX NEW experimental
+  call ascii_upper.a
   cpi
   inc de ; point to next character of the string
   jp nz,find_name_from.not_a_match ; mismatch
@@ -3521,8 +3523,56 @@ endif
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
 
-; doc{
+if 1 ; XXX TMP -- for debugging
 
+; doc{
+;
+; find-name  ( ca len -- nt | 0 )
+;
+; Find the definition identified by the string _ca len_ in the
+; current search order. If the definition is not found after
+; searching all the vocabularies in the search order, return
+; zero.  If the definition is found, return its _nt_.
+;
+; ----
+; : find-name  ( ca len -- nt | 0 )
+;   #order @ 0 ?do
+;     2dup context i cells + @ @ find-name-from ?dup
+;     ( ca len nt nt | ca len 0 )
+;     if  nip nip unloop exit  then
+;   loop  2drop false  ;
+; ----
+;
+; Origin: Gforth.
+;
+; }doc
+
+  dw hash_order_,fetch_
+  _literal 0
+  dw paren_question_do_,find_name.loop_exit ; do
+
+  ; ( ca len )
+  _brk_type 'in do' ; XXX TMP -- for debugging
+  dw two_dup_,context_,i_,cells_,plus_
+  _brk 'before first @' ; XXX TMP -- for debugging
+  dw fetch_
+  _brk 'before second @' ; XXX TMP -- for debugging
+  dw fetch_
+  _brk 'before find-name-from' ; XXX TMP -- for debugging
+  dw find_name_from_,question_dup_ ; ( ca len nt nt | ca len 0 )
+  dw zero_branch_,find_name.loop
+  dw nip_,nip_,unloop_,exit_
+find_name.loop:
+  dw paren_loop_ ; loop
+find_name.loop_exit:
+
+  dw two_drop_,false_
+  dw exit_
+
+else
+
+; doc{
+;
 ; find-name  ( ca len -- nt | 0 )
 ;
 ; Find the definition identified by the string _ca len_ in the
@@ -3558,6 +3608,8 @@ find_name.loop_exit:
 
   dw two_drop_,false_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
@@ -6598,25 +6650,56 @@ endif
   _jp_pushhl
 
 ; ----------------------------------------------
-  _colon_header c_fetch_e_,'C@E'
 
-  ; XXX TODO -- rewrite in Z80
+if 0 ; XXX OLD
+
+  _colon_header c_fetch_e_,'C@E'
 
 ; doc{
 ;
-; c@e ( a -- c )
+; c@e ( ca -- c )
 ;
-; Fetch _c_ from extra-memory address _a_.
+; Fetch _c_ from extra-memory address _ac_.
 ;
 ; ----
-; : c@e  ( a -- c )
+; : c@e  ( ca -- c )
 ;   a>e c@ default-bank  ;
 ; ----
 ;
 ; }doc
 
+
+  ; 11 bytes
+
   dw a_to_e_,c_fetch_,default_bank_
-  dw next_
+  dw exit_
+
+else
+
+  _code_header c_fetch_e_,'C@E'
+
+; doc{
+;
+; c@e ( ca -- c )
+;
+; Fetch _c_ from extra-memory address _ca_.
+;
+; }doc
+
+  ; 13 bytes
+
+  pop hl
+  call a_to_e.hl
+  ld l,(hl) 
+  ld h,0
+  push hl
+  call bank.default
+  _jp_next
+
+  ; XXX TODO -- smaller alternative for `size_optimization`,
+  ; jumping to `push_a`
+
+endif
 
 ; ----------------------------------------------
   _colon_header fetch_e_,'@E'
@@ -6637,14 +6720,14 @@ endif
 ;
 ; ----
 ; : @e  ( a -- x )
-;   dup 1+ a>e c@ >r c@e r> join   ;
+;   dup 1+ a>e c@ >r c@e r> join  ;
 ; ----
 ;
 ; }doc
 
   dw dup_,one_plus_,a_to_e_,c_fetch_,to_r_
   dw c_fetch_e_,from_r_,join_
-  dw next_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header from_name_,'NAME>'
@@ -8697,18 +8780,22 @@ interpret_table.0:
 ; }doc
 
 interpret.begin:
+  _brk 'begin' ; XXX TMP -- for debugging
 
   dw question_stack_
   dw parse_name_  ; ( ca len )
+  _brk_type 'after parse-name' ; XXX TMP -- for debugging
   dw dup_ ; end of stream?
   dw zero_branch_,interpret.end ; if so, finish
 
   dw find_name_ ; ( nt | 0 )
+  _brk 'after find-name' ; XXX TMP -- for debugging
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
   ; Word found
   ; ( nt )
+  _brk 'word found' ; XXX TMP -- for debugging
   dw dup_,name_to_immediate_question_       ; ( nt xt f1 )
   dw rot_,compile_only_question_,two_star_  ; ( xt f1 n2 )
   dw plus_,abs_ ; ( xt +n )
@@ -8719,18 +8806,23 @@ interpret.do_it:
   ; ( +n )
   ; Execute element _+n_ of `interpret-table`,
   ; depending on `state`.
+  _brk 'do it' ; XXX TMP -- for debugging
   dw compiling_question_,question_negate_,cells_
   _literal interpret_table.0
+  _brk 'before +' ; XXX TMP -- for debugging
   dw plus_,perform_
   dw branch_,interpret.begin
 
 interpret.word_not_found:
+  _brk 'not found' ; XXX TMP -- for debugging
   dw parsed_name_,two_fetch_ ; ( ca len )
   dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
+  _brk 'after number?' ; XXX TMP -- for debugging
   dw branch_,interpret.do_it
 
 interpret.end:
   dw two_drop_
+  _brk 'exit' ; XXX TMP -- for debugging
   dw exit_
 
 ; ----------------------------------------------
@@ -9391,6 +9483,23 @@ endif
   dw display_,default_colors_,page_
   dw greeting_
 
+if 0 ; XXX TMP -- for debugging
+
+  ; dw hex_
+
+  ; _literal $1622 ; nt of `.(`
+  ; dw a_to_e_
+  ; dw dup_
+  ; dw cr_,u_dot_
+
+  ; _literal $1620 ; lfa of `.(`
+  ; dw fetch_e_
+  ; dw cr_,u_dot_
+
+  ; dw decimal_
+
+endif
+
   dw abort_
 
 cold_start:
@@ -9419,17 +9528,22 @@ common_start:
 ; doc{
 ;
 ; d>s  ( d -- n )
+; 
+; _n_ is the equivalent of _d_. The high cell of _d_ is
+; discarded.
+;
+; See: `s>d`, `u>ud`.
 ;
 ; Origin: Forth-94 (DOUBLE), Forth-2012 (DOUBLE).
 ;
-; ----
-; : d>s  ( d -- n )
-;   drop  ;
-; ----
 ; }doc
 
 ; ----------------------------------------------
+if size_optimization
+  _colon_header s_to_d_,'S>D'
+else
   _code_header s_to_d_,'S>D'
+endif
 
 ; doc{
 ;
@@ -9437,7 +9551,7 @@ common_start:
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
-; See: `u>ud`.
+; See: `d>s`, `u>ud`.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -9448,6 +9562,13 @@ common_start:
 ;
 ; }doc
 
+if size_optimization
+
+  dw dup_,zero_less_
+  dw exit_
+
+else
+
   ld hl,0
   pop de
   ld a,d
@@ -9455,6 +9576,8 @@ common_start:
   jp p,push_hlde ; jump if positive
   dec hl
   jp push_hlde
+
+endif
 
 ; ----------------------------------------------
   _code_header question_negate_,'?NEGATE'
@@ -10861,7 +10984,7 @@ if 1 ; developing
 
   dw sp_fetch_,sp0_,fetch_,cell_minus_
   dw paren_do_,dot_s.loop_exit ; do
-  dw i_,fetch_,dot_ ; XXX TMP `u.`
+  dw i_,fetch_,u_dot_ ; XXX TMP `u.`
   _literal -cell
   dw paren_plus_loop_ ; loop
 dot_s.loop_exit:
@@ -11778,11 +11901,17 @@ question_backslash.end:
   dw loading_question_ ; input stream from disk?
   dw question_branch_,backslash.loading
   ; Interpreting
-  dw span_,fetch_ ; XXX TODO -- use `#tib` instead?
+  _brk 'interpreting \' ; XXX TMP -- for debugging
+  dw span_
+  _brk 'after span' ; XXX TMP -- for debugging
+  dw fetch_ ; XXX TODO -- use `#tib` instead?
+  _brk 'after @' ; XXX TMP -- for debugging
   dw to_in_,store_
+  _brk 'end of \' ; XXX TMP -- for debugging
   dw exit_
 
 backslash.loading:
+  _brk 'loading \' ; XXX TMP -- for debugging
   ; Loading
   dw to_in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_
@@ -11832,6 +11961,8 @@ if defined plus3dos
   ; modified, moving everything up and making the RAM disk 32
   ; buffers smaller:
 
+  ; XXX TODO -- adapt to the extra memory system
+
 if system_bank!=1
   .error "`system_bank` is not 1. +3DOS's cold start must be reconfigured."
 endif
@@ -11847,12 +11978,24 @@ endif
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the data to the screen
-  call bank.system
+  call bank.system ; XXX TODO -- adapt to the extra memory system
   ld hl,sys_screen ; origin
   ld de,bank_start ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the name fields to the bank
   call bank.default
+
+if 1 ; XXX TMP --
+
+  ; Erase the memory used for headers
+  ; during the compilation of the kernel:
+  ld hl,bank_start
+  ld de,bank_start+1
+  ld bc,bank_size
+  ld (hl),l ; l=0 because bank_start=$C000
+  ldir
+
+endif
 
   ; Remove the call to this routine:
   ld hl,only_first_cold ; address of the call to this routine

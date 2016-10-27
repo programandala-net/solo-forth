@@ -16,7 +16,7 @@
 # 2016-04-20: Debug the ROM calculator support
 fuse-gtk \
   disks/gplusdos/disk0.mgt \
-  --debugger-command "break 0x6CB2"\
+  --debugger-command "break 0x6CC0"\
  &
 # fuse-gtk \
 #   disks/gplusdos/disk0.mgt \

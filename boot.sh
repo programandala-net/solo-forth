@@ -16,6 +16,7 @@
 fuse-sdl \
   --speed 100 \
 	--machine 128 \
+	--graphics-filter 3x \
 	--no-divide \
 	--plusd \
   --plusddisk ./disks/gplusdos/disk0.mgt \
