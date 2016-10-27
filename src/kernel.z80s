@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610261305
+; Last modified: 201610271710
 
 include version.z80s
 
@@ -97,17 +97,23 @@ if (!defined gplusdos) and (!defined plus3dos) and (!defined trdos)
   gplusdos equ true ; G+DOS by default
 endif
 
-  ; XXX experimental:
 size_optimization: equ false
   ; true = some code pieces are more compact but slower.
   ; false = normal, faster code.
 
-  ; XXX OLD -- the flag is harcoded in the code:
 ;assembler_core_in_kernel: equ true
+  ; XXX REMARK -- this flag is harcoded in the code
 
 developing: equ true
   ; true = include some words needed during the development
   ; false = don't
+
+;extra_memory: equ true
+  ; XXX REMARK -- this flag is harcoded in the code
+  ; XXX UNDER DEVELOPMENT
+  ; How to store the dictionary headers?:
+  ; true = use a virtual 64-KiB extra memory built from 4 banks
+  ; false = use one single 16-KiB bank, called "system bank"
 
 ; ==============================================================
 ; Symbols
@@ -181,14 +187,20 @@ valid_word_length_mask:           equ word_length_mask or smudge_mask
 
 csb_size:                         equ 512 ; bytes, size of the circular string buffer
 
-; Memory banks ($C000..$FFFF)
+; Memory banks
 
 bank_start                        equ $C000
+bank_end                          equ $FFFF
+bank_size:                        equ $4000 ; 16 KiB
 
 default_bank:                     equ 0
-system_bank:                      equ 1
 
-names_bank_address:               equ bank_start ; names pointers
+if 0 ; extra_memory
+  system_bank:                      equ 1 ; XXX TMP --
+else
+  system_bank:                      equ 1
+  names_bank_address:               equ bank_start ; names pointers
+endif
 
 ; Error codes used in the kernel
 
@@ -245,9 +257,9 @@ _header: macro _base_label,_name,_flags,_xt
   ; In data space:
 
   if nul _xt
-    _base_label: ; execution token
+    _base_label: equ $ ; execution token
   else
-    _base_label equ _xt ; execution token of an alias
+    _base_label: equ _xt ; execution token of an alias
   endif
 
   local _dp_backup
@@ -257,16 +269,42 @@ _header: macro _base_label,_name,_flags,_xt
 
   ; In memory bank:
 
+if 0 ; extra_memory
+  org bank_start+(np mod bank_size)
+else
   org np
-  _base_label##xtp:
+endif
+
+  ; Execution token pointer:
+if 0 ; extra_memory
+  _base_label##xtp: equ $-bank_start
+else
+  _base_label##xtp: equ $
+endif
+
   if nul _xt
     dw _base_label ; execution token pointer
   else
     dw _xt ; execution token pointer of an alias
   endif
-  _base_label##lfa: ; link field address
+  ; XXX TODO -- the `if` can be removed because `_base_label`
+  ; has already been set at the start of the macro
+
+  ; Link field address:
+if 0 ; extra_memory
+  _base_label##lfa: equ $-bank_start
+else
+  _base_label##lfa: equ $
+endif
+
     dw nt_of_the_previous_word ; link field
-  _base_label##nt: ; name token
+
+  ; Name token:
+if 0 ; extra_memory
+  _base_label##nt: equ $-bank_start
+else
+  _base_label##nt: equ $
+endif
 
   ; Length byte with optional immediate bit:
 
@@ -277,15 +315,20 @@ _header: macro _base_label,_name,_flags,_xt
   endif
 
   _name_address: equ $
-    db _name ; name field
+    db _name
   _address_after_name: equ $
 
-  np: defl $ ; new value of the names pointer
+  ; Set new value of the names pointer:
+if 0 ; extra_memory
+  np: defl $-bank_start
+else
+  np: defl $
+endif
 
   ; Update the names pointer:
   org names_pointer
-  dw np ; overwrite names_pointer
-  dw np ; overwrite names_pointer_init_value
+  dw np ; overwrite the contents of names_pointer
+  dw np ; overwrite the contents of names_pointer_init_value
 
   ; In dictionary:
   org _dp_backup
@@ -707,8 +750,13 @@ default_user_variables_end:
 ip_backup: ; temporary copy of Forth IP
   ; `$24 +origin`
   dw 0
+  ; XXX OLD -- not used
 
-np: defl names_bank_address+1
+if 0 ; extra_memory
+  np: defl 0
+else
+  np: defl names_bank_address
+endif
 
 names_pointer:
   ; `$24 +origin`
@@ -1477,6 +1525,158 @@ get_lib_order.exit
 ; They are different for +2A, +3 and +3e.
 
 ; ----------------------------------------------
+  _code_header question_next_bank_,'?NEXT-BANK'
+
+; doc{
+;
+; ?next-bank  ( a -- a|a' )
+;
+; If the actual extra memory address _a_ is above the bank
+; space, convert it to _a'_ in the next bank and paged in the
+; next bank, do nothing and return _a_.
+;
+; }doc
+
+  pop hl
+  call question_next_bank
+  _jp_pushhl
+
+question_next_bank:
+
+  ; Input:
+  ;   HL = actual address in a bank ($C000..$FFFF) or $0000
+  ; Output when HL=$0000:
+  ;   HL = $C000 (and the next bank is paged in)
+  ;   A corrupted
+  ;   D = 0
+  ;   E = bank
+  ; Output when HL<>$0000:
+  ;   HL preserved
+
+  ld a,h
+  or l
+  ret nz
+
+  ; Update HL to the next bank of extra memory:
+  ld a,(bank_index_pfa)
+  inc a
+  ld hl,bank_start
+
+new_bank:
+
+  ; Input:
+  ;   A = updated bank index (possible underflow or overflow)
+  ; Output:
+  ;   A corrupted
+  ;   D = 0
+  ;   E = bank
+
+  push hl
+  and %11 ; force range 0..3
+  ld (bank_index_pfa),a
+  ld e,a
+  ld hl,extra_memory_pfa
+  ld d,0
+  add hl,de
+  ld e,(hl) ; E = bank
+  pop hl
+  jp bank.e ; page in the bank E, then return
+
+; ----------------------------------------------
+  _code_header question_previous_bank_,'?PREVIOUS-BANK'
+
+; doc{
+;
+; ?previous-bank  ( a -- a|a' )
+;
+; If the actual extra memory address _a_ is above the bank
+; space, convert it to _a'_ in the previous bank and paged in
+; the previous bank, do nothing and return _a_.
+;
+; }doc
+
+  pop hl
+  call question_previous_bank
+  _jp_pushhl
+
+question_previous_bank:
+
+  ; Input:
+  ;   HL = actual address in a bank ($C000..$FFFF) or $BFFF
+  ; Output when HL=$BFFF:
+  ;   HL = $FFFF (and the previous bank is paged in)
+  ;   A corrupted
+  ;   D = 0
+  ;   E = bank
+  ; Output when HL<>$BFFF:
+  ;   HL preserved
+
+  ld a,h
+  cp $BF
+  ret nz
+  ld a,l
+  and a
+  ret nz
+
+  ; Update HL to the previous bank of extra memory:
+  ld a,(bank_index_pfa)
+  dec a
+  ld hl,bank_end
+  jr new_bank
+
+; ----------------------------------------------
+  _code_header bank_boundary_question,'BANK-BOUNDARY?'
+
+  ; XXX TMP --
+
+; doc{
+;
+; bank-boundary?  ( a -- f )
+;
+; }doc
+
+  pop hl
+  ld a,l
+  and a  ; =$00?
+  jr z,bank_boundary_question.xx00
+  inc a  ; =$FF?
+  jp nz,false_
+
+bank_boundary_question.xxFF:
+  ld a,h
+  cp $7F      ; $7FFF?
+  jp z,true_
+  cp $BF      ; $BFFF?
+  jp z,true_
+  cp $FF      ; $FFFF?
+  jp z,true_
+  jp false_
+
+bank_boundary_question.xx00:
+  ld a,h
+  cp $00      ; $0000?
+  jp z,true_
+  cp $40      ; $4000?
+  jp z,true_
+  cp $80      ; $8000?
+  jp z,true_
+  jp false_
+
+; ----------------------------------------------
+  _variable_header bank_index_,'BANK-INDEX'
+
+; doc{
+;
+; bank-index  ( -- ca )
+;
+; A byte variable that holds the bank index (0..3) calculated by
+; the latest execution of `a>e`.
+;
+; }doc
+
+  db 0
+
+; ----------------------------------------------
   _code_header a_to_e_,'A>E'
 
 ; doc{
@@ -1493,6 +1693,8 @@ get_lib_order.exit
 ; ----
 ; : a>e  ( a1 -- a2 )
 ;   u>ud $4000 um/mod  extra-memory + c@ bank  $C000 +  ;
+;   \ Notes: $4000 = size of one memory bank
+;   \        $C000 = address where memory banks are paged in
 ; ----
 ;
 ; }doc
@@ -1507,9 +1709,12 @@ a_to_e.hl:
   ; actual equivalent _a2_ ($C000..$FFFF) and page in the
   ; correspondent memory bank.
   ;
-  ; Input: HL = extra memory address ($0000..$FFFF)
+  ; Input:
+  ;   HL = extra memory address ($0000..$FFFF)
   ;
-  ; Output: HL = actual memory address ($C000..$FFFF)
+  ; Output:
+  ;   HL = actual memory address ($C000..$FFFF)
+  ;   A DE corrupted
 
   ld e,h
   srl e
@@ -1518,12 +1723,15 @@ a_to_e.hl:
   srl e
   srl e
   srl e ; E = 0..3 (bank index)
+  ld a,e
+  ld (bank_index_pfa),a ; save the bank index
   push hl
   ld hl,extra_memory_pfa
   ld d,0
   add hl,de
   ld e,(hl) ; E = bank
   call bank.e
+
   pop hl ; HL = extra memory address ($0000..$FFFF)
   ld a,h
 a_to_e.hl.mod:
@@ -1977,22 +2185,41 @@ endif
 ; system-bank  ( -- )
 ;
 ; Page in the system bank at $C000..$FFFF.
-; This memory bank is used to store the word names and,
-; optionally, also the command line history.
+; This memory bank is used to store the dictionary headers.
 ;
 ; }doc
 
   push ix ; make next `ret` jump to `next`
 
 bank.system:
+
+  ; Page in the system memory bank.
+
+  ; Output:
+  ;   A E corrupted
+
   ld e,system_bank
   jr bank.e
 
 bank.default:
+
+  ; Page in the default memory bank.
+
+  ; Output:
+  ;   A E corrupted
+
 address_of_default_bank equ $+1
   ld e,default_bank
 
 bank.e:
+
+  ; Page in the memory bank hold in the E register.
+
+  ; Input:
+  ;   E = bank
+  ; Output:
+  ;   A corrupted
+
   ld a,(sys_bankm) ; get the saved status of BANKM
   and %11111000 ; reset bits 0-2
   or e ; modify bits 0-2
@@ -2091,7 +2318,7 @@ endif
 ;
 ; csb0  ( -- a )
 ;
-; Address of the data space of the circular string buffer.
+; Base address of the circular string buffer in data space.
 ;
 ; }doc
 
@@ -2218,6 +2445,7 @@ question_csb_.enough:
   ld l,a
   or h
   jp nz,execute_hl
+
   ; Execution continues in `noop`:
 
 ; ----------------------------------------------
@@ -2585,6 +2813,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   ld (return_stack_pointer),hl ; write updated return stack pointer (6 was added)
   dec bc
   dec bc ; point IP to forward branch address
+
   ; Execution continues in `branch`:
 
 ; ----------------------------------------------
@@ -3095,7 +3324,94 @@ char_question.not:
 ;
 ; }doc
 
-  ld (find_name_from.ip_backup),bc ; save the Forth IP
+if 0 ; extra_memory
+
+  ; XXX UNDER DEVELOPMENT
+
+  ld (find_name_from.ip),bc ; save the Forth IP
+  pop hl ; nt
+  pop bc ; C=len, B is supposed to be 0
+  ld a,c
+  ld (find_name_from.string_length),a
+  pop de ; ca
+  ld (find_name_from.string_address),de
+
+find_name_from.first_word:
+  ; Compare the string with a word pointed by its nt.
+  ; HL = nt of the word to compare with
+  ld (find_name_from.nt),hl ; save the nt for later
+  call a_to_e.hl
+
+find_name_from.new_word:
+  ; Compare the string with a new word pointed by its nt.
+  ; HL = actual address of the nt in the extra memory, which is
+  ;      paged in
+
+  ld a,(hl) ; length byte of the name field
+  and valid_word_length_mask  ; mask the length and the smudge bit
+find_name_from.string_length: equ $+1
+  ld c,$00 ; length of the string
+  cp c ; same length?
+  jr nz,find_name_from.not_a_match ; lengths differ
+
+  ; Lengths match, compare the characters.
+  inc hl ; point to the first char of the name in the dictionary
+  call question_next_bank
+find_name_from.string_address: equ $+1
+  ld de,$0000 ; string address
+  ; BC = string length
+find_name_from.compare_next_char:
+  ld a,(de)
+  call ascii_upper.a ; XXX NEW experimental
+  cpi
+  push af
+  push de
+  call question_next_bank ; XXX TODO -- move after the next `jp`
+  pop de
+  pop af
+  inc de ; point to next character of the string
+  jp nz,find_name_from.not_a_match ; mismatch
+  jp pe,find_name_from.compare_next_char ; count not exhausted
+
+  ; The string matches.
+  ld hl,(find_name_from.nt)
+  jr find_name_from.end
+
+find_name_from.not_a_match:
+  ; Not a match, try the next word.
+
+find_name_from.nt: equ $+1
+  ld hl,$0000 ; nt
+  dec hl ; high address of lfa
+  call a_to_e.hl
+  ld b,(hl) ; high part of the next nt
+  dec hl ; low address of lfa
+  call question_previous_bank
+  ld l,(hl) ; low part of the next nt
+  ld h,b ; HL = next nt
+  ld a,h
+  or l ; end of dictionary? (next nt=0)
+
+  jp nz,find_name_from.new_word ; if not, continue
+
+  ; End of dictionary, no match found.
+  ld hl,false
+
+find_name_from.end:
+  ; If match found:
+  ;   HL = nt
+  ; If no match found:
+  ;   HL = false
+  exx
+  call bank.default ; page in the default memory bank
+  exx
+find_name_from.ip: equ $+1
+  ld bc,$0000 ; restore the Forth IP
+  _jp_pushhl
+
+else
+
+  ld (find_name_from.ip),bc ; save the Forth IP
 
   call bank.system ; page in the memory bank
 
@@ -3109,9 +3425,7 @@ char_question.not:
 find_name_from.begin:
   ; Compare the string with a new word.
   ; HL = nt
-  ld (find_name_from.nt_backup),hl ; save the nt for later
-find_name_from.string_address: equ $+1
-  ld de,$0000 ; string address
+  ld (find_name_from.nt),hl ; save the nt for later
   ld a,(hl) ; length byte of the name field
   and valid_word_length_mask  ; mask the length and the smudge bit
 find_name_from.string_length: equ $+1
@@ -3121,6 +3435,8 @@ find_name_from.string_length: equ $+1
 
   ; Lengths match, compare the characters.
   inc hl ; point to the first char of the name in the dictionary
+find_name_from.string_address: equ $+1
+  ld de,$0000 ; string address
 find_name_from.compare_next_char:
   ld a,(de)
   call ascii_upper.a ; XXX NEW experimental
@@ -3130,13 +3446,13 @@ find_name_from.compare_next_char:
   jp pe, find_name_from.compare_next_char ; count not exhausted
 
   ; The string matches.
-  ld hl,(find_name_from.nt_backup)
+  ld hl,(find_name_from.nt)
   jr find_name_from.end
 
 find_name_from.not_a_match:
   ; Not a match, try the next word.
 
-find_name_from.nt_backup: equ $+1
+find_name_from.nt: equ $+1
                                         ;  T  B
   ld hl,$0000 ; nt                        10 03
   dec hl ; high address of lfa            06 01
@@ -3161,9 +3477,11 @@ find_name_from.end:
   exx
   call bank.default ; page in the default memory bank
   exx
-find_name_from.ip_backup: equ $+1
+find_name_from.ip: equ $+1
   ld bc,$0000 ; restore the Forth IP
   _jp_pushhl
+
+endif
 
 ; ----------------------------------------------
   _colon_header search_wordlist_,'SEARCH-WORDLIST'
@@ -4104,7 +4422,11 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _constant_header np0_,'NP0'
 
+if 0 ; extra_memory
+  dw $0000
+else
   dw names_bank_address
+endif
 
 ; ----------------------------------------------
   _code_header np_fetch_,'NP@'
@@ -4324,6 +4646,7 @@ zero_equals.hl:
   ld a,l
   or h
   jp z,true_
+
   ; Execution continues in `0`, which is `false`:
 
 ; ----------------------------------------------
@@ -4864,6 +5187,7 @@ do_colon:
   dw create_,c_comma_
   dw paren_semicolon_code_
 do_c_constant:
+
   ; Execution continues in `c@`:
 
 ; ----------------------------------------------
@@ -4881,6 +5205,7 @@ c_fetch.hl:
   dw create_,comma_
   dw paren_semicolon_code_
 do_constant:
+
   ; Execution continues in `@`:
 
 ; ----------------------------------------------
@@ -5011,9 +5336,6 @@ do_user:
 
 ; ----------------------------------------------
   _constant_header b_slash_rec_,'B/REC'
-
-  ; XXX TODO -- remove? used only once, and may be harcoded
-  ; XXX TODO -- move to the library
 
   dw bytes_per_sector
 
@@ -5707,7 +6029,8 @@ two_comma.allot:
   or a ; CY=0
   sbc hl,de
   jp nz,false_
-  ; Execution continues in `true`:
+
+  ; Execution continues in `-1`, which is `true`:
 
 ; ----------------------------------------------
   _code_header minus_one_,'-1'
@@ -5889,27 +6212,141 @@ u_less_than.de_hl:
 ; Try to find the name token _nt_ of the word represented by
 ; execution token _xt_. Return 0 if it fails.
 ;
-; This word searches all headers, from the oldest to the newest,
-; for the first one whose _xtp_ (xt pointer) contains _xt_.
-; This way, when a word has additional headers created by
-; `alias` or `synonym`, its original name is found first.
+; This word searches all headers, from the oldest one to the
+; newest one, for the first one whose _xtp_ (xt pointer)
+; contains _xt_.  This way, when a word has additional headers
+; created by `alias` or `synonym`, its original name is found
+; first.
 ;
 ; Origin: Gforth.
 ;
 ; }doc
 
-  ; XXX TODO -- Search backwards from `latest`?
+if 0 ; extra_memory
+
+  ; XXX TODO -- finish adapting
+
+  pop de ; xt
+  push bc ; save Forth IP
+
+  ; Save the names pointer for later:
+
+  if size_optimization
+
+                                          ;  T  B
+  ld hl,(names_pointer)                   ; 20 03
+  ld a,l                                  ; 04 01
+  ld (to_name.names_pointer_low_byte),a   ; 13 03
+  ld a,h                                  ; 04 01
+  ld (to_name.names_pointer_high_byte),a  ; 13 03
+                                          ; 54 11 TOTAL
+
+  else
+
+                                          ;  T  B
+  ld a,(names_pointer)                    ; 13 03
+  ld (to_name.names_pointer_low_byte),a   ; 13 03
+  ld a,(names_pointer+1)                  ; 13 03
+  ld (to_name.names_pointer_high_byte),a  ; 13 03
+                                          ; 52 12 TOTAL
+
+  endif
+
+  ld b,0
+  ld hl,$0000 ; first address of the extra memory
+
+to_name.begin:
+
+  ; compare HL with the names pointer
+  ; if they are equal, there are no more names to check
+to_name.names_pointer_high_byte equ $+1
+  ld a,0
+  cp h
+  jr nz,to_name.check_xt
+to_name.names_pointer_low_byte equ $+1
+  ld a,0
+  sub l
+  jr nz,to_name.check_xt
+
+  ; no words left
+  ; a=0
+  ld h,a
+  ld l,a ; HL = 0
+  jr to_name.end
+
+to_name.check_xt
+  ; Check if the xt pointed by HL is the one searched for
+  ; HL = xtp
+  ; XXX TODO -- patch the bytes to be compared, instead of
+  ; preserving DE, what is slower
+  push de ; XXX TMP --
+  call a_to_e.hl
+  pop de ; XXX TMP --
+  ld a,(hl) ; low byte of xt
+  inc hl
+  cp e ; equal?
+  jr nz,to_name.next ; not equal
+  push de ; XXX TMP --
+  call a_to_e.hl
+  pop de ; XXX TMP --
+  ld a,(hl) ; high byte of xt
+  cp d ; equal?
+  jr nz,to_name.next ; not equal
+
+  ; xt found
+  ; HL = xtp+1
+  inc hl ; lfa
+  inc hl
+  inc hl ; nfa
+
+to_name.end:
+  ; HL = nt or zero
+  call bank.default ; page in the default memory bank
+  pop bc ; restore Forth IP
+  _jp_pushhl
+
+to_name.next:
+  ; HL = xtp+1
+  inc hl ; lfa
+  inc hl
+  inc hl ; nfa
+  ld a,(hl) ; name field byte length
+  and word_length_mask ; name length
+  ld c,a ; name length
+  inc c  ; plus the length byte
+  add hl,bc ; xtp of the next word
+  jr to_name.begin
+
+
+else
 
   call bank.system ; page in the memory bank
 
   pop de ; xt
   push bc ; save Forth IP
 
-  ; save the names pointer for later:
-  ld a,(names_pointer)
-  ld (to_name.names_pointer_low_byte),a
-  ld a,(names_pointer+1)
-  ld (to_name.names_pointer_high_byte),a
+  ; Save the names pointer for later:
+
+  if size_optimization
+
+                                          ;  T  B
+  ld hl,(names_pointer)                   ; 20 03
+  ld a,l                                  ; 04 01
+  ld (to_name.names_pointer_low_byte),a   ; 13 03
+  ld a,h                                  ; 04 01
+  ld (to_name.names_pointer_high_byte),a  ; 13 03
+                                          ; 54 11 TOTAL
+
+  else
+
+                                          ;  T  B
+  ld a,(names_pointer)                    ; 13 03
+  ld (to_name.names_pointer_low_byte),a   ; 13 03
+  ld a,(names_pointer+1)                  ; 13 03
+  ld (to_name.names_pointer_high_byte),a  ; 13 03
+                                          ; 52 12 TOTAL
+
+  endif
 
   ld b,0
   ld hl,names_bank_address
@@ -5917,7 +6354,7 @@ u_less_than.de_hl:
 to_name.begin:
 
   ; compare HL with the names pointer
-  ; if they are equals, there are no more names to check
+  ; if they are equal, there are no more names to check
 to_name.names_pointer_high_byte equ $+1
   ld a,0
   cp h
@@ -5967,6 +6404,8 @@ to_name.next:
   inc c  ; plus the length byte
   add hl,bc ; xtp of the next word
   jr to_name.begin
+
+endif
 
 ; ----------------------------------------------
   _colon_header c_store_bank_,'C!BANK'
@@ -6068,6 +6507,8 @@ to_name.next:
   ; XXX TODO -- move to the library?
   ; Used only by an alternative version of `lex?`
 
+  ; XXX TODO -- keep only when the extra_memory option is off
+
 ; doc{
 ;
 ; c@s  ( a -- x )
@@ -6088,6 +6529,8 @@ to_name.next:
 ; ----------------------------------------------
   _colon_header fetch_s_,'@S'
 
+  ; XXX TODO -- keep only when the extra_memory option is off
+
 ; doc{
 ;
 ; @s  ( a -- x )
@@ -6106,26 +6549,195 @@ to_name.next:
   ; jp fetch_bank.e
 
 ; ----------------------------------------------
+  _code_header split_,'SPLIT'
+
+; Credit:
+;
+; Idea from IsForth.
+
+; doc{
+;
+; split  ( x -- b1 b2 )
+;
+; Get _b1_ and _b2_ from the 2 bytes which compose _x_: _b1_
+; is the low-order byte and _b2_ is the high-order byte.
+;
+; See `join`.
+;
+; Origin: IsForth.
+;
+; }doc
+
+  pop hl
+  ld d,0
+  ld e,l
+  ld l,h
+  ld h,0
+  jp push_hlde
+
+; ----------------------------------------------
+  _code_header join_,'JOIN'
+
+; doc{
+;
+; join  ( b1 b2 -- x )
+;
+; _b1_ is the low-order byte of _x_, and _b2_ is the
+; high-order byte of _x_.
+;
+; See `split`.
+;
+; Origin: IsForth.
+;
+; }doc
+
+  pop de
+  ld h,e
+  pop de
+  ld l,e
+  _jp_pushhl
+
+; ----------------------------------------------
+  _colon_header c_fetch_e_,'C@E'
+
+  ; XXX TODO -- rewrite in Z80
+
+; doc{
+;
+; c@e ( a -- c )
+;
+; Fetch _c_ from extra-memory address _a_.
+;
+; ----
+; : c@e  ( a -- c )
+;   a>e c@ default-bank  ;
+; ----
+;
+; }doc
+
+  dw a_to_e_,c_fetch_,default_bank_
+  dw next_
+
+; ----------------------------------------------
+  _colon_header fetch_e_,'@E'
+
+  ; XXX TODO -- rewrite in Z80
+
+; XXX OLD -- faster but larger version:
+; : @e  ( a -- x )
+;   dup 1+ a>e c@ >r a>e c@ r> join default-bank  ;
+
+; doc{
+;
+; @e ( a -- x )
+;
+; Fetch _x_ from extra-memory address _a_.
+;
+; See: `@eb`.
+;
+; ----
+; : @e  ( a -- x )
+;   dup 1+ a>e c@ >r c@e r> join   ;
+; ----
+;
+; }doc
+
+  dw dup_,one_plus_,a_to_e_,c_fetch_,to_r_
+  dw c_fetch_e_,from_r_,join_
+  dw next_
+
+; ----------------------------------------------
   _colon_header from_name_,'NAME>'
+
+if 0 ; extra_memory
+  
+; doc{
+;
+; name>  ( nt -- xt )
+;
+; ----
+; : name>  ( nt -- xt )
+;   [ 2 cells ] literal - @e  ;
+; ----
+;
+; }doc
+
+  _literal 2*cell
+  dw minus_,fetch_e_
+  dw exit_
+
+else
 
 ; doc{
 ;
 ; name>  ( nt -- xt )
 ;
+; ----
+; : name>  ( nt -- xt )
+;   [ 2 cells ] literal - @s  ;
+; ----
+;
 ; }doc
 
-  _literal 4
+  _literal 2*cell
   dw minus_,fetch_s_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header name_to_string_,'NAME>STRING'
 
   ; XXX TODO -- move to the library, with `.name`
 
+if 0 ; extra_memory
+
+  ; XXX TODO -- adapt to extra memory
+
 ; doc{
 ;
 ; name>string  ( nt -- ca len )
+;
+; Convert the name token _nt_ to its name string _ca len_.
+;
+; ----
+; : name>string  ( nt -- ca len )
+;   a>e ( nt' )
+;   count dup %11111 and allocate-string  ( ca1 len ca )
+;   2dup swap 2>r  -rot ( ca ca1 len )
+;   0 ?do  ( ca ca1 )
+;     ?next-bank 2dup c@ swap c! char+
+;   loop  default-bank 2r>  ;
+; ----
+;
+; }doc
+
+  dw a_to_e_ ; ( nt' )
+  dw count_,dup_
+  _literal word_length_mask
+  dw and_  ; ( ca1 len )
+  dw allocate_string_ ; ( ca1 len ca )
+  dw two_dup_,swap_,two_to_r_,minus_rot_ ; ( ca ca1 len )
+  _literal 0
+  dw paren_question_do_,name_to_string.loop_exit ; ( ca ca1 )
+  dw question_next_bank_,two_dup_,c_fetch_,swap_,c_store_,char_plus_
+  dw paren_loop_
+name_to_string.loop_exit:
+  dw default_bank_,two_from_r_
+  dw exit_
+
+else
+
+; doc{
+;
+; name>string  ( nt -- ca len )
+;
+; Convert the name token _nt_ to its name string _ca len_.
+;
+; ----
+; : name>string  ( nt -- ca len )
+;   system-bank count %11111 and save-string default-bank  ;
+; ----
 ;
 ; }doc
 
@@ -6137,6 +6749,8 @@ to_name.next:
   dw default_bank_
   dw exit_
 
+endif
+
 ; ----------------------------------------------
   _colon_header store_csp_,'!CSP'
 
@@ -6147,6 +6761,11 @@ to_name.next:
 ; Save the the current data stack position.
 ;
 ; Origin: fig-Forth.
+;
+; ----
+; : !csp  ( -- )
+;   sp@ csp !  ;
+; ----
 ;
 ; }doc
 
@@ -6310,9 +6929,19 @@ postpone.end:
 ;
 ; }doc
 
+if 0 ; extra_memory
+
+  dw smudge_mask_,swap_
+  dw a_to_e_,c_store_reset_bits_,default_bank_
+  dw exit_
+
+else
+
   dw smudge_mask_,swap_
   dw system_bank_,c_store_reset_bits_,default_bank_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header reveal_,'REVEAL'
@@ -8117,10 +8746,20 @@ interpret.end:
 
 if 1
 
+if 0 ; extra_memory
+
+  dw swap_,a_to_e_,c_fetch_test_bits_question_
+  dw default_bank_
+  dw exit_
+
+else
+
   dw system_bank_
   dw swap_,c_fetch_test_bits_question_
   dw default_bank_
   dw exit_
+
+endif
 
 else  ; XXX TMP alternative without `c@test-bits?`
 
@@ -8151,8 +8790,17 @@ endif
   ; Credit:
   ; Word adapted from eForth.
 
+if 0 ; extra_memory
+
+  dw a_to_e_,c_store_set_bits_,default_bank_
+  dw exit_
+
+else
+
   dw system_bank_,c_store_set_bits_,default_bank_
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
@@ -10369,7 +11017,7 @@ endif
   ld (sys_coords),bc ; reset the graphic coordinates
   exx ; restore the Forth IP
 
-  ; execution continues at `home`
+  ; Execution continues in `home`:
 
 ; ----------------------------------------------
   _defer_header home_,'HOME',,mode32_home_
@@ -10803,7 +11451,8 @@ color9:
   ld a,$09
 color9.valid:
   rst $10
-  ; execution continues at `permanent-colors`
+
+  ; Execution continues in `permanent-colors`:
 
 ; ----------------------------------------------
   _code_header permanent_colors_,'PERMANENT-COLORS'
@@ -10825,6 +11474,7 @@ color9.valid:
   dw create_,two_comma_
   dw paren_semicolon_code_
 do_two_constant:
+
   ; Execution continues in `2@`:
 
 ; ----------------------------------------------
@@ -11179,13 +11829,13 @@ endif
 
 endif
 
-  ld hl,names_bank_address ; origin
+  ld hl,bank_start ; origin
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the data to the screen
   call bank.system
   ld hl,sys_screen ; origin
-  ld de,names_bank_address ; destination
+  ld de,bank_start ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the name fields to the bank
   call bank.default
@@ -11198,8 +11848,6 @@ endif
   inc hl
   ld (hl),0 ; nop
   ret
-
-  org names_bank_address
 
 ; ==============================================================
 ; End

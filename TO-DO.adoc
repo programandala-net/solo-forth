@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-10-24
+:revdate: 2016-10-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -8,6 +8,13 @@
 // }}}
 == Misc ==
 // {{{
+
+.2016-10-27:
+
+Finish the extra memory system in the kernel.
+
+Remove `join` and `split` from the library, moved to the kernel because of the
+extra memory system.
 
 .2016-08-11:
 
@@ -149,11 +156,10 @@ Compact "strings.misc.fsb" and make `lengths` needed.
 Fix the `indexer` tool: indexing all words from the library (>800) fills the
 system memory bank were headers are created.  The solution is a configurable
 system bank: the indexer could use a different system bank, and reset the
-names pointer temporarily.
+names pointer temporarily. Update 2016-10-27: the extra memory is being implemented,
+using 4 banks.
 
-Compact the blocks of the address register and add conditional compilation.
-
-Compact and document the Noble arrays.
+Document the Noble arrays.
 
 .2016-05-06:
 
@@ -412,33 +418,6 @@ Homogenize the following stack notations:
 
 Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
-
-// }}}
-== Turnkey ==
-// {{{
-
-.2015-07-23:
-
-Study how to save and load the main code and the name bank apart, in
-two files. This way `turnkey` could be used also to save a modified
-copy of the system, not just Forth programs. Simpler solution: use the
-snapshop option of the Plus D, or save a snapshot from the emulator.
-
-.2015-08-31:
-
-Problem: SZX snapshots don't preserve the mounted disks or G+DOS!
-
-The Plus D own snapshots can be used, but this means programs have to
-be started manually, typing `run` in BASIC to load G+DOS, and then
-loading the snapshot file from BASIC or an Autoload file.
-
-// }}}
-== Disk blocks ==
-// {{{
-
-.2015-08-31:
-
-Fix: `transfer-block` changes the current drive to 2!
 
 // }}}
 == Graphics ==
@@ -815,6 +794,25 @@ because _r_ is the standard for floating-point numbers.
 // }}}
 == G+DOS ==
 // {{{
+
+.2015-08-31:
+
+Problem: SZX snapshots don't preserve the mounted disks or G+DOS!
+
+The Plus D own snapshots can be used, but this means programs have to
+be started manually, typing `run` in BASIC to load G+DOS, and then
+loading the snapshot file from BASIC or an Autoload file.
+
+.2015-08-31:
+
+Fix: `transfer-block` changes the current drive to 2!
+
+.2015-07-23:
+
+Study how to save and load the main code and the name bank apart, in
+two files. This way `turnkey` could be used also to save a modified
+copy of the system, not just Forth programs. Simpler solution: use the
+snapshop option of the Plus D, or save a snapshot from the emulator.
 
 .2016-03-16:
 

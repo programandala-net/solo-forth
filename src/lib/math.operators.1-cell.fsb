@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610241826
+  \ Last modified: 201610271706
 
   \ -----------------------------------------------------------
   \ Description
@@ -770,6 +770,9 @@ need [if]
 [then]
 
 ( split join )
+
+  \ XXX OLD -- 2016-10-27: Moved to the kernel, needed by the
+  \ extra memory system.
 
 need [if]
 

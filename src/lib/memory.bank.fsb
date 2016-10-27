@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610261304
+  \ Last modified: 201610261716
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,9 @@
   \ been moved to the kernel.
 
 ( !s c!s )
+
+  \ XXX TODO -- remove after fully implementing the extra
+  \ memory
 
 : !s  ( x a -- )  system-bank ! default-bank  ;
 
@@ -101,6 +104,8 @@ need join  need split
 
 : c@e  ( a -- c )  a>e c@ default-bank  ;
 
+  \ XXX TMP -- copied to the kernel
+  \
   \ doc{
   \
   \ c@e ( a -- c )
@@ -143,6 +148,8 @@ need join  need split
 
 : @e  ( a -- x )  dup 1+ a>e c@ >r c@e r> join   ;
 
+  \ XXX TMP -- copied to the kernel
+  \
   \ XXX OLD -- faster but larger version:
   \ : @e  ( a -- x )
   \   dup 1+ a>e c@ >r a>e c@ r> join default-bank  ;
