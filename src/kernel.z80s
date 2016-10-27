@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610271710
+; Last modified: 201610271719
 
 include version.z80s
 
@@ -6703,7 +6703,7 @@ if 0 ; extra_memory
 ; ----
 ; : name>string  ( nt -- ca len )
 ;   a>e ( nt' )
-;   count dup %11111 and allocate-string  ( ca1 len ca )
+;   count dup word-length-mask and allocate-string  ( ca1 len ca )
 ;   2dup swap 2>r  -rot ( ca ca1 len )
 ;   0 ?do  ( ca ca1 )
 ;     ?next-bank 2dup c@ swap c! char+
@@ -6736,7 +6736,8 @@ else
 ;
 ; ----
 ; : name>string  ( nt -- ca len )
-;   system-bank count %11111 and save-string default-bank  ;
+;   system-bank count word-length-mask and
+;   save-string default-bank  ;
 ; ----
 ;
 ; }doc
@@ -6998,6 +6999,19 @@ endif
 
   dw latest_,hidden_
   dw exit_
+
+; ----------------------------------------------
+  _c_constant_header word_length_mask_,'WORD-LENGTH-MASK'
+
+; doc{
+;
+; word-length-mask  ( -- b )
+;
+; Constant that holds the bitmask of the word length.
+;
+; }doc
+
+  db word_length_mask
 
 ; ----------------------------------------------
   _c_constant_header smudge_mask_,'SMUDGE-MASK'
