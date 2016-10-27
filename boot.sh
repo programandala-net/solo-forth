@@ -9,12 +9,15 @@
 
 # 2015-06: Start
 # 2016-08-05: Update with directory.
+# 2016-10-27: Update filename.
+
+# ==============================================================
 
 fuse-sdl \
   --speed 100 \
 	--machine 128 \
 	--no-divide \
 	--plusd \
-  --plusddisk ./disks/gplusdos/solo_forth_disk_1.mgt \
+  --plusddisk ./disks/gplusdos/disk0.mgt \
 	$* \
 	&

@@ -9,14 +9,17 @@
 
 # 2015-08-16: Start.
 # 2016-08-05: Update with directories.
+# 2016-10-27: Update filename.
+
+# ==============================================================
 
 # 2016-04-20: Debug the ROM calculator support
 fuse-gtk \
-  disks/gplusdos/solo_forth_disk_1.mgt \
-  --debugger-command "break 0x353B"\
+  disks/gplusdos/disk0.mgt \
+  --debugger-command "break 0x6CB2"\
  &
 # fuse-gtk \
-#   disks/gplusdos/solo_forth_disk_1.mgt \
+#   disks/gplusdos/disk0.mgt \
 #   --debugger-command "break 0x336C
 #   break 0x338C
 #   break 0x33A1
@@ -26,7 +29,7 @@ fuse-gtk \
 # 2016-04-10: Debug the tape support
 #
 # fuse-gtk \
-#   disks/gplusdos/solo_forth_disk_1.mgt \
+#   disks/gplusdos/disk0.mgt \
 #   --debugger-command "break 0x04C2
 #   break 0x053C
 #   break 0x0991
