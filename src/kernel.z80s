@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610280047
+; Last modified: 201610280056
 
 include version.z80s
 
@@ -523,7 +523,7 @@ _message: macro _error
 ; ----------------------------------------------
 ; Macros for debugging
 
-debugging: equ 1
+debugging: equ 0
 
 _z80_just_border: macro _color
   if debugging
@@ -11902,9 +11902,9 @@ question_backslash.end:
   dw question_branch_,backslash.loading
   ; Interpreting
   _brk 'interpreting \' ; XXX TMP -- for debugging
-  dw span_
-  _brk 'after span' ; XXX TMP -- for debugging
-  dw fetch_ ; XXX TODO -- use `#tib` instead?
+  dw number_tib_
+  _brk 'after #tib' ; XXX TMP -- for debugging
+  dw fetch_
   _brk 'after @' ; XXX TMP -- for debugging
   dw to_in_,store_
   _brk 'end of \' ; XXX TMP -- for debugging
