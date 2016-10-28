@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610261716
+  \ Last modified: 201610281421
 
   \ -----------------------------------------------------------
   \ Description
@@ -92,29 +92,30 @@
 
 need join  need split
 
-: c!e  ( c a -- )  a>e c! default-bank  ;
+: c!e  ( c ca -- )  a>e c! default-bank  ;
+  \ XXX TMP -- copied to the kernel
 
   \ doc{
   \
-  \ c!e  ( c a -- )
+  \ c!e  ( c ca -- )
   \
-  \ Store _c_ into extra-memory address _a_.
+  \ Store _c_ into extra-memory address _ca_.
   \
   \ }doc
 
 : c@e  ( a -- c )  a>e c@ default-bank  ;
-
   \ XXX TMP -- copied to the kernel
-  \
+
   \ doc{
   \
-  \ c@e ( a -- c )
+  \ c@e ( ca -- c )
   \
-  \ Fetch _c_ from extra-memory address _a_.
+  \ Fetch _c_ from extra-memory address _ca_.
   \
   \ }doc
 
 : !e  ( x a -- )  >r split r@ 1+ a>e c! r> c!e  ;
+  \ XXX TMP -- copied to the kernel
 
   \ XXX OLD -- faster but larger version:
   \ : !e  ( x a -- )
@@ -147,9 +148,8 @@ need join  need split
   \ }doc
 
 : @e  ( a -- x )  dup 1+ a>e c@ >r c@e r> join   ;
-
   \ XXX TMP -- copied to the kernel
-  \
+
   \ XXX OLD -- faster but larger version:
   \ : @e  ( a -- x )
   \   dup 1+ a>e c@ >r a>e c@ r> join default-bank  ;

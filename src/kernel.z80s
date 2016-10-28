@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610281313
+; Last modified: 201610281423
 
 include version.z80s
 
@@ -3550,14 +3550,22 @@ endif
   dw paren_question_do_,find_name.loop_exit ; do
 
   ; ( ca len )
-  dw two_dup_,context_,i_,cells_,plus_,fetch_,fetch_
-  dw find_name_from_,question_dup_ ; ( ca len nt nt | ca len 0 )
+  _chk_type 'find-name' ; XXX INFORMER
+  dw two_dup_,context_,i_,cells_,plus_
+  _chk 'before first @' ; XXX INFORMER
+  dw fetch_
+  _chk 'before second @' ; XXX INFORMER
+  dw fetch_
+  _brk 'before find-name-from' ; XXX INFORMER
+  dw find_name_from_
+  _chk 'after find-name-from' ; XXX INFORMER
+  dw question_dup_ ; ( ca len nt nt | ca len 0 )
   dw zero_branch_,find_name.loop
   dw nip_,nip_,unloop_,exit_
 find_name.loop:
   dw paren_loop_ ; loop
-find_name.loop_exit:
 
+find_name.loop_exit:
   dw two_drop_,false_
   dw exit_
 
@@ -4409,6 +4417,8 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _constant_header np_,'NP'
 
+  ; XXX TODO -- update documentation for extra memory
+
 ; doc{
 ;
 ; np  ( -- a )
@@ -4453,6 +4463,8 @@ endif
 
 ; ----------------------------------------------
 
+  ; XXX TODO -- update documentation for extra memory
+
   _colon_header comma_np_,',NP'
 
 ; doc{
@@ -4466,10 +4478,19 @@ endif
 ;
 ; }doc
 
-  dw np_fetch_,store_
-  _literal 2
-  dw np_,plus_store_
+if 0 ; extra_memory
+
+  dw np_fetch_,store_e_
+  dw cell_,np_,plus_store_
   dw exit_
+
+else
+
+  dw np_fetch_,store_
+  dw cell_,np_,plus_store_
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _code_header sp_fetch_,'SP@'
@@ -6609,7 +6630,7 @@ if 0 ; XXX OLD
 ;
 ; c@e ( ca -- c )
 ;
-; Fetch _c_ from extra-memory address _ac_.
+; Fetch _c_ from extra-memory address _ca_.
 ;
 ; ----
 ; : c@e  ( ca -- c )
@@ -6652,6 +6673,24 @@ else
 endif
 
 ; ----------------------------------------------
+  _code_header c_store_e_,'C!E'
+
+; doc{
+;
+; c!e ( c ca -- )
+;
+; Store _c_ into extra-memory address _ca_.
+;
+; }doc
+
+  pop hl
+  call a_to_e.hl
+  pop de
+  ld (hl),e
+  call bank.default
+  _jp_next
+
+; ----------------------------------------------
   _colon_header fetch_e_,'@E'
 
   ; XXX TODO -- rewrite in Z80
@@ -6677,6 +6716,34 @@ endif
 
   dw dup_,one_plus_,a_to_e_,c_fetch_,to_r_
   dw c_fetch_e_,from_r_,join_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header store_e_,'!E'
+
+  ; XXX TODO -- rewrite in Z80
+
+; doc{
+;
+; !e  ( x a -- )
+;
+; Store _x_ into extra-memory address _a_.
+;
+; See: `!eb`.
+; 
+; ----
+; : !e  ( x a -- )
+;   >r split r@ 1+ a>e c! r> c!e  ;
+; ----
+;
+; }doc
+
+; XXX OLD -- faster but larger version:
+; : !e  ( x a -- )
+;   >r split r@ 1+ a>e c! r> a>e c! default-bank  ;
+
+  dw to_r_,split_,r_fetch_,one_plus_
+  dw a_to_e_,c_store_,from_r_,c_store_e_
   dw exit_
 
 ; ----------------------------------------------
@@ -7902,7 +7969,9 @@ parse.end:
 
   dw parse_name_
   dw question_name_too_short_
+  _chk_type 'before header,' ; XXX INFORMER
   dw header_comma_
+  _chk 'after header,' ; XXX INFORMER
   dw exit_
 
 ; ----------------------------------------------
@@ -8251,6 +8320,10 @@ header_comma.continue:
 
   ; ( ca len )
 
+if 0 ; extra_memory
+ 
+  ; XXX TODO --
+  
   dw here_,lastxt_,store_ ; update `lastxt`
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
@@ -8270,9 +8343,36 @@ header_comma.continue:
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
 
-  dw default_bank_ ; XXX NEW -- 2016-04-17
+  dw default_bank_
 
   dw exit_
+
+else
+
+  dw here_,lastxt_,store_ ; update `lastxt`
+  dw width_,fetch_,min_
+  dw tuck_ ; ( len ca len )
+  dw system_bank_
+  dw here_,comma_np_ ; store a pointer to the xt
+  dw current_latest_,comma_np_ ; link field
+  ; Now `np` contains the address of the nt.
+  dw np_fetch_
+  dw dup_,to_r_
+  dw place_ ; store the name
+  dw from_r_,count_,uppers_
+
+  dw np_fetch_,dup_
+  dw get_current_,store_ ; update the current vocabulary
+  dw last_,store_ ; and `last`
+
+  dw hide_
+  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
+
+  dw default_bank_
+
+  dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header create_,'CREATE'
@@ -8770,25 +8870,25 @@ interpret_table.0:
 ; }doc
 
 interpret.begin:
-  _chk 'begin interpret, latest:' ; XXX INFORMER
-if debugging
-  dw latest_,cr_,dot_name_ ; XXX INFORMER
-endif
+  ; _chk 'begin interpret, latest:' ; XXX INFORMER
+  ; if debugging
+  ;   dw latest_,cr_,dot_name_ ; XXX INFORMER
+  ; endif
 
   dw question_stack_
   dw parse_name_  ; ( ca len )
-  _chk_type 'after parse-name' ; XXX INFORMER
+  ; _chk_type 'after parse-name' ; XXX INFORMER
   dw dup_ ; end of stream?
   dw zero_branch_,interpret.end ; if so, finish
 
   dw find_name_ ; ( nt | 0 )
-  _chk 'after find-name' ; XXX INFORMER
+  ; _chk 'after find-name' ; XXX INFORMER
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
   ; Word found
   ; ( nt )
-  _chk 'word found' ; XXX INFORMER
+  ; _chk 'word found' ; XXX INFORMER
   dw dup_,name_to_immediate_question_       ; ( nt xt f1 )
   dw rot_,compile_only_question_,two_star_  ; ( xt f1 n2 )
   dw plus_,abs_ ; ( xt +n )
@@ -8804,19 +8904,19 @@ interpret.do_it:
   _literal interpret_table.0
   ;_brk 'before +' ; XXX INFORMER
   dw plus_,perform_
-  _chk 'after perform' ; XXX INFORMER
+  ; _chk 'after perform' ; XXX INFORMER
   dw branch_,interpret.begin
 
 interpret.word_not_found:
-  _brk 'not found' ; XXX INFORMER
+  ; _brk 'not found' ; XXX INFORMER
   dw parsed_name_,two_fetch_ ; ( ca len )
   dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
-  _chk 'after number?' ; XXX INFORMER
+  ; _chk 'after number?' ; XXX INFORMER
   dw branch_,interpret.do_it
 
 interpret.end:
   dw two_drop_
-  _chk 'exit interpret' ; XXX INFORMER
+  ; _chk 'exit interpret' ; XXX INFORMER
   dw exit_
 
 ; ----------------------------------------------
@@ -8892,7 +8992,9 @@ endif
 
 if 0 ; extra_memory
 
+  _brk "start of lex!" ; XXX INFORMER
   dw a_to_e_,c_store_set_bits_,default_bank_
+  _brk "end of lex!" ; XXX INFORMER
   dw exit_
 
 else

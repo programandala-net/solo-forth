@@ -13,8 +13,7 @@
 
 Fix the extra memory system:
 
-- It fails when loading a block.
-- It fails in compilation mode.
+- After entering compilation mode, words are not recognized.
 - Finish `>name`.
 
 .2016-10-27:
