@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604201956
+  \ Last modified: 201610281920
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,11 @@
   \
   \ 2016-04-20: Improved `2dup`. Commented out `=`, `<>`, `<`,
   \ `<=`, `>` and `>=`, which can not be used yet.
+  \
+  \ 2016-10-28: Fix block title that caused `>=` and other
+  \ calculator operators be found by `need` instead of the
+  \ integer ones, because this module comes before the integer
+  \ operators in the library disk.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -210,7 +215,7 @@ get-current  calculator-wordlist set-current
 
 -->
 
-( = <> < > <= >= )
+( calculator )
 
 -->  \ XXX TMP -- ignore this block
 

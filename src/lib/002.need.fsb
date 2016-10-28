@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201606011726
+  \ Last modified: 201610281925
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,6 +83,9 @@
   \
   \ 2016-06-01: Fix `need-here`, which left the string on the
   \ stack.
+  \
+  \ 2016-10-28: Add a temporary debugging informer to
+  \ `located`.
 
 ( contains delimited located )
 
@@ -116,6 +119,7 @@ variable last-locatable  blk/disk 1- last-locatable !
   \ }doc
 
 : located  ( ca len -- block | false )
+  \ ." Locating " 2dup type space  \ XXX INFORMER
   delimited  last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over contains
