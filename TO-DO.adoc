@@ -11,9 +11,17 @@
 
 .2016-10-28:
 
+Use the "\e" prefix for extra memory variants?
+
+Simplify `u.r`.
+
+Remove the old `alias!` when the extra memory system becomes definitive.
+
+Remove `split` and `join` from the library when the extra memory system
+becomes definitive.
+
 Fix the extra memory system:
 
-- After entering compilation mode, words are not recognized.
 - Finish `>name`.
 
 .2016-10-27:

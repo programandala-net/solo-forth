@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610281626
+; Last modified: 201610281830
 
 include version.z80s
 
@@ -197,9 +197,10 @@ default_bank:                     equ 0
 
 if 0 ; extra_memory
   system_bank:                      equ 1 ; XXX TMP --
+  names_pointer_bottom:             equ $0000
 else
   system_bank:                      equ 1
-  names_bank_address:               equ bank_start ; names pointers
+  names_pointer_bottom:             equ bank_start
 endif
 
 ; Error codes used in the kernel
@@ -752,11 +753,7 @@ ip_backup: ; temporary copy of Forth IP
   dw 0
   ; XXX OLD -- not used
 
-if 0 ; extra_memory
-  np: defl 0
-else
-  np: defl names_bank_address
-endif
+np: defl names_pointer_bottom
 
 names_pointer:
   ; `$24 +origin`
@@ -1504,6 +1501,8 @@ get_lib_order.exit
   include kernel.plus3dos.z80s
 
 ; ----------------------------------------------
+if 0 ; extra_memory
+
   _variable_header extra_memory_,'EXTRA-MEMORY'
 
   db 1,3,4,7
@@ -1552,6 +1551,7 @@ question_next_bank:
   ;   E = bank
   ; Output when HL<>$0000:
   ;   HL preserved
+  ;   A corrupted
 
   ld a,h
   or l
@@ -1610,6 +1610,7 @@ question_previous_bank:
   ;   E = bank
   ; Output when HL<>$BFFF:
   ;   HL preserved
+  ;   A corrupted
 
   ld a,h
   cp $BF
@@ -1624,7 +1625,11 @@ question_previous_bank:
   ld hl,bank_end
   jr new_bank
 
+endif
+
 ; ----------------------------------------------
+if 0 ; XXX OLD
+
   _code_header bank_boundary_question,'BANK-BOUNDARY?'
 
   ; XXX TMP --
@@ -1662,7 +1667,11 @@ bank_boundary_question.xx00:
   jp z,true_
   jp false_
 
+endif
+
 ; ----------------------------------------------
+if 0 ; extra_memory
+
   _variable_header bank_index_,'BANK-INDEX'
 
 ; doc{
@@ -1676,7 +1685,11 @@ bank_boundary_question.xx00:
 
   db 0
 
+endif
+
 ; ----------------------------------------------
+if 0 ; extra_memory
+
   _code_header a_to_e_,'A>E'
 
 ; doc{
@@ -1739,6 +1752,8 @@ a_to_e.hl.mod:
   jr nc,a_to_e.hl.mod ; ...as many times as needed
   ld h,a ; HL = actual memory address ($C000..$FFFF)
   ret
+
+endif
 
 ; ----------------------------------------------
   _colon_header asm_,'ASM'
@@ -4434,11 +4449,7 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _constant_header np0_,'NP0'
 
-if 0 ; extra_memory
-  dw $0000
-else
-  dw names_bank_address
-endif
+  dw names_pointer_bottom
 
 ; ----------------------------------------------
   _code_header np_fetch_,'NP@'
@@ -4478,19 +4489,14 @@ endif
 ;
 ; }doc
 
+  dw np_fetch_
 if 0 ; extra_memory
-
-  dw np_fetch_,store_e_
-  dw cell_,np_,plus_store_
-  dw exit_
-
+  dw store_e_
 else
-
-  dw np_fetch_,store_
+  dw store_
+endif
   dw cell_,np_,plus_store_
   dw exit_
-
-endif
 
 ; ----------------------------------------------
   _code_header sp_fetch_,'SP@'
@@ -6276,7 +6282,7 @@ if 0 ; extra_memory
   endif
 
   ld b,0
-  ld hl,$0000 ; first address of the extra memory
+  ld hl,names_pointer_bottom
 
 to_name.begin:
 
@@ -6372,7 +6378,7 @@ else
   endif
 
   ld b,0
-  ld hl,names_bank_address
+  ld hl,names_pointer_bottom
 
 to_name.begin:
 
@@ -6572,6 +6578,8 @@ endif
   ; jp fetch_bank.e
 
 ; ----------------------------------------------
+if 0 ; extra_memory
+
   _code_header split_,'SPLIT'
 
 ; Credit:
@@ -6745,6 +6753,8 @@ endif
   dw to_r_,split_,r_fetch_,one_plus_
   dw a_to_e_,c_store_,from_r_,c_store_e_
   dw exit_
+
+endif ; extra_memory
 
 ; ----------------------------------------------
   _colon_header from_name_,'NAME>'
@@ -7198,6 +7208,8 @@ do_does equ do_colon
   dw exit_
 
 ; ----------------------------------------------
+if 0 ; extra_memory
+
   _code_header e_count_,'ECOUNT'
 
 ; doc{
@@ -7219,6 +7231,8 @@ do_does equ do_colon
   call question_next_bank
   pop af
   _jump push_ahl
+
+endif
 
 ; ----------------------------------------------
   _code_header count_,'COUNT'
@@ -8080,11 +8094,46 @@ uppers.do:
   ld (hl),a
   inc hl
   dec de
-  if size_optimization
-    jr uppers.do
-  else
-    jp uppers.do
-  endif
+  _jump uppers.do
+
+; ----------------------------------------------
+if 0 ; extra_memory
+
+  _code_header e_uppers_,'EUPPERS'
+
+; XXX TMP -- 
+; XXX TODO -- improve to save push/pop
+
+; doc{
+;
+; euppers  ( ca len -- )
+;
+; A variant of `uppers` that works in extra memory.
+;
+; See: `uppers`.
+;
+; }doc
+
+  ; XXX TODO convert to deferred, to let it be customized for
+  ; 8-bit charsets.
+
+  pop de
+  pop hl
+e_uppers.do:
+  ld a,d
+  or e
+  jp z,next
+  ld a,(hl)
+  call ascii_upper.a
+  ld (hl),a
+  inc hl
+  push de
+  call question_next_bank
+  pop de
+  dec de
+  _jump e_uppers.do
+
+endif
 
 ; ----------------------------------------------
   _colon_header undefined_question_,'UNDEFINED?'
@@ -8363,19 +8412,17 @@ if 0 ; extra_memory
   dw tuck_ ; ( len ca len )
   dw here_,comma_np_ ; store a pointer to the xt
   dw current_latest_,comma_np_ ; link field
-  ; Now `np` contains the address of the nt.
-  dw np_fetch_
-  dw dup_,to_r_
+
+  dw np_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw e_place_ ; store the name
 
-  dw from_r_
-  dw a_to_e_
-  dw e_count_,uppers_
+  ; Convert the name to uppercase:
+  dw r_fetch_,a_to_e_
+  dw e_count_,e_uppers_
   dw default_bank_
 
-  dw np_fetch_,dup_
-  dw get_current_,store_ ; update the current word list
-  dw last_,store_ ; and `last`
+  dw r_fetch_,get_current_,store_ ; update the current word list
+  dw from_r_,last_,store_ ; update `last`
 
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
@@ -8390,15 +8437,13 @@ else
   dw system_bank_
   dw here_,comma_np_ ; store a pointer to the xt
   dw current_latest_,comma_np_ ; link field
-  ; Now `np` contains the address of the nt.
-  dw np_fetch_
-  dw dup_,to_r_
-  dw place_ ; store the name
-  dw from_r_,count_,uppers_
 
-  dw np_fetch_,dup_
-  dw get_current_,store_ ; update the current word list
-  dw last_,store_ ; and `last`
+  dw np_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
+  dw place_ ; store the name
+  dw r_fetch_,count_,uppers_ ; convert it to uppercase
+
+  dw r_fetch_,get_current_,store_ ; update the current word list
+  dw from_r_,last_,store_ ; and `last`
 
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
@@ -8981,20 +9026,15 @@ interpret.end:
 
 if 1
 
+  dw swap_
 if 0 ; extra_memory
-
-  dw swap_,a_to_e_,c_fetch_test_bits_question_
-  dw default_bank_
-  dw exit_
-
+  dw a_to_e_
 else
-
   dw system_bank_
-  dw swap_,c_fetch_test_bits_question_
+endif
+  dw c_fetch_test_bits_question_
   dw default_bank_
   dw exit_
-
-endif
 
 else  ; XXX TMP alternative without `c@test-bits?`
 
@@ -9026,18 +9066,12 @@ endif
   ; Word adapted from eForth.
 
 if 0 ; extra_memory
-
-  _brk "start of lex!" ; XXX INFORMER
-  dw a_to_e_,c_store_set_bits_,default_bank_
-  _brk "end of lex!" ; XXX INFORMER
-  dw exit_
-
+  dw a_to_e_
 else
-
-  dw system_bank_,c_store_set_bits_,default_bank_
-  dw exit_
-
+  dw system_bank_
 endif
+  dw c_store_set_bits_,default_bank_
+  dw exit_
 
 ; ----------------------------------------------
   _colon_header immediate_,'IMMEDIATE'
@@ -11799,6 +11833,8 @@ two_fetch.hl:
 
 ; ----------------------------------------------
   _colon_header u_dot_r_,'U.R'
+
+  ; XXX TODO -- move to the library
 
   dw to_r_
   _literal 0
