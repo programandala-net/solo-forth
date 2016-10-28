@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610281830
+; Last modified: 201610281847
 
 include version.z80s
 
@@ -6669,7 +6669,7 @@ else
 
   pop hl
   call a_to_e.hl
-  ld l,(hl) 
+  ld l,(hl)
   ld h,0
   push hl
   call bank.default
@@ -6699,13 +6699,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header fetch_e_,'@E'
-
-  ; XXX TODO -- rewrite in Z80
-
-; XXX OLD -- faster but larger version:
-; : @e  ( a -- x )
-;   dup 1+ a>e c@ >r a>e c@ r> join default-bank  ;
+  _code_header fetch_e_,'@E'
 
 ; doc{
 ;
@@ -6715,21 +6709,38 @@ endif
 ;
 ; See: `@eb`.
 ;
+; This word is written in Z80, but its equivalent Forth code
+; is the following:
+;
 ; ----
 ; : @e  ( a -- x )
 ;   dup 1+ a>e c@ >r c@e r> join  ;
 ; ----
 ;
+; Faster but larger version:
+;
+; ----
+; : @e  ( a -- x )
+;   dup 1+ a>e c@ >r a>e c@ r> join default-bank  ;
+; ----
+;
 ; }doc
 
-  dw dup_,one_plus_,a_to_e_,c_fetch_,to_r_
-  dw c_fetch_e_,from_r_,join_
-  dw exit_
+
+  exx
+  pop hl
+  call a_to_e.hl
+  ld c,(hl)
+  inc hl
+  call question_next_bank
+  ld b,(hl)
+  push bc
+  call bank.default
+  exx
+  _jp_next
 
 ; ----------------------------------------------
-  _colon_header store_e_,'!E'
-
-  ; XXX TODO -- rewrite in Z80
+  _code_header store_e_,'!E'
 
 ; doc{
 ;
@@ -6738,21 +6749,35 @@ endif
 ; Store _x_ into extra-memory address _a_.
 ;
 ; See: `!eb`.
-; 
+;
+; This word is written in Z80, but its equivalent Forth code
+; is the following:
+;
 ; ----
 ; : !e  ( x a -- )
 ;   >r split r@ 1+ a>e c! r> c!e  ;
 ; ----
 ;
-; }doc
-
-; XXX OLD -- faster but larger version:
+; Faster but larger version:
+;
+; ----
 ; : !e  ( x a -- )
 ;   >r split r@ 1+ a>e c! r> a>e c! default-bank  ;
+; ----
+;
+; }doc
 
-  dw to_r_,split_,r_fetch_,one_plus_
-  dw a_to_e_,c_store_,from_r_,c_store_e_
-  dw exit_
+  exx
+  pop hl
+  call a_to_e.hl
+  pop bc
+  ld (hl),c
+  inc hl
+  call question_next_bank
+  ld (hl),b
+  call bank.default
+  exx
+  _jp_next
 
 endif ; extra_memory
 
@@ -6760,7 +6785,7 @@ endif ; extra_memory
   _colon_header from_name_,'NAME>'
 
 if 0 ; extra_memory
-  
+
 ; doc{
 ;
 ; name>  ( nt -- xt )
@@ -8101,7 +8126,7 @@ if 0 ; extra_memory
 
   _code_header e_uppers_,'EUPPERS'
 
-; XXX TMP -- 
+; XXX TMP --
 ; XXX TODO -- improve to save push/pop
 
 ; doc{
@@ -8404,9 +8429,9 @@ header_comma.continue:
   ; ( ca len )
 
 if 0 ; extra_memory
- 
+
   ; XXX TODO --
-  
+
   dw here_,lastxt_,store_ ; update `lastxt`
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
@@ -9698,7 +9723,7 @@ common_start:
 ; doc{
 ;
 ; d>s  ( d -- n )
-; 
+;
 ; _n_ is the equivalent of _d_. The high cell of _d_ is
 ; discarded.
 ;
