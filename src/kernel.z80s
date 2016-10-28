@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610281423
+; Last modified: 201610281626
 
 include version.z80s
 
@@ -8114,15 +8114,15 @@ uppers.do:
 ; An ambiguous condition exists if _len1_ is greater than 255 or
 ; the buffer at _ca2_ is less than _len1_+1 characters.
 ;
+; This word is written in Z80, but the equivalent Forth code is
+; the following:
+;
 ; ----
 ; : place  ( ca1 len1 ca2 -- )
 ;   2dup c! char+ smove  ;
 ; ----
 ;
 ; }doc
-
-; XXX TODO -- alternative in Forth Dimensions 20-3 p.29
-;   2dup c! char+ swap chars move
 
   ; Credit:
   ; Code from DZX-Forth's `packed`.
@@ -8140,6 +8140,40 @@ uppers.do:
   ld (hl),e
   exx         ; restore Forth IP
   _jp_next
+
+; ----------------------------------------------
+if 0 ; extra_memory
+
+  _code_header e_place_,'EPLACE'
+
+; doc{
+;
+; eplace  ( ca1 len1 ca2 -- )
+;
+; Store the string _ca1 len1_ (which must be below memory
+; address $C000) as a counted string at extra-memory address
+; _ca2_.
+;
+; }doc
+
+  exx             ; save Forth IP
+  pop hl          ; HL=ca2
+  call a_to_e.hl  ; HL=ca2' (actual address in extra memory)
+  pop bc          ; C=len1
+  pop de          ; DE=ca1
+  ld (hl),c       ; set length of the destination string
+e_place.copy_char:
+  inc hl
+  call question_next_bank
+  ld a,(de)
+  ld (hl),a
+  inc de
+  djnz e_place.copy_char ; jump if length is not exhausted
+  call bank.default
+  exx         ; restore Forth IP
+  _jp_next
+
+endif
 
 ; ----------------------------------------------
   _variable_header error_number_,'ERROR#'
@@ -8327,23 +8361,24 @@ if 0 ; extra_memory
   dw here_,lastxt_,store_ ; update `lastxt`
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
-  dw system_bank_
   dw here_,comma_np_ ; store a pointer to the xt
   dw current_latest_,comma_np_ ; link field
   ; Now `np` contains the address of the nt.
   dw np_fetch_
   dw dup_,to_r_
-  dw place_ ; store the name
-  dw from_r_,count_,uppers_
+  dw e_place_ ; store the name
+
+  dw from_r_
+  dw a_to_e_
+  dw e_count_,uppers_
+  dw default_bank_
 
   dw np_fetch_,dup_
-  dw get_current_,store_ ; update the current vocabulary
+  dw get_current_,store_ ; update the current word list
   dw last_,store_ ; and `last`
 
   dw hide_
   dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
-
-  dw default_bank_
 
   dw exit_
 
@@ -8362,7 +8397,7 @@ else
   dw from_r_,count_,uppers_
 
   dw np_fetch_,dup_
-  dw get_current_,store_ ; update the current vocabulary
+  dw get_current_,store_ ; update the current word list
   dw last_,store_ ; and `last`
 
   dw hide_
