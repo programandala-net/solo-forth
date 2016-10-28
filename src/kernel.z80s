@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610280056
+; Last modified: 201610281313
 
 include version.z80s
 
@@ -1565,7 +1565,7 @@ question_next_bank:
 new_bank:
 
   ; Input:
-  ;   A = updated bank index (possible underflow or overflow)
+  ;   A = updated bank index (possibly out of range)
   ; Output:
   ;   A corrupted
   ;   D = 0
@@ -3523,54 +3523,6 @@ endif
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
 
-if 1 ; XXX TMP -- for debugging
-
-; doc{
-;
-; find-name  ( ca len -- nt | 0 )
-;
-; Find the definition identified by the string _ca len_ in the
-; current search order. If the definition is not found after
-; searching all the vocabularies in the search order, return
-; zero.  If the definition is found, return its _nt_.
-;
-; ----
-; : find-name  ( ca len -- nt | 0 )
-;   #order @ 0 ?do
-;     2dup context i cells + @ @ find-name-from ?dup
-;     ( ca len nt nt | ca len 0 )
-;     if  nip nip unloop exit  then
-;   loop  2drop false  ;
-; ----
-;
-; Origin: Gforth.
-;
-; }doc
-
-  dw hash_order_,fetch_
-  _literal 0
-  dw paren_question_do_,find_name.loop_exit ; do
-
-  ; ( ca len )
-  _brk_type 'in do' ; XXX TMP -- for debugging
-  dw two_dup_,context_,i_,cells_,plus_
-  _brk 'before first @' ; XXX TMP -- for debugging
-  dw fetch_
-  _brk 'before second @' ; XXX TMP -- for debugging
-  dw fetch_
-  _brk 'before find-name-from' ; XXX TMP -- for debugging
-  dw find_name_from_,question_dup_ ; ( ca len nt nt | ca len 0 )
-  dw zero_branch_,find_name.loop
-  dw nip_,nip_,unloop_,exit_
-find_name.loop:
-  dw paren_loop_ ; loop
-find_name.loop_exit:
-
-  dw two_drop_,false_
-  dw exit_
-
-else
-
 ; doc{
 ;
 ; find-name  ( ca len -- nt | 0 )
@@ -3608,8 +3560,6 @@ find_name.loop_exit:
 
   dw two_drop_,false_
   dw exit_
-
-endif
 
 ; ----------------------------------------------
   _code_header scan_,'SCAN'
@@ -6775,8 +6725,6 @@ endif
 
 if 0 ; extra_memory
 
-  ; XXX TODO -- adapt to extra memory
-
 ; doc{
 ;
 ; name>string  ( nt -- ca len )
@@ -6786,27 +6734,29 @@ if 0 ; extra_memory
 ; ----
 ; : name>string  ( nt -- ca len )
 ;   a>e ( nt' )
-;   count dup word-length-mask and allocate-string  ( ca1 len ca )
+;   ecount word-length-mask and dup allocate-string  ( ca1 len ca )
 ;   2dup swap 2>r  -rot ( ca ca1 len )
 ;   0 ?do  ( ca ca1 )
-;     ?next-bank 2dup c@ swap c! char+
-;   loop  default-bank 2r>  ;
+;     ?next-bank 2dup c@ swap i + c! char+
+;   loop  2drop default-bank 2r>  ;
 ; ----
 ;
 ; }doc
 
   dw a_to_e_ ; ( nt' )
-  dw count_,dup_
+  dw e_count_
   _literal word_length_mask
   dw and_  ; ( ca1 len )
-  dw allocate_string_ ; ( ca1 len ca )
+  dw dup_,allocate_string_ ; ( ca1 len ca )
   dw two_dup_,swap_,two_to_r_,minus_rot_ ; ( ca ca1 len )
   _literal 0
   dw paren_question_do_,name_to_string.loop_exit ; ( ca ca1 )
-  dw question_next_bank_,two_dup_,c_fetch_,swap_,c_store_,char_plus_
+  dw question_next_bank_,two_dup_,c_fetch_
+  dw swap_,i_,plus_,c_store_
+  dw char_plus_
   dw paren_loop_
 name_to_string.loop_exit:
-  dw default_bank_,two_from_r_
+  dw two_drop_,default_bank_,two_from_r_
   dw exit_
 
 else
@@ -7181,15 +7131,51 @@ do_does equ do_colon
   dw exit_
 
 ; ----------------------------------------------
+  _code_header e_count_,'ECOUNT'
+
+; doc{
+;
+; ecount  ( ca1 -- ca2 len2 )
+;
+; A variant of `count` that works with extra memory addresses.
+; The bank must be paged in.
+;
+; See: `count`.
+;
+; }doc
+
+
+  pop hl
+  ld a,(hl)
+  push af
+  inc hl
+  call question_next_bank
+  pop af
+  _jump push_ahl
+
+; ----------------------------------------------
   _code_header count_,'COUNT'
 
-  ; Credit:
-  ; Code from DZX-Forth.
+; doc{
+;
+; count  ( ca1 -- ca2 len2 )
+;
+; Return the character string specification for the counted
+; string stored at _ca1_. _ca2_ is the address of the first
+; character after _ca1_. _len_ is the  contents of the character
+; at _c1_, which is the  length in characters of the string at
+; _c2_.
+;
+; Origin: fig-Forth, Forth-79 (REQUIRED WORD SET), Forth-83
+; (REQUIRED WORD SET), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
 
-  pop de
-  ld a,(de)
-  inc de
-  push de
+  pop hl
+  ld a,(hl)
+  inc hl
+push_ahl:
+  push hl
   jp push_a
 
 ; ----------------------------------------------
@@ -7361,13 +7347,17 @@ minus_trailing.begin:
 ; ----------------------------------------------
   _variable_header span_,'SPAN'
 
+  ; XXX TODO -- move to the library
+
 ; doc{
 ;
 ; span  ( -- a )
 ;
 ; The address of a variable containing the count of characters
 ; actually received and stored by the last execution of
-; `accept`.
+; `expect`.
+;
+; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
 ;
 ; }doc
 
@@ -8246,7 +8236,7 @@ if 1 ; developing
   _string "redefined "
   dw to_name_,dot_name_
 
-  ; XXX TMP -- for debugging:
+  ; XXX INFORMER:
   ; dw paren_dot_quote_
   ; _string "latest "
   ; dw latest_,dot_name_
@@ -8780,22 +8770,25 @@ interpret_table.0:
 ; }doc
 
 interpret.begin:
-  _brk 'begin' ; XXX TMP -- for debugging
+  _chk 'begin interpret, latest:' ; XXX INFORMER
+if debugging
+  dw latest_,cr_,dot_name_ ; XXX INFORMER
+endif
 
   dw question_stack_
   dw parse_name_  ; ( ca len )
-  _brk_type 'after parse-name' ; XXX TMP -- for debugging
+  _chk_type 'after parse-name' ; XXX INFORMER
   dw dup_ ; end of stream?
   dw zero_branch_,interpret.end ; if so, finish
 
   dw find_name_ ; ( nt | 0 )
-  _brk 'after find-name' ; XXX TMP -- for debugging
+  _chk 'after find-name' ; XXX INFORMER
   dw question_dup_ ; found?
   dw zero_branch_,interpret.word_not_found
 
   ; Word found
   ; ( nt )
-  _brk 'word found' ; XXX TMP -- for debugging
+  _chk 'word found' ; XXX INFORMER
   dw dup_,name_to_immediate_question_       ; ( nt xt f1 )
   dw rot_,compile_only_question_,two_star_  ; ( xt f1 n2 )
   dw plus_,abs_ ; ( xt +n )
@@ -8806,23 +8799,24 @@ interpret.do_it:
   ; ( +n )
   ; Execute element _+n_ of `interpret-table`,
   ; depending on `state`.
-  _brk 'do it' ; XXX TMP -- for debugging
+  ;_brk 'do it' ; XXX INFORMER
   dw compiling_question_,question_negate_,cells_
   _literal interpret_table.0
-  _brk 'before +' ; XXX TMP -- for debugging
+  ;_brk 'before +' ; XXX INFORMER
   dw plus_,perform_
+  _chk 'after perform' ; XXX INFORMER
   dw branch_,interpret.begin
 
 interpret.word_not_found:
-  _brk 'not found' ; XXX TMP -- for debugging
+  _brk 'not found' ; XXX INFORMER
   dw parsed_name_,two_fetch_ ; ( ca len )
   dw number_question_ ; is it a number?  ( 0 | n 1 | d 2 )
-  _brk 'after number?' ; XXX TMP -- for debugging
+  _chk 'after number?' ; XXX INFORMER
   dw branch_,interpret.do_it
 
 interpret.end:
   dw two_drop_
-  _brk 'exit' ; XXX TMP -- for debugging
+  _chk 'exit interpret' ; XXX INFORMER
   dw exit_
 
 ; ----------------------------------------------
@@ -9483,7 +9477,7 @@ endif
   dw display_,default_colors_,page_
   dw greeting_
 
-if 0 ; XXX TMP -- for debugging
+if 1 ; XXX INFORMER
 
   ; dw hex_
 
@@ -9495,6 +9489,11 @@ if 0 ; XXX TMP -- for debugging
   ; _literal $1620 ; lfa of `.(`
   ; dw fetch_e_
   ; dw cr_,u_dot_
+
+  ; _literal $10BD ; nt of `definitions`
+  ; dw a_to_e_
+  ; dw e_count_
+  ; dw cr_,dot_s_,cr_,type_
 
   ; dw decimal_
 
@@ -10962,6 +10961,7 @@ hash_s.begin:
 
 ; ----------------------------------------------
 if 1 ; developing
+
   ; XXX TMP -- during the development
 
   _colon_header dot_s_,'.S'
@@ -11900,18 +11900,12 @@ question_backslash.end:
 
   dw loading_question_ ; input stream from disk?
   dw question_branch_,backslash.loading
+
   ; Interpreting
-  _brk 'interpreting \' ; XXX TMP -- for debugging
-  dw number_tib_
-  _brk 'after #tib' ; XXX TMP -- for debugging
-  dw fetch_
-  _brk 'after @' ; XXX TMP -- for debugging
-  dw to_in_,store_
-  _brk 'end of \' ; XXX TMP -- for debugging
+  dw number_tib_,fetch_,to_in_,store_
   dw exit_
 
 backslash.loading:
-  _brk 'loading \' ; XXX TMP -- for debugging
   ; Loading
   dw to_in_,fetch_,c_slash_l_,mod_
   dw c_slash_l_,swap_,minus_

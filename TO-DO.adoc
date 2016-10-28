@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-10-27
+:revdate: 2016-10-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -9,13 +9,21 @@
 == Misc ==
 // {{{
 
+.2016-10-28:
+
+Fix the extra memory system:
+
+- It fails when loading a block.
+- It fails in compilation mode.
+- Finish `>name`.
+
 .2016-10-27:
+
+Finish the extra memory system in the kernel.
 
 Make `noop` an alias, using `next` as xt. This saves `jp (ix)`.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
-
-Finish the extra memory system in the kernel.
 
 Remove `join` and `split` from the library, moved to the kernel because of the
 extra memory system.
