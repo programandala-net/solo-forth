@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610281847
+; Last modified: 201610282303
 
 include version.z80s
 
@@ -2163,34 +2163,6 @@ push_a:
 ; }doc
 
   dw address_of_default_bank
-
-; ----------------------------------------------
-  _code_header default_bank_,'DEFAULT-BANK'
-
-; doc{
-;
-; default-bank  ( -- )
-;
-; Page in the default memory bank at $C000..$FFFF.
-;
-; }doc
-
-
-if size_optimization
-
-                    ;  T  B
-  push ix           ; 15 02 ; make next `ret` jump to `next`
-  jr bank.default   ; 12 02
-                    ; 27 04 TOTAL
-
-else
-
-                    ;  T  B
-  call bank.default ; 17 03
-  _jp_next          ; 08 02
-                    ; 25 05 TOTAL
-
-endif
 
 ; ----------------------------------------------
   _code_header system_bank_,'SYSTEM-BANK'
@@ -6437,34 +6409,44 @@ to_name.next:
 endif
 
 ; ----------------------------------------------
+if 0 ; XXX OLD
+
   _colon_header c_store_bank_,'C!BANK'
 
   ; XXX TODO -- move to the library
 
 ; doc{
 ;
-; c!bank  ( b a n -- )
+; c!bank  ( c ca n -- )
 ;
-; Store _b_ into address _a_ of bank _n_.
+; Store _c_ into address _ca_ ($C000..$FFFF) of bank _n_ (0..7).
 ;
 ; }doc
 
-  ; XXX REMARK -- 13 bytes
+  ; 13 bytes
 
   dw bank_,c_store_,default_bank_
   dw exit_
 
-  ; XXX TODO -- faster version:
-  ; pop de
-  ; c_store_bank.e:
-  ; call bank.e
-  ; pop hl
-  ; ld l,(hl)
-  ; ld h,0
-  ; call bank.default
-  ; _jp_pushhl
+else
+
+  _code_header c_store_bank_,'C!BANK'
+
+  ; 10 bytes
+
+  pop de
+c_store_bank.e:
+  call bank.e
+  pop hl
+  pop de
+  ld (hl),e
+  jp default_bank_
+
+endif
 
 ; ----------------------------------------------
+if 0 ; XXX OLD
+
   _colon_header store_bank_,'!BANK'
 
   ; XXX TODO -- move to the library
@@ -6475,61 +6457,149 @@ endif
 ;
 ; Store _x_ into address _a_ of bank _n_.
 ;
+; ----
+; : !bank  ( x a n -- )
+;   bank ! default-bank  ;
+; ----
+;
 ; }doc
+
+  ; 11 bytes
 
   dw bank_,store_,default_bank_
   dw exit_
 
+else
+
+  _code_header store_bank_,'!BANK'
+
+  ; 12 bytes
+
+  pop de
+store_bank.e:
+  call bank.e
+  pop hl
+  pop de
+  ld (hl),e
+  inc hl
+  ld (hl),d
+  jp default_bank_
+
+endif
+
 ; ----------------------------------------------
+if 0 ; XXX OLD
+
   _colon_header c_fetch_bank_,'C@BANK'
 
 ; doc{
 ;
-; c@bank  ( a n -- b )
+; c@bank  ( ca n -- c )
 ;
-; Fetch the 8-bit content of address _a_ of the bank _n_.
+; Fetch _c_ from address _ca_ ($C000..$FFFF) of bank _n_ (0..7).
+;
+; ----
+; : c@bank  ( ca n -- c )
+;   bank c@ default-bank  ;
+; ----
 ;
 ; }doc
+
+  ; 11 bytes
 
   dw bank_,c_fetch_,default_bank_
   dw exit_
 
-  ; XXX TODO -- faster version:
-  ; pop de
-  ; c_fetch_bank.e:
-  ; call bank.e
-  ; pop hl
-  ; ld l,(hl)
-  ; ld h,0
-  ; call bank.default
-  ; _jp_pushhl
+else
+
+  _code_header c_fetch_bank_,'C@BANK'
+
+  ; 10..11 bytes
+
+  pop de
+c_fetch_bank.e:
+  call bank.e
+  pop hl
+  ld l,(hl)
+  ld h,0
+  _jump fetch_bank.end
+
+endif
 
 ; ----------------------------------------------
+if 0 ; XXX OLD
+
   _colon_header fetch_bank_,'@BANK'
 
 ; doc{
 ;
 ; @bank  ( a n -- x )
 ;
-; Fetch the 16-bit content of address _a_ of bank _n_.
+; Fetch _x_ from address _a_ ($C000..$FFFF) of bank _n_ (0..7).
+;
+; ----
+; : @bank  ( a n -- x )
+;   bank @ default-bank  ;
+; ----
 ;
 ; }doc
+
+  ; 11 bytes
 
   dw bank_,fetch_,default_bank_
   dw exit_
 
-  ; XXX TODO -- faster version:
-  ; pop de
-  ; fetch_bank.e:
-  ; call bank.e
-  ; pop hl
-  ; ld a,(hl)
-  ; inc hl
-  ; ld h,(hl)
-  ; ld l,a
-  ; call bank.default
-  ; _jp_pushhl
+else
 
+  _code_header fetch_bank_,'@BANK'
+
+  ; 10 bytes
+
+  pop de
+fetch_bank.e:
+  call bank.e
+  pop hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+fetch_bank.end:
+  push hl
+
+  ; Execution continues in `default-bank`:
+
+endif
+
+; ----------------------------------------------
+  _code_header default_bank_,'DEFAULT-BANK'
+
+; doc{
+;
+; default-bank  ( -- )
+;
+; Page in the default memory bank at $C000..$FFFF.
+;
+; }doc
+
+if size_optimization
+
+                    ;  T  B
+  push ix           ; 15 02 ; make next `ret` jump to `next`
+  jr bank.default   ; 12 02
+                    ; 27 04 TOTAL
+
+else
+
+                    ;  T  B
+  call bank.default ; 17 03
+  _jp_next          ; 08 02
+                    ; 25 05 TOTAL
+
+endif
+
+if 0 ; extra_memory
+else
+  
 ; ----------------------------------------------
   _colon_header c_fetch_s_,'C@S'
 
@@ -6577,8 +6647,11 @@ endif
   ; ld e,system_bank
   ; jp fetch_bank.e
 
+endif
+
 ; ----------------------------------------------
-if 0 ; extra_memory
+if 0 ; XXX OLD -- not needed anymore for the extra-memory system;
+     ;            these words are in the library
 
   _code_header split_,'SPLIT'
 
@@ -6628,7 +6701,10 @@ if 0 ; extra_memory
   ld l,e
   _jp_pushhl
 
+endif
+
 ; ----------------------------------------------
+if 0 ; extra_memory
 
 if 0 ; XXX OLD
 
@@ -9111,7 +9187,7 @@ endif
 ;
 ; immediate?  ( nt -- f )
 ;
-; Does the word with the given _nt_ is immediate?
+; Is the word _nt_ immediate?
 ;
 ; }doc
 
@@ -9125,13 +9201,9 @@ endif
 ;
 ; name>immediate?  ( nt -- xt f )
 ;
-; Does the word with the given _nt_ is immediate?
+; Is the word _nt_ immediate?
 ;
 ; }doc
-
-  ; XXX TODO better name!
-  ; this name is confusing, compared to `immediate?`,
-  ; which converts a nt to a flag.
 
   dw dup_,from_name_,swap_ ; ( xt nt )
   dw immediate_question_ ; ( xt f )
@@ -9163,7 +9235,7 @@ endif
 ;
 ; compile-only?  ( nt -- f )
 ;
-; Does the word with the given _nt_ is compile-only?
+; Is the word _nt_ compile-only?
 ;
 ; }doc
 

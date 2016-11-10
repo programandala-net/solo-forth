@@ -11,29 +11,33 @@
 
 .2016-10-28:
 
-Use the "\e" prefix for extra memory variants?
+Rename "np" (names pointer) to "hp" (headers pointer)?
+
+Use the "\e" prefix for extra-memory variants?
 
 Simplify `u.r`.
 
-Remove the old `alias!` when the extra memory system becomes definitive.
+Remove the old `alias!` when the extra-memory system becomes definitive.
 
-Remove `split` and `join` from the library when the extra memory system
+Remove `split` and `join` from the kernel when the extra-memory system
 becomes definitive.
 
-Fix the extra memory system:
+Remove `s!` and related words when the extra-memory system becomes definitive.
+
+Fix the extra-memory system:
 
 - Finish `>name`.
 
 .2016-10-27:
 
-Finish the extra memory system in the kernel.
+Finish the extra-memory system in the kernel.
 
 Make `noop` an alias, using `next` as xt. This saves `jp (ix)`.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
 Remove `join` and `split` from the library, moved to the kernel because of the
-extra memory system.
+extra-memory system.
 
 .2016-08-11:
 
@@ -175,8 +179,8 @@ Compact "strings.misc.fsb" and make `lengths` needed.
 Fix the `indexer` tool: indexing all words from the library (>800) fills the
 system memory bank were headers are created.  The solution is a configurable
 system bank: the indexer could use a different system bank, and reset the
-names pointer temporarily. Update 2016-10-27: the extra memory is being implemented,
-using 4 banks.
+names pointer temporarily. Update 2016-10-27: the extra-memory system is being
+implemented, using 4 banks.
 
 Document the Noble arrays.
 
