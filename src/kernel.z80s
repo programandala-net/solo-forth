@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611112222
+; Last modified: 201611112352
 
 include version.z80s
 
@@ -524,7 +524,7 @@ _message: macro _error
 ; ----------------------------------------------
 ; Macros for debugging
 
-debugging: equ 1
+debugging: equ 0
 
 _z80_just_border: macro _color
   if debugging
@@ -1602,7 +1602,8 @@ new_bank:
 question_previous_bank:
 
   ; Input:
-  ;   HL = actual address in a bank ($C000..$FFFF) or $BFFF
+  ;   HL = actual address in a bank ($C000..$FFFF) or lower
+  ;   (<$C000)
   ; Output when HL=$BFFF:
   ;   HL = $FFFF (and the previous bank is paged in)
   ;   A corrupted
@@ -1613,11 +1614,8 @@ question_previous_bank:
   ;   A corrupted
 
   ld a,h
-  cp $BF
-  ret nz
-  ld a,l
-  dec a
-  ret nz
+  cp $C0
+  ret nc
 
   ; Update HL to the previous bank of extra memory:
   ld a,(bank_index_pfa)
@@ -3502,7 +3500,9 @@ endif
 ;
 ; }doc
 
-  dw fetch_,find_name_from_  ; ( nt | 0 )
+  dw fetch_
+;  dw dup_,name_to_string_,cr_,type_ ; XXX INFORMER
+  dw find_name_from_  ; ( nt | 0 )
   dw dup_,zero_equals_  ; ( nt false | 0 true )
   dw question_exit_  ; ( nt )
   dw name_to_immediate_question_ ; ( xt f )
@@ -4145,7 +4145,7 @@ move.do:
   exx
   pop de
   pop bc
-  jp move.do
+  _jump move.do
 
 ; ----------------------------------------------
   _code_header u_m_star_,'UM*'
@@ -7591,6 +7591,8 @@ minus_trailing.begin:
 
 ; ----------------------------------------------
   _defer_header to_history_,'>HISTORY',,two_drop_
+
+; XXX TODO -- not used yet
 
 ; doc{
 ;
