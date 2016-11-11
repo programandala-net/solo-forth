@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611112352
+; Last modified: 201611120010
 
 include version.z80s
 
@@ -1543,19 +1543,20 @@ if 1 ; extra_memory
 question_next_bank:
 
   ; Input:
-  ;   HL = actual address in a bank ($C000..$FFFF) or $0000
-  ; Output when HL=$0000:
+  ;   HL = address in a paged bank ($C000..$FFFF) or higher
+  ;   ($0000..$BFFFF).
+  ; Output when HL is not an address in a paged bank:
   ;   HL = $C000 (and the next bank is paged in)
   ;   A corrupted
   ;   D = 0
   ;   E = bank
-  ; Output when HL<>$0000:
+  ; Output when HL is an address in a paged bank:
   ;   HL preserved
   ;   A corrupted
 
   ld a,h
-  or l
-  ret nz
+  cp $C0 ; is HL below $C000?
+  ret nc
 
   ; Update HL to the next bank of extra memory:
   ld a,(bank_index_pfa)
@@ -1602,19 +1603,19 @@ new_bank:
 question_previous_bank:
 
   ; Input:
-  ;   HL = actual address in a bank ($C000..$FFFF) or lower
-  ;   (<$C000)
-  ; Output when HL=$BFFF:
+  ;   HL = address in a paged bank ($C000..$FFFF) or lower
+  ;   ($0000..$BFFFF).
+  ; Output when HL is not an address in a paged bank:
   ;   HL = $FFFF (and the previous bank is paged in)
   ;   A corrupted
   ;   D = 0
   ;   E = bank
-  ; Output when HL<>$BFFF:
+  ; Output when HL is an address in a paged bank:
   ;   HL preserved
   ;   A corrupted
 
   ld a,h
-  cp $C0
+  cp $C0 ; is HL below $C000?
   ret nc
 
   ; Update HL to the previous bank of extra memory:
