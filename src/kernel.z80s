@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611120010
+; Last modified: 201611120049
 
 include version.z80s
 
@@ -1544,9 +1544,9 @@ question_next_bank:
 
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or higher
-  ;   ($0000..$BFFFF).
-  ; Output when HL is not an address in a paged bank:
-  ;   HL = $C000 (and the next bank is paged in)
+  ;   ($0000..$BFFF).
+  ; Output when HL is above the paged bank:
+  ;   HL = correspondent address in the next bank, which is paged in
   ;   A corrupted
   ;   D = 0
   ;   E = bank
@@ -1561,7 +1561,8 @@ question_next_bank:
   ; Update HL to the next bank of extra memory:
   ld a,(bank_index_pfa)
   inc a
-  ld hl,bank_start
+  ld de,bank_start
+  add hl,de
 
 new_bank:
 
@@ -1604,9 +1605,9 @@ question_previous_bank:
 
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or lower
-  ;   ($0000..$BFFFF).
-  ; Output when HL is not an address in a paged bank:
-  ;   HL = $FFFF (and the previous bank is paged in)
+  ;   ($0000..$BFFF).
+  ; Output when HL is below the paged bank:
+  ;   HL = correspondent address in the previous bank, which is paged in
   ;   A corrupted
   ;   D = 0
   ;   E = bank
@@ -1621,7 +1622,8 @@ question_previous_bank:
   ; Update HL to the previous bank of extra memory:
   ld a,(bank_index_pfa)
   dec a
-  ld hl,bank_end
+  ld de,bank_size
+  add hl,de
   jr new_bank
 
 endif
@@ -6319,14 +6321,8 @@ to_name.end:
 
 to_name.next:
   ; HL = xtp+1 (extra-memory address)
-  ;
-  ; XXX TODO -- make `?next-bank` check any address, not only
-  ; the boundary, so only one check will be needed
-  ;
   inc hl ; lfa
-  call question_next_bank
   inc hl
-  call question_next_bank
   inc hl ; nfa
   call question_next_bank
   ; XXX TODO -- improve the update of HL, using the saved
