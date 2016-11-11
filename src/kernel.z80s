@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611101508
+; Last modified: 201611112222
 
 include version.z80s
 
@@ -1565,7 +1565,7 @@ question_next_bank:
 new_bank:
 
   ; Input:
-  ;   A = updated bank index (possibly out of range)
+  ;   A = updated bank index (possibly out of range 0..3)
   ; Output:
   ;   A corrupted
   ;   D = 0
@@ -1616,7 +1616,7 @@ question_previous_bank:
   cp $BF
   ret nz
   ld a,l
-  and a
+  dec a
   ret nz
 
   ; Update HL to the previous bank of extra memory:
@@ -3325,6 +3325,10 @@ if 1 ; extra_memory
   ld (find_name_from.string_address),de
 
 find_name_from.begin:
+
+  ; _z80_border 1 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
+
   ; Compare the string with a word pointed by its nt.
   ; HL = nt of the word to compare with
   ;      (or zero if the end of the word list has been reached)
@@ -3341,12 +3345,6 @@ find_name_from.begin:
   and valid_word_length_mask  ; mask the length and the smudge bit
 find_name_from.string_length.8_bits: equ $+1
   cp $00 ; length of the string
-  ; XXX TODO -- use a harcoded `cp len` instead (faster, and
-  ; executed once for every word), and a harcoded `ld bc,len`
-  ; below, before the `cpi` loop (slower, but executed only once
-  ; for words whose lengths match the string); compare the speed
-  ; of this method with the current one
-
   jr z,find_name_from.compare_characters
   ; Lengths differ.
 
@@ -3375,16 +3373,18 @@ find_name_from.compare_next_char:
   ld a,(de)
   call ascii_upper.a
   cpi
-  push af
-  push de
-  call question_next_bank ; XXX TODO -- move after the next `jp`
-  pop de
-  pop af
   jr nz,find_name_from.not_a_match ; jump if the chars are different
-  ; XXX TODO -- move right after cpi, to save time
   inc de ; point to next character of the string
+  push de
+  push af
+  call question_next_bank
+  pop af
+  pop de
   jp pe,find_name_from.compare_next_char ; jump if length is not exhausted
   ; The length is exhausted, so the string and the name equal.
+
+  ; _z80_border_wait 4 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
 
 find_name_from.end:
   call bank.default ; page in the default memory bank
@@ -3396,6 +3396,10 @@ find_name_from.result: equ $+1
   ;   HL = false
 find_name_from.ip: equ $+1
   ld bc,$0000 ; restore the Forth IP
+
+  ; _z80_border_wait 2 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
+
   _jp_pushhl
 
 else
@@ -8573,9 +8577,13 @@ endif
   ; Convert the name to uppercase:
   dw r_fetch_
   dw e_count_,e_uppers_
-  dw default_bank_
 
-  dw r_fetch_,get_current_,store_ ; update the current word list
+  dw r_fetch_
+if debugging
+  _echo "NP = last = "
+  dw dup_,u_dot_ ; XXX INFORMER
+endif
+  dw get_current_,store_ ; update the current word list
   dw from_r_,last_,store_ ; update `last`
 
   dw hide_
