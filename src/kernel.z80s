@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611130050
+; Last modified: 201611130053
 
 include version.z80s
 
@@ -9195,16 +9195,15 @@ endif
 
 else  ; XXX TMP alternative without `c@test-bits?`
 
-  ; XXX TODO -- write a Z80 alternative, so `c@test-bits` can be
-  ; moved to the library
-  ;
-  ; XXX TODO -- better yet: move the lex bits off the length byte of
-  ; the name field
-
+if 1 ; extra_memory
+  dw swap_,c_fetch_e_,and_,zero_not_equals_
+  dw exit_
+else
   dw system_bank_
   dw swap_,c_fetch_s_,and_,zero_not_equals_
   dw default_bank_
   dw exit_
+endif
 
 endif
 
