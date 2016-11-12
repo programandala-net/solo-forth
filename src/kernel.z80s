@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611120049
+; Last modified: 201611120107
 
 include version.z80s
 
@@ -6927,11 +6927,10 @@ if 1 ; extra_memory
 ;
 ; ----
 ; : name>string  ( nt -- ca len )
-;   a>e ( nt' )
 ;   ecount word-length-mask and dup allocate-string  ( ca1 len ca )
-;   2dup swap 2>r  -rot ( ca ca1 len )
+;   2dup swap 2>r ( R: ca len )  -rot ( ca ca1 len )
 ;   0 ?do  ( ca ca1 )
-;     ?next-bank 2dup c@ swap i + c! char+
+;     2dup c@e swap i + c! char+
 ;   loop  2drop default-bank 2r>  ;
 ; ----
 ;
@@ -6941,15 +6940,14 @@ if 1 ; extra_memory
   _literal word_length_mask
   dw and_  ; ( ca1 len )
   dw dup_,allocate_string_ ; ( ca1 len ca )
-  dw two_dup_,swap_,two_to_r_,minus_rot_ ; ( ca ca1 len )
+  dw two_dup_,swap_,two_to_r_ ;  ( R: ca len )
+  dw minus_rot_ ; ( ca ca1 len )
   _literal 0
   dw paren_question_do_,name_to_string.loop_exit ; ( ca ca1 )
-  dw question_next_bank_,two_dup_,c_fetch_
-  dw swap_,i_,plus_,c_store_
-  dw char_plus_
+  dw two_dup_,c_fetch_e_,swap_,i_,plus_,c_store_,char_plus_
   dw paren_loop_
 name_to_string.loop_exit:
-  dw two_drop_,default_bank_,two_from_r_
+  dw two_drop_,two_from_r_
   dw exit_
 
 else
