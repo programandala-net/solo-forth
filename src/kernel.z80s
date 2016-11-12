@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611120107
+; Last modified: 201611130050
 
 include version.z80s
 
@@ -4998,7 +4998,7 @@ endif
 ; }doc
 
   ; XXX TODO -- rename
-  ; XXX TODO -- move to the library, when possible.
+  ; XXX TODO -- move to the library
 
   pop hl ; address
   pop de ; E = bitmask
@@ -6231,8 +6231,6 @@ u_less_than.de_hl:
 
 if 1 ; extra_memory
 
-  ; XXX TODO -- finish adapting
-
   pop de ; xt
   push bc ; save Forth IP
 
@@ -6245,7 +6243,7 @@ if 1 ; extra_memory
 
   ; Save the names pointer for later:
 
-  if size_optimization
+  if 1
 
                                           ;  T  B
   ld hl,(names_pointer)                   ; 20 03
@@ -6270,10 +6268,8 @@ if 1 ; extra_memory
   ld hl,names_pointer_bottom ; xtp of the first word defined
 
 to_name.begin:
-  ;_z80_border_wait 1 ; XXX INFORMER
-  ;_z80_border 1 ; XXX INFORMER
-  ;_z80_border 0 ; XXX INFORMER
   ; HL = xtp of the word to check
+  ld (to_name.xtp),hl ; preserve it
   ; Compare HL with the names pointer.
   ; If they are equal, there are no more names to check.
 to_name.names_pointer_high_byte equ $+1
@@ -6294,8 +6290,7 @@ to_name.names_pointer_low_byte equ $+1
 to_name.check_xt
   ; Check if the xt pointed by HL is the one searched for
   ; HL = xtp
-  ld (to_name.xtp_found),hl ; preserve it
-  call a_to_e.hl ; HL = actual address of xtp in extra memory
+  call a_to_e.hl ; HL = actual address of xtp in extra-memory bank
   ld a,(hl) ; low byte of xt
 to_name.xt_low_byte equ $+1
   cp 0 ; equal? (patched low byte of the xt)
@@ -6308,7 +6303,7 @@ to_name.xt_high_byte equ $+1
   jr nz,to_name.next ; not equal
 
   ; The xt has been found.
-to_name.xtp_found equ $+1
+to_name.xtp equ $+1
   ld hl,0 ; patched xtp
   ld de,2*cell
   add hl,de ; HL = nt
@@ -6320,17 +6315,16 @@ to_name.end:
   _jp_pushhl
 
 to_name.next:
-  ; HL = xtp+1 (extra-memory address)
-  inc hl ; lfa
-  inc hl
-  inc hl ; nfa
-  call question_next_bank
-  ; XXX TODO -- improve the update of HL, using the saved
-  ; original xtp and `a>e`.
+  ld hl,(to_name.xtp) ; xtp
+  ld de,2*cell
+  add hl,de ; nfa
+  push hl
+  call a_to_e.hl ; HL = actual address of nfa in extra-memory bank
   ld a,(hl) ; name field byte length
   and word_length_mask ; name length
   ld c,a ; name length
   inc c  ; plus the length byte
+  pop hl ; nfa
   add hl,bc ; xtp of the next word
   jr to_name.begin
 
@@ -6343,7 +6337,7 @@ else
 
   ; Save the names pointer for later:
 
-  if size_optimization
+  if 1
 
                                           ;  T  B
   ld hl,(names_pointer)                   ; 20 03
