@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611131600
+; Last modified: 201611131658
 
 include version.z80s
 
@@ -11428,111 +11428,6 @@ trdos_tester.loop_exit
 endif
 
 ; ----------------------------------------------
-  _code_header mode32_home_,'MODE32-HOME'
-
-; doc{
-;
-; mode32-home  ( -- )
-;
-; Behaviour of `home` in `mode32`.
-;
-; }doc
-
-if 0
-
-  ; XXX OLD -- This method works only with the default ROM
-  ; printing routines.
-
-  ld hl,$1821  ; $18 = 24 - row
-               ; $21 = 33 - column
-  ld (sys_s_posn),hl
-  _jp_next
-
-endif
-
-if 1
-
-  ; XXX NEW -- This method works with any printing routine
-  ; associated to a chanel.
-
-  ld a,at_char
-  rst $10
-  xor a
-  rst $10
-  xor a
-  rst $10
-  _jp_next
-
-endif
-
-if 0
-
-  ; XXX TODO -- adapt this from DZX-Forth?
-  ;
-  ; it should work with any printing routine, because `at-xy`
-  ; is deferred, and configured by the screen modes
-  ;
-  ; slower?
-
-  ld hl,$0000
-  push hl
-  push hl
-  jp at_xy_ ; XXX TODO -- move `at-xy` here to save this jump
-
-endif
-
-; ----------------------------------------------
-  _code_header cls_,'CLS'
-
-; doc{
-;
-; cls  ( -- )
-;
-; Clear the screen with the current colors and reset the cursor
-; position to the upper left corner (column 0, row 0).
-;
-; }doc
-
-; Note: The ROM routines that clear the screen are slow and do
-; many unnecessary BASIC-related things. This code simply clears
-; the screen.
-
-; Credit:
-; The attributes part was improved after code by Dean Belfield
-; <http://wordpress.animatez.co.uk/programming/assembly-language/z80/z80-library-routines/204-2/>.
-; The idea for `ld (hl),l` was found in David Webb's _Advanced
-; Spectrum Machine Language_.
-
-  exx ; save the Forth IP
-  ; Erase the bitmap.
-  ld hl,sys_screen
-  ld de,sys_screen+1
-  ld bc,sys_screen_bitmap_size
-  ld (hl),l ; l=0 because sys_screen=$4000
-  ldir
-  ; Color with the permanent attributes.
-  ld bc,sys_screen_attributes_size-1
-  ld a,(sys_attr_p)
-  ld (hl),a
-  ldir
-  ld (sys_coords),bc ; reset the graphic coordinates
-  exx ; restore the Forth IP
-
-  ; Execution continues in `home`:
-
-; ----------------------------------------------
-  _defer_header home_,'HOME',,mode32_home_
-
-; doc{
-;
-; home  ( -- )
-;
-; Set the cursor position at the top left position (column 0,
-; row 0).
-;
-; }doc
-
-; ----------------------------------------------
   _colon_header page_,'PAGE'
 
 ; doc{
@@ -11726,7 +11621,7 @@ endif
   dw zero_branch_,at_pfa.last_line
   ; not the last row
   dw lit_,22,mode32_emit_,mode32_emit_,mode32_emit_
-  dw exit_ ; XXX TODO exit_
+  dw exit_
 
 at_pfa.last_line:
   dw one_minus_,dup_,mode32_emit_,mode32_emit_
@@ -11742,6 +11637,82 @@ at_pfa.last_line:
   dw lit_,sys_s_posn ; 33 minus column number for print position
   dw c_store_
   dw exit_
+
+; ----------------------------------------------
+  _code_header cls_,'CLS'
+
+; doc{
+;
+; cls  ( -- )
+;
+; Clear the screen with the current colors and reset the cursor
+; position to the upper left corner (column 0, row 0).
+;
+; }doc
+
+; Note: The ROM routines that clear the screen are slow and do
+; many unnecessary BASIC-related things. This code simply clears
+; the screen.
+
+; Credit:
+; The attributes part was improved after code by Dean Belfield
+; <http://wordpress.animatez.co.uk/programming/assembly-language/z80/z80-library-routines/204-2/>.
+; The idea for `ld (hl),l` was found in David Webb's _Advanced
+; Spectrum Machine Language_.
+
+  exx ; save the Forth IP
+  ; Erase the bitmap.
+  ld hl,sys_screen
+  ld de,sys_screen+1
+  ld bc,sys_screen_bitmap_size
+  ld (hl),l ; l=0 because sys_screen=$4000
+  ldir
+  ; Color with the permanent attributes.
+  ld bc,sys_screen_attributes_size-1
+  ld a,(sys_attr_p)
+  ld (hl),a
+  ldir
+  ld (sys_coords),bc ; reset the graphic coordinates
+  exx ; restore the Forth IP
+
+  ; Execution continues in `home`:
+
+; ----------------------------------------------
+  _defer_header home_,'HOME',,paren_home_
+
+; doc{
+;
+; home  ( -- )
+;
+; Set the cursor position at the top left position (column 0,
+; row 0).
+;
+; `home` is a deferred word, which default behaviour is
+; `(home)`.
+;
+; See: `(home)`.
+;
+; }doc
+
+; ----------------------------------------------
+  _code_header paren_home_,'(HOME)'
+
+; doc{
+;
+; (home)  ( -- )
+;
+; Default behaviour of `home`: Set the cursor position at the
+; top left position (column 0, row 0).
+;
+; See: `home`.
+;
+; }doc
+
+  ld hl,$0000
+  push hl
+  push hl
+
+  ; Execution continues in `at-xy`:
 
 ; ----------------------------------------------
   _defer_header at_xy_,'AT-XY',,mode32_at_xy_

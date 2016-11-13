@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610161042
+  \ Last modified: 201611131638
 
   \ -----------------------------------------------------------
   \ Description
@@ -79,8 +79,6 @@ create mode64-at-flag 0 c,
 create mode64-column 0 c,
 create mode64-row 0 c,
 variable mode64-chars
-
-  \ XXX TODO mode64-home
 
 code mode64-emit  ( -- )
 
