@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611131857
+; Last modified: 201611132247
 
 include version.z80s
 
@@ -6774,7 +6774,7 @@ endif
 
 ; doc{
 ;
-; @e ( a -- x )
+; far@ ( a -- x )
 ;
 ; Fetch _x_ from far-memory address _a_.
 ;
@@ -6784,14 +6784,14 @@ endif
 ; is the following:
 ;
 ; ----
-; : @e  ( a -- x )
+; : far@  ( a -- x )
 ;   dup 1+ far c@ >r farc@ r> join  ;
 ; ----
 ;
 ; Faster but larger version:
 ;
 ; ----
-; : @e  ( a -- x )
+; : far@  ( a -- x )
 ;   dup 1+ far c@ >r far c@ r> join default-bank  ;
 ; ----
 ;
@@ -6814,7 +6814,7 @@ endif
 
 ; doc{
 ;
-; !e  ( x a -- )
+; far!  ( x a -- )
 ;
 ; Store _x_ into far-memory address _a_.
 ;
@@ -6824,14 +6824,14 @@ endif
 ; is the following:
 ;
 ; ----
-; : !e  ( x a -- )
+; : far!  ( x a -- )
 ;   >r split r@ 1+ far c! r> farc!  ;
 ; ----
 ;
 ; Faster but larger version:
 ;
 ; ----
-; : !e  ( x a -- )
+; : far!  ( x a -- )
 ;   >r split r@ 1+ far c! r> far c! default-bank  ;
 ; ----
 ;
@@ -6862,7 +6862,7 @@ if 1 ; far_memory
 ;
 ; ----
 ; : name>  ( nt -- xt )
-;   [ 2 cells ] literal - @e  ;
+;   [ 2 cells ] literal - far@  ;
 ; ----
 ;
 ; }doc
@@ -7377,10 +7377,10 @@ if 1 ; far_memory
 ; }doc
 
   dw bounds_
-  dw paren_question_do_,e_type.loop_exit ; ?do
+  dw paren_question_do_,far_type.loop_exit ; ?do
   dw i_,far_c_fetch_,emit_
   dw paren_loop_ ; loop
-e_type.loop_exit
+far_type.loop_exit
   dw exit_
 
 endif
@@ -8242,10 +8242,10 @@ if 1 ; far_memory
   ex (sp),hl      ; HL = ca
   call far.hl     ; HL = actual address; bank paged in
   pop de          ; len
-e_uppers.do:
+far_uppers.do:
   ld a,d
   or e
-  jr z,e_uppers.end
+  jr z,far_uppers.end
   ld a,(hl)
   call ascii_upper.a
   ld (hl),a
@@ -8254,8 +8254,8 @@ e_uppers.do:
   call question_next_bank
   pop de
   dec de
-  _jump e_uppers.do
-e_uppers.end:
+  _jump far_uppers.do
+far_uppers.end:
   call bank.default
   _jp_next
 
@@ -8339,7 +8339,7 @@ if 1 ; far_memory
   pop bc          ; C=len1
   pop de          ; DE=ca1
   ld (hl),c       ; set length of the destination string
-e_place.copy_char:
+far_place.copy_char:
   inc hl
   push de
   call question_next_bank
@@ -8347,7 +8347,7 @@ e_place.copy_char:
   ld a,(de)
   ld (hl),a
   inc de
-  djnz e_place.copy_char ; jump if length is not exhausted
+  djnz far_place.copy_char ; jump if length is not exhausted
   call bank.default
   exx         ; restore Forth IP
   _jp_next
