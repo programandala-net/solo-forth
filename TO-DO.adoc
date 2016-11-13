@@ -11,7 +11,7 @@
 
 .2016-11-13:
 
-Check `indexer`.
+Remove note about version 0.11.0 from the README, after releasing it.
 
 .2016-11-13:
 
@@ -242,12 +242,6 @@ if `load-app` has been compiled, then compile the improved version of `?(`.
 Compact "strings.misc.fsb" and make `lengths` needed.
 
 .2016-05-07:
-
-Fix the `indexer` tool: indexing all words from the library (>800) fills the
-system memory bank were headers are created.  The solution is a configurable
-system bank: the indexer could use a different system bank, and reset the
-names pointer temporarily. Update 2016-10-27: the extra-memory system is being
-implemented, using 4 banks.
 
 Document the Noble arrays.
 

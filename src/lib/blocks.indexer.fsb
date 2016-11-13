@@ -3,23 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT -- It works fine, but the indexed
-  \ words (all words from the library) fill the memory bank.
-  \ The solution is a configurable system bank.
-
-  \ Last modified: 201611130111
+  \ Last modified: 201611131913
 
   \ -----------------------------------------------------------
   \ Description
 
   \ A blocks indexer that improves the default behaviour of
-  \ `need`, `needed`, `reneed` and `reneeded`: It creates a
-  \ word list from the names that are on the index (header)
-  \ line of every searchable block, ignoring duplicates.  These
-  \ words will load the block they belong to. This way, after
-  \ indexing all of the disk blocks only once, `need` will
-  \ search the word list and execute the word found, instead of
-  \ searching all of the blocks every time.
+  \ `need` and related words. See the documentation of
+  \ `indexer`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -54,6 +45,11 @@
   \ library.
   \
   \ 2016-08-05: Compact the code to save one block.
+  \
+  \ 2016-11-13: Check the code with the far-memory system
+  \ recently implemented in the kernel. Now the library disk
+  \ can be indexed. Improve the documentation. Remove old
+  \ unused code.
 
 ( indexer )
 
@@ -190,42 +186,37 @@ forth-wordlist set-current
   \ The default behaviour can be restored by
   \ `set-located-need`.
   \
-  \ }doc
-
-  \ : valid-block-header?  ( ca len -- f )
-  \   -trailing dup 0= #-278 ?throw
-  \   2 string/ 2dup s"  )" str= >r s"  \" str= r> or  ;
-  \ XXX TODO -- remove
-
-  \ XXX OLD
-  \ doc{
-  \
-  \ valid-block-header?  ( ca len -- f )
-  \
-  \ Is block header _ca len_ valid?
-  \ Valid block headers end with " )" or " /".
-  \ If it's empty, throw error -278 in order to quit
-  \ the indexing.
+  \ See: `indexer`, `set-located-need`.
   \
   \ }doc
-
-  \ XXX OLD
-  \ : index-block-header  ( ca len -- )
-  \   2dup valid-block-header? if  evaluate exit  then  2drop  ;
-  \ Index block header _ca len_, if it's valid.
 
 need evaluate
 
 : index-block  ( +n -- )
   dup indexed-block ! 0 swap line>string evaluate  ;
-  \ Index block _+n_.
 
-  \ XXX OLD
-  \ dup indexed-block ! 0 swap line>string index-block-header  ;
+  \ doc{
+  \
+  \ index-block  ( +n -- )
+  \
+  \ Index block _+n_. This word is a factor of `(indexer)`.
+  \
+  \ See: `(indexer)`, `indexer`.
+  \
+  \ }doc
 
 : (indexer)  ( -- )  last-locatable @ 1+ first-locatable @
                      ?do  i index-block  loop  ;
-  \ Create the blocks index.
+  \ doc{
+  \
+  \ (indexer)  ( -- )
+  \
+  \ Create the blocks index, from `last-locatable` to
+  \ `last-locatable`. This word is a factor of `indexer`.
+  \
+  \ See: `indexer`, `first-locatable`, `last-locatable`.
+  \
+  \ }doc
 
 : indexer  ( -- )
   get-current  get-order
@@ -237,8 +228,24 @@ need evaluate
   \
   \ indexer  ( -- )
   \
-  \ Create the blocks index and activate it. The current
-  \ word list and the current search order are preserved.
+  \ Create the blocks index and activate it. The current word
+  \ list and the current search order are preserved.
+  \
+  \ This word changes the default behaviour of `need` `needed`,
+  \ `reneed` and `reneeded`: It creates a word list from the
+  \ names that are on the index (header) line of every
+  \ searchable block, ignoring duplicates.  These words will
+  \ load the block they belong to. This way, after indexing all
+  \ the disk blocks only once, `need` will search the word list
+  \ and execute the word found, which will load its block. On
+  \ the contrary, the default behaviour of `need` is to search
+  \ all the blocks every time.
+  \
+  \ The default behaviour of `need` and related words can be
+  \ restored with `set-located-need`.
+  \
+  \ See: `need`, `needed`, `reneed`, `reneeded`,
+  \ `set-indexed-need`, `set-located-need`.
   \
   \ }doc
 
