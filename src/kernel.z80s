@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611131730
+; Last modified: 201611131758
 
 include version.z80s
 
@@ -2440,15 +2440,15 @@ question_csb_.enough:
   ; Execution continues in `noop`:
 
 ; ----------------------------------------------
-  _code_header noop_,'NOOP'
+  _alias_header noop_,'NOOP',,next
 
 ; doc{
 ;
 ; noop  ( -- )
 ;
+; Do nothing.
+;
 ; }doc
-
-  _jp_next
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>MARK'

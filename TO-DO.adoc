@@ -100,8 +100,6 @@ Fix the extra-memory system:
 
 Finish the extra-memory system in the kernel.
 
-Make `noop` an alias, using `next` as xt. This saves `jp (ix)`.
-
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
 Remove `join` and `split` from the library, moved to the kernel because of the
