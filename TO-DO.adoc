@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-12
+:revdate: 2016-11-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -11,7 +11,17 @@
 
 .2016-11-13:
 
-Rename extra-memory words with "far".
+Remove `get-default-bank` and `set-default-bank`.
+
+.2016-11-13:
+
+`jp pushhl` is not used in the kernel because it's slower than `push hl` + `jp
+(ix)`. Change it also in code definitions in the library.
+
+.2016-11-13:
+
+Make `dp` an ordinary variable? Then `here`, `there` and `allot` could be
+improved, rewritten in Z80.
 
 .2016-11-12:
 
@@ -21,16 +31,18 @@ Move the lex bits off the length byte of the name field.
 
 Ideas from
 http://www.bedroomlan.org/hardware/cft/book/forth-programming-d2-reference[CFT
-Forth]: : `base>r`, `r>base`...
+Forth]:
 
 ....
 
-#CONTEXT ( -- a ) (numCONTEXT) The number of entries in the vocabulary stack.
+BASE>R
 
+R>BASE
+
+#CONTEXT ( -- a ) (numCONTEXT) The number of entries in the vocabulary stack.
 
 #WORDS ( -- n ) (countwords) Returns the number of words in the CURRENT
 vocabulary.
-
 
 !BITS ( 16b1 addr 16b2 -- ) (store-BITS) Store the value of 16b1 masked by
 16b2 into the equivalent masked part of the contents of addr, without
@@ -44,12 +56,9 @@ u) in-place.
 
 .BANKS ( -- ) (dot-BANKS) Prints out the current memory banking scheme.
 
-
 .BASE ( -- ) (dot-BASE) Prints out the base.
 
 .DATE ( -- ) (dot-DATE) Read and print out the date from the the real-time clock.
-
-.OK ( -- ) (dot-ok) Print out the ”ok ” prompt.
 
 .TIME ( -- ) (dot-TIME) Read and print out the time from the the real-time
 clock.

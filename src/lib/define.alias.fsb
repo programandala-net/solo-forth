@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610281834
+  \ Last modified: 201611131518
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,17 +58,19 @@
   \ 2016-05-05: Add conditional compilation. Improve
   \ documentation.
   \
-  \ 2016-10-28: Adapt `alias!` to the extra memory system.
+  \ 2016-10-28: Adapt `alias!` to the extra-memory system.
+  \
+  \ 2016-11-13: Update the names of far-memory words.
 
 ( alias! alias realias )
 
-need name>>  need !s
+need name>>
 
-[defined] alias! [defined] extra-memory or
-?\ : alias!  ( xt nt -- )  name>> !s  ;
-[defined] alias! [undefined] extra-memory or
-?\ : alias!  ( xt nt -- )  name>> !e  ;
-  \ XXX TMP -- two variants until the extra memory is fully
+[defined] alias! [defined] far-memory or
+?\ need !s : alias!  ( xt nt -- )  name>> !s  ;
+[defined] alias! [undefined] far-memory or
+?\ : alias!  ( xt nt -- )  name>> far!  ;
+  \ XXX TMP -- two variants until the far memory is fully
   \ implemented
 
   \ doc{

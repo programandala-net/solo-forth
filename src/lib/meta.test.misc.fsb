@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610261233
+  \ Last modified: 201611131517
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,6 +45,8 @@
   \ <lib/flow.begincase.fsb>.
   \
   \ 2016-10-26: Add `a>e-test`.
+  \
+  \ 2016-11-13: Update the names of far-memory words.
 
 ( alias-test synonym-test )
 
@@ -407,16 +409,19 @@ nope
   \ This test compares the results of the new version of `a>e`,
   \ written in Z80 in the kernel, with the previous version
   \ written in Forth.
+  \
+  \ 2016-11-13: Update after the renaming done in the kernel
+  \ (`a>e` to `far`; `extra-memory` to `far-banks`).
 
 need u>ud
 
-: high-a>e  ( a1 -- a2 )
-  u>ud $4000 um/mod  extra-memory + c@ bank  $C000 +  ;
-  \ High-level version of `a>e`.
+: high-far  ( a1 -- a2 )
+  u>ud $4000 um/mod  far-banks + c@ bank  $C000 +  ;
+  \ High-level version of `far`.
 
-: a>e-test  ( -- )
+: far-test  ( -- )
   hex $FFFF 1+ $0000 do
-    home i 4 .r  i a>e i high-a>e <>
+    home i 4 .r  i far i high-far <>
     if  cr ." Mismatch in address " u. abort  then
   loop  decimal  ;
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610281421
+  \ Last modified: 201611131522
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,9 @@
   \
   \ 2016-10-26: Remove `extra-memory` and `a>e`, which have
   \ been moved to the kernel.
+  \
+  \ 2016-11-13: Remove far-memory fetch and store words, which
+  \ are already in the kernel.
 
 ( !s c!s )
 
@@ -85,98 +88,6 @@
   \
   \ Set _+n_ (0..7) as the default memory bank paged in at
   \ $C000..$FFFF.
-  \
-  \ }doc
-
-( c!e c@e !e !eb @e @eb )
-
-need join  need split
-
-: c!e  ( c ca -- )  a>e c! default-bank  ;
-  \ XXX TMP -- copied to the kernel
-
-  \ doc{
-  \
-  \ c!e  ( c ca -- )
-  \
-  \ Store _c_ into extra-memory address _ca_.
-  \
-  \ }doc
-
-: c@e  ( a -- c )  a>e c@ default-bank  ;
-  \ XXX TMP -- copied to the kernel
-
-  \ doc{
-  \
-  \ c@e ( ca -- c )
-  \
-  \ Fetch _c_ from extra-memory address _ca_.
-  \
-  \ }doc
-
-: !e  ( x a -- )  >r split r@ 1+ a>e c! r> c!e  ;
-  \ XXX TMP -- copied to the kernel
-
-  \ XXX OLD -- faster but larger version:
-  \ : !e  ( x a -- )
-  \   >r split r@ 1+ a>e c! r> a>e c! default-bank  ;
-
-  \ doc{
-  \
-  \ !e  ( x a -- )
-  \
-  \ Store _x_ into extra-memory address _a_.
-  \
-  \ See: `!eb`.
-  \
-  \ }doc
-
-: !eb  ( x a -- )  a>e ! default-bank   ;
-
-  \ doc{
-  \
-  \ !eb ( a -- x )
-  \
-  \ Store _x_ into extra-memory address _a_, provided _a_ and
-  \ _a+1_ belong to the same bank.  In other words, _a_ can not
-  \ be the last address of a 16-KiB section ($3FFF, $7FFF,
-  \ $BFFF or $FFFF), else the high byte of _x_ will be "stored"
-  \ into ROM address $0000.
-  \
-  \ See: `!e`.
-  \
-  \ }doc
-
-: @e  ( a -- x )  dup 1+ a>e c@ >r c@e r> join   ;
-  \ XXX TMP -- copied to the kernel
-
-  \ XXX OLD -- faster but larger version:
-  \ : @e  ( a -- x )
-  \   dup 1+ a>e c@ >r a>e c@ r> join default-bank  ;
-
-  \ doc{
-  \
-  \ @e ( a -- x )
-  \
-  \ Fetch _x_ from extra-memory address _a_.
-  \
-  \ See: `@eb`.
-  \
-  \ }doc
-
-: @eb  ( a -- x )  a>e @ default-bank   ;
-
-  \ doc{
-  \
-  \ @eb ( a -- x )
-  \
-  \ Fetch _x_ from extra-memory address _a_, provided _a_ and
-  \ _a+1_ belong to the same bank. In other words, _a_ can not
-  \ be the last address of a 16-KiB section ($3FFF, $7FFF,
-  \ $BFFF or $FFFF), else the high byte of _x_ will be fetched
-  \ from ROM address $0000.
-  \
-  \ See: `@e`.
   \
   \ }doc
 
