@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611131758
+; Last modified: 201611131801
 
 include version.z80s
 
@@ -6687,60 +6687,6 @@ else
   ; XXX TODO -- 5 bytes -- faster version:
   ; ld e,system_bank
   ; jp fetch_bank.e
-
-endif
-
-; ----------------------------------------------
-if 0 ; XXX OLD -- not needed anymore for the far-memory system;
-     ;            these words are in the library
-
-  _code_header split_,'SPLIT'
-
-; Credit:
-;
-; Idea from IsForth.
-
-; doc{
-;
-; split  ( x -- b1 b2 )
-;
-; Get _b1_ and _b2_ from the 2 bytes which compose _x_: _b1_
-; is the low-order byte and _b2_ is the high-order byte.
-;
-; See `join`.
-;
-; Origin: IsForth.
-;
-; }doc
-
-  pop hl
-  ld d,0
-  ld e,l
-  ld l,h
-  ld h,0
-  jp push_hlde
-
-; ----------------------------------------------
-  _code_header join_,'JOIN'
-
-; doc{
-;
-; join  ( b1 b2 -- x )
-;
-; _b1_ is the low-order byte of _x_, and _b2_ is the
-; high-order byte of _x_.
-;
-; See `split`.
-;
-; Origin: IsForth.
-;
-; }doc
-
-  pop de
-  ld h,e
-  pop de
-  ld l,e
-  _jp_pushhl
 
 endif
 

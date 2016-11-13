@@ -102,9 +102,6 @@ Finish the extra-memory system in the kernel.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
-Remove `join` and `split` from the library, moved to the kernel because of the
-extra-memory system.
-
 .2016-08-11:
 
 Remove the 64 cpl font from the library (4 blocks), and use the binary file
