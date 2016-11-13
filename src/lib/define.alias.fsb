@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131518
+  \ Last modified: 201611131719
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,9 +66,9 @@
 
 need name>>
 
-[defined] alias! [defined] far-memory or
+[defined] alias! [defined] far-banks or
 ?\ need !s : alias!  ( xt nt -- )  name>> !s  ;
-[defined] alias! [undefined] far-memory or
+[defined] alias! [undefined] far-banks or
 ?\ : alias!  ( xt nt -- )  name>> far!  ;
   \ XXX TMP -- two variants until the far memory is fully
   \ implemented
