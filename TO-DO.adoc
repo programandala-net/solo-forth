@@ -15,11 +15,6 @@ Remove `get-default-bank` and `set-default-bank`.
 
 .2016-11-13:
 
-`jp pushhl` is not used in the kernel because it's slower than `push hl` + `jp
-(ix)`. Change it also in code definitions in the library.
-
-.2016-11-13:
-
 Make `dp` an ordinary variable? Then `here`, `there` and `allot` could be
 improved, rewritten in Z80.
 
