@@ -11,6 +11,10 @@
 
 .2016-11-13:
 
+Check `indexer`.
+
+.2016-11-13:
+
 Remove `get-default-bank` and `set-default-bank`.
 
 .2016-11-13:

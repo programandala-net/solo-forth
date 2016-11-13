@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611131801
+; Last modified: 201611131857
 
 include version.z80s
 
@@ -2440,7 +2440,7 @@ question_csb_.enough:
   ; Execution continues in `noop`:
 
 ; ----------------------------------------------
-  _alias_header noop_,'NOOP',,next
+  _code_header noop_,'NOOP',
 
 ; doc{
 ;
@@ -2449,6 +2449,8 @@ question_csb_.enough:
 ; Do nothing.
 ;
 ; }doc
+
+  _jp_next
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>MARK'
@@ -9850,9 +9852,28 @@ common_start:
 
 ; ----------------------------------------------
 if size_optimization
+
+  ; 9 bytes
+
   _colon_header s_to_d_,'S>D'
+
+  dw dup_,zero_less_than_
+  dw exit_
+
 else
+
+  ; 13 bytes
+
   _code_header s_to_d_,'S>D'
+
+  ld hl,0
+  pop de
+  ld a,d
+  or a
+  jp p,push_hlde ; jump if positive
+  dec hl
+  jp push_hlde
+
 endif
 
 ; doc{
@@ -9871,23 +9892,6 @@ endif
 ; ----
 ;
 ; }doc
-
-if size_optimization
-
-  dw dup_,zero_less_
-  dw exit_
-
-else
-
-  ld hl,0
-  pop de
-  ld a,d
-  or a
-  jp p,push_hlde ; jump if positive
-  dec hl
-  jp push_hlde
-
-endif
 
 ; ----------------------------------------------
   _code_header question_negate_,'?NEGATE'
