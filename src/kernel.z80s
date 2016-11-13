@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611131658
+; Last modified: 201611131730
 
 include version.z80s
 
@@ -6527,6 +6527,9 @@ store_bank.e:
 
 endif
 
+if 1 ; far_memory
+else
+
 ; ----------------------------------------------
 if 0 ; XXX OLD
 
@@ -6607,6 +6610,8 @@ fetch_bank.end:
   push hl
 
   ; Execution continues in `default-bank`:
+
+endif
 
 endif
 
