@@ -7,7 +7,7 @@
   \ words (all words from the library) fill the memory bank.
   \ The solution is a configurable system bank.
 
-  \ Last modified: 201608051257
+  \ Last modified: 201611130111
 
   \ -----------------------------------------------------------
   \ Description
@@ -79,7 +79,7 @@ variable indexed-block
 
 : index-name  ( ca len -- )
   2dup name-indexed? if  2drop exit  then
-  \ 1 counter +! counter ? 2dup type space np@ u.
+  \ 1 counter +! counter ? 2dup type space hp@ u.
   \ XXX INFORMER
   nextname indexed-block @ alias  ;
   \ Add word _ca len_ to the blocks index, if not done before.

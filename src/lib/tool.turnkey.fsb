@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604262107
+  \ Last modified: 201611130113
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-11-13: Rename `np@` to `hp@` after the changes in the
+  \ kernel.
 
 ( extend size system turnkey )
 
@@ -42,7 +48,7 @@
 
   latest $08 +origin !  \ top most word in `forth` vocabulary
   here $1F +origin !   \ `dp` init value
-  np@ $26 +origin !   \ `np` init value
+  hp@ $26 +origin !   \ `hp` init value
   voc-link @ $0C +origin !  ;  \ `voc-link` init value
 
   \ doc{

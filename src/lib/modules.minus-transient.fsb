@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201606010101
+  \ Last modified: 201611130110
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,9 @@
 
   \ 2016-06-01: Update: `there` was moved from the kernel to
   \ the library.
+  \
+  \ 2016-11-13: Rename "np" to "hp" after the changes in the
+  \ kernel.
 
 ( transient[ )
 
@@ -52,14 +55,14 @@
 need >>link  need there
 
 variable old-dp
-variable old-np
+variable old-hp
 variable old-latest
 variable old-voc-link
 
 : transient[  ( u -- )
 
   here        old-dp !
-  np@         old-np !
+  hp@         old-hp !
   latest      old-latest !
   voc-link @  old-voc-link !
 
@@ -84,7 +87,7 @@ variable old-voc-link
   \ }doc
 
 
-: ]transient  ( -- )  old-dp @ there  old-np @ np !  ;
+: ]transient  ( -- )  old-dp @ there  old-hp @ hp!  ;
 
   \ doc{
   \
@@ -101,7 +104,7 @@ variable old-voc-link
 : -transient  ( -- )
   old-voc-link @ voc-link !
   \ XXX TODO -- finish adapt to Solo Forth:
-  old-latest @ old-np @ >>link !s  ;
+  old-latest @ old-hp @ >>link !s  ;
 
   \ doc{
   \

@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611130053
+; Last modified: 201611130114
 
 include version.z80s
 
@@ -48,7 +48,7 @@ include version.z80s
 ; ----------------------------------------------
 ; Header structure
 
-; The name and link fields are created in a memory bank:
+; The headers are created in paged memory:
 
 ; xtp: dw xt               ; Pointer to xt in main memory.
 ; lfa: dw nt of the previous word
@@ -197,10 +197,10 @@ default_bank:                     equ 0
 
 if 1 ; extra_memory
   system_bank:                      equ 1 ; XXX TMP --
-  names_pointer_bottom:             equ $0000
+  headers_pointer_bottom:           equ $0000
 else
   system_bank:                      equ 1
-  names_pointer_bottom:             equ bank_start
+  headers_pointer_bottom:           equ bank_start
 endif
 
 ; Error codes used in the kernel
@@ -271,9 +271,9 @@ _header: macro _base_label,_name,_flags,_xt
   ; In memory bank:
 
 if 1 ; extra_memory
-  org bank_start+(np mod bank_size)
+  org bank_start+(hp mod bank_size)
 else
-  org np
+  org hp
 endif
 
   ; Execution token pointer:
@@ -319,17 +319,17 @@ endif
     db _name
   _address_after_name: equ $
 
-  ; Set new value of the names pointer:
+  ; Set new value of the headers pointer:
 if 1 ; extra_memory
-  np: defl $-bank_start
+  hp: defl $-bank_start
 else
-  np: defl $
+  hp: defl $
 endif
 
-  ; Update the names pointer:
-  org names_pointer
-  dw np ; overwrite the contents of names_pointer
-  dw np ; overwrite the contents of names_pointer_init_value
+  ; Update the headers pointer:
+  org headers_pointer
+  dw hp ; overwrite the contents of headers_pointer
+  dw hp ; overwrite the contents of headers_pointer_init_value
 
   ; In dictionary:
   org _dp_backup
@@ -753,21 +753,21 @@ ip_backup: ; temporary copy of Forth IP
   dw 0
   ; XXX OLD -- not used
 
-np: defl names_pointer_bottom
+hp: defl headers_pointer_bottom
 
-names_pointer:
+headers_pointer:
   ; `$24 +origin`
   ; First free address in the system bank, restored by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
-  dw np
+  dw hp
 
-names_pointer_init_value:
+headers_pointer_init_value:
   ; `$26 +origin`
-  ; Init value of the names pointer, used by `cold`.
+  ; Init value of the headers pointer, used by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
-  dw np
+  dw hp
 
 ; ==============================================================
 ; User variables
@@ -4409,71 +4409,80 @@ u_m_slash_mod.4:
   dw user_variables
 
 ; ----------------------------------------------
-  _constant_header np_,'NP'
+  _constant_header hp_,'HP'
 
   ; XXX TODO -- update documentation for extra memory
 
 ; doc{
 ;
-; np  ( -- a )
+; hp  ( -- a )
 ;
-; Address that holds the names pointer. The names pointer points
+; Address that holds the headers pointer. The headers pointer points
 ; to the next free address in the system memory bank, where the
 ; next word header will be stored.
 ;
 ; }doc
 
-  dw names_pointer
+  dw headers_pointer
 
 ; ----------------------------------------------
-  _constant_header np0_,'NP0'
+  _constant_header hp0_,'HP0'
 
-  dw names_pointer_bottom
+  dw headers_pointer_bottom
 
 ; ----------------------------------------------
-  _code_header np_fetch_,'NP@'
+  _code_header hp_fetch_,'HP@'
 
 ; doc{
 ;
-; np@  ( -- a )
+; hp@  ( -- a )
 ;
-; Fetch the content of the names pointer.
+; Fetch the content of the headers pointer.
 ;
 ; }doc
 
-  ld hl,(names_pointer)
+  ld hl,(headers_pointer)
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header np_store_,'NP!'
+  _code_header hp_store_,'HP!'
+
+; doc{
+;
+; hp!  ( a -- )
+;
+; Store _a_ into the headers pointer.
+;
+; }doc
+
 
   pop hl
-  ld (names_pointer),hl
+  ld (headers_pointer),hl
   _jp_next
 
 ; ----------------------------------------------
 
   ; XXX TODO -- update documentation for extra memory
 
-  _colon_header comma_np_,',NP'
+  _colon_header comma_np_,',HP'
 
 ; doc{
 ;
-; ,np  ( x -- )
+; ,hp  ( x -- )
 ;
-; Store _x_ into the address pointed by the names pointer,
-; advancing the names pointer.
+; Store _x_ into the address pointed by the headers pointer,
+; advancing the headers pointer.
 ;
 ; }doc
 
-  dw np_fetch_
+  dw hp_fetch_
 if 1 ; extra_memory
   dw store_e_
 else
   ; Note: The system bank must be paged in.
   dw store_
 endif
-  dw cell_,np_,plus_store_
+  dw cell_,hp_,plus_store_
   dw exit_
 
 ; ----------------------------------------------
@@ -6241,47 +6250,47 @@ if 1 ; extra_memory
   ld a,d
   ld (to_name.xt_high_byte),a
 
-  ; Save the names pointer for later:
+  ; Save the headers pointer for later:
 
   if 1
 
-                                          ;  T  B
-  ld hl,(names_pointer)                   ; 20 03
-  ld a,l                                  ; 04 01
-  ld (to_name.names_pointer_low_byte),a   ; 13 03
-  ld a,h                                  ; 04 01
-  ld (to_name.names_pointer_high_byte),a  ; 13 03
-                                          ; 54 11 TOTAL
+                                            ;  T  B
+  ld hl,(headers_pointer)                   ; 20 03
+  ld a,l                                    ; 04 01
+  ld (to_name.headers_pointer_low_byte),a   ; 13 03
+  ld a,h                                    ; 04 01
+  ld (to_name.headers_pointer_high_byte),a  ; 13 03
+                                            ; 54 11 TOTAL
 
   else
 
-                                          ;  T  B
-  ld a,(names_pointer)                    ; 13 03
-  ld (to_name.names_pointer_low_byte),a   ; 13 03
-  ld a,(names_pointer+1)                  ; 13 03
-  ld (to_name.names_pointer_high_byte),a  ; 13 03
-                                          ; 52 12 TOTAL
+                                            ;  T  B
+  ld a,(headers_pointer)                    ; 13 03
+  ld (to_name.headers_pointer_low_byte),a   ; 13 03
+  ld a,(headers_pointer+1)                  ; 13 03
+  ld (to_name.headers_pointer_high_byte),a  ; 13 03
+                                            ; 52 12 TOTAL
 
   endif
 
   ld b,0 ; init B to use BC later
-  ld hl,names_pointer_bottom ; xtp of the first word defined
+  ld hl,headers_pointer_bottom ; xtp of the first word defined
 
 to_name.begin:
   ; HL = xtp of the word to check
   ld (to_name.xtp),hl ; preserve it
-  ; Compare HL with the names pointer.
+  ; Compare HL with the headers pointer.
   ; If they are equal, there are no more names to check.
-to_name.names_pointer_high_byte equ $+1
-  ld a,0 ; patched high byte of the names pointer
+to_name.headers_pointer_high_byte equ $+1
+  ld a,0 ; patched high byte of the headers pointer
   cp h ; equals high byte of the xtp?
   jr nz,to_name.check_xt ; jump if not
-to_name.names_pointer_low_byte equ $+1
-  ld a,0 ; patched low byte of the names pointer
+to_name.headers_pointer_low_byte equ $+1
+  ld a,0 ; patched low byte of the headers pointer
   sub l ; equals low byte of the xtp?
   jr nz,to_name.check_xt ; jump if not
 
-  ; The names pointer has been reached. No words left.
+  ; The headers pointer has been reached. No words left.
   ; A = 0
   ld h,a
   ld l,a ; HL = 0
@@ -6335,42 +6344,42 @@ else
   pop de ; xt
   push bc ; save Forth IP
 
-  ; Save the names pointer for later:
+  ; Save the headers pointer for later:
 
   if 1
 
-                                          ;  T  B
-  ld hl,(names_pointer)                   ; 20 03
-  ld a,l                                  ; 04 01
-  ld (to_name.names_pointer_low_byte),a   ; 13 03
-  ld a,h                                  ; 04 01
-  ld (to_name.names_pointer_high_byte),a  ; 13 03
-                                          ; 54 11 TOTAL
+                                            ;  T  B
+  ld hl,(headers_pointer)                   ; 20 03
+  ld a,l                                    ; 04 01
+  ld (to_name.headers_pointer_low_byte),a   ; 13 03
+  ld a,h                                    ; 04 01
+  ld (to_name.headers_pointer_high_byte),a  ; 13 03
+                                            ; 54 11 TOTAL
 
   else
 
-                                          ;  T  B
-  ld a,(names_pointer)                    ; 13 03
-  ld (to_name.names_pointer_low_byte),a   ; 13 03
-  ld a,(names_pointer+1)                  ; 13 03
-  ld (to_name.names_pointer_high_byte),a  ; 13 03
-                                          ; 52 12 TOTAL
+                                            ;  T  B
+  ld a,(headers_pointer)                    ; 13 03
+  ld (to_name.headers_pointer_low_byte),a   ; 13 03
+  ld a,(headers_pointer+1)                  ; 13 03
+  ld (to_name.headers_pointer_high_byte),a  ; 13 03
+                                            ; 52 12 TOTAL
 
   endif
 
   ld b,0 ; init B to use BC later
-  ld hl,names_pointer_bottom ; xtp of the first word defined
+  ld hl,headers_pointer_bottom ; xtp of the first word defined
 
 to_name.begin:
   ; HL = xtp of the word to check
-  ; Compare HL with the names pointer.
+  ; Compare HL with the headers pointer.
   ; If they are equal, there are no more names to check.
-to_name.names_pointer_high_byte equ $+1
-  ld a,0 ; patched high byte of the names pointer
+to_name.headers_pointer_high_byte equ $+1
+  ld a,0 ; patched high byte of the headers pointer
   cp h
   jr nz,to_name.check_xt
-to_name.names_pointer_low_byte equ $+1
-  ld a,0 ; patched low byte of the names pointer
+to_name.headers_pointer_low_byte equ $+1
+  ld a,0 ; patched low byte of the headers pointer
   sub l
   jr nz,to_name.check_xt
 
@@ -8548,21 +8557,21 @@ if 1 ; extra_memory
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
 if debugging
-  _echo "NP = xtp = "
-  dw np_fetch_,u_dot_ ; XXX INFORMER
+  _echo "HP = xtp = "
+  dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
   dw here_,comma_np_ ; store a pointer to the xt
 if debugging
-  _echo "NP = lfa = "
-  dw np_fetch_,u_dot_ ; XXX INFORMER
+  _echo "HP = lfa = "
+  dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
   dw current_latest_,comma_np_ ; link field
 if debugging
-  _echo "NP = nfa = "
-  dw np_fetch_,u_dot_ ; XXX INFORMER
+  _echo "HP = nfa = "
+  dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
 
-  dw np_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
+  dw hp_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw e_place_ ; store the name
 
   ; Convert the name to uppercase:
@@ -8571,17 +8580,17 @@ endif
 
   dw r_fetch_
 if debugging
-  _echo "NP = last = "
+  _echo "HP = last = "
   dw dup_,u_dot_ ; XXX INFORMER
 endif
   dw get_current_,store_ ; update the current word list
   dw from_r_,last_,store_ ; update `last`
 
   dw hide_
-  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
+  dw one_plus_,hp_,plus_store_ ; update the headers pointer with the length+1
 if debugging
-  _echo "NP = next xtp = "
-  dw np_fetch_,u_dot_ ; XXX INFORMER
+  _echo "HP = next xtp = "
+  dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
 
   dw exit_
@@ -8595,7 +8604,7 @@ else
   dw here_,comma_np_ ; store a pointer to the xt
   dw current_latest_,comma_np_ ; link field
 
-  dw np_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
+  dw hp_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw place_ ; store the name
   dw r_fetch_,count_,uppers_ ; convert it to uppercase
 
@@ -8603,7 +8612,7 @@ else
   dw from_r_,last_,store_ ; and `last`
 
   dw hide_
-  dw one_plus_,np_,plus_store_ ; update the names pointer with the length+1
+  dw one_plus_,hp_,plus_store_ ; update the headers pointer with the length+1
 
   dw default_bank_
 
@@ -9765,9 +9774,9 @@ warm_start:
 ;
 ; }doc
 
-  ; Init the names pointer.
-  dw lit_,names_pointer_init_value,fetch_
-  dw lit_,names_pointer,store_
+  ; Init the headers pointer.
+  dw lit_,headers_pointer_init_value,fetch_
+  dw lit_,headers_pointer,store_
 
   ; Init the disk buffers.
   dw empty_buffers_

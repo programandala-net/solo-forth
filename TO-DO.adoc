@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-10-28
+:revdate: 2016-11-12
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -9,11 +9,75 @@
 == Misc ==
 // {{{
 
+.2016-11-13:
+
+Rename extra-memory words with "far".
+
+.2016-11-12:
+
+Move the lex bits off the length byte of the name field.
+
+.2016-11-12:
+
+Ideas from
+http://www.bedroomlan.org/hardware/cft/book/forth-programming-d2-reference[CFT
+Forth]: : `base>r`, `r>base`...
+
+....
+
+#CONTEXT ( -- a ) (numCONTEXT) The number of entries in the vocabulary stack.
+
+
+#WORDS ( -- n ) (countwords) Returns the number of words in the CURRENT
+vocabulary.
+
+
+!BITS ( 16b1 addr 16b2 -- ) (store-BITS) Store the value of 16b1 masked by
+16b2 into the equivalent masked part of the contents of addr, without
+affecting bits outside the mask.
+
++FLAG! ( u a -- ) (set-FLAG-store) The value at address a is ORred with u
+in-place.
+
+-FLAG! ( u a -- ) (clear-FLAG-store) The value at address a is ANDed with (NOT
+u) in-place.
+
+.BANKS ( -- ) (dot-BANKS) Prints out the current memory banking scheme.
+
+
+.BASE ( -- ) (dot-BASE) Prints out the base.
+
+.DATE ( -- ) (dot-DATE) Read and print out the date from the the real-time clock.
+
+.OK ( -- ) (dot-ok) Print out the ”ok ” prompt.
+
+.TIME ( -- ) (dot-TIME) Read and print out the time from the the real-time
+clock.
+
+.rs ( -- ) (dot-rs) Prints out the return stack non-destructively.
+
+16* ( w -- w ) (16mul) Shift left four bits.
+
+16/ ( u -- u ) (16div) Shift right four bits (one nybble). No sign extension.
+
+1MS ( -- ) Delay for approximately 1 millisecond.
+
+256* ( w -- w ) (256mul) Shift left eight bits.
+
+256/ ( w -- w ) (256div) Shift right eight bits.
+
+>FLAGS ( a -- u ) (to-FLAGS-fetch) Given the PFA of a word, return its ﬂags.
+
+>LINK@ ( a -- a | f ) (to-LINK-fetch) Given the PFA of a word, return the head address of the word preceding it in the vocabulary. If this is the first word in the vocabulary, false (zero) is returned.
+
+CONTEXT@ ( u -- a ) (CONTEXT-fetch) Get the u-th (from the top) entry in the
+vocabulary stack. The value returned is the address of a variable holding the
+address of the last entry in that dictionary. It’s also the PFA of the
+vocabulary word.
+
+....
+
 .2016-10-28:
-
-Rename "np" (names pointer) to "hp" (headers pointer)?
-
-Use the "\e" prefix for extra-memory variants?
 
 Simplify `u.r`.
 
