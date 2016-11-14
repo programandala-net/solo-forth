@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201605092127
+  \ Last modified: 201611141423
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,10 +42,11 @@
 
   \ 2015-12-25: First changes:
   \
-  \ 1. "," suffixes in Z80 instructions; 2. one single set of
-  \ conditions; 3. "a" and "r" prefixes in control structures;
-  \ 4. condition "m" renamed to "ne".
-  \
+  \   1. "," suffixes in Z80 instructions;
+  \   2. one single set of conditions;
+  \   3. "a" and "r" prefixes in control structures;
+  \   4. condition "m" is renamed to "ne".
+
   \ 2016-04-11: Moved `macro` to its own module.
   \
   \ 2016-04-13: Made `calc` independent from the assembler and
@@ -53,8 +54,9 @@
   \ then renamed it and `call-xt` with a trailing comma, to
   \ avoid loading them instead of the versions written for the
   \ first assembler.
-  \
+
   \ 2016-05-08:
+  \
   \ - Rename conditions to the original names plus "?".
   \ - Rename `|mark` to `>amark`.
   \ - Rename `|resolve` to `>aresolve`.
@@ -64,12 +66,15 @@
   \ - Compact the blocks.
   \ - Add `?jp` and `?jr` for conditional jumps.
   \ - Remove "jpCOND"-like and "jrCOND"-like opcodes.
-  \ - Changed the opcode values of the conditions.
+  \ - Change the opcode values of the conditions.
   \ - Rename `?page` to `?jr-range`.
   \ - Rename `clr,` to `clrp,`; add new `clr,`.
-  \
+
   \ 2016-05-09: Save and restore the compile word list, the
   \ current radix and the search order.
+  \
+  \ 2016-11-14: Now `call,` is defined in the kernel, where it
+  \ already existed with the old name `code-field,`.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -189,13 +194,16 @@ DD constant ix-op  FD constant iy-op
 
   \ XXX FIXME ftap
 
+  \ XXX OLD -- CD m5 call,
+  \ `call,` is already defined in the kernel
+
 00 m1 nop, 02 m3 stap, 03 m3 incp, 04 m3 inc, 05 m3 dec, 07 m1
 rlca, 08 m1 exaf, 09 m3 addp, 0A m3 ftap, 0B m3 decp, 0F m1
 rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 22 m5 sthl,
 27 m1 daa, 2A m5 fthl, 2F m1 cpl, 32 m5 sta, 37 m1 scf, 3A m5
 fta, 3F m1 ccf, 76 m1 halt, 80 m2 add, 88 m2 adc, 90 m2 sub, 98
 m2 sbc, B8 m2 cp, C1 m3 pop, C3 m5 jp, C5 m3 push, C6 m4 add#,
-C7 m2 rst, C9 m1 ret, CD m5 call, CE m4 adc#, D3 m4 out, 41 m3
+C7 m2 rst, C9 m1 ret, CE m4 adc#, D3 m4 out, 41 m3
 outbc, D6 m4 sub#, D9 m1 exx, DB m4 in, 40 m3 inbc, 0DE m4
 sbc#, E3 m1 exsp, E6 m4 and#, E9 m1 jphl, EB m1 exde, EE m4
 xor#, F3 m1 di,  F6 m4 or#, F9 m1 ldsp, FB m1 ei, FE m4 cp#, 00
