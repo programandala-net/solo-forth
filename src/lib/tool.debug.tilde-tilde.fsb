@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201611141406
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,51 +22,185 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-( ~~ )
+  \ -----------------------------------------------------------
+  \ History
 
   \ 2016-02-18: First version.
+  \
+  \ 2016-11-14: Document all words. Use `defer!`, which is the
+  \ kernel, instead of `is`, which is in the library.
 
-need :noname  need defer  need is
+( ~~ )
 
-variable ~~?    ~~? on      \ active?
-variable ~~x    ~~x off     \ x coordinate
-variable ~~y    ~~y off     \ y coordinate
-variable ~~key  ~~key off   \ quit key, or zero if no pause
+need :noname  need defer
+
+variable ~~?   ~~? on
+
+  \ doc{
+  \
+  \ ~~?  ( -- a )
+  \
+  \ A variable that holds a flag. When the flag is true, the
+  \ debugging code compiled by `~~` is executed.
+  \
+  \ See: `~~`.
+  \
+  \ }doc
+
+variable ~~x  ~~x off  variable ~~y  ~~y off
+
+  \ doc{
+  \
+  \ ~~x  ( -- a )
+  \
+  \ A variable that holds the column the debugging information
+  \ compiled by `~~` will be printed at.  Its default value is
+  \ zero.
+  \
+  \ See: `~~`, `~~y`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ ~~y  ( -- a )
+  \
+  \ A variable that holds the row the debugging information
+  \ compiled by `~~` will be printed at.  Its default value is
+  \ zero.
+  \
+  \ See: `~~`, `~~x`.
+  \
+  \ }doc
+
+variable ~~key  ~~key off
+
+  \ doc{
+  \
+  \ ~~key  ( -- a )
+  \
+  \ A variable that holds the quit key code to use at the
+  \ debugging points compiled by `~~`. If its content is zero,
+  \ no pause will be done.  Its default value is zero.
+  \
+  \ See: `~~control`, `~~`.
+  \
+  \ }doc
 
 : ~~show  ( nt line block -- )
-  ~~x @ ~~y @ at-xy ." Block " . ." Line " . .name .s   ;
-  \ Show the debugging info.
+  ~~x @ ~~y @ at-xy ." Block " . ." Line " . .name .s  ;
+
+  \ doc{
+  \
+  \ ~~show  ( -- )
+  \
+  \ Show the debugging info compiled by `~~` and the current
+  \ contents of the data stack.
+  \
+  \ See: `~~`, `~~x`, `~~y`.
+  \
+  \ }doc
 
 : ~~control  ( -- )
   ~~key @ ?dup 0= ?exit  key = if  quit  then  ;
-  \ If `~~key` is non-zero, wait for a key and quit if it
-  \ equals the contents of `~~key`.
 
-2variable ~~backup-xy
+  \ doc{
+  \
+  \ ~~control  ( -- )
+  \
+  \ If the content of `~~key` is zero do nothing. Else wait for
+  \ a key press and execute `quit` if the pressed key equals
+  \ the content of `~~key`.
+  \
+  \ See: `~~key`, `~~`.
+  \
+  \ }doc
+
+2variable ~~xy-backup
+
+  \ doc{
+  \
+  \ ~~xy-backup  ( -- a )
+  \
+  \ A double variable that holds cursor coordinates saved and
+  \ restored by the default behaviours of `~~save` and
+  \ `~~restore`.
+  \
+  \ See: `~~save`, `~~restore`, `~~`.
+  \
+  \ }doc
+
 
 defer ~~save  ( -- )  defer ~~restore  ( -- )
 
-:noname  ( -- )  xy ~~backup-xy 2!        ; is ~~save
-:noname  ( -- )     ~~backup-xy 2@ at-xy  ; is ~~restore
-  \ Save and restore the current coordinates.
+  \ doc{
+  \
+  \ ~~save  ( -- )
+  \
+  \ Save system status before executing debugging code.  This
+  \ is a deferred word. Its default behaviour is to save the
+  \ cursor coordinates.
+  \
+  \ See: `~~`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ ~~restore  ( -- )
+  \
+  \ Restore system status after executing debugging code.  This
+  \ is a deferred word. Its default behaviour is to restore the
+  \ cursor coordinates.
+  \
+  \ See: `~~`.
+  \
+  \ }doc
+
+:noname  ( -- )  xy ~~xy-backup 2!  ;  ' ~~save defer!
+  \ Save the cursor coordinates.
+  \ Default behaviour of `~~save`.
+
+:noname  ( -- )  ~~xy-backup 2@ at-xy  ;  ' ~~restore defer!
+  \ Restore the cursor coordinates.
+  \ Default behaviour of `~~restore`.
 
 -->
-
 
 ( ~~ )
 
 : (~~)  ( nt line block -- )
-  ~~? @
-  if    ~~save ~~show ~~control ~~restore
-  else  2drop drop  then  ;
-  \ Execute the debugging code, if debugging is active.
+  ~~? @ if    ~~save ~~show ~~control ~~restore
+        else  2drop drop  then  ;
+
+  \ doc{
+  \
+  \ (~~)  ( nt line block -- )
+  \
+  \ If the content of `~~?` is not zero, execute the debugging
+  \ code that was compiled during the definition of word _nt_
+  \ in _line_ of _block_.
+  \
+  \ See: `~~`, `~~?`.
+  \
+  \ }doc
 
 : ~~  ( -- )
-  latest      postpone literal
-  >in @ c/l / postpone literal
-  blk @       postpone literal
+  latest      postpone literal  ( nt )
+  >in @ c/l / postpone literal  ( nt line )
+  blk @       postpone literal  ( nt line block )
   postpone (~~)  ; immediate compile-only
+
+  \ doc{
+  \
+  \ ~~  ( -- )
+  \
   \ Compile debugging code.
-  \ This word was inspired by Gforth's `~~`.
+  \
+  \ See: `(~~)`, `~~?`.
+  \
+  \ Origin: Gforth.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
