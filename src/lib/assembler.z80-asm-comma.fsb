@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201611141423
+  \ Last modified: 201611141844
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,7 +74,8 @@
   \ current radix and the search order.
   \
   \ 2016-11-14: Now `call,` is defined in the kernel, where it
-  \ already existed with the old name `code-field,`.
+  \ already existed with the old name `code-field,`. Compact
+  \ the code, save one block.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -143,16 +144,14 @@ DD constant ix-op  FD constant iy-op
   create c, does>  ( r -- ) ( r pfa ) CB c, c@ + c,  ;
   \ Rotation of registers.
 
-  -->
+: m7  ( 8b "name" -- )
+  create c, does>  ( r bit -- )
+    ( r bit pfa ) CB c, c@ swap 8* + + c,  ;  -->
+  \ Bit manipulation of registers.
 
 ( z80-asm, )
 
   \ Defining words for z80 instructions
-
-: m7  ( 8b "name" -- )
-  create c, does>  ( r bit -- )
-    ( r bit pfa ) CB c, c@ swap 8* + + c,  ;
-  \ Bit manipulation of registers.
 
 : m8  ( 16b "name" -- ) create , does>  ( -- ) ( pfa ) @ ,  ;
   \ 2-byte opcodes.
@@ -163,12 +162,6 @@ DD constant ix-op  FD constant iy-op
 : m9  ( 8b "name" -- )
   create c, does>  ( a -- ) ( a pfa )  c@ (jr,)  ;
   \ Relative jumps.
-
--->
-
-( z80-asm, )
-
-  \ Defining words for z80 instructions
 
 : ma  ( 8b "name" -- )
   create c, does>  ( disp rphl -- )
@@ -183,10 +176,8 @@ DD constant ix-op  FD constant iy-op
 : mc  ( 8b "name" -- )
   create c, does>  ( disp rphl bit -- )
     ( disp rphl bit pfa )
-    CB c, c@ rot drop rot c, swap 8* + c,  ;
+    CB c, c@ rot drop rot c, swap 8* + c,  ;  -->
   \ Bit manipulation with index registers.
-
--->
 
 ( z80-asm, )
 

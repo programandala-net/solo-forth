@@ -872,6 +872,11 @@ Improve tab control.
 == Assembler ==
 // {{{
 
+.2016-11-14:
+
+Try to adapt the labels of the 8086 hForth assembler. Already started in the
+drafts directory.
+
 .2016-04-20:
 
 Make `call-xt` and `execute-hl` independent from the assemblers.
