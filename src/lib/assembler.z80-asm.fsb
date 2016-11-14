@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611141844
+  \ Last modified: 201611141919
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,7 +47,8 @@
   \ 2016-05-09: Save and restore the compile word list, the
   \ current radix and the search order.
   \
-  \ 2016-11-14: Compact the code, save one block.
+  \ 2016-11-14: Compact the code, save two blocks. Move `8*` to
+  \ the 1-cell operators module.
 
 ( z80-asm )
 
@@ -55,17 +56,11 @@
 
 get-current forth-wordlist set-current
 
-need ?pairs  need 3dup
-
-: 8*   ( n1 -- n2 )  2* 2* 2*  ;
+need ?pairs  need 3dup  need 8*
 
 : z80-asm  ( -- )  assembler  ;
 
 also assembler definitions base @ hex
-
--->
-
-( z80-asm )
 
   \ Registers
 

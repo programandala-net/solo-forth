@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201611141844
+  \ Last modified: 201611141919
 
   \ -----------------------------------------------------------
   \ Description
@@ -75,7 +75,8 @@
   \
   \ 2016-11-14: Now `call,` is defined in the kernel, where it
   \ already existed with the old name `code-field,`. Compact
-  \ the code, save one block.
+  \ the code, save one block.  Move `8*` to the 1-cell
+  \ operators module.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -89,9 +90,7 @@
 
 get-current forth-wordlist set-current
 
-need ?pairs  need 3dup
-
-: 8*   ( n1 -- n2 )  2* 2* 2*  ;
+need ?pairs  need 3dup  need 8*
 
 : z80-asm,  ( -- )  assembler  ;
 
