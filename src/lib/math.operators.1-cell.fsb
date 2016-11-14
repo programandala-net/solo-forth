@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611141906
+  \ Last modified: 201611141911
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,7 +49,8 @@
   \ 2016-10-24: Fix description of `split`.
   \ 2016-10-24: Fix requiring `gcd`, `%` and `u%`.
   \ 2016-10-24: Add `u>ud`.
-  \ 2016-11-14: Fix requiring `<=>`.
+  \ 2016-11-14: Fix requiring `<=>`. Remove `sm/rem`, which is
+  \ in the kernel.
 
 ( under+ +under )
 
@@ -584,47 +585,6 @@ need 2/
       do      2dup / + 2/
       loop    swap drop
   then  ;
-
-( sm/rem )
-
-  \ XXX TODO -- remove, it's in the kernel
-
-  \ Credit:
-  \
-  \ Code from Z88 CamelForth.
-
-: sm/rem  ( d1 n1 -- n2 n3 )
-  \ symmetric signed division
-  2dup xor >r  \  sign of quotient
-  over >r      \  sign of remainder
-  abs >r dabs r> um/mod
-  swap r> ?negate
-  swap r> ?negate  ;
-
-  \ doc{
-  \
-  \ sm/rem  ( d1 n1 -- n2 n3 )
-
-  \ Divide d1 by n1, giving the symmetric quotient n3 and the
-  \ remainder n2. Input and output stack arguments are signed.
-  \ An ambiguous condition exists if n1 is zero or if the
-  \ quotient lies outside the range of a single-cell signed
-  \ integer.
-
-  \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
-
-  \ [caption="Symmetric Division Example"]
-  \
-  \ |===
-  \ | Dividend  | Divisor | Remainder | Quotient
-
-  \ >|       10  >|      7  >|        3  >|        1
-  \ >|      -10  >|      7  >|       -3  >|       -1
-  \ >|       10  >|     -7  >|        3  >|       -1
-  \ >|      -10  >|     -7  >|       -3  >|        1
-  \ |===
-
-  \ }doc
 
 ( /-rem /- -rem */-rem */- )
 
