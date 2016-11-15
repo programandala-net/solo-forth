@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611150207
+; Last modified: 201611151847
 
 include version.z80s
 
@@ -2195,6 +2195,9 @@ push_a:
   dw address_of_default_bank
 
 ; ----------------------------------------------
+if 1 ; far_memory
+else
+
   _code_header system_bank_,'SYSTEM-BANK'
 
 ; doc{
@@ -2217,6 +2220,8 @@ bank.system:
 
   ld e,system_bank
   jr bank.e
+
+endif
 
 bank.default:
 
@@ -3001,7 +3006,7 @@ digit.test_value:
 ; If the first char of string _ca len_ is a radix prefix, return
 ; its value _n_ and the updated string _ca' len'_ (which does
 ; not include the radix prefix).  Otherwise return _ca len_
-; untouched and the current value of `base`.
+; untouched and the current value of `base` _n_.
 ;
 ; ----
 ; : number-base  ( ca len -- ca' len' n )
@@ -7985,6 +7990,8 @@ fill.done:
 ; ----------------------------------------------
   _variable_header slash_hold_,'/HOLD'
 
+; XXX TODO -- not used yet
+
 ; doc{
 ;
 ; /hold  ( -- a )
@@ -9854,8 +9861,8 @@ endif
   dw abort_
 
 cold_start:
-only_first_cold: ; XXX TMP -- temporary label
-  call move_name_fields_to_memory_bank ; (only the first time)
+call_move_definition_headers_to_memory_bank:
+  call move_definition_headers_to_memory_bank ; only the first time
   call common_start
   dw cold_
 
@@ -12269,14 +12276,14 @@ latest_xt_in_forth_voc: equ dot_paren_
 dictionary_pointer_after_cold:
 
 ; ==============================================================
-; Name and link fields
+; Definition headers
 
-move_name_fields_to_memory_bank:
+move_definition_headers_to_memory_bank:
 
-  ; Move the name fields, assembled in ordinary memory, to the
-  ; system bank. This routine is needed only once, therefore its
-  ; call is patched with `noop` at the end; the routine itself
-  ; will be overwritten by the Forth dictionary.
+  ; Move the definition headers, assembled in ordinary memory,
+  ; to the system bank. This routine is needed only once,
+  ; therefore its call is patched with `noop` at the end; the
+  ; routine itself will be overwritten by the Forth dictionary.
 
   ; The whole screen is used as intermediate buffer for copying
   ; the data.
@@ -12299,7 +12306,7 @@ endif
 
   ld de,$2008 ; $08 sectors for the cache, from sector $20
   ld hl,$2858 ; $58 sectors for the RAM disk, from sector $28
-  ld ix,dos_set_1346 ; set RAM pages 1, 3 , 4 and 6
+  ld ix,dos_set_1346 ; set RAM pages 1, 3, 4 and 6
   call dos
 
 endif
@@ -12307,28 +12314,34 @@ endif
   ld hl,bank_start ; origin
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
-  ldir ; copy the data to the screen
-  call bank.system ; XXX TODO -- adapt to the far-memory system
+  ldir ; copy the definition headers to the screen
+
+if 1 ; far_memory
+  ld a,(far_banks_pfa) ; first bank used as far memory
+  ld e,a
+  call bank.e
+else
+  call bank.system
+endif
+
   ld hl,sys_screen ; origin
   ld de,bank_start ; destination
   ld bc,sys_screen_size ; count
-  ldir ; copy the name fields to the bank
+  ldir ; copy the definition headers to the bank
+
   call bank.default
 
-if 1 ; XXX TMP --
-
-  ; Erase the memory used for headers
+  ; Erase the memory that was used for the headers
   ; during the compilation of the kernel:
   ld hl,bank_start
   ld de,bank_start+1
   ld bc,bank_size
-  ld (hl),l ; l=0 because bank_start=$C000
+  ld (hl),l ; L=0 because bank_start=$C000
   ldir
 
-endif
-
-  ; Remove the call to this routine:
-  ld hl,only_first_cold ; address of the call to this routine
+  ; Remove the call to this routine,
+  ; so it will not be executed in future 
+  ld hl,call_move_definition_headers_to_memory_bank
   ld (hl),0 ; nop
   inc hl
   ld (hl),0 ; nop
