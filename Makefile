@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201610222038
+# Last modified: 201611152004
 
 # ==============================================================
 # Author
@@ -119,7 +119,7 @@ disk9: \
 # exactly the same blocks in all DOS implementations. This is useful
 # to check if disk access works fine when a new DOS is implemented,
 # comparing the output of `blks` (a debug tool, temporarily included
-# in the kernel) to a different DOS.
+# in the kernel).
 
 .PHONY: clean
 clean: cleantmp cleandisks
@@ -165,6 +165,10 @@ include Makefile.pasmo
 # labels with the actual values, extracted from the symbols file
 # created by the assembler. Then zmakebas converts the patched loader
 # into a TAP file, ready to be copied to a disk image.
+
+# XXX FIXME -- The rules of the BASIC loader run also when their
+# prerequisites are older than the target! This causes the main disk
+# image is rebuilt also when the sources have not changed.
 
 # ----------------------------------------------
 # G+DOS loader

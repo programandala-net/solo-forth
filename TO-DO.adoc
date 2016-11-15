@@ -26,65 +26,6 @@ improved, rewritten in Z80.
 
 Move the lex bits off the length byte of the name field.
 
-.2016-11-12:
-
-Ideas from
-http://www.bedroomlan.org/hardware/cft/book/forth-programming-d2-reference[CFT
-Forth]:
-
-....
-
-BASE>R
-
-R>BASE
-
-#CONTEXT ( -- a ) (numCONTEXT) The number of entries in the vocabulary stack.
-
-#WORDS ( -- n ) (countwords) Returns the number of words in the CURRENT
-vocabulary.
-
-!BITS ( 16b1 addr 16b2 -- ) (store-BITS) Store the value of 16b1 masked by
-16b2 into the equivalent masked part of the contents of addr, without
-affecting bits outside the mask.
-
-+FLAG! ( u a -- ) (set-FLAG-store) The value at address a is ORred with u
-in-place.
-
--FLAG! ( u a -- ) (clear-FLAG-store) The value at address a is ANDed with (NOT
-u) in-place.
-
-.BANKS ( -- ) (dot-BANKS) Prints out the current memory banking scheme.
-
-.BASE ( -- ) (dot-BASE) Prints out the base.
-
-.DATE ( -- ) (dot-DATE) Read and print out the date from the the real-time clock.
-
-.TIME ( -- ) (dot-TIME) Read and print out the time from the the real-time
-clock.
-
-.rs ( -- ) (dot-rs) Prints out the return stack non-destructively.
-
-16* ( w -- w ) (16mul) Shift left four bits.
-
-16/ ( u -- u ) (16div) Shift right four bits (one nybble). No sign extension.
-
-1MS ( -- ) Delay for approximately 1 millisecond.
-
-256* ( w -- w ) (256mul) Shift left eight bits.
-
-256/ ( w -- w ) (256div) Shift right eight bits.
-
->FLAGS ( a -- u ) (to-FLAGS-fetch) Given the PFA of a word, return its ﬂags.
-
->LINK@ ( a -- a | f ) (to-LINK-fetch) Given the PFA of a word, return the head address of the word preceding it in the vocabulary. If this is the first word in the vocabulary, false (zero) is returned.
-
-CONTEXT@ ( u -- a ) (CONTEXT-fetch) Get the u-th (from the top) entry in the
-vocabulary stack. The value returned is the address of a variable holding the
-address of the last entry in that dictionary. It’s also the PFA of the
-vocabulary word.
-
-....
-
 .2016-10-28:
 
 Simplify `u.r`.
@@ -286,15 +227,42 @@ Add `noname`, analogous to `nextname`, after Gforth.
 
 .2016-04-16:
 
-Fix Makefile: The loader and the main disk are built when the sources have not
-changed.
-
 Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
 `hided  ( nt -- )` is already in the kernel.
 
 // }}}
-== Data ==
+== Makefile ==
 // {{{
+
+.2016-04-16:
+
+Fix Makefile: The loader and the main disk are built when the sources have not
+changed.
+
+.Update 2016-11-15:
+
+Problem is the rules of the BASIC loader. They run also when their
+prerequisites are older than the target.
+
+// }}}
+== Far memory ==
+// {{{
+
+.2016-11-15:
+
+Write far-memory versions of some of the following words from the
+<memory.misc.fsb> module:
+
+----
+  \ -! c+! c-!
+  \ /! *! 2/! 2*!
+  \ @+ 2@+ c@+
+  \ bit>mask bit? set-bit reset-bit
+  \ c1+! c1-! 1+! 1-!
+  \ c@test-bits c!toggle-bits
+  \ exchange reserve alloted align aligned
+  \ n, nn, n@ nn@ n! nn!
+----
 
 // }}}
 == Compilation ==
@@ -675,6 +643,65 @@ New: `.files` (from Pygmy Forth).
 == Misc new words ==
 // {{{
 
+.2016-11-12:
+
+Ideas from
+http://www.bedroomlan.org/hardware/cft/book/forth-programming-d2-reference[CFT
+Forth]:
+
+....
+
+BASE>R
+
+R>BASE
+
+#CONTEXT ( -- a ) (numCONTEXT) The number of entries in the vocabulary stack.
+
+#WORDS ( -- n ) (countwords) Returns the number of words in the CURRENT
+vocabulary.
+
+!BITS ( 16b1 addr 16b2 -- ) (store-BITS) Store the value of 16b1 masked by
+16b2 into the equivalent masked part of the contents of addr, without
+affecting bits outside the mask.
+
++FLAG! ( u a -- ) (set-FLAG-store) The value at address a is ORred with u
+in-place.
+
+-FLAG! ( u a -- ) (clear-FLAG-store) The value at address a is ANDed with (NOT
+u) in-place.
+
+.BANKS ( -- ) (dot-BANKS) Prints out the current memory banking scheme.
+
+.BASE ( -- ) (dot-BASE) Prints out the base.
+
+.DATE ( -- ) (dot-DATE) Read and print out the date from the the real-time clock.
+
+.TIME ( -- ) (dot-TIME) Read and print out the time from the the real-time
+clock.
+
+.rs ( -- ) (dot-rs) Prints out the return stack non-destructively.
+
+16* ( w -- w ) (16mul) Shift left four bits.
+
+16/ ( u -- u ) (16div) Shift right four bits (one nybble). No sign extension.
+
+1MS ( -- ) Delay for approximately 1 millisecond.
+
+256* ( w -- w ) (256mul) Shift left eight bits.
+
+256/ ( w -- w ) (256div) Shift right eight bits.
+
+>FLAGS ( a -- u ) (to-FLAGS-fetch) Given the PFA of a word, return its ﬂags.
+
+>LINK@ ( a -- a | f ) (to-LINK-fetch) Given the PFA of a word, return the head address of the word preceding it in the vocabulary. If this is the first word in the vocabulary, false (zero) is returned.
+
+CONTEXT@ ( u -- a ) (CONTEXT-fetch) Get the u-th (from the top) entry in the
+vocabulary stack. The value returned is the address of a variable holding the
+address of the last entry in that dictionary. It’s also the PFA of the
+vocabulary word.
+
+....
+
 .2015-06-10:
 
 Adapt this word from Spectrum Forth-83, which uses it in `cold` and
@@ -697,7 +724,7 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
     \ Exchange the 16-bit contents of a1 and a2.
 
   : cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
-    \ Exchange the 8-bit contents of a1 and a2.
+    \ Exchange the 8-bit contents of ca1 and ca2.
 
   : switch  ( a1 -- )  dup cell+ exchange  ;
     \ Exchange the 16-bit contents of a1 and the following cell.
