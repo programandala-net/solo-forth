@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611151847
+; Last modified: 201611160029
 
 include version.z80s
 
@@ -1559,9 +1559,12 @@ if 1 ; far_memory
 ;
 ; ?next-bank  ( a -- a|a' )
 ;
-; If the actual far-memory address _a_ is above the bank
-; space, convert it to _a'_ in the next bank and page in the
-; next bank, else do nothing and return _a_.
+; If the actual far-memory address ($C000..$FFFF) _a_ has
+; increased to the next bank ($0000..$3FFF), convert it to the
+; correspondent actual address ($C000..$FFFF) _a'_ in the next
+; bank and page in the next bank, else simply return _a_.
+;
+; See: `questionnextbank`.
 ;
 ; }doc
 
@@ -1571,9 +1574,15 @@ if 1 ; far_memory
 
 question_next_bank:
 
+  ; If the actual far-memory address ($C000..$FFFF) in the HL
+  ; register has increased to the next bank ($0000..$3FFF),
+  ; convert it to the correspondent actual address
+  ; ($C000..$FFFF) in the next bank and page in the next bank,
+  ; else do nothing.
+  ;
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or higher
-  ;   ($0000..$BFFF).
+  ;   ($0000..$3FFF).
   ; Output when HL is above the paged bank:
   ;   HL = correspondent address in the next bank, which is paged in
   ;   A corrupted
@@ -1582,6 +1591,11 @@ question_next_bank:
   ; Output when HL is an address in a paged bank:
   ;   HL preserved
   ;   A corrupted
+  ;
+  ; Note: the address of this routine is returned by
+  ; `questionnextbank`, a constant defined in the assembler
+  ; wordlist in the <memory.far.fsb> module of the library, so
+  ; code words can call it.
 
   ld a,h
   cp $C0 ; is HL below $C000?
@@ -1620,9 +1634,13 @@ new_bank:
 ;
 ; ?previous-bank  ( a -- a|a' )
 ;
-; If the actual far-memory address _a_ is above the bank
-; space, convert it to _a'_ in the previous bank and paged in
-; the previous bank, do nothing and return _a_.
+; If the actual far-memory address ($C000..$FFFF) _a_ has
+; decreased to the previous bank ($8000..$BFFF), convert it to
+; the correspondent actual address ($C000..$FFFF) _a'_ in the
+; previous bank and page in the next bank, else simply return
+; _a_.
+;
+; See: `questionpreviousbank`.
 ;
 ; }doc
 
@@ -1632,9 +1650,15 @@ new_bank:
 
 question_previous_bank:
 
+  ; If the actual far-memory address ($C000..$FFFF) in the HL
+  ; register has decreased to the previous bank ($8000..$BFFF),
+  ; convert it to the correspondent actual address
+  ; ($C000..$FFFF) in the previous bank and page in the next
+  ; bank, else do nothing.
+  ; 
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or lower
-  ;   ($0000..$BFFF).
+  ;   ($8000..$BFFF).
   ; Output when HL is below the paged bank:
   ;   HL = correspondent address in the previous bank, which is paged in
   ;   A corrupted
@@ -1643,6 +1667,11 @@ question_previous_bank:
   ; Output when HL is an address in a paged bank:
   ;   HL preserved
   ;   A corrupted
+  ;
+  ; Note: the address of this routine is returned by
+  ; `questionpreviousbank`, a constant defined in the assembler
+  ; wordlist in the <memory.far.fsb> module of the library, so
+  ; code words can call it.
 
   ld a,h
   cp $C0 ; is HL below $C000?
@@ -1740,6 +1769,8 @@ if 1 ; far_memory
 ;   \        $C000 = address where memory banks are paged in
 ; ----
 ;
+; See: `farhl`.
+;
 ; }doc
 
   pop hl
@@ -1748,8 +1779,8 @@ if 1 ; far_memory
 
 far.hl:
 
-  ; Convert a far-memory address _a1_ ($0000..$FFFF) to its
-  ; actual equivalent _a2_ ($C000..$FFFF) and page in the
+  ; Convert a far-memory address ($0000..$FFFF) to its
+  ; actual equivalent ($C000..$FFFF) and page in the
   ; correspondent memory bank.
   ;
   ; Input:
@@ -1758,6 +1789,11 @@ far.hl:
   ; Output:
   ;   HL = actual memory address ($C000..$FFFF)
   ;   A DE corrupted
+  ;
+  ; Note: the address of this routine is returned by `farhl`, a
+  ; constant defined in the assembler wordlist in the
+  ; <memory.far.fsb> module of the library, so code words can
+  ; call it.
 
   ld e,h
   srl e

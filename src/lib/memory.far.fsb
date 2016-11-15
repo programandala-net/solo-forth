@@ -1,0 +1,136 @@
+  \ memory.far.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201611160029
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to the far-memory system, a virtual 64 KiB
+  \ space formed by 4 configurable 16 KiB banks of paged
+  \ memory. The base support and the main words to use far
+  \ memory are included in the kernel (see `far-banks` to
+  \ start).
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-11-15: Start.  Add `farhl`, `questionnextbank`,
+  \ `questionpreviousbank`.
+
+( farhl questionnextbank questionpreviousbank )
+
+get-current also assembler definitions
+
+[unneeded] farhl ?\ ' far 2+ @ constant farhl  ( -- a )
+
+  \ doc{
+  \
+  \ farhl  ( -- a )
+  \
+  \ Address of the `far.hl` routine of the kernel, which
+  \ converts the far-memory address ($0000..$FFFF) hold in the
+  \ HL register to its actual equivalent ($C000..$FFFF) and
+  \ pages in the correspondent memory bank.
+  \
+  \ This is the routine called by `far`. `farhl` is used in
+  \ code words.
+  \
+  \ Input:
+  \   HL = far-memory address ($0000..$FFFF)
+  \
+  \ Output:
+  \   HL = actual memory address ($C000..$FFFF)
+  \   A DE corrupted
+  \
+  \ See: `far`.
+  \
+  \ }doc
+
+[unneeded] questionnextbank
+?\ ' ?next-bank 2+ @ constant questionnextbank  ( -- a )
+
+  \ doc{
+  \
+  \ questionnextbank  ( -- a )
+  \
+  \ Address of the `question_next_bank` routine of the kernel,
+  \ which does the followig:
+  \
+  \ If the actual far-memory address ($C000..$FFFF) in the HL
+  \ register has increased to the next bank ($0000..$3FFF),
+  \ convert it to the correspondent actual address
+  \ ($C000..$FFFF) in the next bank and page in the next bank,
+  \ else do nothing.
+  \
+  \ This is the routine called by `?next-bank`.
+  \ `questionnextbank` is used in code words.
+  \
+  \ Input:
+  \   HL = address in a paged bank ($C000..$FFFF) or higher
+  \   ($0000..$BFFF).
+  \ Output when HL is above the paged bank:
+  \   HL = correspondent address in the next bank, which is paged in
+  \   A corrupted
+  \   D = 0
+  \   E = bank
+  \ Output when HL is an address in a paged bank:
+  \   HL preserved
+  \   A corrupted
+  \
+  \ See: `?next-bank`.
+  \
+  \ }doc
+
+[unneeded] questionpreviousbank
+?\ ' ?previous-bank 2+ @ constant questionpreviousbank  ( -- a)
+
+  \ doc{
+  \
+  \ questionpreviousbank  ( -- a )
+  \
+  \ Address of the `question_previous_bank` routine of the
+  \ kernel, which does the followig:
+  \
+  \ If the actual far-memory address ($C000..$FFFF) in the HL
+  \ register has decreased to the previous bank ($8000..$BFFF),
+  \ convert it to the correspondent actual address
+  \ ($C000..$FFFF) in the previous bank and page in the next
+  \ bank, else do nothing.
+  \
+  \ This is the routine called by `?previous-bank`.
+  \ `questionpreviousbank` is used in code words.
+  \
+  \ Input:
+  \   HL = address in a paged bank ($C000..$FFFF) or lower
+  \   ($8000..$BFFF).
+  \ Output when HL is below the paged bank:
+  \   HL = correspondent address in the previous bank, which is paged in
+  \   A corrupted
+  \   D = 0
+  \   E = bank
+  \ Output when HL is an address in a paged bank:
+  \   HL preserved
+  \   A corrupted
+  \
+  \ See: `?previous-bank`.
+  \
+  \ }doc
+
+previous set-current
+
+  \ vim: filetype=soloforth
