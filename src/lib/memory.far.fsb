@@ -31,6 +31,8 @@
 
   \ 2016-11-15: Start.  Add `farhl`, `questionnextbank`,
   \ `questionpreviousbank`.
+  \
+  \ 2016-11-16: Add `far2@`, `far@+`, `farc@+`, `far2@+`.
 
 ( farhl questionnextbank questionpreviousbank )
 
@@ -132,5 +134,52 @@ get-current also assembler definitions
   \ }doc
 
 previous set-current
+
+( far2@ far@+ farc@+ far2@+ )
+
+[unneeded] far2@
+?\ : far2@  ( a -- d )  dup cell+ far@ swap far@  ;  exit
+
+[unneeded] far@+
+?\ : far@+  ( a -- a' x )  dup cell+ swap far@  ;  exit
+
+  \ doc{
+  \
+  \ far@+  ( a -- a' x )
+  \
+  \ Fetch _x_ from far-memory address _a_. Return _a'_, which
+  \ is _a_ incremented by one cell.  This is handy for stepping
+  \ through cell arrays.
+  \
+  \ }doc
+
+[unneeded] farc@+
+?\ : farc@+  ( ca -- ca' c )  dup 1+ swap farc@  ;  exit
+
+  \ XXX TODO -- `char+`? (address unit vs char)
+
+  \ doc{
+  \
+  \ code farc@+  ( ca -- ca' c )
+  \
+  \ Fetch the character _c_ at far-memory address _ca_. Return
+  \ _ca'_, which is _ca_ incremented by one address unit.  This
+  \ is handy for stepping through character arrays.
+  \
+  \ }doc
+
+[unneeded] 2@+ ?exit  need far2@
+: far2@+  ( a -- a' xd )
+  dup [ 2 cells ] literal + swap far2@  ;
+
+  \ doc{
+  \
+  \ far2@+  ( a -- a' xd )
+  \
+  \ Fetch _xd_ from _a_. Return _a'_, which is _a_ incremented
+  \ by two cells.  This is handy for stepping through
+  \ double-cell arrays.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
