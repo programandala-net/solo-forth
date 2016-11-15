@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-13
+:revdate: 2016-11-15
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -748,17 +748,9 @@ something to do with the new loops?
 == Strings ==
 // {{{
 
-.2016-05-09:
-
-Simplify the circular string buffer:
-
-- convert `>csb` to a variable, and remove the extra cell at the start of the
-  actual buffer.
-- convert `csb0` to a variable, so the buffer can be moved.
-
 .2016-06-10:
 
-Rename "csb" as "stringer":
+Rename "csb" to "stringer":
 
 |===
 | Now         | "stringer"
@@ -879,8 +871,6 @@ drafts directory.
 
 .2016-04-20:
 
-Make `call-xt` and `execute-hl` independent from the assemblers.
-
 Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
 because _r_ is the standard for floating-point numbers.
 
@@ -919,7 +909,7 @@ Investigate how to use the free memory of the Plus D RAM.
 
 `set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
 "b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
-is problem of fsb2's fb2dsk.
+is a problem of fsb2's fb2dsk.
 
 // }}}
 == TR-DOS ==

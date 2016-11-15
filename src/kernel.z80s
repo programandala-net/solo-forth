@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611141433
+; Last modified: 201611150207
 
 include version.z80s
 
@@ -840,12 +840,6 @@ user_data_pointer: equ $-user_variables
 ; Stacks and buffers
 
 ; ----------------------------------------------
-; Circular string buffer
-
-csb0:
-  ds csb_size
-
-; ----------------------------------------------
 ; Data stack
 
 data_stack_limit: equ $+cell
@@ -853,17 +847,17 @@ data_stack_limit: equ $+cell
 data_stack_bottom:
 
 ; ----------------------------------------------
-; Terminal input buffer
-
-terminal_input_buffer:
-  ds bytes_per_terminal_input_buffer
-
-; ----------------------------------------------
 ; Return stack
 
 return_stack_limit: equ $+cell
   ds cells_per_return_stack*cell
 return_stack_bottom:
+
+; ----------------------------------------------
+; Circular string buffer
+
+csb0:
+  ds csb_size
 
 ; ----------------------------------------------
 ; Disk buffer
@@ -879,6 +873,12 @@ disk_buffer:
   dw buffer_block_id_mask     ; Block id used when the  buffer
                               ; is not associated with a block.
   ds bytes_per_buffer         ; Actual content of the block.
+
+; ----------------------------------------------
+; Terminal input buffer
+
+terminal_input_buffer:
+  ds bytes_per_terminal_input_buffer
 
 ; ==============================================================
 ; Misc routines
@@ -2295,6 +2295,8 @@ endif
 ;   >csb @  ;
 ; ----
 ;
+; See: `csb0`.
+;
 ; }doc
 
   ld hl,(to_csb_pfa)
@@ -2307,7 +2309,13 @@ endif
 ;
 ; csb-size  ( -- n )
 ;
-; Return the size of the circular string-buffer, in chars.
+; Return the maximum size of the circular string-buffer, in
+; chars.
+;
+; In order to reconfigure the circular string buffer, the
+; constant can be modified with `!>`.
+;
+; See: `csb0`, `>csb`, `empty-csb`.
 ;
 ; }doc
 
@@ -2335,7 +2343,14 @@ endif
 ;
 ; csb0  ( -- a )
 ;
-; Base address of the circular string buffer in data space.
+; A constant that returns the base address of the circular
+; string buffer.
+;
+; In order to move the circular string buffer, the constant
+; can be modified with `!>`.
+;
+; See: `csb-size`, `>csb`, `empty-csb`, `unused-csb`, `?csb`,
+; `allocate-string`, `save-string`.
 ;
 ; }doc
 
@@ -2356,6 +2371,9 @@ endif
 ;   dup unused-csb >  \ not enough free space?
 ;   if  empty-csb >csb !  then  negate >csb +!  ;
 ; ----
+;
+; See: `csb0`.
+;
 ; }doc
 
   ; XXX TODO -- rename to `csb-room`, `(allocate-string)` or something
@@ -2384,6 +2402,8 @@ question_csb_.enough:
 ;   ?csb csb0 unused-csb +  ;
 ; ----
 ;
+; See: `save-string`, `csb0`.
+;
 ; }doc
 
   ; XXX TODO -- return a ior; _len_ could be too big for the
@@ -2408,6 +2428,8 @@ question_csb_.enough:
 ;   dup allocate-string swap 2dup 2>r move 2r>  ;
 ; ----
 ;
+; See: `allocate-string`, `csb0`.
+;
 ; }doc
 
   dw dup_,allocate_string_,swap_
@@ -2425,6 +2447,8 @@ question_csb_.enough:
 ; Empty the circular string buffer,
 ; by initializing its pointer to the size of the buffer.
 ; The contents of the buffer are not modifed.
+;
+; See: `csb0`.
 ;
 ; }doc
 
@@ -4448,9 +4472,9 @@ u_m_slash_mod.4:
 ;
 ; hp  ( -- a )
 ;
-; Address that holds the headers pointer. The headers pointer points
-; to the next free address in the system memory bank, where the
-; next word header will be stored.
+; Address that holds the headers-space pointer, which points to
+; the next free address where the next word header will be
+; stored.
 ;
 ; }doc
 
@@ -4473,7 +4497,7 @@ u_m_slash_mod.4:
 ;
 ; hp@  ( -- a )
 ;
-; Fetch the content of the headers pointer.
+; Fetch the content of the headers-space pointer.
 ;
 ; }doc
 
@@ -4492,10 +4516,9 @@ u_m_slash_mod.4:
 ;
 ; hp!  ( a -- )
 ;
-; Store _a_ into the headers pointer.
+; Store _a_ into the headers-space pointer.
 ;
 ; }doc
-
 
   pop hl
   ld (headers_pointer),hl
@@ -5379,10 +5402,28 @@ do_user:
 ; ----------------------------------------------
   _constant_header disk_buffer_,'DISK-BUFFER'
 
+; doc{
+;
+; disk-buffer  ( -- a )
+;
+; Address of the disk buffer, which is a cell that holds its id.
+;
+; }doc
+
   dw disk_buffer
 
 ; ----------------------------------------------
   _constant_header buffer_data_,'BUFFER-DATA'
+
+  ; XXX TODO -- rename
+
+; doc{
+;
+; buffer-data  ( -- ca )
+;
+; Address of the disk buffer contents.
+;
+; }doc
 
   dw disk_buffer+cell
 
@@ -5483,17 +5524,18 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header width_,'WIDTH'
 
-  ; XXX TODO normal variable?
+  ; XXX TODO normal variable? constant?
+  ; XXX TODO -- remove?
 
 ; doc{
 ;
 ; width  ( -- a )
 ;
 ; User variable that holds the maximum number of letters saved
-; in the compilation of a definitions' name. It must be 1 thru
-; 31, with a default value of 31. The name character count and
-; its natural characters are saved, up to the value in `width`.
-; The value may be changed at any time within the above limits.
+; in the compilation of a definition name. It must be 1 thru 31,
+; with a default value of 31. The name character count and its
+; natural characters are saved, up to the value in `width`.  The
+; value may be changed at any time within the above limits.
 ;
 ; Origin: fig-Forth.
 ;
@@ -5778,7 +5820,8 @@ endif
 ;
 ; Address of the terminal input buffer.
 ;
-; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
+; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT,
+; obsolescent)
 ;
 ; }doc
 
@@ -5809,11 +5852,12 @@ endif
 ; _a_ is the address of a cell containing the number of
 ; characters in the terminal input buffer.
 ;
-; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
+; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT,
+; obsolescent).
 ;
 ; }doc
 
-  dw bytes_per_terminal_input_buffer
+  dw 0
 
 ; ----------------------------------------------
   _two_variable_header input_buffer_,'INPUT-BUFFER'
@@ -10398,8 +10442,13 @@ endif
 ;
 ; ----
 ; : empty-buffers  ( -- )
-;   $7FFF block disk-buffer !  ;
+;   $7FFF disk-buffer !  ;
 ; ----
+;
+; Origin: fig-Forth, Forth-79 (REQUIRED WORD SET), Forth-83
+; (CONTROLLED REFERENCE WORDS), Forth-94 (BLOCK EXT), Forth-2012
+; (BLOCK EXT).
+;
 ; }doc
 
   _literal buffer_block_id_mask
