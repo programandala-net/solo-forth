@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051503
+  \ Last modified: 201611161049
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,6 +33,10 @@
   \ `postpone`.
   \
   \ 2016-08-05: Compact the code to save some blocks.
+  \
+  \ 2016-11-16: Update the space used by every version. Make
+  \ the default version of `case` use `alias` if it's already
+  \ defined.
 
 ( case )
 
@@ -40,7 +44,38 @@
   \
   \ Code adapted and modified from eForth.
 
-  \ This version uses 48 bytes.
+  \ When `alias` is already defined,
+  \ this version uses 40 bytes; else it uses 52 bytes.
+
+[defined] alias dup 0=
+  ?\   ' 0 alias case
+  ?\  0 constant case
+  immediate compile-only
+
+: of
+  \ Compilation: ( -- orig )
+  \ Run-time: ( x1 x2 -- )
+  postpone over  postpone =  postpone if  postpone drop
+  ; immediate compile-only
+
+[defined] alias dup 0=
+  ?\ ' else alias endof  ( orig1 -- orig2 )
+  ?\ : endof  ( orig1 -- orig2 ) postpone else  ;
+  immediate compile-only
+
+: endcase
+  \ Compilation: ( 0 orig1..orign -- )
+  \ Run-time: ( x -- )
+  postpone drop  begin  ?dup  while  postpone then  repeat
+  ; immediate compile-only
+
+( case )
+
+  \ Credit:
+  \
+  \ Code adapted and modified from eForth.
+
+  \ This version uses 52 bytes.
 
 0 constant case  immediate compile-only
 
@@ -65,7 +100,7 @@
   \
   \ Code adapted and modified from eForth.
 
-  \ This version uses 54 bytes.
+  \ This version uses 59 bytes.
 
 0 constant case  immediate compile-only
 
@@ -93,7 +128,7 @@
   \ Code copied from the example provided in the Forth-94
   \ documentation.
 
-  \ This version uses 54 bytes.
+  \ This version uses 60 bytes.
 
 0 constant case  immediate compile-only
   \ init count of ofs
@@ -126,7 +161,7 @@
   \ translated from the Z80 disassembly, modified (compiler
   \ security has been removed) and commented.
 
-  \ This version uses 64 bytes.
+  \ This version uses 68 bytes.
 
 : case
   \ Compilation: ( -- a )
