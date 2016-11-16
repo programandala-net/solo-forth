@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611160029
+; Last modified: 201611160225
 
 include version.z80s
 
@@ -4508,6 +4508,7 @@ u_m_slash_mod.4:
   _constant_header hp_,'HP'
 
   ; XXX TODO -- update documentation for far memory
+  ; XXX TODO -- user variable?
 
 ; doc{
 ;
@@ -4569,7 +4570,7 @@ u_m_slash_mod.4:
 
   ; XXX TODO -- update documentation for far memory
 
-  _colon_header comma_np_,',HP'
+  _colon_header comma_hp_,',HP'
 
 ; doc{
 ;
@@ -6081,7 +6082,7 @@ source.other:
 ;
 ; If _n_ is greater than zero, reserve _n_ address units of
 ; data space. If _n_ is less than zero, release _n_ address
-; units of user space. If _n_ is zero, leave the data-space
+; units of data space. If _n_ is zero, leave the data-space
 ; pointer unchanged.
 ;
 ; ----
@@ -8624,12 +8625,12 @@ if debugging
   _echo "HP = xtp = "
   dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
-  dw here_,comma_np_ ; store a pointer to the xt
+  dw here_,comma_hp_ ; store a pointer to the xt
 if debugging
   _echo "HP = lfa = "
   dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
-  dw current_latest_,comma_np_ ; link field
+  dw current_latest_,comma_hp_ ; link field
 if debugging
   _echo "HP = nfa = "
   dw hp_fetch_,u_dot_ ; XXX INFORMER
@@ -8665,8 +8666,8 @@ else
   dw width_,fetch_,min_
   dw tuck_ ; ( len ca len )
   dw system_bank_
-  dw here_,comma_np_ ; store a pointer to the xt
-  dw current_latest_,comma_np_ ; link field
+  dw here_,comma_hp_ ; store a pointer to the xt
+  dw current_latest_,comma_hp_ ; link field
 
   dw hp_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw place_ ; store the name
