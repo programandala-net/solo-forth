@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611160045
+  \ Last modified: 201611160100
 
   \ -----------------------------------------------------------
   \ Description
@@ -84,7 +84,7 @@ code c+!  ( c ca -- )
 
   \ doc{
   \
-  \ code c+!  ( c ca - )
+  \ c+!  ( c ca - )
   \
   \ Add _c_ to the char at _ca_
   \
@@ -229,15 +229,13 @@ code c@+  ( ca -- ca' c )
   \
   \ Code adapted from Pygmy Forth.
 
-  \ XXX TODO -- documentation: address unit vs char
-
   \ doc{
   \
-  \ code c@+  ( ca -- ca' c )
+  \ c@+  ( ca -- ca' c )
   \
   \ Fetch the character _c_ at _ca_. Return _ca'_, which is
-  \ _ca_ incremented by one address unit.
-  \ This is handy for stepping through character arrays.
+  \ _ca_ incremented by one character.  This is handy for
+  \ stepping through character arrays.
   \
   \ }doc
 

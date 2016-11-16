@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611160029
+  \ Last modified: 201611160058
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,7 +32,8 @@
   \ 2016-11-15: Start.  Add `farhl`, `questionnextbank`,
   \ `questionpreviousbank`.
   \
-  \ 2016-11-16: Add `far2@`, `far@+`, `farc@+`, `far2@+`.
+  \ 2016-11-16: Add `far2@`, `far@+`, `farc@+`, `far2@+`,
+  \ `far+!`, `farc+!`, `far2!`.
 
 ( farhl questionnextbank questionpreviousbank )
 
@@ -135,10 +136,13 @@ get-current also assembler definitions
 
 previous set-current
 
-( far2@ far@+ farc@+ far2@+ )
+( far2@ far2! far@+ farc@+ far+! farc+! far2@+ )
 
 [unneeded] far2@
 ?\ : far2@  ( a -- d )  dup cell+ far@ swap far@  ;  exit
+
+[unneeded] far2!
+?\ : far2!  ( d a -- )  swap over far! cell+ far!  ;  exit
 
 [unneeded] far@+
 ?\ : far@+  ( a -- a' x )  dup cell+ swap far@  ;  exit
@@ -154,17 +158,38 @@ previous set-current
   \ }doc
 
 [unneeded] farc@+
-?\ : farc@+  ( ca -- ca' c )  dup 1+ swap farc@  ;  exit
-
-  \ XXX TODO -- `char+`? (address unit vs char)
+?\ : farc@+  ( ca -- ca' c )  dup char+ swap farc@  ;  exit
 
   \ doc{
   \
   \ code farc@+  ( ca -- ca' c )
   \
   \ Fetch the character _c_ at far-memory address _ca_. Return
-  \ _ca'_, which is _ca_ incremented by one address unit.  This
+  \ _ca'_, which is _ca_ incremented by one character.  This
   \ is handy for stepping through character arrays.
+  \
+  \ }doc
+
+[unneeded] far+!
+?\ : far+!  ( n a -- )  dup far@ rot + swap far!  ;  exit
+
+  \ doc{
+  \
+  \ far+!  ( n|u a -- )
+  \
+  \ Add _n|u_ to the single-cell number at far-memory address
+  \ _a_.
+  \
+  \ }doc
+
+[unneeded] farc+!
+?\ : farc+!  ( c a -- )  dup farc@ rot + swap farc!  ;  exit
+
+  \ doc{
+  \
+  \ farc+!  ( c ca - )
+  \
+  \ Add _c_ to the char at far-memory address _ca_
   \
   \ }doc
 
