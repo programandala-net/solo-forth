@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-10-16
+" Updated:  2016-11-16
 
 " --------------------------------------------------------------
 " History
@@ -79,6 +79,7 @@ syn keyword soloforthCharacterOutput d.
 syn keyword soloforthCharacterOutput d.r
 syn keyword soloforthCharacterOutput emit
 syn keyword soloforthCharacterOutput emits
+syn keyword soloforthCharacterOutput fartype
 syn keyword soloforthCharacterOutput home
 syn keyword soloforthCharacterOutput printing
 syn keyword soloforthCharacterOutput space
@@ -99,6 +100,7 @@ syn keyword soloforthConversion hold
 syn keyword soloforthConversion number?
 syn keyword soloforthConversion sign
 syn keyword soloforthDefine '
+syn keyword soloforthDefine (user)
 syn keyword soloforthDefine ,
 syn keyword soloforthDefine /user
 syn keyword soloforthDefine 2constant
@@ -142,9 +144,6 @@ syn keyword soloforthDefine input-stream-header
 syn keyword soloforthDefine interpret
 syn keyword soloforthDefine lit
 syn keyword soloforthDefine literal
-" syn keyword soloforthDefine nextname
-" syn keyword soloforthDefine nextname-header
-" syn keyword soloforthDefine nextname-string
 syn keyword soloforthDefine noname?
 syn keyword soloforthDefine parse
 syn keyword soloforthDefine parse-name
@@ -164,7 +163,6 @@ syn keyword soloforthDefine udp
 syn keyword soloforthDefine undefined?
 syn keyword soloforthDefine up
 syn keyword soloforthDefine up0
-syn keyword soloforthDefine (user)
 syn keyword soloforthDefine value
 syn keyword soloforthDefine variable
 syn keyword soloforthDefine word
@@ -352,9 +350,9 @@ syn keyword soloforthGraphics set-pixel
 syn keyword soloforthGraphics test-pixel
 syn keyword soloforthGraphics toggle-pixel
 syn keyword soloforthGraphics xy
-syn keyword soloforthHardware channel
 syn keyword soloforthHardware !p
 syn keyword soloforthHardware @p
+syn keyword soloforthHardware channel
 syn keyword soloforthMath base
 syn keyword soloforthMath decimal
 syn keyword soloforthMath hex
@@ -399,14 +397,22 @@ syn keyword soloforthMemory default-bank
 syn keyword soloforthMemory dp
 syn keyword soloforthMemory empty-csb
 syn keyword soloforthMemory erase
+syn keyword soloforthMemory far
+syn keyword soloforthMemory far!
+syn keyword soloforthMemory far-banks
+syn keyword soloforthMemory far@
+syn keyword soloforthMemory farc!
+syn keyword soloforthMemory farc@
+syn keyword soloforthMemory farcount
+syn keyword soloforthMemory farplace
 syn keyword soloforthMemory fill
 syn keyword soloforthMemory here
+syn keyword soloforthMemory hp
+syn keyword soloforthMemory hp!
+syn keyword soloforthMemory hp0
+syn keyword soloforthMemory hp@
 syn keyword soloforthMemory limit
 syn keyword soloforthMemory move
-syn keyword soloforthMemory np
-syn keyword soloforthMemory np!
-syn keyword soloforthMemory np0
-syn keyword soloforthMemory np@
 syn keyword soloforthMemory off
 syn keyword soloforthMemory on
 syn keyword soloforthMemory place
@@ -522,6 +528,7 @@ syn keyword soloforthStack sp@
 syn keyword soloforthStack swap
 syn keyword soloforthStack tuck
 syn keyword soloforthString compare
+syn keyword soloforthString faruppers
 syn keyword soloforthString scan
 syn keyword soloforthString search
 syn keyword soloforthString skip
@@ -1163,6 +1170,9 @@ let b:current_syntax = "soloforth"
 " 2016-06-01: Remove `there`.
 "
 " 2016-10-16: Add `ms`.
+"
+" 2016-11-16: Update `hp` (formerly `np`) and related words. Add the
+" far-memory words defined in the kernel.
 
 " --------------------------------------------------------------
 
