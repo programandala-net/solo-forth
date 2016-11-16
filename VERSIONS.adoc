@@ -1,43 +1,509 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-15
+:revdate: 2016-11-16
 :toc:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-== Version 0.0.0
+== Version 0.11.0 // {{{1
 
-Developed from 2015-06-02 to 2015-12-18.
+Released on 2016-11-16.
 
-During this long initial period of the development, Solo Forth grew
-from a small seed (the code of Abersoft Forth, a fig-Forth 1.1) to a
-disk-based system, with only some small traces of fig-Forth left, with
-many features of modern standard Forth systems and a huge library of
-optional code.
+The goal of this version was to implement a virtual 64-KiB continuous
+space built from 4 configurable memory banks, in order to increase the
+headers space of the Forth system (so far only one single 16-KiB bank
+was used for that), and also to provide the programmer an easy method
+to use all the paged memory.  It has been called "far memory".
 
-Version branch 0.0 was finished after replacing the fig-Forth `do
-loop` control structures with the Forth-83 version, adding a method to
-nest sources (`nest-source` and `unnest-source`) and writing
-`evaluate`.
+=== New
 
-== Version 0.1.0
+- Far memory: A virtual 64-KiB continuous space, built from 4
+  configurable memory banks. It's used by the Forth system to store
+  the dictionary headers, and can be used transparently by the
+  programmer.
+- Basic support for the far-memory system in the kernel: `far-banks`,
+  `far`, `?next-bank`, `?previous-bank`, `far@`, `far!`, `farc@`,
+  `farc!`, `farplace`, `fartype`, `faruppers`.
+- Optional library words to manage the far memory: `far2@`, `far2!`,
+  `far@+`, `farc@+`, `far2@+`, `far+!`, `farc+!`, `move>far`,
+  `move<far`, `cmove>far`, `cmove<far`, `fartype-ascii`, `fardump`,
+  `farwdump`, `farallot`.
+- Add `u>ud`.
+- Add `word-length-mask`.
+- Try and document `indexer`. It did not work in previous versions
+  because the old 16-KiB bank used to store the definition headers was
+  not large enough: the index occupied 12 KiB, while the kernel
+  definitions occupied 5 KiB. After implementing the 64-KiB far
+  memory, the indexer works fine.  Its usage has been documented in
+  the source and the README.
 
-Released on 2016-03-14.
+=== Fixes
 
-Many fixes, changes and improvements. See the
-http://programandala.net/en.program.solo_forth.history.html[development
-history].
+- Fix description of the header structure.
+- Fix requiring `gcd`, `%` and `u%`.
+- Fix `\`, which used `span` instead of `#tib`.  This bug has been
+  invisible for a long time, because `\` is not used in the command
+  line.
+- Fix block title of the calculator module: it caused `>=` and other
+  calculator operators be found by `need` instead of the integer ones,
+  because the calculator module is before the integer operators in the
+  library disk.  This problem affected the "tt" sample game, which
+  also lacked `need randomize`.
+- Fix conditional compilation of `alias!`.
+- Fix requiring `<=>'.
 
-- The Vim syntax file for Solo Forth is included.
+=== Improvements
 
-== Version 0.2.0
+- Update Vim syntax file.
+- Rewrite `c!bank`, `!bank`, `@bank` and `c@bank` in Z80.
+- Simplify `home`.  No need for specific versions of `home` for the
+  screen modes. Only `at-xy` has to be reconfigured by the screen
+  modes, if needed.
+- Improve the address register module.  The code still used direct
+  jumps to `pushhl` instead of `jppushhl`, which is faster with no
+  size penalty.
+- Improve documentation of the `assert(` tools.
+- Document the `~~` debugging tool.
+- Compact the assemblers, saving one block each.
+- Make all buffers contiguous.  Now the circular string buffer can be
+  configured to use the disk buffer and the terminal input buffer as
+  extra space.
+- Improve documentation of `dump` and `wdump`.
+- Improve the default `case` with `alias`.
 
-Released on 2016-03-14.
+=== Other changes
 
-- The old alternative ITC code is removed.
+- Remove the old unused code of the old search order.
+- Make Z80 registers and flags uppercase in kernel's comments.
+- Rename "names pointer" to "headers pointer".  The whole header of
+  the definition is stored at the pointed address, not just its name.
+  Therefore the old `np`, `np!` and `np@` have been renamed to `hp`,
+  `hp!` and `hp@`.
+- Rename `code-field,` to `call,` in `assembler`.  The old
+  `code-field,`, needed in the kernel, does exactly the same as
+  `call,` in the `z80-asm,` assembler. So it has been renamed, moved
+  to the `assembler` word list and removed from the assembler.
+- Move `8*` from the assemblers to the operators.
 
-== Version 0.3.0
+== Version 0.10.0 // {{{1
+
+Released on 2016-10-23.
+
+Besides many new features, fixes, improvements and changes, this
+version includes disk images not only for G+DOS but also for TR-DOS
+and +3DOS.  The support for TR-DOS and +3DOS is not finished: The
+TR-DOS version can access the library only from drive A, and it has no
+words to manage disk files; the +3DOS version can not use the library.
+
+=== New
+
+- Add `-1`.  `-1` is defined with the former code of `true`, and
+  `true` is converted to an alias.  This saves 8 bytes in the kernel
+  and makes any compiled -1 faster than a literal and one cell
+  smaller.
+- Add `''` and `>>name`.  These words allow to get the execution token
+  pointer of a name, and convert it to its associated name token; this
+  makes it possible to get the actual name of an alias, what is
+  impossible from its shared execution token.
+- Add `['']`.
+- Add `gcd` operator.
+- Add color constants and color modifiers.
+- Add a 128K sound editor.  First version. It's usable but needs
+  improvements.
+- Support for TR-DOS (not finished: the library can be accesed only
+  from drive A).
+- Add `blks` checker.
+- Add `lib-order`.  So far the library must be one single disk.
+  `lib-order`, `set-lib-order` and `get-lib-order` will make it
+  possible to use several library disks and configure the order in
+  which they are searched, up to the maximum allowed by the DOS. These
+  words are not used by `need` yet, so they are useless at the moment.
+- Build disks for +3DOS (the library can not be accesed yet).
+- Add `ref-xdpb` to the +3DOS version.
+- Add `first-udg` and `udg-row[`.
+- Add `exec-bench`.  This bench compares the execution time of
+  executing two pieces of code depending on a flag, using three
+  methods.
+- Add `fetch-bench`.
+- Add `set-pixel-bench`.
+- Add `pixels-bench`.
+- Add `bitmap>attr-addr` and `pixel-attr-addr`.
+- Add `store-bench`.
+- Add `allot-xstack`.
+- Add `rec/track`.
+
+=== Fixes
+
+- Fix `>body` and `body>`.  Their codes were exchanged when they were
+  moved to the library.
+- Fix `decode`, which showed the usage instructions before checking
+  the word.
+- Fix `need-here`.
+- Fix `find-name` with `?do`.
+- Fix needing `c@+`.
+- Fix requiring `c1+!`, `c1-!`, `1+!` and `1-!`.
+- Fix G+DOS `(cat)`; update the G+DOS module.
+- Fix conditional compilation of some library words.  The conditional
+  compilation of `]l`, `]2l`, `exec` ,`eval`, `save-here` and
+  `restore-here` was wrong.
+- Fix requisite of "Siderator 2".
+- Fix `load-app` to be compatible with `refill`.
+
+=== Improvements
+
+- Modify the structure of vocabularies.  Now vocabularies don't keep
+  the data of a word list in their body.  Instead, they create a
+  wordlist and store only its address. This way, `vocabulary` can be
+  moved to the library, even if there are three vocabularies in the
+  kernel (`root`, `forth` and `assembler`). But the main advantage of
+  this change is conversion can work in both directions: a word list
+  identifier can be get from a vocabulary name, no matter if the
+  vocabulary was created with `vocabulary` or out of an existent word
+  list; and a vocabulary can be created from a word list, and its
+  structure will be identical to those created by `vocabulary`.
+- Improve format of error messages.  Now a backslash is printed after
+  the error code, and only when text messages are active. This looks
+  clearer and saves 2 bytes in the kernel.
+- Improve the `decode` tool.  Improve the check in `colon-cfa?`.
+  Compact `decode-special`.
+- Improve compilation of 8-bit literals.  `literal` is replaced with
+  the new word `1literal` in `interpret-table`.  This causes 8-bit
+  literals will be compiled by `cliteral` instead of `literal`, what
+  saves one byte of data space and is faster at run-time.  `cliteral`
+  was moved from the library to the kernel, and `byte?` was added in
+  order to do the check.  These changes add 31 bytes to the kernel,
+  but they will make the programs smaller and faster.
+- Improve `0`, `1` and `2`.  These byte constants have been rewritten
+  as code words. This makes them faster.
+- Improve `constant` and `cconstant`.  Now they are faster: their
+  run-time code runs directly into `@` and `c@`. This saves 8 bytes
+  from the kernel.
+- Improve `2constant`.  Now its run-time code (instead that of `2>r`,
+  less used) runs directly into `2@`. This makes double constants a
+  bit faster and saves one byte from the kernel.
+- Improve needing of 128K sound effects.  Now every sound effect can
+  be required individually.
+- Improve definition of 128K sounds.  Now sounds are created with
+  `sound` instead of `sound:`, and when they are executed they just
+  play instead of returning the address of its data.
+- Improve `sector-id` for G+DOS.
+- Improve needing of `<is>`, `[is]` and `is`.  No `<is>` and `[is]`
+  can be needed apart.
+- Improve `pixels`.
+- Improve documentation of `attr` and related words.
+
+=== Other Changes
+
+- Move `vocabulary` to library; adapt `assembler`.
+- Use `wordlist` for `parse-escaped-string`.  No need to use
+  `vocabulary` for a standard tool.
+- Move `there` to the library.
+- Reuse the code of `noop` to save 2 bytes.
+- Reorganize the exception codes; add TR-DOS codes.  In order to make
+  calculations easier, all DOS will share the range of exception
+  codes.
+- Start implementing ior to DOS calls.  The goal is all Forth words
+  that call any DOS routine return an ior error result.
+- Print DOS name in the greeting message.
+- Organize the disk images in directories.
+- Rename `error-messages-block` to `errors-block`.  Also combine
+  blocks of its module to save two of them.
+- Compact the library.  The code of several modules has been compacted
+  and reorganized in order to save blocks, because of the 636 KiB
+  usable in TR-DOS disk images.
+- Split the tests and benchmarks into several disks, in order to make
+  them fit 636-KiB TR-DOS disks.
+- Rename disk images.  All disk image files have been renamed after a
+  shorter and clearer format, easier to use with the SDL file
+  interface of the Fuse emulator.  Now disks are numbered the same way
+  in every DOS, with an ordinal number instead the identifier of the
+  drive it's supposed to be used with.
+- Make G+DOS' `transfer-sector` return an ior.
+- Remove G+DOS' old `set-library-disk`.  `set-library-disk` and
+  `get-library-disk` are superseded by `set-lib-order` and
+  `get-lib-order`, which are implemented but not used by `locate` yet.
+- Rename the disk files to fit any DOS.  The filename format 4+3 fits
+  G+DOS (10 chars), +3DOS (8+3 chars) and TR-DOS (8 chars). This is
+  simpler than creating different names for every DOS, and makes code
+  compatible.
+- Reuse code of `invert`.  Currently, the HL register needs to be
+  inverted from assembler, in two DOS operations. There's no need to
+  duplicate code. The fastest method is chosen, though the call makes
+  `invert` a bit slower.
+- Free RAM page 1 in +3DOS.  +3DOS uses RAM pages 1, 3, 4 and 6 as an
+  array of 128 sector buffers (numbered 0...127), each of 512 bytes,
+  thus 32 buffers per RAM page. The cache and RAM disk occupy two
+  separate (contiguous) areas of this array.  In order to free RAM
+  page 1 for Solo Forth, the default configuration must be modified,
+  moving everything up and making the RAM disk 32 buffers smaller.
+- Complete the +3DOS exception codes.
+- Compact the source of `located`.
+- Improve the output of `exec-bench`.
+- Rename `xstack` to `allocate-xstack`.
+- Make `(pixel-addr)` deferred.
+
+== Version 0.9.0 // {{{1
+
+Released on 2016-05-18.
+
+=== Main changes
+
+- Finish `refill`, improve `-->`.  Now `refill` supports blocks. `-->`
+  has been rewritten after it.
+- Fix `[else]` with `refill`: Now `[if]` can cross block boundaries.
+- Fix `to`, `2to` and `cto`.
+- Add `load-app`.
+- Fix `parse-all` (was `parse-line`); finish `execute-parsing`.
+- Move `evaluate` and `string>source` to the library: These words are
+  not used in the kernel, and `evaluate` can be rewritten after
+  `execute-parsing`, which is in the library. This saves 28 bytes in
+  the kernel.
+- Add `!>`, `2!>` and `c!>`: Words that change the value of constants,
+  inspired by IsForth's `!>`.
+- Improve `value`, `to` and their variants: The default versions
+  (standard `value` and `to`, and non-standard `2value`, `2to`,
+  `cvalue` and `cto`) have been combined into one single module,
+  rewritten as aliases and documented.  The standard alternative
+  versions of `value`, `2value` and `to` have been documented.
+- Rename non-parsing `value`/`to` to `val`/`toval`.
+
+=== Other changes
+
+- Fix harmless bug in `locate-reneed`.
+- Improve compilation of "memory.misc.fsb": Remove dependency on the
+  assembler. Add conditional compilation. Compact the blocks. Remove
+  unused code.
+- Rename `@cell+` to `@+`, add `2@+`.
+- Fix `!a`, `!a+`, `c@a+`: The module of the address register has been
+  compacted and documented.  During the process three bugs, caused by
+  wrong Z80 opcodes, were discovered and fixed.
+- Simplify the circular string buffer: So far the internal offset of
+  the buffer was stored before the buffer data. It has been moved to
+  `>csb`, which formerly was a fake variable, a constant that returned
+  the address of the offset, and now is an actual variable. This saves
+  a cell and is more versatile. In total, ten bytes are saved with
+  some related changes.
+- Add `2storer`.
+- Remove `set-latest-lex`: A factor of `interpret` and `compile-only`
+  that was not useful, because there are no more flags to set.
+  Removing it saves 5 bytes.
+- Improve `hided`.
+- Fix requirements of `[cconst]`.
+- Add benchmark for `?throw'.
+- Document `fill`, `erase`, `blank`.
+- Shorten `hex`: A branch saves one cell, more important than speed in
+  this case.  `hex` and `decimal` have been documented.
+- Rename `hided` to the correct `hidden`.
+- Move `>body` and `body>` to the library.
+- Improve `up`: Now `up` is a variable, not a constant that returns
+  the address where the value is stored.  This change is necessary to
+  implement multitasking, and it saves one cell.
+- Improve conditional compilation of word lists tools.
+
+== Version 0.8.0 // {{{1
+
+Released on 2016-05-10.
+
+=== Main changes
+
+- Add the Forth-94 core tests written by John Hayes.
+
+=== Other changes
+
+- Improve compilation of the assemblers: Now the contents of `base`,
+  the compilation word list and the search order are saved before
+  compiling the assemblers, and restored at the end.
+- Add `align` and `aligned`.
+- Fix `[char]`.
+
+== Version 0.7.0 // {{{1
+
+Released on 2016-05-09.
+
+=== Main changes
+
+- Fix `header,`: move `current-latest` back to the kernel.
+- Fix and improve `search`: 8 times faster code.
+- Fix `mode42`.
+- Make three library disks instead of one.
+- Rename `s=` to `str=`; add `str<`, `str>`.
+- Rename `other>` to `othercase>`; improve its doc.
+- Rename `nextcase` to `repeatcase`; improve its doc.
+- Rename `set` to `storer` and improve it.
+- Rename `chan` to `channel`.
+- Improve `compare`: faster code.
+- Improve and document `overprint`; move it to the library.
+- Improve and document `inverse`; move it to the library.
+- Improve `paper` and `ink`.
+- Improve the `indexer` tool: no data space used anymore.
+- Add `?(`.
+- Add `need-here`.
+- Move `warnings` control to the library.
+
+=== Other changes
+
+- Fix `border` and modify `default-colors`.
+- Fix code typos in "printing.cursor.fsb".
+- Fix the error of `?locate`.
+- Add `0max`.
+- Add `<=>`.
+- Add `?ccase`, `ccase0`, `ccase`.
+- Add `alias!`.
+- Add `clshift`, 8-bit version of `lshift`.
+- Add `color`, `2color` and related words.
+- Add `cstorer`.
+- Add `dup>r`.
+- Add `either` and `neither`.
+- Add `holds`.
+- Add `lineload`.
+- Add `ruler`.
+- Add `split` and `join`.
+- Add `string-parameter`.
+- Add `type-left`, `type-center`, `type-right`.
+- Add `warning"`.
+- Add `words#`.
+- Add color system variables.
+- Factor `.unused` from `greeting`.
+- Factor `permanent-colors` from `ink`.
+- Improve `0=` and `=`.
+- Improve `2r>`.
+- Improve `default-colors`.
+- Improve `leave`.
+- Improve `need`.
+- Improve `u<`.
+- Improve `z80-asm,`, the alternative assembler.
+- Improve compilation and documentation of `alias`.
+- Improve conditional compilation of printing control.
+- Improve printing of nameless word lists.
+- Improve documentation of `?repeat`.
+- Improve documentation of `create:`.
+- Improve documentation of `jppushl`.
+- Improve documentation of `options[`.
+- Improve documentation of `thiscase`.
+- Make `chars` an alias of `noop`, not a deferred word.
+- Make `from` and `locate` optional.
+- Make pictured output string buffer configurable.
+- Make the faster `<` definitive.
+- Move `[compile]` to the library.
+- Move `defer@` to the library.
+- Move `printer` to library.
+- Remove `(i)`.
+- Remove `transfer-mode`.
+- Remove unnecessary `space` from `.wid`.
+- Rename and add color words.
+- Replace remaining `[compile]` with `postpone`.
+- Simplify `cls`.
+- Simplify `default-colors`.
+- Simplify `type-right`.
+- Test and document `tabulate`.
+- Fix description of `ahead`.
+- Compact the library.
+
+== Version 0.6.0 // {{{1
+
+Released on 2016-04-27.
+
+=== Main changes
+
+- Add `marker`.
+- Add modern `latest` (old fig-Forth `latest` is renamed to `current-latest`).
+- Add `latestxt` and `lastxt`.
+- Fix `recurse` and `:noname`, which used the old `latest`.
+- Add `name>interpret`, `name>compile`.
+- Add `comp'` and `[comp']`.
+- Fix `restore-here`.
+- Fix and improve compilation of literals.
+- Add `char-position?` and `char-in-string?`.
+- Rename `ascii-type` to `type-ascii`.
+- Improve definition of UDGs.
+- Improve printing of UDGs at graphic coordinates.
+
+=== Other changes
+
+- Add `/!`, `*!`, `2/!`, `2*!`.
+- Move `char` and `[char]` to the library.
+- Move `cliteral` to the library.
+- Move `;code` to the library.
+- Move `2rdrop` to the library.
+- Move `pick` to the library.
+- Move `nextname` to the library.
+- Move `:noname` to the library.
+- Move `get-default-bank` and `set-default-bank` to the library.
+- Improve the error code of `located`.
+- Replace `bs` with `backspace` in `dump`.
+- Fix description of `defined`.
+- Clearer warning and exception messages.
+- Update the Pong game.
+
+== Version 0.5.0 // {{{1
+
+Released on 2016-04-22.
+
+=== Main changes
+
+- Add floating point support.
+- Add ROM calculator support.
+- Fix `>name`.
+- Improve `alias`.
+- Add `user`.
+- Add `j` and `k`.
+
+=== Other changes
+
+- Add `realias`.
+- Improve `dnegate`.
+- Add `wait-for-key`.
+- Improve `system-bank`.
+- Improve `upper`.
+- Renamed the math library files with a common root.
+- Move `recurse` to the library.
+- Add `(source-id)`.
+- Move `!s` and `c!s` to the library.
+- Add `-!`.
+- Add `times`.
+- Fix `(;code)`.
+- Improve `associative-list`.
+- Fix `dump`.
+- Improve `ascii-type`.
+- Fix `decode-compile`.
+- Rename library files.
+- Documentation: Change the stack notation for flags.
+
+== Version 0.4.1 // {{{1
+
+Released on 2016-04-11.
+
+- Fix and improve the tape support: The message "Start tape, then
+  press any key" does not appear anymore.
+- The tape module is fully documented.
+
+== Version 0.4.0 // {{{1
+
+Released on 2016-04-10.
+
+- Tape support.
+- New words: `nonfull-display`, `full-display`, `save-display` and
+  `restore-display`.
+
+== Version 0.3.2 // {{{1
+
+Released on 2016-04-09.
+
+- Fix, improve and finish the `arguments` implementation of locals.
+- Improve the documentation of some library modules.
+
+== Version 0.3.1 // {{{1
+
+Released on 2016-04-09.
+
+- Split the assembler library module into three files: z80-asm
+  assembler, z80-asm-comma assembler and common tools.
+- Fix the title of two 8-bit pseudo-random number generator
+  benchmarks.
+- Fix the name of the `base-execute` library module.
+
+== Version 0.3.0 // {{{1
 
 Released on 2016-04-03.
 
@@ -114,423 +580,34 @@ Released on 2016-04-03.
   `needed`, `reneed` and `reneeded` much faster.
 - Add `cell/`, `d10*` and `bits` to the library.
 
-== Version 0.3.1
+== Version 0.2.0 // {{{1
 
-Released on 2016-04-09.
+Released on 2016-03-14.
 
-- Split the assembler library module into three files: z80-asm
-  assembler, z80-asm-comma assembler and common tools.
-- Fix the title of two 8-bit pseudo-random number generator
-  benchmarks.
-- Fix the name of the `base-execute` library module.
+- The old alternative ITC code is removed.
 
-== Version 0.3.2
+== Version 0.1.0 // {{{1
 
-Released on 2016-04-09.
+Released on 2016-03-14.
 
-- Fix, improve and finish the `arguments` implementation of locals.
-- Improve the documentation of some library modules.
+Many fixes, changes and improvements. See the
+http://programandala.net/en.program.solo_forth.history.html[development
+history].
 
-== Version 0.4.0
+- The Vim syntax file for Solo Forth is included.
 
-Released on 2016-04-10.
+== Version 0.0.0 // {{{1
 
-- Tape support.
-- New words: `nonfull-display`, `full-display`, `save-display` and
-  `restore-display`.
+Developed from 2015-06-02 to 2015-12-18.
 
-== Version 0.4.1
+During this long initial period of the development, Solo Forth grew
+from a small seed (the code of Abersoft Forth, a fig-Forth 1.1) to a
+disk-based system, with only some small traces of fig-Forth left, with
+many features of modern standard Forth systems and a huge library of
+optional code.
 
-Released on 2016-04-11.
+Version branch 0.0 was finished after replacing the fig-Forth `do
+loop` control structures with the Forth-83 version, adding a method to
+nest sources (`nest-source` and `unnest-source`) and writing
+`evaluate`.
 
-- Fix and improve the tape support: The message "Start tape, then
-  press any key" does not appear anymore.
-- The tape module is fully documented.
-
-== Version 0.5.0
-
-Released on 2016-04-22.
-
-=== Main changes
-
-- Add floating point support.
-- Add ROM calculator support.
-- Fix `>name`.
-- Improve `alias`.
-- Add `user`.
-- Add `j` and `k`.
-
-=== Other changes
-
-- Add `realias`.
-- Improve `dnegate`.
-- Add `wait-for-key`.
-- Improve `system-bank`.
-- Improve `upper`.
-- Renamed the math library files with a common root.
-- Move `recurse` to the library.
-- Add `(source-id)`.
-- Move `!s` and `c!s` to the library.
-- Add `-!`.
-- Add `times`.
-- Fix `(;code)`.
-- Improve `associative-list`.
-- Fix `dump`.
-- Improve `ascii-type`.
-- Fix `decode-compile`.
-- Rename library files.
-- Documentation: Change the stack notation for flags.
-
-== Version 0.6.0 ==
-
-Released on 2016-04-27.
-
-=== Main changes ===
-
-- Add `marker`.
-- Add modern `latest` (old fig-Forth `latest` is renamed to `current-latest`).
-- Add `latestxt` and `lastxt`.
-- Fix `recurse` and `:noname`, which used the old `latest`.
-- Add `name>interpret`, `name>compile`.
-- Add `comp'` and `[comp']`.
-- Fix `restore-here`.
-- Fix and improve compilation of literals.
-- Add `char-position?` and `char-in-string?`.
-- Rename `ascii-type` to `type-ascii`.
-- Improve definition of UDGs.
-- Improve printing of UDGs at graphic coordinates.
-
-=== Other changes ===
-
-- Add `/!`, `*!`, `2/!`, `2*!`.
-- Move `char` and `[char]` to the library.
-- Move `cliteral` to the library.
-- Move `;code` to the library.
-- Move `2rdrop` to the library.
-- Move `pick` to the library.
-- Move `nextname` to the library.
-- Move `:noname` to the library.
-- Move `get-default-bank` and `set-default-bank` to the library.
-- Improve the error code of `located`.
-- Replace `bs` with `backspace` in `dump`.
-- Fix description of `defined`.
-- Clearer warning and exception messages.
-- Update the Pong game.
-
-== Version 0.7.0 ==
-
-Released on 2016-05-09.
-
-=== Main changes ===
-
-- Fix `header,`: move `current-latest` back to the kernel.
-- Fix and improve `search`: 8 times faster code.
-- Fix `mode42`.
-- Make three library disks instead of one.
-- Rename `s=` to `str=`; add `str<`, `str>`.
-- Rename `other>` to `othercase>`; improve its doc.
-- Rename `nextcase` to `repeatcase`; improve its doc.
-- Rename `set` to `storer` and improve it.
-- Rename `chan` to `channel`.
-- Improve `compare`: faster code.
-- Improve and document `overprint`; move it to the library.
-- Improve and document `inverse`; move it to the library.
-- Improve `paper` and `ink`.
-- Improve the `indexer` tool: no data space used anymore.
-- Add `?(`.
-- Add `need-here`.
-- Move `warnings` control to the library.
-
-=== Other changes ===
-
-- Fix `border` and modify `default-colors`.
-- Fix code typos in "printing.cursor.fsb".
-- Fix the error of `?locate`.
-- Add `0max`.
-- Add `<=>`.
-- Add `?ccase`, `ccase0`, `ccase`.
-- Add `alias!`.
-- Add `clshift`, 8-bit version of `lshift`.
-- Add `color`, `2color` and related words.
-- Add `cstorer`.
-- Add `dup>r`.
-- Add `either` and `neither`.
-- Add `holds`.
-- Add `lineload`.
-- Add `ruler`.
-- Add `split` and `join`.
-- Add `string-parameter`.
-- Add `type-left`, `type-center`, `type-right`.
-- Add `warning"`.
-- Add `words#`.
-- Add color system variables.
-- Factor `.unused` from `greeting`.
-- Factor `permanent-colors` from `ink`.
-- Improve `0=` and `=`.
-- Improve `2r>`.
-- Improve `default-colors`.
-- Improve `leave`.
-- Improve `need`.
-- Improve `u<`.
-- Improve `z80-asm,`, the alternative assembler.
-- Improve compilation and documentation of `alias`.
-- Improve conditional compilation of printing control.
-- Improve printing of nameless word lists.
-- Improve documentation of `?repeat`.
-- Improve documentation of `create:`.
-- Improve documentation of `jppushl`.
-- Improve documentation of `options[`.
-- Improve documentation of `thiscase`.
-- Make `chars` an alias of `noop`, not a deferred word.
-- Make `from` and `locate` optional.
-- Make pictured output string buffer configurable.
-- Make the faster `<` definitive.
-- Move `[compile]` to the library.
-- Move `defer@` to the library.
-- Move `printer` to library.
-- Remove `(i)`.
-- Remove `transfer-mode`.
-- Remove unnecessary `space` from `.wid`.
-- Rename and add color words.
-- Replace remaining `[compile]` with `postpone`.
-- Simplify `cls`.
-- Simplify `default-colors`.
-- Simplify `type-right`.
-- Test and document `tabulate`.
-- Fix description of `ahead`.
-- Compact the library.
-
-== Version 0.8.0 ==
-
-Released on 2016-05-10.
-
-=== Main changes ===
-
-- Add the Forth-94 core tests written by John Hayes.
-
-=== Other changes ===
-
-- Improve compilation of the assemblers: Now the contents of `base`,
-  the compilation word list and the search order are saved before
-  compiling the assemblers, and restored at the end.
-- Add `align` and `aligned`.
-- Fix `[char]`.
-
-== Version 0.9.0 ==
-
-Released on 2016-05-18.
-
-=== Main changes ===
-
-- Finish `refill`, improve `-->`.  Now `refill` supports blocks. `-->`
-  has been rewritten after it.
-- Fix `[else]` with `refill`: Now `[if]` can cross block boundaries.
-- Fix `to`, `2to` and `cto`.
-- Add `load-app`.
-- Fix `parse-all` (was `parse-line`); finish `execute-parsing`.
-- Move `evaluate` and `string>source` to the library: These words are
-  not used in the kernel, and `evaluate` can be rewritten after
-  `execute-parsing`, which is in the library. This saves 28 bytes in
-  the kernel.
-- Add `!>`, `2!>` and `c!>`: Words that change the value of constants,
-  inspired by IsForth's `!>`.
-- Improve `value`, `to` and their variants: The default versions
-  (standard `value` and `to`, and non-standard `2value`, `2to`,
-  `cvalue` and `cto`) have been combined into one single module,
-  rewritten as aliases and documented.  The standard alternative
-  versions of `value`, `2value` and `to` have been documented.
-- Rename non-parsing `value`/`to` to `val`/`toval`.
-
-=== Other changes ===
-
-- Fix harmless bug in `locate-reneed`.
-- Improve compilation of "memory.misc.fsb": Remove dependency on the
-  assembler. Add conditional compilation. Compact the blocks. Remove
-  unused code.
-- Rename `@cell+` to `@+`, add `2@+`.
-- Fix `!a`, `!a+`, `c@a+`: The module of the address register has been
-  compacted and documented.  During the process three bugs, caused by
-  wrong Z80 opcodes, were discovered and fixed.
-- Simplify the circular string buffer: So far the internal offset of
-  the buffer was stored before the buffer data. It has been moved to
-  `>csb`, which formerly was a fake variable, a constant that returned
-  the address of the offset, and now is an actual variable. This saves
-  a cell and is more versatile. In total, ten bytes are saved with
-  some related changes.
-- Add `2storer`.
-- Remove `set-latest-lex`: A factor of `interpret` and `compile-only`
-  that was not useful, because there are no more flags to set.
-  Removing it saves 5 bytes.
-- Improve `hided`.
-- Fix requirements of `[cconst]`.
-- Add benchmark for `?throw'.
-- Document `fill`, `erase`, `blank`.
-- Shorten `hex`: A branch saves one cell, more important than speed in
-  this case.  `hex` and `decimal` have been documented.
-- Rename `hided` to the correct `hidden`.
-- Move `>body` and `body>` to the library.
-- Improve `up`: Now `up` is a variable, not a constant that returns
-  the address where the value is stored.  This change is necessary to
-  implement multitasking, and it saves one cell.
-- Improve conditional compilation of word lists tools.
-
-== Version 0.10.0 ==
-
-Released on 2016-10-23.
-
-Besides many new features, fixes, improvements and changes, this
-version includes disk images not only for G+DOS but also for TR-DOS
-and +3DOS.  The support for TR-DOS and +3DOS is not finished: The
-TR-DOS version can access the library only from drive A, and it has no
-words to manage disk files; the +3DOS version can not use the library.
-
-=== New ===
-
-- Add `-1`.  `-1` is defined with the former code of `true`, and
-  `true` is converted to an alias.  This saves 8 bytes in the kernel
-  and makes any compiled -1 faster than a literal and one cell
-  smaller.
-- Add `''` and `>>name`.  These words allow to get the execution token
-  pointer of a name, and convert it to its associated name token; this
-  makes it possible to get the actual name of an alias, what is
-  impossible from its shared execution token.
-- Add `['']`.
-- Add `gcd` operator.
-- Add color constants and color modifiers.
-- Add a 128K sound editor.  First version. It's usable but needs
-  improvements.
-- Support for TR-DOS (not finished: the library can be accesed only
-  from drive A).
-- Add `blks` checker.
-- Add `lib-order`.  So far the library must be one single disk.
-  `lib-order`, `set-lib-order` and `get-lib-order` will make it
-  possible to use several library disks and configure the order in
-  which they are searched, up to the maximum allowed by the DOS. These
-  words are not used by `need` yet, so they are useless at the moment.
-- Build disks for +3DOS (the library can not be accesed yet).
-- Add `ref-xdpb` to the +3DOS version.
-- Add `first-udg` and `udg-row[`.
-- Add `exec-bench`.  This bench compares the execution time of
-  executing two pieces of code depending on a flag, using three
-  methods.
-- Add `fetch-bench`.
-- Add `set-pixel-bench`.
-- Add `pixels-bench`.
-- Add `bitmap>attr-addr` and `pixel-attr-addr`.
-- Add `store-bench`.
-- Add `allot-xstack`.
-- Add `rec/track`.
-
-=== Fixes ===
-
-- Fix `>body` and `body>`.  Their codes were exchanged when they were
-  moved to the library.
-- Fix `decode`, which showed the usage instructions before checking
-  the word.
-- Fix `need-here`.
-- Fix `find-name` with `?do`.
-- Fix needing `c@+`.
-- Fix requiring `c1+!`, `c1-!`, `1+!` and `1-!`.
-- Fix G+DOS `(cat)`; update the G+DOS module.
-- Fix conditional compilation of some library words.  The conditional
-  compilation of `]l`, `]2l`, `exec` ,`eval`, `save-here` and
-  `restore-here` was wrong.
-- Fix requisite of "Siderator 2".
-- Fix `load-app` to be compatible with `refill`.
-
-=== Improvements ===
-
-- Modify the structure of vocabularies.  Now vocabularies don't keep
-  the data of a word list in their body.  Instead, they create a
-  wordlist and store only its address. This way, `vocabulary` can be
-  moved to the library, even if there are three vocabularies in the
-  kernel (`root`, `forth` and `assembler`). But the main advantage of
-  this change is conversion can work in both directions: a word list
-  identifier can be get from a vocabulary name, no matter if the
-  vocabulary was created with `vocabulary` or out of an existent word
-  list; and a vocabulary can be created from a word list, and its
-  structure will be identical to those created by `vocabulary`.
-- Improve format of error messages.  Now a backslash is printed after
-  the error code, and only when text messages are active. This looks
-  clearer and saves 2 bytes in the kernel.
-- Improve the `decode` tool.  Improve the check in `colon-cfa?`.
-  Compact `decode-special`.
-- Improve compilation of 8-bit literals.  `literal` is replaced with
-  the new word `1literal` in `interpret-table`.  This causes 8-bit
-  literals will be compiled by `cliteral` instead of `literal`, what
-  saves one byte of data space and is faster at run-time.  `cliteral`
-  was moved from the library to the kernel, and `byte?` was added in
-  order to do the check.  These changes add 31 bytes to the kernel,
-  but they will make the programs smaller and faster.
-- Improve `0`, `1` and `2`.  These byte constants have been rewritten
-  as code words. This makes them faster.
-- Improve `constant` and `cconstant`.  Now they are faster: their
-  run-time code runs directly into `@` and `c@`. This saves 8 bytes
-  from the kernel.
-- Improve `2constant`.  Now its run-time code (instead that of `2>r`,
-  less used) runs directly into `2@`. This makes double constants a
-  bit faster and saves one byte from the kernel.
-- Improve needing of 128K sound effects.  Now every sound effect can
-  be required individually.
-- Improve definition of 128K sounds.  Now sounds are created with
-  `sound` instead of `sound:`, and when they are executed they just
-  play instead of returning the address of its data.
-- Improve `sector-id` for G+DOS.
-- Improve needing of `<is>`, `[is]` and `is`.  No `<is>` and `[is]`
-  can be needed apart.
-- Improve `pixels`.
-- Improve documentation of `attr` and related words.
-
-=== Other Changes ===
-
-- Move `vocabulary` to library; adapt `assembler`.
-- Use `wordlist` for `parse-escaped-string`.  No need to use
-  `vocabulary` for a standard tool.
-- Move `there` to the library.
-- Reuse the code of `noop` to save 2 bytes.
-- Reorganize the exception codes; add TR-DOS codes.  In order to make
-  calculations easier, all DOS will share the range of exception
-  codes.
-- Start implementing ior to DOS calls.  The goal is all Forth words
-  that call any DOS routine return an ior error result.
-- Print DOS name in the greeting message.
-- Organize the disk images in directories.
-- Rename `error-messages-block` to `errors-block`.  Also combine
-  blocks of its module to save two of them.
-- Compact the library.  The code of several modules has been compacted
-  and reorganized in order to save blocks, because of the 636 KiB
-  usable in TR-DOS disk images.
-- Split the tests and benchmarks into several disks, in order to make
-  them fit 636-KiB TR-DOS disks.
-- Rename disk images.  All disk image files have been renamed after a
-  shorter and clearer format, easier to use with the SDL file
-  interface of the Fuse emulator.  Now disks are numbered the same way
-  in every DOS, with an ordinal number instead the identifier of the
-  drive it's supposed to be used with.
-- Make G+DOS' `transfer-sector` return an ior.
-- Remove G+DOS' old `set-library-disk`.  `set-library-disk` and
-  `get-library-disk` are superseded by `set-lib-order` and
-  `get-lib-order`, which are implemented but not used by `locate` yet.
-- Rename the disk files to fit any DOS.  The filename format 4+3 fits
-  G+DOS (10 chars), +3DOS (8+3 chars) and TR-DOS (8 chars). This is
-  simpler than creating different names for every DOS, and makes code
-  compatible.
-- Reuse code of `invert`.  Currently, the HL register needs to be
-  inverted from assembler, in two DOS operations. There's no need to
-  duplicate code. The fastest method is chosen, though the call makes
-  `invert` a bit slower.
-- Free RAM page 1 in +3DOS.  +3DOS uses RAM pages 1, 3, 4 and 6 as an
-  array of 128 sector buffers (numbered 0...127), each of 512 bytes,
-  thus 32 buffers per RAM page. The cache and RAM disk occupy two
-  separate (contiguous) areas of this array.  In order to free RAM
-  page 1 for Solo Forth, the default configuration must be modified,
-  moving everything up and making the RAM disk 32 buffers smaller.
-- Complete the +3DOS exception codes.
-- Compact the source of `located`.
-- Improve the output of `exec-bench`.
-- Rename `xstack` to `allocate-xstack`.
-- Make `(pixel-addr)` deferred.
-
-== Version 0.11.0 ==
-
-Under development.

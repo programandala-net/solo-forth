@@ -1,6 +1,6 @@
-= Solo Forth README
+= Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-13
+:revdate: 2016-11-16
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -133,13 +133,15 @@ instantaneously:
 
 The indexer creates an index (actually, a Forth word list) and changes
 the default behaviour of `need` and related words. Then `need name`
-will automatically start loading the block where the word "name".
+will automatically start loading the first block where the word "name"
+is defined.
 
-NOTE: At the time of writing (2016-11-13) the indexing takes 195
+NOTE: At the time of writing (2016-11-16) the indexing takes 195
 seconds (at 100% the speed of the real machine) and the index uses c.
 12 KiB of "far memory" (so called in Solo Forth): a virtual 64 KiB
-space formed by memory banks, independent from the main memory, used
-to store the definition headers.
+space formed by 4 configurable memory banks, independent from the main
+memory, used to store the definition headers (and also usable by the
+programmer).
 
 == How to build
 

@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611160225
+; Last modified: 201611161336
 
 include version.z80s
 
@@ -1978,7 +1978,7 @@ set_order.exit
 ; ----------------------------------------------
   _colon_header to_order_,'>ORDER'
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library?
 
 ; doc{
 ;
@@ -2004,7 +2004,7 @@ set_order.exit
 ; ----------------------------------------------
   _colon_header previous_,'PREVIOUS'
 
-  ; XXX TODO -- move to the library -- but it's used by `asm`
+  ; XXX TODO -- move to the library? -- but it's used by `asm`
 
 ; doc{
 ;
@@ -11617,7 +11617,7 @@ if 1 ; developing
   _colon_header where_,'WHERE'
 
   ; XXX TMP -- needed only during the development
-  ; XXX TODO -- remove; already copied to the disk
+  ; XXX TODO -- remove; already copied to the library
 
   dw error_pos_,two_fetch_ ; XXX NEW
   dw dup_

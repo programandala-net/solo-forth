@@ -11,10 +11,6 @@
 
 .2016-11-13:
 
-Remove note about version 0.11.0 from the README, after releasing it.
-
-.2016-11-13:
-
 Remove `get-default-bank` and `set-default-bank`.
 
 .2016-11-13:
@@ -32,18 +28,9 @@ Simplify `u.r`.
 
 Remove the old `alias!` when the extra-memory system becomes definitive.
 
-Remove `split` and `join` from the kernel when the extra-memory system
-becomes definitive.
-
 Remove `s!` and related words when the extra-memory system becomes definitive.
 
-Fix the extra-memory system:
-
-- Finish `>name`.
-
 .2016-10-27:
-
-Finish the extra-memory system in the kernel.
 
 Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
@@ -254,9 +241,8 @@ Write far-memory versions of some of the following words from the
 <memory.misc.fsb> module:
 
 ----
-  \ -! c+! c-!
+  \ -!
   \ /! *! 2/! 2*!
-  \ @+ 2@+ c@+
   \ bit>mask bit? set-bit reset-bit
   \ c1+! c1-! 1+! 1-!
   \ c@test-bits c!toggle-bits
@@ -272,11 +258,6 @@ Write far-memory versions of some of the following words from the
 
 Change `need [if]` to `need ?(` in the library, when `[else]` is not needed.
 `?(` is smaller and faster than `[if]`.
-
-.2016-10-22:
-
-16 KiB for the headers is not enough in some cases.
-Make a second bank usable...
 
 .2016-05-31:
 
@@ -320,7 +301,7 @@ byte but is 2 T-cycles faster.
 : [-csp]  ( -- )  cell csp +!  ; immediate compile-only
 ----
 
-But for compiling an external number inside a definition,
+But to compile an external number inside a definition,
 a trick is `[ dup ] literal` and a `drop` after `;`.
 
 .2015-06-09:
@@ -576,11 +557,6 @@ New:
 - Case-sensitive mode.
 - Create words in lowercase.
 - Improve `parse-name` with case conversion.
-
-.2015-09-23:
-
-Fix: `where` shows the offending word uppercased. This means somewhere the
-original address hold in `parsed-word` is used by `uppers`.
 
 .2015-10-15:
 

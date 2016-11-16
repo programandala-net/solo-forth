@@ -1,9 +1,4 @@
-*.dsk
-*.mgt
 *.sna
 *.szx
-*.trd
 *.z80
 _meta/
-disks/
-tmp/
