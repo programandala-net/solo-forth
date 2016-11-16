@@ -1,4 +1,14 @@
+# Ignore ZX Spectrum disk images:
+*.dsk
+*.mgt
+*.trd
+
+# Ignore ZX Spectrum emulator snapshots:
 *.sna
 *.szx
 *.z80
+
+# Ignore the development resources:
 _meta/
+
+# vim: filetype=config

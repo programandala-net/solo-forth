@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201611152004
+# Last modified: 201611161641
 
 # ==============================================================
 # Author
@@ -141,7 +141,9 @@ cleantrdos:
 
 .PHONY: cleantmp
 cleantmp:
-	-rm -f tmp/*
+	-rm -f tmp/[a-zA-Z0-9_]*
+# Note: The file <tmp/.gitignore> must be preserved;
+#       that's why the wildcard is used.
 
 include Makefile.pasmo
 
@@ -625,3 +627,5 @@ oldbackup:
 #
 # 2016-10-22: Split the benchmarks disk into 3 disks, else it didn't
 # fit in a TR-DOS disk image.
+#
+# 2016-11-16: Modify the cleaning of <tmp/>, to preserve <.gitignore>.
