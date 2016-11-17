@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611172026
+  \ Last modified: 201611172116
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,7 +35,7 @@
   \ comparison operators.
   \ 2016-08-05: Reorganize and compact the code to save one
   \ block.
-  \ 2016-11-17: Fix needing `trim`.
+  \ 2016-11-17: Fix needing `trim`. Fix `+place`.
 
 ( str= str< str> trim +place hunt )
 
@@ -60,19 +60,11 @@
 
 need ?(
 
-[unneeded] +place ?(
-: +place  ( ca1 len1 ca2 )
-  2dup c@ + over c!  dup c@ 1+ + smove  ; ?)
+[unneeded] +place ?(  need c+!
+: +place  ( ca1 len1 ca2 -- )
+  2dup 2>r count + smove 2r> c+! ;  ?)
   \ Add the string _ca1 len1_ to the end of the counted string
   \ _ca2_.
-
-  \ Credit:
-  \
-  \ Code from Afera.
-
-
-  \ XXX TODO -- alternative
-  \ : +place  ( a u dest -)  2dup >r >r count + swap move r> r> c+! ;
 
 [unneeded] hunt ?(
 : hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )
