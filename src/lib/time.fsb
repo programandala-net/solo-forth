@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605170054
+  \ Last modified: 201611171353
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,9 @@
   \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
+  \
+  \ 2016-11-17: Improve documentation of `frames@`, `frames!`,
+  \ `reset-frames`.
 
 ( ms )
 
@@ -160,15 +163,45 @@ code ms88  ( u -- )
 need os-frames
 
 : frames@  ( -- d )
-  os-frames @ [ os-frames 2+ ] literal c@  ;
-  \ System frames counter (incremented every 20 ms).
+  os-frames @ [ os-frames cell+ ] literal c@  ;
+
+  \ doc{
+  \
+  \ frames@  ( -- d )
+  \
+  \ Fetch the system frames counter, which is incremented every
+  \ 20 ms by the OS.
+  \
+  \ See: `frames!`, `reset-frames`.
+  \
+  \ }doc
 
 : frames!  ( d -- )
-  [ os-frames 2+ ] literal c! os-frames !  ;
-  \ Set the system frames counter.
+  [ os-frames cell+ ] literal c! os-frames !  ;
+
+  \ doc{
+  \
+  \ frames!  ( d -- )
+  \
+  \ Store _d_ at the system frames counter, which is
+  \ incremented every 20 ms by the OS.
+  \
+  \ See: `frames@`, `reset-frames`.
+  \
+  \ }doc
 
 : reset-frames  ( -- )  0. frames!  ;
-  \ Reset the system frames counter.
+
+  \ doc{
+  \
+  \ reset-frames  ( -- )
+  \
+  \ Reset the system frames counter, which is incremented every
+  \ 20 ms by the OS, seeting it to zero.
+  \
+  \ See: `frames@`, `frames!`.
+  \
+  \ }doc
 
 ( pause )
 
