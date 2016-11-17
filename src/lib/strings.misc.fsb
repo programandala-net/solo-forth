@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051628
+  \ Last modified: 201611172026
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,7 @@
   \ comparison operators.
   \ 2016-08-05: Reorganize and compact the code to save one
   \ block.
+  \ 2016-11-17: Fix needing `trim`.
 
 ( str= str< str> trim +place hunt )
 
@@ -53,7 +54,7 @@
   \ Is string _ca1 len1_ lexicographically larger than string
   \ _ca2 len2_?
 
-[unneded] trim
+[unneeded] trim
 ?\ : trim ( ca1 len1 -- ca2 len2 )  -leading -trailing  ;
   \ Remove leading and trailing spaces from a string.
 
@@ -68,6 +69,10 @@ need ?(
   \ Credit:
   \
   \ Code from Afera.
+
+
+  \ XXX TODO -- alternative
+  \ : +place  ( a u dest -)  2dup >r >r count + swap move r> r> c+! ;
 
 [unneeded] hunt ?(
 : hunt  ( ca1 len1 ca2 len2 -- ca3 len3 )

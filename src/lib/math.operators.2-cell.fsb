@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171856
+  \ Last modified: 201611172024
 
   \ -----------------------------------------------------------
   \ Description
@@ -174,7 +174,7 @@ need 2nip
 
 need ?(
 
-[unneded] d<> ?(
+[unneeded] d<> ?(
 : d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
   \ XXX TODO -- rewrite in Z80
 ?)
