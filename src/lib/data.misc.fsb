@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605102225
+  \ Last modified: 201611171540
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,11 +30,12 @@
   \ `cstorer`.
   \ 2016-05-02: Join two blocks to save space.
   \ 2016-05-10: Add `2storer`.
+  \ 2016-11-17: Add `const`, `cconst`, `2const`.
 
 ( buffer: cvariable enum link@ link, )
 
 [unneeded] buffer:
-?\ : buffer:  ( u "name" -- )  create allot  ;  exit
+?\ : buffer:  ( len "name" -- )  create allot  ;  exit
 
 [unneeded] cvariable
 ?\ : cvariable  ( "name"  -- )  create 1 allot  ;  exit
@@ -63,7 +64,7 @@ need ?(
 [unneeded] storer ?(
 
 : storer  ( x a "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ !  ; ?)
+  create  2,  does>   ( -- ) ( pfa )  2@ !  ; exit ?)
 
   \ doc{
   \
@@ -80,7 +81,7 @@ need ?(
 [unneeded] cstorer ?(
 
 : cstorer  ( c ca "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ c!  ; ?)
+  create  2,  does>   ( -- ) ( pfa )  2@ c!  ; exit ?)
 
   \ doc{
   \
@@ -99,7 +100,7 @@ need ?(
 
 : 2storer  ( xd a "name" -- )
   create  , 2,
-  does>   ( -- ) ( pfa )  dup cell+ 2@ rot @ 2!  ; ?)
+  does>   ( -- ) ( pfa )  dup cell+ 2@ rot @ 2!  ; exit ?)
 
   \ doc{
   \
@@ -111,6 +112,84 @@ need ?(
   \ Origin: variant of the word `set` found in Forth-79
   \ (Reference Word Set) and Forth-83 (Appendix B.
   \ Uncontrolled Reference Words).
+  \
+  \ }doc
+
+( const cconst 2const )
+
+  \ Definers of so called "fast constants", which work like
+  \ ordinary constants, except their value is compiled as a
+  \ literal. A literal is placed on the stack faster than a
+  \ constant.
+  \
+  \ Credit:
+  \
+  \ Words inspired by IsForth's `const`.
+
+need ?(
+
+[unneeded] const ?(
+
+: const  ( x "name" -- )
+  create immediate ,
+  does>  @ executing? ?exit  postpone literal  ; exit ?)
+
+  \ doc{
+  \
+  \ const  ( x "name" -- )
+  \
+  \ Create a fast constant for "name", with value _x_.
+  \
+  \ A fast constant works like an ordinary constant, except its
+  \ value is compiled as a literal.
+  \
+  \ See: `constant`, `cconst`, `2const`.
+  \
+  \ Origin: IsForth.
+  \
+  \ }doc
+
+[unneeded] cconst ?(
+
+: cconst  ( c "name" -- )
+  create immediate c,
+  does>  c@ executing? ?exit  postpone cliteral  ; exit ?)
+
+  \ doc{
+  \
+  \ cconst  ( c "name" -- )
+  \
+  \ Create a character fast constant for "name", with value
+  \ _c_.
+  \
+  \ A fast constant works like an ordinary constant, except its
+  \ value is compiled as a literal.
+  \
+  \ See: `cconstant`, `const`, `2const`.
+  \
+  \ Origin: IsForth's `const`.
+  \
+  \ }doc
+
+[unneeded] 2const ?(
+
+: 2const  ( xd "name" -- )
+  create immediate 2,
+  does>  2@ executing? ?exit  postpone 2literal  ; exit ?)
+
+  \ doc{
+  \
+  \ 2const  ( xd "name" -- )
+  \
+  \ Create a double fast constant for "name", with value
+  \ _xd_.
+  \
+  \ A fast constant works like an ordinary constant, except its
+  \ value is compiled as a literal.
+  \
+  \ See: `2constant`, `const`, `cconst`.
+  \
+  \ Origin: IsForth's `const`.
   \
   \ }doc
 
