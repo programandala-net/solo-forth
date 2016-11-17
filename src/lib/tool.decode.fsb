@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605210052
+  \ Last modified: 201611171903
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,8 @@
   \ 2016-05-18: Improve `colon-cfa?`. Compact `decode-special`.
   \ Fix `decode`, which showed the usage instructions before
   \ checking the word.
+  \
+  \ 2016-11-17: Remove unused `need [if]`.
 
 ( decode )
 
@@ -79,7 +81,7 @@
 
 forth definitions decimal
 
-need body>name  need name>body  need case  need [if]
+need body>name  need name>body  need case
 need recurse  need >body  need body>
 
 variable decode-level  decode-level off \ depth of nesting

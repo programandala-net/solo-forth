@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605060218
+  \ Last modified: 201611171903
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,19 +31,20 @@
   \ 2016-05-02: Join two blocks to save space.
   \ 2016-05-05: Remove unnecessary `space` from `.wid`.
   \ 2016-05-06: Improve printing of nameless word lists.
+  \ 2016-11-17: Use `?(` instead of `[if]`.
 
 ( wordlists .wid .current .context order )
 
-need [if]
+need ?(
 
-[needed] wordlists [if]
+[unneeded] wordlists ?(
 
 : wordlists  ( -- )
   voc-link begin  @ ?dup  while  dup .wid wid>link  repeat  ;
   \ List all wordlists.
   \ XXX FIXME -- prints only one
 
-exit [then]
+exit ?)
 
 need wid>name  need get-order
 

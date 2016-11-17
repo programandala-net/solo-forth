@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605132207
+  \ Last modified: 201611171900
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,8 @@
   \ library.
   \
   \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
 
 ( at-accept clear-accept set-accept )
 
@@ -430,9 +432,9 @@ create kk-chars
 
 ( pressed pressed? )
 
-need [if]
+need ?(
 
-[needed] pressed? [needed] pressed or [if]
+[unneeded] pressed? [unneeded] pressed and ?(
 
 need @p
 
@@ -441,9 +443,9 @@ need @p
   \ n1 = key bitmask
   \ n2 = keyboard row port
 
-[then]
+?)
 
-[needed] pressed [if]
+[unneeded] pressed ?(
 
 need pressed?  need kk-ports
 
@@ -456,7 +458,7 @@ need pressed?  need kk-ports
   \ n1 = key bitmask
   \ n2 = keyboard row port
 
-[then]
+?)
 
 ( only-one-pressed )
 

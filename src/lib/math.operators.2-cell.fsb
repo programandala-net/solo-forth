@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604271707
+  \ Last modified: 201611171856
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,27 +26,31 @@
   \ Latest changes
 
   \ 2015-11-13: Add `dsqrt`.
+  \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
+  \ saving 3 blocks.
 
-( ud* )
+( ud* d* )
+
+need ?(
 
   \ Credit:
   \
-  \ Code from Z88 CamelForth.
+  \ Code of `ud*` from Z88 CamelForth.
 
+[unneeded] ud* ?(
 : ud*  ( ud1 u2 -- ud3 )  dup >r um* drop  swap r> um* rot +  ;
+?)
 
-( d* )
-
-  \
   \ Credit:
   \
-  \ Code from DX-Forth 4.13.
+  \ Code of `d*` from DX-Forth 4.13.
 
   \ This implementation uses 30 bytes.
   \ Relative speed: 1.0000
 
+[unneeded] d* ?(
 : d* ( d|ud1 d|ud2 -- d|ud3 )
-  >r swap >r 2dup um* rot r> * + rot r> * + ;
+  >r swap >r 2dup um* rot r> * + rot r> * + ; ?)
 
   \ --------------------------------------------
   \ Alternative implementation.
@@ -137,18 +141,18 @@ need tum*  need t+  need t-  need tum/  need d2*  need lshift
 
 [unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; exit
 
-need [if]
+need ?(
 
-[needed] d< [if]
+[unneeded] d< ?(
 
 need 2nip
 
 : d<  ( d1 d2 -- f )
   rot 2dup = if  2drop u< exit  then  2nip >  ;  exit
 
-[then]
+?)
 
-[needed] du< [if]
+[unneeded] du< ?(
 
   \ XXX TODO rewrite in Z80
 
@@ -160,37 +164,38 @@ need 2nip
   \ Note: the flags are compiled with `literal` to make
   \ execution a bit faster.
 
-[then]
+?)
 
-( dmin dmax )
+( d= d<> dmin dmax )
 
-  \ Credit:
-  \
-  \ Code from DZX-Forth.
-
-need [if]
-
-[needed] dmin [if]
-: dmin  ( d1 d2 -- d1 | d2 )
-  2over 2over d< 0= if  2swap  then  2drop  ;  exit  [then]
-  \ XXX TODO -- use `d>` when available
-
-[needed] dmax [if]
-: dmax  ( d1 d2 -- d1 | d2 )
-  2over 2over d< if  2swap  then  2drop  ;  [then]
-
-( d= d<> )
-
+[unneeded] d=
+?\ : d=  ( d1 d2 -- f )  d<> 0=  ; exit
   \ XXX TODO -- rewrite in Z80
 
-: d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
+need ?(
 
-: d=  ( d1 d2 -- f )  d<> 0=  ;
+[unneded] d<> ?(
+: d<>  ( d1 d2 -- f )  rot <> if  2drop true exit  then  <>  ;
+  \ XXX TODO -- rewrite in Z80
+?)
 
   \ XXX OLD
   \ XXX TODO benchmark
   \ : d=  ( d1 d2 -- f ) rot = >r = r> and  ;
   \ : d<>  ( d1 d2 -- f )  d= 0=  ;
+
+  \ Credit:
+  \
+  \ Code of `dmin` and `dmax` from DZX-Forth.
+
+[unneeded] dmin ?(
+: dmin  ( d1 d2 -- d1 | d2 )
+  2over 2over d< 0= if  2swap  then  2drop  ;  exit  ?)
+  \ XXX TODO -- use `d>` when available
+
+[unneeded] dmax ?(
+: dmax  ( d1 d2 -- d1 | d2 )
+  2over 2over d< if  2swap  then  2drop  ;  ?)
 
 ( d- )
 
@@ -202,19 +207,13 @@ need z80-asm
 
 code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
 
-  de pop          \ DE=d2hi
-  exx
-  de pop          \ DE'=d2lo
-  exx
-  hl pop          \ HL=d1hi,DE=d2hi
-  exx
-  hl pop          \ HL'=d1lo
-  de subp
-  hl push         \ 2OS=d1lo-d2lo
-  exx
-  de sbcp         \ HL=d1hi-d2hi-cy
-  jppushhl
-  end-code
+  de pop              \ DE=d2hi
+  exx  de pop         \ DE'=d2lo
+  exx  hl pop         \ HL=d1hi,DE=d2hi
+  exx  hl pop         \ HL'=d1lo
+  de subp  hl push    \ 2OS=d1lo-d2lo
+  exx  de sbcp        \ HL=d1hi-d2hi-cy
+  jppushhl  end-code
 
 ( d2* d2/ )
 
@@ -223,9 +222,9 @@ code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
   \ Code converted to Z80 from the 8080 version
   \ of DZX-Forth.
 
-need [if]
+need ?(
 
-[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+[unneeded] d2* ?(  code d2*  ( xd1 -- xd2 )
 
   D1 c, E1 c,
     \ pop de / pop hl
@@ -236,9 +235,9 @@ need [if]
   EB c, C3 c, pushhlde ,
     \ ex de,hl jp pushhlde
 
-  end-code  [then]
+  end-code  ?)
 
-[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+[unneeded] d2/ ?(  code d2/  ( xd1 -- xd2 )
 
   E1 c, D1 c,
     \ pop hl / pop de
@@ -249,7 +248,7 @@ need [if]
   EB c, C3 c, pushhlde ,
     \ ex de,hl jp pushhlde
 
-  end-code  [then]
+  end-code  ?)
 
 ( d2* d2/ )
 
@@ -258,9 +257,9 @@ need [if]
   \ Code converted to Z80 from the 8080 version
   \ of DZX-Forth.
 
-need [if]  need z80-asm
+need ?(  need z80-asm
 
-[needed] d2* [if]  code d2*  ( xd1 -- xd2 )
+[unneeded] d2* ?(  code d2*  ( xd1 -- xd2 )
 
   de pop  hl pop
   hl addp  e rl  d rl
@@ -268,9 +267,9 @@ need [if]  need z80-asm
   exde  pushhlde jp           \ smaller but slower
   \ hl push  de push  jpnext  \ faster but bigger
 
-  end-code  [then]
+  end-code  ?)
 
-[needed] d2/ [if]  code d2/  ( xd1 -- xd2 )
+[unneeded] d2/ ?(  code d2/  ( xd1 -- xd2 )
 
   hl pop  de pop
   h sra  l rr  d rr  e rr
@@ -279,14 +278,15 @@ need [if]  need z80-asm
   pushhlde jp                 \ smaller but slower
   \ hl push  de push  jpnext  \ faster but bigger
 
-  end-code  [then]
+  end-code  ?)
 
-( dxor dor dand )
+( dxor dor dand d10* )
 
   \ Credit:
   \
-  \ Code written by Everett F. Carter, published on Forth
-  \ Dimensions (volume 16, number 2, page 17, 1994-08).
+  \ Code of `dxor`, `dor` and `dand` written by Everett F.
+  \ Carter, published on Forth Dimensions (volume 16, number 2,
+  \ page 17, 1994-08).
 
 [unneeded] dxor
 ?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
@@ -296,6 +296,13 @@ need [if]  need z80-asm
 
 [unneeded] dand
 ?\ : dand  ( d1 d2 -- d3 )  rot and -rot and swap  ;
+
+  \ Credit:
+  \
+  \ Code of `d10*` from Pygmy Forth.
+
+[unneeded] d10*
+?\ : d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
 
 ( m* )
 
@@ -350,18 +357,14 @@ exit
 
   \ Credit:
   \
-  \ Code from Gforth 0.7.3.
+  \ Code of `m*/` from Gforth 0.7.3.
 
 : m*/  ( d1 n1 +n2 -- d2 )
-
   >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
   rot tuck um* 2swap um* swap
   >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
-  if     if     1 0 d+
-         then
-         dnegate
-  else   drop
-  then  ;
+  if    if  1 0 d+  then  dnegate
+  else  drop  then  ;
 
   \ doc{
   \
@@ -375,7 +378,9 @@ exit
 
   \ XXX TODO -- see difference Gforth - Forth-94
 
-( m*/ )
+( alt-m*/ )
+
+  \ XXX TODO -- benchmark with the previous version
 
   \ Credit:
   \ Robert Smith (from COLDFORTH Version 0.8, GPL)
@@ -419,12 +424,5 @@ need 2nip  [defined] cell-bits ?\ 16 constant cell-bits
   loop  cr .s 2rot 2drop  ;
 
 : dsqrt  ( radicand . -- root . )  (dsqrt) 2nip  ;
-
-( d10* )
-
-  \ Credit:
-  \ Code from Pygmy Forth.
-
-: d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
 
   \ vim: filetype=soloforth

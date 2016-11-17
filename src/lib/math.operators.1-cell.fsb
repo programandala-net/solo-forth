@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611141919
+  \ Last modified: 201611171919
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,12 +51,14 @@
   \ 2016-10-24: Add `u>ud`.
   \ 2016-11-14: Fix requiring `<=>`. Remove `sm/rem`, which is
   \ in the kernel. Move `8*` here from the assemblers.
+  \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
+  \ saving one block.
 
 ( under+ +under )
 
-need [if]
+need ?(
 
-[needed] under+ [if]
+[unneeded] under+ ?(
 
 code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   D9 c, D1 c, C1 c, E1 c, 19 c, E5 c, C5 c, D9 c,
@@ -68,7 +70,7 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \ push hl
   \ push bc
   \ exx
-  jpnext  end-code
+  jpnext  end-code  ?)
 
   \ doc{
   \
@@ -90,9 +92,7 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \
   \ }doc
 
-[then]
-
-[needed] +under [if]
+[unneeded] +under ?(
 
 code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   D9 c, C1 c, D1 c, E1 c, 19 c, E5 c, C5 c, D9 c,
@@ -104,7 +104,7 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ push hl
   \ push bc
   \ exx
-  jpnext  end-code
+  jpnext  end-code  ?)
 
   \ doc{
   \
@@ -125,8 +125,6 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ ----
   \
   \ }doc
-
-[then]
 
   \ XXX TODO -- variant after PFE's `(under+)`:
   \ : +under  ( n1 n2 -- n1+n2 n2 )  tuck + swap  ;
@@ -267,9 +265,7 @@ code polarity  ( n -- -1 | 0 | 1 )
     \ or 1
     \ ld l,a ; HL=1 or -1
     \ jp push_hl
-  end-code
-
-?)
+  end-code  ?)
 
   \ doc{
   \
@@ -370,8 +366,10 @@ code lshift  ( x1 u -- x2 )
   \
   \ Code adapted from DZX-Forth.
 
-  \ This version is smaller (13 bytes used) but slower (169%
-  \ the execution time of version adapted from Z88 CamelForth).
+  \ This version is 3 bytes smaller but slower (169% the
+  \ execution time of version adapted from Z88 CamelForth).
+  \
+  \ Data space used: 13 bytes.
 
 code lshift  ( x1 u -- x2 )
 
@@ -435,7 +433,11 @@ code rshift  ( x1 u -- x2 )
   C3 c, ,         \ jp begin
   end-code
 
-( clshift )
+( clshift crshift )
+
+need ?(
+
+[unneeded] clshift ?(
 
 code clshift  ( b1 u -- b2 )
 
@@ -446,14 +448,13 @@ code clshift  ( b1 u -- b2 )
     \ inc e
   here
     \ begin:
-  1D c,  CA c, pusha ,  80 07 + c,  C3 c, ,
+  1D c,  CA c, pusha ,  80 07 + c,  C3 c, ,  end-code  ?)
     \ dec e
     \ jp z,push_a
     \ add a,a
     \ jp begin
-  end-code
 
-( crshift )
+[unneeded] crshift ?(
 
   \ XXX UNDER DEVELOPMENT -- 2016-05-01
 
@@ -471,10 +472,8 @@ code crshift  ( b1 u -- b2 )
     \ jp z,push_a
   \ 80 07 + c,
     \ rra
-  C3 c, ,
+  C3 c, ,  end-code  ?)
     \ jp begin
-
-  end-code
 
 ( bits )
 
@@ -520,16 +519,16 @@ code bits  ( ca len -- u )
   \ Code from Spectrum Forth-83.
   \ Documentation partly based on lina.
 
-need [if]
+need ?(
 
-[needed] 2/ [needed] cell/ or [if]
+[unneeded] 2/ ?(
 
 code 2/  ( x1 -- x2 )
   E1 c,           \ pop hl
   CB c, 2C c,     \ sra h
   CB c, 1D c,     \ rr l
   jppushhl        \ jp pushhl
-  end-code
+  end-code  ?)
 
   \ doc{
   \
@@ -547,9 +546,8 @@ code 2/  ( x1 -- x2 )
   \
   \ }doc
 
-[then]
+[unneeded] cell/  ?\ need alias  need 2/  ' 2/ alias cell/
 
-[unneeded] cell/  ?\ need alias  ' 2/ alias cell/
   \ Credit:
   \
   \ Idea from IsForth.
@@ -688,13 +686,13 @@ need fm/mod
 
 ( any? either neither )
 
-need [if]
+need ?(
 
-[needed] any? [if]  need roll  variable (any?)
+[unneeded] any? ?(  need roll  variable (any?)
 
 : any?  ( x0 x1..xn n -- f )
   dup 1+ roll (any?) !
-  0 swap 0 do  swap (any?) @ = or  loop  ;
+  0 swap 0 do  swap (any?) @ = or  loop  ;  ?)
 
   \ doc{
   \
@@ -712,16 +710,14 @@ need [if]
   \ tool set for the CP/M implementation of Laxen&Perry's F83
   \ 2.1.1.
 
-[then]
-
   \ Credit:
   \
   \ Code from IsForth (version 1.23b).
 
-[needed] either [if]
+[unneeded] either ?(
 
 : either  ( n1|u1 n2|u2 n3|u3 -- f )
-  -rot over = -rot = or  ;
+  -rot over = -rot = or  ;  ?)
 
   \ doc{
   \
@@ -732,12 +728,10 @@ need [if]
   \
   \ }doc
 
-[then]
-
-[needed] neither [if]
+[unneeded] neither ?(
 
 : neither  ( n1|u1 n2|u2 n3|u3 -- f )
-  -rot over <> -rot <> and  ;
+  -rot over <> -rot <> and  ;  ?)
 
   \ doc{
   \
@@ -748,16 +742,14 @@ need [if]
   \
   \ }doc
 
-[then]
-
 ( split join )
 
   \ XXX OLD -- 2016-10-27: Moved to the kernel, needed by the
   \ extra memory system.
 
-need [if]
+need ?(
 
-[needed] split [if]
+[unneeded] split ?(
 
 code split  ( x -- b1 b2 )
   E1 c,
@@ -767,7 +759,7 @@ code split  ( x -- b1 b2 )
     \ ld e,l
     \ ld l,h
     \ ld h,0
-  C3 c, pushhlde ,  end-code
+  C3 c, pushhlde ,  end-code  ?)
     \ jp push_hlde
 
   \ Credit:
@@ -787,9 +779,7 @@ code split  ( x -- b1 b2 )
   \
   \ }doc
 
-[then]
-
-[needed] join [if]
+[unneeded] join ?(
 
 code join  ( b1 b2 -- x )
   D1 c,  60 03 + c,  D1 c,  68 03 + c,
@@ -797,7 +787,7 @@ code join  ( b1 b2 -- x )
     \ ld h,e
     \ pop de
     \ ld l,e
-  jppushhl  end-code
+  jppushhl  end-code  ?)
     \ jp push_hl
 
   \ doc{
@@ -812,7 +802,5 @@ code join  ( b1 b2 -- x )
   \ Origin: IsForth.
   \
   \ }doc
-
-[then]
 
   \ vim: filetype=soloforth

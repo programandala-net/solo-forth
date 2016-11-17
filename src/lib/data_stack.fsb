@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605020046
+  \ Last modified: 201611171838
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,17 +34,18 @@
   \ 2016-02-26: Add `ndrop`, `2ndrop`.
   \ 2016-04-24: Move `pick` from the kernel.
   \ 2016-05-02: Join several blocks to save space.
+  \ 2016-11-17: Use `?(` instead of `[if]`.
 
 ( 2nip pick roll )
 
-need [if]
+need ?(
 
   \ Credit:
   \
   \ Code from Afera; original code from DZX-Forth.
 
-[needed] 2nip [if]  code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
-  E1 c, D1 c, F1 c, F1 c, C3 c, pushhlde ,  end-code  [then]
+[unneeded] 2nip ?(  code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
+  E1 c, D1 c, F1 c, F1 c, C3 c, pushhlde ,  end-code  ?)
     \ pop hl
     \ pop de
     \ pop af
@@ -57,9 +58,9 @@ need [if]
   \
   \ }doc
 
-[needed] pick [if]
+[unneeded] pick ?(
 code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
-  E1 c,  29 c,  39 c,  C3 c, fetchhl ,  end-code  [then]
+  E1 c,  29 c,  39 c,  C3 c, fetchhl ,  end-code  ?)
     \ pop hl
     \ add hl,hl
     \ add hl,sp
@@ -75,7 +76,7 @@ code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ Code adapted from DZX-Forth.
 
-[needed] pick [if]  need z80-asm
+[unneeded] pick ?(  need z80-asm
 
 code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 
@@ -111,7 +112,7 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
     \ pop hl
     \ pop bc
     \ ex (sp),hl
-  jpnext  end-code
+  jpnext  end-code  ?)
 
   \ doc{
   \
@@ -119,15 +120,13 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
   \
   \ }doc
 
-[then]
-
 ( 3drop 4drop 3dup )
 
-need [if]
+need ?(
 
-[needed] 3drop [if]
+[unneeded] 3drop ?(
 code 3drop  ( x1 x2 x3 -- )
-  E1 c,  E1 c,  E1 c,  jpnext  end-code  [then]
+  E1 c,  E1 c,  E1 c,  jpnext  end-code  ?)
     \ pop hl
     \ pop hl
     \ pop hl
@@ -139,9 +138,9 @@ code 3drop  ( x1 x2 x3 -- )
   \
   \ }doc
 
-[needed] 4drop [if]
+[unneeded] 4drop ?(
 code 4drop  ( x1 x2 x3 x4 -- )
-  E1 c,  E1 c,  E1 c,  E1 c,  jpnext  end-code  [then]
+  E1 c,  E1 c,  E1 c,  E1 c,  jpnext  end-code  ?)
     \ pop hl
     \ pop hl
     \ pop hl
@@ -154,7 +153,7 @@ code 4drop  ( x1 x2 x3 x4 -- )
   \
   \ }doc
 
-[needed] 3dup [if]
+[unneeded] 3dup ?(
 code 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
   D9 c,
     \ exx
@@ -168,7 +167,7 @@ code 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
     \ push hl
     \ push de
     \ push bc
-  D9 c,  jpnext  end-code  [then]
+  D9 c,  jpnext  end-code  ?)
     \ exx
     \ jp next
 
@@ -184,14 +183,12 @@ code 3dup  ( x1 x2 x3 -- x1 x2 x3 x1 x2 x3 )
 
 ( 2rot swapped )
 
-need [if]
+need ?(
 
-[needed] 2rot [if]
-
-need roll
+[unneeded] 2rot ?(  need roll
 
 : 2rot  ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
-  5 roll 5 roll  ;
+  5 roll 5 roll  ; ?)
 
   \ doc{
   \
@@ -204,15 +201,13 @@ need roll
   \ Adapted from code written by Sam Suan Chen, published
   \ on Forth Dimensions (volume 6, number 6, page 9, 1985-03).
 
-[then]
-
-[needed] swapped [if]
+[unneeded] swapped ?(
 
 : swapped  ( i*x n1 n2 -- j*x )
   >r 1+ cells sp@ +     ( i*x a1 ) ( R: n2 )
   r> 2+ cells sp@ +     ( i*x a1 a2 )
   over @ over @         ( i*x a1 a2 x1 x2 )
-  >r swap !  r> swap !  ;
+  >r swap !  r> swap !  ; ?)
 
   \ Usage example:
   \
@@ -228,14 +223,12 @@ need roll
   \
   \   ( 1 2 3 4 5 )  $25 xyswap  ( 4 2 3 1 5 )
 
-[then]
-
 ( nup drup dip 0dup -dup )
 
-need [if]
+need ?(
 
-[needed] nup [if]  code nup  ( x1 x2 -- x1 x1 x2 )
-  E1 c,  D1 c,  D5 c,  C3 c, pushhlde ,  end-code  [then]
+[unneeded] nup ?(  code nup  ( x1 x2 -- x1 x1 x2 )
+  E1 c,  D1 c,  D5 c,  C3 c, pushhlde ,  end-code  ?)
     \ pop hl
     \ pop de
     \ push de
@@ -248,8 +241,8 @@ need [if]
   \
   \ }doc
 
-[needed] drup [if]  code drup  ( x1 x2 -- x1 x1 )
-  D1 c,  E1 c,  E5 c,  E5 c,  jpnext  end-code  [then]
+[unneeded] drup ?(  code drup  ( x1 x2 -- x1 x1 )
+  D1 c,  E1 c,  E5 c,  E5 c,  jpnext  end-code  ?)
     \ pop de
     \ pop hl
     \ push hl
@@ -262,8 +255,8 @@ need [if]
   \
   \ }doc
 
-[needed] dip [if]  code dip  ( x1 x2 -- x2 x2 )
-  E1 c, D1 c, E5 c, E5 c,  jpnext  end-code  [then]
+[unneeded] dip ?(  code dip  ( x1 x2 -- x2 x2 )
+  E1 c, D1 c, E5 c, E5 c,  jpnext  end-code  ?)
     \ pop hl
     \ pop de
     \ push hl
@@ -276,12 +269,12 @@ need [if]
   \
   \ }doc
 
-[needed] 0dup [if]  code 0dup  ( x -- x | 0 0 )
+[unneeded] 0dup ?(  code 0dup  ( x -- x | 0 0 )
   E1 c,  78 04 + c,  B0 05 + c,
     \ pop hl
     \ ld a,h
     \ or l
-  C2 c, pushhl ,  E5 c,  jppushhl  end-code  [then]
+  C2 c, pushhl ,  E5 c,  jppushhl  end-code  ?)
     \ jp z,push_hl
     \ push hl
     \ jp push_hl
@@ -294,14 +287,14 @@ need [if]
   \
   \ }doc
 
-[needed] -dup [if]  code -dup  ( x -- x | 0 0 )
-  E1 c,  CB c, 7C c,  C2 c, pushhl ,  E5 c,  jppushhl  end-code
+[unneeded] -dup ?(  code -dup  ( x -- x | 0 0 )
+  E1 c,  CB c, 7C c,  C2 c, pushhl ,  E5 c,  jppushhl
+  end-code ?)
     \ pop hl
     \ bit 7,h ; negative?
     \ jp z,push_hl
     \ push hl
     \ jp push_hl
-  [then]
 
   \ doc{
   \
@@ -313,9 +306,9 @@ need [if]
 
 ( ndrop 2ndrop )
 
-need [if]  need z80-asm
+need ?(  need z80-asm
 
-[needed] ndrop [if]
+[unneeded] ndrop ?(
 
 code ndrop  ( x1..xn n -- )
 
@@ -329,7 +322,7 @@ code ndrop  ( x1..xn n -- )
   de addp  ldsp  \ update SP
     \ add hl,de
     \ ld sp,hl
-  jpnext  end-code
+  jpnext  end-code ?)
 
   \ doc{
   \
@@ -339,9 +332,7 @@ code ndrop  ( x1..xn n -- )
   \
   \ }doc
 
-[then]
-
-[needed] 2ndrop [if]
+[unneeded] 2ndrop ?(
 
 code 2ndrop  ( dx1..dxn n -- )
 
@@ -356,7 +347,7 @@ code 2ndrop  ( dx1..dxn n -- )
   de addp  ldsp  \ update SP
     \ add hl,de
     \ ld sp,hl
-  jpnext  end-code
+  jpnext  end-code ?)
 
   \ doc{
   \
@@ -365,7 +356,5 @@ code 2ndrop  ( dx1..dxn n -- )
   \ Drop _n_ double cell items from the stack.
   \
   \ }doc
-
-[then]
 
   \ vim: filetype=soloforth

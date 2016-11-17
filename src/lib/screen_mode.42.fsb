@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201610161048
+  \ Last modified: 201611171907
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,7 @@
   \ 2016-08-11: Rename the filenames of the driver and the
   \ font.
   \ 2016-10-16: Typo.
+  \ 2016-11-17: Use `?(` instead of `[if]`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -55,9 +56,9 @@
   \ ............................
   \ Common requirements
 
-need mode32  need <file-as-is need (mode42 need [if]
+need mode32  need <file-as-is need (mode42 need ?(
 
-[needed] mode42 [if]  need set-mode-output
+[unneeded] mode42 ?(  need set-mode-output
 
   \ ............................
   \ mode42
@@ -72,7 +73,7 @@ get-drive 1 set-drive  s" pr42.bin" <file-as-is throw
             set-drive
   \ Load the driver and the font.
 
-exit [then]
+exit ?)
 
   \ ............................
   \ banked-mode42
