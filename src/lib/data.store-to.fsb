@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171606
+  \ Last modified: 201611181716
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,10 +26,15 @@
   \ History
 
   \ 2016-05-10: First version.
+  \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
+  \
   \ 2016-11-17: Update documentation with `const`, `cconst` and
   \ `2const`.
+  \
+  \ 2016-11-18: Add missing references to `const`, `cconst` and
+  \ `2const` in documentation.
 
 ( !> 2!> c!> )
 
@@ -55,9 +60,9 @@ need ?(  need >body
   \
   \ Compilation: ( "name" -- )
   \
-  \ Parse "name", which is a word created by `constant`, and
-  \ append the execution execution semantics given below to the
-  \ current definition.
+  \ Parse "name", which is a word created by `constant` or
+  \ `const`, and append the execution execution semantics given
+  \ below to the current definition.
   \
   \ Execution: ( x -- )
   \
@@ -85,9 +90,9 @@ need ?(  need >body
   \
   \ Compilation: ( "name" -- )
   \
-  \ Parse "name", which is a word created by `2constant`, and
-  \ append the execution execution semantics given below to the
-  \ current definition.
+  \ Parse "name", which is a word created by `2constant` or
+  \ `2const`, and append the execution execution semantics
+  \ given below to the current definition.
   \
   \ Execution: ( xd -- )
   \
@@ -115,9 +120,9 @@ need ?(  need >body
   \
   \ Compilation: ( "name" -- )
   \
-  \ Parse "name", which is a word created by `cconstant`, and
-  \ append the execution execution semantics given below to the
-  \ current definition.
+  \ Parse "name", which is a word created by `cconstant` or
+  \ `cconst`, and append the execution execution semantics
+  \ given below to the current definition.
   \
   \ Execution: ( c -- )
   \
