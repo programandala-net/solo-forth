@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611182046
+; Last modified: 201611182130
 
 include version.z80s
 
@@ -5382,6 +5382,10 @@ fetch.hl:
 ; ----------------------------------------------
   _colon_header paren_user_,'(USER)'
 
+  ; XXX TODO -- Rename to `user`? That was the original name in
+  ; fig-Forth, Forth-79 and Forth-83. Choose an alternative
+  ; for the current `user`, defined in the library.
+
 ; doc{
 ;
 ; (user)  ( +n "name" -- )
@@ -5390,7 +5394,9 @@ fetch.hl:
 ; user area where the value for _name_ is stored.  Execution of
 ; _name_ leaves its absolute user area storage address.
 ;
-; This word is a factor of `user`.
+; This word is a factor of `ucreate`.
+;
+; See: `ucreate`, `user`, `2user`.
 ;
 ; Origin: This word is called `user` in fig-Forth, Forth-79
 ; (Reference Word Set) and Forth-83 (Uncontrolled Reference
