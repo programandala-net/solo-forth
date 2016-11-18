@@ -1,17 +1,63 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-15
+:revdate: 2016-11-18
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// }}}
-== Misc ==
-// {{{
+== Assembler == // {{{1
 
-.2016-11-13:
+.2016-11-14:
 
-Remove `get-default-bank` and `set-default-bank`.
+Try to adapt the labels of the 8086 hForth assembler. Already started in the
+drafts directory.
+
+.2016-04-20:
+
+Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
+because _r_ is the standard for floating-point numbers.
+
+== Benchmarks == // {{{1
+
+- Benchmark library `m*` with the kernel version.
+- Benchmark two library versions of `m*/`.
+- Benchmark two library versions of `d=` and `d<>`.
+
+.2016-04-25:
+
+Benchmark the system without constants `0`, `1` and `2`.
+
+2016-05-30:
+
+With constants:    32598 B free.
+Without constants: 32572 B free.
+Diff:                +26 B
+
+== Interpreter == // {{{1
+
+.2016-05-17:
+
+Improve the search order words, after Forth-2012.
+
+.2016-04-27:
+
+Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
+used only for `list`.
+
+Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
+`name>int`, etc. Factor `defined` and `comp'` accordingly.
+
+.2016-04-24:
+
+Add `noname`, analogous to `nextname`, after Gforth.
+
+.2015-09-13:
+
+`rp` should be a user variable.
+
+.2016-05-18:
+
+Remove the `root` word list. Set the minimum search order to `forth`.
 
 .2016-11-13:
 
@@ -22,22 +68,181 @@ improved, rewritten in Z80.
 
 Move the lex bits off the length byte of the name field.
 
-.2016-10-28:
+.2016-10-24:
 
-Simplify `u.r`.
+Change `need [if]` to `need ?(` in the library, when `[else]` is not needed.
+`?(` is smaller and faster than `[if]`.
 
-Remove the old `alias!` when the extra-memory system becomes definitive.
+.2016-05-31:
 
-Remove `s!` and related words when the extra-memory system becomes definitive.
+Add `''` to get the execution token pointer of a name, so the actual name of
+an alias could be get this way:
 
-.2016-10-27:
+----
+'' wordname >>name .name
+----
 
-Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
+.2016-05-15:
 
-.2016-08-11:
+Check if `current-latest`, used in the library, can be replaced with `latest`.
 
-Remove the 64 cpl font from the library (4 blocks), and use the binary file
-(336 bytes) instead? Or provide the file as an alternative.
+.2016-05-09:
+
+Idea: in DX-Forth, `last` is a 2-cell variable that holds both the nt and the
+xt: `last @ ( nt )` and `last 2@ ( xt nfa )`.
+
+.2016-04-29:
+
+Factor the return stack manipulation done by `(.")` in order to
+reuse it in `(abort")` and `(warning")`. Use a variant of pForth's `param`.
+
+.2016-04-28:
+
+Finish the implementation of control stack words.
+
+.2016-04-21:
+
+Make `jp pushhlde` a macro dependent of `size_optimization`: compile `jp
+pushhlde` or `push de / push hl / jp (ix)`. The second option needs one more
+byte but is 2 T-cycles faster.
+
+.2015-11-12:
+
+`+bal`, `-bal` or similar, to change `csp`:
+
+----
+: [+csp]  ( -- )  [ cell negate ] literal csp +!  ; immediate compile-only
+: [-csp]  ( -- )  cell csp +!  ; immediate compile-only
+----
+
+But to compile an external number inside a definition,
+a trick is `[ dup ] literal` and a `drop` after `;`.
+
+.2015-06-09:
+
+In order to save compilation time, move inner words to the bottom of
+the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
+
+.2015-06-30:
+
+Change: compare the user variables with those of Spectrum Forth-83.
+
+.2016-03-19:
+
+Separate header flags from the length byte of the name field.  This way more
+bits will fit (alias, deferred, special behaviour), and word names will be
+actual strings.
+
+== Control structures == // {{{1
+
+.2016-05-07:
+
+Idea: Rename `branch`, `0branch` and `?branch` to `(branch)`, `(0branch)` and
+`(?branch)`.  Then write `branch`, `0branch` and `?branch` to compile them, as
+control structures.
+
+----
+: branch  ( a -- )  postpone (branch) ,  ; immediate compile-only
+: ?branch  ( a -- )  postpone (?branch) ,  ; immediate compile-only
+: 0branch  ( a -- )  postpone (0branch) ,  ; immediate compile-only
+----
+
+Also `-branch`, in the library.
+
+.2015-11-14:
+
+Forth Dimensions v06n1p26: `it endit` control structure.
+
+.2015-10-25:
+
+Ideas from cmForth:
+
+____
+
+LOOP         Test the top item on the return stack.  If it is zero,
+pop it off the return stack and continue executing the next
+instruction. If it is not zero, decrement it and jump to the address
+specified in this instruction.  Address specifier is the same as in
+BRANCH.  LOOP is compiled by NEXT.
+
+REPEATS      Repeat the next instruction if the count on top of the
+return stack is not zero.  The count is also decremented.  If count is
+zero, pop the return stack and continue executing the following
+instruction.  REPEATS is  compiled by        TIMES or OF(.
+
+The REPEATS instruction is used frequently to implement complicated
+math operations, like shifts, multiply, divide and square root, from
+appropriate math step instructions.  It is also useful in repeating
+auto-indexing memory instructions.
+
+____
+
+== Data structures == // {{{1
+
+=== Strings === // {{{2
+
+.2016-05-11:
+
+Compact "strings.misc.fsb" and make `lengths` needed.
+
+.2015-09-12:
+
+Implement a configurable case mode for `search` and `compare`? See how
+Z88 CamelForth does it. Also DX-Forth has this feature.
+
+.2015-07-23:
+
+New: `lower` and `lowers`.
+
+.2016-06-10:
+
+Rename "csb" to "stringer":
+
+|===
+| Now         | "stringer"
+
+| >csb        | >stringer
+| ?csb        | ?stringer
+| csb-size    | /stringer
+| csb0        | stringer
+| empty-csb   | empty-stringer
+| unused-csb  | unused-stringer
+|===
+
+=== Local variables === // {{{2
+
+Examples from Forth Dimensions:
+
+|===
+| Title                                    | Vo  | N  | Pag | Note
+
+| Turning the Stack into Local Variables   | 03  | 6  | 185 | Implemented: locals.arguments.fsb
+| Anonymous Variables                      | 06  | 1  | 033 | Implemented: locals.anon.fsb
+| Local Definitions                        | 06  | 6  | 016 | :( `privatize` is simpler
+| Letter "Stack Your Locals"               | 07  | 5  | 005 | :( modification of Vo06N6
+| Local Variables                          | 09  | 4  | 009 | :( complete but complex, and not recursive
+| Letters "Local Variables"                | 09  | 5  | 005 | Implemented: locals.local.fsb
+| Letters "Code for Local Variables"       | 10  | 1  | 006 | Modification for FD Vo09N4
+| Headless Local Variables and Constants   | 10  | 1  | 019 | Interesting, but for F83
+| Letters "Local Variables Revisited"      | 10  | 5  | 005 |
+| Local Variables and Arguments            | 11  | 1  | 013 | Seen
+| Local Variables - Another Technique      | 11  | 1  | 018 | Seen
+| Prefix Frame Operators                   | 11  | 1  | 023 |
+|===
+
+=== User variables === // {{{2
+
+.2016-11-18:
+
+Rename `(user)` to `user`? That was the original name in fig-Forth, Forth-79
+and Forth-83. Choose an alternative for the current `user`, defined in the
+library.
+
+== Documentation == // {{{1
+
+.2016-05-07:
+
+Document the Noble arrays.
 
 .2016-08-09:
 
@@ -48,9 +253,314 @@ xn..x1 --> x[n] ... x[1]
        --> x[n]..x[1] 
 ----
 
+.2016-10-24:
+
+Common notation for text coordinates: "col row" --> "x y"?
+Common notation for graphic coordinates: "x y" --> "gx gy"?
+
+.2016-06-01:
+
+Change the stack notation back to classic Forth?:
+
+- xt -> cfa
+- nt -> nfa
+- pfa
+- lfa
+
+And change also:
+
+- xtp -> cfaa
+
+The problem with the standard notation is it does not has alternatives to pfa
+and lfa, because they are system dependent and may not exist in all systems.
+This make the notations xt, nt, pfa, lfa look heterogeneous. Beside, xt and nt
+are abstract terms, while cfa and nfa are precise definitions for the
+implemention.
+
+.2016-06-01:
+
+Put the "Origin" section of the glossary entries at the end of each entry.
+
+.2016-05-11:
+
+Homogenize the stack notation for character/bytes: only _c_.
+
+.2016-04-29:
+
+Homogenize the stack notation for blocks and block lines.
+
+.2016-04-28:
+
+Homogenize the notation "Run-time" to "Execution".
+
+.2016-04-11:
+
+Homogenize the following stack notations:
+
+- double, triple and quadruple numbers (or include all used
+  conventions in the documentation).
+
+.2015-07-23:
+
+Adapt the markups of Z88 CamelForth to extract the glossary from the
+source.
+
+== DOS == // {{{1
+
+=== G+DOS === // {{{2
+
+.2015-08-31:
+
+Problem: SZX snapshots don't preserve the mounted disks or G+DOS!
+
+The Plus D own snapshots can be used, but this means programs have to
+be started manually, typing `run` in BASIC to load G+DOS, and then
+loading the snapshot file from BASIC or an Autoload file.
+
+.2015-08-31:
+
+Fix: `transfer-block` changes the current drive to 2!
+
+.2015-07-23:
+
+Study how to save and load the main code and the name bank apart, in
+two files. This way `turnkey` could be used also to save a modified
+copy of the system, not just Forth programs. Simpler solution: use the
+snapshop option of the Plus D, or save a snapshot from the emulator.
+
+.2016-03-16:
+
+Investigate how to use the free memory of the Plus D RAM.
+
+=== +3DOS === // {{{2
+
+.2016-08-14:
+
+`set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
+"b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
+is a problem of fsb2's fb2dsk.
+
+=== TR-DOS === // {{{2
+
+.2016-10-15:
+
+The new benchmarks don't fit a TR-DOS disk. The source of the benchmarks
+should be splitted into several parts, e.g. maths, system, data...
+
+.2016-09-01:
+
+`read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
+transfer-sectors` hangs. `0 set-drive` or `1 set-drive` makes no difference.
+
+.2016-08-11:
+
+Make also 40S, 40D and 80S TRD disk images?
+
+.2016-08-11:
+
+Investigate if TR-DOS uses the IX register. If not, remove the restorings.
+
+== Errors == // {{{1
+
+.2016-04-25:
+
+Idea: Add `where` to the default exception message. In order to save space,
+`where` should be in the library and patch itself into the default message.
+
+.2015-09-20:
+
+Idea:
+____
+
+The correlation between DX-Forth exception code and DOS error code
+is given below:
+
+ Exception   DOS
+     0        0     no error
+   -511       1     function number invalid (not used)
+   -510       2     file not found
+   -509       3     path not found
+   -508       4     too many open files
+   -507       5     access denied
+   -506       6     invalid handle
+    ...     ...
+   -257     255     unspecified error
+
+Note: To convert an exception code in the range -257 to -511 to its
+corresponding DOS error code, use: 255 AND
+____
+
+.2015-10-18:
+
+`.warning`
+
+== Files == // {{{1
+
+.2016-04-11:
+
+Make the tape words return a standard _ior_.
+
+Rename the tape and disk words after a common convention. Maybe after
+Gforth `slurp-file` and Galope `unslurpe-file`: `slurp-tape-file`,
+`unslurp-tape-file`, `slurp-file`, `unslurp-file`.
+
+.2016-03-02:
+
+Adapt all file words to standard _ior_; remove _f n_.
+
+2016-04-09: already done?
+
+.2015-09-18:
+
+New: `.files` (from Pygmy Forth).
+
+== Games == // {{{1
+
+.2016-05-13:
+
+Convert the sample games to .fs.
+
 .2016-06-01:
 
 Fix warnings during compilation of the tt game.
+
+.2016-01-01:
+
+Compilation of the tt game crash!  the offending word is marked.
+something to do with the new loops?
+
+== Graphics == // {{{1
+
+.2015-09-01:
+
+Possible names for text and graphic cursor words.
+
+|===
+| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
+
+| at         | at@        | at-pixel        | at-pixel@       | home-pixel
+| at         | at@        | gat             | gat@            | ghome
+| at         | at@        | graphic-at      | graphic-at@     | graphic-home
+| at         | at@        | xy-at           | xy-at@          | xy-home
+| at-xy      | ?at        | gat-xy          | ?gat            | ghome
+| at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
+| at-xy      | xy         | at-coord        | coord           | coord-home
+| at-xy      | xy         | at-coord        | coord           | home-coord
+| at-xy      | xy         | at-coords       | coords          | coords-home
+| at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-g-xy         | g-xy            | g-home
+| at-xy      | xy         | at-gxy          | gxy             | ghome
+| at-xy      | xy@        | at-coords       | coords@         | home-coords
+| at-xy      | xy@        | at-gxy          | gxy@            | ghome
+| at-xy      | xy@        | gat-xy          | gxy@            | ghome
+| cursor!    | cursor@    | gcursor!        | gcursor@        | ghome
+| cursor!    | cursor@    | graph-cursor!   | graph-cursor@   | graph-home
+| cursor!    | cursor@    | graphic-cursor! | graphic-cursor@ | graphic-home
+| cursor!    | cursor@    | xy!             | xy@             | xy-home
+| cursor!    | cursor@    | xy-cursor!      | xy-cursor@      | xy-home
+| set-cursor | get-cursor | set-coords      | get-coords      | home-coords
+| set-cursor | get-cursor | set-xy          | get-xy          | home-xy
+| set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
+|===
+
+So far (2016-04-23) the best are:
+
+|===
+| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
+
+| at-xy      | xy         | at-coord        | coord           | coord-home
+| at-xy      | xy         | at-coord        | coord           | home-coord
+| at-xy      | xy         | at-coords       | coords          | coords-home
+| at-xy      | xy         | at-coords       | coords          | home-coords
+| at-xy      | xy         | at-gxy          | gxy             | ghome
+| at-xy      | xy         | at-g-xy         | g-xy            | g-home
+|===
+
+.2015-09-05:
+
+Name for graphic fill: `flood`.
+
+== Keyboard == // {{{1
+
+.2015-06-30:
+
+New: command history, stored in the names bank.
+
+.2015-06-07:
+
+Change: move key to the blocks, as `mode-key` or similar, and use a
+simpler `key` (`akey` from Afera).
+
+.2015-06-30:
+
+Change: modify `expect` after Spectrum Forth-83.
+
+== Kernel == // {{{1
+
+.2016-10-27:
+
+Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
+
+.2016-04-24:
+
+Words that can be moved to the library: `there`, `catch`, `?\`,
+`[defined]`, `[undefined]`, `umin`, `umax`...
+
+Study how to move `line>string` and `undefined?` to the library.  They are not
+used in the kernel, but they are needed by the `need` utility.
+
+.2016-05-06:
+
+Remove the routine `compare_de_hl_signed`, if possible.
+
+== Makefile == // {{{1
+
+.2016-04-16:
+
+Fix Makefile: The loader and the main disk are built when the sources have not
+changed.
+
+.Update 2016-11-15:
+
+Problem is the rules of the BASIC loader. They run also when their
+prerequisites are older than the target.
+
+== Maths == // {{{1
+
+.2015-07-23:
+
+Idea: 2 more bytes for `base`, to be used as save-restore space.
+
+----
+  : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
+    \ Exchange the 16-bit contents of a1 and a2.
+
+  : cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
+    \ Exchange the 8-bit contents of ca1 and ca2.
+
+  : switch  ( a1 -- )  dup cell+ exchange  ;
+    \ Exchange the 16-bit contents of a1 and the following cell.
+
+  \ Example:
+
+  base switch hex
+
+  base switch
+----
+
+.2015-09-12:
+
+....
+
+ROTATE         n1 n2 -- n3
+
+     Rotate  the value n1 left n2 bits if n2 is positive, right  n2
+     bits  if n2 is negative.  Bits shifted out of one end  of  the
+     cell are shifted back in at the opposite end.
+
+  \ Standard: Forth-79 (Reference Word Set); Forth-83 (Appendix
+  \ B.  Uncontrolled Reference Words).
+....
 
 .2016-05-31:
 
@@ -128,112 +638,72 @@ minus_one_equals.hl:
   ; 09 B
 ----
 
-.2016-05-18:
-
-Remove the `root` word list. Set the minimum search order to `forth`.
-
-.2016-05-18:
-
-Improve `need` to make several index lines possible, by making `(` executable:
-
-----
-( very-long-word-1 very-long-word-2 very-long-word-3
-very-long-word-4 very-long-word-5 very-long-word-6 )
-----
-
-Problem: this would force changes in fsb and fsb2.
-
-.2016-05-18:
-
-Factor `new-needed-word  2dup undefined?`.
-
-.2016-05-17:
-
-Improve the search order words, after Forth-2012.
-
-.2016-05-17:
-
-Add conditional compilation to the `user` module.
-
-.2016-05-13:
-
-Convert the sample games to .fs.
-
-.2016-05-13:
-
-Improve `?(` with `refill`, to cross block boundaries?
-This would be needed  for `load-add`. Maybe two versions:
-if `load-app` has been compiled, then compile the improved version of `?(`.
-
-.2016-05-11:
-
-Compact "strings.misc.fsb" and make `lengths` needed.
-
 .2016-05-07:
 
-Document the Noble arrays.
+Implement 2-cell operators from Spectrum Forth-83. Most of them are written in Z80.
 
-.2016-05-06:
+.2016-05-01:
 
-Remove the routine `compare_de_hl_signed`, if possible.
+Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp 103..105.
 
 .2016-04-27:
 
-Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
-used only for `list`.
+Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
+"math.operators.4-cell.fsb".
 
-Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
-`name>int`, etc. Factor `defined` and `comp'` accordingly.
+.2016-04-22:
 
-.2016-04-25:
+Document floating point.
 
-Idea: Add `where` to the default exception message. In order to save space,
-`where` should be in the library and patch itself into the default message.
+.2016-04-22:
 
-.2016-04-25:
+Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
+locals. Problem: some calculator's words use them (eg. `over`).  They could be
+recursive, because their address can be changed with the system variable MEM;
+they could be pointed to a frame in the return stack.
 
-Benchmark the system without constants `0`, `1` and `2`.
+Simpler idea: use the calculator memories them as is, as temporary storage.
+The ROM allocates 6*5 bytes, but 32*5 can be used.
 
-2016-05-30:
+.2016-04-19:
 
-With constants:    32598 B free.
-Without constants: 32572 B free.
-Diff:                +26 B
+Floating-point words `flit`, `fliteral`. From PFE:
+`fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
+`f2*`.
 
-.2016-04-24:
+.2016-04-18:
 
-Write faster, Z80 versions of words that fetch from and store to memory banks.
+Modify `interpret` to be patched by a floating-point implementation in order
+to recognize floating-point numbers.
 
-Words that can be moved to the library: `there`, `catch`, `?\`,
-`[defined]`, `[undefined]`, `umin`, `umax`...
+Make `number?` deferred, in order to add floating-point support.
 
-Study how to move `line>string` and `undefined?` to the library.  They are not
-used in the kernel, but they are needed by the `need` utility.
+.2016-04-17:
 
-Add `noname`, analogous to `nextname`, after Gforth.
+`factorial`, from Forth-2012 documentation: examples in `recurse` and
+`repeat`.
 
-.2016-04-16:
+.2015-12-24:
 
-Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
-`hided  ( nt -- )` is already in the kernel.
+Fractional arithmetic, FD 4-1.
 
-// }}}
-== Makefile ==
-// {{{
+.2016-03-16:
 
-.2016-04-16:
+Idea for improving `number?` or writing an optional alternative:
+Return the chars and positions of every point, not only the last
+one. Convert `dpl` to a backwards compatible array:
 
-Fix Makefile: The loader and the main disk are built when the sources have not
-changed.
+----
++0 cell: position of the last point
++2 byte: last point
++3 cell: position of the last but one point
++5 byte: last but one point
+etc.
+----
 
-.Update 2016-11-15:
+A new variable `#dpl` would hold the number of points.
 
-Problem is the rules of the BASIC loader. They run also when their
-prerequisites are older than the target.
-
-// }}}
-== Far memory ==
-// {{{
+== Memory == // {{{1
 
 .2016-11-15:
 
@@ -250,374 +720,37 @@ Write far-memory versions of some of the following words from the
   \ n, nn, n@ nn@ n! nn!
 ----
 
-// }}}
-== Compilation ==
-// {{{
+.2016-11-13:
 
-.2016-10-24:
+Remove `get-default-bank` and `set-default-bank`.
 
-Change `need [if]` to `need ?(` in the library, when `[else]` is not needed.
-`?(` is smaller and faster than `[if]`.
+.2016-10-28:
 
-.2016-05-31:
+Remove the old `alias!` when the extra-memory system becomes definitive.
 
-Add `''` to get the execution token pointer of a name, so the actual name of
-an alias could be get this way:
+Remove `s!` and related words when the extra-memory system becomes definitive.
 
-----
-'' wordname >>name .name
-----
+== Misc == // {{{1
 
-.2016-05-15:
+.2016-05-18:
 
-Check if `current-latest`, used in the library, can be replaced with `latest`.
-
-.2016-05-09:
-
-Idea: in DX-Forth, `last` is a 2-cell variable that holds both the nt and the
-xt: `last @ ( nt )` and `last 2@ ( xt nfa )`.
-
-.2016-04-29:
-
-Factor the return stack manipulation done by `(.")` in order to
-reuse it in `(abort")` and `(warning")`. Use a variant of pForth's `param`.
-
-.2016-04-28:
-
-Finish the implementation of control stack words.
-
-.2016-04-21:
-
-Make `jp pushhlde` a macro dependent of `size_optimization`: compile `jp
-pushhlde` or `push de / push hl / jp (ix)`. The second option needs one more
-byte but is 2 T-cycles faster.
-
-.2015-11-12:
-
-`+bal`, `-bal` or similar, to change `csp`:
+Improve `need` to make several index lines possible, by making `(` executable:
 
 ----
-: [+csp]  ( -- )  [ cell negate ] literal csp +!  ; immediate compile-only
-: [-csp]  ( -- )  cell csp +!  ; immediate compile-only
+( very-long-word-1 very-long-word-2 very-long-word-3
+very-long-word-4 very-long-word-5 very-long-word-6 )
 ----
 
-But to compile an external number inside a definition,
-a trick is `[ dup ] literal` and a `drop` after `;`.
+Problem: this would force changes in fsb and fsb2.
 
-.2015-06-09:
+.2016-05-18:
 
-In order to save compilation time, move inner words to the bottom of
-the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
+Factor `new-needed-word  2dup undefined?`.
 
-.2015-06-30:
+.2016-04-16:
 
-Change: compare the user variables with those of Spectrum Forth-83.
-
-.2016-03-19:
-
-Separate header flags from the length byte of the name field.  This way more
-bits will fit (alias, deferred, special behaviour), and word names will be
-actual strings.
-
-// }}}
-== User interface ==
-// {{{
-
-.2015-06-30:
-
-New: command history, stored in the names bank.
-
-// }}}
-== Local variables ==
-// {{{
-
-Examples from Forth Dimensions:
-
-|===
-| Title                                    | Vo  | N  | Pag | Note
-
-| Turning the Stack into Local Variables   | 03  | 6  | 185 | Implemented: locals.arguments.fsb
-| Anonymous Variables                      | 06  | 1  | 033 | Implemented: locals.anon.fsb
-| Local Definitions                        | 06  | 6  | 016 | :( `privatize` is simpler
-| Letter "Stack Your Locals"               | 07  | 5  | 005 | :( modification of Vo06N6
-| Local Variables                          | 09  | 4  | 009 | :( complete but complex, and not recursive
-| Letters "Local Variables"                | 09  | 5  | 005 | Implemented: locals.local.fsb
-| Letters "Code for Local Variables"       | 10  | 1  | 006 | Modification for FD Vo09N4
-| Headless Local Variables and Constants   | 10  | 1  | 019 | Interesting, but for F83
-| Letters "Local Variables Revisited"      | 10  | 5  | 005 |
-| Local Variables and Arguments            | 11  | 1  | 013 | Seen
-| Local Variables - Another Technique      | 11  | 1  | 018 | Seen
-| Prefix Frame Operators                   | 11  | 1  | 023 |
-|===
-
-// }}}
-== Control structures ==
-// {{{
-
-.2016-05-07:
-
-Idea: Rename `branch`, `0branch` and `?branch` to `(branch)`, `(0branch)` and
-`(?branch)`.  Then write `branch`, `0branch` and `?branch` to compile them, as
-control structures.
-
-----
-: branch  ( a -- )  postpone (branch) ,  ; immediate compile-only
-: ?branch  ( a -- )  postpone (?branch) ,  ; immediate compile-only
-: 0branch  ( a -- )  postpone (0branch) ,  ; immediate compile-only
-----
-
-Also `-branch`, in the library.
-
-.2015-11-14:
-
-Forth Dimensions v06n1p26: `it endit` control structure.
-
-.2015-10-25:
-
-Ideas from cmForth:
-
-____
-
-LOOP         Test the top item on the return stack.  If it is zero,
-pop it off the return stack and continue executing the next
-instruction. If it is not zero, decrement it and jump to the address
-specified in this instruction.  Address specifier is the same as in
-BRANCH.  LOOP is compiled by NEXT.
-
-REPEATS      Repeat the next instruction if the count on top of the
-return stack is not zero.  The count is also decremented.  If count is
-zero, pop the return stack and continue executing the following
-instruction.  REPEATS is  compiled by        TIMES or OF(.
-
-The REPEATS instruction is used frequently to implement complicated
-math operations, like shifts, multiply, divide and square root, from
-appropriate math step instructions.  It is also useful in repeating
-auto-indexing memory instructions.
-
-____
-
-// }}}
-== Documentation ==
-// {{{
-
-.2016-10-24:
-
-Common notation for text coordinates: "col row" --> "x y"?
-Common notation for graphic coordinates: "x y" --> "gx gy"?
-
-.2016-06-01:
-
-Change the stack notation back to classic Forth?:
-
-- xt -> cfa
-- nt -> nfa
-- pfa
-- lfa
-
-And change also:
-
-- xtp -> cfaa
-
-The problem with the standard notation is it does not has alternatives to pfa
-and lfa, because they are system dependent and may not exist in all systems.
-This make the notations xt, nt, pfa, lfa look heterogeneous. Beside, xt and nt
-are abstract terms, while cfa and nfa are precise definitions for the
-implemention.
-
-.2016-06-01:
-
-Put the "Origin" section of the glossary entries at the end of each entry.
-
-.2016-05-11:
-
-Homogenize the stack notation for character/bytes: only _c_.
-
-.2016-04-29:
-
-Homogenize the stack notation for blocks and block lines.
-
-.2016-04-28:
-
-Homogenize the notation "Run-time" to "Execution".
-
-.2016-04-11:
-
-Homogenize the following stack notations:
-
-- double, triple and quadruple numbers (or include all used
-  conventions in the documentation).
-
-.2015-07-23:
-
-Adapt the markups of Z88 CamelForth to extract the glossary from the
-source.
-
-// }}}
-== Graphics ==
-// {{{
-
-.2015-09-01:
-
-Possible names for text and graphic cursor words.
-
-|===
-| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
-
-| at         | at@        | at-pixel        | at-pixel@       | home-pixel
-| at         | at@        | gat             | gat@            | ghome
-| at         | at@        | graphic-at      | graphic-at@     | graphic-home
-| at         | at@        | xy-at           | xy-at@          | xy-home
-| at-xy      | ?at        | gat-xy          | ?gat            | ghome
-| at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
-| at-xy      | xy         | at-coord        | coord           | coord-home
-| at-xy      | xy         | at-coord        | coord           | home-coord
-| at-xy      | xy         | at-coords       | coords          | coords-home
-| at-xy      | xy         | at-coords       | coords          | home-coords
-| at-xy      | xy         | at-g-xy         | g-xy            | g-home
-| at-xy      | xy         | at-gxy          | gxy             | ghome
-| at-xy      | xy@        | at-coords       | coords@         | home-coords
-| at-xy      | xy@        | at-gxy          | gxy@            | ghome
-| at-xy      | xy@        | gat-xy          | gxy@            | ghome
-| cursor!    | cursor@    | gcursor!        | gcursor@        | ghome
-| cursor!    | cursor@    | graph-cursor!   | graph-cursor@   | graph-home
-| cursor!    | cursor@    | graphic-cursor! | graphic-cursor@ | graphic-home
-| cursor!    | cursor@    | xy!             | xy@             | xy-home
-| cursor!    | cursor@    | xy-cursor!      | xy-cursor@      | xy-home
-| set-cursor | get-cursor | set-coords      | get-coords      | home-coords
-| set-cursor | get-cursor | set-xy          | get-xy          | home-xy
-| set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
-|===
-
-So far (2016-04-23) the best are:
-
-|===
-| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
-
-| at-xy      | xy         | at-coord        | coord           | coord-home
-| at-xy      | xy         | at-coord        | coord           | home-coord
-| at-xy      | xy         | at-coords       | coords          | coords-home
-| at-xy      | xy         | at-coords       | coords          | home-coords
-| at-xy      | xy         | at-gxy          | gxy             | ghome
-| at-xy      | xy         | at-g-xy         | g-xy            | g-home
-|===
-
-.2015-09-05:
-
-Name for graphic fill: `flood`.
-
-// }}}
-== Screen modes ==
-// {{{
-
-.2015-09-05:
-
-There's an example how to change and restore a channel in print-42, by
-Ricardo Serral Wigge. Beside, it supports many (all?) control
-characters, unlike the implementation by Andy Jenkinson.
-
-.2015-09-11:
-
-Idea: screen modes table?
-
-- 0: 32 cpl original (ROM routines)
-- 1: 32 cpl improved (bold, italic).
-- 3: 36 cpl
-- 4: 42 cpl
-- 5: 51 cpl
-- 6: 64 cpl
-
-It seems more versatile to create one word to select every mode and provide a
-common user interface to row, column, cpl, window...
-
-// }}}
-== Keyboard ==
-// {{{
-
-.2015-06-07:
-
-Change: move key to the blocks, as `mode-key` or similar, and use a
-simpler `key` (`akey` from Afera).
-
-.2015-06-30:
-
-Change: modify `expect` after Spectrum Forth-83.
-
-// }}}
-== Parsing ==
-// {{{
-
-.2016-06-01:
-
-When loading an app with `load-app`, make `(` behave like in the
-Forth-2012 FILE word set.
-
-.2015-06-17:
-
-New:
-- Case-sensitive mode.
-- Create words in lowercase.
-- Improve `parse-name` with case conversion.
-
-.2015-10-15:
-
-Adapt from Gforth: `noname`.
-
-// }}}
-== Errors ==
-// {{{
-
-.2015-09-20:
-
-Idea:
-____
-
-The correlation between DX-Forth exception code and DOS error code
-is given below:
-
- Exception   DOS
-     0        0     no error
-   -511       1     function number invalid (not used)
-   -510       2     file not found
-   -509       3     path not found
-   -508       4     too many open files
-   -507       5     access denied
-   -506       6     invalid handle
-    ...     ...
-   -257     255     unspecified error
-
-Note: To convert an exception code in the range -257 to -511 to its
-corresponding DOS error code, use: 255 AND
-____
-
-.2015-10-18:
-
-`.warning`
-
-// }}}
-== Files ==
-// {{{
-
-.2016-04-11:
-
-Make the tape words return a standard _ior_.
-
-Rename the tape and disk words after a common convention. Maybe after
-Gforth `slurp-file` and Galope `unslurpe-file`: `slurp-tape-file`,
-`unslurp-tape-file`, `slurp-file`, `unslurp-file`.
-
-.2016-03-02:
-
-Adapt all file words to standard _ior_; remove _f n_.
-
-2016-04-09: already done?
-
-.2015-09-18:
-
-New: `.files` (from Pygmy Forth).
-
-// }}}
-== Misc new words ==
-// {{{
+Write `behead  ( "name" -- )`. DX-Forth uses `behead ( "name1" "name2" -- )`.
+`hided  ( nt -- )` is already in the kernel.
 
 .2016-11-12:
 
@@ -689,171 +822,65 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
     >S ;                \ And initialize screen output.
 ----
 
-.2015-07-23:
-
-New: `lower` and `lowers`.
-
-Idea: 2 more bytes for `base`, to be used as save-restore space.
-
-----
-  : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
-    \ Exchange the 16-bit contents of a1 and a2.
-
-  : cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
-    \ Exchange the 8-bit contents of ca1 and ca2.
-
-  : switch  ( a1 -- )  dup cell+ exchange  ;
-    \ Exchange the 16-bit contents of a1 and the following cell.
-
-  \ Example:
-
-  base switch hex
-
-  base switch
-----
-
-.2015-09-12:
-
-____
-
-ROTATE         n1 n2 -- n3
-
-     Rotate  the value n1 left n2 bits if n2 is positive, right  n2
-     bits  if n2 is negative.  Bits shifted out of one end  of  the
-     cell are shifted back in at the opposite end.
-
-  \ Standard: Forth-79 (Reference Word Set); Forth-83 (Appendix
-  \ B.  Uncontrolled Reference Words).
-____
-
-Implement a configurable case mode for `search` and `compare`? See how
-Z88 CamelForth does it. Also DX-Forth has this feature.
-
-.2015-09-13:
-
-`rp` should be a user variable.
-
 .2015-09-22:
 
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
 
-// }}}
-== Sample games ==
-// {{{
+== Parsing == // {{{1
 
-.2016-01-01:
+.2016-05-13:
 
-Compilation of the tt game crash!  the offending word is marked.
-something to do with the new loops?
+Improve `?(` with `refill`, to cross block boundaries?
+This would be needed  for `load-add`. Maybe two versions:
+if `load-app` has been compiled, then compile the improved version of `?(`.
 
-// }}}
-== Strings ==
-// {{{
+.2016-06-01:
 
-.2016-06-10:
+When loading an app with `load-app`, make `(` behave like in the
+Forth-2012 FILE word set.
 
-Rename "csb" to "stringer":
+.2015-06-17:
 
-|===
-| Now         | "stringer"
+New:
+- Case-sensitive mode.
+- Create words in lowercase.
+- Improve `parse-name` with case conversion.
 
-| >csb        | >stringer
-| ?csb        | ?stringer
-| csb-size    | /stringer
-| csb0        | stringer
-| empty-csb   | empty-stringer
-| unused-csb  | unused-stringer
-|===
+.2015-10-15:
 
-.2015-11-10:
+Adapt from Gforth: `noname`.
 
-Move the circular string buffer to the top of memory.  Use `high` or
-similar, like fig-Forth, to protect the string buffer and the heap. In
-fact, the string buffer should be defined in the heap, but a small
-implementation of the heap is needed. The problem is words compiled
-above 0xC000 could not use the circular string buffer.
+== Printing == // {{{1
 
-// }}}
-== Maths ==
-// {{{
+.2016-10-28:
 
-.2016-05-07:
+Simplify `u.r`.
 
-Implement 2-cell operators from Spectrum Forth-83. Most of them are written in Z80.
+.2016-08-11:
 
-.2016-05-01:
+Remove the 64 cpl font from the library (4 blocks), and use the binary file
+(336 bytes) instead? Or provide the file as an alternative.
 
-Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp 103..105.
+.2015-09-05:
 
-.2016-04-27:
+There's an example how to change and restore a channel in print-42, by
+Ricardo Serral Wigge. Beside, it supports many (all?) control
+characters, unlike the implementation by Andy Jenkinson.
 
-Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
-"math.operators.4-cell.fsb".
+.2015-09-11:
 
-.2016-04-22:
+Idea: screen modes table?
 
-Document floating point.
+- 0: 32 cpl original (ROM routines)
+- 1: 32 cpl improved (bold, italic).
+- 3: 36 cpl
+- 4: 42 cpl
+- 5: 51 cpl
+- 6: 64 cpl
 
-.2016-04-22:
-
-Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
-locals. Problem: some calculator's words use them (eg. `over`).  They could be
-recursive, because their address can be changed with the system variable MEM;
-they could be pointed to a frame in the return stack.
-
-Simpler idea: use the calculator memories them as is, as temporary storage.
-The ROM allocates 6*5 bytes, but 32*5 can be used.
-
-.2016-04-19:
-
-Floating-point words `flit`, `fliteral`. From PFE:
-`fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
-`f2*`.
-
-.2016-04-18:
-
-Modify `interpret` to be patched by a floating-point implementation in order
-to recognize floating-point numbers.
-
-Make `number?` deferred, in order to add floating-point support.
-
-.2016-04-17:
-
-`factorial`, from Forth-2012 documentation: examples in `recurse` and
-`repeat`.
-
-.2015-12-24:
-
-Fractional arithmetic, FD 4-1.
-
-.2016-03-16:
-
-Idea for improving `number?` or writing an optional alternative:
-Return the chars and positions of every point, not only the last
-one. Convert `dpl` to a backwards compatible array:
-
-----
-+0 cell: position of the last point
-+2 byte: last point
-+3 cell: position of the last but one point
-+5 byte: last but one point
-etc.
-----
-
-A new variable `#dpl` would hold the number of points.
-
-// }}}
-== Time ==
-// {{{
-
-.2015-12-14
-
-Update the date with interrupts.
-
-// }}}
-== Printing ==
-// {{{
+It seems more versatile to create one word to select every mode and provide a
+common user interface to row, column, cpl, window...
 
 .2016-10-27:
 
@@ -863,82 +890,7 @@ Add `vemits`, inspired by TI BASIC's `call vchar()`.
 
 Improve tab control.
 
-// }}}
-== Assembler ==
-// {{{
-
-.2016-11-14:
-
-Try to adapt the labels of the 8086 hForth assembler. Already started in the
-drafts directory.
-
-.2016-04-20:
-
-Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
-because _r_ is the standard for floating-point numbers.
-
-// }}}
-== G+DOS ==
-// {{{
-
-.2015-08-31:
-
-Problem: SZX snapshots don't preserve the mounted disks or G+DOS!
-
-The Plus D own snapshots can be used, but this means programs have to
-be started manually, typing `run` in BASIC to load G+DOS, and then
-loading the snapshot file from BASIC or an Autoload file.
-
-.2015-08-31:
-
-Fix: `transfer-block` changes the current drive to 2!
-
-.2015-07-23:
-
-Study how to save and load the main code and the name bank apart, in
-two files. This way `turnkey` could be used also to save a modified
-copy of the system, not just Forth programs. Simpler solution: use the
-snapshop option of the Plus D, or save a snapshot from the emulator.
-
-.2016-03-16:
-
-Investigate how to use the free memory of the Plus D RAM.
-
-// }}}
-== +3DOS ==
-// {{{
-
-.2016-08-14:
-
-`set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
-"b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
-is a problem of fsb2's fb2dsk.
-
-// }}}
-== TR-DOS ==
-// {{{
-
-.2016-10-15:
-
-The new benchmarks don't fit a TR-DOS disk. The source of the benchmarks
-should be splitted into several parts, e.g. maths, system, data...
-
-.2016-09-01:
-
-`read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
-transfer-sectors` hangs. `0 set-drive` or `1 set-drive` makes no difference.
-
-.2016-08-11:
-
-Make also 40S, 40D and 80S TRD disk images?
-
-.2016-08-11:
-
-Investigate if TR-DOS uses the IX register. If not, remove the restorings.
-
-// }}}
-== Sound ==
-// {{{
+== Sound == // {{{1
 
 .2016-08-01:
 
@@ -947,3 +899,14 @@ Rename `sound:` to `sound` and make the sounds sound when executed.
 .2016-10-10:
 
 Finish the conversion of 128K sound explosions. More details in the source.
+
+== Time == // {{{1
+
+.2015-12-14:
+
+Update the date with interrupts.
+
+.2016-11-18:
+
+Rename `frames@` to `ticks@`, etc.
+
