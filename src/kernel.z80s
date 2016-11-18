@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611161336
+; Last modified: 201611182010
 
 include version.z80s
 
@@ -6065,6 +6065,8 @@ source.other:
 ;
 ; Return the address of the data-space pointer.
 ;
+; See: `limit`, `unused`, `there`.
+;
 ; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -6319,7 +6321,7 @@ u_less_than.de_hl:
 ; which returns the name token of the latest word defined in
 ; the system.
 ;
-; Origin: fig-Forth `latest`.
+; Origin: fig-Forth's `latest`.
 ;
 ; ----
 ; : current-latest  ( -- nt )
@@ -9143,6 +9145,8 @@ endif
 ; See the kernel source for details on the position and function
 ; of the vectors.
 ;
+; See: `interpret`.
+;
 ; }doc
 
                         ; compiling...
@@ -11587,7 +11591,16 @@ system_stack_pointer: equ $+1
 ; limit  ( -- a )
 ;
 ; Variable that holds the address above the highest address
-; usable by the region addressed by `here`.
+; usable by the data space, which is the region addressed by
+; `here`. Its default value is zero, which is right above the
+; highest memory address ($FFFF).
+;
+; This variable can be modified by a program in order to reserve
+; a memory zone for special purposes.
+;
+; See: `here`, `unused`.
+;
+; Origin: Fig-Forth's `limit` constant.
 ;
 ; }doc
 
@@ -11602,6 +11615,8 @@ system_stack_pointer: equ $+1
 ;
 ; Return the amount of space remaining in the region addressed
 ; by `here`, in address units.
+;
+; See: `here`, `limit`.
 ;
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;

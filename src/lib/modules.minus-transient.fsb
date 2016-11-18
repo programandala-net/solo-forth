@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611130110
+  \ Last modified: 201611181929
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,58 +41,47 @@
   \
   \ 2016-11-13: Rename "np" to "hp" after the changes in the
   \ kernel.
-
-( transient[ )
-
-  \ XXX UNDER DEVELOPMENT
-
-  \ XXX TODO -- Finish and test.
   \
-  \ XXX TODO -- Check if `current-latest` (old fig-Forth
-  \ `latest`) must be used instead of `latest`, which now
-  \ (2016-04-26) is standard.
+  \ 2016-11-18: Adapt to far memory and fix. Use `limit`.
+  \ Improve documentation.
+
+( transient[ ]transient -transient )
 
 need >>link  need there
 
-variable old-dp
-variable old-hp
-variable old-latest
-variable old-voc-link
+variable old-dp  variable old-latest
+variable old-hp  variable old-voc-link  variable old-limit
 
 : transient[  ( u -- )
+  here old-dp !  hp@ old-hp !
+  current-latest old-latest !  voc-link @ old-voc-link !
+  limit @ dup old-limit ! swap - dup limit ! there  ;
 
-  here        old-dp !
-  hp@         old-hp !
-  latest      old-latest !
-  voc-link @  old-voc-link !
-
-  \ XXX FIXME -- after changing `dp` the interpreter does not
-  \ recognize any input, just issues error #1, "not
-  \ understood".
-
-  0 swap - there  ;
   \ doc{
   \
   \ transient[  ( u -- )
   \
-  \ Start transient code, reserving _u_ bytes for it (including
-  \ dictionary space and data stack).
+  \ Start transient code, reserving _u_ bytes of data space for
+  \ it, which will be allocated at the top of the main memory.
   \
   \ This word must be used before compiling the transient code.
   \ the compiled size of the transient code must be known in
   \ advance.
   \
+  \ Note: `limit` must be preserved between `transient[` and
+  \ `]transient`, because `-transient`
+  \
   \ See: `]transient`, `-transient`.
   \
   \ }doc
 
-
-: ]transient  ( -- )  old-dp @ there  old-hp @ hp!  ;
+: ]transient  ( -- )
+  old-dp @ there  old-hp @ hp!  old-limit @ limit !  ;
 
   \ doc{
   \
   \ ]transient  ( -- )
-
+  \
   \ End the transient code.
   \
   \ This word must be used after compiling the transient code.
@@ -102,9 +91,9 @@ variable old-voc-link
   \ }doc
 
 : -transient  ( -- )
-  old-voc-link @ voc-link !
-  \ XXX TODO -- finish adapt to Solo Forth:
-  old-latest @ old-hp @ >>link !s  ;
+  old-voc-link @ voc-link !  old-latest @ old-hp @ >>link
+  [defined] far-banks ?\ !s  ;
+  [undefined] far-banks ?\ far!  ;
 
   \ doc{
   \
@@ -123,8 +112,16 @@ variable old-voc-link
   \
   \ See: `transient[`, `]transient`.
   \
+  \ Usage example:
+  \
+  \ ----
+  \ transient[
+  \   need assembler \ compile in transient zone above `limit`
+  \ ]transient
+  \ \ ...use assembler here...
+  \ -transient \ remove assembler; no data space was wasted
+  \ ----
+  \
   \ }doc
-
-  \ See: `transient[`, `-transient`.
 
   \ vim: filetype=soloforth
