@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131719
+  \ Last modified: 201611182019
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,8 @@
   \ 2016-10-28: Adapt `alias!` to the extra-memory system.
   \
   \ 2016-11-13: Update the names of far-memory words.
+  \
+  \ 2016-11-18: Improve documentation of `alias`.
 
 ( alias! alias realias )
 
@@ -93,10 +95,10 @@ need name>>
   \ Create an alias _name_ that will execute _xt_.
   \
   \ Aliases have the execution token _xt_ of the original word,
-  \ but don't inherit its precedence (set by `immediate`) and
-  \ restricted (set by `compile-only`) attributes.
+  \ but, contrary to synonyms created by `synonym`, don't
+  \ inherit its attributes (immediate and compile-only).
   \
-  \ See `realias`, `alias!`.
+  \ See `realias`, `alias!`, `synonym`.
   \
   \ Origin: Gforth.
   \

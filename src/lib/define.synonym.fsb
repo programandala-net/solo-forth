@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604241841
+  \ Last modified: 201611182019
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,8 @@
   \
   \ 2016-04-24: Add `need nextname`, because `nextname` has been
   \ moved from the kernel to the library.
+  \
+  \ 2016-11-18: Improve documentation.
 
 
 ( synonym )
@@ -61,6 +63,12 @@ need alias  need nextname
   \ newname ( Compilation: i*x -- j*x )
   \
   \ Perform the compilation semantics of _oldname_.
+  \
+  \ Synonyms have the execution token of the old word and,
+  \ contrary to aliases created by `alias`, they also inherit
+  \ its attributes (immediate and compile-only).
+  \
+  \ See: `alias`.
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
