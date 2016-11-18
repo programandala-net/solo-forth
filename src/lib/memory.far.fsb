@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611160226
+  \ Last modified: 201611182041
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,19 @@
   \ this license.  There is no warranty.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ The "far" naming convention was borrowed from a post by Dr
+  \ Jefyll in 6502.org on 2010-02-16:
+  \
+  \ http://forum.6502.org/viewtopic.php?f=9&t=1529&p=10079
+  \
+  \ Also Garry Lancaster used the name "far memory" in his Z88
+  \ CamelForth (2001):
+  \
+  \ http://www.worldofspectrum.org/z88forever/camelforth/camel-pools.html
+
+  \ -----------------------------------------------------------
   \ History
 
   \ 2016-11-15: Start.  Add `farhl`, `questionnextbank`,
@@ -35,6 +48,8 @@
   \ 2016-11-16: Add `far2@`, `far@+`, `farc@+`, `far2@+`,
   \ `far+!`, `farc+!`, `far2!` `move>far`, `move<far`,
   \ `cmove>far`, `cmove<far`, `fartype-ascii`, `farallot`.
+  \
+  \ 2016-11-18: Credit about the naming convention.
 
 ( farhl questionnextbank questionpreviousbank )
 

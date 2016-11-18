@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611182010
+; Last modified: 201611182046
 
 include version.z80s
 
@@ -1551,6 +1551,18 @@ if 1 ; far_memory
 
 ; XXX TODO -- These banks are for ZX Spectrum 128K and +2.
 ; They are different for +2A, +3 and +3e.
+
+  ; Credit:
+
+  ; The "far" naming convention was borrowed from a post by Dr
+  ; Jefyll in 6502.org (2010-02-16):
+  ;
+  ; http://forum.6502.org/viewtopic.php?f=9&t=1529&p=10079
+  ;
+  ; Also Garry Lancaster used the name "far memory" in his Z88
+  ; CamelForth (2001):
+  ;
+  ; http://www.worldofspectrum.org/z88forever/camelforth/camel-pools.html
 
 ; ----------------------------------------------
   _code_header question_next_bank_,'?NEXT-BANK'
