@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611191842
+; Last modified: 201611191940
 
 include version.z80s
 
@@ -148,7 +148,7 @@ true:                             equ $FFFF ; -1
 cell:                             equ $02
 
 cells_per_data_stack:             equ $50
-cells_per_return_stack:           equ $55
+cells_per_return_stack:           equ $56
 
   ; XXX REMARK -- 2016-11-19: The return stack has been
   ; increased from $50 to $55 cells. The loading of `tt` (a
