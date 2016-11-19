@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611191135
+; Last modified: 201611191842
 
 include version.z80s
 
@@ -148,7 +148,26 @@ true:                             equ $FFFF ; -1
 cell:                             equ $02
 
 cells_per_data_stack:             equ $50
-cells_per_return_stack:           equ $50
+cells_per_return_stack:           equ $55
+
+  ; XXX REMARK -- 2016-11-19: The return stack has been
+  ; increased from $50 to $55 cells. The loading of `tt` (a
+  ; sample game) needs $55 cells; `blocked` (a block editor)
+  ; needs $54 cells.  Formerly the terminal input buffer was
+  ; below the return stack and worked as a pad for it, so the
+  ; problem was unnoticed.  But the terminal input buffer was
+  ; moved on 2016-11-15 in order to make all buffers contiguous
+  ; so the circular string buffer can be expandable.
+  ;
+  ; As a temporary solution, also the return stack is checked in
+  ; `?stack`, when the developing label is on.
+  ;
+  ; XXX TODO -- Move the terminal input buffer below the return
+  ; stack? Moving the stacks to the top of the memory is
+  ; incompatible with the far memory and with the future support
+  ; of +3DOS.
+  ;
+  ; XXX TODO -- Write `?rstack` and make `?stack` configurable?
 
 bytes_per_terminal_input_buffer:  equ $50
 
@@ -208,6 +227,8 @@ endif
 
 error.stack_overflow:               equ -003
 error.stack_underflow:              equ -004
+error.return_stack_overflow:        equ -005
+error.return_stack_underflow:       equ -006
 error.dictionary_overflow:          equ -008
 error.not_found:                    equ -013
 error.compilation_only:             equ -014
@@ -511,6 +532,11 @@ _jump_z: macro _address ; XXX TODO -- not used yet
 
 ; ----------------------------------------------
 ; Macros for error messages
+
+_throw: macro _error
+  _literal (_error)
+  dw throw_
+  endm
 
 _question_throw: macro _error
   _literal (_error)
@@ -9086,20 +9112,48 @@ endif
 ; ?stack  ( -- )
 ;
 ; Issue an error message if the stack is out of bounds.
-
+;
 ; Origin: fig-Forth.
 ;
 ; }doc
 
-  dw sp_fetch_
-  dw sp0_,fetch_
+  dw sp_fetch_,sp0_,fetch_
   dw swap_,less_than_
   _question_throw error.stack_underflow
   dw sp_fetch_
   dw lit_,data_stack_limit
   dw less_than_
   _question_throw error.stack_overflow
+
+if developing
+  
+  ; Check also the return stack
+
+  dw rp0_,fetch_
+  dw rp_fetch_
+  dw less_than_
+  _question_throw error.return_stack_underflow
+
+if 0
+  dw rp_fetch_
+  _literal return_stack_limit+8*cell
+  ; XXX REMARK -- adding less than 8 cells doesn't work
+  dw less_than_,zero_equals_
+else
+  _literal return_stack_limit+7*cell
+  ; XXX REMARK -- adding less than 7 cells doesn't work
+  dw rp_fetch_,less_than_
+endif
+
+  dw question_exit_
+  dw rp0_,fetch_,rp_store_ ; empty the return stack
+  _throw error.return_stack_overflow ; no return from `throw`
+
+else
+
   dw exit_
+
+endif
 
 ; ----------------------------------------------
   _colon_header not_understood_,'NOT-UNDERSTOOD'
@@ -9655,8 +9709,6 @@ quit.begin:
 ; Origin: Forth-2012 (CORE EXT).
 ;
 ; }doc
-
-; XXX TODO -- move to the library?
 
   dw header_,reveal_
   _literal paren_defer_ ; default xt to execute
@@ -11720,7 +11772,8 @@ endif
   dw not_equals_ ; not the last row?
   dw zero_branch_,at_pfa.last_line
   ; not the last row
-  dw lit_,22,mode32_emit_,mode32_emit_,mode32_emit_
+  _literal 22
+  dw mode32_emit_,mode32_emit_,mode32_emit_
   dw exit_
 
 at_pfa.last_line:
