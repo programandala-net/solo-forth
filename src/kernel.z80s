@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611182130
+; Last modified: 201611191135
 
 include version.z80s
 
@@ -1337,6 +1337,32 @@ endif
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header jp_comma_,'JP,'
+
+; doc{
+;
+; jp,  ( a -- )
+;
+; Compile the Z80 opcode to jump to _a_.
+;
+; ----
+; : code-field,  ( a -- )
+;   $C3 c,  \ Z80 opcode for "jp"
+;   ,  ;
+; ----
+;
+; }doc
+
+; XXX TODO -- This word is needed in the kernel, but it is
+; defined in the `z80-asm-comma` variant of the assembler, which
+; is intended to be the main assembler of the system, instead of
+; the current variant `z80-asm`.
+
+  _literal $C3 ; Z80 opcode for "call"
+  dw c_comma_,comma_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header call_comma_,'CALL,'
 
 ; doc{
@@ -1346,7 +1372,7 @@ endif
 ; Compile the Z80 opcode to call _a_.
 ;
 ; ----
-; : code-field,  ( a -- )
+; : call,  ( a -- )
 ;   $CD c,  \ Z80 opcode for "call"
 ;   ,  ;
 ; ----
@@ -6354,7 +6380,8 @@ u_less_than.de_hl:
 ; ----------------------------------------------
   _colon_header latestxt_,'LATESTXT'
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library?
+  ; Note: Used by `mode32` in the library.
 
 ; doc{
 ;
@@ -9629,14 +9656,11 @@ quit.begin:
 ;
 ; }doc
 
-; XXX TODO -- move to the library
+; XXX TODO -- move to the library?
 
   dw header_,reveal_
-  _literal $C3 ; Z80 opcode for `jp`
-  dw c_comma_
   _literal paren_defer_ ; default xt to execute
-  dw comma_
-
+  dw jp_comma_
   dw exit_
 
 ; ----------------------------------------------

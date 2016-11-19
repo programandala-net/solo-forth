@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201611141919
+  \ Last modified: 201611191147
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,9 +74,11 @@
   \ current radix and the search order.
   \
   \ 2016-11-14: Now `call,` is defined in the kernel, where it
-  \ already existed with the old name `code-field,`. Compact
-  \ the code, save one block.  Move `8*` to the 1-cell
-  \ operators module.
+  \ existed with the old name `code-field,`. Compact the code,
+  \ save one block.  Move `8*` to the 1-cell operators module.
+  \
+  \ 2016-11-19: Now `jp,` is defined in the kernel, factored
+  \ from `defer`.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -184,15 +186,17 @@ DD constant ix-op  FD constant iy-op
 
   \ XXX FIXME ftap
 
-  \ XXX OLD -- CD m5 call,
-  \ `call,` is already defined in the kernel
+  \ XXX OLD -- `CD m5 call,`
+  \ `call,` is defined in the kernel
+  \ XXX OLD -- `C3 m5 jp,`
+  \ `jp,` is defined in the kernel
 
 00 m1 nop, 02 m3 stap, 03 m3 incp, 04 m3 inc, 05 m3 dec, 07 m1
 rlca, 08 m1 exaf, 09 m3 addp, 0A m3 ftap, 0B m3 decp, 0F m1
 rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 22 m5 sthl,
 27 m1 daa, 2A m5 fthl, 2F m1 cpl, 32 m5 sta, 37 m1 scf, 3A m5
 fta, 3F m1 ccf, 76 m1 halt, 80 m2 add, 88 m2 adc, 90 m2 sub, 98
-m2 sbc, B8 m2 cp, C1 m3 pop, C3 m5 jp, C5 m3 push, C6 m4 add#,
+m2 sbc, B8 m2 cp, C1 m3 pop, C5 m3 push, C6 m4 add#,
 C7 m2 rst, C9 m1 ret, CE m4 adc#, D3 m4 out, 41 m3
 outbc, D6 m4 sub#, D9 m1 exx, DB m4 in, 40 m3 inbc, 0DE m4
 sbc#, E3 m1 exsp, E6 m4 and#, E9 m1 jphl, EB m1 exde, EE m4
