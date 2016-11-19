@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131913
+  \ Last modified: 201611191618
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,53 +50,14 @@
   \ recently implemented in the kernel. Now the library disk
   \ can be indexed. Improve the documentation. Remove old
   \ unused code.
+  \
+  \ 2016-11-19: Move to <blocks.index-wordlist.fsb> the code
+  \ shared with the new module <blocks.fly-indexer.fsb>.
 
 ( indexer )
 
 only forth definitions
-
-need str=  need alias  need string/
-need get-order  need set-order  need nextname
-
-wordlist constant index-wordlist
-  \ Word list for the indexed words.
-
-: search-index  ( ca len -- 0 | xt 1 | xt -1 )
-  index-wordlist search-wordlist  ;
-  \ Search the index for word _ca len_.
-
-: name-indexed?  ( ca len -- f )
-  search-index 0<> dup if  nip  then  ;
-  \ Is word _ca len_ in the index?
-
-variable indexed-block
-
-  \ variable counter counter off  \ XXX INFORMER
-
-: index-name  ( ca len -- )
-  2dup name-indexed? if  2drop exit  then
-  \ 1 counter +! counter ? 2dup type space hp@ u.
-  \ XXX INFORMER
-  nextname indexed-block @ alias  ;
-  \ Add word _ca len_ to the blocks index, if not done before.
-  \ The current word list is supposed to be `index-wordlist`.
-
-wordlist dup constant indexer-wordlist set-current  -->
-  \ Word list for the words that parse the block index lines.
-
-( indexer )
-
-: (  ( "ccc<space><paren><space|eof>" -- )
-  begin  parse-name 2dup s" )" str= 0=
-  while  index-name  repeat  2drop  ;  ' ( alias .(
-  \ Parse and index the names until the next right paren name.
-
-: \  ( "ccc<space><backslash><space|eof>" -- )
-  begin  parse-name 2dup s" \" str= 0=
-  while  index-name  repeat  2drop  ;
-  \ Parse and index the names until the next backslash name.
-
-forth-wordlist set-current
+need index-wordlist  need get-order  need set-order
 
 : index-reneeded  ( ca len -- )
   search-index 0= #-277 ?throw load  ;
