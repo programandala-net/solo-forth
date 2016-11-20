@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201611191315
+  \ Last modified: 201611201459
 
   \ -----------------------------------------------------------
   \ Authors
@@ -27,31 +27,35 @@
   \ -----------------------------------------------------------
   \ Usage
 
-  \ m   marks current position
-  \ a   goes to marked position
-  \ c   moves cursor by n chars
-  \ t   goes to line n and inserts
-  \ i   inserts
-  \ d   deletes marked area
-  \ r   replaces marked area
+  \ m   mark current position
+  \ a   go to marked position
+  \ c   move cursor by n chars
+  \ t   go to line n and inserts
+  \ i   insert
+  \ d   delete marked area
+  \ r   replace marked area
   \ f   search and mark
   \ il  insert a line
   \ dl  delete a line
-  \ qx  gives a quick index
-  \ nx  gives next index
-  \ bx  gives previous index
-  \ n   goes to next screen
-  \ b   goes to previous screen
-  \ l   goes to screen n
-  \ v   goes to current screen
-  \ s   searches until screen n
+  \ qx  give a quick index
+  \ nx  give next index
+  \ px  give previous index
+  \ n   go to next screen
+  \ p   go to previous screen
+  \ g   go to screen n
+  \ l   list current screen
+  \ s   search until screen n
   \ y   yank deleted string
 
   \ -----------------------------------------------------------
   \ History
 
   \ 2016-11-19: Start. Adapt layout and requirements. Add
-  \ comments .Remove `hi`.
+  \ comments. Remove `hi`.
+  \
+  \ 2016-11-20: Rename `l` to `g`; rename `v` to `l`, after the
+  \ classic fig-Forth editor. Rename `b` to `p`.  Rename `bx`
+  \ to `px`. Add comments. Try the original code with Gforth.
 
 ( blocked )
 
@@ -65,20 +69,23 @@ variable r# variable len 2variable mark create rbuf $100 allot
   \ mark = Backup of the editing position (cursor and block).
 create ibuf  $100 allot  create fbuf  $100 allot
 
-: l  ( n -- )  editor page list  ;
+: g  ( n -- )  editor page list  ;
   \ Go to screen _n_.
 
-: v  ( -- )  scr @ l  ;
+: l  ( -- )  scr @ g  ;
   \ Go to current screen.
 
 : delete  ( buffer size count -- )
   over min >r  r@ - ( left over )  dup 0>
   if  2dup swap dup  r@ +  -rot swap move  then  + r> blank  ;
+  \ XXX TODO -- move to the strings module?
 
 : insert  ( string length buffer size -- )
   rot over min >r  r@ -  over dup r@ +  rot move  r> move  ;
+  \ XXX TODO -- move to the strings module?
 
-: replace   ( string length buffer size -- ) rot min move  ;
+: replace  ( string length buffer size -- ) rot min move  ;
+  \ XXX TODO -- move to the strings module?
 
 also editor definitions -->
 
@@ -89,48 +96,55 @@ also editor definitions -->
 : m  ( -- )  scr @ r# @ mark 2!  ;
   \ Mark current position.
 
-: a  ( -- )  mark 2@ m r# ! l  ;
-  \ Go to marked position.
-  \ XXX TODO -- why `m`?
+: a  ( -- )  mark 2@ m r# ! g  ;
+  \ Go to marked position, marking the current position first.
 
-: c  ( n -- )  r# +! 1 len ! v  ;
+: c  ( n -- )  r# +! 1 len ! l  ;
   \ Move cursor by _n_ chars.
 
-: 'rest ( -- a u )  scr @ block b/buf  r# @ /string  ;
+: 'rest ( -- ca len )  scr @ block b/buf r# @ /string  ;
+  \ Return the rest of the current screen, from the
+  \ current position.
 
-: 'line ( -- a u )  'rest  1- c/l 1- and 1+  ;
+: 'line ( -- ca len )  'rest  1- c/l 1- and 1+  ;
 
-: 'par  ( buf -- a u )  >r 0 parse dup
-   0= if 2drop r> count  else  2dup  r> place  then  ;
+: 'par  ( buf "ccc<eol>" -- ca len )  >r 0 parse dup
+   0= if  2drop r> count  else  2dup  r> place  then  ;
+   \ Parse "ccc". If the result string is empty,
+   \ discard it and return the counted string at _buf_;
+   \ else return the parsed string and also store it
+   \ at _buf_ as a counted string.
 
-: t  ( n -- )  c/l * r# ! c/l len !
-  0 parse tuck 'line insert if update then v  ;
-  \ Go to line _n_ and insert.
+: t  ( n "ccc<eol>" -- )  c/l * r# ! c/l len !
+  0 parse tuck 'line insert if  update  then  l  ;
+  \ Go to line _n_ and insert "ccc".
 
-: i  ibuf 'par 'line insert update v  ;
-  \ Insert.
+: i  ( "ccc<eol>" -- )  ibuf 'par 'line insert update l  ;
+  \ Insert "ccc" or, if it's empty, the contents of the insert
+  \ buffer.
 
-: d  'line 2dup rbuf place len @  delete update v  ;
+: d  ( -- )  'line 2dup rbuf place len @  delete update l  ;
   \ Delete marked area.
 
-: r  d i  ;
+: r  ( "ccc<eol>" -- )  d i  ;
   \ Replace marked area.
 
-: y  rbuf count 'line insert update v  ;
+: y  ( -- )  rbuf count 'line insert update l  ;  -->
   \ Yank deleted string.
-
-: f  'rest  len @ c/l mod /string fbuf 'par dup len ! search
-  0= throw nip b/buf swap - r# ! v  ;      -->
-  \ Search and mark.
 
 ( blocked )
 
+: f  ( "ccc<eol>" -- )
+  'rest  len @ c/l mod /string fbuf 'par dup len ! search
+  0= throw nip b/buf swap - r# ! l  ;
+  \ Search and mark.
+
   \ Multi-screen commands
 
-: il  pad c/l 'rest insert 'rest drop c/l blank update v  ;
+: il  pad c/l 'rest insert 'rest drop c/l blank update l  ;
   \ Insert a line.
 
-: dl  'rest c/l  delete  update v  ;
+: dl  'rest c/l  delete  update l  ;
   \ Delete a line.
 
 : qx ( -- )  0 0 at-xy scr @ 60 / 60 * 60 bounds
@@ -138,23 +152,30 @@ also editor definitions -->
                space  dup scr @ = if  1 inverse  then
                block 20 type  0 inverse  loop  cr  3 +loop  ;
   \ Give a quick index.
+  \
+  \ XXX TODO -- adapt the original code, which is written for a
+  \ 80 cpl screen: 3 columns of 20-char lines, with line
+  \ numbers.
 
-: nx  60 scr @ +       scr !  qx  ;
+: nx  ( -- )  60 scr @ + blocks min scr ! qx  ;
   \ Give next index.
 
-: bx -60 scr @ + 0 max scr !  qx  ;
+: px  ( -- )  -60 scr @ + 0 max scr ! qx  ;
   \ Give previous index.
 
-: n  scr @ 1+ l r# off  ;
+: n  ( -- )  scr @ 1+ g r# off  ;
   \ Go to next screen.
 
-: b  scr @ 1- l r# off  ;
+: p  ( -- )  scr @ 1- g r# off  ;  -->
   \ Go to previous screen.
 
-: s ( n -- / n )   >r
+( blocked )
+
+: s ( n "ccc<eol>" | n -- )   >r
   begin  ['] f catch  while  scr @ r@ =  if  rdrop  exit  then
-         scr @ r@ u<  if  n  else  b  then  repeat  r>  ;
-  \ Search until screen _n_.
+         scr @ r@ u<  if  n  else  p  then  repeat  r>  ;
+  \ Search "ccc" until screen _n_. If "ccc" is empty, use the
+  \ string of the previous search.
 
 forth definitions
 
