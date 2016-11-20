@@ -6,6 +6,8 @@
 *.fsb linguist-language=Forth
 *.fzx binary
 *.mgt binary
+*.pbm binary
+*.scr binary
 *.sna binary
 *.szx binary
 *.tap binary

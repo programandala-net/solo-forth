@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201611161641
+# Last modified: 201611200216
 
 # ==============================================================
 # Author
@@ -20,28 +20,32 @@
 # ==============================================================
 # Requirements
 
-# head, cat and sort (from the GNU coreutils)
+# bin2code (by Metalbrain)
+# 	http://metalbrain.speccy.org/link-eng.htm
+
+# cat (from the GNU coreutils)
+
+# DOSBox (by The DOSBox Team)
+#   http://www.dosbox.com
+
+# Forth Foundation Library (by Dick van Oudheusden)
+# 	http://irdvo.github.io/ffl/
+
+# fsb2 (by Marcos Cruz)
+# 	http://programandala.net/en.program.fsb2.html
+
+# head (from the GNU coreutils)
+
+# mkmgt (by Marcos Cruz)
+# 	http://programandala.net/en.program.mkmgt.html
+
+# sort (from the GNU coreutils)
 
 # zmakebas (by Russell Marks)
 #   Usually included in Linux distros. Also see:
 # 	http://sourceforge.net/p/emuscriptoria/code/HEAD/tree/desprot/ZMakeBas.c
 # 	https://github.com/catseye/zmakebas
 # 	http://zmakebas.sourcearchive.com/documentation/1.2-1/zmakebas_8c-source.html
-
-# bin2code (by Metalbrain)
-# 	http://metalbrain.speccy.org/link-eng.htm
-
-# fsb2 (by Marcos Cruz)
-# 	http://programandala.net/en.program.fsb2.html
-
-# mkmgt (by Marcos Cruz)
-# 	http://programandala.net/en.program.mkmgt.html
-
-# Forth Foundation Library (by Dick van Oudheusden)
-# 	http://irdvo.github.io/ffl/
-
-# DOSBox (by The DOSBox Team)
-#   http://www.dosbox.com
 
 # ==============================================================
 # History
@@ -73,6 +77,7 @@ MAKEFLAGS = --no-print-directory
 
 # ==============================================================
 # Main
+
 
 .PHONY: all
 all: gplusdos trdos plus3dos
@@ -498,6 +503,29 @@ disks/trdos/disk9_lib_without_dos.trd: tmp/library_without_dos.fsb
 	mv $(basename $<).trd $@
 
 # ==============================================================
+# Background images
+
+# Starting from version 0.12.0, Solo Forth shows a background image
+# every time it boots. It's an illustration made in the 19th century
+# by Gustave Doré for the novel _El ingenioso hidalgo don Quijote de
+# La Mancha_, by Miguel de Cervantes (1605, 1615).
+
+# First, create a link to the Netpbm image selected for the current
+# version of Solo Forth:
+
+backgrounds/current.pbm: src/version.z80s
+	version=$(shell tools/versionfile2string.fs $<) ; \
+	cd backgrounds ; \
+	ln -sf v$${version}.pbm $(notdir $@) ; \
+	cd ..
+
+# Second, convert it to a SCR format file (which will be included in
+# the assembled binary of the system):
+
+backgrounds/current.scr: backgrounds/current.pbm
+	tools/pbm2scr.fs $<
+
+# ==============================================================
 # Backup
 
 .PHONY: backupsrc
@@ -629,3 +657,5 @@ oldbackup:
 # fit in a TR-DOS disk image.
 #
 # 2016-11-16: Modify the cleaning of <tmp/>, to preserve <.gitignore>.
+#
+# 2016-11-20: Add background images.

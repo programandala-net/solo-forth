@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611191940
+; Last modified: 201611200229
 
 include version.z80s
 
@@ -9969,7 +9969,12 @@ endif
   dw default_header_ ; set the default behaviour of `header`
   dw decimal_
 
-  dw display_,default_colors_,page_
+  dw display_,default_colors_
+cold.home:
+  dw home_ ; only the first time, to preserve the background
+  dw lit_,page_ ; but next time use `page`...
+  dw lit_,cold.home ; ...instead of `home`...
+  dw store_ ; ...so patch it
   dw greeting_
 
 if 1 ; XXX INFORMER
@@ -12426,6 +12431,8 @@ dictionary_pointer_after_cold:
 ; Definition headers
 
 move_definition_headers_to_memory_bank:
+  ; XXX TODO -- rename the label, because other task are done
+  ; here
 
   ; Move the definition headers, assembled in ordinary memory,
   ; to the system bank. This routine is needed only once,
@@ -12478,6 +12485,11 @@ endif
 
   call bank.default
 
+  ld hl,background_image ; origin
+  ld de,sys_screen ; destination
+  ld bc,sys_screen_size ; count
+  ldir ; copy the background to the screen
+
   ; Erase the memory that was used for the headers
   ; during the compilation of the kernel:
   ld hl,bank_start
@@ -12485,6 +12497,8 @@ endif
   ld bc,bank_size
   ld (hl),l ; L=0 because bank_start=$C000
   ldir
+  ; XXX TODO -- Erase also the background image.
+  ; XXX TODO -- Erase also this whole routine?
 
   ; Remove the call to this routine,
   ; so it will not be executed in future 
@@ -12494,7 +12508,33 @@ endif
   ld (hl),0 ; nop
   inc hl
   ld (hl),0 ; nop
+
+  ; Set frames counter to zero:
+  xor a
+  ld (sys_frames+0),a
+  ld (sys_frames+1),a
+  ld (sys_frames+2),a
+  ; XXX TODO -- setting the counter to zero
+  ; would make it possible to add `uptime`,
+  ; but it doesn't look useful enough.
+  ; In order to limit the pause here,
+  ; only the first byte has to be reseted.
+
+  ; Wait for a key
+  ld (sys_last_k),a ; forget last key
+wait_a_bit:
+  ld a,(sys_frames) ; frames...
+  inc a ; ...is $FF? (so, passed 255*20 ms = 5.12 s)
+  ret z
+  ld a,(sys_last_k) ; a key...
+  and a ; ...pressed?
+  jr z,wait_a_bit
+  xor a
+  ld (sys_last_k),a ; forget last key
   ret
+
+background_image:
+  incbin ../backgrounds/current.scr
 
 ; ==============================================================
 ; End
