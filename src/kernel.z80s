@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611200229
+; Last modified: 201611201616
 
 include version.z80s
 
@@ -9833,17 +9833,20 @@ if 1 ; developing
 ;
 ; .unused ( -- )
 ;
-; Display the amount of space remaining in the region addressed
-; by `here`, in address units.
+; Display the amount of space remaining in the regions addressed
+; by `here` and `hp`, in address units.
 ;
 ; ----
 ; : .unused  ( -- )
-;   unused u. ." B free"  ;
+;   unused u. ."  +" emit farunused u. ." B free"  ;
 ; ----
 ;
 ; }doc
 
   dw unused_,u_dot_
+  dw paren_dot_quote_
+  _string '+ '
+  dw farunused_,u_dot_
   dw paren_dot_quote_
   _string "B free"
   dw exit_
@@ -11697,7 +11700,30 @@ system_stack_pointer: equ $+1
 ; This variable can be modified by a program in order to reserve
 ; a memory zone for special purposes.
 ;
-; See: `here`, `unused`.
+; See: `here`, `unused`, `farlimit`.
+;
+; Origin: Fig-Forth's `limit` constant.
+;
+; }doc
+
+  dw 0
+
+; ----------------------------------------------
+  _variable_header farlimit_,'FARLIMIT'
+
+; doc{
+;
+; farlimit  ( -- a )
+;
+; Variable that holds the far-memory address above the highest
+; address usable by the headers space, which is the region
+; addressed by `hp`. Its default value is zero, which is right
+; above the highest far-memory address ($FFFF).
+;
+; This variable can be modified by a program in order to reserve
+; a memory zone for special purposes.
+;
+; See: `hp`, `farunused`, `limit`.
 ;
 ; Origin: Fig-Forth's `limit` constant.
 ;
@@ -11722,6 +11748,23 @@ system_stack_pointer: equ $+1
 ; }doc
 
   dw limit_,fetch_,here_,minus_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header farunused_,'FARUNUSED'
+
+; doc{
+;
+; farunused ( -- u )
+;
+; Return the amount of far-memory space remaining in the region
+; addressed by `hp`, in address units.
+;
+; See: `hp`, `farlimit`.
+;
+; }doc
+
+  dw farlimit_,fetch_,hp_fetch_,minus_
   dw exit_
 
 ; ----------------------------------------------
