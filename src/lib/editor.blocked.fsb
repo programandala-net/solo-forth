@@ -1,0 +1,161 @@
+  \ editor.blocked.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT -- not usable yet
+
+  \ Last modified: 201611191315
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Bernd Paysan, 1995.
+  \
+  \ Adapted to Solo Forth by Marcos Cruz (programandala.net),
+  \ 2016.
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ This is the simple block editor included with Gforth
+  \ (in blocks file <blocked.fb>), adapted to Solo Forth.
+  \
+  \ Word descriptions and stack comments have been added after
+  \ the original source.
+
+  \ -----------------------------------------------------------
+  \ Usage
+
+  \ m   marks current position
+  \ a   goes to marked position
+  \ c   moves cursor by n chars
+  \ t   goes to line n and inserts
+  \ i   inserts
+  \ d   deletes marked area
+  \ r   replaces marked area
+  \ f   search and mark
+  \ il  insert a line
+  \ dl  delete a line
+  \ qx  gives a quick index
+  \ nx  gives next index
+  \ bx  gives previous index
+  \ n   goes to next screen
+  \ b   goes to previous screen
+  \ l   goes to screen n
+  \ v   goes to current screen
+  \ s   searches until screen n
+  \ y   yank deleted string
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-11-19: Start. Adapt layout and requirements. Add
+  \ comments .Remove `hi`.
+
+( blocked )
+
+  \ Display block
+
+only forth definitions  need inverse  need list  need update
+need j  need vocabulary  vocabulary editor
+
+variable r# variable len 2variable mark create rbuf $100 allot
+  \ r# = Location of the editing cursor.
+  \ mark = Backup of the editing position (cursor and block).
+create ibuf  $100 allot  create fbuf  $100 allot
+
+: l  ( n -- )  editor page list  ;
+  \ Go to screen _n_.
+
+: v  ( -- )  scr @ l  ;
+  \ Go to current screen.
+
+: delete  ( buffer size count -- )
+  over min >r  r@ - ( left over )  dup 0>
+  if  2dup swap dup  r@ +  -rot swap move  then  + r> blank  ;
+
+: insert  ( string length buffer size -- )
+  rot over min >r  r@ -  over dup r@ +  rot move  r> move  ;
+
+: replace   ( string length buffer size -- ) rot min move  ;
+
+also editor definitions -->
+
+( blocked )
+
+  \ In-screen commands
+
+: m  ( -- )  scr @ r# @ mark 2!  ;
+  \ Mark current position.
+
+: a  ( -- )  mark 2@ m r# ! l  ;
+  \ Go to marked position.
+  \ XXX TODO -- why `m`?
+
+: c  ( n -- )  r# +! 1 len ! v  ;
+  \ Move cursor by _n_ chars.
+
+: 'rest ( -- a u )  scr @ block b/buf  r# @ /string  ;
+
+: 'line ( -- a u )  'rest  1- c/l 1- and 1+  ;
+
+: 'par  ( buf -- a u )  >r 0 parse dup
+   0= if 2drop r> count  else  2dup  r> place  then  ;
+
+: t  ( n -- )  c/l * r# ! c/l len !
+  0 parse tuck 'line insert if update then v  ;
+  \ Go to line _n_ and insert.
+
+: i  ibuf 'par 'line insert update v  ;
+  \ Insert.
+
+: d  'line 2dup rbuf place len @  delete update v  ;
+  \ Delete marked area.
+
+: r  d i  ;
+  \ Replace marked area.
+
+: y  rbuf count 'line insert update v  ;
+  \ Yank deleted string.
+
+: f  'rest  len @ c/l mod /string fbuf 'par dup len ! search
+  0= throw nip b/buf swap - r# ! v  ;      -->
+  \ Search and mark.
+
+( blocked )
+
+  \ Multi-screen commands
+
+: il  pad c/l 'rest insert 'rest drop c/l blank update v  ;
+  \ Insert a line.
+
+: dl  'rest c/l  delete  update v  ;
+  \ Delete a line.
+
+: qx ( -- )  0 0 at-xy scr @ 60 / 60 * 60 bounds
+  do  3 0  do  [ forth ] i 1+ [ editor ] j + dup 3 .r
+               space  dup scr @ = if  1 inverse  then
+               block 20 type  0 inverse  loop  cr  3 +loop  ;
+  \ Give a quick index.
+
+: nx  60 scr @ +       scr !  qx  ;
+  \ Give next index.
+
+: bx -60 scr @ + 0 max scr !  qx  ;
+  \ Give previous index.
+
+: n  scr @ 1+ l r# off  ;
+  \ Go to next screen.
+
+: b  scr @ 1- l r# off  ;
+  \ Go to previous screen.
+
+: s ( n -- / n )   >r
+  begin  ['] f catch  while  scr @ r@ =  if  rdrop  exit  then
+         scr @ r@ u<  if  n  else  b  then  repeat  r>  ;
+  \ Search until screen _n_.
+
+forth definitions
+
+  \ vim: filetype=soloforth
