@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611201616
+; Last modified: 201611211535
 
 include version.z80s
 
@@ -928,7 +928,7 @@ compare_de_hl_unsigned:
   ; Credit:
   ; Code from DZX-Forth
 
-          ; T  B
+          ;  T  B
           ; -- --
   ld a,h  ; 04 01
   cp d    ; 04 01
@@ -937,7 +937,7 @@ compare_de_hl_unsigned:
   cp e    ; 04 01
   ret     ; 10 01
           ; -- --  -- --
-          ; 37 06  31 06
+          ; 37 06  31 06 Total
 
 compare_de_hl_signed:
 
@@ -1112,7 +1112,7 @@ abs_hl:
 
 negate_hl:
   ; two's complement
-  ;       ; T  B
+  ;       ;  T  B
   ;       ; -- --
   dec hl  ; 06 01
 negate_hl.1:
@@ -1124,7 +1124,7 @@ negate_hl.1:
   cpl     ; 04 01
   ld h,a  ; 04 01
           ; -- --
-          ; 30 07
+          ; 30 07 Total
   ret
 
 endif
@@ -1139,7 +1139,7 @@ negate_hl:
   ;ouput: hl negated
   ;destroys a
 
-  ;       ; T  B
+  ;       ;  T  B
   ;       ; -- --
   xor a   ; 04 01
   sub l   ; 04 01
@@ -1148,7 +1148,7 @@ negate_hl:
   sub h   ; 04 01
   ld h,a  ; 04 01
           ; -- --
-          ; 24 06
+          ; 24 06 Total
   ret
 
 if 0
@@ -3608,6 +3608,7 @@ find_name_from.not_a_match:
 
 find_name_from.nt: equ $+1
                                         ;  T  B
+                                        ; -- --
   ld hl,$0000 ; nt                        10 03
   dec hl ; high address of lfa            06 01
   ld d,(hl) ; high part of the next nt    07 01
@@ -3616,7 +3617,8 @@ find_name_from.nt: equ $+1
   ex de,hl                              ; 04 01
   ld a,h                                ; 04 01
   or l ; end of dictionary? (next nt=0)   04 01
-                                        ; 48 10 TOTAL
+                                        ; -- --
+                                        ; 48 10 Total
 
   jp nz,find_name_from.begin ; if not, continue
 
@@ -4913,7 +4915,7 @@ true_if_cy:
   ; Credit:
   ; Code adapted from Z88 CamelForth.
 
-                        ;  t  B
+                        ;   T  B
                         ;  -- --
   pop de                ;  10 01 ; DE=d2hi
   exx                   ;  04 01
@@ -4929,7 +4931,7 @@ true_if_cy:
   push hl               ;  11 01
   _jp_next              ;  08 02
                         ;  -- --
-                        ; 112 15 TOTALS
+                        ; 112 15 Total
 
 ; ----------------------------------------------
   _code_header invert_,'INVERT'
@@ -4995,7 +4997,7 @@ if size_optimization
   ; Time:  1.04
   ; Size: -1
 
-                                                ; T   B
+                                                ;   T  B
                                                 ; --- --
   pop     hl        ; high part                 ;  10 01
   pop     de        ; low part                  ;  10 01
@@ -5010,7 +5012,7 @@ if size_optimization
   _jp_pushhl                                    ;  11 01 push hl
                                                 ;  08 02 jp (ix)
                                                 ; --- --
-                                                ; 125 19
+                                                ; 125 19 Total
 else
 
   ; Credit:
@@ -5018,7 +5020,7 @@ else
 
   ; XXX TODO optimize?
 
-                                                ; T   B
+                                                ;   T  B
                                                 ; --- --
   pop hl      ; high part                       ;  10 01
   pop de      ; low part                        ;  10 01
@@ -5038,7 +5040,7 @@ else
                                                 ;  11 00 push de
                                                 ;  11 00 push hl
                                                 ; --- --
-                                                ; 109 20
+                                                ; 109 20 Total
 
 endif
 
@@ -6029,7 +6031,8 @@ source.other:
   inc hl      ; 06 01
   _jp_pushhl  ; 11 01 push hl
               ; 08 02 jp (ix)
-              ; 41 06 TOTAL
+              ; -- --
+              ; 41 06 Total
 
 ; ----------------------------------------------
   _alias_header cell_minus_,'CELL-',,two_minus_
@@ -6462,21 +6465,25 @@ if 1 ; far_memory
   if 1
 
                                             ;  T  B
+                                            ; -- --
   ld hl,(headers_pointer)                   ; 20 03
   ld a,l                                    ; 04 01
   ld (to_name.headers_pointer_low_byte),a   ; 13 03
   ld a,h                                    ; 04 01
   ld (to_name.headers_pointer_high_byte),a  ; 13 03
-                                            ; 54 11 TOTAL
+                                            ; -- --
+                                            ; 54 11 Total
 
   else
 
                                             ;  T  B
+                                            ; -- --
   ld a,(headers_pointer)                    ; 13 03
   ld (to_name.headers_pointer_low_byte),a   ; 13 03
   ld a,(headers_pointer+1)                  ; 13 03
   ld (to_name.headers_pointer_high_byte),a  ; 13 03
-                                            ; 52 12 TOTAL
+                                            ; -- --
+                                            ; 52 12 Total
 
   endif
 
@@ -6556,21 +6563,25 @@ else
   if 1
 
                                             ;  T  B
+                                            ; -- --
   ld hl,(headers_pointer)                   ; 20 03
   ld a,l                                    ; 04 01
   ld (to_name.headers_pointer_low_byte),a   ; 13 03
   ld a,h                                    ; 04 01
   ld (to_name.headers_pointer_high_byte),a  ; 13 03
-                                            ; 54 11 TOTAL
+                                            ; -- --
+                                            ; 54 11 Total
 
   else
 
                                             ;  T  B
+                                            ; -- --
   ld a,(headers_pointer)                    ; 13 03
   ld (to_name.headers_pointer_low_byte),a   ; 13 03
   ld a,(headers_pointer+1)                  ; 13 03
   ld (to_name.headers_pointer_high_byte),a  ; 13 03
-                                            ; 52 12 TOTAL
+                                            ; -- --
+                                            ; 52 12 Total
 
   endif
 
@@ -6816,16 +6827,20 @@ endif
 if size_optimization
 
                     ;  T  B
+                    ; -- --
   push ix           ; 15 02 ; make next `ret` jump to `next`
   jr bank.default   ; 12 02
-                    ; 27 04 TOTAL
+                    ; -- --
+                    ; 27 04 Total
 
 else
 
                     ;  T  B
+                    ; -- --
   call bank.default ; 17 03
   _jp_next          ; 08 02
-                    ; 25 05 TOTAL
+                    ; -- --
+                    ; 25 05 Total
 
 endif
 
@@ -8155,7 +8170,7 @@ fill.done:
 ;
 ; /string  ( ca1 len1 n -- ca2 len2 )
 ;
-; Adjust the character string at _ca1 len1_ by _n_ characters.
+; Adjust the character string _ca1 len1_ by _n_ characters.
 ; The resulting character string _ca2 len2_ begins at _ca1_ plus
 ; _n_ characters and is _len1_ minus _n_ characters long.
 ;
@@ -11667,7 +11682,7 @@ system_stack_pointer: equ $+1
   ; Credit:
   ; Code adapted from Z88 CamelForth
 
-                      ; T   B
+                      ;   T  B
                       ; --- --
   exx                 ;  04 01
   pop hl  ; HL'=x4    ;  10 01
@@ -11683,7 +11698,7 @@ system_stack_pointer: equ $+1
                       ;  11 00 push de
                       ;  11 00 push hl
                       ; --- --
-                      ; 110 13 TOTAL
+                      ; 110 13 Total
 
 ; ----------------------------------------------
   _variable_header limit_,'LIMIT'
