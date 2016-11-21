@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611211927
+  \ Last modified: 201611211936
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,7 +36,7 @@
   \ document it. Write `/line#` and `.line#`, useful factors of
   \ `list-lines`. Move `contains` to <strings.misc.fsb>.
   \ Move `.line` from <blocks.fsb>. Compact the code, saving
-  \ one block.
+  \ one block. Add `/block#` and `.block#`, for clarity.
 
 ( /line# .line# .line list-lines list )
 
@@ -112,12 +112,18 @@ exit ?)
   \
   \ }doc
 
-( .index index )
+( /block# .block# .index index )
+
+[unneeded] /block# ?\ 3 constant /block#  exit
 
 need ?(
 
+[unneeded] .block# ?(  need /block#
+: .block#  ( n -- )  /block# .r  ;  exit ?)
+
 [unneeded] .index ?(  need .line
-: .index  ( u -- )  cr dup 3 .r space 0 swap .line  ;  exit ?)
+: .index  ( u -- )
+  cr dup .block# space 0 swap .line  ;  exit ?)
 
   \ doc{
   \
@@ -130,7 +136,8 @@ need ?(
 
 [unneeded] index ?(  need .line  need nuf?
 : index  ( u1 u2 -- )
-  1+ swap ?do  cr i 3 .r space 0 i .line  nuf? ?leave  loop  ;
+  1+ swap ?do  cr i .block# space 0 i .line  nuf? ?leave
+  loop  ;
 exit ?)
 
   \ doc{
@@ -209,7 +216,7 @@ need ?(  need .index  need contains  need nuf?
   \ `blocked`, originally written by Bernd Paysan, 1995.
 
 need rows  need columns  need j  need inverse
-need .line#  need /line#
+need .line#  need /line#  need .block#  need /block#
 
 : qx-columns  ( -- n )  columns 14 /  ;
 
@@ -264,8 +271,8 @@ need .line#  need /line#
 
 : qx ( -- )
   home  qx-bounds do  qx-columns 0 do
-    i 1+ j +  dup 3 .r  dup scr @ = abs inverse
-    block /qx-column 3 - type  0 inverse
+    i 1+ j +  dup .block#  dup scr @ = abs inverse
+    block /qx-column /block# - type  0 inverse
   loop  cr  qx-columns 2 +loop  ;
 
   \ doc{
@@ -282,12 +289,6 @@ need .line#  need /line#
 
   \ XXX FIXME -- The combination of loops makes the block count
   \ overflow at the end of the disk, beyond `blocks`.
-  \
-  \ XXX TODO -- factor `3 .r` to `.line-number`, dependent on
-  \ `base`
-  \
-  \ XXX TODO -- change _3_ to `/line-number`, a factor of
-  \ `.line-number`
   \
   \ XXX TODO -- simplify: one single `do loop` and a
   \ conditional `cr`, or padding to end of line
