@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611211828
+  \ Last modified: 201611211916
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,16 +33,41 @@
   \ 2016-11-21: Modify title of listed screen, to avoid
   \ confusion when the radix is other than decimal. Move the
   \ `blocked` editor's quick index here, improve it and
-  \ document it.
+  \ document it. Write `/line#` and `.line#`, useful factors of
+  \ `list-lines`. Move `contains` to <strings.misc.fsb>.
 
-( list-lines list index .index )
+( /line# .line# list-lines list )
+
+[unneeded] /line#
+?\ : /line#  ( -- n )  #16 base @ - 4 / 1+  ;  exit
+
+  \ doc{
+  \
+  \ /line#  ( -- # )
+  \
+  \ Maximum length of a line number in the current radix.
+  \ It works for decimal, hex and binary.
+  \
+  \ }doc
+
+[unneeded] .line#
+?\ need /line#  : .line#  ( n -- )  /line# .r  ;  exit
+
+  \ doc{
+  \
+  \ .line#  ( n -- )
+  \
+  \ Print line number _n_ right-aligned in a field whose width
+  \ depends on the current radix (decimal, hex or binary).
+  \
+  \ }doc
 
 need ?(
 
-[unneeded] list-lines ?(  need .line  need nuf?
+[unneeded] list-lines ?(  need .line  need nuf?  need .line#
 : list-lines  ( u1 u2 u3 -- )
   rot dup scr ! cr ." Screen " .  1+ swap
-  ?do  cr i 2 .r space i scr @ .line nuf? ?leave  loop cr  ;
+  ?do  cr i .line# space i scr @ .line nuf? ?leave  loop cr  ;
 exit ?)
 
   \ doc{
@@ -71,6 +96,8 @@ exit ?)
   \ Forth-2012 (BLOCK EXT).
   \
   \ }doc
+
+( .index index )
 
 [unneeded] .index ?(  need .line
 : .index  ( u -- )  cr dup 3 .r space 0 swap .line  ;  exit ?)
@@ -104,12 +131,7 @@ exit ?)
 
 ( index-like )
 
-need .index  need nuf?
-
-[defined] contains
-  ?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
-     \ Does the string _ca1 len1_ contains the string _ca2
-     \ len2?_
+need .index  need nuf?  need contains
 
 : index-like  ( u1 u2 "name" -- )
   parse-name 2swap
@@ -133,14 +155,7 @@ need .index  need nuf?
 
 ( index-ilike )
 
-need .index
-
-[defined] contains
-?\ : contains  ( ca1 len1 ca2 len2 -- f )  search nip nip  ;
-   \ Does string _ca1 len1_ contain string _ca2 len2?_
-   \
-   \ XXX REMARK -- This word is defined in <002.need.fsb>,
-   \ that's why conditional compilation is used here.
+need .index  need contains
 
 : index-ilike  ( u1 u2 "name" -- )
   parse-name save-string 2dup uppers
@@ -178,6 +193,7 @@ need .index
   \ `blocked`, originally written by Bernd Paysan, 1995.
 
 need rows  need columns  need j  need inverse
+need .line#  need /line#
 
 : qx-columns  ( -- n )  columns 14 /  ;
 
