@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201611211706
+  \ Last modified: 201611211826
 
   \ -----------------------------------------------------------
   \ Authors
@@ -37,9 +37,6 @@
   \ f   search and mark
   \ il  insert a line
   \ dl  delete a line
-  \ qx  give a quick index
-  \ nx  give next index
-  \ px  give previous index
   \ n   go to next screen
   \ p   go to previous screen
   \ g   go to a given screen
@@ -58,7 +55,8 @@
   \ to `px`. Add comments. Try the original code with Gforth.
   \
   \ 2016-11-21: Improve, try and document. Adapt quick index
-  \ and highlighting of marked area.
+  \ and highlighting of marked area. Move quick index to
+  \ <tool.list.blocks.fsb>.
 
 ( blocked )
 
@@ -211,28 +209,6 @@ also editor definitions
 
 : dl  ( -- ) 'rest c/l delete update l  ;
   \ Delete a line at the cursor position.
-
-44 constant /qx  
-  \ Header lines shown on a quick index.
-  \ XXX TODO -- make it a word dependent on `rows`
-  \ XXX TODO -- move to <tool.list.blocks.fsb>
-
-: qx ( -- )  home scr @ /qx / /qx * /qx bounds
-  do  2 0  do  [ forth ] i 1+ [ editor ] j + dup 3 .r
-               dup scr @ = if  1 inverse  then
-               block 13 type  0 inverse  loop  cr  2 +loop  ;
-  \ Give a quick index.
-  \ XXX TODO -- make the index columns depend on the current
-  \ screen mode
-  \ XXX TODO -- move to <tool.list.blocks.fsb>
-
-: nx  ( -- )  /qx scr @ + blocks min scr ! qx  ;
-  \ Give next quick index.
-  \ XXX TODO -- move to <tool.list.blocks.fsb>
-
-: px  ( -- )  scr @ /qx - 0 max scr ! qx  ;
-  \ Give previous quick index.
-  \ XXX TODO -- move to <tool.list.blocks.fsb>
 
 : n  ( -- )  scr @ 1+ g r# off  ;
   \ Go to next screen.
