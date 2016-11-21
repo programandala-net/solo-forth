@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201611200216
+# Last modified: 201611211404
 
 # ==============================================================
 # Author
@@ -183,7 +183,7 @@ include Makefile.pasmo
 tmp/loader.gplusdos.bas: \
 	tmp/kernel.symbols.gplusdos.z80s \
 	src/loader/gplusdos.bas
-	gforth tools/patch_the_loader.fs $^ $@
+	gforth make/patch_the_loader.fs $^ $@
 
 tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
@@ -194,7 +194,7 @@ tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 tmp/loader.plus3dos.bas: \
 	tmp/kernel.symbols.plus3dos.z80s \
 	src/loader/plus3dos.bas
-	gforth tools/patch_the_loader.fs $^ $@
+	gforth make/patch_the_loader.fs $^ $@
 
 tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
@@ -205,7 +205,7 @@ tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 tmp/loader.trdos.bas: \
 	tmp/kernel.symbols.trdos.z80s \
 	src/loader/trdos.bas
-	gforth tools/patch_the_loader.fs $^ $@
+	gforth make/patch_the_loader.fs $^ $@
 
 tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
 	zmakebas -n boot -a 1 -o $@ $<
@@ -306,7 +306,7 @@ tmp/disk0.trdos.tap: \
 disks/trdos/disk0.trd: tmp/disk0.trdos.tap
 	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
 	rm -f $@
-	ln -f tools/emptytrd.exe tools/writetrd.exe tmp/
+	ln -f make/emptytrd.exe make/writetrd.exe tmp/
 	cd tmp && \
 	echo "EMPTYTRD.EXE SoloFth0.TRD" > mktrd.bat && \
 	echo "WRITETRD.EXE SoloFth0.TRD TRDOS-D0.TAP" >> mktrd.bat && \
@@ -514,7 +514,7 @@ disks/trdos/disk9_lib_without_dos.trd: tmp/library_without_dos.fsb
 # version of Solo Forth:
 
 backgrounds/current.pbm: src/version.z80s
-	version=$(shell tools/versionfile2string.fs $<) ; \
+	version=$(shell make/versionfile2string.fs $<) ; \
 	cd backgrounds ; \
 	ln -sf v$${version}.pbm $(notdir $@) ; \
 	cd ..
@@ -523,7 +523,7 @@ backgrounds/current.pbm: src/version.z80s
 # the assembled binary of the system):
 
 backgrounds/current.scr: backgrounds/current.pbm
-	tools/pbm2scr.fs $<
+	make/pbm2scr.fs $<
 
 # ==============================================================
 # Backup
@@ -659,3 +659,6 @@ oldbackup:
 # 2016-11-16: Modify the cleaning of <tmp/>, to preserve <.gitignore>.
 #
 # 2016-11-20: Add background images.
+#
+# 2016-11-21: Adapt: tools used by make have been moved from <tools/>
+# to <make/>.
