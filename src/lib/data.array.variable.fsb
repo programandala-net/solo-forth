@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611230028
+  \ Last modified: 201611230039
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,26 +44,11 @@
 
 need ?(
 
-[unneeded] avariable ?(
-
-: avariable>  ( n a1 -- a2 )  swap cells +  ;
-
-  \ XXX TODO -- factor, common to avalue
-
-  \ doc{
-  \
-  \ avariable>  ( n a1 -- a2 )
-  \
-  \ Return address _a2_ of element _n_ of a 1-dimension
-  \ single-cell variables array _a1_.
-  \
-  \ See: `avariable`.
-  \
-  \ }doc
+[unneeded] avariable ?(  need array>
 
 : avariable  ( n "name" -- )
   create  cells allot
-  does>  ( n -- a ) ( n pfa ) avariable>  ;  exit ?)
+  does>  ( n -- a ) ( n pfa ) array>  ;  exit ?)
 
   \ doc{
   \
@@ -85,24 +70,9 @@ need ?(
 
 [unneeded] 2avariable ?(
 
-: 2avariable>  ( n a1 -- a2 )  swap [ 2 cells ] literal * +  ;
-
-  \ XXX TODO -- factor, common to 2avalue
-
-  \ doc{
-  \
-  \ 2avariable>  ( n a1 -- a2 )
-  \
-  \ Return address _a2_ of element _n_ of a 1-dimension
-  \ double-cell variables array _a1_.
-  \
-  \ See: `2avariable`.
-  \
-  \ }doc
-
 : 2avariable  ( n "name" -- )
   create  [ 2 cells ] literal * allot
-  does>  ( n -- a ) ( n pfa ) 2avariable>  ;  exit ?)
+  does>  ( n -- a ) ( n pfa ) 2array>  ;  exit ?)
 
   \ doc{
   \
