@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611212213
+  \ Last modified: 201611220100
 
   \ -----------------------------------------------------------
   \ Description
@@ -216,7 +216,7 @@ need ?(  need .index  need contains  need nuf?
   \ `blocked` blocks editor, originally written by Bernd
   \ Paysan, 1995.
 
-need rows  need columns  need j  need inverse
+need rows  need columns
 need .line#  need /line#  need .block#  need /block#
 
 : qx-columns  ( -- n )  columns 14 /  ;
@@ -272,19 +272,8 @@ need .line#  need /line#  need .block#  need /block#
   \
   \ }doc
 
-: qx-row?  ( n -- f )  qx-columns mod 1+ qx-columns =  ;
-
-  \ doc{
+  \ need j  need inverse
   \
-  \ qx-row?  ( n -- f )
-  \
-  \ Is block counter _n_ (0..) the end of a row of the quick
-  \ index?
-  \
-  \ See: `qx`, `/qx`, `qx-columns`.
-  \
-  \ }doc
-
   \ : qx ( -- )
   \   home  qx-bounds do  qx-columns 0 do
   \     i j +  dup .block#  dup scr @ = abs inverse
@@ -292,15 +281,44 @@ need .line#  need /line#  need .block#  need /block#
   \   loop  cr  qx-columns +loop  ;
   \
   \ XXX OLD -- The stepped outer loops makes the block count
-  \ overflow at the end of the disk, beyond `blocks`. The new
-  \ version uses one single loop.
+  \ overflow at the end of the disk, beyond `blocks`. The next
+  \ version uses one single loop:
 
-: qx ( -- ) home  0  qx-bounds ?do
-    i dup .block#  dup scr @ = inverse
-    block /qx-column /block# - type  0 inverse
-    dup qx-row? if  cr  then  1+  loop  drop  ;
+  \ : qx-row?  ( n -- f )  qx-columns mod 1+ qx-columns =  ;
+  \
+  \ need j  need inverse
+  \
+  \ : qx ( -- ) home  0  qx-bounds ?do
+  \     i dup .block#  dup scr @ = inverse
+  \     block /qx-column /block# - type  0 inverse
+  \     dup qx-row? if  cr  then  1+  loop  drop  ;
+  \
+  \ XXX OLD -- `cr` caused problems because the `mode64` driver
+  \ increases the current line even when the cursor position is
+  \ at the end of a line. That's not the way the default
+  \ printing system works, `mode32`, or `mode42`.  Happily `cr`
+  \ is not needed, as long as the columns fill the whole width
+  \ of the screen, what the current calculations already do.
+  \ The next version does not use `cr` at the end of the index
+  \ rows:
 
-  \ XXX TODO --  try with `mode64` and `mode42`
+  \ need inverse
+  \
+  \ : qx ( -- )
+  \   home  qx-bounds ?do
+  \     i .block#  i scr @ = inverse
+  \     i block /qx-column /block# - type  0 inverse
+  \   loop  ;
+  \
+  \ XXX OLD -- `mode64` does not support `inverse`.  The next
+  \ version uses a mark instead, so the current block is
+  \ visible in any screen mode:
+
+: qx ( -- )
+  home  qx-bounds ?do
+    i scr @ = if  '>' /block# emits  else  i .block#  then
+    i block /qx-column /block# - type
+  loop  ;
 
   \ doc{
   \
