@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611220100
+  \ Last modified: 201611220133
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,9 +34,12 @@
   \ confusion when the radix is other than decimal. Move the
   \ `blocked` editor's quick index here, improve it and
   \ document it. Write `/line#` and `.line#`, useful factors of
-  \ `list-lines`. Move `contains` to <strings.misc.fsb>.
-  \ Move `.line` from <blocks.fsb>. Compact the code, saving
-  \ one block. Add `/block#` and `.block#`, for clarity.
+  \ `list-lines`. Move `contains` to <strings.misc.fsb>.  Move
+  \ `.line` from <blocks.fsb>. Compact the code, saving one
+  \ block. Add `/block#` and `.block#`, for clarity.
+  \
+  \ 2016-11-22: Make the quick index work with any screen mode.
+  \ Move `lt`, `lm` and `lb` from the `blocked` editor.
 
 ( /line# .line# .line list-lines list )
 
@@ -355,6 +358,42 @@ need .line#  need /line#  need .block#  need /block#
   \ Give previous quick index, calculated from `scr`.
   \
   \ See: `qx`, `nx`, `scr`.
+  \
+  \ }doc
+
+( lt lm lb )
+
+need list-lines
+
+: lt  ( -- )  scr @ 0 [ l/scr 2 / 1- ] literal list-lines  ;
+
+  \ doc{
+  \
+  \ lt  ( -- )
+  \
+  \ List top half of screen hold in `scr`.
+  \
+  \ }doc
+
+: lm  ( -- )  scr @ [ l/scr 4 / ] literal
+                    [ l/scr 4 / 3 * 1- ] literal list-lines  ;
+
+  \ doc{
+  \
+  \ lm ( -- )
+  \
+  \ List middle part of screen hold in `scr`.
+  \
+  \ }doc
+
+: lb  ( -- )  scr @ [ l/scr 2 / ] literal
+                    [ l/scr 1-  ] literal list-lines  ;
+
+  \ doc{
+  \
+  \ lb  ( -- )
+  \
+  \ List bottom half of screen hold in `lb`.
   \
   \ }doc
 

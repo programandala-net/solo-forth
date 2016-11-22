@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611211610
+  \ Last modified: 201611220134
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,9 @@
   \ 2016-11-21: Complete and improve documentation of all
   \ words. Use radix prefix instead of `hex`. Init `r#`. Use
   \ `l/scr` instead of a literal.
+  \
+  \ 2016-11-22: Move `r#` <editor.common.fsb>` and get `top`
+  \ from it.
 
 ( editor )
 
@@ -62,6 +65,8 @@ only forth definitions  need list  need update  need flush
                         need parse-all need vocabulary
 
 vocabulary editor  also editor definitions
+
+need r#  need top
 
   \ XXX OLD
   \ XXX FIXME `1 text`, used by two words, corrupts the system.
@@ -96,20 +101,6 @@ vocabulary editor  also editor definitions
   \ current block buffer.  The block number is in `scr`.
   \ Read the disk block from  disk if it is not already in the
   \ disk buffer.
-  \
-  \ }doc
-
-variable r#  r# off
-
-  \ XXX TODO -- move to <editor.common.fsb>
-
-  \ doc{
-  \
-  \ r#  ( -- a )
-  \
-  \ A variable that holds the location of the editing cursor,
-  \ an offset from the top of the current block. Its default
-  \ value is zero.
   \
   \ }doc
 
@@ -262,16 +253,6 @@ variable r#  r# off
   \
   \ Insert text from `pad` at line _n_, moving the old line _n_
   \ down. Line 15 is lost.
-  \
-  \ }doc
-
-: top  ( -- )  r# off  ;
-
-  \ doc{
-  \
-  \ top  ( -- )
-  \
-  \ Position the cursor at the start of the block.
   \
   \ }doc
 

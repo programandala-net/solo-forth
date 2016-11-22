@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201611211826
+  \ Last modified: 201611220135
 
   \ -----------------------------------------------------------
   \ Authors
@@ -57,56 +57,15 @@
   \ 2016-11-21: Improve, try and document. Adapt quick index
   \ and highlighting of marked area. Move quick index to
   \ <tool.list.blocks.fsb>.
+  \
+  \ 2016-11-22: Move `r#` to <editor.common.fsb>` and get `top`
+  \ from it.
 
 ( blocked )
-
-  \ Display block
 
 only forth definitions
-need inverse  need list  need update  need j  need list
-need list-lines  need vocabulary  vocabulary editor
-
-variable r# r# off
-  \ Location of the editing cursor.
-  \ XXX TODO -- move to <editor.common.fsb>
-variable len len off
-  \ Length of the text found.
-  \ XXX TODO -- rename to `/r#`
-  \ XXX TODO -- move to <editor.common.fsb>
-2variable mark 0. mark 2!
-  \ Backup of the editing position (cursor and block).
-
-create rbuf $100 allot
-  \ Replace buffer.
-  \ XXX TODO -- rename
-  \ XXX TODO -- use the circular string buffer instead?
-create ibuf $100 allot
-  \ Insert buffer.
-  \ XXX TODO -- rename
-  \ XXX TODO -- use the circular string buffer instead?
-create fbuf $100 allot
-  \ Search buffer.
-  \ XXX TODO -- rename
-  \ XXX TODO -- use the circular string buffer instead?
-
--->
-
-( blocked )
-
-: h  ( -- )
-  r# @ c/l /mod swap >r scr @ line>string
-  2dup drop r@ cr type
-       r> /string 2dup drop len @ 1 inverse type 0 inverse
-                       len @ /string type  ;
-  \ Type the line of the marked area, highlighting it. 
-
-: g  ( u -- )  editor page list h  ;
-  \ Go to screen _u_.
-
-: l  ( -- )  scr @ g  ;  -->
-  \ Go to current screen.
-
-( blocked )
+need inverse  need list  need update
+need list-lines  need vocabulary
 
 : delete  ( ca1 len1 len2 -- )
   over min >r  r@ - ( left over )  dup 0>
@@ -125,23 +84,45 @@ create fbuf $100 allot
   \ len1_.
   \ XXX TODO -- move to <strings.misc.fsb>
 
-also editor definitions
+vocabulary editor  also editor definitions
+need r#  need top
 
-  \ In-screen commands
-
-: lt  ( -- )  scr @ 0 [ l/scr 2 / 1- ] literal list-lines  ;
-  \ List top half of current screen.
+variable len len off
+  \ Length of the text found.
+  \ XXX TODO -- rename to `/r#`
   \ XXX TODO -- move to <editor.common.fsb>
+2variable mark 0. mark 2!
+  \ Backup of the editing position (cursor and block).
 
-: lm  ( -- )  scr @ [ l/scr 4 / ] literal
-                    [ l/scr 4 / 3 * 1- ] literal list-lines  ;
-  \ List middle part of current screen.
-  \ XXX TODO -- move to <editor.common.fsb>
+-->
 
-: lb  ( -- )  scr @ [ l/scr 2 / ] literal
-                    [ l/scr 1-  ] literal list-lines  ;
-  \ List bottom half of current screen.
-  \ XXX TODO -- move to <editor.common.fsb>
+( blocked )
+
+create rbuf $100 allot
+  \ Replace buffer.
+  \ XXX TODO -- rename
+  \ XXX TODO -- use the circular string buffer instead?
+create ibuf $100 allot
+  \ Insert buffer.
+  \ XXX TODO -- rename
+  \ XXX TODO -- use the circular string buffer instead?
+create fbuf $100 allot
+  \ Search buffer.
+  \ XXX TODO -- rename
+  \ XXX TODO -- use the circular string buffer instead?
+
+: h  ( -- )
+  r# @ c/l /mod swap >r scr @ line>string
+  2dup drop r@ cr type
+       r> /string 2dup drop len @ 1 inverse type 0 inverse
+                       len @ /string type  ;
+  \ Type the line of the marked area, highlighting it. 
+
+: g  ( u -- )  page list h  ;
+  \ Go to screen _u_.
+
+: l  ( -- )  scr @ g  ;
+  \ Go to current screen.
 
 : m  ( -- )  scr @ r# @ mark 2!  ;
   \ Mark current position.
@@ -199,8 +180,6 @@ also editor definitions
   \ Parse _ccc_, search it and mark it. If _ccc_ is empty, use
   \ the 
 
-  \ Multi-screen commands
-
 : il  ( -- )
   pad c/l 'rest insert 'rest drop c/l blank update l  ;  -->
   \ Insert a line at the cursor position.
@@ -210,17 +189,17 @@ also editor definitions
 : dl  ( -- ) 'rest c/l delete update l  ;
   \ Delete a line at the cursor position.
 
-: n  ( -- )  scr @ 1+ g r# off  ;
+: n  ( -- )  scr @ 1+ top g ;
   \ Go to next screen.
 
-: p  ( -- )  scr @ 1- g r# off  ;
+: p  ( -- )  scr @ 1- top g  ;
   \ Go to previous screen.
 
 : s ( u "ccc<eol>" | u -- )   >r
   begin  ['] f catch  while  scr @ r@ =  if  rdrop  exit  then
          scr @ r@ u<  if  n  else  p  then  repeat  r>  ;
-  \ Search _ccc_ until screen _u_. If _ccc_ is empty, use the
-  \ string of the previous search.
+  \ Search for _ccc_ until screen _u_. If _ccc_ is empty, use
+  \ the string of the previous search.
   \
   \ XXX TODO -- simplify and improve: search from the current
   \ block to the last one, without listing them; use
