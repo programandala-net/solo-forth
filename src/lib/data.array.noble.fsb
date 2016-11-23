@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051526201608051526
+  \ Last modified: 201611230112
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,10 +68,26 @@
   \ can delete that stuff.
 
   \ ...........................................................
+  \ Usage examples
+
+  \ 20 2 floats 1array a{
+  \   \ complex vector
+  \
+  \ 20 20 1 floats 2array m{{
+  \   \ real matrix
+  \
+  \ 20 1 cells 1array irow{
+  \   \ single-length, integer-valued vector
+  \
+  \ m{{ i j }} ( -- adr[m_ij] )
+  \   \ to dereference
+
+  \ ...........................................................
   \ References
 
-  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
   \ http://forth.sourceforge.net/techniques/
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/
+  \ http://forth.sourceforge.net/techniques/arrays-jvn/index-v.txt
   \ http://www.phys.virginia.edu/classes/551.jvn.fall01/arrays.f
 
   \ -----------------------------------------------------------
@@ -113,50 +129,91 @@
   \ 2016-08-05: Remove `long` and `wide` (syntactic sugar).
   \ Combine both blocks into one. Rewrite all stack comments
   \ and word descriptions.
+  \
+  \ 2016-11-23: Complete documentation. Improve conditional
+  \ compilation for `need`.
 
-( 1array 2array )
+( 1array } 2array }} )
 
-need ?(  [defined] 1array ?(  need <=  
+need ?(
+
+[unneeded] 1array ?(  need }  need align
 
 : 1array ( n1 n2 "name" -- )
-  create 2dup , , * allot  ;
-  \ Define a 1-dimension array _name_ with _n1_ items of 
+  create 2dup , , * allot align  ;  ?)
+
+  \ doc{
+  \
+  \ 1array  ( n1 n2 "name" -- )
+  \
+  \ Define a 1-dimension array _name_ with _n1_ items of
   \ _n2_ address units each.
+  \
+  \ See: `}`, `array>items`, `2array`.
+  \
+  \ }doc
 
-: array>items ( a -- n )  cell+ @ ;
+[unneeded] } ?(  need <=
+
+: array>items  ( a -- n )  cell+ @  ;
+
+  \ doc{
+  \
+  \ array>items  ( a -- n )
+  \
   \ Convert address of array _a_ to its number of items _n_.
+  \
+  \ See: `1array`.
+  \
+  \ }doc
 
-: } ( a1 n -- a2 )
+: }  ( a1 n -- a2 )
   over array>items over <= over 0< or #-272 ?throw
   over @ * + cell+ cell+  ;  ?)
-  \ Return address _a2_ of the _n_ item of the 1-cell array
-  \ _a1_.  Note: #-272 = array index out of range.
 
-[needed] 1array ?exit
+  \ XXX TODO -- remove bounds checking
 
-: 2array ( n1 n2 n3 "name" -- )
-  create >r tuck , ( n2 n1 )  r@ , * dup , r> * allot  ;
-  \ Define a 2-dimension array _name_ with _n1 x n2_ items of 
+  \ doc{
+  \
+  \ }  ( a1 n -- a2 )
+  \
+  \ If in range, return address _a2_ of the _n_ item of the
+  \ 1-cell array _a1_.  Otherwise throw error #-272 (array
+  \ index out of range).
+  \
+  \ See: `1array`, `array>items`.
+  \
+  \ }doc
+
+[unneeded] 2array ?(  need }  need align
+
+: 2array  ( n1 n2 n3 "name" -- )
+  create >r tuck , ( n2 n1 ) r@ , * dup , r> * allot align  ;
+
+  \ doc{
+  \
+  \ 2array  ( n1 n2 n3 "name" -- )
+  \
+  \ Define a 2-dimension array _name_ with _n1 x n2_ items of
   \ _n3_ address units each.
+  \
+  \ See: `}}`, `1array`.
+  \
+  \ }doc
 
-: }} ( a1 n1 n2 -- a2 ) \ data stored row-wise
-  2>r cell+ dup cell- @  r> * r> + }  ;
+: }} ( a1 n1 n2 -- a2 )  2>r cell+ dup cell- @  r> * r> + }  ;
+
+?)
+
+  \ doc{
+  \
+  \ }}  ( a1 n1 n2 -- a2 )
+  \
   \ Return address _a2_ of the _n1,n2_ item of the 2-dimension
-  \ array _a1_.
-
-  \ ...........................................................
-  \ Usage examples:
-
-  \ 20 2 floats 1array a{
-  \   \ complex vector
+  \ array _a1_.  Data  stored row-wise.
   \
-  \ 20 20 1 floats 2array m{{
-  \   \ real matrix
+  \ See: `2array`.
   \
-  \ 20 1 cells 1array irow{
-  \   \ single-length, integer-valued vector
-  \
-  \ m{{ i j }} ( -- adr[m_ij] )
-  \   \ to dereference
+  \ }doc
 
   \ vim: filetype=soloforth
