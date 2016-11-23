@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611231327
+; Last modified: 201611231410
 
 include version.z80s
 
@@ -5213,11 +5213,11 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_store_reset_bits_,'C!RESET-BITS'
+  _code_header c_reset_,'CRESET'
 
 ; doc{
 ;
-; c!reset-bits  ( b ca -- )
+; creset  ( b ca -- )
 ;
 ; Reset the bits at _ca_ specified by the bitmask _b_.
 ;
@@ -7348,13 +7348,13 @@ postpone.end:
 if 1 ; far_memory
 
   dw smudge_mask_,swap_
-  dw far_,c_store_reset_bits_,default_bank_
+  dw far_,c_reset_,default_bank_
   dw exit_
 
 else
 
   dw smudge_mask_,swap_
-  dw system_bank_,c_store_reset_bits_,default_bank_
+  dw system_bank_,c_reset_,default_bank_
   dw exit_
 
 endif
