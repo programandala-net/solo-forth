@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242022
+  \ Last modified: 201611231229
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,13 +23,16 @@
 
   \ 2016-04-24: Add `need 2rdrop`, because `2rdrop` has been
   \ moved from the kernel to the library.
+  \
+  \ 2016-11-23: Rename `c!set-bits` to `cset` after the changes
+  \ in the system.
 
 ( rnd-benchmark )
 
   \ XXX UNDER DEVELOPMENT -- new benchmark
   \ 2016-04-07: Start
 
-need bits  need u%
+need bits  need u%  need cset
 
 $FFFF constant #sampled
 8 constant /byte  \ bits
@@ -43,7 +46,7 @@ create sample  /sample allot
 : sampled  ( -- u )  sample /sample bits  ;
   \ Count the bits of the sample.
 
-: remember  ( u -- )  /byte /mod sample + c!set-bits  ;
+: remember  ( u -- )  /byte /mod sample + cset  ;
   \ Remember random number _u_, by setting its associated bit
   \ in the sample.
 

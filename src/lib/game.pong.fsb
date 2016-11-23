@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604242200
+  \ Last modified: 201611231221
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`, after the
+  \ changes in the system.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -68,7 +71,7 @@ need columns  need rows  need 0udg[  need rnd  need ??
 3 constant /kk  need pressed?
 
 need cvariable  need 2/  need pixel-addr
-need g-emit-0udg  need c!toggle-bits  need g-at-xy
+need g-emit-0udg  need ctoggle  need g-at-xy
 
 0 cconstant black  7 cconstant white
 
@@ -279,10 +282,10 @@ variable ball-frame  first-ball-frame ball-frame !
 : print-points  ( -- )  print-points1 print-points2  ;
   \ Print the points of both players.
 
-: change-x  ( -- )  %10 direction c!toggle-bits  ;
+: change-x  ( -- )  %10 direction ctoggle  ;
   \ Change the x direction of the ball.
 
-: change-y  ( -- )  %01 direction c!toggle-bits  ;
+: change-y  ( -- )  %01 direction ctoggle  ;
   \ Change the y direction of the ball.
 
 : faster  ( -- )

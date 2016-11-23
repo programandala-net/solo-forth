@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608051556
+  \ Last modified: 201611231220
 
   \ -----------------------------------------------------------
   \ Description
@@ -71,6 +71,7 @@
   \ 2016-08-05: Fix requiring of `]l`, `]2l`, `exec` ,`eval`,
   \ `save-here` and `restore-here`. Compact the code of several
   \ blocks. Replace one usage of `[if]` with `?(`.
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -273,9 +274,9 @@ need ?(
 
 need ?(
 
-[unneeded] smudged ?(  need c!toggle-bits
+[unneeded] smudged ?(  need ctoggle
 : smudged  ( nt -- )
-  smudge-mask swap system-bank c!toggle-bits default-bank  ; ?)
+  smudge-mask swap system-bank ctoggle default-bank  ; ?)
 
   \ doc{
   \

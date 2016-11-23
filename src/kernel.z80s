@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611211535
+; Last modified: 201611231303
 
 include version.z80s
 
@@ -4873,11 +4873,15 @@ zero_equals.hl:
   pop hl
 zero_less_.hl: ; XXX entry not used yet
   if size_optimization
-    add hl,hl ; 11t, 1 byte
+              ;   T  B
+              ;  -- --
+    add hl,hl ;  11  1
   else
     ; Credit:
     ; Idea from Ace Forth.
-    rl h ; 8t, 2 bytes
+              ;   T  B
+              ;  -- --
+    rl h      ;   8  2
   endif
 true_if_cy:
   jp c,true_
@@ -5189,17 +5193,16 @@ endif
   jp false_
 
 ; ----------------------------------------------
-  _code_header c_store_set_bits_,'C!SET-BITS'
+  _code_header c_set_,'CSET'
 
 ; doc{
 ;
-; c!set-bits  ( b ca -- )
+; cset  ( b ca -- )
 ;
 ; Set the bits at _ca_ specified by the bitmask _b_.
 ;
 ; }doc
 
-  ; XXX TODO -- rename
   ; XXX TODO -- move to the library, when possible.
 
   pop hl ; address
@@ -9418,7 +9421,7 @@ if 1 ; far_memory
 else
   dw system_bank_
 endif
-  dw c_store_set_bits_,default_bank_
+  dw c_set_,default_bank_
   dw exit_
 
 ; ----------------------------------------------

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611231225
+  \ Last modified: 201611231257
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,9 @@
   \ 2016-08-02: Fix requiring `c1+!`, `c1-!`, `1+!` and `1-!`.
   \ 2016-11-16: Fix documentation.
   \ 2016-11-22: Document `align` and `aligned`.
+  \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
+  \ `c!set-bits` to `cset` and `c!reset-bits` to `creset`,
+  \ after the changes in the system.
 
 ( -! c+! c-! )
 
@@ -327,13 +330,7 @@ need ?(  [unneeded] nn, ?(  need need-here  need-here n,
   \
   \ }doc
 
-( c@test-bits c!toggle-bits )
-
-  \ XXX TODO possible names:
-  \ c@test-bits     cand@    c@and   c@mask?    c@test?  c@set?
-  \ c!set-bits      cor!     c!or    c!mask     c!set
-  \ c!reset-bits                     c!unmask   c!reset
-  \ c!toggle-bits   cxor!    c!xor   c!toggle   c!toggle
+( c@test-bits ctoggle )
 
   \ Credit:
   \
@@ -374,22 +371,22 @@ code c@test-bits  ( b1 ca -- b2 )
   \
   \ }doc
 
-  \ XXX OLD -- `c!set-bits` is in the kernel
-  \ [needed] c!set-bits [if]
-  \ code c!set-bits  ( b ca -- )
+  \ XXX OLD -- `cset` is in the kernel
+  \ [needed] cset [if]
+  \ code cset  ( b ca -- )
   \   hl pop  de pop  e a ld  m or  a m ld  jpnext
   \   end-code  exit  [then]
   \   \ Set the bits at _ca_ specified by the bitmask _b_.
 
-  \ XXX OLD -- `c!reset-bits` is in the kernel
-  \ [needed] c!reset-bits [if]
-  \ code c!reset-bits  ( b ca -- )
+  \ XXX OLD -- `creset` is in the kernel
+  \ [needed] creset [if]
+  \ code creset  ( b ca -- )
   \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
   \   end-code  exit  [then]
   \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
-[unneeded] c!toggle-bits ?(
-code c!toggle-bits  ( b ca -- )
+[unneeded] ctoggle ?(
+code ctoggle  ( b ca -- )
   E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext end-code ?)
     \ pop hl
     \ pop de
@@ -400,7 +397,7 @@ code c!toggle-bits  ( b ca -- )
 
   \ doc{
   \
-  \ c!toggle-bits  ( b ca -- )
+  \ ctoggle  ( b ca -- )
   \
   \ Invert the bits at _ca_ specified by the bitmask _b_.
   \

@@ -455,10 +455,10 @@ syn keyword soloforthOperator ?dnegate
 syn keyword soloforthOperator ?negate
 syn keyword soloforthOperator abs
 syn keyword soloforthOperator and
-syn keyword soloforthOperator c!reset-bits
-syn keyword soloforthOperator c!set-bits
-syn keyword soloforthOperator c!toggle-bits
 syn keyword soloforthOperator c@test-bits
+syn keyword soloforthOperator creset
+syn keyword soloforthOperator cset
+syn keyword soloforthOperator ctoggle
 syn keyword soloforthOperator d+
 syn keyword soloforthOperator d-
 syn keyword soloforthOperator d2*
@@ -1158,8 +1158,7 @@ let b:current_syntax = "soloforth"
 "
 " 2016-04-18: Removed `not`.
 "
-" 2016-04-21: Updated the kernel words related to user data
-" space.
+" 2016-04-21: Updated the kernel words related to user data space.
 "
 " 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
 " `noname?`, `last`, `lastxt`, `latestxt`.
@@ -1179,7 +1178,8 @@ let b:current_syntax = "soloforth"
 "
 " 2016-11-20: Add `blocks`.
 "
-" 2016-11-23: Add `align` and `aligned`.
+" 2016-11-23: Add `align` and `aligned`. Update bit-manipulation
+" words.
 
 " --------------------------------------------------------------
 
