@@ -455,7 +455,8 @@ syn keyword soloforthOperator ?dnegate
 syn keyword soloforthOperator ?negate
 syn keyword soloforthOperator abs
 syn keyword soloforthOperator and
-syn keyword soloforthOperator c@test-bits
+syn keyword soloforthOperator c@and
+syn keyword soloforthOperator c@and?
 syn keyword soloforthOperator creset
 syn keyword soloforthOperator cset
 syn keyword soloforthOperator ctoggle

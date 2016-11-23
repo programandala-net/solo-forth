@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611231227
+  \ Last modified: 201611231322
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,13 +26,14 @@
   \ Latest changes
 
   \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
-  \ `c!set-bits` to `cset` and `c!reset-bits` to `creset` after
-  \ the changes in the system.
+  \ `c!set-bits` to `cset`, `c!reset-bits` to `creset` and
+  \ `c@test-bits` to `c@and`, after the changes in the system.
+  \ Use `c@and?`.
 
 ( capslock )
 
 need os-flags2
-need ctoggle  need c@test-bits  need cset   need creset
+need ctoggle  need cset   need creset
 
 %1000 os-flags2 2constant capslock
   \ Bit and system variable that control the capslock.
@@ -40,6 +41,6 @@ need ctoggle  need c@test-bits  need cset   need creset
 : toggle-capslock  ( -- )    capslock ctoggle  ;
 : set-capslock     ( -- )    capslock cset  ;
 : unset-capslock   ( -- )    capslock creset  ;
-: capslock?        ( -- f )  capslock c@test-bits 0<>  ;
+: capslock?        ( -- f )  capslock c@and?  ;
 
   \ vim: filetype=soloforth

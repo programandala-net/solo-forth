@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611231307
+; Last modified: 201611231327
 
 include version.z80s
 
@@ -5171,18 +5171,18 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_fetch_test_bits_question_,'C@TEST-BITS?'
+  _code_header c_fetch_and_question_,'C@AND?'
 
 ; doc{
 ;
-; c@test-bits?  ( b ca -- f )
+; c@and?  ( b ca -- f )
 ;
-; Test the bits at _ca_ specified by the bitmask _b_.
-; Return _true_ if the result is non-zero, else return _false_.
+; Fetch the caracter at _ca_ and do a bit-by-bit logical "and"
+; of it with _b_. Return _false_ if the result is zero, else
+; _true_.
 ;
 ; }doc
 
-  ; XXX TODO -- rename
   ; XXX TODO -- move to the library
 
   pop hl ; address
@@ -9394,7 +9394,7 @@ if 1 ; far_memory
 else
   dw system_bank_
 endif
-  dw c_fetch_test_bits_question_
+  dw c_fetch_and_question_
   dw default_bank_
   dw exit_
 
