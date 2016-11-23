@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-11-16
+" Updated:  2016-11-23
 
 " --------------------------------------------------------------
 " History
@@ -180,6 +180,7 @@ syn keyword soloforthFiles b/rec
 syn keyword soloforthFiles blk
 syn keyword soloforthFiles blk/disk
 syn keyword soloforthFiles block
+syn keyword soloforthFiles blocks
 syn keyword soloforthFiles block-number
 syn keyword soloforthFiles block>source
 syn keyword soloforthFiles buffer
@@ -370,6 +371,8 @@ syn keyword soloforthMemory ?csb
 syn keyword soloforthMemory @
 syn keyword soloforthMemory @bank
 syn keyword soloforthMemory @s
+syn keyword soloforthMemory align
+syn keyword soloforthMemory aligned
 syn keyword soloforthMemory allocate-string
 syn keyword soloforthMemory allot
 syn keyword soloforthMemory bank
@@ -1173,6 +1176,10 @@ let b:current_syntax = "soloforth"
 "
 " 2016-11-16: Update `hp` (formerly `np`) and related words. Add the
 " far-memory words defined in the kernel.
+"
+" 2016-11-20: Add `blocks`.
+"
+" 2016-11-23: Add `align` and `aligned`.
 
 " --------------------------------------------------------------
 
