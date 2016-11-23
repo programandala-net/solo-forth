@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611231303
+; Last modified: 201611231307
 
 include version.z80s
 
@@ -5825,7 +5825,13 @@ endif
 ;
 ; current  ( -- a )
 ;
-; User variable that holds XXX TODO
+; User variable that holds the word list identifier of the
+; compilation word list.
+; 
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (System Extension Word Set).
+; 
+; See: `get-current`.
 ;
 ; }doc
 
@@ -5838,7 +5844,11 @@ endif
 ;
 ; state  ( -- a )
 ;
-; User variable that holds XXX TODO
+; User variable that holds the compilation-state flag, which is
+; true when in compilation state, false otherwise.
+;
+; Origin: fig-Forth, Forth-89 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -9578,6 +9588,8 @@ do_vocabulary:
 ; Return _wid_, the identifier of the compilation word list.
 ;
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+;
+; See: `current`.
 ;
 ; ----
 ; : get-current  ( -- wid )
