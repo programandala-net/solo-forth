@@ -1,14 +1,14 @@
-  \ tool.decode.fsb
+  \ tool.see.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171903
+  \ Last modified: 201611232249
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ The `decode` utility.
+  \ The `see` utility.
 
   \ -----------------------------------------------------------
   \ Author
@@ -74,8 +74,11 @@
   \ checking the word.
   \
   \ 2016-11-17: Remove unused `need [if]`.
+  \
+  \ 2016-11-23: Rename `decode` to `see`, and all words
+  \ accordingly. Compact the code, saving one block.
 
-( decode )
+( see )
 
   \ Variables, indentation and pause control
 
@@ -84,60 +87,53 @@ forth definitions decimal
 need body>name  need name>body  need case
 need recurse  need >body  need body>
 
-variable decode-level  decode-level off \ depth of nesting
-variable decode-address  \ in the word being decoded
+variable see-level  see-level off \ depth of nesting
+variable see-address  \ in the word being decoded
 
-: indent  ( -- )
-  cr decode-address @ u. decode-level @ 2* spaces  ;
+: indent  ( -- )  cr see-address @ u. see-level @ 2* spaces  ;
 
-: indent+  ( -- )  1 decode-level +! indent  ;
-
--->
-
-( decode )
+: indent+  ( -- )  1 see-level +! indent  ;
 
   \ Special cases
 
-: decode-branch    ( a1 -- a2 )  cell+ dup @ u.  ;
+: see-branch    ( a1 -- a2 )  cell+ dup @ u.  ;
 
-: decode-literal   ( a1 -- a2 )  cell+ dup @ .  ;
+: see-literal   ( a1 -- a2 )  cell+ dup @ .  ;
 
-: decode-2literal   ( a1 -- a2 )  cell+ dup 2@ d. cell+  ;
+: see-2literal   ( a1 -- a2 )  cell+ dup 2@ d. cell+  ;
 
-: decode-cliteral  ( a1 -- a2 )  cell+ dup c@ . 1-  ;
+: see-cliteral  ( a1 -- a2 )  cell+ dup c@ . 1-  ;
 
-: decode-sliteral  ( a1 -- a2 )
+: see-sliteral  ( a1 -- a2 )
   cell+ dup count type  dup c@ + 1-  ;
 
-: decode-compile   ( a1 -- a2 )  cell+ dup @ >name .name  ;
+: see-compile   ( a1 -- a2 )  cell+ dup @ >name .name  ;  -->
 
--->
-
-( decode )
+( see )
 
   \ Special cases dispatcher
 
-: decode-special  ( a1 -- a1 | a2 )  dup @ case
-    ['] compile   of  decode-compile    endof
-    ['] lit       of  decode-literal    endof
-    ['] 2lit      of  decode-2literal   endof
-    ['] clit      of  decode-cliteral   endof
-    ['] slit      of  decode-sliteral   endof
-    ['] branch    of  decode-branch     endof
-    ['] 0branch   of  decode-branch     endof
-    ['] ?branch   of  decode-branch     endof
-    ['] (do)      of  decode-branch     endof
-    ['] (?do)     of  decode-branch     endof
-    ['] (.")      of  decode-sliteral   endof
-    [undefined] cslit   ?\ ['] cslit   of decode-sliteral endof
-    [undefined] -branch ?\ ['] -branch of decode-branch   endof
+: see-special  ( a1 -- a1 | a2 )  dup @ case
+    ['] compile   of  see-compile    endof
+    ['] lit       of  see-literal    endof
+    ['] 2lit      of  see-2literal   endof
+    ['] clit      of  see-cliteral   endof
+    ['] slit      of  see-sliteral   endof
+    ['] branch    of  see-branch     endof
+    ['] 0branch   of  see-branch     endof
+    ['] ?branch   of  see-branch     endof
+    ['] (do)      of  see-branch     endof
+    ['] (?do)     of  see-branch     endof
+    ['] (.")      of  see-sliteral   endof
+    [undefined] cslit   ?\ ['] cslit   of see-sliteral endof
+    [undefined] -branch ?\ ['] -branch of see-branch   endof
   endcase  ;  -->
 
-( decode )
+( see )
 
   \ Checks of the main code
 
-: decode-end?  ( xt -- f )
+: see-end?  ( xt -- f )
   dup  ['] exit =  swap ['] (;code) =  or  ;
   \ Is the given xt the end of a definition?
 
@@ -152,43 +148,59 @@ variable decode-address  \ in the word being decoded
 
 -->
 
-( decode )
+( see )
 
   \ Main code
 
   \ XXX TODO -- pause with `nuf?`
 
-: (decode)  ( pfa -- )
-
-  \ Decode the definition at the given pfa.
-
+: see-body  ( pfa -- )
   dup colon-pfa? if
-    dup body> decode-address ! indent
-    ." : " dup body>name .name
-    begin   ( pfa+n ) dup decode-address !
-            dup @  ( pfa+n xt ) dup decode-end? 0=
+    dup body> see-address ! indent  ." : " dup body>name .name
+    begin   ( pfa+n ) dup see-address !
+            dup @  ( pfa+n xt ) dup see-end? 0=
     while  \ high level & not end of colon definition
       \ ( pfa+n xt )
       >body ( pfa+n pfa' ) dup indent+  body>name .name
       key case  'q' of  sp0 @ sp! quit  endof
                 bl  of  drop            endof
                 swap recurse  \ default
-          endcase  decode-special  cell+  -1 decode-level +!
+          endcase  see-special  cell+  -1 see-level +!
     repeat  indent >name .name
             \ show the last word
   else  ." Not a colon definition."  then  drop  ;  -->
+  
+  \ doc{
+  \
+  \ see-body  ( a -- )
+  \
+  \ Decode the colon word's definition whose body is _a_.
+  \ This word is a factor of `see`.
+  \
+  \ See: `see`.
+  \
+  \ }doc
 
-( decode )
+( see )
 
   \ Interface
 
-: decode-usage  ( -- )
+: see-usage  ( -- )
      \  <------------------------------>
   cr ." Keys: space=more, q=quit, other=deeper." cr  ;
 
-: decode  ( "name" -- )
-  defined  ( nt | 0 )  dup 0= -13 ?throw
-  decode-usage
-  name>body  decode-level off  (decode)  ;
+: see  ( "name" -- )
+  defined  ( nt | 0 )  dup 0= -13 ?throw  see-usage
+  name>body  see-level off  see-body  ;
+
+  \ doc{
+  \
+  \ see  ( "name" -- )
+  \
+  \ Decode the word's definition _name_.
+  \
+  \ Origin: Forth-94 (TOOLS), Forth-2012 (TOOLS).
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
