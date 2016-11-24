@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611220133
+  \ Last modified: 201611240142
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,8 +40,10 @@
   \
   \ 2016-11-22: Make the quick index work with any screen mode.
   \ Move `lt`, `lm` and `lb` from the `blocked` editor.
+  \
+  \ 2016-11-24: Factor `list-line` from `list-lines`.
 
-( /line# .line# .line list-lines list )
+( /line# .line# .line list-line list-lines list )
 
 [unneeded] /line#
 ?\ : /line#  ( -- n )  #16 base @ - 4 / 1+  ;  exit
@@ -80,21 +82,32 @@
   \
   \ }doc
 
-need ?(
+need ?(  [unneeded] list-line ?(  need .line#  need .line
+: list-line  ( n1 n2 -- )
+  cr over .line# space .line  ;  exit ?)
 
-[unneeded] list-lines ?(  need .line  need nuf?  need .line#
+  \ doc{
+  \
+  \ list-line  ( n1 n2 -- )
+  \
+  \ List line _n1_ from block _n2_, without trailing spaces.
+  \
+  \ See: `list-lines`.
+  \
+  \ }doc
+
+[unneeded] list-lines ?(  need .line  need nuf?  need list-line
 : list-lines  ( u1 u2 u3 -- )
   rot dup scr ! cr ." Screen " .  1+ swap
-  ?do  cr i .line# space i scr @ .line nuf? ?leave  loop cr  ;
-exit ?)
+  ?do  i scr @ list-line nuf? ?leave  loop cr  ;  exit ?)
 
   \ doc{
   \
   \ list-lines  ( u1 u2 u3 -- )
   \
-  \ Display lines _u2..u3_ of block _u1_ and store _u1_ in `scr`.
+  \ List lines _u2..u3_ of block _u1_ and store _u1_ in `scr`.
   \
-  \ See: `list`, `scr`.
+  \ See: `list`, `scr`, `list-line`.
   \
   \ }doc
 
