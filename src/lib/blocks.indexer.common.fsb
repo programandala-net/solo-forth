@@ -1,14 +1,14 @@
-  \ blocks.index-wordlist.fsb
+  \ blocks.indexer.common.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611210200
+  \ Last modified: 201611241642
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Code common to `indexer` and `fly-indexer`.
+  \ Code common to the Thru Indexer and the Fly Indexer.
 
   \ -----------------------------------------------------------
   \ Author
@@ -29,8 +29,10 @@
   \ share the code with <blocks.fly-indexer.fsb>.
   \
   \ 2016-11-21: Add missing `need`.
+  \
+  \ 2016-11-24: Rename the module.
 
-( index-wordlist )
+( common-indexer )
 
 get-current forth-wordlist dup >order set-current
 
@@ -106,7 +108,7 @@ variable indexed-block
   \
   \ }doc
 
-( index-wordlist )
+( common-indexer )
 
 wordlist dup constant indexer-wordlist set-current
   \ Word list for the words that parse the block index lines.
@@ -125,5 +127,7 @@ indexer-wordlist >order  ' ( alias .(  previous
 
 previous set-current
   \ Restore the original search order.
+
+: common-indexer  ( -- )  ;
 
   \ vim: filetype=soloforth

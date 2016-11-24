@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611220203
+  \ Last modified: 201611241642
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \
   \ The utility consists of words `need`, `needed`, `reneed`
   \ and `reneeded`. All of them are deferred words. Their
-  \ default behaviour is set by `set-located-need`: locate the
+  \ default behaviour is set by `set-no-index`: locate the
   \ required word searching the blocks of the library.
   \
   \ An alternative faster behaviour is provided by the
@@ -321,7 +321,7 @@ defer needed  ( ca len -- )  -->
   \ }doc
 
 
-( locate-needed need set-located-needed )
+( locate-needed need set-no-index )
 
 : locate-needed  ( ca len -- )
   \ rp@ rp0 @ - -2 / ." rdepth=" .  \ XXX INFORMER
@@ -382,20 +382,34 @@ defer need  ( "name" -- )
   \
   \ }doc
 
-: set-located-need  ( -- )
+: set-locate-need  ( -- )
   ['] locate-reneeded ['] reneeded  defer!
   ['] locate-reneed   ['] reneed    defer!
   ['] locate-need     ['] need      defer!
-  ['] locate-needed   ['] needed    defer!
-  ['] (located)       ['] located   defer!
-  ['] drop            ['] unlocated defer!  ; set-located-need
-
-  \ XXX TODO -- rename to `set-no-index`, after the
-  \ alternative `set-fly-index`.
+  ['] locate-needed   ['] needed    defer!  ;
 
   \ doc{
   \
-  \ set-located-need  ( -- )
+  \ set-locate-need  ( -- )
+  \
+  \ Set the default behaviour of `need`, `needed`, `reneed`,
+  \ and `reneeded`: Use `locate` for searching the library.
+  \ 
+  \ This word is a common factor of `set-no-index` and
+  \ `set-fly-index`.
+  \
+  \ See: `set-no-index`, `set-fly-index`.
+  \
+  \ }doc
+
+: set-no-index  ( -- )
+  set-locate-need
+  ['] (located)       ['] located   defer!
+  ['] drop            ['] unlocated defer!  ; set-no-index
+
+  \ doc{
+  \
+  \ set-no-index  ( -- )
   \
   \ Set the default behaviour of `need`, `needed`, `reneed`,
   \ `reneeded` and `unlocated`: Use `locate` for searching the
