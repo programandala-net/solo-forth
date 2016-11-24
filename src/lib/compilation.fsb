@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611231220
+  \ Last modified: 201611241748
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,7 @@
   \ `save-here` and `restore-here`. Compact the code of several
   \ blocks. Replace one usage of `[if]` with `?(`.
   \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`.
+  \ 2016-11-24: Make `name<name` compatible with far memory.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -125,8 +126,11 @@ need str=
 [unneeded] name>link
 ?\ need alias  ' cell- alias name>link  ( nt -- pfa )
 
-[unneeded] name<name
-?\ need name>link  : name<name  ( nt1 -- nt2 )  name>link @s  ;
+[unneeded] name<name ?exit
+need name>link
+[defined] far@ ?\ : name<name  ( nt1 -- nt2 )  name>link @s  ;
+  \ XXX TMP -- while the old system bank is kept, just in case
+[defined] s@ ?\ : name<name  ( nt1 -- nt2 )  name>link far@  ;
   \ Get the previous _nt2_ from _nt1_.
 
 ( >>link name>> >>name >body body> '' [''] )
