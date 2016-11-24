@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611241431
+  \ Last modified: 201611241513
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,7 +26,8 @@
   \ Latest changes
 
   \ 2016-11-24: Move `+branch` from
-  \ <flow.conditionals.negative.fsb>.  Add `-branch`.
+  \ <flow.conditionals.negative.fsb>.  Add `-branch`. Improve
+  \ documentation.
 
   \ XXX TODO -- Compilation stack comments.
 
@@ -52,6 +53,10 @@ code -branch  ( n -- )
   \ negative, the following in-line address is copied to IP to
   \ branch forward or backward.
   \
+  \ This word is compiled by `+if` and `+until`.
+  \
+  \ See: `+if`, `+while`, `+until`.
+  \ 
   \ }doc
 
 [unneeded] +branch ?(
@@ -72,7 +77,7 @@ code +branch  ( n -- )
   \ positive, the following in-line address is copied to IP to
   \ branch forward or backward.
   \
-  \ Compiled by `-if`, `-while` and `-until`.
+  \ This word is compiled by `-if` and `-until`.
   \
   \ See: `-if`, `-while`, `-until`.
   \ 

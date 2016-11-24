@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611231410
+; Last modified: 201611240116
 
 include version.z80s
 
@@ -2690,6 +2690,8 @@ question_csb_.enough:
 ;
 ; Origin: fig-Forth.
 ;
+; See: `?branch`, `-branch`, `+branch`.
+;
 ; }doc
 
   pop hl
@@ -2713,6 +2715,8 @@ question_csb_.enough:
 ;
 ; Note: This is not Forth-83's `?branch`, which is equivalent to
 ; '0branch` in fig-Forth and Solo Forth.
+;
+; See: `0branch`, `-branch`, `+branch`.
 ;
 ; }doc
 
@@ -5289,6 +5293,17 @@ store.de_into_hl_pointer:
 
 ; ----------------------------------------------
   _colon_header colon_,':'
+
+if 0 ; XXX TMP -- for debugging
+  dw cr_
+  dw blk_,fetch_,dot_
+  dw latest_,question_dup_
+  dw zero_branch_,colon.no_name
+  dw dot_name_
+colon.no_name:
+  dw hp_fetch_,u_dot_
+  ; dw key_,drop_
+endif
 
   dw store_csp_
   dw header_
@@ -8320,6 +8335,17 @@ parse.end:
 ; ----
 ;
 ; }doc
+
+if 0 ; XXX TMP -- for debugging
+  dw cr_
+  dw blk_,fetch_,dot_
+  dw latest_,question_dup_
+  dw zero_branch_,input_stream_header.no_name
+  dw dot_name_
+input_stream_header.no_name:
+  dw hp_fetch_,u_dot_
+  ; dw key_,drop_
+endif
 
   dw parse_name_,question_name_too_short_,header_comma_
   dw exit_
