@@ -3,14 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611191618
+  \ Last modified: 201611241553
 
   \ -----------------------------------------------------------
   \ Description
 
   \ A blocks indexer that improves the default behaviour of
   \ `need` and related words. See the documentation of
-  \ `indexer`.
+  \ `make-thru-index`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -54,10 +54,12 @@
   \ 2016-11-19: Move to <blocks.index-wordlist.fsb> the code
   \ shared with the new module <blocks.fly-indexer.fsb>.
 
-( indexer )
+( make-thru-index )
 
 only forth definitions
+
 need index-wordlist  need get-order  need set-order
+need evaluate
 
 : index-reneeded  ( ca len -- )
   search-index 0= #-277 ?throw load  ;
@@ -127,67 +129,64 @@ need index-wordlist  need get-order  need set-order
   \
   \ }doc
 
-( indexer )
+( make-thru-index )
 
-: set-indexed-need  ( -- )
+: set-thru-index  ( -- )
   ['] index-reneeded ['] reneeded  defer!
   ['] index-reneed   ['] reneed    defer!
   ['] index-need     ['] need      defer!
-  ['] index-needed   ['] needed    defer!  ;
+  ['] index-needed   ['] needed    defer!
+  ['] (located)      ['] located   defer!
+  ['] drop           ['] unlocated defer!  ;
+
+  \ XXX TODO -- rename to `set-thru-index`, after the
+  \ alternative `set-fly-index`.
 
   \ doc{
   \
-  \ set-indexed-need  ( -- )
+  \ set-thru-index  ( -- )
   \
-  \ Set the alternative behaviour of `need`, `needed`, `reneed`
-  \ and `reneeded`: Use the library index created by `indexer`.
-  \ In fact `indexer` executes `set-indexed-need` after
-  \ creating the index.
+  \ Set the alternative behaviour of `need`, `needed`,
+  \ `reneed`, `reneeded`: Use the library index created by
+  \ `make-thru-index`.  In fact `make-thru-index` executes
+  \ `set-thru-index` after creating the index.
   \
-  \ The default behaviour can be restored by
+  \ Set also the default behaviour of `located` and
+  \ `unlocated`, just in case another version of the indexer
+  \ has been used before.
+  \
+  \ The default behaviour of all said words can be restored by
   \ `set-located-need`.
   \
-  \ See: `indexer`, `set-located-need`.
+  \ See: `make-thru-index`, `set-located-need`.
   \
   \ }doc
 
-need evaluate
-
-: index-block  ( +n -- )
-  dup indexed-block ! 0 swap line>string evaluate  ;
+: (make-thru-index)  ( -- )
+  last-locatable @ 1+ first-locatable @
+  ?do  i index-block-header  loop  ;
 
   \ doc{
   \
-  \ index-block  ( +n -- )
-  \
-  \ Index block _+n_. This word is a factor of `(indexer)`.
-  \
-  \ See: `(indexer)`, `indexer`.
-  \
-  \ }doc
-
-: (indexer)  ( -- )  last-locatable @ 1+ first-locatable @
-                     ?do  i index-block  loop  ;
-  \ doc{
-  \
-  \ (indexer)  ( -- )
+  \ (make-thru-index)  ( -- )
   \
   \ Create the blocks index, from `last-locatable` to
-  \ `last-locatable`. This word is a factor of `indexer`.
+  \ `last-locatable`. This word is a factor of
+  \ `make-thru-index`.
   \
-  \ See: `indexer`, `first-locatable`, `last-locatable`.
+  \ See: `make-thru-index`, `first-locatable`,
+  \ `last-locatable`.
   \
   \ }doc
 
-: indexer  ( -- )
-  get-current  get-order
+: make-thru-index  ( -- )  get-current  get-order
   index-wordlist set-current  indexer-wordlist 1 set-order
-  ['] (indexer) catch  dup #-278 <> swap ?throw
-  set-order set-current  set-indexed-need  ;
+  ['] (make-thru-index) catch  dup #-278 <> swap ?throw
+  set-order set-current  set-thru-index  ;
 
   \ doc{
   \
-  \ indexer  ( -- )
+  \ make-thru-index  ( -- )
   \
   \ Create the blocks index and activate it. The current word
   \ list and the current search order are preserved.
@@ -206,7 +205,7 @@ need evaluate
   \ restored with `set-located-need`.
   \
   \ See: `need`, `needed`, `reneed`, `reneeded`,
-  \ `set-indexed-need`, `set-located-need`.
+  \ `set-thru-index`, `set-located-need`.
   \
   \ }doc
 

@@ -1,0 +1,170 @@
+  \ blocks.fly-indexer.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT -- not usable yet
+
+  \ Last modified: 201611191235
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ A blocks indexer that improves the default behaviour of
+  \ `need` and related words. See the documentation of
+  \ `fly-indexer`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-04-19: Start, based on the code of `indexer`.
+
+( fly-indexer )
+
+only forth definitions  need index-wordlist  need get-order
+need set-order  need evaluate  need bit-array
+
+blocks bit-array indexed-blocks
+  \ Bit array to mark the indexed blocks
+
+: indexed?  ( u -- f )  indexed-blocks @bit  ;
+  \ Is block _u_ indexed?
+
+: indexed  ( u -- )  indexed-blocks !bit  ;
+  \ Mark block _u_ as indexed.
+
+: fly-index-reneeded  ( ca len -- )
+  search-index 0= #-277 ?throw load  ;
+
+  \ doc{
+  \
+  \ fly-index-reneeded  ( ca len-- )
+  \
+  \ Search the index word list for word _ca len_. If found,
+  \ load the block it's associated to.  If not found, throw an
+  \ exception -277 ("required, but not indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `reneeded`.
+  \
+  \ }doc
+
+: fly-index-reneed  ( "name" -- )
+  parse-name fly-index-reneeded  ;
+
+  \ doc{
+  \
+  \ fly-index-reneed  ( "name" -- )
+  \
+  \ Search the index word list for word "name". If found,
+  \ execute it, causing its associated block be loaded.  If not
+  \ found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `reneed`.
+  \
+  \ }doc
+
+: fly-index-needed  ( ca len -- )
+  needed-word 2@ 2>r  new-needed-word  2dup undefined?
+  if    fly-index-reneeded
+  else  2drop  then  2r> needed-word 2!  ;
+
+  \ doc{
+  \
+  \ fly-index-needed ( ca len -- )
+  \
+  \ If word _ca len_ is found in the current search order, do
+  \ nothing. Otherwise search the index word list for it. If
+  \ found, execute it, causing its associated block be loaded.
+  \ If not found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `needed`.
+  \
+  \ }doc
+
+: fly-index-need  ( "name" -- )  parse-name fly-index-needed  ;
+
+  \ doc{
+  \
+  \ fly-index-need  ( "name" -- )
+  \
+  \ If word "name" is found in the current search order, do
+  \ nothing. Otherwise search the index word list for it. If
+  \ found, execute it, causing its associated block be loaded.
+  \ If not found, throw an exception -277 ("required, but not
+  \ indexed").
+  \
+  \ This is an alternative behaviour of the deferred word
+  \ `need`.
+  \
+  \ }doc
+
+-->
+
+( fly-indexer )
+
+: (index-block)  ( n -- )
+  index-wordlist set-current  indexer-wordlist 1 set-order
+  ['] index-block-header catch  dup #-278 <> swap ?throw  ;
+
+: index-block  ( n -- ) get-current get-order (index-block)
+                        set-order set-current  ;
+
+: ?index-block  ( n -- )
+  dup indexed? if  drop exit  then  dup index-block indexed  ;
+  \ Index block _n_, if not done before.
+
+: fly-located  ( ca len -- block | false )
+  2dup search-index if  execute  0= #-277 ?throw load  ;
+
+  \ doc{
+  \
+  \ fly-located  ( ca len -- block | 0 )
+  \
+  \ Locate the first block whose header contains the string _ca
+  \ len_ (surrounded by spaces), and return its number. If not
+  \ found, return zero.  The search is case-sensitive.
+  \ Index all searched blocks on the fly.
+  \
+  \ }doc
+
+: set-fly-index  ( -- )
+  ['] locate-reneeded ['] reneeded  defer!
+  ['] locate-reneed   ['] reneed    defer!
+  ['] locate-need     ['] need      defer!
+  ['] locate-needed   ['] needed    defer!
+  ['] fly-located     ['] located   defer!
+  ['] ?index-block    ['] unlocated defer!  ;
+
+  \ doc{
+  \
+  \ set-fly-index  ( -- )
+  \
+  \ Set the alternative behaviour of `need`, `needed`, `reneed`
+  \ and `reneeded`: Index the searched blocks on the fly.
+  \
+  \ The default behaviour can be restored by
+  \ `set-located-need`.
+  \
+  \ See: `fly-indexer`, `set-located-need`, `indexer`.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth
+

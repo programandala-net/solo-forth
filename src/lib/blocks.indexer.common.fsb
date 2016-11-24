@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611191304
+  \ Last modified: 201611210200
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,23 +27,46 @@
 
   \ 2016-11-19: Extracted from <blocks.indexer.fsb> in order to
   \ share the code with <blocks.fly-indexer.fsb>.
+  \
+  \ 2016-11-21: Add missing `need`.
 
 ( index-wordlist )
 
-also forth  get-current  forth-wordlist set-current
+get-current forth-wordlist dup >order set-current
 
-need str=  need alias  need nextname
+need str=  need alias  need nextname  need evaluate
 
 wordlist constant index-wordlist
+
+  \ doc{
+  \
+  \ index-wordlist  ( -- wid )
+  \
   \ Word list for the indexed words.
+  \
+  \ }doc
 
 : search-index  ( ca len -- 0 | xt 1 | xt -1 )
   index-wordlist search-wordlist  ;
+
+  \ doc{
+  \
+  \ search-index  ( ca len -- 0 | xt 1 | xt -1 )
+  \
   \ Search the index for word _ca len_.
+  \
+  \ }doc
 
 : name-indexed?  ( ca len -- f )
   search-index 0<> dup if  nip  then  ;
+
+  \ doc{
+  \
+  \ name-indexed?  ( ca len -- f )
+  \
   \ Is word _ca len_ in the index?
+  \
+  \ }doc
 
 variable indexed-block
 
@@ -54,10 +77,34 @@ variable indexed-block
   \ 1 counter +! counter ? 2dup type space hp@ u.
   \ XXX INFORMER
   nextname indexed-block @ alias  ;
-  \ Add word _ca len_ to the blocks index, if not done before.
-  \ The current word list is supposed to be `index-wordlist`.
 
--->
+  \ doc{
+  \
+  \ index-name  ( ca len -- )
+  \
+  \ Add word _ca len_ to the blocks index, if not done before.
+  \
+  \ The current word list must be `index-wordlist`.
+  \
+  \ }doc
+
+: index-block-header  ( +n -- )
+  dup indexed-block ! 0 swap line>string evaluate  ;  -->
+
+  \ doc{
+  \
+  \ (index-block)  ( +n -- )
+  \
+  \ Index block _+n_, evaluating its header line.  The only
+  \ word list in the search order must be `index-wordlist`.
+  \
+  \ This is a common factor of `(indexer)` (from the `indexer`
+  \ tool) and `(index-block)` (from the `fly-indexer` tool).
+  \
+  \ See: `indexer`, `(indexer)`, `fly-indexer`,
+  \ `(index-block)`.
+  \
+  \ }doc
 
 ( index-wordlist )
 
@@ -66,8 +113,10 @@ wordlist dup constant indexer-wordlist set-current
 
 : (  ( "ccc<space><paren><space|eof>" -- )
   begin  parse-name 2dup s" )" str= 0=
-  while  index-name  repeat  2drop  ;  ' ( alias .(
+  while  index-name  repeat  2drop  ;
   \ Parse and index the names until the next right paren name.
+
+indexer-wordlist >order  ' ( alias .(  previous
 
 : \  ( "ccc<space><backslash><space|eof>" -- )
   begin  parse-name 2dup s" \" str= 0=
@@ -75,5 +124,6 @@ wordlist dup constant indexer-wordlist set-current
   \ Parse and index the names until the next backslash name.
 
 previous set-current
+  \ Restore the original search order.
 
   \ vim: filetype=soloforth
