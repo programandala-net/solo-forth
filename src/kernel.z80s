@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611241845
+; Last modified: 201611242015
 
 include version.z80s
 
@@ -12307,16 +12307,6 @@ two_fetch.hl:
 
   dw create_
   dw branch_,two_comma.allot
-
-; ----------------------------------------------
-  _colon_header u_dot_r_,'U.R'
-
-  ; XXX TODO -- move to the library
-
-  dw to_r_
-  _literal 0
-  dw from_r_,d_dot_r_
-  dw exit_
 
 ; ----------------------------------------------
   _code_header two_over_,'2OVER'

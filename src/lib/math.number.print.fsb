@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605010407
+  \ Last modified: 201611242041
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,18 +26,67 @@
   \ Latest changes
 
   \ 2016-05-01: Add `holds`.
+  \
+  \ 2016-11-24: Move `u.r` from the kernel and document it.
+  \ Document also `ud.r` and `ud.`. Improve individual needing
+  \ of all of them.
 
-( ud.r ud. )
+( ud.r u.r ud. )
 
   \ Credit:
   \
   \ Code adapted from Spectrum Forth-83.
 
-: ud.r  ( d n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+need ?(
 
-  \ : u.r  ( n1 n2 -- )  >r 0 r> ud.r  ;
+[unneeded] ud.r ?(
+: ud.r  ( ud n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+exit ?)
 
-: ud.  ( d -- )  0 ud.r space  ;
+  \ doc{
+  \
+  \ ud.r  ( ud n -- )
+  \
+  \ Print an usigned double number _ud_ right justified in a
+  \ field of _n_ characters wide. If the number of characters
+  \ required to print _ud_ is greater than _n_, all digits are
+  \ displayed with no leading spaces in a field as wide as
+  \ necessary.
+  \
+  \ }doc
+
+[unneeded] u.r ?(  need ud.r
+: u.r  ( u n -- )  >r s>d r> ud.r  ;  exit ?)
+  
+  \ doc{
+  \
+  \ u.r  ( u n -- )
+  \
+  \ Print an unsigned number _u_ right justified in a field of
+  \ _n_ characters wide. If the number of characters required
+  \ to print _u_ is greater than _n_, all digits are displayed
+  \ with no leading spaces in a field as wide as necessary.
+  \
+  \ Origin: Forth-79 (Reference Word Set)footnote:[In Forth-79,
+  \ if the number of characters required to display _u_ is
+  \ greater than _n_, no leading spaces are given.], Forth-83
+  \ (Controlled Reference Word)footnote:[In Forth-83, if the
+  \ number of characters required to display _u_ is greater
+  \ than _n_, an error condition exists, which depends on the
+  \ system.], Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
+[unneeded] u.r ?(  need ud.r
+: ud.  ( ud -- )  0 ud.r space  ;  exit ?)
+
+  \ doc{
+  \
+  \ ud.  ( ud -- )
+  \
+  \ Print an usigned double number _ud_.
+  \
+  \ }doc
 
 ( bin. dec. hex. )
 
