@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611251916
+  \ Last modified: 201611252046
 
   \ -----------------------------------------------------------
   \ Description
@@ -11,7 +11,7 @@
   \ Incomplete implementation of quotations, as described in
   \ Forth-2012's RfD
   \ <http://www.forth200x.org/quotations-v3.txt>: No support
-  \ for `recurse` or locals, not tested with `does>`.
+  \ for locals, not tested with `does>`.
 
   \ -----------------------------------------------------------
   \ Author
@@ -29,19 +29,19 @@
   \ History
 
   \ 2016-11-25: First version.  Reference:
-  \ <http://www.forth200x.org/quotations-v3.txt>.  No support
-  \ for `recurse` yet. Not tested with `does>`.  No support for
-  \ locals.
+  \ <http://www.forth200x.org/quotations-v3.txt>.  Not tested
+  \ with `does>`.  No support for locals.
 
 ( [: ;] )
 
-: [:  \ Compilation: ( -- orig )
-  postpone ahead
-  docolon [ also assembler ] call, [ previous ]  ; immediate
+: [:  \ Compilation: ( -- orig xt )
+  postpone ahead  latestxt here lastxt !
+  docolon [ also assembler ] call, [ previous ]
+  ; immediate compile-only
 
   \ doc{
   \
-  \ [:  \ Compilation: ( -- orig )
+  \ [:  \ Compilation: ( -- orig xt )
   \
   \ Suspend compiling to the current definition, start a new
   \ nested definition and compilation continues with this
@@ -64,10 +64,10 @@
   \ the start of the present quotation or any of the containing
   \ quotations.
 
-: ;]  \ Compilation: ( orig -- )
-      \ Execution:   ( -- xt )
-  postpone exit  dup >resolve
-  cell+ postpone literal  ; immediate
+: ;]  \ Compilation: ( orig xt1 -- )
+      \ Execution:   ( -- xt2 )
+  lastxt !  postpone exit  dup >resolve
+  cell+ postpone literal  ; immediate compile-only
 
   \ doc{
   \
