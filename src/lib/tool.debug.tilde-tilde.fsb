@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611141406
+  \ Last modified: 201611251110
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,11 @@
   \
   \ 2016-11-14: Document all words. Use `defer!`, which is the
   \ kernel, instead of `is`, which is in the library.
+  \
+  \ 2016-11-25: Add a pause control with a configurable key to
+  \ resume. Update and improve documentation. Convert the
+  \ default behaviours of `~~save` and `~~restore` to named
+  \ words, in order to make them easier to reuse.
 
 ( ~~ )
 
@@ -41,7 +46,8 @@ variable ~~?   ~~? on
   \ ~~?  ( -- a )
   \
   \ A variable that holds a flag. When the flag is true, the
-  \ debugging code compiled by `~~` is executed.
+  \ debugging code compiled by `~~` is executed, else ignored.
+  \ Its default value is true.
   \
   \ See: `~~`.
   \
@@ -73,17 +79,33 @@ variable ~~x  ~~x off  variable ~~y  ~~y off
   \
   \ }doc
 
-variable ~~key  ~~key off
+variable ~~quit-key  ~~quit-key off
 
   \ doc{
   \
-  \ ~~key  ( -- a )
+  \ ~~quit-key  ( -- a )
   \
-  \ A variable that holds the quit key code to use at the
-  \ debugging points compiled by `~~`. If its content is zero,
-  \ no pause will be done.  Its default value is zero.
+  \ A variable that holds the key code used to quit at the
+  \ debugging points compiled by `~~`. If its value is not
+  \ zero, `~~control` will wait for a key press in order to
+  \ quit the debugging.  Its default value is zero.
   \
-  \ See: `~~control`, `~~`.
+  \ See: `~~resume-key`, `~~control`, `~~`.
+  \
+  \ }doc
+
+variable ~~resume-key  ~~resume-key off
+
+  \ doc{
+  \
+  \ ~~resume-key  ( -- a )
+  \
+  \ A variable that holds the key code used to pause at the
+  \ debugging points compiled by `~~`. If its value is not
+  \ zero, `~~control` will wait for a key press in order to
+  \ resume the debugging.  Its default value is zero.
+  \
+  \ See: `~~quit-key`, `~~control`, `~~`.
   \
   \ }doc
 
@@ -101,20 +123,55 @@ variable ~~key  ~~key off
   \
   \ }doc
 
+: ~~control?  ( -- f )  ~~resume-key @ ~~quit-key @ or  ;
+
+  \ doc{
+  \
+  \ ~~control?  ( -- f )
+  \ 
+  \ Is there any key to be checked by `~~control`?
+  \
+  \ See: `~~control`.
+  \
+  \ }doc
+
+: ~~press?  ( c a -- f )  @ tuck = swap 0<> and ;
+
+  \ doc{
+  \
+  \ ~~press?  ( c a -- f )
+  \
+  \ Is the contents of _a_ not zero and equal to _c_?
+  \ This is a factor of `~~control` used to check key presses.
+  \
+  \ See: `~~control`.
+  \
+  \ }doc
+
 : ~~control  ( -- )
-  ~~key @ ?dup 0= ?exit  key = if  quit  then  ;
+  ~~control? 0= ?exit                         begin  key dup
+    ~~quit-key ~~press? if  drop quit  then
+  ~~resume-key ~~press? if  exit       then   again   ;
 
   \ doc{
   \
   \ ~~control  ( -- )
+  \ 
+  \ Keyboard control used by the debug points compiled by `~~`:
+  \ If the contents of `~~quit-key` and `~~resume-key` are zero
+  \ do nothing, else wait for a key press in an endless loop:
+  \ If the pressed key equals the contents of `~~quit-key`,
+  \ then execute `quit`; if the pressed key equals the contents
+  \ of `~~resume-key`, then exit.
   \
-  \ If the content of `~~key` is zero do nothing. Else wait for
-  \ a key press and execute `quit` if the pressed key equals
-  \ the content of `~~key`.
-  \
-  \ See: `~~key`, `~~`.
+  \ See: `~~quit-key`, `~~resume-key`, `~~`, `~~control?`,
+  \ `~~press?`.
   \
   \ }doc
+
+-->
+
+( ~~ )
 
 2variable ~~xy-backup
 
@@ -129,7 +186,6 @@ variable ~~key  ~~key off
   \ See: `~~save`, `~~restore`, `~~`.
   \
   \ }doc
-
 
 defer ~~save  ( -- )  defer ~~restore  ( -- )
 
@@ -157,17 +213,33 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \
   \ }doc
 
-:noname  ( -- )  xy ~~xy-backup 2!  ;  ' ~~save defer!
-  \ Save the cursor coordinates.
-  \ Default behaviour of `~~save`.
+: ~~save-xy  ( -- )  xy ~~xy-backup 2!  ;
 
-:noname  ( -- )  ~~xy-backup 2@ at-xy  ;  ' ~~restore defer!
-  \ Restore the cursor coordinates.
-  \ Default behaviour of `~~restore`.
+  \ doc{
+  \
+  \ ~~save-xy  ( -- )
+  \
+  \ Save the cursor coordinates.  This is the default
+  \ behaviour of `~~save`.
+  \
+  \ See: `~~save`, `~~restore-xy`, `~~restore`.
+  \
+  \ }doc
 
--->
+: ~~restore-xy  ( -- )  ~~xy-backup 2@ at-xy  ;
 
-( ~~ )
+  \ doc{
+  \
+  \ ~~restore-xy  ( -- )
+  \
+  \ Restore the cursor coordinates.  This is the default
+  \ behaviour of `~~restore`.
+  \
+  \ See: `~~restore`, `~~save-xy`, `~~save`.
+  \
+  \ }doc
+
+' ~~save-xy ' ~~save defer!  ' ~~restore-xy ' ~~restore defer!
 
 : (~~)  ( nt line block -- )
   ~~? @ if    ~~save ~~show ~~control ~~restore
@@ -179,7 +251,7 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \
   \ If the content of `~~?` is not zero, execute the debugging
   \ code that was compiled during the definition of word _nt_
-  \ in _line_ of _block_.
+  \ in line _line_ of block _block_.
   \
   \ See: `~~`, `~~?`.
   \
