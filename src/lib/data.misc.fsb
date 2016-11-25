@@ -26,11 +26,18 @@
   \ Latest changes
 
   \ 2015-11-15: Add `link@` and `link,`.
+  \
   \ 2016-04-28: Rename `set` to `storer` and improve it. Add
   \ `cstorer`.
+  \
   \ 2016-05-02: Join two blocks to save space.
+  \
   \ 2016-05-10: Add `2storer`.
+  \
   \ 2016-11-17: Add `const`, `cconst`, `2const`.
+  \
+  \ 2016-11-25: Move `storer`, `cstorer` and `2storer` to its
+  \ own module <data.storer.fsb>.
 
 ( buffer: cvariable enum link@ link, )
 
@@ -56,64 +63,6 @@ defer link@  ( node1 -- node2 )  ' @ ' link@ defer!
 
 : link,  ( node -- )  here over @ , swap !  ;
   \ Create a new linked list node, pointing to _node_.
-
-( storer cstorer 2storer )
-
-need ?(
-
-[unneeded] storer ?(
-
-: storer  ( x a "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ !  ; exit ?)
-
-  \ doc{
-  \
-  \ storer  ( x a "name" -- )
-  \
-  \ Define a word "name" which, when executed, will cause that
-  \ _x_ be stored at _a_.
-  \
-  \ Origin: word `set` found in Forth-79 (Reference Word Set)
-  \ and Forth-83 (Appendix B.  Uncontrolled Reference Words).
-  \
-  \ }doc
-
-[unneeded] cstorer ?(
-
-: cstorer  ( c ca "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ c!  ; exit ?)
-
-  \ doc{
-  \
-  \ cstorer  ( c ca "name" -- )
-  \
-  \ Define a word "name" which, when executed, will cause that
-  \ _c_ be stored at _ca_.
-  \
-  \ Origin: variant of the word `set` found in Forth-79
-  \ (Reference Word Set) and Forth-83 (Appendix B.
-  \ Uncontrolled Reference Words).
-  \
-  \ }doc
-
-[unneeded] 2storer ?(
-
-: 2storer  ( xd a "name" -- )
-  create  , 2,
-  does>   ( -- ) ( pfa )  dup cell+ 2@ rot @ 2!  ; exit ?)
-
-  \ doc{
-  \
-  \ 2storer  ( xd a "name" -- )
-  \
-  \ Define a word "name" which, when executed, will cause that
-  \ _xd_ be stored at _a_.
-  \
-  \ Origin: variant of the word `set` found in Forth-79
-  \ (Reference Word Set) and Forth-83 (Appendix B.
-  \ Uncontrolled Reference Words).
-  \
-  \ }doc
 
 ( const cconst 2const )
 
