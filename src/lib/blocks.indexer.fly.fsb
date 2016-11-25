@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201611241642
+  \ Last modified: 201611250127
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,106 +36,41 @@
   \
   \ 2016-11-24: Rename the module and some words, to be
   \ consistent with the previous version Thru Indexer.
+  \
+  \ 2016-11-25: Factor `set-index-order`. Improve documentation
+  \ and names.
 
-( set-fly-index )
+( use-fly-index )
 
 only forth definitions  need common-indexer  need get-order
-need set-order  need evaluate  need bit-array
+                        need set-order       need bit-array
 
 blocks bit-array indexed-blocks
   \ Bit array to mark the indexed blocks
 
-: indexed?  ( u -- f )  indexed-blocks @bit  ;
-  \ Is block _u_ indexed?
+: indexed-block?  ( block -- f )  indexed-blocks @bit  ;
+  \ Is block _block_ indexed?
 
-: indexed  ( u -- )  indexed-blocks !bit  ;
-  \ Mark block _u_ as indexed.
-
-: fly-index-reneeded  ( ca len -- )
-  search-index 0= #-277 ?throw load  ;
-
-  \ doc{
-  \
-  \ fly-index-reneeded  ( ca len-- )
-  \
-  \ Search the index word list for word _ca len_. If found,
-  \ load the block it's associated to.  If not found, throw an
-  \ exception -277 ("required, but not indexed").
-  \
-  \ This is an alternative behaviour of the deferred word
-  \ `reneeded`.
-  \
-  \ }doc
-
-: fly-index-reneed  ( "name" -- )
-  parse-name fly-index-reneeded  ;
-
-  \ doc{
-  \
-  \ fly-index-reneed  ( "name" -- )
-  \
-  \ Search the index word list for word "name". If found,
-  \ execute it, causing its associated block be loaded.  If not
-  \ found, throw an exception -277 ("required, but not
-  \ indexed").
-  \
-  \ This is an alternative behaviour of the deferred word
-  \ `reneed`.
-  \
-  \ }doc
-
-: fly-index-needed  ( ca len -- )
-  needed-word 2@ 2>r  new-needed-word  2dup undefined?
-  if    fly-index-reneeded
-  else  2drop  then  2r> needed-word 2!  ;
-
-  \ doc{
-  \
-  \ fly-index-needed ( ca len -- )
-  \
-  \ If word _ca len_ is found in the current search order, do
-  \ nothing. Otherwise search the index word list for it. If
-  \ found, execute it, causing its associated block be loaded.
-  \ If not found, throw an exception -277 ("required, but not
-  \ indexed").
-  \
-  \ This is an alternative behaviour of the deferred word
-  \ `needed`.
-  \
-  \ }doc
-
-: fly-index-need  ( "name" -- )  parse-name fly-index-needed  ;
-
-  \ doc{
-  \
-  \ fly-index-need  ( "name" -- )
-  \
-  \ If word "name" is found in the current search order, do
-  \ nothing. Otherwise search the index word list for it. If
-  \ found, execute it, causing its associated block be loaded.
-  \ If not found, throw an exception -277 ("required, but not
-  \ indexed").
-  \
-  \ This is an alternative behaviour of the deferred word
-  \ `need`.
-  \
-  \ }doc
+: block-indexed  ( block -- )  indexed-blocks !bit  ;
+  \ Mark block _block_ as indexed.
 
 -->
 
-( set-fly-index )
+( use-fly-index )
 
-: (index-block)  ( n -- )  get-current get-order
-  index-wordlist set-current  indexer-wordlist 1 set-order
-  ['] index-block-header catch  dup #-278 <> swap ?throw
-                           set-order set-current  ;
+: index-block  ( block -- )
+  get-current get-order set-index-order
+  ['] (index-block) catch  dup #-278 <> swap ?throw
+  set-order set-current block-indexed  ;
 
-: ?index-block  ( n -- )
-  dup indexed? if  drop exit  then  dup index-block indexed  ;
-  \ Index block _n_, if not done before.
+  \ XXX TODO -- #-278 \ empty block found: quit indexing
 
-: fly-located  ( ca len -- block | false )
-  2dup search-index if  execute  0= #-277 ?throw load  ;
+: ?index-block  ( block -- )
+  dup indexed-block? if  drop exit  then  index-block  ;
+  \ Index block _block_, if not done before.
+
+: fly-located  ( ca len -- )
+  2dup indexed-name? if  nip nip load exit  then  (located)  ;
 
   \ doc{
   \
@@ -148,14 +83,14 @@ blocks bit-array indexed-blocks
   \
   \ }doc
 
-: set-fly-index  ( -- )
-  set-locate-need
+: use-fly-index  ( -- )
+  use-default-need
   ['] fly-located     ['] located   defer!
   ['] ?index-block    ['] unlocated defer!  ;
 
   \ doc{
   \
-  \ set-fly-index  ( -- )
+  \ use-fly-index  ( -- )
   \
   \ Set the alternative behaviour of `need`, `needed`,
   \ `reneed`, `reneeded`, `located` and `unlocated` in order to
@@ -163,9 +98,9 @@ blocks bit-array indexed-blocks
   \ fly.
   \
   \ The default behaviour of all said words can be restored by
-  \ `set-no-index`.
+  \ `use-no-index`.
   \
-  \ See: `set-no-index`, `make-thru-index`, `set-thru-index`.
+  \ See: `use-no-index`, `make-thru-index`, `use-thru-index`.
   \
   \ }doc
 

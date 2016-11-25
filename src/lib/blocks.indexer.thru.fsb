@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611241642
+  \ Last modified: 201611250127
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,8 +59,11 @@
   \
   \ 2016-11-24: Rename the module and some words, to be
   \ consistent with the alternative version Fly Indexer.
+  \
+  \ 2016-11-25: Factor `use-default-located`. Improve
+  \ documentation.
 
-( make-thru-index )
+( make-thru-index use-thru-index )
 
 only forth definitions
 
@@ -138,34 +141,36 @@ need evaluate
   \
   \ }doc
 
-( make-thru-index )
+( make-thru-index use-thru-index )
 
-: set-thru-index  ( -- )
+: use-thru-index  ( -- )
   ['] thru-index-reneeded ['] reneeded  defer!
   ['] thru-index-reneed   ['] reneed    defer!
   ['] thru-index-need     ['] need      defer!
   ['] thru-index-needed   ['] needed    defer!
-  ['] (located)           ['] located   defer!
-  ['] drop                ['] unlocated defer!  ;
+  use-default-located  ;
 
   \ doc{
   \
-  \ set-thru-index  ( -- )
+  \ use-thru-index  ( -- )
   \
   \ Change the behaviour of `need`, `needed`, `reneed`,
   \ `reneeded`, `located` and `unlocated` in order to use the
   \ blocks index created by `make-thru-index`.
   \
   \ The default behaviour of all said words can be restored by
-  \ `set-no-index`.
+  \ `use-no-index`.
   \
-  \ See: `make-thru-index`, `set-no-index`, `set-fly-index`.
+  \ See: `make-thru-index`, `use-no-index`, `use-fly-index`.
   \
   \ }doc
 
 : (make-thru-index)  ( -- )
   last-locatable @ 1+ first-locatable @
-  ?do  i index-block-header  loop  ;
+  ?do  i (index-block)  loop  ;
+
+  \ XXX TODO -- factor `last-locatable @ 1+ first-locatable @`,
+  \ to `need-bounds`; see `(located)`.
 
   \ doc{
   \
@@ -176,14 +181,16 @@ need evaluate
   \ `make-thru-index`.
   \
   \ See: `make-thru-index`, `first-locatable`,
-  \ `last-locatable`.
+  \ `last-locatable`, `use-thru-index`.
   \
   \ }doc
 
-: make-thru-index  ( -- )  get-current  get-order
-  index-wordlist set-current  indexer-wordlist 1 set-order
+: make-thru-index  ( -- )
+  get-current get-order set-index-order
   ['] (make-thru-index) catch  dup #-278 <> swap ?throw
-  set-order set-current  set-thru-index  ;
+  set-order set-current  use-thru-index  ;
+
+  \ XXX TODO -- #-278 \ empty block found: quit indexing
 
   \ doc{
   \
@@ -192,21 +199,23 @@ need evaluate
   \ Create the blocks index and activate it. The current word
   \ list and the current search order are preserved.
   \
-  \ This word changes the default behaviour of `need` `needed`,
-  \ `reneed` and `reneeded`: It creates a word list from the
-  \ names that are on the index (header) line of every
-  \ searchable block, ignoring duplicates.  These words will
-  \ load the block they belong to. This way, after indexing all
+  \ This word first creates a blocks index, i.e. a word list
+  \ from the names that are on the index (header) line of every
+  \ searchable block, ignoring duplicates; second, it executes
+  \ `set-thru-index` to activate the blocks index, changing the
+  \ default behaivour of `need` and related words.
+  \
+  \ The words in the index have a fake execution token, which
+  \ is the block they belong to.  This way, after indexing all
   \ the disk blocks only once, `need` will search the word list
-  \ and execute the word found, which will load its block. On
-  \ the contrary, the default behaviour of `need` is to search
-  \ all the blocks every time.
+  \ and load the block of the word found. On the contrary, the
+  \ default behaviour of `need` is to search all the blocks
+  \ every time.
   \
   \ The default behaviour of `need` and related words can be
-  \ restored with `set-no-index`.
+  \ restored with `use-no-index`.
   \
-  \ See: `need`, `needed`, `reneed`, `reneeded`,
-  \ `set-thru-index`, `set-no-index`.
+  \ See: `use-thru-index`, `need`, `use-no-index`.
   \
   \ }doc
 
