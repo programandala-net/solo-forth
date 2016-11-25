@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-18
+:revdate: 2016-11-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -19,6 +19,9 @@ because _r_ is the standard for floating-point numbers.
 
 == Benchmarks == // {{{1
 
+- Benchmark `cell+ cell+` (from `switcher`) and `[ 2 cells ] literal +`.
+- Benchmark current `times` and new version that keeps the xt in the return
+  stack in the loop: `do dup r> execute r> loop drop`.
 - Benchmark library `m*` with the kernel version.
 - Benchmark two library versions of `m*/`.
 - Benchmark two library versions of `d=` and `d<>`.
@@ -33,7 +36,18 @@ With constants:    32598 B free.
 Without constants: 32572 B free.
 Diff:                +26 B
 
-== Interpreter == // {{{1
+== Bugs to fix == // {{{1
+
+.2016-11-25:
+
+The machine resets when the second string of `search` is empty.
+
+== Interpreter/compiler == // {{{1
+
+.2016-11-20:
+
+Add `fast` and `slow`, after ACE Forth, to deactivate/activate some checks:
+`?stacks`, `limit` and `farlimit` (not used yet), etc.
 
 .2016-05-17:
 
@@ -64,15 +78,6 @@ Remove the `root` word list. Set the minimum search order to `forth`.
 Make `dp` an ordinary variable? Then `here`, `there` and `allot` could be
 improved, rewritten in Z80.
 
-.2016-11-12:
-
-Move the lex bits off the length byte of the name field.
-
-.2016-10-24:
-
-Change `need [if]` to `need ?(` in the library, when `[else]` is not needed.
-`?(` is smaller and faster than `[if]`.
-
 .2016-05-31:
 
 Add `''` to get the execution token pointer of a name, so the actual name of
@@ -89,7 +94,7 @@ Check if `current-latest`, used in the library, can be replaced with `latest`.
 .2016-05-09:
 
 Idea: in DX-Forth, `last` is a 2-cell variable that holds both the nt and the
-xt: `last @ ( nt )` and `last 2@ ( xt nfa )`.
+xt: `last @ ( nt )` and `last 2@ ( xt nt )`.
 
 .2016-04-29:
 
@@ -134,6 +139,12 @@ bits will fit (alias, deferred, special behaviour), and word names will be
 actual strings.
 
 == Control structures == // {{{1
+
+.2016-11-25:
+
+Remove `don't` or move it to <flow.misc.fsb>
+
+Move `times` and `dtimes` to <flow.times.fsb>
 
 .2016-05-07:
 
@@ -181,9 +192,14 @@ ____
 
 === Strings === // {{{2
 
+.2016-11-19:
+
+Study the strings stack included in Spectrum Forth-83
+(file <objects>).
+
 .2016-05-11:
 
-Compact "strings.misc.fsb" and make `lengths` needed.
+Compact <strings.misc.fsb>.
 
 .2015-09-12:
 
@@ -195,6 +211,8 @@ Z88 CamelForth does it. Also DX-Forth has this feature.
 New: `lower` and `lowers`.
 
 .2016-06-10:
+
+NOTE: Milestone: 0.13.0
 
 Rename "csb" to "stringer":
 
@@ -240,9 +258,10 @@ library.
 
 == Documentation == // {{{1
 
-.2016-05-07:
+.2016-11-21:
 
-Document the Noble arrays.
+Change _n_ to _u_ for blocks and block lines. Consult the notation used in
+Forth-2012.
 
 .2016-08-09:
 
@@ -255,8 +274,10 @@ xn..x1 --> x[n] ... x[1]
 
 .2016-10-24:
 
-Common notation for text coordinates: "col row" --> "x y"?
-Common notation for graphic coordinates: "x y" --> "gx gy"?
+Common notation for:
+
+- text coordinates: "col row" --> "x y"?
+- graphic coordinates: "x y" --> "gx gy"?
 
 .2016-06-01:
 
@@ -342,11 +363,6 @@ is a problem of fsb2's fb2dsk.
 
 === TR-DOS === // {{{2
 
-.2016-10-15:
-
-The new benchmarks don't fit a TR-DOS disk. The source of the benchmarks
-should be splitted into several parts, e.g. maths, system, data...
-
 .2016-09-01:
 
 `read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
@@ -361,6 +377,11 @@ Make also 40S, 40D and 80S TRD disk images?
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 
 == Errors == // {{{1
+
+.2016-11-25:
+
+Rename exception messages "required" to "needed" in comments of modules.
+Already done in the error messages module.
 
 .2016-04-25:
 
@@ -420,15 +441,6 @@ New: `.files` (from Pygmy Forth).
 
 Convert the sample games to .fs.
 
-.2016-06-01:
-
-Fix warnings during compilation of the tt game.
-
-.2016-01-01:
-
-Compilation of the tt game crash!  the offending word is marked.
-something to do with the new loops?
-
 == Graphics == // {{{1
 
 .2015-09-01:
@@ -482,6 +494,10 @@ Name for graphic fill: `flood`.
 
 == Keyboard == // {{{1
 
+.2016-11-25:
+
+`akey` for `accept`, after SwiftForth.
+
 .2015-06-30:
 
 New: command history, stored in the names bank.
@@ -503,7 +519,7 @@ Use `_jump` macros at the end of `umax`, `umin`, `dabs`, `abs`, etc.
 
 .2016-04-24:
 
-Words that can be moved to the library: `there`, `catch`, `?\`,
+Words that can be moved to the library: `catch`, `?\`,
 `[defined]`, `[undefined]`, `umin`, `umax`...
 
 Study how to move `line>string` and `undefined?` to the library.  They are not
@@ -517,19 +533,19 @@ Remove the routine `compare_de_hl_signed`, if possible.
 
 .2016-04-16:
 
-Fix Makefile: The loader and the main disk are built when the sources have not
-changed.
+Fix Makefile: The loader and the main disk are built also when the sources
+have not changed.
 
 .Update 2016-11-15:
 
-Problem is the rules of the BASIC loader. They run also when their
+The problem is the rules of the BASIC loader. They run also when their
 prerequisites are older than the target.
 
 == Maths == // {{{1
 
 .2015-07-23:
 
-Idea: 2 more bytes for `base`, to be used as save-restore space.
+NOTE: Milestone: 0.12.0
 
 ----
   : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
@@ -537,7 +553,13 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 
   : cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
     \ Exchange the 8-bit contents of ca1 and ca2.
+----
 
+.2015-07-23:
+
+Idea: 2 more bytes for `base`, to be used as save-restore space.
+
+----
   : switch  ( a1 -- )  dup cell+ exchange  ;
     \ Exchange the 16-bit contents of a1 and the following cell.
 
@@ -547,6 +569,7 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
 
   base switch
 ----
+
 
 .2015-09-12:
 
@@ -640,36 +663,18 @@ minus_one_equals.hl:
 
 .2016-05-07:
 
-Implement 2-cell operators from Spectrum Forth-83. Most of them are written in Z80.
+Implement 2-cell operators from Spectrum Forth-83. Most of them are written in
+Z80.
 
 .2016-05-01:
 
-Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp 103..105.
+Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp
+103..105.
 
 .2016-04-27:
 
 Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
 "math.operators.4-cell.fsb".
-
-.2016-04-22:
-
-Document floating point.
-
-.2016-04-22:
-
-Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
-locals. Problem: some calculator's words use them (eg. `over`).  They could be
-recursive, because their address can be changed with the system variable MEM;
-they could be pointed to a frame in the return stack.
-
-Simpler idea: use the calculator memories them as is, as temporary storage.
-The ROM allocates 6*5 bytes, but 32*5 can be used.
-
-.2016-04-19:
-
-Floating-point words `flit`, `fliteral`. From PFE:
-`fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
-`f2*`.
 
 .2016-04-18:
 
@@ -703,6 +708,28 @@ etc.
 
 A new variable `#dpl` would hold the number of points.
 
+=== Floating point // {{{2
+
+.2016-04-22:
+
+Document floating point.
+
+.2016-04-22:
+
+Idea: Use the ROM calculator memories (0..5) as floating-point non-recursive
+locals. Problem: some calculator's words use them (eg. `over`).  They could be
+recursive, because their address can be changed with the system variable MEM;
+they could be pointed to a frame in the return stack.
+
+Simpler idea: use the calculator memories them as is, as temporary storage.
+The ROM allocates 6*5 bytes, but 32*5 can be used.
+
+.2016-04-19:
+
+Floating-point words `flit`, `fliteral`. From PFE:
+`fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
+`f2*`.
+
 == Memory == // {{{1
 
 .2016-11-15:
@@ -715,8 +742,8 @@ Write far-memory versions of some of the following words from the
   \ /! *! 2/! 2*!
   \ bit>mask bit? set-bit reset-bit
   \ c1+! c1-! 1+! 1-!
-  \ c@test-bits c!toggle-bits
-  \ exchange reserve alloted align aligned
+  \ c@and ctoggle
+  \ exchange reserve alloted
   \ n, nn, n@ nn@ n! nn!
 ----
 
@@ -731,17 +758,6 @@ Remove the old `alias!` when the extra-memory system becomes definitive.
 Remove `s!` and related words when the extra-memory system becomes definitive.
 
 == Misc == // {{{1
-
-.2016-05-18:
-
-Improve `need` to make several index lines possible, by making `(` executable:
-
-----
-( very-long-word-1 very-long-word-2 very-long-word-3
-very-long-word-4 very-long-word-5 very-long-word-6 )
-----
-
-Problem: this would force changes in fsb and fsb2.
 
 .2016-05-18:
 
@@ -827,6 +843,60 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
 
+== Loading == {{{1
+
+.2016-11-24:
+
+Study the actual advantage of `exit` at the end of conditional compilation.
+
+.2016-11-23:
+
+Rename `from` to `need-from`.
+
+.2016-11-22:
+
+Fix: when nothing follows `need`, crash! (after loading `blocked` and
+`mode64`).
+
+.2016-11-22:
+
+Write `needs` to do multiple `need` on one line of a block,
+saving space
+
+----
+needs word1 word2 word3 word4
+needs word5 word6 word7 word8
+----
+
+Or `need( )` to do the same without the one-line limit:
+
+----
+need( word1 word2 word3 word4
+      word5 word6 word7 word8 )
+----
+
+----
+: need(  ( "name#1" ... "name#n" "<paren>" -- )
+  begin  parse-name 2dup s" )" str= 0=
+  while  needed  repeat  2drop  ;
+----
+
+.2016-11-19:
+
+Write an alternative version of `indexer` to index the blocks on the fly as
+they are being searched by `need` and family, i.e., not in advance.
+
+.2016-05-18:
+
+Improve `need` to make several index lines possible, by making `(` executable:
+
+----
+( very-long-word-1 very-long-word-2 very-long-word-3
+very-long-word-4 very-long-word-5 very-long-word-6 )
+----
+
+Problem: this would force changes in fsb and fsb2.
+
 == Parsing == // {{{1
 
 .2016-05-13:
@@ -852,6 +922,18 @@ New:
 Adapt from Gforth: `noname`.
 
 == Printing == // {{{1
+
+.2016-11-21:
+
+Add support for more control characters to alternative version of `mode64`.
+
+.2016-11-21:
+
+In mode 32, one `cr` does nothing when the cursor is at the end of a line.
+That is the default behaviour in Sinclair BASIC. The driver of `mode42` works
+the same way.  But the driver of `mode64` always prints the carriage return,
+increasing the line number. Somehow the behaviour must be unified in all
+modes. The behaviour of `mode64` seems more logical.
 
 .2016-10-28:
 
@@ -908,5 +990,25 @@ Update the date with interrupts.
 
 .2016-11-18:
 
-Rename `frames@` to `ticks@`, etc.
+Rename `frames@` to `ticks@`, etc.?
+
+2016-11-19: `utime`? `cputime`? (See Gforth)
+
+== Tools == // {{{1
+
+.2016-11-25:
+
+Write `ed:` after TurboForth.
+
+.2016-11-24:
+
+Factor `list-title` from `list-lines`.
+
+.2016-11-21:
+
+Improve `begin-module` to reuse a named module.
+
+.2016-11-19:
+
+Make `editor` defered, in order to load more than one editor at the same time.
 
