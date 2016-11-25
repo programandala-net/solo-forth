@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131517
+  \ Last modified: 201611251651
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,60 @@
   \ 2016-10-26: Add `a>e-test`.
   \
   \ 2016-11-13: Update the names of far-memory words.
+  \
+  \ 2016-11-25: Move `:switch-test` and `[switch-test` from
+  \ <flow.bracket-switch.fsb>.
+
+( :switch-test )
+
+  \ 2015-11-15: Test passed
+  \ 2016-11-25: Test passed
+
+need :switch  need <switch  need :noname  need >body
+
+: one    ( -- )  ." unu " ;
+: two    ( -- )  ." du "  ;
+: three  ( -- )  ." tri "  ;
+: many   ( n -- )  . ." is too much! "  ;
+
+' many :switch numbers
+  \ `many` is the default behaviour of the new switch `numbers`
+
+  ' one   1 <switch
+  ' two   2 <switch
+  ' three 3 <switch  drop
+
+cr 1 numbers 2 numbers 3 numbers 4 numbers
+
+' numbers >body  :noname  ." kvar "  ; 4 <switch drop
+  \ add a new clause for number 4
+
+cr 1 numbers 2 numbers 3 numbers 4 numbers
+
+( [switch-test )
+
+  \ 2015-11-15: Test passed
+  \ 2016-11-25: Test passed
+
+need :switch-test  need [switch  need [+switch
+need runs  need run:
+
+[switch sugar-numbers many
+  1 runs one  2 runs two  3 runs three  switch]
+
+cr 1 sugar-numbers 3 sugar-numbers 4 sugar-numbers
+
+: four  ." kvar "  ;
+
+[+switch sugar-numbers  4 runs four  switch]
+  \ add a new clause for number 4
+
+cr 1 sugar-numbers 3 sugar-numbers 4 sugar-numbers
+
+[+switch sugar-numbers  5 run: ." kvin" ;  switch]
+  \ add a new unnamed clause for number 5
+
+cr 1 sugar-numbers 4 sugar-numbers 5 sugar-numbers
 
 ( alias-test synonym-test )
 
