@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611242015
+; Last modified: 201611252100
 
 include version.z80s
 
@@ -94,7 +94,7 @@ include version.z80s
   ; not finished yet.
 
 if (!defined gplusdos) and (!defined plus3dos) and (!defined trdos)
-  gplusdos equ true ; G+DOS by default
+  gplusdos: equ true ; G+DOS by default
 endif
 
 size_optimization: equ false
@@ -209,8 +209,8 @@ csb_size:                         equ 512 ; bytes, size of the circular string b
 
 ; Memory banks
 
-bank_start                        equ $C000
-bank_end                          equ $FFFF
+bank_start:                       equ $C000
+bank_end:                         equ $FFFF
 bank_size:                        equ $4000 ; 16 KiB
 
 default_bank:                     equ 0
@@ -1386,7 +1386,7 @@ endif
 ; is intended to be the main assembler of the system, instead of
 ; the current variant `z80-asm`.
 
-  _literal $C3 ; Z80 opcode for "call"
+  _literal $C3 ; Z80 opcode for "jp"
   dw c_comma_,comma_
   dw exit_
 
@@ -2372,7 +2372,7 @@ bank.default:
   ; Output:
   ;   A E corrupted
 
-address_of_default_bank equ $+1
+address_of_default_bank: equ $+1
   ld e,default_bank
 
 bank.e:
@@ -6579,11 +6579,11 @@ to_name.begin:
   ld (to_name.xtp),hl ; preserve it
   ; Compare HL with the headers pointer.
   ; If they are equal, there are no more names to check.
-to_name.headers_pointer_high_byte equ $+1
+to_name.headers_pointer_high_byte: equ $+1
   ld a,0 ; patched high byte of the headers pointer
   cp h ; equals high byte of the xtp?
   jr nz,to_name.check_xt ; jump if not
-to_name.headers_pointer_low_byte equ $+1
+to_name.headers_pointer_low_byte: equ $+1
   ld a,0 ; patched low byte of the headers pointer
   sub l ; equals low byte of the xtp?
   jr nz,to_name.check_xt ; jump if not
@@ -6599,18 +6599,18 @@ to_name.check_xt
   ; HL = xtp
   call far.hl ; HL = actual address of xtp in far-memory bank
   ld a,(hl) ; low byte of xt
-to_name.xt_low_byte equ $+1
+to_name.xt_low_byte: equ $+1
   cp 0 ; equal? (patched low byte of the xt)
   jr nz,to_name.next ; not equal
   inc hl ; point  to high byte of xt
   call question_next_bank
   ld a,(hl) ; high byte of xt
-to_name.xt_high_byte equ $+1
+to_name.xt_high_byte: equ $+1
   cp 0 ; equal? (patched high byte of the xt)
   jr nz,to_name.next ; not equal
 
   ; The xt has been found.
-to_name.xtp equ $+1
+to_name.xtp: equ $+1
   ld hl,0 ; patched xtp
   ld de,2*cell
   add hl,de ; HL = nt
@@ -6676,11 +6676,11 @@ to_name.begin:
   ; HL = xtp of the word to check
   ; Compare HL with the headers pointer.
   ; If they are equal, there are no more names to check.
-to_name.headers_pointer_high_byte equ $+1
+to_name.headers_pointer_high_byte: equ $+1
   ld a,0 ; patched high byte of the headers pointer
   cp h
   jr nz,to_name.check_xt
-to_name.headers_pointer_low_byte equ $+1
+to_name.headers_pointer_low_byte: equ $+1
   ld a,0 ; patched low byte of the headers pointer
   sub l
   jr nz,to_name.check_xt
@@ -7575,12 +7575,11 @@ base_store:
 ; ----------------------------------------------
   _colon_header does_,'DOES>',immediate+compile_only
 
-do_does equ do_colon
+do_does: equ do_colon
 
   dw compile_,paren_semicolon_code_
-  _literal $CD ; Z80 opcode for "call"
-  dw c_comma_ ; compile it
-  dw lit_,do_does,comma_ ; compile the routine address
+  dw lit_,do_does
+  dw call_comma_
   dw exit_
 
 ; ----------------------------------------------
@@ -11426,8 +11425,7 @@ to_digit.end
   ; Credit:
   ; Code modified from Z88 CamelForth.
 
-; XXX TODO -- compare with this version from Gforth
-; and save `-rot` in the kernel:
+; XXX TODO -- Compare with this version from Gforth:
 ;
 ; : ud/mod
 ;   >r 0 r@ um/mod r> swap >r um/mod r> ;
