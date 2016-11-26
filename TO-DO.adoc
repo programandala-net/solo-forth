@@ -206,6 +206,10 @@ ____
 
 === Strings === // {{{2
 
+.2016-11-26:
+
+Compact <strings.replaces.fsb>.
+
 .2016-11-19:
 
 Study the strings stack included in Spectrum Forth-83
@@ -872,6 +876,8 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 Spectrum Forth-83).
 
 == Library == {{{1
+
+Rename <environmental_queries.fsb>.
 
 == Loading == {{{1
 

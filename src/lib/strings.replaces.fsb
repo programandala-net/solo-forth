@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605181554
+  \ Last modified: 201611262317
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,9 @@
 
   \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
   \ has been moved to the library.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
 
 ( replaces )
 
@@ -36,7 +39,7 @@
   \
   \ Code adapted from the Forth-2012 documentation.
 
-need vocabulary
+need search-wordlist
 
 s" /counted-string" environment? 0= [if] 256 [then]
 chars constant string-max

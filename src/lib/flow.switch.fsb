@@ -3,8 +3,10 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ XXX UNDER DEVELOPMENT
 
+  \ Last modified: 201611262313
+  
   \ -----------------------------------------------------------
   \ Description
 
@@ -23,12 +25,17 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ History
+  
+  \ 2015-11-16: Start.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
 
 ( switch )
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ 2015-11-16: Start.
+need search-wordlist
 
 : n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
   \ Convert _n_ to a code string of two bytes.
@@ -50,10 +57,6 @@
 
 ( switch )
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ 2015-11-16: Start.
-
 : n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
   \ Convert _n_ to a code string of two bytes.
 
@@ -72,3 +75,4 @@
   \ Start the definition of a switch clause _n_ for switch
   \ _switch_.
 
+  \ vim: filetype=soloforth

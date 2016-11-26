@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604160027
+  \ Last modified: 201611262312
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,9 @@
   \ Factored. An obscure bug was discovered in during the
   \ changes.  Finally its origin was found in `(;code)`, in the
   \ kernel, and fixed.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -46,6 +49,8 @@
   \ XXX TODO -- document
 
 ( associative-list item? item create-entry )
+
+need search-wordlist
 
 : associative-list  ( "name" -- )  wordlist constant  ;
   \ Create a new associative list "name".

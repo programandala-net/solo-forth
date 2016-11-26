@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611250127
+  \ Last modified: 201611262310
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,12 +35,16 @@
   \ 2016-11-25: Combine `search-index` and `name-indexed?` into
   \ `indexed-name?`.  Add `set-index-order`. Improve
   \ documentation.
+  \
+  \ 2016-11-26: Need `search-wordlist`, which has been moved to
+  \ the library.
 
 ( common-indexer )
 
 get-current forth-wordlist dup >order set-current
 
 need str=  need alias  need nextname  need evaluate
+need search-wordlist
 
 wordlist constant index-wordlist
 
@@ -130,5 +134,19 @@ previous set-current
   \ Restore the original search order.
 
 : common-indexer  ( -- )  ;
+
+( index-words indexer-words )
+
+  \ XXX TMP -- for debugging
+
+need ?(  need common-indexer
+
+[unneeded] index-words ?(
+need wordlist-words  need .wordname
+: index-words  ( -- )  index-wordlist wordlist-words  ; ?)
+
+[unneeded] indexer-words ?(
+need wordlist-words  need .wordname
+: indexer-words  ( -- )  indexer-wordlist wordlist-words  ; ?)
 
   \ vim: filetype=soloforth

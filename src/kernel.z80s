@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611262254
+; Last modified: 201611262321
 
 include version.z80s
 
@@ -3634,43 +3634,6 @@ find_name_from.ip: equ $+1
   _jp_pushhl
 
 endif
-
-; ----------------------------------------------
-  _colon_header search_wordlist_,'SEARCH-WORDLIST'
-
-  ; XXX TODO -- move to the library, with `warnings`
-  ; and the check done in `header,`.
-
-; doc{
-;
-; search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
-;
-; Find the definition identified by the string _ca len_ in the
-; word list identified by _wid_. If the definition is not found,
-; return zero. If the definition is found, return its _xt_ and
-; one (1) if the definition is immediate, minus-one (-1)
-; otherwise.
-;
-; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
-;
-; ----
-; : search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
-;   @ find-name-from dup 0= ?exit
-;   name>immediate? 0= 1 or  ;
-; ----
-;
-; }doc
-
-  dw fetch_
-;  dw dup_,name_to_string_,cr_,type_ ; XXX INFORMER
-  dw find_name_from_  ; ( nt | 0 )
-  dw dup_,zero_equals_  ; ( nt false | 0 true )
-  dw question_exit_  ; ( nt )
-  dw name_to_immediate_question_ ; ( xt f )
-  dw zero_equals_
-  _literal 1
-  dw or_ ; ( xt 1 | xt -1 )
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header find_name_,'FIND-NAME'
