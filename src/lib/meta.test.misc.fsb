@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611252045
+  \ Last modified: 201611261419
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \
   \ 2016-11-25: Move `:switch-test` and `[switch-test` from
   \ <flow.bracket-switch.fsb>. Add tests for `[:`.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
 
 ( [:-test-1 [:-test-2 [:-test-3 )
 
@@ -266,6 +269,8 @@ code if'-test  ( -- )
   \ Credit:
   \
   \ Code from MPE Forth for TiniARM User Manual.
+
+need catch
 
 : could-fail  ( -- c )
   key dup 'q' =

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201611250127
+  \ Last modified: 201611261418
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,20 +39,51 @@
   \
   \ 2016-11-25: Factor `set-index-order`. Improve documentation
   \ and names.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
 
 ( use-fly-index )
 
 only forth definitions  need common-indexer  need get-order
                         need set-order       need bit-array
+                        need catch
 
 blocks bit-array indexed-blocks
+
+  \ doc{
+  \
+  \ indexed-blocks  ( -- ca )
+  \
   \ Bit array to mark the indexed blocks
+  \
+  \ See: `use-fly-index`.
+  \
+  \ }doc
 
 : indexed-block?  ( block -- f )  indexed-blocks @bit  ;
+
+  \ doc{
+  \
+  \ indexed-block?  ( block -- f )
+  \
   \ Is block _block_ indexed?
+  \
+  \ See: `use-fly-index`.
+  \
+  \ }doc
 
 : block-indexed  ( block -- )  indexed-blocks !bit  ;
+
+  \ doc{
+  \
+  \ block-indexed  ( block -- )
+  \
   \ Mark block _block_ as indexed.
+  \
+  \ See: `use-fly-index`.
+  \
+  \ }doc
 
 -->
 
@@ -62,15 +93,36 @@ blocks bit-array indexed-blocks
   get-current get-order set-index-order
   ['] (index-block) catch  dup #-278 <> swap ?throw
   set-order set-current block-indexed  ;
+  \ Index block _block_.
 
   \ XXX TODO -- #-278 \ empty block found: quit indexing
 
-: ?index-block  ( block -- )
-  dup indexed-block? if  drop exit  then  index-block  ;
-  \ Index block _block_, if not done before.
+  \ doc{
+  \
+  \ index-block  ( block -- )
+  \
+  \ Index block _block_.
+  \
+  \ See: `use-fly-index`.
+  \
+  \ }doc
 
-: fly-located  ( ca len -- )
-  2dup indexed-name? if  nip nip load exit  then  (located)  ;
+: ?index-block  ( block -- ) ~~
+  dup indexed-block? if  drop exit  then  index-block  ;
+
+  \ doc{
+  \
+  \ ?index-block  ( block -- )
+  \
+  \ Index block _block_, if not done before.
+  \
+  \ See: `use-fly-index`.
+  \
+  \ }doc
+
+: fly-located  ( ca len -- block | false ) ~~
+  2dup indexed-name? if  ~~ nip nip load exit
+  then  ~~ (located)  ;
 
   \ doc{
   \
@@ -80,6 +132,8 @@ blocks bit-array indexed-blocks
   \ len_ (surrounded by spaces), and return its number. If not
   \ found, return zero.  The search is case-sensitive.
   \ Index all searched blocks on the fly.
+  \
+  \ See: `use-fly-index`.
   \
   \ }doc
 

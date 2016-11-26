@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201611220135
+  \ Last modified: 201611261418
 
   \ -----------------------------------------------------------
   \ Authors
@@ -60,12 +60,15 @@
   \
   \ 2016-11-22: Move `r#` to <editor.common.fsb>` and get `top`
   \ from it.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
 
 ( blocked )
 
 only forth definitions
 need inverse  need list  need update
-need list-lines  need vocabulary
+need list-lines  need vocabulary  need catch
 
 : delete  ( ca1 len1 len2 -- )
   over min >r  r@ - ( left over )  dup 0>

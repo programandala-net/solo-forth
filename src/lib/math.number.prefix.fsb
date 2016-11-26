@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605140240
+  \ Last modified: 201611261418
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,9 @@
 
   \ 2016-05-14: Update: `evaluate` has been moved to the
   \ library.
+  \
+  \ 2016-11-26: Need `catch`, which has been moved to the
+  \ library.
 
 ( base# b# d# h# )
 
@@ -38,7 +41,7 @@
   \ Based on code from eForth and code written by Wil Baden
   \ (published on Forth Dimensions 20-3, p. 27).
 
-need evaluate
+need evaluate  need catch
 
 : base# ( -- ) ( "name" -- )
   create c, immediate
@@ -58,7 +61,7 @@ need evaluate
   \
   \ Code from eForth.
 
-need evaluate
+need evaluate  need catch
 
 : x# ( -- ) ( "name" -- n | d )
   does> c@              \ new radix

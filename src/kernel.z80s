@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261159
+; Last modified: 201611261415
 
 include version.z80s
 
@@ -12376,53 +12376,6 @@ two_fetch.hl:
   or l
   jp nz,exit_
   _jp_next
-
-; ----------------------------------------------
-  _colon_header catch_,'CATCH'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-
-; catch  ( xt -- 0 | err# )
-
-; Push an exception frame on the exception stack and then
-; execute _xt_ (as with `execute`) in such a way that control
-; can be transferred to a point just after `catch` if `throw` is
-; executed during the execution of _xt_.
-;
-; If the execution of _xt_ completes normally (i.e., the
-; exception frame pushed by this `catch` is not popped by an
-; execution of `throw`) pop the exception frame and return zero
-; on top of the data stack, above whatever stack items would
-; have been returned by the execution of _xt_. Otherwise, the
-; remainder of the execution semantics are given by `throw`.
-;
-; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
-
-;----
-; : catch  ( xt -- exception# | 0 )
-;   sp@ >r          ( xt )  \ save data stack pointer
-;   catcher @ >r    ( xt )  \ save previous catcher
-;   rp@ catcher !   ( xt )  \ set current catcher
-;   execute         ( )     \ `execute` returns if no `throw`
-;   r> catcher !    ( )     \ restore previous catcher
-;   r> drop         ( )     \ discard saved stack pointer
-;   0  ;            ( 0 )   \ normal completion, no error
-;----
-; }doc
-
-  ; Credit: Code from DZX-Forth, MPE Forth for TiniARM and
-  ; Forth-2012 documentation.
-
-  dw sp_fetch_,to_r_ ; save data stack pointer
-  dw catcher_,fetch_,to_r_ ; save previous catcher
-  dw rp_fetch_,catcher_,store_ ; set current catcher
-  dw execute_ ; `execute` returns if no `throw`
-  dw from_r_,catcher_,store_  ; restore error frame
-  dw from_r_,drop_ ; discard saved stack pointer
-  _literal 0  ; normal completion, no error
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header throw_,'THROW'
