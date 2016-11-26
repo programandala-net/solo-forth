@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605072052
+  \ Last modified: 201611261935
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,71 +27,92 @@
 
   \ 2015-10-14: Add `column`, `row`, `at-x`, `at-y`, adapted
   \ from Galope.
+  \
   \ 2016-05-01: Add conditional compilation and documentation.
+  \
   \ 2016-05-07: Fix typos and conditional compilation.
+  \
+  \ 2016-11-26: Improve needing and documentation.
 
 ( column last-column row last-row at-x at-y )
 
-[unneeded] column [unneeded] last-column and
-[unneeded] at-y and
-?\ : column  ( -- col )  xy drop  ;
+[unneeded] column
+?\ : column  ( -- col )  xy drop  ;  exit
+
   \ doc{
   \
   \ column  ( -- col )
   \
   \ Current column (x coordinate).
   \
+  \ See: `row`, `last-column`.
+  \
   \ }doc
 
 [unneeded] last-column
-?\ : last-column  ( -- row  )  column 1-  ;
+?\ need column  : last-column  ( -- row  )  column 1-  ;  exit
+
   \ doc{
   \
   \ last-column  ( -- col )
   \
   \ Last column (x coordinate) in the current screen mode.
   \
+  \ See: `last-row`, `column`.
+  \
   \ }doc
 
-[unneeded] row [unneeded] last-row [unneeded] at-x and and
-?\ : row  ( -- row )  xy nip  ;
+[unneeded] row
+?\ : row  ( -- row )  xy nip  ;  exit
+
   \ doc{
   \
   \ row  ( -- row )
   \
   \ Current row (y coordinate).
   \
+  \ See: `column`, `last-row`.
+  \
   \ }doc
 
 [unneeded] last-row
-?\ : last-row  ( -- row  )  row 1-  ;
+?\ need row  : last-row  ( -- row  )  row 1-  ;  exit
+
   \ doc{
   \
   \ last-row  ( -- row )
   \
   \ Last row (y coordinate) in the current screen mode.
   \
+  \ See: `last-column`, `row`.
+  \
   \ }doc
 
 [unneeded] at-x
-?\ : at-x  ( col -- )  row at-xy  ;
+?\ need row  : at-x  ( col -- )  row at-xy  ;  exit
+
   \ doc{
   \
   \ at-x ( col -- )
   \
-  \ Set the cursor at the given column (x coordinate) and the
-  \ current row (y coordinate).
+  \ Set the cursor at the given column (x coordinate) _col_ and
+  \ the current row (y coordinate).
+  \
+  \ See: `at-y`, `at-xy`, `row`, `column`.
   \
   \ }doc
 
 [unneeded] at-y
-?\ : at-y  ( row -- )  column swap at-xy  ;
+?\ need column  : at-y  ( row -- )  column swap at-xy  ;  exit
+
   \ doc{
   \
   \ at-y ( row -- )
   \
   \ Set the cursor at the current column (x coordinate) and the
-  \ given row (y coordinate).
+  \ given row (y coordinate) _row_.
+  \
+  \ See: `at-x`, `at-xy`, `row`, `column`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605060140
+  \ Last modified: 201611262323
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,11 +34,27 @@
   \ 2016-05-04: Move `printer` from the kernel.
   \
   \ 2016-05-06: Fix and add conditional compilation.
+  \
+  \ 2016-11-26: Improve documentation.
 
 ( printer tabulate )
 
 [unneeded] printer
 ?\ : printer  ( -- )  3 channel printing on  ;  exit
+
+  \ doc{
+  \
+  \ printer  ( -- )
+  \
+  \ Select the printer as output.
+  \
+  \ See: `display`, `printing`.
+  \
+  \ }doc
+
+need ?(
+
+[unneeded] tabulate ?(
 
 need column
 
@@ -55,6 +71,9 @@ variable /tabulate  8 /tabulate !
   \ }doc
 
 : tabulate  ( -- )  column 1+ /tabulate @ tuck mod - spaces  ;
+
+?)
+
   \ doc{
   \
   \ tabulate  ( -- )
@@ -65,10 +84,10 @@ variable /tabulate  8 /tabulate !
   \ Note `tabulate` does not uses the "tab" control code, whose
   \ behaviour depends on the screen mode (in the default screen
   \ mode, it moves the cursor 16 positions to right).
-  \ `tabulate` is independent on the screen mode, since it uses
-  \ spaces.
+  \ `tabulate` prints spaces and is independent from the screen
+  \ mode.
   \
-  \ See `/tabulate`.
+  \ See `/tabulate`, `tab`.
   \
   \ }doc
 
