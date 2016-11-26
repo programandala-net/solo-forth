@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261747
+; Last modified: 201611261752
 
 include version.z80s
 
@@ -2936,23 +2936,6 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; Origin: Forth-2012 (CORE).
 ;
 ; }doc
-
-; ----------------------------------------------
-  _code_header question_leave_,'?LEAVE'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
-;
-; }doc
-
-  pop hl
-  ld a,h
-  or l
-  jp nz,leave_
-  _jp_next
 
 ; ----------------------------------------------
   _code_header leave_,'LEAVE'

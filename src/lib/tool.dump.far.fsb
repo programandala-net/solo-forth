@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611160155
+  \ Last modified: 201611261753
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,10 +27,13 @@
 
   \ 2016-11-16: Start. Copy and modify the code of ordinary
   \ `dump` and `wdump`.
+  \
+  \ 2016-11-26: Need `?leave`, which has been moved to the
+  \ library.
 
 ( fardump )
 
-need 16hex.  need fartype-ascii  need backspace
+need 16hex.  need fartype-ascii  need backspace  need ?leave
 
 : fardump  ( ca len -- )
   8 max 8 2dup mod - + 8 / 1- 0
@@ -52,7 +55,7 @@ need 16hex.  need fartype-ascii  need backspace
 
 ( farwdump )
 
-need 16hex.
+need 16hex.  need ?leave
 
 : farwdump  ( a len -- )
   0

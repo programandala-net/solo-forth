@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261644
+  \ Last modified: 201611261751
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,7 +34,7 @@
   \ <flow.recurse.fsb>, <flow.retry.fsb>.
   \
   \ 2016-11-26: Document `base-execute`.  Compact `call` and
-  \ document it. Document `??`.
+  \ document it. Document `??`. Move `?leave` from the kernel.
 
 ( base-execute call don't executions )
 
@@ -257,7 +257,7 @@ need ?(  [unneeded] ?repeat ?(  need cs-pick
   \
   \ }doc
 
-( retry ?retry )
+( retry ?retry ?leave )
 
   \ Description:
   \
@@ -301,6 +301,23 @@ need ?(  [unneeded] ?repeat ?(  need cs-pick
   \ : ?retry  ( Compilation: -- ) ( Run-time: f -- )
   \
   \ Do a conditional branch to the start of the word.
+  \
+  \ }doc
+
+[unneeded] ?leave ?(
+
+code ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
+  E1 c, 78 04 + c, B0 05 + c, C2 c, ' leave , jpnext
+  \ pop hl
+  \ ld a,h
+  \ or l
+  \ jp nz,leave_
+  \ jp next
+  end-code ?)
+
+  \ doc{
+  \
+  \ ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ }doc
 

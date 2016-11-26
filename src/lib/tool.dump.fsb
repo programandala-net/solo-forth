@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611160200
+  \ Last modified: 201611261754
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,10 +38,13 @@
   \ `bs` with `backspace`, which is part of the library.
   \
   \ 2016-11-16: Improve documentation.
+  \
+  \ 2016-11-26: Need `?leave`, which has been moved to the
+  \ library.
 
 ( dump )
 
-need 16hex.  need type-ascii  need backspace
+need 16hex.  need type-ascii  need backspace  need ?leave
 
 : dump  ( ca len -- )
   8 max 8 2dup mod - + 8 / 1- 0
@@ -62,7 +65,7 @@ need 16hex.  need type-ascii  need backspace
 
 ( wdump )
 
-need 16hex.
+need 16hex.  need ?leave
 
 : wdump  ( a len -- )
   0

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611240142
+  \ Last modified: 201611261755
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,11 +42,13 @@
   \ Move `lt`, `lm` and `lb` from the `blocked` editor.
   \
   \ 2016-11-24: Factor `list-line` from `list-lines`.
+  \
+  \ 2016-11-26: Need `?leave`, which has been moved to the
+  \ library.
 
 ( /line# .line# .line list-line list-lines list )
 
-[unneeded] /line#
-?\ : /line#  ( -- n )  #16 base @ - 4 / 1+  ;  exit
+[unneeded] /line# ?\ : /line#  ( -- n )  #16 base @ - 4 / 1+  ;
 
   \ doc{
   \
@@ -96,7 +98,8 @@ need ?(  [unneeded] list-line ?(  need .line#  need .line
   \
   \ }doc
 
-[unneeded] list-lines ?(  need .line  need nuf?  need list-line
+[unneeded] list-lines ?(
+need .line  need nuf?  need list-line  need ?leave
 : list-lines  ( u1 u2 u3 -- )
   rot dup scr ! cr ." Screen " .  1+ swap
   ?do  i scr @ list-line nuf? ?leave  loop cr  ;  exit ?)
@@ -150,7 +153,7 @@ need ?(
   \
   \ }doc
 
-[unneeded] index ?(  need .line  need nuf?
+[unneeded] index ?(  need .line  need nuf?  need ?leave
 : index  ( u1 u2 -- )
   1+ swap ?do  cr i .block# space 0 i .line  nuf? ?leave
   loop  ;
@@ -171,7 +174,7 @@ exit ?)
 
 ( index-like index-ilike )
 
-need ?(  need .index  need contains  need nuf?
+need ?(  need .index  need contains  need nuf?  need ?leave
 
 [unneeded] index-like ?(
 
