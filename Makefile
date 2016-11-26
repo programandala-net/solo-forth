@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201611211404
+# Last modified: 201611260136
 
 # ==============================================================
 # Author
@@ -323,9 +323,9 @@ lib_files = $(sort $(wildcard src/lib/*.fsb))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fsb))
 game_lib_files = $(sort $(wildcard src/lib/game.*.fsb))
 meta_lib_files = $(sort $(wildcard src/lib/meta.*.fsb))
-meta_benchmark_misc_lib_files = $(sort $(wildcard src/lib/meta.benchmark.misc.fsb))
-meta_benchmark_misc_lib_files = $(sort $(wildcard src/lib/meta.benchmark.rng.fsb))
-meta_benchmark_misc_lib_files = $(sort $(wildcard src/lib/meta.benchmark.flow.fsb))
+meta_benchmark_misc_lib_files = src/lib/meta.benchmark.misc.fsb
+meta_benchmark_rng_lib_files = src/lib/meta.benchmark.rng.fsb
+meta_benchmark_flow_lib_files = src/lib/meta.benchmark.flow.fsb
 meta_test_lib_files = $(sort $(wildcard src/lib/meta.test*.fsb))
 core_lib_files = \
 	$(filter-out $(game_lib_files) $(meta_lib_files), \
@@ -662,3 +662,5 @@ oldbackup:
 #
 # 2016-11-21: Adapt: tools used by make have been moved from <tools/>
 # to <make/>.
+#
+# 2016-11-26: Fix lists of benchmark library files.
