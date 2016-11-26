@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261129
+; Last modified: 201611261159
 
 include version.z80s
 
@@ -1983,7 +1983,7 @@ paren_set_order.loop_exit
 ; ----------------------------------------------
   _colon_header get_order_,'GET-ORDER'
 
-; : get-order  ( -- 0 | widn..wid1 n )
+; : get-order  ( -- wid[n]..wid[1] n )
 ;   #order @ 0 ?do
 ;     #order @ i - 1- cells context + @
 ;   loop  #order @  ;
@@ -2144,39 +2144,6 @@ set_order.exit
 
 ; : get-order
 ;  vp @ 0 ?do  vp cell+ i cells + @  loop  vp @  ;
-
-; ----------------------------------------------
-  _colon_header seal_,'SEAL'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; seal  ( -- )
-;
-; Change the search order such that only the vocabulary at the
-; top of the search order will be searched.
-;
-; ----
-; : seal  ( -- )
-;   1 #order ! ;
-; ----
-;
-; Remove all word list from the search order stack other than
-; the word list that is currently on top of the search order
-; stack.
-;
-; Origin: Gforth.
-;
-; }doc
-
-  _literal 1
-  dw hash_order_,store_
-  dw exit_
-
-  ; XXX TODO -- alternative definition, from Gforth
-  ;
-  ; : seal  ( -- )  context @ 1 set-order ;
 
 ; ----------------------------------------------
   _variable_header root_wordlist_,'ROOT-WORDLIST'
