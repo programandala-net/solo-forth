@@ -953,6 +953,16 @@ Adapt from Gforth: `noname`.
 
 == Printing == // {{{1
 
+.2016-11-26:
+
+Make `type-ascii` configurable: store the common char in a character variable.
+In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
+and use `type`.
+
+Move `drop-type` to `type-right`.
+
+Make `type` deferred, to be configured as `fartype` or other when needed.
+
 .2016-11-21:
 
 Add support for more control characters to alternative version of `mode64`.

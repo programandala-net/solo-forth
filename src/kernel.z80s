@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261724
+; Last modified: 201611261747
 
 include version.z80s
 
@@ -3862,6 +3862,8 @@ skip.end:
 ; ----------------------------------------------
   _code_header emit_udg_,'EMIT-UDG'
 
+  ; XXX TODO -- move to the library
+
 ; doc{
 ;
 ; emit-udg  ( c -- )
@@ -3883,6 +3885,8 @@ emit_udg.a
 
 ; ----------------------------------------------
   _code_header emit_0udg_,'EMIT-0UDG'
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;
@@ -4253,6 +4257,17 @@ wait_for_key:
 ; ----------------------------------------------
   _colon_header paren_cr_,'(CR)'
 
+; doc{
+;
+; (cr)  ( -- )
+;
+; Default behaviour of the deferred word `cr`:
+; Transmit a carriage return to the selected output device.
+;
+; See: `cr`.
+;
+; }doc
+
   _literal carriage_return_char
   dw emit_
   dw exit_
@@ -4265,6 +4280,13 @@ wait_for_key:
 ; cr  ( -- )
 ;
 ; Transmit a carriage return to the selected output device.
+;
+; This is a deferred word whose default behaviour is `(cr)`.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See: `(cr)`.
 ;
 ; }doc
 
