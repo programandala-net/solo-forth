@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281733
+  \ Last modified: 201611261724
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,16 +33,20 @@
   \
   \ 2016-04-28: First working versions of `type-center`,
   \ `type-left` and `type-right`.
+  \
+  \ 2016-11-26: Move `fartype` from the kernel.
 
-( type-ascii )
+( type-ascii far-type )
 
-need ascii-char?  need control-char?
+need ?(
+
+[unneeded] type-ascii ?(  need ascii-char?  need control-char?
 
 : type-ascii  ( ca len -- )
   bounds ?do
     i c@ dup dup ascii-char? 0= swap control-char? or
     if  drop '.'  then  emit
-  loop  ;
+  loop  ;  exit ?)
 
   \ doc{
   \
@@ -53,13 +57,29 @@ need ascii-char?  need control-char?
   \
   \ }doc
 
+[unneeded] fartype ?(
+
+: fartype  ( ca len -- )
+  bounds ?do  i farc@ emit  loop  drop  ; ?)
+
+  \ doc{
+  \
+  \ fartype  ( ca len -- )
+  \
+  \ If _len_ is greater than zero, display the character string
+  \ _ca len_, which is stored in the far memory.
+  \
+  \ See: `far-banks`, `type`.
+  \
+  \ }doc
+
 ( drop-type padding-spaces type-left )
 
 [unneeded] drop-type
 ?\ : drop-type  ( ca len x -- )  drop type  ;  exit
 
-: padding-spaces  ( len1 len2 -- )
-  swap - 0 max spaces  ;
+[unneeded] padding-spaces
+?\ : padding-spaces  ( len1 len2 -- )  swap - 0 max spaces  ;
 
   \ doc{
   \
@@ -70,10 +90,10 @@ need ascii-char?  need control-char?
   \
   \ }doc
 
-[needed] padding-spaces ?exit
+[unneeded] type-left ?(  need padding-spaces
 
 : type-left  ( ca len1 len2 -- )
-  2dup 2>r min type 2r> padding-spaces  ;
+  2dup 2>r min type 2r> padding-spaces  ; ?)
 
   \ doc{
   \

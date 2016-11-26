@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261415
+; Last modified: 201611261724
 
 include version.z80s
 
@@ -7605,33 +7605,6 @@ push_ahl:
 
   dw over_,plus_,swap_
   dw exit_
-
-; ----------------------------------------------
-if 1 ; far_memory
-
-  _colon_header far_type_,'FARTYPE'
-
-; XXX TODO -- move to the library
-
-; doc{
-;
-; fartype  ( ca len -- )
-;
-; If _len_ is greater than zero, display the character string
-; _ca len_, which is stored in the far memory.
-;
-; See: `far-banks`, `type`.
-;
-; }doc
-
-  dw bounds_
-  dw paren_question_do_,far_type.loop_exit ; ?do
-  dw i_,far_c_fetch_,emit_
-  dw paren_loop_ ; loop
-far_type.loop_exit
-  dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header type_,'TYPE'
