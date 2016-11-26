@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201611261418
+  \ Last modified: 201611262335
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,7 +41,8 @@
   \ and names.
   \
   \ 2016-11-26: Need `catch`, which has been moved to the
-  \ library.
+  \ library.  Rename `blocks` to `blk/disk` after the fix in
+  \ the kernel.
 
 ( use-fly-index )
 
@@ -49,7 +50,7 @@ only forth definitions  need common-indexer  need get-order
                         need set-order       need bit-array
                         need catch
 
-blocks bit-array indexed-blocks
+blk/disk bit-array indexed-blocks
 
   \ doc{
   \

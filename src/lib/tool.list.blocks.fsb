@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261755
+  \ Last modified: 201611262333
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,7 +44,8 @@
   \ 2016-11-24: Factor `list-line` from `list-lines`.
   \
   \ 2016-11-26: Need `?leave`, which has been moved to the
-  \ library.
+  \ library.  Rename `blocks` to `blk/disk` after the fix in
+  \ the kernel.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -278,7 +279,7 @@ need .line#  need /line#  need .block#  need /block#
   \ }doc
 
 : qx-bounds  ( -- u1 u2 )
-  scr @ /qx / /qx * /qx bounds 0 max swap blocks min swap  ;
+  scr @ /qx / /qx * /qx bounds 0 max swap blk/disk min swap  ;
 
   \ doc{
   \
@@ -293,15 +294,13 @@ need .line#  need /line#  need .block#  need /block#
 
   \ need j  need inverse
   \
-  \ : qx ( -- )
-  \   home  qx-bounds do  qx-columns 0 do
-  \     i j +  dup .block#  dup scr @ = abs inverse
-  \     block /qx-column /block# - type  0 inverse
-  \   loop  cr  qx-columns +loop  ;
+  \ : qx ( -- ) home  qx-bounds do  qx-columns 0 do i j +  dup
+  \ .block#  dup scr @ = abs inverse block /qx-column /block# -
+  \ type  0 inverse loop  cr  qx-columns +loop  ;
   \
   \ XXX OLD -- The stepped outer loops makes the block count
-  \ overflow at the end of the disk, beyond `blocks`. The next
-  \ version uses one single loop:
+  \ overflow at the end of the disk, beyond `blk/disk`. The
+  \ next version uses one single loop:
 
   \ : qx-row?  ( n -- f )  qx-columns mod 1+ qx-columns =  ;
   \
@@ -353,7 +352,8 @@ need .line#  need /line#  need .block#  need /block#
   \
   \ }doc
 
-: nx  ( -- )  /qx scr @ + [ blocks 1- ] literal min scr ! qx  ;
+: nx  ( -- )
+  /qx scr @ + [ blk/disk 1- ] literal min scr ! qx  ;
 
   \ doc{
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611211922
+  \ Last modified: 201611262336
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,14 +26,23 @@
   \ History
 
   \ 2015..2016: Main development.
+  \
   \ 2016-04-29: Add `lineload` and `lineblock>source`.
+  \
   \ 2016-05-02: Join two blocks to save space.
+  \
   \ 2016-05-13: Add `load-app`.
-  \ 2016-10-04: Start a new version of `load-app`,
-  \ compatible with `[if]` and other words that use `refill`.
+  \
+  \ 2016-10-04: Start a new version of `load-app`, compatible
+  \ with `[if]` and other words that use `refill`.
+  \
   \ 2016-10-11: Finish the new version of `load-app`,
   \ compatible with `[if]` and other words that use `refill`.
+  \
   \ 2016-11-21: Move `.line` to <tool.list.blocks.fsb>.
+  \
+  \ 2016-11-26: Rename `blocks` to `blk/disk` after the fix in
+  \ the kernel.
 
 ( ?--> update flush thru )
 
@@ -253,13 +262,13 @@ need ?( [unneeded] lineload ?(
 
   \ : load-app  ( "name" -- )
   \   loading-app on
-  \   blocks locate ?do   loading-app @ 0= ?leave  i load
+  \   blk/disk locate ?do   loading-app @ 0= ?leave  i load
   \                 loop  end-app  ; ?)
   \   \ XXX OLD -- incompatible with words that use `refill`
 
 : load-app  ( "name" -- )
   loading-app on  locate blk !
-  begin   loading-app @  blk @ blocks <  and  while
+  begin   loading-app @  blk @ blk/disk <  and  while
           blk @ (load) 1 blk +!
   repeat  end-app  ; ?)
 
