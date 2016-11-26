@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611260112
+; Last modified: 201611261129
 
 include version.z80s
 
@@ -897,9 +897,9 @@ buffer_block_id_mask: equ $7FFF
 ; modified.
 
 disk_buffer:
-
   dw buffer_block_id_mask     ; Block id used when the  buffer
                               ; is not associated with a block.
+buffer_data:
   ds bytes_per_buffer         ; Actual content of the block.
 
 ; ----------------------------------------------
@@ -1721,7 +1721,7 @@ question_previous_bank:
   ; convert it to the correspondent actual address
   ; ($C000..$FFFF) in the previous bank and page in the next
   ; bank, else do nothing.
-  ; 
+  ;
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or lower
   ;   ($8000..$BFFF).
@@ -2026,7 +2026,7 @@ get_order.exit
 ; : ?order  ( n -- )
 ;   dup 0< #-50 ?throw  max-order < ?exit  #-49 throw  ;
 ; ----
-; 
+;
 ; See: `#order`, `>order`, `order`.
 ;
 ; }doc
@@ -4863,7 +4863,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
   ; XXX TODO -- Move to the library? But the Z80 label
   ; `two_fetch.hl` should be returned by a constant.
-  ; Alternative: write it in Forth.
+  ; Alternative:
+  ; - calculate the address: `' 2@ 1+`
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
@@ -5231,7 +5232,7 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library, when possible
 
   pop hl ; address
   pop de ; E = bitmask
@@ -5271,7 +5272,6 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- rename
   ; XXX TODO -- move to the library, when possible.
 
   pop hl ; address
@@ -5293,7 +5293,7 @@ two_store.into_hl_pointer:
   ld (hl),d
   inc hl
   if size_optimization
-    jp store.into_hl_pointer
+    jr store.into_hl_pointer
   else
     pop de
     ld (hl),e
@@ -5601,7 +5601,7 @@ do_user:
 ;
 ; }doc
 
-  dw disk_buffer+cell
+  dw buffer_data
 
 ; ----------------------------------------------
   _constant_header b_slash_buf_,'B/BUF'
@@ -5611,14 +5611,12 @@ do_user:
 ; ----------------------------------------------
   _constant_header b_slash_rec_,'B/REC'
 
-; XXX TODO -- move to the library?
+  ; XXX TODO -- move to the library, it's calculated
 
   dw bytes_per_sector
 
 ; ----------------------------------------------
   _c_constant_header rec_slash_blk_,'REC/BLK'
-
-; XXX TODO -- move to the library?
 
   db sectors_per_block
 
@@ -5886,10 +5884,10 @@ endif
 ;
 ; User variable that holds the word list identifier of the
 ; compilation word list.
-; 
+;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (System Extension Word Set).
-; 
+;
 ; See: `get-current`.
 ;
 ; }doc
@@ -5988,7 +5986,7 @@ endif
 ;
 ; See: `max-order`, `#order`, `order`, `>order`, `get-order`,
 ; `set-order`.
-; 
+;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (System Extension Word Set).
 ;
@@ -9251,7 +9249,7 @@ endif
   _question_throw error.stack_overflow
 
 if developing
-  
+
   ; Check also the return stack
 
   dw rp0_,fetch_
@@ -9908,14 +9906,20 @@ quit.begin:
 ;
 ; }doc
 
+
   dw version_
   dw dup_,c_fetch_,zero_dot_r_
+
+  ; XXX TODO -- factor these repeated parts to a nonamed word,
+  ; but only two cells would be saved:
   _literal '.'
   dw emit_
   dw one_plus_,dup_,c_fetch_,zero_dot_r_
+
   _literal '.'
   dw emit_
   dw one_plus_,dup_,c_fetch_,zero_dot_r_
+
   dw one_plus_
 if version_prerelease
   dw paren_dot_quote_
@@ -12331,8 +12335,10 @@ two_fetch.hl:
 
   ; XXX TODO -- Move to the library? But the Z80 label
   ; `two_fetch.hl` should be returned by a constant.
-  ; Alternatives: write it in Forth; write it in Z80 with a call
-  ; to `2@`, using `execute-xt`.
+  ; Alternatives:
+  ; - write it in Forth
+  ; - write it in Z80 with a call to `2@`, using `execute-xt`
+  ; - write it in Z80 calculating the address: `' 2@ 1+`
 
 ; doc{
 ;
@@ -12407,7 +12413,7 @@ two_fetch.hl:
 ; ----------------------------------------------
   _colon_header catch_,'CATCH'
 
-  ; XXX TODO -- move to the library?
+  ; XXX TODO -- move to the library
 
 ; doc{
 
@@ -12664,7 +12670,7 @@ endif
   ; XXX TODO -- Erase also this whole routine?
 
   ; Remove the call to this routine,
-  ; so it will not be executed in future 
+  ; so it will not be executed in future
   ld hl,call_move_definition_headers_to_memory_bank
   ld (hl),0 ; nop
   inc hl

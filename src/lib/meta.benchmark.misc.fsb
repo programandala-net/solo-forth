@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 2016112601
+  \ Last modified: 201611261130
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,6 +62,32 @@
   \
   \ 2016-11-26: Add `2cells+-bench`.
 
+( transfer-bench  )
+
+  \ 2016-11-26: Confirm this benchmark for the parameters used
+  \ by `transfer-sector` in `transfer-block`.
+
+need bench{  need }bench.
+
+: constsum  ( -- n )  buffer-data b/rec +  ;
+: litsum    ( -- n )  [ buffer-data b/rec + ] literal  ;
+
+: run  ( n -- )
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." constants sum "
+      0 swap bench{ 0 ?do  constsum drop  loop }bench. drop
+      cr ." literal       "
+      0 swap bench{ 0 ?do  litsum drop    loop }bench. drop   ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       constants sum             literal
+  \       -------------  ------------------
+  \ 00100             2                   1
+  \ 01000            14                  10
+  \ 10000           131                  94
+  \ 65536           858                 613
+
 ( 2cells+-bench )
 
   \ 2016-11-26
@@ -72,7 +98,7 @@ need bench{  need }bench.
 : 2cellslit+  ( n -- )  [ 2 cells ] literal +  ;
 
 : run  ( n -- )
-  cr ." Results for " dup . ." iterations"
+  cr ." Results for " dup u. ." iterations"
   dup cr ." cell+ cell+ "
       0 swap bench{ 0 ?do  cell+cell+  loop }bench. drop
       cr ." 4 +         "
@@ -304,7 +330,7 @@ cvariable cvar  : cvariable-bench  ( n -- )
 need value  need cvalue  need cvariable
 need bench{  need }bench.
 
-0 value val  0 cvalue cval  variable var  cvariable cvar  
+0 value val  0 cvalue cval  variable var  cvariable cvar
 
 : value-bench  ( n -- )
   bench{  0 do  i to val  loop  }bench.  ;

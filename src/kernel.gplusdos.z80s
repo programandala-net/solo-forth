@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201608102009
+; Last modified: 201611261123
 
 ; ==============================================================
 ; Description
@@ -27,6 +27,11 @@
 
 ; See
 ; http://programandala.net/en.program.solo_forth.history.html
+
+; Latest changes:
+
+; 2016-11-26: Improve `transfer-block` using a literal for the second
+; `transfer-block`.
 
 ; ==============================================================
 
@@ -195,11 +200,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   dw transfer_sector_,throw_
 
   dw one_plus_,sector_id_
-
-  ; XXX TODO -- benchmark again
-  dw buffer_data_,b_slash_rec_,plus_ ; XXX 23768 frames
-  ;_literal disk_buffer+cell+bytes_per_sector ; XXX 24425 frames??
-
+  _literal buffer_data+bytes_per_sector
   dw transfer_sector_,throw_
 
   dw exit_
