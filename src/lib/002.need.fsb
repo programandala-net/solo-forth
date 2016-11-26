@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611250127
+  \ Last modified: 201611261043
 
   \ -----------------------------------------------------------
   \ Description
@@ -99,6 +99,8 @@
   \
   \ 2016-11-25: Factor `use-no-index`, `use-default-located`.
   \ Fix and improve documentation and names.
+  \
+  \ 2016-11-26: Improve `(located)` to detect empty strings.
 
 ( delimited located needed-word )
 
@@ -144,8 +146,13 @@ defer unlocated  ( block -- )
   \
   \ }doc
 
+-->  \ XXX TMP --
+
+( --- )
+
 : (located)  ( ca len -- block | false )
-  \ ." Locating " 2dup type space  \ XXX INFORMER
+  \ cr ." (located)<" 2dup type ." >" \ XXX INFORMER
+  ?dup 0= if  drop false exit  then
   delimited last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
   do  0 i line>string 2over contains
@@ -168,7 +175,6 @@ defer unlocated  ( block -- )
   \
   \ }doc
 
-
 defer located  ( ca len -- block | false )
 
   \ doc{
@@ -181,7 +187,7 @@ defer located  ( ca len -- block | false )
   \
   \ }doc
 
-2variable needed-word  -->
+2variable needed-word  0. needed-word 2!  -->
 
 ( ?located reneeded reneed needed-word [needed] [unneeded] )
 
@@ -331,6 +337,7 @@ defer needed  ( ca len -- )  -->
 ( locate-needed need use-no-index )
 
 : locate-needed  ( ca len -- )
+  \ cr ." LN<" 2dup type ." >"  \ XXX INFORMER
   \ rp@ rp0 @ - -2 / ." rdepth=" .  \ XXX INFORMER
   needed-word 2@ 2>r  new-needed-word  2dup undefined?
   if  locate-reneeded  else  2drop  then  2r> needed-word 2!  ;
@@ -449,16 +456,16 @@ blk @ 1+ dup default-first-locatable !  first-locatable !
 need ?(
 
 [unneeded] locate ?(
-: locate  ( "name" -- n )
+: locate  ( "name" -- block | false )
   parse-name save-string located  ;  exit ?)
 
   \ doc{
   \
-  \ locate  ( "name" -- n )
+  \ locate  ( "name" -- block | false )
   \
   \ Locate the first block whose header contains "name"
-  \ (surrounded by spaces), and return its number. If not
-  \ found, return zero.  The search is case-sensitive.
+  \ (surrounded by spaces), and return its number _block_. If
+  \ not found, return _false_.  The search is case-sensitive.
   \
   \ }doc
 
