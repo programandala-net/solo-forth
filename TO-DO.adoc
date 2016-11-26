@@ -48,17 +48,19 @@ Improve the search order words, after Forth-2012.
 
 .2016-04-27:
 
+NOTE: Milestone: 0.12.0
+
 Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
 used only for `list`.
+
+.2016-04-27:
 
 Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
 `name>int`, etc. Factor `defined` and `comp'` accordingly.
 
-.2016-04-24:
-
-Add `noname`, analogous to `nextname`, after Gforth.
-
 .2015-09-13:
+
+NOTE: Milestone: 0.13.0
 
 `rp` should be a user variable.
 
@@ -135,6 +137,8 @@ actual strings.
 
 .2016-11-26:
 
+NOTE: Milestone: 0.13.0
+
 Change `??` to its old version, which is more useful:
 
 ----
@@ -155,10 +159,6 @@ Move old versions of `case` to an <old> directory.
 
 Finish `switch` (flow.switch.fsb) and indentify its origin (Wil
 Baden?).
-
-.2016-11-26:
-
-Move doer-test to tests module.
 
 .2016-05-07:
 
@@ -764,6 +764,12 @@ Floating-point words `flit`, `fliteral`. From PFE:
 
 == Memory == // {{{1
 
+.2016-11-26:
+
+NOTE: Milestone: 0.14.0
+
+Remove the code of the old system bank.
+
 .2016-11-15:
 
 Write far-memory versions of some of the following words from the
@@ -877,7 +883,15 @@ Spectrum Forth-83).
 
 == Library == {{{1
 
+.2016-11-26:
+
+NOTE: Milestone: 0.12.0
+
 Rename <environmental_queries.fsb>.
+
+Add missing "misc" and "common" parts of module filenames.
+
+Rename "misc" and "common" part of module filenames to uppercase.
 
 == Loading == {{{1
 
@@ -887,9 +901,13 @@ Study the actual advantage of `exit` at the end of conditional compilation.
 
 .2016-11-23:
 
+NOTE: Milestone: 0.12.0
+
 Rename `from` to `need-from`.
 
 .2016-11-22:
+
+NOTE: Milestone: 0.12.0
 
 Fix: when nothing follows `need`, crash! (after loading `blocked` and
 `mode64`).
@@ -918,6 +936,8 @@ need( word1 word2 word3 word4
 ----
 
 .2016-11-19:
+
+NOTE: Milestone: 0.12.0
 
 Write an alternative version of `indexer` to index the blocks on the fly as
 they are being searched by `need` and family, i.e., not in advance.
@@ -955,11 +975,15 @@ New:
 
 .2015-10-15:
 
-Adapt from Gforth: `noname`.
+NOTE: Milestone: 0.13.0
+
+Adapt from Gforth: `noname`, analogous to `nextname`.
 
 == Printing == // {{{1
 
 .2016-11-26:
+
+NOTE: Milestone: 0.13.0
 
 Make `type-ascii` configurable: store the common char in a character variable.
 In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
@@ -982,6 +1006,8 @@ increasing the line number. Somehow the behaviour must be unified in all
 modes. The behaviour of `mode64` seems more logical.
 
 .2016-10-28:
+
+NOTE: Milestone: 0.13.0
 
 Simplify `u.r`.
 
@@ -1022,13 +1048,15 @@ Improve tab control.
 
 .2016-11-26:
 
+NOTE: Milestone: 0.12.0
+ 
 Write these new words in Z80:
 
 ----
-: >true  ( x -- true )  drop true  ;
-: >false  ( x -- true )  drop false  ;
-: 2>true  ( xd -- true )  2drop true  ;
-: 2>false  ( xd -- true )  2drop false  ;
+: >true    ( x -- true )       drop true   ;
+: >false   ( x -- true )       drop false  ;
+: 2>true   ( x1 x2 -- true )  2drop true   ;
+: 2>false  ( x1 x2 -- false)  2drop false  ;
 ----
 
 == Sound == // {{{1
@@ -1063,6 +1091,8 @@ Write `fyi` or `.sys`, etc.
 
 .2016-11-25:
 
+NOTE: Milestone: 0.13.0
+
 Write `ed:` after TurboForth.
 
 .2016-11-24:
@@ -1071,9 +1101,10 @@ Factor `list-title` from `list-lines`.
 
 .2016-11-21:
 
+NOTE: Milestone: 0.13.0
+
 Improve `begin-module` to reuse a named module.
 
 .2016-11-19:
 
 Make `editor` defered, in order to load more than one editor at the same time.
-

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261419
+  \ Last modified: 201611270007
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,26 @@
   \
   \ 2016-11-26: Need `catch`, which has been moved to the
   \ library.
+  \
+  \ 2016-11-27: Move `doer-test` from the `doer` module.
+
+( doer-test )
+
+need doer
+
+doer test
+  cr .( Test 1: ) test
+
+make test  cr ." test 2" ;
+  cr .( Test 2: ) test
+
+: change    make test ." test 3" ;and  test ;
+
+change
+  cr .( Test 3: ) test
+
+undo test
+  cr .( Test 4: ) test
 
 ( [:-test-1 [:-test-2 [:-test-3 )
 
