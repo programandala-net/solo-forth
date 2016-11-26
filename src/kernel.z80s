@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611252100
+; Last modified: 201611260112
 
 include version.z80s
 
@@ -8995,18 +8995,34 @@ compare.end:
 ;
 ; }doc
 
-  ld d,b
-  ld e,c ; save IP in DE
-  pop bc
-  pop hl ; HL/BC=substring
-  ld a,b
-  or c
+  pop de
+  pop hl ; HL/DE=substring
+  ld a,d
+  or e
   jr z,search.match ; if zero length substring, immediate match
+
+  ; Exchange DE and BC:
+if size_optimization
+  push de
+  push bc
+  pop de ; DE = Forth IP
+  pop bc ; HL/BC=substring
+         ; 42 T 04 B
+else
+  ld a,e
+  ld e,c
+  ld c,a
+  ld a,d
+  ld d,b ; DE = Forth IP
+  ld b,a ; HL/BC=substring
+         ; 24 T 06 B
+endif
+
   exx
   pop bc
-  pop hl
+  pop hl ; HL'/BC'=main string
   push hl
-  push bc ; HL'/BC'=main string
+  push bc
 
 search.substring:
   ld a,b
@@ -9479,7 +9495,7 @@ endif
   dw default_bank_
   dw exit_
 
-else  ; XXX TMP alternative without `c@test-bits?`
+else  ; XXX TMP alternative without `c@and?`
 
 if 1 ; far_memory
   dw swap_,far_c_fetch_,and_,zero_not_equals_
@@ -11099,6 +11115,8 @@ block.end:
 ;
 ; }doc
 
+  ; XXX TODO -- move to the library
+
   dw defined_,zero_not_equals_
   dw exit_
 
@@ -11107,6 +11125,8 @@ block.end:
 
   ; XXX TODO make this the main word instead of `[defined]`, and
   ; move `[defined]` to the library?
+
+  ; XXX TODO -- move to the library
 
 ; doc{
 ;

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-25
+:revdate: 2016-11-26
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -35,12 +35,6 @@ Benchmark the system without constants `0`, `1` and `2`.
 With constants:    32598 B free.
 Without constants: 32572 B free.
 Diff:                +26 B
-
-== Bugs to fix == // {{{1
-
-.2016-11-25:
-
-The machine resets when the second string of `search` is empty.
 
 == Interpreter/compiler == // {{{1
 
