@@ -135,10 +135,6 @@ actual strings.
 
 .2016-11-26:
 
-Improve `times` and `dtimes` to not use a variable to hold the xt.
-
-.2016-11-26:
-
 Move old versions of `case` to an <old> directory.
 
 .2016-11-26:
@@ -147,17 +143,6 @@ Finish `switch` (flow.switch.fsb) and indentify its origin (Wil
 Baden?).
 
 .2016-11-26:
-
-Move to <flow.misc.fsb>:
-
-- <flow.dont.fsb>.
-- <flow.base-execute.fsb>.
-- <flow.call.fsb>.
-- <flow.create-colon.fsb>.
-- <flow.executions.fsb>.
-- <flow.question-repeat.fsb>.
-- <flow.recurse.fsb>.
-- <flow.retry.fsb>.
 
 Move doer-test to tests module.
 
@@ -871,6 +856,12 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
+
+== Library == {{{1
+
+.2016-11-26:
+
+Move `create:` to <define.misc.fsb>.
 
 == Loading == {{{1
 
