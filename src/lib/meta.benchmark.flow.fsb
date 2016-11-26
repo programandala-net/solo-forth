@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610121913
+  \ Last modified: 201611262141
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,7 +23,11 @@
   \ Latest changes
 
   \ 2016-08-05: Compact the code to save one block.
+  \
   \ 2016-10-12: Add `exec-bench`.
+  \
+  \ 2016-11-26: Remove `warnings off`, because now warnings are
+  \ deactivated by default.
 
 ( case-benchs )
 
@@ -34,7 +38,7 @@
   \ 2015-12-14: Updated the comments: `case:` has been renamed
   \ to `positional-case:`.
 
-need bench{  warnings off
+need bench{
 
 : .used  ( u -- )  unused - cr u. ." B used " ;
 

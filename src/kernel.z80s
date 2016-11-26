@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261903
+; Last modified: 201611262254
 
 include version.z80s
 
@@ -817,7 +817,7 @@ paren_wait:                                   ; +$04 ; XXX OLD
   dw $0000
 width_value:                                  ; +$06
   dw max_word_length
-warnings_value:                               ; +$08
+warnings_value:                               ; +$08 ; XXX OLD
   dw $0000
 last_value:                                   ; +$0A
   dw latest_nt_in_forth_voc
@@ -2845,7 +2845,7 @@ question_csb_.enough:
   _colon_header plus_loop_,'+LOOP',immediate+compile_only
 
   ; XXX TODO -- move to the library
-  ; (it's only used by `.s`, which will be removed from the kernel
+  ; (it's used by `.s`, which will be removed from the kernel
   ; after the development)
 
   ; Credit:
@@ -2940,8 +2940,6 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; ----------------------------------------------
   _code_header leave_,'LEAVE'
 
-  ; XXX TODO -- move to the library?
-
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
@@ -2988,7 +2986,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   _code_header paren_plus_loop_,'(+LOOP)'
 
   ; XXX TODO -- move to the library
-  ; (it's only used by `.s`, which will be removed from the kernel
+  ; (it's used by `.s`, which will be removed from the kernel
   ; after the development)
 
   ; Credit:
@@ -3801,7 +3799,11 @@ skip.end:
 
 ; doc{
 ;
-; chan  ( n -- )  \ Open channel n for output.
+; chan  ( n -- )
+;
+; Open channel _n_ for output.
+;
+; See: `display`, `printer`, `printing`.
 ;
 ; }doc
 ;
@@ -3823,6 +3825,10 @@ skip.end:
 ; mode32-emit  ( c -- )
 ;
 ; Send character _c_ to the current channel.
+;
+; This word is the default behaviour of `emit`.
+;
+; See: `emit`.
 ;
 ; }doc
 
@@ -3918,6 +3924,8 @@ emit_0udg.a
 ; This flag is set by `printer`, reset by `display` and checked
 ; by `page`. It should not be changed directly.
 ;
+; See: `display`, `printing`.
+;
 ; }doc
 
   dw false
@@ -3930,6 +3938,8 @@ emit_0udg.a
 ; display  ( -- )
 ;
 ; Select the display as output.
+;
+; See: `printer`, `printing`.
 ;
 ; }doc
 
@@ -5689,26 +5699,7 @@ do_user:
 
   db $06
 
-; ----------------------------------------------
-if 1 ; developing
-
-  ; XXX TMP -- during the development
-
-  _user_variable_header warnings_,'WARNINGS'
-
-; doc{
-;
-; warnings  ( -- a )
-;
-; User variable that holds a flag. If it's zero, no warning is
-; shown when a compiled word is not unique in the `current`
-; vocabulary.
-;
-; }doc
-
-  db $08
-
-endif
+  ; XXX TODO -- user variable $08 is free
 
 ; ----------------------------------------------
   _user_variable_header last_,'LAST'
@@ -8509,7 +8500,7 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- this may be moved to the library, but it's
+  ; XXX TODO -- move to the library, but it's
   ; needed by `needed`.
 
   dw find_name_,zero_equals_
@@ -8572,12 +8563,12 @@ if 1 ; far_memory
 ;
 ; }doc
 
-  exx             ; save Forth IP
-  pop hl          ; HL=ca2
-  call far.hl     ; HL=ca2' (actual address in far memory)
-  pop bc          ; C=len1
-  pop de          ; DE=ca1
-  ld (hl),c       ; set length of the destination string
+  exx                      ; save Forth IP
+  pop hl                   ; HL=ca2
+  call far.hl              ; HL=ca2' (actual address in far memory)
+  pop bc                   ; C=len1
+  pop de                   ; DE=ca1
+  ld (hl),c                ; set length of the destination string
 far_place.copy_char:
   inc hl
   push de
@@ -8588,7 +8579,7 @@ far_place.copy_char:
   inc de
   djnz far_place.copy_char ; jump if length is not exhausted
   call bank.default
-  exx         ; restore Forth IP
+  exx                      ; restore Forth IP
   _jp_next
 
 endif
@@ -8694,6 +8685,23 @@ error.message:
 ; ----------------------------------------------
   _defer_header warn_,'WARN',,noop_
 
+; doc{
+;
+; warn  ( ca len -- ca len )
+;
+; Check if _ca len_ already exists in the compilation word list.
+; If so, and if the content of `warnings` is not zero, do a
+; configurable action, usually issue a warning message.
+;
+; This is a deferred word which is called by `header,` and whose
+; default behaviour is `noop`. Alternative behaviours are
+; provided by `warn.message`, `warn.throw` and `warn-throw`.
+;
+; See: `warnings`, `warn.message`, `warn.throw`, `warn-throw`,
+; `header,`.
+;
+; }doc
+
 ; ----------------------------------------------
   _colon_header header_comma_,'HEADER,'
 
@@ -8703,39 +8711,15 @@ error.message:
 ;
 ; Create a dictionary header with the name _ca len_.
 ;
+; See: `warn`.
+;
 ; }doc
 
   ; XXX TODO -- complete the description, for DTC.
 
   dw dup_,zero_equals_
   _question_throw error.zero_length_name
-
-if 1 ; developing
-
-  ; XXX TMP -- during the development
-
-  dw warnings_,fetch_
-  dw zero_branch_,header_comma.continue
-
-  ; `warnings` is on
-  dw two_dup_,get_current_,search_wordlist_
-  dw zero_branch_,header_comma.continue
-  ; the word is not unique in `current`
-  ; ( ca len xt )
-  dw paren_dot_quote_
-  _string "redefined "
-  dw to_name_,dot_name_
-
-  ; XXX INFORMER:
-  ; dw paren_dot_quote_
-  ; _string "latest "
-  ; dw latest_,dot_name_
-
-else ; XXX NEW
-
   dw warn_
-
-endif
 
 header_comma.continue:
 
@@ -8785,7 +8769,7 @@ endif
 
   dw exit_
 
-else
+else ; system bank
 
   dw here_,lastxt_,store_ ; update `lastxt`
   dw width_,fetch_,min_

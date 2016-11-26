@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261130
+  \ Last modified: 201611262143
 
   \ -----------------------------------------------------------
   \ Description
@@ -60,7 +60,8 @@
   \
   \ 2016-10-16: Add `store-bench`.
   \
-  \ 2016-11-26: Add `2cells+-bench`.
+  \ 2016-11-26: Add `2cells+-bench`.  Remove `warnings off`,
+  \ because now warnings are deactivated by default.
 
 ( transfer-bench  )
 
@@ -658,7 +659,7 @@ defer num?
 
 ( buffer-benchmark-2 )
 
-  2 load  need reset-frames  warnings off  reset-frames
+  2 load  need reset-frames  reset-frames
 
   need list  need dump  need wdump  need decode
   need life  need hanoi  need tt need siderator  need pong
@@ -705,7 +706,7 @@ defer num?
 
 ( header-benchmark )
 
-need bench{ warnings off bench{ : w ; : w ; : w ; : w ;
+need bench{ bench{ : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
 : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ; : w ;
@@ -750,7 +751,7 @@ need bench{ warnings off bench{ : w ; : w ; : w ; : w ;
 
 ( header-benchmark )
 
-need bench{ warnings off blk @ 1+ constant b bench{ b load
+need bench{ blk @ 1+ constant b bench{ b load
 b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load b load
 b load b load b load b load b load b load b load b load b load
