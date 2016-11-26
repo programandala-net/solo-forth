@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611241748
+  \ Last modified: 201611260147
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,6 +73,7 @@
   \ blocks. Replace one usage of `[if]` with `?(`.
   \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`.
   \ 2016-11-24: Make `name<name` compatible with far memory.
+  \ 2016-11-26: Improve `name>>` and `>>name`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -139,10 +140,10 @@ need name>link
 ?\ need alias  ' cell+ alias >>link  ( xtp -- lfa ) exit
 
 [unneeded] name>>
-?\ : name>>  ( nt -- xtp )  [ 2 cells ] literal -  ; exit
+?\ : name>>  ( nt -- xtp )  cell- cell-  ; exit
 
 [unneeded] >>name
-?\ : >>name  ( xtp -- nt )  [ 2 cells ] literal +  ; exit
+?\ : >>name  ( xtp -- nt )  cell+ cell+  ; exit
 
 [unneeded] >body
 ?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl  end-code

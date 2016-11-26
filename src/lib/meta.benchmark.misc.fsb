@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610161627
+  \ Last modified: 2016112601
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,33 @@
   \ `pixels-bench`.
   \
   \ 2016-10-16: Add `store-bench`.
+  \
+  \ 2016-11-26: Add `2cells+-bench`.
+
+( 2cells+-bench )
+
+  \ 2016-11-26
+
+need bench{  need }bench.
+
+: cell+cell+  ( n -- )  cell+ cell+  ;
+: 2cellslit+  ( n -- )  [ 2 cells ] literal +  ;
+
+: run  ( n -- )
+  cr ." Results for " dup . ." iterations"
+  dup cr ." cell+ cell+ "
+      0 swap bench{ 0 ?do  cell+cell+  loop }bench. drop
+      cr ." 4 +         "
+      0 swap bench{ 0 ?do  2cellslit+  loop }bench. drop   ;
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ----------------------------------
+  \       cell+ cell+  [ 2 cells ] literal +
+  \       -----------  ---------------------
+  \ 00100           1                      2
+  \ 01000          10                      9
+  \ 10000          95                     99
+  \ 65536         625                    649
 
 ( number-base-bench )
 

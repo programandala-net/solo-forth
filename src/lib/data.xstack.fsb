@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610140034
+  \ Last modified: 201611260156
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
 
   \ 2016-10-14: Rename `xstack` to `allocate-xstack` and write
   \ `allot-xstack`. Move the common code to its own block.
+  \
+  \ 2016-11-26: Improve `allot-xstack`.
 
 ( xsize xp xp0 xp@ xp! xp+! xclear set-xstack )
 
@@ -82,7 +84,7 @@ need set-xstack
 
 : allot-xstack  ( n "name" -- )
   \ Create a new xstack of _n_ cells.
-  create  cells dup here [ 2 cells ] literal + dup
+  create  cells dup here cell+ cell+ dup
     , , , allot
     \ +0 = xp0
     \ +2 = xp

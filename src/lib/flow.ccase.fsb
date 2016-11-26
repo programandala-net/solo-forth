@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281721
+  \ Last modified: 201611260155
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,8 @@
   \ History
 
   \ 2016-04-28: Write `?ccase`, `ccase0`.
+  \
+  \ 2016-11-26: Improve `(ccase)`.
 
 ( ?ccase )
 
@@ -213,7 +215,7 @@ need char-position?
   rot char-position? if    ( +n ) 3 + cells r@ +
                            \ character found:
                            \ calculate address of the option
-                     else  [ 2 cells ] literal r@ + @
+                     else  r@ cell+ cell+ @
                            \ character not found:
                            \ calculate address of the default option
                      then  perform  ;

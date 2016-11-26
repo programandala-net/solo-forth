@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611231318
+  \ Last modified: 201611260149
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,8 @@
   \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`,
   \ `c!set-bits` to `cset`, `c!reset-bits` to `creset`, and
   \ `c@test-bits` to `c@and` after the changes in the system.
+  \
+  \ 2016-11-26: Improve `2@+`.
 
 ( -! c+! c-! )
 
@@ -220,7 +222,7 @@ code 1-!  ( a -- )
   \ }doc
 
 [unneeded] 2@+
-?\ : 2@+  ( a -- a' xd )  dup [ 2 cells ] literal + swap 2@  ;
+?\ : 2@+  ( a -- a' xd )  dup cell+ cell+ swap 2@  ;
 
   \ doc{
   \

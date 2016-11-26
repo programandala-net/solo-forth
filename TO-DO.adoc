@@ -19,7 +19,6 @@ because _r_ is the standard for floating-point numbers.
 
 == Benchmarks == // {{{1
 
-- Benchmark `cell+ cell+` (from `switcher`) and `[ 2 cells ] literal +`.
 - Benchmark current `times` and new version that keeps the xt in the return
   stack in the loop: `do dup r> execute r> loop drop`.
 - Benchmark library `m*` with the kernel version.

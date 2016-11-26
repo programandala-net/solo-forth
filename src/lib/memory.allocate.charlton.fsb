@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605181528
+  \ Last modified: 201611260151
 
   \ -----------------------------------------------------------
   \ Description
@@ -88,6 +88,8 @@
 
   \ 2016-05-18: Need `vocabulary`, which has been moved to the
   \ library.
+  \
+  \ 2016-11-26: Improve `>prev`.
 
 ( heap )
 
@@ -185,7 +187,7 @@ variable nextnode  -->
   \ address of the "next" cell.  Externally they are referred
   \ to by the address of the start of the data field.
 
-: >prev ( addr1 -- addr2)  [ 2 cells ] literal +  ;
+: >prev ( addr1 -- addr2)  cell+ cell+  ;
 
   \ Move from the "next" cell to the "previous" cell.
 
