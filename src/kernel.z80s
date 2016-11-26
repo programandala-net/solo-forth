@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611261752
+; Last modified: 201611261903
 
 include version.z80s
 
@@ -10080,8 +10080,8 @@ endif
   dw abort_
 
 cold_start:
-call_move_definition_headers_to_memory_bank:
-  call move_definition_headers_to_memory_bank ; only the first time
+call_first_boot:
+  call first_boot ; only once, after the first boot from disk
   call common_start
   dw cold_
 
@@ -11583,14 +11583,10 @@ dot_s.end:
 ; ----------------------------------------------
   _colon_header type_ascii_,'TYPE-ASCII'
 
-; : type-ascii  ( ca len -- )
-;   bounds ?do
-;     i c@ dup dup ascii-char? 0= swap control-char? or
-;     if  drop '.'  then  emit
-;   loop  ;
+  ; XXX TMP -- for debugging
 
-; XXX REMARK -- This word is in the library. It's also here because
-; it's needed by `blks`.
+  ; XXX REMARK -- This word is in the library. It's also here
+  ; because it's needed by `blks`.
 
   dw bounds_
   dw paren_question_do_,type_ascii.loop_exit
@@ -11668,6 +11664,8 @@ endif
 ;
 ; Origin: Forth-79 (Reference Word Set), Forth-83 (Uncontrolled
 ; Reference Words), Forth-94 (FACILITY), Forth-2012 (FACILITY).
+;
+; See: `cls`.
 ;
 ; }doc
 
@@ -11888,7 +11886,9 @@ endif
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
 ; be written if needed.
-
+;
+; See: `at-xy`.
+;
 ; }doc
 
   ; Credit:
@@ -11927,6 +11927,8 @@ at_pfa.last_line:
 ;
 ; Clear the screen with the current colors and reset the cursor
 ; position to the upper left corner (column 0, row 0).
+;
+; See: `page`.
 ;
 ; }doc
 
@@ -11967,7 +11969,7 @@ at_pfa.last_line:
 ; Set the cursor position at the top left position (column 0,
 ; row 0).
 ;
-; `home` is a deferred word, which default behaviour is
+; `home` is a deferred word, whose default behaviour is
 ; `(home)`.
 ;
 ; See: `(home)`.
@@ -12001,7 +12003,12 @@ at_pfa.last_line:
 ;
 ; at-xy ( col row -- )
 ;
+; This is a deferred word, whose default behaviour is
+; `mode32-at-xy`.
+;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
+;
+; See: `mode32-at-xy`.
 ;
 ; }doc
 
@@ -12010,15 +12017,19 @@ at_pfa.last_line:
 
 ; doc{
 ;
-; (mode32-xy)  ( -- col row )
-
+; mode32-xy  ( -- col row )
+;
 ; Return the current column and row, in mode 32.
+;
+; This is the default behaviour of `xy`.
 ;
 ; ----
 ; : (mode32-xy)  ( -- col row )
 ;   24 23689 c@ -
 ;   33 23688 c@ - dup 32 = if  drop 1+ 0  then  swap  ;
 ; ----
+;
+; See: `xy`.
 ;
 ; }doc
 
@@ -12049,6 +12060,11 @@ mode32_xy.end:
 ; xy ( -- col row )
 ;
 ; Return the current column and row of the text cursor.
+;
+; This is a deferred word whose default behaviour is
+; `mode32-xy`.
+;
+; See: `mode32-xy`, `at-xy`.
 ;
 ; }doc
 
@@ -12223,6 +12239,25 @@ color9.valid:
 ; ----------------------------------------------
   _colon_header two_constant_,'2CONSTANT'
 
+; doc{
+;
+; 2constant  ( x1 x2 "name -- )
+;
+; Create a definition for _name_ with the executions semantics
+; defined below:
+;
+; _name_ is referred to as a two-constant.
+;
+; name Execution: ( -- x1 x2 )
+;
+; Place cell pair _x1 x2_ on the stack.
+;
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
+; (DOUBLE).
+;
+; }doc
+
   dw create_,two_comma_
   dw paren_semicolon_code_
 do_two_constant:
@@ -12248,7 +12283,6 @@ two_fetch.hl:
                 ; 11t  0 push hl
                 ; 86t 12 TOTAL
 
-
 ; ----------------------------------------------
   _colon_header two_variable_,'2VARIABLE'
 
@@ -12260,15 +12294,17 @@ two_fetch.hl:
 ; execution semantics defined below. Reserve two consecutive
 ; cells of data space.
 ;
-;    _name_ is referred to as a two-variable.
+; _name_ is referred to as a two-variable.
 ;
-;          name Execution: ( -- a )
+; name Execution: ( -- a )
 ;
-;    _a_ is the address of the first (lowes address) cell of two
-;    consecutive cells. A program is responsible for
-;    initializing the contents.
+; _a_ is the address of the first (lower address) cell of two
+; consecutive cells. A program is responsible for
+; initializing the contents.
 ;
-; Origin: Forth-94.
+; Origin: Forth-79 (Double Number Word Set), Forth-83 (Double
+; Number Extension Word Set), Forth-94 (DOUBLE), Forth-2012
+; (DOUBLE).
 ;
 ; }doc
 
@@ -12298,8 +12334,6 @@ two_fetch.hl:
 ; ----------------------------------------------
   _alias_header unnest_,'UNNEST',,r_drop_
 
-  ; XXX NEW -- experimental
-
   ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
 
@@ -12309,7 +12343,7 @@ two_fetch.hl:
 ; doc{
 ;
 ; exit  ( -- ) ( R: nest-sys -- )
-
+;
 ; Return control to the calling definition, specified by
 ; _nest-sys_.
 ;
@@ -12495,19 +12529,23 @@ latest_xt_in_forth_voc: equ dot_paren_
 dictionary_pointer_after_cold:
 
 ; ==============================================================
-; Definition headers
+; First-boot only tasks
 
-move_definition_headers_to_memory_bank:
-  ; XXX TODO -- rename the label, because other task are done
-  ; here
+; The following code is executed only the _first time_ Solo
+; Forth boots from the disk.  At the end its call is deactivated
+; with a patch; the code itself will be overwritten by the Forth
+; dictionary.
 
-  ; Move the definition headers, assembled in ordinary memory,
-  ; to the system bank. This routine is needed only once,
-  ; therefore its call is patched with `noop` at the end; the
-  ; routine itself will be overwritten by the Forth dictionary.
+first_boot:
 
-  ; The whole screen is used as intermediate buffer for copying
-  ; the data.
+; ----------------------------------------------
+; Border color
+
+  ld a,7      ; white...
+  out($FE),a  ; ...border, just in case it was changed before boot
+
+; ----------------------------------------------
+; Memory banks for +3DOS
 
 if defined plus3dos
 
@@ -12532,73 +12570,107 @@ endif
 
 endif
 
-  ld hl,bank_start ; origin
-  ld de,sys_screen ; destination
+; ----------------------------------------------
+; Move the definition headers
+
+; Move the definition headers, which were assembled in ordinary
+; memory (from address $C000), to the system bank or the far
+; memory, depending on the method selected.  The whole screen is
+; used as intermediate buffer for copying the data.
+
+  ld hl,bank_start      ; origin
+  ld de,sys_screen      ; destination
   ld bc,sys_screen_size ; count
-  ldir ; copy the definition headers to the screen
+  ldir                  ; copy to the screen
 
 if 1 ; far_memory
-  ld a,(far_banks_pfa) ; first bank used as far memory
+  ld a,(far_banks_pfa)  ; first bank of far memory
   ld e,a
   call bank.e
 else
   call bank.system
 endif
 
-  ld hl,sys_screen ; origin
-  ld de,bank_start ; destination
+  ld hl,sys_screen      ; origin
+  ld de,bank_start      ; destination
   ld bc,sys_screen_size ; count
-  ldir ; copy the definition headers to the bank
+  ldir                  ; copy to the bank
 
   call bank.default
+
+; ----------------------------------------------
+; Show the background image
+
+; Solo Forth shows a version-specific background image the first
+; time it boots from disk.
 
   ld hl,background_image ; origin
   ld de,sys_screen ; destination
   ld bc,sys_screen_size ; count
   ldir ; copy the background to the screen
 
-  ; Erase the memory that was used for the headers
-  ; during the compilation of the kernel:
-  ld hl,bank_start
-  ld de,bank_start+1
-  ld bc,bank_size
-  ld (hl),l ; L=0 because bank_start=$C000
-  ldir
-  ; XXX TODO -- Erase also the background image.
-  ; XXX TODO -- Erase also this whole routine?
+; ----------------------------------------------
+; Pause
 
-  ; Remove the call to this routine,
-  ; so it will not be executed in future
-  ld hl,call_move_definition_headers_to_memory_bank
-  ld (hl),0 ; nop
-  inc hl
-  ld (hl),0 ; nop
-  inc hl
-  ld (hl),0 ; nop
+; Wait 5 seconds, or until a key is pressed.
 
   ; Set frames counter to zero:
   xor a
   ld (sys_frames+0),a
   ld (sys_frames+1),a
   ld (sys_frames+2),a
-  ; XXX TODO -- setting the counter to zero
-  ; would make it possible to add `uptime`,
-  ; but it doesn't look useful enough.
-  ; In order to limit the pause here,
-  ; only the first byte has to be reseted.
 
-  ; Wait for a key
+  ; XXX TODO -- setting the counter to zero would make it
+  ; possible to add `uptime`, but it doesn't look useful enough.
+  ; In order to limit the pause here, only the first byte has to
+  ; be reseted.
+
   ld (sys_last_k),a ; forget last key
+
 wait_a_bit:
-  ld a,(sys_frames) ; frames...
-  inc a ; ...is $FF? (so, passed 255*20 ms = 5.12 s)
-  ret z
-  ld a,(sys_last_k) ; a key...
-  and a ; ...pressed?
-  jr z,wait_a_bit
+
+  ld a,(sys_frames) ; is frames...
+  inc a             ; ...$FF? (so, it passed 255*20 ms = 5.12 s)
+  jr z,end_of_pause ; if so, exit
+
+  ld a,(sys_last_k) ; has a key...
+  and a             ; ...been pressed?
+  jr z,wait_a_bit   ; if not, keep waiting
+
   xor a
   ld (sys_last_k),a ; forget last key
+
+end_of_pause:
+
+; ----------------------------------------------
+; Clear memory
+
+; Erase the background image and the zone that was used for the
+; headers during the compilation of the kernel.
+
+  ld hl,background_image        ; from the background image
+  ld de,background_image+1
+  ld bc,$FFFF-background_image  ; to the top of memory
+  ld (hl),0
+  ldir
+
+; ----------------------------------------------
+; Deactivate
+
+; Remove the call to this initialization routine, so it will not
+; be executed in future.
+
+  ld hl,call_first_boot
+  ld (hl),0 ; nop
+  inc hl
+  ld (hl),0 ; nop
+  inc hl
+  ld (hl),0 ; nop
+
   ret
+
+; ----------------------------------------------
+; The background image
 
 background_image:
   incbin ../backgrounds/current.scr
