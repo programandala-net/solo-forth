@@ -135,6 +135,20 @@ actual strings.
 
 .2016-11-26:
 
+Change `??` to its old version, which is more useful:
+
+----
+  \ XXX TODO -- 2016-11-26: It seems more useful the old
+  \ version, extended as the rest of alternative conditionals:
+  \
+  \ : ??   ( f -- )   0= if  r> cell+ >r  then  ; compile-only
+  \ : 0??  ( f -- )      if  r> cell+ >r  then  ; compile-only
+  \ : -??  ( f -- )  0>= if  r> cell+ >r  then  ; compile-only
+  \ : +??  ( f -- )   0< if  r> cell+ >r  then  ; compile-only
+----
+
+.2016-11-26:
+
 Move old versions of `case` to an <old> directory.
 
 .2016-11-26:
@@ -858,10 +872,6 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 Spectrum Forth-83).
 
 == Library == {{{1
-
-.2016-11-26:
-
-Move `create:` to <define.misc.fsb>.
 
 == Loading == {{{1
 
