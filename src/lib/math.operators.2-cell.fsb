@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611172024
+  \ Last modified: 201611261356
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,8 +26,12 @@
   \ Latest changes
 
   \ 2015-11-13: Add `dsqrt`.
+  \
   \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
   \ saving 3 blocks.
+  \
+  \ 2016-11-26: Rewrite `d-` with Z80 opcodes, without
+  \ `z80-asm`. Compact `d2*` and `d2/`, saving two blocks.
 
 ( ud* d* )
 
@@ -197,88 +201,56 @@ need ?(
 : dmax  ( d1 d2 -- d1 | d2 )
   2over 2over d< if  2swap  then  2drop  ;  ?)
 
-( d- )
-
-need z80-asm
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
-
-  de pop              \ DE=d2hi
-  exx  de pop         \ DE'=d2lo
-  exx  hl pop         \ HL=d1hi,DE=d2hi
-  exx  hl pop         \ HL'=d1lo
-  de subp  hl push    \ 2OS=d1lo-d2lo
-  exx  de sbcp        \ HL=d1hi-d2hi-cy
-  jppushhl  end-code
-
-( d2* d2/ )
-
-  \ Credit:
-  \
-  \ Code converted to Z80 from the 8080 version
-  \ of DZX-Forth.
+( d- d2* d2/ )
 
 need ?(
 
-[unneeded] d2* ?(  code d2*  ( xd1 -- xd2 )
+  \ Credit:
+  \
+  \ Code of `d-` adapted from Z88 CamelForth.
 
-  D1 c, E1 c,
-    \ pop de / pop hl
-  29 c,  CB c, 13 c,  CB c, 12 c,
-    \ add hl,hl
-    \ rl e
-    \ rl d
-  EB c, C3 c, pushhlde ,
-    \ ex de,hl jp pushhlde
+[unneeded] d- ?( code d-  ( d1|ud1 d2|ud2 -- d3|ud3 )
 
-  end-code  ?)
-
-[unneeded] d2/ ?(  code d2/  ( xd1 -- xd2 )
-
-  E1 c, D1 c,
-    \ pop hl / pop de
-  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
-    \ sra h  /  rr h /  rr l
-  CB c, 1A c,  CB c, 1B c,
-    \ rr d /  rr e
-  EB c, C3 c, pushhlde ,
-    \ ex de,hl jp pushhlde
-
-  end-code  ?)
-
-( d2* d2/ )
+  D1 c,  D9 c,  D1 c,  D9 c,  E1 c,  D9 c,  E1 c,
+  \ de pop            \ DE=d2hi
+  \ exx  de pop       \ DE'=d2lo
+  \ exx  hl pop       \ HL=d1hi,DE=d2hi
+  \ exx  hl pop       \ HL'=d1lo
+  A0 07 + c,  ED c, 52 c,  E5 c,  D9 c,  ED c,  52 c,
+  \ de subp  hl push  \ 2OS=d1lo-d2lo
+  \ exx de  sbcp      \ HL=d1hi-d2hi-cy
+  jppushhl  end-code  exit ?)
 
   \ Credit:
   \
-  \ Code converted to Z80 from the 8080 version
-  \ of DZX-Forth.
-
-need ?(  need z80-asm
+  \ Code of `d2*` and `d2/` converted to Z80 from the 8080
+  \ version of DZX-Forth.
 
 [unneeded] d2* ?(  code d2*  ( xd1 -- xd2 )
 
-  de pop  hl pop
-  hl addp  e rl  d rl
-                              \ alternatives:
-  exde  pushhlde jp           \ smaller but slower
-  \ hl push  de push  jpnext  \ faster but bigger
-
-  end-code  ?)
+  D1 c, E1 c,  29 c,  CB c, 13 c,  CB c, 12 c,  EB c,
+    \ pop de
+    \ pop hl
+    \ add hl,hl
+    \ rl e
+    \ rl d
+    \ ex de,hl 
+  pushhlde jp, end-code  exit ?)
+    \ jp pushhlde
 
 [unneeded] d2/ ?(  code d2/  ( xd1 -- xd2 )
 
-  hl pop  de pop
-  h sra  l rr  d rr  e rr
-
-                              \ alternatives:
-  pushhlde jp                 \ smaller but slower
-  \ hl push  de push  jpnext  \ faster but bigger
-
-  end-code  ?)
+  E1 c, D1 c,  CB c, 2C c,  CB c, 1C c,  CB c, 1D c,
+    \ pop hl
+    \ pop de
+    \ sra h
+    \ rr h
+    \ rr l
+  CB c, 1A c,  CB c, 1B c,  EB c,  pushhlde jp,  end-code  ?)
+    \ rr d
+    \ rr e
+    \ ex de,hl
+    \ jp pushhlde
 
 ( dxor dor dand d10* )
 

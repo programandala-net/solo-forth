@@ -133,11 +133,33 @@ actual strings.
 
 == Control structures == // {{{1
 
-.2016-11-25:
+.2016-11-26:
 
-Remove `don't` or move it to <flow.misc.fsb>
+Improve `times` and `dtimes` to not use a variable to hold the xt.
 
-Move `times` and `dtimes` to <flow.times.fsb>
+.2016-11-26:
+
+Move old versions of `case` to an <old> directory.
+
+.2016-11-26:
+
+Finish `switch` (flow.switch.fsb) and indentify its origin (Wil
+Baden?).
+
+.2016-11-26:
+
+Move to <flow.misc.fsb>:
+
+- <flow.dont.fsb>.
+- <flow.base-execute.fsb>.
+- <flow.call.fsb>.
+- <flow.create-colon.fsb>.
+- <flow.executions.fsb>.
+- <flow.question-repeat.fsb>.
+- <flow.recurse.fsb>.
+- <flow.retry.fsb>.
+
+Move doer-test to tests module.
 
 .2016-05-07:
 
@@ -250,6 +272,10 @@ and Forth-83. Choose an alternative for the current `user`, defined in the
 library.
 
 == Documentation == // {{{1
+
+.2016-11-26:
+
+Change to title case the word sets of Forth-79 and Forth-83.
 
 .2016-11-21:
 
@@ -535,6 +561,16 @@ The problem is the rules of the BASIC loader. They run also when their
 prerequisites are older than the target.
 
 == Maths == // {{{1
+
+.2016-11-26:
+
+Remove old z80-asm versions of `d2*` and `d2/`.
+Search for similar cases.
+
+.2016-11-26:
+
+Rewrite `d-` with Z80 opcodes, without `z80-asm`.
+Search for similar cases.
 
 .2015-07-23:
 
@@ -965,6 +1001,19 @@ Add `vemits`, inspired by TI BASIC's `call vchar()`.
 
 Improve tab control.
 
+== Stacks == // {{{1
+
+.2016-11-26:
+
+Write these new words in Z80:
+
+----
+: >true  ( x -- true )  drop true  ;
+: >false  ( x -- true )  drop false  ;
+: 2>true  ( xd -- true )  2drop true  ;
+: 2>false  ( xd -- true )  2drop false  ;
+----
+
 == Sound == // {{{1
 
 .2016-08-01:
@@ -988,6 +1037,12 @@ Rename `frames@` to `ticks@`, etc.?
 2016-11-19: `utime`? `cputime`? (See Gforth)
 
 == Tools == // {{{1
+
+.2016-11-26:
+
+Rename `.unused` to `.free`.
+
+Write `fyi` or `.sys`, etc.
 
 .2016-11-25:
 
