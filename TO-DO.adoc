@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-26
+:revdate: 2016-11-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -399,6 +399,14 @@ Make also 40S, 40D and 80S TRD disk images?
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 
 == Errors == // {{{1
+
+.2016-11-27:
+
+Rename?:
+
+- `warn.throw` to `error-code-warn`
+- `warn-throw` to `error-warn`
+- `warn.message` to `message-warn`
 
 .2016-11-25:
 

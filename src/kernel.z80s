@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611262338
+; Last modified: 201611271035
 
 include version.z80s
 
@@ -1749,48 +1749,6 @@ question_previous_bank:
   ld de,bank_size
   add hl,de
   jr new_bank
-
-endif
-
-; ----------------------------------------------
-if 0 ; XXX OLD
-
-  _code_header bank_boundary_question,'BANK-BOUNDARY?'
-
-  ; XXX TMP --
-
-; doc{
-;
-; bank-boundary?  ( a -- f )
-;
-; }doc
-
-  pop hl
-  ld a,l
-  and a  ; =$00?
-  jr z,bank_boundary_question.xx00
-  inc a  ; =$FF?
-  jp nz,false_
-
-bank_boundary_question.xxFF:
-  ld a,h
-  cp $7F      ; $7FFF?
-  jp z,true_
-  cp $BF      ; $BFFF?
-  jp z,true_
-  cp $FF      ; $FFFF?
-  jp z,true_
-  jp false_
-
-bank_boundary_question.xx00:
-  ld a,h
-  cp $00      ; $0000?
-  jp z,true_
-  cp $40      ; $4000?
-  jp z,true_
-  cp $80      ; $8000?
-  jp z,true_
-  jp false_
 
 endif
 
