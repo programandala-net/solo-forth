@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605181544
+  \ Last modified: 201611270130
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,8 +33,11 @@
 
 ( parse-escaped-string )
 
-only forth definitions
+get-current  forth-wordlist set-current
+  \ Save the compilation wordlist and change it.
+
 need parse-char
+
 wordlist dup constant escaped-wordlist dup >order set-current
 
   \ The `escaped-voc` vocabulary contains the words whose names
@@ -75,12 +78,20 @@ wordlist dup constant escaped-wordlist dup >order set-current
   \ \x = hex character code
   \ Parse the 8-bit hex number of a character code.
 
+previous
+  \ Restore the search order.
+
 -->
 
 ( parse-escaped-string )
 
-only forth definitions  need char>string   need search-wordlist
-                        need chars>string  need s+
+forth-wordlist set-current
+
+need char>string   need search-wordlist
+need chars>string  need s+
+
+set-current
+  \ Restore the compilation wordlist.
 
 : unescape-char  ( c -- c1..cn n )
   dup char>string escaped-wordlist search-wordlist
