@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262336
+  \ Last modified: 201611271518
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \
   \ 2016-11-26: Rename `blocks` to `blk/disk` after the fix in
   \ the kernel.
+  \
+  \ 2016-11-27: Use `lastblk` in `reload`, instead of `scr`.
 
 ( ?--> update flush thru )
 
@@ -155,13 +157,15 @@
   \ }doc
 
 [unneeded] reload
-?\ : reload  ( -- )  empty-buffers  scr @ load  ;
+?\ : reload  ( -- )  empty-buffers  lastblk @ load  ;
 
   \ doc{
   \
   \ reload  ( -- )
   \
-  \ Load the most recently loaded or listed block.
+  \ Load the most recently loaded block.
+  \
+  \ See: `lastblk`.
   \
   \ }doc
 

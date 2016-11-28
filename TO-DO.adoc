@@ -58,12 +58,6 @@ used only for `list`.
 Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
 `name>int`, etc. Factor `defined` and `comp'` accordingly.
 
-.2015-09-13:
-
-NOTE: Milestone: 0.13.0
-
-`rp` should be a user variable.
-
 .2016-05-18:
 
 Remove the `root` word list. Set the minimum search order to `forth`.
@@ -122,10 +116,6 @@ a trick is `[ dup ] literal` and a `drop` after `;`.
 
 In order to save compilation time, move inner words to the bottom of
 the dictionary. Example: `(loop)`, `clit`, `back`, `digit`...
-
-.2015-06-30:
-
-Change: compare the user variables with those of Spectrum Forth-83.
 
 .2016-03-19:
 
@@ -1091,6 +1081,10 @@ Rename `frames@` to `ticks@`, etc.?
 
 == Tools == // {{{1
 
+.2016-11-28:
+
+Improve `see`: decode `does>`.
+
 .2016-11-26:
 
 Rename `.unused` to `.free`.
@@ -1116,3 +1110,21 @@ Improve `begin-module` to reuse a named module.
 .2016-11-19:
 
 Make `editor` defered, in order to load more than one editor at the same time.
+
+== User variables == {{{1
+
+.2016-11-27:
+
+Update the user variables that are initialized (`warnings` has been removed,
+but its place is used by `lastblk`, which does not need initialization).
+
+.2015-09-13:
+
+NOTE: Milestone: 0.13.0
+
+`rp` should be a user variable.
+
+.2015-06-30:
+
+Change: compare the user variables with those of Spectrum Forth-83.
+

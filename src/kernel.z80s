@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611271035
+; Last modified: 201611271526
 
 include version.z80s
 
@@ -753,15 +753,15 @@ sp0_init_value:                               ; +$00
 rp0_init_value:                               ; +$02
   ; `$14 +origin`
   dw return_stack_bottom
-paren_wait_init_value:                        ; +$04
+paren_wait_init_value:                        ; +$04 ; XXX OLD
   ; `$16 +origin`
   dw noop_
 width_init_value:                             ; +$06
   dw max_word_length
   ; `$18 +origin`
-warnings_init_value:                          ; +$08
+                                              ; +$08 ; XXX OLD
   ; `$1A +origin`
-  dw true
+  dw $0000
 last_init_value:                              ; +$0A
   ; `$1C +origin`
   dw latest_nt_in_forth_voc
@@ -817,7 +817,7 @@ paren_wait:                                   ; +$04 ; XXX OLD
   dw $0000
 width_value:                                  ; +$06
   dw max_word_length
-warnings_value:                               ; +$08 ; XXX OLD
+                                              ; +$08 ; XXX OLD
   dw $0000
 last_value:                                   ; +$0A
   dw latest_nt_in_forth_voc
@@ -5621,7 +5621,24 @@ do_user:
 
   db $06
 
-  ; XXX TODO -- user variable $08 is free
+; ----------------------------------------------
+  _user_variable_header lastblk_,'LASTBLK'
+
+; XXX TODO normal variable?
+
+; doc{
+;
+; lastblk  ( -- a )
+;
+; User variable that holds the block number of the block most recently
+; or loaded (with `load` or `continued`). This is the value used by
+; `reload`.
+; 
+; See: `load`, `continued`, `reload`.
+;
+; }doc
+
+  db $08
 
 ; ----------------------------------------------
   _user_variable_header last_,'LAST'
@@ -5722,9 +5739,14 @@ do_user:
 ;
 ; scr  ( -- a )
 ;
-; User variable that holds the screen number of the screen most
-; recently listed (with `list`) or loaded (with `load` or
-; `continued`). This is the value used by `reload`.
+; User variable that holds the number of the block most recently
+; listed by `list`. This variable is used by the blocks editors.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
+; (BLOCK EXT).
+;
+; See: `list`.
 ;
 ; }doc
 
@@ -10851,28 +10873,28 @@ block.end:
 ;
 ; load  ( u -- )
 ;
-; XXX TODO update the description
-;
-; Save the current input-source specification. Store the first
-; disk block of screen _u_ in `blk` (thus making screen _u_ the
-; input source and setting the input buffer to encompass its
-; contents), set `>in` to zero, and interpret. When the parse
-; area is exhausted, restore the prior input source
-; specification.
+; Save the current input-source specification. Store _u_ in `blk`
+; (thus making block _u_ the input source and setting the input buffer
+; to encompass its contents) and `lastblk`, set `>in` to zero, and
+; interpret. When the parse area is exhausted, restore the prior input
+; source specification.
 ;
 ; An error is issued if _u_ is zero.
 ;
 ; ----
 ; : load  ( u -- )
-;   dup 0= #-259 ?throw  dup scr !
+;   dup 0= #-259 ?throw  dup lastblk !
 ;   nest-source (load) unnest-source  ;
 ; ----
+;
+; See: `blk`, `>in`, `lastblk`, `(load)`, `nest-source`,
+; `unnest-source`.
 ;
 ; }doc
 
   dw dup_,zero_equals_
   _question_throw error.loading_from_screen_0
-  dw dup_,scr_,store_
+  dw dup_,lastblk_,store_
   dw nest_source_,paren_load_,unnest_source_
   dw exit_
 
