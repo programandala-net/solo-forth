@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262143
+  \ Last modified: 201611280135
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,6 +62,78 @@
   \
   \ 2016-11-26: Add `2cells+-bench`.  Remove `warnings off`,
   \ because now warnings are deactivated by default.
+  \
+  \ 2016-11-28: Add `+field-bench`.
+
+( +field-bench )
+
+  \ 2016-11-28
+
+need bench{  need }bench.
+
+  \ Implementation of `+field` from the Forth-2012
+  \ documentation:
+
+: +field-c  create  over , +  does> @ +  ;
+  \ ( n1 n2 "name" -- n3 )
+
+  \ The zero-field improved implementation,
+  \ is a version without local variables
+  \ of the following code:
+  \
+  \ Newsgroups: comp.lang.forth
+  \ From: anton AT mips DOT complang DOT tuwien DOT ac DOT at (Anton Ertl)
+  \ Subject: Re: ColorForth - another dead end?
+  \ Date: Mon, 01 Jun 2015 13:21:34 GMT
+  \ Message-ID: <2015Jun1.152134@mips.complang.tuwien.ac.at>
+  \
+  \ : +FIELD {: n1 n2 -- n3 :}
+  \   : n1 if
+  \     n1 postpone literal postpone +
+  \   else
+  \      immediate
+  \   then
+  \   postpone ; n1 n2 + ;
+
+: +field-:  : over ?dup if    postpone literal postpone +
+                        else  immediate  then  postpone ;  +  ;
+  \ ( n1 n2 "name" -- n3 )
+
+0 1 +field-c 0f-c  drop
+0 1 +field-: 0f-:  drop
+1 1 +field-c xf-c  drop
+1 1 +field-: xf-:  drop
+
+-->
+
+( +field-bench )
+
+: run  ( n -- )
+  cr ." Results for " dup u. ." iterations"
+  cr ." Field 0:"
+  cr ." - With `create` "
+  dup bench{ 0 ?do  0 0f-c drop  loop }bench.
+  cr ." - With `:`      "
+  dup bench{ 0 ?do  0 0f-: drop  loop }bench.
+  cr ." Field non-0:"
+  cr ." - With `create` "
+  dup bench{ 0 ?do  0 xf-c drop  loop }bench.
+  cr ." - With `:`      "
+      bench{ 0 ?do  0 xf-: drop  loop }bench.  ;
+ 
+ 
+  \ 2016-11-28:
+ 
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ----------------------------------
+  \       with `create`     with `:`
+  \       -------------     --------
+  \         0   x             0    x
+  \       --- ---           ---  ---
+  \ 00100   1   2             0    1
+  \ 01000  12  12             5   12
+  \ 10000 121 121            50  121
+  \ 65535 796 796           330  789
 
 ( transfer-bench  )
 
@@ -87,7 +159,7 @@ need bench{  need }bench.
   \ 00100             2                   1
   \ 01000            14                  10
   \ 10000           131                  94
-  \ 65536           858                 613
+  \ 65535           858                 613
 
 ( 2cells+-bench )
 
@@ -112,7 +184,7 @@ need bench{  need }bench.
   \ 00100           1                      2
   \ 01000          10                      9
   \ 10000          95                     99
-  \ 65536         625                    649
+  \ 65535         625                    649
 
 ( number-base-bench )
 

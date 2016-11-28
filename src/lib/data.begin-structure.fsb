@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201611280145
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,8 +22,12 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
 
-( begin-structure +field field: 2field: cfield: )
+  \ 2016-11-28: Better implementation of `+field`.
+
+( begin-structure +field field: 2field: cfield: end-structure )
 
   \ Forth-2012.
 
@@ -31,9 +35,35 @@
   create  >mark 0
   does>   ( -- n )  ( pfa ) @   ;
 
+  \ : +field  ( n1 n2 "name" -- n3 )
+  \   create  over , +
+  \   does>   ( a -- a' )  ( a pfa ) @ +  ;
+  \
+  \ XXX OLD -- This version from the Forth-2012 documentation
+  \ is inefficient because the addition is done also with field
+  \ 0.
+
 : +field  ( n1 n2 "name" -- n3 )
-  create  over , +
-  does>   ( a -- a' )  ( a pfa ) @ +  ;
+  : over ?dup if    postpone literal postpone +
+              else  immediate
+              then  postpone ;  +  ;
+
+  \ Credit:
+  \
+  \ Newsgroups: comp.lang.forth
+  \ From: anton AT mips DOT complang DOT tuwien DOT ac DOT at (Anton Ertl)
+  \ Subject: Re: ColorForth - another dead end?
+  \ Date: Mon, 01 Jun 2015 13:21:34 GMT
+  \ Message-ID: <2015Jun1.152134@mips.complang.tuwien.ac.at>
+  \
+  \ : +FIELD {: n1 n2 -- n3 :}
+  \   : n1 if
+  \     n1 postpone literal postpone +
+  \   else
+  \      immediate
+  \   then
+  \   postpone ; n1 n2 + ;
+
 
 : field:    ( n1 "name" -- n2 )  cell +field  ;
 : 2field:   ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
