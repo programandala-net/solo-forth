@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-11-23
+" Updated:  2016-11-28
 
 " --------------------------------------------------------------
 " History
@@ -101,9 +101,11 @@ syn keyword soloforthConversion number?
 syn keyword soloforthConversion sign
 syn keyword soloforthDefine '
 syn keyword soloforthDefine (user)
+syn keyword soloforthDefine +field
 syn keyword soloforthDefine ,
 syn keyword soloforthDefine /user
 syn keyword soloforthDefine 2constant
+syn keyword soloforthDefine 2field:
 syn keyword soloforthDefine 2lit
 syn keyword soloforthDefine 2literal
 syn keyword soloforthDefine 2to
@@ -114,7 +116,9 @@ syn keyword soloforthDefine ;
 syn keyword soloforthDefine ?defined
 syn keyword soloforthDefine ]
 syn keyword soloforthDefine alias
+syn keyword soloforthDefine begin-structure
 syn keyword soloforthDefine cconstant
+syn keyword soloforthDefine cfield:
 syn keyword soloforthDefine clit
 syn keyword soloforthDefine cliteral
 syn keyword soloforthDefine code-field,
@@ -133,6 +137,8 @@ syn keyword soloforthDefine defined
 syn keyword soloforthDefine dliteral
 syn keyword soloforthDefine docolon
 syn keyword soloforthDefine does>
+syn keyword soloforthDefine end-structure
+syn keyword soloforthDefine field:
 syn keyword soloforthDefine header
 syn keyword soloforthDefine header,
 syn keyword soloforthDefine hide
@@ -173,6 +179,7 @@ syn keyword soloforthFiles -->
 syn keyword soloforthFiles .line
 syn keyword soloforthFiles ;s
 syn keyword soloforthFiles ?(
+syn keyword soloforthFiles ?)
 syn keyword soloforthFiles ?-->
 syn keyword soloforthFiles ?\
 syn keyword soloforthFiles b/buf
@@ -180,9 +187,9 @@ syn keyword soloforthFiles b/rec
 syn keyword soloforthFiles blk
 syn keyword soloforthFiles blk/disk
 syn keyword soloforthFiles block
-syn keyword soloforthFiles blocks
 syn keyword soloforthFiles block-number
 syn keyword soloforthFiles block>source
+syn keyword soloforthFiles blocks
 syn keyword soloforthFiles buffer
 syn keyword soloforthFiles buffer-block
 syn keyword soloforthFiles buffer-data
@@ -198,6 +205,7 @@ syn keyword soloforthFiles include
 syn keyword soloforthFiles included
 syn keyword soloforthFiles index
 syn keyword soloforthFiles l/scr
+syn keyword soloforthFiles lastblk
 syn keyword soloforthFiles list
 syn keyword soloforthFiles load
 syn keyword soloforthFiles locate
@@ -222,6 +230,7 @@ syn keyword soloforthFiles where
 syn keyword soloforthFiles write-block
 syn keyword soloforthFiles write-mode
 syn keyword soloforthFlow +loop
+syn keyword soloforthFlow -exit
 syn keyword soloforthFlow -if
 syn keyword soloforthFlow -until
 syn keyword soloforthFlow -while
@@ -915,6 +924,9 @@ syn keyword soloforthControlFlow rthen
 syn keyword soloforthControlFlow runtil
 syn keyword soloforthControlFlow rwhile
 
+syn match soloforthFlow "\<\[:\>"
+syn keyword soloforthFlow ;]
+
 syn match soloforthColonDef '\<:\s\+[^ \t]\+\>'
 
 " Special cases because of the open bracket
@@ -968,14 +980,17 @@ syn match soloforthCharOps '\<\[char\]\s\+\S\+\>'
 
 syn match soloforthComment '\<\.(\s[^)]*)'
 
-syn match soloforthDefine "\[if]"
-syn match soloforthDefine "\[defined]"
-syn match soloforthDefine "\[undefined]"
-syn match soloforthDefine "\[else]"
-syn match soloforthDefine "\[then]"
+syn match soloforthFiles "\<\[needed]\>"
+syn match soloforthFiles "\<\[unneeded]\>"
 
-syn match soloforthFunction "\[true]"
-syn match soloforthFunction "\[false]"
+syn match soloforthDefine "\<\[if]\>"
+syn match soloforthDefine "\<\[defined]\>"
+syn match soloforthDefine "\<\[undefined]\>"
+syn match soloforthDefine "\<\[else]\>"
+syn match soloforthDefine "\<\[then]\>"
+
+syn match soloforthFunction "\<\[true]\>"
+syn match soloforthFunction "\<\[false]\>"
 
 " Define the highlighting.
 
@@ -1181,6 +1196,13 @@ let b:current_syntax = "soloforth"
 "
 " 2016-11-23: Add `align` and `aligned`. Update bit-manipulation
 " words.
+"
+" 2016-11-24: Add `-exit`.
+"
+" 2016-11-25: Add `[:`, `;]`. Fix keywords matched with `syn match`.
+"
+" 2016-11-28: Add `lastblk`, Forth-2012 structures. Add `[needed]`,
+" `[unneeded]`, `?)`.
 
 " --------------------------------------------------------------
 

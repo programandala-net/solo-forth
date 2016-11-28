@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611280135
+  \ Last modified: 201611281233
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,8 +74,8 @@ need bench{  need }bench.
   \ Implementation of `+field` from the Forth-2012
   \ documentation:
 
-: +field-c  create  over , +  does> @ +  ;
-  \ ( n1 n2 "name" -- n3 )
+: +field-cr  ( n1 n2 "name" -- n3 )
+  create  over , +  does> @ +  ;
 
   \ The zero-field improved implementation,
   \ is a version without local variables
@@ -95,45 +95,126 @@ need bench{  need }bench.
   \   then
   \   postpone ; n1 n2 + ;
 
-: +field-:  : over ?dup if    postpone literal postpone +
-                        else  immediate  then  postpone ;  +  ;
-  \ ( n1 n2 "name" -- n3 )
-
-0 1 +field-c 0f-c  drop
-0 1 +field-: 0f-:  drop
-1 1 +field-c xf-c  drop
-1 1 +field-: xf-:  drop
+: +field-co  ( n1 n2 "name" -- n3 )
+  :
+  over ?dup if    postpone literal postpone +
+            else  immediate  then  postpone ;  +  ;
 
 -->
 
 ( +field-bench )
 
+need case
+
+: +field-ca  ( n1 n2 "name" -- n3 )
+  :
+  over case
+  0                   of  immediate                      endof
+  1                   of  postpone 1+                    endof
+  cell                of  postpone cell+                 endof
+  [ 2 cells ] literal of  postpone cell+ postpone cell+  endof
+  dup  postpone literal postpone +  \ default
+  endcase  postpone ;  +  ;
+
+  \ Fields from offset 0:
+
+$0000 1 +field-cr 0f-cr drop
+$0000 1 +field-co 0f-co drop
+$0000 1 +field-ca 0f-ca drop  -->
+
+( +field-bench )
+
+  \ Fields from offset greater than 0,
+  \ with standard field size:
+
+$0001 1 +field-cr 1f-cr drop
+$0001 1 +field-co 1f-co drop
+$0001 1 +field-ca 1f-ca drop
+$0002 1 +field-cr 2f-cr drop
+$0002 1 +field-co 2f-co drop
+$0002 1 +field-ca 2f-ca drop
+$0004 1 +field-cr 4f-cr drop
+$0004 1 +field-co 4f-co drop
+$0004 1 +field-ca 4f-ca drop
+
+  \ Fields from offset greater than 0,
+  \ with non-standard field size:
+
+$0005 1 +field-cr 5f-cr drop
+$0005 1 +field-co 5f-co drop
+$0005 1 +field-ca 5f-ca drop  -->
+
+( +field-bench )
+
 : run  ( n -- )
-  cr ." Results for " dup u. ." iterations"
-  cr ." Field 0:"
-  cr ." - With `create` "
-  dup bench{ 0 ?do  0 0f-c drop  loop }bench.
-  cr ." - With `:`      "
-  dup bench{ 0 ?do  0 0f-: drop  loop }bench.
-  cr ." Field non-0:"
-  cr ." - With `create` "
-  dup bench{ 0 ?do  0 xf-c drop  loop }bench.
-  cr ." - With `:`      "
-      bench{ 0 ?do  0 xf-: drop  loop }bench.  ;
- 
- 
+  cls ." +field benchmark"
+  ." Results for " dup u. ." iterations"
+  cr ." Field 0:"     cr ." - 'create'    "
+  dup bench{ 0 ?do  0 0f-cr drop  loop }bench.
+                      cr ." - '+'         "
+  dup bench{ 0 ?do  0 0f-co drop  loop }bench.
+                      cr ." - 'case'      "
+  dup bench{ 0 ?do  0 0f-ca drop  loop }bench.
+  cr ." Field non-0:" cr ." - +1 'create' "
+  dup bench{ 0 ?do  0 1f-cr drop  loop }bench.
+                      cr ." - +1 '+'      "
+  dup bench{ 0 ?do  0 1f-co drop  loop }bench.
+                      cr ." - +1 'case'   "
+  dup bench{ 0 ?do  0 1f-ca drop  loop }bench.  -->
+
+( +field-bench )
+
+                      cr ." - +2 'create' "
+  dup bench{ 0 ?do  0 2f-cr drop  loop }bench.
+                      cr ." - +2 '+'      "
+  dup bench{ 0 ?do  0 2f-co drop  loop }bench.
+                      cr ." - +2 'case'   "
+  dup bench{ 0 ?do  0 2f-ca drop  loop }bench.
+                      cr ." - +4 'create' "
+  dup bench{ 0 ?do  0 4f-cr drop  loop }bench.
+                      cr ." - +4 '+'      "
+  dup bench{ 0 ?do  0 4f-co drop  loop }bench.
+                      cr ." - +4 'case'   "
+  dup bench{ 0 ?do  0 4f-ca drop  loop }bench.  -->
+
+( +field-bench )
+
+                      cr ." - +5 'create' "
+  dup bench{ 0 ?do  0 5f-cr drop  loop }bench.
+                      cr ." - +5 '+'      "
+  dup bench{ 0 ?do  0 5f-co drop  loop }bench.
+                      cr ." - +5 'case'   "
+      bench{ 0 ?do  0 5f-ca drop  loop }bench.  ;
+
   \ 2016-11-28:
- 
-  \ Times Frames (1 frame = 50th of second)
-  \ ----- ----------------------------------
-  \       with `create`     with `:`
-  \       -------------     --------
-  \         0   x             0    x
-  \       --- ---           ---  ---
-  \ 00100   1   2             0    1
-  \ 01000  12  12             5   12
-  \ 10000 121 121            50  121
-  \ 65535 796 796           330  789
+
+  \                     Frames (1 frame = 50th of second)
+  \ Field  +field       ---------------------------------
+  \ offset implement.   Times             Id 
+  \ ------ ------------ ----------------- ---
+  \                     01000 10000 65535
+  \                     ----- ----- -----
+  \ 0      create does>    12   122   796 #00
+  \ 0      colon plus       5    51   330 #01
+  \ 0      colon case       5    51   330 #02
+  \ 1      create does>    13   121   796 #03
+  \ 1      colon plus      12   120   789 #04
+  \ 1      colon case      11   103   675 #05
+  \ 2      create does>    12   121   796 #06
+  \ 2      colon plus      12   121   789 #07
+  \ 2      colon case      11   105   684 #08
+  \ 4      create does>    12   121   796 #09
+  \ 4      colon plus      12   121   788 #10
+  \ 4      colon case      12   119   777 #11
+  \ 5      create does>    12   122   796 #12
+  \ 5      colon plus      12   121   788 #13
+  \ 5      colon case      12   120   788 #14
+
+  \ Notes:
+  \
+  \ Why #11 is not slower than #14?
+  \ Why #14 is not faster than #11?
+  \ Why #14 is not slower than #04, #07 and #10?
 
 ( transfer-bench  )
 

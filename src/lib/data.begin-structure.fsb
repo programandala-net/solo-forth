@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611280145
+  \ Last modified: 201611281233
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,30 +25,117 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-11-28: Better implementation of `+field`.
+  \ 2016-11-28: Make `+field` deferred and provide three
+  \ optional implementations. Make all words accessible to
+  \ `need`.
 
-( begin-structure +field field: 2field: cfield: end-structure )
+( +field field: 2field: cfield: begin-structure end-structure )
 
-  \ Forth-2012.
+[unneeded] +field ?\ defer +field  ( n1 n2 "name" -- n3 )  exit
+
+  \ doc{
+  \
+  \ +field  ( n1 n2 "name -- n3 )
+  \
+  \ Create a definition for _name_ with the execution semantics
+  \ defined below. Return _n3_ = _n1_ + _n2_ where _n1_ is the
+  \ offset in the data  structure before `+field` executes, and
+  \ _n2_ is the size of the data to be added to the data
+  \ structure. _n1_ and _n2_  are in address units.
+  \
+  \ name ( Execution: a1 -- a2 )
+  \
+  \ Add _n1_ to _a1_ giving _a2_.
+  \
+  \ `+field` is not  required to  align items.  This is
+  \ deliberate and allows  the construction  of unaligned  data
+  \ structures for communication with external elements such as
+  \ a hardware register map or protocol packet.  Field
+  \ alignment has been left to the appropriate field definition
+  \ (e.g.  `field:`, `2field:`, `cfield:`).
+  \
+  \ In Solo Forth, `+field` is an unitialized deferred word,
+  \ for which three implementations are provided:
+  \ `+field-unopt`, `+field-opt-0` and `+field-opt-0124`.
+  \
+  \ Origin: Forth-2012 (FACILITY EXT).
+  \
+  \ See: `+field-unopt`, `+field-opt-0` and `+field-opt-0124`,
+  \ `field:`, `2field:`, `cfield:`, `begin-structure`.
+  \
+  \ }doc
+
+need ?(
+
+  \ XXX TODO -- document
+
+[unneeded] field: ?( need +field
+: field:   ( n1 "name" -- n2 )  cell +field  ; exit ?)
+
+[unneeded] 2field: ?( need +field
+: 2field:  ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
+exit ?)
+
+[unneeded] cfield: ?( need +field
+: cfield:  ( n1 "name" -- n2 )  [ 1 chars ] literal +field  ;
+exit ?)
+
+[unneeded] begin-structure [unneeded] end-structure and ?(
 
 : begin-structure  ( "name" -- struct-sys 0 )
   create  >mark 0
   does>   ( -- n )  ( pfa ) @   ;
 
-  \ : +field  ( n1 n2 "name" -- n3 )
-  \   create  over , +
-  \   does>   ( a -- a' )  ( a pfa ) @ +  ;
-  \
-  \ XXX OLD -- This version from the Forth-2012 documentation
-  \ is inefficient because the addition is done also with field
-  \ 0.
+: end-structure  ( struct-sys n -- )  swap !  ; ?)
 
-: +field  ( n1 n2 "name" -- n3 )
+( +field-unopt +field-opt-0 )
+
+need +field  need ?(
+
+[unneeded] +field-unopt ?(
+
+: +field-unopt  ( n1 n2 "name" -- n3 )
+  create  over , +
+  does>   ( a -- a' )  ( a pfa ) @ +  ;
+
+' +field-unopt ' +field defer!  exit ?)
+
+  \ Credit:
+  \
+  \ Code copied from the Forth-2012 documentation.
+
+  \ doc{
+  \
+  \ +field-unopt  ( n1 n2 "name" -- n3 )
+  \
+  \ Unoptimized implementation of `+field`.  This
+  \ implementation is less efficient than `+field-opt-0` and
+  \ `+field-opt-0124` because the field offset is calculated
+  \ also when it's 0.
+  \
+  \ The only advantage of this implementation is it uses only
+  \ 22 bytes of data space, so it could be useful in some
+  \ cases.
+  \
+  \ See: `+field`, `+field-opt-0`, `+field-opt-0124`.
+  \
+  \ }doc
+
+[unneeded] +field-opt-0
+
+  \ This implementation optimizes field 0 of the structure.  It
+  \ uses 31 bytes of data space.
+
+: +field-opt-0  ( n1 n2 "name" -- n3 )
   : over ?dup if    postpone literal postpone +
               else  immediate
               then  postpone ;  +  ;
 
+' +field-opt-0 ' +field defer! ?)
+
   \ Credit:
+  \
+  \ Code adapted (local variables removed) from:
   \
   \ Newsgroups: comp.lang.forth
   \ From: anton AT mips DOT complang DOT tuwien DOT ac DOT at (Anton Ertl)
@@ -64,11 +151,52 @@
   \   then
   \   postpone ; n1 n2 + ;
 
+  \ doc{
+  \
+  \ +field-opt-0  ( n1 n2 "name" -- n3 )
+  \
+  \ Optimized implementation of `+field`.  This implementation
+  \ is more efficient than `+field-unopt` (but less than
+  \ `+field-opt-0124`) because the field 0 does not calculate
+  \ the field offset.
+  \
+  \ It uses 31 bytes of data space.
+  \
+  \ See: `+field`, `+field-unopt`, `+field-opt-0124`.
+  \
+  \ }doc
 
-: field:    ( n1 "name" -- n2 )  cell +field  ;
-: 2field:   ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
-: cfield:   ( n1 "name" -- n2 )  [ 1 chars ] literal +field  ;
+( +field-opt-0124 )
 
-: end-structure  ( struct-sys n -- )  swap !  ;
+need ?(
+
+[unneeded] +field-opt-0124 ?(
+
+need case
+
+: +field-opt-0124  ( n1 n2 "name" -- n3 )
+  :
+  over case
+  0                   of  immediate                      endof
+  1                   of  postpone 1+                    endof
+  cell                of  postpone cell+                 endof
+  [ 2 cells ] literal of  postpone cell+ postpone cell+  endof
+  dup  postpone literal postpone +  \ default
+  endcase  postpone ;  +  ;
+
+' +field-opt-0124 ' +field defer! ?)
+
+  \ doc{
+  \
+  \ +field-opt-0  ( n1 n2 "name" -- n3 )
+  \
+  \ This implementation of `+field` optimizes the calculation
+  \ of field offsets 0, 1, 2 and 4. Therefore it's more
+  \ efficient than `+field-unopt` and `+field-opt-0`, but it
+  \ uses 107 bytes of data space and needs `case`.
+  \
+  \ See: `+field`, `+field-unopt`, `+field-opt-0`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
