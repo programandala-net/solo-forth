@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611271526
+; Last modified: 201611291247
 
 include version.z80s
 
@@ -161,11 +161,6 @@ cells_per_return_stack:           equ $56
   ;
   ; As a temporary solution, also the return stack is checked in
   ; `?stack`, when the developing label is on.
-  ;
-  ; XXX TODO -- Move the terminal input buffer below the return
-  ; stack? Moving the stacks to the top of the memory is
-  ; incompatible with the far memory and with the future support
-  ; of +3DOS.
   ;
   ; XXX TODO -- Write `?rstack` and make `?stack` configurable?
 
@@ -908,6 +903,9 @@ buffer_data:
 terminal_input_buffer:
   ds bytes_per_terminal_input_buffer
 
+  ; XXX TODO -- Move the terminal input buffer below the return
+  ; stack?
+
 ; ==============================================================
 ; Misc routines
 
@@ -1102,56 +1100,6 @@ hl_multiplied_by_de_to_hlde_signed:
   jp negate_hlde ; XXX TODO
 
 endif
-
-if 0
-
-  ; XXX TODO -- code from DZX-Forth
-
-abs_hl:
-  ld a,h
-  or a
-  ret p
-
-negate_hl:
-  ; two's complement
-  ;       ;  T  B
-  ;       ; -- --
-  dec hl  ; 06 01
-negate_hl.1:
-  ; one's complement
-  ld a,l  ; 04 01
-  cpl     ; 04 01
-  ld l,a  ; 04 01
-  ld a,h  ; 04 01
-  cpl     ; 04 01
-  ld h,a  ; 04 01
-          ; -- --
-          ; 30 07 Total
-  ret
-
-endif
-
-negate_hl:
-
-  ; Credit:
-  ;
-  ; http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Signed_Math
-
-  ;input: hl
-  ;ouput: hl negated
-  ;destroys a
-
-  ;       ;  T  B
-  ;       ; -- --
-  xor a   ; 04 01
-  sub l   ; 04 01
-  ld l,a  ; 04 01
-  sbc a,a ; 04 01
-  sub h   ; 04 01
-  ld h,a  ; 04 01
-          ; -- --
-          ; 24 06 Total
-  ret
 
 if 0
 
@@ -4926,9 +4874,46 @@ true_if_cy:
 ;
 ; }doc
 
-  pop hl
-  call negate_hl
-  _jp_pushhl
+if 0 ; XXX OLD
+
+  pop hl          ; 10 01
+  call negate_hl  ; 17 03
+  _jp_pushhl      ; 11 01 ; push hl
+                  ; 08 02 ; jp (ix)
+                  ; -- --
+                  ; 46 07
+ 
+else ; XXX NEW 
+
+  ld hl,push_hl   ; 10 03
+  ex (sp),hl      ; 19 01
+                  ; 11 01 ; push hl ; done after return
+                  ; -- --
+                  ; 40 05
+
+endif
+
+negate_hl:
+
+  ; Credit:
+  ;
+  ; http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Signed_Math
+
+  ;input: hl
+  ;ouput: hl negated
+  ;destroys a
+
+  ;       ;  T  B
+  ;       ; -- --
+  xor a   ; 04 01
+  sub l   ; 04 01
+  ld l,a  ; 04 01
+  sbc a,a ; 04 01
+  sub h   ; 04 01
+  ld h,a  ; 04 01
+          ; -- --
+          ; 24 06 Total
+  ret
 
 ; ----------------------------------------------
   _code_header d_negate_,'DNEGATE'
