@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608011328
+  \ Last modified: 201612021720
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,8 @@
   \ 2016-08-01: Move color constants, `papery`, `brighty` and
   \ `flashy` from _Nuclear Invaders_
   \ (http://programandala.net/en.program.nuclear_invaders.html).
+  \
+  \ 2016-12-02: Fix `bright!`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -282,7 +284,7 @@ need color@  need color!
   color@ %01000000 and 0=  ;
 
 : bright!  ( f -- )
-  %10000000 and color@ %10111111 and or color!  ;
+  %01000000 and color@ %10111111 and or color!  ;
 
 : flash@  ( -- f )
   color@ %10000000 and 0=  ;

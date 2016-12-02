@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-27
+:revdate: 2016-12-02
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -462,6 +462,20 @@ New: `.files` (from Pygmy Forth).
 Convert the sample games to .fs.
 
 == Graphics == // {{{1
+
+.2016-12-02:
+
+Use constants for bitmasks and "unbitmasks" in <printing.color.fsb>.
+
+.2016-12-02:
+
+Rewrite in Z80 the low-level words of <printing.color.fsb>.
+
+.2016-12-02:
+
+Factor `inverse` to `inverse-on` and `inverse-off`.
+
+Factor `overprint` to `overprint-on` and `overprint-off`.
 
 .2015-09-01:
 
