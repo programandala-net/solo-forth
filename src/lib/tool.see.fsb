@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611250001
+  \ Last modified: 201612031222
 
   \ -----------------------------------------------------------
   \ Description
@@ -82,10 +82,14 @@
   \
   \ 2016-11-24: Add `see-xt` and `see-body-from`. Make them
   \ individually accessible for `need`.
+  \
+  \ 2016-12-03: Preserve the compilation wordlist and the
+  \ search order. Useful when the tool is needed during the
+  \ development of a program.
 
 ( see )
 
-forth definitions decimal
+get-current  also forth definitions decimal
 
 need body>name  need name>body  need case
 need recurse  need >body  need body>
@@ -266,5 +270,7 @@ need ?(  [unneeded] see-body-from ?(  need see
   \ See: `see`, `see-body`, `see-body-from`.
   \
   \ }doc
+
+previous set-current
 
   \ vim: filetype=soloforth

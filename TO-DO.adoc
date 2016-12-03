@@ -35,6 +35,14 @@ With constants:    32598 B free.
 Without constants: 32572 B free.
 Diff:                +26 B
 
+== Bugs == // {{{1
+
+.2016-12-02:
+
+`2 load need paper>attr` causes exception #-268 when `str=` (6th nested
+`need`) can not be located, and then `base` contains 32768! But `need str=`
+works fine.
+
 == Interpreter/compiler == // {{{1
 
 .2016-11-20:
