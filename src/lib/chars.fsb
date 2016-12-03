@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604271451
+  \ Last modified: 201612032042
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,12 +27,17 @@
 
   \ 2016-04-27: Move `ascii-char?` and `control-char?` from
   \ module "tool.dump.fsb".
+  \
+  \ 2016-12-03: Add `printable-ascii-char?`,
+  \ `default-printable-ascii-char` and `>printable-ascii-char`.
+  \ Make all words accessible to `need`.
 
   \ XXX TODO -- move to <strings.misc.fsb>.
 
 ( ascii-char? control-char? )
 
-: ascii-char?    ( c -- f )  128 <  ;
+[unneeded] ascii-char?
+?\ : ascii-char?    ( c -- f )  128 <  ;  exit
 
   \ doc{
   \
@@ -43,7 +48,8 @@
   \ }doc
 
 
-: control-char?  ( c -- f )  bl <  ;
+[unneeded] control-char?
+?\ : control-char?  ( c -- f )  bl <  ;  exit
 
   \ doc{
   \
@@ -52,5 +58,20 @@
   \ Is character _c_ a control character?
   \
   \ }doc
+
+( printable-ascii-char? >printable-ascii-char )
+
+[unneeded] printable-ascii-char?
+?\ : printable-ascii-char?  ( c -- f )  bl 128 within  ;  exit
+
+[unneeded] >printable-ascii-char ?exit
+
+need printable-ascii-char?
+
+'.' cconstant default-printable-ascii-char
+
+: >printable-ascii-char  ( c1 -- c2 )
+  dup printable-ascii-char? ?exit
+  drop default-printable-ascii-char  ;
 
   \ vim: filetype=soloforth

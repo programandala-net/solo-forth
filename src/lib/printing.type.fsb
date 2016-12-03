@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261745
+  \ Last modified: 201612032030
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,6 +36,9 @@
   \
   \ 2016-11-26: Move `fartype` from the kernel. Move
   \ `fartype-ascii` from the far memory module.
+  \
+  \ 2016-12-03: Factor `>printable-ascii-char` from
+  \ `type-ascii` and `fartype-ascii`.
 
 ( fartype type-ascii fartype-ascii )
 
@@ -56,12 +59,10 @@ need ?(  [unneeded] fartype ?(
   \ }doc
 
 
-[unneeded] type-ascii ?(  need ascii-char?  need control-char?
+[unneeded] type-ascii ?(  need >printable-ascii-char
 
 : type-ascii  ( ca len -- )
-  bounds ?do  i c@ dup dup ascii-char? 0= swap control-char? or
-              if  drop '.'  then  emit
-         loop  ;  exit ?)
+  bounds ?do  i c@ >printable-ascii-char emit  loop  ;  exit ?)
 
   \ doc{
   \
@@ -72,15 +73,10 @@ need ?(  [unneeded] fartype ?(
   \
   \ }doc
 
-[unneeded] fartype-ascii ?(
-
-need ascii-char?  need control-char?
+[unneeded] fartype-ascii ?(  need >printable-ascii-char
 
 : fartype-ascii  ( ca len -- )
-  bounds ?do
-    i farc@ dup dup ascii-char? 0= swap control-char? or
-    if  drop '.'  then  emit
-  loop  ; :)
+  bounds ?do  i farc@ >printable-ascii-char emit  loop  ; ?)
 
   \ doc{
   \
