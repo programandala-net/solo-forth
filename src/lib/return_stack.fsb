@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604281333
+  \ Last modified: 201612031924
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,9 +26,15 @@
   \ History
 
   \ 2015-09-10: Add `n>r`, `nr>`.
+  \
   \ 2015-10-27: Add `r'@`.
+  \
   \ 2016-04-24: Move `2rdrop` from the kernel.
+  \
   \ 2016-04-28: Add `dup>r`.
+  \
+  \ 2016-12-03: Use `cell` and `literal` in `rdepth`, for
+  \ clarity. Use `jp,`. Compact the code, saving 2 blocks.
 
 ( n>r )
 
@@ -84,14 +90,14 @@ code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
 
 need n>r
 
-( rdepth r'@ )
+( rdepth r'@ 2rdrop dup>r )
+
+[unneeded] rdepth
+?\ : rdepth  ( -- n )  rp@ rp0 @ - [ cell negate ] literal /  ;
 
   \ Credit:
   \
   \ `rdepth` from Afera.
-
-[unneeded] rdepth
-?\ : rdepth  ( -- n )  rp@ rp0 @ - -2 /  ;
 
   \ doc{
   \
@@ -103,10 +109,11 @@ need n>r
   \
   \ `r'@` by Wil Baden.
 
-[unneeded] r'@ ?exit
+need ?(
 
+[unneeded] r'@ ?(
 : r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
-  r> 2r@ drop swap >r  ;
+  r> 2r@ drop swap >r  ;  exit ?)
 
   \ doc{
   \
@@ -114,20 +121,16 @@ need n>r
   \
   \ }doc
 
-( 2rdrop )
-
-
+[unneeded] 2rdrop ?(
 code 2rdrop  ( R: x1 x2 -- )
-  2A c, rp ,
+  2A c, rp , 11 c, 02 cells , 19 c, 22 c, rp , jpnext end-code
     \ ld hl,(return_stack_pointer)
-  11 c, 02 cells ,
     \ ld de,cell*2
-  19 c,
     \ add hl,de
-  22 c, rp ,
     \ ld (return_stack_pointer),hl
-  jpnext
-  end-code
+    \ jp next
+exit ?)
+
 
   \ doc{
   \
@@ -135,18 +138,16 @@ code 2rdrop  ( R: x1 x2 -- )
   \
   \ }doc
 
-( dup>r )
-
-  \ Credit:
-  \ Idea from IsForth.
-
+[unneeded] dup>r ?(
 code dup>r  ( x -- x ) ( R: -- x )
-  D1 c, D5 c,
+  D1 c, D5 c, ' >r 1+ jp, end-code ?)
     \ pop de
     \ push de
-  C3 c, ' >r 1+ ,
     \ jp to_r_.de ; secondary entry of `>r`, in the kernel
-  end-code
+
+  \ Credit:
+  \
+  \ Idea from IsForth.
 
   \ doc{
   \
