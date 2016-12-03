@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-02
+:revdate: 2016-12-03
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -41,7 +41,10 @@ Diff:                +26 B
 
 `2 load need paper>attr` causes exception #-268 when `str=` (6th nested
 `need`) can not be located, and then `base` contains 32768! But `need str=`
-works fine.
+works fine. This problem happens with the high-level version of `paper>attr`
+and `attr>paper`, which need `lshift` and `rshift`, which need `?(`, which
+needs `str=`... But no exception is issued when `need order` is given before
+`need paper>attr`...
 
 == Interpreter/compiler == // {{{1
 
