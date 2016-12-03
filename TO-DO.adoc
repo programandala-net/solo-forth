@@ -37,16 +37,39 @@ Diff:                +26 B
 
 == Bugs == // {{{1
 
-.2016-12-02:
+.2016-12-02..2016-12-03:
 
 `2 load need paper>attr` causes exception #-268 when `str=` (6th nested
 `need`) can not be located, and then `base` contains 32768! But `need str=`
-works fine. This problem happens with the high-level version of `paper>attr`
-and `attr>paper`, which need `lshift` and `rshift`, which need `?(`, which
-needs `str=`... But no exception is issued when `need order` is given before
-`need paper>attr`...
+works fine.
+
+This problem happens with the high-level version of `paper>attr` and
+`attr>paper`, which need `lshift` and `rshift`, which need `z80-asm`, which
+needs `3dup`, which needs `?(`, which needs `str=`... But no exception is
+issued when `need order` is given first, before `need paper>attr`...
+
+When the far memory is turned off in the kernel, there's no difference, except
+`base` contains 32767. Thus it seems far memory has nothing to do.
+
+Using a simple test, `nest-need-test`, the system crashes at the sixth
+nesting.
+
+The problem is the return stack overflows. Each nested `need` uses 14 cells...
+`nest-source` uses 6 cells for data, `need` uses 2 cells for the string, the
+rest must be used for calls.
 
 == Interpreter/compiler == // {{{1
+
+.2016-12-03:
+
+Use a new kind of unconditional high-level branch at the end of `nest-source`
+and `unnest-source`:
+
+----
+goto  ( a -- )
+----
+
+Make it consistent with the planned changes in the current low-level branches.
 
 .2016-11-20:
 
@@ -917,6 +940,11 @@ Add missing "misc" and "common" parts of module filenames.
 Rename "misc" and "common" part of module filenames to uppercase.
 
 == Loading == {{{1
+
+.2016-12-03:
+
+Make `need-here` unnecessary: Always check the current block, just in case.
+Many needed words are in the same block.
 
 .2016-11-24:
 

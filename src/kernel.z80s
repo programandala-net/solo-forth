@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201611291247
+; Last modified: 201612031848
 
 include version.z80s
 
@@ -148,21 +148,24 @@ true:                             equ $FFFF ; -1
 cell:                             equ $02
 
 cells_per_data_stack:             equ $50
-cells_per_return_stack:           equ $56
+cells_per_return_stack:           equ $64
 
-  ; XXX REMARK -- 2016-11-19: The return stack has been
-  ; increased from $50 to $55 cells. The loading of `tt` (a
-  ; sample game) needs $55 cells; `blocked` (a block editor)
-  ; needs $54 cells.  Formerly the terminal input buffer was
-  ; below the return stack and worked as a pad for it, so the
-  ; problem was unnoticed.  But the terminal input buffer was
-  ; moved on 2016-11-15 in order to make all buffers contiguous
-  ; so the circular string buffer can be expandable.
+  ; XXX REMARK -- 2016-11-19: The return stack has been increased from
+  ; $50 to $55 cells. The loading of `tt` (a sample game) needs $55
+  ; cells; `blocked` (a block editor) needs $54 cells.  Formerly the
+  ; terminal input buffer was below the return stack and worked as a
+  ; pad for it, so the problem was unnoticed.  But the terminal input
+  ; buffer was moved on 2016-11-15 in order to make all buffers
+  ; contiguous so the circular string buffer can be expandable.
   ;
   ; As a temporary solution, also the return stack is checked in
   ; `?stack`, when the developing label is on.
   ;
-  ; XXX TODO -- Write `?rstack` and make `?stack` configurable?
+  ; XXX REMARK -- 2016-12-03: Each `nest-source` uses 6 cells of the
+  ; return stack for data; `need` uses 2 cells for data; 9 more cells
+  ; are used by calls every nesting level of `need`... With a $56
+  ; cells large return stack, only 5 levels of `need` are possible.
+  ; The size is increased to $64.
 
 bytes_per_terminal_input_buffer:  equ $50
 
@@ -7865,8 +7868,6 @@ simple_accept.end
 ; ----------------------------------------------
   _constant_header paren_source_id_,'(SOURCE-ID)'
 
-  dw source_id_pfa
-
 ; doc{
 ;
 ; (source-id)  ( -- a )
@@ -7874,6 +7875,8 @@ simple_accept.end
 ; A variable that contains the value returned by `source-id`.
 ;
 ; }doc
+
+  dw source_id_pfa
 
 ; ----------------------------------------------
   _constant_header source_id_,'SOURCE-ID'
@@ -9075,9 +9078,11 @@ endif
 ;
 ; ?stack  ( -- )
 ;
-; Issue an error message if the stack is out of bounds.
+; Issue an error message if the data stack is out of bounds.
 ;
 ; Origin: fig-Forth.
+;
+; See: `?rstack`.
 ;
 ; }doc
 
@@ -9088,10 +9093,22 @@ endif
   dw lit_,data_stack_limit
   dw less_than_
   _question_throw error.stack_overflow
+  dw exit_
 
-if developing
+; ----------------------------------------------
+  _colon_header question_r_stack_,'?RSTACK'
 
-  ; Check also the return stack
+; doc{
+;
+; ?rstack  ( -- )
+;
+; Issue an error message if the return stack is out of bounds.
+;
+; Origin: fig-Forth's `?stack`.
+;
+; See: `?stack`.
+;
+; }doc
 
   dw rp0_,fetch_
   dw rp_fetch_
@@ -9110,14 +9127,12 @@ else
 endif
 
   dw question_exit_
+
   dw rp0_,fetch_,rp_store_ ; empty the return stack
+  ; XXX TODO -- Needed? Already done in `quit` <-- `error` <--
+  ; `(abort)` <--  `throw`.
+
   _throw error.return_stack_overflow ; no return from `throw`
-
-else
-
-  dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header not_understood_,'NOT-UNDERSTOOD'
@@ -9148,7 +9163,7 @@ endif
 ;   source-id >r
 ;   >in @ >r
 ;   blk @ >r
-;   #tib @ >@
+;   #tib @ >r
 ;   >r  ; compile-only
 ; ----
 
@@ -9161,7 +9176,11 @@ endif
   dw blk_,fetch_,to_r_
   dw number_tib_,fetch_,to_r_
   dw to_r_ ; restore the return address
+  ; dw question_r_stack_ ; XXX TMP -- for debugging
   dw exit_
+
+  ; XXX TODO -- use a high-level branch, when implemented, instead of
+  ; `>r exit`.
 
 ; ----------------------------------------------
   _colon_header unnest_source_,'UNNEST-SOURCE',compile_only
@@ -9194,6 +9213,9 @@ endif
   dw two_from_r_,input_buffer_,two_store_
   dw to_r_ ; restore the return address
   dw exit_
+
+  ; XXX TODO -- use a high-level branch, when implemented, instead of
+  ; `>r exit`.
 
 ; ----------------------------------------------
   _variable_header interpret_table_,'INTERPRET-TABLE'
@@ -9254,6 +9276,9 @@ interpret.begin:
   ; endif
 
   dw question_stack_
+if 1 ; developing
+  dw question_r_stack_
+endif
   dw parse_name_  ; ( ca len )
   ; _chk_type 'after parse-name' ; XXX INFORMER
   dw dup_ ; end of stream?
