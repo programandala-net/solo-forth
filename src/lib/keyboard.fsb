@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612041149
+  \ Last modified: 201612041211
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,7 +34,8 @@
   \
   \ 2016-12-04: Use `cenum` instead of `enum` for `kk-1#`
   \ constant and family. This change saves 40 bytes of data
-  \ space and makes the access faster.
+  \ space and makes the access faster. Add `#>kk`. Document
+  \ several words.
 
 ( at-accept clear-accept set-accept )
 
@@ -410,19 +411,6 @@ drop
 
 ( kk-chars )
 
-  \ This table contains the chars used as names of the keys.
-
-  \ This table contains 40 items, one per physical key, and
-  \ it's organized by keyboard rows.
-
-  \ By default, the first 4 UDG (chars 128..131) are used for
-  \ keys whose names are not a printable char:
-  \ 
-  \ 128 = Caps Shift
-  \ 129 = Enter
-  \ 130 = Space
-  \ 131 = Symbol Shift
-
 create kk-chars
 
 '1' c,  '2' c,  '3' c,  '4' c,  '5' c,
@@ -434,33 +422,78 @@ create kk-chars
 129 c,  'l' c,  'k' c,  'j' c,  'h' c,
 130 c,  131 c,  'm' c,  'n' c,  'b' c,
 
+  \ doc{
+  \
+  \ kk-chars  ( -- a )
+  \
+  \ Address of a 40-byte table that contains the chars used as
+  \ names of the keys.
+  \
+  \ The table contains one byte per physical key, and
+  \ it's organized by keyboard rows.
+  \
+  \ By default, the first 4 UDG (chars 128..131) are used for
+  \ keys whose names are not a printable char:
+  \ 
+  \ - 128 = Caps Shift
+  \ - 129 = Enter
+  \ - 130 = Space
+  \ - 131 = Symbol Shift
+  \
+  \ }doc
+
 ( pressed pressed? )
 
 need ?(
 
-[unneeded] pressed? [unneeded] pressed and ?(
+[unneeded] #>kk ?(  need kk-ports
 
-need @p
+: #>kk  ( n -- d )  /kk * kk-ports + kk@  ;  exit ?)
 
-: pressed? ( n1 n2 -- f )  @p and 0=  ;
-  \ Is a key pressed?
-  \ n1 = key bitmask
-  \ n2 = keyboard row port
+  \ doc{
+  \
+  \ #>kk  ( n -- bitmask port )
+  \
+  \ Convert keyboard key number _n_ to its data: _bitmask_ is
+  \ the key bitmask and _port_ is the keyboard row port.
+  \
+  \ }doc
+
+[unneeded] pressed? ?(  need @p
+
+: pressed? ( bitmask port -- f )  @p and 0=  ;  exit ?)
+  
+  \ doc{
+  \
+  \ pressed? ( bitmask port -- f )
+  \
+  \ Is a key pressed?  _bitmask_ is the key bitmask and _port_
+  \ is the keyboard row port.
+  \
+  \ See: `pressed`, `only-one-pressed`.
+  \
+  \ }doc
 
 ?)
 
-[unneeded] pressed ?(
+[unneeded] pressed ?(  need pressed?  need kk-ports
 
-need pressed?  need kk-ports
-
-: pressed  ( -- false | n1 n2 true )
-  0 \ false by default
+: pressed  ( -- false | bitmask port true )
+  false \ by default
   [ kk-ports keys /kk * bounds swap ] literal literal
   do  i kk@ pressed? if  drop i kk@ 1 leave  then  /kk +loop  ;
-  \ Return the key identifier of the first key
-  \ from the keys table that happens to be pressed.
-  \ n1 = key bitmask
-  \ n2 = keyboard row port
+
+  \ doc{
+  \
+  \ pressed  ( -- false | bitmask port true )
+  \
+  \ Return the key identifier of the first key from the keys
+  \ table that happens to be pressed.  _bitmask_ is the key
+  \ bitmask and _port_ is the keyboard row port.
+  \
+  \ See: `kk-ports`, `only-one-pressed`, `pressed?`.
+  \
+  \ }doc
 
 ?)
 
@@ -474,7 +507,7 @@ need kk-ports
 
 0. 2variable kk-pressed
 
-: only-one-pressed  ( -- false | n1 n2 true )
+: only-one-pressed  ( -- false | bitmask port true )
 
   \ XXX TODO finish
 
@@ -486,9 +519,16 @@ need kk-ports
   /kk +loop
   kk-pressed 2@ 2dup + if  1  else  2drop 0  then  ;
 
-  \ Return the key identifier of the key pressed,
-  \ if there's only one key pressed.
-  \ n1 = key bitmask
-  \ n2 = keyboard row port
+  \ doc{
+  \
+  \ only-one-pressed  ( -- false | bitmask port true )
+  \
+  \ Return the key identifier of the key pressed, if there's
+  \ only one key pressed.  _bitmask_ is the key bitmask and
+  \ _port_ is the keyboard row port.
+  \
+  \ See: `kk-ports`, `pressed`, `pressed?`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
