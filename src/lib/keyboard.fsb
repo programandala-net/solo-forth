@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612041246
+  \ Last modified: 201612041253
 
   \ -----------------------------------------------------------
   \ Description
@@ -293,7 +293,7 @@ need ?(  [unneeded] aborted? ?(
   \
   \ -----------------------------------------------------------
 
-[undefined] /kk ?\ 4 cconstant /kk
+[defined] /kk ?\ 4 cconstant /kk
 
   \ doc{
   \
