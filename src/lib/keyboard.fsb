@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171900
+  \ Last modified: 201612041149
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,6 +31,10 @@
   \ 2016-05-07: Make block titles compatible with `indexer`.
   \
   \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2016-12-04: Use `cenum` instead of `enum` for `kk-1#`
+  \ constant and family. This change saves 40 bytes of data
+  \ space and makes the access faster.
 
 ( at-accept clear-accept set-accept )
 
@@ -391,17 +395,17 @@ kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
   \ Key number constants, to be used as indexes of the key
   \ tables.
 
-need enum
+need cenum
 
 0
-enum kk-1#  enum kk-2#  enum kk-3# enum kk-4# enum kk-5#
-enum kk-q#  enum kk-w#  enum kk-e# enum kk-r# enum kk-t#
-enum kk-a#  enum kk-s#  enum kk-d# enum kk-f# enum kk-g#
-enum kk-cs# enum kk-z#  enum kk-x# enum kk-c# enum kk-v#
-enum kk-0#  enum kk-9#  enum kk-8# enum kk-7# enum kk-6#
-enum kk-p#  enum kk-o#  enum kk-i# enum kk-u# enum kk-y#
-enum kk-en# enum kk-l#  enum kk-k# enum kk-j# enum kk-h#
-enum kk-sp# enum kk-ss# enum kk-m# enum kk-n# enum kk-b#
+cenum kk-1#  cenum kk-2#  cenum kk-3# cenum kk-4# cenum kk-5#
+cenum kk-q#  cenum kk-w#  cenum kk-e# cenum kk-r# cenum kk-t#
+cenum kk-a#  cenum kk-s#  cenum kk-d# cenum kk-f# cenum kk-g#
+cenum kk-cs# cenum kk-z#  cenum kk-x# cenum kk-c# cenum kk-v#
+cenum kk-0#  cenum kk-9#  cenum kk-8# cenum kk-7# cenum kk-6#
+cenum kk-p#  cenum kk-o#  cenum kk-i# cenum kk-u# cenum kk-y#
+cenum kk-en# cenum kk-l#  cenum kk-k# cenum kk-j# cenum kk-h#
+cenum kk-sp# cenum kk-ss# cenum kk-m# cenum kk-n# cenum kk-b#
 drop
 
 ( kk-chars )
@@ -411,9 +415,9 @@ drop
   \ This table contains 40 items, one per physical key, and
   \ it's organized by keyboard rows.
 
-  \ By default, the first 4 UDG are used for keys whose names
-  \ are not a printable char:
-  \
+  \ By default, the first 4 UDG (chars 128..131) are used for
+  \ keys whose names are not a printable char:
+  \ 
   \ 128 = Caps Shift
   \ 129 = Enter
   \ 130 = Space

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611252014
+  \ Last modified: 201612041147
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,8 +41,10 @@
   \ `2const` to their own module <data.const.fsb>.  Document
   \ all remaining words.  Convert `link@` from deferred to
   \ alias. Add `enumcell`.
+  \
+  \ 2016-12-04: Add `cenum`.
 
-( buffer: cvariable enum enumcell link@ link, )
+( buffer: cvariable enum cenum enumcell link@ link, )
 
 [unneeded] buffer:
 ?\ : buffer:  ( u "name" -- )  create allot  ;  exit
@@ -106,7 +108,30 @@
   \ drop
   \ ----
   \
-  \ See: `enumcell`.
+  \ See: `cenum`, `enumcell`.
+  \
+  \ }doc
+
+[unneeded] cenum
+?\ : cenum  (  n "name" -- n+1 )  dup cconstant 1+  ;  exit
+
+  \ doc{
+  \
+  \ cenum  ( n "name" -- n+1 )
+  \
+  \ Create a cconstant _name_ with value _n_ and return _n+1_.
+  \
+  \ Usage example:
+  \
+  \ ----
+  \ 0 cenum first
+  \   cenum second
+  \   cenum third
+  \   cenum fourth
+  \ drop
+  \ ----
+  \
+  \ See: `enum`, `enumcell`.
   \
   \ }doc
 
