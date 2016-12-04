@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612031557
+  \ Last modified: 201612041735
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,10 +42,13 @@
   \
   \ 2016-12-03: Improve stack comments of `~~`. Rename `~~show`
   \ to `~~info`.
+  \
+  \ 2016-12-04: Add `~~app-info`. Need `.s` (it's still in the
+  \ kernel, but only during development).
 
 ( ~~ )
 
-need :noname  need defer
+need :noname  need defer  need .s
 
 variable ~~?   ~~? on
 
@@ -119,6 +122,20 @@ variable ~~resume-key  ~~resume-key off
   \
   \ }doc
 
+defer ~~app-info  ( -- )  ' noop ' ~~app-info defer!
+
+  \ doc{
+  \
+  \ ~~app-info  ( -- )
+  \
+  \ A deferred word that can be used by the application in
+  \ order to show application-specific debugging information.
+  \ It's compiled by `~~`. By default it does nothing.
+  \
+  \ See: `~~`, `~~info`.
+  \
+  \ }doc
+
 : ~~info  ( nt line block -- )
   ~~x @ ~~y @ at-xy ." Block " . ." Line " . .name .s  ;
 
@@ -162,7 +179,7 @@ variable ~~resume-key  ~~resume-key off
   ~~control? 0= ?exit                         begin  key dup
     ~~quit-key ~~press? if  drop quit  then
       ~~resume-key @ 0< if  drop exit  then
-  ~~resume-key ~~press? if  exit       then   again   ;
+  ~~resume-key ~~press? if  exit       then   again   ;  -->
 
   \ doc{
   \
@@ -179,8 +196,6 @@ variable ~~resume-key  ~~resume-key off
   \ `~~press?`.
   \
   \ }doc
-
--->
 
 ( ~~ )
 
@@ -253,7 +268,7 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
 ' ~~save-xy ' ~~save defer!  ' ~~restore-xy ' ~~restore defer!
 
 : (~~)  ( nt line block -- )
-  ~~? @ if    ~~save ~~info ~~control ~~restore
+  ~~? @ if    ~~save ~~app-info ~~info ~~control ~~restore
         else  2drop drop  then  ;
 
   \ doc{
