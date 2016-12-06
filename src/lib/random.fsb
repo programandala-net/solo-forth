@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610181359
+  \ Last modified: 201612061131
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,9 @@
 
   \ 2016-10-18: Update the name of the benchmarks library
   \ module.
+  \
+  \ 2016-12-06: Add `-1|1`. Improve documentation and needing
+  \ of `randomize` and `randomize0`.
 
 ( rnd random )
 
@@ -186,19 +189,48 @@ code crnd  ( -- b )
   \         ret
   \ ----
 
-( randomize randomize0 )
+( -1|1 randomize randomize0 )
+
+[undefined] -1|1
+?\ need random  : -1|1  ( -- -1|1 )  2 random 2* 1-  ;  exit
+
+  \ doc{
+  \
+  \ -1|1  ( -- -1|1 )
+  \
+  \ Return a random number: -1 or 1.
+  \
+  \ }doc
 
 [defined] randomize
-?\  need os-seed  : randomize  ( n -- )  os-seed !  ;
-  \ Set the seed of the random number generator.
+?\  need os-seed  : randomize  ( n -- )  os-seed !  ;  exit
 
-[needed] randomize ?exit
+  \ doc{
+  \
+  \ randomize  ( n -- )
+  \
+  \ Set the seed of the random number generator to _n_.
+  \
+  \ See: `randomize0`.
+  \
+  \ }doc
+
+[unneeded] randomize0 ?exit
 
 need os-frames
 
 : randomize0  ( n -- )
   ?dup 0=  if  os-frames @  then  randomize  ;
-  \ Set the seed of the random number generator;
+
+  \ doc{
+  \
+  \ randomize0  ( -- )
+  \
+  \ Set the seed of the random number generator to _n_;
   \ if _n_ is zero use the system frames counter instead.
+  \
+  \ See: `randomize`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
