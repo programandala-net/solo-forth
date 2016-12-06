@@ -10,8 +10,7 @@
 
 .2016-11-14:
 
-Try to adapt the labels of the 8086 hForth assembler. Already started in the
-drafts directory.
+Finish the port of the 8086 hForth assembler labels.
 
 .2016-04-20:
 
@@ -27,6 +26,11 @@ because _r_ is the standard for floating-point numbers.
 - Benchmark two library versions of `m*/`.
 - Benchmark two library versions of `d=` and `d<>`.
 
+.2016-12-06:
+
+Rename `bench{` and `}bench` and family. Maybe after SwiftForth: `counter` and
+`timer`.
+
 .2016-04-25:
 
 Benchmark the system without constants `0`, `1` and `2`.
@@ -39,6 +43,11 @@ Diff:                +26 B
 
 // Bugs {{{1
 == Bugs ==
+
+.2016-12-06:
+
+Probable bug in `find-name-from`: when `hp` crosses the 16-KiB boundary,
+sometimes a previous word is not found.
 
 .2016-12-02..2016-12-03:
 
