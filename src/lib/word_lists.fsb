@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262307
+  \ Last modified: 201612061637
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,11 +37,24 @@
   \ 2016-11-26: Improve `(wid>name`. Remove old definitions
   \ `get-order` and `order@`. Move `seal` and `search-wordlist`
   \ from the kernel.
+  \
+  \ 2016-12-06: Improve documentation of `wid>link`, `wid>name`
+  \ and `(wid>name`.  Add `-order` and `+order`.
 
 ( wid>link (wid>name wid>name )
 
 [unneeded] wid>link
 ?\ need alias  ' cell+ alias wid>link  ( wid -- a ) exit
+
+  \ doc{
+  \
+  \ wid>link  ( wid -- a )
+  \
+  \ Return the word list link address _a_ of word list _wid_.
+  \
+  \ See: `wid>name`.
+  \
+  \ }doc
 
 [unneeded] (wid>name
 ?\ : (wid>name  ( wid -- a )  cell+ cell+  ; exit
@@ -52,6 +65,8 @@
   \
   \ Return the address _a_ which holds the _nt_ of word list
   \ _wid_ (or zero if the word list has no associated name).
+  \
+  \ See: `wid>name`.
   \
   \ }doc
 
@@ -64,6 +79,61 @@
   \
   \ Return the _nt_ associated to word list _wid_ (or zero if
   \ the word list has no associated name).
+  \
+  \ See: `wid>link`, `(wid>name`.
+  \
+  \ }doc
+
+( +order -order )
+
+[unneeded] +order
+?\ need -order  : +order ( wid -- )  dup -order >order ;  exit
+
+  \ Credit:
+  \
+  \ Original code by Julian Fondren:
+  \
+  \ http://forth.minimaltype.com/packages.html
+
+  \ doc{
+  \
+  \ +order  ( wid -- )
+  \
+  \ Remove all instances of word list _wid_ from the search
+  \ order, then add it to the top.
+  \
+  \ See: `-order`, `>order`, `order`.
+  \
+  \ }doc
+
+[unneeded] -order ?exit
+
+need n>r  need under+
+
+variable -order-wid
+  \ XXX TMP -- used as a local
+  \ XXX TODO -- use an actual local when available
+
+: -order  ( wid -- )
+  -order-wid !  get-order n>r r> dup
+  begin dup  while  1-
+    r@ -order-wid @ = if  rdrop -1 under+  else  r> -rot  then
+  repeat  drop set-order ;
+
+  \ Credit:
+  \
+  \ Original code for Gforth by Julian Fondren:
+  \
+  \ http://forth.minimaltype.com/packages.html
+
+  \ doc{
+  \
+  \ -order  ( wid -- )
+  \
+  \ Remove all instances of word list _wid_ from the search
+  \ order.
+  \
+  \ See: `+order`, `>order`, `order`.
   \
   \ }doc
 

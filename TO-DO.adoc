@@ -1,11 +1,12 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-03
+:revdate: 2016-12-06
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-== Assembler == // {{{1
+// Assembler {{{1
+== Assembler ==
 
 .2016-11-14:
 
@@ -17,7 +18,8 @@ drafts directory.
 Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
 because _r_ is the standard for floating-point numbers.
 
-== Benchmarks == // {{{1
+// Benchmarks {{{1
+== Benchmarks ==
 
 - Benchmark current `times` and new version that keeps the xt in the return
   stack in the loop: `do dup r> execute r> loop drop`.
@@ -35,7 +37,8 @@ With constants:    32598 B free.
 Without constants: 32572 B free.
 Diff:                +26 B
 
-== Bugs == // {{{1
+// Bugs {{{1
+== Bugs ==
 
 .2016-12-02..2016-12-03:
 
@@ -58,7 +61,8 @@ The problem is the return stack overflows. Each nested `need` uses 14 cells...
 `nest-source` uses 6 cells for data, `need` uses 2 cells for the string, the
 rest must be used for calls.
 
-== Interpreter/compiler == // {{{1
+// Interpreter/compiler {{{1
+== Interpreter/compiler ==
 
 .2016-12-03:
 
@@ -157,7 +161,8 @@ Separate header flags from the length byte of the name field.  This way more
 bits will fit (alias, deferred, special behaviour), and word names will be
 actual strings.
 
-== Control structures == // {{{1
+// Control structures {{{1
+== Control structures ==
 
 .2016-11-26:
 
@@ -226,9 +231,11 @@ auto-indexing memory instructions.
 
 ____
 
-== Data structures == // {{{1
+// Data structures {{{1
+== Data structures ==
 
-=== Strings === // {{{2
+// Strings {{{2
+=== Strings ===
 
 .2016-11-26:
 
@@ -269,7 +276,8 @@ Rename "csb" to "stringer":
 | unused-csb  | unused-stringer
 |===
 
-=== Local variables === // {{{2
+// Local variables {{{2
+=== Local variables ===
 
 Examples from Forth Dimensions:
 
@@ -290,7 +298,8 @@ Examples from Forth Dimensions:
 | Prefix Frame Operators                   | 11  | 1  | 023 |
 |===
 
-=== User variables === // {{{2
+// User variables {{{2
+=== User variables ===
 
 .2016-11-18:
 
@@ -298,7 +307,8 @@ Rename `(user)` to `user`? That was the original name in fig-Forth, Forth-79
 and Forth-83. Choose an alternative for the current `user`, defined in the
 library.
 
-== Documentation == // {{{1
+// Documentation {{{1
+== Documentation ==
 
 .2016-11-26:
 
@@ -372,9 +382,11 @@ Homogenize the following stack notations:
 Adapt the markups of Z88 CamelForth to extract the glossary from the
 source.
 
-== DOS == // {{{1
+// DOS {{{1
+== DOS ==
 
-=== G+DOS === // {{{2
+// G+DOS {{{2
+=== G+DOS ===
 
 .2015-08-31:
 
@@ -399,7 +411,8 @@ snapshop option of the Plus D, or save a snapshot from the emulator.
 
 Investigate how to use the free memory of the Plus D RAM.
 
-=== +3DOS === // {{{2
+// +3DOS {{{2
+=== +3DOS ===
 
 .2016-08-14:
 
@@ -407,7 +420,8 @@ Investigate how to use the free memory of the Plus D RAM.
 "b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
 is a problem of fsb2's fb2dsk.
 
-=== TR-DOS === // {{{2
+// TR-DOS {{{2
+=== TR-DOS ===
 
 .2016-09-01:
 
@@ -422,7 +436,8 @@ Make also 40S, 40D and 80S TRD disk images?
 
 Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 
-== Errors == // {{{1
+// Errors {{{1
+== Errors ==
 
 .2016-11-27:
 
@@ -469,7 +484,8 @@ ____
 
 `.warning`
 
-== Files == // {{{1
+// Files {{{1
+== Files ==
 
 .2016-04-11:
 
@@ -489,13 +505,15 @@ Adapt all file words to standard _ior_; remove _f n_.
 
 New: `.files` (from Pygmy Forth).
 
-== Games == // {{{1
+// Games {{{1
+== Games ==
 
 .2016-05-13:
 
 Convert the sample games to .fs.
 
-== Graphics == // {{{1
+// Graphics {{{1
+== Graphics ==
 
 .2016-12-02:
 
@@ -560,7 +578,8 @@ So far (2016-04-23) the best are:
 
 Name for graphic fill: `flood`.
 
-== Keyboard == // {{{1
+// Keyboard {{{1
+== Keyboard ==
 
 .2016-11-25:
 
@@ -579,7 +598,8 @@ simpler `key` (`akey` from Afera).
 
 Change: modify `expect` after Spectrum Forth-83.
 
-== Kernel == // {{{1
+// Kernel {{{1
+== Kernel ==
 
 .2016-10-27:
 
@@ -597,7 +617,8 @@ used in the kernel, but they are needed by the `need` utility.
 
 Remove the routine `compare_de_hl_signed`, if possible.
 
-== Makefile == // {{{1
+// Makefile {{{1
+== Makefile ==
 
 .2016-04-16:
 
@@ -609,7 +630,8 @@ have not changed.
 The problem is the rules of the BASIC loader. They run also when their
 prerequisites are older than the target.
 
-== Maths == // {{{1
+// Maths {{{1
+== Maths ==
 
 .2016-11-26:
 
@@ -786,7 +808,8 @@ etc.
 
 A new variable `#dpl` would hold the number of points.
 
-=== Floating point // {{{2
+// Floating point {{{2
+=== Floating point ===
 
 .2016-04-22:
 
@@ -808,7 +831,8 @@ Floating-point words `flit`, `fliteral`. From PFE:
 `fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
 `f2*`.
 
-== Memory == // {{{1
+// Memory {{{1
+== Memory ==
 
 .2016-11-26:
 
@@ -841,7 +865,8 @@ Remove the old `alias!` when the extra-memory system becomes definitive.
 
 Remove `s!` and related words when the extra-memory system becomes definitive.
 
-== Misc == // {{{1
+// Misc {{{1
+== Misc ==
 
 .2016-05-18:
 
@@ -927,7 +952,8 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
 
-== Library == {{{1
+// Library {{{1
+== Library ==
 
 .2016-11-26:
 
@@ -939,7 +965,8 @@ Add missing "misc" and "common" parts of module filenames.
 
 Rename "misc" and "common" part of module filenames to uppercase.
 
-== Loading == {{{1
+// Loading {{{1
+== Loading ==
 
 .2016-12-03:
 
@@ -1004,7 +1031,8 @@ very-long-word-4 very-long-word-5 very-long-word-6 )
 
 Problem: this would force changes in fsb and fsb2.
 
-== Parsing == // {{{1
+// Parsing {{{1
+== Parsing ==
 
 .2016-05-13:
 
@@ -1030,7 +1058,8 @@ NOTE: Milestone: 0.13.0
 
 Adapt from Gforth: `noname`, analogous to `nextname`.
 
-== Printing == // {{{1
+// Printing {{{1
+== Printing ==
 
 .2016-11-26:
 
@@ -1095,7 +1124,8 @@ Add `vemits`, inspired by TI BASIC's `call vchar()`.
 
 Improve tab control.
 
-== Stacks == // {{{1
+// Stacks {{{1
+== Stacks ==
 
 .2016-11-26:
 
@@ -1110,7 +1140,8 @@ Write these new words in Z80:
 : 2>false  ( x1 x2 -- false)  2drop false  ;
 ----
 
-== Sound == // {{{1
+// Sound {{{1
+== Sound ==
 
 .2016-08-01:
 
@@ -1120,7 +1151,8 @@ Rename `sound:` to `sound` and make the sounds sound when executed.
 
 Finish the conversion of 128K sound explosions. More details in the source.
 
-== Time == // {{{1
+// Time {{{1
+== Time ==
 
 .2015-12-14:
 
@@ -1132,7 +1164,8 @@ Rename `frames@` to `ticks@`, etc.?
 
 2016-11-19: `utime`? `cputime`? (See Gforth)
 
-== Tools == // {{{1
+// Tools {{{1
+== Tools ==
 
 .2016-11-28:
 
@@ -1164,7 +1197,8 @@ Improve `begin-module` to reuse a named module.
 
 Make `editor` defered, in order to load more than one editor at the same time.
 
-== User variables == {{{1
+// User variables {{{1
+== User variables ==
 
 .2016-11-27:
 
@@ -1180,4 +1214,40 @@ NOTE: Milestone: 0.13.0
 .2015-06-30:
 
 Change: compare the user variables with those of Spectrum Forth-83.
+
+// Word lists {{{1
+== Word lists ==
+
+.2016-12-06:
+
+Rename `named-wid`, which is not clear. Options:
+
+- `latest-as-wid-name`
+- `latest-as-wordlist-name`
+- `latest-wid-name`
+- `latest-wordlist-name`
+- `latest>wid-name`
+- `latest>wordlist-name`
+- `name-wid-after-latest`
+- `name-wordlist-after-latest`
+- `wid-name-after-latest`
+- `wid-name<latest`
+- `wordlist-name-after-latest`
+- `wordlist-name<latest`
+
+Beside, write a more generic version:
+
+----
+: wid-name!  ( nt wid -- )  wid>(name) !  ;
+----
+
+Where `wid>(name)` is a possible new name for `(wid>name`.
+
+.2016-12-06:
+
+Combine `begin-module` module and `package` module.
+
+.2016-12-06:
+
+In module <modules.module.fsb>: Rename `module` to `hide-external`.
 
