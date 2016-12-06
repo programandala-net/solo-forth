@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201612061800
+  \ Last modified: 201612062045
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,45 +66,54 @@
   \ the style used in Solo Forth.
   \
   \ 2016-12-06: Revise source layout, comments, stack comments.
-  \ Divide source into blocks.
+  \ Divide source into blocks. Rename `xhere` and `codeb!`
+  \ after the hForth documentation. Use `?rel`, which is
+  \ already in the assemblers, instead of the original code.
+  \ Prepare for future development.
 
 ( l: l# )
 
-: big? ( o -- f )  0080 +  ff00 and  0= invert  ;
-  \ True if offset requires 2 bytes.
-  \ XXX TODO -- remove, not needed in Z80
+get-order get-current
 
-: huh? ( x -- )  invert if ." ? " source type abort then  ;
+root-wordlist assembler-wordlist forth-wordlist 3 set-order
+forth-wordlist set-current
+
+: huh? ( x -- ) 0= if ." ? " source type abort then  ;
   \ Error action of several words.
   \ XXX TODO -- adapt
 
-: ?reljump  ( n -- )  big? invert huh?  ;
-  \ Abort if relative distance is too far.
+#16 constant max-l#
 
-decimal 16 constant  max-l#  hex
+2 cells           \ pointers:
+                  \   +0 = address of the next free pair
+                  \   +1 = ? \ XXX TODO --
+max-l# 2* cells   \ pairs
++ constant /fwds
 
-create fwds  ( -- a )
-         2  cells allot  \ pointers
-  max-l# 2* cells allot  \ pairs
-  \ Unresolved forward reference associative stack.  Emptied
-  \ by init.  Associate stacks can be "popped" from the middle,
-  \ or wherever the key is found.
-  \ XXX TODO -- empty by a hook en `asm`
+create fwds  ( -- a )  /fwds allot
+  \ Unresolved forward reference associative array.
+  \ XXX TODO -- init by a hook in `asm` and document
 
-create bwds  ( -- a )  max-l# cells allot
-  \ Resolved label value array.  Cleared by init.
-  \ XXX TODO -- clear by a hook en `asm`
+: init-fwds  ( -- )
+  /fwds allot  fwds /fwds erase
+  [ fwds 2 cells + ] literal fwds !  ;  init-fwds
 
-: lpush  ( value=here' key=label# )
-  fwds 2@ = 0= huh?  \ full?
-  fwds @ 2!  [ 2 cells ] literal fwds +!  ;
-  \ Push unresolved reference.
+max-l# cells constant /bwds
+
+create bwds  ( -- a )  /bwds allot  bwds /bwds erase
+  \ Resolved label value array.
+  \ XXX TODO -- init by a hook in `asm` and document
 
 -->
 
 ( l: l# )
 
-: lpop  ( key=label# -- value=addr true | key 0 )
+: lpush  ( a label -- )
+  fwds 2@ <> huh?  \ full?
+  fwds @ 2!  [ 2 cells ] literal fwds +!  ;
+  \ Push unresolved reference.
+
+: lpop  ( label -- a true | label false )
   >r fwds @ fwds cell+ cell+
   begin  2dup = 0= ( end start )  while
     dup @  r@ = if  \ found
@@ -113,34 +122,32 @@ create bwds  ( -- a )  max-l# cells allot
         \ promote last pair
       r> r> ( a key )  -1 or  ( a true )  exit
     then  cell+ cell+
-  repeat
-  2drop r> 0  ;
+  repeat  2drop r> 0  ;
   \ Pop any unresolved references.
 
-: l?  ( n -- a | 0 )
-  dup max-l# u< huh?  cells  bwds + @  ;
-  \ Return the address of the label _n_ or 0 if unresolved.
+: l?  ( n -- a | 0 )  dup max-l# u< huh?  cells  bwds + @  ;
+  \ Return the address of label _n_ or 0 if unresolved.
 
 -->
 
 ( l: l# )
 
+  \ assembler-wordlist set-current
+  \ XXX TODO --
+
 : l:  ( n -- a )
   dup l? 0= huh? \ should be unknown
-  xhere  over cells bwds + ! \ now known
+  here  over cells bwds + ! \ now known
   begin  dup lpop ( a -1 | n 0 )  while
-    xhere over - 1-  swap over ?reljump codeb!  \ resolve ref
-  repeat
-  2drop  ;
+    here over - 1-  swap over ?rel c!  \ resolve ref
+  repeat  2drop  ;
   \ Assign `here` to label _n-1_.  Resolve any forward
   \ references.  Assume 8-bit relative displacements.
-  \ XXX TODO -- `codeb!`, `xhere`
 
 : l#  ( n -- a )
-  dup l?
-  ?dup 0=  if xhere 1+ 2dup swap lpush  then
-  nip  ;
+  dup l? ?dup 0= if  here 1+ 2dup swap lpush  then  nip  ;
   \ Retrieve the value of label _n-1_.
-  \ XXX TODO -- `xhere`
+
+set-current set-order
 
   \ vim: filetype=soloforth
