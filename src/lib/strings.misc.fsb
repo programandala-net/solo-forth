@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611251235
+  \ Last modified: 201612062238
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,21 +26,34 @@
   \ Latest changes
 
   \ 2016-04-22: Add `s""`, moved from the kernel.
+  \
   \ 2016-04-24: Add `need pick`, because `pick` has been moved
   \ from the kernel to the library.
+  \
   \ 2016-04-27: Add `char-in-string?` and `char-position?`.
+  \
   \ 2016-05-05: Rename `s=` to `str=`. Add `str<` and `str>`.
+  \
   \ 2016-05-11: Fix `-prefix`. Start compacting the blocks.
+  \
   \ 2016-08-02: Improve comment of `hunt`. Comment the string
   \ comparison operators.
+  \
   \ 2016-08-05: Reorganize and compact the code to save one
   \ block.
+  \
   \ 2016-11-17: Fix needing `trim`. Fix `+place`.
+  \
   \ 2016-11-19: Update credit of `prefix?`.
+  \
   \ 2016-11-21: Complete and improve documentation. Move
   \ `contains` from <tools.list.blocks.fsb> here.
+  \
   \ 2016-11-25: Rewrite `lengths` in Z80. Make `lengths` and
   \ `s+` independently accessible for `need`.
+  \ 
+  \ 2016-12-06: Move `>cell-string` from the `switch` structure
+  \ module.
 
 ( str= str< str> trim +place hunt )
 
@@ -194,7 +207,18 @@ need ?(
   \
   \ }doc
 
-( lengths s+ )
+( >cell-string lengths s+ )
+
+[unneeded] >cell-string 
+?\ : >cell-string  ( u -- ca len )  pad ! pad cell  ;  exit
+  
+  \ doc{
+  \
+  \ >cell-string  ( u -- ca len )
+  \
+  \ Convert _u_ to a cell string in `pad`.
+  \
+  \ }doc
 
 need ?( 
 

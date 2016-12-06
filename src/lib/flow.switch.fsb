@@ -3,15 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ Last modified: 201611262313
+  \ Last modified: 201612062240
   
   \ -----------------------------------------------------------
   \ Description
 
-  \ `switch`, a case selector with word
-  \ lists.
+  \ An extendable case selector implemented with word lists.
 
   \ -----------------------------------------------------------
   \ Author
@@ -32,47 +29,83 @@
   \
   \ 2016-11-26: Need `search-wordlist`, which has been moved to
   \ the library.
+  \
+  \ 2016-12-06: Update: Replace `next-name` with `nextname`.
+  \ Fix the key to string converter, rename it and move it to
+  \ <strings.misc.fsb>. Document and test the code.
 
 ( switch )
 
-need search-wordlist
+  \ XXX TODO -- add default xt
 
-: n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
-  \ Convert _n_ to a code string of two bytes.
-
-: switch:  ( "name" -- )  wordlist constant  ;
-  \ Create a new switch "name".
-
-: switch  ( n switch -- )
-  swap n>code-string rot search-wordlist if  execute  then  ;
-  \ Execute the switch _switch_ for the key _n_.
-
-  \ XXX FIXME -- runtime: screen garbage and stack underflow!
-: :clause  ( n switch -- )
-  get-current >r set-current
-  n>code-string next-name 2! :
-  r> set-current  ;
-  \ Start the definition of a switch clause _n_ for switch
-  \ _switch_.
-
-( switch )
-
-: n>code-string  ( n -- ca len )  2 pad ! pad 1+ ! pad   ;
-  \ Convert _n_ to a code string of two bytes.
+need search-wordlist  need nextname  need >cell-string
 
 : switch:  ( "name" -- )  wordlist constant  ;
-  \ Create a new switch "name".
+  
+  \ doc{
+  \
+  \ switch:  ( "name" -- )
+  \
+  \ Create a new switch control structure _name_.
+  \
+  \ Usage example:
+ 
+  \ ----
+  \ switch: mynumber
+  \
+  \ \ Define the clauses for keys 0..2:
+  \
+  \ 0 mynumber :clause  ( -- )  cr ." zero"  ;
+  \ 1 mynumber :clause  ( -- )  cr ." one"   ;
+  \ 2 mynumber :clause  ( -- )  cr ." two"   ;
+  \
+  \ \ Execute the clauses:
+  \
+  \ 0 mynumber switch
+  \ 1 mynumber switch
+  \ 2 mynumber switch
+  \ ----
+ 
+  \ Key clauses are unsigned numbers.
+  \
+  \ New clauses can be added any time.
+  \
+  \ If a new clause is added with a previously used key, the
+  \ new clause will replace the old one.
+  \
+  \ There's no default clause: if the a given key is not found,
+  \ no code is executed and no exception is thrown.
+  \
+  \ See: `:clause`, `switch`.
+ 
+  \ }doc
 
-: switch  ( n switch -- )
-  swap n>code-string rot search-wordlist if  execute  then  ;
-  \ Execute the switch _switch_ for the key _n_.
+: switch  ( u switch -- )
+  swap >cell-string rot search-wordlist if  execute  then  ;
 
-  \ XXX FIXME -- runtime: screen garbage and stack underflow!
-: :clause  ( n switch -- )
-  get-current >r set-current
-  n>code-string next-name 2! :
-  r> set-current  ;
-  \ Start the definition of a switch clause _n_ for switch
+  \ doc{
+  \
+  \ switch  ( u switch -- )
+  \
+  \ Execute the switch _switch_ for the key _u_.
+  \
+  \ See: `switch`.
+  \
+  \ }doc
+
+: :clause  ( u switch -- )
+  get-current >r set-current  >cell-string nextname :
+              r> set-current  ;
+
+  \ doc{
+  \
+  \ :clause  ( u switch -- )
+  \
+  \ Start the definition of a switch clause _u_ for switch
   \ _switch_.
+  \
+  \ See: `switch`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
