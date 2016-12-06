@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201611191147
+  \ Last modified: 201612061901
 
   \ -----------------------------------------------------------
   \ Description
@@ -79,6 +79,10 @@
   \
   \ 2016-11-19: Now `jp,` is defined in the kernel, factored
   \ from `defer`.
+  \
+  \ 2016-12-06: Rename `?jr-range` to `?rel` and make it
+  \ consume its argument, in order to reuse it in the future
+  \ implementation of local labels.
 
   \ -------------------------------------------------------------
   \ XXX TODO
@@ -112,8 +116,9 @@ DD constant ix-op  FD constant iy-op
 : ix  ( -- rphl )  ix-op c, hl  ;
 : iy  ( -- rphl )  iy-op c, hl  ;
 
-: ?jr-range  ( n -- n )  dup 80 + FF swap u< #-269 ?throw  ;
-  \ Branch too long?
+: ?rel  ( n -- )  80 + FF swap u< #-269 ?throw  ;
+  \ If branch _n_ is too long, throw exception #-269
+  \ (relative jump too long).
 
 -->
 
@@ -157,7 +162,7 @@ DD constant ix-op  FD constant iy-op
 : m8  ( 16b "name" -- ) create , does>  ( -- ) ( pfa ) @ ,  ;
   \ 2-byte opcodes.
 
-: (jr,)  ( a op -- )  c, here 1+ - ?jr-range c,  ;
+: (jr,)  ( a op -- )  c, here 1+ - dup ?rel c,  ;
   \ Compile a relative jump _op_ to absolute address _a_.
 
 : m9  ( 8b "name" -- )
@@ -291,7 +296,7 @@ EA constant pe? E2 constant po? FA constant m? F2 constant p?
   \ Leave the origin address of a forward relative branch
   \ just compiled, to be resolved by `>rresolve`.
 
-: rresolve  ( orig dest -- )  1- over - ?jr-range swap c!  ;
+: rresolve  ( orig dest -- )  1- over - dup ?rel swap c!  ;
   \ Resolve a relative branch.
 
 : >rresolve  ( orig -- )  here rresolve  ;
