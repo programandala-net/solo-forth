@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612031704
+  \ Last modified: 201612072047
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,33 @@
   \ 2016-11-27: Move `doer-test` from the `doer` module.
   \
   \ 2016-12-03: Add `nest-need-test`.
+  \
+  \ 2016-12-07: Add `transient-test`.
+
+( transient-test )
+
+: info  ( -- )
+  cr ." here     =" here u.
+  cr ." hp       =" hp@ u.
+  cr ." voc-link =" voc-link @ u.
+  cr ." limit    =" limit @ u.
+  cr ." farlimit =" farlimit @ u.
+  cr ." Press any key to continue" key drop  ;
+
+need transient  cr .( Before transient :) info  100 transient
+
+cr .( After transient :) info
+
+: transient-code  ( -- )  ." bla bla bla bla"  ;
+
+cr .( Before end-transient :) info end-transient 
+cr .( After end-transient :) info
+
+: using  ( -- )  transient-code ;  cr using  \ works fine
+
+forget-transient  cr .( After forget-transient :) info
+
+cr using  \ works fine
 
 ( nest-need-test nnt1 nnt2 nnt3 nnt4 nnt5 nnt6 nnt7 nnt8 nnt9 )
 
