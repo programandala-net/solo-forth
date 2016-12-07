@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-06
+:revdate: 2016-12-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -173,6 +173,14 @@ actual strings.
 // Control structures {{{1
 == Control structures ==
 
+.2016-12-07:
+
+Add to `switch:`: `:cclause`, `cswitch`, `:2clause`, `2switch`.
+Rename its module to <flow.switch-colon.fsb>.
+
+Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
+(already exists as `char>string`).
+ 
 .2016-11-26:
 
 NOTE: Milestone: 0.13.0
@@ -245,6 +253,28 @@ ____
 
 // Strings {{{2
 === Strings ===
+
+.2016-12-07:
+
+Add `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
+(already exists as `char>string`).
+
+.2016-12-07:
+
+Choose a clear convention for suffixes ">str" and ">string". Depending on the
+location of the string (circular string buffer, `pad` or another temporary
+area)? Another option: "stringer" (after renaming the circular string buffer,
+as planned).
+
+`X>string` :: string in the circular string buffer
+`X>stringer` :: string in the circular string buffer
+`X>bstring` :: binary string in the circular string buffer
+`X>bstringer` :: binary string in the circular string buffer
+`X>#str` :: temporary string in the pictured numeric string buffer
+`X>padstr` :: temporary string in `pad`
+`X>bpadstr` :: temporary binary string in `pad`
+`X>padbstr` :: temporary binary string in `pad`
+`X>padzone` :: temporary binary string in `pad`
 
 .2016-11-26:
 
@@ -1039,6 +1069,31 @@ very-long-word-4 very-long-word-5 very-long-word-6 )
 ----
 
 Problem: this would force changes in fsb and fsb2.
+
+// Modules {{{1
+== Modules
+
+.2016-12-07:
+
+Combine `begin-module` and `package`.
+
+.2016-12-06:
+
+Improve `internal external module` with new names and several versions of
+`module`:
+
+1. Ignore the internal words, bypassing them (current behaviour).
+2. Remove the internal words, modifyng the headers pointer.
+3. Behead the internal words (this is no advantage).
+
+- `private end-private` to mark the private/internal words
+- `forget-private` to forget the words, changing `hp`
+- `unlink-private` to unlink the words
+- `hide-private` to hide the words
+- `behead-private` to behead the words
+
+In fact <modules.privatize.fsb> could be combined with <modules.module.fsb>,
+because `privatize` is the equivalent of the planned `behead-private`.
 
 // Parsing {{{1
 == Parsing ==

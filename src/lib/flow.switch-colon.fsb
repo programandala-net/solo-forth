@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071001
+  \ Last modified: 201612071014
   
   \ -----------------------------------------------------------
   \ Description
@@ -34,13 +34,14 @@
   \ Fix the key to string converter, rename it and move it to
   \ <strings.misc.fsb>. Document and test the code.
   \
-  \ 2016-12-07: Rename module.
+  \ 2016-12-07: Rename module to <flow.switch-colon.fsb>.
+  \ Rename `>cell-string` to `>bstring`.
 
 ( switch: )
 
   \ XXX TODO -- add default xt
 
-need search-wordlist  need nextname  need >cell-string
+need search-wordlist  need nextname  need >bstring
 
 : switch:  ( "name" -- )  wordlist constant  ;
   
@@ -83,7 +84,7 @@ need search-wordlist  need nextname  need >cell-string
   \ }doc
 
 : switch  ( u switch -- )
-  swap >cell-string rot search-wordlist if  execute  then  ;
+  swap >bstring rot search-wordlist if  execute  then  ;
 
   \ doc{
   \
@@ -95,15 +96,15 @@ need search-wordlist  need nextname  need >cell-string
   \
   \ }doc
 
-: :clause  ( u switch -- )
-  get-current >r set-current  >cell-string nextname :
+: :clause  ( x switch -- )
+  get-current >r set-current  >bstring nextname :
               r> set-current  ;
 
   \ doc{
   \
-  \ :clause  ( u switch -- )
+  \ :clause  ( x switch -- )
   \
-  \ Start the definition of a switch clause _u_ for switch
+  \ Start the definition of a switch clause _x_ for switch
   \ _switch_.
   \
   \ See: `switch`.

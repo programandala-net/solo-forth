@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612062238
+  \ Last modified: 201612071028
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,9 @@
   \ 
   \ 2016-12-06: Move `>cell-string` from the `switch` structure
   \ module.
+  \
+  \ 2016-12-07: Rename `>cell-string` to `>bstring`. Add
+  \ `c>bstring`, `2>bstring`.
 
 ( str= str< str> trim +place hunt )
 
@@ -180,6 +183,9 @@ need ?(
 : char>string  ( c -- ca len )
   1 allocate-string tuck c! 1  ; ?)
 
+  \ XXX TODO -- rename or write after `c>bstring`, which
+  \ does the same but in `pad`.
+
   \ doc{
   \
   \ char>string  ( c -- ca len )
@@ -207,18 +213,54 @@ need ?(
   \
   \ }doc
 
-( >cell-string lengths s+ )
+( >bstring c>bstring 2>bstring )
 
-[unneeded] >cell-string 
-?\ : >cell-string  ( u -- ca len )  pad ! pad cell  ;  exit
+[unneeded] >bstring 
+?\ : >bstring  ( u -- ca len )  pad ! pad cell  ;  exit
   
   \ doc{
   \
-  \ >cell-string  ( u -- ca len )
+  \ >bstring  ( x -- ca len )
   \
-  \ Convert _u_ to a cell string in `pad`.
+  \ Convert _x_ to a 1-cell binary string _ca len_ in `pad`.
+  \ _ca len_ contains _x_ "as is", as stored in memory.
+  \
+  \ See: `c>bstring`, `2>bstring`, `pad`.
   \
   \ }doc
+
+[unneeded] c>bstring 
+?\ : c>bstring  ( c -- ca len )  pad c! pad 1  ;  exit
+  
+  \ doc{
+  \
+  \ c>bstring  ( c -- ca len )
+  \
+  \ Convert _c_ to a 1-char binary string _ca len_ in `pad`,
+  \ _ca len_ contains _c_ "as is", as stored in memory.
+  \
+  \ See: `>bstring`, `2>bstring`, `pad`.
+  \
+  \ }doc
+
+need ?(
+
+[unneeded] 2>bstring  ?(
+: 2>bstring  ( xd -- ca len )
+  pad 2! pad [ 2 cells ] literal  ;  exit ?)
+  
+  \ doc{
+  \
+  \ >2bstring  ( xd -- ca len )
+  \
+  \ Convert _xd_ to a 2-cell binary string in `pad`.
+  \ _ca len_ contains _xd_ "as is", as stored in memory.
+  \
+  \ See: `>bstring`, `c>bstring`, `pad`.
+  \
+  \ }doc
+
+( lengths s+ )
 
 need ?( 
 
