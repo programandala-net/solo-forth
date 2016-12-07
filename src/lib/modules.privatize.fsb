@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071537
+  \ Last modified: 201612071556
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,7 +39,9 @@
   \ 2016-05-06: Update the requirements: `current-lastest`
   \ moved to the kernel.
   \
-  \ 2016-12-07: Fix: `hidden` instead of `hide`.
+  \ 2016-12-07: Fix `privatize`: `hidden` instead of `hide`.
+  \ Update the documentation of `privatize` after
+  \ `hide-internal`.
 
 ( privatize )
 
@@ -100,6 +102,10 @@ variable private-start  variable private-stop
   \ privatize          \ hide foo and moo
   \ ' foo              \ will fail
   \ ----
+
+  \ The `hide-internal` tool, available in the library module
+  \ of `internal`, is similar to `privatize`, but has no error
+  \ checking and uses the stack.
 
   \ }doc
 

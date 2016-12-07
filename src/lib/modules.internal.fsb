@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071418
+  \ Last modified: 201612071549
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,11 +52,15 @@
   \
   \ 2016-11-18: Adapt to far memory.
   \
-  \ 2016-12-07: Rename all words and the module.
+  \ 2016-12-07: Rename `external` to `end-internal`, `module`
+  \ to `unlink-internal`. Rename the module file accordingly.
+  \ Add `hide-internal`.
 
-( internal end-internal unlink-internal )
+( internal end-internal unlink-internal hide-internal )
 
-need alias  need >>link
+need ?(
+
+[unneeded] internal [unneeded] end-internal and ?(  need alias
 
 ' current-latest alias internal  ( -- nt )
 
@@ -73,7 +77,7 @@ need alias  need >>link
   \
   \ }doc
 
-' hp@ alias end-internal  ( -- a )
+' hp@ alias end-internal  ( -- a ) exit ?)
 
   \ doc{
   \
@@ -89,9 +93,11 @@ need alias  need >>link
   \
   \ }doc
 
+[unneeded] unlink-internal ?(  need internal  need >>link
+
 [undefined] far-banks dup 0=
 ?\ : unlink-internal  ( nt xtp -- )  >>link s!  ;
-?\ : unlink-internal  ( nt xtp -- )  >>link far!  ;
+?\ : unlink-internal  ( nt xtp -- )  >>link far!  ; ?)
 
   \ doc{
   \
@@ -119,10 +125,64 @@ need alias  need >>link
   \ hello   \ error!
   \ ----
 
-  \ Note: At least one word must be defined between
-  \ `end-internal` and `unlink-internal`.
+  \ At least one word must be defined between `end-internal`
+  \ and `unlink-internal`.
   \
-  \ See: `internal`, `end-internal`.
+  \ The alternative word `hide-internal` can be used instead of
+  \ `unlink-internal` in order to keep the internal words
+  \ searchable, e.g. accessible for `traverse-wordlist`.
+  \
+  \ See: `internal`, `end-internal`, `hide-internal`.
+  \
+  \ }doc
+
+[unneeded] hide-internal ?(
+
+need internal  need name<name  need >>name
+
+: hide-internal  ( nt xtp -- )
+  >>name name<name  ( nt1 nt2 ) begin   2dup swap u>
+                                while   dup hidden name<name
+                                repeat  2drop  ; ?)
+
+  \ doc{
+  \
+  \ hide-internal  ( nt xtp -- )
+  \
+  \ Hide all words defined between the latest pair `internal`
+  \ and `end-external`, setting the smudge bit of their
+  \ headers.
+  \
+  \ Usage example:
+
+  \ ----
+  \ internal
+  \
+  \ : hello  ( -- )  ." hello"  ;
+  \
+  \ end-internal 
+  \
+  \ : salute  ( -- )  hello  ;
+  \
+  \ hide-internal
+  \
+  \ salute  \ ok!
+  \ hello   \ error!
+  \ ----
+
+  \ At least one word must be defined between `end-internal`
+  \ and `hide-internal`.
+  \
+  \ The alternative word `unlink-internal` uses a different,
+  \ simpler method: it unlinks the internal words form the
+  \ dictionary.
+  \
+  \ The `privatize` tool, available in its own library module,
+  \ is similar to `hide-internal`, but has error checking and
+  \ does not use the stack.
+  \
+  \ See: `internal`, `end-internal`, `unlink-internal`,
+  \ `privatize`.
   \
   \ }doc
 
