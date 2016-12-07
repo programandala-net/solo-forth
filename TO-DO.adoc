@@ -1075,25 +1075,31 @@ Problem: this would force changes in fsb and fsb2.
 
 .2016-12-07:
 
+....
+Newsgroups: comp.lang.forth
+Date: Wed, 3 Aug 2016 01:18:18 -0700 (PDT)
+In-Reply-To: <0a8d7b8a-8367-4e92-a482-ee8b6728325a@googlegroups.com>
+Message-ID: <c5aa8e30-1dee-4d64-9022-e24f46b20437@googlegroups.com>
+Subject: Re: Code management with wordlists
+From: hheinrich.hohl ...
+....
+
+Excising
+
+This method was used in LMI PC/FORTH and UR/FORTH.
+
+EXCISE <word1> <word5>
+
+This command hides the headers of <word1> through <word5> 
+by excising their headers from the linked list in the dictionary.
+
+Together with the ability to create binary overlays, the LMI FORTH compilers
+enabled the user to create modules that showed only words that are relevant
+for the end user.
+
+.2016-12-07:
+
 Combine `begin-module` and `package`.
-
-.2016-12-06:
-
-Improve `internal external module` with new names and several versions of
-`module`:
-
-1. Ignore the internal words, bypassing them (current behaviour).
-2. Remove the internal words, modifyng the headers pointer.
-3. Behead the internal words (this is no advantage).
-
-- `private end-private` to mark the private/internal words
-- `forget-private` to forget the words, changing `hp`
-- `unlink-private` to unlink the words
-- `hide-private` to hide the words
-- `behead-private` to behead the words
-
-In fact <modules.privatize.fsb> could be combined with <modules.module.fsb>,
-because `privatize` is the equivalent of the planned `behead-private`.
 
 // Parsing {{{1
 == Parsing ==
@@ -1190,6 +1196,12 @@ Improve tab control.
 
 // Stacks {{{1
 == Stacks ==
+
+.2016-12-07:
+
+Rewrite `n>r` and `nr>` with Z80 opcodes, to make it independent from the
+assembler, which needs >1800 B of data space, or use `transient`, which is not
+fully adapted yet.
 
 .2016-11-26:
 

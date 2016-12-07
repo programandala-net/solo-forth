@@ -3,19 +3,18 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071757
+  \ Last modified: 201612071950
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Implementation of VFX Forth
-  \ (http://www.mpeforth.com/vfxcom.htm) `module`.
+  \ Implementation of VFX Forth's `module`.
 
   \ -----------------------------------------------------------
   \ Authors
 
-  \ Ulrich Hoffmann (http://theforth.net/package/modules),
-  \ 2015, 2016.
+  \ Ulrich Hoffmann wrote the original version, "Modules", for
+  \ Forth-94 and Forth-2012, 2015, 2016.
 
   \ Marcos Cruz (programandala.net) integrated the code into
   \ Solo Forth and improved it using the specific features of
@@ -26,7 +25,8 @@
 
   \ The MIT License (MIT)
 
-  \ Copyright (c) 2015-2016 Ulrich Hoffmann
+  \ Copyright (c) 2015,2016 Ulrich Hoffmann
+  \ Copyright (c) 2016 Marcos Cruz (programandala.net)
 
   \ Permission is hereby granted, free of charge, to any person
   \ obtaining a copy of this software and associated
@@ -51,6 +51,12 @@
   \ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
   \ -----------------------------------------------------------
+  \ References
+
+  \ http://theforth.net/package/modules
+  \ http://www.mpeforth.com/vfxcom.htm
+
+  \ -----------------------------------------------------------
   \ History
 
   \ 2016-12-07: Start. Copy the code and documentation of
@@ -67,6 +73,11 @@
 ( module end-module export )
 
 need alias  need nextname
+  
+  \ XXX REMARK -- 2016-12-07:
+  \     Data space used:
+  \       Code           59 B
+  \       Requirements  173 B  (`alias` and `nextname`)
 
 : module  ( "name" -- parent-wid )
   get-current  wordlist dup >r constant
