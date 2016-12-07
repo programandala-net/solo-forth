@@ -1,6 +1,6 @@
 = Acknowledgments
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-25
+:revdate: 2016-11-26
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -36,6 +36,7 @@ alphabetical order:
 - kForth (for Linux, v1.5.2), by  Krishna Myneni, 1999..2010.
 - lina (for x86 Linux), by Albert van der Horst, 2000..2004.
 - lpForth (for Linux), by Jih-tung Pai, 1999..2001.
+- Modules (for ANS Forth, v1.0.2), by Ulrich Hoffmann, 2015..2016.
 - MPE Forth for TiniARM, by MicroProcessor Engineering Limited,
   1996..2004.
 - PFE (Portable Forth Environment), by Dirk Zoller and Guido U.
@@ -45,7 +46,7 @@ alphabetical order:
 - Pygmy Forth (for DOS), by Frank C. Sergeant, 1989..2007.
 - Spectrum Forth-83 (for ZX Spectrum 48K/128K), by Lennart Benschop,
   1988.
-- TurboForth (for TI-99/4A), by Mark Willis, ..2015.
+- TurboForth (for TI-99/4A), by Mark Willis, <2012..2015.
 - v.Forth (for ZX Spectrum 48K/128K with Interface 1), by Matteo
   Vitturi, 1990..2016.
 - volksFORTH 3.80a (for C/PM), by Forth Gesellschaft e.V., 1985..2006.
