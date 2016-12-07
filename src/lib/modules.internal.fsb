@@ -1,9 +1,9 @@
-  \ modules.module.fsb
+  \ modules.internal.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611181813
+  \ Last modified: 201612071418
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,8 +51,10 @@
   \ kernel.
   \
   \ 2016-11-18: Adapt to far memory.
+  \
+  \ 2016-12-07: Rename all words and the module.
 
-( module )
+( internal end-internal unlink-internal )
 
 need alias  need >>link
 
@@ -64,64 +66,63 @@ need alias  need >>link
   \
   \ Start internal (private) definitions of a module.
   \
-  \ Return the _nt_ of the latest word created in the `current`
-  \ vocabulary.
+  \ Return the _nt_ of the latest word created in the
+  \ compilation word list.
   \
-  \ See: `external`, `module`.
+  \ See: `end-internal`, `unlink-internal`.
   \
   \ }doc
 
-' hp@ alias external  ( -- a )
+' hp@ alias end-internal  ( -- a )
 
   \ doc{
   \
-  \ external  ( -- a )
+  \ end-internal  ( -- a )
   \
-  \ End internal (private) definitions of a module. Start its
-  \ external (public) definitions.
+  \ End internal (private) definitions.
   \
   \ Returne the current value of the headers pointer, which is
   \ the _xtp_ (execution token pointer) of the next word
   \ defined.
   \
-  \ See: `internal`, `module`.
+  \ See: `internal`, `unlink-internal`.
   \
   \ }doc
 
 [undefined] far-banks dup 0=
-?\ : module  ( nt xtp -- )  >>link s!  ;
-?\ : module  ( nt xtp -- )  >>link far!  ;
+?\ : unlink-internal  ( nt xtp -- )  >>link s!  ;
+?\ : unlink-internal  ( nt xtp -- )  >>link far!  ;
 
   \ doc{
   \
-  \ module  ( nt xtp -- )
+  \ unlink-internal  ( nt xtp -- )
   \
-  \ Hide all words defined between the latest pair `internal`
-  \ and `external`, by linking the first word after `external`
-  \ to the word before `internal`, thus making the private
-  \ words invisible.
-  \
-  \ Those words are supposed to be needed only within a module
-  \ and do not need to be exported.
+  \ Unlink all words defined between the latest pair `internal`
+  \ and `end-external`, linking the first word after
+  \ `end-internal` to the word before `internal`, thus making
+  \ all the internal words skipped by the dictionary searches.
   \
   \ Usage example:
-  \
+
   \ ----
   \ internal
   \
   \ : hello  ( -- )  ." hello"  ;
   \
-  \ external
+  \ end-internal 
   \
   \ : salute  ( -- )  hello  ;
   \
-  \ module
+  \ unlink-internal
   \
   \ salute  \ ok!
   \ hello   \ error!
   \ ----
+
+  \ Note: At least one word must be defined between
+  \ `end-internal` and `unlink-internal`.
   \
-  \ See: `internal`, `external`.
+  \ See: `internal`, `end-internal`.
   \
   \ }doc
 
