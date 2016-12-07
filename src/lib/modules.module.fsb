@@ -54,25 +54,25 @@
   \ 2016-12-07: Start. Copy the code and documentation of
   \ Modules 1.0.2 (http://theforth.net/package/modules) and
   \ modify the code style after the conventions used in Solo
-  \ Forth.  Simplify with `perform` and `previous`.
+  \ Forth.  Improve `end-module` with `perform`; `export` with
+  \ `previous`; `module` with `constant`; `expose-module` with
+  \ `execute >order`.
 
 ( module end-module export expose-module )
 
-: module  ( "name" -- old-current )
-  get-current  wordlist create dup >r ,
-  get-order r@ swap 1+ set-order  r> set-current  ;
-  \ XXX TODO -- create a constant instead
-  \ XXX TODO -- simplify
+: module  ( "name" -- parent-wid )
+  get-current  wordlist dup >r constant
+  r@ >order  r> set-current  ;
 
   \ doc{
   \
-  \ module  ( "name" -- old-current )
+  \ module  ( "name" -- parent-wid )
   \
   \ Start the definition of a new module named _name_.
   \
   \ }doc
 
-: export  ( "name" old-current -- old-currrent )
+: export  ( parent-wid "name" -- parent-wid )
   >r  >in @  '  swap >in !  get-current  r@ set-current
   create swap , set-current r>
   does>  ( -- )  ( pfa ) perform  ;
@@ -80,7 +80,7 @@
 
   \ doc{
   \
-  \ export  ( "name" old-current -- old-currrent )
+  \ export  ( parent-wid "name" -- parent-wid )
   \
   \ Make the word named _name_ accessible outside the module
   \ currently defined.  After `end-module` this word is still
@@ -88,9 +88,7 @@
   \
   \ }doc
 
-: expose-module  ( "name" -- )
-  get-order  ' >body @  swap 1+ set-order  ;
-  \ XXX TODO -- use a constant, execute it and use `>order`
+: expose-module  ( "name" -- )  get-order  ' execute  >order  ;
 
   \ doc{
   \
@@ -101,11 +99,11 @@
   \
   \ }doc
 
-: end-module  ( old-current -- )  set-current previous  ;
+: end-module  ( parent-wid -- )  set-current previous  ;
 
   \ doc{
   \
-  \ end-module  ( old-current -- )
+  \ end-module  ( parent-wid -- )
   \
   \ End a module definition. All module internal words are no
   \ longer accessible.  Only words that have been exported with
