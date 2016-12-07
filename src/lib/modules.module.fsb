@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071659
+  \ Last modified: 201612071738
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,9 +56,12 @@
   \ modify the code style after the conventions used in Solo
   \ Forth.  Improve `end-module` with `perform`; `export` with
   \ `previous`; `module` with `constant`; `expose-module` with
-  \ `execute >order`.
+  \ `execute >order`. Rewrite `export` to improve it with
+  \ `alias`.
 
 ( module end-module export expose-module )
+
+need alias  need nextname
 
 : module  ( "name" -- parent-wid )
   get-current  wordlist dup >r constant
@@ -73,10 +76,8 @@
   \ }doc
 
 : export  ( parent-wid "name" -- parent-wid )
-  >r  >in @  '  swap >in !  get-current  r@ set-current
-  create swap , set-current r>
-  does>  ( -- )  ( pfa ) perform  ;
-  \ XXX TODO -- create an alias instead
+  dup get-current  defined name>  parsed-name 2@ nextname
+  rot set-current alias  set-current  ;
 
   \ doc{
   \
