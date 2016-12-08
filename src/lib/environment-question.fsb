@@ -1,9 +1,9 @@
-  \ environmental_queries.fsb
+  \ environment-question.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081716
+  \ Last modified: 201612081721
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,7 +34,8 @@
   \ 2016-11-26: Need `search-wordlist`, which has been moved to
   \ the library.
   \
-  \ 2016-12-08: Fix `/hold`, `floored`.
+  \ 2016-12-08: Fix `/hold`, `floored`. Rename the module
+  \ filename to <environment-question.fsb>.
 
 ( environment? )
 
