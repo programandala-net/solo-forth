@@ -994,11 +994,13 @@ Spectrum Forth-83).
 // Library {{{1
 == Library ==
 
+.2016-12-08:
+
+Rename <math.number.print.fsb> to <printing.number.fsb>.
+
 .2016-11-26:
 
 NOTE: Milestone: 0.12.0
-
-Rename <environmental_queries.fsb>.
 
 Add missing "misc" and "common" parts of module filenames.
 

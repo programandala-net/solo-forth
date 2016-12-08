@@ -3,12 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081721
+  \ Last modified: 201612081913
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `environment?`.
+  \ The environmental queries of Forth-2012.
 
   \ -----------------------------------------------------------
   \ Author
@@ -35,20 +35,74 @@
   \ the library.
   \
   \ 2016-12-08: Fix `/hold`, `floored`. Rename the module
-  \ filename to <environment-question.fsb>.
+  \ filename to <environment-question.fsb>.  Add
+  \ `return-stack-cells` and `data-stack-cells`.  Fix restoring
+  \ of the search order. Document `environment?` and
+  \ `environment-wordlist`.
 
 ( environment? )
 
 need search-wordlist  need alias
 
 wordlist constant environment-wordlist  ( -- wid )
-  \ Wordlist that is searched by environmental queries.
+
+  \ doc{
+  \
+  \ environment-wordlist  ( -- wid )
+  \
+  \ A constant that holds the word list identifier _wid_ where
+  \ the environmental queries are defined.
+  \
+  \ See: `environment?`.
+  \
+  \ }doc
 
 : environment?  ( ca len -- false | i*x true )
   environment-wordlist search-wordlist
   if  execute true  else  false  then  ;
 
+  \ doc{
+  \
+  \ environment?  ( ca len -- false | i*x true )
+  \
+  \ The string _ca len_ is the identifier of an environmental
+  \ query. If the string is not recognized, return a false
+  \ flag. Otherwise return a true flag and some information
+  \ about the query.
+  \
+  
+  \ [caption="Environmental Query Strings"]
+  \ |===
+  \ | String   | Value data type  | Constant? | Meaning
+
+  \ | /COUNTED-STRING    | n      | yes       |  maximum size of a counted string, in characters
+  \ | /HOLD              | n      | yes       |  size of the pictured numeric output string buffer, in characters
+  \ | /PAD               | n      | yes       |  size of the scratch area pointed to by PAD, in characters
+  \ | ADDRESS-UNIT-BITS  | n      | yes       |  size of one address unit, in bits
+  \ | FLOORED            | flag   | yes       |  true if floored division is the default
+  \ | MAX-CHAR           | u      | yes       |  maximum value of any character in the implementation-defined character set
+  \ | MAX-D              | d      | yes       |  largest usable signed double number
+  \ | MAX-N              | n      | yes       |  largest usable signed integer
+  \ | MAX-U              | u      | yes       |  largest usable unsigned integer
+  \ | MAX-UD             | ud     | yes       |  largest usable unsigned double number
+  \ | RETURN-STACK-CELLS | n      | yes       |  maximum size of the return stack, in cells
+  \ | STACK-CELLS        | n      | yes       |  maximum size of the data stack, in cells
+  \ |===
+
+  \ Note: Forth-2012 designates the Forth-94 practice of using
+  \ `environment?` to inquire whether a given word set is
+  \ present as obsolescent.  The Forth-94 environmental
+  \ strings are not supported in Solo Forth.
+  \
+  \ Origin: Forth-2012 (CORE).
+  
+  \ See: `environment-wordlist`.
+  \
+  \ }doc
+
 get-current  environment-wordlist dup >order set-current
+
+  \ XXX TODO -- document?
 
 8 constant address-unit-bits  ( -- n )
   \ Size of one address unit, in bits.
@@ -95,20 +149,14 @@ false constant floored  ( -- f )
 -1. 2constant max-ud ( -- ud )
   \ Largest usable unsigned double.
 
-  \ XXX TODO -- calculate
-$50 constant return-stack-cells ( -- n )
-  \ : return-stack-cells ( -- n )
-    \ [ forthstart 6 cells + ] literal @ cell / ;
+$2C +origin @ constant return-stack-cells ( -- n )
     \ Maximum size of the return stack, in cells.
 
-  \ XXX TODO -- calculate
-$50 constant stack-cells ( -- n )
-  \ : stack-cells ( -- n )
-    \ [ forthstart 4 cells + ] literal @ cell / ;
+$2A +origin @ constant stack-cells ( -- n )
     \ Maximum size of the data stack, in cells.
 
   \ XXX TODO -- add "#locals" when needed
 
-set-order previous
+set-current previous
 
   \ vim: filetype=soloforth

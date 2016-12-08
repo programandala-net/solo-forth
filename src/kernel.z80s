@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612031848
+; Last modified: 201612081838
 
 include version.z80s
 
@@ -156,16 +156,17 @@ cells_per_return_stack:           equ $64
   ; terminal input buffer was below the return stack and worked as a
   ; pad for it, so the problem was unnoticed.  But the terminal input
   ; buffer was moved on 2016-11-15 in order to make all buffers
-  ; contiguous so the circular string buffer can be expandable.
-  ;
-  ; As a temporary solution, also the return stack is checked in
-  ; `?stack`, when the developing label is on.
+  ; contiguous so the circular string buffer can be expandable.  As a
+  ; temporary solution, also the return stack is checked in `?stack`,
+  ; when the developing label is on.
   ;
   ; XXX REMARK -- 2016-12-03: Each `nest-source` uses 6 cells of the
   ; return stack for data; `need` uses 2 cells for data; 9 more cells
-  ; are used by calls every nesting level of `need`... With a $56
+  ; are used by calls at every nesting level of `need`... With a $56
   ; cells large return stack, only 5 levels of `need` are possible.
-  ; The size is increased to $64.
+  ; The size is increased to $64. `?rstack` has been factored from
+  ; `?stack` and called directly by `interpret`, during the
+  ; development.
 
 bytes_per_terminal_input_buffer:  equ $50
 
@@ -755,8 +756,8 @@ paren_wait_init_value:                        ; +$04 ; XXX OLD
   ; `$16 +origin`
   dw noop_
 width_init_value:                             ; +$06
-  dw max_word_length
   ; `$18 +origin`
+  dw max_word_length
                                               ; +$08 ; XXX OLD
   ; `$1A +origin`
   dw $0000
@@ -783,18 +784,26 @@ ip_backup: ; temporary copy of Forth IP
 hp: defl headers_pointer_bottom
 
 headers_pointer:
-  ; `$24 +origin`
+  ; `$26 +origin`
   ; First free address in the system bank, restored by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw hp
 
 headers_pointer_init_value:
-  ; `$26 +origin`
+  ; `$28 +origin`
   ; Init value of the headers pointer, used by `cold`.
   ; The value is updated during the assembling,
   ; by the `_header` macro.
   dw hp
+
+  ; `$2A +origin`
+  ; Size of the data stack, used by `environment?`.
+  dw cells_per_data_stack
+
+  ; `$2C +origin`
+  ; Size of the return stack, used by `environment?`.
+  dw cells_per_return_stack
 
 ; ==============================================================
 ; User variables
@@ -4885,8 +4894,8 @@ if 0 ; XXX OLD
                   ; 08 02 ; jp (ix)
                   ; -- --
                   ; 46 07
- 
-else ; XXX NEW 
+
+else ; XXX NEW
 
   ld hl,push_hl   ; 10 03
   ex (sp),hl      ; 19 01
@@ -5363,19 +5372,18 @@ fetch.hl:
 ;
 ; variable ( "name" -- )
 ;
-; Parse _name_.  Create a definition for _name_ with the
-; execution semantics defined below. Reserve one cell of data
-; space.
+; Parse _name_.  Create a definition for _name_ with the execution
+; semantics defined below. Reserve one cell of data space.
 ;
-;    _name_ is referred to as a variable.
+; _name_ is referred to as a variable.
 ;
 ;          name Execution: ( -- a )
 ;
-;    _a_ is the address of the reserved cell. A program is
-;    responsible for initializing the contents of the reserved
-;    cell.
+; _a_ is the address of the reserved cell. A program is responsible
+; for initializing the contents of the reserved cell.
 ;
-; Origin: Forth-94.
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word Set),
+; Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -5621,7 +5629,7 @@ do_user:
 ; User variable that holds the block number of the block most recently
 ; or loaded (with `load` or `continued`). This is the value used by
 ; `reload`.
-; 
+;
 ; See: `load`, `continued`, `reload`.
 ;
 ; }doc
@@ -8047,14 +8055,14 @@ fill.done:
 ; ----------------------------------------------
   _variable_header slash_hold_,'/HOLD'
 
-; XXX TODO -- not used yet
-
 ; doc{
 ;
 ; /hold  ( -- a )
 ;
 ; Variable that holds the length of the pictured output string
 ; buffer, which is located right below `pad`.
+;
+; See: `pad`, `hld`.
 ;
 ; }doc
 
@@ -8067,14 +8075,18 @@ fill.done:
 ;
 ; pad  ( -- ca )
 ;
-; Return the address of a transient region that can be used to
-; hold data for intermediate processing.
+; Return the address of a transient region that can be used to hold
+; data for intermediate processing. It's a fixed offset above `here`.
 ;
-; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT),
-; Forth-2012 (CORE EXT).
-;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83 (REQUIRED
+; WORD SET), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+
+; ----
 ; : pad  ( -- ca )
 ;   here /hold @ +  ;
+; ----
+;
+; See: `here`, `/hold`.
 ;
 ; }doc
 
@@ -9601,6 +9613,11 @@ do_vocabulary:
 ; : definitions  ( -- )
 ;   context @ set-current  ;
 ; ----
+
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word Set),
+; Forth-94 (SEARCH), Forth-2012 (SEARCH).
+;
+; See: `context`, `set-current`, `wordlist`, `vocabulary`.
 ;
 ; }doc
 
@@ -9771,7 +9788,6 @@ quit.begin:
 ; Print the Solo Forth version.
 ;
 ; }doc
-
 
   dw version_
   dw dup_,c_fetch_,zero_dot_r_
@@ -11201,6 +11217,17 @@ emits.loop_exit:
 ; ----------------------------------------------
   _colon_header less_hash_,'<#'
 
+; doc{
+;
+; <#  ( -- )
+;
+; Initialize the pictured numeric output process:
+; Set `hld` to its initial value, right below `pad`.
+;
+; See: `hld` `pad`.
+;
+; }doc
+
   dw pad_,hld_,store_
   dw exit_
 
@@ -11738,6 +11765,9 @@ system_stack_pointer: equ $+1
 ;
 ; Return the amount of space remaining in the region addressed
 ; by `here`, in address units.
+;
+; This region includes the transient spaces addressed by `pad`
+; and `hold`
 ;
 ; See: `here`, `limit`.
 ;
