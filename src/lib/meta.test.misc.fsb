@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612072047
+  \ Last modified: 201612081307
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,28 @@
   \ 2016-12-03: Add `nest-need-test`.
   \
   \ 2016-12-07: Add `transient-test`.
+  \
+  \ 2016-12-07: Add `transient-asm-test`.
+
+( transient-asm-test )
+
+: info  ( -- )  cr ." here           =" here u.
+                cr ." hp             =" hp@ u.
+                cr ." voc-link       =" voc-link @ u.
+                cr ." limit          =" limit @ u.
+                cr ." farlimit       =" farlimit @ u.
+                cr ." latest         =" latest u.
+                cr ." current-latest =" current-latest u.
+                cr ." Press any key to continue" key drop  ;
+
+need transient
+
+cr .( Before transient :)         info  2000 2000 transient
+cr .( After transient :)          info  need z80-asm
+cr .( Before end-transient :)     info  end-transient 
+cr .( After end-transient :)      info  need n>r
+cr .( Before forget-transient :)  info  forget-transient
+cr .( After forget-transient :)   info
 
 ( transient-test )
 

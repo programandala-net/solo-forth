@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612061901
+  \ Last modified: 201612081412
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,10 +53,17 @@
   \ 2016-12-06: Rename `?page` to `?rel`, after
   \ `z80-asm,`; make it consume its argument, in order to reuse
   \ it in the future implementation of local labels.
+  \
+  \ 2016-12-08: Calculate the memory used, required by
+  \ `transient`.
 
 ( z80-asm )
 
   \ XXX TODO -- `get-order` here and `set-order` at the end.
+
+  \ XXX REMARK -- 2016-12-08: Memory used:
+  \               Data space:     1817 B
+  \               Headers space:  1917 B
 
 get-current forth-wordlist set-current
 

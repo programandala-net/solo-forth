@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-07
+:revdate: 2016-12-08
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1293,6 +1293,10 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 // Word lists {{{1
 == Word lists ==
+
+.2016-12-08:
+
+Rename to `voc-link` to `latest-wordlist`
 
 .2016-12-06:
 
