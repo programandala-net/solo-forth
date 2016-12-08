@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201611260136
+# Last modified: 201612082020
 
 # ==============================================================
 # Author
@@ -323,7 +323,7 @@ lib_files = $(sort $(wildcard src/lib/*.fsb))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fsb))
 game_lib_files = $(sort $(wildcard src/lib/game.*.fsb))
 meta_lib_files = $(sort $(wildcard src/lib/meta.*.fsb))
-meta_benchmark_misc_lib_files = src/lib/meta.benchmark.misc.fsb
+meta_benchmark_misc_lib_files = src/lib/meta.benchmark.MISC.fsb
 meta_benchmark_rng_lib_files = src/lib/meta.benchmark.rng.fsb
 meta_benchmark_flow_lib_files = src/lib/meta.benchmark.flow.fsb
 meta_test_lib_files = $(sort $(wildcard src/lib/meta.test*.fsb))
@@ -664,3 +664,6 @@ oldbackup:
 # to <make/>.
 #
 # 2016-11-26: Fix lists of benchmark library files.
+#
+# 2016-12-08: Update after the renaming of "misc" and "common"
+# module files.
