@@ -1,9 +1,9 @@
-  \ strings.misc.fsb
+  \ strings.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071028
+  \ Last modified: 201612081944
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,9 @@
   \
   \ 2016-12-07: Rename `>cell-string` to `>bstring`. Add
   \ `c>bstring`, `2>bstring`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
 
 ( str= str< str> trim +place hunt )
 

@@ -1,9 +1,9 @@
-  \ screen_mode.fsb
+  \ screen_mode.COMMON.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605170052
+  \ Last modified: 201612081944
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,9 @@
   \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "COMMON", after the new convention.
 
 ( columns rows set-mode-output set-font )
 

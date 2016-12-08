@@ -1,9 +1,9 @@
-  \ memory.misc.fsb
+  \ memory.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611260149
+  \ Last modified: 201612081944
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,9 @@
   \ `c@test-bits` to `c@and` after the changes in the system.
   \
   \ 2016-11-26: Improve `2@+`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
 
 ( -! c+! c-! )
 

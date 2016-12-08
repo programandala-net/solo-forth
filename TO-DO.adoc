@@ -287,7 +287,7 @@ Study the strings stack included in Spectrum Forth-83
 
 .2016-05-11:
 
-Compact <strings.misc.fsb>.
+Compact <strings.MISC.fsb>.
 
 .2015-09-12:
 
@@ -882,7 +882,7 @@ Remove the code of the old system bank.
 .2016-11-15:
 
 Write far-memory versions of some of the following words from the
-<memory.misc.fsb> module:
+<memory.MISC.fsb> module:
 
 ----
   \ -!
@@ -997,14 +997,6 @@ Spectrum Forth-83).
 .2016-12-08:
 
 Rename <math.number.print.fsb> to <printing.number.fsb>.
-
-.2016-11-26:
-
-NOTE: Milestone: 0.12.0
-
-Add missing "misc" and "common" parts of module filenames.
-
-Rename "misc" and "common" part of module filenames to uppercase.
 
 // Loading {{{1
 == Loading ==

@@ -1,9 +1,9 @@
-  \ meta.benchmark.misc.fsb
+  \ meta.benchmark.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611281233
+  \ Last modified: 201612081944
 
   \ -----------------------------------------------------------
   \ Description
@@ -64,6 +64,9 @@
   \ because now warnings are deactivated by default.
   \
   \ 2016-11-28: Add `+field-bench`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
 
 ( +field-bench )
 

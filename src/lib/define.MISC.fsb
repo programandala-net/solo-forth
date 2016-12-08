@@ -1,9 +1,9 @@
-  \ define.misc.fsb
+  \ define.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612062059
+  \ Last modified: 201612081944
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,9 @@
   \ 2016-11-26: Improve documentation of `nextname` and family.
   \
   \ 2016-12-06: Improve documentation of `:noname`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
 
 ( ;code :noname nextname )
 

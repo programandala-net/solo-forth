@@ -1,9 +1,9 @@
-  \ flow.misc.fsb
+  \ flow.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612042042
+  \ Last modified: 201612081944
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,9 @@
   \ 2016-12-03: Fix needing of `retry`.
   \
   \ 2016-12-04: Add `+perform`.
+  \
+  \ 2016-12-08: Rename the module filename with uppercase
+  \ "MISC" after the new convention.
 
 ( +perform base-execute call don't executions )
 
