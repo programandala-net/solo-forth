@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611242041
+  \ Last modified: 201612081635
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
   \ 2016-11-24: Move `u.r` from the kernel and document it.
   \ Document also `ud.r` and `ud.`. Improve individual needing
   \ of all of them.
+  \
+  \ 2016-12-08: Fix `u.r`.
 
 ( ud.r u.r ud. )
 
@@ -55,8 +57,8 @@ exit ?)
   \
   \ }doc
 
-[unneeded] u.r ?(  need ud.r
-: u.r  ( u n -- )  >r s>d r> ud.r  ;  exit ?)
+[unneeded] u.r ?(  need u>ud  need ud.r
+: u.r  ( u n -- )  >r u>ud r> ud.r  ;  exit ?)
   
   \ doc{
   \
