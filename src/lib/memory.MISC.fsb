@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612082011
+  \ Last modified: 201612082019
 
   \ -----------------------------------------------------------
   \ Description
@@ -64,7 +64,8 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention. Rename `exchange` to
-  \ `!exchange`.
+  \ `!exchange`. Add `c!exchange`. Add new `exchange` and
+  \ `cexchange`.
 
 ( -! c+! c-! )
 
@@ -421,10 +422,33 @@ end-code  exit ?)
   \
   \ }doc
 
-( !exchange reserve alloted align aligned )
+( !exchange c!exchange reserve alloted align aligned )
 
 [unneeded] !exchange
-?\ : !exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
+?\ : !exchange  ( x1 a -- x2 )  dup @ rot rot !  ;
+
+  \ doc{
+  \
+  \ !exchange  ( x1 a -- x2 )
+  \
+  \ Store _x1_ into _a_ and return its previous contents _x2_.
+  \
+  \ See: `c!exchange`, `exchange`.
+  \
+  \ }doc
+
+[unneeded] c!exchange
+?\ : c!exchange  ( c1 ca -- c2 )  dup c@ rot rot c!  ;
+
+  \ doc{
+  \
+  \ c!exchange  ( c1 ca -- c2 )
+  \
+  \ Store _c1_ into _ca_ and return its previous contents _c2_.
+  \
+  \ See: `!exchange`, `cexchange`.
+  \
+  \ }doc
 
 [unneeded] reserve
 ?\ : reserve  ( n -- a )  here tuck over erase allot  ;
@@ -490,7 +514,7 @@ end-code  exit ?)
   \
   \ }doc
 
-( /! *! 2/! 2*! )
+( /! *! 2/! 2*! exchange cexchange )
 
 [unneeded] /!
 ?\ : /!  ( n a -- )  tuck @ swap / swap !  ;
@@ -539,6 +563,33 @@ end-code  exit ?)
   \ Do a `2/` shift to the single-cell number at _a_.
   \
   \ See `2/`.
+  \
+  \ }doc
+ 
+
+[unneeded] exchange
+?\ : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
+
+  \ doc{
+  \
+  \ exchange  ( a1 a2 -- )
+  \
+  \ Exchange the cells stored in _a1_ and _a2_.
+  \
+  \ See: `cexchange`, `!exchange`.
+  \
+  \ }doc
+
+[unneeded] cexchange ?exit
+: cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
+
+  \ doc{
+  \
+  \ cexchange  ( ca1 ca2 -- )
+  \
+  \ Exchange the characters stored in _ca1_ and _ca2_.
+  \
+  \ See: `exchange`, `c!exchange`.
   \
   \ }doc
   

@@ -95,13 +95,6 @@ Improve the search order words, after Forth-2012.
 
 .2016-04-27:
 
-NOTE: Milestone: 0.12.0
-
-Idea: `variable lastblk`, only for `block`, instead of `scr`, which will be
-used only for `list`.
-
-.2016-04-27:
-
 Rewrite `'` after Gforth. See Gforth's `(')`, `name?int`,
 `name>int`, etc. Factor `defined` and `comp'` accordingly.
 
@@ -681,18 +674,6 @@ Search for similar cases.
 
 Rewrite `d-` with Z80 opcodes, without `z80-asm`.
 Search for similar cases.
-
-.2015-07-23:
-
-NOTE: Milestone: 0.12.0
-
-----
-  : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
-    \ Exchange the 16-bit contents of a1 and a2.
-
-  : cexchange  ( ca1 ca2 -- )  2dup c@ swap c@  rot c! swap c!  ;
-    \ Exchange the 8-bit contents of ca1 and ca2.
-----
 
 .2015-07-23:
 
