@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201612082011
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,7 +63,8 @@
   \ 2016-11-26: Improve `2@+`.
   \
   \ 2016-12-08: Rename the module filename with uppercase
-  \ "MISC" after the new convention.
+  \ "MISC" after the new convention. Rename `exchange` to
+  \ `!exchange`.
 
 ( -! c+! c-! )
 
@@ -420,10 +421,10 @@ end-code  exit ?)
   \
   \ }doc
 
-( exchange reserve alloted align aligned )
+( !exchange reserve alloted align aligned )
 
-[unneeded] exchange
-?\ : exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
+[unneeded] !exchange
+?\ : !exchange  ( n1 a -- n2 )  dup @ rot rot !  ;
 
 [unneeded] reserve
 ?\ : reserve  ( n -- a )  here tuck over erase allot  ;
@@ -540,5 +541,5 @@ end-code  exit ?)
   \ See `2/`.
   \
   \ }doc
-
+  
   \ vim: filetype=soloforth
