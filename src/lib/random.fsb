@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612061131
+  \ Last modified: 201612122339
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,6 +32,8 @@
   \
   \ 2016-12-06: Add `-1|1`. Improve documentation and needing
   \ of `randomize` and `randomize0`.
+  \
+  \ 2016-12-12: Fix needing of `-1|1` and `randomize`.
 
 ( rnd random )
 
@@ -191,7 +193,7 @@ code crnd  ( -- b )
 
 ( -1|1 randomize randomize0 )
 
-[undefined] -1|1
+[unneeded] -1|1
 ?\ need random  : -1|1  ( -- -1|1 )  2 random 2* 1-  ;  exit
 
   \ doc{
@@ -202,7 +204,7 @@ code crnd  ( -- b )
   \
   \ }doc
 
-[defined] randomize
+[unneeded] randomize
 ?\  need os-seed  : randomize  ( n -- )  os-seed !  ;  exit
 
   \ doc{
@@ -217,7 +219,7 @@ code crnd  ( -- b )
 
 [unneeded] randomize0 ?exit
 
-need os-frames
+need os-frames  need randomize
 
 : randomize0  ( n -- )
   ?dup 0=  if  os-frames @  then  randomize  ;
