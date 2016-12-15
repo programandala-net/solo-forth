@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604262155
+  \ Last modified: 201612061330
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,8 +39,11 @@
   \ History
 
   \ 2015-11-09: First version, adapted from Galope.
+  \ 2016-12-06: Comment name clashes with `package`.
 
 ( begin-module: begin-module public private end-module )
+
+  \ XXX TODO -- combine with `package`
 
 need get-order  need wordlist
 
@@ -61,6 +64,9 @@ set-current
   \ Interface words
 
 : public  ( -- )  current-wid @ set-current  ;
+  
+  \ XXX FIXME -- name clash with `package`
+
   \ doc{
   \
   \ public  ( -- )
@@ -71,6 +77,9 @@ set-current
   \ }doc
 
 : private  ( -- )  module-wid @ set-current  ;
+  
+  \ XXX FIXME -- name clash with `package`
+
   \ doc{
   \
   \ private  ( -- )
@@ -118,6 +127,7 @@ set-current
   \ }doc
 
 : begin-module  ( -- )  (begin-module) drop private  ;
+
   \ doc{
   \
   \ begin-module  ( -- )
@@ -129,6 +139,7 @@ set-current
   \ }doc
 
 : end-module  ( -- )  public previous  ;
+
   \ doc{
   \
   \ end-module  ( -- )

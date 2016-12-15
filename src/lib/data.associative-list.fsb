@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262312
+  \ Last modified: 201612152052
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,92 +36,137 @@
   \ 2016-03-24: Comments.
   \
   \ 2016-04-15: Improved with different types of items.
-  \ Factored. An obscure bug was discovered in during the
-  \ changes.  Finally its origin was found in `(;code)`, in the
-  \ kernel, and fixed.
+  \ Factored. An obscure bug was discovered during the changes.
+  \ Finally its origin was found in `(;code)`, in the kernel,
+  \ and fixed.
   \
   \ 2016-11-26: Need `search-wordlist`, which has been moved to
   \ the library.
-
-  \ -----------------------------------------------------------
-  \ To-do
-
-  \ XXX TODO -- document
+  \
+  \ 2016-12-15: Improve documentation. Rename `entry` and
+  \ friends after `field:` and friends, and make them
+  \ individually accessible by `need`. Compact the code to save
+  \ one block. Move the test to the tests module.
 
 ( associative-list item? item create-entry )
 
 need search-wordlist
 
 : associative-list  ( "name" -- )  wordlist constant  ;
+
+  \ doc{
+  \
+  \ associative-list  ( "name" -- )
+  \
   \ Create a new associative list "name".
+  \
+  \ }doc
 
 : item?  ( ca len wid -- false | xt true )
   search-wordlist 0<> ;
+
+  \ doc{
+  \
+  \ item?  ( ca len wid -- false | xt true )
+  \
   \ Is _ca len_ an item of associative list _wid_?
   \ If so return its _xt_ and _true_, else return _false_.
+  \
+  \ }doc
 
-: item  ( ca len wid -- i*x )
-  item? 0= #-13 ?throw execute  ;
+: item  ( ca len wid -- i*x )  item? 0= #-13 ?throw execute  ;
+
+  \ doc{
+  \
+  \ item  ( ca len wid -- i*x )
+  \
   \ If _ca len_ is an item of associative list _wid_, return
   \ its value _i*x_; else throw exception -13, "undefined
   \ word".
+  \
+  \ }doc
+
 
 : create-entry  ( i*x wid xt "name" -- )
-  get-current >r swap set-current
-  create execute
+  get-current >r swap set-current  create execute
   r> set-current  ;
+
+  \ doc{
+  \
+  \ create-entry  ( i*x wid xt "name" -- )
+  \
   \ Create an entry "name" in associative list _wid_,
   \ using _xt_ to store its value _i*x_.
+  \
+  \ }doc
 
 -->
 
-( entry char-entry double-entry string-entry )
+( entry: centry: 2entry: sentry: items )
 
-: entry  ( x wid "name" -- )
-  ['] , create-entry does>  ( -- x )  ( pfa ) @  ;
+need ?(  need create-entry  [unneeded] entry: ?(
+: entry:  ( x wid "name" -- )
+  ['] , create-entry does>  ( -- x )  ( pfa ) @  ;  exit ?)
+
+  \ doc{
+  \
+  \ entry:  ( x wid "name" -- )
+  \
   \ Create a cell entry "name" in associative list
   \ _wid_, with value _x_.
+  \
+  \ }doc
 
-: char-entry  ( c wid "name" -- )
-  ['] c, create-entry does>  ( -- c )  ( pfa ) c@  ;
+[unneeded] centry: ?(
+: centry:  ( c wid "name" -- )
+  ['] c, create-entry does>  ( -- c )  ( pfa ) c@  ;  exit ?)
+
+  \ doc{
+  \
+  \ centry:  ( c wid "name" -- )
+  \
   \ Create a character entry "name" in associative list
   \ _wid_, with value _c_.
+  \
+  \ }doc
 
-: double-entry  ( dx wid "name" -- )
-  ['] 2, create-entry does>  ( -- dx )  ( pfa ) 2@  ;
+[unneeded] 2entry: ?(
+: 2entry:  ( dx wid "name" -- )
+  ['] 2, create-entry does>  ( -- dx )  ( pfa ) 2@  ;  exit ?)
+
+  \ doc{
+  \
+  \ 2entry:  ( dx wid "name" -- )
+  \
   \ Create a double-cell entry "name" in associative list
   \ _wid_, with value _dx_.
+  \
+  \ }doc
 
-: string-entry  ( ca len wid "name" -- )
+[unneeded] sentry: ?(
+: sentry:  ( ca len wid "name" -- )
   ['] s, create-entry does>  ( -- ca len )  ( pfa ) count  ;
+exit ?)
+
+  \ doc{
+  \
+  \ sentry:  ( ca len wid "name" -- )
+  \
   \ Create a string entry "name" in associative list
   \ _wid_, with value _ca len_.
+  \
+  \ }doc
 
-( items )
-
-need alias  need wordlist-words
+[unneeded] items ?exit  need alias  need wordlist-words
 
 ' wordlist-words alias items  ( wid -- )
+
+  \ doc{
+  \
+  \ items  ( wid -- )
+  \
   \ List items of associative list _wid_.
-
-( associative-list-demo )
-
-need associative-list need items
-
-associative-list stuff
-
-1887          stuff entry year
-char E        stuff char-entry letter
-s" Saluton"   stuff string-entry hello
-314159.       stuff double-entry pi
-
-cr .( Keys:) cr stuff items cr
-
-cr .( Values: ) cr
-
-s" year"    stuff item . cr
-s" letter"  stuff item emit cr
-s" hello"   stuff item type cr
-s" pi"      stuff item d. cr
+  \
+  \ }doc
 
   \ vim: filetype=soloforth

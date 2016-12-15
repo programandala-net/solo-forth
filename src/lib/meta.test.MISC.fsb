@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201612152052
 
   \ -----------------------------------------------------------
   \ Description
@@ -64,6 +64,30 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention.
+  \
+  \ 2016-12-15: Move `associative-list-test` from the
+  \ `associative-list` module.
+
+( associative-list-test )
+
+need associative-list  need items
+need entry:  need centry:  need 2entry:  need sentry:
+
+associative-list stuff
+
+1887          stuff entry:  year
+'E'           stuff centry: letter
+s" Saluton"   stuff sentry: hello
+314159.       stuff 2entry: pi
+
+cr .( Keys:) cr stuff items cr
+
+cr .( Values: ) cr
+
+s" year"    stuff item . cr
+s" letter"  stuff item emit cr
+s" hello"   stuff item type cr
+s" pi"      stuff item d. cr
 
 ( transient-asm-test )
 

@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612081838
+; Last modified: 201612152149
 
 include version.z80s
 
@@ -8118,7 +8118,7 @@ fill.done:
 ; The resulting character string _ca2 len2_ begins at _ca1_ plus
 ; _n_ characters and is _len1_ minus _n_ characters long.
 ;
-; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+; `/string` is written in Z80. Example implementations in Forth:
 ;
 ; ----
 ; : /string  ( ca1 len1 n -- ca2 len2 )
@@ -8129,6 +8129,8 @@ fill.done:
 ; : /string  ( ca1 len1 n -- ca2 len2 )
 ;   dup >r - swap r> + swap  ;
 ; ----
+;
+; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
 ; }doc
 

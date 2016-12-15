@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-11-28
+" Updated:  2016-12-08
 
 " --------------------------------------------------------------
 " History
@@ -142,7 +142,7 @@ syn keyword soloforthDefine field:
 syn keyword soloforthDefine header
 syn keyword soloforthDefine header,
 syn keyword soloforthDefine hide
-syn keyword soloforthDefine hided
+syn keyword soloforthDefine hidden
 syn keyword soloforthDefine immediate
 syn keyword soloforthDefine immediate-mask
 syn keyword soloforthDefine immediate?
@@ -327,10 +327,12 @@ syn keyword soloforthForth name>immediate?
 syn keyword soloforthForth name>link
 syn keyword soloforthForth name>string
 syn keyword soloforthForth nest-source
-syn keyword soloforthForth next-name
+syn keyword soloforthForth nextname
 syn keyword soloforthForth noop
 syn keyword soloforthForth pad
+syn keyword soloforthForth refill
 syn keyword soloforthForth source
+syn keyword soloforthForth source-id
 syn keyword soloforthForth state
 syn keyword soloforthForth stream
 syn keyword soloforthForth unnest-source
@@ -416,6 +418,7 @@ syn keyword soloforthMemory far@
 syn keyword soloforthMemory farc!
 syn keyword soloforthMemory farc@
 syn keyword soloforthMemory farcount
+syn keyword soloforthMemory farlimit
 syn keyword soloforthMemory farplace
 syn keyword soloforthMemory fill
 syn keyword soloforthMemory here
@@ -464,6 +467,7 @@ syn keyword soloforthOperator ?dnegate
 syn keyword soloforthOperator ?negate
 syn keyword soloforthOperator abs
 syn keyword soloforthOperator and
+syn keyword soloforthOperator between
 syn keyword soloforthOperator c@and
 syn keyword soloforthOperator c@and?
 syn keyword soloforthOperator creset
@@ -499,6 +503,7 @@ syn keyword soloforthOperator um/mod
 syn keyword soloforthOperator um/mod
 syn keyword soloforthOperator umax
 syn keyword soloforthOperator umin
+syn keyword soloforthOperator within
 syn keyword soloforthOperator xor
 syn keyword soloforthReturnStack 2>r
 syn keyword soloforthReturnStack 2r
@@ -548,39 +553,42 @@ syn keyword soloforthString skip
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
 syn keyword soloforthTool ms
-syn keyword soloforthVocs (find-name)
-syn keyword soloforthVocs -order
-syn keyword soloforthVocs .name
-syn keyword soloforthVocs >order
-syn keyword soloforthVocs also
-syn keyword soloforthVocs assembler
-syn keyword soloforthVocs context
-syn keyword soloforthVocs current
-syn keyword soloforthVocs definitions
-syn keyword soloforthVocs find
-syn keyword soloforthVocs find-name
-syn keyword soloforthVocs find-name-from
-syn keyword soloforthVocs forth
-syn keyword soloforthVocs forth-wordlist
-syn keyword soloforthVocs get-current
-syn keyword soloforthVocs get-order
-syn keyword soloforthVocs last
-syn keyword soloforthVocs lastxt
-syn keyword soloforthVocs latest
-syn keyword soloforthVocs latestxt
-syn keyword soloforthVocs only
-syn keyword soloforthVocs previous
-syn keyword soloforthVocs root
-syn keyword soloforthVocs seal
-syn keyword soloforthVocs search-wordlist
-syn keyword soloforthVocs set-current
-syn keyword soloforthVocs set-order
-syn keyword soloforthVocs trail
-syn keyword soloforthVocs traverse
-syn keyword soloforthVocs voc-link
-syn keyword soloforthVocs vocabulary
-syn keyword soloforthVocs wordlist
-syn keyword soloforthVocs words
+syn keyword soloforthWordlists (find-name)
+syn keyword soloforthWordlists -order
+syn keyword soloforthWordlists .name
+syn keyword soloforthWordlists >order
+syn keyword soloforthWordlists also
+syn keyword soloforthWordlists assembler
+syn keyword soloforthWordlists assembler-wordlist
+syn keyword soloforthWordlists context
+syn keyword soloforthWordlists current
+syn keyword soloforthWordlists current-latest
+syn keyword soloforthWordlists definitions
+syn keyword soloforthWordlists find
+syn keyword soloforthWordlists find-name
+syn keyword soloforthWordlists find-name-from
+syn keyword soloforthWordlists forth
+syn keyword soloforthWordlists forth-wordlist
+syn keyword soloforthWordlists get-current
+syn keyword soloforthWordlists get-order
+syn keyword soloforthWordlists last
+syn keyword soloforthWordlists lastxt
+syn keyword soloforthWordlists latest
+syn keyword soloforthWordlists latestxt
+syn keyword soloforthWordlists only
+syn keyword soloforthWordlists previous
+syn keyword soloforthWordlists root
+syn keyword soloforthWordlists root-wordlist
+syn keyword soloforthWordlists seal
+syn keyword soloforthWordlists search-wordlist
+syn keyword soloforthWordlists set-current
+syn keyword soloforthWordlists set-order
+syn keyword soloforthWordlists trail
+syn keyword soloforthWordlists traverse
+syn keyword soloforthWordlists voc-link
+syn keyword soloforthWordlists vocabulary
+syn keyword soloforthWordlists wordlist
+syn keyword soloforthWordlists words
 
 " Assembler words defined in the kernel:
 
@@ -1021,7 +1029,7 @@ hi def link soloforthStack Special
 hi def link soloforthString String
 hi def link soloforthTodo Todo
 hi def link soloforthTool Statement
-hi def link soloforthVocs Statement
+hi def link soloforthWordlists Statement
 
 let b:current_syntax = "soloforth"
 
@@ -1203,6 +1211,15 @@ let b:current_syntax = "soloforth"
 "
 " 2016-11-28: Add `lastblk`, Forth-2012 structures. Add `[needed]`,
 " `[unneeded]`, `?)`.
+"
+" 2016-12-03: Add `within`, `between`.
+"
+" 2016-12-06: Add `source-id`, `refill`, `assembler-wordlist`,
+" `root-wordlist`. Replace `next-name` with `nextname`.
+"
+" 2016-12-07: Fix `hided` to `hidden`. Add `farlimit`.
+"
+" 2016-12-08: Add `current-lastest`.
 
 " --------------------------------------------------------------
 
