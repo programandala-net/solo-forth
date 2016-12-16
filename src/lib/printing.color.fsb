@@ -43,6 +43,10 @@
   \ 2016-12-03: Rename `>paper` to `paper>attr` and `paper>` to
   \ `attr>paper`, and rewrite them in Z80: much faster, and 2
   \ bytes smaller each.
+  \
+  \ 2016-12-16: Make `color@`, `color!`, `color-mask@`,
+  \ `color-mask!`, `color` and `2color` individually accesible
+  \ to `need`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -123,19 +127,19 @@
 
 ( color@ color! color-mask@ color-mask! color 2color )
 
-need os-attr-t  need os-mask-t
-
-: color@  ( -- b )  os-attr-t c@  ;
+[unneeded] color@
+?\ need os-attr-t  : color@  ( -- b )  os-attr-t c@  ;  exit
 
   \ doc{
   \
-  \ color!  ( b -- )
+  \ color@  ( -- b )
   \
   \ Get temporary color attribute _b_.
   \
   \ }doc
 
-: color!  ( b -- )  os-attr-t c!  ;
+[unneeded] color!
+?\ need os-attr-t  : color!  ( b -- )  os-attr-t c!  ;  exit
 
   \ doc{
   \
@@ -145,7 +149,8 @@ need os-attr-t  need os-mask-t
   \
   \ }doc
 
-: color-mask@  ( -- b )  os-mask-t c@  ;
+[unneeded] color-mask@ dup ?\ need os-mask-t
+?\ : color-mask@  ( -- b )  os-mask-t c@  ;  exit
 
   \ doc{
   \
@@ -155,7 +160,8 @@ need os-attr-t  need os-mask-t
   \
   \ }doc
 
-: color-mask!  ( b -- )  os-mask-t c!  ;
+[unneeded] color-mask! dup ?\ need os-mask-t
+?\ : color-mask!  ( b -- )  os-mask-t c!  ;  exit
 
   \ doc{
   \
@@ -165,8 +171,9 @@ need os-attr-t  need os-mask-t
   \
   \ }doc
 
+need ?(  [unneeded] color ?(  need color!
 : color  ( b "name" -- )
-  create c,  does>  ( -- ) ( pfa ) c@ color!  ;
+  create c,  does>  ( -- ) ( pfa ) c@ color!  ;  exit ?)
 
   \ doc{
   \
@@ -177,8 +184,9 @@ need os-attr-t  need os-mask-t
   \
   \ }doc
 
+need ?(  [unneeded] 2color ?(  need color!  need color-mask!
 : 2color  ( b1 b2 "name" -- )
-  create 2,  does>  ( -- ) ( pfa ) 2@ color! color-mask!  ;
+  create 2,  does>  ( -- ) ( pfa ) 2@ color! color-mask!  ; ?)
 
   \ doc{
   \
