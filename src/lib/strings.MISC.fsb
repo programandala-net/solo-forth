@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201612161409
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,7 +51,7 @@
   \
   \ 2016-11-25: Rewrite `lengths` in Z80. Make `lengths` and
   \ `s+` independently accessible for `need`.
-  \ 
+  \
   \ 2016-12-06: Move `>cell-string` from the `switch` structure
   \ module.
   \
@@ -60,6 +60,8 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention.
+  \
+  \ 2016-12-16: Add `sconstants`.
 
 ( str= str< str> trim +place hunt )
 
@@ -218,9 +220,9 @@ need ?(
 
 ( >bstring c>bstring 2>bstring )
 
-[unneeded] >bstring 
+[unneeded] >bstring
 ?\ : >bstring  ( u -- ca len )  pad ! pad cell  ;  exit
-  
+
   \ doc{
   \
   \ >bstring  ( x -- ca len )
@@ -232,9 +234,9 @@ need ?(
   \
   \ }doc
 
-[unneeded] c>bstring 
+[unneeded] c>bstring
 ?\ : c>bstring  ( c -- ca len )  pad c! pad 1  ;  exit
-  
+
   \ doc{
   \
   \ c>bstring  ( c -- ca len )
@@ -251,7 +253,7 @@ need ?(
 [unneeded] 2>bstring  ?(
 : 2>bstring  ( xd -- ca len )
   pad 2! pad [ 2 cells ] literal  ;  exit ?)
-  
+
   \ doc{
   \
   \ >2bstring  ( xd -- ca len )
@@ -265,7 +267,7 @@ need ?(
 
 ( lengths s+ )
 
-need ?( 
+need ?(
 
 [unneeded] lengths ?(
 
@@ -273,7 +275,7 @@ code lengths
   \ ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
 
   \ 11 bytes in Forth:
-  
+
     \   : lengths  2over nip over  ;
 
   \ 12 bytes in Z80:
@@ -309,12 +311,12 @@ code lengths
   \
   \ This word is written in Z80. Its equivalent code in Forth
   \ is the following:
-  
+
   \ ----
   \ : lengths ( ca1 len1 ca2 len2 -- ca1 len1 ca2 len2 len1 len2 )
   \   2over nip over  ;
   \ ----
-  
+
   \ }doc
 
 [unneeded] s+  ?(  need lengths  need pick
@@ -552,18 +554,6 @@ need ?(
   \
   \ }doc
 
-need ?(  [unneeded] sconstant ?(
-: sconstant  ( ca len "name" -- )
-  here >r s, r> count 2constant  ; ?)
-
-  \ doc{
-  \
-  \ sconstant  ( ca len "name" -- )
-  \
-  \ Create a string constant _name_ with value _ca len_.
-  \
-  \ }doc
-
 [unneeded] save-counted-string ?(
 : save-counted-string  ( ca1 len1 -- ca2 )
   dup 1+ allocate-string dup >r place r>  ; ?)
@@ -649,6 +639,61 @@ code string/  ( ca1 len1 len2 -- ca2 len2 )
   \
   \ Return a string _ca len_ of characters _c_.
   \
+  \ }doc
+
+( sconstant sconstants )
+
+need ?(
+
+[unneeded] sconstant ?(
+: sconstant  ( ca len "name" -- )
+  here >r s, r> count 2constant  ; exit ?)
+
+  \ doc{
+  \
+  \ sconstant  ( ca len "name" -- )
+  \
+  \ Create a string constant _name_ with value _ca len_.
+  \
+  \ }doc
+
+[unneeded] sconstants ?exit
+
+need array>
+
+: sconstants  ( 0 ca[n]..ca[1] -- )
+  create  begin  ?dup  while  ,  repeat
+  does>  ( n -- ca len )  ( n pfa ) array> @ count  ;
+
+  \ doc{
+  \
+  \ sconstants  ( 0 ca[n]..ca[0] "name" -- )
+  \
+  \ Create a table of string constants _name_, using counted
+  \ strings _ca[n]..ca[1]_, being _0_ a mark for the last
+  \ string on the stack.
+  \
+  \ When _name_ is executed, it converts the index on the stack
+  \ (0.._n_) to the correspondent string _ca len_.
+  \
+  \ Usage example:
+
+  \ ----
+  \
+  \ 0                \ end of strings
+  \   here ," kvar"  \ string 4
+  \   here ," tri"   \ string 3
+  \   here ," du"    \ string 2
+  \   here ," unu"   \ string 1
+  \   here ," nul"   \ string 0
+  \ sconstants digitname
+  \
+  \ 0 digitname cr type
+  \ 1 digitname cr type
+  \ 2 digitname cr type
+  \ 3 digitname cr type cr
+  \ ----
+
   \ }doc
 
   \ vim: filetype=soloforth

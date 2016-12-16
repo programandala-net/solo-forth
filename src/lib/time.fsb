@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171353
+  \ Last modified: 201612160040
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,15 +32,28 @@
   \
   \ 2016-11-17: Improve documentation of `frames@`, `frames!`,
   \ `reset-frames`.
+  \
+  \ 2016-12-16: Add `seconds`.
 
-( ms )
+( seconds ms )
 
-need os-frames
+[unneeded] seconds
+?\ need ms  : seconds  ( n -- )  1000 * ms  ;  exit
+
+  \ doc{
+  \
+  \ seconds  ( n -- )
+  \
+  \ Wait _n_ seconds.
+  \
+  \ }doc
+
+[unneeded] ms ?exit
 
 : ms  ( u -- )
   \ Wait _u_ ms (miliseconds), with 20 ms precision.
   20 / os-frames @ +
-  begin  dup os-frames @ u<  until drop  ;
+  begin  dup os-frames @ u<  until drop  ;  exit ?)
 
   \ doc{
   \

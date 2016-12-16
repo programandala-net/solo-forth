@@ -67,6 +67,25 @@
   \
   \ 2016-12-15: Move `associative-list-test` from the
   \ `associative-list` module.
+  \
+  \ 2016-12-16: Add `sconstants-test`.
+
+( sconstants-test )
+
+need sconstants
+
+0                \ end of strings
+  here ," kvar"  \ string 4
+  here ," tri"   \ string 3
+  here ," du"    \ string 2
+  here ," unu"   \ string 1
+  here ," nul"   \ string 0
+sconstants digitname
+
+0 digitname cr type
+1 digitname cr type
+2 digitname cr type
+3 digitname cr type cr
 
 ( associative-list-test )
 

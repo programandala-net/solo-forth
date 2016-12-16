@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-12-08
+" Updated:  2016-12-16
 
 " --------------------------------------------------------------
 " History
@@ -964,6 +964,7 @@ syn match soloforthNumber '\<\'.\'\>'
 syn region soloforthString start=+abort\"+ end=+"+ end=+$+
 syn region soloforthString start=+\.\"+ end=+"+ end=+$+
 syn region soloforthString start=+s\"+ end=+"+ end=+$+
+syn region soloforthString start=+,\"+ end=+"+ end=+$+
 syn region soloforthString start=+s\\\"+ end=+"+ end=+$+
 "syn region soloforthCharOps start=+."\s+ skip=+\\"+ end=+"+
 
@@ -1220,6 +1221,8 @@ let b:current_syntax = "soloforth"
 " 2016-12-07: Fix `hided` to `hidden`. Add `farlimit`.
 "
 " 2016-12-08: Add `current-lastest`.
+"
+" 2016-12-16: Add `,"`.
 
 " --------------------------------------------------------------
 
