@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612161409
+  \ Last modified: 201612170036
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,7 +61,7 @@
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention.
   \
-  \ 2016-12-16: Add `sconstants`.
+  \ 2016-12-16: Add `sconstants`, `/sconstants`, `u>str`.
 
 ( str= str< str> trim +place hunt )
 
@@ -150,10 +150,10 @@ need ?(
   \
   \ }doc
 
-( ud>str d>str char>string chars>string )
+( ud>str u>str d>str char>string chars>string )
 
 [unneeded] ud>str
-?\ : ud>str  ( ud -- ca len )  <# #s #>  ;
+?\ : ud>str  ( ud -- ca len )  <# #s #>  ;  exit
 
   \ Credit:
   \
@@ -167,8 +167,20 @@ need ?(
   \
   \ }doc
 
-[unneeded] d>str
-?\ : d>str  ( d -- ca len )  tuck dabs <# #s rot sign #>  ;
+[unneeded] u>str
+?\ need ud>str  : u>str  ( u -- ca len )  s>d ud>str  ;  exit
+
+  \ doc{
+  \
+  \ u>str  ( u -- ca len )
+  \
+  \ Convert _u_ to string _ca len_.
+  \
+  \ }doc
+
+need ?(  [unneeded] d>str ?(
+: d>str  ( d -- ca len )  tuck dabs <# #s rot sign #>  ;
+exit ?)
 
   \ Credit:
   \
@@ -181,8 +193,6 @@ need ?(
   \ Convert _d_ to string _ca len_.
   \
   \ }doc
-
-need ?(
 
 [unneeded] char>string ?(
 : char>string  ( c -- ca len )
@@ -641,7 +651,7 @@ code string/  ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-( sconstant sconstants )
+( sconstant sconstants-does> sconstants /sconstants )
 
 need ?(
 
@@ -657,24 +667,26 @@ need ?(
   \
   \ }doc
 
-[unneeded] sconstants ?exit
+[unneeded] sconstants-does> ?(  need array>
+: sconstants-does>  ( -- )
+  does>  ( n -- ca len )  ( n pfa ) array> @ count  ;  exit ?)
 
-need array>
+[unneeded] sconstants ?(  need sconstants-does>
 
-: sconstants  ( 0 ca[n]..ca[1] -- )
+: sconstants  ( 0 ca[n]..ca[1] "name" -- )
   create  begin  ?dup  while  ,  repeat
-  does>  ( n -- ca len )  ( n pfa ) array> @ count  ;
+  sconstants-does>  ;  exit ?)
 
   \ doc{
   \
-  \ sconstants  ( 0 ca[n]..ca[0] "name" -- )
+  \ sconstants  ( 0 ca[n]..ca[1] "name" -- )
   \
   \ Create a table of string constants _name_, using counted
   \ strings _ca[n]..ca[1]_, being _0_ a mark for the last
   \ string on the stack.
   \
   \ When _name_ is executed, it converts the index on the stack
-  \ (0.._n_) to the correspondent string _ca len_.
+  \ (0.._n-1_) to the correspondent string _ca len_.
   \
   \ Usage example:
 
@@ -694,7 +706,48 @@ need array>
   \ 3 digitname cr type cr
   \ ----
 
+  \ See: `/sconstants`.
+  \
+  \ }doc
+
+[unneeded] /sconstants ?exit  need sconstants-does>
+
+: /sconstants  ( 0 ca[n]..ca[1] "name" -- n )
+  create  0 begin  swap ?dup  while  , 1+  repeat
+  sconstants-does>  ;  exit ?)
+
+  \ doc{
+  \
+  \ sconstants  ( 0 ca[n]..ca[1] "name" -- )
+  \
+  \ Create a table of string constants _name_, using counted
+  \ strings _ca[n]..ca[1]_, being _0_ a mark for the last
+  \ string on the stack.
+  \
+  \ When _name_ is executed, it converts the index on the stack
+  \ (0.._n-1_) to the correspondent string _ca len_.
+  \
+  \ Usage example:
+
+  \ ----
+  \
+  \ 0                \ end of strings
+  \   here ," kvar"  \ string 4
+  \   here ," tri"   \ string 3
+  \   here ," du"    \ string 2
+  \   here ," unu"   \ string 1
+  \   here ," nul"   \ string 0
+  \ /sconstants digitname  constant digitnames
+  \
+  \ cr .( There are ) digitnames . .( digit names:)
+  \ 0 digitname cr type
+  \ 1 digitname cr type
+  \ 2 digitname cr type
+  \ 3 digitname cr type cr
+  \ ----
+
+  \ See: `sconstants`.
+  \
   \ }doc
 
   \ vim: filetype=soloforth
-
