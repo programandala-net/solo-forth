@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612170036
+  \ Last modified: 201612182035
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,6 +62,9 @@
   \ "MISC" after the new convention.
   \
   \ 2016-12-16: Add `sconstants`, `/sconstants`, `u>str`.
+  \
+  \ 2016-12-18: Add `uppers1`. Make `#chars` and `#spaces`
+  \ individually accesible to `need`.
 
 ( str= str< str> trim +place hunt )
 
@@ -353,15 +356,30 @@ code lengths
   \
   \ }doc
 
-( #spaces #chars )
+( uppers1 #spaces #chars )
 
-need under+
+[unneeded] uppers1
+?\ : uppers1 ( ca len -- )  drop 1 uppers  ;  exit
+  \ doc{
+  \
+  \ uppers1 ( ca len -- )
+  \
+  \ Change the first char of _ca len_ to uppercase.
+  \
+  \ See: `uppers`, `upper`.
+  \
+  \ }doc
+
+need ?)
+
+[unneeded] #spaces ?(  need under+
 
   \ XXX TODO -- finish and benchmark. rewrite `#spaces` after
   \ `#chars`? add `#nulls`
 
 : #spaces  ( ca len -- +n )
   0 rot rot  0 do  count bl = under+  loop  drop abs  ;
+exit ?)
 
   \ Credit:
   \
@@ -378,9 +396,10 @@ need under+
   \
   \ }doc
 
+[unneeded] #chars ?(  need under+
 : #chars  ( ca len c -- +n )
   0 2swap 0 do
-    ( c count ca ) count over = under+  loop  2drop abs  ;
+    ( c count ca ) count over = under+  loop  2drop abs  ; ?)
 
   \ doc{
   \

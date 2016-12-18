@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612152149
+; Last modified: 201612182033
 
 include version.z80s
 
@@ -8332,6 +8332,10 @@ parse_name.skip:
 ;
 ; upper  ( c -- c' )
 ;
+; Convert _c_ to uppercase _c'_.
+;
+; See: `uppers`.
+;
 ; }doc
 
   ; XXX TODO convert to deferred, to let it be customized for
@@ -8357,6 +8361,10 @@ ascii_upper.a:
 ; doc{
 ;
 ; uppers  ( ca len -- )
+;
+; Convert _ca len_ to uppercase.
+;
+; See: `uppers1`, `upper`.
 ;
 ; }doc
 
