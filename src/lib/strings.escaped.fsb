@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611270130
+  \ Last modified: 201612181937
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
   \
   \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
   \ has been moved to the library.
+  \
+  \ 2016-12-18: Improve documentation of `escaped-wordlist`.
 
 ( parse-escaped-string )
 
@@ -40,13 +42,22 @@ need parse-char
 
 wordlist dup constant escaped-wordlist dup >order set-current
 
-  \ The `escaped-voc` vocabulary contains the words whose names
-  \ are characters that must be escaped after a backslash.
-  \ Their execution returns the new character(s) on the stack
-  \ (the first one at the top) and the count.
+  \ doc{
+  \
+  \ escaped-wordlist  ( -- wid )
+  \
+  \ Identifier of the word list that contains the words whose
+  \ names are characters that must be escaped after a backslash
+  \ in strings defined by `s\"`.  The execution of these words
+  \ returns the new character(s) on the stack (the first one at
+  \ the top) and the count.
   \
   \ Most of the escaped chars are translated to one char, so
   \ they are defined as double constants.
+  \
+  \ See: `s\"`.
+  \
+  \ }doc
 
 7 1 2constant a  8 1 2constant b  27 1 2constant e
   \ \a = backspace
