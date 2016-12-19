@@ -1,5 +1,5 @@
 #!/bin/sh
-# fs2fba.sh 
+# fs2fba.sh
 
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
@@ -36,6 +36,7 @@
 
 # 2016-05-13: Start, based on <fs2fb.sh>, by the same author.
 # 2016-06-01: Fix description.
+# 2016-12-19: Fix problem with grep.
 
 # --------------------------------------------------------------
 
@@ -54,10 +55,33 @@ do
   tmp_file=$(mktemp --suffix=.tmp $base_filename-XXX)
 
   # Remove empty lines and metacomments:
-  grep "^.\+$" $file | \
+
+  # XXX OLD -- 2016-12-19: this expression removes lines that contain
+  # Latin1 non-ASCII chars, but it works fine with UTF-8 texts, why?:
+  #
+  # grep "^.\+$" $file | \
+
+  # XXX NEW -- 2016-12-19: the problem is solved when `$` is removed,
+  # why?:
+  grep "^.\+" $file | \
   grep --invert-match "^\s\+\\\\\s" | \
   grep --invert-match "^\s\+\\\\$" \
   > $tmp_file
+
+  # ################################################
+  # XXX TMP -- debugging test:
+
+  # # XXX FIXME -- this removes lines that contain latin1 non-ASCII
+  # # chars, why?!:
+  # grep "^.\+$" $file > src/XXX-step-1-grep.tmp
+  # # XXX FIXME -- ack creates an empty file, why?
+  # ack "^.\+$" $file > src/XXX-step-1-ack.tmp
+  # # XXX FIXME -- no difference:
+  # grep --extended-regexp "^.+$" $file > src/XXX-step-grep-1E.tmp
+  # # XXX REMARK -- solution:
+  # grep "^.\+" $file > src/XXX-step-1-grep-1D.tmp
+
+  # ################################################
 
   # Create the blocks file:
   dd if=$tmp_file of=$output_file bs=1024 cbs=64 conv=block,sync
