@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201950
+  \ Last modified: 201612202023
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,7 +39,8 @@
   \ Rewrite `pause`. Add `do-pause`. Move drafts and variants
   \ of `ms` and `pause` to the development archive, to be
   \ reused in the future.  Rename `jpnext` to `jpnext,` after
-  \ the change in the kernel.
+  \ the change in the kernel. Update syntax of the `thiscase`
+  \ structure.
 
 ( seconds ms )
 
@@ -206,13 +207,12 @@ exit
 
   \ Alternative:
 
-need baden-case
-  \ XXX TODO -- update to the new syntax
+need thiscase
 
 : leapy-year?  ( n -- f )
-  case 400 mod 0= of  true   endof
-  case 100 mod 0= of  false  endof
-  case   4 mod 0= of  true   endof
+  thiscase 400 mod 0= ifcase  true   exitcase
+  thiscase 100 mod 0= ifcase  false  exitcase
+  thiscase   4 mod 0= ifcase  true   exitcase
   othercase false  ;
 
 ( set-date get-date )
