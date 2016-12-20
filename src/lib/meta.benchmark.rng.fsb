@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611231229
+  \ Last modified: 201612201938
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,9 @@
   \
   \ 2016-11-23: Rename `c!set-bits` to `cset` after the changes
   \ in the system.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
+  \ change in the kernel.
 
 ( rnd-benchmark )
 
@@ -490,7 +493,7 @@ code jml-rnd  ( -- u )
   hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
   de pop  de addp  0029 de ldp#  de addp
   os-seed sthl
-  jppushhl
+  jppushhl,
   end-code
 
 : jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
@@ -551,7 +554,7 @@ code mb-rnd  ( -- u )
   0 d ld#  d sbc  a e ld  de sbcp
   cy if  hl incp  then
   os-seed sthl
-  jppushhl   end-code
+  jppushhl,   end-code
 
 : mb-random  ( n -- 0..n-1 )  mb-rnd um* nip  ;
 
@@ -733,7 +736,7 @@ code zh-rnd  ( -- u )
     \ inc hl
   os-seed sthl
     \ ld (seed),hl
-  jppushhl   end-code
+  jppushhl,   end-code
 
 : zh-random  ( n -- 0..n-1 )  zh-rnd um* nip  ;
 
@@ -1338,7 +1341,7 @@ code libzx-crnd  ( -- b )
     \ ld (hl), a        ; save this number
     \ XXX REMARK -- original code is not optimized
 
-  bc pop  0 h ld#  a l ld  jppushhl end-code
+  bc pop  0 h ld#  a l ld  jppushhl, end-code
 
 : libzx-random-pix-benchmark  ( -- )
   3 rom-pointer !  33 os-seed c!

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611241511
+  \ Last modified: 201612201947
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,9 @@
   \ 2016-11-24: Compact the code, saving one block. Add
   \ conditional compilation for `need`. Rename `-branch` to
   \ `+branch` and move it to its own module.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
   \ XXX TODO -- Compilation stack comments.
 
@@ -79,7 +82,7 @@ exit ?)
 [unneeded] +exit ?(
 
 code +exit  ( n -- ) ( R: nest-sys | -- nest-sys | )
-  E1 c,  CB c, 7C c,  C2 c, ' exit ,  jpnext  end-code ?)
+  E1 c,  CB c, 7C c,  C2 c, ' exit ,  jpnext,  end-code ?)
   \ pop hl
   \ bit 7,h         ; positive?
   \ jp z,exit_xt    ; exit if positive

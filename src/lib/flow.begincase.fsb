@@ -58,7 +58,7 @@ need cs-push  need cs-pop
   ; immediate compile-only
 
   \ Usage example:
-  \ 
+  \
   \ ----
   \ : test
   \   begincase

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604160140
+  \ Last modified: 201612201942
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,9 @@
   \
   \ 2016-04-16: Revised. Improved file header. Fixed stack
   \ notations.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( for step )
 
@@ -88,7 +91,7 @@ code (step)  ( R: n -- n' )
     \ inc hl
     \ ld (return_stack_pointer),hl
     \ ; skip branch offset and jump to next
-  03 c, 03 c, jpnext
+  03 c, 03 c, jpnext,
     \ inc bc
     \ inc bc
     \ jp next

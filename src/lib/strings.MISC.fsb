@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612182035
+  \ Last modified: 201612201949
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,6 +65,9 @@
   \
   \ 2016-12-18: Add `uppers1`. Make `#chars` and `#spaces`
   \ individually accesible to `need`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( str= str< str> trim +place hunt )
 
@@ -306,7 +309,7 @@ code lengths
     \ push bc   ;  11 01
     \ push hl   ;  11 01
     \ exx       ;  04 01
-  jpnext end-code ?)
+  jpnext, end-code ?)
     \ _jpnext   ;  08 02 jp (ix)
     \           ; --- --
     \           ; 100 12 Total
@@ -611,7 +614,7 @@ code string/  ( ca1 len1 len2 -- ca2 len2 )
     \ add hl,de                 ;  11 01
     \ and a        ; cy=0       ;  04 01
     \ sbc hl,bc    ; hl=ca2     ;  15 02
-  E5 c, C5 c, D9 c, jpnext  end-code
+  E5 c, C5 c, D9 c, jpnext,  end-code
     \ push hl                   ;  11 01
     \ push bc                   ;  11 01
     \ exx          ; restore IP ;  04 01

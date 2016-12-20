@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612031629
+  \ Last modified: 201612201945
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,9 @@
   \ 2016-12-16: Make `color@`, `color!`, `color-mask@`,
   \ `color-mask!`, `color` and `2color` individually accesible
   \ to `need`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -363,11 +366,11 @@ code inverse  ( f -- )
     \ ld a,h
     \ or l
     \ jr z,inverse.off
-  FD c, CB c, 57 c, C6 08 02 * + c,  jpnext
+  FD c, CB c, 57 c, C6 08 02 * + c,  jpnext,
     \ set 2,(iy+sys_p_flag_offset) ; temporary inverse flag
     \ _jp_next
     \ inverse.off:
-  FD c, CB c, 57 c, 86 08 02 * + c,  jpnext  end-code
+  FD c, CB c, 57 c, 86 08 02 * + c,  jpnext,  end-code
     \ res 2,(iy+sys_p_flag_offset) ; temporary inverse flag
     \ _jp_next
 
@@ -385,11 +388,11 @@ code overprint  ( f -- )
     \ ld a,h
     \ or l
     \ jr z,overprint.off
-  FD c, CB c, 57 c, C6 08 00 * + c,  jpnext
+  FD c, CB c, 57 c, C6 08 00 * + c,  jpnext,
     \ set 0,(iy+sys_p_flag_offset) ; temporary overprint flag
     \ _jp_next
     \ overprint.off:
-  FD c, CB c, 57 c, 86 08 00 * + c,  jpnext  end-code
+  FD c, CB c, 57 c, 86 08 00 * + c,  jpnext,  end-code
     \ res 0,(iy+sys_p_flag_offset) ; temporary overprint flag
     \ _jp_next
 

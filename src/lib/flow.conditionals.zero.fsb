@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262103
+  \ Last modified: 201612201948
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,9 @@
   \ conditional compilation for `need`.
   \
   \ 2016-11-26: Fix needing of `0exit`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
   \ XXX TODO Compilation stack notation.
 
@@ -76,7 +79,7 @@ exit ?)
 [unneeded] 0exit ?(
 code 0exit  ( f -- ) ( R: nest-sys | -- nest-sys | )
   E1 c,  78 04 + c,  B0 05 + c,  CA c, ' exit ,
-  jpnext end-code  exit ?)
+  jpnext, end-code  exit ?)
   \ pop hl
   \ ld a,h
   \ or l          ; zero?

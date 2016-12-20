@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605070026
+  \ Last modified: 201612201948
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,9 @@
   \ Latest changes
 
   \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( rdraw )
 
@@ -61,7 +64,7 @@ code rdraw  ( gx gy -- )
 
   bc pop
 
-  jpnext end-code
+  jpnext, end-code
 
 ( (rdraw )
 

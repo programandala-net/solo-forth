@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201612201942
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,6 +42,9 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( +perform base-execute call don't executions )
 
@@ -81,7 +84,7 @@
 need ?(  [unneeded] call ?(
 
 code call  ( a -- )
-  E1 c,  C5 c,  CD c, >mark  C1 c,  DD c, 21 c, next , jpnext
+  E1 c,  C5 c,  CD c, >mark  C1 c,  DD c, 21 c, next , jpnext,
                       >resolve E9 c,  end-code  exit ?)
 
   \   pop hl
@@ -333,7 +336,7 @@ need ?(
 [unneeded] ?leave ?(
 
 code ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
-  E1 c, 78 04 + c, B0 05 + c, C2 c, ' leave , jpnext
+  E1 c, 78 04 + c, B0 05 + c, C2 c, ' leave , jpnext,
   \ pop hl
   \ ld a,h
   \ or l

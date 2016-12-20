@@ -8,6 +8,19 @@
 // Assembler {{{1
 == Assembler ==
 
+Data space used (2016-12-20) by the assemblers:
+
+`z80-asm` :: 1817 B
+`z80-asm,`:: 1664 B
+
+.2016-12-20:
+
+Add assembler control structures to the syntax file.
+
+.2016-12-20:
+
+Migrate from `z80-asm` to `z80-asm,`.
+
 .2016-11-14:
 
 Finish the port of the 8086 hForth assembler labels.
@@ -165,6 +178,14 @@ actual strings.
 
 // Control structures {{{1
 == Control structures ==
+
+.2016-12-20:
+
+Update references to `baden-case` to `thiscase`.
+
+.2016-12-20:
+
+Document the variants of `of`.
 
 .2016-12-07:
 
@@ -1111,6 +1132,11 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 // Printing {{{1
 == Printing ==
 
+.2016-12-20:
+
+Move `.0000` and `.00` from the time module to the printing module, and factor
+them for double numbers.
+
 .2016-11-26:
 
 NOTE: Milestone: 0.13.0
@@ -1209,6 +1235,14 @@ Finish the conversion of 128K sound explosions. More details in the source.
 
 // Time {{{1
 == Time ==
+
+.2016-12-20:
+
+Use `chars` in offsets of `get-date` and `set-date`.
+
+.2016-12-20:
+
+Fix `pause`.
 
 .2015-12-14:
 

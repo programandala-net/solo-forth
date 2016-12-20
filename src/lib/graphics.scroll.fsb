@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201612201943
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,6 +22,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( scroll-1px-right )
 
@@ -47,7 +52,7 @@ code scroll-1px-right  ( -- )
     c dec
   z until
 
-  bc pop jpnext
+  bc pop jpnext,
 
   end-code
 
@@ -86,6 +91,6 @@ code scroll-1px-up  ( -- )
 
   bc push  \ Forth IP
   (scroll-1px-up) call
-  bc pop  jpnext  end-code
+  bc pop  jpnext,  end-code
 
   \ vim: filetype=soloforth

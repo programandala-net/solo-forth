@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612201558
+; Last modified: 201612202009
 
 include version.z80s
 
@@ -1290,11 +1290,11 @@ endif
   dw fetch.hl
 
 ; ----------------------------------------------
-  _colon_header jppushl_,'JPPUSHHL'
+  _colon_header jppushhl_comma_,'JPPUSHHL,'
 
 ; doc{
 ;
-; jppushl  ( -- )
+; jppushhl,  ( -- )
 ;
 ; Compile a Z80 jump to `pushhl`.
 ;
@@ -1307,14 +1307,14 @@ endif
 
   _literal $E5 ; opcode `push hl`
   dw c_comma_
-  dw branch_,jpnext_pfa
+  dw branch_,jpnext_comma_pfa
 
 ; ----------------------------------------------
-  _colon_header jpnext_,'JPNEXT'
+  _colon_header jpnext_comma_,'JPNEXT,'
 
 ; doc{
 ;
-; jpnext  ( -- )
+; jpnext,  ( -- )
 ;
 ; Compile a Z80 jump to `next`.
 ;

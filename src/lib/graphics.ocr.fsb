@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201612201934
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,11 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
+  \ change in the kernel.
 
 ( ocr )
 
@@ -98,7 +103,7 @@ code ocr  ( col line -- n )
 
   \ end:
   2 unresolved @ >relresolve  0 h ld#  b l ld
-  bc pop  jppushhl  end-code
+  bc pop  jppushhl,  end-code
 
 ( ocr-charset ocr-first ocr-chars ascii-ocr udg-ocr )
 

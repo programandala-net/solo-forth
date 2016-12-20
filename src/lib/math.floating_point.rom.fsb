@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605050022
+  \ Last modified: 201612201936
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,9 @@
   \ `f~relabs`, `f==`, `flnp1`, `?fln`, `'?flnp1`.
   \
   \ 2016-05-05: Update `s=` to `str=`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -111,7 +114,7 @@ need macro  need f>flag  need call-xt
 
 macro end-calculator-flag  ( -- f ) ( F: 1|0 -- )
   [ calculator-wordlist >order ] end-calculator [ previous ]
-  ['] f>flag call-xt  jpnext endm
+  ['] f>flag call-xt  jpnext, endm
 
   \ Exit the ROM calculator and convert a flag calculated by
   \ it (_1|0_) to a well-formed flag on the data stack.
@@ -149,7 +152,7 @@ need calculator-command  need f>flag  need call-xt
 
 : calculator-command>flag  ( b -- )
   calculator-command ['] f>flag call-xt
-  [ also assembler ] jpnext [ previous ]  ;
+  [ also assembler ] jpnext, [ previous ]  ;
 
   \ doc{
   \
@@ -319,35 +322,35 @@ code f0>  ( -- f ) ( F: r -- )
 need calculator
 
 code fdrop  ( F: r -- )
-  calculator  drop  end-calculator  jpnext  end-code
+  calculator  drop  end-calculator  jpnext,  end-code
 
 code fdup  ( F: r -- r r )
-  calculator  dup  end-calculator  jpnext  end-code
+  calculator  dup  end-calculator  jpnext,  end-code
 
 code fswap  ( F: r1 r2 -- r2 r1 )
-  calculator  swap  end-calculator  jpnext  end-code
+  calculator  swap  end-calculator  jpnext,  end-code
 
 code fover  ( F: r1 r2 -- r1 r2 r1 )
-  calculator  over  end-calculator  jpnext  end-code
+  calculator  over  end-calculator  jpnext,  end-code
 
 ( f2dup f2drop )
 
 code f2dup  ( F: r -- r r )
-  calculator  2dup  end-calculator  jpnext  end-code
+  calculator  2dup  end-calculator  jpnext,  end-code
 
 code f2drop  ( F: r -- )
-  calculator  drop drop  end-calculator  jpnext  end-code
+  calculator  drop drop  end-calculator  jpnext,  end-code
 
 ( fnip ftuck )
 
 need calculator
 
 code fnip  ( F: r1 r2 -- r2 )
-  calculator  swap drop  end-calculator  jpnext
+  calculator  swap drop  end-calculator  jpnext,
   end-code
 
 code ftuck  ( F: r1 r2 -- r2 r1 r2 )
-  calculator  2 >mem swap 2 mem>  end-calculator  jpnext
+  calculator  2 >mem swap 2 mem>  end-calculator  jpnext,
   end-code
 
 ( frot -frot )
@@ -357,28 +360,28 @@ need calculator
 code frot  ( F: r1 r2 r3 -- r2 r3 r1 )
   calculator
     1 >mem drop swap 1 mem> swap
-  end-calculator  jpnext  end-code
+  end-calculator  jpnext,  end-code
 
 code -frot  ( F: r1 r2 r3 -- r3 r1 r2 )
   calculator
     swap 1 >mem drop swap 1 mem>
-  end-calculator  jpnext  end-code
+  end-calculator  jpnext,  end-code
 
 ( f+ f- f* f/ ?f/ fmod )
 
 need calculator  need fdup  need f0=
 
 code f+  ( F: r1 r2 -- r3 )
-  calculator  +  end-calculator  jpnext  end-code
+  calculator  +  end-calculator  jpnext,  end-code
 
 code f-  ( F: r1 r2 -- r3 )
-  calculator  -  end-calculator  jpnext  end-code
+  calculator  -  end-calculator  jpnext,  end-code
 
 code f*  ( F: r1 r2 -- r3 )
-  calculator  *  end-calculator  jpnext  end-code
+  calculator  *  end-calculator  jpnext,  end-code
 
 code f/  ( F: r1 r2 -- r3 )
-  calculator  /  end-calculator  jpnext  end-code
+  calculator  /  end-calculator  jpnext,  end-code
   \ XXX FIXME -- when _r2_ is zero, the calculator issues
   \ "number too big" BASIC error, what crashes the system.  A
   \ safe alternative `?f/` is provided.
@@ -388,7 +391,7 @@ code f/  ( F: r1 r2 -- r3 )
   \ is thrown.
 
 code fmod  ( F: r1 -- r2 )
-  calculator  mod  end-calculator  jpnext  end-code
+  calculator  mod  end-calculator  jpnext,  end-code
 
 ( fmax )
 
@@ -402,7 +405,7 @@ code fmax  ( F: r1 r2 -- r1|r2 )
     if    drop  ( F: r1 )
     else  swap drop  ( F: r2 )
     then
-  end-calculator  jpnext  end-code
+  end-calculator  jpnext,  end-code
 
   \ XXX OLD -- Original, simpler version. The problem is the
   \ calculator's `>`. See the calculator module for details of
@@ -414,7 +417,7 @@ code fmax  ( F: r1 r2 -- r1|r2 )
   \     if    drop  ( F: r1 )
   \     else  swap drop  ( F: r2 )
   \     then
-  \   end-calculator  jpnext  end-code
+  \   end-calculator  jpnext,  end-code
 
 ( fmin )
 
@@ -428,7 +431,7 @@ code fmin  ( F: r1 r2 -- r1|r2 )
     if    drop  ( F: r1 )
     else  swap drop  ( F: r2 )
     then
-  end-calculator  jpnext  end-code
+  end-calculator  jpnext,  end-code
 
   \ XXX OLD -- Original, simpler version. The problem is the
   \ calculator's `<`. See the calculator module for details of
@@ -440,27 +443,27 @@ code fmin  ( F: r1 r2 -- r1|r2 )
   \     if    drop  ( F: r1 )
   \     else  swap drop  ( F: r2 )
   \     then
-  \   end-calculator  jpnext  end-code
+  \   end-calculator  jpnext,  end-code
 
 ( fsgn fabs fnegate )
 
 need calculator
 
 code fsgn  ( F: r1 -- -1|0|1 )
-  calculator  sgn  end-calculator  jpnext  end-code
+  calculator  sgn  end-calculator  jpnext,  end-code
 
 code fabs  ( F: r1 -- r2 )
-  calculator  abs  end-calculator  jpnext  end-code
+  calculator  abs  end-calculator  jpnext,  end-code
 
 code fnegate  ( F: r1 -- r2 )
-  calculator  negate  end-calculator  jpnext  end-code
+  calculator  negate  end-calculator  jpnext,  end-code
 
 ( fln ?fln flnp1 ?flnp1 fexp f** fsqrt ?fsqrt )
 
 need calculator  need fdup  need f0<  need f<=
 
 code fln  ( F: r1 -- r2 )
-  calculator  ln  end-calculator  jpnext  end-code
+  calculator  ln  end-calculator  jpnext,  end-code
   \ XXX FIXME -- The ROM calculator checks that the argument is
   \ a positive non-zero number (address $3713). If not, it
   \ throws a BASIC error "invalid argument", what crashes the
@@ -471,7 +474,7 @@ code fln  ( F: r1 -- r2 )
   \ zero, an exception is thrown.
 
 code flnp1  ( F: r1 -- r2 )
-  calculator  one + fln  end-calculator  jpnext  end-code
+  calculator  one + fln  end-calculator  jpnext,  end-code
 
 : ?flnp1  ( F: r1 -- r2 )
   fdup f1 fnegate f<= #-46 ?throw fln  ;
@@ -479,13 +482,13 @@ code flnp1  ( F: r1 -- r2 )
   \ negative one, an exception is thrown.
 
 code fexp  ( F: r1 -- r2 )
-  calculator  exp  end-calculator  jpnext  end-code
+  calculator  exp  end-calculator  jpnext,  end-code
 
 code f**  ( F: r1 -- r2 )
-  calculator  **  end-calculator  jpnext  end-code
+  calculator  **  end-calculator  jpnext,  end-code
 
 code fsqrt  ( F: r1 -- r2 )
-  calculator  sqrt  end-calculator  jpnext  end-code
+  calculator  sqrt  end-calculator  jpnext,  end-code
   \ XXX FIXME -- when _r1_ is negative, the calculator issues
   \ "invalid argument" BASIC error, what crashes the system.  A
   \ safe alternative `?fsqrt` is provided.
@@ -499,19 +502,19 @@ code fsqrt  ( F: r1 -- r2 )
 need calculator
 
 code f0  ( F: -- r )
-  calculator  zero  end-calculator  jpnext  end-code
+  calculator  zero  end-calculator  jpnext,  end-code
 
 code f1  ( F: -- r )
-  calculator  one  end-calculator  jpnext  end-code
+  calculator  one  end-calculator  jpnext,  end-code
 
 code fhalf  ( F: -- r )
-  calculator  half  end-calculator  jpnext  end-code
+  calculator  half  end-calculator  jpnext,  end-code
 
 code fpi2/  ( F: -- r )
-  calculator  pi2/  end-calculator  jpnext  end-code
+  calculator  pi2/  end-calculator  jpnext,  end-code
 
 code f10  ( F: -- r )
-  calculator  ten  end-calculator  jpnext  end-code
+  calculator  ten  end-calculator  jpnext,  end-code
 
 ( (f>s )
 
@@ -522,7 +525,7 @@ code (f>s  ( -- n ) ( F: r -- )
   C5 c,  CD c, 2DA2 ,
     \ push bc
     \ call $2DA2 ; FP_TO_BC ROM routine
-  60 00 + c,  68 01 + c,  C1 c,  jppushhl
+  60 00 + c,  68 01 + c,  C1 c,  jppushhl,
     \ ld h,b
     \ ld l,c
     \ pop bc
@@ -534,11 +537,11 @@ code (f>s  ( -- n ) ( F: r -- )
 need calculator  need fnegate  need fdup  need (f>s  need f0<
 
 code frestack  ( F: r -- r' )
-  calculator  re-stack  end-calculator  jpnext end-code
+  calculator  re-stack  end-calculator  jpnext, end-code
   \ Restack an integer in full floating-point form.
 
 code b>f  ( b -- ) ( F: -- r )
-  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext  end-code
+  D9 c, E1 c, 78 05 + c, CD c, 2D28 , D9 c,  jpnext,  end-code
     \ exx
     \ pop hl
     \ ld a,l
@@ -547,7 +550,7 @@ code b>f  ( b -- ) ( F: -- r )
   \ XXX TODO -- test
 
 code u>f  ( u -- ) ( F: -- r )
-  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext  end-code
+  D9 c, C1 c, CD c, 2D2B , D9 c,  jpnext,  end-code
     \ exx
     \ pop bc
     \ call $2D2B ; STACK_BC ROM routine
@@ -584,7 +587,7 @@ code f!  ( fa -- ) ( F: r -- )
        hl pop  a m ld  hl incp
                e m ld  hl incp  d m ld  hl incp
                c m ld  hl incp  b m ld
-  exx  jpnext end-code
+  exx  jpnext, end-code
 
   \ doc{
   \
@@ -601,7 +604,7 @@ code f@  ( fa -- ) ( F: -- r )
               m e ld  hl incp  m d ld  hl incp
               m c ld  hl incp  m b ld
               2AB6 call  \ STK_STORE ROM routine
-  exx  jpnext end-code
+  exx  jpnext, end-code
 
   \ doc{
   \
@@ -651,22 +654,22 @@ need float  need f!  need f@
 need calculator
 
 code facos  ( F: r1 -- r2 )
-  calculator  acos  end-calculator  jpnext  end-code
+  calculator  acos  end-calculator  jpnext,  end-code
 
 code fasin  ( F: r1 -- r2 )
-  calculator  asin  end-calculator  jpnext  end-code
+  calculator  asin  end-calculator  jpnext,  end-code
 
 code fatan  ( F: r1 -- r2 )
-  calculator  atan  end-calculator  jpnext  end-code
+  calculator  atan  end-calculator  jpnext,  end-code
 
 code fcos  ( F: r1 -- r2 )
-  calculator  cos  end-calculator  jpnext  end-code
+  calculator  cos  end-calculator  jpnext,  end-code
 
 code fsin  ( F: r1 -- r2 )
-  calculator  sin  end-calculator  jpnext  end-code
+  calculator  sin  end-calculator  jpnext,  end-code
 
 code ftan  ( F: r1 -- r2 )
-  calculator  tan  end-calculator  jpnext  end-code
+  calculator  tan  end-calculator  jpnext,  end-code
 
 ( (f. f. )
 
@@ -677,7 +680,7 @@ code (f.  ( F: r -- )
     \ push bc
     \ call $2DE3  ; PRINT_FP ROM routine
     \ pop bc
-  jpnext  end-code
+  jpnext,  end-code
   \ Note: `exx` can no be used to preserve `bc`, the Forth IP,
   \ because the routine uses the alternative registers.  `bc`
   \ is saved on the stack instead.
@@ -720,7 +723,7 @@ need fdepth  need float  need float+  need .depth
 need calculator  need fdup  need fsgn  need f*  need f+
 
 code floor  ( F: r1 -- r2 )
-  calculator  int  end-calculator  jpnext  end-code
+  calculator  int  end-calculator  jpnext,  end-code
 
   \ doc{
   \
@@ -735,7 +738,7 @@ code floor  ( F: r1 -- r2 )
 
 
 code ftrunc  ( F: r1 -- r2 )
-  calculator  truncate  end-calculator  jpnext  end-code
+  calculator  truncate  end-calculator  jpnext,  end-code
 
   \ doc{
   \

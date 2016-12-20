@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-12-16
+" Updated:  2016-12-20
 
 " --------------------------------------------------------------
 " History
@@ -598,8 +598,8 @@ syn keyword soloforthAssembler end-asm
 syn keyword soloforthAssembler end-code
 syn keyword soloforthAssembler endm
 syn keyword soloforthAssembler fetchhl
-syn keyword soloforthAssembler jpnext
-syn keyword soloforthAssembler jppushhl
+syn keyword soloforthAssembler jpnext,
+syn keyword soloforthAssembler jppushhl,
 syn keyword soloforthAssembler macro
 syn keyword soloforthAssembler next
 syn keyword soloforthAssembler pusha
@@ -1062,29 +1062,32 @@ let b:current_syntax = "soloforth"
 "
 " 2015-07-22: Updated: `l/scr'.
 "
-" 2015-07-23: Updated: `fetchhl'. 'fetchhl,', 'next,', 'pushhl,',
-" 'pushde,'.
+" 2015-07-23: Updated: `fetchhl'. 'fetchhl,', 'next,',
+" 'pushhl,', 'pushde,'.
 "
 " 2015-07-24: Updated: `parse-name` instead of `parse-word`.
 "
 " 2015-08-11: Added `compile,`.
 "
 " 2015-08-12: Updated: `?terminal` -> `break-key?`. Added
-" `nfa>string`, `upper`, `uppers`, `trail`. Removed `-find`, `forget`.
-" More changes.
+" `nfa>string`, `upper`, `uppers`, `trail`. Removed `-find`,
+" `forget`.  More changes.
 "
-" 2015-08-14: Updated: `pushde` -> pushhlde`, `pushde,` -> pushhlde,`
+" 2015-08-14: Updated: `pushde` -> pushhlde`, `pushde,` ->
+" pushhlde,`
 "
-" 2015-08-15: Fixed: `blank`. Updated after the changes in the disk
-" buffers.
+" 2015-08-15: Fixed: `blank`. Updated after the changes in the
+" disk buffers.
 "
-" 2015-08-21: Updated with search order words defined in the kernel.
+" 2015-08-21: Updated with search order words defined in the
+" kernel.
 "
 " 2015-08-23: Updated.
 "
 " 2015-08-30: Updated: `pusha`.
 "
-" 2015-08-30: Updated: `asm`, `end-asm`, circular string buffer.
+" 2015-08-30: Updated: `asm`, `end-asm`, circular string
+" buffer.
 "
 " 2015-09-07: Added `don't` and `unnest`.
 "
@@ -1094,15 +1097,15 @@ let b:current_syntax = "soloforth"
 "
 " 2015-09-12: Updated, user area words.
 "
-" 2015-09-13: Updated: `umin`, `umax`; `require` and family renamed to
-" `need`.
+" 2015-09-13: Updated: `umin`, `umax`; `require` and family
+" renamed to `need`.
 "
 " 2015-09-19: Updated.
 "
 " 2015-09-22: Updated.
 "
-" 2015-09-24: Updated: number prefixes "#", "$" and "%"; `>number`,
-" `number?`.
+" 2015-09-24: Updated: number prefixes "#", "$" and "%";
+" `>number`, `number?`.
 "
 " 2015-09-26: Updated.
 "
@@ -1116,8 +1119,8 @@ let b:current_syntax = "soloforth"
 "
 " 2015-10-14: Updated: `catch`, `throw`, `abort"`, `?throw`.
 "
-" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed `@p`,
-" `!p`.
+" 2015-10-16: Updated: `2,`, `smove`, `2r@`, `roll`... Fixed
+" `@p`, `!p`.
 "
 " 2015-10-21: Upadted: `compile-only`.
 "
@@ -1173,8 +1176,9 @@ let b:current_syntax = "soloforth"
 "
 " 2016-03-15: Added `evaluate`.
 "
-" 2016-03-19: Added `there`, `system-bank`, `default-bank`, `bank`,
-" `bank-start`.  Renamed the words related to the names bank.
+" 2016-03-19: Added `there`, `system-bank`, `default-bank`,
+" `bank`, `bank-start`.  Renamed the words related to the names
+" bank.
 "
 " 2016-03-24: Added `:noname`.
 "
@@ -1183,14 +1187,17 @@ let b:current_syntax = "soloforth"
 "
 " 2016-04-18: Removed `not`.
 "
-" 2016-04-21: Updated the kernel words related to user data space.
+" 2016-04-21: Updated the kernel words related to user data
+" space.
 "
 " 2016-04-24: Add `2literal`, `2lit`, `docolon`, `code-field,`,
 " `noname?`, `last`, `lastxt`, `latestxt`.
 "
-" 2016-04-27: Remove `defined?`, add `?defined`. Add `.error-word`.
+" 2016-04-27: Remove `defined?`, add `?defined`. Add
+" `.error-word`.
 "
-" 2016-04-29: Add `nest-source`, `unnest-source`, `block>source`.
+" 2016-04-29: Add `nest-source`, `unnest-source`,
+" `block>source`.
 "
 " 2016-05-04: Add `channel`, `printing`, `/hold`; remove `out`.
 "
@@ -1198,20 +1205,21 @@ let b:current_syntax = "soloforth"
 "
 " 2016-10-16: Add `ms`.
 "
-" 2016-11-16: Update `hp` (formerly `np`) and related words. Add the
-" far-memory words defined in the kernel.
+" 2016-11-16: Update `hp` (formerly `np`) and related words.
+" Add the far-memory words defined in the kernel.
 "
 " 2016-11-20: Add `blocks`.
 "
-" 2016-11-23: Add `align` and `aligned`. Update bit-manipulation
-" words.
+" 2016-11-23: Add `align` and `aligned`. Update
+" bit-manipulation words.
 "
 " 2016-11-24: Add `-exit`.
 "
-" 2016-11-25: Add `[:`, `;]`. Fix keywords matched with `syn match`.
+" 2016-11-25: Add `[:`, `;]`. Fix keywords matched with `syn
+" match`.
 "
-" 2016-11-28: Add `lastblk`, Forth-2012 structures. Add `[needed]`,
-" `[unneeded]`, `?)`.
+" 2016-11-28: Add `lastblk`, Forth-2012 structures. Add
+" `[needed]`, `[unneeded]`, `?)`.
 "
 " 2016-12-03: Add `within`, `between`.
 "
@@ -1223,6 +1231,9 @@ let b:current_syntax = "soloforth"
 " 2016-12-08: Add `current-lastest`.
 "
 " 2016-12-16: Add `,"`.
+"
+" 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext` to
+" `jpnext,`.
 
 " --------------------------------------------------------------
 

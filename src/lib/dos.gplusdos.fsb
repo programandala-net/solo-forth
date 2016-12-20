@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608101950
+  \ Last modified: 201612201941
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,9 @@
   \
   \ 2016-08-10: Move `dosior>ior` to the DOS module of the
   \ kernel.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( plusd-in plusd-out )
 
@@ -47,7 +50,7 @@ need z80-asm  need --hook-codes--
 
 code plusd-in  ( -- )
   patch hook
-  jpnext
+  jpnext,
   end-code
 
   \ doc{
@@ -60,7 +63,7 @@ code plusd-in  ( -- )
 
 code plusd-out  ( -- )
   D3 c, #231 c,     \ out (231),a
-  jpnext
+  jpnext,
   end-code
 
   \ doc{
@@ -77,7 +80,7 @@ code plusd-out  ( -- )
 
 code plusd-in  ( -- )
   DB c, #231 c,     \ in a,(231)
-  jpnext
+  jpnext,
   end-code
 
   \ doc{
@@ -90,7 +93,7 @@ code plusd-in  ( -- )
 
 code plusd-out  ( -- )
   D3 c, #231 c,     \ out (231),a
-  jpnext
+  jpnext,
   end-code
 
   \ doc{
@@ -211,7 +214,7 @@ code set-drive  ( n -- )
   bc push  \ save the Forth IP
   l a ld  21 hook   \ select drive in a
   bc pop   next ix ldp#  \ restore the Forth registers
-  jpnext  end-code
+  jpnext,  end-code
   \ Set the current drive _n_ (1 or 2).
 
 ( delete-file )
@@ -225,7 +228,7 @@ code (delete-file)  ( -- ior )
   heraz hook  \ erase the file
   bc pop  next ix ldp#  \ restore the Forth registers
   af push
-  jpnext
+  jpnext,
   end-code
   \ Delete a disk file using the data hold in UFIA.
   \ Return a G+DOS _ior_.
@@ -277,7 +280,7 @@ code (>file)  ( -- ior )
     nc if  cfsm hook  then  \ close the file if no error
   then  bc pop  next ix ldp#  \ restore the Forth registers
   af push  \ ior
-  jpnext end-code
+  jpnext, end-code
   \ Save a file to disk using the data hold in UFIA
   \ and return error result _ior_.
 
@@ -316,7 +319,7 @@ code (<file)  ( -- ior )
 
   then  bc pop  next ix ldp#  af push
         \ restore the Forth registers and save the ior
-  jpnext  end-code
+  jpnext,  end-code
   \ Load a file from disk, using the data hold in UFIA, the
   \ file header and the parameters specified by the high level
   \ command. Return error result _ior_.
@@ -356,7 +359,7 @@ code (file>screen)  ( -- dosior )
 
   then  bc pop  next ix ldp#  af push
         \ restore the Forth registers and save the ior
-  jpnext  end-code -->
+  jpnext,  end-code -->
   \ Print a file on the screen, line by line, using the data
   \ hold in UFIA.
 
@@ -380,7 +383,7 @@ code .100  ( u -- )
   hl pop
   1744 call
   E7 out  \ page +D out
-  bc pop  next ix ldp#  jpnext
+  bc pop  next ix ldp#  jpnext,
   end-code
 
 ( <file-as-is )
@@ -405,7 +408,7 @@ code (<file-as-is)  ( -- ior )
   then  bc pop  next ix ldp#  af push
         \ Restore the Forth registers and save the ior.
 
-  jpnext  end-code
+  jpnext,  end-code
   \ Load a file from disk, using the data hold in UFIA, the
   \ file header and the parameters specified by the high level
   \ command.
@@ -465,7 +468,7 @@ code (cat)  ( n -- )
   E7 out  bc pop  next ix ldp#
     \ page +D out
     \ restore the Forth registers and exit
-  jpnext  end-code
+  jpnext,  end-code
   \ Show a catalogue of the current disk, of type _n_
   \ (2=compact; 4=detailed).  This word is the low-level common
   \ factor of all words that show disk catalogues.
@@ -505,7 +508,7 @@ code @dos  ( a -- n )
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
   de push
-  jpnext
+  jpnext,
   end-code
   \ Fetch the content of +D memory address.
 
@@ -538,7 +541,7 @@ code c!dos  ( b a -- )
   hl pop  de pop  e m ld
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  jpnext
+  jpnext,
   end-code
   \ Store b into the +D memory address a.
 
@@ -554,7 +557,7 @@ code !dos  ( n a -- )
   hl pop  de pop  e m ld  hl incp  d m ld
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  jpnext
+  jpnext,
   end-code
   \ Store _n_ into the +D memory address _a_.
 
@@ -576,7 +579,7 @@ code @dosvar  ( n1 -- n2 )
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
   de push
-  jpnext
+  jpnext,
   end-code
   \ Fetch the content _n2_ of G+DOS variable _n1_.
 
@@ -599,7 +602,7 @@ code c@dosvar  ( n -- b )
   \ E7 out  \ page +D out
   \ bc pop  next ix ldp#  \ restore the Forth registers
   \ de push
-  \ jpnext
+  \ jpnext,
 
   \ XXX NEW
   m a ld
@@ -626,7 +629,7 @@ code !dosvar  ( n1 n2 -- )
   e m ld  hl incp  d m ld
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  jpnext
+  jpnext,
   end-code
   \ Store _n1_ into the G+DOS variable _n2_.
 
@@ -646,7 +649,7 @@ code c!dosvar  ( b n -- )
   e m ld
   E7 out  \ page +D out
   bc pop  next ix ldp#  \ restore the Forth registers
-  jpnext
+  jpnext,
   end-code
   \ Store _b_ into the G+DOS variable _n_.
 

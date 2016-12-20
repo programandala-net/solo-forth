@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610101851
+  \ Last modified: 201612201949
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,6 +33,9 @@
   \
   \ 2016-10-10: Fix name of `applause`. Define `/sound` only
   \ once.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( /sound sound-register-port sound-write-port !sound )
 
@@ -174,7 +177,7 @@ code zplay  ( a -- )
             \ store the datum
           hl incp  e inc  bc pop  \ next
   step
-  bc pop  jpnext  end-code
+  bc pop  jpnext,  end-code
   \ Play a sound whose 14 bytes are stored at _a_.
   \ XXX FIXME -- no sound! maybe `outbc` has a bug in the
   \ assembler

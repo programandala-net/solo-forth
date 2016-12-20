@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201611231221
+  \ Last modified: 201612201948
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,9 @@
   \
   \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`, after the
   \ changes in the system.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -92,7 +95,7 @@ white paper-color brighty cconstant racket-color
 23264 constant bottom-line-attr
   \ address of the bottom left screen attribute
 
-code sync  ( -- )  78 c,  jpnext  end-code
+code sync  ( -- )  78 c,  jpnext,  end-code
   \ Z80 halt
 
 -->

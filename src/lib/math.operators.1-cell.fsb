@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612061117
+  \ Last modified: 201612201936
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,35 +26,62 @@
   \ Latest changes
 
   \ 2015: Add `within`, `between`, and common operators.
+  \
   \ 2015-08-12: Add `lshift`. Improve `2/`.
+  \
   \ 2015-08-14: Add `under+`, in Forth.
+  \
   \ 2015-11-01: Add `rshift` and faster `lshift`.
+  \
   \ 2015-11-13: Add `sqrt` (version by Wil Baden).
+  \
   \ 2015-12-15: Rewrote `under+` in Z80.
+  \
   \ 2015-12-21: Add `polarity`.
+  \
   \ 2015-12-22: Add `%` and `u%`.
+  \
   \ 2015-12-29: Add second version of `sqrt` (from Computer One
   \ Forth).
+  \
   \ 2016-03-20: Add `+under`, a variant of `under+`.
+  \
   \ 2016-04-05: Add `cell/`.
+  \
   \ 2016-04-07: Add `bits`, generic version of `pixels`.
+  \
   \ 2016-04-27: Add `sgn`, `<=>`, `either`, `neither`.
+  \
   \ 2016-04-28: Fix `<=>`. Add `0max`.
+  \
   \ 2016-05-01: Add `clshift`.
+  \
   \ 2016-05-02: Compact the blocks to save space. Remove `sgn`
   \ because `polarity` does the same already.
+  \
   \ 2016-07-14: Fix and complete credits of `any?`.
+  \
   \ 2016-07-29: Add `gcd`.
+  \
   \ 2016-10-16: Document `%`, `u%` and `gcd`.
+  \
   \ 2016-10-24: Fix description of `split`.
+  \
   \ 2016-10-24: Fix requiring `gcd`, `%` and `u%`.
+  \
   \ 2016-10-24: Add `u>ud`.
+  \
   \ 2016-11-14: Fix requiring `<=>`. Remove `sm/rem`, which is
   \ in the kernel. Move `8*` here from the assemblers.
+  \
   \ 2016-11-17: Use `?(` instead of `[if]`. Compact the module,
   \ saving one block.
+  \
   \ 2016-12-06: Simplify documentation of `between` and
   \ `within`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
 
 ( under+ +under )
 
@@ -72,7 +99,7 @@ code under+  ( n1|u1 x n2|u2 -- n3|u3 x )
   \ push hl
   \ push bc
   \ exx
-  jpnext  end-code  ?)
+  jpnext,  end-code  ?)
 
   \ doc{
   \
@@ -106,7 +133,7 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ push hl
   \ push bc
   \ exx
-  jpnext  end-code  ?)
+  jpnext,  end-code  ?)
 
   \ doc{
   \
@@ -258,7 +285,7 @@ code polarity  ( n -- -1 | 0 | 1 )
   CB c, 10 03 + c,  ED c, 62 c,
     \ rl d ; set carry if DE -ve
     \ sbc hl,hl ; HL=0 if DE +ve, or -1 if DE -ve
-  78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl
+  78 05 + c,  F6 c, 01 c,  68 07 + c,  jppushhl,
     \ ld a,l
     \ or 1
     \ ld l,a ; HL=1 or -1
@@ -318,7 +345,7 @@ code 0max  ( n -- n | 0 )
     \ rl h ; negative?
     \ jp c,false_
     \ rr h
-  jppushhl  end-code
+  jppushhl,  end-code
     \ jp push_hl
 
   \ Credit:
@@ -354,7 +381,7 @@ code lshift  ( x1 u -- x2 )
   begin  hl addp  0 unresolved @ >relresolve  step
   hl push
   exx
-  jpnext
+  jpnext,
 
   end-code
 
@@ -404,7 +431,7 @@ code rshift  ( x1 u -- x2 )
   begin  h srl  l rr  0 unresolved @ >relresolve  step
   hl push
   exx
-  jpnext
+  jpnext,
 
   end-code
 
@@ -500,7 +527,7 @@ code bits  ( ca len -- u )
     \ Note: `2swap` is needed because `begin again` and `if
     \ then` are not nested.
 
-  exx jppushhl end-code
+  exx jppushhl, end-code
 
   \ doc{
   \
@@ -525,7 +552,7 @@ code 2/  ( x1 -- x2 )
   E1 c,           \ pop hl
   CB c, 2C c,     \ sra h
   CB c, 1D c,     \ rr l
-  jppushhl        \ jp pushhl
+  jppushhl,       \ jp pushhl
   end-code  ?)
 
   \ doc{
@@ -785,7 +812,7 @@ code join  ( b1 b2 -- x )
     \ ld h,e
     \ pop de
     \ ld l,e
-  jppushhl  end-code  ?)
+  jppushhl,  end-code  ?)
     \ jp push_hl
 
   \ doc{

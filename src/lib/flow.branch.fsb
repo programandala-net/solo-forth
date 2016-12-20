@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611241513
+  \ Last modified: 201612201947
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,9 @@
   \ 2016-11-24: Move `+branch` from
   \ <flow.conditionals.negative.fsb>.  Add `-branch`. Improve
   \ documentation.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
   \ XXX TODO -- Compilation stack comments.
 
@@ -43,7 +46,7 @@ code -branch  ( n -- )
     \ jp nz,branch_xt   ; branch if negative
     \ inc bc
     \ inc bc            ; skip the inline branch address
-  jpnext  end-code  exit ?)
+  jpnext,  end-code  exit ?)
 
   \ doc{
   \
@@ -67,7 +70,7 @@ code +branch  ( n -- )
     \ jp z,branch_xt  ; branch if positive
     \ inc bc
     \ inc bc          ; skip the inline branch address
-  jpnext  end-code  exit ?)
+  jpnext,  end-code  exit ?)
 
   \ doc{
   \

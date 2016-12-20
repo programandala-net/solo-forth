@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201612201948
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,6 +22,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( clear-block )
 
@@ -119,7 +125,7 @@ code clear-block  ( column row width height -- )
     \ add hl,de
     \ ld sp,hl
 
-  exx  next ix ldp#  jpnext  end-code
+  exx  next ix ldp#  jpnext,  end-code
     \ exx         ; restore the Forth IP
     \ ld ix,next  ; restore IX
     \ jp next
@@ -207,7 +213,7 @@ code color-block  ( column row width height color -- )
     \ add hl,de
     \ ld sp,hl
 
-  exx  next ix ldp#  jpnext  end-code
+  exx  next ix ldp#  jpnext,  end-code
     \ exx         ; restore the Forth IP
     \ ld ix,next  ; restore IX
     \ jp next
@@ -365,6 +371,6 @@ code wipe-block  ( column row width height color -- )
   exx  next ix ldp#
     \ exx         ; restore the Forth IP
     \ ld ix,next  ; restore IX
-  jpnext  end-code
+  jpnext,  end-code
 
   \ vim: filetype=soloforth

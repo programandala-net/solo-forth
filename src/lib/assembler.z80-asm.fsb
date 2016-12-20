@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201846
+  \ Last modified: 201612201946
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,6 +58,7 @@
   \ `transient`.
   \
   \ 2016-12-20: Fix stack comments of `repeat` and `until'`.
+  \ Remove old `jpnext`, already commented out.
 
 ( z80-asm )
 
@@ -370,8 +371,6 @@ A0 m2 and  B0 m2 or  A8 m2 xor
 
   \ Macro to test 16-bit register for zero:
 : tstp  ( rp -- )  dup a ld 1+ or  ;
-
-  \ ; jpnext ( -- )  jpix  ; \ XXX OLD
 
 -->
 

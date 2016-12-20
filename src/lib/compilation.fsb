@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262248
+  \ Last modified: 201612201932
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,56 +26,94 @@
   \ History
 
   \ 2015-06-04: Add `[if] [else] [then]`, adapted from Afera.
+  \
   \ 2015-06-17: Add `[true]`, `[false]`.
+  \
   \ 2015-06-25: Finish `[if] [else] [then]`.
+  \
   \ 2015-10-22: Rename words that convert header addresses.
+  \
   \ 2015-10-24: Move `body>name`, `name>link`, `link>name` and
   \ `>>link` from the kernel.
+  \
   \ 2015-10-29: Move `smudge` and `smudged` from the kernel.
+  \
   \ 2015-11-13: Move `?pairs` from the kernel.
+  \
   \ 2016-03-19: Add `save-here` and `restore-here`.
+  \
   \ 2016-04-17: Add `name>>`.
+  \
   \ 2016-04-24: Add `]l`, `]2l`, `exec`, `eval`.
+  \
   \ 2016-04-24: Add `[const]`, `[2const]`, `[cconst]`.
+  \
   \ 2016-04-24: Move `cliteral` from the kernel.
+  \
   \ 2016-04-24: Move `n,` from module "tool.marker.fsb".
+  \
   \ 2016-04-25: Simplify `exec`, move `possibly` from the
   \ module "tool.marker.fsb".
+  \
   \ 2016-04-25: Move `n,`, `n@`, `n!` to the module
   \ "memory.misc.fsb".
+  \
   \ 2016-04-26: Fix `restore-here`. Add `name>interpret`,
   \ `name>compile`.  Move `current-latest` from the kernel,
   \ formerly called `latest`.
+  \
   \ 2016-04-27: Add `comp'`, `[comp']`. Move `warning` from the
-  \ kernel. Add `warn.throw`, `warn.message`, `warn-throw`
-  \ and common factors.
+  \ kernel. Add `warn.throw`, `warn.message`, `warn-throw` and
+  \ common factors.
+  \
   \ 2016-04-29: Add `string-parameter`.
+  \
   \ 2016-05-02: Join several blocks to save space.
+  \
   \ 2016-05-02: Move `[compile]` from the kernel.
+  \
   \ 2016-05-04: Compact the blocks.
+  \
   \ 2016-05-05: Update `s=` to `str=`.
+  \
   \ 2016-05-06: Move `current-latest` back to the kernel.
+  \
   \ 2016-05-07: Add `?(`, a simpler alternative to `[if]`.
+  \
   \ 2016-05-12: Fix requirements of `[cconst]`.
+  \
   \ 2016-05-13: Improve `[else]` with `refill`.
+  \
   \ 2016-05-14: Update: `evaluate` has been moved to the
   \ library.
+  \
   \ 2016-05-15: Update comment.
+  \
   \ 2016-05-17: Move `body>` and `>body` from the kernel.
+  \
   \ 2016-05-18: Fix `body>` and `>body`: their codes were
   \ exchanged.
+  \
   \ 2016-05-31: Update: `cliteral` has been moved to the
   \ kernel. Add `''` and `>>name`.
+  \
   \ 2016-06-01: Move `there` from the kernel. Update. Add
   \ `['']`.
+  \
   \ 2016-08-05: Fix requiring of `]l`, `]2l`, `exec` ,`eval`,
   \ `save-here` and `restore-here`. Compact the code of several
   \ blocks. Replace one usage of `[if]` with `?(`.
+  \
   \ 2016-11-23: Rename `c!toggle-bits` to `ctoggle`.
+  \
   \ 2016-11-24: Make `name<name` compatible with far memory.
+  \
   \ 2016-11-26: Improve `name>>` and `>>name`. Try `?warn` and
   \ related words, and improve their documentation. Fix
   \ `warn.throw`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
+  \ change in the kernel.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -148,7 +186,7 @@ need name>link
 ?\ : >>name  ( xtp -- nt )  cell+ cell+  ; exit
 
 [unneeded] >body
-?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl  end-code
+?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl,  end-code
   \ ( xt -- pfa )
   \ pop hl
   \ inc hl
@@ -157,7 +195,7 @@ need name>link
   \ jp pushhl
 
 [unneeded] body>
-?\ code body> E1 c, 2B c, 2B c, 2B c, jppushhl  end-code exit
+?\ code body> E1 c, 2B c, 2B c, 2B c, jppushhl,  end-code exit
   \ ( pfa -- xt )
   \ pop hl
   \ dec hl

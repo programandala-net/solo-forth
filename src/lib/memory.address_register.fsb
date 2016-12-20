@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131747
+  \ Last modified: 201612201937
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,13 +37,21 @@
 
   \ 2015-07-20: Copy the code from Z88 CamelForth. Start
   \ adapting it.
+  \
   \ 2015-07-21: Finish the adaption. Not tested yet.
+  \
   \ 2015-07-22: Let independent loading of the words.
+  \
   \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
   \ 2016-05-10: Compact the blocks. Fix `!a`, `!a+`, `c@a+`.
   \ Document.
+  \
   \ 2016-11-13: Use `jppushhl` instead of `jp pushhl`; improve
   \ comments.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
 
 ( a a! a@ )
 
@@ -60,7 +68,7 @@ variable a
   \
   \ }doc
 
-code a!  ( a -- )  E1 c, 22 c, a , jpnext  end-code
+code a!  ( a -- )  E1 c, 22 c, a , jpnext,  end-code
     \ pop hl
     \ ld (address_register),hl
     \ jp next
@@ -75,7 +83,7 @@ code a!  ( a -- )  E1 c, 22 c, a , jpnext  end-code
   \
   \ }doc
 
-code a@  ( -- a )  2A c, a , jppushhl  end-code
+code a@  ( -- a )  2A c, a , jppushhl,  end-code
     \ ld hl,(address_register)
     \ jp pushhl
 
@@ -95,7 +103,7 @@ need a  need ?(
 
 [unneeded] !a ?(
 code !a  ( x -- )  D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
-                   jpnext  end-code ?)
+                   jpnext,  end-code ?)
     \ pop de
     \ ld hl,(address_register)
     \ ld (hl),e
@@ -115,7 +123,7 @@ code !a  ( x -- )  D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
 
 [unneeded] @a ?(
 code @a  ( -- x )  2A c, a , 5E c, 23 c, 66 c, 68 03 + c,
-                   jppushhl  end-code ?)
+                   jppushhl,  end-code ?)
     \ ld hl,(address_register)
     \ ld e,(hl)
     \ inc hl
@@ -134,7 +142,7 @@ code @a  ( -- x )  2A c, a , 5E c, 23 c, 66 c, 68 03 + c,
   \ }doc
 
 [unneeded] c!a ?(
-code c!a  ( c -- )  D1 c, 2A c, a , 70 03 + c, jpnext
+code c!a  ( c -- )  D1 c, 2A c, a , 70 03 + c, jpnext,
                     end-code ?)
     \ pop de
     \ ld hl,(address_register)
@@ -152,7 +160,7 @@ code c!a  ( c -- )  D1 c, 2A c, a , 70 03 + c, jpnext
   \ }doc
 
 [unneeded] c@a ?(
-code c@a  ( -- c )  2A c, a , 6E c, 26 c, 00 c, jppushhl
+code c@a  ( -- c )  2A c, a , 6E c, 26 c, 00 c, jppushhl,
                     end-code ?)
     \ ld hl,(address_register)
     \ ld l,(hl)
@@ -176,7 +184,7 @@ need a  need ?(
 [unneeded] !a+ ?(
 code !a+  ( x -- )
   D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c, 23 c, 22 c, a ,
-  jpnext  end-code ?)
+  jpnext,  end-code ?)
     \ pop de
     \ ld hl,(address_register)
     \ ld (hl),e
@@ -199,7 +207,7 @@ code !a+  ( x -- )
 
 [unneeded] @a+ ?(
 code @a+  ( -- x )
-  2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a , D5 c, jpnext
+  2A c, a , 5E c, 23 c, 56 c, 23 c, 22 c, a , D5 c, jpnext,
   end-code ?)
     \ ld hl,(address_register)
     \ ld e,(hl)
@@ -224,7 +232,7 @@ code @a+  ( -- x )
 
 [unneeded] c!a+ ?(
 code c!a+  ( c -- )  D1 c, 2A c, a , 70 03 + c, 23 c,
-                     22 c, a , jpnext  end-code ?)
+                     22 c, a , jpnext,  end-code ?)
     \ pop de
     \ ld hl,(address_register)
     \ ld (hl),e
@@ -245,7 +253,7 @@ code c!a+  ( c -- )  D1 c, 2A c, a , 70 03 + c, 23 c,
 
 [unneeded] c@a+ ?(
 code c@a+  ( -- c )  2A c, a , 5E c, 23 c, 16 c, 00 c,
-                     22 c, a , D5 c, jpnext  end-code ?)
+                     22 c, a , D5 c, jpnext,  end-code ?)
     \ ld hl,(address_register)
     \ ld e,(hl)
     \ inc hl

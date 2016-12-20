@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201910
+  \ Last modified: 201612201950
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,7 +38,8 @@
   \ 2016-12-20: Rewrite `ms`, after the v.Forth version.
   \ Rewrite `pause`. Add `do-pause`. Move drafts and variants
   \ of `ms` and `pause` to the development archive, to be
-  \ reused in the future.
+  \ reused in the future.  Rename `jpnext` to `jpnext,` after
+  \ the change in the kernel.
 
 ( seconds ms )
 
@@ -55,14 +56,14 @@
 
 [unneeded] ms ?exit
 
-need z80-asm
+need z80-asm,
 
 code ms  ( u -- )
-  de pop  de tstp nz if
-    begin  #171 a ld#  begin  nop a dec  z until
-           de decp  de tstp
-    z until
-  then  jpnext  end-code
+  d pop, d tstp, nz? rif
+    rbegin  #171 a ld#,  rbegin  nop, a dec,  z? runtil
+           d decp,  d tstp,
+    z? runtil
+  rthen  jpnext,  end-code
 
   \ Credit:
   \ Code adapted from v.Forth.
@@ -178,7 +179,7 @@ need z80-asm,
 code do-pause ( u -- )
   d pop, b push,
   rbegin  halt, d decp, d tstp,  z? runtil
-  b pop, jpnext  end-code  exit ?)
+  b pop, jpnext,  end-code  exit ?)
 
   \ XXX TODO -- multitasking
 

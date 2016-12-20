@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201612201933
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,9 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "COMMON", after the new convention.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
+  \ change in the kernel.
 
 ( array> 2array> )
 
@@ -36,7 +39,7 @@ need ?(
 
 [unneeded] array> ?(
 code array>  ( n a1 -- a2 )
-  D1 c, E1 c, 29 c, 19 c, jppushhl  end-code  exit ?)
+  D1 c, E1 c, 29 c, 19 c, jppushhl,  end-code  exit ?)
   \ pop de
   \ pop hl
   \ add hl,hl
@@ -63,7 +66,7 @@ code array>  ( n a1 -- a2 )
 
 [unneeded] 2array> ?(
 code 2array>  ( n a1 -- a2 )
-  D1 c, E1 c, 29 c, 29 c, 19 c, jppushhl  end-code  exit ?)
+  D1 c, E1 c, 29 c, 29 c, 19 c, jppushhl,  end-code  exit ?)
   \ pop de
   \ pop hl
   \ add hl,hl

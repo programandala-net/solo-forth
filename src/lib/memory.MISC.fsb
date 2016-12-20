@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612082019
+  \ Last modified: 201612201944
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,6 +66,9 @@
   \ "MISC" after the new convention. Rename `exchange` to
   \ `!exchange`. Add `c!exchange`. Add new `exchange` and
   \ `cexchange`.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( -! c+! c-! )
 
@@ -81,7 +84,7 @@ code -!  ( n|u a -- )
     \ sub a,e
     \ ld (hl),a
     \ inc hl
-  7E c, 98 02 + c, 70 07 + c, jpnext  end-code ?)
+  7E c, 98 02 + c, 70 07 + c, jpnext,  end-code ?)
     \ ld a,(hl)
     \ sbc a,d
     \ ld (hl),a
@@ -98,7 +101,7 @@ code -!  ( n|u a -- )
 [unneeded] c+! ?(
 
 code c+!  ( c ca -- )
-  E1 c, D1 c, 78 03 + c, 86 c, 70 07 + c, jpnext  end-code ?)
+  E1 c, D1 c, 78 03 + c, 86 c, 70 07 + c, jpnext,  end-code ?)
     \ pop hl
     \ pop de
     \ ld a,e
@@ -117,7 +120,7 @@ code c+!  ( c ca -- )
 [unneeded] c-! ?(
 
 code c-!  ( c ca -- )
-  E1 c, D1 c, 7E c, 90 03 + c, 70 07 + c, jpnext  end-code ?)
+  E1 c, D1 c, 7E c, 90 03 + c, 70 07 + c, jpnext,  end-code ?)
     \ pop hl
     \ pop de
     \ ld a,(hl)
@@ -136,7 +139,7 @@ code c-!  ( c ca -- )
 ( c1+! c1-! 1+! 1-! )
 
 [unneeded] c1+!
-?\  code c1+!  ( ca -- )  E1 c, 34 c, jpnext  end-code  exit
+?\  code c1+!  ( ca -- )  E1 c, 34 c, jpnext,  end-code  exit
     \ pop hl
     \ inc (hl)
     \ jp next
@@ -150,7 +153,7 @@ code c-!  ( c ca -- )
   \ }doc
 
 [unneeded] c1-!
-?\  code c1-!  ( ca -- )  E1 c, 35 c, jpnext  end-code  exit
+?\  code c1-!  ( ca -- )  E1 c, 35 c, jpnext,  end-code  exit
     \ pop hl
     \ dec (hl)
     \ jp next
@@ -169,7 +172,7 @@ need ?(
 
 code 1+!  ( a -- )
   E1 c, 5E c, 23 c, 56 c, 13 c, 70 02 + c, 2B c, 70 03 + c,
-  jpnext end-code  ?)
+  jpnext, end-code  ?)
     \ pop hl
     \ ld e,(hl)
     \ inc hl
@@ -192,7 +195,7 @@ code 1+!  ( a -- )
 
 code 1-!  ( a -- )
   E1 c, 5E c, 23 c, 56 c, 1B c, 70 02 + c, 2B c, 70 03 + c,
-  jpnext end-code  ?)
+  jpnext, end-code  ?)
     \ pop hl
     \ ld e,(hl)
     \ inc hl
@@ -372,7 +375,7 @@ need ?(
 
 [unneeded] c@and ?(
 code c@and  ( b1 ca -- b2 )
-  E1 c, D1 c, 78 03 + c, A6 c, C3 c, pusha , jpnext
+  E1 c, D1 c, 78 03 + c, A6 c, C3 c, pusha , jpnext,
     \ pop hl
     \ pop de
     \ ld a,e
@@ -392,20 +395,20 @@ end-code  exit ?)
   \ XXX OLD -- `cset` is in the kernel
   \ [unneeded] cset ?(
   \ code cset  ( b ca -- )
-  \   hl pop  de pop  e a ld  m or  a m ld  jpnext
+  \   hl pop  de pop  e a ld  m or  a m ld  jpnext,
   \   end-code  exit ?)
   \   \ Set the bits at _ca_ specified by the bitmask _b_.
 
   \ XXX OLD -- `creset` is in the kernel
   \ [unneeded] creset ?(
   \ code creset  ( b ca -- )
-  \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext
+  \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext,
   \   end-code  exit ?)
   \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
 [unneeded] ctoggle ?(
 code ctoggle  ( b ca -- )
-  E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext
+  E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext,
 end-code  exit ?)
     \ pop hl
     \ pop de

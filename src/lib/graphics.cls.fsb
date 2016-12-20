@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201612201942
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,6 +22,12 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
 
 ( cls-chars0 )
 
@@ -52,7 +58,7 @@ code cls-chars0  ( -- )
                   3F a ld#  h cp  z until
           bc pop  step
 
-  bc pop  jpnext
+  bc pop  jpnext,
 
   end-code
 
@@ -86,7 +92,7 @@ code cls-chars1  ( -- )
 
   step
 
-  bc pop  jpnext  end-code
+  bc pop  jpnext,  end-code
 
 ( horizontal-curtain )
 
@@ -116,7 +122,7 @@ code horizontal-curtain  ( b -- )
                   bc pop  de incp  hl decp  step
           bc pop  step
 
-  bc pop  jpnext
+  bc pop  jpnext,
 
   end-code
 
@@ -152,6 +158,6 @@ code vertical-curtain  ( b -- )
 
           hl pop  de pop  bc pop  de incp  hl decp  step
 
-  bc pop  jpnext  end-code
+  bc pop  jpnext,  end-code
 
   \ vim: filetype=soloforth

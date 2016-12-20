@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605071939
+  \ Last modified: 201612201938
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,9 @@
   \ Latest changes
 
   \ 2016-05-07: Improve documentation. Compact the blocks.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
+  \ to `jpnext,`, after the change in the kernel.
 
 ( @p !p )
 
@@ -39,7 +42,7 @@ code @p  ( a -- b )
     \ ld c,l
     \ ld b,h
     \ in l,(c)
-  C1 c,  26 c, 00 c,  jppushhl  end-code
+  C1 c,  26 c, 00 c,  jppushhl,  end-code
     \ pop bc
     \ ld h,0x00
     \ jp pushhl
@@ -63,7 +66,7 @@ code !p  ( b a -- )
     \ ld c,l
     \ ld b,h
     \ out (c),e
-  C1 c,  jpnext  end-code
+  C1 c,  jpnext,  end-code
     \ pop bc
     \ jp next
 

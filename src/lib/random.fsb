@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612122339
+  \ Last modified: 201612201939
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,9 @@
   \ of `randomize` and `randomize0`.
   \
   \ 2016-12-12: Fix needing of `-1|1` and `randomize`.
+  \
+  \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
+  \ change in the kernel.
 
 ( rnd random )
 
@@ -95,7 +98,7 @@ code fast-rnd  ( -- u )
     \ inc hl
   os-seed sthl
     \ ld (seed),hl
-  jppushhl   end-code
+  jppushhl,   end-code
 
 : fast-random  ( n -- 0..n-1 )  fast-rnd um* nip  ;
 
