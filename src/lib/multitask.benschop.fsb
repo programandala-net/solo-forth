@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201605171738
+  \ Last modified: 201612201600
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,8 +32,13 @@
   \ History
 
   \ 2016-05-17: Start.
+  \
+  \ 2016-12-20: Move the `(wait)` user variable from the
+  \ kernel.
 
 ( benschop-multitasker )
+
+need user  user (wait)  ' noop (wait) !
 
 code switch
   rptr ldhl h push d push h clr sp addp exde uptr
@@ -42,7 +47,13 @@ code switch
   h inc m e ld h inc  m d ld h inc uptr sthl  exde ldsp
   d pop h pop rptr  sthl jpix end-code
 
-27028 constant uptr  variable task-link  variable first-task
+27028 constant uptr
+variable task-link
+variable first-task
+
+-->
+
+( benschop-multitasker )
 
 : task:  ( "name" -- )
   create here $243 + , ( eerste adres ip)

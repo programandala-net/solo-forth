@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612182033
+; Last modified: 201612201558
 
 include version.z80s
 
@@ -752,9 +752,9 @@ sp0_init_value:                               ; +$00
 rp0_init_value:                               ; +$02
   ; `$14 +origin`
   dw return_stack_bottom
-paren_wait_init_value:                        ; +$04 ; XXX OLD
+                                              ; +$04 ; XXX OLD
   ; `$16 +origin`
-  dw noop_
+  dw $0000
 width_init_value:                             ; +$06
   ; `$18 +origin`
   dw max_word_length
@@ -5579,21 +5579,10 @@ do_user:
   db $02
 
 ; ----------------------------------------------
-  _user_variable_header paren_wait_,'(WAIT)'
+; XXX REMARK -- free user variable
+; XXX TODO -- move the rest of user variables
 
-; XXX TMP -- from Spectrum Forth-83.
-; XXX TODO --
-
-; doc{
-;
-; (wait)  ( -- a )
-;
-; User variable that holds the xt of a word to be executed by
-; some words that accept user input, during multitasking.
-;
-; }doc
-
-  db $04
+  ; db $04
 
 ; ----------------------------------------------
   _user_variable_header width_,'WIDTH'
