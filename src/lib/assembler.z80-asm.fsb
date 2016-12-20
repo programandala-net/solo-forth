@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081412
+  \ Last modified: 201612201846
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,6 +56,8 @@
   \
   \ 2016-12-08: Calculate the memory used, required by
   \ `transient`.
+  \
+  \ 2016-12-20: Fix stack comments of `repeat` and `until'`.
 
 ( z80-asm )
 
@@ -314,7 +316,8 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 : again  (  dest cs-id -- )  18 until  ;
   \ compile `jr`
 
-: repeat  (  dest cs-id1 orig cs-id2 )  2swap again 2- then  ;
+: repeat  2swap again 2- then  ;
+  \ (  dest cs-id1 orig cs-id2 -- )
 
 : step    ( dest cs-id -- )  10 until  ;  -->
   \ compile `djnz`
@@ -337,7 +340,7 @@ E2 constant pe' EA constant po' F2 constant m'  FA constant p'
 
 : while'  (  op -- orig cs-id )  if' 2+  ;
 
-: until'  (  cs-id op -- )  c, 09 ?pairs <resolve  ;
+: until'  (  dest cs-id op -- )  c, 09 ?pairs <resolve  ;
 
 : again'  (  cs-id -- )  C3 until'  ;
 

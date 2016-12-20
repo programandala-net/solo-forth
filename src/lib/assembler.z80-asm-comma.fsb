@@ -30,14 +30,14 @@
   \ improved the Spectrum Forth-83 version for Solo Forth,
   \ 2015, 2016.
 
-  \ -------------------------------------------------------------
+  \ -----------------------------------------------------------
   \ License
 
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
-  \ -------------------------------------------------------------
+  \ -----------------------------------------------------------
   \ History
 
   \ 2015-12-25: First changes:
@@ -83,8 +83,12 @@
   \ 2016-12-06: Rename `?jr-range` to `?rel` and make it
   \ consume its argument, in order to reuse it in the future
   \ implementation of local labels.
+  \
+  \ 2016-12-20: Fix stack comments of `rrepeat` and `auntil`.
+  \ Fix `jp>jr` to manage also unconditional jumps. Factor
+  \ `?call` with `?jp`.  Fix `relse`, `rwhile` and `runtil`.
 
-  \ -------------------------------------------------------------
+  \ -----------------------------------------------------------
   \ XXX TODO
 
   \ - Combine changes 2..4 with the previous version.
@@ -191,11 +195,6 @@ DD constant ix-op  FD constant iy-op
 
   \ XXX FIXME ftap
 
-  \ XXX OLD -- `CD m5 call,`
-  \ `call,` is defined in the kernel
-  \ XXX OLD -- `C3 m5 jp,`
-  \ `jp,` is defined in the kernel
-
 00 m1 nop, 02 m3 stap, 03 m3 incp, 04 m3 inc, 05 m3 dec, 07 m1
 rlca, 08 m1 exaf, 09 m3 addp, 0A m3 ftap, 0B m3 decp, 0F m1
 rrca, 10 m9 djnz, 17 m1 rla, 18 m9 jr,  1F m1 rra, 22 m5 sthl,
@@ -265,27 +264,29 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
 ( z80-asm, )
 
-  \ Conditions
-
-  \ Conditions are Z80 opcodes for the required absolute jump
-  \ instruction.
+  \ Conditions (Z80 opcodes for the required absolute jump
+  \ instruction)
 
 CA constant z?  C2 constant nz? DA constant c? D2 constant nc?
 EA constant pe? E2 constant po? FA constant m? F2 constant p?
 
-: jp>jr  ( op1 -- op2 )  dup nc? > #-273 ?throw  A2 -  ;
-  \ Convert an absolute-jump condition to a relative-jump
-  \ condition.  Throw error #-273 if the condition is
+: jp>jr  ( op1 -- op2 )
+  dup C3 =  if  drop 18 exit  then
+  dup nc? > #-273 ?throw  A2 -  ;
+  \ Convert an absolute-jump opcode to its relative-jump
+  \ equivalent.  Throw error #-273 if the jump condition is
   \ invalid.
+  \
+  \ Note: Opcodes: $C3 is `jp`; $18 is `jr`.
 
 : ?ret,  ( op -- )  2- c,  ;
   \ Conditional ret
 
-: ?call,  ( a op -- )  2+ c, ,  ;
-  \ Conditional call
-
 : ?jp,  ( a op -- )  c, ,  ;
   \ Conditional absolute jump
+
+: ?call,  ( a op -- )  2+ ?jp,  ;
+  \ Conditional call
 
 : ?jr,  ( a op -- )  jp>jr (jr,)  ;
   \ Conditional relative jump
@@ -315,13 +316,13 @@ EA constant pe? E2 constant po? FA constant m? F2 constant p?
   \ Convert a condition flag (actually, an absolute jump
   \ opcode) to its opposite.
   \
-  \ Examples: `c?` to `nc?` (jpc to jpnc); nz? to z? (jpnz to
-  \ jpz); etc.
+  \ Examples: `c?` to `nc?`; `nz?` to `z?`, etc.
 
 : rahead  ( -- orig  )  18 , >rmark  ;
   \ Create a relative branch forward.
   \ Leave the origin address of a forward relative branch
   \ just compiled, to be resolved by `>rresolve`.
+  \
   \ Note: $18 is the Z80 opcode for `jr`.
 
 : rif  ( op -- orig cs-id )  jp>jr inverse-cond , >rmark 0A  ;
@@ -329,27 +330,29 @@ EA constant pe? E2 constant po? FA constant m? F2 constant p?
 : rthen  ( orig cs-id -- )  0A ?pairs >rresolve  ;
 
 : relse  ( orig cs-id -- cs-id )
-  0A ?pairs 18 rif rot swap rthen 0A  ;
-  \ Note: $18 is the opcode of `jr`.
+  0A ?pairs C3 rif rot swap rthen 0A  ;
+  \ Note: $C3 is the opcode of `jp`.
 
 : rbegin  (  -- dest cs-id )  <mark 0B  ;
 
-: rwhile  (  op -- orig cs-id )  jp>jr rif 2+  ;
+: rwhile  (  op -- orig cs-id )  rif 2+  ;
 
-: runtil  (  dest cs-id op -- )  , 0B ?pairs <rresolve  ;
+: runtil  (  dest cs-id op -- )  jp>jr , 0B ?pairs <rresolve  ;
   \ compile a relative conditional jump
 
 : ragain  (  dest cs-id -- )  18 runtil  ;
   \ compile `jr`
-  \ Note: $18 is the opcode of `jr`.
+  \
+  \ Note: $C3 is the opcode of `jp`.
 
-: rrepeat  (  dest cs-id1 orig cs-id2 )
+: rrepeat  (  dest cs-id1 orig cs-id2 -- )
   2swap ragain 2- rthen  ;
 
 : rstep    ( dest cs-id -- )  10 runtil  ;  -->
   \ compile `djnz`
+  \
   \ Note: $10 is the Z80 opcode for `djnz`.
-
+/
 ( z80-asm, )
 
   \ Control structures with absolute jumps
@@ -366,11 +369,12 @@ EA constant pe? E2 constant po? FA constant m? F2 constant p?
 
 : awhile  (  op -- orig cs-id )  aif 2+  ;
 
-: auntil  (  cs-id op -- )  c, 09 ?pairs <resolve  ;
+: auntil  (  dest cs-id op -- )  c, 09 ?pairs <resolve  ;
   \ Compile an absolute conditional jump.
 
 : aagain  (  cs-id -- )  C3 auntil  ;
   \ Compile an absolute jump.
+  \
   \ Note: $C3 is the opcode of `jp`
 
 : arepeat  (  dest cs-id1 orig cs-id2 )
@@ -391,8 +395,9 @@ EA constant pe? E2 constant po? FA constant m? F2 constant p?
   \ XXX TODO -- use the heap instead, when implemented
 
 : unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
-  \ Return the address of the _n_ unresolved address.  Note:
-  \ The address returned by `allocate-string` is directly
+  \ Return the address of the _n_ unresolved address.
+  \
+  \ Note: The address returned by `allocate-string` is directly
   \ compiled into `unresolved`. This saves a definition.  `dup`
   \ and `drop` are used to pass the stack check at the end of
   \ the definition.
