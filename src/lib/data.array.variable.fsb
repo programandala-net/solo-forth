@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612190135
+  \ Last modified: 201612200221
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,8 @@
   \ 2016-11-22: First version.
   \
   \ 2016-12-19: Fix requirement of `2avariable`.
+  \
+  \ 2016-12-20: Fix and improve documentation.
 
 ( avariable 2avariable cavariable )
 
@@ -62,11 +64,11 @@ need ?(
   \
   \ `name` execution:
   \
-  \ name  ( n -- x )
+  \ name  ( n -- a )
   \
-  \ Return contents _x_ of element _n_.
+  \ Return addreess _a_ of element _n_.
   \
-  \ See: `ato`, `+ato`.
+  \ See: `2variable`, `cvariable`.
   \
   \ }doc
 
@@ -90,6 +92,8 @@ need ?(
   \
   \ Return address _a_ of element _n_.
   \
+  \ See: `avariable`, `cvariable`.
+  \
   \ }doc
 
 [unneeded] cavariable ?(  need align
@@ -110,6 +114,8 @@ need ?(
   \ name  ( n -- ca )
   \
   \ Return address _ca_ of element _n_.
+  \
+  \ See: `avariable`, `2variable`.
   \
   \ }doc
 
