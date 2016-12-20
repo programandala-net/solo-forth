@@ -11,5 +11,5 @@ version_patch:                equ 0
 
 version_prerelease:           equ 165 ; zero if none
 
-version_build_high_part:      equ $0134
+version_build_high_part:      equ $0133
 version_build_low_part:       equ $A2C4  ; build 20161220
