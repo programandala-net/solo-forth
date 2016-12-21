@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201610111959
+  \ Last modified: 201612212311
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,6 +31,8 @@
   \ 2016-04-24: Add `udg[` and `0udg[`.
   \
   \ 2016-10-11: Add `udg-row[`.
+  \
+  \ 2016-12-21: Add `make-block-characters`.
 
 ( 0udg! udg! 0udg: udg: )
 
@@ -328,6 +330,44 @@ variable udg-row-first-udg
   \
   \ ]udg-row
   \ ----
+  \
+  \ }doc
+
+( make-block-characters )
+
+need z80-asm,
+
+code make-block-characters  ( a -- )
+  h pop, b push,
+  #128 a ld#,  \ first char is #128
+  rbegin
+    af push, a b ld, 0B3B call, af pop, a inc,
+  #144 cp#, nz? runtil  \ last char is #143
+  b pop, jpnext, end-code
+
+  \ Note: $0B3B is a secondary entry point to the PO-GR-1 ROM
+  \ routine ($0B38), in order to force a non-default value of
+  \ the HL register, which holds the destination address, which
+  \ holds the destination address.
+
+  \ doc{
+  \
+  \ make-block-characters  ( a -- )
+  \
+  \ Make the bit patterns of the 16 ZX Spectrum block
+  \ characters, originally assigned to character codes
+  \ 128..143, and store them (128 bytes in total) from address
+  \ _a_.
+  \
+  \ This word is provided for easier conversion of BASIC
+  \ programs that use the original block characters. These
+  \ characters are part of the ZX Spectrum character set, but
+  \ they are not included in the ROM font. Instead, their
+  \ bitmaps are built on the fly by the BASIC ROM printing
+  \ routine. In Solo Forth there's no such restriction, and
+  \ characters 128..255 can be redefined by the user.
+  \
+  \ This word is written in Z80 and uses 18 B of code space.
   \
   \ }doc
 
