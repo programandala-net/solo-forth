@@ -35,15 +35,15 @@
 
 ( ud.r u.r ud. )
 
-  \ Credit:
-  \
-  \ Code adapted from Spectrum Forth-83.
-
 need ?(
 
 [unneeded] ud.r ?(
 : ud.r  ( ud n -- )  >r <# #s #> r> over - 0 max spaces type  ;
 exit ?)
+
+  \ Credit:
+  \
+  \ Code adapted from Spectrum Forth-83.
 
   \ doc{
   \
@@ -59,7 +59,11 @@ exit ?)
 
 [unneeded] u.r ?(  need u>ud  need ud.r
 : u.r  ( u n -- )  >r u>ud r> ud.r  ;  exit ?)
-  
+
+  \ Credit:
+  \
+  \ Code adapted from Spectrum Forth-83.
+
   \ doc{
   \
   \ u.r  ( u n -- )
@@ -81,6 +85,10 @@ exit ?)
 
 [unneeded] ud. ?(  need ud.r
 : ud.  ( ud -- )  0 ud.r space  ;  exit ?)
+
+  \ Credit:
+  \
+  \ Code adapted from Spectrum Forth-83.
 
   \ doc{
   \

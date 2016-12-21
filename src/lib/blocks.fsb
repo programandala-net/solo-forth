@@ -284,7 +284,7 @@ need ?( [unneeded] lineload ?(
   \ is a set of blocks that are loaded as a whole. They don't
   \ have block headers except the first one, which contains
   \ "name", and therefore they don't have internal requisites.
-  \ Applications dont't need `-->` or any other word to change
+  \ Applications don't need `-->` or any other word to change
   \ the loading: The loading starts from the first block of the
   \ disk that has "name" in its header, and continues until the
   \ last block of the disk or until `end-app` is executed.

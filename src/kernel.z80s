@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612202009
+; Last modified: 201612202034
 
 include version.z80s
 
@@ -1849,6 +1849,9 @@ endif
 
   dw get_order_,over_,swap_,one_plus_,set_order_
   dw exit_
+
+  ; XXX TODO -- `over swap` could be replaced with `nup`, which is in
+  ; the library
 
   ; XXX TODO -- in Gforth:
   ; : also  ( -- )  context @ >order  ;
