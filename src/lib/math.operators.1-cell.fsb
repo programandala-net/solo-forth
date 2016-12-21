@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201936
+  \ Last modified: 201612212356
 
   \ -----------------------------------------------------------
   \ Description
@@ -82,6 +82,8 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
   \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2016-12-21: Add `odd?`. Rewrite `8*` in Z80.
 
 ( under+ +under )
 
@@ -256,9 +258,21 @@ need ?(
   \
   \ }doc
 
-( 8* polarity <=> )
+( odd? 8* polarity <=> )
 
-[unneeded] 8* ?\ : 8*   ( n1 -- n2 )  2* 2* 2*  ; exit
+[unneeded] odd? ?\ : odd?  ( n -- f )  1 and  ;  exit
+
+need ?(
+
+[unneeded] 8* ?(
+
+code 8*  ( n1 -- n2 )
+  e1 c, 29 c, 29 c, 29 c, jppushhl, end-code  exit ?)
+  \ pop hl
+  \ add hl,hl
+  \ add hl,hl
+  \ add hl,hl
+  \ _jp_pushhl
 
   \ doc{
   \
@@ -268,11 +282,11 @@ need ?(
   \ most-significant bit, filling the vacated least-significant
   \ bit with zero.
   \
-  \ This is the same as `3 lshift`.
+  \ This is the same as `3 lshift` or `2* 2* 2*`, but faster.
+  \
+  \ See: `2*`, `lshift`.
   \
   \ }doc
-
-need ?(
 
 [defined] polarity ?(
 
