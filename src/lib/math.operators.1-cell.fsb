@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612212356
+  \ Last modified: 201612222116
 
   \ -----------------------------------------------------------
   \ Description
@@ -84,6 +84,8 @@
   \ to `jpnext,`, after the change in the kernel.
   \
   \ 2016-12-21: Add `odd?`. Rewrite `8*` in Z80.
+  \
+  \ 2016-12-22: Add `ever?`.
 
 ( under+ +under )
 
@@ -258,9 +260,11 @@ need ?(
   \
   \ }doc
 
-( odd? 8* polarity <=> )
+( odd? even? 8* polarity <=> )
 
-[unneeded] odd? ?\ : odd?  ( n -- f )  1 and  ;  exit
+[unneeded] odd?  ?\ : odd?   ( n -- f )  1 and     ;  exit
+[unneeded] even? ?\ : even?  ( n -- f )  1 and 0=  ;  exit
+  \ XXX TODO -- write in Z80
 
 need ?(
 
