@@ -266,11 +266,6 @@ ____
 
 .2016-12-22:
 
-Factor `parse-char esc-char>chars` (used 5 times) to `: parse-esc-char>chars
-parse-char esc-char>chars ;`. At the moment this would save only one byte.
-
-.2016-12-22:
-
 Rewrite `parse-esc-string` to use case-sensitive characters after the
 backslash, after standard Forth.
 

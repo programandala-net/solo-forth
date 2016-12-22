@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-12-20
+" Updated:  2016-12-22
 
 " --------------------------------------------------------------
 " History
@@ -966,6 +966,7 @@ syn region soloforthString start=+\.\"+ end=+"+ end=+$+
 syn region soloforthString start=+s\"+ end=+"+ end=+$+
 syn region soloforthString start=+,\"+ end=+"+ end=+$+
 syn region soloforthString start=+s\\\"+ end=+"+ end=+$+
+syn region soloforthString start=+.\\\"+ end=+"+ end=+$+
 "syn region soloforthCharOps start=+."\s+ skip=+\\"+ end=+"+
 
 " Comments
@@ -1234,6 +1235,8 @@ let b:current_syntax = "soloforth"
 "
 " 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext` to
 " `jpnext,`.
+"
+" 2016-12-22: Add `.\"`.
 
 " --------------------------------------------------------------
 
