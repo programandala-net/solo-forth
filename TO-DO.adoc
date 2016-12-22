@@ -269,10 +269,6 @@ ____
 Rewrite `parse-esc-string` to use case-sensitive characters after the
 backslash, after standard Forth.
 
-.2016-12-21:
-
-Finish the implementation of escaped block graphics and escaped UDGs.
-
 .2016-12-16:
 
 Remove bounds checking from `}` (Noble's arrays)
