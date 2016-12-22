@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612221609
+  \ Last modified: 201612221704
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,28 +34,27 @@
   \ 2016-12-18: Improve documentation of `escaped-wordlist`.
   \
   \ 2016-12-22: Rename `escaped-wordlist` to
-  \ `standard-esc-chars-wordlist`. Use `internal` to hide `(x)`
-  \ in the word list. Make the escaped characters configurable
-  \ with the search order. Improve documentation.  Rename
-  \ "escaped" to "esc" in word names, because some of them were
-  \ longer than 31 characters. Rename `unescape-chr` to
-  \ `esc-char>chars` and fix it. Factor `parse-esc-string`. Use
-  \ `alias` (31 bytes) if already defined, to save 14 bytes of
-  \ 2 double-cell constants defined in
-  \ `standard-esc-chars-wordlist`.
+  \ `esc-standard-chars-wordlist`.  Make the escaped characters
+  \ configurable with the search order. Improve documentation.
+  \ Rename "escaped" to "esc" in word names, because some of
+  \ them were longer than 31 characters. Rename `unescape-char`
+  \ to `esc-char>chars` and fix it. Factor `parse-esc-string`.
+  \ Use `alias` (31 bytes) if already defined, to save 14 bytes
+  \ of 2 double-cell constants defined in
+  \ `esc-standard-chars-wordlist`.
 
-( standard-esc-chars-wordlist )
+( esc-standard-chars-wordlist )
 
 get-current  forth-wordlist set-current
 
-need parse-char  need internal  need unlink-internal
+need parse-char
 
-wordlist dup constant standard-esc-chars-wordlist
+wordlist dup constant esc-standard-chars-wordlist
          dup >order set-current
 
   \ doc{
   \
-  \ standard-esc-chars-wordlist  ( -- wid )
+  \ esc-standard-chars-wordlist  ( -- wid )
   \
   \ Identifier of the word list that contains the words whose
   \ names are the standard characters that must be escaped
@@ -121,11 +120,11 @@ wordlist dup constant standard-esc-chars-wordlist
   \ \z = null character
   \ \\ = backslash
 
-: m  ( -- c1 c2 2 )  10 13 2  ;                        internal
+: m  ( -- c1 c2 2 )  10 13 2  ;
   \ \m = carriage return and line feed
 
 : (x)  ( "c" -- n )
-  parse-char upper 16 digit? 0= #-260 ?throw  ;    end-internal
+  parse-char upper 16 digit? 0= #-260 ?throw  ;
   \ Parse an hex digit and convert it to a number.
   \ XXX TODO -- move to other word list
 
@@ -138,28 +137,28 @@ wordlist dup constant standard-esc-chars-wordlist
   \ \" = double quote
   \ \n = new line
 
-unlink-internal  set-current previous
+set-current previous
 
 ( parse-esc-string )
 
 need char>string  need chars>string  need s+
-need standard-esc-chars-wordlist
+need esc-standard-chars-wordlist
 
 : set-standard-esc-string-order  ( -- )
-  standard-esc-chars-wordlist 1 set-order  ;
+  esc-standard-chars-wordlist 1 set-order  ;
 
   \ doc{
   \
   \ set-standard-esc-string-order  ( -- )
   \
-  \ Set `standard-esc-chars-wordlist` the only word list in
+  \ Set `esc-standard-chars-wordlist` the only word list in
   \ the search order.  This is the default action of
   \ `set-esc-string-order`. This word makes
   \ `parse-esc-string` escape only the standard escaped
   \ characters defined in Forth-2012. `parse-esc-string` is
   \ the common factor of `s\"` and `.\"`.
   \
-  \ See: `standard-esc-chars-wordlist`,
+  \ See: `esc-standard-chars-wordlist`,
   \ `set-esc-string-order`.  `parse-esc-string`, `s\"`,
   \ `.\"`.
   \
@@ -176,7 +175,7 @@ defer set-esc-string-order  ( -- )
   \ `set-standard-esc-string-order`.
   \
   \ See: `set-standard-esc-string-order`,
-  \ `standard-esc-chars-wordlist`, `parse-esc-string`.
+  \ `esc-standard-chars-wordlist`, `parse-esc-string`.
   \
   \ }doc
 
