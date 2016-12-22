@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612220053
+  \ Last modified: 201612222144
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,10 @@
   \ 2016-12-21: Add `make-block-characters`,
   \ `block-characters`, `0udg>`, `set-udg`, `get-udg`,
   \ `set-font`, `get-font`, `rom-font`.
+  \
+  \ 2016-12-22: Rename "-characters" to "-chars" in all words,
+  \ to be consistent with the convention used in the escaped
+  \ strings module.
 
 ( 0udg> 0udg! udg! 0udg: udg: )
 
@@ -338,11 +342,11 @@ variable udg-row-first-udg
   \
   \ }doc
 
-( make-block-characters )
+( make-block-chars )
 
 need z80-asm,
 
-code make-block-characters  ( a -- )
+code make-block-chars  ( a -- )
   h pop, b push,
   #128 a ld#,  \ first char is #128
   rbegin
@@ -357,7 +361,7 @@ code make-block-characters  ( a -- )
 
   \ doc{
   \
-  \ make-block-characters  ( a -- )
+  \ make-block-chars  ( a -- )
   \
   \ Make the bit patterns of the 16 ZX Spectrum block
   \ characters, originally assigned to character codes
@@ -374,11 +378,11 @@ code make-block-characters  ( a -- )
   \
   \ This word is written in Z80 and uses 18 B of code space.
   \
-  \ See `block-characters`.
+  \ See `block-chars`.
   \
   \ }doc
 
-( block-characters )
+( block-chars )
 
 $0F $0F $0F $0F $00 $00 $00 $00 #129 need udg! udg!
 $F0 $F0 $F0 $F0 $00 $00 $00 $00 #130 udg!
@@ -396,16 +400,22 @@ $0F $0F $0F $0F $FF $FF $FF $FF #141 udg!
 $F0 $F0 $F0 $F0 $FF $FF $FF $FF #142 udg! need 0udg>
 $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
 
+  \ Note: In this block `need` is in unusual places. The goal
+  \ is to save one line and make the 16 character definitions
+  \ in one block keeping the layout clean, i.e. keeping one
+  \ char definition per source line. At the end `erase` creates
+  \ char #128, the first one, which is blank.
+
   \ doc{
   \
-  \ block-characters  ( -- )
+  \ block-chars  ( -- )
   \
-  \ A phoney word used only to do `need block-characters`.  The
+  \ A phoney word used only to do `need block-chars`.  The
   \ loading of the correspondent source block will define
   \ characters 128..143 as block characters, with the shape
   \ they have in Sinclair BASIC.
   \
-  \ See: `make-block-characters`.
+  \ See: `make-block-chars`.
   \
   \ }doc
 
