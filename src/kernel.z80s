@@ -3,9 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; XXX UNDER DEVELOPMENT
-
-; Last modified: 201612202034
+; Last modified: 201612221459
 
 include version.z80s
 
@@ -24,8 +22,9 @@ include version.z80s
 ; ==============================================================
 ; History
 
-; See
+; See:
 ; http://programandala.net/en.program.solo_forth.history.html
+; http://github.com/programandala-net/solo-forth
 
 ; ==============================================================
 ; System description
@@ -2152,7 +2151,9 @@ endif
 
 ; doc{
 ;
-; parse-string ( Compilation: c "ccc<char>" -- ) ( Run-time:  -- ca len )
+; parse-string ( Compilation: c "ccc<char>" -- )
+;              ( Interpretation: c "ccc<char>" -- ca len )
+;              ( Run-time:  -- ca len )
 ;
 ; }doc
 
@@ -3449,7 +3450,7 @@ find_name_from.string_length.16_bits: equ $+1
   ld bc,$0000 ; string length
 find_name_from.compare_next_char:
   ld a,(de)
-  call ascii_upper.a
+  call ascii_upper.a ; XXX TODO -- configure for case-sensitive mode
   cpi
   jr nz,find_name_from.not_a_match ; jump if the chars are different
   inc de ; point to next character of the string
@@ -3510,7 +3511,7 @@ find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
 find_name_from.compare_next_char:
   ld a,(de)
-  call ascii_upper.a
+  call ascii_upper.a ; XXX TODO -- configure for case-sensitive mode
   cpi
   inc de ; point to next character of the string
   jp nz,find_name_from.not_a_match ; mismatch
@@ -8678,6 +8679,7 @@ endif
   dw far_place_ ; store the name
 
   ; Convert the name to uppercase:
+  ; XXX TODO -- configure for case-sensitive mode:
   dw r_fetch_
   dw far_count_,far_uppers_
 
@@ -8709,6 +8711,8 @@ else ; system bank
 
   dw hp_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw place_ ; store the name
+
+   ; XXX TODO -- configure for case-sensitive mode:
   dw r_fetch_,count_,uppers_ ; convert it to uppercase
 
   dw r_fetch_,get_current_,store_ ; update the current word list
@@ -12408,8 +12412,20 @@ throw.end:
 ; ----------------------------------------------
   _colon_header s_quote_,'S"',immediate
 
-  ; : s"  ( Compilation: "ccc<">" -- ) ( Run-time:  -- ca len )
-  ;   '"' parse-string  ; immediate
+; doc{
+;
+; s"  ( Compilation: "ccc<quote>" -- )
+;     ( Interpretation: "ccc<quote>" -- ca len )
+;     ( Run-time:  -- ca len )
+;
+; ----
+; : s"  ( Compilation: "ccc<quote>" -- )
+;       ( Interpretation: "ccc<quote>" -- ca len )
+;       ( Run-time:  -- ca len )
+;   '"' parse-string  ; immediate
+; ----
+;
+; }doc
 
   _literal '"'
   dw parse_string_
