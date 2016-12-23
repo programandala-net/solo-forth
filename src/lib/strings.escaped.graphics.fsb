@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612222132
+  \ Last modified: 201612230238
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,9 @@
   \ 2016-12-22: Adapt to the changes in the
   \ <strings.escaped.fsb> module. Improve. Document. Fix
   \ `left-column?`: use `even?` instead of `odd?`.
+  \
+  \ 2016-12-23: Remove debugging code. Use case-sensitive mode
+  \ to define the UDG escaped chars.
 
 ( first-esc-block-char esc-block-chars-wordlist )
 
@@ -151,18 +154,6 @@ s"  " nextname
 
 set-current previous
 
--->
-  \ XXX TMP -- for debugging
-
-( xxx )
-
-:noname esc-block-chars-wordlist 1 set-order ;
-' set-esc-string-order defer!
-  \ XXX TMP -- for debugging
-
-cr .( Ready!)
-  \ XXX TMP -- for debugging
-
 ( esc-udg-chars-wordlist )
 
 get-current
@@ -208,6 +199,8 @@ wordlist dup constant esc-udg-chars-wordlist set-current
   \
   \ }doc
 
+be-case-sensitive
+
 144 1 2constant A  145 1 2constant B  146 1 2constant E
 147 1 2constant D  148 1 2constant E  149 1 2constant F
 150 1 2constant G  151 1 2constant H  152 1 2constant I
@@ -215,6 +208,8 @@ wordlist dup constant esc-udg-chars-wordlist set-current
 156 1 2constant M  157 1 2constant N  158 1 2constant O
 159 1 2constant P  160 1 2constant Q  161 1 2constant R
 162 1 2constant S  163 1 2constant T  164 1 2constant U
+
+be-case-insensitive
 
 set-current
 

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-22
+:revdate: 2016-12-23
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -57,6 +57,10 @@ Diff:                +26 B
 // Bugs {{{1
 == Bugs ==
 
+.2016-12-23:
+
+Check `.\"`.
+
 .2016-12-06:
 
 Probable bug in `find-name-from`: when `hp` crosses the 16-KiB boundary,
@@ -85,6 +89,11 @@ rest must be used for calls.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
+
+.2016-12-23:
+
+Improve the case-sensitive mode: Use just one flag variable and make the code
+check it.
 
 .2016-12-03:
 
@@ -1120,13 +1129,6 @@ if `load-app` has been compiled, then compile the improved version of `?(`.
 
 When loading an app with `load-app`, make `(` behave like in the
 Forth-2012 FILE word set.
-
-.2015-06-17:
-
-New:
-- Case-sensitive mode.
-- Create words in lowercase.
-- Improve `parse-name` with case conversion.
 
 .2015-10-15:
 
