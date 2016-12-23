@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612222144
+  \ Last modified: 201612231720
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,8 +39,32 @@
   \ 2016-12-22: Rename "-characters" to "-chars" in all words,
   \ to be consistent with the convention used in the escaped
   \ strings module.
+  \
+  \ 2016-12-23: Add `udg-chars`.
 
-( 0udg> 0udg! udg! 0udg: udg: )
+( udg-chars 0udg> 0udg! udg! 0udg: udg: )
+
+need ?(  [unneeded] udg-chars ?(  need rom-font need os-udg
+
+rom-font 'A' 8 * +          \ from
+os-udg @ 144 128 - 8 * +    \ to
+'U' 'A' - 1+ 8 *            \ count
+move
+
+?)
+
+  \ doc{
+  \
+  \ udg-chars  ( -- )
+  \
+  \ A phoney word used only to do `need default-udg-chars` in
+  \ order to define characters 144..164 as letters 'A'..'U',
+  \ copied from the ROM font, the shape they have in Sinclair
+  \ BASIC. The current value of `os-udg` is used.
+  \
+  \ See: `block-chars`, `os-udg`, `set-udg`, `rom-font`.
+  \
+  \ }doc
 
 need os-udg  need 8*
 
@@ -413,9 +437,11 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ A phoney word used only to do `need block-chars`.  The
   \ loading of the correspondent source block will define
   \ characters 128..143 as block characters, with the shape
-  \ they have in Sinclair BASIC.
+  \ they have in Sinclair BASIC.  The current value of `os-udg`
+  \ is used.
   \
-  \ See: `make-block-chars`.
+  \ See: `make-block-chars`, `os-udg`, `set-udg`, `udg!`,
+  \ `udg-chars`.
   \
   \ }doc
 
