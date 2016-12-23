@@ -273,6 +273,10 @@ ____
 // Strings {{{2
 === Strings ===
 
+.2016-12-23:
+
+Document `s\"` and `.\"`.
+
 .2016-12-22:
 
 Rewrite `parse-esc-string` to use case-sensitive characters after the

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612231350
+  \ Last modified: 201612231610
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,12 +62,9 @@ wordlist dup constant esc-block-chars-wordlist
   \
   \ esc-block-chars-wordlist  ( -- wid )
   \
-  \ Identifier of the word list that must be included in the
-  \ search order (set by the deferred word
-  \ `set-esc-string-order`) in order to make make `s\", `.\"`
-  \ and their common factor `parse-esc-string` recognize the
-  \ escaped block characters, in the notation used by BASin and
-  \ other ZX Spectrum tools:
+  \ Identifier of the word list that contains the escaped block
+  \ characters used by the BASin IDE and other ZX Spectrum
+  \ tools:
   \
 
   \ |===
@@ -91,21 +88,23 @@ wordlist dup constant esc-block-chars-wordlist
   \ | \::               | 143
   \ |===
 
-  \ Usage example:
+  \ In order to make `s\", `.\"` and their common factor
+  \ `parse-esc-string` recognize the escaped block characters,
+  \ `esc-block-chars-wordlist` must be pushed to the escaped
+  \ strings search order.  Example:
 
   \ ----
-  \ : set-esc-block-chars-order  ( -- )
-  \   esc-block-chars-wordlist 1 set-order  ;
+  \ need set-esc-order
+  \ esc-standard-chars-wordlist
+  \ esc-block-chars-wordlist 2 set-esc-order
   \
-  \ ' set-esc-block-chars-order ' set-esc-string-order defer!
-  \
-  \ s\" Block characters: \::\:.\ '\ :..." type
+  \ s\" \::\:.\ '\. \nNew line:\.'\:'\'.\: ..." type
   \ ----
 
   \ The code of the first block character can be modified with
   \ the character variable `first-esc-block-char`.
   \
-  \ See: `first-esc-block-char`, `set-esc-string-order`,
+  \ See: `first-esc-block-char`, `set-esc-order`, `>esc-order`,
   \ `esc-standard-chars-wordlist`, `esc-udg-chars-wordlist`,
   \ `parse-esc-string`, `s\"`, `.\"`.
   \
@@ -165,41 +164,33 @@ wordlist dup constant esc-udg-chars-wordlist set-current
   \ esc-udg-chars-wordlist  ( -- wid )
   \
   \ Identifier of the word list that contains the words whose
-  \ names are the UDG characters ('A'..'U') that must be
-  \ escaped after a backslash in strings parsed by `s\"` and
-  \ other words.
+  \ names are the UDG characters ('A'..'U'), in upper case,
+  \ that must be escaped after a backslash in strings parsed by
+  \ `s\"`, `.\"` and other words.
   \
   \ The execution of the words defined in this word list
   \ returns the correspondent UDG character (144..164) and a 1.
   \
   \ In order to make `s\", `.\"` and their common factor
   \ `parse-esc-string` recognize the escaped UDG characters,
-  \ the deferred word `set-esc-string-order` must be configured
-  \ to include `esc-udg-chars-wordlist` in the search order
-  \
-  \ Usage example:
+  \ `esc-udg-chars-wordlist` must be pushed on the escaped
+  \ strings search order.  Example:
 
   \ ----
-  \ : set-esc-udg-chars-order  ( -- )
-  \   esc-udg-chars-wordlist 1 set-order  ;
+  \ need set-esc-order
+  \ esc-standard-chars-wordlist
+  \ esc-udg-chars-wordlist 2 set-esc-order
   \
-  \ ' set-esc-udg-chars-order ' set-esc-string-order defer!
-  \
-  \ s\" UDG characters: \A\B\C\D..." type
+  \ s\" \A\B\C\D\nNew line:\A\B\C\D..." type
   \ ----
 
-  \ Note: The translation of UDG characters is not compatible
-  \ with the standard escaped characters, because at the moment
-  \ (2016-12-22), in Solo Forth the character after the
-  \ backslash is case-insensitive.
-  \
-  \ See: `set-esc-string-order`, `esc-standard-chars-wordlist`,
-  \ `esc-block-chars-wordlist`, `parse-esc-string`, `s\"`,
-  \ `.\"`.
+  \ See: `set-esc-order`, `>esc-order`,
+  \ `esc-standard-chars-wordlist`, `esc-block-chars-wordlist`,
+  \ `parse-esc-string`, `s\"`, `.\"`.
   \
   \ }doc
 
-case-sensitive on
+case-sensitive @ case-sensitive on
 
 144 1 2constant A  145 1 2constant B  146 1 2constant E
 147 1 2constant D  148 1 2constant E  149 1 2constant F
@@ -209,7 +200,7 @@ case-sensitive on
 159 1 2constant P  160 1 2constant Q  161 1 2constant R
 162 1 2constant S  163 1 2constant T  164 1 2constant U
 
-case-sensitive off
+case-sensitive !
 
 set-current
 
