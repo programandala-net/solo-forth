@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612221459
+; Last modified: 201612230059
 
 include version.z80s
 
@@ -962,6 +962,7 @@ compare_de_hl_signed:
   or a
   ret p
   scf
+noop_routine:
   ret
 
 ; ----------------------------------------------
@@ -3450,7 +3451,8 @@ find_name_from.string_length.16_bits: equ $+1
   ld bc,$0000 ; string length
 find_name_from.compare_next_char:
   ld a,(de)
-  call ascii_upper.a ; XXX TODO -- configure for case-sensitive mode
+find_name_from.call_ascii_upper.a:
+  call ascii_upper.a
   cpi
   jr nz,find_name_from.not_a_match ; jump if the chars are different
   inc de ; point to next character of the string
@@ -3511,7 +3513,8 @@ find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
 find_name_from.compare_next_char:
   ld a,(de)
-  call ascii_upper.a ; XXX TODO -- configure for case-sensitive mode
+find_name_from.call_ascii_upper.a:
+  call ascii_upper.a
   cpi
   inc de ; point to next character of the string
   jp nz,find_name_from.not_a_match ; mismatch
@@ -3604,6 +3607,80 @@ find_name.loop:
 
 find_name.loop_exit:
   dw two_drop_,false_
+  dw exit_
+
+; ----------------------------------------------
+  _variable_header case_sensitive_,'CASE-SENSITIVE'
+
+; XXX TMP --
+;
+; XXX TODO -- remove after improving the implementation of the
+; case-sensitive mode
+
+; doc{
+;
+; case-sensitive  ( -- a )
+;
+; A variable that holds a flag. The flag is true when
+; case-sensitive mode is on; else it's false (default value).
+; This variable is modified by `be-case-sensitive` and
+; `be-case-insensitive`, and should not be modified by the
+; application.
+;
+; See: `be-case-sensitive`, `be-case-insensitive`.
+;
+; }doc
+
+  dw false
+
+; ----------------------------------------------
+  _colon_header be_case_sensitive_,'BE-CASE-SENSITIVE'
+
+; XXX TODO -- rename to `case-sensitive` after improving the
+; implementation of the case-sensitive mode
+
+; doc{
+;
+; be-case-sensitive  ( -- )
+;
+; Turn the case-sensitive mode on. In this mode, the name of new words
+; defined will be stored without modification; and any name searched
+; for in the dictionary will not be modified, therefore it will be
+; found only if it's identical to the name stored in the definition
+; header.
+;
+; See: `be-case-insensitive`, `case-sensitive`.
+;
+; }doc
+
+  dw case_sensitive_,on_
+  dw lit_,noop_routine
+  dw branch_,be_case_insensitive.end
+
+; ----------------------------------------------
+  _colon_header be_case_insensitive_,'BE-CASE-INSENSITIVE'
+
+; XXX TODO -- rename to `case-insensitive` after improving the
+; implementation of the case-sensitive mode
+
+; doc{
+;
+; be-case-insensitive  ( -- )
+;
+; Turn the case-insensitive mode on, which is the default. In this
+; mode, the name of new words defined will be stored in uppercase; and
+; any name searched for in the dictionary will be converted to
+; uppercase first.
+;
+; See: `be-case-sensitive`, `case-sensitive`.
+;
+; }doc
+
+  dw case_sensitive_,off_
+  dw lit_,ascii_upper.a
+be_case_insensitive.end:
+  dw lit_,find_name_from.call_ascii_upper.a+1
+  dw store_
   dw exit_
 
 ; ----------------------------------------------
@@ -8327,10 +8404,13 @@ parse_name.skip:
 ;
 ; Convert _c_ to uppercase _c'_.
 ;
-; See: `uppers`.
+; See: `uppers`, `lower`.
 ;
 ; }doc
 
+  ; XXX TODO -- move to the library, depending on the final
+  ; implementation of the case-sensitive mode
+  ;
   ; XXX TODO convert to deferred, to let it be customized for
   ; 8-bit charsets.
 
@@ -8340,12 +8420,45 @@ parse_name.skip:
   push hl      ; make next `ret` jump to push_a
 
 ascii_upper.a:
-  ; Convert the ASCII char in the 'a' register to uppercase.
+  ; Convert the ASCII char in the 'A' register to uppercase.
   cp 'a'
   ret c
   cp 'z'+1
   ret nc
   and %11011111
+  ret
+
+; ----------------------------------------------
+  _code_header lower_,'LOWER'
+
+; doc{
+;
+; lower  ( c -- c' )
+;
+; Convert _c_ to lowercase _c'_.
+;
+; See: `lowers`, `upper`.
+;
+; }doc
+
+  ; XXX TODO -- move to the library, depending on the final
+  ; implementation of the case-sensitive mode
+  ;
+  ; XXX TODO convert to deferred, to let it be customized for
+  ; 8-bit charsets.
+
+  pop hl
+  ld a,l
+  ld hl,push_a ; exit address
+  push hl      ; make next `ret` jump to push_a
+
+ascii_lower.a:
+  ; Convert the ASCII char in the 'A' register to lowercase.
+  cp 'A'
+  ret c
+  cp 'Z'+1
+  ret nc
+  or  %00100000
   ret
 
 ; ----------------------------------------------
@@ -8357,10 +8470,13 @@ ascii_upper.a:
 ;
 ; Convert _ca len_ to uppercase.
 ;
-; See: `uppers1`, `upper`.
+; See: `uppers1`, `lowers`, `upper`.
 ;
 ; }doc
 
+  ; XXX TODO -- move to the library, depending on the final
+  ; implementation of the case-sensitive mode
+  ;
   ; XXX TODO convert to deferred, to let it be customized for
   ; 8-bit charsets.
 
@@ -8378,9 +8494,45 @@ uppers.do:
   _jump uppers.do
 
 ; ----------------------------------------------
+  _code_header lowers_,'LOWERS'
+
+; doc{
+;
+; lowers  ( ca len -- )
+;
+; Convert _ca len_ to lowercase.
+;
+; See: `uppers`, `lower`.
+;
+; }doc
+
+  ; XXX TODO -- move to the library, depending on the final
+  ; implementation of the case-sensitive mode
+  ;
+  ; XXX TODO convert to deferred, to let it be customized for
+  ; 8-bit charsets.
+
+  pop de
+  pop hl
+lowers.do:
+  ld a,d
+  or e
+  jp z,next
+  ld a,(hl)
+  call ascii_lower.a
+  ld (hl),a
+  inc hl
+  dec de
+  _jump lowers.do
+
+; ----------------------------------------------
 if 1 ; far_memory
 
   _code_header far_uppers_,'FARUPPERS'
+
+  ; XXX TODO -- move to the library, depending on the final
+  ; implementation of the case-sensitive mode
+  ;
 
 ; XXX TMP --
 ; XXX TODO -- improve to save push/pop
@@ -8416,6 +8568,54 @@ far_uppers.do:
   dec de
   _jump far_uppers.do
 far_uppers.end:
+  call bank.default
+  _jp_next
+
+endif
+
+; ----------------------------------------------
+if 1 ; far_memory
+
+  _code_header far_lowers_,'FARLOWERS'
+
+  ; XXX TODO -- move to the library, depending on the final
+  ; implementation of the case-sensitive mode
+  ;
+
+; XXX TMP --
+; XXX TODO -- improve to save push/pop
+
+; doc{
+;
+; farlowers  ( ca len -- )
+;
+; A variant of `lowers` that works in far memory.
+;
+; See: `far-banks`, `lowers`.
+;
+; }doc
+
+  ; XXX TODO convert to deferred, to let it be customized for
+  ; 8-bit charsets.
+
+  pop hl          ; len
+  ex (sp),hl      ; HL = ca
+  call far.hl     ; HL = actual address; bank paged in
+  pop de          ; len
+far_lowers.do:
+  ld a,d
+  or e
+  jr z,far_lowers.end
+  ld a,(hl)
+  call ascii_lower.a
+  ld (hl),a
+  inc hl
+  push de
+  call question_next_bank
+  pop de
+  dec de
+  _jump far_lowers.do
+far_lowers.end:
   call bank.default
   _jp_next
 
@@ -8458,6 +8658,11 @@ endif
 ; ----
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library after removing the old system bank
+  ; method
+
+  ; XXX TODO -- fix the mention about the ambiguous condition
 
   ; Credit:
   ; Code from DZX-Forth's `packed`.
@@ -8678,10 +8883,12 @@ endif
   dw hp_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw far_place_ ; store the name
 
-  ; Convert the name to uppercase:
-  ; XXX TODO -- configure for case-sensitive mode:
-  dw r_fetch_
-  dw far_count_,far_uppers_
+  dw case_sensitive_,fetch_
+  dw question_branch_,header_comma.name_ready
+  dw r_fetch_,far_count_,far_uppers_ ; convert the name to uppercase
+;  dw r_fetch_,far_count_,far_lowers_ ; convert the name to lowercase
+  ; XXX TODO -- lowercase in improved case-sensitive mode
+header_comma.name_ready:
 
   dw r_fetch_
 if debugging
@@ -8712,8 +8919,12 @@ else ; system bank
   dw hp_fetch_,dup_,to_r_ ; ( len ca len nt ) ( R: nt )
   dw place_ ; store the name
 
-   ; XXX TODO -- configure for case-sensitive mode:
+  dw case_sensitive_,fetch_
+  dw question_branch_,header_comma.name_ready
   dw r_fetch_,count_,uppers_ ; convert it to uppercase
+;  dw r_fetch_,count_,lowers_ ; convert it to lowercase
+  ; XXX TODO -- lowercase in improved case-sensitive mode
+header_comma.name_ready:
 
   dw r_fetch_,get_current_,store_ ; update the current word list
   dw from_r_,last_,store_ ; and `last`
@@ -10021,6 +10232,7 @@ if 1 ; XXX INFORMER
 endif
 
   dw abort_
+  ; No return from `abort`.
 
 cold_start:
 call_first_boot:
