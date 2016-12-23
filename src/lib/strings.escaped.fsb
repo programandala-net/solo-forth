@@ -44,15 +44,15 @@
   \ `esc-standard-chars-wordlist`.  Add `parse-char` to
   \ `esc-char>chars`, rename it `parse-esc-char>chars` and make
   \ it accessible to `need`.
+  \
+  \ 2016-12-23: Add support for case-sensitive escaped chars.
 
 ( esc-standard-chars-wordlist )
 
-get-current  forth-wordlist set-current
-
-need parse-char
+get-current  forth-wordlist set-current  need parse-char
 
 wordlist dup constant esc-standard-chars-wordlist
-         dup >order set-current
+dup >order set-current case-sensitive @ case-sensitive on
 
   \ doc{
   \
@@ -96,11 +96,6 @@ wordlist dup constant esc-standard-chars-wordlist
   \ | \x<hexdigit><hexdigit>  | | Conversion of the two hexadecimal digits
   \ |===
 
-  \ Note: The translation is not fully standard, because in
-  \ Standard Forth the character after the backslash is
-  \ case-sensitive. At the moment (2016-12-22), in Solo Forth
-  \ the character after the backslash is case-insensitive.
-  \
   \ See: `parse-esc-string`, `s\"`, `.\"`.
   \ `set-standard-esc-string-order`, `set-esc-string-order`.
   \
@@ -138,16 +133,19 @@ wordlist dup constant esc-standard-chars-wordlist
   \ \" = double quote
   \ \n = new line
 
-set-current previous
+case-sensitive ! set-current previous
 
-( parse-esc-char>chars )
+( parse-esc-char>chars parse-esc-string )
+
+need ?(
+
+[unneeded] parse-esc-char>chars ?(
 
 need parse-char  need char>string
 
 : parse-esc-char>chars  ( "c" -- c[n-1]..c[0] n )
   parse-char dup char>string find-name
-  ?dup if  nip name> execute  else  '\' 2  then  ;
-  \ XXX TODO -- combine with other block
+  ?dup if  nip name> execute  else  '\' 2  then  ;  exit ?)
 
   \ doc{
   \
@@ -165,7 +163,7 @@ need parse-char  need char>string
   \
   \ }doc
 
-( parse-esc-string )
+[unneeded] parse-esc-string ?exit
 
 need parse-esc-char>chars  need chars>string
 need esc-standard-chars-wordlist  need s+
@@ -207,6 +205,10 @@ defer set-esc-string-order  ( -- )
 
 ' set-standard-esc-string-order ' set-esc-string-order defer!
 
+-->
+
+( parse-esc-string )
+
 : (parse-esc-string)  ( ca len "ccc<quote>"  -- ca' len' )
   begin   parse-char dup '"' <>  \ not finished?
   while   dup '\' =  \ maybe escaped?
@@ -230,9 +232,47 @@ defer set-esc-string-order  ( -- )
   \
   \ }doc
 
+variable case-sensitive-esc-chars  case-sensitive-esc-chars on
+
+  \ doc{
+  \
+  \ case-sensitive-esc-chars  ( -- a )
+  \
+  \ A variable that holds a flag that turns case-sensitive mode
+  \ on and off only during the parsing of escaped strings, e.g.
+  \ `s\"` and `.\"`.  The contents of this variable are
+  \ temporarily stored into `case-sensitive` by
+  \ `parse-esc-string`. The current contents of
+  \ `case-sensitive` are preserved and restored at the end.
+  \
+  \ When the contents of `case-sensitive` are non-zero, escaped
+  \ characters case-sensitive mode is on (this is the default):
+  \ any escaped character searched for in the configured word
+  \ list will not be modified, therefore it will be found only
+  \ if it's identical to the name stored in the definition
+  \ header.
+  \
+  \ When the contents of `case-sensitive-esc-chars` are zero,
+  \ escaped characters case-sensitive mode is off: any escaped
+  \ character searched for in the correspondent word list will
+  \ be converted to lowercase first (the conversion is done at
+  \ low level, not affecting the name string passed as
+  \ parameter).
+  \
+  \ NOTE: In order to create upper-case case-sensitive escaped
+  \ chars, their correspondent words must be created when
+  \ `case-sensitive` is on.
+  \ See the words defined in `esc-udg-chars-wordlist`.
+  \
+  \ See: `case-sensitive`, `esc-udg-chars-wordlist`.
+  \
+  \ }doc
+
 : parse-esc-string  ( "ccc<quote>"  -- ca len )
-  get-order set-esc-string-order  0 0 (parse-esc-string)
-  2>r set-order 2r>  ;
+  get-order set-esc-string-order
+  case-sensitive @ case-sensitive-esc-chars @ case-sensitive !
+  0 0 (parse-esc-string)
+  2>r case-sensitive ! set-order 2r>  ;
 
   \ doc{
   \
@@ -272,11 +312,6 @@ need ?(
   \
   \ s\"  ( "ccc<quote>" -- ca len )
   \
-  \ Note: The translation is not fully standard, because in
-  \ Standard Forth the character after the backslash is
-  \ case-sensitive. At the moment (2016-12-22), in Solo Forth
-  \ the character after the backslash is case-insensitive.
-  \
   \ See: `parse-esc-string`, `.\"`.
   \
   \ }doc
@@ -291,11 +326,6 @@ need ?(
   \ doc{
   \
   \ .\"  ( "ccc<quote>" -- )
-  \
-  \ Note: The translation is not fully standard, because in
-  \ Standard Forth the character after the backslash is
-  \ case-sensitive. At the moment (2016-12-22), in Solo Forth
-  \ the character after the backslash is case-insensitive.
   \
   \ See: `parse-esc-string`, `s\"`.
   \
