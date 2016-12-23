@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612230059
+; Last modified: 201612230133
 
 include version.z80s
 
@@ -1197,13 +1197,13 @@ execute_hl:
 nt_of_the_previous_word: defl 0
 
 ; ----------------------------------------------
-  _alias_header root_forth_,'FORTH',,forth_
+  _alias_header root_forth_,'forth',,forth_
 
 ; ----------------------------------------------
-  _alias_header root_forth_wordlist_,'FORTH-WORDLIST',,forth_wordlist_
+  _alias_header root_forth_wordlist_,'forth-wordlist',,forth_wordlist_
 
 ; ----------------------------------------------
-  _alias_header root_set_order_,'SET-ORDER',,set_order_
+  _alias_header root_set_order_,'set-order',,set_order_
 
   ; This symbol must be set with the value of the
   ; latest word defined in the `root` vocabulary:
@@ -1220,7 +1220,7 @@ nt_of_the_previous_word: defl 0
 
 if 1 ; abase
 
-  _variable_header abase_,'ABASE'
+  _variable_header abase_,'abase'
 
   ; XXX TODO use the return stack instead?
 
@@ -1238,7 +1238,7 @@ if 1 ; abase
 endif
 
 ; ----------------------------------------------
-  _colon_header end_asm_,'END-ASM'
+  _colon_header end_asm_,'end-asm'
 
 ; doc{
 ;
@@ -1259,38 +1259,38 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header end_code_,'END-CODE'
+  _colon_header end_code_,'end-code'
 
   dw end_asm_,reveal_
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header next_,'NEXT'
+  _constant_header next_,'next'
 
   dw next
 
 ; ----------------------------------------------
-  _constant_header pusha_,'PUSHA'
+  _constant_header pusha_,'pusha'
 
   dw push_a
 
 ; ----------------------------------------------
-  _constant_header pushhl_,'PUSHHL'
+  _constant_header pushhl_,'pushhl'
 
   dw push_hl
 
 ; ----------------------------------------------
-  _constant_header pushhlde_,'PUSHHLDE'
+  _constant_header pushhlde_,'pushhlde'
 
   dw push_hlde
 
 ; ----------------------------------------------
-  _constant_header fetchhl_,'FETCHHL'
+  _constant_header fetchhl_,'fetchhl'
 
   dw fetch.hl
 
 ; ----------------------------------------------
-  _colon_header jppushhl_comma_,'JPPUSHHL,'
+  _colon_header jppushhl_comma_,'jppushhl,'
 
 ; doc{
 ;
@@ -1310,7 +1310,7 @@ endif
   dw branch_,jpnext_comma_pfa
 
 ; ----------------------------------------------
-  _colon_header jpnext_comma_,'JPNEXT,'
+  _colon_header jpnext_comma_,'jpnext,'
 
 ; doc{
 ;
@@ -1325,7 +1325,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header jp_comma_,'JP,'
+  _colon_header jp_comma_,'jp,'
 
 ; doc{
 ;
@@ -1351,7 +1351,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header call_comma_,'CALL,'
+  _colon_header call_comma_,'call,'
 
 ; doc{
 ;
@@ -1388,7 +1388,7 @@ endif
 nt_of_the_previous_word: defl 0
 
 ; ----------------------------------------------
-  _colon_header dos_,'DOS'
+  _colon_header dos_,'dos'
 
 ; doc{
 ;
@@ -1411,7 +1411,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _c_constant_header max_drives_,'MAX-DRIVES'
+  _c_constant_header max_drives_,'max-drives'
 
   db max_drives
 
@@ -1425,7 +1425,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _variable_header lib_order_,'LIB-ORDER'
+  _variable_header lib_order_,'lib-order'
 
 ; XXX NEW -- not used yet by `need`
 
@@ -1467,7 +1467,7 @@ endif
 ; format, but letters are used in filenames.
 
 ; ----------------------------------------------
-  _colon_header set_lib_order_,'SET-LIB-ORDER'
+  _colon_header set_lib_order_,'set-lib-order'
 
 ; XXX NEW -- not used yet by `need`
 
@@ -1578,7 +1578,11 @@ if 1 ; far_memory
   ;
   ; http://www.worldofspectrum.org/z88forever/camelforth/camel-pools.html
 
+endif
+
 ; ----------------------------------------------
+if 1 ; far_memory
+
   _code_header question_next_bank_,'?NEXT-BANK'
 
 ; doc{
@@ -1653,7 +1657,11 @@ new_bank:
   pop hl
   jp bank.e ; page in the bank E, then return
 
+endif
+
 ; ----------------------------------------------
+if 1 ; far_memory
+
   _code_header question_previous_bank_,'?PREVIOUS-BANK'
 
 ; doc{
@@ -2075,7 +2083,7 @@ root_vocabulary_link:
   dw root_nt
 
 ; ----------------------------------------------
-  _does_header root_,'ROOT',,do_vocabulary
+  _does_header root_,'root',,do_vocabulary
 
   dw root_wordlist_pfa
 
@@ -2101,14 +2109,14 @@ forth_vocabulary_link:
   dw forth_nt
 
 ; ----------------------------------------------
-  _does_header forth_,'FORTH',,do_vocabulary
+  _does_header forth_,'forth',,do_vocabulary
 
   dw forth_wordlist_pfa
 
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
 
-  _variable_header assembler_wordlist_,'ASSEMBLER-WORDLIST'
+  _variable_header assembler_wordlist_,'assembler-wordlist'
 
   dw latest_nt_in_assembler_voc
 assembler_vocabulary_link:
@@ -2120,14 +2128,14 @@ endif
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
 
-  _does_header assembler_,'ASSEMBLER',,do_vocabulary
+  _does_header assembler_,'assembler',,do_vocabulary
 
   dw assembler_wordlist_pfa
 
 endif
 
 ; ----------------------------------------------
-  _colon_header s_lit_,'SLIT'
+  _colon_header s_lit_,'slit'
 
 ; doc{
 ;
@@ -2148,7 +2156,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header parse_string_,'PARSE-STRING'
+  _colon_header parse_string_,'parse-string'
 
 ; doc{
 ;
@@ -2171,7 +2179,7 @@ parse_string.interpreting:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header c_lit_,'CLIT',compile_only
+  _code_header c_lit_,'clit',compile_only
 
   ld a,(bc)
   inc bc
@@ -2181,7 +2189,7 @@ push_a:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header two_lit_,'2LIT',compile_only
+  _code_header two_lit_,'2lit',compile_only
 
   ld a,(bc)
   ld l,a
@@ -2198,7 +2206,7 @@ push_a:
   jp push_hlde
 
 ; ----------------------------------------------
-  _code_header lit_,'LIT',compile_only
+  _code_header lit_,'lit',compile_only
 
   ld a,(bc)
   ld l,a
@@ -2209,7 +2217,7 @@ push_a:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _constant_header default_bank_hash_,'DEFAULT-BANK#'
+  _constant_header default_bank_hash_,'default-bank#'
 
   ; XXX TMP --
 
@@ -2230,7 +2238,7 @@ push_a:
 if 1 ; far_memory
 else
 
-  _code_header system_bank_,'SYSTEM-BANK'
+  _code_header system_bank_,'system-bank'
 
 ; doc{
 ;
@@ -2291,7 +2299,7 @@ endif
   ret
 
 ; ----------------------------------------------
-  _constant_header bank_start_,'BANK-START'
+  _constant_header bank_start_,'bank-start'
 
 ; doc{
 ;
@@ -2304,7 +2312,7 @@ endif
   dw bank_start
 
 ; ----------------------------------------------
-  _code_header bank_,'BANK'
+  _code_header bank_,'bank'
 
 ; doc{
 ;
@@ -2319,7 +2327,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header unused_csb_,'UNUSED-CSB'
+  _code_header unused_csb_,'unused-csb'
 
 ; doc{
 ;
@@ -2340,7 +2348,7 @@ endif
   _jp_pushhl
 
 ; ----------------------------------------------
-  _constant_header csb_size_,'CSB-SIZE'
+  _constant_header csb_size_,'csb-size'
 
 ; doc{
 ;
@@ -2359,7 +2367,7 @@ endif
   dw csb_size
 
 ; ----------------------------------------------
-  _variable_header to_csb_,'>CSB'
+  _variable_header to_csb_,'>csb'
 
 ; doc{
 ;
@@ -2374,7 +2382,7 @@ endif
   dw csb_size
 
 ; ----------------------------------------------
-  _constant_header csb0_,'CSB0'
+  _constant_header csb0_,'csb0'
 
 ; doc{
 ;
@@ -2394,7 +2402,7 @@ endif
   dw csb0
 
 ; ----------------------------------------------
-  _colon_header question_csb_,'?CSB'
+  _colon_header question_csb_,'?csb'
 
 ; doc{
 ;
@@ -2425,7 +2433,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header allocate_string_,'ALLOCATE-STRING'
+  _colon_header allocate_string_,'allocate-string'
 
 ; doc{
 ;
@@ -2451,7 +2459,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header save_string_,'SAVE-STRING'
+  _colon_header save_string_,'save-string'
 
 ; doc{
 ;
@@ -2475,7 +2483,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header empty_csb_,'EMPTY-CSB'
+  _colon_header empty_csb_,'empty-csb'
 
 ; doc{
 ;
@@ -2493,7 +2501,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header execute_,'EXECUTE'
+  _code_header execute_,'execute'
 
 ; doc{
 ;
@@ -2505,7 +2513,7 @@ question_csb_.enough:
   jp (hl)
 
 ; ----------------------------------------------
-  _code_header perform_,'PERFORM'
+  _code_header perform_,'perform'
 
 ; doc{
 ;
@@ -2527,7 +2535,7 @@ question_csb_.enough:
   ; Execution continues in `noop`:
 
 ; ----------------------------------------------
-  _code_header noop_,'NOOP',
+  _code_header noop_,'noop',
 
 ; doc{
 ;
@@ -2540,7 +2548,7 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header forward_mark_,'>MARK'
+  _colon_header forward_mark_,'>mark'
 
 ; doc{
 ;
@@ -2562,7 +2570,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header forward_resolve_,'>RESOLVE'
+  _colon_header forward_resolve_,'>resolve'
 
 ; doc{
 ;
@@ -2579,7 +2587,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _alias_header backward_mark_,'<MARK',,here_
+  _alias_header backward_mark_,'<mark',,here_
 
 ; doc{
 ;
@@ -2594,7 +2602,7 @@ question_csb_.enough:
 ; }doc
 
 ; ----------------------------------------------
-  _alias_header backward_resolve_,'<RESOLVE',,comma_
+  _alias_header backward_resolve_,'<resolve',,comma_
 
 ; doc{
 ;
@@ -2610,7 +2618,7 @@ question_csb_.enough:
 ; }doc
 
 ; ----------------------------------------------
-  _code_header zero_branch_,'0BRANCH'
+  _code_header zero_branch_,'0branch'
 
 ; doc{
 ;
@@ -2635,7 +2643,7 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header question_branch_,'?BRANCH'
+  _code_header question_branch_,'?branch'
 
 ; doc{
 ;
@@ -2661,7 +2669,7 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header unloop_,'UNLOOP'
+  _code_header unloop_,'unloop'
 
 ; doc{
 ;
@@ -2684,7 +2692,7 @@ question_csb_.enough:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_question_do_,'(?DO)'
+  _code_header paren_question_do_,'(?do)'
 
   ; Credit:
   ; Code based on Spectrum Forth-83.
@@ -2698,7 +2706,7 @@ question_csb_.enough:
   jp paren_do.de_hl
 
 ; ----------------------------------------------
-  _colon_header question_do_,'?DO',immediate+compile_only
+  _colon_header question_do_,'?do',immediate+compile_only
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -2721,7 +2729,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header do_,'DO',immediate+compile_only
+  _colon_header do_,'do',immediate+compile_only
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -2744,7 +2752,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header loop_,'LOOP',immediate+compile_only
+  _colon_header loop_,'loop',immediate+compile_only
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -2765,7 +2773,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header plus_loop_,'+LOOP',immediate+compile_only
+  _colon_header plus_loop_,'+loop',immediate+compile_only
 
   ; XXX TODO -- move to the library
   ; (it's used by `.s`, which will be removed from the kernel
@@ -2790,7 +2798,7 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header paren_do_,'(DO)'
+  _code_header paren_do_,'(do)'
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -2826,7 +2834,7 @@ paren_do.de_hl:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header i_,'I'
+  _code_header i_,'i'
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -2861,7 +2869,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; }doc
 
 ; ----------------------------------------------
-  _code_header leave_,'LEAVE'
+  _code_header leave_,'leave'
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -2882,7 +2890,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   ; Execution continues in `branch`:
 
 ; ----------------------------------------------
-  _code_header branch_,'BRANCH'
+  _code_header branch_,'branch'
 
 ; doc{
 ;
@@ -2906,7 +2914,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_plus_loop_,'(+LOOP)'
+  _code_header paren_plus_loop_,'(+loop)'
 
   ; XXX TODO -- move to the library
   ; (it's used by `.s`, which will be removed from the kernel
@@ -2954,7 +2962,7 @@ paren_loop.continue:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header paren_loop_,'(LOOP)'
+  _code_header paren_loop_,'(loop)'
 
   ; Credit:
   ; Code adapted from spectrum Forth-83.
@@ -2976,7 +2984,7 @@ paren_loop.continue:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header digit_question_,'DIGIT?'
+  _code_header digit_question_,'digit?'
 
 ; doc{
 ;
@@ -3016,7 +3024,7 @@ digit.test_value:
   jp true_
 
 ; ----------------------------------------------
-  _colon_header number_base_,'NUMBER-BASE'
+  _colon_header number_base_,'number-base'
 
 ; doc{
 ;
@@ -3073,7 +3081,7 @@ number_base.current:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header to_number_,'>NUMBER'
+  _colon_header to_number_,'>number'
 
 ; doc{
 ;
@@ -3137,7 +3145,7 @@ to_number.end:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header number_point_question_,'NUMBER-POINT?',,standard_number_point_question_
+  _defer_header number_point_question_,'number-point?',,standard_number_point_question_
 
 ; doc{
 ;
@@ -3152,7 +3160,7 @@ to_number.end:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header standard_number_point_question_,'STANDARD-NUMBER-POINT?'
+  _colon_header standard_number_point_question_,'standard-number-point?'
 
 ; doc{
 ;
@@ -3181,7 +3189,7 @@ to_number.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header number_question_,'NUMBER?'
+  _colon_header number_question_,'number?'
 
   ; XXX TODO make it a deferred word
 
@@ -3311,7 +3319,7 @@ number_question.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header char_question_,'CHAR?'
+  _colon_header char_question_,'char?'
 
 ; doc{
 ;
@@ -3358,7 +3366,7 @@ char_question.not:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header skip_sign_question_,'SKIP-SIGN?'
+  _colon_header skip_sign_question_,'skip-sign?'
 
 ; : sign?  ( ca len -- ca' len' f )
 ;   over c@ '-' = dup >r abs /string r>  ;
@@ -3377,7 +3385,7 @@ char_question.not:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header find_name_from_,'FIND-NAME-FROM'
+  _code_header find_name_from_,'find-name-from'
 
 ; doc{
 ;
@@ -3451,8 +3459,8 @@ find_name_from.string_length.16_bits: equ $+1
   ld bc,$0000 ; string length
 find_name_from.compare_next_char:
   ld a,(de)
-find_name_from.call_ascii_upper.a:
-  call ascii_upper.a
+find_name_from.call_ascii_lower.a:
+  call ascii_lower.a
   cpi
   jr nz,find_name_from.not_a_match ; jump if the chars are different
   inc de ; point to next character of the string
@@ -3513,8 +3521,8 @@ find_name_from.string_address: equ $+1
   ld de,$0000 ; string address
 find_name_from.compare_next_char:
   ld a,(de)
-find_name_from.call_ascii_upper.a:
-  call ascii_upper.a
+find_name_from.call_ascii_lower.a:
+  call ascii_lower.a
   cpi
   inc de ; point to next character of the string
   jp nz,find_name_from.not_a_match ; mismatch
@@ -3561,7 +3569,7 @@ find_name_from.ip: equ $+1
 endif
 
 ; ----------------------------------------------
-  _colon_header find_name_,'FIND-NAME'
+  _colon_header find_name_,'find-name'
 
 ; doc{
 ;
@@ -3610,7 +3618,7 @@ find_name.loop_exit:
   dw exit_
 
 ; ----------------------------------------------
-  _variable_header case_sensitive_,'CASE-SENSITIVE'
+  _variable_header case_sensitive_,'case-sensitive'
 
 ; XXX TMP --
 ;
@@ -3634,7 +3642,7 @@ find_name.loop_exit:
   dw false
 
 ; ----------------------------------------------
-  _colon_header be_case_sensitive_,'BE-CASE-SENSITIVE'
+  _colon_header be_case_sensitive_,'be-case-sensitive'
 
 ; XXX TODO -- rename to `case-sensitive` after improving the
 ; implementation of the case-sensitive mode
@@ -3658,7 +3666,7 @@ find_name.loop_exit:
   dw branch_,be_case_insensitive.end
 
 ; ----------------------------------------------
-  _colon_header be_case_insensitive_,'BE-CASE-INSENSITIVE'
+  _colon_header be_case_insensitive_,'be-case-insensitive'
 
 ; XXX TODO -- rename to `case-insensitive` after improving the
 ; implementation of the case-sensitive mode
@@ -3668,23 +3676,23 @@ find_name.loop_exit:
 ; be-case-insensitive  ( -- )
 ;
 ; Turn the case-insensitive mode on, which is the default. In this
-; mode, the name of new words defined will be stored in uppercase; and
+; mode, the name of new words defined will be stored in lowercase; and
 ; any name searched for in the dictionary will be converted to
-; uppercase first.
+; lowercase first.
 ;
 ; See: `be-case-sensitive`, `case-sensitive`.
 ;
 ; }doc
 
   dw case_sensitive_,off_
-  dw lit_,ascii_upper.a
+  dw lit_,ascii_lower.a
 be_case_insensitive.end:
-  dw lit_,find_name_from.call_ascii_upper.a+1
+  dw lit_,find_name_from.call_ascii_lower.a+1
   dw store_
   dw exit_
 
 ; ----------------------------------------------
-  _code_header scan_,'SCAN'
+  _code_header scan_,'scan'
 
 ; doc{
 ;
@@ -3717,7 +3725,7 @@ scan.nothing:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header skip_,'SKIP'
+  _code_header skip_,'skip'
 
 ; doc{
 ;
@@ -3757,7 +3765,7 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header channel_,'CHANNEL'
+  _code_header channel_,'channel'
 
 ; doc{
 ;
@@ -3780,7 +3788,7 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header mode32_emit_,'MODE32-EMIT'
+  _code_header mode32_emit_,'mode32-emit'
 
 ; doc{
 ;
@@ -3811,7 +3819,7 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header emit_udg_,'EMIT-UDG'
+  _code_header emit_udg_,'emit-udg'
 
   ; XXX TODO -- move to the library
 
@@ -3835,7 +3843,7 @@ emit_udg.a
   jr emit_0udg.a
 
 ; ----------------------------------------------
-  _code_header emit_0udg_,'EMIT-0UDG'
+  _code_header emit_0udg_,'emit-0udg'
 
   ; XXX TODO -- move to the library
 
@@ -3871,12 +3879,12 @@ emit_0udg.a
   _jp_next
 
 ; ----------------------------------------------
-  _defer_header emit_,'EMIT',,mode32_emit_
+  _defer_header emit_,'emit',,mode32_emit_
 
 ; XXX TODO -- Add multitasker's `pause` when available.
 
 ; ----------------------------------------------
-  _variable_header printing_,'PRINTING'
+  _variable_header printing_,'printing'
 
 ; doc{
 ;
@@ -3893,7 +3901,7 @@ emit_0udg.a
   dw false
 
 ; ----------------------------------------------
-  _colon_header display_,'DISPLAY'
+  _colon_header display_,'display'
 
 ; doc{
 ;
@@ -3911,7 +3919,7 @@ emit_0udg.a
   dw exit_
 
 ; ----------------------------------------------
-  _variable_header key_translation_table_,'KEY-TRANSLATION-TABLE'
+  _variable_header key_translation_table_,'key-translation-table'
 
 ; doc{
 ;
@@ -3947,7 +3955,7 @@ default_key_translation_table:
   ; "I" 172 ($AC) "AT"   --> 127 ($7F) "(C)" ; XXX TODO
 
 ; ----------------------------------------------
-  _code_header translate_char_,'TRANSLATE-CHAR'
+  _code_header translate_char_,'translate-char'
 
 ; doc{
 ;
@@ -3984,7 +3992,7 @@ if 0 ; XXX UNDER DEVELOPMENT
   ; improved version with support for chained tables
 
 ; ----------------------------------------------
-  _colon_header translate_char_,'TRANSLATE-CHAR'
+  _colon_header translate_char_,'translate-char'
 
 ; doc{
 ;
@@ -4005,7 +4013,7 @@ translate_char.do_it
   dw exit_
 
 ; ----------------------------------------------
-  _code_header paren_translate_char_,'(TRANSLATE-CHAR)'
+  _code_header paren_translate_char_,'(translate-char)'
 
 ; doc{
 ;
@@ -4058,7 +4066,7 @@ endif
   ; jp translate_char_
 
 ; ----------------------------------------------
-  _code_header default_break_key_question_,'DEFAULT-BREAK-KEY?'
+  _code_header default_break_key_question_,'default-break-key?'
 
 ; doc{
 ;
@@ -4075,7 +4083,7 @@ endif
   jp false_
 
 ; ----------------------------------------------
-  _defer_header break_key_question_,'BREAK-KEY?',,default_break_key_question_
+  _defer_header break_key_question_,'break-key?',,default_break_key_question_
 
 ; doc{
 ;
@@ -4087,7 +4095,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _code_header key_question_,'KEY?'
+  _code_header key_question_,'key?'
 
 ; doc{
 ;
@@ -4105,7 +4113,7 @@ endif
   jp true_
 
 ; ----------------------------------------------
-  _variable_header cursor_char_,'CURSOR-CHAR'
+  _variable_header cursor_char_,'cursor-char'
 
 ; doc{
 ;
@@ -4120,7 +4128,7 @@ endif
   db $5F ; char code
 
 ; ----------------------------------------------
-  _code_header key_,'KEY'
+  _code_header key_,'key'
 
 ; doc{
 ;
@@ -4135,7 +4143,7 @@ endif
   jp push_a
 
 ; ----------------------------------------------
-  _code_header xkey_,'XKEY'
+  _code_header xkey_,'xkey'
 
 ; doc{
 ;
@@ -4187,7 +4195,7 @@ xkey.translate:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header wait_for_key_,'WAIT-FOR-KEY'
+  _code_header wait_for_key_,'wait-for-key'
 
 ; doc{
 ;
@@ -4210,7 +4218,7 @@ wait_for_key:
   ret
 
 ; ----------------------------------------------
-  _colon_header paren_cr_,'(CR)'
+  _colon_header paren_cr_,'(cr)'
 
 ; doc{
 ;
@@ -4228,7 +4236,7 @@ wait_for_key:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header cr_,'CR',,paren_cr_
+  _defer_header cr_,'cr',,paren_cr_
 
 ; doc{
 ;
@@ -4246,7 +4254,7 @@ wait_for_key:
 ; }doc
 
 ; ----------------------------------------------
-  _code_header c_move_up_,'CMOVE>'
+  _code_header c_move_up_,'cmove>'
 
   exx
   pop bc
@@ -4257,7 +4265,7 @@ wait_for_key:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_move_,'CMOVE'
+  _code_header c_move_,'cmove'
 
   exx
   pop bc
@@ -4268,7 +4276,7 @@ wait_for_key:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header move_,'MOVE'
+  _code_header move_,'move'
 
 ; doc{
 ;
@@ -4286,7 +4294,7 @@ move.do:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header s_move_,'SMOVE'
+  _code_header s_move_,'smove'
 
 ; doc{
 ;
@@ -4305,7 +4313,7 @@ move.do:
   _jump move.do
 
 ; ----------------------------------------------
-  _code_header u_m_star_,'UM*'
+  _code_header u_m_star_,'um*'
 
 ; doc{
 ;
@@ -4426,7 +4434,7 @@ u_m_star.4:
 endif
 
 ; ----------------------------------------------
-  _code_header u_m_slash_mod_,'UM/MOD'
+  _code_header u_m_slash_mod_,'um/mod'
 
 ; doc{
 ;
@@ -4483,7 +4491,7 @@ u_m_slash_mod.4:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header and_,'AND'
+  _code_header and_,'and'
 
   pop de
   pop hl
@@ -4496,7 +4504,7 @@ u_m_slash_mod.4:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header or_,'OR'
+  _code_header or_,'or'
 
   pop de
   pop hl
@@ -4509,7 +4517,7 @@ u_m_slash_mod.4:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header xor_,'XOR'
+  _code_header xor_,'xor'
 
   pop de
   pop hl
@@ -4522,7 +4530,7 @@ u_m_slash_mod.4:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _constant_header slash_user_,'/USER'
+  _constant_header slash_user_,'/user'
 
 ; doc{
 ;
@@ -4535,7 +4543,7 @@ u_m_slash_mod.4:
   dw bytes_per_user_variables
 
 ; ----------------------------------------------
-  _variable_header up_,'UP'
+  _variable_header up_,'up'
 
 ; doc{
 ;
@@ -4550,7 +4558,7 @@ u_m_slash_mod.4:
   dw user_variables
 
 ; ----------------------------------------------
-  _constant_header up0_,'UP0'
+  _constant_header up0_,'up0'
 
 ; doc{
 ;
@@ -4563,7 +4571,7 @@ u_m_slash_mod.4:
   dw user_variables
 
 ; ----------------------------------------------
-  _constant_header hp_,'HP'
+  _constant_header hp_,'hp'
 
   ; XXX TODO -- update documentation for far memory
   ; XXX TODO -- user variable?
@@ -4581,12 +4589,12 @@ u_m_slash_mod.4:
   dw headers_pointer
 
 ; ----------------------------------------------
-  _constant_header hp0_,'HP0'
+  _constant_header hp0_,'hp0'
 
   dw headers_pointer_bottom
 
 ; ----------------------------------------------
-  _code_header hp_fetch_,'HP@'
+  _code_header hp_fetch_,'hp@'
 
   ; XXX TODO -- remove?
   ;
@@ -4605,7 +4613,7 @@ u_m_slash_mod.4:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header hp_store_,'HP!'
+  _code_header hp_store_,'hp!'
 
   ; XXX TODO -- remove?
   ;
@@ -4628,7 +4636,7 @@ u_m_slash_mod.4:
 
   ; XXX TODO -- update documentation for far memory
 
-  _colon_header comma_hp_,',HP'
+  _colon_header comma_hp_,',hp'
 
 ; doc{
 ;
@@ -4650,7 +4658,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _code_header sp_fetch_,'SP@'
+  _code_header sp_fetch_,'sp@'
 
 ; doc{
 ;
@@ -4665,7 +4673,7 @@ endif
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header sp_store_,'SP!'
+  _code_header sp_store_,'sp!'
 
 ; doc{
 ;
@@ -4680,7 +4688,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header rp_,'RP'
+  _constant_header rp_,'rp'
 
   ; XXX TODO -- convert to user variable
 
@@ -4695,7 +4703,7 @@ endif
   dw return_stack_pointer
 
 ; ----------------------------------------------
-  _code_header rp_fetch_,'RP@'
+  _code_header rp_fetch_,'rp@'
 
 ; doc{
 ;
@@ -4709,7 +4717,7 @@ endif
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header rp_store_,'RP!'
+  _code_header rp_store_,'rp!'
 
 ; doc{
 ;
@@ -4724,7 +4732,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header to_r_,'>R'
+  _code_header to_r_,'>r'
 
 ; doc{
 ;
@@ -4743,7 +4751,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   _jp_next
 
 ; ----------------------------------------------
-  _code_header from_r_,'R>'
+  _code_header from_r_,'r>'
 
 ; doc{
 ;
@@ -4761,7 +4769,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   _jp_next
 
 ; ----------------------------------------------
-  _code_header r_drop_,'RDROP'
+  _code_header r_drop_,'rdrop'
 
 ; doc{
 ;
@@ -4776,7 +4784,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   _jp_next
 
 ; ----------------------------------------------
-  _code_header two_to_r_,'2>R'
+  _code_header two_to_r_,'2>r'
 
 ; doc{
 ;
@@ -4791,7 +4799,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   jp two_store.into_hl_pointer
 
 ; ----------------------------------------------
-  _code_header two_from_r_,'2R>'
+  _code_header two_from_r_,'2r>'
 
 ; 2r>  ( -- x1 x2 ) ( R: x1 x2 -- )
 
@@ -4803,7 +4811,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   jp two_fetch_
 
 ; ----------------------------------------------
-  _code_header two_r_fetch_,'2R@'
+  _code_header two_r_fetch_,'2r@'
 
   ; XXX TODO -- Move to the library? But the Z80 label
   ; `two_fetch.hl` should be returned by a constant.
@@ -4814,7 +4822,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
   jp two_fetch.hl
 
 ; ----------------------------------------------
-  _code_header r_fetch_,'R@'
+  _code_header r_fetch_,'r@'
 
   ld hl,(return_stack_pointer)
   jp fetch.hl
@@ -4843,7 +4851,7 @@ zero_equals.hl:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _alias_header false_,'FALSE',,zero_
+  _alias_header false_,'false',,zero_
 
 ; doc{
 ;
@@ -4899,7 +4907,7 @@ true_if_cy:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header d_plus_,'D+'
+  _code_header d_plus_,'d+'
 
 ; doc{
 ;
@@ -4931,7 +4939,7 @@ true_if_cy:
                         ; 112 15 Total
 
 ; ----------------------------------------------
-  _code_header invert_,'INVERT'
+  _code_header invert_,'invert'
 
 ; doc{
 ;
@@ -4954,7 +4962,7 @@ true_if_cy:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header negate_,'NEGATE'
+  _code_header negate_,'negate'
 
 ; doc{
 ;
@@ -5009,7 +5017,7 @@ negate_hl:
   ret
 
 ; ----------------------------------------------
-  _code_header d_negate_,'DNEGATE'
+  _code_header d_negate_,'dnegate'
 
 ; doc{
 ;
@@ -5086,14 +5094,14 @@ endif
   ; ----
 
 ; ----------------------------------------------
-  _code_header nip_,'NIP'
+  _code_header nip_,'nip'
 
   pop hl
   pop de
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header tuck_,'TUCK'
+  _code_header tuck_,'tuck'
 
   pop hl
   pop de
@@ -5101,7 +5109,7 @@ endif
   jp push_hlde
 
 ; ----------------------------------------------
-  _code_header over_,'OVER'
+  _code_header over_,'over'
 
   pop de
   pop hl
@@ -5109,27 +5117,27 @@ endif
   jp push_hlde
 
 ; ----------------------------------------------
-  _code_header drop_,'DROP'
+  _code_header drop_,'drop'
 
   pop hl
   _jp_next
 
 ; ----------------------------------------------
-  _code_header swap_,'SWAP'
+  _code_header swap_,'swap'
 
   pop hl
   ex (sp),hl
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header dup_,'DUP'
+  _code_header dup_,'dup'
 
   pop hl
   push hl
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header two_dup_,'2DUP'
+  _code_header two_dup_,'2dup'
 
   pop hl
   pop de
@@ -5163,7 +5171,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header off_,'OFF'
+  _code_header off_,'off'
 
 ; doc{
 ;
@@ -5182,7 +5190,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header on_,'ON'
+  _code_header on_,'on'
 
 ; doc{
 ;
@@ -5201,7 +5209,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_fetch_and_question_,'C@AND?'
+  _code_header c_fetch_and_question_,'c@and?'
 
 ; doc{
 ;
@@ -5223,7 +5231,7 @@ endif
   jp false_
 
 ; ----------------------------------------------
-  _code_header c_set_,'CSET'
+  _code_header c_set_,'cset'
 
 ; doc{
 ;
@@ -5241,7 +5249,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_reset_,'CRESET'
+  _code_header c_reset_,'creset'
 
 ; doc{
 ;
@@ -5292,7 +5300,7 @@ store.de_into_hl_pointer:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header c_store_,'C!'
+  _code_header c_store_,'c!'
 
   pop hl
   pop de
@@ -5300,7 +5308,7 @@ store.de_into_hl_pointer:
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header do_colon_,'DOCOLON'
+  _constant_header do_colon_,'docolon'
 
 ; doc{
 ;
@@ -5345,7 +5353,7 @@ do_colon:
   _jp_next
 
 ; ----------------------------------------------
-  _variable_header noname_question_,'NONAME?'
+  _variable_header noname_question_,'noname?'
 
 ; doc{
 ;
@@ -5363,7 +5371,7 @@ do_colon:
   dw false
 
 ; ----------------------------------------------
-  _colon_header finish_code_,'FINISH-CODE'
+  _colon_header finish_code_,'finish-code'
 
 ; doc{
 ;
@@ -5409,7 +5417,7 @@ do_colon:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header c_constant_,'CCONSTANT'
+  _colon_header c_constant_,'cconstant'
 
   dw create_,c_comma_
   dw paren_semicolon_code_
@@ -5418,7 +5426,7 @@ do_c_constant:
   ; Execution continues in `c@`:
 
 ; ----------------------------------------------
-  _code_header c_fetch_,'C@'
+  _code_header c_fetch_,'c@'
 
   pop hl
 c_fetch.hl:
@@ -5427,7 +5435,7 @@ c_fetch.hl:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _colon_header constant_,'CONSTANT'
+  _colon_header constant_,'constant'
 
   dw create_,comma_
   dw paren_semicolon_code_
@@ -5447,7 +5455,7 @@ fetch.hl:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header variable_,'VARIABLE'
+  _colon_header variable_,'variable'
 
 ; doc{
 ;
@@ -5472,7 +5480,7 @@ fetch.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header paren_user_,'(USER)'
+  _colon_header paren_user_,'(user)'
 
   ; XXX TODO -- Rename to `user`? That was the original name in
   ; fig-Forth, Forth-79 and Forth-83. Choose an alternative
@@ -5531,7 +5539,7 @@ do_user:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _c_constant_header b_l_,'BL'
+  _c_constant_header b_l_,'bl'
 
 ; doc{
 ;
@@ -5542,17 +5550,17 @@ do_user:
   db space_char
 
 ; ----------------------------------------------
-  _c_constant_header c_slash_l_,'C/L'
+  _c_constant_header c_slash_l_,'c/l'
 
   db characters_per_line
 
 ; ----------------------------------------------
-  _c_constant_header l_slash_scr_,'L/SCR'
+  _c_constant_header l_slash_scr_,'l/scr'
 
   db lines_per_screen
 
 ; ----------------------------------------------
-  _constant_header disk_buffer_,'DISK-BUFFER'
+  _constant_header disk_buffer_,'disk-buffer'
 
 ; doc{
 ;
@@ -5565,7 +5573,7 @@ do_user:
   dw disk_buffer
 
 ; ----------------------------------------------
-  _constant_header buffer_data_,'BUFFER-DATA'
+  _constant_header buffer_data_,'buffer-data'
 
   ; XXX TODO -- rename
 
@@ -5580,24 +5588,24 @@ do_user:
   dw buffer_data
 
 ; ----------------------------------------------
-  _constant_header b_slash_buf_,'B/BUF'
+  _constant_header b_slash_buf_,'b/buf'
 
   dw bytes_per_buffer
 
 ; ----------------------------------------------
-  _constant_header b_slash_rec_,'B/REC'
+  _constant_header b_slash_rec_,'b/rec'
 
   ; XXX TODO -- move to the library, it's calculated
 
   dw bytes_per_sector
 
 ; ----------------------------------------------
-  _c_constant_header rec_slash_blk_,'REC/BLK'
+  _c_constant_header rec_slash_blk_,'rec/blk'
 
   db sectors_per_block
 
 ; ----------------------------------------------
-  _constant_header blk_slash_disk_,'BLK/DISK'
+  _constant_header blk_slash_disk_,'blk/disk'
 
 ; doc{
 ;
@@ -5610,7 +5618,7 @@ do_user:
   dw blocks_per_disk
 
 ; ----------------------------------------------
-  _colon_header plus_origin_,'+ORIGIN'
+  _colon_header plus_origin_,'+origin'
 
 ; doc{
 ;
@@ -5628,7 +5636,7 @@ do_user:
   dw exit_
 
 ; ----------------------------------------------
-  _user_variable_header sp0_,'SP0'
+  _user_variable_header sp0_,'sp0'
 
 ; doc{
 ;
@@ -5644,7 +5652,7 @@ do_user:
   db $00
 
 ; ----------------------------------------------
-  _user_variable_header rp0_,'RP0'
+  _user_variable_header rp0_,'rp0'
 
 ; doc{
 ;
@@ -5666,7 +5674,7 @@ do_user:
   ; db $04
 
 ; ----------------------------------------------
-  _user_variable_header width_,'WIDTH'
+  _user_variable_header width_,'width'
 
   ; XXX TODO normal variable? constant?
   ; XXX TODO -- remove?
@@ -5688,7 +5696,7 @@ do_user:
   db $06
 
 ; ----------------------------------------------
-  _user_variable_header lastblk_,'LASTBLK'
+  _user_variable_header lastblk_,'lastblk'
 
 ; XXX TODO normal variable?
 
@@ -5707,7 +5715,7 @@ do_user:
   db $08
 
 ; ----------------------------------------------
-  _user_variable_header last_,'LAST'
+  _user_variable_header last_,'last'
 
 ; doc{
 ;
@@ -5721,7 +5729,7 @@ do_user:
   db $0A
 
 ; ----------------------------------------------
-  _user_variable_header dp_,'DP'
+  _user_variable_header dp_,'dp'
 
 ; doc{
 ;
@@ -5738,7 +5746,7 @@ do_user:
   db $0C
 
 ; ----------------------------------------------
-  _user_variable_header udp_,'UDP'
+  _user_variable_header udp_,'udp'
 
 ; doc{
 ;
@@ -5752,7 +5760,7 @@ do_user:
   db $0E
 
 ; ----------------------------------------------
-  _user_variable_header lastxt_,'LASTXT'
+  _user_variable_header lastxt_,'lastxt'
 
 ; doc{
 ;
@@ -5766,7 +5774,7 @@ do_user:
   db $10
 
 ; ----------------------------------------------
-  _user_variable_header to_in_,'>IN'
+  _user_variable_header to_in_,'>in'
 
 ; doc{
 ;
@@ -5780,7 +5788,7 @@ do_user:
   db $12
 
 ; ----------------------------------------------
-  _user_variable_header blk_,'BLK'
+  _user_variable_header blk_,'blk'
 
   ; XXX TODO normal variable?
 
@@ -5797,7 +5805,7 @@ do_user:
   db $14
 
 ; ----------------------------------------------
-  _user_variable_header scr_,'SCR'
+  _user_variable_header scr_,'scr'
 
 ; XXX TODO normal variable?
 
@@ -5819,7 +5827,7 @@ do_user:
   db $16
 
 ; ----------------------------------------------
-  _user_variable_header catcher_,'CATCHER'
+  _user_variable_header catcher_,'catcher'
 
 ; doc{
 ;
@@ -5833,7 +5841,7 @@ do_user:
   db $18
 
 ; ----------------------------------------------
-  _user_variable_header hld_,'HLD'
+  _user_variable_header hld_,'hld'
 
 ; doc{
 ;
@@ -5849,7 +5857,7 @@ do_user:
   db $1A
 
 ; ----------------------------------------------
-  _user_variable_header current_,'CURRENT'
+  _user_variable_header current_,'current'
 
 ; doc{
 ;
@@ -5868,7 +5876,7 @@ do_user:
   db $1C
 
 ; ----------------------------------------------
-  _user_variable_header state_,'STATE'
+  _user_variable_header state_,'state'
 
 ; doc{
 ;
@@ -5885,7 +5893,7 @@ do_user:
   db $1E
 
 ; ----------------------------------------------
-  _user_variable_header base_,'BASE'
+  _user_variable_header base_,'base'
 
 ; doc{
 ;
@@ -5898,7 +5906,7 @@ do_user:
   db $20
 
 ; ----------------------------------------------
-  _user_variable_header dpl_,'DPL'
+  _user_variable_header dpl_,'dpl'
 
 ; doc{
 ;
@@ -5911,7 +5919,7 @@ do_user:
   db $22
 
 ; ----------------------------------------------
-  _user_variable_header csp_,'CSP'
+  _user_variable_header csp_,'csp'
 
   ; XXX TODO ordinary variable?
 
@@ -5929,7 +5937,7 @@ do_user:
   db $24
 
 ; ----------------------------------------------
-  _user_variable_header hash_order_,'#ORDER'
+  _user_variable_header hash_order_,'#order'
 
 ; doc{
 ;
@@ -5945,7 +5953,7 @@ do_user:
   db $26
 
 ; ----------------------------------------------
-  _user_variable_header context_,'CONTEXT'
+  _user_variable_header context_,'context'
 
 ; doc{
 ;
@@ -5968,7 +5976,7 @@ do_user:
   db $28
 
 ; ----------------------------------------------
-  _variable_header voc_link_,'VOC-LINK'
+  _variable_header voc_link_,'voc-link'
 
   ; XXX TODO 2015-12-26 -- rename to `latest-wordlist` after
   ; finishing the new implementation of `wordlist`, based on
@@ -5981,7 +5989,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _constant_header tib_,'TIB'
+  _constant_header tib_,'tib'
 
 ; doc{
 ;
@@ -5997,7 +6005,7 @@ endif
   dw terminal_input_buffer
 
 ; ----------------------------------------------
-  _c_constant_header slash_tib_,'/TIB'
+  _c_constant_header slash_tib_,'/tib'
 
 ; doc{
 ;
@@ -6012,7 +6020,7 @@ endif
   db bytes_per_terminal_input_buffer
 
 ; ----------------------------------------------
-  _variable_header number_tib_,'#TIB'
+  _variable_header number_tib_,'#tib'
 
 ; doc{
 ;
@@ -6029,7 +6037,7 @@ endif
   dw 0
 
 ; ----------------------------------------------
-  _two_variable_header input_buffer_,'INPUT-BUFFER'
+  _two_variable_header input_buffer_,'input-buffer'
 
 ; doc{
 ;
@@ -6044,7 +6052,7 @@ endif
   dw 0 ; address
 
 ; ----------------------------------------------
-  _colon_header source_,'SOURCE'
+  _colon_header source_,'source'
 
 ; doc{
 ;
@@ -6090,16 +6098,16 @@ source.other:
               ; 41 06 Total
 
 ; ----------------------------------------------
-  _alias_header cell_minus_,'CELL-',,two_minus_
+  _alias_header cell_minus_,'cell-',,two_minus_
 
 ; ----------------------------------------------
-  _alias_header cell_plus_,'CELL+',,two_plus_
+  _alias_header cell_plus_,'cell+',,two_plus_
 
 ; ----------------------------------------------
-  _alias_header char_minus_,'CHAR-',,one_minus_
+  _alias_header char_minus_,'char-',,one_minus_
 
 ; ----------------------------------------------
-  _alias_header char_plus_,'CHAR+',,one_plus_
+  _alias_header char_plus_,'char+',,one_plus_
 
 ; ----------------------------------------------
   _code_header one_minus_,'1-'
@@ -6143,7 +6151,7 @@ source.other:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _alias_header chars_,'CHARS',immediate,noop_
+  _alias_header chars_,'chars',immediate,noop_
 
 ; doc{
 ;
@@ -6158,7 +6166,7 @@ source.other:
 ; }doc
 
 ; ----------------------------------------------
-  _alias_header cells_,'CELLS',,two_star_
+  _alias_header cells_,'cells',,two_star_
 
 ; doc{
 ;
@@ -6171,7 +6179,7 @@ source.other:
 ; }doc
 
 ; ----------------------------------------------
-  _alias_header cell_,'CELL',,two_
+  _alias_header cell_,'cell',,two_
 
 ; doc{
 ;
@@ -6185,7 +6193,7 @@ source.other:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header here_,'HERE'
+  _colon_header here_,'here'
 
 ; doc{
 ;
@@ -6204,7 +6212,7 @@ source.other:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header allot_,'ALLOT'
+  _colon_header allot_,'allot'
 
 ; doc{
 ;
@@ -6232,7 +6240,7 @@ source.other:
   ; http://dxforth.netbay.com.au/allot.html
 
 ; ----------------------------------------------
-  _colon_header s_comma_,'S,'
+  _colon_header s_comma_,'s,'
 
 ; doc{
 ;
@@ -6266,7 +6274,7 @@ two_comma.allot:
   dw exit_
 
 ; ----------------------------------------------
-  _alias_header compile_comma_,'COMPILE,',,comma_
+  _alias_header compile_comma_,'compile,',,comma_
 
 ; doc{
 ;
@@ -6275,7 +6283,7 @@ two_comma.allot:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header c_comma_,'C,'
+  _colon_header c_comma_,'c,'
 
   dw here_,c_store_
   _literal 1
@@ -6325,7 +6333,7 @@ two_comma.allot:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _alias_header true_,'TRUE',,minus_one_
+  _alias_header true_,'true',,minus_one_
 
 ; doc{
 ;
@@ -6366,7 +6374,7 @@ less_than.reverse
   jp true_       ; if +ve, result true
 
 ; ----------------------------------------------
-  _code_header u_greater_than_,'U>'
+  _code_header u_greater_than_,'u>'
 
   pop hl
 u_greater_than.hl:
@@ -6374,7 +6382,7 @@ u_greater_than.hl:
   jp u_less_than.de_hl
 
 ; ----------------------------------------------
-  _code_header u_less_than_,'U<'
+  _code_header u_less_than_,'u<'
 
   ; Credit:
   ;
@@ -6398,7 +6406,7 @@ u_less_than.de_hl:
   jp less_than.de_hl
 
 ; ----------------------------------------------
-  _code_header rot_,'ROT'
+  _code_header rot_,'rot'
 
   pop de
   pop hl
@@ -6406,13 +6414,13 @@ u_less_than.de_hl:
   jp push_hlde
 
 ; ----------------------------------------------
-  _colon_header space_,'SPACE'
+  _colon_header space_,'space'
 
   dw b_l_,emit_
   dw exit_
 
 ; ----------------------------------------------
-  _code_header question_dup_,'?DUP'
+  _code_header question_dup_,'?dup'
 
   pop hl
   ld a,h
@@ -6422,7 +6430,7 @@ u_less_than.de_hl:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _colon_header latest_,'LATEST'
+  _colon_header latest_,'latest'
 
 ; doc{
 ;
@@ -6438,7 +6446,7 @@ u_less_than.de_hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header current_latest_,'CURRENT-LATEST'
+  _colon_header current_latest_,'current-latest'
 
 ; doc{
 ;
@@ -6462,7 +6470,7 @@ u_less_than.de_hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header latestxt_,'LATESTXT'
+  _colon_header latestxt_,'latestxt'
 
   ; XXX TODO -- move to the library?
   ; Note: Used by `mode32` in the library.
@@ -6481,7 +6489,7 @@ u_less_than.de_hl:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header to_name_,'>NAME'
+  _code_header to_name_,'>name'
 
   ; XXX TODO -- move to the library, when the temporary code of
   ; the warning in `header,` is removed
@@ -6704,7 +6712,7 @@ endif
 ; ----------------------------------------------
 if 0 ; XXX OLD
 
-  _colon_header c_store_bank_,'C!BANK'
+  _colon_header c_store_bank_,'c!bank'
 
   ; XXX TODO -- move to the library
 
@@ -6723,7 +6731,7 @@ if 0 ; XXX OLD
 
 else
 
-  _code_header c_store_bank_,'C!BANK'
+  _code_header c_store_bank_,'c!bank'
 
   ; 10 bytes
 
@@ -6740,7 +6748,7 @@ endif
 ; ----------------------------------------------
 if 0 ; XXX OLD
 
-  _colon_header store_bank_,'!BANK'
+  _colon_header store_bank_,'!bank'
 
   ; XXX TODO -- move to the library
 
@@ -6764,7 +6772,7 @@ if 0 ; XXX OLD
 
 else
 
-  _code_header store_bank_,'!BANK'
+  _code_header store_bank_,'!bank'
 
   ; 12 bytes
 
@@ -6786,7 +6794,7 @@ else
 ; ----------------------------------------------
 if 0 ; XXX OLD
 
-  _colon_header c_fetch_bank_,'C@BANK'
+  _colon_header c_fetch_bank_,'c@bank'
 
 ; doc{
 ;
@@ -6808,7 +6816,7 @@ if 0 ; XXX OLD
 
 else
 
-  _code_header c_fetch_bank_,'C@BANK'
+  _code_header c_fetch_bank_,'c@bank'
 
   ; 10..11 bytes
 
@@ -6825,7 +6833,7 @@ endif
 ; ----------------------------------------------
 if 0 ; XXX OLD
 
-  _colon_header fetch_bank_,'@BANK'
+  _colon_header fetch_bank_,'@bank'
 
 ; doc{
 ;
@@ -6847,7 +6855,7 @@ if 0 ; XXX OLD
 
 else
 
-  _code_header fetch_bank_,'@BANK'
+  _code_header fetch_bank_,'@bank'
 
   ; 10 bytes
 
@@ -6869,7 +6877,7 @@ endif
 endif
 
 ; ----------------------------------------------
-  _code_header default_bank_,'DEFAULT-BANK'
+  _code_header default_bank_,'default-bank'
 
 ; doc{
 ;
@@ -6903,7 +6911,7 @@ if 1 ; far_memory
 else
 
 ; ----------------------------------------------
-  _colon_header c_fetch_s_,'C@S'
+  _colon_header c_fetch_s_,'c@s'
 
   ; XXX TODO -- move to the library?
   ; Used only by an alternative version of `lex?`
@@ -6926,7 +6934,7 @@ else
   ; jp c_fetch_bank.e
 
 ; ----------------------------------------------
-  _colon_header fetch_s_,'@S'
+  _colon_header fetch_s_,'@s'
 
 ; doc{
 ;
@@ -6952,7 +6960,7 @@ if 1 ; far_memory
 
 if 0 ; XXX OLD
 
-  _colon_header far_c_fetch_,'FARC@'
+  _colon_header far_c_fetch_,'farc@'
 
 ; doc{
 ;
@@ -6977,7 +6985,7 @@ if 0 ; XXX OLD
 
 else
 
-  _code_header far_c_fetch_,'FARC@'
+  _code_header far_c_fetch_,'farc@'
 
 ; doc{
 ;
@@ -7005,7 +7013,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _code_header far_c_store_,'FARC!'
+  _code_header far_c_store_,'farc!'
 
 ; doc{
 ;
@@ -7025,7 +7033,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header far_fetch_,'FAR@'
+  _code_header far_fetch_,'far@'
 
 ; doc{
 ;
@@ -7065,7 +7073,7 @@ endif
   _jp_next
 
 ; ----------------------------------------------
-  _code_header far_store_,'FAR!'
+  _code_header far_store_,'far!'
 
 ; doc{
 ;
@@ -7107,7 +7115,7 @@ endif
 endif ; far_memory
 
 ; ----------------------------------------------
-  _colon_header from_name_,'NAME>'
+  _colon_header from_name_,'name>'
 
 if 1 ; far_memory
 
@@ -7146,7 +7154,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header name_to_string_,'NAME>STRING'
+  _colon_header name_to_string_,'name>string'
 
   ; XXX TODO -- move to the library, with `.name`
 
@@ -7210,7 +7218,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header store_csp_,'!CSP'
+  _colon_header store_csp_,'!csp'
 
 ; doc{
 ;
@@ -7231,7 +7239,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_throw_,'?THROW'
+  _colon_header question_throw_,'?throw'
 
 ; doc{
 ;
@@ -7256,7 +7264,7 @@ endif
 ; XXX TODO -- benchmark, compare to `and throw`
 
 ; ----------------------------------------------
-  _colon_header compiling_question_,'COMPILING?'
+  _colon_header compiling_question_,'compiling?'
 
 ; doc{
 ;
@@ -7273,7 +7281,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header executing_question_,'EXECUTING?'
+  _colon_header executing_question_,'executing?'
 
 ; doc{
 ;
@@ -7290,7 +7298,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_csp_,'?CSP'
+  _colon_header question_csp_,'?csp'
 
 ; doc{
 ;
@@ -7311,20 +7319,20 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_loading_,'?LOADING'
+  _colon_header question_loading_,'?loading'
 
   dw loading_question_,zero_equals_
   _question_throw error.loading_only
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header loading_question_,'LOADING?'
+  _colon_header loading_question_,'loading?'
 
   dw blk_,fetch_,zero_not_equals_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header compile_,'COMPILE',compile_only
+  _colon_header compile_,'compile',compile_only
 
 ; doc{
 ;
@@ -7339,7 +7347,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header postpone_,'POSTPONE',immediate
+  _colon_header postpone_,'postpone',immediate
 
 ; doc{
 ;
@@ -7377,7 +7385,7 @@ postpone.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header revealed_,'REVEALED'
+  _colon_header revealed_,'revealed'
 
 ; doc{
 ;
@@ -7402,7 +7410,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header reveal_,'REVEAL'
+  _colon_header reveal_,'reveal'
 
 ; doc{
 ;
@@ -7430,7 +7438,7 @@ endif
 ;   latest ?dup ;
 
 ; ----------------------------------------------
-  _colon_header hidden_,'HIDDEN'
+  _colon_header hidden_,'hidden'
 
 ; doc{
 ;
@@ -7444,7 +7452,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header hide_,'HIDE'
+  _colon_header hide_,'hide'
 
 ; doc{
 ;
@@ -7458,7 +7466,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _c_constant_header word_length_mask_,'WORD-LENGTH-MASK'
+  _c_constant_header word_length_mask_,'word-length-mask'
 
 ; doc{
 ;
@@ -7471,7 +7479,7 @@ endif
   db word_length_mask
 
 ; ----------------------------------------------
-  _c_constant_header smudge_mask_,'SMUDGE-MASK'
+  _c_constant_header smudge_mask_,'smudge-mask'
 
 ; doc{
 ;
@@ -7484,7 +7492,7 @@ endif
   db smudge_mask
 
 ; ----------------------------------------------
-  _colon_header hex_,'HEX'
+  _colon_header hex_,'hex'
 
 ; doc{
 ;
@@ -7502,7 +7510,7 @@ endif
   dw branch_,base_store
 
 ; ----------------------------------------------
-  _colon_header decimal_,'DECIMAL'
+  _colon_header decimal_,'decimal'
 
 ; doc{
 ;
@@ -7521,7 +7529,7 @@ base_store:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header paren_semicolon_code_,'(;CODE)'
+  _colon_header paren_semicolon_code_,'(;code)'
 
 ; doc{
 ;
@@ -7544,7 +7552,7 @@ base_store:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header does_,'DOES>',immediate+compile_only
+  _colon_header does_,'does>',immediate+compile_only
 
 do_does: equ do_colon
 
@@ -7556,7 +7564,7 @@ do_does: equ do_colon
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header far_count_,'FARCOUNT'
+  _code_header far_count_,'farcount'
 
 ; doc{
 ;
@@ -7582,7 +7590,7 @@ if 1 ; far_memory
 endif
 
 ; ----------------------------------------------
-  _code_header count_,'COUNT'
+  _code_header count_,'count'
 
 ; doc{
 ;
@@ -7607,13 +7615,13 @@ push_ahl:
   jp push_a
 
 ; ----------------------------------------------
-  _colon_header bounds_,'BOUNDS'
+  _colon_header bounds_,'bounds'
 
   dw over_,plus_,swap_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header type_,'TYPE'
+  _colon_header type_,'type'
 
 ; doc{
 ;
@@ -7638,7 +7646,7 @@ type.loop_exit
 
 ; ----------------------------------------------
 
-  _code_header minus_trailing_,'-TRAILING'
+  _code_header minus_trailing_,'-trailing'
 
 ; doc{
 ;
@@ -7675,7 +7683,7 @@ minus_trailing.begin:
   jp minus_trailing.begin ; repeat
 
 ; ----------------------------------------------
-  _colon_header minus_leading_,'-LEADING'
+  _colon_header minus_leading_,'-leading'
 
 ; doc{
 ;
@@ -7773,7 +7781,7 @@ minus_trailing.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _variable_header span_,'SPAN'
+  _variable_header span_,'span'
 
   ; XXX TODO -- move to the library
 
@@ -7792,7 +7800,7 @@ minus_trailing.begin:
   dw 0
 
 ; ----------------------------------------------
-  _defer_header to_history_,'>HISTORY',,two_drop_
+  _defer_header to_history_,'>history',,two_drop_
 
 ; XXX TODO -- not used yet
 
@@ -7806,7 +7814,7 @@ minus_trailing.begin:
 ; }doc
 
 ; ----------------------------------------------
-  _defer_header accept_,'ACCEPT',,simple_accept_
+  _defer_header accept_,'accept',,simple_accept_
 
 ; doc{
 ;
@@ -7832,7 +7840,7 @@ minus_trailing.begin:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header simple_accept_,'SIMPLE-ACCEPT'
+  _colon_header simple_accept_,'simple-accept'
 
 ; Credit:
 ;
@@ -7909,7 +7917,7 @@ simple_accept.end
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header query_,'QUERY'
+  _colon_header query_,'query'
 
 ; doc{
 ;
@@ -7944,7 +7952,7 @@ simple_accept.end
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header paren_source_id_,'(SOURCE-ID)'
+  _constant_header paren_source_id_,'(source-id)'
 
 ; doc{
 ;
@@ -7957,7 +7965,7 @@ simple_accept.end
   dw source_id_pfa
 
 ; ----------------------------------------------
-  _constant_header source_id_,'SOURCE-ID'
+  _constant_header source_id_,'source-id'
 
 ; doc{
 ;
@@ -7977,7 +7985,7 @@ simple_accept.end
   dw 0
 
 ; ----------------------------------------------
-  _colon_header block_question_,'BLOCK?'
+  _colon_header block_question_,'block?'
 
 ; doc{
 ;
@@ -7991,7 +7999,7 @@ simple_accept.end
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header refill_,'REFILL'
+  _colon_header refill_,'refill'
 
 ; doc{
 ;
@@ -8027,7 +8035,7 @@ refill.not_loading
   dw exit_
 
 ; ----------------------------------------------
-  _code_header fill_,'FILL'
+  _code_header fill_,'fill'
 
 ; doc{
 ;
@@ -8064,7 +8072,7 @@ fill.done:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header erase_,'ERASE'
+  _code_header erase_,'erase'
 
 ; doc{
 ;
@@ -8083,7 +8091,7 @@ fill.done:
   jp fill.a
 
 ; ----------------------------------------------
-  _code_header blank_,'BLANK'
+  _code_header blank_,'blank'
 
 ; doc{
 ;
@@ -8102,7 +8110,7 @@ fill.done:
   jp fill.a
 
 ; ----------------------------------------------
-  _colon_header hold_,'HOLD'
+  _colon_header hold_,'hold'
 
 ; doc{
 ;
@@ -8123,7 +8131,7 @@ fill.done:
   dw exit_
 
 ; ----------------------------------------------
-  _variable_header slash_hold_,'/HOLD'
+  _variable_header slash_hold_,'/hold'
 
 ; doc{
 ;
@@ -8139,7 +8147,7 @@ fill.done:
   dw 68
 
 ; ----------------------------------------------
-  _colon_header pad_,'PAD'
+  _colon_header pad_,'pad'
 
 ; doc{
 ;
@@ -8164,7 +8172,7 @@ fill.done:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header stream_,'STREAM'
+  _colon_header stream_,'stream'
 
 ; doc{
 ;
@@ -8178,7 +8186,7 @@ fill.done:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header slash_string_,'/STRING'
+  _code_header slash_string_,'/string'
 
 ; doc{
 ;
@@ -8214,7 +8222,7 @@ fill.done:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _colon_header parsed_,'PARSED'
+  _colon_header parsed_,'parsed'
 
 ; doc{
 ;
@@ -8233,7 +8241,7 @@ fill.done:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header parse_,'PARSE'
+  _colon_header parse_,'parse'
 
 ; doc{
 ;
@@ -8268,7 +8276,7 @@ parse.end:
   dw exit_
 
 ; ----------------------------------------------
-  _two_variable_header parsed_name_,'PARSED-NAME'
+  _two_variable_header parsed_name_,'parsed-name'
 
 ; doc{
 ;
@@ -8282,7 +8290,7 @@ parse.end:
   dw 0,0
 
 ; ----------------------------------------------
-  _defer_header header_,'HEADER',,input_stream_header_
+  _defer_header header_,'header',,input_stream_header_
 
 ; doc{
 ;
@@ -8296,7 +8304,7 @@ parse.end:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header question_name_too_short_,'?NAME-TOO-SHORT'
+  _colon_header question_name_too_short_,'?name-too-short'
 
 ; doc{
 ;
@@ -8309,7 +8317,7 @@ parse.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header input_stream_header_,'INPUT-STREAM-HEADER'
+  _colon_header input_stream_header_,'input-stream-header'
 
 ; doc{
 ;
@@ -8339,7 +8347,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header default_header_,'DEFAULT-HEADER'
+  _colon_header default_header_,'default-header'
 
 ; doc{
 ;
@@ -8360,7 +8368,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header parse_name_,'PARSE-NAME'
+  _colon_header parse_name_,'parse-name'
 
 ; doc{
 
@@ -8396,7 +8404,7 @@ parse_name.skip:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header upper_,'UPPER'
+  _code_header upper_,'upper'
 
 ; doc{
 ;
@@ -8408,8 +8416,7 @@ parse_name.skip:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, depending on the final
-  ; implementation of the case-sensitive mode
+  ; XXX TODO -- move to the library
   ;
   ; XXX TODO convert to deferred, to let it be customized for
   ; 8-bit charsets.
@@ -8429,7 +8436,7 @@ ascii_upper.a:
   ret
 
 ; ----------------------------------------------
-  _code_header lower_,'LOWER'
+  _code_header lower_,'lower'
 
 ; doc{
 ;
@@ -8462,7 +8469,7 @@ ascii_lower.a:
   ret
 
 ; ----------------------------------------------
-  _code_header uppers_,'UPPERS'
+  _code_header uppers_,'uppers'
 
 ; doc{
 ;
@@ -8474,8 +8481,7 @@ ascii_lower.a:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, depending on the final
-  ; implementation of the case-sensitive mode
+  ; XXX TODO -- move to the library
   ;
   ; XXX TODO convert to deferred, to let it be customized for
   ; 8-bit charsets.
@@ -8494,7 +8500,7 @@ uppers.do:
   _jump uppers.do
 
 ; ----------------------------------------------
-  _code_header lowers_,'LOWERS'
+  _code_header lowers_,'lowers'
 
 ; doc{
 ;
@@ -8506,8 +8512,8 @@ uppers.do:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, depending on the final
-  ; implementation of the case-sensitive mode
+  ; XXX TODO -- move to the library when the old system bank method is
+  ; removed
   ;
   ; XXX TODO convert to deferred, to let it be customized for
   ; 8-bit charsets.
@@ -8528,11 +8534,9 @@ lowers.do:
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header far_uppers_,'FARUPPERS'
+  _code_header far_uppers_,'faruppers'
 
-  ; XXX TODO -- move to the library, depending on the final
-  ; implementation of the case-sensitive mode
-  ;
+  ; XXX TODO -- move to the library
 
 ; XXX TMP --
 ; XXX TODO -- improve to save push/pop
@@ -8576,11 +8580,7 @@ endif
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header far_lowers_,'FARLOWERS'
-
-  ; XXX TODO -- move to the library, depending on the final
-  ; implementation of the case-sensitive mode
-  ;
+  _code_header far_lowers_,'farlowers'
 
 ; XXX TMP --
 ; XXX TODO -- improve to save push/pop
@@ -8622,7 +8622,7 @@ far_lowers.end:
 endif
 
 ; ----------------------------------------------
-  _colon_header undefined_question_,'UNDEFINED?'
+  _colon_header undefined_question_,'undefined?'
 
 ; doc{
 ;
@@ -8637,7 +8637,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _code_header place_,'PLACE'
+  _code_header place_,'place'
 
 ; doc{
 ;
@@ -8684,7 +8684,7 @@ endif
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header far_place_,'FARPLACE'
+  _code_header far_place_,'farplace'
 
 ; doc{
 ;
@@ -8720,7 +8720,7 @@ far_place.copy_char:
 endif
 
 ; ----------------------------------------------
-  _variable_header error_number_,'ERROR#'
+  _variable_header error_number_,'error#'
 
   ; XXX TODO -- useful? remove? user variable?
 
@@ -8736,7 +8736,7 @@ endif
   dw 0
 
 ; ----------------------------------------------
-  _two_variable_header error_pos_,'ERROR-POS'
+  _two_variable_header error_pos_,'error-pos'
 
 ; doc{
 ;
@@ -8754,7 +8754,7 @@ endif
   dw 0 ; value of `>in`
 
 ; ----------------------------------------------
-  _colon_header dot_error_word_,'.ERROR-WORD'
+  _colon_header dot_error_word_,'.error-word'
 
   dw parsed_name_,two_fetch_,cr_,type_ ; last parsed word
   dw paren_dot_quote_
@@ -8762,7 +8762,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header error_,'ERROR'
+  _colon_header error_,'error'
 
 ; doc{
 ;
@@ -8804,12 +8804,12 @@ error.message:
   ; No return from `(abort)`.
 
 ; ----------------------------------------------
-  _two_variable_header abort_message_,"ABORT-MESSAGE"
+  _two_variable_header abort_message_,'abort-message'
 
   dw 0,0
 
 ; ----------------------------------------------
-  _colon_header dot_name_,'.NAME'
+  _colon_header dot_name_,'.name'
 
   ; XXX TODO -- move to the library, with `warnings`
   ; and the check done in `header,`.
@@ -8818,7 +8818,7 @@ error.message:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header warn_,'WARN',,noop_
+  _defer_header warn_,'warn',,noop_
 
 ; doc{
 ;
@@ -8838,7 +8838,7 @@ error.message:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header header_comma_,'HEADER,'
+  _colon_header header_comma_,'header,'
 
 ; doc{
 ;
@@ -8885,9 +8885,7 @@ endif
 
   dw case_sensitive_,fetch_
   dw question_branch_,header_comma.name_ready
-  dw r_fetch_,far_count_,far_uppers_ ; convert the name to uppercase
-;  dw r_fetch_,far_count_,far_lowers_ ; convert the name to lowercase
-  ; XXX TODO -- lowercase in improved case-sensitive mode
+  dw r_fetch_,far_count_,far_lowers_ ; convert the name to lowercase
 header_comma.name_ready:
 
   dw r_fetch_
@@ -8921,9 +8919,7 @@ else ; system bank
 
   dw case_sensitive_,fetch_
   dw question_branch_,header_comma.name_ready
-  dw r_fetch_,count_,uppers_ ; convert it to uppercase
-;  dw r_fetch_,count_,lowers_ ; convert it to lowercase
-  ; XXX TODO -- lowercase in improved case-sensitive mode
+  dw r_fetch_,count_,lowers_ ; convert it to lowercase
 header_comma.name_ready:
 
   dw r_fetch_,get_current_,store_ ; update the current word list
@@ -8939,7 +8935,7 @@ header_comma.name_ready:
 endif
 
 ; ----------------------------------------------
-  _colon_header create_,'CREATE'
+  _colon_header create_,'create'
 
   ; XXX TODO -- factor `header reveal` to `visible-header`?
   ; This phrase is used also by `defer` and `alias`.
@@ -8959,7 +8955,7 @@ do_create:
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
 
-  _colon_header code_,'CODE'
+  _colon_header code_,'code'
 
   dw header_,asm_
   dw exit_
@@ -8967,7 +8963,7 @@ if 1 ; assembler_core_in_kernel
 endif
 
 ; ----------------------------------------------
-  _code_header compare_,'COMPARE'
+  _code_header compare_,'compare'
 
   ; XXX TODO -- move to the library -- but needed by `[needed]`
 
@@ -9049,7 +9045,7 @@ compare.end:
   _jp_pushhl ; string2 is longer than string2
 
 ; ----------------------------------------------
-  _code_header search_,'SEARCH'
+  _code_header search_,'search'
 
   ; XXX TODO -- move to the library -- but needed by `contains`
 
@@ -9158,7 +9154,7 @@ search.failed:
   jp false_
 
 ; ----------------------------------------------
-  _colon_header s_literal_,'SLITERAL',immediate+compile_only
+  _colon_header s_literal_,'sliteral',immediate+compile_only
 
   ; ----
   ; : sliteral  ( ca len -- )  compile slit s,  ; immediate
@@ -9168,7 +9164,7 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header byte_question_,'BYTE?'
+  _code_header byte_question_,'byte?'
 
 ; doc{
 ;
@@ -9186,7 +9182,7 @@ search.failed:
   jp zero_equals.hl
 
 ; ----------------------------------------------
-  _colon_header c_literal_,'CLITERAL',immediate+compile_only
+  _colon_header c_literal_,'cliteral',immediate+compile_only
 
 ; doc{
 ;
@@ -9211,7 +9207,7 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header literal_,'LITERAL',immediate+compile_only
+  _colon_header literal_,'literal',immediate+compile_only
 
 ; doc{
 ;
@@ -9230,7 +9226,7 @@ search.failed:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header one_literal_,'1LITERAL',immediate+compile_only
+  _colon_header one_literal_,'1literal',immediate+compile_only
 
 ; doc{
 ;
@@ -9250,7 +9246,7 @@ search.failed:
   dw branch_,c_literal_pfa
 
 ; ----------------------------------------------
-  _colon_header two_literal_,'2LITERAL',immediate+compile_only
+  _colon_header two_literal_,'2literal',immediate+compile_only
 
 ; doc{
 ;
@@ -9273,7 +9269,7 @@ if 1 ; developing
 
   ; XXX TMP -- during the development
 
-  _colon_header depth_,'DEPTH'
+  _colon_header depth_,'depth'
 
   ; XXX TMP -- only during the development, then move to the
   ; library.
@@ -9284,7 +9280,7 @@ if 1 ; developing
 endif
 
 ; ----------------------------------------------
-  _colon_header question_dictionary_,'?DICTIONARY'
+  _colon_header question_dictionary_,'?dictionary'
 
 ; doc{
 ;
@@ -9301,7 +9297,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_stack_,'?STACK'
+  _colon_header question_stack_,'?stack'
 
 ; doc{
 ;
@@ -9325,7 +9321,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_r_stack_,'?RSTACK'
+  _colon_header question_r_stack_,'?rstack'
 
 ; doc{
 ;
@@ -9364,19 +9360,19 @@ endif
   _throw error.return_stack_overflow ; no return from `throw`
 
 ; ----------------------------------------------
-  _colon_header not_understood_,'NOT-UNDERSTOOD'
+  _colon_header not_understood_,'not-understood'
 
   _literal error.not_understood
   dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
-  _colon_header compilation_only_,'COMPILATION-ONLY'
+  _colon_header compilation_only_,'compilation-only'
 
   _literal error.compilation_only
   dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
-  _colon_header nest_source_,'NEST-SOURCE',compile_only
+  _colon_header nest_source_,'nest-source',compile_only
 
 ; doc{
 ;
@@ -9412,7 +9408,7 @@ endif
   ; `>r exit`.
 
 ; ----------------------------------------------
-  _colon_header unnest_source_,'UNNEST-SOURCE',compile_only
+  _colon_header unnest_source_,'unnest-source',compile_only
 
 ; doc{
 ;
@@ -9447,7 +9443,7 @@ endif
   ; `>r exit`.
 
 ; ----------------------------------------------
-  _variable_header interpret_table_,'INTERPRET-TABLE'
+  _variable_header interpret_table_,'interpret-table'
 
 ; doc{
 ;
@@ -9483,7 +9479,7 @@ interpret_table.0:
   dw compilation_only_  ; ...immediate and compile-only word (error)
 
 ; ----------------------------------------------
-  _colon_header interpret_,'INTERPRET'
+  _colon_header interpret_,'interpret'
 
 ; doc{
 ;
@@ -9552,7 +9548,7 @@ interpret.end:
   dw exit_
 
 ; ----------------------------------------------
-  _c_constant_header immediate_mask_,'IMMEDIATE-MASK'
+  _c_constant_header immediate_mask_,'immediate-mask'
 
 ; doc{
 ;
@@ -9565,7 +9561,7 @@ interpret.end:
   db immediate_mask
 
 ; ----------------------------------------------
-  _colon_header lex_question_,'LEX?'
+  _colon_header lex_question_,'lex?'
 
 ; doc{
 ;
@@ -9603,7 +9599,7 @@ endif
 endif
 
 ; ----------------------------------------------
-  _colon_header lex_store_,'LEX!'
+  _colon_header lex_store_,'lex!'
 
 ; doc{
 ;
@@ -9625,13 +9621,13 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header immediate_,'IMMEDIATE'
+  _colon_header immediate_,'immediate'
 
   dw immediate_mask_,latest_,lex_store_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header immediate_question_,'IMMEDIATE?'
+  _colon_header immediate_question_,'immediate?'
 
 ; doc{
 ;
@@ -9645,7 +9641,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header name_to_immediate_question_,'NAME>IMMEDIATE?'
+  _colon_header name_to_immediate_question_,'name>immediate?'
 
 ; doc{
 ;
@@ -9660,7 +9656,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _c_constant_header compile_only_mask_,'COMPILE-ONLY-MASK'
+  _c_constant_header compile_only_mask_,'compile-only-mask'
 
 ; doc{
 ;
@@ -9673,13 +9669,13 @@ endif
   db compile_only_mask
 
 ; ----------------------------------------------
-  _colon_header compile_only_,'COMPILE-ONLY'
+  _colon_header compile_only_,'compile-only'
 
   dw compile_only_mask_,latest_,lex_store_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header compile_only_question_,'COMPILE-ONLY?'
+  _colon_header compile_only_question_,'compile-only?'
 
 ; doc{
 ;
@@ -9693,7 +9689,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header wordlist_comma_,'WORDLIST,'
+  _colon_header wordlist_comma_,'wordlist,'
 
 ; doc{
 ;
@@ -9725,7 +9721,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header wordlist_,'WORDLIST'
+  _colon_header wordlist_,'wordlist'
 
 ; Credit: Most code related to word lists has been adapted from
 ; eForth.
@@ -9743,7 +9739,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header do_vocabulary_,'DOVOCABULARY'
+  _colon_header do_vocabulary_,'dovocabulary'
 
 ; doc{
 ;
@@ -9769,7 +9765,7 @@ do_vocabulary:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header get_current_,'GET-CURRENT'
+  _colon_header get_current_,'get-current'
 
 ; doc{
 ;
@@ -9792,7 +9788,7 @@ do_vocabulary:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header set_current_,'SET-CURRENT'
+  _colon_header set_current_,'set-current'
 
 ; doc{
 ;
@@ -9814,7 +9810,7 @@ do_vocabulary:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header definitions_,'DEFINITIONS'
+  _colon_header definitions_,'definitions'
 
 ; doc{
 ;
@@ -9864,7 +9860,7 @@ do_vocabulary:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dot_ok_,'.OK'
+  _colon_header dot_ok_,'.ok'
 
 ; doc{
 ;
@@ -9880,7 +9876,7 @@ do_vocabulary:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header ok_,'OK',,dot_ok_
+  _defer_header ok_,'ok',,dot_ok_
 
 ; doc{
 ;
@@ -9892,7 +9888,7 @@ do_vocabulary:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header quit_,'QUIT'
+  _colon_header quit_,'quit'
 
   dw terminal_to_source_
   dw left_bracket_
@@ -9906,7 +9902,7 @@ quit.begin:
   dw branch_,quit.begin
 
 ; ----------------------------------------------
-  _colon_header paren_defer_,'(DEFER)'
+  _colon_header paren_defer_,'(defer)'
 
 ; doc{
 ;
@@ -9923,7 +9919,7 @@ quit.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header defer_,'DEFER'
+  _colon_header defer_,'defer'
 
 ; doc{
 ;
@@ -9941,7 +9937,7 @@ quit.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _alias_header to_defer_,'>DEFER',,one_plus_
+  _alias_header to_defer_,'>defer',,one_plus_
 
 ; XXX TODO -- rename to `>action`, after the standard
 ; `action-of`?
@@ -9956,7 +9952,7 @@ quit.begin:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header defer_store_,'DEFER!'
+  _colon_header defer_store_,'defer!'
 
 ; doc{
 ;
@@ -9972,7 +9968,7 @@ quit.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _variable_header version_,'VERSION'
+  _variable_header version_,'version'
 
 ; doc{
 ;
@@ -9996,7 +9992,7 @@ quit.begin:
   dw version_build_high_part,version_build_low_part
 
 ; ----------------------------------------------
-  _colon_header dot_version_,'.VERSION'
+  _colon_header dot_version_,'.version'
 
 ; doc{
 ;
@@ -10032,7 +10028,7 @@ dot_version.build
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header greeting_,'GREETING'
+  _colon_header greeting_,'greeting'
 
 ; doc{
 ;
@@ -10057,7 +10053,7 @@ endif
 ; ----------------------------------------------
 if 1 ; developing
   ; XXX TMP -- during the development
-  _colon_header dot_unused_,'.UNUSED'
+  _colon_header dot_unused_,'.unused'
 
 ; doc{
 ;
@@ -10083,7 +10079,7 @@ if 1 ; developing
 
 endif
 ; ----------------------------------------------
-  _defer_header boot_,'BOOT',,noop_
+  _defer_header boot_,'boot',,noop_
 
 ; doc{
 ;
@@ -10095,7 +10091,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _variable_header previous_mode_,'PREVIOUS-MODE'
+  _variable_header previous_mode_,'previous-mode'
 
   ; XXX TODO -- convert to a deferred word?
 
@@ -10113,7 +10109,7 @@ endif
   dw noop_
 
 ; ----------------------------------------------
-  _variable_header current_mode_,'CURRENT-MODE'
+  _variable_header current_mode_,'current-mode'
 
   ; XXX TODO -- convert to a deferred word?
 
@@ -10130,20 +10126,20 @@ endif
   dw noop_
 
 ; ----------------------------------------------
-  _colon_header save_mode_,'SAVE-MODE'
+  _colon_header save_mode_,'save-mode'
 
   dw current_mode_,fetch_
   dw previous_mode_,store_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header restore_mode_,'RESTORE-MODE'
+  _colon_header restore_mode_,'restore-mode'
 
   dw previous_mode_,perform_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header warm_,'WARM'
+  _colon_header warm_,'warm'
 
 ; doc{
 ;
@@ -10162,7 +10158,7 @@ warm_start:
   dw warm_
 
 ; ----------------------------------------------
-  _colon_header cold_,'COLD'
+  _colon_header cold_,'cold'
 
 ; doc{
 ;
@@ -10255,7 +10251,7 @@ common_start:
   _jp_next ; jump to the xt pointed by the register pair BC
 
 ; ----------------------------------------------
-  _alias_header d_to_s_,'D>S',,drop_
+  _alias_header d_to_s_,'d>s',,drop_
 
 ; doc{
 ;
@@ -10275,7 +10271,7 @@ if size_optimization
 
   ; 9 bytes
 
-  _colon_header s_to_d_,'S>D'
+  _colon_header s_to_d_,'s>d'
 
   dw dup_,zero_less_than_
   dw exit_
@@ -10284,7 +10280,7 @@ else
 
   ; 13 bytes
 
-  _code_header s_to_d_,'S>D'
+  _code_header s_to_d_,'s>d'
 
   ld hl,0
   pop de
@@ -10314,7 +10310,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _code_header question_negate_,'?NEGATE'
+  _code_header question_negate_,'?negate'
 
 ; doc{
 ;
@@ -10339,7 +10335,7 @@ question_negate.hl:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header question_d_negate_,'?DNEGATE'
+  _code_header question_d_negate_,'?dnegate'
 
 ; doc{
 ;
@@ -10364,7 +10360,7 @@ question_d_negate.hl:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header abs_,'ABS'
+  _code_header abs_,'abs'
 
 ; doc{
 ;
@@ -10384,7 +10380,7 @@ question_d_negate.hl:
   jp question_negate.hl
 
 ; ----------------------------------------------
-  _code_header d_abs_,'DABS'
+  _code_header d_abs_,'dabs'
 
 ; doc{
 ;
@@ -10404,7 +10400,7 @@ question_d_negate.hl:
   jp question_d_negate.hl
 
 ; ----------------------------------------------
-  _code_header umax_,'UMAX'
+  _code_header umax_,'umax'
 
 ; doc{
 ;
@@ -10421,7 +10417,7 @@ question_d_negate.hl:
   jp max.1
 
 ; ----------------------------------------------
-  _code_header umin_,'UMIN'
+  _code_header umin_,'umin'
 
 ; doc{
 ;
@@ -10438,7 +10434,7 @@ question_d_negate.hl:
   jp max.2
 
 ; ----------------------------------------------
-  _code_header min_,'MIN'
+  _code_header min_,'min'
 
   ; Credit:
   ; Code from DZX-Forth.
@@ -10449,7 +10445,7 @@ question_d_negate.hl:
   jp max.2
 
 ; ----------------------------------------------
-  _code_header max_,'MAX'
+  _code_header max_,'max'
 
   ; Credit:
   ; Code adapted from DZX-Forth.
@@ -10466,7 +10462,7 @@ max.2:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header m_star_,'M*'
+  _colon_header m_star_,'m*'
 
 ; doc{
 ;
@@ -10509,7 +10505,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _defer_header m_slash_,'M/',,s_m_slash_rem_
+  _defer_header m_slash_,'m/',,s_m_slash_rem_
 
 ; doc{
 ;
@@ -10533,7 +10529,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header s_m_slash_rem_,'SM/REM'
+  _colon_header s_m_slash_rem_,'sm/rem'
 
 ; doc{
 ;
@@ -10611,7 +10607,7 @@ else
 endif
 
 ; ----------------------------------------------
-  _colon_header slash_mod_,'/MOD'
+  _colon_header slash_mod_,'/mod'
 
 ; doc{
 ;
@@ -10652,7 +10648,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header mod_,'MOD'
+  _colon_header mod_,'mod'
 
 ; doc{
 ;
@@ -10676,7 +10672,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header star_slash_mod_,'*/MOD'
+  _colon_header star_slash_mod_,'*/mod'
 
 ; doc{
 ;
@@ -10727,7 +10723,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header line_to_string_,'LINE>STRING'
+  _colon_header line_to_string_,'line>string'
 
 ; doc{
 ;
@@ -10757,13 +10753,13 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dec_dot_,'DEC.'
+  _colon_header dec_dot_,'dec.'
 
   dw base_,fetch_,swap_,decimal_,dot_,base_,store_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dot_throw_hash_,'.THROW#'
+  _colon_header dot_throw_hash_,'.throw#'
 
 ; doc{
 ;
@@ -10779,7 +10775,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header dot_throw_,'.THROW',,dot_throw_hash_
+  _defer_header dot_throw_,'.throw',,dot_throw_hash_
 
   ; Credit:
   ; Name from MPE Forth for TiniARM.
@@ -10794,7 +10790,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header updated_question_,'UPDATED?'
+  _colon_header updated_question_,'updated?'
 
 ; doc{
 ;
@@ -10812,7 +10808,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header empty_buffers_,'EMPTY-BUFFERS'
+  _colon_header empty_buffers_,'empty-buffers'
 
 ; doc{
 ;
@@ -10837,7 +10833,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header buffer_id_,'BUFFER-ID'
+  _colon_header buffer_id_,'buffer-id'
 
 ; doc{
 ;
@@ -10851,7 +10847,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header buffer_block_,'BUFFER-BLOCK'
+  _colon_header buffer_block_,'buffer-block'
 
 ; doc{
 ;
@@ -10872,7 +10868,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header free_buffer_,'FREE-BUFFER'
+  _colon_header free_buffer_,'free-buffer'
 
 ; doc{
 ;
@@ -10898,7 +10894,7 @@ free_buffer.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header buffer_,'BUFFER'
+  _colon_header buffer_,'buffer'
 
 ; doc{
 ;
@@ -10929,7 +10925,7 @@ buffer.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header block_,'BLOCK'
+  _colon_header block_,'block'
 
 ; doc{
 ;
@@ -10966,7 +10962,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header flip_,'FLIP'
+  _code_header flip_,'flip'
 
 ; doc{
 ;
@@ -10991,7 +10987,7 @@ block.end:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _colon_header save_buffers_,'SAVE-BUFFERS'
+  _colon_header save_buffers_,'save-buffers'
 
 ; doc{
 ;
@@ -11018,7 +11014,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header set_source_,'SET-SOURCE'
+  _colon_header set_source_,'set-source'
 
 ; doc{
 ;
@@ -11039,7 +11035,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header terminal_to_source_,'TERMINAL>SOURCE'
+  _colon_header terminal_to_source_,'terminal>source'
 
 ; doc{
 ;
@@ -11059,7 +11055,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header block_to_source_,'BLOCK>SOURCE'
+  _colon_header block_to_source_,'block>source'
 
 ; doc{
 ;
@@ -11090,7 +11086,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header paren_load_,'(LOAD)'
+  _colon_header paren_load_,'(load)'
 
 ; doc{
 ;
@@ -11111,7 +11107,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header load_,'LOAD'
+  _colon_header load_,'load'
 
 ; doc{
 ;
@@ -11168,7 +11164,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header defined_,'DEFINED'
+  _colon_header defined_,'defined'
 
 ; doc{
 ;
@@ -11190,7 +11186,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header question_defined_,'?DEFINED'
+  _colon_header question_defined_,'?defined'
 
 ; doc{
 ;
@@ -11206,7 +11202,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header bracket_defined_,'[DEFINED]',immediate
+  _colon_header bracket_defined_,'[defined]',immediate
 
 ; doc{
 ;
@@ -11225,7 +11221,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header bracket_undefined_,'[UNDEFINED]',immediate
+  _colon_header bracket_undefined_,'[undefined]',immediate
 
   ; XXX TODO make this the main word instead of `[defined]`, and
   ; move `[defined]` to the library?
@@ -11287,7 +11283,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _alias_header begin_,'BEGIN',immediate+compile_only,backward_mark_
+  _alias_header begin_,'begin',immediate+compile_only,backward_mark_
 
 ; doc{
 ;
@@ -11300,17 +11296,17 @@ block.end:
 ; }doc
 
 ; ----------------------------------------------
-  _alias_header then_,'THEN',immediate+compile_only,forward_resolve_
+  _alias_header then_,'then',immediate+compile_only,forward_resolve_
 
 ; ----------------------------------------------
-  _colon_header until_,'UNTIL',immediate+compile_only
+  _colon_header until_,'until',immediate+compile_only
 
   dw compile_,zero_branch_
   dw backward_resolve_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header again_,'AGAIN',immediate+compile_only
+  _colon_header again_,'again',immediate+compile_only
 
 ; doc{
 ;
@@ -11326,7 +11322,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header repeat_,'REPEAT',immediate+compile_only
+  _colon_header repeat_,'repeat',immediate+compile_only
 
 ; doc{
 ;
@@ -11344,7 +11340,7 @@ block.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header if_,'IF',immediate+compile_only
+  _colon_header if_,'if',immediate+compile_only
 
 ; doc{
 ;
@@ -11358,7 +11354,7 @@ if.do:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header ahead_,'AHEAD',immediate+compile_only
+  _colon_header ahead_,'ahead',immediate+compile_only
 
 ; doc{
 ;
@@ -11375,7 +11371,7 @@ if.do:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header else_,'ELSE',immediate+compile_only
+  _colon_header else_,'else',immediate+compile_only
 
   dw ahead_
   dw swap_ ; XXX TODO `cs-swap`
@@ -11383,14 +11379,14 @@ if.do:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header while_,'WHILE',immediate+compile_only
+  _colon_header while_,'while',immediate+compile_only
 
   dw if_
   dw swap_ ; XXX TODO `cs-swap`
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header spaces_,'SPACES'
+  _colon_header spaces_,'spaces'
 
 ; doc{
 ;
@@ -11407,7 +11403,7 @@ if.do:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header emits_,'EMITS'
+  _colon_header emits_,'emits'
 
 ; doc{
 ;
@@ -11458,7 +11454,7 @@ emits.loop_exit:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header sign_,'SIGN'
+  _colon_header sign_,'sign'
 
 ; doc{
 
@@ -11486,7 +11482,7 @@ sign.end:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header to_digit_,'>DIGIT'
+  _code_header to_digit_,'>digit'
 
 ; doc{
 ;
@@ -11538,7 +11534,7 @@ to_digit.end
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header u_d_slash_mod_,'UD/MOD'
+  _colon_header u_d_slash_mod_,'ud/mod'
 
 ; doc{
 ;
@@ -11576,7 +11572,7 @@ to_digit.end
   dw exit_
 
 ; ----------------------------------------------
-  _code_header minus_rot_,'-ROT'
+  _code_header minus_rot_,'-rot'
 
 ; doc{
 ;
@@ -11595,7 +11591,7 @@ to_digit.end
   jp push_hlde
 
 ; ----------------------------------------------
-  _colon_header hash_s_,'#S'
+  _colon_header hash_s_,'#s'
 
 ; doc{
 ;
@@ -11609,7 +11605,7 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header d_dot_r_,'D.R'
+  _colon_header d_dot_r_,'d.r'
 
 ; doc{
 ;
@@ -11633,13 +11629,13 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dot_r_,'.R'
+  _colon_header dot_r_,'.r'
 
   dw to_r_,s_to_d_,from_r_,d_dot_r_
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header zero_dot_r_,'0.R'
+  _colon_header zero_dot_r_,'0.r'
 
 ; doc{
 ;
@@ -11655,7 +11651,7 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header zero_d_dot_r_,'0D.R'
+  _colon_header zero_d_dot_r_,'0d.r'
 
 ; doc{
 ;
@@ -11671,7 +11667,7 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header d_dot_,'D.'
+  _colon_header d_dot_,'d.'
 
 ; doc{
 ;
@@ -11707,7 +11703,7 @@ hash_s.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header u_dot_,'U.'
+  _colon_header u_dot_,'u.'
 
   _literal 0
   dw d_dot_
@@ -11718,7 +11714,7 @@ if 1 ; developing
 
   ; XXX TMP -- during the development
 
-  _colon_header dot_s_,'.S'
+  _colon_header dot_s_,'.s'
 
   ; XXX TMP -- only during the development, then remove
   ; It is in the library.
@@ -11747,7 +11743,7 @@ dot_s.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header type_ascii_,'TYPE-ASCII'
+  _colon_header type_ascii_,'type-ascii'
 
   ; XXX TMP -- for debugging
 
@@ -11770,7 +11766,7 @@ type_ascii.loop_exit
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header blks_,'BLKS'
+  _colon_header blks_,'blks'
 
   ; XXX TMP -- for debugging
 
@@ -11818,7 +11814,7 @@ trdos_tester.loop_exit
 endif
 
 ; ----------------------------------------------
-  _colon_header page_,'PAGE'
+  _colon_header page_,'page'
 
 ; doc{
 ;
@@ -11846,7 +11842,7 @@ page.display
   dw exit_
 
 ; ----------------------------------------------
-  _code_header paren_bye_,'(BYE)'
+  _code_header paren_bye_,'(bye)'
 
   ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
 
@@ -11871,7 +11867,7 @@ system_stack_pointer: equ $+1
   db $08 ; "STOP" BASIC error
 
 ; ----------------------------------------------
-  _defer_header default_mode_,'DEFAULT-MODE',,noop_
+  _defer_header default_mode_,'default-mode',,noop_
 
 ; doc{
 ;
@@ -11884,7 +11880,7 @@ system_stack_pointer: equ $+1
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header bye_,'BYE'
+  _colon_header bye_,'bye'
 
   dw save_mode_
   dw default_mode_
@@ -11892,14 +11888,14 @@ system_stack_pointer: equ $+1
   ; No return from `(bye)`.
 
 ; ----------------------------------------------
-  _code_header two_drop_,'2DROP'
+  _code_header two_drop_,'2drop'
 
   pop hl
   pop hl
   _jp_next
 
 ; ----------------------------------------------
-  _code_header two_swap_,'2SWAP'
+  _code_header two_swap_,'2swap'
 
 ; doc{
 ;
@@ -11929,7 +11925,7 @@ system_stack_pointer: equ $+1
                       ; 110 13 Total
 
 ; ----------------------------------------------
-  _variable_header limit_,'LIMIT'
+  _variable_header limit_,'limit'
 
 ; doc{
 ;
@@ -11952,7 +11948,7 @@ system_stack_pointer: equ $+1
   dw 0
 
 ; ----------------------------------------------
-  _variable_header farlimit_,'FARLIMIT'
+  _variable_header farlimit_,'farlimit'
 
 ; doc{
 ;
@@ -11975,7 +11971,7 @@ system_stack_pointer: equ $+1
   dw 0
 
 ; ----------------------------------------------
-  _colon_header unused_,'UNUSED'
+  _colon_header unused_,'unused'
 
 ; doc{
 ;
@@ -11997,7 +11993,7 @@ system_stack_pointer: equ $+1
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header farunused_,'FARUNUSED'
+  _colon_header farunused_,'farunused'
 
 ; doc{
 ;
@@ -12017,7 +12013,7 @@ system_stack_pointer: equ $+1
 if 1 ; developing
   ; XXX TMP -- during the development
 
-  _colon_header where_,'WHERE'
+  _colon_header where_,'where'
 
   ; XXX TMP -- needed only during the development
   ; XXX TODO -- remove; already copied to the library
@@ -12044,7 +12040,7 @@ where.do_it:
 endif
 
 ; ----------------------------------------------
-  _colon_header mode32_at_xy_,'MODE32-AT-XY'
+  _colon_header mode32_at_xy_,'mode32-at-xy'
 
 ; doc{
 
@@ -12088,7 +12084,7 @@ at_pfa.last_line:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header cls_,'CLS'
+  _code_header cls_,'cls'
 
 ; doc{
 ;
@@ -12129,7 +12125,7 @@ at_pfa.last_line:
   ; Execution continues in `home`:
 
 ; ----------------------------------------------
-  _defer_header home_,'HOME',,paren_home_
+  _defer_header home_,'home',,paren_home_
 
 ; doc{
 ;
@@ -12146,7 +12142,7 @@ at_pfa.last_line:
 ; }doc
 
 ; ----------------------------------------------
-  _code_header paren_home_,'(HOME)'
+  _code_header paren_home_,'(home)'
 
 ; doc{
 ;
@@ -12166,7 +12162,7 @@ at_pfa.last_line:
   ; Execution continues in `at-xy`:
 
 ; ----------------------------------------------
-  _defer_header at_xy_,'AT-XY',,mode32_at_xy_
+  _defer_header at_xy_,'at-xy',,mode32_at_xy_
 
 ; doc{
 ;
@@ -12182,7 +12178,7 @@ at_pfa.last_line:
 ; }doc
 
 ; ----------------------------------------------
-  _colon_header mode32_xy_,'MODE32-XY'
+  _colon_header mode32_xy_,'mode32-xy'
 
 ; doc{
 ;
@@ -12222,7 +12218,7 @@ mode32_xy.end:
   dw exit_
 
 ; ----------------------------------------------
-  _defer_header xy_,'XY',,mode32_xy_
+  _defer_header xy_,'xy',,mode32_xy_
 
 ; doc{
 ;
@@ -12238,7 +12234,7 @@ mode32_xy.end:
 ; }doc
 
 ; ----------------------------------------------
-  _code_header default_colors_,'DEFAULT-COLORS'
+  _code_header default_colors_,'default-colors'
 
 ; doc{
 ;
@@ -12272,7 +12268,7 @@ mode32_xy.end:
   jr border.a
 
 ; ----------------------------------------------
-  _code_header border_,'BORDER'
+  _code_header border_,'border'
 
 ; doc{
 ;
@@ -12300,7 +12296,7 @@ border.a:
   ; BASIC, no matter the border color used in Forth.
 
 ; ----------------------------------------------
-  _code_header flash_,'FLASH'
+  _code_header flash_,'flash'
 
 ; doc{
 ;
@@ -12315,7 +12311,7 @@ border.a:
   jr color1
 
 ; ----------------------------------------------
-  _code_header bright_,'BRIGHT'
+  _code_header bright_,'bright'
 
 ; doc{
 ;
@@ -12344,7 +12340,7 @@ color1:
   jr permanent_colors_
 
 ; ----------------------------------------------
-  _code_header paper_,'PAPER'
+  _code_header paper_,'paper'
 
 ; doc{
 ;
@@ -12359,7 +12355,7 @@ color1:
   jr color9
 
 ; ----------------------------------------------
-  _code_header ink_,'INK'
+  _code_header ink_,'ink'
 
 ; doc{
 ;
@@ -12392,7 +12388,7 @@ color9.valid:
   ; Execution continues in `permanent-colors`:
 
 ; ----------------------------------------------
-  _code_header permanent_colors_,'PERMANENT-COLORS'
+  _code_header permanent_colors_,'permanent-colors'
 
 ; doc{
 ;
@@ -12406,7 +12402,7 @@ color9.valid:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header two_constant_,'2CONSTANT'
+  _colon_header two_constant_,'2constant'
 
 ; doc{
 ;
@@ -12453,7 +12449,7 @@ two_fetch.hl:
                 ; 86t 12 TOTAL
 
 ; ----------------------------------------------
-  _colon_header two_variable_,'2VARIABLE'
+  _colon_header two_variable_,'2variable'
 
 ; doc{
 ;
@@ -12481,7 +12477,7 @@ two_fetch.hl:
   dw branch_,two_comma.allot
 
 ; ----------------------------------------------
-  _code_header two_over_,'2OVER'
+  _code_header two_over_,'2over'
 
   ; XXX TODO -- Move to the library? But the Z80 label
   ; `two_fetch.hl` should be returned by a constant.
@@ -12501,13 +12497,13 @@ two_fetch.hl:
   jp two_fetch.hl
 
 ; ----------------------------------------------
-  _alias_header unnest_,'UNNEST',,r_drop_
+  _alias_header unnest_,'unnest',,r_drop_
 
   ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
 
 ; ----------------------------------------------
-  _code_header exit_,'EXIT'
+  _code_header exit_,'exit'
 
 ; doc{
 ;
@@ -12535,7 +12531,7 @@ two_fetch.hl:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header question_exit_,'?EXIT'
+  _code_header question_exit_,'?exit'
 
 ; doc{
 ;
@@ -12559,7 +12555,7 @@ two_fetch.hl:
   _jp_next
 
 ; ----------------------------------------------
-  _colon_header throw_,'THROW'
+  _colon_header throw_,'throw'
 
   ; Credit:
   ; Code from DZX-Forth.
@@ -12608,7 +12604,7 @@ throw.end:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header paren_abort_,'(ABORT)'
+  _colon_header paren_abort_,'(abort)'
 
   dw sp0_,fetch_,sp_store_
   dw boot_  ; XXX TODO -- not here?
@@ -12616,13 +12612,13 @@ throw.end:
   ; No return from `quit`.
 
 ; ----------------------------------------------
-  _colon_header abort_,'ABORT'
+  _colon_header abort_,'abort'
 
   _literal -1
   dw throw_ ; no return from this `throw`
 
 ; ----------------------------------------------
-  _colon_header s_quote_,'S"',immediate
+  _colon_header s_quote_,'s"',immediate
 
 ; doc{
 ;
