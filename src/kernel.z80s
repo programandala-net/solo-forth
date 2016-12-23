@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612230202
+; Last modified: 201612231349
 
 include version.z80s
 
@@ -3398,6 +3398,20 @@ char_question.not:
 ; String _ca len_ must be below memory address $C000.
 ;
 ; }doc
+ 
+
+  ; First, patch the code depending on the case-sensitive mode.  This
+  ; way the inner loop does not have to check the mode for every
+  ; letter of the string searched for.
+  
+  ld de,ascii_lower.a ; routine used when case-sensitive mode is off
+  ld hl,(case_sensitive_pfa) ; contents of `case-sensitive` variable
+  ld a,h
+  or l ; zero?
+  jr z,find_name_from.set_case_sensitivity ; if zero, just do it
+  ld de,noop_routine ; routine used when case-sensitive mode is on
+find_name_from.set_case_sensitivity:
+  ld (find_name_from.call_ascii_lower.a+1),de ; set the routine to be called
 
 if 1 ; far_memory
 
@@ -3620,76 +3634,34 @@ find_name.loop_exit:
 ; ----------------------------------------------
   _variable_header case_sensitive_,'case-sensitive'
 
-; XXX TMP --
-;
-; XXX TODO -- remove after improving the implementation of the
-; case-sensitive mode
-
 ; doc{
 ;
 ; case-sensitive  ( -- a )
 ;
-; A variable that holds a flag. The flag is true when
-; case-sensitive mode is on; else it's false (default value).
-; This variable is modified by `be-case-sensitive` and
-; `be-case-insensitive`, and should not be modified by the
-; application.
+; A variable that holds a flag that turns case-sensitive mode on and
+; off.
 ;
-; See: `be-case-sensitive`, `be-case-insensitive`.
+; When the contents of `case-sensitive` is zero, case-sensitive mode
+; is off (this is the default): the name of new words defined will be
+; stored in lowercase into the dictionary headers; and any name
+; searched for in the dictionary will be converted to lowercase first
+; (the conversion is done at low level, not affecting the name string
+; passed as parameter).
+;
+; When the contents of `case-sensitive` is non-zero, case-sensitive
+; mode is on: the name of new words defined will be stored as they are
+; parsed from the input stream, without modification; and any name
+; searched for in the dictionary will not be modified, therefore it
+; will be found only if it's identical to the name stored in the
+; definition header.
+;
+; WARNING: Words that are defined when case-sensitive mode is on, and
+; that have uppercase characters in their names, will not be found
+; when case-sensitive mode is off.
 ;
 ; }doc
 
   dw false
-
-; ----------------------------------------------
-  _colon_header be_case_sensitive_,'be-case-sensitive'
-
-; XXX TODO -- rename to `case-sensitive` after improving the
-; implementation of the case-sensitive mode
-
-; doc{
-;
-; be-case-sensitive  ( -- )
-;
-; Turn the case-sensitive mode on. In this mode, the name of new words
-; defined will be stored without modification; and any name searched
-; for in the dictionary will not be modified, therefore it will be
-; found only if it's identical to the name stored in the definition
-; header.
-;
-; See: `be-case-insensitive`, `case-sensitive`.
-;
-; }doc
-
-  dw case_sensitive_,on_
-  dw lit_,noop_routine
-  dw branch_,be_case_insensitive.end
-
-; ----------------------------------------------
-  _colon_header be_case_insensitive_,'be-case-insensitive'
-
-; XXX TODO -- rename to `case-insensitive` after improving the
-; implementation of the case-sensitive mode
-
-; doc{
-;
-; be-case-insensitive  ( -- )
-;
-; Turn the case-insensitive mode on, which is the default. In this
-; mode, the name of new words defined will be stored in lowercase; and
-; any name searched for in the dictionary will be converted to
-; lowercase first.
-;
-; See: `be-case-sensitive`, `case-sensitive`.
-;
-; }doc
-
-  dw case_sensitive_,off_
-  dw lit_,ascii_lower.a
-be_case_insensitive.end:
-  dw lit_,find_name_from.call_ascii_lower.a+1
-  dw store_
-  dw exit_
 
 ; ----------------------------------------------
   _code_header scan_,'scan'
