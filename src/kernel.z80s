@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612230133
+; Last modified: 201612230202
 
 include version.z80s
 
@@ -1498,7 +1498,7 @@ set_lib_order.exit
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header get_lib_order_,'GET-LIB-ORDER'
+  _colon_header get_lib_order_,'get-lib-order'
 
 ; XXX NEW -- not used yet by `need`
 
@@ -1544,7 +1544,7 @@ get_lib_order.exit
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _variable_header far_banks_,'FAR-BANKS'
+  _variable_header far_banks_,'far-banks'
 
   db 1,3,4,7
 
@@ -1583,7 +1583,7 @@ endif
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header question_next_bank_,'?NEXT-BANK'
+  _code_header question_next_bank_,'?next-bank'
 
 ; doc{
 ;
@@ -1662,7 +1662,7 @@ endif
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header question_previous_bank_,'?PREVIOUS-BANK'
+  _code_header question_previous_bank_,'?previous-bank'
 
 ; doc{
 ;
@@ -1723,7 +1723,7 @@ endif
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _variable_header bank_index_,'BANK-INDEX'
+  _variable_header bank_index_,'bank-index'
 
 ; doc{
 ;
@@ -1741,7 +1741,7 @@ endif
 ; ----------------------------------------------
 if 1 ; far_memory
 
-  _code_header far_,'FAR'
+  _code_header far_,'far'
 
 ; doc{
 ;
@@ -1814,7 +1814,7 @@ far.hl.mod:
 endif
 
 ; ----------------------------------------------
-  _colon_header asm_,'ASM'
+  _colon_header asm_,'asm'
 
 ; doc{
 ;
@@ -1838,7 +1838,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header also_,'ALSO'
+  _colon_header also_,'also'
 
 ; doc{
 ;
@@ -1865,7 +1865,7 @@ endif
   ; : also  ( -- )  context @ >order  ;
 
 ; ----------------------------------------------
-  _colon_header only_,'ONLY'
+  _colon_header only_,'only'
 
 ; doc{
 ;
@@ -1885,7 +1885,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header paren_set_order_,'(SET-ORDER)'
+  _colon_header paren_set_order_,'(set-order)'
 
 ; doc{
 ;
@@ -1910,7 +1910,7 @@ paren_set_order.loop_exit
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header get_order_,'GET-ORDER'
+  _colon_header get_order_,'get-order'
 
 ; : get-order  ( -- wid[n]..wid[1] n )
 ;   #order @ 0 ?do
@@ -1928,7 +1928,7 @@ get_order.exit
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header max_order_,'MAX-ORDER'
+  _constant_header max_order_,'max-order'
 
 ; doc{
 ;
@@ -1942,7 +1942,7 @@ get_order.exit
   dw max_search_order
 
 ; ----------------------------------------------
-  _colon_header question_order_,'?ORDER'
+  _colon_header question_order_,'?order'
 
 ; doc{
 ;
@@ -1967,7 +1967,7 @@ get_order.exit
   ; No return from `throw`, no need for `exit` here.
 
 ; ----------------------------------------------
-  _colon_header set_order_,'SET-ORDER'
+  _colon_header set_order_,'set-order'
 
 ; doc{
 ;
@@ -2011,7 +2011,7 @@ set_order.exit
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header to_order_,'>ORDER'
+  _colon_header to_order_,'>order'
 
   ; XXX TODO -- move to the library?
 
@@ -2037,7 +2037,7 @@ set_order.exit
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header previous_,'PREVIOUS'
+  _colon_header previous_,'previous'
 
   ; XXX TODO -- move to the library? -- but it's used by `asm`
 
@@ -2075,7 +2075,7 @@ set_order.exit
 ;  vp @ 0 ?do  vp cell+ i cells + @  loop  vp @  ;
 
 ; ----------------------------------------------
-  _variable_header root_wordlist_,'ROOT-WORDLIST'
+  _variable_header root_wordlist_,'root-wordlist'
 
   dw latest_nt_in_root_voc
 root_vocabulary_link:
@@ -2088,7 +2088,7 @@ root_vocabulary_link:
   dw root_wordlist_pfa
 
 ; ----------------------------------------------
-  _variable_header forth_wordlist_,'FORTH-WORDLIST'
+  _variable_header forth_wordlist_,'forth-wordlist'
 
 ; doc{
 ;
@@ -4045,7 +4045,7 @@ translate_char.end:
 endif
 
 ; ----------------------------------------------
-  ; _code_header paren_key_,'(KEY)'
+  ; _code_header paren_key_,'(key)'
 
   ; XXX not used yet
 
