@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612231432
+; Last modified: 201612231651
 
 include version.z80s
 
@@ -1912,10 +1912,27 @@ paren_set_order.loop_exit
 ; ----------------------------------------------
   _colon_header get_order_,'get-order'
 
+; doc{
+;
+; get-order  ( -- wid[n]..wid[1] n )
+;
+; Return the number of word lists _n_ in the search order and the word
+; lists identifiers _wid[n]..wid[1]_ identifying these word lists.
+; _wid[1]_ identifies the word list that is searched first, and
+; _wid[n]_ the word list that is searched last.
+;
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+
+; ----
 ; : get-order  ( -- wid[n]..wid[1] n )
 ;   #order @ 0 ?do
 ;     #order @ i - 1- cells context + @
 ;   loop  #order @  ;
+; ----
+
+; See: `set-order`, `>order`.
+;
+; }doc
 
   dw hash_order_,fetch_
   _literal 0
@@ -1934,8 +1951,10 @@ get_order.exit
 ;
 ; max-order  ( -- n )
 ;
-; A constant that returns the maximum number of word lists in
-; the search order.
+; A constant that returns the maximum number of word lists in the
+; search order.
+;
+; See: `context`, `#order`, `set-order`, `get-order`, `>order`.
 ;
 ; }doc
 
@@ -1971,7 +1990,7 @@ get_order.exit
 
 ; doc{
 ;
-; set-order  ( -1 | 0 | widn..wid1 n -- )
+; set-order  ( -1 | 0 | wid[n]..wid[1] n -- )
 ;
 ; Set the search order to the word lists identified by
 ; _widn..wid1_. Subsequently, word list _wid1_ will be
@@ -1988,6 +2007,8 @@ get_order.exit
 ;   dup ?order  dup #order !
 ;   0 ?do  i cells context + !  loop  ;
 ; ----
+;
+; See: `get-order`, `>order`.
 ;
 ; }doc
 
@@ -5915,10 +5936,11 @@ do_user:
 ;
 ; #order  ( -- a )
 ;
-; User variable that holds the number of word lists in the
-; search order.
+; User variable that holds the number of word lists in the search
+; order.
 ;
-; See: `context`, `max-order`, `get-order`, `set-order`, `order`.
+; See: `context`, `max-order`, `get-order`, `set-order`, `>order`,
+; `order`.
 ;
 ; }doc
 
