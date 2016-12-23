@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201932
+  \ Last modified: 201612230149
 
   \ -----------------------------------------------------------
   \ Description
@@ -114,6 +114,8 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,`, after the
   \ change in the kernel.
+  \
+  \ 2016-12-23: Fix typo `s@`, instead of `@s`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -171,7 +173,7 @@ need str=
 need name>link
 [defined] far@ ?\ : name<name  ( nt1 -- nt2 )  name>link @s  ;
   \ XXX TMP -- while the old system bank is kept, just in case
-[defined] s@ ?\ : name<name  ( nt1 -- nt2 )  name>link far@  ;
+[defined] @s ?\ : name<name  ( nt1 -- nt2 )  name>link far@  ;
   \ Get the previous _nt2_ from _nt1_.
 
 ( >>link name>> >>name >body body> '' [''] )
