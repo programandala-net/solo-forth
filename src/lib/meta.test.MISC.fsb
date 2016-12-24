@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201944
+  \ Last modified: 201612241928
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,31 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2016-12-24: Add `window-test`.
+
+( window-test )
+
+need window  need wtype  need wcls  need ~~  need s+
+
+:noname   ( ca len -- )
+ 0 ~~y @ 3 + at-xy ." x " wx c@ . ." y " wy c@ .
+                   ." free " wfreecolumns .  ;
+' ~~app-info defer!
+
+window my-window
+
+: txt  ( -- ca len )
+  s" En un lugar de La Mancha de cuyo nombre no quiero"
+  s"  acordarme no ha mucho tiempo que..." s+  ;
+
+default-colors cls 7 border
+
+20  5  8 15 set-window 6 paper 0 ink wcls txt wtype
+ 2  2 22  6 set-window 5 paper 0 ink wcls txt wtype
+ 0 10 10 12 set-window 2 paper 7 ink wcls txt wtype
+
+home default-colors
 
 ( /sconstants-test )
 

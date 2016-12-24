@@ -3,14 +3,13 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ Last modified: 201612241744
+  \ Last modified: 201612241906
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Basic text windows, which use special printing words.
+  \ Basic implementation of text windows, which use specific
+  \ printing words and share the global color attributes.
 
   \ -----------------------------------------------------------
   \ Author
@@ -31,16 +30,16 @@
   \
   \ 2016-12-24: First working version.
 
-( window )
+  \ -----------------------------------------------------------
+  \ To-do
 
-need cfield:  need +field-opt-0124
-need columns  need rows  need under+  need ruler
+  \ Scroll, with configurable pause.
+  \
+  \ Rewrite `wcls` in Z80.
 
-need ~~
+( window set-window )
 
--->
-
-( window )
+need +field-opt-0124 need cfield:
 
 0 cfield: ~wx         \ x cursor coordinate
   cfield: ~wy         \ y cursor coordinate
@@ -59,7 +58,7 @@ variable current-window
 : wcolumns  ( -- ca )  current-window @ ~wcolumns  ;
 : wrows     ( -- ca )  current-window @ ~wrows     ;  -->
 
-( window )
+( window set-window )
 
 : window  ( "name" -- )
   create  here  /window allot  current-window !
@@ -69,132 +68,109 @@ variable current-window
 
 : set-window  ( x0 y0 columns rows -- )
   wrows c!  wcolumns c!  wy0 c! wx0 c!  ;
-  \ Set the current window: _x0 y0_ is the position of
-  \ its top left corner on the screen, and _columns rows_ is
-  \ its size.
+  \ Set the current window: _x0 y0_ is the position of its top
+  \ left corner on the screen, and _columns rows_ is its size.
 
-: reset-window  ( -- )  0 0 columns rows set-window  ;
-  \ Set the current window to use the full screen.
+( wspace wemit wfreecolumns (wat-xy wat-xy at-wxy )
 
-: (wat-xy)  ( x y -- )  wx0 c@ under+ wy0 c@ + at-xy  ;
+[unneeded] wspace
+?\ need wemit  : wspace  ( -- )  bl wemit  ;  exit
+
+need ?(
+
+[unneeded] wemit ?(  need char>string  need wtype
+: wemit  ( c -- )  char>string wtype  ;  exit ?)
+
+[unneeded] wfreecolumns ?(  need window
+: wfreecolumns  ( -- n )  wcolumns c@ wx c@ -  ;  exit ?)
+  \ Return the number _n_ of free columns in the current
+  \ line of the current window.
+
+[unneeded] (wat-xy ?(  need window  need under+
+: (wat-xy  ( x y -- )  wx0 c@ under+ wy0 c@ + at-xy  ;
+exit ?)
   \ Set the cursor at current window coordinates _x y_.
 
-: wat-xy  ( x y -- )  2dup wy c! wx c!  (wat-xy)  ;
+[unneeded] wat-xy ?(  need window  need (wat-xy
+: wat-xy  ( x y -- )  2dup wy c! wx c!  (wat-xy  ;  exit ?)
   \ Set the current window coordinates to _x y_ and set the
   \ cursor there.
 
-: at-wxy  ( -- )  wx c@ wy c@ (wat-xy)  ;
+[unneeded] at-wxy ?(  need window  need (wat-xy
+: at-wxy  ( -- )  wx c@ wy c@ (wat-xy  ;  exit ?)
   \ Set the cursor at the current window coordinates.
 
-: whome  ( -- )  0 0 wat-xy  ;
+( whome wcr ?wcr reset-window wcls )
+
+[unneeded] whome
+?\ need wat-xy  : whome  ( -- )  0 0 wat-xy  ;  exit
   \ Set the current window coordinates to the first column and
   \ the first row.
 
-: wcls  ( -- )
-  bl wcolumns c@ ruler  wy0 c@ wrows c@ bounds ?do
-                          2dup wx0 c@ i at-xy type
-                        loop  2drop  whome  ;  -->
-  \ Clear the current window.
-
-( wtype )
+need ?(  [unneeded] wcr ?(  need window  need whome
 
 : wcr  ( -- )  wy c@ dup wrows c@ 1- =
                if  drop whome exit  then  1+ wy c! 0 wx c!  ;
+exit ?)
   \ Cause subsequent output to the current window appear at the
   \ beginning of the next line.
   \
   \ XXX TODO -- scroll instead of `whome`
 
-: ?wcr  ( -- )  wx c@ 0= ?exit wcr  ;
-  \ If the current window x coordinate is not zero, cause
-  \ subsequent output to the current window appear at the
-  \ beginning of the next line.
+[unneeded] ?wcr ?(  need window  need wcr
+: ?wcr  ( -- )  wx c@ 0= ?exit wcr  ;  exit ?)
+  \ If the x curser coordinate of the current window is not
+  \ zero, cause subsequent output to the current window appear
+  \ at the beginning of the next line.
 
-: wfreecolumns  ( -- n )  wcolumns c@ wx c@ -  ;
-  \ Return the number _n_ of free columns in the current
-  \ line of the current window.
+[unneeded] reset-window ?(
 
+need columns  need rows  need set-window
+
+: reset-window  ( -- )  0 0 columns rows set-window  ;  exit ?)
+  \ Set the current window to use the full screen.
+
+[unneeded] wcls ?(  need window  need whome  need ruler
+
+: wcls  ( -- )  bl wcolumns c@ ruler  ( ca len )
+  wy0 c@ wrows c@ bounds ?do   2dup wx0 c@ i at-xy type
+                         loop  2drop  whome  ;  exit ?)
+  \ Clear the current window.
+
+( wtype )
+
+need window need at-wxy need wfreecolumns need wcr need ?wcr
 
 : +wc  ( n -- )
-  ~~ wx c@
-  ~~ + dup wx c! wcolumns c@
-  ~~ = if
-  ~~ wcr  then  ;
-  \ Increase the x coordinate of the current window with _n_
-  \ character positions
-
--->
-
-( window )
+  wx c@ + dup wx c! wcolumns c@ = if  wcr  then  ;
+  \ Add _n_ character positions to the x cursor coordinate of
+  \ the current window.
 
 variable wtyped
+  \ A flag that indicates if a space-delimited substring was
+  \ found and printed in the current window. Otherwise, the
+  \ string must be broken in order to fit the current line of
+  \ the window.
 
-: (wtype)  ( ca len -- )  ~~ tuck type +wc  wtyped on  ;
+: wtype+  ( ca len -- )  tuck type +wc  wtyped on  ;
   \ Type string _ca len_ in the current window and update
   \ the window coordinates accordingly.
 
-:noname   ( ca len -- )
- 0 ~~y @ 3 + at-xy ." x " wx c@ . ." y " wy c@ .
-                   ." free " wfreecolumns .  ;
-
-' ~~app-info defer!
-
 : /wtype  ( ca len len1 n -- ca' len' )
-  >r >r over r> at-wxy (wtype) r> /string  ;
-  \ Type the first  _len1_ characters of _ca len_ in the
-  \ current window and remove its first _n_ characters,
-  \ returning the string _ca' len'_.
-
--->
-
-( window )
+  >r >r over r> at-wxy wtype+ r> /string  ;
+  \ Type the first  _len1_ characters of string _ca len_ in the
+  \ current window, then remove the first _n_ characters from
+  \ the string, returning the result string _ca' len'_.
 
 : wtype  ( ca len -- )  wtyped off
-  begin  dup wfreecolumns ~~ >      \ line  2
-  while 2dup wfreecolumns min 0 ~~y @ 2+ at-xy type ." <      "
-    0 wfreecolumns ~~               \ line  4
-    do  ~~                          \ line  5
-      over i + c@ bl ~~ = if        \ line  6
-        i dup 1+ /wtype ~~ leave           \ line  7
-      then
-    -1 +loop                        \ line  9
+  \ XXX TODO -- move `wtyped off` after `while`?
+  begin  dup wfreecolumns >  while
+    0 wfreecolumns do  over i + c@ bl =
+                       if  i dup 1+ /wtype leave  then
+                   -1 +loop
     wtyped @ if    ?wcr wtyped off
              else  wfreecolumns dup /wtype  then
-  repeat  ~~                        \ line 11
-  at-wxy (wtype) ~~  ;              \ line 12
-  \ Type string _ca len_ in the current window.
-
-( wemit wspace )
-
-need char>string  need window
-
-: wemit  ( c -- )  char>string wtype  ;
-
-: wspace  ( -- )  bl wemit  ;
-
-
-( window-test )
-
-  \ XXX TMP -- for debugging
-
-need window
-
-window my-window
-my-window
-20 5 8 15 set-window
-
-: wipe  ( -- )  0 paper cls 6 paper wcls 7 ink 0 paper  ;
-
-wipe
-
-: txt1  ( -- ca len )
-  s" En un lugar de La Mancha de cuyo nombre no quiero"  ;
-
-: txt2  ( -- ca len )
-  s" acordarme no ha mucho tiempo que vivía un hidalgo"  ;
-
-txt2
-
-.s
+  repeat  at-wxy wtype+  ;
+  \ Type string _ca len_ in the current window, left justified.
 
   \ vim: filetype=soloforth
