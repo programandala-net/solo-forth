@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612041735
+  \ Last modified: 201612241427
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,12 +45,16 @@
   \
   \ 2016-12-04: Add `~~app-info`. Need `.s` (it's still in the
   \ kernel, but only during development).
+  \
+  \ 2016-12-24: Improve `~~info` to produce clearer output.
+  \ Set default quit and resume keys: `q` and space. Remove
+  \ `~~x`, which is not useful because two full lines are used.
 
 ( ~~ )
 
-need :noname  need defer  need .s
+need :noname  need defer  need .s  need columns
 
-variable ~~?   ~~? on
+variable ~~?  ~~? on
 
   \ doc{
   \
@@ -64,19 +68,7 @@ variable ~~?   ~~? on
   \
   \ }doc
 
-variable ~~x  ~~x off  variable ~~y  ~~y off
-
-  \ doc{
-  \
-  \ ~~x  ( -- a )
-  \
-  \ A variable that holds the column the debugging information
-  \ compiled by `~~` will be printed at.  Its default value is
-  \ zero.
-  \
-  \ See: `~~`, `~~y`.
-  \
-  \ }doc
+variable ~~y  ~~y off
 
   \ doc{
   \
@@ -86,11 +78,11 @@ variable ~~x  ~~x off  variable ~~y  ~~y off
   \ compiled by `~~` will be printed at.  Its default value is
   \ zero.
   \
-  \ See: `~~`, `~~x`.
+  \ See: `~~`.
   \
   \ }doc
 
-variable ~~quit-key  ~~quit-key off
+variable ~~quit-key  'q' ~~quit-key !
 
   \ doc{
   \
@@ -99,13 +91,13 @@ variable ~~quit-key  ~~quit-key off
   \ A variable that holds the key code used to quit at the
   \ debugging points compiled by `~~`. If its value is not
   \ zero, `~~control` will wait for a key press in order to
-  \ quit the debugging.  Its default value is zero.
+  \ quit the debugging.  Its default value is the code of 'q'.
   \
   \ See: `~~resume-key`, `~~control`, `~~`.
   \
   \ }doc
 
-variable ~~resume-key  ~~resume-key off
+variable ~~resume-key  bl ~~resume-key !
 
   \ doc{
   \
@@ -116,37 +108,30 @@ variable ~~resume-key  ~~resume-key off
   \ zero, `~~control` will not wait for a key.  If it contains
   \ a negative value (e.g. _true_), `~~control` will wait for
   \ any key.  Otherwise `~~control` will wait for the key it
-  \ contains.  Its default value is zero.
+  \ contains.  Its default value is `bl`, the code of the space
+  \ character.
   \
   \ See: `~~quit-key`, `~~control`, `~~`.
   \
   \ }doc
 
-defer ~~app-info  ( -- )  ' noop ' ~~app-info defer!
-
-  \ doc{
-  \
-  \ ~~app-info  ( -- )
-  \
-  \ A deferred word that can be used by the application in
-  \ order to show application-specific debugging information.
-  \ It's compiled by `~~`. By default it does nothing.
-  \
-  \ See: `~~`, `~~info`.
-  \
-  \ }doc
-
 : ~~info  ( nt line block -- )
-  ~~x @ ~~y @ at-xy ." Block " . ." Line " . .name .s  ;
+  0 ~~y @ 2dup 2>r at-xy columns 2* spaces 2r@ at-xy
+  ." Block" 4 .r ."  Line" 3 .r space .name 2r> 1+ at-xy .s  ;
 
   \ doc{
   \
   \ ~~info  ( -- )
   \
   \ Show the debugging info compiled by `~~` and the current
-  \ contents of the data stack.
+  \ contents of the data stack. At least to lines are used,
+  \ depending on the contents of the stack. The first line
+  \ shows the block, line and definition name where `~~`
+  \ was compiled; the second line shows the contents of the
+  \ stack. The printing position can be configured with 
+  \ `~~y`.
   \
-  \ See: `~~`, `~~x`, `~~y`.
+  \ See: `~~`, `~~y`.
   \
   \ }doc
 
@@ -266,6 +251,21 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ }doc
 
 ' ~~save-xy ' ~~save defer!  ' ~~restore-xy ' ~~restore defer!
+
+defer ~~app-info  ( -- )  ' noop ' ~~app-info defer!
+
+  \ doc{
+  \
+  \ ~~app-info  ( -- )
+  \
+  \ A deferred word that can be used by the application in
+  \ order to show application-specific debugging information.
+  \ It's compiled by `~~`. By default it does nothing.
+  \
+  \ See: `~~`, `~~info`.
+  \
+  \ }doc
+
 
 : (~~)  ( nt line block -- )
   ~~? @ if    ~~save ~~app-info ~~info ~~control ~~restore
