@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-23
+:revdate: 2016-12-24
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1142,6 +1142,14 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Printing {{{1
 == Printing ==
+
+.2016-12-24:
+
+Windows:
+
+- Scroll support, with configurable pause.
+- Rewrite `wcls` in Z80.
+- Save and restore windows, in Z80.
 
 .2016-12-20:
 

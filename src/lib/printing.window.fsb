@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612241906
+  \ Last modified: 201612241951
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,13 +29,6 @@
   \ 2016-12-23: Start.
   \
   \ 2016-12-24: First working version.
-
-  \ -----------------------------------------------------------
-  \ To-do
-
-  \ Scroll, with configurable pause.
-  \
-  \ Rewrite `wcls` in Z80.
 
 ( window set-window )
 
@@ -163,7 +156,6 @@ variable wtyped
   \ the string, returning the result string _ca' len'_.
 
 : wtype  ( ca len -- )  wtyped off
-  \ XXX TODO -- move `wtyped off` after `while`?
   begin  dup wfreecolumns >  while
     0 wfreecolumns do  over i + c@ bl =
                        if  i dup 1+ /wtype leave  then
