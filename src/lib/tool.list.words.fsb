@@ -96,8 +96,8 @@ exit ?)
   \
   \ }doc
 
-[unneeded] words ?(  need trail  need more-words?  
-                     need .word  need name<name  
+[unneeded] words ?(  need trail  need more-words?
+                     need .word  need name<name
 
 : words  ( -- ) trail begin  more-words?  while
                 dup .word name<name  repeat  drop  ;  exit  ?)

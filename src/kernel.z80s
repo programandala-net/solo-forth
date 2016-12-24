@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612231853
+; Last modified: 201612241344
 
 include version.z80s
 
@@ -2694,6 +2694,8 @@ question_csb_.enough:
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; See: `leave`, `do`, `loop`, `+loop`.
+;
 ; }doc
 
   ld hl,(return_stack_pointer)
@@ -2881,6 +2883,21 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 
 ; ----------------------------------------------
   _code_header leave_,'leave'
+
+; doc{
+;
+; leave  ( -- ) ( R: loop-sys -- )
+;
+; Discard the loop-control parameters for the current nesting level.
+; Continue execution immediately following the innermost syntactically
+; enclosing `do`..`loop` or `do`..`+loop`.
+;
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE), Forth-2012
+; (CORE).
+;
+; See: `unloop`, `do`, `loop`, `+loop`.
+;
+; }doc
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -3409,12 +3426,12 @@ char_question.not:
 ; String _ca len_ must be below memory address $C000.
 ;
 ; }doc
- 
+
 
   ; First, patch the code depending on the case-sensitive mode.  This
   ; way the inner loop does not have to check the mode for every
   ; letter of the string searched for.
-  
+
   ld hl,(case_sensitive_pfa) ; contents of `case-sensitive` variable
   ld a,h
   or l ; case-sensitive mode?

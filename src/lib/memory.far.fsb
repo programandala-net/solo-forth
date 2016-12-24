@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261743
+  \ Last modified: 201612240146
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,9 @@
   \
   \ 2016-11-26: Improve `far2@+`. Move `fartype-ascii` to the
   \ printing module.
+  \
+  \ 2016-12-24: Fix block header. Improve the Asciidoctor
+  \ markup of the documentation.
 
 ( farhl questionnextbank questionpreviousbank )
 
@@ -72,12 +75,14 @@ get-current also assembler definitions
   \ This is the routine called by `far`. `farhl` is used in
   \ code words.
   \
+  \ ....
   \ Input:
   \   HL = far-memory address ($0000..$FFFF)
   \
   \ Output:
   \   HL = actual memory address ($C000..$FFFF)
   \   A DE corrupted
+  \ ....
   \
   \ See: `far`.
   \
@@ -102,17 +107,21 @@ get-current also assembler definitions
   \ This is the routine called by `?next-bank`.
   \ `questionnextbank` is used in code words.
   \
+  \ ....
   \ Input:
   \   HL = address in a paged bank ($C000..$FFFF) or higher
   \   ($0000..$BFFF).
+  \
   \ Output when HL is above the paged bank:
   \   HL = correspondent address in the next bank, which is paged in
   \   A corrupted
   \   D = 0
   \   E = bank
+  \
   \ Output when HL is an address in a paged bank:
   \   HL preserved
   \   A corrupted
+  \ ....
   \
   \ See: `?next-bank`.
   \
@@ -137,17 +146,21 @@ get-current also assembler definitions
   \ This is the routine called by `?previous-bank`.
   \ `questionpreviousbank` is used in code words.
   \
+  \ ....
   \ Input:
   \   HL = address in a paged bank ($C000..$FFFF) or lower
   \   ($8000..$BFFF).
+  \
   \ Output when HL is below the paged bank:
   \   HL = correspondent address in the previous bank, which is paged in
   \   A corrupted
   \   D = 0
   \   E = bank
+  \
   \ Output when HL is an address in a paged bank:
   \   HL preserved
   \   A corrupted
+  \ ....
   \
   \ See: `?previous-bank`.
   \
@@ -287,7 +300,7 @@ need ?(
   \
   \ }doc
 
-( farallot fartype-ascii )
+( farallot )
 
 [unneeded] farallot
 ?\ : farallot  ( n -- )  hp +!  ;  exit
