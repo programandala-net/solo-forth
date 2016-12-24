@@ -1,9 +1,9 @@
-  \ keyboard.fsb
+  \ keyboard.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612041253
+  \ Last modified: 201612242048
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,10 @@
   \ space and makes the access faster. Add `#>kk`. Document
   \ many words. Improve access by `need`. Define `/kk` by
   \ default. Compact the code, saving two blocks.
+  \
+  \ 2016-12-24: Add `key-edit`, `key-left`, `key-right`,
+  \ `key-down`, `key-up`, `key-delete`, `key-enter`. Rename the
+  \ module from <keyboard.fsb> to <keyboard.MISC.fsb>.
 
 ( at-accept clear-accept set-accept )
 
@@ -499,7 +503,7 @@ create kk-chars
   \
   \ By default, the first 4 UDG (chars 128..131) are used for
   \ keys whose names are not a printable char:
-  \ 
+  \
   \ - 128 = Caps Shift
   \ - 129 = Enter
   \ - 130 = Space
@@ -527,7 +531,7 @@ need ?(
 [unneeded] pressed? ?(  need @p
 
 : pressed? ( bitmask port -- f )  @p and 0=  ;  exit ?)
-  
+
   \ doc{
   \
   \ pressed? ( bitmask port -- f )
@@ -595,5 +599,24 @@ need kk-ports
   \ See: `kk-ports`, `pressed`, `pressed?`.
   \
   \ }doc
+
+( key-edit key-left key-right key-down key-up key-delete )
+
+  \ Words analogous to Forth-2012 constants, but with a
+  \ different prefix and used to hold values returned by `key`.
+
+[unneeded] key-edit   ?\  7 cconstant key-edit   exit
+[unneeded] key-left   ?\  8 cconstant key-left   exit
+[unneeded] key-right  ?\  9 cconstant key-right  exit
+[unneeded] key-down   ?\ 10 cconstant key-down   exit
+[unneeded] key-up     ?\ 11 cconstant key-up     exit
+[unneeded] key-delete ?\ 12 cconstant key-up     exit
+
+( key-enter )
+
+  \ Words analogous to Forth-2012 constants, but with a
+  \ different prefix and used to hold values returned by `key`.
+
+[unneeded] key-enter  ?\ 13 cconstant key-enter  exit
 
   \ vim: filetype=soloforth
