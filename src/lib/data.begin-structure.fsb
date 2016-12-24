@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611281233
+  \ Last modified: 201612240231
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,9 @@
   \ 2016-11-28: Make `+field` deferred and provide three
   \ optional implementations. Make all words accessible to
   \ `need`.
+  \
+  \ 2016-12-24: Fix typo in documentation. Fix needing of
+  \ `+field-opt-0` and `+field-opt-0124`.
 
 ( +field field: 2field: cfield: begin-structure end-structure )
 
@@ -90,9 +93,9 @@ exit ?)
 
 ( +field-unopt +field-opt-0 )
 
-need +field  need ?(
+need ?(
 
-[unneeded] +field-unopt ?(
+[unneeded] +field-unopt ?(  need +field
 
 : +field-unopt  ( n1 n2 "name" -- n3 )
   create  over , +
@@ -121,7 +124,7 @@ need +field  need ?(
   \
   \ }doc
 
-[unneeded] +field-opt-0
+[unneeded] +field-opt-0  ?(  need +field
 
   \ This implementation optimizes field 0 of the structure.  It
   \ uses 31 bytes of data space.
@@ -170,9 +173,7 @@ need +field  need ?(
 
 need ?(
 
-[unneeded] +field-opt-0124 ?(
-
-need case
+[unneeded] +field-opt-0124 ?(  need case  need +field
 
 : +field-opt-0124  ( n1 n2 "name" -- n3 )
   :
@@ -188,7 +189,7 @@ need case
 
   \ doc{
   \
-  \ +field-opt-0  ( n1 n2 "name" -- n3 )
+  \ +field-opt-0124  ( n1 n2 "name" -- n3 )
   \
   \ This implementation of `+field` optimizes the calculation
   \ of field offsets 0, 1, 2 and 4. Therefore it's more
