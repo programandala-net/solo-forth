@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201612251331
 
   \ -----------------------------------------------------------
   \ Description
@@ -22,32 +22,44 @@
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
 
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-12-25: Improve documentation. Convert from `z80-asm`
+  \ to `z80-asm,` assembler.
+
 ( inkey )
 
-need z80-asm
+need z80-asm,
 
 code inkey  ( -- c | 0 )
 
+  a xor,
+  01 iy 5 bitx,  \ a new key pressed?
+  nz? rif
+    5C08 h ldp#,  \ LAST-K system variable
+    m a ld,
+    \ 0 m ld#, \ XXX OLD
+    01 iy 5 resx,
+  rthen
+  pusha jp,  end-code
+
+  \ doc{
+  \
+  \ inkey  ( -- 0 | c )
+  \
   \ Leave the value of the key being pressed. If no key being
   \ pressed, leave 0.
   \
   \ This word works only when an interrupts routine reads the
   \ keyboard and updates the related system variables.
+  \
+  \ See: `get-inkey`, `key`.
+  \
+  \ }doc
 
   \ XXX FIXME -- Some times this word returns zero when the key
-  \ is pressed; the version on the previous block works fine.
-  \ Anyway this version is smaller and can be useful.
-
-  a xor
-  01 iy 5 bitx  \ a new key pressed?
-  nz if
-    5C08 hl ldp#  \ LAST-K system variable
-    m a ld
-    \ 0 m ld# \ XXX OLD
-    01 iy 5 resx
-  then
-  pusha jp
-
-  end-code
+  \ is pressed; `get-inkey` works fine.  Anyway this version is
+  \ smaller and can be useful.
 
   \ vim: filetype=soloforth
