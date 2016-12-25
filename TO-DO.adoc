@@ -15,20 +15,6 @@ Data space used (2016-12-20) by the assemblers:
 
 .2016-12-25:
 
-Fix compatibility problem between both assemblers: compilation of `rdraw176`
-fails when `z80-asm` is already loaded.
-
-Example: `rdraw176` needs `z80-asm,`:
-
-This works fine:
-`1 load need z80-asm, need z80-asm need rdraw176`.
-
-But this fails:
-`1 load need z80-asm need z80-asm, need rdraw176`
-because `rif` does not do its job.
-
-g2016-12-25:
-
 Move `assembler` to the library after migrating from `z80-asm` to `z80-asm,`,
 in order to use `need assembler`. Leave `assembler-wordlist` in the kernel.
 
@@ -535,6 +521,10 @@ Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 
 // Errors {{{1
 == Errors ==
+
+.2016-12-25:
+
+`cold` must set `warn` to its default.
 
 .2016-11-27:
 

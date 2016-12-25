@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612252108
+  \ Last modified: 201612252158
 
   \ -----------------------------------------------------------
   \ Description
@@ -88,7 +88,8 @@
   \ `?call` with `?jp`.  Fix `relse`, `rwhile` and `runtil`.
   \
   \ 2016-12-25: Fix `jp>jr`. Rename `im1`, `im2` to `im1,`
-  \ `im2,`.
+  \ `im2,`. Make `inverse-cond` and `jp>jr` compatible with
+  \ `z80-asm`, in case `z80-asm` was loaded first.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -271,14 +272,19 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 C2 constant nz? CA constant z?  D2 constant nc? DA constant c?
 E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
-: jp>jr  ( op1 -- op2 )
+: jp>jr  ( op1 -- op2 )  [ also forth ]
   dup C3 =  if  drop 18 exit  then
-  dup c? > #-273 ?throw  A2 -  ;
+  dup c? > #-273 ?throw  A2 -  ; previous
   \ Convert an absolute-jump opcode to its relative-jump
   \ equivalent.  Throw error #-273 if the jump condition is
   \ invalid.
   \
   \ Note: Opcodes: $C3 is `jp`; $18 is `jr`.
+  \
+  \ XXX TMP -- The change of the search order is needed until
+  \ `z80-asm` is not used anymore. `z80-asm` is still needed by
+  \ many words. In case `z80-asm` is loaded before `z80-asm,`,
+  \ `if` and `then` are words of `z80-asm`.
 
 : ?ret,  ( op -- )  2- c,  ;
   \ Conditional ret
@@ -313,11 +319,17 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
   \ Control structures with relative jumps
 
-: inverse-cond  ( op1 -- op2 )  8 xor  ;
+: inverse-cond  ( op1 -- op2 )
+  8 [ also forth ] xor [ previous ]  ;
   \ Convert a condition flag (actually, an absolute jump
   \ opcode) to its opposite.
   \
   \ Examples: `c?` to `nc?`; `nz?` to `z?`, etc.
+  \
+  \ XXX TMP -- The change of the search order is needed until
+  \ `z80-asm` is not used anymore. `z80-asm` is still needed by
+  \ many words. In case `z80-asm` is loaded before `z80-asm,`,
+  \ `xor` is not Forth's `xor`, but that of `z80-asm`.
 
 : rahead  ( -- orig  )  18 , >rmark  ;
   \ Create a relative branch forward.
