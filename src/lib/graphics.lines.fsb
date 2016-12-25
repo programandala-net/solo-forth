@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612250212
+  \ Last modified: 201612251316
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,31 +31,32 @@
   \ in the kernel.
   \
   \ 2016-12-25: Rename `rdraw` to `rdraw176`, and `adraw` to
-  \ `adraw176`. Improve documentation.
+  \ `adraw176`. Improve documentation. Convert `rdraw176` to
+  \ the `z80-asm,` assembler.
 
 ( rdraw176 )
 
-need z80-asm
+need z80-asm,
 
 code rdraw176  ( gx gy -- )
 
-  hl pop  de pop  bc push
-  de bc ldp
+  h pop,  d pop,  b push,
+  d b ldp,
 
-  \ hl = y
-  \ bc = x
-  1 e ld#
-  b 7 bit  \ negative x?
-  nz if  c a ld  neg  -1 e ld#  a c ld  then  \ negative x
+  \ HL = gy
+  \ BC = gx
+  1 e ld#,
+  b 7 bit,  \ negative x?
+  nz? rif  c a ld, neg, -1 e ld#,  a c ld,  rthen  \ negative x
 
-  l b ld   \ y
-  1 d ld#
-  h 7 bit  \ negative y?
-  nz if  b a ld  neg  -1 d ld#  a b ld  then  \ negative y
+  l b ld,   \ y
+  1 d ld#,
+  h 7 bit,  \ negative y?
+  nz? rif  b a ld, neg, -1 d ld#, a b ld,  rthen  \ negative y
 
-  24BA call \ alternative entry to the DRAW-LINE ROM routine
+  24BA call, \ alternative entry to the DRAW-LINE ROM routine
 
-  bc pop
+  b pop,
 
   jpnext, end-code
 
@@ -84,7 +85,7 @@ code rdraw176  ( gx gy -- )
 
   \ XXX TODO -- adapt the DRAW-LINE ROM routine
 
-need z80-asm
+need z80-asm-comma
 
 code rdraw  ( gx gy -- )
 
