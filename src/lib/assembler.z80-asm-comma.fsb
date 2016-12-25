@@ -6,7 +6,7 @@
   \ XXX UNDER DEVELOPMENT -- Fork of `z80-asm`, with modified
   \ syntax.
 
-  \ Last modified: 201612061901
+  \ Last modified: 201612251338
 
   \ -----------------------------------------------------------
   \ Description
@@ -87,6 +87,8 @@
   \ 2016-12-20: Fix stack comments of `rrepeat` and `auntil`.
   \ Fix `jp>jr` to manage also unconditional jumps. Factor
   \ `?call` with `?jp`.  Fix `relse`, `rwhile` and `runtil`.
+  \
+  \ 2016-12-25: Fix `jp>jr`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -267,12 +269,12 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
   \ Conditions (Z80 opcodes for the required absolute jump
   \ instruction)
 
-CA constant z?  C2 constant nz? DA constant c? D2 constant nc?
-EA constant pe? E2 constant po? FA constant m? F2 constant p?
+C2 constant nz? CA constant z?  D2 constant nc? DA constant c?
+E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
 : jp>jr  ( op1 -- op2 )
   dup C3 =  if  drop 18 exit  then
-  dup nc? > #-273 ?throw  A2 -  ;
+  dup c? > #-273 ?throw  A2 -  ;
   \ Convert an absolute-jump opcode to its relative-jump
   \ equivalent.  Throw error #-273 if the jump condition is
   \ invalid.
