@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612251831
+; Last modified: 201612252145
 
 include version.z80s
 
@@ -10194,6 +10194,11 @@ if 1 ; assembler_core_in_kernel
 endif
   dw lit_,voc_link.init_value,fetch_
   dw lit_,voc_link_pfa,store_
+
+  ; Set `warn` to its default behaviour:
+  dw lit_,noop_
+  dw lit_,warn_
+  dw defer_store_
 
   dw only_,forth_,definitions_  ; init the search order
   dw default_header_ ; set the default behaviour of `header`
