@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612241344
+; Last modified: 201612251831
 
 include version.z80s
 
@@ -1559,7 +1559,7 @@ if 1 ; far_memory
 ; for $8000..$BFFF and the fourth one for $C000..$FFFF.
 ;
 ; See: `far`, `far@`, `farc@`, `far!`, `farc!`, `farcount`,
-; `farplace`, `fartype`, `faruppers`.
+; `farplace`, `fartype`, `faruppers`, `farlimit`.
 ;
 ; }doc
 
@@ -2598,6 +2598,25 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
+  _colon_header here_,'here'
+
+; doc{
+;
+; here  ( -- a )
+;
+; Return the address of the data-space pointer.
+;
+; See: `limit`, `unused`, `there`.
+;
+; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
+; Forth-94 (CORE), Forth-2012 (CORE).
+;
+; }doc
+
+  dw dp_,fetch_
+  dw exit_
+
+; ----------------------------------------------
   _alias_header backward_mark_,'<mark',,here_
 
 ; doc{
@@ -2609,6 +2628,21 @@ question_csb_.enough:
 ; only used by `<resolve` to compile a branch address.
 ;
 ; Origin: Forth-83 (System Extension Word Set).
+;
+; }doc
+
+; ----------------------------------------------
+  _colon_header comma_,','
+
+  dw here_,store_,cell_,allot_
+  dw exit_
+
+; ----------------------------------------------
+  _alias_header compile_comma_,'compile,',,comma_
+
+; doc{
+;
+; compile,  ( xt -- )
 ;
 ; }doc
 
@@ -5539,6 +5573,20 @@ do_user:
   _jp_pushhl
 
 ; ----------------------------------------------
+  _alias_header cell_,'cell',,two_
+
+; doc{
+;
+; cell  ( -- n )
+;
+; _n_ is the size in address units of one cell. This word
+; returns 2 in Solo Forth.
+;
+; Origin: Comus.
+;
+; }doc
+
+; ----------------------------------------------
   _c_constant_header b_l_,'bl'
 
 ; doc{
@@ -6079,13 +6127,6 @@ source.other:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header one_plus_,'1+'
-
-  pop hl
-  inc hl
-  _jp_pushhl
-
-; ----------------------------------------------
   _code_header two_plus_,'2+'
 
               ;  T  B
@@ -6099,16 +6140,7 @@ source.other:
               ; 41 06 Total
 
 ; ----------------------------------------------
-  _alias_header cell_minus_,'cell-',,two_minus_
-
-; ----------------------------------------------
   _alias_header cell_plus_,'cell+',,two_plus_
-
-; ----------------------------------------------
-  _alias_header char_minus_,'char-',,one_minus_
-
-; ----------------------------------------------
-  _alias_header char_plus_,'char+',,one_plus_
 
 ; ----------------------------------------------
   _code_header one_minus_,'1-'
@@ -6118,12 +6150,28 @@ source.other:
   _jp_pushhl
 
 ; ----------------------------------------------
+  _alias_header char_minus_,'char-',,one_minus_
+
+; ----------------------------------------------
+  _code_header one_plus_,'1+'
+
+  pop hl
+  inc hl
+  _jp_pushhl
+
+; ----------------------------------------------
+  _alias_header char_plus_,'char+',,one_plus_
+
+; ----------------------------------------------
   _code_header two_minus_,'2-'
 
   pop hl
   dec hl
   dec hl
   _jp_pushhl
+
+; ----------------------------------------------
+  _alias_header cell_minus_,'cell-',,two_minus_
 
 ; ----------------------------------------------
   _code_header two_star_,'2*'
@@ -6152,21 +6200,6 @@ source.other:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _alias_header chars_,'chars',immediate,noop_
-
-; doc{
-;
-; chars  ( n1 -- n2 )
-;
-; _n2_ is the size in address units of _n1_ characters.
-;
-; In Solo Forth, this word does nothing.
-;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-;
-; }doc
-
-; ----------------------------------------------
   _alias_header cells_,'cells',,two_star_
 
 ; doc{
@@ -6180,37 +6213,19 @@ source.other:
 ; }doc
 
 ; ----------------------------------------------
-  _alias_header cell_,'cell',,two_
+  _alias_header chars_,'chars',immediate,noop_
 
 ; doc{
 ;
-; cell  ( -- n )
+; chars  ( n1 -- n2 )
 ;
-; _n_ is the size in address units of one cell. This word
-; returns 2 in Solo Forth.
+; _n2_ is the size in address units of _n1_ characters.
 ;
-; Origin: Comus.
+; In Solo Forth, this word does nothing.
 ;
-; }doc
-
-; ----------------------------------------------
-  _colon_header here_,'here'
-
-; doc{
-;
-; here  ( -- a )
-;
-; Return the address of the data-space pointer.
-;
-; See: `limit`, `unused`, `there`.
-;
-; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
-; Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
-
-  dw dp_,fetch_
-  dw exit_
 
 ; ----------------------------------------------
   _colon_header allot_,'allot'
@@ -6267,21 +6282,6 @@ two_comma.allot:
   _literal 2*cell
   dw allot_
   dw exit_
-
-; ----------------------------------------------
-  _colon_header comma_,','
-
-  dw here_,store_,cell_,allot_
-  dw exit_
-
-; ----------------------------------------------
-  _alias_header compile_comma_,'compile,',,comma_
-
-; doc{
-;
-; compile,  ( xt -- )
-;
-; }doc
 
 ; ----------------------------------------------
   _colon_header c_comma_,'c,'
@@ -11963,7 +11963,7 @@ system_stack_pointer: equ $+1
 ; This variable can be modified by a program in order to reserve
 ; a memory zone for special purposes.
 ;
-; See: `hp`, `farunused`, `limit`.
+; See: `hp`, `farunused`, `limit`, `far-banks`.
 ;
 ; Origin: Fig-Forth's `limit` constant.
 ;
@@ -12852,6 +12852,14 @@ end_of_pause:
 
 background_image:
   incbin ../backgrounds/current.scr
+
+; ----------------------------------------------
+; The code name
+
+; XXX TODO --
+
+;code_name:
+;  incbin ../codenames/
 
 ; ==============================================================
 ; End
