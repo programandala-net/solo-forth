@@ -3,12 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201946
+  \ Last modified: 201612252108
 
   \ -----------------------------------------------------------
   \ Description
 
   \ A Z80 assembler called `z80-asm`.
+  \ This assembler will be replaced by the new one, called
+  \ `z80-asm,`.
 
   \ -----------------------------------------------------------
   \ Authors
@@ -50,15 +52,18 @@
   \ 2016-11-14: Compact the code, save two blocks. Move `8*` to
   \ the 1-cell operators module.
   \
-  \ 2016-12-06: Rename `?page` to `?rel`, after
-  \ `z80-asm,`; make it consume its argument, in order to reuse
-  \ it in the future implementation of local labels.
+  \ 2016-12-06: Rename `?page` to `?rel`, after `z80-asm,`;
+  \ make it consume its argument, in order to reuse it in the
+  \ future implementation of local labels.
   \
   \ 2016-12-08: Calculate the memory used, required by
   \ `transient`.
   \
   \ 2016-12-20: Fix stack comments of `repeat` and `until'`.
   \ Remove old `jpnext`, already commented out.
+  \
+  \ 2016-12-25: Move some comments, in order to compare the
+  \ source with that of the `z80-asm,` assembler.
 
 ( z80-asm )
 
@@ -101,70 +106,61 @@ DD constant ix-op  FD constant iy-op
   \ Defining words for z80 instructions
 
 : m1  ( 8b "name" -- )
-  \ 1-byte opcode without parameters.
   create c, does>  ( -- )  ( pfa ) c@ c,  ;
+  \ 1-byte opcode without parameters.
 
 : m2  ( 8b "name" -- )
-  \ 1-byte opcode with register encoded in bits 0-3.
   create c, does>  ( r -- )  ( r pfa ) c@ + c,  ;
+  \ 1-byte opcode with register encoded in bits 0-3.
 
 : m3  ( 8b "name" -- )
-  \ 1-byte opcode with register encoded in bits 3-5.
   create c, does>  ( r -- )  ( r pfa ) c@ swap 8* + c,  ;
+  \ 1-byte opcode with register encoded in bits 3-5.
 
 : m4  ( 8b "name" -- )
-  \ 1-byte opcode with 1-byte parameter.
   create c, does>  ( 8b -- )  ( 8b pfa ) c@ c, c,  ;
+  \ 1-byte opcode with 1-byte parameter.
 
 : m5  ( 8b "name" -- )
-  \ 1-byte opcode with 2-byte parameter.
   create c, does>  ( 16b -- )  ( 16b pfa ) c@ c, ,  ;
+  \ 1-byte opcode with 2-byte parameter.
 
 : m6  ( 8b "name" -- )
-  \ Rotation of registers.
   create c, does>  ( r -- )  ( r pfa ) CB c, c@ + c,  ;
+  \ Rotation of registers.
 
 : m7  ( 8b "name" -- )
-  \ Bit manipulation of registers.
-  \ XXX OLD
-  \ create c, does>  ( bit r -- )
-  \  ( bit r pfa ) CB c, c@ + swap 8* + c,  ;
-  \ XXX NEW
   create c, does>  ( r bit -- )
     ( r bit pfa ) CB c, c@ swap 8* + + c,  ;  -->
+  \ Bit manipulation of registers.
 
 ( z80-asm )
 
   \ Defining words for z80 instructions
 
-: m8  ( 16b "name" -- )
+: m8  ( 16b "name" -- )  create , does>  ( -- )  ( pfa ) @ ,  ;
   \ 2-byte opcodes.
-  create , does>  ( -- )  ( pfa ) @ ,  ;
 
 : m9  ( 8b "name" -- )
-  \ Relative jumps.
   create c, does>  ( a -- )
     ( a pfa )  c@ c, here 1+ - dup ?rel c,  ;
+  \ Relative jumps.
 
 : ma  ( 8b "name" -- )
-  \ Index registers with register.
   create c, does>  ( disp rphl -- )
     ( disp rphl pfa ) c@ c, drop c,  ;
+  \ Index registers with register.
 
 : mb  ( 8b "name" -- )
-  \ Rotation with index registers.
   create c, does>  ( disp rphl -- )
     ( disp rphl pfa ) CB c, c@ c, drop c,  ;
+  \ Rotation with index registers.
 
 : mc  ( 8b "name" -- )
-  \ Bit manipulation with index registers.
-  \ XXX OLD
-  \  create c, does>  ( bit rphl disp -- )
-  \   ( bit rphl disp pfa ) CB c, rot drop c@ -rot c, 8* + c,  ;
-  \ XXX NEW
   create c, does>  ( disp rphl bit -- )
     ( disp rphl bit pfa )
     CB c, c@ rot drop rot c, swap 8* + c,  ;  -->
+  \ Bit manipulation with index registers.
 
 ( z80-asm )
 

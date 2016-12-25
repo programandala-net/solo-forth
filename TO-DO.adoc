@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-24
+:revdate: 2016-12-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -12,6 +12,25 @@ Data space used (2016-12-20) by the assemblers:
 
 `z80-asm` :: 1817 B
 `z80-asm,`:: 1664 B
+
+.2016-12-25:
+
+Fix compatibility problem between both assemblers: compilation of `rdraw176`
+fails when `z80-asm` is already loaded.
+
+Example: `rdraw176` needs `z80-asm,`:
+
+This works fine:
+`1 load need z80-asm, need z80-asm need rdraw176`.
+
+But this fails:
+`1 load need z80-asm need z80-asm, need rdraw176`
+because `rif` does not do its job.
+
+g2016-12-25:
+
+Move `assembler` to the library after migrating from `z80-asm` to `z80-asm,`,
+in order to use `need assembler`. Leave `assembler-wordlist` in the kernel.
 
 .2016-12-20:
 
@@ -89,6 +108,12 @@ rest must be used for calls.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
+
+.2016-12-25:
+
+When `>name` is used with the xt of an alias, the returned name
+is that of the oldest 
+of aliases are taken
 
 .2016-12-23:
 
