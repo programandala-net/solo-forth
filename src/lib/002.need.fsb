@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612031848
+  \ Last modified: 201612251915
 
   \ -----------------------------------------------------------
   \ Description
@@ -103,6 +103,9 @@
   \ 2016-11-26: Improve `(located)` to detect empty strings.
   \
   \ 2016-12-03: Add debugging code.
+  \
+  \ 2016-12-25: Rename `from` to `need-from` and improve its
+  \ documentation.
 
 ( delimited located needed-word )
 
@@ -460,7 +463,7 @@ defer need  ( "name" -- )
 
 blk @ 1+ dup default-first-locatable !  first-locatable !
 
-( locate from need-here )
+( locate need-from need-here )
 
 need ?(
 
@@ -478,13 +481,13 @@ need ?(
   \
   \ }doc
 
-[unneeded] from ?(  need locate
-: from  ( "name" -- )
+[unneeded] need-from ?(  need locate
+: need-from  ( "name" -- )
   locate ?located first-locatable !  ;  exit ?)
 
   \ doc{
   \
-  \ from  ( "name" -- )
+  \ need-from  ( "name" -- )
   \
   \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and set it the first one `located`
@@ -495,7 +498,7 @@ need ?(
   \ during the execution of `need` and related words. "name" is
   \ supposed to be a conventional marker.
   \
-  \ Usage examples:
+  \ Usage example:
 
   \ ----
   \ ( x )
@@ -504,9 +507,11 @@ need ?(
   \
   \ ( use-x )
   \
-  \ from ==data-structures==  need x
+  \ need-from ==data-structures==  need x
   \
-  \ ( y )  ==data-structures==
+  \ x
+  \
+  \ ( y ==data-structures== )
   \
   \ : y ." Y data structure; ;
   \
