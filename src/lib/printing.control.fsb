@@ -36,6 +36,9 @@
   \ 2016-05-06: Fix and add conditional compilation.
   \
   \ 2016-11-26: Improve documentation.
+  \
+  \ 2016-12-25: Improve needing of word set `'cr' 'tab' 'bs'
+  \ crs tab tabs backspace backspaces`.
 
 ( printer tabulate )
 
@@ -93,24 +96,25 @@ variable /tabulate  8 /tabulate !
 
 ( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
 
-[unneeded] 'tab' [unneeded] tab [unneeded] tabs and and
-?\ 6 constant 'tab'
+[unneeded] 'tab' ?\ 6 constant 'tab'  exit
 
-[unneeded] 'bs' [unneeded] backspace [unneeded] backspaces
-and and ?\ 8 constant 'bs'
+[unneeded] 'bs' ?\ 8 constant 'bs'  exit
 
-[unneeded] 'cr' [unneeded] crs and ?\ 13 constant 'cr'
+[unneeded] 'cr' ?\ 13 constant 'cr'  exit
 
-[unneeded] tab [unneeded] tabs and
-?\ : tab  ( -- )  'tab' emit  ;
+[unneeded] tab
+?\ need 'tab'  : tab  ( -- )  'tab' emit  ;  exit
 
-[unneeded] backspace [unneeded] backspaces and
-?\ : backspace    ( -- )  'bs'  emit  ;
+[unneeded] backspace
+?\ need 'bs'  : backspace  ( -- )  'bs'  emit  ;  exit
 
-[unneeded] crs  ?\ : crs   ( n -- )  'cr'  emits  ;
-[unneeded] tabs ?\ : tabs  ( n -- )  'tab' emits  ;
+[unneeded] crs
+?\ need 'cr'  : crs   ( n -- )  'cr'  emits  ;  exit
+
+[unneeded] tabs
+?\ need 'tab'  : tabs  ( n -- )  'tab' emits  ;  exit
 
 [unneeded] backspaces
-?\ : backspaces    ( n -- )  'bs'  emits  ;
+?\ need 'bs'  : backspaces    ( n -- )  'bs'  emits  ;
 
   \ vim: filetype=soloforth
