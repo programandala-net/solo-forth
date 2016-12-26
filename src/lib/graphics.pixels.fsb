@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612250207
+  \ Last modified: 201612260042
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,7 +58,7 @@ create slow-(pixel-addr)  ( -- a )
   \
   \ slow-(pixel-addr)  ( -- a )
   \
-  0 Return address _a_ of an alternative entry point to the
+  \ Return address _a_ of an alternative entry point to the
   \ "pixel-add" ROM routine ($22AA), to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
   \
