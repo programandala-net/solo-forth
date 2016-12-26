@@ -40,21 +40,29 @@
 need z80-asm,
 
 code rdraw176  ( gx gy -- )
+
   h pop, d pop, b push, d b ldp,
   \ HL = gy
   \ BC = gx
   1 e ld#,
-  b 7 bit,  \ negative x?
-  nz? rif  c a ld, neg, -1 e ld#, a c ld,  rthen  \ negative x
+  b 7 bit,  \ negative gx?
+  nz? rif  c a ld, neg, -1 e ld#, a c ld,  rthen  \ negative gx
 
-  l b ld,   \ y
+  l b ld,   \ B = gy
   1 d ld#,
-  h 7 bit,  \ negative y?
-  nz? rif  b a ld, neg, -1 d ld#, a b ld,  rthen  \ negative y
+  h 7 bit,  \ negative gy?
+  nz? rif  b a ld, neg, -1 d ld#, a b ld,  rthen  \ negative gy
+
+  \ XXX TODO -- factor the above part, it's common to `rdraw`
+
+  \ B = gy
+  \ D = sign of gy (1/-1)
+  \ C = gx
+  \ E = sign of gx (1/-1)
 
   24BA call, \ alternative entry to the DRAW-LINE ROM routine
 
-  b pop,
+  b pop,  \ restore Forth IP
 
   jpnext, end-code
 
@@ -73,60 +81,82 @@ code rdraw176  ( gx gy -- )
   \
   \ This word is equivalent to Sinclair BASIC's DRAW command.
   \
+  \ See: `adraw176`, `rdraw`.
+  \
   \ }doc
 
 ( rdraw )
 
-  \ XXX UNDER DEVELOPMENT
+  \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ XXX TODO -- adapt the DRAW-LINE ROM routine
-
-need z80-asm-comma
+need z80-asm,  need l:  need os-coords  need (pixel-addr)
 
 code rdraw  ( gx gy -- )
 
-  a c ld, b cp, c? rif
-    \  ld      a,c
-    \  cp      b
-    \  jr      nc,dl_x_ge_y
+  h pop, d pop, b push, d b ldp,
+  \ HL = gy
+  \ BC = gx
+  1 e ld#,  \ default positive sign of gx
+  b 7 bit,  \ negative gx?
+  nz? rif  c a ld, neg, -1 e ld#, a c ld,  rthen  \ negative gx
 
-    c l ld, d push, a xor, a e ld, XXX jr,
+  l b ld,   \ B = gy
+  1 d ld#,  \ default positive sign of gy
+  h 7 bit,  \ negative gy?
+  nz? rif  b a ld, neg, -1 d ld#, a b ld,  rthen  \ negative gy
+
+  \ XXX TODO -- factor the above part, it's common to
+  \ `rdraw176`
+
+  \ B = gy
+  \ D = sign of gy (1/-1)
+  \ C = gx
+  \ E = sign of gx (1/-1)
+
+  \ Modified copy of DRAW-LINE ROM routine from address $24BA:
+
+  c a ld, b cp, c? rif
+    \  ld      a,c
+    \  cp      b ; is gx
+    \  jr      nc,dl_x_ge_y
+    \  ; gy is greater than gx
+
+  c l ld, d push, a xor, a e ld, 00 l# jr,  rthen
     \  ld      l,c
     \  push    de
     \  xor     a
     \  ld      e,a
     \  jr      dl_larger
 
-  rthen
     \ dl_x_ge_y:
-  c or, z? ?ret
+    \  ; gy is not greater than gx
+  c or, z? ?ret, b l ld, c b ld, d push, 00 d ld#,
     \  or      c
     \  ret     z
-
-  b l ld, c b ld, d push, 00 d ld#,
     \  ld      l,b
     \  ld      b,c
     \  push    de
     \  ld      d,$00
 
+  00 l: b h ld, b a ld, rra,
     \ dl_larger:
-  b h ld, b a ld, rra,
     \  ld      h,b
     \  ld      a,b
     \  rra
 
-  rbegin
+-->
+
+( rdraw )
+
+  rbegin  l add, 01 l# c? ?jr, h cp, 02 l# c? ?jr,
     \ d_l_loop:
-  l a add, XXX jr,
     \  add     a,l
     \  jr      c,d_l_diag
-
-  h cp, XXX jr,
     \  cp      h
     \  jr      c,d_l_hr_vt
 
+  01 l: h sub, a c ld, exx, b pop, b push, 03 l# jr,
     \ d_l_diag:
-  h sub, a c ld, exx, b pop, b push, XXX jr,
     \  sub     h
     \  ld      c,a
     \  exx
@@ -134,21 +164,18 @@ code rdraw  ( gx gy -- )
     \  push    bc
     \  jr      d_l_step
 
--->
-
-( rdraw )
-
+  02 l: a c ld, d push, exx, b pop,
     \ d_l_hr_vt:
-  a c ld, d push, exx, b pop,
     \  ld      c,a
     \  push    de
     \  exx
     \  pop     bc
 
-    \ d_l_step:
+  03 l:
   os-coords h ftp, b a ld, h add, a b ld, c a ld, a inc, l add,
-  XXX c? ?jr,
-  XXX z? ?jr,
+  05 l# c? ?jr,
+  \ XXX z? ?jr, ; XXX TODO -- adapt, integer out of range
+    \ d_l_step:
     \  ld      hl,($5c7d) ; coords
     \  ld      a,b
     \  add     a,h
@@ -160,24 +187,40 @@ code rdraw  ( gx gy -- )
     \  jr      z,report_bc ; XXX TODO -- adapt, integer out of range
 
     \ d_l_plot:
-  a dec, a c ld, 22E5 07 + call, exx, c a ld,
+  04 l: a dec, a c ld,
     \  dec     a
     \  ld      c,a
-    \  call    l22e5      ; routine plot-sub \ XXX TODO
-    \ XXX TODO -- replace `call PLOT-SUB` with `call PLOT-SUB+7`
+
+  (pixel-addr) call, 22EC 07 + call, exx, c a ld, rstep
+    \  call    pixel_addr ; alternative routine for 0..191 gy
+    \  call    $22EC ; alternative entry to PLOT-SUB ROM routine
     \  exx
     \  ld      a,c
-  rstep
     \  djnz    d_l_loop
 
-  d pop, ret,
+  d pop, ret,  05 l: 04 l# z? ?jr, b pop, jpnext, end-code
     \  pop     de
     \  ret
-
     \ d_l_range:
-  XXX z? ?jr,
     \  jr      z,d_l_plot
-  jpnext, end-code
+    \  pop bc  ; restore Forth IP
+    \  jp next ; jp (ix)
+
+  \ Credit:
+  \
+  \ This word is a modified version of the DRAW-LINE ROM
+  \ routine.
+
+  \ doc{
+  \
+  \ rdraw  ( gx gy -- )
+  \
+  \ Draw a line relative _gx gy_ to the current coordinates,
+  \ _gx_ is 0..255; _gy_ is 0..191.
+  \
+  \ See: `rdraw176`, `adraw176`.
+  \
+  \ }doc
 
 ( adraw176 )
 
@@ -221,9 +264,11 @@ need plot  need os-coordx  need os-coordy
   \ adraw176  ( gx gy -- )
   \
   \ Draw a line from the current coordinates to the given
-  \ absolute coordinates, using only the top 176 pixel rows of
-  \ the screen (the lower 16 pixel rows are not used). _gx_ is
-  \ 0..255; _gy_ is 0..175.
+  \ absolute coordinates _gx gy_, using only the top 176 pixel
+  \ rows of the screen (the lower 16 pixel rows are not used).
+  \ _gx_ is 0..255; _gy_ is 0..175.
+  \
+  \ See: `rdraw176`.
   \
   \ }doc
 
