@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612260042
+  \ Last modified: 201612261637
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,11 @@
   \ to `jpnext,`, after the change in the kernel.
   \
   \ 2016-12-25: Improve documentation. Write `plot176`.
+  \
+  \ 2016-12-26: Convert all code words (`fast-(pixel-addr)`,
+  \ `set-pixel`, `reset-pixel`, `toggle-pixel` `test-pixel`,
+  \ and `pixels`) from the `z80-asm` assembler to the
+  \ `z80-asm,` assembler.
 
 \ (pixel-addr) slow-(pixel-addr) \
 
@@ -96,7 +101,7 @@ create slow-(pixel-addr)  ( -- a )
 
 \ (pixel-addr) fast-(pixel-addr) \
 
-need z80-asm
+need z80-asm,
 
 [defined] (pixel-addr) ?\ defer (pixel-addr)  ( -- a )
 
@@ -104,10 +109,10 @@ create fast-(pixel-addr)  ( -- a )
 
   asm
 
-  BF a ld#  b sub
+  BF a ld#,  b sub,
     \ b= adjusted Y coordinate (0..191)
 
-  a b ld  rra  scf  rra  a and  rra
+  a b ld, rra, scf, rra, a and, rra,
     \ the line number from top of screen to B
     \                     0xxxxxxx
     \ set carry flag
@@ -115,31 +120,31 @@ create fast-(pixel-addr)  ( -- a )
     \ clear carry flag
     \                     010xxxxx
 
-  b xor  F8 and#  b xor  a h ld
+  b xor, F8 and#, b xor, a h ld,
     \
     \ keep the top 5 bits 11111000
     \                     010xxbbb
     \ transfer high byte to H
 
-  c a ld
+  c a ld,
     \ the x value 0..255
 
-  rlca rlca rlca  b xor  C7 and#
+  rlca, rlca, rlca,  b xor, C7 and#,
     \ the y value
     \ apply mask             11000111
 
-  b xor  rlca  rlca
+  b xor, rlca, rlca,
     \ restore unmasked bits  xxyyyxxx
     \ rotate to              xyyyxxxx
     \ required position      yyyxxxxx
 
-  a l ld
+  a l ld,
     \ low byte to L
 
-  c a ld  07 and#
+  c a ld, 07 and#,
     \ form the pixel position in A
 
-  ret
+  ret,
 
   end-asm
 
@@ -269,16 +274,16 @@ code plot176  ( gx gy -- )
 
 ( set-pixel )
 
-need (pixel-addr)  need z80-asm
+need (pixel-addr)  need z80-asm,
 
 code set-pixel  ( gx gy -- )
 
-  hl pop  de pop  bc push
-  l b ld  e c ld  (pixel-addr) call
-  a b ld  b inc  1 a ld#
-  begin  rrca  step
-  m or  a m ld  \ combine pixel with byte in the screen
-  bc pop  jpnext,
+  h pop, d pop, b push,
+  l b ld, e c ld, (pixel-addr) call,
+  a b ld, b inc, 1 a ld#,
+  rbegin  rrca,  rstep
+  m or, a m ld,  \ combine pixel with byte in the screen
+  b pop, jpnext,
 
   end-code
 
@@ -303,16 +308,16 @@ code set-pixel  ( gx gy -- )
 
 ( reset-pixel )
 
-need (pixel-addr)  need z80-asm
+need (pixel-addr)  need z80-asm,
 
 code reset-pixel  ( gx gy -- )
 
-  hl pop  de pop  bc push
-  l b ld  e c ld  (pixel-addr) call
-  a b ld  b inc  1 a ld#
-  begin  rrca  step
-  cpl  m and  a m ld  \ combine pixel with byte in the screen
-  bc pop  jpnext,
+  h pop, d pop, b push,
+  l b ld, e c ld, (pixel-addr) call,
+  a b ld, b inc, 1 a ld#,
+  rbegin  rrca,  rstep,
+  cpl, m and, a m ld,  \ combine pixel with byte in the screen
+  b pop, jpnext,
 
   end-code
 
@@ -337,16 +342,16 @@ code reset-pixel  ( gx gy -- )
 
 ( toggle-pixel )
 
-need (pixel-addr)  need z80-asm
+need (pixel-addr)  need z80-asm,
 
 code toggle-pixel  ( gx gy -- )
 
-  hl pop  de pop  bc push
-  l b ld  e c ld  (pixel-addr) call
-  a b ld  b inc  1 a ld#
-  begin  rrca  step
-  m xor  a m ld  \ combine pixel with byte in the screen
-  bc pop  jpnext,
+  h pop, d pop, b push,
+  l b ld, e c ld, (pixel-addr) call,
+  a b ld, b inc, 1 a ld#,
+  rbegin  rrca,  rstep
+  m xor, a m ld,  \ combine pixel with byte in the screen
+  b pop, jpnext,
 
   end-code
 
@@ -371,43 +376,44 @@ code toggle-pixel  ( gx gy -- )
 
 ( test-pixel )
 
-need (pixel-addr)  need z80-asm
+need (pixel-addr)  need z80-asm,
 
 code test-pixel  ( gx gy -- f )
-  hl pop  de pop  bc push
-  \ l = y coordinate
-  \ e = x coordinate
-  l b ld  e c ld
-  \ b = y coordinate
-  \ c = x coordinate
-  (pixel-addr) call
-  \ hl = screen address
-  \ a = pixel position in hl
-  a b ld  b inc  m a ld
-  begin  rlca  step \ rotate to bit 0
-  bc pop  \ restore the Forth IP
-  1 and#  \ pixel?
-  ' true jpnz
-  ' false jp
+  h pop, d pop, b push,
+  \ L = gy coordinate
+  \ E = gx coordinate
+  \ (SP) = Forth IP
+  l b ld, e c ld,
+  \ B = gy coordinate
+  \ C = gx coordinate
+  (pixel-addr) call,
+  \ HL = screen address
+  \ A = pixel position in HL
+  a b ld, b inc, m a ld,
+  rbegin  rlca,  rstep \ rotate to bit 0
+  b pop,   \ restore the Forth IP
+  1 and#,  \ pixel?
+  ' true nz? ?jp,
+  ' false jp,
   end-code
 
 ( pixels fast-pixels )
 
-need z80-asm  [defined] pixels ?\ defer pixels  ( -- n )
+need z80-asm,  [defined] pixels ?\ defer pixels  ( -- n )
 
 code fast-pixels  ( -- n )
 
-  exx
-  4000 hl ldp#  l b ld  l c ld
-  begin  \ byte
-    08 d ld#
-    begin  \ bit
-      m rrc  cy if  bc incp  then  d dec
-    z until
-    hl incp  h a ld  58 cp#
-  z until
-  bc push
-  exx
+  exx,  \ save Forth IP
+  4000 h ldp#, l b ld, l c ld,
+  rbegin  \ byte
+    08 d ld#,
+    rbegin  \ bit
+      m rrc, c? rif  b incp,  rthen  d dec,
+    z? runtil
+    h incp, h a ld, 58 cp#,
+  z? runtil
+  b push,
+  exx,  \ restore Forth IP
   jpnext,
   end-code  ' fast-pixels ' pixels defer!
 
