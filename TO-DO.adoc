@@ -184,6 +184,14 @@ actual strings.
 // Control structures {{{1
 == Control structures ==
 
+.2016-12-26:
+
+Add default execution token to `switch:`.
+
+.2016-12-26:
+
+Choose a better name for `?repeat`.
+
 .2016-12-20:
 
 Document the variants of `of`.
@@ -212,11 +220,6 @@ Change `??` to its old version, which is more useful:
 .2016-11-26:
 
 Move old versions of `case` to an <old> directory.
-
-.2016-11-26:
-
-Finish `switch` (flow.switch.fsb) and indentify its origin (Wil
-Baden?).
 
 .2016-05-07:
 

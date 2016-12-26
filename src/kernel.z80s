@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612261642
+; Last modified: 201612261916
 
 include version.z80s
 
@@ -2943,7 +2943,7 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
-; See: `unloop`, `do`, `loop`, `+loop`.
+; See: `?leave`, `unloop`, `do`, `?do`, `loop`, `+loop`.
 ;
 ; }doc
 
