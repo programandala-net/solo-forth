@@ -587,6 +587,11 @@ Convert the sample games to .fs.
 // Graphics {{{1
 == Graphics ==
 
+.2016-12-26:
+
+Factor `adraw176` to write `aline176`, which uses `set-pixel` and is faster.
+Write a similar alternative to `rdraw`, `rline`.
+
 .2016-12-02:
 
 Use constants for bitmasks and "unbitmasks" in <printing.color.fsb>.
@@ -652,6 +657,15 @@ Name for graphic fill: `flood`.
 
 // Keyboard {{{1
 == Keyboard ==
+
+.2016-12-26:
+
+Remove `discard-key`? It does exactly the same as `key drop`, but faster, and
+it uses only two bytes of data space (for `push ix`).
+
+.2016-12-26:
+
+Test `break?`.
 
 .2016-11-25:
 

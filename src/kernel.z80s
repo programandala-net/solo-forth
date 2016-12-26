@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612261916
+; Last modified: 201612262050
 
 include version.z80s
 
@@ -4243,17 +4243,18 @@ xkey.translate:
   _jp_pushhl
 
 ; ----------------------------------------------
-  _code_header wait_for_key_,'wait-for-key'
+  _code_header wait_for_key_,'discard-key'
 
 ; doc{
 ;
-; wait-for-key  ( -- )
+; discard-key  ( -- )
 ;
 ; Wait for a valid key and discard it.
 ;
 ; }doc
 
   ; XXX TODO -- make it compatible with the future multitasking
+  ; XXX TODO -- remove?
 
   push ix ; make next `ret` jump to `next`
 
