@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612252158
+  \ Last modified: 201612261722
 
   \ -----------------------------------------------------------
   \ Description
@@ -90,6 +90,8 @@
   \ 2016-12-25: Fix `jp>jr`. Rename `im1`, `im2` to `im1,`
   \ `im2,`. Make `inverse-cond` and `jp>jr` compatible with
   \ `z80-asm`, in case `z80-asm` was loaded first.
+  \
+  \ 2016-12-26: Factor `runtil`, fix `rstep`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -350,22 +352,27 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
 : rwhile  (  op -- orig cs-id )  rif 2+  ;
 
-: runtil  (  dest cs-id op -- )  jp>jr , 0B ?pairs <rresolve  ;
-  \ compile a relative conditional jump
+: (runtil)  (  dest cs-id op -- )  , 0B ?pairs <rresolve  ;
+  \ Compile a relative conditional jump.
+  \ This word is common factor of `runtil` and `rstep`.
+
+: runtil  (  dest cs-id op -- )  jp>jr (runtil)  ;
+  \ End a `rbegin runtil` loop.
 
 : ragain  (  dest cs-id -- )  18 runtil  ;
-  \ compile `jr`
+  \ End a `rbegin ragin` loop by compiling `jr`.
   \
   \ Note: $C3 is the opcode of `jp`.
 
 : rrepeat  (  dest cs-id1 orig cs-id2 -- )
   2swap ragain 2- rthen  ;
+  \ End a `rbegin rrepeat` loop.
 
-: rstep    ( dest cs-id -- )  10 runtil  ;  -->
-  \ compile `djnz`
+: rstep    ( dest cs-id -- )  10 (runtil)  ;  -->
+  \ End a `rbegin rstep` loop by compiling `djnz`.
   \
   \ Note: $10 is the Z80 opcode for `djnz`.
-/
+
 ( z80-asm, )
 
   \ Control structures with absolute jumps
@@ -376,7 +383,7 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
 : aelse  (  cs-id -- cs-id )
   08 ?pairs C3 aif rot swap athen 08  ;
-  \ Note: $C3 is the opcode of `jp`
+  \ Note: $C3 is the opcode of `jp`.
 
 : abegin  (  -- dest cs-id )  <mark 09  ;
 
@@ -406,6 +413,8 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \ buffer is used.
   \
   \ XXX TODO -- use the heap instead, when implemented
+  \
+  \ XXX TODO -- deprecate, use labels instead
 
 : unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
   \ Return the address of the _n_ unresolved address.
@@ -414,6 +423,8 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \ compiled into `unresolved`. This saves a definition.  `dup`
   \ and `drop` are used to pass the stack check at the end of
   \ the definition.
+  \
+  \ XXX TODO -- deprecate, use labels instead
 
 base ! set-current previous
 
