@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612251316
+  \ Last modified: 201612260058
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,22 +32,20 @@
   \
   \ 2016-12-25: Rename `rdraw` to `rdraw176`, and `adraw` to
   \ `adraw176`. Improve documentation. Convert `rdraw176` to
-  \ the `z80-asm,` assembler.
+  \ the `z80-asm,` assembler. First steps to write `rdraw` with
+  \ a modified version of the ROM routine.
 
 ( rdraw176 )
 
 need z80-asm,
 
 code rdraw176  ( gx gy -- )
-
-  h pop,  d pop,  b push,
-  d b ldp,
-
+  h pop, d pop, b push, d b ldp,
   \ HL = gy
   \ BC = gx
   1 e ld#,
   b 7 bit,  \ negative x?
-  nz? rif  c a ld, neg, -1 e ld#,  a c ld,  rthen  \ negative x
+  nz? rif  c a ld, neg, -1 e ld#, a c ld,  rthen  \ negative x
 
   l b ld,   \ y
   1 d ld#,
@@ -77,8 +75,6 @@ code rdraw176  ( gx gy -- )
   \
   \ }doc
 
-  \ XXX FIXME -- use the whole screen
-
 ( rdraw )
 
   \ XXX UNDER DEVELOPMENT
@@ -89,79 +85,99 @@ need z80-asm-comma
 
 code rdraw  ( gx gy -- )
 
+  a c ld, b cp, c? rif
+    \  ld      a,c
+    \  cp      b
+    \  jr      nc,dl_x_ge_y
 
-  \  ld      a,c
-  \  cp      b
-  \  jr      nc,dl_x_ge_y
-  \
-  \  ld      l,c
-  \  push    de
-  \  xor     a
-  \  ld      e,a
-  \  jr      dl_larger
-  \
-  \ dl_x_ge_y:
-  \  or      c
-  \  ret     z
-  \
-  \  ld      l,b
-  \  ld      b,c
-  \  push    de
-  \  ld      d,$00
-  \
-  \ dl_larger:
-  \  ld      h,b
-  \  ld      a,b
-  \  rra
-  \
-  \ d_l_loop:
-  \  add     a,l
-  \  jr      c,d_l_diag
-  \
-  \  cp      h
-  \  jr      c,d_l_hr_vt
-  \
-  \ d_l_diag:
-  \  sub     h
-  \  ld      c,a
-  \  exx
-  \  pop     bc
-  \  push    bc
-  \  jr      d_l_step
-  \
-  \ d_l_hr_vt:
-  \  ld      c,a
-  \  push    de
-  \  exx
-  \  pop     bc
-  \
-  \ d_l_step:
-  \  ld      hl,($5c7d) ; coords
-  \  ld      a,b
-  \  add     a,h
-  \  ld      b,a
-  \  ld      a,c
-  \  inc     a
-  \  add     a,l
-  \  jr      c,d_l_range
-  \  jr      z,report_bc ; XXX TODO -- adapt, integer out of range
-  \
-  \ d_l_plot:
-  \  dec     a
-  \  ld      c,a
-  \  call    l22e5      ; routine plot-sub \ XXX TODO
-  \ XXX TODO -- replace `call PLOT-SUB` with `call PLOT-SUB+7`
-  \  exx
-  \  ld      a,c
-  \  djnz    d_l_loop
-  \
-  \  pop     de
-  \  ret
-  \
-  \ d_l_range:
-  \  jr      z,d_l_plot
+    c l ld, d push, a xor, a e ld, XXX jr,
+    \  ld      l,c
+    \  push    de
+    \  xor     a
+    \  ld      e,a
+    \  jr      dl_larger
 
-end-asm
+  rthen
+    \ dl_x_ge_y:
+  c or, z? ?ret
+    \  or      c
+    \  ret     z
+
+  b l ld, c b ld, d push, 00 d ld#,
+    \  ld      l,b
+    \  ld      b,c
+    \  push    de
+    \  ld      d,$00
+
+    \ dl_larger:
+  b h ld, b a ld, rra,
+    \  ld      h,b
+    \  ld      a,b
+    \  rra
+
+  rbegin
+    \ d_l_loop:
+  l a add, XXX jr,
+    \  add     a,l
+    \  jr      c,d_l_diag
+
+  h cp, XXX jr,
+    \  cp      h
+    \  jr      c,d_l_hr_vt
+
+    \ d_l_diag:
+  h sub, a c ld, exx, b pop, b push, XXX jr,
+    \  sub     h
+    \  ld      c,a
+    \  exx
+    \  pop     bc
+    \  push    bc
+    \  jr      d_l_step
+
+-->
+
+( rdraw )
+
+    \ d_l_hr_vt:
+  a c ld, d push, exx, b pop,
+    \  ld      c,a
+    \  push    de
+    \  exx
+    \  pop     bc
+
+    \ d_l_step:
+  os-coords h ftp, b a ld, h add, a b ld, c a ld, a inc, l add,
+  XXX c? ?jr,
+  XXX z? ?jr,
+    \  ld      hl,($5c7d) ; coords
+    \  ld      a,b
+    \  add     a,h
+    \  ld      b,a
+    \  ld      a,c
+    \  inc     a
+    \  add     a,l
+    \  jr      c,d_l_range
+    \  jr      z,report_bc ; XXX TODO -- adapt, integer out of range
+
+    \ d_l_plot:
+  a dec, a c ld, 22E5 07 + call, exx, c a ld,
+    \  dec     a
+    \  ld      c,a
+    \  call    l22e5      ; routine plot-sub \ XXX TODO
+    \ XXX TODO -- replace `call PLOT-SUB` with `call PLOT-SUB+7`
+    \  exx
+    \  ld      a,c
+  rstep
+    \  djnz    d_l_loop
+
+  d pop, ret,
+    \  pop     de
+    \  ret
+
+    \ d_l_range:
+  XXX z? ?jr,
+    \  jr      z,d_l_plot
+  jpnext, end-code
 
 ( adraw176 )
 

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201612081408
+  \ Last modified: 201612260119
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,12 +58,16 @@
 
 need >>link  need there
 
-variable old-dp  variable old-latest  variable old-voc-link
+variable old-dp  variable old-voc-link
 variable old-hp  variable old-limit   variable old-farlimit
+variable old-current-latest
+
+  \ variable old-latest
 
 : transient  ( u1 u2 -- )
-  here old-dp !  hp@ old-hp !
-  current-latest old-latest !  voc-link @ old-voc-link !
+  here old-dp !  hp@ old-hp !  voc-link @ old-voc-link !
+  \ latest old-latest !
+  current-latest old-current-latest !
   limit @ dup old-limit ! swap - dup limit ! there
   farlimit @ dup old-farlimit ! swap - dup farlimit ! hp!  ;
 
@@ -114,7 +118,7 @@ variable old-hp  variable old-limit   variable old-farlimit
   \ XXX FIXME -- after `end-transient` the words of the
   \ `assembler` vocabulary defined in the kernel can not be
   \ found
-  
+
   \ doc{
   \
   \ end-transient  ( -- )
@@ -130,7 +134,8 @@ variable old-hp  variable old-limit   variable old-farlimit
   \ }doc
 
 : forget-transient  ( -- )
-  old-voc-link @ voc-link !  old-latest @ old-hp @ >>link
+  old-voc-link @ voc-link !
+  old-current-latest @ old-hp @ >>link
   [defined] far-banks ?\ !s  ;
   [undefined] far-banks ?\ far!  ;
 
