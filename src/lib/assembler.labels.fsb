@@ -3,9 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT -- not usable yet
-
-  \ Last modified: 201612062045
+  \ Last modified: 201612261642
 
   \ -----------------------------------------------------------
   \ Description
@@ -70,6 +68,16 @@
   \ after the hForth documentation. Use `?rel`, which is
   \ already in the assemblers, instead of the original code.
   \ Prepare for future development.
+  \
+  \ 2016-12-26: Review, try, test. Factor. Integrate init into
+  \ `asm`. Replace original error checking with `?throw` and
+  \ specific exception codes.
+
+  \ -----------------------------------------------------------
+  \ To-do
+
+  \ 2016-12-26: Document. Simplify. Save memory: Store label
+  \ numbers in bytes.
 
 ( l: l# )
 
@@ -78,42 +86,40 @@ get-order get-current
 root-wordlist assembler-wordlist forth-wordlist 3 set-order
 forth-wordlist set-current
 
-: huh? ( x -- ) 0= if ." ? " source type abort then  ;
-  \ Error action of several words.
-  \ XXX TODO -- adapt
-
 #16 constant max-l#
 
-2 cells           \ pointers:
-                  \   +0 = address of the next free pair
-                  \   +1 = ? \ XXX TODO --
-max-l# 2* cells   \ pairs
-+ constant /fwds
+2 cells  max-l# 2* cells +  constant /fwds
+  \ cell structure:
+  \   +0    = address of the next free pair
+  \   +1    = ? \ XXX TODO --
+  \   +2..x = pairs
 
 create fwds  ( -- a )  /fwds allot
   \ Unresolved forward reference associative array.
-  \ XXX TODO -- init by a hook in `asm` and document
 
 : init-fwds  ( -- )
-  /fwds allot  fwds /fwds erase
+  fwds /fwds erase
   [ fwds 2 cells + ] literal fwds !  ;  init-fwds
 
 max-l# cells constant /bwds
 
-create bwds  ( -- a )  /bwds allot  bwds /bwds erase
+create bwds  ( -- a )  /bwds allot
   \ Resolved label value array.
-  \ XXX TODO -- init by a hook in `asm` and document
 
--->
+: init-bwds  ( -- )  bwds /bwds erase  ;  init-bwds
+
+: init-l  ( -- ) init-fwds init-bwds  ;
+
+' init-l ' init-asm defer!  -->
 
 ( l: l# )
 
-: lpush  ( a label -- )
-  fwds 2@ <> huh?  \ full?
+: lpush  ( a n -- )
+  fwds 2@ = #-285 ?throw  \ full?
   fwds @ 2!  [ 2 cells ] literal fwds +!  ;
-  \ Push unresolved reference.
+  \ Push unresolved reference to address _a_, label _n_.
 
-: lpop  ( label -- a true | label false )
+: lpop  ( n -- a true | n false )
   >r fwds @ fwds cell+ cell+
   begin  2dup = 0= ( end start )  while
     dup @  r@ = if  \ found
@@ -123,30 +129,32 @@ create bwds  ( -- a )  /bwds allot  bwds /bwds erase
       r> r> ( a key )  -1 or  ( a true )  exit
     then  cell+ cell+
   repeat  2drop r> 0  ;
-  \ Pop any unresolved references.
+  \ Pop any unresolved references of label _n_.
 
-: l?  ( n -- a | 0 )  dup max-l# u< huh?  cells  bwds + @  ;
-  \ Return the address of label _n_ or 0 if unresolved.
+: ?l#  ( n -- )  [ max-l# 1- ] literal u> #-283 ?throw  ;
+  \ If label number _n_ is out of range, throw exception #-283.
+
+: l?  ( n -- a | 0 )  dup ?l#  cells bwds + @  ;
+  \ Return the address _a_ of label _n_ or 0 if unresolved.
 
 -->
 
 ( l: l# )
 
-  \ assembler-wordlist set-current
-  \ XXX TODO --
+assembler-wordlist set-current
 
-: l:  ( n -- a )
-  dup l? 0= huh? \ should be unknown
+: l:  ( n -- )
+  dup l? #-284 ?throw  \ should be unknown
   here  over cells bwds + ! \ now known
-  begin  dup lpop ( a -1 | n 0 )  while
+  begin  dup lpop ( a true | n false )  while
     here over - 1-  swap over ?rel c!  \ resolve ref
   repeat  2drop  ;
-  \ Assign `here` to label _n-1_.  Resolve any forward
+  \ Assign `here` to label _n_.  Resolve any forward
   \ references.  Assume 8-bit relative displacements.
 
 : l#  ( n -- a )
   dup l? ?dup 0= if  here 1+ 2dup swap lpush  then  nip  ;
-  \ Retrieve the value of label _n-1_.
+  \ Retrieve the address _a_ of label _n_.
 
 set-current set-order
 

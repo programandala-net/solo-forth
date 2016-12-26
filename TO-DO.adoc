@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-25
+:revdate: 2016-12-26
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -25,10 +25,6 @@ Add assembler control structures to the syntax file.
 .2016-12-20:
 
 Migrate from `z80-asm` to `z80-asm,`.
-
-.2016-11-14:
-
-Finish the port of the 8086 hForth assembler labels.
 
 .2016-04-20:
 
@@ -94,17 +90,6 @@ rest must be used for calls.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
-
-.2016-12-25:
-
-When `>name` is used with the xt of an alias, the returned name
-is that of the oldest 
-of aliases are taken
-
-.2016-12-23:
-
-Improve the case-sensitive mode: Use just one flag variable and make the code
-check it.
 
 .2016-12-03:
 
@@ -205,9 +190,6 @@ Document the variants of `of`.
 
 .2016-12-07:
 
-Add to `switch:`: `:cclause`, `cswitch`, `:2clause`, `2switch`.
-Rename its module to <flow.switch-colon.fsb>.
-
 Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
 (already exists as `char>string`).
  
@@ -296,7 +278,7 @@ backslash, after standard Forth.
 .2016-12-16:
 
 Remove bounds checking from `}` (Noble's arrays)
-and keep it as `?}`, for debugging.
+and keep a copy of it as `?}`, for debugging.
 
 .2016-12-07:
 

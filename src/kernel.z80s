@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612252145
+; Last modified: 201612261642
 
 include version.z80s
 
@@ -1814,6 +1814,66 @@ far.hl.mod:
 endif
 
 ; ----------------------------------------------
+  _code_header execute_,'execute'
+
+; doc{
+;
+; execute  ( xt  -- )
+;
+; }doc
+
+  pop hl
+  jp (hl)
+
+; ----------------------------------------------
+  _code_header perform_,'perform'
+
+; doc{
+;
+; perform  ( a  -- )
+;
+; Execute the word whose xt is stored in _a_.  Do nothing if
+; the content of _a_ is zero.
+;
+; }doc
+
+  pop hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+  or h
+  jp nz,execute_hl
+
+  ; Execution continues in `noop`:
+
+; ----------------------------------------------
+  _code_header noop_,'noop',
+
+; doc{
+;
+; noop  ( -- )
+;
+; Do nothing.
+;
+; }doc
+
+  _jp_next
+
+; ----------------------------------------------
+  _defer_header init_asm_,'init-asm',,noop_
+
+; doc{
+;
+; init-asm  ( -- )
+;
+; A deferred word called by `asm`. Its default behaviour is `noop`.
+; This word is modified the assembler labels module in order to init
+; the labels.
+;
+; }doc
+
+; ----------------------------------------------
   _colon_header asm_,'asm'
 
 ; doc{
@@ -1828,6 +1888,7 @@ endif
   ; Idea taken from Coos Haak's Z80 Forth assembler.
 
   dw store_csp_
+  dw init_asm_
 if 1 ; abase
   dw base_,fetch_,abase_,store_ ; save the current base
 else
@@ -2510,53 +2571,6 @@ question_csb_.enough:
 
   dw csb_size_,to_csb_,store_
   dw exit_
-
-; ----------------------------------------------
-  _code_header execute_,'execute'
-
-; doc{
-;
-; execute  ( xt  -- )
-;
-; }doc
-
-  pop hl
-  jp (hl)
-
-; ----------------------------------------------
-  _code_header perform_,'perform'
-
-; doc{
-;
-; perform  ( a  -- )
-;
-; Execute the word whose xt is stored in _a_.  Do nothing if
-; the content of _a_ is zero.
-;
-; }doc
-
-  pop hl
-  ld a,(hl)
-  inc hl
-  ld h,(hl)
-  ld l,a
-  or h
-  jp nz,execute_hl
-
-  ; Execution continues in `noop`:
-
-; ----------------------------------------------
-  _code_header noop_,'noop',
-
-; doc{
-;
-; noop  ( -- )
-;
-; Do nothing.
-;
-; }doc
-
-  _jp_next
 
 ; ----------------------------------------------
   _colon_header forward_mark_,'>mark'
