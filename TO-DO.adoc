@@ -587,6 +587,10 @@ Convert the sample games to .fs.
 // Graphics {{{1
 == Graphics ==
 
+.2016-12-27:
+
+Rename and document `test-pixel` and `test-pixel176`.
+
 .2016-12-26:
 
 Factor `adraw176` to write `aline176`, which uses `set-pixel` and is faster.

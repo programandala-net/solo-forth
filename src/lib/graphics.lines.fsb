@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612260058
+  \ Last modified: 201612270053
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,8 @@
   \ `adraw176`. Improve documentation. Convert `rdraw176` to
   \ the `z80-asm,` assembler. First steps to write `rdraw` with
   \ a modified version of the ROM routine.
+  \
+  \ 2016-12-26: Add `aline176`.
 
 ( rdraw176 )
 
@@ -222,20 +224,25 @@ code rdraw  ( gx gy -- )
   \
   \ }doc
 
+( x1 incx y1 incy y )
+
+2variable x1  2variable incx
+2variable y1  2variable incy
+
+  \ Variables used by `adraw176` and `aline176`.
+
 ( adraw176 )
 
-need plot  need os-coordx  need os-coordy
+need plot176  need os-coordx  need os-coordy
 
-2variable x1  2variable incx  2variable y1  2variable incy
+need x1  need incx  need y1  need incy
 
 : adraw176  ( gx gy -- )
 
-  [ os-coordy ] literal c@ ( y0 )
-  dup 0 swap y1 2! - dup abs rot
+  [ os-coordy ] literal c@ dup 0 swap y1 2! - dup abs rot
   \ ( +-ydiff ydiff x )
 
-  [ os-coordx ] literal c@ ( x0 )
-  dup 0 swap x1 2! - dup abs rot
+  [ os-coordx ] literal c@ dup 0 swap x1 2! - dup abs rot
   \ ( +-ydiff +-xdiff xdiff ydiff )
 
   max >r dup 0<  \ negative xdiff?
@@ -246,12 +253,8 @@ need plot  need os-coordx  need os-coordy
   if    abs 0 swap r@ ud/mod dnegate
   else  0 swap r@ ud/mod  then
 
-  -->
-
-( adraw176 )
-
   incy 2! drop r> 1+ 0
-  do  x1 @ y1 @ plot
+  do  x1 @ y1 @ plot176
       x1 2@ incx 2@ d+ x1 2!
       y1 2@ incy 2@ d+ y1 2!  loop  ;
 
@@ -268,8 +271,55 @@ need plot  need os-coordx  need os-coordy
   \ rows of the screen (the lower 16 pixel rows are not used).
   \ _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See: `rdraw176`.
+  \ See: `rdraw176`, `rline176`.
   \
   \ }doc
+
+( aline176 )
+
+need set-save-pixel176  need os-coordx  need os-coordy
+
+need x1  need incx  need y1  need incy
+
+: aline176  ( gx gy -- )
+
+  [ os-coordy ] literal c@ dup 0 swap y1 2! - dup abs rot
+  \ ( +-ydiff ydiff x )
+
+  [ os-coordx ] literal c@ dup 0 swap x1 2! - dup abs rot
+  \ ( +-ydiff +-xdiff xdiff ydiff )
+
+  max >r dup 0<  \ negative xdiff?
+  if    abs 0 swap r@ ud/mod dnegate
+  else  0 swap r@ ud/mod  then
+
+  incx 2! drop dup 0<  \ negative ydiff?
+  if    abs 0 swap r@ ud/mod dnegate
+  else  0 swap r@ ud/mod  then
+
+  incy 2! drop r> 1+ 0
+  do  x1 @ y1 @ set-save-pixel176
+      x1 2@ incx 2@ d+ x1 2!
+      y1 2@ incy 2@ d+ y1 2!  loop  ;
+
+  \ Credit:
+  \
+  \ Code adapted from Abersoft Forth's `DRAW`.
+
+  \ doc{
+  \
+  \ aline176  ( gx gy -- )
+  \
+  \ Draw a line from the current coordinates to the given
+  \ absolute coordinates _gx gy_, using only the top 176 pixel
+  \ rows of the screen (the lower 16 pixel rows are not used)
+  \ and preserving the current attributes of the screen.
+  \ _gx_ is 0..255; _gy_ is 0..175. This word is faster than
+  \ `adrawline176` not only because the 
+  \
+  \ See: `adraw176`, `rdraw176`.
+  \
+  \ }doc
+
 
   \ vim: filetype=soloforth

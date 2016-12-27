@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201612270053
 
   \ -----------------------------------------------------------
   \ Description
@@ -67,6 +67,53 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention.
+  \
+  \ 2016-12-26: Add `aline176-bench`.
+
+( aline176-bench )
+
+need bench{  need }bench.  need adraw176  need aline176
+
+: adraw  ( -- )    0 175 adraw176 255 175 adraw176
+                 255   0 adraw176   0   0 adraw176 ;
+
+: aline  ( -- )    0 175 aline176 255 175 aline176
+                 255   0 aline176   0   0 aline176 ;
+
+: run  ( n -- )
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." adraw176: "
+      0 swap bench{ 0 ?do  adraw  loop }bench. drop
+      cr ." aline176: "
+      0 swap bench{ 0 ?do  aline  loop }bench. drop   ;
+
+  \ 2016-12-27:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ------------------------------------
+  \       adraw176  aline176 (1)  aline176 (2)
+  \       --------  ------------  ------------
+  \ 00010      369           360           336
+  \ 00100     3691          3600          3359
+  \ 01000    36905         36000         33587
+
+  \ (1) First version, which saves the coordinates on the stack
+  \ during the loop:
+
+  \ incy 2! drop r> 1+ 0 2dup
+  \ do  2drop x1 @ y1 @ 2dup set-pixel176
+  \     x1 2@ incx 2@ d+ x1 2!
+  \     y1 2@ incy 2@ d+ y1 2!  loop  ( gx gy )
+  \ [ os-coordy ] literal c! [ os-coordx ] literal c!  ;
+
+  \ (2) Second version, which uses `set-save-pixel176`, a
+  \ variant of `set-pixel176` that saves the new graphic
+  \ coordinates:
+
+  \ incy 2! drop r> 1+ 0
+  \ do  x1 @ y1 @ set-save-pixel176
+  \     x1 2@ incx 2@ d+ x1 2!
+  \     y1 2@ incy 2@ d+ y1 2!  loop  ;
 
 ( +field-bench )
 
@@ -193,7 +240,7 @@ $0005 1 +field-ca 5f-ca drop  -->
 
   \                     Frames (1 frame = 50th of second)
   \ Field  +field       ---------------------------------
-  \ offset implement.   Times             Id 
+  \ offset implement.   Times             Id
   \ ------ ------------ ----------------- ---
   \                     01000 10000 65535
   \                     ----- ----- -----
