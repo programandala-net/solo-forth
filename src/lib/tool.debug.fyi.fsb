@@ -1,0 +1,57 @@
+  \ tool.debug.fyi.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201612272050
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ `fyi`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-12-27: Start. Add `fyi`.
+
+( fyi )
+
+need u.r
+
+: fyi.  ( u -- )  cr 5 u.r space  ;
+
+: fyi  ( -- )
+  here           fyi. ." here"
+  voc-link @     fyi. ." voc-link @"
+  limit @        fyi. ." limit @"
+  unused         fyi. ." unused"
+  hp@            fyi. ." hp@"
+  latest         fyi. ." latest"
+  current-latest fyi. ." current-latest"
+  farlimit @     fyi. ." farlimit @"
+  farunused      fyi. ." farunused"  ;
+
+  \ doc{
+  \
+  \ fyi  ( -- )
+  \
+  \ Print system information.
+  \
+  \ }doc
+
+
+  \ vim: filetype=soloforth
+

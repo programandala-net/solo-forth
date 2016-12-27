@@ -491,6 +491,11 @@ is a problem of fsb2's fb2dsk.
 // TR-DOS {{{2
 === TR-DOS ===
 
+.2016-12-27:
+
+The games disk needs 648 KiB, it does not fit the 636 KiB usable in a TR-DOS
+disk.
+
 .2016-09-01:
 
 `read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
@@ -579,6 +584,15 @@ New: `.files` (from Pygmy Forth).
 
 // Games {{{1
 == Games ==
+
+.2016-12-27:
+
+The games does not fit a TR-DOS disk, because the library has grown.
+
+Extract them, make them independent projects?
+
+First, convert them to .fs as planned, and load them with `load-app`.
+This will save several blocks of source.
 
 .2016-05-13:
 
@@ -1058,12 +1072,6 @@ Many needed words are in the same block.
 
 Study the actual advantage of `exit` at the end of conditional compilation.
 
-.2016-11-23:
-
-NOTE: Milestone: 0.12.0
-
-Rename `from` to `need-from`.
-
 .2016-11-22:
 
 NOTE: Milestone: 0.12.0
@@ -1253,8 +1261,6 @@ fully adapted yet.
 
 .2016-11-26:
 
-NOTE: Milestone: 0.12.0
- 
 Write these new words in Z80:
 
 ----
@@ -1306,8 +1312,6 @@ Improve `see`: decode `does>`.
 .2016-11-26:
 
 Rename `.unused` to `.free`.
-
-Write `fyi` or `.sys`, etc.
 
 .2016-11-25:
 
