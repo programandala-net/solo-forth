@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-12-23
+" Updated:  2016-12-27
 
 " --------------------------------------------------------------
 " History
@@ -319,6 +319,7 @@ syn keyword soloforthForth enclose
 syn keyword soloforthForth error#
 syn keyword soloforthForth error-pos
 syn keyword soloforthForth executing?
+syn keyword soloforthForth farunused
 syn keyword soloforthForth line>string
 syn keyword soloforthForth link>name
 syn keyword soloforthForth name>
@@ -593,11 +594,13 @@ syn keyword soloforthWordlists words
 " Assembler words defined in the kernel:
 
 syn keyword soloforthAssembler asm
+syn keyword soloforthAssembler call,
 syn keyword soloforthAssembler code
 syn keyword soloforthAssembler end-asm
 syn keyword soloforthAssembler end-code
 syn keyword soloforthAssembler endm
 syn keyword soloforthAssembler fetchhl
+syn keyword soloforthAssembler jp,
 syn keyword soloforthAssembler jpnext,
 syn keyword soloforthAssembler jppushhl,
 syn keyword soloforthAssembler macro
@@ -777,7 +780,6 @@ syn keyword soloforthAssembler and,
 syn keyword soloforthAssembler andx,
 syn keyword soloforthAssembler bit,
 syn keyword soloforthAssembler bitx,
-syn keyword soloforthAssembler call,
 syn keyword soloforthAssembler callc,
 syn keyword soloforthAssembler callm,
 syn keyword soloforthAssembler callnc,
@@ -820,7 +822,6 @@ syn keyword soloforthAssembler inbc,
 syn keyword soloforthAssembler inc,
 syn keyword soloforthAssembler incp,
 syn keyword soloforthAssembler incx,
-syn keyword soloforthAssembler jp,
 syn keyword soloforthAssembler jpc,
 syn keyword soloforthAssembler jphl,
 syn keyword soloforthAssembler jpix,
@@ -1239,6 +1240,10 @@ let b:current_syntax = "soloforth"
 " 2016-12-22: Add `.\"`.
 "
 " 2016-12-23: Fix string regions to start at a word boundary.
+"
+" 2016-12-26: Update the order of some assembly words.
+"
+" 2016-12-27: Add `farunused`.
 
 " --------------------------------------------------------------
 
