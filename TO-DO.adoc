@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-27
+:revdate: 2016-12-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -737,6 +737,15 @@ prerequisites are older than the target.
 // Maths {{{1
 == Maths ==
 
+.2016-12-28:
+
+----
+: ?ifelse  ( x1 x2 f -- x1 | x2 )  if  drop  else  nip  then  ;
+: ifelse  ( x1 x2 f -- x1 | x2 )  rot ?ifelse  ;
+: ?dup  ( x1 f -- x1 | )  if  dup  then  ;
+: ?nip  ( x1 x2 f -- x1 x2 | x2 )  if  nip  then  ;
+----
+
 .2016-12-27:
 
 Add `binary` to the library.  If `base` were not a user variable, `binary` and
@@ -1157,7 +1166,7 @@ Combine `begin-module` and `package`.
 .2016-05-13:
 
 Improve `?(` with `refill`, to cross block boundaries?
-This would be needed  for `load-add`. Maybe two versions:
+This would be needed  for `load-app`. Maybe two versions:
 if `load-app` has been compiled, then compile the improved version of `?(`.
 
 .2016-06-01:

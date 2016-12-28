@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612222116
+  \ Last modified: 201612281859
 
   \ -----------------------------------------------------------
   \ Description
@@ -85,7 +85,10 @@
   \
   \ 2016-12-21: Add `odd?`. Rewrite `8*` in Z80.
   \
-  \ 2016-12-22: Add `ever?`.
+  \ 2016-12-22: Add `even?`.
+  \
+  \ 2016-12-28: Add `ifelse`. Fix Typo. Improve documentation
+  \ of `either`, `neither` and `any?`.
 
 ( under+ +under )
 
@@ -727,7 +730,7 @@ need fm/mod
 
 : */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
 
-( any? either neither )
+( any? either neither ifelse )
 
 need ?(
 
@@ -737,6 +740,12 @@ need ?(
   dup 1+ roll (any?) !
   0 swap 0 do  swap (any?) @ = or  loop  ;  ?)
 
+  \ Credit:
+  \
+  \ Originally written by John A. Peters in 1984 as part of a
+  \ tool set for the CP/M implementation of Laxen&Perry's F83
+  \ 2.1.1.
+
   \ doc{
   \
   \ any?  ( x0 x1..xn n -- f )
@@ -745,22 +754,18 @@ need ?(
   \
   \ Origin: John A. Peters' tools for CP/M F83 2.1.1, 1984.
   \
+  \ See: `either`, `neither`, `ifelse`.
+  \
   \ }doc
-
-  \ Credit:
-  \
-  \ Originally written by John A. Peters in 1984 as part of a
-  \ tool set for the CP/M implementation of Laxen&Perry's F83
-  \ 2.1.1.
-
-  \ Credit:
-  \
-  \ Code from IsForth (version 1.23b).
 
 [unneeded] either ?(
 
 : either  ( n1|u1 n2|u2 n3|u3 -- f )
   -rot over = -rot = or  ;  ?)
+
+  \ Credit:
+  \
+  \ Code from IsForth (version 1.23b).
 
   \ doc{
   \
@@ -769,6 +774,10 @@ need ?(
   \ Return _true_ if _n1|u1_ equals either _n2|u2_ or _n3|u3_;
   \ else return _false_.
   \
+  \ Origin: IsForth.
+  \
+  \ See: `neither`, `ifelse`, `any?`.
+  \
   \ }doc
 
 [unneeded] neither ?(
@@ -776,12 +785,38 @@ need ?(
 : neither  ( n1|u1 n2|u2 n3|u3 -- f )
   -rot over <> -rot <> and  ;  ?)
 
+  \ Credit:
+  \
+  \ Code from IsForth (version 1.23b).
+
   \ doc{
   \
   \ neither  ( n1|u1 n2|u2 n3|u3 -- f )
   \
   \ Return _true_ if _n1|u1_ is not equal to either _n2|u2_ or
   \ _n3|u3_; else return _false_.
+  \
+  \ Origin: IsForth.
+  \
+  \ See: `either`, `ifelse`, `any?`.
+  \
+  \ }doc
+
+[unneeded] ifelse ?(
+
+: ifelse  ( x1 x2 f -- x1 | x2 )  if  drop  else  nip  then  ;
+
+?)
+ 
+  \ Credit:
+  \
+  \ Idea from: http://hyperpolyglot.org/stack#ifelse
+
+  \ doc{
+  \
+  \ ifelse  ( x1 x2 f -- x1 | x2 )
+  \
+  \ If _f_ is true return _x1_, otherwise return _x2_.
   \
   \ }doc
 
