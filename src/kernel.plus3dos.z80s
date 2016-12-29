@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201608141426
+; Last modified: 201612290139
 
 ; ==============================================================
 ; Description
@@ -30,6 +30,11 @@
 
 ; See
 ; http://programandala.net/en.program.solo_forth.history.html
+
+; Latest changes:
+
+; 2016-12-29: Change definition names to lowercase, after the
+; changes in the main kernel.
 
 ; ==============================================================
 
@@ -132,7 +137,7 @@ dos.preserve_ip:
 ; Dictionary
 
 ; ----------------------------------------------
-_code_header dosior_to_ior_,'DOSIOR>IOR'
+_code_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
@@ -164,7 +169,7 @@ dosior_to_ior.hl:
   jp negate_hl
 
 ; ----------------------------------------------
-  _constant_header rec_slash_track_,'REC/TRACK'
+  _constant_header rec_slash_track_,'rec/track'
 
 ; doc{
 ;
@@ -179,7 +184,7 @@ dosior_to_ior.hl:
   ; XXX TODO -- not used in +3DOS
 
 ; ----------------------------------------------
-  _colon_header sector_id_,'SECTOR-ID'
+  _colon_header sector_id_,'sector-id'
 
   ; XXX TODO --
 
@@ -209,7 +214,7 @@ dosior_to_ior.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header read_block_,'READ-BLOCK'
+  _colon_header read_block_,'read-block'
 
 ; doc{
 ;
@@ -228,7 +233,7 @@ dosior_to_ior.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header write_block_,'WRITE-BLOCK'
+  _colon_header write_block_,'write-block'
 
 ; doc{
 ;
@@ -247,7 +252,7 @@ dosior_to_ior.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header transfer_block_,'TRANSFER-BLOCK'
+  _colon_header transfer_block_,'transfer-block'
 
 ; doc{
 ;
@@ -270,7 +275,7 @@ dosior_to_ior.hl:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header reposition_file_,'REPOSITION-FILE'
+  _code_header reposition_file_,'reposition-file'
 
 ; doc{
 ;
@@ -291,7 +296,7 @@ reposition_file.backup_ip equ $+1
   jp back_from_dos
 
 ; ----------------------------------------------
-  _code_header file_position_,'FILE-POSITION'
+  _code_header file_position_,'file-position'
 
 ; doc{
 ;
@@ -313,7 +318,7 @@ reposition_file.backup_ip equ $+1
   jp back_from_dos
 
 ; ----------------------------------------------
-  _code_header transfer_bytes_,'TRANSFER-BYTES'
+  _code_header transfer_bytes_,'transfer-bytes'
 
 ; doc{
 ;
@@ -341,7 +346,7 @@ transfer_bytes.backup_ip equ $+1
   jp back_from_dos
 
 ; ----------------------------------------------
-  _colon_header write_mode_,'WRITE-MODE'
+  _colon_header write_mode_,'write-mode'
 
 ; doc{
 ;
@@ -355,7 +360,7 @@ transfer_bytes.backup_ip equ $+1
   dw branch_,transfer_mode
 
 ; ----------------------------------------------
-  _colon_header read_mode_,'READ-MODE'
+  _colon_header read_mode_,'read-mode'
 
 ; doc{
 ;
@@ -372,7 +377,7 @@ transfer_mode:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header dos_get_1346_,'DOS-GET-1346'
+  _code_header dos_get_1346_,'dos-get-1346'
 
 ; doc{
 ;
@@ -400,7 +405,7 @@ dos_get_1346.ip_backup equ $+1
   _jp_next
 
 ; ----------------------------------------------
-  _code_header dos_set_1346_,'DOS-SET-1346'
+  _code_header dos_set_1346_,'dos-set-1346'
 
 ; doc{
 ;
@@ -422,7 +427,7 @@ dos_get_1346.ip_backup equ $+1
   _jp_next
 
 ; ----------------------------------------------
-  _code_header close_file_,'CLOSE-FILE'
+  _code_header close_file_,'close-file'
 
 ; doc{
 ;
@@ -442,7 +447,7 @@ dos_get_1346.ip_backup equ $+1
   jp back_from_dos
 
 ; ----------------------------------------------
-  _code_header open_disk_,'OPEN-DISK'
+  _code_header open_disk_,'open-disk'
 
 ; doc{
 ;
@@ -465,7 +470,7 @@ dos_get_1346.ip_backup equ $+1
   jp back_from_dos
 
 ; ----------------------------------------------
-  _variable_header library_file_,'LIBRARY-FILE'
+  _variable_header library_file_,'library-file'
 
 ; doc{
 ;
@@ -479,7 +484,7 @@ dos_get_1346.ip_backup equ $+1
   dw 0
 
 ; ----------------------------------------------
-  _colon_header set_drive_,'SET-DRIVE'
+  _colon_header set_drive_,'set-drive'
 
 ; doc{
 ;
@@ -498,7 +503,7 @@ dos_get_1346.ip_backup equ $+1
   dw exit_
 
 ; ----------------------------------------------
-  _code_header ref_xdbp_,'REF-XDPB'
+  _code_header ref_xdbp_,'ref-xdpb'
 
 ; doc{
 ;

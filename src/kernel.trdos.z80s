@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201610042357
+; Last modified: 201612290139
 
 ; ==============================================================
 ; Description
@@ -29,6 +29,11 @@
 
 ; See
 ; http://programandala.net/en.program.solo_forth.history.html
+
+; Latest changes:
+
+; 2016-12-29: Change definition names to lowercase, after the
+; changes in the main kernel.
 
 ; ==============================================================
 
@@ -141,7 +146,7 @@ dosior_to_ior.hl:
 ; Dictionary
 
 ; ----------------------------------------------
-_code_header dosior_to_ior_,'DOSIOR>IOR'
+_code_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
@@ -161,7 +166,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   _jp_pushhl
 
 ; ----------------------------------------------
-  _constant_header rec_slash_track_,'REC/TRACK'
+  _constant_header rec_slash_track_,'rec/track'
 
 ; doc{
 ;
@@ -175,7 +180,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   ; XXX TODO -- use a label and move to the kernel
 
 ; ----------------------------------------------
-  _colon_header sector_id_,'SECTOR-ID'
+  _colon_header sector_id_,'sector-id'
 
 ; doc{
 
@@ -203,7 +208,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header read_block_,'READ-BLOCK'
+  _colon_header read_block_,'read-block'
 
 ; doc{
 ;
@@ -222,7 +227,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header write_block_,'WRITE-BLOCK'
+  _colon_header write_block_,'write-block'
 
 ; doc{
 ;
@@ -241,7 +246,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header transfer_block_,'TRANSFER-BLOCK'
+  _colon_header transfer_block_,'transfer-block'
 
 ; doc{
 ;
@@ -269,7 +274,7 @@ _code_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _code_header transfer_sectors_,'TRANSFER-SECTORS'
+  _code_header transfer_sectors_,'transfer-sectors'
 
 if 1
 
@@ -349,7 +354,7 @@ transfer_sectors.command equ $+1
 endif
 
 ; ----------------------------------------------
-;  _colon_header library_disk_,'LIBRARY-DISK'
+;  _colon_header library_disk_,'library-disk'
 
 ; doc{
 ;
@@ -363,7 +368,7 @@ endif
   ; XXX TMP -- for debugging
 
 ; ----------------------------------------------
-  _code_header init_drive_,'INIT-DRIVE'
+  _code_header init_drive_,'init-drive'
 
 ; doc{
 ;
@@ -387,7 +392,7 @@ endif
   jp back_from_dos
 
 ; ----------------------------------------------
-;  _code_header cat_,'CAT'
+;  _code_header cat_,'cat'
 
 ; doc{
 ;
@@ -397,7 +402,7 @@ endif
 
 if 1
 
-  _code_header cat1_,'CAT1'
+  _code_header cat1_,'cat1'
 
   ; XXX FIXME -- hang!
 
@@ -420,7 +425,7 @@ endif
 
 if 1
 
-  _code_header cat2_,'CAT2'
+  _code_header cat2_,'cat2'
 
   ; XXX FIXME -- hang!
 
@@ -442,7 +447,7 @@ endif
 
 if 1
 
-  _code_header cat3_,'CAT3'
+  _code_header cat3_,'cat3'
 
   ; XXX FIXME -- hang!
 
@@ -460,7 +465,7 @@ endif
 
 if 1
 
-  _code_header cat4_,'CAT4'
+  _code_header cat4_,'cat4'
 
   push bc   ; save the Forth IP
 ;  ld hl,(sys_ch_add)
@@ -490,7 +495,7 @@ endif
 
 if 1
 
-  _code_header cat5_,'CAT5'
+  _code_header cat5_,'cat5'
 
   ; XXX FIXME -- no effect
 
@@ -512,7 +517,7 @@ endif
 
 if 1
 
-  _code_header cat6_,'CAT6'
+  _code_header cat6_,'cat6'
 
   push bc   ; save the Forth IP
   ld c,$07
@@ -532,7 +537,7 @@ endif
 
 if 1
 
-  _code_header cat7_,'CAT7'
+  _code_header cat7_,'cat7'
 
   ; XXX FIXME -- hang!
 
@@ -570,7 +575,7 @@ endif
 
 if 1
 
-  _code_header cat8_,'CAT8'
+  _code_header cat8_,'cat8'
 
   push bc   ; save the Forth IP
 
@@ -604,7 +609,7 @@ endif
 
 if 1
 
-  _code_header cat9_,'CAT9'
+  _code_header cat9_,'cat9'
 
   ld a,2      ; stream: screen
   push bc     ; save the Forth IP
@@ -621,7 +626,7 @@ endif
 
 if 1
 
-  _code_header cat10_,'CAT10'
+  _code_header cat10_,'cat10'
 
   push bc     ; save the Forth IP
   ld a,2      ; stream: screen
@@ -639,7 +644,7 @@ if 1
 endif
 
 ; ----------------------------------------------
-  _colon_header set_drive_,'SET-DRIVE'
+  _colon_header set_drive_,'set-drive'
 
 ; doc{
 ;
@@ -791,7 +796,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header get_drive_,'GET-DRIVE'
+  _colon_header get_drive_,'get-drive'
 
 ; doc{
 ;
@@ -804,7 +809,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header dot_drives_,'.DRIVES'
+  _colon_header dot_drives_,'.drives'
 
   ; XXX TMP -- for debugging
 
@@ -862,7 +867,7 @@ endif
 ; 23833  1  = default drive
 
 ; ----------------------------------------------
-  _colon_header dot_step_rates_,'.STEP-RATES'
+  _colon_header dot_step_rates_,'.step-rates'
 
   ; XXX TMP -- for debugging
 
@@ -896,7 +901,7 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header write_mode_,'WRITE-MODE'
+  _colon_header write_mode_,'write-mode'
 
 ; doc{
 ;
@@ -910,7 +915,7 @@ endif
   dw branch_,transfer_mode
 
 ; ----------------------------------------------
-  _colon_header read_mode_,'READ-MODE'
+  _colon_header read_mode_,'read-mode'
 
 ; doc{
 ;
@@ -927,7 +932,7 @@ transfer_mode:
   dw exit_
 
 ; ----------------------------------------------
-  _code_header xxx_,'XXX'
+  _code_header xxx_,'xxx'
 
 ; doc{
 ;

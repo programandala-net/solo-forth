@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201611261123
+; Last modified: 201612290138
 
 ; ==============================================================
 ; Description
@@ -32,6 +32,9 @@
 
 ; 2016-11-26: Improve `transfer-block` using a literal for the second
 ; `transfer-block`.
+;
+; 2016-12-29: Change definition names to lowercase, after the
+; changes in the main kernel.
 
 ; ==============================================================
 
@@ -43,7 +46,7 @@ if defined gplusdos
 ; Dictionary
 
 ; ----------------------------------------------
-_colon_header dosior_to_ior_,'DOSIOR>IOR'
+_colon_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
@@ -86,7 +89,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header rec_slash_track_,'REC/TRACK'
+  _constant_header rec_slash_track_,'rec/track'
 
 ; doc{
 ;
@@ -100,7 +103,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   ; XXX TODO -- use a label and move to the kernel
 
 ; ----------------------------------------------
-  _colon_header sector_id_,'SECTOR-ID'
+  _colon_header sector_id_,'sector-id'
 
 ; doc{
 
@@ -140,7 +143,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header read_block_,'READ-BLOCK'
+  _colon_header read_block_,'read-block'
 
 ; doc{
 ;
@@ -159,7 +162,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header write_block_,'WRITE-BLOCK'
+  _colon_header write_block_,'write-block'
 
 ; doc{
 ;
@@ -178,7 +181,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header transfer_block_,'TRANSFER-BLOCK'
+  _colon_header transfer_block_,'transfer-block'
 
 ; doc{
 ;
@@ -206,7 +209,7 @@ _colon_header dosior_to_ior_,'DOSIOR>IOR'
   dw exit_
 
 ; ----------------------------------------------
-  _code_header transfer_sector_,'TRANSFER-SECTOR'
+  _code_header transfer_sector_,'transfer-sector'
 
 ; doc{
 ;
@@ -244,7 +247,7 @@ transfer_sector.command:
   jp dosior_to_ior_
 
 ; ----------------------------------------------
-  _colon_header write_mode_,'WRITE-MODE'
+  _colon_header write_mode_,'write-mode'
 
 ; doc{
 ;
@@ -258,7 +261,7 @@ transfer_sector.command:
   dw branch_,transfer_mode
 
 ; ----------------------------------------------
-  _colon_header read_mode_,'READ-MODE'
+  _colon_header read_mode_,'read-mode'
 
 ; doc{
 ;
