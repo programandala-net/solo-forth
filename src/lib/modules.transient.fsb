@@ -3,9 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT -- not usable yet
-
-  \ Last modified: 201612260119
+  \ Last modified: 201612290057
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +51,9 @@
   \ `hp`.
   \
   \ 2016-12-08: Reserve also headers space, above `farlimit`.
+  \
+  \ 2016-12-29: Try alternative code to unlink the transient
+  \ code in `forget-transient`.
 
 ( transient end-transient forget-transient )
 
@@ -62,11 +63,10 @@ variable old-dp  variable old-voc-link
 variable old-hp  variable old-limit   variable old-farlimit
 variable old-current-latest
 
-  \ variable old-latest
-
 : transient  ( u1 u2 -- )
-  here old-dp !  hp@ old-hp !  voc-link @ old-voc-link !
-  \ latest old-latest !
+  here old-dp !
+  hp@ old-hp !    \ XXX TMP -- try 0, 2, 3
+  voc-link @ old-voc-link !
   current-latest old-current-latest !
   limit @ dup old-limit ! swap - dup limit ! there
   farlimit @ dup old-farlimit ! swap - dup farlimit ! hp!  ;
@@ -91,9 +91,9 @@ variable old-current-latest
   \ Usage example:
 
   \ ----
-  \ 200 2000 transient
+  \ 2025 1700 transient
   \
-  \   need z80-asm
+  \   need z80-asm,
   \
   \ end-transient
   \
@@ -111,13 +111,16 @@ variable old-current-latest
   \
   \ }doc
 
-: end-transient  ( -- )
-  old-dp @ there  old-hp @ hp!
-  old-farlimit @ farlimit !  old-limit @ limit !  ;
+-->
 
-  \ XXX FIXME -- after `end-transient` the words of the
-  \ `assembler` vocabulary defined in the kernel can not be
-  \ found
+( transient )
+
+: end-transient  ( -- )
+  old-dp @ there
+  \ old-hp @ hp!                \ XXX TMP -- try 0
+  \ hp@ old-hp !                \ XXX TMP -- try 1
+    hp@ old-hp @ hp! old-hp !   \ XXX TMP -- try 2, 3
+  old-farlimit @ farlimit !  old-limit @ limit !  ;
 
   \ doc{
   \
