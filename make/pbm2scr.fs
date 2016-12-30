@@ -2,9 +2,9 @@
 
 \ pbm2scr
 
-: version  s" 0.3.1+20161120"  ;
+: version  s" 0.3.1+201612302009"  ;
 
-\ Last modified: 201611200212
+\ Last modified: 201612302009
 
 \ ==============================================================
 \ Description
@@ -14,6 +14,9 @@
 \ files.
 
 \ http://programandala.net/en.program.pbm2scr.html
+
+\ This program is written in Forth (http://forth-standard.org)
+\ with Gforth (http://gnu.org/software/gforth/).
 
 \ ==============================================================
 \ Author and license
@@ -26,11 +29,6 @@
 
 \ ==============================================================
 \ Acknowledgements
-
-\ pbm2scr is written in Forth with Gforth (by Anton Ertl, Bernd
-\ Paysan et al.):
-
-\   http://gnu.org/software/gforth
 
 \ The information on the PBM format was obtained from the manual
 \ page of the Netpbm Debian package. But also the Wikipedia
@@ -346,6 +344,8 @@ run bye
 \ Microhobby pages.
 \
 \ 2016-11-20: Fix comment.
+\
+\ 2016-12-30: Modify the header comments.
 
 \ vim: textwidth=64
 

@@ -5,6 +5,8 @@
 \ This file is part of Solo Forth
 \ http://programandala.net/en.program.solo_forth.html
 
+\ Last modified 201612302013
+
 \ ==============================================================
 \ Description
 
@@ -17,8 +19,8 @@
 
 \     versionfile2string.fs PATH-TO/version.z80s
 
-\ This program is written in Forth with Gforth
-\ (http://gnu.org/software/gforth/).
+\ This program is written in Forth (http://forth-standard.org)
+\ with Gforth (http://gnu.org/software/gforth/).
 
 \ ==============================================================
 \ Author
@@ -36,6 +38,8 @@
 \ History
 
 \ 2016-11-19: Start.
+\
+\ 2016-12-30: Improve the description.
 
 \ ==============================================================
 
