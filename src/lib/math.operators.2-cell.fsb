@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201937
+  \ Last modified: 201612301200
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,10 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
   \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2016-12-30: Compact the code, saving two blocks. Don't
+  \ compile flags as literals in `du<`, because `true` and
+  \ `false` are code words.
 
 ( ud* d* )
 
@@ -165,11 +169,8 @@ need 2nip
 
 : du<  ( ud1 ud2 -- f )
   rot swap 2dup
-  u<  if  2drop 2drop [ true ] literal exit  then
-  -   if  2drop [ false ] literal exit  then  u<  ;  exit
-
-  \ Note: the flags are compiled with `literal` to make
-  \ execution a bit faster.
+  u<  if  2drop 2drop true   exit  then
+  -   if  2drop       false  exit  then  u<  ;  exit
 
 ?)
 
@@ -255,13 +256,7 @@ need ?(
     \ ex de,hl
     \ jp pushhlde
 
-( dxor dor dand d10* )
-
-  \ Credit:
-  \
-  \ Code of `dxor`, `dor` and `dand` written by Everett F.
-  \ Carter, published on Forth Dimensions (volume 16, number 2,
-  \ page 17, 1994-08).
+( dxor dor dand d10* m* )
 
 [unneeded] dxor
 ?\ : dxor  ( d1 d2 -- d3 )  rot xor -rot xor swap  ;
@@ -274,12 +269,22 @@ need ?(
 
   \ Credit:
   \
-  \ Code of `d10*` from Pygmy Forth.
+  \ Code of `dxor`, `dor` and `dand` written by Everett F.
+  \ Carter, published on Forth Dimensions (volume 16, number 2,
+  \ page 17, 1994-08).
 
 [unneeded] d10*
 ?\ : d10*  ( ud -- ud*10 )  d2* 2dup d2* d2* d+  ;
 
-( m* )
+  \ Credit:
+  \
+  \ Code of `d10*` from Pygmy Forth.
+
+[unneeded] m* ?exit
+
+need d*
+
+: m*  ( n1 n2 -- d )  >r s>d r> s>d d* ;
 
   \ Credit:
   \
@@ -287,11 +292,6 @@ need ?(
   \ (volume 4, number 1, page 3, 1982-05).
 
   \ XXX TODO benchmark with the version in the kernel
-
-need d*
-
-: m*  ( n1 n2 -- d )
-  >r s>d r> s>d d* ;
 
 ( m+ )
 
@@ -328,11 +328,8 @@ exit
 
 : m+  ( d1|ud1 n -- d2|ud2 )  s>d d+  ;
 
-( m*/ )
+( m*/ alt-m*/ )
 
-  \ Credit:
-  \
-  \ Code of `m*/` from Gforth 0.7.3.
 
 : m*/  ( d1 n1 +n2 -- d2 )
   >r s>d >r abs -rot s>d r> xor r> swap >r >r dabs
@@ -340,6 +337,12 @@ exit
   >r 0 d+ r> -rot i um/mod -rot r> um/mod -rot r>
   if    if  1 0 d+  then  dnegate
   else  drop  then  ;
+
+  \ XXX TODO -- see difference Gforth - Forth-94
+
+  \ Credit:
+  \
+  \ Code of `m*/` from Gforth 0.7.3.
 
   \ doc{
   \
@@ -351,21 +354,18 @@ exit
   \
   \ }doc
 
-  \ XXX TODO -- see difference Gforth - Forth-94
+need mt*  need tnegate  need ut/
 
-( alt-m*/ )
+: alt-m*/  ( d1 n1 +n2 -- d2 )
+    >r mt* dup 0< if    tnegate r> ut/ dnegate
+                  else  r> ut/  then  ;
 
+  \ XXX TMP --
   \ XXX TODO -- benchmark with the previous version
 
   \ Credit:
   \ Robert Smith (from COLDFORTH Version 0.8, GPL)
   \ https://github.com/oco2000/m3forth/blob/master/lib/include/double.f
-
-need mt*  need tnegate  need ut/
-
-: m*/  ( d1 n1 +n2 -- d2 )
-    >r mt* dup 0< if    tnegate r> ut/ dnegate
-                  else  r> ut/  then  ;
 
 ( dsqrt )
 
