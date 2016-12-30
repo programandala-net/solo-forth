@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605170051
+  \ Last modified: 201612300221
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,8 @@
   \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
+  \
+  \ 2016-12-30: Remove the old, unused, first version.
 
 ( local )
 
@@ -83,28 +85,5 @@ need :noname  need >body
   \ ----
   \
   \ }doc
-
-( local )
-
-  \ XXX OLD
-  \ 2015-11-14: First port of the original.
-
-: (restore-local)  ( -- )  ( R: a x -- )  2r> swap !  ;
-  \ Restore value _x_ of variable _a_.
-  \ Can not be used directly.
-
-: local  \ Compilation: ( xt -- xt )
-         \ Run-time: ( a0 -- ) ( R: a1 -- a0 x pfa a1 )
-           \ xt  = execution token of `restore-local`
-           \ a0  = address of a variable
-           \ x   = its current value
-           \ a1  = return address
-           \ pfa = pfa of `restore-local`
-  r> swap  dup @ 2>r
-    \ save return address
-    \ save variable address and value
-  ['] (restore-local) >body >r  >r  ;  compile-only
-    \ force exit via `(restore-local)`
-    \ restore return address
 
   \ vim: filetype=soloforth

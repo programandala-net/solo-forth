@@ -119,7 +119,7 @@ create fbuf $100 allot
   2dup drop r@ cr type
        r> /string 2dup drop len @ 1 inverse type 0 inverse
                        len @ /string type  ;
-  \ Type the line of the marked area, highlighting it. 
+  \ Type the line of the marked area, highlighting it.
 
 : g  ( u -- )  page list h  ;
   \ Go to screen _u_.
@@ -181,7 +181,7 @@ create fbuf $100 allot
   'rest len @ c/l mod /string fbuf 'par dup len ! search
   0= throw nip b/buf swap - r# ! l  ;
   \ Parse _ccc_, search it and mark it. If _ccc_ is empty, use
-  \ the 
+  \ the
 
 : il  ( -- )
   pad c/l 'rest insert 'rest drop c/l blank update l  ;  -->

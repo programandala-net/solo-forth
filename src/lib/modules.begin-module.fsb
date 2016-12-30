@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612061330
+  \ Last modified: 201612272316
 
   \ -----------------------------------------------------------
   \ Description
@@ -64,7 +64,7 @@ set-current
   \ Interface words
 
 : public  ( -- )  current-wid @ set-current  ;
-  
+
   \ XXX FIXME -- name clash with `package`
 
   \ doc{
@@ -77,7 +77,7 @@ set-current
   \ }doc
 
 : private  ( -- )  module-wid @ set-current  ;
-  
+
   \ XXX FIXME -- name clash with `package`
 
   \ doc{

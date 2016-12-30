@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604271709
+  \ Last modified: 201612301235
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,8 @@
   \ Latest changes
 
   \ 2015-11-13: Add `q2*`.
+  \
+  \ 2016-12-30: Modify the layout of two words.
 
 ( q2* )
 
@@ -39,10 +41,8 @@
 need d2*
 
 : q2*  ( n . . . -- 2n . . . )
-  d2* >r >r
-  dup 0< if     d2* r> 1+ r>
-         else   d2* r> r>
-         then  ;
+  d2* >r >r  dup 0< if    d2* r> 1+ r>
+                    else  d2* r> r>  then  ;
 
 ( q+ q- q0< q0= qu< qnegate qabs )
 
@@ -63,7 +63,7 @@ end-code
 : q0=  ( nq -- f )  or or or 0=  ;
 : qu<  ( uq uq -- f )  q- q0<  ;
 : qnegate  ( nq -- nq' )  0 0 0 0 4swap q-  ;
-: qabs  ( nq -- uq )  dup 0< if qnegate then  ;
+: qabs  ( nq -- uq )  dup 0< if  qnegate  then  ;
 
 ( udm* dm* )
 

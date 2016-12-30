@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604242202
+  \ Last modified: 201612300146
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,8 @@
 
   \ 2016-04-24: Remove `char`, which has been moved to the
   \ library.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
 ( select )
 
@@ -76,13 +78,13 @@
   \ XXX NOTE: A version of `thens` is in the kernel of
   \ DZX-Forth.
 
-: thens  ( 0 a'1 ... a'n -- )
-  begin  ?dup while  postpone then  repeat  ;
+: thens  begin  ?dup while  postpone then  repeat  ;
+  \ ( 0 a'1 ... a'n -- )
   \ Compile the pending `then`.
+  \ XXX TODO -- probably, common factor with `endcase`
 
-: endselect
+: endselect  postpone drop  thens  ; immediate
   \ ( Compilation: 0 a'1 ... a'n -- ) ( Run-time: x0 -- )
-  postpone drop  thens  ; immediate
 
 : when
   \ ( Compilation: 0 orig1..orign -- )
@@ -90,10 +92,6 @@
   postpone else  >r >r >r  thens  r> r> r>  postpone drop
   ; immediate
   \ XXX TODO stack
-
--->
-
-( select )
 
 : continue
   \ ( Compilation: xxx )
@@ -112,7 +110,7 @@
 : range
   \ ( Compilation: -- orig )
   \ ( Run-time: x0 x1 x2 -- x0 f )
-  postpone (range)  postpone if  ; immediate
+  postpone (range)  postpone if  ; immediate  -->
 
 ( select-test )
 

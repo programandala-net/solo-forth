@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612242048
+  \ Last modified: 201612300219
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,8 @@
   \ 2016-12-24: Add `key-edit`, `key-left`, `key-right`,
   \ `key-down`, `key-up`, `key-delete`, `key-enter`. Rename the
   \ module from <keyboard.fsb> to <keyboard.MISC.fsb>.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
 ( at-accept clear-accept set-accept )
 
@@ -142,7 +144,7 @@ variable >accept          \ offset to the cursor position
   \ 2016-03-13: copied from the kernel, in
   \ order to make it optional in the future.
 
-need at-accept  need set-accept
+need at-accept  need set-accept  need toggle-capslock
 
 : .acceptx  ( -- )
 
@@ -154,22 +156,17 @@ need at-accept  need set-accept
   0 inverse
     \ Print the cursor.
 
-  accept-buffer @ span @ >accept @ 1+ min /string type
+  accept-buffer @ span @ >accept @ 1+ min /string type  ;
     \ Print the end of the string, after the cursor.
-  ;
-
--->
-
-( acceptx )
-
-need toggle-capslock
 
 : accept-edit  ( -- )  clear-accept init-accept  ;
 : accept-left  ( -- )  ;
 : accept-right  ( -- )  ;
 : accept-up  ( -- )  ;
 : accept-down  ( -- )  ;
-: accept-delete  ( -- )  ;
+: accept-delete  ( -- )  ;  -->
+
+( acceptx )
 
 create accept-commands ] noop noop noop noop noop noop
 toogle-capslock accept-edit accept-left accept-right
@@ -179,12 +176,12 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
 : >accept-command  ( c -- a )  cells accept-commands +  ;
 : accept-command  ( c -- )  >accept-command perform  ;
 
+: init-acceptx  ( ca len -- )
+  /accept !  accept-buffer !  >accept off  xy accept-xy 2!  ;
+
 -->
 
 ( acceptx )
-
-: init-acceptx  ( ca len -- )
-  /accept !  accept-buffer !  >accept off  xy accept-xy 2!  ;
 
 : (acceptx) ( ca len -- len' )  2dup init-accept
 
@@ -199,17 +196,15 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
           if r@ over c!  char+  r@ emit
           then r> drop
     then
-  repeat  drop nip swap -  ;  -->
-
-( acceptx )
+  repeat  drop nip swap -  ;
 
 : acceptx ( ca len -- len' )
   span off  ?dup 0= if  drop 0  else  (acceptx)  then  ;
 
-  \ XXX TMP -- for debugging
+  \ XXX TMP -- for debugging:
 
-: ax  ( -- )  ['] acceptx ['] accept defer!  ;
-: a0  ( -- )  ['] default-accept ['] accept defer!  ;
+  \ : ax  ( -- )  ['] acceptx ['] accept defer!  ;
+  \ : a0  ( -- )  ['] default-accept ['] accept defer!  ;
 
 ( nuf? aborted? break? )
 
@@ -513,9 +508,7 @@ create kk-chars
 
 ( #>kk pressed pressed? )
 
-need ?(
-
-[unneeded] #>kk ?(  need kk-ports
+need ?(  [unneeded] #>kk ?(  need kk-ports
 
 : #>kk  ( n -- d )  /kk * kk-ports + kk@  ;  exit ?)
 
@@ -542,8 +535,6 @@ need ?(
   \ See: `pressed`, `only-one-pressed`.
   \
   \ }doc
-
-?)
 
 [unneeded] pressed ?(  need pressed?  need kk-ports
 

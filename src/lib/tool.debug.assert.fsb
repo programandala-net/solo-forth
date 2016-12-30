@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611141114
+  \ Last modified: 201612301334
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,22 +26,29 @@
   \ Latest changes
 
   \ 2016-11-14: Improve documentation.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
-( assert assert= )
+( assert assert= assert( )
+
+[unneeded] assert
+?\ : assert   ( n -- )    0= if  abort  then  ;  exit
+
+[unneeded] assert=
+?\ need assert  : assert=  ( a b -- )  = assert  ;  exit
 
   \ Credit:
   \
-  \ Taken from Brad Nelson's code:
+  \ `assert` and `assert=` are taken from Brad Nelson's code:
+  \
   \ http://bradn123.github.io/literateforth/out/events.fs
 
-: assert   ( n -- )    0= if  abort  then  ;
-: assert=  ( a b -- )  = assert  ;
-
-( assert( )
+[unneeded] assert( ?exit
 
   \ Credit:
   \
-  \ Documentation and public-domain code from Gforth.
+  \ Documentation and public-domain code of `assert(` from
+  \ Gforth.
 
   \ It is a good idea to make your programs self-checking, in
   \ particular, if you use an assumption (e.g., that a certain

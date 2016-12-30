@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611260156
+  \ Last modified: 201612300133
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,6 +32,8 @@
   \ `allot-xstack`. Move the common code to its own block.
   \
   \ 2016-11-26: Improve `allot-xstack`.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
 ( xsize xp xp0 xp@ xp! xp+! xclear set-xstack )
 
@@ -57,12 +59,15 @@ need value
   dup @ to xp0  cell+ dup to xp  cell+ @ to xsize  ;
   \ Set the xstack at _a_ the current one.
 
-( allocate-xstack xfree )
+( xfree allocate-xstack allot-xstack )
 
-  \ Creation of xstacks in the heap.
+  \ Creation of xstacks in the heap: `allocate-xstack`, `xfree`.
 
-need allocate  need free
-need set-xstack  need xp0
+[unneeded] xfree ?\ : xfree  ( -- )  xp0 free throw  ;  exit
+
+need ?(  [unneeded] allocate-xstack ?(
+
+need allocate  need free need set-xstack  need xp0
 
 : allocate-xstack  ( n "name" -- )
   create  cells dup allocate throw  cell - dup
@@ -70,17 +75,13 @@ need set-xstack  need xp0
     \ +0 = xp0
     \ +2 = xp
     \ +4 = xsize
-  does> ( -- ) ( pfa ) set-xstack  ;
+  does> ( -- ) ( pfa ) set-xstack  ;  exit ?)
   \ Create, in the heap, a xstack _name_ of _n_ cells which,
   \ when executed, will be the current one.
 
-: xfree  ( -- )  xp0 free throw  ;
+[unneeded] allot-xstack ?(  need set-xstack
 
-( allot-xstack )
-
-  \ Creation of xstacks in data space.
-
-need set-xstack
+  \ Creation of xstacks in data space: `allot-xstack`.
 
 : allot-xstack  ( n "name" -- )
   \ Create a new xstack of _n_ cells.
@@ -90,7 +91,7 @@ need set-xstack
     \ +2 = xp
     \ +4 = xsize
     \ +6 = stack space
-  does> ( -- )  ( pfa ) set-xstack  ;
+  does> ( -- )  ( pfa ) set-xstack  ; ?)
   \ Create, in data space, a xstack _name_ of _n_ cells which,
   \ when executed, will be the current one.
 

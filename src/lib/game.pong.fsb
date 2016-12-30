@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201612201948
+  \ Last modified: 201612300102
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,6 +56,8 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2016-12-30: Compact the source, saving some blocks.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -95,10 +97,8 @@ white paper-color brighty cconstant racket-color
 23264 constant bottom-line-attr
   \ address of the bottom left screen attribute
 
-code sync  ( -- )  78 c,  jpnext,  end-code
+code sync  ( -- )  78 c,  jpnext,  end-code  -->
   \ Z80 halt
-
--->
 
 ( pong )
 
@@ -213,13 +213,11 @@ variable ball-frame  first-ball-frame ball-frame !
 
 : erase-ball  ( -- )  at-ball ball sync g-emit-0udg  ;
 
--->
-
-( pong )
-
 : restore-screen  ( -- )  default-colors page  ;
 
-: init-screen  ( -- )  restore-screen white ink  ;
+: init-screen  ( -- )  restore-screen white ink  ;  -->
+
+( pong )
 
 : (border)  ( a -- )
   columns [ white paper-color ] literal sync fill  ;
@@ -227,10 +225,6 @@ variable ball-frame  first-ball-frame ball-frame !
 : top-border  ( -- )  top-line-attr (border)  ;
 
 : bottom-border  ( -- )  bottom-line-attr (border)  ;
-
--->
-
-( pong )
 
 : show-racket  ( a -- )  racket-size racket-color sync fill  ;
 
@@ -248,14 +242,13 @@ variable ball-frame  first-ball-frame ball-frame !
 : reset-rackets  ( -- )
   racket-initial-x dup racket1-x ! racket2-x !  ;
 
--->
+: erase-racket  ( a1 a2 -- )  @ + racket-size erase  ;  -->
 
-( pong )
-
-: erase-racket  ( a1 a2 -- )  @ + racket-size erase  ;
   \ Erase a racket.
   \ a1 = address of the first screen attribute on the row
   \ a2 = variable that holds the racket x coordinate
+
+( pong )
 
 : erase-racket1  ( -- )
   top-line-attr racket1-x erase-racket  ;
@@ -264,10 +257,6 @@ variable ball-frame  first-ball-frame ball-frame !
 : erase-racket2  ( -- )
   bottom-line-attr racket2-x erase-racket  ;
   \ Erase racket of player 2.
-
--->
-
-( pong )
 
 : (print-points)  ( n y -- )
   0 swap at-xy s>d <# # # # #>
@@ -291,12 +280,10 @@ variable ball-frame  first-ball-frame ball-frame !
 : change-y  ( -- )  %01 direction ctoggle  ;
   \ Change the y direction of the ball.
 
-: faster  ( -- )
-  exit  ;  \ XXX OLD
+: faster  ( -- )  exit  ;  \ XXX OLD  -->
+
   \ speed @ 40 > if  speed @ dup 20 / - speed !   then  ;
   \ If the delay is more than 40 ms, reduce it with 5%.
-
--->
 
 ( pong )
 
@@ -320,13 +307,11 @@ variable ball-frame  first-ball-frame ball-frame !
     ball-at-left?   if  change-x  then  -1
   then  x +!  ;
 
--->
+: reset-ball  ( -- )
+  128 x !  95 y !  rnd %11 and direction c!  ;  -->
+  \ Reset the ball position and direction.
 
 ( pong )
-
-: reset-ball  ( -- )
-  128 x !  95 y !  rnd %11 and direction c!  ;
-  \ Reset the ball position and direction.
 
 : ready  ( -- )  reset-rackets reset-ball  ;
 
@@ -358,15 +343,15 @@ variable ball-frame  first-ball-frame ball-frame !
   \   2dup 1- > >r
   \   racket-size 8* + <  r> and  ;
 
--->
-
-( pong )
-
 : possible-top-hit  ( -- )
   hit-racket2? if change-y  else  score-player1 ready  then  ;
 
 : move-ball-down  ( -- )
   ball-at-bottom? if  possible-top-hit  else  -1 y +!  then  ;
+
+-->
+
+( pong )
 
 : possible-bottom-hit  ( -- )
   hit-racket1? if  change-y  else  score-player2 ready  then  ;
@@ -383,15 +368,15 @@ variable ball-frame  first-ball-frame ball-frame !
 variable racket1-delay
 variable racket2-delay
 
--->
-
-( pong )
-
 : ?move-ball  ( -- )
   -1 ball-delay +!  ball-delay @ if  unnest  exit  then
   ball-delay0 ball-delay !  ;
   \ Update the delay of the ball.
   \ If the ball must not be moved, exit from the calling word.
+
+-->
+
+( pong )
 
 : move-ball  ( -- )
   ?move-ball erase-ball move-ball-x move-ball-y
@@ -410,15 +395,15 @@ variable racket2-delay
   cls  frame arena-line show-rackets print-points show-ball  ;
   \ Draw the arena.
 
--->
-
-( pong )
-
 : ?move-racket1  ( -- )
   -1 racket1-delay +!  racket1-delay @ if  unnest exit  then
   racket-delay0 racket1-delay !  ;
 
 : (move-racket1)  ( 1|-1 -- )  racket1-x +!  show-racket1  ;
+
+-->
+
+( pong )
 
 : move-racket1-left  ( -- )
   ?move-racket1
@@ -430,15 +415,15 @@ variable racket2-delay
   racket1-x @ racket-size + columns = ?exit
   1 (move-racket1)  ;
 
--->
-
-( pong )
-
 : ?move-racket2  ( -- )
   -1 racket2-delay +!  racket2-delay @ if  unnest exit  then
   racket-delay0 racket2-delay !  ;
 
 : (move-racket2)  ( 1|-1 -- )  racket2-x +!  show-racket2  ;
+
+-->
+
+( pong )
 
 : move-racket2-left  ( -- )
   ?move-racket2
@@ -450,16 +435,16 @@ variable racket2-delay
   racket2-x @ racket-size + columns = ?exit
   1 (move-racket2)  ;
 
--->
-
-( pong )
-
 : reset-points  ( -- )  points1 off  points2 off  ;
 
 : init-game  ( -- )
   init-screen reset-points
   racket-delay0  dup racket1-delay !  racket2-delay !
   ball-delay0 ball-delay ! ready  ;
+
+-->
+
+( pong )
 
 : quit-game  ( -- )
   restore-screen  ." Player 1 score: " points1 ? cr
@@ -470,24 +455,20 @@ variable racket2-delay
   right1-key    pressed? ?? move-racket1-right
   left2-key     pressed? ?? move-racket2-left
   right2-key    pressed? ?? move-racket2-right
-              break-key? ?? quit-game  ;  -->
-
-( pong )
+              break-key? ?? quit-game  ;
 
 : show-player-key  ( c ca len -- )
   space rot emit ."  = " type cr  ;
 
 : show-player-keys  ( c1 c2 -- )
-  s" left" show-player-key  s" right" show-player-key  ;
+  s" left" show-player-key  s" right" show-player-key  ;  -->
+
+( pong )
 
 : show-game-keys  ( -- )
   ." Player 1:" cr right1-char left1-char show-player-keys
   ." Player 2:" cr right2-char left2-char show-player-keys
   ." Break (Shift+Space) = quit"  ;
-
--->
-
-( pong )
 
 : show-credits  ( -- )
 
@@ -503,6 +484,10 @@ variable racket2-delay
   ."   2016." cr  ;
   \  <------------------------------>
 
+-->
+
+( pong )
+
 : press-any-key  ( -- )
   \  <------------------------------>
   ." Press any key to start the game." key drop  ;
@@ -510,17 +495,11 @@ variable racket2-delay
 : welcome  ( -- )
   page show-credits cr show-game-keys cr cr press-any-key  ;
 
--->
-
-( pong )
-
 : pong  ( -- )
   init-game welcome page arena
   begin  move-ball
     \ begin key? until key drop  \ XXX TMP -- for debugging
   keypress  again  ;
-
-( pong-test )
 
   \ XXX TMP -- for debugging
 

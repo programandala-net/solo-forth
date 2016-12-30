@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081749
+  \ Last modified: 201612300229
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,8 +32,10 @@
   \ of all of them.
   \
   \ 2016-12-08: Fix `u.r`. Fix needing of `ud.`.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
-( ud.r u.r ud. )
+( ud.r u.r ud. holds )
 
 need ?(
 
@@ -98,6 +100,25 @@ exit ?)
   \
   \ }doc
 
+[unneeded] holds ?(
+
+: holds  ( ca len -- )
+  begin  dup  while  1- 2dup + c@ hold  repeat
+  2drop  ; ?)
+
+  \ Credit:
+  \ Code from the documentation of Forth-2012.
+
+  \ doc{
+  \
+  \ holds  ( ca len -- )
+  \
+  \ Add string _ca len_ to the pictured numeric output string.
+  \
+  \ Origin: Forth-2012 (CORE EXT).
+  \
+  \ }doc
+
 ( bin. dec. hex. )
 
   \ Credit:
@@ -153,24 +174,5 @@ exit ?)
 : 32bin.    ( d -- )  32 (dbin.)  ;
 : 16bin.     ( n -- )  s>d 16 (dbin.)  ;
 : 8bin.    ( b -- )  s>d 8 (dbin.)  ;
-
-( holds )
-
-  \ Credit:
-  \ Code from the documentation of Forth-2012.
-
-: holds  ( ca len -- )
-  begin  dup  while  1- 2dup + c@ hold  repeat
-  2drop  ;
-
-  \ doc{
-  \
-  \ holds  ( ca len -- )
-  \
-  \ Add string _ca len_ to the pictured numeric output string.
-  \
-  \ Origin: Forth-2012 (CORE EXT).
-  \
-  \ }doc
 
   \ vim: filetype=soloforth

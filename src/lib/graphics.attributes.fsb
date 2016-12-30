@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201934
+  \ Last modified: 201612300201
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,23 +29,21 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
   \ change in the kernel.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
-( attr )
+( attr attr-addr )
 
-need z80-asm need (attr-addr)
+need ?(  [unneeded] attr ?(  need z80-asm need (attr-addr)
 
 code attr ( col row -- b )
 
-  de pop  hl pop  l d ld
+  de pop  hl pop  l d ld  (attr-addr) call  m l ld  0 h ld#
     \ d = col
     \ e = line
-  (attr-addr) call
     \ hl = attribute address
-  m l ld  0 h ld#
     \ hl = attribute
-  jppushhl,
-
-  end-code
+  jppushhl, end-code  exit ?)
 
   \ doc{
   \
@@ -56,20 +54,15 @@ code attr ( col row -- b )
   \
   \ }doc
 
-( attr-addr )
-
-need z80-asm need (attr-addr)
+[unneeded] attr-addr ?(  need z80-asm need (attr-addr)
 
 code attr-addr ( col row -- a )
 
-  de pop  hl pop  l d ld
+  de pop  hl pop  l d ld  (attr-addr) call
     \ d = col
     \ e = line
-  (attr-addr) call
     \ hl = attribute address
-  jppushhl,
-
-  end-code
+  jppushhl, end-code
 
   \ doc{
   \

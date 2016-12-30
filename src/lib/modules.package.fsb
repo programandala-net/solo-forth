@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071921
+  \ Last modified: 201612272316
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,15 +52,15 @@
 
   \ ............................................
   \ XXX REMARK -- 2016-12-07:
- 
+
   \     Data space used:
   \
   \       Code              76 B
   \       Requirements    2073 B (!)
-  
+
   \ The problem is `-order`, which needs `n>r`, which needs the
   \ assembler:
-  
+
   \            named-wid    22 B
   \            -order     1881 B
   \            +order       11 B (needs `-order`)
@@ -126,7 +126,7 @@ need named-wid  need +order  need -order  need nextname
   \ end-package
   \ ----
 
-  \ at this point, `.example` is a new word in whatever the
+  \ At this point, `.example` is a new word in whatever the
   \ current wordlist was, and `text`, `ex1` and `ex2` are all
   \ words in the `example` word list. `example` itself is
   \ created in the current wordlist if it didn't already exist.

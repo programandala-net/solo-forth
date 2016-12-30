@@ -73,7 +73,7 @@
 ( module end-module export )
 
 need alias  need nextname
-  
+
   \ XXX REMARK -- 2016-12-07:
   \     Data space used:
   \       Code           59 B

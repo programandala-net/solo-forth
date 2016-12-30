@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612251915
+  \ Last modified: 201612300112
 
   \ -----------------------------------------------------------
   \ Description
@@ -106,6 +106,8 @@
   \
   \ 2016-12-25: Rename `from` to `need-from` and improve its
   \ documentation.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
 ( delimited located needed-word )
 
@@ -151,10 +153,6 @@ defer unlocated  ( block -- )
   \
   \ }doc
 
--->  \ XXX TMP --
-
-( --- )
-
 : (located)  ( ca len -- block | false )
   \ cr ." (located)<" 2dup type ." >"
     \ XXX INFORMER
@@ -187,7 +185,7 @@ defer unlocated  ( block -- )
   \
   \ }doc
 
-defer located  ( ca len -- block | false )
+defer located  ( ca len -- block | false )  -->
 
   \ doc{
   \
@@ -199,9 +197,9 @@ defer located  ( ca len -- block | false )
   \
   \ }doc
 
-2variable needed-word  0. needed-word 2!  -->
-
 ( ?located reneeded reneed needed-word [needed] [unneeded] )
+
+2variable needed-word  0. needed-word 2!
 
 : ?located  ( n -- )
   dup ?exit  needed-word 2@ parsed-name 2! #-268 throw  ;
@@ -249,7 +247,7 @@ defer reneeded  ( ca len -- )
   \
   \ }doc
 
-defer reneed  ( "name" -- )
+defer reneed  ( "name" -- )  defer needed  ( ca len -- )
 
   \ doc{
   \
@@ -264,6 +262,25 @@ defer reneed  ( "name" -- )
   \ See: `locate-reneed`, `indexer`.
   \
   \ }doc
+
+  \ doc{
+  \
+  \ needed  ( ca len -- )
+  \
+  \ If the string _ca len_ is not the name of a word found in
+  \ the current search order, load the first block where "name"
+  \ is included in the block header (but surrounded by spaces).
+  \ If not found, throw an exception #-268 ("required, but not
+  \ located").
+  \
+  \ This is a deferred word whose default behaviour is
+  \ `locate-needed`.
+  \
+  \ See: `locate-needed`, `indexer`.
+  \
+  \ }doc
+
+
 
 : locate-reneed  ( "name" -- )
   parse-name save-string locate-reneeded  ;
@@ -313,7 +330,7 @@ defer reneed  ( "name" -- )
   \ }doc
 
 : new-needed-word  ( ca len -- ca' len' )
-  -trailing -leading save-string 2dup needed-word 2!  ;
+  -trailing -leading save-string 2dup needed-word 2!  ;  -->
 
   \ doc{
   \
@@ -325,26 +342,6 @@ defer reneed  ( "name" -- )
   \ buffer and return it as _ca2 len'_ for further processing.
   \
   \ }doc
-
-defer needed  ( ca len -- )  -->
-
-  \ doc{
-  \
-  \ needed  ( ca len -- )
-  \
-  \ If the string _ca len_ is not the name of a word found in
-  \ the current search order, load the first block where "name"
-  \ is included in the block header (but surrounded by spaces).
-  \ If not found, throw an exception #-268 ("required, but not
-  \ located").
-  \
-  \ This is a deferred word whose default behaviour is
-  \ `locate-needed`.
-  \
-  \ See: `locate-needed`, `indexer`.
-  \
-  \ }doc
-
 
 ( locate-needed need use-no-index )
 

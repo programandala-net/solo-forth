@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611172026
+  \ Last modified: 201612301300
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,19 +26,29 @@
   \ History
 
   \ 2015-09-13: Add `parse-char`.
+  \
   \ 2015-10-06: Move `word` from the kernel.
+  \
   \ 2015-10-18: Move `command` from the editor and rename it to
   \ `parse-line`.
+  \
   \ 2015-10-22: Fix `parse-char`.
+  \
   \ 2016-04-24: Move `char` and `[char]` from the kernel.
+  \
   \ 2016-05-10: Fix `[char]`.
+  \
   \ 2016-05-14: Compact the blocks. Fix `parse-line` and rename
   \ it to `parse-all`. Finish and document `execute-parsing`.
   \ Move `string>source` and `evaluate` from the kernel.
   \ Rewrite `evaluate` after `execute-parsing`.
+  \
   \ 2016-05-31: Update: `cliteral` has been moved to the
   \ kernel.
+  \
   \ 2016-11-17: Fix needing `char`, `[char]` and `word`.
+  \
+  \ 2016-12-30: Compact the code, saving one block.
 
 ( defined? parse-char parse-all )
 
@@ -198,29 +208,16 @@ need ?(  [uneeded] [char]  ?(
   source-id 0>
   if tib #tib @ 2dup c/l 2 + allocate throw dup >r swap cmove
      r> to tib  >in @
-     source-id file-position throw
-     5
-  else blk @ >in @ 2 then
-  ;
+     source-id file-position throw  5
+  else blk @ >in @ 2 then  ;
 
--->
-
-( save-input restore-input )
-
-  \ XXX UNDER DEVELOPMENT
-  \
-  \ 2016-01-01: Code copied from m3Forth:
-  \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
-
-: restore-input ( xn ... x1 n -- f )
-  source-id 0>
+: restore-input ( xn ... x1 n -- f )  source-id 0>
   if dup 5 <> if 0 ?do drop loop -1 exit then
      drop source-id reposition-file ?dup
      if >r 2drop drop r> exit then
      >in ! #tib ! to tib false
   else dup 2 <> if 0 ?do drop loop -1 exit then
      drop >in ! blk ! false
-  then
-  ;
+  then  ;
 
   \ vim: filetype=soloforth

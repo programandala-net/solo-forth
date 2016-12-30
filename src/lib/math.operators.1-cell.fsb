@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612281859
+  \ Last modified: 201612300240
 
   \ -----------------------------------------------------------
   \ Description
@@ -89,6 +89,8 @@
   \
   \ 2016-12-28: Add `ifelse`. Fix Typo. Improve documentation
   \ of `either`, `neither` and `any?`.
+  \
+  \ 2016-12-30: Compact the code, saving two blocks.
 
 ( under+ +under )
 
@@ -384,12 +386,6 @@ code 0max  ( n -- n | 0 )
 
 ( lshift )
 
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-  \ Data space used: 16 bytes.
-
 need z80-asm
 
 code lshift  ( x1 u -- x2 )
@@ -400,13 +396,27 @@ code lshift  ( x1 u -- x2 )
   hl pop  \ hi 8 bits ignored!
   b inc  ahead 0 unresolved !
   begin  hl addp  0 unresolved @ >relresolve  step
-  hl push
-  exx
-  jpnext,
+  hl push exx  jpnext, end-code
 
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
+
+  \ Data space used: 16 bytes.
+
+exit  \ XXX TODO -- make both versions accessible?
+
+code lshift  ( x1 u -- x2 )
+  D1 c, E1 c, 1C c, here 1D c, CA c, pushhl , 29 c, C3 c, ,
+  \   pop de
+  \   pop hl
+  \   inc e
+  \ begin:
+  \   dec e
+  \   jp z,push_hl
+  \   add hl,hl
+  \   jp begin
   end-code
-
-( lshift )
 
   \ Credit:
   \
@@ -417,28 +427,10 @@ code lshift  ( x1 u -- x2 )
   \
   \ Data space used: 13 bytes.
 
-code lshift  ( x1 u -- x2 )
-
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  1C c,           \ inc e
-  here            \ begin:
-  1D c,           \ dec e
-  CA c, pushhl ,  \ jp z,push_hl
-  29 c,           \ add hl,hl
-  C3 c, ,         \ jp begin
-
-  end-code
 
 ( rshift )
 
 need z80-asm
-
-  \ Credit:
-  \
-  \ Code adapted from Z88 CamelForth.
-
-  \ Data space used: 19 bytes.
 
 code rshift  ( x1 u -- x2 )
 
@@ -450,13 +442,28 @@ code rshift  ( x1 u -- x2 )
   b inc  ahead 0 unresolved !
 
   begin  h srl  l rr  0 unresolved @ >relresolve  step
-  hl push
-  exx
-  jpnext,
+  hl push exx jpnext, end-code
 
-  end-code
+  \ Credit:
+  \
+  \ Code adapted from Z88 CamelForth.
 
-( rshift )
+  \ Data space used: 19 bytes.
+
+exit  \ XXX TODO -- make both versions accessible?
+
+code rshift  ( x1 u -- x2 )
+  D1 c, E1 c, 1C c, here 1D c, CA c, pushhl , CB c, 3C c,
+  CB c, 1D c, C3 c, , end-code
+  \   pop de
+  \   pop hl
+  \   inc e
+  \ begin:
+  \   dec e
+  \   jp z,push_hl
+  \   srl h
+  \   rr l
+  \   jp begin
 
   \ Credit:
   \
@@ -466,18 +473,6 @@ code rshift  ( x1 u -- x2 )
   \ execution time of the version adapted from Z88 CamelForth).
 
   \ Data space used: 16 bytes.
-
-code rshift  ( x1 u -- x2 )
-  D1 c,           \ pop de
-  E1 c,           \ pop hl
-  1C c,           \ inc e
-  here            \ begin:
-  1D c,           \ dec e
-  CA c, pushhl ,  \ jp z,push_hl
-  CB c, 3C c,     \ srl h
-  CB c, 1D c,     \ rr l
-  C3 c, ,         \ jp begin
-  end-code
 
 ( clshift crshift )
 
@@ -807,7 +802,7 @@ need ?(
 : ifelse  ( x1 x2 f -- x1 | x2 )  if  drop  else  nip  then  ;
 
 ?)
- 
+
   \ Credit:
   \
   \ Idea from: http://hyperpolyglot.org/stack#ifelse
