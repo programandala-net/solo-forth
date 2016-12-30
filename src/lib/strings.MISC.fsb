@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201949
+  \ Last modified: 201612301326
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,6 +68,8 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2016-12-30: Move `s'` here from its own module.
 
 ( str= str< str> trim +place hunt )
 
@@ -543,7 +545,7 @@ need ?(
   \
   \ }doc
 
-( contains chop s"" sconstant save-counted-string )
+( contains chop s"" sconstant save-counted-string s' )
 
 [unneeded] contains ?\ : contains  search nip nip  ;  exit
                          \ ( ca1 len1 ca2 len2 -- f )
@@ -586,7 +588,25 @@ need ?(
   \
   \ }doc
 
-[unneeded] save-counted-string ?(
+[unneeded] s'
+?\ : s'  ''' parse-string  ; immediate
+  \ ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
+  
+  \ Credit:
+  \
+  \ Code from Afera.
+
+  \ doc{
+  \
+  \ s'  ( Compilation: "ccc<char>" -- ) ( Run-time:  -- ca len )
+  \
+  \ Identical to the standard word `s"`, but using single
+  \ quote as delimiter. A simple alternative to `s\"` when only
+  \ double quotes are needed in a string.
+  \
+  \ }doc
+
+need ?(  [unneeded] save-counted-string ?(
 : save-counted-string  ( ca1 len1 -- ca2 )
   dup 1+ allocate-string dup >r place r>  ; ?)
 
