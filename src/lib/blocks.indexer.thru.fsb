@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261418
+  \ Last modified: 201612301916
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,6 +65,9 @@
   \
   \ 2016-11-26: Need `catch`, which has been moved to the
   \ library.
+  \
+  \ 2016-12-30: Replace `search-index`, which was renamed on
+  \ 2016-11-25, with `indexed-name?`.
 
 ( make-thru-index use-thru-index )
 
@@ -74,7 +77,7 @@ need common-indexer  need get-order  need set-order
 need evaluate  need catch
 
 : thru-index-reneeded  ( ca len -- )
-  search-index 0= #-277 ?throw load  ;
+  indexed-name? 0= #-277 ?throw load  ;
 
   \ doc{
   \
