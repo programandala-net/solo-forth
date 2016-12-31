@@ -17,8 +17,8 @@ Data space used (2016-12-20) by the assemblers:
 
 NOTE: Milestone: 0.13.0
 
-Rewrite `attr` and `attr-addr` with opcodes, without assembler.
-Search for similar cases, e.g. `lshift`.
+Rewrite all small code words in Z80 opcodes, without assembler.
+Example: `lshift`.
 
 .2016-12-25:
 
@@ -1236,6 +1236,14 @@ for the end user.
 NOTE: Milestone: 0.13.0
 
 Combine `begin-module` and `package`.
+
+// Names {{{1
+== Names ==
+
+.2016-12-31:
+
+Rename all paren words to use only the opening paren? This would make the
+block index line backslash notation unnecesary.
 
 // Optimizations {{{1
 == Optimizations ==

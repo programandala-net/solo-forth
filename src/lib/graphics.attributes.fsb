@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300201
+  \ Last modified: 201612311938
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,70 +31,34 @@
   \ change in the kernel.
   \
   \ 2016-12-30: Compact the code, saving one block.
-
-( attr attr-addr )
-
-need ?(  [unneeded] attr ?(  need z80-asm need (attr-addr)
-
-code attr ( col row -- b )
-
-  de pop  hl pop  l d ld  (attr-addr) call  m l ld  0 h ld#
-    \ d = col
-    \ e = line
-    \ hl = attribute address
-    \ hl = attribute
-  jppushhl, end-code  exit ?)
-
-  \ doc{
   \
-  \ attr  ( col row -- b )
-  \
-  \ Return the color attribute _b_ of the given cursor
-  \ coordinates _col row_.
-  \
-  \ }doc
+  \ 2016-12-31: Rewrite `attr`, `attr-addr` and `(attr-addr)`
+  \ with Z80 opcodes, without assembler. Compact the code,
+  \ saving one block.
 
-[unneeded] attr-addr ?(  need z80-asm need (attr-addr)
+\ (attr-addr) attr attr-addr \
 
-code attr-addr ( col row -- a )
+need ?(
 
-  de pop  hl pop  l d ld  (attr-addr) call
-    \ d = col
-    \ e = line
-    \ hl = attribute address
-  jppushhl, end-code
+[unneeded] (attr-addr) ?(
 
-  \ doc{
-  \
-  \ attr-addr  ( col row -- a )
-  \
-  \ Return the color attribute address _a_ of the given cursor
-  \ coordinates _col row_.
-  \
-  \ }doc
+create  (attr-addr)  ( -- a )  asm
 
-\ (attr-addr) \
-
-need z80-asm
-
-create (attr-addr)  ( -- a )
-
-  asm
-
-  e a ld  \ line to a 0x00..0x17 (max 00010111)
-  rrca rrca rrca  \ rotate bits left
-  a e ld  \ store in d as an intermediate value
-  E0 and#  \ pick up bits 11100000 (was 00011100)
-  d xor  \ combine with column 0x00..0x1F
-  a l ld  \ low byte now correct
-  e a ld  \ bring back intermediate result from d
-  03 and#  58 xor#
-    \ mask to give correct third of screen
-    \ combine with base address
-  a h ld  \ high byte correct
-  ret
-
-  end-asm
+  7B c, 0F c, 0F c, 0F c, 5F c, E6 c, E0 c, AA c, 6F c, 7B c,
+    \ ld a,e   ; line to a $00..$17 (max %00010111)
+    \ rrca
+    \ rrca
+    \ rrca     ; rotate bits left
+    \ ld e,a   ; store in E as an intermediate value
+    \ and $E0  ; pick up bits %11100000 (was %00011100)
+    \ xor d    ; combine with column $00..$1F
+    \ ld l,a   ; low byte now correct
+    \ ld a,e   ; bring back intermediate result from E
+  E6 c, 03 c, EE c, 58 c, 67 c, C9 c, end-asm  exit ?)
+    \ and 003h ; mask to give correct third of screen
+    \ xor 058h ; combine with base address
+    \ ld h,a   ; high byte correct
+    \ ret
 
   \ doc{
   \
@@ -112,6 +76,47 @@ create (attr-addr)  ( -- a )
   \ Output:
   \
   \ - HL = address of the attribute in the screen
+  \
+  \ }doc
+
+[unneeded] attr ?(  need (attr-addr)
+
+code attr  ( col row -- b )
+  D1 c, E1 c, 55 c, (attr-addr) call, 6E c, 26 c, 00 c,
+    \ pop de ; E = row
+    \ pop hl
+    \ ld d,l ; D = col
+    \ call attr_addr
+    \ ld l,(hl)
+    \ ld h,0 ; HL = attribute
+  jppushhl, end-code  exit ?)
+    \ jp pushhl
+
+  \ doc{
+  \
+  \ attr  ( col row -- b )
+  \
+  \ Return the color attribute _b_ of the given cursor
+  \ coordinates _col row_.
+  \
+  \ }doc
+
+[unneeded] attr-addr ?(  need (attr-addr)
+
+code attr-addr  ( col row -- a )
+  D1 c, E1 c, 55 c, (attr-addr) call, jppushhl, end-code ?)
+    \ pop de ; E = row
+    \ pop hl
+    \ ld d,l ; D = col
+    \ call attr_addr
+    \ jp pushhl
+
+  \ doc{
+  \
+  \ attr-addr  ( col row -- a )
+  \
+  \ Return the color attribute address _a_ of the given cursor
+  \ coordinates _col row_.
   \
   \ }doc
 
