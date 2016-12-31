@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-28
+:revdate: 2016-12-31
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -13,26 +13,43 @@ Data space used (2016-12-20) by the assemblers:
 `z80-asm` :: 1817 B
 `z80-asm,`:: 1664 B
 
+.2016-12-30:
+
+NOTE: Milestone: 0.13.0
+
+Rewrite `attr` and `attr-addr` with opcodes, without assembler.
+Search for similar cases, e.g. `lshift`.
+
 .2016-12-25:
+
+NOTE: Milestone: 0.13.0
 
 Move `assembler` to the library after migrating from `z80-asm` to `z80-asm,`,
 in order to use `need assembler`. Leave `assembler-wordlist` in the kernel.
 
 .2016-12-20:
 
+NOTE: Milestone: 0.13.0
+
 Add assembler control structures to the syntax file.
 
 .2016-12-20:
 
+NOTE: Milestone: 0.13.0
+
 Migrate from `z80-asm` to `z80-asm,`.
 
 .2016-04-20:
+
+NOTE: Milestone: 0.13.0
 
 Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
 because _r_ is the standard for floating-point numbers.
 
 // Benchmarks {{{1
 == Benchmarks ==
+
+NOTE: Milestone: 0.14.0
 
 - Benchmark current `times` and new version that keeps the xt in the return
   stack in the loop: `do dup r> execute r> loop drop`.
@@ -41,6 +58,8 @@ because _r_ is the standard for floating-point numbers.
 - Benchmark two library versions of `d=` and `d<>`.
 
 .2016-12-06:
+
+NOTE: Milestone: 0.14.0
 
 Rename `bench{` and `}bench` and family. Maybe after SwiftForth: `counter` and
 `timer`.
@@ -51,9 +70,9 @@ Benchmark the system without constants `0`, `1` and `2`.
 
 2016-05-30:
 
-With constants:    32598 B free.
-Without constants: 32572 B free.
-Diff:                +26 B
+With constants::    32598 B free
+Without constants:: 32572 B free
+Diff::              +26 B
 
 // Bugs {{{1
 == Bugs ==
@@ -66,6 +85,9 @@ Check `.\"`.
 
 Probable bug in `find-name-from`: when `hp` crosses the 16-KiB boundary,
 sometimes a previous word is not found.
+
+Update 2016-12-30: Already solved? It seems the problem was the `grep`
+expression in the `fs2fsb.sh` converter, because of the file enconding.
 
 .2016-12-02..2016-12-03:
 
@@ -203,8 +225,6 @@ Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
  
 .2016-11-26:
 
-NOTE: Milestone: 0.13.0
-
 Change `??` to its old version, which is more useful:
 
 ----
@@ -269,14 +289,16 @@ ____
 // Strings {{{2
 === Strings ===
 
+.2016-12-29:
+
+NOTE: Milestone: 0.14.0
+
+Move the circular string buffer right below `limit`. This way the application
+can move it without wasting its original space.
+
 .2016-12-23:
 
 Document `s\"` and `.\"`.
-
-.2016-12-22:
-
-Rewrite `parse-esc-string` to use case-sensitive characters after the
-backslash, after standard Forth.
 
 .2016-12-16:
 
@@ -329,7 +351,7 @@ New: `lower` and `lowers`.
 
 .2016-06-10:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Rename "csb" to "stringer":
 
@@ -374,6 +396,13 @@ Examples from Forth Dimensions:
 Rename `(user)` to `user`? That was the original name in fig-Forth, Forth-79
 and Forth-83. Choose an alternative for the current `user`, defined in the
 library.
+
+// Other {{{2
+== Other ==
+
+.2016-12-30:
+
+Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
@@ -737,6 +766,24 @@ prerequisites are older than the target.
 // Maths {{{1
 == Maths ==
 
+.2016-12-30:
+
+NOTE: Milestone: 0.13.0
+
+Rewrite `du<` in Z80.
+
+.2016-12-30:
+
+NOTE: Milestone: 0.13.0
+
+Make both versions of `lshift` and `rshift` accessible, or remove them.
+
+.2016-12-30:
+
+NOTE: Milestone: 0.13.0
+
+Remove module <math.number.prefix.fsb>.
+
 .2016-12-28:
 
 ----
@@ -753,6 +800,8 @@ Add `binary` to the library.  If `base` were not a user variable, `binary` and
 
 .2016-12-22:
 
+NOTE: Milestone: 0.13.0
+
 Rewrite `odd?` and `even?` in Z80.
 
 .2016-11-26:
@@ -761,6 +810,8 @@ Remove old z80-asm versions of `d2*` and `d2/`.
 Search for similar cases.
 
 .2016-11-26:
+
+NOTE: Milestone: 0.13.0
 
 Rewrite `d-` with Z80 opcodes, without `z80-asm`.
 Search for similar cases.
@@ -800,7 +851,6 @@ ROTATE         n1 n2 -- n3
 The idiom `-1 =` is used 3 times in the kernel. It could be defined this way:
 
 ----
-; ----------------------------------------------
   _code_header minus_one_equals_,'-1='
 
   pop hl
@@ -818,7 +868,6 @@ minus_one_equals.hl:
 Or:
 
 ----
-; ----------------------------------------------
   _code_header rminus_one_equals_,'-1='
 
   pop hl
@@ -831,7 +880,6 @@ minus_one_equals.hl:
   jr true_
 
   ; 11 B
-
 ----
 
 And an alias `true=` could be defined.
@@ -900,13 +948,13 @@ Make `number?` deferred, in order to add floating-point support.
 
 .2015-12-24:
 
-Fractional arithmetic, FD 4-1.
+Fractional arithmetic, Forth Dimensions volume 4-1.
 
 .2016-03-16:
 
-Idea for improving `number?` or writing an optional alternative:
-Return the chars and positions of every point, not only the last
-one. Convert `dpl` to a backwards compatible array:
+Idea to improve `number?`, or to write an optional alternative: Return the
+chars and positions of every point, not only the last one. Convert `dpl` to a
+backwards compatible array:
 
 ----
 +0 cell: position of the last point
@@ -937,9 +985,8 @@ The ROM allocates 6*5 bytes, but 32*5 can be used.
 
 .2016-04-19:
 
-Floating-point words `flit`, `fliteral`. From PFE:
-`fround>s`, `ftrunc>s` (being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`,
-`f2*`.
+Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
+(being `f>s` a synonym), `1/f`, `f^2`, `f^n`, `f2/`, `f2*`.
 
 // Memory {{{1
 == Memory ==
@@ -1065,12 +1112,40 @@ Spectrum Forth-83).
 // Library {{{1
 == Library ==
 
+.2016-12-30:
+
+Make words in <printing.color.fsb> accessible to `need`.
+
+.2016-12-30:
+
+NOTE: Milestone 0.15.0
+
+Make it possible to use any number of disks, in any order, for the library.
+This way, the main library could be only on its own disk, not copied to all the
+disks.
+
+`lib-order`, `set-lib-orde`, `get-lib-order` are in the kernel, but no used
+yet.
+
 .2016-12-08:
 
 Rename <math.number.print.fsb> to <printing.number.fsb>.
 
 // Loading {{{1
 == Loading ==
+
+.2016-12-30:
+
+Add `//` to ignore the rest of the source, as a shorter alternative to `exit`
+to exit the current block.
+
+.2016-12-29:
+
+`(located)  ( ca len -- block | false )` returns _false_ also when _ca len_ is
+empty, therefore the exception code thrown by the calling word is always #-268
+(needed but not located).  This is not a big problem, but exceptions #-16
+(attempt to use zero-length string as a name) or #-32 (invalid name argument)
+would be clearer.
 
 .2016-12-03:
 
@@ -1080,13 +1155,6 @@ Many needed words are in the same block.
 .2016-11-24:
 
 Study the actual advantage of `exit` at the end of conditional compilation.
-
-.2016-11-22:
-
-NOTE: Milestone: 0.12.0
-
-Fix: when nothing follows `need`, crash! (after loading `blocked` and
-`mode64`).
 
 .2016-11-22:
 
@@ -1111,11 +1179,13 @@ need( word1 word2 word3 word4
   while  needed  repeat  2drop  ;
 ----
 
-.2016-11-19:
+Update 2016-12-31: `need\` is clearer than `parses` to parse the current line.
 
-NOTE: Milestone: 0.12.0
+.2016-11-19, 2016-12-29:
 
-Write an alternative version of `indexer` to index the blocks on the fly as
+NOTE: Milestone: 0.15.0
+
+Finish the alternative version of `indexer` to index the blocks on the fly as
 they are being searched by `need` and family, i.e., not in advance.
 
 .2016-05-18:
@@ -1131,6 +1201,11 @@ Problem: this would force changes in fsb and fsb2.
 
 // Modules {{{1
 == Modules
+
+.2016-12-29:
+
+Improve `transient` to actually unlink all the transient words?  This means
+backuping and restoring the latest definition of all word lists...
 
 .2016-12-07:
 
@@ -1158,7 +1233,18 @@ for the end user.
 
 .2016-12-07:
 
+NOTE: Milestone: 0.13.0
+
 Combine `begin-module` and `package`.
+
+// Optimizations {{{1
+== Optimizations ==
+
+.2016-12-30:
+
+NOTE: Milestone: 0.13.0
+
+Convert `'x' emit` to `." x"`. It saves one byte and is faster.
 
 // Parsing {{{1
 == Parsing ==
@@ -1182,6 +1268,10 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Printing {{{1
 == Printing ==
+
+.2016-12-30:
+
+Combine `clear-block` and family with the text windows.
 
 .2016-12-24:
 
@@ -1262,6 +1352,10 @@ Improve tab control.
 // Stacks {{{1
 == Stacks ==
 
+.2016-12-30:
+
+Improve needing of `xstack` words.
+
 .2016-12-07:
 
 Rewrite `n>r` and `nr>` with Z80 opcodes, to make it independent from the
@@ -1314,6 +1408,12 @@ Rename `frames@` to `ticks@`, etc.?
 // Tools {{{1
 == Tools ==
 
+.2016-12-30:
+
+NOTE: Milestone: 0.13.0
+
+Write `wordlists` to list all word list defined.
+
 .2016-11-28:
 
 Improve `see`: decode `does>`.
@@ -1327,16 +1427,6 @@ Rename `.unused` to `.free`.
 NOTE: Milestone: 0.13.0
 
 Write `ed:` after TurboForth.
-
-.2016-11-24:
-
-Factor `list-title` from `list-lines`.
-
-.2016-11-21:
-
-NOTE: Milestone: 0.13.0
-
-Improve `begin-module` to reuse a named module.
 
 .2016-11-19:
 
@@ -1391,12 +1481,4 @@ Beside, write a more generic version:
 ----
 
 Where `wid>(name)` is a possible new name for `(wid>name`.
-
-.2016-12-06:
-
-Combine `begin-module` module and `package` module.
-
-.2016-12-06:
-
-In module <modules.module.fsb>: Rename `module` to `hide-external`.
 

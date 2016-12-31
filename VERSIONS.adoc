@@ -1,12 +1,278 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-16
+:revdate: 2016-12-31
 :toc:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-== Version 0.11.0 // {{{1
+// Version 0.12.0  {{{1
+== Version 0.12.0
+
+Released on 2016-12-31.
+
+This version has more new features, bug fixes, improvements and
+changes than initially planned. The reason is it was heavily tested
+during the development of two game projects.
+
+=== New
+
+- Port of the `blocked` editor, an alternative to the fig-Forth
+  editor. Not fully tested yet.
+- `const`, `cconst` and `2const`, to define constants that compile
+  their values.
+- Add `jp,` to the assembler word list in the kernel, factored from
+  `defer`.
+- Add `farlimit`, `farunused`; update `.unused`.
+- Add `list-lines`, `list-line`.
+- Add `qx`, a quick index tool extracted from the original `blocked`
+  editor and improved to work with any editor and in any screen mode.
+- `.line#`, `/line#`.
+- Add `/block#` and `.block#`.
+- Add `avariable`, `2avariable`, `cavariable`, 1-dimension arrays that
+  work like variables.
+- Add `bit-array`, `!bit`, `@bit`.
+- Start supporting Gforth's mini-oof.
+- Add `see-xt`, `see-body-from`.
+- Add `-branch`.
+- Add `+if`, `+while`, `+until`.
+- Add `max-order` and `?order`.  In order to check the search order in
+  `set-order`...
+- Add `data:`, `2data:`, `cdata:`.
+- Add quotations: `[:` and `;]`.
+- Add `enumcell`.
+- Add `dtimes`.
+- Add `?rstack`.
+- New word `>printable-ascii-char`, a factor of `type-ascii` and
+  `fartype-ascii`. New faster and specific check
+  `printable-ascii-char?`.
+- Add `cenum`.
+- Add `#>kk`.
+- Add `~~app-info`.  This makes `~~` easier to extend and customize by
+  the application.
+- Add `+perform`.
+- Add `-order`, `+order`.
+- Add `-1|1`.
+- Add assembler labels.
+- Add `switch`, `>cell-string`.
+- Add `c>bstring`, `2>bstring`.
+- Add `hide-internal`, to complete the old `internal` module.
+- Add VFX-like `module`.  An implementation of VFX's `module` by
+  Ulrich Hoffmann in Forth-94.
+- Add SwiftForth's `package`.
+- Add `c!exchange`, new `exchange`, `cexchange`.
+- Add `sconstants`, `/sconstants`.
+- Add `u>str`.
+- Add `uppers1`.
+- Add `make-block-characters`.
+- Add `block-characters` and `0udg>`.
+- Add `odd?`.
+- Add `set-font`, `get-font`, `set-udg`, `get-udg`, `rom-font`.
+- Add `even?`.
+- Add `case-sensitive`, `lower`, `lowers`, `farlowers`.
+- Add `udg-chars` to define the default UDG 'A'..'U'.
+- Add case-sensitive escaped strings.  This improvement makes the
+  escaped strings Forth-2012 compliant, and compatible with the ZX
+  Spectrum escaped UDG notation (uppercase '\A'..'\U').
+- Implement escaped strings search order.  This method is analogous to
+  the main search order, and lets the application configure the chars
+  escaped by `s\"`, `.\"` and other words.
+- Add `window`, a basic implementation of text windows.
+- Add constants for common control keys.
+- Add `plot176`.
+- Start the new `rdraw` (not finished yet).
+- Add more words to plot and draw in 255x176 mode.  The graphic
+  commands of Sinclair BASIC work in 255x176 instead of 255x191.
+  Therefore words that use the same resolution and origin are useful
+  to adapt BASIC programs.  New words: `(pixel-addr176)`,
+  `pixel-addr176`, `set-pixel176`, `reset-pixel176`,
+  `toggle-pixel176`, `test-pixel176`, `set-save-pixel176`,
+  `aline176`.
+- Add `fyi`.
+- Add `ifelse` operator.
+
+=== Fixes
+
+- Fix `:noname` with the new `call,`.
+- Fix needing `d<>`, `trim`, `char`, `[char]`, `word`.
+- Fix `+place`.
+- Adapt `module` to far memory.
+- Make `name<name` compatible with far memory.
+- Fix `search`: empty substring caused crash.
+- Fix compilation of `s\"`, `.\"`: keep search order.
+- Fix `bright!`.
+- Load `see` (old `decode`) preserving the word lists config.
+- Fix conditional definition of `/kk`.
+- Fix `privatize`.
+- Fix `u.r`.
+- Fix `/hold` and `floored` environmental query strings.
+- Fix grep expression in `fs2fba.sh`.
+- Fix and improve several issues in both assemblers.  Main changes, in
+  the `z80-asm,` assembler: Fix `jp>jr` to manage also unconditional
+  jumps; fix `relse`, `rwhile` and `runtil`.
+- Fix `jp>jr`.
+- Fix names of `im1,` and `im2,`.
+- Make `inverse-cond` and `jp>jr` `z80-asm`-safe.  There were problems
+  when `z80-asm` was loaded before `z80-asm,`, because `z80-asm` has
+  words homonymous with Forth words.
+- Fix: Make `cold` reset the behaviour of `warn`.
+- Fix code typo in `fast-(pixel-addr)`.
+- Fix `rstep`.
+
+=== Improvements
+
+- Documentation of many words has been improved. All documentation is
+  still in the sources, though.
+- The needing of many words has been improved, i.e., now they can be
+  accessed individually by `need`.
+- Rename `transient[ ]transient -transient` to `transient
+  end-transient forget-transient` and improve them.
+- Update the Vim syntax file.
+- Add Vim ftdetect file.
+- Make `link@` an alias, for speed.
+- Make `words` and family configurable.  Sometimes it's useful to see
+  more information in a listing of words.  Now `words`,
+  `wordlist-words` and `words-like` can be configured with a deferred
+  word.
+- Add a configurable resume key to `~~control`.
+- Rewrite `lengths` in Z80.
+- Improve and test `[switch`.
+- Improve `does>` with `call,`.
+- Use `cell+ cell+` and `cell- cell-`.  They are a little bit faster
+  than `[ 2 cells ] literal +` and `[ 2 cells ] literal -` and save
+  one cell.
+- Improve `(located)` to detect empty strings.  Actually this was a
+  bug: an empty string from `need` and family was accepted and looked
+  for, and of course it matched the header of the first locatable
+    block of the library.
+- Improve G+DOS `transfer-block` with `literal`.
+- Rewrite `d-` with Z80 opcodes, to make it independent from the
+  assembler.
+- Improve kernel's first-boot routine.
+- Improve `+field`: Make it a deferred word and add 3 implementations:
+  `+field-unopt`, `+field-opt-0` and `+field-opt-0124`.
+- Make `negate` 6 T faster and 2 B smaller.
+- Improve `~~control` to accept also any resume key.
+- Rename `paper>` to `attr>paper`.  Rename `>paper` to `paper>attr`.
+  Rewrite them in Z80.
+- Increase return stack.
+- Define default `/kk`.
+- Improve `switch:` with character and 2-cell clauses.
+- Improve `export` with `alias`.
+- Rewrite `ms`.
+- Rewrite `8*` in Z80.
+- Make escaped chars configurable in `s\"` and `.\"`. Support escaped
+  graphic chars (BASin notation).
+- Save one byte in `find-name-from`.
+- Improve `~~` with clearer output.
+- Improve `du<`.
+- Improve `.depth`: 4 bytes smaller.
+
+=== Other changes
+
+- Store definition names in lowercase.  This makes more sense, because
+  this way words can be typed and interpreted in lowercase, which is
+  the default in the sources, also when the new case-sensitive mode is
+  activated.
+- Use `?(` instead of `[if]` in the library.  Compilation of standard
+  `[if]` needs more data space and is slower than the conditional
+  comment `?(`, which is enough for all the conditional compilation
+  needs of the library.
+- Split the `indexer` module.  Part of the code can be shared with an
+  alternative indexer under development.
+- Show version-specific background image at startup.
+- Improve the `user` module. Add conditional compilation.
+- Reorganize <make/> and <tools/>.  Now <make/> contains the programs
+  used by <Makefile>, and <tools/> will contain tools for the Forth
+  programmer.
+- Move `.line` to its proper module.
+- Move code and list tools common to both editors to an independent
+  module.
+- Rename Wong's `array` to `avalue` and extend it.
+- Rename `c!set-bits`, `c!reset-bits`, `c!toggle-bits` to `cset`,
+  `creset`, `ctoggle`.
+- Rename `c@test-bits` and `c@test-bits?` to `c@and` and `c@and?`.
+- Rename `decode` to `see`.  The tool is not complete yet, but it fits
+  the description of the standard word `see`, therefore there's no
+  need to keep its original name.
+- Rename `-branch` to `+branch`. The name was not consistent with
+  `?branch` and `0branch`.
+- Move `u.r` to the library.
+- Prepare the implementation of `use-fly-index`, an alternative
+  indexer.
+- Move `storer`, `cstorer`, `2storer` to a module.
+- Remove old `get-order` and `order@` from library.
+- Move `seal` to the library.
+- Move `catch` to the library.
+- Combine small control structures into one module.
+- Combine small definers into one module.
+- Move `fartype` and `fartype-ascii` to the library.
+- Move `?leave` to the library.
+- Move `warnings` and family to the library.
+- Move `search-wordlist` to the library.
+- Remove `blocks`, a duplicate of `blk/disk`.
+- Move `doer-test` to the tests module.
+- Remove old unused `bank-boundary?`.
+- Replace `scr` with `lastblk` in `load` and `reload`.
+- Rename `~~show` to `~~info`.
+- Remove mutual needing of `n>r`, `nr>`.
+- Rename `?jr-range` and `?page` to `?rel`.  The word is common to
+  both assemblers but had different names.
+- Rename module of `switch:`, after the usual convention.
+- Rename `>cell-string` to `>bstring`, which is completed with the new
+  words `c>bstring` and `2>bstring`.
+- Rename the `internal` module words to extend it: Old: `internal`,
+  `external`, `module` New: `internal`, `end-internal`,
+  `unlink-internal`
+- Rename "common" and "misc" module filenames.  The change makes those
+  modules more visible; besides, by default they are listed before
+  their related modules.
+- Rename `exchange` to `!exchange`.
+- Rename the `environment?` module after the usual convention.
+- Remove `(wait)` from the kernel.
+- Rename `jpnext`, `jppushhl`: `jpnext,`, `jppushhl,`.  The new names
+  are consistent with the rest of similar words also defined in the
+  kernel: `jp,` and `call,`. Beside, `z80-asm,`, which uses the comma
+  suffix convention,  will be the only assembler in a future version.
+- Rename `rdraw`, `adraw` to `rdraw176`, `adraw176`.  These
+  implementations use only 176 pixel rows of the screen, like Sinclair
+  BASIC. They can be useful for conversions from BASIC.
+- Convert `rdraw176` to the `z80-asm,` assembler.
+- Convert `inkey`, `get-inkey` to the `z80-asm,` assembler.
+- Move kernel aliases after the words they point to.  This change
+  makes the output of `see` clearer in certain cases,  because `>name`
+  searches the dictionary from oldest to newest definition.  Anyway,
+  this is the order aliases are defined outside the kernel.
+- Rename `from` to `need-from`.  This word is seldom needed.  `from`
+  is a generic, more useful name in application context.
+- Change the assembler of pixel graphic words.  Convert all of them
+  from the deprecated `z80-asm` to `z80-asm,`.
+- Rename `wait-for-key` to `discard-key`.
+- Move `s'` from its own module to the misc strings module.
+- Improve the description of the Forth tools used by GNU make to build
+  the Forth system.
+- Compact the library to fit the 636 KiB available in a TR-DOS disk
+  image.
+
+=== Background image
+
+From version 0.12.0, Solo Forth shows a version-specific background
+image the first time it boots. The image of this version is the
+following:
+
+- Title: Alonso Quixano reading books of chavalry.
+- Author: Gustave Doré (1832-1883).
+- Book: _El ingenioso hidalgo don Quijote de La Mancha_ (_The
+  Ingenious Gentleman Don Quixote of La Mancha_) (1605), chapter 1, by
+  Miguel de Cervantes (1547-1616).
+
+The ZX Spectrum image was converted from the
+http://www.h-net.org/~cervantes/doreesp2.htm[pictures scanned by
+Claudio Paganelli] from the italian edition _Don Chisciotte della
+Mancia_, published by Edoardo Perino (Rome, 1888).
+
+// Version 0.11.0  {{{1
+== Version 0.11.0
 
 Released on 2016-11-16.
 
@@ -85,8 +351,9 @@ to use all the paged memory.  It has been called "far memory".
   `call,` in the `z80-asm,` assembler. So it has been renamed, moved
   to the `assembler` word list and removed from the assembler.
 - Move `8*` from the assemblers to the operators.
-
-== Version 0.10.0 // {{{1
+ 
+// Version 0.10.0  {{{1
+== Version 0.10.0
 
 Released on 2016-10-23.
 
@@ -243,7 +510,8 @@ words to manage disk files; the +3DOS version can not use the library.
 - Rename `xstack` to `allocate-xstack`.
 - Make `(pixel-addr)` deferred.
 
-== Version 0.9.0 // {{{1
+// Version 0.9.0  {{{1
+== Version 0.9.0
 
 Released on 2016-05-18.
 
@@ -301,7 +569,8 @@ Released on 2016-05-18.
   implement multitasking, and it saves one cell.
 - Improve conditional compilation of word lists tools.
 
-== Version 0.8.0 // {{{1
+// Version 0.8.0  {{{1
+== Version 0.8.0
 
 Released on 2016-05-10.
 
@@ -317,7 +586,8 @@ Released on 2016-05-10.
 - Add `align` and `aligned`.
 - Fix `[char]`.
 
-== Version 0.7.0 // {{{1
+// Version 0.7.0  {{{1
+== Version 0.7.0
 
 Released on 2016-05-09.
 
@@ -400,7 +670,8 @@ Released on 2016-05-09.
 - Fix description of `ahead`.
 - Compact the library.
 
-== Version 0.6.0 // {{{1
+// Version 0.6.0  {{{1
+== Version 0.6.0
 
 Released on 2016-04-27.
 
@@ -436,7 +707,8 @@ Released on 2016-04-27.
 - Clearer warning and exception messages.
 - Update the Pong game.
 
-== Version 0.5.0 // {{{1
+// Version 0.5.0  {{{1
+== Version 0.5.0
 
 Released on 2016-04-22.
 
@@ -470,7 +742,8 @@ Released on 2016-04-22.
 - Rename library files.
 - Documentation: Change the stack notation for flags.
 
-== Version 0.4.1 // {{{1
+// Version 0.4.1  {{{1
+== Version 0.4.1
 
 Released on 2016-04-11.
 
@@ -478,7 +751,8 @@ Released on 2016-04-11.
   press any key" does not appear anymore.
 - The tape module is fully documented.
 
-== Version 0.4.0 // {{{1
+// Version 0.4.0  {{{1
+== Version 0.4.0
 
 Released on 2016-04-10.
 
@@ -486,14 +760,16 @@ Released on 2016-04-10.
 - New words: `nonfull-display`, `full-display`, `save-display` and
   `restore-display`.
 
-== Version 0.3.2 // {{{1
+// Version 0.3.2  {{{1
+== Version 0.3.2
 
 Released on 2016-04-09.
 
 - Fix, improve and finish the `arguments` implementation of locals.
 - Improve the documentation of some library modules.
 
-== Version 0.3.1 // {{{1
+// Version 0.3.1  {{{1
+== Version 0.3.1
 
 Released on 2016-04-09.
 
@@ -503,7 +779,8 @@ Released on 2016-04-09.
   benchmarks.
 - Fix the name of the `base-execute` library module.
 
-== Version 0.3.0 // {{{1
+// Version 0.3.0  {{{1
+== Version 0.3.0
 
 Released on 2016-04-03.
 
@@ -580,13 +857,15 @@ Released on 2016-04-03.
   `needed`, `reneed` and `reneeded` much faster.
 - Add `cell/`, `d10*` and `bits` to the library.
 
-== Version 0.2.0 // {{{1
+// Version 0.2.0  {{{1
+== Version 0.2.0
 
 Released on 2016-03-14.
 
 - The old alternative ITC code is removed.
 
-== Version 0.1.0 // {{{1
+// Version 0.1.0  {{{1
+== Version 0.1.0
 
 Released on 2016-03-14.
 
@@ -596,7 +875,8 @@ history].
 
 - The Vim syntax file for Solo Forth is included.
 
-== Version 0.0.0 // {{{1
+// Version 0.0.0  {{{1
+== Version 0.0.0
 
 Developed from 2015-06-02 to 2015-12-18.
 
