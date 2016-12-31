@@ -1,7 +1,7 @@
 # Ignore ZX Spectrum disk images:
-#*.dsk
-#*.mgt
-#*.trd
+*.dsk
+*.mgt
+*.trd
 
 # Ignore ZX Spectrum emulator snapshots:
 *.sna
