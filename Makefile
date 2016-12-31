@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201612082020
+# Last modified: 201612312040
 
 # ==============================================================
 # Author
@@ -505,10 +505,8 @@ disks/trdos/disk9_lib_without_dos.trd: tmp/library_without_dos.fsb
 # ==============================================================
 # Background images
 
-# Starting from version 0.12.0, Solo Forth shows a background image
-# every time it boots. It's an illustration made in the 19th century
-# by Gustave Doré for the novel _El ingenioso hidalgo don Quijote de
-# La Mancha_, by Miguel de Cervantes (1605, 1615).
+# Starting from version 0.12.0, Solo Forth shows a background
+# image every time it boots.
 
 # First, create a link to the Netpbm image selected for the current
 # version of Solo Forth:
@@ -667,3 +665,5 @@ oldbackup:
 #
 # 2016-12-08: Update after the renaming of "misc" and "common"
 # module files.
+#
+# 2016-12-31: Remove the details about the background images.

@@ -6,6 +6,35 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
+// Version 0.13.0  {{{1
+== Version 0.13.0
+
+Under development.
+
+=== Background image
+
+Title: Alonso Quijano limpia sus armas (Alonso Quixano cleans up his
+armour).
+
+Illustrator: Doré, Gustave (1832-1883).
+
+Engraver: Pisan, Héliodore Joseph (1822-1890).
+
+Book: _El ingenioso hidalgo don Quijote de La Mancha_ (_The Ingenious
+Gentleman Don Quixote of La Mancha_) (1605), by Miguel de Cervantes
+(1547-1616).
+
+http://qbi2005.windows.cervantesvirtual.com/wfrmDatosEdicion.aspx?edicion=6[Edition]:
+Edition: 1863, Paris, _L'ingénieux hidalgo Don Quichotte de la Manche_
+(Hachette).  Volume 1, chapter 1, page 13.
+
+The ZX Spectrum image was created from
+http://qbi2005.windows.cervantesvirtual.com/imagenes/media/0000600879.jpg[image
+0000600879 of QBI].
+
+// Alternative URL:
+// http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0000600879
+
 // Version 0.12.0  {{{1
 == Version 0.12.0
 
