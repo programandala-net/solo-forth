@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201612262050
+; Last modified: 20161230212
 
 include version.z80s
 
@@ -130,8 +130,8 @@ if defined trdos
  ; disk.  This buffer is allocated dynamically. Therefore, the
  ; default origin of the Forth system must be moved up.
 
-  ;origin:                         equ default_origin+$170
-  origin:                         equ default_origin+$800 ; XXX TMP --
+  origin:                         equ default_origin+$170
+  ;origin:                         equ default_origin+$800 ; XXX TMP --
 
 else
 
@@ -1533,9 +1533,9 @@ get_lib_order.exit
 
 ; ----------------------------------------------
 
-; Note: Conditional `include` is not allowed in the Pasmo
-; assembler. That's why all DOS files are included, and they
-; check its own condition.
+; Note: Conditional `include` is not allowed in the Pasmo assembler.
+; That's why all DOS files are included, and they check their own
+; condition.
 
   include kernel.gplusdos.z80s
   include kernel.trdos.z80s
@@ -1914,6 +1914,8 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- move to the library?
+
   ; XXX TODO -- check the limit, see Gforth
 
   dw get_order_,over_,swap_,one_plus_,set_order_
@@ -1940,6 +1942,8 @@ endif
 ; ----
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library?
 
   _literal -1
   dw set_order_
@@ -3926,6 +3930,10 @@ emit_0udg.a
   pop bc
   _jp_next
 
+  ; XXX TODO -- write a simpler version, without the ROM call,
+  ; only to print a graphic char
+  ; See http://chuntey.arjunnair.in/?p=154
+
 ; ----------------------------------------------
   _defer_header emit_,'emit',,mode32_emit_
 
@@ -3942,7 +3950,7 @@ emit_0udg.a
 ; This flag is set by `printer`, reset by `display` and checked
 ; by `page`. It should not be changed directly.
 ;
-; See: `display`, `printing`.
+; See: `display`, `printing`, `page`.
 ;
 ; }doc
 
@@ -3957,7 +3965,7 @@ emit_0udg.a
 ;
 ; Select the display as output.
 ;
-; See: `printer`, `printing`.
+; See: `printer`, `printing`, `page`.
 ;
 ; }doc
 
@@ -8866,7 +8874,7 @@ error.message:
 ;
 ; }doc
 
-  ; XXX TODO -- complete the description, for DTC.
+  ; XXX TODO -- complete the documentation
 
   dw dup_,zero_equals_
   _question_throw error.zero_length_name
@@ -12872,14 +12880,6 @@ end_of_pause:
 
 background_image:
   incbin ../backgrounds/current.scr
-
-; ----------------------------------------------
-; The code name
-
-; XXX TODO --
-
-;code_name:
-;  incbin ../codenames/
 
 ; ==============================================================
 ; End
