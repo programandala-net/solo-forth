@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300114
+  \ Last modified: 201612312140
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,6 +66,10 @@
   \ source with that of the `z80-asm,` assembler.
   \
   \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2016-12-31: Fix: Move the location of unresolved references
+  \ from the string stack to data space. Using the string stack
+  \ is not safe for this.
 
 ( z80-asm )
 
@@ -370,13 +374,9 @@ A0 m2 and  B0 m2 or  A8 m2 xor
   \ Macro to test 16-bit register for zero:
 : tstp  ( rp -- )  dup a ld 1+ or  ;
 
-6 cells allocate-string
-  \ Temporary space to store unresolved addresses during
-  \ compilation. `pad` can not be used because it's transient
-  \ and changes during the compilation. The circular string
-  \ buffer is used.
-  \
-  \ XXX TODO -- use the heap instead, when implemented
+here 6 cells allot
+  \ Space to store unresolved addresses during
+  \ compilation.
 
 : unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
   \ Return the address of the _n_ unresolved address.  Note:

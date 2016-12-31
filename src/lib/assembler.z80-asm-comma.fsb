@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612261722
+  \ Last modified: 201612312137
 
   \ -----------------------------------------------------------
   \ Description
@@ -92,6 +92,10 @@
   \ `z80-asm`, in case `z80-asm` was loaded first.
   \
   \ 2016-12-26: Factor `runtil`, fix `rstep`.
+  \
+  \ 2016-12-31: Fix: Move the location of unresolved references
+  \ from the string stack to data space. Using the string stack
+  \ is not safe for this.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -406,13 +410,9 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 : >aresolve  ( a -- )  >amark swap !  ;
   \ Resolve an absolute forward reference.
 
-6 cells allocate-string
-  \ Temporary space to store unresolved addresses during
-  \ compilation. `pad` can not be used because it's transient
-  \ and changes during the compilation. The circular string
-  \ buffer is used.
-  \
-  \ XXX TODO -- use the heap instead, when implemented
+here 6 cells allot
+  \ Space to store unresolved addresses during
+  \ compilation.
   \
   \ XXX TODO -- deprecate, use labels instead
 
