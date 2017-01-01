@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201934
+  \ Last modified: 201701012051
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,22 +48,25 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
   \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-01-01: Convert `roll` from `z80-asm` to `z80-asm,` and
+  \ fix its needing.
 
 ( 2nip pick roll )
 
 need ?(
 
-  \ Credit:
-  \
-  \ Code from Afera; original code from DZX-Forth.
-
 [unneeded] 2nip ?(  code 2nip  ( x1 x2 x3 x4 -- x3 x4 )
-  E1 c, D1 c, F1 c, F1 c, C3 c, pushhlde ,  end-code  ?)
+  E1 c, D1 c, F1 c, F1 c, C3 c, pushhlde ,  end-code  exit ?)
     \ pop hl
     \ pop de
     \ pop af
     \ pop af
     \ jp pushhlde
+
+  \ Credit:
+  \
+  \ Code from Afera; original code from DZX-Forth.
 
   \ doc{
   \
@@ -89,24 +92,24 @@ code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ Code adapted from DZX-Forth.
 
-[unneeded] pick ?(  need z80-asm
+[unneeded] roll ?(  need z80-asm,
 
 code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 
-  hl pop  hl addp  hl de ldp  sp addp
+  h pop, h addp, h d ldp, sp addp,
     \ pop hl
     \ add hl,hl
     \ ld e,l
     \ ld d,h
     \ add hl,sp
 
-  bc push  m c ld  hl incp  m b ld
+  b push,  m c ld, h incp, m b ld,
     \ push bc
     \ ld c,(hl)
     \ inc hl
     \ ld b,(hl)
 
-  bc push  de bc ldp  hl de ldp  bc tstp
+  b push, d b ldp, h d ldp, b tstp,
     \ push bc
     \ ld b,d
     \ ld c,e
@@ -115,13 +118,13 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
     \ ld a,b
     \ or c
 
-  0000 jpz |mark 0 unresolved !   hl decp  hl decp  lddr
+  0000 z? ?jp, >amark 0 unresolved ! h decp, h decp, lddr,
     \ jp z,roll.end
     \ dec hl
     \ dec hl
     \ lddr
     \ roll.end:
-  0 unresolved @ >resolve  hl pop  bc pop  exsp
+  0 unresolved @ >resolve h pop, b pop, exsp,
     \ pop hl
     \ pop bc
     \ ex (sp),hl
