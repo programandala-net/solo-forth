@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701012051
+  \ Last modified: 201701020044
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,9 @@
   \
   \ 2017-01-01: Convert `roll` from `z80-asm` to `z80-asm,` and
   \ fix its needing.
+  \
+  \ 2017-01-02: Convert `ndrop` and 2ndrop` from `z80-asm` to
+  \ Z80 opcodes.
 
 ( 2nip pick roll )
 
@@ -87,10 +90,6 @@ code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \ pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ }doc
-
-  \ Credit:
-  \
-  \ Code adapted from DZX-Forth.
 
 [unneeded] roll ?(  need z80-asm,
 
@@ -129,6 +128,10 @@ code roll  ( xu xn .. x0 u -- xn .. x0 xu )
     \ pop bc
     \ ex (sp),hl
   jpnext,  end-code  ?)
+
+  \ Credit:
+  \
+  \ Code adapted from DZX-Forth.
 
   \ doc{
   \
@@ -322,23 +325,20 @@ need ?(
 
 ( ndrop 2ndrop )
 
-need ?(  need z80-asm
+need ?(
 
 [unneeded] ndrop ?(
 
 code ndrop  ( x1..xn n -- )
-
-  hl pop  hl addp  exde  \ DE = n cells
+  E1 c, 29 c, EB c, 21 c, 0000 , 39 c, 19 c, F9 c,
     \ pop hl
     \ add hl,hl
-    \ ex de,hl
-  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ex de,hl ; DE = n cells
     \ ld hl,0
-    \ add hl,sp
-  de addp  ldsp  \ update SP
+    \ add hl,sp ; HL = stack pointer
     \ add hl,de
-    \ ld sp,hl
-  jpnext,  end-code ?)
+    \ ld sp,hl ; update SP
+  jpnext,  end-code  exit ?)
 
   \ doc{
   \
@@ -352,17 +352,15 @@ code ndrop  ( x1..xn n -- )
 
 code 2ndrop  ( dx1..dxn n -- )
 
-  hl pop  hl addp  hl addp  exde  \ DE = n cells
+  E1 c, 29 c, 29 c, EB c, 21 c, 0000 , 29 c, 19 c, F9 c,
     \ pop hl
     \ add hl,hl
     \ add hl,hl
-    \ ex de,hl
-  0 hl ldp#  sp addp  \ HL = stack pointer
+    \ ex de,hl ; DE = n cells
     \ ld hl,0
-    \ add hl,sp
-  de addp  ldsp  \ update SP
+    \ add hl,sp ; HL = stack pointer
     \ add hl,de
-    \ ld sp,hl
+    \ ld sp,hl ; update SP
   jpnext,  end-code ?)
 
   \ doc{
