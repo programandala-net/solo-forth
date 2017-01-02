@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300240
+  \ Last modified: 201701020123
 
   \ -----------------------------------------------------------
   \ Description
@@ -91,6 +91,9 @@
   \ of `either`, `neither` and `any?`.
   \
   \ 2016-12-30: Compact the code, saving two blocks.
+  \
+  \ 2017-01-02: Convert `lshift`, `rshift` and `bits` from
+  \ `z80-asm` to `z80-asm,`.
 
 ( under+ +under )
 
@@ -386,17 +389,17 @@ code 0max  ( n -- n | 0 )
 
 ( lshift )
 
-need z80-asm
+need z80-asm,
 
 code lshift  ( x1 u -- x2 )
 
-  exx
-  bc pop  \ C = loop counter
-  c b ld
-  hl pop  \ hi 8 bits ignored!
-  b inc  ahead 0 unresolved !
-  begin  hl addp  0 unresolved @ >relresolve  step
-  hl push exx  jpnext, end-code
+  exx,
+  b pop,  \ C = loop counter
+  c b ld,
+  h pop,  \ hi 8 bits ignored!
+  b inc, rahead 0 unresolved !
+  rbegin  h addp, 0 unresolved @ >relresolve  rstep
+  h push, exx, jpnext, end-code
 
   \ Credit:
   \
@@ -430,19 +433,19 @@ code lshift  ( x1 u -- x2 )
 
 ( rshift )
 
-need z80-asm
+need z80-asm,
 
 code rshift  ( x1 u -- x2 )
 
-  exx
-  bc pop  \ C = loop counter
-  c b ld
-  hl pop  \ hi 8 bits ignored!
+  exx,
+  b pop,  \ C = loop counter
+  c b ld,
+  h pop, \ hi 8 bits ignored!
 
-  b inc  ahead 0 unresolved !
+  b inc, rahead 0 unresolved !
 
-  begin  h srl  l rr  0 unresolved @ >relresolve  step
-  hl push exx jpnext, end-code
+  rbegin  h srl, l rr, 0 unresolved @ >relresolve  rstep
+  h push, exx, jpnext, end-code
 
   \ Credit:
   \
@@ -527,23 +530,23 @@ code crshift  ( b1 u -- b2 )
 
   \ Data space used: 29 bytes.
 
-need z80-asm
+need z80-asm,
 
 code bits  ( ca len -- u )
 
-  0 hl ldp#  \ init bit count
-  exx  \ save IP and count
-  de pop  hl pop  \ memory zone
-  begin
-    d a ld  e or  nz if
-      08 b ld#  \ bits per byte
-      begin  m rrc  cy if  exx hl incp exx  then  step
-      hl incp  de decp  \ next byte
-  2swap again then
-    \ Note: `2swap` is needed because `begin again` and `if
-    \ then` are not nested.
+  0 h ldp#,  \ init bit count
+  exx, \ save IP and count
+  d pop, h pop,  \ memory zone
+  rbegin
+    d a ld, e or, nz? rif
+      08 b ld#,  \ bits per byte
+      rbegin  m rrc, c? rif  exx, h incp, exx,  rthen  rstep
+      h incp, d decp,  \ next byte
+  2swap ragain rthen
+    \ Note: `2swap` is needed because `rbegin ragain` and `rif
+    \ rthen` are not nested.
 
-  exx jppushhl, end-code
+  exx, jppushhl, end-code
 
   \ doc{
   \
