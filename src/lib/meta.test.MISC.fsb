@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612290045
+  \ Last modified: 201701021359
 
   \ -----------------------------------------------------------
   \ Description
@@ -76,6 +76,8 @@
   \ 2016-12-24: Add `window-test`.
   \
   \ 2016-12-29: Move `transient-test` from block 1.
+  \
+  \ 2017-01-02: Use `z80-asm,` in `transient-asm-test`.
 
 ( transient-test )
 
@@ -212,7 +214,7 @@ need order  need wordlist-words  need .wordname
 need transient
 
 cr .( Before transient :)         info  2000 2000 transient
-cr .( After transient :)          info  need z80-asm
+cr .( After transient :)          info  need z80-asm,
 cr .( Before end-transient :)     info  end-transient
 cr .( After end-transient :)      info  need n>r
 cr .( Before forget-transient :)  info  forget-transient
