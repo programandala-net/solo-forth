@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 20161230212
+; Last modified: 201701020140
 
 include version.z80s
 
@@ -10067,7 +10067,7 @@ dot_version.build
   dw dot_version_
   dw dos_,type_
   dw paren_dot_quote_
-  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2016\r"
+  _string "\rBy Marcos Cruz\r(programandala.net), 2015-2017\r"
 if 1 ; developing
   ; XXX TMP -- during the development
   dw dot_unused_
