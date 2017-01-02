@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612301321
+  \ Last modified: 201701020133
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,6 +46,9 @@
   \ change in the kernel.
   \
   \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-02: Convert `fast-rnd` from `z80-asm` to
+  \ `z80-asm,`.
 
 ( rnd random random-range )
 
@@ -78,16 +81,16 @@ need ?(
 
 ( fast-rnd fast-random )
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code fast-rnd  ( -- u )
 
-  os-seed fthl  hl de ldp
+  os-seed fthl, h d ldp,
     \ ld hl,(seed)
     \ ld c,l
     \ ld b,h
-  hl addp  de addp  hl addp  de addp  hl addp
-  de addp  hl addp  hl addp  hl addp  hl addp  de addp
+  h addp, d addp, h addp, d addp, h addp,
+  d addp, h addp, h addp, h addp, h addp, d addp,
     \ add hl,hl
     \ add hl,de
     \ add hl,hl
@@ -99,10 +102,11 @@ code fast-rnd  ( -- u )
     \ add hl,hl
     \ add hl,hl
     \ add hl,de
-  h inc  hl incp  os-seed sthl  jppushhl,  end-code
+  h inc, h incp, os-seed sthl, jppushhl,  end-code
     \ inc h
     \ inc hl
     \ ld (seed),hl
+    \ jp push_hl
 
 : fast-random  ( n -- 0..n-1 )  fast-rnd um* nip  ;
 

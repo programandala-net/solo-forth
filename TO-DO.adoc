@@ -18,7 +18,7 @@ Data space used (2016-12-20) by the assemblers:
 NOTE: Milestone: 0.13.0
 
 Rewrite all small code words in Z80 opcodes, without assembler.
-Example: `lshift`, `(g-emit)` and family, `f!`, `f@`...
+Example: `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`...
 
 .2016-12-25:
 
