@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612312137
+  \ Last modified: 201701021622
 
   \ -----------------------------------------------------------
   \ Description
@@ -96,6 +96,8 @@
   \ 2016-12-31: Fix: Move the location of unresolved references
   \ from the string stack to data space. Using the string stack
   \ is not safe for this.
+  \
+  \ 2017-01-02: Fix `runtil`, `auntil` and `ragain`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -360,13 +362,13 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \ Compile a relative conditional jump.
   \ This word is common factor of `runtil` and `rstep`.
 
-: runtil  (  dest cs-id op -- )  jp>jr (runtil)  ;
+: runtil  (  dest cs-id op -- )  jp>jr inverse-cond (runtil)  ;
   \ End a `rbegin runtil` loop.
 
-: ragain  (  dest cs-id -- )  18 runtil  ;
+: ragain  (  dest cs-id -- )  18 (runtil)  ;
   \ End a `rbegin ragin` loop by compiling `jr`.
   \
-  \ Note: $C3 is the opcode of `jp`.
+  \ Note: $18 is the opcode of `jr`.
 
 : rrepeat  (  dest cs-id1 orig cs-id2 -- )
   2swap ragain 2- rthen  ;
@@ -393,7 +395,8 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
 : awhile  (  op -- orig cs-id )  aif 2+  ;
 
-: auntil  (  dest cs-id op -- )  c, 09 ?pairs <resolve  ;
+: auntil  inverse-cond c, 09 ?pairs <resolve  ;
+  \ (  dest cs-id op -- )
   \ Compile an absolute conditional jump.
 
 : aagain  (  cs-id -- )  C3 auntil  ;
