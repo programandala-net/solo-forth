@@ -13,12 +13,12 @@ Data space used (2016-12-20) by the assemblers:
 `z80-asm` :: 1817 B
 `z80-asm,`:: 1664 B
 
-.2016-12-30:
+.2016-12-30..2017-01-02:
 
 NOTE: Milestone: 0.13.0
 
 Rewrite all small code words in Z80 opcodes, without assembler.
-Example: `lshift`.
+Example: `lshift`, `(g-emit)`.
 
 .2016-12-25:
 
@@ -1112,7 +1112,22 @@ Spectrum Forth-83).
 // Library {{{1
 == Library ==
 
+.2017-01-02:
+
+NOTE: Milestone 0.13.0
+
+Rename <modules> directories to <addons>, to avoid confusion with
+library modules.
+
+.2017-01-02:
+
+NOTE: Milestone 0.13.0
+
+Compact the `g-emit` module.
+
 .2016-12-30:
+
+NOTE: Milestone 0.13.0
 
 Make words in <printing.color.fsb> accessible to `need`.
 
