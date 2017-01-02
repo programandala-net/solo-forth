@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612301200
+  \ Last modified: 201701021513
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,8 @@
   \ 2016-12-30: Compact the code, saving two blocks. Don't
   \ compile flags as literals in `du<`, because `true` and
   \ `false` are code words.
+  \
+  \ 2017-01-02: Convert `m+` from `z80-asm` to `z80-asm,`.
 
 ( ud* d* )
 
@@ -299,18 +301,17 @@ need d*
   \
   \ Code adapted from Z88 CamelForth.
 
-need z80-asm
+need z80-asm,
 
 code m+  ( d1|ud1 n -- d2|ud2 )
-  exx     \ save Forth IP
-  bc pop  \ n
-  de pop  \ d1 hi cell
-  hl pop  \ d1 lo cell
-  bc addp  hl push
-  cy if  de inc  then  de push
-  exx      \ restore Forth IP
-  jpnext,
-  end-code
+  exx,     \ save Forth IP
+  b pop,  \ n
+  d pop,  \ d1 hi cell
+  h pop,  \ d1 lo cell
+  b addp, h push,
+  c? rif  d inc, rthen  d push,
+  exx,    \ restore Forth IP
+  jpnext,  end-code
 
   \ doc{
   \
