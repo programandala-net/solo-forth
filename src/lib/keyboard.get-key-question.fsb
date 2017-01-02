@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701020115
+  \ Last modified: 201701021351
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,16 +37,16 @@ code get-key?  ( -- f )
 
   b push,
   028E call,  \ ROM KEY_SCAN
-  here nz? ?jr,  >relmark 0 unresolved ! \ to return_false
+  here nz? ?jr,  >rmark 0 unresolved ! \ to return_false
   031E call,  \ ROM KEY_TEST
-  here nc? ?jr,  >relmark 1 unresolved ! \ to return_false
+  here nc? ?jr,  >rmark 1 unresolved ! \ to return_false
 
   \ return_true:
   b pop, ' true jp,
 
   \ return_false:
-  0 unresolved @ >relresolve
-  1 unresolved @ >relresolve
+  0 unresolved @ >rresolve
+  1 unresolved @ >rresolve
   b pop, ' false jp,
 
   end-code
