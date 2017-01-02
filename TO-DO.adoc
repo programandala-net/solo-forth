@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-31
+:revdate: 2017-01-02
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -18,7 +18,7 @@ Data space used (2016-12-20) by the assemblers:
 NOTE: Milestone: 0.13.0
 
 Rewrite all small code words in Z80 opcodes, without assembler.
-Example: `lshift`, `(g-emit)`.
+Example: `lshift`, `(g-emit)` and family, `f!`, `f@`...
 
 .2016-12-25:
 

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201612201936
+  \ Last modified: 201701020129
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,9 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` and `jpnext`
   \ to `jpnext,`, after the change in the kernel.
+  \
+  \ 2017-01-02: Convert `f!` and `f@` from `z80-asm` to
+  \ `z80-asm,`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -580,14 +583,14 @@ code u>f  ( u -- ) ( F: -- r )
 
 ( f! f@ )
 
-need z80-asm
+need z80-asm,
 
 code f!  ( fa -- ) ( F: r -- )
-  exx  2BF1 call  \ STK_FETCH ROM routine
-       hl pop  a m ld  hl incp
-               e m ld  hl incp  d m ld  hl incp
-               c m ld  hl incp  b m ld
-  exx  jpnext, end-code
+  exx, 2BF1 call,  \ STK_FETCH ROM routine
+       h pop, a m ld, h incp,
+              e m ld, h incp, d m ld, h incp,
+              c m ld, h incp, b m ld,
+  exx, jpnext, end-code
 
   \ doc{
   \
@@ -600,11 +603,11 @@ code f!  ( fa -- ) ( F: r -- )
   \ }doc
 
 code f@  ( fa -- ) ( F: -- r )
-  exx  hl pop m a ld  hl incp
-              m e ld  hl incp  m d ld  hl incp
-              m c ld  hl incp  m b ld
-              2AB6 call  \ STK_STORE ROM routine
-  exx  jpnext, end-code
+  exx, h pop, m a ld, h incp,
+              m e ld, h incp, m d ld, h incp,
+              m c ld, h incp, m b ld
+              2AB6 call, \ STK_STORE ROM routine
+  exx, jpnext, end-code
 
   \ doc{
   \
