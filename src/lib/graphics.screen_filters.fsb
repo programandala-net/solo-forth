@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300211
+  \ Last modified: 201701021715
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,9 @@
   \ in the kernel.
   \
   \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-02: Convert `inverted` from `z80-asm` to
+  \ `z80-asm,` and fix it.
 
 ( fade )
 
@@ -43,42 +46,49 @@
   \ published on Microhobby Especial, issue 7 (1987-12), page
   \ 46: <http://microhobby.org/mhes7.htm>.
 
-need z80-asm
+need z80-asm,
 
 code fade  ( -- )
-  bc push
-  8 b ld#
+  b push,
+  8 b ld#,
   \ do:
-  begin  5AFF hl ldp#  halt  halt
-    begin
-      m a ld  a d ld  07 and#  nz if  a dec  then
-      a e ld  a d ld  38 and#  nz if  8 sub#  then
-      e or  d xor  3F and#  d xor
-      a m ld  hl decp  h a ld
-      58 cp#
-    cy until
-  step
-  bc pop  jpnext,
+  rbegin  5AFF h ldp#, halt, halt,
+    rbegin
+      m a ld, a d ld, 07 and#, nz? rif  a dec,  rthen
+      a e ld, a d ld, 38 and#, nz? rif  8 sub#,  rthen
+      e or, d xor, 3F and#, d xor,
+      a m ld, h decp, h a ld,
+      58 cp#,
+    c? runtil
+  rstep
+  b pop, jpnext,
   end-code
 
 ( inverted water )
 
-need ?(  [unneeded] inverted ?(  need z80-asm
+need ?(  [unneeded] inverted ?(  need z80-asm,
 
 code inverted  ( -- )
 
-  4000 hl ldp#
-  begin   m a ld  cpl  a m ld  hl incp  h a ld  58 cp#  jrnz
+  4000 h ldp#,
+  rbegin   m a ld, cpl, a m ld, h incp,
+           h a ld, 58 cp#,  z? runtil
   jpnext,  end-code  exit ?)
   
-  \ Invert the pixels of the whole screen.
-
   \ Credit:
   \
   \ Code adapted from a routine written by Javier Granadino,
   \ published on Microhobby, issue 133 (1987-06), page 7:
   \ http://microhobby.org/numero133.htm
   \ http://microhobby.speccy.cz/mhf/133/MH133_07.jpg
+  
+  \ doc{
+  \
+  \ inverted  ( -- )
+  \
+  \ Invert the pixels of the whole screen.
+  \
+  \ }doc
 
 [unneeded] water ?(  need z80-asm
 
