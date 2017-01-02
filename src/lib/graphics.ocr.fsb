@@ -3,13 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201934
+  \ Last modified: 201701021353
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Words that recognize characters on the
-  \ screen.
+  \ Words that recognize characters on the screen.
 
   \ -----------------------------------------------------------
   \ Author
@@ -28,82 +27,94 @@
 
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
   \ change in the kernel.
+  \
+  \ 2017-01-02: Convert `ocr` to `z80-asm,`. Improve
+  \ documentation.
 
 ( ocr )
 
+need z80-asm,  need ocr-chars
+
+code ocr  ( col line -- n )
+
+  d pop, h pop, b push,
+    \ get row, get col, save the Forth IP
+  l b ld, e c ld, ocr-charset fthl,
+    \ B=colum, C=row, HL=udg
+
+  c a ld, rrca, rrca, rrca, E0 and#, b xor, a e ld,
+  c a ld, 18 and#, 40 xor#, a d ld,
+    \ DE = screen address
+  0 de stp, >amark 0 unresolved !
+    \ modify the code to get the screen address later
+
+  ocr-chars fta, a b ld,
+    \ number of chars in the charset
+  rbegin
+    \ B=remaining chars
+    \ HL = address of scan 0 of the current char
+    b push, h push,
+    0 de ldp#,  \ restore the screen address
+    >amark 0 unresolved @ !
+      \ compilation: resolve the address of the screen address
+    \ DE = screen address
+
+-->
+
+( ocr )
+
+    08 b ld#,  \ scans
+    rbegin
+      de ftap, m xor,  \ scan match?
+      here nz? ?jr, >rmark 1 unresolved !
+        \ if not, goto next_char
+      d inc, h incp,  \ update the pointers
+    rstep  \ next scan
+
+    \ all eight scans match: udg found
+
+    b pop, b pop,
+      \ discard the saved pointer
+      \ B = chars left
+    ocr-chars fta, b sub, a b ld,
+    ocr-first fta, b add, a b ld,
+      \ B = char number
+    here jr, >rmark 2 unresolved !
+      \ go to end
+
+    \ next_char:
+    1 unresolved @ >rresolve
+    h pop, 0008 d ldp#, d addp, b pop,
+  rstep
+  \ B = 0 (no char matches)
+
+  \ end:
+  2 unresolved @ >rresolve  0 h ld#, b l ld,
+  b pop, jppushhl,  end-code
+  
   \ Credit:
   \
   \ Adapted from anonymous code published on Todospectrum,
   \ issue 19 (1986-03), page 65.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
 
-need z80-asm  need ocr-chars
-
-code ocr  ( col line -- n )
-
-  \ Try to recognize the char printed at the given cursor
-  \ coordinates, using the charset whose first printable char
+  \ doc{
+  \
+  \ ocr  ( col row -- c | 0 )
+  \
+  \ Try to recognize the character printed at the given cursor
+  \ coordinates, using the font whose first printable character
   \ is pointed by the variable `ocr-charset`. The variable
-  \ `ocr-chars` holds the number of chars in the charset,
-  \ and `ocr-first` holds the code of the first char in the
-  \ charset.  If succesful, return the char number _n_
-  \ according to the said variables.  If no char is recognized,
-  \ return 0. Inverse characters are not recognized.
-
-  de pop  hl pop  bc push
-    \ get row, get col, save the Forth IP
-  l b ld  e c ld  ocr-charset fthl
-    \ b=colum, c=row, hl=udg
-
-  c a ld  rrca  rrca  rrca  E0 and#  b xor  a e ld
-  c a ld  18 and#  40 xor#  a d ld
-    \ de = screen address
-  0 de stp |mark 0 unresolved !
-    \ modify the code to get the screen address later
-
-  ocr-chars fta  a b ld
-    \ number of chars in the charset
-  begin
-    \ b=remaining chars
-    \ hl = address of scan 0 of the current char
-    bc push  hl push
-    0 de ldp#  \ restore the screen address
-    |mark 0 unresolved @ !
-      \ compilation: resolve the address of the screen address
-    \ de = screen address
-
--->
-
-( ocr )
-
-    08 b ld# \ scans
-    begin
-      de ftap  m xor  \ scan match?
-      here jrnz >relmark 1 unresolved !
-        \ if not, goto next_char
-      d inc  hl incp  \ update the pointers
-    step  \ next scan
-
-    \ all eight scans match: udg found
-
-    bc pop  bc pop
-      \ discard the saved pointer
-      \ b = chars left
-    ocr-chars fta  b sub  a b ld
-    ocr-first fta  b add  a b ld
-      \ b = char number
-    here jr >relmark 2 unresolved !
-      \ go to end
-
-    \ next_char:
-    1 unresolved @ >relresolve
-    hl pop  0008 de ldp#  de addp  bc pop
-  step
-  \ b = 0 (no char matches)
-
-  \ end:
-  2 unresolved @ >relresolve  0 h ld#  b l ld
-  bc pop  jppushhl,  end-code
+  \ `ocr-chars` holds the number of characters in the set, and
+  \ `ocr-first` holds the code of its first character.  If
+  \ succesful, return the character number _c_ according to the
+  \ said variables. Otherwise return 0. Inverse characters are
+  \ not recognized.
+  \
+  \ See: `ocr-charset`, `ocr-chars`, `ocr-first`, `udg-ocr`,
+  \ `ascii-ocr`.
+  \
+  \ }doc
 
 ( ocr-charset ocr-first ocr-chars ascii-ocr udg-ocr )
 
@@ -117,6 +128,8 @@ variable ocr-charset
   \ in the charset used by `ocr`. By default it contains
   \ 0x3D00, the address of the space char in the ROM charset.
   \
+  \ See: `ocr`, `ocr-chars`, `ocr-first`.
+  \
   \ }doc
 
 variable ocr-first
@@ -128,6 +141,8 @@ variable ocr-first
   \ Variable that holds the code of the first printable char in
   \ the charset used by `ocr`. By default it contais 0x80, the
   \ first UDG.
+  \
+  \ See: `ocr`, `ocr-chars`, `ocr-charset`.
   \
   \ }doc
 
@@ -142,23 +157,43 @@ variable ocr-chars
   \ 0x5F, the number of printable ASCII chars in the ROM
   \ charset.
   \
+  \ See: `ocr`, `ocr-first`, `ocr-charset`.
+  \
   \ }doc
 
 need os-chars  need os-udg
 
 : ascii-ocr  ( -- )
-  \ Set `ocr` to work with the ASCII charset pointed by the
-  \ system variable CHARS.
   os-chars @ 256 + ocr-charset !
   32 ocr-first !
   95 ocr-chars !  ;
+  
+  \ doc{
+  \
+  \ ascii-ocr  ( -- )
+  \
+  \ Set `ocr` to work with the ASCII charset pointed by the
+  \ system variable CHARS.
+  \
+  \ See: `ocr`.
+  \
+  \ }doc
 
 : udg-ocr  ( n -- )
-  \ Set `ocr` to work with the first _n_ chars of the UDG
-  \ set pointed by the system variable UDG.
   os-udg @ ocr-charset !
   128 ocr-first !
   ocr-chars !  ;
+  
+  \ doc{
+  \
+  \ udg-ocr  ( n -- )
+  \
+  \ Set `ocr` to work with the first _n_ chars of the UDG set
+  \ pointed by the system variable UDG.
+  \
+  \ See: `ocr`.
+  \
+  \ }doc
 
 19 udg-ocr  \ default
 

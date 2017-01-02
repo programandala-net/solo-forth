@@ -1259,6 +1259,11 @@ Combine `begin-module` and `package`.
 // Names {{{1
 == Names ==
 
+.2017-01-02:
+
+Improve definition names in the `ocr` module: Use "font" instead of
+"charset".
+
 .2016-12-31:
 
 Rename all paren words to use only the opening paren? This would make the
