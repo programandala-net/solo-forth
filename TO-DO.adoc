@@ -1301,6 +1301,11 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 // Printing {{{1
 == Printing ==
 
+.2017-01-02:
+
+Adapt the banked screen mode, which uses the unfinsihed implementation
+of a code bank for addons, to far memory or remove it.
+
 .2016-12-30:
 
 Combine `clear-block` and family with the text windows.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201949
+  \ Last modified: 201701021538
 
   \ -----------------------------------------------------------
   \ Description
@@ -96,5 +96,6 @@ code (banked-mode-output)  ( -- )
   \ Associate the output routine at _a_ (which is in the code
   \ bank) to the system channels "K", "S" and "P", using and
   \ intermediate routine to page the code bank in and out.
+  \ XXX OLD -- adapt to far memory or remove
 
   \ vim: filetype=soloforth

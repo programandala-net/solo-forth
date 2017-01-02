@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131638
+  \ Last modified: 201701021540
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,9 +31,15 @@
   \ Latest changes
 
   \ 2016-04-26: Update `latest name>` to `latestxt`.
+  \
   \ 2016-05-07: Improve the file header.
+  \
   \ 2016-08-11: Rename the filenames of the driver.
+  \
   \ 2016-10-16: Fix credits.
+  \
+  \ 2017-01-02: Convert the new unfinished version of
+  \ `mode64-emit` from `z80-asm` to `z80-asm,` and fix it.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -68,10 +74,11 @@ set-drive
 
 ( mode64 )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX NEW
   \ XXX TODO -- integrate the driver
 
-need z80-asm
+need z80-asm,
 
   \ XXX TODO use common variables for all modes?
 
@@ -82,10 +89,12 @@ variable mode64-chars
 
 code mode64-emit  ( -- )
 
-  b a ld
+  \ XXX TODO --
+
+  b a ld,
   here 1+ 0 unresolved !  \ address of at_flag
-  0 a ld#  and a
-  z if  FF a ld#  then
+  0 a ld#, a and,
+  z? rif  FF a ld#,  rthen
   \ check_cr
 
   end-code
