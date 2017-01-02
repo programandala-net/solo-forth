@@ -1114,6 +1114,10 @@ Spectrum Forth-83).
 
 .2017-01-02:
 
+Move all tests to the tests module.
+
+.2017-01-02:
+
 NOTE: Milestone 0.13.0
 
 Rename <modules> directories to <addons>, to avoid confusion with
