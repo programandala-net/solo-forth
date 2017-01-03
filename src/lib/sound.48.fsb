@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300209
+  \ Last modified: 201701032054
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,6 +33,11 @@
   \ in the kernel.
   \
   \ 2016-12-30: Compact the code, saving two blocks.
+  \
+  \ 2017-01-03: Convert `laser-gun`, `ambulance`, and
+  \ `white-noise` from `z80-asm` to `z80-asm`. Fix needing of
+  \ `laser-gun` and `ambulance`. Fix structures: use `<mark ...
+  \ ?jr` instead of `rbegin ... ?jr`. Improve documentation.
 
 ( bleep beep>bleep )
 
@@ -84,15 +89,13 @@ code bleep  ( duration pitch -- )
 
 ( laser-gun ambulance )
 
-[unneeded] laser-gun ?(  need z80-asm
+need ?( [unneeded] laser-gun ?(  need z80-asm,
 
-code laser-gun  ( -- )  bc push  5 b ld#  0500 hl ldp#
-  begin   0001 de ldp#
-          hl push  03B5 call  hl pop  \ ROM beeper
-          0010 de ldp#  de subp  jrnz
-  bc pop  next ix ldp#  jpnext,  end-code  exit ?)
-
-  \ Laser gun sound for ZX Spectrum 48K.
+code laser-gun  ( -- )  b push, 5 b ld#, 0500 h ldp#,
+  <mark  0001 d ldp#,
+         h push, 03B5 call, h pop,  \ ROM beeper
+         0010 d ldp#, d subp,  nz? ?jr,
+  b pop, next ix ldp#, jpnext,  end-code  exit ?)
 
   \ Credit:
   \
@@ -100,24 +103,30 @@ code laser-gun  ( -- )  bc push  5 b ld#  0500 hl ldp#
   \ Published on Microhobby, issue 126 (1987), page 7:
   \ http://microhobby.org/numero126.htm
   \ http://microhobby.speccy.cz/mhf/126/MH126_07.jpg
+  
+  \ doc{
+  \
+  \ laser-gun  ( -- )
+  \
+  \ Laser gun sound for ZX Spectrum 48K.
+  \
+  \ }doc
 
-[unneeded] ambulance ?(  need z80-asm
+[unneeded] ambulance ?(  need z80-asm,
 
 code ambulance  ( n -- )
 
   \ n = times
 
-  de pop  bc push  e b ld
+  d pop, b push, e b ld,
 
-  begin   bc push  0320 hl ldp#  000A de ldp#
-          <mark   hl push
-                  03B5 call  \ ROM beeper
-                  hl pop  hl decp  hl tstp  jrnz
-          bc pop  step
+  rbegin  b push, 0320 h ldp#, 000A d ldp#,
+          <mark   h push,
+                  03B5 call,  \ ROM beeper
+                  h pop, h decp, h tstp,  nz? ?jr,
+          b pop,  rstep
 
-  bc pop  next ix ldp#  jpnext, end-code ?)
-
-  \ Ambulance sound for ZX Spectrum 48K.
+  b pop, next ix ldp#, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -125,10 +134,38 @@ code ambulance  ( n -- )
   \ Published on Microhobby, issue 142 (1987-09), page 7:
   \ http://microhobby.org/numero142.htm
   \ http://microhobby.speccy.cz/mhf/142/MH142_07.jpg
+  
+  \ doc{
+  \
+  \ ambulance  ( n -- )
+  \
+  \ Ambulance sound for ZX Spectrum 48K. Make it _n_ times.
+  \
+  \ }doc
 
 ( white-noise )
 
-  \ White noise for ZX Spectrum 48K.
+need z80-asm,
+
+code white-noise  ( u -- )
+
+  d pop,
+  b push,  \ save the Forth IP
+  d b ldp, 0000 h ldp#,  \ BC=duration, HL=start of ROM
+
+  5C48 fta, a sra, a sra, a sra, 07 and#, a d ld,
+    \ D = border color (in bits 0-2)
+
+  <mark   m e ld, h incp, b decp, b push,
+          08 b ld#,  \ bit counter
+          rbegin   e a ld, 10 and#, e rl, d or, FE out,  \ beep
+                  rstep
+          b pop, b tstp,
+          nz? ?jr,
+
+  b pop, jpnext, \ restore the Forth IP and go next
+
+  end-code
 
   \ Credit:
   \
@@ -140,29 +177,14 @@ code ambulance  ( n -- )
   \ The original code was called "explosion" and had a fixed
   \ duration of 768 sample bytes, thus equivalent to `768
   \ white-noise`.
-
-need z80-asm
-
-code white-noise  ( u -- )
-
-  \ u = duration in number of sample bytes
-
-  de pop
-  bc push  \ save the Forth IP
-  de bc ldp  0000 hl ldp#  \ bc=duration, hl=start of ROM
-
-  5C48 fta  a sra  a sra  a sra  07 and#  a d ld
-    \ d = border color (in bits 0-2)
-
-  begin   m e ld  hl incp  bc decp  bc push
-          08 b ld#  \ bit counter
-          begin   e a ld  10 and#  e rl  d or  FE out  \ beep
-                  step
-          bc pop  bc tstp
-          jrnz
-
-  bc pop  jpnext, \ restore the Forth IP and go next
-
-  end-code
+  
+  \ doc{
+  \
+  \ white-noise  ( -- )
+  \
+  \ White noise for ZX Spectrum 48K.  _u_ is the duration in
+  \ number of sample bytes.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
