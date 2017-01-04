@@ -47,6 +47,9 @@
   \ `z80-asm,` assembler. Add `(pixel-addr176)`,
   \ `pixel-addr176`, `set-pixel176`, `reset-pixel176`,
   \ `toggle-pixel176`, `test-pixel176`, `set-save-pixel176`.
+  \
+  \ 2017-01-04: Rename `test-pixel` to `get-pixel` and
+  \ `test-pixel176` to `get-pixel176`.
 
 \ (pixel-addr) slow-(pixel-addr) \
 
@@ -597,11 +600,11 @@ code toggle-pixel176  ( gx gy -- )
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
 
-( test-pixel )
+( get-pixel )
 
 need (pixel-addr)  need z80-asm,
 
-code test-pixel  ( gx gy -- f )
+code get-pixel  ( gx gy -- f )
   h pop, d pop, b push,
   \ L = gy coordinate
   \ E = gx coordinate
@@ -620,11 +623,11 @@ code test-pixel  ( gx gy -- f )
   ' false jp,
   end-code
 
-( test-pixel176 )
+( get-pixel176 )
 
 need (pixel-addr176)  need z80-asm,
 
-code test-pixel176  ( gx gy -- f )
+code get-pixel176  ( gx gy -- f )
   h pop, d pop, b push,
   \ L = gy coordinate
   \ E = gx coordinate
