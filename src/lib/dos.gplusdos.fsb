@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201941
+  \ Last modified: 201701042141
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,17 +41,23 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2017-01-04: Review the words to page in and page out the
+  \ Plus D interface: Use the port to page in, not the hook;
+  \ use Z80 opcodes, not `z80-asm`. Compact the code, saving
+  \ one block.
 
-( plusd-in plusd-out )
+( plusd-in plusd-out plusd-in, plusd-out, )
 
-  \ XXX UNDER DEVELOPMENT -- second version
+[unneeded] plusd-in
+?\ code plusd-in  ( -- )  DB c, #231 c, jpnext,  end-code
 
-need z80-asm  need --hook-codes--
-
-code plusd-in  ( -- )
-  patch hook
-  jpnext,
-  end-code
+  \ XXX OLD
+  \ need --hook-codes--
+  \ code plusd-in  ( -- )  CF c, patch c, jpnext,  end-code
+  \   \ rst $08
+  \   \ defb patch
+  \   \ jp (ix)
 
   \ doc{
   \
@@ -61,10 +67,10 @@ code plusd-in  ( -- )
   \
   \ }doc
 
-code plusd-out  ( -- )
-  D3 c, #231 c,     \ out (231),a
-  jpnext,
-  end-code
+[unneeded] plusd-out
+?\ code plusd-out  ( -- )  D3 c, #231 c, jpnext,  end-code
+  \ out (231),a
+  \ jp (ix)
 
   \ doc{
   \
@@ -74,45 +80,9 @@ code plusd-out  ( -- )
   \
   \ }doc
 
-( plusd-in plusd-out )
-
-  \ XXX UNDER DEVELOPMENT -- first version
-
-code plusd-in  ( -- )
-  DB c, #231 c,     \ in a,(231)
-  jpnext,
-  end-code
-
-  \ doc{
-  \
-  \ plusd-in  ( -- )
-  \
-  \ Page in the Plus D memory.
-  \
-  \ }doc
-
-code plusd-out  ( -- )
-  D3 c, #231 c,     \ out (231),a
-  jpnext,
-  end-code
-
-  \ doc{
-  \
-  \ plusd-out  ( -- )
-  \
-  \ Page out the Plus D memory.
-  \
-  \ }doc
-
-( plusd-in, plusd-out, )
-
-  \ XXX UNDER DEVELOPMENT
-
-need macro
-
-macro plusd-in,  ( -- )
-  DB c, #231 c,     \ in a,(231)
-  endm
+[unneeded] plusd-in,
+?\ need macro  macro plusd-in,  ( -- )  DB c, #231 c,  endm
+  \ in a,(231)
 
   \ doc{
   \
@@ -122,9 +92,9 @@ macro plusd-in,  ( -- )
   \
   \ }doc
 
-macro plusd-out,  ( -- )
-  D3 c, #231 c,     \ out (231),a
-  endm
+[unneeded] plusd-out,
+?\ need macro  macro plusd-out,  ( -- )  D3 c, #231 c,  endm
+  \ out (231),a
 
   \ doc{
   \
