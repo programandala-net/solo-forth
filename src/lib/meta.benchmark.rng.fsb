@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201938
+  \ Last modified: 201701042334
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,8 +29,17 @@
   \
   \ 2016-12-20: Rename `jppushhl` to `jppushhl,` after the
   \ change in the kernel.
+  \
+  \ 2017-01-03: Convert all assembly words from `z80-asm` to
+  \ `z80-asm,`.
+  \
+  \ 2017-01-04: Fix: add another missing `need 2rdrop`, for
+  \ `16-bit-random-pix-benchmarks`. Convert `zh-crnd` to
+  \ `z80-asm,` and add its requirements. Shorten name parts:
+  \ "random-pix" to "rng-pix"; "-benchmark" to "-bench". Try
+  \ all of the benchs.
 
-( rnd-benchmark )
+( rnd-bench )
 
   \ XXX UNDER DEVELOPMENT -- new benchmark
   \ 2016-04-07: Start
@@ -61,16 +70,17 @@ create sample  /sample allot
 
 : report  ( ca len -- )  type sampled .sampled cr  ;
 
-: rnd-benchmark  ( ca len xt -- )
+: rnd-bench  ( ca len xt -- )
   -sample
   #sampled 0 do  dup execute remember  loop  drop
   report  ;
 
-( random-pix-benchmark )
+( rng-pix-bench )
 
   \ Random pixels benchmark
 
 need set-pixel  need bench{  need pixels  need u%  need 3dup
+need 2rdrop
 
 256 192 * constant #pixels
   \ number of pixels of the screen
@@ -98,13 +108,11 @@ defer .cycles  ( -- )
 
 : .result  ( ca len d -- )
   2>r pixels >r  .title cr  r> .pixels cr
-  2r> .time .cycles   ;
+  2r> .time .cycles   ;  -->
   \ Calculate and print the result of the benchmark.
   \ _d_ is the time in frames; _ca len_ is the title.
 
--->
-
-( random-pix-benchmark )
+( rng-pix-bench )
 
 defer random-coords  ( -- gx gy )
   \ Random graphic coordinates. Configurable depending on the
@@ -121,7 +129,7 @@ defer random-coords  ( -- gx gy )
   \ Change the border color according to the current count
   \ of cycles, just to show that the benchmark is running.
 
-: (random-pix-benchmark)  ( -- d )
+: (rnd-pix-bench)  ( -- d )
   1 cycles +!  signal  bench{ fill-screen }bench  ;
   \ Do one cycle of the benchmark and return its result.
 
@@ -144,14 +152,14 @@ defer finish?  ( i*x -- j*x f )
 
 ' new-pixels? ' finish? defer!  -->
 
-( random-pix-benchmark )
+( rng-pix-bench )
 
-defer random-pix-benchmark  ( ca len xt -- )
+defer rng-pix-bench  ( ca len xt -- )
   \ Do a RNG benchmark for the `random` word _xt_ with title
   \ _ca len_.
 
-: (random-pix-benchmark2)  ( ca len -- )
-  0 begin   (random-pix-benchmark) 2>r
+: (rnd-pix-bench2)  ( ca len -- )
+  0 begin   (rnd-pix-bench) 2>r
             finish? dup 0= if  2rdrop  then
   until     drop 2r> finish  ;
   \ Do a double RNG benchmark with title _ca len_: The time
@@ -159,9 +167,9 @@ defer random-pix-benchmark  ( ca len xt -- )
   \ the number of cycles required until the number of pixels
   \ doesn't change.
 
-: random-pix-benchmark2  ( ca len xt -- )
+: rng-pix-bench2  ( ca len xt -- )
   ['] (.cycles) ['] (random-coords) init
-  (random-pix-benchmark2)  ;
+  (rnd-pix-bench2)  ;
   \ Do a double RNG benchmark for the `random` word _xt_ with
   \ title _ca len_: The time required to complete one cycle
   \ (49152 random pixels), plus the number of cycles required
@@ -171,86 +179,82 @@ defer random-pix-benchmark  ( ca len xt -- )
   \ it's useful a simpler test to show only the pixels set at
   \ the end of the first cycle:
 
-' random-pix-benchmark2 ' random-pix-benchmark defer!
+' rng-pix-bench2 ' rng-pix-bench defer!
   \ default benchmark
 
 : (.cycle)  ( -- )  ." First cycle only"  ;
 
-: (random-pix-benchmark1)  ( ca len -- )
-  (random-pix-benchmark) .result wait  ;
+: (rnd-pix-bench1)  ( ca len -- )
+  (rnd-pix-bench) .result wait  ;
   \ Do a one-cycle RNG benchmark with title _ca len_: Only the
   \ time required to complete one cycle (49152 random pixels).
 
-: random-pix-benchmark1  ( ca len xt -- )
+: rng-pix-bench1  ( ca len xt -- )
   ['] (.cycle) ['] (random-coords) init
-  (random-pix-benchmark1)  ;  -->
+  (rnd-pix-bench1)  ;  -->
   \ Do a one-cycle RNG benchmark for `random` word _xt_ with
   \ title _ca len_: Only the time required to complete one
   \ cycle (49152 random pixels).
 
-( random-pix-benchmark )
+( rng-pix-bench )
 
   \ Versions for 8-bit `rnd`.
 
 : crnd-coords  ( -- gx gy )  rng rng 192 min  ;
   \ Random graphic coordinates for 8-bit `rnd`.
 
-: crnd-pix-benchmark2  ( ca len xt -- )
+: crnd-pix-bench2  ( ca len xt -- )
   ['] (.cycles) ['] crnd-coords init
-  (random-pix-benchmark2)  ;
+  (rnd-pix-bench2)  ;
   \ Do a double RNG benchmark for 8-bit `rnd` word _xt_ with
   \ title _ca len_: The time required to complete one cycle
   \ (49152 random pixels), plus the number of cycles required
   \ until the number of pixels doesn't change.
 
-: crnd-pix-benchmark1  ( ca len xt -- )
+: crnd-pix-bench1  ( ca len xt -- )
   ['] (.cycle) ['] crnd-coords init
-  (random-pix-benchmark1)  ;
+  (rnd-pix-bench1)  ;
   \ Do a one-cycle RNG benchmark for 8-bit `rnd` word _xt_ with
   \ title _ca len_: Only the time required to complete one
   \ cycle (49152 random pixels).
 
-( 16-bit-random-pix-benchmarks )
+( 16-bit-rng-pix-benchs )
 
   \ Execute all of the 16-bit random pixels benchmarks
 
-need random-pix-benchmark  need +thru  2 21 +thru
+need rng-pix-bench  need +thru  2 21 +thru
 
-ace-random-pix-benchmark
+ace-rng-pix-bench
 
-cgm-5E9B-random-pix-benchmark
-cgm-61BF-random-pix-benchmark
-cgm-62DC-random-pix-benchmark
-cgm-6363-random-pix-benchmark
-cgm-6594-random-pix-benchmark
-cgm-65E8-random-pix-benchmark
+cgm-5E9B-rng-pix-bench cgm-61BF-rng-pix-bench
+cgm-62DC-rng-pix-bench cgm-6363-rng-pix-bench
+cgm-6594-rng-pix-bench cgm-65E8-rng-pix-bench
 
-dx-random-pix-benchmark gf-random-pix-benchmark
-jer-random-pix-benchmark jml-random-pix-benchmark
-lb-random-pix-benchmark lina-random-pix-benchmark
-mb-random-pix-benchmark
+dx-rng-pix-bench gf-rng-pix-bench
+jer-rng-pix-bench jml-rng-pix-bench
+lb-rng-pix-bench lina-rng-pix-bench
+mb-rng-pix-bench
 
-  \ mm-random-pix-benchmark  \ XXX TMP --
+  \ mm-rng-pix-bench  \ XXX TMP --
 
-sf83-random-pix-benchmark tt-random-pix-benchmark
-vf-random-pix-benchmark z88-random-pix-benchmark
-zh-random-pix-benchmark  -->
+sf83-rng-pix-bench tt-rng-pix-bench
+vf-rng-pix-bench z88-rng-pix-bench
+zh-rng-pix-bench
 
-( 16-bit-random-pix-benchmarks )
+-->
+
+( 16-bit-rng-pix-benchs )
 
   \ Execute single-cycle benchmarks of RNG that need more than
   \ one cycle to finish:
 
-' random-pix-benchmark1 ' random-pix-benchmark defer!
+' rng-pix-bench1 ' rng-pix-bench defer!
 
-cgm-5E9B-random-pix-benchmark
-cgm-61BF-random-pix-benchmark
-cgm-62DC-random-pix-benchmark
-cgm-6363-random-pix-benchmark
-cgm-6594-random-pix-benchmark
-cgm-65E8-random-pix-benchmark
+cgm-5E9B-rng-pix-bench cgm-61BF-rng-pix-bench
+cgm-62DC-rng-pix-bench cgm-6363-rng-pix-bench
+cgm-6594-rng-pix-bench cgm-65E8-rng-pix-bench
 
-dx-random-pix-benchmark  vf-random-pix-benchmark
+dx-rng-pix-bench  vf-rng-pix-bench
 
 ( ace-random )
 
@@ -267,11 +271,11 @@ need os-seed
 
 : ace-random  ( n -- 0..n-1 )  ace-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: ace-random-pix-benchmark  ( -- )
+: ace-rng-pix-bench  ( -- )
   os-seed off  s" Jupiter ACE manual"
-  ['] ace-random random-pix-benchmark  ;
+  ['] ace-random rng-pix-bench  ;
 
 ( cgm-5E9B-random )
 
@@ -290,11 +294,11 @@ need random-pix-benchmark
 
 : cgm-5E9B-random  ( n -- 0..n-1 )  cgm-5E9B-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: cgm-5E9B-random-pix-benchmark  ( -- )
+: cgm-5E9B-rng-pix-bench  ( -- )
   s" C. G. Montgomery $5E9B"
-  ['] cgm-5E9B-random random-pix-benchmark  ;
+  ['] cgm-5E9B-random rng-pix-bench  ;
 
 ( cgm-61BF-random )
 
@@ -313,11 +317,11 @@ need random-pix-benchmark
 
 : cgm-61BF-random  ( n -- 0..n-1 )  cgm-61BF-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: cgm-61BF-random-pix-benchmark  ( -- )
+: cgm-61BF-rng-pix-bench  ( -- )
   s" C. G. Montgomery $61BF"
-  ['] cgm-61BF-random random-pix-benchmark  ;
+  ['] cgm-61BF-random rng-pix-bench  ;
 
 ( cgm-62DC-random )
 
@@ -336,11 +340,11 @@ need random-pix-benchmark
 
 : cgm-62DC-random  ( n -- 0..n-1 )  cgm-62DC-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: cgm-62DC-random-pix-benchmark  ( -- )
+: cgm-62DC-rng-pix-bench  ( -- )
   s" C. G. Montgomery $62DC"
-  ['] cgm-62DC-random random-pix-benchmark  ;
+  ['] cgm-62DC-random rng-pix-bench  ;
 
 ( cgm-6363-random )
 
@@ -359,11 +363,11 @@ need random-pix-benchmark
 
 : cgm-6363-random  ( n -- 0..n-1 )  cgm-6363-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: cgm-6363-random-pix-benchmark  ( -- )
+: cgm-6363-rng-pix-bench  ( -- )
   s" C. G. Montgomery $6363"
-  ['] cgm-6363-random random-pix-benchmark  ;
+  ['] cgm-6363-random rng-pix-bench  ;
 
 ( cgm-6594-random )
 
@@ -382,11 +386,11 @@ need random-pix-benchmark
 
 : cgm-6594-random  ( n -- 0..n-1 )  cgm-6594-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: cgm-6594-random-pix-benchmark  ( -- )
+: cgm-6594-rng-pix-bench  ( -- )
   s" C. G. Montgomery $6594"
-  ['] cgm-6594-random random-pix-benchmark  ;
+  ['] cgm-6594-random rng-pix-bench  ;
 
 ( cgm-65E8-random )
 
@@ -405,11 +409,11 @@ need random-pix-benchmark
 
 : cgm-65E8-random  ( n -- 0..n-1 )  cgm-65E8-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: cgm-65E8-random-pix-benchmark  ( -- )
+: cgm-65E8-rng-pix-bench  ( -- )
   s" C. G. Montgomery $65E8"
-  ['] cgm-65E8-random random-pix-benchmark  ;
+  ['] cgm-65E8-random rng-pix-bench  ;
 
 ( dx-random )
 
@@ -428,10 +432,10 @@ need d*
 : dx-random ( u -- 0..u-1 )  dx-rnd um* nip  ;
   \ Get random number between 0 and u-1
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: dx-random-pix-benchmark  ( -- )
-  s" DX-Forth" ['] dx-random random-pix-benchmark  ;
+: dx-rng-pix-bench  ( -- )
+  s" DX-Forth" ['] dx-random rng-pix-bench  ;
 
 ( gf-random )
 
@@ -446,11 +450,11 @@ need os-seed  need ud*
 
 : gf-random  ( n -- 0..n-1 )  gf-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: gf-random-pix-benchmark  ( -- )
+: gf-rng-pix-bench  ( -- )
   os-seed off  s" Gforth"
-  ['] gf-random random-pix-benchmark  ;
+  ['] gf-random rng-pix-bench  ;
 
 ( jer-random )
 
@@ -470,11 +474,11 @@ need os-seed
 
   \ XXX Note: patterns
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: jer-random-pix-benchmark  ( -- )
+: jer-rng-pix-bench  ( -- )
   os-seed off  s" J. E. Rickenbacker"
-  ['] jer-random random-pix-benchmark  ;
+  ['] jer-random rng-pix-bench  ;
 
 ( jml-random )
 
@@ -485,24 +489,24 @@ need random-pix-benchmark
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code jml-rnd  ( -- u )
 
-  os-seed fthl  hl push
-  hl addp  hl addp  hl addp  hl addp  hl addp  hl addp
-  de pop  de addp  0029 de ldp#  de addp
-  os-seed sthl
+  os-seed fthl, h push,
+  h addp, h addp, h addp, h addp, h addp, h addp,
+  d pop, d addp, 0029 d ldp#, d addp,
+  os-seed sthl,
   jppushhl,
   end-code
 
 : jml-random  ( n -- 0..n-1 )  jml-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: jml-random-pix-benchmark  ( -- )
+: jml-rng-pix-bench  ( -- )
   os-seed off  s" J. M. Lazo"
-  ['] jml-random random-pix-benchmark  ;
+  ['] jml-random rng-pix-bench  ;
 
 ( lb-random )
 
@@ -516,11 +520,11 @@ need os-seed
 
 : lb-random  ( n -- 0..n-1 )  lb-rnd um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: lb-random-pix-benchmark  ( -- )
+: lb-rng-pix-bench  ( -- )
   os-seed off  s" Leo Brodie"
-  ['] lb-random random-pix-benchmark  ;
+  ['] lb-random rng-pix-bench  ;
 
 ( lina-random )
 
@@ -531,11 +535,11 @@ need os-seed
 
 : lina-random  ( n -- 0..n-1 )  lina-rnd um* nip ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: lina-random-pix-benchmark  ( -- )
+: lina-rng-pix-bench  ( -- )
   os-seed off  s" lina"
-  ['] lina-random random-pix-benchmark  ;
+  ['] lina-random rng-pix-bench  ;
 
 ( mb-random )
 
@@ -544,17 +548,16 @@ need random-pix-benchmark
   \ Adapted from code published by Milos Bazelides:
   \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code mb-rnd  ( -- u )
-  os-seed de ftp
-  d a ld  e h ld  #253 l ld#
-  a or  de sbcp
-  0 sbc#  de sbcp
-  0 d ld#  d sbc  a e ld  de sbcp
-  cy if  hl incp  then
-  os-seed sthl
-  jppushhl,   end-code
+  os-seed d ftp,
+  d a ld, e h ld, #253 l ld#,
+  a or, d sbcp,
+  0 sbc#, d sbcp,
+  0 d ld#, d sbc, a e ld, d sbcp,
+  c? rif  h incp,  rthen
+  os-seed sthl, jppushhl,   end-code
 
 : mb-random  ( n -- 0..n-1 )  mb-rnd um* nip  ;
 
@@ -584,11 +587,11 @@ code mb-rnd  ( -- u )
   \  ret
   \ ----
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: mb-random-pix-benchmark  ( -- )
+: mb-rng-pix-bench  ( -- )
   os-seed off  s" Milos Bazelides"
-  ['] mb-random random-pix-benchmark  ;
+  ['] mb-random rng-pix-bench  ;
 
 ( mm-random )
 
@@ -613,18 +616,18 @@ variable seed1  variable seed2
   2dup + seed2 ! 2dup xor seed1 !
   + swap cells mod cell/ ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: mm-random-pix-benchmark  ( -- )
-  s" IsForth" ['] mm-random random-pix-benchmark  ;
+: mm-rng-pix-bench  ( -- )
+  s" IsForth" ['] mm-random rng-pix-bench  ;
 
-  \ ' random-pix-benchmark2 ' random-pix-benchmark defer!
+  \ ' rng-pix-bench2 ' rng-pix-bench defer!
 
-  \ mm-random-pix-benchmark
+  \ mm-rng-pix-bench
 
-  \ ' random-pix-benchmark1 ' random-pix-benchmark defer!
+  \ ' rng-pix-bench1 ' rng-pix-bench defer!
 
-  \ mm-random-pix-benchmark
+  \ mm-rng-pix-bench
 
 ( sf83-random )
 
@@ -637,11 +640,11 @@ need os-seed  3 os-seed !
 : sf83-random  ( n -- 0..n-1 )
   os-seed @ 743 * 43 + dup os-seed ! um* swap drop  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: sf83-random-pix-benchmark  ( -- )
+: sf83-rng-pix-bench  ( -- )
   s" Spectrum Forth-83"
-  ['] sf83-random random-pix-benchmark  ;
+  ['] sf83-random rng-pix-bench  ;
 
 ( tt-random )
 
@@ -658,11 +661,11 @@ need os-seed
     os-seed @ 13 * $7FFF and
     dup os-seed !  swap mod ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: tt-random-pix-benchmark  ( -- )
+: tt-rng-pix-bench  ( -- )
   os-seed on  s" Tetris for terminals"
-  ['] tt-random random-pix-benchmark  ;
+  ['] tt-random rng-pix-bench  ;
 
 ( vf-random )
 
@@ -678,10 +681,10 @@ need os-frames
   \ dup os-seed !
   swap mod  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: vf-random-pix-benchmark  ( -- )
-  s" vForth" ['] vf-random random-pix-benchmark  ;
+: vf-rng-pix-bench  ( -- )
+  s" vForth" ['] vf-random rng-pix-bench  ;
 
 ( z88-random )
 
@@ -696,11 +699,11 @@ need ud*  need os-seed  need 2rdrop
   os-seed @ ud* 12345. d+ over os-seed !
   rot ud/mod 2drop  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: z88-random-pix-benchmark  ( -- )
+: z88-rng-pix-bench  ( -- )
   os-seed off  s" Z88 CamelForth"
-  ['] z88-random random-pix-benchmark  ;
+  ['] z88-random rng-pix-bench  ;
 
 ( zh-random )
 
@@ -709,17 +712,16 @@ need random-pix-benchmark
   \ Code adapted from:
   \ http://z80-heaven.wikidot.com/math#toc40
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code zh-rnd  ( -- u )
 
-  os-seed fthl
+  os-seed fthl, h d ldp,
     \ ld hl,(seed)
-  hl de ldp
     \ ld c,l
     \ ld b,h
-  hl addp  de addp  hl addp  de addp  hl addp
-  de addp  hl addp  hl addp  hl addp  hl addp  de addp
+  h addp, d addp, h addp, d addp, h addp,
+  d addp, h addp, h addp, h addp, h addp, d addp,
     \ add hl,hl
     \ add hl,de
     \ add hl,hl
@@ -731,12 +733,11 @@ code zh-rnd  ( -- u )
     \ add hl,hl
     \ add hl,hl
     \ add hl,de
-  h inc  hl incp
+  h inc, h incp, os-seed sthl, jppushhl,   end-code
     \ inc h
     \ inc hl
-  os-seed sthl
     \ ld (seed),hl
-  jppushhl,   end-code
+    \ jp push_hl
 
 : zh-random  ( n -- 0..n-1 )  zh-rnd um* nip  ;
 
@@ -780,11 +781,11 @@ code zh-rnd  ( -- u )
   \      ret
   \ ----
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: zh-random-pix-benchmark  ( -- )
+: zh-rng-pix-bench  ( -- )
   os-seed off  s" Z80 Heaven"
-  ['] zh-random random-pix-benchmark  ;
+  ['] zh-random rng-pix-bench  ;
 
 ( random-byte )
 
@@ -834,32 +835,39 @@ need d*  need du/mod  need 2nip
 
 : lcm-random  ( n -- 0..n-1 )  lcm-rnd d>s um* nip  ;
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: lcm-random-pix-benchmark  ( -- )
-  s" LCM" ['] lcm-random random-pix-benchmark  ;
+: lcm-rng-pix-bench  ( -- )
+  s" LCM" ['] lcm-random rng-pix-bench  ;
 
-( 8-bit-random-pix-benchmarks )
+( 8-bit-rng-pix-benchs )
 
   \ Execute all of the 8-bit random pixels benchmarks
 
-need random-pix-benchmark  need +thru  1 5 +thru
+need rng-pix-bench  need +thru  1 8 +thru
 
-' crnd-pix-benchmark2 ' random-pix-benchmark defer!
+' crnd-pix-bench2 ' rng-pix-bench defer!
 
-  \ libzx-random-pix-benchmark
-  \ jw-random-pix-benchmark
-  mb1-random-pix-benchmark
-  mb2-random-pix-benchmark
-  \ zh-random-pix-benchmark
+  \ XXX TODO -- check the libzx rng benchs
+
+  jw-rng-pix-bench
+  \ mb1-rng-pix-bench  mb2-rng-pix-bench
+  zh-rng-pix-bench
+  libzx-rng-pix-bench
+  libzx-rng-pix-bench-opt2
+  libzx-rng-pix-bench-opt1
+  libzx-rng-pix-bench-opt3  \ XXX FIXME -- crash after!
 
   \ Execute single-cycle benchmarks of RNG that need more than
   \ one cycle to finish:
 
-' crnd-pix-benchmark1 ' random-pix-benchmark defer!
+' crnd-pix-bench1 ' rng-pix-bench defer!
 
-  \ jw-random-pix-benchmark
-  \ libzx-random-pix-benchmark
+  jw-rng-pix-bench
+  libzx-rng-pix-bench  \ XXX FIXME -- crash after!
+  libzx-rng-pix-bench-opt1
+  libzx-rng-pix-bench-opt2
+  libzx-rng-pix-bench-opt3
 
 ( jw-crnd )
 
@@ -870,31 +878,27 @@ need random-pix-benchmark  need +thru  1 5 +thru
   \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
   \ Joe Wingbermuehle
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code jw-crnd  ( -- b )
 
-  os-seed fthl
+  os-seed fthl, ED c, 5F c, a d ld, m e ld,
     \ ld      hl,(randData)
-  ED c, 5F c,  a d ld  m e ld
     \ ld      a,r
     \ ld      d,a
     \ ld      e,(hl)
-  de addp  l add  h xor
+  d addp, l add, h xor, os-seed sthl, pusha jp,  end-code
     \ add     hl,de
     \ add     a,l
     \ xor     h
-  os-seed sthl
     \ ld      (randData),hl
-  pusha jp
     \ jp push_a
-  end-code
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: jw-random-pix-benchmark  ( -- )
+: jw-rng-pix-bench  ( -- )
   os-seed off  s" Joe Wingbermuehle"
-  ['] jw-crnd random-pix-benchmark  ;
+  ['] jw-crnd rng-pix-bench  ;
 
   \ Original code:
 
@@ -935,34 +939,32 @@ need random-pix-benchmark
   \ Input: none
   \ Output: A = pseudo-random number, period 256
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code mb1-crnd  ( -- b )
 
-  os-seed fta
+  os-seed fta, a d ld, a add, a add, d add,
     \ ld  a,(seed) ; Seed is usually 0
-  a d ld  a add  a add  d add
-    \  ld  d,a
-    \  add  a,a
-    \  add  a,a
-    \  add  a,d
-  a inc  os-seed sta
-    \  inc  a    ; another possibility is ADD A,7
-    \  ld  (seed),a
-  pusha jp
-  end-code
+    \ ld  d,a
+    \ add  a,a
+    \ add  a,a
+    \ add  a,d
+  a inc, os-seed sta, pusha jp,  end-code
+    \ inc  a    ; another possibility is ADD A,7
+    \ ld  (seed),a
+    \ jp push_a
 
 : mb1-crandom  ( n1 -- n2 )  mb1-crnd um* nip  ;
   \ XXX FIXME -- it always return zero
 
-need random-pix-benchmark
+need rng-pix-bench
 
-  \ : mb1-random-pix-benchmark  ( -- )
-  \   s" Milos Bazelides 1" ['] mb1-crandom random-pix-benchmark  ;
+  \ : mb1-rng-pix-bench  ( -- )
+  \   s" Milos Bazelides 1" ['] mb1-crandom rng-pix-bench  ;
 
-: mb1-random-pix-benchmark  ( -- )
+: mb1-rng-pix-bench  ( -- )
   os-seed off  s" Milos Bazelides 1 (8 bit)"
-  ['] mb1-crnd random-pix-benchmark  ;
+  ['] mb1-crnd rng-pix-bench  ;
 
 ( mb2-crnd )
 
@@ -982,33 +984,32 @@ need random-pix-benchmark
   \ Input: none
   \ Output: A = pseudo-random number, period 256
 
-need z80-asm  need os-seed
+need z80-asm,  need os-seed
 
 code mb2-crnd  ( -- b )
 
-  os-seed fta
+  os-seed fta, a d ld, a add, a add, d add,
     \ ld  a,(seed) ; Seed is usually 0
-  a d ld  a add  a add  d add
-    \  ld  d,a
-    \  add  a,a
-    \  add  a,a
-    \  add  a,d
-  07 add#  os-seed sta
-    \  add a,7
-    \  ld  (seed),a
-  pusha jp  end-code
+    \ ld  d,a
+    \ add  a,a
+    \ add  a,a
+    \ add  a,d
+  07 add#, os-seed sta, pusha jp,  end-code
+    \ add a,7
+    \ ld  (seed),a
+    \ jp push_a
 
 : mb2-crandom  ( n1 -- n2 )  mb2-crnd um* nip  ;
   \ XXX FIXME -- it always return zero
 
-need random-pix-benchmark
+need rng-pix-bench
 
-  \ : mb2-random-pix-benchmark  ( -- )
-  \   s" Milos Bazelides 2" ['] mb2-crandom random-pix-benchmark  ;
+  \ : mb2-rng-pix-bench  ( -- )
+  \   s" Milos Bazelides 2" ['] mb2-crandom rng-pix-bench  ;
 
-: mb2-random-pix-benchmark  ( -- )
+: mb2-rng-pix-bench  ( -- )
   os-seed off  s" Milos Bazelides 2 (8 bit)"
-  ['] mb2-crnd random-pix-benchmark  ;
+  ['] mb2-crnd rng-pix-bench  ;
 
 ( zh-crnd )
 
@@ -1019,19 +1020,21 @@ need random-pix-benchmark
   \ Code adapted from:
   \ http://z80-heaven.wikidot.com/math#toc40
 
+need z80-asm,  need os-seed
+
 code zh-crnd  ( -- b )
 
-  os-seed fta  a e ld
-  a add  e add  a add  a add  e add  #83 add#
-  os-seed sta
-  pusha jp
+  os-seed fta, a e ld,
+  a add, e add, a add, a add, e add, #83 add#,
+  os-seed sta,
+  pusha jp,
 
   end-code
 
-need random-pix-benchmark
+need rng-pix-bench
 
-: zh-random-pix-benchmark  ( -- )
-  s" Z80 Heaven (8 bit)" ['] zh-crnd random-pix-benchmark  ;
+: zh-rng-pix-bench  ( -- )
+  s" Z80 Heaven (8 bit)" ['] zh-crnd rng-pix-bench  ;
 
   \ This is one of many variations of PRNGs. This routine is
   \ not particularly useful for many games, but is fairly
@@ -1055,7 +1058,7 @@ need random-pix-benchmark
   \      ld (randSeed),a
   \      ret
 
-( opt3-libzx-crnd )
+( libzx-crnd-opt3 )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1064,11 +1067,11 @@ need random-pix-benchmark
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
 
-need z80-asm  need os-seed  need random-pix-benchmark
+need z80-asm,  need os-seed  need rng-pix-bench
 
 variable rom-pointer  rom-pointer off  os-seed off
 
-code opt3-libzx-crnd  ( -- b )
+code libzx-crnd-opt3  ( -- b )
 
   \ Gets an 8-bit random number.
   \ It is computed using a combination of:
@@ -1077,13 +1080,13 @@ code opt3-libzx-crnd  ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  bc push  af push
+  b push, af push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
 
-  rom-pointer hl ftp  hl incp
-  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+  rom-pointer h ftp, h incp,
+  h a ld, %00111111 and, a h ld, h rom-pointer stp,
 
     \ ld hl,(romPointer)
     \ inc hl
@@ -1096,35 +1099,34 @@ code opt3-libzx-crnd  ( -- b )
 
   \ 2) compute the random number
 
-  bc pop  c rlc  b rlc  os-seed fta
+  b pop, c rlc, b rlc, os-seed fta,
     \ pop bc          ; BC := AF
     \ rlc c
     \ rlc b
     \ ld a, (lastRandomNumber)
-  47 add#  b add  c add  d add  e add  h add  l add
-    \ add a, 47
-    \ add a, b  ; current register values are "pretty random"
-    \ add a, c  ; so add them in the mix
+  47 add#, b add, c add, d add, e add, h add, l add,
+    \ ; current register values are "pretty random"
+    \ ; so add them in the mix:
+    \ add a, $47
+    \ add a, b
+    \ add a, c
     \ add a, d
     \ add a, e
     \ add a, h
     \ add a, l
 
-  rom-pointer hl ldp#  m add
+  rom-pointer h ldp#, m add,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \             ; so add it in the mix
 
-  os-seed sta  bc pop  pusha jp  end-code
+  os-seed sta, b pop, pusha jp, end-code
 
-: libzx-random-pix-benchmark  ( -- )
+: libzx-rng-pix-bench-opt3  ( -- )
   rom-pointer off  os-seed off  s" libzx opt3 (8 bit)"
-  ['] opt3-libzx-crnd random-pix-benchmark  ;
+  ['] libzx-crnd-opt3 rng-pix-bench  ;
 
-' crnd-pix-benchmark2 ' random-pix-benchmark defer!
-libzx-random-pix-benchmark  \ XXX TMP --
-
-( opt2-libzx-crnd )
+( libzx-crnd-opt2 )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1133,11 +1135,11 @@ libzx-random-pix-benchmark  \ XXX TMP --
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
 
-need z80-asm  need os-seed  need random-pix-benchmark
+need z80-asm,  need os-seed  need rng-pix-bench
 
 variable rom-pointer  rom-pointer off  os-seed off
 
-code opt2-libzx-crnd  ( -- b )
+code libzx-crnd-opt2  ( -- b )
 
   \ Gets an 8-bit random number.
   \ It is computed using a combination of:
@@ -1146,13 +1148,13 @@ code opt2-libzx-crnd  ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  bc push  af push
+  b push, af push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
 
-  rom-pointer hl ftp  hl incp
-  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+  rom-pointer h ftp, h incp,
+  h a ld, %00111111 and, a h ld, h rom-pointer stp,
 
     \ ld hl,(romPointer)
     \ inc hl
@@ -1165,12 +1167,12 @@ code opt2-libzx-crnd  ( -- b )
 
   \ 2) compute the random number
 
-  bc pop  c rlc  b rlc  os-seed fta
+  b pop, c rlc, b rlc, os-seed fta,
     \ pop bc          ; BC := AF
     \ rlc c
     \ rlc b
     \ ld a, (lastRandomNumber)
-  47 add#  b add  c add  d add  e add  h add  l add
+  47 add#, b add, c add, d add, e add, h add, l add,
     \ add a, 47
     \ add a, b  ; current register values are "pretty random"
     \ add a, c  ; so add them in the mix
@@ -1179,23 +1181,21 @@ code opt2-libzx-crnd  ( -- b )
     \ add a, h
     \ add a, l
 
-  rom-pointer hl ldp#  m add
+  rom-pointer h ldp#, m add,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \             ; so add it in the mix
 
-  os-seed sta
+  os-seed sta,
     \ ld (lastRandomNumber), a        ; save this number
 
-  bc pop  pusha jp  end-code
+  b pop, pusha jp,  end-code
 
-: libzx-random-pix-benchmark  ( -- )
+: libzx-rng-pix-bench-opt2  ( -- )
   rom-pointer off  os-seed off  s" libzx opt2 (8 bit)"
-  ['] opt2-libzx-crnd random-pix-benchmark  ;
+  ['] libzx-crnd-opt2 rng-pix-bench  ;
 
-libzx-random-pix-benchmark  \ XXX TMP --
-
-( opt1-libzx-crnd )
+( libzx-crnd-opt1 )
 
   \ Credit:
   \ Original code from the ZX Spectrum libzx library,
@@ -1204,11 +1204,11 @@ libzx-random-pix-benchmark  \ XXX TMP --
   \ 2016-04-09: Adapted to Solo Forth. Optimized the original
   \ code.
 
-need z80-asm  need os-seed  need random-pix-benchmark
+need z80-asm,  need os-seed  need rng-pix-bench
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
-code opt1-libzx-crnd  ( -- b )
+code libzx-crnd-opt1  ( -- b )
 
   \ Gets an 8-bit random number.
   \ It is computed using a combination of:
@@ -1217,18 +1217,18 @@ code opt1-libzx-crnd  ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  bc push  af push
+  b push, af push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
 
-  rom-pointer bc ftp 3 hl ldp#  bc addp
+  rom-pointer b ftp, 3 h ldp#, b addp,
 
     \ ld bc,(romPointer)
     \ ld hl,3
     \ add hl,bc ; HL := ROM pointer advanced by 3
 
-  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+  h a ld, %00111111 and, a h ld, h rom-pointer stp,
 
     \ ld a, h
     \ and %00111111
@@ -1239,12 +1239,12 @@ code opt1-libzx-crnd  ( -- b )
 
   \ 2) compute the random number
 
-  bc pop  c rlc  b rlc  os-seed fta
+  b pop, c rlc, b rlc, os-seed fta,
     \ pop bc          ; BC := AF
     \ rlc c
     \ rlc b
     \ ld a, (lastRandomNumber)
-  47 add#  b add  c add  d add  e add  h add  l add
+  47 add#, b add, c add, d add, e add, h add, l add,
     \ add a, 47
     \ add a, b  ; current register values are "pretty random"
     \ add a, c  ; so add them in the mix
@@ -1253,20 +1253,19 @@ code opt1-libzx-crnd  ( -- b )
     \ add a, h
     \ add a, l
 
-  rom-pointer hl ldp#  m add
+  rom-pointer h ldp#, m add,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \             ; so add it in the mix
 
-  os-seed sta
+  os-seed sta,
     \ ld (lastRandomNumber), a        ; save this number
 
-  bc pop  pusha jp  end-code
+  b pop, pusha jp,  end-code
 
-: libzx-random-pix-benchmark  ( -- )
-  3 rom-pointer !  33 os-seed c!
-  s" libzx opt1 (8 bit)"
-  ['] opt1-libzx-crnd random-pix-benchmark  ;
+: libzx-rng-pix-bench-opt1  ( -- )
+  3 rom-pointer !  33 os-seed c!  s" libzx opt1 (8 bit)"
+  ['] libzx-crnd-opt1 rng-pix-bench  ;
 
 ( libzx-crnd )
 
@@ -1276,7 +1275,7 @@ code opt1-libzx-crnd  ( -- b )
 
   \ 2016-04-09: Adapted to Solo Forth.
 
-need z80-asm  need os-seed  need random-pix-benchmark
+need z80-asm,  need os-seed  need rng-pix-bench
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
@@ -1289,13 +1288,13 @@ code libzx-crnd  ( -- b )
   \     - current values of various registers
   \     - a flat incremented value
 
-  bc push  af push
+  b push, af push,
     \ save Forth IP and the AF register
 
   \ 1) advance ROM pointer
 
-  rom-pointer hl ldp#
-  m c ld  hl incp  m b ld  3 hl ldp#  bc addp
+  rom-pointer h ldp#,
+  m c ld, h incp, m b ld, 3 h ldp#, b addp,
     \ XXX TODO -- simpler
     \ XXX REMARK -- original code is not optimized
 
@@ -1306,7 +1305,7 @@ code libzx-crnd  ( -- b )
     \ ld hl, 3
     \ add hl, bc        ; HL := ROM pointer advanced by 3
 
-  h a ld  %00111111 and  a h ld  hl rom-pointer stp
+  h a ld, %00111111 and, a h ld, h rom-pointer stp,
 
     \ ld a, h
     \ and %00111111
@@ -1317,12 +1316,12 @@ code libzx-crnd  ( -- b )
 
   \ 2) compute the random number
 
-  bc pop  c rlc  b rlc  os-seed fta
+  b pop, c rlc, b rlc, os-seed fta,
     \ pop bc          ; BC := AF
     \ rlc c
     \ rlc b
     \ ld a, (lastRandomNumber)
-  47 add#  b add  c add  d add  e add  h add  l add
+  47 add#, b add, c add, d add, e add, h add, l add,
     \ add a, 47
     \ add a, b  ; current register values are "pretty random"
     \ add a, c  ; so add them in the mix
@@ -1331,27 +1330,27 @@ code libzx-crnd  ( -- b )
     \ add a, h
     \ add a, l
 
-  rom-pointer hl ldp#  m add
+  rom-pointer h ldp#, m add,
     \ ld hl, romPointer
     \ add a, (hl) ; the contents of the ROM are "pretty random"
     \             ; so add it in the mix
 
-  os-seed ldp#  m a ld
+  os-seed h ldp#, m a ld,
     \ ld hl, lastRandomNumber
     \ ld (hl), a        ; save this number
     \ XXX REMARK -- original code is not optimized
 
-  bc pop  0 h ld#  a l ld  jppushhl, end-code
+  b pop, 0 h ld#, a l ld, jppushhl,  end-code
 
-: libzx-random-pix-benchmark  ( -- )
+: libzx-rng-pix-bench  ( -- )
   3 rom-pointer !  33 os-seed c!
-  s" libzx (8 bit)" ['] libzx-crnd random-pix-benchmark  ;
+  s" libzx (8 bit)" ['] libzx-crnd rng-pix-bench  ;
 
 
   \ ===========================================================
 
   \ 2016-03-31
-  \ Results of the 16-bit version of `random-pix-benchmark`:
+  \ Results of the 16-bit version of `rnd-pix-bench`:
 
   \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
 
@@ -1384,7 +1383,7 @@ code libzx-crnd  ( -- b )
   \ | Z80 Heaven             | 32599 (066%) | 03371 (067 s) | 1
 
   \ 2016-03-31
-  \ Results of the 8-bit version of `random-pix-benchmark`:
+  \ Results of the 8-bit version of `rnd-pix-bench`:
 
   \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
 
@@ -1395,7 +1394,7 @@ code libzx-crnd  ( -- b )
   \ | Z80 Heaven             | 00096 (000%) | 01055 (021 s) | 1
 
   \ 2016-04-07
-  \ Results of the 16-bit version of `random-pix-benchmark`,
+  \ Results of the 16-bit version of `rnd-pix-bench`,
   \ with `os-seed` initialized to zero every time, except when
   \ the implementation needs a non-zero value:
 
@@ -1430,7 +1429,7 @@ code libzx-crnd  ( -- b )
   \ | Z80 Heaven             | 32768 (066%) | 03352 (067 s) | 1
 
   \ 2016-04-08
-  \ Results of the 8-bit version of `random-pix-benchmark`:
+  \ Results of the 8-bit version of `rnd-pix-bench`:
 
   \ | Code | Pixels | Time per cycle in frames (and seconds) | Cycles
 

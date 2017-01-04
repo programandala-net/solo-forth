@@ -3,14 +3,14 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701020140
+; Last modified: 201701041717
 
 include version.z80s
 
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
 ; ==============================================================
 ; License
@@ -147,25 +147,30 @@ true:                             equ $FFFF ; -1
 cell:                             equ $02
 
 cells_per_data_stack:             equ $50
-cells_per_return_stack:           equ $64
+cells_per_return_stack:           equ $70
 
-  ; XXX REMARK -- 2016-11-19: The return stack has been increased from
-  ; $50 to $55 cells. The loading of `tt` (a sample game) needs $55
-  ; cells; `blocked` (a block editor) needs $54 cells.  Formerly the
-  ; terminal input buffer was below the return stack and worked as a
-  ; pad for it, so the problem was unnoticed.  But the terminal input
-  ; buffer was moved on 2016-11-15 in order to make all buffers
-  ; contiguous so the circular string buffer can be expandable.  As a
-  ; temporary solution, also the return stack is checked in `?stack`,
-  ; when the developing label is on.
+  ; XXX REMARK -- 2016-11-19: The return stack has been
+  ; increased from $50 to $55 cells. The loading of `tt` (a
+  ; sample game) needs $55 cells; `blocked` (a block editor)
+  ; needs $54 cells.  Formerly the terminal input buffer was
+  ; below the return stack and worked as a pad for it, so the
+  ; problem was unnoticed.  But the terminal input buffer was
+  ; moved on 2016-11-15 in order to make all buffers contiguous
+  ; so the circular string buffer can be expandable.  As a
+  ; temporary solution, also the return stack is checked in
+  ; `?stack`, when the developing label is on.
   ;
-  ; XXX REMARK -- 2016-12-03: Each `nest-source` uses 6 cells of the
-  ; return stack for data; `need` uses 2 cells for data; 9 more cells
-  ; are used by calls at every nesting level of `need`... With a $56
-  ; cells large return stack, only 5 levels of `need` are possible.
-  ; The size is increased to $64. `?rstack` has been factored from
-  ; `?stack` and called directly by `interpret`, during the
-  ; development.
+  ; XXX REMARK -- 2016-12-03: Each `nest-source` uses 6 cells
+  ; of the return stack for data; `need` uses 2 cells for data;
+  ; 9 more cells are used by calls at every nesting level of
+  ; `need`... With a $56 cells large return stack, only 5
+  ; levels of `need` are possible.  The size is increased to
+  ; $64. `?rstack` has been factored from `?stack` and called
+  ; directly by `interpret`, during the development.
+  ;
+  ; XXX REMARK -- 2017-01-04: $70 cells, the minimum needed to
+  ; load `8-bit-rng-pix-benchs` and `16-bit-rng-pix-benchs` (8
+  ; nested `need` each).
 
 bytes_per_terminal_input_buffer:  equ $50
 
