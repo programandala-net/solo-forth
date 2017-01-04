@@ -44,8 +44,13 @@
   \
   \ 2017-01-04: Review the words to page in and page out the
   \ Plus D interface: Use the port to page in, not the hook;
-  \ use Z80 opcodes, not `z80-asm`. Compact the code, saving
-  \ one block.
+  \ use Z80 opcodes, not `z80-asm`.
+  \
+  \ 2017-01-04: Compact the code, saving one block.
+  \
+  \ 2017-01-04: Convert `get-drive` and `set-drive` from
+  \ `z80-asm` to `z80-asm,`; make them independent to `need`;
+  \ improve their documentation.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -166,26 +171,44 @@ $45 constant hwsad  $46 constant otfoc $47 constant patch
 
 ( get-drive set-drive )
 
-need z80-asm  need --hook-codes--
+need ?(
+
+[unneeded] get-drive ?(
+
+need z80-asm,  need plusd-in,  need plusd-out,
 
 code get-drive  ( -- n )
-  bc push  \ save the Forth IP
-  patch hook
-  3ACE fta  \ XXX NEW
+  b push,  \ save the Forth IP
+  plusd-in, 3ACE fta, plusd-out,
+  b pop, next ix ldp#,  \ restore the Forth registers
+  pusha jp,  end-code  ?)
+
   \ XXX TODO check this method:
   \ bit 0 of 3DD1
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  \ restore the Forth registers
-  pusha jp  end-code
+
+  \ doc{
+  \
+  \ get-drive  ( -- n )
+  \
   \ Get the current drive _n_ (1 or 2).
+  \
+  \ }doc
+
+[unneeded] get-drive ?(  need z80-asm,
 
 code set-drive  ( n -- )
-  hl pop
-  bc push  \ save the Forth IP
-  l a ld  21 hook   \ select drive in a
-  bc pop   next ix ldp#  \ restore the Forth registers
-  jpnext,  end-code
+  h pop, b push,
+  l a ld, 21 hook,   \ select drive in a
+  b pop, next ix ldp#,  \ restore the Forth registers
+  jpnext,  end-code ?)
+
+  \ doc{
+  \
+  \ set-drive  ( n -- )
+  \
   \ Set the current drive _n_ (1 or 2).
+  \
+  \ }doc
 
 ( delete-file )
 
