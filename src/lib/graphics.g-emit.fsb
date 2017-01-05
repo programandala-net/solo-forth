@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051636
+  \ Last modified: 201701051731
 
   \ -----------------------------------------------------------
   \ Description
@@ -145,7 +145,8 @@ code g-emit-0udg  ( gx gy b -- )
 
 ( g-emit-udg )
 
-need assembler  need g-emit-routine  need os-udg  need os-coords
+need assembler
+need g-emit-routine  need os-udg  need os-coords
 
 [defined] first-udg ?\ #128 constant first-udg
 
