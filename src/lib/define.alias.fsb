@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611182019
+  \ Last modified: 201701051930
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,17 +63,13 @@
   \ 2016-11-13: Update the names of far-memory words.
   \
   \ 2016-11-18: Improve documentation of `alias`.
+  \
+  \ 2017-01-05: Remove old system bank support from `alias!`.
 
 ( alias! alias realias )
 
-need name>>
-
-[defined] alias! [defined] far-banks or
-?\ need !s : alias!  ( xt nt -- )  name>> !s  ;
-[defined] alias! [undefined] far-banks or
-?\ : alias!  ( xt nt -- )  name>> far!  ;
-  \ XXX TMP -- two variants until the far memory is fully
-  \ implemented
+[unneeded] alias!
+?\ need name>>  : alias!  ( xt nt -- )  name>> far!  ;  exit
 
   \ doc{
   \
@@ -85,7 +81,8 @@ need name>>
   \
   \ }doc
 
-[unneeded] alias
+[unneeded] alias dup
+?\ need alias!
 ?\ : alias  ( xt "name" -- )  header reveal latest alias!  ;
 
   \ doc{
@@ -105,6 +102,8 @@ need name>>
   \ }doc
 
 [unneeded] realias ?exit
+
+need alias!
 
 : realias  ( xt "name" -- )
   defined dup 0= #-13 ?throw alias!  ;

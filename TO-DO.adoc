@@ -100,6 +100,10 @@ rest must be used for calls.
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
 
+.2017-01-05:
+
+Rewrite `there` in Z80 or remove it?
+
 .2016-12-03:
 
 Use a new kind of unconditional high-level branch at the end of `nest-source`
@@ -1215,6 +1219,11 @@ Problem: this would force changes in fsb and fsb2.
 
 // Modules {{{1
 == Modules
+
+.2017-01-05:
+
+`>>link far!` is used in `forget-transient`, but it's what `unlink-internal`
+does. Factor and reuse.
 
 .2016-12-29:
 

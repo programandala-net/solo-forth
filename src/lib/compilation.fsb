@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612252043
+  \ Last modified: 201701051926
 
   \ -----------------------------------------------------------
   \ Description
@@ -119,6 +119,9 @@
   \
   \ 2016-12-25: Improve needing of `warn.throw`,
   \ `warn.message`, and `warn-throw`.
+  \
+  \ 2017-01-05: Remove old system bank support from
+  \ `name<name`. Rewrite `smudged`, adapted to far memory.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -174,9 +177,7 @@ need str=
 
 [unneeded] name<name ?exit
 need name>link
-[defined] far@ ?\ : name<name  ( nt1 -- nt2 )  name>link @s  ;
-  \ XXX TMP -- while the old system bank is kept, just in case
-[defined] @s ?\ : name<name  ( nt1 -- nt2 )  name>link far@  ;
+: name<name  ( nt1 -- nt2 )  name>link far@  ;
   \ Get the previous _nt2_ from _nt1_.
 
 ( >>link name>> >>name >body body> '' [''] )
@@ -321,12 +322,8 @@ need ?(
 [unneeded] [compile]
 ?\ : [compile]  ( "name" -- )  ' compile,  ; immediate  exit
 
-
-need ?(
-
-[unneeded] smudged ?(  need ctoggle
-: smudged  ( nt -- )
-  smudge-mask swap system-bank ctoggle default-bank  ; ?)
+[unneeded] smudged
+?\ : smudged  ( nt -- ) dup farc@ smudge-mask xor swap farc!  ;
 
   \ doc{
   \
@@ -337,10 +334,12 @@ need ?(
   \ This word is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
+  \ See: `smudge`, `hidden`, `revealed`.
+  \
   \ }doc
 
-[unneeded] smudge ?(  need need-here  need-here smudged
-: smudge  ( -- )  latest smudged  ;  ?)
+[unneeded] smudge
+?\ need smudged  : smudge  ( -- )  latest smudged  ;
 
   \ doc{
   \
@@ -355,6 +354,8 @@ need ?(
   \ instead.
   \
   \ Origin: fig-Forth.
+  \
+  \ See: `smudged`, `hide`, `reveal`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611131522
+  \ Last modified: 201701051936
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,31 +40,8 @@
   \
   \ 2016-11-13: Remove far-memory fetch and store words, which
   \ are already in the kernel.
-
-( !s c!s )
-
-  \ XXX TODO -- remove after fully implementing the extra
-  \ memory
-
-: !s  ( x a -- )  system-bank ! default-bank  ;
-
-  \ doc{
   \
-  \ !s  ( x a -- )
-  \
-  \ Store _x_ into address _a_ of the system bank.
-  \
-  \ }doc
-
-: c!s  ( c ca -- )  system-bank c! default-bank  ;
-
-  \ doc{
-  \
-  \ c!s  ( c ca -- )
-  \
-  \ Store _c_ into address _ca_ of the system bank.
-  \
-  \ }doc
+  \ 2017-01-05: Remove old system bank words `!s` and `c!s`.
 
 ( get-default-bank set-default-bank )
 

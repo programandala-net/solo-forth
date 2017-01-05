@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071549
+  \ Last modified: 201701051931
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,9 @@
   \ 2016-12-07: Rename `external` to `end-internal`, `module`
   \ to `unlink-internal`. Rename the module file accordingly.
   \ Add `hide-internal`.
+  \
+  \ 2017-01-05: Remove old system bank support from
+  \ `unlink-internal`.
 
 ( internal end-internal unlink-internal hide-internal )
 
@@ -95,9 +98,10 @@ need ?(
 
 [unneeded] unlink-internal ?(  need internal  need >>link
 
-[undefined] far-banks dup 0=
-?\ : unlink-internal  ( nt xtp -- )  >>link s!  ;
-?\ : unlink-internal  ( nt xtp -- )  >>link far!  ; ?)
+: unlink-internal  ( nt xtp -- )  >>link far!  ; ?)
+
+  \ XXX TODO -- `>>link far!` is used also in
+  \ `forget-transient`; reuse it
 
   \ doc{
   \

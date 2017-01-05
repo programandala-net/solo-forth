@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051639
+  \ Last modified: 201701051932
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,7 @@
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler` in
   \ documentation.
+  \ Remove old system bank support from `forget-transient`.
 
 ( transient end-transient forget-transient )
 
@@ -141,9 +142,10 @@ variable old-current-latest
 
 : forget-transient  ( -- )
   old-voc-link @ voc-link !
-  old-current-latest @ old-hp @ >>link
-  [defined] far-banks ?\ !s  ;
-  [undefined] far-banks ?\ far!  ;
+  old-current-latest @ old-hp @ >>link far!  ;
+
+  \ XXX TODO -- `>>link far!` is what `unlink-internal` does;
+  \ reuse it
 
   \ doc{
   \

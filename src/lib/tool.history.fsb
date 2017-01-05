@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605070041
+  \ Last modified: 201701051956
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
   \ 2016-05-05: Update `s=` to `str=`.
   \
   \ 2016-05-07: Make block titles compatible with `indexer`.
+  \
+  \ 2017-01-05: Update from old system bank to far memory.
 
 ( history )
 
@@ -68,17 +70,17 @@ variable hp
 : history>link  ( ca -- a )  cell-  ;
   \ Convert a history string address to its link field.
 
-: history<history  ( ca1 -- ca2 )  history>link @s  ;
+: history<history  ( ca1 -- ca2 )  history>link far@  ;
   \ Convert a history string address to the previous one.
 
-: history>history  ( ca1 -- ca2 )
-  system-bank count default-bank  + cell+  ;
+: history>history  ( ca1 -- ca2 )  farcount + cell+  ;
   \ Convert a history string address to the next one.
 
-: history>string  ( ca1 -- ca2 len2 )
-  system-bank count save-string default-bank  ;  -->
+: history>string  ( ca1 -- ca2 len2 )  farcount save-string  ;
   \ Copy a history string to a string in the circular string
   \ buffer.
+
+-->
 
 ( history )
 
@@ -107,7 +109,7 @@ variable browsed-history
 
 : init-history  ( n -- )
   dup /history !  $FFFF swap -
-  dup hp0 !  dup hp !  browsed-history !  0 hp0 @ c!s  ;
+  dup hp0 !  dup hp !  browsed-history !  0 hp0 @ farc!  ;
 
 1024 init-history  -->
 
@@ -146,8 +148,8 @@ need str=
 
 : history,  ( ca len -- )
   hp @ dup >r  over >r  ( ca len ca1 ) ( R: len ca1 -- )
-  system-bank place default-bank
-  r> 1+ allot-history  r> hp @ !s  cell allot-history  ;
+  farplace
+  r> 1+ allot-history  r> hp @ far!  cell allot-history  ;
   \ Add a string to the command line history.
 
 : (>history)  ( ca len -- )
@@ -205,11 +207,7 @@ variable history
           dup history>string type cr  history>history
         repeat  drop  ;
 
-need dump
-
-: hdump  ( ca len -- )  system-bank dump default-bank  ;
-
-: .h  ( -- )  hp0 dup hp @ - hdump  ;
+: .h  ( -- )  hp0 dup hp @ - fardump  ;
 
 \ history-on
 
@@ -247,7 +245,7 @@ $FFFF constant hp0
 variable /history  1024 /history !
   \ Size of the history space, where all strings are hold.
 
-: init-hp0  ( -- )  0 hp0 c!s  ;
+: init-hp0  ( -- )  0 hp0 farc!  ;
 
 : history-bounds  ( -- ca1 ca2 )  hp0 hp @  ;
   \ Return bottom of history _a1_ and address of the latest
@@ -271,8 +269,7 @@ variable currently-browsed-history
 
 : older-history  ( -- )
   currently-browsed-history @ dup previously-browsed-history !
-  system-bank count default-bank +
-  currently-browsed-history !  ;
+  farcount + currently-browsed-history !  ;
   \ Update the current history being browsed to the previous
   \ (older) one.
 
@@ -308,14 +305,14 @@ need str=
   \ XXX TODO -- remove older strings if needed
 
 : latest-history  ( -- ca len )
-  system-bank  hp @ count  save-string  default-bank  ;
+  hp @ farcount  save-string  ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
   \ XXX OLD
 
 : browsed-history  ( -- ca len )
   currently-browsed-history @
-  system-bank  count save-string  default-bank  ;
+  farcount save-string  ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
 
@@ -338,7 +335,7 @@ need str=
 : (>history)  ( ca len -- )
   dup 0= if  2drop exit  then
     \ If string is empty, do nothing.
-  history-empty? if  dup hp0 c!s  then
+  history-empty? if  dup hp0 farc!  then
     \ If history is empty, init its bottom with the length
     \ of the string.
   2dup duplicated-history? if  2drop exit  then
@@ -346,8 +343,7 @@ need str=
   if  dup allocate-history throw  then
     \ If there's no space left, allocate it.
   dup 1+ allot-history
-  hp @ dup system-bank place default-bank
-           currently-browsed-history !  ;
+  hp @ dup farplace currently-browsed-history !  ;
   \ Save string _ca len_ into the command line history.
 
 -->
@@ -381,8 +377,7 @@ variable history
   \ Turn command line history on.
 
 : .history  ( -- )
-  hp @  begin  dup hp0 <  while
-          system-bank count 2dup type cr default-bank  +
+  hp @  begin  dup hp0 <  while  farcount 2dup type cr +
         repeat  drop  ;
 
 \ history-on
