@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2016-12-27
+" Updated:  2017-01-05
 
 " --------------------------------------------------------------
 " History
@@ -591,181 +591,27 @@ syn keyword soloforthWordlists vocabulary
 syn keyword soloforthWordlists wordlist
 syn keyword soloforthWordlists words
 
-" Assembler words defined in the kernel:
+" Assembler words (defined in the kernel):
 
 syn keyword soloforthAssembler asm
 syn keyword soloforthAssembler call,
 syn keyword soloforthAssembler code
 syn keyword soloforthAssembler end-asm
 syn keyword soloforthAssembler end-code
-syn keyword soloforthAssembler endm
 syn keyword soloforthAssembler fetchhl
 syn keyword soloforthAssembler jp,
 syn keyword soloforthAssembler jpnext,
 syn keyword soloforthAssembler jppushhl,
-syn keyword soloforthAssembler macro
 syn keyword soloforthAssembler next
 syn keyword soloforthAssembler pusha
 syn keyword soloforthAssembler pushhl
 syn keyword soloforthAssembler pushhlde
 
-" Assembler words defined in the library (version 1):
-
-syn keyword soloforthAssembler ?call
-syn keyword soloforthAssembler ?ret
-syn keyword soloforthAssembler adc#
-syn keyword soloforthAssembler adc
-syn keyword soloforthAssembler adcp
-syn keyword soloforthAssembler adcx
-syn keyword soloforthAssembler add#
-syn keyword soloforthAssembler add
-syn keyword soloforthAssembler addix
-syn keyword soloforthAssembler addiy
-syn keyword soloforthAssembler addp
-syn keyword soloforthAssembler addx
-syn keyword soloforthAssembler and#
-syn keyword soloforthAssembler and
-syn keyword soloforthAssembler andx
-syn keyword soloforthAssembler bit
-syn keyword soloforthAssembler bitx
-syn keyword soloforthAssembler call
-syn keyword soloforthAssembler callc
-syn keyword soloforthAssembler callm
-syn keyword soloforthAssembler callnc
-syn keyword soloforthAssembler callnz
-syn keyword soloforthAssembler callp
-syn keyword soloforthAssembler callpe
-syn keyword soloforthAssembler callpo
-syn keyword soloforthAssembler callz
-syn keyword soloforthAssembler ccf
-syn keyword soloforthAssembler clr
-syn keyword soloforthAssembler cp#
-syn keyword soloforthAssembler cp
-syn keyword soloforthAssembler cpir
-syn keyword soloforthAssembler cpl
-syn keyword soloforthAssembler cpx
-syn keyword soloforthAssembler daa
-syn keyword soloforthAssembler dec
-syn keyword soloforthAssembler decp
-syn keyword soloforthAssembler decx
-syn keyword soloforthAssembler di
-syn keyword soloforthAssembler djnz
-syn keyword soloforthAssembler ei
-syn keyword soloforthAssembler end
-syn keyword soloforthAssembler exaf
-syn keyword soloforthAssembler exde
-syn keyword soloforthAssembler exsp
-syn keyword soloforthAssembler exx
-syn keyword soloforthAssembler fta
-syn keyword soloforthAssembler ftap
-syn keyword soloforthAssembler fthl
-syn keyword soloforthAssembler ftp
-syn keyword soloforthAssembler ftpx
-syn keyword soloforthAssembler ftx
-syn keyword soloforthAssembler ftx
-syn keyword soloforthAssembler ftx
-syn keyword soloforthAssembler halt
-syn keyword soloforthAssembler hook
-syn keyword soloforthAssembler in
-syn keyword soloforthAssembler inbc
-syn keyword soloforthAssembler inc
-syn keyword soloforthAssembler incp
-syn keyword soloforthAssembler incx
-syn keyword soloforthAssembler jp
-syn keyword soloforthAssembler jpc
-syn keyword soloforthAssembler jphl
-syn keyword soloforthAssembler jpix
-syn keyword soloforthAssembler jpm
-syn keyword soloforthAssembler jpnc
-syn keyword soloforthAssembler jpnz
-syn keyword soloforthAssembler jpp
-syn keyword soloforthAssembler jppe
-syn keyword soloforthAssembler jppo
-syn keyword soloforthAssembler jpz
-syn keyword soloforthAssembler jr
-syn keyword soloforthAssembler jrc
-syn keyword soloforthAssembler jrnc
-syn keyword soloforthAssembler jrnz
-syn keyword soloforthAssembler jrz
-syn keyword soloforthAssembler ld#
-syn keyword soloforthAssembler ld
-syn keyword soloforthAssembler ldai
-syn keyword soloforthAssembler lddr
-syn keyword soloforthAssembler ldia
-syn keyword soloforthAssembler ldir
-syn keyword soloforthAssembler ldp#
-syn keyword soloforthAssembler ldp
-syn keyword soloforthAssembler ldsp
-syn keyword soloforthAssembler neg
-syn keyword soloforthAssembler nop
-syn keyword soloforthAssembler nz`
-syn keyword soloforthAssembler or#
-syn keyword soloforthAssembler or
-syn keyword soloforthAssembler orx
-syn keyword soloforthAssembler out
-syn keyword soloforthAssembler outbc
-syn keyword soloforthAssembler pop
-syn keyword soloforthAssembler prt
-syn keyword soloforthAssembler push
-syn keyword soloforthAssembler res
-syn keyword soloforthAssembler resx
-syn keyword soloforthAssembler ret
-syn keyword soloforthAssembler retc
-syn keyword soloforthAssembler retm
-syn keyword soloforthAssembler retnc
-syn keyword soloforthAssembler retnz
-syn keyword soloforthAssembler retp
-syn keyword soloforthAssembler retpe
-syn keyword soloforthAssembler retpo
-syn keyword soloforthAssembler retz
-syn keyword soloforthAssembler rl
-syn keyword soloforthAssembler rla
-syn keyword soloforthAssembler rlc
-syn keyword soloforthAssembler rlca
-syn keyword soloforthAssembler rlcx
-syn keyword soloforthAssembler rld
-syn keyword soloforthAssembler rlx
-syn keyword soloforthAssembler rr
-syn keyword soloforthAssembler rra
-syn keyword soloforthAssembler rrc
-syn keyword soloforthAssembler rrca
-syn keyword soloforthAssembler rrcx
-syn keyword soloforthAssembler rrx
-syn keyword soloforthAssembler rst
-syn keyword soloforthAssembler sbc#
-syn keyword soloforthAssembler sbc
-syn keyword soloforthAssembler sbcp
-syn keyword soloforthAssembler sbcx
-syn keyword soloforthAssembler scf
-syn keyword soloforthAssembler set
-syn keyword soloforthAssembler setx
-syn keyword soloforthAssembler sla
-syn keyword soloforthAssembler slax
-syn keyword soloforthAssembler sra
-syn keyword soloforthAssembler srax
-syn keyword soloforthAssembler srl
-syn keyword soloforthAssembler srlx
-syn keyword soloforthAssembler st#x
-syn keyword soloforthAssembler sta
-syn keyword soloforthAssembler stap
-syn keyword soloforthAssembler sthl
-syn keyword soloforthAssembler stp
-syn keyword soloforthAssembler stpx
-syn keyword soloforthAssembler stx
-syn keyword soloforthAssembler stx
-syn keyword soloforthAssembler stx
-syn keyword soloforthAssembler sub#
-syn keyword soloforthAssembler sub
-syn keyword soloforthAssembler subp
-syn keyword soloforthAssembler subx
-syn keyword soloforthAssembler tstp
-syn keyword soloforthAssembler xor#
-syn keyword soloforthAssembler xor
-syn keyword soloforthAssembler xorx
-
-" Assembler words defined in the library (version 2):
+" Assembler words:
 
 syn keyword soloforthAssembler ?call,
+syn keyword soloforthAssembler ?jp,
+syn keyword soloforthAssembler ?jr,
 syn keyword soloforthAssembler ?ret,
 syn keyword soloforthAssembler adc#,
 syn keyword soloforthAssembler adc,
@@ -780,14 +626,6 @@ syn keyword soloforthAssembler and,
 syn keyword soloforthAssembler andx,
 syn keyword soloforthAssembler bit,
 syn keyword soloforthAssembler bitx,
-syn keyword soloforthAssembler callc,
-syn keyword soloforthAssembler callm,
-syn keyword soloforthAssembler callnc,
-syn keyword soloforthAssembler callnz,
-syn keyword soloforthAssembler callp,
-syn keyword soloforthAssembler callpe,
-syn keyword soloforthAssembler callpo,
-syn keyword soloforthAssembler callz,
 syn keyword soloforthAssembler ccf,
 syn keyword soloforthAssembler clr,
 syn keyword soloforthAssembler cp#,
@@ -803,6 +641,7 @@ syn keyword soloforthAssembler di,
 syn keyword soloforthAssembler djnz,
 syn keyword soloforthAssembler ei,
 syn keyword soloforthAssembler end,
+syn keyword soloforthAssembler endm
 syn keyword soloforthAssembler exaf,
 syn keyword soloforthAssembler exde,
 syn keyword soloforthAssembler exsp,
@@ -822,21 +661,9 @@ syn keyword soloforthAssembler inbc,
 syn keyword soloforthAssembler inc,
 syn keyword soloforthAssembler incp,
 syn keyword soloforthAssembler incx,
-syn keyword soloforthAssembler jpc,
 syn keyword soloforthAssembler jphl,
 syn keyword soloforthAssembler jpix,
-syn keyword soloforthAssembler jpm,
-syn keyword soloforthAssembler jpnc,
-syn keyword soloforthAssembler jpnz,
-syn keyword soloforthAssembler jpp,
-syn keyword soloforthAssembler jppe,
-syn keyword soloforthAssembler jppo,
-syn keyword soloforthAssembler jpz,
 syn keyword soloforthAssembler jr,
-syn keyword soloforthAssembler jrc,
-syn keyword soloforthAssembler jrnc,
-syn keyword soloforthAssembler jrnz,
-syn keyword soloforthAssembler jrz,
 syn keyword soloforthAssembler ld#,
 syn keyword soloforthAssembler ld,
 syn keyword soloforthAssembler ldai,
@@ -846,9 +673,9 @@ syn keyword soloforthAssembler ldir,
 syn keyword soloforthAssembler ldp#,
 syn keyword soloforthAssembler ldp,
 syn keyword soloforthAssembler ldsp,
+syn keyword soloforthAssembler macro
 syn keyword soloforthAssembler neg,
 syn keyword soloforthAssembler nop,
-syn keyword soloforthAssembler nz`,
 syn keyword soloforthAssembler or#,
 syn keyword soloforthAssembler or,
 syn keyword soloforthAssembler orx,
@@ -860,14 +687,6 @@ syn keyword soloforthAssembler push,
 syn keyword soloforthAssembler res,
 syn keyword soloforthAssembler resx,
 syn keyword soloforthAssembler ret,
-syn keyword soloforthAssembler retc,
-syn keyword soloforthAssembler retm,
-syn keyword soloforthAssembler retnc,
-syn keyword soloforthAssembler retnz,
-syn keyword soloforthAssembler retp,
-syn keyword soloforthAssembler retpe,
-syn keyword soloforthAssembler retpo,
-syn keyword soloforthAssembler retz,
 syn keyword soloforthAssembler rl,
 syn keyword soloforthAssembler rla,
 syn keyword soloforthAssembler rlc,
@@ -913,7 +732,18 @@ syn keyword soloforthAssembler xor#,
 syn keyword soloforthAssembler xor,
 syn keyword soloforthAssembler xorx,
 
-" Assembler control flow words defined in the library (version 2):
+" Assembler conditions:
+
+syn keyword soloforthAssembler c?
+syn keyword soloforthAssembler m?
+syn keyword soloforthAssembler nc?
+syn keyword soloforthAssembler nz?
+syn keyword soloforthAssembler p?
+syn keyword soloforthAssembler pe?
+syn keyword soloforthAssembler po?
+syn keyword soloforthAssembler z?
+
+" Assembler control flow words:
 
 syn keyword soloforthControlFlow aagain
 syn keyword soloforthControlFlow abegin
@@ -933,8 +763,12 @@ syn keyword soloforthControlFlow rthen
 syn keyword soloforthControlFlow runtil
 syn keyword soloforthControlFlow rwhile
 
+" Quotations:
+
 syn match soloforthFlow "\<\[:\>"
 syn keyword soloforthFlow ;]
+
+" Colon definitions:
 
 syn match soloforthColonDef '\<:\s\+[^ \t]\+\>'
 
@@ -1244,6 +1078,9 @@ let b:current_syntax = "soloforth"
 " 2016-12-26: Update the order of some assembly words.
 "
 " 2016-12-27: Add `farunused`.
+"
+" 2017-01-05: Update the assembler words. The first version of
+" the assembler has been removed from the system.
 
 " --------------------------------------------------------------
 
