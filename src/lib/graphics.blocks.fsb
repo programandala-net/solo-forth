@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051256
+  \ Last modified: 201701051309
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,8 +29,8 @@
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
   \
-  \ 2017-01-05: Convert `color-block` and `clear-block` from
-  \ `z80-asm` to `z80-asm,`.
+  \ 2017-01-05: Convert `color-block`, `clear-block` and
+  \ `wipe-block` from `z80-asm` to `z80-asm,`.
 
 ( clear-block )
 
@@ -223,11 +223,11 @@ code color-block  ( column row width height color -- )
 
 ( wipe-block )
 
-need z80-asm
+need z80-asm,
 
 code wipe-block  ( column row width height color -- )
 
-  exx  0 ix ldp#  sp addix
+  exx,  0 ix ldp#, sp addix,
     \ exx ; save the Forth IP
     \ ld ix,0
     \ add ix,sp ; ix = address of TOS
@@ -238,7 +238,7 @@ code wipe-block  ( column row width height color -- )
     \ ; ix+2 = height
     \ ; ix+0 = color
 
-  #6 ix a ftx  a d ld  rrca rrca rrca  #224 and#  #8 ix orx
+  #6 ix a ftx, a d ld, rrca, rrca, rrca, #224 and#, #8 ix orx,
     \ ld a,(ix+6) ; row
     \ ld d,a
     \ rrca
@@ -246,13 +246,13 @@ code wipe-block  ( column row width height color -- )
     \ rrca
     \ and 224
     \ or (ix+8) ; column
-  a e ld  d a ld  #24 and#  #64 or#  a d ld
+  a e ld, d a ld, #24 and#, #64 or#, a d ld,
     \ ld e,a
     \ ld a,d ; column
     \ and 24
     \ or 64
     \ ld d,a ; DE = top left address of the block
-  #4 ix c ftx  #2 ix a ftx  a add  a add  a add  a b ld
+  #4 ix c ftx, #2 ix a ftx, a add, a add, a add, a b ld,
     \ ld c,(ix+4) ; width
     \ ld a,(ix+2) ; height
     \ add a,a
@@ -260,9 +260,9 @@ code wipe-block  ( column row width height color -- )
     \ add a,a
     \ ld b,a ; width*8
 
-  begin
+  rbegin
     \ delete_bitmap:
-    de push  de hl ldp  de incp  0 m ld#  bc push  c dec
+    d push, d h ldp, d incp, 0 m ld#, b push, c dec,
       \ push de     ; save the address of the block scan
       \ ld l,e
       \ ld h,d      ; HL = origin, start of the scan
@@ -270,20 +270,20 @@ code wipe-block  ( column row width height color -- )
       \ ld (hl),0   ; delete the first byte
       \ push bc     ; save the counts
       \ dec c       ; is width greater than 1?
-    nz if  0 b ld#  ldir  then
+    nz? rif  0 b ld#, ldir,  rthen
       \ jr z,label1
-      \   ld b,0    ; BC = width
-      \   ldir      ; erase the rest of the scan
+      \ ld b,0    ; BC = width
+      \ ldir      ; erase the rest of the scan
       \ label1:
-    bc pop  de pop  d inc  d a ld  7 and#
+    b pop, d pop, d inc, d a ld, 7 and#,
       \ pop bc      ; restore counts
       \ pop de      ; restore address of scan
       \ inc d
       \ ld a,d
       \ and 7
-    z if  #32 a ld#  e add  a e ld
-      nc if  d a ld  8 sub#  a d ld  then
-    then
+    z? rif  #32 a ld#, e add, a e ld,
+      nc? rif  d a ld, 8 sub#, a d ld,  rthen
+    rthen
       \ jr nz,inc_char
       \ ld a,32
       \ add a,e
@@ -293,63 +293,63 @@ code wipe-block  ( column row width height color -- )
       \ sub 8
       \ ld d,a
       \ inc_char:
-  step  -->
+  rstep  -->
     \ djnz delete_bitmap
 
 ( wipe-block )
 
-  #6 ix a ftx  #22 d ld#  a add  a add  a add  a add
+  #6 ix a ftx, #22 d ld#, a add, a add, a add, a add,
     \ ld a,(ix+6) ; row
     \ ld d,22
     \ add a
     \ add a
     \ add a
     \ add a ; row*8
-  d rl  a add  d rl  #8 ix orx  a e ld  #2 ix b ftx
+  d rl, a add, d rl, #8 ix orx, a e ld, #2 ix b ftx,
     \ rl d
     \ add a
     \ rl d
     \ or (ix+8) ; column
     \ ld e,a
     \ ld b,(ix+2) ; height
-  begin
+  rbegin
     \ delete_attributes:
-    de push  de hl ldp  de incp  bc push  #0 b ld#
+    d push, d h ldp, d incp, b push, #0 b ld#,
       \ push de
       \ ld h,d
       \ ld l,e
       \ inc de
       \ push bc
       \ ld b,0
-    0 ix a ftx  a m ld  c dec
+    0 ix a ftx, a m ld, c dec,
       \ ld a,(ix+0) ; color
       \ ld (hl),a
       \ dec c
-    nz if  ldir  then
+    nz? rif  ldir,  rthen
       \ jr z,no_more_attributes
       \ ldir
       \ no_more_attributes:
-    bc pop  hl pop  #32 de ldp#  de addp  exde
+    b pop, h pop, #32 d ldp#, d addp, exde,
       \ pop bc
       \ pop hl
       \ ld de,32
       \ add hl,de
       \ ex de,hl
-  step
+  rstep
     \ djnz delete_attributes
 
   \ Drop the parameters:
-  0 hl ldp#  sp addp  #5 cells de ldp#  de addp  ldsp
+  0 h ldp#, sp addp, #5 cells d ldp#, d addp, ldsp,
     \ ld hl,0
     \ add hl,sp
     \ ld de,5*cells
     \ add hl,de
     \ ld sp,hl
 
-  exx  next ix ldp#
+  exx, next ix ldp#, jpnext,  end-code
     \ exx         ; restore the Forth IP
     \ ld ix,next  ; restore IX
-  jpnext,  end-code
+    \ jp next
 
   \ Credit:
   \
