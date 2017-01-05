@@ -1,16 +1,14 @@
-  \ assembler.z80-asm-comma.fsb
+  \ assembler.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701021622
+  \ Last modified: 201701051611
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ An alternative Z80 assembler, called `z80-asm,`.
-  \ This assembler will replace the previous one, called
-  \ `z80-asm`.
+  \ A Z80 assembler.
 
   \ -----------------------------------------------------------
   \ Authors
@@ -27,7 +25,7 @@
   \
   \ Marcos Cruz (programandala.net) adapted, modified and
   \ improved the Spectrum Forth-83 version for Solo Forth,
-  \ 2015, 2016.
+  \ 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -39,7 +37,8 @@
   \ -----------------------------------------------------------
   \ History
 
-  \ 2015-12-25: First changes:
+  \ 2015-12-25: First changes to the previous version, called
+  \ `z80-asm`:
   \
   \   1. "," suffixes in Z80 instructions;
   \   2. one single set of conditions;
@@ -98,22 +97,29 @@
   \ is not safe for this.
   \
   \ 2017-01-02: Fix `runtil`, `auntil` and `ragain`.
+  \
+  \ 2017-01-05: The previous version of this assembler has been
+  \ deleted. Rename this module from
+  \ <assembler.z80-asm-comma.fsb> to <assembler.fsb>. Remove
+  \ `bc`, `de` and `hl`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
 
-  \ - Combine changes 2..4 with the previous version.
   \ - Make absolute-jump control structures optional.
   \ - Use `get-order` at the start and `set-order` at the end.
   \ - Document.
 
-( z80-asm, )
+( assembler z80-asm, )
+
+  \ XXX TMP -- `z80-asm,` is still used until the system is updated
 
 get-current forth-wordlist set-current
 
 need ?pairs  need 3dup  need 8*
 
 : z80-asm,  ( -- )  assembler  ;
+  \ XXX TMP -- until the system is updated
 
 also assembler definitions base @ hex
 
@@ -122,14 +128,12 @@ also assembler definitions base @ hex
 0 constant b   1 constant c   2 constant d   3 constant e
 4 constant h   5 constant l   6 constant m   7 constant a
 
-0 constant bc  2 constant de  4 constant hl
-
 6 constant sp  6 constant af
 
 DD constant ix-op  FD constant iy-op
 
-: ix  ( -- rphl )  ix-op c, hl  ;
-: iy  ( -- rphl )  iy-op c, hl  ;
+: ix  ( -- rphl )  ix-op c, h  ;
+: iy  ( -- rphl )  iy-op c, h  ;
 
 : ?rel  ( n -- )  80 + FF swap u< #-269 ?throw  ;
   \ If branch _n_ is too long, throw exception #-269
@@ -137,7 +141,7 @@ DD constant ix-op  FD constant iy-op
 
 -->
 
-( z80-asm, )
+( assembler )
 
   \ Defining words for z80 instructions
 
@@ -170,7 +174,7 @@ DD constant ix-op  FD constant iy-op
     ( r bit pfa ) CB c, c@ swap 8* + + c,  ;  -->
   \ Bit manipulation of registers.
 
-( z80-asm, )
+( assembler )
 
   \ Defining words for z80 instructions
 
@@ -196,12 +200,11 @@ DD constant ix-op  FD constant iy-op
   \ Rotation with index registers.
 
 : mc  ( 8b "name" -- )
-  create c, does>  ( disp rphl bit -- )
-    ( disp rphl bit pfa )
+  create c, does>  ( disp rphl bit -- )  ( disp rphl bit pfa )
     CB c, c@ rot drop rot c, swap 8* + c,  ;  -->
   \ Bit manipulation with index registers.
 
-( z80-asm, )
+( assembler )
 
   \ Opcodes
 
@@ -222,7 +225,7 @@ m7 res, C0 m7 set, B0ED m8 ldir, B8ED m8 lddr, 44ED m8 neg,
 57ED m8 ldai, 47ED m8 ldia, 56ED m8 im1, 5EED m8 im2, B1ED m8
 cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2 xor, -->
 
-( z80-asm, )
+( assembler )
 
   \ Opcodes
 
@@ -256,14 +259,16 @@ cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2 xor, -->
 : tstp,  ( rp -- )  dup a ld, 1+ or,  ;  -->
   \ Macro to test 16-bit register for zero.
 
-( z80-asm, )
+( assembler )
 
   \ ZX Spectrum specific
+  \ XXX TODO -- make it optional
 
 CF m4 hook,  \ rst $08
 D7 m1 prt,   \ rst $16
 
   \ Index register opcodes
+  \ XXX TODO -- make it optional
 
 86 ma addx, 8E ma adcx, 96 ma subx, 9E ma sbcx, A6 ma andx,
 AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
@@ -278,7 +283,7 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 
 -->
 
-( z80-asm, )
+( assembler )
 
   \ Conditions (Z80 opcodes for the required absolute jump
   \ instruction)
@@ -286,19 +291,14 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 C2 constant nz? CA constant z?  D2 constant nc? DA constant c?
 E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
-: jp>jr  ( op1 -- op2 )  [ also forth ]
+: jp>jr  ( op1 -- op2 )
   dup C3 =  if  drop 18 exit  then
-  dup c? > #-273 ?throw  A2 -  ; previous
+  dup c? > #-273 ?throw  A2 -  ;
   \ Convert an absolute-jump opcode to its relative-jump
   \ equivalent.  Throw error #-273 if the jump condition is
   \ invalid.
   \
   \ Note: Opcodes: $C3 is `jp`; $18 is `jr`.
-  \
-  \ XXX TMP -- The change of the search order is needed until
-  \ `z80-asm` is not used anymore. `z80-asm` is still needed by
-  \ many words. In case `z80-asm` is loaded before `z80-asm,`,
-  \ `if` and `then` are words of `z80-asm`.
 
 : ?ret,  ( op -- )  2- c,  ;
   \ Conditional ret
@@ -329,21 +329,15 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
 
 -->
 
-( z80-asm, )
+( assembler )
 
   \ Control structures with relative jumps
 
-: inverse-cond  ( op1 -- op2 )
-  8 [ also forth ] xor [ previous ]  ;
+: inverse-cond  ( op1 -- op2 )  8 xor  ;
   \ Convert a condition flag (actually, an absolute jump
   \ opcode) to its opposite.
   \
   \ Examples: `c?` to `nc?`; `nz?` to `z?`, etc.
-  \
-  \ XXX TMP -- The change of the search order is needed until
-  \ `z80-asm` is not used anymore. `z80-asm` is still needed by
-  \ many words. In case `z80-asm` is loaded before `z80-asm,`,
-  \ `xor` is not Forth's `xor`, but that of `z80-asm`.
 
 : rahead  ( -- orig  )  18 , >rmark  ;
   \ Create a relative branch forward.
@@ -385,9 +379,10 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \
   \ Note: $10 is the Z80 opcode for `djnz`.
 
-( z80-asm, )
+( assembler )
 
   \ Control structures with absolute jumps
+  \ XXX TODO -- make them optional
 
 : aif  (  op -- orig cs-id )  inverse-cond c, >mark 08  ;
 
@@ -423,6 +418,7 @@ here 6 cells allot
   \ Space to store unresolved addresses during
   \ compilation.
   \
+  \ XXX TODO -- make this optional
   \ XXX TODO -- deprecate, use labels instead
 
 : unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
@@ -433,6 +429,7 @@ here 6 cells allot
   \ and `drop` are used to pass the stack check at the end of
   \ the definition.
   \
+  \ XXX TODO -- make this optional
   \ XXX TODO -- deprecate, use labels instead
 
 base ! set-current previous
@@ -448,20 +445,20 @@ base ! set-current previous
   \ variable.  The code was factored to two assembler macros in
   \ order to make it reusable.
 
-need z80-asm,  need macro
+need assembler  need macro
 
 macro execute-hl,  ( -- )
-  0000 bc stp,  >amark      \ save the Forth IP
-  0000 bc ldp#, >amark      \ point IP to phony_compiled_word
+  0000 b stp,  >amark      \ save the Forth IP
+  0000 b ldp#, >amark      \ point IP to phony_compiled_word
   jphl,                     \ execute the xt in HL
   >resolve                  \ phony_compiled_word
   here cell+ ,              \ point to the phony xt following
-  0000 bc ldp#  >aresolve   \ restore the Forth IP
+  0000 b ldp#  >aresolve   \ restore the Forth IP
   endm
   \ Compile an `execute` with the xt hold in HL.
 
 macro call-xt,  ( xt -- )
-  hl ldp#,  execute-hl,
+  h ldp#,  execute-hl,
   endm
   \ Compile a call to _xt_.
   \ This is the low-level equivalent of `execute`.
