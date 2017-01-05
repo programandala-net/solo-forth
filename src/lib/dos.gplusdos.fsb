@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051359
+  \ Last modified: 201701051405
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,8 +53,8 @@
   \ improve their documentation.
   \
   \ 2017-01-05: Convert `(delete-file)`, `(>file)`, `(<file)`,
-  \ `(file>screen)`, `(<file-as-is)`, `(file?)`  from `z80-asm`
-  \ to `z80-asm,`.
+  \ `(file>screen)`, `(<file-as-is)`, `(file?)`, `(cat)`,
+  \ `@dos`, `c@dos`  from `z80-asm` to `z80-asm,`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -437,7 +437,7 @@ code (file?)  ( -- f )
 
 ( cat acat wcat wacat )
 
-need z80-asm  need ufia  need --hook-codes--
+need z80-asm,  need ufia  need --hook-codes--
 need filename>ufia
 
   \ G+DOS addresses (in its own paged memory).
@@ -446,23 +446,23 @@ need filename>ufia
 
 code (cat)  ( n -- )
 
-  hl pop  bc push  exx
+  h pop, b push, exx,
     \ Get the parameter in hl' and save the Forth IP
 
-  patch hook
+  patch hook,
 
-  ufia hl ldp#  ufia1 de ldp#  /ufia bc ldp#  ldir
+  ufia h ldp#, ufia1 d ldp#, /ufia b ldp#, ldir,
     \ Copy Forth UFIA to G+DOS UFIA1.
 
   \ exx  l a ld  24B5 call  168E call \ XXX OLD
     \ 24B5 = CAT_RUN (input: cat type in the A register)
     \ 168E = BORD_REST (restore the border)
 
-  exx  l a ld  09A5 call  168E call
+  exx, l a ld, 09A5 call, 168E call,
     \ 09A5 = SCAN_CAT  (input: cat or search type in the A register)
     \ 168E = BORD_REST (restore the border)
 
-  E7 out  bc pop  next ix ldp#
+  E7 out, b pop, next ix ldp#,
     \ page +D out
     \ restore the Forth registers and exit
   jpnext,  end-code
@@ -494,35 +494,35 @@ code (cat)  ( n -- )
 
 ( @dos )
 
-need z80-asm  need --hook-codes--
+need z80-asm,  need --hook-codes--
 
 code @dos  ( a -- n )
-  hl pop
-  bc push  \ save the Forth IP
-  hl push
-  patch hook
-  hl pop m e ld  hl incp  m d ld
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  \ restore the Forth registers
-  de push
+  h pop,
+  b push,  \ save the Forth IP
+  h push,
+  patch hook,
+  h pop, m e ld, h incp, m d ld,
+  E7 out,  \ page +D out
+  b pop, next ix ldp#,  \ restore the Forth registers
+  d push,
   jpnext,
   end-code
   \ Fetch the content of +D memory address.
 
 ( c@dos )
 
-need z80-asm  need --hook-codes--
+need z80-asm,  need --hook-codes--
 
 code c@dos  ( a -- b )
-  hl pop
-  bc push  \ save the Forth IP
-  hl push
-  patch hook
-  hl pop
-  m a ld
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  \ restore the Forth registers
-  pusha jp
+  h pop,
+  b push,  \ save the Forth IP
+  h push,
+  patch hook,
+  h pop,
+  m a ld,
+  E7 out,  \ page +D out
+  b pop, next ix ldp#,  \ restore the Forth registers
+  pusha jp,
   end-code
   \ Fetch the content of +D memory address.
 
