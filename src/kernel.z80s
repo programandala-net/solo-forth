@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701041717
+; Last modified: 201701051605
 
 include version.z80s
 
@@ -1900,7 +1900,7 @@ else
   dw base_,fetch_ ; save the current base
 endif
   dw hex_
-  dw also_,assembler_ ; XXX TODO better
+  dw assembler_wordlist_,to_order_
   dw exit_
 
 ; ----------------------------------------------
@@ -2202,16 +2202,7 @@ if 1 ; assembler_core_in_kernel
   dw latest_nt_in_assembler_voc
 assembler_vocabulary_link:
   dw forth_vocabulary_link
-  dw assembler_nt
-
-endif
-
-; ----------------------------------------------
-if 1 ; assembler_core_in_kernel
-
-  _does_header assembler_,'assembler',,do_vocabulary
-
-  dw assembler_wordlist_pfa
+  dw 0
 
 endif
 

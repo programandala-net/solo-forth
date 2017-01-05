@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051611
+  \ Last modified: 201701051625
 
   \ -----------------------------------------------------------
   \ Description
@@ -101,7 +101,7 @@
   \ 2017-01-05: The previous version of this assembler has been
   \ deleted. Rename this module from
   \ <assembler.z80-asm-comma.fsb> to <assembler.fsb>. Remove
-  \ `bc`, `de` and `hl`.
+  \ `bc`, `de` and `hl`. Move `assembler` from the kernel.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -114,9 +114,26 @@
 
   \ XXX TMP -- `z80-asm,` is still used until the system is updated
 
-get-current forth-wordlist set-current
+get-order get-current only forth definitions
 
-need ?pairs  need 3dup  need 8*
+need ?pairs  need 3dup  need 8*  need wid>vocabulary
+
+assembler-wordlist wid>vocabulary assembler
+
+  \ doc{
+  \
+  \ assembler  ( -- )
+  \ 
+  \ Replace the first word list in the search order with
+  \ `assembler-wordlist`.
+  \
+  \ Origin: Forth-79 (Assembler Word Set), Forth-83 (Assembler
+  \ Extension Word Set), Forth-94 (TOOLS EXT), Forth-2012
+  \ (TOOLS EXT).
+  \
+  \ See: `assembler-wordlist`.
+  \
+  \ }doc
 
 : z80-asm,  ( -- )  assembler  ;
   \ XXX TMP -- until the system is updated
@@ -432,7 +449,7 @@ here 6 cells allot
   \ XXX TODO -- make this optional
   \ XXX TODO -- deprecate, use labels instead
 
-base ! set-current previous
+base ! set-current set-order
 
 ( execute-hl, call-xt, )
 
