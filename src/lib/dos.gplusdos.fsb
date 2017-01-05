@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701042141
+  \ Last modified: 201701051343
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,9 @@
   \ 2017-01-04: Convert `get-drive` and `set-drive` from
   \ `z80-asm` to `z80-asm,`; make them independent to `need`;
   \ improve their documentation.
+  \
+  \ 2017-01-05: Convert `(delete-file)` and `(>file)` from
+  \ `z80-asm` to `z80-asm,`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -212,15 +215,15 @@ code set-drive  ( n -- )
 
 ( delete-file )
 
-need z80-asm  need ufia  need --hook-codes--
+need z80-asm,  need ufia  need --hook-codes--
 need filename>ufia
 
 code (delete-file)  ( -- ior )
-  bc push  \ save the Forth registers
-  ufia ix ldp#
-  heraz hook  \ erase the file
-  bc pop  next ix ldp#  \ restore the Forth registers
-  af push
+  b push,  \ save the Forth registers
+  ufia ix ldp#,
+  heraz hook,  \ erase the file
+  b pop, next ix ldp#,  \ restore the Forth registers
+  af push,
   jpnext,
   end-code
   \ Delete a disk file using the data hold in UFIA.
@@ -260,19 +263,19 @@ need ufia  need get-drive
 
 ( >file )
 
-need z80-asm  need ufia  need --hook-codes--  need >ufia
+need z80-asm,  need ufia  need --hook-codes--  need >ufia
 
 code (>file)  ( -- ior )
 
-  bc push  \ save the Forth registers
-  ufia ix ldp#
-  hofile hook \ open the file and create its header
-  nc if \ no error?
-    hd0d de ftp  hd0b bc ftp  \ de=start, bc=length
-    hsvbk hook \ save to file
-    nc if  cfsm hook  then  \ close the file if no error
-  then  bc pop  next ix ldp#  \ restore the Forth registers
-  af push  \ ior
+  b push,  \ save the Forth IP
+  ufia ix ldp#,
+  hofile hook, \ open the file and create its header
+  nc? rif \ no error?
+    hd0d d ftp, hd0b b ftp,  \ DE=start, BC=length
+    hsvbk hook, \ save to file
+    nc? rif  cfsm hook,  rthen  \ close the file if no error
+  rthen  b pop, next ix ldp#,  \ restore the Forth registers
+  af push,  \ ior
   jpnext, end-code
   \ Save a file to disk using the data hold in UFIA
   \ and return error result _ior_.
