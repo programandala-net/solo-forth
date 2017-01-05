@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051410
+  \ Last modified: 201701051422
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -52,10 +52,11 @@
   \ `z80-asm` to `z80-asm,`; make them independent to `need`;
   \ improve their documentation.
   \
-  \ 2017-01-05: Convert from `z80-asm` to `z80-asm,`:
-  \ `(delete-file)`, `(>file)`, `(<file)`, `(file>screen)`,
-  \ `(<file-as-is)`, `(file?)`, `(cat)`, `@dos`, `c@dos`,
-  \ `c!dos`, `!dos`, `@dosvar`.
+  \ 2017-01-05: Convert all assembly words from `z80-asm` to
+  \ `z80-asm,`: `(delete-file)`, `(>file)`, `(<file)`,
+  \ `(file>screen)`, `(<file-as-is)`, `(file?)`, `(cat)`,
+  \ `@dos`, `c@dos`, `c!dos`, `!dos`, `@dosvar`, `c@dosvar`,
+  \ `!dosvar`, `c!dosvar`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -583,70 +584,61 @@ code @dosvar  ( n1 -- n2 )
 
 ( c@dosvar )
 
-need z80-asm  need --hook-codes--
+need z80-asm,  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
 
 code c@dosvar  ( n -- b )
-  hl pop
-  bc push  \ save the Forth IP
-  hl push
-  patch hook
-  hl pop  dos-vars de ldp#  de addp
-
-  \ XXX OLD
-  \ m a ld 0 d ld#  a e ld
-  \ E7 out  \ page +D out
-  \ bc pop  next ix ldp#  \ restore the Forth registers
-  \ de push
-  \ jpnext,
-
-  \ XXX NEW
-  m a ld
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  \ restore the Forth registers
-  pusha jp
+  h pop,
+  b push,  \ save the Forth IP
+  h push,
+  patch hook,
+  h pop, dos-vars d ldp#, d addp,
+  m a ld,
+  E7 out,  \ page +D out
+  b pop, next ix ldp#,  \ restore the Forth registers
+  pusha jp,
 
   end-code
   \ Fetch the content _b_ of G+DOS variable _n_.
 
 ( !dosvar )
 
-need z80-asm  need --hook-codes--
+need z80-asm,  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
 
 code !dosvar  ( n1 n2 -- )
-  hl pop  de pop
-  bc push  \ save the Forth IP
-  de push  hl push
-  patch hook
-  hl pop  dos-vars de ldp#  de addp  de pop
-  e m ld  hl incp  d m ld
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  \ restore the Forth registers
+  h pop, d pop,
+  b push,  \ save the Forth IP
+  d push, h push,
+  patch hook,
+  h pop, dos-vars d ldp#, d addp, d pop,
+  e m ld, h incp, d m ld,
+  E7 out,  \ page +D out
+  b pop, next, ix, ldp#,  \ restore the Forth registers
   jpnext,
   end-code
   \ Store _n1_ into the G+DOS variable _n2_.
 
 ( c!dosvar )
 
-need z80-asm  need --hook-codes--
+need z80-asm,  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
 
 code c!dosvar  ( b n -- )
-  hl pop  de pop
-  bc push  \ save the Forth IP
-  de push hl push
-  patch hook
-  hl pop  dos-vars de ldp#  de addp  de pop
-  e m ld
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  \ restore the Forth registers
+  h pop, d pop,
+  b push,  \ save the Forth IP
+  d push, h push,
+  patch hook,
+  h pop, dos-vars d ldp#, d addp, d pop,
+  e m ld,
+  E7 out,  \ page +D out
+  b pop, next ix ldp#,  \ restore the Forth registers
   jpnext,
   end-code
   \ Store _b_ into the G+DOS variable _n_.
