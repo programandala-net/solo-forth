@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701050043
+  \ Last modified: 201701051256
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,16 +29,16 @@
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
   \
-  \ 2017-01-05: Convert `color-block` from `z80-asm` to
-  \ `z80-asm,`.
+  \ 2017-01-05: Convert `color-block` and `clear-block` from
+  \ `z80-asm` to `z80-asm,`.
 
 ( clear-block )
 
-need z80-asm
+need z80-asm,
 
 code clear-block  ( column row width height -- )
 
-  exx  0 ix ldp#  sp addix
+  exx, 0000 ix ldp#, sp addix,
     \ exx ; save the Forth IP
     \ ld ix,0
     \ add ix,sp ; ix = address of TOS
@@ -48,7 +48,7 @@ code clear-block  ( column row width height -- )
     \ ; ix+2 = width
     \ ; ix+0 = height
 
-  #4 ix a ftx  a d ld  rrca rrca rrca  #224 and#  #6 ix orx
+  04 ix a ftx, a d ld, rrca, rrca, rrca, #224 and#, 06 ix orx,
     \ ld a,(ix+4) ; row
     \ ld d,a
     \ rrca
@@ -56,13 +56,13 @@ code clear-block  ( column row width height -- )
     \ rrca
     \ and 224
     \ or (ix+6) ; column
-  a e ld  d a ld  #24 and#  #64 or#  a d ld
+  a e ld, d a ld, #24 and#, #64 or#, a d ld,
     \ ld e,a
     \ ld a,d ; column
     \ and 24
     \ or 64
     \ ld d,a
-  #2 ix c ftx  #0 ix a ftx  a add  a add  a add  a b ld
+  02 ix c ftx, 00 ix a ftx, a add, a add, a add, a b ld,
     \ ld c,(ix+2) ; width
     \ ld a,(ix+0) ; height
     \ add a,a
@@ -70,9 +70,9 @@ code clear-block  ( column row width height -- )
     \ add a,a
     \ ld b,a ; width*8
 
-  begin
+  rbegin
     \ delete_bitmap:
-    de push  de hl ldp  de incp  0 m ld#  bc push  c dec
+    d push, d h ldp, d incp, 00 m ld#, b push, c dec,
       \ push de     ; save the address of the block scan
       \ ld l,e
       \ ld h,d      ; HL = origin, start of the scan
@@ -80,20 +80,20 @@ code clear-block  ( column row width height -- )
       \ ld (hl),0   ; delete the first byte
       \ push bc     ; save the counts
       \ dec c       ; is width greater than 1?
-    nz if  0 b ld#  ldir  then
+    nz? rif  00 b ld#, ldir,  rthen
       \ jr z,label1
-      \   ld b,0    ; BC = width
-      \   ldir      ; erase the rest of the scan
+      \ ld b,0    ; BC = width
+      \ ldir      ; erase the rest of the scan
       \ label1:
-    bc pop  de pop  d inc  d a ld  7 and#
+    b pop, d pop, d inc, d a ld, 07 and#,
       \ pop bc      ; restore counts
       \ pop de      ; restore address of scan
       \ inc d
       \ ld a,d
       \ and 7
-    z if  #32 a ld#  e add  a e ld
-      nc if  d a ld  8 sub#  a d ld  then
-    then
+    z? rif  #32 a ld#, e add, a e ld,
+      nc? rif  d a ld, 08 sub#, a d ld,  rthen
+    rthen
       \ jr nz,inc_char
       \ ld a,32
       \ add a,e
@@ -103,16 +103,16 @@ code clear-block  ( column row width height -- )
       \ sub 8
       \ ld d,a
       \ inc_char:
-  step  0 hl ldp#  sp addp  #4 cells de ldp#  de addp  ldsp
+  rstep  0000 h ldp#, sp addp, 04 cells d ldp#, d addp, ldsp,
     \ djnz delete_bitmap
     \ ; Drop the parameters:
     \ ld hl,0
     \ add hl,sp
-    \ ld de,5*cells
+    \ ld de,4*cells
     \ add hl,de
     \ ld sp,hl
 
-  exx  next ix ldp#  jpnext,  end-code
+  exx, next ix ldp#, jpnext,  end-code
     \ exx         ; restore the Forth IP
     \ ld ix,next  ; restore IX
     \ jp next
