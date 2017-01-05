@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701021540
+  \ Last modified: 201701051639
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
   \
   \ 2017-01-02: Convert the new unfinished version of
   \ `mode64-emit` from `z80-asm` to `z80-asm,` and fix it.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -78,7 +80,7 @@ set-drive
   \ XXX NEW
   \ XXX TODO -- integrate the driver
 
-need z80-asm,
+need assembler
 
   \ XXX TODO use common variables for all modes?
 

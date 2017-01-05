@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701020129
+  \ Last modified: 201701051641
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,6 +58,8 @@
   \
   \ 2017-01-02: Convert `f!` and `f@` from `z80-asm` to
   \ `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -583,7 +585,7 @@ code u>f  ( u -- ) ( F: -- r )
 
 ( f! f@ )
 
-need z80-asm,
+need assembler
 
 code f!  ( fa -- ) ( F: r -- )
   exx, 2BF1 call,  \ STK_FETCH ROM routine

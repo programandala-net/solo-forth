@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612270053
+  \ Last modified: 201701051636
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,10 +36,12 @@
   \ a modified version of the ROM routine.
   \
   \ 2016-12-26: Add `aline176`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( rdraw176 )
 
-need z80-asm,
+need assembler
 
 code rdraw176  ( gx gy -- )
 
@@ -91,7 +93,7 @@ code rdraw176  ( gx gy -- )
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-need z80-asm,  need l:  need os-coords  need (pixel-addr)
+need assembler  need l:  need os-coords  need (pixel-addr)
 
 code rdraw  ( gx gy -- )
 

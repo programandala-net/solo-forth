@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701020052
+  \ Last modified: 201701051635
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,8 @@
   \ Latest changes
 
   \ 2017-01-02: Convert from `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( circle )
 
@@ -41,7 +43,7 @@
   \ Note. original ROM circles are slightly displaced to the
   \ right as noticed.
 
-need z80-asm,
+need assembler
 
 create circle-plot  ( -- a )
   asm

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051422
+  \ Last modified: 201701051632
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,8 @@
   \ `(file>screen)`, `(<file-as-is)`, `(file?)`, `(cat)`,
   \ `@dos`, `c@dos`, `c!dos`, `!dos`, `@dosvar`, `c@dosvar`,
   \ `!dosvar`, `c!dosvar`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -181,7 +183,7 @@ need ?(
 
 [unneeded] get-drive ?(
 
-need z80-asm,  need plusd-in,  need plusd-out,
+need assembler  need plusd-in,  need plusd-out,
 
 code get-drive  ( -- n )
   b push,  \ save the Forth IP
@@ -200,7 +202,7 @@ code get-drive  ( -- n )
   \
   \ }doc
 
-[unneeded] get-drive ?(  need z80-asm,
+[unneeded] get-drive ?(  need assembler
 
 code set-drive  ( n -- )
   h pop, b push,
@@ -218,7 +220,7 @@ code set-drive  ( n -- )
 
 ( delete-file )
 
-need z80-asm,  need ufia  need --hook-codes--
+need assembler  need ufia  need --hook-codes--
 need filename>ufia
 
 code (delete-file)  ( -- ior )
@@ -266,7 +268,7 @@ need ufia  need get-drive
 
 ( >file )
 
-need z80-asm,  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need --hook-codes--  need >ufia
 
 code (>file)  ( -- ior )
 
@@ -290,7 +292,7 @@ code (>file)  ( -- ior )
 
 ( <file )
 
-need z80-asm,  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need --hook-codes--  need >ufia
 
 code (<file)  ( -- ior )
 
@@ -333,7 +335,7 @@ code (<file)  ( -- ior )
   \ XXX UNDER DEVELOPMENT
   \ Experimental code to read lines from a file
 
-need z80-asm,  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need --hook-codes--  need >ufia
 
 code (file>screen)  ( -- dosior )
 
@@ -387,7 +389,7 @@ code .100  ( u -- )
 
 ( <file-as-is )
 
-need z80-asm,  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need --hook-codes--  need >ufia
 
 code (<file-as-is)  ( -- ior )
 
@@ -419,7 +421,7 @@ code (<file-as-is)  ( -- ior )
 
 ( file? )
 
-need z80-asm, need ufia  need filename!  need --hook-codes--
+need assembler need ufia  need filename!  need --hook-codes--
 
 code (file?)  ( -- f )
   b push,  \ save the Forth IP
@@ -439,7 +441,7 @@ code (file?)  ( -- f )
 
 ( cat acat wcat wacat )
 
-need z80-asm,  need ufia  need --hook-codes--
+need assembler  need ufia  need --hook-codes--
 need filename>ufia
 
   \ G+DOS addresses (in its own paged memory).
@@ -496,7 +498,7 @@ code (cat)  ( n -- )
 
 ( @dos )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 code @dos  ( a -- n )
   h pop,
@@ -513,7 +515,7 @@ code @dos  ( a -- n )
 
 ( c@dos )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 code c@dos  ( a -- b )
   h pop,
@@ -530,7 +532,7 @@ code c@dos  ( a -- b )
 
 ( c!dos )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 code c!dos  ( b a -- )
   h pop, d pop,
@@ -546,7 +548,7 @@ code c!dos  ( b a -- )
 
 ( !dos )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 code !dos  ( n a -- )
   h pop, d pop,
@@ -562,7 +564,7 @@ code !dos  ( n a -- )
 
 ( @dosvar )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -584,7 +586,7 @@ code @dosvar  ( n1 -- n2 )
 
 ( c@dosvar )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -605,7 +607,7 @@ code c@dosvar  ( n -- b )
 
 ( !dosvar )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -625,7 +627,7 @@ code !dosvar  ( n1 n2 -- )
 
 ( c!dosvar )
 
-need z80-asm,  need --hook-codes--
+need assembler  need --hook-codes--
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.

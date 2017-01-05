@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701042321
+  \ Last modified: 201701051637
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,8 @@
   \ 2017-01-04: Convert `crnd` from `z80-asm` to `z80-asm,`;
   \ add its missing requirement. Make `crnd` and `crandom`
   \ accessible to `need`; improve their documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( rnd random random-range )
 
@@ -91,7 +93,7 @@ need ?(
 
 ( fast-rnd fast-random )
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code fast-rnd  ( -- u )
 
@@ -180,7 +182,7 @@ code fast-rnd  ( -- u )
 
 [unneeded] crnd ?exit
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code crnd  ( -- b )
   os-seed fthl,

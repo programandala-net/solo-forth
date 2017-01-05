@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612290057
+  \ Last modified: 201701051639
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,9 @@
   \
   \ 2016-12-29: Try alternative code to unlink the transient
   \ code in `forget-transient`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler` in
+  \ documentation.
 
 ( transient end-transient forget-transient )
 
@@ -93,7 +96,7 @@ variable old-current-latest
   \ ----
   \ 2025 1700 transient
   \
-  \   need z80-asm,
+  \   need assembler
   \
   \ end-transient
   \

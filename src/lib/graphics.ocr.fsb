@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701021353
+  \ Last modified: 201701051637
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,10 +30,12 @@
   \
   \ 2017-01-02: Convert `ocr` to `z80-asm,`. Improve
   \ documentation.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( ocr )
 
-need z80-asm,  need ocr-chars
+need assembler  need ocr-chars
 
 code ocr  ( col line -- n )
 

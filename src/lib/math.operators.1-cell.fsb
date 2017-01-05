@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701041640
+  \ Last modified: 201701051641
 
   \ -----------------------------------------------------------
   \ Description
@@ -97,6 +97,8 @@
   \
   \ 2017-01-04: Fix: replace `>relresolve` with `>rresolve` in
   \ `lshift` and `rshift`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( under+ +under )
 
@@ -392,7 +394,7 @@ code 0max  ( n -- n | 0 )
 
 ( lshift )
 
-need z80-asm,
+need assembler
 
 code lshift  ( x1 u -- x2 )
 
@@ -436,7 +438,7 @@ code lshift  ( x1 u -- x2 )
 
 ( rshift )
 
-need z80-asm,
+need assembler
 
 code rshift  ( x1 u -- x2 )
 
@@ -533,7 +535,7 @@ code crshift  ( b1 u -- b2 )
 
   \ Data space used: 29 bytes.
 
-need z80-asm,
+need assembler
 
 code bits  ( ca len -- u )
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701021606
+  \ Last modified: 201701051635
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,10 +28,12 @@
 
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( cls-chars0 )
 
-need z80-asm,
+need assembler
 
 code cls-chars0  ( -- )
 
@@ -72,7 +74,7 @@ code cls-chars0  ( -- )
 
 ( cls-chars1 )
 
-need z80-asm,
+need assembler
 
 code cls-chars1  ( -- )
 
@@ -118,7 +120,7 @@ code cls-chars1  ( -- )
   \ http://microhobby.org/numero128.htm
   \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg
 
-need z80-asm,
+need assembler
 
 code horizontal-curtain  ( b -- )
 
@@ -157,7 +159,7 @@ code horizontal-curtain  ( b -- )
   \ http://microhobby.org/numero128.htm
   \ http://microhobby.speccy.cz/mhf/128/MH128_07.jpg
 
-need z80-asm,
+need assembler
 
 code vertical-curtain  ( b -- )
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612251332
+  \ Last modified: 201701051642
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,8 @@
 
   \ 2016-12-25: Improve documentation. Convert from `z80-asm`
   \ to `z80-asm,` assembler.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( get-inkey )
 
@@ -35,7 +37,7 @@
   \
   \ Code adapted and modified from Abersoft Forth's `inkey`.
 
-need z80-asm,
+need assembler
 
 code get-inkey  ( -- c | 0 )
 

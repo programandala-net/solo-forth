@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701021513
+  \ Last modified: 201701051640
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,8 @@
   \ `false` are code words.
   \
   \ 2017-01-02: Convert `m+` from `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( ud* d* )
 
@@ -301,7 +303,7 @@ need d*
   \
   \ Code adapted from Z88 CamelForth.
 
-need z80-asm,
+need assembler
 
 code m+  ( d1|ud1 n -- d2|ud2 )
   exx,     \ save Forth IP

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701021359
+  \ Last modified: 201701051638
 
   \ -----------------------------------------------------------
   \ Description
@@ -78,6 +78,11 @@
   \ 2016-12-29: Move `transient-test` from block 1.
   \
   \ 2017-01-02: Use `z80-asm,` in `transient-asm-test`.
+  \
+  \ 2017-01-05: Remove the tests of the old `z80-asm`
+  \ assembler.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( transient-test )
 
@@ -100,7 +105,7 @@
   \ 2250 2000 transient  \ works
   \ 2500 2000 transient  \ works
   unused farunused
-  need z80-asm,   cr .( Memory used by the assembler:)
+  need assembler   cr .( Memory used by the assembler:)
       farunused - cr u. .(  headers space)    \ 1777 B
          unused - cr u. .(  data/code space)  \ 1623 B
   cr .( Is headers space corrupted?:)
@@ -214,7 +219,7 @@ need order  need wordlist-words  need .wordname
 need transient
 
 cr .( Before transient :)         info  2000 2000 transient
-cr .( After transient :)          info  need z80-asm,
+cr .( After transient :)          info  need assembler
 cr .( Before end-transient :)     info  end-transient
 cr .( After end-transient :)      info  need n>r
 cr .( Before forget-transient :)  info  forget-transient
@@ -381,48 +386,6 @@ synonym2 if-s2 if
   \ : zx [ 1 ] literal-a ;    \ error #-264
   \ : zx [ 1 ] literal-s ;    \ no error \ ok
   \ : zx [ 1 ] literal-s2 ;   \ error #-264
-
-( until-test )
-
-  \ XXX TMP for debugging
-  \ XXX OLD
-
-need z80-asm  need dump  need >body
-
-code until-test  ( -- )
-  begin
-    nop
-  z until  jpnext,
-  end-code
-
-' until-test >body 5 dump
-
-( if'-test )
-
-  \ XXX TMP for debugging
-  \ XXX OLD
-
-need z80-asm  need dump  need >body
-
-code if'-test  ( -- )
-
-  .( here is ) here u.
-
-  p' if'  \ not expecting a regular character
-
-    nz if  \ not expecting the column
-      \ expecting the line
-      \ get_lin:
-      cpl  C0 add#  \ now A = 191 - char
-      hl incp
-    then
-    \ get_col:
-    hl incp  a m ld
-    ret
-
-  then'  end-code
-
-' if'-test >body dup here swap - dump
 
 ( {if-test {do-test )
 

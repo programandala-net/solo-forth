@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701050008
+  \ Last modified: 201701051642
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,10 +31,12 @@
   \ 2017-01-04: Convert `scroll-1px-up` and `(scroll-1px-up)`
   \ from `z80-asm` to `z80-asm,`. Improve documentation. Fix:
   \ add missing `ret,` to `(scroll-1px-up)`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( scroll-1px-right )
 
-need z80-asm,
+need assembler
 
 code scroll-1px-right  ( -- )
 
@@ -70,7 +72,7 @@ code scroll-1px-right  ( -- )
 
 ( scroll-1px-up )
 
-need z80-asm,
+need assembler
 
 create (scroll-1px-up)  ( -- a )
 

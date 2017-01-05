@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051309
+  \ Last modified: 201701051635
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,10 +31,12 @@
   \
   \ 2017-01-05: Convert `color-block`, `clear-block` and
   \ `wipe-block` from `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( clear-block )
 
-need z80-asm,
+need assembler
 
 code clear-block  ( column row width height -- )
 
@@ -135,7 +137,7 @@ code clear-block  ( column row width height -- )
 
 ( color-block )
 
-need z80-asm,
+need assembler
 
 code color-block  ( column row width height color -- )
 
@@ -223,7 +225,7 @@ code color-block  ( column row width height color -- )
 
 ( wipe-block )
 
-need z80-asm,
+need assembler
 
 code wipe-block  ( column row width height color -- )
 

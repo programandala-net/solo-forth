@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701042334
+  \ Last modified: 201701051638
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,8 @@
   \ `z80-asm,` and add its requirements. Shorten name parts:
   \ "random-pix" to "rng-pix"; "-benchmark" to "-bench". Try
   \ all of the benchs.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( rnd-bench )
 
@@ -489,7 +491,7 @@ need rng-pix-bench
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code jml-rnd  ( -- u )
 
@@ -548,7 +550,7 @@ need rng-pix-bench
   \ Adapted from code published by Milos Bazelides:
   \ http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#4
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code mb-rnd  ( -- u )
   os-seed d ftp,
@@ -712,7 +714,7 @@ need rng-pix-bench
   \ Code adapted from:
   \ http://z80-heaven.wikidot.com/math#toc40
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code zh-rnd  ( -- u )
 
@@ -878,7 +880,7 @@ need rng-pix-bench  need +thru  1 8 +thru
   \ http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Random
   \ Joe Wingbermuehle
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code jw-crnd  ( -- b )
 
@@ -939,7 +941,7 @@ need rng-pix-bench
   \ Input: none
   \ Output: A = pseudo-random number, period 256
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code mb1-crnd  ( -- b )
 
@@ -984,7 +986,7 @@ need rng-pix-bench
   \ Input: none
   \ Output: A = pseudo-random number, period 256
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code mb2-crnd  ( -- b )
 
@@ -1020,7 +1022,7 @@ need rng-pix-bench
   \ Code adapted from:
   \ http://z80-heaven.wikidot.com/math#toc40
 
-need z80-asm,  need os-seed
+need assembler  need os-seed
 
 code zh-crnd  ( -- b )
 
@@ -1067,7 +1069,7 @@ need rng-pix-bench
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
 
-need z80-asm,  need os-seed  need rng-pix-bench
+need assembler  need os-seed  need rng-pix-bench
 
 variable rom-pointer  rom-pointer off  os-seed off
 
@@ -1135,7 +1137,7 @@ code libzx-crnd-opt3  ( -- b )
   \ 2016-04-09: Adapted to Solo Forth. Optimized and modified
   \ the original code.
 
-need z80-asm,  need os-seed  need rng-pix-bench
+need assembler  need os-seed  need rng-pix-bench
 
 variable rom-pointer  rom-pointer off  os-seed off
 
@@ -1204,7 +1206,7 @@ code libzx-crnd-opt2  ( -- b )
   \ 2016-04-09: Adapted to Solo Forth. Optimized the original
   \ code.
 
-need z80-asm,  need os-seed  need rng-pix-bench
+need assembler  need os-seed  need rng-pix-bench
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 
@@ -1275,7 +1277,7 @@ code libzx-crnd-opt1  ( -- b )
 
   \ 2016-04-09: Adapted to Solo Forth.
 
-need z80-asm,  need os-seed  need rng-pix-bench
+need assembler  need os-seed  need rng-pix-bench
 
 variable rom-pointer  3 rom-pointer !  33 os-seed c!
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701020101
+  \ Last modified: 201701051636
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,13 +40,15 @@
   \
   \ 2017-01-02: Convert all assembler words from `z80-asm` to
   \ `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( g-emit g-type )
 
 
   \ XXX TODO -- `g-emit` use the current coordinates
 
-need z80-asm,  need g-emit-routine  need g-emit-udg
+need assembler  need g-emit-routine  need g-emit-udg
 need os-chars  need os-coords  need g-emitted
 
 code (g-emit)  ( c -- )
@@ -119,7 +121,8 @@ need c+!  need c-!
 
 ( g-emit-0udg )
 
-need z80-asm,  need g-emit-routine  need os-udg  need os-coords
+need assembler
+need g-emit-routine  need os-udg  need os-coords
 
 code g-emit-0udg  ( gx gy b -- )
   h pop, l a ld, b push,
@@ -142,7 +145,7 @@ code g-emit-0udg  ( gx gy b -- )
 
 ( g-emit-udg )
 
-need z80-asm,  need g-emit-routine  need os-udg  need os-coords
+need assembler  need g-emit-routine  need os-udg  need os-coords
 
 [defined] first-udg ?\ #128 constant first-udg
 
@@ -168,7 +171,7 @@ code g-emit-udg  ( c -- )
 
 ( g-emit-routine )
 
-need z80-asm, need (pixel-addr)
+need assembler need (pixel-addr)
 
 create g-emit-routine  ( -- a )  asm
 

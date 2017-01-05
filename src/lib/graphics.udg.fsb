@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612231720
+  \ Last modified: 201701051642
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,8 @@
   \ strings module.
   \
   \ 2016-12-23: Add `udg-chars`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( udg-chars 0udg> 0udg! udg! 0udg: udg: )
 
@@ -368,7 +370,7 @@ variable udg-row-first-udg
 
 ( make-block-chars )
 
-need z80-asm,
+need assembler
 
 code make-block-chars  ( a -- )
   h pop, b push,

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701020044
+  \ Last modified: 201701051631
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,8 @@
   \
   \ 2017-01-02: Convert `ndrop` and 2ndrop` from `z80-asm` to
   \ Z80 opcodes.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
 
 ( 2nip pick roll )
 
@@ -91,7 +93,7 @@ code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ }doc
 
-[unneeded] roll ?(  need z80-asm,
+[unneeded] roll ?(  need assembler
 
 code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 
