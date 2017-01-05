@@ -179,6 +179,7 @@ DD constant ix-op  FD constant iy-op
 
 : (jr,)  ( a op -- )  c, here 1+ - dup ?rel c,  ;
   \ Compile a relative jump _op_ to absolute address _a_.
+  \ XXX TODO -- use `<rresolve`
 
 : m9  ( 8b "name" -- )
   create c, does>  ( a -- ) ( a pfa )  c@ (jr,)  ;
@@ -226,6 +227,9 @@ cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2 xor, -->
   \ Opcodes
 
 : jpix,  ( -- )  ix-op c, jphl,  ;
+  \ XXX TODO -- study changes needed to use `ix jpp` or similar
+  \ instead.
+
 : ldp#,  ( 16b rp -- )  8* 1+ c, ,  ;
 : ld#,  ( 8b r -- )  8* 06 + c, c,  ;
 : ld,  ( r1 r2 -- )  8* 40 + + c,  ;
@@ -236,6 +240,8 @@ cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2 xor, -->
 
 : addix,  ( rp -- )  ix-op c, addp,  ;
 : addiy,  ( rp -- )  iy-op c, addp,  ;
+  \ XXX TODO -- study changes needed to use `ix addp,` instead;
+  \ that means `h addp,` should be used instead of `addp,`
 
   \ Macros
 

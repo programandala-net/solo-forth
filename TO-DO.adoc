@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-02
+:revdate: 2017-01-05
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -17,8 +17,9 @@ Data space used (2016-12-20) by the assemblers:
 
 NOTE: Milestone: 0.13.0
 
-Rewrite all small code words in Z80 opcodes, without assembler.
-Example: `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`...
+Rewrite all small code words in Z80 opcodes, without assembler.  Example:
+`lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
+`set-drive`, `crnd`, `(delete-file)`...
 
 .2016-12-25:
 
@@ -76,6 +77,11 @@ Diff::              +26 B
 
 // Bugs {{{1
 == Bugs ==
+
+.2017-01-04:
+
+Check some of the RNG benchs.  The machine resets at the end of some
+of them. They are marked in the source.
 
 .2016-12-23:
 
@@ -484,6 +490,14 @@ source.
 
 // G+DOS {{{2
 === G+DOS ===
+
+.2017-01-05:
+
+Simplify `!dos,`, `c!dos` and family.
+
+.2017-01-05:
+
+Try `plusd-in,` instead of `patch hook,`.
 
 .2015-08-31:
 
@@ -1258,6 +1272,14 @@ Combine `begin-module` and `package`.
 
 // Names {{{1
 == Names ==
+
+.2017-01-05:
+
+Use parens after a convention: `(name)` for words not useful for the
+user, not accessible in the library; `(name` for internal words that
+may be useful for the user and are accessible in the library. Beside,
+this avoids the need to use backslash-delimited index block lines in
+the library.
 
 .2017-01-02:
 
