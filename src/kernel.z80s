@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701051605
+; Last modified: 201701051839
 
 include version.z80s
 
@@ -2305,70 +2305,6 @@ push_a:
 ; }doc
 
   dw address_of_default_bank
-
-; ----------------------------------------------
-if 1 ; far_memory
-else
-
-  _code_header system_bank_,'system-bank'
-
-; doc{
-;
-; system-bank  ( -- )
-;
-; Page in the system bank at $C000..$FFFF.
-; This memory bank is used to store the dictionary headers.
-;
-; }doc
-
-  push ix ; make next `ret` jump to `next`
-
-bank.system:
-
-  ; Page in the system memory bank.
-
-  ; Output:
-  ;   A E corrupted
-
-  ld e,system_bank
-  jr bank.e
-
-endif
-
-bank.default:
-
-  ; Page in the default memory bank.
-
-  ; Output:
-  ;   A E corrupted
-
-address_of_default_bank: equ $+1
-  ld e,default_bank
-
-bank.e:
-
-  ; Page in the memory bank hold in the E register.
-
-  ; Input:
-  ;   E = bank
-  ; Output:
-  ;   A corrupted
-
-  ld a,(sys_bankm) ; get the saved status of BANKM
-  and %11111000 ; reset bits 0-2
-  or e ; modify bits 0-2
-  di
-  ld (sys_bankm),a ; update BANKM
-if defined plus3dos
-  push bc
-  ld bc,bank1_port
-  out (c),a
-  pop bc
-else
-  out (bank1_port),a ; page in the bank
-endif
-  ei
-  ret
 
 ; ----------------------------------------------
   _constant_header bank_start_,'bank-start'
@@ -6851,6 +6787,35 @@ c_fetch_bank.e:
 endif
 
 ; ----------------------------------------------
+if 1 ; far_memory
+else
+
+  _code_header system_bank_,'system-bank'
+
+; doc{
+;
+; system-bank  ( -- )
+;
+; Page in the system bank at $C000..$FFFF.
+; This memory bank is used to store the dictionary headers.
+;
+; }doc
+
+  push ix ; make next `ret` jump to `next`
+
+bank.system:
+
+  ; Page in the system memory bank.
+
+  ; Output:
+  ;   A E corrupted
+
+  ld e,system_bank
+  jr bank.e
+
+endif
+
+; ----------------------------------------------
 if 0 ; XXX OLD
 
   _colon_header fetch_bank_,'@bank'
@@ -6907,25 +6872,42 @@ endif
 ;
 ; }doc
 
-if size_optimization
+  push ix           ; make next `ret` jump to `next`
 
-                    ;  T  B
-                    ; -- --
-  push ix           ; 15 02 ; make next `ret` jump to `next`
-  jr bank.default   ; 12 02
-                    ; -- --
-                    ; 27 04 Total
+bank.default:
 
+  ; Page in the default memory bank.
+
+  ; Output:
+  ;   A E corrupted
+
+address_of_default_bank: equ $+1
+  ld e,default_bank
+
+bank.e:
+
+  ; Page in the memory bank hold in the E register.
+
+  ; Input:
+  ;   E = bank
+  ; Output:
+  ;   A corrupted
+
+  ld a,(sys_bankm) ; get the saved status of BANKM
+  and %11111000 ; reset bits 0-2
+  or e ; modify bits 0-2
+  di
+  ld (sys_bankm),a ; update BANKM
+if defined plus3dos
+  push bc
+  ld bc,bank1_port
+  out (c),a
+  pop bc
 else
-
-                    ;  T  B
-                    ; -- --
-  call bank.default ; 17 03
-  _jp_next          ; 08 02
-                    ; -- --
-                    ; 25 05 Total
-
+  out (bank1_port),a ; page in the bank
 endif
+  ei
+  ret
 
 if 1 ; far_memory
 else
