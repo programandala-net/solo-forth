@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051625
+  \ Last modified: 201701051630
 
   \ -----------------------------------------------------------
   \ Description
@@ -102,6 +102,7 @@
   \ deleted. Rename this module from
   \ <assembler.z80-asm-comma.fsb> to <assembler.fsb>. Remove
   \ `bc`, `de` and `hl`. Move `assembler` from the kernel.
+  \ Remove `z80-asm,`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -110,9 +111,7 @@
   \ - Use `get-order` at the start and `set-order` at the end.
   \ - Document.
 
-( assembler z80-asm, )
-
-  \ XXX TMP -- `z80-asm,` is still used until the system is updated
+( assembler )
 
 get-order get-current only forth definitions
 
@@ -134,9 +133,6 @@ assembler-wordlist wid>vocabulary assembler
   \ See: `assembler-wordlist`.
   \
   \ }doc
-
-: z80-asm,  ( -- )  assembler  ;
-  \ XXX TMP -- until the system is updated
 
 also assembler definitions base @ hex
 

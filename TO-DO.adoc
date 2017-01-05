@@ -21,25 +21,6 @@ Rewrite all small code words in Z80 opcodes, without assembler.  Example:
 `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
 `set-drive`, `crnd`, `(delete-file)`...
 
-.2016-12-25:
-
-NOTE: Milestone: 0.13.0
-
-Move `assembler` to the library after migrating from `z80-asm` to `z80-asm,`,
-in order to use `need assembler`. Leave `assembler-wordlist` in the kernel.
-
-.2016-12-20:
-
-NOTE: Milestone: 0.13.0
-
-Add assembler control structures to the syntax file.
-
-.2016-12-20:
-
-NOTE: Milestone: 0.13.0
-
-Migrate from `z80-asm` to `z80-asm,`.
-
 .2016-04-20:
 
 NOTE: Milestone: 0.13.0
