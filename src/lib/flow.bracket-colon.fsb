@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611252046
+  \ Last modified: 201701051739
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,12 +31,15 @@
   \ 2016-11-25: First version.  Reference:
   \ <http://www.forth200x.org/quotations-v3.txt>.  Not tested
   \ with `does>`.  No support for locals.
+  \
+  \ 2017-01-05: Update `also assembler` to `assembler-wordlist
+  \ >order`.
 
 ( [: ;] )
 
 : [:  \ Compilation: ( -- orig xt )
   postpone ahead  latestxt here lastxt !
-  docolon [ also assembler ] call, [ previous ]
+  docolon [ assembler-wordlist >order ] call, [ previous ]
   ; immediate compile-only
 
   \ doc{

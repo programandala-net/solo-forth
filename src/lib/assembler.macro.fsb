@@ -28,10 +28,12 @@
   \ 2016-04-11: Extracted from the assemblers `z80-asm` and
   \ `z80-asm,`. The code was identical in both of them and it
   \ can be useful without an assembler.
+  \
+  \ 2017-01-05: `need assembler`.
 
 ( macro )
 
-need get-order
+need assembler
 
 get-order get-current
 

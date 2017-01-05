@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701051641
+  \ Last modified: 201701051739
 
   \ -----------------------------------------------------------
   \ Description
@@ -60,6 +60,7 @@
   \ `z80-asm,`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \ Update `also assembler` to `assembler-wordlist >order`.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -157,7 +158,7 @@ need calculator-command  need f>flag  need call-xt
 
 : calculator-command>flag  ( b -- )
   calculator-command ['] f>flag call-xt
-  [ also assembler ] jpnext, [ previous ]  ;
+  [ assembler-wordlist >order ] jpnext, [ previous ]  ;
 
   \ doc{
   \
