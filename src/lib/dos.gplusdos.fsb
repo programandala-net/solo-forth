@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051343
+  \ Last modified: 201701051351
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,8 +52,8 @@
   \ `z80-asm` to `z80-asm,`; make them independent to `need`;
   \ improve their documentation.
   \
-  \ 2017-01-05: Convert `(delete-file)` and `(>file)` from
-  \ `z80-asm` to `z80-asm,`.
+  \ 2017-01-05: Convert `(delete-file)`, `(>file)`, `(<file)`,
+  \ `(file>screen)` from `z80-asm` to `z80-asm,`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -287,20 +287,20 @@ code (>file)  ( -- ior )
 
 ( <file )
 
-need z80-asm  need ufia  need --hook-codes--  need >ufia
+need z80-asm,  need ufia  need --hook-codes--  need >ufia
 
 code (<file)  ( -- ior )
 
-  bc push  \ save the Forth IP
+  b push,  \ save the Forth IP
 
-  ufia ix ldp#  hgfile hook \ get the file
-  nc if \ no error?  -- load the file header:
+  ufia ix ldp#, hgfile hook,  \ get the file
+  nc? rif  \ no error?  -- load the file header:
 
-    hd00 de ldp#  9 b ld# \ destination and count
-    begin  lbyte hook  de stap  de incp  step
+    hd00 d ldp#, 9 b ld#,  \ destination and count
+    rbegin  lbyte hook, d stap, d incp,  rstep
       \ Load the file header.
 
-    file-address de ftp  file-length bc ftp
+    file-address d ftp, file-length b ftp,
       \ The start address and length specified
       \ in the command are used by default instead
       \ of those stored in the file header.
@@ -308,12 +308,12 @@ code (<file)  ( -- ior )
   \ XXX TODO make the file address optional
   \ XXX TODO make the file length optional
 
-    bc tstp z if  hd0b bc ftp  then  hldbk hook
+    b tstp, z? rif  hd0b b ftp,  rthen  hldbk hook,
       \ If the length is zero, use the
       \ length of the file header
       \ instead.  Then load the file data.
 
-  then  bc pop  next ix ldp#  af push
+  rthen  b pop, next ix ldp#, af push,
         \ restore the Forth registers and save the ior
   jpnext,  end-code
   \ Load a file from disk, using the data hold in UFIA, the
@@ -330,30 +330,30 @@ code (<file)  ( -- ior )
   \ XXX UNDER DEVELOPMENT
   \ Experimental code to read lines from a file
 
-need z80-asm  need ufia  need --hook-codes--  need >ufia
+need z80-asm,  need ufia  need --hook-codes--  need >ufia
 
 code (file>screen)  ( -- dosior )
 
-  bc push  \ save the Forth IP
+  b push,  \ save the Forth IP
 
-  ufia ix ldp#  hgfile hook \ get the file
-  nc if \ no error?  -- load the file header:
+  ufia ix ldp#, hgfile hook,  \ get the file
+  nc? rif  \ no error?  -- load the file header:
 
-    patch hook  4000 de ldp#  128 bc ldp#
+    patch hook, 4000 d ldp#, #128 b ldp#,
       \ page +D in
       \ destination and count
 
-    d h ld
-    begin   lbyte hook  de stap
-            a l ld  de push  bc push  1744 call  bc pop  de pop
+    d h ld,
+    rbegin   lbyte hook, d stap,
+            a l ld, d push, b push, 1744 call, b pop, d pop,
               \ print HL
-            de incp  bc decp  b a ld  c or
-    z until  E7 out  \ page +D out
+            d incp, b decp, b a ld, c or,
+    z? runtil  E7 out,  \ page +D out
     \ begin
     \   lbyte hook  af push  10 hook  af pop  13 cp
     \ z until
 
-  then  bc pop  next ix ldp#  af push
+  rthen  b pop, next ix ldp#, af push,
         \ restore the Forth registers and save the ior
   jpnext,  end-code -->
   \ Print a file on the screen, line by line, using the data
