@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051926
+  \ Last modified: 201701061703
 
   \ -----------------------------------------------------------
   \ Description
@@ -122,6 +122,9 @@
   \
   \ 2017-01-05: Remove old system bank support from
   \ `name<name`. Rewrite `smudged`, adapted to far memory.
+  \
+  \ 2017-01-06: Add missing `exit` after loading some words.
+  \ Document `(comp')`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -164,16 +167,16 @@ need str=
 ( body>name name>body link>name name>link name<name )
 
 [unneeded] body>name
-?\ need body>  : body>name  ( pfa -- nt )  body> >name  ;
+?\ need body>  : body>name  ( pfa -- nt )  body> >name  ; exit
 
 [unneeded] name>body
-?\ need >body  : name>body  ( nt -- pfa )  name> >body  ;
+?\ need >body  : name>body  ( nt -- pfa )  name> >body  ; exit
 
 [unneeded] link>name
-?\ need alias  ' cell+ alias link>name  ( nt -- pfa )
+?\ need alias  ' cell+ alias link>name  ( nt -- pfa ) exit
 
 [unneeded] name>link
-?\ need alias  ' cell- alias name>link  ( nt -- pfa )
+?\ need alias  ' cell- alias name>link  ( nt -- pfa ) exit
 
 [unneeded] name<name ?exit
 need name>link
@@ -192,7 +195,7 @@ need name>link
 ?\ : >>name  ( xtp -- nt )  cell+ cell+  ; exit
 
 [unneeded] >body
-?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl,  end-code
+?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl,  end-code exit
   \ ( xt -- pfa )
   \ pop hl
   \ inc hl
@@ -245,6 +248,18 @@ need ?(
   immediate?  if    ['] execute
               else  ['] compile,  then  ;
 
+  \ doc{
+  \
+  \ (comp')  ( nt -- xt )
+  \
+  \ A factor of `name>compile`. If _nt_ is an immediate word,
+  \ return the _xt_ of `execute`, else return the _xt_ of
+  \ `compile,`.
+  \
+  \ See: `name>compile`.
+  \
+  \ }doc
+
 : name>compile  ( nt -- x xt )  dup name> swap (comp')  ;  ?)
 
   \ doc{
@@ -259,12 +274,14 @@ need ?(
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
+  \ See: `(comp')`.
+  \
   \ }doc
 
 [unneeded] comp' ?(  need need-here  need-here name>compile
 
 : comp'  ( "name" -- x xt )
-  defined dup ?defined name>compile  ;  ?)
+  defined dup ?defined name>compile  ; exit ?)
 
   \ doc{
   \
@@ -280,7 +297,7 @@ need ?(
 [unneeded] [comp'] ?(  need need-here  need-here comp'
 
 : [comp']  ( Compilation: "name" -- ) ( Run-time: -- x xt )
-  comp' postpone 2literal  ; immediate compile-only  ?)
+  comp' postpone 2literal  ; immediate compile-only exit ?)
 
   \ doc{
   \
