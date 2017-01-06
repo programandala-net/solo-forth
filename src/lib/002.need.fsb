@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701042330
+  \ Last modified: 201701061719
 
   \ -----------------------------------------------------------
   \ Description
@@ -108,6 +108,9 @@
   \ documentation.
   \
   \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-05: Update `indexer` to `make-thru-index` in
+  \ documentation.
 
 ( delimited located needed-word )
 
@@ -153,8 +156,10 @@ defer unlocated  ( block -- )
   \
   \ }doc
 
-: (located)  \ ( ca len -- block | false )
-  \ cr ." <" 2dup type ." > " rp@ rp0 @ - -2 / .
+: (located)  ( ca len -- block | false )
+  \ : (located)  cr 2dup type space .s depth 2 > if  key drop  then
+    \ XXX INFORMER
+  \ : (located)  cr 2dup type space rp@ rp0 @ - -2 / . hp@ u. cr .s
     \ XXX INFORMER
   \ cr ." (located)<" 2dup type ." >"
     \ XXX INFORMER
@@ -229,7 +234,7 @@ defer reneeded  ( ca len -- )
   \ This is a deferred word whose default behaviour is
   \ `locate-reneeded`.
   \
-  \ See: `locate-reneeded`, `indexer`.
+  \ See: `locate-reneeded`, `make-thru-index`.
   \
   \ }doc
 
@@ -246,7 +251,7 @@ defer reneeded  ( ca len -- )
   \ This is the default behaviour of the deferred word
   \ `reneeded`.
   \
-  \ See: `reneeded`, `indexer`.
+  \ See: `reneeded`, `make-thru-index`.
   \
   \ }doc
 
@@ -262,7 +267,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ This is a deferred word whose default behaviour is
   \ `locate-reneed`.
   \
-  \ See: `locate-reneed`, `indexer`.
+  \ See: `locate-reneed`, `make-thru-index`.
   \
   \ }doc
 
@@ -279,7 +284,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ This is a deferred word whose default behaviour is
   \ `locate-needed`.
   \
-  \ See: `locate-needed`, `indexer`.
+  \ See: `locate-needed`, `make-thru-index`.
   \
   \ }doc
 
@@ -299,7 +304,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ This is the default behaviour of the deferred word
   \ `reneed`.
   \
-  \ See: `reneed`, `indexer`.
+  \ See: `reneed`, `make-thru-index`.
   \
   \ }doc
 
@@ -367,7 +372,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ This is the default behaviour of the deferred word
   \ `needed`.
   \
-  \ See: `needed`, `indexer`.
+  \ See: `needed`, `make-thru-index`.
   \
   \ }doc
 
@@ -385,7 +390,7 @@ defer need  ( "name" -- )
   \ This is a deferred word whose default behaviour is
   \ `locate-need`.
   \
-  \ See: `locate-need`, `indexer`.
+  \ See: `locate-need`, `make-thru-index`.
   \
   \ }doc
 
@@ -402,7 +407,7 @@ defer need  ( "name" -- )
   \
   \ This is the default behaviour of the deferred word `need`.
   \
-  \ See: `need`, `indexer`.
+  \ See: `need`, `make-thru-index`.
   \
   \ }doc
 
