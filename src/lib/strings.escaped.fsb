@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612231845
+  \ Last modified: 201701061413
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,11 @@
   \ Instead of a deferred word, use a set of words to
   \ manipulate the escaped strings search order, analogous to
   \ the main search order.
+  \
+  \ 2017-01-06: Fix erasing of `esc-context`: the parameters
+  \ were wrong and the Forth system crashed or became
+  \ corrupted, depending on the size of the dictionary and the
+  \ previous words.
 
 ( esc-standard-chars-wordlist )
 
@@ -327,7 +332,7 @@ variable #esc-order  #esc-order off
   \
   \ }doc
 
-create esc-context max-esc-order cells 2dup allot erase ?)
+create esc-context here max-esc-order cells dup allot erase ?)
 
   \ doc{
   \
