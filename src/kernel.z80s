@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701062311
+; Last modified: 201701070033
 
 include version.z80s
 
@@ -3407,13 +3407,12 @@ find_name_from.string_length.8_bits: equ $+1
 find_name_from.not_a_match:
   ; Not a match, try the next word.
   ld hl,(find_name_from.result) ; HL = nt
+  dec hl ; point to high byte of the link field
   call far.hl
-  ; HL = actual address of the nt in the far memory, which is
-  ;      paged in
-  dec hl ; high address of the lfa
-  call question_previous_bank
+  ; HL = actual address of the high byte of the link
+  ; field in the far memory, which is paged in
   ld b,(hl) ; high part of the next nt
-  dec hl ; low address of the lfa
+  dec hl ; point to link field address
   call question_previous_bank
   ld l,(hl) ; low part of the next nt
   ld h,b ; HL = nt of the previous word
