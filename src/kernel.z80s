@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701061804
+; Last modified: 201701062311
 
 include version.z80s
 
@@ -933,7 +933,7 @@ compare_de_hl_signed:
   or a
   ret p
   scf
-noop_routine:
+noop:
   ret
 
 ; ----------------------------------------------
@@ -1602,6 +1602,9 @@ question_next_bank:
   ld de,bank_start
   add hl,de
 
+  ; _z80_border_wait 2 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
+
 new_bank:
 
   ; Input:
@@ -1677,6 +1680,10 @@ question_previous_bank:
   dec a
   ld de,bank_size
   add hl,de
+
+  ; _z80_border_wait 4 ; XXX INFORMER
+  ; _z80_border 0 ; XXX INFORMER
+
   jr new_bank
 
 ; ----------------------------------------------
@@ -3354,25 +3361,23 @@ char_question.not:
 ;
 ; }doc
 
+  ; Patch the code with the routine proper to the
+  ; case-sensitive mode:
 
-  ; First, patch the code depending on the case-sensitive mode.  This
-  ; way the inner loop does not have to check the mode for every
-  ; letter of the string searched for.
-
-  ld hl,(case_sensitive_pfa) ; contents of `case-sensitive` variable
+  ld hl,(case_sensitive_pfa) ; contents of the `case-sensitive` variable
   ld a,h
   or l ; case-sensitive mode?
   ld hl,ascii_lower.a ; routine used when case-sensitive mode is off
   jr z,find_name_from.set_case_sensitivity ; jump if case-sensitive mode is off
-  ld hl,noop_routine ; routine used when case-sensitive mode is on
+  ld hl,noop ; routine used when case-sensitive mode is on
 find_name_from.set_case_sensitivity:
-  ld (find_name_from.call_ascii_lower.a+1),hl ; set the routine to be called
+  ld (find_name_from.change_case_routine),hl ; patch the call
 
-  ; XXX UNDER DEVELOPMENT
+  ; Get the parameters and patch the code with the string:
 
   ld (find_name_from.ip),bc ; save the Forth IP
   pop hl ; nt
-  pop bc ; len; B is supposed to be 0
+  pop bc ; len (B must be 0)
   ld (find_name_from.string_length.16_bits),bc
   ld a,c
   ld (find_name_from.string_length.8_bits),a
@@ -3380,9 +3385,6 @@ find_name_from.set_case_sensitivity:
   ld (find_name_from.string_address),de
 
 find_name_from.begin:
-
-  ; _z80_border 1 ; XXX INFORMER
-  ; _z80_border 0 ; XXX INFORMER
 
   ; Compare the string with a word pointed by its nt.
   ; HL = nt of the word to compare with
@@ -3394,7 +3396,6 @@ find_name_from.begin:
   call far.hl
   ; HL = actual address of the nt in the far memory, which is
   ;      paged in
-  ld (find_name_from.converted_nt),hl
 
   ld a,(hl) ; length byte of the name field
   and valid_word_length_mask  ; mask the length and the smudge bit
@@ -3405,8 +3406,10 @@ find_name_from.string_length.8_bits: equ $+1
 
 find_name_from.not_a_match:
   ; Not a match, try the next word.
-find_name_from.converted_nt: equ $+1
-  ld hl,$0000 ; actual address of the nt in the far memory
+  ld hl,(find_name_from.result) ; HL = nt
+  call far.hl
+  ; HL = actual address of the nt in the far memory, which is
+  ;      paged in
   dec hl ; high address of the lfa
   call question_previous_bank
   ld b,(hl) ; high part of the next nt
@@ -3426,7 +3429,7 @@ find_name_from.string_length.16_bits: equ $+1
   ld bc,$0000 ; string length
 find_name_from.compare_next_char:
   ld a,(de)
-find_name_from.call_ascii_lower.a:
+find_name_from.change_case_routine: equ $+1
   call ascii_lower.a
   cpi
   jr nz,find_name_from.not_a_match ; jump if the chars are different
@@ -3439,9 +3442,6 @@ find_name_from.call_ascii_lower.a:
   jp pe,find_name_from.compare_next_char ; jump if length is not exhausted
   ; The length is exhausted, so the string and the name equal.
 
-  ; _z80_border_wait 4 ; XXX INFORMER
-  ; _z80_border 0 ; XXX INFORMER
-
 find_name_from.end:
   call bank.default ; page in the default memory bank
 find_name_from.result: equ $+1
@@ -3452,9 +3452,6 @@ find_name_from.result: equ $+1
   ;   HL = false
 find_name_from.ip: equ $+1
   ld bc,$0000 ; restore the Forth IP
-
-  ; _z80_border_wait 2 ; XXX INFORMER
-  ; _z80_border 0 ; XXX INFORMER
 
   _jp_pushhl
 
@@ -3475,7 +3472,7 @@ find_name_from.ip: equ $+1
 ;   #order @ 0 ?do
 ;     2dup context i cells + @ @ find-name-from ?dup
 ;     ( ca len nt nt | ca len 0 )
-;     if  nip nip unloop exit  then
+;     if  nip nip unloop exit  then  ( ca len )
 ;   loop  2drop false  ;
 ; ----
 ;

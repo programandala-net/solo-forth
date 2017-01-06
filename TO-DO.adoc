@@ -76,6 +76,12 @@ sometimes a previous word is not found.
 Update 2016-12-30: Already solved? It seems the problem was the `grep`
 expression in the `fs2fsb.sh` converter, because of the file enconding.
 
+2017-01-06: Fixed! It was a very subtle bug in `find-name-from`: a previous
+word of the same length than the latest one was not found after crossing the
+16-KiB boundary...
+
+After the solution: 31936 B free. But an improved version is possible.
+
 .2016-12-02..2016-12-03:
 
 `2 load need paper>attr` causes exception #-268 when `str=` (6th nested
@@ -96,6 +102,17 @@ nesting.
 The problem is the return stack overflows. Each nested `need` uses 14 cells...
 `nest-source` uses 6 cells for data, `need` uses 2 cells for the string, the
 rest must be used for calls.
+
+// Code style {{{1
+== Code style ==
+
+.2017-01-06:
+
+Change the code style after Pygmy Forth:
+
+- Remove the last space in paren comment.
+- Use only one space before and after paren comments.
+- Use a single dash in stack comments.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
@@ -990,12 +1007,6 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 // Memory {{{1
 == Memory ==
 
-.2016-11-26:
-
-NOTE: Milestone: 0.14.0
-
-Remove the code of the old system bank.
-
 .2016-11-15:
 
 Write far-memory versions of some of the following words from the
@@ -1142,7 +1153,7 @@ Make it possible to use any number of disks, in any order, for the library.
 This way, the main library could be only on its own disk, not copied to all the
 disks.
 
-`lib-order`, `set-lib-orde`, `get-lib-order` are in the kernel, but no used
+`lib-order`, `set-lib-order`, `get-lib-order` are in the kernel, but no used
 yet.
 
 .2016-12-08:
@@ -1456,6 +1467,10 @@ Rename `frames@` to `ticks@`, etc.?
 
 // Tools {{{1
 == Tools ==
+
+.2017-01-06:
+
+Study the editor of Pygmy Forth.
 
 .2016-11-28:
 
