@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051638
+  \ Last modified: 201701061839
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,6 +83,8 @@
   \ assembler.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
 
 ( transient-test )
 
@@ -203,13 +205,13 @@ only forth definitions
 need order  need wordlist-words  need .wordname
 
 : info  ( -- )
-  cr ." here           =" here u.
-  cr ." hp             =" hp@ u.
-  cr ." voc-link       =" voc-link @ u.
-  cr ." limit          =" limit @ u.
-  cr ." farlimit       =" farlimit @ u.
-  cr ." latest         =" latest dup u. .name
-  cr ." current-latest =" current-latest dup u. .name
+  cr ." here            =" here u.
+  cr ." hp              =" hp@ u.
+  cr ." latest-wordlist =" latest-wordlist @ u.
+  cr ." limit           =" limit @ u.
+  cr ." farlimit        =" farlimit @ u.
+  cr ." latest          =" latest dup u. .name
+  cr ." current-latest  =" current-latest dup u. .name
   order
   cr ." Continue? (y/n)"
   begin  key dup 'n' = if  abort  then  'y' = until  ;  -->
@@ -228,11 +230,11 @@ cr .( After forget-transient :)   info
 ( transient-test )
 
 : info  ( -- )
-  cr ." here     =" here u.
-  cr ." hp       =" hp@ u.
-  cr ." voc-link =" voc-link @ u.
-  cr ." limit    =" limit @ u.
-  cr ." farlimit =" farlimit @ u.
+  cr ." here            =" here u.
+  cr ." hp              =" hp@ u.
+  cr ." latest-wordlist =" latest-wordlist @ u.
+  cr ." limit           =" limit @ u.
+  cr ." farlimit        =" farlimit @ u.
   cr ." Press any key to continue" key drop  ;
 
 need transient  cr .( Before transient :) info  100 transient

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061424
+  \ Last modified: 201701061849
 
   \ -----------------------------------------------------------
   \ Description
@@ -90,10 +90,11 @@ exit ?)
 
 need ?(
 
-[unneeded] wordlists ?(  need .wid  need link>wid
+[unneeded] wordlists ?(  need .wid  need wid>link
 
 : wordlists  ( -- )
-  voc-link  begin  @ ?dup  while  dup link>wid .wid  repeat  ;
+  latest-wordlist
+  begin  @ ( wid|0) ?dup  while  dup .wid wid>link  repeat  ;
 
   \ doc{
   \

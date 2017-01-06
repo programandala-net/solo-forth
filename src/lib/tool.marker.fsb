@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201611130111
+  \ Last modified: 201701061846
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,9 @@
   \
   \ 2016-11-13: Rename "np" to "hp" after the changes in the
   \ kernel.
+  \
+  \ 2017-01-06: Update `voc-link` to `latest-wordlist`;
+  \ `wordlists,` and `@wordlists` still must be adapted.
 
 ( marker )
 
@@ -54,9 +57,10 @@
   \ |===
 
 : wordlists,  ( -- )
-  voc-link @ begin
+  latest-wordlist @ begin
     dup cell- @  ( a nt ) , @
   ?dup 0= until  ;
+  \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
   \
@@ -68,10 +72,11 @@
   \ }doc
 
 : @wordlists  ( a -- )
-  voc-link @ begin
+  latest-wordlist @ begin
     2dup  swap @ swap cell- !
     swap cell+ swap  @
   ?dup 0= until  drop  ;
+  \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
   \
@@ -96,7 +101,8 @@ need get-order  need @cell+  need nn,  need nn@  need there
 
 : unmarker  ( a -- )
   dup there
-  @cell+ hp!  @cell+ last !  @cell+ lastxt !  @cell+ voc-link !
+  @cell+ hp!  @cell+ last !  @cell+ lastxt !
+  @cell+ latest-wordlist !
   @cell+ set-current
   dup dup @ 1+ cells + >r  @order  r> @wordlists  ;
 
@@ -117,7 +123,7 @@ need get-order  need @cell+  need nn,  need nn@  need there
 : order,  ( -- )  get-order nn,  ;
 
 : marker,  ( -- a )
-  here  hp@ ,  last @ ,  lastxt @ ,  voc-link @ ,
+  here  hp@ ,  last @ ,  lastxt @ ,  latest-wordlist @ ,
         get-current ,  order,  wordlists,  ;
 
   \ doc{

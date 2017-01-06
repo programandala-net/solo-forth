@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612290058
+  \ Last modified: 201701061838
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,10 +15,6 @@
 (  )
 
 2 load
-
-  \ XXX TMP -- to debug `marker`:
-
-  \ need wdump  need save-voc-links
 
   \ XXX TMP -- to debug `associative-list`:
   \ need associative-list

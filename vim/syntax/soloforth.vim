@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-01-05
+" Updated:  2017-01-06
 
 " --------------------------------------------------------------
 " History
@@ -575,6 +575,7 @@ syn keyword soloforthWordlists get-order
 syn keyword soloforthWordlists last
 syn keyword soloforthWordlists lastxt
 syn keyword soloforthWordlists latest
+syn keyword soloforthWordlists latest-wordlist
 syn keyword soloforthWordlists latestxt
 syn keyword soloforthWordlists only
 syn keyword soloforthWordlists previous
@@ -586,7 +587,6 @@ syn keyword soloforthWordlists set-current
 syn keyword soloforthWordlists set-order
 syn keyword soloforthWordlists trail
 syn keyword soloforthWordlists traverse
-syn keyword soloforthWordlists voc-link
 syn keyword soloforthWordlists vocabulary
 syn keyword soloforthWordlists wordlist
 syn keyword soloforthWordlists words
@@ -1081,6 +1081,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-01-05: Update the assembler words. The first version of
 " the assembler has been removed from the system.
+"
+" 2017-01-06: Update `voc-link` to `latest-wordlist`.
 
 " --------------------------------------------------------------
 

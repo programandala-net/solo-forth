@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701061608
+; Last modified: 201701061804
 
 include version.z80s
 
@@ -690,12 +690,12 @@ else
   dw 0 ; XXX TMP --
 endif
 
-voc_link.init_value:
+latest_wordlist.init_value:
   ; `$0C +origin`
 if 1 ; assembler_core_in_kernel
-  dw assembler_word_list_link ; link to the latest word list defined
+  dw assembler_wordlist_pfa
 else
-  dw forth_word_list_link ; link to the latest word list defined
+  dw forth_wordlist_pfa
 endif
 
 return_stack_pointer:
@@ -2105,7 +2105,6 @@ set_order.exit
   _variable_header root_wordlist_,'root-wordlist'
 
   dw latest_nt_in_root_word_list
-root_word_list_link:
   dw $0000
   dw root_nt
 
@@ -2131,8 +2130,7 @@ root_word_list_link:
 ; }doc
 
   dw latest_nt_in_forth_word_list
-forth_word_list_link:
-  dw root_word_list_link
+  dw root_wordlist_pfa
   dw forth_nt
 
 ; ----------------------------------------------
@@ -2146,8 +2144,7 @@ if 1 ; assembler_core_in_kernel
   _variable_header assembler_wordlist_,'assembler-wordlist'
 
   dw latest_nt_in_assembler_word_list
-assembler_word_list_link:
-  dw forth_word_list_link
+  dw forth_wordlist_pfa
   dw 0
 
 endif
@@ -5842,16 +5839,12 @@ do_user:
   db $28
 
 ; ----------------------------------------------
-  _variable_header voc_link_,'voc-link'
-
-  ; XXX TODO 2015-12-26 -- rename to `latest-wordlist` after
-  ; finishing the new implementation of `wordlist`, based on
-  ; eForth.
+  _variable_header latest_wordlist_,'latest-wordlist'
 
 if 1 ; assembler_core_in_kernel
-  dw assembler_word_list_link ; link to the latest word list defined
+  dw assembler_wordlist_pfa
 else
-  dw forth_word_list_link ; link to the latest word list defined
+  dw forth_wordlist_pfa
 endif
 
 ; ----------------------------------------------
@@ -9232,25 +9225,25 @@ endif
 ; The structure is the following:
 ;
 ; |===
-; | +0 | _nt_ of last definition
-; | +2 | link field of previous wordlist in chain, or zero
-; | +4 | _nt|0_, word list name pointer, or zero
+; | +0 | _nt_ of the latest definition in the word list
+; | +2 | _wid_ of the previous word list, or zero
+; | +4 | _nt_ of the word list name, or zero
 ; |===
 ;
 ; ----
 ; : wordlist,  ( -- )
-;   0 ,  here voc-link @ , voc-link !  0 ,  ;
+;   here 0 , latest-wordlist @ , latest-wordlist !  0 ,  ;
 ; ----
 ;
 ; }doc
 
+  dw here_                           ; new value of `latest-wordlist`
   _literal 0
-  dw comma_                   ; nt of the latest word defined in the vocabulary
-  dw here_                    ; new value of `voc-link`
-  dw voc_link_,fetch_,comma_  ; compile the previous value of `voc-link`
-  dw voc_link_,store_         ; update `voc-link`
+  dw comma_                          ; latest definition in the word list
+  dw latest_wordlist_,fetch_,comma_  ; previous word list
+  dw latest_wordlist_,store_         ; update it
   _literal 0
-  dw comma_                   ; nt of the wordlist, or zero
+  dw comma_                           ; word list name
   dw exit_
 
 ; ----------------------------------------------
@@ -9724,8 +9717,8 @@ if 1 ; assembler_core_in_kernel
   dw lit_,latest_nt_in_assembler_word_list.init_value,fetch_
   dw lit_,assembler_wordlist_pfa,store_
 endif
-  dw lit_,voc_link.init_value,fetch_
-  dw lit_,voc_link_pfa,store_
+  dw lit_,latest_wordlist.init_value,fetch_
+  dw lit_,latest_wordlist_pfa,store_
 
   ; Set `warn` to its default behaviour:
   dw lit_,noop_
