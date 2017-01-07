@@ -1,10 +1,19 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-05-09
+:revdate: 2017-01-07
+
+// =============================================================
+// Latest changes
+
+// 2017-01-07: Update the Z80 register notation. Fix the table columns
+// and other details. General review. Add _x_ and _y_ as alternative
+// cursor coordinates.
+
+// =============================================================
 
 == Numbers
 
-[cols="4,10,6"]
+[cols="4,10,10,10"]
 |===
 | Symbol     | Data type                                     | Size   | Range
 
@@ -22,12 +31,12 @@
 | c           | 8-bit character                              | 1 cell | 0..255
 
 | u           | 16-bit unsigned number                       | 1 cell | 0..65535
-| len         | 16-bit unsigned number (string length)       | 1 cell | 0..65335
+| len         | 16-bit unsigned number (memory zone length)  | 1 cell | 0..65335
 | n           | 16-bit signed number                         | 1 cell | -32768..32767
 | +n          | 16-bit non-negative number                   | 1 cell | 0..32767
 | x           | 16-bit unspecified number                    | 1 cell | -32768..65535
 
-| ca len      | string                                       | 2 cells |
+| ca len      | string or memory zone                        | 2 cells |
 
 | d           | 32-bit signed double number                  | 2 cells | -2147483648..2147483647
 | +d          | 32-bit non-negative double number            | 2 cells | 0..2147483647
@@ -39,11 +48,14 @@
 | q           | 64-bit signed quadruple number               | 4 cells |
 | uq          | 64-bit unsigned quadruple number             | 4 cells |
 
+| row         | 8-bit cursor row                             | 1 cell | 0..23
+| col         | 8-bit cursor column                          | 1 cell | 0..31, 0..41, 0..63
+
+| x           | 8-bit cursor x coordinate (column)           | 1 cell | 0..31, 0..41, 0..63
+| y           | 8-bit cursor y coordinate (row)              | 1 cell | 0..23
+
 | gx          | 8-bit graphic x coordinate                   | 1 cell | 0..255
 | gy          | 8-bit graphic y coordinate                   | 1 cell | 0..191
-
-| row         | 8-bit cursor row                             | 1 cell | 0..n
-| col         | 8-bit cursor column                          | 1 cell | 0..n
 
 | xt          | execution token (=cfa)                       | 1 cell |
 | cfa         | code field address (=xt)                     | 1 cell |
@@ -53,7 +65,7 @@
 | pfa         | parameter field address                      | 1 cell |
 | xtp         | execution token pointer                      | 1 cell |
 
-| wid         | wordlist identifier                          | 1 cell |
+| wid         | word-list identifier                         | 1 cell |
 
 | orig        | address of an unresolved forward branch      | 1 cell | 0..65535
 | dest        | address of a backward branch target          | 1 cell | 0..65535
@@ -69,12 +81,13 @@
 | u*x         | u elements of type x (eg. `u*wid`)           | 0 or more cells |
 
 | r           | a floating point real number                 | 5 bytes (in the floating point stack) | 1E-38..1E38
-| rf          | a floating point real number flag (0|1)      | 5 bytes (in the floating point stack) | 0..1
+| rf          | a floating point real number flag            | 5 bytes (in the floating point stack) | 0..1
 
 | op          | Z80 8-bit opcode, generally a jump           | 1 cell | 0..255
-| r           | Z80 8-bit register identifier                | 1 cell | 0..7
-| rp          | Z80 16-bit register pair identifier          | 1 cell | 0, 2, 4
-| rphl        | Z80 16-bit HL register pair                  | 1 cell | 4
+| reg         | Z80 8-bit register identifier                | 1 cell | 0..7
+| regp        | Z80 16-bit register pair identifier          | 1 cell | 0, 2, 4
+| regph       | Z80 16-bit HL register pair identifier       | 1 cell | 4
+| regpi       | Z80 16-bit IX/IY register pair identifier    | 1 cell | 4
 |===
 
 == Parsed text

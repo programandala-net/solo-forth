@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051630
+  \ Last modified: 201701071305
 
   \ -----------------------------------------------------------
   \ Description
@@ -103,6 +103,8 @@
   \ <assembler.z80-asm-comma.fsb> to <assembler.fsb>. Remove
   \ `bc`, `de` and `hl`. Move `assembler` from the kernel.
   \ Remove `z80-asm,`.
+  \
+  \ 2017-01-07: Improve the Z80 registers stack notation.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -145,8 +147,8 @@ also assembler definitions base @ hex
 
 DD constant ix-op  FD constant iy-op
 
-: ix  ( -- rphl )  ix-op c, h  ;
-: iy  ( -- rphl )  iy-op c, h  ;
+: ix  ( -- regpi )  ix-op c, h  ;
+: iy  ( -- regpi )  iy-op c, h  ;
 
 : ?rel  ( n -- )  80 + FF swap u< #-269 ?throw  ;
   \ If branch _n_ is too long, throw exception #-269
@@ -163,11 +165,11 @@ DD constant ix-op  FD constant iy-op
   \ 1-byte opcode without parameters.
 
 : m2  ( 8b "name" -- )
-  create c, does>  ( r -- )  ( r pfa ) c@ + c,  ;
+  create c, does>  ( reg -- )  ( reg pfa ) c@ + c,  ;
   \ 1-byte opcode with register encoded in bits 0-3.
 
 : m3  ( 8b "name" -- )
-  create c, does>  ( r -- )  ( r pfa ) c@ swap 8* + c,  ;
+  create c, does>  ( reg -- )  ( reg pfa ) c@ swap 8* + c,  ;
   \ 1-byte opcode with register encoded in bits 3-5.
 
 : m4  ( 8b "name" -- )
@@ -179,12 +181,12 @@ DD constant ix-op  FD constant iy-op
   \ 1-byte opcode with 2-byte parameter.
 
 : m6  ( 8b "name" -- )
-  create c, does>  ( r -- )  ( r pfa ) CB c, c@ + c,  ;
+  create c, does>  ( reg -- )  ( reg pfa ) CB c, c@ + c,  ;
   \ Rotation of registers.
 
 : m7  ( 8b "name" -- )
-  create c, does>  ( r bit -- )
-    ( r bit pfa ) CB c, c@ swap 8* + + c,  ;  -->
+  create c, does>  ( reg bit -- )
+    ( reg bit pfa ) CB c, c@ swap 8* + + c,  ;  -->
   \ Bit manipulation of registers.
 
 ( assembler )
@@ -203,18 +205,19 @@ DD constant ix-op  FD constant iy-op
   \ Relative jumps.
 
 : ma  ( 8b "name" -- )
-  create c, does>  ( disp rphl -- )
-    ( disp rphl pfa ) c@ c, drop c,  ;
+  create c, does>  ( disp regph -- ) ( disp regph pfa )
+  c@ c, drop c,  ;
   \ Index registers with register.
 
 : mb  ( 8b "name" -- )
-  create c, does>  ( disp rphl -- )
-    ( disp rphl pfa ) CB c, c@ c, drop c,  ;
+  create c, does>  ( disp regph -- ) ( disp regph pfa )
+  CB c, c@ c, drop c,  ;
   \ Rotation with index registers.
 
 : mc  ( 8b "name" -- )
-  create c, does>  ( disp rphl bit -- )  ( disp rphl bit pfa )
-    CB c, c@ rot drop rot c, swap 8* + c,  ;  -->
+  create c, does>  ( disp regph bit -- )
+  ( disp regph bit pfa )
+  CB c, c@ rot drop rot c, swap 8* + c,  ;  -->
   \ Bit manipulation with index registers.
 
 ( assembler )
@@ -246,30 +249,30 @@ cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2 xor, -->
   \ XXX TODO -- study changes needed to use `ix jpp` or similar
   \ instead.
 
-: ldp#,  ( 16b rp -- )  8* 1+ c, ,  ;
-: ld#,  ( 8b r -- )  8* 06 + c, c,  ;
-: ld,  ( r1 r2 -- )  8* 40 + + c,  ;
-: sbcp,  ( rp -- )  ED c, 8* 42 + c,  ;
-: adcp,  ( rp1 rp2 -- )  ED c, 8* 4A + c,  ;
-: stp,  ( a rp -- )  ED c, 8* 43 + c, ,  ;
-: ftp,  ( a rp -- )  ED c, 8* 4B + c, ,  ;
+: ldp#,  ( 16b regp -- )  8* 1+ c, ,  ;
+: ld#,  ( 8b reg -- )  8* 06 + c, c,  ;
+: ld,  ( reg1 reg2 -- )  8* 40 + + c,  ;
+: sbcp,  ( regp -- )  ED c, 8* 42 + c,  ;
+: adcp,  ( regp1 regp2 -- )  ED c, 8* 4A + c,  ;
+: stp,  ( a regp -- )  ED c, 8* 43 + c, ,  ;
+: ftp,  ( a regp -- )  ED c, 8* 4B + c, ,  ;
 
-: addix,  ( rp -- )  ix-op c, addp,  ;
-: addiy,  ( rp -- )  iy-op c, addp,  ;
+: addix,  ( regp -- )  ix-op c, addp,  ;
+: addiy,  ( regp -- )  iy-op c, addp,  ;
   \ XXX TODO -- study changes needed to use `ix addp,` instead;
   \ that means `h addp,` should be used instead of `addp,`
 
   \ Macros
 
-: clr,  ( rp -- )  0 swap ld#,  ;
+: clr,  ( regp -- )  0 swap ld#,  ;
   \ Macro to clear an 8-bit register with zero.
-: clrp,  ( rp -- )  0 swap ldp#,  ;
+: clrp,  ( regp -- )  0 swap ldp#,  ;
   \ Macro to clear a 16-bit register with zero.
-: ldp,  ( rp1 rp2 -- )  2dup ld, 1+ swap 1+ swap ld,  ;
+: ldp,  ( regp1 regp2 -- )  2dup ld, 1+ swap 1+ swap ld,  ;
   \ Macro, 16-bit register load.
-: subp,  ( rp -- )  a and, sbcp,  ;
+: subp,  ( regp -- )  a and, sbcp,  ;
   \ Macro, 16-bit subtract.
-: tstp,  ( rp -- )  dup a ld, 1+ or,  ;  -->
+: tstp,  ( regp -- )  dup a ld, 1+ or,  ;  -->
   \ Macro to test 16-bit register for zero.
 
 ( assembler )
@@ -288,13 +291,13 @@ AE ma xorx, B6 ma orx,  BE ma cpx,  34 ma incx, 35 ma decx,
 06 mb rlcx, 0E mb rrcx, 16 mb rlx,  1E mb rrx,  26 mb slax,
 2E mb srax, 3E mb srlx, 46 mc bitx, 86 mc resx, C6 mc setx,
 
-: ftx,   ( disp rpi r -- )   nip 8* 46 + c, c,  ;
-: stx,   ( r disp rphl -- )  drop swap 70 + c, c,  ;
-: st#x,  ( 8b disp rpi -- )  drop 36 c, swap c, c,  ;
-: ftpx,  ( disp rpi rp -- )  3dup 1+ ftx, rot 1+ -rot ftx,  ;
-: stpx,  ( disp rpi rp -- )  3dup 1+ stx, rot 1+ -rot stx,  ;
-
--->
+: ftx,   ( disp regpi reg -- )  nip 8* 46 + c, c,  ;
+: stx,   ( reg disp regpi -- )  drop swap 70 + c, c,  ;
+: st#x,  ( 8b disp regpi -- )   drop 36 c, swap c, c,  ;
+: ftpx,  ( disp regpi regp -- )
+  3dup 1+ ftx, rot 1+ -rot ftx,  ;
+: stpx,  ( disp regpi regp -- )
+  3dup 1+ stx, rot 1+ -rot stx,  ;  -->
 
 ( assembler )
 

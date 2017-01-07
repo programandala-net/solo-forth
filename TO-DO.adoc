@@ -21,13 +21,6 @@ Rewrite all small code words in Z80 opcodes, without assembler.  Example:
 `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
 `set-drive`, `crnd`, `(delete-file)`...
 
-.2016-04-20:
-
-NOTE: Milestone: 0.13.0
-
-Change the stack notation of Z80 registers from _r rp_ to _reg regp_,
-because _r_ is the standard for floating-point numbers.
-
 // Benchmarks {{{1
 == Benchmarks ==
 
