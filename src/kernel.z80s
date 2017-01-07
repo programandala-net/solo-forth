@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701070033
+; Last modified: 201701070049
 
 include version.z80s
 
@@ -1176,8 +1176,7 @@ nt_of_the_previous_word: defl 0
 ; ----------------------------------------------
   _alias_header root_set_order_,'set-order',,set_order_
 
-  ; This symbol must be set with the value of the
-  ; latest word defined in the `root` vocabulary:
+  ; Name token of the latest word defined in `root-wordlist`:
 latest_nt_in_root_word_list: equ root_set_order_nt
 
 if 1 ; assembler_core_in_kernel
@@ -1312,11 +1311,6 @@ endif
 ;
 ; }doc
 
-; XXX TODO -- This word is needed in the kernel, but it is
-; defined in the `z80-asm-comma` variant of the assembler, which
-; is intended to be the main assembler of the system, instead of
-; the current variant `z80-asm`.
-
   _literal $C3 ; Z80 opcode for "jp"
   dw c_comma_,comma_
   dw exit_
@@ -1338,17 +1332,11 @@ endif
 ;
 ; }doc
 
-; XXX TODO -- This word is needed in the kernel, but it is
-; defined in the `z80-asm-comma` variant of the assembler, which
-; is intended to be the main assembler of the system, instead of
-; the current variant `z80-asm`.
-
   _literal $CD ; Z80 opcode for "call"
   dw c_comma_,comma_
   dw exit_
 
-  ; This symbol must be set with the value of the
-  ; latest word defined in the `assembler` vocabulary:
+  ; Name token of the latest word defined in `assembler-wordlist`:
 latest_nt_in_assembler_word_list: equ call_comma_nt
 
 endif
@@ -12225,9 +12213,10 @@ backslash.loading:
   dw parse_,type_
   dw exit_
 
-  ; These symbols must be set with the values of the
-  ; latest word defined in the `forth` vocabulary:
+  ; Name token of the latest word defined in `forth-wordlist`:
 latest_nt_in_forth_word_list: equ dot_paren_nt
+
+  ; Execution token of the latest word defined in `forth-wordlist`:
 latest_xt_in_forth_word_list: equ dot_paren_
 
 dictionary_pointer_after_cold:
