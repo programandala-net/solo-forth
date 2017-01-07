@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051738
+  \ Last modified: 201701071621
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,6 +42,8 @@
   \
   \ 2017-01-05: Update `also assembler` to `assembler-wordlist
   \ >order`.
+  \
+  \ 2017-01-07: Improve documentation.
 
 ( create: ;code :noname nextname )
 
@@ -114,10 +116,6 @@ need ?(  [unneeded] ;code ?(
 
 [unneeded] nextname ?(  2variable nextname-string
 
-  \ Credit:
-  \
-  \ `nextname` is borrowed from Gforth.
-
   \ doc{
   \
   \ nextname-string  ( -- a )
@@ -145,12 +143,17 @@ need ?(  [unneeded] ;code ?(
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname`, `nextname-string`.
+  \ See: `nextname`, `nextname-string`, `header`,
+  \ `default-header`.
   \
   \ }doc
 
 : nextname  ( ca len -- )  nextname-string 2!
   ['] nextname-header ['] header defer!  ; ?)
+
+  \ Credit:
+  \
+  \ `nextname` is borrowed from Gforth.
 
   \ doc{
   \
