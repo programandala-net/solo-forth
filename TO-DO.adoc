@@ -8,11 +8,6 @@
 // Assembler {{{1
 == Assembler ==
 
-Data space used (2016-12-20) by the assemblers:
-
-`z80-asm` :: 1817 B
-`z80-asm,`:: 1664 B
-
 .2016-12-30..2017-01-02:
 
 NOTE: Milestone: 0.13.0
@@ -20,6 +15,13 @@ NOTE: Milestone: 0.13.0
 Rewrite all small code words in Z80 opcodes, without assembler.  Example:
 `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
 `set-drive`, `crnd`, `(delete-file)`, `n>r`, `nr>`...
+
+.2016-12-20:
+
+Data space used by the assemblers:
+
+`z80-asm` :: 1817 B
+`z80-asm,`:: 1664 B
 
 // Benchmarks {{{1
 == Benchmarks ==
@@ -255,6 +257,11 @@ ____
 // Strings {{{2
 === Strings ===
 
+.2017-01-07:
+
+Rename `char>string` or write after `c>bstring`, which
+does the same but in `pad`.
+
 .2016-12-29:
 
 NOTE: Milestone: 0.14.0
@@ -270,11 +277,6 @@ Document `s\"` and `.\"`.
 
 Remove bounds checking from `}` (Noble's arrays)
 and keep a copy of it as `?}`, for debugging.
-
-.2016-12-07:
-
-Add `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
-(already exists as `char>string`).
 
 .2016-12-07:
 
@@ -1463,35 +1465,4 @@ NOTE: Milestone: 0.13.0
 
 Change: compare the user variables with those of Spectrum Forth-83.
 
-// Word lists {{{1
-== Word lists ==
-
-.2016-12-08:
-
-Rename to `voc-link` to `latest-wordlist`
-
-.2016-12-06:
-
-Rename `named-wid`, which is not clear. Options:
-
-- `latest-as-wid-name`
-- `latest-as-wordlist-name`
-- `latest-wid-name`
-- `latest-wordlist-name`
-- `latest>wid-name`
-- `latest>wordlist-name`
-- `name-wid-after-latest`
-- `name-wordlist-after-latest`
-- `wid-name-after-latest`
-- `wid-name<latest`
-- `wordlist-name-after-latest`
-- `wordlist-name<latest`
-
-Beside, write a more generic version:
-
-----
-: wid-name!  ( nt wid -- )  wid>(name) !  ;
-----
-
-Where `wid>(name)` is a possible new name for `(wid>name`.
 

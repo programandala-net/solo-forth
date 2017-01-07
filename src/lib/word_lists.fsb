@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061420
+  \ Last modified: 201701072100
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,61 +42,75 @@
   \ and `(wid>name`.  Add `-order` and `+order`.
   \
   \ 2017-01-06: Add `link>wid`. Improve documentation.
-
-( wid>link link>wid (wid>name wid>name )
-
-[unneeded] wid>link
-?\ need alias  ' cell+ alias wid>link  ( wid -- a ) exit
-
-  \ doc{
   \
-  \ wid>link  ( wid -- a )
-  \
-  \ Return the word list link address _a_ of word list _wid_.
-  \
-  \ See: `link>wid`, `wid>name`.
-  \
-  \ }doc
+  \ 2017-01-07: Remove `link>wid`, not needed anymore, because
+  \ the word-list fields are accessed from its identifier, and
+  \ the linked list of word lists uses the word-list
+  \ identifiers.  Rename `wid>link` to `wordlist>link`.  Rename
+  \ `(wid>name` to `wordlist>name`.  Remove `wid>name`.  Rename
+  \ `wid>vocabulary` to `wordlist>vocabulary`.  Add
+  \ `wordlist-name@` and `wordlist-name!`.  Rename `wid-of` to
+  \ `wordlist-of`.  Rename `named-wid` to `latest>wordlist`.
 
-[unneeded] link>wid
-?\ need alias  ' cell- alias link>wid  ( a -- wid ) exit
+( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
+
+[unneeded] wordlist>link
+?\ need alias  ' cell+ alias wordlist>link  ( wid -- a ) exit
 
   \ doc{
   \
-  \ link>wid  ( a -- wid )
+  \ wordlist>link  ( wid -- a )
   \
-  \ Return the word list identifier of word list link address
-  \ _a_.
-  \
-  \ See: `wid>link`, `wid>name`.
-  \
-  \ }doc
-
-[unneeded] (wid>name
-?\ : (wid>name  ( wid -- a )  cell+ cell+  ; exit
-
-  \ doc{
-  \
-  \ (wid>name  ( wid -- a )
-  \
-  \ Return the address _a_ which holds the _nt_ of word list
-  \ _wid_ (or zero if the word list has no associated name).
+  \ Return the link field address _a_ of word-list identifier
+  \ _wid_, which holds the word-list identifier of the previous
+  \ word list defined in the system.
   \
   \ See: `wid>name`.
   \
   \ }doc
 
-[unneeded] wid>name
-?\ need (wid>name : wid>name  ( wid -- nt|0 )  (wid>name @  ;
+[unneeded] wordlist>name
+?\ : wordlist>name  ( wid -- a )  cell+ cell+  ; exit
 
   \ doc{
   \
-  \ wid>name  ( wid -- nt|0 )
+  \ wordlist>name  ( wid -- a )
   \
-  \ Return the _nt_ associated to word list _wid_ (or zero if
-  \ the word list has no associated name).
+  \ Return the address _a_ which holds the _nt_ of word-list
+  \ identifier _wid_ (or zero if the word list has no
+  \ associated name).
   \
-  \ See: `wid>link`, `(wid>name`.
+  \ See: `wordlist>link`.
+  \
+  \ }doc
+
+[unneeded] wordlist-name@ dup
+?\ need wordlist>name
+?\ : wordlist-name@  ( wid -- nt|0 )  wordlist>name @  ;  exit
+
+  \ doc{
+  \
+  \ wordlist-name@  ( wid -- nt|0 )
+  \
+  \ Fetch from word list _wid_ its associated name _nt_, or
+  \ zero if the word list has no associated name.
+  \
+  \ See: `wordlist-name!`, `wordlist>name`.
+  \
+  \ }doc
+
+[unneeded] wordlist-name! dup
+?\ need wordlist>name
+?\ : wordlist-name!  ( nt wid -- )  wordlist>name !  ;
+
+  \ doc{
+  \
+  \ wordlist-name!  ( nt wid -- )
+  \
+  \ Store _nt_ as the name associated to word list _wid_.  _nt_
+  \ is stored into the name field of the word-list metadata.
+  \
+  \ See: `wordlist-name@`, `wordlist>name`.
   \
   \ }doc
 
@@ -153,37 +167,54 @@ variable -order-wid
   \
   \ }doc
 
-( named-wid wid>vocabulary vocabulary search-wordlist )
+( wordlist-of latest>wordlist wordlist>vocabulary vocabulary )
 
-need ?(  [unneeded] named-wid ?(  need (wid>name
-: named-wid  ( wid -- )  (wid>name latest swap !  ; exit ?)
+[unneeded] wordlist-of
+?\ need >body  : wordlist-of  ( "name" -- wid )  ' >body @  ;
 
   \ doc{
   \
-  \ named-wid ( wid -- )
+  \ wid-of  ( "name" -- wid )
+  \
+  \ Return the _wid_ associated to vocabulary "name".
+  \
+  \ Origin: eForth's `widof`.
+  \
+  \ }doc
+
+need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
+
+: latest>wordlist  ( wid -- )  latest swap wordlist-name!  ;
+
+exit ?)
+
+  \ doc{
+  \
+  \ latest>wordlist ( wid -- )
   \
   \ Associate the latest name to word list _wid_.
   \
-  \ See: `wid>vocabulary`, `wordlists`.
+  \ See: `wordlist>vocabulary`, `wordlists`.
   \
   \ }doc
 
-[unneeded] wid>vocabulary ?(  need named-wid
-: wid>vocabulary  ( wid "name" -- )
-  create dup , named-wid dovocabulary  ; exit ?)
+[unneeded] wordlist>vocabulary ?(  need latest>wordlist
+: wordlist>vocabulary  ( wid "name" -- )
+  create dup , latest>wordlist dovocabulary  ; exit ?)
 
   \ doc{
   \
-  \ wid>vocabulary  ( wid "name" -- )
+  \ wordlist>vocabulary  ( wid "name" -- )
   \
   \ Create a vocabulary "name" for the word list _wid_.
   \
-  \ See: `vocabulary`, `named-wid`, `wordlists`.
+  \ See: `vocabulary`, `latest>wordlist`, `wordlists`.
   \
   \ }doc
 
-[unneeded] vocabulary ?(  need wid>vocabulary
-: vocabulary  ( "name" -- )  wordlist wid>vocabulary  ; exit ?)
+[unneeded] vocabulary ?(  need wordlist>vocabulary
+: vocabulary  ( "name" -- )
+  wordlist wordlist>vocabulary  ; exit ?)
 
   \ doc{
   \
@@ -201,25 +232,7 @@ need ?(  [unneeded] named-wid ?(  need (wid>name
   \
   \ }doc
 
-[unneeded] search-wordlist ?(
-: search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
-  @ find-name-from dup 0= ?exit  name>immediate? 0= 1 or  ; ?)
-
-  \ doc{
-  \
-  \ search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
-  \
-  \ Find the definition identified by the string _ca len_ in
-  \ the word list identified by _wid_. If the definition is not
-  \ found, return zero. If the definition is found, return its
-  \ _xt_ and one (1) if the definition is immediate, minus-one
-  \ (-1) otherwise.
-  \
-  \ Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
-  \
-  \ }doc
-
-( seal trail find-name-in find swap-current wid-of )
+( seal trail find-name-in find swap-current search-wordlist )
 
 [unneeded] seal
 ?\ : seal  ( -- )  1 #order !  ;  exit
@@ -259,8 +272,6 @@ need ?(  [unneeded] named-wid ?(  need (wid>name
   \ word list _wid_. If the definition is found, return its
   \ _nt_, else return zero.
   \
-  \ The search is case-insensitive.
-  \
   \ }doc
 
 need ?(  [unneeded] find ?(
@@ -291,16 +302,21 @@ need ?(  [unneeded] find ?(
   \
   \ Idea for `swap-current` from lpForth.
 
-[unneeded] wid-of ?( need >body
-  : wid-of  ( "name" -- wid )  ' >body @  ; ?)
+[unneeded] search-wordlist ?(
+: search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
+  @ find-name-from dup 0= ?exit  name>immediate? 0= 1 or  ; ?)
 
   \ doc{
   \
-  \ wid-of  ( "name" -- wid )
+  \ search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
   \
-  \ Return the _wid_ associated to vocabulary "name".
+  \ Find the definition identified by the string _ca len_ in
+  \ the word list identified by _wid_. If the definition is not
+  \ found, return zero. If the definition is found, return its
+  \ _xt_ and one (1) if the definition is immediate, minus-one
+  \ (-1) otherwise.
   \
-  \ Origin: eForth's `widof`.
+  \ Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
   \
   \ }doc
 
