@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051631
+  \ Last modified: 201701071357
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,6 +56,8 @@
   \ Z80 opcodes.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-07: Add `>true`, `2>true`, `>false`, `2>false`.
 
 ( 2nip pick roll )
 
@@ -370,6 +372,70 @@ code 2ndrop  ( dx1..dxn n -- )
   \ ndrop  ( dx1..dxn n -- )
   \
   \ Drop _n_ double cell items from the stack.
+  \
+  \ }doc
+
+( >true >false 2>true 2>false )
+
+need ?(
+
+[unneeded] >true [unneeded] 2>true and ?(
+
+code 2>true  ( x1 x2 -- true )  E1 c,  end-code
+  \ pop hl
+  \ ; execution continues in `>true`
+
+  \ doc{
+  \
+  \ 2>true  ( x1 x2 -- true )
+  \
+  \ Replace _x1 x2_ with _true_.
+  \
+  \ See: `2>false`, `>true`.
+  \
+  \ }doc
+
+code >true  ( x -- true )    E1 c, ' true jp,  end-code exit ?)
+  \ pop hl
+  \ jp true_
+  
+  \ doc{
+  \
+  \ >true  ( x -- true )
+  \
+  \ Replace _x_ with _true_.
+  \
+  \ See: `>false`, `2>true`.
+  \
+  \ }doc
+
+[unneeded] >false [unneeded] 2>false and ?(
+
+code 2>false  ( x1 x2 -- false )  E1 c, end-code
+  \ pop hl
+  \ ; execution continues in `>false`
+
+  \ doc{
+  \
+  \ 2>false  ( x1 x2 -- false )
+  \
+  \ Replace _x1 x2_ with _false_.
+  \
+  \ See: `2>true`, `>false`.
+  \
+  \ }doc
+
+code >false  ( x -- false )  E1 c, ' false jp, end-code ?)
+  \ pop hl
+  \ jp false_
+
+  \ doc{
+  \
+  \ >false  ( x -- false )
+  \
+  \ Replace _x_ with _false_.
+  \
+  \ See: `>true`, `2>false`.
   \
   \ }doc
 

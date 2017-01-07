@@ -19,7 +19,7 @@ NOTE: Milestone: 0.13.0
 
 Rewrite all small code words in Z80 opcodes, without assembler.  Example:
 `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
-`set-drive`, `crnd`, `(delete-file)`...
+`set-drive`, `crnd`, `(delete-file)`, `n>r`, `nr>`...
 
 // Benchmarks {{{1
 == Benchmarks ==
@@ -60,27 +60,6 @@ of them. They are marked in the source.
 .2016-12-23:
 
 Check `.\"`.
-
-.2016-12-02..2016-12-03:
-
-`2 load need paper>attr` causes exception #-268 when `str=` (6th nested
-`need`) can not be located, and then `base` contains 32768! But `need str=`
-works fine.
-
-This problem happens with the high-level version of `paper>attr` and
-`attr>paper`, which need `lshift` and `rshift`, which need `z80-asm`, which
-needs `3dup`, which needs `?(`, which needs `str=`... But no exception is
-issued when `need order` is given first, before `need paper>attr`...
-
-When the far memory is turned off in the kernel, there's no difference, except
-`base` contains 32767. Thus it seems far memory has nothing to do.
-
-Using a simple test, `nest-need-test`, the system crashes at the sixth
-nesting.
-
-The problem is the return stack overflows. Each nested `need` uses 14 cells...
-`nest-source` uses 6 cells for data, `need` uses 2 cells for the string, the
-rest must be used for calls.
 
 // Code style {{{1
 == Code style ==
@@ -1397,26 +1376,17 @@ Improve tab control.
 // Stacks {{{1
 == Stacks ==
 
+.2017-01-07:
+
+Notes about nested `need`:
+
+Each nested `need` uses 14 cells of the return stack: `nest-source` uses 6
+cells for data, `need` uses 2 cells for the string, the rest must be used for
+calls.
+
 .2016-12-30:
 
 Improve needing of `xstack` words.
-
-.2016-12-07:
-
-Rewrite `n>r` and `nr>` with Z80 opcodes, to make it independent from the
-assembler, which needs >1800 B of data space, or use `transient`, which is not
-fully adapted yet.
-
-.2016-11-26:
-
-Write these new words in Z80:
-
-----
-: >true    ( x -- true )       drop true   ;
-: >false   ( x -- true )       drop false  ;
-: 2>true   ( x1 x2 -- true )  2drop true   ;
-: 2>false  ( x1 x2 -- false)  2drop false  ;
-----
 
 // Sound {{{1
 == Sound ==
