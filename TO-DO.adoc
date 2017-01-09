@@ -1167,9 +1167,11 @@ would be clearer.
 Make `need-here` unnecessary: Always check the current block, just in case.
 Many needed words are in the same block.
 
-.2016-11-24:
+.2016-11-24, 2017-01-09:
 
 Study the actual advantage of `exit` at the end of conditional compilation.
+
+Disadvantage: not all words are loaded with `load`.
 
 .2016-11-22:
 

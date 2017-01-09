@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612270053
+  \ Last modified: 201701091609
 
   \ -----------------------------------------------------------
   \ Description
@@ -69,6 +69,36 @@
   \ "MISC" after the new convention.
   \
   \ 2016-12-26: Add `aline176-bench`.
+  \
+  \ 2017-01-09: Add `at-xy-display-0udg-bench`.
+
+( at-xy-display-0udg-bench )
+
+need bench{  need }bench.
+need at-xy-display-0udg  ( c x y -- )
+need 0udg-at-xy-display  ( x y c -- )
+
+: run  ( n -- )
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." at-xy-display-0udg: "
+  dup bench{ 0 ?do  0 0 0 at-xy-display-0udg  loop }bench.
+      cr ." 0udg-at-xy-display: "
+      bench{ 0 ?do  0 0 0 0udg-at-xy-display  loop }bench.  ;
+
+  \ 2017-01-09:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- -------------------------------------
+  \       at-xy-display-0udg 0udg-at-xy-display
+  \       ------------------ -----------------
+  \ 00010                  1                 1
+  \ 00100                  1                 2
+  \ 01000                 15                16
+  \ 01000                 16                15
+  \ 10000                156               156
+  \ 32768                511               510
+  \ 32768                511               510
+  \ 65535               1022              1020
 
 ( aline176-bench )
 
