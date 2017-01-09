@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701091735
+  \ Last modified: 201701091738
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,7 +48,8 @@
   \ the basic words individually accessible to `need`.  Improve
   \ documentation.
   \
-  \ 2017-01-09: Add `(cursor-addr)` and `cursor-addr`.
+  \ 2017-01-09: Add `(cursor-addr)` and `cursor-addr`. Add
+  \ `(display-char-bitmap)`.
 
 ( default-udg-chars )
 
@@ -725,6 +726,112 @@ code cursor-addr  ( x y -- a )
   \ screen address _a_.
   \
   \ See: `(cursor-addr)` , `pixel-addr`.
+  \
+  \ }doc
+
+\ (display-char-bitmap) \
+
+need ?(
+
+[unneeded] (display-char-bitmap) ?(
+
+need assembler  need (cursor-addr)
+
+create (display-char-bitmap)  ( -- a )
+
+  asm
+
+  \   ; Input:
+  \   ;   HL = address of the character bitmap
+  \   ;   B = y coordinate (0..23)
+  \   ;   C = x coordinate (0..31)
+
+  (cursor-addr) call,
+
+  \   call cursor_addr ; DE = screen address
+
+  8 b ld#, rbegin  m a ld, d stap, h incp, d inc,  rstep  ret,
+
+  \   ld b,8     ; pixels high
+  \ display_char_row:
+  \   ld a,(hl)  ; row of graphic bitmap
+  \   ld (de),a  ; transfer to screen
+  \   inc hl     ; next row of graphic bitmap
+  \   inc d      ; next pixel line
+  \   djnz display_char_row
+  \   ret
+
+  end-asm ?)
+
+  \ doc{
+  \
+  \ (display-char-bitmap)  ( -- a )
+  \
+  \ Return address _a_ of a Z80 routine that displays
+  \ the bitmap of a character at given cursor coordinates.
+  \
+  \ Input registers:
+  \
+  \ - HL = address of the character bitmap
+  \ - B = y coordinate (0..23)
+  \ - C = x coordinate (0..31)
+  \
+  \ }doc
+
+\ (display-char-bitmap) \
+
+  \ XXX TMP --
+  \
+  \ Alternative version that uses the version of
+  \ `(cursor-addr)` that does not use the BC register.
+
+need ?(
+
+[unneeded] (display-char-bitmap) ?(
+
+need assembler  need (cursor-addr)
+
+create (display-char-bitmap)  ( -- a )
+
+  asm
+
+  \   ; Input:
+  \   ;   HL = address of the character bitmap
+  \   ;   D = y coordinate (0..23)
+  \   ;   E = x coordinate (0..31)
+
+  (cursor-addr) call,
+
+  \   push hl
+  \   call cursor_addr ; HL = screen address
+  \   ex de,hl
+  \   pop hl
+
+  8 b ld#, rbegin  m a ld, d stap, h incp, d inc,  rstep  ret,
+
+  \   ld b,8     ; pixels high
+  \ display_char_row:
+  \   ld a,(hl)  ; row of graphic bitmap
+  \   ld (de),a  ; transfer to screen
+  \   inc hl     ; next row of graphic bitmap
+  \   inc d      ; next pixel line
+  \   djnz display_char_row
+  \   ret
+
+  end-asm ?)
+
+  \ doc{
+  \
+  \ (display-char-bitmap)  ( -- a )
+  \
+  \ Return address _a_ of a Z80 routine that displays
+  \ the bitmap of a character at given cursor coordinates.
+  \
+  \ Input registers:
+  \
+  \ - HL = address of the character bitmap
+  \ - B = y coordinate (0..23)
+  \ - C = x coordinate (0..31)
   \
   \ }doc
 
