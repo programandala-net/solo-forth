@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051642
+  \ Last modified: 201701090908
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,90 +43,123 @@
   \ 2016-12-23: Add `udg-chars`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-09: Rename `udg-chars` to `default-udg-chars`. Make
+  \ the basic words individually accessible to `need`.  Improve
+  \ documentation.
 
-( udg-chars 0udg> 0udg! udg! 0udg: udg: )
+( default-udg-chars )
 
-need ?(  [unneeded] udg-chars ?(  need rom-font need os-udg
+need rom-font need first-udg  need os-udg
 
-rom-font 'A' 8 * +          \ from
-os-udg @ 144 128 - 8 * +    \ to
-'U' 'A' - 1+ 8 *            \ count
+rom-font 'A' 8 * +                \ from
+os-udg @ 144 first-udg - 8 * +    \ to
+'U' 'A' - 1+ 8 *                  \ count
 move
-
-?)
 
   \ doc{
   \
-  \ udg-chars  ( -- )
+  \ default-udg-chars  ( -- )
   \
   \ A phoney word used only to do `need default-udg-chars` in
   \ order to define characters 144..164 as letters 'A'..'U',
   \ copied from the ROM font, the shape they have in Sinclair
-  \ BASIC. The current value of `os-udg` is used.
+  \ BASIC by default. The current value of `os-udg` is used.
   \
-  \ See: `block-chars`, `os-udg`, `set-udg`, `rom-font`.
+  \ See: `block-chars`, `os-udg`, `set-udg`, `rom-font`,
+  \ `first-udg`.
   \
   \ }doc
 
-need os-udg  need 8*
+( first-udg 0udg> 0udg! udg! 0udg: udg: )
 
-[defined] first-udg ?\ #128 constant first-udg
-
-: 0udg>  ( n -- a )  8* os-udg @ +  ;
-  \ Convert UDG number _n_ (0..127) to the address _a_ of its
-  \ bitmap.
-
-: 0udg!  ( b0..b7 n -- )  0udg> dup 7 + do  i c!  -1 +loop  ;
+[unneeded] first-udg ?\ #128 cconstant first-udg  exit
 
   \ doc{
   \
-  \ udg!  ( b0..b7 n -- )
+  \ first-udg  ( -- c )
   \
-  \ Store the given 8 bytes into UDG number _n_ (0..127).
+  \ A character constant that holds 128, the number of the
+  \ first user defined graphic.
   \
-  \ - b0 = first (top) scan
-  \ - b7 = last (bottom) scan
+  \ See: `udg!`, `udg:`.
   \
   \ }doc
 
-: udg!  ( b0..b7 c -- )  first-udg - 0udg!  ;
+need ?(
+
+[unneeded] 0udg> ?(  need 8* need os-udg
+: 0udg>  ( n -- a )  8* os-udg @ +  ;  exit ?)
+
+  \ doc{
+  \
+  \ 0udg>  ( c -- a )
+  \
+  \ Convert UDG number _n_ (0..255) to the address _a_ of its
+  \ bitmap.
+  \
+  \ See: `0udg!`, `0udg:`.
+  \
+  \ }doc
+
+[unneeded] 0udg! ?(  need 0udg>
+: 0udg!  ( b0..b7 n -- )  0udg> dup 7 + do  i c!  -1 +loop  ;
+exit ?)
+
+  \ doc{
+  \
+  \ 0udg!  ( b0..b7 c -- )
+  \
+  \ Store the 8-byte bitmap _b0..b7_ into UDG number _n_
+  \ (0..127).  _b0_ is the first (top) scan.  _b7_ is the last
+  \ (bottom) scan.
+  \
+  \ See: `0udg:`, `udg!`.
+  \
+  \ }doc
+
+[unneeded] udg! ?( need first-udg  need 0udg!
+: udg!  ( b0..b7 c -- )  first-udg - 0udg!  ;  exit ?)
 
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
   \
-  \ Store the given 8 bytes into UDG char _c_ (128..255).
+  \ Store the 8-byte bitmap _b0..b7_ into UDG char _c_
+  \ (0..255).  _b0_ is the first (top) scan.  _b7_ is the last
+  \ (bottom) scan.
   \
-  \ - b0 = first (top) scan
-  \ - b7 = last (bottom) scan
+  \ See: `udg:`, `0udg!`, `first-udg`.
   \
   \ }doc
 
-: udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;
+[unneeded] udg: ?(  need udg! ?(
+: udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;  exit ?)
 
   \ doc{
   \
   \ udg:  ( b0..b7 c "name" -- )
   \
   \ Create a constant "name" for UDG char _c_ (128..255) and
-  \ store the given 8 bytes into that UDG char.
-
-  \ - b0 = first (top) scan
-  \ - b7 = last (bottom) scan
+  \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
+  \ is the first (top) scan.  _b7_ is the last (bottom) scan.
+  \
+  \ See: `udg!`, `0udg:`, `first-udg`.
   \
   \ }doc
 
-: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ;
+[unneeded] 0udg: ?(  need 0udg!
+: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ;  exit ?)
 
   \ doc{
   \
-  \ 0udg:  ( b0..b7 n "name" -- )
+  \ 0udg:  ( b0..b7 c "name" -- )
   \
-  \ Create a constant "name" for UDG number _n_ (0..127) and
-  \ store the given 8 bytes into UDG char _128+n_.
-
-  \ - b0 = first (top) scan
-  \ - b7 = last (bottom) scan
+  \ Create a constant "name" for UDG char _c_ (0..255) and
+  \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
+  \ is the first (top) scan.  _b7_ is the last (bottom) scan.
+  \
+  \ See: `0udg!`, `udg:`.
   \
   \ }doc
 
@@ -402,7 +435,8 @@ code make-block-chars  ( a -- )
   \ routine. In Solo Forth there's no such restriction, and
   \ characters 128..255 can be redefined by the user.
   \
-  \ This word is written in Z80 and uses 18 B of code space.
+  \ This word is written in Z80 and uses 18 B of code space,
+  \ but the word `block-chars` is provided as an alternative.
   \
   \ See `block-chars`.
   \
@@ -443,7 +477,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ is used.
   \
   \ See: `make-block-chars`, `os-udg`, `set-udg`, `udg!`,
-  \ `udg-chars`.
+  \ `default-udg-chars`.
   \
   \ }doc
 
@@ -457,8 +491,10 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ set-udg  ( a -- )
   \
   \ Set address _a_ as the the current UDG set (characters
-  \ 128..255).  _a_ must be the bitmap address of character
-  \ 128.
+  \ 128..255), by changing the system variable `os-udg`.  _a_
+  \ must be the bitmap address of character 128.
+  \
+  \ See: `os-udg`, `get-udg`.
   \
   \ }doc
 
@@ -470,7 +506,10 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ get-udg  ( -- a )
   \
   \ Get address _a_ of the current UDG set (characters
-  \ 128..255).  _a_ is the bitmap address of character 128.
+  \ 128..255), by fetching the system variable `os-udg`.  _a_
+  \ is the bitmap address of character 128.
+  \
+  \ See: `os-udg`, `get-udg`.
   \
   \ }doc
 
@@ -482,7 +521,10 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ set-font  ( a -- )
   \
   \ Set address _a_ as the the current font (characters
-  \ 32..127).  _a_ must be the bitmap address of character 0.
+  \ 32..127), by setting the system variable `os-chars`.  _a_
+  \ must be the bitmap address of character 0.
+  \
+  \ See: `os-chars`, `get-font`.
   \
   \ }doc
 
@@ -493,8 +535,11 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \
   \ get-font  ( -- a )
   \
-  \ Get address _a_ of the current font (characters 32..127).
-  \ _a_ is the bitmap address of character 0.
+  \ Get address _a_ of the current font (characters 32..127),
+  \ by fetching the system variable `os-chars`.  _a_ is the
+  \ bitmap address of character 0.
+  \
+  \ See: `os-chars`, `set-font`.
   \
   \ }doc
 
@@ -504,8 +549,10 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \
   \ rom-font ( -- a )
   \
-  \ A constant that holds the address of the ROM font (_a_ is
-  \ the bitmap address of character 0).
+  \ A constant that holds the address _a_ of the ROM font,
+  \ which is 15360 ($3C00), the bitmap address of character 0,
+  \ 256 bytes below the bitmap of the space (character 32),
+  \ which is the first printable character.
   \
   \ }doc
 
