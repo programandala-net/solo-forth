@@ -612,6 +612,14 @@ Convert the sample games to .fs.
 
 .2017-01-09:
 
+Simplify the management of UDG: Use only the 0-index words, and make an
+optional layer to use 128-index codes, to make conversion of BASIC programs
+easier.
+
+Problem: general print words must use 128..255 codes for the first 128 UDGs.
+
+.2017-01-09:
+
 Add `.udg"` as a fast way to print strings of UDG (0..255).
 
 .2017-01-09:

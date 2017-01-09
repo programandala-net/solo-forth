@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051637
+  \ Last modified: 201701091136
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -52,6 +52,9 @@
   \ `test-pixel176` to `get-pixel176`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-09: Improve documentation with references to
+  \ `cursor-addr` and `(cursor-addr)`.
 
 \ (pixel-addr) slow-(pixel-addr) \
 
@@ -106,7 +109,7 @@ create slow-(pixel-addr)  ( -- a )
   \ of the y coordinate to be 0..191 instead of 0..175.
   \
   \ See: `fast-(pixel-addr)`, `slow-(pixel-addr)`,
-  \ `(pixel-addr176)`.
+  \ `(pixel-addr176)`, `(cursor-addr)`.
   \
   \ }doc
 
@@ -207,7 +210,7 @@ create (pixel-addr176)  ( -- a )
   \
   \ Return address _a_ of an alternative entry point to
   \ the
-  \ "pixel-add" ROM routine ($22AA), 
+  \ "pixel-add" ROM routine ($22AA),
   \ bypass the error check.
   \ to let the range of the y
   \ coordinate to be 0..191 instead of 0..175.
@@ -249,7 +252,7 @@ code pixel-addr176  ( gx gy -- n a )
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..175).
   \
-  \ See: `(pixel-addr176)`, `pixel-addr`.
+  \ See: `(pixel-addr176)`, `pixel-addr`, `cursor-addr`.
   \
   \ }doc
 
@@ -275,7 +278,7 @@ code pixel-addr  ( gx gy -- n a )
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..191).
   \
-  \ See: `(pixel-addr)`, `pixel-addr176`.
+  \ See: `(pixel-addr)`, `pixel-addr176`, `cursor-addr`.
   \
   \ }doc
 
