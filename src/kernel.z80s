@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701091226
+; Last modified: 201701101701
 
 include version.z80s
 
@@ -2416,14 +2416,14 @@ question_csb_.enough:
 ; save-string  ( ca1 len1 -- ca2 len1 )
 
 ; Save the string _ca1 len1_ in the circular string buffer and
-; return it at its new address.
+; return it at its new address as _ca2 len1_.
 ;
 ; ----
 ; : save-string  ( ca1 len1 -- ca2 len1 )
 ;   dup allocate-string swap 2dup 2>r move 2r>  ;
 ; ----
 ;
-; See: `allocate-string`, `csb0`.
+; See: `allocate-string`, `csb0`, `save-farstring`.
 ;
 ; }doc
 
@@ -6182,6 +6182,11 @@ source.other:
 
   dw dup_,c_comma_,tuck_,here_,swap_,c_move_,allot_
   dw exit_
+
+; XXX TODO -- simplify, after `fars,`?:
+; : fars,  ( ca len -- )  tuck hp@ farplace 1+ farallot  ;
+; : s,  ( ca len -- )  tuck here place 1+ allot  ;
+; XXX TODO -- if so, `place` has to be in the kernel
 
 ; ----------------------------------------------
   _colon_header two_comma_,'2,'

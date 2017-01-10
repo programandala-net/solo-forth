@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701092040
+  \ Last modified: 201701101705
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,6 +63,8 @@
   \ >order`.
   \
   \ 2017-01-09: Add `far,`.
+  \
+  \ 2017-01-10: Change `2*` to `cells`.
 
 ( farhl questionnextbank questionpreviousbank farallot far, )
 
@@ -190,6 +192,7 @@ previous set-current
   \ }doc
 
 need ?(  [unneeded] far, ?(  need farallot
+
 : far,  ( x -- )  hp@ far! cell farallot  ;  ?)
 
   \ doc{
@@ -276,9 +279,11 @@ need ?(  [unneeded] far, ?(  need farallot
 need ?(
 
 [unneeded] move>far ?(
+
 : move>far  ( a1 a2 len -- )
-  2* bounds ?do  dup @ i far! cell+
-            cell +loop  drop  ;  exit ?)
+  cells bounds ?do  dup @ i far! cell+ cell +loop  drop  ;
+
+exit ?)
 
   \ doc{
   \
@@ -291,9 +296,11 @@ need ?(
   \ }doc
 
 [unneeded] move<far ?(
+
 : move<far  ( a1 a2 len -- )
-  2* bounds ?do  dup far@ i ! cell+
-            cell +loop  drop  ;  exit ?)
+  cells bounds ?do  dup far@ i ! cell+ cell +loop  drop  ;
+
+exit ?)
 
   \ doc{
   \
@@ -306,8 +313,11 @@ need ?(
   \ }doc
 
 [unneeded] cmove>far ?(
+
 : cmove>far  ( ca1 ca2 len -- )
-  bounds ?do  dup c@ i farc! char+  loop  drop  ;  exit ?)
+  bounds ?do  dup c@ i farc! char+  loop  drop  ;
+
+exit ?)
 
   \ doc{
   \
@@ -320,8 +330,11 @@ need ?(
   \ }doc
 
 [unneeded] cmove<far ?(
+
 : cmove<far  ( ca1 ca2 len -- )
-  bounds ?do  dup farc@ i c! char+  loop  drop  ;  exit ?)
+  bounds ?do  dup farc@ i c! char+  loop  drop  ;
+
+exit ?)
 
   \ doc{
   \
