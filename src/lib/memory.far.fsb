@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701101705
+  \ Last modified: 201701101802
 
   \ -----------------------------------------------------------
   \ Description
@@ -315,9 +315,7 @@ exit ?)
 [unneeded] cmove>far ?(
 
 : cmove>far  ( ca1 ca2 len -- )
-  bounds ?do  dup c@ i farc! char+  loop  drop  ;
-
-exit ?)
+  bounds ?do  dup c@ i farc! char+  loop  drop  ;  exit ?)
 
   \ doc{
   \
@@ -332,9 +330,7 @@ exit ?)
 [unneeded] cmove<far ?(
 
 : cmove<far  ( ca1 ca2 len -- )
-  bounds ?do  dup farc@ i c! char+  loop  drop  ;
-
-exit ?)
+  bounds ?do  dup farc@ i c! char+  loop  drop  ;  exit ?)
 
   \ doc{
   \
