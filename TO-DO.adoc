@@ -612,6 +612,11 @@ Convert the sample games to .fs.
 
 .2017-01-09:
 
+- Rename `color!` to `temp-attr!`, etc.
+- Rename `permcolor!` to `perm-attr!`, etc.
+
+.2017-01-09:
+
 Simplify the management of UDG: Use only the 0-index words, and make an
 optional layer to use 128-index codes, to make conversion of BASIC programs
 easier.
