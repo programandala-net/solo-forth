@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701091741
+  \ Last modified: 201701101918
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,8 @@
   \ 2017-01-09: Add `(cursor-addr)` and `cursor-addr`.  Add
   \ temporary experimental words `(display-char-bitmap)`,
   \ `at-xy-display-0udg` and `0udg-at-xy-display`.
+  \
+  \ 2017-01-10: Improve documentation.
 
 ( default-udg-chars )
 
@@ -498,7 +500,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ 128..255), by changing the system variable `os-udg`.  _a_
   \ must be the bitmap address of character 128.
   \
-  \ See: `os-udg`, `get-udg`.
+  \ See: `os-udg`, `get-udg`, `set-font`.
   \
   \ }doc
 
@@ -528,7 +530,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ 32..127), by setting the system variable `os-chars`.  _a_
   \ must be the bitmap address of character 0.
   \
-  \ See: `os-chars`, `get-font`.
+  \ See: `os-chars`, `get-font`, `rom-font`.
   \
   \ }doc
 
@@ -556,7 +558,10 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ A constant that holds the address _a_ of the ROM font,
   \ which is 15360 ($3C00), the bitmap address of character 0,
   \ 256 bytes below the bitmap of the space (character 32),
-  \ which is the first printable character.
+  \ which is the first printable character. This is the default
+  \ hold in `os-chars`.
+  \
+  \ See: `set-font`, `get-font`, `os-chars`.
   \
   \ }doc
 
