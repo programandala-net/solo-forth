@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262323
+  \ Last modified: 201701102000
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,10 @@
   \
   \ 2016-12-25: Improve needing of word set `'cr' 'tab' 'bs'
   \ crs tab tabs backspace backspaces`.
+  \
+  \ 2017-01-07: Fix typo.
+  \
+  \ 2017-01-10: Complete and improve documentation.
 
 ( printer tabulate )
 
@@ -86,7 +90,7 @@ variable /tabulate  8 /tabulate !
   \
   \ Note `tabulate` does not uses the "tab" control code, whose
   \ behaviour depends on the screen mode (in the default screen
-  \ mode, it moves the cursor 16 positions to right).
+  \ mode, it moves the cursor 16 positions to the right).
   \ `tabulate` prints spaces and is independent from the screen
   \ mode.
   \
@@ -96,25 +100,109 @@ variable /tabulate  8 /tabulate !
 
 ( 'cr' 'tab' 'bs' crs tab tabs backspace backspaces )
 
-[unneeded] 'tab' ?\ 6 constant 'tab'  exit
+[unneeded] 'tab' ?\ 6 cconstant 'tab'  exit
 
-[unneeded] 'bs' ?\ 8 constant 'bs'  exit
+  \ doc{
+  \
+  \ 'tab'  ( -- c )
+  \
+  \ A character constant that returns the caracter code used as
+  \ tabulator (6).
+  \
+  \ See: `tab`, `'cr'`, `'bs'`.
+  \
+  \ }doc
 
-[unneeded] 'cr' ?\ 13 constant 'cr'  exit
+[unneeded] 'bs' ?\ 8 cconstant 'bs'  exit
+
+  \ doc{
+  \
+  \ 'bs'  ( -- c )
+  \
+  \ A character constant that returns the caracter code used as
+  \ backspace (8).
+  \
+  \ See: `'cr'`, `'tab'`.
+  \
+  \ }doc
+
+[unneeded] 'cr' ?\ 13 cconstant 'cr'  exit
+
+  \ doc{
+  \
+  \ 'cr'  ( -- c )
+  \
+  \ A character constant that returns the caracter code used as
+  \ carriage return (13).
+  \
+  \ See: `cr`, `crs`.
+  \
+  \ }doc
 
 [unneeded] tab
 ?\ need 'tab'  : tab  ( -- )  'tab' emit  ;  exit
 
+  \ doc{
+  \
+  \ tab  ( -- )
+  \
+  \ Emit a tabulate character (character code 6), which moves
+  \ the print position to the next 16-character column.
+  \
+  \ See: `'tab'`.
+  \
+  \ }doc
+
 [unneeded] backspace
 ?\ need 'bs'  : backspace  ( -- )  'bs'  emit  ;  exit
+
+  \ doc{
+  \
+  \ backspace  ( -- )
+  \
+  \ Emit a backspace character (character code 8).
+  \
+  \ See: `'bs'`.
+  \
+  \ }doc
 
 [unneeded] crs
 ?\ need 'cr'  : crs   ( n -- )  'cr'  emits  ;  exit
 
+  \ doc{
+  \
+  \ crs  ( n -- )
+  \
+  \ Emit _n_ number of cr characters (character code 13).
+  \
+  \ See: `cr`, `'cr'`.
+  \
+  \ }doc
+
 [unneeded] tabs
 ?\ need 'tab'  : tabs  ( n -- )  'tab' emits  ;  exit
 
+  \ doc{
+  \
+  \ tabs  ( n -- )
+  \
+  \ Emit _n_ number of tab characters (character code 6).
+  \
+  \ See: `tab`, `'tab'`.
+  \
+  \ }doc
+
 [unneeded] backspaces
 ?\ need 'bs'  : backspaces    ( n -- )  'bs'  emits  ;
+
+  \ doc{
+  \
+  \ backspaces  ( n -- )
+  \
+  \ Emit _n_ number of backspace characters (character code 8).
+  \
+  \ See: `backspace`, `'bs'`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
