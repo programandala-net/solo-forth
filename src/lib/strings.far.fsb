@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701101723
+  \ Last modified: 201701101947
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,11 +25,15 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2017-01-10: Move this code from <strings.MISC.fsb>.
+  \ 2017-01-10: Move all the far-memory string words from
+  \ <strings.MISC.fsb>.  Simplify the string arrays: remove the
+  \ variants that don't leave the count on the stack and remove
+  \ the slash from the names of the others.
 
-( far," fars, farsconstant )
+( far," fars, farsconstant save-farstring )
 
 [unneeded] far,"
+
 ?\ need fars,  : far,"  ( -- )  '"' parse fars,  ;  exit
 
   \ doc{
@@ -41,9 +45,13 @@
   \
   \ }doc
 
+need ?(
+
 [unneeded] fars, ?(  need farplace  need farallot
 
-: fars,  ( ca len -- )  tuck hp@ farplace 1+ farallot  ; ?)
+: fars,  ( ca len -- )  tuck hp@ farplace 1+ farallot  ;
+
+exit ?)
 
   \ doc{
   \
@@ -54,9 +62,8 @@
   \
   \ }doc
 
-need ?(
-
 [unneeded] farsconstant ?(  need fars,
+
 : farsconstant  ( ca len "name" -- )
   hp@ >r fars, r> farcount 2constant  ; exit ?)
 
@@ -67,160 +74,15 @@ need ?(
   \ Create a string constant _name_ in far memory with value
   \ _ca len_.
   \
-  \ }doc
-
-( farsconstants, /farsconstants, )
-
-[unneeded] farsconstants, ?(
-
-need far,
-
-: farsconstants,  ( 0 ca[n]..ca[1] "name" -- )
-  create  hp@ , begin  ?dup  while  far,  repeat  ;  exit ?)
-
-  \ doc{
-  \
-  \ farsconstants,  ( 0 ca[n]..ca[1] "name" -- )
-  \
-  \ Create a table of string constants _name_ in far memory,
-  \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
-  \ the last string on the stack.
-  \
-  \ When _name_ is executed, it returns an address that holds
-  \ the address of the table in far memory.
-  \
-  \ This word is a common factor of `farsconstants` and
-  \ `far>sconstants`.
-  \
-  \ See: `farsconstants`, `far>sconstants`.
+  \ When _name_ is executed, it returns the string _ca len_ in
+  \ far memory as _ca2 len_.
   \
   \ }doc
 
-[unneeded] /farsconstants, ?exit
-
-need far,
-
-: /farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
-  create  hp@ , 0 begin  swap ?dup  while  far, 1+  repeat  ;
-
-exit ?)
-
-  \ doc{
-  \
-  \ /farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
-  \
-  \ Create a table of string constants _name_ in far memory,
-  \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
-  \ the last string on the stack, and return the number _n_ of
-  \ compiled strings.
-  \
-  \ When _name_ is executed, it returns an address that holds
-  \ the address of the table in far memory.
-  \
-  \ This word is a common factor of `/farsconstants` and
-  \ `/far>sconstants`.
-  \
-  \ See: `/farsconstants`, `/far>sconstants`.
-  \
-  \ }doc
-
-( farsconstants-does> farsconstants /farsconstants )
-
-need ?(
-
-[unneeded] farsconstants-does> ?(  need array>
-: farsconstants-does>  ( -- )
-  does>  ( n -- ca len ) ( n pfa ) @ array> far@ farcount  ; ?)
-
-[unneeded] farsconstants ?(
-
-need farsconstants,  need farsconstants-does>  need far,
-
-: farsconstants  ( 0 ca[n]..ca[1] "name" -- )
-  farsconstants, farsconstants-does>  ;  exit ?)
-
-  \ doc{
-  \
-  \ farsconstants  ( 0 ca[n]..ca[1] "name" -- )
-  \
-  \ Create a table of string constants _name_ in far memory,
-  \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
-  \ the last string on the stack.
-  \
-  \ When _name_ is executed, it converts the index on the stack
-  \ (0.._n-1_) to the correspondent string _ca len_ in far
-  \ memory.
-  \
-  \ Usage example:
-
-  \ ----
-  \
-  \ 0                  \ end of strings
-  \   hp@ far," kvar"  \ string 4
-  \   hp@ far," tri"   \ string 3
-  \   hp@ far," du"    \ string 2
-  \   hp@ far," unu"   \ string 1
-  \   hp@ far," nul"   \ string 0
-  \ farsconstants digitname
-  \
-  \ 0 digitname cr fartype
-  \ 1 digitname cr fartype
-  \ 2 digitname cr fartype
-  \ 3 digitname cr fartype cr
-  \ ----
-
-  \ See: `/farsconstants`, `/sconstants`, `farsconstants,`.
-  \
-  \ }doc
-
-[unneeded] /farsconstants ?exit
-
-need /farsconstants,  need farsconstants-does>  need far,
-
-: /farsconstants  ( 0 ca[n]..ca[1] "name" -- n )
-  /farsconstants, farsconstants-does>  ;  exit ?)
-
-  \ doc{
-  \
-  \ farsconstants  ( 0 ca[n]..ca[1] "name" -- )
-  \
-  \ Create a table of string constants _name_ in far memory,
-  \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
-  \ the last string on the stack.
-  \
-  \ When _name_ is executed, it converts the index on the stack
-  \ (0.._n-1_) to the correspondent string _ca len_ in far
-  \ memory.
-  \
-  \ Usage example:
-
-  \ ----
-  \
-  \ 0                \ end of strings
-  \   hp@ far," kvar"  \ string 4
-  \   hp@ far," tri"   \ string 3
-  \   hp@ far," du"    \ string 2
-  \   hp@ far," unu"   \ string 1
-  \   hp@ far," nul"   \ string 0
-  \ /farsconstants digitname  constant digitnames
-  \
-  \ cr .( There are ) digitnames . .( digit names:)
-  \ 0 digitname cr fartype
-  \ 1 digitname cr fartype
-  \ 2 digitname cr fartype
-  \ 3 digitname cr fartype cr
-  \ ----
-
-  \ See: `farsconstants`, `sconstants`.
-  \
-  \ }doc
-
-( save-farstring )
-
-need cmove<far
+[unneeded] save-farstring ?(  need cmove<far
 
 : save-farstring  ( ca1 len1 -- ca2 len1 )
-  dup allocate-string swap 2dup 2>r cmove<far 2r>  ;
+  dup allocate-string swap 2dup 2>r cmove<far 2r>  ; ?)
 
   \ doc{
   \
@@ -234,36 +96,56 @@ need cmove<far
   \
   \ }doc
 
-( far>sconstants-does> far>sconstants /far>sconstants )
+( farsconstants, farsconstants far>sconstants )
 
 need ?(
 
-[unneeded] far>sconstants-does> ?(
+[unneeded] farsconstants, ?(  need far,
 
-need array>  need save-farstring
+: farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
+  create  hp@ , 0 begin  swap ?dup  while  far, 1+  repeat  ;
 
-: far>sconstants-does>  ( -- )
-  does>  ( n -- ca len )
-  ( n pfa ) @ array> far@ farcount save-farstring  ; ?)
-
-[unneeded] far>sconstants ?(
-
-need farsconstants, need far>sconstants-does>  need far,
-
-: far>sconstants  ( 0 ca[n]..ca[1] "name" -- )
-  farsconstants, far>sconstants-does>  ;  exit ?)
+exit ?)
 
   \ doc{
   \
-  \ far>sconstants  ( 0 ca[n]..ca[1] "name" -- )
+  \ farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
-  \ the last string on the stack.
+  \ the last string on the stack, and return the number _n_ of
+  \ compiled strings.
+  \
+  \ When _name_ is executed, it returns an address that holds
+  \ the address of the table in far memory.
+  \
+  \ This word is a common factor of `farsconstants` and
+  \ `far>sconstants`.
+  \
+  \ See: `farsconstants`, `far>sconstants`.
+  \
+  \ }doc
+
+[unneeded] farsconstants ?(  need farsconstants,  need array>
+
+: farsconstants  ( 0 ca[n]..ca[1] "name" -- n )
+  farsconstants,  does>  ( n -- ca len )
+  ( n pfa ) @ array> far@ farcount  ;
+
+exit ?)
+
+  \ doc{
+  \
+  \ farsconstants  ( 0 ca[n]..ca[1] "name" -- )
+  \
+  \ Create a table of string constants _name_ in far memory,
+  \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
+  \ the last string on the stack, and return the number _n_ of
+  \ compiled strings.
   \
   \ When _name_ is executed, it converts the index on the stack
   \ (0.._n-1_) to the correspondent string _ca len_ in far
-  \ memory and return a copy in the circular string buffer.
+  \ memory.
   \
   \ Usage example:
 
@@ -275,24 +157,26 @@ need farsconstants, need far>sconstants-does>  need far,
   \   hp@ far," du"    \ string 2
   \   hp@ far," unu"   \ string 1
   \   hp@ far," nul"   \ string 0
-  \ farsconstants digitname
+  \ farsconstants digitname  constant digitnames
   \
-  \ 0 digitname cr type
-  \ 1 digitname cr type
-  \ 2 digitname cr type
-  \ 3 digitname cr type cr
+  \ cr .( There are ) digitnames . .( digit names:)
+  \ 0 digitname cr fartype
+  \ 1 digitname cr fartype
+  \ 2 digitname cr fartype
+  \ 3 digitname cr fartype cr
   \ ----
 
-  \ See: `/farsconstants`, `/sconstants`, `farsconstants,`.
+  \ See: `sconstants`.
   \
   \ }doc
 
-[unneeded] /far>sconstants ?exit
+[unneeded] far>sconstants ?exit
 
-need /farsconstants,  need far>sconstants-does>  need far,
+need farsconstants,  need array>  need save-farstring
 
-: /far>sconstants  ( 0 ca[n]..ca[1] "name" -- n )
-  /farsconstants, far>sconstants-does>  ;  exit ?)
+: far>sconstants  ( 0 ca[n]..ca[1] "name" -- n )
+  farsconstants,  does>  ( n -- ca len )
+  ( n pfa ) @ array> far@ farcount save-farstring  ;  exit ?)
 
   \ doc{
   \
@@ -311,13 +195,13 @@ need /farsconstants,  need far>sconstants-does>  need far,
 
   \ ----
   \
-  \ 0                \ end of strings
+  \ 0                  \ end of strings
   \   hp@ far," kvar"  \ string 4
   \   hp@ far," tri"   \ string 3
   \   hp@ far," du"    \ string 2
   \   hp@ far," unu"   \ string 1
   \   hp@ far," nul"   \ string 0
-  \ /farsconstants digitname  constant digitnames
+  \ far>sconstants digitname  constant digitnames
   \
   \ cr .( There are ) digitnames . .( digit names:)
   \ 0 digitname cr type
@@ -326,8 +210,7 @@ need /farsconstants,  need far>sconstants-does>  need far,
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `far>sconstants`, `/farsconstants`, `sconstants`,
-  \ `/farsconstants,`.
+  \ See: `sconstants`, `farsconstants`.
   \
   \ }doc
 

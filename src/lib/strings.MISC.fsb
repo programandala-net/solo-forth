@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701101725
+  \ Last modified: 201701101947
 
   \ -----------------------------------------------------------
   \ Description
@@ -78,7 +78,10 @@
   \ `/far>sconstants`, `save-farstring`.
   \
   \ 2017-01-10: Move all far-memory strings words to their own
-  \ module <strings.far.fsb>.
+  \ module <strings.far.fsb>.  Simplify the string arrays:
+  \ remove the variant `sconstants`, which doesn't leave the
+  \ count on the stack, and rename `/sconstants` to
+  \ `sconstants`.
 
 ( str= str< str> trim +place hunt )
 
@@ -705,7 +708,7 @@ code string/  ( ca1 len1 len2 -- ca2 len2 )
   \
   \ }doc
 
-( sconstant sconstants-does> sconstants /sconstants )
+( sconstant sconstants )
 
 need ?(
 
@@ -719,25 +722,24 @@ need ?(
   \
   \ Create a string constant _name_ with value _ca len_.
   \
+  \ See: `sconstants`.
+  \
   \ }doc
 
-[unneeded] sconstants-does> ?(  need array>
-: sconstants-does>  ( -- )
+[unneeded] sconstants ?(  need array>  need sconstants-does>
+
+: sconstants  ( 0 ca[n]..ca[1] "name" -- n )
+  create  0 begin  swap ?dup  while  , 1+  repeat
   does>  ( n -- ca len )  ( n pfa ) array> @ count  ;  exit ?)
-
-[unneeded] sconstants ?(  need sconstants-does>
-
-: sconstants  ( 0 ca[n]..ca[1] "name" -- )
-  create  begin  ?dup  while  ,  repeat
-  sconstants-does>  ;  exit ?)
 
   \ doc{
   \
-  \ sconstants  ( 0 ca[n]..ca[1] "name" -- )
+  \ sconstants  ( 0 ca[n]..ca[1] "name" -- n )
   \
   \ Create a table of string constants _name_, using counted
   \ strings _ca[n]..ca[1]_, being _0_ a mark for the last
-  \ string on the stack.
+  \ string on the stack, and return the number _n_ of compiled
+  \ strings.
   \
   \ When _name_ is executed, it converts the index on the stack
   \ (0.._n-1_) to the correspondent string _ca len_.
@@ -753,45 +755,7 @@ need ?(
   \   here ," unu"   \ string 1
   \   here ," nul"   \ string 0
   \ sconstants digitname
-  \
-  \ 0 digitname cr type
-  \ 1 digitname cr type
-  \ 2 digitname cr type
-  \ 3 digitname cr type cr
-  \ ----
-
-  \ See: `/sconstants`.
-  \
-  \ }doc
-
-[unneeded] /sconstants ?exit  need sconstants-does>
-
-: /sconstants  ( 0 ca[n]..ca[1] "name" -- n )
-  create  0 begin  swap ?dup  while  , 1+  repeat
-  sconstants-does>  ;  exit ?)
-
-  \ doc{
-  \
-  \ sconstants  ( 0 ca[n]..ca[1] "name" -- )
-  \
-  \ Create a table of string constants _name_, using counted
-  \ strings _ca[n]..ca[1]_, being _0_ a mark for the last
-  \ string on the stack.
-  \
-  \ When _name_ is executed, it converts the index on the stack
-  \ (0.._n-1_) to the correspondent string _ca len_.
-  \
-  \ Usage example:
-
-  \ ----
-  \
-  \ 0                \ end of strings
-  \   here ," kvar"  \ string 4
-  \   here ," tri"   \ string 3
-  \   here ," du"    \ string 2
-  \   here ," unu"   \ string 1
-  \   here ," nul"   \ string 0
-  \ /sconstants digitname  constant digitnames
+  \   constant digitnames
   \
   \ cr .( There are ) digitnames . .( digit names:)
   \ 0 digitname cr type
@@ -800,7 +764,7 @@ need ?(
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `sconstants`.
+  \ See: `sconstant`.
   \
   \ }doc
 
