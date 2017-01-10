@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612032030
+  \ Last modified: 201701101605
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,13 +39,15 @@
   \
   \ 2016-12-03: Factor `>printable-ascii-char` from
   \ `type-ascii` and `fartype-ascii`.
+  \
+  \ 2017-01-10: Fix `fartype`.
 
 ( fartype type-ascii fartype-ascii )
 
 need ?(  [unneeded] fartype ?(
 
 : fartype  ( ca len -- )
-  bounds ?do  i farc@ emit  loop  drop  ;  exit ?)
+  bounds ?do  i farc@ emit  loop  ;  exit ?)
 
   \ doc{
   \
