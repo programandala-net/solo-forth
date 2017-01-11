@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061413
+  \ Last modified: 201701111856
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -55,6 +55,9 @@
   \ were wrong and the Forth system crashed or became
   \ corrupted, depending on the size of the dictionary and the
   \ previous words.
+  \
+  \ 2017-01-11: Make `s\"` and `.\"` use
+  \ `esc-standard-chars-wordlist`. Improve documentation.
 
 ( esc-standard-chars-wordlist )
 
@@ -247,6 +250,8 @@ need ?(
 
 need parse-esc-string  need esc-standard-chars-wordlist
 
+need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
+
 : s\"  ( Interpretation: "ccc<quote>" -- ca len )
        ( Compilation: "ccc<quote>" -- )
        ( Run-time: -- ca len )
@@ -261,11 +266,16 @@ need parse-esc-string  need esc-standard-chars-wordlist
   \      ( Interpretation: "ccc<quote>" -- ca len )
   \      ( Run-time: -- ca len )
 
+  \ Note: Loading this word sets `esc-standard-chars-wordlist`
+  \ as the only wordlist in `esc-order`. That is the standard
+  \ behaviour. Alternative escaped chars can be configured with
+  \ `esc-block-chars-wordlist` and `esc-udg-chars-wordlist`.
   \
   \ Origin: Forth-2012 (CORE EXT, FILE EXT).
   \
   \ See: `parse-esc-string`, `esc-standard-chars-wordlist`,
-  \ `.\"`.
+  \ `set-esc-order`, `.\"`, `esc-block-chars-wordlist` and
+  \ `esc-udg-chars-wordlist`.
   \
   \ }doc
 
@@ -273,10 +283,11 @@ need parse-esc-string  need esc-standard-chars-wordlist
 
 need parse-esc-string  need esc-standard-chars-wordlist
 
+need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
+
 : .\"  ( Compilation: "ccc<quote>" -- )
        ( Run-time: -- ca len )
-  compile (.")  parse-esc-string s,
-  ; immediate compile-only ?)
+  compile (.") parse-esc-string s,  ; immediate compile-only ?)
 
   \ XXX TODO documentation
 
@@ -286,8 +297,14 @@ need parse-esc-string  need esc-standard-chars-wordlist
   \      ( Run-time: -- ca len )
   \
 
+  \ Note: Loading this word sets `esc-standard-chars-wordlist`
+  \ as the only wordlist in `esc-order`. That is the standard
+  \ behaviour. Alternative escaped chars can be configured with
+  \ `esc-block-chars-wordlist` and `esc-udg-chars-wordlist`.
+  \
   \ See: `parse-esc-string`, `esc-standard-chars-wordlist`,
-  \ `s\"`.
+  \ `set-esc-order`, `s\"`, `esc-block-chars-wordlist` and
+  \ `esc-udg-chars-wordlist`.
   \
   \ }doc
 
@@ -376,7 +393,7 @@ need ?(
 
 need ?esc-order  need #esc-order  need esc-context
 
-: set-esc-order  ( -1 | 0 | widn..wid1 n -- )
+: set-esc-order  ( widn..wid1 n -- )
   dup ?esc-order  dup #esc-order !
   0 ?do  i cells esc-context + !  loop  ;  exit ?)
 

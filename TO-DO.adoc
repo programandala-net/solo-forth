@@ -54,6 +54,10 @@ Diff::              +26 B
 // Bugs {{{1
 == Bugs ==
 
+.2017-01-11:
+
+`view` gets trapped in `wait-for-key` at the end, why?
+
 .2017-01-08:
 
 `cold` does not restore the ROM font.
