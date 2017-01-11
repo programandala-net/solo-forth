@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-09
+:revdate: 2017-01-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -57,10 +57,6 @@ Diff::              +26 B
 .2017-01-11:
 
 `view` gets trapped in `wait-for-key` at the end, why?
-
-.2017-01-08:
-
-`cold` does not restore the ROM font.
 
 .2017-01-04:
 
