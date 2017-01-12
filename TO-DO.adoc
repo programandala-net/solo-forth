@@ -63,10 +63,6 @@ Diff::              +26 B
 Check some of the RNG benchs.  The machine resets at the end of some
 of them. They are marked in the source.
 
-.2016-12-23:
-
-Check `.\"`.
-
 // Code style {{{1
 == Code style ==
 

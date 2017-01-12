@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701121221
+  \ Last modified: 201701121419
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,7 +52,8 @@
   \ in the kernel.
   \
   \ 2017-01-12: Rewrite `papery`, `brighty` and `flashy` in Z80
-  \ (smaller and faster code) and document them.
+  \ (smaller and faster code) and document them. Improve
+  \ `permcolor`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -313,8 +314,8 @@ need os-attr-p  need os-mask-p
 need permcolor!  need permcolor-mask!
 
 : permcolor  ( b "name" -- )
-  create ,
-  does>  ( -- ) ( pfa ) @ permcolor!  ;
+  create c,
+  does>  ( -- ) ( pfa ) c@ permcolor!  ;
 
   \ doc{
   \
