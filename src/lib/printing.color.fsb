@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201945
+  \ Last modified: 201701121221
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2017-01-12: Rewrite `papery`, `brighty` and `flashy` in Z80
+  \ (smaller and faster code) and document them.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -119,14 +122,75 @@
 
 ( papery brighty flashy )
 
-[unneeded] papery
-?\ : papery   ( color -- paper-attribute )           8 *  ;
+need ?(
 
-[unneeded] brighty
-?\ : brighty  ( attribute -- brighty-attribute )   64 or  ;
+[unneeded] papery ?(  need 8*  need alias
+' 8* alias papery  ( b1 -- b2 ) ?)
 
-[unneeded] flashy
-?\ : flashy   ( attribute -- flashy-attribute )   128 or  ;
+  \ doc{
+  \
+  \ papery   ( b1 -- b2 )
+  \
+  \ Convert paper color _b1_ to its equivalent attribute _b2_.
+  \
+  \ This word is an alias of `8*`, which is written in Z80.
+  \ Its equivalent in Forth is the following:
+
+  \ ----
+  \ : papery   ( b1 -- b2 )           8 *  ;
+  \ ----
+
+  \ See: `brighty`, `flashy`.
+  \
+  \ }doc
+
+[unneeded] brighty ?(
+code brighty  ( attribute -- brighty-attribute )
+  E1 c, CB c, C0 6 8 * + 5 + c, jppushhl,  end-code ?)
+  \ pop hl
+  \ set 6,l
+  \ jp pushhl
+
+  \ doc{
+  \
+  \ brighty  ( b1 -- b2 )
+  \
+  \ Convert attribute _b1_ to its brighty equivalent _b2_.
+  \
+  \ This word is written in Z80. Its equivalent in Forth is the
+  \ following:
+
+  \ ----
+  \ : brighty  ( b1 -- b2 )   64 or  ;
+  \ ----
+
+  \ See: `papery`, `flashy`.
+  \
+  \ }doc
+
+[unneeded] flashy ?(
+code flashy   ( b1 -- b2 )
+  E1 c, CB c, C0 7 8 * + 5 + c, jppushhl,  end-code ?)
+  \ pop hl
+  \ set 7,l
+  \ jp pushhl
+
+  \ doc{
+  \
+  \ flashy   ( b1 -- b2 )
+  \
+  \ Convert attribute _b1_ to its flashy equivalent _b2_.
+  \
+  \ This word is written in Z80. Its equivalent in Forth is the
+  \ following:
+
+  \ ----
+  \ : flashy   ( b1 -- b2 )   128 or  ;
+  \ ----
+
+  \ See: `papery`, `brighty`.
+  \
+  \ }doc
 
 ( color@ color! color-mask@ color-mask! color 2color )
 
@@ -278,7 +342,7 @@ need permcolor!  need permcolor-mask!
 
 need color@  need color!
 
-code attr>paper  ( n1 -- n2 )
+code attr>paper  ( b1 -- b2 )
   E1 c, 7D c, E6 c, %00111000 c,
   \ pop hl
   \ ld a,l
@@ -291,21 +355,21 @@ code attr>paper  ( n1 -- n2 )
 
   \ doc{
   \
-  \ attr>paper  ( n1 -- n2 )
+  \ attr>paper  ( b1 -- b2 )
   \
-  \ Convert paper attribute _n1_ to actual paper color number
-  \ _n2_.
+  \ Convert paper attribute _b1_ to actual paper color number
+  \ _b2_.
   \
   \ This word is written in Z80. The equivalent code in Forth
   \ is the following:
   \
   \ ----
-  \ : attr>paper  ( n1 -- n2 )  %00111000 and 3 rshift  ;
+  \ : attr>paper  ( b1 -- b2 )  %00111000 and 3 rshift  ;
   \ ----
   \
   \ }doc
 
-code paper>attr  ( n1 -- n2 )
+code paper>attr  ( b1 -- b2 )
   E1 c, 7F c, E6 c, %00000111 c,
   \ pop hl
   \ ld a,l
@@ -318,16 +382,16 @@ code paper>attr  ( n1 -- n2 )
 
   \ doc{
   \
-  \ paper>attr  ( n1 -- n2 )
+  \ paper>attr  ( b1 -- b2 )
   \
-  \ Convert paper color _n1_ (only bits 0..2 are used) to paper
-  \ attribute _n2_.
+  \ Convert paper color _b1_ (only bits 0..2 are used) to paper
+  \ attribute _b2_.
   \
   \ This word is written in Z80. The equivalent code in Forth
   \ is the following:
   \
   \ ----
-  \ : >paper>  ( n1 -- n2 )  %00000111 and 3 lshift  ;
+  \ : paper>attr  ( b1 -- b2 )  %00000111 and 3 lshift  ;
   \ ----
   \
   \ }doc
