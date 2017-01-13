@@ -606,11 +606,13 @@ Convert the sample games to .fs.
 // Graphics {{{1
 == Graphics ==
 
-.2017-01-09:
+.2017-01-09, 2017-01-12:
 
-- Rename `color!` to `temp-attr!`, etc.
-- Rename `permcolor!` to `perm-attr!`, etc.
-
+- Rename `color!` and family to `temp-attr!` or `t-attr!`...
+- Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...
+- Rename `permament-colors` to `permanent-attrs` or `temp>perm-attrs` or
+  `t>p-attrs`...
+ 
 .2017-01-09:
 
 Simplify the management of UDG: Use only the 0-index words, and make an
@@ -626,10 +628,6 @@ Add `.udg"` as a fast way to print strings of UDG (0..255).
 .2017-01-09:
 
 Finish `udg-block[`.
-
-.2016-12-27:
-
-Rename and document `test-pixel` and `test-pixel176`.
 
 .2016-12-26:
 
