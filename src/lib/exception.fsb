@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611261415
+  \ Last modified: 201701131717
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,6 +46,8 @@
   \ `errors-block`. Combine blocks to save two of them.
   \
   \ 2016-11-26: Move `catch` from the kernel.
+  \
+  \ 2017-01-13: Improve documentation.
 
 ( ?compiling ?executing abort" warning" )
 
@@ -56,7 +58,7 @@
   \
   \ ?compiling  ( -- )
   \
-  \ Issue an error if not compiling.
+  \ Throw exception #-14 if not compiling.
   \
   \ }doc
 
@@ -67,9 +69,10 @@
   \
   \ ?executing  ( -- )
   \
-  \ Issue an error if not executing.
+  \ Throw exception #-263 if not executing.
   \
   \ }doc
+
   \ Credit:
   \
   \ The code of `warning"` was adapted from pForth and modified.
