@@ -609,6 +609,21 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-01-13:
+
+Improve `ocr`: Return a flag apart from the code, in order to make it possible
+to recognize character zero:
+  
+----
+  \ ocr  ( col row -- c true | false )
+----
+
+Or write a variant:
+
+----
+  \ ocr?  ( col row -- c true | false )
+----
+
 .2017-01-09, 2017-01-12:
 
 - Rename `color!` and family to `temp-attr!` or `t-attr!`...

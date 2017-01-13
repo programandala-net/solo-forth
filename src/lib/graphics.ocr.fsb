@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051637
+  \ Last modified: 201701131812
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,10 +32,69 @@
   \ documentation.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-13: Fix `ocr`: `de` was still used as register, but
+  \ it doesn't exist anymore. Reorganize the source. Make
+  \ `ascii-ocr` and `udg-ocr` optional. Add `0udg-ocr`. Improve
+  \ documentation.
 
 ( ocr )
 
-need assembler  need ocr-chars
+need assembler
+
+variable ocr-charset  $3D00 ocr-charset !
+
+  \ doc{
+  \
+  \ ocr-charset  ( -- a )
+  \
+  \ Variable that holds the address of the first printable char
+  \ in the charset used by `ocr`. By default it contains
+  \ 0x3D00, the address of the space char in the ROM charset.
+  \
+  \ The configuration of `ocr`, including this variable, can be
+  \ changed by `ascii-ocr`, `udg-ocr` and `0udg-ocr`.
+  \
+  \ See: `ocr`, `ocr-chars`, `ocr-first`, `ascii-ocr`,
+  \ `udg-ocr`, `0udg-ocr`.
+  \
+  \ }doc
+
+variable ocr-first  bl ocr-first !
+
+  \ doc{
+  \
+  \ ocr-first  ( -- a )
+  \
+  \ Variable that holds the code of the first printable char in
+  \ the charset used by `ocr`, pointed by `ocr-charset`.  By
+  \ default it contais `bl`, the code of the space character.
+  \
+  \ The configuration of `ocr`, including this variable, can be
+  \ changed by `ascii-ocr`, `udg-ocr` and `0udg-ocr`.
+  \
+  \ See: `ocr`, `ocr-chars`, `ocr-charset`, `ascii-ocr`,
+  \ `udg-ocr`, `0udg-ocr`.
+  \
+  \ }doc
+
+variable ocr-chars  127 bl - ocr-chars !
+
+  \ doc{
+  \
+  \ ocr-chars  ( -- a )
+  \
+  \ Variable that holds the number of chars used by `ocr`, from
+  \ the address pointed by `ocr-charset`. By default it contais
+  \ 95, the number of printable ASCII chars in the ROM charset.
+  \
+  \ The configuration of `ocr`, including this variable, can be
+  \ changed by `ascii-ocr`, `udg-ocr` and `0udg-ocr`.
+  \
+  \ See: `ocr`, `ocr-first`, `ocr-charset`, `ascii-ocr`,
+  \ `udg-ocr`, `0udg-ocr`.
+  \
+  \ }doc
 
 code ocr  ( col line -- n )
 
@@ -47,7 +106,7 @@ code ocr  ( col line -- n )
   c a ld, rrca, rrca, rrca, E0 and#, b xor, a e ld,
   c a ld, 18 and#, 40 xor#, a d ld,
     \ DE = screen address
-  0 de stp, >amark 0 unresolved !
+  0 d stp, >amark 0 unresolved !
     \ modify the code to get the screen address later
 
   ocr-chars fta, a b ld,
@@ -56,18 +115,16 @@ code ocr  ( col line -- n )
     \ B=remaining chars
     \ HL = address of scan 0 of the current char
     b push, h push,
-    0 de ldp#,  \ restore the screen address
-    >amark 0 unresolved @ !
+    0 d ldp#,  \ restore the screen address
+    >amark 0 unresolved @ !  -->
       \ compilation: resolve the address of the screen address
     \ DE = screen address
-
--->
 
 ( ocr )
 
     08 b ld#,  \ scans
     rbegin
-      de ftap, m xor,  \ scan match?
+      d ftap, m xor,  \ scan match?
       here nz? ?jr, >rmark 1 unresolved !
         \ if not, goto next_char
       d inc, h incp,  \ update the pointers
@@ -93,12 +150,21 @@ code ocr  ( col line -- n )
   \ end:
   2 unresolved @ >rresolve  0 h ld#, b l ld,
   b pop, jppushhl,  end-code
-  
+
   \ Credit:
   \
   \ Adapted from anonymous code published on Todospectrum,
   \ issue 19 (1986-03), page 65.
   \ http://microhobby.speccy.cz/zxsf/revistas-ts.htm
+
+  \ XXX FIXME -- return a flag apart from the code, in order to
+  \ make it possible to recognize character zero:
+  \
+  \ ocr  ( col row -- c true | false )
+  \
+  \ Or a variant:
+  \
+  \ ocr?  ( col row -- c true | false )
 
   \ doc{
   \
@@ -113,90 +179,72 @@ code ocr  ( col line -- n )
   \ said variables. Otherwise return 0. Inverse characters are
   \ not recognized.
   \
+  \ Note: The name `ocr` stands for "Optical Character
+  \ Recognition".
+  \
   \ See: `ocr-charset`, `ocr-chars`, `ocr-first`, `udg-ocr`,
   \ `ascii-ocr`.
   \
   \ }doc
 
-( ocr-charset ocr-first ocr-chars ascii-ocr udg-ocr )
+( ascii-ocr udg-ocr )
 
-variable ocr-charset
+need ?(
 
-  \ doc{
-  \
-  \ ocr-charset  ( -- a )
-  \
-  \ Variable that holds the address of the first printable char
-  \ in the charset used by `ocr`. By default it contains
-  \ 0x3D00, the address of the space char in the ROM charset.
-  \
-  \ See: `ocr`, `ocr-chars`, `ocr-first`.
-  \
-  \ }doc
-
-variable ocr-first
-
-  \ doc{
-  \
-  \ ocr-first  ( -- a )
-  \
-  \ Variable that holds the code of the first printable char in
-  \ the charset used by `ocr`. By default it contais 0x80, the
-  \ first UDG.
-  \
-  \ See: `ocr`, `ocr-chars`, `ocr-charset`.
-  \
-  \ }doc
-
-variable ocr-chars
-
-  \ doc{
-  \
-  \ ocr-chars  ( -- a )
-  \
-  \ Variable that holds the number of chars used by `ocr`, from
-  \ the address pointed by `ocr-charset`. By default it contais
-  \ 0x5F, the number of printable ASCII chars in the ROM
-  \ charset.
-  \
-  \ See: `ocr`, `ocr-first`, `ocr-charset`.
-  \
-  \ }doc
-
-need os-chars  need os-udg
+[unneeded] ascii-ocr ?(  need ocr  need os-chars
 
 : ascii-ocr  ( -- )
   os-chars @ 256 + ocr-charset !
-  32 ocr-first !
-  95 ocr-chars !  ;
-  
+  bl ocr-first !  95 ocr-chars !  ; ?)
+
   \ doc{
   \
   \ ascii-ocr  ( -- )
   \
-  \ Set `ocr` to work with the ASCII charset pointed by the
-  \ system variable CHARS.
+  \ Set `ocr` to work with the current ASCII charset, pointed
+  \ by `os-chars`.
   \
-  \ See: `ocr`.
+  \ See: `ocr`, `udg-ocr`, `0udg-ocr`, `os-chars`.
   \
   \ }doc
 
+[unneeded] udg-ocr ?(  need ocr  need os-udg
+
 : udg-ocr  ( n -- )
-  os-udg @ ocr-charset !
-  128 ocr-first !
-  ocr-chars !  ;
-  
+  os-udg @ ocr-charset !  128 ocr-first !  ocr-chars !  ; ?)
+
   \ doc{
   \
   \ udg-ocr  ( n -- )
   \
-  \ Set `ocr` to work with the first _n_ chars of the UDG set
-  \ pointed by the system variable UDG.
+  \ Set `ocr` to work with the first _n_ chars of the current
+  \ UDG set, pointed by `os-udg`, using code 128 for the first
+  \ UDG is the UDGT set.
   \
-  \ See: `ocr`.
+  \ See: `ocr`, `ascii-ocr`, `0udg-ocr`, `os-udg`.
   \
   \ }doc
 
-19 udg-ocr  \ default
+[unneeded] 0udg-ocr ?(  need ocr  need os-udg
+
+: 0udg-ocr  ( n -- )
+  os-udg @ ocr-charset !  ocr-first off  ocr-chars !  ; ?)
+
+  \ doc{
+  \
+  \ 0udg-ocr  ( n -- )
+  \
+  \ Set `ocr` to work with the first _n_ chars of current the
+  \ UDG set, pointed by `os-udg`, using code 0 for the first
+  \ UDG in the set.
+  \
+  \ WARNING: At the moment `ocr` returns zero when no character
+  \ is recognized. Therefore recognizing the first character
+  \ can not be distinguished from a failed recognition. This
+  \ will be solved in a future version of the code.
+  \
+  \ See: `ocr`, `ascii-ocr`, `udg-ocr`, `os-udg`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
