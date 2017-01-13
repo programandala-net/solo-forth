@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701111903
+  \ Last modified: 201701131706
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,6 +74,40 @@
   \ notation of all benchmarks.
   \
   \ 2017-01-11: Add `dot-quote-bench`.
+  \
+  \ 2017-01-13: Add `m*-bench`.
+
+( m*-bench )
+
+need bench{  need }bench.  need d*
+
+: km* ( n1 n2 - d) 2dup xor >r abs swap abs um* r> ?dnegate ;
+  \ `m*` currently in the kernel:
+  \ Code adapted from Abersoft Forth; used also by Z88
+  \ CamelForth and Z80 eForth.
+
+: lm* ( n1 n2 - d) >r s>d r> s>d d* ;
+  \ `m*` in the library:
+  \ Code by Robert L. Smith, published on Forth Dimensions
+  \ (volume 4, number 1, page 3, 1982-05).
+
+: run  ( u -)
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." Kernel m*: "
+      bench{ 0 ?do  i i km* 2drop  loop }bench.
+      cr ." Library m*: "
+      bench{ 0 ?do  i i lm* 2drop  loop }bench. ;
+
+  \ 2017-01-13:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ------------------------------------
+  \       Kernel um*   Library m*
+  \       ----------  -----------
+  \ 00010          0            1
+  \ 00100          5           14
+  \ 01000         46          143
+  \ 10000        462         1427
 
 ( dot-quote-bench )
 

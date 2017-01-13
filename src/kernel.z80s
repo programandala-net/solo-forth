@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701112027
+; Last modified: 201701131714
 
 include version.z80s
 
@@ -10161,9 +10161,9 @@ max.2:
 if 1 ; original_m_star
 
   ; Credit:
-  ; Code from Abersoft Forth.
-
-  ; XXX Note: this code is used also by Z88 CamelForth.
+  ;
+  ; Code adapted from Abersoft Forth; used also by Z88
+  ; CamelForth and Z80 eForth.
 
   dw two_dup_,xor_,to_r_
   dw abs_,swap_,abs_,u_m_star_

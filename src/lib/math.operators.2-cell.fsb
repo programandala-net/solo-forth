@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051640
+  \ Last modified: 201701131714
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,11 @@
   \ 2017-01-02: Convert `m+` from `z80-asm` to `z80-asm,`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-13: Remove alternative implementation of `m*`, by
+  \ by Robert L. Smith, published on Forth Dimensions (volume
+  \ 4, number 1, page 3, 1982-05). It's much slower than the
+  \ current version included in the kernel.
 
 ( ud* d* )
 
@@ -283,19 +288,6 @@ need ?(
   \ Credit:
   \
   \ Code of `d10*` from Pygmy Forth.
-
-[unneeded] m* ?exit
-
-need d*
-
-: m*  ( n1 n2 -- d )  >r s>d r> s>d d* ;
-
-  \ Credit:
-  \
-  \ Code by Robert L. Smith, published on Forth Dimensions
-  \ (volume 4, number 1, page 3, 1982-05).
-
-  \ XXX TODO benchmark with the version in the kernel
 
 ( m+ )
 

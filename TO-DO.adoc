@@ -1,12 +1,23 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-11
+:revdate: 2017-01-13
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-01-13:
+
+Modify words that restore IX: use the current contents of `next` instead of its
+default value. This way the value of IX can be changed to implement a debugger
+or multitasking.
+
+.2017-01-13:
+
+Move standard `end-code` to the library and use `;c` in the kernel instead?
+Space is precious in blocks.
 
 .2016-12-30..2017-01-02:
 
@@ -30,7 +41,6 @@ NOTE: Milestone: 0.14.0
 
 - Benchmark current `times` and new version that keeps the xt in the return
   stack in the loop: `do dup r> execute r> loop drop`.
-- Benchmark library `m*` with the kernel version.
 - Benchmark two library versions of `m*/`.
 - Benchmark two library versions of `d=` and `d<>`.
 
@@ -46,6 +56,7 @@ Rename `bench{` and `}bench` and family. Maybe after SwiftForth: `counter` and
 Benchmark the system without constants `0`, `1` and `2`.
 
 2016-05-30:
+of standard `end-code` by default
 
 With constants::    32598 B free
 Without constants:: 32572 B free
@@ -517,10 +528,6 @@ Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 // Errors {{{1
 == Errors ==
 
-.2016-12-25:
-
-`cold` must set `warn` to its default.
-
 .2016-11-27:
 
 Rename?:
@@ -590,18 +597,14 @@ New: `.files` (from Pygmy Forth).
 // Games {{{1
 == Games ==
 
-.2016-12-27:
+.2016-12-27, 2017-01-13:
 
-The games does not fit a TR-DOS disk, because the library has grown.
+Extract the games, make them independent projects?
 
-Extract them, make them independent projects?
+.2016-05-13, 2017-01-13:
 
-First, convert them to .fs as planned, and load them with `load-app`.
-This will save several blocks of source.
-
-.2016-05-13:
-
-Convert the sample games to .fs.
+Convert the sample games to .fs.  and load them with `load-app`.  This will
+save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
@@ -611,7 +614,7 @@ Convert the sample games to .fs.
 - Rename `color!` and family to `temp-attr!` or `t-attr!`...
 - Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...
 - Rename `permament-colors` to `permanent-attrs` or `temp>perm-attrs` or
-  `t>p-attrs`...
+  `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr`...
  
 .2017-01-09:
 
