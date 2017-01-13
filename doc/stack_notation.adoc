@@ -1,6 +1,6 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-07
+:revdate: 2017-01-12
 
 // =============================================================
 // Latest changes
@@ -8,6 +8,8 @@
 // 2017-01-07: Update the Z80 register notation. Fix the table columns
 // and other details. General review. Add _x_ and _y_ as alternative
 // cursor coordinates.
+//
+// 2017-01-12: Update description and ranges of graphic coordinates.
 
 // =============================================================
 
@@ -48,14 +50,14 @@
 | q           | 64-bit signed quadruple number               | 4 cells |
 | uq          | 64-bit unsigned quadruple number             | 4 cells |
 
-| row         | 8-bit cursor row                             | 1 cell | 0..23
 | col         | 8-bit cursor column                          | 1 cell | 0..31, 0..41, 0..63
+| row         | 8-bit cursor row                             | 1 cell | 0..23
 
 | x           | 8-bit cursor x coordinate (column)           | 1 cell | 0..31, 0..41, 0..63
 | y           | 8-bit cursor y coordinate (row)              | 1 cell | 0..23
 
-| gx          | 8-bit graphic x coordinate                   | 1 cell | 0..255
-| gy          | 8-bit graphic y coordinate                   | 1 cell | 0..191
+| gx          | 8-bit (absolute) or 16-bit (relative) graphic x coordinate | 1 cell | 0..255, -32768..32767
+| gy          | 8-bit (absolute) or 16-bit (relative) graphic y coordinate | 1 cell | 0..191, -32768..32767, 0..175
 
 | xt          | execution token (=cfa)                       | 1 cell |
 | cfa         | code field address (=xt)                     | 1 cell |
