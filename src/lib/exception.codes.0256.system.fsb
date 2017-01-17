@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612261343
+  \ Last modified: 201701111150
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,8 @@
   \ search order.
   \
   \ 2016-12-26: Add codes #-283 and #-285 for assembler labels.
+  \
+  \ 2017-01-11: Add code #-286.
 
 ( System error codes #-256..#-270 )
 
@@ -71,5 +73,23 @@
 #-283 \ assembly label number out of range
 #-284 \ assembly label number already used
 #-285 \ too many unresolved forward assembly label references
+
+( System error codes #-286..#-300 )
+
+#-286 \ not located
+#-287 \
+#-288 \
+#-289 \
+#-290 \
+#-291 \
+#-292 \
+#-293 \
+#-294 \
+#-295 \
+#-296 \
+#-297 \
+#-298 \
+#-299 \
+#-300 \
 
   \ vim: filetype=soloforth

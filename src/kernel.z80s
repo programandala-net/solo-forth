@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701131714
+; Last modified: 201701171837
 
 include version.z80s
 
@@ -4162,6 +4162,10 @@ xkey.translate:
   push ix ; make next `ret` jump to `next`
 
 wait_for_key:
+
+  ; XXX TMP -- for debugging of `view`:
+  ; im 1 ; interrupt mode 1
+
   ; output: A = key code
   bit 5,(iy+1)      ; FLAGS system variable: new key available?
   jr z,wait_for_key
@@ -12178,6 +12182,10 @@ two_fetch.hl:
 
   ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
+  ;
+  ; XXX TODO -- Make it a code word and move it above `rdrop`.
+  ; The only difference is its name will be shown by `see`,
+  ; instead of `rdrop`.
 
 ; ----------------------------------------------
   _code_header exit_,'exit'
@@ -12230,6 +12238,9 @@ two_fetch.hl:
   or l
   jp nz,exit_
   _jp_next
+  ; XXX TODO -- Move above `exit`, invert the final condition
+  ; and save one jump?
+  ; XXX TODO -- Alternative: Use a relative jump.
 
 ; ----------------------------------------------
   _colon_header throw_,'throw'

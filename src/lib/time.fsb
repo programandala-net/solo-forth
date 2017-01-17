@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051640
+  \ Last modified: 201701171838
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \ structure.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-17: Fix typo in documentation.
 
 ( seconds ms )
 
@@ -143,7 +145,7 @@ need ?(
 
   \ doc{
   \
-  \ do-pause  ( u -- )
+  \ pause  ( u -- )
   \
   \ Stop execution during _u_ frames of the TV (there are 50
   \ frames per second in in Europe and 60 frames per second in

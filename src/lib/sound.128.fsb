@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051640
+  \ Last modified: 201701131953
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,10 +40,23 @@
   \ 2017-01-02: Convert `zplay` from `z80-asm` to `z80-asm,`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-13: Improve documentation.
 
 ( /sound sound-register-port sound-write-port !sound )
 
-[unneeded] /sound ?\ 14 constant /sound exit
+[unneeded] /sound ?\ 14 cconstant /sound exit
+
+  \ doc{
+  \
+  \ /sound  ( -- b )
+  \
+  \ A character constant that returns 14, the number of
+  \ registers used by the 128K sounds.
+  \
+  \ See: `sound!`, `play`.
+  \
+  \ }doc
 
 #65533 constant sound-register-port
 #49149 constant sound-write-port
@@ -54,7 +67,16 @@ need !p
 
 : !sound  ( b1 b2 -- )
   sound-register-port !p sound-write-port !p  ;
+
+  \ doc{
+  \
+  \ !sound  ( b1 b2 -- )
+  \
   \ Set sound register _b2_ (0...13) to value _b1_.
+  \
+  \ See: `/sound`, `play`.
+  \
+  \ }doc
 
 ( vol shutup noise )
 
@@ -131,36 +153,74 @@ set-current previous
 
 need !sound  need /sound
 
-: play  ( a -- )
+: play  ( ca -- )
   /sound 0 do  dup c@ i !sound 1+  loop  drop  ;
-  \ Play a 14-byte sound definition stored at _a_.
 
-: sound,  ( b0 ... b13 -- )
+  \ doc{
+  \
+  \ play  ( ca -- )
+  \
+  \ Play a 14-byte sound definition stored at _ca_.
+  \
+  \ See: `sound,`, `sound`.
+  \
+  \ }doc
+
+: sound,  ( b[0]..b[13] -- )
   here /sound allot here 1- do  i c!  -1 +loop  ;
-  \ Compile the 14-byte sound definition _b0 ... b13_.
 
-: sound  ( b0 ... b13 "name" -- )
+  \ doc{
+  \
+  \ sound,  ( b[0]..b[13] -- )
+  \
+  \ Compile the 14-byte sound definition _b[0]..b[13]_.
+  \
+  \ See: `play`, `sound`.
+  \
+  \ }doc
+
+: sound  ( b[0]..b[13] "name" -- )
   create  sound,  does>  ( -- )  ( pfa )  play  ;
+
+  \ doc{
+  \
+  \ sound  ( b[0]..b[13] "name" -- )
+  \
   \ Create a word _name_ that will play the 14-byte sound
-  \ defined by _b0 ... b13_.
+  \ defined by _b[0]..b[13]_.
+  \
+  \ See: `sound,`, `play`.
+  \
+  \ }doc
 
 ( fplay )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TMP --
-
-  \ Faster version of `play`.
+  \ XXX TODO -- rename to `fast-play`.
 
 need !p  need c@+
 need sound-register-port  need sound-write-port  need /sound
 
-: fplay  ( a -- )
+: fplay  ( ca -- )
   /sound 0 do
     i sound-register-port !p  c@+ sound-write-port !p
   loop  drop  ;
-  \ Play a sound whose 14 bytes are stored at _a_.
+
+  \ doc{
+  \
+  \ fplay  ( ca -- )
+  \
+  \ Play a sound whose 14 bytes are stored at _ca_.
+  \ This ward is a faster version of `play`.
+  \
+  \ See: `play`.
+  \
+  \ }doc
 
 ( zplay )
 
+  \ XXX UNDER DEVELOPMENT
   \ XXX TMP --
 
   \ Z80 version of `play`.
@@ -187,8 +247,6 @@ code zplay  ( a -- )
   \ assembler
 
 ( waves shoot helicopter1 train airplane helicopter2 )
-
-  \ Sounds to be played with `play`.
 
 need sound  hex
 
@@ -241,8 +299,6 @@ decimal
 
 ( bomber whip metalic rain2 lightning1 lighting2 )
 
-  \ Sounds to be played with `play`.
-
   \ Credit:
   \
   \ Adapted from data written by Francisco Majón, published on
@@ -275,8 +331,6 @@ need sound  hex
 decimal
 
 ( bell1 bell2 bell3 rap drum cymbal )
-
-  \ Sounds to be played with `play`.
 
   \ Credit:
   \
@@ -311,8 +365,6 @@ decimal
 
 ( applause hammer background beach waterdrop2 )
 
-  \ Sounds to be played with `play`.
-
   \ Credit:
   \
   \ Data extracted from a program written by Juan José Rosado
@@ -342,8 +394,6 @@ need sound  hex
 decimal
 
 ( rain1 waterdrop1 explosion1 explosion2 )
-
-  \ Sounds to be played with `play`.
 
 need sound  hex
 

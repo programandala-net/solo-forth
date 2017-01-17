@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061719
+  \ Last modified: 201701171855
 
   \ -----------------------------------------------------------
   \ Description
@@ -111,6 +111,8 @@
   \
   \ 2017-01-05: Update `indexer` to `make-thru-index` in
   \ documentation.
+  \
+  \ 2017-01-17: Improve documentation.
 
 ( delimited located needed-word )
 
@@ -126,6 +128,40 @@ variable default-first-locatable  variable first-locatable
 variable last-locatable  blk/disk 1- last-locatable !
   \ Variables that define the range of blocks to be searched
   \ by `located` and its descendants.
+
+  \ doc{
+  \
+  \ first-locatable  ( -- a )
+  \
+  \ A variable that holds the number of the first block to be
+  \ searched by `located` and its descendants.
+  \
+  \ See: `last-locatable`, `located`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ default-first-locatable  ( -- a )
+  \
+  \ A variable that holds the default number of the first block
+  \ to be searched by `located` and its descendants.
+  \
+  \ See: `first-locatable`, `located`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ last-locatable  ( -- a )
+  \
+  \ A variable that holds the number of the last block to be
+  \ searched by `located` and its descendants. Its default
+  \ value is the last block of the disk.
+  \
+  \ See: `first-locatable`, `located`.
+  \
+  \ }doc
 
 : delimited  ( ca1 len1 -- ca2 len2 )
   dup 2+ dup allocate-string swap  ( ca1 len1 ca2 len2 )
@@ -185,10 +221,14 @@ defer unlocated  ( block -- )
   \ len_ (surrounded by spaces), and return its number. If not
   \ found, return zero.  The search is case-sensitive.
   \
+  \ Only the blocks delimited by `first-locatable-block` and
+  \ `last-locatable-block` are searched`.
+  \
   \ This is the default behaviour of `located`, which is
   \ changed by `use-fly-index`.
   \
-  \ See: `located`, `use-fly-index`.
+  \ See: `located`, `use-fly-index`, `default-first-locatable`,
+  \ `first-locatable`, `last-locatable`.
   \
   \ }doc
 
@@ -201,6 +241,15 @@ defer located  ( ca len -- block | false )  -->
   \ Locate the first block whose header contains the string _ca
   \ len_ (surrounded by spaces), and return its number. If not
   \ found, return zero.  The search is case-sensitive.
+  \
+  \ Only the blocks delimited by `first-locatable-block` and
+  \ `last-locatable-block` are searched`.
+  \
+  \ This is a deferred word whose default action is
+  \ `(located)`.
+  \
+  \ See: `(located)`, `first-locatable-block`,
+  \ `last-locatable-block`.
   \
   \ }doc
 
@@ -216,7 +265,7 @@ defer located  ( ca len -- block | false )  -->
   \
   \ ?located ( n -- )
   \
-  \ If _n_ is zero, throw an exception #-268 ("required, but
+  \ If _n_ is zero, throw an exception #-268 ("needed, but
   \ not located").
   \
   \ }doc
@@ -229,7 +278,7 @@ defer reneeded  ( ca len -- )
   \
   \ Load the first block whose header contains the string _ca
   \ len_ (surrounded by spaces).  If not found, throw an
-  \ exception #-268 ("required, but not located").
+  \ exception #-268 ("needed, but not located").
   \
   \ This is a deferred word whose default behaviour is
   \ `locate-reneeded`.
@@ -246,7 +295,7 @@ defer reneeded  ( ca len -- )
   \
   \ Locate the first block whose header contains the string _ca
   \ len_ (surrounded by spaces), and load it. If not found,
-  \ throw an exception #-268 ("required, but not located").
+  \ throw an exception #-268 ("needed, but not located").
   \
   \ This is the default behaviour of the deferred word
   \ `reneeded`.
@@ -278,7 +327,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ If the string _ca len_ is not the name of a word found in
   \ the current search order, load the first block where "name"
   \ is included in the block header (but surrounded by spaces).
-  \ If not found, throw an exception #-268 ("required, but not
+  \ If not found, throw an exception #-268 ("needed, but not
   \ located").
   \
   \ This is a deferred word whose default behaviour is
@@ -299,7 +348,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \
   \ Locate the first block whose header contains "name" (but
   \ surrounded by spaces), and load it.  If not found, throw an
-  \ exception #-268 ("required, but not located").
+  \ exception #-268 ("needed, but not located").
   \
   \ This is the default behaviour of the deferred word
   \ `reneed`.
@@ -367,7 +416,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ the current search order, locate the first block where
   \ "name" is included in the block header (but surrounded by
   \ spaces), and load it.  If not found, throw an exception
-  \ #-268 ("required, but not located").
+  \ #-268 ("needed, but not located").
   \
   \ This is the default behaviour of the deferred word
   \ `needed`.
@@ -385,7 +434,7 @@ defer need  ( "name" -- )
   \ If "name" is not found in the current search order, locate
   \ the first block where "name" is included is the block
   \ header (surrounded by spaces), and load it.  If not found,
-  \ throw an exception #-268 ("required, but not located").
+  \ throw an exception #-268 ("needed, but not located").
   \
   \ This is a deferred word whose default behaviour is
   \ `locate-need`.
@@ -403,7 +452,7 @@ defer need  ( "name" -- )
   \ If "name" is not found in the current search order, locate
   \ the first block where "name" is included is the block
   \ header (surrounded by spaces), and load it.  If not found,
-  \ throw an exception #-268 ("required, but not located").
+  \ throw an exception #-268 ("needed, but not located").
   \
   \ This is the default behaviour of the deferred word `need`.
   \
@@ -484,6 +533,12 @@ need ?(
   \ (surrounded by spaces), and return its number _block_. If
   \ not found, return _false_.  The search is case-sensitive.
   \
+  \ Only the blocks delimited by `first-locatable-block` and
+  \ `last-locatable-block` are searched`.
+  \
+  \ See: `located`, `first-locatable-block`,
+  \ `last-locatable-block`.
+  \
   \ }doc
 
 [unneeded] need-from ?(  need locate
@@ -497,7 +552,7 @@ need ?(
   \ Locate the first block whose header contains "name"
   \ (surrounded by spaces), and set it the first one `located`
   \ will search from. If not found, throw an exception #-268
-  \ ("required, but not located").
+  \ ("needed, but not located").
   \
   \ This word is intended to prevent undesired name clashes
   \ during the execution of `need` and related words. "name" is

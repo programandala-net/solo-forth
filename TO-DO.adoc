@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-13
+:revdate: 2017-01-17
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -611,6 +611,15 @@ save several blocks of source.
 
 .2017-01-13:
 
+Rename `attr` to `get-attr` or similar. Write its corresponding `set-attr  ( b
+col row -- )`.
+
+Maybe `xy-attr@` and `xy-attr!` or
+`xy-color@` and `xy-color!`,
+depending on the final naming convention about "color/attr".
+
+.2017-01-13:
+
 Improve `ocr`: Return a flag apart from the code, in order to make it possible
 to recognize character zero:
   
@@ -624,13 +633,22 @@ Or write a variant:
   \ ocr?  ( col row -- c true | false )
 ----
 
-.2017-01-09, 2017-01-12:
+.2017-01-09, 2017-01-12, 2017-01-13:
 
-- Rename `color!` and family to `temp-attr!` or `t-attr!`...
-- Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...
+- Rename `color!` and family to `temp-attr!` or `t-attr!`...?
+- Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...?
 - Rename `permament-colors` to `permanent-attrs` or `temp>perm-attrs` or
-  `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr`...
- 
+  `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr`...?
+
+"color" is more readable. It can be used to name an 8-bit color attribute:
+
+- `temp-color@`, `perm-color@`
+- `temp-color!`, `perm-color!`
+- `temp>perm-colors`
+- `xy-color@`, `xy-color!`
+- `temp-color-mask@`, `perm-color-mask@`
+- `temp-color-mask!`, `perm-color-mask!`
+
 .2017-01-09:
 
 Simplify the management of UDG: Use only the 0-index words, and make an
@@ -1278,6 +1296,10 @@ Combine `begin-module` and `package`.
 
 // Names {{{1
 == Names ==
+
+.2017-01-17:
+
+Rename old "rec" to "sectors", for example in `rec/blk`.
 
 .2017-01-05:
 
