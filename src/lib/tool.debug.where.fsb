@@ -3,17 +3,18 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171906
+  \ Last modified: 201701181838
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `where`.
+  \ The `where` tool, which prints information about the last
+  \ error.
 
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -31,20 +32,35 @@
   \ library.
   \
   \ 2016-11-17: Remove unused `need [if]`.
+  \
+  \ 2017-01-18: The temporary version in the kernel has been
+  \ removed. Improve documentation. Simplify: do not update
+  \ `scr`.
 
 ( where )
 
 : where  ( -- )
-  \ Print block and line numbers and a picture of where the
-  \ last error occurred.
   error-pos 2@  ( n1 n2 )
   \ n1 = value of `>in` when the error happened
   \ n2 = value of `blk` when the error happened
   dup if
-    dup scr !
     ." Scr #" dec. cr
     swap c/l /mod c/l * rot block + c/l type cr
     here c@ - spaces '^' emit
   else  2drop  then  ;
+
+  \ doc{
+  \
+  \ where  ( -- )
+  \
+  \ Print information about the last error: block number, line
+  \ number and a picture of where it occurred. If the error was
+  \ in the command line, nothing is printed.
+  \
+  \ Origin: Forth-79 (Reference Word Set).
+  \
+  \ See: `error-pos`, `error`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth

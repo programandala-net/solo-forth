@@ -1301,6 +1301,10 @@ Combine `begin-module` and `package`.
 // Names {{{1
 == Names ==
 
+.2017-01-18:
+
+Change "screen" and "scr" to "block", e.g. in `list` and `where`.
+
 .2017-01-17:
 
 Rename old "rec" to "sectors", for example in `rec/blk`.

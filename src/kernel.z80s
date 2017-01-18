@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701171837
+; Last modified: 201701181826
 
 include version.z80s
 
@@ -1182,7 +1182,7 @@ latest_nt_in_root_word_list: equ root_set_order_nt
 if 1 ; assembler_core_in_kernel
 
 ; ----------------------------------------------
-; Start compiling in the `assembler` vocabulary
+; Start compiling in the `assembler-wordlist` word list
 
 nt_of_the_previous_word: defl 0
 
@@ -1855,7 +1855,7 @@ endif
 ;
 ; also  ( -- )
 ;
-; Duplicate the vocabulary at the top of the search order.
+; Duplicate the word list at the top of the search order.
 ;
 ; ----
 ; : also  ( -- )
@@ -1864,18 +1864,17 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library?
-
-  ; XXX TODO -- check the limit, see Gforth
-
   dw get_order_,over_,swap_,one_plus_,set_order_
   dw exit_
+
+  ; XXX TODO -- check the limit, see Gforth's `>order`
 
   ; XXX TODO -- `over swap` could be replaced with `nup`, which is in
   ; the library
 
-  ; XXX TODO -- in Gforth:
-  ; : also  ( -- )  context @ >order  ;
+  ; XXX TODO -- in Gforth `also` is simpler:
+  ;     : also  ( -- )  context @ >order  ;
+  ; because `>order` does the low-level work.
 
 ; ----------------------------------------------
   _colon_header only_,'only'
@@ -2048,8 +2047,6 @@ set_order.exit
 
 ; ----------------------------------------------
   _colon_header to_order_,'>order'
-
-  ; XXX TODO -- move to the library?
 
 ; doc{
 ;
@@ -5809,17 +5806,19 @@ do_user:
   _user_variable_header scr_,'scr'
 
 ; XXX TODO normal variable?
+; XXX TODO -- move to the library
 
 ; doc{
 ;
 ; scr  ( -- a )
 ;
-; User variable that holds the number of the block most recently
-; listed by `list`. This variable is used by the blocks editors.
+; User variable that holds the number of the block most
+; recently listed by `list`. This variable is used by the block
+; editors.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
-; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
-; (BLOCK EXT).
+; (Controlled Reference Words), Forth-94 (BLOCK EXT),
+; Forth-2012 (BLOCK EXT).
 ;
 ; See: `list`.
 ;
@@ -8473,6 +8472,8 @@ far_place.copy_char:
 ; - high part = value of `blk`
 ; - low part = value of `>in`
 
+; See: `error`, `where`.
+
 ; }doc
 
   dw 0 ; value of `blk`
@@ -9425,7 +9426,7 @@ endif
 ; Replace the first word list in the search order with
 ; the _wid_ stored in its body.
 ;
-; See `vocabulary`, `wid>vocabulary`, `wordlist`.
+; See `vocabulary`, `wordlist>vocabulary`, `wordlist`.
 ;
 ; ----
 ; : dovocabulary  ( -- )
@@ -11689,36 +11690,6 @@ system_stack_pointer: equ $+1
 
   dw farlimit_,fetch_,hp_fetch_,minus_
   dw exit_
-
-; ----------------------------------------------
-if 1 ; developing
-  ; XXX TMP -- during the development
-
-  _colon_header where_,'where'
-
-  ; XXX TMP -- needed only during the development
-  ; XXX TODO -- remove; already copied to the library
-
-  dw error_pos_,two_fetch_ ; XXX NEW
-  dw dup_
-  dw question_branch_,where.do_it
-  dw two_drop_
-  dw exit_
-
-where.do_it:
-  dw dup_
-  dw paren_dot_quote_
-  _string 'Scr #'
-  dw dec_dot_
-  dw swap_,c_slash_l_,slash_mod_,c_slash_l_,star_
-  dw rot_,block_,plus_
-  dw c_slash_l_,cr_,type_,cr_
-  dw here_,c_fetch_,minus_,spaces_
-  _literal '^'
-  dw emit_
-  dw exit_
-
-endif
 
 ; ----------------------------------------------
   _colon_header mode32_at_xy_,'mode32-at-xy'
