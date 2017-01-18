@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701180104
+  \ Last modified: 201701180115
 
   \ -----------------------------------------------------------
   \ Description
@@ -138,29 +138,15 @@ need os-frames
   \
   \ }doc
 
-( (?frames ?frames frames pause )
+( ?frames frames pause )
 
-need ?(  [unneeded] (?frames ?(  need os-frames
+need ?(
 
-: (?frames  ( u -- )  os-frames @ +
+[unneeded] ?frames ?(  need os-frames
+
+: ?frames  ( u -- )
+  os-frames @ +
   begin  dup os-frames @ u< key? or  until drop  ;  exit ?)
-
-  \ doc{
-  \
-  \ (?frames  ( u -- )
-  \
-  \ Stop execution during at least _u_ frames of the TV (there
-  \ are 50 frames per second in in Europe and 60 frames per
-  \ second in USA), or until a key is pressed.
-  \
-  \ This word is a common factor of `?frames` and `pause`.
-  \
-  \ See: `?frames`, `pause`, `frames`.
-  \
-  \ }doc
-
-[unneeded] ?frames ?(  need 0exit  need (?frames
-: ?frames  ( u -- )  ?dup 0exit (?frames  ; exit ?)
 
   \ XXX TODO -- multitasking
 
@@ -172,19 +158,16 @@ need ?(  [unneeded] (?frames ?(  need os-frames
   \ are 50 frames per second in in Europe and 60 frames per
   \ second in USA), or until a key is pressed.
   \
-  \ See: `frames`, `pause`, `(?frames`.
+  \ See: `frames`, `pause`.
   \
   \ }doc
 
-need ?(  [unneeded] frames ?(  need 0exit  need os-frames
+need ?(  [unneeded] frames ?(  need os-frames
+
 : frames  ( u -- )
-  ?dup 0exit
   os-frames @ +  begin  dup os-frames @ u<  until drop  ; ?)
 
   \ XXX TODO -- multitasking
-
-  \ XXX FIXME -- `0 frames` has a delay. `?dup 0exit` could be
-  \ added at the start.
 
   \ doc{
   \
@@ -216,18 +199,19 @@ need ?(  [unneeded] frames ?(  need 0exit  need os-frames
   \ XXX FIXME -- `0 frames` does `$FFFF frames`
   \ XXX TODO -- multitasking
 
-[unneeded] pause ?(  need (?frames
+[unneeded] pause ?(  need ?frames
+
 : pause  ( u -- )
-  ?dup if  (?frames exit  then  begin  key?  until  ; ?)
+  ?dup if  ?frames exit  then  begin  key?  until  ; ?)
 
   \ doc{
   \
-  \ ?frames  ( u -- )
+  \ pause  ( u -- )
   \
-  \ Stop execution during at least _u_ frames of the TV (there
-  \ are 50 frames per second in in Europe and 60 frames per
-  \ second in USA), or until a key is pressed. If _u_ is zero,
-  \ pause indefinitely until a key is pressed.
+  \ If _u_ 0 zero, stop execution until a key is pressed.
+  \ Otherwise stop execution during at least _u_ frames of the
+  \ TV (there are 50 frames per second in in Europe and 60
+  \ frames per second in USA), or until a key is pressed.
   \
   \ This word is a convenience that works like the homonymous
   \ keyword of Sinclair BASIC.
