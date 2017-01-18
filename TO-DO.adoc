@@ -267,8 +267,7 @@ ____
 
 .2017-01-18:
 
-Write far-memory versions of `avariable`, `2avariable` `cavariable`, `avalue`,
-`2avalue` and `cavalue`.
+Write far-memory versions of `avalue`, `2avalue` and `cavalue`.
 
 // Strings {{{2
 === Strings ===
