@@ -265,6 +265,11 @@ ____
 // Data structures {{{1
 == Data structures ==
 
+.2017-01-18:
+
+Write far-memory versions of `avariable`, `2avariable` `cavariable`, `avalue`,
+`2avalue` and `cavalue`.
+
 // Strings {{{2
 === Strings ===
 
