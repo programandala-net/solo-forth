@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701181403
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -14,7 +14,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -38,7 +38,8 @@
   \ in the kernel.
   \
   \ 2017-01-18: Make `columns` and `rows` independent for
-  \ `need` and document them.
+  \ `need` and document them.  Remove `exit` at the end of
+  \ conditional interpretation.
  
 ( columns rows set-mode-output set-font )
 
@@ -71,7 +72,7 @@
   \ }doc
 
 [unneeded] set-font
-?\ need os-chars  : set-font  ( a -- )  os-chars !  ;  exit
+?\ need os-chars  : set-font  ( a -- )  os-chars !  ;
 
   \ doc{
   \

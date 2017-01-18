@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612240231
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -31,6 +31,9 @@
   \
   \ 2016-12-24: Fix typo in documentation. Fix needing of
   \ `+field-opt-0` and `+field-opt-0124`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( +field field: 2field: cfield: begin-structure end-structure )
 
@@ -73,7 +76,7 @@ need ?(
   \ XXX TODO -- document
 
 [unneeded] field: ?( need +field
-: field:   ( n1 "name" -- n2 )  cell +field  ; exit ?)
+: field:   ( n1 "name" -- n2 )  cell +field  ; ?)
 
 [unneeded] 2field: ?( need +field
 : 2field:  ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;

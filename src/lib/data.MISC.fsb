@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -46,11 +46,14 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "MISC" after the new convention.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( buffer: cvariable enum cenum enumcell link@ link, )
 
 [unneeded] buffer:
-?\ : buffer:  ( u "name" -- )  create allot  ;  exit
+?\ : buffer:  ( u "name" -- )  create allot  ;
 
   \ doc{
   \
@@ -78,7 +81,7 @@
   \ }doc
 
 [unneeded] cvariable
-?\ : cvariable  ( "name"  -- )  create 1 allot  ;  exit
+?\ : cvariable  ( "name"  -- )  create 1 allot  ;
 
   \ doc{
   \
@@ -93,7 +96,7 @@
   \ }doc
 
 [unneeded] enum
-?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;  exit
+?\ : enum  (  n "name" -- n+1 )  dup constant 1+  ;
 
   \ doc{
   \
@@ -116,7 +119,7 @@
   \ }doc
 
 [unneeded] cenum
-?\ : cenum  (  n "name" -- n+1 )  dup cconstant 1+  ;  exit
+?\ : cenum  (  n "name" -- n+1 )  dup cconstant 1+  ;
 
   \ doc{
   \
@@ -142,7 +145,7 @@ need ?(
 
 [unneeded] enumcell ?(
 : enumcell  (  n "name" -- n+cell )
-  dup constant cell+  ;  exit ?)
+  dup constant cell+  ; ?)
 
   \ Credit:
   \

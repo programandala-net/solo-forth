@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701131714
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -48,6 +48,9 @@
   \ by Robert L. Smith, published on Forth Dimensions (volume
   \ 4, number 1, page 3, 1982-05). It's much slower than the
   \ current version included in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( ud* d* )
 
@@ -157,9 +160,9 @@ need tum*  need t+  need t-  need tum/  need d2*  need lshift
   \
   \ Code from DZX-Forth.
 
-[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;  exit
+[unneeded] d0= ?\ : d0=  ( d -- f )  or 0=  ;
 
-[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ; exit
+[unneeded] d0< ?\ : d0<  ( d -- f )  nip 0<  ;
 
 need ?(
 
@@ -168,7 +171,7 @@ need ?(
 need 2nip
 
 : d<  ( d1 d2 -- f )
-  rot 2dup = if  2drop u< exit  then  2nip >  ;  exit
+  rot 2dup = if  2drop u< exit  then  2nip >  ;
 
 ?)
 
@@ -179,14 +182,14 @@ need 2nip
 : du<  ( ud1 ud2 -- f )
   rot swap 2dup
   u<  if  2drop 2drop true   exit  then
-  -   if  2drop       false  exit  then  u<  ;  exit
+  -   if  2drop       false  exit  then  u<  ;
 
 ?)
 
 ( d= d<> dmin dmax )
 
 [unneeded] d=
-?\ : d=  ( d1 d2 -- f )  d<> 0=  ; exit
+?\ : d=  ( d1 d2 -- f )  d<> 0=  ;
   \ XXX TODO -- rewrite in Z80
 
 need ?(
@@ -207,7 +210,7 @@ need ?(
 
 [unneeded] dmin ?(
 : dmin  ( d1 d2 -- d1 | d2 )
-  2over 2over d< 0= if  2swap  then  2drop  ;  exit  ?)
+  2over 2over d< 0= if  2swap  then  2drop  ; ?)
   \ XXX TODO -- use `d>` when available
 
 [unneeded] dmax ?(
@@ -232,7 +235,7 @@ need ?(
   A0 07 + c,  ED c, 52 c,  E5 c,  D9 c,  ED c,  52 c,
   \ de subp  hl push  \ 2OS=d1lo-d2lo
   \ exx de  sbcp      \ HL=d1hi-d2hi-cy
-  jppushhl,  end-code  exit ?)
+  jppushhl,  end-code ?)
 
   \ Credit:
   \
@@ -248,7 +251,7 @@ need ?(
     \ rl e
     \ rl d
     \ ex de,hl 
-  pushhlde jp, end-code  exit ?)
+  pushhlde jp, end-code ?)
     \ jp pushhlde
 
 [unneeded] d2/ ?(  code d2/  ( xd1 -- xd2 )

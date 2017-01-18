@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701121419
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -54,6 +54,9 @@
   \ 2017-01-12: Rewrite `papery`, `brighty` and `flashy` in Z80
   \ (smaller and faster code) and document them. Improve
   \ `permcolor`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -196,7 +199,7 @@ code flashy   ( b1 -- b2 )
 ( color@ color! color-mask@ color-mask! color 2color )
 
 [unneeded] color@
-?\ need os-attr-t  : color@  ( -- b )  os-attr-t c@  ;  exit
+?\ need os-attr-t  : color@  ( -- b )  os-attr-t c@  ;
 
   \ doc{
   \
@@ -207,7 +210,7 @@ code flashy   ( b1 -- b2 )
   \ }doc
 
 [unneeded] color!
-?\ need os-attr-t  : color!  ( b -- )  os-attr-t c!  ;  exit
+?\ need os-attr-t  : color!  ( b -- )  os-attr-t c!  ;
 
   \ doc{
   \
@@ -218,7 +221,7 @@ code flashy   ( b1 -- b2 )
   \ }doc
 
 [unneeded] color-mask@ dup ?\ need os-mask-t
-?\ : color-mask@  ( -- b )  os-mask-t c@  ;  exit
+?\ : color-mask@  ( -- b )  os-mask-t c@  ;
 
   \ doc{
   \
@@ -229,7 +232,7 @@ code flashy   ( b1 -- b2 )
   \ }doc
 
 [unneeded] color-mask! dup ?\ need os-mask-t
-?\ : color-mask!  ( b -- )  os-mask-t c!  ;  exit
+?\ : color-mask!  ( b -- )  os-mask-t c!  ;
 
   \ doc{
   \
@@ -241,7 +244,7 @@ code flashy   ( b1 -- b2 )
 
 need ?(  [unneeded] color ?(  need color!
 : color  ( b "name" -- )
-  create c,  does>  ( -- ) ( pfa ) c@ color!  ;  exit ?)
+  create c,  does>  ( -- ) ( pfa ) c@ color!  ; ?)
 
   \ doc{
   \

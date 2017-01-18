@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701131717
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -48,11 +48,14 @@
   \ 2016-11-26: Move `catch` from the kernel.
   \
   \ 2017-01-13: Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( ?compiling ?executing abort" warning" )
 
 [unneeded] ?compiling
-?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;  exit
+?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
 
   \ doc{
   \
@@ -63,7 +66,7 @@
   \ }doc
 
 [unneeded] ?executing
-?\ : ?executing  ( -- )  compiling? -263 ?throw  ;  exit
+?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
 
   \ doc{
   \

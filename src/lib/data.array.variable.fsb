@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701181438
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,6 +48,9 @@
   \
   \ 2017-01-18: Fix and update documentation. Improve
   \ `2avariable` with `cliteral`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( avariable 2avariable cavariable )
 
@@ -57,7 +60,7 @@ need ?(
 
 : avariable  ( n "name" -- )
   create  cells allot
-  does>  ( n -- a ) ( n pfa ) array>  ;  exit ?)
+  does>  ( n -- a ) ( n pfa ) array>  ; ?)
 
   \ doc{
   \
@@ -81,7 +84,7 @@ need ?(
 
 : 2avariable  ( n "name" -- )
   create  [ 2 cells ] cliteral * allot
-  does>  ( n -- a ) ( n pfa ) 2array>  ;  exit ?)
+  does>  ( n -- a ) ( n pfa ) 2array>  ; ?)
 
   \ doc{
   \
@@ -105,7 +108,7 @@ need ?(
 
 : cavariable  ( n "name" -- )
   create  allot align
-  does>  ( n -- ca ) ( n pfa ) +  ;  exit ?)
+  does>  ( n -- ca ) ( n pfa ) +  ; ?)
 
   \ doc{
   \

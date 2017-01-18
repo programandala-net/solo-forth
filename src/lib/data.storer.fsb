@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611251253
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -27,6 +27,9 @@
 
   \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
   \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( storer cstorer 2storer )
 
@@ -35,7 +38,7 @@ need ?(
 [unneeded] storer ?(
 
 : storer  ( x a "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ !  ; exit ?)
+  create  2,  does>   ( -- ) ( pfa )  2@ !  ; ?)
 
   \ doc{
   \
@@ -52,7 +55,7 @@ need ?(
 [unneeded] cstorer ?(
 
 : cstorer  ( c ca "name" -- )
-  create  2,  does>   ( -- ) ( pfa )  2@ c!  ; exit ?)
+  create  2,  does>   ( -- ) ( pfa )  2@ c!  ; ?)
 
   \ doc{
   \
@@ -71,7 +74,7 @@ need ?(
 
 : 2storer  ( xd a "name" -- )
   create  , 2,
-  does>   ( -- ) ( pfa )  dup cell+ 2@ rot @ 2!  ; exit ?)
+  does>   ( -- ) ( pfa )  dup cell+ 2@ rot @ 2!  ; ?)
 
   \ doc{
   \

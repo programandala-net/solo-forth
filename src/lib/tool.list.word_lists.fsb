@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701072229
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -47,11 +47,14 @@
   \ `wordlist>vocabulary`, after the changes in the word-list
   \ interface words. Rename `.wid` to `.wordlist`.  Rename
   \ `named-wid` to `latest>wordlist` in documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( .current .context .wordlist )
 
 [unneeded] .current
-?\ : .current  ( -- )  get-current .wordlist  ;  exit
+?\ : .current  ( -- )  get-current .wordlist  ;
 
   \ doc{
   \

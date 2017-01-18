@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611250113
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -35,6 +35,9 @@
   \ `.name` with `.word`, a deferred word with default
   \ behaviour `(.word`. Add its alternative behaviour
   \ `.wordname`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( .word .wordname more-words? words wordlist-words )
 
@@ -100,7 +103,7 @@ exit ?)
                      need .word  need name<name
 
 : words  ( -- ) trail begin  more-words?  while
-                dup .word name<name  repeat  drop  ;  exit  ?)
+                dup .word name<name  repeat  drop  ; ?)
 
   \ Credit:
   \
@@ -143,7 +146,7 @@ need ?(
   begin  more-words?  while
     dup >r name>string 2over contains if  r@ .word  then
         r> name<name
-  repeat drop 2drop  ;  exit ?)
+  repeat drop 2drop  ; ?)
 
   \ Credit:
   \

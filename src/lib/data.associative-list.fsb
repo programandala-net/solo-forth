@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612152052
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ Credit
@@ -47,6 +47,9 @@
   \ friends after `field:` and friends, and make them
   \ individually accessible by `need`. Compact the code to save
   \ one block. Move the test to the tests module.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( associative-list item? item create-entry )
 
@@ -106,7 +109,7 @@ need search-wordlist
 
 need ?(  need create-entry  [unneeded] entry: ?(
 : entry:  ( x wid "name" -- )
-  ['] , create-entry does>  ( -- x )  ( pfa ) @  ;  exit ?)
+  ['] , create-entry does>  ( -- x )  ( pfa ) @  ; ?)
 
   \ doc{
   \
@@ -119,7 +122,7 @@ need ?(  need create-entry  [unneeded] entry: ?(
 
 [unneeded] centry: ?(
 : centry:  ( c wid "name" -- )
-  ['] c, create-entry does>  ( -- c )  ( pfa ) c@  ;  exit ?)
+  ['] c, create-entry does>  ( -- c )  ( pfa ) c@  ; ?)
 
   \ doc{
   \
@@ -132,7 +135,7 @@ need ?(  need create-entry  [unneeded] entry: ?(
 
 [unneeded] 2entry: ?(
 : 2entry:  ( dx wid "name" -- )
-  ['] 2, create-entry does>  ( -- dx )  ( pfa ) 2@  ;  exit ?)
+  ['] 2, create-entry does>  ( -- dx )  ( pfa ) 2@  ; ?)
 
   \ doc{
   \

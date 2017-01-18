@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701112025
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,6 +56,9 @@
   \
   \ 2017-01-11: Move `set-font` to the kernel, because `cold`
   \ must set the default font.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( default-udg-chars )
 
@@ -98,7 +101,7 @@ move
 need ?(
 
 [unneeded] 0udg> ?(  need 8* need os-udg
-: 0udg>  ( n -- a )  8* os-udg @ +  ;  exit ?)
+: 0udg>  ( n -- a )  8* os-udg @ +  ; ?)
 
   \ doc{
   \
@@ -128,7 +131,7 @@ exit ?)
   \ }doc
 
 [unneeded] udg! ?( need first-udg  need 0udg!
-: udg!  ( b0..b7 c -- )  first-udg - 0udg!  ;  exit ?)
+: udg!  ( b0..b7 c -- )  first-udg - 0udg!  ; ?)
 
   \ doc{
   \
@@ -143,7 +146,7 @@ exit ?)
   \ }doc
 
 [unneeded] udg: ?(  need udg! ?(
-: udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ;  exit ?)
+: udg:  ( b0..b7 c "name" -- )  dup constant  udg!  ; ?)
 
   \ doc{
   \
@@ -158,7 +161,7 @@ exit ?)
   \ }doc
 
 [unneeded] 0udg: ?(  need 0udg!
-: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ;  exit ?)
+: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ; ?)
 
   \ doc{
   \
@@ -493,7 +496,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
 ( set-udg get-udg get-font rom-font )
 
 [unneeded] set-udg
-?\ need os-udg  : set-udg  ( a -- )  os-udg !  ;  exit
+?\ need os-udg  : set-udg  ( a -- )  os-udg !  ;
 
   \ doc{
   \
@@ -508,7 +511,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ }doc
 
 [unneeded] get-udg
-?\ need os-udg  : get-udg  ( -- a )  os-udg @  ;  exit
+?\ need os-udg  : get-udg  ( -- a )  os-udg @  ;
 
   \ doc{
   \
@@ -523,7 +526,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \ }doc
 
 [unneeded] get-font
-?\ need os-chars  : get-font  ( -- a )  os-chars @  ;  exit
+?\ need os-chars  : get-font  ( -- a )  os-chars @  ;
 
   \ doc{
   \

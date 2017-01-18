@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701101947
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -82,11 +82,14 @@
   \ remove the variant `sconstants`, which doesn't leave the
   \ count on the stack, and rename `/sconstants` to
   \ `sconstants`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( str= str< str> trim +place hunt )
 
 [unneeded] str=
-?\ : str=  ( ca1 len1 ca2 len2 -- f )  compare 0=  ;  exit
+?\ : str=  ( ca1 len1 ca2 len2 -- f )  compare 0=  ;
 
   \ doc{
   \
@@ -98,7 +101,7 @@
   \ }doc
 
 [unneeded] str<
-?\ : str<  ( ca1 len1 ca2 len2 -- f )  compare 0<  ;  exit
+?\ : str<  ( ca1 len1 ca2 len2 -- f )  compare 0<  ;
 
   \ doc{
   \
@@ -110,7 +113,7 @@
   \ }doc
 
 [unneeded] str>
-?\ : str>  ( ca1 len1 ca2 len2 -- f )  compare 0>  ;  exit
+?\ : str>  ( ca1 len1 ca2 len2 -- f )  compare 0>  ;
 
   \ doc{
   \
@@ -174,7 +177,7 @@ need ?(
 ( ud>str u>str d>str char>string chars>string )
 
 [unneeded] ud>str
-?\ : ud>str  ( ud -- ca len )  <# #s #>  ;  exit
+?\ : ud>str  ( ud -- ca len )  <# #s #>  ;
 
   \ Credit:
   \
@@ -189,7 +192,7 @@ need ?(
   \ }doc
 
 [unneeded] u>str
-?\ need ud>str  : u>str  ( u -- ca len )  s>d ud>str  ;  exit
+?\ need ud>str  : u>str  ( u -- ca len )  s>d ud>str  ;
 
   \ doc{
   \
@@ -252,7 +255,7 @@ exit ?)
 ( >bstring c>bstring 2>bstring )
 
 [unneeded] >bstring
-?\ : >bstring  ( u -- ca len )  pad ! pad cell  ;  exit
+?\ : >bstring  ( u -- ca len )  pad ! pad cell  ;
 
   \ doc{
   \
@@ -266,7 +269,7 @@ exit ?)
   \ }doc
 
 [unneeded] c>bstring
-?\ : c>bstring  ( c -- ca len )  pad c! pad 1  ;  exit
+?\ : c>bstring  ( c -- ca len )  pad c! pad 1  ;
 
   \ doc{
   \
@@ -283,7 +286,7 @@ need ?(
 
 [unneeded] 2>bstring  ?(
 : 2>bstring  ( xd -- ca len )
-  pad 2! pad [ 2 cells ] literal  ;  exit ?)
+  pad 2! pad [ 2 cells ] literal  ; ?)
 
   \ doc{
   \
@@ -379,7 +382,7 @@ code lengths
 ( uppers1 #spaces #chars )
 
 [unneeded] uppers1
-?\ : uppers1 ( ca len -- )  drop 1 uppers  ;  exit
+?\ : uppers1 ( ca len -- )  drop 1 uppers  ;
   \ doc{
   \
   \ uppers1 ( ca len -- )
@@ -435,7 +438,7 @@ need ?(  [unneeded] last-name ?(  need trim
 
 : last-name  ( ca1 len1 -- ca2 len2 )
   trim  begin  2dup bl scan bl skip dup
-        while  2nip  repeat  2drop  ;  exit ?)
+        while  2nip  repeat  2drop  ; ?)
 
   \ Credit:
   \
@@ -562,7 +565,7 @@ need ?(
 
 ( contains chop s"" sconstant save-counted-string s' )
 
-[unneeded] contains ?\ : contains  search nip nip  ;  exit
+[unneeded] contains ?\ : contains  search nip nip  ;
                          \ ( ca1 len1 ca2 len2 -- f )
 
   \ doc{
@@ -578,7 +581,7 @@ need ?(
   \ `[unneeded]` is not defined yet at that point.
 
 [unneeded] chop
-?\ : chop  ( ca len -- ca' len' )  1- swap char+ swap  ;  exit
+?\ : chop  ( ca len -- ca' len' )  1- swap char+ swap  ;
 
   \ Credit:
   \
@@ -593,7 +596,7 @@ need ?(
   \ }doc
 
 [unneeded] s""
-?\ : s""  ( -- ca len )  0 allocate-string 0  ;  exit
+?\ : s""  ( -- ca len )  0 allocate-string 0  ;
 
   \ doc{
   \
@@ -714,7 +717,7 @@ need ?(
 
 [unneeded] sconstant ?(
 : sconstant  ( ca len "name" -- )
-  here >r s, r> count 2constant  ; exit ?)
+  here >r s, r> count 2constant  ; ?)
 
   \ doc{
   \
@@ -730,7 +733,7 @@ need ?(
 
 : sconstants  ( 0 ca[n]..ca[1] "name" -- n )
   create  0 begin  swap ?dup  while  , 1+  repeat
-  does>  ( n -- ca len )  ( n pfa ) array> @ count  ;  exit ?)
+  does>  ( n -- ca len )  ( n pfa ) array> @ count  ; ?)
 
   \ doc{
   \

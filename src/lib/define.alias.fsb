@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051930
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -21,7 +21,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -65,11 +65,14 @@
   \ 2016-11-18: Improve documentation of `alias`.
   \
   \ 2017-01-05: Remove old system bank support from `alias!`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( alias! alias realias )
 
 [unneeded] alias!
-?\ need name>>  : alias!  ( xt nt -- )  name>> far!  ;  exit
+?\ need name>>  : alias!  ( xt nt -- )  name>> far!  ;
 
   \ doc{
   \

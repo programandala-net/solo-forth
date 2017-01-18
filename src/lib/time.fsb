@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701180129
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,11 +52,14 @@
   \ `seconds`. Write a new `pause` that works exactly like the
   \ homonymous keyword of Sinclair BASIC, as a convenience. Add
   \ `?seconds`. Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( seconds ?seconds ms )
 
 [unneeded] seconds
-?\ need ms  : seconds  ( u -- )  1000 * ms  ;  exit
+?\ need ms  : seconds  ( u -- )  1000 * ms  ;
 
   \ doc{
   \
@@ -69,7 +72,7 @@
   \ }doc
 
 [unneeded] ?seconds
-?\ need ?frames  : ?seconds  ( u -- )  50 * ?frames  ;  exit
+?\ need ?frames  : ?seconds  ( u -- )  50 * ?frames  ;
 
   \ doc{
   \
@@ -164,7 +167,7 @@ need ?(
 
 : ?frames  ( u -- )
   os-frames @ +
-  begin  dup os-frames @ u< key? or  until drop  ;  exit ?)
+  begin  dup os-frames @ u< key? or  until drop  ; ?)
 
   \ XXX TODO -- multitasking
 
@@ -208,7 +211,7 @@ need ?(  [unneeded] frames ?(  need os-frames
   \ code frames ( u -- )
   \   d pop, b push,
   \   rbegin  halt, d decp, d tstp,  z? runtil
-  \   b pop, jpnext,  end-code  exit ?)
+  \   b pop, jpnext,  end-code ?)
 
   \ Credit:
   \

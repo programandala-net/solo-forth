@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611182130
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -31,11 +31,14 @@
   \
   \ 2016-11-18: Add conditional compilation. Improve
   \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( ucreate ?user uallot user 2user )
 
 [unneeded] ucreate
-?\ : ucreate  ( "name" -- )  udp @ (user)  ;  exit
+?\ : ucreate  ( "name" -- )  udp @ (user)  ;
 
   \ doc{
   \
@@ -54,7 +57,7 @@ need ?(
 
 [unneeded] ?user ?(
 : ?user  ( -- )
-  udp @ dup /user > #-279 ?throw  0< #-280 ?throw  ;  exit  ?)
+  udp @ dup /user > #-279 ?throw  0< #-280 ?throw  ; ?)
   \ Error codes: #-279: user area overflow
   \              #-280: user area underflow
 
@@ -70,7 +73,7 @@ need ?(
   \ }doc
 
 [unneeded] uallot ?(  need ?user
-: uallot  ( n -- )  udp +! ?user  ;  exit  ?)
+: uallot  ( n -- )  udp +! ?user  ; ?)
 
   \ doc{
   \
@@ -88,7 +91,7 @@ need ?(
   \ }doc
 
 [unneeded] user ?(  need ucreate  need uallot
-: user  ( "name" -- )  ucreate cell uallot  ;  exit  ?)
+: user  ( "name" -- )  ucreate cell uallot  ; ?)
 
   \ doc{
   \

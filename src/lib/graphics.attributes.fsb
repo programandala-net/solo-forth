@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612311938
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -35,6 +35,9 @@
   \ 2016-12-31: Rewrite `attr`, `attr-addr` and `(attr-addr)`
   \ with Z80 opcodes, without assembler. Compact the code,
   \ saving one block.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 \ (attr-addr) attr attr-addr \
 
@@ -89,7 +92,7 @@ code attr  ( col row -- b )
     \ call attr_addr
     \ ld l,(hl)
     \ ld h,0 ; HL = attribute
-  jppushhl, end-code  exit ?)
+  jppushhl, end-code ?)
     \ jp pushhl
 
   \ doc{

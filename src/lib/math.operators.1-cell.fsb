@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051641
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -99,6 +99,9 @@
   \ `lshift` and `rshift`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( under+ +under )
 
@@ -178,7 +181,7 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
 ( % u% u>ud within between gcd )
 
 [unneeded] %
-?\ : %  ( n1 n2 -- n3 )  100 swap */  ;  exit
+?\ : %  ( n1 n2 -- n3 )  100 swap */  ;
 
   \ doc{
   \
@@ -189,7 +192,7 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ }doc
 
 [unneeded] u%
-?\ : u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;  exit
+?\ : u%  ( u1 u2 -- u3 )  >r 100 um* r> um/mod nip  ;
 
   \ doc{
   \
@@ -200,7 +203,7 @@ code +under  ( n1|u1 n2|u2 x -- n3|u3 x )
   \ }doc
 
 [unneeded] u>ud
-?\ need alias  ' 0 alias u>ud ( u -- ud )  exit
+?\ need alias  ' 0 alias u>ud ( u -- ud )
 
   \ doc{
   \
@@ -275,8 +278,8 @@ need ?(
 
 ( odd? even? 8* polarity <=> )
 
-[unneeded] odd?  ?\ : odd?   ( n -- f )  1 and     ;  exit
-[unneeded] even? ?\ : even?  ( n -- f )  1 and 0=  ;  exit
+[unneeded] odd?  ?\ : odd?   ( n -- f )  1 and     ;
+[unneeded] even? ?\ : even?  ( n -- f )  1 and 0=  ;
   \ XXX TODO -- write in Z80
 
 need ?(
@@ -284,7 +287,7 @@ need ?(
 [unneeded] 8* ?(
 
 code 8*  ( n1 -- n2 )
-  e1 c, 29 c, 29 c, 29 c, jppushhl, end-code  exit ?)
+  e1 c, 29 c, 29 c, 29 c, jppushhl, end-code ?)
   \ pop hl
   \ add hl,hl
   \ add hl,hl
@@ -361,12 +364,12 @@ code polarity  ( n -- -1 | 0 | 1 )
 
 ( u<= u>= <= >= 0>= 0<= 0max )
 
-[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;  exit
-[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;  exit
-[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;  exit
-[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;  exit
-[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;  exit
-[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;  exit
+[unneeded] u<=  ?\ : u<=  ( u1 u2 -- f )  u> 0=  ;
+[unneeded] u>=  ?\ : u>=  ( u1 u2 -- f )  u< 0=  ;
+[unneeded] <=   ?\ : <=   ( n1 n2 -- f )  > 0=   ;
+[unneeded] >=   ?\ : >=   ( n1 n2 -- f )  < 0=   ;
+[unneeded] 0>=  ?\ : 0>=  ( n1 n2 -- f )  0< 0=  ;
+[unneeded] 0<=  ?\ : 0<=  ( n1 n2 -- f )  0> 0=  ;
 
 [unneeded] 0max ?exit
 

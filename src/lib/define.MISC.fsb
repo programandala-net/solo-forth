@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701071621
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -14,7 +14,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -44,6 +44,9 @@
   \ >order`.
   \
   \ 2017-01-07: Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( create: ;code :noname nextname )
 
@@ -100,7 +103,7 @@ need ?(  [unneeded] ;code ?(
 : :noname  ( -- xt )
   here  dup lastxt !  last off  !csp
   docolon [ assembler-wordlist >order ] call, [ previous ]
-  noname? on  ]  ;  exit ?)
+  noname? on  ]  ; ?)
 
   \ doc{
   \

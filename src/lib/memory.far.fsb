@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701101802
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -17,7 +17,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -65,6 +65,9 @@
   \ 2017-01-09: Add `far,`.
   \
   \ 2017-01-10: Change `2*` to `cells`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( farhl questionnextbank questionpreviousbank farallot far, )
 
@@ -178,7 +181,7 @@ get-current assembler-wordlist dup >order set-current
 previous set-current
 
 [unneeded] farallot
-?\ : farallot  ( n -- )  hp +!  ;  exit
+?\ : farallot  ( n -- )  hp +!  ;
 
   \ doc{
   \
@@ -207,13 +210,13 @@ need ?(  [unneeded] far, ?(  need farallot
 ( far2@ far2! far@+ farc@+ far+! farc+! far2@+ )
 
 [unneeded] far2@
-?\ : far2@  ( a -- d )  dup cell+ far@ swap far@  ;  exit
+?\ : far2@  ( a -- d )  dup cell+ far@ swap far@  ;
 
 [unneeded] far2!
-?\ : far2!  ( d a -- )  swap over far! cell+ far!  ;  exit
+?\ : far2!  ( d a -- )  swap over far! cell+ far!  ;
 
 [unneeded] far@+
-?\ : far@+  ( a -- a' x )  dup cell+ swap far@  ;  exit
+?\ : far@+  ( a -- a' x )  dup cell+ swap far@  ;
 
   \ doc{
   \
@@ -226,7 +229,7 @@ need ?(  [unneeded] far, ?(  need farallot
   \ }doc
 
 [unneeded] farc@+
-?\ : farc@+  ( ca -- ca' c )  dup char+ swap farc@  ;  exit
+?\ : farc@+  ( ca -- ca' c )  dup char+ swap farc@  ;
 
   \ doc{
   \
@@ -239,7 +242,7 @@ need ?(  [unneeded] far, ?(  need farallot
   \ }doc
 
 [unneeded] far+!
-?\ : far+!  ( n a -- )  dup far@ rot + swap far!  ;  exit
+?\ : far+!  ( n a -- )  dup far@ rot + swap far!  ;
 
   \ doc{
   \
@@ -251,7 +254,7 @@ need ?(  [unneeded] far, ?(  need farallot
   \ }doc
 
 [unneeded] farc+!
-?\ : farc+!  ( c a -- )  dup farc@ rot + swap farc!  ;  exit
+?\ : farc+!  ( c a -- )  dup farc@ rot + swap farc!  ;
 
   \ doc{
   \
@@ -315,7 +318,7 @@ exit ?)
 [unneeded] cmove>far ?(
 
 : cmove>far  ( ca1 ca2 len -- )
-  bounds ?do  dup c@ i farc! char+  loop  drop  ;  exit ?)
+  bounds ?do  dup c@ i farc! char+  loop  drop  ; ?)
 
   \ doc{
   \
@@ -330,7 +333,7 @@ exit ?)
 [unneeded] cmove<far ?(
 
 : cmove<far  ( ca1 ca2 len -- )
-  bounds ?do  dup farc@ i c! char+  loop  drop  ;  exit ?)
+  bounds ?do  dup farc@ i c! char+  loop  drop  ; ?)
 
   \ doc{
   \

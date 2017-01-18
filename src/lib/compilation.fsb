@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061703
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -125,6 +125,9 @@
   \
   \ 2017-01-06: Add missing `exit` after loading some words.
   \ Document `(comp')`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -167,16 +170,16 @@ need str=
 ( body>name name>body link>name name>link name<name )
 
 [unneeded] body>name
-?\ need body>  : body>name  ( pfa -- nt )  body> >name  ; exit
+?\ need body>  : body>name  ( pfa -- nt )  body> >name  ;
 
 [unneeded] name>body
-?\ need >body  : name>body  ( nt -- pfa )  name> >body  ; exit
+?\ need >body  : name>body  ( nt -- pfa )  name> >body  ;
 
 [unneeded] link>name
-?\ need alias  ' cell+ alias link>name  ( nt -- pfa ) exit
+?\ need alias  ' cell+ alias link>name  ( nt -- pfa )
 
 [unneeded] name>link
-?\ need alias  ' cell- alias name>link  ( nt -- pfa ) exit
+?\ need alias  ' cell- alias name>link  ( nt -- pfa )
 
 [unneeded] name<name ?exit
 need name>link
@@ -186,16 +189,16 @@ need name>link
 ( >>link name>> >>name >body body> '' [''] )
 
 [unneeded] >>link
-?\ need alias  ' cell+ alias >>link  ( xtp -- lfa ) exit
+?\ need alias  ' cell+ alias >>link  ( xtp -- lfa )
 
 [unneeded] name>>
-?\ : name>>  ( nt -- xtp )  cell- cell-  ; exit
+?\ : name>>  ( nt -- xtp )  cell- cell-  ;
 
 [unneeded] >>name
-?\ : >>name  ( xtp -- nt )  cell+ cell+  ; exit
+?\ : >>name  ( xtp -- nt )  cell+ cell+  ;
 
 [unneeded] >body
-?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl,  end-code exit
+?\ code >body  E1 c, 23 c, 23 c, 23 c, jppushhl,  end-code
   \ ( xt -- pfa )
   \ pop hl
   \ inc hl
@@ -204,7 +207,7 @@ need name>link
   \ jp pushhl
 
 [unneeded] body>
-?\ code body> E1 c, 2B c, 2B c, 2B c, jppushhl,  end-code exit
+?\ code body> E1 c, 2B c, 2B c, 2B c, jppushhl,  end-code
   \ ( pfa -- xt )
   \ pop hl
   \ dec hl
@@ -215,7 +218,7 @@ need name>link
 need ?(
 
 [unneeded] '' ?(  need need-here  need-here name>>
-: ''  ( "name" -- xtp )  defined dup ?defined name>>  ; exit ?)
+: ''  ( "name" -- xtp )  defined dup ?defined name>>  ; ?)
 
 [unneeded] [''] ?(  need need-here  need-here ''
 : ['']  '' postpone literal  ; immediate compile-only exit ?)
@@ -281,7 +284,7 @@ need ?(
 [unneeded] comp' ?(  need need-here  need-here name>compile
 
 : comp'  ( "name" -- x xt )
-  defined dup ?defined name>compile  ; exit ?)
+  defined dup ?defined name>compile  ; ?)
 
   \ doc{
   \
@@ -313,7 +316,7 @@ need ?(
 ( there ?pairs [compile] smudge smudged )
 
 [unneeded] there
-?\ : there  ( a -- )  dp !  ;  exit
+?\ : there  ( a -- )  dp !  ;
 
   \ doc{
   \
@@ -325,7 +328,7 @@ need ?(
   \ }doc
 
 [unneeded] ?pairs
-?\ : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;  exit
+?\ : ?pairs  ( x1 x2 -- )  <> #-22 ?throw  ;
 
   \ doc{
   \

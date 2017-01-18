@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701111856
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,6 +58,9 @@
   \
   \ 2017-01-11: Make `s\"` and `.\"` use
   \ `esc-standard-chars-wordlist`. Improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( esc-standard-chars-wordlist )
 
@@ -395,7 +398,7 @@ need ?esc-order  need #esc-order  need esc-context
 
 : set-esc-order  ( widn..wid1 n -- )
   dup ?esc-order  dup #esc-order !
-  0 ?do  i cells esc-context + !  loop  ;  exit ?)
+  0 ?do  i cells esc-context + !  loop  ; ?)
 
   \ doc{
   \
@@ -445,7 +448,7 @@ need ?(
 need get-esc-order  need set-esc-order
 
 : >esc-order  ( wid -- )
-  >r get-esc-order 1+ r> swap set-esc-order  ;  exit ?)
+  >r get-esc-order 1+ r> swap set-esc-order  ; ?)
 
   \ doc{
   \
@@ -462,7 +465,7 @@ need get-esc-order  need set-esc-order
 
 [unneeded] esc-previous ?(
 : esc-previous  ( -- )
-  get-esc-order nip 1- set-esc-order  ;  exit ?)
+  get-esc-order nip 1- set-esc-order  ; ?)
 
   \ doc{
   \

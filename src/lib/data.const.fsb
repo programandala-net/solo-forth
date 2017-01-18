@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611251256
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -16,7 +16,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ Credit
@@ -35,6 +35,9 @@
 
   \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
   \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( const cconst 2const )
 
@@ -44,7 +47,7 @@ need ?(
 
 : const  ( x "name" -- )
   create immediate ,
-  does>  @ executing? ?exit  postpone literal  ; exit ?)
+  does>  @ executing? ?exit  postpone literal  ; ?)
 
   \ doc{
   \
@@ -65,7 +68,7 @@ need ?(
 
 : cconst  ( c "name" -- )
   create immediate c,
-  does>  c@ executing? ?exit  postpone cliteral  ; exit ?)
+  does>  c@ executing? ?exit  postpone cliteral  ; ?)
 
   \ doc{
   \
@@ -86,7 +89,7 @@ need ?(
 
 : 2const  ( xd "name" -- )
   create immediate 2,
-  does>  2@ executing? ?exit  postpone 2literal  ; exit ?)
+  does>  2@ executing? ?exit  postpone 2literal  ; ?)
 
   \ doc{
   \

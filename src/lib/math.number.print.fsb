@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300229
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -34,6 +34,9 @@
   \ 2016-12-08: Fix `u.r`. Fix needing of `ud.`.
   \
   \ 2016-12-30: Compact the code, saving one block.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( ud.r u.r ud. holds )
 
@@ -60,7 +63,7 @@ exit ?)
   \ }doc
 
 [unneeded] u.r ?(  need u>ud  need ud.r
-: u.r  ( u n -- )  >r u>ud r> ud.r  ;  exit ?)
+: u.r  ( u n -- )  >r u>ud r> ud.r  ; ?)
 
   \ Credit:
   \
@@ -86,7 +89,7 @@ exit ?)
   \ }doc
 
 [unneeded] ud. ?(  need ud.r
-: ud.  ( ud -- )  0 ud.r space  ;  exit ?)
+: ud.  ( ud -- )  0 ud.r space  ; ?)
 
   \ Credit:
   \

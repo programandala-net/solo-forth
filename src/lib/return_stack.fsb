@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051639
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -47,6 +47,9 @@
   \ `z80-asm,`.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( n>r )
 
@@ -144,7 +147,7 @@ need ?(
 
 [unneeded] r'@ ?(
 : r'@  ( -- x1 ) ( R: x1 x2 -- x1 x2 )
-  r> 2r@ drop swap >r  ;  exit ?)
+  r> 2r@ drop swap >r  ; ?)
 
   \ doc{
   \

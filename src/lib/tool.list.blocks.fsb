@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701171728
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -51,6 +51,9 @@
   \
   \ 2017-01-17: Fix and improve documentation of `list`, `lt`,
   \ `lm` and `lb`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -66,7 +69,7 @@
   \ }doc
 
 [unneeded] .line#
-?\ need /line#  : .line#  ( n -- )  /line# .r  ;  exit
+?\ need /line#  : .line#  ( n -- )  /line# .r  ;
 
   \ doc{
   \
@@ -78,7 +81,7 @@
   \ }doc
 
 [unneeded] .line
-?\ : .line  ( n1 n2 -- )  line>string -trailing type  ;  exit
+?\ : .line  ( n1 n2 -- )  line>string -trailing type  ;
 
   \ doc{
   \
@@ -92,7 +95,7 @@
 
 need ?(  [unneeded] list-line ?(  need .line#  need .line
 : list-line  ( n1 n2 -- )
-  cr over .line# space .line  ;  exit ?)
+  cr over .line# space .line  ; ?)
 
   \ doc{
   \
@@ -108,7 +111,7 @@ need ?(  [unneeded] list-line ?(  need .line#  need .line
 need .line  need nuf?  need list-line  need ?leave
 : list-lines  ( u1 u2 u3 -- )
   rot dup scr ! cr ." Screen " .  1+ swap
-  ?do  i scr @ list-line nuf? ?leave  loop cr  ;  exit ?)
+  ?do  i scr @ list-line nuf? ?leave  loop cr  ; ?)
 
   \ doc{
   \
@@ -121,7 +124,7 @@ need .line  need nuf?  need list-line  need ?leave
   \ }doc
 
 [unneeded] list ?(  need list-lines
-: list  ( u -- )  0 [ l/scr 1- ] literal list-lines  ;  exit ?)
+: list  ( u -- )  0 [ l/scr 1- ] literal list-lines  ; ?)
 
   \ doc{
   \
@@ -147,7 +150,7 @@ need ?(
 
 [unneeded] view ?( need locate  need list
 : view  ( "name" -- )
-  locate dup 0= #-286 ?throw list  ;  exit ?)
+  locate dup 0= #-286 ?throw list  ; ?)
 
   \ doc{
   \
@@ -162,11 +165,11 @@ need ?(
   \ }doc
 
 [unneeded] .block# ?(  need /block#
-: .block#  ( n -- )  /block# .r  ;  exit ?)
+: .block#  ( n -- )  /block# .r  ; ?)
 
 [unneeded] .index ?(  need .line
 : .index  ( u -- )
-  cr dup .block# space 0 swap .line  ;  exit ?)
+  cr dup .block# space 0 swap .line  ; ?)
 
   \ doc{
   \
@@ -206,7 +209,7 @@ need ?(  need .index  need contains  need nuf?  need ?leave
   parse-name 2swap
   1+ swap ?do  0 i line>string 2over contains
                if  i .index  then  nuf? ?leave
-  loop  2drop  ;  exit ?)
+  loop  2drop  ; ?)
 
   \ doc{
   \
@@ -229,7 +232,7 @@ need ?(  need .index  need contains  need nuf?  need ?leave
     save-string  0 i line>string save-string 2dup uppers
     2over contains if  i .index  then
     nuf? ?leave
-  loop  2drop  ;  exit ?)
+  loop  2drop  ; ?)
 
   \ doc{
   \

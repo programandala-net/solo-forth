@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201947
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -31,6 +31,9 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
   \ XXX TODO -- Compilation stack comments.
 
@@ -46,7 +49,7 @@ code -branch  ( n -- )
     \ jp nz,branch_xt   ; branch if negative
     \ inc bc
     \ inc bc            ; skip the inline branch address
-  jpnext,  end-code  exit ?)
+  jpnext,  end-code ?)
 
   \ doc{
   \
@@ -70,7 +73,7 @@ code +branch  ( n -- )
     \ jp z,branch_xt  ; branch if positive
     \ inc bc
     \ inc bc          ; skip the inline branch address
-  jpnext,  end-code  exit ?)
+  jpnext,  end-code ?)
 
   \ doc{
   \

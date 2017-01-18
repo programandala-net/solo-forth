@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701102000
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -43,11 +43,14 @@
   \ 2017-01-07: Fix typo.
   \
   \ 2017-01-10: Complete and improve documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( printer tabulate )
 
 [unneeded] printer
-?\ : printer  ( -- )  3 channel printing on  ;  exit
+?\ : printer  ( -- )  3 channel printing on  ;
 
   \ doc{
   \
@@ -140,7 +143,7 @@ variable /tabulate  8 /tabulate !
   \ }doc
 
 [unneeded] tab
-?\ need 'tab'  : tab  ( -- )  'tab' emit  ;  exit
+?\ need 'tab'  : tab  ( -- )  'tab' emit  ;
 
   \ doc{
   \
@@ -154,7 +157,7 @@ variable /tabulate  8 /tabulate !
   \ }doc
 
 [unneeded] backspace
-?\ need 'bs'  : backspace  ( -- )  'bs'  emit  ;  exit
+?\ need 'bs'  : backspace  ( -- )  'bs'  emit  ;
 
   \ doc{
   \
@@ -167,7 +170,7 @@ variable /tabulate  8 /tabulate !
   \ }doc
 
 [unneeded] crs
-?\ need 'cr'  : crs   ( n -- )  'cr'  emits  ;  exit
+?\ need 'cr'  : crs   ( n -- )  'cr'  emits  ;
 
   \ doc{
   \
@@ -180,7 +183,7 @@ variable /tabulate  8 /tabulate !
   \ }doc
 
 [unneeded] tabs
-?\ need 'tab'  : tabs  ( n -- )  'tab' emits  ;  exit
+?\ need 'tab'  : tabs  ( n -- )  'tab' emits  ;
 
   \ doc{
   \

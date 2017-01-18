@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611251840
+  \ Last modified: 201701182337
 
   \ -----------------------------------------------------------
   \ Description
@@ -16,7 +16,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ Credit
@@ -36,6 +36,9 @@
   \ History
 
   \ 2016-11-25: Start.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( data: 2data: cdata: )
 
@@ -108,7 +111,7 @@ exit ?)
   \ }doc
 
 : ;2data  ( orig -- )
-  here over cell+ - [ 2 cells ] literal / swap !  ;  exit ?)
+  here over cell+ - [ 2 cells ] literal / swap !  ; ?)
 
   \ doc{
   \

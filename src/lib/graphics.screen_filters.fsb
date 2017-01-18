@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051642
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -14,7 +14,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -38,6 +38,9 @@
   \ Improve documentation.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( fade )
 
@@ -83,7 +86,7 @@ code inverted  ( -- )
   4000 h ldp#,
   rbegin   m a ld, cpl, a m ld, h incp,
            h a ld, 58 cp#,  z? runtil
-  jpnext,  end-code  exit ?)
+  jpnext,  end-code ?)
   
   \ Credit:
   \

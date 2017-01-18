@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701072100
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,9 @@
   \ `wid>vocabulary` to `wordlist>vocabulary`.  Add
   \ `wordlist-name@` and `wordlist-name!`.  Rename `wid-of` to
   \ `wordlist-of`.  Rename `named-wid` to `latest>wordlist`.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
@@ -70,7 +73,7 @@
   \ }doc
 
 [unneeded] wordlist>name
-?\ : wordlist>name  ( wid -- a )  cell+ cell+  ; exit
+?\ : wordlist>name  ( wid -- a )  cell+ cell+  ;
 
   \ doc{
   \
@@ -86,7 +89,7 @@
 
 [unneeded] wordlist-name@ dup
 ?\ need wordlist>name
-?\ : wordlist-name@  ( wid -- nt|0 )  wordlist>name @  ;  exit
+?\ : wordlist-name@  ( wid -- nt|0 )  wordlist>name @  ;
 
   \ doc{
   \
@@ -117,7 +120,7 @@
 ( +order -order )
 
 [unneeded] +order
-?\ need -order  : +order ( wid -- )  dup -order >order ;  exit
+?\ need -order  : +order ( wid -- )  dup -order >order ;
 
   \ Credit:
   \
@@ -200,7 +203,7 @@ exit ?)
 
 [unneeded] wordlist>vocabulary ?(  need latest>wordlist
 : wordlist>vocabulary  ( wid "name" -- )
-  create dup , latest>wordlist dovocabulary  ; exit ?)
+  create dup , latest>wordlist dovocabulary  ; ?)
 
   \ doc{
   \
@@ -214,7 +217,7 @@ exit ?)
 
 [unneeded] vocabulary ?(  need wordlist>vocabulary
 : vocabulary  ( "name" -- )
-  wordlist wordlist>vocabulary  ; exit ?)
+  wordlist wordlist>vocabulary  ; ?)
 
   \ doc{
   \
@@ -235,7 +238,7 @@ exit ?)
 ( seal trail find-name-in find swap-current search-wordlist )
 
 [unneeded] seal
-?\ : seal  ( -- )  1 #order !  ;  exit
+?\ : seal  ( -- )  1 #order !  ;
 
   \ doc{
   \
@@ -250,7 +253,7 @@ exit ?)
   \
   \ }doc
 
-[unneeded] trail ?\ : trail  ( -- nt )  context @ @  ;  exit
+[unneeded] trail ?\ : trail  ( -- nt )  context @ @  ;
 
   \ doc{
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612201944
+  \ Last modified: 201701190050
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -69,6 +69,9 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( -! c+! c-! )
 
@@ -139,7 +142,7 @@ code c-!  ( c ca -- )
 ( c1+! c1-! 1+! 1-! )
 
 [unneeded] c1+!
-?\  code c1+!  ( ca -- )  E1 c, 34 c, jpnext,  end-code  exit
+?\  code c1+!  ( ca -- )  E1 c, 34 c, jpnext,  end-code
     \ pop hl
     \ inc (hl)
     \ jp next
@@ -153,7 +156,7 @@ code c-!  ( c ca -- )
   \ }doc
 
 [unneeded] c1-!
-?\  code c1-!  ( ca -- )  E1 c, 35 c, jpnext,  end-code  exit
+?\  code c1-!  ( ca -- )  E1 c, 35 c, jpnext,  end-code
     \ pop hl
     \ dec (hl)
     \ jp next
@@ -268,7 +271,7 @@ code c@+  ( ca -- ca' c )
 
 ( n, nn, n@ nn@ n! nn! )
 
-[unneeded] n, ?\ : n,  ( xu..x1 u -- )  0 ?do  ,  loop  ; exit
+[unneeded] n, ?\ : n,  ( xu..x1 u -- )  0 ?do  ,  loop  ;
   \ If _u_ is not zero, store _u_ cells _xu..x1_ into data
   \ space, being _x1_ the first one stored and _xu_ the last
   \ one.
@@ -282,7 +285,7 @@ need ?(  [unneeded] nn, ?(  need need-here  need-here n,
 [unneeded] n@ ?(
 : n@  ( a u -- xu..x1 )
   tuck 1- cells +  \ point _a_ to _xu_
-  swap 0 ?do  dup i cells - @ swap  loop  drop  ; exit ?)
+  swap 0 ?do  dup i cells - @ swap  loop  drop  ; ?)
   \ If _u_ is not zero, read _u_ cells _xu..x1_ from
   \ _a_, being _x1_ the first one stored and _xu_ the last
   \ one.
@@ -296,7 +299,7 @@ need ?(  [unneeded] nn, ?(  need need-here  need-here n,
 
 [unneeded] n! ?(
 : n!  ( xu..x1 u a -- )
-  swap 0 ?do  dup >r ! r> cell+  loop  drop  ; exit ?)
+  swap 0 ?do  dup >r ! r> cell+  loop  drop  ; ?)
   \ If _u_ is not zero, store _u_ cells at address _a_, being
   \ _x1_ the first cell stored there and _xu_ the last one.
 
@@ -365,7 +368,7 @@ need ?(
   \ [unneeded] c@and? ?(
   \ code c@and?  ( b ca -- f )
   \   hl pop  de pop  e a ld  m and
-  \   ' true jpnz  ' false jp  end-code  exit ?)
+  \   ' true jpnz  ' false jp  end-code ?)
 
   \ c@and?  ( b ca -- f )
   \
@@ -381,7 +384,7 @@ code c@and  ( b1 ca -- b2 )
     \ ld a,e
     \ and (hl)
     \ jp push_a
-end-code  exit ?)
+end-code ?)
 
   \ doc{
   \
@@ -396,20 +399,20 @@ end-code  exit ?)
   \ [unneeded] cset ?(
   \ code cset  ( b ca -- )
   \   hl pop  de pop  e a ld  m or  a m ld  jpnext,
-  \   end-code  exit ?)
+  \   end-code ?)
   \   \ Set the bits at _ca_ specified by the bitmask _b_.
 
   \ XXX OLD -- `creset` is in the kernel
   \ [unneeded] creset ?(
   \ code creset  ( b ca -- )
   \   hl pop  de pop  e a ld  cpl  m and  a m ld  jpnext,
-  \   end-code  exit ?)
+  \   end-code ?)
   \   \ Reset the bits at _ca_ specified by the bitmask _b_.
 
 [unneeded] ctoggle ?(
 code ctoggle  ( b ca -- )
   E1 c, D1 c, 7E c, A8 03 + c, 70 07 + c, jpnext,
-end-code  exit ?)
+end-code ?)
     \ pop hl
     \ pop de
     \ ld a,(hl)

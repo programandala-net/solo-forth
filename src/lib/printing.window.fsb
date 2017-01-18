@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612241951
+  \ Last modified: 201701182343
 
   \ -----------------------------------------------------------
   \ Description
@@ -14,7 +14,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -29,6 +29,9 @@
   \ 2016-12-23: Start.
   \
   \ 2016-12-24: First working version.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( window set-window )
 
@@ -67,15 +70,15 @@ variable current-window
 ( wspace wemit wfreecolumns (wat-xy wat-xy at-wxy )
 
 [unneeded] wspace
-?\ need wemit  : wspace  ( -- )  bl wemit  ;  exit
+?\ need wemit  : wspace  ( -- )  bl wemit  ;
 
 need ?(
 
 [unneeded] wemit ?(  need char>string  need wtype
-: wemit  ( c -- )  char>string wtype  ;  exit ?)
+: wemit  ( c -- )  char>string wtype  ; ?)
 
 [unneeded] wfreecolumns ?(  need window
-: wfreecolumns  ( -- n )  wcolumns c@ wx c@ -  ;  exit ?)
+: wfreecolumns  ( -- n )  wcolumns c@ wx c@ -  ; ?)
   \ Return the number _n_ of free columns in the current
   \ line of the current window.
 
@@ -85,18 +88,18 @@ exit ?)
   \ Set the cursor at current window coordinates _x y_.
 
 [unneeded] wat-xy ?(  need window  need (wat-xy
-: wat-xy  ( x y -- )  2dup wy c! wx c!  (wat-xy  ;  exit ?)
+: wat-xy  ( x y -- )  2dup wy c! wx c!  (wat-xy  ; ?)
   \ Set the current window coordinates to _x y_ and set the
   \ cursor there.
 
 [unneeded] at-wxy ?(  need window  need (wat-xy
-: at-wxy  ( -- )  wx c@ wy c@ (wat-xy  ;  exit ?)
+: at-wxy  ( -- )  wx c@ wy c@ (wat-xy  ; ?)
   \ Set the cursor at the current window coordinates.
 
 ( whome wcr ?wcr reset-window wcls )
 
 [unneeded] whome
-?\ need wat-xy  : whome  ( -- )  0 0 wat-xy  ;  exit
+?\ need wat-xy  : whome  ( -- )  0 0 wat-xy  ;
   \ Set the current window coordinates to the first column and
   \ the first row.
 
@@ -111,7 +114,7 @@ exit ?)
   \ XXX TODO -- scroll instead of `whome`
 
 [unneeded] ?wcr ?(  need window  need wcr
-: ?wcr  ( -- )  wx c@ 0= ?exit wcr  ;  exit ?)
+: ?wcr  ( -- )  wx c@ 0= ?exit wcr  ; ?)
   \ If the x curser coordinate of the current window is not
   \ zero, cause subsequent output to the current window appear
   \ at the beginning of the next line.
@@ -120,14 +123,14 @@ exit ?)
 
 need columns  need rows  need set-window
 
-: reset-window  ( -- )  0 0 columns rows set-window  ;  exit ?)
+: reset-window  ( -- )  0 0 columns rows set-window  ; ?)
   \ Set the current window to use the full screen.
 
 [unneeded] wcls ?(  need window  need whome  need ruler
 
 : wcls  ( -- )  bl wcolumns c@ ruler  ( ca len )
   wy0 c@ wrows c@ bounds ?do   2dup wx0 c@ i at-xy type
-                         loop  2drop  whome  ;  exit ?)
+                         loop  2drop  whome  ; ?)
   \ Clear the current window.
 
 ( wtype )
