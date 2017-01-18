@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701071630
+  \ Last modified: 201701181438
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,7 +26,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -45,6 +45,9 @@
   \ 2016-12-20: Fix and improve documentation.
   \
   \ 2017-01-07: Fix typo.
+  \
+  \ 2017-01-18: Fix and update documentation. Improve
+  \ `2avariable` with `cliteral`.
 
 ( avariable 2avariable cavariable )
 
@@ -70,14 +73,14 @@ need ?(
   \
   \ Return address _a_ of element _n_.
   \
-  \ See: `2variable`, `cvariable`.
+  \ See: `2avariable`, `cavariable`, `faravariable`.
   \
   \ }doc
 
 [unneeded] 2avariable ?(  need 2array>
 
 : 2avariable  ( n "name" -- )
-  create  [ 2 cells ] literal * allot
+  create  [ 2 cells ] cliteral * allot
   does>  ( n -- a ) ( n pfa ) 2array>  ;  exit ?)
 
   \ doc{
@@ -94,7 +97,7 @@ need ?(
   \
   \ Return address _a_ of element _n_.
   \
-  \ See: `avariable`, `cvariable`.
+  \ See: `avariable`, `cavariable`, `far2avariable`.
   \
   \ }doc
 
@@ -117,7 +120,7 @@ need ?(
   \
   \ Return address _ca_ of element _n_.
   \
-  \ See: `avariable`, `2variable`.
+  \ See: `avariable`, `2avariable`, `farcavariable`.
   \
   \ }doc
 
