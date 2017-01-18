@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-17
+:revdate: 2017-01-18
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1359,6 +1359,13 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 // Printing {{{1
 == Printing ==
 
+.2017-01-18:
+
+Current versions of `type-right` and `type-center` use
+spaces, which create a banner of the current colors.
+
+Write alternative versions that move the cursor position instead.
+
 .2017-01-02:
 
 Adapt the banked screen mode, which uses the unfinsihed implementation
@@ -1388,8 +1395,6 @@ NOTE: Milestone: 0.13.0
 Make `type-ascii` configurable: store the common char in a character variable.
 In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
 and use `type`.
-
-Move `drop-type` to `type-right`.
 
 Make `type` deferred, to be configured as `fartype` or other when needed.
 
