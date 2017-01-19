@@ -25,12 +25,26 @@
 
 ( cs-pick cs-roll cs-swap cs-drop )
 
-need alias  need pick  need roll
+[unneeded] cs-pick
+?\ need alias need pick ' pick alias cs-pick
+  \ ( C: 
 
-' pick alias cs-pick
-' roll alias cs-roll
-' swap alias cs-swap
-' drop alias cs-drop
+  \ doc{
+  \
+  \ cs-pick ( S: u -- )
+  \         ( C: dest[u]..orig[0] | dest[0] -- dest[u]..orig[0] | dest[0] dest[u] )
+  \
+  \ }doc
+
+
+[unneeded] cs-roll
+?\ need alias need roll ' roll alias cs-roll
+
+[unneeded] cs-swap
+?\ need alias ' swap alias cs-swap
+
+[unneeded] cs-drop
+?\ need alias ' drop alias cs-drop
 
 ( cs-pick cs-roll cs-drop cs-mark cs-test cs-push cs-pop )
 

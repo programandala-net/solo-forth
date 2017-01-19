@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191346
 
   \ -----------------------------------------------------------
   \ Description
@@ -64,6 +64,10 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
 
 ( avalue 2avalue cavalue )
 
@@ -159,7 +163,7 @@ need ?(  [unneeded] ato ?(  need >body
 
 : ato  ( x n "name" -- )
   compiling?  if    postpone ['] postpone (ato)
-              else  ' (ato)  then  ; immediate  exit ?)
+              else  ' (ato)  then  ; immediate ?)
 
   \ doc{
   \
@@ -189,7 +193,7 @@ need ?(  [unneeded] ato ?(  need >body
 
 : +ato  ( n1 n2 "name" -- )
   compiling? if    postpone ['] postpone (+ato)
-             else  ' (+ato)  then  ; immediate  exit ?)
+             else  ' (+ato)  then  ; immediate ?)
 
   \ doc{
   \
@@ -219,7 +223,7 @@ need ?(  [unneeded] ato ?(  need >body
 
 : 2ato  ( xd n "name" -- )
   compiling?  if    postpone ['] postpone (2ato)
-              else  ' (2ato)  then  ; immediate  exit ?)
+              else  ' (2ato)  then  ; immediate ?)
 
   \ doc{
   \
@@ -253,7 +257,7 @@ need ?(
 
 : cato  ( x n "name" -- )
   compiling?  if    postpone ['] postpone (cato)
-              else  ' (cato)  then  ; immediate  exit ?)
+              else  ' (cato)  then  ; immediate ?)
 
   \ doc{
   \
@@ -283,7 +287,7 @@ need ?(
 
 : +cato  ( n1 n2 "name" -- )
   compiling? if    postpone ['] postpone (+cato)
-             else  ' (+cato)  then  ; immediate  exit ?)
+             else  ' (+cato)  then  ; immediate ?)
 
   \ doc{
   \

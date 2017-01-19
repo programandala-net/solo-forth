@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190050
+  \ Last modified: 201701191346
 
   \ -----------------------------------------------------------
   \ Description
@@ -128,11 +128,15 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
 
 ( [false] [true] [if] [else] [then] )
 
-[unneeded] [true]  ?\   0 constant [false] immediate exit
-[unneeded] [false] ?\  -1 constant [true]  immediate exit
+[unneeded] [true]  ?\   0 constant [false] immediate
+[unneeded] [false] ?\  -1 constant [true]  immediate
 
 need str=
 
@@ -221,7 +225,7 @@ need ?(
 : ''  ( "name" -- xtp )  defined dup ?defined name>>  ; ?)
 
 [unneeded] [''] ?(  need need-here  need-here ''
-: ['']  '' postpone literal  ; immediate compile-only exit ?)
+: ['']  '' postpone literal  ; immediate compile-only ?)
   \ Compilation: ( "name" -- )
   \ Execution: ( -- xtp )
 
@@ -300,7 +304,7 @@ need ?(
 [unneeded] [comp'] ?(  need need-here  need-here comp'
 
 : [comp']  ( Compilation: "name" -- ) ( Run-time: -- x xt )
-  comp' postpone 2literal  ; immediate compile-only exit ?)
+  comp' postpone 2literal  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -340,7 +344,7 @@ need ?(
   \ }doc
 
 [unneeded] [compile]
-?\ : [compile]  ( "name" -- )  ' compile,  ; immediate  exit
+?\ : [compile]  ( "name" -- )  ' compile,  ; immediate
 
 [unneeded] smudged
 ?\ : smudged  ( nt -- ) dup farc@ smudge-mask xor swap farc!  ;

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191346
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,10 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
 
 ( create: ;code :noname nextname )
 
@@ -74,7 +78,7 @@ need ?(  [unneeded] ;code ?(
   \ 2016-04-24: Move `;code` to the library.
 
 : ;code  ( -- )  postpone (;code)  finish-code
-                 ; immediate compile-only  exit ?)
+                 ; immediate compile-only ?)
 
   \ XXX TODO -- Improve documentation.
 

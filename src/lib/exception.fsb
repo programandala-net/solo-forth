@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191346
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,10 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
 
 ( ?compiling ?executing abort" warning" )
 
@@ -92,9 +96,9 @@ need ?(  [unneeded] abort" ?(
   r> count rot if  abort-message 2! -2 throw  then + >r  ;
 
 : abort"  ( Compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate compile-only  exit  ?)
+  postpone (abort") ,"  ; immediate compile-only  ?)
 
-need string-parameter
+[unneeded] warning?( ?(  need string-parameter
 
 : (warning")  ( f -- )
   string-parameter rot if  type  else  2drop  then  ;
@@ -110,7 +114,7 @@ need string-parameter
 
 : warning"  \ Compilation: ( "ccc<quote>" -- )
             \ Execution:   ( f -- )
-  postpone (warning") ,"  ; immediate compile-only
+  postpone (warning") ,"  ; immediate compile-only ?)
 
   \ doc{
   \

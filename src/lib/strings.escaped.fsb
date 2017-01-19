@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191346
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,10 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`.
 
 ( esc-standard-chars-wordlist )
 
@@ -259,7 +263,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
        ( Compilation: "ccc<quote>" -- )
        ( Run-time: -- ca len )
   parse-esc-string compiling? if  postpone sliteral  then
-  ; immediate  exit ?)
+  ; immediate ?)
 
   \ XXX TODO documentation
 
