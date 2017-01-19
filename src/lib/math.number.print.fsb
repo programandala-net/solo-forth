@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191542
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,11 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation. Rename `(d.)` to `(d.`,
+  \ `(dbin.)` to `(dbin.` and `(dhex.)` to `(dhex.`.  Make all
+  \ words individually accessible to `need`.
 
 ( ud.r u.r ud. holds )
 
@@ -44,7 +49,7 @@ need ?(
 
 [unneeded] ud.r ?(
 : ud.r  ( ud n -- )  >r <# #s #> r> over - 0 max spaces type  ;
-exit ?)
+?)
 
   \ Credit:
   \
@@ -122,60 +127,76 @@ exit ?)
   \
   \ }doc
 
-( bin. dec. hex. )
+( base. bin. dec. hex. )
 
   \ Credit:
   \
   \ Code modified from eForth.
 
-[defined] base.
+[unneeded] base.
 ?\ : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
 
-[unneeded] bin.  ?\ create bin.  ( n -- )   2 c, base.
-[unneeded] hex.  ?\ create hex.  ( n -- )  16 c, base.
+[unneeded] bin.
+?\ need base.  create bin.  ( n -- )   #2 c, base.
 
-[unneeded] dec.  [defined] dec.  or
+[unneeded] hex.
+?\ need base.  create hex.  ( n -- )  #16 c, base.
+
+[unneeded] dec.
+?\ need base.  create dec.  ( n -- )  #10 c, base.
   \ XXX TMP -- `dec.` is in the kernel
-  ?\  create dec.  ( n -- )  10 c, base.
 
-( 8hex. 16hex. 32hex. <hex hex> )
+( base' (d. <hex hex> (dhex. 8hex. 16hex. 32hex. )
 
   \ Credit:
   \
   \ Code adapted from lina.
 
-[defined] base'  ?\ variable base'
+[unneeded] base'  ?\ variable base'
 
-[defined] (d.)
-?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+[unneeded] (d.
+?\ : (d.  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
 
-: <hex  ( -- )  base @ base' ! hex ; \ switch to hex
-: hex>  ( -- )  base' @ base !     ; \ and back
+[unneeded] <hex [unneeded] hex> and dup dup ?\ need base'
+?\ : <hex  ( -- )  base @ base' ! hex ; \ switch to hex
+?\ : hex>  ( -- )  base' @ base !     ; \ and back
 
-: (dhex.)  ( d n -- )  <hex (d.) hex> type space  ;
-: 32hex.    ( d -- )  8 (dhex.)  ;
-: 16hex.     ( n -- )  s>d 4 (dhex.)  ;
-: 8hex.    ( b -- )  s>d 2 (dhex.)  ;
+[unneeded] (dhex. dup ?\ need <hex  need (d.
+?\ : (dhex.  ( d n -- )  <hex (d. hex> type space  ;
 
-( binary 8bin. 16bin. 32bin. <bin bin> )
+[unneeded] 32hex.
+?\ need (dhex.  : 32hex.   ( d -- )      8 (dhex.  ;
+
+[unneeded] 16hex.
+?\ heed (dhex.  : 16hex.   ( n -- )  s>d 4 (dhex.  ;
+
+[unneeded] 8hex.
+?\ need (dhex.  : 8hex.    ( b -- )  s>d 2 (dhex.  ;
+
+( binary <bin bin> (dbin. 8bin. 16bin. 32bin. )
 
   \ Credit:
   \
   \ Code inspired by lina.
 
-[defined] base'  ?\ variable base'
+[unneeded] binary  ?\ : binary  ( -- )  2 base !  ;
 
-[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+[unneeded] <bin [unneeded] bin> and dup dup
+?\ need base'  need binary
+?\ : <bin  ( -- )  base @ base' ! binary ; \ switch to binary
+?\ : bin>  ( -- )  base' @ base !        ; \ and back
 
-[defined] (d.)
-?\ : (d.)  ( d n -- ca len )  <# 0 do  #  loop  #>  ;
+[unneeded] (dbin. dup
+?\ need <bin  need (d.
+?\ : (dbin.  ( d n -- )  <bin (d. bin> type space  ;
 
-: <bin  ( -- )  base @ base' ! binary ; \ switch to binary
-: bin>  ( -- )  base' @ base !        ; \ and back
+[unneeded] 32bin.
+?\ need (dbin.  : 32bin.  ( d -- )      #32 (dbin.  ;
 
-: (dbin.)  ( d n -- )  <bin (d.) bin> type space  ;
-: 32bin.    ( d -- )  32 (dbin.)  ;
-: 16bin.     ( n -- )  s>d 16 (dbin.)  ;
-: 8bin.    ( b -- )  s>d 8 (dbin.)  ;
+[unneeded] 16bin.
+?\ need (dbin.  : 16bin.  ( n -- )  s>d #16 (dbin.  ;
+
+[unneeded] 8bin.
+?\ need (dbin.  : 8bin.   ( b -- )  s>d  #8 (dbin.  ;
 
   \ vim: filetype=soloforth
