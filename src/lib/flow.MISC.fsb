@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190050
+  \ Last modified: 201701191342
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,6 +48,10 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation, after `immediate` or
+  \ `compile-only`. Improve `?repeat`.
 
 ( +perform base-execute call don't executions )
 
@@ -110,7 +114,7 @@ code call  ( a -- )
 [unneeded] don't ?(
 
 : don't  ( n1 n2 -- | n1 n2 )
-  2dup = if  2drop unnest unnest  then  ; compile-only  exit ?)
+  2dup = if  2drop unnest unnest  then  ; compile-only ?)
 
   \ doc{
   \
@@ -148,7 +152,7 @@ code call  ( a -- )
 
 ( ?repeat recurse ?? )
 
-need ?(  [unneeded] ?repeat ?(  need cs-pick
+need ?(  [unneeded] ?repeat ?(  need cs-dup
 
   \ Credit:
   \
@@ -163,7 +167,7 @@ need ?(  [unneeded] ?repeat ?(  need cs-pick
 
 : ?repeat  ( Compilation: dest -- dest )
            ( Execution:   f -- )
-  0 cs-pick   postpone until  ; immediate  exit ?)
+  cs-dup  postpone until  ; immediate ?)
 
   \ doc{
   \
@@ -200,7 +204,7 @@ need ?(  [unneeded] ?repeat ?(  need cs-pick
   \ 2016-11-26: Move to <flow.misc.fsb>.
 
 : recurse  ( -- )
-  latestxt compile,  ; immediate compile-only  exit ?)
+  latestxt compile,  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -312,7 +316,7 @@ need ?(
 
 : retry  ( Compilation: -- ) ( Run-time: -- )
   latest name>body postpone again
-  ; immediate compile-only  exit ?)
+  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -326,7 +330,7 @@ need ?(
 
 : ?retry  ( Compilation: -- ) ( Run-time: f -- )
   postpone if  postpone retry  postpone then
-  ; immediate compile-only  exit ?)
+  ; immediate compile-only ?)
 
   \ doc{
   \

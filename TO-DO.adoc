@@ -1138,6 +1138,13 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
 
+// Multitasking {{{1
+== Multitasking ==
+
+.2017-01-19:
+
+Study the way v.Forth manages the interrupts and adapt it.
+
 // Library {{{1
 == Library ==
 
