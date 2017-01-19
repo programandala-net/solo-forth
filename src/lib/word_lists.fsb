@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-18: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
@@ -189,7 +192,7 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
 
 : latest>wordlist  ( wid -- )  latest swap wordlist-name!  ;
 
-exit ?)
+?)
 
   \ doc{
   \

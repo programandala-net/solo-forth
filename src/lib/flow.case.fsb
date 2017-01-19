@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611161049
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -14,7 +14,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -37,6 +37,9 @@
   \ 2016-11-16: Update the space used by every version. Make
   \ the default version of `case` use `alias` if it's already
   \ defined.
+  \
+  \ 2017-01-19: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( case )
 
@@ -225,9 +228,7 @@ need ?(  [unneeded] less-of ?(
 
 : less-of  ( Compilation: -- of-sys )
            ( Run-time: x1 x2 -- | x1 )
-  postpone (less-of) postpone of  ;  immediate compile-only
-
-exit ?)
+  postpone (less-of) postpone of  ;  immediate compile-only ?)
 
   \ Usage example:
 
@@ -263,9 +264,7 @@ need ?(  [unneeded] any-of ?(  need any?  need pick
 
 : any-of  ( Compilation: -- of-sys )
           ( Run-time: x0 x1..xn n -- | x0 )
-  postpone (any-of) postpone of  ; immediate compile-only
-
-exit ?)
+  postpone (any-of) postpone of  ; immediate compile-only ?)
 
   \ Usage example:
 
@@ -308,9 +307,7 @@ need ?(  [unneeded] within-of ?(  need within
 
 : within-of  ( Compilation: -- of-sys )
              ( Run-time: x1 x2 x3 -- | x1 )
-  postpone (within-of) postpone of  ; immediate compile-only
-
-exit ?)
+  postpone (within-of) postpone of  ; immediate compile-only ?)
 
   \ XXX TODO confirm the ranges in the example:
 

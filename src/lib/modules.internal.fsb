@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051931
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,7 +25,7 @@
   \ number 5, page 132, 1981-01).
 
   \ Marcos Cruz (programandala.net), adapted it to Solo Forth,
-  \ 2015, 2016.
+  \ 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -58,6 +58,9 @@
   \
   \ 2017-01-05: Remove old system bank support from
   \ `unlink-internal`.
+  \
+  \ 2017-01-19: Remove `exit` at the end of conditional
+  \ interpretation.
 
 ( internal end-internal unlink-internal hide-internal )
 
@@ -80,7 +83,7 @@ need ?(
   \
   \ }doc
 
-' hp@ alias end-internal  ( -- a ) exit ?)
+' hp@ alias end-internal  ( -- a ) ?)
 
   \ doc{
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( .current .context .wordlist )
 
@@ -68,9 +71,7 @@
 [unneeded] .context ?(  need .wordlist
 
 : .context  ( -- )
-  get-order begin  ?dup  while  swap .wordlist 1-  repeat  ;
-
-exit ?)
+  get-order begin  ?dup  while  swap .wordlist 1-  repeat  ; ?)
 
   \ doc{
   \
@@ -104,7 +105,7 @@ need ?(
 : wordlists  ( -- )
   latest-wordlist
   begin  @ ( wid|0) ?dup  while  dup .wordlist wordlist>link
-  repeat  ;
+  repeat  ; ?)
 
   \ doc{
   \
@@ -120,14 +121,10 @@ need ?(
   \
   \ }doc
 
-exit ?)
-
 [unneeded] order ?(  need .context  need .current
 
 : order  ( -- )
-  cr ." Search: " .context cr ." Compile: " .current  ;
-
-exit ?)
+  cr ." Search: " .context cr ." Compile: " .current  ; ?)
 
   \ Display the search order currently in effect and the name
   \ of the `current` vocabulary.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,6 +32,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( far," fars, farsconstant save-farstring )
 
@@ -52,9 +55,7 @@ need ?(
 
 [unneeded] fars, ?(  need farplace  need farallot
 
-: fars,  ( ca len -- )  tuck hp@ farplace 1+ farallot  ;
-
-exit ?)
+: fars,  ( ca len -- )  tuck hp@ farplace 1+ farallot  ; ?)
 
   \ doc{
   \
@@ -106,9 +107,8 @@ need ?(
 [unneeded] farsconstants, ?(  need far,
 
 : farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
-  create  hp@ , 0 begin  swap ?dup  while  far, 1+  repeat  ;
-
-exit ?)
+  create  hp@ ,
+  0 begin  swap ?dup  while  far, 1+  repeat  ; ?)
 
   \ doc{
   \
@@ -133,9 +133,7 @@ exit ?)
 
 : farsconstants  ( 0 ca[n]..ca[1] "name" -- n )
   farsconstants,  does>  ( n -- ca len )
-  ( n pfa ) @ array> far@ farcount  ;
-
-exit ?)
+  ( n pfa ) @ array> far@ farcount  ; ?)
 
   \ doc{
   \

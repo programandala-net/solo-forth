@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201611171907
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -21,7 +21,7 @@
   \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
 
   \ Marcos Cruz (programandala.net) integrated it into Solo
-  \ Forth, 2015, 2016.
+  \ Forth, 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -34,12 +34,19 @@
   \ Latest changes
 
   \ 2016-04-26: Update `latest >name` to `latestxt`.
+  \
   \ 2016-05-07: Compact the blocks. Improve the file header.
   \ Fix: `need mode32` was missing.
+  \
   \ 2016-08-11: Rename the filenames of the driver and the
   \ font.
+  \
   \ 2016-10-16: Typo.
+  \
   \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -73,7 +80,7 @@ get-drive 1 set-drive  s" pr42.bin" <file-as-is throw
             set-drive
   \ Load the driver and the font.
 
-exit ?)
+?)
 
   \ ............................
   \ banked-mode42

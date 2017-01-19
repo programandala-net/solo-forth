@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( n>r )
 
@@ -157,13 +160,13 @@ need ?(
 
 [unneeded] 2rdrop ?(
 code 2rdrop  ( R: x1 x2 -- )
-  2A c, rp , 11 c, 02 cells , 19 c, 22 c, rp , jpnext, end-code
+  2A c, rp , 11 c, 02 cells , 19 c, 22 c, rp ,
     \ ld hl,(return_stack_pointer)
     \ ld de,cell*2
     \ add hl,de
     \ ld (return_stack_pointer),hl
+  jpnext, end-code ?)
     \ jp next
-exit ?)
 
 
   \ doc{

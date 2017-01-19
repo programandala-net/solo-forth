@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191346
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,8 +59,7 @@ need ?(
 
 [unneeded] 0while ?(  need 0if  need cs-swap
 : 0while  ( f -- )
-  postpone 0if  postpone cs-swap  ; immediate compile-only
-exit ?)
+  postpone 0if  postpone cs-swap  ; immediate compile-only ?)
 
   \ doc{
   \

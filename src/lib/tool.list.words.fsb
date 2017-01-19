@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( .word .wordname more-words? words wordlist-words )
 
@@ -72,7 +75,7 @@ need ?(  [unneeded] .word ?(  need tab  defer .word  ( nt -- )
 
 [unneeded] .wordname ?(  need u.r
 : .wordname  ( nt -- ) cr dup 5 u.r space .name  ;
-' .wordname ' .word defer!  exit ?)
+' .wordname ' .word defer! ?)
 
   \ doc{
   \
@@ -88,8 +91,7 @@ need ?(  [unneeded] .word ?(  need tab  defer .word  ( nt -- )
   \ }doc
 
 [unneeded] more-words? ?(  need nuf?
-: more-words?  ( nt|0 -- nt|0 f )  dup 0<>  nuf? 0= and  ;
-exit ?)
+: more-words?  ( nt|0 -- nt|0 f )  dup 0<>  nuf? 0= and  ; ?)
 
   \ doc{
   \

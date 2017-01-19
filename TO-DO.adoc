@@ -55,9 +55,6 @@ Rename `bench{` and `}bench` and family. Maybe after SwiftForth: `counter` and
 
 Benchmark the system without constants `0`, `1` and `2`.
 
-2016-05-30:
-of standard `end-code` by default
-
 With constants::    32598 B free
 Without constants:: 32572 B free
 Diff::              +26 B

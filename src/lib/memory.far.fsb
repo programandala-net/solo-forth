@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,6 +68,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( farhl questionnextbank questionpreviousbank farallot far, )
 
@@ -284,9 +287,7 @@ need ?(
 [unneeded] move>far ?(
 
 : move>far  ( a1 a2 len -- )
-  cells bounds ?do  dup @ i far! cell+ cell +loop  drop  ;
-
-exit ?)
+  cells bounds ?do  dup @ i far! cell+ cell +loop  drop  ; ?)
 
   \ doc{
   \
@@ -301,9 +302,7 @@ exit ?)
 [unneeded] move<far ?(
 
 : move<far  ( a1 a2 len -- )
-  cells bounds ?do  dup far@ i ! cell+ cell +loop  drop  ;
-
-exit ?)
+  cells bounds ?do  dup far@ i ! cell+ cell +loop  drop  ; ?)
 
   \ doc{
   \

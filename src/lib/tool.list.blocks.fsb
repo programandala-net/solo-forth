@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -183,8 +186,7 @@ need ?(
 [unneeded] index ?(  need .line  need nuf?  need ?leave
 : index  ( u1 u2 -- )
   1+ swap ?do  cr i .block# space 0 i .line  nuf? ?leave
-  loop  ;
-exit ?)
+  loop  ; ?)
 
   \ doc{
   \

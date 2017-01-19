@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( tum* tum/ t+ t- )
 
@@ -46,12 +49,12 @@ need ?(  [unneeded] t+ ?(
 : t+  ( t1 t2 -- t3 )
   >r rot >r  >r swap >r +carry  0 r> r> +carry d+ r> r> + +  ;
 
-exit ?)
+?)
   \ Triple add.
 
 [unneeded] tum/ ?(
 : tum/  ( t n -- d )  dup >r um/mod r> swap >r um/mod nip r>  ;
-exit ?)
+?)
   \ Triple unsigned mixed division.
 
 [unneeded] t- ?(  need d-
@@ -113,7 +116,7 @@ need ?(  [unneeded] mt* ?(  need ut*  need tnegate
 
 : ut/  ( ut n -- d )  dup >r um/mod -rot r> um/mod nip swap  ;
 
-exit ?)
+?)
 
   \ Credit:
   \ Robert Smith (from COLDFORTH Version 0.8, GPL)

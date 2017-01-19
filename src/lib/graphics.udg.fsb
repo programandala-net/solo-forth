@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( default-udg-chars )
 
@@ -116,7 +119,7 @@ need ?(
 
 [unneeded] 0udg! ?(  need 0udg>
 : 0udg!  ( b0..b7 n -- )  0udg> dup 7 + do  i c!  -1 +loop  ;
-exit ?)
+?)
 
   \ doc{
   \
@@ -570,7 +573,7 @@ create (cursor-addr)  ( -- a )
   rrca, rrca, rrca, a e ld, c a ld, e add, a e ld,
   ret,
 
-  end-asm  exit ?)
+  end-asm ?)
 
   \ ld a,b              ; y coordinate
   \ and %11000          ; mask segment: 0..2
@@ -660,7 +663,7 @@ create (cursor-addr)  ( -- a )
   rrca, rrca, rrca, a l ld, e a ld, l add, a l ld,
   ret,
 
-  end-asm  exit ?)
+  end-asm ?)
 
   \ ld a,d              ; y coordinate
   \ and %11000          ; mask segment: 0..2

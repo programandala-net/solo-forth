@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( +field field: 2field: cfield: begin-structure end-structure )
 
@@ -79,12 +82,12 @@ need ?(
 : field:   ( n1 "name" -- n2 )  cell +field  ; ?)
 
 [unneeded] 2field: ?( need +field
-: 2field:  ( n1 "name" -- n2 )  [ 2 cells ] literal +field  ;
-exit ?)
+: 2field:  ( n1 "name" -- n2 )
+  [ 2 cells ] literal +field  ; ?)
 
 [unneeded] cfield: ?( need +field
-: cfield:  ( n1 "name" -- n2 )  [ 1 chars ] literal +field  ;
-exit ?)
+: cfield:  ( n1 "name" -- n2 )
+  [ 1 chars ] literal +field  ; ?)
 
 [unneeded] begin-structure [unneeded] end-structure and ?(
 
@@ -104,7 +107,7 @@ need ?(
   create  over , +
   does>   ( a -- a' )  ( a pfa ) @ +  ;
 
-' +field-unopt ' +field defer!  exit ?)
+' +field-unopt ' +field defer!  ?)
 
   \ Credit:
   \

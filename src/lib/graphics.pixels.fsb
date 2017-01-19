@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701091136
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,9 @@
   \
   \ 2017-01-09: Improve documentation with references to
   \ `cursor-addr` and `(cursor-addr)`.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 \ (pixel-addr) slow-(pixel-addr) \
 
@@ -295,17 +298,15 @@ code plot  ( gx gy -- )
     \ pop hl
     \ pop bc            ; C = x coordinate
     \ ld b,l            ; B = y coordinate (0..191)
-  ED c, 43 c, 5C7D ,  CD c, (pixel-addr) ,
+  ED c, 43 c, 5C7D , CD c, (pixel-addr) ,
     \ ld ($5C7D),bc     ; update COORDS
     \ call pixel_addr   ; hl = screen address
     \                   ; a = pixel position in hl (0..7)
-  CD c, 22EC ,  D9 c,  DD c, 21 c, next ,  jpnext,  end-code
+  CD c, 22EC , D9 c, DD c, 21 c, next , jpnext, end-code ?)
     \ call $22EC        ; ROM PLOT-SUB + 7
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore ix
     \ jp (ix)           ; jp next
-
-exit ?)
 
   \ doc{
   \
@@ -328,13 +329,11 @@ code plot176  ( gx gy -- )
     \ pop hl
     \ pop bc            ; C = x coordinate
     \ ld b,l            ; B = y coordinate (0..175)
-  CD c, 22E5 ,  D9 c,  DD c, 21 c, next ,  jpnext,  end-code
+  CD c, 22E5 , D9 c, DD c, 21 c, next , jpnext, end-code ?)
     \ call $22E5        ; ROM PLOT-SUB
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore ix
     \ jp (ix)           ; jp next
-
-?)
 
   \ doc{
   \

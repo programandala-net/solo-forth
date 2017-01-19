@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191346
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -131,7 +131,7 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation, after `immediate` or
-  \ `compile-only`.
+  \ `compile-only`, or at the end of a line.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -643,7 +643,7 @@ need ?(
 : warn.throw  ( ca len -- ca len )
   ?warn ( ca len xt )  drop .error-word  #-257 .throw  ;
 
-' warn.throw ' warn defer!  exit ?)
+' warn.throw ' warn defer!  ?)
 
   \ doc{
   \
@@ -664,7 +664,7 @@ need ?(
 : warn.message  ( ca len -- ca len )
   ?warn ( ca len xt )  ." redefined " >name .name  ;
 
-' warn.message ' warn defer!  exit ?)
+' warn.message ' warn defer!  ?)
 
   \ doc{
   \
@@ -684,7 +684,7 @@ need ?(
 : warn-throw  ( ca len -- ca len )
   ?warn ( ca len xt )  #-257 throw  ;
 
-' warn-throw ' warn defer!  exit ?)
+' warn-throw ' warn defer!  ?)
 
   \ doc{
   \

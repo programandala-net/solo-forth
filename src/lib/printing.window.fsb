@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,6 +32,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( window set-window )
 
@@ -83,8 +86,7 @@ need ?(
   \ line of the current window.
 
 [unneeded] (wat-xy ?(  need window  need under+
-: (wat-xy  ( x y -- )  wx0 c@ under+ wy0 c@ + at-xy  ;
-exit ?)
+: (wat-xy  ( x y -- )  wx0 c@ under+ wy0 c@ + at-xy  ; ?)
   \ Set the cursor at current window coordinates _x y_.
 
 [unneeded] wat-xy ?(  need window  need (wat-xy
@@ -105,9 +107,9 @@ exit ?)
 
 need ?(  [unneeded] wcr ?(  need window  need whome
 
-: wcr  ( -- )  wy c@ dup wrows c@ 1- =
-               if  drop whome exit  then  1+ wy c! 0 wx c!  ;
-exit ?)
+: wcr  ( -- )
+  wy c@ dup wrows c@ 1- =
+  if  drop whome exit  then  1+ wy c! 0 wx c!  ; ?)
   \ Cause subsequent output to the current window appear at the
   \ beginning of the next line.
   \

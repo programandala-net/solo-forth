@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701191512
 
   \ -----------------------------------------------------------
   \ Description
@@ -85,6 +85,9 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
 
 ( str= str< str> trim +place hunt )
 
@@ -203,8 +206,7 @@ need ?(
   \ }doc
 
 need ?(  [unneeded] d>str ?(
-: d>str  ( d -- ca len )  tuck dabs <# #s rot sign #>  ;
-exit ?)
+: d>str  ( d -- ca len )  tuck dabs <# #s rot sign #>  ; ?)
 
   \ Credit:
   \
@@ -401,8 +403,7 @@ need ?)
   \ `#chars`? add `#nulls`
 
 : #spaces  ( ca len -- +n )
-  0 rot rot  0 do  count bl = under+  loop  drop abs  ;
-exit ?)
+  0 rot rot  0 do  count bl = under+  loop  drop abs  ; ?)
 
   \ Credit:
   \
