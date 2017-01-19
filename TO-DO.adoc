@@ -1461,9 +1461,9 @@ Improve needing of `xstack` words.
 // Sound {{{1
 == Sound ==
 
-.2016-08-01:
+.2017-01-19:
 
-Rename `sound:` to `sound` and make the sounds sound when executed.
+Try `beep>bleep` and improve its documentation.
 
 .2016-10-10:
 
