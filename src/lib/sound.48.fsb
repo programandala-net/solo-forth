@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190144
+  \ Last modified: 201701190210
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,7 +46,7 @@
   \
   \ 2017-01-19: Improve documentation.
 
-( bleep beep>bleep )
+( bleep >bleep )
 
 need ?(
 
@@ -150,28 +150,25 @@ code bleep  ( duration pitch -- )
   \ _____
 
   \
-  \ See: `beep>bleep`.
+  \ See: `>bleep`.
   \
   \ }doc
 
-[unneeded] beep>bleep ?(
+[unneeded] >bleep ?(
 
-: beep>bleep  ( frequency duration1 -- duration2 pitch )
+: >bleep  ( frequency duration1 -- duration2 pitch )
   over 1000 */ swap  4375 100 rot */ 30 -  ; ?)
 
   \ Credit:
   \
   \ Code from v.Forth.
 
-  \ XXX TODO test
-  \ XXX TODO -- improve documentation with examples
-
   \ doc{
   \
-  \ beep>bleep  ( frequency duration1 -- duration2 pitch )
+  \ >bleep  ( frequency duration1 -- duration2 pitch )
   \
-  \ Convert the parameters of Sinclair BASIC `beep` to Solo
-  \ Forth `bleep`.
+  \ Convert _frequency_ (in Hz) and _duration1_ (in ms) to
+  \ the parameters _duration2 pitch_ needed by `bleep`.
   \
   \ See: `bleep`.
   \

@@ -1463,7 +1463,7 @@ Improve needing of `xstack` words.
 
 .2017-01-19:
 
-Try `beep>bleep` and improve its documentation.
+Use `>bleep` to write a table of notes for `bleep`.
 
 .2016-10-10:
 
