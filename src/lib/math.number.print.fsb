@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191542
+  \ Last modified: 201701191553
 
   \ -----------------------------------------------------------
   \ Description
@@ -168,7 +168,7 @@ need ?(
 ?\ need (dhex.  : 32hex.   ( d -- )      8 (dhex.  ;
 
 [unneeded] 16hex.
-?\ heed (dhex.  : 16hex.   ( n -- )  s>d 4 (dhex.  ;
+?\ need (dhex.  : 16hex.   ( n -- )  s>d 4 (dhex.  ;
 
 [unneeded] 8hex.
 ?\ need (dhex.  : 8hex.    ( b -- )  s>d 2 (dhex.  ;
