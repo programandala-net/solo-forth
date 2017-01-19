@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191342
+  \ Last modified: 201701191616
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,7 +51,7 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation, after `immediate` or
-  \ `compile-only`. Improve `?repeat`.
+  \ `compile-only`. Improve `?repeat`. Fix needing of `??`.
 
 ( +perform base-execute call don't executions )
 
@@ -154,6 +154,10 @@ code call  ( a -- )
 
 need ?(  [unneeded] ?repeat ?(  need cs-dup
 
+: ?repeat  ( Compilation: dest -- dest )
+           ( Execution:   f -- )
+  cs-dup  postpone until  ; immediate ?)
+
   \ Credit:
   \
   \ Code from the documentation of Forth-2012 and Forth-94.
@@ -164,10 +168,6 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
   \ documentation.
   \ 2016-04-28: Fix the stack notation of `?repeat`.
   \ 2016-11-26: Move to <flow.misc.fsb>.
-
-: ?repeat  ( Compilation: dest -- dest )
-           ( Execution:   f -- )
-  cs-dup  postpone until  ; immediate ?)
 
   \ doc{
   \
@@ -195,6 +195,9 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
 [unneeded] recurse ?(
 
+: recurse  ( -- )
+  latestxt compile,  ; immediate compile-only ?)
+
   \ Old history:
   \
   \ 2015-06-05: Written in the kernel.
@@ -202,9 +205,6 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
   \ 2016-04-24: Fixed with `latestxt`: now it can be used
   \ in words created with `:noname`.
   \ 2016-11-26: Move to <flow.misc.fsb>.
-
-: recurse  ( -- )
-  latestxt compile,  ; immediate compile-only ?)
 
   \ doc{
   \
@@ -219,6 +219,13 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
   \ }doc
 
 [unneeded] ?? ?(
+
+: ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  postpone if
+  defined ( nt | 0 ) ?dup 0= -13 ?throw
+  name>immediate? ( xt f ) if  execute  else  compile,  then
+  postpone then
+  ;  immediate compile-only ?)
 
   \ Credit:
   \
@@ -256,13 +263,6 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
   \ Final version, after a comment by Anton Ertl in
   \ comp.lang.forth, 2015-10-19:
-
-: ??  ( Compilation: "name" -- ) ( Runtime: f -- )
-  postpone if
-  defined ( nt | 0 ) ?dup 0= -13 ?throw
-  name>immediate? ( xt f ) if  execute  else  compile,  then
-  postpone then
-  ;  immediate compile-only
 
   \ XXX TODO -- 2016-11-26: don't compile `if then` for
   \ immediate _name_; compile `drop` instead?
