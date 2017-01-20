@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701201818
+; Last modified: 201701202211
 
 include version.z80s
 
@@ -267,6 +267,8 @@ compile_only: equ compile_only_mask
 
 nt_of_the_previous_word: defl 0 ; link to previous Forth word
 
+word_count: defl 0
+
 _header: macro _base_label,_name,_flags,_xt
 
   ; In data space:
@@ -323,6 +325,8 @@ _header: macro _base_label,_name,_flags,_xt
   org headers_pointer
   dw hp ; overwrite the contents of headers_pointer
   dw hp ; overwrite the contents of headers_pointer_init_value
+
+  word_count: defl word_count+1
 
   ; In dictionary:
   org _dp_backup
@@ -8587,6 +8591,19 @@ error.message:
 ; }doc
 
 ; ----------------------------------------------
+  _constant_header hash_words_,'#words'
+
+; doc{
+;
+; #words  ( -- u )
+;
+; _u_ is the number of words currently defined in the system.
+;
+; }doc
+
+  dw 0
+
+; ----------------------------------------------
   _colon_header header_comma_,'header,'
 
 ; doc{
@@ -8651,6 +8668,11 @@ if debugging
   _echo "HP = next xtp = "
   dw hp_fetch_,u_dot_ ; XXX INFORMER
 endif
+
+  ; Update the word count
+  _literal 1
+  _literal hash_words_pfa
+  dw plus_store_
 
   dw exit_
 
@@ -9746,6 +9768,9 @@ dot_version.build
   _string "\rBy Marcos Cruz\r(programandala.net), 2015-2017\r"
 if 1 ; developing
   ; XXX TMP -- during the development
+  dw hash_words_,u_dot_
+  dw paren_dot_quote_
+  _string "words\r"
   dw dot_unused_
 endif
   dw exit_
@@ -9882,7 +9907,7 @@ warm_start:
   _literal default_user_variables_end-default_user_variables_start ; length
   dw c_move_
 
-  ; Restore the vocabularies to the default state.
+  ; Restore the dictionary to its default state.
   dw lit_,latest_nt_in_root_word_list.init_value,fetch_
   dw lit_,root_wordlist_pfa,store_
   dw lit_,latest_nt_in_forth_word_list.init_value,fetch_
@@ -9893,6 +9918,12 @@ if 1 ; assembler_core_in_kernel
 endif
   dw lit_,latest_wordlist.init_value,fetch_
   dw lit_,latest_wordlist_pfa,store_
+
+  ; Restore the word count:
+  dw lit_
+cold.hash_words:
+  dw 0
+  dw lit_,hash_words_pfa,store_
 
   ; Set `warn` to its default behaviour:
   dw lit_,noop_
@@ -12533,6 +12564,12 @@ background_image:
 
 ; ==============================================================
 ; End
+
+  ; Update the counter of words:
+  org hash_words_pfa
+  dw word_count
+  org cold.hash_words
+  dw word_count
 
 end cold_entry
 

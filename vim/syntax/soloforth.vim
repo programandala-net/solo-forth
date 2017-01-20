@@ -560,6 +560,7 @@ syn keyword soloforthString skip
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
 syn keyword soloforthTool ms
+syn keyword soloforthWordlists #words
 syn keyword soloforthWordlists (find-name)
 syn keyword soloforthWordlists -order
 syn keyword soloforthWordlists .name
@@ -1091,7 +1092,7 @@ let b:current_syntax = "soloforth"
 " 2017-01-06: Update `voc-link` to `latest-wordlist`.
 "
 " 2017-01-20: Add `word-length-mask`, `>>name`, `name>>`,
-" `name<name`, `name>str`, `name>name`.
+" `name<name`, `name>str`, `name>name`, `#words`.
 
 " --------------------------------------------------------------
 

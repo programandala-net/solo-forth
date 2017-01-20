@@ -279,12 +279,6 @@ the system?
 
 Solution 2: Add a second link to every header, pointing to the next definition.
 
-.2017-01-20:
-
-Add a variable to count the number of definitions in the dictionary.  It must
-be updated by the assembler macro during the assembly of the kernel, and also
-by `header,`. Show its value in `greeting` and `fyi`.
-
 // Strings {{{2
 === Strings ===
 
@@ -1130,11 +1124,6 @@ clock.
 >FLAGS ( a -- u ) (to-FLAGS-fetch) Given the PFA of a word, return its ﬂags.
 
 >LINK@ ( a -- a | f ) (to-LINK-fetch) Given the PFA of a word, return the head address of the word preceding it in the vocabulary. If this is the first word in the vocabulary, false (zero) is returned.
-
-CONTEXT@ ( u -- a ) (CONTEXT-fetch) Get the u-th (from the top) entry in the
-vocabulary stack. The value returned is the address of a variable holding the
-address of the last entry in that dictionary. It’s also the PFA of the
-vocabulary word.
 
 ....
 
