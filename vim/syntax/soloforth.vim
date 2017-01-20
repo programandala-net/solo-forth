@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-01-06
+" Updated:  2017-01-20
 
 " --------------------------------------------------------------
 " History
@@ -298,6 +298,7 @@ syn keyword soloforthForth ;code
 syn keyword soloforthForth <mark
 syn keyword soloforthForth <resolve
 syn keyword soloforthForth >>link
+syn keyword soloforthForth >>name
 syn keyword soloforthForth >body
 syn keyword soloforthForth >code
 syn keyword soloforthForth >in
@@ -322,10 +323,13 @@ syn keyword soloforthForth executing?
 syn keyword soloforthForth farunused
 syn keyword soloforthForth line>string
 syn keyword soloforthForth link>name
+syn keyword soloforthForth name<name
 syn keyword soloforthForth name>
+syn keyword soloforthForth name>>
 syn keyword soloforthForth name>body
 syn keyword soloforthForth name>immediate?
 syn keyword soloforthForth name>link
+syn keyword soloforthForth name>str
 syn keyword soloforthForth name>string
 syn keyword soloforthForth nest-source
 syn keyword soloforthForth nextname
@@ -340,6 +344,7 @@ syn keyword soloforthForth unnest-source
 syn keyword soloforthForth unused
 syn keyword soloforthForth warnings
 syn keyword soloforthForth width
+syn keyword soloforthForth word-length-mask
 syn keyword soloforthFunction false
 syn keyword soloforthFunction true
 syn keyword soloforthGraphics at-xy
@@ -1083,6 +1088,9 @@ let b:current_syntax = "soloforth"
 " the assembler has been removed from the system.
 "
 " 2017-01-06: Update `voc-link` to `latest-wordlist`.
+"
+" 2017-01-20: Add `word-length-mask`, `>>name`, `name>>`,
+" `name<name`, `name>str`.
 
 " --------------------------------------------------------------
 
