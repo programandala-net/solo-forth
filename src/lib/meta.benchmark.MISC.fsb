@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701131706
+  \ Last modified: 201701201744
 
   \ -----------------------------------------------------------
   \ Description
@@ -76,6 +76,44 @@
   \ 2017-01-11: Add `dot-quote-bench`.
   \
   \ 2017-01-13: Add `m*-bench`.
+  \
+  \ 2017-01-20: Add `>name-bench`.
+
+( >name-bench )
+
+  \ Compare the current version of `>name`, which is written in
+  \ Z80 in the kernel, with a new version written in Forth.
+
+need bench{  need }bench.
+need >>name  need name>>  need name>name
+
+  \ unused  \ XXX TMP --
+
+: >name2  ( xt -- nt | 0 )
+  0 begin  ( xt xtp )
+    dup >>name >r  far@ over = if  drop r> exit  then
+    r> name>name name>>
+  hp@ over u< until  2drop false  ;
+
+  \ unused - cr . .( B of data space used)  \ XXX TMP --
+  \ XXX REMARK -- 49 B of data space used
+
+: run  ( u -)
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." >name in Z80:   "
+      bench{ 0 ?do  latestxt >name  drop  loop }bench.
+      cr ." >name in Forth: "
+      bench{ 0 ?do  latestxt >name2 drop  loop }bench. ;
+
+  \ 2017-01-20
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ------------------------------------
+  \       >name in Z80  >name in Forth
+  \       ------------  ---------------------
+  \ 00010           62             380 (6.12)
+  \ 00100          656            3793 (5.78)
+  \ 01000         6532           37924 (5.80)
 
 ( m*-bench )
 

@@ -329,6 +329,7 @@ syn keyword soloforthForth name>>
 syn keyword soloforthForth name>body
 syn keyword soloforthForth name>immediate?
 syn keyword soloforthForth name>link
+syn keyword soloforthForth name>name
 syn keyword soloforthForth name>str
 syn keyword soloforthForth name>string
 syn keyword soloforthForth nest-source
@@ -1090,7 +1091,7 @@ let b:current_syntax = "soloforth"
 " 2017-01-06: Update `voc-link` to `latest-wordlist`.
 "
 " 2017-01-20: Add `word-length-mask`, `>>name`, `name>>`,
-" `name<name`, `name>str`.
+" `name<name`, `name>str`, `name>name`.
 
 " --------------------------------------------------------------
 

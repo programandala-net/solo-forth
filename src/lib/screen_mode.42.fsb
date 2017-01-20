@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701191512
+  \ Last modified: 201701201753
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,7 +33,7 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-26: Update `latest >name` to `latestxt`.
+  \ 2016-04-26: Update `latest name>` to `latestxt`.
   \
   \ 2016-05-07: Compact the blocks. Improve the file header.
   \ Fix: `need mode32` was missing.
@@ -47,6 +47,8 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2017-01-20: Fix typo.
 
   \ -----------------------------------------------------------
   \ To-do

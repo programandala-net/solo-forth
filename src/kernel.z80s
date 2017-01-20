@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701201633
+; Last modified: 201701201818
 
 include version.z80s
 
@@ -6445,7 +6445,8 @@ u_less_than.de_hl:
 ; ----------------------------------------------
   _code_header to_name_,'>name'
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- move to the library -- or use the alternative
+  ; implementation in Forth that has been written there
 
 ; doc{
 ;
@@ -6487,6 +6488,8 @@ u_less_than.de_hl:
   ld (to_name.headers_pointer_high_byte),a  ; 13 03
                                             ; -- --
                                             ; 54 11 Total
+
+  ; XXX REMARK -- 94 B used by the whole code
 
   else
 
@@ -6564,8 +6567,6 @@ to_name.next:
   pop hl ; nfa
   add hl,bc ; xtp of the next word
   jr to_name.begin
-
-.echo 
 
 ; ----------------------------------------------
 if 0 ; XXX OLD

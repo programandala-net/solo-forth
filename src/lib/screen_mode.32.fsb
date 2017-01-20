@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605071629
+  \ Last modified: 201701201753
 
   \ -----------------------------------------------------------
   \ Description
@@ -25,9 +25,11 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2016-04-26: Change `latest >name` to `latestxt`.
+  \ 2016-04-26: Change `latest name>` to `latestxt`.
   \
   \ 2016-05-07: Improve documentation.
+  \
+  \ 2017-01-20: Fix typo.
 
 ( mode32 )
 
