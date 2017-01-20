@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201701202031
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,8 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2017-01-20: Fix documentation.
 
 ( far," fars, farsconstant save-farstring )
 
@@ -167,7 +169,7 @@ need ?(
   \ 3 digitname cr fartype cr
   \ ----
 
-  \ See: `sconstants`.
+  \ See: `sconstants`, `far>sconstants`.
   \
   \ }doc
 

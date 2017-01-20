@@ -266,6 +266,25 @@ ____
 
 Write far-memory versions of `avalue`, `2avalue` and `cavalue`.
 
+// Dictionary {{{1
+== Dictionary ==
+
+.2017-01-20:
+
+Problem: when data are compiled into the headers space, `>name` can not work,
+because it searches the dictionary from oldest to newest.
+
+Solution 1: Search backwards like `find-name`, but search every word list in
+the system? 
+
+Solution 2: Add a second link to every header, pointing to the next definition.
+
+.2017-01-20:
+
+Add a variable to count the number of definitions in the dictionary.  It must
+be updated by the assembler macro during the assembly of the kernel, and also
+by `header,`. Show its value in `greeting` and `fyi`.
+
 // Strings {{{2
 === Strings ===
 
