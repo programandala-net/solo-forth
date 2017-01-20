@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-19
+:revdate: 2017-01-20
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1449,6 +1449,46 @@ Improve tab control.
 
 // Stacks {{{1
 == Stacks ==
+
+.2017-01-20:
+
+Make the return stack grow toward high memory and move it below the data stack.
+This way both stacks can share a common free space.  This is an advantage
+because you can have programs which need quite some return stack depth, but few
+data elements - or the inverse.  "Stack overflow" means both pointers cross.
+The idea was taken from 4tH:
+
+....
+Message-ID: <57f3f915bash75@news.xs4all.nl>
+From: Hans Bezemer <the.beez.speaks@gmail.com>
+Subject: Re: Stack Sizes
+Newsgroups: comp.lang.forth
+Date: Tue, 04 Oct 2016 20:46:33 +0200
+....
+
+.2017-01-20:
+
+Implement this, as a simpler alternative to `xstack`:
+
+-----
+: stack dup ! ;                        ( stack --)
+: a@ @ @ ;                             ( stack -- n)
+: >a 1 cells over +! @ ! ;             ( n stack --)
+: a> dup a@ -1 cells rot +! ;          ( stack -- n)
+: adepth dup @ swap - ;                ( stack -- n)
+-----
+
+Credit:
+
+Code from 4tH:
+
+....
+Message-ID: <57f3f915bash75@news.xs4all.nl>
+From: Hans Bezemer <the.beez.speaks@gmail.com>
+Subject: Re: Stack Sizes
+Newsgroups: comp.lang.forth
+Date: Tue, 04 Oct 2016 20:46:33 +0200
+....
 
 .2017-01-07:
 
