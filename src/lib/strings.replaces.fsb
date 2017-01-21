@@ -3,19 +3,17 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ XXX UNDER DEVELOPMENT
-
-  \ Last modified: 201611262317
+  \ Last modified: 201701212219
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `replaces`.
+  \ Forth-2012's `replaces`.
 
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -32,6 +30,8 @@
   \
   \ 2016-11-26: Need `search-wordlist`, which has been moved to
   \ the library.
+  \
+  \ 2017-01-21: Finish. Test. Document.
 
 ( replaces )
 
@@ -39,66 +39,76 @@
   \
   \ Code adapted from the Forth-2012 documentation.
 
-need search-wordlist
+need /counted-string  need search-wordlist  need nextname
 
-s" /counted-string" environment? 0= [if] 256 [then]
-chars constant string-max
+wordlist constant substitute-wordlist
 
-wordlist constant replaces-wordlist
-  \ wordlist for substitution names and replacement texts
+  \ doc{
+  \
+  \ substitute-wordlist  ( -- wid )
+  \
+  \ Word list for substitution names and replacement texts.
+  \
+  \ See: `replaces`.
+  \
+  \ }doc
 
-[defined] vfxforth [if] \ vfx forth
-  : makesubst \ c-addr len -- c-addr
-    get-current >r wid-subst set-current
-    ($create)  \ like create but takes c-addr/len
-    r> set-current
-    here string-max allot 0 over c! \ create buffer space
-    ;
-  \ given a name string create a substution and storage space.
-  \ return the address of the buffer for the substitution text.
-  \ this word requires system specific knowledge of the host forth.
-  \ some systems may need to perform case conversion here.
-[then]
+: create-substitution  ( ca1 len1 -- ca2 )
+  get-current >r substitute-wordlist set-current
+  nextname create
+  r> set-current
+  here 0 c, /counted-string chars allot  ;
 
-( replaces )
+  \ doc{
+  \
+  \ create-substitution  ( ca1 len1 -- ca2 )
+  \
+  \ Given a string _ca1 len1_ create its substitution and
+  \ storage space.  Return the address of the buffer for the
+  \ substitution text.
+  \
+  \ See: `replaces`.
+  \
+  \ }doc
 
-[defined] (wid-create) [if] \ swiftforth
-: makesubst \ c-addr len -- c-addr
-  wid-subst (wid-create)
-  \ like create but takes c-addr/len/wid
-  last @ >create !
-  here string-max allot 0 over c! \ create buffer space
-  ;
-[then]
+: find-substitution  ( ca len -- xt f | 0 )
+  substitute-wordlist search-wordlist  ;
 
-: findsubst  ( ca len -- xt f | 0 )
-  wid-subst search-wordlist  ;
-  \ Given a name string, find the substitution.
-  \ Return _xt_ and _f_ if found, or just zero if not found.
+  \ doc{
+  \
+  \ find-substitution  ( ca len -- xt f | 0 )
+  \
+  \ Given a string _ca len_, find its substitution.  Return
+  \ _xt_ and _f_ if found, or just zero if not found.
+  \
+  \ See: `replaces`.
+  \
+  \ }doc
 
-: replaces \ text tlen name nlen --
-  2dup findsubst if    nip nip execute  \ get buffer address
-                 else  makesubst
-                 then  place  ;
+: replaces  ( ca1 len1 ca2 len2 -- )
+  2dup find-substitution if    nip nip execute
+                         else  create-substitution
+                         then  place  ;
 
   \ doc{
   \
   \ replaces  ( ca1 len1 ca2 len2 -- )
   \
-  \ Set the string _ca1 len1_ as the text to substitute for
-  \ the substitution named by _ca2 len2_. If the substitution
-  \ does not exist it is created. The  program may then reuse
-  \ the buffer _ca1 len1_ without affecting the definition  of
-  \ the substitution.
-
-  \ Ambiguous conditions occur as follows:
-
-  \   * The substitution cannot be created;
-  \   * The name of a substitution contains the "%" delimiter character.
-
-  \ `replaces` may allot  data space and  create a definition.
-  \ This breaks  the contiguity of  the current region  and is
-  \ not allowed during compilation of a colon definition
+  \ Set the string _ca1 len1_ as the text to substitute for the
+  \ substitution named by _ca2 len2_. If the substitution does
+  \ not exist it is created. The  program may then reuse the
+  \ buffer _ca1 len1_ without affecting the definition  of the
+  \ substitution.
+  \
+  \ The name of a substitution should not contain the "%"
+  \ delimiter character.
+  \
+  \ `replaces` allots data space and creates a definition.
+  \
+  \ Origin: Forth-2012 (STRING EXT).
+  \
+  \ See: `create-substitution`, `find-substitution`,
+  \ `substitute-wordlist`.
   \
   \ }doc
 

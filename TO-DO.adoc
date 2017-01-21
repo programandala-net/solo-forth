@@ -328,10 +328,6 @@ as planned).
 `X>padbstr` :: temporary binary string in `pad`
 `X>padzone` :: temporary binary string in `pad`
 
-.2016-11-26:
-
-Compact <strings.replaces.fsb>.
-
 .2016-11-19:
 
 Study the strings stack included in Spectrum Forth-83
