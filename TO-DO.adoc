@@ -311,6 +311,8 @@ and keep a copy of it as `?}`, for debugging.
 
 .2016-12-07:
 
+NOTE: Milestone: 0.14.0
+
 Choose a clear convention for suffixes ">str" and ">string". Depending on the
 location of the string (circular string buffer, `pad` or another temporary
 area)? Another option: "stringer" (after renaming the circular string buffer,
