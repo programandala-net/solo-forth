@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701212219
+  \ Last modified: 201701220050
 
   \ -----------------------------------------------------------
   \ Description
@@ -23,6 +23,11 @@
   \ this license.  There is no warranty.
 
   \ -----------------------------------------------------------
+  \ Credit
+
+  \ Code adapted from the Forth-2012 documentation.
+
+  \ -----------------------------------------------------------
   \ Latest changes
 
   \ 2016-05-18: Use `wordlist` instead of `vocabulary`, which
@@ -31,17 +36,15 @@
   \ 2016-11-26: Need `search-wordlist`, which has been moved to
   \ the library.
   \
-  \ 2017-01-21: Finish. Test. Document.
-
-( replaces )
-
-  \ Credit:
+  \ 2017-01-21: Finish. Test. Document. Make all words
+  \ individually accessible to `need`.
   \
-  \ Code adapted from the Forth-2012 documentation.
+  \ 2017-01-22: Improve documentation.
 
-need /counted-string  need search-wordlist  need nextname
+( substitute-wordlist create-substitution )
 
-wordlist constant substitute-wordlist
+[unneeded] substitute-wordlist
+?\  wordlist constant substitute-wordlist
 
   \ doc{
   \
@@ -53,11 +56,17 @@ wordlist constant substitute-wordlist
   \
   \ }doc
 
+need ?(
+
+[unneeded] create-substitution ?(
+
+need substitute-wordlist  need /counted-string  need nextname
+
 : create-substitution  ( ca1 len1 -- ca2 )
   get-current >r substitute-wordlist set-current
   nextname create
   r> set-current
-  here 0 c, /counted-string chars allot  ;
+  here 0 c, /counted-string chars allot  ; ?)
 
   \ doc{
   \
@@ -71,8 +80,16 @@ wordlist constant substitute-wordlist
   \
   \ }doc
 
+( find-substitution replaces )
+
+need ?(
+
+[unneeded] find-substitution ?(
+
+need substitute-wordlist  need search-wordlist
+
 : find-substitution  ( ca len -- xt f | 0 )
-  substitute-wordlist search-wordlist  ;
+  substitute-wordlist search-wordlist  ; ?)
 
   \ doc{
   \
@@ -85,10 +102,14 @@ wordlist constant substitute-wordlist
   \
   \ }doc
 
+[unneeded] replaces ?(
+
+need find-substitution  need create-substitution
+
 : replaces  ( ca1 len1 ca2 len2 -- )
   2dup find-substitution if    nip nip execute
                          else  create-substitution
-                         then  place  ;
+                         then  place  ; ?)
 
   \ doc{
   \
@@ -107,8 +128,8 @@ wordlist constant substitute-wordlist
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
-  \ See: `create-substitution`, `find-substitution`,
-  \ `substitute-wordlist`.
+  \ See: `substitute`, `unescape`, `create-substitution`,
+  \ `find-substitution`, `substitute-wordlist`.
   \
   \ }doc
 

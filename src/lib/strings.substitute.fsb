@@ -1,0 +1,157 @@
+  \ strings.substitute.fsb
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201701212315
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Forth-2012's `substitute`.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Unknown. Published in the documentation of Forth-2012.
+  \
+  \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
+  \ 2017.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2017-01-21: First version, adapted from the documentation
+  \ of Forth-2012.
+  \
+  \ 2017-01-22: Improve documentation.
+
+( substitute )
+
+need find-substitution  need /counted-string
+
+'%' constant delim
+  \ Character used as the substitution name delimiter.
+
+create name /counted-string 1+ chars allot
+  \ Substitution name as a counted string.
+
+variable dest-len
+  \ Maximum length of the destination buffer.
+
+2variable dest
+  \ Destination string current length and address.
+
+variable subst-err
+  \ Zero or an error code.
+
+: add-dest  ( char -- )
+  dest @ dest-len @ < if    dest 2@ + c! 1 chars dest +!
+                      else  drop -1 subst-err !  then  ;
+  \ Add the character to the destination string.
+
+: form-name  ( ca len -- ca' len' )
+   1 /string 2dup delim scan >r drop  \ Find length of residue.
+   2dup r> - dup >r name place        \ Save name in buffer.
+   r> 1 chars + /string  ;            \ Step over name and
+                                      \ trailing '%'.
+
+  \ Given a source string _ca len_ pointing at a leading
+  \ delimiter, place the name string in the name buffer.
+
+-->
+
+( substitute )
+
+: >dest  ( ca len -- )
+   bounds ?do
+     i c@ add-dest
+   1 chars +loop  ;
+  \ Add a string to the output string.
+
+: process-name  ( -- f )
+  name count find-substitution dup >r
+  if    execute count >dest
+  else  delim add-dest name count >dest delim add-dest
+  then  r>  ;
+  \ Process the last substitution name. Return _true_ if found;
+  \ return _false_ if not found.
+
+-->
+
+( substitute )
+
+: substitute  ( src slen dest dlen -- dest dlen' n )
+   dest-len ! 0 dest 2! 0 -rot  ( -- 0 src slen )
+   subst-err off
+   begin  dup 0 >  while
+     over c@ delim <> if                \ character not "%"
+       over c@ add-dest 1 /string
+     else
+       over 1 chars + c@ delim =  \ "%%" for one output "%"?
+       if    delim add-dest 2 /string   \ add one % to output
+       else  form-name process-name if  rot 1+ -rot  then
+                                    \ count substitutions
+       then
+     then
+   repeat
+   2drop dest 2@ rot subst-err @ if  drop subst-err @  then  ;
+
+  \ XXX REMARK -- Note that this version is simplistic,
+  \ performs no error checking, and requires a global buffer
+  \ and global variables.
+
+  \ doc{
+  \
+  \ substitute( ca1 len1 ca2 len2 -- ca2 len3 n )
+
+  \
+  \ Perform substitution on the string _ca1 len1_ placing
+  \ the result at string _ca2 len3_, where _len3_ is the length
+  \ of the resulting string. An error occurs if the resulting
+  \ string will not fit into _ca2 len2_ or if _ca2_ is
+  \ the same as _ca1_. The return value _n_ is positive or 0
+  \ on success and indicates the number of substitutions made.
+  \ A negative value for _n_ indicates that an error occurred,
+  \ leaving _ca2 len3_ undefined, and being _n_ the exception
+  \ code.
+  \
+  \ Substitution occurs left to right from the start of
+  \ _ca1_ in one pass and is non-recursive.  When text  of
+  \ a  potential substitution  name, surrounded  by "%" (ASCII
+  \ $25)  delimiters is  encountered  by `substitute`, the
+  \ following occurs:
+  \
+  \  1. If the name is null, a single delimiter character is
+  \  passed to the output, i.e., "%%" is replaced by "%". The
+  \  current number of substitutions is not changed.
+  \
+  \  2. If the text is a valid substitution name acceptable to
+  \  `replaces`, the leading and trailing
+  \  delimiter characters and the enclosed substitution name
+  \  are replaced by the substitution text. The current number
+  \  of substitutions is incremented.
+  \
+  \  3. If the text is not a valid substitution name, the name
+  \  with leading and trailing delimiters is passed unchanged
+  \  to the output. The current number of substitutions is not
+  \  changed.
+  \
+  \  4. Parsing of the input string resumes after the trailing
+  \  delimiter.
+  \
+  \ If after processing any pairs of delimiters, the residue of
+  \ the input string contains a single delimiter,  the residue
+  \ is passed unchanged to the output.
+  \
+  \ See: `replaces`, `unescape`.
+  \
+  \ }doc
+
