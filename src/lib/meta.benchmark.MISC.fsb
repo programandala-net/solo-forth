@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701201744
+  \ Last modified: 201701211620
 
   \ -----------------------------------------------------------
   \ Description
@@ -78,6 +78,9 @@
   \ 2017-01-13: Add `m*-bench`.
   \
   \ 2017-01-20: Add `>name-bench`.
+  \
+  \ 2017-01-21: Update the documentation of `rshift-bench` and
+  \ `lshift-bench`.
 
 ( >name-bench )
 
@@ -716,6 +719,12 @@ need value  need 2value  need bench{  need }bench.
 
 ( rshift-bench lshift-bench )
 
+  \ 2015-11-01: Compare two Z80 implementation of `rshift` and
+  \ `lshift`.
+  \
+  \ 2017-01-21: Remove the slower implementations (and 3 bytes
+  \ smaller) from the library.
+
 need frames@  need reset-frames
 
 : rshift-bench  ( u -- )
@@ -739,6 +748,17 @@ need frames@  need reset-frames
   \ 10000 1203 1609 133% 1016 1723 169%
   \ 30000 3607 4826 133% 3048 5170 169%
 
+  \ 2017-01-21
+
+  \ Data space used by the code
+  \ ---------------------------
+  \ rshift  lshift
+  \ ------- -------
+  \ Z88 DZX Z88 DZX
+  \ --- --- --- ---
+  \ 16  13  19  16
+
+  \ Legend:
   \ Z88 = code adapted from Z88 CamelForth
   \ DZX = code adapted from DZX-Forth
 
