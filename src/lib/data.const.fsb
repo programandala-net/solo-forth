@@ -12,7 +12,7 @@
   \ ordinary constants, except their value is compiled as a
   \ literal. A literal is placed on the stack faster than a
   \ constant.
-  
+
   \ -----------------------------------------------------------
   \ Author
 

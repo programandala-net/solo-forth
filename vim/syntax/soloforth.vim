@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-01-20
+" Updated:  2017-01-22
 
 " --------------------------------------------------------------
 " History
@@ -107,6 +107,7 @@ syn keyword soloforthDefine /user
 syn keyword soloforthDefine 2constant
 syn keyword soloforthDefine 2field:
 syn keyword soloforthDefine 2lit
+syn keyword soloforthDefine 1literal
 syn keyword soloforthDefine 2literal
 syn keyword soloforthDefine 2to
 syn keyword soloforthDefine 2value
@@ -1093,6 +1094,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-01-20: Add `word-length-mask`, `>>name`, `name>>`,
 " `name<name`, `name>str`, `name>name`, `#words`.
+"
+" 2017-01-22: Add `1literal`.
 
 " --------------------------------------------------------------
 

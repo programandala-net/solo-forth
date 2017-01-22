@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701202211
+; Last modified: 201701220123
 
 include version.z80s
 
@@ -8927,7 +8927,7 @@ search.failed:
 ;
 ; Compile _b_ in the current definition.
 ;
-; This word does the same than `literal` but saves one byte
+; This word does the same as `literal` but saves one byte
 ; of data space and is a bit faster at run-time (0.97 of
 ; execution speed).
 ;
@@ -8937,6 +8937,8 @@ search.failed:
 ; ----
 ;
 ; Origin: Comus.
+;
+; See: `literal`, `2literal`, `1literal`.
 ;
 ; }doc
 
@@ -8957,6 +8959,8 @@ search.failed:
 ;   postpone lit ,  ;
 ; ----
 ;
+; See: `cliteral`, `2literal`, `1literal`.
+;
 ; }doc
 
   dw compile_,lit_,comma_
@@ -8967,14 +8971,20 @@ search.failed:
 
 ; doc{
 ;
-; 1literal  ( n|b -- )
+; 1literal  ( x -- )
 ;
-; Compile _n|b_ in the current definition.
+; If _x_ is a byte, execute `cliteral`, else execute `literal`.
 ;
+; This word is used in `interpret-table` to compile the
+; single-cell literals.
+
 ; ----
-; : 1literal  ( n|b -- )
-;   dup byte? if  postpone cliteral exit  then  postpone literal  ;
+; : 1literal  ( x -- )
+;   dup byte?
+;   if  postpone cliteral exit  then  postpone literal  ;
 ; ----
+
+; See: `literal`, `cliteral`, `2literal`, `interpret-table`.
 ;
 ; }doc
 
@@ -8995,6 +9005,8 @@ search.failed:
 ; : 2literal  ( d -- )
 ;   postpone 2lit 2,  ;
 ; ----
+;
+; See: `literal`, `cliteral`, `1literal`.
 ;
 ; }doc
 
