@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201701222324
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,6 +62,9 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2017-01-22: Rewrite `get-udg`, `set-udg` and `get-font` in
+  \ Z80.
 
 ( default-udg-chars )
 
@@ -498,8 +501,15 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
 
 ( set-udg get-udg get-font rom-font )
 
-[unneeded] set-udg
-?\ need os-udg  : set-udg  ( a -- )  os-udg !  ;
+need ?(
+
+[unneeded] set-udg ?( need os-udg
+
+code set-udg  ( a -- )
+  E1 c, 22 c, os-udg , jpnext, end-code ?)
+  \ pop hl
+  \ ld (sys_udg),hl
+  \ jp next
 
   \ doc{
   \
@@ -513,8 +523,11 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \
   \ }doc
 
-[unneeded] get-udg
-?\ need os-udg  : get-udg  ( -- a )  os-udg @  ;
+[unneeded] get-udg ?(  need os-udg
+
+code get-udg  ( -- a )  2A c, os-udg , jppushhl, end-code ?)
+  \ ld hl, (sys_udg)
+  \ jp pushhl
 
   \ doc{
   \
@@ -528,8 +541,11 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
   \
   \ }doc
 
-[unneeded] get-font
-?\ need os-chars  : get-font  ( -- a )  os-chars @  ;
+[unneeded] get-font ?(  need os-chars
+
+code get-font  ( -- a )  2A c, os-chars , jppushhl, end-code ?)
+  \ ld hl, (sys_chars)
+  \ jp pushhl
 
   \ doc{
   \
