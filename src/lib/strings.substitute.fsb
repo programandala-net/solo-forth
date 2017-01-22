@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701221904
+  \ Last modified: 201701222017
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,12 +32,13 @@
   \ of Forth-2012.
   \
   \ 2017-01-22: Improve documentation. Make the code more clear
-  \ by renaming and a bit of factoring. Make it faster with
-  \ Z80 code.
+  \ by renaming and a bit of factoring. Make it faster with Z80
+  \ code. Rewrite some parts to make the intermediate buffer
+  \ unnecessary.
 
 ( substitute )
 
-need find-substitution  need /counted-string
+need find-substitution
 
 '%' cconstant substitute-delimiter
   \ Character used as the substitution name delimiter.
@@ -53,10 +54,6 @@ need find-substitution  need /counted-string
   \
   \ }doc
 
-
-create name /counted-string 1+ chars allot
-  \ Substitution name as a counted string.
-
 variable /substitute-result
   \ Maximum length of the destination buffer.
 
@@ -71,6 +68,7 @@ variable substitute-error
   if    substitute-result 2@ + c! 1 chars substitute-result +!
   else  drop #-78 substitute-error !  then  ;
   \ Add the character _c_ to the destination string.
+  \ XXX TODO -- use a specific exception code
 
 : str>substitute-result  ( ca len -- )
   bounds ?do  i c@ c>substitute-result  loop  ;  -->
@@ -80,31 +78,28 @@ variable substitute-error
 
 ( substitute )
 
-: form-name  ( ca len -- ca' len' )
-  1 /string 2dup substitute-delimiter scan >r drop
-    \ Find length of residue.
-  2dup r> - dup >r name place
-    \ Save name in buffer.
-  r> char+ /string  ;
-    \ Step over name and trailing "%".
-
-  \ Given a source string _ca len_ pointing at a leading
-  \ delimiter, place the name string in the name buffer.
+: get-substitution  ( ca1 len1 -- ca3 len3 ca2 len2 )
+  1 /string 2dup substitute-delimiter scan dup
+  if    dup >r 1 /string 2swap r> -
+  else  2swap #-78 substitute-error !  then  ;
+  \ Given a source string _ca1 len1_ pointing at a leading
+  \ delimiter, divide into the delimited substitution _ca2
+  \ len2_ and the residue _ca3 len3_ of the string
   \
-  \ XXX TODO -- simplify, just scan, dont't copy the string
+  \ If no ending delimiter can be found, `substitute-error` is
+  \ updated, the substitution is the whole string after the
+  \ starting delimiter, and the residue is an empty string.
+  \
+  \ XXX TODO -- use a specific exception code
 
-: (process-name)  ( ca len -- f )
-  find-substitution dup >r
-  if    execute count str>substitute-result
+: substituted?  ( ca len -- f )
+  2dup find-substitution dup >r
+  if    execute count str>substitute-result 2drop
   else  substitute-delimiter c>substitute-result
-        name count str>substitute-result
+        str>substitute-result
         substitute-delimiter c>substitute-result  then  r>  ;
-  \ Process the substitution name _ca len_. Return _true_ if
-  \ found; return _false_ if not found.
-
-: process-name  ( -- f )  name count (process-name)  ;
-  \ Process the last substitution name. Return _true_ if found;
-  \ return _false_ if not found.
+  \ Process the substitution _ca len_. Return _true_ if
+  \ found and substituted; return _false_ if not found.
 
 need >body
 
@@ -150,7 +145,8 @@ code substitute-delimiter?  ( ca -- f )
        over char+ substitute-delimiter?
        if    substitute-delimiter c>substitute-result
              2 /string
-       else  form-name process-name if  rot 1+ -rot  then
+       else  get-substitution
+             substituted? if  rot 1+ -rot  then
        then
      else  over c@ c>substitute-result 1 /string  then
    repeat  2drop substitute-result 2@ rot
@@ -209,3 +205,4 @@ code substitute-delimiter?  ( ca -- f )
   \
   \ }doc
 
+  \ vim: filetype=soloforth
