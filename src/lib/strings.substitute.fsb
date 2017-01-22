@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701221655
+  \ Last modified: 201701221904
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,7 +32,8 @@
   \ of Forth-2012.
   \
   \ 2017-01-22: Improve documentation. Make the code more clear
-  \ by renaming and a bit of factoring.
+  \ by renaming and a bit of factoring. Make it faster with
+  \ Z80 code.
 
 ( substitute )
 
@@ -40,6 +41,18 @@ need find-substitution  need /counted-string
 
 '%' cconstant substitute-delimiter
   \ Character used as the substitution name delimiter.
+
+  \ doc{
+  \
+  \ substitute-delimiter  ( -- c )
+  \
+  \ A character constant that returns the character used as
+  \ delimiter by `substitute`. By default it's "%".
+  \
+  \ See: `substitute`, `substitute-delimiter?`.
+  \
+  \ }doc
+
 
 create name /counted-string 1+ chars allot
   \ Substitution name as a counted string.
@@ -53,11 +66,19 @@ variable /substitute-result
 variable substitute-error
   \ Zero or an error code.
 
-: char>substitute-result  ( c -- )
+: c>substitute-result  ( c -- )
   substitute-result @ /substitute-result @ <
   if    substitute-result 2@ + c! 1 chars substitute-result +!
   else  drop #-78 substitute-error !  then  ;
   \ Add the character _c_ to the destination string.
+
+: str>substitute-result  ( ca len -- )
+  bounds ?do  i c@ c>substitute-result  loop  ;  -->
+
+  \ Add a string to the output string.
+  \ XXX TODO -- faster, not character by character
+
+( substitute )
 
 : form-name  ( ca len -- ca' len' )
   1 /string 2dup substitute-delimiter scan >r drop
@@ -72,22 +93,12 @@ variable substitute-error
   \
   \ XXX TODO -- simplify, just scan, dont't copy the string
 
--->
-
-( substitute )
-
-: string>substitute-result  ( ca len -- )
-  bounds ?do  i c@ char>substitute-result  loop  ;
-  \ Add a string to the output string.
-  \ XXX TODO -- faster, not character by character
-
 : (process-name)  ( ca len -- f )
   find-substitution dup >r
-  if    execute count string>substitute-result
-  else  substitute-delimiter char>substitute-result
-        name count string>substitute-result
-        substitute-delimiter char>substitute-result
-  then  r>  ;
+  if    execute count str>substitute-result
+  else  substitute-delimiter c>substitute-result
+        name count str>substitute-result
+        substitute-delimiter c>substitute-result  then  r>  ;
   \ Process the substitution name _ca len_. Return _true_ if
   \ found; return _false_ if not found.
 
@@ -95,10 +106,38 @@ variable substitute-error
   \ Process the last substitution name. Return _true_ if found;
   \ return _false_ if not found.
 
-: substitute-delimiter?  ( ca -- f )
-  c@ substitute-delimiter =  ;
+need >body
 
--->
+code substitute-delimiter?  ( ca -- f )
+  E1 c, 3A c, ' substitute-delimiter >body , BE c,
+  \ pop hl
+  \ ld a,(substitute_delimiter)
+  \ cp (hl)
+  CA c, ' true , C3 c, ' false , end-code  -->
+  \ jp z,true
+  \ jp false
+
+  \ doc{
+  \
+  \ substitute-delimiter?  ( ca -- f )
+  \
+  \ Does _ca_ contains the character hold in the character
+  \ constant `substitute-delimiter`? If so return _true_, else
+  \ return _false_.
+  \
+  \ This word is a factor of `substitute`.
+  \
+  \ This word is written in Z80. Its equivalent code is Forth
+  \ is the following:
+  \
+  \ ----
+  \ : substitute-delimiter?  ( ca -- f )
+  \  c@ substitute-delimiter =  ;
+  \ ----
+  \
+  \ See: `substitute`, `substitute-delimiter`.
+  \
+  \ }doc
 
 ( substitute )
 
@@ -109,15 +148,13 @@ variable substitute-error
    begin  dup 0>  while  ( -- n ca1 len1 )
      over substitute-delimiter? if
        over char+ substitute-delimiter?
-       if    substitute-delimiter char>substitute-result
+       if    substitute-delimiter c>substitute-result
              2 /string
        else  form-name process-name if  rot 1+ -rot  then
        then
-     else
-       over c@ char>substitute-result 1 /string
-     then
-   repeat   2drop substitute-result 2@ rot
-            substitute-error @ ?dup if  nip  then  ; 
+     else  over c@ c>substitute-result 1 /string  then
+   repeat  2drop substitute-result 2@ rot
+           substitute-error @ ?dup if  nip  then  ;
 
   \ XXX REMARK -- Note that this version is simplistic,
   \ performs no error checking, and requires a global buffer
@@ -168,7 +205,7 @@ variable substitute-error
   \ the input string contains a single delimiter,  the residue
   \ is passed unchanged to the output.
   \
-  \ See: `replaces`, `unescape`.
+  \ See: `replaces`, `unescape`, `substitute-delimiter?`.
   \
   \ }doc
 
