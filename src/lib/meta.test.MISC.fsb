@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701221658
+  \ Last modified: 201701222054
 
   \ -----------------------------------------------------------
   \ Description
@@ -94,14 +94,14 @@
 
 need substitute  need replaces
 
-create new 255 chars allot
+create result 255 chars allot
 
 s" saluton"  s" hello"    replaces
 s" bonvenon" s" welcome"  replaces
 
 : substitute-test  ( ca len -- )
   2dup cr type
-  new 255 substitute cr
+  result 255 substitute cr
   dup 0< over ?throw
   . ." substitutions:" cr type cr  ;
 

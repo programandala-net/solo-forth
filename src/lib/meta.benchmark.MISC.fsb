@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701211620
+  \ Last modified: 201701222053
 
   \ -----------------------------------------------------------
   \ Description
@@ -81,6 +81,80 @@
   \
   \ 2017-01-21: Update the documentation of `rshift-bench` and
   \ `lshift-bench`.
+  \
+  \ 2017-01-22: Add `substitute-bench`.
+
+( substitute-bench )
+
+need bench{  need }bench.
+need substitute  need substitute2 need replaces
+
+create result 255 chars allot
+
+s" saluton"  s" hello"    replaces
+s" bonvenon" s" welcome"  replaces
+
+: old  ( -- ca len )
+  s" Say '%hello%' and '%welcome%' then percentage sign %%."  ;
+
+result 255 2constant new
+
+: run  ( u -)
+  cr ." Results for " dup u. ." iterations" dup
+  cr ." substitute w/rot :      "
+  bench{ 0 ?do  old new substitute  drop 2drop  loop }bench.
+  cr ." substitute w/variable : "
+  bench{ 0 ?do  old new substitute2 drop 2drop  loop }bench. ;
+
+  \ 2017-01-22
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ------------------------------------
+  \       substitute w/rot substitute w/variable
+  \       ---------------- ---------------------
+  \ 00010               25                    26
+  \ 00100              256                   256
+  \ 01000             2558                  2556
+  \ 10000            25574                 25571
+
+  \ No difference!
+
+  \ Version with `rot`:
+
+  \ : substitute  ( ca1 len1 ca2 len2 -- ca2 len3 n )
+  \    /substitute-result ! 0 substitute-result 2! 0 -rot
+  \    \ ( -- 0 ca1 len1 )
+  \    substitute-error off
+  \    begin  dup 0>  while  ( -- n ca1 len1 )
+  \      over substitution-delimiter? if
+  \        over char+ substitution-delimiter?
+  \        if    substitution-delimiter c>substitute-result
+  \              2 /string
+  \        else  get-substitution
+  \              substituted? if  rot 1+ -rot  then
+  \        then
+  \      else  over c@ c>substitute-result 1 /string  then
+  \    repeat  2drop substitute-result 2@ rot
+  \            substitute-error @ ?dup if  nip  then  ;
+
+  \ Version with `variable`:
+
+  \ variable substitutions
+  \ : substitute2  ( ca1 len1 ca2 len2 -- ca2 len3 n )
+  \    /substitute-result ! 0 substitute-result 2!
+  \    \ ( -- ca1 len1 )
+  \    substitute-error off  substitutions off
+  \    begin  dup 0>  while  ( -- n ca1 len1 )
+  \      over substitution-delimiter? if
+  \        over char+ substitution-delimiter?
+  \        if    substitution-delimiter c>substitute-result
+  \              2 /string
+  \        else  get-substitution substituted? abs substitutions +!
+  \        then
+  \      else  over c@ c>substitute-result 1 /string  then
+  \    repeat  2drop substitute-result 2@
+  \            substitute-error @ ?dup 0=
+  \            if  substitutions @  then  ;
 
 ( >name-bench )
 
