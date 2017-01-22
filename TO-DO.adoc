@@ -290,7 +290,8 @@ saves the additional link.
 
 .2017-01-22:
 
-Improve `substitute`: tidy the code, hide factors, rename...
+Improve `substitute`: hide factors; rename words; make it faster; don't use a
+buffer for the name, but the substring.
 
 .2017-01-22:
 
