@@ -647,14 +647,23 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
-.2017-01-13:
+.2017-01-22:
 
-Rename `attr` to `get-attr` or similar. Write its corresponding `set-attr  ( b
-col row -- )`.
+Decide a convention about permanent and temporary attributes. At the moment the
+attribute words defined in the kernel (`bright`, `flash`, `paper` and `ink`)
+change both attributes, but `overprint` and `inverse`, defined in the library,
+change only the temporary attributes.
 
-Maybe `xy-attr@` and `xy-attr!` or
-`xy-color@` and `xy-color!`,
-depending on the final naming convention about "color/attr".
+.2017-01-22:
+
+Write `temp-attr@  ( -- b )`, `temp-attr@  ( b -- )`, `perm-attr@  ( -- b )`
+and `perm-attr@  ( b -- )`.
+
+So far the 
+
+.2017-01-22:
+
+Write `xy-attr@  ( x y -- b )` and `xy-attr!  ( b x y -- )`.
 
 .2017-01-13:
 

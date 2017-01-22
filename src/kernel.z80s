@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701220123
+; Last modified: 201701221536
 
 include version.z80s
 
@@ -11808,8 +11808,9 @@ at_pfa.last_line:
 ;
 ; cls  ( -- )
 ;
-; Clear the screen with the current colors and reset the cursor
-; position to the upper left corner (column 0, row 0).
+; Clear the screen with the current permanent colors and reset
+; the cursor position to the upper left corner (column 0, row
+; 0).
 ;
 ; See: `page`.
 ;
@@ -11820,8 +11821,10 @@ at_pfa.last_line:
 ; the screen.
 
 ; Credit:
+;
 ; The attributes part was improved after code by Dean Belfield
 ; <http://wordpress.animatez.co.uk/programming/assembly-language/z80/z80-library-routines/204-2/>.
+;
 ; The idea for `ld (hl),l` was found in David Webb's _Advanced
 ; Spectrum Machine Language_.
 
@@ -11837,7 +11840,7 @@ at_pfa.last_line:
   ld a,(sys_attr_p)
   ld (hl),a
   ldir
-  ld (sys_coords),bc ; reset the graphic coordinates
+  ld (sys_coords),bc ; reset the graphic coordinates to 0,0
   exx ; restore the Forth IP
 
   ; Execution continues in `home`:
@@ -12035,7 +12038,7 @@ border.a:
 ;
 ; bright  ( n -- )
 ;
-; If bit 0 of _n_ is set, turn bright on (in temporaryi and
+; If bit 0 of _n_ is set, turn bright on (in temporary and
 ; permanent attributes); else turn it off.
 ;
 ; }doc

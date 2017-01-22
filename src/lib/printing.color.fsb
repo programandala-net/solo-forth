@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701221508
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-22: Rewrite `color!` and `color-mask!` in Z80.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -196,7 +198,7 @@ code flashy   ( b1 -- b2 )
   \
   \ }doc
 
-( color@ color! color-mask@ color-mask! color 2color )
+( color@ color! color-mask@ color-mask! )
 
 [unneeded] color@
 ?\ need os-attr-t  : color@  ( -- b )  os-attr-t c@  ;
@@ -209,8 +211,17 @@ code flashy   ( b1 -- b2 )
   \
   \ }doc
 
-[unneeded] color!
-?\ need os-attr-t  : color!  ( b -- )  os-attr-t c!  ;
+need ?(  [unneeded] color! ?(  need os-attr-t
+
+code color!  ( b -- )
+  D1 c, 78 03 + c, 32 c, os-attr-t , jpnext, end-code ?)
+
+  \ pop de            ; 10 01
+  \ ld a,e            ; 04 01
+  \ ld (sys_attr_t),a ; 13 03
+  \ jp (ix)           ; 08 02
+  \                   ; -----
+  \                   ; 35 07
 
   \ doc{
   \
@@ -220,8 +231,9 @@ code flashy   ( b1 -- b2 )
   \
   \ }doc
 
-[unneeded] color-mask@ dup ?\ need os-mask-t
-?\ : color-mask@  ( -- b )  os-mask-t c@  ;
+[unneeded] color-mask@ ?( need os-mask-t
+
+: color-mask@  ( -- b )  os-mask-t c@  ; ?)
 
   \ doc{
   \
@@ -231,8 +243,17 @@ code flashy   ( b1 -- b2 )
   \
   \ }doc
 
-[unneeded] color-mask! dup ?\ need os-mask-t
-?\ : color-mask!  ( b -- )  os-mask-t c!  ;
+[unneeded] color-mask! ?( need os-mask-t
+
+code color-mask!  ( b -- )
+  D1 c, 78 03 + c, 32 c, os-mask-t , jpnext, end-code ?)
+
+  \ pop de            ; 10 01
+  \ ld a,e            ; 04 01
+  \ ld (sys_mask_t),a ; 13 03
+  \ jp (ix)           ; 08 02
+  \                   ; -----
+  \                   ; 35 07
 
   \ doc{
   \
@@ -242,7 +263,12 @@ code flashy   ( b1 -- b2 )
   \
   \ }doc
 
-need ?(  [unneeded] color ?(  need color!
+( color 2color )
+
+need ?(
+
+[unneeded] color ?(  need color!
+
 : color  ( b "name" -- )
   create c,  does>  ( -- ) ( pfa ) c@ color!  ; ?)
 
@@ -255,7 +281,8 @@ need ?(  [unneeded] color ?(  need color!
   \
   \ }doc
 
-need ?(  [unneeded] 2color ?(  need color!  need color-mask!
+[unneeded] 2color ?(  need color!  need color-mask!
+
 : 2color  ( b1 b2 "name" -- )
   create 2,  does>  ( -- ) ( pfa ) 2@ color! color-mask!  ; ?)
 
@@ -446,7 +473,8 @@ code inverse  ( f -- )
   \
   \ inverse  ( f -- )
   \
-  \ If _f_ is zero, turn the inverse mode off; else turn it on.
+  \ If _f_ is zero, turn the inverse printing mode off; else
+  \ turn it on.
   \
   \ }doc
 
