@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701231304
+; Last modified: 201701231534
 
 include version.z80s
 
@@ -1359,6 +1359,8 @@ nt_of_the_previous_word: defl 0
 ;
 ; Return the name of the DOS.
 ;
+; See: `g+dos`, `tr-dos`, `+3dos`.
+;
 ; }doc
 
   dw s_lit_
@@ -1813,6 +1815,60 @@ do_create:
 do_variable:
 
   _jp_next
+
+; ----------------------------------------------
+if defined gplusdos
+  _alias_header g_plus_dos_,'g+dos',immediate,noop_
+endif
+
+; doc{
+;
+; g+dos  ( -- )
+;
+; This word is defined only in the G+DOS version of Solo Forth.
+; It does nothing, in neither interpretation nor compilation state.
+; Its goal is to be used as a way to check the DOS the
+; application is running on.
+;
+; See: `dos`, `tr-dos`, `+3dos`, `defined`, `[defined]`.
+;
+; }doc
+
+; ----------------------------------------------
+if defined trdos
+  _alias_header tr_dos_,'tr-dos',immediate,noop_
+endif
+
+; doc{
+;
+; tr-dos  ( -- )
+;
+; This word is defined only in the TR-DOS version of Solo Forth.
+; It does nothing, in neither interpretation nor compilation state.
+; Its goal is to be used as a way to check the DOS the
+; application is running on.
+;
+; See: `dos`, `g+dos`, `+3dos`, `defined`, `[defined]`.
+;
+; }doc
+
+; ----------------------------------------------
+if defined plus3dos
+  _alias_header plus_3_dos_,'+3dos',immediate,noop_
+endif
+
+; doc{
+;
+; +3dos  ( -- )
+;
+; This word is defined only in the +3DOS version of Solo Forth.
+; It does nothing, in neither interpretation nor compilation state.
+; Its goal is to be used as a way to check the DOS the
+; application is running on.
+;
+; See: `dos`, `tr-dos`, `g+dos`, `defined`, `[defined]`.
+;
+; }doc
 
 ; ----------------------------------------------
   _defer_header init_asm_,'init-asm',,noop_
@@ -8402,6 +8458,17 @@ far_lowers.end:
 ;
 ; undefined?  ( ca len -- f )
 ;
+; Find name _ca len_.  If the definition is
+; not found after searching the active search
+; order, return _false_, else return _true_.
+;
+; ----
+; : undefined?  ( ca len -- f )
+;   find-name 0=  ;
+; ----
+;
+; See: `defined`.
+;
 ; }doc
 
   ; XXX TODO -- move to the library, but it's
@@ -10958,6 +11025,8 @@ block.end:
 ;   parse-name find-name  ;
 ; ----
 ;
+; See: `undefined?`, `[defined]`.
+;
 ; }doc
 
   dw parse_name_,find_name_
@@ -10990,6 +11059,8 @@ block.end:
 ; : [defined]  ( "name" -- f )
 ;   defined 0<>  ; immediate
 ; ----
+; 
+; See: `defined`, `[undefined]`.
 ;
 ; }doc
 
@@ -11014,6 +11085,8 @@ block.end:
 ; : [undefined]  ( "name" -- f )
 ;   postpone [defined] 0=  ; immediate
 ; ----
+;
+; See: `[defined]`.
 ;
 ; }doc
 
