@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701131953
+  \ Last modified: 201701232012
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,10 +42,13 @@
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
   \ 2017-01-13: Improve documentation.
+  \
+  \ 2017-01-23: Make all remaining words individually
+  \ accessible to `need`.
 
 ( /sound sound-register-port sound-write-port !sound )
 
-[unneeded] /sound ?\ 14 cconstant /sound exit
+[unneeded] /sound ?\ 14 cconstant /sound
 
   \ doc{
   \
@@ -58,15 +61,20 @@
   \
   \ }doc
 
-#65533 constant sound-register-port
-#49149 constant sound-write-port
+need ?(
 
-[unneeded] !sound ?exit
+[unneeded] sound-register-port
+[unneeded] sound-write-port and ?(  need const
 
-need !p
+65533 const sound-register-port
+49149 const sound-write-port    ?)
+
+[unneeded] !sound ?(
+
+need !p  need sound-register-port  need sound-write-port 
 
 : !sound  ( b1 b2 -- )
-  sound-register-port !p sound-write-port !p  ;
+  sound-register-port !p  sound-write-port  !p  ; ?)
 
   \ doc{
   \
@@ -86,15 +94,20 @@ need !p
 
   \ XXX TODO finish, document and test
 
-need !sound
+[unneeded] vol
+?\ need !sound  : vol  ( b1 b2 -- )  8 + !sound  ;
 
-: vol  ( b1 b2 -- )  8 + !sound  ;
-: shutup  ( -- )  -1 7 !sound  ;
-: noise  ( -- )  7 7 !sound  ;
+[unneeded] shutup
+?\ need !sound  : shutup  ( -- )  -1 7 !sound  ;
+  \ XXX FIXME -- sometimes part of the sound remains, e.g.
+  \ with `waves`
+
+[unneeded] noise
+?\ need !sound  : noise  ( -- )  7 7 !sound  ;
 
 ( music )
 
-need ms  need roll  need pick  need vocabulary
+need vocabulary need ms  need roll  need pick
 need !sound  need vol
 
 vocabulary music  get-current  also music definitions
@@ -151,10 +164,12 @@ set-current previous
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
 
-need !sound  need /sound
+need ?(
+
+[unneeded] play ?(  need /sound  need !sound
 
 : play  ( ca -- )
-  /sound 0 do  dup c@ i !sound 1+  loop  drop  ;
+  /sound 0 do  dup c@ i !sound 1+  loop  drop  ; ?)
 
   \ doc{
   \
@@ -166,8 +181,10 @@ need !sound  need /sound
   \
   \ }doc
 
+[unneeded] sound, ?(  need /sound
+
 : sound,  ( b[0]..b[13] -- )
-  here /sound allot here 1- do  i c!  -1 +loop  ;
+  here /sound allot here 1- do  i c!  -1 +loop  ; ?)
 
   \ doc{
   \
@@ -179,8 +196,10 @@ need !sound  need /sound
   \
   \ }doc
 
+[unneeded] sound ?(  need sound,  need play
+
 : sound  ( b[0]..b[13] "name" -- )
-  create  sound,  does>  ( -- )  ( pfa )  play  ;
+  create  sound,  does>  ( -- )  ( pfa )  play  ; ?)
 
   \ doc{
   \
