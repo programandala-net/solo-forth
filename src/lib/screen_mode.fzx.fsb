@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231538
+  \ Last modified: 201701231549
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,16 +52,18 @@ need fzx-emit
   \ FZX driver as well.
 
 : fzx-at-xy  ( gx gy -- )  fzx-y c! fzx-x c!  ;
+
 : fzx-cr  ( -- )  13 fzx-emit  ;
-  \ : fzx-home  ( -- )  0 fzx-x !  ;  \ XXX TODO
+
 : fzx-home  ( -- )  0 191 fzx-at-xy  ;
+  \ : fzx-home  ( -- )  0 fzx-x !  ;  \ XXX TODO
 
 : fzx-mode  ( -- )
+  ['] fzx-emit   ['] emit   defer!
+  ['] fzx-at-xy  ['] at-xy  defer!
+  ['] fzx-home   ['] home   defer!
+  ['] fzx-cr     ['] cr     defer!  ;
   \ Set the FZX printing mode.
-  ['] fzx-emit ['] emit defer!
-  ['] fzx-at-xy ['] at-xy defer!
-  ['] fzx-home ['] home defer!
-  ['] fzx-cr ['] cr defer!  ;
 
 ( fzx-emit )
 

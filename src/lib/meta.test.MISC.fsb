@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231435
+  \ Last modified: 201701231617
 
   \ -----------------------------------------------------------
   \ Description
@@ -110,15 +110,18 @@ explosion edit-sound
 
   \ XXX TMP for debugging
 
-need fzx-emit  need <file
+need fzx-mode  need <file
 
 create font  2048 allot
-1 set-drive  font 0 s" lettra.fzx" <file
+
+  .( Loading a FZX font...)
+1 set-drive  font 0 s" lett.fzx" <file
 font fzx-font !
+
 : zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
 
 cr .( fzx-emit is ready ) cr
-' (fzx-emit) hex
+' (fzx-emit)
 cr .( Code start:   ) dup u.
 cr .( Code length:  ) ' fzx-emit swap - u.
 cr
