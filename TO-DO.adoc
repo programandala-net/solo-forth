@@ -87,11 +87,11 @@ Change the code style after Pygmy Forth:
 
 .2017-01-23:
 
-Rewrite `here` in Z80.
+Rewrite `here` in Z80. `dp` must be an ordinary variable first.
 
 .2017-01-05, 2017-01-23:
 
-Rewrite `there` in Z80 or remove it?
+Rewrite `there` in Z80 (`dp` must be an ordinary variable first) or remove it?
 
 .2016-12-03:
 
@@ -126,15 +126,6 @@ Remove the `root` word list. Set the minimum search order to `forth`.
 
 Make `dp` an ordinary variable? Then `here`, `there` and `allot` could be
 improved, rewritten in Z80.
-
-.2016-05-31:
-
-Add `''` to get the execution token pointer of a name, so the actual name of
-an alias could be get this way:
-
-----
-'' wordname >>name .name
-----
 
 .2016-05-15:
 
@@ -412,6 +403,12 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-01-23:
+
+Homogenize and fix the notation about interpretation, compilation and
+execution/run-time semantics. Better yet, use the simpler convention of
+Forth-83.
 
 .2016-11-26:
 

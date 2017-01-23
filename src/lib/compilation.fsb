@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701201817
+  \ Last modified: 201701231308
 
   \ -----------------------------------------------------------
   \ Description
@@ -136,6 +136,8 @@
   \ 2017-01-20: Add `name>name`. Add alternative implementation
   \ of `>name` in Forth, a possible replacement for the Z80
   \ version included in the kernel.
+  \
+  \ 2017-01-23: Improve documentation of `''` and `['']`.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -233,10 +235,44 @@ need ?(
 [unneeded] '' ?(  need need-here  need-here name>>
 : ''  ( "name" -- xtp )  defined dup ?defined name>>  ; ?)
 
+  \ doc{
+  \
+  \
+  \ ''  ( "name" -- xtp )
+  \
+  \ If _name_ is found in the current search order, return its
+  \ execution-token pointer _xtp_, else throw an exception.
+  \
+  \ Since aliases share the execution token of their original
+  \ word, it's not possible to get the name of an alias from
+  \ its execution token. But `''` can do it:
+
+  \ ----
+  \ ' drop alias abandon
+  \ ' abandon >name .name       \ this prints "drop"
+  \ '' abandon >>name .name     \ this prints "abandon"
+  \ ----
+
+  \ See: `['']`, `'`.
+  \
+  \ }doc
+
 [unneeded] [''] ?(  need need-here  need-here ''
 : ['']  '' postpone literal  ; immediate compile-only ?)
-  \ Compilation: ( "name" -- )
-  \ Execution: ( -- xtp )
+  \ ( Compilation: "name" -- )
+
+  \ doc{
+  \
+  \ ['']  ( Compilation: "name" -- )
+
+  \
+  \ If _name_ is found in the current search
+  \ order, compile its execution-token pointer as a literal, else
+  \ throw an exception.
+  \
+  \ See: `literal`, `''`, `[']`.
+  \
+  \ }doc
 
 ( >name )
 

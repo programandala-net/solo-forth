@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701231220
+; Last modified: 201701231304
 
 include version.z80s
 
@@ -8911,9 +8911,19 @@ search.failed:
 ; ----------------------------------------------
   _colon_header s_literal_,'sliteral',immediate+compile_only
 
-  ; ----
-  ; : sliteral  ( ca len -- )  compile slit s,  ; immediate
-  ; ----
+; doc{
+;
+; sliteral  ( ca len -- )
+;
+; Compile string _ca len _ in the current definition.
+
+; ----
+; : sliteral  ( ca len -- )
+;   postpone slit s,  ; immediate compile-only
+; ----
+
+;
+; }doc
 
   dw compile_,s_lit_,s_comma_
   dw exit_
@@ -8923,9 +8933,9 @@ search.failed:
 
 ; doc{
 ;
-; byte?  ( n|b -- f )
+; byte?  ( x -- f )
 ;
-; Is _n|b_ an 8-bit number?
+; Is _x_ an 8-bit number?
 ;
 ; }doc
 
@@ -8945,15 +8955,15 @@ search.failed:
 ;
 ; Compile _b_ in the current definition.
 ;
-; This word does the same as `literal` but saves one byte
-; of data space and is a bit faster at run-time (0.97 of
+; This word does the same as `literal` but saves one byte of
+; data space and _b_ is put on the stack a bit faster (0.97 of
 ; execution speed).
-;
+
 ; ----
 ; : cliteral  ( b -- )
-;   postpone clit c,  ;
+;   postpone clit c,  ; immediate compile-only
 ; ----
-;
+
 ; Origin: Comus.
 ;
 ; See: `literal`, `2literal`, `1literal`.
@@ -8968,15 +8978,15 @@ search.failed:
 
 ; doc{
 ;
-; literal  ( n -- )
+; literal  ( x -- )
 ;
-; Compile _n_ in the current definition.
-;
+; Compile _x_ in the current definition.
+
 ; ----
-; : literal  ( n -- )
-;   postpone lit ,  ;
+; : literal  ( x -- )
+;   postpone lit ,  ; immediate compile-only
 ; ----
-;
+
 ; See: `cliteral`, `2literal`, `1literal`.
 ;
 ; }doc
@@ -8994,12 +9004,14 @@ search.failed:
 ; If _x_ is a byte, execute `cliteral`, else execute `literal`.
 ;
 ; This word is used in `interpret-table` to compile the
-; single-cell literals.
+; single-cell literals. It is useful as an alternative to
+; `literal`, in order to optimize the code when _x_ is unknown.
 
 ; ----
 ; : 1literal  ( x -- )
 ;   dup byte?
 ;   if  postpone cliteral exit  then  postpone literal  ;
+;   immediate compile-only
 ; ----
 
 ; See: `literal`, `cliteral`, `2literal`, `interpret-table`.
@@ -9015,13 +9027,13 @@ search.failed:
 
 ; doc{
 ;
-; 2literal  ( d -- )
+; 2literal  ( dx -- )
 ;
-; Compile _d_ in the current definition.
+; Compile _dx_ in the current definition.
 ;
 ; ----
-; : 2literal  ( d -- )
-;   postpone 2lit 2,  ;
+; : 2literal  ( dx -- )
+;   postpone 2lit 2,  ; immediate compile-only
 ; ----
 ;
 ; See: `literal`, `cliteral`, `1literal`.
@@ -11015,13 +11027,18 @@ block.end:
 ;
 ; '  ( "name" -- xt )
 ;
-; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
-; Forth-2012 (CORE).
-;
+; If _name_ is found in the current search order, return its
+; execution token _xt_, else throw an exception.
+
 ; ----
 ; : '  ( "name" -- xt )
 ;   defined dup ?defined name>  ;
 ; ----
+
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Forth-2012 (CORE).
+;
+; See: `[']`, `''`.
 ;
 ; }doc
 
@@ -11033,15 +11050,21 @@ block.end:
 
 ; doc{
 ;
-; [']  ( "name" -- xt )
+; [']  ( Compilation: "name" -- )
 ;
+; Compilation: If _name_ is found in the current search order,
+; compile its execution token as a literal, else throw an
+; exception.
+
+; ----
+; : [']  ( Compilation: "name" -- )
+;   ' postpone literal  ; immediate
+; ----
+
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; ----
-; : [']  ( "name" -- xt )
-;   ' postpone literal  ; immediate
-; ----
+; See: `literal`, `'`, `['']`.
 ;
 ; }doc
 
