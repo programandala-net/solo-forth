@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608021653
+  \ Last modified: 201701231435
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,6 +26,8 @@
   \ Latest changes
 
   \ 2016-08-02: Start.
+  \
+  \ 2017-01-23: Move `edit-sound-test` to the tests module.
 
 ( edit-sound )
 
@@ -137,15 +139,5 @@ forth-wordlist set-current
   again  ;
 
 set-current  previous
-
-( edit-sound-test )
-
-  \ XXX TMP
-
-need edit-sound  need >body  need shoot
-
-create explosion
-
-' shoot >body explosion /sound move
 
   \ vim: filetype=soloforth

@@ -194,7 +194,7 @@ Document the variants of `of`.
 Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
 (already exists as `char>string`).
  
-.2016-11-26:
+.2016-11-26, 2017-01-23:
 
 Change `??` to its old version, which is more useful:
 
@@ -206,6 +206,15 @@ Change `??` to its old version, which is more useful:
   \ : 0??  ( f -- )      if  r> cell+ >r  then  ; compile-only
   \ : -??  ( f -- )  0>= if  r> cell+ >r  then  ; compile-only
   \ : +??  ( f -- )   0< if  r> cell+ >r  then  ; compile-only
+----
+
+Alternative:
+
+----
+  \ : ??   ( f -- )     0exit  r> cell+ >r  ; compile-only
+  \ : 0??  ( f -- )     ?exit  r> cell+ >r  ; compile-only
+  \ : -??  ( f -- )  0> ?exit  r> cell+ >r  ; compile-only
+  \ : +??  ( f -- )  0< ?exit  r> cell+ >r  ; compile-only
 ----
 
 .2016-11-26:
@@ -333,18 +342,10 @@ as planned).
 Study the strings stack included in Spectrum Forth-83
 (file <objects>).
 
-.2016-05-11:
-
-Compact <strings.MISC.fsb>.
-
 .2015-09-12:
 
 Implement a configurable case mode for `search` and `compare`? See how
 Z88 CamelForth does it. Also DX-Forth has this feature.
-
-.2015-07-23:
-
-New: `lower` and `lowers`.
 
 .2016-06-10:
 
@@ -666,7 +667,7 @@ Or write a variant:
   \ ocr?  ( col row -- c true | false )
 ----
 
-.2017-01-09, 2017-01-12, 2017-01-13:
+.2017-01-09, 2017-01-12, 2017-01-13, 2017-01-23:
 
 - Rename `color!` and family to `temp-attr!` or `t-attr!`...?
 - Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...?
@@ -682,6 +683,28 @@ Or write a variant:
 - `temp-color-mask@`, `perm-color-mask@`
 - `temp-color-mask!`, `perm-color-mask!`
 
+But "color" is ambiguous. It's not exactly a synonym of "color attribute".
+Alternative:
+
+|===
+| Current name        | New name
+
+| `color!`            | `attr!`
+| `color@`            | `attr@`
+| `color-mask!`       | `attr-mask!`
+| `color-mask@`       | `attr-mask@`
+| `permcolor!`        | `perm-attr!`
+| `permcolor@`        | `perm-attr!`
+| `permcolor-mask!`   | `perm-attr-mask!`
+| `permcolor-mask@`   | `perm-attr-mask@`
+| `permanent-colors`  | `permanent-attrs`
+| `permcolor@`        | `perm-attr@`
+|                     | `xy-attr!`
+|                     | `xy-attr@`
+|                     | `gxy-attr!`
+|                     | `gxy-attr@`
+|===
+
 .2017-01-09:
 
 Simplify the management of UDG: Use only the 0-index words, and make an
@@ -692,7 +715,7 @@ Problem: general print words must use 128..255 codes for the first 128 UDGs.
 
 .2017-01-09:
 
-Add `.udg"` as a fast way to print strings of UDG (0..255).
+Add `.0udg"` as a fast way to print strings of UDG (0..255).
 
 .2017-01-09:
 
@@ -711,11 +734,14 @@ Use constants for bitmasks and "unbitmasks" in <printing.color.fsb>.
 
 Rewrite in Z80 the low-level words of <printing.color.fsb>.
 
-.2016-12-02:
+.2016-12-02, 2017-01-23:
 
 Factor `inverse` to `inverse-on` and `inverse-off`.
 
 Factor `overprint` to `overprint-on` and `overprint-off`.
+
+Or write alternatives to `inverse` and `overprint`, for speed:
+`+inverse`, `-inverse`, `+overprint`, `-overprint`.
 
 .2015-09-01:
 
@@ -817,12 +843,10 @@ Remove the routine `compare_de_hl_signed`, if possible.
 // Makefile {{{1
 == Makefile ==
 
-.2016-04-16:
+.2016-04-16, 2016-11-15:
 
 Fix Makefile: The loader and the main disk are built also when the sources
 have not changed.
-
-.Update 2016-11-15:
 
 The problem is the rules of the BASIC loader. They run also when their
 prerequisites are older than the target.
@@ -1066,12 +1090,6 @@ Write far-memory versions of some of the following words from the
 
 Remove `get-default-bank` and `set-default-bank`.
 
-.2016-10-28:
-
-Remove the old `alias!` when the extra-memory system becomes definitive.
-
-Remove `s!` and related words when the extra-memory system becomes definitive.
-
 // Misc {{{1
 == Misc ==
 
@@ -1151,7 +1169,7 @@ Adapt this word from Spectrum Forth-83, which uses it in `cold` and
 
 .2015-09-22:
 
-`console` to do `display` and init the keyboard and `tib` (see
+Add `console` to do `display` and init the keyboard and `tib` (see
 Spectrum Forth-83).
 
 // Multitasking {{{1
@@ -1163,10 +1181,6 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library ==
-
-.2017-01-02:
-
-Move all tests to the tests module.
 
 .2017-01-02:
 
@@ -1187,7 +1201,7 @@ NOTE: Milestone 0.13.0
 
 Make words in <printing.color.fsb> accessible to `need`.
 
-.2016-12-30:
+.2016-12-30, 2017-01-23:
 
 NOTE: Milestone 0.15.0
 
@@ -1195,8 +1209,34 @@ Make it possible to use any number of disks, in any order, for the library.
 This way, the main library could be only on its own disk, not copied to all the
 disks.
 
-`lib-order`, `set-lib-order`, `get-lib-order` are in the kernel, but no used
-yet.
+`lib-order`, `set-lib-order`, `get-lib-order` are in the kernel, but
+not used yet.
+
+Alternative method, drafted on 2017-01-03:
+
+----
+create block-drives  ( -- ca )
+  1 c, 2 c,
+
+: no-block-drive  ( -- )  block-drives drives erase  ;
+
+: >block-drive  ( n -- ca )  block-drives +  ;
+
+: block-drive!  ( c n -- )  >block-drive c!  ;
+
+: block-drive@  ( n -- c )  >block-drive c@  ;
+
+: >drive-block  ( u1 -- u2 )
+  blk/disk /mod swap dup ?block-overflow
+  block-drive@ ?dup ?noblock set-drive  ;
+  \ Convert block _u1_ to its equivalent _u2_ in its corresponding
+  \ disk drive, which is set the current drive.
+
+: drive-blk  ( -- u )  blk @ >drive-block  ;
+  \ Return block number _u_, equivalent to the contents of `blk`
+  \ in its corresponding disk drive, which is set the current drive.
+  
+----
 
 .2016-12-08:
 

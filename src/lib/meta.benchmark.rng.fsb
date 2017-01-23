@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051638
+  \ Last modified: 201701231438
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
   \ all of the benchs.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-23: Fix name.
 
 ( rnd-bench )
 
@@ -798,7 +800,7 @@ code random-byte  ( -- b )
 
 need bench{
 
-: random-byte-test  ( -- )
+: random-byte-bench  ( -- )
   ['] random-byte ['] rng defer!  cls  bench{ pixels
   do  rng rng 192 min set-pixel  loop  }bench.
   ." Z80 R register" cr key drop ;

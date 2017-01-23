@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701222054
+  \ Last modified: 201701231435
 
   \ -----------------------------------------------------------
   \ Description
@@ -89,6 +89,71 @@
   \ 2017-01-20: Add `>name-test`.
   \
   \ 2017-01-22: Add `substitute-test`.
+  \
+  \ 2017-01-23: Move `select-test` from <flow.select.fsb>; move
+  \ `fzx-text` from <screen_mode.fzx.fsb>; move
+  \ `edit-sound-test` from <sound.128.editor.fsb>.
+
+( edit-sound-test )
+
+  \ XXX TMP
+
+need edit-sound  need >body  need shoot
+
+create explosion /sound allot
+
+' shoot >body explosion /sound move
+
+explosion edit-sound
+
+( fzx-test )
+
+  \ XXX TMP for debugging
+
+need fzx-emit  need <file
+
+create font  2048 allot
+1 set-drive  font 0 s" lettra.fzx" <file
+font fzx-font !
+: zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
+
+cr .( fzx-emit is ready ) cr
+' (fzx-emit) hex
+cr .( Code start:   ) dup u.
+cr .( Code length:  ) ' fzx-emit swap - u.
+cr
+
+( select-test )
+
+  \ Usage example
+
+: select-test ( n -- )
+  space
+  select
+    cond  $00 $1F range
+          $7F     equal  when  ." Control char "       else
+    cond  $20 $2F range
+          $3A $40 range
+          $5B $60 range
+          $7B $7E range  when  ." Point "              else
+    cond  $30 $39 range  when  ." Digit "              else
+    cond  $41 $5A range  when  ." Upper case letter "  else
+    cond  $61 $7A range  when  ." Lower case letter "  else
+    ." Not a character "
+  endselect  ;  -->
+
+( select-test )
+
+cr cr .( Running 'select' test...)
+
+cr  'a'  .(   ) dup emit  select-test
+cr  ','  .(   ) dup emit  select-test
+cr  '8'  .(   ) dup emit  select-test
+cr  '?'  .(   ) dup emit  select-test
+cr  'K'  .(   ) dup emit  select-test
+cr  0              dup 3 .r  select-test
+cr  127            dup 3 .r  select-test
+cr  128            dup 3 .r  select-test
 
 ( substitute-test )
 
