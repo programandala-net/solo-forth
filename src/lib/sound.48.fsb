@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701232007
+  \ Last modified: 201701240006
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,6 +50,9 @@
   \ 2017-01-23: Rename `>bleep` to `hz>bleep`. Add `dhz>bleep`,
   \ `middle-octave`, `/octave`, `octave-changer`, `beep>dhz`,
   \ `beep`.
+  \
+  \ 2017-01-24: Make `hz>bleep` and `dhz>bleep` faster (0.75
+  \ the previous time).
 
 ( bleep hz>bleep dhz>bleep )
 
@@ -162,14 +165,14 @@ code bleep  ( duration pitch -- )
 [unneeded] hz>bleep ?(
 
 : hz>bleep  ( frequency duration1 -- duration2 pitch )
-  over 1000 */ swap  4375 100 rot */ 30 -  ; ?)
+  over m* 1000 m/ nip swap  4375100. rot m/ nip 30 -  ; ?)
 
-  \ XXX TODO -- improve and benchmark:
-  \ over m* 1000 m/ nip swap  4375100. rot m/ nip 30 -  ;
+  \ XXX OLD -- 1.32 slower:
+  \ over 1000 */ swap  4375 100 rot */ 30 -  ;
 
   \ Credit:
   \
-  \ Code from v.Forth.
+  \ Code adapted from v.Forth.
 
   \ doc{
   \
@@ -185,10 +188,10 @@ code bleep  ( duration pitch -- )
 [unneeded] dhz>bleep ?(
 
 : dhz>bleep  ( frequency duration1 -- duration2 pitch )
-  over 10000 */ swap  4375 1000 rot */ 30 -  ; ?)
+  over m* 10000 m/ nip swap  43751000. rot m/ nip 30 -  ; ?)
 
-  \ XXX TODO -- improve and benchmark:
-  \ over m* 10000 m/ nip swap  43751000. rot m/ nip 30 -  ;
+  \ XXX OLD -- 1.32 slower:
+  \ over 10000 */ swap  4375 1000 rot */ 30 -  ;
 
   \ Credit:
   \
@@ -338,8 +341,6 @@ need octave-changer
 [unneeded] beep ?(
 
 need beep>dhz  need dhz>bleep  need bleep
-
-  \ XXX UNDER DEVELOPMENT
 
 : beep  ( duration pitch -- )
   beep>dhz swap dhz>bleep bleep  ; ?)

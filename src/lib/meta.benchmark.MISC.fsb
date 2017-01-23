@@ -84,7 +84,39 @@
   \
   \ 2017-01-22: Add `substitute-bench`.
   \
-  \ 2017-01-23: Add `1/string-bench`
+  \ 2017-01-23: Add `1/string-bench`, `hz>bleep-bench`.
+
+( hz>bleep-bench )
+
+need bench{  need }bench.
+
+: hz>bleep1  ( frequency duration1 -- duration2 pitch )
+  over 1000 */ swap  4375 100 rot */ 30 -  ;
+
+: hz>bleep2  ( frequency duration1 -- duration2 pitch )
+  over m* 1000 m/ nip swap  4375100. rot m/ nip 30 -  ;
+
+: run  ( u -)
+  cr ." Bench of hz>bleep"
+  cr ." Results for " dup u. ." iterations" dup
+  cr ." with */        : "
+  bench{ 0 ?do  i dup hz>bleep1 2drop  loop }bench.
+  cr ." with m* and m/ : "
+  bench{ 0 ?do  i dup hz>bleep2 2drop  loop }bench. ;
+
+  \ 2017-01-23:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       hz>bleep
+  \       ----------------------------
+  \       variant 1 variant 2
+  \       --------- ---------
+  \ 00010         3        2
+  \ 00100        25       19
+  \ 01000       247      185
+  \ 10000      2463     1848
+  \ 65535     16290    12263 (0.75)
 
 ( 1/string-bench )
 
