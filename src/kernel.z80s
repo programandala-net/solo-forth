@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701221536
+; Last modified: 201701231220
 
 include version.z80s
 
@@ -2985,22 +2985,22 @@ digit.test_value:
 ;
 ; number-base  ( ca len -- ca' len' n )
 ;
-; If the first char of string _ca len_ is a radix prefix, return
-; its value _n_ and the updated string _ca' len'_ (which does
-; not include the radix prefix).  Otherwise return _ca len_
-; untouched and the current value of `base` _n_.
-;
+; If the first char of string _ca len_ is a radix prefix,
+; return its value _n_ and the updated string _ca' len'_ (which
+; does not include the radix prefix).  Otherwise return _ca
+; len_ untouched and the current value of `base` _n_.
+
 ; ----
 ; : number-base  ( ca len -- ca' len' n )
 ;   dup if
 ;    over c@
-;    dup '$' = if  drop 1 /string 16  exit  then
-;    dup '%' = if  drop 1 /string  2  exit  then
-;        '#' = if       1 /string 10  exit  then
+;    dup '$' = if  drop 1 /string #16  exit  then
+;    dup '%' = if  drop 1 /string  #2  exit  then
+;        '#' = if       1 /string #10  exit  then
 ;   then
 ;   base @  ;
 ; ----
-;
+
 ; }doc
 
 number_base.try_hex:
@@ -3011,8 +3011,7 @@ number_base.try_hex:
   _literal '$'
   dw equals_,zero_branch_,number_base.try_binary
   dw drop_
-  _literal 1
-  dw slash_string_
+  dw one_slash_string_
   _literal 16
   dw exit_
 number_base.try_binary:
@@ -3020,15 +3019,13 @@ number_base.try_binary:
   _literal '%'
   dw equals_,zero_branch_,number_base.try_decimal
   dw drop_
-  _literal 1
-  dw slash_string_
+  dw one_slash_string_
   _literal 2
   dw exit_
 number_base.try_decimal:
   _literal '#'
   dw equals_,zero_branch_,number_base.current
-  _literal 1
-  dw slash_string_
+  dw one_slash_string_
   _literal 10
   dw exit_
 number_base.current:
@@ -3091,8 +3088,7 @@ to_number.begin: ; begin
   dw u_m_star_
   dw d_plus_
   dw two_swap_
-  _literal 1
-  dw slash_string_
+  dw one_slash_string_
   ; dw one_,dpl_,plus_store_ ; XXX TODO why this?
   dw branch_,to_number.begin  ; repeat
 to_number.end:
@@ -3248,8 +3244,7 @@ number_question.point:
 
 number_question.valid_point:
   dw dup_,one_minus_,dpl_,store_ ; update the position of the last point
-  _literal 1
-  dw slash_string_ ; skip the point
+  dw one_slash_string_ ; skip the point
 
   dw branch_,number_question.begin ; repeat
 
@@ -7945,6 +7940,27 @@ fill.done:
   dw exit_
 
 ; ----------------------------------------------
+  _code_header one_slash_string_,'1/string'
+
+; doc{
+;
+; 1/string  ( ca1 len1 -- ca1+1 len1-1 )
+;
+; Adjust the character string _ca1 len1_ by 1 character.
+;
+; This word is equivalent to `1 /string` but works faster
+; (0.9 the execution time).
+;
+; See: `/string`.
+;
+; }doc
+
+  ld hl,1
+  push hl
+
+  ; Execution continues in `/string`:
+
+; ----------------------------------------------
   _code_header slash_string_,'/string'
 
 ; doc{
@@ -7968,6 +7984,8 @@ fill.done:
 ; ----
 ;
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
+;
+; See: `1/string`.
 ;
 ; }doc
 

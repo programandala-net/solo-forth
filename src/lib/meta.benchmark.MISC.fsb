@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701222053
+  \ Last modified: 201701231153
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,6 +83,46 @@
   \ `lshift-bench`.
   \
   \ 2017-01-22: Add `substitute-bench`.
+  \
+  \ 2017-01-23: Add `1/string-bench`
+
+( 1/string-bench )
+
+need bench{  need }bench.
+
+: run  ( u -)
+  cr ." Results for " dup u. ." iterations" dup
+  cr ." 1 /string : "
+  bench{ 0 ?do  0 0 1 /string 2drop  loop }bench.
+  cr ." 1/string  : "
+  bench{ 0 ?do  0 0 1/string  2drop  loop }bench. ;
+
+  \ 2017-01-23:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \                   `1/string`
+  \                   --------------
+  \       `1 /string` push jr   jp
+  \       ----------- ---- ---- ----
+  \ 00100           1    1    1    1
+  \ 01000          11    9    9    9
+  \ 10000         100   91   90   90
+  \ 65535         661  594  590  588
+  \       ----------- ---- ---- ----
+
+  \ Data-space:          4    5    6  (bytes)
+
+  \ Legend:
+  \
+  \ push: `1/string` pushes 1 on the stack and runs into
+  \ `/string`. This was the chosen option.
+  \
+  \ jr: `1/string` loads DE with 1 and does a relative jump
+  \ into `/string`.
+  \
+  \ jp: `1/string` loads DE with 1 and does an absolute jump
+  \ into `/string`.
 
 ( substitute-bench )
 

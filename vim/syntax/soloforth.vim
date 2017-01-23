@@ -382,6 +382,7 @@ syn keyword soloforthMemory !s
 syn keyword soloforthMemory -leading
 syn keyword soloforthMemory -trailing
 syn keyword soloforthMemory /string
+syn keyword soloforthMemory 1/string
 syn keyword soloforthMemory 2!
 syn keyword soloforthMemory 2,
 syn keyword soloforthMemory 2@
@@ -1100,7 +1101,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-01-22: Add `1literal`.
 "
-" 2017-01-23: Add `replaces`, `unescape`, `substitute`.
+" 2017-01-23: Add `replaces`, `unescape`, `substitute`,
+" `1/string`.
 
 " --------------------------------------------------------------
 
