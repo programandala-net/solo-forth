@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-01-22
+" Updated:  2017-01-23
 
 " --------------------------------------------------------------
 " History
@@ -555,9 +555,12 @@ syn keyword soloforthStack swap
 syn keyword soloforthStack tuck
 syn keyword soloforthString compare
 syn keyword soloforthString faruppers
+syn keyword soloforthString replaces
 syn keyword soloforthString scan
 syn keyword soloforthString search
 syn keyword soloforthString skip
+syn keyword soloforthString substitute
+syn keyword soloforthString unescape
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
 syn keyword soloforthTool ms
@@ -1096,6 +1099,8 @@ let b:current_syntax = "soloforth"
 " `name<name`, `name>str`, `name>name`, `#words`.
 "
 " 2017-01-22: Add `1literal`.
+"
+" 2017-01-23: Add `replaces`, `unescape`, `substitute`.
 
 " --------------------------------------------------------------
 

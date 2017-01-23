@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701220050
+  \ Last modified: 201701230222
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,8 +40,12 @@
   \ individually accessible to `need`.
   \
   \ 2017-01-22: Improve documentation.
+  \
+  \ 2017-01-23: Modify to support the new alternative
+  \ `xt-replaces`:  Now execution of a substitution returns the
+  \ string pair, not the address of a counted string.
 
-( substitute-wordlist create-substitution )
+( substitute-wordlist (substitution slit-substitution )
 
 [unneeded] substitute-wordlist
 ?\  wordlist constant substitute-wordlist
@@ -58,19 +62,41 @@
 
 need ?(
 
-[unneeded] create-substitution ?(
+[unneeded] (substitution ?(
 
-need substitute-wordlist  need /counted-string  need nextname
+need substitute-wordlist  need nextname
 
-: create-substitution  ( ca1 len1 -- ca2 )
+: (substitution  ( ca1 len1 -- ca2 )
   get-current >r substitute-wordlist set-current
-  nextname create
-  r> set-current
-  here 0 c, /counted-string chars allot  ; ?)
+  nextname create here
+  r> set-current  ; ?)
 
   \ doc{
   \
-  \ create-substitution  ( ca1 len1 -- ca2 )
+  \ (substitution  ( ca1 len1 -- ca2 )
+  \
+  \ Given a string _ca1 len1_ create its definition in
+  \ `substitute-wordlist` its substitution and return the
+  \ address of its storage space in data space, not allocated.
+  \
+  \ This word is a common factor of `substitution` and
+  \ `xt-substitution`.
+  \
+  \ See: `substitution`, `xt-substitution`, `replaces`.
+  \
+  \ }doc
+
+[unneeded] slit-substitution ?(
+
+need (substitution  need /counted-string
+
+: slit-substitution  ( ca1 len1 -- ca2 )
+  (substitution 0 c, /counted-string chars allot
+  does> count  ; ?)
+
+  \ doc{
+  \
+  \ substitution  ( ca1 len1 -- ca2 )
   \
   \ Given a string _ca1 len1_ create its substitution and
   \ storage space.  Return the address of the buffer for the
@@ -80,7 +106,7 @@ need substitute-wordlist  need /counted-string  need nextname
   \
   \ }doc
 
-( find-substitution replaces )
+( find-substitution reuse-substitution replaces )
 
 need ?(
 
@@ -88,7 +114,7 @@ need ?(
 
 need substitute-wordlist  need search-wordlist
 
-: find-substitution  ( ca len -- xt f | 0 )
+: find-substitution  ( ca len -- xt true | false )
   substitute-wordlist search-wordlist  ; ?)
 
   \ doc{
@@ -102,13 +128,20 @@ need substitute-wordlist  need search-wordlist
   \
   \ }doc
 
+[unneeded] reuse-substitution ?(
+
+need >body
+
+: reuse-substitution  ( ca len xt -- pfa )  nip nip >body  ; ?)
+
 [unneeded] replaces ?(
 
-need find-substitution  need create-substitution
+need find-substitution  need reuse-substitution
+need slit-substitution
 
 : replaces  ( ca1 len1 ca2 len2 -- )
-  2dup find-substitution if    nip nip execute
-                         else  create-substitution
+  2dup find-substitution if    reuse-substitution
+                         else  slit-substitution
                          then  place  ; ?)
 
   \ doc{
@@ -128,7 +161,7 @@ need find-substitution  need create-substitution
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
-  \ See: `substitute`, `unescape`, `create-substitution`,
+  \ See: `substitute`, `unescape`, `substitution`,
   \ `find-substitution`, `substitute-wordlist`.
   \
   \ }doc

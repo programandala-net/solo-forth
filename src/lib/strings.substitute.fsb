@@ -35,6 +35,10 @@
   \ by renaming and a bit of factoring. Make it faster with Z80
   \ code. Rewrite some parts to make the intermediate buffer
   \ unnecessary.
+  \
+  \ 2017-01-23: Modify to support the new alternative
+  \ `xt-replaces`: Now execution of a substitution returns the
+  \ string pair, not the address of a counted string.
 
 ( substitute )
 
@@ -94,7 +98,7 @@ variable substitute-error
 
 : substituted?  ( ca len -- f )
   2dup find-substitution dup >r
-  if    execute count str>substitute-result 2drop
+  if    execute str>substitute-result 2drop
   else  substitution-delimiter c>substitute-result
         str>substitute-result
         substitution-delimiter c>substitute-result  then  r>  ;

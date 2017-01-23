@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-22
+:revdate: 2017-01-23
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -85,7 +85,28 @@ Change the code style after Pygmy Forth:
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
 
-.2017-01-05:
+.2017-01-23:
+
+Add `1/string` to the kernel, in Z80.  The idiom `1 /string` is used 5 times in
+the kernel (by `number-base`, `>number` and `number?`). Replaces them with
+`1/string` will save 10 data-space bytes (`1` is a code word) and the code
+would run faster. This word needs only 5 bytes of data space, because its
+execution runs into `/string`:
+
+----
+ld hl,1
+push hl
+; continue in `/string`
+----
+
+The idiom `1 /string` is used also in the library: once in `substitute` and
+twice in `get-substitution`.
+
+.2017-01-23:
+
+Rewrite `here` in Z80.
+
+.2017-01-05, 2017-01-23:
 
 Rewrite `there` in Z80 or remove it?
 
@@ -290,24 +311,8 @@ saves the additional link.
 
 .2017-01-22:
 
-Improve `substitute`: hide factors; rename words; make it faster; don't use a
-buffer for the name, but the substring.
-
-.2017-01-22:
-
 Improve `substitute` and `replaces` with a configurable search order, similar
 to that implemented for escaped strings.
-
-.2017-01-22:
-
-The standard version of `replaces` creates a 255-byte buffer for every
-substitution.  Most of the times that is not needed.  Write two alternatives,
-variants or configurable behaviours of `replaces`:
-
-1. Accept an xt as substitution. The execution of the xt will return the actual
-   string.
-2. Create a buffer as long as the substitution. Therefore the substitution can
-   not be replaced by longer substitutions later.
 
 .2017-01-07:
 

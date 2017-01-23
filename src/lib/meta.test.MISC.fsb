@@ -92,7 +92,7 @@
 
 ( substitute-test )
 
-need substitute  need replaces
+need substitute  need replaces  need xt-replaces
 
 create result 255 chars allot
 
@@ -100,13 +100,19 @@ s" saluton"  s" hello"    replaces
 s" bonvenon" s" welcome"  replaces
 
 : substitute-test  ( ca len -- )
-  2dup cr type
-  result 255 substitute cr
-  dup 0< over ?throw
+  2dup cr type result 255 substitute cr dup 0< over ?throw
   . ." substitutions:" cr type cr  ;
 
 s" Say '%hello%' and '%welcome%'" substitute-test
-s" The percentage sign is %%." substitute-test
+s" The percentage sign is %%" substitute-test
+
+: fth  s" Forth" ; ' fth s" lang" xt-replaces
+s" I program in %lang%" substitute-test
+
+: z80  s" Z80 assembly" ; ' z80 s" lang" xt-replaces
+s" I program in %lang%" substitute-test
+
+s" Say '%hello%' in %lang%" substitute-test
 
 ( >name-test )
 
