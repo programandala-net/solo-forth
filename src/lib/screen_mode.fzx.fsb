@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231436
+  \ Last modified: 201701231538
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,8 +39,9 @@
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
-  \ 2017-01-23: Move `fzx-test` to the tests module. Fix Z80
-  \ mnemonic.
+  \ 2017-01-23: Move `fzx-test` to the tests module. Fix 7
+  \ wrong Z80 instructions in `(fzx-emit)`, remaining from the
+  \ conversion from the old assembler.
 
 ( fzx-mode )
 
@@ -218,8 +219,7 @@ create (fzx-emit)  ( -- )
   h incp, m a ld,
     \ now HL references next char offset
     \ now A = LSB of next char offset
-  r add, a e ld,
-    \ XXX TODO -- confirm `r`
+  l add, a e ld,
     \ now E = LSB of next char definition address
 -->
 
@@ -266,7 +266,7 @@ create (fzx-emit)  ( -- )
   22AA 2+ call, exaf,
     \ call (PIXEL-ADDr) + 2 to calculate screen address
     \ now A' = (col % 8)
-  here jr, >relmark 5 unresolved !  \ jr CHK_LOOP
+  here jr, >rmark 5 unresolved !  \ jr CHK_LOOP
 
 -->
 
@@ -289,7 +289,7 @@ create (fzx-emit)  ( -- )
       \ now A = zero (since there's no 3rd byte)
       \ now HL = screen address
       \ now A = (col % 8), A' = 0
-    nz' rif
+    nz? rif
       a b ld, exaf,
         \ now B = (col % 8)
         \ now A = 0, A' = (col % 8)
@@ -312,10 +312,10 @@ create (fzx-emit)  ( -- )
 
     h a ld, 07 and#,
     z? rif  l a ld, 20 add#, a l ld,
-      nc? if  h a ld, 08 sub#, a h ld,  then
+      nc? rif  h a ld, 08 sub#, a h ld,  rthen
     rthen \ CHK_LOOP:
 
-    5 unresolved @ >relresolve
+    5 unresolved @ >rresolve
 -->
 
 ( fzx-emit )
