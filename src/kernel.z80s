@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701231534
+; Last modified: 201701232352
 
 include version.z80s
 
@@ -139,7 +139,7 @@ true:                             equ $FFFF ; -1
 cell:                             equ $02
 
 cells_per_data_stack:             equ $50
-cells_per_return_stack:           equ $70
+cells_per_return_stack:           equ $90
 
   ; XXX REMARK -- 2016-11-19: The return stack has been
   ; increased from $50 to $55 cells. The loading of `tt` (a
@@ -163,6 +163,10 @@ cells_per_return_stack:           equ $70
   ; XXX REMARK -- 2017-01-04: $70 cells, the minimum needed to
   ; load `8-bit-rng-pix-benchs` and `16-bit-rng-pix-benchs` (8
   ; nested `need` each).
+  ;
+  ; XXX REMARK -- 2017-01-23: $90 cells. $70 is not enough to
+  ; load `beep`. The final solution is to share a common space
+  ; between the data and the return stack, as planned.
 
 bytes_per_terminal_input_buffer:  equ $50
 

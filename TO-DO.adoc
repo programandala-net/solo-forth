@@ -854,6 +854,17 @@ prerequisites are older than the target.
 // Maths {{{1
 == Maths ==
 
+.2017-01-23:
+
+Write `?shift`, but in Z80:
+
+----
+: ?shift  ( x n -- )
+  ?dup 0exit
+  dup 0< if  abs rshift exit  then
+  lshift  ;
+----
+
 .2016-12-30:
 
 Rewrite `du<` in Z80.
