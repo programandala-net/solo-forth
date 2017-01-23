@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-23
+:revdate: 2017-01-24
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -854,16 +854,9 @@ prerequisites are older than the target.
 // Maths {{{1
 == Maths ==
 
-.2017-01-23:
+.2017-01-24:
 
-Write `?shift`, but in Z80:
-
-----
-: ?shift  ( x n -- )
-  ?dup 0exit
-  dup 0< if  abs rshift exit  then
-  lshift  ;
-----
+Rewrite `?shift` in Z80.
 
 .2016-12-30:
 
