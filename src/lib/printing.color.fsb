@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701242311
+  \ Last modified: 201701242355
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,7 +65,8 @@
   \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
   \ `perm-attr-mask!`, `attr@`, `attr-mask@`, `perm-attr@`,
   \ `perm-attr-mask@` in Z80. Improve documentation. Make all
-  \ words individually accessible to `need`.
+  \ words individually accessible to `need`. Add `inverse-off`
+  \ and `inverse-on` and rewrite `inverse` after them.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -553,22 +554,30 @@ need ?(
 : flash!  ( f -- )
   %10000000 and attr@ %01111111 and or attr!  ; ?)
 
-( inverse overprint )
+( inverse-off inverse-on inverse )
 
 need ?(
 
-[unneded] inverse ?(
+[unneeded] inverse-off ?(
 
-code inverse  ( f -- )
-  E1 c,  78 04 + c,  B0 05 + c,  28 c, 06 c,
-    \ pop hl
-    \ ld a,h
-    \ or l
-    \ jr z,inverse.off
-  FD c, CB c, 57 c, C6 08 02 * + c,  jpnext,
+code inverse-off  ( -- )
+  FD c, CB c, 57 c, C6 08 02 * + c,  jpnext,  end-code ?)
     \ set 2,(iy+sys_p_flag_offset) ; temporary inverse flag
     \ _jp_next
-    \ inverse.off:
+
+  \ doc{
+  \
+  \ inverse-off  ( -- )
+  \
+  \ Turn the inverse printing mode off.
+  \
+  \ See: `inverse-on`, `inverse`.
+  \
+  \ }doc
+
+[unneeded] inverse-on ?(
+
+code inverse-on  ( f -- )
   FD c, CB c, 57 c, 86 08 02 * + c,  jpnext,  end-code ?)
     \ res 2,(iy+sys_p_flag_offset) ; temporary inverse flag
     \ _jp_next
@@ -577,12 +586,35 @@ code inverse  ( f -- )
   \
   \ inverse  ( f -- )
   \
+  \ Turn the inverse printing mode on.
+  \
+  \ See: `inverse-off`, `inverse`.
+  \
+  \ }doc
+
+[unneeded] inverse ?(  need inverse-off  need inverse-on
+
+code inverse  ( f -- )
+  E1 c, 78 04 + c, B0 05 + c,
+    \ pop hl
+    \ ld a,h
+    \ or l
+  CA c, ' inverse-on , C3 c, ' inverse-off ,  end-code ?)
+    \ jp z,minus_inverse_
+    \ jp plus_inverse_
+
+  \ doc{
+  \
+  \ inverse  ( f -- )
+  \
   \ If _f_ is zero, turn the inverse printing mode off; else
   \ turn it on.
   \
-  \ See: `overprint`.
+  \ See: `inverse-off`, `inverse-on`, `overprint`.
   \
   \ }doc
+
+( overprint )
 
 [unneeded] overprint ?(
 

@@ -697,12 +697,7 @@ Rewrite in Z80 the low-level words of <printing.color.fsb>.
 
 .2016-12-02, 2017-01-23:
 
-Factor `inverse` to `inverse-on` and `inverse-off`.
-
 Factor `overprint` to `overprint-on` and `overprint-off`.
-
-Or write alternatives to `inverse` and `overprint`, for speed:
-`+inverse`, `-inverse`, `+overprint`, `-overprint`.
 
 .2015-09-01:
 
