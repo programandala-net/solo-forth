@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701242250
+  \ Last modified: 201701242311
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,7 +63,8 @@
   \ 2017-01-24: Rename all words that fetch and store the
   \ system attributes: prefix "color" to "attr", prefix
   \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
-  \ `perm-attr-mask!`, `attr@`, `attr-mask@` in Z80.
+  \ `perm-attr-mask!`, `attr@`, `attr-mask@`, `perm-attr@`,
+  \ `perm-attr-mask@` in Z80. Improve documentation.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -210,7 +211,7 @@ need ?(
 [unneeded] attr@ ?( need os-attr-t
 
 code attr@  ( -- b )
-  3A c, os-attr-t , C3 c, jp pusha , end-code
+  3A c, os-attr-t , C3 c, jp pusha , end-code ?)
   \ ld a,(sys_attr_t)
   \ jp push_a
 
@@ -218,11 +219,11 @@ code attr@  ( -- b )
   \
   \ attr@  ( -- b )
   \
-  \ Get temporary color attribute _b_.
+  \ Get the temporary attribute _b_.
+  \
+  \ See: `attr!`, `perm-attr@`.
   \
   \ }doc
-
-need ?(
 
 [unneeded] attr! ?(  need os-attr-t
 
@@ -240,26 +241,30 @@ code attr!  ( b -- )
   \
   \ attr!  ( b -- )
   \
-  \ Set temporary color attribute _b_.
+  \ Set _b_ as the temporary attribute.
+  \
+  \ See: `attr@`, `perm-attr!`.
   \
   \ }doc
 
-[unneeded] attr-mask@ ?( need os-mask-t
+[unneeded] attr-mask@ ?(  need os-mask-t
 
 code attr-mask@  ( -- b )
-  3A c, os-mask-t , C3 c, jp pusha , end-code
+  3A c, os-mask-t , C3 c, jp pusha , end-code ?)
   \ ld a,(sys_mask_t)
   \ jp push_a
 
   \ doc{
   \
-  \ attr-mask!  ( b -- )
+  \ attr-mask@  ( b -- )
   \
-  \ Get temporary color attribute mask _b_.
+  \ Set _b_ as the temporary attribute mask.
+  \
+  \ See: `attr-mask!`, `perm-attr-mask@`.
   \
   \ }doc
 
-[unneeded] attr-mask! ?( need os-mask-t
+[unneeded] attr-mask! ?(  need os-mask-t
 
 code attr-mask!  ( b -- )
   D1 c, 78 03 + c, 32 c, os-mask-t , jpnext, end-code ?)
@@ -275,7 +280,9 @@ code attr-mask!  ( b -- )
   \
   \ attr-mask!  ( b -- )
   \
-  \ Set temporary color attribute mask _b_.
+  \ Set _b_ as the temporary attribute mask.
+  \
+  \ See: `attr-mask@`, `perm-attr-mask!`.
   \
   \ }doc
 
@@ -295,6 +302,8 @@ need ?(
   \ Create a definition "name" that, when executed, will
   \ set temporary color attribute _b_.
   \
+  \ See: `2color`.
+  \
   \ }doc
 
 [unneeded] 2color ?(  need attr!  need attr-mask!
@@ -309,6 +318,8 @@ need ?(
   \ Create a definition "name" that, when executed, will
   \ set temporary color attribute _b2_ and mask _b1_.
   \
+  \ See: `color`.
+  \
   \ }doc
 
 ( perm-attr@ perm-attr! perm-attr-mask@ perm-attr-mask! )
@@ -317,13 +328,18 @@ need ?(
 
 [unneeded] perm-attr@ ?(  need os-attr-p
 
-: perm-attr@  ( -- b )  os-attr-p c@  ; ?)
+code perm-attr@  ( -- b )
+  3A c, os-attr-p , C3 c, jp pusha , end-code ?)
+  \ ld a,(sys_attr_p)
+  \ jp push_a
 
   \ doc{
   \
   \ perm-attr@  ( -- b )
   \
-  \ Get permanent color attribute _b_.
+  \ Get the permanent attribute _b_.
+  \
+  \ See: `perm-attr!`, `attr@`.
   \
   \ }doc
 
@@ -345,17 +361,24 @@ code perm-attr!  ( b -- )
   \
   \ Set permanent color attribute _b_.
   \
+  \ See: `perm-attr@`, `attr!`.
+  \
   \ }doc
 
 [unneeded] perm-attr-mask@ ?(  need os-mask-p
 
-: perm-attr-mask@  ( -- b )  os-mask-p c@  ; ?)
+code perm-attr-mask@  ( -- b )
+  3A c, os-mask-p , C3 c, jp pusha , end-code ?)
+  \ ld a,(sys_mask_p)
+  \ jp push_a
 
   \ doc{
   \
   \ perm-attr-mask@  ( -- b )
   \
-  \ Get permanent color attribute mask _b_.
+  \ Get the permanent attribute mask _b_.
+  \
+  \ See: `perm-attr-mask!`, `attr-mask@`.
   \
   \ }doc
 
@@ -377,6 +400,8 @@ code perm-attr-mask!  ( b -- )
   \
   \ Set permanent color attribute mask _b_.
   \
+  \ See: `perm-attr-mask@`, `attr-mask!`.
+  \
   \ }doc
 
 ( permcolor 2permcolor )
@@ -394,6 +419,8 @@ need perm-attr!  need perm-attr-mask!
   \ Create a definition "name" that, when executed, will
   \ set permanent color attribute _b_.
   \
+  \ See: `2permcolor`.
+  \
   \ }doc
 
 : 2permcolor  ( b1 b2 "name" -- )
@@ -406,6 +433,8 @@ need perm-attr!  need perm-attr-mask!
   \
   \ Create a definition "name" that, when executed, will
   \ set permanent color attribute _b2_ and mask _b1_.
+  \
+  \ See: `permcolor`.
   \
   \ }doc
 
