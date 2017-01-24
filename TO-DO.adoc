@@ -631,14 +631,11 @@ attribute words defined in the kernel (`bright`, `flash`, `paper` and `ink`)
 change both attributes, but `overprint` and `inverse`, defined in the library,
 change only the temporary attributes.
 
-.2017-01-22:
+.2017-01-24:
 
 NOTE: Milestone: 0.13.0
 
-Write `temp-attr@  ( -- b )`, `temp-attr@  ( b -- )`, `perm-attr@  ( -- b )`
-and `perm-attr@  ( b -- )`.
-
-So far the 
+Write `gxy-attr@  ( x y -- b )` and `gxy-attr!  ( b x y -- )`.
 
 .2017-01-22:
 
@@ -665,41 +662,9 @@ Or write a variant:
 
 NOTE: Milestone: 0.13.0
 
-- Rename `color!` and family to `temp-attr!` or `t-attr!`...?
-- Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...?
-- Rename `permament-colors` to `permanent-attrs` or `temp>perm-attrs` or
-  `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr`...?
-
-"color" is more readable. It can be used to name an 8-bit color attribute:
-
-- `temp-color@`, `perm-color@`
-- `temp-color!`, `perm-color!`
-- `temp>perm-colors`
-- `xy-color@`, `xy-color!`
-- `temp-color-mask@`, `perm-color-mask@`
-- `temp-color-mask!`, `perm-color-mask!`
-
-But "color" is ambiguous. It's not exactly a synonym of "color attribute".
-Alternative:
-
-|===
-| Current name        | New name
-
-| `color!`            | `attr!`
-| `color@`            | `attr@`
-| `color-mask!`       | `attr-mask!`
-| `color-mask@`       | `attr-mask@`
-| `permcolor!`        | `perm-attr!`
-| `permcolor@`        | `perm-attr!`
-| `permcolor-mask!`   | `perm-attr-mask!`
-| `permcolor-mask@`   | `perm-attr-mask@`
-| `permanent-colors`  | `permanent-attrs` `attr>perm`
-| `permcolor@`        | `perm-attr@`
-|                     | `xy-attr!`
-|                     | `xy-attr@`
-|                     | `gxy-attr!`
-|                     | `gxy-attr@`
-|===
+- Rename `permament-colors` to `permanent-attrs` or `temp>perm-attrs`
+  or `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr` or `attr>perm`
+  or `attr>perm-attr`...
 
 .2017-01-09:
 
@@ -1200,12 +1165,6 @@ library modules.
 NOTE: Milestone 0.13.0
 
 Compact the `g-emit` module.
-
-.2016-12-30:
-
-NOTE: Milestone 0.13.0
-
-Make words in <printing.color.fsb> accessible to `need`.
 
 .2016-12-30, 2017-01-23:
 

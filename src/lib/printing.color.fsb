@@ -64,7 +64,8 @@
   \ system attributes: prefix "color" to "attr", prefix
   \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
   \ `perm-attr-mask!`, `attr@`, `attr-mask@`, `perm-attr@`,
-  \ `perm-attr-mask@` in Z80. Improve documentation.
+  \ `perm-attr-mask@` in Z80. Improve documentation. Make all
+  \ words individually accessible to `need`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -137,6 +138,7 @@
 need ?(
 
 [unneeded] papery ?(  need 8*  need alias
+
 ' 8* alias papery  ( b1 -- b2 ) ?)
 
   \ doc{
@@ -157,6 +159,7 @@ need ?(
   \ }doc
 
 [unneeded] brighty ?(
+
 code brighty  ( attribute -- brighty-attribute )
   E1 c, CB c, C0 6 8 * + 5 + c, jppushhl,  end-code ?)
   \ pop hl
@@ -181,6 +184,7 @@ code brighty  ( attribute -- brighty-attribute )
   \ }doc
 
 [unneeded] flashy ?(
+
 code flashy   ( b1 -- b2 )
   E1 c, CB c, C0 7 8 * + 5 + c, jppushhl,  end-code ?)
   \ pop hl
@@ -300,7 +304,7 @@ need ?(
   \ color  ( b "name" -- )
   \
   \ Create a definition "name" that, when executed, will
-  \ set temporary color attribute _b_.
+  \ set _b_ as the temporary attribute.
   \
   \ See: `2color`.
   \
@@ -315,8 +319,9 @@ need ?(
   \
   \ 2color  ( b1 b2 "name" -- )
   \
-  \ Create a definition "name" that, when executed, will
-  \ set temporary color attribute _b2_ and mask _b1_.
+  \ Create a definition "name" that, when executed, will set
+  \ _b2_ as the temporary attribute and _b1_ as the temporary
+  \ attribute mask.
   \
   \ See: `color`.
   \
@@ -359,7 +364,7 @@ code perm-attr!  ( b -- )
   \
   \ perm-attr!  ( b -- )
   \
-  \ Set permanent color attribute _b_.
+  \ Set _b_ as the permanent attribute.
   \
   \ See: `perm-attr@`, `attr!`.
   \
@@ -398,7 +403,7 @@ code perm-attr-mask!  ( b -- )
   \
   \ perm-attr-mask!  ( b -- )
   \
-  \ Set permanent color attribute mask _b_.
+  \ Set _b_ as the permanent attribute mask.
   \
   \ See: `perm-attr-mask@`, `attr-mask!`.
   \
@@ -406,48 +411,54 @@ code perm-attr-mask!  ( b -- )
 
 ( permcolor 2permcolor )
 
-need perm-attr!  need perm-attr-mask!
+need ?(
+
+[unneeded] permcolor ?(  need perm-attr!
 
 : permcolor  ( b "name" -- )
   create c,
-  does>  ( -- ) ( pfa ) c@ perm-attr!  ;
+  does>  ( -- ) ( pfa ) c@ perm-attr!  ; ?)
 
   \ doc{
   \
   \ permcolor  ( b "name" -- )
   \
-  \ Create a definition "name" that, when executed, will
-  \ set permanent color attribute _b_.
+  \ Create a definition "name" that, when executed, will set
+  \ permanent attribute _b_.
   \
   \ See: `2permcolor`.
   \
   \ }doc
 
+[unneeded] 2permcolor ?(  need perm-attr!  need perm-attr-mask!
+
 : 2permcolor  ( b1 b2 "name" -- )
   create 2,
-  does>  ( -- ) ( pfa ) 2@ perm-attr! perm-attr-mask!  ;
+  does>  ( -- ) ( pfa ) 2@ perm-attr! perm-attr-mask!  ; ?)
 
   \ doc{
   \
   \ 2permcolor  ( b1 b2 "name" -- )
   \
-  \ Create a definition "name" that, when executed, will
-  \ set permanent color attribute _b2_ and mask _b1_.
+  \ Create a definition "name" that, when executed, will set
+  \ permanent attribute _b2_ and permanent attribute mask _b1_.
   \
   \ See: `permcolor`.
   \
   \ }doc
 
-( attr>paper paper>attr paper@ paper! ink@ ink! )
+( attr>paper paper>attr )
 
-need attr@  need attr!
+need ?(
+
+[unneeded] attr>paper ?(
 
 code attr>paper  ( b1 -- b2 )
   E1 c, 7D c, E6 c, %00111000 c,
   \ pop hl
   \ ld a,l
   \ and %00111000
-  CB c, 3F c, CB c, 3F c, CB c, 3F c, pusha jp,  end-code
+  CB c, 3F c, CB c, 3F c, CB c, 3F c, pusha jp,  end-code ?)
   \ srl a
   \ srl a
   \ srl a
@@ -469,12 +480,14 @@ code attr>paper  ( b1 -- b2 )
   \
   \ }doc
 
+[unneeded] paper>attr ?(
+
 code paper>attr  ( b1 -- b2 )
   E1 c, 7F c, E6 c, %00000111 c,
   \ pop hl
   \ ld a,l
   \ and %00000111
-  CB c, 27 c, CB c, 27 c, CB c, 27 c, pusha jp,  end-code
+  CB c, 27 c, CB c, 27 c, CB c, 27 c, pusha jp,  end-code ?)
   \ sla a
   \ sla a
   \ sla a
@@ -496,33 +509,55 @@ code paper>attr  ( b1 -- b2 )
   \
   \ }doc
 
-: paper@  ( -- b )  attr@ attr>paper  ;
+( paper@ paper! ink@ ink! )
+
+need ?(
+
+[unneeded] paper@ ?(  need attr@  need attr>paper
+
+: paper@  ( -- b )  attr@ attr>paper  ; ?)
+
+[unneeded] paper! ?(  need paper>attr  attr@  need attr!
 
 : paper!  ( b -- )
-  paper>attr attr@ %11000111 and or attr!  ;
+  paper>attr attr@ %11000111 and or attr!  ; ?)
 
-: ink@  ( -- b )  attr@ %00000111 and  ;
+[unneeded] ink@ ?(  need attr@
+
+: ink@  ( -- b )  attr@ %00000111 and  ; ?)
+
+[unneeded] ink! ?(  need attr@  need attr!
 
 : ink!  ( b -- )
-  %00000111 and attr@ %11111000 and or attr!  ;
+  %00000111 and attr@ %11111000 and or attr!  ; ?)
 
 ( bright@ bright! flash! flash@ )
 
-need attr@  need attr!
+need ?(
 
-: bright@  ( -- f )
-  attr@ %01000000 and 0=  ;
+[unneeded] bright@ ?(  need attr@
+
+: bright@  ( -- f )  attr@ %01000000 and 0=  ; ?)
+
+[unneeded] bright! ?(  need attr@  need attr!
 
 : bright!  ( f -- )
-  %01000000 and attr@ %10111111 and or attr!  ;
+  %01000000 and attr@ %10111111 and or attr!  ; ?)
 
-: flash@  ( -- f )
-  attr@ %10000000 and 0=  ;
+[unneeded] flash@ ?(  need attr@
+
+: flash@  ( -- f )  attr@ %10000000 and 0=  ; ?)
+
+[unneeded] flash! ?(  need attr@  need attr!
 
 : flash!  ( f -- )
-  %10000000 and attr@ %01111111 and or attr!  ;
+  %10000000 and attr@ %01111111 and or attr!  ; ?)
 
 ( inverse overprint )
+
+need ?(
+
+[unneded] inverse ?(
 
 code inverse  ( f -- )
   E1 c,  78 04 + c,  B0 05 + c,  28 c, 06 c,
@@ -534,7 +569,7 @@ code inverse  ( f -- )
     \ set 2,(iy+sys_p_flag_offset) ; temporary inverse flag
     \ _jp_next
     \ inverse.off:
-  FD c, CB c, 57 c, 86 08 02 * + c,  jpnext,  end-code
+  FD c, CB c, 57 c, 86 08 02 * + c,  jpnext,  end-code ?)
     \ res 2,(iy+sys_p_flag_offset) ; temporary inverse flag
     \ _jp_next
 
@@ -545,7 +580,11 @@ code inverse  ( f -- )
   \ If _f_ is zero, turn the inverse printing mode off; else
   \ turn it on.
   \
+  \ See: `overprint`.
+  \
   \ }doc
+
+[unneeded] overprint ?(
 
 code overprint  ( f -- )
   E1 c,  78 04 + c,  B0 05 + c,  28 c, 06 c,
@@ -557,7 +596,7 @@ code overprint  ( f -- )
     \ set 0,(iy+sys_p_flag_offset) ; temporary overprint flag
     \ _jp_next
     \ overprint.off:
-  FD c, CB c, 57 c, 86 08 00 * + c,  jpnext,  end-code
+  FD c, CB c, 57 c, 86 08 00 * + c,  jpnext,  end-code ?)
     \ res 0,(iy+sys_p_flag_offset) ; temporary overprint flag
     \ _jp_next
 
@@ -567,6 +606,8 @@ code overprint  ( f -- )
   \
   \ If _f_ is zero, turn the overprint mode off; else turn it
   \ on.
+  \
+  \ See: `inverse`.
   \
   \ }doc
 
