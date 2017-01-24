@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-24
+:revdate: 2017-01-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -694,10 +694,6 @@ Use constants for bitmasks and "unbitmasks" in <printing.color.fsb>.
 .2016-12-02:
 
 Rewrite in Z80 the low-level words of <printing.color.fsb>.
-
-.2016-12-02, 2017-01-23:
-
-Factor `overprint` to `overprint-on` and `overprint-off`.
 
 .2015-09-01:
 
