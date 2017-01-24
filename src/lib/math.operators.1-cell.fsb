@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701241338
+  \ Last modified: 201701241702
 
   \ -----------------------------------------------------------
   \ Description
@@ -109,7 +109,9 @@
   \
   \ 2017-01-23: Add `?shift`.
   \
-  \ 2017-01-24: Improve documentation of `fm/mod`.
+  \ 2017-01-24: Improve documentation of `fm/mod`. Improve
+  \ needing of symmetric-division and floored-division
+  \ operators.
 
 ( under+ +under )
 
@@ -642,17 +644,27 @@ need 2/
   \
   \ Forth-94 documentation.
 
-need sm/rem
+need ?(
 
-: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ;
+[unneeded] /-rem ?(  need sm/rem
 
-: /-  (  n1 n2 -- n3 )  /-rem nip  ;
+: /-rem  ( n1 n2 -- n3 n4 )  >r  s>d  r> sm/rem  ; ?)
 
-: -rem  ( n1 n2 -- n3 )  /-rem drop  ;
+[unneeded] /- ?(  need /-rem
 
-: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ;
+: /-  (  n1 n2 -- n3 )  /-rem nip  ; ?)
 
-: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ;
+[unneeded] -rem ?(  need /-rem
+
+: -rem  ( n1 n2 -- n3 )  /-rem drop  ; ?)
+
+[unneeded] */-rem ?(  need sm/rem
+
+: */-rem  (  n1 n2 n3 -- n4 n5 )  >r  m*  r> sm/rem  ; ?)
+
+[unneeded] ?(  need */-rem
+
+: */-  ( n1 n2 n3 -- n4 )  */-rem nip  ; ?)
 
 ( fm/mod )
 
@@ -708,17 +720,22 @@ need sm/rem
   \
   \ Forth-94 documentation.
 
-need fm/mod
+need ?(
 
-: /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ;
+[unneeded] /_mod ?(  need fm/mod
+: /_mod  ( n1 n2 -- n3 n4 )  >r s>d r> fm/mod  ; ?)
 
-: /_  ( n1 n2 -- n3 )  /_mod nip  ;
+[unneeded] /_ ?(  need /_mod
+: /_  ( n1 n2 -- n3 )  /_mod nip  ; ')
 
-: _mod  ( n1 n2 -- n3 )  /_mod drop  ;
+[unneeded] _mod ?(  need /_mod
+: _mod  ( n1 n2 -- n3 )  /_mod drop  ; ?)
 
-: */_mod  ( n1 n2 n3 -- n4 n5 )  >r m* r> fm/mod  ;
+[unneeded] */_mod ?(  need fm/mod
+: */_mod  ( n1 n2 n3 -- n4 n5 )  >r m* r> fm/mod  ; ?)
 
-: */_  ( n1 n2 n3 -- n4 )   */_mod nip  ;
+[unneeded] */_ ?(  need */_mod
+: */_  ( n1 n2 n3 -- n4 )   */_mod nip  ; ?)
 
 ( any? either neither ifelse )
 
