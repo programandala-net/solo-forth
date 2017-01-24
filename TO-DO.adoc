@@ -629,6 +629,8 @@ save several blocks of source.
 
 .2017-01-22:
 
+NOTE: Milestone: 0.13.0
+
 Decide a convention about permanent and temporary attributes. At the moment the
 attribute words defined in the kernel (`bright`, `flash`, `paper` and `ink`)
 change both attributes, but `overprint` and `inverse`, defined in the library,
@@ -636,12 +638,16 @@ change only the temporary attributes.
 
 .2017-01-22:
 
+NOTE: Milestone: 0.13.0
+
 Write `temp-attr@  ( -- b )`, `temp-attr@  ( b -- )`, `perm-attr@  ( -- b )`
 and `perm-attr@  ( b -- )`.
 
 So far the 
 
 .2017-01-22:
+
+NOTE: Milestone: 0.13.0
 
 Write `xy-attr@  ( x y -- b )` and `xy-attr!  ( b x y -- )`.
 
@@ -660,7 +666,9 @@ Or write a variant:
   \ ocr?  ( col row -- c true | false )
 ----
 
-.2017-01-09, 2017-01-12, 2017-01-13, 2017-01-23:
+.2017-01-09, 2017-01-12, 2017-01-13, 2017-01-23, 2017-01-24:
+
+NOTE: Milestone: 0.13.0
 
 - Rename `color!` and family to `temp-attr!` or `t-attr!`...?
 - Rename `permcolor!` and family to `perm-attr!` or `p-attr!`...?
@@ -690,7 +698,7 @@ Alternative:
 | `permcolor@`        | `perm-attr!`
 | `permcolor-mask!`   | `perm-attr-mask!`
 | `permcolor-mask@`   | `perm-attr-mask@`
-| `permanent-colors`  | `permanent-attrs`
+| `permanent-colors`  | `permanent-attrs` `attr>perm`
 | `permcolor@`        | `perm-attr@`
 |                     | `xy-attr!`
 |                     | `xy-attr@`
