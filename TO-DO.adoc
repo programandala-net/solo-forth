@@ -44,20 +44,15 @@ NOTE: Milestone: 0.14.0
 - Benchmark two library versions of `m*/`.
 - Benchmark two library versions of `d=` and `d<>`.
 
-.2016-04-25:
-
-Benchmark the system without constants `0`, `1` and `2`.
-
-With constants::    32598 B free
-Without constants:: 32572 B free
-Diff::              +26 B
-
 // Bugs {{{1
 == Bugs ==
 
-.2017-01-11:
+.2017-01-11, 2017-01-24:
 
 `view` gets trapped in `wait-for-key` at the end, why?
+
+It happens when `view` is used on its own, but not when used right
+after being loaded, example `need view view see`.
 
 .2017-01-04:
 
