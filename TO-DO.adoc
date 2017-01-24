@@ -1569,10 +1569,6 @@ Improve needing of `xstack` words.
 
 .2017-01-24:
 
-Check `beep>bleep`.
-
-.2017-01-24:
-
 Fix `beep>dhz` to support negative values.
 
 .2017-01-24:

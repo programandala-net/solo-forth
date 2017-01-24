@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231153
+  \ Last modified: 201701241306
 
   \ -----------------------------------------------------------
   \ Description
@@ -85,6 +85,9 @@
   \ 2017-01-22: Add `substitute-bench`.
   \
   \ 2017-01-23: Add `1/string-bench`, `hz>bleep-bench`.
+  \
+  \ 2017-01-24: Fix `hz>bleep2` in `hz>bleep-bench` (the result
+  \ of the benchmark is not affected).
 
 ( hz>bleep-bench )
 
@@ -94,7 +97,7 @@ need bench{  need }bench.
   over 1000 */ swap  4375 100 rot */ 30 -  ;
 
 : hz>bleep2  ( frequency duration1 -- duration2 pitch )
-  over m* 1000 m/ nip swap  4375100. rot m/ nip 30 -  ;
+  over m* 1000 m/ nip swap  437500. rot m/ nip 30 -  ;
 
 : run  ( u -)
   cr ." Bench of hz>bleep"

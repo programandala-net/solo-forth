@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701240050
+  \ Last modified: 201701241304
 
   \ -----------------------------------------------------------
   \ Description
@@ -165,7 +165,7 @@ code bleep  ( duration pitch -- )
 [unneeded] hz>bleep ?(
 
 : hz>bleep  ( frequency duration1 -- duration2 pitch )
-  over m* 1000 m/ nip swap  4375100. rot m/ nip 30 -  ; ?)
+  over m* 1000 m/ nip swap  437500. rot m/ nip 30 -  ; ?)
 
   \ XXX OLD -- 1.32 slower:
   \ over 1000 */ swap  4375 100 rot */ 30 -  ;
@@ -188,7 +188,7 @@ code bleep  ( duration pitch -- )
 [unneeded] dhz>bleep ?(
 
 : dhz>bleep  ( frequency duration1 -- duration2 pitch )
-  over m* 10000 m/ nip swap  43751000. rot m/ nip 30 -  ; ?)
+  over m* 10000 m/ nip swap  4375000. rot m/ nip 30 -  ; ?)
 
   \ XXX OLD -- 1.32 slower:
   \ over 10000 */ swap  4375 1000 rot */ 30 -  ;
