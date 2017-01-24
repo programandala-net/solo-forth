@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701242240
+  \ Last modified: 201701242250
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,7 +63,7 @@
   \ 2017-01-24: Rename all words that fetch and store the
   \ system attributes: prefix "color" to "attr", prefix
   \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
-  \ `perm-attr-mask!` in Z80.
+  \ `perm-attr-mask!`, `attr@`, `attr-mask@` in Z80.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -205,8 +205,14 @@ code flashy   ( b1 -- b2 )
 
 ( attr@ attr! attr-mask@ attr-mask! )
 
-[unneeded] attr@
-?\ need os-attr-t  : attr@  ( -- b )  os-attr-t c@  ;
+need ?(
+
+[unneeded] attr@ ?( need os-attr-t
+
+code attr@  ( -- b )
+  3A c, os-attr-t , C3 c, jp pusha , end-code
+  \ ld a,(sys_attr_t)
+  \ jp push_a
 
   \ doc{
   \
@@ -240,7 +246,10 @@ code attr!  ( b -- )
 
 [unneeded] attr-mask@ ?( need os-mask-t
 
-: attr-mask@  ( -- b )  os-mask-t c@  ; ?)
+code attr-mask@  ( -- b )
+  3A c, os-mask-t , C3 c, jp pusha , end-code
+  \ ld a,(sys_mask_t)
+  \ jp push_a
 
   \ doc{
   \
