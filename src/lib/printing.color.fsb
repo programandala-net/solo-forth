@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701250024
+  \ Last modified: 201701250030
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,8 +68,11 @@
   \ words individually accessible to `need`. Add `inverse-on`
   \ and `inverse-off` and rewrite `inverse` after them.  Add
   \ `overprint-on` and `overprint-off` and rewrite `overprint`
-  \ after them. Remove `permcolor` and `2permcolor`: they are
-  \ too specific.
+  \ after them.
+  \
+  \ 2017-01-25: Remove `permcolor` and `2permcolor`: they
+  \ hardly useful.  Rename `color` to `attr-setter`, and
+  \ `2color` to `mask+attr-setter`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -294,40 +297,40 @@ code attr-mask!  ( b -- )
   \
   \ }doc
 
-( color 2color )
+( attr-setter mask+attr-setter )
 
 need ?(
 
-[unneeded] color ?(  need attr!
+[unneeded] attr-setter ?(  need attr!
 
-: color  ( b "name" -- )
+: attr-setter  ( b "name" -- )
   create c,  does>  ( -- ) ( pfa ) c@ attr!  ; ?)
 
   \ doc{
   \
-  \ color  ( b "name" -- )
+  \ attr-setter  ( b "name" -- )
   \
   \ Create a definition "name" that, when executed, will
   \ set _b_ as the temporary attribute.
   \
-  \ See: `2color`.
+  \ See: `mask+attr-setter`.
   \
   \ }doc
 
-[unneeded] 2color ?(  need attr!  need attr-mask!
+[unneeded] mask+attr-setter ?(  need attr!  need attr-mask!
 
-: 2color  ( b1 b2 "name" -- )
+: mask+attr-setter  ( b1 b2 "name" -- )
   create 2,  does>  ( -- ) ( pfa ) 2@ attr! attr-mask!  ; ?)
 
   \ doc{
   \
-  \ 2color  ( b1 b2 "name" -- )
+  \ mask+attr-setter  ( b1 b2 "name" -- )
   \
   \ Create a definition "name" that, when executed, will set
   \ _b2_ as the temporary attribute and _b1_ as the temporary
   \ attribute mask.
   \
-  \ See: `color`.
+  \ See: `attr-setter`.
   \
   \ }doc
 
