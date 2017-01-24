@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701242204
+  \ Last modified: 201701242240
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,7 +62,8 @@
   \
   \ 2017-01-24: Rename all words that fetch and store the
   \ system attributes: prefix "color" to "attr", prefix
-  \ "permcolor" to "perm-attr".
+  \ "permcolor" to "perm-attr". Rewrite `perm-attr!`,
+  \ `perm-attr-mask!` in Z80.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -215,7 +216,9 @@ code flashy   ( b1 -- b2 )
   \
   \ }doc
 
-need ?(  [unneeded] attr! ?(  need os-attr-t
+need ?(
+
+[unneeded] attr! ?(  need os-attr-t
 
 code attr!  ( b -- )
   D1 c, 78 03 + c, 32 c, os-attr-t , jpnext, end-code ?)
@@ -301,19 +304,31 @@ need ?(
 
 ( perm-attr@ perm-attr! perm-attr-mask@ perm-attr-mask! )
 
-need os-attr-p  need os-mask-p
+need ?(
 
-: perm-attr@  ( -- b )  os-attr-p c@  ;
+[unneeded] perm-attr@ ?(  need os-attr-p
+
+: perm-attr@  ( -- b )  os-attr-p c@  ; ?)
 
   \ doc{
   \
-  \ perm-attr!  ( -- b )
+  \ perm-attr@  ( -- b )
   \
   \ Get permanent color attribute _b_.
   \
   \ }doc
 
-: perm-attr!  ( b -- )  os-attr-p c!  ;
+[unneeded] perm-attr! ?(  need os-attr-p
+
+code perm-attr!  ( b -- )
+  D1 c, 78 03 + c, 32 c, os-attr-p , jpnext, end-code ?)
+
+  \ pop de            ; 10 01
+  \ ld a,e            ; 04 01
+  \ ld (sys_attr_p),a ; 13 03
+  \ jp (ix)           ; 08 02
+  \                   ; -----
+  \                   ; 35 07
 
   \ doc{
   \
@@ -323,7 +338,9 @@ need os-attr-p  need os-mask-p
   \
   \ }doc
 
-: perm-attr-mask@  ( -- b )  os-mask-p c@  ;
+[unneeded] perm-attr-mask@ ?(  need os-mask-p
+
+: perm-attr-mask@  ( -- b )  os-mask-p c@  ; ?)
 
   \ doc{
   \
@@ -333,7 +350,17 @@ need os-attr-p  need os-mask-p
   \
   \ }doc
 
-: perm-attr-mask!  ( b -- )  os-mask-p c!  ;
+[unneeded] perm-attr-mask! ?(  need os-mask-p
+
+code perm-attr-mask!  ( b -- )
+  D1 c, 78 03 + c, 32 c, os-mask-p , jpnext, end-code ?)
+
+  \ pop de            ; 10 01
+  \ ld a,e            ; 04 01
+  \ ld (sys_mask_p),a ; 13 03
+  \ jp (ix)           ; 08 02
+  \                   ; -----
+  \                   ; 35 07
 
   \ doc{
   \
