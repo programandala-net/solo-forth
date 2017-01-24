@@ -44,13 +44,6 @@ NOTE: Milestone: 0.14.0
 - Benchmark two library versions of `m*/`.
 - Benchmark two library versions of `d=` and `d<>`.
 
-.2016-12-06:
-
-NOTE: Milestone: 0.14.0
-
-Rename `bench{` and `}bench` and family. Maybe after SwiftForth: `counter` and
-`timer`.
-
 .2016-04-25:
 
 Benchmark the system without constants `0`, `1` and `2`.
@@ -1075,6 +1068,12 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 // Memory {{{1
 == Memory ==
 
+.2017-01-24:
+
+----
+: /pad  ( -- len )  limit @ pad -  ;
+----
+
 .2016-11-15:
 
 Write far-memory versions of some of the following words from the
@@ -1523,7 +1522,7 @@ The idea was taken from 4tH:
 
 ....
 Message-ID: <57f3f915bash75@news.xs4all.nl>
-From: Hans Bezemer <the.beez.speaks@gmail.com>
+From: Hans Bezemer
 Subject: Re: Stack Sizes
 Newsgroups: comp.lang.forth
 Date: Tue, 04 Oct 2016 20:46:33 +0200
@@ -1547,7 +1546,7 @@ Code from 4tH:
 
 ....
 Message-ID: <57f3f915bash75@news.xs4all.nl>
-From: Hans Bezemer <the.beez.speaks@gmail.com>
+From: Hans Bezemer
 Subject: Re: Stack Sizes
 Newsgroups: comp.lang.forth
 Date: Tue, 04 Oct 2016 20:46:33 +0200
@@ -1568,9 +1567,18 @@ Improve needing of `xstack` words.
 // Sound {{{1
 == Sound ==
 
-.2017-01-19:
+.2017-01-24:
 
-Use `>bleep` to write a table of notes for `bleep`.
+Check `beep>bleep`.
+
+.2017-01-24:
+
+Fix `beep>dhz` to support negative values.
+
+.2017-01-24:
+
+Convert `middle-scale` to mHz (milihertzs) for greater accuracy and
+write `mhz>bleep`.
 
 .2016-10-10:
 
@@ -1579,23 +1587,50 @@ Finish the conversion of 128K sound explosions. More details in the source.
 // Time {{{1
 == Time ==
 
+.2017-01-24:
+
+From SwiftForth:
+
+EXPIRED  ( u — flag )
+
+Return true if the current millisecond timer reading has passed u. For
+example, the following word will execute the hypothetical word TEST
+for u milliseconds:
+
+----
+: TRY ( u -- ) COUNTER + BEGIN TEST DUP EXPIRED UNTIL ;
+----
+
+.2016-12-06, 2017-01-24:
+
+NOTE: Milestone: 0.14.0
+
+Rename `bench{` and `}bench` and family.
+
+Maybe after SwiftForth: `counter` and `timer`:
+
+----
+counter  ( -- ms )
+Return the current value of the millisecond timer.
+----
+
+----
+: timer  ( ms -- )  counter swap - u.  ;
+----
+
 .2016-12-20:
 
 Use `chars` in offsets of `get-date` and `set-date`.
-
-.2016-12-20:
-
-Fix `pause`.
 
 .2015-12-14:
 
 Update the date with interrupts.
 
-.2016-11-18:
+.2016-11-18, 2016-11-19:
 
 Rename `frames@` to `ticks@`, etc.?
 
-2016-11-19: `utime`? `cputime`? (See Gforth)
+`utime`, `cputime`? (See Gforth)
 
 // Tools {{{1
 == Tools ==
