@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701250009
+  \ Last modified: 201701250024
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,7 +68,8 @@
   \ words individually accessible to `need`. Add `inverse-on`
   \ and `inverse-off` and rewrite `inverse` after them.  Add
   \ `overprint-on` and `overprint-off` and rewrite `overprint`
-  \ after them.
+  \ after them. Remove `permcolor` and `2permcolor`: they are
+  \ too specific.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -409,44 +410,6 @@ code perm-attr-mask!  ( b -- )
   \ Set _b_ as the permanent attribute mask.
   \
   \ See: `perm-attr-mask@`, `attr-mask!`.
-  \
-  \ }doc
-
-( permcolor 2permcolor )
-
-need ?(
-
-[unneeded] permcolor ?(  need perm-attr!
-
-: permcolor  ( b "name" -- )
-  create c,
-  does>  ( -- ) ( pfa ) c@ perm-attr!  ; ?)
-
-  \ doc{
-  \
-  \ permcolor  ( b "name" -- )
-  \
-  \ Create a definition "name" that, when executed, will set
-  \ permanent attribute _b_.
-  \
-  \ See: `2permcolor`.
-  \
-  \ }doc
-
-[unneeded] 2permcolor ?(  need perm-attr!  need perm-attr-mask!
-
-: 2permcolor  ( b1 b2 "name" -- )
-  create 2,
-  does>  ( -- ) ( pfa ) 2@ perm-attr! perm-attr-mask!  ; ?)
-
-  \ doc{
-  \
-  \ 2permcolor  ( b1 b2 "name" -- )
-  \
-  \ Create a definition "name" that, when executed, will set
-  \ permanent attribute _b2_ and permanent attribute mask _b1_.
-  \
-  \ See: `permcolor`.
   \
   \ }doc
 
