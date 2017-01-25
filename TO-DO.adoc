@@ -47,12 +47,16 @@ NOTE: Milestone: 0.14.0
 // Bugs {{{1
 == Bugs ==
 
-.2017-01-11, 2017-01-24:
+.2017-01-11, 2017-01-24, 2017-01-25:
 
 `view` gets trapped in `wait-for-key` at the end, why?
 
 It happens when `view` is used on its own, but not when used right
 after being loaded, example `need view view see`.
+
+Update: It has nothing to do with `view`. The same happened after an
+error #-268. Somehow the flag of the last key pressed is not updated
+by the OS and the code is trapped in a loop. An emulator issue?
 
 .2017-01-04:
 
