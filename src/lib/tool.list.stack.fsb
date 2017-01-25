@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701250122
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,29 +40,31 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-25: Add deferred `(.s)` to `.s` and rewrite `u.s`
+  \ after `.s`.
 
 ( .depth .s u.s )
 
-[unneeded] .depth
-?\ : .depth  ( n -- )  ." <" 0 .r ." > "  ;
+[unneeded] .depth ?\ : .depth  ( n -- )  ." <" 0 .r ." > "  ;
 
 need ?(
 
 [unneeded] .s ?(  need .depth
 
+defer (.s)  ( x -- )  ' . ' (.s) defer!
+
 : .s   ( -- )
   depth dup .depth 0> if
-    sp@ sp0 @ cell- do i @ .  [ cell negate ] literal +loop
+    sp@ sp0 @ cell- do i @ (.s)  [ cell negate ] literal +loop
   then  ; ?)
 
   \ Credit:
   \ Code from Afera. Original algorithm from v.Forth.
 
-[unneeded] u.s ?(  need .depth
+[unneeded] u.s ?(  need .s
 
 : u.s   ( -- )
-  depth dup .depth 0> if
-    sp@ sp0 @ cell- do i @ u.  [ cell negate ] literal +loop
-  then  ; ?)
+  ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer!  ; ?)
 
   \ vim: filetype=soloforth
