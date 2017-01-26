@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-25
+:revdate: 2017-01-26
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1516,10 +1516,6 @@ Notes about nested `need`:
 Each nested `need` uses 14 cells of the return stack: `nest-source` uses 6
 cells for data, `need` uses 2 cells for the string, the rest must be used for
 calls.
-
-.2016-12-30:
-
-Improve needing of `xstack` words.
 
 // Sound {{{1
 == Sound ==
