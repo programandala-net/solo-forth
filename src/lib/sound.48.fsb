@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701250101
+  \ Last modified: 201701252210
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,8 @@
   \ the previous time). Factor `beep>bleep` from `beep`. Factor
   \ `beep>note` from `beep>bleep` and fix the calculation to
   \ support also negative values of pitch.
+  \
+  \ 2017-01-25: Typo.
 
 ( bleep hz>bleep dhz>bleep )
 
@@ -174,7 +176,7 @@ code bleep  ( duration pitch -- )
 
   \ Credit:
   \
-  \ Code adapted from v.Forth.
+  \ Code adapted from v.Forth's `>bleep`.
 
   \ doc{
   \
@@ -197,7 +199,7 @@ code bleep  ( duration pitch -- )
 
   \ Credit:
   \
-  \ Code adapted from v.Forth.
+  \ Code adapted from v.Forth's `>bleep`.
 
   \ doc{
   \
@@ -306,7 +308,7 @@ here    ' drop    ,
   \
   \ octave-changer  ( -- a )
   \
-  \ Execution table that contais the three execution tokens
+  \ Execution table that contains the three execution tokens
   \ used to calculate the frequency of notes from any octave.
   \ _a_ is the address of the second execution token (cell
   \ offset 0).
