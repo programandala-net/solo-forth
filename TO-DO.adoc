@@ -8,6 +8,12 @@
 // Assembler {{{1
 == Assembler ==
 
+.2017-01-26:
+
+Homogenize the notation of assembly comments in the library: use the
+same code that would be used in the kernel. Example: the `_jp_pushhl`
+macro for `jppushhl,`, not `jp push_hl`.
+
 .2017-01-13:
 
 Modify words that restore IX: use the current contents of `next` instead of its
@@ -626,6 +632,10 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-01-26:
+
+Add `wipe` or similar name, to change all attributes with a given value.
+
 .2017-01-22:
 
 NOTE: Milestone: 0.13.0
@@ -829,25 +839,12 @@ Remove module <math.number.prefix.fsb>.
 ----
 : ?ifelse  ( x1 x2 f -- x1 | x2 )  if  drop  else  nip  then  ;
 : ifelse  ( x1 x2 f -- x1 | x2 )  rot ?ifelse  ;
-: ?dup  ( x1 f -- x1 | )  if  dup  then  ;
-: ?nip  ( x1 x2 f -- x1 x2 | x2 )  if  nip  then  ;
 ----
 
 .2016-12-27:
 
 Add `binary` to the library.  If `base` were not a user variable, `binary` and
 `decimal` would be smaller in Z80 than in Forth.
-
-.2016-12-22:
-
-NOTE: Milestone: 0.13.0
-
-Rewrite `odd?` and `even?` in Z80.
-
-.2016-11-26:
-
-Remove old z80-asm versions of `d2*` and `d2/`.
-Search for similar cases.
 
 .2016-11-26:
 
