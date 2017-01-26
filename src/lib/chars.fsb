@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201701261550
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-26: Fix requirement of `printable-ascii-char?`.
 
   \ XXX TODO -- move to <strings.misc.fsb>.
 
@@ -50,7 +52,6 @@
   \
   \ }doc
 
-
 [unneeded] control-char?
 ?\ : control-char?  ( c -- f )  bl <  ;
 
@@ -64,7 +65,8 @@
 
 ( printable-ascii-char? >printable-ascii-char )
 
-[unneeded] printable-ascii-char?
+[unneeded] printable-ascii-char? dup
+?\ need within
 ?\ : printable-ascii-char?  ( c -- f )  bl 128 within  ;
 
 [unneeded] >printable-ascii-char ?exit
