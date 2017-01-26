@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701241915
+; Last modified: 201701252203
 
 include version.z80s
 
@@ -9123,12 +9123,10 @@ search.failed:
 ; ----------------------------------------------
 if 1 ; developing
 
-  ; XXX TMP -- during the development
+  ; XXX TMP -- only during the development, then remove (it's
+  ; in the library)
 
   _colon_header depth_,'depth'
-
-  ; XXX TMP -- only during the development, then move to the
-  ; library.
 
   dw sp_fetch_,sp0_,fetch_,minus_,lit_,-2,slash_
   dw exit_
@@ -9869,6 +9867,20 @@ dot_version.build
   dw exit_
 
 ; ----------------------------------------------
+if 1 ; developing
+
+  ; XXX TMP -- during the development
+
+  _colon_header dot_words_,'.words'
+
+  dw hash_words_,u_dot_
+  dw paren_dot_quote_
+  _string "words"
+  dw exit_
+
+endif
+
+; ----------------------------------------------
   _colon_header greeting_,'greeting'
 
 ; doc{
@@ -9887,10 +9899,7 @@ dot_version.build
   _string "\rBy Marcos Cruz\r(programandala.net), 2015-2017\r"
 if 1 ; developing
   ; XXX TMP -- during the development
-  dw hash_words_,u_dot_
-  dw paren_dot_quote_
-  _string "words\r"
-  dw dot_unused_
+  dw dot_words_,cr_,dot_unused_
 endif
   dw exit_
 
@@ -11631,8 +11640,8 @@ if 1 ; developing
 
   _colon_header u_dot_s_,'u.s'
 
-  ; XXX TMP -- only during the development, then move
-  ; to the library
+  ; XXX TMP -- only during the development, then remove
+  ; (it's in the library)
 
   dw lit_,u_dot_,lit_,dot_s.dot,store_ ; patch `.s`
   dw dot_s_
@@ -11642,11 +11651,11 @@ if 1 ; developing
 endif
 
 ; ----------------------------------------------
-if 1 ; developing
-
-  _colon_header type_ascii_,'type-ascii'
+if 0
 
   ; XXX TMP -- for debugging
+
+  _colon_header type_ascii_,'type-ascii'
 
   ; XXX REMARK -- This word is in the library. It's also here
   ; because it's needed by `blks`.
@@ -11669,11 +11678,11 @@ type_ascii.loop_exit
 endif
 
 ; ----------------------------------------------
-if 1 ; developing
-
-  _colon_header blks_,'blks'
+if 0
 
   ; XXX TMP -- for debugging
+
+  _colon_header blks_,'blks'
 
 ; : blks  ( u -- )
 ;   page
