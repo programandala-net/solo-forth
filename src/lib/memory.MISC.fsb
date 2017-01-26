@@ -571,7 +571,7 @@ end-code ?)
   \ See `2/`.
   \
   \ }doc
- 
+
 
 [unneeded] exchange
 ?\ : exchange  ( a1 a2 -- )  2dup @ swap @  rot ! swap !  ;
@@ -598,5 +598,5 @@ end-code ?)
   \ See: `exchange`, `c!exchange`.
   \
   \ }doc
-  
+
   \ vim: filetype=soloforth

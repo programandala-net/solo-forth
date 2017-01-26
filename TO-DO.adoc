@@ -856,7 +856,7 @@ NOTE: Milestone: 0.13.0
 Rewrite `d-` with Z80 opcodes, without `z80-asm`.
 Search for similar cases.
 
-.2015-07-23:
+.2015-07-23, 2017-01-26:
 
 Idea: 2 more bytes for `base`, to be used as save-restore space.
 
@@ -871,6 +871,10 @@ Idea: 2 more bytes for `base`, to be used as save-restore space.
   base switch
 ----
 
+Use this to factor `dec.` and write `decu.` or `udec.` (useful in
+`where`).
+
+`switch` is taken by a control flow structure.
 
 .2015-09-12:
 
@@ -1030,6 +1034,10 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 
 // Memory {{{1
 == Memory ==
+
+.2017-01-26:
+
+Rewrite `exchange`, `cexchange`, `!exchange`  and `c!exchange` in Z80.
 
 .2017-01-24:
 
@@ -1317,10 +1325,6 @@ Combine `begin-module` and `package`.
 
 // Names {{{1
 == Names ==
-
-.2017-01-18:
-
-Change "screen" and "scr" to "block", e.g. in `list` and `where`.
 
 .2017-01-17:
 
