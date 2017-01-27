@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701241831
+  \ Last modified: 201701271541
 
   \ -----------------------------------------------------------
   \ Description
@@ -88,6 +88,42 @@
   \
   \ 2017-01-24: Fix `hz>bleep2` in `hz>bleep-bench` (the result
   \ of the benchmark is not affected). Add `-beep>note-bench`.
+  \
+  \ 2017-01-27: Add `mask+attr!-bench`.
+
+( mask+attr!-bench )
+
+need bench{  need }bench.
+need attr!  need attr-mask!  need os-attr-t  need mask+attr!
+
+4 cconstant green
+
+: v1  ( x1 x2 -- )  attr! attr-mask!  ;
+: v2  ( x1 x2 -- )  os-attr-t 2!  ;
+: v3  ( x1 x2 -- )  mask+attr!  ;
+
+: run  ( u -)
+  cr ." Bench of mask+attr! "
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." Variant 1: "
+  bench{ 0 ?do  0 green v1  loop }bench.
+  dup cr ." Variant 2: "
+  bench{ 0 ?do  0 green v2  loop }bench.
+      cr ." Variant 3: "
+  bench{ 0 ?do  0 green v3  loop }bench.  ;
+
+  \ 2017-01-27:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       mask+attr!
+  \       -----------------------------
+  \       Variant 1 Variant 2 Variant 3
+  \       --------- --------- ---------
+  \ 00010         0         0         0
+  \ 00100         1         2         1
+  \ 01000        12        13        11
+  \ 10000       121       136       111
 
 ( -beep>note-bench )
 

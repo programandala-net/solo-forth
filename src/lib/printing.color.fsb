@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701271545
+  \ Last modified: 201701271551
 
   \ -----------------------------------------------------------
   \ Description
@@ -70,11 +70,13 @@
   \ `overprint-on` and `overprint-off` and rewrite `overprint`
   \ after them.
   \
-  \ 2017-01-25: Remove `permcolor` and `2permcolor`: they
+  \ 2017-01-25: Remove `permcolor` and `2permcolor`: they are
   \ hardly useful.  Rename `color` to `attr-setter`, and
   \ `2color` to `mask+attr-setter`.
   \
-  \ 2017-01-27: Fix or improve several assembly jumps.
+  \ 2017-01-27: Fix or improve several assembly jumps. Add
+  \ `mask+attr!` and `mask+attr@`. Improve documentation.
+  \ Improve `mask+attr-setter`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -243,6 +245,8 @@ code attr@  ( -- b )
 code attr!  ( b -- )
   D1 c, 78 03 + c, 32 c, os-attr-t , jpnext, end-code ?)
 
+  \                   ;  T  B
+  \                   ; -----
   \ pop de            ; 10 01
   \ ld a,e            ; 04 01
   \ ld (sys_attr_t),a ; 13 03
@@ -269,9 +273,9 @@ code attr-mask@  ( -- b )
 
   \ doc{
   \
-  \ attr-mask@  ( b -- )
+  \ attr-mask@  ( -- b )
   \
-  \ Set _b_ as the temporary attribute mask.
+  \ Get the temporary attribute mask _b_.
   \
   \ See: `attr-mask!`, `perm-attr-mask@`.
   \
@@ -282,6 +286,8 @@ code attr-mask@  ( -- b )
 code attr-mask!  ( b -- )
   D1 c, 78 03 + c, 32 c, os-mask-t , jpnext, end-code ?)
 
+  \                   ;  T  B
+  \                   ; -----
   \ pop de            ; 10 01
   \ ld a,e            ; 04 01
   \ ld (sys_mask_t),a ; 13 03
@@ -296,6 +302,58 @@ code attr-mask!  ( b -- )
   \ Set _b_ as the temporary attribute mask.
   \
   \ See: `attr-mask@`, `perm-attr-mask!`.
+  \
+  \ }doc
+
+( mask+attr! mask+attr@ )
+
+need ?(
+
+[unneeded] mask+attr! ?(  need os-attr-t
+
+code mask+attr!  ( b1 b2 -- )
+  E1 c, D1 c, 60 03 + c, 22 c, os-attr-t , jpnext,  end-code ?)
+
+  \                     ;  T  B
+  \                     ; -----
+  \ pop hl              ; 10 01
+  \ pop de              ; 10 01
+  \ ld h,e              ; 04 01
+  \ ld (sys_attr_t),hl  ; 16 03
+  \ _jp_next            ; 08 02 ; jp (ix)
+  \                     ; -----
+  \                     ; 48 08
+
+  \ doc{
+  \
+  \ mask+attr!  ( b1 b2 -- )
+  \
+  \ Set _b1_ as the temporary attribute mask
+  \ and _b2_ as the temporary attribute.
+  \
+  \ See: `mask+attr@`, `attr!`, `attr-mask!`
+  \
+  \ }doc
+
+[unneeded] mask+attr@ ?(  need os-attr-t
+
+code mask+attr@  ( -- b1 b2 )
+  26 c, 00 c, ED c, 5B c, os-attr-t , 68 02 + c, E5 c,
+  \ ld h,0
+  \ ld de,(sys_attr_t)
+  \ ld l,d
+  \ push hl
+  68 03 + c, jppushhl,  end-code ?)
+  \ ld l,e
+  \ _jp_pushhl
+
+  \ doc{
+  \
+  \ mask+attr@  ( -- b1 b2 )
+  \
+  \ Set _b_ as the temporary attribute mask.
+  \
+  \ See: `attr-mask!`, `perm-attr-mask@`.
   \
   \ }doc
 
@@ -319,18 +377,18 @@ need ?(
   \
   \ }doc
 
-[unneeded] mask+attr-setter ?(  need attr!  need attr-mask!
+[unneeded] mask+attr-setter ?(  need mask+attr!
 
 : mask+attr-setter  ( b1 b2 "name" -- )
-  create 2,  does>  ( -- ) ( pfa ) 2@ attr! attr-mask!  ; ?)
+  create 2,  does>  ( -- ) ( pfa ) 2@ mask+attr!  ; ?)
 
   \ doc{
   \
   \ mask+attr-setter  ( b1 b2 "name" -- )
   \
   \ Create a definition "name" that, when executed, will set
-  \ _b2_ as the temporary attribute and _b1_ as the temporary
-  \ attribute mask.
+  \ _b1_ as the temporary attribute mask and _b2_ as the
+  \ temporary attribute.
   \
   \ See: `attr-setter`.
   \
@@ -362,6 +420,8 @@ code perm-attr@  ( -- b )
 code perm-attr!  ( b -- )
   D1 c, 78 03 + c, 32 c, os-attr-p , jpnext, end-code ?)
 
+  \                   ;  T  B
+  \                   ; -----
   \ pop de            ; 10 01
   \ ld a,e            ; 04 01
   \ ld (sys_attr_p),a ; 13 03
@@ -401,6 +461,8 @@ code perm-attr-mask@  ( -- b )
 code perm-attr-mask!  ( b -- )
   D1 c, 78 03 + c, 32 c, os-mask-p , jpnext, end-code ?)
 
+  \                   ;  T  B
+  \                   ; -----
   \ pop de            ; 10 01
   \ ld a,e            ; 04 01
   \ ld (sys_mask_p),a ; 13 03
