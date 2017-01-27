@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191346
+  \ Last modified: 201701271251
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,6 +65,14 @@
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation, after `immediate` or
   \ `compile-only`.
+  \
+  \ 2017-01-27: Remove remaining `exit` after definition of
+  \ `max-esc-order`. Improve needing of `?esc-order`. Fix
+  \ `parse-esc-string`: execute `(parse-esc-string)` with
+  \ `catch` in order to restore the search order before
+  \ actually throwing a possible exception (e.g. thrown by
+  \ `(x)`); otherwise the system is unusable, because the
+  \ search order is the one used to parse the escaped strings.
 
 ( esc-standard-chars-wordlist )
 
@@ -160,7 +168,7 @@ case-sensitive ! set-current previous
 ( parse-esc-string )
 
 need parse-esc-char>chars  need chars>string  need s+
-need get-esc-order
+need get-esc-order  need catch
 
 : (parse-esc-string)  ( ca len "ccc<quote>"  -- ca' len' )
   begin   parse-char dup '"' <>  \ not finished?
@@ -224,8 +232,8 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
 : parse-esc-string  ( "ccc<quote>"  -- ca len )
   get-order get-esc-order set-order
   case-sensitive @ case-sensitive-esc-chars @ case-sensitive !
-  0 0 (parse-esc-string)
-  2>r case-sensitive ! set-order 2r>  ;
+  0 0 ['] (parse-esc-string) catch >r
+  2>r case-sensitive ! set-order 2r> r> throw  ;
 
   \ doc{
   \
@@ -318,7 +326,7 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
 ( max-esc-order #esc-order esc-context ?esc-order )
 
 [unneeded] max-esc-order
-?\ 4 constant max-esc-order  exit
+?\ 4 constant max-esc-order
 
   \ doc{
   \
@@ -373,12 +381,12 @@ create esc-context here max-esc-order cells dup allot erase ?)
   \
   \ }doc
 
-[unneeded] ?esc-order ?exit
+[unneeded] ?esc-order ?(
 
 need max-esc-order
 
 : ?esc-order  ( n -- )
-  dup 0< #-282 ?throw  max-esc-order < ?exit  #-281 throw  ;
+  dup 0< #-282 ?throw  max-esc-order < ?exit  #-281 throw  ; ?)
 
   \ doc{
   \

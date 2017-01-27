@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-26
+:revdate: 2017-01-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -32,13 +32,6 @@ NOTE: Milestone: 0.13.0
 Rewrite all small code words in Z80 opcodes, without assembler.  Example:
 `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
 `set-drive`, `crnd`, `(delete-file)`, `n>r`, `nr>`...
-
-.2016-12-20:
-
-Data space used by the assemblers:
-
-`z80-asm` :: 1817 B
-`z80-asm,`:: 1664 B
 
 // Benchmarks {{{1
 == Benchmarks ==
@@ -179,10 +172,6 @@ actual strings.
 
 Add default execution token to `switch:`.
 
-.2016-12-26:
-
-Choose a better name for `?repeat`.
-
 .2016-12-20:
 
 Document the variants of `of`.
@@ -289,6 +278,11 @@ saves the additional link.
 
 // Strings {{{2
 === Strings ===
+
+.2017-01-27:
+
+Generalize `parse-esc-string` and `(parse-esc-string)` to accept a
+delimiter char, like `parse`. Then implement `.\(`.
 
 .2017-01-22:
 
@@ -413,11 +407,6 @@ Forth-83.
 
 Change to title case the word sets of Forth-79 and Forth-83.
 
-.2016-11-21:
-
-Change _n_ to _u_ for blocks and block lines. Consult the notation used in
-Forth-2012.
-
 .2016-08-09:
 
 Change the format of stack notation:
@@ -447,10 +436,10 @@ And change also:
 
 - xtp -> cfaa
 
-The problem with the standard notation is it does not has alternatives to pfa
-and lfa, because they are system dependent and may not exist in all systems.
-This make the notations xt, nt, pfa, lfa look heterogeneous. Beside, xt and nt
-are abstract terms, while cfa and nfa are precise definitions for the
+The problem with the standard notation is it does not has alternatives
+to pfa and lfa, because they are system dependent.  This makes the
+notations xt, nt, pfa, lfa look heterogeneous. Beside, xt and nt are
+abstract terms, while cfa and nfa are precise definitions for the
 implemention.
 
 .2016-06-01:
@@ -461,9 +450,12 @@ Put the "Origin" section of the glossary entries at the end of each entry.
 
 Homogenize the stack notation for character/bytes: only _c_.
 
-.2016-04-29:
+.2016-04-29, 2016-11-21:
 
 Homogenize the stack notation for blocks and block lines.
+
+Change _n_ to _u_ for blocks and block lines. Consult the notation used in
+Forth-2012.
 
 .2016-04-28:
 
