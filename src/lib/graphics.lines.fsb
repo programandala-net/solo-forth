@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701121722
+  \ Last modified: 201701281512
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
   \ 2017-01-12: Fix and improve documentation.
+  \
+  \ 2017-01-28: Improve documentation.
 
 ( rdraw176 )
 
@@ -223,7 +225,7 @@ code rdraw  ( gx gy -- )
   \
   \ REMARK: This word is under development.
   \
-  \ Draw a line relative _gx gy_ to the current coordinates,
+  \ Draw a line relative _gx gy_ to the current coordinates.
   \ _gx_ is 0..255; _gy_ is 0..191.
   \
   \ See: `rdraw176`, `adraw176`.
@@ -235,7 +237,45 @@ code rdraw  ( gx gy -- )
 2variable x1  2variable incx
 2variable y1  2variable incy
 
-  \ Variables used by `adraw176` and `aline176`.
+  \ doc{
+  \
+  \ x1  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `y1`, `incx`, `incy`, `adraw176`, `aline176`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ y1  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `x1`, `incx`, `incy`, `adraw176`, `aline176`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ incx  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `incy`, `x1`, `y1`, `adraw176`, `aline176`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ incy  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `incx`, `x1`, `y1`, `adraw176`, `aline176`.
+  \
+  \ }doc
 
 ( adraw176 )
 

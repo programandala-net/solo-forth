@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-27
+:revdate: 2017-01-28
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1137,6 +1137,19 @@ Spectrum Forth-83).
 
 // Multitasking {{{1
 == Multitasking ==
+
+.2017-01-28:
+
+Make the following environment question depend on the current values,
+which can change when multitasking is active:
+
+----
+$2C +origin @ constant return-stack-cells ( -- n )
+    \ Maximum size of the return stack, in cells.
+
+$2A +origin @ constant stack-cells ( -- n )
+    \ Maximum size of the data stack, in cells.
+----
 
 .2017-01-19:
 
