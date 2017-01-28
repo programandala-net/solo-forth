@@ -1328,6 +1328,14 @@ Combine `begin-module` and `package`.
 // Names {{{1
 == Names ==
 
+.2017-01-28:
+
+Rename `(pixel-addr)` to `(pixel-addr`, and family.
+
+.2017-01-28:
+
+Rename `bitmap>attr-addr` to `screen>attr-addr`? More clear?
+
 .2017-01-17:
 
 Rename old "rec" to "sectors", for example in `rec/blk`.
