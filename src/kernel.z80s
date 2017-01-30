@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701301313
+; Last modified: 201701301322
 
 include version.z80s
 
@@ -11980,8 +11980,8 @@ at_pfa.last_line:
 ; cls  ( -- )
 ;
 ; Clear the screen with the current permanent attribute, reset
-; the graphic coordinates to the lower left corner (x 0, y 0)
-; and reset the cursor position to the upper left corner
+; the graphic coordinates at the lower left corner (x 0, y 0)
+; and reset the cursor position at the upper left corner
 ; (column 0, row 0).
 ;
 ; See: `attr-cls`, `page`.
@@ -12004,8 +12004,8 @@ at_pfa.last_line:
 ; attr-cls  ( b -- )
 ;
 ; Clear the screen with the attribute _b_, reset the graphic
-; coordinates to the lower lef corner (x 0, y 0) and reset the
-; cursor position to the upper left corner (column 0, row 0).
+; coordinates at the lower left corner (x 0, y 0) and reset the
+; cursor position at the top left corner (column 0, row 0).
 ;
 ; See: `cls`, `page`.
 ;
@@ -12027,7 +12027,7 @@ at_pfa.last_line:
   pop hl
   ld a,l
 
-attr_cls.a: ; alternative entry point from `cls`
+attr_cls.a: ; alternative entry point used by `cls`
 
   ; Erase the bitmap.
   ld hl,sys_screen
