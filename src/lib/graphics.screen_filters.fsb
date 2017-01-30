@@ -3,13 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190050
+  \ Last modified: 201701301232
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Words that make filter effects to the
-  \ whole screen.
+  \ Words that make filter effects to the whole screen.
 
   \ -----------------------------------------------------------
   \ Author
@@ -41,6 +40,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-01-30: Add `blackout`.
 
 ( fade )
 
@@ -48,9 +49,7 @@ need assembler
 
 code fade  ( -- )
   b push,
-  8 b ld#,
-  \ do:
-  rbegin  5AFF h ldp#, halt, halt,
+  8 b ld#, rbegin  5AFF h ldp#, halt, halt,
     rbegin
       m a ld, a d ld, 07 and#, nz? rif  a dec,  rthen
       a e ld, a d ld, 38 and#, nz? rif  8 sub#,  rthen
@@ -59,9 +58,8 @@ code fade  ( -- )
       58 cp#,
     c? runtil
   rstep
-  b pop, jpnext,
-  end-code
-  
+  b pop, jpnext, end-code
+
   \ doc{
   \
   \ fade  ( -- )
@@ -77,24 +75,23 @@ code fade  ( -- )
   \ published on Microhobby Especial, issue 7 (1987-12), page
   \ 46: <http://microhobby.org/mhes7.htm>.
 
-( inverted water )
+( inverted water blackout )
 
 need ?(  [unneeded] inverted ?(  need assembler
 
 code inverted  ( -- )
 
-  4000 h ldp#,
-  rbegin   m a ld, cpl, a m ld, h incp,
-           h a ld, 58 cp#,  z? runtil
+  4000 h ldp#, rbegin   m a ld, cpl, a m ld, h incp,
+                        h a ld, 58 cp#,  z? runtil
   jpnext,  end-code ?)
-  
+
   \ Credit:
   \
   \ Code adapted from a routine written by Javier Granadino,
   \ published on Microhobby, issue 133 (1987-06), page 7:
   \ http://microhobby.org/numero133.htm
   \ http://microhobby.speccy.cz/mhf/133/MH133_07.jpg
-  
+
   \ doc{
   \
   \ inverted  ( -- )
@@ -118,13 +115,37 @@ code water  ( -- )
   \ published on Microhobby, issue 150 (1987-06), page 9:
   \ http://microhobby.org/numero150.htm
   \ http://microhobby.speccy.cz/mhf/150/MH133_09.jpg
-  
+
   \ doc{
   \
   \ water  ( -- )
   \
   \ Modify the screen bitmap with a water effect. At the end
   \ the original image is  restored.
+  \
+  \ }doc
+
+[unneeded] blackout ?(
+
+code blackout  ( -- )
+  D9 c, 21 c, 4000 , 11 c, 4001 , 01 c, 1B00 , 75 c,
+  \ exx
+  \ ld hl,$4000 ; start of screen
+  \ ld de,$4001 ; destination
+  \ ld bc,$1B00 ; count: bitmap and attributes
+  \ ld (hl),l   ; zero
+  ED c, B0 c, D9 c, jpnext,  end-code ?)
+  \ ldir        ; fill
+  \ exx
+  \ _jp_next
+
+  \ doc{
+  \
+  \ blackout  ( -- )
+  \
+  \ Erase the screen (bitmap and the attributes) with zeros.
+  \
+  \ See: `cls`.
   \
   \ }doc
 
