@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701261621
+; Last modified: 201701301209
 
 include version.z80s
 
@@ -1810,7 +1810,7 @@ far.hl.mod:
   ; Execution continues in `noop`:
 
 ; ----------------------------------------------
-  _code_header noop_,'noop',
+  _code_header noop_,'noop'
 
 ; doc{
 ;
@@ -1825,6 +1825,11 @@ do_create:
 do_variable:
 
   _jp_next
+
+; ----------------------------------------------
+  _constant_header noop_routine,'noop-routine'
+
+  dw noop
 
 ; ----------------------------------------------
 if defined gplusdos
@@ -12228,7 +12233,10 @@ print_boolean_attribute:
 print_boolean_attribute.valid:
   ; A = 0 or 1
   rst $10 ; print the attribute value (0..1)
-  jr permanent_colors_
+
+  ; _jp_next ; XXX TODO --
+
+  jr permanent_colors_ ; XXX OLD
 
 ; ----------------------------------------------
   _code_header paper_,'paper'
@@ -12277,6 +12285,9 @@ print_0_9_attribute.valid:
   ; A = 0..9
   rst $10 ; print the attribute value (0..9)
 
+  ; _jp_next ; XXX TODO --
+  
+  ; XXX OLD:
   ; Execution continues in `permanent-colors`:
 
 ; ----------------------------------------------
