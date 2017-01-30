@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701301209
+; Last modified: 201701301313
 
 include version.z80s
 
@@ -716,7 +716,7 @@ return_stack_pointer:
   ; `$0E +origin`
   dw return_stack_bottom
 
-default_color_attribute:
+default_attribute_and_mask:
   ; `$10 +origin`
   db 4          ; low byte: green paper, black ink
   ; `$11 +origin`
@@ -11979,11 +11979,35 @@ at_pfa.last_line:
 ;
 ; cls  ( -- )
 ;
-; Clear the screen with the current permanent colors and reset
-; the cursor position to the upper left corner (column 0, row
-; 0).
+; Clear the screen with the current permanent attribute, reset
+; the graphic coordinates to the lower left corner (x 0, y 0)
+; and reset the cursor position to the upper left corner
+; (column 0, row 0).
 ;
-; See: `page`.
+; See: `attr-cls`, `page`.
+;
+; }doc
+
+; Note: The ROM routines that clear the screen are slow and do
+; many unnecessary BASIC-related things. This code simply clears
+; the screen.
+
+  exx ; save the Forth IP
+  ld a,(sys_attr_p)
+  jr attr_cls.a
+
+; ----------------------------------------------
+  _code_header attr_cls_,'attr-cls'
+
+; doc{
+;
+; attr-cls  ( b -- )
+;
+; Clear the screen with the attribute _b_, reset the graphic
+; coordinates to the lower lef corner (x 0, y 0) and reset the
+; cursor position to the upper left corner (column 0, row 0).
+;
+; See: `cls`, `page`.
 ;
 ; }doc
 
@@ -12000,15 +12024,19 @@ at_pfa.last_line:
 ; Spectrum Machine Language_.
 
   exx ; save the Forth IP
+  pop hl
+  ld a,l
+
+attr_cls.a: ; alternative entry point from `cls`
+
   ; Erase the bitmap.
   ld hl,sys_screen
   ld de,sys_screen+1
   ld bc,sys_screen_bitmap_size
-  ld (hl),l ; l=0 because sys_screen=$4000
+  ld (hl),l ; L=0 because sys_screen=$4000
   ldir
-  ; Color with the permanent attributes.
+  ; Color with attribute in the A register
   ld bc,sys_screen_attributes_size-1
-  ld a,(sys_attr_p)
   ld (hl),a
   ldir
   ld (sys_coords),bc ; reset the graphic coordinates to 0,0
@@ -12142,9 +12170,9 @@ mode32_xy.end:
   xor a
   ld (sys_p_flag),a
 
-  ; Set the colors and their masks.
+  ; Set the default attribute and mask.
 
-  ld hl,(default_color_attribute)
+  ld hl,(default_attribute_and_mask)
   ; L = 128*flash + 64*bright + 8*paper + ink
   ; H = mask
   ld (sys_attr_p),hl ; permanent
@@ -12178,14 +12206,15 @@ border.a:
   call $229B ; secondary entry point in the "BORDER" ROM routine
   _jp_next
 
-  ; Note: The ROM routine at $229B also sets the system variable
-  ; BORDCR, which holds the attributes of the lower part of the
-  ; screen (paper after the border, and calculated constrast
-  ; ink).  This is needed because: 1) G+DOS by default changes
-  ; the border color during disk operations, and at the end
-  ; restores it with the value of this system variable; 2) The
-  ; lower screen will have contrast ink after returning to
-  ; BASIC, no matter the border color used in Forth.
+  ; Note: The ROM routine at $229B also sets the system
+  ; variable BORDCR, which holds the attributes of the lower
+  ; part of the screen (paper after the border, and calculated
+  ; constrast ink).  This is useful because: 1) G+DOS by
+  ; default changes the border color during disk operations,
+  ; and at the end restores it with the value of this system
+  ; variable; 2) The lower screen will have contrast ink after
+  ; returning to BASIC, no matter the border color used in
+  ; Forth.
 
 ; ----------------------------------------------
   _code_header flash_,'flash'
