@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701271541
+  \ Last modified: 201701301202
 
   \ -----------------------------------------------------------
   \ Description
@@ -90,6 +90,39 @@
   \ of the benchmark is not affected). Add `-beep>note-bench`.
   \
   \ 2017-01-27: Add `mask+attr!-bench`.
+  \
+  \ 2017-01-30: Add `circle-bench`.
+
+( circle-bench )
+
+need bench{  need }bench.
+
+need circle
+need colored-circle-pixel  need uncolored-circle-pixel
+
+need frames@  need reset-frames  defer (number-base)
+
+: (run)  ( u -- )
+  bench{ 0 do  127 95 95 circle  loop }bench. ;
+
+: run  ( u -- )
+  cr ." Bench of circle "
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." With colored-circle-pixel :" cr space
+      colored-circle-pixel set-circle-pixel (run)
+      cr ." With uncolored-circle-pixel :" cr space
+      uncolored-circle-pixel set-circle-pixel (run)  ;
+
+  \ 2017-01-30:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------------
+  \       colored circle  uncolored circle
+  \       --------------- -----------------------
+  \ 00010              53                32
+  \ 00100             525               319
+  \ 01000            5250              3191 (0.6)
+  \ 10000           52501             31907 (0.6)
 
 ( mask+attr!-bench )
 

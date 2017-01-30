@@ -3,12 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701281803
+  \ Last modified: 201701301202
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Implementation of `circle`.
+  \ Implementation of a configurable fast `circle`.
 
   \ -----------------------------------------------------------
   \ Authors
@@ -37,49 +37,126 @@
   \
   \ 2017-01-28: Finish the conversion of the original code of
   \ `circle`.  Document the word.
-
-( circle )
-
-  \ Credit:
   \
-  \ <http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/>.
-  \ Code adapted from:
-  \ <http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/>,
-  \ which was written and published by rtunes
-  \ (https://worldofspectrum.org/forums/profile/259/rtunes),
-  \ 2008.
+  \ 2017-01-29: Make the pixel routine configurable with a
+  \ deferred word and provide code for color circles and faster
+  \ colorless circles.
+  \
+  \ 2017-01-30: Fix and rewrite the configuration method, using
+  \ an intermediate routine that does a jump.
 
-  \ x^2+y^2=r^2 represents the real variable equation of a
-  \ circle which is to be plotted using a grid of discrete
-  \ pixels where each pixel has integer coordinates.
+( uncolored-circle-pixel colored-circle-pixel )
 
-  \ Note. original ROM circles are slightly displaced to the
-  \ right as noticed.
+need ?(
+
+[unneeded] uncolored-circle-pixel ?(
 
 need assembler  need (pixel-addr)
 
-create (plot  ( -- )  asm
+create uncolored-circle-pixel  ( -- a )  asm
+  h push, b push, d push, (pixel-addr) call,
+  \ HL = screen address ; A = pixel position in hl (0..7)
+  a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep  m or, a m ld,
+  d pop, b pop, h pop, ret, end-asm ?)
 
-  ED c, 43 c, 5C7D , CD c, (pixel-addr) ,
-    \ ld ($5C7D),bc     ; update COORDS
-    \ call pixel_addr   ; HL = screen address
-    \                   ; A = pixel position in hl (0..7)
-  CD c, 22EC , C9 c,  end-asm
-    \ call $22EC        ; ROM PLOT-SUB + 7
-    \ ret
-  \ XXX TMP --
+  \ doc{
+  \
+  \ uncolored-circle-pixel  ( -- a )
+  \
+  \ _a_ is the address of a subroutine that `circle` can use to
+  \ draw its pixels.  This routine sets a pixel without
+  \ changing its color attributes on the screen (like
+  \ `set-pixel`).  Therefore it's faster than its alternative
+  \ `colored-circle-pixel` (0.6 its execution speed).
+  \
+  \ `set-circle-pixel` sets the routine used by `circle`. See
+  \ the requirements of such routine in the documentation of
+  \ `circle-pixel`.
+  \
+  \ See: `set-circle-pixel`, `circle-pixel`,
+  \ `colored-circle-pixel`, `circle`, `set-pixel`.
+  \
+  \ }doc
 
-create circle-plot  ( -- a )  asm
-  h push, b push, d push, (plot call,
-  d pop, b pop, h pop, ret,
-  end-asm
-  \ XXX TMP --
+[unneeded] colored-circle-pixel ?(
 
--->
+need assembler  need (pixel-addr)
+
+create colored-circle-pixel  ( -- a )  asm
+  h push, b push, d push, (pixel-addr) call,
+  \ HL = screen address ; A = pixel position in hl (0..7)
+  22EC call, d pop, b pop, h pop, ret, end-asm ?)
+  \ Note: $22EC is an alternative entry to ROM PLOT_SUB: +7 bytes
+
+  \ doc{
+  \
+  \ colored-circle-pixel  ( -- a )
+  \
+  \ _a_ is the address of a subroutine that `circle` can use to
+  \ draw its pixels.  This routine sets a pixel, changing its
+  \ color attributes on the screen (like `plot`).  Therefore
+  \ it's slower than its alternative `uncolored-circle-pixel`
+  \ (1.64 its execution speed).
+  \
+  \ `set-circle-pixel` sets the routine used by `circle`.  See
+  \ the requirements of such routine in the documentation of
+  \ `circle-pixel`.
+  \
+  \ See: `set-circle-pixel`, `circle-pixel`,
+  \ `uncolored-circle-pixel`, `circle`, `plot`.
+  \
+  \ }doc
+
+( circle-pixel set-circle-pixel )
+
+need ?(
+
+[unneeded] circle-pixel
+
+?\ create circle-pixel  ( -- a )  asm noop-routine jp, end-asm
+
+  \ doc{
+  \
+  \ circle-pixel  ( -- a )
+  \
+  \ _a_ is the address of a subroutine used by `circle` to set
+  \ its pixels.  This routine does a jump to the actual
+  \ routine, which by default does nothing. The desired routine
+  \ must be set by `set-circle`.
+  \
+  \ Also any routine provided by the application can be used as
+  \ the action of `circle-pixel`, provided the following
+  \ requirements:
+
+  \ - HL, DE and BC must be preserved.
+  \ - Input parameters: B=gy and C=gx.
+
+  \ See: `circle`, `set-circle`.
+  \
+  \ }doc
+
+[unneeded] set-circle-pixel ?(  need circle-pixel
+
+: set-circle-pixel  ( a -- )
+  [ circle-pixel 1+ ] literal !  ; ?)
+
+  \ doc{
+  \
+  \ set-circle-pixel  ( a -- )
+  \
+  \ Set the address _a_ of the routine `circle-pixel` will jump
+  \ to. This word is used to make `circle-pixel` jump to
+  \ `colored-circle-pixel`, `uncolored-circle-pixel`, or other
+  \ routine provided by the application.
+  \
+  \ See: `circle-pixel`, `colored-circle-pixel`,
+  \ `uncolored-circle-pixel`, `circle`.
+  \
+  \ }doc
 
 ( circle )
 
-need assembler
+need assembler  need circle-pixel  need set-circle-pixel
 
 code circle  ( gx gy b -- )
 
@@ -122,7 +199,7 @@ code circle  ( gx gy b -- )
   \ ;*******Set 8 pixels, one for each circle's octant*********
 
   rbegin  d a ld, h add, a c ld, e a ld, l add, a b ld,
-  circle-plot call,
+  circle-pixel call,
     \ ld a,d ; point #1
     \ add a,h
     \ ld c,a
@@ -131,26 +208,30 @@ code circle  ( gx gy b -- )
     \ ld b,a
     \ call circle_plot
 
-  e a ld, l sub, a b ld, circle-plot call,
+  e a ld, l sub, a b ld, circle-pixel call,
     \ ld a,e ;point #2
     \ sub l
     \ ld b,a
     \ call circle_plot
 
-  d a ld, h sub, a c ld, circle-plot call,
+  d a ld, h sub, a c ld, circle-pixel call,
     \ ld a,d ;point #4
     \ sub h
     \ ld c,a
     \ call circle_plot
 
-  e a ld, l add, a b ld, circle-plot call,
+  e a ld, l add, a b ld, circle-pixel call,
     \ ld a,e ;point #3
     \ add a,l
     \ ld b,a
     \ call circle_plot
 
+-->
+
+( circle )
+
   d a ld, l add, a c ld, e a ld, h add, a b ld,
-  circle-plot call,
+  circle-pixel call,
     \ ld a,d ;point #5
     \ add a,l
     \ ld c,a
@@ -159,25 +240,23 @@ code circle  ( gx gy b -- )
     \ ld b,a
     \ call circle_plot
 
-  e a ld, h sub, a b ld, circle-plot call,
+  e a ld, h sub, a b ld, circle-pixel call,
     \ ld a,e ;point #6
     \ sub h
     \ ld b,a
     \ call circle_plot
 
-  d a ld, l sub, a c ld, circle-plot call,
+  d a ld, l sub, a c ld, circle-pixel call,
     \ ld a,d ;point #8
     \ sub l
     \ ld c,a
     \ call circle_plot
 
-  e a ld, h add, a b ld, circle-plot call,  -->
+  e a ld, h add, a b ld, circle-pixel call,
     \ ld a,e ;point #7
     \ add a,h
     \ ld b,a
     \ call circle_plot
-
-( circle )
 
   \ ;********main logic***********
 
@@ -228,6 +307,24 @@ code circle  ( gx gy b -- )
     \ ld ix,next ; restore Forth IX
     \ _jp_next
 
+  \ Credit:
+  \
+  \ <http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/>.
+  \ Code adapted from:
+  \ <http://worldofspectrum.org/forums/discussion/22058/bresenhams-circle-algorithm/>,
+  \ which was written and published by rtunes
+  \ (https://worldofspectrum.org/forums/profile/259/rtunes),
+  \ 2008.
+
+  \ x^2+y^2=r^2 represents the real variable equation of a
+  \ circle which is to be plotted using a grid of discrete
+  \ pixels where each pixel has integer coordinates.
+
+  \ Note: original ROM circles are slightly displaced to the
+  \ right as noticed.
+
+  \ Note: 125 B used.
+
   \ doc{
   \
   \ circle  ( gx gy b -- )
@@ -238,10 +335,20 @@ code circle  ( gx gy b -- )
   \ This word does not use the ROM routine and it's much
   \ faster.
   \
-  \ Note no error checking is done: the whole circle must fit
+  \ This word does no error checking: the whole circle must fit
   \ the screen. Otherwise, strange things will happen when
   \ other parts of the screen bitmap, the screen attributes or
   \ even the system variables will be altered.
+  \
+  \ Note: By default `circle` does nothing. Its factor routine
+  \ `circle-pixel` must be configured first with
+  \ `set-circle-pixel`, in order to choose the routine that
+  \ creates the pixels of the circle: `uncolored-circle-pixel`,
+  \ `colored-circle-pixel` or a routine provided by the
+  \ application.
+  \
+  \ See: `circle-pixel`, `set-circle-pixel`,
+  \ `colored-circle-pixel`, `uncolored-circle-pixel`.
   \
   \ }doc
 
