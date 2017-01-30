@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231308
+  \ Last modified: 201701302327
 
   \ -----------------------------------------------------------
   \ Description
@@ -138,6 +138,8 @@
   \ version included in the kernel.
   \
   \ 2017-01-23: Improve documentation of `''` and `['']`.
+  \
+  \ 2017-01-30: Add `]cl` and `]1l`. Improve documentation.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -468,35 +470,71 @@ need ?(
   \
   \ }doc
 
-( ]l ]2l save-here restore-here )
+( ]l ]cl ]2l ]1l )
 
 need ?(
 
 [unneeded] ]l ?(
 
-: ]l  ( x -- )  ] postpone literal  ; immediate compile-only ?)
+: ]l  ( Compilation: x -- )
+  ] postpone literal  ; immediate compile-only ?)
 
   \ doc{
   \
-  \ ]l  ( x -- )
+  \ ]l  ( Compilation: x -- )
   \
   \ A short form of the idiom `] literal`.
+  \
+  \ See: `]`, `literal`, `]cl`, `]2l`, `]1l`.
+  \
+  \ }doc
+
+[unneeded] ]cl ?(
+
+: ]cl  ( Compilation: c -- )
+  ] postpone cliteral  ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ ]cl  ( Compilation: c -- )
+  \
+  \ A short form of the idiom `] cliteral`.
+  \
+  \ See: `]`, `cliteral`, `]l`, `]2l`, `]1l`.
   \
   \ }doc
 
 [unneeded] ]2l ?(
 
-: ]2l  ( xd -- )  ] postpone 2literal  ; immediate compile-only
+: ]2l  ( Compilation: xd -- )
+  ] postpone 2literal  ; immediate compile-only ?)
 
   \ doc{
   \
-  \ ]2l  ( xd -- )
+  \ ]2l  ( Compilation: xd -- )
   \
   \ A short form of the idiom `] 2literal`.
   \
+  \ See: `]`, `2literal`, `]cl`, `]l`, `]1l`.
+  \
   \ }doc
 
-?)
+[unneeded] ]1l ?(
+
+: ]1l  ( Compilation: x | c -- )
+  ] postpone 1literal  ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ ]1l  ( Compilation: x | c -- )
+  \
+  \ A short form of the idiom `] 1literal`.
+  \
+  \ See: `]`, `1literal`, `]l`, `]cl`, `]2l`.
+  \
+  \ }doc
+
+( save-here restore-here )
 
 [unneeded] save-here [unneeded] restore-here and ?(  need there
 
