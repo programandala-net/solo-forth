@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701311248
+; Last modified: 201701311317
 
 include version.z80s
 
@@ -12266,59 +12266,6 @@ print_boolean_attribute:
 print_boolean_attribute.valid:
   ; A = 0 or 1
   rst $10 ; print the attribute value (0..1)
-  _jp_next
-
-; ----------------------------------------------
-  _code_header paper_dot_,'paper.'
-
-; doc{
-;
-; paper.  ( b -- )
-;
-; Set paper color to _b_ (0..9), by printing the corresponding
-; control characters.  If _b_ is greater than 9, 9 is used.
-;
-; See: `set-paper`, `attr!`, `ink.`.
-;
-; }doc
-
-  ld a,paper_char
-  jr print_0_9_attribute
-
-; ----------------------------------------------
-  _code_header ink_dot_,'ink.'
-
-; doc{
-;
-; ink.  ( b -- )
-;
-; Set ink color to _b_ (0..9), by printing the corresponding
-; control characters.  If _b_ is greater than 9, 9 is used.
-;
-; See: `set-ink`, `attr!`, `paper.`.
-;
-; }doc
-
-  ld a,ink_char
-
-print_0_9_attribute:
-
-  ; Print a 0..9 attribute (ink, paper)
-  ;
-  ; Input:
-  ;   A = attribute control char
-  ;   TOS = attribute value
-
-  rst $10 ; print the control char
-  pop hl
-  ld a,l
-  cp $0A ; value is 0..9?
-  jr c,print_0_9_attribute.valid
-  ld a,$09
-print_0_9_attribute.valid:
-  ; A = 0..9
-  rst $10 ; print the attribute value (0..9)
-
   _jp_next
 
 ; ----------------------------------------------

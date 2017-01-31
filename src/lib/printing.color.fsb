@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701311207
+  \ Last modified: 201701311334
 
   \ -----------------------------------------------------------
   \ Description
@@ -80,7 +80,8 @@
   \
   \ 2017-01-31: Fix requirement of `paper!`. Fix Z80 opcode in
   \ `paper>attr`. Rename `paper!`, `paper@` and family to
-  \ `set-paper`, `get-paper`, etc.
+  \ `set-paper`, `get-paper`, etc. Move `paper.` and `ink.`
+  \ from the kernel.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -710,5 +711,93 @@ code overprint  ( f -- )
   \ See: `overprint-on`, `overprint-off`, `inverse`.
   \
   \ }doc
+
+( paper. ink. (0-9-color. )
+
+need ?(
+
+[unneeded] paper. ?(  need (0-9-color.
+
+code paper.  ( b -- )  3E c, 11 c, (0-9-color. jp,  end-code ?)
+  \ ld a,paper_control_char
+  \ jr print_0_9_color
+
+  \ doc{
+  \
+  \ paper.  ( b -- )
+  \
+  \ Set paper color to _b_ (0..9), by printing the
+  \ corresponding control characters.  If _b_ is greater than
+  \ 9, 9 is used instead.
+  \
+  \ This word is much slower than `set-paper` or `attr!`, but
+  \ it can handle pseudo-colors 8 (transparent) and 9
+  \ (contrast), setting the correspondent system variables and
+  \ flags accordingly.
+  \
+  \ See: `set-paper`, `attr!`, `ink.`, `(0-9-color.`.
+  \
+  \ }doc
+
+[unneeded] ink. ?(  need (0-9-color.
+
+code ink.  ( b -- )  3E c, 10 c, (0-9-color. jp,  end-code ?)
+  \ ld a,ink_control_char
+  \ jr print_0_9_color
+
+  \ doc{
+  \
+  \ ink.  ( b -- )
+  \
+  \ Set ink color to _b_ (0..9), by printing the corresponding
+  \ control characters.  If _b_ is greater than 9, 9 is used
+  \ instead.
+  \
+  \ This word is much slower than `set-ink` or `attr!`, but it
+  \ can handle pseudo-colors 8 (transparent) and 9 (contrast),
+  \ setting the correspondent system variables and flags
+  \ accordingly.
+  \
+  \ See: `set-ink`, `attr!`, `paper.`, `(0-9-color.`.
+  \
+  \ }doc
+
+[unneeded] (0-9-color. ?(  need assembler
+
+create (0-9-color.  ( -- a )  asm
+
+  prt, h pop, l a ld, 0A cp#, nc? rif  09 a ld#,  rthen prt,
+
+  \   rst $10 ; print the control char in A
+  \   pop hl
+  \   ld a,l ; A = color
+  \   cp $0A ; value is 0..9?
+  \   jr c,print_0_9_attribute.valid
+  \   ld a,$09
+  \ print_0_9_attribute.valid:
+  \   ; A = color 0..9
+  \   rst $10 ; print the attribute value in A (0..9)
+  jpnext, end-asm ?)
+  \   _jp_next
+
+  \ doc{
+  \
+  \ (0-9-color.  ( -- a )
+  \
+  \ Return the address _a_ of a routine used by `paper.` and
+  \ `ink.`.  This routine prints a color attribute in the range
+  \ 0..9.
+
+  \ Input:
+  \ - A = attribute control char ($10 for ink, $11 for paper)
+  \ - TOS = attribute value (0..9)
+
+  \ Note: If TOS is greater than 9, 9 is used instead.
+
+  \ See: `paper.`, `ink.`.
+  \
+  \ }doc
+
+
 
   \ vim: filetype=soloforth
