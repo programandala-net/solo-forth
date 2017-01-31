@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701311627
+  \ Last modified: 201701311654
 
   \ -----------------------------------------------------------
   \ Description
@@ -80,8 +80,9 @@
   \
   \ 2017-01-31: Fix requirement of `paper!`. Fix Z80 opcode in
   \ `paper>attr`. Rename `paper!`, `paper@` and family to
-  \ `set-paper`, `get-paper`, etc. Move `paper.` and `ink.`
-  \ from the kernel.
+  \ `set-paper`, `get-paper`, etc. Move `paper.`, `ink.`,
+  \ `bright.` and `flash.` from the kernel. Improve
+  \ documentation.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -170,13 +171,13 @@ need ?(
   \ : papery  ( b1 -- b2 )  8 *  ;
   \ ----
 
-  \ See: `brighty`, `flashy`.
+  \ See: `brighty`, `flashy`, `attr>paper`.
   \
   \ }doc
 
 [unneeded] brighty ?(
 
-code brighty  ( attribute -- brighty-attribute )
+code brighty  ( b1 -- b2 )
   E1 c, CB c, C0 6 8 * + 5 + c, jppushhl,  end-code ?)
   \ pop hl
   \ set 6,l
@@ -192,7 +193,7 @@ code brighty  ( attribute -- brighty-attribute )
   \ following:
 
   \ ----
-  \ : brighty  ( b1 -- b2 )   64 or  ;
+  \ : brighty  ( b1 -- b2 )   %01000000 or  ;
   \ ----
 
   \ See: `papery`, `flashy`.
@@ -217,7 +218,7 @@ code flashy   ( b1 -- b2 )
   \ following:
 
   \ ----
-  \ : flashy   ( b1 -- b2 )   128 or  ;
+  \ : flashy   ( b1 -- b2 )   %10000000 or  ;
   \ ----
 
   \ See: `papery`, `brighty`.
@@ -820,7 +821,7 @@ create (0-9-color.  ( -- a )  asm
   \ This word is much slower than `set-flash` or `attr!`, but
   \ it can handle pseudo-color 8 (transparent).
   \
-  \ See: `set-flash`, `attr!`, `bright.`.
+  \ See: `set-flash`, `attr!`, `bright.`, `(0-1-8-color.`.
   \
   \ }doc
 
@@ -844,12 +845,31 @@ create (0-9-color.  ( -- a )  asm
   \ This word is much slower than `set-bright` or `attr!`, but
   \ it can handle pseudo-color 8 (transparent).
   \
-  \ See: `set-bright`, `attr!`, `flash.`.
+  \ See: `set-bright`, `attr!`, `flash.`, `(0-1-8-color.`.
   \
   \ }doc
 
 [unneeded] (0-1-8-color.
 
 ?\ : (0-1-8-color.  ( n c -- )  emit %1001 and 8 min emit  ;
+
+  \ doc{
+  \
+  \ (0-1-8-color.  ( n c -- )
+  \
+  \ Print control character _c_. Then convert _n_ to the set 0,
+  \ 1 and 8 and print it as a character. The conversion of _n_
+  \ is done as follows:
+
+  \ - 0, 1 and 8 are not changed.
+  \ - 2, 4 and 6 are converted to 0.
+  \ - 3, 5 and 7 are converted to 1.
+  \ - Values greater than 8 or less than 0 are converted to 8.
+
+  \ This word is a factor of `flash.` and `bright.`.
+  \
+  \ See: `flash.`, `bright.`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
