@@ -624,10 +624,6 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
-.2017-01-31:
-
-Remove `paper>attr`, which is equivalent to `papery`.
-
 .2017-01-24:
 
 NOTE: Milestone: 0.13.0
