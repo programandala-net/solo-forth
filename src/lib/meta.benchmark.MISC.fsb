@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701301202
+  \ Last modified: 201701312002
 
   \ -----------------------------------------------------------
   \ Description
@@ -92,6 +92,54 @@
   \ 2017-01-27: Add `mask+attr!-bench`.
   \
   \ 2017-01-30: Add `circle-bench`.
+  \
+  \ 2017-01-31: Add `paper-bench`.
+
+( paper-bench )
+
+need bench{  need }bench.
+need paper.  need set-paper  need papery
+need attr@   need attr!
+
+: old-set-paper  ( b -- )
+  papery attr@ %11000111 and or attr!  ;
+
+: run  ( u -- )
+  cr ." Bench of paper "
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." paper. :" cr space
+  bench{ 0 do  i paper.         loop default-colors }bench.
+  dup cr ." set-paper in Forth :" cr space
+  bench{ 0 do  i old-set-paper  loop default-colors }bench.
+      cr ." set-paper in Z80 :" cr space
+  bench{ 0 do  i set-paper      loop default-colors }bench.  ;
+
+  \ 2017-01-31:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ---------------------------------
+  \       paper. set-paper in Forth set-paper in Z80
+  \       ------ ------------------ ----------------
+  \ 00100      3                  2                1
+  \ 01000     25                 19                8
+  \ 10000    250                189               76
+  \ 65535   1638               1234              498
+
+  \ Legend:
+  \
+  \ `paper.`: Written in Z80: It prints the paper control
+  \ character followed by the paper number (so the temporary
+  \ attribute is updated).
+  \
+  \ `set-paper` in Forth: Old version, written in Forth: It
+  \ modifies only the needed bits of the temporary attribute:
+
+  \ ----
+  \ : set-paper  ( b -- )
+  \   paper>attr attr@ %11000111 and or attr!  ;
+  \ ----
+
+  \ `set-paper`: New version, written in Z80 in the library.
 
 ( circle-bench )
 

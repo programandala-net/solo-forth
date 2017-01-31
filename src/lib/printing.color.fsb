@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701311702
+  \ Last modified: 201701312007
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,6 +83,7 @@
   \ `set-paper`, `get-paper`, etc. Move `paper.`, `ink.`,
   \ `bright.` and `flash.` from the kernel. Improve
   \ documentation. Remove `paper>attr`; use `papery` instead.
+  \ Rewrite `set-paper` in Z80.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -522,10 +523,40 @@ need ?(
 
 [unneeded] set-paper ?(
 
-need papery  need attr@  need attr!
+code set-paper  ( b -- )
+  E1 c, 78 05 + c, E6 c, %00000111 c,
+  \ pop hl
+  \ ld a,l
+  \ and %00000111
+  CB c, 27 c, CB c, 27 c, CB c, 27 c, 58 07 + c,
+  \ sla a
+  \ sla a
+  \ sla a
+  \ ld e,a
+  21 c, os-attr-t , 3E c, %11000111 c, A6 c, B0 03 + c,
+  \ ld hl,sys_attr_t
+  \ ld a,%11000111
+  \ and (hl)
+  \ or e
+  70 07 + c, jpnext, end-code ?)
+  \ ld (hl),a
+  \ _jp_next
 
-: set-paper  ( b -- )
-  papery attr@ %11000111 and or attr!  ; ?)
+  \ doc{
+  \
+  \ set-paper  ( b -- )
+  \
+  \ This word is written in Z80. Its equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : set-paper  ( b -- )
+  \   papery attr@ %11000111 and or attr!  ;
+  \ ----
+
+  \ See: `paper.`, `set-ink`, `set-flash`, `set-bright`.
+  \
+  \ }doc
 
 [unneeded] get-ink ?(  need attr@
 
