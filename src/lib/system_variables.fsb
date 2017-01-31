@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701180126
+  \ Last modified: 201701312100
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,10 +34,13 @@
   \ 2017-01-10: Document all words.
   \
   \ 2017-01-18: Improve documentation of `os-frames`.
+  \
+  \ 2017-01-31: Add the decimal prefix to addresses, in case
+  \ `base` is not decimal.
 
 ( os-chars os-chans os-flags2 os-seed os-frames os-udg )
 
-[unneeded] os-chars    ?\ 23606 constant os-chars
+[unneeded] os-chars    ?\ #23606 constant os-chars
 
   \ doc{
   \
@@ -52,7 +55,7 @@
   \
   \ }doc
 
-[unneeded] os-chans    ?\ 23631 constant os-chans
+[unneeded] os-chans    ?\ #23631 constant os-chans
 
   \ doc{
   \
@@ -63,7 +66,7 @@
   \
   \ }doc
 
-[unneeded] os-flags2   ?\ 23658 constant os-flags2
+[unneeded] os-flags2   ?\ #23658 constant os-flags2
 
   \ doc{
   \
@@ -76,7 +79,7 @@
   \
   \ }doc
 
-[unneeded] os-seed     ?\ 23670 constant os-seed
+[unneeded] os-seed     ?\ #23670 constant os-seed
 
   \ doc{
   \
@@ -88,7 +91,7 @@
   \
   \ }doc
 
-[unneeded] os-frames   ?\ 23672 constant os-frames
+[unneeded] os-frames   ?\ #23672 constant os-frames
 
   \ doc{
   \
@@ -103,7 +106,7 @@
   \
   \ }doc
 
-[unneeded] os-udg      ?\ 23675 constant os-udg
+[unneeded] os-udg      ?\ #23675 constant os-udg
 
   \ doc{
   \
@@ -121,7 +124,7 @@
 
 ( os-coords os-coordx os-coordy )
 
-[unneeded] os-coords      ?\ 23677 constant os-coords
+[unneeded] os-coords      ?\ #23677 constant os-coords
 
   \ doc{
   \
@@ -135,7 +138,7 @@
   \
   \ }doc
 
-[unneeded] os-coordx      ?\ 23677 constant os-coordx
+[unneeded] os-coordx      ?\ #23677 constant os-coordx
 
   \ doc{
   \
@@ -149,7 +152,7 @@
   \
   \ }doc
 
-[unneeded] os-coordy      ?\ 23678 constant os-coordy
+[unneeded] os-coordy      ?\ #23678 constant os-coordy
 
   \ doc{
   \
@@ -165,7 +168,7 @@
 
 ( os-attr-p os-mask-p os-attr-t os-mask-t os-p-flag )
 
-[unneeded] os-attr-p      ?\ 23693 constant os-attr-p
+[unneeded] os-attr-p      ?\ #23693 constant os-attr-p
 
   \ doc{
   \
@@ -179,7 +182,7 @@
   \
   \ }doc
 
-[unneeded] os-mask-p      ?\ 23694 constant os-mask-p
+[unneeded] os-mask-p      ?\ #23694 constant os-mask-p
 
   \ doc{
   \
@@ -195,7 +198,7 @@
   \
   \ }doc
 
-[unneeded] os-attr-t      ?\ 23695 constant os-attr-t
+[unneeded] os-attr-t      ?\ #23695 constant os-attr-t
 
   \ doc{
   \
@@ -209,7 +212,7 @@
   \
   \ }doc
 
-[unneeded] os-mask-t      ?\ 23696 constant os-mask-t
+[unneeded] os-mask-t      ?\ #23696 constant os-mask-t
 
   \ doc{
   \
@@ -226,7 +229,7 @@
   \ }doc
 
 
-[unneeded] os-p-flag      ?\ 23697 constant os-mask-t
+[unneeded] os-p-flag      ?\ #23697 constant os-mask-t
 
   \ doc{
   \
