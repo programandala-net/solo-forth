@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-01-23
+" Updated:  2017-01-31
 
 " --------------------------------------------------------------
 " History
@@ -116,6 +116,10 @@ syn keyword soloforthDefine :noname
 syn keyword soloforthDefine ;
 syn keyword soloforthDefine ?defined
 syn keyword soloforthDefine ]
+syn keyword soloforthDefine ]1l
+syn keyword soloforthDefine ]2l
+syn keyword soloforthDefine ]cl
+syn keyword soloforthDefine ]l
 syn keyword soloforthDefine alias
 syn keyword soloforthDefine begin-structure
 syn keyword soloforthDefine cconstant
@@ -351,18 +355,19 @@ syn keyword soloforthFunction false
 syn keyword soloforthFunction true
 syn keyword soloforthGraphics at-xy
 syn keyword soloforthGraphics attr
+syn keyword soloforthGraphics attr-cls
 syn keyword soloforthGraphics border
-syn keyword soloforthGraphics bright
+syn keyword soloforthGraphics bright.
 syn keyword soloforthGraphics cls
 syn keyword soloforthGraphics default-colors
 syn keyword soloforthGraphics default-mode
 syn keyword soloforthGraphics display
-syn keyword soloforthGraphics flash
-syn keyword soloforthGraphics ink
+syn keyword soloforthGraphics flash.
+syn keyword soloforthGraphics ink.
 syn keyword soloforthGraphics inverse
 syn keyword soloforthGraphics overprint
 syn keyword soloforthGraphics page
-syn keyword soloforthGraphics paper
+syn keyword soloforthGraphics paper.
 syn keyword soloforthGraphics reset-pixel
 syn keyword soloforthGraphics restore-mode
 syn keyword soloforthGraphics save-mode
@@ -1103,6 +1108,9 @@ let b:current_syntax = "soloforth"
 "
 " 2017-01-23: Add `replaces`, `unescape`, `substitute`,
 " `1/string`.
+"
+" 2017-01-31: Add `attr-cls`, `]l`, `]1l`, `]2l`, `]cl`. Rename
+" `paper` to `paper.`, etc.
 
 " --------------------------------------------------------------
 

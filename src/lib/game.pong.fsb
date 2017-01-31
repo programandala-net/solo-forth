@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201612300102
+  \ Last modified: 201701311233
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,6 +58,8 @@
   \ in the kernel.
   \
   \ 2016-12-30: Compact the source, saving some blocks.
+  \
+  \ 2017-01-31: Update the attribute and color words.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -78,7 +80,7 @@ need columns  need rows  need 0udg[  need rnd  need ??
 need cvariable  need 2/  need pixel-addr
 need g-emit-0udg  need ctoggle  need g-at-xy
 
-0 cconstant black  7 cconstant white
+need black  need white  need set-ink  need brighty  need papery
 
 8 cconstant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
@@ -87,10 +89,7 @@ variable ball-delay
 
 4 cconstant racket-size
 
-: brighty  ( n1 -- n2 )  %1000000 or  ;
-: paper-color  ( n1 -- n2 )  8 *  ;
-
-white paper-color brighty cconstant racket-color
+white papery brighty cconstant racket-color
 
 22528 constant top-line-attr
   \ address of the top left screen attribute
@@ -215,12 +214,12 @@ variable ball-frame  first-ball-frame ball-frame !
 
 : restore-screen  ( -- )  default-colors page  ;
 
-: init-screen  ( -- )  restore-screen white ink  ;  -->
+: init-screen  ( -- )  restore-screen white set-ink  ;  -->
 
 ( pong )
 
 : (border)  ( a -- )
-  columns [ white paper-color ] literal sync fill  ;
+  columns [ white papery ] literal sync fill  ;
 
 : top-border  ( -- )  top-line-attr (border)  ;
 
@@ -260,7 +259,7 @@ variable ball-frame  first-ball-frame ball-frame !
 
 : (print-points)  ( n y -- )
   0 swap at-xy s>d <# # # # #>
-  black ink sync type white ink  ;
+  black set-ink sync type white set-ink  ;
   \ Print the points of a player.
 
 : print-points1  ( -- )

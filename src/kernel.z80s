@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701301322
+; Last modified: 201701311226
 
 include version.z80s
 
@@ -12217,14 +12217,16 @@ border.a:
   ; Forth.
 
 ; ----------------------------------------------
-  _code_header flash_,'flash'
+  _code_header flash_dot_,'flash.'
 
 ; doc{
 ;
-; flash  ( f -- )
+; flash.  ( f -- )
 ;
-; If _f_ is zero, turn flash off (in temporary and permanent
-; attributes); else turn it on.
+; If _f_ is zero, turn flash off, else turn it on; do it by
+; printing the corresponding control characters.
+;
+; See: `set-flash`, `attr!`, `bright.`.
 ;
 ; }doc
 
@@ -12232,14 +12234,16 @@ border.a:
   jr print_boolean_attribute
 
 ; ----------------------------------------------
-  _code_header bright_,'bright'
+  _code_header bright_dot_,'bright.'
 
 ; doc{
 ;
-; bright  ( f -- )
+; bright.  ( f -- )
 ;
-; If _f_ is zero, turn bright off (in temporary and permanent
-; attributes); else turn it on.
+; If _f_ is zero, turn bright off, else turn it on; do it by
+; printing the corresponding control characters.
+;
+; See: `set-bright`, `attr!`, `flash.`.
 ;
 ; }doc
 
@@ -12262,20 +12266,19 @@ print_boolean_attribute:
 print_boolean_attribute.valid:
   ; A = 0 or 1
   rst $10 ; print the attribute value (0..1)
-
-  ; _jp_next ; XXX TODO --
-
-  jr permanent_colors_ ; XXX OLD
+  _jp_next
 
 ; ----------------------------------------------
-  _code_header paper_,'paper'
+  _code_header paper_dot_,'paper.'
 
 ; doc{
 ;
-; paper  ( b -- )
+; paper.  ( b -- )
 ;
-; Set paper color to _b_ (0..9). If _b_ is greater than 9, 9 is
-; used.
+; Set paper color to _b_ (0..9), by printing the corresponding
+; control characters.  If _b_ is greater than 9, 9 is used.
+;
+; See: `set-paper`, `attr!`, `ink.`.
 ;
 ; }doc
 
@@ -12283,14 +12286,16 @@ print_boolean_attribute.valid:
   jr print_0_9_attribute
 
 ; ----------------------------------------------
-  _code_header ink_,'ink'
+  _code_header ink_dot_,'ink.'
 
 ; doc{
 ;
-; ink  ( b -- )
+; ink.  ( b -- )
 ;
-; Set ink color to _b_ (0..9). If _b_ is greater than 9, 9 is
-; used.
+; Set ink color to _b_ (0..9), by printing the corresponding
+; control characters.  If _b_ is greater than 9, 9 is used.
+;
+; See: `set-ink`, `attr!`, `paper.`.
 ;
 ; }doc
 
@@ -12314,10 +12319,7 @@ print_0_9_attribute.valid:
   ; A = 0..9
   rst $10 ; print the attribute value (0..9)
 
-  ; _jp_next ; XXX TODO --
-  
-  ; XXX OLD:
-  ; Execution continues in `permanent-colors`:
+  _jp_next
 
 ; ----------------------------------------------
   _code_header permanent_colors_,'permanent-colors'

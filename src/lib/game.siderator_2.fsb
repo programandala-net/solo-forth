@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300105
+  \ Last modified: 201701311237
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \ missing `need inverse`.
   \
   \ 2016-08-05: Compact the code, saving three blocks.
+  \
+  \ 2017-01-31: Update the attribute and color words.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -60,6 +62,7 @@ need random  need randomize  need udg:  need inkey
 need between  need ocr  need frames@  need inverse
 need j  need between  need rows  need last-column
 need last-row  need vocabulary
+need cyan  need white  need set-ink
 
 vocabulary siderator
 also siderator definitions
@@ -152,7 +155,7 @@ variable parsecs    variable record  record off
 
 : .star  ( c -- )
   [ last-column 1+ ] literal random last-row at-xy
-  1 bright emit 0 bright  ;
+  1 bright. emit 0 bright.  ;
 
 : stars/speed  ( -- n )  speed @ #stars 1- max-speed */ 1+  ;
 
@@ -178,7 +181,8 @@ rows 2 / constant craft-y
 
 : -craft  ( -- )  at-craft space  ;
 
-: .craft  ( -- )  at-craft craft-udg 5 ink emit 7 ink  ;
+: .craft  ( -- )
+  at-craft craft-udg cyan set-ink emit white set-ink  ;
 
   \ Speed, parsecs, record
 
@@ -267,7 +271,7 @@ rows 2 / constant craft-y
   \ Init
 
 : init-colors  ( -- )
-  0 paper 7 ink 0 flash 0 bright 0 inverse 0 border  ;
+  white attr!  0 inverse  0 border  ;
 
 : init-screen  ( -- )
   init-colors cls about cr instructions wait cls  ;
