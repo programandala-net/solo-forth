@@ -1145,6 +1145,12 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
+.2017-01-31:
+
+Words that could be moved to the library, if the `need` tool didn't use them:
+`2over`, `line>string`.
+
+
 .2017-01-02:
 
 NOTE: Milestone 0.13.0
@@ -1314,6 +1320,10 @@ Combine `begin-module` and `package`.
 
 // Names {{{1
 == Names ==
+
+.2017-01-31:
+
+Rename `>defer` to `>action`, after the standard `action-of`
 
 .2017-01-30:
 

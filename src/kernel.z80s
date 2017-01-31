@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701311629
+; Last modified: 201702010005
 
 include version.z80s
 
@@ -1233,7 +1233,7 @@ endif
 ; }doc
 
   dw question_csp_
-  dw previous_ ; restore the search order ; XXX TODO better
+  dw previous_ ; restore the search order
 if 1 ; abase
   dw abase_,fetch_,base_,store_ ; restore `base`
 else
@@ -1967,8 +1967,6 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library?
-
   _literal -1
   dw set_order_
   dw exit_
@@ -2142,8 +2140,6 @@ set_order.exit
 
 ; ----------------------------------------------
   _colon_header previous_,'previous'
-
-  ; XXX TODO -- move to the library? -- but it's used by `asm`
 
 ; doc{
 ;
@@ -4620,9 +4616,6 @@ u_m_slash_mod.4:
   _code_header hp_fetch_,'hp@'
 
   ; XXX TODO -- remove?
-  ;
-  ; XXX TODO -- move to the library? (used in the modules of
-  ; `indexer`, `-transient`, `module` and `marker`)
 
 ; doc{
 ;
@@ -4831,10 +4824,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; ----------------------------------------------
   _code_header two_r_fetch_,'2r@'
 
-  ; XXX TODO -- Move to the library? But the Z80 label
-  ; `two_fetch.hl` should be returned by a constant.
-  ; Alternative:
-  ; - calculate the address: `' 2@ 1+`
+  ; XXX TODO -- Move to the library?
+  ; Use `' 2@ 1+` to calculate the jump address.
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
@@ -7606,26 +7597,7 @@ minus_trailing.begin:
   dw exit_
 
 ; ----------------------------------------------
-  _variable_header span_,'span'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; span  ( -- a )
-;
-; The address of a variable containing the count of characters
-; actually received and stored by the last execution of
-; `expect`.
-;
-; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT).
-;
-; }doc
-
-  dw 0
-
-; ----------------------------------------------
-  _defer_header to_history_,'>history',,two_drop_
+;  _defer_header to_history_,'>history',,two_drop_
 
 ; XXX TODO -- not used yet
 
@@ -9756,8 +9728,6 @@ quit.begin:
 ;
 ; }doc
 
-; XXX TODO -- move to the library
-
   _literal error.deferred_word_uninitialized
   dw error_
   dw exit_
@@ -10620,9 +10590,8 @@ endif
 ; ----
 ; }doc
 
-  ; XXX TODO -- move to the library?
-  ; the problem is `located` needs it,
-  ; thus it can not be loaded with `need`.
+  ; XXX REMARK -- Could be moved to the library, but it's
+  ; needed in `(located)`.
 
   dw to_r_
   dw c_slash_l_,b_slash_buf_,star_slash_mod_
@@ -12308,16 +12277,12 @@ two_fetch.hl:
 ; ----------------------------------------------
   _code_header two_over_,'2over'
 
-  ; XXX TODO -- Move to the library? But the Z80 label
-  ; `two_fetch.hl` should be returned by a constant.
-  ; Alternatives:
-  ; - write it in Forth
-  ; - write it in Z80 with a call to `2@`, using `execute-xt`
-  ; - write it in Z80 calculating the address: `' 2@ 1+`
+  ; XXX REMARK -- Could be moved to the library, using `' 2@
+  ; 1+ jp,` to jump into `2@`, but it's needed in `(located)`.
 
 ; doc{
 ;
-; 2over  ( d1 d2 -- d1 d2 d1 )
+; 2over  ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
 ;
 ; }doc
 
@@ -12330,10 +12295,6 @@ two_fetch.hl:
 
   ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
-  ;
-  ; XXX TODO -- Make it a code word and move it above `rdrop`.
-  ; The only difference is its name will be shown by `see`,
-  ; instead of `rdrop`.
 
 ; ----------------------------------------------
   _code_header exit_,'exit'
