@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-30
+:revdate: 2017-01-3w
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -623,19 +623,6 @@ save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
-
-.2017-01-26:
-
-Add `wipe` or similar name, to change all attributes with a given value.
-
-.2017-01-22:
-
-NOTE: Milestone: 0.13.0
-
-Decide a convention about permanent and temporary attributes. At the moment the
-attribute words defined in the kernel (`bright`, `flash`, `paper` and `ink`)
-change both attributes, but `overprint` and `inverse`, defined in the library,
-change only the temporary attributes.
 
 .2017-01-24:
 

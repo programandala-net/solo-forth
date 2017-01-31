@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201701311226
+; Last modified: 201701311248
 
 include version.z80s
 
@@ -11979,12 +11979,12 @@ at_pfa.last_line:
 ;
 ; cls  ( -- )
 ;
-; Clear the screen with the current permanent attribute, reset
-; the graphic coordinates at the lower left corner (x 0, y 0)
-; and reset the cursor position at the upper left corner
-; (column 0, row 0).
+; Clear the screen with the current attribute, reset the
+; graphic coordinates at the lower left corner (x 0, y 0) and
+; reset the cursor position at the upper left corner (column 0,
+; row 0).
 ;
-; See: `attr-cls`, `page`.
+; See: `attr!`, `attr-cls`, `page`.
 ;
 ; }doc
 
@@ -11993,7 +11993,7 @@ at_pfa.last_line:
 ; the screen.
 
   exx ; save the Forth IP
-  ld a,(sys_attr_p)
+  ld a,(sys_attr_t)
   jr attr_cls.a
 
 ; ----------------------------------------------
