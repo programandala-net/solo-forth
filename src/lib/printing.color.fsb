@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701312007
+  \ Last modified: 201701312053
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,7 +83,7 @@
   \ `set-paper`, `get-paper`, etc. Move `paper.`, `ink.`,
   \ `bright.` and `flash.` from the kernel. Improve
   \ documentation. Remove `paper>attr`; use `papery` instead.
-  \ Rewrite `set-paper` in Z80.
+  \ Rewrite `set-paper` and `set-ink` in Z80.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -262,8 +262,7 @@ need ?(
 
 [unneeded] attr@ ?( need os-attr-t
 
-code attr@  ( -- b )
-  3A c, os-attr-t , pusha jp, end-code ?)
+code attr@  ( -- b )  3A c, os-attr-t , pusha jp, end-code ?)
   \ ld a,(sys_attr_t)
   \ jp push_a
 
@@ -521,10 +520,10 @@ need ?(
 
 : get-paper  ( -- b )  attr@ attr>paper  ; ?)
 
-[unneeded] set-paper ?(
+[unneeded] set-paper ?(  need os-attr-t
 
 code set-paper  ( b -- )
-  E1 c, 78 05 + c, E6 c, %00000111 c,
+  E1 c, 7D c, E6 c, %111 c,
   \ pop hl
   \ ld a,l
   \ and %00000111
@@ -546,6 +545,9 @@ code set-paper  ( b -- )
   \
   \ set-paper  ( b -- )
   \
+  \ Set paper color _b_ (0..7) by modifying the corresponding
+  \ bits of the temporary attribute.
+  \
   \ This word is written in Z80. Its equivalent code in Forth
   \ is the following:
 
@@ -560,12 +562,41 @@ code set-paper  ( b -- )
 
 [unneeded] get-ink ?(  need attr@
 
-: get-ink  ( -- b )  attr@ %00000111 and  ; ?)
+: get-ink  ( -- b )  attr@ %111 and  ; ?)
 
-[unneeded] set-ink ?(  need attr@  need attr!
+[unneeded] set-ink ?(  need os-attr-t
 
-: set-ink  ( b -- )
-  %00000111 and attr@ %11111000 and or attr!  ; ?)
+code set-ink  ( b -- )
+  D1 c, 21 c, os-attr-t ,
+  \ pop de
+  \ ld hl,sys_attr_t
+  3E c, %11111000 c, A6 c, B3 c, 77 c, jpnext, end-code ?)
+  \ ld a,%11111000
+  \ and (hl)
+  \ or e
+  \ ld (hl),a
+  \ _jp_next
+
+  \ doc{
+  \
+  \ set-ink  ( b -- )
+  \
+  \ Set ink color _b_ by modifying bits 0-2 of the current
+  \ attribute. Note that _b_ is supposed to be in the range
+  \ 0..7 and its bits 3-7 are not masked. Therefore any value
+  \ other than 0..7 will corrupt the current attribute.
+  \
+  \ This word is written in Z80. Its equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : set-ink  ( b -- )
+  \   attr@ %11111000 and or attr!  ;
+  \ ----
+
+  \ See: `ink.`, `set-paper`, `set-flash`, `set-bright`.
+  \
+  \ }doc
 
 ( get-bright set-bright set-flash get-flash )
 

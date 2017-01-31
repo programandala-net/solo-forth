@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701312002
+  \ Last modified: 201701312141
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,7 +15,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -93,7 +93,51 @@
   \
   \ 2017-01-30: Add `circle-bench`.
   \
-  \ 2017-01-31: Add `paper-bench`.
+  \ 2017-01-31: Add `paper-bench`, `ink-bench`.
+
+( ink-bench )
+
+need bench{  need }bench.
+need ink.  need set-ink  need attr@  need attr!
+
+: old-set-ink  ( b -- )  attr@ %11111000 and or attr!  ;
+
+: run  ( u -- )
+  cr ." Bench of ink "
+  cr ." Results for " dup u. ." iterations"
+  dup cr ." ink. :" cr space
+  bench{ 0 do  i ink.         loop default-colors }bench.
+  dup cr ." set-ink in Forth :" cr space
+  bench{ 0 do  i old-set-ink  loop default-colors }bench.
+      cr ." set-ink in Z80 :" cr space
+  bench{ 0 do  i set-ink      loop default-colors }bench.  ;
+
+  \ 2017-01-31:
+
+  \ Times Frames (1 frame = 50th of second)
+  \ ----- ------------------------------------------
+  \       ink.   set-ink in Forth   set-ink in Z80
+  \       ------ ------------------ ----------------
+  \ 00100      2                  2                1
+  \ 01000     25                 17                7
+  \ 10000    248                173               70
+  \ 65535   1630               1136              460
+
+  \ Legend:
+  \
+  \ `ink.`: Written in Z80: It prints the ink control
+  \ character followed by the ink number (so the temporary
+  \ attribute is updated).
+  \
+  \ `set-ink` in Forth: Old version, written in Forth: It
+  \ modifies only the needed bits of the temporary attribute:
+
+  \ ----
+  \ : set-ink  ( b -- )
+  \   attr@ %11111000 and or attr!  ;
+  \ ----
+
+  \ `set-ink`: New version, written in Z80 in the library.
 
 ( paper-bench )
 
