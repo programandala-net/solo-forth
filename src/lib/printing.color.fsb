@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011223
+  \ Last modified: 201702011229
 
   \ -----------------------------------------------------------
   \ Description
@@ -86,7 +86,7 @@
   \ Rewrite `set-paper` and `set-ink` in Z80.
   \
   \ 2017-02-01: Make color constants individually accessible to
-  \ `need`. Add `contrast`.
+  \ `need`. Add `contrast`. Add `attr>ink`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -282,11 +282,9 @@ need ?(
   \
   \ }doc
 
-( papery brighty flashy attr>paper )
+( papery brighty flashy attr>paper attr>ink )
 
-need ?(
-
-[unneeded] papery ?(  need 8*  need alias
+need ?(  [unneeded] papery ?(  need 8*  need alias
 
 ' 8* alias papery  ( b1 -- b2 ) ?)
 
@@ -383,7 +381,33 @@ code attr>paper  ( b1 -- b2 )
   \ : attr>paper  ( b1 -- b2 )  %00111000 and 3 rshift  ;
   \ ----
 
-  \ See: `papery`.
+  \ See: `attr>ink`, `papery`.
+  \
+  \ }doc
+
+[unneeded] attr>ink ?(
+
+code attr>ink  ( b1 -- b2 )
+  E1 c, 7D c, E6 c, %111 c, pusha jp,  end-code ?)
+  \ pop hl
+  \ ld a,l
+  \ and %111
+  \ jp push_a
+
+  \ doc{
+  \
+  \ attr>ink  ( b1 -- b2 )
+  \
+  \ Convert attribute _b1_ to its ink color number _b2_.
+  \
+  \ This word is written in Z80. The equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : attr>ink  ( b1 -- b2 )  %111 and  ;
+  \ ----
+
+  \ See: `attr>paper`.
   \
   \ }doc
 
@@ -691,9 +715,9 @@ code set-paper  ( b -- )
   \
   \ }doc
 
-[unneeded] get-ink ?(  need attr@
+[unneeded] get-ink ?(  need attr@  need attr>ink
 
-: get-ink  ( -- b )  attr@ %111 and  ; ?)
+: get-ink  ( -- b )  attr@ attr>ink  ; ?)
 
 [unneeded] set-ink ?(  need os-attr-t
 
