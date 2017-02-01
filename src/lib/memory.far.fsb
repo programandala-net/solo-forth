@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011319
+  \ Last modified: 201702011334
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,8 +74,8 @@
   \
   \ 2017-02-01: Fix typo. Improve the layout of some
   \ documentation.  Add `default-bank-routine`,
-  \ `e-bank-routine`.  Move `!bank` and `c!bank` from the
-  \ kernel.
+  \ `e-bank-routine`.  Move `!bank`, `c!bank`, `@bank` and
+  \ `c@bank` from the kernel.
 
 ( farhl questionnextbank questionpreviousbank farallot far, )
 
@@ -357,9 +357,10 @@ need ?(
   \
   \ }doc
 
-( default-bank-routine e-bank-routine !bank )
+( default-bank-routine e-bank-routine )
 
-' default-bank 2+ constant default-bank-routine
+[unneeded] default-bank-routine
+?\ ' default-bank 2+ constant default-bank-routine
 
   \ doc{
   \
@@ -376,7 +377,8 @@ need ?(
   \
   \ }doc
 
-' default-bank 4 + constant e-bank-routine
+[unneeded] e-bank-routine
+?\ ' default-bank 4 + constant e-bank-routine
 
   \ doc{
   \
@@ -393,18 +395,21 @@ need ?(
   \
   \ }doc
 
+( !bank c!bank @bank c@bank )
+
+need ?(  [unneeded] !bank ?(  need e-bank-routine
+
 code !bank  ( x a n -- )
   D1 c, e-bank-routine call, E1 c, D1 c, 73 c, 23 c, 72 c,
-  ' default-bank jp,  end-code
-  \   pop de
-  \ store_bank.e:
-  \   call bank.e
-  \   pop hl
-  \   pop de
-  \   ld (hl),e
-  \   inc hl
-  \   ld (hl),d
-  \   jp default_bank_
+  ' default-bank jp,  end-code ?)
+  \ pop de
+  \ call bank.e
+  \ pop hl
+  \ pop de
+  \ ld (hl),e
+  \ inc hl
+  \ ld (hl),d
+  \ jp default_bank_
 
   \ doc{
   \
@@ -423,9 +428,10 @@ code !bank  ( x a n -- )
 
   \ }doc
 
-code c!bank
-  D1 c, e-bank-routine call, E1 c, D1 c, 73 c,
-  ' default-bank jp,  end-code
+[unneeded] !bank ?(  need e-bank-routine
+
+code c!bank  ( c ca n -- )  D1 c, e-bank-routine call,
+  E1 c, D1 c, 73 c, ' default-bank jp,  end-code ?)
   \ pop de
   \ call bank.e
   \ pop hl
@@ -446,6 +452,63 @@ code c!bank
   \ ----
   \ : c!bank  ( c ca n -- )
   \   bank c! default-bank  ;
+  \ ----
+
+  \ }doc
+
+[unneeded] @bank ?(  need e-bank-routine
+
+code @bank  ( a n -- x )
+  D1 c, e-bank-routine call, E1 c, 7E c, 23 c, 66 c, 6F c,
+  \ pop de
+  \ call bank.e
+  \ pop hl
+  \ ld a,(hl)
+  \ inc hl
+  \ ld h,(hl)
+  \ ld l,a
+  E5 c, ' default-bank jp,  end-code ?)
+  \ push hl
+  \ jp default_bank_
+
+  \ doc{
+  \
+  \ @bank  ( a n -- x )
+  \
+  \ Fetch _x_ from address _a_ ($C000..$FFFF) of bank _n_
+  \ (0..7).
+  \
+  \ This word is written in Z80. Its equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : @bank  ( a n -- x )
+  \   bank @ default-bank  ;
+  \ ----
+
+  \ }doc
+
+[unneeded] c@bank ?(  need e-bank-routine
+
+code c@bank  ( ca n -- c )  D1 c, e-bank-routine call,
+  E1 c, 6E c, 26 c, 00 c, E5 c, ' default-bank jp,  end-code ?)
+  \ pop de
+  \ call bank.e
+  \ pop hl
+  \ ld l,(hl)
+  \ ld h,0
+  \ push hl
+  \ jp default_bank_
+
+  \ doc{
+  \
+  \ c@bank  ( ca n -- c )
+  \
+  \ Fetch _c_ from address _ca_ ($C000..$FFFF) of bank _n_ (0..7).
+
+  \ ----
+  \ : c@bank  ( ca n -- c )
+  \   bank c@ default-bank  ;
   \ ----
 
   \ }doc

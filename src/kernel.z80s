@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702011320
+; Last modified: 201702011336
 
 include version.z80s
 
@@ -6628,93 +6628,6 @@ to_name.next:
   pop hl ; nfa
   add hl,bc ; xtp of the next word
   jr to_name.begin
-
-; ----------------------------------------------
-if 0 ; XXX OLD
-
-  _colon_header c_fetch_bank_,'c@bank'
-
-; doc{
-;
-; c@bank  ( ca n -- c )
-;
-; Fetch _c_ from address _ca_ ($C000..$FFFF) of bank _n_ (0..7).
-;
-; ----
-; : c@bank  ( ca n -- c )
-;   bank c@ default-bank  ;
-; ----
-;
-; }doc
-
-  ; 11 bytes
-
-  dw bank_,c_fetch_,default_bank_
-  dw exit_
-
-else
-
-  _code_header c_fetch_bank_,'c@bank'
-
-  ; XXX TODO -- move to the library
-
-  ; 10..11 bytes
-
-  pop de
-c_fetch_bank.e:
-  call bank.e
-  pop hl
-  ld l,(hl)
-  ld h,0
-  _jump fetch_bank.end
-
-endif
-
-; ----------------------------------------------
-if 0 ; XXX OLD
-
-  _colon_header fetch_bank_,'@bank'
-
-; doc{
-;
-; @bank  ( a n -- x )
-;
-; Fetch _x_ from address _a_ ($C000..$FFFF) of bank _n_ (0..7).
-;
-; ----
-; : @bank  ( a n -- x )
-;   bank @ default-bank  ;
-; ----
-;
-; }doc
-
-  ; 11 bytes
-
-  dw bank_,fetch_,default_bank_
-  dw exit_
-
-else
-
-  _code_header fetch_bank_,'@bank'
-
-  ; XXX TODO -- move to the library
-
-  ; 10 bytes
-
-  pop de
-fetch_bank.e:
-  call bank.e
-  pop hl
-  ld a,(hl)
-  inc hl
-  ld h,(hl)
-  ld l,a
-fetch_bank.end:
-  push hl
-
-  ; Execution continues in `default-bank`:
-
-endif
 
 ; ----------------------------------------------
   _code_header default_bank_,'default-bank'
