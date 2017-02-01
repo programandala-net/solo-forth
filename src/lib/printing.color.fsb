@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011244
+  \ Last modified: 201702011730
 
   \ -----------------------------------------------------------
   \ Description
@@ -266,7 +266,7 @@ need ?(
 
 [unneeded] contrast ?(  need white  need green
 
-: contrast  ( b1 -- b1 )  green < abs white *  ;
+: contrast  ( b1 -- b1 )  green < abs white *  ; ?)
 
   \ doc{
   \
