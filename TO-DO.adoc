@@ -684,51 +684,6 @@ Write a similar alternative to `rdraw`, `rline`.
 
 Rewrite in Z80 the low-level words of <printing.color.fsb>.
 
-.2015-09-01:
-
-Possible names for text and graphic cursor words.
-
-|===
-| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
-
-| at         | at@        | at-pixel        | at-pixel@       | home-pixel
-| at         | at@        | gat             | gat@            | ghome
-| at         | at@        | graphic-at      | graphic-at@     | graphic-home
-| at         | at@        | xy-at           | xy-at@          | xy-home
-| at-xy      | ?at        | gat-xy          | ?gat            | ghome
-| at-xy      | at-xy@     | gat-xy          | gat-xy@         | ghome
-| at-xy      | xy         | at-coord        | coord           | coord-home
-| at-xy      | xy         | at-coord        | coord           | home-coord
-| at-xy      | xy         | at-coords       | coords          | coords-home
-| at-xy      | xy         | at-coords       | coords          | home-coords
-| at-xy      | xy         | at-g-xy         | g-xy            | g-home
-| at-xy      | xy         | at-gxy          | gxy             | ghome
-| at-xy      | xy@        | at-coords       | coords@         | home-coords
-| at-xy      | xy@        | at-gxy          | gxy@            | ghome
-| at-xy      | xy@        | gat-xy          | gxy@            | ghome
-| cursor!    | cursor@    | gcursor!        | gcursor@        | ghome
-| cursor!    | cursor@    | graph-cursor!   | graph-cursor@   | graph-home
-| cursor!    | cursor@    | graphic-cursor! | graphic-cursor@ | graphic-home
-| cursor!    | cursor@    | xy!             | xy@             | xy-home
-| cursor!    | cursor@    | xy-cursor!      | xy-cursor@      | xy-home
-| set-cursor | get-cursor | set-coords      | get-coords      | home-coords
-| set-cursor | get-cursor | set-xy          | get-xy          | home-xy
-| set-xy     | get-xy     | set-gxy         | get-gxy         | ghome
-|===
-
-So far (2016-04-23) the best are:
-
-|===
-| set txt pos| get txt pos| set graph pos   | get graph pos   | graph home
-
-| at-xy      | xy         | at-coord        | coord           | coord-home
-| at-xy      | xy         | at-coord        | coord           | home-coord
-| at-xy      | xy         | at-coords       | coords          | coords-home
-| at-xy      | xy         | at-coords       | coords          | home-coords
-| at-xy      | xy         | at-gxy          | gxy             | ghome
-| at-xy      | xy         | at-g-xy         | g-xy            | g-home
-|===
-
 .2015-09-05:
 
 Name for graphic fill: `flood`.
