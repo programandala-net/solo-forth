@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702010012
+  \ Last modified: 201702011319
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,8 +73,9 @@
   \ conditional interpretation.
   \
   \ 2017-02-01: Fix typo. Improve the layout of some
-  \ documentation. Move `!bank` from the kernel. Add
-  \ `default-bank-routine`.
+  \ documentation.  Add `default-bank-routine`,
+  \ `e-bank-routine`.  Move `!bank` and `c!bank` from the
+  \ kernel.
 
 ( farhl questionnextbank questionpreviousbank farallot far, )
 
@@ -356,7 +357,7 @@ need ?(
   \
   \ }doc
 
-( default-bank-routine !bank )
+( default-bank-routine e-bank-routine !bank )
 
 ' default-bank 2+ constant default-bank-routine
 
@@ -371,12 +372,29 @@ need ?(
   \
   \ Output of the routine: A and E corrupted.
   \
-  \ See: `default-bank`.
+  \ See: `default-bank`, `bank-e-routine`.
+  \
+  \ }doc
+
+' default-bank 4 + constant e-bank-routine
+
+  \ doc{
+  \
+  \ e-bank-routine  ( -- a )
+  \
+  \ Return address _a_ of a routine that pages in the
+  \ bank hold in the E register.
+  \ This routine is a secondary entry point of `default-bank`.
+  \
+  \ - Input: E = bank
+  \ - Output: A corrupted
+  \
+  \ See: `default-bank-routine`.
   \
   \ }doc
 
 code !bank  ( x a n -- )
-  D1 c, bank-e-routine call, E1 c, D1 c, 73 c, 23 c, 72 c,
+  D1 c, e-bank-routine call, E1 c, D1 c, 73 c, 23 c, 72 c,
   ' default-bank jp,  end-code
   \   pop de
   \ store_bank.e:
@@ -392,16 +410,44 @@ code !bank  ( x a n -- )
   \
   \ !bank  ( x a n -- )
   \
-  \ Store cell _x_ into address _a_ of bank _n_.
+  \ Store cell _x_ into address _a_ ($C000..$FFFF) of bank _n_
+  \ (0..7).
   \
   \ This word is written in Z80. Its equivalent code in Forth
   \ is the following:
-  \
+
   \ ----
   \ : !bank  ( x a n -- )
   \   bank ! default-bank  ;
   \ ----
+
+  \ }doc
+
+code c!bank
+  D1 c, e-bank-routine call, E1 c, D1 c, 73 c,
+  ' default-bank jp,  end-code
+  \ pop de
+  \ call bank.e
+  \ pop hl
+  \ pop de
+  \ ld (hl),e
+  \ jp default_bank_
+
+  \ doc{
   \
+  \ c!bank  ( c ca n -- )
+  \
+  \ Store _c_ into address _ca_ ($C000..$FFFF) of bank _n_
+  \ (0..7).
+  \
+  \ This word is written in Z80. Its equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : c!bank  ( c ca n -- )
+  \   bank c! default-bank  ;
+  \ ----
+
   \ }doc
 
   \ vim: filetype=soloforth
