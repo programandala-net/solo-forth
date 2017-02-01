@@ -1149,6 +1149,8 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 Move `upper`, `uppers` and `faruppers` to the library.
 
+Move `!bank`, `c!bank`, `@bank` and `c@bank` to the library.
+
 .2017-01-31:
 
 Words that could be moved to the library, if the `need` tool didn't use them:
