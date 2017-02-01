@@ -73,7 +73,8 @@
   \ conditional interpretation.
   \
   \ 2017-02-01: Fix typo. Improve the layout of some
-  \ documentation.
+  \ documentation. Move `!bank` from the kernel. Add
+  \ `default-bank-routine`.
 
 ( farhl questionnextbank questionpreviousbank farallot far, )
 
@@ -352,6 +353,54 @@ need ?(
   \ If _len_ is greater than zero, copy _len_ consecutive
   \ characters from far-memory address _ca1_ to main-memory
   \ address _ca2_.
+  \
+  \ }doc
+
+( default-bank-routine !bank )
+
+' default-bank 2+ constant default-bank-routine
+
+  \ doc{
+  \
+  \ default-bank-routine  ( -- a )
+  \
+  \ Return address _a_ of a routine that pages in the default
+  \ bank. This is the routine `default-bank` runs into, after
+  \ pushing IX on the return stack to force a final return to
+  \ `next`.
+  \
+  \ Output of the routine: A and E corrupted.
+  \
+  \ See: `default-bank`.
+  \
+  \ }doc
+
+code !bank  ( x a n -- )
+  D1 c, bank-e-routine call, E1 c, D1 c, 73 c, 23 c, 72 c,
+  ' default-bank jp,  end-code
+  \   pop de
+  \ store_bank.e:
+  \   call bank.e
+  \   pop hl
+  \   pop de
+  \   ld (hl),e
+  \   inc hl
+  \   ld (hl),d
+  \   jp default_bank_
+
+  \ doc{
+  \
+  \ !bank  ( x a n -- )
+  \
+  \ Store cell _x_ into address _a_ of bank _n_.
+  \
+  \ This word is written in Z80. Its equivalent code in Forth
+  \ is the following:
+  \
+  \ ----
+  \ : !bank  ( x a n -- )
+  \   bank ! default-bank  ;
+  \ ----
   \
   \ }doc
 

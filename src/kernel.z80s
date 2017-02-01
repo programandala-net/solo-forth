@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702010005
+; Last modified: 201702011302
 
 include version.z80s
 
@@ -6660,49 +6660,6 @@ else
   pop hl
   pop de
   ld (hl),e
-  jp default_bank_
-
-endif
-
-; ----------------------------------------------
-if 0 ; XXX OLD
-
-  _colon_header store_bank_,'!bank'
-
-  ; XXX TODO -- move to the library
-
-; doc{
-;
-; !bank  ( x a n -- )
-;
-; Store _x_ into address _a_ of bank _n_.
-;
-; ----
-; : !bank  ( x a n -- )
-;   bank ! default-bank  ;
-; ----
-;
-; }doc
-
-  ; 11 bytes
-
-  dw bank_,store_,default_bank_
-  dw exit_
-
-else
-
-  _code_header store_bank_,'!bank'
-
-  ; 12 bytes
-
-  pop de
-store_bank.e:
-  call bank.e
-  pop hl
-  pop de
-  ld (hl),e
-  inc hl
-  ld (hl),d
   jp default_bank_
 
 endif
