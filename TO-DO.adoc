@@ -624,11 +624,15 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-02-01:
+
+Finish `rdraw`.
+
 .2017-01-24:
 
 NOTE: Milestone: 0.13.0
 
-Write `gxy-attr@  ( x y -- b )` and `gxy-attr!  ( b x y -- )`.
+Write `g-xy-attr@  ( x y -- b )` and `g-xy-attr!  ( b x y -- )`.
 
 .2017-01-22:
 
