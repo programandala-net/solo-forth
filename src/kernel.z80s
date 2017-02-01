@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702011544
+; Last modified: 201702011640
 
 include version.z80s
 
@@ -1247,6 +1247,22 @@ endif
 
   dw end_asm_,reveal_
   dw exit_
+
+; ----------------------------------------------
+  _constant_header lower_routine_,'lower-routine'
+
+; doc{
+;
+; lower-routine  ( -- a )
+;
+; Return address _a_ of a routine that converts the ASCII
+; character in the A register to uppercase.
+;
+; See: `lower`, `upper-routine`.
+;
+; }doc
+
+  dw ascii_lower.a
 
 ; ----------------------------------------------
   _constant_header next_,'next'
@@ -8088,9 +8104,6 @@ parse_name.skip:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, depending on the final
-  ; implementation of the case-sensitive mode
-  ;
   ; XXX TODO convert to deferred, to let it be customized for
   ; 8-bit charsets.
 
@@ -8100,45 +8113,19 @@ parse_name.skip:
   push hl      ; make next `ret` jump to push_a
 
 ascii_lower.a:
+
   ; Convert the ASCII char in the 'A' register to lowercase.
+  ;
+  ; Note: The address of this routine is returned by the
+  ; `lower-routine` constant, defined in the
+  ; `assembler-wordlist` word list.
+
   cp 'A'
   ret c
   cp 'Z'+1
   ret nc
   or  %00100000
   ret
-
-; ----------------------------------------------
-  _code_header lowers_,'lowers'
-
-; doc{
-;
-; lowers  ( ca len -- )
-;
-; Convert _ca len_ to lowercase.
-;
-; See: `uppers`, `lower`.
-;
-; }doc
-
-  ; XXX TODO -- move to the library when the old system bank method is
-  ; removed
-  ;
-  ; XXX TODO convert to deferred, to let it be customized for
-  ; 8-bit charsets.
-
-  pop de
-  pop hl
-lowers.do:
-  ld a,d
-  or e
-  jp z,next
-  ld a,(hl)
-  call ascii_lower.a
-  ld (hl),a
-  inc hl
-  dec de
-  _jump lowers.do
 
 ; ----------------------------------------------
   _code_header far_lowers_,'farlowers'

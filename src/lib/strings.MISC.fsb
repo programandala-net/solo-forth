@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011615
+  \ Last modified: 201702011640
 
   \ -----------------------------------------------------------
   \ Description
@@ -95,6 +95,7 @@
   \
   \ 2017-02-01: Fix needing of `#spaces` and `#chars`. Move
   \ `upper` and `uppers` from the kernel. Add `upper-routine`.
+  \ Move `lowers` from the kernel.
 
 ( str= str< str> trim +place hunt )
 
@@ -433,10 +434,10 @@ set-current ?)
   \
   \ upper-routine  ( -- a )
   \
-  \ Return address _a_ of a routine that converts the character
-  \ in the A register to uppercase.
+  \ Return address _a_ of a routine that converts the ASCII
+  \ character in the A register to uppercase.
   \
-  \ See: `upper`.
+  \ See: `upper`, `lower-routine`.
   \
   \ }doc
 
@@ -456,7 +457,7 @@ code uppers  ( ca len -- )
   \   ld (hl),a
   \   inc hl
   \   dec de
-  \   _jump uppers.do
+  \   jp uppers.do
 
   \ doc{
   \
@@ -475,9 +476,37 @@ code uppers  ( ca len -- )
   \
   \ uppers1 ( ca len -- )
   \
-  \ Change the first char of _ca len_ to uppercase.
+  \ Change the first char of string _ca len_ to uppercase.
   \
   \ See: `uppers`, `upper`.
+  \
+  \ }doc
+
+( lowers )
+
+code lowers  ( ca len -- )
+  D1 c, E1 c, here 7A c, B3 c, CA c, next , 7E c,
+  \   pop de ; E = string length
+  \   pop hl ; string address
+  \ lowers.do:
+  \   ld a,d
+  \   or e
+  \   jp z,next
+  \   ld a,(hl)
+  lower-routine call, 77 c, 23 c, 1B c, C3 c, ,  end-code
+  \   call lower_routine
+  \   ld (hl),a
+  \   inc hl
+  \   dec de
+  \   jp lowers.do
+
+  \ doc{
+  \
+  \ lowers  ( ca len -- )
+  \
+  \ Convert string _ca len_ to lowercase.
+  \
+  \ See: `uppers`, `lower`.
   \
   \ }doc
 
