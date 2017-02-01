@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701202031
+  \ Last modified: 201702011607
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,8 @@
   \ conditional interpretation.
   \
   \ 2017-01-20: Fix documentation.
+  \
+  \ 2017-02-01: Move `faruppers` from the kernel.
 
 ( far," fars, farsconstant save-farstring )
 
@@ -214,6 +216,56 @@ need farsconstants,  need array>  need save-farstring
   \ ----
 
   \ See: `sconstants`, `farsconstants`.
+  \
+  \ }doc
+
+( faruppers )
+
+need ?(
+
+[unneeded] faruppers ?(
+
+need assembler
+need far-hl-routine need upper-routine need ?next-bank-routine
+
+code faruppers  ( ca len -- )
+
+  h pop, exsp, far-hl-routine call, d pop,
+  rbegin  d a ld, e or,  nz? rwhile
+          m a ld, upper-routine call, a m ld, h incp,
+          d push, ?next-bank-routine call, d pop, d decp,
+  rrepeat ' default-bank jp,  end-code ?)
+
+  \   pop hl               ; string length
+  \   ex (sp),hl           ; HL = string address
+  \   call far_hl_routine  ; HL = actual string address; bank paged in
+  \   pop de               ; string length
+  \ far_uppers.do:
+  \   ld a,d
+  \   or e
+  \   jr z,faruppers.end
+  \   ld a,(hl)
+  \   call upper_routine
+  \   ld (hl),a
+  \   inc hl
+  \   push de
+  \   call question_next_bank_routine
+  \   pop de
+  \   dec de
+  \   jp far_uppers.do
+  \ far_uppers.end:
+  \   jp default_bank_
+
+  \ XXX TODO -- improve to save push/pop
+
+  \ doc{
+  \
+  \ faruppers  ( ca len -- )
+  \
+  \ Convert string _ca len_, which is stored in far memory, to
+  \ uppercase.
+  \
+  \ See: `uppers`, `far-banks`.
   \
   \ }doc
 

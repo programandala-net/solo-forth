@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701271251
+  \ Last modified: 201702011618
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,6 +73,8 @@
   \ actually throwing a possible exception (e.g. thrown by
   \ `(x)`); otherwise the system is unusable, because the
   \ search order is the one used to parse the escaped strings.
+  \
+  \ 2017-02-01: Remove unnecessary `upper` from `(x)`.
 
 ( esc-standard-chars-wordlist )
 
@@ -150,8 +152,7 @@ dup >order set-current case-sensitive @ case-sensitive on
 : m  ( -- c1 c2 2 )  10 13 2  ;
   \ \m = carriage return and line feed
 
-: (x)  ( "c" -- n )
-  parse-char upper 16 digit? 0= #-260 ?throw  ;
+: (x)  ( "c" -- n )  parse-char 16 digit? 0= #-260 ?throw  ;
   \ Parse an hex digit and convert it to a number.
 
 : x  ( "<hexdigit><hexdigit>" -- c 1 )  (x) 16 * (x) + 1  ;

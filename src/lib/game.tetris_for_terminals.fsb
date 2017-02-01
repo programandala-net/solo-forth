@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611191937
+  \ Last modified: 201702011629
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,9 @@
   \
   \ 2016-11-19: Remove the debugging code. The problem was the
   \ return stack overflowed. It has been solved in the kernel.
+  \
+  \ 2017-02-01: Replace `upper` with `lower`, because `upper`
+  \ has been moved to the library. Update the keys.
 
 ( tt )
 
@@ -109,14 +112,14 @@ variable wiping
   \ keys
 
 : spanish-dvorak-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  'C' 'H' '.' 'A' bl edit-char  ;
+  'c' 'h' '.' 'a' bl edit-char  ;
   \ QWERTY layout, as found in many ZX Spectrum games.
 
 : dvorak-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  'C' 'R' ''' 'A' bl edit-char  ;
+  'c' 'r' ''' 'a' bl edit-char  ;
 
 : qwerty-keys  ( -- c1 c2 c3 c4 c5 c6 )
-  'O' 'P' 'Q' 'A' bl edit-char ;
+  'o' 'p' 'q' 'a' bl edit-char ;
   \ QWERTY layout, as found in many ZX Spectrum games.
 
 : cursor-digits-keys  ( -- c1 c2 c3 c4 c5 c6 )
@@ -564,7 +567,7 @@ create brick-value 1 c, 2 c, 3 c, 3 c, 4 c, 5 c, 5 c,
 ( tt )
 
 : interaction  ( -- f )
-  case  key upper
+  case  key lower
     left-key      of  0 -1 move-brick drop  endof
     right-key     of  0  1 move-brick drop  endof
     rot-key       of  0 rotate-brick drop  endof

@@ -1145,10 +1145,6 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
-.2017-02-01:
-
-Move `upper`, `uppers` and `faruppers` to the library.
-
 .2017-01-31:
 
 Words that could be moved to the library, if the `need` tool didn't use them:

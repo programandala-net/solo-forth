@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201702011627
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,9 @@
 
   \ 2016-04-24: Remove `char`, which has been moved to the
   \ library.
+  \
+  \ 2017-02-01: Replace `upper` with `lower`, because `upper`
+  \ has been moved to the library.
 
 ( y/n? y/n no? yes? )
 
@@ -36,7 +39,7 @@
 
 need value
 
-'Y' value "y"  'N' value "n"
+'y' value "y"  'n' value "n"
   \ Default (uppercase) letters for "yes" and "no".
 
 : y/n?  ( c -- f )  dup "y" = swap "n" = or  ;
@@ -44,7 +47,7 @@ need value
   \ a valid answer for a "y/n" question?
 
 : y/n  ( -- c )
-  begin  key upper dup y/n? 0=  while  drop  repeat  ;
+  begin  key lower dup y/n? 0=  while  drop  repeat  ;
   \ Wait for a valid key press for a "y/n" question
   \ and return its code.
 

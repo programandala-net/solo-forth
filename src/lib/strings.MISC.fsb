@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701220042
+  \ Last modified: 201702011615
 
   \ -----------------------------------------------------------
   \ Description
@@ -92,6 +92,9 @@
   \ 2017-01-21: Add `/counted-string`.
   \
   \ 2017-01-22: Add `unescape`.
+  \
+  \ 2017-02-01: Fix needing of `#spaces` and `#chars`. Move
+  \ `upper` and `uppers` from the kernel. Add `upper-routine`.
 
 ( str= str< str> trim +place hunt )
 
@@ -387,10 +390,87 @@ code lengths
   \
   \ }doc
 
-( uppers1 #spaces #chars )
+( upper upper-routine uppers uppers1 )
+
+need ?(  [unneeded] upper [unneeded] upper-routine and ?( 0
+
+code upper  ( c -- c' )  E1 c, 7D c, 21 c, pusha , E5 c,
+  \   pop hl
+  \   ld a,l
+  \   ld hl,push_a ; exit address
+  \   push hl      ; make next `ret` jump to push_a
+  drop here \ upper_routine:
+  \   ; Convert the ASCII char in the 'A' register to uppercase.
+  FE c, 'a' c, D8 c, FE c, 'z' 1+ c, D0 c, E6 c, %11011111 c,
+  C9 c, end-code
+  \   cp 'a'
+  \   ret c
+  \   cp 'z'+1
+  \   ret nc
+  \   and %11011111
+  \   ret
+
+  \ XXX TODO convert to deferred, to let it be customized for
+  \ 8-bit charsets.
+
+  \ doc{
+  \
+  \ upper  ( c -- c' )
+  \
+  \ Convert _c_ to uppercase _c'_.
+  \
+  \ See: `uppers`, `lower`, `upper-routine`.
+  \
+  \ }doc
+
+get-current swap assembler-wordlist set-current
+
+constant upper-routine  ( -- a )
+
+set-current ?)
+
+  \ doc{
+  \
+  \ upper-routine  ( -- a )
+  \
+  \ Return address _a_ of a routine that converts the character
+  \ in the A register to uppercase.
+  \
+  \ See: `upper`.
+  \
+  \ }doc
+
+[unneeded] uppers ?(  need upper-routine
+
+code uppers  ( ca len -- )
+  D1 c, E1 c, here 7A c, B3 c, CA c, next , 7E c,
+  \   pop de ; E = string length
+  \   pop hl ; string address
+  \ uppers.do:
+  \   ld a,d
+  \   or e
+  \   jp z,next
+  \   ld a,(hl)
+  upper-routine call, 77 c, 23 c, 1B c, C3 c, ,  end-code ?)
+  \   call upper_routine
+  \   ld (hl),a
+  \   inc hl
+  \   dec de
+  \   _jump uppers.do
+
+  \ doc{
+  \
+  \ uppers  ( ca len -- )
+  \
+  \ Convert string _ca len_ to uppercase.
+  \
+  \ See: `uppers1`, `lowers`, `upper`.
+  \
+  \ }doc
 
 [unneeded] uppers1
-?\ : uppers1 ( ca len -- )  drop 1 uppers  ;
+?\ need uppers  : uppers1 ( ca len -- )  drop 1 uppers  ;
+
   \ doc{
   \
   \ uppers1 ( ca len -- )
@@ -401,7 +481,9 @@ code lengths
   \
   \ }doc
 
-need ?)
+( #spaces #chars )
+
+need ?(
 
 [unneeded] #spaces ?(  need under+
 

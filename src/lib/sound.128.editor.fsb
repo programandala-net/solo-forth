@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231435
+  \ Last modified: 201702011624
 
   \ -----------------------------------------------------------
   \ Description
@@ -28,6 +28,9 @@
   \ 2016-08-02: Start.
   \
   \ 2017-01-23: Move `edit-sound-test` to the tests module.
+  \
+  \ 2017-02-01: Use `lower` in `edit-sound`, because `upper`
+  \ has been moved to the library.
 
 ( edit-sound )
 
@@ -43,7 +46,7 @@ variable sound  variable register
   \ `sound`: address of the sound being edited
   \ `register`: register (0..13) being edited
 
-'Q' value quit-key  'P' value play-key
+'q' value quit-key  'p' value play-key
   8 value left-key    9 value right-key
  10 value down-key   11 value up-key
 
@@ -128,7 +131,7 @@ forth-wordlist set-current
 : edit-sound ( a -- )
   sound ! register off  page .sound cr .help
   begin  .sound
-    key upper case
+    key lower case
       quit-key   of  exit               endof
       play-key   of  sound @ play       endof
       left-key   of  decrease-value     endof
