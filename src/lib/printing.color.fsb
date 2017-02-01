@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701312053
+  \ Last modified: 201702011223
 
   \ -----------------------------------------------------------
   \ Description
@@ -84,6 +84,9 @@
   \ `bright.` and `flash.` from the kernel. Improve
   \ documentation. Remove `paper>attr`; use `papery` instead.
   \ Rewrite `set-paper` and `set-ink` in Z80.
+  \
+  \ 2017-02-01: Make color constants individually accessible to
+  \ `need`. Add `contrast`.
 
   \ -----------------------------------------------------------
   \ Documentation
@@ -145,11 +148,139 @@
   \ 23697   |___|___|___|___|___|___|___|___|
   \           7   6   5   4   3   2   1   0
 
-( black blue red magenta green cyan yellow white )
+( black blue red magenta green cyan yellow white contrast )
 
-0 cconstant black    1 cconstant blue   2 cconstant red
-3 cconstant magenta  4 cconstant green  5 cconstant cyan
-6 cconstant yellow   7 cconstant white
+[unneeded] black    ?\ 0 cconstant black
+
+  \ doc{
+  \
+  \ black  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ black color.
+  \
+  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`, `yellow`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] blue     ?\ 1 cconstant blue
+
+  \ doc{
+  \
+  \ blue  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ blue color.
+  \
+  \ See: `black`, `red`, magenta`, `green`, `cyan`, `yellow`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] red      ?\ 2 cconstant red
+
+  \ doc{
+  \
+  \ red  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ red color.
+  \
+  \ See: `black`, `blue`, magenta`, `green`, `cyan`, `yellow`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] magenta  ?\ 3 cconstant magenta
+
+  \ doc{
+  \
+  \ magenta  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ magenta color.
+  \
+  \ See: `black`, `blue`, `red`, `green`, `cyan`, `yellow`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] green    ?\ 4 cconstant green
+
+  \ doc{
+  \
+  \ green  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ green color.
+  \
+  \ See: `black`, `blue`, `red`, magenta`, `cyan`, `yellow`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] cyan     ?\ 5 cconstant cyan
+
+  \ doc{
+  \
+  \ cyan  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ cyan color.
+  \
+  \ See: `black`, `blue`, `red`, magenta`, `green`, `yellow`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] yellow   ?\ 6 cconstant yellow
+
+  \ doc{
+  \
+  \ yellow  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ yellow color.
+  \
+  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`,
+  \ `white`, `contrast`.
+  \
+  \ }doc
+
+[unneeded] white    ?\ 7 cconstant white
+
+  \ doc{
+  \
+  \ white  ( -- b )
+  \
+  \ A constant that returns 0, the value that represents the
+  \ white color.
+  \
+  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`, `yellow`,
+  \ `contrast`.
+  \
+  \ }doc
+
+need ?(
+
+[unneeded] contrast ?(  need white  need green
+
+: contrast  ( b1 -- b1 )  green < abs white *  ;
+
+  \ doc{
+  \
+  \ contrast  ( b1 -- b2 )
+  \
+  \ Convert color _b1_ to its contrast color _b2_.  _b2_ is
+  \ white (7) if _b1_ is a dark color (black, blue, red or
+  \ magenta); _b2_ is black (0) if _b1_ is a light colour
+  \ (green, cyan, yellow or white).
+  \
+  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`,
+  \ `yellow`, `white`.
+  \
+  \ }doc
 
 ( papery brighty flashy attr>paper )
 
