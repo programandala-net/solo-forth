@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702011517
+; Last modified: 201702011536
 
 include version.z80s
 
@@ -1563,7 +1563,7 @@ get_lib_order.exit
 ; correspondent actual address ($C000..$FFFF) _a'_ in the next
 ; bank and page in the next bank, else simply return _a_.
 ;
-; See: `questionnextbank`.
+; See: `?next-bank-routine`.
 ;
 ; }doc
 
@@ -1592,7 +1592,7 @@ question_next_bank:
   ;   A corrupted
   ;
   ; Note: the address of this routine is returned by
-  ; `questionnextbank`, a constant defined in the assembler
+  ; `?next-bank-routine`, a constant defined in the assembler
   ; word list in the <memory.far.fsb> module of the library, so
   ; code words can call it.
 
@@ -1642,7 +1642,7 @@ new_bank:
 ; previous bank and page in the next bank, else simply return
 ; _a_.
 ;
-; See: `questionpreviousbank`.
+; See: `?previous-bank-routine`.
 ;
 ; }doc
 
@@ -1671,7 +1671,7 @@ question_previous_bank:
   ;   A corrupted
   ;
   ; Note: the address of this routine is returned by
-  ; `questionpreviousbank`, a constant defined in the assembler
+  ; `?previous-bank-routine`, a constant defined in the assembler
   ; word list in the <memory.far.fsb> module of the library, so
   ; code words can call it.
 
@@ -1725,7 +1725,7 @@ question_previous_bank:
 ;   \        $C000 = address where memory banks are paged in
 ; ----
 ;
-; See: `farhl`.
+; See: `far-hl-routine`.
 ;
 ; }doc
 
@@ -1746,10 +1746,10 @@ far.hl:
   ;   HL = actual memory address ($C000..$FFFF)
   ;   A DE corrupted
   ;
-  ; Note: the address of this routine is returned by `farhl`, a
-  ; constant defined in the assembler word list in the
-  ; <memory.far.fsb> module of the library, so code words can
-  ; call it.
+  ; Note: the address of this routine is returned by
+  ; `far-hl-routine`, a constant defined in the assembler word
+  ; list in the <memory.far.fsb> module of the library, so code
+  ; words can call it.
 
   ld e,h
   srl e

@@ -1324,12 +1324,6 @@ Combine `begin-module` and `package`.
 // Names {{{1
 == Names ==
 
-.2017-02-01:
-
-Decide a naming convention for constants that return addresses of
-kernel routines. `default-bank-routine` seems clear, but others use no
-hyphen and no "-routine" suffix.
-
 .2017-01-31:
 
 Rename `>defer` to `>action`, after the standard `action-of`
