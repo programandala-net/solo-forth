@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702011336
+; Last modified: 201702011517
 
 include version.z80s
 
@@ -3027,17 +3027,17 @@ paren_loop.continue:
 ;   DUP $140 > $107 AND - $30 -
 ;   DUP BASE @ U< ;
 
-  pop hl  ; l=base
+  pop hl  ; L=base
   pop de  ; E=character
   ld a,e  ; character
-  call ascii_upper.a
+  call ascii_lower.a
   sub '0' ; >="0"?
   jp c,false_ ; <"0" is invalid
   cp $0A ; >"9"?
   jp m,digit.test_value ; no, test value
-  sub $07 ; gap between "9" & "A", now "A"=$0A
-  cp $0A ; >="A"?
-  jp c,false_ ; characters between "9" & "A" are invalid
+  sub "a"-"9"-1 ; gap between "9" & "a", now "a"=$0A
+  cp $0A ; >="a"?
+  jp c,false_ ; characters between "9" & "a" are invalid
 digit.test_value:
   cp l ; <base?
   jp nc,false_ ; no, invalid
