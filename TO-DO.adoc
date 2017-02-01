@@ -682,10 +682,6 @@ Write a similar alternative to `rdraw`, `rline`.
 
 .2016-12-02:
 
-Use constants for bitmasks and "unbitmasks" in <printing.color.fsb>.
-
-.2016-12-02:
-
 Rewrite in Z80 the low-level words of <printing.color.fsb>.
 
 .2015-09-01:

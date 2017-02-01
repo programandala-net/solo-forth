@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011730
+  \ Last modified: 201702011838
 
   \ -----------------------------------------------------------
   \ Description
@@ -88,7 +88,9 @@
   \ 2017-02-01: Make color constants individually accessible to
   \ `need`. Add `contrast`. Add `attr>ink`. Improve and update
   \ the documentation: use the name "current attribute" for the
-  \ OS temporary attribute.
+  \ OS temporary attribute. Add `bright-mask`, `unbright-mask`,
+  \ `flash-mask`, `unflash-mask`, `ink-mask`, `unink-mask`,
+  \ `paper-mask`, `unpaper-mask`.
 
   \ -----------------------------------------------------------
   \ Operatyng system variables
@@ -150,7 +152,7 @@
 
 ( black blue red magenta green cyan yellow white contrast )
 
-[unneeded] black    ?\ 0 cconstant black
+[unneeded] black ?\ 0 cconstant black
 
   \ doc{
   \
@@ -164,7 +166,7 @@
   \
   \ }doc
 
-[unneeded] blue     ?\ 1 cconstant blue
+[unneeded] blue ?\ 1 cconstant blue
 
   \ doc{
   \
@@ -178,7 +180,7 @@
   \
   \ }doc
 
-[unneeded] red      ?\ 2 cconstant red
+[unneeded] red ?\ 2 cconstant red
 
   \ doc{
   \
@@ -192,7 +194,7 @@
   \
   \ }doc
 
-[unneeded] magenta  ?\ 3 cconstant magenta
+[unneeded] magenta ?\ 3 cconstant magenta
 
   \ doc{
   \
@@ -206,7 +208,7 @@
   \
   \ }doc
 
-[unneeded] green    ?\ 4 cconstant green
+[unneeded] green ?\ 4 cconstant green
 
   \ doc{
   \
@@ -220,7 +222,7 @@
   \
   \ }doc
 
-[unneeded] cyan     ?\ 5 cconstant cyan
+[unneeded] cyan ?\ 5 cconstant cyan
 
   \ doc{
   \
@@ -234,7 +236,7 @@
   \
   \ }doc
 
-[unneeded] yellow   ?\ 6 cconstant yellow
+[unneeded] yellow ?\ 6 cconstant yellow
 
   \ doc{
   \
@@ -248,7 +250,7 @@
   \
   \ }doc
 
-[unneeded] white    ?\ 7 cconstant white
+[unneeded] white ?\ 7 cconstant white
 
   \ doc{
   \
@@ -323,7 +325,7 @@ code brighty  ( b1 -- b2 )
   \ following:
 
   \ ----
-  \ : brighty  ( b1 -- b2 )   %01000000 or  ;
+  \ : brighty  ( b1 -- b2 )   bright-mask or  ;
   \ ----
 
   \ See: `papery`, `flashy`.
@@ -348,7 +350,7 @@ code flashy   ( b1 -- b2 )
   \ following:
 
   \ ----
-  \ : flashy   ( b1 -- b2 )   %10000000 or  ;
+  \ : flashy   ( b1 -- b2 )   flash-mask or  ;
   \ ----
 
   \ See: `papery`, `brighty`.
@@ -361,7 +363,7 @@ code attr>paper  ( b1 -- b2 )
   E1 c, 7D c, E6 c, %00111000 c,
   \ pop hl
   \ ld a,l
-  \ and %00111000
+  \ and %00111000 ; paper-mask
   CB c, 3F c, CB c, 3F c, CB c, 3F c, pusha jp,  end-code ?)
   \ srl a
   \ srl a
@@ -378,7 +380,7 @@ code attr>paper  ( b1 -- b2 )
   \ is the following:
 
   \ ----
-  \ : attr>paper  ( b1 -- b2 )  %00111000 and 3 rshift  ;
+  \ : attr>paper  ( b1 -- b2 )  paper-mask and 3 rshift  ;
   \ ----
 
   \ See: `attr>ink`, `papery`.
@@ -391,7 +393,7 @@ code attr>ink  ( b1 -- b2 )
   E1 c, 7D c, E6 c, %111 c, pusha jp,  end-code ?)
   \ pop hl
   \ ld a,l
-  \ and %111
+  \ and %111 ; ink-mask
   \ jp push_a
 
   \ doc{
@@ -404,7 +406,7 @@ code attr>ink  ( b1 -- b2 )
   \ is the following:
 
   \ ----
-  \ : attr>ink  ( b1 -- b2 )  %111 and  ;
+  \ : attr>ink  ( b1 -- b2 )  ink-mask and  ;
   \ ----
 
   \ See: `attr>paper`.
@@ -697,15 +699,15 @@ code set-paper  ( b -- )
   E1 c, 7D c, E6 c, %111 c,
   \ pop hl
   \ ld a,l
-  \ and %00000111
+  \ and %111 ; ink-mask
   CB c, 27 c, CB c, 27 c, CB c, 27 c, 58 07 + c,
   \ sla a
   \ sla a
   \ sla a
   \ ld e,a
-  21 c, os-attr-t , 3E c, %11000111 c, A6 c, B0 03 + c,
+  21 c, os-attr-t , 3E c, %1100111 c, A6 c, B0 03 + c,
   \ ld hl,sys_attr_t
-  \ ld a,%11000111
+  \ ld a,%11000111 ; unpaper-mask
   \ and (hl)
   \ or e
   70 07 + c, jpnext, end-code ?)
@@ -724,7 +726,7 @@ code set-paper  ( b -- )
 
   \ ----
   \ : set-paper  ( b -- )
-  \   papery attr@ %11000111 and or attr!  ;
+  \   papery attr@ unpaper-mask and or attr!  ;
   \ ----
 
   \ See: `paper.`, `set-ink`, `set-flash`, `set-bright`.
@@ -742,7 +744,7 @@ code set-ink  ( b -- )
   \ pop de
   \ ld hl,sys_attr_t
   3E c, %11111000 c, A6 c, B3 c, 77 c, jpnext, end-code ?)
-  \ ld a,%11111000
+  \ ld a,%11111000 ; unink-mask
   \ and (hl)
   \ or e
   \ ld (hl),a
@@ -769,27 +771,53 @@ code set-ink  ( b -- )
   \
   \ }doc
 
-( get-bright set-bright set-flash get-flash )
+( ink-mask unink-mask paper-mask unpaper-mask )
+
+[unneeded] ink-mask      ?\ %00000111 cconstant ink-mask
+[unneeded] unink-mask    ?\ %11111000 cconstant unink-mask
+
+[unneeded] paper-mask    ?\ %00111000 cconstant paper-mask
+[unneeded] unpaper-mask  ?\ %11000111 cconstant unpaper-mask
+
+( bright-mask unbright-mask get-bright set-bright )
+
+[unneeded] bright-mask   ?\ %01000000 cconstant bright-mask
+[unneeded] unbright-mask ?\ %10111111 cconstant unbright-mask
 
 need ?(
 
-[unneeded] get-bright ?(  need attr@
+[unneeded] get-bright ?(  need attr@  need bright-mask
 
-: get-bright  ( -- f )  attr@ %01000000 and 0=  ; ?)
+: get-bright  ( -- f )
+  attr@ [ bright-mask ] cliteral and 0=  ; ?)
 
-[unneeded] set-bright ?(  need attr@  need attr!
+[unneeded] set-bright ?(
+
+need bright-mask  need attr@  need unbright-mask  need attr!
 
 : set-bright  ( f -- )
-  %01000000 and attr@ %10111111 and or attr!  ; ?)
+  [ bright-mask ] cliteral and
+  attr@ [ unbright-mask ] cliteral and or attr!  ; ?)
 
-[unneeded] get-flash ?(  need attr@
+( flash-mask unflash-mask get-flash set-flash )
 
-: get-flash  ( -- f )  attr@ %10000000 and 0=  ; ?)
+[unneeded] flash-mask    ?\ %10000000 cconstant flash-mask
+[unneeded] unflash-mask  ?\ %01111111 cconstant unflash-mask
 
-[unneeded] set-flash ?(  need attr@  need attr!
+need ?(
+
+[unneeded] get-flash ?(  need attr@  need flash-mask
+
+: get-flash  ( -- f )
+  attr@ [ flash-mask ] literal and 0=  ; ?)
+
+[unneeded] set-flash ?(
+
+need flash-mask  need attr@  need unflash-mask  need attr!
 
 : set-flash  ( f -- )
-  %10000000 and attr@ %01111111 and or attr!  ; ?)
+  [ flash-mask ] cliteral and
+  attr@ [ unflash-mask ] cliteral and or attr!  ; ?)
 
 ( inverse-on inverse-off inverse )
 
