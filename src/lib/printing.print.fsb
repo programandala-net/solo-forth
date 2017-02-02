@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604220029
+  \ Last modified: 201702030002
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -21,6 +21,11 @@
   \ You may do whatever you want with this work, so long as you
   \ retain every copyright, credit and authorship notice, and
   \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2017-02-03: Compact the code, saving two blocks.
 
 ( print )
 
@@ -33,6 +38,7 @@ need last-row  need /name
 
 variable #printed   \ Printed chars in the current line.
 variable #indented   \ Indented chars in the current line.
+
 : printed+  ( u -- )  #printed +!  ;
 : indented+  ( u -- )  #indented +!  ;
 : (.word) ( ca len -- )  dup printed+ type  ;
@@ -45,10 +51,6 @@ variable #indented   \ Indented chars in the current line.
 : print-home  ( -- )  home no-printed  ;
 : print-page  ( -- )  page print-home  ;
 
--->
-
-( print )
-
 : print-start-of-line  ( -- )
   #printed @ trm+move-cursor-left no-printed  ;
 
@@ -58,13 +60,15 @@ variable #indented   \ Indented chars in the current line.
   \ hide
 
 : at-last-start-of-line?  ( -- f )
-  xy last-row = swap 0= and  ;
+  xy last-row = swap 0= and  ;  -->
+
+( print )
+
 : not-at-start-of-line?  ( -- f )  column 0<>  ;
-: print-cr?  ( -- f )
-  not-at-home? not-at-start-of-line? and
-  \ xxx fixme 2012-09-30 what this was for?:
+
+: print-cr?  ( -- f ) not-at-home? not-at-start-of-line? and  ;
+  \ XXX FIXME -- 2012-09-30 what this was for?:
   \ at-last-start-of-line? 0= or
-  ;
 
   \ export
 
@@ -74,27 +78,19 @@ defer (print-cr) ' (print-cr) ' cr defer!
 
 variable print-width
 
--->
-
-( print )
-
   \ hide
 
 : previous-word?  ( -- f )  #printed @ #indented @ >  ;
 : ?space  ( -- ) previous-word? if  bl .char  then  ;
-: current-print-width  ( -- u )
-  print-width @ ?dup 0= ?? cols  ;
-: too-long?  ( u -- f )
-  1+ #printed @ + current-print-width >  ;
+: current-print-width  ( -- u ) print-width @ ?dup 0= ?? cols ;
+: too-long?  ( u -- f ) 1+ #printed @ + current-print-width > ;
 : .word  ( ca len -- )
   dup too-long? if  print-cr  else  ?space  then  (.word)  ;
 
--->
+: (print-indentation)  ( u -- )
+  dup trm+move-cursor-right dup indented+ printed+  ;  -->
 
 ( print )
-
-: (print-indentation)  ( u -- )
-  dup trm+move-cursor-right dup indented+ printed+  ;
 
   \ export
 
@@ -111,10 +107,6 @@ variable print-width
 : first-word  ( ca1 len1 -- ca2 len2 ca3 len3 )  /name >word  ;
 
 : (print)  ( ca1 len1 -- ca2 len2 )  first-word .word  ;
-
--->
-
-( print )
 
   \ export
 

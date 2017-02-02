@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701281512
+  \ Last modified: 201702030048
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,10 +42,12 @@
   \ 2017-01-12: Fix and improve documentation.
   \
   \ 2017-01-28: Improve documentation.
+  \
+  \ 2017-02-03: Compact the code, saving one block.
 
-( rdraw176 )
+( rdraw176 x1 incx y1 incy y )
 
-need assembler
+need ?(  [unneeded] rdraw176 ?( need assembler
 
 code rdraw176  ( gx gy -- )
 
@@ -70,9 +72,7 @@ code rdraw176  ( gx gy -- )
 
   24BA call, \ alternative entry to the DRAW-LINE ROM routine
 
-  b pop,  \ restore Forth IP
-
-  jpnext, end-code
+  b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -90,6 +90,51 @@ code rdraw176  ( gx gy -- )
   \ This word is equivalent to Sinclair BASIC's DRAW command.
   \
   \ See: `adraw176`, `rdraw`.
+  \
+  \ }doc
+
+[unneeded] x1 [unneeded] incx
+[unneeded] y1 [unneeded] incy and and and
+
+?\ 2variable x1  2variable incx  2variable y1  2variable incy
+
+  \ doc{
+  \
+  \ x1  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `y1`, `incx`, `incy`, `adraw176`, `aline176`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ y1  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `x1`, `incx`, `incy`, `adraw176`, `aline176`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ incx  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `incy`, `x1`, `y1`, `adraw176`, `aline176`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ incy  ( -- a )
+  \
+  \ A double-cell variable used by `adraw176` and `aline176`.
+  \
+  \ See: `incx`, `x1`, `y1`, `adraw176`, `aline176`.
   \
   \ }doc
 
@@ -229,51 +274,6 @@ code rdraw  ( gx gy -- )
   \ _gx_ is 0..255; _gy_ is 0..191.
   \
   \ See: `rdraw176`, `adraw176`.
-  \
-  \ }doc
-
-( x1 incx y1 incy y )
-
-2variable x1  2variable incx
-2variable y1  2variable incy
-
-  \ doc{
-  \
-  \ x1  ( -- a )
-  \
-  \ A double-cell variable used by `adraw176` and `aline176`.
-  \
-  \ See: `y1`, `incx`, `incy`, `adraw176`, `aline176`.
-  \
-  \ }doc
-
-  \ doc{
-  \
-  \ y1  ( -- a )
-  \
-  \ A double-cell variable used by `adraw176` and `aline176`.
-  \
-  \ See: `x1`, `incx`, `incy`, `adraw176`, `aline176`.
-  \
-  \ }doc
-
-  \ doc{
-  \
-  \ incx  ( -- a )
-  \
-  \ A double-cell variable used by `adraw176` and `aline176`.
-  \
-  \ See: `incy`, `x1`, `y1`, `adraw176`, `aline176`.
-  \
-  \ }doc
-
-  \ doc{
-  \
-  \ incy  ( -- a )
-  \
-  \ A double-cell variable used by `adraw176` and `aline176`.
-  \
-  \ See: `incx`, `x1`, `y1`, `adraw176`, `aline176`.
   \
   \ }doc
 
