@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011607
+  \ Last modified: 201702022207
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,8 @@
   \ 2017-01-20: Fix documentation.
   \
   \ 2017-02-01: Move `faruppers` from the kernel.
+  \
+  \ 2017-02-02: Add `far>sconstant` and `farsconstants>`.
 
 ( far," fars, farsconstant save-farstring )
 
@@ -85,6 +87,8 @@ need ?(
   \ When _name_ is executed, it returns the string _ca len_ in
   \ far memory as _ca2 len_.
   \
+  \ See: `far>sconstant`.
+  \
   \ }doc
 
 [unneeded] save-farstring ?(  need cmove<far
@@ -104,15 +108,33 @@ need ?(
   \
   \ }doc
 
-( farsconstants, farsconstants far>sconstants )
+[unneeded] far>sconstant ?(
 
-need ?(
+need farsconstant  need save-farstring
 
-[unneeded] farsconstants, ?(  need far,
+: far>sconstant  ( ca len "name" -- )
+  farsconstant does> 2@ save-farstring  ; ?)
+
+  \ doc{
+  \
+  \ far>sconstant  ( ca len "name" -- )
+  \
+  \ Create a string constant _name_ in far memory with value
+  \ _ca len_.
+  \
+  \ When _name_ is executed, it returns the string _ca len_ in
+  \ the circular string buffer as _ca2 len_.
+  \
+  \ See: `farsconstant`.
+  \
+  \ }doc
+
+( farsconstants, farsconstants> farsconstants far>sconstants )
+
+need ?(  [unneeded] farsconstants, ?(  need far,
 
 : farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
-  create  hp@ ,
-  0 begin  swap ?dup  while  far, 1+  repeat  ; ?)
+  create hp@ , 0 begin  swap ?dup while  far, 1+  repeat  ; ?)
 
   \ doc{
   \
@@ -133,11 +155,30 @@ need ?(
   \
   \ }doc
 
-[unneeded] farsconstants ?(  need farsconstants,  need array>
+[unneeded] farsconstants>
+?\ : farsconstants> ( n a -- ca len ) @ array> far@ farcount ;
+
+  \ doc{
+  \
+  \ farsconstants> ( n a -- ca len )
+  \
+  \ Return the far-memory string _ca len_ whose address is
+  \ stored at the _n_ cell of the table _a_ in data space.
+  \
+  \ This word is a factor of `farsconstants` and
+  \ `far>sconstants`.
+  \
+  \ See: `farsconstants`, `far>sconstants`.
+  \
+  \ }doc
+
+[unneeded] farsconstants ?(
+
+need farsconstants,  need array>  need farsconstants>
 
 : farsconstants  ( 0 ca[n]..ca[1] "name" -- n )
   farsconstants,  does>  ( n -- ca len )
-  ( n pfa ) @ array> far@ farcount  ; ?)
+  ( n pfa ) farsconstants>  ; ?)
 
   \ doc{
   \
@@ -175,13 +216,12 @@ need ?(
   \
   \ }doc
 
-[unneeded] far>sconstants ?exit
-
-need farsconstants,  need array>  need save-farstring
+[unneeded] far>sconstants ?(  need farsconstants,
+need array>  need farsconstants>  need save-farstring
 
 : far>sconstants  ( 0 ca[n]..ca[1] "name" -- n )
   farsconstants,  does>  ( n -- ca len )
-  ( n pfa ) @ array> far@ farcount save-farstring  ; ?)
+  ( n pfa ) farsconstants> save-farstring  ; ?)
 
   \ doc{
   \

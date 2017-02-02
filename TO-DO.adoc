@@ -522,19 +522,10 @@ is a problem of fsb2's fb2dsk.
 // TR-DOS {{{2
 === TR-DOS ===
 
-.2016-12-27:
-
-The games disk needs 648 KiB, it does not fit the 636 KiB usable in a TR-DOS
-disk.
-
 .2016-09-01:
 
 `read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
 transfer-sectors` hangs. `0 set-drive` or `1 set-drive` makes no difference.
-
-.2016-08-11:
-
-Make also 40S, 40D and 80S TRD disk images?
 
 .2016-08-11:
 
@@ -1331,13 +1322,6 @@ block index line backslash notation unnecesary.
 
 // Optimizations {{{1
 == Optimizations ==
-
-.2016-12-30:
-
-NOTE: Milestone: 0.13.0
-
-Convert `'x' emit` to `." x"`. It saves one byte and is faster.
-
 // Parsing {{{1
 == Parsing ==
 
@@ -1504,10 +1488,6 @@ calls.
 
 // Sound {{{1
 == Sound ==
-
-.2017-01-24:
-
-Fix `beep>dhz` to support negative values.
 
 .2017-01-24:
 
