@@ -164,7 +164,7 @@ This is not a problem, because the goal of Solo Forth is cross
 development, and therefore only the last step of the development loop,
 i.e., the compilation of the sources from the disk images created in
 the host system, compilation that includes all the slow searching of
-library blocks, is done is the real (actually, emulated) machine. But
+library blocks, is done in the real (actually, emulated) machine. But
 the system includes a tool to create an index of the library, which is
 used to locate their contents instantaneously, what makes things more
 comfortable when the Forth system is used interactively.
@@ -270,10 +270,10 @@ to your home <~/.vim/> directory.
 
 If you modify the kernel or the library, you need to build the system.
 
-First, see the requirements listed in the header of <Makefile> file
-and install the required programs. Then enter the project directory
-and use one of the following commands to build the disk images for
-your DOS of choice:
+First, see the requirements listed in the header of the <Makefile>
+file and install the required programs. Then enter the project
+directory and use one of the following commands to build the disk
+images for your DOS of choice:
 
 |===
 | DOS          | Command
