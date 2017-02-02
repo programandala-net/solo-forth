@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011838
+  \ Last modified: 201702021529
 
   \ -----------------------------------------------------------
   \ Description
@@ -91,6 +91,9 @@
   \ OS temporary attribute. Add `bright-mask`, `unbright-mask`,
   \ `flash-mask`, `unflash-mask`, `ink-mask`, `unink-mask`,
   \ `paper-mask`, `unpaper-mask`.
+  \
+  \ 2017-02-02: Move `permanent-colors` from the library and
+  \ rename it to `mask+attr>perm`.
 
   \ -----------------------------------------------------------
   \ Operatyng system variables
@@ -495,6 +498,22 @@ code attr-mask!  ( b -- )
   \ Set _b_ as the current attribute mask.
   \
   \ See: `attr-mask@`, `perm-attr-mask!`.
+  \
+  \ }doc
+
+code mask+attr>perm  ( -- )  $1CAD call, jpnext,  end-code
+  \ call rom_set_permanent_colors_0x1CAD
+  \ _jp_next
+
+  \ doc{
+  \
+  \ mask+attr>perm  ( -- )
+  \
+  \ Make the current attribute and mask permanent.
+  \
+  \ Note: Words that use attributes don't use the OS permanent
+  \ attribute but the temporary one, which is called "current
+  \ attribute" in Solo Forth.
   \
   \ }doc
 

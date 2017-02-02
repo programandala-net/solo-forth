@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702012210
+; Last modified: 201702021530
 
 include version.z80s
 
@@ -11809,20 +11809,6 @@ border.a:
   ; variable; 2) The lower screen will have contrast ink after
   ; returning to BASIC, no matter the border color used in
   ; Forth.
-
-; ----------------------------------------------
-  _code_header permanent_colors_,'permanent-colors'
-
-; doc{
-;
-; permanent-colors  ( -- )
-;
-; Make the current temporary color attributes permanent.
-;
-; }doc
-
-  call rom_set_permanent_colors_0x1CAD
-  _jp_next
 
 ; ----------------------------------------------
   _colon_header two_constant_,'2constant'
