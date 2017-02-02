@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201612312040
+# Last modified: 201702021744
 
 # ==============================================================
 # Author
@@ -79,9 +79,6 @@ MAKEFLAGS = --no-print-directory
 # Main
 
 
-.PHONY: all
-all: gplusdos trdos plus3dos
-
 .PHONY: gplusdos
 gplusdos: \
 	disks/gplusdos/disk0.mgt \
@@ -112,6 +109,9 @@ trdos: \
 	disks/trdos/disk4_lib+rng_benchmarks.trd \
 	disks/trdos/disk5_lib+flow_benchmarks.trd \
 	disks/trdos/disk6_lib+tests.trd
+
+.PHONY: all
+all: gplusdos trdos plus3dos
 
 .PHONY: disk9
 disk9: \
@@ -667,3 +667,5 @@ oldbackup:
 # module files.
 #
 # 2016-12-31: Remove the details about the background images.
+#
+# 2017-02-02: Make `gplusdos` the default recipe.

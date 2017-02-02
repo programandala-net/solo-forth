@@ -626,6 +626,12 @@ save several blocks of source.
 
 .2017-02-02:
 
+Test the new version of `(cursor-addr)` and rename it to `(xy>address`
+or similar, and so its family. Be consistent with the planned names to
+get attribute addresses from cursor and graphic coordinates.
+
+.2017-02-02:
+
 Fix `g-emit-routine`.
 
 .2017-02-01:
