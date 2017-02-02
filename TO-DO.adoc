@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-01
+:revdate: 2017-02-02
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -624,6 +624,10 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-02-02:
+
+Fix `g-emit-routine`.
+
 .2017-02-01:
 
 Finish `rdraw`.
@@ -777,8 +781,8 @@ Remove module <math.number.prefix.fsb>.
 
 .2016-12-27:
 
-Add `binary` to the library.  If `base` were not a user variable, `binary` and
-`decimal` would be smaller in Z80 than in Forth.
+If `base` were not a user variable, `binary` and `decimal` would be
+smaller in Z80 than in Forth.
 
 .2016-11-26:
 
@@ -1111,12 +1115,6 @@ NOTE: Milestone 0.13.0
 
 Rename <modules> directories to <addons>, to avoid confusion with
 library modules.
-
-.2017-01-02:
-
-NOTE: Milestone 0.13.0
-
-Compact the `g-emit` module.
 
 .2016-12-30, 2017-01-23:
 

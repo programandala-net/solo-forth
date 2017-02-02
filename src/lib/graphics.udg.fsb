@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701222324
+  \ Last modified: 201702021517
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,6 +65,9 @@
   \
   \ 2017-01-22: Rewrite `get-udg`, `set-udg` and `get-font` in
   \ Z80.
+  \
+  \ 2017-02-02: Use `need binary` instead of `[undefined]
+  \ binary`.
 
 ( default-udg-chars )
 
@@ -183,14 +186,12 @@ need ?(
 
 ( 0udg[ udg[ )
 
-need os-udg
+need os-udg  need binary
 
 [defined] first-udg ?\ #128 constant first-udg
 variable udg0
 variable current-udg
 variable current-scan
-
-[defined] binary ?\  : binary  ( -- )  2 base !  ;
 
 : 0udg[  ( b -- )
   dup udg0 !  current-udg !  current-scan off  binary  ;
@@ -319,8 +320,7 @@ need s=
 
 ( udg-row[ )
 
-need os-udg  need evaluate
-[defined] binary  ?\ : binary  ( -- )  2 base !  ;
+need os-udg  need evaluate  need binary
 
 8 constant udg-height  8 constant udg-width
   \ height in bytes (scans)
