@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702032030
+  \ Last modified: 201702032339
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,7 +41,8 @@
   \ `scroll-1px-up` to `pixel-scroll-up`; `scroll-#px-up` to
   \ `pixels-scroll-up`. Add `pixels-pan-right`. Factor
   \ `(pixel-pan-right` from `pixel-pan-right`. Improve
-  \ documentation.
+  \ documentation. Fix `(pixel-scroll-up` to erase the last
+  \ pixel row of the screen.
 
 ( (pixel-pan-right pixel-pan-right pixels-pan-right )
 
@@ -125,13 +126,13 @@ create (pixel-scroll-up  ( -- a )  asm
     z? rif  08 b ld#, b sub,             rra, rra, rra, a h ld,
             0020 b ldp#, b addp, h a ld, rla, rla, rla, a h ld,
     rthen   h push, 0020 b ldp#, ldir, h pop, b pop,
-  rstep  ret,  end-asm ?)
+  rstep b m ld, 57E1 d ldp#, 0020 b ldp#, ldir, ret, end-asm ?)
 
   \ Credit:
   \
-  \ Code adapted from a routine written by Iván Sansa,
-  \ published on Microhobby, issue 122 (1987-03), page 7:
-  \ http://microhobby.org/numero122.htm
+  \ Code adapted and improved from a routine written by Iván
+  \ Sansa, published on Microhobby, issue 122 (1987-03), page
+  \ 7: http://microhobby.org/numero122.htm
   \ http://microhobby.speccy.cz/mhf/122/MH122_07.jpg
 
   \ doc{
