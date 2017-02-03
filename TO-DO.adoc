@@ -672,13 +672,19 @@ NOTE: Milestone: 0.13.0
   or `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr` or `attr>perm`
   or `attr>perm-attr`...
 
-.2017-01-09:
+.2017-01-09, 2017-02-03:
 
 Simplify the management of UDG: Use only the 0-index words, and make an
 optional layer to use 128-index codes, to make conversion of BASIC programs
 easier.
 
 Problem: general print words must use 128..255 codes for the first 128 UDGs.
+
+Possible solution: Make UDG 128..255 be the same in both index modes,
+i.e., UDG 0..127 can be accessed only with "0udg" words, while UDG
+128..255 don't vary. This is better than the current behaviour, when
+UDG 128 is UDG 0 in a 0-based UDG word. In fact, this solution makes
+128-based UDG words unnecessary.
 
 .2017-01-09:
 
@@ -1322,6 +1328,7 @@ block index line backslash notation unnecesary.
 
 // Optimizations {{{1
 == Optimizations ==
+
 // Parsing {{{1
 == Parsing ==
 
