@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702021744
+# Last modified: 201702022355
 
 # ==============================================================
 # Author
@@ -33,6 +33,9 @@
 
 # fsb2 (by Marcos Cruz)
 # 	http://programandala.net/en.program.fsb2.html
+
+# Gforth (by Anton Erlt, Bernd Paysan et al.)
+# 	http://gnu.org/software/gforth
 
 # head (from the GNU coreutils)
 
@@ -566,77 +569,83 @@ oldbackup:
 #
 # 2015-06-17: Improved backup recipe.
 #
-# 2015-06-29: Improvement: The source filenames are configurable. This
-# makes it easier to try old versions, for debugging.
+# 2015-06-29: Improvement: The source filenames are
+# configurable. This makes it easier to try old versions, for
+# debugging.
 #
-# 2015-07-22: Added the MGT disk images to the backup.  Sometimes it's
-# useful to test and old version without recompiling the old sources.
+# 2015-07-22: Added the MGT disk images to the backup.
+# Sometimes it's useful to test and old version without
+# recompiling the old sources.
 #
 # 2015-08-14: Updated backup recipe.
 #
 # 2015-08-17: Modified to use GNU binutils instead of Pasmo.
 #
-# 2015-08-18: Improved. New: a Forth program creates the symbols file.
+# 2015-08-18: Improved. New: a Forth program creates the
+# symbols file.
 #
 # 2015-08-20: Divided in three parts: Makefile, Makefile.pasmo,
 # Makefile.binutils.
 #
-# 2015-10-10: Substituted fsb (written in Vim) with fsb2 (written in
-# Forth for Gforth). fsb was becoming too show with more than 300
-# source screens, while fsb2 is instantaneous.
+# 2015-10-10: Substituted fsb (written in Vim) with fsb2
+# (written in Forth for Gforth). fsb was becoming too show with
+# more than 300 source screens, while fsb2 is instantaneous.
 #
 # 2015-10-15: Updated.
 #
 # 2015-11-10: First changes to support also the +3DOS version.
 #
-# 2015-11-11: The DOS error codes are separated from the main file of
-# the library.
+# 2015-11-11: The DOS error codes are separated from the main
+# file of the library.
 #
-# 2015-11-12: Fixed the load address of the font drivers; they were
-# missing because of the recent use of `bin2code`, required to build
-# +3DOS disk images.
+# 2015-11-12: Fixed the load address of the font drivers; they
+# were missing because of the recent use of `bin2code`,
+# required to build +3DOS disk images.
 #
-# 2016-02-15: Added Nuclear Invaders to the library, a game under
-# development for Solo Forth, in order to try it.
+# 2016-02-15: Added Nuclear Invaders to the library, a game
+# under development for Solo Forth, in order to try it.
 #
-# 2016-02-22: Delete also <library.complete.*.fsb> in clean.  It seems
-# this is required when parts of the library are simbolyc links.
+# 2016-02-22: Delete also <library.complete.*.fsb> in clean.
+# It seems this is required when parts of the library are
+# simbolyc links.
 #
 # 2016-03-19: Updated after the reorganization of files into
 # directories.
 #
-# 2016-03-22: Removed Nuclear Invaders from the library, because now
-# it's built on its own directory.
+# 2016-03-22: Removed Nuclear Invaders from the library,
+# because now it's built on its own directory.
 #
 # 2016-03-24: New partial backups.
 #
-# 2016-04-13: Improved: the BASIC loader is patched with the current
-# memory addresses, extracted from the Z80 symbols file. Updated the
-# requirements and the license.
+# 2016-04-13: Improved: the BASIC loader is patched with the
+# current memory addresses, extracted from the Z80 symbols
+# file. Updated the requirements and the license.
 #
-# 2016-04-16: Fix: the patching of the loader didn't work after `make
-# clean`, because a prerequisite was missing.
+# 2016-04-16: Fix: the patching of the loader didn't work after
+# `make clean`, because a prerequisite was missing.
 #
-# 2016-04-16: Also the +3DOS loader is patched with the current values
-# of the kernel.
+# 2016-04-16: Also the +3DOS loader is patched with the current
+# values of the kernel.
 #
-# 2016-05-02: Make two library disks: the main one, now without games;
-# a new one, with games but without the meta benchamarks/tests. This
-# is needed, because the library has grown too much, and it's near the
-# limit of a G+DOS disk (800 KiB).
+# 2016-05-02: Make two library disks: the main one, now without
+# games; a new one, with games but without the meta
+# benchamarks/tests. This is needed, because the library has
+# grown too much, and it's near the limit of a G+DOS disk (800
+# KiB).
 #
-# 2016-05-03: Make three library disks: 1) only with the core library;
-# 2) the core library plus the meta tools (benchmarks and tests for
-# Solo Forth itself); 3) the core library plus the sample games.
+# 2016-05-03: Make three library disks: 1) only with the core
+# library; 2) the core library plus the meta tools (benchmarks
+# and tests for Solo Forth itself); 3) the core library plus
+# the sample games.
 #
 # 2016-08-03: Make first changes to support TR-DOS.
 #
 # 2016-08-04: Fix TRD library disks with a track 0.
 #
-# 2016-08-05: Create the disks images in <disks/DOSNAME>. Split the
-# meta tools disk into two: tests and benchmarks. Rename all disk
-# image files after a shorter and clearer format. Add disk9 for
-# debugging.
+# 2016-08-05: Create the disks images in <disks/DOSNAME>. Split
+# the meta tools disk into two: tests and benchmarks. Rename
+# all disk image files after a shorter and clearer format. Add
+# disk9 for debugging.
 #
 # 2016-08-10: Activate disk0 of +3DOS.
 #
@@ -646,20 +655,21 @@ oldbackup:
 #
 # 2016-08-11: Improve copying the FZX fonts to the disks.
 #
-# 2016-08-11: Rename the 42 cpl driver and font to make them fit in
-# TR-DOS. Rename the 64 cpl driver for the same reason.
+# 2016-08-11: Rename the 42 cpl driver and font to make them
+# fit in TR-DOS. Rename the 64 cpl driver for the same reason.
 #
 # 2016-08-11: Make also a 180 KiB disk 0 for +3DOS.
 #
-# 2016-10-22: Split the benchmarks disk into 3 disks, else it didn't
-# fit in a TR-DOS disk image.
+# 2016-10-22: Split the benchmarks disk into 3 disks, else it
+# didn't fit in a TR-DOS disk image.
 #
-# 2016-11-16: Modify the cleaning of <tmp/>, to preserve <.gitignore>.
+# 2016-11-16: Modify the cleaning of <tmp/>, to preserve
+# <.gitignore>.
 #
 # 2016-11-20: Add background images.
 #
-# 2016-11-21: Adapt: tools used by make have been moved from <tools/>
-# to <make/>.
+# 2016-11-21: Adapt: tools used by make have been moved from
+# <tools/> to <make/>.
 #
 # 2016-11-26: Fix lists of benchmark library files.
 #
@@ -668,4 +678,5 @@ oldbackup:
 #
 # 2016-12-31: Remove the details about the background images.
 #
-# 2017-02-02: Make `gplusdos` the default recipe.
+# 2017-02-02: Make `gplusdos` the default recipe.  Add Gforth
+# to the requirements.

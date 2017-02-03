@@ -1361,12 +1361,12 @@ of a code bank for addons, to far memory or remove it.
 
 Combine `clear-block` and family with the text windows.
 
-.2016-12-24:
+.2016-12-24, 2017-02-03:
 
 Windows:
 
 - Scroll support, with configurable pause.
-- Rewrite `wcls` in Z80.
+- Rewrite `wcls` in Z80, or use `spaces` instead of `type`
 - Save and restore windows, in Z80.
 
 .2016-12-20:
