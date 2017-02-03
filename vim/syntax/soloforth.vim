@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-01-31
+" Updated:  2017-02-01
 
 " --------------------------------------------------------------
 " History
@@ -340,6 +340,7 @@ syn keyword soloforthForth name>string
 syn keyword soloforthForth nest-source
 syn keyword soloforthForth nextname
 syn keyword soloforthForth noop
+syn keyword soloforthForth noop-routine
 syn keyword soloforthForth pad
 syn keyword soloforthForth refill
 syn keyword soloforthForth source
@@ -560,6 +561,7 @@ syn keyword soloforthStack sp@
 syn keyword soloforthStack swap
 syn keyword soloforthStack tuck
 syn keyword soloforthString compare
+syn keyword soloforthString farlowers
 syn keyword soloforthString faruppers
 syn keyword soloforthString replaces
 syn keyword soloforthString scan
@@ -567,6 +569,9 @@ syn keyword soloforthString search
 syn keyword soloforthString skip
 syn keyword soloforthString substitute
 syn keyword soloforthString unescape
+syn keyword soloforthString lower
+syn keyword soloforthString lower-routine
+syn keyword soloforthString lowers
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
 syn keyword soloforthTool ms
@@ -1111,6 +1116,9 @@ let b:current_syntax = "soloforth"
 "
 " 2017-01-31: Add `attr-cls`, `]l`, `]1l`, `]2l`, `]cl`. Rename
 " `paper` to `paper.`, etc.
+"
+" 2017-02-01: Add `lower`, `lowers`, `farlowers`,
+" `lower-routine`, `noop-routine`.
 
 " --------------------------------------------------------------
 
