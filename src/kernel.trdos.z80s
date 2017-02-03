@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612290139
+; Last modified: 201702031823
 
 ; ==============================================================
 ; Description
@@ -53,8 +53,13 @@ if 0
 
 ; XXX OLD
 
+; Input:
+;   (dos.command) = command
+; Output:
+;   A  = error code or zero
+
   push bc     ; save the Forth IP
-dos.command equ $+1
+dos.command: equ $+1
   ld c,0      ; DOS command (must be patched before calling)
   call trdos_entry.execute_command_in_c
   ld a,c      ; error code
@@ -75,7 +80,7 @@ if 1
 ;   BC = error code or zero
 ;   Z  = no error?
 
-dos.command equ $+1
+dos.command: equ $+1
   ld c,0    ; DOS command (must be patched before calling)
   ; _z80_border_wait 3 ; XXX INFORMER
   call trdos_entry.execute_command_in_c
@@ -252,16 +257,15 @@ _code_header dosior_to_ior_,'dosior>ior'
 ;
 ; transfer-block  ( n -- )
 ;
-; The block-level disk read-write linkage.
-; Transfer block _n_ to or from disk.
-; The read or write mode must be previously set
-; by `write-mode` or `read-mode`.
-;
+; The block-level disk read-write linkage.  Transfer block _n_
+; to or from disk.  The read or write mode must be previously
+; set by `write-mode` or `read-mode`.
+
 ; ----
 ; : transfer-block  ( n -- )
 ;   rec/blk * sector-id buffer-data rec/blk transfer-sectors  ;
-;
 ; ----
+
 ; }doc
 
   ; XXX TODO restore the current drive
@@ -297,7 +301,7 @@ if 1
   pop hl
   ld a,l    ; number of sectors
   pop hl    ; address
-  pop de    ; d = track 0..159; e = sector 0..15
+  pop de    ; D = track 0..159; E = sector 0..15
   push bc   ; save the Forth IP
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
@@ -308,7 +312,7 @@ transfer_sectors.command equ $+1
   ; returns, and the system hangs.
   ;
   ; XXX TODO -- check error code returned in bc
-  ;ld (22528),bc  ; XXX INFORMER  XXX TMP --
+  ld (22528),bc  ; XXX INFORMER  XXX TMP --
 
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
@@ -644,7 +648,7 @@ if 1
 endif
 
 ; ----------------------------------------------
-  _colon_header set_drive_,'set-drive'
+;  _colon_header set_drive_,'set-drive'
 
 ; doc{
 ;
@@ -655,15 +659,18 @@ endif
   ; XXX FIXME -- hang:
   ;_literal trdos_variable.current_temporary_drive
   ;dw c_store_
+  ;dw exit_
 
   ; XXX FIXME -- no effect:
   ; _literal trdos_variable.default_drive
   ; dw c_store_
+  ;dw exit_
 
   ; XXX FIXME -- hang:
   ; dw dup_,init_drive_
   ; _literal trdos_variable.default_drive
   ; dw c_store_
+  ;dw exit_
 
   ; XXX TODO -- how to set the default drive?
 
@@ -673,6 +680,7 @@ endif
   ; dw c_store_
   ; _literal trdos_variable.current_temporary_drive
   ; dw c_store_
+  ;dw exit_
 
   ; XXX FIXME -- no effect:
   ; dw dup_
@@ -682,8 +690,54 @@ endif
   ; _literal trdos_variable.current_temporary_drive
   ; dw c_store_
   ; dw init_drive_
+  ;dw exit_
 
-if 0
+if 1
+
+  _code_header sd0_,'sd0'
+
+  ; XXX REMARK -- 2017-02-03: Variant of `sd1`, saving and
+  ; restoring SP.
+
+  pop hl ; L = drive 0..3
+  push bc ; save the Forth IP
+
+  ld a,l ; drive 0..3
+  add a,'A' ; drive 'A'..'D'
+  ld (set_drive2.command_line.drive),a
+  ld hl,(sys_ch_add)
+  push hl
+  ld hl,$0000
+  add hl,sp
+  ld (sp.backup),hl ; save SP
+  ld hl,set_drive2.command_line
+  ld (sys_ch_add),hl
+  _z80_border_wait 2 ; XXX INFORMER
+
+  ; call trdos_entry.interpret_rem_command
+  ; XXX FIXME -- crash before getting here
+
+  call 15363
+
+  _z80_border_wait 3 ; XXX INFORMER
+sp.backup: equ $+1
+  ld sp,$0000 ; restore SP
+  _z80_border_wait 4 ; XXX INFORMER
+
+  ld (22528),bc ; XXX INFORMER -- save error code
+
+  pop hl
+  ld (sys_ch_add),hl
+  pop bc    ; restore the Forth IP
+  ld ix,next  ; restore IX
+  _jp_next
+
+endif
+
+
+if 1
+
+  _code_header sd1_,'sd1'
 
 ; XXX FIXME -- 2016-08-13: Crash! But the same code works outside
 ; Forth, why?
@@ -707,26 +761,26 @@ if 0
 ; routine. The problem seems TR-DOS moves up and down BASIC. But this
 ; should not affect the zone above RAMTOP.
 
-;  pop hl
-;  ld a,l ; drive 0..3
+; XXX REMARK -- 2017-02-03: `init-drive` sets the step rate to
+; $08, as expected.
 
-  ld a,1  ; XXX TMP --
+  pop hl ; L = drive 0..3
+  push bc ; save the Forth IP
+
+  ld a,l ; drive 0..3
   add a,'A' ; drive 'A'..'D'
   ld (set_drive2.command_line.drive),a
-  push bc   ; save the Forth IP
   ld hl,(sys_ch_add)
   push hl
   ld hl,set_drive2.command_line
   ld (sys_ch_add),hl
-  ;_z80_border_wait 1 ; XXX INFORMER
+  _z80_border_wait 1 ; XXX INFORMER
   call trdos_entry.interpret_rem_command
   ; XXX FIXME -- crash before getting here
-  ;_z80_border_wait 2 ; XXX INFORMER
+  _z80_border_wait 2 ; XXX INFORMER
 
   ; XXX INFORMER:
-  ; push bc ; error code
-  ; pop hl
-  ; ld (22528),hl
+  ld (22528),bc
 
   pop hl
   ld (sys_ch_add),hl
@@ -740,7 +794,9 @@ set_drive2.command_line.drive equ $+4
 
 endif
 
-if 0
+if 1
+
+  _colon_header sd2_,'sd2'
 
 ; doc{
 ;
@@ -748,22 +804,49 @@ if 0
 ;
 ; }doc
 
+  ; 2017-02-03:
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Insert disk1 into drive A.
+  ; 2) `0 sd2`
+  ; 3) `1 load` --> works!
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Eject disk from drive A. Insert disk1 into drive B.
+  ; 2) `1 sd2`
+  ; 3) `1 load` --> crash!
+
   dw dup_,init_drive_,throw_
   dw dup_
   _literal trdos_variable.default_drive
   dw c_store_
   _literal trdos_variable.current_temporary_drive
   dw c_store_
+  dw exit_
 
 endif
 
-if 0
+if 1
+
+  _colon_header sd3_,'sd3'
 
 ; doc{
 ;
 ; set-drive  ( n -- ior )
 ;
 ; }doc
+
+  ; 2017-02-03:
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Insert disk1 into drive A.
+  ; 2) `0 sd3 .` --> 0
+  ; 3) `1 load` --> works!
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Eject disk from drive A. Insert disk1 into drive B.
+  ; 2) `1 sd3 .` --> 0
+  ; 3) `1 load` --> crash!
 
   dw dup_,init_drive_,question_dup_,question_exit_
   dw dup_
@@ -772,28 +855,76 @@ if 0
   _literal trdos_variable.current_temporary_drive
   dw c_store_
   _literal 0
+  dw exit_
 
 endif
 
 if 1
+
+  _colon_header sd4_,'sd4'
 
 ; XXX REMARK -- 2016-09-01: New version, based on the disassembly of
 ; TR-DOS (project under development)
 
 ; doc{
 ;
-; set-drive  ( n -- ior )
+; sd4  ( n -- ior )
 ;
 ; }doc
+
+  ; 2017-02-03:
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Insert disk1 into drive A.
+  ; 2) `0 sd4 .` --> 0
+  ; 3) `1 load` --> works!
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Eject disk from drive A. Insert disk1 into drive B.
+  ; 2) `1 sd4 .` --> 0
+  ; 3) `1 load` --> crash!
 
   dw dup_
   _literal trdos_variable.default_drive
   dw c_store_
   dw init_drive_
+  dw exit_
 
 endif
 
-  dw exit_
+if 1
+
+; Version of `sd4` in Z80.
+
+; doc{
+;
+; sd5  ( n -- )
+;
+; }doc
+
+  _code_header sd5_,'sd5'
+
+  ; 2017-02-03:
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Insert disk1 into drive A.
+  ; 2) `0 sd5`
+  ; 3) `1 load` --> works!
+  ;
+  ; 0) Boot Solo Forth.
+  ; 1) Insert disk1 into drive B.
+  ; 2) `1 sd5`
+  ; 3) `1 load` --> crash!
+
+  pop hl
+  push bc ; save Forth IP
+  ld a,l ; A = drive (0..3)
+  ld c,1 ; C = command code: disk drive init
+  call trdos_entry.execute_command_in_c ; do it
+  pop bc ; restore Forth IP
+  _jp_next
+
+endif
 
 ; ----------------------------------------------
   _colon_header get_drive_,'get-drive'
@@ -980,7 +1111,7 @@ xxx.file_found:
   call trdos.execute_command
   _z80_border_wait 6 ; XXX INFORMER
 
-  ; XXX FIXME -- 
+  ; XXX FIXME --
   ; a = 2 = file descriptor, not error code!
 
 xxx.exit:
@@ -992,7 +1123,7 @@ xxx.exit:
   jp back_from_dos
 
 name_and_type:
-  defm "pr64.binC" 
+  defm "pr64.binC"
 
 endif
 

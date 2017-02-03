@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702022051
+; Last modified: 201702031756
 
 include version.z80s
 
@@ -122,8 +122,9 @@ if defined trdos
  ; disk.  This buffer is allocated dynamically. Therefore, the
  ; default origin of the Forth system must be moved up.
 
-  origin:                         equ default_origin+$170
-  ;origin:                         equ default_origin+$800 ; XXX TMP --
+  ;origin:                         equ default_origin+$170
+  ;origin:                         equ default_origin+$470 ; XXX TMP --
+  origin:                         equ default_origin+$800 ; XXX TMP --
 
 else
 
@@ -11165,10 +11166,10 @@ if 0
   dw zero_branch_,type_ascii.then
   dw drop_
   _literal '.'
-type_ascii.then
+type_ascii.then:
   dw emit_
   dw paren_loop_
-type_ascii.loop_exit
+type_ascii.loop_exit:
   dw exit_
 
 endif
@@ -11213,7 +11214,7 @@ if 0
   dw equals_
   dw zero_branch_,trdos_tester.continue
   dw unloop_,exit_
-trdos_tester.continue
+trdos_tester.continue:
 
 endif
 
@@ -11247,9 +11248,18 @@ endif
   dw emit_
   dw exit_
 
-page.display
+page.display:
   dw cls_
   dw exit_
+
+; ----------------------------------------------
+  _variable_header os_sp_,'os-sp'
+
+  ; XXX TMP -- For debugging of the TR-DOS support.
+  ; Formerly this was done in `(bye)`.
+
+system_stack_pointer:
+  dw 0
 
 ; ----------------------------------------------
   _code_header paren_bye_,'(bye)'
@@ -11258,8 +11268,7 @@ page.display
 
   im 1 ; interrupt mode 1, normal situation of the OS
 
-system_stack_pointer: equ $+1
-  ld sp,0 ; restore the system stack
+  ld sp,(system_stack_pointer) ; restore the system stack
 
 ; The Complete Spectrum ROM Disassembly
 ; (http://www.worldofspectrum.org/infoseekid.cgi?id=2000076),
