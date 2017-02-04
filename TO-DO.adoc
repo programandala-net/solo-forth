@@ -1333,6 +1333,15 @@ block index line backslash notation unnecesary.
 // Optimizations {{{1
 == Optimizations ==
 
+.2017-02-04:
+
+Make `cold` a code word in order to save space from basic init
+operations, e.g. modifying memory. Then continue execution into a
+colon word called `(cold)`, which finishes the high-level tasks.
+
+Identify operations in `cold` that can be factored out as code words,
+to save space. For example, the patching of `cold.home`.
+
 // Parsing {{{1
 == Parsing ==
 
@@ -1355,6 +1364,12 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Printing {{{1
 == Printing ==
+
+.2017-02-04:
+
+Rename `mode32-emit` to `mode32-rom-emit` and write an alternative
+word `mode32-iso-emit` to print characters 128..255 also from the
+current font.  This will make it possible to use 8-bit character sets.
 
 .2017-01-18, 2017-02-04:
 

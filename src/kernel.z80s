@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702041232
+; Last modified: 201702041329
 
 include version.z80s
 
@@ -3707,18 +3707,35 @@ skip.end:
 ; mode32-max-char  ( -- ca )
 ;
 ; Address _ca_ holds the code of the highest character that
-; `mode32-emit` will print from the current font. Higher
-; character are printe from the UDG set.
+; `mode32-emit` will print , using the ROM routine. Higher
+; character are printed by `emit-udg`.
 ;
-; Its default value is 127. Therefore, characters 128..255 are
-; printed from the UDG set.
+; Note that this is a character variable, which must be set
+; with `c!`.  Its default value is 127. The following table
+; shows the effect of other values:
+
+; |===
+; | Value | Effect
 ;
-; When this variable is set to 255, all characters are printed
-; from the current font. This makes 8-bit character sets
-; possible.
-;
-; Note this is a character variable, which must be set with
-; `c!`.
+; | 126 | Characters 0..126 are printed by the ROM;
+;         characters 127..255 are printed by `emit-udg`.
+; | 127 | Characters 0..127 are printed by the ROM;
+;         characters 128..255 are printed by `emit-udg`.
+; | 143 | Characters 0..143 are printed by the ROM
+;         (this range includes the block graphics);
+;         characters 144..255 are printed by `emit-udg`.
+; | 162 | Characters 0..162 are printed by the ROM
+;         (this range includes also the 128-BASIC UDG set 144..162,
+;         correspondent to UDG characters 0..18 in Solo Forth);
+;         characters 163..255 are printed by `emit-udg`.
+; | 255 | Characters 0..255 are printed by the ROM
+;         (this range includes also the 128-BASIC tokens);
+;         no character is printed by `emit-udg`.
+; |===
+
+; Note that `emit-udg` prints characters 0..255 from the
+; current UDG set. This is different from Sinclair BASIC, where
+; UDG code 164 is the first one in the UDG set.
 ;
 ; See: `mode32-emit`, `set-font`, `set-udg`.
 ;
@@ -3738,9 +3755,11 @@ skip.end:
 ; This word is the default behaviour of `emit`: By default,
 ; characters 0..127 are printed from the current font and
 ; characters 128..255 are printed from the current UDG set.
-; These ranges can be changed with `mode32-max-char`.
+; These ranges can be changed with `mode32-max-char`; see
+; `mode32-max-char` for details.
 ;
-; See: `emit`, `emit-udg`, `emit-0udg`, `mode32-max-char`.
+; See: `emit`, `emit-udg`, `mode32-max-char`, `set-font`,
+; `set-udg`.
 ;
 ; }doc
 
@@ -3749,7 +3768,10 @@ skip.end:
 mode32_emit.max_char: equ $+1
   ld a,127 ; max character printed from the font
   cp l ; is character L in range?
-  jp m,emit_udg.l ; if not in range, print it from the UDG set
+  jr z,mode32_emit.l ; if equals, print it from the font
+  jr c,emit_udg.l ; if greater, print it from the UDG set
+  ; Otherwise, print it from the font.
+mode32_emit.l
   ld a,l ; A =character
   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
   rst $10 ; print it through the ROM
@@ -3761,67 +3783,33 @@ mode32_emit.max_char: equ $+1
 ; ----------------------------------------------
   _code_header emit_udg_,'emit-udg'
 
-  ; XXX TODO -- move to the library? but `emit` uses it.
-  ;
-  ; XXX TODO -- make it an alias or deferred, with a default
-  ; useless action? (drop and emit a dot, for example). This
-  ; way, the actual code can be moved to teh library.
-
 ; doc{
 ;
 ; emit-udg  ( c -- )
 ;
-; Print the user defined graphic _c_ (128..255).
+; Print the UDG _c_ (0..255) from the current UDG set.
 ;
-; See: `emit-0udg`, `emit`.
-;
-; }doc
-
-  pop hl ; L = character
-  push bc ; save the Forth IP
-emit_udg.l
-  ld a,l ; A = character
-emit_udg.a
-  ; A = UDG code (128..255)
-  ; H = 0
-  sub 128
-  jr emit_0udg.a
-
-; ----------------------------------------------
-  _code_header emit_0udg_,'emit-0udg'
-
-  ; XXX TODO -- move to the library? but `emit-udg` uses it.
-  ;
-  ; XXX TODO -- make it an alias or deferred, with a default
-  ; useless action? (drop and emit a dot, for example). This
-  ; way, the actual code can be moved to the library.
-
-; doc{
-;
-; emit-0udg  ( b -- )
-;
-; Print the User Defined Character _b_ (0..255).
+; See: `set-udg`, `emit`, `mode32-emit`, `mode32-max-char`.
 ;
 ; }doc
 
   pop hl ; L = UDG (0..255)
   push bc ; save the Forth IP
+emit_udg.l
   ld a,l ; A = UDG (0..255)
-
-emit_0udg.a
   ; A = UDG (0..255)
-  ; H = 0
+  ; H = 0 (supposed, not checked, not forced)
   ld l,a ; HL = UDG (0..255)
   ld de,(sys_udg)
   add hl,hl
   add hl,hl
   add hl,hl
   add hl,de
-  ex de,hl ; DE = character address in the UDG font
+  ex de,hl ; DE = character address in the UDG set
   ld bc,(sys_s_posn) ; cursor position
   ld hl,(sys_df_cc) ; current screen address
+  ld (iy+sys_scr_ct_offset),$FF ; no scroll message
   call rom_pr_all
-  ; XXX TODO -- check if scroll is managed by that routine
   ld (sys_s_posn),bc
   ld (sys_df_cc),hl
   pop bc ; restore the Forth IP
@@ -9540,6 +9528,11 @@ warm_start:
 ; cold  ( -- )
 ;
 ; }doc
+
+  ; XXX TODO -- Make `cold` a code word in order to save space
+  ; from basic init operations, e.g. modifying memory. Then
+  ; continue execution into a colon word called `(cold)`, which
+  ; finishes the high-level tasks.
 
   ; Init the headers pointer.
   dw lit_,headers_pointer_init_value,fetch_
