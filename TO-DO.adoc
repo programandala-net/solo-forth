@@ -621,14 +621,6 @@ Document the usage of UDG codes greater than 255. `emit-udg` admits them.
 
 .2017-02-02:
 
-Make `mode32-emit` configurable with a patch:
-
-- Mode 1 (current): Print characters 32..127 from the ordinary font,
-  and characters 128..255 from the UDG set.
-- Mode 2 (new): Print characters 32..255 from the ordinary font.
-
-.2017-02-02:
-
 Test the new version of `(cursor-addr)` and rename it to `(xy>address`
 or similar, and so its family. Be consistent with the planned names to
 get attribute addresses from cursor and graphic coordinates.
@@ -667,14 +659,6 @@ Or write a variant:
 ----
   \ ocr?  ( col row -- c true | false )
 ----
-
-.2017-01-09, 2017-01-12, 2017-01-13, 2017-01-23, 2017-01-24:
-
-NOTE: Milestone: 0.13.0
-
-- Rename `permament-colors` to `permanent-attrs` or `temp>perm-attrs`
-  or `t>p-attrs` or `temp-attr>perm` or `t-attr>p-attr` or `attr>perm`
-  or `attr>perm-attr`...
 
 .2017-01-09, 2017-02-04:
 
@@ -1327,6 +1311,14 @@ block index line backslash notation unnecesary.
 
 // Optimizations {{{1
 == Optimizations ==
+
+.2017-02-04:
+
+Rewrite `hide` in Z80, move it before `hidden` and use this one as
+its tail code.
+
+Rewrite `reveal` in Z80, move it before `revelead` and use this one as
+its tail code.
 
 .2017-02-04:
 

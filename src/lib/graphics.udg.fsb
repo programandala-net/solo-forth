@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702021517
+  \ Last modified: 201702041458
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,14 +68,23 @@
   \
   \ 2017-02-02: Use `need binary` instead of `[undefined]
   \ binary`.
+  \
+  \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
+  \ the kernel: Remove `first-udg`. Remove `udg!` and rename
+  \ `0udg!` to `udg!`; remove 'udg:` and rename `0udg:` to
+  \ `udg:`; rename `0udg>` to `udg>`; change the calculation of
+  \ `default-udg-chars`; remove `udg[` and rename `0udg[` to
+  \ `udg[`;  rename `at-xy-display-0udg` to
+  \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
+  \ `udg-at-xy-display`.
 
 ( default-udg-chars )
 
-need rom-font need first-udg  need os-udg
+need rom-font need os-udg
 
-rom-font 'A' 8 * +                \ from
-os-udg @ 144 first-udg - 8 * +    \ to
-'U' 'A' - 1+ 8 *                  \ count
+rom-font 'A' 8 * +  \ from
+os-udg @ 144 8 * +  \ to
+'U' 'A' - 1+ 8 *    \ count
 move
 
   \ doc{
@@ -83,74 +92,44 @@ move
   \ default-udg-chars  ( -- )
   \
   \ A phoney word used only to do `need default-udg-chars` in
-  \ order to define characters 144..164 as letters 'A'..'U',
-  \ copied from the ROM font, the shape they have in Sinclair
-  \ BASIC by default. The current value of `os-udg` is used.
+  \ order to define UDG 144..164 as letters 'A'..'U', copied
+  \ from the ROM font, the shape they have in Sinclair BASIC by
+  \ default. The current value of `os-udg` is used.
   \
-  \ See: `block-chars`, `os-udg`, `set-udg`, `rom-font`,
-  \ `first-udg`.
+  \ See: `block-chars`, `os-udg`, `set-udg`, `rom-font`.
   \
   \ }doc
 
-( first-udg 0udg> 0udg! udg! 0udg: udg: )
+( udg> udg! udg: )
 
-[unneeded] first-udg ?\ #128 cconstant first-udg  exit
+need ?(
+
+[unneeded] udg> ?(  need 8* need os-udg
+: udg>  ( n -- a )  8* os-udg @ +  ; ?)
 
   \ doc{
   \
-  \ first-udg  ( -- c )
+  \ udg>  ( c -- a )
   \
-  \ A character constant that holds 128, the number of the
-  \ first user defined graphic.
+  \ Convert UDG number _n_ (0..255) to the address _a_ of its
+  \ bitmap.
   \
   \ See: `udg!`, `udg:`.
   \
   \ }doc
 
-need ?(
-
-[unneeded] 0udg> ?(  need 8* need os-udg
-: 0udg>  ( n -- a )  8* os-udg @ +  ; ?)
-
-  \ doc{
-  \
-  \ 0udg>  ( c -- a )
-  \
-  \ Convert UDG number _n_ (0..255) to the address _a_ of its
-  \ bitmap.
-  \
-  \ See: `0udg!`, `0udg:`.
-  \
-  \ }doc
-
-[unneeded] 0udg! ?(  need 0udg>
-: 0udg!  ( b0..b7 n -- )  0udg> dup 7 + do  i c!  -1 +loop  ;
-?)
-
-  \ doc{
-  \
-  \ 0udg!  ( b0..b7 c -- )
-  \
-  \ Store the 8-byte bitmap _b0..b7_ into UDG number _n_
-  \ (0..127).  _b0_ is the first (top) scan.  _b7_ is the last
-  \ (bottom) scan.
-  \
-  \ See: `0udg:`, `udg!`.
-  \
-  \ }doc
-
-[unneeded] udg! ?( need first-udg  need 0udg!
-: udg!  ( b0..b7 c -- )  first-udg - 0udg!  ; ?)
+[unneeded] udg! ?(  need udg>
+: udg!  ( b0..b7 c -- )  udg> dup 7 + do  i c!  -1 +loop  ; ?)
 
   \ doc{
   \
   \ udg!  ( b0..b7 c -- )
   \
-  \ Store the 8-byte bitmap _b0..b7_ into UDG char _c_
-  \ (0..255).  _b0_ is the first (top) scan.  _b7_ is the last
-  \ (bottom) scan.
+  \ Store the 8-byte bitmap _b0..b7_ into UDG _c_ (0..255).
+  \ _b0_ is the first (top) scan.  _b7_ is the last (bottom)
+  \ scan.
   \
-  \ See: `udg:`, `0udg!`, `first-udg`.
+  \ See: `udg:`.
   \
   \ }doc
 
@@ -161,62 +140,32 @@ need ?(
   \
   \ udg:  ( b0..b7 c "name" -- )
   \
-  \ Create a constant "name" for UDG char _c_ (128..255) and
-  \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
-  \ is the first (top) scan.  _b7_ is the last (bottom) scan.
-  \
-  \ See: `udg!`, `0udg:`, `first-udg`.
-  \
-  \ }doc
-
-[unneeded] 0udg: ?(  need 0udg!
-: 0udg:  ( b0..b7 n "name" -- )  dup constant 0udg!  ; ?)
-
-  \ doc{
-  \
-  \ 0udg:  ( b0..b7 c "name" -- )
-  \
   \ Create a constant "name" for UDG char _c_ (0..255) and
   \ store the 8-byte bitmap _b0..b7_ into that UDG char.  _b0_
   \ is the first (top) scan.  _b7_ is the last (bottom) scan.
   \
-  \ See: `0udg!`, `udg:`.
+  \ See: `udg!`.
   \
   \ }doc
 
-( 0udg[ udg[ )
+( udg[ )
 
 need os-udg  need binary
 
-[defined] first-udg ?\ #128 constant first-udg
-variable udg0
-variable current-udg
-variable current-scan
+variable udg0  variable current-udg  variable current-scan
+  \ XXX TODO -- rename (to prevent name clashes) and document
 
-: 0udg[  ( b -- )
+: udg[  ( b -- )
   dup udg0 !  current-udg !  current-scan off  binary  ;
-
-  \ doc{
-  \
-  \ 0udg[  ( b -- )
-  \
-  \ Start a set of UDG definitions, from UDG number _b_
-  \ (0..255).
-  \
-  \ See: `udg[`, `|`, `||`, `||]`.
-  \
-  \ }doc
-
-: udg[  ( c -- )  first-udg - 0udg[  ;
 
   \ doc{
   \
   \ udg[  ( c -- )
   \
   \ Start a set of UDG definitions, from UDG character _c_
-  \ (128..255).
+  \ (0..255).
   \
-  \ See: `0udg[`, `|`, `||`, `||]`.
+  \ See: `|`, `||`, `||]`.
   \
   \ Usage example:
   \
@@ -235,9 +184,8 @@ variable current-scan
   \
   \ }doc
 
-: |  ( b -- )
-  os-udg @ current-udg @ 8 * current-scan @ + + c!
-  1 current-udg +!  ;
+: |  ( b -- )  os-udg @ current-udg @ 8 * current-scan @ + + c!
+               1 current-udg +!  ;
 
   \ doc{
   \
@@ -245,12 +193,11 @@ variable current-scan
   \
   \ Store scan _b_ into the current UDG being defined.
   \
-  \ See: `0udg[`, `udg[`, `||`, `||]`.
+  \ See: `udg[`, `||`, `||]`.
   \
   \ }doc
 
-: || ( b -- )
-  |  1 current-scan +!  udg0 @ current-udg !  ;
+: || ( b -- )  |  1 current-scan +!  udg0 @ current-udg !  ;
 
   \ doc{
   \
@@ -259,7 +206,7 @@ variable current-scan
   \ Store scan _b_ into the current UDG being defined and start
   \ a new row of scans.
   \
-  \ See: `0udg[`, `udg[`, `|`, `||]`.
+  \ See: `udg[`, `|`, `||]`.
   \
   \ }doc
 
@@ -273,21 +220,19 @@ variable current-scan
   \ Store scan _b_ into the current UDG being defined and stop
   \ defining UDGs.
   \
-  \ See: `0udg[`, `udg[`, `|`, `||`.
+  \ See: `udg[`, `|`, `||`.
   \
   \ }doc
 
 ( udg-block[ )
 
   \ XXX UNDER DEVELOPMENT
-  \ 2016-10-04
-
-need s=
+  \ 2016-10-04: Start.
 
 : udg-block[  ( c "ccc" -- )
   begin   parse-name 2dup s" ]udg-block" compare
   while   dup 8 mod dup abort" Wrong scan length"
-
+    udg-block-row[
   repeat  ;
 
 : ]udg-block ;
@@ -297,7 +242,7 @@ need s=
   \ udg-block[  ( c "ccc" -- )
   \
   \ Start a set of UDG definitions that form a sprite, from UDG
-  \ character _c_ (128..255).
+  \ character _c_ (0..255).
 
   \ Usage example:
   \
@@ -433,8 +378,7 @@ code make-block-chars  ( a -- )
 
   \ Note: $0B3B is a secondary entry point to the PO-GR-1 ROM
   \ routine ($0B38), in order to force a non-default value of
-  \ the HL register, which holds the destination address, which
-  \ holds the destination address.
+  \ the HL register, which holds the destination address.
 
   \ doc{
   \
@@ -475,8 +419,8 @@ $F0 $F0 $F0 $F0 $F0 $F0 $F0 $F0 #138 udg!
 $FF $FF $FF $FF $F0 $F0 $F0 $F0 #139 udg!
 $00 $00 $00 $00 $FF $FF $FF $FF #140 udg!
 $0F $0F $0F $0F $FF $FF $FF $FF #141 udg!
-$F0 $F0 $F0 $F0 $FF $FF $FF $FF #142 udg! need 0udg>
-$FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 0udg> 8 erase
+$F0 $F0 $F0 $F0 $FF $FF $FF $FF #142 udg! need udg>
+$FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 udg> 8 erase
 
   \ Note: In this block `need` is in unusual places. The goal
   \ is to save one line and make the 16 character definitions
@@ -851,17 +795,17 @@ create (display-char-bitmap)  ( -- a )
   \
   \ }doc
 
-( at-xy-display-0udg 0udg-at-xy-display )
+( at-xy-display-udg udg-at-xy-display )
 
   \ XXX UNDER DEVELOPMENT
 
 need ?(
 
-[unneeded] at-xy-display-0udg ?(
+[unneeded] at-xy-display-udg ?(
 
 need assembler  need (display-char-bitmap)  need os-udg
 
-unused code at-xy-display-0udg  ( c x y -- )
+unused code at-xy-display-udg  ( c x y -- )
 
   h pop, l a ld, h pop, a d ld, l e ld,
 
@@ -894,23 +838,23 @@ unused code at-xy-display-0udg  ( c x y -- )
 
   \ doc{
   \
-  \ at-xy-display-0udg  ( c x y -- )
+  \ at-xy-display-udg  ( c x y -- )
   \
   \ Display UDG _c_ at cursor coordinates _x y_. This is much
-  \ faster than using `at-xy` and `emit-0udg`, because no ROM
+  \ faster than using `at-xy` and `emit-udg`, because no ROM
   \ routine is used, the cursor coordinates are not updated and
   \ the screen attributtes are not changed (only the character
   \ bitmap is displayed).
   \
-  \ See: `0udg-at-xy-display`.
+  \ See: `udg-at-xy-display`.
   \
   \ }doc
 
-[unneeded] 0udg-at-xy-display ?(
+[unneeded] udg-at-xy-display ?(
 
 need assembler  need (display-char-bitmap)  need os-udg
 
-unused code 0udg-at-xy-display  ( x y c -- )
+unused code udg-at-xy-display  ( x y c -- )
 
   h pop, h addp, h addp, h addp, os-udg d ftp, d addp,
 
@@ -941,15 +885,16 @@ unused code 0udg-at-xy-display  ( x y c -- )
 
   \ doc{
   \
-  \ 0udg-at-xy-display  ( x y c -- )
+  \ udg-at-xy-display  ( x y c -- )
   \
   \ Display UDG _c_ (0..255) at cursor coordinates _x y_. This
   \ is much faster than a combination of `at-xy` and
-  \ `emit-0udg`, because no ROM routine is used, the cursor
+  \ `emit-udg`, because no ROM routine is used, the cursor
   \ coordinates are not updated and the screen attributtes are
   \ not changed (only the character bitmap is displayed).
   \
-  \ See: `at-xy-display-0udg`.
+  \ See: `at-xy-display-udg`.
   \
   \ }doc
+
   \ vim: filetype=soloforth
