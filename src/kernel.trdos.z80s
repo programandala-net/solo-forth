@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702031823
+; Last modified: 201702050025
 
 ; ==============================================================
 ; Description
@@ -34,6 +34,20 @@
 
 ; 2016-12-29: Change definition names to lowercase, after the
 ; changes in the main kernel.
+;
+; 2017-02-03: Add more test words.
+;
+; 2017-02-04: Add option to restore the BASIC SP and the number
+; of lines of the bottom screen before calling TR-DOS.
+;
+; The number of lines was the reason of the crash: TR-DOS
+; throws a disk error and BASIC can not print it. The disk
+; error happens when `transfer-sectors` reads a sector from
+; disk B.  Choosing "abort" at the TR-DOS disk error message
+; enters BASIC. Then Forth can be reentered using a warm
+; restart.  The step rate of drive B has been increased by 2
+; units.
+;
 
 ; ==============================================================
 
@@ -46,6 +60,11 @@ include inc/zx_spectrum_trdos.z80s
 
 ; ------------------------------
 ; DOS call
+
+basic_friendly: equ 1
+
+trdos.sp_backup:
+  dw 0
 
 dos:
 
@@ -83,7 +102,17 @@ if 1
 dos.command: equ $+1
   ld c,0    ; DOS command (must be patched before calling)
   ; _z80_border_wait 3 ; XXX INFORMER
+  ld (trdos.sp_backup),sp
+
+if basic_friendly
+  ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
+;  ld (trdos.sp_backup),sp
+;  ld sp,(system_stack_pointer) ; restore the system stack
+endif
   call trdos_entry.execute_command_in_c
+if basic_friendly
+;  ld sp,(trdos.sp_backup)
+endif
   ; _z80_border_wait 4 ; XXX INFORMER
   ld a,c    ; error code
   and a
@@ -108,7 +137,15 @@ trdos.execute_command:
   xor a
   ld (trdos_variable.error_code),a
   pop af
+if basic_friendly
+  ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
+  ld (trdos.sp_backup),sp
+  ld sp,(system_stack_pointer) ; restore the system stack
+endif
   call trdos_entry.execute_command_in_c
+if basic_friendly
+  ld sp,(trdos.sp_backup)
+endif
 ;  ld (22530),bc ; XXX INFORMER
   ld a,c    ; error code
   and a
@@ -306,7 +343,15 @@ if 1
   ld b,a    ; number of sectors
 transfer_sectors.command equ $+1
   ld c,trdos_command.read_sectors
+if basic_friendly
+  ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
+  ld (trdos.sp_backup),sp
+  ld sp,(system_stack_pointer) ; restore the system stack
+endif
   call trdos_entry.execute_command_in_c
+if basic_friendly
+  ld sp,(trdos.sp_backup)
+endif
 
   ; XXX FIXME -- when there's no disk in the drive, the call never
   ; returns, and the system hangs.
@@ -382,9 +427,9 @@ endif
 
 ; Note: this TR-DOS routine stores the drive number in
 ; `trdos_variable.current_temporary_drive`.
-
-  ; XXX FIXME -- when there's no disk in the drive, the system never
-  ; returns from the DOS.
+;
+; 2017-02-04: This word actually changes the current drive,
+; so it can be renamed to `set-drive`.
 
   pop hl
   ld a,l    ; drive number (0..3)
@@ -408,7 +453,14 @@ if 1
 
   _code_header cat1_,'cat1'
 
-  ; XXX FIXME -- hang!
+  ; XXX REMARK -- 2017-02-04: It works with `basic_friendly`
+  ; set: save SP and restore lower screen lines
+  ;
+  ; XXX REMARK -- 2017-02-05: It hangs without `basic_friendly`
+  ;
+  ; XXX REMARK -- 2017-02-05: It works when lines of the lower
+  ; screen are restored before calling the DOS: the SP has
+  ; nothing to do
 
   ld a,trdos_command.cat
   ld (dos.command),a
@@ -418,9 +470,7 @@ if 1
   ld (trdos_variable.default_drive),a
   ld a,2    ; stream: screen
   push bc   ; save the Forth IP
-  _z80_border_wait 1 ; XXX INFORMER
   call dos
-  _z80_border_wait 2 ; XXX INFORMER
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
   jp back_from_dos
@@ -431,7 +481,8 @@ if 1
 
   _code_header cat2_,'cat2'
 
-  ; XXX FIXME -- hang!
+  ; XXX REMARK -- 2017-02-04: It works with `basic_friendly`
+  ; set.
 
   ld a,(trdos_variable.current_temporary_drive)
   ld (trdos_variable.two_files_drive),a
@@ -440,9 +491,7 @@ if 1
   ld a,2    ; stream: screen
   push bc   ; save the Forth IP
   ld c,trdos_command.cat
-  _z80_border_wait 1 ; XXX INFORMER
   call trdos_entry.execute_command_in_c
-  _z80_border_wait 2 ; XXX INFORMER
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
   _jp_next
@@ -453,14 +502,10 @@ if 1
 
   _code_header cat3_,'cat3'
 
-  ; XXX FIXME -- hang!
-
   ld a,2      ; stream: screen
   push bc     ; save the Forth IP
   ld c,trdos_command.cat
-  _z80_border_wait 1 ; XXX INFORMER
   call trdos_entry.execute_command_in_c
-  _z80_border_wait 2 ; XXX INFORMER
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
   _jp_next
@@ -470,6 +515,10 @@ endif
 if 1
 
   _code_header cat4_,'cat4'
+
+  ; XXX REMARK -- 2017-02-04: It shows the directory but then
+  ; corrupts the screen and crashes. Tried with
+  ; `basic_friendly` set.
 
   push bc   ; save the Forth IP
 ;  ld hl,(sys_ch_add)
@@ -501,7 +550,8 @@ if 1
 
   _code_header cat5_,'cat5'
 
-  ; XXX FIXME -- no effect
+  ; XXX FIXME -- 2017-02-05 no effect, the parameter is not
+  ; consumed
 
   push bc   ; save the Forth IP
   ld hl,$0429 ; `CAT`
@@ -523,6 +573,8 @@ if 1
 
   _code_header cat6_,'cat6'
 
+  ; XXX FIXME -- 2017-02-05: Crash! (with `basic_friendly` set)
+
   push bc   ; save the Forth IP
   ld c,$07
   call dos.hl
@@ -543,7 +595,7 @@ if 1
 
   _code_header cat7_,'cat7'
 
-  ; XXX FIXME -- hang!
+  ; XXX FIXME -- 2017-02-05: Crash! (with `basic_friendly` set)
 
   ; ld a,trdos_command.cat
   ; ld (dos.command),a
@@ -581,6 +633,10 @@ if 1
 
   _code_header cat8_,'cat8'
 
+  ; XXX REMARK -- 2017-02-05: It works (with `basic_friendly`
+  ; set), but prints the directory in the lower screen, which
+  ; remains active.
+
   push bc   ; save the Forth IP
 
   ld a,(trdos_variable.current_temporary_drive)
@@ -615,6 +671,9 @@ if 1
 
   _code_header cat9_,'cat9'
 
+  ; XXX REMARK -- 2017-02-04: It works with `basic_friendly`
+  ; set.
+
   ld a,2      ; stream: screen
   push bc     ; save the Forth IP
   ld c,trdos_command.cat
@@ -631,6 +690,9 @@ endif
 if 1
 
   _code_header cat10_,'cat10'
+
+  ; XXX REMARK -- 2017-02-04: It works with `basic_friendly`
+  ; set.
 
   push bc     ; save the Forth IP
   ld a,2      ; stream: screen
@@ -1042,6 +1104,8 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- rewrite in Z80
+
   _literal trdos_command.write_sectors
   dw branch_,transfer_mode
 
@@ -1055,6 +1119,8 @@ endif
 ; Set the read mode for `transfer-sectors` and `transfer-block`.
 ;
 ; }doc
+
+  ; XXX TODO -- rewrite in Z80
 
   _literal trdos_command.read_sectors
 transfer_mode:
@@ -1073,6 +1139,9 @@ transfer_mode:
 
   ; XXX TMP -- for debugging
   ; XXX REMARK -- it works
+
+  ; XXX REMARK -- 2017-02-05: It fails: "nonsense in BASIC"
+  ; (with `basic_friendly` set)
 
   push bc   ; save the Forth IP
   ;ld (backup_bc),bc
