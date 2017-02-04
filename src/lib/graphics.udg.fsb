@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702041717
+  \ Last modified: 201702041831
 
   \ -----------------------------------------------------------
   \ Description
@@ -77,16 +77,16 @@
   \ `udg[`;  rename `at-xy-display-0udg` to
   \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
   \ `udg-at-xy-display`. Compact the code, saving one block.
-  \ Improve `udg>` ẁith `get-udg`.
+  \ Improve `udg>` and other words ẁith `get-udg`.
 
 ( default-udg-chars udg> udg! udg: )
 
 need ?(
 
-[unneeded] default-udg-chars ?(  need rom-font need os-udg
+[unneeded] default-udg-chars ?(  need rom-font need get-udg
 
 rom-font 'A' 8 * +  \ from
-os-udg @ 144 8 * +  \ to
+get-udg @ 144 8 * +  \ to
 'U' 'A' - 1+ 8 *    \ count
 move ?)
 
@@ -149,7 +149,7 @@ move ?)
 
 ( udg[ )
 
-need os-udg  need binary
+need get-udg  need binary
 
 variable udg0  variable current-udg  variable current-scan
   \ XXX TODO -- rename (to prevent name clashes) and document
@@ -183,7 +183,7 @@ variable udg0  variable current-udg  variable current-scan
   \
   \ }doc
 
-: |  ( b -- )  os-udg @ current-udg @ 8 * current-scan @ + + c!
+: |  ( b -- )  get-udg current-udg @ 8 * current-scan @ + + c!
                1 current-udg +!  ;
 
   \ doc{
@@ -264,7 +264,7 @@ variable udg0  variable current-udg  variable current-scan
 
 ( udg-row[ )
 
-need os-udg  need evaluate  need binary
+need get-udg  need evaluate  need binary
 
 8 constant udg-height  8 constant udg-width
   \ height in bytes (scans)
@@ -292,11 +292,9 @@ variable udg-row-first-udg
 
 ( udg-row[ )
 
-[defined] first-udg ?\ #128 constant first-udg
-
 : >udg-scan  ( n -- a )
   udg-height * udg-current-scan +
-  udg-row-first-udg @ first-udg - udg-height * +  os-udg @ +  ;
+  udg-row-first-udg @ udg-height * +  get-udg +  ;
   \ Convert column _n_ of the current UDG row to address _a_
   \ of the scan of the current UDG.
 
@@ -342,7 +340,7 @@ variable udg-row-first-udg
   \
   \ Start a UDG row (a graphic formed by a row of UDG). Parse
   \ its scans, extract the individual UDG scans and store them
-  \ starting from UDG code _c_ (128..255).
+  \ starting from UDG code _c_ (0..255).
 
   \ Usage example:
   \
@@ -394,7 +392,7 @@ code make-block-chars  ( a -- )
   \ they are not included in the ROM font. Instead, their
   \ bitmaps are built on the fly by the BASIC ROM printing
   \ routine. In Solo Forth there's no such restriction, and
-  \ characters 128..255 can be redefined by the user.
+  \ characters 0..255 can be redefined by the user.
   \
   \ This word is written in Z80 and uses 18 B of code space,
   \ but the word `block-chars` is provided as an alternative.
@@ -459,8 +457,8 @@ code set-udg  ( a -- )
   \ set-udg  ( a -- )
   \
   \ Set address _a_ as the the current UDG set (characters
-  \ 128..255), by changing the system variable `os-udg`.  _a_
-  \ must be the bitmap address of character 128.
+  \ 0..255), by changing the system variable `os-udg`.  _a_
+  \ must be the bitmap address of character 0.
   \
   \ See: `os-udg`, `get-udg`, `set-font`.
   \
@@ -477,8 +475,8 @@ code get-udg  ( -- a )  2A c, os-udg , jppushhl, end-code ?)
   \ get-udg  ( -- a )
   \
   \ Get address _a_ of the current UDG set (characters
-  \ 128..255), by fetching the system variable `os-udg`.  _a_
-  \ is the bitmap address of character 128.
+  \ 0..255), by fetching the system variable `os-udg`.  _a_
+  \ is the bitmap address of character 0.
   \
   \ See: `os-udg`, `get-udg`.
   \
