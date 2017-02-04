@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-02
+:revdate: 2017-02-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -614,6 +614,10 @@ save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2017-02-04:
+
+Document the usage of UDG codes greater than 255. `emit-udg` admits them.
 
 .2017-02-02:
 
@@ -1352,12 +1356,28 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 // Printing {{{1
 == Printing ==
 
-.2017-01-18:
+.2017-01-18, 2017-02-04:
 
-Current versions of `type-right` and `type-center` use
-spaces, which create a banner of the current colors.
+Current versions of `type-right-field` and `type-center-field` use
+spaces. This creates a banner.
 
 Write alternative versions that move the cursor position instead.
+
+Choose shorter names:
+
+|===
+| Current name        | New name        | Common name with factored execution table
+
+| `type-left-field`   | `<type-field`   | `left-type type-field`
+| `type-center-field` | `<type-field>`  | `center-type type-field`
+| `type-right-field`  | `type-field>`   | `right-type type-field`
+|===
+
+Using the execution table as parameter has a problem:
+`type-left-field` does not use execution table. Besides, the execution
+tables will be different for the future set of words that type without
+padding spaces, so finally the number of different words will grow
+anyway.
 
 .2017-01-02:
 
