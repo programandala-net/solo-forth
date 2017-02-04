@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702041458
+  \ Last modified: 201702041710
 
   \ -----------------------------------------------------------
   \ Description
@@ -76,16 +76,18 @@
   \ `default-udg-chars`; remove `udg[` and rename `0udg[` to
   \ `udg[`;  rename `at-xy-display-0udg` to
   \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
-  \ `udg-at-xy-display`.
+  \ `udg-at-xy-display`. Compact the code, saving one block.
 
-( default-udg-chars )
+( default-udg-chars udg> udg! udg: )
 
-need rom-font need os-udg
+need ?(
+
+[unneeded] default-udg-chars ?(  need rom-font need os-udg
 
 rom-font 'A' 8 * +  \ from
 os-udg @ 144 8 * +  \ to
 'U' 'A' - 1+ 8 *    \ count
-move
+move ?)
 
   \ doc{
   \
@@ -99,10 +101,6 @@ move
   \ See: `block-chars`, `os-udg`, `set-udg`, `rom-font`.
   \
   \ }doc
-
-( udg> udg! udg: )
-
-need ?(
 
 [unneeded] udg> ?(  need 8* need os-udg
 : udg>  ( n -- a )  8* os-udg @ +  ; ?)
@@ -521,19 +519,13 @@ code get-font  ( -- a )  2A c, os-chars , jppushhl, end-code ?)
 
 \ (cursor-addr) cursor-addr \
 
-need ?(
+need ?(  [unneeded] (cursor-addr) ?(  need assembler
 
-[unneeded] (cursor-addr) ?(  need assembler
-
-create (cursor-addr)  ( -- a )
-
-  asm
+create (cursor-addr)  ( -- a )  asm
 
   b a ld, %11000 and#, #64 add#, a d ld, b a ld, %111 and#,
   rrca, rrca, rrca, a e ld, c a ld, e add, a e ld,
-  ret,
-
-  end-asm ?)
+  ret,  end-asm ?)
 
   \ ld a,b              ; y coordinate
   \ and %11000          ; mask segment: 0..2
@@ -606,24 +598,18 @@ code cursor-addr  ( x y -- a )
 
 \ (cursor-addr) cursor-addr \
 
-need ?(
+need ?(  [unneeded] (cursor-addr) ?(  need assembler
 
-[unneeded] (cursor-addr) ?(  need assembler
-
-create (cursor-addr)  ( -- a )
+create (cursor-addr)  ( -- a )  asm
 
   \ XXX TMP --
   \
   \ Alternative version that does not use the BC register and
   \ returns the address in HL.
 
-  asm
-
   d a ld, %11000 and#, #64 add#, a h ld, d a ld, %111 and#,
   rrca, rrca, rrca, a l ld, e a ld, l add, a l ld,
-  ret,
-
-  end-asm ?)
+  ret,  end-asm ?)
 
   \ ld a,d              ; y coordinate
   \ and %11000          ; mask segment: 0..2
@@ -691,28 +677,24 @@ code cursor-addr  ( x y -- a )
 
 \ (display-char-bitmap) \
 
-need ?(
-
-[unneeded] (display-char-bitmap) ?(
+need ?(  [unneeded] (display-char-bitmap) ?(
 
 need assembler  need (cursor-addr)
 
-create (display-char-bitmap)  ( -- a )
-
-  asm
+create (display-char-bitmap)  ( -- a )  asm
 
   \   ; Input:
   \   ;   HL = address of the character bitmap
   \   ;   B = y coordinate (0..23)
   \   ;   C = x coordinate (0..31)
 
-  (cursor-addr) call,
+  (cursor-addr) call, 8 b ld#,
 
   \   call cursor_addr ; DE = screen address
-
-  8 b ld#, rbegin  m a ld, d stap, h incp, d inc,  rstep  ret,
-
   \   ld b,8     ; pixels high
+
+  rbegin  m a ld, d stap, h incp, d inc,  rstep ret, end-asm ?)
+
   \ display_char_row:
   \   ld a,(hl)  ; row of graphic bitmap
   \   ld (de),a  ; transfer to screen
@@ -720,8 +702,6 @@ create (display-char-bitmap)  ( -- a )
   \   inc d      ; next pixel line
   \   djnz display_char_row
   \   ret
-
-  end-asm ?)
 
   \ doc{
   \
@@ -745,15 +725,11 @@ create (display-char-bitmap)  ( -- a )
   \ Alternative version that uses the version of
   \ `(cursor-addr)` that does not use the BC register.
 
-need ?(
-
-[unneeded] (display-char-bitmap) ?(
+need ?(  [unneeded] (display-char-bitmap) ?(
 
 need assembler  need (cursor-addr)
 
-create (display-char-bitmap)  ( -- a )
-
-  asm
+create (display-char-bitmap)  ( -- a )  asm
 
   \   ; Input:
   \   ;   HL = address of the character bitmap
