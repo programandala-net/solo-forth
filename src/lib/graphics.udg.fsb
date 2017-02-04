@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702041710
+  \ Last modified: 201702041717
 
   \ -----------------------------------------------------------
   \ Description
@@ -77,6 +77,7 @@
   \ `udg[`;  rename `at-xy-display-0udg` to
   \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
   \ `udg-at-xy-display`. Compact the code, saving one block.
+  \ Improve `udg>` ẁith `get-udg`.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -102,8 +103,8 @@ move ?)
   \
   \ }doc
 
-[unneeded] udg> ?(  need 8* need os-udg
-: udg>  ( n -- a )  8* os-udg @ +  ; ?)
+[unneeded] udg> ?(  need 8*  need get-udg
+: udg>  ( n -- a )  8* get-udg +  ; ?)
 
   \ doc{
   \
