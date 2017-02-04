@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702040018
+; Last modified: 201702041232
 
 include version.z80s
 
@@ -3700,6 +3700,33 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
+  _constant_header mode32_max_char,'mode32-max-char'
+
+; doc{
+;
+; mode32-max-char  ( -- ca )
+;
+; Address _ca_ holds the code of the highest character that
+; `mode32-emit` will print from the current font. Higher
+; character are printe from the UDG set.
+;
+; Its default value is 127. Therefore, characters 128..255 are
+; printed from the UDG set.
+;
+; When this variable is set to 255, all characters are printed
+; from the current font. This makes 8-bit character sets
+; possible.
+;
+; Note this is a character variable, which must be set with
+; `c!`.
+;
+; See: `mode32-emit`, `set-font`, `set-udg`.
+;
+; }doc
+
+  dw mode32_emit.max_char
+
+; ----------------------------------------------
   _code_header mode32_emit_,'mode32-emit'
 
 ; doc{
@@ -3708,28 +3735,25 @@ skip.end:
 ;
 ; Send character _c_ to the current channel.
 ;
-; This word is the default behaviour of `emit`: Characters
-; 0..127 are printed by the ROM routine; characters 128..255
-; are printed by `emit-udg`.
+; This word is the default behaviour of `emit`: By default,
+; characters 0..127 are printed from the current font and
+; characters 128..255 are printed from the current UDG set.
+; These ranges can be changed with `mode32-max-char`.
 ;
-; See: `emit`, `emit-udg`, `emit-0udg`.
+; See: `emit`, `emit-udg`, `emit-0udg`, `mode32-max-char`.
 ;
 ; }doc
 
-  pop hl
-  ; H = 0
-  ; L = character code
-  push bc
-
+  pop hl ; L = character
+  push bc ; save the Forth IP
+mode32_emit.max_char: equ $+1
+  ld a,127 ; max character printed from the font
+  cp l ; is character L in range?
+  jp m,emit_udg.l ; if not in range, print it from the UDG set
+  ld a,l ; A =character
   ld (iy+sys_scr_ct_offset),$FF ; no scroll message
-
-  ld a,l
-  cp 128 ; control or ASCII character?
-  jp nc,emit_udg.a ; if not, jump
-
-  ; Use the ROM routine to print a control or ASCII character
-  rst $10
-  pop bc
+  rst $10 ; print it through the ROM
+  pop bc ; restore the Forth IP
   _jp_next
 
 ; XXX TODO -- Add multitasker's `pause` when available.
@@ -3753,11 +3777,10 @@ skip.end:
 ;
 ; }doc
 
-  pop hl
-  push bc
-  ; H = 0
-  ld a,l
-
+  pop hl ; L = character
+  push bc ; save the Forth IP
+emit_udg.l
+  ld a,l ; A = character
 emit_udg.a
   ; A = UDG code (128..255)
   ; H = 0
@@ -3781,9 +3804,8 @@ emit_udg.a
 ;
 ; }doc
 
-  pop hl
-  push bc
-  ; H = 0
+  pop hl ; L = UDG (0..255)
+  push bc ; save the Forth IP
   ld a,l ; A = UDG (0..255)
 
 emit_0udg.a
@@ -3795,13 +3817,14 @@ emit_0udg.a
   add hl,hl
   add hl,hl
   add hl,de
-  ex de,hl ; DE = char address in the font
+  ex de,hl ; DE = character address in the UDG font
   ld bc,(sys_s_posn) ; cursor position
   ld hl,(sys_df_cc) ; current screen address
   call rom_pr_all
+  ; XXX TODO -- check if scroll is managed by that routine
   ld (sys_s_posn),bc
   ld (sys_df_cc),hl
-  pop bc
+  pop bc ; restore the Forth IP
   _jp_next
 
 ; ----------------------------------------------
