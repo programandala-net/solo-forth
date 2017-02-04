@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702041329
+; Last modified: 201702041522
 
 include version.z80s
 
@@ -7100,10 +7100,41 @@ push_ahl:
   jp push_a
 
 ; ----------------------------------------------
-  _colon_header bounds_,'bounds'
+  _code_header bounds_,'bounds'
 
-  dw over_,plus_,swap_
-  dw exit_
+                ;  T  B
+                ; -- --
+  pop hl        ; 10 01
+  pop de        ; 10 01
+  add hl,de     ; 11 01
+  push hl       ; 11 01
+  push de       ; 11 01
+  _jp_next      ; 08 02 = jp (ix)
+                ; -- --
+                ; 61 07
+
+; doc{
+;
+; bounds  ( ca len -- ca2 ca )
+;
+; Convert the string identifier _ca len_ to _ca2 ca_, being
+; _ca2_ the address after the last character of the string.
+; _ca2 ca_ are the parameters needed by `do` or `?do` to
+; traverse the string _ca len_.
+;
+; This word is written in Z80. Its equivalent definition in
+; Forth is the following:
+
+; ----
+; : bounds  ( ca len -- ca2 ca )
+;   over + swap  ;
+; ----
+
+; See: `do`, `?do`, `count`.
+;
+; Origin: Comus.
+;
+; }doc
 
 ; ----------------------------------------------
   _colon_header type_,'type'

@@ -1335,6 +1335,12 @@ block index line backslash notation unnecesary.
 
 .2017-02-04:
 
+Convert `ocr-chars` and `ocr-first` to character variables.
+
+Rewrite `udg>` in Z80.
+
+.2017-02-04:
+
 Make `cold` a code word in order to save space from basic init
 operations, e.g. modifying memory. Then continue execution into a
 colon word called `(cold)`, which finishes the high-level tasks.
