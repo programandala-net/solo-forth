@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702041522
+; Last modified: 201702041552
 
 include version.z80s
 
@@ -3700,7 +3700,7 @@ skip.end:
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header mode32_max_char,'mode32-max-char'
+  _constant_header mode32_max_char_,'mode32-max-char'
 
 ; doc{
 ;
@@ -7090,6 +7090,8 @@ do_does: equ do_colon
 ; Origin: fig-Forth, Forth-79 (REQUIRED WORD SET), Forth-83
 ; (REQUIRED WORD SET), Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; See: `farcount`.
+;
 ; }doc
 
   pop hl
@@ -9608,7 +9610,12 @@ cold.hash_words:
   dw default_header_ ; set the default behaviour of `header`
   dw decimal_
 
+  ; Set the screen to its default status:
+  _literal 127
+  dw mode32_max_char_,c_store_
   dw display_,default_font_,default_colors_
+
+  ; Print the greeting message:
 cold.home:
   dw home_ ; only the first time, to preserve the background
   dw lit_,page_ ; but next time use `page`...
