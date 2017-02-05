@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201612290139
+; Last modified: 201702052206
 
 ; ==============================================================
 ; Description
@@ -35,6 +35,10 @@
 
 ; 2016-12-29: Change definition names to lowercase, after the
 ; changes in the main kernel.
+;
+; 2017-02-05: Move `read-block` and `write-block` to the main
+; file of the kernel, because they are identical in G+DOS,
+; TR-DOS and +3DOS.
 
 ; ==============================================================
 
@@ -211,44 +215,6 @@ dosior_to_ior.hl:
   dw dup_,rec_slash_track_,mod_
   dw swap_,rec_slash_track_,slash_
   dw flip_,or_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header read_block_,'read-block'
-
-; doc{
-;
-; read-block  ( n -- )
-;
-; Read disk block _n_ to the buffer.
-;
-; ----
-; : read-block  ( n -- )
-;   read-mode transfer-block  ;
-; ----
-;
-; }doc
-
-  dw read_mode_,transfer_block_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header write_block_,'write-block'
-
-; doc{
-;
-; write-block  ( n -- )
-;
-; Write the buffer to disk block _n_.
-;
-; ----
-; : write-block  ( n -- )
-;   write-mode transfer-block  ;
-; ----
-;
-; }doc
-
-  dw write_mode_,transfer_block_
   dw exit_
 
 ; ----------------------------------------------
