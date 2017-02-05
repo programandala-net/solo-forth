@@ -12,6 +12,9 @@
 ;
 ; 2016-10-01: Complete the variables and entry points. Identify
 ; unknown variable 23817.
+;
+; 2017-02-05: Update name of variable 23766, which is used for
+; two different things. Add symbols for error codes.
 
 ; --------------------------------------------------------------
 ; TR-DOS entry points
@@ -81,7 +84,7 @@ trdos_variable.basic_program_autostart.high:              equ 23762
 trdos_variable.unknown_23763:                             equ 23763
 trdos_variable.move_command_deleted_files:                equ 23764
 trdos_variable.move_command_first_sector:                 equ 23765
-trdos_variable.move_command_first_track:                  equ 23766
+trdos_variable.bad_sectors_or_move_command_first_track:   equ 23766
 trdos_variable.start_file_parameter_or_number_of_tracks:  equ 23767
 trdos_variable.start_file_parameter.high:                 equ 23768
 trdos_variable.ch_add:                                    equ 23769
@@ -162,3 +165,21 @@ trdos_variable.r_channel.id:                              equ 23860
 trdos_variable.p_channel.output:                          equ 23861
 trdos_variable.p_channel.input:                           equ 23863
 trdos_variable.p_channel.id:                              equ 23865
+
+; --------------------------------------------------------------
+; TR-DOS error codes
+
+trdos_error.no_errors               equ 0
+trdos_error.no_files                equ 1
+trdos_error.file_exists             equ 2
+trdos_error.no_space                equ 3
+trdos_error.directory_full          equ 4
+trdos_error.record_number_overflow  equ 5
+trdos_error.no_disk                 equ 6
+trdos_error.disk_errors             equ 7
+trdos_error.syntax_errors           equ 8
+trdos_error.undefined_error         equ 9
+trdos_error.stream_already_opened   equ 10
+trdos_error.not_disk_file           equ 11
+trdos_error.stream_not_open         equ 12
+

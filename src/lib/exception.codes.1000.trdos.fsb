@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605181602
+  \ Last modified: 201702052015
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,8 +15,10 @@
   \ History
 
   \ 2016-08-04: Start.
+  \
+  \ 2017-02-05: Fix typo in error description.
 
-( TR-DOS error codes #-1000..#-1014 )
+( TR-DOS error codes #-1000..#-1012 )
 
   \ TR-DOS Error codes and messages.
   \
@@ -26,7 +28,7 @@
   \ #-1009 (not mentioned in the Beta 128 Disk manual) has been
   \ added.
 
-#-1000 \ TR-DOS: OK
+#-1000 \ TR-DOS: No errors
 #-1001 \ TR-DOS: No files
 #-1002 \ TR-DOS: File exists
 #-1003 \ TR-DOS: No space
@@ -35,9 +37,9 @@
 #-1006 \ TR-DOS: No disk
 #-1007 \ TR-DOS: Disk errors
 #-1008 \ TR-DOS: Syntax errors
-#-1009 \ TR-DOS: (Undefined error)
+#-1009 \ TR-DOS: Undefined error
 #-1010 \ TR-DOS: Stream already opened
-#-1011 \ TR-DOS: Not disk fle
+#-1011 \ TR-DOS: Not disk file
 #-1012 \ TR-DOS: Stream not open
 
   \ vim: filetype=soloforth

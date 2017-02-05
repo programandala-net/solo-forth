@@ -476,8 +476,23 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-02-05:
+
+Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
+their behaviour and names identical.
+
+.2017-02-05:
+
+`read-block` and `write-block` are identical in G+DOS, TR-DOS and
++3DOS. Move them to the main file of the kernel.
+
 // G+DOS {{{2
 === G+DOS ===
+
+.2017-02-05:
+
+Make `set-drive` return an ior, as the TR-DOS and +3DOS versions do.
+Search for similar cases.
 
 .2017-01-05:
 
@@ -521,16 +536,6 @@ is a problem of fsb2's fb2dsk.
 
 // TR-DOS {{{2
 === TR-DOS ===
-
-.2017-02-05:
-
-Rewrite a common routine to enter TR-DOS, preserving the Forth IP,
-modifying the DF_SZ system variable as needed by TR-DOS, and restoring
-IX at the end, if needed.
-
-.2016-08-11:
-
-Investigate if TR-DOS uses the IX register. If not, remove the restorings.
 
 // Errors {{{1
 == Errors ==

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702041552
+; Last modified: 201702051514
 
 include version.z80s
 
@@ -122,9 +122,7 @@ if defined trdos
  ; disk.  This buffer is allocated dynamically. Therefore, the
  ; default origin of the Forth system must be moved up.
 
-  ;origin:                         equ default_origin+$170
-  ;origin:                         equ default_origin+$470 ; XXX TMP --
-  origin:                         equ default_origin+$800 ; XXX TMP --
+  origin:                         equ default_origin+$170
 
 else
 
@@ -10392,9 +10390,9 @@ block.end:
 
 ; doc{
 ;
-; flip  ( n1 -- n2 )
+; flip  ( x1 -- x2 )
 ;
-; Exchange the low and high bytes within _n1_.
+; Exchange the low and high bytes within _x1_, resulting _x2_.
 ;
 ; Note: This word is called `><` or `cswap` in other Forth
 ; systems.
