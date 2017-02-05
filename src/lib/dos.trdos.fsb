@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608041546
+  \ Last modified: 201702052320
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -25,17 +25,58 @@
   \ -----------------------------------------------------------
   \ History
 
-  \ 2016-08-04: Start.
+  \ 2016-08-04: Start: `dos-drive`, `get-drive`, `set-drive`.
+  \
+  \ 2017-02-05: Start from scratch. Move `get-drive` from the
+  \ TR-DOS kernel and rewrite it in Z80. Move `cat` from the
+  \ TR-DOS kernel.
 
-( get-drive set-drive )
+( get-drive cat )
 
-23833 constant dos-drive
+[unneeded] get-drive
 
-: get-drive  ( -- b )  dos-drive c@  ;
-  \ Get the current drive _b_ (0..3).
+?\ code get-drive  ( -- b )  3A c, 5CF6 , pusha jp,  end-code
 
-: set-drive  ( b -- )  dos-drive c!  ;
-  \ Set the current drive _b_ (0..3).
+  \ Note: $5CF6 is the TR-DOS variable "current temporary
+  \ drive".
 
-  \ vim: filetype=soloforth
+  \ doc{
+  \
+  \ get-drive ( -- b )
+  \
+  \ Return the number _b_ of the current drive (0..3).
+  \
+  \ This word is written in Z80. Its equivalent code in Forth
+  \ is the following:
+
+  \ ----
+  \ : get-drive ( -- b )
+  \   $5FC6 c@  ;
+  \ ----
+
+  \ See: `set-drive`.
+  \
+  \ }doc
+
+need ?(
+
+[unneeded] cat ?(
+
+code cat  ( -- ior )
+  3E c, 07 c, 08 c, 3E c, 02 c, dos-routine call,
+  \ ld a,trdos_command.cat
+  \ ex af,af'
+  \ ld a,2    ; stream: screen
+  \ call dos
+  pushdosior jp, end-code ?)
+  \ jp push_dos_ior
+
+  \ doc{
+  \
+  \ cat  ( -- ior )
+  \
+  \ Print a catalog of the current disk.
+  \
+  \ }doc
+
 

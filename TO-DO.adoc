@@ -478,8 +478,44 @@ source.
 
 .2017-02-05:
 
+Unify the names of the DOS call routines in +3DOS and TR-DOS.
+
+.2017-02-05:
+
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
 their behaviour and names identical.
+
+.2017-02-05:
+
+Study a method to hide the different drive notations from the
+application, in order to make the application work on any DOS.
+
+|===
+| DOS                                       | First drive | Last drive
+
+| G+DOS                                     | 1           | 2
+| TR-DOS (in filenames and BASIC commands)  | 'A'         | 'D'
+| TR-DOS (in Z80 code)                      | 0           | 3
+| +3DOS                                     | 'A'         | 'P'
+|===
+
+First, use parallel ranges:
+
+|===
+| DOS    | Drives
+
+| G+DOS  | 0..1
+| TR-DOS | 0..3
+| +3DOS  | 0..15
+|===
+
+And second, define a wrapper word to precede the operations:
+
+----
+: drive  ( x -- x' )  1+  ;             \ G+DOS
+' noop alias drive  ( -- )  immediate   \ TR+DOS
+: drive  ( x -- x' )  'A' +  ;          \ G+DOS
+----
 
 // G+DOS {{{2
 === G+DOS ===
@@ -520,6 +556,16 @@ snapshop option of the Plus D, or save a snapshot from the emulator.
 
 Investigate how to use the free memory of the Plus D RAM.
 
+// TR-DOS {{{2
+=== TR-DOS ===
+
+.2017-02-05:
+
+Define the Z80-symbol constants in the assembler word list:
+`dos-routine`, etc.
+
+Choose names suitable also for +3DOS.
+
 // +3DOS {{{2
 === +3DOS ===
 
@@ -528,9 +574,6 @@ Investigate how to use the free memory of the Plus D RAM.
 `set-drive`, `open-disk` and `close-file` work on drive "a".  But when drive
 "b" is used, `close-file` returns ior -1006 (unrecognised disk format). This
 is a problem of fsb2's fb2dsk.
-
-// TR-DOS {{{2
-=== TR-DOS ===
 
 // Errors {{{1
 == Errors ==

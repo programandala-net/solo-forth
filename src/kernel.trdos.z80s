@@ -68,7 +68,7 @@ include inc/zx_spectrum_trdos.z80s
 testing_trdos: equ 1 ; flag
 
 ; ==============================================================
-; Routines
+; Routines to call TR-DOS
 
 ; ------------------------------
 dos:
@@ -79,7 +79,7 @@ dos:
   ;   A' =TR-DOS command code ($00..$18)
   ;   A, DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (1..12)
+  ;   A  = TR-DOS error code (0..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -103,7 +103,7 @@ dos.tos_ip:
   ;   (SP) = Forth IP
   ;   A, B DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (1..12)
+  ;   A  = TR-DOS error code (0..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -123,7 +123,7 @@ do_dos_command:
   ;   A' = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (1..12)
+  ;   A  = TR-DOS error code (0..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -143,7 +143,7 @@ do_dos_command.c:
   ;   C = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (1..12)
+  ;   A  = TR-DOS error code (0..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -164,10 +164,10 @@ push_dos_ior:
   ; `next` at the end.
 
   ; Input:
-  ;   A  = TR-DOS error code (1..12) or zero
+  ;   A  = TR-DOS error code (0..12) or zero
   ;   Z = no error?
   ; Output if error:
-  ;   TOS = TR-DOS error code in Forth range (-1012..-1001)
+  ;   TOS = TR-DOS error code in Forth range (-1012..-1000)
   ; Output if no error:
   ;   TOS = false (no error)
 
@@ -175,53 +175,27 @@ push_dos_ior:
   call dosior_to_ior
   _jp_pushhl
 
-; ------------------------------
-dosior_to_ior:
-
-  ; Input:
-  ;   A  = TR-DOS error code (1..12)
-  ; Output:
-  ;   HL = TR-DOS error in Forth range (-1012..-1001)
-
-  ld h,0
-  ld l,a
-
-; ------------------------------
-dosior_to_ior.hl:
-
-  ; Input:
-  ;   HL = original DOS error code (1..12)
-  ; Output:
-  ;   HL = DOS error code in Forth range (-1012..-1001)
-
-  ld de,1000
-  add hl,de
-  jp negate_hl ; then return
-
 ; ==============================================================
 ; Dictionary
 
 ; ----------------------------------------------
   _constant_header dos_routine_,'dos-routine'
 
-  ; XXX TODO -- Move to the library and to the assembler word
-  ; list.
+  ; XXX TODO -- Move to the assembler word list.
 
   dw dos
 
 ; ----------------------------------------------
   _constant_header tos_ip_dos_routine_,'tos-ip-dos-routine'
 
-  ; XXX TODO -- Move to the library and to the assembler word
-  ; list.
+  ; XXX TODO -- Move to the assembler word list.
 
   dw dos.tos_ip
 
 ; ----------------------------------------------
   _constant_header push_dos_ior_,'pushdosior'
 
-  ; XXX TODO -- Move to the library and to the assembler word
-  ; list.
+  ; XXX TODO -- Move to the assembler word list.
 
   dw push_dos_ior
 
@@ -232,8 +206,8 @@ dosior_to_ior.hl:
 ;
 ; dosior>ior  ( dosior -- ior )
 ;
-; Convert a TR-DOS ior to a Forth ior.
-
+; Convert a DOS ior to a Forth ior.
+;
 ; This word is written in Z80. Its equivalent code in Forth is
 ; the following:
 
@@ -248,8 +222,29 @@ dosior_to_ior.hl:
   call dosior_to_ior.hl
   _jp_pushhl
 
+dosior_to_ior:
+
+  ; Input:
+  ;   A  = TR-DOS error code (0..12)
+  ; Output:
+  ;   HL = TR-DOS error in Forth range (-1012..-1000)
+
+  ld h,0
+  ld l,a
+
+dosior_to_ior.hl:
+
+  ; Input:
+  ;   HL = original DOS error code (0..12)
+  ; Output:
+  ;   HL = DOS error code in Forth range (-1012..-1000)
+
+  ld de,1000
+  add hl,de
+  jp negate_hl ; then return
+
 ; ----------------------------------------------
-  _constant_header rec_slash_track_,'rec/track'
+  _c_constant_header rec_slash_track_,'rec/track'
 
 ; doc{
 ;
@@ -259,7 +254,7 @@ dosior_to_ior.hl:
 ;
 ; }doc
 
-  dw 16
+  db 16
   ; XXX TODO -- use a label and move to the kernel
 
 ; ----------------------------------------------
@@ -387,20 +382,6 @@ transfer_mode:
   dw exit_
 
 ; ----------------------------------------------
-;  _colon_header library_disk_,'library-disk'
-
-; doc{
-;
-; library-disk  ( c -- )
-;
-; Set disk drive _c_ ('a', 'b', 'c' or 'd') as the current library
-; disk.  By default it's disk drive 'b'.
-;
-; }doc
-
-  ; XXX TMP -- for debugging
-
-; ----------------------------------------------
   _code_header init_drive_,'init-drive'
 
 ; doc{
@@ -483,41 +464,6 @@ transfer_mode:
   dw c_store_
   dw init_drive_,question_dup_,question_exit_
   dw read_system_track_
-  dw exit_
-
-; ----------------------------------------------
-  _code_header cat_,'cat'
-
-; doc{
-;
-; cat  ( -- ior )
-;
-; Print a catalog of the current disk.
-;
-; }doc
-
-  ld a,trdos_command.cat
-  ex af,af'
-  ld a,2    ; stream: screen
-  call dos
-  jp push_dos_ior
-
-; ----------------------------------------------
-  _colon_header get_drive_,'get-drive'
-
-; doc{
-;
-; get-drive ( -- b )
-;
-; Return the number _b_ of the current drive (0..3).
-;
-; }doc
-
-  ; XXX TODO -- rewrite in Z80
-  ; XXX TODO -- move to the library
-
-  _literal trdos_variable.current_temporary_drive
-  dw c_fetch_
   dw exit_
 
 ; ==============================================================
