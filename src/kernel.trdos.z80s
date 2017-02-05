@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702050127
+; Last modified: 201702050213
 
 ; ==============================================================
 ; Description
@@ -65,36 +65,21 @@ include inc/zx_spectrum_trdos.z80s
 ; ------------------------------
 dos:
 
-if 0
+simple_dos_call: equ 0
 
-; XXX OLD
+if simple_dos_call
 
-; Input:
-;   (dos.command) = command
-; Output:
-;   A  = error code or zero
+  ; XXX OLD -- Simple version: The calling code must
+  ; preserve the Forth IP and the IX register.
 
-  push bc     ; save the Forth IP
-dos.command: equ $+1
-  ld c,0      ; DOS command (must be patched before calling)
-  ld (iy+sys_df_sz_offset),2 ; BASIC mode: 2 lines in the lower screen
-  call trdos_entry.execute_command_in_c
-  ld (iy+sys_df_sz_offset),0 ; Forth mode: no lines in the lower screen
-  ld a,c      ; error code
-  pop bc      ; restore the Forth IP
-  ld ix,next  ; restore IX
-  ret
+  ; Input:
+  ;   (dos_command) = command
+  ; Output:
+  ;   A  = error code or zero
+  ;   BC = error code or zero
+  ;   Z  = no error?
 
-else
-
-; Input:
-;   (dos.command) = command
-; Output:
-;   A  = error code or zero
-;   BC = error code or zero
-;   Z  = no error?
-
-dos.command: equ $+1
+dos_command: equ $+1
   ld c,0    ; DOS command (must be patched before calling)
   ld (iy+sys_df_sz_offset),2 ; BASIC mode: 2 lines in the lower screen
   call trdos_entry.execute_command_in_c
@@ -103,28 +88,32 @@ dos.command: equ $+1
   and a
   ret
 
-endif
+else
 
-; ------------------------------
-trdos.execute_command:
+  ; XXX NEW
 
-; Input:
-;   C = command
-; Output:
-;   A  = error code or zero
-;   BC = error code or zero
-;   Z  = no error?
+  ; Input:
+  ;   (dos_command) = command
+  ; Output:
+  ;   A  = error code or zero
+  ;   Z  = no error?
 
-  ; XXX NEW -- experimental
-  push af
-  xor a
-  ld (trdos_variable.error_code),a
-  pop af
-  ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
+  push bc     ; save the Forth IP
+
+dos.ip_already_pushed: ; alternative entry, when B is a parameter
+
+dos_command: equ $+1
+  ld c,0      ; DOS command (must be patched before calling)
+  ld (iy+sys_df_sz_offset),2 ; BASIC mode: 2 lines in the lower screen
   call trdos_entry.execute_command_in_c
-  ld a,c    ; error code
+  ld (iy+sys_df_sz_offset),0 ; Forth mode: no lines in the lower screen
+  ld a,c      ; error code
   and a
+  pop bc      ; restore the Forth IP
+  ld ix,next  ; restore IX
   ret
+
+endif
 
 ; ------------------------------
 back_from_dos:
@@ -285,8 +274,6 @@ _code_header dosior_to_ior_,'dosior>ior'
 
 ; }doc
 
-  ; XXX TODO restore the current drive
-
   dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
   dw sector_id_
   dw buffer_data_
@@ -355,23 +342,30 @@ transfer_sectors.command equ $+1
 ;
 ; }doc
 
-transfer_sectors.command equ $+1
+transfer_sectors_question.command equ $+1
   ld a,trdos_command.read_sectors
-  ld (dos.command),a
+  ld (dos_command),a
   pop hl
   ld a,l    ; number of sectors
   pop hl    ; address
   pop de    ; d = track 0..159; e = sector 0..15
   push bc   ; save the Forth IP
   ld b,a    ; number of sectors
+if simple_dos_call
   call dos
+else
+  call dos.ip_already_pushed
+endif
 
   ; XXX FIXME -- when there's no disk in the drive, the call never
   ; returns, and the system hangs.
   ; XXX TODO -- check error code returned in bc
 
+if simple_dos_call
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
+endif
+
   jp back_from_dos
 
 ; ----------------------------------------------
@@ -400,9 +394,15 @@ transfer_sectors.command equ $+1
 ; Note: this TR-DOS routine stores the drive number in
 ; `trdos_variable.current_temporary_drive`.
 ;
-; 2017-02-04: This word actually changes the current drive,
-; so it can be renamed to `set-drive`.
+; XXX TODO -- 2017-02-04: This word actually changes the
+; current drive, so it can be renamed to `set-drive`.
+;
+; XXX FIXME -- 2017-02-05: When there's no disk in the drive,
+; TR-DOS exits to BASIC with "R Tape Loading Error". The code
+; that causes this is already identified in the TR-DOS
+; disassembly.
 
+if 0
   pop hl
   ld a,l    ; drive number (0..3)
   push bc   ; save the Forth IP
@@ -410,40 +410,49 @@ transfer_sectors.command equ $+1
   call trdos.execute_command
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
+else
+  if simple_dos_call
+    ld a,trdos_command.init_drive
+    ld (dos_command),a
+    pop hl
+    ld a,l    ; drive number (0..3)
+    push bc
+    call dos
+    pop bc      ; restore the Forth IP
+    ld ix,next  ; restore IX
+  else
+    ld a,trdos_command.init_drive
+    ld (dos_command),a
+    pop hl
+    ld a,l    ; drive number (0..3)
+    call dos
+  endif
+endif
   jp back_from_dos
 
 ; ----------------------------------------------
-;  _code_header cat_,'cat'
+  _code_header cat1_,'cat1'
 
 ; doc{
 ;
-; cat  ( -- )
+; cat  ( -- ior )
 ;
 ; }doc
 
-  _code_header cat1_,'cat1'
-
   ld a,trdos_command.cat
-  ld (dos.command),a
+  ld (dos_command),a
   ld a,2    ; stream: screen
+if simple_dos_call
   push bc   ; save the Forth IP
   call dos
   pop bc      ; restore the Forth IP
   ld ix,next  ; restore IX
+else
+  call dos
+endif
   jp back_from_dos
 
-  _code_header cat3b_,'cat3b'
-
-  ld a,2      ; stream: screen
-  push bc     ; save the Forth IP
-  ld c,trdos_command.cat
-  ld (iy+sys_df_sz_offset),$02 ; BASIC mode: 2 lines in the lower screen
-  call trdos_entry.execute_command_in_c
-  ld (iy+sys_df_sz_offset),$00 ; Forth mode: no lines in the lower screen
-  pop bc      ; restore the Forth IP
-  ld ix,next  ; restore IX
-  _jp_next
-
+; ----------------------------------------------
   _code_header cat4b_,'cat4b'
 
   ; XXX REMARK -- 2017-02-05: It works, but then the screen is
@@ -467,6 +476,7 @@ transfer_sectors.command equ $+1
   ld ix,next  ; restore IX
   _jp_next
 
+; ----------------------------------------------
   _code_header cat4b2_,'cat4b2'
 
   ; XXX REMARK -- 2017-02-05: It works, but then the screen is
@@ -499,42 +509,6 @@ cat.command_line:
 ; set-drive  ( n -- )
 ;
 ; }doc
-
-  ; XXX FIXME -- hang:
-  ;_literal trdos_variable.current_temporary_drive
-  ;dw c_store_
-  ;dw exit_
-
-  ; XXX FIXME -- no effect:
-  ; _literal trdos_variable.default_drive
-  ; dw c_store_
-  ;dw exit_
-
-  ; XXX FIXME -- hang:
-  ; dw dup_,init_drive_
-  ; _literal trdos_variable.default_drive
-  ; dw c_store_
-  ;dw exit_
-
-  ; XXX TODO -- how to set the default drive?
-
-  ; XXX FIXME -- no effect:
-  ; dw dup_
-  ; _literal trdos_variable.default_drive
-  ; dw c_store_
-  ; _literal trdos_variable.current_temporary_drive
-  ; dw c_store_
-  ;dw exit_
-
-  ; XXX FIXME -- no effect:
-  ; dw dup_
-  ; _literal trdos_variable.default_drive
-  ; dw c_store_
-  ; dw dup_
-  ; _literal trdos_variable.current_temporary_drive
-  ; dw c_store_
-  ; dw init_drive_
-  ;dw exit_
 
   _code_header sd0_,'sd0'
 
@@ -957,5 +931,7 @@ name_and_type:
   defm "pr64.binC"
 
 endif
+
+endif ; defined trdos
 
 ; vim: filetype=z80:textwidth=64
