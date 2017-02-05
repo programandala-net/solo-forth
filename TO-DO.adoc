@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-04
+:revdate: 2017-02-05
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -522,10 +522,11 @@ is a problem of fsb2's fb2dsk.
 // TR-DOS {{{2
 === TR-DOS ===
 
-.2016-09-01:
+.2017-02-05:
 
-`read-mode 0 22528 1 transfer-sectors` works after but `read-mode 80 22528 1
-transfer-sectors` hangs. `0 set-drive` or `1 set-drive` makes no difference.
+Rewrite a common routine to enter TR-DOS, preserving the Forth IP,
+modifying the DF_SZ system variable as needed by TR-DOS, and restoring
+IX at the end, if needed.
 
 .2016-08-11:
 
