@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-05
+:revdate: 2017-02-06
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -476,6 +476,10 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-02-06:
+
+Rewrite `read-mode` and `write-mode` in Z80, to save some bytes.
+
 .2017-02-05:
 
 Unify the names of the DOS call routines in +3DOS and TR-DOS.
@@ -559,15 +563,21 @@ Investigate how to use the free memory of the Plus D RAM.
 // TR-DOS {{{2
 === TR-DOS ===
 
+.2017-02-06:
+
+Rewrite `read-mode` and `write-mode` in Z80, to save some bytes.
 .2017-02-05:
 
 Define the Z80-symbol constants in the assembler word list:
 `dos-routine`, etc.
 
-Choose names suitable also for +3DOS.
-
 // +3DOS {{{2
 === +3DOS ===
+
+.2017-02-06:
+
+Save `jp (ix)` using the code of `noop` instead. Add a label `call_ix`
+to make it clear.
 
 .2016-08-14:
 

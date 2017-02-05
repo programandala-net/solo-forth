@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702052320
+  \ Last modified: 201702060018
 
   \ -----------------------------------------------------------
   \ Description
@@ -79,4 +79,4 @@ code cat  ( -- ior )
   \
   \ }doc
 
-
+  \ vim: filetype=soloforth

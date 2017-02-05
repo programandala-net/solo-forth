@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702052355
+; Last modified: 201702060051
 
 ; ==============================================================
 ; Description
@@ -42,40 +42,14 @@
 ; the main file of the kernel.
 
 ; ==============================================================
-; Routines to call TR-DOS
+; Requirements
 
 if defined plus3dos
 
 include inc/zx_spectrum_plus3dos.z80s
 
-back_from_dos:
-  ; CY = no error?
-  ; A  = error code
-  jp c,false_   ; no error
-  call dosior_to_ior
-  ; HL = error code
-  _jp_pushhl
-
-if 0
-
-  ; XXX TODO -- move to the library
-
-get_current_drive:
-  ld a,$FF
-
-set_current_drive:
-  ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
-  ld ix,dos_set_drive
-  jr dos.preserve_ip
-
-get_current_user:
-  ld a,$FF
-
-set_current_user:
-  ; a = user ($00..$0F to set it; $FF to get it)
-  ld ix,dos_set_user
-
-endif
+; ==============================================================
+; Routines to call +3DOS
 
 ; ------------------------------
 ; DOS call
@@ -84,11 +58,13 @@ dos:
 
   ; Adapted from the ZX Spectrum +3 manual.
 
-  ; IX holds the address of the DOS routine to be run. All other registers are
-  ; passed intact to the DOS routine and are returned from it.
+  ; IX holds the address of the DOS routine to be run. All
+  ; other registers are passed intact to the DOS routine and
+  ; are returned from it.
 
-  ; Stack must be somewhere in central 32K (conforming to DOS requirements), so
-  ; saved AF and BC will not be switched out.
+  ; The stack must be somewhere in central 32K (conforming to
+  ; DOS requirements), so saved AF and BC will not be switched
+  ; out.
 
   push af
   push bc                  ; temp save registers while switching
@@ -126,15 +102,68 @@ dos.jp_ix:
 ; ------------------------------
 ; DOS call preserving the Forth IP
 
-; This is used when the BC register (the Forth IP) is not a parameter
-; of the DOS routine
-
 dos.preserve_ip:
-  ; IX = DOS routine to run
+
+  ; This is used when the BC register (the Forth IP) is not a
+  ; parameter of the DOS routine.
+
+  ; IX holds the address of the DOS routine to be run. All
+  ; other registers are passed intact to the DOS routine and
+  ; are returned from it.
+
+  ; The stack must be somewhere in central 32K (conforming to
+  ; DOS requirements), so saved AF and BC will not be switched
+  ; out.
+
   push bc
   call dos
   pop bc
   ret
+
+; ------------------------------
+; Push DOS ior and continue at `next`
+
+push_dos_ior:
+
+  ; This routine is entered with `jp`, not with `call`, because
+  ; it works as the end of a code Forth word: it jumps to
+  ; `next` at the end.
+
+  ; Input:
+  ;   CY = no error?
+  ;   A  = +3DOS error code (0..36)
+  ; Output if error:
+  ;   TOS = Forth exception code (-1036..-1000)
+  ; Output if no error:
+  ;   TOS = false
+
+  jp c,false_   ; no error
+  call dosior_to_ior
+  ; HL = error code
+  _jp_pushhl
+
+; ------------------------------
+
+if 0
+
+  ; XXX TODO -- move to the library
+
+get_current_drive:
+  ld a,$FF
+
+set_current_drive:
+  ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
+  ld ix,dos_set_drive
+  jr dos.preserve_ip
+
+get_current_user:
+  ld a,$FF
+
+set_current_user:
+  ; a = user ($00..$0F to set it; $FF to get it)
+  ld ix,dos_set_user
+
+endif
 
 ; ==============================================================
 ; Dictionary
@@ -164,9 +193,9 @@ _code_header dosior_to_ior_,'dosior>ior'
 dosior_to_ior:
 
   ; Input:
-  ;   A  = original DOS error code (0..36)
+  ;   A  = +3DOS error code (0..36)
   ; Output:
-  ;   HL = DOS error code in Forth range (-1036..-1000)
+  ;   HL = Forth exception code (-1036..-1000)
 
   ld h,0
   ld l,a
@@ -174,9 +203,9 @@ dosior_to_ior:
 dosior_to_ior.hl:
 
   ; Input:
-  ;   HL  = original DOS error code (0..36)
+  ;   HL  = +3DOS error code (0..36)
   ; Output:
-  ;   HL = DOS error code in Forth range (-1036..-1000)
+  ;   HL = Forth exception code (-1036..-1000)
 
   ld de,1000
   add hl,de
@@ -255,7 +284,7 @@ dosior_to_ior.hl:
 reposition_file.backup_ip equ $+1
   ld bc,0 ; restore Forth IP
   ld ix,next ; restore IX
-  jp back_from_dos
+  jp push_dos_ior
 
 ; ----------------------------------------------
   _code_header file_position_,'file-position'
@@ -277,7 +306,7 @@ reposition_file.backup_ip equ $+1
   push hl ; low part of _ud_
   push de ; high part of _ud_
   ld ix,next ; restore IX
-  jp back_from_dos
+  jp push_dos_ior
 
 ; ----------------------------------------------
   _code_header transfer_bytes_,'transfer-bytes'
@@ -305,7 +334,7 @@ transfer_bytes.command equ $+2
 transfer_bytes.backup_ip equ $+1
   ld bc,0 ; restore Forth IP
   ld ix,next ; restore IX
-  jp back_from_dos
+  jp push_dos_ior
 
 ; ----------------------------------------------
   _colon_header write_mode_,'write-mode'
@@ -406,7 +435,7 @@ dos_get_1346.ip_backup equ $+1
   call dos
   pop bc ; restore Forth IP
   ld ix,next ; restore IX
-  jp back_from_dos
+  jp push_dos_ior
 
 ; ----------------------------------------------
   _code_header open_disk_,'open-disk'
@@ -429,7 +458,7 @@ dos_get_1346.ip_backup equ $+1
   call dos
   pop bc ; restore Forth IP
   ld ix,next ; restore IX
-  jp back_from_dos
+  jp push_dos_ior
 
 ; ----------------------------------------------
   _variable_header library_file_,'library-file'
@@ -481,8 +510,10 @@ dos_get_1346.ip_backup equ $+1
   call dos.preserve_ip
   push ix
   ld ix,next ; restore IX
-  jp back_from_dos
+  jp push_dos_ior
 
-endif
+; ==============================================================
+
+endif ; defined plus3dos
 
 ; vim: filetype=z80:textwidth=64
