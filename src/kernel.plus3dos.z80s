@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702052206
+; Last modified: 201702052355
 
 ; ==============================================================
 ; Description
@@ -38,23 +38,22 @@
 ;
 ; 2017-02-05: Move `read-block` and `write-block` to the main
 ; file of the kernel, because they are identical in G+DOS,
-; TR-DOS and +3DOS.
+; TR-DOS and +3DOS. Improve the layout.  Move `rec/track` to
+; the main file of the kernel.
 
 ; ==============================================================
+; Routines to call TR-DOS
 
 if defined plus3dos
 
 include inc/zx_spectrum_plus3dos.z80s
 
 back_from_dos:
-  ; cy = no error?
-  ; a  = error code
+  ; CY = no error?
+  ; A  = error code
   jp c,false_   ; no error
-
-back_from_dos.error:
-  ; a = error code
   call dosior_to_ior
-  ; hl = error code
+  ; HL = error code
   _jp_pushhl
 
 if 0
@@ -148,6 +147,8 @@ _code_header dosior_to_ior_,'dosior>ior'
 ; dosior>ior  ( dosior -- ior )
 ;
 ; Convert a DOS ior to a Forth ior.
+;
+; This word is written in Z80. Its equivalent code in Forth is
 
 ; ----
 ; : dosior>ior  ( dosior -- ior )
@@ -161,35 +162,30 @@ _code_header dosior_to_ior_,'dosior>ior'
   _jp_pushhl
 
 dosior_to_ior:
-  ; Input:   a  = original DOS error code (0..36)
-  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
+
+  ; Input:
+  ;   A  = original DOS error code (0..36)
+  ; Output:
+  ;   HL = DOS error code in Forth range (-1036..-1000)
+
   ld h,0
   ld l,a
+
 dosior_to_ior.hl:
-  ; Input:   hl  = original DOS error code (0..36)
-  ; Output: hl = DOS error code converted to Forth range (-1000..-1036)
+
+  ; Input:
+  ;   HL  = original DOS error code (0..36)
+  ; Output:
+  ;   HL = DOS error code in Forth range (-1036..-1000)
+
   ld de,1000
   add hl,de
   jp negate_hl
 
 ; ----------------------------------------------
-  _constant_header rec_slash_track_,'rec/track'
-
-; doc{
-;
-; rec/track  ( -- n )
-;
-; Records (sectors) per disk track.
-;
-; }doc
-
-  dw 9
-  ; XXX TODO -- use a label and move to the kernel
-  ; XXX TODO -- not used in +3DOS
-
-; ----------------------------------------------
   _colon_header sector_id_,'sector-id'
 
+  ; XXX UNDER DEVELOPMENT -- not usable
   ; XXX TODO --
 
 ; doc{

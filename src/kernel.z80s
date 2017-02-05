@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702052208
+; Last modified: 201702060001
 
 include version.z80s
 
@@ -178,18 +178,21 @@ bytes_per_terminal_input_buffer:  equ $50
 bytes_per_buffer:                 equ $0400
 
 if defined gplusdos
+  sectors_per_track:                equ 10
   blocks_per_disk:                  equ 800
-  sectors_per_block:                equ $02
+  sectors_per_block:                equ 2
   max_drives:                       equ 2
 endif
 if defined plus3dos
+  sectors_per_track:                equ 9
   blocks_per_disk:                  equ 720
-  sectors_per_block:                equ $02
+  sectors_per_block:                equ 2
   max_drives:                       equ 2
 endif
 if defined trdos
+  sectors_per_track:                equ 16
   blocks_per_disk:                  equ 636 ; 640 minus 4 KiB of sector 0
-  sectors_per_block:                equ $04
+  sectors_per_block:                equ 4
   max_drives:                       equ 4
 endif
 
@@ -5476,10 +5479,46 @@ do_user:
 
   ; XXX TODO -- move to the library, it's calculated
 
+; doc{
+;
+; b/rec  ( -- n )
+;
+; Bytes per disk record (sector).
+;
+; See: `rec/blk`, `rec/track`.
+;
+; }doc
+
   dw bytes_per_sector
 
 ; ----------------------------------------------
+  _c_constant_header rec_slash_track_,'rec/track'
+
+; doc{
+;
+; rec/track  ( -- n )
+;
+; Records (sectors) per disk track.
+;
+; See: `b/rec`, `rec/blk`, `blk/disk`.
+;
+; }doc
+
+  db sectors_per_track
+
+; ----------------------------------------------
   _c_constant_header rec_slash_blk_,'rec/blk'
+
+; doc{
+;
+; rec/blk  ( -- n )
+;
+; Records (sectors) per block.
+;
+; See: `b/rec`, `rec/track`, `blk/disk`.
+;
+; }doc
+
 
   db sectors_per_block
 
@@ -5491,6 +5530,8 @@ do_user:
 ; blk/disk  ( -- n )
 ;
 ; A constant. Number of blocks per disk.
+;
+; See: `rec/blk`, `rec/track`.
 ;
 ; }doc
 
