@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702052208
+; Last modified: 201702052217
 
 ; ==============================================================
 ; Description
@@ -76,10 +76,10 @@ dos:
   ; Execute a TR-DOS command, preserving the Forth IP.
 
   ; Input:
-  ;   (dos_command) = TR-DOS command code ($00..$18)
+  ;   A' =TR-DOS command code ($00..$18)
   ;   A, DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
+  ;   A  = TR-DOS error code (1..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -99,11 +99,11 @@ dos.tos_ip:
   ; parameter for TR-DOS.
 
   ; Input:
-  ;   (dos_command) = TR-DOS command code ($00..$18)
+  ;   A' = TR-DOS command code ($00..$18)
   ;   (SP) = Forth IP
   ;   A, B DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
+  ;   A  = TR-DOS error code (1..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -120,21 +120,19 @@ do_dos_command:
   ; Execute a TR-DOS command.
 
   ; Input:
-  ;   (dos_command) = TR-DOS command code ($00..$18)
+  ;   A' = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
+  ;   A  = TR-DOS error code (1..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
   ;   Z  = set
 
-  ; XXX TODO -- Use the alternative A' register for the command
-  ; code.
 
-dos_command: equ $+1
-  ld c,0      ; DOS command (must be patched before calling)
-
+  ex af,af'
+  ld c,a
+  ex af,af'
 
 ; ------------------------------
 do_dos_command.c:
@@ -145,7 +143,7 @@ do_dos_command.c:
   ;   C = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
   ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
+  ;   A  = TR-DOS error code (1..12)
   ;   Z  = reset
   ; Output if no error:
   ;   A  = zero
@@ -166,10 +164,10 @@ push_dos_ior:
   ; `next` at the end.
 
   ; Input:
-  ;   A  = TR-DOS error code (0..12) or zero
+  ;   A  = TR-DOS error code (1..12) or zero
   ;   Z = no error?
   ; Output if error:
-  ;   TOS = TR-DOS error code in Forth range (-1012..-1000)
+  ;   TOS = TR-DOS error code in Forth range (-1012..-1001)
   ; Output if no error:
   ;   TOS = false (no error)
 
@@ -181,9 +179,9 @@ push_dos_ior:
 dosior_to_ior:
 
   ; Input:
-  ;   A  = TR-DOS error code (0..12)
+  ;   A  = TR-DOS error code (1..12)
   ; Output:
-  ;   HL = TR-DOS error in Forth range (-1012..-1000)
+  ;   HL = TR-DOS error in Forth range (-1012..-1001)
 
   ld h,0
   ld l,a
@@ -192,9 +190,9 @@ dosior_to_ior:
 dosior_to_ior.hl:
 
   ; Input:
-  ;   HL = original DOS error code (0..12)
+  ;   HL = original DOS error code (1..12)
   ; Output:
-  ;   HL = DOS error code in Forth range (-1012..-1000)
+  ;   HL = DOS error code in Forth range (-1012..-1001)
 
   ld de,1000
   add hl,de
@@ -218,14 +216,6 @@ dosior_to_ior.hl:
   ; list.
 
   dw dos.tos_ip
-
-; ----------------------------------------------
-  _constant_header dos_command_,'dos-command'
-
-  ; XXX TODO -- Move to the library and to the assembler word
-  ; list.
-
-  dw dos_command
 
 ; ----------------------------------------------
   _constant_header push_dos_ior_,'pushdosior'
@@ -327,7 +317,7 @@ dosior_to_ior.hl:
 
 transfer_sectors.command equ $+1
   ld a,trdos_command.read_sectors ; read or write command (patched)
-  ld (dos_command),a
+  ex af,af'
   pop hl
   ld a,l    ; number of sectors
   pop hl    ; address
@@ -434,7 +424,7 @@ transfer_mode:
 ; happens and _ior_ is zero).
 
   ld a,trdos_command.init_drive
-  ld (dos_command),a
+  ex af,af'
   pop hl
   ld a,l    ; drive number (0..3)
   call dos
@@ -471,7 +461,7 @@ transfer_mode:
   ; this and return an ior.
 
   ld a,trdos_command.read_system_track
-  ld (dos_command),a
+  ex af,af'
   call dos
   jp push_dos_ior
 
@@ -507,7 +497,7 @@ transfer_mode:
 ; }doc
 
   ld a,trdos_command.cat
-  ld (dos_command),a
+  ex af,af'
   ld a,2    ; stream: screen
   call dos
   jp push_dos_ior
