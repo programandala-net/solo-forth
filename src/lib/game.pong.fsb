@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702041359
+  \ Last modified: 201702051824
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,6 +63,10 @@
   \
   \ 2017-02-04: Adapt to 0-index-only UDG, after the changes in
   \ the kernel and the library.
+  \
+  \ 2017-02-05: Fix loading: a comment had removed a `-->`.
+  \ Add `pong-wordlist` for the words of the game. Show help
+  \ message at the end of the loading.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -72,10 +76,11 @@
   \ XXX TODO -- turnkey to tape
   \ XXX TODO -- change the rotation of the ball after bounce
   \ XXX TODO -- random bounce angle
+  \ XXX TODO slow the rackets
 
 ( pong )
 
-  \ XXX TODO slow the rackets
+only forth definitions
 
 need columns  need rows  need udg[  need rnd  need ??
 3 constant /kk  need pressed?
@@ -84,6 +89,8 @@ need cvariable  need 2/  need pixel-addr
 need g-emit-udg  need ctoggle  need g-at-xy
 
 need black  need white  need set-ink  need brighty  need papery
+
+wordlist dup constant pong-wordlist dup >order set-current
 
 8 cconstant ball-delay0
   \ Counter: Times the ball is not moved in the main loop.
@@ -279,12 +286,11 @@ variable ball-frame  first-ball-frame ball-frame !
 : change-x  ( -- )  %10 direction ctoggle  ;
   \ Change the x direction of the ball.
 
-: change-y  ( -- )  %01 direction ctoggle  ;
+: change-y  ( -- )  %01 direction ctoggle  ;  -->
   \ Change the y direction of the ball.
 
-: faster  ( -- )  exit  ;  \ XXX OLD  -->
-
-  \ speed @ 40 > if  speed @ dup 20 / - speed !   then  ;
+  \ : faster  ( -- )  exit  ;  \ XXX OLD
+  \   speed @ 40 > if  speed @ dup 20 / - speed !   then  ;
   \ If the delay is more than 40 ms, reduce it with 5%.
 
 ( pong )
@@ -507,9 +513,11 @@ variable racket2-delay
 
 : pong-test  ( -- )
   begin
-  last-ball-frame 1+ 128 + first-ball-frame 128 + ?do
-    home i emit  key drop
-  loop
+    last-ball-frame 1+ 128 + first-ball-frame 128 + ?do
+      home i emit  key drop
+    loop
   break-key? until  ;
+
+cr .( Type PONG to run)
 
   \ vim: filetype=soloforth
