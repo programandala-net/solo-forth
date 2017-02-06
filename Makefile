@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702022355
+# Last modified: 201702060101
 
 # ==============================================================
 # Author
@@ -81,6 +81,11 @@ MAKEFLAGS = --no-print-directory
 # ==============================================================
 # Main
 
+.PHONY: all
+all: gplusdos trdos plus3dos
+
+.PHONY: g
+g: gplusdos
 
 .PHONY: gplusdos
 gplusdos: \
@@ -91,6 +96,9 @@ gplusdos: \
 	disks/gplusdos/disk4_lib+rng_benchmarks.mgt \
 	disks/gplusdos/disk5_lib+flow_benchmarks.mgt \
 	disks/gplusdos/disk6_lib+tests.mgt
+
+.PHONY: p
+p: plus3dos
 
 .PHONY: plus3dos
 plus3dos: \
@@ -103,6 +111,9 @@ plus3dos: \
 	disks/plus3dos/disk5_lib+flow_benchmarks.dsk \
 	disks/plus3dos/disk6_lib+tests.dsk
 
+.PHONY: t
+t: trdos
+
 .PHONY: trdos
 trdos: \
 	disks/trdos/disk0.trd \
@@ -112,9 +123,6 @@ trdos: \
 	disks/trdos/disk4_lib+rng_benchmarks.trd \
 	disks/trdos/disk5_lib+flow_benchmarks.trd \
 	disks/trdos/disk6_lib+tests.trd
-
-.PHONY: all
-all: gplusdos trdos plus3dos
 
 .PHONY: disk9
 disk9: \
@@ -176,9 +184,10 @@ include Makefile.pasmo
 # created by the assembler. Then zmakebas converts the patched loader
 # into a TAP file, ready to be copied to a disk image.
 
-# XXX FIXME -- The rules of the BASIC loader run also when their
-# prerequisites are older than the target! This causes the main disk
-# image is rebuilt also when the sources have not changed.
+# XXX FIXME -- The recipe of the BASIC loader runs also when
+# the prerequisites are older than the target! This causes the
+# main disk image is rebuilt also when the sources have not
+# changed.
 
 # ----------------------------------------------
 # G+DOS loader
@@ -227,7 +236,7 @@ tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
 
 # XXX WARNING -- 2016-03-19. bin2code returns error 97 when one
 # of the filenames has a path, but it creates the tap file as
-# usual.  A hyphen at the beginning of the recipe line forces
+# usual.  A hyphen at the beginning of the target forces
 # `make` to ignore the error.
 
 tmp/pr64.tap: src/modules/pr64.z80s
@@ -678,5 +687,8 @@ oldbackup:
 #
 # 2016-12-31: Remove the details about the background images.
 #
-# 2017-02-02: Make `gplusdos` the default recipe.  Add Gforth
-# to the requirements.
+# 2017-02-02: Make `gplusdos` the default rule.  Add Gforth to
+# the requirements.
+#
+# 2017-02-02: Make `all` the default rule. Add a 1-letter
+# shortcut for every DOS.
