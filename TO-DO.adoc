@@ -524,6 +524,14 @@ And second, define a wrapper word to precede the operations:
 // G+DOS {{{2
 === G+DOS ===
 
+.2017-02-06:
+
+Make `2 set-drive throw` mandatory to start using library on the
+second drive, like in TR-DOS. Now it's the default.
+
+Anyway, the support for several library disks (planned for v0.14.0)
+will make things simpler.
+
 .2017-02-05:
 
 Make `set-drive` return an ior, as the TR-DOS and +3DOS versions do.
@@ -1166,22 +1174,22 @@ library modules.
 
 .2016-12-30, 2017-01-23:
 
-NOTE: Milestone 0.15.0
+NOTE: Milestone 0.14.0
 
 Make it possible to use any number of disks, in any order, for the library.
 This way, the main library could be only on its own disk, not copied to all the
 disks.
 
-`lib-order`, `set-lib-order`, `get-lib-order` are in the kernel, but
-not used yet.
-
 Alternative method, drafted on 2017-01-03:
 
 ----
 create block-drives  ( -- ca )
-  1 c, 2 c,
 
-: no-block-drive  ( -- )  block-drives drives erase  ;
+[undefined] g+dos   ?\ 1 c, 2 c,
+[undefined] tr-dos  ?\ 0 c, 1 c, 2 c, 3 c,
+[undefined] +3dos   ?\ 'A' c, 'B' c,
+
+: no-block-drive  ( -- )  block-drives max-drives erase  ;
 
 : >block-drive  ( n -- ca )  block-drives +  ;
 
@@ -1191,7 +1199,7 @@ create block-drives  ( -- ca )
 
 : >drive-block  ( u1 -- u2 )
   blk/disk /mod swap dup ?block-overflow
-  block-drive@ ?dup ?noblock set-drive  ;
+  block-drive@ ?dup ?noblock set-drive throw  ;
   \ Convert block _u1_ to its equivalent _u2_ in its corresponding
   \ disk drive, which is set the current drive.
 
