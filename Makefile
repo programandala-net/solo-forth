@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702060101
+# Last modified: 201702062330
 
 # ==============================================================
 # Author
@@ -239,15 +239,15 @@ tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
 # usual.  A hyphen at the beginning of the target forces
 # `make` to ignore the error.
 
-tmp/pr64.tap: src/modules/pr64.z80s
+tmp/pr64.tap: src/addons/pr64.z80s
 	pasmo --tap $< pr64.bin ; \
 	mv pr64.bin $@
 
-tmp/pr42.tap: bin/modules/pr42.bin
-	cd bin/modules/ ; \
+tmp/pr42.tap: bin/addons/pr42.bin
+	cd bin/addons/ ; \
 	bin2code pr42.bin pr42.tap 63610 ; \
 	cd - ; \
-	mv bin/modules/pr42.tap tmp/pr42.tap
+	mv bin/addons/pr42.tap tmp/pr42.tap
 
 # ==============================================================
 # Fonts
@@ -692,3 +692,8 @@ oldbackup:
 #
 # 2017-02-02: Make `all` the default rule. Add a 1-letter
 # shortcut for every DOS.
+#
+# 2017-02-06: Update: the <src/modules> directory has been
+# renamed to <src/addons>, and <bin/modules> to <bin/addons>.
+# The reason is to avoid confusion with library modules, in the
+# documentation.

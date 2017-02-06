@@ -27,7 +27,7 @@ Space is precious in blocks.
 
 .2016-11-26, 2016-12-30..2017-01-02:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Rewrite all small code words in Z80 opcodes, without assembler.  Example:
 `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
@@ -482,12 +482,8 @@ Rewrite `read-mode` and `write-mode` in Z80, to save some bytes.
 
 .2017-02-05:
 
-Unify the names of the DOS call routines in +3DOS and TR-DOS.
-
-.2017-02-05:
-
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
-their behaviour and names identical.
+their behaviour and names identical. Write the +3DOS version too.
 
 .2017-02-05:
 
@@ -502,6 +498,8 @@ application, in order to make the application work on any DOS.
 | TR-DOS (in Z80 code)                      | 0           | 3
 | +3DOS                                     | 'A'         | 'P'
 |===
+
+Possible solution:
 
 First, use parallel ranges:
 
@@ -520,6 +518,10 @@ And second, define a wrapper word to precede the operations:
 ' noop alias drive  ( -- )  immediate   \ TR+DOS
 : drive  ( x -- x' )  'A' +  ;          \ G+DOS
 ----
+
+But the drive identifiers used in filenames will remain different.
+
+All this can be solved by the application, if needed.
 
 // G+DOS {{{2
 === G+DOS ===
@@ -581,6 +583,11 @@ Define the Z80-symbol constants in the assembler word list:
 
 // +3DOS {{{2
 === +3DOS ===
+
+.2017-02-06:
+
+Replace `transfer-bytes` with `transfer-sector`. Use the DOS calls DD
+READ SECTOR and DD WRITE SECTOR.
 
 .2017-02-06:
 
@@ -677,6 +684,25 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-02-06:
+
+Alternative method to set paper colors:
+
+----
+: on-blue  ( b1 -- b2 )  blue papery +  ;
+: on-red   ( b1 -- b2 )  red papery +  ;
+' noop alias on-black immediate
+----
+
+The names were borrowed from Pygmy Forth.
+
+Better in Z80:
+
+----
+code on-blue  ( b1 -- b2 )
+  h pop, h a ld, blue papery add#, pusha jp,  end-code
+----
+
 .2017-02-04:
 
 Document the usage of UDG codes greater than 255. `emit-udg` admits them.
@@ -697,13 +723,13 @@ Finish `rdraw`.
 
 .2017-01-24:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Write `g-xy-attr@  ( x y -- b )` and `g-xy-attr!  ( b x y -- )`.
 
 .2017-01-22:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Write `xy-attr@  ( x y -- b )` and `xy-attr!  ( b x y -- )`.
 
@@ -815,7 +841,7 @@ Rewrite `du<` in Z80.
 
 .2016-12-30:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Remove module <math.number.prefix.fsb>.
 
@@ -1058,6 +1084,12 @@ Remove `get-default-bank` and `set-default-bank`.
 // Misc {{{1
 == Misc ==
 
+.2017-02-06:
+
+NOTE: Milestone 0.14.0
+
+Adapt the zx7 decompressor (written by Einar Saukas).
+
 .2016-05-18:
 
 Factor `new-needed-word  2dup undefined?`.
@@ -1164,13 +1196,6 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 Words that could be moved to the library, if the `need` tool didn't use them:
 `2over`, `line>string`.
-
-.2017-01-02:
-
-NOTE: Milestone 0.13.0
-
-Rename <modules> directories to <addons>, to avoid confusion with
-library modules.
 
 .2016-12-30, 2017-01-23:
 
@@ -1322,7 +1347,7 @@ for the end user.
 
 .2016-12-07:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Combine `begin-module` and `package`.
 
@@ -1407,7 +1432,7 @@ Forth-2012 FILE word set.
 
 .2015-10-15:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Adapt from Gforth: `noname`, analogous to `nextname`.
 
@@ -1445,8 +1470,8 @@ anyway.
 
 .2017-01-02:
 
-Adapt the banked screen mode, which uses the unfinsihed implementation
-of a code bank for addons, to far memory or remove it.
+Adapt the banked screen mode (which uses the unfinsihed implementation
+of a code bank for addons) to far memory or remove it.
 
 .2016-12-30:
 
@@ -1467,7 +1492,7 @@ them for double numbers.
 
 .2016-11-26:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Make `type-ascii` configurable: store the common char in a character variable.
 In fact, it would be enough to write `emit-ascii`, because `emit` is deferred,
@@ -1489,7 +1514,7 @@ modes. The behaviour of `mode64` seems more logical.
 
 .2016-10-28:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Simplify `u.r`.
 
@@ -1648,13 +1673,13 @@ Study the editor of Pygmy Forth.
 
 Improve `see`: decode `does>`.
 
-.2016-11-26:
+.2016-11-26, 2017-02-06:
 
-Rename `.unused` to `.free`.
+Rename `.unused` to `.free` (if other info is added).
 
 .2016-11-25:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 Write `ed:` after TurboForth.
 
@@ -1672,7 +1697,7 @@ but its place is used by `lastblk`, which does not need initialization).
 
 .2015-09-13:
 
-NOTE: Milestone: 0.13.0
+NOTE: Milestone: 0.14.0
 
 `rp` should be a user variable.
 

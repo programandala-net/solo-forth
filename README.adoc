@@ -73,20 +73,20 @@ and flash cards, beside many other new features.
 ├── backgrounds       background images
 ├── bin               binary files needed to build disk 0
 │   ├── fonts         fonts for the supported screen modes
-│   ├── modules       special modules, not integrated in the library yet
+│   ├── addons        addons, not integrated in the library yet
 │   └── sys           DOSs
 ├── disks             disk images ready to use
 │   ├── gplusdos      for G+DOS
 │   ├── plus3dos      for +3DOS
 │   └── trdos         for TR-DOS
 ├── doc               some initial documentation
-├── make              files used by make to build the system
+├── make              files used by `make` to build the system
 ├── src               sources
-│   ├── inc           included Z80 symbols
+│   ├── inc           Z80 symbols files
 │   ├── lib           library
 │   ├── loader        BASIC loader for disk 0
-│   └── modules       special modules, not integrated in the library yet
-├── tmp               temporary files used by make during the building
+│   └── addons        addons, not integrated in the library yet
+├── tmp               temporary files created by `make`
 ├── tools             development and user tools
 └── vim               Vim files
     ├── ftdetect      file type detection
