@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702060125
+; Last modified: 201702062312
 
 include version.z80s
 
@@ -1210,8 +1210,10 @@ if 1 ; abase
 ;
 ; abase  ( -- a )
 ;
-; A variable used to save the current value of `base` in
-; assembler definitions.
+; A variable used by `asm` to save the current value of `base`
+; in assembler definitions.
+;
+; See: `asm`.
 ;
 ; }doc
 
@@ -1227,6 +1229,8 @@ endif
 ; end-asm  ( -- )
 ;
 ; Exit the assembler mode.
+;
+; See: `asm`, `end-code`.
 ;
 ; }doc
 
@@ -1814,6 +1818,8 @@ endif
 ;
 ; Enter the assembler mode.
 ;
+; See: `end-asm`, `code`.
+;
 ; }doc
 
   ; Credit:
@@ -1844,6 +1850,8 @@ endif
 ;   get-order over swap 1+ set-order  ;
 ; ----
 ;
+; See: `previous`, `only`, `order`, `>order`.
+;
 ; }doc
 
   dw get_order_,over_,swap_,one_plus_,set_order_
@@ -1871,6 +1879,8 @@ endif
 ; : only  ( -- )
 ;   -1 set-order  ;
 ; ----
+;
+; See: `also`, previous`, `order`.
 ;
 ; }doc
 
