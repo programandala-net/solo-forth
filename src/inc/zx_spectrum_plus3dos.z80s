@@ -2,17 +2,23 @@
 
 ; By Marcos Cruz (programandala.net)
 
-; This file is Part 27 of Chapter 8 of the ZX Spectrum +3 manual,
-; published in HTML format in <http://worldofspectrum.org>.
-; I simply converted it be usable as Z80 source.
+; Credit:
+;
+; This file is Part 27 of Chapter 8 of the ZX Spectrum +3
+; manual, transcribed by Russell Marks et al. and published in
+; HTML format in <http://worldofspectrum.org>.  I simply
+; converted it to be usable as Z80 source.
 
 ; --------------------------------------------------------------
 ; Change history
 
 ; 2015-01-12: Start.
 ;
-; 2015-07-13: Added labels for DOS GET 1346 and DOS SET 1346. Fixed typos (also
-; in the original HTML document).
+; 2015-07-13: Add labels for DOS GET 1346 and DOS SET 1346.
+; Fix typos (also in the original HTML document).
+;
+; 2017-02-06: Add all symbols for low-level "DD" entry points.
+; Improve the credit note.
 
 ; --------------------------------------------------------------
 
@@ -1807,10 +1813,9 @@ dos_map_b: equ 0x0154 ; (340)
 ; All routines assume that interrupts are enabled on entry, and will
 ; still be enabled on exit.
 ;
-;
-; DD INTERFACE
-; 0157h (343)
-;
+
+dd_interface: equ 0x0157 ; (343)
+
 ; Is the floppy disk drive interface present? (This information is also
 ; held by BASIC in bit 4 of the FLAGS3 system variable.)
 ;
@@ -1826,10 +1831,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 A BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD INIT
-; 015Ah (346)
-;
+
+dd_init: equ 0x015a ; (346)
+
 ; Initialise the disk driver.
 ;
 ; ENTRY CONDITIONS
@@ -1840,10 +1844,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD SETUP
-; 015Dh (349)
-;
+
+dd_setup: equ 0x015d ; (349)
+
 ; Set up disk parameters.
 ;
 ; Send a specify command.
@@ -1866,10 +1869,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD SET RETRY
-; 0160h (352)
-;
+
+dd_set_retry: equ 0x0160 ; (352)
+
 ; Set the try and retry count. (A value of 1 will try the operation
 ; once, i.e. no retry.)
 ;
@@ -1881,10 +1883,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD READ SECTOR
-; 0163h (355)
-;
+
+dd_read_sector: equ 0x0163 ; (355)
+
 ; Read a sector.
 ;
 ; ENTRY CONDITIONS
@@ -1906,10 +1907,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD WRITE SECTOR
-; 0166h (358)
-;
+
+dd_write_sector: equ 0x0166 ; (358)
+
 ; Write a sector.
 ;
 ; ENTRY CONDITIONS
@@ -1931,10 +1931,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD CHECK SECTOR
-; 0169h (361)
-;
+
+dd_check_sector: equ 0x0169 ; (361)
+
 ; Check a sector. (Uses the uPD765A scan equal command.)
 ;
 ; Checks that the sector on disk is the same as the copy in memory.
@@ -1966,10 +1965,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD FORMAT
-; 016Ch (364)
-;
+
+dd_format: equ 0x016c ; (364)
+
 ; Format a track. (Uses the uPD765A format track command.)
 ;
 ; Buffer contains 4 bytes for each sector as follows:
@@ -1999,10 +1997,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD READ ID
-; 016Fh (367)
-;
+
+dd_read_id: equ 0x016f ; (367)
+
 ; Read a sector identifier.
 ;
 ; ENTRY CONDITIONS
@@ -2022,10 +2019,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD TEST UNSUITABLE
-; 0172h (370)
-;
+
+dd_test_unsuitable: equ 0x0172 ; (370)
+
 ; Check that disk is suitable to write to.
 ;
 ; A single track disk will not work in a double track drive, and vice
@@ -2046,10 +2042,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD LOGIN
-; 0175h (373)
-;
+
+dd_login: equ 0x0175 ; (373)
+
 ; Log in a new disk.
 ;
 ; Initialise the XDPB.
@@ -2074,10 +2069,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD SEL FORMAT
-; 0178h (376)
-;
+
+dd_sel_format: equ 0x0178 ; (376)
+
 ; Initialise an XDPB for a standard format.
 ;
 ; This routine does not affect or consider the freeze flag.
@@ -2105,10 +2099,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD ASK 1
-; 017Bh (379)
-;
+
+dd_ask_1: equ 0x017b ; (379)
+
 ; Check to see if unit 1 is present. (BASIC holds this information in
 ; bit 5 of the FLAGS3 system variable.)
 ;
@@ -2138,10 +2131,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 A BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD DRIVE STATUS
-; 017Eh (382)
-;
+
+dd_drive_status: equ 0x017e ; (382)
+
 ; Issue a sense drive status command.
 ;
 ; ENTRY CONDITIONS
@@ -2156,10 +2148,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 F BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD EQUIPMENT
-; 0181h (385)
-;
+
+dd_equipment: equ 0x0181 ; (385)
+
 ; Ask what type of drive this is (i.e. single/double track,
 ; single/double sided).
 ;
@@ -2187,10 +2178,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 F BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD ENCODE
-; 0184h (388)
-;
+
+dd_encode: equ 0x0184 ; (388)
+
 ; Set the copy protection ENCODE subroutine.
 ;
 ; Copy protected disks have some of their track and sector numbers
@@ -2240,9 +2230,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                         AF corrupt
 ;                         All other registers preserved
 ;
-;
-; DD L XDPB
-; 0187h (391)
+
+dd_l_xdpb: equ 0x0187 ; (391)
+
 ; Initialise an XDPB for a given format.
 ;
 ; This routine does not affect or consider the freeze flag.
@@ -2265,10 +2255,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L DPB
-; 018Ah (394)
-;
+
+dd_l_dpb: equ 0x018a ; (394)
+
 ; Initialise a DPB for a given format.
 ;
 ; This routine does not affect or consider the freeze flag.
@@ -2291,10 +2280,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L SEEK
-; 018Dh (397)
-;
+
+dd_l_seek: equ 0x018d ; (397)
+
 ; Seek to required track.
 ;
 ; Retry if fails.
@@ -2318,10 +2306,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L READ
-; 0190h (400)
-;
+
+dd_l_read: equ 0x0190 ; (400)
+
 ; Low level uPD765A read command.
 ;
 ; Read data.
@@ -2355,10 +2342,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L WRITE
-; 0193h (403)
-;
+
+dd_l_write: equ 0x0193 ; (403)
+
 ; Low level uPD765A write command.
 ;
 ; Write data.
@@ -2398,10 +2384,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L ON MOTOR
-; 0196h (406)
-;
+
+dd_l_on_motor: equ 0x0196 ; (406)
+
 ; Turn on the motor.
 ;
 ; Wait for the motor on time as set by DD SETUP.
@@ -2414,10 +2399,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L T OFF MOTOR
-; 0199h (409)
-;
+
+dd_l_t_off_motor: equ 0x0199 ; (409)
+
 ; Start the motor off time-out.
 ;
 ; ENTRY CONDITIONS
@@ -2428,10 +2412,9 @@ dos_map_b: equ 0x0154 ; (340)
 ;                 AF BC DE HL IX corrupt
 ;                 All other registers preserved
 ;
-;
-; DD L OFF MOTOR
-; 019Ch (412)
-;
+
+dd_l_off_motor: equ 0x019c ; (412)
+
 ; Turn off the motor.
 ;
 ; ENTRY CONDITIONS
