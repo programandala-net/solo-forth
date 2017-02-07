@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702080010
+  \ Last modified: 201702080045
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,7 +65,8 @@
   \ 2017-02-07: Use `cconstant` for byte constants
   \
   \ 2017-02-08: Update and complete the paging tests `g.100h`
-  \ and `g.100i`.
+  \ and `g.100i`. Make hook codes individually accessible to
+  \ `need`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -161,7 +162,45 @@ variable file-address  \ copy of `hd0d` used by `(<file)`
 
 : --file-types--  ;
 
-( --directory-descriptions-- )
+( hxfer ofsm hofile sbyte hsvbk cfsm pntp cops hgfile lbyte )
+
+  \ Hook codes
+
+[unneeded] hxfer   ?\ $33 cconstant hxfer
+[unneeded] ofsm    ?\ $34 cconstant ofsm
+[unneeded] hofile  ?\ $35 cconstant hofile
+[unneeded] sbyte   ?\ $36 cconstant sbyte
+[unneeded] hsvbk   ?\ $37 cconstant hsvbk
+[unneeded] cfsm    ?\ $38 cconstant cfsm
+[unneeded] pntp    ?\ $39 cconstant pntp
+[unneeded] cops    ?\ $3A cconstant cops
+[unneeded] hgfile  ?\ $3B cconstant hgfile
+[unneeded] lbyte   ?\ $3C cconstant lbyte
+
+( hldbk wsad sad rest heraz cops2 pcat hrsad hwsad otfoc )
+
+  \ Hook codes (continued)
+
+[unneeded] hldbk   ?\ $3D cconstant hldbk
+[unneeded] wsad    ?\ $3E cconstant wsad
+[unneeded] sad     ?\ $3F cconstant sad
+[unneeded] rest    ?\ $40 cconstant rest
+[unneeded] heraz   ?\ $41 cconstant heraz
+[unneeded] cops2   ?\ $42 cconstant cops2
+[unneeded] pcat    ?\ $43 cconstant pcat
+[unneeded] hrsad   ?\ $44 cconstant hrsad
+[unneeded] hwsad   ?\ $45 cconstant hwsad
+[unneeded] otfoc   ?\ $46 cconstant otfoc
+
+( patch --directory-descriptions-- )
+
+  \ Hook codes (continued)
+
+[unneeded] patch   ?\ $47 cconstant patch
+
+  \ Directory descriptions
+
+need ?(  [unneeded] --directory-descriptions ?(
 
 01 cconstant basic-file-dir    02 cconstant data-array-dir
 03 cconstant string-array-dir  04 cconstant code-file-dir
@@ -170,19 +209,7 @@ variable file-address  \ copy of `hd0d` used by `(<file)`
 09 cconstant snapshot-128k-dir 10 cconstant opentype-file-dir
 11 cconstant execute-file-dir
 
-: --directory-descriptions--  ;
-
-( --hook-codes-- )
-
-$33 cconstant hxfer  $34 cconstant ofsm  $35 cconstant hofile
-$36 cconstant sbyte  $37 cconstant hsvbk $38 cconstant cfsm
-$39 cconstant pntp   $3A cconstant cops  $3B cconstant hgfile
-$3C cconstant lbyte  $3D cconstant hldbk $3E cconstant wsad
-$3F cconstant sad    $40 cconstant rest  $41 cconstant heraz
-$42 cconstant cops2  $43 cconstant pcat  $44 cconstant hrsad
-$45 cconstant hwsad  $46 cconstant otfoc $47 cconstant patch
-
-: --hook-codes--  ;
+: --directory-descriptions--  ; ?)
 
 ( get-drive set-drive )
 
@@ -227,7 +254,7 @@ code set-drive  ( n -- )
 
 ( delete-file )
 
-need assembler  need ufia  need --hook-codes--
+need assembler  need ufia  need heraz
 need filename>ufia
 
 code (delete-file)  ( -- ior )
@@ -275,7 +302,8 @@ need ufia  need get-drive
 
 ( >file )
 
-need assembler  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need >ufia
+need hofile  need hsvbk  need cfsm
 
 code (>file)  ( -- ior )
 
@@ -299,7 +327,8 @@ code (>file)  ( -- ior )
 
 ( <file )
 
-need assembler  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need >ufia
+need hgfile  need lbyte  need hldbk
 
 code (<file)  ( -- ior )
 
@@ -342,7 +371,8 @@ code (<file)  ( -- ior )
   \ XXX UNDER DEVELOPMENT
   \ Experimental code to read lines from a file
 
-need assembler  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need >ufia
+need hgfile  need lbyte
 
 code (file>screen)  ( -- dosior )
 
@@ -383,8 +413,7 @@ code (file>screen)  ( -- dosior )
 
   \ XXX TMP -- for debugging
 
-need assembler
-need plusd-in,  need plusd-out,  need --hook-codes--
+need assembler  need plusd-in,  need plusd-out,  need patch
 
 code g.100h  ( u -- )
   h pop, b push,
@@ -402,7 +431,8 @@ code g.100i  ( u -- )
 
 ( <file-as-is )
 
-need assembler  need ufia  need --hook-codes--  need >ufia
+need assembler  need ufia  need >ufia
+need hgfile  need lbyte  need hldbk
 
 code (<file-as-is)  ( -- ior )
 
@@ -434,7 +464,7 @@ code (<file-as-is)  ( -- ior )
 
 ( file? )
 
-need assembler need ufia  need filename!  need --hook-codes--
+need assembler need ufia  need filename!  need patch
 
 code (file?)  ( -- f )
   b push,  \ save the Forth IP
@@ -454,8 +484,7 @@ code (file?)  ( -- f )
 
 ( cat acat wcat wacat )
 
-need assembler  need ufia  need --hook-codes--
-need filename>ufia
+need assembler  need ufia  need filename>ufia  need patch
 
   \ G+DOS addresses (in its own paged memory).
 [defined] ufia1  ?\ $3E01 constant ufia1
@@ -511,7 +540,7 @@ code (cat)  ( n -- )
 
 ( @dos )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 code @dos  ( a -- n )
   h pop,
@@ -528,7 +557,7 @@ code @dos  ( a -- n )
 
 ( c@dos )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 code c@dos  ( a -- b )
   h pop,
@@ -545,7 +574,7 @@ code c@dos  ( a -- b )
 
 ( c!dos )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 code c!dos  ( b a -- )
   h pop, d pop,
@@ -561,7 +590,7 @@ code c!dos  ( b a -- )
 
 ( !dos )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 code !dos  ( n a -- )
   h pop, d pop,
@@ -577,7 +606,7 @@ code !dos  ( n a -- )
 
 ( @dosvar )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -596,7 +625,7 @@ code @dosvar  ( n1 -- n2 )
 
 ( c@dosvar )
 
-need assembler  need --hook-codes--
+need assembler  patch
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -617,7 +646,7 @@ code c@dosvar  ( n -- b )
 
 ( !dosvar )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
@@ -637,7 +666,7 @@ code !dosvar  ( n1 n2 -- )
 
 ( c!dosvar )
 
-need assembler  need --hook-codes--
+need assembler  need patch
 
 [defined] dos-vars ?\ 8192 constant dos-vars
   \ Address of the G+DOS vars in its own memory.
