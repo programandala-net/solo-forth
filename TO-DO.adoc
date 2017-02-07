@@ -476,10 +476,6 @@ source.
 // DOS {{{1
 == DOS ==
 
-.2017-02-06:
-
-Rewrite `read-mode` and `write-mode` in Z80, to save some bytes.
-
 .2017-02-05:
 
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
@@ -573,13 +569,11 @@ Investigate how to use the free memory of the Plus D RAM.
 // TR-DOS {{{2
 === TR-DOS ===
 
-.2017-02-06:
-
-Rewrite `read-mode` and `write-mode` in Z80, to save some bytes.
 .2017-02-05:
 
 Define the Z80-symbol constants in the assembler word list:
 `dos-routine`, etc.
+
 
 // +3DOS {{{2
 === +3DOS ===

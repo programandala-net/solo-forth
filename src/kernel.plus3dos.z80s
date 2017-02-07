@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702060051
+; Last modified: 201702072120
 
 ; ==============================================================
 ; Description
@@ -40,6 +40,8 @@
 ; file of the kernel, because they are identical in G+DOS,
 ; TR-DOS and +3DOS. Improve the layout.  Move `rec/track` to
 ; the main file of the kernel.
+;
+; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
 
 ; ==============================================================
 ; Requirements
@@ -337,7 +339,7 @@ transfer_bytes.backup_ip equ $+1
   jp push_dos_ior
 
 ; ----------------------------------------------
-  _colon_header write_mode_,'write-mode'
+  _code_header write_mode_,'write-mode'
 
 ; doc{
 ;
@@ -347,8 +349,8 @@ transfer_bytes.backup_ip equ $+1
 ;
 ; }doc
 
-  _literal dos_write
-  dw branch_,transfer_mode
+  ld hl,dos_write
+  jr transfer_mode
 
 ; ----------------------------------------------
   _colon_header read_mode_,'read-mode'
@@ -361,11 +363,12 @@ transfer_bytes.backup_ip equ $+1
 ;
 ; }doc
 
-  _literal dos_read
+  ld hl,dos_read
+
 transfer_mode:
-  _literal transfer_bytes.command
-  dw store_
-  dw exit_
+  ; HL = DOS routine
+  ld (transfer_bytes.command),hl
+  _jp_next
 
 ; ----------------------------------------------
   _code_header dos_get_1346_,'dos-get-1346'
