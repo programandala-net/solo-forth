@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702072354
+  \ Last modified: 201702080010
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,7 +62,10 @@
   \
   \ 2017-02-05: Fix needing of `set-drive`.
   \
-  \ 2017-02-07: Use `cconstant` for byte constants.
+  \ 2017-02-07: Use `cconstant` for byte constants
+  \
+  \ 2017-02-08: Update and complete the paging tests `g.100h`
+  \ and `g.100i`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -160,11 +163,11 @@ variable file-address  \ copy of `hd0d` used by `(<file)`
 
 ( --directory-descriptions-- )
 
-01 cconstant basic-file-dir      02 cconstant data-array-dir
-03 cconstant string-array-dir    04 cconstant code-file-dir
-05 cconstant snapshot-48k-dir    06 cconstant microdrive-file-dir
-07 cconstant screens$-file-dir   08 cconstant special-file-dir
-09 cconstant snapshot-128k-dir   10 cconstant opentype-file-dir
+01 cconstant basic-file-dir    02 cconstant data-array-dir
+03 cconstant string-array-dir  04 cconstant code-file-dir
+05 cconstant snapshot-48k-dir  06 cconstant microdrive-file-dir
+07 cconstant screens$-file-dir 08 cconstant special-file-dir
+09 cconstant snapshot-128k-dir 10 cconstant opentype-file-dir
 11 cconstant execute-file-dir
 
 : --directory-descriptions--  ;
@@ -358,9 +361,9 @@ code (file>screen)  ( -- dosior )
               \ print HL
             d incp, b decp, b a ld, c or,
     z? runtil  E7 out,  \ page +D out
-    \ begin
-    \   lbyte hook  af push  10 hook  af pop  13 cp
-    \ z until
+    \ rbegin
+    \   lbyte hook,  af push,  10 hook,  af pop,  13 cp#,
+    \ z runtil
 
   rthen  b pop, next ix ldp#, af push,
         \ restore the Forth registers and save the ior
@@ -376,20 +379,26 @@ code (file>screen)  ( -- dosior )
   \ Copy a file _ca len_ to the screen, line by line,
   \ and return error result _ior_.
 
-( .100 )
+( g.100h g.100i )
 
   \ XXX TMP -- for debugging
 
-code .100  ( u -- )
-  hl pop
-  bc push
-  hl push
-  patch hook
-  hl pop
-  1744 call
-  E7 out  \ page +D out
-  bc pop  next ix ldp#  jpnext,
-  end-code
+need assembler
+need plusd-in,  need plusd-out,  need --hook-codes--
+
+code g.100h  ( u -- )
+  h pop, b push,
+  h push, patch hook, h pop, 1744 call, plusd-out,
+  b pop,  next ix ldp#,  jpnext, end-code
+  \ Print _u_ using a routine of the Plus D ROM, paging it
+  \ with a hook.
+
+code g.100i  ( u -- )
+  h pop, b push,
+  plusd-in, 1744 call, plusd-out,
+  b pop,  next ix ldp#,  jpnext, end-code
+  \ Print _u_ using a routine of the Plus D ROM, paging it
+  \ with an `in` instruction.
 
 ( <file-as-is )
 
