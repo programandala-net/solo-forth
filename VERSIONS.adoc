@@ -6,6 +6,32 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
+// Version 0.14.0  {{{1
+== Version 0.14.0
+
+Under development.
+
+=== Background image
+
+Title: Alonso Quijano prueba la celada (Alonso Quixano tries the
+helmet).
+
+Illustrator: Pahissa Laporta, Jaime (1846-1928).
+
+Engraver: Unknown.
+
+Book: _El ingenioso hidalgo don Quijote de La Mancha_ (_The Ingenious
+Gentleman Don Quixote of La Mancha_) (1605), by Miguel de Cervantes
+(1547-1616).
+
+Edition: 1897, Barcelona, _El ingenioso hidalgo don Quijote de la
+Mancha_ (Centro Editorial Artístico de Miguel Seguí).  Volume 1,
+chapter 1, page 21.
+
+The ZX Spectrum image was created from
+http://qbi2005.windows.cervantesvirtual.com/wfrmVistaImagen.aspx?imagen=0009605796[image
+0009605796 of QBI].
+
 // Version 0.13.0  {{{1
 == Version 0.13.0
 
