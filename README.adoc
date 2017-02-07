@@ -1,16 +1,17 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-06
+:revdate: 2017-02-07
 :toc:
+:linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 == Description
 
-Solo Forth is a modern http://forth-standard.org[standard Forth]
-system under development for the ZX Spectrum 128 computer and later
-models.
+Solo Forth is a modern http://forth-standard.org[standard
+Forth,role="external"] system under development for the ZX Spectrum
+128 computer and later models.
 
 Solo Forth is focused on cross development of Forth programs for this
 platform, using a ZX Spectrum emulator and all modern development
@@ -22,16 +23,17 @@ Forth was developed for.
 
 Home page: http://programandala.net/en.program.solo_forth.html
 
+[role="external"]
 Git repository: http://github.com/programandala-net/solo-forth
 
 == History and current status
 
-The
-http://programandala.net/en.program.solo_forth.history.html[development
-history] started on 2015-05-30.
+The developmente started on 2015-05-30.
 
-As of 2017-02-05 Solo Forth is under active development. It's very
+As of 2017-02-07 Solo Forth is under active development. It's very
 stable, and it's already used to develop some projects in Forth.
+
+The changes of the latest version are listed in VERSIONS.adoc.
 
 == Target platforms
 
@@ -43,7 +45,7 @@ create programs for a ZX Spectrum 48.
 
 Solo Forth was first intended for a ZX Spectrum 128 with G+DOS
 (provided by the Plus D interface).  The support for G+DOS is almost
-complete, both in the kernel and the library.
+complete.
 
 === ZX Spectrum 128 with TR-DOS
 
@@ -61,36 +63,39 @@ practice it's useless.
 
 The DOS support in Solo Forth is modular, so in theory it will not be
 difficult to support also more powerful DOSs in future versions, like
-http://www.worldofspectrum.org/zxplus3e/technical.html[IDEDOS],
-http://www.worldofspectrum.org/residos/[ResiDOS], and
-http://esxdos.org[esxDOS]. This will let Solo Forth use hard drives
-and flash cards, beside many other new features.
+http://www.worldofspectrum.org/zxplus3e/technical.html[IDEDOS,role="external"],
+http://www.worldofspectrum.org/residos/[ResiDOS,role="external"], and
+http://esxdos.org[esxDOS,role="external"]. This will let Solo Forth use hard drives,
+flash cards, and much more memory, beside many other new features.
 
 == Directories
 
 ....
 .
-├── backgrounds       background images
-├── bin               binary files needed to build disk 0
-│   ├── fonts         fonts for the supported screen modes
-│   ├── addons        addons, not integrated in the library yet
-│   └── sys           DOSs
-├── disks             disk images ready to use
-│   ├── gplusdos      for G+DOS
-│   ├── plus3dos      for +3DOS
-│   └── trdos         for TR-DOS
-├── doc               some initial documentation
-├── make              files used by `make` to build the system
-├── src               sources
+├── backgrounds       Version background images
+├── bin               Binary files needed to build disk 0
+│   ├── fonts         Fonts for the supported screen modes
+│   ├── addons        Code that is loaded from disk
+│   │                 because it's not assembled in the library yet
+│   └── sys           DOS files
+├── disks             Disk images ready to use
+│   ├── gplusdos      For G+DOS
+│   ├── plus3dos      For +3DOS
+│   └── trdos         For TR-DOS
+├── doc               Some initial documentation
+├── make              Files used by `make` to build the system
+├── screenshots       Version screenshots
+├── src               Sources
 │   ├── inc           Z80 symbols files
-│   ├── lib           library
+│   ├── lib           Library
 │   ├── loader        BASIC loader for disk 0
-│   └── addons        addons, not integrated in the library yet
-├── tmp               temporary files created by `make`
-├── tools             development and user tools
+│   └── addons        Code that is loaded from disk
+│                     because it's not integrated in the library yet
+├── tmp               Temporary files created by `make`
+├── tools             Development and user tools
 └── vim               Vim files
-    ├── ftdetect      file type detection
-    └── syntax        syntax highlighting
+    ├── ftdetect      File type detection
+    └── syntax        Syntax highlighting
 
 ....
 
@@ -114,14 +119,15 @@ and flash cards, beside many other new features.
    disk interface.
 3. Choose "128 BASIC" from the ZX Spectrum start menu.
 4. Type `randomize usr 15616` in BASIC. This will enter the TR-DOS
-   command line, which uses tokens, like the ZX Spectrum 48.
-5. Type the `R` key to get the `RUN` command and press the `Enter`
+   command line, which uses keyboard tokens, like the ZX Spectrum 48.
+5. Type the `R` key to get the `RUN` command and press the Enter
    key. Solo Forth will be loaded from disk.
 
 === ZX Spectrum +3 and ZX Spectrum +3e
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 or
-   http://www.worldofspectrum.org/zxplus3e/[ZX Spectrum +3e].
+   http://www.worldofspectrum.org/zxplus3e/[ZX Spectrum
+   +3e,role="external"].
 2. "Insert" the file <disks/plus3dos/disk0.180.dsk> as disk A of the
    ZX Spectrum +3.
 3. Choose "Loader" from the ZX Spectrum +3 start menu. Solo Forth will
@@ -129,20 +135,23 @@ and flash cards, beside many other new features.
 
 == How to use the library
 
+NOTE: At the moment, the library can not be used on +3DOS.
+
 The library disk contains the source code in Forth blocks, written
 directly on the disk sectors, without any filesystem.  In order to use
 the library, follow these steps:
 
-1. Run Solo Forth.
-2. Insert the the library disk:
+1. <<_how_to_run,Run Solo Forth>>.
+2. Insert the library disk:
 ** In G+DOS: "Insert" the file <disks/gplusdos/disk1_lib.mgt> as disk
    2 of the Plus D disk interface.
 ** In TR-DOS: "Insert" the file <disks/trdos/disk1_lib.trd> as disk B
    of the Beta 128 disk interface. Type `1 set-drive throw` to set
    drive 1 (="B") as the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
-   block 1 is used as a loader.  In this case, block 1 contains `2
-   load`, in order to load `need` and related words from block 2.
+   block 1 is used as a loader.  In Solo Forth, block 1 contains just
+   `2 load`, in order to load the `need` tool and related words from
+   block 2.
 4. Type `need name`, were "name" is the name of the word or tool you
    want to load from the library.
 
@@ -184,12 +193,12 @@ behaviour of `need` and related words to use it. Then `need name` will
 automatically start loading the first block where the word "name" is
 defined.
 
-[caption="Time and memory required to make the library index"]
+[caption="Time and memory required to make the library index (in v0.12.0)"]
 |===
-| DOS     | First block | Last block | Seconds | Far memory
+| DOS     | First block | Last block | Seconds | Bytes of far memory
 
-| G+DOS   |           5 |        799 |     154 |      13498
-| TR-DOS  |           5 |        635 |     135 |      13027
+| G+DOS   |           5 |        799 |     154 |               13498
+| TR-DOS  |           5 |        635 |     135 |               13027
 |===
 
 NOTE: The far memory is the virtual 64-KiB space formed by 4
@@ -210,12 +219,13 @@ notation.
 Most words are fully documented in the kernel and the library source
 files, and those comments are marked in order to extract them from the
 sources and build a fully organized and indexed glossary in
-http://asciidoctor.org[Asciidoctor] format, that will be automatically
-converted to HTML, EPUB and other formats.
+http://asciidoctor.org[Asciidoctor,role="external"] format, that will
+be automatically converted to HTML, EPUB and other formats.
 
 The tool that will build the documentation is under development,
-written in Gforth, and it will be included in a future version of Solo
-Forth.
+written in Forth with
+http://gnu.org/software/gforth[Gforth,role="external"], and it will be
+included in a future version of Solo Forth.
 
 === How to search the library
 
@@ -246,10 +256,10 @@ The only difference between building Solo Forth and building a Forth
 program is the additional files added to disk image 0 (the boot disk),
 if needed, and the library modules included in disk image 1 (the
 library disk), which also contains the source of the program.  If
-the program does not need to use the disk at run-time, you can simply
-copy the default disk 0, and boot it to load your program from block
-1 of your customized disk 1, with a simple `1 load`. When the
-program is finished, you can save a snapshot with the ZX Spectrum
+the program does not need to use the disk at run-time, you can
+simply copy the default disk 0, and boot it to load your program
+from block 1 of your customized disk 1, with a simple `1 load`. When
+the loading finishes, you can save a snapshot with the ZX Spectrum
 emulator.
 
 Some simple little games are provided as examples in the library.

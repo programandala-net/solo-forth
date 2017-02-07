@@ -1,6 +1,6 @@
 = Solo Forth version history
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-12-31
+:revdate: 2017-02-07
 :toc:
 
 // This file is part of Solo Forth
@@ -9,7 +9,297 @@
 // Version 0.13.0  {{{1
 == Version 0.13.0
 
-Under development.
+Released on 2017-02-07.
+
+Another version that includes more new features, bug fixes,
+improvements and changes than planned, having being heavily tested
+during the development of two game projects.
+
+Some things are worth to be commented apart:
+
+- Only one assembler. The transition from the old assembler to the new
+  one has been completed.
+- Full rewrite of the color management: the temporary attribute of the
+  OS is manipulated directly. This method is much faster and more
+  compact.  Alternative words are provided to use the BASIC-like
+  method (i.e., control characters).
+- Deep modification of the UDG management to use only the character
+  range 0..255. Now the first UDG character is always character 0, in
+  any context (so far, it could be 0 or 128, depending on the word
+  used).  Now the UDG code range of `emit` is coherent, and its
+  default behaviour can be configured (by choosing the first character
+  it will consider a UDG, instead of printing it through the ROM
+  routine) Eventually this will be improved further in order to
+  support 8-bit character sets.
+- Improved support to store data in far memory.
+- Finally, `circle` is included, and a very fast one.
+- Improved support to use `bleep`, and also to convert parameters of
+  BASIC's `BEEP`.
+- New standard tools to manipulate strings: `replaces`, `substitute`
+  and `unescape`.
+- On TR-DOS, the library can be used on any disk. This makes the
+  system actually usable on this DOS, and makes it possible to improve
+  its support.
+
+=== New
+
+- Add `link>wid`.
+- Add `>true`, `2>true`, `>false`, `2>false`.
+- Add `(cursor-addr)` and `cursor-addr`.
+- Add alternative `cursor-addr` and `(cursor-addr)`.
+- Add basic words to store and compile strings in far memory: `far,`,
+  `fars,`, `farsconstant`, `farsconstants,`, `far,"`, `/farsconstants`
+  and `farsconstants-does>`.
+- Add variants of the far-memory string arrays that return the strings
+  in the circular string buffer: `save-farstring`, `far>sconstants`,
+  `/far>sconstants`.
+- Add `dot-quote-bench`, to compare printing one single char with
+  `emit` or `."`.
+- Add `-1..1`.
+- Add `view`.
+- Add `?seconds`.
+- Add `faravariable`, `far2avariable`, `farcavariable`.
+- Add `name>str`, a factor of `name>string`.
+- Add `name>name`, an alternative `>name` and `>name-bench`.  The
+  current Z80 version of `>name` is not needed in the kernel.  An
+  alternative version in Forth is being tested.
+- Add `#words`.
+- Add `/counted-string` constant.
+- Add `replaces`.
+- Add `substitute` and `unescape`.
+- Add `xt-replaces`.
+- Add `1/string`.  A faster alternative for the low-level idiom `1
+  /string`. Beside, it saves six bytes in the kernel.
+- Add `g+dos`, `tr-dos` and `+3dos`.
+- Add `beep`, `dhz>bleep`, `middle-octave`, `/octave`,
+  `octave-changer`, `beep>dhz`, `beep`, and a new `beep>bleep`.  The
+  support of Sinclar BASIC's `BEEP` is complete.  The conversion of
+  parameters from `beep` to `bleep` is fully factored and reusable.
+- Add `?shift`.
+- Add `u.s`.
+- Add `inverse-on` and `inverse-off`.
+- Add `overprint-on` and `overprint-off`.
+- Add `.words`.
+- Add `mask+attr!` and `mask+attr@`.
+- Add `circle`.
+- Add `noop-routine`.  A useful counterpart of `noop`, needed by the
+  new implementation of a configurable `circle`.
+- Add `blackout`.
+- Add `attr-cls`.  A useful factor of `cls`
+- Add `]cl` and `]1l`.
+- Add `contrast`.
+- Add `attr>ink`.
+- Add `default-bank-routine` and `e-bank-routine`.
+- Add `lower-routine`.
+- Add constants for attribute masks: `bright-mask`, `unbright-mask`,
+  `flash-mask`, `unflash-mask`, `ink-mask`, `unink-mask`,
+  `paper-mask`, `unpaper-mask`.
+- Add words to manipulate the graphic coordinates: `g-xy`, `g-x`,
+  `g-y`, `g-at-xy`, `g-at-x`, `g-at-y`, `g-home`.
+- Add `far>sconstant` and `farsconstants>`.
+- Add `os-sp`.
+- Add `g-type`, `g-emit`, `g-cr`, etc. (They were almost finished but
+  not tested).
+- Add `mode32-max-char`.
+- Add TR-DOS `set-drive` and related code.  Finally, the library can
+  be used on any TR-DOS disk drive.
+
+=== Fixes
+
+- Fix storage of unresolved assembler references.
+- Fix `runtil`, `auntil` and `ragain`.
+- Fix sound effects `laser-gun`, `ambulance` and `white-noise`.
+- Fix `scroll-1px-up`.
+- Fix `wordlists`.
+- Fix erasing of `esc-context`.
+- Fix loading of `see`.
+- Fix `find-name-from`.  A very subtle bug, first detected on
+  2016-12-06: When `hp` crossed the 16-KiB boundary, sometimes a
+  previous word was not found. Finally, the error condition has been
+  found out: a previous word of the same length than the latest one is
+  not found after crossing the 16-KiB boundary...  The reason was the
+  difference between the actual _nt_ and its converted version in
+  paged memory, which was used for restoring.
+- Fix `fartype`.
+- Make `s\"` and `.\"` use standard escapes by default.
+- Add `default-font` for `cold`.  `cold` didn't set the default font.
+  That was a subtle bug. In order to reuse code, `set-font` has been
+  moved from the library to the kernel, but it has been rewritten is
+  Z80 to save some bytes.
+- Fix and improve `ocr`.
+- Fix `last-column` and `last-row`.
+- Fix needing of `??`.
+- Fix needing of `16hex.`.
+- Fix `error>ordinal`, which was not updated.
+- Fix and update `fyi`.
+- Fix `fzx-emit`.
+- Rename `beep>bleep` to `hz>bleep`.  The word does not convert the
+  parameters of BASIC's `beep`, but hertzs.
+- Fix requirement of `printable-ascii-char?`.
+- Fix and improve `where` and `list-lines`.
+- Fix requirements of `xdrop`.
+- Fix `parse-esc-string`.
+- Fix `(pixel-scroll-up`.
+- Fix needing of G+DOS `set-drive`.
+- Fix loading of the Pong game.
+
+=== Improvements
+
+- Write `attr`, `attr-addr`, and `(attr-addr)` in Z80 opcodes.  No
+  need to use the assembler for these small words.
+- Remove the old assembler (`z80-asm`). Update the new one
+  (`z80-asm,`), move the `assembler` vocabulary to the library, in
+  order to use `need assembler` to load the new assembler when needed.
+  Convert all words to the new assembler.
+- Rewrite `ndrop` and `2ndrop` with Z80 opcodes.
+- Improve words to page in and page out the Plus D: `plusd-in`,
+  `plusd-out`, `plusd-in,`, `plusd-out,`.
+- Improve `default-bank`.
+- Improve loading of `see-xt` and `see-body-from`.
+- Improve `find-name-from`: 3 bytes less, 5% faster.
+- Improve `create` (2 bytes less).
+- Improve the word-lists interface.  More coherent and less cryptic
+  names and functions: Remove `link>wid`; remove `wid>name`; rename
+  `(wid>name` to `wordlist>name`; rename `wid>link` to
+  `wordlist>link`; rename `.wid` to `.wordlist`; rename
+  `wid>vocabulary` to `wordlist>vocabulary`.  add `wordlist-name@` and
+  `wordlist-name!`; rename `wid-of` to `wordlist-of`; rename
+  `named-wid` to `latest>wordlist`
+- Improve `papery`, `brighty`, `flashy`.
+- Improve `permcolor`.
+- Rename `pause` to `?frames`, and `do-pause` to `frames`.  The name
+  "pause" was taken from BASIC but the new names are more clear, and
+  consistent with `ms` and `seconds`. Add a new `pause` after Sinclair
+  BASIC.  Just a convenience to adapt BASIC programs.
+- Improve `see`: type strings between quotes.  This is more clear when
+  they have leading or trailing spaces.
+- Improve needing of `columns` and `rows`.
+- Improve `2avariable`.
+- Improve `?repeat`.
+- Improve needing of words to print numbers in radix.
+- Improve needing of control flow stack words.
+- Change the behaviour of `window` and `set-window`.  Now they are
+  more versatile.
+- Document how data in headers space affect `>name`.
+- Replace `xdepth.` with `.depth`;rename `.x` to `.xs`.
+- Rewrite `color!` and `color-mask!` in Z80.
+- Rewrite `set-udg`,`get-udg` and `get-font` in Z80.
+- Improve needing of 128K sound words.
+- Restore default behaviour of `.s`.  `.s` was provisionaly modified
+  some time ago to print unsigned numbers.  Now `u.s` does the job.
+  Both words are in the kernel only during the development.
+- Improve needing symmetric/floored-division operators.
+- Rename words that store/fetch sys color attributes.  Rename "color"
+  prefix to "attr", "permcolor" prefix to "perm-attr".
+- Rewrite `perm-attr!` and `perm-attr-mask!` in Z80.
+- Rewrite `attr@` and `attr-mask@` in Z80.
+- Rewrite `perm-attr@` and `perm-attr-mask@` in Z80.
+- Make all attribute words accessible to `need`.
+- Improve the implementation of `xstack`.  Rename `set-xstack` to
+  `xstack`.  Make `allot-xstack` and `allocate-xstack` more versatile:
+  they don't parse a name anymore, but simply return the address of
+  the new stack.  Remove `xp@`, `xp!` and `xp+!`.  Fix `xfree`.
+  Improve and complete documentation of all words.  Make all words
+  individually accessible to `need`.
+- Rewrite `odd?` and `even?` in Z80.
+- Rename `paper!`/`paper@` and family to "set-/get-".  The new names
+  are more logical, because the values are not stored or fetched
+  verbatim, but as bits of the temporary attribute. Beside, the new
+  naming convention can be generalized and used also with the printing
+  modes (`inverse` and `overprint`).  Rewrite `set-paper` and
+  `set-ink` in Z80.
+- Rename/modify `paper` and family to `paper.`, etc.  These names make
+  clear what these words do. Beside, they don't change the permanent
+  attribute any more.  Move `paper.`, `ink.`, `bright.` and `flash.`
+  to the library.  Improve `bright.` and `flash.` to accept a flag (so
+  far they checked only bit 0 of the parameter; nowe any non-zero
+  value turns them on, what is the usual behaviour in Forth) and color
+  8 (transparent).
+- Make `cls` use the temporary attribute.  This behaviour is more
+  logical and practical because the permanent attribute is not
+  modified by other words any more.
+- Add decimal prefix to system variables addresses. This avoids
+  problems.
+- Improve needing of color constants.
+- Rename the far-memory routines constants.  A more clear convention
+  is used for constants that return addresses of kernel routines.
+- Update needing of `binary`.
+- Rename and improve the scroll and pan words.
+- Rewrite `spaces` in Z80.
+- Rename the variants of `type` that print on fields.  Rename
+  `type-left`, `type-right` and `type-center` to `type-left-field`,
+  `type-right-field` and `type-center-field`, because they erase the
+  field with padding spaces, and there will be a parallel set of words
+  that don't.  Improve `type-center-field` and `type-right-field`.
+- Improve `mode32-emit` to be configurable.
+- Rewrite `bounds` in Z80.
+- Convert all UDG words to the 0-index-only convention.  All "0udg"
+  words have been renamed after their "udg" counterparts, which have
+  been removed.  Other words have become useless too and have been
+  removed.
+- Improve `udg>`, `ocr-chars` and `ocr-first`.  Now `ocr-chars` and
+  `ocr-first` are character variables. No need for a whole cell in
+  this case.
+- Unify DOS symbols, notation and layout.  Especially TR-DOS and +3DOS
+  have some analogous routines, that have been named and arranged the
+  same way.
+
+=== Other changes
+
+- Rename `test-pixel` to `get-pixel`; also in mode 176.
+- Remove the old "system bank" code. The far-memory system made it
+  unnecessary.
+- Convert `voc-link` to `latest-wordlist`.  Now the _wid_ is used as
+  pointer to the previous word list.  This method is simpler and
+  clearer, and `latest-wordlist` is a better name than the old
+  fig-Forth `voc-link`, which anyway relates to vocabularies.
+- Rename `udg-chars` to `default-udg-chars`.
+- Move far-memory string words to their own module.
+- Remove string arrays that don't leave a count.  There were two
+  variants of each string array. It's simpler to keep only the variant
+  that returns the count of compiled strings, which is useful most of
+  the times.
+- Benchmark and remove alternative `m*`.
+- Remove the kernel copy of `where`.
+- Remove `exit` after conditional intepretation.  The objective of
+  `exit` at the end of conditional comments (`?\` and `?(`) was to
+  interpret blocks faster, leaving the current block after the needed
+  code had been interpreted.  But the space in the block is more
+  important.
+- Remove slower versions of `rshift` and `lshift`.  They are only 3
+  bytes smaller, but much slower (1.33 and 1.69 the execution time of
+  the faster default versions).
+- Move remaining tests to the tests module.
+- Remove `permcolor` and `2permcolor` definers.  Hardly useful.
+- Rename `color` definer to `attr-setter`, and `2color` to
+  `mask+attr-setter`.
+- Remove `paper>attr`.  No need for this word. `papery` can be used
+  instead.
+- Move `span` to the library.
+- Move `!bank`, `c!bank`, `@bank` and `c@bank` to the library.
+- Move `upper`, `uppers`, `faruppers` and `lowers` to the library.
+- Modify `digit?` to use the `lower` routine.
+- Remove old unused implementations of `um*`.
+- Move `permanent-colors` to the library and rename it to
+  `mask+attr>perm`.  This word is not needed in the kernel any more.
+  The new name is consistent with the words that manipulate the
+  current attribute.
+- Remove `0udg-at-xy-echo`, `at-xy-echo-0udg`.  No need for them in
+  the kernel.  They are already in the library, with different names,
+  since 2017-01-09. They are still experimental.
+- Move `read-block` and `write-block` to the main file of the kernel,
+  because they are identical in G+DOS, TR-DOS and +3DOS.
+- Move TR-DOS `get-drive` and `cat` to the library.
+- Move `rec/track` to the kernel.
+- Remove `lib-order` and family.  These words were never used, because
+  the method was not low-level enough: `need` had to be modified to
+  use it explicitily.  A better, transparent method to use several
+  configurable library disks at the same time will be introduced in
+  v0.14.0.
+- Rename the "modules" directories to "addons".  The name was
+  confusing because these directories contain code not integrated in
+  the library yet, while in all the documentation the name "module"
+  means a library file.
 
 === Background image
 

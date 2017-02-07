@@ -9,7 +9,7 @@ version_major:                equ 0
 version_minor:                equ 13
 version_patch:                equ 0
 
-version_prerelease:           equ 244 ; zero if none
+version_prerelease:           equ 0 ; zero if none
 
 version_build_high_part:      equ $0133
-version_build_low_part:       equ $C5DE  ; build 20170206
+version_build_low_part:       equ $C5DF  ; build 20170207

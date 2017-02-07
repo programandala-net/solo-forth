@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-06
+:revdate: 2017-02-07
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1308,8 +1308,8 @@ very-long-word-4 very-long-word-5 very-long-word-6 )
 
 Problem: this would force changes in fsb and fsb2.
 
-// Modules {{{1
-== Modules
+// Forth modules {{{1
+== Forth modules
 
 .2017-01-05:
 
@@ -1550,6 +1550,13 @@ Add `vemits`, inspired by TI BASIC's `call vchar()`.
 .2016-04-17:
 
 Improve tab control.
+
+// Project tree {{{1
+== Project tree ==
+
+.2017-02-07:
+
+Rename <bin/sys> to <bin/dos>.
 
 // Stacks {{{1
 == Stacks ==

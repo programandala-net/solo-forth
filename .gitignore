@@ -1,15 +1,12 @@
 # Ignore ZX Spectrum disk images:
-*.dsk
-*.mgt
-*.trd
+#*.dsk
+#*.mgt
+#*.trd
 
 # Ignore ZX Spectrum emulator snapshots:
 *.sna
 *.szx
 *.z80
-
-# Ignore screenshots:
-*.png
 
 # Ignore the development resources:
 _meta/
