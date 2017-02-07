@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604111350
+  \ Last modified: 201702080022
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,19 +30,43 @@
   \ can be useful without an assembler.
   \
   \ 2017-01-05: `need assembler`.
+  \
+  \ 2017-02-08: Remove the changing of search order and
+  \ compilation word list. No need to load the assembler.
+  \ Document the words.
 
-( macro )
-
-need assembler
-
-get-order get-current
-
-only forth definitions  also assembler
+( macro endm )
 
 : macro  ( "name" -- )  : asm  ;
+
+  \ doc{
+  \
+  \ macro  ( name -- )
+  \
+  \ Start the definition of an assembler macro _name_.
+  \
+  \ Usage example:
+
+  \ ----
+  \ macro plusd-in,  ( -- )  DB c, #231 c,  endm
+  \   \ Assemble the Z80 instruction `in a,(#231)`.
+  \ ----
+
+  \ See: `endm`, `asm`, `code`.
+  \
+  \ }doc
+
 : endm  ( -- )  end-asm postpone ;  ;  immediate
 
-set-current  set-order
+  \ doc{
+  \
+  \ endm  ( -- )
+  \
+  \ Finish the definition of an assembler macro.
+  \
+  \ See: `macro`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
 
