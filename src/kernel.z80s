@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702062312
+; Last modified: 201702072345
 
 include version.z80s
 
@@ -2222,7 +2222,7 @@ push_a:
 
 ; doc{
 ;
-; default-bank#  ( -- a )
+; default-bank#  ( -- ca )
 ;
 ; An 8-bit variable holding the value of the default bank.  Note
 ; this variable must be set with `c!` and fetched with `c@`.
