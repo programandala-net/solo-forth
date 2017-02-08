@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702080200
+  \ Last modified: 201702082109
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,13 +73,8 @@
 
 [unneeded] plusd-in
 ?\ code plusd-in  ( -- )  DB c, #231 c, jpnext,  end-code
-
-  \ XXX OLD
-  \ need --hook-codes--
-  \ code plusd-in  ( -- )  CF c, patch c, jpnext,  end-code
-  \   \ rst $08
-  \   \ defb patch
-  \   \ jp (ix)
+  \ in a,(231)
+  \ _jp_next
 
   \ doc{
   \
@@ -87,18 +82,22 @@
   \
   \ Page in the Plus D memory.
   \
+  \ See: `plusd-out`, `plusd-in,`.
+  \
   \ }doc
 
 [unneeded] plusd-out
 ?\ code plusd-out  ( -- )  D3 c, #231 c, jpnext,  end-code
   \ out (231),a
-  \ jp (ix)
+  \ _jp_next
 
   \ doc{
   \
   \ plusd-out  ( -- )
   \
   \ Page out the Plus D memory.
+  \
+  \ See: `plusd-in`, `plusd-out,`.
   \
   \ }doc
 
@@ -110,7 +109,10 @@
   \
   \ plusd-in,  ( -- )
   \
-  \ Compile machine code to page in the Plus D memory.
+  \ Compile the Z80 instruction `in a,(231)`, which pages in
+  \ the Plus D memory.
+  \
+  \ See: `plusd-out,`, `plusd-in`.
   \
   \ }doc
 
@@ -122,7 +124,10 @@
   \
   \ plusd-out,  ( -- )
   \
-  \ Compile machine code to page out the Plus D memory.
+  \ Compile the Z80 instruction `out(231),a`, which pages out
+  \ the Plus D memory.
+  \
+  \ See: `plusd-in,`, `plusd-out`.
   \
   \ }doc
 
@@ -212,7 +217,7 @@ need ?(  [unneeded] --directory-descriptions ?(
 
 : --directory-descriptions--  ; ?)
 
-( get-drive set-drive )
+( get-drive )
 
 need ?(  [unneeded] get-drive ?(
 
@@ -250,13 +255,35 @@ code (delete-file)  ( -- ior )
   af push,
   jpnext,
   end-code
+
+  \ doc{
+  \
+  \ (delete-file)  ( -- ior )
+  \
   \ Delete a disk file using the data hold in UFIA.
-  \ Return a G+DOS _ior_.
+  \ Return a result code _ior_.
+  \
+  \ This word is a factor of `delete-file`.
+  \
+  \ See: `delete-file`, `ufia`.
+  \
+  \ }doc
 
 : delete-file  ( ca len -- ior )
   filename>ufia (delete-file) dosior>ior  ;
-  \ Delete a disk file _ca len_ and return I/O result code
-  \ _ior_.
+
+  \ doc{
+  \
+  \ delete-file  ( ca len -- ior )
+  \
+  \ Delete the disk file named in the string _ca len_ and
+  \ return a result code _ior_.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See: `(delete-file)`.
+  \
+  \ }doc
 
 ( -filename filename! >ufia filename>ufia )
 
@@ -264,13 +291,40 @@ need ufia  need get-drive
 
 10 cconstant /filename  \ max filename length
 
+  \ doc{
+  \
+  \ /filename  ( -- b )
+  \
+  \ A constant that returns the maximum length of a G+DOS
+  \ filename.
+  \
+  \ }doc
+
 : -filename  ( -- )  nstr2 /filename blank  ;
+
+  \ doc{
+  \
+  \ -filename  ( -- )
+  \
   \ Blank the filename in UFIA.
+  \
+  \ See: `ufia`, `/filename`.
+  \
+  \ }doc
 
 : filename!  ( ca len -- )
   -filename /filename min nstr2 swap cmove  ;
+
+  \ XXX TODO -- Rename to `filename>ufia`, but rename
+  \ `filename>ufia` first!
+
+  \ doc{
+  \
+  \ filename!  ( ca len -- )
+  \
   \ Store a filename _ca len_ into UFIA.
-  \ XXX TODO -- rename to `set-filename`?
+  \
+  \ }doc
 
 : >ufia  ( ca1 len1 ca2 len2 -- )
   3 hd00 c!  4 nstr1 c!  \ code filetype and dir description
@@ -278,12 +332,20 @@ need ufia  need get-drive
   dup hd0b !  file-length !
   dup hd0d !  file-address !
   get-drive dstr1 c!  ;
-  \ Set the UFIA with the memory region _ca1 len1_, which will
-  \ be saved or loaded, and filename _ca2 len2_
 
-1 set-drive throw  \ default
+  \ doc{
+  \
+  \ >ufia  ( ca1 len1 ca2 len2 -- )
+  \
+  \ Set UFIA with the memory region _ca1 len1_, which will
+  \ be saved or loaded, and filename _ca2 len2_
+  \
+  \ }doc
+
+1 set-drive throw  \ default drive
 
 : filename>ufia  ( ca len -- )  0 0 2swap >ufia  ;
+  \ XXX TODO -- Rename to `file>ufia`
 
 ( >file )
 
@@ -307,8 +369,8 @@ code (>file)  ( -- ior )
 
 : >file  ( ca1 len1 ca2 len2 -- ior )
   >ufia (>file) dosior>ior  ;
-  \ Save memory region _ca1 len1_ to a file with name _ca2
-  \ len2_, and return error result _ior_.
+  \ Save memory region _ca1 len1_ to a file named by the string
+  \ _ca2 len2_, and return error result _ior_.
 
 ( <file )
 
@@ -346,7 +408,7 @@ code (<file)  ( -- ior )
   \ file header and the parameters specified by the high level
   \ command. Return error result _ior_.
 
-: <file  ( a1 len1 ca2 len2 -- ior )
+: <file  ( ca1 len1 ca2 len2 -- ior )
   >ufia (<file) dosior>ior  ;
   \ Load a memory region _ca1 len1_ from file _ca2 len2_
   \ and return error result _ior_.
@@ -367,7 +429,7 @@ code (file>screen)  ( -- dosior )
   nc? rif  \ no error?  -- load the file header:
 
     patch hook, 4000 d ldp#, #128 b ldp#,
-      \ page +D in
+      \ page in the Plus D memory
       \ destination and count
 
     d h ld,
@@ -375,7 +437,7 @@ code (file>screen)  ( -- dosior )
             a l ld, d push, b push, 1744 call, b pop, d pop,
               \ print HL
             d incp, b decp, b a ld, c or,
-    z? runtil  E7 out,  \ page +D out
+    z? runtil  E7 out,  \ page out the Plus D memory
     \ rbegin
     \   lbyte hook,  af push,  10 hook,  af pop,  13 cp#,
     \ z runtil
@@ -457,7 +519,7 @@ code (file?)  ( -- f )
   nstr2 ix ldp#,
   1146 call,  \ FIND_FILE
   168E call,  \ BORD_REST = restore the border
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   ' true z? ?jp,
   ' false jp,
@@ -494,7 +556,7 @@ code (cat)  ( n -- )
     \ 168E = BORD_REST (restore the border)
 
   E7 out, b pop, next ix ldp#,
-    \ page +D out
+    \ page out the Plus D memory
     \ restore the Forth registers and exit
   jpnext,  end-code
   \ Show a catalogue of the current disk, of type _n_
@@ -503,23 +565,24 @@ code (cat)  ( n -- )
 
 : wcat  ( ca len -- )  filename>ufia  4 (cat)  ;
   \ Show a wild-cald disk catologue using the wild-card
-  \ filename _ca len_.  See the +D manual for wild-card syntax.
+  \ filename _ca len_.  See the Plus D manual for wild-card syntax.
 
 : wacat  ( ca len -- )  filename>ufia  2 (cat)  ;  decimal
   \ Show a wild-cald abbreviated disk catologue using the
-  \ wild-card filename _ca len_.  See the +D manual for
-  \ wild-card syntax.  See the +D manual for wild-card syntax.
+  \ wild-card filename _ca len_.  See the Plus D manual for
+  \ wild-card syntax.  See the Plus D manual for wild-card syntax.
 
 : cat  ( -- )  s" *" wcat  ;
-  \ Show a disk catologue.
+  \ Show a disk catalogue.
 
 : acat  ( -- )  s" *" wacat ;  decimal
   \ Show an abbreviated disk catologue.
 
-  \ The disk catalogues can be printed out on a printer by
-  \ storing the number 3 into SSTR1 (a field of UFIA that holds
-  \ the stream number to use) before doing `CAT`. The default
-  \ value is 2 (screen) and should be restored. Example:
+  \ XXX REMARK -- The disk catalogues can be printed out on a
+  \ printer by storing the number 3 into SSTR1 (a field of UFIA
+  \ that holds the stream number to use) before doing `CAT`.
+  \ The default value is 2 (screen) and should be restored.
+  \ Example:
   \
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 
@@ -533,12 +596,12 @@ code @dos  ( a -- n )
   h push,
   patch hook,
   h pop, m e ld, h incp, m d ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   d push,
   jpnext,
   end-code
-  \ Fetch the content of +D memory address.
+  \ Fetch the content of Plus D memory address.
 
 ( c@dos )
 
@@ -551,11 +614,11 @@ code c@dos  ( a -- b )
   patch hook,
   h pop,
   m a ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   pusha jp,
   end-code
-  \ Fetch the content of +D memory address.
+  \ Fetch the content of Plus D memory address.
 
 ( c!dos )
 
@@ -567,11 +630,11 @@ code c!dos  ( b a -- )
   d push, h push,
   patch hook,
   h pop, d pop, e m ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   jpnext,
   end-code
-  \ Store b into the +D memory address a.
+  \ Store b into the Plus D memory address a.
 
 ( !dos )
 
@@ -583,11 +646,11 @@ code !dos  ( n a -- )
   d push, h push,
   patch hook,
   h pop, d pop, e m ld, h incp, d m ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   jpnext,
   end-code
-  \ Store _n_ into the +D memory address _a_.
+  \ Store _n_ into the Plus D memory address _a_.
 
 ( @dosvar )
 
@@ -603,7 +666,7 @@ code @dosvar  ( n1 -- n2 )
   patch hook,
   h pop, dos-vars d ldp#, d addp,
   m e ld, h incp, m d ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   d push, jpnext, end-code
   \ Fetch the content _n2_ of G+DOS variable _n1_.
@@ -622,7 +685,7 @@ code c@dosvar  ( n -- b )
   patch hook,
   h pop, dos-vars d ldp#, d addp,
   m a ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   pusha jp,
 
@@ -643,7 +706,7 @@ code !dosvar  ( n1 n2 -- )
   patch hook,
   h pop, dos-vars d ldp#, d addp, d pop,
   e m ld, h incp, d m ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next, ix, ldp#,  \ restore the Forth registers
   jpnext,
   end-code
@@ -663,7 +726,7 @@ code c!dosvar  ( b n -- )
   patch hook,
   h pop, dos-vars d ldp#, d addp, d pop,
   e m ld,
-  E7 out,  \ page +D out
+  E7 out,  \ page out the Plus D memory
   b pop, next ix ldp#,  \ restore the Forth registers
   jpnext,
   end-code
