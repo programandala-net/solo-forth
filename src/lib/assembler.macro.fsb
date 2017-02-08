@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702080022
+  \ Last modified: 201702080111
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -------------------------------------------------------------
   \ License
@@ -32,8 +32,8 @@
   \ 2017-01-05: `need assembler`.
   \
   \ 2017-02-08: Remove the changing of search order and
-  \ compilation word list. No need to load the assembler.
-  \ Document the words.
+  \ compilation word list. No need to load the assembler, just
+  \ use `assembler-wordlist`.  Document the words.
 
 ( macro endm )
 
@@ -56,7 +56,9 @@
   \
   \ }doc
 
+assembler-wordlist >order
 : endm  ( -- )  end-asm postpone ;  ;  immediate
+previous
 
   \ doc{
   \
