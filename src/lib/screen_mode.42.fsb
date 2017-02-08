@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701201753
+  \ Last modified: 201702080103
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,6 +49,9 @@
   \ conditional interpretation.
   \
   \ 2017-01-20: Fix typo.
+  \
+  \ 2017-02-08: Update the usage of `set-drive`, which now
+  \ returns an error result.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -77,9 +80,9 @@ need mode32  need <file-as-is need (mode42 need ?(
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
-get-drive 1 set-drive  s" pr42.bin" <file-as-is throw
-                       s" ea5a.f42" <file-as-is throw
-            set-drive
+get-drive 1 set-drive throw  s" pr42.bin" <file-as-is throw
+                             s" ea5a.f42" <file-as-is throw
+            set-drive throw
   \ Load the driver and the font.
 
 ?)
@@ -97,10 +100,10 @@ need set-banked-mode-output  need code-bank
 : banked-mode42  ( -- )  [ latestxt ] literal current-mode !
                          (mode42 set-banked-mode-output  ;
 
-code-bank{  get-drive 1 set-drive
+code-bank{  get-drive 1 set-drive throw
             s" pr42.bin" <file-as-is throw
             s" ea5a.f42" <file-as-is throw
-            set-drive  }code-bank
+            set-drive throw }code-bank
   \ Load the driver and the font into the code bank.
 
 ( (mode42 )
