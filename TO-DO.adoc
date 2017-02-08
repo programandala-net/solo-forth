@@ -397,6 +397,12 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Documentation {{{1
 == Documentation ==
 
+.2017-02-08:
+
+NOTE: Milestone: 0.14.0
+
+Build the HTML version of <README.adoc>.
+
 .2017-01-23:
 
 Homogenize and fix the notation about interpretation, compilation and
@@ -511,7 +517,8 @@ And second, define a wrapper word to precede the operations:
 
 ----
 : drive  ( x -- x' )  1+  ;             \ G+DOS
-' noop alias drive  ( -- )  immediate   \ TR+DOS
+' noop alias drive  ( -- )  immediate   \ TR+DOS option 1
+: drive  ( x -- x' )  'A' +  ;          \ TR-DOS option 2
 : drive  ( x -- x' )  'A' +  ;          \ G+DOS
 ----
 
@@ -521,6 +528,24 @@ All this can be solved by the application, if needed.
 
 // G+DOS {{{2
 === G+DOS ===
+
+.2017-02-08:
+
+Fix: `cat` crashes if there's no disk in the drive.
+
+.2017-02-08:
+
+Make `cat` and family check and use `printing`.
+
+----
+  \ XXX REMARK -- The disk catalogues can be printed out on a
+  \ printer by storing the number 3 into SSTR1 (a field of UFIA
+  \ that holds the stream number to use) before doing `CAT`.
+  \ The default value is 2 (screen) and should be restored.
+  \ Example:
+  \
+  \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
+----
 
 .2017-02-08:
 
@@ -1178,6 +1203,12 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
+.2017-02-08:
+
+Move `?(` to the kernel. Since `exit` is not used after conditional
+compilation, `?(` must be loaded most of the times, because the whole
+block is interpreted.
+
 .2017-01-31:
 
 Words that could be moved to the library, if the `need` tool didn't use them:
@@ -1606,6 +1637,25 @@ write `mhz>bleep`.
 .2016-10-10:
 
 Finish the conversion of 128K sound explosions. More details in the source.
+
+// Tape {{{1
+== Tape ==
+
+.2017-02-08:
+
+Rename `read-tape-file` and `write-tape-file` after a new convention
+shared with similar disk operations.
+
+.2017-02-08:
+
+Fix `read-tape-file`: when the file length attribute is not zero
+(=undefined) or the real file lenght to be loaded, the ROM routine
+returns to BASIC with "Tape loading error". This crashes the system
+(because the message can not be printed, because the lower screen has
+no lines). This will be avoided in a future version of Solo Forth.
+
+The simplest solution seems to remove the parameter and always use 0
+internally.
 
 // Time {{{1
 == Time ==

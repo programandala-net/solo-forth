@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702080102
+  \ Last modified: 201702082141
 
   \ -----------------------------------------------------------
   \ Description
@@ -98,7 +98,18 @@
   \ has been moved to the library.
   \
   \ 2017-02-08: Update the usage of `set-drive`, which now
-  \ returns an error result.
+  \ returns an error result. Move `.tape` from the tape module.
+
+( .tape )
+
+: .tape  ( -- )
+  cr ." Tape header " tape-header u. cr
+     ." Filetype    " tape-filetype c@ . cr
+     ." Filename    " tape-filename /tape-filename type cr
+     ." Length      " tape-length @ u. cr
+     ." Start       " tape-start @ u. cr
+     .s cr
+     ." Press any key" key drop  ;
 
 ( edit-sound-test )
 
