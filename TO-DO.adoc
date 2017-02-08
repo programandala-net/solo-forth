@@ -522,21 +522,17 @@ All this can be solved by the application, if needed.
 // G+DOS {{{2
 === G+DOS ===
 
-.2017-02-06:
+.2017-02-08:
 
-Make `2 set-drive throw` mandatory to start using library on the
-second drive, like in TR-DOS. Now it's the default.
-
-Anyway, the support for several library disks (planned for v0.14.0)
-will make things simpler.
+Improve `set-drive`: check if there's a disk in the drive.
 
 .2017-01-05:
 
 Simplify `!dos,`, `c!dos` and family.
 
-.2017-01-05:
+.2017-01-05, 2017-02-08:
 
-Try `plusd-in,` instead of `patch hook,`.
+Use `plusd-in,` instead of `patch hook,`.
 
 .2015-08-31:
 
@@ -545,10 +541,6 @@ Problem: SZX snapshots don't preserve the mounted disks or G+DOS!
 The Plus D own snapshots can be used, but this means programs have to
 be started manually, typing `run` in BASIC to load G+DOS, and then
 loading the snapshot file from BASIC or an Autoload file.
-
-.2015-08-31:
-
-Fix: `transfer-block` changes the current drive to 2!
 
 .2015-07-23:
 
@@ -672,6 +664,11 @@ save several blocks of source.
 
 // Graphics {{{1
 == Graphics ==
+
+.2017-02-08:
+
+Make `circle-pixel` throw an error by default. It can not be a
+deferred word, because it must return the address of a routine.
 
 .2017-02-06:
 

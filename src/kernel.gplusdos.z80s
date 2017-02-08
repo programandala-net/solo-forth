@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702072117
+; Last modified: 201702080201
 
 ; ==============================================================
 ; Description
@@ -30,8 +30,8 @@
 
 ; Latest changes:
 
-; 2016-11-26: Improve `transfer-block` using a literal for the second
-; `transfer-block`.
+; 2016-11-26: Improve `transfer-block` using a literal for the
+; second `transfer-block`.
 ;
 ; 2016-12-29: Change definition names to lowercase, after the
 ; changes in the main kernel.
@@ -43,7 +43,11 @@
 ;
 ; 2017-02-06: Improve documentation.
 ;
-; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
+; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.a
+;
+; 2017-02-08: Improve `transfer-sector` to use the current
+; drive (formerly it always used drive 2). Move `set-drive`
+; from the library, because of that.
 
 ; ==============================================================
 ; Requirements
@@ -176,8 +180,9 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; transfer-sector  ( x a -- ior )
 ;
 ; The sector-level disk read-write linkage.  Transfer sector
-; _x_ to or from disk.  The read or write mode must be
-; previously set by `write-mode` or `read-mode`.
+; _x_ to or from the disk in the current drive.  The read or
+; write mode must be previously set by `write-mode` or
+; `read-mode`.
 
 ; * x = sector to read or write
 ;     ** high byte = track 0..79, +128 if side 1
@@ -193,7 +198,10 @@ _colon_header dosior_to_ior_,'dosior>ior'
          ; e = sector 1..10
   push bc ; save the Forth IP
 transfer_sector.drive equ $+1 ; XXX TODO -- not used yet
-  ld a,2 ; drive
+
+  in a,(231) ; page in the Plus D memory
+  ld a,($3ACE) ; get the current drive
+  out (231),a ; page out the Plus D memory
   rst 8 ; G+DOS hook
 transfer_sector.command:
   ; G+DOS command already patched:
@@ -235,6 +243,39 @@ transfer_mode:
   ; A = G+DOS command: read sector or write sector
   ld (transfer_sector.command),a
   _jp_next
+
+; ----------------------------------------------
+  _code_header set_drive_,'set-drive'
+
+; doc{
+;
+; set-drive  ( n -- ior )
+;
+; Set the current drive _n_ (1 or 2). If the drive is
+; successfully selected, _ior_ is zero. Otherwise it's an
+; exception code.
+;
+; See: `get-drive`.
+;
+; }doc
+
+  pop hl ; L = drive
+  push bc ; save the Forth IP
+  ld a,l ; A = drive
+  rst 8 ; G+DOS hook
+  defb $21 ; call the SEL_DRIVE hook to select the drive in A
+  pop bc ; restore the Forth IP
+  ld ix,next ; restore Forth IX
+  and a ; wrong drive number?
+  jp nz,false_ ; if no error, return zero
+  ld hl,-1022 ; otherwise, exception code "wrong drive"
+  jp push_hl
+
+  ; Note: The G+DOS routine accessed with hook $21 (at address
+  ; $0E38) does nothing when the drive number is wrong, except
+  ; loading A with zero. If the drive number is correct, A is
+  ; not loaded with an explicit value, but it's never zero at
+  ; the end of the routine.
 
 ; ==============================================================
 

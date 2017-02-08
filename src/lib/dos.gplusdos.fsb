@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702080119
+  \ Last modified: 201702080200
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,7 +66,8 @@
   \
   \ 2017-02-08: Update and complete the paging tests `g.100h`
   \ and `g.100i`. Make hook codes individually accessible to
-  \ `need`. Improve `set-drive` to return an error result.
+  \ `need`. Improve `set-drive` to return an error result and
+  \ move it to the kernel.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -232,32 +233,7 @@ code get-drive  ( -- n )
   \
   \ Get the current drive _n_ (1 or 2).
   \
-  \ }doc
-
-[unneeded] set-drive ?(  need assembler
-
-code set-drive  ( n -- ior )
-
-  h pop, b push,
-  l a ld, 21 hook,   \ select drive in a
-  b pop, next ix ldp#,     \ restore the Forth registers
-  a and, ' false nz? ?jp,  \ if no error, return zero
-  #-1022 h ldp#, jppushhl, end-code ?)
-    \ otherwise, return #-1022 "wrong drive"
-
-  \ Note: The G+DOS routine accessed with hook $21 (at address
-  \ $0E38) does nothing when the drive number is wrong, except
-  \ loading A with zero. If the drive number is correct, A is
-  \ not loaded with an explicit value, but it's never zero at
-  \ the end of the routine.
-
-  \ doc{
-  \
-  \ set-drive  ( n -- ior )
-  \
-  \ Set the current drive _n_ (1 or 2). If the drive is
-  \ successfully selected, _ior_ is zero. Otherwise it's a
-  \ G+DOS exception code.
+  \ See: `set-drive`.
   \
   \ }doc
 

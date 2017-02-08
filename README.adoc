@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-07
+:revdate: 2017-02-08
 :toc:
 :linkattrs:
 
@@ -144,10 +144,11 @@ the library, follow these steps:
 1. <<_how_to_run,Run Solo Forth>>.
 2. Insert the library disk:
 ** In G+DOS: "Insert" the file <disks/gplusdos/disk1_lib.mgt> as disk
-   2 of the Plus D disk interface.
+   2 of the Plus D disk interface. Type `2 set-drive throw` to set
+   drive 2 the current one.
 ** In TR-DOS: "Insert" the file <disks/trdos/disk1_lib.trd> as disk B
    of the Beta 128 disk interface. Type `1 set-drive throw` to set
-   drive 1 (="B") as the current one.
+   drive 1 (="B") the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 1 is used as a loader.  In Solo Forth, block 1 contains just
    `2 load`, in order to load the `need` tool and related words from
