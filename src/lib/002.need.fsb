@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701232109
+  \ Last modified: 201702091424
 
   \ -----------------------------------------------------------
   \ Description
@@ -121,6 +121,8 @@
   \
   \ 2017-01-23: Increase and tidy optional debugging code in
   \ `(located)`.
+  \
+  \ 2017-02-09: Fix documentation.
 
 ( delimited located needed-word )
 
@@ -231,8 +233,8 @@ defer unlocated  ( block -- )
   \ len_ (surrounded by spaces), and return its number. If not
   \ found, return zero.  The search is case-sensitive.
   \
-  \ Only the blocks delimited by `first-locatable-block` and
-  \ `last-locatable-block` are searched`.
+  \ Only the blocks delimited by `first-locatable` and
+  \ `last-locatable` are searched`.
   \
   \ This is the default behaviour of `located`, which is
   \ changed by `use-fly-index`.
@@ -252,14 +254,14 @@ defer located  ( ca len -- block | false )  -->
   \ len_ (surrounded by spaces), and return its number. If not
   \ found, return zero.  The search is case-sensitive.
   \
-  \ Only the blocks delimited by `first-locatable-block` and
-  \ `last-locatable-block` are searched`.
+  \ Only the blocks delimited by `first-locatable` and
+  \ `last-locatable` are searched`.
   \
   \ This is a deferred word whose default action is
   \ `(located)`.
   \
-  \ See: `(located)`, `first-locatable-block`,
-  \ `last-locatable-block`.
+  \ See: `(located)`, `first-locatable`,
+  \ `last-locatable`.
   \
   \ }doc
 
@@ -543,11 +545,10 @@ need ?(
   \ (surrounded by spaces), and return its number _block_. If
   \ not found, return _false_.  The search is case-sensitive.
   \
-  \ Only the blocks delimited by `first-locatable-block` and
-  \ `last-locatable-block` are searched`.
+  \ Only the blocks delimited by `first-locatable` and
+  \ `last-locatable` are searched`.
   \
-  \ See: `located`, `first-locatable-block`,
-  \ `last-locatable-block`.
+  \ See: `located`, `first-locatable`, `last-locatable`.
   \
   \ }doc
 

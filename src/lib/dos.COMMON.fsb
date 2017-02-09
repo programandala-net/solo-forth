@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702090128
+  \ Last modified: 201702091525
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,12 @@
 
   \ 2017-02-08: Start. First version of `set-block-drives` and
   \ related words.
+  \
+  \ 2017-02-09: Fix `(>block-drive`: `drive` is not needed,
+  \ because `(block-drives` contains the actual identifiers,
+  \ not the ordinal numbers. Fix and factor the check of drives
+  \ number in `set-block-drives`.  Update `last-locatable` in
+  \ `set-block-drives`.
 
 ( drive )
 
@@ -58,20 +64,18 @@ $FF cconstant not-block-drive
 
 : block-drive!  ( c n -- c )  >block-drive c!  ;
 
-: set-block-drives  ( c[n]..c[1] n -- )
-  dup max-drives > #-35 ?throw
-  -block-drives  dup block-drives c!
-                     0 ?do  i block-drive!  loop  ;
+: ?drives  ( u -- )  max-drives > #-287 ?throw  ;
 
-[undefined] g+dos   ?\ 2 1      2 set-block-drives
-[undefined] tr-dos  ?\ 3 2 1 0  4 set-block-drives
-[undefined] +3dos   ?\ 'B' 'A'  2 set-block-drives
+: set-block-drives  ( c[u]..c[1] u -- )
+  dup ?drives -block-drives
+  dup block-drives c!  max-blocks 1- last-locatable !
+      0 ?do  i block-drive!  loop  ;
 
--->
+[undefined] g+dos   ?\ 2 1      2 set-block-drives  -->
+[undefined] tr-dos  ?\ 3 2 1 0  4 set-block-drives  -->
+[undefined] +3dos   ?\ 'B' 'A'  2 set-block-drives  -->
 
 ( set-block-drives )
-
-need drive
 
 : ?drive#  ( u -- )
   [ max-drives 1- ] 1literal > #-35 ?throw  ;
@@ -80,7 +84,7 @@ need drive
 
 : (>drive-block  ( u1 -- u2 )
   blk/disk /mod ( block drive ) dup ?drive#
-  block-drive@ dup ?block-drive drive set-drive throw  ;
+  block-drive@ dup ?block-drive set-drive throw  ;
   \ Convert block _u1_ to its equivalent _u2_ in its corresponding
   \ disk drive, which is set the current drive.
 

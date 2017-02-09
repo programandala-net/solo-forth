@@ -487,45 +487,6 @@ source.
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
 their behaviour and names identical. Write the +3DOS version too.
 
-.2017-02-05:
-
-Study a method to hide the different drive notations from the
-application, in order to make the application work on any DOS.
-
-|===
-| DOS                                       | First drive | Last drive
-
-| G+DOS                                     | 1           | 2
-| TR-DOS (in filenames and BASIC commands)  | 'A'         | 'D'
-| TR-DOS (in Z80 code)                      | 0           | 3
-| +3DOS                                     | 'A'         | 'P'
-|===
-
-Possible solution:
-
-First, use parallel ranges:
-
-|===
-| DOS    | Drives
-
-| G+DOS  | 0..1
-| TR-DOS | 0..3
-| +3DOS  | 0..15
-|===
-
-And second, define a wrapper word to precede the operations:
-
-----
-: drive  ( x -- x' )  1+  ;             \ G+DOS
-' noop alias drive  ( -- )  immediate   \ TR+DOS option 1
-: drive  ( x -- x' )  'A' +  ;          \ TR-DOS option 2
-: drive  ( x -- x' )  'A' +  ;          \ G+DOS
-----
-
-But the drive identifiers used in filenames will remain different.
-
-All this can be solved by the application, if needed.
-
 // G+DOS {{{2
 === G+DOS ===
 
@@ -580,6 +541,24 @@ Investigate how to use the free memory of the Plus D RAM.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-02-09:
+
+Having implemented `drive`, to convert a 0-index drive to the actual
+identifier needed by the current DOS, the notation used for TR-DOS in
+those cased must be decided:
+
+|===
+| DOS                                       | First drive | Last drive
+
+| G+DOS                                     | 1           | 2
+| TR-DOS (in filenames and BASIC commands)  | 'A'         | 'D'
+| TR-DOS (in Z80 code)                      | 0           | 3
+| +3DOS                                     | 'A'         | 'P'
+|===
+
+Using 0..3 is simpler, because the assembly interface needs no change.
+The question is if notation 'A'..'D' must be explicit in filenames.
 
 .2017-02-05:
 
@@ -1213,14 +1192,6 @@ block is interpreted.
 
 Words that could be moved to the library, if the `need` tool didn't use them:
 `2over`, `line>string`.
-
-.2016-12-30, 2017-01-23, 2017-02-09:
-
-NOTE: Milestone 0.14.0
-
-Try and finish the implementation of `set-block-drives`.
-Then build the secondary disk images without the library.
-Also, think how to update `last-locatable`.
 
 .2016-12-08:
 
