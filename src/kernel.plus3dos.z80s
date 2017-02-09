@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702072344
+; Last modified: 201702090106
 
 ; ==============================================================
 ; Description
@@ -43,6 +43,8 @@
 ;
 ; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
 ; First draft of `transfer-sector`.
+;
+; 2017-02-09: Add `>drive-block` to `transfer-block`.
 
 ; ==============================================================
 ; Requirements
@@ -272,6 +274,7 @@ if 0 ; XXX OLD
 
 else
 
+  dw to_drive_block_
   dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
   dw rec_slash_track_,plus_  ; but the first track is not used
   dw dup_

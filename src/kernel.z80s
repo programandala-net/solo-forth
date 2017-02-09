@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702072345
+; Last modified: 201702090135
 
 include version.z80s
 
@@ -182,18 +182,21 @@ if defined gplusdos
   blocks_per_disk:                  equ 800
   sectors_per_block:                equ 2
   max_drives:                       equ 2
+  first_drive:                      equ 1 ; 1..2
 endif
 if defined plus3dos
   sectors_per_track:                equ 9
   blocks_per_disk:                  equ 720
   sectors_per_block:                equ 2
   max_drives:                       equ 2
+  first_drive:                      equ 'A' ; 'A'..'P'
 endif
 if defined trdos
   sectors_per_track:                equ 16
   blocks_per_disk:                  equ 636 ; 640 minus 4 KiB of sector 0
   sectors_per_block:                equ 4
   max_drives:                       equ 4
+  first_drive:                      equ 0 ; 0..3
 endif
 
 bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
@@ -1413,9 +1416,27 @@ endif
 ; A constant that returns the maximum number of drives
 ; available in the DOS.
 ;
+; See: `first-drive`.
+;
 ; }doc
 
   db max_drives
+
+; ----------------------------------------------
+  _c_constant_header first_drive_,'first-drive'
+
+; doc{
+;
+; first-drive ( -- c )
+;
+; A constant that returns the identifier _c_ of the first drive
+; available in the DOS.
+;
+; See: `max-drives`, `drive`.
+;
+; }doc
+
+  db first_drive
 
 ; ----------------------------------------------
 
@@ -1803,9 +1824,11 @@ endif
 ;
 ; init-asm  ( -- )
 ;
-; A deferred word called by `asm`. Its default behaviour is `noop`.
-; This word is modified the assembler labels module in order to init
-; the labels.
+; A deferred word called by `asm`. Its default behaviour is
+; `noop`.  This word is modified by the assembler labels module
+; in order to init the labels.
+;
+; See: `asm`.
 ;
 ; }doc
 
@@ -1818,7 +1841,7 @@ endif
 ;
 ; Enter the assembler mode.
 ;
-; See: `end-asm`, `code`.
+; See: `end-asm`, `code`, `init-asm`.
 ;
 ; }doc
 
@@ -7426,6 +7449,42 @@ simple_accept.end
   dw 0
 
 ; ----------------------------------------------
+  _variable_header block_drives_,'block-drives'
+
+; doc{
+;
+; block-drives  ( -- ca )
+;
+; A character variable that holds the number of block drives,
+; i.e. the number of drives that are used for blocks.  This
+; variable is set by `set-block-drives`.
+;
+; See: `set-block-drives`.
+;
+; }doc
+
+  db 1
+
+; ----------------------------------------------
+  _colon_header max_blocks_,'max-blocks'
+
+; doc{
+;
+; max-blocks  ( -- u )
+;
+; Return the number _u_ of maximum blocks available in the
+; system. The number depends on the current number of block
+; drives configured with `set-block-drives`. By default it's
+; one.
+;
+; See: `block-drives`, `blk/disk`, `set-block-drives`.
+;
+; }doc
+
+  dw blk_slash_disk_,block_drives_,c_fetch_,star_
+  dw exit_
+
+; ----------------------------------------------
   _colon_header block_question_,'block?'
 
 ; doc{
@@ -7436,7 +7495,7 @@ simple_accept.end
 ;
 ; }doc
 
-  dw blk_slash_disk_,u_less_than_
+  dw max_blocks_,u_less_than_
   dw exit_
 
 ; ----------------------------------------------
@@ -10236,16 +10295,34 @@ endif
   dw exit_
 
 ; ----------------------------------------------
+  _defer_header to_drive_block_,'>drive-block',,noop_
+
+; doc{
+;
+; >drive-block  ( u1 -- u2 )
+;
+; Convert block _u1_ to its equivalent _u2_ in its
+; corresponding disk drive, which is set the current drive.
+;
+; This is a deferred word that by default executes `noop`.  Its
+; action is set to `(>drive-block` when `set-block-drives` is
+; loaded.
+;
+; See: `set-block-drives`, `(>drive-block`.
+;
+; }doc
+
+; ----------------------------------------------
   _colon_header read_block_,'read-block'
 
 ; doc{
 ;
-; read-block  ( n -- )
+; read-block  ( u -- )
 ;
-; Read disk block _n_ to the buffer.
+; Read disk block _u_ to the buffer.
 ;
 ; ----
-; : read-block  ( n -- )
+; : read-block  ( u -- )
 ;   read-mode transfer-block  ;
 ; ----
 ;
@@ -10335,19 +10412,19 @@ buffer.end:
 
 ; doc{
 ;
-; block  ( n -- a )
+; block  ( u -- a )
 
-; If the block _n_ is already in memory, leave the address _a_
+; If the block _u_ is already in memory, leave the address _a_
 ; of the first cell in the disk buffer for data storage.
 ;
-; If the block _n_ is not already in memory, transfer it from
+; If the block _u_ is not already in memory, transfer it from
 ; disk to the buffer.  If the block occupying that buffer has
-; been marked as updated, rewrite it to disk before block _n_ is
+; been marked as updated, rewrite it to disk before block _u_ is
 ; read into the buffer.  Finally leave the address _a_ of the
 ; first cell in the disk buffer for data storage.
 ;
 ; ----
-; : block ( n -- a )
+; : block ( u -- a )
 ;   dup buffer-block =
 ;   if    drop
 ;   else  save-buffers  dup read-block  disk-buffer !

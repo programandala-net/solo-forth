@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-08
+:revdate: 2017-02-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1214,42 +1214,13 @@ block is interpreted.
 Words that could be moved to the library, if the `need` tool didn't use them:
 `2over`, `line>string`.
 
-.2016-12-30, 2017-01-23:
+.2016-12-30, 2017-01-23, 2017-02-09:
 
 NOTE: Milestone 0.14.0
 
-Make it possible to use any number of disks, in any order, for the library.
-This way, the main library could be only on its own disk, not copied to all the
-disks.
-
-Alternative method, drafted on 2017-01-03:
-
-----
-create block-drives  ( -- ca )
-
-[undefined] g+dos   ?\ 1 c, 2 c,
-[undefined] tr-dos  ?\ 0 c, 1 c, 2 c, 3 c,
-[undefined] +3dos   ?\ 'A' c, 'B' c,
-
-: no-block-drive  ( -- )  block-drives max-drives erase  ;
-
-: >block-drive  ( n -- ca )  block-drives +  ;
-
-: block-drive!  ( c n -- )  >block-drive c!  ;
-
-: block-drive@  ( n -- c )  >block-drive c@  ;
-
-: >drive-block  ( u1 -- u2 )
-  blk/disk /mod swap dup ?block-overflow
-  block-drive@ ?dup ?noblock set-drive throw  ;
-  \ Convert block _u1_ to its equivalent _u2_ in its corresponding
-  \ disk drive, which is set the current drive.
-
-: drive-blk  ( -- u )  blk @ >drive-block  ;
-  \ Return block number _u_, equivalent to the contents of `blk`
-  \ in its corresponding disk drive, which is set the current drive.
-  
-----
+Try and finish the implementation of `set-block-drives`.
+Then build the secondary disk images without the library.
+Also, think how to update `last-locatable`.
 
 .2016-12-08:
 
