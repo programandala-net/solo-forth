@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702082109
+  \ Last modified: 201702091644
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,6 +68,10 @@
   \ and `g.100i`. Make hook codes individually accessible to
   \ `need`. Improve `set-drive` to return an error result and
   \ move it to the kernel.
+  \
+  \ 2017-02-09: Improve all the Plus D memory fetch and store
+  \ words: smaller and faster. Compact the code, saving 4
+  \ blocks.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -198,7 +202,7 @@ variable file-address  \ copy of `hd0d` used by `(<file)`
 [unneeded] hwsad   ?\ $45 cconstant hwsad
 [unneeded] otfoc   ?\ $46 cconstant otfoc
 
-( patch --directory-descriptions-- )
+( patch --directory-descriptions-- dos-vars )
 
   \ Hook codes (continued)
 
@@ -216,6 +220,16 @@ need ?(  [unneeded] --directory-descriptions ?(
 11 cconstant execute-file-dir
 
 : --directory-descriptions--  ; ?)
+
+[unneeded] dos-vars ?\ 8192 constant dos-vars
+
+  \ doc{
+  \
+  \ dos-vars  ( -- a )
+  \
+  \ Address of the G+DOS variables in its own memory.
+  \
+  \ }doc
 
 ( get-drive )
 
@@ -586,150 +600,165 @@ code (cat)  ( n -- )
   \
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 
-( @dos )
+( @dos c@dos  )
 
-need assembler  need patch
+need ?(
 
-code @dos  ( a -- n )
+[unneeded] @dos ?(
+
+need assembler  need plusd-in,  need plusd-out,
+
+code @dos  ( a -- x )
+  h pop, plusd-in, m e ld, h incp, m d ld,
+         plusd-out, d push, jpnext, end-code ?)
+  \ doc{
+  \
+  \ @dos  ( a -- x )
+  \
+  \ Fetch the cell _x_ stored at Plus D memory address _a_.
+  \
+  \ See: `!dos`, `c@dos`.
+  \
+  \ }doc
+
+[unneeded] c@dos ?(
+
+need assembler  need plusd-in,  need plusd-out,
+
+code c@dos  ( ca -- b )
+  h pop, plusd-in, m a ld,
+         plusd-out, pusha jp, end-code ?)
+
+  \ doc{
+  \
+  \ c@dos  ( ca -- b )
+  \
+  \ Fetch byte _b_ stored at Plus D memory address _ca_.
+  \
+  \ See: `c!dos`, `@dos`.
+  \
+  \ }doc
+
+( !dos c!dos )
+
+need ?(
+
+[unneeded] !dos ?(
+
+need assembler  need plusd-in,  need plusd-out,
+
+code !dos  ( x a -- )
+  h pop, d pop, plusd-in, e m ld, h incp, d m ld,
+                plusd-out, jpnext, end-code ?)
+  \ doc{
+  \
+  \ !dos  ( x a -- )
+  \
+  \ Store _x_ at the Plus D memory address _a_.
+  \
+  \ See: `@dos`, `c!dos`.
+  \
+  \ }doc
+
+[unneeded] c!dos ?(
+
+need assembler  need plusd-in,  need plusd-out,
+
+code c!dos  ( b ca -- )
+  h pop, d pop, plusd-in, e m ld,
+                plusd-out, jpnext, end-code ?)
+
+  \ doc{
+  \
+  \ c!dos  ( b ca -- )
+  \
+  \ Store _b_ at the Plus D memory address _ca_.
+  \
+  \ See: `c@dos`, `!dos`.
+  \
+  \ }doc
+
+
+( @dosvar c@dosvar )
+
+need ?(
+
+[unneeded] @dosvar ?(
+
+need assembler  need dos-vars  need plusd-in,  need plusd-out,
+
+code @dosvar  ( n -- x )
   h pop,
-  b push,  \ save the Forth IP
-  h push,
-  patch hook,
-  h pop, m e ld, h incp, m d ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  d push,
-  jpnext,
-  end-code
-  \ Fetch the content of Plus D memory address.
+  plusd-in, dos-vars d ldp#, d addp, m e ld, h incp, m d ld,
+  plusd-out, d push, jpnext, end-code ?)
 
-( c@dos )
+  \ doc{
+  \
+  \ name  ( -- )
+  \
+  \ Fetch the contents _x_ of G+DOS variable _n_.
+  \
+  \ See: `!dosvar`, `c@dosvar`, `!dos`.
+  \
+  \ }doc
 
-need assembler  need patch
+[unneeded] c@dosvar ?(
 
-code c@dos  ( a -- b )
-  h pop,
-  b push,  \ save the Forth IP
-  h push,
-  patch hook,
-  h pop,
-  m a ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  pusha jp,
-  end-code
-  \ Fetch the content of Plus D memory address.
-
-( c!dos )
-
-need assembler  need patch
-
-code c!dos  ( b a -- )
-  h pop, d pop,
-  b push,  \ save the Forth IP
-  d push, h push,
-  patch hook,
-  h pop, d pop, e m ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  jpnext,
-  end-code
-  \ Store b into the Plus D memory address a.
-
-( !dos )
-
-need assembler  need patch
-
-code !dos  ( n a -- )
-  h pop, d pop,
-  b push,  \ save the Forth IP
-  d push, h push,
-  patch hook,
-  h pop, d pop, e m ld, h incp, d m ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  jpnext,
-  end-code
-  \ Store _n_ into the Plus D memory address _a_.
-
-( @dosvar )
-
-need assembler  need patch
-
-[defined] dos-vars ?\ 8192 constant dos-vars
-  \ Address of the G+DOS vars in its own memory.
-
-code @dosvar  ( n1 -- n2 )
-  h pop,
-  b push,  \ save the Forth IP
-  h push,
-  patch hook,
-  h pop, dos-vars d ldp#, d addp,
-  m e ld, h incp, m d ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  d push, jpnext, end-code
-  \ Fetch the content _n2_ of G+DOS variable _n1_.
-
-( c@dosvar )
-
-need assembler  patch
-
-[defined] dos-vars ?\ 8192 constant dos-vars
-  \ Address of the G+DOS vars in its own memory.
+need assembler  need dos-vars  need plusd-in,  need plusd-out,
 
 code c@dosvar  ( n -- b )
-  h pop,
-  b push,  \ save the Forth IP
-  h push,
-  patch hook,
-  h pop, dos-vars d ldp#, d addp,
-  m a ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  pusha jp,
+  h pop, plusd-in, dos-vars d ldp#, d addp, m a ld,
+         plusd-out, pusha jp, end-code ?)
 
-  end-code
-  \ Fetch the content _b_ of G+DOS variable _n_.
+  \ doc{
+  \
+  \ c@dosvar  ( n -- b )
+  \
+  \ Fetch the contents _b_ of G+DOS variable _n_.
+  \
+  \ See: `c!dosvar`, `c!dosvar`, `@dos`.
+  \
+  \ }doc
 
-( !dosvar )
+( !dosvar c!dosvar )
 
-need assembler  need patch
+need ?(
 
-[defined] dos-vars ?\ 8192 constant dos-vars
-  \ Address of the G+DOS vars in its own memory.
+[unneeded] !dosvar ?(
 
-code !dosvar  ( n1 n2 -- )
-  h pop, d pop,
-  b push,  \ save the Forth IP
-  d push, h push,
-  patch hook,
-  h pop, dos-vars d ldp#, d addp, d pop,
-  e m ld, h incp, d m ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next, ix, ldp#,  \ restore the Forth registers
-  jpnext,
-  end-code
-  \ Store _n1_ into the G+DOS variable _n2_.
+need assembler  need dos-vars  need plusd-in,  need plusd-out,
 
-( c!dosvar )
+code !dosvar  ( x n -- )
+  h pop, plusd-in, dos-vars d ldp#, d addp,
+                   d pop, e m ld, h incp, d m ld,
+         plusd-out, jpnext, end-code ?)
 
-need assembler  need patch
+  \ doc{
+  \
+  \ !dosvar  ( x n -- )
+  \
+  \ Store _x_ into the G+DOS variable _n_.
+  \
+  \ See: `@dosvar`, `c!dosvar`, `!dos`.
+  \
+  \ }doc
 
-[defined] dos-vars ?\ 8192 constant dos-vars
-  \ Address of the G+DOS vars in its own memory.
+[unneeded] c!dosvar ?(
+
+need assembler  need dos-vars  need plusd-in,  need plusd-out,
 
 code c!dosvar  ( b n -- )
-  h pop, d pop,
-  b push,  \ save the Forth IP
-  d push, h push,
-  patch hook,
-  h pop, dos-vars d ldp#, d addp, d pop,
-  e m ld,
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  jpnext,
-  end-code
+  h pop, plusd-in, dos-vars d ldp#, d addp, d pop, e m ld,
+                   plusd-out, jpnext, end-code ?)
+
+  \ doc{
+  \
+  \ c!dosvar  ( b n -- )
+  \
   \ Store _b_ into the G+DOS variable _n_.
+  \
+  \ See: `c@dosvar`, `!dosvar`, `c!dos`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
