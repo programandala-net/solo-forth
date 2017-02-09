@@ -105,7 +105,7 @@ flash cards, and much more memory, beside many other new features.
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 with the
    Plus D disk interface.
-2. "Insert" the file <disks/gplusdos/disk0_boot.mgt> as disk 1 of the
+2. "Insert" the file <disks/gplusdos/disk_0_boot.mgt> as disk 1 of the
    Plus D disk interface.
 3. Choose "128 BASIC" from the ZX Spectrum start menu.
 4. Type `run` in BASIC. G+DOS will be loaded from disk, and Solo Forth
@@ -115,7 +115,7 @@ flash cards, and much more memory, beside many other new features.
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 with the
    Beta 128 disk interface.
-2. "Insert" the file <disks/trdos/disk0_boot.trd> as disk A of the
+2. "Insert" the file <disks/trdos/disk_0_boot.trd> as disk A of the
    Beta 128 disk interface.
 3. Choose "128 BASIC" from the ZX Spectrum start menu.
 4. Type `print usr 15616` in BASIC. This will enter the TR-DOS command
@@ -128,7 +128,7 @@ flash cards, and much more memory, beside many other new features.
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 or
    http://www.worldofspectrum.org/zxplus3e/[ZX Spectrum
    +3e,role="external"].
-2. "Insert" the file <disks/plus3dos/disk0_boot.180.dsk> as disk A of
+2. "Insert" the file <disks/plus3dos/disk_0_boot.180.dsk> as disk A of
    the ZX Spectrum +3.
 3. Choose "Loader" from the ZX Spectrum +3 start menu. Solo Forth will
    be loaded from disk.
@@ -144,13 +144,13 @@ directly on the disk sectors, without any filesystem.  In order to use
 the library, follow these steps:
 
 1. <<_how_to_run,Run Solo Forth>>.
-2. Insert the library disk:
-** In G+DOS: "Insert" the file <disks/gplusdos/disk1_library.mgt> as
-   disk 2 of the Plus D disk interface. Type `2 set-drive throw` to
-   make drive 2 the current one.
-** In TR-DOS: "Insert" the file <disks/trdos/disk1_library.trd> as
-   disk B of the Beta 128 disk interface. Type `1 set-drive throw` to
-   make drive 1 (="B") the current one.
+2. Insert the library disk: ** In G+DOS: "Insert" the file
+   <disks/gplusdos/disk_1_library.mgt> as disk 2 of the Plus D disk
+   interface. Type `2 set-drive throw` to make drive 2 the current
+   one.  ** In TR-DOS: "Insert" the file
+   <disks/trdos/disk_1_library.trd> as disk B of the Beta 128 disk
+   interface. Type `1 set-drive throw` to make drive 1 (="B") the
+   current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 1 is used as a loader.  In Solo Forth, block 1 contains just
    `2 load`, in order to load the `need` tool and related words from

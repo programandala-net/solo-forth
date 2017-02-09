@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702091310
+# Last modified: 201702092109
 
 # ==============================================================
 # Author
@@ -100,41 +100,41 @@ g: gplusdos
 
 .PHONY: gplusdos
 gplusdos: \
-	disks/gplusdos/disk0_boot.mgt \
-	disks/gplusdos/disk1_library.mgt \
-	disks/gplusdos/disk2_games.mgt \
-	disks/gplusdos/disk3_workbench.mgt
+	disks/gplusdos/disk_0_boot.mgt \
+	disks/gplusdos/disk_1_library.mgt \
+	disks/gplusdos/disk_2_games.mgt \
+	disks/gplusdos/disk_3_workbench.mgt
 
 .PHONY: p
 p: plus3dos
 
 .PHONY: plus3dos
 plus3dos: \
-	disks/plus3dos/disk0_boot.180.dsk \
-	disks/plus3dos/disk0_boot.720.dsk \
-	disks/plus3dos/disk1_library.dsk \
-	disks/plus3dos/disk2_games.dsk \
-	disks/plus3dos/disk3_workbench.dsk
+	disks/plus3dos/disk_0_boot.180.dsk \
+	disks/plus3dos/disk_0_boot.720.dsk \
+	disks/plus3dos/disk_1_library.dsk \
+	disks/plus3dos/disk_2_games.dsk \
+	disks/plus3dos/disk_3_workbench.dsk
 
 .PHONY: t
 t: trdos
 
 .PHONY: trdos
 trdos: \
-	disks/trdos/disk0_boot.trd \
-	disks/trdos/disk1_library.trd \
-	disks/trdos/disk2_games.trd \
-	disks/trdos/disk3_workbench.trd
+	disks/trdos/disk_0_boot.trd \
+	disks/trdos/disk_1_library.trd \
+	disks/trdos/disk_2_games.trd \
+	disks/trdos/disk_3_workbench.trd
 
-.PHONY: disk9
-disk9: \
-	disks/gplusdos/disk9_library_without_dos.mgt \
-	disks/plu3sdos/disk9_library_without_dos.dsk \
-	disks/trdos/disk9_library_without_dos.trd
+.PHONY: disk_9
+disk_9: \
+	disks/gplusdos/disk_9_library_without_dos.mgt \
+	disks/plu3sdos/disk_9_library_without_dos.dsk \
+	disks/trdos/disk_9_library_without_dos.trd
 
-# XXX REMARK -- disk9 is a special disk image used for
+# XXX REMARK -- disk_9 is a special disk image used for
 # debugging. It contains the core library except the DOS
-# modules. This means disk9 contains exactly the same blocks in
+# modules. This means disk_9 contains exactly the same blocks in
 # all DOS implementations. This is useful to check if disk
 # access works fine when a new DOS is implemented, comparing
 # the output of `blks` (a debug tool, temporarily included in
@@ -276,7 +276,7 @@ tmp/fzx_fonts.tap : $(fzx_fonts)
 # ----------------------------------------------
 # G+DOS boot disk
 
-disks/gplusdos/disk0_boot.mgt: \
+disks/gplusdos/disk_0_boot.mgt: \
 		tmp/loader.gplusdos.bas.tap \
 		tmp/kernel.gplusdos.bin.tap \
 		tmp/pr64.tap \
@@ -288,7 +288,7 @@ disks/gplusdos/disk0_boot.mgt: \
 # ----------------------------------------------
 # +3DOS boot disk
 
-tmp/disk0_boot.plus3dos.tap: \
+tmp/disk_0_boot.plus3dos.tap: \
 		tmp/loader.plus3dos.bas.tap \
 		tmp/kernel.plus3dos.bin.tap \
 		tmp/pr64.tap \
@@ -297,16 +297,16 @@ tmp/disk0_boot.plus3dos.tap: \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
-disks/plus3dos/disk0_boot.720.dsk: tmp/disk0_boot.plus3dos.tap
+disks/plus3dos/disk_0_boot.720.dsk: tmp/disk_0_boot.plus3dos.tap
 	tap2dsk -720 -label SoloForth $< $@
 
-disks/plus3dos/disk0_boot.180.dsk: tmp/disk0_boot.plus3dos.tap
+disks/plus3dos/disk_0_boot.180.dsk: tmp/disk_0_boot.plus3dos.tap
 	tap2dsk -180 -label SoloForth $< $@
 
 # ----------------------------------------------
 # TR-DOS boot disk
 
-tmp/disk0_boot.trdos.tap: \
+tmp/disk_0_boot.trdos.tap: \
 		tmp/loader.trdos.bas.tap \
 		tmp/kernel.trdos.bin.tap \
 		tmp/pr64.tap \
@@ -315,7 +315,7 @@ tmp/disk0_boot.trdos.tap: \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
-disks/trdos/disk0_boot.trd: tmp/disk0_boot.trdos.tap
+disks/trdos/disk_0_boot.trd: tmp/disk_0_boot.trdos.tap
 	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
 	rm -f $@
 	ln -f make/emptytrd.exe make/writetrd.exe tmp/
@@ -368,18 +368,18 @@ gplusdos_core_lib_files = \
 tmp/library_for_gplusdos.fsb: $(gplusdos_core_lib_files)
 	cat $(gplusdos_core_lib_files) > $@
 
-disks/gplusdos/disk1_library.mgt: tmp/library_for_gplusdos.fsb
+disks/gplusdos/disk_1_library.mgt: tmp/library_for_gplusdos.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 # ------------------------------
 # Additional disks
 
-disks/gplusdos/disk2_games.mgt: tmp/games.fsb
+disks/gplusdos/disk_2_games.mgt: tmp/games.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-disks/gplusdos/disk3_workbench.mgt: tmp/workbench.fsb
+disks/gplusdos/disk_3_workbench.mgt: tmp/workbench.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
@@ -389,39 +389,39 @@ disks/gplusdos/disk3_workbench.mgt: tmp/workbench.fsb
 tmp/library_for_gplusdos_and_games.fsb: $(gplusdos_core_lib_files) $(game_lib_files)
 	cat $(gplusdos_core_lib_files) $(game_lib_files) > $@
 
-disks/gplusdos/disk2_library_and_games.mgt: tmp/library_for_gplusdos_and_games.fsb
+disks/gplusdos/disk_2_library_and_games.mgt: tmp/library_for_gplusdos_and_games.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos_and_misc_benchmarks.fsb: $(gplusdos_core_lib_files) $(meta_benchmark_misc_lib_files)
 	cat $^ > $@
 
-disks/gplusdos/disk3_library_and_misc_benchmarks.mgt: tmp/library_for_gplusdos_and_misc_benchmarks.fsb
+disks/gplusdos/disk_3_library_and_misc_benchmarks.mgt: tmp/library_for_gplusdos_and_misc_benchmarks.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos_and_rng_benchmarks.fsb: $(gplusdos_core_lib_files) $(meta_benchmark_rng_lib_files)
 	cat $^ > $@
 
-disks/gplusdos/disk4_library_and_rng_benchmarks.mgt: tmp/library_for_gplusdos_and_rng_benchmarks.fsb
+disks/gplusdos/disk_4_library_and_rng_benchmarks.mgt: tmp/library_for_gplusdos_and_rng_benchmarks.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos_and_flow_benchmarks.fsb: $(gplusdos_core_lib_files) $(meta_benchmark_flow_lib_files)
 	cat $^ > $@
 
-disks/gplusdos/disk5_library_and_flow_benchmarks.mgt: tmp/library_for_gplusdos_and_flow_benchmarks.fsb
+disks/gplusdos/disk_5_library_and_flow_benchmarks.mgt: tmp/library_for_gplusdos_and_flow_benchmarks.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
 tmp/library_for_gplusdos_and_tests.fsb: $(gplusdos_core_lib_files) $(meta_test_lib_files)
 	cat $^ > $@
 
-disks/gplusdos/disk6_library_and_tests.mgt: tmp/library_for_gplusdos_and_tests.fsb
+disks/gplusdos/disk_6_library_and_tests.mgt: tmp/library_for_gplusdos_and_tests.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
-disks/gplusdos/disk9_library_without_dos.mgt: tmp/library_without_dos.fsb
+disks/gplusdos/disk_9_library_without_dos.mgt: tmp/library_without_dos.fsb
 	fsb2-mgt $< ;\
 	mv $(basename $<).mgt $@
 
@@ -436,18 +436,18 @@ plus3dos_core_lib_files = $(filter-out %trdos.fsb %gplusdos.fsb, $(core_lib_file
 tmp/library_for_plus3dos.fsb: $(plus3dos_core_lib_files)
 	cat $(gplusdos_core_lib_files) > $@
 
-disks/plus3dos/disk1_library.dsk: tmp/library_for_plus3dos.fsb
+disks/plus3dos/disk_1_library.dsk: tmp/library_for_plus3dos.fsb
 	fsb2-dsk tmp/library_for_plus3dos.fsb ;\
 	mv $(basename $<).dsk $@
 
 # ------------------------------
 # Additional disks
 
-disks/plus3dos/disk2_games.dsk: tmp/games.fsb
+disks/plus3dos/disk_2_games.dsk: tmp/games.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
-disks/plus3dos/disk3_workbench.dsk: tmp/workbench.fsb
+disks/plus3dos/disk_3_workbench.dsk: tmp/workbench.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
@@ -457,39 +457,39 @@ disks/plus3dos/disk3_workbench.dsk: tmp/workbench.fsb
 tmp/library_for_plus3dos_and_games.fsb: $(plus3dos_core_lib_files) $(game_lib_files)
 	cat $(plus3dos_core_lib_files) $(game_lib_files) > $@
 
-disks/plus3dos/disk2_library_and_games.dsk: tmp/library_for_plus3dos_and_games.fsb
+disks/plus3dos/disk_2_library_and_games.dsk: tmp/library_for_plus3dos_and_games.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
 tmp/library_for_plus3dos_and_misc_benchmarks.fsb: $(plus3dos_core_lib_files) $(meta_benchmark_misc_lib_files)
 	cat $^ > $@
 
-disks/plus3dos/disk3_library_and_misc_benchmarks.dsk: tmp/library_for_plus3dos_and_misc_benchmarks.fsb
+disks/plus3dos/disk_3_library_and_misc_benchmarks.dsk: tmp/library_for_plus3dos_and_misc_benchmarks.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
 tmp/library_for_plus3dos_and_rng_benchmarks.fsb: $(plus3dos_core_lib_files) $(meta_benchmark_rng_lib_files)
 	cat $^ > $@
 
-disks/plus3dos/disk4_library_and_rng_benchmarks.dsk: tmp/library_for_plus3dos_and_rng_benchmarks.fsb
+disks/plus3dos/disk_4_library_and_rng_benchmarks.dsk: tmp/library_for_plus3dos_and_rng_benchmarks.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
 tmp/library_for_plus3dos_and_flow_benchmarks.fsb: $(plus3dos_core_lib_files) $(meta_benchmark_flow_lib_files)
 	cat $^ > $@
 
-disks/plus3dos/disk5_library_and_flow_benchmarks.dsk: tmp/library_for_plus3dos_and_flow_benchmarks.fsb
+disks/plus3dos/disk_5_library_and_flow_benchmarks.dsk: tmp/library_for_plus3dos_and_flow_benchmarks.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
 tmp/library_for_plus3dos_and_tests.fsb: $(plus3dos_core_lib_files) $(meta_test_lib_files)
 	cat $^ > $@
 
-disks/plus3dos/disk6_library_and_tests.dsk: tmp/library_for_plus3dos_and_tests.fsb
+disks/plus3dos/disk_6_library_and_tests.dsk: tmp/library_for_plus3dos_and_tests.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
-disks/plus3dos/disk9_library_without_dos.dsk: tmp/library_without_dos.fsb
+disks/plus3dos/disk_9_library_without_dos.dsk: tmp/library_without_dos.fsb
 	fsb2-dsk $< ;\
 	mv $(basename $<).dsk $@
 
@@ -505,18 +505,18 @@ trdos_core_lib_files = \
 tmp/library_for_trdos.fsb: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
 
-disks/trdos/disk1_library.trd: tmp/library_for_trdos.fsb 
+disks/trdos/disk_1_library.trd: tmp/library_for_trdos.fsb 
 	fsb2-trd $< SoloFh1 ; \
 	mv $(basename $<).trd $@
 
 # ------------------------------
 # Additional disks
 
-disks/trdos/disk2_games.trd: tmp/games.fsb
+disks/trdos/disk_2_games.trd: tmp/games.fsb
 	fsb2-trd $< SoloFth2 ; \
 	mv $(basename $<).trd $@
 
-disks/trdos/disk3_workbench.trd: tmp/workbench.fsb
+disks/trdos/disk_3_workbench.trd: tmp/workbench.fsb
 	fsb2-trd $< SoloFth3 ; \
 	mv $(basename $<).trd $@
 
@@ -527,39 +527,39 @@ tmp/library_for_trdos_and_games.fsb: \
 	$(trdos_core_lib_files) $(game_lib_files)
 	cat $(trdos_core_lib_files) $(game_lib_files) > $@
 
-disks/trdos/disk2_library_and_games.trd: tmp/library_for_trdos_and_games.fsb
+disks/trdos/disk_2_library_and_games.trd: tmp/library_for_trdos_and_games.fsb
 	fsb2-trd $< SoloFth2 ; \
 	mv $(basename $<).trd $@
 
 tmp/library_for_trdos_and_misc_benchmarks.fsb: $(trdos_core_lib_files) $(meta_benchmark_misc_lib_files)
 	cat $^ > $@
 
-disks/trdos/disk3_library_and_misc_benchmarks.trd: tmp/library_for_trdos_and_misc_benchmarks.fsb
+disks/trdos/disk_3_library_and_misc_benchmarks.trd: tmp/library_for_trdos_and_misc_benchmarks.fsb
 	fsb2-trd $< SoloFth3 ;\
 	mv $(basename $<).trd $@
 
 tmp/library_for_trdos_and_rng_benchmarks.fsb: $(trdos_core_lib_files) $(meta_benchmark_rng_lib_files)
 	cat $^ > $@
 
-disks/trdos/disk4_library_and_rng_benchmarks.trd: tmp/library_for_trdos_and_rng_benchmarks.fsb
+disks/trdos/disk_4_library_and_rng_benchmarks.trd: tmp/library_for_trdos_and_rng_benchmarks.fsb
 	fsb2-trd $< SoloFth4 ;\
 	mv $(basename $<).trd $@
 
 tmp/library_for_trdos_and_flow_benchmarks.fsb: $(trdos_core_lib_files) $(meta_benchmark_flow_lib_files)
 	cat $^ > $@
 
-disks/trdos/disk5_library_and_flow_benchmarks.trd: tmp/library_for_trdos_and_flow_benchmarks.fsb
+disks/trdos/disk_5_library_and_flow_benchmarks.trd: tmp/library_for_trdos_and_flow_benchmarks.fsb
 	fsb2-trd $< SoloFth5 ;\
 	mv $(basename $<).trd $@
 
 tmp/library_for_trdos_and_tests.fsb: $(trdos_core_lib_files) $(meta_test_lib_files)
 	cat $^ > $@
 
-disks/trdos/disk6_library_and_tests.trd: tmp/library_for_trdos_and_tests.fsb
+disks/trdos/disk_6_library_and_tests.trd: tmp/library_for_trdos_and_tests.fsb
 	fsb2-trd $< SoloFth6 ; \
 	mv $(basename $<).trd $@
 
-disks/trdos/disk9_library_without_dos.trd: tmp/library_without_dos.fsb
+disks/trdos/disk_9_library_without_dos.trd: tmp/library_without_dos.fsb
 	fsb2-trd $< SoloFth9 ; \
 	mv $(basename $<).trd $@
 
@@ -750,4 +750,5 @@ oldbackup:
 # 2017-02-09: Update the rules and filenames after the
 # implementation of `set-block-disks`, which makes it possible
 # to use several block disks, therefore making in unnecessary
-# to copy the library in the additional disks.
+# to copy the library in the additional disks. Reduce the
+# number of disk images from 7 to 4.
