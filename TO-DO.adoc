@@ -569,6 +569,11 @@ Define the Z80-symbol constants in the assembler word list:
 // +3DOS {{{2
 === +3DOS ===
 
+.2017-02-09:
+
+Adjust the far-memory system to the requirements of +3DOS (RAM disk
+and DOS buffers).
+
 .2017-02-06:
 
 Replace `transfer-bytes` with `transfer-sector`. Use the DOS calls DD
@@ -1649,6 +1654,11 @@ Rename `frames@` to `ticks@`, etc.?
 
 // Tools {{{1
 == Tools ==
+
+.2017-02-09:
+
+Improve `search_library.sh` to include the kernel, or write an
+alternative.
 
 .2017-01-06:
 

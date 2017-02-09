@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-08
+:revdate: 2017-02-09
 :toc:
 :linkattrs:
 
@@ -101,41 +101,43 @@ flash cards, and much more memory, beside many other new features.
 
 == How to run
 
-=== ZX Spectrum 128 with G+DOS
+=== On ZX Spectrum 128 with G+DOS
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 with the
    Plus D disk interface.
-2. "Insert" the file <disks/gplusdos/disk0.mgt> as disk 1 of the Plus
-   D disk interface.
+2. "Insert" the file <disks/gplusdos/disk0_boot.mgt> as disk 1 of the
+   Plus D disk interface.
 3. Choose "128 BASIC" from the ZX Spectrum start menu.
 4. Type `run` in BASIC. G+DOS will be loaded from disk, and Solo Forth
    as well.
 
-=== ZX Spectrum 128 with TR-DOS
+=== On ZX Spectrum 128 with TR-DOS
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum 128 with the
    Beta 128 disk interface.
-2. "Insert" the file <disks/trdos/disk0.trd> as disk A of the Beta 128
-   disk interface.
+2. "Insert" the file <disks/trdos/disk0_boot.trd> as disk A of the
+   Beta 128 disk interface.
 3. Choose "128 BASIC" from the ZX Spectrum start menu.
-4. Type `randomize usr 15616` in BASIC. This will enter the TR-DOS
-   command line, which uses keyboard tokens, like the ZX Spectrum 48.
-5. Type the `R` key to get the `RUN` command and press the Enter
-   key. Solo Forth will be loaded from disk.
+4. Type `print usr 15616` in BASIC. This will enter the TR-DOS command
+   line, which uses keyboard tokens, like the ZX Spectrum 48.
+5. Type the `R` key to get the `RUN` command and press the Enter key.
+   Solo Forth will be loaded from disk.
 
-=== ZX Spectrum +3 and ZX Spectrum +3e
+=== On ZX Spectrum +3 or ZX Spectrum +3e
 
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 or
    http://www.worldofspectrum.org/zxplus3e/[ZX Spectrum
    +3e,role="external"].
-2. "Insert" the file <disks/plus3dos/disk0.180.dsk> as disk A of the
-   ZX Spectrum +3.
+2. "Insert" the file <disks/plus3dos/disk0_boot.180.dsk> as disk A of
+   the ZX Spectrum +3.
 3. Choose "Loader" from the ZX Spectrum +3 start menu. Solo Forth will
    be loaded from disk.
 
-== How to use the library
+== How to use the Forth source disks
 
-NOTE: At the moment, the library can not be used on +3DOS.
+NOTE: At the moment, the Forth source disks can not be used on +3DOS.
+
+=== How to use the library
 
 The library disk contains the source code in Forth blocks, written
 directly on the disk sectors, without any filesystem.  In order to use
@@ -143,12 +145,12 @@ the library, follow these steps:
 
 1. <<_how_to_run,Run Solo Forth>>.
 2. Insert the library disk:
-** In G+DOS: "Insert" the file <disks/gplusdos/disk1_lib.mgt> as disk
-   2 of the Plus D disk interface. Type `2 set-drive throw` to set
-   drive 2 the current one.
-** In TR-DOS: "Insert" the file <disks/trdos/disk1_lib.trd> as disk B
-   of the Beta 128 disk interface. Type `1 set-drive throw` to set
-   drive 1 (="B") the current one.
+** In G+DOS: "Insert" the file <disks/gplusdos/disk1_library.mgt> as
+   disk 2 of the Plus D disk interface. Type `2 set-drive throw` to
+   make drive 2 the current one.
+** In TR-DOS: "Insert" the file <disks/trdos/disk1_library.trd> as
+   disk B of the Beta 128 disk interface. Type `1 set-drive throw` to
+   make drive 1 (="B") the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 1 is used as a loader.  In Solo Forth, block 1 contains just
    `2 load`, in order to load the `need` tool and related words from
@@ -156,13 +158,9 @@ the library, follow these steps:
 4. Type `need name`, were "name" is the name of the word or tool you
    want to load from the library.
 
-Disk image number 1 contains only the library.  Disk images from
-number 2 contain the library plus sample games, benchmarks and tests,
-as their filenames read.
+=== How to use the additional source disks
 
-In a future version, the library will not be copied in the other
-disks, because it will be possible to use several block disks at the
-same time.
+Section pending.
 
 === Library index
 
@@ -209,7 +207,8 @@ indexer.
 An alternative indexer is under development. It's activated with
 `use-fly-index` and does not make and index in advance: Instead, it
 indexes the blocks on the fly, when they are searched the first time.
-This indexer is included in version 0.12.0 but it's not finished yet.
+This indexer was included in Solo Forth 0.12.0 but it's not finished
+yet.
 
 == Documentation
 
@@ -228,11 +227,11 @@ written in Forth with
 http://gnu.org/software/gforth[Gforth,role="external"], and it will be
 included in a future version of Solo Forth.
 
-=== How to search the library
+=== How to search the Forth sources
 
-A simple wrapper script is provided to search the library for a
-regular expression. It's used during the development, but it can be
-useful for the user too.
+A simple wrapper script is provided to search the Forth sources (not
+the Z80 kernel files) for a regular expression. It's used during the
+development, but it can be useful for the user too.
 
 Usage examples:
 
@@ -263,9 +262,8 @@ from block 1 of your customized disk 1, with a simple `1 load`. When
 the loading finishes, you can save a snapshot with the ZX Spectrum
 emulator.
 
-Some simple little games are provided as examples in the library.
-They are in their own disk image, which contains also the whole
-library. Some of them are not finished yet.
+Some simple little games are provided as examples, in their own disk.
+Some of them are not finished yet.
 
 In order to try and fix the Forth system during its development, two
 more complex game projects are being developed at the same time. They
@@ -280,7 +278,8 @@ to your home <~/.vim/> directory.
 
 == How to build
 
-If you modify the kernel or the library, you need to build the system.
+If you modify the sources, you have to build new disk images for your
+DOS of choice.
 
 First, see the requirements listed in the header of the <Makefile>
 file and install the required programs. Then enter the project
@@ -296,6 +295,6 @@ images for your DOS of choice:
 | All of them  | `make all` or simply `make`.
 |===
 
-The correspondent disk images will be recreated in the <disks>
+The correspondent disk images will be created in the <disks>
 directory.
 

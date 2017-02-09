@@ -21,8 +21,10 @@
 ; upper case. Rename `draw` to `draw_line_24BA; use `draw` for
 ; the official routine.
 
-; 2016-09-02: Rename the entry point of ADD-CHAR at 0F85 with a
-; descriptive name.
+; 2016-09-02: Rename the entry point of ADD-CHAR at 0F85 with a descriptive
+; name.
+;
+; 2017-02-09: Add two additional entry points, and two 128K routines.
 
 ; ==============================================================
 
@@ -127,6 +129,7 @@ rom_clear_prb:                       equ 0x0EDF
 rom_clear_run:                       equ 0x1EAF
 rom_clear_sp:                        equ 0x1097
 rom_close:                           equ 0x16E5
+rom_close_0_16EB:                    equ 0x16EB
 rom_close_1:                         equ 0x16FC
 rom_close_2:                         equ 0x1701
 rom_close_str:                       equ 0x171C
@@ -215,8 +218,8 @@ rom_dr_3_prms:                       equ 0x238D
 rom_dr_prms:                         equ 0x23C1
 rom_dr_sin_nz:                       equ 0x23A3
 rom_draw:                            equ 0x2382
-rom_draw_line_24BA:                  equ 0x24BA ; entry point of the draw_line routine
 rom_draw_line:                       equ 0x24B7
+rom_draw_line_24BA:                  equ 0x24BA ; entry point of the draw_line routine
 rom_draw_save:                       equ 0x2497
 rom_drw_steps:                       equ 0x2420
 rom_e_divsn:                         equ 0x2D6D
@@ -490,6 +493,7 @@ rom_main_2:                          equ 0x12AC
 rom_main_3:                          equ 0x12CF
 rom_main_4:                          equ 0x1303
 rom_main_5:                          equ 0x133C
+rom_main_5_1349:                     equ 0x1349
 rom_main_6:                          equ 0x1373
 rom_main_7:                          equ 0x1376
 rom_main_8:                          equ 0x1384
@@ -1149,3 +1153,8 @@ rom_zeros_4_or_5:                    equ 0x2FFB
 rom_zplus:                           equ 0x37A1
 rom_zx81_name:                       equ 0x04AA
 
+; ZX Spectrum 128K 
+
+rom_swap:                            equ 0x5B00 ; 128K paging subroutine in RAM
+
+rom_128_new:                         equ 0x0057
