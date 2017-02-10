@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702091644
+  \ Last modified: 201702101827
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,11 @@
   \ 2017-02-09: Improve all the Plus D memory fetch and store
   \ words: smaller and faster. Compact the code, saving 4
   \ blocks.
+  \
+  \ 2017-02-10: Rename `<file` to `file>`, and `<file-as-is` to
+  \ `file-as-is>`.  The new names are consistent with the
+  \ convention used in Forth.  Non-standard file words are
+  \ being unified in G+DOS, TR-DOS and +3DOS.
 
 ( plusd-in plusd-out plusd-in, plusd-out, )
 
@@ -160,8 +165,8 @@ ufia 18 + constant hd0d    \ file start address
 2 sstr1 c!  \ stream 2
 1 dstr1 c!  \ drive 1
 
-variable file-length   \ copy of `hd0b` used by `(<file)`
-variable file-address  \ copy of `hd0d` used by `(<file)`
+variable file-length   \ copy of `hd0b` used by `(file>)`
+variable file-address  \ copy of `hd0d` used by `(file>)`
 
 ( --file-types-- )
 
@@ -341,10 +346,9 @@ need ufia  need get-drive
   \ }doc
 
 : >ufia  ( ca1 len1 ca2 len2 -- )
+  filename!  dup hd0b !  file-length !
+             dup hd0d !  file-address !
   3 hd00 c!  4 nstr1 c!  \ code filetype and dir description
-  filename!
-  dup hd0b !  file-length !
-  dup hd0d !  file-address !
   get-drive dstr1 c!  ;
 
   \ doc{
@@ -386,12 +390,12 @@ code (>file)  ( -- ior )
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return error result _ior_.
 
-( <file )
+( file> )
 
 need assembler  need ufia  need >ufia
 need hgfile  need lbyte  need hldbk
 
-code (<file)  ( -- ior )
+code (file>)  ( -- ior )
 
   b push,  \ save the Forth IP
 
@@ -422,8 +426,15 @@ code (<file)  ( -- ior )
   \ file header and the parameters specified by the high level
   \ command. Return error result _ior_.
 
-: <file  ( ca1 len1 ca2 len2 -- ior )
-  >ufia (<file) dosior>ior  ;
+: file>  ( ca1 len1 ca2 len2 -- ior )
+  2swap >ufia (file>) dosior>ior  ;
+
+  \ doc{
+  \
+  \ file>  ( ca1 len1 ca2 len2 -- ior )
+  \
+  \ }doc
+
   \ Load a memory region _ca1 len1_ from file _ca2 len2_
   \ and return error result _ior_.
 
@@ -490,12 +501,12 @@ code g.100i  ( u -- )
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
 
-( <file-as-is )
+( file-as-is> )
 
 need assembler  need ufia  need >ufia
 need hgfile  need lbyte  need hldbk
 
-code (<file-as-is)  ( -- ior )
+code (file-as-is>)  ( -- ior )
 
   b push,  \ save the Forth IP
 
@@ -518,8 +529,8 @@ code (<file-as-is)  ( -- ior )
   \ file header and the parameters specified by the high level
   \ command.
 
-: <file-as-is  ( ca len -- ior )
-  0 0 2swap >ufia (<file-as-is) dosior>ior  ;
+: file-as-is>  ( ca len -- ior )
+  0 0 2swap >ufia (file-as-is>) dosior>ior  ;
   \ Load a file _ca len_ from disk, returning the error result
   \ _ior_.
 

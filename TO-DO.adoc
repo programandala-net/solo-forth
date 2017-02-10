@@ -482,6 +482,10 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-02-09:
+
+Study if `flush` should be added to `set-drive`.
+
 .2017-02-05:
 
 Unify G+DOS `transfer-sector` and TR-DOS `transfer-sectors`. Make
@@ -546,7 +550,7 @@ Investigate how to use the free memory of the Plus D RAM.
 
 Having implemented `drive`, to convert a 0-index drive to the actual
 identifier needed by the current DOS, the notation used for TR-DOS in
-those cased must be decided:
+those cases must be decided:
 
 |===
 | DOS                                       | First drive | Last drive
