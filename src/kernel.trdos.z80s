@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702090106
+; Last modified: 201702101819
 
 ; ==============================================================
 ; Description
@@ -38,20 +38,19 @@
 ; 2017-02-04: Add option to restore the BASIC SP and the number
 ; of lines of the lower screen before calling TR-DOS.
 ;
-; The number of lines was the reason of the crash: TR-DOS
-; throws a disk error and BASIC can not print it. The disk
-; error happens when `transfer-sectors` reads a sector from
-; disk B.  Choosing "abort" at the TR-DOS disk error message
-; enters BASIC. Then Forth can be reentered using a warm
-; restart.  The step rate of drive B has been increased by 2
-; units.
+; The number of lines was the reason of the crash: TR-DOS throws
+; a disk error and BASIC can not print it. The disk error
+; happens when `transfer-sectors` reads a sector from disk B.
+; Choosing "abort" at the TR-DOS disk error message enters
+; BASIC. Then Forth can be reentered using a warm restart.  The
+; step rate of drive B has been increased by 2 units.
 ;
 ; Test all implementations of `cat` to confirm the problem.
 ;
 ; 2017-02-05: Remove duplicated implementations of `cat`. Tidy,
-; fix and improve the routines to enter and exit TR-DOS.
-; Remove old code. Add `read-system-track`. Add first working
-; version of `set-drive`.
+; fix and improve the routines to enter and exit TR-DOS.  Remove
+; old code. Add `read-system-track`. Add first working version
+; of `set-drive`.
 ;
 ; 2017-02-05: Move `read-block` and `write-block` to the main
 ; file of the kernel, because they are identical in G+DOS,
@@ -61,6 +60,9 @@
 ; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
 ;
 ; 2017-02-09: Add `>drive-block` to `transfer-block`.
+;
+; 2017-02-10: First draft of `file>`. First working version of
+; `>file`.
 
 ; ==============================================================
 ; Requirements
@@ -203,21 +205,21 @@ push_dos_ior:
   dw dos
 
 ; ----------------------------------------------
-  _constant_header dos_c_routine_,'dosc-routine'
+  _constant_header dos_c_routine_,'dos-c-routine'
 
   ; XXX TODO -- Move to the assembler word list.
 
   dw dos.c
 
 ; ----------------------------------------------
-  _constant_header dos_preserve_ip_routine_,'dospreserveip-routine'
+  _constant_header dos_preserve_ip_routine_,'dos-preserve-ip-routine'
 
   ; XXX TODO -- Move to the assembler word list.
 
   dw dos.preserve_ip
 
 ; ----------------------------------------------
-  _constant_header dos_ip_on_tos_routine_,'dosipontos-routine'
+  _constant_header dos_ip_on_tos_routine_,'dos-ip-on-tos-routine'
 
   ; XXX TODO -- Move to the assembler word list.
 
@@ -594,8 +596,202 @@ dot_drives.exit
   dw exit_
 
 ; ----------------------------------------------
+  _constant_header fda_,'fda'
 
-if 1
+  dw 23773
+
+; ----------------------------------------------
+  _c_constant_header slash_fda_,'/fda'
+
+  db $0F
+; ----------------------------------------------
+  _constant_header filename_,'filename'
+
+  dw 23773
+
+; ----------------------------------------------
+  _constant_header filetype_,'filetype'
+
+  dw 23781
+
+; ----------------------------------------------
+  _colon_header minus_filename_,'-filename'
+
+  dw filename_
+  _literal 8
+  dw blank_
+  dw exit_
+
+; ----------------------------------------------
+  _colon_header filename_to_fda_,'filename>fda'
+
+; ----
+; : filename>fda  ( ca len -- )
+;   -filename fda smove  'C' filetype c!  ;
+; ----
+
+  dw minus_filename_
+  dw fda_,s_move_
+  _literal 'C'
+  dw filetype_,c_store_
+  dw exit_
+
+; ----------------------------------------------
+
+if 1 ; XXX TMP --
+
+  ; XXX UNDER DEVELOPMENT
+
+  _code_header paren_from_file_,'(file>)'
+
+; doc{
+;
+; (file>)  ( -- ior )
+;
+; }doc
+
+  push bc   ; save the Forth IP
+
+  ld c,trdos_command.find_file
+  call dos.c
+  ; A = directory entry of the file (0..127), or $FF if not found
+  inc a ; file not found?
+  jr nz,paren_from_file.file_found ; no error
+  ; file not found
+  ld a,trdos_error.no_files ; error code "no files"
+  and a ; unset Z
+  jr paren_from_file.exit
+
+paren_from_file.file_found:
+  dec a ; restore directory entry (0..127)
+  ld c,trdos_command.read_file_descriptor
+  call dos.c
+  ; A = directory entry
+
+  xor a    ; load
+  ; ld a,$FF ; verify
+  ld (trdos_variable.cat_drive_or_read_verify_flag),a ; set load flag
+  ld hl,16384      ; load address
+
+  ;xor a    ; use address and length from the directory
+  ld a,$FF ; use address from HL, and length from the directory
+  ;ld a,$03 ; use address HL, and length in DE
+
+  ld c,trdos_command.read_file
+  call dos.c
+  ; XXX FIXME -- The call never returns. The DOS exits to BASIC
+  ; with error "Nonsense in BASIC".
+
+  ld a,c ; possible error code
+
+paren_from_file.exit:
+
+  pop bc      ; restore the Forth IP
+  jp push_dos_ior
+
+; ----------------------------------------------
+  _colon_header from_file_,'file>'
+
+; ----
+; : file>  ( ca len -- ior )
+;   filename>fda (file>) ;
+; ----
+
+  dw filename_to_fda_
+  dw paren_from_file_
+  dw exit_
+
+endif
+
+; ----------------------------------------------
+
+if 1 ; XXX TMP --
+
+  _code_header paren_to_file_,'(>file)'
+
+; doc{
+;
+; (>file)  ( ca len -- ior )
+;
+; }doc
+
+  ld (paren_to_file.ip_backup),bc ; save the Forth IP
+
+  ld c,trdos_command.find_file
+  call dos.c
+  ; A = directory entry of the file (0..127), or $FF if not found
+  inc a ; file not found?
+  pop de ; length
+  pop hl ; address
+  jr z,paren_to_file.file_not_found ; jump if no error
+  ; file found
+  ld a,trdos_error.file_exists ; error code "file exists"
+  jr paren_to_file.exit
+
+paren_to_file.file_not_found:
+  ld c,trdos_command.create_file
+  call dos.c
+
+  ; XXX FIXME -- 2017-02-10: When there's no disk in the drive,
+  ; TR-DOS throws "Disc Error. Retry,Abort,Ignore?". "Retry" is
+  ; useless; "Abort" exits to BASIC with "Tape loading error";
+  ; "Ignore" crashes the system. There must be a way to avoid
+  ; this and return an ior.
+
+  ld a,c ; possible error code
+
+paren_to_file.exit:
+paren_to_file.ip_backup: equ $+1
+  ld bc,0  ; restore the Forth IP
+  jp push_dos_ior
+
+; ----------------------------------------------
+  _colon_header to_file_,'>file'
+
+; ----
+; : >file  ( ca1 len1 ca2 len2 -- ior )
+;   filename>fda (>file) ;
+; ----
+
+  dw filename_to_fda_
+  dw paren_to_file_
+  dw exit_
+
+endif
+
+; ----------------------------------------------
+  _colon_header dot_f_d_a_,'.fda'
+
+  ; XXX TMP -- print file descriptor, for debugging
+
+  dw cr_,paren_dot_quote_
+  _string "Filename and type:"
+  _literal trdos_variable.filename
+  _literal 8 ; filename max lenght
+  dw type_
+  _literal '<'
+  dw emit_
+  _literal trdos_variable.file_type
+  dw c_fetch_,emit_
+  _literal '>'
+  dw emit_
+  dw cr_,paren_dot_quote_
+  _string "Start address:    "
+  _literal trdos_variable.file_start
+  dw fetch_,u_dot_
+  dw cr_,paren_dot_quote_
+  _string "Lenght in bytes:  "
+  _literal trdos_variable.file_length_in_bytes
+  dw fetch_,u_dot_
+  dw cr_,paren_dot_quote_
+  _string "Lenght in sectors:"
+  _literal trdos_variable.file_length_in_sectors
+  dw c_fetch_,dot_
+  dw exit_
+
+; ----------------------------------------------
+
+if 0 ; XXX TMP --
 
   _code_header readtry_,'readtry'
 
@@ -605,7 +801,7 @@ if 1
 ;
 ; }doc
 
-  ; XXX TMP -- Firt try to read the contents of a file.
+  ; XXX TMP -- Fisrt try to read the contents of a file.
   ;
   ; XXX REMARK -- 2016: It works.
   ;

@@ -15,6 +15,9 @@
 ;
 ; 2017-02-05: Update name of variable 23766, which is used for
 ; two different things. Add symbols for error codes.
+;
+; 2017-02-10: Add synonymous of command $0E. Fix typo in
+; symbol.
 
 ; --------------------------------------------------------------
 ; TR-DOS entry points
@@ -47,7 +50,11 @@ trdos_entry.call_pushed_address:        equ 15663 ; $3D2F
 ; --------------------------------------------------------------
 ; TR-DOS commands
 
+trdos_command.init_interface:                 equ $00
 trdos_command.init_drive:                 equ $01
+trdos_command.seek_track:                 equ $02
+trdos_command.set_sector:                 equ $03
+trdos_command.define_buffer:                 equ $04
 trdos_command.read_sectors:               equ $05
 trdos_command.write_sectors:              equ $06
 trdos_command.cat:                        equ $07
@@ -57,12 +64,13 @@ trdos_command.find_file:                  equ $0A
 trdos_command.create_file:                equ $0B
 trdos_command.save_basic_program:         equ $0C
 trdos_command.read_file:                  equ $0E
+trdos_command.load_or_verify:             equ $0E
 trdos_command.delete_file:                equ $12
 trdos_command.copy_from_hl_to_descriptor: equ $13
 trdos_command.copy_from_descriptor_to_hl: equ $14
 trdos_command.test_track:                 equ $15
 trdos_command.select_bottom_side:         equ $16
-trdos_command.selet_top_side:             equ $17
+trdos_command.select_top_side:            equ $17
 trdos_command.read_system_track:          equ $18
 
 ; --------------------------------------------------------------

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702060018
+  \ Last modified: 201702101809
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,43 @@
   \ 2017-02-05: Start from scratch. Move `get-drive` from the
   \ TR-DOS kernel and rewrite it in Z80. Move `cat` from the
   \ TR-DOS kernel.
+  \
+  \ 2017-02-10: Add DOS command constants. Add draft words to
+  \ manipulate files. Rename "filedescriptor" notation to
+  \ "fda".
+
+( --dos-comands-- )
+
+  \ TR-DOS command codes
+
+$00 cconstant dos-init-interface
+$01 cconstant dos-init-drive
+$02 cconstant dos-seek-track
+$03 cconstant dos-set-sector
+$04 cconstant dos-define-buffer
+$05 cconstant dos-read-sectors
+$06 cconstant dos-write-sectors
+$07 cconstant dos-cat
+$08 cconstant dos-read-file-descriptor
+$09 cconstant dos-write-file-descriptor
+$0A cconstant dos-find-file
+$0B cconstant dos-create-file
+$0C cconstant dos-save-basic-program
+$0E cconstant dos-read-file
+$12 cconstant dos-delete-file  -->
+
+( --dos-commands-- )
+
+  \ TR-DOS command codes (continued)
+
+$13 cconstant dos-copy-from-hl-to-descriptor
+$14 cconstant dos-copy-from-descriptor-to-hl
+$15 cconstant dos-test-track
+$16 cconstant dos-select-bottom-side
+$17 cconstant dos-select-top-side
+$18 cconstant dos-read-system-track
+
+: --dos-commands-- ;
 
 ( get-drive cat )
 
@@ -78,5 +115,39 @@ code cat  ( -- ior )
   \ Print a catalog of the current disk.
   \
   \ }doc
+
+( fda )
+
+  $5CDD dup constant fda
+        dup constant filename
+         1+ constant filetype
+
+: filename>fda  ( ca len -- )
+  fda smove  'C' filetype c!  ;
+
+
+( file> )
+
+  \ XXX UNDER DEVELOPMENT
+
+need assembler  need --dos-comands--  need fda
+
+code (file>)  ( -- ior )
+
+  b push, dos-find-file a ld#, exaf, dos-routine call,
+  \ A = directory entry of the file, or $FF if not found
+  a inc, z? rif  1 a ld#, a and,  \ error: "no files"
+  relse  a dec, \ restore file descriptor (0..127)
+         dos-read-file-descriptor c ld, dos-c-routine call,
+         nz? rif  a xor, 5CF9 sta, 16384 h ldp, FF a ld,
+                  \ set load flag
+                  \ set load address
+                  \ take length from the directory
+                  dos-read-file c ld, dos-c-routine call,
+             rthen
+  rthen b pop, pushdosior jp, end-code
+
+
+: file>  ( ca len -- ior )  filename>fda (file>) ;
 
   \ vim: filetype=soloforth
