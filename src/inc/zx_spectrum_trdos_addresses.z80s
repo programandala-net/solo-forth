@@ -1,0 +1,179 @@
+; ZX Spectrum TR-DOS addresses
+
+; By Marcos Cruz (programandala.net)
+
+; --------------------------------------------------------------
+; History
+
+; 2017-02-10: Extracted from the main file: entry points,
+; variables and sector buffer addresses.
+
+; --------------------------------------------------------------
+; TR-DOS entry points
+
+trdos_entry.enter_trdos_from_basic:     equ 15616 ; 0x3D00
+
+trdos_entry.interpret_rem_command:      equ 15619 ; 0x3D03
+  ; Interpret a TR-DOS REM-command pointed by the system variable CH
+  ; ADD (23645).
+  ;
+  ; XXX REMARK -- The Beta Disk and Beta 128 Disk manuals use address
+  ; 15363 in the assembly examples, but it's a mistake. In fact 15363
+  ; (0x3C03) is out of the range of addresses that make the TR-DOS
+  ; memory page in (0x3D00..0x3DFF). Probably the confusion was caused
+  ; by a typo in hex (0x3D03 and 0x3C03).
+
+trdos_entry.execute_command_in_c:       equ 15635 ; 0x3D13
+  ; Execute a TR-DOS command, whose code is in the C register.
+
+entry.init_dos:                         equ 15649 ; 0x3D21
+
+trdos_entry.call_pushed_address:        equ 15663 ; 0x3D2F
+  ; Execute the TR-DOS routine whose address is on top of stack.
+
+; trdos_entry.XXX equ 15622 ; 0x3D06
+; trdos_entry.XXX equ 15629 ; 0x3D0D
+; trdos_entry.XXX equ 15632 ; 0x3D10
+; trdos_entry.XXX equ 15652 ; 0x3D24
+
+; --------------------------------------------------------------
+; TR-DOS variables
+
+trdos_variable.interface_1_zone:                          equ 23734
+trdos_variable.0xc9:                                      equ 23746
+trdos_variable.unknown_23747:                             equ 23747
+trdos_variable.drive_a_mode:                              equ 23752
+trdos_variable.drive_b_mode:                              equ 23753
+trdos_variable.drive_c_mode:                              equ 23754
+trdos_variable.drive_d_mode:                              equ 23755
+trdos_variable.cat_current_sector:                        equ 23756
+trdos_variable.disk_drive_ready:                          equ 23757
+trdos_variable.sector_rw_flag:                            equ 23758
+trdos_variable.stack_sp_copy:                             equ 23759
+trdos_variable.basic_program_autostart:                   equ 23761
+trdos_variable.basic_program_autostart.high:              equ 23762
+trdos_variable.unknown_23763:                             equ 23763
+trdos_variable.move_command_deleted_files:                equ 23764
+trdos_variable.move_command_first_sector:                 equ 23765
+trdos_variable.bad_sectors_or_move_command_first_track:   equ 23766
+trdos_variable.start_file_parameter_or_number_of_tracks:  equ 23767
+trdos_variable.start_file_parameter.high:                 equ 23768
+trdos_variable.ch_add:                                    equ 23769
+trdos_variable.ch_add.high:                               equ 23770
+trdos_variable.file_size:                                 equ 23771
+trdos_variable.file_size.high:                            equ 23772
+trdos_variable.filename:                                  equ 23773
+trdos_variable.filename.1:                                equ 23774
+trdos_variable.filename.2:                                equ 23775
+trdos_variable.filename.3:                                equ 23776
+trdos_variable.filename.4:                                equ 23777
+trdos_variable.filename.5:                                equ 23778
+trdos_variable.filename.6:                                equ 23779
+trdos_variable.filename.7:                                equ 23780
+trdos_variable.file_type:                                 equ 23781
+trdos_variable.file_start:                                equ 23782
+trdos_variable.file_start.high:                           equ 23783
+trdos_variable.file_length_in_bytes:                      equ 23784
+trdos_variable.file_length_in_bytes.high:                 equ 23785
+trdos_variable.file_length_in_sectors:                    equ 23786
+trdos_variable.file_first_sector:                         equ 23787
+trdos_variable.file_first_track:                          equ 23788
+trdos_variable.c_file_start_or_b_file_size:               equ 23789
+trdos_variable.file_2_length_in_bytes:                    equ 23791
+trdos_variable.file_2_length_in_sectors:                  equ 23793
+trdos_variable.file_2_first_sector:                       equ 23794
+trdos_variable.file_2_first_track:                        equ 23795
+trdos_variable.current_sector:                            equ 23796
+trdos_variable.current_track:                             equ 23797
+trdos_variable.current_temporary_drive:                   equ 23798
+trdos_variable.cleared:                                   equ 23799
+trdos_variable.two_files_drive:                           equ 23800
+trdos_variable.cat_drive_or_read_verify_flag:             equ 23801
+trdos_variable.drive_a_step_rate:                         equ 23802
+trdos_variable.drive_b_step_rate:                         equ 23803
+trdos_variable.drive_c_step_rate:                         equ 23804
+trdos_variable.drive_d_step_rate:                         equ 23805
+trdos_variable.last_fdc_command:                          equ 23806
+trdos_variable.sector:                                    equ 23807
+trdos_variable.buffer:                                    equ 23808
+trdos_variable.hl_copy:                                   equ 23810
+trdos_variable.de_copy:                                   equ 23812
+trdos_variable.find_command_symbols:                      equ 23814
+trdos_variable.deleted_files:                             equ 23815
+trdos_variable.filename_first_char:                       equ 23816
+trdos_variable.data_file_mode:                            equ 23817
+trdos_variable.buffer_flag:                               equ 23820
+trdos_variable.file_number_for_copying:                   equ 23821
+trdos_variable.command_mode:                              equ 23822
+trdos_variable.error_code:                                equ 23823
+trdos_variable.error_code_msb:                            equ 23824
+trdos_variable.command_line_address:                      equ 23825
+trdos_variable.err_sp_copy:                               equ 23827
+trdos_variable.show_screen_flag:                          equ 23829
+trdos_variable.system_register:                           equ 23830
+trdos_variable.show_title_flag:                           equ 23831
+trdos_variable.interface_1_flag:                          equ 23832
+trdos_variable.default_drive:                             equ 23833
+trdos_variable.internal_address_of_finishing_proc:        equ 23834
+trdos_variable.sp_copy:                                   equ 23836
+trdos_variable.find_command_found_file:                   equ 23838
+trdos_variable.unknown_23839:                             equ 23839
+trdos_variable.entered_line_3_first_chars:                equ 23840
+trdos_variable.entered_line_3_first_chars.1:              equ 23841
+trdos_variable.entered_line_3_first_chars.2:              equ 23842
+trdos_variable.move_command_blocks:                       equ 23843
+trdos_variable.tmp_buffer_address:                        equ 23845
+trdos_variable.k_channel.output:                          equ 23846
+trdos_variable.k_channel.input:                           equ 23848
+trdos_variable.k_channel.id:                              equ 23850
+trdos_variable.s_channel.output:                          equ 23851
+trdos_variable.s_channel.input:                           equ 23853
+trdos_variable.s_channel.id:                              equ 23855
+trdos_variable.r_channel.output:                          equ 23856
+trdos_variable.r_channel.input:                           equ 23858
+trdos_variable.r_channel.input.high:                      equ 23859
+trdos_variable.r_channel.id:                              equ 23860
+trdos_variable.p_channel.output:                          equ 23861
+trdos_variable.p_channel.input:                           equ 23863
+trdos_variable.p_channel.id:                              equ 23865
+
+; --------------------------------------------------------------
+; TR-DOS sector buffer
+
+trdos_sector_buffer: equ 0x5D25
+  ; 256-byte sector buffer
+
+; Addresses of the 8th sector of track 0, which contains the
+; disk metatada, when it's loaded in the sector buffer:
+
+trdos_sector_buffer.sectors: equ 0x5D04
+  ; 2 B: total number of sectors
+trdos_sector_buffer.next_free_sector: equ 0x5E06
+  ; 1 B: Next free sector (0 index, 0 default)
+trdos_sector_buffer.next_free_track: equ 0x5E07
+  ; 1 B: Next free track
+trdos_sector_buffer.disk_type: equ 0x5E08
+  ; 1 B: disk type:
+  ; 0x16 - 80 tracks, 2 sides
+  ; 0x17 - 40 tracks, 2 sides
+  ; 0x18 - 80 tracks, 1 side
+  ; 0x19 - 40 tracks, 1 side
+trdos_sector_buffer.files: equ 0x5E09
+  ; 1 B: Number of files, including the deleted files
+trdos_sector_buffer.free_sectors: equ 0x5E0A
+  ; 2 B: Number of free sectors, depending on the disk type:
+  ; 2544 = 0x09F0 : 80 tracks, 2 sides
+  ; 1264 = 0x04F0 - 40 tracks, 2 sides
+  ; 1264 = 0x04F0 - 80 tracks, 1 side
+  ;  624 = 0x0270 - 40 tracks, 1 side
+  ; 2672 = 0x0A70 - 84 tracks, 2 sides (DCU format)
+  ; 2736 = 0x0AB0 - 86 tracks, 2 sides (DCU format)
+trdos_sector_buffer.sectors_per_track: equ 0x5E0C
+  ; 1 B: Number of sectors per track:
+  ; If not 0x10, the disk will not be recognized.
+trdos_sector_buffer.deleted_files: equ 0x5E19
+  ; 1 B: Number of deleted files
+trdos_sector_buffer.disc_title: equ 0x5E1A
+  ; 8 B: Disk title
+
+

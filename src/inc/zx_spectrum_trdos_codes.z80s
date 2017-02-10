@@ -1,0 +1,53 @@
+; ZX Spectrum TR-DOS codes
+
+; By Marcos Cruz (programandala.net)
+
+; --------------------------------------------------------------
+; History
+
+; 2017-02-10: Extracted from the main file: command and error
+; codes.
+
+; --------------------------------------------------------------
+; TR-DOS command codes
+
+trdos_command.init_interface:             equ 0x00
+trdos_command.init_drive:                 equ 0x01
+trdos_command.seek_track:                 equ 0x02
+trdos_command.set_sector:                 equ 0x03
+trdos_command.define_buffer:              equ 0x04
+trdos_command.read_sectors:               equ 0x05
+trdos_command.write_sectors:              equ 0x06
+trdos_command.cat:                        equ 0x07
+trdos_command.read_file_descriptor:       equ 0x08
+trdos_command.write_file_descriptor:      equ 0x09
+trdos_command.find_file:                  equ 0x0A
+trdos_command.create_file:                equ 0x0B
+trdos_command.save_basic_program:         equ 0x0C
+trdos_command.read_file:                  equ 0x0E
+trdos_command.load_or_verify:             equ 0x0E
+trdos_command.delete_file:                equ 0x12
+trdos_command.copy_from_hl_to_descriptor: equ 0x13
+trdos_command.copy_from_descriptor_to_hl: equ 0x14
+trdos_command.test_track:                 equ 0x15
+trdos_command.select_bottom_side:         equ 0x16
+trdos_command.select_top_side:            equ 0x17
+trdos_command.read_system_track:          equ 0x18
+
+; --------------------------------------------------------------
+; TR-DOS error codes
+
+trdos_error.no_errors               equ 0
+trdos_error.no_files                equ 1
+trdos_error.file_exists             equ 2
+trdos_error.no_space                equ 3
+trdos_error.directory_full          equ 4
+trdos_error.record_number_overflow  equ 5
+trdos_error.no_disk                 equ 6
+trdos_error.disk_errors             equ 7
+trdos_error.syntax_errors           equ 8
+trdos_error.undefined_error         equ 9
+trdos_error.stream_already_opened   equ 10
+trdos_error.not_disk_file           equ 11
+trdos_error.stream_not_open         equ 12
+
