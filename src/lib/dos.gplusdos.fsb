@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702101827
+  \ Last modified: 201702101849
 
   \ -----------------------------------------------------------
   \ Description
@@ -76,9 +76,10 @@
   \ 2017-02-10: Rename `<file` to `file>`, and `<file-as-is` to
   \ `file-as-is>`.  The new names are consistent with the
   \ convention used in Forth.  Non-standard file words are
-  \ being unified in G+DOS, TR-DOS and +3DOS.
+  \ being unified in G+DOS, TR-DOS and +3DOS. Add `ufia1` and
+  \ `ufia2`.
 
-( plusd-in plusd-out plusd-in, plusd-out, )
+( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
 [unneeded] plusd-in
 ?\ code plusd-in  ( -- )  DB c, #231 c, jpnext,  end-code
@@ -140,6 +141,12 @@
   \
   \ }doc
 
+[unneeded] ufia1 ?\ $3E01 constant ufia1
+  \ G+DOS UFIA1 (in the Plus D memory).
+
+[unneeded] ufia2 ?\ $3E1A constant ufia2
+  \ G+DOS UFIA1 (in the Plus D memory).
+
 ( ufia )
 
 24 cconstant /ufia  create ufia  /ufia allot  ufia /ufia erase
@@ -161,12 +168,12 @@ ufia 18 + constant hd0d    \ file start address
   \ ufia 20 + constant hd0f  \ BASIC length without variables
   \ ufia 22 + constant hd11  \ BASIC autorun line
 
-'d' device c! \ "d" or "D"
-2 sstr1 c!  \ stream 2
-1 dstr1 c!  \ drive 1
+'d' device c!  2 sstr1 c!  1 dstr1 c!
+  \ Defaults: device "d" (instead of "D"), stream 2, drive 1
 
-variable file-length   \ copy of `hd0b` used by `(file>)`
-variable file-address  \ copy of `hd0d` used by `(file>)`
+variable file-length  variable file-address
+  \ `file-length` holds a copy of `hd0b` used by `(file>)`
+  \ `file-address` holds a copy of `hd0d` used by `(file>)`
 
 ( --file-types-- )
 
@@ -556,11 +563,8 @@ code (file?)  ( -- f )
 
 ( cat acat wcat wacat )
 
-need assembler  need ufia  need filename>ufia  need patch
-
-  \ G+DOS addresses (in its own paged memory).
-[defined] ufia1  ?\ $3E01 constant ufia1
-  \ 3E1A constant ufia2
+need assembler
+need ufia  need ufia1  need filename>ufia  need patch
 
 code (cat)  ( n -- )
 
