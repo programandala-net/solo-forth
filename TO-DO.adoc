@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-09
+:revdate: 2017-02-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -493,6 +493,10 @@ their behaviour and names identical. Write the +3DOS version too.
 
 // G+DOS {{{2
 === G+DOS ===
+
+.2017-02-11:
+
+Try `cat`, `acta`, `wcat`, `wacat`.
 
 .2017-02-08:
 

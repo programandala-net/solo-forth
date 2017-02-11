@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702080103
+  \ Last modified: 201702110143
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,10 @@
   \
   \ 2017-02-08: Update the usage of `set-drive`, which now
   \ returns an error result.
+  \
+  \ 2017-02-11: Replace `<file-as-is` with `0 0 file>`, after
+  \ the improvements in the G+DOS module. Use `drive` to make
+  \ the code compatible with any DOS.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -65,44 +69,37 @@
 
 ( mode42 banked-mode42 )
 
-  \ ............................
-  \ Common requirements
-
-need mode32  need <file-as-is need (mode42 need ?(
-
-[unneeded] mode42 ?(  need set-mode-output
-
-  \ ............................
-  \ mode42
+need mode32  need (mode42  need set-mode-output
+need get-drive  need drive  need file>
 
 : mode42  ( -- )  [ latestxt ] literal current-mode !
                   (mode42 set-mode-output  ;
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
-get-drive 1 set-drive throw  s" pr42.bin" <file-as-is throw
-                             s" ea5a.f42" <file-as-is throw
-            set-drive throw
-  \ Load the driver and the font.
+get-drive  0 drive set-drive throw
+           s" pr42.bin" 0 0 file> throw  \ load the driver
+           s" ea5a.f42" 0 0 file> throw  \ load the font
+set-drive throw
 
-?)
-
-  \ ............................
-  \ banked-mode42
+( banked-mode42 )
 
   \ XXX UNDER DEVELOPMENT -- A variant of `mode42` that stores
   \ the driver and the font in the code bank.
 
   \ XXX FIXME -- crash!
 
+need mode32  need (mode42
+need drive  need get-drive  need file>
+
 need set-banked-mode-output  need code-bank
 
 : banked-mode42  ( -- )  [ latestxt ] literal current-mode !
                          (mode42 set-banked-mode-output  ;
 
-code-bank{  get-drive 1 set-drive throw
-            s" pr42.bin" <file-as-is throw
-            s" ea5a.f42" <file-as-is throw
+code-bank{  get-drive 0 drive set-drive throw
+                        s" pr42.bin" 0 0 file> throw
+                        s" ea5a.f42" 0 0 file> throw
             set-drive throw }code-bank
   \ Load the driver and the font into the code bank.
 

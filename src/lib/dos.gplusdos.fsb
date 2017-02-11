@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702101849
+  \ Last modified: 201702110130
 
   \ -----------------------------------------------------------
   \ Description
@@ -78,6 +78,11 @@
   \ convention used in Forth.  Non-standard file words are
   \ being unified in G+DOS, TR-DOS and +3DOS. Add `ufia1` and
   \ `ufia2`.
+  \
+  \ 2017-02-11: Improve `file>` to support any useful
+  \ combination of implicit or explicit parameters (address and
+  \ length). Remove `file-as-is>`, which is not needed anymore.
+  \ Improve documentation.
 
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
@@ -92,7 +97,7 @@
   \
   \ Page in the Plus D memory.
   \
-  \ See: `plusd-out`, `plusd-in,`.
+  \ See: `plusd-out`, `plusd-in,`, `@dos`, `!dos`.
   \
   \ }doc
 
@@ -151,11 +156,33 @@
 
 24 cconstant /ufia  create ufia  /ufia allot  ufia /ufia erase
 
-  \ Note: The original field names are used, except `device`,
-  \ whose original name is "lstr1".
+  \ doc{
+  \
+  \ ufia  ( -- a )
+  \
+  \ Return address _a_ of the User File Information Area used
+  \ by G+DOS.
+  \
+  \ See: `/ufia`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ /ufia  ( -- b )
+  \
+  \ A constant that holds the length of the UFIA, which is 24
+  \ bytes.
+  \
+  \ See: `ufia`.
+  \
+  \ }doc
+
+  \ Note: The original UFIA field names are used, except
+  \ `device`, whose original name is "lstr1":
 
 ufia      constant dstr1   \ drive: 1 or 2
-ufia 1+   constant fstr1   \ program number
+ufia 1+   constant fstr1   \ file directory number
 ufia 2+   constant sstr1   \ stream number
 ufia 3 +  constant device  \ device: "D" or "d"
 ufia 4 +  constant nstr1   \ directory description
@@ -169,11 +196,12 @@ ufia 18 + constant hd0d    \ file start address
   \ ufia 22 + constant hd11  \ BASIC autorun line
 
 'd' device c!  2 sstr1 c!  1 dstr1 c!
-  \ Defaults: device "d" (instead of "D"), stream 2, drive 1
+  \ Set default values of device, stream and drive
 
 variable file-length  variable file-address
   \ `file-length` holds a copy of `hd0b` used by `(file>)`
   \ `file-address` holds a copy of `hd0d` used by `(file>)`
+  \ XXX TODO -- Study if these variables are really needed.
 
 ( --file-types-- )
 
@@ -239,7 +267,9 @@ need ?(  [unneeded] --directory-descriptions ?(
   \
   \ dos-vars  ( -- a )
   \
-  \ Address of the G+DOS variables in its own memory.
+  \ Address of the G+DOS variables in the Plus D memory.
+  \
+  \ See: `@dosvar`, `c@dosvar`, `!dosvar`, `c!dosvar`.
   \
   \ }doc
 
@@ -389,13 +419,33 @@ code (>file)  ( -- ior )
   rthen  b pop, next ix ldp#,  \ restore the Forth registers
   af push,  \ ior
   jpnext, end-code
-  \ Save a file to disk using the data hold in UFIA
-  \ and return error result _ior_.
+
+  \ doc{
+  \
+  \ (>file)  ( -- ior )
+  \
+  \ Save a file to disk using the data hold in UFIA and return
+  \ error result _ior_.
+  \
+  \ This word is a factor of `>file`.
+  \
+  \ See: `>file`, `ufia`.
+  \
+  \ }doc
 
 : >file  ( ca1 len1 ca2 len2 -- ior )
   >ufia (>file) dosior>ior  ;
+
+  \ doc{
+  \
+  \ >file  ( ca1 len1 ca2 len2 -- ior )
+  \
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return error result _ior_.
+  \
+  \ See: `file>`, `(>file)`.
+  \
+  \ }doc
 
 ( file> )
 
@@ -407,9 +457,9 @@ code (file>)  ( -- ior )
   b push,  \ save the Forth IP
 
   ufia ix ldp#, hgfile hook,  \ get the file
-  nc? rif  \ no error?  -- load the file header:
+  nc? rif  \ no error?
 
-    hd00 d ldp#, 9 b ld#,  \ destination and count
+    hd00 d ldp#, 9 b ld#,  \ file header destination and count
     rbegin  lbyte hook, d stap, d incp,  rstep
       \ Load the file header.
 
@@ -418,40 +468,100 @@ code (file>)  ( -- ior )
       \ in the command are used by default instead
       \ of those stored in the file header.
 
-  \ XXX TODO make the file address optional
-  \ XXX TODO make the file length optional
+    b tstp, z?  rif  hd0b b ftp,
+                     d tstp, z? rif  hd0d d ftp,  rthen
+    rthen  hldbk hook,
+      \ If the length is zero, use the length stored in the
+      \ file header instead and check also the start address:
+      \ If the address is zero, use the address stored in the
+      \ file header instead.
+      \
+      \ Then load the file data.
 
-    b tstp, z? rif  hd0b b ftp,  rthen  hldbk hook,
-      \ If the length is zero, use the
-      \ length of the file header
-      \ instead.  Then load the file data.
+  rthen  b pop, next ix ldp#,
+    \ restore the Forth registers
+  af push, ' dosior>ior jp,  end-code
 
-  rthen  b pop, next ix ldp#, af push,
-        \ restore the Forth registers and save the ior
-  jpnext,  end-code
-  \ Load a file from disk, using the data hold in UFIA, the
-  \ file header and the parameters specified by the high level
-  \ command. Return error result _ior_.
+  \ doc{
+  \
+  \ (file>)  ( -- ior )
+  \
+  \ Read a file from disk, using the data hold in UFIA and the
+  \ contents of `file-address` and `file-length` variables,
+  \ following the following two rules:
+  \
+  \ 1. If `file-length` is not zero, use it as the
+  \    count of bytes that must be read from the file defined in
+  \    UFIA into the address stored in `file-address`.
+  \
+  \ 2. If `file-length` is zero, use the file
+  \    length stored in the file header instead, and then check
+  \    also the start address: If `file-address`
+  \    is zero, use the file address stored in the file header
+  \    instead.
+  \
+  \ Return error result _ior_.
+  \
+  \ This word is a factor of `file>`.
+  \
+  \ See: `file>`, `ufia`, `file-address`, `file-length`.
+  \
+  \ }doc
 
-: file>  ( ca1 len1 ca2 len2 -- ior )
-  2swap >ufia (file>) dosior>ior  ;
+: file>  ( ca1 len1 ca2 len2 -- ior )  2swap >ufia (file>) ;
 
   \ doc{
   \
   \ file>  ( ca1 len1 ca2 len2 -- ior )
   \
+  \ Read the contents of a disk file, defined by the string
+  \ _ca1 len1_, to _ca2 len2_, i.e. _len2_ bytes at address
+  \ _ca2_, or use the original address and length of the file,
+  \ depending on the following rules:
+  \
+  \ 1. If _len2_ is not zero, use _ca2 len2_.
+  \
+  \ 2. If _len2_ is zero, use the original file length instead and
+  \    then check also _ca2_: If _ca2_ is zero, use the original
+  \    file address instead.
+  \
+  \ Return error result _ior_.
+  \
+  \ Example:
+  \
+  \ The screen memory has been saved to a disk file using the following
+  \ command:
+  \
+  \ ----
+  \ 16384 6912 s" pic.scr" >file
+  \ ----
+  \
+  \ Therefore, its original address is 16384 and its original
+  \ size is 6912 bytes.
+  \
+  \ Now there are four ways to load the file from disk:
+  \
+  \ |===
+  \ | Example                        | Result
+  \
+  \ | `s" pic.scr" 16384 6912 file>` | Load the file using its original values
+  \ | `s" pic.scr"     0    0 file>` | Load the file using its original values
+  \ | `s" pic.scr" 32768    0 file>` | Load the whole file to address 32768
+  \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
+  \ |===
+  \
+  \ See: `>file`, `(file>)`.
+  \
   \ }doc
 
-  \ Load a memory region _ca1 len1_ from file _ca2 len2_
-  \ and return error result _ior_.
 
 ( file>screen )
 
   \ XXX UNDER DEVELOPMENT
   \ Experimental code to read lines from a file
 
-need assembler  need ufia  need >ufia
-need hgfile  need lbyte
+need assembler  need ufia  need >ufia  need hgfile  need lbyte
+need plusd-in,  need plusd-out,
 
 code (file>screen)  ( -- dosior )
 
@@ -460,28 +570,23 @@ code (file>screen)  ( -- dosior )
   ufia ix ldp#, hgfile hook,  \ get the file
   nc? rif  \ no error?  -- load the file header:
 
-    patch hook, 4000 d ldp#, #128 b ldp#,
-      \ page in the Plus D memory
+    plusd-in, 4000 d ldp#, #128 b ldp#,
       \ destination and count
 
-    d h ld,
-    rbegin   lbyte hook, d stap,
+    d h ldp,
+    rbegin  lbyte hook, d stap,
             a l ld, d push, b push, 1744 call, b pop, d pop,
               \ print HL
             d incp, b decp, b a ld, c or,
-    z? runtil  E7 out,  \ page out the Plus D memory
+    z? runtil  plusd-out,
     \ rbegin
     \   lbyte hook,  af push,  10 hook,  af pop,  13 cp#,
     \ z runtil
 
-  rthen  b pop, next ix ldp#, af push,
+  rthen  b pop, next ix ldp#, af push,  jpnext,  end-code
         \ restore the Forth registers and save the ior
-  jpnext,  end-code -->
   \ Print a file on the screen, line by line, using the data
   \ hold in UFIA.
-
-
-( file>screen )
 
 : file>screen  ( ca len -- ior )
   >ufia (file>screen) dosior>ior  ;
@@ -507,39 +612,6 @@ code g.100i  ( u -- )
   b pop,  next ix ldp#,  jpnext, end-code
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
-
-( file-as-is> )
-
-need assembler  need ufia  need >ufia
-need hgfile  need lbyte  need hldbk
-
-code (file-as-is>)  ( -- ior )
-
-  b push,  \ save the Forth IP
-
-  ufia ix ldp#, hgfile hook,  \ get the file
-  nc? rif  \ no error?  -- load the file header:
-
-    hd00 d ldp#, 9 b ld#,  \ destination and count
-    rbegin  lbyte hook, d stap, d incp,  rstep
-      \ Load the file header.
-
-    hd0d d ftp, hd0b b ftp, hldbk hook,
-      \ Use the address and length from the header.
-      \ Then load the file data.
-
-  rthen  b pop, next ix ldp#, af push,
-        \ Restore the Forth registers and save the ior.
-
-  jpnext,  end-code
-  \ Load a file from disk, using the data hold in UFIA, the
-  \ file header and the parameters specified by the high level
-  \ command.
-
-: file-as-is>  ( ca len -- ior )
-  0 0 2swap >ufia (file-as-is>) dosior>ior  ;
-  \ Load a file _ca len_ from disk, returning the error result
-  \ _ior_.
 
 ( file? )
 
