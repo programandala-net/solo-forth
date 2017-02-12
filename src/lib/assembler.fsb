@@ -106,6 +106,8 @@
   \
   \ 2017-01-07: Improve the Z80 registers stack notation.
   \ Update `wid>vocabulary` to `wordlist>vocabulary`.
+  \
+  \ 2017-02-12: Fix `relse` and `aelse`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -316,16 +318,16 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \ Note: Opcodes: $C3 is `jp`; $18 is `jr`.
 
 : ?ret,  ( op -- )  2- c,  ;
-  \ Conditional ret
+  \ Conditional return.
 
 : ?jp,  ( a op -- )  c, ,  ;
-  \ Conditional absolute jump
+  \ Conditional absolute jump.
 
 : ?call,  ( a op -- )  2+ ?jp,  ;
-  \ Conditional call
+  \ Conditional call.
 
 : ?jr,  ( a op -- )  jp>jr (jr,)  ;
-  \ Conditional relative jump
+  \ Conditional relative jump.
 
   \ Control structures with relative jumps
 
@@ -361,31 +363,33 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \
   \ Note: $18 is the Z80 opcode for `jr`.
 
-: rif  ( op -- orig cs-id )  jp>jr inverse-cond , >rmark 0A  ;
+: (rif)  ( op -- orig cs-id )  , >rmark 0A  ;
+
+: rif  ( op -- orig cs-id )  jp>jr inverse-cond (rif)  ;
 
 : rthen  ( orig cs-id -- )  0A ?pairs >rresolve  ;
 
-: relse  ( orig cs-id -- cs-id )
-  0A ?pairs C3 rif rot swap rthen 0A  ;
-  \ Note: $C3 is the opcode of `jp`.
+: relse  ( orig cs-id -- orig cs-id )
+  0A ?pairs 18 (rif) rot swap rthen 0A  ;
+  \ Note: $18 is the opcode of `jr`.
 
-: rbegin  (  -- dest cs-id )  <mark 0B  ;
+: rbegin  ( -- dest cs-id )  <mark 0B  ;
 
-: rwhile  (  op -- orig cs-id )  rif 2+  ;
+: rwhile  ( op -- orig cs-id )  rif 2+  ;
 
-: (runtil)  (  dest cs-id op -- )  , 0B ?pairs <rresolve  ;
+: (runtil)  ( dest cs-id op -- )  , 0B ?pairs <rresolve  ;
   \ Compile a relative conditional jump.
   \ This word is common factor of `runtil` and `rstep`.
 
-: runtil  (  dest cs-id op -- )  jp>jr inverse-cond (runtil)  ;
+: runtil  ( dest cs-id op -- )  jp>jr inverse-cond (runtil)  ;
   \ End a `rbegin runtil` loop.
 
-: ragain  (  dest cs-id -- )  18 (runtil)  ;
+: ragain  ( dest cs-id -- )  18 (runtil)  ;
   \ End a `rbegin ragin` loop by compiling `jr`.
   \
   \ Note: $18 is the opcode of `jr`.
 
-: rrepeat  (  dest cs-id1 orig cs-id2 -- )
+: rrepeat  ( dest cs-id1 orig cs-id2 -- )
   2swap ragain 2- rthen  ;
   \ End a `rbegin rrepeat` loop.
 
@@ -399,29 +403,30 @@ E2 constant po? EA constant pe? F2 constant p?  FA constant m?
   \ Control structures with absolute jumps
   \ XXX TODO -- make them optional
 
-: aif  (  op -- orig cs-id )  inverse-cond c, >mark 08  ;
+: (aif)  ( op -- orig cs-id )  c, >mark 08  ;
 
-: athen  (  orig cs-id -- )  08 ?pairs >resolve  ;
+: aif  ( op -- orig cs-id )  inverse-cond (aif)  ;
 
-: aelse  (  cs-id -- cs-id )
-  08 ?pairs C3 aif rot swap athen 08  ;
+: athen  ( orig cs-id -- )  08 ?pairs >resolve  ;
+
+: aelse  ( orig cs-id -- orig cs-id )
+  08 ?pairs C3 (aif) rot swap athen 08  ;
   \ Note: $C3 is the opcode of `jp`.
 
-: abegin  (  -- dest cs-id )  <mark 09  ;
+: abegin  ( -- dest cs-id )  <mark 09  ;
 
-: awhile  (  op -- orig cs-id )  aif 2+  ;
+: awhile  ( op -- orig cs-id )  aif 2+  ;
 
 : auntil  inverse-cond c, 09 ?pairs <resolve  ;
-  \ (  dest cs-id op -- )
+  \ ( dest cs-id op -- )
   \ Compile an absolute conditional jump.
 
-: aagain  (  cs-id -- )  C3 auntil  ;
+: aagain  ( cs-id -- )  C3 auntil  ;
   \ Compile an absolute jump.
   \
   \ Note: $C3 is the opcode of `jp`
 
-: arepeat  (  dest cs-id1 orig cs-id2 )
-  2swap aagain 2- athen  ;
+: arepeat  ( dest cs-id1 orig cs-id2 ) 2swap aagain 2- athen  ;
 
 : >amark  ( -- a )  here 2-  ;
   \ Leave the address of an absolute forward reference.

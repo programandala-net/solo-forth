@@ -8,6 +8,19 @@
 // Assembler {{{1
 == Assembler ==
 
+.2017-02-12:
+
+NOTE: Milestone: 0.14.0
+
+Make the absolute-jump flow structures optional
+
+.2017-02-12:
+
+NOTE: Milestone: 0.14.0
+
+Deprecate `unresolved`. Use labels instead. Adapt the words that still
+use it.
+
 .2017-01-26:
 
 Homogenize the notation of assembly comments in the library: use the
@@ -29,9 +42,10 @@ Space is precious in blocks.
 
 NOTE: Milestone: 0.14.0
 
-Rewrite all small code words in Z80 opcodes, without assembler.  Example:
-`lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`, `get-drive`,
-`set-drive`, `crnd`, `(delete-file)`, `n>r`, `nr>`, `d-`...
+Rewrite all small code words in Z80 opcodes, without assembler.
+1xamples: `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`,
+`get-drive`, `set-drive`, `crnd`, `(delete-file)`, `n>r`, `nr>`,
+`d-`...
 
 // Benchmarks {{{1
 == Benchmarks ==
@@ -491,6 +505,10 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-02-12:
+
+Rename `file-exists?` to `find-file` (after `find-name`).
+
 .2017-02-09:
 
 Study if `flush` should be added to `set-drive`.
@@ -502,6 +520,20 @@ their behaviour and names identical. Write the +3DOS version too.
 
 // G+DOS {{{2
 === G+DOS ===
+
+.2017-02-12:
+
+Factor the following code, which reads a file header; it's used by two
+words:
+
+----
+    hd00 d ldp#, 9 b ld#,  \ file header destination and count
+    rbegin  lbyte hook, d stap, d incp,  rstep
+----
+
+.2017-02-12:
+
+Rename the UFIA fields. See TR-DOS File Description Area.
 
 .2017-02-11:
 
@@ -558,6 +590,25 @@ Investigate how to use the free memory of the Plus D RAM.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-02-12:
+
+Implement the original command `LIST` as `cat`, and rename the current
+`cat` to `acat`, after the name used in G+DOS.
+
+.2017-02-12:
+
+Make the DOS commands independent to `need`.
+
+.2017-02-12:
+
+Rewrite `dosior>ior` after G+DOS: Convert the AF register. Make the
+low-level words return it unchanged.
+
+.2017-02-12:
+
+Confirm if "file descriptor" is correct. Meanwhile, "File Description
+Area" is used instead.
 
 .2017-02-09:
 

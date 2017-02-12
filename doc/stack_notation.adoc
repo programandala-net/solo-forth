@@ -1,6 +1,6 @@
 = Stack notation
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-01-12
+:revdate: 2017-02-12
 
 // =============================================================
 // Latest changes
@@ -10,6 +10,8 @@
 // cursor coordinates.
 //
 // 2017-01-12: Update description and ranges of graphic coordinates.
+//
+// 2017-02-12: Add "ior" and "dosior".
 
 // =============================================================
 
@@ -68,6 +70,9 @@
 | xtp         | execution token pointer                      | 1 cell |
 
 | wid         | word-list identifier                         | 1 cell |
+
+| ior         | Input/Output error result                    | 1 cell |
+| dosior      | Input/Output error result in DOS raw format  | 1 cell |
 
 | orig        | address of an unresolved forward branch      | 1 cell | 0..65535
 | dest        | address of a backward branch target          | 1 cell | 0..65535
