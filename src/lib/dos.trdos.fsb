@@ -36,6 +36,8 @@
   \ "fda". Add draft of `file-status`.
   \
   \ 2017-02-11: Fix `cat`.
+  \
+  \ 2017-02-12: Fix and document `file-status`.
 
 ( --dos-comands-- )
 
@@ -132,8 +134,7 @@ code cat  ( -- ior )
          1+ constant filetype
 
 : filename>fda  ( ca len -- )
-  fda smove  'C' filetype c!  ;
-
+  -filename  /filename min fda smove  ;
 
 ( file> )
 
@@ -165,19 +166,33 @@ need assembler  need --dos-comands--  need fda
 
 code (file-status)  ( -- a ior )
 
-  b push, b push,
-    \ Save Forth IP and a dummy copy that will be returned
-    \ as an useless _a_ when _ior_ is not zero.
+  fda h ldp#, h push, b push,
+    \ Push `fda` (the _a_ returned) and save Forth IP.
   dos-find-file a ld#, exaf, dos-routine call,
     \ A = directory entry (0..127), or $FF if file not found
   a inc, z? rif  1 a ld#, a and,  \ error: "no files"
   relse  a dec, \ restore directory entry (0..127)
-         dos-read-file-descriptor c ld, dos-c-routine call,
-         b pop, fda h ldp, h push,
-  rthen b pop, pushdosior jp, end-code
+         dos-read-file-descriptor c ld#, dos-c-routine call,
+         c a ld, \ possible error code
+  rthen b pop, next ix ldp#, pushdosior jp, end-code
 
 : file-status  ( ca len -- a ior )
   filename>fda (file-status) ;
 
+  \ doc{
+  \
+  \ file-status  ( -- a ior )
+  \
+  \ Return the status of the file identified by the character
+  \ string _ca len_. If the file exists, _ior_ is zero and _a_
+  \ is the address returned by `fda`, the TR-DOS File
+  \ Description Area; otherwise _ior_ is the corresponding I/O
+  \ result code and _a_ is useless.
+  \
+  \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
+  \
+  \ See: `fda`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth

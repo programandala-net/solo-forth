@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702120034
+; Last modified: 201702120053
 
 ; ==============================================================
 ; Description
@@ -602,7 +602,7 @@ dot_drives.exit
 ;
 ; fda  ( -- a )
 ;
-; Return address _a_ of TR-DOS' File Description Area, which has
+; Return address _a_ of TR-DOS File Description Area, which has
 ; the following structure:
 
 ; |===
@@ -617,7 +617,7 @@ dot_drives.exit
 ; | 0xF    | 1     | First track of the file
 ; |===
 
-; See: `/fda`.
+; See: `/fda`, `filename`, `filetype`.
 ;
 ; }doc
 
@@ -630,7 +630,7 @@ dot_drives.exit
 ;
 ; /fda  ( -- b )
 ;
-; Return the length of TR-DOS' File Description Area, which is
+; Return the length of TR-DOS File Description Area, which is
 ; 15.
 ;
 ; See: `fda`.
@@ -657,6 +657,18 @@ dot_drives.exit
 ; ----------------------------------------------
   _colon_header minus_filename_,'-filename'
 
+; doc{
+;
+; -filename  ( -- )
+;
+; Erase the filename stored at TR-DOS File Descriptor Area with
+; spaces, and set its type to 'C'.
+;
+; See: `fda`, `filename>fda`.
+;
+; }doc
+
+
   dw filename_,slash_filename_,blank_
   _literal 'C'
   dw filetype_,c_store_
@@ -665,14 +677,28 @@ dot_drives.exit
 ; ----------------------------------------------
   _colon_header filename_to_fda_,'filename>fda'
 
+
+; doc{
+;
+; filename>fda  ( ca len -- )
+;
+; Copy the filename _ca len_ to the TR-DOS File Descriptor Area.
+; If _len_ is greater than 9 characters (the value returned by
+; `/filename`), that value is used instead.  If _ca len_ does
+; not include the file type at the end (at character offset 9),
+; 'C' is used by default.
+
 ; ----
 ; : filename>fda  ( ca len -- )
-;   -filename  /filename min fda smove  'C' filetype c!  ;
+;   -filename  /filename min fda smove  ;
 ; ----
 
+; See: `fda`, `filename`, `filetype`, `-filename`, `/filename`.
+;
+; }doc
+
   dw minus_filename_
-  dw slash_filename_,min_
-  dw fda_,s_move_
+  dw slash_filename_,min_,fda_,s_move_
   dw exit_
 
 ; ----------------------------------------------
