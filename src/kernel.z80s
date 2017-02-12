@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702090135
+; Last modified: 201702121114
 
 include version.z80s
 
@@ -9572,8 +9572,11 @@ warm_start:
   dw lit_,headers_pointer_init_value,fetch_
   dw lit_,headers_pointer,store_
 
-  ; Init the disk buffers.
+  ; Empty the disk buffer.
   dw empty_buffers_
+
+  ; Set the first drive as the current one.
+  dw first_drive_,set_drive_
 
   ; Init the circular string buffer.
   dw empty_csb_
@@ -10478,14 +10481,18 @@ block.end:
 ;
 ; If the disk buffer has been modified, transfer its contents to
 ; disk and mark it as unmodified.
-;
+
 ; ----
 ; : save-buffers ( -- )
 ;   updated? 0= ?exit \ exit if not updated
 ;   buffer-block dup write-block  disk-buffer !  ;
 ; ----
+
+; Origin: Forth-79 (Required Word Set), Forth-83 (Required Word
+; Set), Forth-94 (BLOCK), Forth-2012 (BLOCK).
 ;
-; Origin: Forth-94.
+; See: `empty-buffers`, `flush`, `block`, `buffer`,
+; `buffer-block`, `disk-buffer`.
 ;
 ; }doc
 
