@@ -503,10 +503,6 @@ their behaviour and names identical. Write the +3DOS version too.
 // G+DOS {{{2
 === G+DOS ===
 
-.2017-02-12:
-
-Try the simpler alternative version of `file?`.
-
 .2017-02-11:
 
 Try `cat`, `acta`, `wcat`, `wacat`.

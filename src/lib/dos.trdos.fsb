@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702121131
+  \ Last modified: 201702121147
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,7 +37,8 @@
   \
   \ 2017-02-11: Fix `cat`.
   \
-  \ 2017-02-12: Fix and document `file-status`.
+  \ 2017-02-12: Fix and document `file-status`. Add
+  \ `file-exists?`.
 
 ( --dos-comands-- )
 
@@ -194,5 +195,10 @@ code (file-status)  ( -- a ior )
   \ See: `fda`.
   \
   \ }doc
+
+( file-exists? )
+
+[unneeded] file-exists?
+?\ need file-status  : file-exists?  file-status nip 0=  ;
 
   \ vim: filetype=soloforth

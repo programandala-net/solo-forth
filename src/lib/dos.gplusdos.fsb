@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702121137
+  \ Last modified: 201702121147
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,6 +83,9 @@
   \ combination of implicit or explicit parameters (address and
   \ length). Remove `file-as-is>`, which is not needed anymore.
   \ Improve documentation.
+  \
+  \ 2017-02-12: Add `file-status`. Replace old versions of
+  \ `file?` with simpler `file-exists?`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
@@ -604,6 +607,11 @@ code (file-status)  ( -- ior )
   \
   \ }doc
 
+( file-exists? )
+
+[unneeded] file-exists?
+?\ need file-status  : file-exists?  file-status nip 0=  ;
+
 ( file>screen )
 
   \ XXX UNDER DEVELOPMENT
@@ -661,42 +669,6 @@ code g.100i  ( u -- )
   b pop,  next ix ldp#,  jpnext, end-code
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
-
-( file? )
-
-  \ XXX REMARK -- 2017-02-12: `file-status` makes this word
-  \ almost useless, but a simpler implementation is being
-  \ tried.
-
-need assembler  need ufia  need filename!  need ghfile
-need plusd-in,  need plusd-out,
-
-code (file?)  ( -- f )
-  b push, plusd-in,
-    \ save the Forth IP
-  nstr2 ix ldp#, 1146 call, 168E call,
-    \ FIND_FILE
-    \ BORD_REST = restore the border
-  plusd-out, b pop, next ix ldp#,
-  ' true z? ?jp, ' false jp, end-code
-  \ Does the file whose name is stored in UFIA exist?
-
-: file?  ( ca len -- f )  filename! (file?)  ;
-  \ Does file _ca len_ exist?
-
-  \ XXX REMARK -- 2017-02-12: Simpler version:
-
-code (file2?)  ( -- f )
-  b push,  \ save the Forth IP
-  ufia ix ldp#, hgfile hook,  \ get the file
-  b pop, next ix ldp#, \ restore the Forth registers
-  ' true nc? ?jp, ' false jp, end-code
-
-: file2?  ( ca len -- f )  filename! (file2?)  ;
-
-  \ XXX REMARK -- Even simpler:
-
-need file-status  : file-exists?  file-status nip 0=  ;
 
 ( cat acat wcat wacat )
 
