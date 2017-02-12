@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-02-01
+" Updated:  2017-02-12
 
 " --------------------------------------------------------------
 " History
@@ -203,6 +203,7 @@ syn keyword soloforthFiles c/l
 syn keyword soloforthFiles disk-buffer
 syn keyword soloforthFiles editor
 syn keyword soloforthFiles empty-buffers
+syn keyword soloforthFiles file-status
 syn keyword soloforthFiles flush
 syn keyword soloforthFiles free-buffer
 syn keyword soloforthFiles from
@@ -1119,6 +1120,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-02-01: Add `lower`, `lowers`, `farlowers`,
 " `lower-routine`, `noop-routine`.
+"
+" 2017-02-12: Add `file-status`.
 
 " --------------------------------------------------------------
 

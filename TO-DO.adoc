@@ -695,6 +695,10 @@ save several blocks of source.
 // Graphics {{{1
 == Graphics ==
 
+.2017-02-12:
+
+Rename `border` to `set-border` and add `get-border`.
+
 .2017-02-08:
 
 Make `circle-pixel` throw an error by default. It can not be a

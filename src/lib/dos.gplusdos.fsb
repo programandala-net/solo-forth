@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702110130
+  \ Last modified: 201702121137
 
   \ -----------------------------------------------------------
   \ Description
@@ -397,8 +397,6 @@ need ufia  need get-drive
   \
   \ }doc
 
-1 set-drive throw  \ default drive
-
 : filename>ufia  ( ca len -- )  0 0 2swap >ufia  ;
   \ XXX TODO -- Rename to `file>ufia`
 
@@ -554,6 +552,57 @@ code (file>)  ( -- ior )
   \
   \ }doc
 
+( file-status )
+
+need assembler  need ufia  need filename!
+need hgfile  need lbyte
+
+code (file-status)  ( -- ior )
+  ufia ix ldp#, ix push,
+  b push,  \ save the Forth IP
+  hgfile hook,  \ get the file
+  nc? rif  \ no error?
+    hd00 d ldp#, 9 b ld#,  \ file header destination and count
+    rbegin  lbyte hook, d stap, d incp,  rstep
+      \ Load the file header.
+      a xor, \ set no error
+  rthen  b pop, next ix ldp#, \ restore the Forth registers
+  af push, ' dosior>ior jp,  end-code
+
+  \ doc{
+  \
+  \ (file-status)  ( -- a ior )
+  \
+  \ Return the status of the file whose name is hold in UFIA,
+  \ the G+DOS User Information Area.  If the file exists, _ior_
+  \ is zero and _a_ is the address returned by `ufia`, which
+  \ contains the header data of the file.  If the file doesn't
+  \ exist, _ior_ is the corresponding I/O result code and _a_
+  \ is useless.
+  \
+  \ This word is a factor of `file-status`.
+  \
+  \ See: `file-status`, `ufia`.
+  \
+  \ }doc
+
+: file-status  ( ca len -- a ior )  filename! (file-status)  ;
+
+  \ doc{
+  \
+  \ file-status  ( ca len -- a ior )
+  \
+  \ Return the status of the file identified by the character
+  \ string _ca len_. If the file exists, _ior_ is zero and _a_
+  \ is the address returned by `ufia`, the G+DOS User
+  \ Information Area; otherwise _ior_ is the corresponding I/O
+  \ result code and _a_ is useless.
+  \
+  \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
+  \
+  \ See: `ufia`.
+  \
+  \ }doc
 
 ( file>screen )
 
@@ -615,23 +664,39 @@ code g.100i  ( u -- )
 
 ( file? )
 
-need assembler need ufia  need filename!  need patch
+  \ XXX REMARK -- 2017-02-12: `file-status` makes this word
+  \ almost useless, but a simpler implementation is being
+  \ tried.
+
+need assembler  need ufia  need filename!  need ghfile
+need plusd-in,  need plusd-out,
 
 code (file?)  ( -- f )
-  b push,  \ save the Forth IP
-  patch hook,
-  nstr2 ix ldp#,
-  1146 call,  \ FIND_FILE
-  168E call,  \ BORD_REST = restore the border
-  E7 out,  \ page out the Plus D memory
-  b pop, next ix ldp#,  \ restore the Forth registers
-  ' true z? ?jp,
-  ' false jp,
-  end-code
+  b push, plusd-in,
+    \ save the Forth IP
+  nstr2 ix ldp#, 1146 call, 168E call,
+    \ FIND_FILE
+    \ BORD_REST = restore the border
+  plusd-out, b pop, next ix ldp#,
+  ' true z? ?jp, ' false jp, end-code
   \ Does the file whose name is stored in UFIA exist?
 
 : file?  ( ca len -- f )  filename! (file?)  ;
   \ Does file _ca len_ exist?
+
+  \ XXX REMARK -- 2017-02-12: Simpler version:
+
+code (file2?)  ( -- f )
+  b push,  \ save the Forth IP
+  ufia ix ldp#, hgfile hook,  \ get the file
+  b pop, next ix ldp#, \ restore the Forth registers
+  ' true nc? ?jp, ' false jp, end-code
+
+: file2?  ( ca len -- f )  filename! (file2?)  ;
+
+  \ XXX REMARK -- Even simpler:
+
+need file-status  : file-exists?  file-status nip 0=  ;
 
 ( cat acat wcat wacat )
 

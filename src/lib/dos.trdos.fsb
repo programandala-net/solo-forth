@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702120030
+  \ Last modified: 201702121131
 
   \ -----------------------------------------------------------
   \ Description
@@ -181,7 +181,7 @@ code (file-status)  ( -- a ior )
 
   \ doc{
   \
-  \ file-status  ( -- a ior )
+  \ file-status  ( ca len -- a ior )
   \
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
