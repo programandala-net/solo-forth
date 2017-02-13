@@ -3,12 +3,12 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702132119
+; Last modified: 201702140007
 
 ; ==============================================================
 ; Description
 
-; The part of the Solo Forth's kernel that is specific to TR-DOS.
+; The part of the kernel that is specific to TR-DOS.
 
 ; ==============================================================
 ; Author

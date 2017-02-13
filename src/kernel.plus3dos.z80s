@@ -5,13 +5,12 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702132123
+; Last modified: 201702140007
 
 ; ==============================================================
 ; Description
 
-; The part of the Solo Forth's kernel that is specific to +3DOS.
-; Not finished.
+; The part of the kernel that is specific to +3DOS.
 
 ; ==============================================================
 ; Author

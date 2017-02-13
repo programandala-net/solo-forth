@@ -3,17 +3,17 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702132110
+; Last modified: 201702140007
 
 ; ==============================================================
 ; Description
 
-; The part of the Solo Forth's kernel that is specific to G+DOS.
+; The part of the kernel that is specific to G+DOS.
 
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
 ; ==============================================================
 ; License
