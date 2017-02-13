@@ -84,6 +84,10 @@ of them. They are marked in the source.
 // Code style {{{1
 == Code style ==
 
+.2017-02-13:
+
+Align comments of the kernel.
+
 .2017-01-06, 2017-02-13:
 
 Change the code style after Pygmy Forth:
@@ -1714,6 +1718,19 @@ internally.
 
 // Time {{{1
 == Time ==
+
+.2017-02-13:
+
+Try simpler alternative to `ms`, based on this loop found in the Plus
+D disassembly:
+
+----
+  ; Wait about 1 ms
+  ld   b,0
+rest_1:
+  djnz rest_1 ; 13/08 T
+  ; 255*13+8= 3323 T
+----
 
 .2017-01-24:
 

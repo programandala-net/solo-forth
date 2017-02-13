@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702090106
+; Last modified: 201702132110
 
 ; ==============================================================
 ; Description
@@ -96,10 +96,10 @@ _colon_header dosior_to_ior_,'dosior>ior'
 
   dw dup_
   _literal 1
-  dw and_,negate_  ; error?
+  dw and_,negate_       ; error?
   dw swap_,flip_
   _literal %11111111
-  dw and_ ; get upper 8 bits
+  dw and_               ; get upper 8 bits
   _literal 1000
   dw plus_,negate_,and_
   dw exit_
@@ -194,23 +194,20 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;
 ; }doc
 
-  pop ix ; address
-  pop de ; d = track 0..79, +128 if side 1
-         ; e = sector 1..10
-  push bc ; save the Forth IP
-transfer_sector.drive equ $+1 ; XXX TODO -- not used yet
-
-  in a,(231) ; page in the Plus D memory
-  ld a,($3ACE) ; get the current drive
-  out (231),a ; page out the Plus D memory
-  rst 8 ; G+DOS hook
-transfer_sector.command:
-  ; G+DOS command already patched:
-  db $44 ; $44 = read ; $45 = write
-  pop bc ; restore the Forth IP
-  ld ix,next
-  jp nc,false_ ; no error
-  push af ; DOS error code
+  pop ix                       ; address
+  pop de                       ; D = track 0..79, +128 if side 1
+                               ; E = sector 1..10
+  push bc                      ; save the Forth IP
+  in a,(231)                   ; page in the Plus D memory
+  ld a,($3ACE)                 ; get the current drive
+  out (231),a                  ; page out the Plus D memory
+  rst 8                        ; G+DOS hook
+transfer_sector.command:       ; G+DOS command already patched:
+  db $44                       ; $44 = read, $45 = write
+  pop bc                       ; restore the Forth IP
+  ld ix,next                   ; restore IX
+  jp nc,false_                 ; no error
+  push af                      ; DOS error code
   jp dosior_to_ior_
 
 ; ----------------------------------------------
@@ -260,16 +257,16 @@ transfer_mode:
 ;
 ; }doc
 
-  pop hl ; L = drive
-  push bc ; save the Forth IP
-  ld a,l ; A = drive
-  rst 8 ; G+DOS hook
-  defb $21 ; call the SEL_DRIVE hook to select the drive in A
-  pop bc ; restore the Forth IP
-  ld ix,next ; restore Forth IX
-  and a ; wrong drive number?
+  pop hl       ; L = drive
+  push bc      ; save the Forth IP
+  ld a,l       ; A = drive
+  rst 8        ; G+DOS hook
+  defb $21     ; call the SEL_DRIVE hook to select the drive in A
+  pop bc       ; restore the Forth IP
+  ld ix,next   ; restore Forth IX
+  and a        ; wrong drive number?
   jp nz,false_ ; if no error, return zero
-  ld hl,-1022 ; otherwise, exception code "wrong drive"
+  ld hl,-1022  ; otherwise, exception code "wrong drive"
   jp push_hl
 
   ; Note: The G+DOS routine accessed with hook $21 (at address

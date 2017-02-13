@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702130118
+; Last modified: 201702132119
 
 ; ==============================================================
 ; Description
@@ -112,12 +112,22 @@ dos.c:
   ;   A  = TR-DOS error result (0..12)
   ;   Z  = no error? (A=0)
 
-  ld (iy+sys_df_sz_offset),2 ; BASIC mode: 2 lines in the lower screen
+  ld (iy+sys_df_sz_offset),2            ; 2 lines in the lower screen
   call trdos_entry.execute_command_in_c
-  ld (iy+sys_df_sz_offset),0 ; Forth mode: no lines in the lower screen
-  ld a,c      ; error code
-  and a       ; set Z
+  ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
+  ld a,c                                ; error code
+  and a                                 ; set Z
   ret
+
+  ; XXX REMARK -- In Solo Forth the DF_SZ system variable
+  ; contains 0 in order to use the full screen, i.e. also the
+  ; two bottom lines.  This variable is set to 2 before calling
+  ; TR-DOS just in case TR-DOS prints an error message (e.g.
+  ; "Disk error") or returns to BASIC (e.g. "Tape loading
+  ; error"). When DF_SZ contains 0 in those cases, the system
+  ; crashes. This is a temporary solution, until the words that
+  ; access TR-DOS are improved to do their own checks and return
+  ; a result error.
 
 ; ------------------------------
 ; DOS call (command in A') preserving the Forth IP
@@ -332,15 +342,15 @@ dosior_hl_to_ior_hl:
   ; "Ignore" crashes the system. There must be a way to avoid
   ; this and return an ior.
 
-transfer_sectors.command equ $+1
+transfer_sectors.command: equ $+1
   ld a,trdos_command.read_sectors ; read or write command (patched)
   ex af,af'
   pop hl
-  ld a,l    ; number of sectors
-  pop hl    ; address
-  pop de    ; D = track 0..159; E = sector 0..15
-  push bc   ; save the Forth IP
-  ld b,a    ; number of sectors
+  ld a,l                          ; number of sectors
+  pop hl                          ; address
+  pop de                          ; D = track 0..159, E = sector 0..15
+  push bc                         ; save the Forth IP
+  ld b,a                          ; number of sectors
   call dos.ip_on_tos
   jp push_dos_ior
 

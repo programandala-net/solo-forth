@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702090106
+; Last modified: 201702132123
 
 ; ==============================================================
 ; Description
@@ -16,7 +16,7 @@
 ; ==============================================================
 ; Author
 
-; Marcos Cruz (programandala.net), 2015, 2016.
+; Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
 ; ==============================================================
 ; License
@@ -76,7 +76,7 @@ dos:
   ld   a,(sys_bankm)       ; RAM/ROM switching system variable
   or   %00000111           ; set bits 0-3: RAM 7
   res  4,a                 ; and DOS ROM
-  ld   bc,bank1_port       ; port used for horiz ROM switch and RAM paging
+  ld   bc,bank1_port       ; port used for horiz. ROM switch and RAM paging
   di
   ld   (sys_bankm),a       ; keep system variables up to date
   out  (c),a               ; RAM page 7 to top and DOS ROM
@@ -102,7 +102,7 @@ dos:
 
 dos.jp_ix:
 
-  jp   (ix)                ; standard way to CALL (IX), by calling this jump
+  jp   (ix)                ; call address in IX by calling this jump
 
 ; ------------------------------
 ; DOS call preserving the Forth IP
@@ -275,7 +275,7 @@ if 0 ; XXX OLD
 else
 
   dw to_drive_block_
-  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
+  dw rec_slash_blk_,star_    ; sequential number of the first sector of the block
   dw rec_slash_track_,plus_  ; but the first track is not used
   dw dup_
   dw sector_id_
@@ -385,17 +385,17 @@ transfer_bytes.backup_ip equ $+1
   ld (transfer_sector.backup_ip),bc ; save Forth IP
 
   ld ix,dos_ref_xdpb
-  ld a,'A' ; XXX TMP -- drive 'A'..'P'
-  call dos ; IX = XDPB of the drive
+  ld a,'A'                          ; XXX TMP -- drive 'A'..'P'
+  call dos                          ; IX = XDPB of the drive
 
-  pop hl ; address of origin or destination buffer
-  pop de ; D = logical track; E = logical sector
+  pop hl                            ; address of origin or destination buffer
+  pop de                            ; D = logical track, E = logical sector
 
-  jr nc,transfer_sector.end ; exit if the DOS call failed
+  jr nc,transfer_sector.end         ; exit if the DOS call failed
 
   ld a,(address_of_default_bank)
-  ld b,a ; page for $C000..$FFFF
-  ld c,0 ; XXX TMP -- unit 0/1
+  ld b,a                            ; page for $C000..$FFFF
+  ld c,0                            ; XXX TMP -- unit 0/1
 
 transfer_sector.command equ $+2
   ld ix,dd_read_sector
@@ -403,8 +403,8 @@ transfer_sector.command equ $+2
 
 transfer_sector.end:
 transfer_sector.backup_ip equ $+1
-  ld bc,0 ; restore Forth IP
-  ld ix,next ; restore Forth IX
+  ld bc,0                           ; restore Forth IP
+  ld ix,next                        ; restore Forth IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -454,17 +454,17 @@ transfer_mode:
   ld ix,dos_get_1346
   call dos
   ld b,0
-  ld c,d ; first buffer of cache
+  ld c,d                         ; first buffer of cache
   push bc
-  ld c,e ; number of cache sector buffers
+  ld c,e                         ; number of cache sector buffers
   push bc
-  ld c,h ; first buffer of RAM disk
+  ld c,h                         ; first buffer of RAM disk
   push bc
-  ld c,l ; number of RAM disk sector buffers
+  ld c,l                         ; number of RAM disk sector buffers
   push bc
 dos_get_1346.ip_backup equ $+1
-  ld bc,0 ; restore Forth IP
-  ld ix,next ; restore IX
+  ld bc,0                        ; restore Forth IP
+  ld ix,next                     ; restore IX
   _jp_next
 
 ; ----------------------------------------------
@@ -478,15 +478,15 @@ dos_get_1346.ip_backup equ $+1
 
   ; XXX TODO -- Move to the library.
 
-  pop hl ; L = number of RAM disk sector buffers
+  pop hl               ; L = number of RAM disk sector buffers
   pop af
-  ld h,a ; H = first buffer of RAM disk
-  pop de ; E = number of cache sector buffers
+  ld h,a               ; H = first buffer of RAM disk
+  pop de               ; E = number of cache sector buffers
   pop af
-  ld d,a ; D = first buffer of cache
+  ld d,a               ; D = first buffer of cache
   ld ix,dos_set_1346
   call dos.preserve_ip
-  ld ix,next ; restore IX
+  ld ix,next           ; restore IX
   _jp_next
 
 ; ----------------------------------------------
@@ -502,13 +502,13 @@ dos_get_1346.ip_backup equ $+1
 
   ; XXX TODO -- Move to the library.
 
-  pop hl ; l = file number
-  push bc ; save Forth IP
-  ld b,l ; file number
+  pop hl          ; l = file number
+  push bc         ; save Forth IP
+  ld b,l          ; file number
   ld ix,dos_close
   call dos
-  pop bc ; restore Forth IP
-  ld ix,next ; restore IX
+  pop bc          ; restore Forth IP
+  ld ix,next      ; restore IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -524,16 +524,16 @@ dos_get_1346.ip_backup equ $+1
 
   ; XXX TODO -- Move to the library.
 
-  pop hl ; l = file number
-  pop de ; e = drive
-  push bc ; save Forth IP
-  ld a,e ; drive
-  ld b,l ; file number
-  ld c,%011 ; access mode: exclusive-read-write ; XXX TMP --
+  pop hl               ; L = file number
+  pop de               ; E = drive
+  push bc              ; save Forth IP
+  ld a,e               ; drive
+  ld b,l               ; file number
+  ld c,%011            ; access mode: exclusive-read-write ; XXX TMP --
   ld ix,dos_open_drive
   call dos
-  pop bc ; restore Forth IP
-  ld ix,next ; restore IX
+  pop bc               ; restore Forth IP
+  ld ix,next           ; restore IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -569,9 +569,9 @@ if 0 ; XXX OLD
 
   dw library_file_,fetch_,dup_,close_file_
   dw dup_
-  _literal -1029 ; exception code: "file number not open"
+  _literal -1029                ; exception code: "file number not open"
   dw not_equals_,question_exit_ ; other errors force an exit
-  dw drop_ ; discard -1029
+  dw drop_                      ; discard -1029
   dw open_disk_
   dw exit_
 
@@ -592,11 +592,11 @@ endif
   ; when bank 7 is paged in.
 
   pop hl
-  ld a,l ; drive 'A'..'P'
+  ld a,l               ; drive 'A'..'P'
   ld ix,dos_ref_xdpb
   call dos.preserve_ip
   push ix
-  ld ix,next ; restore Forth next
+  ld ix,next           ; restore Forth next
   jp push_dos_ior
 
 ; ==============================================================
