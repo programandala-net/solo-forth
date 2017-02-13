@@ -45,7 +45,7 @@ NOTE: Milestone: 0.14.0
 Rewrite all small code words in Z80 opcodes, without assembler.
 1xamples: `lshift`, `(g-emit)` and family, `f!`, `f@`, `fast-rnd`,
 `get-drive`, `set-drive`, `crnd`, `(delete-file)`, `n>r`, `nr>`,
-`d-`...
+`d-`, `@dos`, `c@dos`...
 
 // Benchmarks {{{1
 == Benchmarks ==
@@ -94,7 +94,8 @@ Change the code style after Pygmy Forth:
 
 Also:
 
-- Use a single space before semicolon.
+- Use a single space before `;`, `end-code`, `end-asm`, `endm`.
+- Use a single space after `?(`.
 
 All this will make the code more compact, saving a handful of blocks.
 Many times a word does not fit a block line because of the current
@@ -515,6 +516,20 @@ source.
 
 .2017-02-13:
 
+Decide if lower-level factor words return a _dosior_ or an _ior_.
+
+Making the low-level words do the conversion needs either a push and a
+jump to `dosior>ior` (4 bytes in total), or a direct jump to a
+specific routine in the kernel (3 bytes in total), which can save some
+bytes, depending on the number of calls done in the kernel and the
+library.
+
+Making the conversion in the upper-level calling words means pushing
+the _dosior_ in the factor, returning to `next`, and using
+`dosior>ior` in the calling word (5 bytes in total).
+
+.2017-02-13:
+
 ----
 : find-file  ( ca len -- x | 0 )  file-status 0= and  ;
 ----
@@ -537,9 +552,11 @@ their behaviour and names identical. Write the +3DOS version too.
 
 .2017-02-13:
 
-Sometimes, the words that depend on `file-status` start returning ior
-#-1022 ("Wrong drive"). The error conditions are not clear yet. It
-seems it happens after changing the disk.
+Fix: When the current disk is removed before doing `cat`, the
+corresponding exception is thrown. But the system does not recognize
+the disk when it's inserted back. The same code is thrown: #-1006
+(check disk in drive), even after `set-drive`. It seems something more
+is needed to make G+DOS be aware of the change.
 
 .2017-02-12:
 
@@ -554,14 +571,6 @@ words:
 .2017-02-12:
 
 Rename the UFIA fields. See TR-DOS File Description Area.
-
-.2017-02-08, 2017-02-13:
-
-Fix: `cat` crashes if there's no disk in the drive.  The chrash is
-caused because the ROM exits to BASIC with message "CHECK DISK in
-drive", and the lower screen has no lines (the system variable 23659
-is set to 0 in Forth. There must be a way to check the drive first and
-throw an exception.
 
 .2017-02-08:
 
