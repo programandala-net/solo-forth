@@ -505,6 +505,12 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-02-13:
+
+----
+: find-file  ( ca len -- x | 0 )  file-status 0= and  ;
+----
+
 .2017-02-12:
 
 Rename `file-exists?` to `find-file` (after `find-name`).
@@ -535,13 +541,13 @@ words:
 
 Rename the UFIA fields. See TR-DOS File Description Area.
 
-.2017-02-11:
+.2017-02-08, 2017-02-13:
 
-Try `cat`, `acta`, `wcat`, `wacat`.
-
-.2017-02-08:
-
-Fix: `cat` crashes if there's no disk in the drive.
+Fix: `cat` crashes if there's no disk in the drive.  The chrash is
+caused because the ROM exits to BASIC with message "CHECK DISK in
+drive", and the lower screen has no lines (the system variable 23659
+is set to 0 in Forth. There must be a way to check the drive first and
+throw an exception.
 
 .2017-02-08:
 
