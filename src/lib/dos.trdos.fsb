@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702121147
+  \ Last modified: 201702131716
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,9 +38,14 @@
   \ 2017-02-11: Fix `cat`.
   \
   \ 2017-02-12: Fix and document `file-status`. Add
-  \ `file-exists?`.
+  \ `file-exists?`, `file-start`, `file-length`, `file-type`,
+  \ `file-dir`.  `file-sectors`, `file-sector`, `file-track`.
+  \
+  \ 2017-02-13: Fix `file-status`. Fix `file-dir` and rename it
+  \ to `file-dir#`, after the changes in the G+DOS
+  \ implementation.
 
-( --dos-comands-- )
+( --dos-commands-- )
 
   \ TR-DOS command codes
 
@@ -72,6 +77,122 @@ $17 cconstant dos-select-top-side
 $18 cconstant dos-read-system-track
 
 : --dos-commands-- ;
+
+( fda /fda )
+
+need ?(
+
+[unneeded] fda ?(
+
+$5CDD     constant fda
+fda       constant fda-filename
+fda $08 + constant fda-filetype
+fda $09 + constant fda-filestart
+fda $0B + constant fda-filelength
+fda $0D + constant fda-filesectors
+fda $0E + constant fda-filesector
+fda $0F + constant fda-filetrack ?)
+
+  \ doc{
+  \
+  \ fda  ( -- ca )
+  \
+  \ Return the address _ca_ of TR-DOS File Description Area,
+  \ which has the following structure:
+
+  \ |===
+  \ | Offset | Bytes | Description
+  \
+  \ | +0x0   | 8     | File name
+  \ | +0x8   | 1     | File type ('B, 'C', 'D', '#'...)
+  \ | +0x9   | 2     | Address (or length of a BASIC program)
+  \ | +0xB   | 2     | Length in bytes
+  \ | +0xD   | 1     | Length in sectors
+  \ | +0xE   | 1     | First sector of the file on its first track
+  \ | +0xF   | 1     | First track of the file
+  \ |===
+  \
+  \ See: `/fda`.
+  \
+  \ }doc
+
+[unneeded] /fda  ?\ $10 cconstant /fda
+
+  \ doc{
+  \
+  \ /fda  ( -- b )
+  \
+  \ Return the length of TR-DOS File Description Area, which is
+  \ 16 bytes.
+  \
+  \ See: `fda`.
+  \
+  \ }doc
+
+( /filename -filename set-filename )
+
+[unneeded] /filename ?\  9 cconstant /filename
+
+  \ doc{
+  \
+  \ /filename  ( -- n )
+  \
+  \ Return the maximum length of a TR-DOS filename, which is 9.
+  \ In TR-DOS, the last character of the filename (character
+  \ offset 8) is the filetype:
+  \
+  \ |===
+  \ | Character | Filetype
+  \
+  \ | B         | BASIC program
+  \ | C         | Code file
+  \ | D         | BASIC data array file
+  \ | #         | Serial/random access data file
+  \ | other     | Defined by the programmer
+  \ |===
+  \
+  \ See: `set-filename`, `fda`.
+  \
+  \ }doc
+
+need ?(
+
+[unneeded] -filename ?(  need fda  need /filename
+
+: -filename  ( -- )
+  fda-filename /filename blank 'C' fda-filetype c!  ; ?)
+
+  \ doc{
+  \
+  \ -filename  ( -- )
+  \
+  \ Erase the filename stored at TR-DOS File Descriptor Area
+  \ with spaces, and set its type to 'C'.
+  \
+  \ See: `fda`, `set-filename`.
+  \
+  \ }doc
+
+[unneeded] set-filename ?(
+
+need -filename  need /filename  need fda
+
+: set-filename  ( ca len -- )
+  -filename  /filename min fda smove  ; ?)
+
+  \ doc{
+  \
+  \ set-filename  ( ca len -- )
+  \
+  \ Store filename _ca len_ into the TR-DOS File Description
+  \ Area.  If _len_ is greater than 9 characters (the value
+  \ returned by `/filename`), 9 is used instead.  If _ca len_
+  \ does not include the file type at the end (at character
+  \ offset +8), 'C' (code file) is used by default.
+  \
+  \ See: `fda`, `-filename`, `/filename`.
+  \
+  \ }doc
 
 ( get-drive cat )
 
@@ -128,42 +249,47 @@ code cat  ( -- ior )
   \
   \ }doc
 
-( fda )
-
-  $5CDD dup constant fda
-        dup constant filename
-         1+ constant filetype
-
-: filename>fda  ( ca len -- )
-  -filename  /filename min fda smove  ;
-
 ( file> )
 
   \ XXX UNDER DEVELOPMENT
 
-need assembler  need --dos-comands--  need fda
+need assembler need --dos-commands-- need fda need set-filename
 
-code (file>)  ( -- ior )
+code (file>)  ( ca len -- ior )
 
-  b push, dos-find-file a ld#, exaf, dos-routine call,
+  d pop, h pop, b push, h push, d push, ( ip ca len )
+
+  dos-find-file a ld#, exaf, dos-routine call,
   \ A = directory entry of the file, or $FF if not found
-  a inc, z? rif  1 a ld#, a and,  \ error: "no files"
-  relse  a dec, \ restore file descriptor (0..127)
-         dos-read-file-descriptor c ld, dos-c-routine call,
-         nz? rif  a xor, 5CF9 sta, 16384 h ldp, FF a ld,
-                  \ set load flag
-                  \ set load address
-                  \ take length from the directory
-                  dos-read-file c ld, dos-c-routine call,
-             rthen
+  a inc, z? rif  d pop, d pop, 1 a ld#,  relse
+                 \ error, so drop parameters and report "no files"
+    a dec, \ restore file descriptor (0..127)
+    dos-read-file-descriptor c ld, dos-c-routine call,
+    z? rif  a xor, 5CF9 sta, d pop, h pop,
+                 \ set load flag and get the parameters
+       d tstp, nz?  \ is _len_ not zero?
+       rif   03 a ld#,  \ if so, use the parameters
+       relse h tstp, nz? rif cpl, rthen
+         \ if _len_ is zero, use _ca_ if it's not zero
+       rthen dos-read-file-descriptor c ld, dos-c-routine call,
+    rthen
   rthen b pop, pushdosior jp, end-code
 
+  \ Note: TR-DOS command `dos-read-file` works different ways
+  \ depending on the A register:
+  \
+  \ A=$00 - take address and length from FDA
+  \ A=$03 - take address from HL and length from DE
+  \ A=$FF - take address from HL but length from FDA
+  \
+  \ FDA = File Description Area
 
-: file>  ( ca len -- ior )  filename>fda (file>)  ;
+: file>  ( ca1 len1 ca2 len2 -- ior )  set-filename (file>)  ;
 
 ( file-status )
 
-need assembler  need --dos-comands--  need fda
+need assembler  need --dos-commands--
+need fda  need set-filename
 
 code (file-status)  ( -- a ior )
 
@@ -171,14 +297,19 @@ code (file-status)  ( -- a ior )
     \ Push `fda` (the _a_ returned) and save Forth IP.
   dos-find-file a ld#, exaf, dos-routine call,
     \ A = directory entry (0..127), or $FF if file not found
-  a inc, z? rif  1 a ld#, a and,  \ error: "no files"
+  a inc, z? rif  1 a ld#,  \ error: "no files"
   relse  a dec, \ restore directory entry (0..127)
          dos-read-file-descriptor c ld#, dos-c-routine call,
-         c a ld, \ possible error code
-  rthen b pop, next ix ldp#, pushdosior jp, end-code
+         a xor,
+          \ XXX REMAR -- This TR-DOS command does not
+          \ return its error result in C, but the directory
+          \ entry it received in A. Therefore, the value of
+          \ A returned by the DOS call `dos-c-routine` is a
+          \ copy of it.  We set it to zero (to force "no error").
+  rthen b pop, pushdosior jp, end-code
 
 : file-status  ( ca len -- a ior )
-  filename>fda (file-status) ;
+  set-filename (file-status)  ;
 
   \ doc{
   \
@@ -196,9 +327,183 @@ code (file-status)  ( -- a ior )
   \
   \ }doc
 
-( file-exists? )
+( file-exists? file-start file-length file-type )
 
-[unneeded] file-exists?
-?\ need file-status  : file-exists?  file-status nip 0=  ;
+need ?(
+
+[unneeded] file-exists? ?( need file-status
+
+: file-exists?  ( ca len -- f )  file-status nip 0=  ; ?)
+
+  \ doc{
+  \
+  \ file-exists?  ( ca len -- f )
+  \
+  \ If the file named in the character string _ca len_ is
+  \ found, _f_ is _true_. Otherwise _f_ is _false_.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-start  ?( need file-status  need fda
+
+: file-start  ( ca1 len1 -- ca2 ior )
+  file-status nip fda-filestart @ swap ; ?)
+
+  \ doc{
+  \
+  \ file-start  ( ca1 len1 -- ca2 ior )
+  \
+  \ Return the file start address of the file named in the
+  \ character string _ca1 len1_. If the file was successfully
+  \ found, _ior_ is zero and _ca2_ is the start address.
+  \ Otherwise _ior_ is an exception code and _ca2_ is
+  \ undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-len  ?( need file-status  need fda
+
+: file-length  ( ca1 len1 -- len2 ior )
+  file-status nip fda-filelength @ swap ; ?)
+
+  \ doc{
+  \
+  \ file-length  ( ca1 len1 -- len2 ior )
+  \
+  \ Return the file length of the file named in the character
+  \ string _ca1 len1_. If the file was successfully found,
+  \ _ior_ is zero and _len2_ is the file length.  Otherwise
+  \ _ior_ is an exception code and _len2_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-type  ?( need file-status  need fda
+
+: file-type  ( ca len -- n ior )
+  file-status nip fda-filetype c@ swap ; ?)
+
+  \ XXX REMARK -- 2017-02-13: This word is uselsin TR-DOS,
+  \ because the filetype is part of the filename.
+
+  \ doc{
+  \
+  \ file-type  ( ca len -- c ior )
+  \
+  \ Return the TR-DOS file-type indentifier of the file named
+  \ in the character string _ca len_. If the file was
+  \ successfully found, _ior_ is zero and _n_ is the file-type
+  \ identifier.  Otherwise _ior_ is an exception code and _n_
+  \ is undefined.
+  \
+  \ Note this word is useless in TR-DOS, because the file type
+  \ in part of the filename. This word is included for
+  \ compatibility with other DOSs supported.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+( file-dir# )
+
+need assembler  need --dos-commands--  need set-filename
+
+code (file-dir#)  ( -- n ior )
+
+  dos-find-file a ld#, exaf, dos-preserve-ip-routine call,
+    \ A = directory entry (0..127), or $FF if file not found
+  0 h ld#, a l ld, h push,
+  a inc, z? rif    1 a ld#,  \ error: "no files"
+            relse  a xor,  rthen
+  pushdosior jp, end-code
+
+  \ doc{
+  \
+  \ (file-dir#)  ( -- n ior )
+  \
+  \ Return the file directory number of the file whose filename
+  \ is stored at FDA. If the file was successfully found, _ior_
+  \ is zero and _n_ is the file directory number.  Otherwise
+  \ _ior_ is an exception code and _n_ is undefined.
+  \
+  \ See: `file-dir#`, `fda`, `file-status`.
+  \
+  \ }doc
+
+: file-dir#  ( ca len -- n ior )  set-filename (file-dir#)  ;
+
+  \ doc{
+  \
+  \ file-dir#  ( ca len -- n ior )
+  \
+  \ Return the file directory number of the file named in the
+  \ character string _ca len_. If the file was successfully
+  \ found, _ior_ is zero and _n_ is the file directory number.
+  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+( file-sectors file-sector file-track )
+
+[unneeded] file-sectors  ?( need file-status  need fda
+
+: file-sectors  ( ca len -- n ior )
+  file-status nip fda-filesectors c@ swap ; ?)
+
+  \ doc{
+  \
+  \ file-sectors  ( ca len -- n ior )
+  \
+  \ Return the sectors occupied by the file named in the
+  \ character string _ca len_. If the file was successfully
+  \ found, _ior_ is zero and _n_ is the length in sectors.
+  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-sector  ?( need file-status  need fda
+
+: file-sector  ( ca len -- n ior )
+  file-status nip fda-filesector c@ swap ; ?)
+
+  \ doc{
+  \
+  \ file-sector  ( ca len -- n ior )
+  \
+  \ Return the first sector of the first track of the file
+  \ named in the character string _ca len_. If the file was
+  \ successfully found, _ior_ is zero and _n_ is the sector.
+  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-track  ?( need file-status  need fda
+
+: file-track  ( ca len -- n ior )
+  file-status nip fda-filetrack c@ swap ; ?)
+
+  \ doc{
+  \
+  \ file-track  ( ca len -- n ior )
+  \
+  \ Return the first track of the file named in the character
+  \ string _ca len_. If the file was successfully found, _ior_
+  \ is zero and _n_ is the track.  Otherwise _ior_ is an
+  \ exception code and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
