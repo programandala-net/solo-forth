@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702120053
+; Last modified: 201702130118
 
 ; ==============================================================
 ; Description
@@ -63,6 +63,10 @@
 ;
 ; 2017-02-10: First draft of `file>`. First working version of
 ; `>file`.
+;
+; 2017-02-12: Improve the conversion of TR-DOS error result:
+; check the contents of the A register also at the end.  This is
+; more versatile.  Remove temporary code.
 
 ; ==============================================================
 ; Requirements
@@ -86,13 +90,9 @@ dos:
   ; Input:
   ;   A' = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
-  ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
-  ;   Z  = reset
-  ; Output if no error:
-  ;   A  = zero
-  ;   Z  = set
-
+  ; Output:
+  ;   A  = TR-DOS error result (0..12)
+  ;   Z  = no error? (A=0)
 
   ex af,af'
   ld c,a
@@ -108,18 +108,15 @@ dos.c:
   ; Input:
   ;   C = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
-  ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
-  ;   Z  = reset
-  ; Output if no error:
-  ;   A  = zero
-  ;   Z  = set
+  ; Output:
+  ;   A  = TR-DOS error result (0..12)
+  ;   Z  = no error? (A=0)
 
   ld (iy+sys_df_sz_offset),2 ; BASIC mode: 2 lines in the lower screen
   call trdos_entry.execute_command_in_c
   ld (iy+sys_df_sz_offset),0 ; Forth mode: no lines in the lower screen
   ld a,c      ; error code
-  and a
+  and a       ; set Z
   ret
 
 ; ------------------------------
@@ -133,12 +130,9 @@ dos.preserve_ip:
   ; Input:
   ;   A' =TR-DOS command code ($00..$18)
   ;   A, DE, HL = possible parameters, depending on the command
-  ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
-  ;   Z  = reset
-  ; Output if no error:
-  ;   A  = zero
-  ;   Z  = set
+  ; Output:
+  ;   A  = TR-DOS error result (0..12)
+  ;   Z  = no error? (A=0)
 
   push bc     ; save the Forth IP
   call dos
@@ -161,12 +155,9 @@ dos.ip_on_tos:
   ;   A' = TR-DOS command code ($00..$18)
   ;   (SP) = Forth IP
   ;   A, B DE, HL = possible parameters, depending on the command
-  ; Output if error:
-  ;   A  = TR-DOS error code (0..12)
-  ;   Z  = reset
-  ; Output if no error:
-  ;   A  = zero
-  ;   Z  = set
+  ; Output:
+  ;   A  = TR-DOS error result (0..12)
+  ;   Z  = no error? (A=0)
 
   call dos
   pop hl   ; get the return address
@@ -182,16 +173,24 @@ push_dos_ior:
   ; it works as the end of a code Forth word: it jumps to
   ; `next` at the end.
 
-  ; Input:
-  ;   Z = no error?
-  ;   A  = TR-DOS error code (0..12)
-  ; Output if error:
-  ;   TOS = Forth exception code (-1012..-1000)
-  ; Output if no error:
-  ;   TOS = false
+  ; XXX REMARK -- 2017-02-13: This entry is used 3 times in the
+  ; kernel, and 5 times in the library (15 bytes in total).  It
+  ; can be removed (and its corresponding constant) (-14 bytes
+  ; in total): Code words can push the code and jump into
+  ; `dosior>ior`, what needs only one more byte (24 bytes in
+  ; total).
 
-  jp z,false_
-  call dosior_to_ior
+  ; Input:
+  ;   A  = TR-DOS error result (0..12)
+  ; Output:
+  ;   If error:
+  ;     TOS = Forth exception code (-1012..-1001)
+  ;   If no error:
+  ;     TOS = zero
+
+  and a               ; error?
+  jp z,false_         ; jump if not
+  call dosior_a_to_ior_hl
   _jp_pushhl
 
 ; ==============================================================
@@ -246,35 +245,39 @@ push_dos_ior:
 
 ; ----
 ; : dosior>ior  ( dosior -- ior )
-;   1000 + negate  ;
+;   dup if  1000 + negate  then   ;
 ; ----
 
 ; }doc
 
   pop hl
-  call dosior_to_ior.hl
+dosior_to_ior.hl:
+  call dosior_hl_to_ior_hl
   _jp_pushhl
 
-dosior_to_ior:
+dosior_a_to_ior_hl:
 
   ; Input:
-  ;   A  = TR-DOS error code (0..12)
+  ;   A  = TR-DOS error result (0..12)
   ; Output:
-  ;   HL = Forth exception code (-1012..-1000)
+  ;   HL = Forth exception code (-1012..-1001 | 0)
 
   ld h,0
   ld l,a
 
-dosior_to_ior.hl:
+dosior_hl_to_ior_hl:
 
   ; Input:
-  ;   HL = TR-DOS error code (0..12)
+  ;   HL = TR-DOS error result (0..12)
   ; Output:
-  ;   HL = Forth exception code (-1012..-1000)
+  ;   HL = Forth exception code (-1012..-1001 | 0)
 
+  ld a,h
+  or l          ; zero?
+  jp z,false_   ; if so, push it
   ld de,1000
   add hl,de
-  jp negate_hl ; then return
+  jp negate_hl  ; do `negate`, then return
 
 ; ----------------------------------------------
   _colon_header sector_id_,'sector-id'
@@ -596,253 +599,6 @@ dot_drives.exit
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header fda_,'fda'
-
-; doc{
-;
-; fda  ( -- a )
-;
-; Return address _a_ of TR-DOS File Description Area, which has
-; the following structure:
-
-; |===
-; | Offset | Bytes | Description
-;
-; | 0x0    | 8     | File name
-; | 0x8    | 1     | File type ('B, 'C', '#'...)
-; | 0x9    | 2     | Address (or length of a BASIC program)
-; | 0xB    | 2     | Length in bytes
-; | 0xD    | 1     | Length in sectors
-; | 0xE    | 1     | First sector of the file on its first track
-; | 0xF    | 1     | First track of the file
-; |===
-
-; See: `/fda`, `filename`, `filetype`.
-;
-; }doc
-
-  dw 23773
-
-; ----------------------------------------------
-  _c_constant_header slash_fda_,'/fda'
-
-; doc{
-;
-; /fda  ( -- b )
-;
-; Return the length of TR-DOS File Description Area, which is
-; 15.
-;
-; See: `fda`.
-;
-; }doc
-
-  db $0F
-
-; ----------------------------------------------
-  _constant_header filename_,'filename'
-
-  dw 23773
-
-; ----------------------------------------------
-  _c_constant_header slash_filename_,'/filename'
-
-  db 9
-
-; ----------------------------------------------
-  _constant_header filetype_,'filetype'
-
-  dw 23781
-
-; ----------------------------------------------
-  _colon_header minus_filename_,'-filename'
-
-; doc{
-;
-; -filename  ( -- )
-;
-; Erase the filename stored at TR-DOS File Descriptor Area with
-; spaces, and set its type to 'C'.
-;
-; See: `fda`, `filename>fda`.
-;
-; }doc
-
-
-  dw filename_,slash_filename_,blank_
-  _literal 'C'
-  dw filetype_,c_store_
-  dw exit_
-
-; ----------------------------------------------
-  _colon_header filename_to_fda_,'filename>fda'
-
-
-; doc{
-;
-; filename>fda  ( ca len -- )
-;
-; Copy the filename _ca len_ to the TR-DOS File Descriptor Area.
-; If _len_ is greater than 9 characters (the value returned by
-; `/filename`), that value is used instead.  If _ca len_ does
-; not include the file type at the end (at character offset 9),
-; 'C' is used by default.
-
-; ----
-; : filename>fda  ( ca len -- )
-;   -filename  /filename min fda smove  ;
-; ----
-
-; See: `fda`, `filename`, `filetype`, `-filename`, `/filename`.
-;
-; }doc
-
-  dw minus_filename_
-  dw slash_filename_,min_,fda_,s_move_
-  dw exit_
-
-; ----------------------------------------------
-  _variable_header file_address_,'file-address'
-
-  dw 0
-
-; ----------------------------------------------
-  _variable_header file_length_,'file-length'
-
-  dw 0
-
-; ----------------------------------------------
-
-if 1 ; XXX TMP --
-
-  ; XXX UNDER DEVELOPMENT
-
-  _code_header paren_from_file_,'(file>)'
-
-; doc{
-;
-; (file>)  ( -- ior )
-;
-; }doc
-
-  push bc   ; save the Forth IP
-
-  ld c,trdos_command.find_file
-  call dos.c
-  ; A = directory entry of the file (0..127), or $FF if not found
-  inc a ; file not found?
-  jr nz,paren_from_file.file_found ; no error
-  ; file not found
-  ld a,trdos_error.no_files ; error code "no files"
-  and a ; unset Z
-  jr paren_from_file.exit
-
-paren_from_file.file_found:
-  dec a ; restore directory entry (0..127)
-  ld c,trdos_command.read_file_descriptor
-  call dos.c
-  ; A = directory entry
-
-  xor a    ; load
-  ; ld a,$FF ; verify
-  ld (trdos_variable.cat_drive_or_read_verify_flag),a ; set load flag
-  ld hl,16384      ; load address
-
-  ;xor a    ; use address and length from the directory
-  ld a,$FF ; use address from HL, and length from the directory
-  ;ld a,$03 ; use address HL, and length in DE
-
-  ld c,trdos_command.read_file
-  call dos.c
-  ; XXX FIXME -- The call never returns. The DOS exits to BASIC
-  ; with error "Nonsense in BASIC".
-
-  ld a,c ; possible error code
-
-paren_from_file.exit:
-
-  pop bc      ; restore the Forth IP
-  jp push_dos_ior
-
-; ----------------------------------------------
-  _colon_header from_file_,'file>'
-
-; ----
-; : file>  ( ca len -- ior )
-;   filename>fda (file>) ;
-; ----
-
-  dw filename_to_fda_
-  dw paren_from_file_
-  dw exit_
-
-endif
-
-; ----------------------------------------------
-
-if 1 ; XXX TMP --
-
-  _code_header paren_to_file_,'(>file)'
-
-; doc{
-;
-; (>file)  ( -- ior )
-;
-; }doc
-
-  push bc ; save the Forth IP
-
-  ld c,trdos_command.read_system_track
-  call dos.c
-  jr nz,paren_to_file.exit ; jump if error
-
-  ; XXX FIXME -- 2017-02-10: When there's no disk in the drive,
-  ; TR-DOS throws "Disc Error. Retry,Abort,Ignore?". "Retry" is
-  ; useless; "Abort" exits to BASIC with "Tape loading error";
-  ; "Ignore" crashes the system. The call to `read_system_track`
-  ; does not return.
-  ;
-  ; There must be a way to avoid this and return an ior.
-
-  ld c,trdos_command.find_file
-  call dos.c
-  ; A = directory entry of the file (0..127), or $FF if not found
-  inc a ; file not found?
-  jr z,paren_to_file.file_not_found ; jump if no error
-
-  ; error: file found
-  ld a,trdos_error.file_exists ; error code "file exists"
-  jr paren_to_file.exit
-
-paren_to_file.file_not_found:
-  ld de,(file_length_pfa)
-  ld hl,(file_address_pfa)
-  ld c,trdos_command.create_file
-  call dos.c
-
-  ld a,c ; possible error code
-
-paren_to_file.exit:
-  pop bc  ; restore the Forth IP
-  jp push_dos_ior
-
-; ----------------------------------------------
-  _colon_header to_file_,'>file'
-
-; ----
-; : >file  ( ca1 len1 ca2 len2 -- ior )
-;   filename>fda file-length ! file-address ! (>file) ;
-; ----
-
-  dw filename_to_fda_
-  dw file_length_,store_
-  dw file_address_,store_
-  dw paren_to_file_
-  dw exit_
-
-endif
-
-; ----------------------------------------------
   _colon_header dot_f_d_a_,'.fda'
 
   ; XXX TMP -- print file descriptor, for debugging
@@ -872,68 +628,6 @@ endif
   dw c_fetch_,dot_
   dw exit_
 
-; ----------------------------------------------
-
-if 0 ; XXX TMP --
-
-  _code_header readtry_,'readtry'
-
-; doc{
-;
-; readtry  ( -- ior )
-;
-; }doc
-
-  ; XXX TMP -- Fisrt try to read the contents of a file.
-  ;
-  ; XXX REMARK -- 2016: It works.
-  ;
-  ; XXX REMARK -- 2017-02-05: It fails: "nonsense in BASIC".
-
-  push bc   ; save the Forth IP
-  ;ld (backup_bc),bc
-
-  ld c,trdos_command.read_system_track
-  call dos.c
-
-  ld hl,name_and_type
-  ld c,trdos_command.copy_from_hl_to_descriptor
-  call dos.c
-  jr nz,readtry.exit ; error
-  ld c,trdos_command.find_file
-  call dos.c
-  ; a=directory entry of the file, or $FF if not found
-  inc a ; file not found?
-  jr nz,readtry.file_found ; no error
-  ; file not found
-  ld a,1 ; error code "no files"
-  and a ; unset Z
-  jr readtry.exit
-readtry.file_found:
-  dec a ; restore file descriptor (0..127)
-  ld c,trdos_command.read_file_descriptor
-  call dos.c
-;  jr nz,readtry.exit ; error
-  xor a
-  ld (trdos_variable.cat_drive_or_read_verify_flag),a ; set load flag
-  ld hl,16384      ; load address
-  ld a, $ff        ; take length from the directory
-  ld c,trdos_command.read_file
-  call dos.c
-
-  ; XXX FIXME --
-  ; a = 2 = file descriptor, not error code!
-
-readtry.exit:
-  pop bc      ; restore the Forth IP
-;backup_bc equ $+1
-;  ld bc,0
-  jp push_dos_ior
-
-name_and_type:
-  defm "pr64.binC"
-
-endif ; readtry
 
 endif ; testing_trdos
 
