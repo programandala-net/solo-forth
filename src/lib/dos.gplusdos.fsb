@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702131759
+  \ Last modified: 201702140004
 
   \ -----------------------------------------------------------
   \ Description
@@ -806,6 +806,116 @@ code g.100i  ( u -- )
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
 
+( cd3 )
+
+  \ `check-disk`, try 3
+
+  \ XXX UNDER DEVELOPMENT -- 2017-02-13
+
+need assembler  need rest  need get-drive
+
+code (cd3  ( -- ior )
+  b push, rest hook, b pop, next ix ldp#,
+  af push, ' dosior>ior jp, end-code
+
+: cd3  ( n -- ior )
+  get-drive >r set-drive throw (cd3 r> set-drive throw  ;
+
+  \ XXX FIXME -- Since the first time #-1006 (no disk in drive)
+  \ is returned because of a missing disk, it is the only error
+  \ result, no matter the drive, no matter if disks are
+  \ inserted or not.
+
+( cd2 )
+
+  \ `check-disk`, try 2
+
+  \ XXX UNDER DEVELOPMENT -- 2017-02-13
+
+need assembler  need ufia1  need rest  need plusd-in,
+
+code cd2  ( n -- ior )
+  h pop,
+  b push,  \ save the Forth IP
+  plusd-in, l a ld, ufia1 sta, rest hook,
+  b pop, next ix ldp#, \ restore the Forth registers
+  af push, ' dosior>ior jp, end-code
+
+  \ XXX REMARK -- It seems the `rest` hook does not use the
+  \ drive specified in UFIA passed in IX, like the RAMSOFT's
+  \ _DISCiPLE/+D Technical Guide_ suggests (it's not clear, it
+  \ reads "UFIA" but not IX) but the current drive.
+  \
+  \ This alternative uses G+DOS' UFIA1, just in case, but it
+  \ does not work: _ior_ is always zero, no matter if there's a
+  \ disk in the drive or not.
+
+( cd1 )
+
+  \ `check-disk`, try 1
+
+  \ XXX UNDER DEVELOPMENT -- 2017-02-13
+
+need assembler  need ufia  need rest
+
+code cd1  ( n -- ior )
+  h pop,
+  b push,  \ save the Forth IP
+  l a ld, dstr1 sta, ufia ix ldp#, rest hook,
+  b pop, next ix ldp#, \ restore the Forth registers
+  af push, ' dosior>ior jp, end-code
+
+  \ XXX REMARK -- It seems the `rest` hook does not use the
+  \ drive specified in UFIA passed in IX, like the RAMSOFT's
+  \ _DISCiPLE/+D Technical Guide_ suggests (it's not clear, it
+  \ reads "UFIA" but not IX) but the current drive.
+  \
+  \ XXX FIXME -- The method works: when the disk is removed,
+  \ _ior_ is #-1006. The problem is #-1006 is returned also
+  \ after inserting the disk, unless `set-drive` is used *on
+  \ the other drive* first, and then on the other one.
+
+( cd0 )
+
+  \ `check-disk`, try 0
+
+  \ XXX UNDER DEVELOPMENT -- 2017-02-13
+
+  \ XXX TODO -- 
+
+need assembler  need plusd-in,  need plusd-out,  need patch
+need ufia  need ufia1  need set-filename  need patch
+
+create (cd0-error  ( -- a )  asm
+  168E call, plusd-out, b pop, next ix ldp#,
+    \ $168E=BORD_REST (restore the border).
+    \ Page out the Plus D memory.
+    \ Restore the Forth registers.
+  0000 h ldp#, 2066 h stp,
+    \ Clear G+DOS D_ERR_SP.
+  af push, ' dosior>ior jp, end-asm
+    \ Return the ior.
+
+code cd0  ( -- ior )
+
+  b push,  plusd-in,
+    \ Get the parameter.
+    \ Save the Forth IP.
+    \ Page in the Plus D memory.
+  (cd0-error h ldp#, h push, 2066 sp stp,
+    \ Set G+DOS D_ERR_SP ($2066) so an error will go to
+    \   `(cd0-error` instead of returning to BASIC.
+    \   This is needed because we are using direct calls to the
+    \   G+DOS ROM instead of hook codes.
+  \ 06C5 call, \ XXX REMARK -- This always returns #-1006
+  06A4 call,  \ track_0
+  plusd-out, b pop, b pop, next ix ldp#, ' false jp,  end-code
+
+  \ XXX FIXME -- Since the first time #-1006 (no disk in drive)
+  \ is returned because of a missing disk, it is the only error
+  \ result, no matter the drive, no matter if disks are
+  \ inserted or not.
+
 ( (cat )
 
 need assembler  need plusd-in,  need plusd-out,  need patch
@@ -851,7 +961,7 @@ code (cat  ( n -- ior )
     \ Page in the Plus D memory.
   (cat-error h ldp#, h push, 2066 sp stp,
     \ Set G+DOS D_ERR_SP ($2066) so an error will go to
-    \   `((cat2` instead of returning to BASIC.
+    \   `(cat-error` instead of returning to BASIC.
     \   This is needed because we are using direct calls to the
     \   G+DOS ROM instead of hook codes.
 

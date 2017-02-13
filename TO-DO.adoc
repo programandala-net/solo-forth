@@ -556,6 +556,17 @@ their behaviour and names identical. Write the +3DOS version too.
 
 .2017-02-13:
 
+Factor this common code to a routine to jump to:
+
+----
+  b pop, next ix ldp#, \ restore the Forth registers
+  af push, ' dosior>ior jp, end-code
+----
+
+It could be in the kernel, right before `dosior>ior`, and run into it.
+
+.2017-02-13:
+
 Fix: When the current disk is removed before doing `cat`, the
 corresponding exception is thrown. But the system does not recognize
 the disk when it's inserted back. The same code is thrown: #-1006
