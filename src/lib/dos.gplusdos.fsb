@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702121147
+  \ Last modified: 201702131622
 
   \ -----------------------------------------------------------
   \ Description
@@ -85,7 +85,18 @@
   \ Improve documentation.
   \
   \ 2017-02-12: Add `file-status`. Replace old versions of
-  \ `file?` with simpler `file-exists?`.
+  \ `file?` with simpler `file-exists?`.  Add `file-start`,
+  \ `file-length`, `file-type`, `file-dir`. Rename `>ufia` to
+  \ `set-code-file`. Rename `filename!` to `set-filename`.
+  \
+  \ 2017-02-13: Make low-level factor words return an _ior_
+  \ instead of a _dosior_. It's more useful and saves one byte
+  \ per word pair. Rename `file-dir` to `file-dirdesc` and add
+  \ `file-dir#`. Improve documentation of `cat` words. Add
+  \ draft of improved `cat` which detects there's no disk in
+  \ the drive.  Move the UFIA drive setting from
+  \ `set-code-file` to lower `set-filename`; this fixes
+  \ `file-status`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
@@ -163,12 +174,46 @@
   \
   \ ufia  ( -- a )
   \
-  \ Return address _a_ of the User File Information Area used
-  \ by G+DOS.
+  \ Return constant address _a_ of a buffer used as G+DOS User File
+  \ Information Area.
   \
+  \ |===
+  \ | Offset | Bytes | Meaning
+  \
+  \ |      0 |     1 | Drive number (1, 2 or '*' ($2A) for current)
+  \ |      1 |     1 | Directory entry number
+  \ |      2 |     1 | Stream number
+  \ |      3 |     1 | Device density type ('d'=DD, 'D'=SD)
+  \ |      4 |     1 | Directory description
+  \ |      5 |    10 | File name (padded with spaces)
+  \ |     15 |     1 | File type
+  \ |     16 |     2 | Length of file
+  \ |     18 |     2 | Start address
+  \ |     20 |     2 | Length of a BASIC program
+  \ |     22 |     2 | Autostart line of a BASIC program
+  \ |===
+
   \ See: `/ufia`.
   \
   \ }doc
+
+  \ XXX TODO --
+  \ |===
+  \ Code          Type                   CAT string   ROM-ID
+  \
+  \  0            ERASED (free entry)    (NA)         NA
+  \  1            BASIC                  BAS          0
+  \  2            NUMBER ARRAY           D.ARRAY      1
+  \  3            STRING ARRAY           $.ARRAY      2
+  \  4            CODE                   CDE          3
+  \  5            48K SNAPSHOT           SNP 48k      NA
+  \  6            MICRODRIVE             MD.FILE      NA
+  \  7            SCREEN$                SCREEN$      NA
+  \  8            SPECIAL                SPECIAL      NA
+  \  9            128K SNAPSHOT          SNP 128k     NA
+  \ 10            OPENTYPE               OPENTYPE     NA
+  \ 11            EXECUTE                EXECUTE      NA
+  \ |===
 
   \ doc{
   \
@@ -184,27 +229,21 @@
   \ Note: The original UFIA field names are used, except
   \ `device`, whose original name is "lstr1":
 
-ufia      constant dstr1   \ drive: 1 or 2
+ufia      constant dstr1   \ drive: 1, 2 or '*'
 ufia 1+   constant fstr1   \ file directory number
 ufia 2+   constant sstr1   \ stream number
 ufia 3 +  constant device  \ device: "D" or "d"
+  \ XXX TODO -- Remove `device`. The distinction is useless in Forth.
 ufia 4 +  constant nstr1   \ directory description
 ufia 5 +  constant nstr2   \ file name
 ufia 15 + constant hd00    \ file type
 ufia 16 + constant hd0b    \ file length
 ufia 18 + constant hd0d    \ file start address
-
-  \ XXX OLD -- not needed
-  \ ufia 20 + constant hd0f  \ BASIC length without variables
-  \ ufia 22 + constant hd11  \ BASIC autorun line
+ufia 20 + constant hd0f    \ BASIC length without variables
+ufia 22 + constant hd11    \ BASIC autorun line
 
 'd' device c!  2 sstr1 c!  1 dstr1 c!
   \ Set default values of device, stream and drive
-
-variable file-length  variable file-address
-  \ `file-length` holds a copy of `hd0b` used by `(file>)`
-  \ `file-address` holds a copy of `hd0d` used by `(file>)`
-  \ XXX TODO -- Study if these variables are really needed.
 
 ( --file-types-- )
 
@@ -288,7 +327,9 @@ code get-drive  ( -- n )
   b pop, next ix ldp#,  \ restore the Forth registers
   pusha jp,  end-code  ?)
 
-  \ XXX TODO check this method:
+  \ XXX TODO -- Rewrite in Z80 opcodes.
+
+  \ XXX TODO -- Check this method:
   \ bit 0 of 3DD1
 
   \ doc{
@@ -303,24 +344,20 @@ code get-drive  ( -- n )
 
 ( delete-file )
 
-need assembler  need ufia  need heraz
-need filename>ufia
+need assembler  need ufia  need heraz  need set-filename
 
 code (delete-file)  ( -- ior )
-  b push,  \ save the Forth registers
-  ufia ix ldp#,
-  heraz hook,  \ erase the file
-  b pop, next ix ldp#,  \ restore the Forth registers
-  af push,
-  jpnext,
-  end-code
+  b push,  \ save the Forth IP
+  ufia ix ldp#, heraz hook,  \ delete the file
+  b pop, next ix ldp#, \ restore the Forth registers
+  af push, ' dosior>ior jp, end-code
 
   \ doc{
   \
   \ (delete-file)  ( -- ior )
   \
   \ Delete a disk file using the data hold in UFIA.
-  \ Return a result code _ior_.
+  \ Return an error result _ior_.
   \
   \ This word is a factor of `delete-file`.
   \
@@ -328,15 +365,14 @@ code (delete-file)  ( -- ior )
   \
   \ }doc
 
-: delete-file  ( ca len -- ior )
-  filename>ufia (delete-file) dosior>ior  ;
+: delete-file  ( ca len -- ior )  set-filename (delete-file)  ;
 
   \ doc{
   \
   \ delete-file  ( ca len -- ior )
   \
   \ Delete the disk file named in the string _ca len_ and
-  \ return a result code _ior_.
+  \ return an error result _ior_.
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
@@ -344,7 +380,7 @@ code (delete-file)  ( -- ior )
   \
   \ }doc
 
-( -filename filename! >ufia filename>ufia )
+( -filename set-filename set-code-file )
 
 need ufia  need get-drive
 
@@ -357,6 +393,8 @@ need ufia  need get-drive
   \ A constant that returns the maximum length of a G+DOS
   \ filename.
   \
+  \ See: `set-filename`.
+  \
   \ }doc
 
 : -filename  ( -- )  nstr2 /filename blank  ;
@@ -365,47 +403,44 @@ need ufia  need get-drive
   \
   \ -filename  ( -- )
   \
-  \ Blank the filename in UFIA.
+  \ Blank the filename in UFIA, i.e. replace it with spaces.
   \
-  \ See: `ufia`, `/filename`.
-  \
-  \ }doc
-
-: filename!  ( ca len -- )
-  -filename /filename min nstr2 swap cmove  ;
-
-  \ XXX TODO -- Rename to `filename>ufia`, but rename
-  \ `filename>ufia` first!
-
-  \ doc{
-  \
-  \ filename!  ( ca len -- )
-  \
-  \ Store a filename _ca len_ into UFIA.
+  \ See: `ufia`, `/filename`, `set-filename`.
   \
   \ }doc
 
-: >ufia  ( ca1 len1 ca2 len2 -- )
-  filename!  dup hd0b !  file-length !
-             dup hd0d !  file-address !
-  3 hd00 c!  4 nstr1 c!  \ code filetype and dir description
+: set-filename  ( ca len -- )
+  -filename /filename min nstr2 swap cmove
   get-drive dstr1 c!  ;
 
   \ doc{
   \
-  \ >ufia  ( ca1 len1 ca2 len2 -- )
+  \ set-filename  ( ca len -- )
   \
-  \ Set UFIA with the memory region _ca1 len1_, which will
-  \ be saved or loaded, and filename _ca2 len2_
+  \ Configure UFIA to use filename _ca len_ and the current
+  \ drive.
+  \
+  \ See: `ufia`, `-filename`, `/filename`.
   \
   \ }doc
 
-: filename>ufia  ( ca len -- )  0 0 2swap >ufia  ;
-  \ XXX TODO -- Rename to `file>ufia`
+: set-code-file  ( ca1 len1 ca2 len2 -- )
+  set-filename  hd0b !  hd0d !  3 hd00 c!  4 nstr1 c!  ;
+
+  \ doc{
+  \
+  \ set-code-file  ( ca1 len1 ca2 len2 -- )
+  \
+  \ Configure UFIA to use a code file in the current drive with
+  \ filename _ca2 len2_, start address _ca1_ and length _len1_.
+  \
+  \ See: `ufia`, `set-filename`.
+  \
+  \ }doc
 
 ( >file )
 
-need assembler  need ufia  need >ufia
+need assembler  need ufia  need set-code-file
 need hofile  need hsvbk  need cfsm
 
 code (>file)  ( -- ior )
@@ -418,8 +453,7 @@ code (>file)  ( -- ior )
     hsvbk hook, \ save to file
     nc? rif  cfsm hook,  rthen  \ close the file if no error
   rthen  b pop, next ix ldp#,  \ restore the Forth registers
-  af push,  \ ior
-  jpnext, end-code
+  af push, ' dosior>ior jp, end-code
 
   \ doc{
   \
@@ -434,8 +468,7 @@ code (>file)  ( -- ior )
   \
   \ }doc
 
-: >file  ( ca1 len1 ca2 len2 -- ior )
-  >ufia (>file) dosior>ior  ;
+: >file  ( ca1 len1 ca2 len2 -- ior )  set-code-file (>file)  ;
 
   \ doc{
   \
@@ -450,56 +483,39 @@ code (>file)  ( -- ior )
 
 ( file> )
 
-need assembler  need ufia  need >ufia
+need assembler  need ufia  need set-code-file
 need hgfile  need lbyte  need hldbk
 
-code (file>)  ( -- ior )
+code (file>)  ( ca len -- ior )
 
-  b push,  \ save the Forth IP
+  d pop, h pop, b push, h push, d push, ( ip ca len )
 
   ufia ix ldp#, hgfile hook,  \ get the file
-  nc? rif  \ no error?
-
+  c? rif  d pop, d pop,  \ error, so drop the parameters
+  relse
     hd00 d ldp#, 9 b ld#,  \ file header destination and count
     rbegin  lbyte hook, d stap, d incp,  rstep
-      \ Load the file header.
-
-    file-address d ftp, file-length b ftp,
-      \ The start address and length specified
-      \ in the command are used by default instead
-      \ of those stored in the file header.
-
-    b tstp, z?  rif  hd0b b ftp,
-                     d tstp, z? rif  hd0d d ftp,  rthen
+    b pop, d pop, b tstp, z?  rif
+      hd0b b ftp, d tstp, z? rif  hd0d d ftp,  rthen
     rthen  hldbk hook,
-      \ If the length is zero, use the length stored in the
-      \ file header instead and check also the start address:
-      \ If the address is zero, use the address stored in the
-      \ file header instead.
-      \
-      \ Then load the file data.
-
-  rthen  b pop, next ix ldp#,
-    \ restore the Forth registers
-  af push, ' dosior>ior jp,  end-code
+  rthen b pop, next ix ldp#, af push, ' dosior>ior jp, end-code
 
   \ doc{
   \
-  \ (file>)  ( -- ior )
+  \ (file>)  ( ca len -- ior )
   \
   \ Read a file from disk, using the data hold in UFIA and the
-  \ contents of `file-address` and `file-length` variables,
-  \ following the following two rules:
+  \ alternative destination zone _ca len_, following the
+  \ following two rules:
   \
-  \ 1. If `file-length` is not zero, use it as the
-  \    count of bytes that must be read from the file defined in
-  \    UFIA into the address stored in `file-address`.
+  \ 1. If _len_ is not zero, use it as the count of bytes that
+  \ must be read from the file defined in UFIA, and use _ca_ as
+  \ destination address.
   \
-  \ 2. If `file-length` is zero, use the file
-  \    length stored in the file header instead, and then check
-  \    also the start address: If `file-address`
-  \    is zero, use the file address stored in the file header
-  \    instead.
+  \ 2. If _len_ is zero, use the file length stored in the file
+  \ header instead, and then check also _ca_: If _ca_ not zero,
+  \ use it as destination address, else use the file address
+  \ stored in the file header instead.
   \
   \ Return error result _ior_.
   \
@@ -509,39 +525,41 @@ code (file>)  ( -- ior )
   \
   \ }doc
 
-: file>  ( ca1 len1 ca2 len2 -- ior )  2swap >ufia (file>) ;
+: file> ( ca1 len1 ca2 len2 -- ior)
+  2dup 2>r 2swap set-code-file 2r> (file>)  ;
 
   \ doc{
   \
   \ file>  ( ca1 len1 ca2 len2 -- ior )
   \
-  \ Read the contents of a disk file, defined by the string
-  \ _ca1 len1_, to _ca2 len2_, i.e. _len2_ bytes at address
-  \ _ca2_, or use the original address and length of the file,
-  \ depending on the following rules:
+  \ Read the contents of a disk file, whose filename is defined
+  \ by the string _ca1 len1_, to memory zone _ca2 len2_ (i.e.
+  \ read _len2_ bytes and stored them starting at address
+  \ _ca2_), or use the original address and length of the file
+  \ instead, depending on the following rules:
   \
   \ 1. If _len2_ is not zero, use _ca2 len2_.
   \
-  \ 2. If _len2_ is zero, use the original file length instead and
-  \    then check also _ca2_: If _ca2_ is zero, use the original
-  \    file address instead.
+  \ 2. If _len2_ is zero, use the original file length instead
+  \ and then check also _ca2_: If _ca2_ is zero, use the
+  \ original file address instead.
   \
   \ Return error result _ior_.
   \
   \ Example:
   \
-  \ The screen memory has been saved to a disk file using the following
-  \ command:
-  \
+  \ The screen memory has been saved to a disk file using the
+  \ following command:
+
   \ ----
   \ 16384 6912 s" pic.scr" >file
   \ ----
-  \
+
   \ Therefore, its original address is 16384 and its original
   \ size is 6912 bytes.
   \
   \ Now there are four ways to load the file from disk:
-  \
+
   \ |===
   \ | Example                        | Result
   \
@@ -550,17 +568,17 @@ code (file>)  ( -- ior )
   \ | `s" pic.scr" 32768    0 file>` | Load the whole file to address 32768
   \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
   \ |===
-  \
+
   \ See: `>file`, `(file>)`.
   \
   \ }doc
 
 ( file-status )
 
-need assembler  need ufia  need filename!
+need assembler  need ufia  need set-filename
 need hgfile  need lbyte
 
-code (file-status)  ( -- ior )
+code (file-status)  ( -- a ior )
   ufia ix ldp#, ix push,
   b push,  \ save the Forth IP
   hgfile hook,  \ get the file
@@ -570,26 +588,29 @@ code (file-status)  ( -- ior )
       \ Load the file header.
       a xor, \ set no error
   rthen  b pop, next ix ldp#, \ restore the Forth registers
-  af push, ' dosior>ior jp,  end-code
+  af push, ' dosior>ior jp, end-code
+
+  \ XXX TODO --  Update also the file directory number
+  \ (`fstr1`) and the directory description (`nstr1`).
 
   \ doc{
   \
   \ (file-status)  ( -- a ior )
   \
   \ Return the status of the file whose name is hold in UFIA,
-  \ the G+DOS User Information Area.  If the file exists, _ior_
-  \ is zero and _a_ is the address returned by `ufia`, which
-  \ contains the header data of the file.  If the file doesn't
-  \ exist, _ior_ is the corresponding I/O result code and _a_
-  \ is useless.
+  \ the G+DOS User Information Area.  If the file exists, its
+  \ file header is read into UFIA,  _a_ is the address returned
+  \ by `ufia`, and _ior_ is zero. If the file does not exists,
+  \ _a_ is useless and _ior_ is the corresponding error code.
   \
-  \ This word is a factor of `file-status`.
+  \ This word is a low-level factor of `file-status`.
   \
   \ See: `file-status`, `ufia`.
   \
   \ }doc
 
-: file-status  ( ca len -- a ior )  filename! (file-status)  ;
+: file-status  ( ca len -- a ior)
+  set-filename (file-status)  ;
 
   \ doc{
   \
@@ -603,24 +624,140 @@ code (file-status)  ( -- ior )
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
-  \ See: `ufia`.
+  \ See: `ufia`, `file-exists?`, `file-start`, `file-length`,
+  \ `file-type`, `file-dir`.
   \
   \ }doc
 
-( file-exists? )
+( file-exists? file-start file-length file-type )
 
-[unneeded] file-exists?
-?\ need file-status  : file-exists?  file-status nip 0=  ;
+need ?(
+
+[unneeded] file-exists?  ?( need file-status
+: file-exists?  ( ca len -- f )  file-status nip 0=  ; ?)
+
+  \ doc{
+  \
+  \ file-exists?  ( ca len -- f )
+  \
+  \ If the file named in the character string _ca len_ is
+  \ found, _f_ is _true_. Otherwise _f_ is _false_.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-start  ?( need file-status  need ufia
+
+: file-start  ( ca1 len1 -- ca2 ior )
+  file-status nip hd0d @ swap ; ?)
+
+  \ doc{
+  \
+  \ file-start  ( ca1 len1 -- ca2 ior )
+  \
+  \ Return the file start address of the file named in the
+  \ character string _ca1 len1_. If the file was successfully
+  \ found, _ior_ is zero and _ca2_ is the start address.
+  \ Otherwise _ior_ is an exception code and _ca2_ is
+  \ undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-length  ?( need file-status  need ufia
+
+: file-length  ( ca1 len1 -- len2 ior )
+  file-status nip hd0b @ swap ; ?)
+
+  \ doc{
+  \
+  \ file-length  ( ca1 len1 -- len2 ior )
+  \
+  \ Return the file length of the file named in the character
+  \ string _ca1 len1_. If the file was successfully found,
+  \ _ior_ is zero and _len2_ is the file length.  Otherwise
+  \ _ior_ is an exception code and _len2_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-type  ?( need file-status  need ufia
+
+: file-type  ( ca len -- n ior )
+  file-status nip hd00 c@ swap ; ?)
+
+  \ doc{
+  \
+  \ file-type  ( ca len -- n ior )
+  \
+  \ Return the G+DOS file-type indentifier of the file named in
+  \ the character string _ca len_. If the file was successfully
+  \ found, _ior_ is zero and _n_ is the file-type identifier.
+  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+( file-dir# file-dirdesc )
+
+need ?(
+
+[unneeded] file-dir#  ?( need file-status  need ufia
+
+: file-dir#  ( ca len -- n ior )
+  file-status nip fstr1 c@ swap ; ?)
+
+  \ XXX FIXME --  _n_ is always zero. `file-status` does not
+  \ update the whole UFIA?
+
+  \ doc{
+  \
+  \ file-dir#  ( ca len -- n ior )
+  \
+  \ Return the file directory number of the file named in the
+  \ character string _ca len_. If the file was successfully
+  \ found, _ior_ is zero and _n_ is the file directory number.
+  \ Otherwise _ior_ is an exception code and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-dirdesc  ?( need file-status  need ufia
+
+: file-dirdesc  ( ca len -- n ior )
+  file-status nip nstr1 c@ swap ; ?)
+
+  \ XXX FIXME --  _n_ is always zero. `file-status` does not
+  \ update the whole UFIA?
+
+  \ doc{
+  \
+  \ file-dirdesc  ( ca len -- n ior )
+  \
+  \ Return the G+DOS file directory identifier of the file
+  \ named in the character string _ca len_. If the file was
+  \ successfully found, _ior_ is zero and _n_ is the file
+  \ directory identifier. Otherwise _ior_ is an exception code
+  \ and _n_ is undefined.
+  \
+  \ See: `file-status`.
+  \
+  \ }doc
 
 ( file>screen )
 
   \ XXX UNDER DEVELOPMENT
   \ Experimental code to read lines from a file
 
-need assembler  need ufia  need >ufia  need hgfile  need lbyte
-need plusd-in,  need plusd-out,
+need assembler  need ufia  need set-code-file
+need hgfile  need lbyte  need plusd-in,  need plusd-out,
 
-code (file>screen)  ( -- dosior )
+code (file>screen)  ( -- ior )
 
   b push,  \ save the Forth IP
 
@@ -640,13 +777,13 @@ code (file>screen)  ( -- dosior )
     \   lbyte hook,  af push,  10 hook,  af pop,  13 cp#,
     \ z runtil
 
-  rthen  b pop, next ix ldp#, af push,  jpnext,  end-code
+  rthen b pop, next ix ldp#, af push, ' dosior>ior jp, end-code
         \ restore the Forth registers and save the ior
   \ Print a file on the screen, line by line, using the data
   \ hold in UFIA.
 
 : file>screen  ( ca len -- ior )
-  >ufia (file>screen) dosior>ior  ;
+  0 0 2swap set-code-file (file>screen) ;
   \ Copy a file _ca len_ to the screen, line by line,
   \ and return error result _ior_.
 
@@ -670,22 +807,84 @@ code g.100i  ( u -- )
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
 
-( cat acat wcat wacat )
+( (cat2 cat2 wacat2 acat2 wcat2 )
 
-need assembler
-need ufia  need ufia1  need filename>ufia  need patch
+  \ XXX NEW -- 2017-02-13: Improved version. When there's no
+  \ disk in the current drive, it will return a _ior_ instead
+  \ of printing a BASIC error.
+  \
+  \ XXX UNDER DEVELOPMENT
+  \
+  \ See Plus D ROM at $182D (d_error) and $2226 (patch):
+  \
+  \ If $2066 contains 0, the BASIC message is printed.
+  \ When it holds other value, it's loaded into SP before
+  \ returning.
 
-code (cat)  ( n -- )
+need assembler  need plusd-in,  need plusd-out,  need patch
+need ufia  need ufia1  need set-filename  need patch
 
-  h pop, b push, exx,
-    \ Get the parameter in hl' and save the Forth IP
+create ((cat2  ( -- a )  asm
+  168E call, plusd-out, b pop, next ix ldp#,
+    \ $168E=BORD_REST (restore the border).
+    \ Page out the Plus D memory.
+    \ Restore the Forth registers.
+  0000 h ldp#, 2066 h stp,
+    \ Clear G+DOS D_ERR_SP.
+  af push, ' dosior>ior jp, end-asm
+    \ Return the ior.
+    \
+    \ XXX TODO -- Use G+DOS routine HOOK_RET at $22C8
+    \ to all at once.
 
-  patch hook,
+code (cat2  ( n -- ior )
+
+  2 a ld#, #23659 sta,
+    \ XXX TMP -- 2 lines for the lower screen
+
+  d pop, b push,  plusd-in, ((cat2 h ldp#, h push, 2066 sp stp,
+    \ Get the parameter.
+    \ Save the Forth IP.
+    \ Page in the Plus D memory.
+    \ Set G+DOS D_ERR_SP ($2066) so an error will go to
+    \   `((cat2` instead of returning to BASIC.
+    \   This is needed because we are using direct calls to the
+    \   G+DOS ROM instead of hook codes.
+
+  exx,  ufia h ldp#, ufia1 d ldp#, /ufia b ldp#, ldir,
+    \ Preserve the parameter into DE'
+    \ Copy Forth UFIA to G+DOS UFIA1.
+
+  exx, e a ld, 09A5 call, 168E call,
+    \ 09A5 = SCAN_CAT  (input: cat or search type in the A register)
+    \ XXX OLD: 24B5 = CAT_RUN (input: cat type in the A register)
+    \ 168E = BORD_REST (restore the border)
+
+  plusd-out, b pop, b pop, next ix ldp#, ' false jp,  end-code
+    \ Page out the Plus D memory.
+    \ Consume the useless address of `((cat2` pushed at the start.
+    \ Restore the Forth registers and exit.
+
+  \ : wacat2  ( ca len -- )  set-filename  2 (cat2 throw  ;
+: wcat2  ( ca len -- )  set-filename  4 (cat2 throw  ;
+  \ : acat2  ( -- )  s" *" wacat2 ;
+: cat2  ( -- )  s" *" wcat2  ;
+
+( (cat )
+
+need assembler  need plusd-in,  need plusd-out,  need patch
+need ufia  need ufia1  need set-filename  need patch
+
+code (cat  ( n -- )
+
+  h pop, b push, exx, plusd-in,
+    \ Get the parameter in HL', save the Forth IP, page in the
+    \ Plus D memory.
 
   ufia h ldp#, ufia1 d ldp#, /ufia b ldp#, ldir,
     \ Copy Forth UFIA to G+DOS UFIA1.
 
-  \ exx  l a ld  24B5 call  168E call \ XXX OLD
+  \ exx, l a ld, 24B5 call, 168E call,  \ XXX OLD
     \ 24B5 = CAT_RUN (input: cat type in the A register)
     \ 168E = BORD_REST (restore the border)
 
@@ -693,30 +892,80 @@ code (cat)  ( n -- )
     \ 09A5 = SCAN_CAT  (input: cat or search type in the A register)
     \ 168E = BORD_REST (restore the border)
 
-  E7 out, b pop, next ix ldp#,
-    \ page out the Plus D memory
-    \ restore the Forth registers and exit
-  jpnext,  end-code
-  \ Show a catalogue of the current disk, of type _n_
-  \ (2=compact; 4=detailed).  This word is the low-level common
-  \ factor of all words that show disk catalogues.
+  plusd-out, b pop, next ix ldp#, jpnext,  end-code
+    \ Page out the Plus D memory.
+    \ Restore the Forth registers and exit.
 
-: wcat  ( ca len -- )  filename>ufia  4 (cat)  ;
-  \ Show a wild-cald disk catologue using the wild-card
-  \ filename _ca len_.  See the Plus D manual for wild-card syntax.
+  \ doc{
+  \
+  \ (cat  ( n -- )
+  \
+  \ Show a disk catalogue of the current drive, being _n_ the
+  \ type of catalogue: 2=compact; 4=detailed.  This word is the
+  \ low-level common factor of all words that show disk
+  \ catalogues.
+  \
+  \ See: `cat`, `acat`, `wcat`, `wacat`, `set-drive`.
+  \
+  \ }doc
 
-: wacat  ( ca len -- )  filename>ufia  2 (cat)  ;  decimal
-  \ Show a wild-cald abbreviated disk catologue using the
-  \ wild-card filename _ca len_.  See the Plus D manual for
-  \ wild-card syntax.  See the Plus D manual for wild-card syntax.
+( cat acat wcat wacat )
+
+need (cat
+
+: wcat  ( ca len -- )  set-filename  4 (cat  ;
+
+  \ doc{
+  \
+  \ wcat  ( ca len -- )
+  \
+  \ Show a wild-cald disk catologue of the current drive using
+  \ the wild-card filename _ca len_.  See the Plus D manual for
+  \ wild-card syntax.
+  \
+  \ See: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+: wacat  ( ca len -- )  set-filename  2 (cat  ;
+
+  \ doc{
+  \
+  \ wacat  ( ca len -- )
+  \
+  \ Show a wild-card abbreviated disk catologue of the current
+  \ drive using the wild-card filename _ca len_.  See the Plus
+  \ D manual for wild-card syntax.
+  \
+  \ See: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
+  \
+  \ }doc
 
 : cat  ( -- )  s" *" wcat  ;
-  \ Show a disk catalogue.
 
-: acat  ( -- )  s" *" wacat ;  decimal
-  \ Show an abbreviated disk catologue.
+  \ doc{
+  \
+  \ cat  ( -- )
+  \
+  \ Show a disk catalogue of the current drive.
+  \
+  \ See: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
 
-  \ XXX REMARK -- The disk catalogues can be printed out on a
+: acat  ( -- )  s" *" wacat ;
+
+  \ doc{
+  \
+  \ acat  ( -- )
+  \
+  \ Show an abbreviated disk catologue of the current drive.
+  \
+  \ See: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+  \ XXX TODO -- The disk catalogues can be printed out on a
   \ printer by storing the number 3 into SSTR1 (a field of UFIA
   \ that holds the stream number to use) before doing `CAT`.
   \ The default value is 2 (screen) and should be restored.
