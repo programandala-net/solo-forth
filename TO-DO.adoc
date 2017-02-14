@@ -532,16 +532,6 @@ Making the conversion in the upper-level calling words means pushing
 the _dosior_ in the factor, returning to `next`, and using
 `dosior>ior` in the calling word (5 bytes in total).
 
-.2017-02-13:
-
-----
-: find-file  ( ca len -- x | 0 )  file-status 0= and  ;
-----
-
-.2017-02-12:
-
-Rename `file-exists?` to `find-file` (after `find-name`).
-
 .2017-02-09:
 
 Study if `flush` should be added to `set-drive`.

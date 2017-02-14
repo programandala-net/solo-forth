@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702140004
+  \ Last modified: 201702140014
 
   \ -----------------------------------------------------------
   \ Description
@@ -96,6 +96,8 @@
   \ the UFIA drive setting from `set-code-file` to lower
   \ `set-filename`; this fixes `file-status`.  Rewrite `(cat`
   \ to return an error result.
+  \
+  \ 2017-02-14: Add `find-file`.
 
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
@@ -628,7 +630,7 @@ code (file-status)  ( -- a ior )
   \
   \ }doc
 
-( file-exists? file-start file-length file-type )
+( file-exists? file-start file-length file-type find-file )
 
 need ?(
 
@@ -698,6 +700,23 @@ need ?(
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
   \ See: `file-status`.
+  \
+  \ }doc
+
+need ?(
+
+[unneeded] find-file  ?( need file-status
+: find-file  ( ca len -- f )  file-status 0= and  ; ?)
+
+  \ doc{
+  \
+  \ find-file  ( ca len -- a | 0 )
+  \
+  \ If the file named in the character string _ca len_ is
+  \ found, return address _a_ of updated UFIA. Otherwise return
+  \ zero.
+  \
+  \ See: `ufia`, `file-status`.
   \
   \ }doc
 
