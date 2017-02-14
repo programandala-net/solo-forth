@@ -599,25 +599,6 @@ Improve `set-drive`: check if there's a disk in the drive.
 
 Simplify `!dos,`, `c!dos` and family.
 
-.2017-01-05, 2017-02-08:
-
-Use `plusd-in,` instead of `patch hook,`.
-
-.2015-08-31:
-
-Problem: SZX snapshots don't preserve the mounted disks or G+DOS!
-
-The Plus D own snapshots can be used, but this means programs have to
-be started manually, typing `run` in BASIC to load G+DOS, and then
-loading the snapshot file from BASIC or an Autoload file.
-
-.2015-07-23:
-
-Study how to save and load the main code and the name bank apart, in
-two files. This way `turnkey` could be used also to save a modified
-copy of the system, not just Forth programs. Simpler solution: use the
-snapshop option of the Plus D, or save a snapshot from the emulator.
-
 .2016-03-16:
 
 Investigate how to use the free memory of the Plus D RAM.
@@ -644,29 +625,10 @@ low-level words return it unchanged.
 Confirm if "file descriptor" is correct. Meanwhile, "File Description
 Area" is used instead.
 
-.2017-02-09:
-
-Having implemented `drive`, to convert a 0-index drive to the actual
-identifier needed by the current DOS, the notation used for TR-DOS in
-those cases must be decided:
-
-|===
-| DOS                                       | First drive | Last drive
-
-| G+DOS                                     | 1           | 2
-| TR-DOS (in filenames and BASIC commands)  | 'A'         | 'D'
-| TR-DOS (in Z80 code)                      | 0           | 3
-| +3DOS                                     | 'A'         | 'P'
-|===
-
-Using 0..3 is simpler, because the assembly interface needs no change.
-The question is if notation 'A'..'D' must be explicit in filenames.
-
 .2017-02-05:
 
 Define the Z80-symbol constants in the assembler word list:
 `dos-routine`, etc.
-
 
 // +3DOS {{{2
 === +3DOS ===
@@ -702,11 +664,6 @@ Rename?:
 - `warn.throw` to `error-code-warn`
 - `warn-throw` to `error-warn`
 - `warn.message` to `message-warn`
-
-.2016-11-25:
-
-Rename exception messages "required" to "needed" in comments of modules.
-Already done in the error messages module.
 
 .2016-04-25:
 
@@ -921,13 +878,16 @@ Remove the routine `compare_de_hl_signed`, if possible.
 // Makefile {{{1
 == Makefile ==
 
-.2016-04-16, 2016-11-15:
+.2017-02-14:
 
-Fix Makefile: The loader and the main disk are built also when the sources
-have not changed.
+Fix:
 
-The problem is the rules of the BASIC loader. They run also when their
-prerequisites are older than the target.
+When a kernel file is modified, the boot disk is built twice before
+`make` informs there's nothing to do. The first time the kernel and
+the BASIC loader are built; the second time, only the BASIC loader.
+
+This does not happen doing `make clean;make all`: the next `make all`
+does nothing, as expected.
 
 // Maths {{{1
 == Maths ==

@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201611200216
+# Last modified: 201702140231
 
 # ==============================================================
 # Author
@@ -51,7 +51,6 @@ pasmo=/usr/local/bin/pasmo.054beta2
 # ----------------------------------------------
 # Kernel for G+DOS
 
-.PHONY: tmp/kernel.symbols.gplusdos.z80s
 tmp/kernel.symbols.gplusdos.z80s: tmp/kernel.gplusdos.bin.tap
 
 tmp/kernel.gplusdos.bin.tap: \
@@ -71,7 +70,6 @@ tmp/kernel.gplusdos.bin.tap: \
 # ----------------------------------------------
 # Kernel for +3DOS
 
-.PHONY: tmp/kernel.symbols.plus3dos.z80s
 tmp/kernel.symbols.plus3dos.z80s: tmp/kernel.plus3dos.bin.tap
 
 tmp/kernel.plus3dos.bin.tap: \
@@ -91,7 +89,6 @@ tmp/kernel.plus3dos.bin.tap: \
 # ----------------------------------------------
 # Kernel for TR-DOS
 
-.PHONY: tmp/kernel.symbols.trdos.z80s
 tmp/kernel.symbols.trdos.z80s: tmp/kernel.trdos.bin.tap
 
 tmp/kernel.trdos.bin.tap: \
@@ -118,19 +115,23 @@ tmp/kernel.trdos.bin.tap: \
 #
 # 2016-04-13: Updated the header and the license.
 #
-# 2016-04-16: Fix: the process didn't stop when the assembling of the
-# kernel failed. Fix: the patching of the loader needed a dependency
-# here.
+# 2016-04-16: Fix: the process didn't stop when the assembling
+# of the kernel failed. Fix: the patching of the loader needed
+# a dependency here.
 #
 # 2016-08-03: First changes to support TR-DOS.
 #
-# 2016-08-04: Fix requisites: the new DOS modules of the kernel were
-# missing.
+# 2016-08-04: Fix requisites: the new DOS modules of the kernel
+# were missing.
 #
-# 2016-08-06: Rename the kernel file in TR-DOS, which only accepts 8
-# characters.
+# 2016-08-06: Rename the kernel file in TR-DOS, which only
+# accepts 8 characters.
 #
-# 2016-08-11: Rename the kernel file to "solo.bin", which fits any
-# DOS.
+# 2016-08-11: Rename the kernel file to "solo.bin", which fits
+# any DOS.
 #
 # 2016-11-20: Add background images.
+#
+# 2017-02-14: Remove the `.PHONY` of the kernel symbols
+# targets. They were the reason the BASIC loaders were rebuilt
+# every time.

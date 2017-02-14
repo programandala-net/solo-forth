@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702140007
+; Last modified: 201702140229
 
 ; ==============================================================
 ; Description
@@ -554,8 +554,6 @@ if 0 ; XXX OLD
 endif
 
 ; ----------------------------------------------
-if 0 ; XXX OLD
-
   _colon_header set_drive_,'set-drive'
 
 ; doc{
@@ -566,15 +564,16 @@ if 0 ; XXX OLD
 ;
 ; }doc
 
+if 0 ; XXX OLD
+
   dw library_file_,fetch_,dup_,close_file_
   dw dup_
   _literal -1029                ; exception code: "file number not open"
   dw not_equals_,question_exit_ ; other errors force an exit
   dw drop_                      ; discard -1029
   dw open_disk_
-  dw exit_
-
 endif
+  dw exit_
 
 ; ----------------------------------------------
   _code_header ref_xdbp_,'ref-xdpb'
