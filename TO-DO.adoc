@@ -460,10 +460,6 @@ Homogenize and fix the notation about interpretation, compilation and
 execution/run-time semantics. Better yet, use the simpler convention of
 Forth-83.
 
-.2016-11-26:
-
-Change to title case the word sets of Forth-79 and Forth-83.
-
 .2016-08-09:
 
 Change the format of stack notation:

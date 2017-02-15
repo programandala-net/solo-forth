@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702151647
+; Last modified: 201702151717
 
 include version.z80s
 
@@ -6357,7 +6357,7 @@ endif
 ;
 ; Address of the terminal input buffer.
 ;
-; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT,
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent)
 ;
 ; }doc
@@ -6389,7 +6389,7 @@ endif
 ; _a_ is the address of a cell containing the number of
 ; characters in the terminal input buffer.
 ;
-; Origin: Forth-83 (REQUIRED WORD SET), Forth-94 (CORE EXT,
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE EXT,
 ; obsolescent).
 ;
 ; }doc
@@ -7733,8 +7733,8 @@ do_does: equ do_colon
 ; at _c1_, which is the  length in characters of the string at
 ; _c2_.
 ;
-; Origin: fig-Forth, Forth-79 (REQUIRED WORD SET), Forth-83
-; (REQUIRED WORD SET), Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; See: `farcount`.
 ;
@@ -8357,8 +8357,8 @@ fill.done:
 ;   here /hold @ +  ;
 ; ----
 
-; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83 (REQUIRED
-; WORD SET), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83 (Required
+; Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; See: `here`, `/hold`.
 ;
@@ -11122,8 +11122,8 @@ endif
 ;   $7FFF disk-buffer !  ;
 ; ----
 
-; Origin: fig-Forth, Forth-79 (REQUIRED WORD SET), Forth-83
-; (CONTROLLED REFERENCE WORDS), Forth-94 (BLOCK EXT), Forth-2012
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Controlled Reference Words), Forth-94 (BLOCK EXT), Forth-2012
 ; (BLOCK EXT).
 ;
 ; }doc
