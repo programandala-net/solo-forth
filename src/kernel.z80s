@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702151546
+; Last modified: 201702151647
 
 include version.z80s
 
@@ -1207,8 +1207,6 @@ if 1 ; abase
 
   _variable_header abase_,'abase'
 
-  ; XXX TODO use the return stack instead?
-
 ; doc{
 ;
 ; abase  ( -- a )
@@ -1219,6 +1217,8 @@ if 1 ; abase
 ; See: `asm`, `base`.
 ;
 ; }doc
+
+  ; XXX TODO use the return stack instead?
 
   dw 0
 
@@ -1864,6 +1864,17 @@ do_variable:
 ; ----------------------------------------------
   _constant_header noop_routine,'noop-routine'
 
+; doc{
+;
+; noop-routine  ( -- a )
+;
+; Return address _a_ of routine that does nothing, except
+; executing a Z80 +ret+ to return.
+;
+; See: `noop`.
+;
+; }doc
+
   dw noop
 
 ; ----------------------------------------------
@@ -2230,12 +2241,41 @@ set_order.exit
 ; ----------------------------------------------
   _variable_header root_wordlist_,'root-wordlist'
 
+; doc{
+;
+; root-wordlist  ( -- wid )
+;
+; Return _wid_, the identifier of the word list that includes
+; the words defined in the minimum search order. The words in
+; this word list are aliases of the definitions in
+; `forth-wordlist`.
+;
+; See: `only`, `wordlist`, `set-order`, `forth-wordlist`,
+; `assembler-wordlist`, `alias`.
+;
+; }doc
+
   dw latest_nt_in_root_word_list
   dw $0000
   dw root_nt
 
 ; ----------------------------------------------
   _does_header root_,'root',,do_vocabulary
+
+; doc{
+;
+; root  ( -- )
+;
+; Transform the search  order consisting of  _wid[n]..wid[2]
+; wid[1]_ (where _wid[1]_  is searched first)  into
+; _wid[n]..wid[2] wid[`root-wordlist`]_, i.e. replace the top
+; word list of the search order with `root-wordlist`.
+;
+; This word is the vocabulary corresponding to `root-wordlist`.
+;
+; See: `root-wordlist`, `forth`, `wordlist`, `vocabulary`.
+;
+; }doc
 
   dw root_wordlist_pfa
 
@@ -2253,6 +2293,9 @@ set_order.exit
 ;
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
+; See: `wordlist`, `set-order`, `root-wordlist`,
+; `assembler-wordlist`.
+;
 ; }doc
 
   dw latest_nt_in_forth_word_list
@@ -2262,12 +2305,42 @@ set_order.exit
 ; ----------------------------------------------
   _does_header forth_,'forth',,do_vocabulary
 
+; doc{
+;
+; forth  ( -- )
+;
+; Transform the search  order consisting of  _wid[n]..wid[2]
+; wid[1]_ (where _wid[1]_  is searched first)  into
+; _wid[n]..wid[2] wid[`forth-wordlist`]_, i.e. replace the top
+; word list of the search order with `forth-wordlist`.
+;
+; This word is the vocabulary corresponding to `forth-wordlist`.
+;
+; Origin: Forth-83 (Required Word Set), Forth-94 (SEARCH EXT),
+; Forth-2012 (SEARCH EXT).
+;
+; See: `forth-wordlist`, `root`, `wordlist`, `vocabulary`.
+;
+; }doc
+
   dw forth_wordlist_pfa
 
 ; ----------------------------------------------
 if 1 ; assembler_core_in_kernel
 
   _variable_header assembler_wordlist_,'assembler-wordlist'
+
+; doc{
+;
+; assembler-wordlist  ( -- wid )
+;
+; Return _wid_, the identifier of the word list that includes
+; the words defined as part of the assembler.
+;
+; See: `assembler`, `wordlist`, `set-order`, `forth-wordlist`,
+; `root-wordlist`.
+;
+; }doc
 
   dw latest_nt_in_assembler_word_list
   dw forth_wordlist_pfa
@@ -2362,8 +2435,6 @@ push_a:
 ; ----------------------------------------------
   _constant_header default_bank_hash_,'default-bank#'
 
-  ; XXX TMP --
-
 ; doc{
 ;
 ; default-bank#  ( -- ca )
@@ -2374,6 +2445,8 @@ push_a:
 ; See: `set-default-bank`, `get-default-bank`.
 ;
 ; }doc
+
+  ; XXX TMP --
 
   dw address_of_default_bank
 
@@ -2637,8 +2710,8 @@ question_csb_.enough:
 ;
 ; See: `limit`, `unused`, `there`.
 ;
-; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
-; Forth-94 (CORE), Forth-2012 (CORE).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -2662,6 +2735,14 @@ question_csb_.enough:
 
 ; ----------------------------------------------
   _colon_header comma_,','
+
+; doc{
+;
+; ,  ( -- )
+;
+; }doc
+
+; XXX TODO -- document
 
   dw here_,store_,cell_,allot_
   dw exit_
@@ -2769,6 +2850,14 @@ question_csb_.enough:
 
 ; ----------------------------------------------
   _code_header paren_question_do_,'(?do)'
+
+; doc{
+;
+; (?do)  ( n1 n2 -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code based on Spectrum Forth-83.
@@ -2880,6 +2969,14 @@ question_csb_.enough:
 ; ----------------------------------------------
   _code_header paren_do_,'(do)'
 
+; doc{
+;
+; (do)  ( n1 n2 -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
 
@@ -2915,6 +3012,14 @@ paren_do.de_hl:
 
 ; ----------------------------------------------
   _code_header i_,'i'
+
+; doc{
+;
+; i  ( -- n|u ) ( R: loop-sys -- loop-sys )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -3012,6 +3117,14 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ; ----------------------------------------------
   _code_header paren_plus_loop_,'(+loop)'
 
+; doc{
+;
+; (+loop)  ( n -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; XXX TODO -- move to the library
   ; (it's used by `.s`, which will be removed from the kernel
   ; after the development)
@@ -3059,6 +3172,14 @@ paren_loop.continue:
 
 ; ----------------------------------------------
   _code_header paren_loop_,'(loop)'
+
+; doc{
+;
+; (loop)  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code adapted from spectrum Forth-83.
@@ -3281,17 +3402,12 @@ to_number.end:
 
 ; }doc
 
-; Credit:
-;
-
   _literal '.'
   dw equals_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header number_question_,'number?'
-
-  ; XXX TODO make it a deferred word
 
 ; doc{
 ;
@@ -3345,6 +3461,8 @@ to_number.end:
 ; ----
 
 ; }doc
+
+  ; XXX TODO make it a deferred word
 
   dw dup_,zero_equals_ ; empty string?
   dw zero_branch_,number_question.try_char
@@ -4057,7 +4175,7 @@ endif
 ; ----------------------------------------------
   ; _code_header paren_key_,'(key)'
 
-  ; XXX not used yet
+  ; XXX TODO -- 
 
   ; ld a,(sys_last_k)
   ; ld (previous_key),a
@@ -4271,6 +4389,14 @@ wait_for_key:
 ; ----------------------------------------------
   _code_header c_move_up_,'cmove>'
 
+; doc{
+;
+; cmove>  ( ca len u -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   exx
   pop bc
   pop de
@@ -4281,6 +4407,14 @@ wait_for_key:
 
 ; ----------------------------------------------
   _code_header c_move_,'cmove'
+
+; doc{
+;
+; cmove  ( ca len u -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   exx
   pop bc
@@ -4409,6 +4543,14 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _code_header and_,'and'
 
+; doc{
+;
+; and  ( x1 x2 -- x3 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop de
   pop hl
   ld a,e
@@ -4422,6 +4564,14 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _code_header or_,'or'
 
+; doc{
+;
+; or  ( x1 x2 -- x3 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop de
   pop hl
   ld a,e
@@ -4434,6 +4584,14 @@ u_m_slash_mod.4:
 
 ; ----------------------------------------------
   _code_header xor_,'xor'
+
+; doc{
+;
+; xor  ( x1 x2 -- x3 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -4489,9 +4647,6 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _constant_header hp_,'hp'
 
-  ; XXX TODO -- update documentation for far memory
-  ; XXX TODO -- user variable?
-
 ; doc{
 ;
 ; hp  ( -- a )
@@ -4502,17 +4657,26 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
+  ; XXX TODO -- update documentation for far memory
+  ; XXX TODO -- user variable?
+
   dw headers_pointer
 
 ; ----------------------------------------------
   _constant_header hp0_,'hp0'
 
+; doc{
+;
+; hp0  ( -- a )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw headers_pointer_bottom
 
 ; ----------------------------------------------
   _code_header hp_fetch_,'hp@'
-
-  ; XXX TODO -- remove?
 
 ; doc{
 ;
@@ -4522,16 +4686,13 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
+  ; XXX TODO -- remove?
+
   ld hl,(headers_pointer)
   _jp_pushhl
 
 ; ----------------------------------------------
   _code_header hp_store_,'hp!'
-
-  ; XXX TODO -- remove?
-  ;
-  ; XXX TODO -- move to the library? (used in the modules of
-  ; `-transient` and `marker`)
 
 ; doc{
 ;
@@ -4541,14 +4702,16 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
+  ; XXX TODO -- remove?
+  ;
+  ; XXX TODO -- move to the library? (used in the modules of
+  ; `-transient` and `marker`)
+
   pop hl
   ld (headers_pointer),hl
   _jp_next
 
 ; ----------------------------------------------
-
-  ; XXX TODO -- update documentation for far memory
-
   _colon_header comma_hp_,',hp'
 
 ; doc{
@@ -4559,6 +4722,8 @@ u_m_slash_mod.4:
 ; advancing the headers pointer.
 ;
 ; }doc
+
+  ; XXX TODO -- Improve documentation with far-memory details.
 
   dw hp_fetch_
   dw far_store_
@@ -4598,8 +4763,6 @@ u_m_slash_mod.4:
 ; ----------------------------------------------
   _constant_header rp_,'rp'
 
-  ; XXX TODO -- convert to user variable
-
 ; doc{
 ;
 ; rp  ( -- a )
@@ -4607,6 +4770,8 @@ u_m_slash_mod.4:
 ; Address of the return stack pointer.
 ;
 ; }doc
+
+  ; XXX TODO -- convert to user variable
 
   dw return_stack_pointer
 
@@ -4709,7 +4874,13 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; ----------------------------------------------
   _code_header two_from_r_,'2r>'
 
+; doc{
+;
 ; 2r>  ( -- x1 x2 ) ( R: x1 x2 -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   push hl
@@ -4721,6 +4892,14 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; ----------------------------------------------
   _code_header two_r_fetch_,'2r@'
 
+; doc{
+;
+; 2r@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; XXX TODO -- Move to the library?
   ; Use `' 2@ 1+` to calculate the jump address.
 
@@ -4730,11 +4909,27 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; ----------------------------------------------
   _code_header r_fetch_,'r@'
 
+; doc{
+;
+; r@  ( -- x ) ( R: x -- x )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ld hl,(return_stack_pointer)
   jp fetch.hl
 
 ; ----------------------------------------------
   _code_header zero_equals_,'0='
+
+; doc{
+;
+; 0=  ( x -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
 zero_equals.hl:
@@ -4768,6 +4963,14 @@ zero_equals.hl:
 ; ----------------------------------------------
   _code_header zero_not_equals_,'0<>'
 
+; doc{
+;
+; 0<>  ( x -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   ld a,l
   or h
@@ -4776,6 +4979,14 @@ zero_equals.hl:
 
 ; ----------------------------------------------
   _code_header zero_less_than_,'0<'
+
+; doc{
+;
+; 0<  ( x -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
 zero_less_.hl: ; XXX entry not used yet
@@ -4797,6 +5008,14 @@ true_if_cy:
 ; ----------------------------------------------
   _code_header zero_greater_than_,'0>'
 
+; doc{
+;
+; 0>  ( x -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; Credit:
   ; Code from DZX-Forth.
 
@@ -4806,6 +5025,14 @@ true_if_cy:
 
 ; ----------------------------------------------
   _code_header plus_,'+'
+
+; doc{
+;
+; +  ( n1|u1 n2|u2 -- n3|u3 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -5001,12 +5228,28 @@ endif
 ; ----------------------------------------------
   _code_header nip_,'nip'
 
+; doc{
+;
+; nip  ( x1 x2 -- x2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   pop de
   _jp_pushhl
 
 ; ----------------------------------------------
   _code_header tuck_,'tuck'
+
+; doc{
+;
+; tuck  ( x1 x2 -- x2 x1 x2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5016,6 +5259,14 @@ endif
 ; ----------------------------------------------
   _code_header over_,'over'
 
+; doc{
+;
+; over  ( x1 x2 -- x1 x2 x1 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop de
   pop hl
   push hl
@@ -5024,11 +5275,27 @@ endif
 ; ----------------------------------------------
   _code_header drop_,'drop'
 
+; doc{
+;
+; drop  ( x -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   _jp_next
 
 ; ----------------------------------------------
   _code_header swap_,'swap'
+
+; doc{
+;
+; swap  ( x1 x2 -- x2 x1 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
   ex (sp),hl
@@ -5037,12 +5304,28 @@ endif
 ; ----------------------------------------------
   _code_header dup_,'dup'
 
+; doc{
+;
+; dup  ( x -- x x )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   push hl
   _jp_pushhl
 
 ; ----------------------------------------------
   _code_header two_dup_,'2dup'
+
+; doc{
+;
+; 2dup  ( x1 x2 -- x1 x2 x1 x2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5175,6 +5458,14 @@ endif
 ; ----------------------------------------------
   _code_header two_store_,'2!'
 
+; doc{
+;
+; 2!  ( x1 x2 a -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
 two_store.into_hl_pointer:
   pop de
@@ -5232,6 +5523,14 @@ two_store.into_hl_pointer:
 ; ----------------------------------------------
   _code_header store_,'!'
 
+; doc{
+;
+; !  ( x a -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
 store.into_hl_pointer:
   pop de
@@ -5243,6 +5542,14 @@ store.de_into_hl_pointer:
 
 ; ----------------------------------------------
   _code_header c_store_,'c!'
+
+; doc{
+;
+; c!  ( c ca -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
   pop de
@@ -5365,6 +5672,14 @@ do_colon:
 ; ----------------------------------------------
   _colon_header c_constant_,'cconstant'
 
+; doc{
+;
+; cconstant  ( b "name" -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw create_,c_comma_
   dw paren_semicolon_code_
 do_c_constant:
@@ -5373,6 +5688,14 @@ do_c_constant:
 
 ; ----------------------------------------------
   _code_header c_fetch_,'c@'
+
+; doc{
+;
+; c@  ( ca -- c )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
 c_fetch.hl:
@@ -5383,6 +5706,14 @@ c_fetch.hl:
 ; ----------------------------------------------
   _colon_header constant_,'constant'
 
+; doc{
+;
+; constant  ( x "name" -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw create_,comma_
   dw paren_semicolon_code_
 do_constant:
@@ -5391,6 +5722,14 @@ do_constant:
 
 ; ----------------------------------------------
   _code_header fetch_,'@'
+
+; doc{
+;
+; @  ( a -- x )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
 fetch.hl:
@@ -5428,10 +5767,6 @@ fetch.hl:
 ; ----------------------------------------------
   _colon_header paren_user_,'(user)'
 
-  ; XXX TODO -- Rename to `user`? That was the original name in
-  ; fig-Forth, Forth-79 and Forth-83. Choose an alternative
-  ; for the current `user`, defined in the library.
-
 ; doc{
 ;
 ; (user)  ( +n "name" -- )
@@ -5442,13 +5777,17 @@ fetch.hl:
 ;
 ; This word is a factor of `ucreate`.
 ;
-; See: `ucreate`, `user`, `2user`.
-;
 ; Origin: This word is called `user` in fig-Forth, Forth-79
 ; (Reference Word Set) and Forth-83 (Uncontrolled Reference
 ; Words).
 ;
+; See: `ucreate`, `user`, `2user`.
+;
 ; }doc
+
+  ; XXX TODO -- Rename to `user`? That was the original name in
+  ; fig-Forth, Forth-79 and Forth-83. Choose an alternative
+  ; for the current `user`, defined in the library.
 
   dw c_constant_
   dw paren_semicolon_code_
@@ -5512,10 +5851,26 @@ do_user:
 ; ----------------------------------------------
   _c_constant_header c_slash_l_,'c/l'
 
+; doc{
+;
+; c/l  ( -- c )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   db characters_per_line
 
 ; ----------------------------------------------
   _c_constant_header l_slash_scr_,'l/scr'
+
+; doc{
+;
+; l/scr  ( -- c )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   db lines_per_screen
 
@@ -5535,8 +5890,6 @@ do_user:
 ; ----------------------------------------------
   _constant_header buffer_data_,'buffer-data'
 
-  ; XXX TODO -- rename
-
 ; doc{
 ;
 ; buffer-data  ( -- ca )
@@ -5545,17 +5898,25 @@ do_user:
 ;
 ; }doc
 
+  ; XXX TODO -- rename
+
   dw buffer_data
 
 ; ----------------------------------------------
   _constant_header b_slash_buf_,'b/buf'
 
+; doc{
+;
+; b/buf  ( -- c )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw bytes_per_buffer
 
 ; ----------------------------------------------
   _constant_header b_slash_rec_,'b/rec'
-
-  ; XXX TODO -- move to the library, it's calculated
 
 ; doc{
 ;
@@ -5566,6 +5927,8 @@ do_user:
 ; See: `rec/blk`, `rec/track`.
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library, it's calculated
 
   dw bytes_per_sector
 
@@ -5674,9 +6037,6 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header width_,'width'
 
-  ; XXX TODO normal variable? constant?
-  ; XXX TODO -- remove?
-
 ; doc{
 ;
 ; width  ( -- a )
@@ -5690,6 +6050,9 @@ do_user:
 ; Origin: fig-Forth.
 ;
 ; }doc
+
+  ; XXX TODO normal variable? constant?
+  ; XXX TODO -- remove?
 
   db $06
 
@@ -5788,8 +6151,6 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header blk_,'blk'
 
-  ; XXX TODO normal variable?
-
 ; doc{
 ;
 ; blk  ( -- a )
@@ -5799,6 +6160,8 @@ do_user:
 ; consists of one disk block.
 ;
 ; }doc
+
+  ; XXX TODO normal variable?
 
   db $14
 
@@ -5921,8 +6284,6 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header csp_,'csp'
 
-  ; XXX TODO ordinary variable?
-
 ; doc{
 ;
 ; csp  ( -- a )
@@ -5933,6 +6294,8 @@ do_user:
 ; Origin: fig-Forth.
 ;
 ; }doc
+
+  ; XXX TODO ordinary variable?
 
   db $24
 
@@ -6095,6 +6458,14 @@ source.other:
 ; ----------------------------------------------
   _code_header one_minus_,'1-'
 
+; doc{
+;
+; 1-  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   dec hl
   _jp_pushhl
@@ -6105,6 +6476,14 @@ source.other:
 ; ----------------------------------------------
   _code_header one_plus_,'1+'
 
+; doc{
+;
+; 1+  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   inc hl
   _jp_pushhl
@@ -6114,6 +6493,12 @@ source.other:
 
 ; ----------------------------------------------
   _code_header two_minus_,'2-'
+
+; doc{
+;
+; 2-  ( n1 -- n2 )
+;
+; }doc
 
   pop hl
   dec hl
@@ -6236,6 +6621,14 @@ source.other:
 ; ----------------------------------------------
   _colon_header two_comma_,'2,'
 
+; doc{
+;
+; 2,  ( x1 x2 -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw here_,two_store_
 two_comma.allot:
   _literal 2*cell
@@ -6245,6 +6638,14 @@ two_comma.allot:
 ; ----------------------------------------------
   _colon_header c_comma_,'c,'
 
+; doc{
+;
+; c,  ( c -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw here_,c_store_
   _literal 1
   dw allot_
@@ -6252,6 +6653,14 @@ two_comma.allot:
 
 ; ----------------------------------------------
   _code_header minus_,'-'
+
+; doc{
+;
+; -  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -6262,6 +6671,14 @@ two_comma.allot:
 ; ----------------------------------------------
   _code_header not_equals_,'<>'
 
+; doc{
+;
+; <>  ( x1 x2 -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop de
   pop hl
   or a ; CY=0
@@ -6271,6 +6688,14 @@ two_comma.allot:
 
 ; ----------------------------------------------
   _code_header equals_,'='
+
+; doc{
+;
+; =  ( x1 x2 -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -6304,6 +6729,14 @@ two_comma.allot:
 ; ----------------------------------------------
   _code_header less_than_,'<'
 
+; doc{
+;
+; <  ( n1 n2 -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; Credit:
   ;
   ; Code adapted from Z88 CamelForth
@@ -6336,6 +6769,14 @@ less_than.reverse
 ; ----------------------------------------------
   _code_header u_greater_than_,'u>'
 
+; doc{
+;
+; u>  ( u1 u2 -- > )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
 u_greater_than.hl:
   pop de
@@ -6343,6 +6784,14 @@ u_greater_than.hl:
 
 ; ----------------------------------------------
   _code_header u_less_than_,'u<'
+
+; doc{
+;
+; u<  ( u1 u2 -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ;
@@ -6361,12 +6810,28 @@ u_less_than.de_hl:
 ; ----------------------------------------------
   _code_header greater_than_,'>'
 
+; doc{
+;
+; >  ( n1 n2 -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl
   pop de
   jp less_than.de_hl
 
 ; ----------------------------------------------
   _code_header rot_,'rot'
+
+; doc{
+;
+; rot  ( x1 x2 x3 -- x2 x3 x1 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop de
   pop hl
@@ -6376,11 +6841,27 @@ u_less_than.de_hl:
 ; ----------------------------------------------
   _colon_header space_,'space'
 
+; doc{
+;
+; space  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw b_l_,emit_
   dw exit_
 
 ; ----------------------------------------------
   _code_header question_dup_,'?dup'
+
+; doc{
+;
+; ?dup  ( x -- 0 | x x )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
   ld a,h
@@ -6434,9 +6915,6 @@ u_less_than.de_hl:
 ; ----------------------------------------------
   _colon_header latestxt_,'latestxt'
 
-  ; XXX TODO -- move to the library?
-  ; Note: Used by `mode32` in the library.
-
 ; doc{
 ;
 ; latestxt ( -- xt )
@@ -6447,14 +6925,14 @@ u_less_than.de_hl:
 ;
 ; }doc
 
+  ; XXX TODO -- move to the library?
+  ; Note: Used by `mode32` in the library.
+
   dw lastxt_,fetch_
   dw exit_
 
 ; ----------------------------------------------
   _code_header to_name_,'>name'
-
-  ; XXX TODO -- move to the library -- or use the alternative
-  ; implementation in Forth that has been written there
 
 ; doc{
 ;
@@ -6472,6 +6950,9 @@ u_less_than.de_hl:
 ; Origin: Gforth.
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library -- or use the alternative
+  ; implementation in Forth that has been written there
 
   pop de ; xt
   push bc ; save Forth IP
@@ -6807,8 +7288,6 @@ endif
 ; ----------------------------------------------
   _colon_header name_to_string_,'name>string'
 
-  ; XXX TODO -- move to the library, with `.name`
-
 ; doc{
 ;
 ; name>string  ( nt -- ca len )
@@ -6830,6 +7309,8 @@ endif
 ; See: `name>str`.
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library, with `.name`
 
   dw name_to_str_  ; ( ca1 len )
   dw dup_,allocate_string_ ; ( ca1 len ca )
@@ -6955,12 +7436,28 @@ name_to_string.loop_exit:
 ; ----------------------------------------------
   _colon_header question_loading_,'?loading'
 
+; doc{
+;
+; ?loading  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw loading_question_,zero_equals_
   _question_throw error.loading_only
   dw exit_
 
 ; ----------------------------------------------
   _colon_header loading_question_,'loading?'
+
+; doc{
+;
+; loading?  ( -- f )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw blk_,fetch_,zero_not_equals_
   dw exit_
@@ -7014,6 +7511,14 @@ postpone.end:
 
 ; ----------------------------------------------
   _colon_header right_bracket_,']'
+
+; doc{
+;
+; ]  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw state_,on_
   dw exit_
@@ -8320,8 +8825,6 @@ far_place.copy_char:
 ; ----------------------------------------------
   _variable_header error_number_,'error#'
 
-  ; XXX TODO -- useful? remove? user variable?
-
 ; doc{
 ;
 ; error# ( -- a )
@@ -8330,6 +8833,8 @@ far_place.copy_char:
 ; `error`.
 ;
 ; }doc
+
+  ; XXX TODO -- useful? remove? user variable?
 
   dw 0
 
@@ -8355,6 +8860,14 @@ far_place.copy_char:
 
 ; ----------------------------------------------
   _colon_header dot_error_word_,'.error-word'
+
+; doc{
+;
+; .error-word  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw parsed_name_,two_fetch_,cr_,type_ ; last parsed word
   dw paren_dot_quote_
@@ -8408,10 +8921,26 @@ error.message:
 ; ----------------------------------------------
   _two_variable_header abort_message_,'abort-message'
 
+; doc{
+;
+; abort-message  ( -- a )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw 0,0
 
 ; ----------------------------------------------
   _colon_header dot_name_,'.name'
+
+; doc{
+;
+; .name  ( nt -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; XXX TODO -- move to the library
 
@@ -8527,6 +9056,14 @@ endif
 ; ----------------------------------------------
   _colon_header create_,'create'
 
+; doc{
+;
+; create  ( "name" -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; XXX TODO -- factor `header reveal` to `visible-header`?
   ; This phrase is used also by `defer` and `alias`.
   ; new word: 9 bytes used (3 for the call, plus 3 cells)
@@ -8542,6 +9079,14 @@ if 1 ; assembler_core_in_kernel
 
   _colon_header code_,'code'
 
+; doc{
+;
+; code  ( "name -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw header_,asm_
   dw exit_
 
@@ -8549,8 +9094,6 @@ endif
 
 ; ----------------------------------------------
   _code_header compare_,'compare'
-
-  ; XXX TODO -- move to the library -- but needed by `[needed]`
 
 ; doc{
 ;
@@ -8572,6 +9115,8 @@ endif
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library -- but needed by `[needed]`
 
 ; Credit:
 ; Adapted from DZX-Forth
@@ -8632,8 +9177,6 @@ compare.end:
 ; ----------------------------------------------
   _code_header search_,'search'
 
-  ; XXX TODO -- move to the library -- but needed by `contains`
-
 ; doc{
 ;
 ; search  ( ca1 len1 ca2 len2 -- ca3 len3 f )
@@ -8646,6 +9189,8 @@ compare.end:
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
 ; }doc
+
+  ; XXX TODO -- move to the library -- but needed by `contains`
 
   pop de
   pop hl ; HL/DE=substring
@@ -9229,6 +9774,14 @@ endif
 ; ----------------------------------------------
   _colon_header immediate_,'immediate'
 
+; doc{
+;
+; immediate  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw immediate_mask_,latest_,lex_store_
   dw exit_
 
@@ -9276,6 +9829,14 @@ endif
 
 ; ----------------------------------------------
   _colon_header compile_only_,'compile-only'
+
+; doc{
+;
+; compile-only  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw compile_only_mask_,latest_,lex_store_
   dw exit_
@@ -9506,6 +10067,14 @@ do_vocabulary:
 ; ----------------------------------------------
   _colon_header quit_,'quit'
 
+; doc{
+;
+; quit  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw terminal_to_source_
   dw left_bracket_
 quit.begin:
@@ -9723,8 +10292,6 @@ endif
 ; ----------------------------------------------
   _variable_header previous_mode_,'previous-mode'
 
-  ; XXX TODO -- convert to a deferred word?
-
 ; doc{
 ;
 ; previous-mode  ( -- a )
@@ -9736,12 +10303,12 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- convert to a deferred word?
+
   dw noop_
 
 ; ----------------------------------------------
   _variable_header current_mode_,'current-mode'
-
-  ; XXX TODO -- convert to a deferred word?
 
 ; doc{
 ;
@@ -9753,10 +10320,20 @@ endif
 ;
 ; }doc
 
+  ; XXX TODO -- convert to a deferred word?
+
   dw noop_
 
 ; ----------------------------------------------
   _colon_header save_mode_,'save-mode'
+
+; doc{
+;
+; save-mode  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw current_mode_,fetch_
   dw previous_mode_,store_
@@ -9764,6 +10341,14 @@ endif
 
 ; ----------------------------------------------
   _colon_header restore_mode_,'restore-mode'
+
+; doc{
+;
+; restore-mode  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw previous_mode_,perform_
   dw exit_
@@ -10102,6 +10687,14 @@ question_d_negate.hl:
 ; ----------------------------------------------
   _code_header min_,'min'
 
+; doc{
+;
+; min  ( n1 n2 -- n3 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; Credit:
   ; Code from DZX-Forth.
 
@@ -10112,6 +10705,14 @@ question_d_negate.hl:
 
 ; ----------------------------------------------
   _code_header max_,'max'
+
+; doc{
+;
+; max  ( n1 n2 -- n3 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; Code adapted from DZX-Forth.
@@ -10440,6 +11041,14 @@ endif
 
 ; ----------------------------------------------
   _colon_header dec_dot_,'dec.'
+
+; doc{
+;
+; dec.  ( n -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw base_,fetch_,swap_,decimal_,dot_,base_,store_
   dw exit_
@@ -11273,6 +11882,14 @@ emits.loop_exit:
 ; ----------------------------------------------
   _colon_header hash_greater_,'#>'
 
+; doc{
+;
+; #>  ( xd -- ca len )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw two_drop_
   dw hld_,fetch_
   dw pad_,over_,minus_
@@ -11466,6 +12083,14 @@ hash_s.begin:
 ; ----------------------------------------------
   _colon_header dot_r_,'.r'
 
+; doc{
+;
+; .r  ( n1 n2 -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw to_r_,s_to_d_,from_r_,d_dot_r_
   dw exit_
 
@@ -11533,6 +12158,14 @@ hash_s.begin:
 
 ; ----------------------------------------------
   _colon_header question_,'?'
+
+; doc{
+;
+; ?  ( a -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw fetch_,dot_
   dw exit_
@@ -11702,6 +12335,14 @@ page.display:
 ; ----------------------------------------------
   _variable_header os_sp_,'os-sp'
 
+; doc{
+;
+; os-sp  ( -- a )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   ; XXX TMP -- For debugging of the TR-DOS support.
   ; Formerly this was done in `(bye)`.
 
@@ -11710,6 +12351,14 @@ system_stack_pointer:
 
 ; ----------------------------------------------
   _code_header paren_bye_,'(bye)'
+
+; doc{
+;
+; (bye)  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ld (iy+sys_df_sz_offset),$02 ; restore lines of the lower screen
 
@@ -11748,6 +12397,14 @@ system_stack_pointer:
 ; ----------------------------------------------
   _colon_header bye_,'bye'
 
+; doc{
+;
+; bye  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   dw save_mode_
   dw default_mode_
   dw paren_bye_
@@ -11755,6 +12412,14 @@ system_stack_pointer:
 
 ; ----------------------------------------------
   _code_header two_drop_,'2drop'
+
+; doc{
+;
+; 2drop  ( x1 x2 -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   pop hl
   pop hl
@@ -12196,6 +12861,14 @@ do_two_constant:
 ; ----------------------------------------------
   _code_header two_fetch_,'2@'
 
+; doc{
+;
+; 2@  ( a -- x1 x2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
   pop hl ; address
 two_fetch.hl:
   ld e,(hl)     ; 07t  1
@@ -12243,14 +12916,14 @@ two_fetch.hl:
 ; ----------------------------------------------
   _code_header two_over_,'2over'
 
-  ; XXX REMARK -- Could be moved to the library, using `' 2@
-  ; 1+ jp,` to jump into `2@`, but it's needed in `(located)`.
-
 ; doc{
 ;
 ; 2over  ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
 ;
 ; }doc
+
+  ; XXX REMARK -- Could be moved to the library, using `' 2@
+  ; 1+ jp,` to jump into `2@`, but it's needed in `(located)`.
 
   ld hl,$0004
   add hl,sp
@@ -12320,10 +12993,6 @@ two_fetch.hl:
 ; ----------------------------------------------
   _colon_header throw_,'throw'
 
-  ; Credit:
-  ; Code from DZX-Forth.
-  ; Comments from MPE Forth for TiniARM.
-
 ; doc{
 ;
 ; throw  ( n -- )
@@ -12349,6 +13018,10 @@ two_fetch.hl:
 ;
 ; }doc
 
+  ; Credit:
+  ; Code from DZX-Forth.
+  ; Comments from MPE Forth for TiniARM.
+
   dw question_dup_
   dw zero_branch_,throw.end
   dw catcher_,fetch_,question_dup_  ; catcher?
@@ -12370,6 +13043,14 @@ throw.end:
 
 ; ----------------------------------------------
   _colon_header paren_abort_,'(abort)'
+
+; doc{
+;
+; (abort)  ( -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   dw sp0_,fetch_,sp_store_
   dw boot_  ; XXX TODO -- not here?
