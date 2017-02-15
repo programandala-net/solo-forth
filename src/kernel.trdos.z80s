@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702140007
+; Last modified: 201702151355
 
 ; ==============================================================
 ; Description
@@ -209,12 +209,53 @@ push_dos_ior:
 ; ----------------------------------------------
   _constant_header dos_routine_,'dos-routine'
 
+; doc{
+;
+; dos-routine  ( -- a )
+;
+; Address of a routine that executes a TR-DOS command.
+
+; ....
+; Input:
+;   A' = TR-DOS command code ($00..$18)
+;   A, B, DE, HL = possible parameters, depending on the command
+; Output:
+;   A  = TR-DOS error result (0..12)
+;   Z  = no error? (A=0)
+; ....
+
+; See: `dos-c-routine`, `dos-preserve-ip-routine`,
+; `dos-ip-on-tos-routine`.
+;
+; }doc
+
   ; XXX TODO -- Move to the assembler word list.
 
   dw dos
 
 ; ----------------------------------------------
   _constant_header dos_c_routine_,'dos-c-routine'
+
+; doc{
+;
+; dos-c-routine  ( -- a )
+;
+; Address of a routine that executes the TR-DOS command hold in
+; the C register.
+
+; ....
+; Input:
+;   C = TR-DOS command code ($00..$18)
+;   A, B, DE, HL = possible parameters, depending on the command
+; Output:
+;   A  = TR-DOS error result (0..12)
+;   Z  = no error? (A=0)
+; ....
+
+; See: `dos-routine`, `dos-preserve-ip-routine`,
+; `dos-ip-on-tos-routine`.
+;
+; }doc
 
   ; XXX TODO -- Move to the assembler word list.
 
@@ -223,12 +264,61 @@ push_dos_ior:
 ; ----------------------------------------------
   _constant_header dos_preserve_ip_routine_,'dos-preserve-ip-routine'
 
+; doc{
+;
+; dos-c-routine  ( -- a )
+;
+; Address of a routine that executes the TR-DOS command hold in
+; the A' register, preserving the Forth IP (the BC register).
+; This is used when the B register is not a parameter of the DOS
+; routine.
+
+; ....
+; Input:
+;   A' =TR-DOS command code ($00..$18)
+;   A, DE, HL = possible parameters, depending on the command
+; Output:
+;   A  = TR-DOS error result (0..12)
+;   Z  = no error? (A=0)
+; ....
+
+; See: `dos-routine`, `dos-preserve-ip-routine`,
+; `dos-ip-on-tos-routine`.
+;
+; }doc
+
   ; XXX TODO -- Move to the assembler word list.
 
   dw dos.preserve_ip
 
 ; ----------------------------------------------
   _constant_header dos_ip_on_tos_routine_,'dos-ip-on-tos-routine'
+
+; doc{
+;
+; dos-ip-on-tos-routine  ( -- a )
+;
+; Address of a routine that executes a TR-DOS command, restoring
+; the Forth IP at the end, which has been pushed onto top of the
+; stack calling this routine.
+;
+; This routine must be used when the B register is a parameter
+; of th TR-DOS command.
+
+; ....
+; Input:
+;   A' = TR-DOS command code ($00..$18)
+;   (SP) = Forth IP
+;   A, B DE, HL = possible parameters, depending on the command
+; Output:
+;   A  = TR-DOS error result (0..12)
+;   Z  = no error? (A=0)
+; ....
+
+; See: `dos-c-routine`, `dos-preserve-ip-routine`,
+; `dos-routine`.
+;
+; }doc
 
   ; XXX TODO -- Move to the assembler word list.
 
@@ -238,6 +328,29 @@ push_dos_ior:
   _constant_header push_dos_ior_,'pushdosior'
 
   ; XXX TODO -- Move to the assembler word list.
+
+; doc{
+;
+; pushdosior  ( -- a )
+;
+; Address of an entry point to the Forth inner interpreter.
+; This entry point is jumped to at the end of a code word, in order
+; to convert a _dosior_ into a _ior_ and push it.
+
+; ....
+; Input:
+;   A  = TR-DOS error result (0..12)
+; Output:
+;   If error:
+;     TOS = Forth exception code (-1012..-1001)
+;   If no error:
+;     TOS = zero
+; ....
+
+; See: `dos-c-routine`, `dos-preserve-ip-routine`,
+; `dos-ip-on-tos-routine`.
+;
+; }doc
 
   dw push_dos_ior
 
@@ -332,7 +445,7 @@ dosior_hl_to_ior_hl:
 ; The high byte of _x_ is the track (0..79 for side 0; 80..159
 ; for side 1); its low byte is the sector (0..15).
 ;
-; See `sector-id`.
+; See: `read-mode`, `write-mode`, `sector-id`, `transfer-block`.
 ;
 ; }doc
 
@@ -363,6 +476,8 @@ transfer_sectors.command: equ $+1
 ;
 ; Set the write mode for `transfer-sectors` and `transfer-block`.
 ;
+; See: `read-mode`, `transfer-sectors`, `transfer-block`.
+;
 ; }doc
 
   ld a,trdos_command.write_sectors
@@ -376,6 +491,8 @@ transfer_sectors.command: equ $+1
 ; read-mode  ( -- )
 ;
 ; Set the read mode for `transfer-sectors` and `transfer-block`.
+;
+; See: `write-mode`, `transfer-sectors`, `transfer-block`.
 ;
 ; }doc
 
@@ -391,18 +508,21 @@ transfer_mode:
 
 ; doc{
 ;
-; transfer-block  ( n -- )
+; transfer-block  ( u -- )
 ;
-; The block-level disk read-write linkage.  Transfer block _n_
-; to or from disk.  The read or write mode must be previously
-; set by `write-mode` or `read-mode`.
+; Transfer block _u_ to or from disk.  The read or write mode
+; must be previously set by `write-mode` or `read-mode`.
+
+; Definition:
 
 ; ----
-; : transfer-block  ( n -- )
+; : transfer-block  ( u -- )
 ;   rec/blk * sector-id buffer-data rec/blk
 ;   transfer-sectors throw  ;
 ; ----
 
+; See: `read-mode`, `write-mode`, `transfer-sectors`.
+;
 ; }doc
 
   dw to_drive_block_
@@ -422,7 +542,7 @@ transfer_mode:
 ;
 ; This word is used by `set-drive`.
 ;
-; See: `set-drive`.
+; See: `set-drive`, `read-system-track`.
 ;
 ; }doc
 
@@ -515,6 +635,8 @@ if testing_trdos
 ;
 ; Display TR-DOS variables related to disk drives.
 ;
+; See: `.step-rates`, `.fda`.
+;
 ; }doc
 
   dw cr_
@@ -583,6 +705,8 @@ dot_drives.exit
 ;
 ; Display the configured step rates of the TR-DOS disk drives.
 ;
+; See: `.drives`, `.fda`.
+;
 ; }doc
 
   dw cr_
@@ -612,6 +736,16 @@ dot_drives.exit
   _colon_header dot_f_d_a_,'.fda'
 
   ; XXX TMP -- print file descriptor, for debugging
+
+; doc{
+;
+; .fda ( -- )
+;
+; Display the contents of TR-DOS File Description Area.
+;
+; See: `.drives`, `.step-rates`.
+;
+; }doc
 
   dw cr_,paren_dot_quote_
   _string "Filename and type:"

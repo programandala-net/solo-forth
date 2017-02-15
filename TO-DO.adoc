@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-13
+:revdate: 2017-02-15
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -428,6 +428,17 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-02-15:
+
+Remove the documentation of DOS subroutines that is duplicated in its
+corresponding entry constant, and put a note instead.
+
+.2017-02-15:
+
+Replace "See:" with "See also:" and remove the words that are
+mentioned in the main description, because they will be cross
+references as well.
 
 .2017-02-11:
 

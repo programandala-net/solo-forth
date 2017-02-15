@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702121114
+; Last modified: 201702151330
 
 include version.z80s
 
@@ -1216,7 +1216,7 @@ if 1 ; abase
 ; A variable used by `asm` to save the current value of `base`
 ; in assembler definitions.
 ;
-; See: `asm`.
+; See: `asm`, `base`.
 ;
 ; }doc
 
@@ -1249,6 +1249,23 @@ endif
 
 ; ----------------------------------------------
   _colon_header end_code_,'end-code'
+
+; doc{
+;
+; end-code  ( -- )
+;
+; End the definition of an assembly word created by `code`.
+;
+; Definition:
+
+; ----
+; : end-code  ( -- )
+;   end-asm reveal  ;
+; ----
+
+; See: `code`, `end-asm`, `reveal`.
+;
+; }doc
 
   dw end_asm_,reveal_
   dw exit_
@@ -1338,12 +1355,14 @@ endif
 ;
 ; Compile the Z80 opcode to jump to _a_.
 ;
+; Definition:
+
 ; ----
 ; : jp,  ( a -- )
 ;   $C3 c,  \ Z80 opcode for "jp"
 ;   ,  ;
 ; ----
-;
+
 ; }doc
 
   _literal $C3 ; Z80 opcode for "jp"
@@ -1359,12 +1378,14 @@ endif
 ;
 ; Compile the Z80 opcode to call _a_.
 ;
+; Definition:
+
 ; ----
 ; : call,  ( a -- )
 ;   $CD c,  \ Z80 opcode for "call"
 ;   ,  ;
 ; ----
-;
+
 ; }doc
 
   _literal $CD ; Z80 opcode for "call"
@@ -1649,14 +1670,14 @@ question_previous_bank:
 ;
 ; This word is written in Z80, but the equivalent Forth code is
 ; the following:
-;
+
 ; ----
 ; : far  ( a1 -- a2 )
 ;   u>ud $4000 um/mod  far-banks + c@ bank  $C000 +  ;
 ;   \ Notes: $4000 = size of one memory bank
 ;   \        $C000 = address where memory banks are paged in
 ; ----
-;
+
 ; See: `far-hl-routine`.
 ;
 ; }doc
@@ -1868,11 +1889,13 @@ endif
 ;
 ; Duplicate the word list at the top of the search order.
 ;
+; Definition:
+
 ; ----
 ; : also  ( -- )
 ;   get-order over swap 1+ set-order  ;
 ; ----
-;
+
 ; See: `previous`, `only`, `order`, `>order`.
 ;
 ; }doc
@@ -1898,11 +1921,13 @@ endif
 ;
 ; Set the search order to the minimum search order.
 ;
+; Definition:
+
 ; ----
 ; : only  ( -- )
 ;   -1 set-order  ;
 ; ----
-;
+
 ; See: `also`, previous`, `order`.
 ;
 ; }doc
@@ -1922,12 +1947,14 @@ endif
 ; _widn..wid1_. Subsequently, word list _wid1_ will be
 ; searched first, and word list _widn_ searched last.
 ;
-; }doc
+; Definition:
 
 ; ----
 ; : (set-order)  ( widn..wid1 n -- )
 ;   0 ?do  context i cells + !  loop  ;
 ; ----
+
+; }doc
 
   _literal 0
   dw paren_question_do_,paren_set_order.loop_exit
@@ -1997,11 +2024,13 @@ get_order.exit
 ; Check if _n_ is a valid size for the search order, else
 ; throw an exception.
 ;
+; Definition:
+
 ; ----
 ; : ?order  ( n -- )
 ;   dup 0< #-50 ?throw  max-order < ?exit  #-49 throw  ;
 ; ----
-;
+
 ; See: `#order`, `>order`, `order`.
 ;
 ; }doc
@@ -2026,14 +2055,16 @@ get_order.exit
 ; the search order to the implementation-defined minimum
 ; search order.
 ;
-; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
-;
+; Definition:
+
 ; ----
 ; : set-order  ( -1 | 0 | widn..wid1 n -- )
 ;   dup -1 = if  drop root-wordlist dup 2  then
 ;   dup ?order  dup #order !
 ;   0 ?do  i cells context + !  loop  ;
 ; ----
+
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; See: `get-order`, `>order`.
 ;
@@ -2067,10 +2098,12 @@ set_order.exit
 ;
 ; Push _wid_ on the search order.
 ;
+; Definition:
+
 ; ----
 ; : >order  ( wid -- )  also context !  ;
 ; ----
-;
+
 ; Origin: Gforth.
 ;
 ; }doc
@@ -2088,13 +2121,17 @@ set_order.exit
 ; Remove the top word list (the word list that is searched first) from
 ; the search order.
 ;
-; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
+; Definition:
 
 ; ----
 ; : previous  ( -- )
 ;   get-order nip 1- set-order  ;
 ; ----
 
+; Origin: Forth-94 (SEARCH EXT), Forth-2012 (SEARCH EXT).
+;
+; See: `get-order`, `set-order`.
+;
 ; }doc
 
   dw get_order_,nip_,one_minus_,set_order_
@@ -2166,11 +2203,13 @@ endif
 ; Return a string that is compiled after the calling word, and
 ; adjust the instruction pointer to step over the inline string.
 ;
+; Definition:
+
 ; ----
 ; : slit  ( -- ca len )
 ;   r@ count dup char+ r> + >r  ;
 ; ----
-;
+
 ; }doc
 
   dw r_fetch_,count_ ; ( ca len )
@@ -2293,11 +2332,13 @@ push_a:
 ;
 ; Return the number of free chars in the circular string-buffer.
 ;
+; Definition:
+
 ; ----
 ; : csb-unused  ( -- n )
 ;   >csb @  ;
 ; ----
-;
+
 ; See: `csb0`.
 ;
 ; }doc
@@ -2329,7 +2370,7 @@ push_a:
 
 ; doc{
 ;
-; to_csb  ( -- a )
+; >csb  ( -- a )
 ;
 ; A variable that holds the circular string buffer pointer, an
 ; offset to the first free address in the buffer; the offset
@@ -2369,12 +2410,14 @@ push_a:
 ; Make sure there's room in the circular string buffer for the
 ; given characters.
 ;
+; Definition:
+
 ; ----
 ; : ?csb  ( len -- )
 ;   dup unused-csb >  \ not enough free space?
 ;   if  empty-csb >csb !  then  negate >csb +!  ;
 ; ----
-;
+
 ; See: `csb0`.
 ;
 ; }doc
@@ -2400,11 +2443,13 @@ question_csb_.enough:
 ; Allocate _len_ chars in the circular string buffer and return
 ; the address _ca_ of the allocated space.
 ;
+; Definition:
+
 ; ----
 ; : allocate-string  ( len -- ca )
 ;   ?csb csb0 unused-csb +  ;
 ; ----
-;
+
 ; See: `save-string`, `csb0`.
 ;
 ; }doc
@@ -2426,11 +2471,13 @@ question_csb_.enough:
 ; Save the string _ca1 len1_ in the circular string buffer and
 ; return it at its new address as _ca2 len1_.
 ;
+; Definition:
+
 ; ----
 ; : save-string  ( ca1 len1 -- ca2 len1 )
 ;   dup allocate-string swap 2dup 2>r move 2r>  ;
 ; ----
-;
+
 ; See: `allocate-string`, `csb0`, `save-farstring`.
 ;
 ; }doc
@@ -2662,12 +2709,14 @@ question_csb_.enough:
 ;
 ; ?do  ( n1 n2 -- )
 ;
-; Origin: Forth-83, Forth-94, Forth-2012.
-;
+; Definition:
+
 ; ----
 ; : ?do  ( n1 n2 -- )
 ;   postpone (?do) >mark  ;  immediate compile-only
 ; ----
+
+; Origin: Forth-83, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -2685,12 +2734,14 @@ question_csb_.enough:
 ;
 ; do  ( n1 n2 -- )
 ;
-; Origin: Forth-83, Forth-94, Forth-2012.
-;
+; Definition:
+
 ; ----
 ; : do  ( n1 n2 -- )
 ;   postpone (do) >mark  ;  immediate compile-only
 ; ----
+
+; Origin: Forth-83, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -2811,7 +2862,8 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ;
 ; Return a copy of the current (innermost) loop index.
 ;
-; Origin: Forth-2012 (CORE).
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -2996,6 +3048,8 @@ digit.test_value:
 ; return its value _n_ and the updated string _ca' len'_ (which
 ; does not include the radix prefix).  Otherwise return _ca
 ; len_ untouched and the current value of `base` _n_.
+;
+; Definition:
 
 ; ----
 ; : number-base  ( ca len -- ca' len' n )
@@ -3007,6 +3061,8 @@ digit.test_value:
 ;   then
 ;   base @  ;
 ; ----
+
+; See: `base`.
 
 ; }doc
 
@@ -3057,8 +3113,9 @@ number_base.current:
 ; end of the string if the string was entirely converted. _len2_
 ; is the number of unconverted characters in the string.
 
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; Definition:
+
 ; ----
 ; : >number  ( d1 ca1 len1 -- d2 ca2 len2 )
 ;   begin  dup  while
@@ -3068,7 +3125,8 @@ number_base.current:
 ;        \ 1 dpl +! \ XXX TODO
 ;   repeat then  ;
 ; ----
-;
+
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -3132,11 +3190,13 @@ to_number.end:
 ;
 ; The library provides alternatives which accept more points.
 
+; Definition:
+
 ; ----
-; : number-point?  ( c -- f )
+; : standard-number-point?  ( c -- f )
 ;   '.' =  ;
 ; ----
-;
+
 ; }doc
 
 ; Credit:
@@ -3165,6 +3225,8 @@ to_number.end:
 ; point is found, `dpl` contains -1.
 ;
 ; Chars between single quotes are recognized, after Forth-2012.
+;
+; Definition:
 
 ; ----
 ; : number?   ( ca len -- 0 | n 1 | d 2 )
@@ -3286,6 +3348,8 @@ number_question.end:
 ; If so return the character _c_ and _true_; else return
 ; _false_.
 ;
+; Definition:
+
 ; ----
 ; : char?  ( ca len -- c true | false )
 ;   3 = if
@@ -3296,7 +3360,7 @@ number_question.end:
 ;   then
 ;   drop false ;
 ; ----
-;
+
 ; }doc
 
   _literal 3
@@ -3461,6 +3525,8 @@ find_name_from.ip: equ $+1
 ; searching all the vocabularies in the search order, return
 ; zero.  If the definition is found, return its _nt_.
 ;
+; Definition:
+
 ; ----
 ; : find-name  ( ca len -- nt | 0 )
 ;   #order @ 0 ?do
@@ -3469,7 +3535,7 @@ find_name_from.ip: equ $+1
 ;     if  nip nip unloop exit  then  ( ca len )
 ;   loop  2drop false  ;
 ; ----
-;
+
 ; Origin: Gforth.
 ;
 ; }doc
@@ -5171,13 +5237,15 @@ do_colon:
 ;
 ; finish-code  ( -- )
 ;
+; Definition:
+
 ; ----
 ; : finish-code  ( -- )
 ;   ?csp  postpone [
 ;   noname? @  noname? off  ?exit
 ;   reveal  ;
 ; ----
-;
+
 ; }doc
 
   ; Credit:
@@ -5199,11 +5267,13 @@ do_colon:
 ;
 ; ;  ( -- )
 ;
+; Definition:
+
 ; ----
 ; : ;  ( -- )
 ;   postpone exit  finish-code  ;
 ; ----
-;
+
 ; }doc
 
   dw compile_,exit_
@@ -5903,12 +5973,14 @@ endif
 ;
 ; source  ( -- ca len )
 ;
+; Definition:
+
 ; ----
 ; : source  ( -- ca len )
 ;   blk @ ?dup if  block b/buf exit  then
 ;   input-buffer 2@  ;
 ; ----
-;
+
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
@@ -6035,11 +6107,13 @@ source.other:
 ; units of data space. If _n_ is zero, leave the data-space
 ; pointer unchanged.
 ;
+; Definition:
+
 ; ----
 ; : allot  ( n -- )
 ;   dp +!  ;
 ; ----
-;
+
 ; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -6060,11 +6134,13 @@ source.other:
 ;
 ; Compile a string.
 ;
+; Definition:
+
 ; ----
 ; : s,  ( ca len -- )
 ;   dup c, tuck here swap cmove allot  ;
 ; ----
-;
+
 ; }doc
 
   dw dup_,c_comma_,tuck_,here_,swap_,c_move_,allot_
@@ -6259,12 +6335,14 @@ u_less_than.de_hl:
 ; which returns the name token of the latest word defined in
 ; the system.
 ;
-; Origin: fig-Forth's `latest`.
-;
+; Definition:
+
 ; ----
 ; : current-latest  ( -- nt )
 ;   get-current @  ;
 ; ----
+
+; Origin: fig-Forth's `latest`.
 ;
 ; }doc
 
@@ -6533,19 +6611,19 @@ endif
 ;
 ; This word is written in Z80, but its equivalent Forth code
 ; is the following:
-;
+
 ; ----
 ; : far@  ( a -- x )
 ;   dup 1+ far c@ >r farc@ r> join  ;
 ; ----
-;
-; Faster but larger version:
-;
+
+; Faster but larger definition:
+
 ; ----
 ; : far@  ( a -- x )
 ;   dup 1+ far c@ >r far c@ r> join default-bank  ;
 ; ----
-;
+
 ; }doc
 
   exx
@@ -6573,19 +6651,19 @@ endif
 ;
 ; This word is written in Z80, but its equivalent Forth code
 ; is the following:
-;
+
 ; ----
 ; : far!  ( x a -- )
 ;   >r split r@ 1+ far c! r> farc!  ;
 ; ----
-;
-; Faster but larger version:
-;
+
+; Faster but larger definition:
+
 ; ----
 ; : far!  ( x a -- )
 ;   >r split r@ 1+ far c! r> far c! default-bank  ;
 ; ----
-;
+
 ; }doc
 
   exx
@@ -6607,11 +6685,13 @@ endif
 ;
 ; name>  ( nt -- xt )
 ;
+; Definition:
+
 ; ----
 ; : name>  ( nt -- xt )
 ;   [ 2 cells ] literal - far@  ;
 ; ----
-;
+
 ; }doc
 
   _literal 2*cell
@@ -6627,6 +6707,8 @@ endif
 ;
 ; Convert the name token _nt_ to its name string _ca len_ in
 ; far memory.
+;
+; Definition:
 
 ; ----
 ; : name>str  ( nt -- ca len )
@@ -6651,6 +6733,8 @@ endif
 ;
 ; Convert the name token _nt_ to its name string _ca len_
 ; in the circular string buffer.
+;
+; Definition:
 
 ; ----
 ; : name>string  ( nt -- ca len )
@@ -6686,12 +6770,14 @@ name_to_string.loop_exit:
 ;
 ; Save the the current data stack position.
 ;
-; Origin: fig-Forth.
-;
+; Definition:
+
 ; ----
 ; : !csp  ( -- )
 ;   sp@ csp !  ;
 ; ----
+
+; Origin: fig-Forth.
 ;
 ; }doc
 
@@ -6708,11 +6794,13 @@ name_to_string.loop_exit:
 ; Perform a `throw` of value _n_ if the boolean flag _f_ is
 ; non-zero.
 ;
+; Definition:
+
 ; ----
 ; : ?throw  ( f n -- )
 ;   swap if  throw  else  drop  then  ;
 ; ----
-;
+
 ; }doc
 
   dw swap_
@@ -6730,11 +6818,13 @@ name_to_string.loop_exit:
 ;
 ; compiling?  ( -- f )
 ;
+; Definition:
+
 ; ----
 ; : compiling?  ( -- f )
 ;   state @ 0<>  ;
 ; ----
-;
+
 ; }doc
 
   dw state_,fetch_,zero_not_equals_
@@ -6747,11 +6837,13 @@ name_to_string.loop_exit:
 ;
 ; executing?  ( -- f )
 ;
+; Definition:
+
 ; ----
 ; : executing?  ( -- f )
 ;   state @ 0=  ;
 ; ----
-;
+
 ; }doc
 
   dw state_,fetch_,zero_equals_
@@ -6990,6 +7082,8 @@ base_store:
 ; code sequence.
 ;
 ; This word is the run-time procedure compiled by `;code`.
+;
+; Definition:
 
 ; ----
 ; : (;code)  ( -- ) ( R: a -- )
@@ -7097,9 +7191,9 @@ push_ahl:
 ;   over + swap  ;
 ; ----
 
-; See: `do`, `?do`, `count`.
-;
 ; Origin: Comus.
+;
+; See: `do`, `?do`, `count`.
 ;
 ; }doc
 
@@ -7189,11 +7283,13 @@ minus_trailing.begin:
 ;
 ; Type the compiled string that follows.
 ;
+; Definition:
+
 ; ----
 ; : (.")  ( -- )
 ;   r@ count dup char+ r> + >r type  ;
 ; ----
-;
+
 ; }doc
 
   dw r_fetch_,count_ ; ( ca len )
@@ -7217,11 +7313,13 @@ minus_trailing.begin:
 ; Parse "ccc" delimited by a double-quote and compile the
 ; string.
 ;
+; Definition:
+
 ; ----
 ; : ,"  ( -- )
 ;   '"' parse s,  ;
 ; ----
-;
+
 ; }doc
 
   ; Credit:
@@ -7247,13 +7345,15 @@ minus_trailing.begin:
 ;
 ; Display "ccc".
 ;
-; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
-; Forth-2012 (CORE).
-;
+; Definition:
+
 ; ----
 ; : ."  ( "ccc<quote> -- )
 ;   compile (.") ,"  ;  immediate
 ; ----
+
+; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
+; Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -7327,6 +7427,8 @@ minus_trailing.begin:
 ; The only control key accepted is Delete.
 ;
 ; _len2_ is the length of the string stored at _ca1_.
+;
+; Definition:
 
 ; ----
 ; : simple-accept  ( ca len -- len' )
@@ -7343,7 +7445,7 @@ minus_trailing.begin:
 ;     then
 ;   repeat  ( bot eot cur c )  drop nip swap -  ;
 ; ----
-;
+
 ; }doc
 
   dw over_,plus_,over_
@@ -7505,12 +7607,14 @@ simple_accept.end
 ;
 ; refill  ( -- f )
 ;
+; Definition:
+
 ; ----
 ; : refill ( -- f )
 ;   loading? if  blk @ 1+ dup block>source block? exit  then
 ;   false source-id ?exit 0= query  ;
 ; ----
-;
+
 ; Origin: Forth-94 (CORE EXT, BLOCK EXT); Forth-2012 (CORE EXT,
 ; BLOCK EXT).
 ;
@@ -7619,11 +7723,13 @@ fill.done:
 ; Insert char _c_ into a pictured numeric output string.
 ; Typically used between `<#` and `#>`.
 ;
+; Definition:
+
 ; ----
 ; : hold  ( c -- )
 ;   -1 hld +!  hld @ c!  ;
 ; ----
-;
+
 ; }doc
 
   dw lit_,-1,hld_,plus_store_ ; decrement `hld`
@@ -7656,13 +7762,16 @@ fill.done:
 ; Return the address of a transient region that can be used to hold
 ; data for intermediate processing. It's a fixed offset above `here`.
 ;
-; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83 (REQUIRED
-; WORD SET), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; Definition:
 
 ; ----
 ; : pad  ( -- ca )
 ;   here /hold @ +  ;
 ; ----
+
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83 (REQUIRED
+; WORD SET), Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; See: `here`, `/hold`.
 ;
@@ -7717,18 +7826,18 @@ fill.done:
 ; The resulting character string _ca2 len2_ begins at _ca1_ plus
 ; _n_ characters and is _len1_ minus _n_ characters long.
 ;
-; `/string` is written in Z80. Example implementations in Forth:
-;
+; `/string` is written in Z80. Equivalent definitions in Forth:
+
 ; ----
 ; : /string  ( ca1 len1 n -- ca2 len2 )
 ;   rot over + -rot -  ;
 ; ----
-;
+
 ; ----
 ; : /string  ( ca1 len1 n -- ca2 len2 )
 ;   dup >r - swap r> + swap  ;
 ; ----
-;
+
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
 ; See: `1/string`.
@@ -7753,11 +7862,13 @@ fill.done:
 ;
 ; Add the given _len_ to `>in`.
 ;
+; Definition:
+
 ; ----
 ; : parsed  ( len -- )
 ;   >in +!  ;
 ; ----
-;
+
 ; }doc
 
   dw to_in_,plus_store_
@@ -7777,8 +7888,8 @@ fill.done:
 ;
 ; If the parse area was empty, the resulting string has a zero length.
 ;
-; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
-;
+; Definition:
+
 ; ----
 ; : parse  ( c "ccc<char>" -- ca len )
 ;   stream 2dup 2>r rot scan
@@ -7786,6 +7897,8 @@ fill.done:
 ;   2r> rot - parsed
 ;   tuck -  ;
 ; ----
+
+; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
 ;
 ; }doc
 
@@ -7851,11 +7964,13 @@ parse.end:
 
 ; Create a dictionary header "name".
 ;
+; Definition:
+
 ; ----
 ; : input-stream-header  ( "name" -- )
 ;   parse-name ?name-too-short header,  ;
 ; ----
-;
+
 ; See: `header`, `nextname-header`.
 ;
 ; }doc
@@ -7882,12 +7997,14 @@ endif
 ; default-header  ( -- )
 
 ; Set `header` to its default behaviour: `input-stream-header`.
+;
+; Definition:
 
 ; ----
 ; : default-header  ( -- )
 ;   ['] input-stream-header ['] header defer!  ;
 ; ----
-;
+
 ; }doc
 
   _literal input_stream_header_
@@ -7902,6 +8019,8 @@ endif
 
 ; parse-name  ( "name"  -- ca len )
 ;
+; Definition:
+
 ; ----
 ; : parse-name  ( "name"  -- ca len )
 ;   stream                 ( ca0 len0 )
@@ -7912,7 +8031,7 @@ endif
 ;   tuck -                 ( ca len )
 ;   2dup parsed-name 2!  ;
 ; ----
-;
+
 ; }doc
 
   dw stream_              ; ( ca len )
@@ -8018,11 +8137,13 @@ far_lowers.end:
 ; not found after searching the active search
 ; order, return _false_, else return _true_.
 ;
+; Definition:
+
 ; ----
 ; : undefined?  ( ca len -- f )
 ;   find-name 0=  ;
 ; ----
-;
+
 ; See: `defined`.
 ;
 ; }doc
@@ -8049,11 +8170,13 @@ far_lowers.end:
 ; This word is written in Z80, but the equivalent Forth code is
 ; the following:
 ;
+; Definition:
+
 ; ----
 ; : place  ( ca1 len1 ca2 -- )
 ;   2dup c! char+ smove  ;
 ; ----
-;
+
 ; }doc
 
   ; XXX TODO -- move to the library after removing the old system bank
@@ -8167,6 +8290,8 @@ far_place.copy_char:
 ; block and line into `error-pos`, to be used by `where`.  Issue
 ; error _n_ and restart the system.
 ;
+; Definition:
+
 ; ----
 ; : error  ( n -- )
 ;   dup error-number !
@@ -8175,7 +8300,7 @@ far_place.copy_char:
 ;   dup -2 = if  space abort-message 2@ type (abort)  then
 ;   .error-word .throw  (abort)  ;
 ; ----
-;
+
 ; }doc
 
   dw dup_,error_number_,store_ ; save the error number
@@ -8539,6 +8664,8 @@ search.failed:
 ; sliteral  ( ca len -- )
 ;
 ; Compile string _ca len _ in the current definition.
+;
+; Definition:
 
 ; ----
 ; : sliteral  ( ca len -- )
@@ -8581,6 +8708,8 @@ search.failed:
 ; This word does the same as `literal` but saves one byte of
 ; data space and _b_ is put on the stack a bit faster (0.97 of
 ; execution speed).
+;
+; Definition:
 
 ; ----
 ; : cliteral  ( b -- )
@@ -8604,6 +8733,8 @@ search.failed:
 ; literal  ( x -- )
 ;
 ; Compile _x_ in the current definition.
+;
+; Definition:
 
 ; ----
 ; : literal  ( x -- )
@@ -8629,6 +8760,8 @@ search.failed:
 ; This word is used in `interpret-table` to compile the
 ; single-cell literals. It is useful as an alternative to
 ; `literal`, in order to optimize the code when _x_ is unknown.
+;
+; Definition:
 
 ; ----
 ; : 1literal  ( x -- )
@@ -8654,11 +8787,13 @@ search.failed:
 ;
 ; Compile _dx_ in the current definition.
 ;
+; Definition:
+
 ; ----
 ; : 2literal  ( dx -- )
 ;   postpone 2lit 2,  ; immediate compile-only
 ; ----
-;
+
 ; See: `literal`, `cliteral`, `1literal`.
 ;
 ; }doc
@@ -8780,6 +8915,8 @@ endif
 ;
 ; _source-sys_ describe the current source specification for
 ; later use by `unnest-source`.
+;
+; Definition:
 
 ; ----
 ; : nest-source  ( R: -- source-sys )
@@ -8815,6 +8952,8 @@ endif
 ; unnest-source  ( R: source-sys -- )
 ;
 ; Restore the source specification described by _source-sys_.
+;
+; Definition:
 
 ; ----
 ; : unnest-source  ( R: source-sys -- )
@@ -9089,11 +9228,13 @@ endif
 ; | +4 | _nt_ of the word list name, or zero
 ; |===
 ;
+; Definition:
+
 ; ----
 ; : wordlist,  ( -- )
 ;   here 0 , latest-wordlist @ , latest-wordlist !  0 ,  ;
 ; ----
-;
+
 ; }doc
 
   dw here_                           ; new value of `latest-wordlist`
@@ -9134,12 +9275,14 @@ endif
 ; Replace the first word list in the search order with
 ; the _wid_ stored in its body.
 ;
-; See `vocabulary`, `wordlist>vocabulary`, `wordlist`.
-;
+; Definition:
+
 ; ----
 ; : dovocabulary  ( -- )
 ;   does>   ( -- )  ( pfa ) @ context !  ;
 ; ----
+
+; See `vocabulary`, `wordlist>vocabulary`, `wordlist`.
 ;
 ; }doc
 
@@ -9158,14 +9301,16 @@ do_vocabulary:
 ;
 ; Return _wid_, the identifier of the compilation word list.
 ;
-; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
-;
-; See: `current`.
-;
+; Definition:
+
 ; ----
 ; : get-current  ( -- wid )
 ;   current @  ;
 ; ----
+
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
+;
+; See: `current`.
 ;
 ; }doc
 
@@ -9182,12 +9327,14 @@ do_vocabulary:
 ; Set the compilation word list to the word list identified by
 ; _wid_.
 ;
-; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
-;
+; Definition:
+
 ; ----
 ; : set-current  ( wid -- )
 ;   current !  ;
 ; ----
+
+; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
 ;
 ; }doc
 
@@ -9207,6 +9354,8 @@ do_vocabulary:
 ; changes in the search  order will not affect the compilation
 ; word list.
 ;
+; Definition:
+
 ; ----
 ; : definitions  ( -- )
 ;   context @ set-current  ;
@@ -9459,11 +9608,13 @@ if 1 ; developing
 ; Display the amount of space remaining in the regions addressed
 ; by `here` and `hp`, in address units.
 ;
+; Definition:
+
 ; ----
 ; : .unused  ( -- )
 ;   unused u. ."  +" emit farunused u. ." B free"  ;
 ; ----
-;
+
 ; }doc
 
   dw unused_,u_dot_
@@ -9719,14 +9870,16 @@ endif
 ;
 ; Sign extend a single number _n_ to form a double number _d_.
 ;
-; See: `d>s`, `u>ud`.
-;
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
-;
+; Definition:
+
 ; ----
 ; : s>d  ( n -- d )
 ;   dup 0<  ;
 ; ----
+
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See: `d>s`, `u>ud`.
 ;
 ; }doc
 
@@ -9748,7 +9901,7 @@ endif
 ;   0< if  negate  then  ;
 ; ----
 
-; Origin: fig-Forth's `+-`.
+; Origin: fig-Forth's "+-".
 ;
 ; }doc
 
@@ -9776,7 +9929,7 @@ question_negate.hl:
 ;   0< if  dnegate  then  ;
 ; ----
 
-; Origin: fig-Forth's `d+-`.
+; Origin: fig-Forth's "d+-".
 ;
 ; }doc
 
@@ -9795,11 +9948,13 @@ question_d_negate.hl:
 ;
 ; Leave the absolute value _u_ of a number _n_.
 ;
+; Definition:
+
 ; ----
 ; : abs  ( n -- u )
 ;   dup ?negate  ;
 ; ----
-;
+
 ; }doc
 
   pop hl
@@ -9815,11 +9970,13 @@ question_d_negate.hl:
 ;
 ; Leave the absolute value _ud_ of a double number _d_.
 ;
+; Definition:
+
 ; ----
 ; : dabs  ( d -- ud )
 ;   dup ?dnegate  ;
 ; ----
-;
+
 ; }doc
 
   pop hl
@@ -9897,14 +10054,16 @@ max.2:
 ;
 ; Multiply _n1_ by _n2_ producing the result _d_.
 ;
-; Origin: fig-Forth, Forth-94 (CORE), Forth-2012 (CORE).
-;
+; Definition:
+
 ; ----
 ; : m*  ( n1 n2 -- d )
 ;   2dup xor >r
 ;   abs swap abs um*
 ;   r> ?dnegate  ;
 ; ----
+
+; Origin: fig-Forth, Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; }doc
 
@@ -9974,17 +10133,17 @@ endif
 ; remainder _n2_. Input and output stack arguments are signed.
 
 ; [caption="Symmetric Division Example"]
-;
 ;  |===
 ;  | Dividend   | Divisor  | Remainder  | Quotient
-
+;
 ; >|       10  >|      7  >|        3  >|        1
 ; >|      -10  >|      7  >|       -3  >|       -1
 ; >|       10  >|     -7  >|        3  >|       -1
 ; >|      -10  >|     -7  >|       -3  >|        1
 ;  |===
 
-; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; Definition:
 
 ; ----
 ; : sm/rem  ( d1 n1 -- n2 n3 )
@@ -9996,6 +10155,8 @@ endif
 ;   swap r> ?negate  ;
 ; ----
 
+; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
 ; See: `fm/mod`, `m/`.
 ;
 ; }doc
@@ -10063,12 +10224,15 @@ endif
 ;
 ; Divide _n1_ by _n2_, giving the quotient _n3_.
 
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
+; Definition:
+
 ; ----
 ; : /  ( n1 n2 -- n3 )
 ;   /mod nip  ;
 ; ----
+
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -10086,13 +10250,15 @@ endif
 ; mod  ( n1 n2 -- n3 )
 ;
 ; Divide _n1_ by _n2_, giving the single-cell remainder _n3_.
-
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
+; Definition:
+
 ; ----
 ; : mod  ( n1 n2 -- n3 )
 ;   /mod drop  ;
 ; ----
+
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -10112,13 +10278,15 @@ endif
 ; Multiply _n1_ by _n2_ producing the intermediate
 ; result _d_. Divide _d_ by _n3_ producing the remainder
 ; _n4_ and the quotient _n5_.
-
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
+; Definition:
+
 ; ----
 ; : */mod  ( n1 n2 n3 -- n4 n5 )
 ;   >r m* r> m/  ;
 ; ----
+
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -10137,13 +10305,15 @@ endif
 ;
 ; Multiply _n1_ by _n2_ producing the intermediate
 ; _d_. Divide _d_ by _n3_ giving the quotient _n4_.
-
-; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
+; Definition:
+
 ; ----
 ; : */  ( n1 n2 n3 -- n4 )
 ;   */mod nip  ;
 ; ----
+
+; Origin: fig-Forth, Forth-79, Forth-94, Forth-2012.
 ;
 ; }doc
 
@@ -10163,13 +10333,17 @@ endif
 ; Convert the line number _n1_ and the screen number _n2_ to a
 ; string _ca len_ in the disk buffer containing the data.
 ;
-; Note: in fig-Forth, this word is called `(line)`.
 ;
+; Definition:
+
 ; ----
 ; : line>string  ( n1 n2 -- ca len )
 ;   >r  c/l b/buf */mod  r> +
 ;   block + c/l  ;
 ; ----
+
+; Origin: fig-Forth's "(line)".
+;
 ; }doc
 
   ; XXX REMARK -- Could be moved to the library, but it's
@@ -10228,10 +10402,13 @@ endif
 ;
 ; Is the current disk buffer marked as modified?
 ;
+; Definition:
+
 ; ----
 ; : updated?  ( -- f )
 ;   buffer-id 0<  ;
 ; ----
+
 ; }doc
 
   dw buffer_id_,zero_less_than_
@@ -10247,11 +10424,13 @@ endif
 ; Unassign all block buffers. Do not transfer the contents of
 ; any updated block to mass storage.
 ;
+; Definition:
+
 ; ----
 ; : empty-buffers  ( -- )
 ;   $7FFF disk-buffer !  ;
 ; ----
-;
+
 ; Origin: fig-Forth, Forth-79 (REQUIRED WORD SET), Forth-83
 ; (CONTROLLED REFERENCE WORDS), Forth-94 (BLOCK EXT), Forth-2012
 ; (BLOCK EXT).
@@ -10324,11 +10503,13 @@ endif
 ;
 ; Read disk block _u_ to the buffer.
 ;
+; Definition:
+
 ; ----
 ; : read-block  ( u -- )
 ;   read-mode transfer-block  ;
 ; ----
-;
+
 ; }doc
 
   dw read_mode_,transfer_block_
@@ -10343,11 +10524,13 @@ endif
 ;
 ; Write the buffer to disk block _n_.
 ;
+; Definition:
+
 ; ----
 ; : write-block  ( n -- )
 ;   write-mode transfer-block  ;
 ; ----
-;
+
 ; }doc
 
   dw write_mode_,transfer_block_
@@ -10363,12 +10546,14 @@ endif
 ; If the current disk buffer has been updated, write its block
 ; to the disk. Assign block number _n_ to the disk buffer.
 ;
+; Definition:
+
 ; ----
 ; : free-buffer  ( n -- )
 ;   updated?  if    buffer-block write-buffer
 ;             then  disk-buffer !  ;
 ; ----
-;
+
 ; }doc
 
   dw updated_question_
@@ -10391,12 +10576,14 @@ free_buffer.end:
 ; block _n_ is not read from the disk.  The address _a_ left on
 ; stack is the first cell in the buffer for data storage.
 ;
+; Definition:
+
 ; ----
 ; : buffer  ( n -- a )
 ;   dup buffer-block =
 ;   if  drop  else  free-buffer  then  buffer-data  ;
 ; ----
-;
+
 ; }doc
 
   dw dup_,buffer_block_,equals_
@@ -10426,6 +10613,8 @@ buffer.end:
 ; read into the buffer.  Finally leave the address _a_ of the
 ; first cell in the disk buffer for data storage.
 ;
+; Definition:
+
 ; ----
 ; : block ( u -- a )
 ;   dup buffer-block =
@@ -10433,7 +10622,7 @@ buffer.end:
 ;   else  save-buffers  dup read-block  disk-buffer !
 ;   then  buffer-data  ;
 ; ----
-;
+
 ; }doc
 
   dw dup_,buffer_block_,equals_
@@ -10481,6 +10670,8 @@ block.end:
 ;
 ; If the disk buffer has been modified, transfer its contents to
 ; disk and mark it as unmodified.
+;
+; Definition:
 
 ; ----
 ; : save-buffers ( -- )
@@ -10512,11 +10703,15 @@ block.end:
 ;
 ; Set the memory zone _ca len_ as the current source by pointing
 ; the input buffer to it.
+;
+; Definition:
 
 ; ----
 ; : set-source  ( ca len -- )
 ;   input-buffer 2!  >in off  ;
 ; ----
+
+; See: `input-buffer`, `>in`.
 ;
 ; }doc
 
@@ -10533,11 +10728,13 @@ block.end:
 ;
 ; Set the terminal as the current source.
 ;
+; Definition:
+
 ; ----
 ; : terminal>source  ( -- )
 ;   blk off  (source-id) off  tib #tib @ set-source  ;
 ; ----
-;
+
 ; }doc
 
   dw blk_,off_,paren_source_id_,off_
@@ -10553,11 +10750,13 @@ block.end:
 ;
 ; Set block _u_ as the current source.
 ;
+; Definition:
+
 ; ----
 ; : block>source  ( u -- )
 ;   blk !  >in off  ;
 ; ----
-;
+
 ; }doc
 
   ; XXX INFORMER {{{
@@ -10586,10 +10785,14 @@ block.end:
 
 ; This word is a common factor of `load` and `continued`.
 ;
+; Definition:
+
 ; ----
 ; : (load)  ( u -- )
 ;   block>source interpret  ;
 ; ----
+; 
+; See: `load`, `continued`, `block>source`, `interpret`.
 ;
 ; }doc
 
@@ -10611,12 +10814,14 @@ block.end:
 ;
 ; An error is issued if _u_ is zero.
 ;
+; Definition:
+
 ; ----
 ; : load  ( u -- )
 ;   dup 0= #-259 ?throw  dup lastblk !
 ;   nest-source (load) unnest-source  ;
 ; ----
-;
+
 ; See: `blk`, `>in`, `lastblk`, `(load)`, `nest-source`,
 ; `unnest-source`.
 ;
@@ -10637,13 +10842,15 @@ block.end:
 ;
 ; Continue interpretation with the next block.
 ;
-; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
-; (Controlled Reference Words).
-;
+; Definition:
+
 ; ----
 ; : -->  ( -- )
 ;   ?loading refill 0= #-35 ?throw  ; immediate
 ; ----
+
+; Origin: fig-Forth, Forth-79 (Reference Word Set), Forth-83
+; (Controlled Reference Words).
 ;
 ; }doc
 
@@ -10665,11 +10872,13 @@ block.end:
 ; order, return zero. If the definition is found,
 ; return its _nt_.
 ;
+; Definition:
+
 ; ----
 ; : defined  ( "name" -- nt | 0 )
 ;   parse-name find-name  ;
 ; ----
-;
+
 ; See: `undefined?`, `[defined]`.
 ;
 ; }doc
@@ -10700,11 +10909,13 @@ block.end:
 ;
 ; [defined]  ( "name" -- f )
 ;
+; Definition:
+
 ; ----
 ; : [defined]  ( "name" -- f )
 ;   defined 0<>  ; immediate
 ; ----
-;
+
 ; See: `defined`, `[undefined]`.
 ;
 ; }doc
@@ -10726,11 +10937,13 @@ block.end:
 ;
 ; [undefined]  ( "name" -- f )
 ;
+; Definition:
+
 ; ----
 ; : [undefined]  ( "name" -- f )
 ;   postpone [defined] 0=  ; immediate
 ; ----
-;
+
 ; See: `[defined]`.
 ;
 ; }doc
@@ -10747,6 +10960,8 @@ block.end:
 ;
 ; If _name_ is found in the current search order, return its
 ; execution token _xt_, else throw an exception.
+;
+; Definition:
 
 ; ----
 ; : '  ( "name" -- xt )
@@ -10773,6 +10988,8 @@ block.end:
 ; Compilation: If _name_ is found in the current search order,
 ; compile its execution token as a literal, else throw an
 ; exception.
+;
+; Definition:
 
 ; ----
 ; : [']  ( Compilation: "name" -- )
@@ -10866,7 +11083,6 @@ if.do:
 ; doc{
 ;
 ; ahead
-;
 ;   Compilation: ( C: -- orig )
 ;   Run-time: ( -- )
 ;
@@ -10912,6 +11128,8 @@ if.do:
 ; Origin: fig-Forth, Forth-79, Forth-83 (Required Word Set),
 ; Forth-94 (CORE), Forth-2012 (CORE).
 ;
+; See: `space`, `bl`, `emits`.
+;
 ; }doc
 
                     ;  T  B
@@ -10934,11 +11152,13 @@ if.do:
 ;
 ; If _n_ is greater than zero, display _n_ characters _c_.
 ;
+; Definition:
+
 ; ----
 ; : emits  ( c n -- )
 ;   0 max 0 ?do  dup emit  loop  drop  :
 ; ----
-;
+
 ; }doc
 
   _literal 0
@@ -10986,14 +11206,16 @@ emits.loop_exit:
 ; If _n_ is negative, add a minus sign to the beginning of the
 ; pictured numeric output string.
 ;
-; See: `<#`, `#>`.
-;
-; Origin: Forth 94 (CORE), Forth-2012 (CORE).
-;
+; Definition:
+
 ; ----
 ; : sign  ( n -- )
 ;   0< if  '-' hold  then  ;
 ; ----
+
+; Origin: Forth 94 (CORE), Forth-2012 (CORE).
+;
+; See: `<#`, `#>`.
 ;
 ; }doc
 
@@ -11013,11 +11235,13 @@ sign.end:
 ;
 ; Convert a number to its character digit: 0..9A..Z.
 ;
+; Definition:
+
 ; ----
 ; : >digit  ( n -- c )
 ;   dup 9 > [ 'A' '0' - 1+ ] literal and + '0' +  ;
 ; ----
-;
+
 ; }doc
 
   ; Credit:
@@ -11045,11 +11269,13 @@ to_digit.end
 ; an ASCII character and appended to the output text string.
 ; The quotient _d2_ is left on stack.
 ;
+; Definition:
+
 ; ----
 ; : #  ( d1 -- d2 )
 ;   base @ ud/mod rot >digit hold  ;
 ; ----
-;
+
 ; }doc
 
   dw base_,fetch_
@@ -11066,13 +11292,15 @@ to_digit.end
 ; An unsigned mixed magnitude math operation which leaves a
 ; double quotient _ud4_ and remainder _u3_, from a double
 ; dividend _ud1_ and single divisor _u2_.
+;
+; Definition:
 
 ; ----
 ; : ud/mod  ( ud1 u1 -- urem udquot )
 ;   >r 0 r@ um/mod -rot r> um/mod rot  ;
 ; ----
-;
-; Origin: fig-Forth (`m/mod`), Gforth, Z88 CamelForth.
+
+; Origin: fig-Forth's "m/mod", Gforth, Z88 CamelForth.
 ;
 ; }doc
 
@@ -11137,11 +11365,13 @@ hash_s.begin:
 ; Print a signed double number _d_ right justified in a field of
 ; _n_ characters.
 ;
+; Definition:
+
 ; ----
 ; : d.r  ( d n -- )
 ;   >r tuck dabs <# #s rot sign #> over - spaces type  ;
 ; ----
-;
+
 ; }doc
 
   dw to_r_ ; save _n_
@@ -11743,12 +11973,14 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; This is the default behaviour of `xy`.
 ;
+; Definition:
+
 ; ----
 ; : (mode32-xy)  ( -- col row )
 ;   24 23689 c@ -
 ;   33 23688 c@ - dup 32 = if  drop 1+ 0  then  swap  ;
 ; ----
-;
+
 ; See: `xy`.
 ;
 ; }doc
@@ -12014,8 +12246,8 @@ two_fetch.hl:
 ;
 ; throw  ( n -- )
 ;
-; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
-;
+; Definition:
+
 ; ----
 ; : throw  ( n -- )
 ;   ?dup if
@@ -12030,6 +12262,8 @@ two_fetch.hl:
 ;     \ execution.
 ;   then  ;
 ; ----
+
+; Origin: Forth-94 (EXCEPTION), Forth-2012 (EXCEPTION).
 ;
 ; }doc
 
@@ -12075,13 +12309,15 @@ throw.end:
 ;     ( Interpretation: "ccc<quote>" -- ca len )
 ;     ( Run-time:  -- ca len )
 ;
+; Definition:
+
 ; ----
 ; : s"  ( Compilation: "ccc<quote>" -- )
 ;       ( Interpretation: "ccc<quote>" -- ca len )
 ;       ( Run-time:  -- ca len )
 ;   '"' parse-string  ; immediate
 ; ----
-;
+
 ; }doc
 
   _literal '"'

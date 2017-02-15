@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702140229
+; Last modified: 201702151357
 
 ; ==============================================================
 ; Description
@@ -182,6 +182,7 @@ _code_header dosior_to_ior_,'dosior>ior'
 ; Convert a DOS ior to a Forth ior.
 ;
 ; This word is written in Z80. Its equivalent code in Forth is
+; the following:
 
 ; ----
 ; : dosior>ior  ( dosior -- ior )
@@ -415,6 +416,8 @@ transfer_sector.backup_ip equ $+1
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
+; See: `read-mode`, `transfer-sector`, `transfer-block`.
+;
 ; }doc
 
   ld hl,dd_write_sector
@@ -428,6 +431,8 @@ transfer_sector.backup_ip equ $+1
 ; read-mode  ( -- )
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
+;
+; See: `write-mode`, `transfer-sector`, `transfer-block`.
 ;
 ; }doc
 
@@ -444,6 +449,8 @@ transfer_mode:
 ; doc{
 ;
 ; dos-get-1346  ( -- n1 n2 n3 n4 )
+;
+; See: `dos-set-1346`.
 ;
 ; }doc
 
@@ -472,6 +479,8 @@ dos_get_1346.ip_backup equ $+1
 ; doc{
 ;
 ; dos-set-1346  ( n1 n2 n3 n4 -- )
+;
+; See: `dos-get-1346`.
 ;
 ; }doc
 

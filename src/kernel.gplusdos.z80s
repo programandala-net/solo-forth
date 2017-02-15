@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702140007
+; Last modified: 201702151334
 
 ; ==============================================================
 ; Description
@@ -81,6 +81,8 @@ _colon_header dosior_to_ior_,'dosior>ior'
 
 ; * -1031..-1000: Equivalent to G+DOS error codes 0..31.
 ; * -1154..-1128: Equivalent to OS error codes 0..27.
+;
+; Definition:
 
 ; ----
 ; : dosior>ior  ( dosior -- ior )
@@ -114,7 +116,9 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; Convert the sequential disk sector _n_ to the disk sector id
 ; _x_, in the format required by G+DOS: The high byte of _x_
 ; is the track (0..79 for side 0; 128..207 for side 1); its low
-; byte is the sector (1..10).
+; byte is the sector (1..10).;
+
+; Definition:
 
 ; ----
 ; : sector-id  ( n -- x )
@@ -129,6 +133,8 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;   negate 128 and or           ( sector track )
 ;   flip or  ;
 ; ----
+
+; See: `transfer-sector`.
 
 ; }doc
 
@@ -190,7 +196,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;     ** low byte  = sector 1..10
 ; * a = source or destination address
 
-; See: `read-mode`, `write-mode`, `transfer-block`.
+; See: `read-mode`, `write-mode`, `sector-id`, `transfer-block`.
 ;
 ; }doc
 
@@ -219,6 +225,8 @@ transfer_sector.command:       ; G+DOS command already patched:
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
+; See: `read-mode`.
+;
 ; }doc
 
   ld a,$45 ; G+DOS write sector command
@@ -232,6 +240,8 @@ transfer_sector.command:       ; G+DOS command already patched:
 ; read-mode  ( -- )
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
+;
+; See: `write-mode`.
 ;
 ; }doc
 
