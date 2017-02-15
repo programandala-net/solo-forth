@@ -431,10 +431,6 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 .2017-02-15:
 
-Document aliases defined in the kernel.
-
-.2017-02-15:
-
 Remove the documentation of DOS subroutines that is duplicated in its
 corresponding entry constant, and put a note instead.
 
@@ -494,10 +490,6 @@ to pfa and lfa, because they are system dependent.  This makes the
 notations xt, nt, pfa, lfa look heterogeneous. Beside, xt and nt are
 abstract terms, while cfa and nfa are precise definitions for the
 implemention.
-
-.2016-06-01:
-
-Put the "Origin" section of the glossary entries at the end of each entry.
 
 .2016-05-11:
 

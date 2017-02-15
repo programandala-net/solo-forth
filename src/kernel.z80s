@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702151717
+; Last modified: 201702151732
 
 include version.z80s
 
@@ -4011,6 +4011,14 @@ emit_udg.l
 ; ----------------------------------------------
   _defer_header emit_,'emit',,mode32_emit_
 
+; doc{
+;
+; emit  ( c -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
 ; ----------------------------------------------
   _variable_header printing_,'printing'
 
@@ -6455,6 +6463,14 @@ source.other:
 ; ----------------------------------------------
   _alias_header cell_plus_,'cell+',,two_plus_
 
+; doc{
+;
+; cell+  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
 ; ----------------------------------------------
   _code_header one_minus_,'1-'
 
@@ -6472,6 +6488,14 @@ source.other:
 
 ; ----------------------------------------------
   _alias_header char_minus_,'char-',,one_minus_
+
+; doc{
+;
+; char-  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _code_header one_plus_,'1+'
@@ -6491,6 +6515,14 @@ source.other:
 ; ----------------------------------------------
   _alias_header char_plus_,'char+',,one_plus_
 
+; doc{
+;
+; char+  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
+
 ; ----------------------------------------------
   _code_header two_minus_,'2-'
 
@@ -6507,6 +6539,14 @@ source.other:
 
 ; ----------------------------------------------
   _alias_header cell_minus_,'cell-',,two_minus_
+
+; doc{
+;
+; cell-  ( n1 -- n2 )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _code_header two_star_,'2*'
@@ -7949,20 +7989,6 @@ minus_trailing.begin:
 
   dw compile_,paren_dot_quote_,comma_quote_
   dw exit_
-
-; ----------------------------------------------
-;  _defer_header to_history_,'>history',,two_drop_
-
-; XXX TODO -- not used yet
-
-; doc{
-;
-; >history  ( -- ca len )
-;
-; A deferred word. When command line history is activated,
-; store string _ca len_ into it, else drop it.
-;
-; }doc
 
 ; ----------------------------------------------
   _defer_header accept_,'accept',,simple_accept_
@@ -10122,9 +10148,6 @@ quit.begin:
 ; ----------------------------------------------
   _alias_header to_defer_,'>defer',,one_plus_
 
-; XXX TODO -- rename to `>action`, after the standard
-; `action-of`?
-
 ; doc{
 ;
 ; >defer  ( xt -- a )
@@ -10133,6 +10156,9 @@ quit.begin:
 ; to the deferred word _xt_.
 ;
 ; }doc
+
+; XXX TODO -- rename to `>action`, after the standard
+; `action-of`?
 
 ; ----------------------------------------------
   _colon_header defer_store_,'defer!'
@@ -11072,9 +11098,6 @@ endif
 ; ----------------------------------------------
   _defer_header dot_throw_,'.throw',,dot_throw_hash_
 
-  ; Credit:
-  ; Name from MPE Forth for TiniARM.
-
 ; doc{
 ;
 ; .throw  ( n -- )
@@ -11083,6 +11106,9 @@ endif
 ; prints only the number.
 ;
 ; }doc
+
+  ; Credit:
+  ; Name from MPE Forth for TiniARM.
 
 ; ----------------------------------------------
   _colon_header updated_question_,'updated?'
@@ -11712,6 +11738,14 @@ block.end:
 
 ; ----------------------------------------------
   _alias_header then_,'then',immediate+compile_only,forward_resolve_
+
+; doc{
+;
+; then  ( orig -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
 ; ----------------------------------------------
   _colon_header until_,'until',immediate+compile_only
@@ -12931,6 +12965,14 @@ two_fetch.hl:
 
 ; ----------------------------------------------
   _alias_header unnest_,'unnest',,r_drop_
+
+; doc{
+;
+; unnest  ( R: nest-sys -- )
+;
+; }doc
+
+; XXX TODO -- Finish the documentation.
 
   ; Credit:
   ; http://dxforth.netbay.com.au/unnest.html
