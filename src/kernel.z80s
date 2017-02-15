@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702151330
+; Last modified: 201702151546
 
 include version.z80s
 
@@ -1289,25 +1289,98 @@ endif
 ; ----------------------------------------------
   _constant_header next_,'next'
 
+; doc{
+;
+; next  ( -- a )
+;
+; Return address _a_ of the main entry point of the Forth inner
+; interpreter.  It is the address Forth words jump to at the
+; end.  The code at _a_ executes the word whose execution token
+; is in the address pointed by the Forth IP (the Z80 BC
+; register).
+;
+; In Solo Forth, the Z80 IX register holds _a_, which must be
+; preserved across Forth words.
+;
+; See: `pushhl`, `pushhlde`, `pusha`.
+;
+; }doc
+
   dw next
 
 ; ----------------------------------------------
   _constant_header pusha_,'pusha'
+
+; doc{
+;
+; pusha  ( -- a )
+;
+; Return address _a_ of a secondary entry point of the Forth
+; inner interpreter.  The code at _a_ pushes the A register
+; onto the stack and then continues at the address returned by
+; `next`.
+;
+; See: `next`, `pushhl`, `pushhlde`.
+;
+; }doc
 
   dw push_a
 
 ; ----------------------------------------------
   _constant_header pushhl_,'pushhl'
 
+; doc{
+;
+; pushhl  ( -- a )
+;
+; Return address _a_ of a secondary entry point of the Forth
+; inner interpreter.  The code at _a_ pushes the HL register
+; onto the stack and then continues at the address returned by
+; `next`.
+;
+; See: `next`, `pushhlde`, `pusha`.
+;
+; }doc
+
   dw push_hl
 
 ; ----------------------------------------------
   _constant_header pushhlde_,'pushhlde'
 
+; doc{
+;
+; pushhlde  ( -- a )
+;
+; Return address _a_ of a secondary entry point of the Forth
+; inner interpreter.  The code at _a_ pushes the DE and HL
+; registers onto the stack and then continues at the address
+; returned by `next`.
+;
+; Note: DE is pushed first, so HL is left on top of the stack.
+; This is equivalent to pushing the double number formed by both
+; registers, being HL the high part and DE the lower part.
+;
+; See: `next`, `pushhl`, `pusha`.
+;
+; }doc
+
   dw push_hlde
 
 ; ----------------------------------------------
   _constant_header fetchhl_,'fetchhl'
+
+; doc{
+;
+; fetchhl  ( -- a )
+;
+; Return address _a_ of a secondary entry point in the code of
+; `@`.  The code at _a_ fetches the cell pointed by the HL
+; register, pushes it onto the stack and then continues at the
+; address returned by `next`.
+;
+; See: `next`, `pushhl`.
+;
+; }doc
 
   dw fetch.hl
 
@@ -1320,10 +1393,12 @@ endif
 ;
 ; Compile a Z80 jump to `pushhl`.
 ;
-; Actually two instructions are compiled: `push hl` and `jp
-; (ix)`. The execution of these instructions is faster than an
-; absolute jump to a push, and they need 3 bytes, same as a
-; jump.
+; Actually two instructions are compiled: +push hl+ and +jp
+; (ix)+ (the IX register holds the address returned by `next`).
+; The execution of these instructions is faster than an absolute
+; jump to a push, and they need 3 bytes, same as a jump.
+;
+; See: `jp,`, `pushhl`, `next`.
 ;
 ; }doc
 
@@ -1340,9 +1415,11 @@ endif
 ;
 ; Compile a Z80 jump to `next`.
 ;
+; See: `jp,`, `next`.
+;
 ; }doc
 
-  _literal $E9DD ; opcode `jp (ix)`
+  _literal $E9DD ; Z80 opcode for "jp (ix)"
   dw comma_
   dw exit_
 
@@ -1362,6 +1439,8 @@ endif
 ;   $C3 c,  \ Z80 opcode for "jp"
 ;   ,  ;
 ; ----
+
+; See: `call,`.
 
 ; }doc
 
@@ -1386,6 +1465,8 @@ endif
 ;   ,  ;
 ; ----
 
+; See: `jp,`.
+
 ; }doc
 
   _literal $CD ; Z80 opcode for "call"
@@ -1409,7 +1490,8 @@ nt_of_the_previous_word: defl 0
 ;
 ; dos  ( -- ca len )
 ;
-; Return the name of the DOS.
+; Return the name of the DOS in string _ca len_.
+; It can be "+3DOS", "G+DOS" or "TR-DOS".
 ;
 ; See: `g+dos`, `tr-dos`, `+3dos`.
 ;
