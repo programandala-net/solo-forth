@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702162114
+; Last modified: 201702170007
 
 ; ==============================================================
 ; Description
@@ -735,13 +735,13 @@ dot_drives.exit
 ; ----------------------------------------------
   _colon_header dot_f_d_a_,'.fda'
 
-  ; XXX TMP -- print file descriptor, for debugging
+  ; XXX TMP -- for debugging
 
 ; doc{
 ;
 ; .fda ( -- )
 ;
-; Display the contents of TR-DOS File Description Area.
+; Display the contents of TR-DOS File Descriptor Area.
 ;
 ; See: `.drives`, `.step-rates`.
 ;
