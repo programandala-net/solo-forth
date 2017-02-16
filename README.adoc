@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-09
+:revdate: 2017-02-15
 :toc:
 :linkattrs:
 
@@ -82,14 +82,15 @@ flash cards, and much more memory, beside many other new features.
 │   ├── gplusdos      For G+DOS
 │   ├── plus3dos      For +3DOS
 │   └── trdos         For TR-DOS
-├── doc               Some initial documentation
+├── doc               Documentation
 ├── make              Files used by `make` to build the system
 ├── screenshots       Version screenshots
 ├── src               Sources
 │   ├── inc           Z80 symbols files
 │   ├── lib           Library
 │   ├── loader        BASIC loader for disk 0
-│   └── addons        Code that is loaded from disk
+│   ├── addons        Code that is loaded from disk
+│   └── doc           Files used to build the documentation
 │                     because it's not integrated in the library yet
 ├── tmp               Temporary files created by `make`
 ├── tools             Development and user tools
@@ -213,8 +214,8 @@ yet.
 == Documentation
 
 At the moment, the only documentation is this README file, the
-sources, and a file in the <doc/> directory that explains the stack
-notation.
+sources, and a file in the <src/doc/> directory that explains the
+stack notation.
 
 Most words are fully documented in the kernel and the library source
 files, and those comments are marked in order to extract them from the

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702140014
+  \ Last modified: 201702151811
 
   \ -----------------------------------------------------------
   \ Description
@@ -98,6 +98,8 @@
   \ to return an error result.
   \
   \ 2017-02-14: Add `find-file`.
+  \
+  \ 2017-02-15: Fix typo.
 
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
@@ -1024,7 +1026,7 @@ need ?(
   \
   \ wcat  ( ca len -- )
   \
-  \ Show a wild-cald disk catologue of the current drive using
+  \ Show a wild-card disk catologue of the current drive using
   \ the wild-card filename _ca len_.  See the Plus D manual for
   \ wild-card syntax.
   \

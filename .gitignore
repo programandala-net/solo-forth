@@ -11,4 +11,8 @@
 # Ignore the development resources:
 _meta/
 
+# Ignore the documentation:
+doc/*.adoc
+doc/*.html
+
 # vim: filetype=config

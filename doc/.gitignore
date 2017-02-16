@@ -1,0 +1,4 @@
+# This file makes sure this directory is kept
+# when disk images are ignored in the main <.gitignore>.
+
+# vim: filetype=config

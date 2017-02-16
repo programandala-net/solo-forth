@@ -1,0 +1,12 @@
+= Solo Forth manual (%DOS% version)
+:author: Marcos Cruz (programandala.net)
+:revdate: 2017-02-15
+:toc:
+:toclevels: 1
+:toc-placement!:
+
+toc::[]
+
+// =============================================================
+
+

@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702092109
+# Last modified: 201702160129
 
 # ==============================================================
 # Author
@@ -19,6 +19,9 @@
 
 # ==============================================================
 # Requirements
+
+# Asciidoctor (by Dan Allen)
+# 	http://asciidoctor.org
 
 # bin2code (by Metalbrain)
 # 	http://metalbrain.speccy.org/link-eng.htm
@@ -36,6 +39,9 @@
 
 # Gforth (by Anton Erlt, Bernd Paysan et al.)
 # 	http://gnu.org/software/gforth
+
+# Glosara (by Marcos Cruz)
+# 	http://programandala.net/en.program.glosara.html
 
 # head (from the GNU coreutils)
 
@@ -92,7 +98,10 @@ all: gplusdos trdos plus3dos
 g: gplusdos
 
 .PHONY: gplusdos
-gplusdos: \
+gplusdos: gplusdosdisks gplusdosdoc
+
+.PHONY: gplusdosdisks
+gplusdosdisks: \
 	disks/gplusdos/disk_0_boot.mgt \
 	disks/gplusdos/disk_1_library.mgt \
 	disks/gplusdos/disk_2_games.mgt \
@@ -102,7 +111,10 @@ gplusdos: \
 p: plus3dos
 
 .PHONY: plus3dos
-plus3dos: \
+plus3dos: plus3dosdisks plus3dosdoc
+
+.PHONY: plus3dosdisks
+plus3dosdisks: \
 	disks/plus3dos/disk_0_boot.180.dsk \
 	disks/plus3dos/disk_0_boot.720.dsk \
 	disks/plus3dos/disk_1_library.dsk \
@@ -113,7 +125,10 @@ plus3dos: \
 t: trdos
 
 .PHONY: trdos
-trdos: \
+trdos: trdosdisks trdosdoc
+
+.PHONY: trdosdisks
+trdosdisks: \
 	disks/trdos/disk_0_boot.trd \
 	disks/trdos/disk_1_library.trd \
 	disks/trdos/disk_2_games.trd \
@@ -134,21 +149,21 @@ disk_9: \
 # the kernel).
 
 .PHONY: clean
-clean: cleantmp cleandisks
+clean: cleantmp cleandisks cleandoc
 
 .PHONY: cleandisks
-cleandisks: cleangplusdos cleanplus3dos cleantrdos
+cleandisks: cleangplusdosdisks cleanplus3dosdisks cleantrdosdisks
 
-.PHONY: cleangplusdos
-cleangplusdos:
+.PHONY: cleangplusdosdisks
+cleangplusdosdisks:
 	rm -f disks/gplusdos/*.mgt
 
-.PHONY: cleanplus3dos
-cleanplus3dos:
+.PHONY: cleanplus3dosdisks
+cleanplus3dosdisks:
 	rm -f disks/plus3dos/*.dsk
 
-.PHONY: cleantrdos
-cleantrdos:
+.PHONY: cleantrdosdisks
+cleantrdosdisks:
 	rm -f disks/trdos/*.trd
 
 .PHONY: cleantmp
@@ -157,18 +172,17 @@ cleantmp:
 # Note: The file <tmp/.gitignore> must be preserved;
 #       that's why the wildcard is used.
 
-include Makefile.pasmo
+.PHONY: cleandoc
+cleandoc:
+	-rm -f doc/*.html doc/*.adoc tmp/doc.*
 
-# XXX OLD
-# .PHONY : pasmo
-# pasmo:
-# 	@make Makefile.pasmo
-# .PHONY : as
-# as:
-# 	@make Makefile.binutils
+.PHONY: doc
+doc: gplusdosdoc plus3dosdoc trdosdoc
 
 # ==============================================================
-# Debug
+# Kernel
+
+include Makefile.pasmo
 
 # ==============================================================
 # Loader
@@ -315,10 +329,7 @@ disks/trdos/disk_0_boot.trd: tmp/disk_0_boot.trdos.tap
 	mv tmp/SOLOFTH0.TRD $@
 
 # ==============================================================
-# Block disks
-
-# The block disks contain the source blocks of the library and
-# additional code.
+# Source file lists
 
 lib_files = $(sort $(wildcard src/lib/*.fsb))
 dos_lib_files = $(sort $(wildcard src/lib/dos.*.fsb))
@@ -335,6 +346,21 @@ core_lib_files = \
 no_dos_core_lib_files = \
 	$(filter-out $(dos_lib_files), $(core_lib_files))
 
+gplusdos_core_lib_files = \
+	$(filter-out %trdos.fsb %plus3dos.fsb , $(core_lib_files))
+
+plus3dos_core_lib_files = \
+	$(filter-out %trdos.fsb %gplusdos.fsb, $(core_lib_files))
+
+trdos_core_lib_files = \
+	$(filter-out %gplusdos.fsb %plus3dos.fsb, $(core_lib_files))
+
+# ==============================================================
+# Block disks
+
+# The block disks contain the source blocks of the library and
+# additional code.
+
 tmp/library_without_dos.fsb: $(no_dos_core_lib_files)
 	cat $^ > $@
 
@@ -349,9 +375,6 @@ tmp/workbench.fsb: $(meta_benchmark_files) $(meta_test_lib_files)
 
 # ------------------------------
 # Library disk
-
-gplusdos_core_lib_files = \
-	$(filter-out %trdos.fsb %plus3dos.fsb , $(core_lib_files))
 
 tmp/library.gplusdos.fsb: $(gplusdos_core_lib_files)
 	cat $(gplusdos_core_lib_files) > $@
@@ -415,8 +438,6 @@ disks/gplusdos/disk_9_library_without_dos.mgt: tmp/library_without_dos.fsb
 
 # ----------------------------------------------
 # +3DOS block disks
-
-plus3dos_core_lib_files = $(filter-out %trdos.fsb %gplusdos.fsb, $(core_lib_files))
 
 # ------------------------------
 # Library disk
@@ -486,9 +507,6 @@ disks/plus3dos/disk_9_library_without_dos.dsk: tmp/library_without_dos.fsb
 
 # ------------------------------
 # Library disk
-
-trdos_core_lib_files = \
-	$(filter-out %gplusdos.fsb %plus3dos.fsb, $(core_lib_files))
 
 tmp/library.trdos.fsb: $(trdos_core_lib_files)
 	cat $(trdos_core_lib_files) > $@
@@ -573,6 +591,84 @@ backgrounds/current.pbm: src/version.z80s
 
 backgrounds/current.scr: backgrounds/current.pbm
 	make/pbm2scr.fs $<
+
+# ==============================================================
+# Documentation
+
+# ----------------------------------------------
+# Common rules
+
+%.html: %.adoc
+	asciidoctor $< > $@
+
+%.glossary.adoc: %.files.txt
+	glosara --level=3 --input=$< > $@
+
+# ----------------------------------------------
+# Documentation for G+DOS
+
+tmp/doc.gplusdos.files.txt: \
+	src/kernel.z80s \
+	src/kernel.gplusdos.z80s \
+	$(gplusdos_core_lib_files)
+	ls -1 $^ > $@
+
+tmp/doc.gplusdos.manual_header.adoc: src/doc/manual_header.adoc
+	sed -e "s/%DOS%/G+DOS/" $< > $@
+
+doc/solo_forth_for_gplusdos_manual.adoc: \
+	tmp/doc.gplusdos.manual_header.adoc \
+	src/doc/stack_notation.adoc \
+	src/doc/glossary_heading.adoc \
+	tmp/doc.gplusdos.glossary.adoc
+	cat $^ > $@
+
+.PHONY: gplusdosdoc
+gplusdosdoc: doc/solo_forth_for_gplusdos_manual.html
+
+# ----------------------------------------------
+# Documentation for +3DOS
+
+tmp/doc.plus3dos.files.txt: \
+	src/kernel.z80s \
+	src/kernel.plus3dos.z80s \
+	$(plus3dos_core_lib_files)
+	ls -1 $^ > $@
+
+tmp/doc.plus3dos.manual_header.adoc: src/doc/manual_header.adoc
+	sed -e "s/%DOS%/+3DOS/" $< > $@
+
+doc/solo_forth_for_plus3dos_manual.adoc: \
+	tmp/doc.plus3dos.manual_header.adoc \
+	src/doc/stack_notation.adoc \
+	src/doc/glossary_heading.adoc \
+	tmp/doc.plus3dos.glossary.adoc
+	cat $^ > $@
+
+.PHONY: plus3dosdoc
+plus3dosdoc: doc/solo_forth_for_plus3dos_manual.html
+
+# ----------------------------------------------
+# Documentation for TR-DOS
+
+tmp/doc.trdos.files.txt: \
+	src/kernel.z80s \
+	src/kernel.trdos.z80s \
+	$(trdos_core_lib_files)
+	ls -1 $^ > $@
+
+tmp/doc.trdos.manual_header.adoc: src/doc/manual_header.adoc
+	sed -e "s/%DOS%/TR-DOS/" $< > $@
+
+doc/solo_forth_for_trdos_manual.adoc: \
+	tmp/doc.trdos.manual_header.adoc \
+	src/doc/stack_notation.adoc \
+	src/doc/glossary_heading.adoc \
+	tmp/doc.trdos.glossary.adoc
+	cat $^ > $@
+
+.PHONY: trdosdoc
+trdosdoc: doc/solo_forth_for_trdos_manual.html
 
 # ==============================================================
 # Backup
@@ -749,3 +845,6 @@ oldbackup:
 # problem with the <backgrounds/current.pbm> target: the
 # solution was to do a copy instead of a link (hard or symbolic
 # made no difference).
+#
+# 2017-02-15: Add rules to build the documentation from the
+# sources.
