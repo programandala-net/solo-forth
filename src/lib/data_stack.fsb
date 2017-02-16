@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701312333
+  \ Last modified: 201702162051
 
   \ -----------------------------------------------------------
   \ Description
@@ -63,6 +63,8 @@
   \ interpretation.
   \
   \ 2017-01-31: Improve documentation of `swapped`.
+  \
+  \ 2017-02-16: Fix typo in documentation of `2ndrop`.
 
 ( 2nip pick roll )
 
@@ -391,7 +393,7 @@ code 2ndrop  ( dx1..dxn n -- )
 
   \ doc{
   \
-  \ ndrop  ( dx1..dxn n -- )
+  \ 2ndrop  ( dx1..dxn n -- )
   \
   \ Drop _n_ double cell items from the stack.
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611271518
+  \ Last modified: 201702162034
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,6 +45,8 @@
   \ the kernel.
   \
   \ 2016-11-27: Use `lastblk` in `reload`, instead of `scr`.
+  \
+  \ 2017-02-16: Remove `?\`, which is in the kernel.
 
 ( ?--> update flush thru )
 
@@ -58,19 +60,6 @@
   \ If _f_ is not false, continue interpretation on the next
   \ sequential block.  parse area. This word is used for
   \ conditional compilation.
-  \
-  \ }doc
-
-  \ XXX TMP -- `?\` is still in the kernel
-
-  \ : ?\  ( f "ccc<eol>" -- )  if  postpone \  then  ; immediate
-
-  \ doc{
-  \
-  \ ?\  ( f "ccc" -- )
-  \
-  \ If _f_ is not false, parse and discard the rest of the
-  \ parse area. This word is used for conditional compilation.
   \
   \ }doc
 

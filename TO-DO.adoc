@@ -1,12 +1,16 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-15
+:revdate: 2017-02-16
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-02-16:
+
+Try `;code`. Its definition should include `asm`.
 
 .2017-02-12:
 
@@ -33,10 +37,11 @@ Modify words that restore IX: use the current contents of `next` instead of its
 default value. This way the value of IX can be changed to implement a debugger
 or multitasking.
 
-.2017-01-13:
+.2017-01-13, 2017-02-16:
 
-Move standard `end-code` to the library and use `;c` in the kernel instead?
-Space is precious in blocks.
+Rename `end-code` to `;c`?  `end-code` is more legible, but space is
+precious in blocks.  `end-code` is not in Forth-94 or Forth-2012 (only
+mentioned), but it was in Forth-79 and Forth-83, and it's in Gforth.
 
 .2016-11-26, 2016-12-30..2017-01-02:
 
@@ -302,11 +307,12 @@ the system?
 
 Solution 2: Add a second link to every header, pointing to the next definition.
 
-Solution 3: Search all word lists, which are chained from `latest-wordlist`. Of
-course, the search will be from newest to oldest word list and from newest to
-oldest word... But the process should examine all words of the system, and keep
-the nt of the oldest word this the xt that is searched for. This is slow, but
-saves the additional link.
+Solution 3: Search all word lists, which are chained from
+`latest-wordlist`. Of course, the search will be from newest to oldest
+word list and from newest to oldest word... But the process should
+examine all words of the system, and keep the _nt_ of the oldest word
+this the _xt_ that is searched for. This is slow, but saves the
+additional link.
 
 // Strings {{{2
 === Strings ===
@@ -602,9 +608,9 @@ Improve `set-drive`: check if there's a disk in the drive.
 
 Simplify `!dos,`, `c!dos` and family.
 
-.2016-03-16:
+.2016-03-16, 2017-02-16:
 
-Investigate how to use the free memory of the Plus D RAM.
+Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
@@ -1256,6 +1262,11 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
+.2017-02-16:
+
+Move `>name` to the library, and make the alternative slower
+implementation optional.
+
 .2017-02-08:
 
 Move `?(` to the kernel. Since `exit` is not used after conditional
@@ -1305,7 +1316,7 @@ would be clearer.
 Make `need-here` unnecessary: Always check the current block, just in case.
 Many needed words are in the same block.
 
-.2016-11-22:
+.2016-11-22, 2016-12-31, 2017-02-16:
 
 Write `needs` to do multiple `need` on one line of a block,
 saving space
@@ -1315,7 +1326,9 @@ needs word1 word2 word3 word4
 needs word5 word6 word7 word8
 ----
 
-Or `need( )` to do the same without the one-line limit:
+NOTE: Milestone: 0.14.0
+
+Write `need( )` to do the same without the one-line limit:
 
 ----
 need( word1 word2 word3 word4
@@ -1328,7 +1341,8 @@ need( word1 word2 word3 word4
   while  needed  repeat  2drop  ;
 ----
 
-Update 2016-12-31: `need\` is clearer than `needs` to parse the current line.
+`need\` is clearer than `needs` to parse the current line, but `need(`
+seems the best option.
 
 .2016-11-19, 2016-12-29:
 
@@ -1385,20 +1399,34 @@ Together with the ability to create binary overlays, the LMI FORTH compilers
 enabled the user to create modules that showed only words that are relevant
 for the end user.
 
-.2016-12-07:
+.2016-12-07, 2017-02-16:
 
 NOTE: Milestone: 0.14.0
 
 Combine `begin-module` and `package`.
 
+Also, `end-module` is used by modules `module` and `begin-module`.
+
 // Names {{{1
 == Names ==
 
+.2017-02-16:
+
+Decide a naming convention for words that return the address of a Z80
+routine. Now several conventions are used, e.g. "-routine", parens,
+no-hyphen, and others.
+
+Maybe "-mc" for "machine code"? Too cryptic.
+
 .2017-01-31:
+
+NOTE: Milestone: 0.14.0
 
 Rename `>defer` to `>action`, after the standard `action-of`
 
 .2017-01-30:
+
+NOTE: Milestone: 0.14.0
 
 Current names of some screen filters are too generic. Rename them:
 
@@ -1593,6 +1621,8 @@ Improve tab control.
 
 // Project tree {{{1
 == Project tree ==
+
+NOTE: Milestone: 0.14.0
 
 .2017-02-07:
 

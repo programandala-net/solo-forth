@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702160129
+# Last modified: 201702162303
 
 # ==============================================================
 # Author
@@ -599,10 +599,16 @@ backgrounds/current.scr: backgrounds/current.pbm
 # Common rules
 
 %.html: %.adoc
-	asciidoctor $< > $@
+	asciidoctor --out-file=$@ $<
 
 %.glossary.adoc: %.files.txt
 	glosara --level=3 --input=$< > $@
+
+# %.docbook: %.adoc
+# 	asciidoctor --backend=docbook --out-file=$@ $<
+
+# %.texinfo: %.docbook
+# 	pandoc --from=docbook --to=texinfo --output=$@ $<
 
 # ----------------------------------------------
 # Documentation for G+DOS

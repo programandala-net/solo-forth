@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702151355
+; Last modified: 201702162114
 
 ; ==============================================================
 ; Description
@@ -266,7 +266,7 @@ push_dos_ior:
 
 ; doc{
 ;
-; dos-c-routine  ( -- a )
+; dos-preserve-ip-routine  ( -- a )
 ;
 ; Address of a routine that executes the TR-DOS command hold in
 ; the A' register, preserving the Forth IP (the BC register).

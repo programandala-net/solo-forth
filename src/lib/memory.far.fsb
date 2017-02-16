@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011536
+  \ Last modified: 201702162040
 
   \ -----------------------------------------------------------
   \ Description
@@ -79,6 +79,8 @@
   \ `far-hl-routine`; `questionnextbank` to
   \ `?next-bank-routine`; `questionpreviousbank` to
   \ `?previous-bank-routine`.
+  \
+  \ 2017-02-16: Fix typo in documentation of `farc@+`.
 
 ( far-hl-routine ?next-bank-routine ?previous-bank-routine )
 
@@ -304,7 +306,7 @@ need ?(  [unneeded] far, ?(  need farallot
 
   \ doc{
   \
-  \ code farc@+  ( ca -- ca' c )
+  \ farc@+  ( ca -- ca' c )
   \
   \ Fetch the character _c_ at far-memory address _ca_. Return
   \ _ca'_, which is _ca_ incremented by one character.  This

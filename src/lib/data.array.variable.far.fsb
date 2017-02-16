@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201702162105
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
 
   \ 2017-01-18: Start, based on the module
   \ <data.array.variable.fsb>.
+  \
+  \ 2017-02-16: Fix typo in documentation.
 
 ( faravariable far2avariable farcavariable )
 
@@ -77,7 +79,7 @@ need ?(
 
   \ doc{
   \
-  \ 2avariable  ( n "name" -- )
+  \ far2avariable  ( n "name" -- )
   \
   \ Create, in far memory, a 1-dimension double-cell variables
   \ array _name_ with _n_ elements and the execution semantics

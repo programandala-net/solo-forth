@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201702162056
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,12 +40,14 @@
   \ 2017-01-18: Make `columns` and `rows` independent for
   \ `need` and document them.  Remove `exit` at the end of
   \ conditional interpretation.
- 
-( columns rows set-mode-output set-font )
+  \
+  \ 2017-02-16: Remove `set-font`, which is in the kernel.
+
+( columns rows set-mode-output )
 
 [unneeded] columns
 ?\ need value  32 value columns  exit
-  
+
   \ doc{
   \
   \ columns  ( -- n )
@@ -68,21 +70,6 @@
   \ default value is 24.
   \
   \ See: `columns`, `last-row`, `row`.
-  \
-  \ }doc
-
-[unneeded] set-font
-?\ need os-chars  : set-font  ( a -- )  os-chars !  ;
-
-  \ doc{
-  \
-  \ set-font  ( a -- )
-  \
-  \ Set the system font to _a_.  This is used by all modes:
-  \ `mode32`, `mode42` and `mode64`. The value of _a_ depends
-  \ on the mode: In `mode32` and `mode42`, _a_ is the address
-  \ of char 0, i.e. 256 bytes below the space char; In `mode64`
-  \ _a_ is the address of space char.
   \
   \ }doc
 

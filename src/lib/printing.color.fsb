@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702152213
+  \ Last modified: 201702162312
 
   \ -----------------------------------------------------------
   \ Description
@@ -96,6 +96,8 @@
   \ rename it to `mask+attr>perm`.
   \
   \ 2017-02-15: Fix typo in documentation.
+  \
+  \ 2017-02-16: Fix typos in documentation.
 
   \ -----------------------------------------------------------
   \ Operatyng system variables
@@ -166,7 +168,7 @@
   \ A constant that returns 0, the value that represents the
   \ black color.
   \
-  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`, `yellow`,
+  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`, `yellow`,
   \ `white`, `contrast`.
   \
   \ }doc
@@ -180,7 +182,7 @@
   \ A constant that returns 0, the value that represents the
   \ blue color.
   \
-  \ See: `black`, `red`, magenta`, `green`, `cyan`, `yellow`,
+  \ See: `black`, `red`, `magenta`, `green`, `cyan`, `yellow`,
   \ `white`, `contrast`.
   \
   \ }doc
@@ -222,7 +224,7 @@
   \ A constant that returns 0, the value that represents the
   \ green color.
   \
-  \ See: `black`, `blue`, `red`, magenta`, `cyan`, `yellow`,
+  \ See: `black`, `blue`, `red`, `magenta`, `cyan`, `yellow`,
   \ `white`, `contrast`.
   \
   \ }doc
@@ -236,7 +238,7 @@
   \ A constant that returns 0, the value that represents the
   \ cyan color.
   \
-  \ See: `black`, `blue`, `red`, magenta`, `green`, `yellow`,
+  \ See: `black`, `blue`, `red`, `magenta`, `green`, `yellow`,
   \ `white`, `contrast`.
   \
   \ }doc
@@ -250,7 +252,7 @@
   \ A constant that returns 0, the value that represents the
   \ yellow color.
   \
-  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`,
+  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`,
   \ `white`, `contrast`.
   \
   \ }doc
@@ -264,7 +266,7 @@
   \ A constant that returns 0, the value that represents the
   \ white color.
   \
-  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`, `yellow`,
+  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`, `yellow`,
   \ `contrast`.
   \
   \ }doc
@@ -284,7 +286,7 @@ need ?(
   \ magenta); _b2_ is black (0) if _b1_ is a light colour
   \ (green, cyan, yellow or white).
   \
-  \ See: `black`, `blue`, `red`, magenta`, `green`, `cyan`,
+  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`,
   \ `yellow`, `white`.
   \
   \ }doc

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702041831
+  \ Last modified: 201702162103
 
   \ -----------------------------------------------------------
   \ Description
@@ -78,6 +78,11 @@
   \ `at-xy-display-udg`; rename `0udg-at-xy-display` to
   \ `udg-at-xy-display`. Compact the code, saving one block.
   \ Improve `udg>` and other words ẁith `get-udg`.
+  \
+  \ 2017-02-16: Deactivate documentation of alternative
+  \ implementations of `(cursor-addr)`, `cursor-addr` and
+  \ `(display-char-bitmap)`, to prevent them from being
+  \ included twice in the glossary.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -630,8 +635,6 @@ create (cursor-addr)  ( -- a )  asm
   \ How To Write ZX Spectrum Games – Chapter 9
   \ http://chuntey.arjunnair.in/?p=154
 
-  \ doc{
-  \
   \ (cursor-addr)  ( -- a )
   \
   \ Return address _a_ of a Z80 routine that calculates the
@@ -647,8 +650,6 @@ create (cursor-addr)  ( -- a )  asm
   \ - HL = screen address
   \
   \ See: `cursor-addr`, `(pixel-addr)`.
-  \
-  \ }doc
 
 [unneeded] cursor-addr ?(  need assembler  need (cursor-addr)
 
@@ -663,16 +664,12 @@ code cursor-addr  ( x y -- a )
   \ call cursor_addr
   \ jp push_hl
 
-  \ doc{
-  \
   \ cursor-addr  ( x y -- a )
   \
   \ Convert cursor coordinates _x y_ to their correspondent
   \ screen address _a_.
   \
   \ See: `(cursor-addr)` , `pixel-addr`.
-  \
-  \ }doc
 
 \ (display-char-bitmap) \
 
@@ -755,8 +752,6 @@ create (display-char-bitmap)  ( -- a )  asm
 
   end-asm ?)
 
-  \ doc{
-  \
   \ (display-char-bitmap)  ( -- a )
   \
   \ Return address _a_ of a Z80 routine that displays
@@ -767,8 +762,6 @@ create (display-char-bitmap)  ( -- a )  asm
   \ - HL = address of the character bitmap
   \ - B = y coordinate (0..23)
   \ - C = x coordinate (0..31)
-  \
-  \ }doc
 
 ( at-xy-display-udg udg-at-xy-display )
 
