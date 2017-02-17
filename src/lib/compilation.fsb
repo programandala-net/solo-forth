@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702162110
+  \ Last modified: 201702171531
 
   \ -----------------------------------------------------------
   \ Description
@@ -142,6 +142,8 @@
   \ 2017-02-16: Remove `cliteral`, which is in the kernel. Fix
   \ typo in documentation of `eval`.  Deactivate documentation
   \ of the alternative implementation of `>name`.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( [false] [true] [if] [else] [then] )
 
@@ -716,7 +718,7 @@ need ?(
   \
   \ warn.throw  ( ca len -- ca len )
   \
-  \ Alternative behaviour for the deferred word `warn`.  If the
+  \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
   \ compilation word list, print throw error #-257, without
@@ -737,7 +739,7 @@ need ?(
   \
   \ warn.message  ( ca len -- ca len )
   \
-  \ Alternative behaviour for the deferred word `warn`.  If the
+  \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
   \ compilation word list, print a warning message.
@@ -757,7 +759,7 @@ need ?(
   \
   \ warn-throw  ( ca len -- ca len )
   \
-  \ Alternative behaviour for the deferred word `warn`.  If the
+  \ Alternative action for the deferred word `warn`.  If the
   \ contents of the user variable `warnings` is not zero and
   \ the word name _ca len_ is already defined in the current
   \ compilation word list, throw error #-257 instead of

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702082141
+  \ Last modified: 201702171526
 
   \ -----------------------------------------------------------
   \ Description
@@ -99,6 +99,8 @@
   \
   \ 2017-02-08: Update the usage of `set-drive`, which now
   \ returns an error result. Move `.tape` from the tape module.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( .tape )
 
@@ -460,7 +462,7 @@ need :switch  need <switch  need :noname  need >body
 : many   ( n -- )  . ." is too much! "  ;
 
 ' many :switch numbers
-  \ `many` is the default behaviour of the new switch `numbers`
+  \ `many` is the default action of the new switch `numbers`
 
   ' one   1 <switch
   ' two   2 <switch

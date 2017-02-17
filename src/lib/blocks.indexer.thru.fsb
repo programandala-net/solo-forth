@@ -3,14 +3,14 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701171857
+  \ Last modified: 201702171531
 
   \ -----------------------------------------------------------
   \ Description
 
   \ Blocks Thru Indexer
   \
-  \ A blocks indexer that changes the default behaviour of
+  \ A blocks indexer that changes the default action of
   \ `need` and related words: The whole disk is indexed first,
   \ and then `need and family uses the index instead of
   \ searching the blocks.
@@ -70,6 +70,8 @@
   \ 2016-11-25, with `indexed-name?`.
   \
   \ 2017-01-17: Fix text of exception #-277 in documentation.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( make-thru-index use-thru-index )
 
@@ -89,7 +91,7 @@ need evaluate  need catch
   \ load the block it's associated to.  If not found, throw an
   \ exception -277 ("needed, but not indexed").
   \
-  \ This is an alternative behaviour of the deferred word
+  \ This is an alternative action of the deferred word
   \ `reneeded`.
   \
   \ }doc
@@ -106,7 +108,7 @@ need evaluate  need catch
   \ found, throw an exception -277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative behaviour of the deferred word
+  \ This is an alternative action of the deferred word
   \ `reneed`.
   \
   \ }doc
@@ -126,7 +128,7 @@ need evaluate  need catch
   \ If not found, throw an exception -277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative behaviour of the deferred word
+  \ This is an alternative action of the deferred word
   \ `needed`.
   \
   \ }doc
@@ -144,7 +146,7 @@ need evaluate  need catch
   \ If not found, throw an exception -277 ("needed, but not
   \ indexed").
   \
-  \ This is an alternative behaviour of the deferred word
+  \ This is an alternative action of the deferred word
   \ `need`.
   \
   \ }doc
@@ -162,11 +164,11 @@ need evaluate  need catch
   \
   \ use-thru-index  ( -- )
   \
-  \ Change the behaviour of `need`, `needed`, `reneed`,
+  \ Change the action of `need`, `needed`, `reneed`,
   \ `reneeded`, `located` and `unlocated` in order to use the
   \ blocks index created by `make-thru-index`.
   \
-  \ The default behaviour of all said words can be restored by
+  \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
   \ See: `make-thru-index`, `use-no-index`, `use-fly-index`.
@@ -217,10 +219,10 @@ need evaluate  need catch
   \ is the block they belong to.  This way, after indexing all
   \ the disk blocks only once, `need` will search the word list
   \ and load the block of the word found. On the contrary, the
-  \ default behaviour of `need` is to search all the blocks
+  \ default action of `need` is to search all the blocks
   \ every time.
   \
-  \ The default behaviour of `need` and related words can be
+  \ The default action of `need` and related words can be
   \ restored with `use-no-index`.
   \
   \ See: `use-thru-index`, `need`, `use-no-index`.

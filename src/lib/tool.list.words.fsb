@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011623
+  \ Last modified: 201702171529
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,8 @@
   \
   \ 2017-02-01: Fix `words-like` with `lowers` (words are
   \ stored in lowercase).
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( .word .wordname more-words? words wordlist-words )
 
@@ -55,7 +57,7 @@ need ?(  [unneeded] .word ?(  need tab  defer .word  ( nt -- )
   \
   \ .word  ( nt -- )
   \
-  \ A deferred word whose default behaviour is `(.word)`. This
+  \ A deferred word whose default action is `(.word)`. This
   \ word is used by `words`, `words-like` and `wordlist-words`,
   \ therefore their output can be changed by the user in
   \ special cases, for example when more details are needed for
@@ -69,7 +71,7 @@ need ?(  [unneeded] .word ?(  need tab  defer .word  ( nt -- )
   \
   \ (.word  ( nt -- )
   \
-  \ Default behaviour of `.word`: print the name of the
+  \ Default action of `.word`: print the name of the
   \ definition _nt_ and execute `tab`.
   \
   \ See: `.word`.
@@ -84,7 +86,7 @@ need ?(  [unneeded] .word ?(  need tab  defer .word  ( nt -- )
   \
   \ .wordname  ( nt -- )
   \
-  \ An alternative behaviour for the deferred word `.word`,
+  \ An alternative action for the deferred word `.word`,
   \ which is used by `words`, `words-like` and
   \ `wordlist-words`.  This word prints _nt_ and its
   \ correspondent name.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231438
+  \ Last modified: 201702171534
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,6 +42,8 @@
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \
   \ 2017-01-23: Fix name.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( rnd-bench )
 
@@ -123,7 +125,7 @@ defer random-coords  ( -- gx gy )
   \ type of `random` to benchmark.
 
 : (random-coords)  ( -- gx gy )  256 rng 192 rng  ;
-  \ Default behaviour of `random-coords`.
+  \ Default action of `random-coords`.
 
 : fill-screen  ( -- )
   #pixels 0 do  random-coords set-pixel  loop  ;

@@ -5,14 +5,14 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201611262335
+  \ Last modified: 201702171531
 
   \ -----------------------------------------------------------
   \ Description
 
   \ Blocks Fly Indexer
   \
-  \ A blocks indexer that changes the default behaviour of
+  \ A blocks indexer that changes the default action of
   \ `need` and related words: The disk is searched for the
   \ needed word only when it's not found in the blocks index,
   \ and the searched blocks are indexed on the fly.
@@ -43,6 +43,8 @@
   \ 2016-11-26: Need `catch`, which has been moved to the
   \ library.  Rename `blocks` to `blk/disk` after the fix in
   \ the kernel.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( use-fly-index )
 
@@ -147,12 +149,12 @@ blk/disk bit-array indexed-blocks
   \
   \ use-fly-index  ( -- )
   \
-  \ Set the alternative behaviour of `need`, `needed`,
+  \ Set the alternative action of `need`, `needed`,
   \ `reneed`, `reneeded`, `located` and `unlocated` in order to
   \ use the blocks index and index the searched blocks on the
   \ fly.
   \
-  \ The default behaviour of all said words can be restored by
+  \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
   \ See: `use-no-index`, `make-thru-index`, `use-thru-index`.

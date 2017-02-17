@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702121121
+  \ Last modified: 201702171529
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,10 +13,10 @@
   \
   \ The utility consists of words `need`, `needed`, `reneed`
   \ and `reneeded`. All of them are deferred words. Their
-  \ default behaviour is set by `use-no-index`: locate the
+  \ default action is set by `use-no-index`: locate the
   \ required word searching a configurable range of blocks.
   \
-  \ Alternative behaviours are provided by the optional tools
+  \ Alternative actions are provided by the optional tools
   \ Thru Indexer and Fly Indexer.
 
   \ -----------------------------------------------------------
@@ -126,6 +126,8 @@
   \
   \ 2017-02-12: Add more optional debugging code for
   \ `(located)`.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( delimited located needed-word )
 
@@ -198,7 +200,7 @@ defer unlocated  ( block -- )
   \
   \ Deferred word called in the loop of `located`, when the
   \ word searched for is not located in _block_.  Its default
-  \ behaviour is `drop`, which is changed by `use-fly-index`
+  \ action is `drop`, which is changed by `use-fly-index`
   \ in order to index the blocks on the fly.
   \
   \ See: `located`, `use-fly-index`.
@@ -242,7 +244,7 @@ defer unlocated  ( block -- )
   \ Only the blocks delimited by `first-locatable` and
   \ `last-locatable` are searched`.
   \
-  \ This is the default behaviour of `located`, which is
+  \ This is the default action of `located`, which is
   \ changed by `use-fly-index`.
   \
   \ See: `located`, `use-fly-index`, `default-first-locatable`,
@@ -298,7 +300,7 @@ defer reneeded  ( ca len -- )
   \ len_ (surrounded by spaces).  If not found, throw an
   \ exception #-268 ("needed, but not located").
   \
-  \ This is a deferred word whose default behaviour is
+  \ This is a deferred word whose default action is
   \ `locate-reneeded`.
   \
   \ See: `locate-reneeded`, `make-thru-index`.
@@ -315,7 +317,7 @@ defer reneeded  ( ca len -- )
   \ len_ (surrounded by spaces), and load it. If not found,
   \ throw an exception #-268 ("needed, but not located").
   \
-  \ This is the default behaviour of the deferred word
+  \ This is the default action of the deferred word
   \ `reneeded`.
   \
   \ See: `reneeded`, `make-thru-index`.
@@ -331,7 +333,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ Load the first block whose header contains "name" (but
   \ surrounded by spaces).
   \
-  \ This is a deferred word whose default behaviour is
+  \ This is a deferred word whose default action is
   \ `locate-reneed`.
   \
   \ See: `locate-reneed`, `make-thru-index`.
@@ -348,7 +350,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ If not found, throw an exception #-268 ("needed, but not
   \ located").
   \
-  \ This is a deferred word whose default behaviour is
+  \ This is a deferred word whose default action is
   \ `locate-needed`.
   \
   \ See: `locate-needed`, `make-thru-index`.
@@ -368,7 +370,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ surrounded by spaces), and load it.  If not found, throw an
   \ exception #-268 ("needed, but not located").
   \
-  \ This is the default behaviour of the deferred word
+  \ This is the default action of the deferred word
   \ `reneed`.
   \
   \ See: `reneed`, `make-thru-index`.
@@ -436,7 +438,7 @@ defer reneed  ( "name" -- )  defer needed  ( ca len -- )
   \ spaces), and load it.  If not found, throw an exception
   \ #-268 ("needed, but not located").
   \
-  \ This is the default behaviour of the deferred word
+  \ This is the default action of the deferred word
   \ `needed`.
   \
   \ See: `needed`, `make-thru-index`.
@@ -454,7 +456,7 @@ defer need  ( "name" -- )
   \ header (surrounded by spaces), and load it.  If not found,
   \ throw an exception #-268 ("needed, but not located").
   \
-  \ This is a deferred word whose default behaviour is
+  \ This is a deferred word whose default action is
   \ `locate-need`.
   \
   \ See: `locate-need`, `make-thru-index`.
@@ -472,7 +474,7 @@ defer need  ( "name" -- )
   \ header (surrounded by spaces), and load it.  If not found,
   \ throw an exception #-268 ("needed, but not located").
   \
-  \ This is the default behaviour of the deferred word `need`.
+  \ This is the default action of the deferred word `need`.
   \
   \ See: `need`, `make-thru-index`.
   \
@@ -488,7 +490,7 @@ defer need  ( "name" -- )
   \
   \ use-default-need  ( -- )
   \
-  \ Set the default behaviour of `need`, `needed`, `reneed`,
+  \ Set the default action of `need`, `needed`, `reneed`,
   \ and `reneeded`: Use `locate` for searching the blocks.
   \
   \ This word is a common factor of `use-no-index` and
@@ -505,7 +507,7 @@ defer need  ( "name" -- )
   \
   \ use-default-located  ( -- )
   \
-  \ Set the default behaviour of `located` and `unlocated`:
+  \ Set the default action of `located` and `unlocated`:
   \ search the blocks.
   \
   \ This word is a common factor of `use-no-index` and
@@ -522,11 +524,11 @@ defer need  ( "name" -- )
   \
   \ use-no-index  ( -- )
   \
-  \ Set the default behaviour of `need`, `needed`, `reneed`,
+  \ Set the default action of `need`, `needed`, `reneed`,
   \ `reneeded` and `unlocated`: Use `locate` for searching the
   \ blocks.
   \
-  \ The alternative behaviours are set by `use-thru-index` and
+  \ The alternative actions are set by `use-thru-index` and
   \ `use-fly-index`.
   \
   \ See: `use-thru-index`, `use-fly-index`.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701200131
+  \ Last modified: 201702171532
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,8 @@
   \ 2017-01-20: Fix `error>ordinal`: error code #-286 was added
   \ some days ago, making #-300 the new highest code available
   \ for system error codes, but `error>ordinal` wasn't updated.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( ?compiling ?executing abort" warning" )
 
@@ -204,7 +206,7 @@ s" Standard error codes" located errors-block !
   \
   \ .throw-message  ( n -- )
   \
-  \ Extended behaviour of the deferred word `.throw`: Print the
+  \ Extended action of the deferred word `.throw`: Print the
   \ text of throw error _n_.  The variable
   \ `errors-block` holds the number of the first
   \ block where messages are hold. If it contains zero, only

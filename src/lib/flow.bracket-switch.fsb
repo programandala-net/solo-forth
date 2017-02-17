@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201702171525
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update notation "behaviour" to "action".
 
 ( switcher :switch <switch )
 
@@ -90,7 +92,7 @@ need link@  need link,  need pick
   \
   \ :switch  ( xt "name" -- head )
   \
-  \ Create a code switch whose default behaviour is given by
+  \ Create a code switch whose default action is given by
   \ _xt_. Leave the address of the _head_ of its list on the
   \ stack.
   \
@@ -159,7 +161,7 @@ need ?(
   \
   \ Start the definition of a switch structure _name1_
   \ consisting of a linked list of single-precision numbers and
-  \ associated behaviors, with its default behaviour _name2_.
+  \ associated behaviors, with its default action _name2_.
   \ The _head_ of the switch is left on the stack for defining
   \ clauses.  The switch definition will be terminated by
   \ `switch]`, and can be extended by `[+switch`.

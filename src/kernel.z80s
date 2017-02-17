@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702171427
+; Last modified: 201702171536
 
 include version.z80s
 
@@ -1947,7 +1947,7 @@ endif
 ;
 ; init-asm  ( -- )
 ;
-; A deferred word called by `asm`. Its default behaviour is
+; A deferred word called by `asm`. Its default action is
 ; `noop`.  This word is modified by the assembler labels module
 ; in order to init the labels.
 ;
@@ -3373,7 +3373,7 @@ to_number.end:
 ; number-point?  ( c -- f )
 ;
 ; Is character _c_ a valid point in a number?  This is a
-; deferred word used in `number?`. Its default behaviour is
+; deferred word used in `number?`. Its default action is
 ; `standard-number-point?`, which only allows the period.
 ;
 ; The library provides alternatives which accept more points.
@@ -3390,7 +3390,7 @@ to_number.end:
 ; Is character _c_ a valid point in a number?  The only allowed
 ; point is period.
 ;
-; This is the default behaviour of the deferred word
+; This is the default action of the deferred word
 ; `number-point?`, which is used in `number?`.
 ;
 ; The library provides alternatives which accept more points.
@@ -3947,7 +3947,7 @@ skip.end:
 ;
 ; Send character _c_ to the current channel.
 ;
-; This word is the default behaviour of `emit`: By default,
+; This word is the default action of `emit`: By default,
 ; characters 0..127 are printed from the current font and
 ; characters 128..255 are printed from the current UDG set.
 ; These ranges can be changed with `mode32-max-char`.
@@ -4203,7 +4203,7 @@ endif
 ; default-break-key?  ( -- f )
 ;
 ; Is the default break key (Shift+Space) pressed?
-; This is the default behaviour of the deferred word
+; This is the default action of the deferred word
 ; `break-key?`.
 ;
 ; }doc
@@ -4359,7 +4359,7 @@ wait_for_key:
 ;
 ; (cr)  ( -- )
 ;
-; Default behaviour of the deferred word `cr`:
+; Default action of the deferred word `cr`:
 ; Transmit a carriage return to the selected output device.
 ;
 ; }doc
@@ -4377,7 +4377,7 @@ wait_for_key:
 ;
 ; Transmit a carriage return to the selected output device.
 ;
-; This is a deferred word whose default behaviour is `(cr)`.
+; This is a deferred word whose default action is `(cr)`.
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
@@ -8006,7 +8006,7 @@ minus_trailing.begin:
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
 ; In Solo Forth `accept` is a deferred word. Its default
-; behaviour is `simple-accept`, which provides only the basic
+; action is `simple-accept`, which provides only the basic
 ; editing options. Alternative definitions are provided in the
 ; library.
 ;
@@ -8023,7 +8023,7 @@ minus_trailing.begin:
 ;
 ; simple-accept  ( ca1 len1 -- len2 )
 ;
-; Default behaviour of the deferred word `accept`:
+; Default action of the deferred word `accept`:
 ;
 ; Receive a string of at most _len1_ characters.  No characters
 ; are received or transferred if _len1_ is zero.  Display
@@ -8540,8 +8540,8 @@ parse.end:
 ; header  ( "name" | -- )
 ;
 ; A deferred word that creates a dictionary header.  Its default
-; behaviour is `stream-name-header`, and it's set by
-; `default-header`. Its alternative temporary behaviour is
+; action is `stream-name-header`, and it's set by
+; `default-header`. Its alternative temporary action is
 ; `nextname-header`.
 ;
 ; See also: `header,`.
@@ -8604,7 +8604,7 @@ endif
 ;
 ; default-header  ( -- )
 
-; Set `header` to its default behaviour: `input-stream-header`.
+; Set `header` to its default action: `input-stream-header`.
 ;
 ; Definition:
 
@@ -8986,7 +8986,7 @@ error.message:
 ; configurable action, usually issue a warning message.
 ;
 ; This is a deferred word which is called by `header,` and whose
-; default behaviour is `noop`. Alternative behaviours are
+; default action is `noop`. Alternative actions are
 ; provided by `warn.message`, `warn.throw` and `warn-throw`.
 ;
 ; }doc
@@ -10098,7 +10098,7 @@ do_vocabulary:
   _colon_header paren_,'(',immediate
 
   ; XXX TODO -- make this word deferred and factor its default
-  ; behaviour to `core-(` (Forth-2012 CORE word set), in order
+  ; action to `core-(` (Forth-2012 CORE word set), in order
   ; to let `load-app` change it to `file-(` (Forth-2012 FILE
   ; word set).
 
@@ -10123,7 +10123,7 @@ do_vocabulary:
 ;
 ; .ok  ( -- )
 ;
-; Print "ok". This is the default behaviour of `ok`, the word
+; Print "ok". This is the default action of `ok`, the word
 ; called by `quit` after interpreting a command.
 ;
 ; }doc
@@ -10140,7 +10140,7 @@ do_vocabulary:
 ; ok  ( -- )
 ;
 ; A deferred word called by `quit` after interpreting a command.
-; Its default behaviour is the word `.ok`.
+; Its default action is the word `.ok`.
 ;
 ; }doc
 
@@ -10173,7 +10173,7 @@ quit.begin:
 ;
 ; (defer)  ( -- )
 ;
-; Default behaviour of an uninitialized deferred word: error.
+; Default action of an uninitialized deferred word: error.
 ;
 ; }doc
 
@@ -10503,13 +10503,13 @@ cold.hash_words:
   dw 0
   dw lit_,hash_words_pfa,store_
 
-  ; Set `warn` to its default behaviour:
+  ; Set `warn` to its default action:
   dw lit_,noop_
   dw lit_,warn_
   dw defer_store_
 
   dw only_,forth_,definitions_  ; init the search order
-  dw default_header_ ; set the default behaviour of `header`
+  dw default_header_ ; set the default action of `header`
   dw decimal_
 
   ; Set the screen to its default status:
@@ -10865,7 +10865,7 @@ endif
 ; remainder _n2_ and signed quotient _n3_ from a double number
 ; dividend and divisor _n1_.
 ;
-; This word is deferred and by default it's set to execute
+; This word is deferred and by default its action is
 ; `sm/rem`, so it does a symmetric division (the  remainder
 ; takes its sign from the dividend), as in fig-Forth.  It can be
 ; set to execute `fm/mod` instead.
@@ -12693,7 +12693,7 @@ system_stack_pointer:
 
 ; (mode32-at-xy) ( col row -- )
 ;
-; Default behaviour of `at-xy`, in mode 32.
+; Default action of `at-xy`, in mode 32.
 ;
 ; Warning: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
@@ -12812,7 +12812,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ; Set the cursor position at the top left position (column 0,
 ; row 0).
 ;
-; This word is a deferred word, whose default behaviour is
+; This word is a deferred word, whose default action is
 ; `(home)`.
 ;
 ; }doc
@@ -12824,7 +12824,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; (home)  ( -- )
 ;
-; Default behaviour of `home`: Set the cursor position at the
+; Default action of `home`: Set the cursor position at the
 ; top left position (column 0, row 0).
 ;
 ; }doc
@@ -12842,7 +12842,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; at-xy ( col row -- )
 ;
-; This is a deferred word, whose default behaviour is
+; This is a deferred word, whose default action is
 ; `mode32-at-xy`.
 ;
 ; Origin: Forth-94 (FACILITY), Forth-2012 (FACILITY).
@@ -12858,7 +12858,7 @@ attr_cls.a: ; alternative entry point used by `cls`
 ;
 ; Return the current column and row, in mode 32.
 ;
-; This is the default behaviour of `xy`.
+; This is the default action of `xy`.
 ;
 ; Definition:
 
@@ -12898,7 +12898,7 @@ mode32_xy.end:
 ;
 ; Return the current column and row of the text cursor.
 ;
-; This is a deferred word whose default behaviour is
+; This is a deferred word whose default action is
 ; `mode32-xy`.
 ;
 ; See also: `at-xy`.

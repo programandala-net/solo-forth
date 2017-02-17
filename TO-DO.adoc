@@ -439,13 +439,6 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 NOTE: Milestone: 0.14.0
 
-Replace "behaviour" with "action", concerning deferred words. Example
-"its/whose default behaviour is".
-
-.2017-02-17:
-
-NOTE: Milestone: 0.14.0
-
 Replace backticks markup with pluses in the "Origin" section of the
 glossary entries, because words backticks are cross references.
 
