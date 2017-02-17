@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702151357
+; Last modified: 201702171518
 
 ; ==============================================================
 ; Description
@@ -44,6 +44,8 @@
 ; First draft of `transfer-sector`.
 ;
 ; 2017-02-09: Add `>drive-block` to `transfer-block`.
+;
+; 2017-02-17: Update cross references.
 
 ; ==============================================================
 ; Requirements
@@ -416,7 +418,7 @@ transfer_sector.backup_ip equ $+1
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
-; See: `read-mode`, `transfer-sector`, `transfer-block`.
+; See also: `read-mode`.
 ;
 ; }doc
 
@@ -432,7 +434,7 @@ transfer_sector.backup_ip equ $+1
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
-; See: `write-mode`, `transfer-sector`, `transfer-block`.
+; See also: `write-mode`.
 ;
 ; }doc
 
@@ -450,9 +452,11 @@ transfer_mode:
 ;
 ; dos-get-1346  ( -- n1 n2 n3 n4 )
 ;
-; See: `dos-set-1346`.
+; See also: `dos-set-1346`.
 ;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   ; XXX TODO -- Move to the library.
 
@@ -480,9 +484,11 @@ dos_get_1346.ip_backup equ $+1
 ;
 ; dos-set-1346  ( n1 n2 n3 n4 -- )
 ;
-; See: `dos-get-1346`.
+; See also: `dos-get-1346`.
 ;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   ; XXX TODO -- Move to the library.
 
@@ -508,6 +514,8 @@ dos_get_1346.ip_backup equ $+1
 ;
 ; }doc
 
+  ; XXX TODO -- Finish the documentation.
+
   ; XXX TODO -- Move to the library.
 
   pop hl          ; l = file number
@@ -530,6 +538,8 @@ dos_get_1346.ip_backup equ $+1
 ;
 ; }doc
 
+  ; XXX TODO -- Finish the documentation.
+
   ; XXX TODO -- Move to the library.
 
   pop hl               ; L = file number
@@ -549,14 +559,10 @@ if 0 ; XXX OLD
 
   _variable_header library_file_,'library-file'
 
-; doc{
-;
 ; library-file  ( -- a )
 ;
 ; A variable that holds the fid (0..15) used to open the library disks
 ; as a single file.
-;
-; }doc
 
   dw 0
 
@@ -565,13 +571,9 @@ endif
 ; ----------------------------------------------
   _colon_header set_drive_,'set-drive'
 
-; doc{
-;
 ; set-drive  ( c -- ior )
 ;
 ; Sed drive _c_ ('A'..'P') as the current library drive.
-;
-; }doc
 
 if 0 ; XXX OLD
 

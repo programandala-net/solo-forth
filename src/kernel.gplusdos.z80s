@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702151334
+; Last modified: 201702171512
 
 ; ==============================================================
 ; Description
@@ -50,6 +50,8 @@
 ; from the library, because of that.
 ;
 ; 2017-02-09: Add `>drive-block` to `transfer-block`.
+;
+; 2017-02-17: Update cross references.
 
 ; ==============================================================
 ; Requirements
@@ -134,7 +136,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;   flip or  ;
 ; ----
 
-; See: `transfer-sector`.
+; See also: `transfer-sector`.
 
 ; }doc
 
@@ -162,7 +164,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; The read or write mode must be previously set
 ; by `write-mode` or `read-mode`.
 ;
-; See: `read-mode`, `write-mode`, `transfer-sector`.
+; See also: `transfer-sector`.
 ;
 ; }doc
 
@@ -191,12 +193,12 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; write mode must be previously set by `write-mode` or
 ; `read-mode`.
 
-; * x = sector to read or write
+; * _x_ = sector to be read or written
 ;     ** high byte = track 0..79, +128 if side 1
 ;     ** low byte  = sector 1..10
-; * a = source or destination address
+; * _a_ = source or destination address
 
-; See: `read-mode`, `write-mode`, `sector-id`, `transfer-block`.
+; See also: `sector-id`, `transfer-block`.
 ;
 ; }doc
 
@@ -225,7 +227,7 @@ transfer_sector.command:       ; G+DOS command already patched:
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
-; See: `read-mode`.
+; See also: `read-mode`.
 ;
 ; }doc
 
@@ -241,7 +243,7 @@ transfer_sector.command:       ; G+DOS command already patched:
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
-; See: `write-mode`.
+; See also: `write-mode`.
 ;
 ; }doc
 
@@ -263,7 +265,7 @@ transfer_mode:
 ; successfully selected, _ior_ is zero. Otherwise it's an
 ; exception code.
 ;
-; See: `get-drive`.
+; See also: `get-drive`.
 ;
 ; }doc
 

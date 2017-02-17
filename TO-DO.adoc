@@ -480,7 +480,7 @@ Replace "See:" with "See also:" and remove from it the words that are
 mentioned in the main description, because they will be cross
 references as well.
 
-Already done in the main kernel.
+Already done in the kernel.
 
 .2017-02-11:
 
