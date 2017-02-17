@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702130232
+  \ Last modified: 201702171238
 
   \ -----------------------------------------------------------
   \ Description
@@ -115,7 +115,6 @@
   \ XXX TODO
 
   \ - Make absolute-jump control structures optional.
-  \ - Use `get-order` at the start and `set-order` at the end.
   \ - Document.
 
 ( assembler )

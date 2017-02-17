@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702162303
+# Last modified: 201702171238
 
 # ==============================================================
 # Author
@@ -98,7 +98,7 @@ all: gplusdos trdos plus3dos
 g: gplusdos
 
 .PHONY: gplusdos
-gplusdos: gplusdosdisks gplusdosdoc
+gplusdos: gplusdosdisks
 
 .PHONY: gplusdosdisks
 gplusdosdisks: \
@@ -111,7 +111,7 @@ gplusdosdisks: \
 p: plus3dos
 
 .PHONY: plus3dos
-plus3dos: plus3dosdisks plus3dosdoc
+plus3dos: plus3dosdisks
 
 .PHONY: plus3dosdisks
 plus3dosdisks: \
@@ -125,7 +125,7 @@ plus3dosdisks: \
 t: trdos
 
 .PHONY: trdos
-trdos: trdosdisks trdosdoc
+trdos: trdosdisks
 
 .PHONY: trdosdisks
 trdosdisks: \
@@ -178,6 +178,15 @@ cleandoc:
 
 .PHONY: doc
 doc: gplusdosdoc plus3dosdoc trdosdoc
+
+.PHONY: gdoc
+doc: gplusdosdoc
+
+.PHONY: pdoc
+doc: plus3dosdoc
+
+.PHONY: tdoc
+doc: trdosdoc
 
 # ==============================================================
 # Kernel
@@ -854,3 +863,5 @@ oldbackup:
 #
 # 2017-02-15: Add rules to build the documentation from the
 # sources.
+#
+# 2017-02-17: Don't make the documentation by default.

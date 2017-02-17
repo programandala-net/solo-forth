@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182337
+  \ Last modified: 201702170151
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Fix markup in documentation.
 
 ( avariable 2avariable cavariable )
 
@@ -70,7 +72,7 @@ need ?(
   \ with _n_ elements and the execution semantics defined
   \ below.
   \
-  \ `name` execution:
+  \ _name_ execution:
   \
   \ name  ( n -- a )
   \
@@ -94,7 +96,7 @@ need ?(
   \ with _n_ elements and the execution semantics defined
   \ below.
   \
-  \ `name` execution:
+  \ _name_ execution:
   \
   \ name  ( n -- a )
   \
@@ -117,7 +119,7 @@ need ?(
   \ Create a 1-dimension character variables array _name_ with
   \ _n_ elements and the execution semantics defined below.
   \
-  \ `name` execution:
+  \ _name_ execution:
   \
   \ name  ( n -- ca )
   \

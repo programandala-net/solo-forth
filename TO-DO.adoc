@@ -16,7 +16,7 @@ Try `;code`. Its definition should include `asm`.
 
 NOTE: Milestone: 0.14.0
 
-Make the absolute-jump flow structures optional
+Make the absolute-jump flow structures optional.
 
 .2017-02-12:
 
@@ -434,6 +434,12 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-02-17:
+
+In glossary entries, change "its equivalent code" to "its equivalent
+definition".  The reason is "Definition:" is used as heading in normal
+cases.
 
 .2017-02-15:
 
