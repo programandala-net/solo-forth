@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171832
+  \ Last modified: 201702172230
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,7 +58,8 @@
   \
   \ 2017-01-25: Typo.
   \
-  \ 2017-02-17: Update cross references.
+  \ 2017-02-17: Update cross references.  Change markup of code
+  \ that is not a cross reference.
 
 ( bleep hz>bleep dhz>bleep )
 
@@ -100,12 +101,16 @@ code bleep  ( duration pitch -- )
   \ on the following basis:
   \
   \ To generate a frequency of F Hz, _pitch_ must be set to:
-  \
-  \ `pitch = (437500/F)-30`
+  \ 
+  \ ....
+  \ pitch = (437500/F)-30
+  \ ....
   \
   \ Looking in the opposite direction:
   \
-  \ `F = 437500/(pitch+30)`
+  \ ....
+  \ F = 437500/(pitch+30)
+  \ ....
   \
   \ The duration of the note is determined as a number of
   \ cycles, so _duration_ must be set to `F x T`, where T is

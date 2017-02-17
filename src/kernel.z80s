@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702171745
+; Last modified: 201702172336
 
 include version.z80s
 
@@ -2816,12 +2816,12 @@ question_csb_.enough:
 ; false (not zero), the following in-line address is copied to
 ; IP to branch forward or backward.
 ;
-; Note: This is not Forth-83's +?branch+, which is equivalent to
-; fig-Forth's +0branch+, which is a more logical name to
+; Note: This is not Forth-83's ``?branch``, which is equivalent
+; to fig-Forth's ``0branch+``, which is a more logical name to
 ; represent the action: branch if zero. Solo Forth borrows
 ; `0branch` from fig-Forth, and completes the branches after a
-; logical convention naming shared with optional control flow
-; words.
+; logical naming convention shared with optional control flow
+; words, e.g. `?exit`, `0exit`, `-exit`...
 ;
 ; See also: `branch`, `-branch`, `+branch`.
 ;
@@ -3215,7 +3215,7 @@ paren_loop.continue:
 ; equivalent _u_, accompanied by a true flag. If the conversion
 ; is invalid, leave only a false flag.
 ;
-; Note: This word is equivalent to fig-Forth's `digit`.
+; Origin: fig-Forth's ``digit``.
 ;
 ; }doc
 
@@ -6103,7 +6103,7 @@ do_user:
 ; free address.  The value may be read by `here` and altered by
 ; `there` and `allot`.
 ;
-; Origin: fig-Forth's +dp+ user variable.
+; Origin: fig-Forth's ``dp`` user variable.
 ;
 ; }doc
 
@@ -6945,7 +6945,7 @@ u_less_than.de_hl:
 ;   get-current @  ;
 ; ----
 
-; Origin: fig-Forth's +latest+.
+; Origin: fig-Forth's ``latest``.
 ;
 ; See also: `latest`.
 ;
@@ -9519,7 +9519,7 @@ endif
 ;
 ; Issue an error message if the return stack is out of bounds.
 ;
-; Origin: fig-Forth's +?stack+.
+; Origin: fig-Forth's ``?stack``.
 ;
 ; See also: `?stack`.
 ;
@@ -10628,7 +10628,7 @@ endif
 ;   dup 0<  ;
 ; ----
 
-; Origin: fig-Forth's +s->d+, Forth-94 (CORE), Forth-2012
+; Origin: fig-Forth's ``s->d``, Forth-94 (CORE), Forth-2012
 ; (CORE).
 ;
 ; See also: `d>s`, `u>ud`.
@@ -10653,7 +10653,7 @@ endif
 ;   0< if  negate  then  ;
 ; ----
 
-; Origin: fig-Forth's "+-".
+; Origin: fig-Forth's ``+-``.
 ;
 ; }doc
 
@@ -10681,7 +10681,7 @@ question_negate.hl:
 ;   0< if  dnegate  then  ;
 ; ----
 
-; Origin: fig-Forth's "d+-".
+; Origin: fig-Forth's ``d+-``.
 ;
 ; }doc
 
@@ -11109,7 +11109,7 @@ endif
 ;   block + c/l  ;
 ; ----
 
-; Origin: fig-Forth's "(line)".
+; Origin: fig-Forth's ``(line)``.
 ;
 ; }doc
 
@@ -12151,7 +12151,7 @@ to_digit.end
 ;   >r 0 r@ um/mod -rot r> um/mod rot  ;
 ; ----
 
-; Origin: fig-Forth's "m/mod", Gforth, Z88 CamelForth.
+; Origin: fig-Forth's ``m/mod``, Gforth, Z88 CamelForth.
 ;
 ; }doc
 
@@ -12622,7 +12622,7 @@ system_stack_pointer:
 ; This variable can be modified by a program in order to reserve
 ; a memory zone for special purposes.
 ;
-; Origin: Fig-Forth's +limit+ constant.
+; Origin: Fig-Forth's ``limit`` constant.
 ;
 ; See also: `unused`, `farlimit`.
 ;
@@ -12645,7 +12645,7 @@ system_stack_pointer:
 ; This variable can be modified by a program in order to reserve
 ; a memory zone for special purposes.
 ;
-; Origin: Fig-Forth's +limit+ constant.
+; Origin: Fig-Forth's ``limit`` constant.
 ;
 ; See also: `farunused`, `limit`, `far-banks`.
 ;

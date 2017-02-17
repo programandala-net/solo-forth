@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604091850
+  \ Last modified: 201702172234
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,7 +31,10 @@
   \ History
 
   \ 2015-11-14: Start.
+  \
   \ 2016-04-09: Fixed, improved, renamed, documented, finished.
+  \
+  \ 2017-02-17: Fix markup in comment.
 
 ( arguments results )
 
@@ -53,7 +56,7 @@ variable arg-action  arg-action off
     \ ( pfa | x pfa )
     c@ >args @ swap -
     arg-action @ arg-actions + perform  arg-action off  ;
-  \ create a new argument "name" with offset _+n_
+  \ create a new argument _name_ with offset _+n_
 
 $00 arg: l0 $02 arg: l1 $04 arg: l2 $06 arg: l3 $08 arg: l4
 $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9

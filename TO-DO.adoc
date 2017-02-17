@@ -437,24 +437,6 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 .2017-02-17:
 
-Check the parsing of Asciidoctor markup `+`, example:
-
-----
-  \ This is the same as +3 lshift+ or +2* 2* 2*+, but faster.
-----
-
-
-.2017-02-17:
-
-NOTE: Milestone: 0.14.0
-
-Replace backticks markup with pluses in the "Origin" section of the
-glossary entries, because words backticks are cross references.
-
-Already done in the main kernel.
-
-.2017-02-17:
-
 NOTE: Milestone: 0.14.0
 
 Add "This word is an immediate word".

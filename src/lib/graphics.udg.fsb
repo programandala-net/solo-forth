@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171916
+  \ Last modified: 201702172325
 
   \ -----------------------------------------------------------
   \ Description
@@ -84,7 +84,8 @@
   \ `(display-char-bitmap)`, to prevent them from being
   \ included twice in the glossary.
   \
-  \ 2017-02-17: Update cross references.
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -101,7 +102,7 @@ move ?)
   \
   \ default-udg-chars  ( -- )
   \
-  \ A phoney word used only to do +need default-udg-chars+ in
+  \ A phoney word used only to do ``need default-udg-chars`` in
   \ order to define UDG 144..164 as letters 'A'..'U', copied
   \ from the ROM font, the shape they have in Sinclair BASIC by
   \ default. The current value of `os-udg` is used.
@@ -436,7 +437,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 udg> 8 erase
   \
   \ block-chars  ( -- )
   \
-  \ A phoney word used only to do +need block-chars+.  The
+  \ A phoney word used only to do ``need block-chars``.  The
   \ loading of the correspondent source block will define
   \ characters 128..143 as block characters, with the shape
   \ they have in Sinclair BASIC.  The current value of `os-udg`

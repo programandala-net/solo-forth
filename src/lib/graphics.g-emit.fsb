@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171926
+  \ Last modified: 201702172321
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,7 +54,8 @@
   \ the kernel: Remove `g-emit-udg`; rename `g-emit-0udg` to
   \ `g-emit-udg`. Compact the code, saving one block.
   \
-  \ 2017-02-17: Update cross references.
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
 
 ( (g-emit g-emit g-type )
 
@@ -76,7 +77,7 @@ code (g-emit  ( c -- )
   \ coordinates.
   \
   \ The character is printed with overprinting (equivalent to
-  \ +1 overprint+).
+  \ ``1 overprint``).
   \
   \ See also: `g-emit`, `g-emit-routine`.
   \
@@ -100,7 +101,7 @@ need g-emit-udg  need (g-emit  need g-emitted
   \ font.
   \
   \ The character is printed with overprinting (equivalent to
-  \ +1 overprint+).
+  \ ``1 overprint``).
   \
   \ See also: `g-emit-udg`, `(g-emit`, `g-type`.
   \
@@ -175,7 +176,7 @@ code g-emit-udg  ( c -- )
   \ bitmap (0).
   \
   \ The UDG character is printed with overprinting (equivalent
-  \ to +1 overprint+).
+  \ to ``1 overprint``).
   \
   \ See also: `g-emit`, `g-emit-routine`.
   \

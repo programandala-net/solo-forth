@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171857
+  \ Last modified: 201702172326
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,7 +50,8 @@
   \ 2017-01-07: Rename `named-wid` to `latest>wordlist`, after
   \ the changes in the word-lists interface words.
   \
-  \ 2017-02-17: Update cross references.
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
 
 ( package public private end-package )
 
@@ -102,11 +103,11 @@ need latest>wordlist  need +order  need -order  need nextname
   \ ----
 
   \ In the above, private definitions are placed in the
-  \ +package-name+ word list.  Public definitions are placed in
-  \ whatever word list was current before +package
-  \ package-name+.  If a package +package-name+ already exists
-  \ prior to the above, then it is reused, rather than
-  \ redefined.
+  \ ``package-name`` word list.  Public definitions are placed
+  \ in whatever word list was current before ``package
+  \ package-name``.  If a package called ``package-name``
+  \ already exists prior to the above, then it is reused,
+  \ rather than redefined.
 
   \ Usage example:
   \
@@ -128,16 +129,16 @@ need latest>wordlist  need +order  need -order  need nextname
   \ end-package
   \ ----
 
-  \ At this point, +.example+ is a new word in whatever the
-  \ current wordlist was, and +text+, +ex1+ and +ex2+ are all
-  \ words in the +example+ word list. +example+ itself is
-  \ created in the current wordlist if it didn't already exist.
-  \ (if +example+ exists and *isn't* a package, this is an
-  \ unchecked error which will probably be revealed when
+  \ At this point, ``.example`` is a new word in whatever the
+  \ current wordlist was, and ``text``, ``ex1`` and ``ex2`` are
+  \ all words in the ``example`` word list. ``example`` itself
+  \ is created in the current wordlist if it didn't already
+  \ exist.  (if ``example`` exists and *isn't* a package, this
+  \ is an unchecked error which will probably be revealed when
   \ `public` runs.)
   \
   \ If this code is in a library, code including the library
-  \ can then run +.example+ freely.
+  \ can then run ``.example`` freely.
   \
   \ If there's some need to reopen the package, this is easily
   \ done:

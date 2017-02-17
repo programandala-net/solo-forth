@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171806
+  \ Last modified: 201702172327
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,7 +65,8 @@
   \ 2017-02-01: Add `need uppers`, because `uppers` has been
   \ moved to the library.
   \
-  \ 2017-02-17: Update cross references.
+  \ 2017-02-17: Update cross references.  Change markup of
+  \ inline code that is not a cross reference.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -384,7 +385,7 @@ need .line#  need /line#  need .block#  need /block#
   \ depend on the current screen mode. The current block,
   \ stored in `scr`, is highlighted.
   \
-  \ Origin: Gforth's +blocked+ editor.
+  \ Origin: Gforth's ``blocked`` editor.
   \
   \ See also: `nx`, `px`.
   \
