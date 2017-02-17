@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702162034
+  \ Last modified: 201702171733
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,8 @@
   \ 2016-11-27: Use `lastblk` in `reload`, instead of `scr`.
   \
   \ 2017-02-16: Remove `?\`, which is in the kernel.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( ?--> update flush thru )
 
@@ -60,6 +62,8 @@
   \ If _f_ is not false, continue interpretation on the next
   \ sequential block.  parse area. This word is used for
   \ conditional compilation.
+  \
+  \ See also: `-->`.
   \
   \ }doc
 
@@ -93,6 +97,8 @@
   \ Origin: Forth-83 (Required Word Set), Forth-94 (BLOCK),
   \ Forth-2012 (BLOCK).
   \
+  \ See also: `empty-buffers`.
+  \
   \ }doc
 
 [unneeded] thru
@@ -110,6 +116,8 @@
   \ (Controlled Reference Words), Forth-94 (BLOCK EXT),
   \ Forth-2012 (BLOCK EXT).
   \
+  \ See also: `load`, `+thru`.
+  \
   \ }doc
 
 ( continued ?load reload loads +load +thru loader )
@@ -126,6 +134,8 @@
   \ Origin: Forth-79 (Reference Word Set), Forth-83 (Appendix
   \ B. Uncontrolled Reference Words).
   \
+  \ See also: `-->`, `load`.
+  \
   \ }doc
 
 [unneeded] ?load
@@ -134,14 +144,16 @@
   \ Credit:
   \
   \ Code from Pygmy Forth.
-  \
+
   \ doc{
   \
-  \ ?load  ( block f -- )
+  \ ?load  ( u f -- )
   \
-  \ Load block _block_ if flag _f_ is true, else do nothing.
+  \ Load block _u_ if flag _f_ is true, else do nothing.
   \
   \ Origin: Pygmy Forth.
+  \
+  \ See also: `load`.
   \
   \ }doc
 
@@ -154,12 +166,12 @@
   \
   \ Load the most recently loaded block.
   \
-  \ See: `lastblk`.
+  \ See also: `load`, `lastblk`.
   \
   \ }doc
 
 [unneeded] loads
-?\ : loads  ( block n -- )  bounds ?do  i load  loop  ;
+?\ : loads  ( u n -- )  bounds ?do  i load  loop  ;
 
   \ Credit:
   \
@@ -167,9 +179,9 @@
 
   \ doc{
   \
-  \ loads  ( block n -- )
+  \ loads  ( u n -- )
   \
-  \ Load _n_ blocks starting from block _block_.
+  \ Load _n_ blocks starting from block _u_.
   \
   \ Origin: MMSFORTH.
   \
@@ -178,53 +190,76 @@
 [unneeded] +load  [unneeded] +thru  and
 ?\ : +load  ( n -- )  blk @ + load  ;
 
+  \ doc{
+  \
+  \ +load ( n -- )
+  \
+  \ Load the block that is _n_ blocks from the current one.
+  \
+  \ See also: `load`, `blk`, `+thru`.
+  \
+  \ }doc
+
 [unneeded] +thru
 ?\ : +thru  ( n1 n2 -- )  1+ swap do  i +load  loop  ;
 
-[unneeded] loader ?exit
+  \ doc{
+  \
+  \ +thru ( u1 u2 -- )
+  \
+  \ Load consecutively the blocks that are _n1_ blocks through
+  \ _n2_ blocks from the current one.
+  \
+  \ See also: `+load`, `blk`, `load`.
+  \
+  \ }doc
 
-: loader  ( block "name" -- )
-  create ,  does>  ( pfa )  @ load  ;
+[unneeded] loader
+?\ : loader  ( u "name" -- )  create , does> ( pfa ) @ load  ;
 
   \ doc{
   \
-  \ loader  ( block "name" -- )
+  \ loader  ( u "name" -- )
   \
-  \ Define a word "name" which, when executed, will  load block
-  \ _block_.
+  \ Define a word _name_ which, when executed, will  load block
+  \ _u_.
   \
-  \ Origin: `loads`, found on Forth-79 (Reference Word Set) and
-  \ Forth-83 (Appendix B. Uncontrolled Reference Words).
+  \ Origin: Forth-79's +loads+ (Reference Word Set), Forth-83's
+  \ +loads+ (Appendix B. Uncontrolled Reference Words).
   \
   \ }doc
 
 ( lineblock>source lineload load-app )
 
 [unneeded] lineblock>source [unneeded] lineload and
-?\ : lineblock>source  ( n1 n2 -- )  blk !  c/l * >in !  ;
+?\ : lineblock>source  ( n u -- )  blk !  c/l * >in !  ;
 
   \ doc{
   \
-  \ lineblock>source  ( n1 n2 -- )
+  \ lineblock>source  ( n u -- )
   \
-  \ Set block _n2_ as the current source, starting from its
-  \ line _n1_.
+  \ Set block _u_ as the current source, starting from its
+  \ line _n_.
+  \
+  \ See also: `block>source`.
   \
   \ }doc
 
 need ?( [unneeded] lineload ?(
 
-: lineload  ( n1 n2 -- )
+: lineload  ( n u -- )
   dup 0= #-259 ?throw
   nest-source lineblock>source interpret unnest-source  ; ?)
 
   \ doc{
   \
-  \ lineload  ( n1 n2 -- )
+  \ lineload  ( n u -- )
   \
-  \ Begin interpretation at line _n1_ of block _n2_.
+  \ Begin interpretation at line _n_ of block _u_.
   \
   \ Origin: Forth-83 (Uncontrolled Reference Words).
+  \
+  \ See also: `load`.
   \
   \ }doc
 
@@ -237,8 +272,6 @@ need ?( [unneeded] lineload ?(
   \ A variable that holds a flag: Is an application being
   \ loaded?  This flag is modified by `load-app` and `end-app`.
   \
-  \ See `load-app`, `end-app`.
-  \
   \ }doc
 
 : end-app  ( -- )  loading-app off  ;  end-app
@@ -247,9 +280,10 @@ need ?( [unneeded] lineload ?(
   \
   \ end-app  ( -- )
   \
-  \ End a app of the library.
+  \ Mark the end of an application that is being loaded by
+  \ `load-app`.
   \
-  \ See `load-app`, `loading-app`.
+  \ See also: `loading-app`.
   \
   \ }doc
 
@@ -269,16 +303,17 @@ need ?( [unneeded] lineload ?(
   \
   \ load-app  ( "name" -- )
   \
-  \ Load an application from the blocks disk.  An application
-  \ is a set of blocks that are loaded as a whole. They don't
-  \ have block headers except the first one, which contains
-  \ "name", and therefore they don't have internal requisites.
-  \ Applications don't need `-->` or any other word to change
-  \ the loading: The loading starts from the first block of the
-  \ disk that has "name" in its header, and continues until the
-  \ last block of the disk or until `end-app` is executed.
+  \ Load an application.  An application is a set of blocks
+  \ that are loaded as a whole. They don't have block headers
+  \ except the first one, which contains _name_, and therefore
+  \ they don't have internal requisites.  Applications don't
+  \ need `-->` or any other word to change the loading: The
+  \ loading starts from the first block of the disk that has
+  \ _name_ in its header (surrounded by spaces), and continues
+  \ until the last block of the disk or until `end-app` is
+  \ executed.
   \
-  \ See `end-app`, `loading-app`.
+  \ See also: `loading-app`.
   \
   \ }doc
 

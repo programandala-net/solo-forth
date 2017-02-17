@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702170151
+  \ Last modified: 201702172011
 
   \ -----------------------------------------------------------
   \ Description
@@ -69,7 +69,8 @@
   \ conditional interpretation, after `immediate` or
   \ `compile-only`.
   \
-  \ 2017-02-17: Fix markup in documentation.
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
 
 ( avalue 2avalue cavalue )
 
@@ -95,7 +96,7 @@ need ?(
   \
   \ Return contents _x_ of element _n_.
   \
-  \ See: `ato`, `+ato`.
+  \ See also: `ato`, `+ato`.
   \
   \ }doc
 
@@ -119,7 +120,7 @@ need ?(
   \
   \ Return contents _xd_ of element _n_.
   \
-  \ See: `2ato`, `+2ato`.
+  \ See also: `2ato`, `+2ato`.
   \
   \ }doc
 
@@ -142,7 +143,7 @@ need ?(
   \
   \ Return contents _c_ of element _n_.
   \
-  \ See: `cato`, `+cato`.
+  \ See also: `cato`, `+cato`.
   \
   \ }doc
 
@@ -159,7 +160,7 @@ need ?(  [unneeded] ato ?(  need >body
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _xt_.
   \
-  \ See: `ato`.
+  \ See also: `ato`.
   \
   \ }doc
 
@@ -174,7 +175,7 @@ need ?(  [unneeded] ato ?(  need >body
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _name_.
   \
-  \ See: `array`, `(ato)`.
+  \ See also: `array`, `(ato)`.
   \
   \ }doc
 
@@ -189,7 +190,7 @@ need ?(  [unneeded] ato ?(  need >body
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _xt_.
   \
-  \ See: `avalue`, `+ato`.
+  \ See also: `avalue`, `+ato`.
   \
   \ }doc
 
@@ -204,7 +205,7 @@ need ?(  [unneeded] ato ?(  need >body
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _name_.
   \
-  \ See: `avalue`, `(+ato)`.
+  \ See also: `avalue`, `(+ato)`.
   \
   \ }doc
 
@@ -219,7 +220,7 @@ need ?(  [unneeded] ato ?(  need >body
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _xt_.
   \
-  \ See: `2ato`.
+  \ See also: `2ato`.
   \
   \ }doc
 
@@ -234,7 +235,7 @@ need ?(  [unneeded] ato ?(  need >body
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _name_.
   \
-  \ See: `2avalue`, `(2ato)`.
+  \ See also: `2avalue`, `(2ato)`.
   \
   \ }doc
 
@@ -253,7 +254,7 @@ need ?(
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _xt_.
   \
-  \ See: `cato`.
+  \ See also: `cato`.
   \
   \ }doc
 
@@ -268,7 +269,7 @@ need ?(
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _name_.
   \
-  \ See: `cavalue`, `(cato)`.
+  \ See also: `cavalue`, `(cato)`.
   \
   \ }doc
 
@@ -283,7 +284,7 @@ need ?(
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _xt_.
   \
-  \ See: `cavalue`, `+cato`.
+  \ See also: `cavalue`, `+cato`.
   \
   \ }doc
 
@@ -298,7 +299,7 @@ need ?(
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _name_.
   \
-  \ See: `cavalue`, `(+cato)`.
+  \ See also: `cavalue`, `(+cato)`.
   \
   \ }doc
 

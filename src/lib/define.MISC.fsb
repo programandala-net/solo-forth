@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171525
+  \ Last modified: 201702171955
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,7 @@
   \ `compile-only`.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
 
 ( create: ;code :noname nextname )
 
@@ -135,7 +136,7 @@ need ?(  [unneeded] ;code ?(
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname`, `nextname-header`.
+  \ See also: `nextname-header`.
   \
   \ }doc
 
@@ -152,7 +153,7 @@ need ?(  [unneeded] ;code ?(
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname`, `nextname-string`, `header`,
+  \ See also: `nextname-string`.
   \ `default-header`.
   \
   \ }doc
@@ -174,7 +175,7 @@ need ?(  [unneeded] ;code ?(
   \
   \ Origin: Gforth.
   \
-  \ See: `nextname-header`, `nextname-string`.
+  \ See also: `nextname-header`, `nextname-string`.
   \
   \ }doc
 

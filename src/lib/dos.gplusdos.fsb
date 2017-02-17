@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171239
+  \ Last modified: 201702171954
 
   \ -----------------------------------------------------------
   \ Description
@@ -101,7 +101,8 @@
   \
   \ 2017-02-15: Fix typo.
   \
-  \ 2017-02-17: Fix markup in documentation.
+  \ 2017-02-17: Fix markup in documentation.  Update cross
+  \ references.
 
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
@@ -116,7 +117,7 @@
   \
   \ Page in the Plus D memory.
   \
-  \ See: `plusd-out`, `plusd-in,`, `@dos`, `!dos`.
+  \ See also: `plusd-out`, `plusd-in,`, `@dos`, `!dos`.
   \
   \ }doc
 
@@ -131,7 +132,7 @@
   \
   \ Page out the Plus D memory.
   \
-  \ See: `plusd-in`, `plusd-out,`.
+  \ See also: `plusd-in`, `plusd-out,`.
   \
   \ }doc
 
@@ -146,7 +147,7 @@
   \ Compile the Z80 instruction +in a,(231)+, which pages in
   \ the Plus D memory.
   \
-  \ See: `plusd-out,`, `plusd-in`.
+  \ See also: `plusd-out,`, `plusd-in`.
   \
   \ }doc
 
@@ -161,7 +162,7 @@
   \ Compile the Z80 instruction +out (231),a+, which pages out
   \ the Plus D memory.
   \
-  \ See: `plusd-in,`, `plusd-out`.
+  \ See also: `plusd-in,`, `plusd-out`.
   \
   \ }doc
 
@@ -198,7 +199,7 @@
   \ |     22 |     2 | Autostart line of a BASIC program
   \ |===
 
-  \ See: `/ufia`.
+  \ See also: `/ufia`.
   \
   \ }doc
 
@@ -224,10 +225,10 @@
   \
   \ /ufia  ( -- b )
   \
-  \ A constant that holds the length of the UFIA, which is 24
-  \ bytes.
+  \ A constant that holds the length of a G+DOS UFIA (User File
+  \ Information Area), which is 24 bytes.
   \
-  \ See: `ufia`.
+  \ See also: `ufia`.
   \
   \ }doc
 
@@ -316,7 +317,7 @@ need ?(  [unneeded] --directory-descriptions ?(
   \
   \ Address of the G+DOS variables in the Plus D memory.
   \
-  \ See: `@dosvar`, `c@dosvar`, `!dosvar`, `c!dosvar`.
+  \ See also: `@dosvar`, `c@dosvar`, `!dosvar`, `c!dosvar`.
   \
   \ }doc
 
@@ -343,7 +344,7 @@ code get-drive  ( -- n )
   \
   \ Get the current drive _n_ (1 or 2).
   \
-  \ See: `set-drive`.
+  \ See also: `set-drive`.
   \
   \ }doc
 
@@ -361,12 +362,10 @@ code (delete-file)  ( -- ior )
   \
   \ (delete-file)  ( -- ior )
   \
-  \ Delete a disk file using the data hold in UFIA.
+  \ Delete a disk file using the data hold in `ufia`.
   \ Return an error result _ior_.
   \
   \ This word is a factor of `delete-file`.
-  \
-  \ See: `delete-file`, `ufia`.
   \
   \ }doc
 
@@ -381,7 +380,7 @@ code (delete-file)  ( -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See: `(delete-file)`.
+  \ See also: `(delete-file)`.
   \
   \ }doc
 
@@ -398,7 +397,7 @@ need ufia  need get-drive
   \ A constant that returns the maximum length of a G+DOS
   \ filename.
   \
-  \ See: `set-filename`.
+  \ See also: `set-filename`.
   \
   \ }doc
 
@@ -408,9 +407,9 @@ need ufia  need get-drive
   \
   \ -filename  ( -- )
   \
-  \ Blank the filename in UFIA, i.e. replace it with spaces.
+  \ Blank the filename in `ufia`, i.e. replace it with spaces.
   \
-  \ See: `ufia`, `/filename`, `set-filename`.
+  \ See also: `/filename`, `set-filename`.
   \
   \ }doc
 
@@ -422,10 +421,10 @@ need ufia  need get-drive
   \
   \ set-filename  ( ca len -- )
   \
-  \ Configure UFIA to use filename _ca len_ and the current
+  \ Configure `ufia` to use filename _ca len_ and the current
   \ drive.
   \
-  \ See: `ufia`, `-filename`, `/filename`.
+  \ See also: `-filename`, `/filename`.
   \
   \ }doc
 
@@ -436,10 +435,10 @@ need ufia  need get-drive
   \
   \ set-code-file  ( ca1 len1 ca2 len2 -- )
   \
-  \ Configure UFIA to use a code file in the current drive with
+  \ Configure `ufia` to use a code file in the current drive with
   \ filename _ca2 len2_, start address _ca1_ and length _len1_.
   \
-  \ See: `ufia`, `set-filename`.
+  \ See also: `set-filename`.
   \
   \ }doc
 
@@ -464,12 +463,10 @@ code (>file)  ( -- ior )
   \
   \ (>file)  ( -- ior )
   \
-  \ Save a file to disk using the data hold in UFIA and return
-  \ error result _ior_.
+  \ Save a file to disk using the data hold in `ufia` and
+  \ return error result _ior_.
   \
   \ This word is a factor of `>file`.
-  \
-  \ See: `>file`, `ufia`.
   \
   \ }doc
 
@@ -482,7 +479,7 @@ code (>file)  ( -- ior )
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return error result _ior_.
   \
-  \ See: `file>`, `(>file)`.
+  \ See also: `file>`, `(>file)`.
   \
   \ }doc
 
@@ -509,12 +506,12 @@ code (file>)  ( ca len -- ior )
   \
   \ (file>)  ( ca len -- ior )
   \
-  \ Read a file from disk, using the data hold in UFIA and the
+  \ Read a file from disk, using the data hold in `ufia` and the
   \ alternative destination zone _ca len_, following the
   \ following two rules:
   \
   \ 1. If _len_ is not zero, use it as the count of bytes that
-  \ must be read from the file defined in UFIA, and use _ca_ as
+  \ must be read from the file defined in `ufia` and use _ca_ as
   \ destination address.
   \
   \ 2. If _len_ is zero, use the file length stored in the file
@@ -526,7 +523,7 @@ code (file>)  ( ca len -- ior )
   \
   \ This word is a factor of `file>`.
   \
-  \ See: `file>`, `ufia`, `file-address`, `file-length`.
+  \ See also: `file-address`, `file-length`.
   \
   \ }doc
 
@@ -574,7 +571,7 @@ code (file>)  ( ca len -- ior )
   \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
   \ |===
 
-  \ See: `>file`, `(file>)`.
+  \ See also: `>file`, `(file>)`.
   \
   \ }doc
 
@@ -602,15 +599,13 @@ code (file-status)  ( -- a ior )
   \
   \ (file-status)  ( -- a ior )
   \
-  \ Return the status of the file whose name is hold in UFIA,
-  \ the G+DOS User Information Area.  If the file exists, its
-  \ file header is read into UFIA,  _a_ is the address returned
-  \ by `ufia`, and _ior_ is zero. If the file does not exists,
-  \ _a_ is useless and _ior_ is the corresponding error code.
+  \ Return the status of the file whose name is hold in `ufia`.
+  \ If the file exists, its file header is read into `ufia`,
+  \ _a_ is the address returned by `ufia`, and _ior_ is zero.
+  \ If the file does not exists, _a_ is useless and _ior_ is
+  \ the corresponding error code.
   \
   \ This word is a low-level factor of `file-status`.
-  \
-  \ See: `file-status`, `ufia`.
   \
   \ }doc
 
@@ -623,13 +618,12 @@ code (file-status)  ( -- a ior )
   \
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
-  \ is the address returned by `ufia`, the G+DOS User
-  \ Information Area; otherwise _ior_ is the corresponding I/O
-  \ result code and _a_ is useless.
+  \ is the address returned by `ufia`.  Otherwise _ior_ is the
+  \ corresponding I/O result code and _a_ is useless.
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
-  \ See: `ufia`, `file-exists?`, `file-start`, `file-length`,
+  \ See also: `file-exists?`, `file-start`, `file-length`,
   \ `file-type`, `file-dir`.
   \
   \ }doc
@@ -648,7 +642,7 @@ need ?(
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -667,7 +661,7 @@ need ?(
   \ Otherwise _ior_ is an exception code and _ca2_ is
   \ undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -685,7 +679,7 @@ need ?(
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
   \ _ior_ is an exception code and _len2_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -703,7 +697,7 @@ need ?(
   \ found, _ior_ is zero and _n_ is the file-type identifier.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -717,10 +711,10 @@ need ?(
   \ find-file  ( ca len -- a | 0 )
   \
   \ If the file named in the character string _ca len_ is
-  \ found, return address _a_ of updated UFIA. Otherwise return
-  \ zero.
+  \ found, update the contents of `ufia` and return its address
+  \ _a_. Otherwise return zero.
   \
-  \ See: `ufia`, `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -745,7 +739,7 @@ need ?(
   \ found, _ior_ is zero and _n_ is the file directory number.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -767,7 +761,7 @@ need ?(
   \ directory identifier. Otherwise _ior_ is an exception code
   \ and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -972,8 +966,6 @@ create (cat-error  ( -- a )  asm
   \ This word works like an alternative ending of `(cat` to
   \ manage the error and return the proper error result.
   \
-  \ See: `(cat`.
-  \
   \ }doc
 
 code (cat  ( n -- ior )
@@ -1011,7 +1003,7 @@ code (cat  ( n -- ior )
   \ low-level common factor of all words that show disk
   \ catalogues.
   \
-  \ See: `cat`, `acat`, `wcat`, `wacat`, `(cat-error`,
+  \ See also: `cat`, `acat`, `wcat`, `wacat`, `(cat-error`,
   \ `set-drive`.
   \
   \ }doc
@@ -1032,7 +1024,7 @@ need ?(
   \ the wild-card filename _ca len_.  See the Plus D manual for
   \ wild-card syntax.
   \
-  \ See: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1046,7 +1038,7 @@ need ?(
   \
   \ Show a disk catalogue of the current drive.
   \
-  \ See: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \ See also: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1062,7 +1054,7 @@ need ?(
   \ drive using the wild-card filename _ca len_.  See the Plus
   \ D manual for wild-card syntax.
   \
-  \ See: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1076,7 +1068,7 @@ need ?(
   \
   \ Show an abbreviated disk catologue of the current drive.
   \
-  \ See: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
 
@@ -1105,7 +1097,7 @@ code @dos  ( a -- x )
   \
   \ Fetch the cell _x_ stored at Plus D memory address _a_.
   \
-  \ See: `!dos`, `c@dos`.
+  \ See also: `!dos`, `c@dos`.
   \
   \ }doc
 
@@ -1123,7 +1115,7 @@ code c@dos  ( ca -- b )
   \
   \ Fetch byte _b_ stored at Plus D memory address _ca_.
   \
-  \ See: `c!dos`, `@dos`.
+  \ See also: `c!dos`, `@dos`.
   \
   \ }doc
 
@@ -1144,7 +1136,7 @@ code !dos  ( x a -- )
   \
   \ Store _x_ at the Plus D memory address _a_.
   \
-  \ See: `@dos`, `c!dos`.
+  \ See also: `@dos`, `c!dos`.
   \
   \ }doc
 
@@ -1162,7 +1154,7 @@ code c!dos  ( b ca -- )
   \
   \ Store _b_ at the Plus D memory address _ca_.
   \
-  \ See: `c@dos`, `!dos`.
+  \ See also: `c@dos`, `!dos`.
   \
   \ }doc
 
@@ -1186,7 +1178,7 @@ code @dosvar  ( n -- x )
   \
   \ Fetch the contents _x_ of G+DOS variable _n_.
   \
-  \ See: `!dosvar`, `c@dosvar`, `!dos`.
+  \ See also: `!dosvar`, `c@dosvar`, `!dos`.
   \
   \ }doc
 
@@ -1204,7 +1196,7 @@ code c@dosvar  ( n -- b )
   \
   \ Fetch the contents _b_ of G+DOS variable _n_.
   \
-  \ See: `c!dosvar`, `c!dosvar`, `@dos`.
+  \ See also: `c!dosvar`, `c!dosvar`, `@dos`.
   \
   \ }doc
 
@@ -1227,7 +1219,7 @@ code !dosvar  ( x n -- )
   \
   \ Store _x_ into the G+DOS variable _n_.
   \
-  \ See: `@dosvar`, `c!dosvar`, `!dos`.
+  \ See also: `@dosvar`, `c!dosvar`, `!dos`.
   \
   \ }doc
 
@@ -1245,7 +1237,7 @@ code c!dosvar  ( b n -- )
   \
   \ Store _b_ into the G+DOS variable _n_.
   \
-  \ See: `c@dosvar`, `!dosvar`, `c!dos`.
+  \ See also: `c@dosvar`, `!dosvar`, `c!dos`.
   \
   \ }doc
 

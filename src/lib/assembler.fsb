@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171238
+  \ Last modified: 201702171715
 
   \ -----------------------------------------------------------
   \ Description
@@ -110,6 +110,8 @@
   \ 2017-02-12: Fix `relse` and `aelse`.
   \
   \ 2017-02-13: Replace `constant` with `cconstant`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -135,8 +137,6 @@ assembler-wordlist wordlist>vocabulary assembler
   \ Origin: Forth-79 (Assembler Word Set), Forth-83 (Assembler
   \ Extension Word Set), Forth-94 (TOOLS EXT), Forth-2012
   \ (TOOLS EXT).
-  \
-  \ See: `assembler-wordlist`.
   \
   \ }doc
 

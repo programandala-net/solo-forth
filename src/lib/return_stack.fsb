@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201702171843
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,8 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( n>r )
 
@@ -91,8 +93,6 @@ code n>r  ( x1..xn n -- ) ( R: -- x1..xn n )
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `nr>`.
-  \
   \ }doc
 
 ( nr> )
@@ -122,8 +122,6 @@ code nr>  ( -- x1..xn n ) ( R: x1..xn n -- )
   \ stack.
   \
   \ Origin: Forth-2012 (TOOLS EXT).
-  \
-  \ See: `n>r`.
   \
   \ }doc
 

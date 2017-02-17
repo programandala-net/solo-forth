@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201702171758
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,8 @@
   \
   \ 2017-01-19: Remove remaining `exit` at the end of
   \ conditional interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( .current .context .wordlist )
 
@@ -63,8 +65,9 @@
   \
   \ .current  ( -- )
   \
-  \ Display the word list into which new definitions will be
-  \ placed.
+  \ Display the compilation word list.
+  \
+  \ See also: `get-current`, `.wordlist`, `order`.
   \
   \ }doc
 
@@ -80,6 +83,8 @@
   \ Display the word lists in the search order in their search
   \ order sequence, from first searched to last searched.
   \
+  \ See also: `get-order`, `.wordlist`, `order`.
+  \
   \ }doc
 
 [unneeded] .wordlist ?(  need wordlist>name
@@ -91,8 +96,10 @@
   \
   \ .wordlist  ( wid -- )
   \
-  \ Display the id of the word list _wid_: it can be an
-  \ associated name or the number _wid_.
+  \ If the word list identified by _wid_ has an associated
+  \ name, display it; else display _wid_.
+  \
+  \ See also: `wordlists`.
   \
   \ }doc
 
@@ -113,11 +120,11 @@ need ?(
   \
   \ List all wordlists defined in the system, either by name
   \ (if they have an associated name) or by number (its word
-  \ list identifier, when they have no associated name). The
-  \ wordlist are listed in reverse chronological order: The
-  \ first wordlist listed is the most recently defined.
+  \ list identifier, if they have no associated name). The
+  \ word lists are listed in reverse chronological order: The
+  \ first word list listed is the most recently defined.
   \
-  \ See: `latest>wordlist`, `wordlist>vocabulary`.
+  \ See also: `.wordlist`, `wordlist`, `latest-wordlist`.
   \
   \ }doc
 
@@ -139,7 +146,9 @@ need ?(
   \ placed.
   \
   \ Origin: Forth-2012 (SEARCH EXT).
-
+  \
+  \ See also: `.context`, `.current`, `.wordlist`, `set-order`.
+  \
   \ }doc
 
   \ vim: filetype=soloforth

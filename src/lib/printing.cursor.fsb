@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201702171845
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,8 @@
   \ 2017-01-18: Fix `last-column` and `last-row`. Improve
   \ documentation.  Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( column last-column row last-row at-x at-y )
 
@@ -49,7 +51,7 @@
   \
   \ Current column (x coordinate).
   \
-  \ See: `row`, `last-column`, `columns`.
+  \ See also: `row`, `last-column`, `columns`.
   \
   \ }doc
 
@@ -62,7 +64,7 @@
   \
   \ Last column (x coordinate) in the current screen mode.
   \
-  \ See: `last-row`, `columns`, `column`.
+  \ See also: `last-row`, `columns`, `column`.
   \
   \ }doc
 
@@ -75,7 +77,7 @@
   \
   \ Current row (y coordinate).
   \
-  \ See: `column`, `last-row`, `rows`.
+  \ See also: `column`, `last-row`, `rows`.
   \
   \ }doc
 
@@ -88,7 +90,7 @@
   \
   \ Last row (y coordinate) in the current screen mode.
   \
-  \ See: `last-column`, `row`, `rows`.
+  \ See also: `last-column`, `row`, `rows`.
   \
   \ }doc
 
@@ -102,7 +104,7 @@
   \ Set the cursor at the given column (x coordinate) _col_ and
   \ the current row (y coordinate).
   \
-  \ See: `at-y`, `at-xy`, `row`, `column`.
+  \ See also: `at-y`, `at-xy`, `row`, `column`.
   \
   \ }doc
 
@@ -116,7 +118,7 @@
   \ Set the cursor at the current column (x coordinate) and the
   \ given row (y coordinate) _row_.
   \
-  \ See: `at-x`, `at-xy`, `row`, `column`.
+  \ See also: `at-x`, `at-xy`, `row`, `column`.
   \
   \ }doc
 

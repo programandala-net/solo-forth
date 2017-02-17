@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171529
+  \ Last modified: 201702171812
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,8 +32,8 @@
   \
   \ 2016-11-25: Add a pause control with a configurable key to
   \ resume. Update and improve documentation. Convert the
-  \ default actions of `~~save` and `~~restore` to named
-  \ words, in order to make them easier to reuse.
+  \ default actions of `~~save` and `~~restore` to named words,
+  \ in order to make them easier to reuse.
   \
   \ 2016-11-29: Improve `~~control` to wait for any key when
   \ `~~resume-key` is less than zero. This makes it possible to
@@ -53,6 +53,7 @@
   \ 2017-01-17: Improve documentation.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
 
 ( ~~ )
 
@@ -68,8 +69,6 @@ variable ~~?  ~~? on
   \ debugging code compiled by `~~` is executed, else ignored.
   \ Its default value is true.
   \
-  \ See: `~~`.
-  \
   \ }doc
 
 variable ~~y  ~~y off
@@ -81,8 +80,6 @@ variable ~~y  ~~y off
   \ A variable that holds the row the debugging information
   \ compiled by `~~` will be printed at.  Its default value is
   \ zero.
-  \
-  \ See: `~~`.
   \
   \ }doc
 
@@ -97,7 +94,7 @@ variable ~~quit-key  'q' ~~quit-key !
   \ zero, `~~control` will wait for a key press in order to
   \ quit the debugging.  Its default value is the code of 'q'.
   \
-  \ See: `~~resume-key`, `~~control`, `~~`.
+  \ See also: `~~resume-key`.
   \
   \ }doc
 
@@ -115,7 +112,7 @@ variable ~~resume-key  bl ~~resume-key !
   \ contains.  Its default value is `bl`, the code of the space
   \ character.
   \
-  \ See: `~~quit-key`, `~~control`, `~~`.
+  \ See also: `~~quit-key`.
   \
   \ }doc
 
@@ -135,8 +132,6 @@ variable ~~resume-key  bl ~~resume-key !
   \ stack. The printing position can be configured with 
   \ `~~y`.
   \
-  \ See: `~~`, `~~y`.
-  \
   \ }doc
 
 : ~~control?  ( -- f )  ~~resume-key @ ~~quit-key @ or  ;
@@ -147,7 +142,7 @@ variable ~~resume-key  bl ~~resume-key !
   \ 
   \ Is there any key to be checked by `~~control`?
   \
-  \ See: `~~control`.
+  \ This word is part of the `~~` tool.
   \
   \ }doc
 
@@ -158,9 +153,8 @@ variable ~~resume-key  bl ~~resume-key !
   \ ~~press?  ( c a -- f )
   \
   \ Is the contents of _a_ not zero and equal to _c_?
-  \ This is a factor of `~~control` used to check key presses.
-  \
-  \ See: `~~control`.
+  \ This is a factor of `~~control` used to check key presses,
+  \ in the code compiled by `~~`.
   \
   \ }doc
 
@@ -181,8 +175,7 @@ variable ~~resume-key  bl ~~resume-key !
   \ then execute `quit`; if the pressed key equals the contents
   \ of `~~resume-key`, then exit.
   \
-  \ See: `~~quit-key`, `~~resume-key`, `~~`, `~~control?`,
-  \ `~~press?`.
+  \ See also: `~~control?`, `~~press?`.
   \
   \ }doc
 
@@ -198,7 +191,7 @@ variable ~~resume-key  bl ~~resume-key !
   \ restored by the default actions of `~~save` and
   \ `~~restore`.
   \
-  \ See: `~~save`, `~~restore`, `~~`.
+  \ This word is part of the `~~` tool.
   \
   \ }doc
 
@@ -208,11 +201,11 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \
   \ ~~save  ( -- )
   \
-  \ Save system status before executing debugging code.  This
-  \ is a deferred word. Its default action is to save the
-  \ cursor coordinates.
+  \ Save system status before executing the debugging code
+  \ compiled by `~~`..  This is a deferred word. Its default
+  \ action is to save the cursor coordinates.
   \
-  \ See: `~~`, `~~restore`, `~~save-xy`.
+  \ See also: `~~restore`, `~~save-xy`.
   \
   \ }doc
 
@@ -220,11 +213,11 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \
   \ ~~restore  ( -- )
   \
-  \ Restore system status after executing debugging code.  This
-  \ is a deferred word. Its default action is to restore the
-  \ cursor coordinates.
+  \ Restore system status after executing the debugging code
+  \ compiled by `~~`.  This is a deferred word. Its default
+  \ action is to restore the cursor coordinates.
   \
-  \ See: `~~`, `~~save`, `~~restore-xy`.
+  \ See also: `~~save`, `~~restore-xy`.
   \
   \ }doc
 
@@ -237,7 +230,9 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ Save the cursor coordinates.  This is the default
   \ action of `~~save`.
   \
-  \ See: `~~save`, `~~restore-xy`, `~~restore`, `~~xy-backup`.
+  \ This word is part of the `~~` tool.
+  \
+  \ See also: `~~restore-xy`, `~~restore`, `~~xy-backup`.
   \
   \ }doc
 
@@ -250,7 +245,9 @@ defer ~~save  ( -- )  defer ~~restore  ( -- )
   \ Restore the cursor coordinates.  This is the default
   \ action of `~~restore`.
   \
-  \ See: `~~restore`, `~~save-xy`, `~~save`, `~~xy-backup`.
+  \ This word is part of the `~~` tool.
+  \
+  \ See also: `~~save-xy`, `~~save`, `~~xy-backup`.
   \
   \ }doc
 
@@ -263,10 +260,11 @@ defer ~~app-info  ( -- )  ' noop ' ~~app-info defer!
   \ ~~app-info  ( -- )
   \
   \ A deferred word that can be used by the application in
-  \ order to show application-specific debugging information.
-  \ It's compiled by `~~`. By default it does nothing.
+  \ order to show application-specific debugging information as
+  \ part of the debugging code compiled by `~~`.  By default it
+  \ does nothing.
   \
-  \ See: `~~`, `~~info`.
+  \ See also: `~~info`.
   \
   \ }doc
 
@@ -277,13 +275,13 @@ defer ~~app-info  ( -- )  ' noop ' ~~app-info defer!
 
   \ doc{
   \
-  \ (~~)  ( nt line block -- )
+  \ (~~)  ( nt n u -- )
   \
   \ If the content of `~~?` is not zero, execute the debugging
-  \ code that was compiled during the definition of word _nt_
-  \ in line _line_ of block _block_.
+  \ code that was compiled by `~~` during the definition of
+  \ word _nt_ in line _n_ of block _u_.
   \
-  \ See: `~~`, `~~?`, `~~y`, `~~control`.
+  \ See also: `~~y`, `~~control`.
   \
   \ }doc
 
@@ -299,7 +297,7 @@ defer ~~app-info  ( -- )  ' noop ' ~~app-info defer!
   \
   \ Compile debugging code.
   \
-  \ See: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
+  \ See also: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
   \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
   \
   \ Origin: Gforth.

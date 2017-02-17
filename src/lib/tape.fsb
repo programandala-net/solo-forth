@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702082143
+  \ Last modified: 201702171816
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,6 +57,8 @@
   \ code, saving one block. Make `read-tape-file` and
   \ `write-tape-file` independent` for `need`. Improve
   \ documentation. Move `.tape` to the tests module.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ -----------------------------------------------------------
   \ Development documentation
@@ -286,8 +288,6 @@ code (read-tape-file)  ( -- )
   \ Low-level action of `read-tape-file`: read a tape file
   \ using the data stored at `tape-header`.
   \
-  \ See: `read-tape-file`.
-  \
   \ }doc
 
 : read-tape-file  ( ca1 len1 ca2 len2 -- )
@@ -310,7 +310,7 @@ code (read-tape-file)  ( -- )
   \ lower screen has no lines. This will be avoided in a future
   \ version of Solo Forth.
   \
-  \ See: `write-tape-file`, `(read-tape-file)`.
+  \ See also: `write-tape-file`, `(read-tape-file)`.
   \
   \ }doc
 
@@ -343,8 +343,6 @@ code (write-tape-file)  ( -- )
   \ Low-level action of `write-tape-file`: write a tape file
   \ using the data stored at `tape-header`.
   \
-  \ See: `write-tape-file`.
-  \
   \ }doc
 
 : write-tape-file  ( ca1 len1 ca2 len2 -- )
@@ -357,7 +355,7 @@ code (write-tape-file)  ( -- )
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
   \
-  \ See: `read-tape-file`, `(write-tape-file)`.
+  \ See also: `read-tape-file`, `(write-tape-file)`.
   \
   \ }doc
 

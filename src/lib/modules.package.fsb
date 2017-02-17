@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701072228
+  \ Last modified: 201702171857
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,6 +49,8 @@
   \
   \ 2017-01-07: Rename `named-wid` to `latest>wordlist`, after
   \ the changes in the word-lists interface words.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( package public private end-package )
 
@@ -100,9 +102,9 @@ need latest>wordlist  need +order  need -order  need nextname
   \ ----
 
   \ In the above, private definitions are placed in the
-  \ `package-name` wordlist.  Public definitions are placed in
-  \ whatever wordlist was current before `package
-  \ package-name`.  If a package `package-name` already exists
+  \ +package-name+ word list.  Public definitions are placed in
+  \ whatever word list was current before +package
+  \ package-name+.  If a package +package-name+ already exists
   \ prior to the above, then it is reused, rather than
   \ redefined.
 
@@ -126,16 +128,16 @@ need latest>wordlist  need +order  need -order  need nextname
   \ end-package
   \ ----
 
-  \ At this point, `.example` is a new word in whatever the
-  \ current wordlist was, and `text`, `ex1` and `ex2` are all
-  \ words in the `example` word list. `example` itself is
+  \ At this point, +.example+ is a new word in whatever the
+  \ current wordlist was, and +text+, +ex1+ and +ex2+ are all
+  \ words in the +example+ word list. +example+ itself is
   \ created in the current wordlist if it didn't already exist.
-  \ (if `example` exists and *isn't* a package, this is an
+  \ (if +example+ exists and *isn't* a package, this is an
   \ unchecked error which will probably be revealed when
   \ `public` runs.)
   \
   \ If this code is in a library, code including the library
-  \ can then run `.example` freely.
+  \ can then run +.example+ freely.
   \
   \ If there's some need to reopen the package, this is easily
   \ done:
@@ -170,9 +172,9 @@ need latest>wordlist  need +order  need -order  need nextname
   \ include some-lib.fs
   \ ----
 
-  \ See: `end-package`, `public`, `private`.
-
   \ Origin: SwiftForth.
+  \
+  \ See also: `end-package`, `public`, `private`.
   \
   \ }doc
 
@@ -185,14 +187,14 @@ need latest>wordlist  need +order  need -order  need nextname
   \ public  ( wid0 wid1 -- wid0 wid1 )
   \
   \ Mark subsequent definitions available outside the current
-  \ package.
+  \ package defined with `package`.
   \
   \ _wid1_ is the word list of the current package; _wid0_
   \ is the word list in which the current package was created.
   \
   \ Origin: SwiftForth.
   \
-  \ See: `package`, `end-package`, `private`.
+  \ See also: `end-package`, `private`.
   \
   \ }doc
 
@@ -213,7 +215,7 @@ need latest>wordlist  need +order  need -order  need nextname
   \
   \ Origin: SwiftForth.
   \
-  \ See: `package`, `end-package`, `public`.
+  \ See also: `end-package`, `public`.
   \
   \ }doc
 
@@ -223,14 +225,14 @@ need latest>wordlist  need +order  need -order  need nextname
   \
   \ end-package  ( wid0 wid1 -- )
   \
-  \ End the current package.
+  \ End the current package, which was started by `package`.
   \
   \ _wid1_ is the word list of the current package; _wid0_
   \ is the word list in which the current package was created.
   \
   \ Origin: SwiftForth.
   \
-  \ See: `package`, `public`, `private`.
+  \ See also: `public`, `private`.
   \
   \ }doc
 

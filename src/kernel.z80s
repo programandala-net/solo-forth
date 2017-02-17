@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702171536
+; Last modified: 201702171745
 
 include version.z80s
 
@@ -3620,6 +3620,8 @@ char_question.not:
 ;
 ; String _ca len_ must be below memory address $C000.
 ;
+; See also: `find-name`, `find-name-in`, `find`.
+;
 ; }doc
 
   ; Patch the code with the routine proper to the
@@ -3739,6 +3741,8 @@ find_name_from.ip: equ $+1
 ; ----
 
 ; Origin: Gforth.
+;
+; See also: `find-name-in`, `find-name-from`, `find`.
 ;
 ; }doc
 
@@ -11536,7 +11540,8 @@ block.end:
 ;   blk !  >in off  ;
 ; ----
 
-; See also: `terminal>source`, `blk`, `>in`, `set-source`.
+; See also: `terminal>source`, `blk`, `>in`, `set-source`,
+; `lineblock>source`.
 ;
 ; }doc
 
@@ -11603,7 +11608,8 @@ block.end:
 ;   nest-source (load) unnest-source  ;
 ; ----
 
-; See also: `(load)`, `nest-source`, `unnest-source`.
+; See also: `(load)`, `nest-source`, `unnest-source`,
+; `lineload`, `+load`, `thru`.
 ;
 ; }doc
 

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201702171531
+  \ Last modified: 201702172020
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,6 +45,7 @@
   \ the kernel.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
 
 ( use-fly-index )
 
@@ -60,7 +61,7 @@ blk/disk bit-array indexed-blocks
   \
   \ Bit array to mark the indexed blocks
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -72,7 +73,7 @@ blk/disk bit-array indexed-blocks
   \
   \ Is block _block_ indexed?
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -84,7 +85,7 @@ blk/disk bit-array indexed-blocks
   \
   \ Mark block _block_ as indexed.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -106,7 +107,7 @@ blk/disk bit-array indexed-blocks
   \
   \ Index block _block_.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -119,7 +120,7 @@ blk/disk bit-array indexed-blocks
   \
   \ Index block _block_, if not done before.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -136,7 +137,7 @@ blk/disk bit-array indexed-blocks
   \ found, return zero.  The search is case-sensitive.
   \ Index all searched blocks on the fly.
   \
-  \ See: `use-fly-index`.
+  \ See also: `use-fly-index`.
   \
   \ }doc
 
@@ -149,15 +150,14 @@ blk/disk bit-array indexed-blocks
   \
   \ use-fly-index  ( -- )
   \
-  \ Set the alternative action of `need`, `needed`,
-  \ `reneed`, `reneeded`, `located` and `unlocated` in order to
-  \ use the blocks index and index the searched blocks on the
-  \ fly.
+  \ Set the alternative action of `need`, `needed`, `reneed`,
+  \ `reneeded`, `located` and `unlocated` in order to use the
+  \ blocks index and index the searched blocks on the fly.
   \
   \ The default action of all said words can be restored by
   \ `use-no-index`.
   \
-  \ See: `use-no-index`, `make-thru-index`, `use-thru-index`.
+  \ See also: `use-thru-index`.
   \
   \ }doc
 

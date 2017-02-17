@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171525
+  \ Last modified: 201702171941
 
   \ -----------------------------------------------------------
   \ Description
@@ -81,7 +81,7 @@ need link@  need link,  need pick
   \ associated matched _xt_. If no match is found, leave _n_ on
   \ the stack and execute the default xt.
   \
-  \ See: `:switch`, `[switch`, `<switch`.
+  \ See also: `:switch`, `[switch`, `<switch`.
   \
   \ }doc
 
@@ -102,7 +102,7 @@ need link@  need link,  need pick
   \ 1. link (to the last clause of the switch)
   \ 2. default xt
   \
-  \ See: `<switch`, `[switch`.
+  \ See also: `<switch`, `[switch`.
   \
   \ }doc
 
@@ -121,7 +121,7 @@ need link@  need link,  need pick
   \ 2. key
   \ 3. xt
   \
-  \ See: `:switch`, `[switch`.
+  \ See also: `:switch`, `[switch`.
   \
   \ }doc
 
@@ -144,7 +144,7 @@ need link@  need link,  need pick
   \
   \ Origin: SwiftForth.
   \
-  \ See: `[switch`, `switch]`, `runs`, `run`.
+  \ See also: `[switch`, `runs`, `run`.
   \
   \ }doc
 
@@ -168,7 +168,7 @@ need ?(
   \
   \ Origin: SwiftForth.
   \
-  \ See: `switch]`, `[+switch`, `runs`, `run:`.
+  \ See also: `runs`, `run:`.
   \
   \ }doc
 
@@ -184,7 +184,7 @@ need alias  ' drop alias switch]  ( head -- ) ?)
   \
   \ Origin: SwiftForth.
   \
-  \ See: `[switch`, `[+switch`, `runs`, `run:`.
+  \ See also: `[switch`, `[+switch`, `runs`, `run:`.
   \
   \ }doc
 
@@ -201,7 +201,7 @@ need alias  ' drop alias switch]  ( head -- ) ?)
   \
   \ Origin: SwiftForth.
   \
-  \ See: `[switch`, `switch]`.
+  \ See also: `[switch`, `switch]`.
   \
   \ }doc
 
@@ -220,7 +220,7 @@ need alias  ' drop alias switch]  ( head -- ) ?)
   \
   \ Origin: SwiftForth.
   \
-  \ See: `[switch`, `switch]`.
+  \ See also: `[switch`, `switch]`.
   \
   \ }doc
 

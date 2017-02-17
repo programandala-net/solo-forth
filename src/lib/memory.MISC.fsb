@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190050
+  \ Last modified: 201702171905
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( -! c+! c-! )
 
@@ -439,7 +441,7 @@ end-code ?)
   \
   \ Store _x1_ into _a_ and return its previous contents _x2_.
   \
-  \ See: `c!exchange`, `exchange`.
+  \ See also: `c!exchange`, `exchange`.
   \
   \ }doc
 
@@ -452,7 +454,7 @@ end-code ?)
   \
   \ Store _c1_ into _ca_ and return its previous contents _c2_.
   \
-  \ See: `!exchange`, `cexchange`.
+  \ See also: `!exchange`, `cexchange`.
   \
   \ }doc
 
@@ -494,9 +496,9 @@ end-code ?)
   \ alias of `noop`), because the Z80 processor does not need
   \ addresses to be cell-aligned.
   \
-  \ See: `dp`, `aligned`.
-  \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ See also: `dp`, `aligned`.
   \
   \ }doc
 
@@ -514,9 +516,9 @@ end-code ?)
   \ alias of `noop`), because the Z80 processor does not need
   \ addresses to be cell-aligned.
   \
-  \ See: `align`.
-  \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
+  \
+  \ See also: `align`.
   \
   \ }doc
 
@@ -582,7 +584,7 @@ end-code ?)
   \
   \ Exchange the cells stored in _a1_ and _a2_.
   \
-  \ See: `cexchange`, `!exchange`.
+  \ See also: `cexchange`, `!exchange`.
   \
   \ }doc
 
@@ -595,7 +597,7 @@ end-code ?)
   \
   \ Exchange the characters stored in _ca1_ and _ca2_.
   \
-  \ See: `exchange`, `c!exchange`.
+  \ See also: `exchange`, `c!exchange`.
   \
   \ }doc
 

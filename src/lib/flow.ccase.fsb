@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611260155
+  \ Last modified: 201702171939
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \ 2016-04-28: Write `?ccase`, `ccase0`.
   \
   \ 2016-11-26: Improve `(ccase)`.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( ?ccase )
 
@@ -75,8 +77,6 @@ need alias  need char-position?
   \ string _ca len_, execute the n-th word compiled after
   \ `?ccase`, where _n_ is the position of the first _c_ in the
   \ string (0..len-1).  If _c_ is not in _ca len_, do nothing.
-  \
-  \ See: `?ccase`.
   \
   \ }doc
 
@@ -149,8 +149,6 @@ need alias  need char-position?
   \ string (0..len-1) plus 1.  If _c_ is not in _ca len_,
   \ execute the word compiled right after `ccase0`.
   \
-  \ See: `ccase0`.
-  \
   \ }doc
 
 : ccase0
@@ -161,8 +159,8 @@ need alias  need char-position?
   \ doc{
   \
   \ ccase0
-  \
-  \ Compilation: ( C: -- orig ) Run-time: ( c ca len -- )
+  \   Compilation: ( C: -- orig )
+  \   Run-time: ( c ca len -- )
   \
   \ Start a `ccase0 endccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
@@ -202,7 +200,6 @@ need char-position?
   \ doc{
   \
   \ endccase
-  \
   \   Compilation: ( C: orig1 orig2 -- )
   \   Run-time: ( -- )
   \
@@ -230,8 +227,6 @@ need char-position?
   \ string (0..len-1).  If _c_ is not in _ca len_,
   \ execute the word compiled right before `endccase`.
   \
-  \ See: `ccase`.
-  \
   \ }doc
 
 : ccase
@@ -243,11 +238,10 @@ need char-position?
   \ doc{
   \
   \ ccase
+  \   Compilation: ( C: -- orig1 orig2 )
+  \   Run-time: ( c ca len -- )
   \
-  \ Compilation: ( C: -- orig1 orig2 )
-  \ Run-time: ( c ca len -- )
-  \
-  \ Start a `ccase endccase` structure. If _c_ is in the
+  \ Start a `ccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
   \ `ccase`, where _n_ is the position of the first _c_ in the
   \ string (0..len-1) plus 1, then continue after `endcase`.
@@ -266,6 +260,8 @@ need char-position?
   \   s" abc" ccase  .a .b .c .nope  endccase
   \   ."  The End" cr  ;
   \ ----
+  \
+  \ See also: `(ccase)`, `endccase`.
   \
   \ }doc
 

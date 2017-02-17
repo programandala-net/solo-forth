@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702031923
+  \ Last modified: 201702171821
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \ 2017-02-02: Add `far>sconstant` and `farsconstants>`.
   \
   \ 2017-02-03: Fix needing of `far>sconstant`.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( far," fars, farsconstant far>sconstant save-farstring )
 
@@ -89,7 +91,7 @@ need ?(
   \ When _name_ is executed, it returns the string _ca len_ in
   \ far memory as _ca2 len_.
   \
-  \ See: `far>sconstant`.
+  \ See also: `far>sconstant`.
   \
   \ }doc
 
@@ -106,7 +108,7 @@ need ?(
   \ circular string buffer and return it at its new address as
   \ _ca2 len1_.
   \
-  \ See: `save-string`, `csb0`.
+  \ See also: `save-string`, `csb0`.
   \
   \ }doc
 
@@ -127,7 +129,7 @@ need farsconstant  need save-farstring
   \ When _name_ is executed, it returns the string _ca len_ in
   \ the circular string buffer as _ca2 len_.
   \
-  \ See: `farsconstant`.
+  \ See also: `farsconstant`.
   \
   \ }doc
 
@@ -153,8 +155,6 @@ need ?(  [unneeded] farsconstants, ?(  need far,
   \ This word is a common factor of `farsconstants` and
   \ `far>sconstants`.
   \
-  \ See: `farsconstants`, `far>sconstants`.
-  \
   \ }doc
 
 [unneeded] farsconstants>
@@ -169,8 +169,6 @@ need ?(  [unneeded] farsconstants, ?(  need far,
   \
   \ This word is a factor of `farsconstants` and
   \ `far>sconstants`.
-  \
-  \ See: `farsconstants`, `far>sconstants`.
   \
   \ }doc
 
@@ -214,7 +212,7 @@ need farsconstants,  need array>  need farsconstants>
   \ 3 digitname cr fartype cr
   \ ----
 
-  \ See: `sconstants`, `far>sconstants`.
+  \ See also: `sconstants`, `far>sconstants`.
   \
   \ }doc
 
@@ -257,7 +255,7 @@ need array>  need farsconstants>  need save-farstring
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `sconstants`, `farsconstants`.
+  \ See also: `sconstants`, `farsconstants`.
   \
   \ }doc
 
@@ -307,7 +305,7 @@ code faruppers  ( ca len -- )
   \ Convert string _ca len_, which is stored in far memory, to
   \ uppercase.
   \
-  \ See: `uppers`, `far-banks`.
+  \ See also: `uppers`, `far-banks`.
   \
   \ }doc
 

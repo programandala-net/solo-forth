@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612081944
+  \ Last modified: 201702171750
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2016.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -41,6 +41,8 @@
   \
   \ 2016-12-08: Rename the module filename with uppercase
   \ "COMMON", after the new convention.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( common-indexer )
 
@@ -98,16 +100,13 @@ variable indexed-block
 
   \ doc{
   \
-  \ (index-block)  ( block -- )
+  \ (index-block)  ( u -- )
   \
-  \ Index block _block_, evaluating its header line.  The only
+  \ Index block _u_, evaluating its header line.  The only
   \ word list in the search order must be `index-wordlist`.
   \
   \ This is a common factor of `(indexer)` (from the `indexer`
   \ tool) and `(index-block)` (from the `fly-indexer` tool).
-  \
-  \ See: `indexer`, `(indexer)`, `fly-indexer`,
-  \ `(index-block)`.
   \
   \ }doc
 

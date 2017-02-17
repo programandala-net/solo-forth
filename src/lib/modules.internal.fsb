@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201702171903
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,8 @@
   \
   \ 2017-01-19: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( internal end-internal unlink-internal hide-internal )
 
@@ -79,7 +81,7 @@ need ?(
   \ Return the _nt_ of the latest word created in the
   \ compilation word list.
   \
-  \ See: `end-internal`, `unlink-internal`.
+  \ See also: `end-internal`, `unlink-internal`.
   \
   \ }doc
 
@@ -95,7 +97,7 @@ need ?(
   \ the _xtp_ (execution token pointer) of the next word
   \ defined.
   \
-  \ See: `internal`, `unlink-internal`.
+  \ See also: `internal`, `unlink-internal`.
   \
   \ }doc
 
@@ -138,8 +140,6 @@ need ?(
   \ The alternative word `hide-internal` can be used instead of
   \ `unlink-internal` in order to keep the internal words
   \ searchable, e.g. accessible for `traverse-wordlist`.
-  \
-  \ See: `internal`, `end-internal`, `hide-internal`.
   \
   \ }doc
 
@@ -187,9 +187,6 @@ need internal  need name<name  need >>name
   \ The `privatize` tool, available in its own library module,
   \ is similar to `hide-internal`, but has error checking and
   \ does not use the stack.
-  \
-  \ See: `internal`, `end-internal`, `unlink-internal`,
-  \ `privatize`.
   \
   \ }doc
 

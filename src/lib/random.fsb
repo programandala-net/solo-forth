@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201702171843
 
   \ -----------------------------------------------------------
   \ Description
@@ -60,6 +60,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( rnd random random-range )
 
@@ -235,7 +237,7 @@ code crnd  ( -- b )
   \
   \ Return a random 8-bit number _b_ (0..255).
   \
-  \ See: `crandom`.
+  \ See also: `crandom`.
   \
   \ }doc
 
@@ -272,7 +274,7 @@ code crnd  ( -- b )
   \
   \ Set the seed of the random number generator to _n_.
   \
-  \ See: `randomize0`.
+  \ See also: `randomize0`.
   \
   \ }doc
 
@@ -290,7 +292,7 @@ need os-frames  need randomize
   \ Set the seed of the random number generator to _n_;
   \ if _n_ is zero use the system frames counter instead.
   \
-  \ See: `randomize`.
+  \ See also: `randomize`.
   \
   \ }doc
 

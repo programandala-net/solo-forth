@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702162312
+  \ Last modified: 201702171850
 
   \ -----------------------------------------------------------
   \ Description
@@ -98,6 +98,8 @@
   \ 2017-02-15: Fix typo in documentation.
   \
   \ 2017-02-16: Fix typos in documentation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ -----------------------------------------------------------
   \ Operatyng system variables
@@ -168,8 +170,8 @@
   \ A constant that returns 0, the value that represents the
   \ black color.
   \
-  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`, `yellow`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `blue`, `red`, `magenta`, `green`,
+  \ `cyan`, `yellow`, `white`, `contrast`.
   \
   \ }doc
 
@@ -182,8 +184,8 @@
   \ A constant that returns 0, the value that represents the
   \ blue color.
   \
-  \ See: `black`, `red`, `magenta`, `green`, `cyan`, `yellow`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `red`, `magenta`, `green`, `cyan`,
+  \ `yellow`, `white`, `contrast`.
   \
   \ }doc
 
@@ -196,8 +198,8 @@
   \ A constant that returns 0, the value that represents the
   \ red color.
   \
-  \ See: `black`, `blue`, `magenta`, `green`, `cyan`, `yellow`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `blue`, `magenta`, `green`, `cyan`,
+  \ `yellow`, `white`, `contrast`.
   \
   \ }doc
 
@@ -210,8 +212,8 @@
   \ A constant that returns 0, the value that represents the
   \ magenta color.
   \
-  \ See: `black`, `blue`, `red`, `green`, `cyan`, `yellow`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `blue`, `red`, `green`, `cyan`,
+  \ `yellow`, `white`, `contrast`.
   \
   \ }doc
 
@@ -224,8 +226,8 @@
   \ A constant that returns 0, the value that represents the
   \ green color.
   \
-  \ See: `black`, `blue`, `red`, `magenta`, `cyan`, `yellow`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `blue`, `red`, `magenta`, `cyan`,
+  \ `yellow`, `white`, `contrast`.
   \
   \ }doc
 
@@ -238,8 +240,8 @@
   \ A constant that returns 0, the value that represents the
   \ cyan color.
   \
-  \ See: `black`, `blue`, `red`, `magenta`, `green`, `yellow`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `blue`, `red`, `magenta`, `green`,
+  \ `yellow`, `white`, `contrast`.
   \
   \ }doc
 
@@ -252,8 +254,8 @@
   \ A constant that returns 0, the value that represents the
   \ yellow color.
   \
-  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`,
-  \ `white`, `contrast`.
+  \ See also: `black`, `blue`, `red`, `magenta`, `green`,
+  \ `cyan`, `white`, `contrast`.
   \
   \ }doc
 
@@ -266,8 +268,8 @@
   \ A constant that returns 0, the value that represents the
   \ white color.
   \
-  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`, `yellow`,
-  \ `contrast`.
+  \ See also: `black`, `blue`, `red`, `magenta`, `green`,
+  \ `cyan`, `yellow`, `contrast`.
   \
   \ }doc
 
@@ -282,12 +284,9 @@ need ?(
   \ contrast  ( b1 -- b2 )
   \
   \ Convert color _b1_ to its contrast color _b2_.  _b2_ is
-  \ white (7) if _b1_ is a dark color (black, blue, red or
-  \ magenta); _b2_ is black (0) if _b1_ is a light colour
-  \ (green, cyan, yellow or white).
-  \
-  \ See: `black`, `blue`, `red`, `magenta`, `green`, `cyan`,
-  \ `yellow`, `white`.
+  \ `white` (7) if _b1_ is a dark color (`black`, `blue`, `red`
+  \ or `magenta`); _b2_ is `black` (0) if _b1_ is a light
+  \ colour (`green`, `cyan`, `yellow` or `white`).
   \
   \ }doc
 
@@ -310,7 +309,7 @@ need ?(  [unneeded] papery ?(  need 8*  need alias
   \ : papery  ( b1 -- b2 )  8 *  ;
   \ ----
 
-  \ See: `brighty`, `flashy`, `attr>paper`.
+  \ See also: `brighty`, `flashy`, `attr>paper`.
   \
   \ }doc
 
@@ -335,7 +334,7 @@ code brighty  ( b1 -- b2 )
   \ : brighty  ( b1 -- b2 )   bright-mask or  ;
   \ ----
 
-  \ See: `papery`, `flashy`.
+  \ See also: `papery`, `flashy`.
   \
   \ }doc
 
@@ -360,7 +359,7 @@ code flashy   ( b1 -- b2 )
   \ : flashy   ( b1 -- b2 )   flash-mask or  ;
   \ ----
 
-  \ See: `papery`, `brighty`.
+  \ See also: `papery`, `brighty`.
   \
   \ }doc
 
@@ -390,7 +389,7 @@ code attr>paper  ( b1 -- b2 )
   \ : attr>paper  ( b1 -- b2 )  paper-mask and 3 rshift  ;
   \ ----
 
-  \ See: `attr>ink`, `papery`.
+  \ See also: `attr>ink`, `papery`.
   \
   \ }doc
 
@@ -416,7 +415,7 @@ code attr>ink  ( b1 -- b2 )
   \ : attr>ink  ( b1 -- b2 )  ink-mask and  ;
   \ ----
 
-  \ See: `attr>paper`.
+  \ See also: `attr>paper`.
   \
   \ }doc
 
@@ -436,7 +435,7 @@ code attr@  ( -- b )  3A c, os-attr-t , pusha jp, end-code ?)
   \
   \ Get the current attribute _b_.
   \
-  \ See: `attr!`, `perm-attr@`.
+  \ See also: `attr!`, `perm-attr@`.
   \
   \ }doc
 
@@ -460,7 +459,7 @@ code attr!  ( b -- )
   \
   \ Set _b_ as the current attribute.
   \
-  \ See: `attr@`, `perm-attr!`.
+  \ See also: `attr@`, `perm-attr!`.
   \
   \ }doc
 
@@ -477,7 +476,7 @@ code attr-mask@  ( -- b )
   \
   \ Get the current attribute mask _b_.
   \
-  \ See: `attr-mask!`, `perm-attr-mask@`.
+  \ See also: `attr-mask!`, `perm-attr-mask@`.
   \
   \ }doc
 
@@ -501,7 +500,7 @@ code attr-mask!  ( b -- )
   \
   \ Set _b_ as the current attribute mask.
   \
-  \ See: `attr-mask@`, `perm-attr-mask!`.
+  \ See also: `attr-mask@`, `perm-attr-mask!`.
   \
   \ }doc
 
@@ -547,7 +546,7 @@ code mask+attr!  ( b1 b2 -- )
   \ Set _b1_ as the current attribute mask
   \ and _b2_ as the current attribute.
   \
-  \ See: `mask+attr@`, `attr!`, `attr-mask!`
+  \ See also: `mask+attr@`, `attr!`, `attr-mask!`
   \
   \ }doc
 
@@ -569,7 +568,7 @@ code mask+attr@  ( -- b1 b2 )
   \
   \ Set _b_ as the current attribute mask.
   \
-  \ See: `attr-mask!`, `perm-attr-mask@`.
+  \ See also: `attr-mask!`, `perm-attr-mask@`.
   \
   \ }doc
 
@@ -585,7 +584,7 @@ code mask+attr@  ( -- b1 b2 )
   \ Create a definition "name" that, when executed, will
   \ set _b_ as the current attribute.
   \
-  \ See: `mask+attr-setter`.
+  \ See also: `mask+attr-setter`.
   \
   \ }doc
 
@@ -602,7 +601,7 @@ code mask+attr@  ( -- b1 b2 )
   \ _b1_ as the current attribute mask and _b2_ as the
   \ current attribute.
   \
-  \ See: `attr-setter`.
+  \ See also: `attr-setter`.
   \
   \ }doc
 
@@ -627,7 +626,7 @@ code perm-attr@  ( -- b )
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
-  \ See: `perm-attr!`, `attr@`.
+  \ See also: `perm-attr!`, `attr@`.
   \
   \ }doc
 
@@ -655,7 +654,7 @@ code perm-attr!  ( b -- )
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
-  \ See: `perm-attr@`, `attr!`.
+  \ See also: `perm-attr@`, `attr!`.
   \
   \ }doc
 
@@ -676,7 +675,7 @@ code perm-attr-mask@  ( -- b )
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
-  \ See: `perm-attr-mask!`, `attr-mask@`.
+  \ See also: `perm-attr-mask!`, `attr-mask@`.
   \
   \ }doc
 
@@ -704,7 +703,7 @@ code perm-attr-mask!  ( b -- )
   \ attribute but the temporary one, which is called "current
   \ attribute" in Solo Forth.
   \
-  \ See: `perm-attr-mask@`, `attr-mask!`.
+  \ See also: `perm-attr-mask@`, `attr-mask!`.
   \
   \ }doc
 
@@ -752,7 +751,7 @@ code set-paper  ( b -- )
   \   papery attr@ unpaper-mask and or attr!  ;
   \ ----
 
-  \ See: `paper.`, `set-ink`, `set-flash`, `set-bright`.
+  \ See also: `paper.`, `set-ink`, `set-flash`, `set-bright`.
   \
   \ }doc
 
@@ -790,7 +789,7 @@ code set-ink  ( b -- )
   \   attr@ %11111000 and or attr!  ;
   \ ----
 
-  \ See: `ink.`, `set-paper`, `set-flash`, `set-bright`.
+  \ See also: `ink.`, `set-paper`, `set-flash`, `set-bright`.
   \
   \ }doc
 
@@ -859,7 +858,7 @@ code inverse-on  ( f -- )
   \
   \ Turn the inverse printing mode on.
   \
-  \ See: `inverse-off`, `inverse`.
+  \ See also: `inverse-off`, `inverse`.
   \
   \ }doc
 
@@ -876,7 +875,7 @@ code inverse-off  ( -- )
   \
   \ Turn the inverse printing mode off.
   \
-  \ See: `inverse-on`, `inverse`.
+  \ See also: `inverse-on`, `inverse`.
   \
   \ }doc
 
@@ -898,7 +897,7 @@ code inverse  ( f -- )
   \ If _f_ is zero, turn the inverse printing mode
   \ off; else turn it on.
   \
-  \ See: `inverse-off`, `inverse-on`, `overprint`.
+  \ See also: `inverse-off`, `inverse-on`, `overprint`.
   \
   \ }doc
 
@@ -918,7 +917,7 @@ code overprint-on  ( -- )
   \
   \ Turn the overprint mode on.
   \
-  \ See: `overprint-off`, `overprint`.
+  \ See also: `overprint-off`, `overprint`.
   \
   \ }doc
 
@@ -935,7 +934,7 @@ code overprint-off  ( -- )
   \
   \ Turn the overprint mode off.
   \
-  \ See: `overprint-on`, `overprint`.
+  \ See also: `overprint-on`, `overprint`.
   \
   \ }doc
 
@@ -957,7 +956,7 @@ code overprint  ( f -- )
   \ If _f_ is zero, turn the overprint mode off; else
   \ turn it on.
   \
-  \ See: `overprint-on`, `overprint-off`, `inverse`.
+  \ See also: `overprint-on`, `overprint-off`, `inverse`.
   \
   \ }doc
 
@@ -984,7 +983,7 @@ code paper.  ( b -- )  3E c, 11 c, (0-9-color. jp,  end-code ?)
   \ (contrast), setting the correspondent system variables and
   \ flags accordingly.
   \
-  \ See: `set-paper`, `attr!`, `ink.`, `(0-9-color.`.
+  \ See also: `ink.`, `(0-9-color.`.
   \
   \ }doc
 
@@ -1007,7 +1006,7 @@ code ink.  ( b -- )  3E c, 10 c, (0-9-color. jp,  end-code ?)
   \ setting the correspondent system variables and flags
   \ accordingly.
   \
-  \ See: `set-ink`, `attr!`, `paper.`, `(0-9-color.`.
+  \ See also: `paper.`, `(0-9-color.`.
   \
   \ }doc
 
@@ -1043,8 +1042,6 @@ create (0-9-color.  ( -- a )  asm
 
   \ Note: If TOS is greater than 9, 9 is used instead.
 
-  \ See: `paper.`, `ink.`.
-  \
   \ }doc
 
 [unneeded] flash.
@@ -1069,7 +1066,7 @@ create (0-9-color.  ( -- a )  asm
   \ This word is much slower than `set-flash` or `attr!`, but
   \ it can handle pseudo-color 8 (transparent).
   \
-  \ See: `set-flash`, `attr!`, `bright.`, `(0-1-8-color.`.
+  \ See also: `bright.`, `(0-1-8-color.`.
   \
   \ }doc
 
@@ -1093,7 +1090,7 @@ create (0-9-color.  ( -- a )  asm
   \ This word is much slower than `set-bright` or `attr!`, but
   \ it can handle pseudo-color 8 (transparent).
   \
-  \ See: `set-bright`, `attr!`, `flash.`, `(0-1-8-color.`.
+  \ See also: `flash.`, `(0-1-8-color.`.
   \
   \ }doc
 
@@ -1115,8 +1112,6 @@ create (0-9-color.  ( -- a )  asm
   \ - Values greater than 8 or less than 0 are converted to 8.
 
   \ This word is a factor of `flash.` and `bright.`.
-  \
-  \ See: `flash.`, `bright.`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190050
+  \ Last modified: 201702171940
 
   \ -----------------------------------------------------------
   \ Description
@@ -34,6 +34,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ XXX TODO -- Compilation stack comments.
 
@@ -61,7 +63,7 @@ code -branch  ( n -- )
   \
   \ This word is compiled by `+if` and `+until`.
   \
-  \ See: `+if`, `+while`, `+until`.
+  \ See also: `+while`.
   \ 
   \ }doc
 
@@ -85,7 +87,7 @@ code +branch  ( n -- )
   \
   \ This word is compiled by `-if` and `-until`.
   \
-  \ See: `-if`, `-while`, `-until`.
+  \ See also: `-while`.
   \ 
   \ }doc
 

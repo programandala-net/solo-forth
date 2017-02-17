@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702151718
+  \ Last modified: 201702171912
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,8 @@
   \ 2017-02-01: Move `span` from the kernel.
   \
   \ 2017-02-15: Update notation in the documentation of `span`.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( at-accept clear-accept set-accept )
 
@@ -331,8 +333,6 @@ need ?(  [unneeded] aborted? ?(
   \ The application can define `/kk` before loading this block;
   \ else it will be defined as a cconstant with value 4.
   \
-  \ See: `kk,`, `kk@`, `kk-ports`.
-  \
   \ }doc
 
   \ ............................................
@@ -373,7 +373,7 @@ need ?(  [unneeded] aborted? ?(
   \
   \ Store a key definition into the keys table.
   \
-  \ See: `kk@`, `/kk`, `kk-ports`.
+  \ See also: `kk@`, `/kk`, `kk-ports`.
   \
   \ }doc
 
@@ -383,7 +383,7 @@ need ?(  [unneeded] aborted? ?(
   \
   \ Fetch a key definition from the keys table.
   \
-  \ See: `kk,`, `/kk`, `kk-ports`.
+  \ See also: `kk,`, `/kk`, `kk-ports`.
   \
   \ }doc
 
@@ -472,7 +472,7 @@ kk-sp kk,  kk-ss kk,  kk-m kk,  kk-n kk,  kk-b kk,
   \ Every item occupies 3 or 4 bytes, depending on the value of
   \ `/kk`.
   \
-  \ See: `/kk`, `kk,`, `kk@`.
+  \ See also: `kk,`, `kk@`.
   \
   \ }doc
 
@@ -555,7 +555,7 @@ need ?(  [unneeded] #>kk ?(  need kk-ports
   \ Is a key pressed?  _bitmask_ is the key bitmask and _port_
   \ is the keyboard row port.
   \
-  \ See: `pressed`, `only-one-pressed`.
+  \ See also: `pressed`, `only-one-pressed`.
   \
   \ }doc
 
@@ -574,7 +574,7 @@ need ?(  [unneeded] #>kk ?(  need kk-ports
   \ table that happens to be pressed.  _bitmask_ is the key
   \ bitmask and _port_ is the keyboard row port.
   \
-  \ See: `kk-ports`, `only-one-pressed`, `pressed?`.
+  \ See also: `kk-ports`, `only-one-pressed`, `pressed?`.
   \
   \ }doc
 
@@ -610,7 +610,7 @@ need kk-ports
   \ only one key pressed.  _bitmask_ is the key bitmask and
   \ _port_ is the keyboard row port.
   \
-  \ See: `kk-ports`, `pressed`, `pressed?`.
+  \ See also: `kk-ports`, `pressed`, `pressed?`.
   \
   \ }doc
 

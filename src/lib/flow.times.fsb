@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191346
+  \ Last modified: 201702171931
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,6 +42,8 @@
   \
   \ 2017-01-19: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( times dtimes )
 
@@ -62,21 +64,21 @@ variable times-xt  \ the _xt_ executed by `times`
   \ Repeat the next compiled instruction _n_ times.  If _n_ is
   \ zero, continue executing the following instruction.
   \
-  \ `times` is useful to implement complicated math operations,
-  \ like shifts, multiply, divide and square root, from
-  \ appropriate math step instructions.  It is also useful in
-  \ repeating auto-indexing memory instructions.
+  \ This word is useful to implement complicated math
+  \ operations, like shifts, multiply, divide and square root,
+  \ from appropriate math step instructions.  It is also useful
+  \ in repeating auto-indexing memory instructions.
   \
   \ This structure is not nestable.
   \
   \ Usage example:
-  \
+
   \ ----
   \ : blink  ( -- )  7 0 do  i border  loop  0 border  ;
   \ : blinking  ( -- )  100 times blink  ." Done" cr  ;
   \ ----
-  \
-  \ See: `dtimes`, `executions`.
+
+  \ See also: `dtimes`, `executions`.
   \
   \ }doc
 
@@ -100,13 +102,13 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ This structure is not nestable.
   \
   \ Usage example:
-  \
+
   \ ----
   \ : blink  ( -- )  7 0 do  i border  loop  0 border  ;
   \ : blinking  ( -- )  100000. dtimes blink  ." Done" cr  ;
   \ ----
-  \
-  \ See: `times`, `executions`.
+
+  \ See also: `times`, `executions`.
   \
   \ }doc
 

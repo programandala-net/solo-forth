@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702041719
+  \ Last modified: 201702171924
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,6 +42,8 @@
   \ the kernel and the library: Remove `udg-ocr` and rename
   \ `0udg-ocr` to `udg-ocr`. Convert `ocr-chars` and
   \ `ocr-first` to character variables.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( ocr )
 
@@ -60,8 +62,7 @@ variable ocr-charset  $3D00 ocr-charset !
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr`, `ocr-chars`, `ocr-first`, `ascii-ocr`,
-  \ `udg-ocr`.
+  \ See also: `ocr-chars`, `ocr-first`.
   \
   \ }doc
 
@@ -79,8 +80,7 @@ here bl c, constant ocr-first
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr`, `ocr-chars`, `ocr-charset`, `ascii-ocr`,
-  \ `udg-ocr`.
+  \ See also: `ocr-chars`, `ocr-charset`.
   \
   \ }doc
 
@@ -98,8 +98,7 @@ here 127 bl - c, constant ocr-chars
   \ The configuration of `ocr`, including this variable, can be
   \ changed by `ascii-ocr` and `udg-ocr`.
   \
-  \ See: `ocr`, `ocr-first`, `ocr-charset`, `ascii-ocr`,
-  \ `udg-ocr`.
+  \ See also: `ocr-first`, `ocr-charset`.
   \
   \ }doc
 
@@ -189,8 +188,7 @@ code ocr  ( col line -- n )
   \ Note: The name `ocr` stands for "Optical Character
   \ Recognition".
   \
-  \ See: `ocr-charset`, `ocr-chars`, `ocr-first`, `udg-ocr`,
-  \ `ascii-ocr`.
+  \ See also: `udg-ocr`, `ascii-ocr`.
   \
   \ }doc
 
@@ -211,7 +209,7 @@ need ?(
   \ Set `ocr` to work with the current ASCII charset, pointed
   \ by `os-chars`.
   \
-  \ See: `ocr`, `udg-ocr`, `set-font`.
+  \ See also: `udg-ocr`, `set-font`.
   \
   \ }doc
 
@@ -227,7 +225,7 @@ need ?(
   \ Set `ocr` to work with the first _n_ chars of the current
   \ UDG set.
   \
-  \ See: `ocr`, `ascii-ocr`, `set-udg`.
+  \ See also: `ascii-ocr`, `set-udg`.
   \
   \ }doc
 

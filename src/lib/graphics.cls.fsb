@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051635
+  \ Last modified: 201702171927
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
   \ in the kernel.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( cls-chars0 )
 
@@ -68,7 +70,7 @@ code cls-chars0  ( -- )
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
-  \ See: `cls-chars1`.
+  \ See also: `cls-chars1`.
   \
   \ }doc
 
@@ -107,7 +109,7 @@ code cls-chars1  ( -- )
   \
   \ Clear the screen by rotating all bytes of the bitmap.
   \
-  \ See: `cls-chars0`.
+  \ See also: `cls-chars0`.
   \
   \ }doc
 
@@ -146,7 +148,7 @@ code horizontal-curtain  ( b -- )
   \ Wash the screen with the given color attribute _b_ from the
   \ top and bottom rows to the middle.
   \
-  \ See: `vertical-curtain`.
+  \ See also: `vertical-curtain`.
   \
   \ }doc
 
@@ -185,7 +187,7 @@ code vertical-curtain  ( b -- )
   \ Wash the screen with the given color attribute _b_ from the
   \ left and right columns to the middle.
   \
-  \ See: `horizontal-curtain`.
+  \ See also: `horizontal-curtain`.
   \
   \ }doc
 

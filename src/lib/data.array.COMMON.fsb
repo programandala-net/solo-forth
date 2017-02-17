@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701190050
+  \ Last modified: 201702172012
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( array> 2array> )
 
@@ -63,8 +65,6 @@ code array>  ( n a1 -- a2 )
   \   swap cells +  ;
   \ ----
   \
-  \ See: `avalue`, `avariable`.
-  \
   \ }doc
 
 [unneeded] 2array> ?(
@@ -90,8 +90,6 @@ code 2array>  ( n a1 -- a2 )
   \ : 2array>  ( n a1 -- a2 )
   \   swap [ 2 cells ] literal * +  ;
   \ ----
-  \
-  \ See: `2avalue`, `2avariable`.
   \
   \ }doc
 

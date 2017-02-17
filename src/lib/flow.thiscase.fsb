@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612202020
+  \ Last modified: 201702171935
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,6 +41,9 @@
   \ 2016-04-27: Improve documentation and file header.
   \
   \ 2016-12-20: Improve documentation.
+  \
+  \ 2017-02-17: Update cross references and improve
+  \ documentation.
 
 ( thiscase )
 
@@ -53,11 +56,11 @@ need alias
   \
   \ ifcase  ( x f -- )
   \
-  \ Part of a `thiscase ifcase exitcase` structure that checks
-  \ _x_. If _f_ is true, discard _x_ and continue execution;
-  \ else skip the code compiled until the next `exitcase`.
+  \ Part of a `thiscase` structure that checks _x_. If _f_ is
+  \ true, discard _x_ and continue execution; else skip the
+  \ code compiled until the next `exitcase`.
   \
-  \ See `thiscase`, `exitcase`, `othercase`.
+  \ See also: `othercase`.
   \
   \ }doc
 
@@ -68,10 +71,10 @@ need alias
   \
   \ exitcase  ( -- )
   \
-  \ End part of a `thiscase ifcase exitcase` structure:
-  \ exit the current definition.
+  \ End part of a `thiscase` structure: exit the current
+  \ definition.
   \
-  \ See `thiscase`, `ifcase`, `othercase`.
+  \ See also: `ifcase`, `othercase`.
   \
   \ }doc
 
@@ -81,10 +84,7 @@ need alias
   \
   \ thiscase  ( x -- x x )
   \
-  \ Mark the start of a `thiscase ifcase exitcase` structure
-  \ that checks _x_.
-  \
-  \ See: `ifcase`, `exitcase`, `othercase`.
+  \ Mark the start of a alternative `case` structure.
   \
   \ Usage example:
 
@@ -101,6 +101,8 @@ need alias
   \   othercase say-other  ;
   \ ----
   \
+  \ See also: `ifcase`, `exitcase`, `othercase`.
+  \
   \ }doc
 
 ' drop alias othercase  ( n -- )
@@ -109,10 +111,10 @@ need alias
   \
   \ othercase  ( x -- )
   \
-  \ Mark the start of the default option after a list of
-  \ `thiscase ifcase exitcase` structures that checked _x_.
+  \ Mark the start of the default option of a `thiscase`
+  \ structure that checked _x_.
   \
-  \ See `thiscase`, `ifcase`, `exitcase`.
+  \ See also: `thiscase`, `ifcase`, `exitcase`.
   \
   \ }doc
 

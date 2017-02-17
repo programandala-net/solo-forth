@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702030048
+  \ Last modified: 201702171925
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,8 @@
   \ 2017-01-28: Improve documentation.
   \
   \ 2017-02-03: Compact the code, saving one block.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( rdraw176 x1 incx y1 incy y )
 
@@ -89,7 +91,7 @@ code rdraw176  ( gx gy -- )
   \
   \ This word is equivalent to Sinclair BASIC's DRAW command.
   \
-  \ See: `adraw176`, `rdraw`.
+  \ See also: `adraw176`, `rdraw`.
   \
   \ }doc
 
@@ -104,7 +106,7 @@ code rdraw176  ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See: `y1`, `incx`, `incy`, `adraw176`, `aline176`.
+  \ See also: `y1`, `incx`, `incy`.
   \
   \ }doc
 
@@ -114,7 +116,7 @@ code rdraw176  ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See: `x1`, `incx`, `incy`, `adraw176`, `aline176`.
+  \ See also: `x1`, `incx`, `incy`.
   \
   \ }doc
 
@@ -124,7 +126,7 @@ code rdraw176  ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See: `incy`, `x1`, `y1`, `adraw176`, `aline176`.
+  \ See also: `incy`, `x1`, `y1`.
   \
   \ }doc
 
@@ -134,7 +136,7 @@ code rdraw176  ( gx gy -- )
   \
   \ A double-cell variable used by `adraw176` and `aline176`.
   \
-  \ See: `incx`, `x1`, `y1`, `adraw176`, `aline176`.
+  \ See also: `incx`, `x1`, `y1`.
   \
   \ }doc
 
@@ -273,7 +275,7 @@ code rdraw  ( gx gy -- )
   \ Draw a line relative _gx gy_ to the current coordinates.
   \ _gx_ is 0..255; _gy_ is 0..191.
   \
-  \ See: `rdraw176`, `adraw176`.
+  \ See also: `rdraw176`, `adraw176`.
   \
   \ }doc
 
@@ -317,7 +319,7 @@ need x1  need incx  need y1  need incy
   \ rows of the screen (the lower 16 pixel rows are not used).
   \ _gx_ is 0..255; _gy_ is 0..175.
   \
-  \ See: `rdraw176`, `rline176`.
+  \ See also: `rdraw176`, `rline176`.
   \
   \ }doc
 
@@ -363,9 +365,8 @@ need x1  need incx  need y1  need incy
   \ _gx_ is 0..255; _gy_ is 0..175. This word is faster than
   \ `adraw176`.
   \
-  \ See: `adraw176`, `rdraw176`.
+  \ See also: `rdraw176`.
   \
   \ }doc
-
 
   \ vim: filetype=soloforth

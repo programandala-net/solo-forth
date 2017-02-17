@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701051739
+  \ Last modified: 201702171910
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,6 +61,8 @@
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
   \ Update `also assembler` to `assembler-wordlist >order`.
+  \
+  \ 2017-02-17: Update cross references.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -281,9 +283,9 @@ here ' f== ,
   \ - _r3_=0: `f==`;
   \ - _r3_<0: `f~relabs`.
   \
-  \ See: `f~abs`, `f==`, `f~rel`,`f~relabs`.
-  \
   \ Origin: Forth-94 (FLOATING EXT), Forth-2012 (FLOATING EXT).
+  \
+  \ See also: `f~rel`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701301202
+  \ Last modified: 201702171931
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,8 @@
   \
   \ 2017-01-30: Fix and rewrite the configuration method, using
   \ an intermediate routine that does a jump.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( uncolored-circle-pixel colored-circle-pixel )
 
@@ -73,9 +75,6 @@ create uncolored-circle-pixel  ( -- a )  asm
   \ the requirements of such routine in the documentation of
   \ `circle-pixel`.
   \
-  \ See: `set-circle-pixel`, `circle-pixel`,
-  \ `colored-circle-pixel`, `circle`, `set-pixel`.
-  \
   \ }doc
 
 [unneeded] colored-circle-pixel ?(
@@ -101,9 +100,6 @@ create colored-circle-pixel  ( -- a )  asm
   \ `set-circle-pixel` sets the routine used by `circle`.  See
   \ the requirements of such routine in the documentation of
   \ `circle-pixel`.
-  \
-  \ See: `set-circle-pixel`, `circle-pixel`,
-  \ `uncolored-circle-pixel`, `circle`, `plot`.
   \
   \ }doc
 
@@ -131,8 +127,6 @@ need ?(
   \ - HL, DE and BC must be preserved.
   \ - Input parameters: B=gy and C=gx.
 
-  \ See: `circle`, `set-circle`.
-  \
   \ }doc
 
 [unneeded] set-circle-pixel ?(  need circle-pixel
@@ -147,10 +141,8 @@ need ?(
   \ Set the address _a_ of the routine `circle-pixel` will jump
   \ to. This word is used to make `circle-pixel` jump to
   \ `colored-circle-pixel`, `uncolored-circle-pixel`, or other
-  \ routine provided by the application.
-  \
-  \ See: `circle-pixel`, `colored-circle-pixel`,
-  \ `uncolored-circle-pixel`, `circle`.
+  \ routine provided by the application, therefore configuring
+  \ `circle`.
   \
   \ }doc
 
@@ -340,15 +332,13 @@ code circle  ( gx gy b -- )
   \ other parts of the screen bitmap, the screen attributes or
   \ even the system variables will be altered.
   \
-  \ Note: By default `circle` does nothing. Its factor routine
+  \ Note: By default this word does nothing. Its factor routine
   \ `circle-pixel` must be configured first with
   \ `set-circle-pixel`, in order to choose the routine that
   \ creates the pixels of the circle: `uncolored-circle-pixel`,
   \ `colored-circle-pixel` or a routine provided by the
   \ application.
   \
-  \ See: `circle-pixel`, `set-circle-pixel`,
-  \ `colored-circle-pixel`, `uncolored-circle-pixel`.
   \
   \ }doc
 

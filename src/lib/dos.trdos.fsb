@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702170007
+  \ Last modified: 201702171947
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,7 +48,7 @@
   \ 2017-02-14: Add `find-file`.
   \
   \ 2017-02-17: Restore the original TR-DOS notation
-  \ "descriptor".
+  \ "descriptor".  Update cross references.
 
 ( --dos-commands-- )
 
@@ -117,7 +117,7 @@ fda $0F + constant fda-filetrack ?)
   \ | +0xF   | 1     | First track of the file
   \ |===
   \
-  \ See: `/fda`.
+  \ See also: `/fda`.
   \
   \ }doc
 
@@ -127,10 +127,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ /fda  ( -- b )
   \
-  \ Return the length of TR-DOS File Descriptor Area, which is
-  \ 16 bytes.
-  \
-  \ See: `fda`.
+  \ Return the length of TR-DOS `fda` (File Descriptor Area).
   \
   \ }doc
 
@@ -156,7 +153,7 @@ fda $0F + constant fda-filetrack ?)
   \ | other     | Defined by the programmer
   \ |===
   \
-  \ See: `set-filename`, `fda`.
+  \ See also: `set-filename`, `fda`.
   \
   \ }doc
 
@@ -171,10 +168,10 @@ need ?(
   \
   \ -filename  ( -- )
   \
-  \ Erase the filename stored at TR-DOS File Descriptor Area
-  \ with spaces, and set its type to 'C'.
+  \ Erase the filename stored at TR-DOS `fda` (File Descriptor
+  \ Area) with spaces, and set its type to 'C'.
   \
-  \ See: `fda`, `set-filename`.
+  \ See also: `set-filename`.
   \
   \ }doc
 
@@ -189,13 +186,13 @@ need -filename  need /filename  need fda
   \
   \ set-filename  ( ca len -- )
   \
-  \ Store filename _ca len_ into the TR-DOS File Descriptor
-  \ Area.  If _len_ is greater than 9 characters (the value
+  \ Store filename _ca len_ into the TR-DOS `fda` (File Descriptor
+  \ Area).  If _len_ is greater than 9 characters (the value
   \ returned by `/filename`), 9 is used instead.  If _ca len_
   \ does not include the file type at the end (at character
   \ offset +8), 'C' (code file) is used by default.
   \
-  \ See: `fda`, `-filename`, `/filename`.
+  \ See also: `-filename`, `/filename`.
   \
   \ }doc
 
@@ -222,7 +219,7 @@ need -filename  need /filename  need fda
   \   $5FC6 c@  ;
   \ ----
 
-  \ See: `set-drive`.
+  \ See also: `set-drive`.
   \
   \ }doc
 
@@ -250,7 +247,7 @@ code cat  ( -- ior )
   \
   \ Print a catalog of the current disk.
   \
-  \ See: `set-drive`.
+  \ See also: `set-drive`.
   \
   \ }doc
 
@@ -328,8 +325,6 @@ code (file-status)  ( -- a ior )
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
-  \ See: `fda`.
-  \
   \ }doc
 
 ( file-exists? file-start file-length file-type find-file )
@@ -347,7 +342,7 @@ need ?(
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -366,7 +361,7 @@ need ?(
   \ Otherwise _ior_ is an exception code and _ca2_ is
   \ undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -384,7 +379,7 @@ need ?(
   \ _ior_ is zero and _len2_ is the file length.  Otherwise
   \ _ior_ is an exception code and _len2_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -410,7 +405,7 @@ need ?(
   \ in part of the filename. This word is included for
   \ compatibility with other DOSs supported.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -424,10 +419,10 @@ need ?(
   \ find-file  ( ca len -- a | 0 )
   \
   \ If the file named in the character string _ca len_ is
-  \ found, return address _a_ of updated FDA. Otherwise return
-  \ zero.
+  \ found, return address _a_ of the updated `fda` (File
+  \ Descriptor Area). Otherwise return zero.
   \
-  \ See: `fda`, `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -449,11 +444,12 @@ code (file-dir#)  ( -- n ior )
   \ (file-dir#)  ( -- n ior )
   \
   \ Return the file directory number of the file whose filename
-  \ is stored at FDA. If the file was successfully found, _ior_
-  \ is zero and _n_ is the file directory number.  Otherwise
-  \ _ior_ is an exception code and _n_ is undefined.
+  \ is stored at `fda` (File Descriptor Area). If the file was
+  \ successfully found, _ior_ is zero and _n_ is the file
+  \ directory number.  Otherwise _ior_ is an exception code and
+  \ _n_ is undefined.
   \
-  \ See: `file-dir#`, `fda`, `file-status`.
+  \ See also: `file-dir#`, `file-status`.
   \
   \ }doc
 
@@ -468,7 +464,7 @@ code (file-dir#)  ( -- n ior )
   \ found, _ior_ is zero and _n_ is the file directory number.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -488,7 +484,7 @@ code (file-dir#)  ( -- n ior )
   \ found, _ior_ is zero and _n_ is the length in sectors.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -506,7 +502,7 @@ code (file-dir#)  ( -- n ior )
   \ successfully found, _ior_ is zero and _n_ is the sector.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 
@@ -524,7 +520,7 @@ code (file-dir#)  ( -- n ior )
   \ is zero and _n_ is the track.  Otherwise _ior_ is an
   \ exception code and _n_ is undefined.
   \
-  \ See: `file-status`.
+  \ See also: `file-status`.
   \
   \ }doc
 

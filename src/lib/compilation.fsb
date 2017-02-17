@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171531
+  \ Last modified: 201702172016
 
   \ -----------------------------------------------------------
   \ Description
@@ -144,6 +144,7 @@
   \ of the alternative implementation of `>name`.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \ Update cross references.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -251,7 +252,7 @@ need ?(
   \
   \ Since aliases share the execution token of their original
   \ word, it's not possible to get the name of an alias from
-  \ its execution token. But `''` can do it:
+  \ its execution token. But this word can do it:
 
   \ ----
   \ ' drop alias abandon
@@ -259,7 +260,7 @@ need ?(
   \ '' abandon >>name .name     \ this prints "abandon"
   \ ----
 
-  \ See: `['']`, `'`.
+  \ See also: `['']`, `'`.
   \
   \ }doc
 
@@ -276,7 +277,7 @@ need ?(
   \ order, compile its execution-token pointer as a literal, else
   \ throw an exception.
   \
-  \ See: `literal`, `''`, `[']`.
+  \ See also: `literal`, `''`, `[']`.
   \
   \ }doc
 
@@ -350,8 +351,6 @@ need ?(
   \ return the _xt_ of `execute`, else return the _xt_ of
   \ `compile,`.
   \
-  \ See: `name>compile`.
-  \
   \ }doc
 
 : name>compile  ( nt -- x xt )  dup name> swap (comp')  ;  ?)
@@ -368,7 +367,7 @@ need ?(
   \
   \ Origin: Forth-2012 (TOOLS EXT).
   \
-  \ See: `(comp')`.
+  \ See also: `(comp')`.
   \
   \ }doc
 
@@ -445,7 +444,7 @@ need ?(
   \ This word is obsolete. `hidden` and `revealed` are used
   \ instead.
   \
-  \ See: `smudge`, `hidden`, `revealed`.
+  \ See also: `smudge`.
   \
   \ }doc
 
@@ -466,7 +465,7 @@ need ?(
   \
   \ Origin: fig-Forth.
   \
-  \ See: `smudged`, `hide`, `reveal`.
+  \ See also: `smudged`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061841
+  \ Last modified: 201702171852
 
   \ -----------------------------------------------------------
   \ Description
@@ -60,6 +60,8 @@
   \ `forget-transient`.
   \
   \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( transient end-transient forget-transient )
 
@@ -113,8 +115,6 @@ variable old-current-latest
   \ `forget-transient` restores them to their previous state,
   \ before `transient`.
   \
-  \ See: `end-transient`, `forget-transient`.
-  \
   \ }doc
 
 -->
@@ -132,13 +132,13 @@ variable old-current-latest
   \
   \ end-transient  ( -- )
   \
-  \ End the transient code.  This word must be used after
-  \ compiling the transient code.
+  \ End the transient code started by `transient`.  This word
+  \ must be used after compiling the transient code.
   \
   \ The inner operation is: Restore the old values of `dp`,
   \ `hp`, `limit` and `farlimit`.
   \
-  \ See: `transient`, `forget-transient`.
+  \ See also: `forget-transient`.
   \
   \ }doc
 
@@ -153,17 +153,16 @@ variable old-current-latest
   \
   \ forget-transient  ( -- )
   \
-  \ Forget the transient code, unlinking the header space that
-  \ was reserved and used for it.  This word must be used when
-  \ the transient code is not going to be used any more.
+  \ Forget the transient code compiled between `transient` and
+  \ `end-transient`, by unlinking the header space that was
+  \ reserved and used for it.  This word must be used when the
+  \ transient code is not going to be used any more.
   \
   \ The inner operation is: Restore the old value of
   \ `latest-wordlist`; store the _nt_ of the latest word
   \ created before compiling the transient code, into the _lfa_
   \ of the first word created after the transient code was
   \ finished by `end-transient`.
-  \
-  \ See: `transient`, `end-transient`.
   \
   \ }doc
 

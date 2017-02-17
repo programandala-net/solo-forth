@@ -437,6 +437,15 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 .2017-02-17:
 
+Check the parsing of Asciidoctor markup `+`, example:
+
+----
+  \ This is the same as +3 lshift+ or +2* 2* 2*+, but faster.
+----
+
+
+.2017-02-17:
+
 NOTE: Milestone: 0.14.0
 
 Replace backticks markup with pluses in the "Origin" section of the
@@ -466,14 +475,6 @@ cases.
 
 Remove the documentation of DOS subroutines that is duplicated in its
 corresponding entry constant, and put a note instead.
-
-.2017-02-15, 2017-02-17:
-
-Replace "See:" with "See also:" and remove from it the words that are
-mentioned in the main description, because they will be cross
-references as well.
-
-Already done in the kernel.
 
 .2017-02-11:
 
@@ -555,6 +556,10 @@ source.
 
 // DOS {{{1
 == DOS ==
+
+.2017-02-17:
+
+Add `rename-file`.
 
 .2017-02-13:
 
@@ -643,6 +648,10 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-02-17:
+
+Add `delete-file`.
 
 .2017-02-12:
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701051642
+  \ Last modified: 201702171910
 
   \ -----------------------------------------------------------
   \ Description
@@ -30,6 +30,8 @@
   \ to `z80-asm,` assembler.
   \
   \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( get-inkey )
 
@@ -70,7 +72,7 @@ code get-inkey  ( -- c | 0 )
   \ This word reads the keyboard, so it works even when the
   \ keyboard is not read by an interrupts routine.
   \
-  \ See: `inkey`, `key`.
+  \ See also: `inkey`, `key`.
   \
   \ }doc
 

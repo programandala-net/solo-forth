@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701180246
+  \ Last modified: 201702171751
 
   \ -----------------------------------------------------------
   \ Description
@@ -93,6 +93,8 @@
   \
   \ 2017-01-18: Type compiled strings between quotes. This is
   \ useful when they have leading or trailing spaces.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( see )
 
@@ -203,7 +205,7 @@ defer .see-body-name  ( pfa -- )
   \ Decode the colon word's definition whose body is _pfa_.
   \ This word is a factor of `see`.
   \
-  \ See: `see-body-from`, `see`, `see-xt`.
+  \ See also: `see-body-from`, `see-xt`.
   \
   \ }doc
 
@@ -226,7 +228,7 @@ defer .see-body-name  ( pfa -- )
   \
   \ Origin: Forth-94 (TOOLS), Forth-2012 (TOOLS).
   \
-  \ See: `see-xt`, `see-body`, `see-body-from`.
+  \ See also: `see-xt`, `see-body`, `see-body-from`.
   \
   \ }doc
 
@@ -251,7 +253,7 @@ need ?(  [unneeded] see-body-from ?(  need see
   \ `exit` in the midle of the definition, because `see` stops
   \ at the first `exit` found.
   \
-  \ See: `see-body`, `see`, `see-xt`.
+  \ See also: `see-body`, `see-xt`.
   \
   \ }doc
 
@@ -278,7 +280,7 @@ need ?(  [unneeded] see-body-from ?(  need see
   \ The listing can be paused with the space bar, then stopped
   \ with the return key or resumed with any other key.
   \
-  \ See: `see`, `see-body`, `see-body-from`.
+  \ See also: `see`, `see-body`, `see-body-from`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702011640
+  \ Last modified: 201702171828
 
   \ -----------------------------------------------------------
   \ Description
@@ -96,6 +96,8 @@
   \ 2017-02-01: Fix needing of `#spaces` and `#chars`. Move
   \ `upper` and `uppers` from the kernel. Add `upper-routine`.
   \ Move `lowers` from the kernel.
+  \
+  \ 2017-02-17: Update cross references.
 
 ( str= str< str> trim +place hunt )
 
@@ -276,7 +278,7 @@ need ?(  [unneeded] d>str ?(
   \ Convert _x_ to a 1-cell binary string _ca len_ in `pad`.
   \ _ca len_ contains _x_ "as is", as stored in memory.
   \
-  \ See: `c>bstring`, `2>bstring`, `pad`.
+  \ See also: `c>bstring`, `2>bstring`.
   \
   \ }doc
 
@@ -290,7 +292,7 @@ need ?(  [unneeded] d>str ?(
   \ Convert _c_ to a 1-char binary string _ca len_ in `pad`,
   \ _ca len_ contains _c_ "as is", as stored in memory.
   \
-  \ See: `>bstring`, `2>bstring`, `pad`.
+  \ See also: `>bstring`, `2>bstring`.
   \
   \ }doc
 
@@ -307,7 +309,7 @@ need ?(
   \ Convert _xd_ to a 2-cell binary string in `pad`.
   \ _ca len_ contains _xd_ "as is", as stored in memory.
   \
-  \ See: `>bstring`, `c>bstring`, `pad`.
+  \ See also: `>bstring`, `c>bstring`.
   \
   \ }doc
 
@@ -363,8 +365,6 @@ code lengths
   \   2over nip over  ;
   \ ----
 
-  \ See: `s+`.
-  \
   \ }doc
 
 [unneeded] s+  ?(  need lengths  need pick
@@ -420,7 +420,7 @@ code upper  ( c -- c' )  E1 c, 7D c, 21 c, pusha , E5 c,
   \
   \ Convert _c_ to uppercase _c'_.
   \
-  \ See: `uppers`, `lower`, `upper-routine`.
+  \ See also: `uppers`, `lower`, `upper-routine`.
   \
   \ }doc
 
@@ -437,7 +437,7 @@ set-current ?)
   \ Return address _a_ of a routine that converts the ASCII
   \ character in the A register to uppercase.
   \
-  \ See: `upper`, `lower-routine`.
+  \ See also: `upper`, `lower-routine`.
   \
   \ }doc
 
@@ -465,7 +465,7 @@ code uppers  ( ca len -- )
   \
   \ Convert string _ca len_ to uppercase.
   \
-  \ See: `uppers1`, `lowers`, `upper`.
+  \ See also: `uppers1`, `lowers`, `upper`.
   \
   \ }doc
 
@@ -478,7 +478,7 @@ code uppers  ( ca len -- )
   \
   \ Change the first char of string _ca len_ to uppercase.
   \
-  \ See: `uppers`, `upper`.
+  \ See also: `uppers`, `upper`.
   \
   \ }doc
 
@@ -506,7 +506,7 @@ code lowers  ( ca len -- )
   \
   \ Convert string _ca len_ to lowercase.
   \
-  \ See: `uppers`, `lower`.
+  \ See also: `uppers`, `lower`.
   \
   \ }doc
 
@@ -844,7 +844,7 @@ need ?(
   \
   \ Create a string constant _name_ with value _ca len_.
   \
-  \ See: `sconstants`.
+  \ See also: `sconstants`.
   \
   \ }doc
 
@@ -886,7 +886,7 @@ need ?(
   \ 3 digitname cr type cr
   \ ----
 
-  \ See: `sconstant`.
+  \ See also: `sconstant`.
   \
   \ }doc
 
@@ -916,7 +916,7 @@ need ?(
   \
   \ Origin: Forth-2012 (STRING EXT).
   \
-  \ See: `substitute`, `replaces`.
+  \ See also: `replaces`.
   \
   \ }doc
 

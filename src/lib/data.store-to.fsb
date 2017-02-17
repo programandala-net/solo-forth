@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611181716
+  \ Last modified: 201702172004
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,9 @@
   \
   \ 2016-11-18: Add missing references to `const`, `cconst` and
   \ `2const` in documentation.
+  \
+  \ 2017-02-17: Update cross references and improve
+  \ documentation.
 
 ( !> 2!> c!> )
 
@@ -52,25 +55,28 @@ need ?(  need >body
   \ doc{
   \
   \ !>
+  \   Interpretation: ( x "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( x -- )
   \
   \ Interpretation: ( x "name" -- )
   \
-  \ Parse "name", which is the name of a word created by
+  \ Parse _name_, which is the name of a word created by
   \ `constant` or `const`, and make _x_ its value.
   \
   \ Compilation: ( "name" -- )
   \
-  \ Parse "name", which is a word created by `constant` or
+  \ Parse _name_, which is a word created by `constant` or
   \ `const`, and append the execution execution semantics given
   \ below to the current definition.
   \
   \ Execution: ( x -- )
   \
-  \ Make _x_ the current value of constant "name".
-  \
-  \ See: `constant`, `const`, `c!>`, `2!>`.
+  \ Make _x_ the current value of constant _name_.
   \
   \ Origin: IsForth.
+  \
+  \ See also: `c!>`, `2!>`.
   \
   \ }doc
 
@@ -82,6 +88,9 @@ need ?(  need >body
   \ doc{
   \
   \ 2!>
+  \   Interpretation: ( xd "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( xd -- )
   \
   \ Interpretation: ( xd "name" -- )
   \
@@ -98,9 +107,9 @@ need ?(  need >body
   \
   \ Make _xd_ the current value of double-cell constant "name".
   \
-  \ See: `2constant`, `2const`, `!>`, `c!>`.
-  \
   \ Origin: IsForth's `!>`.
+  \
+  \ See also: `!>`, `c!>`.
   \
   \ }doc
 
@@ -112,6 +121,9 @@ need ?(  need >body
   \ doc{
   \
   \ c!>
+  \   Interpretation: ( c "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( c -- )
   \
   \ Interpretation: ( c "name" -- )
   \
@@ -129,9 +141,9 @@ need ?(  need >body
   \ Make _c_ the current value of the character constant
   \ "name".
   \
-  \ See: `cconstant`, `cconst`, `!>`, `2!>`.
-  \
   \ Origin: IsForth's `!>`.
+  \
+  \ See also: `!>`, `2!>`.
   \
   \ }doc
 

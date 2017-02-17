@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611231641
+  \ Last modified: 201702172012
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,6 +37,8 @@
 
   \ 2016-11-23: Start. Adapt, fix and improve the original code
   \ (http://www.forth.org/svfig/Len/bits.htm).
+  \
+  \ 2017-02-17: Update cross references.
 
 ( bitmasks bits>bytes bit-array !bit @bit )
 
@@ -51,8 +53,6 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ Address of a table that holds the bitmasks for bits 0..7
   \ as used by `bit-array`.
   \
-  \ See: `bit-array`.
-  \
   \ }doc
 
 : bits>bytes  ( n1 -- n2 )  8 /mod swap 0<> -  ;
@@ -63,8 +63,6 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ Return the number of bytes _n2_ needed to hold _n1_ bits.
   \ Used by `bit-array`.
-  \
-  \ See: `bit-array`.
   \
   \ }doc
 
@@ -88,7 +86,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ Return bitmak _b_ and address _ca_ of bit _n_ of the array.
   \
-  \ See: `@bit`, `!bit`, `bits>bytes`, `bitmasks`.
+  \ See also: `@bit`, `!bit`, `bits>bytes`, `bitmasks`.
   \
   \ }doc
 
@@ -101,7 +99,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ Store flag _f_ in an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.
   \
-  \ See: `@bit`, `bit-array`.
+  \ See also: `@bit`, `bit-array`.
   \
   \ }doc
 
@@ -115,7 +113,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ address _ca_ and bitmask _b_.  This word is an alias of
   \ `c@and?`.
   \
-  \ See: `!bit`, `bit-array`, `c@and?`.
+  \ See also: `!bit`, `bit-array`.
   \
   \ }doc
 
