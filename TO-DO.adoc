@@ -437,6 +437,34 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 .2017-02-17:
 
+NOTE: Milestone: 0.14.0
+
+Replace "behaviour" with "action", concerning deferred words. Example
+"its/whose default behaviour is".
+
+.2017-02-17:
+
+NOTE: Milestone: 0.14.0
+
+Replace backticks markup with pluses in the "Origin" section of the
+glossary entries, because words backticks are cross references.
+
+Already done in the main kernel.
+
+.2017-02-17:
+
+NOTE: Milestone: 0.14.0
+
+Add "This word is an immediate word".
+
+.2017-02-17:
+
+NOTE: Milestone: 0.14.0
+
+Include the execution table in the documentation of `interpret-table`.
+
+.2017-02-17:
+
 In glossary entries, change "its equivalent code" to "its equivalent
 definition".  The reason is "Definition:" is used as heading in normal
 cases.
@@ -446,11 +474,13 @@ cases.
 Remove the documentation of DOS subroutines that is duplicated in its
 corresponding entry constant, and put a note instead.
 
-.2017-02-15:
+.2017-02-15, 2017-02-17:
 
 Replace "See:" with "See also:" and remove from it the words that are
 mentioned in the main description, because they will be cross
 references as well.
+
+Already done in the main kernel.
 
 .2017-02-11:
 
@@ -1410,6 +1440,12 @@ Also, `end-module` is used by modules `module` and `begin-module`.
 
 // Names {{{1
 == Names ==
+
+.2017-02-17:
+
+NOTE: Milestone: 0.14.0
+
+Rename `?name-too-short` to `?empty-name`, or `?no-name`.
 
 .2017-02-16:
 
