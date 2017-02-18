@@ -1,6 +1,6 @@
-= Solo Forth manual (%DOS% version)
+= Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-15
+:revdate: 2017-02-18
 :toc:
 :toclevels: 1
 :toc-placement!:
@@ -9,6 +9,26 @@ toc::[]
 
 // =============================================================
 
-include::../README.adoc[leveloffset=+1]
+include::../README.adoc[tags=description]
+
+include::../README.adoc[tags=history]
+
+include::../README.adoc[tags=target]
+
+include::../README.adoc[tags=downloads]
+
+include::../README.adoc[tags=tree]
+
+include::../README.adoc[tags=disks]
+
+include::../README.adoc[tags=run]
+
+include::../README.adoc[tags=library]
+
+include::../README.adoc[tags=write]
+
+include::../README.adoc[tags=vim]
+
+include::../README.adoc[tags=rebuild]
 
 // =============================================================

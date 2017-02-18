@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702171238
+# Last modified: 201702181919
 
 # ==============================================================
 # Author
@@ -180,13 +180,13 @@ cleandoc:
 doc: gplusdosdoc plus3dosdoc trdosdoc
 
 .PHONY: gdoc
-doc: gplusdosdoc
+gdoc: gplusdosdoc
 
 .PHONY: pdoc
-doc: plus3dosdoc
+pdoc: plus3dosdoc
 
 .PHONY: tdoc
-doc: trdosdoc
+tdoc: trdosdoc
 
 # ==============================================================
 # Kernel
@@ -588,7 +588,7 @@ disks/trdos/disk_9_library_without_dos.trd: tmp/library_without_dos.fsb
 # version of Solo Forth:
 
 backgrounds/current.pbm: src/version.z80s
-	version=$(shell make/versionfile2string.fs $<) ; \
+	version=$(shell gforth -e 's" ../$<" false' make/version_number.fs) ; \
 	cd backgrounds ; \
 	cp -f v$${version}.pbm $(notdir $@) ; \
 	cd ..
@@ -622,14 +622,22 @@ backgrounds/current.scr: backgrounds/current.pbm
 # ----------------------------------------------
 # Documentation for G+DOS
 
+doc/solo_forth_for_gplusdos_manual.html: \
+	doc/solo_forth_for_gplusdos_manual.adoc \
+	README.adoc
+	asciidoctor --out-file=$@ $<
+
 tmp/doc.gplusdos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.gplusdos.z80s \
 	$(gplusdos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.gplusdos.manual_header.adoc: src/doc/manual_header.adoc
-	sed -e "s/%DOS%/G+DOS/" $< > $@
+tmp/doc.gplusdos.manual_header.adoc: \
+	src/doc/manual_header.adoc \
+	src/version.z80s
+	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
+	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 doc/solo_forth_for_gplusdos_manual.adoc: \
 	tmp/doc.gplusdos.manual_header.adoc \
@@ -644,14 +652,22 @@ gplusdosdoc: doc/solo_forth_for_gplusdos_manual.html
 # ----------------------------------------------
 # Documentation for +3DOS
 
+doc/solo_forth_for_plus3dos_manual.html: \
+	doc/solo_forth_for_plus3dos_manual.adoc \
+	README.adoc
+	asciidoctor --out-file=$@ $<
+
 tmp/doc.plus3dos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.plus3dos.z80s \
 	$(plus3dos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.plus3dos.manual_header.adoc: src/doc/manual_header.adoc
-	sed -e "s/%DOS%/+3DOS/" $< > $@
+tmp/doc.plus3dos.manual_header.adoc: \
+	src/doc/manual_header.adoc \
+	src/version.z80s
+	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
+	sed -e "s/%DOS%/+3DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 doc/solo_forth_for_plus3dos_manual.adoc: \
 	tmp/doc.plus3dos.manual_header.adoc \
@@ -666,14 +682,22 @@ plus3dosdoc: doc/solo_forth_for_plus3dos_manual.html
 # ----------------------------------------------
 # Documentation for TR-DOS
 
+doc/solo_forth_for_trdos_manual.html: \
+	doc/solo_forth_for_trdos_manual.adoc \
+	README.adoc
+	asciidoctor --out-file=$@ $<
+
 tmp/doc.trdos.files.txt: \
 	src/kernel.z80s \
 	src/kernel.trdos.z80s \
 	$(trdos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.trdos.manual_header.adoc: src/doc/manual_header.adoc
-	sed -e "s/%DOS%/TR-DOS/" $< > $@
+tmp/doc.trdos.manual_header.adoc: \
+	src/doc/manual_header.adoc \
+	src/version.z80s
+	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
+	sed -e "s/%DOS%/TR-DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 doc/solo_forth_for_trdos_manual.adoc: \
 	tmp/doc.trdos.manual_header.adoc \
@@ -865,3 +889,7 @@ oldbackup:
 # sources.
 #
 # 2017-02-17: Don't make the documentation by default.
+#
+# 2017-02-18: Fix recipe aliases that build the documentation.
+# Make the manual depend on <README.adoc>, from which some
+# sections are taken.

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-17
+:revdate: 2017-02-18
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -434,6 +434,16 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-02-18:
+
+Fix rendering of `-->` in the documentation.
+
+.2017-02-18:
+
+Asciidoctor bug?: role _external_ in <README.adoc> is not rendered
+into an HTML class when this file is included into the manual. It is
+included verbatim.
 
 .2017-02-17:
 
@@ -1761,7 +1771,7 @@ for u milliseconds:
 : TRY ( u -- ) COUNTER + BEGIN TEST DUP EXPIRED UNTIL ;
 ----
 
-.2016-12-06, 2017-01-24:
+.2016-12-06, 2017-01-24, 2017-02-18:
 
 NOTE: Milestone: 0.14.0
 
@@ -1776,6 +1786,14 @@ Return the current value of the millisecond timer.
 
 ----
 : timer  ( ms -- )  counter swap - u.  ;
+----
+
+Another example, from Brouhabouha Forth:
+
+----
+: TIMER  ( n --)
+   base @ decimal ticks rot -
+   0 <# #s #> type . sec  base ! ;
 ----
 
 .2016-12-20:
