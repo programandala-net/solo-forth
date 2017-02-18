@@ -7,6 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
+// Last modified 201702182121
 
 // tag::description[]
 
@@ -18,8 +19,7 @@ Forth,role="external"] system under development for the ZX Spectrum
 
 Solo Forth is focused on cross development of Forth programs for this
 platform, using a ZX Spectrum emulator on a GNU/Linux operating system
-(in theory, the cross development could be done on other kind of
-operating system as well, but this has not been tried).
+(in theory, other kind of operating system could be used as well).
 
 Solo Forth can be used also as a stand-alone Forth System on a ZX
 Spectrum emulator or the real computer, but that's not what it was
@@ -45,11 +45,11 @@ developed for.
 == History and current status
 
 The development started on 2015-05-30, from the
-http://programandala.net/en.program.abersoft_forth[disassembly of
-Abersoft Forth], a tape-based fig-Forth 1.1 for ZX Spectrum 48.
+http://programandala.net/en.program.abersoft_forth[disassembled code
+of Abersoft Forth], a tape-based fig-Forth 1.1 for ZX Spectrum 48.
 
 As of 2017-02-18 Solo Forth is under active development. It's very
-stable, and it's already used to develop some projects in Forth.
+stable, and it's being used to develop a couple of projects in Forth.
 
 // end::history[]
 
@@ -118,19 +118,6 @@ feasible...
 
 // end::target[]
 
-// tag::downloads[]
-
-== Downloads
-
-Solo Forth can be downloaded from two sites:
-
-- http://programandala.net/en.program.solo_forth.html[Solo Forth home
-  page]
-- http://github.com/programandala-net/solo-forth[Solo Forth repository
-  in GitHub,role="external"]
-
-// end::downloads[]
-
 // tag::tree[]
 
 == Directory tree
@@ -166,15 +153,6 @@ Solo Forth can be downloaded from two sites:
 
 // end::tree[]
 
-== Documentation
-
-A HTML manual is included in the <doc> directory.  It is automatically
-built from the source files, which are fully documented, and from
-secondary files as well, like this README file. The manual is a work
-in progress. At the moment it contains the basic information and a
-complete glossary with cross references.  A section to describe the
-contents of the library modules is under development.
-
 // tag::disks[]
 == Disks
 
@@ -200,44 +178,8 @@ The subdirectory name and the filename extension depend on the DOS.
 
 WARNING: Disks 1, 2 and 3 are Forth blocks disks: They store the Forth
 blocks directly on the disk sectors, without any file system.
-Therefore they can not be used with DOS commands.
-
-=== Notes on the disk images formats
-
-.MGT
-
-The MGT disk image file format (used for G+DOS disks) does not include
-format-describing metadata: The MGT file is just a dump of the
-original 800-KiB disk. Beside, G+DOS does not need its own metadata
-(the directory tracks) be present in order to read or write sectors.
-
-That's why converting Forth sources to MGT disk images is most simple,
-and the full capacity of the disks can be used to store the Forth
-blocks.
-
-All this means the MGT disk images actually are identical to Forth
-blocks files, as used by modern Forth systems.  Therefore, for
-example, they can be browsed with a Forth blocks editor.
-
-.TRD
-
-Also the TRD disk images, one of the formats used for TR-DOS disk
-images, are dumps of the original disks, without any format-describing
-metadata. But, contrary to G+DOS, TR-DOS needs the system track (track
-0) to contain certain data in order to recognize the disk, even for
-sector-level access. That's why 636 KiB can be used for Forth blocks,
-4 KiB (one track) less than then maximum capacity.
-
-Anyway, TRD disk images can be browsed with a Forth blocks editor,
-with the following restriction: blocks 0..3 will be shown as garbage
-(they are track 0 of the disk), while the actual first Forth block of
-the disk (block 0) will be shown as block 4.
-
-.DSK
-
-The DSK disk image format, used by +3DOS and other systems, is quite a
-different thing: It contains a lot of metadata to describe the format
-of the disk, the format tracks and the format of sectors...
+Therefore their contents can not be accessed with ordinary DOS
+commands.
 
 // end::disks[]
 
@@ -307,154 +249,22 @@ the library, follow these steps:
    disk B of the Beta 128 disk interface. Type `1 set-drive throw` to
    make drive 1 (="B") the current one.
 3. Type `1 load` to load block 1 from the library disk. By convention,
-   block 1 is used as a loader.  In Solo Forth, block 1 contains just
-   `2 load`, in order to load the `need` tool and related words from
-   block 2.
+   block 0 can not be loaded (is is used for comments), and block 1 is
+   used as a loader.  In Solo Forth, block 1 contains just `2 load`,
+   in order to load the `need` tool and related words from block 2.
 4. Type `need name`, were "name" is the name of the word or tool you
    want to load from the library.
 
-=== Library index
-
-The `need` word and its related words search the index line (line 0)
-of all blocks of the disk for the first occurence of the required
-word, within a configurable range of blocks (using the variables
-`first-locatable` and `last-locatable`).  Of course, nested `need` are
-resolved the same way: searching the library from the beginning.  This
-can be slow.  This is not a problem, because the goal of Solo Forth is
-cross development, and therefore only the last step of the development
-loop, i.e., the compilation of the sources from the disk images
-created in the host system, compilation that includes all the slow
-searching of library blocks, is done in the real (actually, emulated)
-machine. But the system includes a tool to create an index of the
-library, which is used to locate their contents instantaneously, what
-makes things more comfortable when the Forth system is used
-interactively.
-
-How to use the library index:
-
-1. Load the indexer with `need make-thru-index`.
-2. Make the index and activate it with `make-thru-index`.
-3. The default behaviour (no index) can be restored with
-   `use-no-index`.  The index can be reactivated with
-   `use-thru-index`.
-
-The indexer creates an index (actually, a Forth word list whose
-definitions use no code or data space) and changes the default
-behaviour of `need` and related words to use it. Then `need name` will
-automatically start loading the first block where the word "name" is
-defined.
-
-.Time and memory required to make the library index (in v0.12.0)
-|===
-| DOS     | First block | Last block | Seconds | Bytes of far memory
-
-| G+DOS   |           5 |        799 |     154 |               13498
-| TR-DOS  |           5 |        635 |     135 |               13027
-|===
-
-NOTE: The far memory is the virtual 64-KiB space formed by 4
-configurable memory banks. No code or data space is used by the
-indexer.
-
-An alternative indexer is under development. It's activated with
-`use-fly-index` and does not make and index in advance: Instead, it
-indexes the blocks on the fly, when they are searched the first time.
-This indexer was included in Solo Forth 0.12.0 but it's not finished
-yet.
-
-=== How to search the library from the host system
-
-A simple wrapper script is provided to search the Forth sources (not
-the Z80 kernel files) for a regular expression. It's used during the
-development, but it can be useful for the user too.
-
-Usage examples:
-
-----
-tools/search_library.sh make-thru-index
-tools/search_library.sh make-thru-index -l
-tools/search_library.sh color
-tools/search_library.sh ":\scolor\s"
-----
-
-The script uses `ack`, but it can be replaced with the more common
-`grep`. They are compatible.
-
 // end::library[]
 
-=== How to use the additional source disks
+== Documentation
 
-Section pending.
+A HTML manual is included in the <doc> directory.  It is automatically
+built from the source files, which are fully documented, and from
+secondary files as well, like this README file, which in fact is only
+an extract from the manual.
 
-// tag::write[]
-
-[id=_write]
-== How to write Forth programs
-
-In order to use Solo Forth to write programs for ZX Spectrum,
-programmers already acquainted with Forth and GNU/Linux systems can
-extract all the required information from the <Makefile> of Solo
-Forth.
-
-The only difference between <<__rebuild,building Solo Forth>> and
-building a Forth program is the contents of disk 0 (the boot disk), if
-needed, and the library modules included in disk 1 (the library disk),
-which usually also contains the source of the program.  If the program
-does not need to use the disk at run-time, you can simply copy the
-default disk 0, and boot it to load your program from block 1 of your
-customized disk 1, with a simple `1 load`. When the loading finishes,
-you can save a snapshot with the ZX Spectrum emulator.
-
-Some simple little games are provided as examples, in <<_disks,disk
-3>>.  Some of them are not finished yet.
-
-In order to try and fix the Forth system during its development, two
-more complex game projects are being developed at the same time.  One
-of them has been published:
-http://programandala.net/en.program.black_flag.html[Black Flag]
-(http://github.com/programandala-net/black-flag[Black Flag in
-GitHub]).  It's not finished, but it can be useful as example of
-development with Solo Forth.
-
-// end::write[]
-
-// tag::vim[]
-
-[id=_vim]
-== Vim support
-
-In order to make Vim recognize and highlight the Solo Forth sources,
-with the ".fsb" extension, copy the contents of the <./vim/> directory
-to your home <~/.vim/> directory.
-
-// end::vim[]
-
-// tag::rebuild[]
-
-[id=_rebuild]
-== How to rebuild
-
-If you modify the sources, you have to build new disk images for your
-DOS of choice. Also the manual depends on the documentation included
-in the sources.
-
-First, see the requirements listed in the header of the <Makefile>
-file and install the required programs. Then enter the project
-directory and use one of the following commands to build the disk
-images or the manual for your DOS of choice:
-
-.Commands to rebuild Solo Forth
-|===
-| DOS          | Disk images                 | Documentation
-
-| G+DOS        | `make gplusdos` or `make g` | `make gplusdosdoc` or `make gdoc`
-| TR-DOS       | `make trdos` or `make t`    | `make trdosdoc` or `make tdoc`
-| +3DOS        | `make plus3dos` or `make p` | `make plus3dosdoc` or `make pdoc`
-| All of them  | `make all` or `make`        | `make doc`
-|===
-
-The disk images will be created in the <disks> directory. The HTML
-manual will be created in the <doc> directory.
-
-// end::rebuild[]
+The manual is a work in progress. At the moment it contains the basic
+information and a complete glossary with cross references.  A section
+to describe the contents of the library modules is under development.
 

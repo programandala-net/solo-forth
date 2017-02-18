@@ -5,6 +5,8 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
+// Last modified 201702182135
+
 // Assembler {{{1
 == Assembler ==
 
@@ -434,6 +436,12 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-02-18:
+
+Remove the file that contains only the glossary heading.  Instead of
+using `cat` in <Makefile>, convert the main file of the manual into an
+skeleton that includes the individual files.
 
 .2017-02-18:
 
