@@ -1,9 +1,11 @@
+( )
+
   \ meta.test.MISC.fsb
   \
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171526
+  \ Last modified: 201702200009
 
   \ -----------------------------------------------------------
   \ Description
@@ -101,6 +103,33 @@
   \ returns an error result. Move `.tape` from the tape module.
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
+  \
+  \ 2017-02-19: Add `-do-test`.  Replace `do`, which has been
+  \ moved to the library, with `?do`.
+
+( -do-test )
+
+need do  need -do
+
+cr .( Results of '-1 +loop' loops:)
+
+: count-down  ( limit start -- )  do i . -1 +loop  ;
+
+cr .( '0 0 do' prints 0) 0 0 count-down
+cr .( '4 0 do' prints 0 -1..-32768 32767..4) \ 4 0 count-down
+cr .( '0 4 do' prints 4 3 2 1 0:) 0 4 count-down
+
+: ?count-down  ( limit start -- )  ?do i . -1 +loop  ;
+
+cr .( '0 0 ?do' prints nothing:) 0 0 ?count-down
+cr .( '4 0 ?do' prints 0 -1..-32768 32767..4) \ 4 0 ?count-down
+cr .( '0 4 ?do' prints 4 3 2 1 0:) 0 4 ?count-down
+
+: -count-down  ( limit start -- )  -do i . -1 +loop  ;
+
+cr .( '0 0 -do' prints nothing:) 0 0 -count-down 
+cr .( '4 0 -do' prints nothing:) 4 0 -count-down
+cr .( '0 4 -do' prints 4 3 2 1:) 0 4 -count-down
 
 ( .tape )
 
@@ -137,7 +166,7 @@ create font  2048 allot
 1 set-drive throw  font 0 s" lett.fzx" <file
 font fzx-font !
 
-: zxtype  ( ca len -- )  bounds do  i c@ fzx-emit  loop  ;
+: zxtype  ( ca len -- )  bounds ?do  i c@ fzx-emit  loop  ;
 
 cr .( fzx-emit is ready ) cr
 ' (fzx-emit)
@@ -627,9 +656,9 @@ need catch
   \ XXX TMP -- `err>ord` tests `error>ordinal`
 
 : err>ord  ( -- )
-  91 1 do  i . i error>ordinal ."  -> " . cr  loop
-  286 256 do  i . i error>ordinal ."  -> " . cr  loop
-  1025 1000 do  i . i error>ordinal ."  -> " . cr  loop ;
+  91 1 ?do  i . i error>ordinal ."  -> " . cr  loop
+  286 256 ?do  i . i error>ordinal ."  -> " . cr  loop
+  1025 1000 ?do  i . i error>ordinal ."  -> " . cr  loop ;
 
 ( type-fields-test )
 
@@ -723,9 +752,9 @@ need begincase
 need j  need k
 
 : jk-test  ( -- )
-  3 0 do
-    13 10 do
-      23 20 do
+  3 0 ?do
+    13 10 ?do
+      23 20 ?do
         k . j . i . cr
       loop
     loop
@@ -832,7 +861,7 @@ need u>ud
   \ High-level version of `far`.
 
 : far-test  ( -- )
-  hex $FFFF 1+ $0000 do
+  hex $FFFF 1+ $0000 ?do
     home i 4 .r  i far i high-far <>
     if  cr ." Mismatch in address " u. abort  then
   loop  decimal  ;

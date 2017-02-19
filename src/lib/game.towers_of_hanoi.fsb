@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201605181526
+  \ Last modified: 201702200003
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,9 @@
   \
   \ 2016-04-24: Remove `[char]`, which has been moved to the
   \ library.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( hanoi )
 
@@ -71,7 +74,7 @@ create PegStacks  30 chars allot
 : PegStack  ( peg -- addr )   10 * PegStacks + ;
 
 : clear-peg    ( peg -- )  dup PegStack  swap PegSP ! ;
-: clear-pegs  ( -- )  pegs 0 do  i clear-peg  loop  ;
+: clear-pegs  ( -- )  pegs 0 ?do  i clear-peg  loop  ;
 
   \ : PegDepth  ( peg -- depth )  dup PegSP @  swap PegStack - ;
   \ XXX OLD not needed
@@ -98,7 +101,7 @@ create PegStacks  30 chars allot
 : maketab  ( n1..nn n -- XXX ) \ XXX TODO stack effect
   create
     dup alloted over 1- + swap 0
-    2dup <> if    do  dup >r c! r> 1-  loop
+    2dup <> if    ?do  dup >r c! r> 1-  loop
             else  2drop
             then  drop
   does>  + c@ ;
@@ -115,7 +118,7 @@ decimal
 : finished  ( -- )  key drop 0 11 at-xy ." Stopped" cr abort  ;
 
 : show-pegs  ( -- )
-  page  pegs 0 do  i show-peg  loop  slowness @ ms
+  page  pegs 0 ?do  i show-peg  loop  slowness @ ms
   key? if  finished  then ;
 
 : move-ring  ( ring -- ring )

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605100125
+  \ Last modified: 201702200011
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,10 +37,12 @@
   \ History
 
   \ 2016-05-09: First version.
+  \
+  \ 2017-02-19: Need `do`, which has been moved to the library.
 
 ( hayes-tester )
 
-need where
+need where  need do
 
 variable verbose  verbose off
   \ Set this flag to true for more verbose output;

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171828
+  \ Last modified: 201702200012
 
   \ -----------------------------------------------------------
   \ Description
@@ -98,6 +98,9 @@
   \ Move `lowers` from the kernel.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-20: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( str= str< str> trim +place hunt )
 
@@ -251,7 +254,7 @@ need ?(  [unneeded] d>str ?(
 [unneeded] chars>string ?(
 : chars>string  ( c1..cn n -- ca len )
   dup if    dup allocate-string swap 2dup 2>r  ( c1..cn ca n )
-            bounds do  i c!  loop  2r>
+            bounds ?do  i c!  loop  2r>
       else  pad swap  then  ; ?)
 
   \ doc{
@@ -520,7 +523,7 @@ need ?(
   \ `#chars`? add `#nulls`
 
 : #spaces  ( ca len -- +n )
-  0 rot rot  0 do  count bl = under+  loop  drop abs  ; ?)
+  0 rot rot  0 ?do  count bl = under+  loop  drop abs  ; ?)
 
   \ Credit:
   \
@@ -539,7 +542,7 @@ need ?(
 
 [unneeded] #chars ?(  need under+
 : #chars  ( ca len c -- +n )
-  0 2swap 0 do
+  0 2swap 0 ?do
     ( c count ca ) count over = under+  loop  2drop abs  ; ?)
 
   \ doc{

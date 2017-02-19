@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171931
+  \ Last modified: 201702200000
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,9 @@
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( times dtimes )
 
@@ -74,7 +77,7 @@ variable times-xt  \ the _xt_ executed by `times`
   \ Usage example:
 
   \ ----
-  \ : blink  ( -- )  7 0 do  i border  loop  0 border  ;
+  \ : blink  ( -- )  7 0 ?do  i border  loop  0 border  ;
   \ : blinking  ( -- )  100 times blink  ." Done" cr  ;
   \ ----
 
@@ -104,7 +107,7 @@ variable dtimes-xt  \ the _xt_ executed by `dtimes`
   \ Usage example:
 
   \ ----
-  \ : blink  ( -- )  7 0 do  i border  loop  0 border  ;
+  \ : blink  ( -- )  7 0 ?do  i border  loop  0 border  ;
   \ : blinking  ( -- )  100000. dtimes blink  ." Done" cr  ;
   \ ----
 

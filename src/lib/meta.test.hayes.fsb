@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611262144
+  \ Last modified: 201702200010
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,10 +53,12 @@
   \
   \ 2016-11-26: Remove `warnings off`, because now warnings are
   \ deactivated by default.
+  \
+  \ 2017-02-19: Need `do`, which has been moved to the library.
 
 ( hayes-test )
 
-need hayes-tester  verbose on  hex
+need hayes-tester  need do  verbose on  hex
 
 { -> }  \ start with clean slate
 

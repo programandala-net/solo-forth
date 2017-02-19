@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171912
+  \ Last modified: 201702200003
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,9 @@
   \ 2017-02-15: Update notation in the documentation of `span`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( at-accept clear-accept set-accept )
 
@@ -563,8 +566,9 @@ need ?(  [unneeded] #>kk ?(  need kk-ports
 
 : pressed  ( -- false | bitmask port true )
   false \ by default
-  [ kk-ports keys /kk * bounds swap ] literal literal
-  do  i kk@ pressed? if  drop i kk@ 1 leave  then  /kk +loop  ;
+  [ kk-ports keys /kk * bounds swap ] literal literal ?do
+    i kk@ pressed? if  drop i kk@ 1 leave  then  /kk
+  +loop  ;
 
   \ doc{
   \
@@ -596,7 +600,7 @@ need kk-ports
 
   0. kk-pressed 2! \ none by default
   [ kk-ports keys /kk * bounds swap ] literal literal
-  do  i kk@ pressed?
+  ?do  i kk@ pressed?
   if  kk-pressed 2@ + if
   then
   /kk +loop

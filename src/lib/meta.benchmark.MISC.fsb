@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702012218
+  \ Last modified: 201702200007
 
   \ -----------------------------------------------------------
   \ Description
@@ -96,6 +96,9 @@
   \ 2017-01-31: Add `paper-bench`, `ink-bench`.
   \
   \ 2017-02-01: Revise `um*-bench` and `um/mod-bench`.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( ink-bench )
 
@@ -108,11 +111,11 @@ need ink.  need set-ink  need attr@  need attr!
   cr ." Bench of ink "
   cr ." Results for " dup u. ." iterations"
   dup cr ." ink. :" cr space
-  bench{ 0 do  i ink.         loop default-colors }bench.
+  bench{ 0 ?do  i ink.         loop default-colors }bench.
   dup cr ." set-ink in Forth :" cr space
-  bench{ 0 do  i old-set-ink  loop default-colors }bench.
+  bench{ 0 ?do  i old-set-ink  loop default-colors }bench.
       cr ." set-ink in Z80 :" cr space
-  bench{ 0 do  i set-ink      loop default-colors }bench.  ;
+  bench{ 0 ?do  i set-ink      loop default-colors }bench.  ;
 
   \ 2017-01-31:
 
@@ -154,11 +157,11 @@ need attr@   need attr!
   cr ." Bench of paper "
   cr ." Results for " dup u. ." iterations"
   dup cr ." paper. :" cr space
-  bench{ 0 do  i paper.         loop default-colors }bench.
+  bench{ 0 ?do  i paper.         loop default-colors }bench.
   dup cr ." set-paper in Forth :" cr space
-  bench{ 0 do  i old-set-paper  loop default-colors }bench.
+  bench{ 0 ?do  i old-set-paper  loop default-colors }bench.
       cr ." set-paper in Z80 :" cr space
-  bench{ 0 do  i set-paper      loop default-colors }bench.  ;
+  bench{ 0 ?do  i set-paper      loop default-colors }bench.  ;
 
   \ 2017-01-31:
 
@@ -197,7 +200,7 @@ need colored-circle-pixel  need uncolored-circle-pixel
 need frames@  need reset-frames  defer (number-base)
 
 : (run)  ( u -- )
-  bench{ 0 do  127 95 95 circle  loop }bench. ;
+  bench{ 0 ?do  127 95 95 circle  loop }bench. ;
 
 : run  ( u -- )
   cr ." Bench of circle "
@@ -612,7 +615,7 @@ need bench{  need }bench.  need adraw176  need aline176
   \ during the loop:
 
   \ incy 2! drop r> 1+ 0 2dup
-  \ do  2drop x1 @ y1 @ 2dup set-pixel176
+  \ ?do  2drop x1 @ y1 @ 2dup set-pixel176
   \     x1 2@ incx 2@ d+ x1 2!
   \     y1 2@ incy 2@ d+ y1 2!  loop  ( gx gy )
   \ [ os-coordy ] literal c! [ os-coordx ] literal c!  ;
@@ -622,7 +625,7 @@ need bench{  need }bench.  need adraw176  need aline176
   \ coordinates:
 
   \ incy 2! drop r> 1+ 0
-  \ do  x1 @ y1 @ set-save-pixel176
+  \ ?do  x1 @ y1 @ set-save-pixel176
   \     x1 2@ incx 2@ d+ x1 2!
   \     y1 2@ incy 2@ d+ y1 2!  loop  ;
 
@@ -864,7 +867,7 @@ need frames@  need reset-frames  defer (number-base)
 
 : (number-base-bench)  ( n xt -- )
   ['] (number-base) defer!
-  reset-frames  0 do  s" 000" (number-base) drop 2drop  loop
+  reset-frames  0 ?do  s" 000" (number-base) drop 2drop  loop
   frames@ d. cr  ;
 
 : number-base-bench  ( u -- )
@@ -898,10 +901,10 @@ defer (fill)
 : (fill-bench)  ( n xt -- )
   ['] (fill) defer!
   reset-frames  0
-  do  16384 6144 rnd (fill)  loop
-  \ do  16384 1 rnd (fill)  loop
-  \ do  16384 0 rnd (fill)  loop
-  \ do  16384 2048 rnd (fill)  loop
+  ?do  16384 6144 rnd (fill)  loop
+  \ ?do  16384 1 rnd (fill)  loop
+  \ ?do  16384 0 rnd (fill)  loop
+  \ ?do  16384 2048 rnd (fill)  loop
   frames@ cr d.
   key drop  ;
 
@@ -966,16 +969,16 @@ defer (fill)
 need value  need 2value  need bench{  need }bench.
 
 0 value val1  : value-bench  ( u -- )
-                bench{  0 do  val1 drop  loop  }bench.  ;
+                bench{  0 ?do  val1 drop  loop  }bench.  ;
 
 0. 2value val2  : 2value-bench  ( u -- )
-                  bench{  0 do  val2 2drop  loop  }bench.  ;
+                  bench{  0 ?do  val2 2drop  loop  }bench.  ;
 
 variable var1  : variable-bench  ( u -- )
-                 bench{  0 do  var1 @ drop  loop  }bench.  ;
+                 bench{  0 ?do  var1 @ drop  loop  }bench.  ;
 
 2variable var2  : 2variable-bench  ( u -- )
-                  bench{  0 do  var2 2@ 2drop  loop  }bench.  ;
+                  bench{  0 ?do  var2 2@ 2drop  loop  }bench. ;
 
 : run  ( u -- )
   cr dup ." value     " value-bench cr
@@ -1006,16 +1009,16 @@ need value  need cvalue  need cvariable
 need bench{  need }bench.
 
 0 value val  : value-bench  ( u -- )
-               bench{  0 do  val drop  loop  }bench.  ;
+               bench{  0 ?do  val drop  loop  }bench.  ;
 
 0 cvalue cval  : cvalue-bench  ( u -- )
-                 bench{  0 do  cval drop  loop  }bench.  ;
+                 bench{  0 ?do  cval drop  loop  }bench.  ;
 
 variable var  : variable-bench  ( u -- )
-                bench{  0 do  var @ drop  loop  }bench.  ;
+                bench{  0 ?do  var @ drop  loop  }bench.  ;
 
 cvariable cvar  : cvariable-bench  ( u -- )
-                  bench{  0 do  cvar c@ drop  loop  }bench.  ;
+                  bench{  0 ?do  cvar c@ drop  loop  }bench.  ;
 
 : run  ( u -- )
   cr dup ." value     " value-bench cr
@@ -1048,16 +1051,16 @@ need bench{  need }bench.
 0 value val  0 cvalue cval  variable var  cvariable cvar
 
 : value-bench  ( u -- )
-  bench{  0 do  i to val  loop  }bench.  ;
+  bench{  0 ?do  i to val  loop  }bench.  ;
 
 : cvalue-bench  ( u -- )
-  bench{  0 do  i cto cval  loop  }bench.  ;
+  bench{  0 ?do  i cto cval  loop  }bench.  ;
 
 : variable-bench  ( u -- )
-  bench{  0 do  i var !  loop  }bench.  ;
+  bench{  0 ?do  i var !  loop  }bench.  ;
 
 : cvariable-bench  ( u -- )
-  bench{  0 do  i cvar c!  loop  }bench.  ;
+  bench{  0 ?do  i cvar c!  loop  }bench.  ;
 
 : run  ( u -- )  cr dup ." value     " value-bench cr
                     dup ." cvalue    " cvalue-bench cr
@@ -1082,17 +1085,17 @@ need value  need 2value  need bench{  need }bench.
 0 value v1
 
 : to-value-bench  ( u -- )
-  bench{  0 do  0 to v1  loop  }bench.  ;
+  bench{  0 ?do  0 to v1  loop  }bench.  ;
 
 0. 2value v2
 
 : to-2value-bench  ( u -- )
-  bench{  0 do  0. to v2  loop  }bench.  ;
+  bench{  0 ?do  0. to v2  loop  }bench.  ;
 
 0. 2value v2
 
 : 2to-2value-bench  ( u -- )
-  bench{  0 do  0. 2to v2   loop  }bench.  ;
+  bench{  0 ?do  0. 2to v2   loop  }bench.  ;
 
 ( rshift-bench lshift-bench )
 
@@ -1106,12 +1109,12 @@ need frames@  need reset-frames
 
 : rshift-bench  ( u -- )
   reset-frames  0
-  do  128 255 rshift drop   loop
+  ?do  128 255 rshift drop   loop
   frames@ cr d.  ;
 
 : lshift-bench  ( u -- )
   reset-frames  0
-  do  128 255 lshift drop   loop
+  ?do  128 255 lshift drop   loop
   frames@ cr d.  ;
 
   \ 2015-11-01
@@ -1154,7 +1157,7 @@ need frames@  need reset-frames  need rnd
 
 : (/-bench)  ( n -- )
   reset-frames
-  1+ 1 do  drnd i (/) 2drop  loop  frames@ cr d.  ;
+  1+ 1 ?do  drnd i (/) 2drop  loop  frames@ cr d.  ;
 
 : /-bench  ( u -- )
   dup ['] m/ ['] (/) defer! (/-bench)
@@ -1182,7 +1185,7 @@ need ?(  need bench{  need }bench.
   \ 2017-02-01: Update.
 
 : run  ( u -- )
-  bench{  0 do  i i um* 2drop  loop  }bench.  ;
+  bench{  0 ?do  i i um* 2drop  loop  }bench.  ;
 
   \ Times Frames (1 frame = 50th of second)
   \ ----- -------------------------------------------
@@ -1218,10 +1221,10 @@ need ?(  need bench{  need }bench.
   \ 2017-02-01: Update.
 
 : um/mod-bench  ( u -- )
-  bench{  0 do  i s>d i um/mod 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i um/mod 2drop  loop  }bench.  ;
 
 : um/mod-bench88  ( n -- )
-  bench{  0 do  i s>d i um/mod88 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i um/mod88 2drop  loop  }bench.  ;
 
 : run  ( u -- )
   dup cr ." Abersoft Forth  U/MOD ..." um/mod-bench
@@ -1249,13 +1252,13 @@ need ?(  need bench{  need }bench.
 need bench{
 
 : a-m/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod drop 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i ud/mod drop 2drop  loop  }bench.  ;
 
 : z1-ud/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod881 drop 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i ud/mod881 drop 2drop  loop  }bench.  ;
 
 : z2-ud/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod882 drop 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i ud/mod882 drop 2drop  loop  }bench.  ;
 
 : run  ( u -- )
   dup cr ." Abersoft Forth  M/MOD ..." a-m/mod
@@ -1288,10 +1291,10 @@ need bench{
 need bench{
 
 : a-m/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod drop 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i ud/mod drop 2drop  loop  }bench.  ;
 
 : z-ud/mod  ( n -- )
-  bench{  0 do  i s>d i ud/mod88 drop 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i ud/mod88 drop 2drop  loop  }bench.  ;
 
 
 : run  ( u -- )
@@ -1320,7 +1323,7 @@ need frames@  need reset-frames
 defer num?
 
 : number?-bench  ( u -- )
-  reset-frames  0 do
+  reset-frames  0 ?do
     s" " num?  s" 12345" num?   s" 12345." num?
     s" -12345" num?  s" -12345." num?  empty-stack
   loop  frames@ cr d.  ;
@@ -1356,7 +1359,7 @@ need frames@  need reset-frames
 defer num?
 
 : number?-bench  ( u -- )
-  reset-frames  0 do
+  reset-frames  0 ?do
     s" " num?  s" 123x45." num?   s" 12345.999x" num?
     s" -12345.x" num?  s" -12345.999x" num?
     s" -12345.000.000" num?
@@ -1716,10 +1719,10 @@ need bench{  need }bench.
 0. 2constant 2zero
 
 : 2constant-bench  ( u -- )
-  bench{ 0 do  2zero 2drop  loop  }bench.  ;
+  bench{ 0 ?do  2zero 2drop  loop  }bench.  ;
 
 : 2literal-bench  ( u -- )
-  bench{ 0 do  [ 0. ] 2literal 2drop  loop  }bench.  ;
+  bench{ 0 ?do  [ 0. ] 2literal 2drop  loop  }bench.  ;
 
 : run  ( u -- )
   dup cr
@@ -1751,19 +1754,19 @@ need bench{  need }bench.
 1000 constant thousand  100 cconstant hundred
 
 : constant-bench  ( u -- )
-  bench{ 0 do  thousand drop  loop  }bench.  ;
+  bench{ 0 ?do  thousand drop  loop  }bench.  ;
 
 : cconstant-bench  ( u -- )
-  bench{ 0 do  hundred drop  loop  }bench.  ;
+  bench{ 0 ?do  hundred drop  loop  }bench.  ;
 
 : code-constant-bench  ( u -- )
-  bench{ 0 do  true drop  loop  }bench.  ;
+  bench{ 0 ?do  true drop  loop  }bench.  ;
 
 : literal-bench  ( u -- )
-  bench{ 0 do  [ 1000 ] literal drop  loop  }bench.  ;
+  bench{ 0 ?do  [ 1000 ] literal drop  loop  }bench.  ;
 
 : cliteral-bench  ( u -- )
-  bench{ 0 do  [ 100 ] cliteral drop  loop  }bench.  ;
+  bench{ 0 ?do  [ 100 ] cliteral drop  loop  }bench.  ;
 
 -->
 
@@ -1834,9 +1837,9 @@ unused - . cr key drop
 
 need bench{
 
-: baden-d*-bench  ( u -- )  0 do  1. 2. baden-d* 2drop  loop  ;
-: smith-d*-bench  ( u -- )  0 do  1. 2. smith-d* 2drop  loop  ;
-: dx-d*-bench  ( u -- )  0 do  1. 2. dx-d* 2drop  loop  ;
+: baden-d*-bench  ( u -- )  0 ?do  1. 2. baden-d* 2drop  loop ;
+: smith-d*-bench  ( u -- )  0 ?do  1. 2. smith-d* 2drop  loop ;
+: dx-d*-bench  ( u -- )     0 ?do  1. 2.    dx-d* 2drop  loop ;
 
 : d*-benchs  ( -- )
   page
@@ -1901,7 +1904,7 @@ need bench{  need 0if
 need bench{
 
 : 2swap-bench  ( -- )
-  32767 0 bench{ 2dup do  2swap  loop  }bench. 2drop  ;
+  32767 0 bench{ 2dup ?do  2swap  loop  }bench. 2drop  ;
 
   \ Code                          Frames for 32767 iterations
   \ -----                         ---------------------------
@@ -1915,10 +1918,10 @@ need bench{
 need bench{
 
 : dnegate-bench  ( -- )
-  32767 0 bench{ 2dup do  dnegate  loop  }bench. 2drop  ;
+  32767 0 bench{ 2dup ?do  dnegate  loop  }bench. 2drop  ;
 
 : dnegate-bench2  ( -- )
-  32767 0 bench{ 2dup do  dnegate2  loop  }bench. 2drop  ;
+  32767 0 bench{ 2dup ?do  dnegate2  loop  }bench. 2drop  ;
 
   \ Code                          Frames for 32767 iterations
   \ -----                         ---------------------------
@@ -1934,16 +1937,16 @@ need bench{  variable times  40000 times !
 : iterations  ( -- n1 n2 )  times @ 0  ;
 
 : forth-0-?dup-bench  ( -- )
-  bench{ iterations do  0 ?dup drop  loop  }bench.  ;
+  bench{ iterations ?do  0 ?dup drop  loop  }bench.  ;
 
 : z80-0-?dup-bench  ( -- )
-  bench{ iterations do  0 ?dup80 drop  loop  }bench.  ;
+  bench{ iterations ?do  0 ?dup80 drop  loop  }bench.  ;
 
 : forth-1-?dup-bench  ( -- )
-  bench{ iterations do  1 ?dup 2drop  loop  }bench.  ;
+  bench{ iterations ?do  1 ?dup 2drop  loop  }bench.  ;
 
 : z80-1-?dup-bench  ( -- )
-  bench{ iterations do  1 ?dup80 2drop  loop  }bench.  ;
+  bench{ iterations ?do  1 ?dup80 2drop  loop  }bench.  ;
 
 : ?dup-bench  ( -- )
   cr ." Forth version:" cr ." 0 ?dup :" forth-0-?dup-bench cr
@@ -1963,16 +1966,16 @@ need bench{  variable times  40000 times !
 need under+
 
 : #spaces1  ( ca len -- +n )
-  0 rot rot  0 do  count bl = 1 and under+  loop  drop ;
+  0 rot rot  0 ?do  count bl = 1 and under+  loop  drop ;
   \ From:
   \ http://forth.sourceforge.net/mirror/comus/index.html
 
 : #spaces2  ( ca len -- +n )
-  0 rot rot  bounds do  i c@ bl = +  loop  abs  ;
+  0 rot rot  bounds ?do  i c@ bl = +  loop  abs  ;
   \ First variant.
 
 : #spaces3  ( ca len -- +n )
-  0 rot rot  0 do  count bl = under+  loop  drop abs  ;
+  0 rot rot  0 ?do  count bl = under+  loop  drop abs  ;
   \ Second variant, the fastest one.
 
 need bench{
@@ -1980,7 +1983,7 @@ need bench{
 defer #spaces
 
 : #spaces-bench  ( u -- )
-  cr bench{  0 do  0 32767 #spaces drop  loop  }bench.  ;
+  cr bench{  0 ?do  0 32767 #spaces drop  loop  }bench.  ;
 
 : run  ( u -- )
   dup ['] #spaces1 ['] #spaces defer! ." 1..." #spaces-bench
@@ -2021,14 +2024,14 @@ need bench{
 need bench{  need m+
 
 : code-m+-bench  ( u -- )
-  bench{  0 do  i s>d i m+ 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i m+ 2drop  loop  }bench.  ;
 
 unused
 : high-m+  ( n -- )  s>d d+  ;
 unused - cr .( bytes of high M+ ) .
 
 : high-m+-bench  ( d1|ud1 n -- d2|ud2 )
-  bench{  0 do  i s>d i high-m+ 2drop  loop  }bench.  ;
+  bench{  0 ?do  i s>d i high-m+ 2drop  loop  }bench.  ;
 
 
 : run  ( u -- )
@@ -2246,10 +2249,10 @@ variable times
 need bench{  need }bench.  need clshift
 
 : 3clshift-bench  ( u -- )
-  bench{  0 do  1 3 clshift drop   loop  }bench.  ;
+  bench{  0 ?do  1 3 clshift drop   loop  }bench.  ;
 
 : 8*-bench  ( u -- )
-  bench{  0 do  1 8 * drop   loop  }bench.  ;
+  bench{  0 ?do  1 8 * drop   loop  }bench.  ;
 
 : run  ( u -- )
   dup cr ." 3 clshift ..." 3clshift-bench
@@ -2279,7 +2282,7 @@ defer do-search
 
 : search-bench  ( u xt -- )
   ['] do-search defer!
-  bench{  0 do  haystack needle do-search drop 2drop   loop
+  bench{  0 ?do  haystack needle do-search drop 2drop   loop
   }bench.  ;
 
 : run  ( u -- )
@@ -2461,7 +2464,7 @@ need j
 
 : set-pixel-bench  ( -- d )
   bench{
-    192 0 do  256 0 do  i j set-pixel  loop  loop
+    192 0 ?do  256 0 ?do  i j set-pixel  loop  loop
   }bench  ;
 
 : mode  ( xt -- )  ['] (pixel-addr) defer!  ;

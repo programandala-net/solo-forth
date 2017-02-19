@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172325
+  \ Last modified: 201702200004
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,9 @@
   \
   \ 2017-02-17: Change markup of inline code that is not a
   \ cross reference.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( create-anon anon +anon n>anon )
 
@@ -65,7 +68,7 @@ variable (anon)  ( -- a )
   \ Current anonymous variable (cell _n_, first is 0).
 
 : n>anon  ( x1..xn n -- )
-  cells postpone anon swap bounds do  i !  cell +loop  ;
+  cells postpone anon swap bounds ?do  i !  cell +loop  ;
   \ Store the given _n_ cells into the current anonymous
   \ variable.
 

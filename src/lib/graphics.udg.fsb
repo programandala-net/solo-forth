@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172325
+  \ Last modified: 201702200003
 
   \ -----------------------------------------------------------
   \ Description
@@ -86,6 +86,9 @@
   \
   \ 2017-02-17: Update cross references.  Change markup of
   \ inline code that is not a cross reference.
+  \
+  \ 2017-02-19: Replace `do`, which has been moved to the
+  \ library, with `?do`.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -126,7 +129,7 @@ move ?)
   \ }doc
 
 [unneeded] udg! ?(  need udg>
-: udg!  ( b0..b7 c -- )  udg> dup 7 + do  i c!  -1 +loop  ; ?)
+: udg!  ( b0..b7 c -- )  udg> dup 7 + ?do  i c!  -1 +loop  ; ?)
 
   \ doc{
   \
@@ -312,7 +315,7 @@ variable udg-row-first-udg
 
 : udg-row-scan  ( ca len -- )
   base @ >r binary  dup ?block-scan-length
-  dup udg-width / 0 do  over udg-width
+  dup udg-width / 0 ?do  over udg-width
     evaluate i udg-scan!  udg-width /string
   loop  2drop  r> base !  1 udg-row-height +!  ;
   \ Manage a UDG row scan _ca len_, extracting the individual
