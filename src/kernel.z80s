@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702172336
+; Last modified: 201702191406
 
 include version.z80s
 
@@ -2078,9 +2078,9 @@ paren_set_order.loop_exit
 
 ; ----
 ; : get-order  ( -- wid[n]..wid[1] n )
-;   #order @ 0 ?do
-;     #order @ i - 1- cells context + @
-;   loop  #order @  ;
+;   #order @ dup 0 ?do
+;     dup i - 1- cells context + @ swap
+;   loop  ;
 ; ----
 
 ; Origin: Forth-94 (SEARCH), Forth-2012 (SEARCH).
@@ -2089,14 +2089,13 @@ paren_set_order.loop_exit
 ;
 ; }doc
 
-  dw hash_order_,fetch_
+  dw hash_order_,fetch_,dup_
   _literal 0
   dw paren_question_do_,get_order.exit
-  dw hash_order_,fetch_,i_,minus_,one_minus_,cells_
-  dw context_,plus_,fetch_
+  dw dup_,i_,minus_,one_minus_,cells_
+  dw context_,plus_,fetch_,swap_
   dw paren_loop_
 get_order.exit
-  dw hash_order_,fetch_
   dw exit_
 
 ; ----------------------------------------------
@@ -3004,7 +3003,7 @@ paren_do.de_hl:
   inc bc
   inc bc                        ; skip branch address
   dec hl
-  ld (hl),B
+  ld (hl),b
   dec hl
   ld (hl),c                     ; push IP on return stack
   ex (sp),hl                    ; HL=init, (SP)=rp@

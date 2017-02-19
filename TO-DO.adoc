@@ -1295,6 +1295,14 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
+.2017-02-19:
+
+NOTE: Milestone: 0.14.0
+
+Make `use-default-need`, `use-default-located` and `use-no-index`
+optional, and the first time set the default actions without them.
+This saves 102 bytes!
+
 .2017-02-16:
 
 Move `>name` to the library, and make the alternative slower
