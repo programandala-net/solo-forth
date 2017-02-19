@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702191406
+; Last modified: 201702191408
 
 include version.z80s
 
@@ -2858,6 +2858,56 @@ question_csb_.enough:
   add hl,de
   ld (return_stack_pointer),hl
   _jp_next
+
+; ----------------------------------------------
+  _code_header paren_minus_do_,'(-do)'
+
+; doc{
+;
+; (-do)  ( n1 n2 -- )
+;
+; }doc
+
+; XXX TODO -- move to the library
+
+; XXX TODO -- Finish the documentation.
+
+; XXX REMARK -- After Gforth `-do`
+
+  pop de          ; init
+  pop hl          ; limit
+  and a
+  sbc hl,de       ; limit<init?
+  jp nc,branch_   ; if not, jump
+  add hl,de       ; reverse the substraction
+  ex de,hl        ; HL=init; DE=limit
+  inc de          ; increment the limit
+  jp paren_do.de_hl
+
+; ----------------------------------------------
+  _colon_header minus_do_,'-do',immediate+compile_only
+
+  ; Credit:
+  ; Code adapted from Spectrum Forth-83.
+
+; doc{
+;
+; -do  ( n1 n2 -- )
+;
+; Definition:
+
+; ----
+; : -do  ( n1 n2 -- )
+;   postpone (-do) >mark  ;  immediate compile-only
+; ----
+
+; Origin: Gforth.
+;
+; }doc
+
+  dw compile_,paren_minus_do_
+  dw forward_mark_
+  dw exit_
 
 ; ----------------------------------------------
   _code_header paren_question_do_,'(?do)'
