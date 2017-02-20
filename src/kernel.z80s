@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702192353
+; Last modified: 201702200134
 
 include version.z80s
 
@@ -7176,12 +7176,12 @@ bank.e:
   ; address is calculated using an offset from the execution
   ; token of `default-bank`.
 
-  ld a,(sys_bankm) ; get the saved status of BANKM
-  and %11111000 ; reset bits 0-2
-  or e ; modify bits 0-2
+  ld a,(sys_bankm)   ; get the saved status of BANKM
+  and %11111000      ; reset bits 0..2
+  or e               ; modify bits 0..2
   di
-  ld (sys_bankm),a ; update BANKM
-if defined plus3dos
+  ld (sys_bankm),a   ; update BANKM
+if defined plus3dos or defined scorpion
   push bc
   ld bc,bank1_port
   out (c),a

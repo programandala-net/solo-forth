@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-18
+:revdate: 2017-02-20
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1154,6 +1154,17 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 
 // Memory {{{1
 == Memory ==
+
+.2017-02-20:
+
+Idea to support memory larger than 128 KiB, provided Pentagon and
+Scorpion:
+
+Of course, `far-banks` can be configured by the application, any time,
+to use a different set of banks.
+
+But there could be an optional, similar system to use 32-bit
+addresses... `farfar-banks`, `vfar-banks`, `32far-banks`.
 
 .2017-01-26:
 
