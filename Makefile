@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702201333
+# Last modified: 201702202149
 
 # ==============================================================
 # Author
@@ -637,17 +637,46 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.glossary.adoc: %.files.txt
 	glosara --level=3 --input=$< > $@
 
-# %.docbook: %.adoc
-# 	asciidoctor --backend=docbook --out-file=$@ $<
+%.docbook: %.adoc
+	asciidoctor --backend=docbook --out-file=$@ $<
 
-# %.texinfo: %.docbook
-# 	pandoc --from=docbook --to=texinfo --output=$@ $<
+%.texinfo: %.docbook
+	pandoc --from=docbook --to=texinfo --output=$@ $<
+
+%.info: %.texinfo
+	makeinfo --output=$@ $<
 
 # ----------------------------------------------
 # Documentation for G+DOS
 
+# ..............................
+#
+# XXX TODO -- Make and Info file.
+#
+# 2017-02-20: It's not possible yet, because Pandoc does not
+# create unique names for nodes, while docbook2texi doesn't
+# recognize the document type declaration, parses without
+# validation and throws many errors...
+
+doc/solo_forth_for_gplusdos_manual.info: \
+	doc/solo_forth_for_gplusdos_manual.texinfo
+	makeinfo --output=$@ $<
+
+doc/solo_forth_for_gplusdos_manual.texinfo: \
+	doc/solo_forth_for_gplusdos_manual.docbook
+	docbook2texi $<
+	
+#	pandoc --from=docbook --to=texinfo --output=$@ $<
+
+doc/solo_forth_for_gplusdos_manual.docbook: \
+	tmp/doc.gplusdos.manual.adoc \
+	README.adoc
+	asciidoctor --backend=docbook5 --out-file=$@ $<
+# ..............................
+
+
 doc/solo_forth_for_gplusdos_manual.html: \
-	doc/solo_forth_for_gplusdos_manual.adoc \
+	tmp/doc.gplusdos.manual.adoc \
 	README.adoc
 	asciidoctor --out-file=$@ $<
 
@@ -657,14 +686,14 @@ tmp/doc.gplusdos.files.txt: \
 	$(gplusdos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.gplusdos.manual.adoc: \
-	src/doc/manual.adoc \
+tmp/doc.gplusdos.manual_skeleton.adoc: \
+	src/doc/manual_skeleton.adoc \
 	src/version.z80s
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
-doc/solo_forth_for_gplusdos_manual.adoc: \
-	tmp/doc.gplusdos.manual.adoc \
+tmp/doc.gplusdos.manual.adoc: \
+	tmp/doc.gplusdos.manual_skeleton.adoc \
 	src/doc/stack_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc
@@ -677,7 +706,7 @@ gplusdosdoc: doc/solo_forth_for_gplusdos_manual.html
 # Documentation for +3DOS
 
 doc/solo_forth_for_plus3dos_manual.html: \
-	doc/solo_forth_for_plus3dos_manual.adoc \
+	tmp/doc.plus3dos.manual.adoc \
 	README.adoc
 	asciidoctor --out-file=$@ $<
 
@@ -687,14 +716,14 @@ tmp/doc.plus3dos.files.txt: \
 	$(plus3dos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.plus3dos.manual.adoc: \
-	src/doc/manual.adoc \
+tmp/doc.plus3dos.manual_skeleton.adoc: \
+	src/doc/manual_skeleton.adoc \
 	src/version.z80s
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/+3DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
-doc/solo_forth_for_plus3dos_manual.adoc: \
-	tmp/doc.plus3dos.manual.adoc \
+tmp/doc.plus3dos.manual.adoc: \
+	tmp/doc.plus3dos.manual_skeleton.adoc \
 	src/doc/stack_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.plus3dos.glossary.adoc
@@ -707,7 +736,7 @@ plus3dosdoc: doc/solo_forth_for_plus3dos_manual.html
 # Documentation for TR-DOS
 
 doc/solo_forth_for_trdos_manual.html: \
-	doc/solo_forth_for_trdos_manual.adoc \
+	tmp/doc.trdos.manual.adoc \
 	README.adoc
 	asciidoctor --out-file=$@ $<
 
@@ -717,14 +746,14 @@ tmp/doc.trdos.files.txt: \
 	$(trdos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.trdos.manual.adoc: \
-	src/doc/manual.adoc \
+tmp/doc.trdos.manual_skeleton.adoc: \
+	src/doc/manual_skeleton.adoc \
 	src/version.z80s
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/TR-DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
-doc/solo_forth_for_trdos_manual.adoc: \
-	tmp/doc.trdos.manual.adoc \
+tmp/doc.trdos.manual.adoc: \
+	tmp/doc.trdos.manual_skeleton.adoc \
 	src/doc/stack_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc
@@ -919,4 +948,5 @@ oldbackup:
 # sections are taken.
 #
 # 2017-02-20: Build boot disk for Scorpion ZS 256. Update name
-# of the source file of the manual.
+# of the source file of the manual. Add first rules to make a
+# Info version of the manual.
