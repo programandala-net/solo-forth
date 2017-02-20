@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702201946
+; Last modified: 201702202306
 
 include version.z80s
 
@@ -72,13 +72,6 @@ include version.z80s
 ; pfa: ...
 
 ; ==============================================================
-; Glossary
-
-; At the moment the description of Forth words is included in
-; this source.  The markers `doc{` and `}doc` delimitate the
-; comments that will be extracted to build the actual glossary.
-
-; ==============================================================
 ; Configuration
 
   ; XXX Note: Pasmo issues strange errors (symbols not found)
@@ -95,6 +88,24 @@ include version.z80s
 if (!defined gplusdos) and (!defined plus3dos) and (!defined trdos)
   gplusdos: equ true ; G+DOS by default
 endif
+
+  ; The TR-DOS version of Solo Forth needs some changes for the
+  ; Pentagon and Scorpion computers.  The labels `pentagon` and
+  ; `scorpion` are created with a parameter of the Pasmo
+  ; assembler, initializing them with the amount of the computer
+  ; RAM (256, 512 or 1024). By default, their value is false,
+  ; i.e. the compilation is not done for them, but for the
+  ; Sinclar models:
+
+if (!defined pentagon)
+  pentagon: equ false
+endif
+
+if (!defined scorpion)
+  scorpion: equ false
+endif
+
+russian_computer: equ pentagon or scorpion
 
 size_optimization: equ false
   ; true = some code pieces are more compact but slower.
@@ -7272,9 +7283,13 @@ bank.e:
   ; Page in the memory bank hold in the E register.
 
   ; Input:
-  ;   E = bank
+  ;   E = bank number
+  ;       On ZX Spectrum 128: 0..7
+  ;       On Pentagon 512:    0..31
+  ;       On Pentagon 1024:   0..63
   ; Output:
   ;   A corrupted
+  ;   D corrupted (only on Pentagon 512 and Pentagon 1024)
 
   ; WARNING -- In order to make this routine usable by code
   ; words, its address is returned by the `e-bank-routine`
@@ -7282,12 +7297,53 @@ bank.e:
   ; address is calculated using an offset from the execution
   ; token of `default-bank`.
 
+if pentagon=512 or pentagon=1024
+
+  ; The ZX Spectrum 128 uses bits 0..2 of port $EFF7 to select
+  ; the memory bank (0..7) to page in addresses $C000..$FFFF.
+  ; The Pentagon uses additional bits to form the number of the
+  ; memory bank, as follows:
+
+  ;                  Bits output to the port  Page range
+  ;                  -----------------------  ----------
+  ; ZX Spectrum 128  .. .. .. .. .. D2 D1 D0  0..7
+  ; Pentagon 512     D7 D6 .. .. .. D2 D1 D0  0..31
+  ; Pentagon 1024    D7 D6 D5 .. .. D2 D1 D0  0..63
+
+  ; This routine converts a Pentagon bank number (0..31 or
+  ; 0..63) to the bit layout that must be written to port $EFF7.
+
+  ld a,e        ; bank number
+
+if pentagon=512
+  rla           ; left shift 3 bits
+  rla
+  rla
+  and %11000000 ; only bits 6..7
+else
+  rla           ; left shift 2 bits
+  rla
+  and %11100000 ; only bits 5..7
+endif
+
+  ld d,a        ; save the result
+  ld a,e        ; get the bank again
+  and %00000111 ; only bits 0..2
+  or d          ; combine both parts
+  ld e,a        ; done
+
+endif
+
+bank.e.ready:
+
+  ; E = bank number ready to be written to the port
+
   ld a,(sys_bankm)   ; get the saved status of BANKM
   and %11111000      ; reset bits 0..2
   or e               ; modify bits 0..2
   di
   ld (sys_bankm),a   ; update BANKM
-if defined plus3dos or defined scorpion
+if (defined plus3dos) or russian_computer
   push bc
   ld bc,bank1_port
   out (c),a

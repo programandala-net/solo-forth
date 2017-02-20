@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702202149
+# Last modified: 201702202313
 
 # ==============================================================
 # Author
@@ -130,7 +130,9 @@ trdos: trdosdisks
 .PHONY: trdosdisks
 trdosdisks: \
 	disks/trdos/disk_0_boot.trd \
-	disks/trdos/disk_0_boot.scorpion.trd \
+	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
+	disks/trdos/disk_0_boot.pentagon_512.trd \
+	disks/trdos/disk_0_boot.pentagon_1024.trd \
 	disks/trdos/disk_1_library.trd \
 	disks/trdos/disk_2_games.trd \
 	disks/trdos/disk_3_workbench.trd
@@ -341,16 +343,62 @@ disks/trdos/disk_0_boot.trd: tmp/disk_0_boot.trdos.tap
 # ----------------------------------------------
 # TR-DOS boot disk for Scorpion ZS 256
 
-tmp/disk_0_boot.trdos.scorpion.tap: \
+tmp/disk_0_boot.trdos.scorpion_zs_256.tap: \
 		tmp/loader.trdos.bas.tap \
-		tmp/kernel.trdos.scorpion.bin.tap \
+		tmp/kernel.trdos.scorpion_zs_256.bin.tap \
 		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
 		tmp/fzx_fonts.tap
 	cat $^ > $@
 
-disks/trdos/disk_0_boot.scorpion.trd: tmp/disk_0_boot.trdos.scorpion.tap
+disks/trdos/disk_0_boot.scorpion_zs_256.trd: tmp/disk_0_boot.trdos.scorpion_zs_256.tap
+	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
+	rm -f $@
+	ln -f make/emptytrd.exe make/writetrd.exe tmp/
+	cd tmp && \
+	echo "EMPTYTRD.EXE SoloFth0.TRD" > mktrd.bat && \
+	echo "WRITETRD.EXE SoloFth0.TRD TRDOS-D0.TAP" >> mktrd.bat && \
+	dosbox -exit mktrd.bat && \
+	cd -
+	mv tmp/SOLOFTH0.TRD $@
+
+# ----------------------------------------------
+# TR-DOS boot disk for Pentagon 512
+
+tmp/disk_0_boot.trdos.pentagon_512.tap: \
+		tmp/loader.trdos.bas.tap \
+		tmp/kernel.trdos.pentagon_512.bin.tap \
+		tmp/pr64.tap \
+		tmp/pr42.tap \
+		bin/fonts/ea5a.f42.tap \
+		tmp/fzx_fonts.tap
+	cat $^ > $@
+
+disks/trdos/disk_0_boot.pentagon_512.trd: tmp/disk_0_boot.trdos.pentagon_512.tap
+	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
+	rm -f $@
+	ln -f make/emptytrd.exe make/writetrd.exe tmp/
+	cd tmp && \
+	echo "EMPTYTRD.EXE SoloFth0.TRD" > mktrd.bat && \
+	echo "WRITETRD.EXE SoloFth0.TRD TRDOS-D0.TAP" >> mktrd.bat && \
+	dosbox -exit mktrd.bat && \
+	cd -
+	mv tmp/SOLOFTH0.TRD $@
+
+# ----------------------------------------------
+# TR-DOS boot disk for Pentagon 1024
+
+tmp/disk_0_boot.trdos.pentagon_1024.tap: \
+		tmp/loader.trdos.bas.tap \
+		tmp/kernel.trdos.pentagon_1024.bin.tap \
+		tmp/pr64.tap \
+		tmp/pr42.tap \
+		bin/fonts/ea5a.f42.tap \
+		tmp/fzx_fonts.tap
+	cat $^ > $@
+
+disks/trdos/disk_0_boot.pentagon_1024.trd: tmp/disk_0_boot.trdos.pentagon_1024.tap
 	cd tmp && ln -sf $(notdir $<) TRDOS-D0.TAP && cd -
 	rm -f $@
 	ln -f make/emptytrd.exe make/writetrd.exe tmp/
@@ -949,4 +997,5 @@ oldbackup:
 #
 # 2017-02-20: Build boot disk for Scorpion ZS 256. Update name
 # of the source file of the manual. Add first rules to make a
-# Info version of the manual.
+# Info version of the manual. Build boot disks for Pentagon 512
+# and Pentagon 1024.

@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702200133
+# Last modified: 201702202311
 
 # ==============================================================
 # Author
@@ -108,9 +108,9 @@ tmp/kernel.trdos.bin.tap: \
 # ----------------------------------------------
 # Kernel for TR-DOS on Scorpion ZS 256
 
-tmp/kernel.symbols.trdos.scorpion.z80s: tmp/kernel.trdos.scorpion.bin.tap
+tmp/kernel.symbols.trdos.scorpion_zs_256.z80s: tmp/kernel.trdos.scorpion_zs_256.bin.tap
 
-tmp/kernel.trdos.bin.tap: \
+tmp/kernel.trdos.scorpion_zs_256.bin.tap: \
 	src/kernel.z80s \
 	src/kernel.trdos.z80s \
 	src/version.z80s \
@@ -118,11 +118,51 @@ tmp/kernel.trdos.bin.tap: \
 	cd src && \
 	$(pasmo) -v --tap \
 		--equ trdos \
-		--equ scorpion \
+		--equ scorpion=256 \
 		kernel.z80s \
 		solo.bin \
-		../tmp/kernel.symbols.trdos.z80s && \
-	mv solo.bin ../tmp/kernel.trdos.scorpion.bin.tap && \
+		../tmp/kernel.symbols.trdos.scorpion_zs_256.z80s && \
+	mv solo.bin ../tmp/kernel.trdos.scorpion_zs_256.bin.tap && \
+	cd ..
+
+# ----------------------------------------------
+# Kernel for TR-DOS on Pentagon 512
+
+tmp/kernel.symbols.trdos.pentagon_512.z80s: tmp/kernel.trdos.pentagon_512.bin.tap
+
+tmp/kernel.trdos.pentagon_512.bin.tap: \
+	src/kernel.z80s \
+	src/kernel.trdos.z80s \
+	src/version.z80s \
+	backgrounds/current.scr
+	cd src && \
+	$(pasmo) -v --tap \
+		--equ trdos \
+		--equ pentagon=512 \
+		kernel.z80s \
+		solo.bin \
+		../tmp/kernel.symbols.trdos.pentagon_512.z80s && \
+	mv solo.bin ../tmp/kernel.trdos.pentagon_512.bin.tap && \
+	cd ..
+
+# ----------------------------------------------
+# Kernel for TR-DOS on Pentagon 1024
+
+tmp/kernel.symbols.trdos.pentagon_1024.z80s: tmp/kernel.trdos.pentagon_1024.bin.tap
+
+tmp/kernel.trdos.pentagon_1024.bin.tap: \
+	src/kernel.z80s \
+	src/kernel.trdos.z80s \
+	src/version.z80s \
+	backgrounds/current.scr
+	cd src && \
+	$(pasmo) -v --tap \
+		--equ trdos \
+		--equ pentagon=1024 \
+		kernel.z80s \
+		solo.bin \
+		../tmp/kernel.symbols.trdos.pentagon_1024.z80s && \
+	mv solo.bin ../tmp/kernel.trdos.pentagon_1024.bin.tap && \
 	cd ..
 
 # ==============================================================
@@ -156,4 +196,5 @@ tmp/kernel.trdos.bin.tap: \
 # targets. They were the reason the BASIC loaders were rebuilt
 # every time.
 #
-# 2017-02-20: Build kernel for Scorpion ZS 256.
+# 2017-02-20: Build kernels for Scorpion ZS 256, Pentagon 512
+# and Pentagon 1024.
