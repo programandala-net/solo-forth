@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611171857
+  \ Last modified: 201702201921
 
   \ -----------------------------------------------------------
   \ Description
@@ -26,11 +26,16 @@
   \ History
 
   \ 2016-04-15: Written.
+  \
   \ 2016-04-28: Calculate the secondary entry point of `i`,
-  \ instead of using the constant `(i)`, which has been
-  \ removed from the kernel.
+  \ instead of using the constant `(i)`, which has been removed
+  \ from the kernel.
+  \
   \ 2016-05-04: Compact two blocks into one.
+  \
   \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-02-20: Update notation of word sets.
 
 ( j k )
 
@@ -53,9 +58,9 @@ code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
   \
   \ Return a copy _n|u_ of the next-outer loop index.
   \
-  \ Origin: Forth-83 (Required word set), Forth-94 (CORE),
+  \ Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
   \ Forth-2012 (CORE).  Note: `k` was also in Forth-79
-  \ (Reference word set), but returned a signed number.
+  \ (Reference Word Set), but returned a signed number.
   \
   \ }doc
 
@@ -78,7 +83,7 @@ code k  ( -- n|u )
   \ Return a copy _n|u_ of the second outer loop index.
   \
   \ Origin: Forth-83 (Controlled reference words). Note: `k`
-  \ was also in Forth-79 (Reference word set), but returned a
+  \ was also in Forth-79 (Reference Word Set), but returned a
   \ signed number.
   \
   \ }doc

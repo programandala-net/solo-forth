@@ -965,6 +965,14 @@ does nothing, as expected.
 // Maths {{{1
 == Maths ==
 
+.2017-02-20:
+
+Rewrite in Z80: `u<=`, `u>=`, `<=`, `>=`, `0>=`, `0<=`.
+
+.2017-02-20:
+
+Write `0min`.
+
 .2017-01-24:
 
 Rewrite `?shift` in Z80.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172317
+  \ Last modified: 201702201923
 
   \ -----------------------------------------------------------
   \ Description
@@ -67,6 +67,8 @@
   \ 2017-02-17: Update notation "behaviour" to "action".
   \ Update cross references.  Change markup of inline code that
   \ is not a cross reference.
+  \
+  \ 2017-02-20: Improve documentation.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -622,10 +624,13 @@ need ?(
 
   \ doc{
   \
-  \ pixels  ( -- n )
+  \ pixels  ( -- u )
   \
-  \ Return the number _n_ of pixels set on the screen.  This is
-  \ a deferred word set by `fast-pixels` or `slow-pixels`.
+  \ Return the number _u_ of pixels that are set on the screen.
+  \ This is a deferred word set by `fast-pixels` or
+  \ `slow-pixels`.
+  \
+  \ See also: `bits`.
   \
   \ }doc
 
@@ -678,7 +683,7 @@ code fast-pixels  ( -- n )
   \ Return the number _n_ of pixels set on the screen.
   \ This is the default action of `pixels`.
   \
-  \ See also: `slow-pixels`.
+  \ See also: `slow-pixels`, `bits`.
   \
   \ }doc
 
@@ -694,8 +699,10 @@ code fast-pixels  ( -- n )
   \
   \ slow-pixels  ( -- n )
   \
-  \ Return the number _n_ of pixels set on the screen.  This is
-  \ the alternative action of the deferred word `pixels`.
+  \ Return the number _u_ of pixels that are set on the screen.
+  \ This is the alternative action of the deferred word
+  \ `pixels`. This word simply executes `bits` with the screen
+  \ address and length on the stack.
   \
   \ See also: `fast-pixels`.
   \
