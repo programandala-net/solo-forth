@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702192356
+  \ Last modified: 201702201325
 
   \ -----------------------------------------------------------
   \ Description
@@ -131,7 +131,7 @@
   \ cross references.
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
-  \ library, with `?do`.
+  \ library, with `?do`. Fix markup typo in documentation.
 
 ( delimited located needed-word )
 
@@ -244,7 +244,7 @@ defer unlocated  ( block -- )
   \ found, return zero.  The search is case-sensitive.
   \
   \ Only the blocks delimited by `first-locatable` and
-  \ `last-locatable` are searched`.
+  \ `last-locatable` are searched.
   \
   \ This is the default action of `located`, which is
   \ changed by `use-fly-index`.

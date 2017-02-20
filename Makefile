@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702200133
+# Last modified: 201702201333
 
 # ==============================================================
 # Author
@@ -657,14 +657,14 @@ tmp/doc.gplusdos.files.txt: \
 	$(gplusdos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.gplusdos.manual_header.adoc: \
-	src/doc/manual_header.adoc \
+tmp/doc.gplusdos.manual.adoc: \
+	src/doc/manual.adoc \
 	src/version.z80s
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/G+DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 doc/solo_forth_for_gplusdos_manual.adoc: \
-	tmp/doc.gplusdos.manual_header.adoc \
+	tmp/doc.gplusdos.manual.adoc \
 	src/doc/stack_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc
@@ -687,14 +687,14 @@ tmp/doc.plus3dos.files.txt: \
 	$(plus3dos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.plus3dos.manual_header.adoc: \
-	src/doc/manual_header.adoc \
+tmp/doc.plus3dos.manual.adoc: \
+	src/doc/manual.adoc \
 	src/version.z80s
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/+3DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 doc/solo_forth_for_plus3dos_manual.adoc: \
-	tmp/doc.plus3dos.manual_header.adoc \
+	tmp/doc.plus3dos.manual.adoc \
 	src/doc/stack_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.plus3dos.glossary.adoc
@@ -717,14 +717,14 @@ tmp/doc.trdos.files.txt: \
 	$(trdos_core_lib_files)
 	ls -1 $^ > $@
 
-tmp/doc.trdos.manual_header.adoc: \
-	src/doc/manual_header.adoc \
+tmp/doc.trdos.manual.adoc: \
+	src/doc/manual.adoc \
 	src/version.z80s
 	version=$(shell gforth -e 's" ../src/version.z80s" true' make/version_number.fs) ; \
 	sed -e "s/%DOS%/TR-DOS/" -e "s/%VERSION%/$${version}/" $< > $@
 
 doc/solo_forth_for_trdos_manual.adoc: \
-	tmp/doc.trdos.manual_header.adoc \
+	tmp/doc.trdos.manual.adoc \
 	src/doc/stack_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.trdos.glossary.adoc
@@ -918,4 +918,5 @@ oldbackup:
 # Make the manual depend on <README.adoc>, from which some
 # sections are taken.
 #
-# 2017-02-20: Build boot disk for Scorpion ZS 256.
+# 2017-02-20: Build boot disk for Scorpion ZS 256. Update name
+# of the source file of the manual.

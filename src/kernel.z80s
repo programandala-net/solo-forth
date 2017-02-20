@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702200134
+; Last modified: 201702201336
 
 include version.z80s
 
@@ -8523,19 +8523,17 @@ fill.done:
 
 ; doc{
 ;
-; parse  ( c "ccc<char>" -- ca len )
+; parse  ( char "ccc<char>" -- ca len )
 ;
-; Parse _ccc_ delimited by the delimiter _c_.
-;
-; ca = address of the parsed string, within the input buffer
-; len = length of the parsed string
-;
-; If the parse area was empty, the resulting string has a zero length.
+; Parse _ccc_ delimited by the delimiter _char_.  _ca_ is the
+; address (within the input buffer) and _len_ is the length of
+; the parsed string If the parse area was empty, the resulting
+; string has a zero length.
 ;
 ; Definition:
 
 ; ----
-; : parse  ( c "ccc<char>" -- ca len )
+; : parse  ( char "ccc<char>" -- ca len )
 ;   stream 2dup 2>r rot scan
 ;   dup if  char-  then
 ;   2r> rot - parsed
@@ -8543,6 +8541,8 @@ fill.done:
 ; ----
 
 ; Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+;
+; See also: `stream`, `parsed`.
 ;
 ; }doc
 

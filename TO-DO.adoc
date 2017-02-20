@@ -437,6 +437,37 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Documentation {{{1
 == Documentation ==
 
+.2017-02-20:
+
+Make the manual contain only the contents related to the corresponding
+DOS.
+
+.2017-02-20:
+
+Improve Glosara with a link-only mode, in order to convert words
+mentioned in the main manual to cross references.
+
+.2017-02-20:
+
+Find a solution to the duplicated entries of the glossary. All af them
+are shown, but there's no way to choose the target of a link. Example:
+`i` (kernel) and `i` (block editor).
+
+Possible solution: Use an incomplete cross-reference Asciidoctor
+markup to the documentation in those cases, and make Glosara complete
+it.
+
+----
+See also: <<lib/editor.specforth.fsb,i>>.
+----
+
+Glosara could replace the filename with the actual identifier.  Maybe
+a part of the filename could be enough:
+
+----
+See also: <<specforth,i>>.
+----
+
 .2017-02-18:
 
 Remove the file that contains only the glossary heading.  Instead of
