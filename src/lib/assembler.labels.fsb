@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612261642
+  \ Last modified: 201702211420
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,6 +72,9 @@
   \ 2016-12-26: Review, try, test. Factor. Integrate init into
   \ `asm`. Replace original error checking with `?throw` and
   \ specific exception codes.
+  \
+  \ 2017-02-21: Need `?rel`. No need to load the whole
+  \ assembler. Improve documentation.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -131,11 +134,33 @@ create bwds  ( -- a )  /bwds allot
   repeat  2drop r> 0  ;
   \ Pop any unresolved references of label _n_.
 
-: ?l#  ( n -- )  [ max-l# 1- ] literal u> #-283 ?throw  ;
+: ?l#  ( n -- )  [ max-l# 1- ] 1literal u> #-283 ?throw  ;
+
+  \ doc{
+  \
+  \ ?l#  ( -- )
+  \
+  \ If assembler label _n_ is out of range, throw exception
+  \ #-283.
+  \
+  \ See also: `l?`, `l:`.
+  \
+  \ }doc
+
   \ If label number _n_ is out of range, throw exception #-283.
 
 : l?  ( n -- a | 0 )  dup ?l#  cells bwds + @  ;
-  \ Return the address _a_ of label _n_ or 0 if unresolved.
+
+  \ doc{
+  \
+  \ l?  ( n -- a | 0 )
+  \
+  \ If assembler label _n_ is resolved, return its address _a_.
+  \ Otherwise return zero.
+  \
+  \ See also: `?l#`, `l:`, `l#`.
+  \
+  \ }doc
 
 -->
 
@@ -143,18 +168,38 @@ create bwds  ( -- a )  /bwds allot
 
 assembler-wordlist set-current
 
+need ?rel
+
 : l:  ( n -- )
   dup l? #-284 ?throw  \ should be unknown
   here  over cells bwds + ! \ now known
   begin  dup lpop ( a true | n false )  while
     here over - 1-  swap over ?rel c!  \ resolve ref
   repeat  2drop  ;
-  \ Assign `here` to label _n_.  Resolve any forward
+
+  \ doc{
+  \
+  \ l:  ( n -- )
+  \
+  \ Assign `here` to assembler label _n_.  Resolve any forward
   \ references.  Assume 8-bit relative displacements.
+  \
+  \ See also: `l#`, `?rel`.
+  \
+  \ }doc
 
 : l#  ( n -- a )
   dup l? ?dup 0= if  here 1+ 2dup swap lpush  then  nip  ;
-  \ Retrieve the address _a_ of label _n_.
+
+  \ doc{
+  \
+  \ l#  ( n -- a )
+  \
+  \ Retrieve the address _a_ of assembler label _n_.
+  \
+  \ See also: `l:`.
+  \
+  \ }doc
 
 set-current set-order
 

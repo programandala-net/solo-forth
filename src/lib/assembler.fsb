@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171715
+  \ Last modified: 201702211411
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,8 +37,8 @@
   \ -----------------------------------------------------------
   \ History
 
-  \ 2015-12-25: First changes to the previous version, called
-  \ `z80-asm`:
+  \ 2015-12-25: First changes to the previous version, which
+  \ is called `z80-asm`:
   \
   \   1. "," suffixes in Z80 instructions;
   \   2. one single set of conditions;
@@ -112,6 +112,9 @@
   \ 2017-02-13: Replace `constant` with `cconstant`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-21: Make `unresolved` optional. Make `?rel`
+  \ independent from the assembler, to be reused by `l:`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -130,7 +133,7 @@ assembler-wordlist wordlist>vocabulary assembler
   \ doc{
   \
   \ assembler  ( -- )
-  \ 
+  \
   \ Replace the first word list in the search order with
   \ `assembler-wordlist`.
   \
@@ -141,6 +144,8 @@ assembler-wordlist wordlist>vocabulary assembler
   \ }doc
 
 also assembler definitions base @ hex
+
+need ?rel
 
   \ Registers
 
@@ -153,10 +158,6 @@ DD cconstant ix-op  FD cconstant iy-op
 
 : ix  ( -- regpi )  ix-op c, h  ;
 : iy  ( -- regpi )  iy-op c, h  ;
-
-: ?rel  ( n -- )  80 + FF swap u< #-269 ?throw  ;
-  \ If branch _n_ is too long, throw exception #-269
-  \ (relative jump too long).
 
 -->
 
@@ -435,25 +436,64 @@ F2 cconstant p?   FA cconstant m?
 : >aresolve  ( a -- )  >amark swap !  ;
   \ Resolve an absolute forward reference.
 
-here 6 cells allot
-  \ Space to store unresolved addresses during
-  \ compilation.
-  \
-  \ XXX TODO -- make this optional
-  \ XXX TODO -- deprecate, use labels instead
-
-: unresolved  ( n -- a )  cells [ dup ] literal +  ;  drop
-  \ Return the address of the _n_ unresolved address.
-  \
-  \ Note: The address returned by `allocate-string` is directly
-  \ compiled into `unresolved`. This saves a definition.  `dup`
-  \ and `drop` are used to pass the stack check at the end of
-  \ the definition.
-  \
-  \ XXX TODO -- make this optional
-  \ XXX TODO -- deprecate, use labels instead
-
 base ! set-current set-order
+
+( ?rel unresolved )
+
+[unneeded] ?rel
+
+?\ : ?rel  ( n -- )  80 + FF swap u< #-269 ?throw  ;
+
+  \ doc{
+  \
+  \ ?rel  ( n -- )
+  \
+  \ If branch _n_ is too long, throw exception #-269
+  \ (relative jump too long).
+  \
+  \ }doc
+
+need ?( [unneeded] unresolved ?(  need array>
+
+create unresolved0>  ( -- a )  8 cells allot
+
+  \ doc{
+  \
+  \ unresolved0>  ( -- a )
+  \
+  \ Address _a_ is the default value of `unresolved>`: an
+  \ 8-cell array.
+  \
+  \ }doc
+
+variable unresolved>  ( -- a )  unresolved0> unresolved> !
+
+  \ doc{
+  \
+  \ unresolved>  ( -- a )
+  \
+  \ A variable. Address _a_ contains the address of a cell
+  \ array accessed by `unresolved`. Its default value is
+  \ `unresolved0>`, which is an 8-cell array.
+  \
+  \ The cell array pointed by this word is used to store
+  \ unresolved addresses during the compilation of code words.
+  \ This method is a simpler alternative to labels created by
+  \ `l:`.
+  \
+  \ }doc
+
+: unresolved  ( n -- a )  unresolved> @ array> ; ?)
+
+
+  \ doc{
+  \
+  \ unresolved  ( n -- a )
+  \
+  \ _a_ is the address of element _n_ of the cell array pointed
+  \ by `unresolved>`.
+  \
+  \ }doc
 
 ( execute-hl, call-xt, )
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171955
+  \ Last modified: 201702211136
 
   \ -----------------------------------------------------------
   \ Description
@@ -67,6 +67,9 @@
   \ 2017-02-16: Fix typo in documentation of `2ndrop`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
 
 ( 2nip pick roll )
 
@@ -104,7 +107,7 @@ code pick  ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ }doc
 
-[unneeded] roll ?(  need assembler
+[unneeded] roll ?(  need assembler  need unresolved
 
 code roll  ( xu xn .. x0 u -- xn .. x0 xu )
 

@@ -5,10 +5,18 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702211046
+// Last modified 201702211208
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-02-21:
+
+Move private words of `l:` to a word list.
+
+.2017-02-21:
+
+Rewrite `execute-hl` and `call-xt` with Z80 opcodes.
 
 .2017-02-16:
 
@@ -19,13 +27,6 @@ Try `;code`. Its definition should include `asm`.
 NOTE: Milestone: 0.14.0
 
 Make the absolute-jump flow structures optional.
-
-.2017-02-12:
-
-NOTE: Milestone: 0.14.0
-
-Deprecate `unresolved`. Use labels instead. Adapt the words that still
-use it.
 
 .2017-01-26:
 

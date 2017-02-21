@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231549
+  \ Last modified: 201702211141
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,6 +42,9 @@
   \ 2017-01-23: Move `fzx-test` to the tests module. Fix 7
   \ wrong Z80 instructions in `(fzx-emit)`, remaining from the
   \ conversion from the old assembler.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
 
 ( fzx-mode )
 
@@ -87,7 +90,7 @@ constant fzx-y  constant fzx-x  constant fzx-flags
 
 ( fzx-emit )
 
-need assembler  need scroll-1px-up
+need assembler  need unresolved  need scroll-1px-up
 
   \ Credit:
   \

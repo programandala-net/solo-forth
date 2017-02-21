@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702110144
+  \ Last modified: 201702211140
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,6 +49,9 @@
   \ 2017-02-11: Replace old `<file-as-is` with `0 0 file>`, after
   \ the improvements in the G+DOS module. Use `drive` to make
   \ the code compatible with any DOS.
+  \
+  \ 2017-02-21: Need `unresolved`, which now is optional, not
+  \ part of the assembler.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -89,7 +92,7 @@ set-drive throw
   \ XXX NEW
   \ XXX TODO -- integrate the driver
 
-need assembler
+need assembler  need unresolved
 
   \ XXX TODO use common variables for all modes?
 
