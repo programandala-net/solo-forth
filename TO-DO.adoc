@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-20
+:revdate: 2017-02-21
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702210222
+// Last modified 201702211046
 
 // Assembler {{{1
 == Assembler ==
@@ -1360,14 +1360,6 @@ without modifying `first-locatable`.
 
 Don't include the new block 0 files into the old disks (games, tests,
 benchmarks) that included the library at the start.
-
-.2017-02-19:
-
-NOTE: Milestone: 0.14.0
-
-Make `use-default-need`, `use-default-located` and `use-no-index`
-optional, and the first time set the default actions without them.
-This saves 102 bytes!
 
 .2017-02-16:
 

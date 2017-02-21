@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172018
+  \ Last modified: 201702211052
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,13 +73,15 @@
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
   \ Update cross references.
+  \
+  \ 2017-02-21: Need `use-default-located`, which now is optional.
 
 ( make-thru-index use-thru-index )
 
 only forth definitions
 
 need common-indexer  need get-order  need set-order
-need evaluate  need catch
+need evaluate  need catch  need use-default-located
 
 : thru-index-reneeded  ( ca len -- )
   indexed-name? 0= #-277 ?throw load  ;

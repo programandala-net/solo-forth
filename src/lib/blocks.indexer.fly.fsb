@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201702172020
+  \ Last modified: 201702211050
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,12 +46,15 @@
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
   \ Update cross references.
+  \
+  \ 2017-02-21: Need `use-default-need`, which now is optional.
 
 ( use-fly-index )
 
-only forth definitions  need common-indexer  need get-order
-                        need set-order       need bit-array
-                        need catch
+only forth definitions
+
+need common-indexer  need get-order  need set-order
+need bit-array  need catch  need use-default-need
 
 blk/disk bit-array indexed-blocks
 
