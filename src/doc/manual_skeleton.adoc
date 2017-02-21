@@ -6,7 +6,7 @@
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201702211742
+// Last modified 201702212050
 
 toc::[]
 
@@ -200,23 +200,29 @@ indexes the blocks on the fly, when they are searched the first time.
 This indexer was included in Solo Forth 0.12.0 but it's not finished
 yet.
 
-=== How to search the library from the host system
+=== How to search the source files
 
-A simple wrapper script is provided to search the Forth sources (not
-the Z80 kernel files) for a regular expression. It's used during the
-development, but it can be useful for the user too.
+Three simple one-line wrapper scripts are included to search the Forth
+sources for a regular expression: <tools/search_library>,
+<tools/search_kernel> and <tools/search_source> (to search all files
+in the <src> directory).
+
+The scripts use `ack`. In order to usu the more common `grep`, edit
+the files.  `ack` and `grep` are compatible.
+
+Their first parameter is the regular expression. An optional second
+parameter is passed to `ack`.
 
 Usage examples:
 
 ----
-tools/search_library.sh make-thru-index
-tools/search_library.sh make-thru-index -l
-tools/search_library.sh color
-tools/search_library.sh ":\scolor\s"
+tools/search_source use-thru-index
+tools/search_source use-thru-index -l
+tools/search_kernel color
+tools/search_kernel ";\s:\s"
+tools/search_library "\-bank"
+tools/search_library "code\s+\S+\s+\("
 ----
-
-The script uses `ack`, but it can be replaced with the more common
-`grep`. They are compatible.
 
 == How to use the additional source disks
 

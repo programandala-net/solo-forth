@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702211753
+// Last modified 201702212051
 
 // Assembler {{{1
 == Assembler ==
@@ -469,10 +469,6 @@ a part of the filename could be enough:
 See also: <<specforth,i>>.
 ----
 
-.2017-02-18:
-
-Fix rendering of `-->` in the documentation.
-
 .2017-02-17:
 
 NOTE: Milestone: 0.14.0
@@ -480,8 +476,6 @@ NOTE: Milestone: 0.14.0
 Add "This word is an immediate word".
 
 .2017-02-17:
-
-NOTE: Milestone: 0.14.0
 
 Include the execution table in the documentation of `interpret-table`.
 
@@ -1875,11 +1869,6 @@ Rename `frames@` to `ticks@`, etc.?
 
 // Tools {{{1
 == Tools ==
-
-.2017-02-09:
-
-Improve `search_library.sh` to include the kernel, or write an
-alternative.
 
 .2017-01-06:
 

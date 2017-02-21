@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# search_library
+
 # Search the library of Solo Forth for the regex $1.
 
 # 2016-04-17: First version.
