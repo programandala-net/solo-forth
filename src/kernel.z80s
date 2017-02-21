@@ -7289,7 +7289,7 @@ to_name.next:
 ; | Pentagon 1024    >|    64
 ; |===
 ;
-; 
+;
 ; See also:`bank`, `far-banks`, `default-bank`.
 ;
 ; }doc
@@ -7415,9 +7415,78 @@ endif
 
 else
 
-  ; Running on a 128 KiB computer.
+if scorpion=256
+
+  ; The Scorpion ZS 256 uses bits 0..2 of port $EFF7 and bit 4
+  ; of port $1FFD to select the memory bank (0..15) to page in
+  ; at $C000..$FFFF.
+
+  ; Port $7FFD (adressation - 01xxxxxx xx1xxx01):
   ;
-  ; XXX TODO -- Support Scorpion ZS 256.
+  ; D0 = bit 0 of bank number
+  ; D1 = bit 1 of bank number
+  ; D2 = bit 2 of bank number
+  ; D3 = videoram
+  ; D4 = ROM
+  ; D5 = disable paging
+  ; D6 = unused
+  ; D7 = unused
+  ;
+  ; Port $1FFD (adressation - 00xxxxxx xx1xxx01):
+  ;
+  ; D0 = set to disable ROM and connect RAM bank 0 at $0000..$3FFF
+  ; D4 = bit 3 of bank number
+  ; D6 = unused
+  ; D7 = unused
+
+  ; E = bank number (bits 0..3)
+
+  ld a,e           ; bank number
+  rla              ; shift to the left to move bit 3 to bit 4
+  and %00010000    ; keep only bit 4
+  ld d,a           ; save the result
+  ld a,e           ; bank number
+  and %00000111    ; keep only bits 0..2
+  ld e,a           ; save the result
+
+  ; D = bit 4 is the higher bit (bit 3) of the bank number,
+  ;     other bits clear
+  ; E = bits 0..2 are the lower bits of the bank number,
+  ;     other bits clear
+
+
+  ld a,(sys_bankm) ; get the saved status of BANKM
+  and %11111000    ; clear bits used by 128 KiB computers
+  or e             ; update them
+
+  di
+  push bc
+  ld (sys_bankm),a ; update BANKM
+
+  ld bc,bank1_port
+  out (c),a        ; page in the bank
+  ld bc,$1FFD      ; XXX TODO -- What symbol for this port?
+
+if true
+  ; XXX TODO -- Is this needed?
+  ld a,(sys_bank678)
+  and %11101111
+  or d
+  ld (sys_bank678),a
+else
+  ld a,d
+endif
+  out (c),a        ; page in the bank
+
+  pop bc
+  ei
+  ret
+
+else
+
+  ; Paging routine for a 128-KiB computer: ZX Spectrum 128, ZX
+  ; Spectrum +2, ZX Spectrum +3, ZX Spectrum +3e or Pentagon
+  ; 128.
 
 bank.e.ready:
 
@@ -7428,16 +7497,30 @@ bank.e.ready:
   or e               ; update them
   di
   ld (sys_bankm),a   ; update BANKM
+
 if (defined plus3dos) or russian_computer
+
+  ; ZX Spectrum +3, ZX Spectrum +3e and Pentagon 128 need the
+  ; full port:
+
   push bc
   ld bc,bank1_port
   out (c),a          ; page in the bank
   pop bc
+
 else
+
+  ; On ZX Spectrum 128 and ZX Spectrum +2 the low byte of the
+  ; port is enough:
+
   out (bank1_port),a ; page in the bank
+
 endif
+
   ei
   ret
+
+endif ; scorpion=256
 
 endif ; pentagon=512 or pentagon=1024
 

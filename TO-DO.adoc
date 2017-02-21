@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702211208
+// Last modified 201702211753
 
 // Assembler {{{1
 == Assembler ==
@@ -438,10 +438,10 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Documentation {{{1
 == Documentation ==
 
-.2017-02-20:
+.2017-02-21:
 
-Make the manual contain only the contents related to the corresponding
-DOS.
+Make one single manual, not one for each DOS. First, the issue about
+cross references of homonymous words must be solved.
 
 .2017-02-20:
 

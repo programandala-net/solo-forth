@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702202313
+# Last modified: 201702211717
 
 # ==============================================================
 # Author
@@ -130,9 +130,23 @@ trdos: trdosdisks
 .PHONY: trdosdisks
 trdosdisks: \
 	disks/trdos/disk_0_boot.trd \
-	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
+	disks/trdos/disk_1_library.trd \
+	disks/trdos/disk_2_games.trd \
+	disks/trdos/disk_3_workbench.trd \
+	pentagon \
+	scorpion
+
+.PHONY: pentagon
+pentagon: \
 	disks/trdos/disk_0_boot.pentagon_512.trd \
 	disks/trdos/disk_0_boot.pentagon_1024.trd \
+	disks/trdos/disk_1_library.trd \
+	disks/trdos/disk_2_games.trd \
+	disks/trdos/disk_3_workbench.trd
+
+.PHONY: scorpion
+scorpion: \
+	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
 	disks/trdos/disk_1_library.trd \
 	disks/trdos/disk_2_games.trd \
 	disks/trdos/disk_3_workbench.trd
@@ -448,7 +462,7 @@ tmp/library_without_dos.fsb: $(no_dos_core_lib_files)
 tmp/games.fsb: $(game_lib_files)
 	cat $(game_lib_files) > $@
 
-tmp/workbench.fsb: $(meta_benchmark_files) $(meta_test_lib_files)
+tmp/workbench.fsb: $(meta_lib_files)
 	cat $^ > $@
 
 # ----------------------------------------------
@@ -999,3 +1013,7 @@ oldbackup:
 # of the source file of the manual. Add first rules to make a
 # Info version of the manual. Build boot disks for Pentagon 512
 # and Pentagon 1024.
+#
+# 2017-02-21: Add rules to create only the disk images of
+# either Pentagon or Scorpion. Fix the contents of the
+# workbench disk.

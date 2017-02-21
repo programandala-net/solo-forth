@@ -1,11 +1,11 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-20
+:revdate: 2017-02-21
 :toc:
 :toclevels: 1
 :toc-placement!:
 
-// Last modified 201702201324
+// Last modified 201702211742
 
 toc::[]
 
@@ -179,7 +179,9 @@ behaviour of `need` and related words to use it. Then `need name` will
 automatically start loading the first block where the word "name" is
 defined.
 
-.Time and memory required to make the library index (in v0.12.0)
+:indexnote: Test done on Solo Forth 0.12.0 on ZX Spectrum 128.
+
+.Time and memory required to make the library indexfootnote:[pass:a,[{indexnote}]]
 |===
 | DOS     | First block | Last block | Seconds | Bytes of far memory
 
@@ -274,7 +276,9 @@ images or the manual for your DOS of choice:
 | DOS          | Disk images                 | Documentation
 
 | G+DOS        | `make gplusdos` or `make g` | `make gplusdosdoc` or `make gdoc`
-| TR-DOS       | `make trdos` or `make t`    | `make trdosdoc` or `make tdoc`
+| TR-DOS (all) | `make trdos` or `make t`    | `make trdosdoc` or `make tdoc`
+| TR-DOS (Pentagon 512/1024 only) | `make pentagon` |
+| TR-DOS (Scorpion ZS 256 only)   | `make scorpion` |
 | +3DOS        | `make plus3dos` or `make p` | `make plus3dosdoc` or `make pdoc`
 | All of them  | `make all` or `make`        | `make doc`
 |===
