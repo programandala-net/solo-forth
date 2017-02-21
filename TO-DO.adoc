@@ -450,7 +450,7 @@ mentioned in the main manual to cross references.
 
 .2017-02-20:
 
-Find a solution to the duplicated entries of the glossary. All af them
+Find a solution to the duplicated entries of the glossary. All of them
 are shown, but there's no way to choose the target of a link. Example:
 `i` (kernel) and `i` (block editor).
 
@@ -471,19 +471,7 @@ See also: <<specforth,i>>.
 
 .2017-02-18:
 
-Remove the file that contains only the glossary heading.  Instead of
-using `cat` in <Makefile>, convert the main file of the manual into an
-skeleton that includes the individual files.
-
-.2017-02-18:
-
 Fix rendering of `-->` in the documentation.
-
-.2017-02-18:
-
-Asciidoctor bug?: role _external_ in <README.adoc> is not rendered
-into an HTML class when this file is included into the manual. It is
-included verbatim.
 
 .2017-02-17:
 

@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702211738
+// Last modified 201702211929
 
 // tag::description[]
 
@@ -117,10 +117,10 @@ useless.
 │   ├── addons        Code that is loaded from disk
 │   │                 because it's not assembled in the library yet
 │   └── sys           DOS files
-├── disks             Disk images ready to use
-│   ├── gplusdos      For G+DOS
-│   ├── plus3dos      For +3DOS
-│   └── trdos         For TR-DOS
+├── disks             Disk images
+│   ├── gplusdos      G+DOS disk images
+│   ├── plus3dos      +3DOS disk images
+│   └── trdos         TR-DOS disk images
 ├── doc               Documentation
 ├── make              Files used by `make` to build the system
 ├── screenshots       Version screenshots
@@ -210,9 +210,16 @@ DOS commands.
 
 === On ZX Spectrum +3 (or ZX Spectrum +3e)
 
+// XXX REMARK -- A problem with Asciidoctor makes the rendering of the
+// ZX Spectrum +3e link text fail. It seems the error condition has to
+// do with a combination of "+" be at start of a new line, and the
+// presence of the link attribute. The result is the "+3e" part is
+// omited. Using `{sp}` to prevent the text from being splitted fixes
+// the problem.
+
 1. Run a ZX Spectrum emulator and select a ZX Spectrum +3 (or
-   http://www.worldofspectrum.org/zxplus3e/[ZX Spectrum
-   +3e,role="external"]).
+   http://www.worldofspectrum.org/zxplus3e/[ZX
+   Spectrum{sp}+3e,role="external"]).
 2. "Insert" the disk image file <disks/plus3dos/disk_0_boot.180.dsk>
    (or <disks/plus3dos/disk_0_boot.720.dsk>, depending on the capacity
    of the drive) as disk 'A'.

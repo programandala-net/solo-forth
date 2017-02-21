@@ -4,6 +4,7 @@
 :toc:
 :toclevels: 1
 :toc-placement!:
+:linkattrs:
 
 // Last modified 201702211742
 
@@ -86,7 +87,7 @@ Porting the G+DOS version of Solo Forth to http://worldofsam.org[SAM
 Coupé,role="external"] (the powerful cousin of ZX Spectrum) would not
 be a trivial task, but feasible...
 
-== Downloads
+== Download
 
 Solo Forth can be downloaded from two sites:
 
