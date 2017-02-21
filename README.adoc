@@ -7,7 +7,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702201230
+// Last modified 201702210255
 
 // tag::description[]
 
@@ -17,8 +17,8 @@ Solo Forth is a modern http://forth-standard.org[standard
 Forth,role="external"] system under development for the ZX Spectrum
 128 and compatible computers.
 
-Solo Forth is focused on cross development of Forth programs for these
-computers, using a ZX Spectrum emulator on a GNU/Linux operating
+Solo Forth is focused on cross development of Forth programs for ZX
+Spectrum 128 using a ZX Spectrum emulator on a GNU/Linux operating
 system (in theory, other kind of operating system could be used as
 well).
 
@@ -26,13 +26,13 @@ Solo Forth can be used also as a stand-alone Forth System on a ZX
 Spectrum emulator or the real computer, but that's not what it was
 developed for.
 
-.Main features
+== Main features
 
 - Fast Direct Threaded Code (DTC) implementation.
 - A kernel as small as possible (c. 9400 bytes at the moment, and
   shrinking).
 - Definition headers separated from code, and stored in banked memory.
-- Transparent access to 64 KiB of banked memory.
+- Transparent access to banked memory.
 - Big <<_library,library>> of useful source code.
 - Modular <<_computers,DOS support>>.
 - Documented source code.
@@ -78,6 +78,8 @@ that run on a ZX Spectrum 48.
 | ZX Spectrum +3  |                | +3DOS
 
 | Pentagon 128    |                | TR-DOS
+| Pentagon 512    |                | TR-DOS
+| Pentagon 1024   |                | TR-DOS
 
 | ZX Spectrum +3e |                | +3DOS
 
@@ -85,17 +87,17 @@ that run on a ZX Spectrum 48.
 
 === Status of the DOS support
 
-==== G+DOS
+==== G+DOS support
 
 The G+DOS support is the most advanced. Only some file-management
 words have to be fixed, improved or implemented yet.
 
-==== TR-DOS
+==== TR-DOS support
 
 The TR-DOS support is still basic. The blocks disks can be used, but
 most file-management words are still under development.
 
-==== +3DOS
+==== +3DOS support
 
 The +3DOS support is still in a very initial stage.  There's no way to
 use the blocks disks or manipulate disk files yet, so in practice it's

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702202306
+; Last modified: 201702211021
 
 include version.z80s
 
@@ -1584,7 +1584,7 @@ endif
 ; Note: The default banks are valid for G+DOS and TR-DOS.  +3DOS
 ; requires other configuration, which is under development.
 ;
-; See also: `far`, `far@`, `farc@`, `far!`, `farc!`, `farcount`,
+; See also: `bank`, `banks`, `bank-index`, `far`, `far@`, `farc@`, `far!`, `farc!`, `farcount`,
 ; `farplace`, `fartype`, `faruppers`, `farlimit`.
 ;
 ; }doc
@@ -1613,10 +1613,10 @@ endif
 ;
 ; ?next-bank  ( a -- a|a' )
 ;
-; If the actual far-memory address ($C000..$FFFF) _a_ has
+; If the actual far-memory address _a_ ($C000..$FFFF) has
 ; increased to the next bank ($0000..$3FFF), convert it to the
-; correspondent actual address ($C000..$FFFF) _a'_ in the next
-; bank and page in the next bank, else simply return _a_.
+; correspondent actual address _a'_ ($C000..$FFFF) in the next
+; bank and page in the next bank. Otherwise return _a_.
 ;
 ; See also: `?next-bank-routine`, `?previous-bank`.
 ;
@@ -1661,9 +1661,6 @@ question_next_bank:
   ld de,bank_start
   add hl,de
 
-  ; _z80_border_wait 2 ; XXX INFORMER
-  ; _z80_border 0 ; XXX INFORMER
-
 new_bank:
 
   ; Input:
@@ -1691,10 +1688,10 @@ new_bank:
 ;
 ; ?previous-bank  ( a -- a|a' )
 ;
-; If the actual far-memory address ($C000..$FFFF) _a_ has
+; If the actual far-memory address _a_ ($C000..$FFFF) has
 ; decreased to the previous bank ($8000..$BFFF), convert it to
-; the correspondent actual address ($C000..$FFFF) _a'_ in the
-; previous bank and page in the next bank, else simply return
+; the correspondent actual address _a'_ ($C000..$FFFF) in the
+; previous bank and page in the next bank. Otherwise return
 ; _a_.
 ;
 ; See also: `?previous-bank-routine`, `?next-bank`.
@@ -1740,9 +1737,6 @@ question_previous_bank:
   ld de,bank_size
   add hl,de
 
-  ; _z80_border_wait 4 ; XXX INFORMER
-  ; _z80_border 0 ; XXX INFORMER
-
   jr new_bank
 
 ; ----------------------------------------------
@@ -1753,7 +1747,9 @@ question_previous_bank:
 ; bank-index  ( -- ca )
 ;
 ; A byte variable that holds the bank index (0..3) calculated by
-; the latest execution of `far`.
+; the latest execution of `far`
+;
+; See also: `far-banks`, `bank`, `banks`.
 ;
 ; }doc
 
@@ -1768,7 +1764,8 @@ question_previous_bank:
 ;
 ; Convert a far-memory address _a1_ ($0000..$FFFF) to its
 ; actual equivalent _a2_ ($C000..$FFFF) and page in the
-; correspondent memory bank.
+; correspondent memory bank, using the configuration at
+; `far-banks`.
 ;
 ; This word is written in Z80, but the equivalent Forth code is
 ; the following:
@@ -1780,7 +1777,7 @@ question_previous_bank:
 ;   \        $C000 = address where memory banks are paged in
 ; ----
 
-; See also: `far-hl-routine`.
+; See also: `far-hl-routine`, `bank`.
 ;
 ; }doc
 
@@ -2460,7 +2457,8 @@ push_a:
 ; An 8-bit variable holding the value of the default bank.  Note
 ; this variable must be set with `c!` and fetched with `c@`.
 ;
-; See also: `set-default-bank`, `get-default-bank`.
+; See also: `set-default-bank`, `get-default-bank`, `banks`,
+; `bank`, `far-banks`.
 ;
 ; }doc
 
@@ -2477,6 +2475,8 @@ push_a:
 ;
 ; A constant: Memory address where banks are paged in: $C000.
 ;
+; See also: `bank`, `banks`, `far-banks`, `default-bank`.
+;
 ; }doc
 
   dw bank_start
@@ -2486,9 +2486,27 @@ push_a:
 
 ; doc{
 ;
-; bank  ( n -- )
+; bank  ( +n -- )
 ;
-; Page in memory bank _n_ (0..7) at $C000..$FFFF.
+; Page in the 16-KiB memory bank _+n_ at $C000..$FFFF.
+;
+; The range of _n_ depends on the computer:
+
+
+; |===
+; | Computer        | Memory banks
+;
+; | ZX Spectrum 128  >| 0..7
+; | ZX Spectrum +2   >| 0..7
+; | ZX Spectrum +3   >| 0..7
+; | ZX Spectrum +3e  >| 0..7
+; | Pentagon 128     >| 0..7
+; | Scorpion ZS 256  >| 0..15
+; | Pentagon 512     >| 0..31
+; | Pentagon 1024    >| 0..63
+; |===
+
+; See also: `banks`, `far-banks`.
 ;
 ; }doc
 
@@ -7250,13 +7268,53 @@ to_name.next:
   jr to_name.begin
 
 ; ----------------------------------------------
+  _c_constant_header banks_,'banks'
+
+; doc{
+;
+; banks  ( -- n )
+;
+; Return the number of 16-KiB RAM memory banks:
+;
+; |===
+; | Computer          | Banks
+;
+; | ZX Spectrum 128  >|     8
+; | ZX Spectrum +2   >|     8
+; | ZX Spectrum +3   >|     8
+; | ZX Spectrum +3e  >|     8
+; | Pentagon 128     >|     8
+; | Scorpion ZS 256  >|    16
+; | Pentagon 512     >|    32
+; | Pentagon 1024    >|    64
+; |===
+;
+; 
+; See also:`bank`, `far-banks`, `default-bank`.
+;
+; }doc
+
+  if pentagon
+    db pentagon/16
+  else
+    if scorpion
+      db scorpion/16
+    else
+      db 128/16
+    endif
+  endif
+
+; ----------------------------------------------
   _code_header default_bank_,'default-bank'
 
 ; doc{
 ;
 ; default-bank  ( -- )
 ;
-; Page in the default memory bank at $C000..$FFFF.
+; Page in the default memory bank, wich can be configured with
+; `default-bank#`, at $C000..$FFFF.
+;
+; See also: `set-default-bank`, `get-default-bank`, `bank`, `banks`.
 ;
 ; }doc
 
@@ -7284,9 +7342,10 @@ bank.e:
 
   ; Input:
   ;   E = bank number
-  ;       On ZX Spectrum 128: 0..7
-  ;       On Pentagon 512:    0..31
-  ;       On Pentagon 1024:   0..63
+  ;       On 128 KiB computers:  0..7
+  ;       On 256 KiB computers:  0..15
+  ;       On 512 KiB computers:  0..31
+  ;       On 1024 Kib computers: 0..63
   ; Output:
   ;   A corrupted
   ;   D corrupted (only on Pentagon 512 and Pentagon 1024)
@@ -7297,18 +7356,18 @@ bank.e:
   ; address is calculated using an offset from the execution
   ; token of `default-bank`.
 
-if pentagon=512 or pentagon=1024
-
   ; The ZX Spectrum 128 uses bits 0..2 of port $EFF7 to select
   ; the memory bank (0..7) to page in addresses $C000..$FFFF.
-  ; The Pentagon uses additional bits to form the number of the
-  ; memory bank, as follows:
+  ; The Pentagon 512 and the Pentagon 1024 use additional bits
+  ; to form the number of the memory bank, as follows:
 
-  ;                  Bits output to the port  Page range
-  ;                  -----------------------  ----------
-  ; ZX Spectrum 128  .. .. .. .. .. D2 D1 D0  0..7
-  ; Pentagon 512     D7 D6 .. .. .. D2 D1 D0  0..31
-  ; Pentagon 1024    D7 D6 D5 .. .. D2 D1 D0  0..63
+  ;                  Bits written to the port  Page range
+  ;                  ------------------------  ----------
+  ; ZX Spectrum 128  .. .. .. .. .. D2 D1 D0   0..7
+  ; Pentagon 512     D7 D6 .. .. .. D2 D1 D0   0..31
+  ; Pentagon 1024    D7 D6 D5 .. .. D2 D1 D0   0..63
+
+if pentagon=512 or pentagon=1024
 
   ; This routine converts a Pentagon bank number (0..31 or
   ; 0..63) to the bit layout that must be written to port $EFF7.
@@ -7316,14 +7375,16 @@ if pentagon=512 or pentagon=1024
   ld a,e        ; bank number
 
 if pentagon=512
-  rla           ; left shift 3 bits
+  ; Pentagon 512
+  rla           ; shift to the left...
   rla
-  rla
-  and %11000000 ; only bits 6..7
+  rla           ; ...3 bits
+  and %11000000 ; keep only bits 6..7
 else
-  rla           ; left shift 2 bits
-  rla
-  and %11100000 ; only bits 5..7
+  ; Pentagon 1024
+  rla           ; shift to the left...
+  rla           ; ...2 bits
+  and %11100000 ; keep only bits 5..7
 endif
 
   ld d,a        ; save the result
@@ -7332,27 +7393,53 @@ endif
   or d          ; combine both parts
   ld e,a        ; done
 
+bank.e.ready:
+
+  ; E = bank number ready to be written to the port
+
+  ld a,(sys_bankm) ; get the saved status of BANKM
+if pentagon=512
+  and %00111000    ; clear the bits used by Pentagon 512
+else
+  and %00011000    ; clear the bits used by Pentagon 1024
 endif
+  or e             ; modify the bits
+  di
+  ld (sys_bankm),a ; update BANKM
+  push bc
+  ld bc,bank1_port
+  out (c),a
+  pop bc
+  ei
+  ret
+
+else
+
+  ; Running on a 128 KiB computer.
+  ;
+  ; XXX TODO -- Support Scorpion ZS 256.
 
 bank.e.ready:
 
   ; E = bank number ready to be written to the port
 
   ld a,(sys_bankm)   ; get the saved status of BANKM
-  and %11111000      ; reset bits 0..2
-  or e               ; modify bits 0..2
+  and %11111000      ; clear bits used by 128 KiB computers
+  or e               ; update them
   di
   ld (sys_bankm),a   ; update BANKM
 if (defined plus3dos) or russian_computer
   push bc
   ld bc,bank1_port
-  out (c),a
+  out (c),a          ; page in the bank
   pop bc
 else
   out (bank1_port),a ; page in the bank
 endif
   ei
   ret
+
+endif ; pentagon=512 or pentagon=1024
 
 ; ----------------------------------------------
   _code_header far_c_fetch_,'farc@'
