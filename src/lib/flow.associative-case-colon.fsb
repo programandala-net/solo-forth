@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 20160324
+  \ Last modified: 201702221309
 
   \ -----------------------------------------------------------
   \ Description
@@ -15,7 +15,8 @@
 
   \ Original code by Frank Sergeant, for Pygmy Forth.
 
-  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
+  \ 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -28,6 +29,8 @@
   \ History
 
   \ 2016-04-09: Fixed the file header.
+  \
+  \ 2017-02-22: Update markup in documentation.
 
 ( associative-case: )
 
@@ -36,29 +39,29 @@ need create:
 : associative-case: ( "name" -- )
   create:
   does> ( n -- ) ( n pfa ) cell+  \ move past `lit`
-  begin   2dup @ dup 0= >r  ( n a n n')
+  begin   2dup @ dup 0= >r ( n a n n')
           =  r> or  0= ( n a f )
-  while   ( n a )  [ 3 cells ] literal +  \ no match
-  repeat  nip cell+ perform  ;
+  while   ( n a ) [ 3 cells ] literal +  \ no match
+  repeat  nip cell+ perform ;
 
   \ doc{
 
   \ associative-case: ( "name" -- )
   \
   \ Create an associative case definition "name":
-  \ `name  ( i*x n -- j*x )`.
+  \ ``name ( i*x n -- j*x )``.
 
   \ Usage example:
 
   \ ----
-  \ : red       ." red"  ;
-  \ : blue      ." blue"  ;
-  \ : orange    ." orange"  ;
-  \ : pink      ." pink"  ;
-  \ : black     ." black"  ;
+  \ : red       ." red" ;
+  \ : blue      ." blue" ;
+  \ : orange    ." orange" ;
+  \ : pink      ." pink" ;
+  \ : black     ." black" ;
   \
-  \ associative-case: color  ( n -- )
-  \   7 red  12 blue  472 orange  15 pink  0 black  ;
+  \ associative-case: color ( n -- )
+  \   7 red  12 blue  472 orange  15 pink  0 black ;
   \
   \ 7 color cr  472 color cr  3000 color cr
   \ ----

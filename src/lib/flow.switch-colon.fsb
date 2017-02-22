@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171936
+  \ Last modified: 201702221316
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,11 +49,11 @@
   \ XXX TODO -- add default xt
 
 [unneeded] switch:
-?\ : switch:  ( "name" -- )  wordlist constant  ;
+?\ : switch: ( "name" -- ) wordlist constant ;
 
   \ doc{
   \
-  \ switch:  ( "name" -- )
+  \ switch: ( "name" -- )
   \
   \ Create a new switch control structure _name_, which is a
   \ word list the clauses of the structure will be added to.
@@ -69,10 +69,10 @@
   \
   \ \ Define clauses:
   \
-  \ 0       mynumber :clause   ( -- )  cr ." zero"  ;
-  \ 1       mynumber :cclause  ( -- )  cr ." one"   ;
-  \ 2048    mynumber :clause   ( -- )  cr ." 2 KiB"   ;
-  \ 100000. mynumber :2clause  ( -- )  cr ." big"   ;
+  \ 0       mynumber :clause  ( -- ) cr ." zero" ;
+  \ 1       mynumber :cclause ( -- ) cr ." one" ;
+  \ 2048    mynumber :clause  ( -- ) cr ." 2 KiB" ;
+  \ 100000. mynumber :2clause ( -- ) cr ." big" ;
   \
   \ \ Execute the clauses:
   \
@@ -106,14 +106,14 @@ need ?(
 
 [unneeded] switch [unneeded] :clause and ?(
 
-need search-wordlist  need nextname  need >bstring
+need search-wordlist need nextname need >bstring
 
-: switch  ( x switch -- )
-  swap >bstring rot search-wordlist if  execute  then  ;
+: switch ( x switch -- )
+  swap >bstring rot search-wordlist if  execute  then ;
 
   \ doc{
   \
-  \ switch  ( x switch -- )
+  \ switch ( x switch -- )
   \
   \ Execute the switch _switch_ for the key _x_.
   \
@@ -121,13 +121,13 @@ need search-wordlist  need nextname  need >bstring
   \
   \ }doc
 
-: :clause  ( x switch -- )
+: :clause ( x switch -- )
   get-current >r set-current  >bstring nextname :
-              r> set-current  ; ?)
+              r> set-current ; ?)
 
   \ doc{
   \
-  \ :clause  ( x switch -- )
+  \ :clause ( x switch -- )
   \
   \ Start the definition of a switch clause _x_ for switch
   \ _switch_.
@@ -142,14 +142,14 @@ need ?(
 
 [unneeded] cswitch [unneeded] :cclause and ?(
 
-need search-wordlist  need nextname  need >bstring
+need search-wordlist need nextname need >bstring
 
-: cswitch  ( c switch -- )
-  swap c>bstring rot search-wordlist if  execute  then  ;
+: cswitch ( c switch -- )
+  swap c>bstring rot search-wordlist if  execute  then ;
 
   \ doc{
   \
-  \ cswitch  ( c switch -- )
+  \ cswitch ( c switch -- )
   \
   \ Execute the switch _switch_ for the key _c_.
   \
@@ -157,13 +157,13 @@ need search-wordlist  need nextname  need >bstring
   \
   \ }doc
 
-: :cclause  ( c switch -- )
+: :cclause ( c switch -- )
   get-current >r set-current  c>bstring nextname :
-              r> set-current  ; ?)
+              r> set-current ; ?)
 
   \ doc{
   \
-  \ :cclause  (  switch -- )
+  \ :cclause (  switch -- )
   \
   \ Start the definition of a switch clause _c_ for switch
   \ _switch_.
@@ -174,14 +174,14 @@ need search-wordlist  need nextname  need >bstring
 
 [unneeded] 2switch [unneeded] :2clause and ?(
 
-need search-wordlist  need nextname  need 2>bstring
+need search-wordlist need nextname need 2>bstring
 
-: 2switch  ( xd switch -- )
-  swap 2>bstring rot search-wordlist if  execute  then  ;
+: 2switch ( xd switch -- )
+  swap 2>bstring rot search-wordlist if  execute  then ;
 
   \ doc{
   \
-  \ 2switch  ( xd switch -- )
+  \ 2switch ( xd switch -- )
   \
   \ Execute the switch _switch_ for the key _xd_.
   \
@@ -189,13 +189,13 @@ need search-wordlist  need nextname  need 2>bstring
   \
   \ }doc
 
-: :2clause  ( xd switch -- )
+: :2clause ( xd switch -- )
   get-current >r set-current  2>bstring nextname :
-              r> set-current  ; ?)
+              r> set-current ; ?)
 
   \ doc{
   \
-  \ :2clause  ( xd switch -- )
+  \ :2clause ( xd switch -- )
   \
   \ Start the definition of a switch clause _xd_ for switch
   \ _switch_.

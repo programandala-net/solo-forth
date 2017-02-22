@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171901
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,20 +74,20 @@
 
 ( module end-module export )
 
-need alias  need nextname
+need alias need nextname
 
   \ XXX REMARK -- 2016-12-07:
   \     Data space used:
   \       Code           59 B
   \       Requirements  173 B  (`alias` and `nextname`)
 
-: module  ( "name" -- parent-wid )
+: module ( "name" -- parent-wid )
   get-current  wordlist dup >r constant
-  r@ >order  r> set-current  ;
+  r@ >order  r> set-current ;
 
   \ doc{
   \
-  \ module  ( "name" -- parent-wid )
+  \ module ( "name" -- parent-wid )
   \
   \ Start the definition of a new module named _name_.
   \
@@ -96,10 +96,10 @@ need alias  need nextname
   \ ----
   \ module greet
   \
-  \   : hello ( -- )  ." Hello" ;
-  \   : mods  ( -- )  ." Modules" ;
+  \   : hello ( -- ) ." Hello" ;
+  \   : mods ( -- ) ." Modules" ;
   \
-  \   : hi ( -- )  hello ." , " mods ." !" cr  ;
+  \   : hi ( -- ) hello ." , " mods ." !" cr ;
   \
   \ export hi
   \
@@ -116,20 +116,20 @@ need alias  need nextname
 
   \ The module name is defined as a constant that holds the
   \ word list identifier the module words are defined into.
-  \ Therefore, to expose the interal words of a module, you can
+  \ Therefore, to expose the internal words of a module, you can
   \ use `name >order`, where _name_ is the name of the module.
   \
   \ See also: `export`, `end-module`.
   \
   \ }doc
 
-: export  ( parent-wid "name" -- parent-wid )
+: export ( parent-wid "name" -- parent-wid )
   dup get-current  defined name>  parsed-name 2@ nextname
-  rot set-current alias  set-current  ;
+  rot set-current alias  set-current ;
 
   \ doc{
   \
-  \ export  ( parent-wid "name" -- parent-wid )
+  \ export ( parent-wid "name" -- parent-wid )
   \
   \ Make the word named _name_ accessible outside the `module`
   \ currently defined.  After `end-module` this word is still
@@ -137,11 +137,11 @@ need alias  need nextname
   \
   \ }doc
 
-: end-module  ( parent-wid -- )  set-current previous  ;
+: end-module ( parent-wid -- ) set-current previous ;
 
   \ doc{
   \
-  \ end-module  ( parent-wid -- )
+  \ end-module ( parent-wid -- )
   \
   \ End a `module` definition. All module internal words are no
   \ longer accessible.  Only words that have been exported with

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701202211
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,9 +36,9 @@
 
 need u.r
 
-: fyi.  ( u -- )  cr 5 u.r space  ;
+: fyi. ( u -- ) cr 5 u.r space ;
 
-: fyi  ( -- )
+: fyi ( -- )
   #words            fyi. ." #words"
   here              fyi. ." here"
   latest-wordlist @ fyi. ." latest-wordlist @"
@@ -48,11 +48,11 @@ need u.r
   latest            fyi. ." latest"
   current-latest    fyi. ." current-latest"
   farlimit @        fyi. ." farlimit @"
-  farunused         fyi. ." farunused" cr  ;
+  farunused         fyi. ." farunused" cr ;
 
   \ doc{
   \
-  \ fyi  ( -- )
+  \ fyi ( -- )
   \
   \ Print information about the current status of the Forth
   \ system.

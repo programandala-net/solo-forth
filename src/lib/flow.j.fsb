@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702201921
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,8 +43,8 @@ need ?(
 
 [unneeded] j ?(
 
-code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
-  2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, ' i 3 + ,  end-code
+code j ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
+  2A c, rp ,  11 c, 3 cells ,  19 c,  C3 c, ' i 3 + , end-code
     \ ld hl,(return_stack_pointer)
     \ ld de,3*cell
     \ add hl,de
@@ -54,7 +54,7 @@ code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 
   \ doc{
   \
-  \ j  ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
+  \ j ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 )
   \
   \ Return a copy _n|u_ of the next-outer loop index.
   \
@@ -66,9 +66,9 @@ code j  ( -- n|u ) ( R: do-sys1 do-sys2 -- do-sys1 do-sys2 )
 
 [unneeded] k ?(
 
-code k  ( -- n|u )
+code k ( -- n|u )
   ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
-  2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, ' i 3 + ,  end-code
+  2A c, rp ,  11 c, 6 cells ,  19 c,  C3 c, ' i 3 + , end-code
     \ ld hl,(return_stack_pointer)
     \ ld de,6*cell
     \ add hl,de
@@ -78,7 +78,7 @@ code k  ( -- n|u )
 
   \ doc{
   \
-  \ k  ( -- n|u ) ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
+  \ k ( -- n|u ) ( R: loop-sys1..loop-sys3 -- loop-sys1..loop-sys3 )
   \
   \ Return a copy _n|u_ of the second outer loop index.
   \

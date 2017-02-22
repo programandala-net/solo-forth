@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701061847
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,41 +44,41 @@
   \ XXX TODO -- Study how to save and load the names bank, even
   \ after assembling the kernel.
 
-: extend  ( -- )
+: extend ( -- )
   latest $08 +origin !
     \ top most word in `forth` vocabulary
   here $1F +origin !
     \ `dp` init value
   hp@ $26 +origin !
     \ `hp` init value
-  latest-wordlist @ $0C +origin !  ;
+  latest-wordlist @ $0C +origin ! ;
     \ `latest-wordlist` init value
   \ XXX TODO -- update
 
   \ doc{
   \
-  \ extend  ( -- )
+  \ extend ( -- )
   \
   \ }doc
   \
   \ Change the `cold` start parameters to extend the system to
   \ its current state.
 
-: size  ( -- u )  here 0 +origin -  ;
+: size ( -- u ) here 0 +origin - ;
 
   \ doc{
   \
-  \ size  ( -- u )
+  \ size ( -- u )
   \
   \ Size of the system.
   \
   \ }doc
 
-: system  ( -- a len )  extend  0 +origin size 10 +  ;
+: system ( -- a len ) extend  0 +origin size 10 + ;
 
   \ doc{
   \
-  \ system  ( -- a len )
+  \ system ( -- a len )
   \
   \ Prepare the system in order to save a copy.  Return its
   \ start address and length, to be used as parameters for
@@ -86,11 +86,11 @@
   \
   \ }doc
 
-: turnkey  ( xt -- a len )  boot defer! system  ;
+: turnkey ( xt -- a len ) boot defer! system ;
 
   \ doc{
   \
-  \ turnkey  ( xt -- a len )
+  \ turnkey ( xt -- a len )
   \
   \ Prepare the system in order to save a copy that will
   \ execute the given xt after the ordinary boot process.

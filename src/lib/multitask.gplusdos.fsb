@@ -35,17 +35,17 @@
   \
   \ XXX TODO link to the WoS archive ftp, when available
 
-need !dosvar  need @dosvar
+need !dosvar need @dosvar
 
-: jiffy!  ( a -- )  16 !dosvar  ;
+: jiffy! ( a -- ) 16 !dosvar ;
   \ Set the Z80 routine to be called by G+DOS after the OS
   \ interrupts routine, every 50th of a second.
 
-: jiffy@  ( -- a )  16 @dosvar  ;
+: jiffy@ ( -- a ) 16 @dosvar ;
   \ Get the current Z80 routine that is called by G+DOS after
   \ the OS interrupts routine, every 50th of a second.
 
-: -jiffy  ( -- )  8335 jiffy!  ;
+: -jiffy ( -- ) 8335 jiffy! ;
   \ Deactivate the jiffy call, setting its default value
   \ (a noop routine in the RAM of the +D interface).
 

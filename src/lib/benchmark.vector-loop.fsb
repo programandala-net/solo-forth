@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300117
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,80 +46,80 @@ need bench{
 
 1000 constant vsize  \ vector size
 
-: vector  ( n -- )
+: vector ( n -- )
   \ make an array
   \ compiling, reserve memory
   create  cells allot
   \ executing, compute address
-  does>  ( index -- address )  ( index pfa ) swap cells +  ;
+  does> ( index -- address ) ( index pfa ) swap cells + ;
 
 vsize vector vec1  vsize vector vec2  vsize vector vec3
 
-: vecload  ( -- )  \ put some stuff into the vectors
+: vecload ( -- ) \ put some stuff into the vectors
   0 begin
      dup vec1 dup !               \ vec1 gets its own address
      dup vec2 dup negate swap !   \ vec2 gets negated address
      1+ dup vsize =
-  until  drop  ;
+  until  drop ;
 
-: loop0  ( -- )  \ null loop
-  0 begin  1+ dup vsize =  until  drop  ;  -->
+: loop0 ( -- ) \ null loop
+  0 begin  1+ dup vsize =  until  drop ;  -->
 
 ( vector-loop-benchmark )
 
-: loop1  ( -- )  \ vector add
+: loop1 ( -- ) \ vector add
   0 begin
      dup vec1 @ over vec2 @ + over vec3 !
      1+ dup vsize =
-  until  drop  ;
+  until  drop ;
 
-: loop2 ( -- )  \ vector multiply
+: loop2 ( -- ) \ vector multiply
   0 begin
      dup vec1 @ over vec2 @ * over vec3 !
      1+ dup vsize =
-  until  drop  ;
+  until  drop ;
 
 : loop3 ( -- ) \ vector divide
   0 begin
     dup vec1 @ over vec2 @ / over vec3 !
     1+ dup vsize =
-  until  drop  ;  -->
+  until  drop ;  -->
 
 ( vector-loop-benchmark )
 
-: loop4 ( -- )  \ vector scale
+: loop4 ( -- ) \ vector scale
   0 begin
      dup vec1 @ 10000 10000 */ over vec2 !  1+ dup vsize =
-  until  drop  ;
+  until  drop ;
 
 1000 constant reps  \ repetitions
 
-: bench0  ( -- )  \ benchmark loop0
+: bench0 ( -- ) \ benchmark loop0
   bench{ 0 begin  loop0 1+ dup reps =  until  drop }bench.
-  ." Vector No-Op" cr  ;
+  ." Vector No-Op" cr ;
 
 : bench1 ( -- ) \ benchmark loop1
   bench{ 0 begin  loop1 1+ dup reps =  until  drop }bench.
-  ." Vector +    " cr  ;
+  ." Vector +    " cr ;
 
 : bench2 ( -- ) \ benchmark loop2
   bench{ 0 begin  loop2 1+ dup reps =  until  drop }bench.
-  ." Vector *    " cr  ;
+  ." Vector *    " cr ;
 
 -->
 
 ( vector-loop-benchmark )
 
-: bench3 ( -- )  \ benchmark loop3
+: bench3 ( -- ) \ benchmark loop3
   bench{ 0 begin  loop3 1+ dup reps =  until  drop }bench.
-  ." Vector /    " cr  ;
+  ." Vector /    " cr ;
 
 : bench4 ( -- ) \ benchmark loop4
   bench{ 0 begin  loop4 1+ dup reps =  until  drop }bench.
-  ." Vector */   " cr  ;
+  ." Vector */   " cr ;
 
-: vector-loop-benchmarks  ( -- )
-  vecload  cr bench0 bench1 bench2 bench3 bench4  ;
+: vector-loop-benchmark ( -- )
+  vecload  cr bench0 bench1 bench2 bench3 bench4 ;
 
   cr
   \  <------------------------------>

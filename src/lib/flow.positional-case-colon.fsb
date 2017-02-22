@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604092020
+  \ Last modified: 201702221314
 
   \ -----------------------------------------------------------
   \ Description
@@ -16,7 +16,8 @@
   \ Original code from F83's `case:`, by Henry Laxen and
   \ Michael Perry.
 
-  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016.
+  \ Adapted by Marcos Cruz (programandala.net), 2015, 2016,
+  \ 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -29,37 +30,39 @@
   \ History
 
   \ 2015-08-11: Adapted.
+  \
   \ 2015-11-22: Modified to use `create:`.
+  \
   \ 2015-12-14: Renamed to `positional-case:`.
+  \
   \ 2016-04-09: Fixed the file header. Documented.
 
 ( positional-case: )
 
 need create:
 
-: positional-case:  ( "name" -- )
+: positional-case: ( "name" -- )
   create:
   does>   ( n -- )
           \ Execute the n-th word compiled.
-          ( n pfa ) swap cells + perform  ;
-
+          ( n pfa ) swap cells + perform ;
 
   \ doc{
   \
-  \ positional-case:  ( "name" -- )
+  \ positional-case: ( "name" -- )
   \
-  \ Create a positional case word "name". At runtime, "name"
+  \ Create a positional case word _name_. At runtime, _name_
   \ will execute the n-th word compiled in its definition,
   \ depending upon the value on the stack. No range checking.
   \
   \ Usage example:
 
   \ ----
-  \ : say0 ." nul"  ;
-  \ : say1 ." unu"  ;
-  \ : say2 ." du"  ;
+  \ : say0 ( -- ) ." nul" ;
+  \ : say1 ( -- ) ." unu" ;
+  \ : say2 ( -- ) ." du" ;
 
-  \ positional-case: say  ( n -- )  say0 say1 say2  ;
+  \ positional-case: say ( n -- ) say0 say1 say2 ;
 
   \ 0 say cr 1 say cr 2 say cr
   \ ----

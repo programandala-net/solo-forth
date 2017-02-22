@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171758
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,11 +59,11 @@
 ( .current .context .wordlist )
 
 [unneeded] .current
-?\ : .current  ( -- )  get-current .wordlist  ;
+?\ : .current ( -- ) get-current .wordlist ;
 
   \ doc{
   \
-  \ .current  ( -- )
+  \ .current ( -- )
   \
   \ Display the compilation word list.
   \
@@ -71,14 +71,14 @@
   \
   \ }doc
 
-[unneeded] .context ?(  need .wordlist
+[unneeded] .context ?( need .wordlist
 
-: .context  ( -- )
-  get-order begin  ?dup  while  swap .wordlist 1-  repeat  ; ?)
+: .context ( -- )
+  get-order begin  ?dup  while  swap .wordlist 1-  repeat ; ?)
 
   \ doc{
   \
-  \ .context  ( -- )
+  \ .context ( -- )
   \
   \ Display the word lists in the search order in their search
   \ order sequence, from first searched to last searched.
@@ -87,14 +87,14 @@
   \
   \ }doc
 
-[unneeded] .wordlist ?(  need wordlist>name
+[unneeded] .wordlist ?( need wordlist>name
 
-: .wordlist  ( wid -- )
-  dup wordlist>name @ ?dup if  .name drop exit  then  u.  ;  ?)
+: .wordlist ( wid -- )
+  dup wordlist>name @ ?dup if  .name drop exit  then  u. ; ?)
 
   \ doc{
   \
-  \ .wordlist  ( wid -- )
+  \ .wordlist ( wid -- )
   \
   \ If the word list identified by _wid_ has an associated
   \ name, display it; else display _wid_.
@@ -107,16 +107,16 @@
 
 need ?(
 
-[unneeded] wordlists ?(  need .wordlist  need wordlist>link
+[unneeded] wordlists ?( need .wordlist need wordlist>link
 
-: wordlists  ( -- )
+: wordlists ( -- )
   latest-wordlist
   begin  @ ( wid|0) ?dup  while  dup .wordlist wordlist>link
-  repeat  ; ?)
+  repeat ; ?)
 
   \ doc{
   \
-  \ wordlists  ( -- )
+  \ wordlists ( -- )
   \
   \ List all wordlists defined in the system, either by name
   \ (if they have an associated name) or by number (its word
@@ -128,17 +128,17 @@ need ?(
   \
   \ }doc
 
-[unneeded] order ?(  need .context  need .current
+[unneeded] order ?( need .context need .current
 
-: order  ( -- )
-  cr ." Search: " .context cr ." Compile: " .current  ; ?)
+: order ( -- )
+  cr ." Search: " .context cr ." Compile: " .current ; ?)
 
   \ Display the search order currently in effect and the name
   \ of the `current` vocabulary.
 
   \ doc{
   \
-  \ order  ( -- )
+  \ order ( -- )
   \
   \ Display the word lists in the search order in their search
   \ order sequence, from first searched to last searched. Also

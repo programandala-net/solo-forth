@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201612301235
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,9 +40,9 @@
 
 need d2*
 
-: q2*  ( n . . . -- 2n . . . )
+: q2* ( n . . . -- 2n . . . )
   d2* >r >r  dup 0< if    d2* r> 1+ r>
-                    else  d2* r> r>  then  ;
+                    else  d2* r> r>  then ;
 
 ( q+ q- q0< q0= qu< qnegate qabs )
 
@@ -51,19 +51,19 @@ need d2*
   \ copyright 1990-2007  Frank Sergeant
   \ License:  http://pygmy.utoh.org/license.html
 
-code q+  ( nq1 nq2 -- nq3 )
+code q+ ( nq1 nq2 -- nq3 )
   \ XXX TODO -- port to Z80
 end-code
 
-code q-  ( nq1 nq2 -- nq3 )
+code q- ( nq1 nq2 -- nq3 )
   \ XXX TODO -- port to Z80
 end-code
 
-: q0<  ( nq -- f )  0< push drop 2drop pop  ;
-: q0=  ( nq -- f )  or or or 0=  ;
-: qu<  ( uq uq -- f )  q- q0<  ;
-: qnegate  ( nq -- nq' )  0 0 0 0 4swap q-  ;
-: qabs  ( nq -- uq )  dup 0< if  qnegate  then  ;
+: q0< ( nq -- f ) 0< push drop 2drop pop ;
+: q0= ( nq -- f ) or or or 0= ;
+: qu< ( uq uq -- f ) q- q0< ;
+: qnegate ( nq -- nq' ) 0 0 0 0 4swap q- ;
+: qabs ( nq -- uq ) dup 0< if  qnegate  then ;
 
 ( udm* dm* )
 
@@ -74,13 +74,13 @@ end-code
 
 need qnegate
 
-code udm*  ( ud ud - quad )
+code udm* ( ud ud - quad )
   \ XXX TODO -- port to Z80
 end-code
 
 : dm* ( nd nd - nq )
   2>r dup 0< dup >r if  dnegate  then
   r> 2r> dup 0< dup >r if  dnegate  then
-  rot >r udm* 2r> xor 0< if  qnegate  then  ;
+  rot >r udm* 2r> xor 0< if  qnegate  then ;
 
   \ vim: filetype=soloforth

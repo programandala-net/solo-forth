@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172323
+  \ Last modified: 201702221304
 
   \ -----------------------------------------------------------
   \ Description
@@ -108,13 +108,13 @@
 ( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
 
 [unneeded] plusd-in
-?\ code plusd-in  ( -- )  DB c, #231 c, jpnext,  end-code
+?\ code plusd-in ( -- ) DB c, #231 c, jpnext, end-code
   \ in a,(231)
   \ _jp_next
 
   \ doc{
   \
-  \ plusd-in  ( -- )
+  \ plusd-in ( -- )
   \
   \ Page in the Plus D memory.
   \
@@ -123,13 +123,13 @@
   \ }doc
 
 [unneeded] plusd-out
-?\ code plusd-out  ( -- )  D3 c, #231 c, jpnext,  end-code
+?\ code plusd-out ( -- ) D3 c, #231 c, jpnext, end-code
   \ out (231),a
   \ _jp_next
 
   \ doc{
   \
-  \ plusd-out  ( -- )
+  \ plusd-out ( -- )
   \
   \ Page out the Plus D memory.
   \
@@ -138,12 +138,12 @@
   \ }doc
 
 [unneeded] plusd-in,
-?\ need macro  macro plusd-in,  ( -- )  DB c, #231 c,  endm
+?\ need macro  macro plusd-in, ( -- ) DB c, #231 c, endm
   \ in a,(231)
 
   \ doc{
   \
-  \ plusd-in,  ( -- )
+  \ plusd-in, ( -- )
   \
   \ Compile the Z80 instruction ``in a,(231)``, which pages in
   \ the Plus D memory.
@@ -153,12 +153,12 @@
   \ }doc
 
 [unneeded] plusd-out,
-?\ need macro  macro plusd-out,  ( -- )  D3 c, #231 c,  endm
+?\ need macro  macro plusd-out, ( -- ) D3 c, #231 c, endm
   \ out (231),a
 
   \ doc{
   \
-  \ plusd-out,  ( -- )
+  \ plusd-out, ( -- )
   \
   \ Compile the Z80 instruction ``out (231),a``, which pages out
   \ the Plus D memory.
@@ -179,7 +179,7 @@
 
   \ doc{
   \
-  \ ufia  ( -- a )
+  \ ufia ( -- a )
   \
   \ Return constant address _a_ of a buffer used as G+DOS User File
   \ Information Area.
@@ -224,7 +224,7 @@
 
   \ doc{
   \
-  \ /ufia  ( -- b )
+  \ /ufia ( -- b )
   \
   \ A constant that holds the length of a G+DOS UFIA (User File
   \ Information Area), which is 24 bytes.
@@ -259,47 +259,47 @@ ufia 22 + constant hd11    \ BASIC autorun line
 2 cconstant string-array-filetype
 3 cconstant code-filetype
 
-: --file-types--  ;
+: --file-types-- ;
 
 ( hxfer ofsm hofile sbyte hsvbk cfsm pntp cops hgfile lbyte )
 
   \ Hook codes
 
-[unneeded] hxfer   ?\ $33 cconstant hxfer
-[unneeded] ofsm    ?\ $34 cconstant ofsm
-[unneeded] hofile  ?\ $35 cconstant hofile
-[unneeded] sbyte   ?\ $36 cconstant sbyte
-[unneeded] hsvbk   ?\ $37 cconstant hsvbk
-[unneeded] cfsm    ?\ $38 cconstant cfsm
-[unneeded] pntp    ?\ $39 cconstant pntp
-[unneeded] cops    ?\ $3A cconstant cops
-[unneeded] hgfile  ?\ $3B cconstant hgfile
-[unneeded] lbyte   ?\ $3C cconstant lbyte
+[unneeded] hxfer  ?\ $33 cconstant hxfer
+[unneeded] ofsm   ?\ $34 cconstant ofsm
+[unneeded] hofile ?\ $35 cconstant hofile
+[unneeded] sbyte  ?\ $36 cconstant sbyte
+[unneeded] hsvbk  ?\ $37 cconstant hsvbk
+[unneeded] cfsm   ?\ $38 cconstant cfsm
+[unneeded] pntp   ?\ $39 cconstant pntp
+[unneeded] cops   ?\ $3A cconstant cops
+[unneeded] hgfile ?\ $3B cconstant hgfile
+[unneeded] lbyte  ?\ $3C cconstant lbyte
 
 ( hldbk wsad sad rest heraz cops2 pcat hrsad hwsad otfoc )
 
   \ Hook codes (continued)
 
-[unneeded] hldbk   ?\ $3D cconstant hldbk
-[unneeded] wsad    ?\ $3E cconstant wsad
-[unneeded] sad     ?\ $3F cconstant sad
-[unneeded] rest    ?\ $40 cconstant rest
-[unneeded] heraz   ?\ $41 cconstant heraz
-[unneeded] cops2   ?\ $42 cconstant cops2
-[unneeded] pcat    ?\ $43 cconstant pcat
-[unneeded] hrsad   ?\ $44 cconstant hrsad
-[unneeded] hwsad   ?\ $45 cconstant hwsad
-[unneeded] otfoc   ?\ $46 cconstant otfoc
+[unneeded] hldbk ?\ $3D cconstant hldbk
+[unneeded] wsad  ?\ $3E cconstant wsad
+[unneeded] sad   ?\ $3F cconstant sad
+[unneeded] rest  ?\ $40 cconstant rest
+[unneeded] heraz ?\ $41 cconstant heraz
+[unneeded] cops2 ?\ $42 cconstant cops2
+[unneeded] pcat  ?\ $43 cconstant pcat
+[unneeded] hrsad ?\ $44 cconstant hrsad
+[unneeded] hwsad ?\ $45 cconstant hwsad
+[unneeded] otfoc ?\ $46 cconstant otfoc
 
 ( patch --directory-descriptions-- dos-vars )
 
   \ Hook codes (continued)
 
-[unneeded] patch   ?\ $47 cconstant patch
+[unneeded] patch ?\ $47 cconstant patch
 
   \ Directory descriptions
 
-need ?(  [unneeded] --directory-descriptions ?(
+need ?( [unneeded] --directory-descriptions ?(
 
 01 cconstant basic-file-dir    02 cconstant data-array-dir
 03 cconstant string-array-dir  04 cconstant code-file-dir
@@ -308,13 +308,13 @@ need ?(  [unneeded] --directory-descriptions ?(
 09 cconstant snapshot-128k-dir 10 cconstant opentype-file-dir
 11 cconstant execute-file-dir
 
-: --directory-descriptions--  ; ?)
+: --directory-descriptions-- ; ?)
 
 [unneeded] dos-vars ?\ 8192 constant dos-vars
 
   \ doc{
   \
-  \ dos-vars  ( -- a )
+  \ dos-vars ( -- a )
   \
   \ Address of the G+DOS variables in the Plus D memory.
   \
@@ -324,15 +324,15 @@ need ?(  [unneeded] --directory-descriptions ?(
 
 ( get-drive )
 
-need ?(  [unneeded] get-drive ?(
+need ?( [unneeded] get-drive ?(
 
-need assembler  need plusd-in,  need plusd-out,
+need assembler need plusd-in, need plusd-out,
 
-code get-drive  ( -- n )
+code get-drive ( -- n )
   b push,  \ save the Forth IP
   plusd-in, 3ACE fta, plusd-out,
   b pop, next ix ldp#,  \ restore the Forth registers
-  pusha jp,  end-code  ?)
+  pusha jp, end-code ?)
 
   \ XXX TODO -- Rewrite in Z80 opcodes.
 
@@ -341,7 +341,7 @@ code get-drive  ( -- n )
 
   \ doc{
   \
-  \ get-drive  ( -- n )
+  \ get-drive ( -- n )
   \
   \ Get the current drive _n_ (1 or 2).
   \
@@ -351,9 +351,9 @@ code get-drive  ( -- n )
 
 ( delete-file )
 
-need assembler  need ufia  need heraz  need set-filename
+need assembler need ufia need heraz need set-filename
 
-code (delete-file)  ( -- ior )
+code (delete-file) ( -- ior )
   b push,  \ save the Forth IP
   ufia ix ldp#, heraz hook,  \ delete the file
   b pop, next ix ldp#, \ restore the Forth registers
@@ -361,7 +361,7 @@ code (delete-file)  ( -- ior )
 
   \ doc{
   \
-  \ (delete-file)  ( -- ior )
+  \ (delete-file) ( -- ior )
   \
   \ Delete a disk file using the data hold in `ufia`.
   \ Return an error result _ior_.
@@ -370,11 +370,11 @@ code (delete-file)  ( -- ior )
   \
   \ }doc
 
-: delete-file  ( ca len -- ior )  set-filename (delete-file)  ;
+: delete-file ( ca len -- ior ) set-filename (delete-file) ;
 
   \ doc{
   \
-  \ delete-file  ( ca len -- ior )
+  \ delete-file ( ca len -- ior )
   \
   \ Delete the disk file named in the string _ca len_ and
   \ return an error result _ior_.
@@ -387,13 +387,13 @@ code (delete-file)  ( -- ior )
 
 ( -filename set-filename set-code-file )
 
-need ufia  need get-drive
+need ufia need get-drive
 
 10 cconstant /filename  \ max filename length
 
   \ doc{
   \
-  \ /filename  ( -- b )
+  \ /filename ( -- b )
   \
   \ A constant that returns the maximum length of a G+DOS
   \ filename.
@@ -402,11 +402,11 @@ need ufia  need get-drive
   \
   \ }doc
 
-: -filename  ( -- )  nstr2 /filename blank  ;
+: -filename ( -- ) nstr2 /filename blank ;
 
   \ doc{
   \
-  \ -filename  ( -- )
+  \ -filename ( -- )
   \
   \ Blank the filename in `ufia`, i.e. replace it with spaces.
   \
@@ -414,13 +414,12 @@ need ufia  need get-drive
   \
   \ }doc
 
-: set-filename  ( ca len -- )
-  -filename /filename min nstr2 swap cmove
-  get-drive dstr1 c!  ;
+: set-filename ( ca len -- )
+  -filename /filename min nstr2 swap cmove get-drive dstr1 c! ;
 
   \ doc{
   \
-  \ set-filename  ( ca len -- )
+  \ set-filename ( ca len -- )
   \
   \ Configure `ufia` to use filename _ca len_ and the current
   \ drive.
@@ -429,12 +428,12 @@ need ufia  need get-drive
   \
   \ }doc
 
-: set-code-file  ( ca1 len1 ca2 len2 -- )
-  set-filename  hd0b !  hd0d !  3 hd00 c!  4 nstr1 c!  ;
+: set-code-file ( ca1 len1 ca2 len2 -- )
+  set-filename  hd0b !  hd0d !  3 hd00 c!  4 nstr1 c! ;
 
   \ doc{
   \
-  \ set-code-file  ( ca1 len1 ca2 len2 -- )
+  \ set-code-file ( ca1 len1 ca2 len2 -- )
   \
   \ Configure `ufia` to use a code file in the current drive with
   \ filename _ca2 len2_, start address _ca1_ and length _len1_.
@@ -445,10 +444,10 @@ need ufia  need get-drive
 
 ( >file )
 
-need assembler  need ufia  need set-code-file
-need hofile  need hsvbk  need cfsm
+need assembler need ufia need set-code-file
+need hofile need hsvbk need cfsm
 
-code (>file)  ( -- ior )
+code (>file) ( -- ior )
 
   b push,  \ save the Forth IP
   ufia ix ldp#,
@@ -462,7 +461,7 @@ code (>file)  ( -- ior )
 
   \ doc{
   \
-  \ (>file)  ( -- ior )
+  \ (>file) ( -- ior )
   \
   \ Save a file to disk using the data hold in `ufia` and
   \ return error result _ior_.
@@ -471,11 +470,11 @@ code (>file)  ( -- ior )
   \
   \ }doc
 
-: >file  ( ca1 len1 ca2 len2 -- ior )  set-code-file (>file)  ;
+: >file ( ca1 len1 ca2 len2 -- ior ) set-code-file (>file) ;
 
   \ doc{
   \
-  \ >file  ( ca1 len1 ca2 len2 -- ior )
+  \ >file ( ca1 len1 ca2 len2 -- ior )
   \
   \ Save memory region _ca1 len1_ to a file named by the string
   \ _ca2 len2_, and return error result _ior_.
@@ -486,10 +485,10 @@ code (>file)  ( -- ior )
 
 ( file> )
 
-need assembler  need ufia  need set-code-file
-need hgfile  need lbyte  need hldbk
+need assembler need ufia need set-code-file
+need hgfile need lbyte need hldbk
 
-code (file>)  ( ca len -- ior )
+code (file>) ( ca len -- ior )
 
   d pop, h pop, b push, h push, d push, ( ip ca len )
 
@@ -505,7 +504,7 @@ code (file>)  ( ca len -- ior )
 
   \ doc{
   \
-  \ (file>)  ( ca len -- ior )
+  \ (file>) ( ca len -- ior )
   \
   \ Read a file from disk, using the data hold in `ufia` and the
   \ alternative destination zone _ca len_, following the
@@ -529,11 +528,11 @@ code (file>)  ( ca len -- ior )
   \ }doc
 
 : file> ( ca1 len1 ca2 len2 -- ior)
-  2dup 2>r 2swap set-code-file 2r> (file>)  ;
+  2dup 2>r 2swap set-code-file 2r> (file>) ;
 
   \ doc{
   \
-  \ file>  ( ca1 len1 ca2 len2 -- ior )
+  \ file> ( ca1 len1 ca2 len2 -- ior )
   \
   \ Read the contents of a disk file, whose filename is defined
   \ by the string _ca1 len1_, to memory zone _ca2 len2_ (i.e.
@@ -578,10 +577,10 @@ code (file>)  ( ca len -- ior )
 
 ( file-status )
 
-need assembler  need ufia  need set-filename
-need hgfile  need lbyte
+need assembler need ufia need set-filename
+need hgfile need lbyte
 
-code (file-status)  ( -- a ior )
+code (file-status) ( -- a ior )
   ufia ix ldp#, ix push,
   b push,  \ save the Forth IP
   hgfile hook,  \ get the file
@@ -598,7 +597,7 @@ code (file-status)  ( -- a ior )
 
   \ doc{
   \
-  \ (file-status)  ( -- a ior )
+  \ (file-status) ( -- a ior )
   \
   \ Return the status of the file whose name is hold in `ufia`.
   \ If the file exists, its file header is read into `ufia`,
@@ -610,12 +609,12 @@ code (file-status)  ( -- a ior )
   \
   \ }doc
 
-: file-status  ( ca len -- a ior)
-  set-filename (file-status)  ;
+: file-status ( ca len -- a ior)
+  set-filename (file-status) ;
 
   \ doc{
   \
-  \ file-status  ( ca len -- a ior )
+  \ file-status ( ca len -- a ior )
   \
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
@@ -634,11 +633,11 @@ code (file-status)  ( -- a ior )
 need ?(
 
 [unneeded] file-exists?  ?( need file-status
-: file-exists?  ( ca len -- f )  file-status nip 0=  ; ?)
+: file-exists? ( ca len -- f ) file-status nip 0= ; ?)
 
   \ doc{
   \
-  \ file-exists?  ( ca len -- f )
+  \ file-exists? ( ca len -- f )
   \
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
@@ -647,14 +646,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-start  ?( need file-status  need ufia
+[unneeded] file-start  ?( need file-status need ufia
 
-: file-start  ( ca1 len1 -- ca2 ior )
+: file-start ( ca1 len1 -- ca2 ior )
   file-status nip hd0d @ swap ; ?)
 
   \ doc{
   \
-  \ file-start  ( ca1 len1 -- ca2 ior )
+  \ file-start ( ca1 len1 -- ca2 ior )
   \
   \ Return the file start address of the file named in the
   \ character string _ca1 len1_. If the file was successfully
@@ -666,14 +665,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-length  ?( need file-status  need ufia
+[unneeded] file-length  ?( need file-status need ufia
 
-: file-length  ( ca1 len1 -- len2 ior )
+: file-length ( ca1 len1 -- len2 ior )
   file-status nip hd0b @ swap ; ?)
 
   \ doc{
   \
-  \ file-length  ( ca1 len1 -- len2 ior )
+  \ file-length ( ca1 len1 -- len2 ior )
   \
   \ Return the file length of the file named in the character
   \ string _ca1 len1_. If the file was successfully found,
@@ -684,14 +683,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-type  ?( need file-status  need ufia
+[unneeded] file-type  ?( need file-status need ufia
 
-: file-type  ( ca len -- n ior )
+: file-type ( ca len -- n ior )
   file-status nip hd00 c@ swap ; ?)
 
   \ doc{
   \
-  \ file-type  ( ca len -- n ior )
+  \ file-type ( ca len -- n ior )
   \
   \ Return the G+DOS file-type indentifier of the file named in
   \ the character string _ca len_. If the file was successfully
@@ -705,11 +704,11 @@ need ?(
 need ?(
 
 [unneeded] find-file  ?( need file-status
-: find-file  ( ca len -- f )  file-status 0= and  ; ?)
+: find-file ( ca len -- f ) file-status 0= and ; ?)
 
   \ doc{
   \
-  \ find-file  ( ca len -- a | 0 )
+  \ find-file ( ca len -- a | 0 )
   \
   \ If the file named in the character string _ca len_ is
   \ found, update the contents of `ufia` and return its address
@@ -723,9 +722,9 @@ need ?(
 
 need ?(
 
-[unneeded] file-dir#  ?( need file-status  need ufia
+[unneeded] file-dir#  ?( need file-status need ufia
 
-: file-dir#  ( ca len -- n ior )
+: file-dir# ( ca len -- n ior )
   file-status nip fstr1 c@ swap ; ?)
 
   \ XXX FIXME --  _n_ is always zero. `file-status` does not
@@ -733,7 +732,7 @@ need ?(
 
   \ doc{
   \
-  \ file-dir#  ( ca len -- n ior )
+  \ file-dir# ( ca len -- n ior )
   \
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
@@ -744,9 +743,9 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-dirdesc  ?( need file-status  need ufia
+[unneeded] file-dirdesc  ?( need file-status need ufia
 
-: file-dirdesc  ( ca len -- n ior )
+: file-dirdesc ( ca len -- n ior )
   file-status nip nstr1 c@ swap ; ?)
 
   \ XXX FIXME --  _n_ is always zero. `file-status` does not
@@ -754,7 +753,7 @@ need ?(
 
   \ doc{
   \
-  \ file-dirdesc  ( ca len -- n ior )
+  \ file-dirdesc ( ca len -- n ior )
   \
   \ Return the G+DOS file directory identifier of the file
   \ named in the character string _ca len_. If the file was
@@ -771,10 +770,10 @@ need ?(
   \ XXX UNDER DEVELOPMENT
   \ Experimental code to read lines from a file
 
-need assembler  need ufia  need set-code-file
-need hgfile  need lbyte  need plusd-in,  need plusd-out,
+need assembler need ufia need set-code-file
+need hgfile need lbyte need plusd-in, need plusd-out,
 
-code (file>screen)  ( -- ior )
+code (file>screen) ( -- ior )
 
   b push,  \ save the Forth IP
 
@@ -799,7 +798,7 @@ code (file>screen)  ( -- ior )
   \ Print a file on the screen, line by line, using the data
   \ hold in UFIA.
 
-: file>screen  ( ca len -- ior )
+: file>screen ( ca len -- ior )
   0 0 2swap set-code-file (file>screen) ;
   \ Copy a file _ca len_ to the screen, line by line,
   \ and return error result _ior_.
@@ -808,16 +807,16 @@ code (file>screen)  ( -- ior )
 
   \ XXX TMP -- for debugging
 
-need assembler  need plusd-in,  need plusd-out,  need patch
+need assembler need plusd-in, need plusd-out, need patch
 
-code g.100h  ( u -- )
+code g.100h ( u -- )
   h pop, b push,
   h push, patch hook, h pop, 1744 call, plusd-out,
   b pop,  next ix ldp#,  jpnext, end-code
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with a hook.
 
-code g.100i  ( u -- )
+code g.100i ( u -- )
   h pop, b push,
   plusd-in, 1744 call, plusd-out,
   b pop,  next ix ldp#,  jpnext, end-code
@@ -830,14 +829,14 @@ code g.100i  ( u -- )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler  need rest  need get-drive
+need assembler need rest need get-drive
 
-code (cd3  ( -- ior )
+code (cd3 ( -- ior )
   b push, rest hook, b pop, next ix ldp#,
   af push, ' dosior>ior jp, end-code
 
-: cd3  ( n -- ior )
-  get-drive >r set-drive throw (cd3 r> set-drive throw  ;
+: cd3 ( n -- ior )
+  get-drive >r set-drive throw (cd3 r> set-drive throw ;
 
   \ XXX FIXME -- Since the first time #-1006 (no disk in drive)
   \ is returned because of a missing disk, it is the only error
@@ -850,9 +849,9 @@ code (cd3  ( -- ior )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler  need ufia1  need rest  need plusd-in,
+need assembler need ufia1 need rest need plusd-in,
 
-code cd2  ( n -- ior )
+code cd2 ( n -- ior )
   h pop,
   b push,  \ save the Forth IP
   plusd-in, l a ld, ufia1 sta, rest hook,
@@ -874,9 +873,9 @@ code cd2  ( n -- ior )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler  need ufia  need rest
+need assembler need ufia need rest
 
-code cd1  ( n -- ior )
+code cd1 ( n -- ior )
   h pop,
   b push,  \ save the Forth IP
   l a ld, dstr1 sta, ufia ix ldp#, rest hook,
@@ -899,12 +898,12 @@ code cd1  ( n -- ior )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-  \ XXX TODO -- 
+  \ XXX TODO --
 
-need assembler  need plusd-in,  need plusd-out,  need patch
-need ufia  need ufia1  need set-filename  need patch
+need assembler need plusd-in, need plusd-out, need patch
+need ufia need ufia1 need set-filename need patch
 
-create (cd0-error  ( -- a )  asm
+create (cd0-error ( -- a ) asm
   168E call, plusd-out, b pop, next ix ldp#,
     \ $168E=BORD_REST (restore the border).
     \ Page out the Plus D memory.
@@ -914,7 +913,7 @@ create (cd0-error  ( -- a )  asm
   af push, ' dosior>ior jp, end-asm
     \ Return the ior.
 
-code cd0  ( -- ior )
+code cd0 ( -- ior )
 
   b push,  plusd-in,
     \ Get the parameter.
@@ -927,7 +926,7 @@ code cd0  ( -- ior )
     \   G+DOS ROM instead of hook codes.
   \ 06C5 call, \ XXX REMARK -- This always returns #-1006
   06A4 call,  \ track_0
-  plusd-out, b pop, b pop, next ix ldp#, ' false jp,  end-code
+  plusd-out, b pop, b pop, next ix ldp#, ' false jp, end-code
 
   \ XXX FIXME -- Since the first time #-1006 (no disk in drive)
   \ is returned because of a missing disk, it is the only error
@@ -936,10 +935,10 @@ code cd0  ( -- ior )
 
 ( (cat )
 
-need assembler  need plusd-in,  need plusd-out,  need patch
-need ufia  need ufia1  need set-filename  need patch
+need assembler need plusd-in, need plusd-out, need patch
+need ufia need ufia1 need set-filename need patch
 
-create (cat-error  ( -- a )  asm
+create (cat-error ( -- a ) asm
   168E call, plusd-out, b pop, next ix ldp#,
     \ $168E=BORD_REST (restore the border).
     \ Page out the Plus D memory.
@@ -957,7 +956,7 @@ create (cat-error  ( -- a )  asm
 
   \ doc{
   \
-  \ (cat-error  ( -- a )
+  \ (cat-error ( -- a )
   \
   \ Return the address _a_ of a subroutine that is executed
   \ when the Plus D ROM routines called by `(cat` throw an
@@ -969,7 +968,7 @@ create (cat-error  ( -- a )  asm
   \
   \ }doc
 
-code (cat  ( n -- ior )
+code (cat ( n -- ior )
 
   d pop, b push,  plusd-in,
     \ Get the parameter.
@@ -990,14 +989,14 @@ code (cat  ( n -- ior )
     \ XXX OLD: 24B5 = CAT_RUN (input: cat type in the A register)
     \ 168E = BORD_REST (restore the border)
 
-  plusd-out, b pop, b pop, next ix ldp#, ' false jp,  end-code
+  plusd-out, b pop, b pop, next ix ldp#, ' false jp, end-code
     \ Page out the Plus D memory.
     \ Consume the address of `(cat-error` that was pushed at the start.
     \ Restore the Forth registers and exit.
 
   \ doc{
   \
-  \ (cat  ( n -- )
+  \ (cat ( n -- )
   \
   \ Show a disk catalogue of the current drive, being _n_ the
   \ type of catalogue: 2=compact; 4=detailed.  This word is the
@@ -1013,13 +1012,13 @@ code (cat  ( n -- ior )
 
 need ?(
 
-[unneeded] wcat ?(  need (cat
+[unneeded] wcat ?( need (cat
 
-: wcat  ( ca len -- )  set-filename  4 (cat throw  ; ?)
+: wcat ( ca len -- ) set-filename  4 (cat throw ; ?)
 
   \ doc{
   \
-  \ wcat  ( ca len -- )
+  \ wcat ( ca len -- )
   \
   \ Show a wild-card disk catologue of the current drive using
   \ the wild-card filename _ca len_.  See the Plus D manual for
@@ -1031,11 +1030,11 @@ need ?(
 
 [unneeded] cat
 
-?\ need wcat  : cat  ( -- )  s" *" wcat  ;
+?\ need wcat  : cat ( -- ) s" *" wcat ;
 
   \ doc{
   \
-  \ cat  ( -- )
+  \ cat ( -- )
   \
   \ Show a disk catalogue of the current drive.
   \
@@ -1043,13 +1042,13 @@ need ?(
   \
   \ }doc
 
-[unneeded] wacat ?(  need (cat
+[unneeded] wacat ?( need (cat
 
-: wacat  ( ca len -- )  set-filename  2 (cat throw  ; ?)
+: wacat ( ca len -- ) set-filename  2 (cat throw ; ?)
 
   \ doc{
   \
-  \ wacat  ( ca len -- )
+  \ wacat ( ca len -- )
   \
   \ Show a wild-card abbreviated disk catologue of the current
   \ drive using the wild-card filename _ca len_.  See the Plus
@@ -1061,11 +1060,11 @@ need ?(
 
 [unneeded] acat
 
-?\ need wacat  : acat  ( -- )  s" *" wacat ;
+?\ need wacat  : acat ( -- ) s" *" wacat ;
 
   \ doc{
   \
-  \ acat  ( -- )
+  \ acat ( -- )
   \
   \ Show an abbreviated disk catologue of the current drive.
   \
@@ -1087,14 +1086,14 @@ need ?(
 
 [unneeded] @dos ?(
 
-need assembler  need plusd-in,  need plusd-out,
+need assembler need plusd-in, need plusd-out,
 
-code @dos  ( a -- x )
+code @dos ( a -- x )
   h pop, plusd-in, m e ld, h incp, m d ld,
          plusd-out, d push, jpnext, end-code ?)
   \ doc{
   \
-  \ @dos  ( a -- x )
+  \ @dos ( a -- x )
   \
   \ Fetch the cell _x_ stored at Plus D memory address _a_.
   \
@@ -1104,15 +1103,15 @@ code @dos  ( a -- x )
 
 [unneeded] c@dos ?(
 
-need assembler  need plusd-in,  need plusd-out,
+need assembler need plusd-in, need plusd-out,
 
-code c@dos  ( ca -- b )
+code c@dos ( ca -- b )
   h pop, plusd-in, m a ld,
          plusd-out, pusha jp, end-code ?)
 
   \ doc{
   \
-  \ c@dos  ( ca -- b )
+  \ c@dos ( ca -- b )
   \
   \ Fetch byte _b_ stored at Plus D memory address _ca_.
   \
@@ -1126,14 +1125,14 @@ need ?(
 
 [unneeded] !dos ?(
 
-need assembler  need plusd-in,  need plusd-out,
+need assembler need plusd-in, need plusd-out,
 
-code !dos  ( x a -- )
+code !dos ( x a -- )
   h pop, d pop, plusd-in, e m ld, h incp, d m ld,
                 plusd-out, jpnext, end-code ?)
   \ doc{
   \
-  \ !dos  ( x a -- )
+  \ !dos ( x a -- )
   \
   \ Store _x_ at the Plus D memory address _a_.
   \
@@ -1143,15 +1142,15 @@ code !dos  ( x a -- )
 
 [unneeded] c!dos ?(
 
-need assembler  need plusd-in,  need plusd-out,
+need assembler need plusd-in, need plusd-out,
 
-code c!dos  ( b ca -- )
+code c!dos ( b ca -- )
   h pop, d pop, plusd-in, e m ld,
                 plusd-out, jpnext, end-code ?)
 
   \ doc{
   \
-  \ c!dos  ( b ca -- )
+  \ c!dos ( b ca -- )
   \
   \ Store _b_ at the Plus D memory address _ca_.
   \
@@ -1166,16 +1165,16 @@ need ?(
 
 [unneeded] @dosvar ?(
 
-need assembler  need dos-vars  need plusd-in,  need plusd-out,
+need assembler need dos-vars need plusd-in, need plusd-out,
 
-code @dosvar  ( n -- x )
+code @dosvar ( n -- x )
   h pop,
   plusd-in, dos-vars d ldp#, d addp, m e ld, h incp, m d ld,
   plusd-out, d push, jpnext, end-code ?)
 
   \ doc{
   \
-  \ name  ( -- )
+  \ name ( -- )
   \
   \ Fetch the contents _x_ of G+DOS variable _n_.
   \
@@ -1185,15 +1184,15 @@ code @dosvar  ( n -- x )
 
 [unneeded] c@dosvar ?(
 
-need assembler  need dos-vars  need plusd-in,  need plusd-out,
+need assembler need dos-vars need plusd-in, need plusd-out,
 
-code c@dosvar  ( n -- b )
+code c@dosvar ( n -- b )
   h pop, plusd-in, dos-vars d ldp#, d addp, m a ld,
          plusd-out, pusha jp, end-code ?)
 
   \ doc{
   \
-  \ c@dosvar  ( n -- b )
+  \ c@dosvar ( n -- b )
   \
   \ Fetch the contents _b_ of G+DOS variable _n_.
   \
@@ -1207,16 +1206,16 @@ need ?(
 
 [unneeded] !dosvar ?(
 
-need assembler  need dos-vars  need plusd-in,  need plusd-out,
+need assembler need dos-vars need plusd-in, need plusd-out,
 
-code !dosvar  ( x n -- )
+code !dosvar ( x n -- )
   h pop, plusd-in, dos-vars d ldp#, d addp,
                    d pop, e m ld, h incp, d m ld,
          plusd-out, jpnext, end-code ?)
 
   \ doc{
   \
-  \ !dosvar  ( x n -- )
+  \ !dosvar ( x n -- )
   \
   \ Store _x_ into the G+DOS variable _n_.
   \
@@ -1226,15 +1225,15 @@ code !dosvar  ( x n -- )
 
 [unneeded] c!dosvar ?(
 
-need assembler  need dos-vars  need plusd-in,  need plusd-out,
+need assembler need dos-vars need plusd-in, need plusd-out,
 
-code c!dosvar  ( b n -- )
+code c!dosvar ( b n -- )
   h pop, plusd-in, dos-vars d ldp#, d addp, d pop, e m ld,
                    plusd-out, jpnext, end-code ?)
 
   \ doc{
   \
-  \ c!dosvar  ( b n -- )
+  \ c!dosvar ( b n -- )
   \
   \ Store _b_ into the G+DOS variable _n_.
   \

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702171512
+; Last modified: 201702221439
 
 ; ==============================================================
 ; Description
@@ -87,10 +87,10 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; Definition:
 
 ; ----
-; : dosior>ior  ( dosior -- ior )
+; : dosior>ior ( dosior -- ior )
 ;   dup 1 and negate          \ error?
 ;   swap flip %11111111 and   \ get upper 8 bits
-;   1000 + negate and  ;
+;   1000 + negate and ;
 ; ----
 
 ; }doc
@@ -113,7 +113,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 
-; sector-id  ( n -- x )
+; sector-id ( n -- x )
 
 ; Convert the sequential disk sector _n_ to the disk sector id
 ; _x_, in the format required by G+DOS: The high byte of _x_
@@ -123,17 +123,17 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ; Definition:
 
 ; ----
-; : sector-id  ( n -- x )
+; : sector-id ( n -- x )
 ;   \ x (high byte) = track 0..79 for side 0, 128..207 for side 1
 ;   \   (low byte)  = sector 1..10
 ;   \ track0        = 0..79
 ;   \ track         = 0..207
 ;   \ side          = 0..1
-;   dup sectors/track mod 1+    ( n sector )
-;   swap dup 20 /               ( sector n track0 )
-;   swap sectors/track / 1 and  ( sector track0 side )
-;   negate 128 and or           ( sector track )
-;   flip or  ;
+;   dup sectors/track mod 1+   ( n sector )
+;   swap dup 20 /              ( sector n track0 )
+;   swap sectors/track / 1 and ( sector track0 side )
+;   negate 128 and or          ( sector track )
+;   flip or ;
 ; ----
 
 ; See also: `transfer-sector`.
@@ -157,7 +157,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
-; transfer-block  ( n -- )
+; transfer-block ( n -- )
 ;
 ; The block-level disk read-write linkage.
 ; Transfer block _n_ to or from disk.
@@ -186,7 +186,7 @@ _colon_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
-; transfer-sector  ( x a -- ior )
+; transfer-sector ( x a -- ior )
 ;
 ; The sector-level disk read-write linkage.  Transfer sector
 ; _x_ to or from the disk in the current drive.  The read or
@@ -223,7 +223,7 @@ transfer_sector.command:       ; G+DOS command already patched:
 
 ; doc{
 ;
-; write-mode  ( -- )
+; write-mode ( -- )
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
@@ -239,7 +239,7 @@ transfer_sector.command:       ; G+DOS command already patched:
 
 ; doc{
 ;
-; read-mode  ( -- )
+; read-mode ( -- )
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
@@ -259,7 +259,7 @@ transfer_mode:
 
 ; doc{
 ;
-; set-drive  ( n -- ior )
+; set-drive ( n -- ior )
 ;
 ; Set the current drive _n_ (1 or 2). If the drive is
 ; successfully selected, _ior_ is zero. Otherwise it's an

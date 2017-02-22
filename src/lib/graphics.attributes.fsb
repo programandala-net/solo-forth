@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201702221318
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,27 +48,27 @@ need ?(
 
 [unneeded] (attr-addr) ?(
 
-create  (attr-addr)  ( -- a )  asm
+create (attr-addr) ( -- a ) asm
 
   7B c, 0F c, 0F c, 0F c, 5F c, E6 c, E0 c, AA c, 6F c, 7B c,
-    \ ld a,e   ; line to a $00..$17 (max %00010111)
+    \ ld a,e    ; line to a $00..$17 (max %00010111)
     \ rrca
     \ rrca
-    \ rrca     ; rotate bits left
-    \ ld e,a   ; store in E as an intermediate value
-    \ and $E0  ; pick up bits %11100000 (was %00011100)
-    \ xor d    ; combine with column $00..$1F
-    \ ld l,a   ; low byte now correct
-    \ ld a,e   ; bring back intermediate result from E
+    \ rrca      ; rotate bits left
+    \ ld e,a    ; store in E as an intermediate value
+    \ and $E0   ; pick up bits %11100000 (was %00011100)
+    \ xor d     ; combine with column $00..$1F
+    \ ld l,a    ; low byte now correct
+    \ ld a,e    ; bring back intermediate result from E
   E6 c, 03 c, EE c, 58 c, 67 c, C9 c, end-asm ?)
-    \ and 003h ; mask to give correct third of screen
-    \ xor 058h ; combine with base address
-    \ ld h,a   ; high byte correct
+    \ and 003h  ; mask to give correct third of screen
+    \ xor 058h  ; combine with base address
+    \ ld h,a    ; high byte correct
     \ ret
 
   \ doc{
   \
-  \ (attr-addr)  ( -- a )
+  \ (attr-addr) ( -- a )
   \
   \ Return the address _a_ of a Z80 routine that calculates the
   \ color attribute address of a cursor position.  This is a
@@ -85,9 +85,9 @@ create  (attr-addr)  ( -- a )  asm
   \
   \ }doc
 
-[unneeded] attr ?(  need (attr-addr)
+[unneeded] attr ?( need (attr-addr)
 
-code attr  ( col row -- b )
+code attr ( col row -- b )
   D1 c, E1 c, 55 c, (attr-addr) call, 6E c, 26 c, 00 c,
     \ pop de ; E = row
     \ pop hl
@@ -100,16 +100,16 @@ code attr  ( col row -- b )
 
   \ doc{
   \
-  \ attr  ( col row -- b )
+  \ attr ( col row -- b )
   \
   \ Return the color attribute _b_ of the given cursor
   \ coordinates _col row_.
   \
   \ }doc
 
-[unneeded] attr-addr ?(  need (attr-addr)
+[unneeded] attr-addr ?( need (attr-addr)
 
-code attr-addr  ( col row -- a )
+code attr-addr ( col row -- a )
   D1 c, E1 c, 55 c, (attr-addr) call, jppushhl, end-code ?)
     \ pop de ; E = row
     \ pop hl
@@ -119,7 +119,7 @@ code attr-addr  ( col row -- a )
 
   \ doc{
   \
-  \ attr-addr  ( col row -- a )
+  \ attr-addr ( col row -- a )
   \
   \ Return the color attribute address _a_ of the given cursor
   \ coordinates _col row_.

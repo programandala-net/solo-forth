@@ -28,7 +28,7 @@ forth definitions decimal
 
 8190 constant size  variable flags  size allot
 
-: do-prime  ( -- )
+: do-prime ( -- )
   flags size 1 fill
   0 size 0
   do flags i + c@
@@ -37,7 +37,7 @@ forth definitions decimal
           while   0 over flags + c! over +
           repeat  drop drop 1+
      then
-  loop  .  ." primes "  ;
+  loop  .  ." primes " ;
 
 ( byte-magazine-benchmark )
 
@@ -52,9 +52,9 @@ need bench{
 
 8190 constant size  variable bflags size allot
 
-: c<- ( a b -- ) swap c!  ;
+: c<- ( a b -- ) swap c! ;
 
-: do-prime  ( -- )
+: do-prime ( -- )
   bflags size 1 fill  0
   size 0 do   bflags i + c@ if
                 i 2* 3 + dup i + bflags +
@@ -69,9 +69,9 @@ need bench{
 
 ( byte-magazine-benchmark )
 
-: byte-magazine-benchmark  ( n -- )
+: byte-magazine-benchmark ( n -- )
   cr dup u. ." iterations..." cr
-  bench{ 0 ?do  do-prime  loop }bench.  ;
+  bench{ 0 ?do  do-prime  loop }bench. ;
 
   cr
   \  <------------------------------>

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200001
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -61,11 +61,11 @@
 
 only forth definitions  decimal
 
-need random  need randomize  need udg:  need inkey
-need between  need ocr  need frames@  need inverse
-need j  need between  need rows  need last-column
-need last-row  need vocabulary
-need cyan  need white  need set-ink
+need random need randomize need udg: need inkey
+need between need ocr need frames@ need inverse
+need j need between need rows need last-column
+need last-row need vocabulary
+need cyan need white need set-ink
 
 vocabulary siderator
 also siderator definitions
@@ -84,7 +84,7 @@ variable parsecs    variable record  record off
 
   \ Common words:
 
-: pause  ( -- )  begin  inkey  until  ;  -->
+: pause ( -- ) begin  inkey  until ;  -->
 
 ( siderator )
 
@@ -92,11 +92,11 @@ variable parsecs    variable record  record off
 
 15360 constant charset  \ ROM charset
 
-: char>a  ( c -- a )  8 * charset +  ;
+: char>a ( c -- a ) 8 * charset + ;
 
-: udg>a  ( c -- a )  128 - 8 * os-udg @ +  ;
+: udg>a ( c -- a ) 128 - 8 * os-udg @ + ;
 
-: char>udg  ( c0 c1 -- )  swap char>a swap udg>a 8 cmove  ;
+: char>udg ( c0 c1 -- ) swap char>a swap udg>a 8 cmove ;
 
 128 constant star0-udg  '*' star0-udg char>udg
 
@@ -140,153 +140,153 @@ variable parsecs    variable record  record off
 
 0 constant first-column
 
-: pressed?  ( c -- f )  inkey =  ;
+: pressed? ( c -- f ) inkey = ;
 
-: left  ( col -- col' )
-  left-key pressed? + first-column max  ;
+: left ( col -- col' )
+  left-key pressed? + first-column max ;
 
-: right  ( col -- col' )
-  right-key pressed? - last-column min  ;
+: right ( col -- col' )
+  right-key pressed? - last-column min ;
 
-: rudder  ( -- )  x @ right left x !  ;
+: rudder ( -- ) x @ right left x ! ;
 
   \ Stars
 
 4 constant #stars
 
-: star-coords  ( -- gx gy )  last-column last-row  ;
+: star-coords ( -- gx gy ) last-column last-row ;
 
-: .star  ( c -- )
+: .star ( c -- )
   [ last-column 1+ ] literal random last-row at-xy
-  1 bright. emit 0 bright.  ;
+  1 bright. emit 0 bright. ;
 
-: stars/speed  ( -- n )  speed @ #stars 1- max-speed */ 1+  ;
+: stars/speed ( -- n ) speed @ #stars 1- max-speed */ 1+ ;
 
-: scroll  ( -- )  star-coords at-xy cr cr  ;  -->
+: scroll ( -- ) star-coords at-xy cr cr ;  -->
 
 ( siderator )
 
-: .stars  ( -- )
+: .stars ( -- )
   stars/speed dup [ star0-udg 1- ] literal + swap 0
-  ?do  dup .star  loop  drop  ;
+  ?do  dup .star  loop  drop ;
 
-: star=  ( c -- f )  star0-udg star3-udg between  ;
+: star= ( c -- f ) star0-udg star3-udg between ;
 
-: star<>  ( c -- f )  star= 0=  ;
+: star<> ( c -- f ) star= 0= ;
 
   \ Craft
 
 rows 2 / constant craft-y
 
-: craft-coords  ( -- y x )  x @ craft-y  ;
+: craft-coords ( -- y x ) x @ craft-y ;
 
-: at-craft  ( -- )  craft-coords at-xy  ;
+: at-craft ( -- ) craft-coords at-xy ;
 
-: -craft  ( -- )  at-craft space  ;
+: -craft ( -- ) at-craft space ;
 
-: .craft  ( -- )
-  at-craft craft-udg cyan set-ink emit white set-ink  ;
+: .craft ( -- )
+  at-craft craft-udg cyan set-ink emit white set-ink ;
 
   \ Speed, parsecs, record
 
-: .datum  ( u -- )  s>d <# # # # #> type space  ;
+: .datum ( u -- ) s>d <# # # # #> type space ;
 
-: delay  ( -- )  max-speed speed @ - 2 / 0  ?do  loop  ;
+: delay ( -- ) max-speed speed @ - 2 / 0  ?do  loop ;
 
-: .speed  ( -- )  ." Speed:" speed @ .datum  ;  -->
+: .speed ( -- ) ." Speed:" speed @ .datum ;  -->
 
 ( siderator )
 
-: +speed  ( u1 -- u2 )
-  dup 10 / 1 max  parsecs @ 4 mod 0= abs *  + max-speed min  ;
+: +speed ( u1 -- u2 )
+  dup 10 / 1 max  parsecs @ 4 mod 0= abs *  + max-speed min ;
 
-: faster  ( -- )  speed @ +speed speed !  ;
+: faster ( -- ) speed @ +speed speed ! ;
 
-: .parsecs  ( -- )  ." Parsecs:" parsecs @ .datum  ;
+: .parsecs ( -- ) ." Parsecs:" parsecs @ .datum ;
 
-: farther  ( -- )  1 parsecs +!  ;
+: farther ( -- ) 1 parsecs +! ;
 
-: .record  ( -- )  ." Record:" record @ .datum  ;
+: .record ( -- ) ." Record:" record @ .datum ;
 
-: .info  ( -- )  home .speed .parsecs .record  ;
+: .info ( -- ) home .speed .parsecs .record ;
 
   \ End
 
-: blast-delay  ( -- )  32 0  ?do  loop  ;
+: blast-delay ( -- ) 32 0  ?do  loop ;
 
-: (blast)  ( -- )
-  .craft blast-delay at-craft star0-udg emit blast-delay  ;
+: (blast) ( -- )
+  .craft blast-delay at-craft star0-udg emit blast-delay ;
 
-: blast  ( -- )  256 0  ?do  (blast)  loop  ;
+: blast ( -- ) 256 0  ?do  (blast)  loop ;
 
-: halt  ( -- )
+: halt ( -- )
   32 0  ?do  24 0 ?do
     i j ocr star= if  i j at-xy  star0-udg emit  then
-  loop  loop  ;  -->
+  loop  loop ;  -->
   \ XXX TODO
 
 ( siderator )
 
-: safe?  ( -- f )  craft-coords swap ocr star<>  ;
+: safe? ( -- f ) craft-coords swap ocr star<> ;
 
-: continue?  ( -- f )  safe? break-key? 0= and  ;
+: continue? ( -- f ) safe? break-key? 0= and ;
 
-: new-record  ( -- )
-  parsecs @ record @ >  if  parsecs @ record !  then  ;
+: new-record ( -- )
+  parsecs @ record @ >  if  parsecs @ record !  then ;
 
-: game-over  ( -- )
+: game-over ( -- )
   blast halt  11 dup at-xy ." GAME OVER"
   new-record .info first-column last-row at-xy
-  default-colors  ;
+  default-colors ;
 
   \ Instructions
 
-: about  ( -- )
+: about ( -- )
   cr ." Siderator 2: Jugdement Day"  cr
   cr ." By programandala.net"
-  cr ." Version: 0.1.0+20160325"  ;
+  cr ." Version: 0.1.0+20160325" ;
 
 -->
 
 ( siderator )
 
-: objective  ( -- )
+: objective ( -- )
   cr ." Your objective is to travel as"
   cr ." much parsecs as possible"
   cr ." while dodging the stars."
   cr ." Anyway you're supposed to die"
   cr ." before the 1000th parsec"
   cr ." because four digits would ruin"
-  cr ." the score panel."  ;
+  cr ." the score panel." ;
 
   \ Instructions
 
-: keys  ( -- )  cr ." Rudder keys: "
+: keys ( -- ) cr ." Rudder keys: "
                 left-key emit space right-key emit
-                cr ." Autodestruction key: Break"  ;
+                cr ." Autodestruction key: Break" ;
 
-: instructions  ( -- )  objective cr keys  ;
+: instructions ( -- ) objective cr keys ;
 
-: wait  ( -- )  cr cr ." Press any key to start." pause  ;  -->
+: wait ( -- ) cr cr ." Press any key to start." pause ;  -->
 
 ( siderator )
 
   \ Init
 
-: init-colors  ( -- )
-  white attr!  0 inverse  0 border  ;
+: init-colors ( -- )
+  white attr!  0 inverse  0 border ;
 
-: init-screen  ( -- )
-  init-colors cls about cr instructions wait cls  ;
+: init-screen ( -- )
+  init-colors cls about cr instructions wait cls ;
 
-: 4+-  ( n1 -- n2 )  9 random 4 - +  ;
+: 4+- ( n1 -- n2 ) 9 random 4 - + ;
 
-: init  ( -- )
+: init ( -- )
   frames@ s>d randomize  udg-ocr
-  init-screen  15 4+- x ! parsecs off  speed off  ;
+  init-screen  15 4+- x ! parsecs off  speed off ;
 
 : run ( -- )
   init  begin  -craft scroll  faster farther .info  continue?
-        while  rudder .craft .stars delay  repeat  game-over  ;
+        while  rudder .craft .stars delay  repeat  game-over ;
 
   \ vim: filetype=soloforth

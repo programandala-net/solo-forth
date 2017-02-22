@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171715
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,18 +39,18 @@
 
 ( macro endm )
 
-: macro  ( "name" -- )  : asm  ;
+: macro ( "name" -- ) : asm ;
 
   \ doc{
   \
-  \ macro  ( name -- )
+  \ macro ( name -- )
   \
   \ Start the definition of an assembler macro _name_.
   \
   \ Usage example:
 
   \ ----
-  \ macro plusd-in,  ( -- )  DB c, #231 c,  endm
+  \ macro plusd-in, ( -- ) DB c, #231 c, endm
   \   \ Assemble the Z80 instruction `in a,(#231)`.
   \ ----
 
@@ -59,12 +59,12 @@
   \ }doc
 
 assembler-wordlist >order
-: endm  ( -- )  end-asm postpone ;  ;  immediate
+: endm ( -- ) end-asm postpone ; ; immediate
 previous
 
   \ doc{
   \
-  \ endm  ( -- )
+  \ endm ( -- )
   \
   \ Finish the definition of an assembler macro, started by
   \ `macro`.

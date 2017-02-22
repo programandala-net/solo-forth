@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171910
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -41,7 +41,7 @@
 
 need assembler
 
-code get-inkey  ( -- c | 0 )
+code get-inkey ( -- c | 0 )
 
   b push,
   028E call, \ KEY-SCAN ROM routine
@@ -60,11 +60,11 @@ code get-inkey  ( -- c | 0 )
   rthen
   FF cp#,  z? rif  a xor,  rthen  \ convert FF to 00
   \ XXX TODO jump to `key` to decode
-  b pop,  pusha jp,  end-code
+  b pop,  pusha jp, end-code
 
   \ doc{
   \
-  \ get-inkey  ( -- 0 | c )
+  \ get-inkey ( -- 0 | c )
   \
   \ Leave the value of the key being pressed. If no key being
   \ pressed leave zero.

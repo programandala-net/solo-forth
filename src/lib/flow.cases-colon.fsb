@@ -42,22 +42,22 @@
 
   \ 109 bytes used
 
-: cases:  ( "name" -- orig 0 )
+: cases: ( "name" -- orig 0 )
   create >mark 0
-  does>  ( selector -- ) ( selector pfa )
-    true rot rot dup  ( true selector pfa pfa )
+  does> ( selector -- ) ( selector pfa )
+    true rot rot dup ( true selector pfa pfa )
     cell+ swap @   ( true selector pfa+2 options )
-    0 do  ( true selector a )
-      2dup @ =  ( true selector a f )
+    0 do ( true selector a )
+      2dup @ = ( true selector a f )
       if    dup cell+ perform
-            2>r 0= 2r>  ( false selector a )  leave
+            2>r 0= 2r> ( false selector a ) leave
       else  cell+ cell+  then
-   loop  ( true selector a | false selector a )
-   rot if  perform  else  drop  then  drop  ;
+   loop ( true selector a | false selector a )
+   rot if  perform  else  drop  then  drop ;
 
   \ doc{
   \
-  \ cases:  ( "name" -- orig 0 )
+  \ cases: ( "name" -- orig 0 )
   \
   \ Define a `cases:` structure "name", built as an array of
   \ pairs (value and associated vector).
@@ -66,12 +66,12 @@
   \ Usage example:
   \
   \ ----
-  \ : say10      ." dek"  ;
+  \ : say10      ." dek" ;
   \ : say100     ." cent" ;
-  \ : say1000    ." mil"  ;
+  \ : say1000    ." mil" ;
   \ : say-other  ." alia" ;
   \
-  \ cases: say  ( n -- )
+  \ cases: say ( n -- )
   \     10 case>      say10
   \    100 case>      say100
   \   1000 case>      say1000
@@ -82,12 +82,12 @@
   \
   \ }doc
 
-: case>  ( orig counter selector "name" -- orig counter' )
-  , ' compile, 1+  ;
+: case> ( orig counter selector "name" -- orig counter' )
+  , ' compile, 1+ ;
 
   \ doc{
   \
-  \ case>  ( orig counter selector "name" -- orig counter' )
+  \ case> ( orig counter selector "name" -- orig counter' )
   \
   \ Compile an option into a `cases:` structure. The given
   \ _selector_ will cause the word "name" to be executed.
@@ -96,11 +96,11 @@
   \
   \ }doc
 
-: othercase>  ( orig counter "name" -- )  ' compile, swap !  ;
+: othercase> ( orig counter "name" -- ) ' compile, swap ! ;
 
   \ doc{
   \
-  \ othercase>  ( orig counter "name" -- )
+  \ othercase> ( orig counter "name" -- )
   \
   \ Compile the default option of a `cases:` to be the word
   \ "name" . This must be the last option of the structure and

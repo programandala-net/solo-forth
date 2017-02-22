@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172001
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,11 +43,11 @@
 ( ucreate ?user uallot user 2user )
 
 [unneeded] ucreate
-?\ : ucreate  ( "name" -- )  udp @ (user)  ;
+?\ : ucreate ( "name" -- ) udp @ (user) ;
 
   \ doc{
   \
-  \ ucreate  ( "name" -- )
+  \ ucreate ( "name" -- )
   \
   \ Create a header _name_ which points to the first available
   \ offset within the user area.  Execution of _name_ leaves
@@ -61,14 +61,14 @@
 need ?(
 
 [unneeded] ?user ?(
-: ?user  ( -- )
-  udp @ dup /user > #-279 ?throw  0< #-280 ?throw  ; ?)
+: ?user ( -- )
+  udp @ dup /user > #-279 ?throw  0< #-280 ?throw ; ?)
   \ Error codes: #-279: user area overflow
   \              #-280: user area underflow
 
   \ doc{
   \
-  \ ?user  ( -- )
+  \ ?user ( -- )
   \
   \ Throw an exception if the user area pointer is out of
   \ bounds.
@@ -77,12 +77,12 @@ need ?(
   \
   \ }doc
 
-[unneeded] uallot ?(  need ?user
-: uallot  ( n -- )  udp +! ?user  ; ?)
+[unneeded] uallot ?( need ?user
+: uallot ( n -- ) udp +! ?user ; ?)
 
   \ doc{
   \
-  \ uallot  ( n -- )
+  \ uallot ( n -- )
   \
   \ If _n_ is greater than zero, reserve _n_ address units of
   \ user data space. If _n_ is less than zero, release _n_
@@ -95,12 +95,12 @@ need ?(
   \
   \ }doc
 
-[unneeded] user ?(  need ucreate  need uallot
-: user  ( "name" -- )  ucreate cell uallot  ; ?)
+[unneeded] user ?( need ucreate need uallot
+: user ( "name" -- ) ucreate cell uallot ; ?)
 
   \ doc{
   \
-  \ user  ( n "name" -- )
+  \ user ( n "name" -- )
   \
   \ Create a user variable _name_ in the first available offset
   \ within the user area.  Execution of _name_ leaves its
@@ -110,13 +110,13 @@ need ?(
   \
   \ }doc
 
-[unneeded] 2user ?(  need ucreate  need uallot
-: 2user  ( "name" -- )
-  ucreate [ 2 cells ] literal uallot  ; ?)
+[unneeded] 2user ?( need ucreate need uallot
+: 2user ( "name" -- )
+  ucreate [ 2 cells ] literal uallot ; ?)
 
   \ doc{
   \
-  \ 2user  ( "name" -- )
+  \ 2user ( "name" -- )
   \
   \ Create a user double variable _name_ in the first available
   \ offset within the user area.  Execution of _name_ leaves

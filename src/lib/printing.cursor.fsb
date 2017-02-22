@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171845
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,11 +43,11 @@
 ( column last-column row last-row at-x at-y )
 
 [unneeded] column
-?\ : column  ( -- col )  xy drop  ;
+?\ : column ( -- col ) xy drop ;
 
   \ doc{
   \
-  \ column  ( -- col )
+  \ column ( -- col )
   \
   \ Current column (x coordinate).
   \
@@ -56,11 +56,11 @@
   \ }doc
 
 [unneeded] last-column
-?\ need columns : last-column  ( -- row  )  columns 1-  ;
+?\ need columns : last-column ( -- row  ) columns 1- ;
 
   \ doc{
   \
-  \ last-column  ( -- col )
+  \ last-column ( -- col )
   \
   \ Last column (x coordinate) in the current screen mode.
   \
@@ -69,11 +69,11 @@
   \ }doc
 
 [unneeded] row
-?\ : row  ( -- row )  xy nip  ;
+?\ : row ( -- row ) xy nip ;
 
   \ doc{
   \
-  \ row  ( -- row )
+  \ row ( -- row )
   \
   \ Current row (y coordinate).
   \
@@ -82,11 +82,11 @@
   \ }doc
 
 [unneeded] last-row
-?\ need rows  : last-row  ( -- row  )  rows 1-  ;
+?\ need rows  : last-row ( -- row  ) rows 1- ;
 
   \ doc{
   \
-  \ last-row  ( -- row )
+  \ last-row ( -- row )
   \
   \ Last row (y coordinate) in the current screen mode.
   \
@@ -95,7 +95,7 @@
   \ }doc
 
 [unneeded] at-x
-?\ need row  : at-x  ( col -- )  row at-xy  ;
+?\ need row  : at-x ( col -- ) row at-xy ;
 
   \ doc{
   \
@@ -109,7 +109,7 @@
   \ }doc
 
 [unneeded] at-y
-?\ need column  : at-y  ( row -- )  column swap at-xy  ;
+?\ need column  : at-y ( row -- ) column swap at-xy ;
 
   \ doc{
   \

@@ -37,7 +37,7 @@
 
 need cs-roll
 
-: {if  ( -- 0 )  0  ; immediate compile-only
+: {if ( -- 0 ) 0 ; immediate compile-only
   \ start a conditional
   \ put counter on stack
 
@@ -52,7 +52,7 @@ need cs-roll
   \ ( c: orig ... orig1 -- orig ... orig2 )
   >r postpone ahead \ new orig
   1 cs-roll postpone then \ resolve old orig
-  r>  ; immediate compile-only
+  r> ; immediate compile-only
   \ bar for {if ... if}
 
 : if} \ end of conditional
@@ -62,7 +62,7 @@ need cs-roll
   1 cs-roll postpone then \ resolve old orig
   -22 postpone literal postpone throw
     \ 'control structure mismatch'
-  r> 0 ?do  postpone then  loop  ; immediate compile-only
+  r> 0 ?do  postpone then  loop ; immediate compile-only
   \ end a conditional
 
 ( {do do} do> |do| )
@@ -77,26 +77,26 @@ need cs-roll
   \ on Forth Dimensions (number 18, number 4, pages 5-14).
   \ Adapted to hForth v0.9.9 by Wonyong Koh
 
-need cs-pick  need cs-roll
+need cs-pick need cs-roll
 
-: {do  ( c: -- dest )  postpone begin  ; immediate compile-only
+: {do ( c: -- dest ) postpone begin ; immediate compile-only
   \ start a loop
 
-: do>  ( c: dest -- orig1 dest )
-  postpone if  1 cs-roll  ; immediate compile-only
+: do> ( c: dest -- orig1 dest )
+  postpone if  1 cs-roll ; immediate compile-only
   \ right arrow for {do ... od}
 
-: |do|  ( c: orig1 dest -- dest )
+: |do| ( c: orig1 dest -- dest )
   0 cs-pick postpone again \ resolve a copy of dest
   1 cs-roll postpone then \ resolve old orig
-  ; immediate compile-only
+ ; immediate compile-only
   \ bar for {do ... do}
 
-: do}  ( c: orig dest -- )
+: do} ( c: orig dest -- )
   \ end of loop
   postpone again \ resolve dest
   postpone then \ resolve orig
-  ; immediate compile-only
+ ; immediate compile-only
   \ end a loop
 
   \ vim: filetype=soloforth

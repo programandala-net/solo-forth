@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702171518
+; Last modified: 201702221439
 
 ; ==============================================================
 ; Description
@@ -179,7 +179,7 @@ _code_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
-; dosior>ior  ( dosior -- ior )
+; dosior>ior ( dosior -- ior )
 ;
 ; Convert a DOS ior to a Forth ior.
 ;
@@ -187,8 +187,8 @@ _code_header dosior_to_ior_,'dosior>ior'
 ; the following:
 
 ; ----
-; : dosior>ior  ( dosior -- ior )
-;   1000 + negate  ;
+; : dosior>ior ( dosior -- ior )
+;   1000 + negate ;
 ; ----
 
 ; }doc
@@ -226,7 +226,7 @@ dosior_to_ior.hl:
 
 ; doc{
 
-; sector-id  ( n -- x )
+; sector-id ( n -- x )
 
 ; Convert the sequential disk sector _n_ to the disk sector id
 ; _x_, in the format required by +3DOS: The high byte of _x_
@@ -234,11 +234,11 @@ dosior_to_ior.hl:
 ; byte is the logical sector (0..).
 ;
 ; ----
-; : sector-id  ( n -- x )
+; : sector-id ( n -- x )
 ;   rec/track +             \ the first track is not used
 ;   dup sectors/track mod   ( n sector )
 ;   swap sectors/track /    ( sector track )
-;   flip or  ;
+;   flip or ;
 ; ----
 ;
 ; }doc
@@ -254,7 +254,7 @@ dosior_to_ior.hl:
 
 ; doc{
 ;
-; transfer-block  ( n -- ior )
+; transfer-block ( n -- ior )
 ;
 ; The block-level disk read-write linkage.  Transfer block _n_ to or
 ; from disk.  The read or write mode must be previously set by
@@ -342,7 +342,7 @@ reposition_file.backup_ip equ $+1
 
 ; doc{
 ;
-; transfer-bytes  ( n ca len fid -- ior )
+; transfer-bytes ( n ca len fid -- ior )
 ;
 ; Transfer _len_ bytes to/from file _fid_ to/from memory, using _n_ as
 ; page $C000..$FFFF.  The read or write mode must be previously set by
@@ -375,7 +375,7 @@ transfer_bytes.backup_ip equ $+1
 
 ; doc{
 ;
-; transfer-sector  ( x a -- ior )
+; transfer-sector ( x a -- ior )
 ;
 ; The sector-level disk read-write linkage.  Transfer one
 ; sector from memory address _a_ to disk sector _x_ or the
@@ -414,7 +414,7 @@ transfer_sector.backup_ip equ $+1
 
 ; doc{
 ;
-; write-mode  ( -- )
+; write-mode ( -- )
 ;
 ; Set the write mode for `transfer-sector` and `transfer-block`.
 ;
@@ -430,7 +430,7 @@ transfer_sector.backup_ip equ $+1
 
 ; doc{
 ;
-; read-mode  ( -- )
+; read-mode ( -- )
 ;
 ; Set the read mode for `transfer-sector` and `transfer-block`.
 ;
@@ -450,7 +450,7 @@ transfer_mode:
 
 ; doc{
 ;
-; dos-get-1346  ( -- n1 n2 n3 n4 )
+; dos-get-1346 ( -- n1 n2 n3 n4 )
 ;
 ; See also: `dos-set-1346`.
 ;
@@ -482,7 +482,7 @@ dos_get_1346.ip_backup equ $+1
 
 ; doc{
 ;
-; dos-set-1346  ( n1 n2 n3 n4 -- )
+; dos-set-1346 ( n1 n2 n3 n4 -- )
 ;
 ; See also: `dos-get-1346`.
 ;
@@ -508,7 +508,7 @@ dos_get_1346.ip_backup equ $+1
 
 ; doc{
 ;
-; close-file  ( fid -- ior )
+; close-file ( fid -- ior )
 ;
 ; Close the file _fid_ (0..15).
 ;
@@ -532,7 +532,7 @@ dos_get_1346.ip_backup equ $+1
 
 ; doc{
 ;
-; open-disk  ( c n -- ior )
+; open-disk ( c n -- ior )
 ;
 ; Open disk _c_ ('A'..'P') as a single file _n_ (0..15).
 ;
@@ -559,7 +559,7 @@ if 0 ; XXX OLD
 
   _variable_header library_file_,'library-file'
 
-; library-file  ( -- a )
+; library-file ( -- a )
 ;
 ; A variable that holds the fid (0..15) used to open the library disks
 ; as a single file.
@@ -571,7 +571,7 @@ endif
 ; ----------------------------------------------
   _colon_header set_drive_,'set-drive'
 
-; set-drive  ( c -- ior )
+; set-drive ( c -- ior )
 ;
 ; Sed drive _c_ ('A'..'P') as the current library drive.
 

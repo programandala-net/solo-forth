@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171845
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -60,11 +60,11 @@
 
 [unneeded] fartype
 
-?\ : fartype  ( ca len -- )  bounds ?do  i farc@ emit  loop  ;
+?\ : fartype ( ca len -- ) bounds ?do  i farc@ emit  loop ;
 
   \ doc{
   \
-  \ fartype  ( ca len -- )
+  \ fartype ( ca len -- )
   \
   \ If _len_ is greater than zero, display the character string
   \ _ca len_, which is stored in the far memory.
@@ -73,28 +73,28 @@
   \
   \ }doc
 
-need ?(  [unneeded] type-ascii ?(  need >printable-ascii-char
+need ?( [unneeded] type-ascii ?( need >printable-ascii-char
 
-: type-ascii  ( ca len -- )
-  bounds ?do  i c@ >printable-ascii-char emit  loop  ; ?)
+: type-ascii ( ca len -- )
+  bounds ?do  i c@ >printable-ascii-char emit  loop ; ?)
 
   \ doc{
   \
-  \ type-ascii  ( ca len -- )
+  \ type-ascii ( ca len -- )
   \
   \ If _len_ is greater than zero, display the string _ca len_,
   \ replacing non-ASCII and control chars with a dot.
   \
   \ }doc
 
-[unneeded] fartype-ascii ?(  need >printable-ascii-char
+[unneeded] fartype-ascii ?( need >printable-ascii-char
 
-: fartype-ascii  ( ca len -- )
-  bounds ?do  i farc@ >printable-ascii-char emit  loop  ; ?)
+: fartype-ascii ( ca len -- )
+  bounds ?do  i farc@ >printable-ascii-char emit  loop ; ?)
 
   \ doc{
   \
-  \ fartype-ascii  ( ca len -- )
+  \ fartype-ascii ( ca len -- )
   \
   \ If _len_ is greater than zero, display the string _ca len_,
   \ which is stored in far memory, replacing non-ASCII and
@@ -105,11 +105,11 @@ need ?(  [unneeded] type-ascii ?(  need >printable-ascii-char
 ( drop-type padding-spaces type-left-field )
 
 [unneeded] drop-type
-?\ : drop-type  ( ca len x -- )  drop type  ;
+?\ : drop-type ( ca len x -- ) drop type ;
 
   \ doc{
   \
-  \ drop-type  ( ca len x -- )
+  \ drop-type ( ca len x -- )
   \
   \ Remove _x_ from the stack and display the string _ca len_.
   \
@@ -119,11 +119,11 @@ need ?(  [unneeded] type-ascii ?(  need >printable-ascii-char
   \ }doc
 
 [unneeded] padding-spaces
-?\ : padding-spaces  ( len1 len2 -- )  swap - 0 max spaces  ;
+?\ : padding-spaces ( len1 len2 -- ) swap - 0 max spaces ;
 
   \ doc{
   \
-  \ padding-spaces  ( len1 len2 -- )
+  \ padding-spaces ( len1 len2 -- )
   \
   \ If _len2_ minus _len1_ is a positive number, print that
   \ number of spaces; else do nothing.
@@ -132,14 +132,14 @@ need ?(  [unneeded] type-ascii ?(  need >printable-ascii-char
   \
   \ }doc
 
-[unneeded] type-left-field ?(  need padding-spaces
+[unneeded] type-left-field ?( need padding-spaces
 
-: type-left-field  ( ca1 len1 len2 -- )
-  2dup 2>r min type 2r> padding-spaces  ; ?)
+: type-left-field ( ca1 len1 len2 -- )
+  2dup 2>r min type 2r> padding-spaces ; ?)
 
   \ doc{
   \
-  \ type-left-field  ( ca1 len1 len2 -- )
+  \ type-left-field ( ca1 len1 len2 -- )
   \
   \ If _len1_ is greater than zero, display the character
   \ string _ca1 len1_ at the left of a field of _len2_
@@ -151,14 +151,14 @@ need ?(  [unneeded] type-ascii ?(  need >printable-ascii-char
 
 ( type-right-field )
 
-need drop-type  need <=>  need array>
+need drop-type need <=> need array>
 
-: type-right-field-crop  ( ca1 len1 len2 -- )
-  over swap - /string type  ;
+: type-right-field-crop ( ca1 len1 len2 -- )
+  over swap - /string type ;
 
   \ doc{
   \
-  \ type-right-field-crop  ( ca1 len1 len2 -- )
+  \ type-right-field-crop ( ca1 len1 len2 -- )
   \
   \ Type string _ca1 len1_ at the right of a field of _len2_
   \ characters, which is shorter than the string.
@@ -167,12 +167,12 @@ need drop-type  need <=>  need array>
   \
   \ }doc
 
-: type-right-field-fit  ( ca1 len1 len2 -- )
-  over - spaces type  ;
+: type-right-field-fit ( ca1 len1 len2 -- )
+  over - spaces type ;
 
   \ doc{
   \
-  \ type-right-field-fit  ( ca1 len1 len2 -- )
+  \ type-right-field-fit ( ca1 len1 len2 -- )
   \
   \ Type string _ca1 len1_ at the right of a field of _len2_
   \ characters, which is longer than the string.
@@ -187,12 +187,12 @@ here  ' drop-type ,
 constant type-right-field-cases
   \ Execution table of `type-right-field`.
 
-: type-right-field  ( ca1 len1 len2 -- )
-  2dup <=> type-right-field-cases array> perform  ;
+: type-right-field ( ca1 len1 len2 -- )
+  2dup <=> type-right-field-cases array> perform ;
 
   \ doc{
   \
-  \ type-right-field  ( ca1 len1 len2 -- )
+  \ type-right-field ( ca1 len1 len2 -- )
   \
   \ If _len1_ is greater than zero, display the character
   \ string _ca1 len1_ at the right of a field of _len2_
@@ -204,14 +204,14 @@ constant type-right-field-cases
 
 ( type-center-field )
 
-need drop-type  need <=>  need array>
+need drop-type need <=> need array>
 
-: type-center-field-fit  ( ca1 len1 len2 -- )
-  over - 2 /mod dup >r + spaces type r> spaces  ;
+: type-center-field-fit ( ca1 len1 len2 -- )
+  over - 2 /mod dup >r + spaces type r> spaces ;
 
   \ doc{
   \
-  \ type-center-field-fit  ( ca1 len1 len2 -- )
+  \ type-center-field-fit ( ca1 len1 len2 -- )
   \
   \ If _len1_ is greater than zero, display the character
   \ string _ca1 len1_ at the center of a field of _len2_
@@ -221,12 +221,12 @@ need drop-type  need <=>  need array>
   \
   \ }doc
 
-: type-center-field-crop  ( ca1 len1 len2 -- )
-  over swap - 2 /mod dup >r + /string r> - type  ;
+: type-center-field-crop ( ca1 len1 len2 -- )
+  over swap - 2 /mod dup >r + /string r> - type ;
 
   \ doc{
   \
-  \ type-center-field-crop  ( ca1 len1 len2 -- )
+  \ type-center-field-crop ( ca1 len1 len2 -- )
   \
   \ If _len1_ is greater than zero, display the character
   \ string _ca1 len1_ at the center of a field of _len2_
@@ -242,12 +242,12 @@ here  ' drop-type ,
 constant type-center-field-cases
   \ Execution table of `type-center-field`.
 
-: type-center-field  ( ca1 len1 len2 -- )
-  2dup <=> type-center-field-cases array> perform  ;
+: type-center-field ( ca1 len1 len2 -- )
+  2dup <=> type-center-field-cases array> perform ;
 
   \ doc{
   \
-  \ type-center-field  ( ca1 len1 len2 -- )
+  \ type-center-field ( ca1 len1 len2 -- )
   \
   \ If _len1_ is greater than zero, display the character
   \ string _ca1 len1_ at the center of a field of _len2_

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171941
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,7 +42,7 @@
 : [:  \ Compilation: ( -- orig xt )
   postpone ahead  latestxt here lastxt !
   docolon [ assembler-wordlist >order ] call, [ previous ]
-  ; immediate compile-only
+ ; immediate compile-only
 
   \ doc{
   \
@@ -72,12 +72,12 @@
 : ;]  \ Compilation: ( orig xt1 -- )
       \ Execution:   ( -- xt2 )
   lastxt !  postpone exit  dup >resolve
-  cell+ postpone literal  ; immediate compile-only
+  cell+ postpone literal ; immediate compile-only
 
   \ doc{
   \
   \ ;]  Compilation: ( orig -- )
-  \ 
+  \
   \ End the current nested definition, and resume compilation
   \ to the previous (containing) current definition. It appends
   \ the following run-time to the (containing) current

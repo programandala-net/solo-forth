@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702211141
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,18 +54,18 @@ need fzx-emit
   \ need some changes before this mode can work fine, and the
   \ FZX driver as well.
 
-: fzx-at-xy  ( gx gy -- )  fzx-y c! fzx-x c!  ;
+: fzx-at-xy ( gx gy -- ) fzx-y c! fzx-x c! ;
 
-: fzx-cr  ( -- )  13 fzx-emit  ;
+: fzx-cr ( -- ) 13 fzx-emit ;
 
-: fzx-home  ( -- )  0 191 fzx-at-xy  ;
-  \ : fzx-home  ( -- )  0 fzx-x !  ;  \ XXX TODO
+: fzx-home ( -- ) 0 191 fzx-at-xy ;
+  \ : fzx-home ( -- ) 0 fzx-x ! ;  \ XXX TODO
 
-: fzx-mode  ( -- )
+: fzx-mode ( -- )
   ['] fzx-emit   ['] emit   defer!
   ['] fzx-at-xy  ['] at-xy  defer!
   ['] fzx-home   ['] home   defer!
-  ['] fzx-cr     ['] cr     defer!  ;
+  ['] fzx-cr     ['] cr     defer! ;
   \ Set the FZX printing mode.
 
 ( fzx-emit )
@@ -90,7 +90,7 @@ constant fzx-y  constant fzx-x  constant fzx-flags
 
 ( fzx-emit )
 
-need assembler  need unresolved  need scroll-1px-up
+need assembler need unresolved need scroll-1px-up
 
   \ Credit:
   \
@@ -103,7 +103,7 @@ need assembler  need unresolved  need scroll-1px-up
   \ XXX TODO -- implement backspace -- the width of the latest
   \ character must be stored.
 
-create (fzx-emit)  ( -- )
+create (fzx-emit) ( -- )
 
   asm
 
@@ -363,7 +363,7 @@ create (fzx-emit)  ( -- )
 
   end-asm
 
-code fzx-emit  ( c -- )
+code fzx-emit ( c -- )
 
   h pop, b push, l a ld, ' (fzx-emit) call,
   b pop, next ix ldp#, jpnext,

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200010
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,7 +58,7 @@
 
 ( hayes-test )
 
-need hayes-tester  need do  verbose on  hex
+need hayes-tester need do  verbose on  hex
 
 { -> }  \ start with clean slate
 
@@ -87,7 +87,7 @@ testing( invert and or xor)
 
 ( hayes-test )
 
-testing( 2* 2/)  need rshift  need 2/
+testing( 2* 2/) need rshift need 2/
 
   \ We trust `1s`, `invert`, and `bitsset?`; we will confirm
   \ `rshift` later.
@@ -102,7 +102,7 @@ testing( 2* 2/)  need rshift  need 2/
 
 ( hayes-test )
 
-testing( lshift rshift)  need lshift  need rshift
+testing( lshift rshift) need lshift need rshift
 
 { 1 0 lshift -> 1 } { 1 1 lshift -> 2 } { 1 2 lshift -> 4 }
 { 1 f lshift -> 8000 }  \ biggest guaranteed shift
@@ -464,7 +464,7 @@ here 1 c, here 2 c, constant 2ndc constant 1stc
 
 ( hayes-test )
 
-need align  need aligned
+need align need aligned
 
 align 1 allot here align here 3 cells allot
 constant a-addr  constant ua-addr
@@ -497,7 +497,7 @@ constant a-addr  constant ua-addr
 { 0 1st ! -> } { 1 1st +! -> } { 1st @ -> 1 }
 { -1 1st +! 1st @ -> 0 }
 
-testing( char [char] [ ] bl s") need char  need [char]
+testing( char [char] [ ] bl s") need char need [char]
 
 { bl -> 20 } { char X -> 58 } { char HELLO -> 48 }
 { : gc1 [char] X ; -> } { : gc2 [char] HELLO ; -> }
@@ -560,7 +560,7 @@ testing( recurse) need recurse
 { 0 gi6 -> 0 } { 1 gi6 -> 0 1 } { 2 gi6 -> 0 1 2 }
 { 3 gi6 -> 0 1 2 3 } { 4 gi6 -> 0 1 2 3 4 }
 
-testing( do loop +loop i j unloop leave exit)  need j
+testing( do loop +loop i j unloop leave exit) need j
 
 { : gd1 do i loop ; -> } { 4 1 gd1 -> 1 2 3 }
 { 2 -1 gd1 -> -1 0 1 } { mid-uint+1 mid-uint gd1 -> mid-uint }
@@ -796,7 +796,7 @@ create gn-buf 0 c,
 
 ( hayes-test )
 
-: gn1  ( ud base -- ud' len )
+: gn1 ( ud base -- ud' len )
   base @ >r base !
   <# #s #>
   0 0 2swap >number swap drop  \ return length only
@@ -866,7 +866,7 @@ testing( . ." cr emit space spaces type u.)
   ." You should see the number ranges" cr
   ." of signed and unsigned numbers:" cr
   ."   signed: " min-int . max-int . cr
-  ." unsigned: " 0 u. max-uint u. cr  ;  { output-test -> }
+  ." unsigned: " 0 u. max-uint u. cr ;  { output-test -> }
 
 testing( accept)
 
@@ -875,7 +875,7 @@ create abuf 80 chars allot
 : accept-test
   cr ." Please type up to 80 characters:" cr  abuf 80 accept
   cr ." Received: " [char] " emit
-  abuf swap type [char] " emit cr  ;  { accept-test -> }
+  abuf swap type [char] " emit cr ;  { accept-test -> }
 
 testing( dictionary search rules)
 

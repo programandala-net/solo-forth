@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702201922
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,11 +66,11 @@
 ( wordlist>link wordlist>name wordlist-name@ wordlist-name! )
 
 [unneeded] wordlist>link
-?\ need alias  ' cell+ alias wordlist>link  ( wid -- a ) exit
+?\ need alias  ' cell+ alias wordlist>link ( wid -- a ) exit
 
   \ doc{
   \
-  \ wordlist>link  ( wid -- a )
+  \ wordlist>link ( wid -- a )
   \
   \ Return the link field address _a_ of word-list identifier
   \ _wid_, which holds the word-list identifier of the previous
@@ -81,11 +81,11 @@
   \ }doc
 
 [unneeded] wordlist>name
-?\ : wordlist>name  ( wid -- a )  cell+ cell+  ;
+?\ : wordlist>name ( wid -- a ) cell+ cell+ ;
 
   \ doc{
   \
-  \ wordlist>name  ( wid -- a )
+  \ wordlist>name ( wid -- a )
   \
   \ Return the address _a_ which holds the _nt_ of word-list
   \ identifier _wid_ (or zero if the word list has no
@@ -97,11 +97,11 @@
 
 [unneeded] wordlist-name@ dup
 ?\ need wordlist>name
-?\ : wordlist-name@  ( wid -- nt|0 )  wordlist>name @  ;
+?\ : wordlist-name@ ( wid -- nt|0 ) wordlist>name @ ;
 
   \ doc{
   \
-  \ wordlist-name@  ( wid -- nt|0 )
+  \ wordlist-name@ ( wid -- nt|0 )
   \
   \ Fetch from the word-list identifier _wid_ its associated
   \ name _nt_, or zero if the word list has no associated name.
@@ -112,11 +112,11 @@
 
 [unneeded] wordlist-name! dup
 ?\ need wordlist>name
-?\ : wordlist-name!  ( nt wid -- )  wordlist>name !  ;
+?\ : wordlist-name! ( nt wid -- ) wordlist>name ! ;
 
   \ doc{
   \
-  \ wordlist-name!  ( nt wid -- )
+  \ wordlist-name! ( nt wid -- )
   \
   \ Store _nt_ as the name associated to the word list
   \ identified by _wid_.  _nt_ is stored into the name field of
@@ -129,7 +129,7 @@
 ( +order -order )
 
 [unneeded] +order
-?\ need -order  : +order ( wid -- )  dup -order >order ;
+?\ need -order  : +order ( wid -- ) dup -order >order ;
 
   \ Credit:
   \
@@ -139,7 +139,7 @@
 
   \ doc{
   \
-  \ +order  ( wid -- )
+  \ +order ( wid -- )
   \
   \ Remove all instances of the word list identified by _wid_
   \ from the search order, then add it to the top.
@@ -150,13 +150,13 @@
 
 [unneeded] -order ?exit
 
-need n>r  need under+
+need n>r need under+
 
 variable -order-wid
   \ XXX TMP -- used as a local
   \ XXX TODO -- use an actual local when available
 
-: -order  ( wid -- )
+: -order ( wid -- )
   -order-wid !  get-order n>r r> dup
   begin dup  while  1-
     r@ -order-wid @ = if  rdrop -1 under+  else  r> -rot  then
@@ -170,7 +170,7 @@ variable -order-wid
 
   \ doc{
   \
-  \ -order  ( wid -- )
+  \ -order ( wid -- )
   \
   \ Remove all instances of word list identified by _wid_ from
   \ the search order.
@@ -182,11 +182,11 @@ variable -order-wid
 ( wordlist-of latest>wordlist wordlist>vocabulary vocabulary )
 
 [unneeded] wordlist-of
-?\ need >body  : wordlist-of  ( "name" -- wid )  ' >body @  ;
+?\ need >body  : wordlist-of ( "name" -- wid ) ' >body @ ;
 
   \ doc{
   \
-  \ wordlist-of  ( "name" -- wid )
+  \ wordlist-of ( "name" -- wid )
   \
   \ Return the word-list identifier _wid_ associated to
   \ vocabulary _name_.
@@ -197,9 +197,9 @@ variable -order-wid
   \
   \ }doc
 
-need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
+need ?( [unneeded] latest>wordlist  ?( need wordlist-name!
 
-: latest>wordlist  ( wid -- )  latest swap wordlist-name!  ; ?)
+: latest>wordlist ( wid -- ) latest swap wordlist-name! ; ?)
 
   \ doc{
   \
@@ -213,13 +213,13 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
   \
   \ }doc
 
-[unneeded] wordlist>vocabulary ?(  need latest>wordlist
-: wordlist>vocabulary  ( wid "name" -- )
-  create dup , latest>wordlist dovocabulary  ; ?)
+[unneeded] wordlist>vocabulary ?( need latest>wordlist
+: wordlist>vocabulary ( wid "name" -- )
+  create dup , latest>wordlist dovocabulary ; ?)
 
   \ doc{
   \
-  \ wordlist>vocabulary  ( wid "name" -- )
+  \ wordlist>vocabulary ( wid "name" -- )
   \
   \ Create a vocabulary _name_ for the word list identified by
   \ _wid_.
@@ -229,13 +229,13 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
   \
   \ }doc
 
-[unneeded] vocabulary ?(  need wordlist>vocabulary
-: vocabulary  ( "name" -- )
-  wordlist wordlist>vocabulary  ; ?)
+[unneeded] vocabulary ?( need wordlist>vocabulary
+: vocabulary ( "name" -- )
+  wordlist wordlist>vocabulary ; ?)
 
   \ doc{
   \
-  \ vocabulary  ( "name" -- )
+  \ vocabulary ( "name" -- )
   \
   \ Create a vocabulary _name_. A vocabulary is a named word
   \ list. Subsequent execution of _name_ replaces the first
@@ -252,11 +252,11 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
 ( seal trail find-name-in find swap-current search-wordlist )
 
 [unneeded] seal
-?\ : seal  ( -- )  1 #order !  ;
+?\ : seal ( -- ) 1 #order ! ;
 
   \ doc{
   \
-  \ seal  ( -- )
+  \ seal ( -- )
   \
   \ Remove all word lists from the search order other than the
   \ word list that is currently on top of the search order.
@@ -269,7 +269,7 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
   \
   \ }doc
 
-[unneeded] trail ?\ : trail  ( -- nt )  context @ @  ;
+[unneeded] trail ?\ : trail ( -- nt ) context @ @ ;
 
   \ doc{
   \
@@ -283,11 +283,11 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
   \ }doc
 
 [unneeded] find-name-in
-?\ : find-name-in  ( ca len wid -- nt | 0 ) @ find-name-from  ;
+?\ : find-name-in ( ca len wid -- nt | 0 ) @ find-name-from ;
 
   \ doc{
   \
-  \ find-name-in  ( ca len wid -- nt | 0 )
+  \ find-name-in ( ca len wid -- nt | 0 )
   \
   \ Find the definition named in the string at _ca len_, in the
   \ word list identified by _wid_. If the definition is found,
@@ -298,14 +298,14 @@ need ?(  [unneeded] latest>wordlist  ?(  need wordlist-name!
   \
   \ }doc
 
-need ?(  [unneeded] find ?(
-: find  ( ca -- ca 0 | xt 1 | xt -1 )
+need ?( [unneeded] find ?(
+: find ( ca -- ca 0 | xt 1 | xt -1 )
   dup count find-name dup
-  if  nip name>immediate? 1 or negate  then  ; ?)
+  if  nip name>immediate? 1 or negate  then ; ?)
 
   \ doc{
   \
-  \ find  ( ca -- ca 0 | xt 1 | xt -1 )
+  \ find ( ca -- ca 0 | xt 1 | xt -1 )
   \
   \ Find the definition named in the counted  string at _ca_.
   \ If the definition is  not found, return _ca_ and zero. If
@@ -321,16 +321,16 @@ need ?(  [unneeded] find ?(
   \ }doc
 
 [unneeded] swap-current ?(
-: swap-current  ( wid1 -- wid2 )
-  get-current swap set-current  ; ?)
+: swap-current ( wid1 -- wid2 )
+  get-current swap set-current ; ?)
 
   \ Credit:
   \
   \ Idea for `swap-current` from lpForth.
-  
+
   \ doc{
   \
-  \ swap-current  ( wid1 -- wid2 )
+  \ swap-current ( wid1 -- wid2 )
   \
   \ Exchange the contents of the current compilation word list,
   \ which is idenfified by _wid2_, with the word list
@@ -341,12 +341,12 @@ need ?(  [unneeded] find ?(
   \ }doc
 
 [unneeded] search-wordlist ?(
-: search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
-  @ find-name-from dup 0= ?exit  name>immediate? 0= 1 or  ; ?)
+: search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
+  @ find-name-from dup 0= ?exit  name>immediate? 0= 1 or ; ?)
 
   \ doc{
   \
-  \ search-wordlist  ( ca len wid -- 0 | xt 1 | xt -1 )
+  \ search-wordlist ( ca len wid -- 0 | xt 1 | xt -1 )
   \
   \ Find the definition identified by the string _ca len_ in
   \ the word list identified by _wid_. If the definition is not

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171916
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,9 +48,9 @@
 
 ( (pixel-pan-right pixel-pan-right pixels-pan-right )
 
-need ?(  [unneeded] (pixel-pan-right ?(  need assembler
+need ?( [unneeded] (pixel-pan-right ?( need assembler
 
-create (pixel-pan-right  ( -- a )  asm
+create (pixel-pan-right ( -- a ) asm
   4000 h ldp#, C0 c ld#,
     \ HL = screen bitmap address
     \ C = pixel rows
@@ -70,7 +70,7 @@ create (pixel-pan-right  ( -- a )  asm
 
   \ doc{
   \
-  \ (pixel-pan-right  ( -- a )
+  \ (pixel-pan-right ( -- a )
   \
   \ Return the address _a_ of a Z80 routine that pans the whole
   \ screen one pixel to the right.
@@ -86,14 +86,14 @@ create (pixel-pan-right  ( -- a )  asm
 
 [unneeded] pixel-pan-right ?(
 
-need (pixel-pan-right  need assembler
+need (pixel-pan-right need assembler
 
-code pixel-pan-right  ( -- )
-  b push, (pixel-pan-right call, b pop, jpnext,  end-code ?)
+code pixel-pan-right ( -- )
+  b push, (pixel-pan-right call, b pop, jpnext, end-code ?)
 
   \ doc{
   \
-  \ pixel-pan-right  ( -- )
+  \ pixel-pan-right ( -- )
   \
   \ Pan the whole screen one pixel to the right.  This word is
   \ a wrapper that calls `(pixel-pan-right` saving the BC
@@ -106,11 +106,11 @@ code pixel-pan-right  ( -- )
 
 [unneeded] pixels-pan-right ?( need pixel-pan-right
 
-: pixels-pan-right ( n -- ) 0 ?do  pixel-pan-right  loop  ; ?)
+: pixels-pan-right ( n -- ) 0 ?do  pixel-pan-right  loop ; ?)
 
   \ doc{
   \
-  \ pixels-pan-right  ( u -- )
+  \ pixels-pan-right ( u -- )
   \
   \ Pan the whole screen _u_ pixels to the right.
   \
@@ -120,9 +120,9 @@ code pixel-pan-right  ( -- )
 
 ( (pixel-scroll-up pixel-scroll-up pixels-scroll-up )
 
-[unneeded] (pixel-scroll-up ?(  need assembler
+[unneeded] (pixel-scroll-up ?( need assembler
 
-create (pixel-scroll-up  ( -- a )  asm
+create (pixel-scroll-up ( -- a ) asm
   4000 h ldp#, BF b ld#, rbegin
     b push, h d ldp, h inc, h a ld, F8 and#, h cp,
     z? rif  08 b ld#, b sub,             rra, rra, rra, a h ld,
@@ -139,7 +139,7 @@ create (pixel-scroll-up  ( -- a )  asm
 
   \ doc{
   \
-  \ (pixel-scroll-up  ( -- a )
+  \ (pixel-scroll-up ( -- a )
   \
   \ Return the address _a_ of a Z80 routine that scrolls the
   \ whole screen one pixel up.
@@ -155,14 +155,14 @@ create (pixel-scroll-up  ( -- a )  asm
 
 [unneeded] pixel-scroll-up ?(
 
-need assembler  need (pixel-scroll-up
+need assembler need (pixel-scroll-up
 
-code pixel-scroll-up  ( -- )
-  b push, (pixel-scroll-up call, b pop, jpnext,  end-code ?)
+code pixel-scroll-up ( -- )
+  b push, (pixel-scroll-up call, b pop, jpnext, end-code ?)
 
   \ doc{
   \
-  \ pixel-scroll-up  ( -- )
+  \ pixel-scroll-up ( -- )
   \
   \ Scroll the whole screen one pixel up. This word is a
   \ wrapper that calls `(pixel-scroll-up` saving the BC
@@ -174,12 +174,12 @@ code pixel-scroll-up  ( -- )
 
 [unneeded] pixels-scroll-up ?( need pixel-scroll-up
 
-: pixels-scroll-up  ( n -- )
-  0 ?do  pixel-scroll-up  loop  ; ?)
+: pixels-scroll-up ( n -- )
+  0 ?do  pixel-scroll-up  loop ; ?)
 
   \ doc{
   \
-  \ pixels-scroll-up  ( u -- )
+  \ pixels-scroll-up ( u -- )
   \
   \ Scroll the whole screen _u_ pixels up.
   \

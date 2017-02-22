@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201611260153
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,11 +38,11 @@
 
 ( dfor dstep di )
 
-: (dstep)  ( R: x d -- x d' )
+: (dstep) ( R: x d -- x d' )
 
   \ doc{
   \
-  \ (dstep)  ( R: x d -- x d' | x )
+  \ (dstep) ( R: x d -- x d' | x )
   \
   \ The run-time procedure compiled by `dstep`.
   \
@@ -58,10 +58,10 @@
     \ decrement the index
   else  2drop  cell+ cell+
     \ discard the index and skip the branch offset
-  then  >r  ;
+  then  >r ;
     \ restore the return address
 
-: dfor  ( d -- )  postpone 2>r <mark  ; immediate compile-only
+: dfor ( d -- ) postpone 2>r <mark ; immediate compile-only
 
   \ doc{
   \
@@ -77,9 +77,9 @@
   \
   \ }doc
 
-: dstep  ( -- )
+: dstep ( -- )
   postpone (dstep) postpone branch <resolve
-  ; immediate compile-only
+ ; immediate compile-only
 
   \ doc{
   \
@@ -101,11 +101,11 @@
 
 need alias
 
-' 2r@ alias dfor-i  ( -- d )
+' 2r@ alias dfor-i ( -- d )
 
   \ doc{
   \
-  \ dfor-i  ( -- d )
+  \ dfor-i ( -- d )
   \
   \ Return the current index _d_ of a `dfor` loop.
   \

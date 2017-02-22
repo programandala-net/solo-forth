@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201605171604
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,7 +38,7 @@
 
 ( muench-koh-multitasker )
 
-get-current forth-wordlist set-current  need user
+get-current forth-wordlist set-current need user
 
   \ Structure of a task created by TASK:
   \
@@ -62,12 +62,12 @@ user tos       \ top of stack
 user status    \ `branch` or `wake`
 user follower  \ address of next task's `status`
 
-: pause  ( -- )
-  rp@ sp@ tos !  follower @ >r  ; compile-only
+: pause ( -- )
+  rp@ sp@ tos !  follower @ >r ; compile-only
 
   \ doc{
   \
-  \ pause  ( -- )
+  \ pause ( -- )
   \
   \ Allow another task to execute:
   \ Stop current task and transfer control to the task of which
@@ -77,41 +77,41 @@ user follower  \ address of next task's `status`
   \ }doc
 
 
-: wake  ( -- )
+: wake ( -- )
   r> userp !  \ `userp` points `follower` of current task
-  tos @ sp! rp!  ; compile-only
+  tos @ sp! rp! ; compile-only
 
   \ doc{
   \
-  \ wake  ( -- )
+  \ wake ( -- )
   \
   \ Wake current task.
   \
   \ }doc
 
-: stop  ( -- )  ['] branch status ! pause  ;
+: stop ( -- ) ['] branch status ! pause ;
 
   \ doc{
   \
-  \ stop  ( -- )
+  \ stop ( -- )
   \
   \ Sleep current task.
   \
   \ }doc
 
-: 's  ( tid a -- a' )
+: 's ( tid a -- a' )
   \ follower  cell+ - swap @ + ;  \ XXX TMP -- eForth
-  userP @ - swap  ( offset tid )  @ +  ;
+  userP @ - swap ( offset tid ) @ + ;
 
   \ doc{
   \
-  \ 's  ( tid a -- a' )
+  \ 's ( tid a -- a' )
   \
   \ Index another task's user variable.
   \
   \ }doc
 
-: sleep  ( tid -- )  status 's  ['] branch  swap !  ;
+: sleep ( tid -- ) status 's  ['] branch  swap ! ;
 
   \ doc{
   \
@@ -120,12 +120,12 @@ user follower  \ address of next task's `status`
   \ }doc
 
 
-: awake  ( tid -- )  status 's  ['] wake  swap !  ;
+: awake ( tid -- ) status 's  ['] wake  swap ! ;
 
   \ doc{
   \
   \
-  \ awake  ( tid -- )
+  \ awake ( tid -- )
   \
   \ Wake another task.
   \
@@ -143,21 +143,21 @@ user follower  \ address of next task's `status`
  \   DUP HERE + ( sp0 ) , ALLOT ;
 
 
-: task  ( user_size ds_size rs_size "name" -- )
+: task ( user_size ds_size rs_size "name" -- )
   create here >r  \ user_size ds_size rs_size  r: tid
   0 ,  \ reserve space for `userp` pointer
-  allot here cell- >r  ( user_size ds_size ) ( r: tid rp0 )
-  allot here cell- >r  ( user_size ) ( r: tid rp0 sp0 )
+  allot here cell- >r ( user_size ds_size ) ( r: tid rp0 )
+  allot here cell- >r ( user_size ) ( r: tid rp0 sp0 )
   [ 6 cells ] literal + allot  \ minimum user variables
-  here cell-  ( user_pointer   ) ( r: tid rp0 sp0 )
+  here cell- ( user_pointer   ) ( r: tid rp0 sp0 )
   r> , r> , ( store sp0 and rp0  )
   r@ !  \ store `userp` pointer
-  lastname r> taskname 's !  ;
+  lastname r> taskname 's ! ;
   \ store task name in new task's 'taskname'
 
   \ doc{
   \
-  \ task  ( user_size ds_size rs_size "name" -- )
+  \ task ( user_size ds_size rs_size "name" -- )
   \
   \ Create a new task.
   \
@@ -168,10 +168,10 @@ user follower  \ address of next task's `status`
 ( muench-koh-multitasker )
 
 
-: build  ( tid -- )
+: build ( tid -- )
   dup sleep                       \ sleep new task
   follower @ over follower 's !   \ link new task
-  status 's follower !  ;         \ link old task
+  status 's follower ! ;         \ link old task
 
   \ doc{
   \
@@ -179,7 +179,7 @@ user follower  \ address of next task's `status`
   \
   \ }doc
 
-: activate  ( tid -- )
+: activate ( tid -- )
 
   \ XXX TMP -- eForth:
   dup 2@        ( tid sp rp )
@@ -195,7 +195,7 @@ user follower  \ address of next task's `status`
 
   \ doc{
   \
-  \ activate  ( tid -- )
+  \ activate ( tid -- )
   \
   \ Activate the task identified by _tid_. `activate` must be
   \ used only in definition. The code following `activate` must
@@ -209,7 +209,7 @@ user follower  \ address of next task's `status`
 ( muench-koh-multitasker )
 
 
-: tasks  ( -- )
+: tasks ( -- )
   follower      \ current task's follower
   begin
     cr dup [ taskname follower - ] literal + @ .name
@@ -221,7 +221,7 @@ user follower  \ address of next task's `status`
 
   \ doc{
   \
-  \ tasks  ( -- )
+  \ tasks ( -- )
   \
   \ Display tasks list in status-follower chain.
   \

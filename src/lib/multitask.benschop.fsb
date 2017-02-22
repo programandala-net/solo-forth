@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not finished
 
-  \ Last modified: 201612201600
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,10 +55,10 @@ variable first-task
 
 ( benschop-multitasker )
 
-: task:  ( "name" -- )
+: task: ( "name" -- )
   create here $243 + , ( eerste adres ip)
-  task-link @ ,  here task-link !  ( link naar vorige taak)
-  here first-task @ !  ( maak cirkel rond)
+  task-link @ ,  here task-link ! ( link naar vorige taak)
+  here first-task @ ! ( maak cirkel rond)
   1 c, 0 , ( nog niet starten&ruimte sp)
   uptr @ here $3C cmove  here 23c + here $0E + ! here
   $013C + here $10 + ! $023C allot ( user-variabelen+stack)
@@ -67,14 +67,14 @@ variable first-task
 ( benschop-multitasker )
 
   does> dup $15 + @ 4 - ( stackpointer)
-  2dup swap 5 + !  2dup swap @ swap !  ( ip op stack)
-  over $17 + @ swap 2+ !  ( rp op stack)
+  2dup swap 5 + !  2dup swap @ swap ! ( ip op stack)
+  over $17 + @ swap 2+ ! ( rp op stack)
   0 swap 4 + c! ( runnable) ;
 
-: terminate 2 uptr @ 3 - c!  switch  ;
-: sleep     3 uptr @ 3 - c!  switch  ;
-: stop  ( tid -- )  4 swap 7 + c!  ;
-: start ( tid -- )  0 swap 7 + c!  ;
+: terminate 2 uptr @ 3 - c!  switch ;
+: sleep     3 uptr @ 3 - c!  switch ;
+: stop ( tid -- ) 4 swap 7 + c! ;
+: start ( tid -- ) 0 swap 7 + c! ;
 
 : ;task compile terminate ?csp smudge [compile] [ ; immediate
 
@@ -93,9 +93,9 @@ code (start)
   h ldp# uptr sthl h dec m d ld h dec m e ld exde ldsp d pop
   h pop rptr sthl jpix end-code
 
-: startup  ( -- )  main-task (start)  ;
+: startup ( -- ) main-task (start) ;
 
-: tasks  ( -- )
+: tasks ( -- )
   uptr @ dup 27039 = cr if  ." multitasking not active"  else
   dup 10 - >name id. 6 emit ." active"
   begin  5 - @ 3 + dup uptr @ -  while
@@ -104,6 +104,6 @@ code (start)
        dup 1 = if ." new"      then
        dup 2 = if ." terminated" then
        dup 3 = if ." sleeping" then
-           4 = if ." stopped" then  repeat then drop  ;
+           4 = if ." stopped" then  repeat then drop ;
 
   \ vim: filetype=soloforth

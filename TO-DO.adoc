@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-21
+:revdate: 2017-02-22
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -1333,6 +1333,22 @@ Study the way v.Forth manages the interrupts and adapt it.
 // Library {{{1
 == Library ==
 
+.2017-02-22:
+
+Compact and document the module <math.floating_point.rom.fsb>.
+
+.2017-02-22:
+
+Make `to` deferred and provide its variants as actions, e.g.
+`slow-(to`, `fast-(to`, `nonparsing-(to`, etc.
+
+Same case: `>name` has a Z80 definition in the kernel and a Forth
+definition in the library.
+
+Same case: `m*`, two definitions in the library.
+
+Same case: bitmasks in <printing.color.fsb>.
+
 .2017-02-21:
 
 Set `first-locatable` to 1 by default and review the block headers of
@@ -1433,7 +1449,7 @@ NOTE: Milestone: 0.15.0
 Finish the alternative version of `indexer` to index the blocks on the fly as
 they are being searched by `need` and family, i.e., not in advance.
 
-.2016-05-18:
+.2016-05-18, 2017-02-22:
 
 Improve `need` to make several index lines possible, by making `(` executable:
 
@@ -1441,6 +1457,8 @@ Improve `need` to make several index lines possible, by making `(` executable:
 ( very-long-word-1 very-long-word-2 very-long-word-3
 very-long-word-4 very-long-word-5 very-long-word-6 )
 ----
+
+See for example <chars.fsb>, <keyboard.MISC.fsb>.
 
 Problem: this would force changes in fsb and fsb2.
 
@@ -1910,4 +1928,14 @@ NOTE: Milestone: 0.14.0
 
 Change: compare the user variables with those of Spectrum Forth-83.
 
+// Vim support {{{1
+== Vim support ==
 
+.2017-02-22:
+
+Fix coloring of paren comments: make it multiline.
+
+.2017-02-22:
+
+Change the filename ".fsb" extensions to ordinary ".fs". Check how Vim
+can load automatically the fsb.vim code and mappings.

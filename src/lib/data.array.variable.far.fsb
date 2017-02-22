@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172010
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,15 +50,15 @@
 
 need ?(
 
-[unneeded] faravariable ?(  need farallot  need array>
+[unneeded] faravariable ?( need farallot need array>
 
-: faravariable  ( n "name" -- )
+: faravariable ( n "name" -- )
   create  hp@ , cells farallot
-  does>  ( n -- a ) ( n pfa ) @ array>  ; ?)
+  does> ( n -- a ) ( n pfa ) @ array> ; ?)
 
   \ doc{
   \
-  \ faravariable  ( n "name" -- )
+  \ faravariable ( n "name" -- )
   \
   \ Create, in far memory, a 1-dimension single-cell variables
   \ array _name_ with _n_ elements and the execution semantics
@@ -66,7 +66,7 @@ need ?(
   \
   \ _name_ execution:
   \
-  \ name  ( n -- a )
+  \ name ( n -- a )
   \
   \ Return far-memory address _a_ of element _n_.
   \
@@ -74,15 +74,15 @@ need ?(
   \
   \ }doc
 
-[unneeded] far2avariable ?(  need farallot need 2array>
+[unneeded] far2avariable ?( need farallot need 2array>
 
-: far2avariable  ( n "name" -- )
+: far2avariable ( n "name" -- )
   create  hp@ , [ 2 cells ] cliteral * farallot
-  does>  ( n -- a ) ( n pfa ) @ 2array>  ; ?)
+  does> ( n -- a ) ( n pfa ) @ 2array> ; ?)
 
   \ doc{
   \
-  \ far2avariable  ( n "name" -- )
+  \ far2avariable ( n "name" -- )
   \
   \ Create, in far memory, a 1-dimension double-cell variables
   \ array _name_ with _n_ elements and the execution semantics
@@ -90,7 +90,7 @@ need ?(
   \
   \ _name_ execution:
   \
-  \ name  ( n -- a )
+  \ name ( n -- a )
   \
   \ Return far-memory address _a_ of element _n_.
   \
@@ -98,15 +98,15 @@ need ?(
   \
   \ }doc
 
-[unneeded] cavariable ?(  need farallot
+[unneeded] cavariable ?( need farallot
 
-: farcavariable  ( n "name" -- )
+: farcavariable ( n "name" -- )
   create  hp@ , farallot
-  does>  ( n -- ca ) ( n pfa ) @ +  ; ?)
+  does> ( n -- ca ) ( n pfa ) @ + ; ?)
 
   \ doc{
   \
-  \ farcavariable  ( n "name" -- )
+  \ farcavariable ( n "name" -- )
   \
   \ Create, in far memory, a 1-dimension character variables
   \ array _name_ with _n_ elements and the execution semantics
@@ -114,7 +114,7 @@ need ?(
   \
   \ _name_ execution:
   \
-  \ name  ( n -- ca )
+  \ name ( n -- ca )
   \
   \ Return far-memory address _ca_ of element _n_.
   \

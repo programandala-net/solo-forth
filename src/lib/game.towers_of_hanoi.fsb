@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702200003
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,7 +51,7 @@
 
 only forth definitions
 
-need don't  need ms  need mode64  need alloted  need recurse
+need don't need ms need mode64 need alloted need recurse
 need vocabulary
 
 vocabulary hanoi  also hanoi definitions
@@ -65,32 +65,32 @@ create PegSPS  pegs cells allot
   \ pointers for three disk stacks
 
 : PegSP     ( peg -- addr ) cells PegSPS + ;
-: PUSH      ( c peg -- )    PegSP tuck @ c!  1 chars swap +! ;
-: POP       ( peg -- c )    PegSP -1 chars over +!  @ c@ ;
+: PUSH      ( c peg -- )   PegSP tuck @ c!  1 chars swap +! ;
+: POP       ( peg -- c )   PegSP -1 chars over +!  @ c@ ;
 
 create PegStacks  30 chars allot
   \ stack area for up to 10 disks
 
-: PegStack  ( peg -- addr )   10 * PegStacks + ;
+: PegStack ( peg -- addr )  10 * PegStacks + ;
 
-: clear-peg    ( peg -- )  dup PegStack  swap PegSP ! ;
-: clear-pegs  ( -- )  pegs 0 ?do  i clear-peg  loop  ;
+: clear-peg    ( peg -- ) dup PegStack  swap PegSP ! ;
+: clear-pegs ( -- ) pegs 0 ?do  i clear-peg  loop ;
 
-  \ : PegDepth  ( peg -- depth )  dup PegSP @  swap PegStack - ;
+  \ : PegDepth ( peg -- depth ) dup PegSP @  swap PegStack - ;
   \ XXX OLD not needed
 
 -->
 
 ( hanoi )
 
-: show-disk  ( level diameter peg -- )
+: show-disk ( level diameter peg -- )
   22 * 10 + over -  rot 10 swap - at-xy
   2* '*' emits ;
 
 : show-peg   ( peg -- )
   dup >r PegStack
   BEGIN   r@ PegSP @ over <>
-  WHILE   dup r@ PegStack - over c@  ( addr level diameter )
+  WHILE   dup r@ PegStack - over c@ ( addr level diameter )
           r@ show-disk  char+
   REPEAT  drop r> drop ;
 
@@ -98,7 +98,7 @@ create PegStacks  30 chars allot
 
 ( hanoi )
 
-: maketab  ( n1..nn n -- XXX ) \ XXX TODO stack effect
+: maketab ( n1..nn n -- XXX ) \ XXX TODO stack effect
   create
     dup alloted over 1- + swap 0
     2dup <> if    ?do  dup >r c! r> 1-  loop
@@ -115,13 +115,13 @@ decimal
 
 ( hanoi )
 
-: finished  ( -- )  key drop 0 11 at-xy ." Stopped" cr abort  ;
+: finished ( -- ) key drop 0 11 at-xy ." Stopped" cr abort ;
 
-: show-pegs  ( -- )
+: show-pegs ( -- )
   page  pegs 0 ?do  i show-peg  loop  slowness @ ms
   key? if  finished  then ;
 
-: move-ring  ( ring -- ring )
+: move-ring ( ring -- ring )
   dup to! 3 / pop  over fro! 3 mod push show-pegs ;
 
 : tower ( depth direction -- depth direction )
@@ -134,7 +134,7 @@ decimal
 
 ( hanoi )
 
-: run  ( depth -- )
+: run ( depth -- )
 
   clear-pegs
 

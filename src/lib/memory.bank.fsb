@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702211016
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,11 +48,11 @@
 ( get-default-bank set-default-bank )
 
 
-: get-default-bank  ( -- +n )  default-bank# c@  ;
+: get-default-bank ( -- +n ) default-bank# c@ ;
 
   \ doc{
   \
-  \ get-default-bank  ( -- +n )
+  \ get-default-bank ( -- +n )
   \
   \ Get the current default bank _+n_ by fetching the contents
   \ of `default-bank#`.
@@ -62,11 +62,11 @@
   \
   \ }doc
 
-: set-default-bank  ( +n -- )  default-bank# c!  ;
+: set-default-bank ( +n -- ) default-bank# c! ;
 
   \ doc{
   \
-  \ set-default-bank  ( +n -- )
+  \ set-default-bank ( +n -- )
   \
   \ Set _+n_ as the default memory bank by modifyng the
   \ contents of `default-bank#`.

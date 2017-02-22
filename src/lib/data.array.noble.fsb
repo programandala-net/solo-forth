@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172011
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -139,14 +139,14 @@
 
 need ?(
 
-[unneeded] 1array ?(  need }  need align
+[unneeded] 1array ?( need } need align
 
 : 1array ( n1 n2 "name" -- )
-  create 2dup , , * allot align  ;  ?)
+  create 2dup , , * allot align ; ?)
 
   \ doc{
   \
-  \ 1array  ( n1 n2 "name" -- )
+  \ 1array ( n1 n2 "name" -- )
   \
   \ Define a 1-dimension array _name_ with _n1_ items of
   \ _n2_ address units each.
@@ -155,13 +155,13 @@ need ?(
   \
   \ }doc
 
-[unneeded] } ?(  need <=
+[unneeded] } ?( need <=
 
-: array>items  ( a -- n )  cell+ @  ;
+: array>items ( a -- n ) cell+ @ ;
 
   \ doc{
   \
-  \ array>items  ( a -- n )
+  \ array>items ( a -- n )
   \
   \ Convert address of array _a_ to its number of items _n_.
   \
@@ -169,15 +169,15 @@ need ?(
   \
   \ }doc
 
-: }  ( a1 n -- a2 )
+: } ( a1 n -- a2 )
   over array>items over <= over 0< or #-272 ?throw
-  over @ * + cell+ cell+  ;  ?)
+  over @ * + cell+ cell+ ; ?)
 
   \ XXX TODO -- remove bounds checking
 
   \ doc{
   \
-  \ }  ( a1 n -- a2 )
+  \ } ( a1 n -- a2 )
   \
   \ If in range, return address _a2_ of the _n_ item of the
   \ 1-cell array _a1_.  Otherwise throw error #-272 (array
@@ -187,14 +187,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] 2array ?(  need }  need align
+[unneeded] 2array ?( need } need align
 
-: 2array  ( n1 n2 n3 "name" -- )
-  create >r tuck , ( n2 n1 ) r@ , * dup , r> * allot align  ;
+: 2array ( n1 n2 n3 "name" -- )
+  create >r tuck , ( n2 n1 ) r@ , * dup , r> * allot align ;
 
   \ doc{
   \
-  \ 2array  ( n1 n2 n3 "name" -- )
+  \ 2array ( n1 n2 n3 "name" -- )
   \
   \ Define a 2-dimension array _name_ with _n1 x n2_ items of
   \ _n3_ address units each.
@@ -203,13 +203,13 @@ need ?(
   \
   \ }doc
 
-: }} ( a1 n1 n2 -- a2 )  2>r cell+ dup cell- @  r> * r> + }  ;
+: }} ( a1 n1 n2 -- a2 ) 2>r cell+ dup cell- @  r> * r> + } ;
 
 ?)
 
   \ doc{
   \
-  \ }}  ( a1 n1 n2 -- a2 )
+  \ }} ( a1 n1 n2 -- a2 )
   \
   \ Return address _a2_ of the _n1,n2_ item of the 2-dimension
   \ array _a1_.  Data  stored row-wise.

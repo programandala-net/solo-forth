@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201604091523
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,13 +37,13 @@
 
   \ XXX TODO finish adapt
 
-need @c+  need for
+need @c+ need for
 
-: <<  ( -- a depth )  here depth  ;
-: >>  ( a depth -- )
+: << ( -- a depth ) here depth ;
+: >> ( a depth -- )
   depth 1- - #-258 ?throw cr base @ >r hex
   dup 4 u.r space  here over - for  c@+ 3 u.r  step drop
-  r> base !  space   ;
+  r> base !  space ;
 
   \ vim: filetype=soloforth
 

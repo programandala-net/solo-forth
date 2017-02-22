@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172011
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -76,15 +76,15 @@
 
 need ?(
 
-[unneeded] avalue ?(  need array>
+[unneeded] avalue ?( need array>
 
-: avalue  ( n "name" -- )
+: avalue ( n "name" -- )
   create  cells allot
-  does>  ( n -- x ) ( n pfa ) array> @  ; ?)
+  does> ( n -- x ) ( n pfa ) array> @ ; ?)
 
   \ doc{
   \
-  \ avalue  ( n "name" -- )
+  \ avalue ( n "name" -- )
   \
   \ Create a 1-dimension single-cell values array _name_
   \ with _n_ elements and the execution semantics defined
@@ -92,7 +92,7 @@ need ?(
   \
   \ _name_ execution:
   \
-  \ name  ( n -- x )
+  \ name ( n -- x )
   \
   \ Return contents _x_ of element _n_.
   \
@@ -100,15 +100,15 @@ need ?(
   \
   \ }doc
 
-[unneeded] 2avalue ?(  need 2array>
+[unneeded] 2avalue ?( need 2array>
 
-: 2avalue  ( n "name" -- )
+: 2avalue ( n "name" -- )
   create  [ 2 cells ] literal * allot
-  does>  ( n -- xd ) ( n pfa ) 2array> 2@  ; ?)
+  does> ( n -- xd ) ( n pfa ) 2array> 2@ ; ?)
 
   \ doc{
   \
-  \ 2avalue  ( n "name" -- )
+  \ 2avalue ( n "name" -- )
   \
   \ Create a 1-dimension double-cell values array _name_
   \ with _n_ elements and the execution semantics defined
@@ -116,7 +116,7 @@ need ?(
   \
   \ _name_ execution:
   \
-  \ name  ( n -- xd )
+  \ name ( n -- xd )
   \
   \ Return contents _xd_ of element _n_.
   \
@@ -124,22 +124,22 @@ need ?(
   \
   \ }doc
 
-[unneeded] cavalue ?(  need align
+[unneeded] cavalue ?( need align
 
-: cavalue  ( n "name" -- )
+: cavalue ( n "name" -- )
   create  allot align
-  does>  ( n -- x ) ( n pfa ) + c@  ; ?)
+  does> ( n -- x ) ( n pfa ) + c@ ; ?)
 
   \ doc{
   \
-  \ cavalue  ( n "name" -- )
+  \ cavalue ( n "name" -- )
   \
   \ Create a 1-dimension character values array _name_ with
   \ _n_ elements and the execution semantics defined below.
   \
   \ _name_ execution:
   \
-  \ name  ( n -- c )
+  \ name ( n -- c )
   \
   \ Return contents _c_ of element _n_.
   \
@@ -149,13 +149,13 @@ need ?(
 
 ( ato +ato 2ato )
 
-need ?(  [unneeded] ato ?(  need >body
+need ?( [unneeded] ato ?( need >body
 
-: (ato)  ( x n xt -- )  >body array> !  ;
+: (ato) ( x n xt -- ) >body array> ! ;
 
   \ doc{
   \
-  \ (ato)  ( x n xt -- )
+  \ (ato) ( x n xt -- )
   \
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _xt_.
@@ -164,13 +164,13 @@ need ?(  [unneeded] ato ?(  need >body
   \
   \ }doc
 
-: ato  ( x n "name" -- )
+: ato ( x n "name" -- )
   compiling?  if    postpone ['] postpone (ato)
-              else  ' (ato)  then  ; immediate ?)
+              else  ' (ato)  then ; immediate ?)
 
   \ doc{
   \
-  \ ato  ( x n "name" -- )
+  \ ato ( x n "name" -- )
   \
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _name_.
@@ -179,13 +179,13 @@ need ?(  [unneeded] ato ?(  need >body
   \
   \ }doc
 
-[unneeded] +ato ?(  need >body
+[unneeded] +ato ?( need >body
 
-: (+ato)  ( n1 n2 xt -- )  >body array> +!  ;
+: (+ato) ( n1 n2 xt -- ) >body array> +! ;
 
   \ doc{
   \
-  \ (+ato)  ( n1 n2 xt -- )
+  \ (+ato) ( n1 n2 xt -- )
   \
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _xt_.
@@ -194,13 +194,13 @@ need ?(  [unneeded] ato ?(  need >body
   \
   \ }doc
 
-: +ato  ( n1 n2 "name" -- )
+: +ato ( n1 n2 "name" -- )
   compiling? if    postpone ['] postpone (+ato)
-             else  ' (+ato)  then  ; immediate ?)
+             else  ' (+ato)  then ; immediate ?)
 
   \ doc{
   \
-  \ +ato  ( n1 n2 "name" -- )
+  \ +ato ( n1 n2 "name" -- )
   \
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _name_.
@@ -209,13 +209,13 @@ need ?(  [unneeded] ato ?(  need >body
   \
   \ }doc
 
-[unneeded] 2ato ?(  need >body
+[unneeded] 2ato ?( need >body
 
-: (2ato)  ( xd n xt -- )  >body 2array> 2!  ;
+: (2ato) ( xd n xt -- ) >body 2array> 2! ;
 
   \ doc{
   \
-  \ (2ato)  ( xd n xt -- )
+  \ (2ato) ( xd n xt -- )
   \
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _xt_.
@@ -224,13 +224,13 @@ need ?(  [unneeded] ato ?(  need >body
   \
   \ }doc
 
-: 2ato  ( xd n "name" -- )
+: 2ato ( xd n "name" -- )
   compiling?  if    postpone ['] postpone (2ato)
-              else  ' (2ato)  then  ; immediate ?)
+              else  ' (2ato)  then ; immediate ?)
 
   \ doc{
   \
-  \ 2ato  ( xd n "name" -- )
+  \ 2ato ( xd n "name" -- )
   \
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _name_.
@@ -243,13 +243,13 @@ need ?(  [unneeded] ato ?(  need >body
 
 need ?(
 
-[unneeded] cato ?(  need >body
+[unneeded] cato ?( need >body
 
-: (cato)  ( c n xt -- )  >body + c!  ;
+: (cato) ( c n xt -- ) >body + c! ;
 
   \ doc{
   \
-  \ (cato)  ( c n xt -- )
+  \ (cato) ( c n xt -- )
   \
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _xt_.
@@ -258,13 +258,13 @@ need ?(
   \
   \ }doc
 
-: cato  ( x n "name" -- )
+: cato ( x n "name" -- )
   compiling?  if    postpone ['] postpone (cato)
-              else  ' (cato)  then  ; immediate ?)
+              else  ' (cato)  then ; immediate ?)
 
   \ doc{
   \
-  \ cato  ( c n "name" -- )
+  \ cato ( c n "name" -- )
   \
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _name_.
@@ -275,11 +275,11 @@ need ?(
 
 [unneeded] +cato ?(
 
-: (+cato)  ( c n xt -- )  >body + c+!  ;
+: (+cato) ( c n xt -- ) >body + c+! ;
 
   \ doc{
   \
-  \ (+cato)  ( c n xt -- )
+  \ (+cato) ( c n xt -- )
   \
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _xt_.
@@ -288,13 +288,13 @@ need ?(
   \
   \ }doc
 
-: +cato  ( n1 n2 "name" -- )
+: +cato ( n1 n2 "name" -- )
   compiling? if    postpone ['] postpone (+cato)
-             else  ' (+cato)  then  ; immediate ?)
+             else  ' (+cato)  then ; immediate ?)
 
   \ doc{
   \
-  \ +cato  ( c n "name" -- )
+  \ +cato ( c n "name" -- )
   \
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _name_.

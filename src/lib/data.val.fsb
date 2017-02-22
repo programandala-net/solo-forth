@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201605110157
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,17 +51,17 @@ need ?(
 [unneeded] val ?(
 
 variable (val)
-: init-val  ( -- )   ['] @ (val) !  ;  init-val
-: val  ( x "name" -- )
-  create ,  does>  ( -- ) ( pfa ) (val) perform  init-val  ;
-: toval    ( -- )  ['] ! (val) !  ;  ?)
+: init-val ( -- )  ['] @ (val) ! ;  init-val
+: val ( x "name" -- )
+  create ,  does> ( -- ) ( pfa ) (val) perform  init-val ;
+: toval    ( -- ) ['] ! (val) ! ; ?)
 
 [unneeded] 2val ?(
 
 variable (2val)
-: init-2val  ( -- )   ['] 2@ (2val) !  ;  init-2val
-: 2val  ( xd "name" -- )
-  create 2,  does>  ( -- ) ( pfa ) (2val) perform  init-2val  ;
-: 2toval    ( -- )  ['] 2! (2val) !  ;  ?)
+: init-2val ( -- )  ['] 2@ (2val) ! ;  init-2val
+: 2val ( xd "name" -- )
+  create 2,  does> ( -- ) ( pfa ) (2val) perform  init-2val ;
+: 2toval    ( -- ) ['] 2! (2val) ! ; ?)
 
   \ vim: filetype=soloforth

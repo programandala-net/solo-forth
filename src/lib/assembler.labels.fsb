@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702211420
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -97,48 +97,48 @@ forth-wordlist set-current
   \   +1    = ? \ XXX TODO --
   \   +2..x = pairs
 
-create fwds  ( -- a )  /fwds allot
+create fwds ( -- a ) /fwds allot
   \ Unresolved forward reference associative array.
 
-: init-fwds  ( -- )
+: init-fwds ( -- )
   fwds /fwds erase
-  [ fwds 2 cells + ] literal fwds !  ;  init-fwds
+  [ fwds 2 cells + ] literal fwds ! ;  init-fwds
 
 max-l# cells constant /bwds
 
-create bwds  ( -- a )  /bwds allot
+create bwds ( -- a ) /bwds allot
   \ Resolved label value array.
 
-: init-bwds  ( -- )  bwds /bwds erase  ;  init-bwds
+: init-bwds ( -- ) bwds /bwds erase ;  init-bwds
 
-: init-l  ( -- ) init-fwds init-bwds  ;
+: init-l ( -- ) init-fwds init-bwds ;
 
 ' init-l ' init-asm defer!  -->
 
 ( l: l# )
 
-: lpush  ( a n -- )
+: lpush ( a n -- )
   fwds 2@ = #-285 ?throw  \ full?
-  fwds @ 2!  [ 2 cells ] literal fwds +!  ;
+  fwds @ 2!  [ 2 cells ] literal fwds +! ;
   \ Push unresolved reference to address _a_, label _n_.
 
-: lpop  ( n -- a true | n false )
+: lpop ( n -- a true | n false )
   >r fwds @ fwds cell+ cell+
-  begin  2dup = 0= ( end start )  while
+  begin  2dup = 0= ( end start ) while
     dup @  r@ = if  \ found
       dup cell+ @ ( a ) >r
       swap cell- cell-  dup fwds ! 2@ rot 2!
         \ promote last pair
-      r> r> ( a key )  -1 or  ( a true )  exit
+      r> r> ( a key ) -1 or ( a true ) exit
     then  cell+ cell+
-  repeat  2drop r> 0  ;
+  repeat  2drop r> 0 ;
   \ Pop any unresolved references of label _n_.
 
-: ?l#  ( n -- )  [ max-l# 1- ] 1literal u> #-283 ?throw  ;
+: ?l# ( n -- ) [ max-l# 1- ] 1literal u> #-283 ?throw ;
 
   \ doc{
   \
-  \ ?l#  ( -- )
+  \ ?l# ( -- )
   \
   \ If assembler label _n_ is out of range, throw exception
   \ #-283.
@@ -149,11 +149,11 @@ create bwds  ( -- a )  /bwds allot
 
   \ If label number _n_ is out of range, throw exception #-283.
 
-: l?  ( n -- a | 0 )  dup ?l#  cells bwds + @  ;
+: l? ( n -- a | 0 ) dup ?l#  cells bwds + @ ;
 
   \ doc{
   \
-  \ l?  ( n -- a | 0 )
+  \ l? ( n -- a | 0 )
   \
   \ If assembler label _n_ is resolved, return its address _a_.
   \ Otherwise return zero.
@@ -170,16 +170,16 @@ assembler-wordlist set-current
 
 need ?rel
 
-: l:  ( n -- )
+: l: ( n -- )
   dup l? #-284 ?throw  \ should be unknown
   here  over cells bwds + ! \ now known
-  begin  dup lpop ( a true | n false )  while
+  begin  dup lpop ( a true | n false ) while
     here over - 1-  swap over ?rel c!  \ resolve ref
-  repeat  2drop  ;
+  repeat  2drop ;
 
   \ doc{
   \
-  \ l:  ( n -- )
+  \ l: ( n -- )
   \
   \ Assign `here` to assembler label _n_.  Resolve any forward
   \ references.  Assume 8-bit relative displacements.
@@ -188,12 +188,12 @@ need ?rel
   \
   \ }doc
 
-: l#  ( n -- a )
-  dup l? ?dup 0= if  here 1+ 2dup swap lpush  then  nip  ;
+: l# ( n -- a )
+  dup l? ?dup 0= if  here 1+ 2dup swap lpush  then  nip ;
 
   \ doc{
   \
-  \ l#  ( n -- a )
+  \ l# ( n -- a )
   \
   \ Retrieve the address _a_ of assembler label _n_.
   \

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201610281920
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -70,8 +70,8 @@ need alias
 
 wordlist constant calculator-wordlist
 
-: calculator  ( -- )
-  calculator-wordlist >order  $C5 c, $EF c,  ;
+: calculator ( -- )
+  calculator-wordlist >order  $C5 c, $EF c, ;
   \ Add `calculator-wordlist` to the search order and
   \ compile the assembler instructions to start the ROM
   \ calculator:
@@ -83,13 +83,13 @@ wordlist constant calculator-wordlist
 calculator-wordlist >order
 get-current  calculator-wordlist set-current
 
-: end-calc  ( -- )  $38 c,  ;
+: end-calc ( -- ) $38 c, ;
   \ Compile the `end-calc` ROM calculator command.
   \ ----
   \ db $38 ; exit the ROM calculator
   \ ----
 
-: end-calculator  ( -- )  previous end-calc $C1 c,  ;
+: end-calculator ( -- ) previous end-calc $C1 c, ;
   \ Restore the search order and
   \ compile the assembler instructions to exit the ROM calculator:
   \ ----
@@ -101,116 +101,116 @@ get-current  calculator-wordlist set-current
 
 ( calculator )
 
-: +  ( -- )  $0F c,  ;
+: + ( -- ) $0F c, ;
   \ Compile the `addition` ROM calculator command.
-: -  ( -- )  $03 c,  ;
+: - ( -- ) $03 c, ;
   \ Compile the `subtract` ROM calculator command.
 
-: *  ( -- )  $04 c,  ;
+: * ( -- ) $04 c, ;
   \ Compile the `multiply` ROM calculator command.
-: /  ( -- )  $05 c,  ;
+: / ( -- ) $05 c, ;
   \ Compile the `division` ROM calculator command.
-: mod  ( -- )  $32 c,  ;
+: mod ( -- ) $32 c, ;
   \ Compile the `n-mod-m` ROM calculator command.
 
-: **  ( -- )  $06 c,  ;
+: ** ( -- ) $06 c, ;
   \ Compile the `to-power` ROM calculator command.
-: sqrt  ( -- )  $28 c,  ;
+: sqrt ( -- ) $28 c, ;
   \ Compile the `sqr` ROM calculator command.
 
 -->
 
 ( calculator )
 
-: negate  ( -- )  $1B c,  ;
+: negate ( -- ) $1B c, ;
   \ Compile the `negate` ROM calculator command.
-: sgn  ( -- )  $29 c,  ;
+: sgn ( -- ) $29 c, ;
   \ Compile the `sgn` ROM calculator command.
-: abs  ( -- )  $2A c,  ;
+: abs ( -- ) $2A c, ;
   \ Compile the `abs` ROM calculator command.
 
-: int  ( -- )  $27 c,  ;
+: int ( -- ) $27 c, ;
   \ Compile the `int` ROM calculator command.
-: truncate  ( -- )  $3A c,  ;
+: truncate ( -- ) $3A c, ;
   \ Compile the `truncate` ROM calculator command.
 
-: re-stack  ( r -- r' )  $3D c,  ;
+: re-stack ( r -- r' ) $3D c, ;
   \ Compile the `re-stack` ROM calculator command.
 
-: zero  ( -- )  $A0 c,  ;
+: zero ( -- ) $A0 c, ;
   \ Compile the ROM calculator command that stacks 0.
-: one  ( -- )  $A1 c,  ;
+: one ( -- ) $A1 c, ;
   \ Compile the ROM calculator command that stacks 1.
-: half  ( -- )  $A2 c,  ;
+: half ( -- ) $A2 c, ;
   \ Compile the ROM calculator command that stacks 1/2.
-: pi2/  ( -- )  $A3 c,  ;
+: pi2/ ( -- ) $A3 c, ;
   \ Compile the ROM calculator command that stacks pi/2.
-: ten  ( -- )  $A4 c,  ;
+: ten ( -- ) $A4 c, ;
   \ Compile the ROM calculator command that stacks 10.
 
 -->
 
 ( calculator )
 
-: ln  ( -- )  $25 c,  ;
+: ln ( -- ) $25 c, ;
   \ Compile the `ln` ROM calculator command.
-: exp  ( -- )  $26 c,  ;
+: exp ( -- ) $26 c, ;
   \ Compile the `exp` ROM calculator command.
 
-: acos  ( -- )  $23 c,  ;
+: acos ( -- ) $23 c, ;
   \ Compile the `acos` ROM calculator command.
-: asin  ( -- )  $22 c,  ;
+: asin ( -- ) $22 c, ;
   \ Compile the `asin` ROM calculator command.
-: atan  ( -- )  $24 c,  ;
+: atan ( -- ) $24 c, ;
   \ Compile the `atan` ROM calculator command.
-: cos  ( -- )  $20 c,  ;
+: cos ( -- ) $20 c, ;
   \ Compile the `cos` ROM calculator command.
-: sin  ( -- )  $1F c,  ;
+: sin ( -- ) $1F c, ;
   \ Compile the `sin` ROM calculator command.
-: tan  ( -- )  $21 c,  ;
+: tan ( -- ) $21 c, ;
   \ Compile the `tan` ROM calculator command.
 
 -->
 
 ( calculator )
 
-: drop  ( -- )  $02 c,  ;
+: drop ( -- ) $02 c, ;
   \ Compile the `delete` ROM calculator command.
 
-: dup  ( -- )  $31 c,  ;
+: dup ( -- ) $31 c, ;
   \ Compile the `duplicate` ROM calculator command.
 
-: swap  ( -- )  $01 c,  ;
+: swap ( -- ) $01 c, ;
   \ Compile the `exchange` ROM calculator command.
 
-: >mem  ( n -- )  $C0 [ also forth ] + [ previous ] c,  ;
+: >mem ( n -- ) $C0 [ also forth ] + [ previous ] c, ;
   \ Compile the `st-mem` ROM calculator command for memory
   \ number _n_ (0..5). Note: The floating-point stack TOS is
   \ copied, not moved.
 
-: mem>  ( n -- )  $E0 [ also forth ] + [ previous ] c,  ;
+: mem> ( n -- ) $E0 [ also forth ] + [ previous ] c, ;
   \ Compile the `get-mem` ROM calculator command for memory
   \ number _n_ (0..5).
 
-: over  ( -- )
-  2 >mem drop 1 >mem 2 mem> 1 mem>  ;
+: over ( -- )
+  2 >mem drop 1 >mem 2 mem> 1 mem> ;
   \ Compile the ROM calculator commands to do `over`.
 
-: 2dup  ( -- )
-  2 >mem drop 1 >mem drop 1 mem> 2 mem>  1 mem> 2 mem>  ;
+: 2dup ( -- )
+  2 >mem drop 1 >mem drop 1 mem> 2 mem>  1 mem> 2 mem> ;
   \ Compile the ROM calculator commands to do `2dup`.
 
 -->
 
 ( calculator )
 
-: 0=  ( -- )  $30 c,  ;
+: 0= ( -- ) $30 c, ;
   \ Compile the `not` ROM calculator command.
 
-: 0<  ( -- )  $36 c,  ;
+: 0< ( -- ) $36 c, ;
   \ Compile the `less-0` ROM calculator command.
 
-: 0>  ( -- )  $37 c,  ;
+: 0> ( -- ) $37 c, ;
   \ Compile the `greater-0` ROM calculator command.
 
 -->
@@ -262,43 +262,43 @@ get-current  calculator-wordlist set-current
   \ string comparison. But in BASIC, at this point register B
   \ contains the command.
 
-: =  ( -- )  $0E c,  ;
+: = ( -- ) $0E c, ;
   \ Compile the `nos-eql` ROM calculator command.
 
-: <>  ( -- )  $0B c,  ;
+: <> ( -- ) $0B c, ;
   \ Compile the `nos-neql` ROM calculator command.
 
-: >  ( -- )  $0C c,  ;
+: > ( -- ) $0C c, ;
   \ Compile the `no-grtr` ROM calculator command.
 
-: <  ( -- )  $0D c,  ;
+: < ( -- ) $0D c, ;
   \ Compile the `no-less` ROM calculator command.
 
-: <=  ( -- )  $09 c,  ;
+: <= ( -- ) $09 c, ;
   \ Compile the `no-l-eql` ROM calculator command.
 
-: >=  ( -- )  $0A c,  ;
+: >= ( -- ) $0A c, ;
   \ Compile the `no-gr-eql` ROM calculator command.
 
 -->
 
 ( calculator )
 
-: ?branch  ( -- )  $00 c,  ;
+: ?branch ( -- ) $00 c, ;
   \ Compile the `jump-true` ROM calculator command.
 
-: 0branch  ( -- )  0= ?branch  ;
+: 0branch ( -- ) 0= ?branch ;
   \ Compile the ROM calculator commands to do a branch if
   \ the TOS of the calculator stack is zero.
 
-: branch  ( -- )  $33 c,  ;
+: branch ( -- ) $33 c, ;
   \ Compile the `jump` ROM calculator command.
 
 -->
 
 ( calculator )
 
-: >mark  ( -- a )  here 0 c,  ;
+: >mark ( -- a ) here 0 c, ;
 
   \ Compile space for the displacement of a ROM calculator
   \ forward branch which will later be resolved by
@@ -307,20 +307,20 @@ get-current  calculator-wordlist set-current
   \ Typically used after either `branch` or
   \ `?branch`.
 
-: from-here  ( a -- n )
+: from-here ( a -- n )
   here [ also forth ] swap - [ previous ] ;
   \ Calculate the displacement _n_ from the current data-space
   \ pointer to address _a_.
 
-: >resolve  ( a -- )
+: >resolve ( a -- )
   [ also forth ] dup [ previous ] from-here
-  [ also forth ] swap [ previous ] c!  ;
+  [ also forth ] swap [ previous ] c! ;
 
   \ Resolve a ROM calculator forward branch by placing the
   \ displacement to the current position into the space
   \ compiled by `>mark`.
 
-' here alias <mark  ( -- a )
+' here alias <mark ( -- a )
 
   \ Leave the address of the current data-space pointer as the
   \ destination of a ROM calculator backward branch which will
@@ -328,18 +328,18 @@ get-current  calculator-wordlist set-current
   \
   \ Typically used before either `branch` or `?branch`.
 
-: <resolve  ( a -- )  from-here c,  ;
+: <resolve ( a -- ) from-here c, ;
 
   \ Resolve a ROM calculator backward branch by compiling the
   \ displacement from the current position to address _a_,
   \ which was left by `<mark`.
 
-: if  ( -- a )  0branch >mark  ;
+: if ( -- a ) 0branch >mark ;
 
-: else  ( a1 -- a2 )
-  branch >mark [ also forth ] swap [ previous ] >resolve  ;
+: else ( a1 -- a2 )
+  branch >mark [ also forth ] swap [ previous ] >resolve ;
 
-' >resolve alias then  ( a -- )
+' >resolve alias then ( a -- )
 
 set-current  previous
   \ restore the current word list and the search order

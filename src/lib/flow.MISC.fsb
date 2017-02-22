@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171942
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,12 +57,12 @@
 
 ( +perform base-execute call don't executions )
 
-[unneeded] +perform  ( a n -- )
-?\ : +perform  ( a n -- )  cells + perform  ;
+[unneeded] +perform ( a n -- )
+?\ : +perform ( a n -- ) cells + perform ;
 
   \ doc{
   \
-  \ +perform  ( a n -- )
+  \ +perform ( a n -- )
   \
   \ Execute the execution token pointed by an offset of _n_
   \ cells from base address _a_, i.e., execute the contents of
@@ -75,7 +75,7 @@
   \ }doc
 
 [unneeded] base-execute
-?\ : base-execute  ( xt n -- )  base @ >r execute r> base !  ;
+?\ : base-execute ( xt n -- ) base @ >r execute r> base ! ;
 
   \ Credit:
   \
@@ -83,18 +83,18 @@
 
   \ doc{
   \
-  \ base-execute  ( xt n -- )
+  \ base-execute ( xt n -- )
   \
   \ Execute _xt_ with the content of `base` being _n_
   \ and restoring the original `base` afterwards.
   \
   \ }doc
 
-need ?(  [unneeded] call ?(
+need ?( [unneeded] call ?(
 
-code call  ( a -- )
+code call ( a -- )
   E1 c,  C5 c,  CD c, >mark  C1 c,  DD c, 21 c, next , jpnext,
-                      >resolve E9 c,  end-code ?)
+                      >resolve E9 c, end-code ?)
 
   \   pop hl
   \   push bc
@@ -107,7 +107,7 @@ code call  ( a -- )
 
   \ doc{
   \
-  \ call  ( a -- )
+  \ call ( a -- )
   \
   \ Call a machine code subroutine at _a_.
   \
@@ -115,12 +115,12 @@ code call  ( a -- )
 
 [unneeded] don't ?(
 
-: don't  ( n1 n2 -- | n1 n2 )
-  2dup = if  2drop unnest unnest  then  ; compile-only ?)
+: don't ( n1 n2 -- | n1 n2 )
+  2dup = if  2drop unnest unnest  then ; compile-only ?)
 
   \ doc{
   \
-  \ don't  ( n1 n2 -- | n1 n2 )
+  \ don't ( n1 n2 -- | n1 n2 )
   \
   \ If _n1_ equals _n2_, remove them and exit the definition
   \ that called `don't`, else leave the _n1_ and _n2_ on the
@@ -132,19 +132,19 @@ code call  ( a -- )
   \
   \ }doc
 
-[unneeded] executions ?(  need 2rdrop
+[unneeded] executions ?( need 2rdrop
 
   \ Credit:
   \
   \ Code from Galope (module times.fs).
 
-: executions  ( xt n -- )
+: executions ( xt n -- )
   2>r begin   2r@   while
-        2r> 1- 2>r execute  repeat  drop 2rdrop  ; ?)
+        2r> 1- 2>r execute  repeat  drop 2rdrop ; ?)
 
   \ doc{
   \
-  \ executions  ( xt n -- )
+  \ executions ( xt n -- )
   \
   \ Execute _xt_ _n_ times.
   \
@@ -154,11 +154,11 @@ code call  ( a -- )
 
 ( ?repeat recurse ?? )
 
-need ?(  [unneeded] ?repeat ?(  need cs-dup
+need ?( [unneeded] ?repeat ?( need cs-dup
 
-: ?repeat  ( Compilation: dest -- dest )
+: ?repeat ( Compilation: dest -- dest )
            ( Execution:   f -- )
-  cs-dup  postpone until  ; immediate ?)
+  cs-dup  postpone until ; immediate ?)
 
   \ Credit:
   \
@@ -173,7 +173,7 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
   \ doc{
   \
-  \ ?repeat  ( Compilation: dest -- dest )
+  \ ?repeat ( Compilation: dest -- dest )
   \          ( Execution:   f -- )
   \
   \ An alternative exit point for `begin until` loops.
@@ -181,7 +181,7 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
   \ Usage example:
   \
   \ ----
-  \ : xx  ( -- )
+  \ : xx ( -- )
   \     begin
   \       ...
   \     flag ?repeat  \ Go back to `begin` if flag is false
@@ -190,15 +190,15 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
   \       ...
   \     flag until    \ Go back to `begin` if flag is false
   \     ...
-  \   ;
+  \ ;
   \ ----
 
   \ }doc
 
 [unneeded] recurse ?(
 
-: recurse  ( -- )
-  latestxt compile,  ; immediate compile-only ?)
+: recurse ( -- )
+  latestxt compile, ; immediate compile-only ?)
 
   \ Old history:
   \
@@ -210,7 +210,7 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
   \ doc{
   \
-  \ recurse  ( -- )
+  \ recurse ( -- )
   \
   \ Append the execution semantics of the current definition to
   \ the current definition.
@@ -222,12 +222,12 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
 [unneeded] ?? ?(
 
-: ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+: ?? ( Compilation: "name" -- ) ( Runtime: f -- )
   postpone if
   defined ( nt | 0 ) ?dup 0= -13 ?throw
   name>immediate? ( xt f ) if  execute  else  compile,  then
   postpone then
-  ;  immediate compile-only ?)
+ ;  immediate compile-only ?)
 
   \ Credit:
   \
@@ -235,33 +235,33 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
   \ The original code was written two ways:
 
-  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
   \   s" if" evaluate  bl word count evaluate
   \   s" then" evaluate
-  \   ;  immediate
+  \ ;  immediate
 
-  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
   \   postpone if bl word count evaluate  postpone then
-  \   ;  immediate
+  \ ;  immediate
 
   \ XXX OLD -- This first version used `postpone` and
   \ `compile,` instead of `evaluate`.
 
-  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
   \   postpone if
   \   parse-name find-name 0= -13 ?throw compile,
   \   postpone then
-  \   ;  immediate
+  \ ;  immediate
 
   \ XXX OLD -- simpler:
 
-  \ : ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ : ?? ( Compilation: "name" -- ) ( Runtime: f -- )
   \  postpone if  ' compile,  postpone then
-  \  ;  immediate
+  \ ;  immediate
 
   \ XXX OLD -- even simpler:
 
-  \ : ??  ( f -- )  0= if  r> cell+ >r  then  ; compile-only
+  \ : ?? ( f -- ) 0= if  r> cell+ >r  then ; compile-only
 
   \ Final version, after a comment by Anton Ertl in
   \ comp.lang.forth, 2015-10-19:
@@ -272,14 +272,14 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
   \ XXX TODO -- 2016-11-26: It seems more useful the old
   \ version, extended as the rest of alternative conditionals:
   \
-  \ : ??   ( f -- )   0= if  r> cell+ >r  then  ; compile-only
-  \ : 0??  ( f -- )      if  r> cell+ >r  then  ; compile-only
-  \ : -??  ( f -- )  0>= if  r> cell+ >r  then  ; compile-only
-  \ : +??  ( f -- )   0< if  r> cell+ >r  then  ; compile-only
+  \ : ??   ( f -- )  0= if  r> cell+ >r  then ; compile-only
+  \ : 0?? ( f -- )     if  r> cell+ >r  then ; compile-only
+  \ : -?? ( f -- ) 0>= if  r> cell+ >r  then ; compile-only
+  \ : +?? ( f -- )  0< if  r> cell+ >r  then ; compile-only
 
   \ doc{
   \
-  \ ??  ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ ?? ( Compilation: "name" -- ) ( Runtime: f -- )
   \
   \ Compilation:
   \
@@ -314,29 +314,29 @@ need ?(  [unneeded] ?repeat ?(  need cs-dup
 
 need ?(
 
-[unneeded] retry ?(  need name>body
+[unneeded] retry ?( need name>body
 
-: retry  ( Compilation: -- ) ( Run-time: -- )
+: retry ( Compilation: -- ) ( Run-time: -- )
   latest name>body postpone again
-  ; immediate compile-only ?)
+ ; immediate compile-only ?)
 
   \ doc{
   \
-  \ retry  ( -- )
+  \ retry ( -- )
   \
   \ Do an unconditional branch to the start of the word.
   \
   \ }doc
 
-[unneeded] ?retry ?(  need retry
+[unneeded] ?retry ?( need retry
 
-: ?retry  ( Compilation: -- ) ( Run-time: f -- )
+: ?retry ( Compilation: -- ) ( Run-time: f -- )
   postpone if  postpone retry  postpone then
-  ; immediate compile-only ?)
+ ; immediate compile-only ?)
 
   \ doc{
   \
-  \ : ?retry  ( Compilation: -- ) ( Run-time: f -- )
+  \ : ?retry ( Compilation: -- ) ( Run-time: f -- )
   \
   \ Do a conditional branch to the start of the word.
   \
@@ -344,7 +344,7 @@ need ?(
 
 [unneeded] ?leave ?(
 
-code ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
+code ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   E1 c, 78 04 + c, B0 05 + c, C2 c, ' leave , jpnext,
   \ pop hl
   \ ld a,h
@@ -355,7 +355,7 @@ code ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
 
   \ doc{
   \
-  \ ?leave  ( f -- ) ( R: loop-sys -- | loop-sys )
+  \ ?leave ( f -- ) ( R: loop-sys -- | loop-sys )
   \
   \ If _f_ is non-zero, discard the loop-control parameters for
   \ the current nesting level and continue execution

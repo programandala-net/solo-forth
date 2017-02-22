@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701051956
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,29 +54,29 @@ variable hp
   \ The history pointer: Address of the free space in the
   \ history.
 
-: used-history  ( -- u )  hp0 @ hp @  -  ;
+: used-history ( -- u ) hp0 @ hp @  - ;
   \ Used space _u_ in the history.
 
-: unused-history  ( -- n )  /history @ used-history -  ;
+: unused-history ( -- n ) /history @ used-history - ;
   \ Unused space _n_ in the history.
 
-: allot-history  ( +n -- )  hp +!  ;
+: allot-history ( +n -- ) hp +! ;
   \ Reserve _+n_ bytes in the history.
 
-: len>history  ( len -- +n )  1+ cell+  ;
+: len>history ( len -- +n ) 1+ cell+ ;
   \ Convert a string length to space required to store it into
   \ the history.
 
-: history>link  ( ca -- a )  cell-  ;
+: history>link ( ca -- a ) cell- ;
   \ Convert a history string address to its link field.
 
-: history<history  ( ca1 -- ca2 )  history>link far@  ;
+: history<history ( ca1 -- ca2 ) history>link far@ ;
   \ Convert a history string address to the previous one.
 
-: history>history  ( ca1 -- ca2 )  farcount + cell+  ;
+: history>history ( ca1 -- ca2 ) farcount + cell+ ;
   \ Convert a history string address to the next one.
 
-: history>string  ( ca1 -- ca2 len2 )  farcount save-string  ;
+: history>string ( ca1 -- ca2 len2 ) farcount save-string ;
   \ Copy a history string to a string in the circular string
   \ buffer.
 
@@ -87,29 +87,29 @@ variable hp
 variable browsed-history
   \ Address of the history string being browsed.
 
-: oldest-history?  ( -- f )  browsed-history @ hp0 @ =  ;
+: oldest-history? ( -- f ) browsed-history @ hp0 @ = ;
   \ Are we browsing the oldest string of history?
 
-: browse-older-history  ( -- )
+: browse-older-history ( -- )
   oldest-history? ?exit
-  browsed-history @ history<history browsed-history !  ;
+  browsed-history @ history<history browsed-history ! ;
   \ Update the current history being browsed to the previous
   \ (older) one.
 
-: newest-history?  ( -- )
+: newest-history? ( -- )
   browsed-history @ history>history hp @ =
-  browsed-history @ hp @ =  or  ;
+  browsed-history @ hp @ =  or ;
   \ Are we browsing the newest string of history?
 
-: browse-newer-history  ( -- )
+: browse-newer-history ( -- )
   newest-history? ?exit
-  browsed-history @ history>history browsed-history !  ;
+  browsed-history @ history>history browsed-history ! ;
   \ Update the current history being browsed to the next
   \ (newer) one.
 
-: init-history  ( n -- )
+: init-history ( n -- )
   dup /history !  $FFFF swap -
-  dup hp0 !  dup hp !  browsed-history !  0 hp0 @ farc!  ;
+  dup hp0 !  dup hp !  browsed-history !  0 hp0 @ farc! ;
 
 1024 init-history  -->
 
@@ -117,14 +117,14 @@ variable browsed-history
 
 need str=
 
-: history-empty?  ( -- f )  used-history 0=  ;
+: history-empty? ( -- f ) used-history 0= ;
   \ Is the history empty?
 
-: allocate-history  ( len -- ior )
+: allocate-history ( len -- ior )
   1+ dup /history @ > if  drop #-274 exit  then
     \ command line history overflow?
   \ ." allocate-history" \ XXX INFORMER
-  0  ; \ XXX TMP
+  0 ; \ XXX TMP
   \ Allocate space in the history for a string _len_ bytes
   \ long.
   \ XXX TODO -- remove older strings if needed
@@ -133,30 +133,30 @@ need str=
 
 ( history )
 
-: latest-history$  ( -- ca len )
-  hp @ history<history history>string  ;
+: latest-history$ ( -- ca len )
+  hp @ history<history history>string ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
 
-: duplicated-history?  ( ca len -- f )  latest-history$ str=  ;
+: duplicated-history? ( ca len -- f ) latest-history$ str= ;
   \ Is string _ca len_ identical to the latest string in
   \ the command line history?
 
-: longer-history?  ( len -- f )
-  len>history unused-history >  ;
+: longer-history? ( len -- f )
+  len>history unused-history > ;
   \ Is _len_ too long?
 
-: history,  ( ca len -- )
-  hp @ dup >r  over >r  ( ca len ca1 ) ( R: len ca1 -- )
+: history, ( ca len -- )
+  hp @ dup >r  over >r ( ca len ca1 ) ( R: len ca1 -- )
   farplace
-  r> 1+ allot-history  r> hp @ far!  cell allot-history  ;
+  r> 1+ allot-history  r> hp @ far!  cell allot-history ;
   \ Add a string to the command line history.
 
-: (>history)  ( ca len -- )
+: (>history) ( ca len -- )
   dup 0= if  2drop exit  then
   2dup duplicated-history? if  2drop exit  then
   dup longer-history? if  dup allocate-history throw  then
-  history,  hp @ browsed-history !  ;
+  history,  hp @ browsed-history ! ;
   \ Save string _ca len_ into the command line history,
   \ provided the string is valid (not empty, not duplicated).
   \ Make room if necessary. Then update the pointer to the
@@ -166,17 +166,17 @@ need str=
 
 ( history )
 
-: browsed-history$  ( -- ca len )
-  browsed-history @ history>string  ;
+: browsed-history$ ( -- ca len )
+  browsed-history @ history>string ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
 
-: get-history   ( -- ca )  browsed-history$ set-accept  ;
+: get-history   ( -- ca ) browsed-history$ set-accept ;
 
 : (history-up)    ( -- ca )
-  get-history browse-older-history  ;
-: (history-down)  ( -- ca )
-  get-history browse-newer-history  ;
+  get-history browse-older-history ;
+: (history-down) ( -- ca )
+  get-history browse-newer-history ;
 
 -->
 
@@ -186,28 +186,28 @@ variable history
   \ A variable holding the current status of the command line
   \ history as a flag: on (true) or off (false).
 
-: history-off  ( -- )
+: history-off ( -- )
   ['] 2drop ['] >history defer!
   ['] 0 ['] history-up   defer!
-  ['] 0 ['] history-down defer!  history off  ;
+  ['] 0 ['] history-down defer!  history off ;
   \ Turn command line history off.
 
-: history-on  ( -- )
+: history-on ( -- )
   ['] (>history) ['] >history defer!
   ['] (history-up)   ['] history-up   defer!
-  ['] (history-down) ['] history-down defer!  history on  ;
+  ['] (history-down) ['] history-down defer!  history on ;
   \ Turn command line history on.
 
 -->
 
 ( history )
 
-: .history  ( -- )
+: .history ( -- )
   hp0 @ begin  dup hp @ u<  while
           dup history>string type cr  history>history
-        repeat  drop  ;
+        repeat  drop ;
 
-: .h  ( -- )  hp0 dup hp @ - fardump  ;
+: .h ( -- ) hp0 dup hp @ - fardump ;
 
 \ history-on
 
@@ -245,16 +245,16 @@ $FFFF constant hp0
 variable /history  1024 /history !
   \ Size of the history space, where all strings are hold.
 
-: init-hp0  ( -- )  0 hp0 farc!  ;
+: init-hp0 ( -- ) 0 hp0 farc! ;
 
-: history-bounds  ( -- ca1 ca2 )  hp0 hp @  ;
+: history-bounds ( -- ca1 ca2 ) hp0 hp @ ;
   \ Return bottom of history _a1_ and address of the latest
   \ string _ca2:
 
-: used-history  ( -- u )  history-bounds -  ;
+: used-history ( -- u ) history-bounds - ;
   \ Used space _u_ in the history.
 
-: unused-history  ( -- n )  /history @ used-history -  ;
+: unused-history ( -- n ) /history @ used-history - ;
   \ Unused space _n_ in the history.
 
 -->
@@ -267,21 +267,21 @@ variable previously-browsed-history
 variable currently-browsed-history
   \ Address of the history string being browsed.
 
-: older-history  ( -- )
+: older-history ( -- )
   currently-browsed-history @ dup previously-browsed-history !
-  farcount + currently-browsed-history !  ;
+  farcount + currently-browsed-history ! ;
   \ Update the current history being browsed to the previous
   \ (older) one.
 
-: newer-history  ( -- )
+: newer-history ( -- )
   currently-browsed-history @
   previously-browsed-history @ currently-browsed-history !
-  currently-browsed-history !  ;
+  currently-browsed-history ! ;
   \ Update the current history being browsed to the next
   \ (newer) one.
 
-: init-history  ( -- )
-  init-hp0  hp0 dup hp ! currently-browsed-history !  ;
+: init-history ( -- )
+  init-hp0  hp0 dup hp ! currently-browsed-history ! ;
 
 init-history  -->
 
@@ -289,50 +289,50 @@ init-history  -->
 
 need str=
 
-: allot-history  ( +n -- )  negate hp +!  ;
+: allot-history ( +n -- ) negate hp +! ;
   \ Reserve _+n_ bytes in the history.
 
-: history-empty?  ( -- f )  history-bounds =  ;
+: history-empty? ( -- f ) history-bounds = ;
   \ Is the history empty?
 
-: allocate-history  ( len -- ior )
+: allocate-history ( len -- ior )
   1+ dup /history @ > if  drop #-274 exit  then
     \ command line history overflow?
   \ ." allocate-history" \ XXX INFORMER
-  0  ; \ XXX TMP
+  0 ; \ XXX TMP
   \ Allocate space in the history for a string _len_ bytes
   \ long.
   \ XXX TODO -- remove older strings if needed
 
-: latest-history  ( -- ca len )
-  hp @ farcount  save-string  ;
+: latest-history ( -- ca len )
+  hp @ farcount  save-string ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
   \ XXX OLD
 
-: browsed-history  ( -- ca len )
+: browsed-history ( -- ca len )
   currently-browsed-history @
-  farcount save-string  ;
+  farcount save-string ;
   \ Return the latest string in the command line history,
   \ copied in the circular string buffer.
 
-: (history>)  ( -- ca len )
+: (history>) ( -- ca len )
   browsed-history  dup 0= ?exit
                    dup 1+ negate allot-history
-  history-empty? if  init-hp0  then  ;  -->
+  history-empty? if  init-hp0  then ;  -->
   \ Get a string from the command line history, and return it
   \ as _ca len_ in the circular string buffer.
   \ XXX TODO -- adapt the browser variables
 
 ( history-xxx-old )
 
-: duplicated-history?  ( ca len -- f )  latest-history str=  ;
+: duplicated-history? ( ca len -- f ) latest-history str= ;
   \ Is string _ca len_ identical to the latest string in
   \ the command line history?
 
-: too-long-for-history?  ( len -- f )  1+ unused-history > ;
+: too-long-for-history? ( len -- f ) 1+ unused-history > ;
 
-: (>history)  ( ca len -- )
+: (>history) ( ca len -- )
   dup 0= if  2drop exit  then
     \ If string is empty, do nothing.
   history-empty? if  dup hp0 farc!  then
@@ -343,42 +343,42 @@ need str=
   if  dup allocate-history throw  then
     \ If there's no space left, allocate it.
   dup 1+ allot-history
-  hp @ dup farplace currently-browsed-history !  ;
+  hp @ dup farplace currently-browsed-history ! ;
   \ Save string _ca len_ into the command line history.
 
 -->
 
 ( history-xxx-old )
 
-: get-history   ( -- ca )  browsed-history set-accept  ;
-: (history-up)    ( -- ca )  get-history older-history  ;
-: (history-down)  ( -- ca )  get-history newer-history  ;
+: get-history   ( -- ca ) browsed-history set-accept ;
+: (history-up)    ( -- ca ) get-history older-history ;
+: (history-down) ( -- ca ) get-history newer-history ;
 
 variable history
   \ A variable holding the current status of the command line
   \ history as a flag: on (true) or off (false).
 
-: history-off  ( -- )
+: history-off ( -- )
   \ XXX OLD
   \ ['] 2drop ['] >history defer!
-  \ ['] s""   ['] history> defer!  history off  ;
+  \ ['] s""   ['] history> defer!  history off ;
   \ XXX NEW
   ['] 0 ['] history-up   defer!
-  ['] 0 ['] history-down defer!  history off  ;
+  ['] 0 ['] history-down defer!  history off ;
   \ Turn command line history off.
 
-: history-on  ( -- )
+: history-on ( -- )
   \ XXX OLD
   \ ['] (>history) ['] >history defer!
-  \ ['] (history>) ['] history> defer!  history on  ;
+  \ ['] (history>) ['] history> defer!  history on ;
   \ XXX NEW
   ['] (history-up)   ['] history-up   defer!
-  ['] (history-down) ['] history-down defer!  history on  ;
+  ['] (history-down) ['] history-down defer!  history on ;
   \ Turn command line history on.
 
-: .history  ( -- )
+: .history ( -- )
   hp @  begin  dup hp0 <  while  farcount 2dup type cr +
-        repeat  drop  ;
+        repeat  drop ;
 
 \ history-on
 

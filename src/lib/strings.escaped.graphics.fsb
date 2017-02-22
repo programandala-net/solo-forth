@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171822
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,13 +42,13 @@
 
 get-current  forth-wordlist set-current
 
-need parse-esc-char>chars  need even?  need nextname
+need parse-esc-char>chars need even? need nextname
 
 variable first-esc-block-char  128 first-esc-block-char !
 
   \ doc{
   \
-  \ first-esc-block-char  ( -- a )
+  \ first-esc-block-char ( -- a )
   \
   \ A variable that holds the code of the first block graphic.
   \ Its default value is 128, like in the ZX Spectrum charset.
@@ -64,7 +64,7 @@ wordlist dup constant esc-block-chars-wordlist
 
   \ doc{
   \
-  \ esc-block-chars-wordlist  ( -- wid )
+  \ esc-block-chars-wordlist ( -- wid )
   \
   \ Identifier of the word list that contains the escaped block
   \ characters used by the BASin IDE and other ZX Spectrum
@@ -119,12 +119,12 @@ variable column  column off
   \ The block characters notation uses 2 colums, two characters.
   \ Only the first bit of this variable is checked.
 
-: left-column?  ( -- f )  column @ even?  1 column +!  ;
+: left-column? ( -- f ) column @ even?  1 column +! ;
   \ Is the left column of the block character notation being
   \ escaped? Update it for the next time.
 
-: >parsed-block-char  ( n1 n2 -- c 1 )
-  + first-esc-block-char @ + 1  ;
+: >parsed-block-char ( n1 n2 -- c 1 )
+  + first-esc-block-char @ + 1 ;
   \ Convert the values _n1 n2_ of the first and second
   \ columns of the block character notation to the actual
   \ character _c_ and its count _1_.
@@ -136,23 +136,23 @@ variable column  column off
 s"  " nextname
 :    ( "c" | n1 -- n1 | n2 1 )
   left-column? if    0 parse-esc-char>chars
-               else  0 >parsed-block-char  then  ;
+               else  0 >parsed-block-char  then ;
   \ Parse a column " " of a escaped block character.
   \ Note: The name of this word is a space.
 
-: '  ( "c" | n1 -- n1 | n2 1 )
+: ' ( "c" | n1 -- n1 | n2 1 )
   left-column? if    2 parse-esc-char>chars
-               else  1 >parsed-block-char then  ;
+               else  1 >parsed-block-char then ;
   \ Parse a column "'" of a escaped block character.
 
-: .  ( "c" | n1 -- n1 | n2 1 )
+: . ( "c" | n1 -- n1 | n2 1 )
   left-column? if    8 parse-esc-char>chars
-               else  4 >parsed-block-char  then  ;
+               else  4 >parsed-block-char  then ;
   \ Parse a column "," of a escaped block character.
 
-: :  ( "c" | n1 -- n1 | n2 1 )
+: : ( "c" | n1 -- n1 | n2 1 )
   left-column? if    10 parse-esc-char>chars
-               else   5 >parsed-block-char  then  ;
+               else   5 >parsed-block-char  then ;
   \ Parse a column ":" of a escaped block character.
 
 set-current previous
@@ -165,7 +165,7 @@ wordlist dup constant esc-udg-chars-wordlist set-current
 
   \ doc{
   \
-  \ esc-udg-chars-wordlist  ( -- wid )
+  \ esc-udg-chars-wordlist ( -- wid )
   \
   \ Identifier of the word list that contains the words whose
   \ names are the UDG characters ('A'..'U'), in upper case,

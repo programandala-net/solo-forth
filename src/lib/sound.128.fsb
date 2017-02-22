@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200011
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,7 +58,7 @@
 
   \ doc{
   \
-  \ /sound  ( -- b )
+  \ /sound ( -- b )
   \
   \ A character constant that returns 14, the number of
   \ registers used by the 128K sounds.
@@ -70,21 +70,21 @@
 need ?(
 
 [unneeded] sound-register-port
-[unneeded] sound-write-port and ?(  need const
+[unneeded] sound-write-port and ?( need const
 
 65533 const sound-register-port
-49149 const sound-write-port    ?)
+49149 const sound-write-port   ?)
 
 [unneeded] !sound ?(
 
-need !p  need sound-register-port  need sound-write-port 
+need !p need sound-register-port need sound-write-port
 
-: !sound  ( b1 b2 -- )
-  sound-register-port !p  sound-write-port  !p  ; ?)
+: !sound ( b1 b2 -- )
+  sound-register-port !p  sound-write-port  !p ; ?)
 
   \ doc{
   \
-  \ !sound  ( b1 b2 -- )
+  \ !sound ( b1 b2 -- )
   \
   \ Set sound register _b2_ (0...13) to value _b1_.
   \
@@ -101,20 +101,20 @@ need !p  need sound-register-port  need sound-write-port
   \ XXX TODO finish, document and test
 
 [unneeded] vol
-?\ need !sound  : vol  ( b1 b2 -- )  8 + !sound  ;
+?\ need !sound  : vol ( b1 b2 -- ) 8 + !sound ;
 
 [unneeded] shutup
-?\ need !sound  : shutup  ( -- )  -1 7 !sound  ;
+?\ need !sound  : shutup ( -- ) -1 7 !sound ;
   \ XXX FIXME -- sometimes part of the sound remains, e.g.
   \ with `waves`
 
 [unneeded] noise
-?\ need !sound  : noise  ( -- )  7 7 !sound  ;
+?\ need !sound  : noise ( -- ) 7 7 !sound ;
 
 ( music )
 
-need vocabulary need ms  need roll  need pick
-need !sound  need vol
+need vocabulary need ms need roll need pick
+need !sound need vol
 
 vocabulary music  get-current  also music definitions
 
@@ -126,17 +126,17 @@ vocabulary music  get-current  also music definitions
 
 : freq
   2* 109.375 3 roll  um/mod nip 256 /mod 2 pick
-  1+ !sound  swap !sound  ;
+  1+ !sound  swap !sound ;
 
 variable len  variable tempo  variable octave  variable volume
 
 2 len !  200 tempo !  8 octave !  15 volume ! 1 15 vol
 
-: tones  ( -- )  56 7 !sound  ;
+: tones ( -- ) 56 7 !sound ;
 
-: note  ( n "name" -- )
+: note ( n "name" -- )
   create  ,  does>   @ octave @ * 16 /  1 freq tones
-                     tempo @ len @ * ms shutup  ;
+                     tempo @ len @ * ms shutup ;
 
 523 note c  554 note c# 583 note d  622 note d#
 659 note e  698 note f  740 note f# 784 note g
@@ -150,12 +150,12 @@ variable len  variable tempo  variable octave  variable volume
 
   \ XXX TODO finish, document and test
 
-: l   ( n -- )  len !  ;
-: o+  ( -- )    octave @ 2 * octave !  ;
-: o-  ( -- )    octave @ 2 / octave !  ;
-: r   ( -- )    tempo @ len @ * ms  ;
-: >>  ( -- )    1 volume @ 1+ vol 1 volume +!  ;
-: <<  ( -- )    1 volume @ 1- vol -1 volume +!  ;
+: l  ( n -- ) len ! ;
+: o+ ( -- )   octave @ 2 * octave ! ;
+: o- ( -- )   octave @ 2 / octave ! ;
+: r  ( -- )   tempo @ len @ * ms ;
+: >> ( -- )   1 volume @ 1+ vol 1 volume +! ;
+: << ( -- )   1 volume @ 1- vol -1 volume +! ;
 
 set-current previous
 
@@ -172,14 +172,14 @@ set-current previous
 
 need ?(
 
-[unneeded] play ?(  need /sound  need !sound
+[unneeded] play ?( need /sound need !sound
 
-: play  ( ca -- )
-  /sound 0 ?do  dup c@ i !sound 1+  loop  drop  ; ?)
+: play ( ca -- )
+  /sound 0 ?do  dup c@ i !sound 1+  loop  drop ; ?)
 
   \ doc{
   \
-  \ play  ( ca -- )
+  \ play ( ca -- )
   \
   \ Play a 14-byte sound definition stored at _ca_.
   \
@@ -187,14 +187,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] sound, ?(  need /sound
+[unneeded] sound, ?( need /sound
 
-: sound,  ( b[0]..b[13] -- )
-  here /sound allot here 1- ?do  i c!  -1 +loop  ; ?)
+: sound, ( b[0]..b[13] -- )
+  here /sound allot here 1- ?do  i c!  -1 +loop ; ?)
 
   \ doc{
   \
-  \ sound,  ( b[0]..b[13] -- )
+  \ sound, ( b[0]..b[13] -- )
   \
   \ Compile the 14-byte sound definition _b[0]..b[13]_.
   \
@@ -202,14 +202,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] sound ?(  need sound,  need play
+[unneeded] sound ?( need sound, need play
 
-: sound  ( b[0]..b[13] "name" -- )
-  create  sound,  does>  ( -- )  ( pfa )  play  ; ?)
+: sound ( b[0]..b[13] "name" -- )
+  create  sound,  does> ( -- ) ( pfa ) play ; ?)
 
   \ doc{
   \
-  \ sound  ( b[0]..b[13] "name" -- )
+  \ sound ( b[0]..b[13] "name" -- )
   \
   \ Create a word _name_ that will play the 14-byte sound
   \ defined by _b[0]..b[13]_.
@@ -224,17 +224,17 @@ need ?(
   \ XXX TMP --
   \ XXX TODO -- rename to `fast-play`.
 
-need !p  need c@+
-need sound-register-port  need sound-write-port  need /sound
+need !p need c@+
+need sound-register-port need sound-write-port need /sound
 
-: fplay  ( ca -- )
+: fplay ( ca -- )
   /sound 0 ?do
     i sound-register-port !p  c@+ sound-write-port !p
-  loop  drop  ;
+  loop  drop ;
 
   \ doc{
   \
-  \ fplay  ( ca -- )
+  \ fplay ( ca -- )
   \
   \ Play a sound whose 14 bytes are stored at _ca_.
   \ This word is a faster version of `play`.
@@ -250,9 +250,9 @@ need sound-register-port  need sound-write-port  need /sound
 
 need assembler
 
-need sound-register-port  need sound-write-port  need /sound
+need sound-register-port need sound-write-port need /sound
 
-code zplay  ( a -- )
+code zplay ( a -- )
   h pop, b push,
   /sound b ld#, 00 e ld#,
     \ B = loop counter
@@ -264,7 +264,7 @@ code zplay  ( a -- )
             \ store the datum
           hl incp, e inc, b pop, \ next
   rstep
-  b pop, jpnext,  end-code
+  b pop, jpnext, end-code
   \ Play a sound whose 14 bytes are stored at _a_.
   \ XXX FIXME -- no sound! maybe `outbc` has a bug in the
   \ assembler

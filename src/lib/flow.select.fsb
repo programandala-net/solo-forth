@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701231427
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,7 +47,7 @@
 
   \ Syntax
 
-  \ select  ( x0 )
+  \ select ( x0 )
   \    cond  <tests>  when    ... else
   \          <test>   if drop ... else
   \    ...   ( default )
@@ -57,8 +57,8 @@
 
   \ <tests> may consist of one or more of the following:
 
-  \  x1    equal  ( test if x0 and x1 are equal )
-  \  x1 x2 range  ( test if x0 is in the range x1..x2 )
+  \  x1    equal ( test if x0 and x1 are equal )
+  \  x1 x2 range ( test if x0 is in the range x1..x2 )
 
   \ <test> can be any code that leaves x0 and a flag (0|<>0).
   \ 'if drop ... else' is for expansion, allowing user-defined
@@ -80,38 +80,38 @@
   \ XXX NOTE: A version of `thens` is in the kernel of
   \ DZX-Forth.
 
-: thens  begin  ?dup while  postpone then  repeat  ;
+: thens  begin  ?dup while  postpone then  repeat ;
   \ ( 0 a'1 ... a'n -- )
   \ Compile the pending `then`.
   \ XXX TODO -- probably, common factor with `endcase`
 
-: endselect  postpone drop  thens  ; immediate
+: endselect  postpone drop  thens ; immediate
   \ ( Compilation: 0 a'1 ... a'n -- ) ( Run-time: x0 -- )
 
 : when
   \ ( Compilation: 0 orig1..orign -- )
   \ ( Run-time: xxx )
   postpone else  >r >r >r  thens  r> r> r>  postpone drop
-  ; immediate
+ ; immediate
   \ XXX TODO stack
 
 : continue
   \ ( Compilation: xxx )
   \ ( Run-time: xxx )
-  >r >r >r thens  0  r> r> r>  ; immediate
+  >r >r >r thens  0  r> r> r> ; immediate
   \ XXX TODO stack
 
 : equal
   \ ( Compilation: -- orig )
   \ ( Run-time: x0 x1 -- )
-  postpone over  postpone -  postpone if  ; immediate
+  postpone over  postpone -  postpone if ; immediate
 
-: (range)  ( x0 x1 x2 -- x0 f )
-  2>r dup 2r> over - -rot - u<  ;
+: (range) ( x0 x1 x2 -- x0 f )
+  2>r dup 2r> over - -rot - u< ;
 
 : range
   \ ( Compilation: -- orig )
   \ ( Run-time: x0 x1 x2 -- x0 f )
-  postpone (range)  postpone if  ; immediate  -->
+  postpone (range)  postpone if ; immediate  -->
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201608021654
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,15 +51,15 @@
 
 ( value to 2value 2to cvalue cto )
 
-need alias  need ?(
+need alias need ?(
 
 [unneeded] value [unneeded] to and ?(
 
-' constant alias value  ( x "name"  -- )
+' constant alias value ( x "name"  -- )
 
   \ doc{
   \
-  \ value  ( x "name" -- )
+  \ value ( x "name" -- )
   \
   \ Create a definition "name" with the following execution
   \ semantics: place _x_ on the stack.
@@ -95,11 +95,11 @@ need !>  ' !> alias to immediate ?)
 
 [unneeded] 2value [unneeded] 2to and ?(
 
-' 2constant alias 2value  ( xd "name"  -- )
+' 2constant alias 2value ( xd "name"  -- )
 
   \ doc{
   \
-  \ 2value  ( xd "name" -- )
+  \ 2value ( xd "name" -- )
   \
   \ Create a definition "name" with the following execution
   \ semantics: place _xd_ on the stack.
@@ -138,11 +138,11 @@ need 2!>  ' 2!> alias 2to immediate ?)
 
 [unneeded] cvalue [unneeded] cto and ?(
 
-need cconstant ' cconstant alias cvalue  ( c "name"  -- )
+need cconstant ' cconstant alias cvalue ( c "name"  -- )
 
   \ doc{
   \
-  \ cvalue  ( c "name" -- )
+  \ cvalue ( c "name" -- )
   \
   \ Create a definition "name" with the following execution
   \ semantics: place _c_ on the stack.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701061838
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,22 +27,22 @@
   \ need f0 need .fs
   \ need f>s
   \ need ftuck
-  \ need fmax  need fmin
+  \ need fmax need fmin
   \ need --fp-rom--
   \ f1 f0 fpi2/ f1 f1
-  \ need f=  need f<
+  \ need f= need f<
   \ f1 f0 f1 f0 f1 f0
   \ 100 s>f  200 s>f  300 s>f
 
   \ XXX TMP -- to debug the G+DOS support:
 
-  \ need plusd-in  need plusd-in,
+  \ need plusd-in need plusd-in,
 
   \ XXX TMP -- to debug the tape support:
 
   \ need write-tape-file
-  \ : savescr 16384 6912 s" screen" write-tape-file  ;
-  \ : savetxt s" TEXT" s" txt" write-tape-file  ;
+  \ : savescr 16384 6912 s" screen" write-tape-file ;
+  \ : savetxt s" TEXT" s" txt" write-tape-file ;
   \ hex  ' (write-tape-file) u.
 
   \ XXX TMP --
@@ -51,8 +51,8 @@
 
   \ XXX TMP --
 
-  \ need wordlist-words  need order
-  \ need bench{  need indexer
-  \ : iw  ( -- )  index-wordlist wordlist-words  ;
+  \ need wordlist-words need order
+  \ need bench{ need indexer
+  \ : iw ( -- ) index-wordlist wordlist-words ;
 
   \ vim: filetype=soloforth

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201701061846
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,31 +56,31 @@
   \ | +4 | _nt|0_, word list name pointer, or zero
   \ |===
 
-: wordlists,  ( -- )
+: wordlists, ( -- )
   latest-wordlist @ begin
-    dup cell- @  ( a nt ) , @
-  ?dup 0= until  ;
+    dup cell- @ ( a nt ) , @
+  ?dup 0= until ;
   \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
   \
-  \ wordlists,  ( -- )
+  \ wordlists, ( -- )
   \
   \ Store the latest definition of every word list in the data
   \ space.
   \
   \ }doc
 
-: @wordlists  ( a -- )
+: @wordlists ( a -- )
   latest-wordlist @ begin
     2dup  swap @ swap cell- !
     swap cell+ swap  @
-  ?dup 0= until  drop  ;
+  ?dup 0= until  drop ;
   \ XXX TODO -- adapt to `latest-wordlist`
 
   \ doc{
   \
-  \ @wordlists  ( a -- )
+  \ @wordlists ( a -- )
   \
   \ Fetch the latest definition of every word list from _a_.
   \
@@ -95,20 +95,20 @@
   \ Code partly inspired by m3forth's `marker`:
   \ https://github.com/oco2000/m3forth/blob/master/lib/include/core-ext.f
 
-need get-order  need @cell+  need nn,  need nn@  need there
+need get-order need @cell+ need nn, need nn@ need there
 
-: @order  ( a -- )  nn@ set-order  ;
+: @order ( a -- ) nn@ set-order ;
 
-: unmarker  ( a -- )
+: unmarker ( a -- )
   dup there
   @cell+ hp!  @cell+ last !  @cell+ lastxt !
   @cell+ latest-wordlist !
   @cell+ set-current
-  dup dup @ 1+ cells + >r  @order  r> @wordlists  ;
+  dup dup @ 1+ cells + >r  @order  r> @wordlists ;
 
   \ doc{
   \
-  \ unmarker  ( a -- )
+  \ unmarker ( a -- )
   \
   \ Set the data-space pointer to _a_ and restore the names
   \ pointer, the latest definition pointers, the word lists
@@ -120,15 +120,15 @@ need get-order  need @cell+  need nn,  need nn@  need there
   \
   \ }doc
 
-: order,  ( -- )  get-order nn,  ;
+: order, ( -- ) get-order nn, ;
 
-: marker,  ( -- a )
+: marker, ( -- a )
   here  hp@ ,  last @ ,  lastxt @ ,  latest-wordlist @ ,
-        get-current ,  order,  wordlists,  ;
+        get-current ,  order,  wordlists, ;
 
   \ doc{
   \
-  \ marker,  ( -- a )
+  \ marker, ( -- a )
   \
   \ Store the names pointer, the latest definition pointers,
   \ the word lists pointer, the current compilation word list,
@@ -142,12 +142,12 @@ need get-order  need @cell+  need nn,  need nn@  need there
   \
   \ }doc
 
-: marker  ( "name" -- )
-  marker, create ,  does>  ( -- )  ( pfa ) @ unmarker  ;
+: marker ( "name" -- )
+  marker, create ,  does> ( -- ) ( pfa ) @ unmarker ;
 
   \ doc{
   \
-  \ marker  ( "name" -- )
+  \ marker ( "name" -- )
   \
   \ Create a definition "name". When "name" is executed, it
   \ will restore the data-space pointer, the word lists
@@ -161,7 +161,7 @@ need get-order  need @cell+  need nn,  need nn@  need there
 
 ( anew )
 
-need possibly  need marker
+need possibly need marker
 
   \ Credit:
   \
@@ -171,6 +171,6 @@ need possibly  need marker
   \ XXX TODO -- use `save-input` and `restore-source` when
   \ possible
 
-: anew  ( "name" -- )  >in @  possibly  >in !  marker  ;
+: anew ( "name" -- ) >in @  possibly  >in !  marker ;
 
   \ vim: filetype=soloforth

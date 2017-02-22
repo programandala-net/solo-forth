@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT -- not usable yet
 
-  \ Last modified: 201702211050
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,14 +53,14 @@
 
 only forth definitions
 
-need common-indexer  need get-order  need set-order
-need bit-array  need catch  need use-default-need
+need common-indexer need get-order need set-order
+need bit-array need catch need use-default-need
 
 blk/disk bit-array indexed-blocks
 
   \ doc{
   \
-  \ indexed-blocks  ( -- ca )
+  \ indexed-blocks ( -- ca )
   \
   \ Bit array to mark the indexed blocks
   \
@@ -68,11 +68,11 @@ blk/disk bit-array indexed-blocks
   \
   \ }doc
 
-: indexed-block?  ( block -- f )  indexed-blocks @bit  ;
+: indexed-block? ( block -- f ) indexed-blocks @bit ;
 
   \ doc{
   \
-  \ indexed-block?  ( block -- f )
+  \ indexed-block? ( block -- f )
   \
   \ Is block _block_ indexed?
   \
@@ -80,11 +80,11 @@ blk/disk bit-array indexed-blocks
   \
   \ }doc
 
-: block-indexed  ( block -- )  indexed-blocks !bit  ;
+: block-indexed ( block -- ) indexed-blocks !bit ;
 
   \ doc{
   \
-  \ block-indexed  ( block -- )
+  \ block-indexed ( block -- )
   \
   \ Mark block _block_ as indexed.
   \
@@ -96,17 +96,17 @@ blk/disk bit-array indexed-blocks
 
 ( use-fly-index )
 
-: index-block  ( block -- )
+: index-block ( block -- )
   get-current get-order set-index-order
   ['] (index-block) catch  dup #-278 <> swap ?throw
-  set-order set-current block-indexed  ;
+  set-order set-current block-indexed ;
   \ Index block _block_.
 
   \ XXX TODO -- #-278 \ empty block found: quit indexing
 
   \ doc{
   \
-  \ index-block  ( block -- )
+  \ index-block ( block -- )
   \
   \ Index block _block_.
   \
@@ -114,12 +114,12 @@ blk/disk bit-array indexed-blocks
   \
   \ }doc
 
-: ?index-block  ( block -- ) ~~
-  dup indexed-block? if  drop exit  then  index-block  ;
+: ?index-block ( block -- ) ~~
+  dup indexed-block? if  drop exit  then  index-block ;
 
   \ doc{
   \
-  \ ?index-block  ( block -- )
+  \ ?index-block ( block -- )
   \
   \ Index block _block_, if not done before.
   \
@@ -127,13 +127,13 @@ blk/disk bit-array indexed-blocks
   \
   \ }doc
 
-: fly-located  ( ca len -- block | false ) ~~
+: fly-located ( ca len -- block | false ) ~~
   2dup indexed-name? if  ~~ nip nip load exit
-  then  ~~ (located)  ;
+  then  ~~ (located) ;
 
   \ doc{
   \
-  \ fly-located  ( ca len -- block | 0 )
+  \ fly-located ( ca len -- block | 0 )
   \
   \ Locate the first block whose header contains the string _ca
   \ len_ (surrounded by spaces), and return its number. If not
@@ -144,14 +144,14 @@ blk/disk bit-array indexed-blocks
   \
   \ }doc
 
-: use-fly-index  ( -- )
+: use-fly-index ( -- )
   use-default-need
   ['] fly-located     ['] located   defer!
-  ['] ?index-block    ['] unlocated defer!  ;
+  ['] ?index-block    ['] unlocated defer! ;
 
   \ doc{
   \
-  \ use-fly-index  ( -- )
+  \ use-fly-index ( -- )
   \
   \ Set the alternative action of `need`, `needed`, `reneed`,
   \ `reneeded`, `located` and `unlocated` in order to use the

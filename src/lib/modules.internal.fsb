@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171903
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,13 +68,13 @@
 
 need ?(
 
-[unneeded] internal [unneeded] end-internal and ?(  need alias
+[unneeded] internal [unneeded] end-internal and ?( need alias
 
-' current-latest alias internal  ( -- nt )
+' current-latest alias internal ( -- nt )
 
   \ doc{
   \
-  \ internal  ( -- nt )
+  \ internal ( -- nt )
   \
   \ Start internal (private) definitions of a module.
   \
@@ -85,11 +85,11 @@ need ?(
   \
   \ }doc
 
-' hp@ alias end-internal  ( -- a ) ?)
+' hp@ alias end-internal ( -- a ) ?)
 
   \ doc{
   \
-  \ end-internal  ( -- a )
+  \ end-internal ( -- a )
   \
   \ End internal (private) definitions.
   \
@@ -101,16 +101,16 @@ need ?(
   \
   \ }doc
 
-[unneeded] unlink-internal ?(  need internal  need >>link
+[unneeded] unlink-internal ?( need internal need >>link
 
-: unlink-internal  ( nt xtp -- )  >>link far!  ; ?)
+: unlink-internal ( nt xtp -- ) >>link far! ; ?)
 
   \ XXX TODO -- `>>link far!` is used also in
   \ `forget-transient`; reuse it
 
   \ doc{
   \
-  \ unlink-internal  ( nt xtp -- )
+  \ unlink-internal ( nt xtp -- )
   \
   \ Unlink all words defined between the latest pair `internal`
   \ and `end-external`, linking the first word after
@@ -122,11 +122,11 @@ need ?(
   \ ----
   \ internal
   \
-  \ : hello  ( -- )  ." hello"  ;
+  \ : hello ( -- ) ." hello" ;
   \
-  \ end-internal 
+  \ end-internal
   \
-  \ : salute  ( -- )  hello  ;
+  \ : salute ( -- ) hello ;
   \
   \ unlink-internal
   \
@@ -145,16 +145,16 @@ need ?(
 
 [unneeded] hide-internal ?(
 
-need internal  need name<name  need >>name
+need internal need name<name need >>name
 
-: hide-internal  ( nt xtp -- )
-  >>name name<name  ( nt1 nt2 ) begin   2dup swap u>
-                                while   dup hidden name<name
-                                repeat  2drop  ; ?)
+: hide-internal ( nt xtp -- )
+  >>name name<name ( nt1 nt2 ) begin   2dup swap u>
+                               while   dup hidden name<name
+                               repeat  2drop ; ?)
 
   \ doc{
   \
-  \ hide-internal  ( nt xtp -- )
+  \ hide-internal ( nt xtp -- )
   \
   \ Hide all words defined between the latest pair `internal`
   \ and `end-external`, setting the smudge bit of their
@@ -165,11 +165,11 @@ need internal  need name<name  need >>name
   \ ----
   \ internal
   \
-  \ : hello  ( -- )  ." hello"  ;
+  \ : hello ( -- ) ." hello" ;
   \
-  \ end-internal 
+  \ end-internal
   \
-  \ : salute  ( -- )  hello  ;
+  \ : salute ( -- ) hello ;
   \
   \ hide-internal
   \
@@ -181,7 +181,7 @@ need internal  need name<name  need >>name
   \ and `hide-internal`.
   \
   \ The alternative word `unlink-internal` uses a different,
-  \ simpler method: it unlinks the internal words form the
+  \ simpler method: it unlinks the internal words from the
   \ dictionary.
   \
   \ The `privatize` tool, available in its own library module,

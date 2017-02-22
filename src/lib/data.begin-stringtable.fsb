@@ -29,28 +29,28 @@
   \ Code adapted from Forth Foundation Library (stt module).
   \ XXX TODO Published under LGPL ?
 
-: begin-stringtable  ( "name" -- stringtable-sys )
+: begin-stringtable ( "name" -- stringtable-sys )
   \ Start a named stringtable definition.
-  create  here ( a1 ) cell allot here  ( a1 a2 )
+  create  here ( a1 ) cell allot here ( a1 a2 )
     \ stringtable-sys:
     \   a1 = pointer (address of address) to the strings index
     \   a2 = address of the compiled strings
   does> ( n -- ca len )
     \ Return the nth string.
-    ( n pfa )  @ swap cells + @ count  ;
+    ( n pfa ) @ swap cells + @ count ;
 
-: end-stringtable  ( stringtable-sys -- )
+: end-stringtable ( stringtable-sys -- )
   \ End the stringtable definition.
   \ stringtable-sys:
   \   a1 = pointer (address of address) to the strings index
   \   a2 = address of the compiled strings
   ( a1 a2 )
   here rot !   \ set the index
-  here swap  ( a3 a2 )
+  here swap ( a3 a2 )
   begin  2dup <>  while
     dup ,   \ store the start of the string in the index
     count chars +  \ move to the next string
-  repeat  2drop  ;
+  repeat  2drop ;
 
   \ Usage example:
   \

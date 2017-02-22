@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171817
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,12 +36,12 @@
 
 need (substitution
 
-: xt-substitution  ( ca len -- a )
-  (substitution  cell allot does> ( pfa ) perform  ; ?)
+: xt-substitution ( ca len -- a )
+  (substitution  cell allot does> ( pfa ) perform ; ?)
 
   \ doc{
   \
-  \ xt-substitution  ( ca len -- a )
+  \ xt-substitution ( ca len -- a )
   \
   \ Given a string _ca len_ create its substitution and
   \ storage space.  Return the address that will hold the
@@ -53,17 +53,17 @@ need (substitution
 
 [unneeded] xt-replaces ?(
 
-need find-substitution  need reuse-substitution
+need find-substitution need reuse-substitution
 need xt-substitution
 
-: xt-replaces  ( xt ca len -- )
+: xt-replaces ( xt ca len -- )
   2dup find-substitution if    reuse-substitution
                          else  xt-substitution
-                         then  !  ; ?)
+                         then  ! ; ?)
 
   \ doc{
   \
-  \ xt-replaces  ( xt ca len -- )
+  \ xt-replaces ( xt ca len -- )
   \
   \ Set _xt_ (whose execution returns the address and length of
   \ a string) as the text to substitute for the substitution

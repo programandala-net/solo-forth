@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171532
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,22 +65,22 @@
 ( ?compiling ?executing abort" warning" )
 
 [unneeded] ?compiling
-?\ : ?compiling  ( -- )  compiling? 0= -14 ?throw  ;
+?\ : ?compiling ( -- ) compiling? 0= -14 ?throw ;
 
   \ doc{
   \
-  \ ?compiling  ( -- )
+  \ ?compiling ( -- )
   \
   \ Throw exception #-14 if not compiling.
   \
   \ }doc
 
 [unneeded] ?executing
-?\ : ?executing  ( -- )  compiling? -263 ?throw  ;
+?\ : ?executing ( -- ) compiling? -263 ?throw ;
 
   \ doc{
   \
-  \ ?executing  ( -- )
+  \ ?executing ( -- )
   \
   \ Throw exception #-263 if not executing.
   \
@@ -90,7 +90,7 @@
   \
   \ The code of `warning"` was adapted from pForth and modified.
 
-need ?(  [unneeded] abort" ?(
+need ?( [unneeded] abort" ?(
 
   \ Credit:
   \
@@ -98,16 +98,16 @@ need ?(  [unneeded] abort" ?(
 
 [defined] abort-message ?\ 2variable abort-message
 
-: (abort")  ( n -- )
-  r> count rot if  abort-message 2! -2 throw  then + >r  ;
+: (abort") ( n -- )
+  r> count rot if  abort-message 2! -2 throw  then + >r ;
 
-: abort"  ( Compilation: "ccc<quote>" -- )
-  postpone (abort") ,"  ; immediate compile-only  ?)
+: abort" ( Compilation: "ccc<quote>" -- )
+  postpone (abort") ," ; immediate compile-only ?)
 
-[unneeded] warning?( ?(  need string-parameter
+[unneeded] warning?( ?( need string-parameter
 
-: (warning")  ( f -- )
-  string-parameter rot if  type  else  2drop  then  ;
+: (warning") ( f -- )
+  string-parameter rot if  type  else  2drop  then ;
 
   \ doc{
   \
@@ -120,7 +120,7 @@ need ?(  [unneeded] abort" ?(
 
 : warning"  \ Compilation: ( "ccc<quote>" -- )
             \ Execution:   ( f -- )
-  postpone (warning") ,"  ; immediate compile-only ?)
+  postpone (warning") ," ; immediate compile-only ?)
 
   \ doc{
   \
@@ -139,10 +139,10 @@ need ?(  [unneeded] abort" ?(
 
 ( error>ordinal error>line errors-block .throw-message )
 
-: error>ordinal  ( -n1 -- +n2 )
+: error>ordinal ( -n1 -- +n2 )
   abs dup 256 < ?exit  \ standard
       dup 1000 < if  [ 256 91 - ] literal - exit  then  \
-      [ 1000 300 - 256 91 - + ] literal -   ;
+      [ 1000 300 - 256 91 - + ] literal - ;
   \ Legend:
   \   -90 = lowest error defined
   \         in the standard range (-255..-1)
@@ -154,7 +154,7 @@ need ?(  [unneeded] abort" ?(
 
   \ doc{
   \
-  \ error>ordinal  ( -n1 -- +n2 )
+  \ error>ordinal ( -n1 -- +n2 )
   \
   \ Convert an error code _n1_ to its ordinal position _+n2_ in
   \ the library.
@@ -168,13 +168,13 @@ need ?(  [unneeded] abort" ?(
 
   \ }doc
 
-: error>line  ( -n1 -- n2 )
+: error>line ( -n1 -- n2 )
   error>ordinal dup >r
-  begin  dup dup l/scr / - r@ <>  while  1+  repeat  rdrop  ;
+  begin  dup dup l/scr / - r@ <>  while  1+  repeat  rdrop ;
 
   \ doc{
   \
-  \ error>line  ( -n1 -- n2 )
+  \ error>line ( -n1 -- n2 )
   \
   \ Convert error code _-n1_ to line _n2_ relative to the block
   \ that contains the error messages.
@@ -188,23 +188,23 @@ s" Standard error codes" located errors-block !
 
   \ doc{
   \
-  \ errors-block  ( -- a )
+  \ errors-block ( -- a )
   \
   \ Variable that contains the block that holds the error
   \ messages.
   \
   \ }doc
 
-: .throw-message  ( n -- )
+: .throw-message ( n -- )
   errors-block @
   if    cr error>line errors-block @ .line space
-  else  .throw#  then  ;
+  else  .throw#  then ;
 
 ' .throw-message ' .throw defer!
 
   \ doc{
   \
-  \ .throw-message  ( n -- )
+  \ .throw-message ( n -- )
   \
   \ Extended action of the deferred word `.throw`: Print the
   \ text of throw error _n_.  The variable
@@ -216,14 +216,14 @@ s" Standard error codes" located errors-block !
 
 ( catch )
 
-: catch  ( xt -- exception# | 0 )
-  sp@ >r          ( xt )  \ save data stack pointer
-  catcher @ >r    ( xt )  \ save previous catcher
-  rp@ catcher !   ( xt )  \ set current catcher
-  execute         ( )     \ `execute` returns if no `throw`
-  r> catcher !    ( )     \ restore previous catcher
-  r> drop         ( )     \ discard saved stack pointer
-  0  ;            ( 0 )   \ normal completion, no error
+: catch ( xt -- exception# | 0 )
+  sp@ >r          ( xt ) \ save data stack pointer
+  catcher @ >r    ( xt ) \ save previous catcher
+  rp@ catcher !   ( xt ) \ set current catcher
+  execute         ( )    \ `execute` returns if no `throw`
+  r> catcher !    ( )    \ restore previous catcher
+  r> drop         ( )    \ discard saved stack pointer
+  0 ;            ( 0 )  \ normal completion, no error
 
   \ Credit:
   \
@@ -232,7 +232,7 @@ s" Standard error codes" located errors-block !
 
   \ doc{
   \
-  \ catch  ( xt -- 0 | err# )
+  \ catch ( xt -- 0 | err# )
   \
   \ Push an exception frame on the exception stack and then
   \ execute _xt_ (as with `execute`) in such a way that control

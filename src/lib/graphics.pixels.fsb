@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702201923
+  \ Last modified: 201702221333
 
   \ -----------------------------------------------------------
   \ Description
@@ -81,14 +81,14 @@
 
 \ (pixel-addr) slow-(pixel-addr) fast-(pixel-addr) \
 
-need ?(  [unneeded] (pixel-addr)
+need ?( [unneeded] (pixel-addr)
          [unneeded] slow-(pixel-addr) and ?(
 
-defer (pixel-addr)  ( -- a )
+defer (pixel-addr) ( -- a )
 
   \ doc{
   \
-  \ (pixel-addr)  ( -- a )
+  \ (pixel-addr) ( -- a )
   \
   \ A deferred word that executes `fast-(pixel-addr)` or, by
   \ default, `slow-(pixel-addr)`:  Return address _a_ of an
@@ -99,7 +99,7 @@ defer (pixel-addr)  ( -- a )
   \
   \ }doc
 
-create slow-(pixel-addr)  ( -- a )  asm
+create slow-(pixel-addr) ( -- a ) asm
   3E c, BF c, 90 00 + c, C3 c, 22B0 , end-asm
   \ ld a,191 ; max Y coordinate
   \ sub b
@@ -109,7 +109,7 @@ create slow-(pixel-addr)  ( -- a )  asm
 
   \ doc{
   \
-  \ slow-(pixel-addr)  ( -- a )
+  \ slow-(pixel-addr) ( -- a )
   \
   \ Return address _a_ of an alternative entry point to the
   \ PIXEL-ADD ROM routine ($22AA), to let the range of the y
@@ -123,16 +123,16 @@ create slow-(pixel-addr)  ( -- a )  asm
   \ other word that needs `(pixel-addr)`.
   \
   \ Input registers:
-  
+
   \ - C = x cordinate (0..255)
   \ - B = y coordinate (0..191)
-  
+
   \ Output registers:
-  
+
   \ - HL = address of the pixel byte in the screen bitmap
   \ - A = position of the pixel in the byte address (0..7),
   \       note: position 0=bit 7, position 7=bit 0.
-  
+
   \ See also: `(pixel-addr176)`.
   \
   \ }doc
@@ -141,7 +141,7 @@ create slow-(pixel-addr)  ( -- a )  asm
 
 need (pixel-addr) need assembler
 
-create fast-(pixel-addr)  ( -- a )  asm
+create fast-(pixel-addr) ( -- a ) asm
 
   #191 a ld#, b sub,  a b ld, rra, scf, rra, a and, rra,
     \ B = adjusted Y coordinate (0..191)
@@ -175,7 +175,7 @@ create fast-(pixel-addr)  ( -- a )  asm
 
   \ doc{
   \
-  \ fast-(pixel-addr)  ( -- a )
+  \ fast-(pixel-addr) ( -- a )
   \
   \ Return address _a_ of a a modified copy of the PIXEL-ADD
   \ ROM routine ($22AA), to let the range of the y coordinate
@@ -213,15 +213,15 @@ need ?(
 
   \ XXX UNDER DEVELOPMENT -- 2016-12-26
 
-create (pixel-addr176)  ( -- a )  asm
-  3E c, #175 c, 90 00 + c, C3 c, 22B0 ,  end-asm ?)
+create (pixel-addr176) ( -- a ) asm
+  3E c, #175 c, 90 00 + c, C3 c, 22B0 , end-asm ?)
   \ ld a,175 ; max Y coordinate in BASIC
   \ sub b
   \ jp $22B0 ; call ROM routine and return
 
   \ doc{
   \
-  \ (pixel-addr176)  ( -- a )
+  \ (pixel-addr176) ( -- a )
   \
   \ Return address _a_ of a routine that uses an alternative
   \ entry point to the PIXEL-ADD ROM routine ($22AA), to bypass
@@ -242,9 +242,9 @@ create (pixel-addr176)  ( -- a )  asm
   \
   \ }doc
 
-[unneeded] pixel-addr176 ?(  need (pixel-addr176)
+[unneeded] pixel-addr176 ?( need (pixel-addr176)
 
-code pixel-addr176  ( gx gy -- n a )
+code pixel-addr176 ( gx gy -- n a )
   E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c,
   \ pop hl
   \ pop de
@@ -261,7 +261,7 @@ code pixel-addr176  ( gx gy -- n a )
 
   \ doc{
   \
-  \ pixel-addr176  ( gx gy -- n a )
+  \ pixel-addr176 ( gx gy -- n a )
   \
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..175).
@@ -270,9 +270,9 @@ code pixel-addr176  ( gx gy -- n a )
   \
   \ }doc
 
-[unneeded] pixel-addr ?(  need (pixel-addr)
+[unneeded] pixel-addr ?( need (pixel-addr)
 
-code pixel-addr  ( gx gy -- n a )
+code pixel-addr ( gx gy -- n a )
   E1 c,  D1 c, C5 c, 40 05 + c, 48 03 + c, CD c, (pixel-addr) ,
   \ pop hl
   \ pop de
@@ -288,7 +288,7 @@ code pixel-addr  ( gx gy -- n a )
 
   \ doc{
   \
-  \ pixel-addr  ( gx gy -- n a )
+  \ pixel-addr ( gx gy -- n a )
   \
   \ Return screen address _a_ and pixel position _n_ (0..7) of
   \ pixel coordinates _gx_ (0..255) and _gy_ (0..191).
@@ -301,9 +301,9 @@ code pixel-addr  ( gx gy -- n a )
 
 need ?(
 
-[unneeded] plot ?(  need (pixel-addr)
+[unneeded] plot ?( need (pixel-addr)
 
-code plot  ( gx gy -- )
+code plot ( gx gy -- )
 
   D9 c, E1 c, C1 c, 40 05 + c,
     \ exx               ; save Forth IP
@@ -313,16 +313,16 @@ code plot  ( gx gy -- )
   ED c, 43 c, 5C7D , CD c, (pixel-addr) ,
     \ ld ($5C7D),bc     ; update COORDS
     \ call pixel_addr   ; hl = screen address
-    \                   ; a = pixel position in hl (0..7)
+    \                   ; A = pixel position in hl (0..7)
   22EC call, D9 c, DD c, 21 c, next , jpnext, end-code ?)
     \ call $22EC        ; ROM PLOT-SUB + 7
     \ exx               ; restore Forth IP
     \ ld ix,next        ; restore ix
-    \ jp (ix)           ; jp next
+    \ _jp_next          ; jp next
 
   \ doc{
   \
-  \ plot  ( gx gy -- )
+  \ plot ( gx gy -- )
   \
   \ Set a pixel, changing its attribute on the screen and the
   \ current graphic coordinates.  _gx_ is 0..255; _gy_ is
@@ -334,22 +334,22 @@ code plot  ( gx gy -- )
 
 [unneeded] plot176 ?(
 
-code plot176  ( gx gy -- )
+code plot176 ( gx gy -- )
 
   D9 c, E1 c, C1 c, 40 05 + c,
-    \ exx               ; save Forth IP
+    \ exx ; save Forth IP
     \ pop hl
     \ pop bc            ; C = x coordinate
     \ ld b,l            ; B = y coordinate (0..175)
   CD c, 22E5 , D9 c, DD c, 21 c, next , jpnext, end-code ?)
     \ call $22E5        ; ROM PLOT-SUB
     \ exx               ; restore Forth IP
-    \ ld ix,next        ; restore ix
-    \ jp (ix)           ; jp next
+    \ ld ix,next        ; restore Forth IX
+    \ _jp_next          ; jp next
 
   \ doc{
   \
-  \ plot176  ( gx gy -- )
+  \ plot176 ( gx gy -- )
   \
   \ Set a pixel, changing its attribute on the screen and the
   \ current graphic coordinates, using only the top 176 pixel
@@ -369,15 +369,15 @@ code plot176  ( gx gy -- )
 
 need ?(
 
-[unneeded] set-pixel?(  need (pixel-addr)  need assembler
+[unneeded] set-pixel?( need (pixel-addr) need assembler
 
-code set-pixel  ( gx gy -- )
+code set-pixel ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
   a b ld, b inc, 1 a ld#,
   rbegin  rrca,  rstep
   m or, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code ?)
+  b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -388,7 +388,7 @@ code set-pixel  ( gx gy -- )
 
   \ doc{
   \
-  \ set-pixel  ( gx gy -- )
+  \ set-pixel ( gx gy -- )
   \
   \ Set a pixel without changing its attribute on the screen or
   \ the current graphic coordinates.  _gx_ is 0..255; _gy_ is
@@ -398,15 +398,15 @@ code set-pixel  ( gx gy -- )
   \
   \ }doc
 
-[unneeded] set-pixel176 ?(  need assembler need (pixel-addr176)
+[unneeded] set-pixel176 ?( need assembler need (pixel-addr176)
 
-code set-pixel176  ( gx gy -- )
+code set-pixel176 ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
   a b ld, b inc, 1 a ld#,
   rbegin  rrca,  rstep
   m or, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code ?)
+  b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -417,7 +417,7 @@ code set-pixel176  ( gx gy -- )
 
   \ doc{
   \
-  \ set-pixel176  ( gx gy -- )
+  \ set-pixel176 ( gx gy -- )
   \
   \ Set a pixel without changing its attribute on the screen or
   \ the current graphic coordinates, and using only the top 176
@@ -432,16 +432,16 @@ code set-pixel176  ( gx gy -- )
 
 ( set-save-pixel176 )
 
-need assembler  need (pixel-addr176)  need os-coords
+need assembler need (pixel-addr176) need os-coords
 
-code set-save-pixel176  ( gx gy -- )
+code set-save-pixel176 ( gx gy -- )
 
   h pop, d pop, b push,
   l b ld, e c ld, os-coords bc stp, (pixel-addr176) call,
   a b ld, b inc, 1 a ld#,
   rbegin  rrca,  rstep
   m or, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code
+  b pop, jpnext, end-code
 
   \ Credit:
   \
@@ -452,7 +452,7 @@ code set-save-pixel176  ( gx gy -- )
 
   \ doc{
   \
-  \ set-save-pixel176  ( gx gy -- )
+  \ set-save-pixel176 ( gx gy -- )
   \
   \ Set a pixel without changing its attribute on the screen,
   \ and using only the top 176 pixel rows of the screen (the
@@ -469,14 +469,14 @@ code set-save-pixel176  ( gx gy -- )
 
 need ?(
 
-[unneeded] reset-pixel ?(  need (pixel-addr)  need assembler
+[unneeded] reset-pixel ?( need (pixel-addr) need assembler
 
-code reset-pixel  ( gx gy -- )
+code reset-pixel ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep,
   cpl, m and, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code ?)
+  b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -487,7 +487,7 @@ code reset-pixel  ( gx gy -- )
 
   \ doc{
   \
-  \ reset-pixel  ( gx gy -- )
+  \ reset-pixel ( gx gy -- )
   \
   \ Reset a pixel without changing its attribute on the screen
   \ or the current graphic coordinates.  _gx_ is 0..255; _gy_
@@ -497,15 +497,15 @@ code reset-pixel  ( gx gy -- )
   \
   \ }doc
 
-[unneeded] reset-pixel176 ?(  need (pixel-addr176)
+[unneeded] reset-pixel176 ?( need (pixel-addr176)
                               need assembler
 
-code reset-pixel176  ( gx gy -- )
+code reset-pixel176 ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep,
   cpl, m and, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code
+  b pop, jpnext, end-code
 
   \ Credit:
   \
@@ -516,7 +516,7 @@ code reset-pixel176  ( gx gy -- )
 
   \ doc{
   \
-  \ reset-pixel176  ( gx gy -- )
+  \ reset-pixel176 ( gx gy -- )
   \
   \ Reset a pixel without its attribute on the screen or the
   \ current graphic coordinates, and using only the top 176
@@ -532,14 +532,14 @@ code reset-pixel176  ( gx gy -- )
 
 need ?(
 
-[unneeded] toggle-pixel ?(  need (pixel-addr)  need assembler
+[unneeded] toggle-pixel ?( need (pixel-addr) need assembler
 
-code toggle-pixel  ( gx gy -- )
+code toggle-pixel ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep
   m xor, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code ?)
+  b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -550,7 +550,7 @@ code toggle-pixel  ( gx gy -- )
 
   \ doc{
   \
-  \ toggle-pixel  ( gx gy -- )
+  \ toggle-pixel ( gx gy -- )
   \
   \ Toggle a pixel without changing its attribute on the screen
   \ or the current graphic coordinates.  _gx_ is 0..255; _gy_
@@ -561,15 +561,15 @@ code toggle-pixel  ( gx gy -- )
   \
   \ }doc
 
-[unneeded] toggle-pixel176 ?(  need (pixel-addr176)
+[unneeded] toggle-pixel176 ?( need (pixel-addr176)
                                need assembler
 
-code toggle-pixel176  ( gx gy -- )
+code toggle-pixel176 ( gx gy -- )
 
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
   a b ld, b inc, 1 a ld#, rbegin  rrca,  rstep
   m xor, a m ld,  \ combine pixel with byte in the screen
-  b pop, jpnext,  end-code ?)
+  b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -580,7 +580,7 @@ code toggle-pixel176  ( gx gy -- )
 
   \ doc{
   \
-  \ toggle-pixel176  ( gx gy -- )
+  \ toggle-pixel176 ( gx gy -- )
   \
   \ Toggle a pixel without changing its attribute on the screen
   \ or the current graphic coordinates, and using only the top
@@ -594,37 +594,37 @@ code toggle-pixel176  ( gx gy -- )
 
 ( get-pixel get-pixel176 )
 
-[unneeded] get-pixel ?(  need (pixel-addr)  need assembler
+[unneeded] get-pixel ?( need (pixel-addr) need assembler
 
-code get-pixel  ( gx gy -- f )
+code get-pixel ( gx gy -- f )
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr) call,
   \ HL = screen address
   \ A = pixel position in HL
   a b ld, b inc, m a ld,
   rbegin  rlca,  rstep \ rotate to bit 0
   b pop,   \ restore the Forth IP
-  1 and#, ' true nz? ?jp, ' false jp,  end-code ?)
+  1 and#, ' true nz? ?jp, ' false jp, end-code ?)
 
 [unneeded] get-pixel176 ?( need (pixel-addr176) need assembler
 
-code get-pixel176  ( gx gy -- f )
+code get-pixel176 ( gx gy -- f )
   h pop, d pop, b push, l b ld, e c ld, (pixel-addr176) call,
   \ HL = screen address
   \ A = pixel position in HL
   a b ld, b inc, m a ld,
   rbegin  rlca,  rstep \ rotate to bit 0
   b pop,   \ restore the Forth IP
-  1 and#, ' true nz? ?jp, ' false jp,  end-code ?)
+  1 and#, ' true nz? ?jp, ' false jp, end-code ?)
 
 ( pixels fast-pixels slow-pixels )
 
 need ?(
 
-[unneeded] pixels ?\ defer pixels  ( -- n )
+[unneeded] pixels ?\ defer pixels ( -- n )
 
   \ doc{
   \
-  \ pixels  ( -- u )
+  \ pixels ( -- u )
   \
   \ Return the number _u_ of pixels that are set on the screen.
   \ This is a deferred word set by `fast-pixels` or
@@ -634,16 +634,16 @@ need ?(
   \
   \ }doc
 
-[unneeded] fast-pixels ?(  need assembler  need pixels
+[unneeded] fast-pixels ?( need assembler need pixels
 
-code fast-pixels  ( -- n )
+code fast-pixels ( -- n )
 
   exx, 4000 h ldp#, l b ld, l c ld,
   rbegin  \ byte
     08 d ld#, rbegin  \ bit
       m rrc, c? rif  b incp,  rthen  d dec,
     z? runtil  h incp, h a ld, 58 cp#,
-  z? runtil  b push, exx, jpnext,  end-code
+  z? runtil  b push, exx, jpnext, end-code
 
 ' fast-pixels ' pixels defer! ?)
 
@@ -678,7 +678,7 @@ code fast-pixels  ( -- n )
 
   \ doc{
   \
-  \ fast-pixels  ( -- n )
+  \ fast-pixels ( -- n )
   \
   \ Return the number _n_ of pixels set on the screen.
   \ This is the default action of `pixels`.
@@ -689,15 +689,15 @@ code fast-pixels  ( -- n )
 
   \ Slower version of `pixels`.
 
-[unneeded] slow-pixels ?(  need bits  need pixels
+[unneeded] slow-pixels ?( need bits need pixels
 
-: slow-pixels  ( -- n )  16384 6144 bits  ;
+: slow-pixels ( -- n ) 16384 6144 bits ;
 
 ' slow-pixels ' pixels defer! ?)
 
   \ doc{
   \
-  \ slow-pixels  ( -- n )
+  \ slow-pixels ( -- n )
   \
   \ Return the number _u_ of pixels that are set on the screen.
   \ This is the alternative action of the deferred word
@@ -714,7 +714,7 @@ need ?(
 
 [unneeded] bitmap>attr-addr ?(
 
-code bitmap>attr-addr  ( a1 -- a2 )
+code bitmap>attr-addr ( a1 -- a2 )
   E1 c,  78 04 + c,
     \ pop hl
     \ ld a,h ; fetch high byte $40..$57
@@ -726,7 +726,7 @@ code bitmap>attr-addr  ( a1 -- a2 )
     \ and $03 ; range is now 0..2
     \ or $58 ; form correct high byte for third of screen
     \ ld h,a
-  jppushhl,  end-code  ?)
+  jppushhl, end-code ?)
 
   \ Credit:
   \
@@ -735,22 +735,22 @@ code bitmap>attr-addr  ( a1 -- a2 )
 
   \ doc{
   \
-  \ bitmap>attr-addr  ( a1 -- a2 )
+  \ bitmap>attr-addr ( a1 -- a2 )
   \
   \ Convert screen bitmap address _a1_ to its correspondent
   \ attribute address _a2_.
   \
   \ }doc
 
-[unneeded] pixel-attr-addr ?(  need pixel-addr
+[unneeded] pixel-attr-addr ?( need pixel-addr
                                need bitmap>attr-addr
 
-: pixel-attr-addr  ( gx gy -- a )
-  pixel-addr nip bitmap>attr-addr  ; ?)
+: pixel-attr-addr ( gx gy -- a )
+  pixel-addr nip bitmap>attr-addr ; ?)
 
   \ doc{
   \
-  \ pixel-attr-addr  ( gx gy -- a )
+  \ pixel-attr-addr ( gx gy -- a )
   \
   \ Convert pixel coordinates _gx gy_ to their correspondent
   \ attribute address _a_.

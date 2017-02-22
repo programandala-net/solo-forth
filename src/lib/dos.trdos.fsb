@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171947
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -100,7 +100,7 @@ fda $0F + constant fda-filetrack ?)
 
   \ doc{
   \
-  \ fda  ( -- ca )
+  \ fda ( -- ca )
   \
   \ Return the address _ca_ of TR-DOS File Descriptor Area,
   \ which has the following structure:
@@ -121,11 +121,11 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-[unneeded] /fda  ?\ $10 cconstant /fda
+[unneeded] /fda ?\ $10 cconstant /fda
 
   \ doc{
   \
-  \ /fda  ( -- b )
+  \ /fda ( -- b )
   \
   \ Return the length of TR-DOS `fda` (File Descriptor Area).
   \
@@ -133,11 +133,11 @@ fda $0F + constant fda-filetrack ?)
 
 ( /filename -filename set-filename )
 
-[unneeded] /filename ?\  9 cconstant /filename
+[unneeded] /filename ?\ 9 cconstant /filename
 
   \ doc{
   \
-  \ /filename  ( -- n )
+  \ /filename ( -- n )
   \
   \ Return the maximum length of a TR-DOS filename, which is 9.
   \ In TR-DOS, the last character of the filename (character
@@ -159,14 +159,14 @@ fda $0F + constant fda-filetrack ?)
 
 need ?(
 
-[unneeded] -filename ?(  need fda  need /filename
+[unneeded] -filename ?( need fda need /filename
 
-: -filename  ( -- )
-  fda-filename /filename blank 'C' fda-filetype c!  ; ?)
+: -filename ( -- )
+  fda-filename /filename blank 'C' fda-filetype c! ; ?)
 
   \ doc{
   \
-  \ -filename  ( -- )
+  \ -filename ( -- )
   \
   \ Erase the filename stored at TR-DOS `fda` (File Descriptor
   \ Area) with spaces, and set its type to 'C'.
@@ -177,14 +177,14 @@ need ?(
 
 [unneeded] set-filename ?(
 
-need -filename  need /filename  need fda
+need -filename need /filename need fda
 
-: set-filename  ( ca len -- )
-  -filename  /filename min fda smove  ; ?)
+: set-filename ( ca len -- )
+  -filename  /filename min fda smove ; ?)
 
   \ doc{
   \
-  \ set-filename  ( ca len -- )
+  \ set-filename ( ca len -- )
   \
   \ Store filename _ca len_ into the TR-DOS `fda` (File Descriptor
   \ Area).  If _len_ is greater than 9 characters (the value
@@ -200,7 +200,7 @@ need -filename  need /filename  need fda
 
 [unneeded] get-drive
 
-?\ code get-drive  ( -- b )  3A c, 5CF6 , pusha jp,  end-code
+?\ code get-drive ( -- b ) 3A c, 5CF6 , pusha jp, end-code
 
   \ Note: $5CF6 is the TR-DOS variable "current temporary
   \ drive".
@@ -216,7 +216,7 @@ need -filename  need /filename  need fda
 
   \ ----
   \ : get-drive ( -- b )
-  \   $5FC6 c@  ;
+  \   $5FC6 c@ ;
   \ ----
 
   \ See also: `set-drive`.
@@ -227,11 +227,11 @@ need ?(
 
 [unneeded] cat ?(
 
-code cat  ( -- ior )
+code cat ( -- ior )
   3E c, 07 c, 08 c, 3E c, 02 c, dos-preserve-ip-routine call,
   \ ld a,trdos_command.cat
   \ ex af,af'
-  \ ld a,2    ; stream: screen
+  \ ld a,2 ; stream: screen
   \ call dos.preserve_ip
 
   \ DD c, 21 c, next , \ ld ix,next ; restore Forth IX
@@ -243,7 +243,7 @@ code cat  ( -- ior )
 
   \ doc{
   \
-  \ cat  ( -- ior )
+  \ cat ( -- ior )
   \
   \ Print a catalog of the current disk.
   \
@@ -257,7 +257,7 @@ code cat  ( -- ior )
 
 need assembler need --dos-commands-- need fda need set-filename
 
-code (file>)  ( ca len -- ior )
+code (file>) ( ca len -- ior )
 
   d pop, h pop, b push, h push, d push, ( ip ca len )
 
@@ -286,14 +286,14 @@ code (file>)  ( ca len -- ior )
   \
   \ FDA = File Descriptor Area
 
-: file>  ( ca1 len1 ca2 len2 -- ior )  set-filename (file>)  ;
+: file> ( ca1 len1 ca2 len2 -- ior ) set-filename (file>) ;
 
 ( file-status )
 
-need assembler  need --dos-commands--
-need fda  need set-filename
+need assembler need --dos-commands--
+need fda need set-filename
 
-code (file-status)  ( -- a ior )
+code (file-status) ( -- a ior )
 
   fda h ldp#, h push, b push,
     \ Push `fda` (the _a_ returned) and save Forth IP.
@@ -310,12 +310,12 @@ code (file-status)  ( -- a ior )
           \ copy of it.  We set it to zero (to force "no error").
   rthen b pop, pushdosior jp, end-code
 
-: file-status  ( ca len -- a ior )
-  set-filename (file-status)  ;
+: file-status ( ca len -- a ior )
+  set-filename (file-status) ;
 
   \ doc{
   \
-  \ file-status  ( ca len -- a ior )
+  \ file-status ( ca len -- a ior )
   \
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
@@ -333,11 +333,11 @@ need ?(
 
 [unneeded] file-exists? ?( need file-status
 
-: file-exists?  ( ca len -- f )  file-status nip 0=  ; ?)
+: file-exists? ( ca len -- f ) file-status nip 0= ; ?)
 
   \ doc{
   \
-  \ file-exists?  ( ca len -- f )
+  \ file-exists? ( ca len -- f )
   \
   \ If the file named in the character string _ca len_ is
   \ found, _f_ is _true_. Otherwise _f_ is _false_.
@@ -346,14 +346,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-start  ?( need file-status  need fda
+[unneeded] file-start  ?( need file-status need fda
 
-: file-start  ( ca1 len1 -- ca2 ior )
+: file-start ( ca1 len1 -- ca2 ior )
   file-status nip fda-filestart @ swap ; ?)
 
   \ doc{
   \
-  \ file-start  ( ca1 len1 -- ca2 ior )
+  \ file-start ( ca1 len1 -- ca2 ior )
   \
   \ Return the file start address of the file named in the
   \ character string _ca1 len1_. If the file was successfully
@@ -365,14 +365,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-len  ?( need file-status  need fda
+[unneeded] file-len  ?( need file-status need fda
 
-: file-length  ( ca1 len1 -- len2 ior )
+: file-length ( ca1 len1 -- len2 ior )
   file-status nip fda-filelength @ swap ; ?)
 
   \ doc{
   \
-  \ file-length  ( ca1 len1 -- len2 ior )
+  \ file-length ( ca1 len1 -- len2 ior )
   \
   \ Return the file length of the file named in the character
   \ string _ca1 len1_. If the file was successfully found,
@@ -383,9 +383,9 @@ need ?(
   \
   \ }doc
 
-[unneeded] file-type  ?( need file-status  need fda
+[unneeded] file-type  ?( need file-status need fda
 
-: file-type  ( ca len -- n ior )
+: file-type ( ca len -- n ior )
   file-status nip fda-filetype c@ swap ; ?)
 
   \ XXX REMARK -- 2017-02-13: This word is uselsin TR-DOS,
@@ -393,7 +393,7 @@ need ?(
 
   \ doc{
   \
-  \ file-type  ( ca len -- c ior )
+  \ file-type ( ca len -- c ior )
   \
   \ Return the TR-DOS file-type indentifier of the file named
   \ in the character string _ca len_. If the file was
@@ -412,11 +412,11 @@ need ?(
 need ?(
 
 [unneeded] find-file  ?( need file-status
-: find-file  ( ca len -- f )  file-status 0= and  ; ?)
+: find-file ( ca len -- f ) file-status 0= and ; ?)
 
   \ doc{
   \
-  \ find-file  ( ca len -- a | 0 )
+  \ find-file ( ca len -- a | 0 )
   \
   \ If the file named in the character string _ca len_ is
   \ found, return address _a_ of the updated `fda` (File
@@ -428,9 +428,9 @@ need ?(
 
 ( file-dir# )
 
-need assembler  need --dos-commands--  need set-filename
+need assembler need --dos-commands-- need set-filename
 
-code (file-dir#)  ( -- n ior )
+code (file-dir#) ( -- n ior )
 
   dos-find-file a ld#, exaf, dos-preserve-ip-routine call,
     \ A = directory entry (0..127), or $FF if file not found
@@ -441,7 +441,7 @@ code (file-dir#)  ( -- n ior )
 
   \ doc{
   \
-  \ (file-dir#)  ( -- n ior )
+  \ (file-dir#) ( -- n ior )
   \
   \ Return the file directory number of the file whose filename
   \ is stored at `fda` (File Descriptor Area). If the file was
@@ -453,11 +453,11 @@ code (file-dir#)  ( -- n ior )
   \
   \ }doc
 
-: file-dir#  ( ca len -- n ior )  set-filename (file-dir#)  ;
+: file-dir# ( ca len -- n ior ) set-filename (file-dir#) ;
 
   \ doc{
   \
-  \ file-dir#  ( ca len -- n ior )
+  \ file-dir# ( ca len -- n ior )
   \
   \ Return the file directory number of the file named in the
   \ character string _ca len_. If the file was successfully
@@ -470,14 +470,14 @@ code (file-dir#)  ( -- n ior )
 
 ( file-sectors file-sector file-track )
 
-[unneeded] file-sectors  ?( need file-status  need fda
+[unneeded] file-sectors  ?( need file-status need fda
 
-: file-sectors  ( ca len -- n ior )
+: file-sectors ( ca len -- n ior )
   file-status nip fda-filesectors c@ swap ; ?)
 
   \ doc{
   \
-  \ file-sectors  ( ca len -- n ior )
+  \ file-sectors ( ca len -- n ior )
   \
   \ Return the sectors occupied by the file named in the
   \ character string _ca len_. If the file was successfully
@@ -488,14 +488,14 @@ code (file-dir#)  ( -- n ior )
   \
   \ }doc
 
-[unneeded] file-sector  ?( need file-status  need fda
+[unneeded] file-sector  ?( need file-status need fda
 
-: file-sector  ( ca len -- n ior )
+: file-sector ( ca len -- n ior )
   file-status nip fda-filesector c@ swap ; ?)
 
   \ doc{
   \
-  \ file-sector  ( ca len -- n ior )
+  \ file-sector ( ca len -- n ior )
   \
   \ Return the first sector of the first track of the file
   \ named in the character string _ca len_. If the file was
@@ -506,14 +506,14 @@ code (file-dir#)  ( -- n ior )
   \
   \ }doc
 
-[unneeded] file-track  ?( need file-status  need fda
+[unneeded] file-track  ?( need file-status need fda
 
-: file-track  ( ca len -- n ior )
+: file-track ( ca len -- n ior )
   file-status nip fda-filetrack c@ swap ; ?)
 
   \ doc{
   \
-  \ file-track  ( ca len -- n ior )
+  \ file-track ( ca len -- n ior )
   \
   \ Return the first track of the file named in the character
   \ string _ca len_. If the file was successfully found, _ior_

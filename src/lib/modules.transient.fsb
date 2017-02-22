@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171852
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -65,23 +65,23 @@
 
 ( transient end-transient forget-transient )
 
-need >>link  need there
+need >>link need there
 
 variable old-dp  variable old-latest-wordlist
 variable old-hp  variable old-limit   variable old-farlimit
 variable old-current-latest
 
-: transient  ( u1 u2 -- )
+: transient ( u1 u2 -- )
   here old-dp !
   hp@ old-hp !    \ XXX TMP -- try 0, 2, 3
   latest-wordlist @ old-latest-wordlist !
   current-latest old-current-latest !
   limit @ dup old-limit ! swap - dup limit ! there
-  farlimit @ dup old-farlimit ! swap - dup farlimit ! hp!  ;
+  farlimit @ dup old-farlimit ! swap - dup farlimit ! hp! ;
 
   \ doc{
   \
-  \ transient  ( u1 u2 -- )
+  \ transient ( u1 u2 -- )
   \
   \ Start transient code, reserving _u1_ bytes of headers space
   \ for it, which will be allocated at the top of the far
@@ -101,7 +101,7 @@ variable old-current-latest
   \ ----
   \ 2025 1700 transient
   \
-  \   need assembler
+  \ need assembler
   \
   \ end-transient
   \
@@ -121,16 +121,16 @@ variable old-current-latest
 
 ( transient )
 
-: end-transient  ( -- )
+: end-transient ( -- )
   old-dp @ there
   \ old-hp @ hp!                \ XXX TMP -- try 0
   \ hp@ old-hp !                \ XXX TMP -- try 1
     hp@ old-hp @ hp! old-hp !   \ XXX TMP -- try 2, 3
-  old-farlimit @ farlimit !  old-limit @ limit !  ;
+  old-farlimit @ farlimit !  old-limit @ limit ! ;
 
   \ doc{
   \
-  \ end-transient  ( -- )
+  \ end-transient ( -- )
   \
   \ End the transient code started by `transient`.  This word
   \ must be used after compiling the transient code.
@@ -142,16 +142,16 @@ variable old-current-latest
   \
   \ }doc
 
-: forget-transient  ( -- )
+: forget-transient ( -- )
   old-latest-wordlist @ latest-wordlist !
-  old-current-latest @ old-hp @ >>link far!  ;
+  old-current-latest @ old-hp @ >>link far! ;
 
   \ XXX TODO -- `>>link far!` is what `unlink-internal` does;
   \ reuse it
 
   \ doc{
   \
-  \ forget-transient  ( -- )
+  \ forget-transient ( -- )
   \
   \ Forget the transient code compiled between `transient` and
   \ `end-transient`, by unlinking the header space that was

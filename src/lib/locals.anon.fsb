@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200004
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,28 +47,28 @@
 
 need body>
 
-variable (anon)  ( -- a )
+variable (anon) ( -- a )
   \ xt of the latest anonymous variable.
 
-: create-anon  ( -- )
+: create-anon ( -- )
   here (anon) !
-  [ (anon) body> @ ] literal compile, 0 ,  ;
+  [ (anon) body> @ ] literal compile, 0 , ;
   \ Create a new anonymous variable.  `(anon)` is used to get
   \ and compile the xt executed by all variables.
 
-: anon  ( Compilation: -- ) ( Run-time: -- a )
+: anon ( Compilation: -- ) ( Run-time: -- a )
   (anon) @
-  compiling? if  compile,  else  execute  then  ; immediate
+  compiling? if  compile,  else  execute  then ; immediate
   \ Current anonymous variable (first cell),
   \ equivalent to ``-0 +anon``.
 
-: +anon  ( Compilation:  n -- ) ( Run-time: -- )
+: +anon ( Compilation:  n -- ) ( Run-time: -- )
   cells (anon) @ execute +
   compiling? if  postpone literal  then ; immediate
   \ Current anonymous variable (cell _n_, first is 0).
 
-: n>anon  ( x1..xn n -- )
-  cells postpone anon swap bounds ?do  i !  cell +loop  ;
+: n>anon ( x1..xn n -- )
+  cells postpone anon swap bounds ?do  i !  cell +loop ;
   \ Store the given _n_ cells into the current anonymous
   \ variable.
 
@@ -84,6 +84,6 @@ variable (anon)  ( -- a )
   \   [ 2 ] +anon ?   \ prints 200
   \   555 [ 2 ] +anon !
   \   [ 2 ] +anon ?   \ prints 555
-  \   ;
+  \ ;
 
   \ vim: filetype=soloforth

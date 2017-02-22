@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702172012
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,38 +42,38 @@
 
 ( bitmasks bits>bytes bit-array !bit @bit )
 
-need align  need alias  need cset  need creset
+need align need alias need cset need creset
 
 create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
 
   \ doc{
   \
-  \ bitmasks  ( -- ca )
-  \ 
+  \ bitmasks ( -- ca )
+  \
   \ Address of a table that holds the bitmasks for bits 0..7
   \ as used by `bit-array`.
   \
   \ }doc
 
-: bits>bytes  ( n1 -- n2 )  8 /mod swap 0<> -  ;
+: bits>bytes ( n1 -- n2 ) 8 /mod swap 0<> - ;
 
   \ doc{
   \
-  \ bits>bytes  ( n1 -- n2 )
+  \ bits>bytes ( n1 -- n2 )
   \
   \ Return the number of bytes _n2_ needed to hold _n1_ bits.
   \ Used by `bit-array`.
   \
   \ }doc
 
-: bit-array  ( n "name" -- )
+: bit-array ( n "name" -- )
   create bits>bytes allot align
-  does>  ( n -- b ca )
-    ( n pfa )  swap 8 /mod >r bitmasks + c@ swap r> +  ;
+  does> ( n -- b ca )
+    ( n pfa ) swap 8 /mod >r bitmasks + c@ swap r> + ;
 
   \ doc{
   \
-  \ bit-array  ( n "name" -- )
+  \ bit-array ( n "name" -- )
   \
   \ Create a bit-array _name_ to hold _n_ bits, with the
   \ execution semantics defined below. The bits are stored in
@@ -82,7 +82,7 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \ bit 8 is bit 7 of the second byte of the array; array bit
   \ 15 is bit 0 of the second byte of the array, etc.
   \
-  \ name  ( n -- b ca )
+  \ name ( n -- b ca )
   \
   \ Return bitmak _b_ and address _ca_ of bit _n_ of the array.
   \
@@ -90,11 +90,11 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ }doc
 
-: !bit  ( f b ca -- )  rot if  cset exit  then  creset  ;
+: !bit ( f b ca -- ) rot if  cset exit  then  creset ;
 
   \ doc{
   \
-  \ !bit  ( f b ca -- )
+  \ !bit ( f b ca -- )
   \
   \ Store flag _f_ in an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.
@@ -103,11 +103,11 @@ create bitmasks 128 c, 64 c, 32 c, 16 c, 8 c, 4 c, 2 c, 1 c,
   \
   \ }doc
 
-' c@and? alias @bit  ( b ca -- f )
+' c@and? alias @bit ( b ca -- f )
 
   \ doc{
   \
-  \ @bit  ( b ca -- f )
+  \ @bit ( b ca -- f )
   \
   \ Fetch _f_ from an element of a bit-array, represented by
   \ address _ca_ and bitmask _b_.  This word is an alias of

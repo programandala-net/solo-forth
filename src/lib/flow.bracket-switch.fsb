@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171941
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,19 +62,19 @@
 
   \ Raw version, without syntactic sugar
 
-need link@  need link,  need pick
+need link@ need link, need pick
 
-: switcher  ( i*x n head -- j*x )
+: switcher ( i*x n head -- j*x )
   dup cell+ @ >r  \ save default xt
-  begin  link@ ?dup while  ( n a )
+  begin  link@ ?dup while ( n a )
     2dup cell+ @ = if   \ match
       nip cell+ cell+ perform  rdrop exit
     then
-  repeat  r> execute  ;
+  repeat  r> execute ;
 
   \ doc{
   \
-  \ switcher  ( i*x n head -- j*x )
+  \ switcher ( i*x n head -- j*x )
   \
   \ Search the linked list from its _head_ for a match to the
   \ value _n_. If a match is found, discard _n_ and execute the
@@ -85,12 +85,12 @@ need link@  need link,  need pick
   \
   \ }doc
 
-: :switch  ( xt "name" -- head )
-  create  >mark swap ,  does>  ( n -- )  ( n pfa ) switcher  ;
+: :switch ( xt "name" -- head )
+  create  >mark swap ,  does> ( n -- ) ( n pfa ) switcher ;
 
   \ doc{
   \
-  \ :switch  ( xt "name" -- head )
+  \ :switch ( xt "name" -- head )
   \
   \ Create a code switch whose default action is given by
   \ _xt_. Leave the address of the _head_ of its list on the
@@ -106,11 +106,11 @@ need link@  need link,  need pick
   \
   \ }doc
 
-: <switch  ( head xt n -- head )  2 pick link,  , ,  ;
+: <switch ( head xt n -- head ) 2 pick link,  , , ;
 
   \ doc{
   \
-  \ <switch  ( head xt n -- head )
+  \ <switch ( head xt n -- head )
   \
   \ Define a new clause to execute _xt_ when the key _n_
   \ is matched.
@@ -130,11 +130,11 @@ need link@  need link,  need pick
   \ Complete version, with syntactic sugar
 
 [unneeded] [+switch
-?\ need >body  : [+switch  ( "name" -- head )  ' >body  ;
+?\ need >body  : [+switch ( "name" -- head ) ' >body ;
 
   \ doc{
   \
-  \ [+switch  ( "name" -- head )
+  \ [+switch ( "name" -- head )
   \
   \ Open the switch structure _name_ to include additional
   \ clauses.  The default behavior remains unchanged. The
@@ -150,14 +150,14 @@ need link@  need link,  need pick
 
 need ?(
 
-[unneeded] [switch [unneeded] switch] and ?(  need switcher
+[unneeded] [switch [unneeded] switch] and ?( need switcher
 
-: [switch  ( "name1" "name2" -- head )
-  create  >mark ' ,  does>  ( n -- )  ( n pfa ) switcher  ;
+: [switch ( "name1" "name2" -- head )
+  create  >mark ' ,  does> ( n -- ) ( n pfa ) switcher ;
 
   \ doc{
   \
-  \ [switch  ( "name1" "name2" -- head )
+  \ [switch ( "name1" "name2" -- head )
   \
   \ Start the definition of a switch structure _name1_
   \ consisting of a linked list of single-precision numbers and
@@ -172,11 +172,11 @@ need ?(
   \
   \ }doc
 
-need alias  ' drop alias switch]  ( head -- ) ?)
+need alias  ' drop alias switch] ( head -- ) ?)
 
   \ doc{
   \
-  \ switch]  ( head -- )
+  \ switch] ( head -- )
   \
   \ Terminate a switch structure (or the latest additions to
   \ it) by marking the end of its linked list.  Discard the
@@ -188,12 +188,12 @@ need alias  ' drop alias switch]  ( head -- ) ?)
   \
   \ }doc
 
-[unneeded] runs ?(  need <switch
-: runs  ( head n "name" -- head )  ' swap <switch  ; ?)
+[unneeded] runs ?( need <switch
+: runs ( head n "name" -- head ) ' swap <switch ; ?)
 
   \ doc{
   \
-  \ runs  ( head n "name" -- )
+  \ runs ( head n "name" -- )
   \
   \ Add a clause to a switch structure _head_.  The key value
   \ of the clause is _n_ and its associated behavior is the
@@ -205,14 +205,14 @@ need alias  ' drop alias switch]  ( head -- ) ?)
   \
   \ }doc
 
-[unneeded] run: ?(  need evaluate  need <switch  need :noname
-: run:  ( head n "ccc<semicolon>" -- head )
+[unneeded] run: ?( need evaluate need <switch need :noname
+: run: ( head n "ccc<semicolon>" -- head )
   :noname ';' parse evaluate postpone ; ( xt )
-  swap <switch  ; ?)
+  swap <switch ; ?)
 
   \ doc{
   \
-  \ run:  ( head n "ccc<semicolon>" -- head )
+  \ run: ( head n "ccc<semicolon>" -- head )
   \
   \ Add a clause to a switch structure _head_.  The key value
   \ of the clause is _n_ and its associated behavior is one or

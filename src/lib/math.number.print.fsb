@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200004
+  \ Last modified: 201702221345
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,7 +51,7 @@
 need ?(
 
 [unneeded] ud.r ?(
-: ud.r  ( ud n -- )  >r <# #s #> r> over - 0 max spaces type  ;
+: ud.r ( ud n -- ) >r <# #s #> r> over - 0 max spaces type ;
 ?)
 
   \ Credit:
@@ -60,7 +60,7 @@ need ?(
 
   \ doc{
   \
-  \ ud.r  ( ud n -- )
+  \ ud.r ( ud n -- )
   \
   \ Print an usigned double number _ud_ right justified in a
   \ field of _n_ characters wide. If the number of characters
@@ -70,8 +70,8 @@ need ?(
   \
   \ }doc
 
-[unneeded] u.r ?(  need u>ud  need ud.r
-: u.r  ( u n -- )  >r u>ud r> ud.r  ; ?)
+[unneeded] u.r ?( need u>ud need ud.r
+: u.r ( u n -- ) >r u>ud r> ud.r ; ?)
 
   \ Credit:
   \
@@ -79,7 +79,7 @@ need ?(
 
   \ doc{
   \
-  \ u.r  ( u n -- )
+  \ u.r ( u n -- )
   \
   \ Print an unsigned number _u_ right justified in a field of
   \ _n_ characters wide. If the number of characters required
@@ -96,8 +96,8 @@ need ?(
   \
   \ }doc
 
-[unneeded] ud. ?(  need ud.r
-: ud.  ( ud -- )  0 ud.r space  ; ?)
+[unneeded] ud. ?( need ud.r
+: ud. ( ud -- ) 0 ud.r space ; ?)
 
   \ Credit:
   \
@@ -105,7 +105,7 @@ need ?(
 
   \ doc{
   \
-  \ ud.  ( ud -- )
+  \ ud. ( ud -- )
   \
   \ Print an usigned double number _ud_.
   \
@@ -113,16 +113,15 @@ need ?(
 
 [unneeded] holds ?(
 
-: holds  ( ca len -- )
-  begin  dup  while  1- 2dup + c@ hold  repeat
-  2drop  ; ?)
+: holds ( ca len -- )
+  begin  dup  while  1- 2dup + c@ hold  repeat 2drop ; ?)
 
   \ Credit:
   \ Code from the documentation of Forth-2012.
 
   \ doc{
   \
-  \ holds  ( ca len -- )
+  \ holds ( ca len -- )
   \
   \ Add string _ca len_ to the pictured numeric output string.
   \
@@ -137,16 +136,16 @@ need ?(
   \ Code modified from eForth.
 
 [unneeded] base.
-?\ : base.  ( -- )  does> c@ base @ >r base ! u. r> base !  ;
+?\ : base. ( -- ) does> c@ base @ >r base ! u. r> base ! ;
 
 [unneeded] bin.
-?\ need base.  create bin.  ( n -- )   #2 c, base.
+?\ need base.  create bin. ( n -- )  #2 c, base.
 
 [unneeded] hex.
-?\ need base.  create hex.  ( n -- )  #16 c, base.
+?\ need base.  create hex. ( n -- ) #16 c, base.
 
 [unneeded] dec.
-?\ need base.  create dec.  ( n -- )  #10 c, base.
+?\ need base.  create dec. ( n -- ) #10 c, base.
   \ XXX TMP -- `dec.` is in the kernel
 
 ( base' (d. <hex hex> (dhex. 8hex. 16hex. 32hex. )
@@ -155,26 +154,26 @@ need ?(
   \
   \ Code adapted from lina.
 
-[unneeded] base'  ?\ variable base'
+[unneeded] base' ?\ variable base'
 
 [unneeded] (d.
-?\ : (d.  ( d n -- ca len )  <# 0 ?do  #  loop  #>  ;
+?\ : (d. ( d n -- ca len ) <# 0 ?do  #  loop  #> ;
 
 [unneeded] <hex [unneeded] hex> and dup dup ?\ need base'
-?\ : <hex  ( -- )  base @ base' ! hex ; \ switch to hex
-?\ : hex>  ( -- )  base' @ base !     ; \ and back
+?\ : <hex ( -- ) base @ base' ! hex ; \ switch to hex
+?\ : hex> ( -- ) base' @ base ! ; \ and back
 
-[unneeded] (dhex. dup ?\ need <hex  need (d.
-?\ : (dhex.  ( d n -- )  <hex (d. hex> type space  ;
+[unneeded] (dhex. dup ?\ need <hex need (d.
+?\ : (dhex. ( d n -- ) <hex (d. hex> type space ;
 
 [unneeded] 32hex.
-?\ need (dhex.  : 32hex.   ( d -- )      8 (dhex.  ;
+?\ need (dhex.  : 32hex.   ( d -- )     8 (dhex. ;
 
 [unneeded] 16hex.
-?\ need (dhex.  : 16hex.   ( n -- )  s>d 4 (dhex.  ;
+?\ need (dhex.  : 16hex.   ( n -- ) s>d 4 (dhex. ;
 
 [unneeded] 8hex.
-?\ need (dhex.  : 8hex.    ( b -- )  s>d 2 (dhex.  ;
+?\ need (dhex.  : 8hex.    ( b -- ) s>d 2 (dhex. ;
 
 ( binary <bin bin> (dbin. 8bin. 16bin. 32bin. )
 
@@ -182,24 +181,24 @@ need ?(
   \
   \ Code inspired by lina.
 
-[unneeded] binary  ?\ : binary  ( -- )  2 base !  ;
+[unneeded] binary ?\ : binary ( -- ) 2 base ! ;
 
 [unneeded] <bin [unneeded] bin> and dup dup
-?\ need base'  need binary
-?\ : <bin  ( -- )  base @ base' ! binary ; \ switch to binary
-?\ : bin>  ( -- )  base' @ base !        ; \ and back
+?\ need base' need binary
+?\ : <bin ( -- ) base @ base' ! binary ; \ switch to binary
+?\ : bin> ( -- ) base' @ base ! ; \ and back
 
 [unneeded] (dbin. dup
-?\ need <bin  need (d.
-?\ : (dbin.  ( d n -- )  <bin (d. bin> type space  ;
+?\ need <bin need (d.
+?\ : (dbin. ( d n -- ) <bin (d. bin> type space ;
 
 [unneeded] 32bin.
-?\ need (dbin.  : 32bin.  ( d -- )      #32 (dbin.  ;
+?\ need (dbin.  : 32bin. ( d -- )     #32 (dbin. ;
 
 [unneeded] 16bin.
-?\ need (dbin.  : 16bin.  ( n -- )  s>d #16 (dbin.  ;
+?\ need (dbin.  : 16bin. ( n -- ) s>d #16 (dbin. ;
 
 [unneeded] 8bin.
-?\ need (dbin.  : 8bin.   ( b -- )  s>d  #8 (dbin.  ;
+?\ need (dbin.  : 8bin.   ( b -- ) s>d  #8 (dbin. ;
 
   \ vim: filetype=soloforth

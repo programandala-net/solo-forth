@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -72,11 +72,11 @@
 ( alias! alias realias )
 
 [unneeded] alias!
-?\ need name>>  : alias!  ( xt nt -- )  name>> far!  ;
+?\ need name>>  : alias! ( xt nt -- ) name>> far! ;
 
   \ doc{
   \
-  \ alias!  ( xt nt -- )
+  \ alias! ( xt nt -- )
   \
   \ Set the alias _nt_ to execute _xt_.
   \
@@ -86,11 +86,11 @@
 
 [unneeded] alias dup
 ?\ need alias!
-?\ : alias  ( xt "name" -- )  header reveal latest alias!  ;
+?\ : alias ( xt "name" -- ) header reveal latest alias! ;
 
   \ doc{
   \
-  \ alias  ( xt "name" -- )
+  \ alias ( xt "name" -- )
   \
   \ Create an alias _name_ that will execute _xt_.
   \
@@ -108,12 +108,12 @@
 
 need alias!
 
-: realias  ( xt "name" -- )
-  defined dup 0= #-13 ?throw alias!  ;
+: realias ( xt "name" -- )
+  defined dup 0= #-13 ?throw alias! ;
 
   \ doc{
   \
-  \ realias  ( xt "name" -- )
+  \ realias ( xt "name" -- )
   \
   \ Set the alias _name_ to execute _xt_.
   \

@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702110143
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -69,11 +69,11 @@
 
 ( mode42 banked-mode42 )
 
-need mode32  need (mode42  need set-mode-output
-need get-drive  need drive  need file>
+need mode32 need (mode42 need set-mode-output
+need get-drive need drive need file>
 
-: mode42  ( -- )  [ latestxt ] literal current-mode !
-                  (mode42 set-mode-output  ;
+: mode42 ( -- ) [ latestxt ] literal current-mode !
+                  (mode42 set-mode-output ;
   \ Set the 42 cpl printing mode: the driver, the font
   \ and `at-xy`.
 
@@ -89,13 +89,13 @@ set-drive throw
 
   \ XXX FIXME -- crash!
 
-need mode32  need (mode42
-need drive  need get-drive  need file>
+need mode32 need (mode42
+need drive need get-drive need file>
 
-need set-banked-mode-output  need code-bank
+need set-banked-mode-output need code-bank
 
-: banked-mode42  ( -- )  [ latestxt ] literal current-mode !
-                         (mode42 set-banked-mode-output  ;
+: banked-mode42 ( -- ) [ latestxt ] literal current-mode !
+                         (mode42 set-banked-mode-output ;
 
 code-bank{  get-drive 0 drive set-drive throw
                         s" pr42.bin" 0 0 file> throw
@@ -105,18 +105,18 @@ code-bank{  get-drive 0 drive set-drive throw
 
 ( (mode42 )
 
-need columns  need rows  need set-font
+need columns need rows need set-font
 
 [defined] (at-xy)
-?\ : (at-xy)  ( col row -- )  22 emit swap emit emit  ;
+?\ : (at-xy) ( col row -- ) 22 emit swap emit emit ;
 
-: mode42-xy  ( -- col row )  0 0  ;  \ XXX TODO
+: mode42-xy ( -- col row ) 0 0 ;  \ XXX TODO
 
-: (mode42  ( -- a )
+: (mode42 ( -- a )
   42 to columns  24 to rows
   ['] mode42-xy ['] xy defer!
   ['] (at-xy) ['] at-xy defer!
-  [ 64600 256 - ] literal set-font 63900  ;
+  [ 64600 256 - ] literal set-font 63900 ;
   \ Set the 42 cpl font and `at-xy`;
   \ return the address of the output routine.
 

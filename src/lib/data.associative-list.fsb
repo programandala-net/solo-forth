@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701191512
+  \ Last modified: 201702221253
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,33 +58,32 @@
 
 need search-wordlist
 
-: associative-list  ( "name" -- )  wordlist constant  ;
+: associative-list ( "name" -- ) wordlist constant ;
 
   \ doc{
   \
-  \ associative-list  ( "name" -- )
+  \ associative-list ( "name" -- )
   \
   \ Create a new associative list "name".
   \
   \ }doc
 
-: item?  ( ca len wid -- false | xt true )
-  search-wordlist 0<> ;
+: item? ( ca len wid -- false | xt true ) search-wordlist 0<> ;
 
   \ doc{
   \
-  \ item?  ( ca len wid -- false | xt true )
+  \ item? ( ca len wid -- false | xt true )
   \
   \ Is _ca len_ an item of associative list _wid_?
   \ If so return its _xt_ and _true_, else return _false_.
   \
   \ }doc
 
-: item  ( ca len wid -- i*x )  item? 0= #-13 ?throw execute  ;
+: item ( ca len wid -- i*x ) item? 0= #-13 ?throw execute ;
 
   \ doc{
   \
-  \ item  ( ca len wid -- i*x )
+  \ item ( ca len wid -- i*x )
   \
   \ If _ca len_ is an item of associative list _wid_, return
   \ its value _i*x_; else throw exception -13, "undefined
@@ -93,13 +92,13 @@ need search-wordlist
   \ }doc
 
 
-: create-entry  ( i*x wid xt "name" -- )
+: create-entry ( i*x wid xt "name" -- )
   get-current >r swap set-current  create execute
-  r> set-current  ;
+  r> set-current ;
 
   \ doc{
   \
-  \ create-entry  ( i*x wid xt "name" -- )
+  \ create-entry ( i*x wid xt "name" -- )
   \
   \ Create an entry "name" in associative list _wid_,
   \ using _xt_ to store its value _i*x_.
@@ -110,13 +109,13 @@ need search-wordlist
 
 ( entry: centry: 2entry: sentry: items )
 
-need ?(  need create-entry  [unneeded] entry: ?(
-: entry:  ( x wid "name" -- )
-  ['] , create-entry does>  ( -- x )  ( pfa ) @  ; ?)
+need ?( need create-entry  [unneeded] entry: ?(
+: entry: ( x wid "name" -- )
+  ['] , create-entry does> ( -- x ) ( pfa ) @ ; ?)
 
   \ doc{
   \
-  \ entry:  ( x wid "name" -- )
+  \ entry: ( x wid "name" -- )
   \
   \ Create a cell entry "name" in associative list
   \ _wid_, with value _x_.
@@ -124,12 +123,12 @@ need ?(  need create-entry  [unneeded] entry: ?(
   \ }doc
 
 [unneeded] centry: ?(
-: centry:  ( c wid "name" -- )
-  ['] c, create-entry does>  ( -- c )  ( pfa ) c@  ; ?)
+: centry: ( c wid "name" -- )
+  ['] c, create-entry does> ( -- c ) ( pfa ) c@ ; ?)
 
   \ doc{
   \
-  \ centry:  ( c wid "name" -- )
+  \ centry: ( c wid "name" -- )
   \
   \ Create a character entry "name" in associative list
   \ _wid_, with value _c_.
@@ -137,12 +136,12 @@ need ?(  need create-entry  [unneeded] entry: ?(
   \ }doc
 
 [unneeded] 2entry: ?(
-: 2entry:  ( dx wid "name" -- )
-  ['] 2, create-entry does>  ( -- dx )  ( pfa ) 2@  ; ?)
+: 2entry: ( dx wid "name" -- )
+  ['] 2, create-entry does> ( -- dx ) ( pfa ) 2@ ; ?)
 
   \ doc{
   \
-  \ 2entry:  ( dx wid "name" -- )
+  \ 2entry: ( dx wid "name" -- )
   \
   \ Create a double-cell entry "name" in associative list
   \ _wid_, with value _dx_.
@@ -150,25 +149,25 @@ need ?(  need create-entry  [unneeded] entry: ?(
   \ }doc
 
 [unneeded] sentry: ?(
-: sentry:  ( ca len wid "name" -- )
-  ['] s, create-entry does>  ( -- ca len )  ( pfa ) count  ; ?)
+: sentry: ( ca len wid "name" -- )
+  ['] s, create-entry does> ( -- ca len ) ( pfa ) count ; ?)
 
   \ doc{
   \
-  \ sentry:  ( ca len wid "name" -- )
+  \ sentry: ( ca len wid "name" -- )
   \
   \ Create a string entry "name" in associative list
   \ _wid_, with value _ca len_.
   \
   \ }doc
 
-[unneeded] items ?exit  need alias  need wordlist-words
+[unneeded] items ?exit need alias need wordlist-words
 
-' wordlist-words alias items  ( wid -- )
+' wordlist-words alias items ( wid -- )
 
   \ doc{
   \
-  \ items  ( wid -- )
+  \ items ( wid -- )
   \
   \ List items of associative list _wid_.
   \

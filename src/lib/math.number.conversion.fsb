@@ -24,10 +24,10 @@
 
 ( number )
 
-: number  ( ca len -- n | d )  number? 0= #-275 ?throw  ;
+: number ( ca len -- n | d ) number? 0= #-275 ?throw ;
   \ doc{
   \
-  \ number  ( ca len -- n | d )
+  \ number ( ca len -- n | d )
   \
   \ Attempt to convert a string _ca len_ into a number. If
   \ a valid point is found, return _d_; if there is no

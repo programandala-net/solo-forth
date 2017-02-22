@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702211139
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,9 +38,9 @@
 ( get-key? )
 
 
-need assembler  need unresolved
+need assembler need unresolved
 
-code get-key?  ( -- f )
+code get-key? ( -- f )
 
   b push,
   028E call,  \ ROM KEY_SCAN
@@ -57,10 +57,10 @@ code get-key?  ( -- f )
   b pop, ' false jp,
 
   end-code
-  
+
   \ doc{
   \
-  \ get-key?  ( -- f )
+  \ get-key? ( -- f )
   \
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Variant with relative jumps.
@@ -71,9 +71,9 @@ code get-key?  ( -- f )
 
 ( fast-get-key? )
 
-need assembler  need unresolved
+need assembler need unresolved
 
-code fast-get-key?  ( -- f )
+code fast-get-key? ( -- f )
 
   b push,
   028E call,  \ ROM KEY_SCAN
@@ -91,7 +91,7 @@ code fast-get-key?  ( -- f )
 
   \ doc{
   \
-  \ fast-get-key?  ( -- f )
+  \ fast-get-key? ( -- f )
   \
   \ An alternative to `key?`. It works also when the system
   \ interrupts are off. Faster variant with absolute jumps.

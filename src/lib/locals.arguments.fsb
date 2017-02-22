@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200004
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,12 +53,12 @@ variable arg-action  arg-action off
   \ id (offset) of the argument action:
   \ 0 = fetch; 2 (1 cell) = store; 4 (2 cells) = add
 
-: arg:  ( +n "name" -- )
+: arg: ( +n "name" -- )
   create  c,
-  does>  ( -- x ) ( x -- )
+  does> ( -- x ) ( x -- )
     \ ( pfa | x pfa )
     c@ >args @ swap -
-    arg-action @ arg-actions + perform  arg-action off  ;
+    arg-action @ arg-actions + perform  arg-action off ;
   \ create a new argument _name_ with offset _+n_
 
 $00 arg: l0 $02 arg: l1 $04 arg: l2 $06 arg: l3 $08 arg: l4
@@ -68,11 +68,11 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
 
 ( arguments results )
 
-: toarg  ( -- )  cell arg-action !  ;
+: toarg ( -- ) cell arg-action ! ;
 
   \ doc{
   \
-  \ toarg  ( -- )
+  \ toarg ( -- )
   \
   \ Set the store action for the next local variable. Used with
   \ locals created by `arguments`.  See `arguments` for a usage
@@ -80,11 +80,11 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \
   \ }doc
 
-: +toarg  ( -- )  [ 2 cells ] literal arg-action !  ;
+: +toarg ( -- ) [ 2 cells ] literal arg-action ! ;
 
   \ doc{
   \
-  \ +toarg  ( -- )
+  \ +toarg ( -- )
   \
   \ Set the add action for the next local variable. Used with
   \ locals created by `arguments`.  See `arguments` for a usage
@@ -92,14 +92,14 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \
   \ }doc
 
-: arguments  ( i*x +n -- j*x )
+: arguments ( i*x +n -- j*x )
   r> >args @ >r >r
   cells sp@ + dup >args ! [ 10 cells ] literal - sp@ swap -
-  cell/ 0 ?do  0  loop  ; compile-only
+  cell/ 0 ?do  0  loop ; compile-only
 
   \ doc{
   \
-  \ arguments  ( i*x +n -- j*x )
+  \ arguments ( i*x +n -- j*x )
   \
   \ Define the number _+n_ of arguments to take from the stack
   \ and assign them to the first local variables from `l0` to
@@ -129,26 +129,26 @@ $0A arg: l5 $0C arg: l6 $0E arg: l7 $10 arg: l8 $12 arg: l9
   \ Usage example:
 
   \ ----
-  \ : test  ( length width height -- length' volume surface )
+  \ : test ( length width height -- length' volume surface )
   \   3 arguments
   \   l0 l1 * toarg l5       \ surface
   \   l5 l2 * toarg l4       \ volume
   \   $2000 +toarg l0        \ length+$2000
   \   l4 toarg l1            \ volume
   \   l5 toarg l2            \ surface
-  \   3 results  ;
+  \   3 results ;
   \ ----
 
   \ }doc
 
-: results  ( +n -- )
+: results ( +n -- )
   cells >args @ swap - sp@ -
   cell/ 0 ?do  drop  loop
-  r> r> >args ! >r  ; compile-only
+  r> r> >args ! >r ; compile-only
 
   \ doc{
   \
-  \ results  ( +n -- )
+  \ results ( +n -- )
   \
   \ Define the number _+n_ of local variables to leave on the
   \ stack as results. Used with locals created by `arguments`.

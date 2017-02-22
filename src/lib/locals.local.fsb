@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612300221
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,11 +44,11 @@
 
 ( local )
 
-need :noname  need >body
+need :noname need >body
 
 :noname  \ Compilation: ( -- xt )
          \ Run-time:    ( -- ) ( R: a x -- )
-  2r> swap !  ;
+  2r> swap ! ;
   \ Restore variable address _a_ and value _x_.
 
 : local  \ Compilation: ( xt -- xt )
@@ -61,14 +61,14 @@ need :noname  need >body
   r> swap                     \ save top return address
   dup @ 2>r                   \ save variable address and value
   [ dup >body ] literal >r    \ force exit via `restore-local`
-  >r  ;                       \ restore top return address
+  >r ;                       \ restore top return address
   compile-only
 
   drop  \ delete xt
 
   \ doc{
   \
-  \ local  ( a -- )
+  \ local ( a -- )
   \
   \ Save the value of variable _a_, which will be restored at
   \ the end of the current definition.
@@ -78,9 +78,9 @@ need :noname  need >body
   \ ----
   \ variable v
   \ 1 v !  v ?  \ default value
-  \ : test  ( -- )
+  \ : test ( -- )
   \   v local
-  \   v ?  1887 v !  v ?  ;
+  \   v ?  1887 v !  v ? ;
   \ v ?  \ default value
   \ ----
   \

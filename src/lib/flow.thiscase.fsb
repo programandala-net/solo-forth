@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171935
+  \ Last modified: 201702221316
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,12 +49,12 @@
 
 need alias
 
-: ifcase  ( x f -- )
-  postpone if  postpone drop  ; immediate compile-only
+: ifcase ( x f -- )
+  postpone if  postpone drop ; immediate compile-only
 
   \ doc{
   \
-  \ ifcase  ( x f -- )
+  \ ifcase ( x f -- )
   \
   \ Part of a `thiscase` structure that checks _x_. If _f_ is
   \ true, discard _x_ and continue execution; else skip the
@@ -64,12 +64,12 @@ need alias
   \
   \ }doc
 
-: exitcase  ( -- )
-  postpone exit  postpone then  ; immediate compile-only
+: exitcase ( -- )
+  postpone exit  postpone then ; immediate compile-only
 
   \ doc{
   \
-  \ exitcase  ( -- )
+  \ exitcase ( -- )
   \
   \ End part of a `thiscase` structure: exit the current
   \ definition.
@@ -78,38 +78,38 @@ need alias
   \
   \ }doc
 
-' dup alias thiscase  ( x -- x x )
+' dup alias thiscase ( x -- x x )
 
   \ doc{
   \
-  \ thiscase  ( x -- x x )
+  \ thiscase ( x -- x x )
   \
   \ Mark the start of a alternative `case` structure.
   \
   \ Usage example:
 
   \ ----
-  \ : say0       ( -- )  ." nul"   ;
-  \ : say1       ( -- )  ." unu"   ;
-  \ : say2       ( -- )  ." du"    ;
-  \ : say-other  ( -- )  ." alia"  ;
+  \ : say0      ( -- ) ." nul" ;
+  \ : say1      ( -- ) ." unu" ;
+  \ : say2      ( -- ) ." du" ;
+  \ : say-other ( -- ) ." alia" ;
   \
-  \ : test  ( x -- )
+  \ : test ( x -- )
   \   thiscase  0 = ifcase  say0  exitcase
   \   thiscase  1 = ifcase  say1  exitcase
   \   thiscase  2 = ifcase  say2  exitcase
-  \   othercase say-other  ;
+  \   othercase say-other ;
   \ ----
   \
   \ See also: `ifcase`, `exitcase`, `othercase`.
   \
   \ }doc
 
-' drop alias othercase  ( n -- )
+' drop alias othercase ( n -- )
 
   \ doc{
   \
-  \ othercase  ( x -- )
+  \ othercase ( x -- )
   \
   \ Mark the start of the default option of a `thiscase`
   \ structure that checked _x_.

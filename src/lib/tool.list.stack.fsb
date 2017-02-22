@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702200013
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,25 +49,25 @@
 
 ( .depth .s u.s )
 
-[unneeded] .depth ?\ : .depth  ( n -- )  ." <" 0 .r ." > "  ;
+[unneeded] .depth ?\ : .depth ( n -- ) ." <" 0 .r ." > " ;
 
 need ?(
 
-[unneeded] .s ?(  need .depth
+[unneeded] .s ?( need .depth
 
-defer (.s)  ( x -- )  ' . ' (.s) defer!
+defer (.s) ( x -- ) ' . ' (.s) defer!
 
 : .s   ( -- )
   depth dup .depth 0> if
     sp@ sp0 @ cell- ?do i @ (.s)  [ cell negate ] literal +loop
-  then  ; ?)
+  then ; ?)
 
   \ Credit:
   \ Code from Afera. Original algorithm from v.Forth.
 
-[unneeded] u.s ?(  need .s
+[unneeded] u.s ?( need .s
 
 : u.s   ( -- )
-  ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer!  ; ?)
+  ['] u. ['] (.s) defer!  .s  ['] . ['] (.s) defer! ; ?)
 
   \ vim: filetype=soloforth

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201612071556
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,7 +36,7 @@
   \ 2016-04-26: Use `current-latest` (old fig-Forth `latest`)
   \ instead of current standard `latest`.
   \
-  \ 2016-05-06: Update the requirements: `current-lastest`
+  \ 2016-05-06: Update the requirements: `current-latest`
   \ moved to the kernel.
   \
   \ 2016-12-07: Fix `privatize`: `hidden` instead of `hide`.
@@ -45,45 +45,45 @@
 
 ( privatize )
 
-need name<name  need abort"
+need name<name need abort"
 
 variable private-start  variable private-stop
 
-: private{  ( -- )
-  current-latest private-start !  private-stop off  ;
+: private{ ( -- )
+  current-latest private-start !  private-stop off ;
 
   \ doc{
   \
-  \ private{  ( -- )
+  \ private{ ( -- )
   \
   \ Start private definitions.  See `privatize` for a usage
   \ example.
   \
   \ }doc
 
-: }private  ( -- )
+: }private ( -- )
   private-stop @ abort" Extra }private"
-  current-latest private-stop !  ;
+  current-latest private-stop ! ;
 
   \ doc{
   \
-  \ }private  ( -- )
+  \ }private ( -- )
   \
   \ End private definitions. See `privatize` for a usage
   \ example.
   \
   \ }doc
 
-: privatize  ( -- )
+: privatize ( -- )
   private-start @ 0= abort" Missing private{"
   private-stop @ dup 0= abort" Missing }private"
   begin   dup private-start @ u>
   while   dup hidden name<name
-  repeat  drop  private-start off  private-stop off  ;
+  repeat  drop  private-start off  private-stop off ;
 
   \ doc{
   \
-  \ privatize  ( -- )
+  \ privatize ( -- )
   \
   \ Hide all words defined between the latest valid pair of
   \ `private{` and `}private`.

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171916
+  \ Last modified: 201702221334
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,7 +51,7 @@
 
 need assembler
 
-code fade  ( -- )
+code fade ( -- )
   b push,
   8 b ld#, rbegin  5AFF h ldp#, halt, halt,
     rbegin
@@ -66,7 +66,7 @@ code fade  ( -- )
 
   \ doc{
   \
-  \ fade  ( -- )
+  \ fade ( -- )
   \
   \ Do a screen fade to black, by decrementing the values of
   \ paper and ink in a loop.
@@ -83,13 +83,13 @@ code fade  ( -- )
 
 ( inverted water blackout )
 
-need ?(  [unneeded] inverted ?(  need assembler
+need ?( [unneeded] inverted ?( need assembler
 
-code inverted  ( -- )
+code inverted ( -- )
 
   4000 h ldp#, rbegin   m a ld, cpl, a m ld, h incp,
                         h a ld, 58 cp#,  z? runtil
-  jpnext,  end-code ?)
+  jpnext, end-code ?)
 
   \ Credit:
   \
@@ -100,7 +100,7 @@ code inverted  ( -- )
 
   \ doc{
   \
-  \ inverted  ( -- )
+  \ inverted ( -- )
   \
   \ Invert the pixels of the whole screen.
   \
@@ -108,14 +108,14 @@ code inverted  ( -- )
   \
   \ }doc
 
-[unneeded] water ?(  need assembler
+[unneeded] water ?( need assembler
 
-code water  ( -- )
+code water ( -- )
 
   b push, 20 b ld#,
   rbegin  57FF h ldp#,
           rbegin   m rrc, h decp, h 6 bit,  z? runtil
-  rstep   b pop, jpnext,  end-code ?)
+  rstep   b pop, jpnext, end-code ?)
 
   \ Credit:
   \
@@ -126,7 +126,7 @@ code water  ( -- )
 
   \ doc{
   \
-  \ water  ( -- )
+  \ water ( -- )
   \
   \ Modify the screen bitmap with a water effect. At the end
   \ the original image is  restored.
@@ -137,21 +137,21 @@ code water  ( -- )
 
 [unneeded] blackout ?(
 
-code blackout  ( -- )
+code blackout ( -- )
   D9 c, 21 c, 4000 , 11 c, 4001 , 01 c, 1B00 , 75 c,
   \ exx         ; save Forth IP
   \ ld hl,$4000 ; start of screen
   \ ld de,$4001 ; destination
   \ ld bc,$1B00 ; count: bitmap and attributes
   \ ld (hl),l   ; zero
-  ED c, B0 c, D9 c, jpnext,  end-code ?)
+  ED c, B0 c, D9 c, jpnext, end-code ?)
   \ ldir        ; fill
   \ exx         ; restore Forth IP
   \ _jp_next
 
   \ doc{
   \
-  \ blackout  ( -- )
+  \ blackout ( -- )
   \
   \ Erase the screen (bitmap and the attributes) with zeros.
   \

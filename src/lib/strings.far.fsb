@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702171821
+  \ Last modified: 201702221416
 
   \ -----------------------------------------------------------
   \ Description
@@ -50,11 +50,11 @@
 
 [unneeded] far,"
 
-?\ need fars,  : far,"  ( -- )  '"' parse fars,  ;
+?\ need fars,  : far," ( -- ) '"' parse fars, ;
 
   \ doc{
   \
-  \ far,"  ( "ccc<quote>" -- )
+  \ far," ( "ccc<quote>" -- )
   \
   \ Parse "ccc" delimited by a double-quote and compile the
   \ string in far memory.
@@ -63,27 +63,27 @@
 
 need ?(
 
-[unneeded] fars, ?(  need farplace  need farallot
+[unneeded] fars, ?( need farplace need farallot
 
-: fars,  ( ca len -- )  tuck hp@ farplace 1+ farallot  ; ?)
+: fars, ( ca len -- ) tuck hp@ farplace 1+ farallot ; ?)
 
   \ doc{
   \
-  \ fars,  ( ca len -- )
+  \ fars, ( ca len -- )
   \
   \ Compile a string in far memory.
   \
   \
   \ }doc
 
-[unneeded] farsconstant ?(  need fars,
+[unneeded] farsconstant ?( need fars,
 
-: farsconstant  ( ca len "name" -- )
-  hp@ >r fars, r> farcount 2constant  ; ?)
+: farsconstant ( ca len "name" -- )
+  hp@ >r fars, r> farcount 2constant ; ?)
 
   \ doc{
   \
-  \ farsconstant  ( ca len "name" -- )
+  \ farsconstant ( ca len "name" -- )
   \
   \ Create a string constant _name_ in far memory with value
   \ _ca len_.
@@ -95,14 +95,14 @@ need ?(
   \
   \ }doc
 
-[unneeded] save-farstring ?(  need cmove<far
+[unneeded] save-farstring ?( need cmove<far
 
-: save-farstring  ( ca1 len1 -- ca2 len1 )
-  dup allocate-string swap 2dup 2>r cmove<far 2r>  ; ?)
+: save-farstring ( ca1 len1 -- ca2 len1 )
+  dup allocate-string swap 2dup 2>r cmove<far 2r> ; ?)
 
   \ doc{
   \
-  \ save-farstring  ( ca1 len1 -- ca2 len1 )
+  \ save-farstring ( ca1 len1 -- ca2 len1 )
   \
   \ Save the string _ca1 len1_, which is in far memory, in the
   \ circular string buffer and return it at its new address as
@@ -114,14 +114,14 @@ need ?(
 
 [unneeded] far>sconstant ?(
 
-need farsconstant  need save-farstring
+need farsconstant need save-farstring
 
-: far>sconstant  ( ca len "name" -- )
-  farsconstant does> 2@ save-farstring  ; ?)
+: far>sconstant ( ca len "name" -- )
+  farsconstant does> 2@ save-farstring ; ?)
 
   \ doc{
   \
-  \ far>sconstant  ( ca len "name" -- )
+  \ far>sconstant ( ca len "name" -- )
   \
   \ Create a string constant _name_ in far memory with value
   \ _ca len_.
@@ -135,14 +135,14 @@ need farsconstant  need save-farstring
 
 ( farsconstants, farsconstants> farsconstants far>sconstants )
 
-need ?(  [unneeded] farsconstants, ?(  need far,
+need ?( [unneeded] farsconstants, ?( need far,
 
-: farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
-  create hp@ , 0 begin  swap ?dup while  far, 1+  repeat  ; ?)
+: farsconstants, ( 0 ca[n]..ca[1] "name" -- n )
+  create hp@ , 0 begin  swap ?dup while  far, 1+  repeat ; ?)
 
   \ doc{
   \
-  \ farsconstants,  ( 0 ca[n]..ca[1] "name" -- n )
+  \ farsconstants, ( 0 ca[n]..ca[1] "name" -- n )
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
@@ -174,15 +174,15 @@ need ?(  [unneeded] farsconstants, ?(  need far,
 
 [unneeded] farsconstants ?(
 
-need farsconstants,  need array>  need farsconstants>
+need farsconstants, need array> need farsconstants>
 
-: farsconstants  ( 0 ca[n]..ca[1] "name" -- n )
-  farsconstants,  does>  ( n -- ca len )
-  ( n pfa ) farsconstants>  ; ?)
+: farsconstants ( 0 ca[n]..ca[1] "name" -- n )
+  farsconstants,  does> ( n -- ca len )
+  ( n pfa ) farsconstants> ; ?)
 
   \ doc{
   \
-  \ farsconstants  ( 0 ca[n]..ca[1] "name" -- )
+  \ farsconstants ( 0 ca[n]..ca[1] "name" -- )
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
@@ -216,16 +216,16 @@ need farsconstants,  need array>  need farsconstants>
   \
   \ }doc
 
-[unneeded] far>sconstants ?(  need farsconstants,
-need array>  need farsconstants>  need save-farstring
+[unneeded] far>sconstants ?( need farsconstants,
+need array> need farsconstants> need save-farstring
 
-: far>sconstants  ( 0 ca[n]..ca[1] "name" -- n )
-  farsconstants,  does>  ( n -- ca len )
-  ( n pfa ) farsconstants> save-farstring  ; ?)
+: far>sconstants ( 0 ca[n]..ca[1] "name" -- n )
+  farsconstants,  does> ( n -- ca len )
+  ( n pfa ) farsconstants> save-farstring ; ?)
 
   \ doc{
   \
-  \ far>sconstants  ( 0 ca[n]..ca[1] "name" -- n )
+  \ far>sconstants ( 0 ca[n]..ca[1] "name" -- n )
   \
   \ Create a table of string constants _name_ in far memory,
   \ using counted strings _ca[n]..ca[1]_, being _0_ a mark for
@@ -268,18 +268,19 @@ need ?(
 need assembler
 need far-hl-routine need upper-routine need ?next-bank-routine
 
-code faruppers  ( ca len -- )
+code faruppers ( ca len -- )
 
   h pop, exsp, far-hl-routine call, d pop,
   rbegin  d a ld, e or,  nz? rwhile
           m a ld, upper-routine call, a m ld, h incp,
           d push, ?next-bank-routine call, d pop, d decp,
-  rrepeat ' default-bank jp,  end-code ?)
+  rrepeat ' default-bank jp, end-code ?)
 
-  \   pop hl               ; string length
-  \   ex (sp),hl           ; HL = string address
-  \   call far_hl_routine  ; HL = actual string address; bank paged in
-  \   pop de               ; string length
+  \   pop hl              ; string length
+  \   ex (sp),hl          ; HL = string address
+  \   call far_hl_routine ; HL = actual string address
+  \                       ; the bank is paged in
+  \   pop de              ; string length
   \ far_uppers.do:
   \   ld a,d
   \   or e
@@ -300,7 +301,7 @@ code faruppers  ( ca len -- )
 
   \ doc{
   \
-  \ faruppers  ( ca len -- )
+  \ faruppers ( ca len -- )
   \
   \ Convert string _ca len_, which is stored in far memory, to
   \ uppercase.

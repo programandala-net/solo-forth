@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201604092020
+  \ Last modified: 201702220028
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,19 +33,19 @@
 
 ( associative: )
 
-: associative:  ( n "name" -- )
+: associative: ( n "name" -- )
   constant
-  does>  ( x -- index )
+  does> ( x -- index )
     ( x pfa )
     dup @ ( x pfa n ) -rot dup @ 0 ( n x pfa n 0 )
     do ( n x pfa )
       cell+ 2dup @ = ( n x pfa' flag )
       if  2drop drop i unloop exit  then
-    loop 2drop ( n )  ;
+    loop 2drop ( n ) ;
 
   \ doc{
 
-  \ associative:  ( n "name" -- )
+  \ associative: ( n "name" -- )
 
   \ Create a table lookup "name" with _n_ entries.
   \
@@ -63,7 +63,7 @@
   \ 200 constant zx2
   \ 30 constant zx3
   \
-  \ 3 associative: unzx  ( value -- n )  zx1 , zx2 , zx3 ,
+  \ 3 associative: unzx ( value -- n ) zx1 , zx2 , zx3 ,
   \
   \ 1000 unzx .  \ prints 0
   \ 200 unzx .   \ prints 1

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201701182343
+  \ Last modified: 201702220020
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,20 +56,20 @@
 ( defined? parse-char parse-all )
 
 [unneeded] defined?
-?\ : defined?  ( ca len -- f )  undefined? 0=  ;
+?\ : defined? ( ca len -- f ) undefined? 0= ;
 
 [unneeded] parse-char
-?\ : parse-char  ( "c"  -- c )  stream drop c@ 1 parsed  ;
+?\ : parse-char ( "c"  -- c ) stream drop c@ 1 parsed ;
   \ Parse the next char in the input stream and return its
   \ code.
 
-need ?(  [unneeded] parse-all ?(
-: parse-all  ( "ccc<eol>" -- ca len )
-  stream dup parsed save-string  ; ?)
+need ?( [unneeded] parse-all ?(
+: parse-all ( "ccc<eol>" -- ca len )
+  stream dup parsed save-string ; ?)
 
   \ doc{
   \
-  \ parse-all  ( "ccc" -- ca len )
+  \ parse-all ( "ccc" -- ca len )
   \
   \ Parse the rest of the source.
   \
@@ -82,12 +82,12 @@ need ?(  [unneeded] parse-all ?(
 need ?(
 
 [unneeded] string>source ?(
-: string>source  ( ca len -- )
-  blk off  (source-id) on  set-source  ; ?)
+: string>source ( ca len -- )
+  blk off  (source-id) on  set-source ; ?)
 
   \ doc{
   \
-  \ string>source  ( ca len -- )
+  \ string>source ( ca len -- )
   \
   \ Set the string _ca len_ as the current source.
   \
@@ -95,12 +95,12 @@ need ?(
 
 [unneeded] execute-parsing ?( need need-here
 need-here string>source
-: execute-parsing  ( ca len xt -- )
-  nest-source >r string>source r> execute unnest-source  ; ?)
+: execute-parsing ( ca len xt -- )
+  nest-source >r string>source r> execute unnest-source ; ?)
 
   \ doc{
   \
-  \ execute-parsing  ( ca len xt -- )
+  \ execute-parsing ( ca len xt -- )
   \
   \ Make _ca len_ the current input source, execute _xt_, then
   \ restore the previous input source.
@@ -109,14 +109,14 @@ need-here string>source
   \
   \ }doc
 
-[unneeded] evaluate ?(  need need-here
+[unneeded] evaluate ?( need need-here
 need-here execute-parsing
-: evaluate  ( i*x ca len -- j*x )
-  ['] interpret execute-parsing  ; ?)
+: evaluate ( i*x ca len -- j*x )
+  ['] interpret execute-parsing ; ?)
 
   \ doc{
   \
-  \ evaluate  ( i*x ca len -- j*x )
+  \ evaluate ( i*x ca len -- j*x )
   \
   \ Save the current input source specification. Store
   \ minus-one (-1) in `source-id`. Make the  string described
@@ -131,11 +131,11 @@ need-here execute-parsing
 ( char [char] word )
 
 [unneeded] char
-?\ : char  ( "name" -- c )  parse-name drop c@  ;
+?\ : char ( "name" -- c ) parse-name drop c@ ;
 
   \ doc{
   \
-  \ char  ( "name" -- c )
+  \ char ( "name" -- c )
   \
   \ Parse "name" and put the value of its first character on
   \ the stack.
@@ -144,10 +144,10 @@ need-here execute-parsing
   \
   \ }doc
 
-need ?(  [uneeded] [char]  ?(
+need ?( [uneeded] [char]  ?(
 
-: [char]  ( "name" -- c )
-  char postpone cliteral  ; immediate compile-only  ?)
+: [char] ( "name" -- c )
+  char postpone cliteral ; immediate compile-only ?)
 
   \ doc{
   \
@@ -173,18 +173,18 @@ need ?(  [uneeded] [char]  ?(
 
 [unneeded] word ?(
 
-: word  ( c "<chars>ccc<char>" -- ca )
+: word ( c "<chars>ccc<char>" -- ca )
   dup  stream                 ( c c ca len )
   dup >r   rot skip           ( c ca' len' )
   over >r  rot scan           ( ca" len" )
   dup if  char-  then         \ skip trailing delimiter
   r> r> rot -   >in +!        \ update `>in`
-  tuck -  ( ca' len ) here place  here ( ca )
-  bl over count + c!  ; ?)    \ append trailing blank
+  tuck - ( ca' len ) here place  here ( ca )
+  bl over count + c! ; ?) \ append trailing blank
 
   \  doc{
   \
-  \  word  ( c "<chars>ccc<char>" -- ca )
+  \  word ( c "<chars>ccc<char>" -- ca )
   \
   \  c = delimiter char
   \
@@ -212,15 +212,15 @@ need ?(  [uneeded] [char]  ?(
   if tib #tib @ 2dup c/l 2 + allocate throw dup >r swap cmove
      r> to tib  >in @
      source-id file-position throw  5
-  else blk @ >in @ 2 then  ;
+  else blk @ >in @ 2 then ;
 
-: restore-input ( xn ... x1 n -- f )  source-id 0>
+: restore-input ( xn ... x1 n -- f ) source-id 0>
   if dup 5 <> if 0 ?do drop loop -1 exit then
      drop source-id reposition-file ?dup
      if >r 2drop drop r> exit then
      >in ! #tib ! to tib false
   else dup 2 <> if 0 ?do drop loop -1 exit then
      drop >in ! blk ! false
-  then  ;
+  then ;
 
   \ vim: filetype=soloforth
