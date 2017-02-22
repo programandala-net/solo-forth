@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -197,7 +197,7 @@ variable -order-wid
   \
   \ }doc
 
-need ?( [unneeded] latest>wordlist  ?( need wordlist-name!
+[unneeded] latest>wordlist  ?( need wordlist-name!
 
 : latest>wordlist ( wid -- ) latest swap wordlist-name! ; ?)
 
@@ -298,7 +298,8 @@ need ?( [unneeded] latest>wordlist  ?( need wordlist-name!
   \
   \ }doc
 
-need ?( [unneeded] find ?(
+[unneeded] find ?(
+
 : find ( ca -- ca 0 | xt 1 | xt -1 )
   dup count find-name dup
   if  nip name>immediate? 1 or negate  then ; ?)

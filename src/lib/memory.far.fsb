@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -154,8 +154,6 @@ get-current assembler-wordlist dup >order set-current
 
   \ }doc
 
-need ?(
-
 [unneeded] ?previous-bank-routine ?(
 
 ' ?previous-bank 2+ @ constant ?previous-bank-routine
@@ -261,7 +259,7 @@ previous set-current
   \
   \ }doc
 
-need ?( [unneeded] far, ?( need farallot
+[unneeded] far, ?( need farallot
 
 : far, ( x -- ) hp@ far! cell farallot ; ?)
 
@@ -345,8 +343,6 @@ need ?( [unneeded] far, ?( need farallot
 
 ( move>far move<far cmove>far cmove<far )
 
-need ?(
-
 [unneeded] move>far ?(
 
 : move>far ( a1 a2 len -- )
@@ -409,7 +405,7 @@ need ?(
 
 ( !bank c!bank @bank c@bank )
 
-need ?( [unneeded] !bank ?( need e-bank-routine
+[unneeded] !bank ?( need e-bank-routine
 
 code !bank ( x a n -- )
   D1 c, e-bank-routine call, E1 c, D1 c, 73 c, 23 c, 72 c,

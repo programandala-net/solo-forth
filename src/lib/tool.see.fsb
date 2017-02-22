@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -238,7 +238,7 @@ previous set-current
 
 get-current  also forth definitions
 
-need ?( [unneeded] see-body-from ?( need see
+[unneeded] see-body-from ?( need see
 
 : see-body-from ( a -- )
   ['] drop ['] .see-body-name defer!

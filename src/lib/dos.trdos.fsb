@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -85,8 +85,6 @@ $18 cconstant dos-read-system-track
 
 ( fda /fda )
 
-need ?(
-
 [unneeded] fda ?(
 
 $5CDD     constant fda
@@ -157,8 +155,6 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-need ?(
-
 [unneeded] -filename ?( need fda need /filename
 
 : -filename ( -- )
@@ -222,8 +218,6 @@ need -filename need /filename need fda
   \ See also: `set-drive`.
   \
   \ }doc
-
-need ?(
 
 [unneeded] cat ?(
 
@@ -329,8 +323,6 @@ code (file-status) ( -- a ior )
 
 ( file-exists? file-start file-length file-type find-file )
 
-need ?(
-
 [unneeded] file-exists? ?( need file-status
 
 : file-exists? ( ca len -- f ) file-status nip 0= ; ?)
@@ -409,9 +401,7 @@ need ?(
   \
   \ }doc
 
-need ?(
-
-[unneeded] find-file  ?( need file-status
+[unneeded] find-file ?( need file-status
 : find-file ( ca len -- f ) file-status 0= and ; ?)
 
   \ doc{

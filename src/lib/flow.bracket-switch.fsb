@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -147,8 +147,6 @@ need link@ need link, need pick
   \ See also: `[switch`, `runs`, `run`.
   \
   \ }doc
-
-need ?(
 
 [unneeded] [switch [unneeded] switch] and ?( need switcher
 

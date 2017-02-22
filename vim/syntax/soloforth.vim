@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-02-12
+" Updated:  2017-02-22
 
 " --------------------------------------------------------------
 " History
@@ -568,6 +568,7 @@ syn keyword soloforthString replaces
 syn keyword soloforthString scan
 syn keyword soloforthString search
 syn keyword soloforthString skip
+syn keyword soloforthString str=
 syn keyword soloforthString substitute
 syn keyword soloforthString unescape
 syn keyword soloforthString lower
@@ -1122,6 +1123,8 @@ let b:current_syntax = "soloforth"
 " `lower-routine`, `noop-routine`.
 "
 " 2017-02-12: Add `file-status`.
+"
+" 2017-02-22: Add `str=`.
 
 " --------------------------------------------------------------
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -66,8 +66,6 @@
   \ See also: `sound!`, `play`.
   \
   \ }doc
-
-need ?(
 
 [unneeded] sound-register-port
 [unneeded] sound-write-port and ?( need const
@@ -169,8 +167,6 @@ set-current previous
   \
   \ http://microhobby.org/numero147.htm
   \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
-
-need ?(
 
 [unneeded] play ?( need /sound need !sound
 

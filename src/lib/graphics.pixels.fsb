@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221333
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -81,8 +81,7 @@
 
 \ (pixel-addr) slow-(pixel-addr) fast-(pixel-addr) \
 
-need ?( [unneeded] (pixel-addr)
-         [unneeded] slow-(pixel-addr) and ?(
+[unneeded] (pixel-addr) [unneeded] slow-(pixel-addr) and ?(
 
 defer (pixel-addr) ( -- a )
 
@@ -207,8 +206,6 @@ create fast-(pixel-addr) ( -- a ) asm
 
 \ (pixel-addr176) pixel-addr176 pixel-addr \
 
-need ?(
-
 [unneeded] (pixel-addr176) ?(
 
   \ XXX UNDER DEVELOPMENT -- 2016-12-26
@@ -299,8 +296,6 @@ code pixel-addr ( gx gy -- n a )
 
 ( plot plot176 )
 
-need ?(
-
 [unneeded] plot ?( need (pixel-addr)
 
 code plot ( gx gy -- )
@@ -366,8 +361,6 @@ code plot176 ( gx gy -- )
   \ }doc
 
 ( set-pixel set-pixel176 )
-
-need ?(
 
 [unneeded] set-pixel?( need (pixel-addr) need assembler
 
@@ -467,8 +460,6 @@ code set-save-pixel176 ( gx gy -- )
 
 ( reset-pixel reset-pixel176 )
 
-need ?(
-
 [unneeded] reset-pixel ?( need (pixel-addr) need assembler
 
 code reset-pixel ( gx gy -- )
@@ -529,8 +520,6 @@ code reset-pixel176 ( gx gy -- )
   \ }doc
 
 ( toggle-pixel toggle-pixel176 )
-
-need ?(
 
 [unneeded] toggle-pixel ?( need (pixel-addr) need assembler
 
@@ -617,8 +606,6 @@ code get-pixel176 ( gx gy -- f )
   1 and#, ' true nz? ?jp, ' false jp, end-code ?)
 
 ( pixels fast-pixels slow-pixels )
-
-need ?(
 
 [unneeded] pixels ?\ defer pixels ( -- n )
 
@@ -709,8 +696,6 @@ code fast-pixels ( -- n )
   \ }doc
 
 ( bitmap>attr-addr pixel-attr-addr )
-
-need ?(
 
 [unneeded] bitmap>attr-addr ?(
 

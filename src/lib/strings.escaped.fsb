@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -257,8 +257,6 @@ variable case-sensitive-esc-chars  case-sensitive-esc-chars on
 
 ( s\" .\" )
 
-need ?(
-
 [unneeded] s\" ?(
 
 need parse-esc-string need esc-standard-chars-wordlist
@@ -339,8 +337,6 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \
   \ }doc
 
-need ?(
-
 [unneeded] #esc-order [unneeded] esc-context and ?(
 
 need max-esc-order
@@ -397,8 +393,6 @@ need max-esc-order
 
 ( set-esc-order get-esc-order )
 
-need ?(
-
 [unneeded] set-esc-order ?(
 
 need ?esc-order need #esc-order need esc-context
@@ -446,8 +440,6 @@ need #esc-order need esc-context
   \ }doc
 
 ( >esc-order parse-esc-char>chars )
-
-need ?(
 
 [unneeded] >esc-order ?(
 

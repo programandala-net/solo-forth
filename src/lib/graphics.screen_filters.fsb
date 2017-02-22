@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221334
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -83,7 +83,7 @@ code fade ( -- )
 
 ( inverted water blackout )
 
-need ?( [unneeded] inverted ?( need assembler
+[unneeded] inverted ?( need assembler
 
 code inverted ( -- )
 

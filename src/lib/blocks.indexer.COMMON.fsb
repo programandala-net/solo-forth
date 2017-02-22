@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221233
+  \ Last modified: 201702221607
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,8 +48,7 @@
 
 get-current forth-wordlist dup >order set-current
 
-need str= need alias need nextname need evaluate
-need search-wordlist
+need alias need nextname need evaluate need search-wordlist
 
 wordlist constant index-wordlist
 
@@ -141,7 +140,7 @@ previous set-current
 
   \ XXX TMP -- for debugging
 
-need ?( need common-indexer
+need common-indexer
 
 [unneeded] index-words ?( need wordlist-words need .wordname
 

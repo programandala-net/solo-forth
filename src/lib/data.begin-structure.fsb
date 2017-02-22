@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220100
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -77,8 +77,6 @@
   \
   \ }doc
 
-need ?(
-
   \ XXX TODO -- document
 
 [unneeded] field: ?( need +field
@@ -101,8 +99,6 @@ need ?(
 : end-structure ( struct-sys n -- ) swap ! ; ?)
 
 ( +field-unopt +field-opt-0 )
-
-need ?(
 
 [unneeded] +field-unopt ?( need +field
 
@@ -174,8 +170,6 @@ need ?(
   \ }doc
 
 ( +field-opt-0124 )
-
-need ?(
 
 [unneeded] +field-opt-0124 ?( need case need +field
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -91,7 +91,7 @@
   \
   \ }doc
 
-need ?( [unneeded] ms ?( need assembler
+[unneeded] ms ?( need assembler
 
 code ms ( u -- )
   d pop, d tstp, nz? rif
@@ -166,8 +166,6 @@ need os-frames
 
 ( ?frames frames pause )
 
-need ?(
-
 [unneeded] ?frames ?( need os-frames
 
 : ?frames ( u -- )
@@ -188,7 +186,7 @@ need ?(
   \
   \ }doc
 
-need ?( [unneeded] frames ?( need os-frames
+[unneeded] frames ?( need os-frames
 
 : frames ( u -- )
   os-frames @ +  begin  dup os-frames @ u<  until drop ; ?)
@@ -248,7 +246,7 @@ need ?( [unneeded] frames ?( need os-frames
 
 ( leapy-year? date set-date get-date )
 
-need ?( [unneeded] leapy-year? ?(
+[unneeded] leapy-year? ?(
 
 : leapy-year? ( n -- f )
   dup 400 mod 0= if  drop true   exit  then

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -131,8 +131,6 @@ variable current-window
 [unneeded] wspace
 ?\ need wemit  : wspace ( -- ) bl wemit ;
 
-need ?(
-
 [unneeded] wemit ?( need char>string need wtype
 : wemit ( c -- ) char>string wtype ; ?)
 
@@ -161,7 +159,7 @@ need ?(
   \ Set the current window coordinates to the first column and
   \ the first row.
 
-need ?( [unneeded] wcr ?( need window need whome
+[unneeded] wcr ?( need window need whome
 
 : wcr ( -- )
   wy c@ dup wrows c@ 1- =

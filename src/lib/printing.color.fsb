@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221409
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -273,8 +273,6 @@
   \
   \ }doc
 
-need ?(
-
 [unneeded] contrast ?( need white need green
 
 : contrast ( b1 -- b1 ) green < abs white * ; ?)
@@ -292,7 +290,7 @@ need ?(
 
 ( papery brighty flashy attr>paper attr>ink )
 
-need ?( [unneeded] papery ?( need 8* need alias
+[unneeded] papery ?( need 8* need alias
 
 ' 8* alias papery ( b1 -- b2 ) ?)
 
@@ -421,8 +419,6 @@ code attr>ink ( b1 -- b2 )
 
 ( attr@ attr! attr-mask@ attr-mask! )
 
-need ?(
-
 [unneeded] attr@ ?( need os-attr-t
 
 code attr@ ( -- b ) 3A c, os-attr-t , pusha jp, end-code ?)
@@ -522,8 +518,6 @@ code mask+attr>perm ( -- ) $1CAD call, jpnext, end-code
 
 ( mask+attr! mask+attr@ attr-setter mask+attr-setter )
 
-need ?(
-
 [unneeded] mask+attr! ?( need os-attr-t
 
 code mask+attr! ( b1 b2 -- )
@@ -606,8 +600,6 @@ code mask+attr@ ( -- b1 b2 )
   \ }doc
 
 ( perm-attr@ perm-attr! perm-attr-mask@ perm-attr-mask! )
-
-need ?(
 
 [unneeded] perm-attr@ ?( need os-attr-p
 
@@ -709,8 +701,6 @@ code perm-attr-mask! ( b -- )
 
 ( get-paper set-paper get-ink set-ink )
 
-need ?(
-
 [unneeded] get-paper ?( need attr@ need attr>paper
 
 : get-paper ( -- b ) attr@ attr>paper ; ?)
@@ -806,8 +796,6 @@ code set-ink ( b -- )
 [unneeded] bright-mask    ?\ %01000000 cconstant bright-mask
 [unneeded] unbright-mask  ?\ %10111111 cconstant unbright-mask
 
-need ?(
-
 [unneeded] get-bright ?( need attr@ need bright-mask
 
 : get-bright ( -- f )
@@ -826,8 +814,6 @@ need bright-mask need attr@ need unbright-mask need attr!
 [unneeded] flash-mask   ?\ %10000000 cconstant flash-mask
 [unneeded] unflash-mask ?\ %01111111 cconstant unflash-mask
 
-need ?(
-
 [unneeded] get-flash ?( need attr@ need flash-mask
 
 : get-flash ( -- f )
@@ -842,8 +828,6 @@ need flash-mask need attr@ need unflash-mask need attr!
   attr@ [ unflash-mask ] cliteral and or attr! ; ?)
 
 ( inverse-on inverse-off inverse )
-
-need ?(
 
 [unneeded] inverse-on ?(
 
@@ -903,8 +887,6 @@ code inverse ( f -- )
 
 ( overprint-on overprint-off overprint )
 
-need ?(
-
 [unneeded] overprint-on ?(
 
 code overprint-on ( -- )
@@ -961,8 +943,6 @@ code overprint ( f -- )
   \ }doc
 
 ( paper. ink. (0-9-color. flash. bright. (0-1-8-color. )
-
-need ?(
 
 [unneeded] paper. ?( need (0-9-color.
 

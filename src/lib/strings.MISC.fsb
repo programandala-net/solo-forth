@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221415
+  \ Last modified: 201702221609
 
   \ -----------------------------------------------------------
   \ Description
@@ -101,20 +101,11 @@
   \
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
-
-( str= str< str> trim +place hunt )
-
-[unneeded] str=
-?\ : str= ( ca1 len1 ca2 len2 -- f ) compare 0= ;
-
-  \ doc{
   \
-  \ str= ( ca1 len1 ca2 len2 -- f )
-  \
-  \ Is string _ca1 len1_ lexicographically equal to string _ca2
-  \ len2_?
-  \
-  \ }doc
+  \ 2017-02-22: Move `str=` to the kernel, because `?(` has
+  \ been moved too.
+
+( str< str> trim +place hunt )
 
 [unneeded] str<
 ?\ : str< ( ca1 len1 ca2 len2 -- f ) compare 0< ;
@@ -125,6 +116,8 @@
   \
   \ Is string _ca1 len1_ lexicographically smaller than string
   \ _ca2 len2_?
+  \
+  \ See also: `str=`, `str>`, `compare`.
   \
   \ }doc
 
@@ -137,6 +130,8 @@
   \
   \ Is string _ca1 len1_ lexicographically larger than string
   \ _ca2 len2_?
+  \
+  \ See also: `str<`, `str=`, `compare`.
   \
   \ }doc
 
@@ -151,8 +146,6 @@
   \ returning string _ca1' len1'_.
   \
   \ }doc
-
-need ?(
 
 [unneeded] +place ?( need c+!
 : +place ( ca1 len1 ca2 -- )
@@ -220,7 +213,7 @@ need ?(
   \
   \ }doc
 
-need ?( [unneeded] d>str ?(
+[unneeded] d>str ?(
 : d>str ( d -- ca len ) tuck dabs <# #s rot sign #> ; ?)
 
   \ Credit:
@@ -299,8 +292,6 @@ need ?( [unneeded] d>str ?(
   \
   \ }doc
 
-need ?(
-
 [unneeded] 2>bstring  ?(
 : 2>bstring ( xd -- ca len )
   pad 2! pad [ 2 cells ] literal ; ?)
@@ -317,8 +308,6 @@ need ?(
   \ }doc
 
 ( lengths s+ )
-
-need ?(
 
 [unneeded] lengths ?(
 
@@ -396,7 +385,7 @@ code lengths
 
 ( upper upper-routine uppers uppers1 )
 
-need ?( [unneeded] upper [unneeded] upper-routine and ?( 0
+[unneeded] upper [unneeded] upper-routine and ?( 0
 
 code upper ( c -- c' ) E1 c, 7D c, 21 c, pusha , E5 c,
   \   pop hl
@@ -515,8 +504,6 @@ code lowers ( ca len -- )
 
 ( #spaces #chars )
 
-need ?(
-
 [unneeded] #spaces ?( need under+
 
   \ XXX TODO -- finish and benchmark. rewrite `#spaces` after
@@ -555,7 +542,7 @@ need ?(
 
 ( /name first-name last-name )
 
-need ?( [unneeded] last-name ?( need trim
+[unneeded] last-name ?( need trim
 
 : last-name ( ca1 len1 -- ca2 len2 )
   trim  begin  2dup bl scan bl skip dup
@@ -611,12 +598,9 @@ need ?( [unneeded] last-name ?( need trim
 
 ( prefix? suffix? -prefix -suffix )
 
-need ?(
+[unneeded] prefix?
 
-[unneeded] prefix? ?( need str=
-
-: prefix? ( ca1 len1 ca2 len2 -- f )
-  tuck 2>r min 2r> str= ; ?)
+?\ : prefix? ( ca1 len1 ca2 len2 -- f ) tuck 2>r min 2r> str= ;
 
   \ Credit:
   \
@@ -631,7 +615,7 @@ need ?(
   \
   \ }doc
 
-[unneeded] suffix? (? need pick need str=
+[unneeded] suffix? (? need pick
 
 : suffix? ( ca1 len1 ca2 len2 -- f )
   2swap dup 3 pick - /string str= ; ?)
@@ -745,7 +729,7 @@ need ?(
   \
   \ }doc
 
-need ?( [unneeded] save-counted-string ?(
+[unneeded] save-counted-string ?(
 : save-counted-string ( ca1 len1 -- ca2 )
   dup 1+ allocate-string dup >r place r> ; ?)
 
@@ -759,8 +743,6 @@ need ?( [unneeded] save-counted-string ?(
   \ }doc
 
 ( string/ char-in-string? char-position? ruler )
-
-need ?(
 
 code string/ ( ca1 len1 len2 -- ca2 len2 )
   D9 c, C1 c, D1 c, E1 c, 19 c, A7 c, ED c, 42 c,
@@ -833,8 +815,6 @@ code string/ ( ca1 len1 len2 -- ca2 len2 )
   \ }doc
 
 ( sconstant sconstants unescape )
-
-need ?(
 
 [unneeded] sconstant ?(
 

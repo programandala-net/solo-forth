@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221419
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -266,7 +266,7 @@ create tape-header  /tape-header 2 * allot
 
 ( read-tape-file write-tape-file )
 
-need ?( [unneeded] read-tape-file ?( need tape-header
+[unneeded] read-tape-file ?( need tape-header
 
 code (read-tape-file) ( -- )
   C5 c,  DD c, 21 c, tape-header ,  2A c, tape-start ,

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221253
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -109,7 +109,7 @@ need search-wordlist
 
 ( entry: centry: 2entry: sentry: items )
 
-need ?( need create-entry  [unneeded] entry: ?(
+need create-entry  [unneeded] entry: ?(
 : entry: ( x wid "name" -- )
   ['] , create-entry does> ( -- x ) ( pfa ) @ ; ?)
 

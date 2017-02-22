@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -58,8 +58,6 @@
   \ inline code that is not a cross reference.
 
 ( (g-emit g-emit g-type )
-
-need ?(
 
 [unneeded] (g-emit ?( need assembler need g-emit-routine
                        need os-chars need os-coords
@@ -125,8 +123,7 @@ need g-emit-udg need (g-emit need g-emitted
 
 ( g-cr g-emitted g-emit-udg )
 
-need ?( [unneeded] g-cr ?( need g-y need g-at-xy
-                            need pixels-scroll-up
+[unneeded] g-cr ?( need g-y need g-at-xy need pixels-scroll-up
 
 : g-cr ( -- )
   0 g-y 8 - dup 7 < if    7 swap - pixels-scroll-up 7

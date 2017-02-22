@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,8 +73,6 @@
   \ references.
 
 ( avalue 2avalue cavalue )
-
-need ?(
 
 [unneeded] avalue ?( need array>
 
@@ -149,7 +147,7 @@ need ?(
 
 ( ato +ato 2ato )
 
-need ?( [unneeded] ato ?( need >body
+[unneeded] ato ?( need >body
 
 : (ato) ( x n xt -- ) >body array> ! ;
 
@@ -240,8 +238,6 @@ need ?( [unneeded] ato ?( need >body
   \ }doc
 
 ( cato +cato )
-
-need ?(
 
 [unneeded] cato ?( need >body
 

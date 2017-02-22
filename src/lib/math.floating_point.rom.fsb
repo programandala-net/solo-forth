@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702221344
+  \ Last modified: 201702221608
 
   \ -----------------------------------------------------------
   \ Description
@@ -193,8 +193,8 @@ code f<> ( -- f ) ( F: r1 r2 -- )
   \ factored and adapted.
 
 need frot need f- need fabs need fswap need f< need fover
-need f+ need f* need fp@ need float- need float need str=
-need fdrop need fsgn
+need f+ need f* need fp@ need float- need float need fdrop
+need fsgn
 
 : f~abs ( -- f ) ( F: r1 r2 r3 -- )
   frot frot f- fabs fswap f< ;

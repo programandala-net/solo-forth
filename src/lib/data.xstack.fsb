@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,8 +52,6 @@
   \ 2017-02-17: Update cross references.
 
 ( xsize xp xp0 xstack xfree allocate-xstack allot-xstack )
-
-need ?(
 
 [unneeded] xsize  [unneeded] xp and  [unneeded] xp0 and
 [unneeded] xstack and ?(
@@ -125,7 +123,7 @@ need value
   \
   \ }doc
 
-need ?( [unneeded] allocate-xstack ?( need allocate
+[unneeded] allocate-xstack ?( need allocate
 
 : allocate-xstack ( n -- a )
   cells here >r allocate throw cell- dup , , , r> ; ?)
@@ -159,7 +157,7 @@ need ?( [unneeded] allocate-xstack ?( need allocate
 
 ( >x x@ xdrop x> xdup xpick )
 
-need ?( [unneeded] >x ?( need xp
+[unneeded] >x ?( need xp
 
 : >x ( x -- ) ( X: -- x ) cell xp +!  xp @ ! ; ?)
 
@@ -258,8 +256,6 @@ need ?( [unneeded] >x ?( need xp
 
 ( 2x@ 2>x 2x> 2xdrop 2xdup )
 
-need ?(
-
 [unneeded] 2x@ ?( need x@ need xpick
 
 : 2x@ ( -- x1 x2 ) ( X: x1 x2 -- x1 x2 )
@@ -333,8 +329,6 @@ need ?(
   \ }doc
 
 ( xclear xdepth .xs )
-
-need ?(
 
 [unneeded] xclear ?( need xp0 need xp
 

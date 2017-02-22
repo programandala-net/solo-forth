@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -1176,7 +1176,7 @@ need frames@ need reset-frames need rnd
 
 ( um*-bench um/mod-bench )
 
-need ?( need bench{ need }bench.
+need bench{ need }bench.
 
   \ --------------------------------------------
 

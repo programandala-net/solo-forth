@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,7 +48,7 @@
 
 ( (pixel-pan-right pixel-pan-right pixels-pan-right )
 
-need ?( [unneeded] (pixel-pan-right ?( need assembler
+[unneeded] (pixel-pan-right ?( need assembler
 
 create (pixel-pan-right ( -- a ) asm
   4000 h ldp#, C0 c ld#,

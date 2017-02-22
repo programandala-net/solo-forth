@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -196,8 +196,6 @@ code ocr ( col line -- n )
   \ }doc
 
 ( ascii-ocr udg-ocr )
-
-need ?(
 
 [unneeded] ascii-ocr ?( need ocr need os-chars
 

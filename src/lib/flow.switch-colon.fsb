@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221316
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -102,8 +102,6 @@
   \
   \ }doc
 
-need ?(
-
 [unneeded] switch [unneeded] :clause and ?(
 
 need search-wordlist need nextname need >bstring
@@ -137,8 +135,6 @@ need search-wordlist need nextname need >bstring
   \ }doc
 
 ( cswitch :cclause 2switch :2clause )
-
-need ?(
 
 [unneeded] cswitch [unneeded] :cclause and ?(
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221318
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,8 +43,6 @@
   \ conditional interpretation, after `end-asm`.
 
 \ (attr-addr) attr attr-addr \
-
-need ?(
 
 [unneeded] (attr-addr) ?(
 

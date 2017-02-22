@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702212051
+// Last modified 201702221706
 
 // Assembler {{{1
 == Assembler ==
@@ -96,22 +96,15 @@ of them. They are marked in the source.
 
 Align comments of the kernel.
 
-.2017-01-06, 2017-02-13:
+.2017-01-06, 2017-02-13, 2017-02-22:
 
 Change the code style after Pygmy Forth:
 
 - Remove the last space in paren comment.
-- Use only one space before and after paren comments.
 - Use a single dash in stack comments.
 
-Also:
-
-- Use a single space before `;`, `end-code`, `end-asm`, `endm`.
-- Use a single space after `?(`.
-
-All this will make the code more compact, saving a handful of blocks.
-Many times a word does not fit a block line because of the current
-convention.
+This will compact the code, saving a handful of blocks.  Many times a
+word does not fit a block line because of the current convention.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
@@ -1365,12 +1358,6 @@ benchmarks) that included the library at the start.
 Move `>name` to the library, and make the alternative slower
 implementation optional.
 
-.2017-02-08:
-
-Move `?(` to the kernel. Since `exit` is not used after conditional
-compilation, `?(` must be loaded most of the times, because the whole
-block is interpreted.
-
 .2017-01-31:
 
 Words that could be moved to the library, if the `need` tool didn't use them:
@@ -1593,11 +1580,10 @@ to save space. For example, the patching of `cold.home`.
 // Parsing {{{1
 == Parsing ==
 
-.2016-05-13:
+.2016-05-13, 2017-02-22:
 
-Improve `?(` with `refill`, to cross block boundaries?
-This would be needed  for `load-app`. Maybe two versions:
-if `load-app` has been compiled, then compile the improved version of `?(`.
+Improve `?(` with `refill`, to cross block boundaries?  This would be
+needed  for `load-app`.
 
 .2016-06-01:
 

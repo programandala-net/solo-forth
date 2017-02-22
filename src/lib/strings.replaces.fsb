@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,8 +62,6 @@
   \
   \ }doc
 
-need ?(
-
 [unneeded] (substitution ?(
 
 need substitute-wordlist need nextname
@@ -109,8 +107,6 @@ need (substitution need /counted-string
   \ }doc
 
 ( find-substitution reuse-substitution replaces )
-
-need ?(
 
 [unneeded] find-substitution ?(
 

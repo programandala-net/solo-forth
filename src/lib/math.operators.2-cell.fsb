@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221354
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -67,8 +67,6 @@
 
   \ This implementation uses 30 bytes.
   \ Relative speed: 1.0000
-
-need ?(
 
 [unneeded] d* ?(
 : d* ( d|ud1 d|ud2 -- d|ud3 )
@@ -163,8 +161,6 @@ need tum* need t+ need t- need tum/ need d2* need lshift
 
 [unneeded] d0< ?\ : d0< ( d -- f ) nip 0< ;
 
-need ?(
-
 [unneeded] d< ?(
 
 need 2nip
@@ -199,8 +195,6 @@ need 2nip
   \
   \ Code of `dmin` and `dmax` from DZX-Forth.
 
-need ?(
-
 [unneeded] dmin ?(
 : dmin ( d1 d2 -- d1 | d2 )
   2over 2over d< 0= if  2swap  then  2drop ; ?)
@@ -211,8 +205,6 @@ need ?(
   2over 2over d< if  2swap  then  2drop ; ?)
 
 ( d- d2* d2/ )
-
-need ?(
 
   \ Credit:
   \

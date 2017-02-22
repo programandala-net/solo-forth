@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,8 +47,6 @@
   \ references.
 
 ( faravariable far2avariable farcavariable )
-
-need ?(
 
 [unneeded] faravariable ?( need farallot need array>
 

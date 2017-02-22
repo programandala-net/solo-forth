@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221351
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -129,8 +129,6 @@
   \ part of the assembler.
 
 ( under+ +under )
-
-need ?(
 
 [unneeded] under+ ?(
 
@@ -310,8 +308,6 @@ code +under ( n1|u1 n2|u2 x -- n3|u3 x )
 
 ( odd? even? )
 
-need ?(
-
 [unneeded] odd? ?(
 
 code odd? ( n -- f )
@@ -367,8 +363,6 @@ code even? ( n -- f )
   \ }doc
 
 ( 8* polarity <=> )
-
-need ?(
 
 [unneeded] 8* ?(
 
@@ -533,8 +527,6 @@ code polarity ( n -- -1 | 0 | 1 )
   \
   \ }doc
 
-need ?(
-
 [unneeded] 0max ?(
 
 code 0max ( n -- n | 0 )
@@ -563,7 +555,7 @@ code 0max ( n -- n | 0 )
 
 ( lshift rshift )
 
-need ?( [unneeded] lshift ?( need assembler need unresolved
+[unneeded] lshift ?( need assembler need unresolved
 
 code lshift ( x1 u -- x2 )
 
@@ -649,8 +641,6 @@ need 0exit need rshift need lshift
 
 ( clshift crshift )
 
-need ?(
-
 [unneeded] clshift ?(
 
 code clshift ( b1 u -- b2 )
@@ -730,8 +720,6 @@ code bits ( ca len -- u )
   \ }doc
 
 ( 2/ cell/ )
-
-need ?(
 
 [unneeded] 2/ ?(
 
@@ -834,8 +822,6 @@ need 2/
   \
   \ Forth-94 documentation.
 
-need ?(
-
 [unneeded] /-rem ?( need sm/rem
 
 : /-rem ( n1 n2 -- n3 n4 ) >r  s>d  r> sm/rem ; ?)
@@ -910,8 +896,6 @@ need ?(
   \
   \ Forth-94 documentation.
 
-need ?(
-
 [unneeded] /_mod ?( need fm/mod
 : /_mod ( n1 n2 -- n3 n4 ) >r s>d r> fm/mod ; ?)
 
@@ -928,8 +912,6 @@ need ?(
 : */_ ( n1 n2 n3 -- n4 )  */_mod nip ; ?)
 
 ( any? either neither ifelse )
-
-need ?(
 
 [unneeded] any? ?( need roll  variable (any?)
 
@@ -1018,8 +1000,6 @@ need ?(
 
   \ XXX OLD -- 2016-10-27: Moved to the kernel, needed by the
   \ extra memory system.
-
-need ?(
 
 [unneeded] split ?(
 

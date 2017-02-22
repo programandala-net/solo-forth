@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,14 +56,17 @@
 ( defined? parse-char parse-all )
 
 [unneeded] defined?
+
 ?\ : defined? ( ca len -- f ) undefined? 0= ;
 
 [unneeded] parse-char
+
 ?\ : parse-char ( "c"  -- c ) stream drop c@ 1 parsed ;
   \ Parse the next char in the input stream and return its
   \ code.
 
-need ?( [unneeded] parse-all ?(
+[unneeded] parse-all ?(
+
 : parse-all ( "ccc<eol>" -- ca len )
   stream dup parsed save-string ; ?)
 
@@ -78,8 +81,6 @@ need ?( [unneeded] parse-all ?(
   \ }doc
 
 ( execute-parsing string>source evaluate )
-
-need ?(
 
 [unneeded] string>source ?(
 : string>source ( ca len -- )
@@ -144,7 +145,7 @@ need-here execute-parsing
   \
   \ }doc
 
-need ?( [uneeded] [char]  ?(
+[uneeded] [char]  ?(
 
 : [char] ( "name" -- c )
   char postpone cliteral ; immediate compile-only ?)

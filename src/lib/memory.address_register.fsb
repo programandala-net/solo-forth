@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221357
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -99,7 +99,7 @@ code a@ ( -- a ) 2A c, a , jppushhl, end-code
 
 ( !a @a c!a c@a )
 
-need a need ?(
+need a
 
 [unneeded] !a ?(
 code !a ( x -- ) D1 c, 2A c, a , 70 03 + c, 23 c, 70 02 + c,
@@ -179,7 +179,7 @@ code c@a ( -- c ) 2A c, a , 6E c, 26 c, 00 c, jppushhl,
 
 ( !a+ @a+ c!a+ c@a+ )
 
-need a need ?(
+need a
 
 [unneeded] !a+ ?(
 code !a+ ( x -- )

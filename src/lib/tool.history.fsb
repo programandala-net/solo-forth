@@ -115,8 +115,6 @@ variable browsed-history
 
 ( history )
 
-need str=
-
 : history-empty? ( -- f ) used-history 0= ;
   \ Is the history empty?
 
@@ -286,8 +284,6 @@ variable currently-browsed-history
 init-history  -->
 
 ( history-xxx-old )
-
-need str=
 
 : allot-history ( +n -- ) negate hp +! ;
   \ Reserve _+n_ bytes in the history.

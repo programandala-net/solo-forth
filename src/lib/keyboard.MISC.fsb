@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -267,11 +267,10 @@ noop noop noop noop noop noop noop noop noop noop noop noop [
   \
   \ }doc
 
-need ?( [unneeded] aborted? ?(
+[unneeded] aborted? ?(
 
 : aborted? ( c -- f )
-  key? dup  if    key 2drop key =
-            else  nip  then ; ?)
+  key? dup if key 2drop key = else nip then ; ?)
 
   \ doc{
   \
@@ -297,8 +296,7 @@ need ?( [unneeded] aborted? ?(
   \ XXX UNDER DEVELOPMENT
   \ XXX TODO try
 
-: break? ( -- f )
-  key? dup if  key 2drop break-key?  then ; ?)
+: break? ( -- f ) key? dup if  key 2drop break-key?  then ; ?)
 
 ( /kk kk-ports kk, kk@ )
 
@@ -534,7 +532,7 @@ create kk-chars
 
 ( #>kk pressed pressed? )
 
-need ?( [unneeded] #>kk ?( need kk-ports
+[unneeded] #>kk ?( need kk-ports
 
 : #>kk ( n -- d ) /kk * kk-ports + kk@ ; ?)
 

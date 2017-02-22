@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221404
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -862,8 +862,6 @@ cr .( foo2)
 ( ?(-test )
 
   \ 2016-05-07
-
-need ?(
 
 0 dup ?( create zx1a  create zx1b ?)
 1 ?(

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221356
+  \ Last modified: 201702221550
 
   \ -----------------------------------------------------------
   \ Description
@@ -42,7 +42,7 @@
 ?\ : tum* ( d n -- t ) 2>r  r@ um*  0 2r>  um* d+ ;
   \ Triple unsigned mixed multiply.
 
-need ?( [unneeded] t+ ?(
+[unneeded] t+ ?(
 
 : +carry ( n1 n2 -- n1+n2 carry ) 0 tuck d+ ;
 
@@ -90,7 +90,7 @@ need ?( [unneeded] t+ ?(
   \
   \ }doc
 
-need ?( [unneeded] mt* ?( need ut* need tnegate
+[unneeded] mt* ?( need ut* need tnegate
 
 : mt*   ( d n -- t ) dup 0<
   if    abs over 0< if  >r dabs r> ut*  else  ut* tnegate  then
