@@ -1184,6 +1184,10 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 // Memory {{{1
 == Memory ==
 
+.2017-02-24:
+
+Make `.unused` show also the number of banks.
+
 .2017-02-20:
 
 Idea to support memory larger than 128 KiB, provided Pentagon and
