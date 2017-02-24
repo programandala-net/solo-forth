@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702221704
+; Last modified: 201702241540
 
 include version.z80s
 
@@ -1365,7 +1365,7 @@ endif
 ; registers onto the stack and then continues at the address
 ; returned by `next`.
 ;
-; Note: DE is pushed first, so HL is left on top of the stack.
+; NOTE: DE is pushed first, so HL is left on top of the stack.
 ; This is equivalent to pushing the double number formed by both
 ; registers, being HL the high part and DE the lower part.
 ;
@@ -1581,7 +1581,7 @@ endif
 ; | +3     | $C000..$FFFF  | 7
 ; |===
 
-; Note: The default banks are valid for G+DOS and TR-DOS.  +3DOS
+; NOTE: The default banks are valid for G+DOS and TR-DOS.  +3DOS
 ; requires other configuration, which is under development.
 ;
 ; See also: `bank`, `banks`, `bank-index`, `far`, `far@`, `farc@`, `far!`, `farc!`, `farcount`,
@@ -2844,8 +2844,8 @@ question_csb_.enough:
 ; false (not zero), the following in-line address is copied to
 ; IP to branch forward or backward.
 ;
-; Note: This is not Forth-83's ``?branch``, which is equivalent
-; to fig-Forth's ``0branch+``, which is a more logical name to
+; NOTE: This is not Forth-83's ``?branch``, which is equivalent
+; to fig-Forth's ``0branch``, which is a more logical name to
 ; represent the action: branch if zero. Solo Forth borrows
 ; `0branch` from fig-Forth, and completes the branches after a
 ; logical naming convention shared with optional control flow
@@ -6121,7 +6121,8 @@ do_user:
 ; User variable that holds the address of the bottom of the data
 ; stack.
 ;
-; Note: In fig-Forth, Forth-79 and Forth-83 it's called `S0`.
+; Origin: fig-Forth's ``s0``, Forth-79's ``s0``, Forth-83's
+; ``s0``.
 ;
 ; }doc
 
@@ -6137,7 +6138,7 @@ do_user:
 ; User variable that holds the address of the bottom of the
 ; return stack.
 ;
-; Note: In fig-Forth it's called `R0`.
+; Origin: fig-Forth's ``r0``.
 ;
 ; }doc
 
@@ -11858,7 +11859,7 @@ block.end:
 ;
 ; Exchange the low and high bytes within _x1_, resulting _x2_.
 ;
-; Note: This word is called `><` or `cswap` in other Forth
+; NOTE: This word is called ``><`` or ``cswap`` in other Forth
 ; systems.
 ;
 ; Origin: eForth.
@@ -13135,7 +13136,7 @@ system_stack_pointer:
 ;
 ; Default action of `at-xy`, in mode 32.
 ;
-; Warning: The system will crash if the coordinates are out of screen.
+; WARNING: The system will crash if the coordinates are out of screen.
 ; For the sake of speed, no check is done.  A wrapper secure word can
 ; be written if needed.
 ;

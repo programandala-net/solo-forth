@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221607
+  \ Last modified: 201702241212
 
   \ -----------------------------------------------------------
   \ Description
@@ -43,6 +43,8 @@
   \ "COMMON", after the new convention.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-24: Improve documentation markup.
 
 ( common-indexer )
 
@@ -86,7 +88,7 @@ variable indexed-block
   \
   \ The current word list must be `index-wordlist`.
   \
-  \ Warning: The block where _ca len_ was found is stored as
+  \ WARNING: The block where _ca len_ was found is stored as
   \ the execution token of its definition in the index. This
   \ way the index uses no data space. Don't put
   \ `index-wordlist` in the search order unless you know what

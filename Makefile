@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702211717
+# Last modified: 201702241523
 
 # ==============================================================
 # Author
@@ -702,40 +702,8 @@ backgrounds/current.scr: backgrounds/current.pbm
 %.docbook: %.adoc
 	asciidoctor --backend=docbook --out-file=$@ $<
 
-%.texinfo: %.docbook
-	pandoc --from=docbook --to=texinfo --output=$@ $<
-
-%.info: %.texinfo
-	makeinfo --output=$@ $<
-
 # ----------------------------------------------
 # Documentation for G+DOS
-
-# ..............................
-#
-# XXX TODO -- Make and Info file.
-#
-# 2017-02-20: It's not possible yet, because Pandoc does not
-# create unique names for nodes, while docbook2texi doesn't
-# recognize the document type declaration, parses without
-# validation and throws many errors...
-
-doc/solo_forth_for_gplusdos_manual.info: \
-	doc/solo_forth_for_gplusdos_manual.texinfo
-	makeinfo --output=$@ $<
-
-doc/solo_forth_for_gplusdos_manual.texinfo: \
-	doc/solo_forth_for_gplusdos_manual.docbook
-	docbook2texi $<
-	
-#	pandoc --from=docbook --to=texinfo --output=$@ $<
-
-doc/solo_forth_for_gplusdos_manual.docbook: \
-	tmp/doc.gplusdos.manual.adoc \
-	README.adoc
-	asciidoctor --backend=docbook5 --out-file=$@ $<
-# ..............................
-
 
 doc/solo_forth_for_gplusdos_manual.html: \
 	tmp/doc.gplusdos.manual.adoc \
@@ -1017,3 +985,6 @@ oldbackup:
 # 2017-02-21: Add rules to create only the disk images of
 # either Pentagon or Scorpion. Fix the contents of the
 # workbench disk.
+#
+# 2017-02-24: Remove the experimental rules that build Info
+# format manual. They are being tested apart.
