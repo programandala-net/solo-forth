@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702242256
 
   \ -----------------------------------------------------------
   \ Description
@@ -89,6 +89,9 @@
   \
   \ 2017-02-19: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-02-24: Fix requirement of `udg-row[`. Fix block char
+  \ 128.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -273,7 +276,7 @@ variable udg0  variable current-udg  variable current-scan
 
 ( udg-row[ )
 
-need get-udg need evaluate need binary
+need get-udg need evaluate need binary need abort"
 
 8 constant udg-height  8 constant udg-width
   \ height in bytes (scans)
@@ -426,13 +429,12 @@ $FF $FF $FF $FF $F0 $F0 $F0 $F0 #139 udg!
 $00 $00 $00 $00 $FF $FF $FF $FF #140 udg!
 $0F $0F $0F $0F $FF $FF $FF $FF #141 udg!
 $F0 $F0 $F0 $F0 $FF $FF $FF $FF #142 udg! need udg>
-$FF $FF $FF $FF $FF $FF $FF $FF #143 udg! 0 udg> 8 erase
+$FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
 
   \ Note: In this block `need` is in unusual places. The goal
   \ is to save one line and make the 16 character definitions
-  \ in one block keeping the layout clean, i.e. keeping one
-  \ char definition per source line. At the end `erase` creates
-  \ char #128, the first one, which is blank.
+  \ fit one block while keeping the layout clean.  At the end
+  \ `erase` creates char #128, which is blank.
 
   \ doc{
   \
