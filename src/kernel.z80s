@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702241540
+; Last modified: 201702241954
 
 include version.z80s
 
@@ -7394,8 +7394,6 @@ endif
   or d          ; combine both parts
   ld e,a        ; done
 
-bank.e.ready:
-
   ; E = bank number ready to be written to the port
 
   ld a,(sys_bankm) ; get the saved status of BANKM
@@ -7463,11 +7461,9 @@ if scorpion=256
   di
   push bc
   ld (sys_bankm),a ; update BANKM
-
   ld bc,bank1_port
   out (c),a        ; page in the bank
   ld bc,$1FFD      ; XXX TODO -- What symbol for this port?
-
 if true
   ; XXX TODO -- Is this needed?
   ld a,(sys_bank678)
@@ -7478,7 +7474,6 @@ else
   ld a,d
 endif
   out (c),a        ; page in the bank
-
   pop bc
   ei
   ret
@@ -7489,35 +7484,17 @@ else
   ; Spectrum +2, ZX Spectrum +3, ZX Spectrum +3e or Pentagon
   ; 128.
 
-bank.e.ready:
-
   ; E = bank number ready to be written to the port
 
   ld a,(sys_bankm)   ; get the saved status of BANKM
-  and %11111000      ; clear bits used by 128 KiB computers
+  and %11111000      ; clear bits used by 128-KiB computers
   or e               ; update them
   di
   ld (sys_bankm),a   ; update BANKM
-
-if (defined plus3dos) or russian_computer
-
-  ; ZX Spectrum +3, ZX Spectrum +3e and Pentagon 128 need the
-  ; full port:
-
   push bc
   ld bc,bank1_port
   out (c),a          ; page in the bank
   pop bc
-
-else
-
-  ; On ZX Spectrum 128 and ZX Spectrum +2 the low byte of the
-  ; port is enough:
-
-  out (bank1_port),a ; page in the bank
-
-endif
-
   ei
   ret
 
