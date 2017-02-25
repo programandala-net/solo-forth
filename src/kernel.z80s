@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702252037
+; Last modified: 201702252257
 
 include version.z80s
 
@@ -226,7 +226,7 @@ compile_only_mask:                equ %10000000
 max_word_length:                  equ word_length_mask
 valid_word_length_mask:           equ word_length_mask or smudge_mask
 
-csb_size:                         equ 512 ; bytes, size of the circular string buffer
+stringer_size:                    equ 512 ; bytes, size of the circular string buffer
 
 ; Memory banks
 
@@ -891,8 +891,8 @@ return_stack_bottom:
 ; ----------------------------------------------
 ; Circular string buffer
 
-csb0:
-  ds csb_size
+stringer:
+  ds stringer_size
 
 ; ----------------------------------------------
 ; Disk buffer
@@ -2534,113 +2534,119 @@ push_a:
   _jp_next
 
 ; ----------------------------------------------
-  _code_header unused_csb_,'unused-csb'
+  _code_header unused_stringer_,'unused-stringer'
 
 ; doc{
 ;
-; csb-unused ( -- n )
+; unused-stringer ( -- n )
 ;
-; Return the number of free chars in the circular string-buffer.
+; Return the number _n_ of free characters in the `stringer`.
 ;
 ; Definition:
 
 ; ----
-; : csb-unused ( -- n )
-;   >csb @ ;
+; : unused-stringer ( -- n )
+;   >stringer @ ;
 ; ----
 
-; See also: `csb0`.
+; See also: `>stringer`.
 ;
 ; }doc
 
-  ld hl,(to_csb_pfa)
+  ld hl,(to_stringerpfa)
   _jp_pushhl
 
 ; ----------------------------------------------
-  _constant_header csb_size_,'csb-size'
+  _constant_header slash_stringer_,'/stringer'
 
 ; doc{
 ;
-; csb-size ( -- n )
+; /stringer ( -- n )
 ;
-; Return the maximum size of the circular string-buffer, in
-; chars.
+; A constant that holds the maximum size of `stringer`, in
+; characters.
 ;
-; In order to reconfigure the circular string buffer, the
-; constant can be modified with `!>`.
+; In order to reconfigure the `stringer`, this constant can be
+; modified with `!>`.
 ;
-; See also: `csb0`, `>csb`, `empty-csb`.
+; See also: `>stringer`, `empty-stringer`.
 ;
 ; }doc
 
-  dw csb_size
+  dw stringer_size
 
 ; ----------------------------------------------
-  _variable_header to_csb_,'>csb'
+  _variable_header to_stringer,'>stringer'
 
 ; doc{
 ;
-; >csb ( -- a )
+; >stringer ( -- a )
 ;
-; A variable that holds the circular string buffer pointer, an
-; offset to the first free address in the buffer; the offset
-; coincides with the number of free chars.
+; A variable that holds the pointer fo the `stringer`, i.e. an
+; offset to its first free address. The offset equals the number
+; of free characters in the `stringer`.
+;
+; See also: `empty-stringer`.
 ;
 ; }doc
 
-  dw csb_size
+  dw stringer_size
 
 ; ----------------------------------------------
-  _constant_header csb0_,'csb0'
+  _constant_header stringer_,'stringer'
 
 ; doc{
 ;
-; csb0 ( -- a )
+; stringer ( -- a )
 ;
-; A constant that returns the base address of the circular
-; string buffer.
+; A constant that returns the base address of the ``stringer``,
+; the circular string buffer used by all string operations.
 ;
-; In order to move the circular string buffer, the constant
-; can be modified with `!>`.
+; In order to move the circular string buffer, this constant can
+; be modified with `!>`.
 ;
-; See also: `csb-size`, `>csb`, `empty-csb`, `unused-csb`, `?csb`,
-; `allocate-string`, `save-string`.
+; See also: `/stringer`, `>stringer`, `empty-stringer`,
+; `unused-stringer`, `?stringer`, `allocate-string`,
+; `save-string`.
 ;
 ; }doc
 
-  dw csb0
+  dw stringer
 
 ; ----------------------------------------------
-  _colon_header question_csb_,'?csb'
+  _colon_header question_stringer_,'?stringer'
 
 ; doc{
 ;
-; ?csb ( len -- )
+; ?stringer ( len -- )
 ;
-; Make sure there's room in the circular string buffer for the
-; given characters.
+; Make sure there's room in the `stringer` for _len_ characters.
 ;
 ; Definition:
 
 ; ----
-; : ?csb ( len -- )
-;   dup unused-csb >  \ not enough free space?
-;   if  empty-csb >csb !  then  negate >csb +! ;
+; : ?stringer ( len -- )
+;   dup unused-stringer >  \ not enough free space?
+;   if  empty-stringer >stringer !  then  negate >stringer +! ;
 ; ----
 
-; See also: `csb0`, `unused-csb`, `empty-csb`, `>csb`.
+; See also: `unused-stringer`, `empty-stringer`, `>stringer`.
 ;
 ; }doc
 
-  ; XXX TODO -- rename to `csb-room`, `(allocate-string)` or something
+  ; XXX TODO -- Rename to `stringer-room`, `(allocate-string)`
+  ; or something.
+  ;
+  ; XXX TODO -- Throw an error if _len_ is greater than the
+  ; stringer. Besides `allocate-string` should return a _ior_.
 
-  dw dup_,unused_csb_,greater_than_
-  dw zero_branch_,question_csb_.enough
+  dw dup_,unused_stringer_,greater_than_
+  dw zero_branch_,question_stringer_.enough
   ; not enough space
-  dw empty_csb_
+  dw empty_stringer_
 
-question_csb_.enough:
-  dw negate_,to_csb_,plus_store_
+question_stringer_.enough:
+  dw negate_,to_stringer,plus_store_
   dw exit_
 
 ; ----------------------------------------------
@@ -2650,25 +2656,26 @@ question_csb_.enough:
 ;
 ; allocate-string ( len -- ca )
 
-; Allocate _len_ chars in the circular string buffer and return
+; Allocate _len_ characters in the circular string buffer and return
 ; the address _ca_ of the allocated space.
 ;
 ; Definition:
 
 ; ----
 ; : allocate-string ( len -- ca )
-;   ?csb csb0 unused-csb + ;
+;   ?stringer stringer unused-stringer + ;
 ; ----
 
-; See also: `save-string`, `csb0`, `?csb`, `unused-csb`.
+; See also: `save-string`, `stringer`, `?stringer`,
+; `unused-stringer`.
 ;
 ; }doc
 
-  ; XXX TODO -- return a ior; _len_ could be too big for the
-  ; buffer
+  ; XXX TODO -- Return a _ior_; _len_ could be too big for the
+  ; buffer.
 
-  dw question_csb_
-  dw csb0_,unused_csb_,plus_
+  dw question_stringer_
+  dw stringer_,unused_stringer_,plus_
   dw exit_
 
 ; ----------------------------------------------
@@ -2688,7 +2695,7 @@ question_csb_.enough:
 ;   dup allocate-string swap 2dup 2>r move 2r> ;
 ; ----
 
-; See also: `allocate-string`, `csb0`, `save-farstring`.
+; See also: `allocate-string`, `stringer`, `save-farstring`.
 ;
 ; }doc
 
@@ -2698,21 +2705,25 @@ question_csb_.enough:
   dw exit_
 
 ; ----------------------------------------------
-  _colon_header empty_csb_,'empty-csb'
+  _colon_header empty_stringer_,'empty-stringer'
 
 ; doc{
 ;
-; empty-csb ( -- )
+; empty-stringer ( -- )
 ;
-; Empty the circular string buffer,
-; by initializing its pointer to the size of the buffer.
-; The contents of the buffer are not modifed.
+; Empty the `stringer`, by initializing `>stringer` with
+; `/stringer`.  The contents of the `stringer` are not modifed.
 ;
-; See also: `csb0`.
-;
+; Definition:
+
+; ----
+; : empty-stringer ( -- )
+;   /stringer >stringer ! ;
+; ----
+
 ; }doc
 
-  dw csb_size_,to_csb_,store_
+  dw slash_stringer_,to_stringer,store_
   dw exit_
 
 ; ----------------------------------------------
@@ -3492,10 +3503,11 @@ to_number.end:
 ; and 2.
 ;
 ; This word accepts valid point anywhere on the number and
-; updates `dpl` with the position of the last one. If no
-; point is found, `dpl` contains -1.
+; updates `dpl` with the position of the last one. If no point
+; is found, `dpl` contains -1.
 ;
-; Chars between single quotes are recognized, after Forth-2012.
+; Characters between single quotes are recognized, after
+; Forth-2012.
 ;
 ; Definition:
 
@@ -4154,7 +4166,7 @@ emit_udg.l
 ; its translation. The table is finished with a zero.
 ;
 ; The default table makes it possible to access the following
-; chars with Symbol Shift: '[', ']', '~', '|', '\', '{' and '}'.
+; characters with Symbol Shift: '[', ']', '~', '|', '\', '{' and '}'.
 ;
 ; }doc
 
@@ -11014,7 +11026,7 @@ warm_start:
   dw first_drive_,set_drive_
 
   ; Init the circular string buffer.
-  dw empty_csb_
+  dw empty_stringer_
 
   ; Init the user variables.
   dw lit_,default_user_variables_start ; from

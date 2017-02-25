@@ -7,6 +7,25 @@
 
 // Last modified 201702221706
 
+// Application development {{{1
+== Application development ==
+
+.2017-02-25:
+
+Move words that applications don't need (e.g. `greeting`, `.unused`,
+`version`...) to the top of the kernel definitions. Then write a word
+that removes all of them, including itself, and sets the new values of
+the pointers. This way, the application can execute that word right at
+the start of the compilation in order to get that extra memory.
+
+.2017-02-25:
+
+Options to make it easier to share code with other systems:
+
+- Add `solo-forth` as an immediate alias of `noop`.
+- Add `solo-forth` to the enviromental queries, to return the version
+  (like Gforth).
+
 // Assembler {{{1
 == Assembler ==
 
@@ -372,23 +391,6 @@ Study the strings stack included in Spectrum Forth-83
 
 Implement a configurable case mode for `search` and `compare`? See how
 Z88 CamelForth does it. Also DX-Forth has this feature.
-
-.2016-06-10:
-
-NOTE: Milestone: 0.14.0
-
-Rename "csb" to "stringer":
-
-|===
-| Now         | "stringer"
-
-| >csb        | >stringer
-| ?csb        | ?stringer
-| csb-size    | /stringer
-| csb0        | stringer
-| empty-csb   | empty-stringer
-| unused-csb  | unused-stringer
-|===
 
 // Local variables {{{2
 === Local variables ===

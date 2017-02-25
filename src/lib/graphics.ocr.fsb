@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702252301
 
   \ -----------------------------------------------------------
   \ Description
@@ -47,6 +47,8 @@
   \
   \ 2017-02-21: Need `unresolved`, which now is optional, not
   \ part of the assembler.
+  \
+  \ 2017-02-25: Fix typo.
 
 ( ocr )
 
@@ -75,7 +77,7 @@ here bl c, constant ocr-first
   \
   \ ocr-first ( -- ca )
   \
-  \ A Character variable that holds the code of the first
+  \ A character variable that holds the code of the first
   \ printable char in the charset used by `ocr`, pointed by
   \ `ocr-charset`.  By default it contais `bl`, the code of the
   \ space character.

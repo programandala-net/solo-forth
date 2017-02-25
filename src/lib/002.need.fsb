@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221531
+  \ Last modified: 201702252258
 
   \ -----------------------------------------------------------
   \ Description
@@ -139,6 +139,9 @@
   \ the `need` tool. Now a copy of the code of
   \ `use-default-need` and `use-default-located` is executed
   \ during the loading of `need`.
+  \
+  \ 2017-02-25: Update the name of the circular string buffer,
+  \ after the changes in the kernel.
 
 ( delimited located needed-word )
 
@@ -230,7 +233,7 @@ defer unlocated ( block -- )
   \ : (located) cr ." (located)<" 2dup type ." >"
   \ : (located) cr ."  base: #" base @ dup decimal . base !
   \ : (located) cr ."  rdepth: " rp@ rp0 @ - -2 / .
-  \ : (located) cr ."  unused-csb: " unused-csb .
+  \ : (located) cr ."  unused-stringer: " unused-stringer .
   \ ----------------------------
     \ XXX INFORMER -- alternative options for debugging
 
