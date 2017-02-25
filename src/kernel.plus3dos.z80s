@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702221439
+; Last modified: 201702260022
 
 ; ==============================================================
 ; Description
@@ -50,7 +50,7 @@
 ; ==============================================================
 ; Requirements
 
-if defined plus3dos
+if plus3dos
 
 include inc/zx_spectrum_plus3dos.z80s
 

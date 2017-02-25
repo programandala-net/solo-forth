@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702221439
+; Last modified: 201702260022
 
 ; ==============================================================
 ; Description
@@ -73,7 +73,7 @@
 ; ==============================================================
 ; Requirements
 
-if defined trdos
+if trdos
 
 include inc/zx_spectrum_trdos.z80s
 

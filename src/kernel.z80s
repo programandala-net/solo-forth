@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702252350
+; Last modified: 201702260021
 
 include version.z80s
 
@@ -79,23 +79,40 @@ include version.z80s
   ; flag (0/1) is used instead, with the flag name in a comment;
   ; it is changed with a text substitution.
 
+; ----------------------------------------------
+; DOS
+
   ; Solo Forth can be compiled for G+DOS, +3DOS or TR-DOS.  This
   ; depends on three labels, `gplusdos`, `plus3dos` and `trdos`,
   ; defined with a parameter of the Pasmo assembler. See the
-  ; Makefile files for details. Support for +3DOS and TR-DOS is
-  ; not finished yet.
+  ; Makefile files for details.
 
-if (!defined gplusdos) and (!defined plus3dos) and (!defined trdos)
+if !defined gplusdos
+  gplusdos: equ false
+endif
+
+if !defined plus3dos
+  plus3dos: equ false
+endif
+
+if !defined trdos
+  trdos: equ false
+endif
+
+if (gplusdos+plus3dos+trdos)=0
   gplusdos: equ true ; G+DOS by default
 endif
 
-  ; The TR-DOS version of Solo Forth needs some changes for the
+; ----------------------------------------------
+; Pentagon and Scorpion
+
+  ; The TR-DOS version of Solo Forth needs some changes on the
   ; Pentagon and Scorpion computers.  The labels `pentagon` and
   ; `scorpion` are created with a parameter of the Pasmo
-  ; assembler, initializing them with the amount of the computer
-  ; RAM (256, 512 or 1024). By default, their value is false,
-  ; i.e. the compilation is not done for them, but for the
-  ; Sinclar models:
+  ; assembler, initializing them with the RAM size RAM (256, 512
+  ; or 1024). By default, their value is false, i.e. the
+  ; compilation is not done for them, but for the Sinclar
+  ; models:
 
 if (!defined pentagon)
   pentagon: equ false
@@ -105,7 +122,8 @@ if (!defined scorpion)
   scorpion: equ false
 endif
 
-russian_computer: equ pentagon or scorpion
+; ----------------------------------------------
+; Misc
 
 size_optimization: equ false
   ; true = some code pieces are more compact but slower.
@@ -126,7 +144,7 @@ developing: equ true
 
 default_origin:                   equ $5E00
 
-if defined trdos
+if trdos
 
  ; TR-DOS needs $70 bytes of RAM for its system variables.
  ; It also uses a $100-byte buffer when accessing the
@@ -188,21 +206,21 @@ bytes_per_terminal_input_buffer:  equ $50
 
 bytes_per_buffer:                 equ $0400
 
-if defined gplusdos
+if gplusdos
   sectors_per_track:                equ 10
   blocks_per_disk:                  equ 800
   sectors_per_block:                equ 2
   max_drives:                       equ 2
   first_drive:                      equ 1 ; 1..2
 endif
-if defined plus3dos
+if plus3dos
   sectors_per_track:                equ 9
   blocks_per_disk:                  equ 720
   sectors_per_block:                equ 2
   max_drives:                       equ 2
   first_drive:                      equ 'A' ; 'A'..'P'
 endif
-if defined trdos
+if trdos
   sectors_per_track:                equ 16
   blocks_per_disk:                  equ 636 ; 640 minus 4 KiB of sector 0
   sectors_per_block:                equ 4
@@ -1507,13 +1525,13 @@ nt_of_the_previous_word: defl 0
 ; }doc
 
   dw s_lit_
-if defined gplusdos
+if gplusdos
   _string 'G+DOS'
 endif
-if defined trdos
+if trdos
   _string 'TR-DOS'
 endif
-if defined plus3dos
+if plus3dos
   _string '+3DOS'
 endif
   dw exit_
@@ -1908,7 +1926,7 @@ do_variable:
   dw noop
 
 ; ----------------------------------------------
-if defined gplusdos
+if gplusdos
   _alias_header g_plus_dos_,'g+dos',immediate,noop_
 endif
 
@@ -1928,7 +1946,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-if defined trdos
+if trdos
   _alias_header tr_dos_,'tr-dos',immediate,noop_
 endif
 
@@ -1948,7 +1966,7 @@ endif
 ; }doc
 
 ; ----------------------------------------------
-if defined plus3dos
+if plus3dos
   _alias_header plus_3_dos_,'+3dos',immediate,noop_
 endif
 
@@ -14025,7 +14043,7 @@ first_boot:
 ; ----------------------------------------------
 ; Memory banks for +3DOS
 
-if defined plus3dos
+if plus3dos
 
   ; +3DOS uses RAM pages 1, 3, 4 and 6 as an array of 128 sector
   ; buffers (numbered 0...127), each of 512 bytes, thus 32
