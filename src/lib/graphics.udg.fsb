@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702242256
+  \ Last modified: 201702251817
 
   \ -----------------------------------------------------------
   \ Description
@@ -92,14 +92,16 @@
   \
   \ 2017-02-24: Fix requirement of `udg-row[`. Fix block char
   \ 128.
+  \
+  \ 2017-02-25: Add `type-udg`.
 
 ( default-udg-chars udg> udg! udg: )
 
 [unneeded] default-udg-chars ?( need rom-font need get-udg
 
-rom-font 'A' 8 * +  \ from
-get-udg @ 144 8 * +  \ to
-'U' 'A' - 1+ 8 *    \ count
+rom-font 'A' 8 * +    \ from
+get-udg @ 144 8 * +   \ to
+'U' 'A' - 1+ 8 *      \ count
 move ?)
 
   \ doc{
@@ -110,6 +112,10 @@ move ?)
   \ order to define UDG 144..164 as letters 'A'..'U', copied
   \ from the ROM font, the shape they have in Sinclair BASIC by
   \ default. The current value of `os-udg` is used.
+  \
+  \ WARNING: In Solo Forth `os-udg` points to bitmap of UDG
+  \ 0, while in Sinclair BASIC it points to bitmap of UDG
+  \ 144.
   \
   \ See also: `block-chars`, `set-udg`, `rom-font`.
   \
@@ -409,8 +415,6 @@ code make-block-chars ( a -- )
   \ This word is written in Z80 and uses 18 B of code space,
   \ but the word `block-chars` is provided as an alternative.
   \
-  \ See `block-chars`.
-  \
   \ }doc
 
 ( block-chars )
@@ -455,8 +459,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
 
 [unneeded] set-udg ?( need os-udg
 
-code set-udg ( a -- )
-  E1 c, 22 c, os-udg , jpnext, end-code ?)
+code set-udg ( a -- ) E1 c, 22 c, os-udg , jpnext, end-code ?)
   \ pop hl
   \ ld (sys_udg),hl
   \ jp next
@@ -864,6 +867,22 @@ unused code udg-at-xy-display ( x y c -- )
   \ not changed (only the character bitmap is displayed).
   \
   \ See also: `at-xy-display-udg`.
+  \
+  \ }doc
+
+( type-udg )
+
+: type-udg ( ca len -- ) bounds ?do i c@ emit-udg loop  ;
+
+  \ doc{
+  \
+  \ type-udg ( ca len -- )
+  \
+  \ If _len_ is greater than zero, display the UDG character
+  \ string _ca len_. All characters of the string are printed
+  \ with `emit-udg`.
+  \
+  \ See also: `type`.
   \
   \ }doc
 

@@ -1,6 +1,6 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-24
+:revdate: 2017-02-25
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -96,15 +96,15 @@ of them. They are marked in the source.
 
 Align comments of the kernel.
 
-.2017-01-06, 2017-02-13, 2017-02-22:
+.2017-01-06, 2017-02-13, 2017-02-22, 2017-02-24:
 
-Change the code style after Pygmy Forth:
+Finish changing the code style after Pygmy Forth:
 
 - Remove the last space in paren comment.
 - Use a single dash in stack comments.
 
-This will compact the code, saving a handful of blocks.  Many times a
-word does not fit a block line because of the current convention.
+Some times a word does not fit a block line because of the current
+convention.
 
 // Interpreter/compiler {{{1
 == Interpreter/compiler ==
@@ -1184,6 +1184,10 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 // Memory {{{1
 == Memory ==
 
+.2017-02-25:
+
+Add `get-far-banks`, `set-far-banks`.
+
 .2017-02-24:
 
 Make `.unused` show also the number of banks.
@@ -1510,6 +1514,13 @@ Also, `end-module` is used by modules `module` and `begin-module`.
 // Names {{{1
 == Names ==
 
+.2017-02-25:
+
+NOTE: Milestone: 0.14.0
+
+Rename "hp..." to "np...", as it was in v0.10.0. The Forth standard
+includes the term "name space".
+
 .2017-02-24:
 
 Rename `(0-1-8-color.` and `(0-9-color.` after the current convention
@@ -1616,6 +1627,19 @@ Adapt from Gforth: `noname`, analogous to `nextname`.
 
 // Printing {{{1
 == Printing ==
+
+.2017-02-25:
+
+The Forth Standard requires standard ASCII.  An alternative to
+non-standard character 96 is needed.
+
+- Detect it in `emit` and change the font only to print it,
+  temporarily?  This will ruin alternative fonts.
+- Simpler: Provide an alternative standard font in disk.
+
+.2017-02-25:
+
+Add '$' prefix to `hex.`, '%' to `bin.` and '#' to `dec.`.
 
 .2017-02-04:
 

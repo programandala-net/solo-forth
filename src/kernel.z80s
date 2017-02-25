@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702242245
+; Last modified: 201702251833
 
 include version.z80s
 
@@ -8079,6 +8079,8 @@ postpone.end:
 ; (Controlled Reference Words), Forth-94 (CORE EXT), Forth-2012
 ; (CORE EXT).
 ;
+; See also: `decimal`, `binary`.
+;
 ; }doc
 
   _literal $10
@@ -8095,6 +8097,8 @@ postpone.end:
 ;
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `hex`, `binary`.
 ;
 ; }doc
 
@@ -8248,9 +8252,11 @@ push_ahl:
 ;
 ;----
 ; : type ( ca len -- )
-;   bounds ?do  i c@ emit  loop  drop ;
+;   bounds ?do i c@ emit loop ;
 ;----
 
+; See also: `type-udg`.
+;
 ; }doc
 
   dw bounds_
@@ -8287,17 +8293,17 @@ type.loop_exit
   push hl
   add hl,de
   ex de,hl
-  ; DE = address after the string
-  ; HL = length of the string
+                          ; DE = address after the string
+                          ; HL = length of the string
 minus_trailing.begin:
   ld a,l
-  or h ; exhausted?
+  or h                    ; exhausted?
   jp z,push_hl
-  dec de ; next char
+  dec de                  ; next char
   ld a,(de)
-  cp ' ' ; space?
+  cp ' '                  ; space?
   jp nz,push_hl
-  dec hl ; new length
+  dec hl                  ; new length
   jp minus_trailing.begin ; repeat
 
 ; ----------------------------------------------
@@ -9565,33 +9571,33 @@ endif
 ; Credit:
 ; Adapted from DZX-Forth
 
-  pop de      ; DE = len2
-  pop hl      ; HL = ca2
-  ex (sp),hl  ; HL = len1 ; ( ca1 ca2 )
+  pop de                 ; DE = len2
+  pop hl                 ; HL = ca2
+  ex (sp),hl             ; HL = len1 -- ( ca1 ca2 )
   ld a,d
   cp h
   jr nz,compare.lengths
   ld a,e
   cp l
 compare.lengths:
-  ; CY = string2 is longer than string1?
+                         ; CY = string2 is longer than string1?
   jr c,compare.ready
   ex de,hl
 compare.ready:
-  ; DE = length of the shorter string
-  ; HL = length of the longer string
+                         ; DE = length of the shorter string
+                         ; HL = length of the longer string
   ld l,c
-  ld h,b ; HL = Forth IP
-  pop bc ; BC = ca2
-  ex (sp),hl ; HL = ca1 ; save Forth IP
-  push af ; save CY (string2 is longer than string1?)
-  ; HL = ca1
-  ; BC = ca2
-  ; DE = length of the shorter string
+  ld h,b                 ; HL = Forth IP
+  pop bc                 ; BC = ca2
+  ex (sp),hl             ; HL = ca1 -- save Forth IP
+  push af                ; save CY (string2 is longer than string1?)
+                         ; HL = ca1
+                         ; BC = ca2
+                         ; DE = length of the shorter string
 compare.char
   ld a,e
-  or d ; end of string?
-  jr z,compare.match ; is so, all chars matched
+  or d                   ; end of string?
+  jr z,compare.match     ; is so, all chars matched
   ld a,(bc)
   cp (hl)
   jr nz,compare.no_match ; a char doesn't match
@@ -9601,22 +9607,22 @@ compare.char
   jp compare.char
 
 compare.match:
-  ; The smaller string matches.
-  pop af ; restore CY (string2 is longer than string1?)
+                         ; The smaller string matches.
+  pop af                 ; restore CY (string2 is longer than string1?)
   jr compare.end
 
 compare.no_match:
-  ; The smaller string does not match.
-  pop bc ; useless carry flag
+                         ; The smaller string does not match.
+  pop bc                 ; useless carry flag
 
 compare.end:
-  pop bc ; restore Forth IP
+  pop bc                 ; restore Forth IP
   ld hl,1
-  jp c,push_hl ; jump if string2 is longer than string1?
-  dec hl ; 0
-  jp z,push_hl ; jump if string1 equals string2
-  dec hl ; -1
-  _jp_pushhl ; string2 is longer than string2
+  jp c,push_hl           ; jump if string2 is longer than string1?
+  dec hl                 ; 0
+  jp z,push_hl           ; jump if string1 equals string2
+  dec hl                 ; -1
+  _jp_pushhl             ; string2 is longer than string2
 
 ; ----------------------------------------------
   _colon_header str_equals_,'str='
@@ -9654,58 +9660,58 @@ compare.end:
   ; XXX TODO -- move to the library -- but needed by `contains`
 
   pop de
-  pop hl ; HL/DE=substring
+  pop hl                      ; HL/DE=substring
   ld a,d
   or e
-  jr z,search.match ; if zero length substring, immediate match
+  jr z,search.match           ; if zero length substring, immediate match
 
-  ; Exchange DE and BC:
+                              ; Exchange DE and BC:
 if size_optimization
   push de
   push bc
-  pop de ; DE = Forth IP
-  pop bc ; HL/BC=substring
-         ; 42 T 04 B
+  pop de                      ; DE = Forth IP
+  pop bc                      ; HL/BC=substring
+                              ; 42 T 04 B
 else
   ld a,e
   ld e,c
   ld c,a
   ld a,d
-  ld d,b ; DE = Forth IP
-  ld b,a ; HL/BC=substring
-         ; 24 T 06 B
+  ld d,b                      ; DE = Forth IP
+  ld b,a                      ; HL/BC=substring
+                              ; 24 T 06 B
 endif
 
   exx
   pop bc
-  pop hl ; HL'/BC'=main string
+  pop hl                      ; HL'/BC'=main string
   push hl
   push bc
 
 search.substring:
   ld a,b
-  or c ; end of main string?
-  jr z,search.failed ; no match if end of main string
+  or c                        ; end of main string?
+  jr z,search.failed          ; no match if end of main string
   exx
   ld a,(hl)
   exx
-  cpir ; search for first substring char
-  jr nz,search.failed ; no match if not found
-  dec hl ; backup to matching char
+  cpir                        ; search for first substring char
+  jr nz,search.failed         ; no match if not found
+  dec hl                      ; backup to matching char
   inc bc
   push bc
   exx
   ex (sp),hl
   and a
-  sbc hl,bc ; test length left against substring length
+  sbc hl,bc                   ; test length left against substring length
   pop hl
   exx
-  jr c,search.failed ; no match if not long enough
+  jr c,search.failed          ; no match if not long enough
   push hl
   exx
   ex de,hl
-  ex (sp),hl ; save IP, get HL=main string, DE=substring
-  push de ; save substring
+  ex (sp),hl                  ; save IP, get HL=main string, DE=substring
+  push de                     ; save substring
   push bc
 search.char:
   ld a,(de)
@@ -9715,33 +9721,33 @@ search.char:
   inc hl
   dec bc
   ld a,b
-  or c ; end of substring?
-  jr nz,search.char ; for rest of substring
+  or c                        ; end of substring?
+  jr nz,search.char           ; for rest of substring
   pop de
-  pop de ; discard substring
-  pop bc ; restore IP
+  pop de                      ; discard substring
+  pop bc                      ; restore IP
   pop de
-  pop de ; discard caddr1/u1
+  pop de                      ; discard caddr1/u1
   exx
-  push hl ; stack caddr3/u3
+  push hl                     ; stack caddr3/u3
   push bc
   exx
 search.match:
   jp true_
 
 search.next_substring:
-  pop bc ; restore substring
+  pop bc                      ; restore substring
   pop hl
-  pop de ; restore IP
+  pop de                      ; restore IP
   exx
-  inc hl ; move past first matching char
+  inc hl                      ; move past first matching char
   dec bc
-  jr search.substring ; back for another try
+  jr search.substring         ; back for another try
 
 search.failed:
   exx
   ld b,d
-  ld c,e ; restore IP
+  ld c,e                      ; restore IP
   jp false_
 
 ; ----------------------------------------------
@@ -11650,6 +11656,10 @@ endif
 ;
 ; dec. ( n -- )
 ;
+; Display _n_ as a signed decimal number, followed by one space.
+;
+; See also: `hex.`, `bin.`, `.`.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -11664,14 +11674,15 @@ endif
 ;
 ; .throw# ( n -- )
 ;
-; Print the number of throw error _n_.
+; Print the number of throw error _n_, as a decimal number,
+; prefixed with a '#' and followed by a space.
 ;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
 
   dw paren_dot_quote_
-  _string "\r#" ; carriage return, backslash, space and hash
+  _string "\r#" ; carriage return and hash
   dw dec_dot_
   dw exit_
 
@@ -12850,7 +12861,7 @@ hash_s.begin:
 ;
 ; . ( n -- )
 ;
-; Print signed integer _n_ according to current base, followed
+; Print signed integer _n_ according to current `base`, followed
 ; by only one blank.
 ;
 ; }doc

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702252003
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,8 @@
   \ set of words that don't. Improve documentation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-25: Improve documentation.
 
 ( fartype type-ascii fartype-ascii )
 
@@ -100,12 +102,13 @@
   \ which is stored in far memory, replacing non-ASCII and
   \ control chars with a dot.
   \
+  \ See also: `fartype`, `type-ascii`.
+  \
   \ }doc
 
 ( drop-type padding-spaces type-left-field )
 
-[unneeded] drop-type
-?\ : drop-type ( ca len x -- ) drop type ;
+[unneeded] drop-type ?\ : drop-type ( ca len x -- ) drop type ;
 
   \ doc{
   \
@@ -145,7 +148,8 @@
   \ string _ca1 len1_ at the left of a field of _len2_
   \ characters.
   \
-  \ See also: `padding-spaces`.
+  \ See also: `padding-spaces`, `type-right-field`,
+  \ `type-center-field`.
   \
   \ }doc
 
@@ -198,7 +202,8 @@ constant type-right-field-cases
   \ string _ca1 len1_ at the right of a field of _len2_
   \ characters.
   \
-  \ See also: `type-right-field-fit`, `type-right-field-crop`.
+  \ See also: `type-right-field-fit`, `type-right-field-crop`,
+  \ `drop-type`, `type-left-field`, `type-center-field`.
   \
   \ }doc
 
@@ -253,7 +258,9 @@ constant type-center-field-cases
   \ string _ca1 len1_ at the center of a field of _len2_
   \ characters.
   \
-  \ See also: `type-center-field-fit`, `type-center-field-crop`.
+  \ See also: `type-center-field-fit`,
+  \ `type-center-field-crop`, `drop-type`, `type-left-field`,
+  \ `type-right-field`.
   \
   \ }doc
 
