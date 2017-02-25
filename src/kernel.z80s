@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702252257
+; Last modified: 201702252350
 
 include version.z80s
 
@@ -1921,6 +1921,8 @@ endif
 ; Its goal is to be used as a way to check the DOS the
 ; application is running on.
 ;
+; ``g+dos`` is an `immediate` word.
+;
 ; See also: `dos`, `tr-dos`, `+3dos`, `defined`, `[defined]`.
 ;
 ; }doc
@@ -1939,6 +1941,8 @@ endif
 ; Its goal is to be used as a way to check the DOS the
 ; application is running on.
 ;
+; ``tr-dos`` is an `immediate` word.
+;
 ; See also: `dos`, `g+dos`, `+3dos`, `defined`, `[defined]`.
 ;
 ; }doc
@@ -1956,6 +1960,8 @@ endif
 ; It does nothing, in neither interpretation nor compilation state.
 ; Its goal is to be used as a way to check the DOS the
 ; application is running on.
+;
+; ``+3dos`` is an `immediate` word.
 ;
 ; See also: `dos`, `tr-dos`, `g+dos`, `defined`, `[defined]`.
 ;
@@ -2963,6 +2969,8 @@ question_stringer_.enough:
 ; Compile `(?do)` and leave _do-sys_ to be consumed by `loop` or
 ; `+loop`.
 ;
+; ``?do`` is an `immediate` and `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -2992,6 +3000,8 @@ question_stringer_.enough:
 ; Compile `(loop)` and resolve the _do-sys_ address left by
 ; `do`, or `?do`.
 ;
+; ``loop`` is an `immediate` and `compile-only` word.
+;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
@@ -3017,6 +3027,8 @@ question_stringer_.enough:
 
 ; Compile `(+loop)` and resolve the _do-sys_ address left by
 ; `do`, `?do` or `-do`.
+;
+; ``+loop`` is an `immediate` and `compile-only` word.
 ;
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
@@ -5816,6 +5828,8 @@ do_colon:
 ;
 ; ; ( -- )
 ;
+; ``;`` is an `immediate` and `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -5824,6 +5838,8 @@ do_colon:
 ; ----
 
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   dw compile_,exit_
   dw finish_code_
@@ -6783,9 +6799,10 @@ source.other:
 ;
 ; chars ( n1 -- n2 )
 ;
-; _n2_ is the size in address units of _n1_ characters.
+; _n2_ is the size in address units of _n1_ characters.  In Solo
+; Forth, ``chars`` does nothing.
 ;
-; In Solo Forth, this word does nothing.
+; ``chars`` is an `immediate` word.
 ;
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
 ;
@@ -7938,12 +7955,15 @@ name_to_string.loop_exit:
 ; space. Find name. Append the compilation semantics of _name_
 ; to the current definition.
 ;
+; ``postpone`` is an `immediate` word.
+;
 ; Definition:
 
 ; ----
 ; : postpone ( "name" -- )
 ;   defined dup ?defined
 ;   name>immediate? 0= if compile compile then compile, ;
+;   immediate
 ; ----
 
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
@@ -7970,6 +7990,8 @@ postpone.end:
 ; doc{
 ;
 ; [ ( -- )
+;
+; ``[`` is an `immediate` word.
 ;
 ; }doc
 
@@ -8171,6 +8193,8 @@ base_store:
 ; doc{
 ;
 ; does> ( -- )
+;
+; ``does>`` is an `immediate` and `compile-only` word.
 ;
 ; }doc
 
@@ -8422,6 +8446,8 @@ minus_trailing.begin:
 ;       Run-time: ( -- )
 ;
 ; Display "ccc".
+;
+; ``."`` is an `immediate` and `compile-only` word.
 ;
 ; Definition:
 
@@ -9790,6 +9816,8 @@ search.failed:
 ;
 ; Compile string _ca len _ in the current definition.
 ;
+; ``sliteral`` is an `immediate` and `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -9834,6 +9862,8 @@ search.failed:
 ; data space and _b_ is put on the stack a bit faster (0.97 of
 ; execution speed).
 ;
+; ``cliteral`` is an `immediate` and `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -9858,6 +9888,8 @@ search.failed:
 ; literal ( x -- )
 ;
 ; Compile _x_ in the current definition.
+;
+; ``literal`` is an `immediate` and `compile-only` word.
 ;
 ; Definition:
 
@@ -9886,6 +9918,8 @@ search.failed:
 ; single-cell literals. It is useful as an alternative to
 ; `literal`, in order to optimize the code when _x_ is unknown.
 ;
+; ``1literal`` is an `immediate` and `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -9911,6 +9945,8 @@ search.failed:
 ; 2literal ( dx -- )
 ;
 ; Compile _dx_ in the current definition.
+;
+; ``2literal`` is an `immediate` and `compile-only` word.
 ;
 ; Definition:
 
@@ -10585,7 +10621,11 @@ do_vocabulary:
 ; characters may be zero to the number of characters in the
 ; parse area.
 ;
+; ``(`` is an `immediate` word.
+;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   _literal ')'
   dw parse_,two_drop_
@@ -10600,7 +10640,7 @@ do_vocabulary:
 ;
 ; Do nothing. `?(` parses until this word is found.
 ;
-; ``?)`` is an immediate word.
+; ``?)`` is an `immediate` word.
 ;
 ; }doc
 
@@ -10613,11 +10653,10 @@ do_vocabulary:
 ;
 ; If _f_ is not zero, parse and discard until `?)` is found or
 ; until the end of the parse area is reached.
-;
-; ``?(`` is an immediate word.
-;
 ; ``?(`` is used for conditional compilation, as a simpler but
 ; more compact alternative to the standard `[if]`.
+;
+; ``?(`` is an `immediate` word.
 ;
 ; Definition:
 
@@ -12212,6 +12251,8 @@ block.end:
 ;
 ; Continue interpretation with the next block.
 ;
+; ``-->`` is an `immediate` word.
+;
 ; Definition:
 
 ; ----
@@ -12288,7 +12329,7 @@ block.end:
 ; word that can be found in the current search order; else
 ; return a false flag.
 ;
-; This word is an immediate word.
+; ``[defined]`` is an `immediate` word.
 ;
 ; Definition:
 
@@ -12324,7 +12365,7 @@ block.end:
 ; word that can be found in the current search order; else
 ; return a true flag.
 ;
-; This word is an immediate word.
+; ``[undefined]`` is an `immediate` word.
 ;
 ; Definition:
 
@@ -12380,6 +12421,8 @@ block.end:
 ; compile its execution token as a literal, else throw an
 ; exception.
 ;
+; ``[']`` is an `immediate` and `compile-only` word.
+;
 ; Definition:
 
 ; ----
@@ -12404,6 +12447,8 @@ block.end:
 ;
 ; begin ( -- dest )
 ;
+; ``begin`` is an `immediate` and `compile-only` word.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -12415,6 +12460,8 @@ block.end:
 ;
 ; then ( orig -- )
 ;
+; ``then`` is an `immediate` and `compile-only` word.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -12425,6 +12472,8 @@ block.end:
 ; doc{
 ;
 ; until ( dest -- )
+;
+; ``until`` is an `immediate` and `compile-only` word.
 ;
 ; }doc
 
@@ -12443,6 +12492,8 @@ block.end:
 ;
 ; End of an infinite loop.  Compile an unconditional jump
 ; instruction to branch backward to _dest_.
+;
+; ``again`` is an `immediate` and `compile-only` word.
 ;
 ; }doc
 
@@ -12464,6 +12515,8 @@ block.end:
 ; Compile `branch` to jump back to `begin`.  Resolve also  the
 ; branching offset required by `while`.
 ;
+; ``repeat`` is an `immediate` and `compile-only` word.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -12478,6 +12531,8 @@ block.end:
 ; doc{
 ;
 ; if ( Compilation: -- orig ) ( Run-time: x -- )
+;
+; ``if`` is an `immediate` and `compile-only` word.
 ;
 ; }doc
 
@@ -12497,6 +12552,8 @@ if.do:
 ;   Compilation: ( C: -- orig )
 ;   Run-time: ( -- )
 ;
+; ``ahead`` is an `immediate` and `compile-only` word.
+;
 ; Origin: Forth-94 (TOOLS EXT), Forth-2012 (TOOLS EXT).
 ;
 ; }doc
@@ -12513,6 +12570,8 @@ if.do:
 ;
 ; else ( orig1 -- orig2 )
 ;
+; ``else`` is an `immediate` and `compile-only` word.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -12528,6 +12587,8 @@ if.do:
 ; doc{
 ;
 ; while ( dest -- orig dest )
+;
+; ``while`` is an `immediate` and `compile-only` word.
 ;
 ; }doc
 
@@ -13833,6 +13894,8 @@ throw.end:
 ;    ( Interpretation: "ccc<quote>" -- ca len )
 ;    ( Run-time:  -- ca len )
 ;
+; ``s"`` is an `immediate` word.
+;
 ; Definition:
 
 ; ----
@@ -13862,7 +13925,7 @@ throw.end:
 ; and discard the portion of the parse area corresponding to
 ; the remainder of the current line.
 ;
-; ``?\`` is an immediate word.
+; ``?\`` is an `immediate` word.
 ;
 ; This word is a conditional version of `\`, used for
 ; conditional compilation, as a simpler but more compact
@@ -13898,7 +13961,7 @@ question_backslash.exit
 ; parse area; otherwise parse and discard the portion of the
 ; parse area corresponding to the remainder of the current line.
 ;
-; ``\`` is an immediate word.
+; ``\`` is an `immediate` word.
 ;
 ; Origin: Forth-94 (BLOCK EXT), Forth-2012 (BLOCK EXT).
 ;
@@ -13924,6 +13987,8 @@ backslash.loading:
 ; doc{
 ;
 ; .( ( "ccc<paren>" -- )
+;
+; ``.(`` is an `immediate` word.
 ;
 ; }doc
 

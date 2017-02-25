@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702221706
+// Last modified 201702252352
 
 // Application development {{{1
 == Application development ==
@@ -473,11 +473,13 @@ a part of the filename could be enough:
 See also: <<specforth,i>>.
 ----
 
-.2017-02-17:
+.2017-02-25:
 
 NOTE: Milestone: 0.14.0
 
-Add "This word is an immediate word".
+Add "``X`` is an `immediate` word" or "``X`` is an `immediate` and
+`compile-only` word" to the library documentation.  Already done in
+the kernel.
 
 .2017-02-17:
 
