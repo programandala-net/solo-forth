@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221608
+  \ Last modified: 201702252030
 
   \ -----------------------------------------------------------
   \ Description
@@ -147,6 +147,9 @@
   \ Update cross references.
   \
   \ 2017-02-22: Move `?(` to the kernel.
+  \
+  \ 2017-02-25: Add `]1l` and `[1const]`. Improve
+  \ documentation.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -258,9 +261,9 @@
   \ [''] ( Compilation: "name" -- )
 
   \
-  \ If _name_ is found in the current search
-  \ order, compile its execution-token pointer as a literal, else
-  \ throw an exception.
+  \ If _name_ is found in the current search order, compile its
+  \ execution-token pointer as a literal, else throw an
+  \ exception.
   \
   \ See also: `literal`, `''`, `[']`.
   \
@@ -364,7 +367,7 @@ need >>name need name>name need name>>
   \ comp' ( "name" -- x xt )
   \
   \ Compilation token _x xt_ represents the compilation
-  \ semantics of "name".
+  \ semantics of _name_.
   \
   \ Origin: Gforth.
   \
@@ -380,7 +383,7 @@ need >>name need name>name need name>>
   \ [comp'] ( Compilation: "name" -- ) ( Run-time: -- x xt )
   \
   \ Compilation token _x xt_ represents the compilation
-  \ semantics of "name".
+  \ semantics of _name_.
   \
   \ Origin: Gforth.
   \
@@ -450,7 +453,7 @@ need >>name need name>name need name>>
   \
   \ }doc
 
-( ]l ]2l save-here restore-here )
+( ]l ]2l ]1l ]cl save-here restore-here )
 
 [unneeded] ]l
 
@@ -461,6 +464,8 @@ need >>name need name>name need name>>
   \ ]l ( x -- )
   \
   \ A short form of the idiom `] literal`.
+  \
+  \ See also: `]`, `literal`, `]2l`, `]1l`, `]cl`.
   \
   \ }doc
 
@@ -473,6 +478,36 @@ need >>name need name>name need name>>
   \ ]2l ( xd -- )
   \
   \ A short form of the idiom `] 2literal`.
+  \
+  \ See also: `]`, `2literal`, `]l`, `]1l`, `]cl`.
+  \
+  \ }doc
+
+[unneeded] ]1l
+
+?\ : ]1l ( x -- ) ] postpone 1literal ; immediate compile-only
+
+  \ doc{
+  \
+  \ ]1l ( x -- )
+  \
+  \ A short form of the idiom `] 1literal`.
+  \
+  \ See also: `]`, `1literal`, `]2l`, `]l`, `]cl`.
+  \
+  \ }doc
+
+[unneeded] ]cl
+
+?\ : ]cl ( x -- ) ] postpone cliteral ; immediate compile-only
+
+  \ doc{
+  \
+  \ ]cl ( x -- )
+  \
+  \ A short form of the idiom `] cliteral`.
+  \
+  \ See also: `]`, `cliteral`, `]2l`, `]l`, `]1l`.
   \
   \ }doc
 
@@ -499,7 +534,7 @@ variable here-backup
   \
   \ possibly ( "name" -- )
   \
-  \ Parse "name".  If "name" is the name of a word in the
+  \ Parse _name_.  If _name_ is the name of a word in the
   \ current search order, execute it; else do nothing.
   \
   \ }doc
@@ -513,7 +548,7 @@ variable here-backup
   \
   \ exec ( "name" -- i*x )
   \
-  \ Parse "name".  If "name" is the name of a word in the
+  \ Parse _name_.  If "name" is the name of a word in the
   \ current search order, execute it; else throw exception
   \ #-13.
   \
@@ -527,14 +562,14 @@ variable here-backup
   \
   \ eval ( i*x "name" -- j*x )
   \
-  \ Parse and evaluate "name".
+  \ Parse and evaluate _name_.
   \
   \ This is a common factor of `[const]`, `[2const]` and
   \ `[cconst]`.
   \
   \ }doc
 
-( [const] [2const] [cconst] )
+( [const] [2const] [1const] [cconst] )
 
 [unneeded] [const] ?( need eval
 
@@ -545,20 +580,22 @@ variable here-backup
   \
   \ [const] ( "name" -- )
   \
-  \ Evaluate "name". Then compile the single-cell value left on
+  \ Evaluate _name_. Then compile the single-cell value left on
   \ the stack.
   \
   \ This word is intented to compile constants as literals, in
-  \ order to gain execution speed. "name" can be any word, as
+  \ order to gain execution speed. _name_ can be any word, as
   \ long as its execution returns a single-cell value on the
   \ stack.
   \
   \ Usage example:
-  \
+
   \ ----
   \ 48 constant zx
   \ : test ( -- ) [const] zx . ;
   \ ----
+
+  \ See also: `[2const]`, `[1const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -571,18 +608,49 @@ variable here-backup
   \
   \ [2const] ( "name" -- )
   \
-  \ Evaluate "name". Then compile the double-cell value left on
+  \ Evaluate _name_. Then compile the double-cell value left on
   \ the stack.
   \
   \ This word is intented to compile double-cell constants as
   \ literals, in order to gain execution speed.
   \
   \ Usage example:
-  \
+
   \ ----
   \ 48. 2constant zx
   \ : test ( -- ) [2const] zx d. ;
   \ ----
+
+  \ See also: `[const]`, `[1const]`, `[cconst]`, `eval`.
+  \
+  \ }doc
+
+[unneeded] [1const] ?( need eval
+
+: [1const] ( "name" -- )
+  eval postpone 1literal ; immediate compile-only ?)
+
+  \ doc{
+  \
+  \ [1const] ( "name" -- )
+  \
+  \ Evaluate _name_. Then compile the single-cell value left on
+  \ the stack, using `1literal`. 
+  \
+  \ This word is intented to compile constants as literals,
+  \ when it's uncertain if the literal is a character or a
+  \ cell, in order to gain execution speed. _name_ can be any
+  \ word, as long as its execution returns a single-cell value
+  \ on the stack.
+  \
+  \ Usage example:
+
+  \ ----
+  \ 48 constant zx
+  \ : test ( -- ) [1const] zx . ;
+  \ ----
+
+  \ See also: `[2const]`, `[const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -595,18 +663,20 @@ variable here-backup
   \
   \ [cconst] ( "name" -- )
   \
-  \ Evaluate "name". Then compile the char left
+  \ Evaluate _name_. Then compile the char left
   \ on the stack.
   \
   \ This word is intented to compile char constants as literals, in
   \ order to gain execution speed.
   \
   \ Usage example:
-  \
+
   \ ----
   \ 48 cconstant zx
   \ : test ( -- ) [cconst] zx emit ;
   \ ----
+
+  \ See also: `[2const]`, `[const]`, `[1const]`, `eval`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702251833
+; Last modified: 201702252037
 
 include version.z80s
 
@@ -7923,10 +7923,21 @@ name_to_string.loop_exit:
 ; postpone ( "name" -- )
 ;
 ; Skip leading space delimiters. Parse name delimited by a
-; space. Find name. Append the compilation semantics of _name_ to
-; the current definition.
+; space. Find name. Append the compilation semantics of _name_
+; to the current definition.
 ;
+; Definition:
+
+; ----
+; : postpone ( "name" -- )
+;   defined dup ?defined
+;   name>immediate? 0= if compile compile then compile, ;
+; ----
+
 ; Origin: Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `[compile]`, `compile`, `defined`, `?defined`,
+; `name>immediate?`, `compile,`, `0if`.
 ;
 ; }doc
 
@@ -7976,7 +7987,9 @@ postpone.end:
 ;
 ; revealed ( nt -- )
 ;
-; Reveal the definition _nt_ by resetting its smudge bit.
+; Reveal the definition _nt_ by resetting its `smudge` bit.
+;
+; See also: `reveal`, `hidden`.
 ;
 ; }doc
 
@@ -7991,7 +8004,9 @@ postpone.end:
 ;
 ; reveal ( -- )
 ;
-; Reveal the latest definition by resetting its smudge bit.
+; Reveal the `latest` definition by resetting its `smudge` bit.
+;
+; See also: `revealed`, `hide`.
 ;
 ; }doc
 
@@ -8019,7 +8034,9 @@ postpone.end:
 ;
 ; hidden ( nt -- )
 ;
-; Hide the definition _nt_ by setting its smudge bit.
+; Hide the definition _nt_ by setting its `smudge` bit.
+;
+; See also: `revealed`, `hide`.
 ;
 ; }doc
 
@@ -8033,7 +8050,9 @@ postpone.end:
 ;
 ; hide ( -- )
 ;
-; Hide the latest definition by setting its smudge bit.
+; Hide the `latest` definition by setting its `smudge` bit.
+;
+; See also: `reveal`, `hidden`.
 ;
 ; }doc
 
@@ -8047,7 +8066,7 @@ postpone.end:
 ;
 ; word-length-mask ( -- b )
 ;
-; Constant that holds the bitmask of the word length.
+; Constant that holds the bitmask _b_ of the word length.
 ;
 ; }doc
 
@@ -8060,7 +8079,7 @@ postpone.end:
 ;
 ; smudge-mask ( -- b )
 ;
-; Constant that holds the bitmask of the smudge bit.
+; Constant that holds the bitmask of the `smudge` bit.
 ;
 ; }doc
 
@@ -9812,7 +9831,7 @@ search.failed:
 
 ; Origin: Comus.
 ;
-; See also: `clit`, `2literal`, `1literal`.
+; See also: `clit`, `2literal`, `1literal`, `]cl`.
 ;
 ; }doc
 
@@ -9835,7 +9854,7 @@ search.failed:
 ;   postpone lit ,  ; immediate compile-only
 ; ----
 
-; See also: `lit`, `cliteral`, `2literal`, `1literal`.
+; See also: `lit`, `cliteral`, `2literal`, `1literal`, `]l`.
 ;
 ; }doc
 
@@ -9864,7 +9883,7 @@ search.failed:
 ;   immediate compile-only
 ; ----
 
-; See also: `2literal`.
+; See also: `2literal`, `]1l`.
 ;
 ; }doc
 
@@ -9888,7 +9907,7 @@ search.failed:
 ;   postpone 2lit 2,  ; immediate compile-only
 ; ----
 
-; See also: `2lit`, `literal`, `cliteral`, `1literal`.
+; See also: `2lit`, `literal`, `cliteral`, `1literal`, `]2l`.
 ;
 ; }doc
 
@@ -12235,6 +12254,8 @@ block.end:
 ;
 ; ?defined ( f -- )
 ;
+; If _f_ is false, throw exception code #-13 (not found).
+;
 ; }doc
 
   ; Credit:
@@ -12329,7 +12350,7 @@ block.end:
 ; Origin: Forth-83 (Required Word Set), Forth-94 (CORE),
 ; Forth-2012 (CORE).
 ;
-; See also: `[']`, `''`.
+; See also: `[']`, `''`, `defined`, `?defined`, `>`.
 ;
 ; }doc
 
