@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702260021
+; Last modified: 201702261214
 
 include version.z80s
 
@@ -229,7 +229,7 @@ if trdos
 endif
 
 bytes_per_sector:                 equ bytes_per_buffer/sectors_per_block
-; XXX TODO -- move to the library
+; XXX TODO -- Move to the library.
 
 characters_per_line:              equ $40
 lines_per_screen:                 equ $10
@@ -3055,9 +3055,8 @@ question_stringer_.enough:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library
-  ; (it's used by `.s`, which will be removed from the kernel
-  ; after the development)
+  ; XXX TODO -- Move to the library (it's used by `.s`, which
+  ; will be removed from the kernel after the development).
 
   ; Credit:
   ; Code adapted from Spectrum Forth-83.
@@ -3233,9 +3232,8 @@ i.hl: ; entry point for `j` and `k`: cfa of `i` plus 3
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library
-  ; (it's used by `.s`, which will be removed from the kernel
-  ; after the development)
+  ; XXX TODO -- Move to the library (it's used by `.s`, which
+  ; will be removed from the kernel after the development).
 
   ; Credit:
   ; Code adapted from spectrum Forth-83.
@@ -4424,8 +4422,10 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- rename to `a[ccept]key`, `c[aps]key`, `m[ode]key`?
-  ; XXX TODO -- rewrite in Forth and move to the library
+  ; XXX TODO -- Rename to `a[ccept]key`, `c[aps]key`,
+  ; `m[ode]key`?
+  ;
+  ; XXX TODO -- Rewrite in Forth and move to the library.
 
   push bc
 
@@ -4533,6 +4533,9 @@ wait_for_key:
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
+
+  ; XXX REMARK -- Not used in the kernel, but moving it to the
+  ; library would be a problem.
 
   exx
   pop bc
@@ -4813,8 +4816,8 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
-  ; XXX TODO -- update documentation for far memory
-  ; XXX TODO -- user variable?
+  ; XXX TODO -- Finish the documentation. (Far memory).
+  ; XXX TODO -- User variable?
 
   dw headers_pointer
 
@@ -4858,10 +4861,10 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
-  ; XXX TODO -- remove?
+  ; XXX TODO -- Remove?
   ;
-  ; XXX TODO -- move to the library? (used in the modules of
-  ; `-transient` and `marker`)
+  ; XXX TODO -- Move to the library? (used in the modules of
+  ; `-transient` and `marker`).
 
   pop hl
   ld (headers_pointer),hl
@@ -5056,8 +5059,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 
   ; XXX TODO -- Finish the documentation.
 
-  ; XXX TODO -- Move to the library?
-  ; Use `' 2@ 1+` to calculate the jump address.
+  ; XXX TODO -- Move to the library?  Use `' 2@ 1+` to calculate
+  ; the jump address.
 
   ld hl,(return_stack_pointer)
   jp two_fetch.hl
@@ -5596,7 +5599,7 @@ endif
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, when possible
+  ; XXX TODO -- Move to the library, when possible.
 
   pop hl ; address
   pop de ; E = bitmask
@@ -6134,7 +6137,7 @@ do_user:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, it's calculated
+  ; XXX TODO -- Move to the library, it's calculated.
 
   dw bytes_per_sector
 
@@ -6373,9 +6376,6 @@ do_user:
 ; ----------------------------------------------
   _user_variable_header scr_,'scr'
 
-; XXX TODO normal variable?
-; XXX TODO -- move to the library
-
 ; doc{
 ;
 ; scr ( -- a )
@@ -6389,6 +6389,10 @@ do_user:
 ; Forth-2012 (BLOCK EXT).
 ;
 ; }doc
+
+; XXX TODO -- Normal variable?
+;
+; XXX TODO -- Move to the library.
 
   db $16
 
@@ -7236,8 +7240,8 @@ u_less_than.de_hl:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library?
-  ; Note: Used by `mode32` in the library.
+  ; XXX TODO -- Move to the library?  Note: Used by `mode32` in
+  ; the library.
 
   dw lastxt_,fetch_
   dw exit_
@@ -7262,8 +7266,14 @@ u_less_than.de_hl:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library -- or use the alternative
-  ; implementation in Forth that has been written there
+  ; XXX TODO -- Finish the documentation. This note from Gforth
+  ; is applicable:
+  ;
+  ; This word is not absolutely reliable. It may give false
+  ; positives and produce a wrong _nt_.
+
+  ; XXX TODO -- Move to the library -- or use the alternative
+  ; implementation in Forth that has been written there.
 
   pop de ; xt
   push bc ; save Forth IP
@@ -7795,7 +7805,7 @@ endif ; pentagon=512 or pentagon=1024
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, with `.name`
+  ; XXX TODO -- Move to the library, with `.name`.
 
   dw name_to_str_  ; ( ca1 len )
   dw dup_,allocate_string_ ; ( ca1 len ca )
@@ -8621,7 +8631,7 @@ simple_accept.end
 ; variable have been received. One or more nulls are added at
 ; the end of the text.
 ;
-  ; XXX TODO move to the library, when possible
+  ; XXX TODO -- Move to the library, when possible.
 
   dw tib_,slash_tib_
   dw two_dup_,blank_ ; clean the input buffer
@@ -9265,8 +9275,8 @@ far_lowers.end:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library, but it's
-  ; needed by `needed`.
+  ; XXX TODO -- Move to the library, but it's needed by
+  ; `needed`.
 
   dw find_name_,zero_equals_
   dw exit_
@@ -9284,10 +9294,8 @@ far_lowers.end:
 ; An ambiguous condition exists if _len1_ is greater than 255 or
 ; the buffer at _ca2_ is less than _len1_+1 characters.
 ;
-; This word is written in Z80, but the equivalent Forth code is
-; the following:
-;
-; Definition:
+; This word is written in Z80, but the equivalent definition in
+; Forth is the following:
 
 ; ----
 ; : place ( ca1 len1 ca2 -- )
@@ -9296,17 +9304,18 @@ far_lowers.end:
 
 ; }doc
 
-  ; XXX TODO -- move to the library after removing the old system bank
-  ; method
+  ; XXX TODO -- Move to the library. Not used in the kernel. The
+  ; problem is the address of `move_block` has to be calculated
+  ; from `move` or get by a constant.
 
-  ; XXX TODO -- fix the mention about the ambiguous condition
+  ; XXX TODO -- Fix the mention about the ambiguous condition.
 
   ; Credit:
   ; Code from DZX-Forth's `packed`.
 
   exx         ; save Forth IP
   pop de      ; DE=ca2
-  pop bc      ; C=len1
+  pop bc      ; BC=len1
   pop hl      ; HL=ca1
   push bc     ; len1
   push de     ; ca2
@@ -9472,7 +9481,7 @@ error.message:
 
   ; XXX TODO -- Finish the documentation.
 
-  ; XXX TODO -- move to the library
+  ; XXX TODO -- Move to the library.
 
   dw name_to_string_,type_,space_
   dw exit_
@@ -9732,7 +9741,7 @@ compare.end:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library -- but needed by `contains`
+  ; XXX TODO -- Move to the library -- but needed by `contains`.
 
   pop de
   pop hl                      ; HL/DE=substring
@@ -12362,18 +12371,14 @@ block.end:
 ;
 ; }doc
 
-  ; XXX TODO -- move to the library
+  ; XXX REMARK -- Not used in the kernel, but it's useful to
+  ; keep it here to share code from other systems.
 
   dw defined_,zero_not_equals_
   dw exit_
 
 ; ----------------------------------------------
   _colon_header bracket_undefined_,'[undefined]',immediate
-
-  ; XXX TODO make this the main word instead of `[defined]`, and
-  ; move `[defined]` to the library?
-
-  ; XXX TODO -- move to the library
 
 ; doc{
 ;
@@ -12397,6 +12402,12 @@ block.end:
 ; See also: `[defined]`.
 ;
 ; }doc
+
+  ; XXX TODO make this the main word instead of `[defined]`, and
+  ; move `[defined]` to the library?
+
+  ; XXX REMARK -- Not used in the kernel, but it's useful to
+  ; keep it here to share code from other systems.
 
   dw bracket_defined_,zero_equals_
   dw exit_
