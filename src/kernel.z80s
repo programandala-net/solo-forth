@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702261506
+; Last modified: 201702262047
 
 include version.z80s
 
@@ -4105,21 +4105,23 @@ mode32_emit.l
 
 ; doc{
 ;
-; emit-udg ( c -- )
+; emit-udg ( c|n -- )
 ;
-; Print the UDG _c_ (0..255) from the current UDG set.
+; Print the UDG _c|n_ from the current UDG set, which is pointed
+; by `os-udg`.
+; 
+; NOTE: The usual parameter is _c_ (0..255), but no check is
+; done. If a 16-bit value _n_ is received instead, it will be
+; used as well in order to calculate the address of the
+; corresponding character bitmap in the UDG set.
 ;
 ; See also: `set-udg`, `emit`, `mode32-emit`, `mode32-max-char`.
 ;
 ; }doc
 
-  pop hl ; L = UDG (0..255)
+  pop hl ; HL = UDG (0..255)
   push bc ; save the Forth IP
 emit_udg.l
-  ld a,l ; A = UDG (0..255)
-  ; A = UDG (0..255)
-  ; H = 0 (supposed, not checked, not forced)
-  ld l,a ; HL = UDG (0..255)
   ld de,(sys_udg)
   add hl,hl
   add hl,hl
@@ -10982,15 +10984,19 @@ if 1 ; developing
 
 ; }doc
 
+  ; XXX TMP -- The layout has additional line breaks to prevent
+  ; the text from overwriting the background image of this
+  ; version.
+
   dw ram_,dot_
   dw paren_dot_quote_
   _string "KiB RAM\r"
   dw unused_,dot_
   dw paren_dot_quote_
-  _string "B free data/code space\r"
+  _string "B free\r  data/code space\r"
   dw farunused_,u_dot_
   dw paren_dot_quote_
-  _string "B free name space"
+  _string "B free\r  name space"
   dw exit_
 
 endif
