@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702261231
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,6 +46,9 @@
   \
   \ 2017-01-06: Update `voc-link` to `latest-wordlist`;
   \ `wordlists,` and `@wordlists` still must be adapted.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
 ( marker )
 
@@ -101,7 +104,7 @@ need get-order need @cell+ need nn, need nn@ need there
 
 : unmarker ( a -- )
   dup there
-  @cell+ hp!  @cell+ last !  @cell+ lastxt !
+  @cell+ np!  @cell+ last !  @cell+ lastxt !
   @cell+ latest-wordlist !
   @cell+ set-current
   dup dup @ 1+ cells + >r  @order  r> @wordlists ;
@@ -123,7 +126,7 @@ need get-order need @cell+ need nn, need nn@ need there
 : order, ( -- ) get-order nn, ;
 
 : marker, ( -- a )
-  here  hp@ ,  last @ ,  lastxt @ ,  latest-wordlist @ ,
+  here  np@ ,  last @ ,  lastxt @ ,  latest-wordlist @ ,
         get-current ,  order,  wordlists, ;
 
   \ doc{

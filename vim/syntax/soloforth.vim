@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-02-22
+" Updated:  2017-02-26
 
 " --------------------------------------------------------------
 " History
@@ -438,10 +438,10 @@ syn keyword soloforthMemory farlimit
 syn keyword soloforthMemory farplace
 syn keyword soloforthMemory fill
 syn keyword soloforthMemory here
-syn keyword soloforthMemory hp
-syn keyword soloforthMemory hp!
-syn keyword soloforthMemory hp0
-syn keyword soloforthMemory hp@
+syn keyword soloforthMemory np
+syn keyword soloforthMemory np!
+syn keyword soloforthMemory np0
+syn keyword soloforthMemory np@
 syn keyword soloforthMemory limit
 syn keyword soloforthMemory move
 syn keyword soloforthMemory off
@@ -1125,6 +1125,9 @@ let b:current_syntax = "soloforth"
 " 2017-02-12: Add `file-status`.
 "
 " 2017-02-22: Add `str=`.
+"
+" 2017-02-26: Rename 'hp' notation to 'np', after the changes
+" in the kernel.
 
 " --------------------------------------------------------------
 

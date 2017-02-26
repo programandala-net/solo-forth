@@ -5,7 +5,7 @@
 
   \ XXX UNDER DEVELOPMENT
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702261232
 
   \ -----------------------------------------------------------
   \ Description
@@ -31,6 +31,9 @@
   \ kernel.
   \
   \ 2017-01-06: Update `voc-link` to `latest-wordlist`.
+  \
+  \ 2017-02-26: Update "hp" notation to "np", after the changes
+  \ in the kernel.
 
 ( extend size system turnkey )
 
@@ -49,8 +52,8 @@
     \ top most word in `forth` vocabulary
   here $1F +origin !
     \ `dp` init value
-  hp@ $26 +origin !
-    \ `hp` init value
+  np@ $26 +origin !
+    \ `np` init value
   latest-wordlist @ $0C +origin ! ;
     \ `latest-wordlist` init value
   \ XXX TODO -- update
