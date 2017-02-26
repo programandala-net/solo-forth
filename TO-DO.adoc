@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702261255
+// Last modified 201702261351
 
 // Application development {{{1
 == Application development ==
@@ -1191,41 +1191,6 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 .2017-02-25:
 
 Add `get-far-banks`, `set-far-banks`.
-
-.2017-02-24, 2017-02-26:
-
-Make `.unused` show also the number of banks, or the total RAM.  Add
-also the description of the free spaces:
-
-....
-RAM: 128 KiB
-Free data/code space: 32000 B
-Free name space: 52000 B
-....
-
-....
-RAM: 128 KiB
-Data/code space: 32000 B free
-Name space: 52000 B free
-....
-
-....
-RAM:                  128 KiB
-Free data/code space: 32000 B
-Free name space:      52000 B
-....
-
-....
-RAM:             128 KiB
-Data/code space: 32000 B free
-Name space:      52000 B free
-....
-
-....
-128 KiB RAM
-32000 B free data/code space
-52000 B free name space
-....
 
 .2017-02-20:
 

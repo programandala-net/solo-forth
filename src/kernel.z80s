@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702261227
+; Last modified: 201702261506
 
 include version.z80s
 
@@ -7401,19 +7401,46 @@ to_name.next:
 ; |===
 ;
 ;
-; See also:`bank`, `far-banks`, `default-bank`.
+; See also: `bank`, `far-banks`, `default-bank`, `ram`.
 ;
 ; }doc
 
-  if pentagon
-    db pentagon/16
-  else
-    if scorpion
-      db scorpion/16
-    else
-      db 128/16
-    endif
-  endif
+banks: equ (pentagon+scorpion+128*(!(pentagon || scorpion) and 1))/16
+
+  ; XXX REMARK -- The calculation above is equivalent to the
+  ; following code:
+  ;
+  ; if pentagon
+  ;   banks: equ pentagon/16
+  ; else
+  ;   if scorpion
+  ;     banks: equ scorpion/16
+  ;   else
+  ;     banks: equ 128/16
+  ;   endif
+  ; endif
+
+  db banks
+
+; ----------------------------------------------
+  _constant_header ram_,'ram'
+
+; doc{
+;
+; ram ( -- n )
+;
+; Return the total RAM size _n_ in kibibytes.
+;
+; NOTE: The RAM size includes the 8 KiB of the Plus D interface,
+; if present.
+;
+; See also: `banks`.
+;
+; }doc
+
+ram_kib: equ banks*16+(8*(gplusdos and 1))
+
+  dw ram_kib
 
 ; ----------------------------------------------
   _code_header default_bank_,'default-bank'
@@ -10946,19 +10973,24 @@ if 1 ; developing
 
 ; ----
 ; : .unused ( -- )
-;   unused u. ."  +" emit farunused u. ." B free" ;
+;   ram . .\" KiB RAM\n" cr
+;   unused u. .\" B free data/code space\n"
+;   farunused u. ." B free name space" ;
 ; ----
 
 ; See also: `unused`, `farunused`.
 
 ; }doc
 
-  dw unused_,u_dot_
+  dw ram_,dot_
   dw paren_dot_quote_
-  _string '+ '
+  _string "KiB RAM\r"
+  dw unused_,dot_
+  dw paren_dot_quote_
+  _string "B free data/code space\r"
   dw farunused_,u_dot_
   dw paren_dot_quote_
-  _string "B free"
+  _string "B free name space"
   dw exit_
 
 endif
