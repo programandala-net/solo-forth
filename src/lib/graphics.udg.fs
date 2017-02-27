@@ -3,12 +3,12 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702251817
+  \ Last modified: 201702272232
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ Words related to User Defined Graphics and fonts.
+  \ Words related to User Defined Graphics.
 
   \ -----------------------------------------------------------
   \ Author
@@ -94,6 +94,9 @@
   \ 128.
   \
   \ 2017-02-25: Add `type-udg`.
+  \
+  \ 2017-02-27: Move `get-font` and `rom-font` to the new
+  \ module <printing.fonts.fs>.
 
 ( default-udg-chars udg> udg! udg: )
 
@@ -455,7 +458,7 @@ $FF $FF $FF $FF $FF $FF $FF $FF #143 udg! #128 udg> 8 erase
   \
   \ }doc
 
-( set-udg get-udg get-font rom-font )
+( set-udg get-udg )
 
 [unneeded] set-udg ?( need os-udg
 
@@ -491,40 +494,6 @@ code get-udg ( -- a ) 2A c, os-udg , jppushhl, end-code ?)
   \ is the bitmap address of character 0.
   \
   \ See also: `set-udg`.
-  \
-  \ }doc
-
-[unneeded] get-font ?( need os-chars
-
-code get-font ( -- a ) 2A c, os-chars , jppushhl, end-code ?)
-  \ ld hl, (sys_chars)
-  \ jp pushhl
-
-  \ doc{
-  \
-  \ get-font ( -- a )
-  \
-  \ Get address _a_ of the current font (characters 32..127),
-  \ by fetching the system variable `os-chars`.  _a_ is the
-  \ bitmap address of character 0.
-  \
-  \ See also: `set-font`, `default-font`.
-  \
-  \ }doc
-
-[unneeded] rom-font ?\ 15360 constant rom-font  exit
-
-  \ doc{
-  \
-  \ rom-font ( -- a )
-  \
-  \ A constant that holds the address _a_ of the ROM font,
-  \ which is 15360 ($3C00), the bitmap address of character 0,
-  \ 256 bytes below the bitmap of the space (character 32),
-  \ which is the first printable character. This is the default
-  \ hold in `os-chars`.
-  \
-  \ See also: `default-font`, `set-font`, `get-font`.
   \
   \ }doc
 

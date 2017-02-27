@@ -11,12 +11,9 @@
   \ Words to manipulate or build fonts.
 
   \ -----------------------------------------------------------
-  \ Authors
+  \ Author
 
-  \ Chezron Software; code published in Outlet #1, 1987.
-  \
-  \ Marcos Cruz (programandala.net) adapted it to Solo Forth,
-  \ 2017.
+  \ Marcos Cruz (programandala.net), 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -28,7 +25,45 @@
   \ -----------------------------------------------------------
   \ Latest changes
 
-  \ 2017-02-27: Start.
+  \ 2017-02-27: Add `outlet-autochars`. Move `get-font` and
+  \ `rom-font` from the UDG module.
+
+( get-font rom-font )
+
+[unneeded] get-font ?( need os-chars
+
+code get-font ( -- a ) 2A c, os-chars , jppushhl, end-code ?)
+  \ ld hl, (sys_chars)
+  \ jp pushhl
+
+  \ doc{
+  \
+  \ get-font ( -- a )
+  \
+  \ Get address _a_ of the current font (characters 32..127),
+  \ by fetching the system variable `os-chars`.  _a_ is the
+  \ bitmap address of character 0.
+  \
+  \ See also: `set-font`, `default-font`.
+  \
+  \ }doc
+
+[unneeded] rom-font ?\ 15360 constant rom-font
+
+  \ doc{
+  \
+  \ rom-font ( -- a )
+  \
+  \ A constant that holds the address _a_ of the ROM font,
+  \ which is 15360 ($3C00), the bitmap address of character 0,
+  \ 256 bytes below the bitmap of the space (character 32),
+  \ which is the first printable character. This is the default
+  \ hold in `os-chars`.
+  \
+  \ See also: `default-font`, `set-font`, `get-font`,
+  \ `outlet-autochars`.
+  \
+  \ }doc
 
 ( outlet-autochars )
 
