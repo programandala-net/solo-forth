@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702280023
 
   \ -----------------------------------------------------------
   \ Description
@@ -40,6 +40,8 @@
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( const cconst 2const )
 
@@ -60,7 +62,7 @@
   \
   \ Origin: IsForth.
   \
-  \ See also: `cconst`, `2const`.
+  \ See also: `[const]`, `cconst`, `2const`.
   \
   \ }doc
 
@@ -81,7 +83,7 @@
   \
   \ Origin: IsForth's `const`.
   \
-  \ See also: `const`, `2const`.
+  \ See also: `[cconst]`, `const`, `2const`.
   \
   \ }doc
 
@@ -102,7 +104,7 @@
   \
   \ Origin: IsForth's `const`.
   \
-  \ See: `const`, `cconst`.
+  \ See: `[2const]`, `const`, `cconst`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261228
+  \ Last modified: 201702272339
 
   \ -----------------------------------------------------------
   \ Description
@@ -153,6 +153,8 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( [false] [true] [if] [else] [then] )
 
@@ -268,6 +270,8 @@
   \ execution-token pointer as a literal, else throw an
   \ exception.
   \
+  \ ``['']`` is an `immediate` and `compile-only` word.
+  \
   \ See also: `literal`, `''`, `[']`.
   \
   \ }doc
@@ -336,7 +340,7 @@ need >>name need name>name need name>>
   \
   \ (comp') ( nt -- xt )
   \
-  \ A factor of `name>compile`. If _nt_ is an immediate word,
+  \ A factor of `name>compile`. If _nt_ is an `immediate` word,
   \ return the _xt_ of `execute`, else return the _xt_ of
   \ `compile,`.
   \
@@ -388,6 +392,8 @@ need >>name need name>name need name>>
   \ Compilation token _x xt_ represents the compilation
   \ semantics of _name_.
   \
+  \ ``[comp']`` is an `immediate` and `compile-only` word.
+  \
   \ Origin: Gforth.
   \
   \ }doc
@@ -418,6 +424,31 @@ need >>name need name>name need name>>
 
 [unneeded] [compile]
 ?\ : [compile] ( "name" -- ) ' compile, ; immediate
+
+  \ doc{
+  \
+  \ [compile] ( "name" -- )
+  \
+  \ Parse _name_. Find _name_. If _name_ has other than default
+  \ compilation semantics, append them to the current
+  \ definition; otherwise append the execution semantics of of
+  \ _name_.
+  \
+  \ In other words: Force compilation of _name_. This allows
+  \ compilation of an `immediate` word when it would otherwise
+  \ have been executed.
+  \
+  \ ``[compile]`` is an `immediate` word.
+  \
+  \ ``[compile]`` has been be superseded by `postpone`.
+  \
+  \ Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+  \ (Required Word Set), Forth-94 (CORE EXT), Forth-2012 (CORE
+  \ EXT, obsolescent).
+  \
+  \ See also: `compile`, `compile,`.
+  \
+  \ }doc
 
 [unneeded] smudged
 ?\ : smudged ( nt -- ) dup farc@ smudge-mask xor swap farc! ;
@@ -468,6 +499,8 @@ need >>name need name>name need name>>
   \
   \ A short form of the idiom `] literal`.
   \
+  \ ``]l`` is an `immediate` and `compile-only` word.
+  \
   \ See also: `]`, `literal`, `]2l`, `]1l`, `]cl`.
   \
   \ }doc
@@ -481,6 +514,8 @@ need >>name need name>name need name>>
   \ ]2l ( xd -- )
   \
   \ A short form of the idiom `] 2literal`.
+  \
+  \ ``]2l`` is an `immediate` and `compile-only` word.
   \
   \ See also: `]`, `2literal`, `]l`, `]1l`, `]cl`.
   \
@@ -496,6 +531,8 @@ need >>name need name>name need name>>
   \
   \ A short form of the idiom `] 1literal`.
   \
+  \ ``]1l`` is an `immediate` and `compile-only` word.
+  \
   \ See also: `]`, `1literal`, `]2l`, `]l`, `]cl`.
   \
   \ }doc
@@ -509,6 +546,8 @@ need >>name need name>name need name>>
   \ ]cl ( x -- )
   \
   \ A short form of the idiom `] cliteral`.
+  \
+  \ ``]cl`` is an `immediate` and `compile-only` word.
   \
   \ See also: `]`, `cliteral`, `]2l`, `]l`, `]1l`.
   \
@@ -586,9 +625,9 @@ variable here-backup
   \ Evaluate _name_. Then compile the single-cell value left on
   \ the stack.
   \
-  \ This word is intented to compile constants as literals, in
-  \ order to gain execution speed. _name_ can be any word, as
-  \ long as its execution returns a single-cell value on the
+  \ ``[const]`` is intented to compile constants as literals,
+  \ in order to gain execution speed. _name_ can be any word,
+  \ as long as its execution returns a single-cell value on the
   \ stack.
   \
   \ Usage example:
@@ -598,7 +637,9 @@ variable here-backup
   \ : test ( -- ) [const] zx . ;
   \ ----
 
-  \ See also: `[2const]`, `[1const]`, `[cconst]`, `eval`.
+  \ ``[const]`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `const`, `[2const]`, `[1const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -614,8 +655,8 @@ variable here-backup
   \ Evaluate _name_. Then compile the double-cell value left on
   \ the stack.
   \
-  \ This word is intented to compile double-cell constants as
-  \ literals, in order to gain execution speed.
+  \ ``[2const]`` is intented to compile double-cell constants
+  \ as literals, in order to gain execution speed.
   \
   \ Usage example:
 
@@ -624,7 +665,9 @@ variable here-backup
   \ : test ( -- ) [2const] zx d. ;
   \ ----
 
-  \ See also: `[const]`, `[1const]`, `[cconst]`, `eval`.
+  \ ``[2const]`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `2const`, `[const]`, `[1const]`, `[cconst]`, `eval`.
   \
   \ }doc
 
@@ -638,9 +681,9 @@ variable here-backup
   \ [1const] ( "name" -- )
   \
   \ Evaluate _name_. Then compile the single-cell value left on
-  \ the stack, using `1literal`. 
+  \ the stack, using `1literal`.
   \
-  \ This word is intented to compile constants as literals,
+  \ ``[1const]`` is intented to compile constants as literals,
   \ when it's uncertain if the literal is a character or a
   \ cell, in order to gain execution speed. _name_ can be any
   \ word, as long as its execution returns a single-cell value
@@ -653,6 +696,8 @@ variable here-backup
   \ : test ( -- ) [1const] zx . ;
   \ ----
 
+  \ ``[1const]`` is an `immediate` and `compile-only` word.
+  \
   \ See also: `[2const]`, `[const]`, `[cconst]`, `eval`.
   \
   \ }doc
@@ -666,11 +711,10 @@ variable here-backup
   \
   \ [cconst] ( "name" -- )
   \
-  \ Evaluate _name_. Then compile the char left
-  \ on the stack.
+  \ Evaluate _name_. Then compile the char left on the stack.
   \
-  \ This word is intented to compile char constants as literals, in
-  \ order to gain execution speed.
+  \ ``[cconst]`` is intented to compile char constants as
+  \ literals, in order to gain execution speed.
   \
   \ Usage example:
 
@@ -679,7 +723,9 @@ variable here-backup
   \ : test ( -- ) [cconst] zx emit ;
   \ ----
 
-  \ See also: `[2const]`, `[const]`, `[1const]`, `eval`.
+  \ ``[cconst]`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `cconst`, `[2const]`, `[const]`, `[1const]`, `eval`.
   \
   \ }doc
 

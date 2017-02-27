@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702272315
 
   \ -----------------------------------------------------------
   \ Description
@@ -53,6 +53,8 @@
   \
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( ?--> update flush thru )
 
@@ -66,6 +68,8 @@
   \ If _f_ is not false, continue interpretation on the next
   \ sequential block.  parse area. This word is used for
   \ conditional compilation.
+  \
+  \ ``?-->`` is an `immediate` word.
   \
   \ See also: `-->`.
   \

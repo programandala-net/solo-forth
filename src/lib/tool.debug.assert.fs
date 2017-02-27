@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272341
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,6 +33,8 @@
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( assert assert= assert( )
 
@@ -132,6 +134,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \ Start an important assertion.  Important assertions should
   \ always be turned on.
   \
+  \ ``assert0(`` is an `immediate` word.
+  \
   \ Origin: Gforth.
   \
   \ See also: `assert-level`, `assert(`, `assert1(`, `assert2(`,
@@ -148,6 +152,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \ Start a normal assertion.  Normal assertions are turned on
   \ by default.
   \
+  \ ``assert1(`` is an `immediate` word.
+  \
   \ Origin: Gforth.
   \
   \ See also: `assert-level`, `assert(`, `assert0(`, `assert2(`,
@@ -162,6 +168,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \ assert2( ( -- )
   \
   \ Start a debugging assertion.
+  \
+  \ ``assert2(`` is an `immediate` word.
   \
   \ Origin: Gforth.
   \
@@ -180,6 +188,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \ not want to turn on in normal debugging; you would turn
   \ them on mainly for thorough checking.
   \
+  \ ``assert3(`` is an `immediate` word.
+  \
   \ Origin: Gforth.
   \
   \ See also: `assert-level`, `assert(`, `assert0(`, `assert1(`,
@@ -195,6 +205,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \
   \ Start a normal assertion.  Normal assertion are turned on
   \ by default. This word is equivalent to `assert1(`.
+  \
+  \ ``assert(`` is an `immediate` word.
   \
   \ Origin: Gforth.
   \
@@ -212,6 +224,8 @@ variable assert-level ( -- a ) 1 assert-level !
   \ ) ( f -- )
   \
   \ End an assertion.
+  \
+  \ ``)`` is an `immediate` word.
   \
   \ Origin: Gforth.
   \

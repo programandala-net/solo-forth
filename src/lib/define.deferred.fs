@@ -59,6 +59,8 @@
   \ into the current definition. I.e. this produces static
   \ binding as if "name" was not deferred.
   \
+  \ ``defers`` is an `immediate` word.
+  \
   \ Origin: Gforth.
   \
   \ }doc
@@ -108,6 +110,8 @@
   \   ( Runtime:        -- xt )
   \
   \ Return the code field address of a deferred word.
+  \
+  \ ``action-of`` is an `immediate` word.
   \
   \ Origin: Forth-2012 (CORE EXT).
   \

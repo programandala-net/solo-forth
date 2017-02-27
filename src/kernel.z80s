@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702270213
+; Last modified: 201702272336
 
 include version.z80s
 
@@ -8038,8 +8038,38 @@ name_to_string.loop_exit:
 ;
 ; compile ( -- )
 ;
+; Compile the cell following the compilation address of
+; ``compile`` into the dictionary.
+;
+; This allows specific compilation situations to be handled in
+; addition to simply compiling an execution token (which the
+; interpreter already does).
+;
+; ``compile`` is a `compile-only` word.
+;
+; Definition:
+
+; ----
 ; : compile ( -- )
-;   ?compiling  r> dup cell+ >r  @ compile, ;
+;   r> dup cell+ >r  @ compile, ;
+; ----
+
+; Typically used in the form:
+
+; ----
+; : name compile namex ;
+; ----
+
+; When _name_ is executed, the execution token of _namex_ is
+; compiled, not executed. _name_ is tipically an `immediate`
+; word and _namex_ is typically not an `immediate` word.
+;
+; ``compile`` has been be superseded by `postpone`.
+;
+; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
+; (Required Word Set).
+;
+; See also: `[compile]`, `compile,`.
 ;
 ; }doc
 

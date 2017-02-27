@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221311
+  \ Last modified: 201702280008
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,6 +45,8 @@
   \ 2016-11-26: Improve `(ccase)`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Fix and improve documentation.
 
 ( ?ccase )
 
@@ -57,12 +59,13 @@ need alias need char-position?
   \ doc{
   \
   \ end?ccase
-  \
   \   Compilation: ( C: orig -- )
   \   Run-time: ( -- )
   \
   \ End of a `?ccase` control structure.
   \ See `?ccase` for a usage example.
+  \
+  \ ``end?ccase`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 
@@ -87,15 +90,15 @@ need alias need char-position?
 
   \ doc{
   \
-  \ ?ccase
+  \ ?ccase Compilation: ( C: -- orig ) Run-time: ( c ca len --)
   \
-  \ Compilation: ( C: -- orig ) Run-time: ( c ca len -- )
+  \ Start a ``?ccase``..`end?ccase` structure. If _c_ is in the
+  \ string _ca len_, execute the n-th word compiled after
+  \ ``?ccase``, where _n_ is the position of the first _c_ in
+  \ the string (0..len-1), then continue after `end?ccase`.  If
+  \ _c_ is not in _ca len_, just continue after `end?ccase`.
   \
-  \ Start a `?ccase end?ccase` structure. If _c_ is in the string
-  \ _ca len_, execute the n-th word compiled after `?ccase`,
-  \ where _n_ is the position of the first _c_ in the string
-  \ (0..len-1), then continue after `endcase`.  If _c_ is not
-  \ in _ca len_, just continue after `end?ccase`.
+  \ ``?ccase`` is an `immediate` and `compile-only` word.
   \
   \ Usage example:
 
@@ -107,6 +110,8 @@ need alias need char-position?
   \ : letter ( c -- )
   \   s" abc" ?ccase  .a .b .c  end?ccase  ."  The End" cr ;
   \ ----
+  \
+  \ See also: `ccase`, `ccase0`.
   \
   \ }doc
 
@@ -121,12 +126,13 @@ need alias need char-position?
   \ doc{
   \
   \ endccase0
-  \
   \   Compilation: ( C: orig -- )
   \   Run-time: ( -- )
   \
   \ End of a `ccase0` control structure.
   \ See `ccase0` for a usage example.
+  \
+  \ ``endcase0`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 
@@ -158,16 +164,18 @@ need alias need char-position?
 
   \ doc{
   \
-  \ ccase0
-  \   Compilation: ( C: -- orig )
-  \   Run-time: ( c ca len -- )
+  \ ccase0 Compilation: ( C: -- orig ) Run-time: ( c ca len --
+  \ )
   \
-  \ Start a `ccase0 endccase` structure. If _c_ is in the
+  \ Start a ``ccase0``..`endccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
-  \ `ccase`, where _n_ is the position of the first _c_ in the
-  \ string (0..len-1) plus 1, then continue after `endcase`.
-  \ If _c_ is not in _ca len_, execute the word compiled right
-  \ after `ccase0`, then continue after `endccase`.
+  \ ``ccase0``, where _n_ is the position of the first _c_ in
+  \ the string (0..len-1) plus 1, then continue after
+  \ ``endccase0``.  If _c_ is not in _ca len_, execute the word
+  \ compiled right after ``ccase0``, then continue after
+  \ `endccase0`.
+  \
+  \ ``ccase0`` is an `immediate` and `compile-only` word.
   \
   \ Usage example:
 
@@ -181,6 +189,8 @@ need alias need char-position?
   \   s" abc" ccase0  .nope .a .b .c  endccase0
   \   ."  The End" cr ;
   \ ----
+  \
+  \ See also: `ccase` `?ccase`.
   \
   \ }doc
 
@@ -205,6 +215,8 @@ need char-position?
   \
   \ End of a `ccase` control structure.
   \ See `ccase` for a usage example.
+  \
+  \ ``endccase`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 
@@ -233,7 +245,7 @@ need char-position?
   \ Compilation: ( C: -- orig1 orig2 )
   \ Run-time: ( c ca len -- )
   postpone (ccase)  postpone ahead  >mark
- ; immediate compile-only
+  ; immediate compile-only
 
   \ doc{
   \
@@ -241,12 +253,14 @@ need char-position?
   \   Compilation: ( C: -- orig1 orig2 )
   \   Run-time: ( c ca len -- )
   \
-  \ Start a `ccase` structure. If _c_ is in the
+  \ Start a ``ccase``..`endccase` structure. If _c_ is in the
   \ string _ca len_, execute the n-th word compiled after
-  \ `ccase`, where _n_ is the position of the first _c_ in the
-  \ string (0..len-1) plus 1, then continue after `endcase`.
+  \ ``ccase``, where _n_ is the position of the first _c_ in the
+  \ string (0..len-1) plus 1, then continue after `endccase`.
   \ If _c_ is not in _ca len_, execute the word compiled right
   \ after `ccase`, then continue after `endccase`.
+  \
+  \ ``ccase`` is an `immediate` and `compile-only` word.
   \
   \ Usage example:
 
@@ -261,7 +275,7 @@ need char-position?
   \   ."  The End" cr ;
   \ ----
   \
-  \ See also: `(ccase)`, `endccase`.
+  \ See also: `ccase0`, `?ccase`.
   \
   \ }doc
 

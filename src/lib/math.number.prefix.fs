@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272348
 
   \ -----------------------------------------------------------
   \ Description
@@ -16,7 +16,7 @@
 
   \ XXX TODO -- update
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -33,6 +33,8 @@
   \
   \ 2016-11-26: Need `catch`, which has been moved to the
   \ library.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( base# b# d# h# )
 
@@ -90,11 +92,13 @@ create t# ( "name" -- n | d ) 36 c, x# immediate
   \
   \ c# ( "name" -- c )
   \
-  \ Parse "name" and return the code _c_ of the its first
+  \ Parse _name_ and return the code _c_ of the its first
   \ character.
   \
   \ This is a short and state-smart alternative to the standard
   \ words `char` and `[char]`.
+  \
+  \ ``c#`` is an `immediate` word.
   \
   \ }doc
 

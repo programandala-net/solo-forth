@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201702272315
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,6 +36,8 @@
   \ use `assembler-wordlist`.  Document the words.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( macro endm )
 
@@ -68,6 +70,8 @@ previous
   \
   \ Finish the definition of an assembler macro, started by
   \ `macro`.
+  \
+  \ ``endm`` is an `immediate` word.
   \
   \ }doc
 

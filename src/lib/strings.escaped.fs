@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702272342
 
   \ -----------------------------------------------------------
   \ Description
@@ -77,6 +77,8 @@
   \ 2017-02-01: Remove unnecessary `upper` from `(x)`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( esc-standard-chars-wordlist )
 
@@ -283,6 +285,8 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \ behaviour. Alternative escaped chars can be configured with
   \ `esc-block-chars-wordlist` and `esc-udg-chars-wordlist`.
   \
+  \ ``s\"`` is an `immediate` word.
+  \
   \ Origin: Forth-2012 (CORE EXT, FILE EXT).
   \
   \ See also: `parse-esc-string`, `set-esc-order`, `.\"`.
@@ -307,6 +311,8 @@ need set-esc-order  esc-standard-chars-wordlist 1 set-esc-order
   \      ( Run-time: -- ca len )
   \
 
+  \ ``.\"`` is an `immediate` and `compile-only` word.
+  \
   \ Note: Loading this word sets `esc-standard-chars-wordlist`
   \ as the only wordlist in `esc-order`. That is the standard
   \ behaviour. Alternative escaped chars can be configured with

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272340
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,8 @@
   \
   \ 2017-02-17: Update notation "behaviour" to "action".
   \ Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( ~~ )
 
@@ -297,10 +299,12 @@ defer ~~app-info ( -- ) ' noop ' ~~app-info defer!
   \
   \ Compile debugging code.
   \
-  \ See also: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
-  \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
+  \ ``~~`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Gforth.
+  \
+  \ See also: `(~~)`, `~~?`, `~~y`, `~~quit-key`, `~~resume-key`,
+  \ `~~info`, `~~app-info`, `~~control` `~~save`, `~~restore`.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272355
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,6 +46,8 @@
   \
   \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
   \ in the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( for step )
 
@@ -102,13 +104,15 @@ code (step) ( R: n -- n' )
 
   \ doc{
   \
-  \ for  Compilation: ( R: -- dest ) Run-time:    ( n -- )
+  \ for Compilation: ( R: -- dest ) Run-time:    ( n -- )
   \
-  \ Start of a `for step` loop, that will iterate _n+1_ times,
-  \ starting with _n_ and ending with 0.
+  \ Start of a ``for``..`step` loop, that will iterate _n+1_
+  \ times, starting with _n_ and ending with 0.
   \
   \ The current value of the index can be retrieved with
   \ `for-i`.
+  \
+  \ ``for`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 
@@ -118,18 +122,27 @@ code (step) ( R: n -- n' )
   \ doc{
   \
   \ step
+  \   Compilation: ( dest -- )
+  \   Run-time:    ( R: n -- n' )
   \
   \ Compilation: ( dest -- )
   \
   \ Append the run-time semantics given below to the current
   \ definition. Resolve the destination of `for`.
   \
-  \ Run-time:    ( R: n -- n' )
+  \ Run-time: ( R: n -- n' )
   \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the
   \ loop index and continue execution at the beginning of the
   \ loop.
+  \
+  \ ``step`` is an `immediate` and `compile-only` word.
+  \
+  \ Note: ``step`` is usually called ``next`` in other Forth
+  \ systems.
+  \
+  \ Origin: Z88 CamelForth.
   \
   \ }doc
 

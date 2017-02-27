@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702280027
 
   \ -----------------------------------------------------------
   \ Description
@@ -71,6 +71,8 @@
   \
   \ 2017-02-17: Fix markup in documentation.  Update cross
   \ references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( avalue 2avalue cavalue )
 
@@ -173,6 +175,8 @@
   \ Store _x_ into element _n_ of 1-dimension single-cell
   \ values array _name_.
   \
+  \ ``ato`` is an `immediate` word.
+  \
   \ See also: `array`, `(ato)`.
   \
   \ }doc
@@ -203,6 +207,8 @@
   \ Add _n1_ to element _n2_ of 1-dimension single-cell
   \ values array _name_.
   \
+  \ ``+ato`` is an `immediate` word.
+  \
   \ See also: `avalue`, `(+ato)`.
   \
   \ }doc
@@ -232,6 +238,8 @@
   \
   \ Store _xd_ into element _n_ of 1-dimension double-cell
   \ values array _name_.
+  \
+  \ ``2ato`` is an `immediate` word.
   \
   \ See also: `2avalue`, `(2ato)`.
   \
@@ -265,6 +273,8 @@
   \ Store _c_ into element _n_ of 1-dimension character
   \ values array _name_.
   \
+  \ ``cato`` is an `immediate` word.
+  \
   \ See also: `cavalue`, `(cato)`.
   \
   \ }doc
@@ -294,6 +304,8 @@
   \
   \ Add _c_ to element _n_ of 1-dimension character values
   \ array _name_.
+  \
+  \ ``+cato`` is an `immediate` word.
   \
   \ See also: `cavalue`, `(+cato)`.
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261227
+  \ Last modified: 201702272314
 
   \ -----------------------------------------------------------
   \ Description
@@ -145,6 +145,8 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( delimited located needed-word )
 
@@ -398,6 +400,8 @@ defer reneed ( "name" -- ) defer needed ( ca len -- )
   \ is the needed word specified by the last execution of
   \ `need` or `needed`, return _true_, else return _false_.
   \
+  \ ```` is an `immediate` word.
+  \
   \ }doc
 
 : [unneeded] ( "name" -- f )
@@ -411,6 +415,8 @@ defer reneed ( "name" -- ) defer needed ( ca len -- )
   \ `reneed` or `reneeded`, return false.  Otherwise, if _name_
   \ is the needed word specified by the last execution of
   \ `need` or `needed`, return _false_, else return _true_.
+  \
+  \ ``[unneeded]`` is an `immediate` word.
   \
   \ }doc
 

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702280013
 
   \ -----------------------------------------------------------
   \ Description
@@ -54,6 +54,8 @@
   \ `compile-only`. Improve `?repeat`. Fix needing of `??`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( +perform base-execute call don't executions )
 
@@ -123,10 +125,12 @@ code call ( a -- )
   \ don't ( n1 n2 -- | n1 n2 )
   \
   \ If _n1_ equals _n2_, remove them and exit the definition
-  \ that called `don't`, else leave the _n1_ and _n2_ on the
+  \ that called ``don't``, else leave the _n1_ and _n2_ on the
   \ stack.
   \
-  \ This word is intended to be used before `do`, as an
+  \ ``don't`` is a `compile-only` word.
+  \
+  \ ``don't`` is intended to be used before `do`, as an
   \ alternative to `?do`, when the do-loop structure is
   \ factored in its own word.
   \
@@ -178,6 +182,8 @@ code call ( a -- )
   \
   \ An alternative exit point for `begin until` loops.
   \
+  \ ``?repeat`` is an `immediate` word.
+  \
   \ Usage example:
   \
   \ ----
@@ -214,6 +220,8 @@ code call ( a -- )
   \
   \ Append the execution semantics of the current definition to
   \ the current definition.
+  \
+  \ ``recurse`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Forth-83 (Controlled Reference Words), Forth-94
   \ (CORE), Forth-2012 (CORE).
@@ -279,13 +287,17 @@ code call ( a -- )
 
   \ doc{
   \
-  \ ?? ( Compilation: "name" -- ) ( Runtime: f -- )
+  \ ??
+  \   ( Compilation: "name" -- )
+  \   ( Runtime: f -- )
+  \
+  \ ``??`` is an `immediate` and `compile-only` word.
   \
   \ Compilation:
   \
   \ Parse _name_ and search the current search order for it.
   \ If not found, throw exception #-13. If found and it's an
-  \ immediate word, execute it, else compile it.
+  \ `immediate` word, execute it, else compile it.
   \
   \ Runtime:
   \
@@ -324,6 +336,10 @@ code call ( a -- )
   \
   \ Do an unconditional branch to the start of the word.
   \
+  \ ``retry`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `?retry`.
+  \
   \ }doc
 
 [unneeded] ?retry ?( need retry
@@ -334,9 +350,13 @@ code call ( a -- )
 
   \ doc{
   \
-  \ : ?retry ( Compilation: -- ) ( Run-time: f -- )
+  \ ?retry ( Compilation: -- ) ( Run-time: f -- )
   \
   \ Do a conditional branch to the start of the word.
+  \
+  \ ``?retry`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `retry`.
   \
   \ }doc
 

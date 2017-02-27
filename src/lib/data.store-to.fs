@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702280022
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,8 @@
   \
   \ 2017-02-17: Update cross references and improve
   \ documentation.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( !> 2!> c!> )
 
@@ -59,18 +61,20 @@ need >body
   \   Compilation: ( "name" -- )
   \   Execution: ( x -- )
   \
-  \ Interpretation: ( x "name" -- )
+  \ ``!>`` is an `immediate` word.
+  \
+  \ Interpretation:
   \
   \ Parse _name_, which is the name of a word created by
   \ `constant` or `const`, and make _x_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
   \ Parse _name_, which is a word created by `constant` or
   \ `const`, and append the execution execution semantics given
   \ below to the current definition.
   \
-  \ Execution: ( x -- )
+  \ Execution:
   \
   \ Make _x_ the current value of constant _name_.
   \
@@ -92,20 +96,22 @@ need >body
   \   Compilation: ( "name" -- )
   \   Execution: ( xd -- )
   \
-  \ Interpretation: ( xd "name" -- )
+  \ ``2!>`` is an `immediate` word.
   \
-  \ Parse "name", which is the name of a word created by
+  \ Interpretation:
+  \
+  \ Parse _name_, which is the name of a word created by
   \ `2constant` or `2const`, and make _xd_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
-  \ Parse "name", which is a word created by `2constant` or
+  \ Parse _name_, which is a word created by `2constant` or
   \ `2const`, and append the execution execution semantics
   \ given below to the current definition.
   \
-  \ Execution: ( xd -- )
+  \ Execution:
   \
-  \ Make _xd_ the current value of double-cell constant "name".
+  \ Make _xd_ the current value of double-cell constant _name_.
   \
   \ Origin: IsForth's `!>`.
   \
@@ -125,21 +131,23 @@ need >body
   \   Compilation: ( "name" -- )
   \   Execution: ( c -- )
   \
-  \ Interpretation: ( c "name" -- )
+  \ ``c!>`` is an `immediate` word.
   \
-  \ Parse "name", which is the name of a word created by
+  \ Interpretation:
+  \
+  \ Parse _name_, which is the name of a word created by
   \ `cconstant` or `cconst`, and make _c_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
-  \ Parse "name", which is a word created by `cconstant` or
+  \ Parse _name_, which is a word created by `cconstant` or
   \ `cconst`, and append the execution execution semantics
   \ given below to the current definition.
   \
-  \ Execution: ( c -- )
+  \ Execution:
   \
   \ Make _c_ the current value of the character constant
-  \ "name".
+  \ _name_.
   \
   \ Origin: IsForth's `!>`.
   \

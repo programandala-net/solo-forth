@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702272356
 
   \ -----------------------------------------------------------
   \ Description
@@ -27,6 +27,8 @@
 
   \ 2017-02-19: Move the code of `do`, `-do` and `(-do)` from
   \ the kernel.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( do -do )
 
@@ -46,6 +48,8 @@
 
   \ Compile `(do)` and leave _do-sys_ to be consumed by `loop` or
   \ `+loop`.
+  \
+  \ ``do`` is an `immediate` and `compile-only` word.
   \
   \ Definition:
 
@@ -110,6 +114,8 @@ code (-do) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys )
   \ Compile `(-do)` and leave _do-sys_ to be consumed by `loop`
   \ or `+loop`.  This word is an alternative to `do` and `?do`,
   \ to create count-down loops with `+loop`.
+  \
+  \ ``-do`` is an `immediate` and `compile-only` word.
   \
   \ Definition:
 

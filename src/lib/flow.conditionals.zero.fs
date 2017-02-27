@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702280000
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,8 @@
   \
   \ 2017-01-19: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-27: Improve documentation.
 
   \ XXX TODO Compilation stack notation.
 
@@ -51,7 +53,9 @@
   \
   \ 0if ( f -- )
   \
-  \ Faster and smaller alternative to the idiom `0= if`.
+  \ Faster and smaller alternative to the idiom ``0= if``.
+  \
+  \ ``0if`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 
@@ -65,6 +69,8 @@
   \
   \ Faster and smaller alternative to the idiom `0= while`.
   \
+  \ ``0while`` is an `immediate` and `compile-only` word.
+  \
   \ }doc
 
 [unneeded] 0until ?(
@@ -76,6 +82,8 @@
   \ 0until ( f -- )
   \
   \ Faster and smaller alternative to the idiom `0= until`.
+  \
+  \ ``0until`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 

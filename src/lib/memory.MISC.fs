@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702272347
 
   \ -----------------------------------------------------------
   \ Description
@@ -74,6 +74,8 @@
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( -! c+! c-! )
 
@@ -486,7 +488,7 @@ end-code ?)
   \ If the data-space pointer is not aligned, reserve enough
   \ space to align it.
   \
-  \ In Solo Forth, this word does nothing (it's an immediate
+  \ In Solo Forth, this word does nothing (it's an `immediate`
   \ alias of `noop`), because the Z80 processor does not need
   \ addresses to be cell-aligned.
   \
@@ -506,7 +508,7 @@ end-code ?)
   \ _a2_ is the first aligned address greater than or equal to
   \ _a1_.
   \
-  \ In Solo Forth, this word does nothing (it's an immediate
+  \ In Solo Forth, this word does nothing (it's an `immediate`
   \ alias of `noop`), because the Z80 processor does not need
   \ addresses to be cell-aligned.
   \

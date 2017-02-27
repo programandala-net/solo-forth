@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272344
 
   \ -----------------------------------------------------------
   \ Description
@@ -14,7 +14,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -37,6 +37,8 @@
   \
   \ 2016-08-05: Combine both blocks. Keep the alternative
   \ definition of `csliteral` only as a reference.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( cslit csliteral c" )
 
@@ -54,6 +56,10 @@
   \ Return a string that is compiled after the calling word, and
   \ adjust the instruction pointer to step over the inline string.
   \
+  \ ``cslit`` is compiled by `csliteral`.
+  \
+  \ See also: `slit`.
+  \
   \ }doc
 
 : csliteral ( ca len -- )
@@ -64,6 +70,10 @@
   \
   \ Compile a string _ca len_ which at run-time will
   \ be returned as a counted string.
+  \
+  \ ``csliteral`` is an `immediate` and `compile-only` word.
+  \
+  \ See also: `sliteral`, `cslit`.
   \
   \ }doc
 
@@ -79,7 +89,11 @@
   \ At run-time the string will be returned as a
   \ counted string _ca_.
   \
+  \ ``c"`` is an `immediate` and `compile-only` word.
+  \
   \ Origin: Forth-94 (CORE EXT), Forth-2012 (CORE EXT).
+  \
+  \ See also: `csliteral`.
   \
   \ }doc
 

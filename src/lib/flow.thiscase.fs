@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221316
+  \ Last modified: 201702272350
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,8 @@
   \
   \ 2017-02-17: Update cross references and improve
   \ documentation.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( thiscase )
 
@@ -60,6 +62,8 @@ need alias
   \ true, discard _x_ and continue execution; else skip the
   \ code compiled until the next `exitcase`.
   \
+  \ ``ifcase`` is an `immediate` and `compile-only` word.
+  \
   \ See also: `othercase`.
   \
   \ }doc
@@ -73,6 +77,8 @@ need alias
   \
   \ End part of a `thiscase` structure: exit the current
   \ definition.
+  \
+  \ ``exitcase`` is an `immediate` and `compile-only` word.
   \
   \ See also: `ifcase`, `othercase`.
   \

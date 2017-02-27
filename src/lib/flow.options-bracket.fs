@@ -3,20 +3,19 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272352
 
   \ -----------------------------------------------------------
   \ Description
 
-  \ `options[ ]options` control structure, an alternative to
-  \ `case` with single-word options and a specific default
-  \ case. The compilation of options is done in interpretation
-  \ mode.
+  \ `options[` control structure, an alternative to `case` with
+  \ single-word options and a specific default case. The
+  \ compilation of options is done in interpretation mode.
 
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ Credit:
@@ -42,6 +41,8 @@
   \ 2016-04-29: Improve documentation.
   \
   \ 2016-11-26: Improve `(options)`.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( options[ )
 
@@ -114,7 +115,7 @@ variable #options
   postpone (options)          \ compile run-time handler
   >mark >mark >mark           ( a1 a2 a3 )
   postpone [                  \ start interpreting options
- ; immediate compile-only
+  ; immediate compile-only
 
   \ doc{
   \
@@ -149,6 +150,8 @@ variable #options
   \
   \ 10 say  100 say  1000 say  1001 say
   \ ----
+  \
+  \ ``options[`` is an `immediate` and `compile-only` word.
   \
   \ }doc
 

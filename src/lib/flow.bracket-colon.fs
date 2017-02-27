@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702280009
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,6 +36,8 @@
   \ >order`.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( [: ;] )
 
@@ -51,6 +53,8 @@
   \ Suspend compiling to the current definition, start a new
   \ nested definition and compilation continues with this
   \ nested definition.
+  \
+  \ ``[:`` is an `immediate` and `compile-only` word.
   \
   \ See also: `;]`.
   \
@@ -76,14 +80,20 @@
 
   \ doc{
   \
-  \ ;]  Compilation: ( orig -- )
+  \ ;]
+  \   Compilation: ( orig -- )
+  \   Run-time: ( -- xt )
+  \
+  \ ``;]`` is an `immediate` and `compile-only` word.
+  \
+  \ Compilation: ( orig -- )
   \
   \ End the current nested definition, and resume compilation
   \ to the previous (containing) current definition. It appends
   \ the following run-time to the (containing) current
   \ definition:
   \
-  \ run-time: ( -- xt )
+  \ Run-time: ( -- xt )
   \
   \ _xt_ is the execution token of the nested definition.
   \

@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702272359
 
   \ -----------------------------------------------------------
   \ Description
@@ -13,7 +13,7 @@
   \ -----------------------------------------------------------
   \ Author
 
-  \ Marcos Cruz (programandala.net), 2015, 2016.
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
 
   \ -----------------------------------------------------------
   \ License
@@ -35,6 +35,8 @@
   \ notations.
   \
   \ 2016-11-26: Improve `(dstep)`.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( dfor dstep di )
 
@@ -69,8 +71,10 @@
   \
   \ Compilation: ( R: -- dest ) Run-time: ( d -- )
   \
-  \ Start of a `dfor dstep` loop, that will iterate _ud+1_
+  \ Start of a ``dfor``..`dstep` loop, that will iterate _ud+1_
   \ times, starting with _du_ and ending with 0.
+  \
+  \ ``dfor`` is an `immediate` and `compile-only` word.
   \
   \ The current value of the index can be retrieved with
   \ `dfor-i`.
@@ -79,18 +83,22 @@
 
 : dstep ( -- )
   postpone (dstep) postpone branch <resolve
- ; immediate compile-only
+  ; immediate compile-only
 
   \ doc{
   \
   \ dstep
+  \   Compilation: ( dest -- )
+  \   Run-time:    ( R: ud -- ud' )
+  \
+  \ ``dstep`` is an `immediate` and `compile-only` word.
   \
   \ Compilation: ( dest -- )
   \
   \ Append the run-time semantics given below to the current
   \ definition. Resolve the destination of `dfor`.
   \
-  \ Run-time:    ( R: ud -- ud' )
+  \ Run-time: ( R: ud -- ud' )
   \
   \ If the loop index is zero, discard the loop parameters and
   \ continue execution after the loop. Otherwise decrement the

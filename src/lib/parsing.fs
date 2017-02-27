@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702272346
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( defined? parse-char parse-all )
 
@@ -163,6 +165,8 @@ need-here execute-parsing
   \
   \ Place _c_, the value of the first character of _name_, on
   \ the stack.
+  \
+  \ ``[char]`` is an `immediate` and `compile-only` word.
   \
   \ Origin: Forth-94 (CORE), Forth-2012 (CORE).
   \

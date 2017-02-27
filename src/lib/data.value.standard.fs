@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702280017
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,10 +32,15 @@
   \ Latest changes
 
   \ 2015-09-25: Benchmark.
+  \
   \ 2016-05-10: Improve `2value`.
+  \
   \ 2016-05-11: Document.
+  \
   \ 2016-05-17: Need `>body`, which has been moved to the
   \ library.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( value 2value to )
 
@@ -82,19 +87,24 @@ need >body
   \ doc{
   \
   \ to
+  \   Interpretation: ( i*x "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( i*x -- )
   \
-  \ Interpretation: ( i*x "name" -- )
+  \ ``to`` is an `immediate` word.
+  \
+  \ Interpretation:
   \
   \ Parse "name", which is a word created by `value` or
   \ `2value`, and make _i*x_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
-  \ Parse "name", which is a word created by `value` or
+  \ Parse _name_, which is a word created by `value` or
   \ `2value`, and append the execution execution semantics
   \ given below to the current definition.
   \
-  \ Execution: ( i*x -- )
+  \ Execution:
   \
   \ Make _i*x_ the value of "name".
   \

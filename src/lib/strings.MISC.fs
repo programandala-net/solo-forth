@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702270008
+  \ Last modified: 201702272345
 
   \ -----------------------------------------------------------
   \ Description
@@ -780,6 +780,8 @@ code lowers ( ca len -- )
   \ Identical to the standard word `s"`, but using single
   \ quote as delimiter. A simple alternative to `s\"` when only
   \ double quotes are needed in a string.
+  \
+  \ ``s'`` is an `immediate` word.
   \
   \ }doc
 

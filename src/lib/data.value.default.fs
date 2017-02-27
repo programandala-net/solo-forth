@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702280020
 
   \ -----------------------------------------------------------
   \ Description
@@ -48,6 +48,8 @@
   \ missing.
   \
   \ 2016-08-02: Fix comment.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( value to 2value 2to cvalue cto )
 
@@ -61,7 +63,7 @@ need alias
   \
   \ value ( x "name" -- )
   \
-  \ Create a definition "name" with the following execution
+  \ Create a definition _name_ with the following execution
   \ semantics: place _x_ on the stack.
   \
   \ See `to`.
@@ -75,21 +77,26 @@ need !>  ' !> alias to immediate ?)
   \ doc{
   \
   \ to
+  \   Interpretation: ( x "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( x -- )
   \
-  \ Interpretation: ( x "name" -- )
+  \ ``to`` is an `immediate` word.
   \
-  \ Parse "name", which is the name of a word created by
+  \ Interpretation:
+  \
+  \ Parse _name_, which is the name of a word created by
   \ `value`, and make _x_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
-  \ Parse "name", which is a word created by `value`, and
+  \ Parse _name_, which is a word created by `value`, and
   \ append the execution execution semantics given below to the
   \ current definition.
   \
-  \ Execution: ( x -- )
+  \ Execution:
   \
-  \ Make _x_ the current value of value "name".
+  \ Make _x_ the current value of value _name_.
   \
   \ }doc
 
@@ -101,7 +108,7 @@ need !>  ' !> alias to immediate ?)
   \
   \ 2value ( xd "name" -- )
   \
-  \ Create a definition "name" with the following execution
+  \ Create a definition _name_ with the following execution
   \ semantics: place _xd_ on the stack.
   \
   \ Note: This word is not the standard `2value` of Forth-94
@@ -118,21 +125,26 @@ need 2!>  ' 2!> alias 2to immediate ?)
   \ doc{
   \
   \ 2to
+  \   Interpretation: ( xd "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( xd -- )
   \
-  \ Interpretation: ( xd "name" -- )
+  \ ``2to`` is an `immediate` word.
   \
-  \ Parse "name", which is the name of a word created by
+  \ Interpretation:
+  \
+  \ Parse _name_, which is the name of a word created by
   \ `2value`, and make _xd_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
-  \ Parse "name", which is a word created by `2value`, and
+  \ Parse _name_, which is a word created by `2value`, and
   \ append the execution execution semantics given below to the
   \ current definition.
   \
-  \ Execution: ( xd -- )
+  \ Execution:
   \
-  \ Make _xd_ the current value of double-cell value "name".
+  \ Make _xd_ the current value of double-cell value _name_.
   \
   \ }doc
 
@@ -144,7 +156,7 @@ need cconstant ' cconstant alias cvalue ( c "name"  -- )
   \
   \ cvalue ( c "name" -- )
   \
-  \ Create a definition "name" with the following execution
+  \ Create a definition _name_ with the following execution
   \ semantics: place _c_ on the stack.
   \
   \ See `cto`.
@@ -156,22 +168,27 @@ need c!>  ' c!> alias cto immediate ?)
   \ doc{
   \
   \ cto
+  \   Interpretation: ( c "name" -- )
+  \   Compilation: ( "name" -- )
+  \   Execution: ( c -- )
   \
-  \ Interpretation: ( c "name" -- )
+  \ ``cto`` is an `immediate` word.
   \
-  \ Parse "name", which is the name of a word created by
+  \ Interpretation:
+  \
+  \ Parse _name_, which is the name of a word created by
   \ `cvalue`, and make _c_ its value.
   \
-  \ Compilation: ( "name" -- )
+  \ Compilation:
   \
-  \ Parse "name", which is a word created by `cvalue`, and
+  \ Parse _name_, which is a word created by `cvalue`, and
   \ append the execution execution semantics given below to the
   \ current definition.
   \
-  \ Execution: ( c -- )
+  \ Execution:
   \
   \ Make _c_ the current value of the character value
-  \ "name".
+  \ _name_.
   \
   \ }doc
 

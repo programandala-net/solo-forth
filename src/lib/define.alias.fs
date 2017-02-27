@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201702280015
 
   \ -----------------------------------------------------------
   \ Description
@@ -68,6 +68,8 @@
   \
   \ 2017-01-18: Remove `exit` at the end of conditional
   \ interpretation.
+  \
+  \ 2017-02-27: Improve documentation.
 
 ( alias! alias realias )
 
@@ -96,7 +98,7 @@
   \
   \ Aliases have the execution token _xt_ of the original word,
   \ but, contrary to synonyms created by `synonym`, don't
-  \ inherit its attributes (immediate and compile-only).
+  \ inherit its attributes (`immediate` and `compile-only`).
   \
   \ See `realias`, `alias!`, `synonym`.
   \
