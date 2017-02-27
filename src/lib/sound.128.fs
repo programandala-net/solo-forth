@@ -1,0 +1,453 @@
+  \ sound.128.fs
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201702221550
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Words related to 128k sound.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-24: Need `pick`, which has been moved to the
+  \ library.
+  \
+  \ 2016-05-18: Need `vocabulary`, which has been moved to the
+  \ library.
+  \
+  \ 2016-10-10: Fix name of `applause`. Define `/sound` only
+  \ once.
+  \
+  \ 2016-12-20: Rename `jpnext` to `jpnext,` after the change
+  \ in the kernel.
+  \
+  \ 2017-01-02: Convert `zplay` from `z80-asm` to `z80-asm,`.
+  \
+  \ 2017-01-05: Update `need z80-asm,` to `need assembler`.
+  \
+  \ 2017-01-13: Improve documentation.
+  \
+  \ 2017-01-23: Make all remaining words individually
+  \ accessible to `need`.
+  \
+  \ 2017-02-17: Fix typo in documentation.  Update cross
+  \ references.
+  \
+  \ 2017-02-20: Replace `do`, which has been moved to the
+  \ library, with `?do`.
+
+( /sound sound-register-port sound-write-port !sound )
+
+[unneeded] /sound ?\ 14 cconstant /sound
+
+  \ doc{
+  \
+  \ /sound ( -- b )
+  \
+  \ A character constant that returns 14, the number of
+  \ registers used by the 128K sounds.
+  \
+  \ See also: `sound!`, `play`.
+  \
+  \ }doc
+
+[unneeded] sound-register-port
+[unneeded] sound-write-port and ?( need const
+
+65533 const sound-register-port
+49149 const sound-write-port   ?)
+
+[unneeded] !sound ?(
+
+need !p need sound-register-port need sound-write-port
+
+: !sound ( b1 b2 -- )
+  sound-register-port !p  sound-write-port  !p ; ?)
+
+  \ doc{
+  \
+  \ !sound ( b1 b2 -- )
+  \
+  \ Set sound register _b2_ (0...13) to value _b1_.
+  \
+  \ See also: `/sound`, `play`.
+  \
+  \ }doc
+
+( vol shutup noise )
+
+  \ Credit:
+  \
+  \ Code from Spectrum Forth-83.
+
+  \ XXX TODO finish, document and test
+
+[unneeded] vol
+?\ need !sound  : vol ( b1 b2 -- ) 8 + !sound ;
+
+[unneeded] shutup
+?\ need !sound  : shutup ( -- ) -1 7 !sound ;
+  \ XXX FIXME -- sometimes part of the sound remains, e.g.
+  \ with `waves`
+
+[unneeded] noise
+?\ need !sound  : noise ( -- ) 7 7 !sound ;
+
+( music )
+
+need vocabulary need ms need roll need pick
+need !sound need vol
+
+vocabulary music  get-current  also music definitions
+
+  \ Credit:
+  \
+  \ Code from Spectrum Forth-83.
+
+  \ XXX TODO finish, document and test
+
+: freq
+  2* 109.375 3 roll  um/mod nip 256 /mod 2 pick
+  1+ !sound  swap !sound ;
+
+variable len  variable tempo  variable octave  variable volume
+
+2 len !  200 tempo !  8 octave !  15 volume ! 1 15 vol
+
+: tones ( -- ) 56 7 !sound ;
+
+: note ( n "name" -- )
+  create  ,  does>   @ octave @ * 16 /  1 freq tones
+                     tempo @ len @ * ms shutup ;
+
+523 note c  554 note c# 583 note d  622 note d#
+659 note e  698 note f  740 note f# 784 note g
+831 note g# 880 note a  932 note a# 988 note b  -->
+
+( music )
+
+  \ Credit:
+  \
+  \ Code from Spectrum Forth-83.
+
+  \ XXX TODO finish, document and test
+
+: l  ( n -- ) len ! ;
+: o+ ( -- )   octave @ 2 * octave ! ;
+: o- ( -- )   octave @ 2 / octave ! ;
+: r  ( -- )   tempo @ len @ * ms ;
+: >> ( -- )   1 volume @ 1+ vol 1 volume +! ;
+: << ( -- )   1 volume @ 1- vol -1 volume +! ;
+
+set-current previous
+
+( play sound, sound )
+
+  \ Credit:
+  \
+  \ Code inspired by the article "Las posibilidades sonoras del
+  \ 128 K", written by Juan José Rosado Recio, published on
+  \ Microhobby, issue 147 (1987-10), page 24:
+  \
+  \ http://microhobby.org/numero147.htm
+  \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
+
+[unneeded] play ?( need /sound need !sound
+
+: play ( ca -- )
+  /sound 0 ?do  dup c@ i !sound 1+  loop  drop ; ?)
+
+  \ doc{
+  \
+  \ play ( ca -- )
+  \
+  \ Play a 14-byte sound definition stored at _ca_.
+  \
+  \ See also: `sound,`, `sound`.
+  \
+  \ }doc
+
+[unneeded] sound, ?( need /sound
+
+: sound, ( b[0]..b[13] -- )
+  here /sound allot here 1- ?do  i c!  -1 +loop ; ?)
+
+  \ doc{
+  \
+  \ sound, ( b[0]..b[13] -- )
+  \
+  \ Compile the 14-byte sound definition _b[0]..b[13]_.
+  \
+  \ See also: `play`, `sound`.
+  \
+  \ }doc
+
+[unneeded] sound ?( need sound, need play
+
+: sound ( b[0]..b[13] "name" -- )
+  create  sound,  does> ( -- ) ( pfa ) play ; ?)
+
+  \ doc{
+  \
+  \ sound ( b[0]..b[13] "name" -- )
+  \
+  \ Create a word _name_ that will play the 14-byte sound
+  \ defined by _b[0]..b[13]_.
+  \
+  \ See also: `sound,`, `play`.
+  \
+  \ }doc
+
+( fplay )
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TMP --
+  \ XXX TODO -- rename to `fast-play`.
+
+need !p need c@+
+need sound-register-port need sound-write-port need /sound
+
+: fplay ( ca -- )
+  /sound 0 ?do
+    i sound-register-port !p  c@+ sound-write-port !p
+  loop  drop ;
+
+  \ doc{
+  \
+  \ fplay ( ca -- )
+  \
+  \ Play a sound whose 14 bytes are stored at _ca_.
+  \ This word is a faster version of `play`.
+  \
+  \ }doc
+
+( zplay )
+
+  \ XXX UNDER DEVELOPMENT
+  \ XXX TMP --
+
+  \ Z80 version of `play`.
+
+need assembler
+
+need sound-register-port need sound-write-port need /sound
+
+code zplay ( a -- )
+  h pop, b push,
+  /sound b ld#, 00 e ld#,
+    \ B = loop counter
+    \ E = register number
+  rbegin  b push,
+          e a ld, sound-register-port b ldp#, a outbc,
+            \ select the register
+          m a ld, sound-write-port b ldp#, a outbc,
+            \ store the datum
+          hl incp, e inc, b pop, \ next
+  rstep
+  b pop, jpnext, end-code
+  \ Play a sound whose 14 bytes are stored at _a_.
+  \ XXX FIXME -- no sound! maybe `outbc` has a bug in the
+  \ assembler
+
+( waves shoot helicopter1 train airplane helicopter2 )
+
+need sound  hex
+
+  \ Credit:
+  \
+  \ `waves` and `shoot` are adapted from code written by Juan
+  \ José Ruiz, published on Microhobby, issue 139 (1987-07),
+  \ page 7:
+  \
+  \ http://microhobby.org/numero139.htm
+  \ http://microhobby.speccy.cz/mhf/139/MH139_07.jpg
+
+[unneeded] waves
+?\ 00 00 00 00 00 00 07 47 14 14 14 00 26 0E sound waves
+
+[unneeded] shoot
+?\ 0A 00 B1 00 BF 00 1F 47 14 14 14 5C 1C 03 sound shoot
+
+  \ Credit:
+  \
+  \ `helicopter1` and `train` are adapted from code written by
+  \ José Ángel Martín, published on Microhobby, issue 172
+  \ (1988-09), page 22:
+  \
+  \ http://microhobby.org/numero172.htm
+  \ http://microhobby.speccy.cz/mhf/172/MH172_22.jpg
+
+[unneeded] helicopter1
+?\ C8 0F C8 0F C8 0F 00 07 17 17 17 FF 01 0C sound helicopter1
+
+[unneeded] train
+?\ 64 78 30 61 0C C8 37 0F 09 0B 37 B4 04 08 sound train
+
+  \ Credit:
+  \
+  \ `airplane` and 'helicopter2' were extracted from a program
+  \ written by Juan José Rosado Recio, published on Microhobby,
+  \ issue 147 (1987-10), page 24:
+  \
+  \ http://microhobby.org/numero147.htm
+  \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
+
+[unneeded] airplane
+?\ 0C 1F 00 00 00 1F 07 E8 0F 10 0F 9A 00 18 sound airplane
+
+[unneeded] helicopter2
+?\ 09 00 00 06 0C 00 0B C0 10 0E 10 3A 02 1C sound helicopter2
+
+decimal
+
+( bomber whip metalic rain2 lightning1 lighting2 )
+
+  \ Credit:
+  \
+  \ Adapted from data written by Francisco Majón, published on
+  \ Microhobby, issue 194 (1989-12), page 26:
+  \
+  \ http://microhobby.org/numero194.htm
+  \ http://microhobby.speccy.cz/mhf/194/MH194_26.jpg
+
+need sound  hex
+
+[unneeded] bomber
+?\ 49 52 3E A5 5A 8A 9F 8C 66 4D 64 A2 57 C9 sound bomber
+
+[unneeded] whip
+?\ 05 12 08 06 13 0B 05 0B 00 13 03 18 15 01 sound whip
+
+[unneeded] metalic
+?\ 95 40 68 EC D2 B4 00 20 00 C2 92 49 51 B1 sound metalic
+
+[unneeded] ligthing1
+?\ 01 04 00 10 24 43 08 04 1F F5 01 06 1E 02 sound lighting1
+
+[unneeded] lighting2
+?\ 00 00 00 00 00 FF 07 04 FF 19 00 3C 3C 03 sound lighting2
+
+  \ #16 #17 #25 #10 #19 #9 #4 #31 #245 #1 #6 #30 #2 sound rain2
+  \ 10 11 19 0A 13 09 04 1F F5 01 06 1E 02 sound rain2
+  \ XXX FIXME -- one number is missing
+
+decimal
+
+( bell1 bell2 bell3 rap drum cymbal )
+
+  \ Credit:
+  \
+  \ Data extracted from a program written by Juan José Rosado
+  \ Recio, published on Microhobby, issue 147 (1987-10), page
+  \ 24:
+  \
+  \ http://microhobby.org/numero147.htm
+  \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
+
+need sound  hex
+
+[unneeded] bell1
+?\ AB 03 2A 02 0C 01 00 F8 10 10 10 00 71 10 sound bell1
+
+[unneeded] bell2
+?\ 66 00 4B 00 45 00 00 F8 10 10 10 00 22 10 sound bell2
+
+[unneeded] bell3
+?\ FC 06 DE 03 C3 04 00 F8 10 10 10 00 FF 10 sound bell3
+
+[unneeded] rap
+?\ 00 00 00 00 00 00 06 C0 10 10 10 00 05 18 sound rap
+
+[unneeded] drum
+?\ 00 06 00 00 00 05 11 E8 10 10 10 00 0A 10 sound drum
+
+[unneeded] cymbal
+?\ 09 00 00 00 00 00 00 C0 10 10 10 03 09 10 sound cymbal
+
+decimal
+
+( applause hammer background beach waterdrop2 )
+
+  \ Credit:
+  \
+  \ Data extracted from a program written by Juan José Rosado
+  \ Recio, published on Microhobby, issue 147 (1987-10), page
+  \ 24:
+  \
+  \ http://microhobby.org/numero147.htm
+  \ http://microhobby.speccy.cz/mhf/147/MH147_24.jpg
+
+need sound  hex
+
+[unneeded] applause
+?\ 00 00 00 00 00 00 1E 40 0F 10 0F 00 07 18 sound aplausse
+
+[unneeded] hammer
+?\ 1B 00 09 00 00 00 1F C8 10 10 10 00 6B 10 sound hammer
+
+[unneeded] background
+?\ 03 05 FC 04 0C 05 00 F8 10 10 10 FF FF 0E sound background
+
+[unneeded] beach
+?\ 00 00 00 00 00 00 0F C0 0B 10 10 FF 50 0E sound beach
+
+[unneeded] waterdrop2
+?\ 24 00 12 00 16 00 00 F8 10 10 10 00 10 18 sound waterdrop2
+
+decimal
+
+( rain1 waterdrop1 explosion1 explosion2 )
+
+need sound  hex
+
+  \ Credit:
+  \
+  \ `rain1` and `waterdrop1` were extracted from a program
+  \ written by Carlos Ventura, published on Microhobby, issue
+  \ 198 (1990-05), page 16:
+  \
+  \ http://microhobby.org/numero198.htm
+  \ http://microhobby.speccy.cz/mhf/198/MH198_16.jpg
+
+[unneeded] rain1
+?\ 2C 18 06 06 07 03 03 05 2C 06 03 05 03 03 sound rain1
+
+[unneeded] waterdrop1
+?\ 14 53 5E 27 00 08 1F 47 17 17 16 5A 00 00 sound waterdrop1
+
+  \ Credit:
+  \
+  \ `explosion1` and `explosion2` are adapted from the SE BASIC
+  \ manual, page 10, where they were taken from the Timex
+  \ Sinclair TS2068 User Manual.
+  \
+  \ XXX FIXME -- 2016-10-10: Finish the conversion: Registers
+  \ not specified in the examples are set to zero, but they
+  \ should keep the default values. Consult the TS2068 User
+  \ Manual.
+
+[unneeded] explosion1
+?\ 00 00 00 00 00 06 07 10 10 10 38 08 00 00 sound explosion1
+
+[unneeded] explosion2
+?\ 00 00 00 00 00 06 07 10 10 10 38 08 00 00 sound explosion2
+
+decimal
+
+  \ vim: filetype=soloforth

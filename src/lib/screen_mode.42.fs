@@ -1,0 +1,123 @@
+  \ screen_mode.42.fs
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201702220020
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ A 42 CPL screen mode.
+
+  \ -----------------------------------------------------------
+  \ Authors
+
+  \ Author of the 42 cpl printing routine: Ricardo Serral Wigge.
+  \ Published on Microhobby, issue 66 (1986-02), page 24:
+  \ http://microhobby.org/numero066.htm
+  \ http://microhobby.speccy.cz/mhf/066/MH066_24.jpg
+
+  \ Marcos Cruz (programandala.net) integrated it into Solo
+  \ Forth, 2015, 2016, 2017.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ Latest changes
+
+  \ 2016-04-26: Update `latest name>` to `latestxt`.
+  \
+  \ 2016-05-07: Compact the blocks. Improve the file header.
+  \ Fix: `need mode32` was missing.
+  \
+  \ 2016-08-11: Rename the filenames of the driver and the
+  \ font.
+  \
+  \ 2016-10-16: Typo.
+  \
+  \ 2016-11-17: Use `?(` instead of `[if]`.
+  \
+  \ 2017-01-19: Remove remaining `exit` at the end of
+  \ conditional interpretation.
+  \
+  \ 2017-01-20: Fix typo.
+  \
+  \ 2017-02-08: Update the usage of `set-drive`, which now
+  \ returns an error result.
+  \
+  \ 2017-02-11: Replace `<file-as-is` with `0 0 file>`, after
+  \ the improvements in the G+DOS module. Use `drive` to make
+  \ the code compatible with any DOS.
+
+  \ -----------------------------------------------------------
+  \ To-do
+
+  \ XXX TODO -- integrate the source of the driver
+
+  \ XXX TODO -- check how the UDG are printed (8 pixels width?)
+
+  \ XXX FIXME -- a pixel of the cursor is not deleted when
+  \ backspace is used on the command line
+
+( mode42 banked-mode42 )
+
+need mode32 need (mode42 need set-mode-output
+need get-drive need drive need file>
+
+: mode42 ( -- ) [ latestxt ] literal current-mode !
+                  (mode42 set-mode-output ;
+  \ Set the 42 cpl printing mode: the driver, the font
+  \ and `at-xy`.
+
+get-drive  0 drive set-drive throw
+           s" pr42.bin" 0 0 file> throw  \ load the driver
+           s" ea5a.f42" 0 0 file> throw  \ load the font
+set-drive throw
+
+( banked-mode42 )
+
+  \ XXX UNDER DEVELOPMENT -- A variant of `mode42` that stores
+  \ the driver and the font in the code bank.
+
+  \ XXX FIXME -- crash!
+
+need mode32 need (mode42
+need drive need get-drive need file>
+
+need set-banked-mode-output need code-bank
+
+: banked-mode42 ( -- ) [ latestxt ] literal current-mode !
+                         (mode42 set-banked-mode-output ;
+
+code-bank{  get-drive 0 drive set-drive throw
+                        s" pr42.bin" 0 0 file> throw
+                        s" ea5a.f42" 0 0 file> throw
+            set-drive throw }code-bank
+  \ Load the driver and the font into the code bank.
+
+( (mode42 )
+
+need columns need rows need set-font
+
+[defined] (at-xy)
+?\ : (at-xy) ( col row -- ) 22 emit swap emit emit ;
+
+: mode42-xy ( -- col row ) 0 0 ;  \ XXX TODO
+
+: (mode42 ( -- a )
+  42 to columns  24 to rows
+  ['] mode42-xy ['] xy defer!
+  ['] (at-xy) ['] at-xy defer!
+  [ 64600 256 - ] literal set-font 63900 ;
+  \ Set the 42 cpl font and `at-xy`;
+  \ return the address of the output routine.
+
+  \ vim: filetype=soloforth

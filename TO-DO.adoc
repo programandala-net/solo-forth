@@ -400,12 +400,12 @@ Examples from Forth Dimensions:
 |===
 | Title                                    | Vo  | N  | Pag | Note
 
-| Turning the Stack into Local Variables   | 03  | 6  | 185 | Implemented: locals.arguments.fsb
-| Anonymous Variables                      | 06  | 1  | 033 | Implemented: locals.anon.fsb
+| Turning the Stack into Local Variables   | 03  | 6  | 185 | Implemented: locals.arguments.fs
+| Anonymous Variables                      | 06  | 1  | 033 | Implemented: locals.anon.fs
 | Local Definitions                        | 06  | 6  | 016 | :( `privatize` is simpler
 | Letter "Stack Your Locals"               | 07  | 5  | 005 | :( modification of Vo06N6
 | Local Variables                          | 09  | 4  | 009 | :( complete but complex, and not recursive
-| Letters "Local Variables"                | 09  | 5  | 005 | Implemented: locals.local.fsb
+| Letters "Local Variables"                | 09  | 5  | 005 | Implemented: locals.local.fs
 | Letters "Code for Local Variables"       | 10  | 1  | 006 | Modification for FD Vo09N4
 | Headless Local Variables and Constants   | 10  | 1  | 019 | Interesting, but for F83
 | Letters "Local Variables Revisited"      | 10  | 5  | 005 |
@@ -435,7 +435,7 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 .2017-02-24:
 
-Add attributes to block quotes. See <lib.sound.48.fsb>.
+Add attributes to block quotes. See <lib.sound.48.fs>.
 
 .2017-02-24:
 
@@ -463,7 +463,7 @@ markup to the documentation in those cases, and make Glosara complete
 it.
 
 ----
-See also: <<lib/editor.specforth.fsb,i>>.
+See also: <<lib/editor.specforth.fs,i>>.
 ----
 
 Glosara could replace the filename with the actual identifier.  Maybe
@@ -883,7 +883,7 @@ Write a similar alternative to `rdraw`, `rline`.
 
 .2016-12-02:
 
-Rewrite in Z80 the low-level words of <printing.color.fsb>.
+Rewrite in Z80 the low-level words of <printing.color.fs>.
 
 .2015-09-05:
 
@@ -984,7 +984,7 @@ Rewrite `du<` in Z80.
 
 NOTE: Milestone: 0.14.0
 
-Remove module <math.number.prefix.fsb>.
+Remove module <math.number.prefix.fs>.
 
 .2016-12-28:
 
@@ -1134,7 +1134,7 @@ Change the order of the parameters of `%` and `u%`, after _Starting Forth_ pp
 .2016-04-27:
 
 Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
-"math.operators.4-cell.fsb".
+"math.operators.4-cell.fs".
 
 .2016-04-18:
 
@@ -1221,7 +1221,7 @@ Rewrite `exchange`, `cexchange`, `!exchange`  and `c!exchange` in Z80.
 .2016-11-15:
 
 Write far-memory versions of some of the following words from the
-<memory.MISC.fsb> module:
+<memory.MISC.fs> module:
 
 ----
   \ -!
@@ -1354,7 +1354,7 @@ Move `-trailing` to the library.
 
 .2017-02-22:
 
-Compact and document the module <math.floating_point.rom.fsb>.
+Compact and document the module <math.floating_point.rom.fs>.
 
 .2017-02-22:
 
@@ -1366,7 +1366,7 @@ definition in the library.
 
 Same case: `m*`, two definitions in the library.
 
-Same case: bitmasks in <printing.color.fsb>.
+Same case: bitmasks in <printing.color.fs>.
 
 .2017-02-21:
 
@@ -1391,7 +1391,7 @@ Words that could be moved to the library, if the `need` tool didn't use them:
 
 .2016-12-08:
 
-Rename <math.number.print.fsb> to <printing.number.fsb>.
+Rename <math.number.print.fs> to <printing.number.fs>.
 
 // Loading {{{1
 == Loading ==
@@ -1471,7 +1471,7 @@ Improve `need` to make several index lines possible, by making `(` executable:
 very-long-word-4 very-long-word-5 very-long-word-6 )
 ----
 
-See for example <chars.fsb>, <keyboard.MISC.fsb>.
+See for example <chars.fs>, <keyboard.MISC.fs>.
 
 Problem: this would force changes in fsb and fsb2.
 
@@ -1965,7 +1965,8 @@ Change: compare the user variables with those of Spectrum Forth-83.
 
 Fix coloring of paren comments: make it multiline.
 
-.2017-02-22:
+.2017-02-27:
 
-Change the filename ".fsb" extensions to ordinary ".fs". Check how Vim
-can load automatically the fsb.vim code and mappings.
+Include the mappings of the fsb converter.  Study how Vim can load
+them when the filetype is set in the mode line, not with a specific
+filename extension and a filetype detector.

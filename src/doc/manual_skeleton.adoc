@@ -6,7 +6,7 @@
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201702212050
+// Last modified 201702272102
 
 toc::[]
 
@@ -259,12 +259,14 @@ http://programandala.net/en.program.black_flag.html[Black Flag]
 GitHub]).  It's not finished, but it can be useful as an example of
 development with Solo Forth.
 
-[id=_vim]
-== Vim support
+// [id=_vim]
+// == Vim support
+//
+// XXX TODO --
 
-In order to make Vim recognize and highlight the Solo Forth sources,
-with the ".fsb" extension, copy the contents of the <vim> directory
-to your home <~/.vim/> directory.
+// In order to make Vim recognize and highlight the Solo Forth sources,
+// with the ".fsb" extension, copy the contents of the <vim> directory
+// to your home <~/.vim/> directory.
 
 [id=_rebuild]
 == How to rebuild

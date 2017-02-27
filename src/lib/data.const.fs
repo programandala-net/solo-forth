@@ -1,0 +1,109 @@
+  \ data.const.fs
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ Last modified: 201702221550
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Definers of so called "fast constants", which work like
+  \ ordinary constants, except their value is compiled as a
+  \ literal. A literal is placed on the stack faster than a
+  \ constant.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2015, 2016, 2017.
+
+  \ -----------------------------------------------------------
+  \ Credit
+
+  \ Words inspired by IsForth's `const`.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-11-25: Extract code from <data.misc.fsb>. Improve
+  \ documentation.
+  \
+  \ 2017-01-18: Remove `exit` at the end of conditional
+  \ interpretation.
+  \
+  \ 2017-02-17: Update cross references.
+
+( const cconst 2const )
+
+[unneeded] const ?(
+
+: const ( x "name" -- )
+  create immediate ,
+  does>  @ executing? ?exit  postpone literal ; ?)
+
+  \ doc{
+  \
+  \ const ( x "name" -- )
+  \
+  \ Create a fast constant _name_, with value _x_.
+  \
+  \ A fast constant works like an ordinary `constant`, except
+  \ its value is compiled as a literal.
+  \
+  \ Origin: IsForth.
+  \
+  \ See also: `cconst`, `2const`.
+  \
+  \ }doc
+
+[unneeded] cconst ?(
+
+: cconst ( c "name" -- )
+  create immediate c,
+  does>  c@ executing? ?exit  postpone cliteral ; ?)
+
+  \ doc{
+  \
+  \ cconst ( c "name" -- )
+  \
+  \ Create a character fast constant _name_, with value _c_.
+  \
+  \ A character fast constant works like an ordinary
+  \ `cconstant`, except its value is compiled as a literal.
+  \
+  \ Origin: IsForth's `const`.
+  \
+  \ See also: `const`, `2const`.
+  \
+  \ }doc
+
+[unneeded] 2const ?(
+
+: 2const ( xd "name" -- )
+  create immediate 2,
+  does>  2@ executing? ?exit  postpone 2literal ; ?)
+
+  \ doc{
+  \
+  \ 2const ( xd "name" -- )
+  \
+  \ Create a double fast constant _name_, with value _xd_.
+  \
+  \ A double fast constant works like an ordinary `2constant`,
+  \ except its value is compiled as a literal.
+  \
+  \ Origin: IsForth's `const`.
+  \
+  \ See: `const`, `cconst`.
+  \
+  \ }doc
+
+  \ vim: filetype=soloforth

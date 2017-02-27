@@ -1,9 +1,7 @@
 *.bin binary
 *.dsk binary
 *.exe binary
-*.fba linguist-language=Forth
 *.fs linguist-language=Forth
-*.fsb linguist-language=Forth
 *.fzx binary
 *.mgt binary
 *.pbm binary

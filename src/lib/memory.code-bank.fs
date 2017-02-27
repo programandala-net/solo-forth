@@ -1,0 +1,72 @@
+  \ memory.code-bank.fs
+  \
+  \ This file is part of Solo Forth
+  \ http://programandala.net/en.program.solo_forth.html
+
+  \ XXX UNDER DEVELOPMENT
+
+  \ Last modified: 201702221359
+
+  \ -----------------------------------------------------------
+  \ Description
+
+  \ Tool to use a 16-KiB memory bank to store binary code,
+  \ Forth words or data.  The intent is to use it mainly for
+  \ binary modules, saving dictionary space.
+
+  \ -----------------------------------------------------------
+  \ Author
+
+  \ Marcos Cruz (programandala.net), 2016.
+
+  \ -----------------------------------------------------------
+  \ License
+
+  \ You may do whatever you want with this work, so long as you
+  \ retain every copyright, credit and authorship notice, and
+  \ this license.  There is no warranty.
+
+  \ -----------------------------------------------------------
+  \ History
+
+  \ 2016-03-19: First version.
+  \
+  \ 2016-06-01: Update: `there` was moved from the kernel to
+  \ the library.
+
+( code-bank )
+
+need save-here need call need there
+
+variable cp  bank-start cp !  \ code pointer
+
+: code-here  ( -- a ) cp @ ;
+: code-there ( a -- ) cp ! ;
+: code-allot ( n -- ) cp +! ;
+
+variable code-bank#  3 code-bank# !
+  \ Memory bank used as code bank.
+
+: code-bank ( -- ) code-bank# @ bank ;
+  \ Page the code bank in.
+
+: code-bank{ ( -- ) save-here code-here there code-bank ;
+  \ Start compiling code into the code bank.
+
+: }code-bank ( -- ) default-bank restore-here ;
+  \ End compiling code into the code bank.
+
+: ?bank ( -- ) bank-start here u< #-276 ?throw ;
+  \ If the dictionary has reached the zone of memory banks,
+  \ throw error #-276; else do nothing.  This check is required
+  \ after compiling code that manipulates memory banks.
+
+: code-bank-caller ( i*x a "name" -- j*x )
+  create ?bank ,
+  does> ( -- ) ( pfa ) @ code-bank call default-bank ;
+  \ Create a word "name" which will call the machine code
+  \ routine at _a_, in the code bank.
+
+?bank
+
+  \ vim: filetype=soloforth

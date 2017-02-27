@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-23
+:revdate: 2017-02-27
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702231707
+// Last modified 201702272047
 
 // tag::description[]
 
@@ -131,7 +131,6 @@ useless.
 ├── tmp               Temporary files created by `make`
 ├── tools             Development and user tools
 └── vim               Vim files
-    ├── ftdetect      File type detection
     └── syntax        Syntax highlighting
 
 ....
