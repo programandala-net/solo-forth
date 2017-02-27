@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702262047
+; Last modified: 201702270213
 
 include version.z80s
 
@@ -4773,6 +4773,8 @@ u_m_slash_mod.4:
 ;
 ; _n_ is the length of the user area.
 ;
+; See also: `up`.
+;
 ; }doc
 
   dw bytes_per_user_variables
@@ -4787,6 +4789,8 @@ u_m_slash_mod.4:
 ; A variable. _a_ holds the address of the user area pointer.
 ;
 ; Origin: fig-Forth.
+;
+; See also: `/user`, `user`.
 ;
 ; }doc
 
@@ -4868,6 +4872,8 @@ u_m_slash_mod.4:
   ; XXX TODO -- Move to the library? (used in the modules of
   ; `-transient` and `marker`).
 
+  ; XXX TODO -- Finish the documentation.
+
   pop hl
   ld (names_pointer),hl
   _jp_next
@@ -4902,6 +4908,8 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
+  ; XXX TODO -- Finish the documentation.
+
   ld hl,$0000
   add hl,sp
   _jp_pushhl
@@ -4916,6 +4924,8 @@ u_m_slash_mod.4:
 ; Store _a_ into the stack pointer.
 ;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   pop hl
   ld sp,hl
@@ -4933,6 +4943,7 @@ u_m_slash_mod.4:
 ; }doc
 
   ; XXX TODO -- convert to user variable
+  ; XXX TODO -- Finish the documentation.
 
   dw return_stack_pointer
 
@@ -4946,6 +4957,8 @@ u_m_slash_mod.4:
 ; Fetch the content of the return stack pointer.
 ;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   _jp_pushhl
@@ -4961,6 +4974,8 @@ u_m_slash_mod.4:
 ;
 ; }doc
 
+  ; XXX TODO -- Finish the documentation.
+
   pop hl
   ld (return_stack_pointer),hl
   _jp_next
@@ -4972,7 +4987,11 @@ u_m_slash_mod.4:
 ;
 ; >r ( x -- ) ( R: -- x )
 ;
+; See also: `r>`, `r@`, 2>r`,
+;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   pop de
 to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
@@ -4991,7 +5010,11 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; r> ( -- x ) ( R: x -- )
 ;
+; See also: `>r`, `r@`, `2r>`.
+;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   ld e,(hl)
@@ -5009,7 +5032,11 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; rdrop ( R: x -- )
 ;
+; See also: `r@`, `drop`.
+;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   inc hl
@@ -5024,7 +5051,11 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; 2>r ( x1 x2 -- ) ( R: -- x1 x2 )
 ;
+; See also: `2r>`, `2r@`, `>r`.
+;
 ; }doc
+
+  ; XXX TODO -- Finish the documentation.
 
   ld hl,(return_stack_pointer)
   ld de,-cell*2
@@ -5038,6 +5069,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; doc{
 ;
 ; 2r> ( -- x1 x2 ) ( R: x1 x2 -- )
+;
+; See also: `2>r`, `2r@`, `r>`.
 ;
 ; }doc
 
@@ -5057,6 +5090,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ;
 ; 2r@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 )
 ;
+; See also: `2>r`, `2r>`, `r@`.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -5073,6 +5108,8 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; doc{
 ;
 ; r@ ( -- x ) ( R: x -- x )
+;
+; See also. `>r`, `r>`, `rdrop`.
 ;
 ; }doc
 
@@ -5093,7 +5130,7 @@ to_r_.de ; entry point used (calculated) by `dup>r`, defined in the library
 ; Origin: fig-Forth, Forth-79 (Required Word Set), Forth-83
 ; (Required Word Set), Forth-94 (CORE), Forth-2012 (CORE).
 ;
-; See also: `0<>`, `0<`, `0>`.
+; See also: `0<>`, `0<`, `0>`, `negate`, `invert`.
 ;
 ; }doc
 
@@ -5222,6 +5259,8 @@ true_if_cy:
 ;
 ; + ( n1|u1 n2|u2 -- n3|u3 )
 ;
+; See also: `d+`.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
@@ -5239,6 +5278,8 @@ true_if_cy:
 ; d+ ( d1|ud1 d2|ud2 -- d3|ud3 )
 ;
 ; Add _d2|ud2_ to _d1|ud1_, giving the sum _d3|ud3_.
+;
+; See also: `+`.
 ;
 ; }doc
 
@@ -5272,6 +5313,8 @@ true_if_cy:
 ;
 ; Invert all bits of _x1_ giving its logical inverse _x2_.
 ;
+; See also: `0=`, `negate`.
+;
 ; }doc
 
   ; Credit:
@@ -5297,6 +5340,8 @@ true_if_cy:
 ;
 ; Origin: Forth-79 (Required Word Set), Forth-83 (Required
 ; Word Set), Forth-94 (CORE), Forth-2012 (CORE).
+;
+; See also: `0=`, `inverse`.
 ;
 ; }doc
 
@@ -8400,6 +8445,8 @@ type.loop_exit
 ;
 ; }doc
 
+  ; XXX TODO -- Move to the library.
+
   pop de
   pop hl
   push hl
@@ -8427,6 +8474,8 @@ minus_trailing.begin:
 ;
 ; Adjust the start and length of a string to suppress the
 ; leading blanks.
+;
+; See also: `-trailing`, `trim`.
 ;
 ; }doc
 
@@ -8989,7 +9038,7 @@ fill.done:
 
 ; Origin: Forth-94 (STRING), Forth-2012 (STRING).
 ;
-; See also: `1/string`.
+; See also: `1/string`, `-prefix`, `string/`.
 ;
 ; }doc
 
@@ -9192,7 +9241,7 @@ endif
 
   dw stream_              ; ( ca len )
   dw dup_,to_r_           ; ( ca len ) ( R: len )
-  dw minus_leading_           ; ( ca1 len1 ) ( R: len )
+  dw minus_leading_       ; ( ca1 len1 ) ( R: len )
   dw over_,to_r_          ; ( ca1 len1 ) ( R: len ca1 )
   dw b_l_,scan_           ; ( ca2 len2 ) ( R: len ca1 )
   dw dup_
@@ -9331,6 +9380,8 @@ far_lowers.end:
 ;   2dup c! char+ smove ;
 ; ----
 
+; See also: `+place`, `smove`.
+;
 ; }doc
 
   ; XXX TODO -- Move to the library. Not used in the kernel. The
@@ -13972,6 +14023,8 @@ throw.end:
 ;   '"' parse-string  ; immediate
 ; ----
 
+; See also: `s\"`, `s'`, `s""`.
+;
 ; }doc
 
   ; XXX TODO -- Finish the documentation.
