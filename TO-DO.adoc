@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-26
+:revdate: 2017-02-27
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702261351
+// Last modified 201702272224
 
 // Application development {{{1
 == Application development ==
@@ -432,6 +432,15 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-02-27:
+
+Markup the credit notices and add them to an annex of the manual.
+
+.2017-02-27:
+
+Create <doc/extra/> to holed external useful documents about Forth and
+ZX Spectrum.
 
 .2017-02-24:
 
