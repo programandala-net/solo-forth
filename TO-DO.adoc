@@ -959,6 +959,11 @@ does nothing, as expected.
 // Maths {{{1
 == Maths ==
 
+.2017-02-27:
+
+Rewrite `between` in Z80, just to prepare the parameters and jump into
+`within`? Benchmark.
+
 .2017-02-20:
 
 Rewrite in Z80: `u<=`, `u>=`, `<=`, `>=`, `0>=`, `0<=`.
@@ -1342,6 +1347,10 @@ Study the way v.Forth manages the interrupts and adapt it.
 
 // Library {{{1
 == Library ==
+
+.2017-02-27:
+
+Move `-trailing` to the library.
 
 .2017-02-22:
 

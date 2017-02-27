@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-02-26
+" Updated:  2017-02-27
 
 " --------------------------------------------------------------
 " History
@@ -691,8 +691,10 @@ syn keyword soloforthAssembler jr,
 syn keyword soloforthAssembler ld#,
 syn keyword soloforthAssembler ld,
 syn keyword soloforthAssembler ldai,
+syn keyword soloforthAssembler ldd,
 syn keyword soloforthAssembler lddr,
 syn keyword soloforthAssembler ldia,
+syn keyword soloforthAssembler ldi,
 syn keyword soloforthAssembler ldir,
 syn keyword soloforthAssembler ldp#,
 syn keyword soloforthAssembler ldp,
@@ -1128,6 +1130,8 @@ let b:current_syntax = "soloforth"
 "
 " 2017-02-26: Rename 'hp' notation to 'np', after the changes
 " in the kernel.
+"
+" 2017-02-27: Add `ldi,` and `ldd,`.
 
 " --------------------------------------------------------------
 

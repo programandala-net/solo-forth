@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702271814
 
   \ -----------------------------------------------------------
   \ Description
@@ -115,6 +115,8 @@
   \
   \ 2017-02-21: Make `unresolved` optional. Make `?rel`
   \ independent from the assembler, to be reused by `l:`.
+  \
+  \ 2017-02-27: Add `ldi,` and `ldd,`.
 
   \ -----------------------------------------------------------
   \ XXX TODO
@@ -240,9 +242,10 @@ m1 exx, DB m4 in, 40 m3 inbc, 0DE m4 sbc#, E3 m1 exsp, E6 m4
 and#, E9 m1 jphl, EB m1 exde, EE m4 xor#, F3 m1 di,  F6 m4 or#,
 F9 m1 ldsp, FB m1 ei, FE m4 cp#, 00 m6 rlc, 08 m6 rrc, 10 m6
 rl, 18 m6 rr, 20 m6 sla, 28 m6 sra, 38 m6 srl,  40 m7 bit, 80
-m7 res, C0 m7 set, B0ED m8 ldir, B8ED m8 lddr, 44ED m8 neg,
-57ED m8 ldai, 47ED m8 ldia, 56ED m8 im1, 5EED m8 im2, B1ED m8
-cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,  A8 m2 xor, -->
+m7 res, C0 m7 set, A0ED m8 ldi, B0ED m8 ldir, A8ED m8 ldd, B8ED
+m8 lddr, 44ED m8 neg, 57ED m8 ldai, 47ED m8 ldia, 56ED m8 im1,
+5EED m8 im2, B1ED m8 cpir, 6FED m8 rld, A0 m2 and, B0 m2 or,
+A8 m2 xor, -->
 
 ( assembler )
 
