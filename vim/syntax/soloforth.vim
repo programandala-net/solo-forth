@@ -1,10 +1,13 @@
 " soloforth.vim
 " Vim syntax file
-" Language: Solo Forth (for ZX Spectrum)
+" Language: Solo Forth (for ZX Spectrum 128 and compatible)
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-02-27
+" Updated:  2017-02-28
+
+" This file is part of Solo Forth
+" http://programandala.net/en.program.solo_forth.html
 
 " --------------------------------------------------------------
 " History
@@ -1132,6 +1135,8 @@ let b:current_syntax = "soloforth"
 " in the kernel.
 "
 " 2017-02-27: Add `ldi,` and `ldd,`.
+"
+" 2017-02-28: Update file header.
 
 " --------------------------------------------------------------
 

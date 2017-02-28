@@ -1,6 +1,6 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-27
+:revdate: 2017-02-28
 :toc:
 :linkattrs:
 
@@ -131,8 +131,8 @@ useless.
 ├── tmp               Temporary files created by `make`
 ├── tools             Development and user tools
 └── vim               Vim files
+    ├── ftplugin      Filetype plugin
     └── syntax        Syntax highlighting
-
 ....
 
 // end::tree[]
