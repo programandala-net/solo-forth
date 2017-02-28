@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702281815
+  \ Last modified: 201702281835
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,7 +55,7 @@
   \ 2017-02-28: Fix names of "lightning" effects.  Rename `vol`
   \ to `!volume`. Add `@volume`. Rename `shutup` to `-mixer`.
   \ Write `silence`, an upper layer on `-mixer`. Add `@sound`.
-  \ Improve documentation.
+  \ Add `get-mixer`, `set-mixer`.  Improve documentation.
 
 ( /sound sound-register-port sound-write-port !sound @sound )
 
@@ -75,8 +75,7 @@
 [unneeded] sound-register-port
 [unneeded] sound-write-port and ?( need const
 
-$FFFD const sound-register-port
-$BFFD const sound-write-port   ?)
+$FFFD const sound-register-port $BFFD const sound-write-port ?)
 
   \ doc{
   \
@@ -141,7 +140,7 @@ need !p need sound-register-port need sound-write-port
   \
   \ }doc
 
-( !volume @volume -mixer silence noise )
+( !volume @volume set-mixer get-mixer -mixer silence noise )
 
   \ Credit:
   \
@@ -153,31 +152,65 @@ need !p need sound-register-port need sound-write-port
 
 ?\ need !sound  : !volume ( b1 b2 -- ) 8 + !sound ;
 
-  \ From the disassembly of the 128K ROM0:
+  \ doc{
   \
+  \ !volume  ( b1 b2 -- )
+  \
+  \ Store _b1_ at volume register of channel _b2_ (0..2,
+  \ equivalent to notation 'A'..'C').
+  \
+  \ [quote,,Disassembly of the ZX Spectrum 128k ROM0]
+  \ ____
   \ Registers 8..10 (Channels A..C Volume)
 
-  \ Bits 0-4: Channel volume level.
-  \ Bit 5   : 1=Use envelope defined by register 13 and ignore the volume setting.
-  \ Bits 6-7: Not used.
+  \ [horizontal]
+  \ Bits 0-4:: Channel volume level.
+  \ Bit 5   :: 1=Use envelope defined by register 13 and ignore the volume setting.
+  \ Bits 6-7:: Not used.
+  \ ____
+  \
+  \ See also: `@volume`, `!sound`.
+  \
+  \ }doc
 
 [unneeded] @volume
 
 ?\ need @sound  : @volume ( b -- ) 8 + @sound ;
 
-  \ From the disassembly of the 128K ROM0:
+  \ doc{
   \
+  \ @volume  ( b1 -- b2 )
+  \
+  \ Fetch _b2_ from the volume register of channel _b1_ (0..2,
+  \ equivalent to notation 'A'..'C').
+  \
+  \ [quote,,Disassembly of the ZX Spectrum 128k ROM0]
+  \ ____
   \ Registers 8..10 (Channels A..C Volume)
 
-  \ Bits 0-4: Channel volume level.
-  \ Bit 5   : 1=Use envelope defined by register 13 and ignore the volume setting.
-  \ Bits 6-7: Not used.
+  \ [horizontal]
+  \ Bits 0-4:: Channel volume level.
+  \ Bit 5   :: 1=Use envelope defined by register 13 and ignore the volume setting.
+  \ Bits 6-7:: Not used.
+  \ ____
+  \
+  \ See also: `!volume`, `@sound`.
+  \
+  \ }doc
 
-[unneeded] -mixer
+[unneeded] set-mixer
 
-?\ need !sound : -mixer ( -- ) -1 7 !sound ;
+?\ need !sound : set-mixer ( b -- ) 7 !sound ;
 
-  \ From the disassembly of the 128K ROM0:
+  \ doc{
+  \
+  \ set-mixer  ( b -- )
+  \
+  \ Set the mixer register of the AY-3-8912 sound
+  \ generator to _b_.
+  \
+  \ [quote,,Disassembly of the ZX Spectrum 128k ROM0]
+  \ ____
   \
   \ Register 7 (Mixer - I/O Enable)
   \
@@ -185,14 +218,70 @@ need !p need sound-register-port need sound-write-port
   \ mixers for the three channels, and also controls the I/O
   \ port used to drive the RS232 and Keypad sockets.
 
-  \ Bit 0: Channel A Tone Enable (0=enabled).
-  \ Bit 1: Channel B Tone Enable (0=enabled).
-  \ Bit 2: Channel C Tone Enable (0=enabled).
-  \ Bit 3: Channel A Noise Enable (0=enabled).
-  \ Bit 4: Channel B Noise Enable (0=enabled).
-  \ Bit 5: Channel C Noise Enable (0=enabled).
-  \ Bit 6: I/O Port Enable (0=input, 1=output).
-  \ Bit 7: Not used.
+  \ [horizontal]
+  \ Bit 0:: Channel A Tone Enable (0=enabled).
+  \ Bit 1:: Channel B Tone Enable (0=enabled).
+  \ Bit 2:: Channel C Tone Enable (0=enabled).
+  \ Bit 3:: Channel A Noise Enable (0=enabled).
+  \ Bit 4:: Channel B Noise Enable (0=enabled).
+  \ Bit 5:: Channel C Noise Enable (0=enabled).
+  \ Bit 6:: I/O Port Enable (0=input, 1=output).
+  \ Bit 7:: Not used.
+  \ ____
+  \
+  \ See also: `get-mixer`, `-mixer`, `!sound`.
+  \
+  \ }doc
+
+[unneeded] get-mixer
+
+?\ need @sound : get-mixer ( b -- ) 7 @sound ;
+
+  \ doc{
+  \
+  \ get-mixer  ( -- b )
+  \
+  \ Get the contents _b_ of the mixer register of the
+  \ AY-3-8912 sound generator.
+  \
+  \ [quote,,Disassembly of the ZX Spectrum 128k ROM0]
+  \ ____
+  \
+  \ Register 7 (Mixer - I/O Enable)
+  \
+  \ This controls the enable status of the noise and tone
+  \ mixers for the three channels, and also controls the I/O
+  \ port used to drive the RS232 and Keypad sockets.
+
+  \ [horizontal]
+  \ Bit 0:: Channel A Tone Enable (0=enabled).
+  \ Bit 1:: Channel B Tone Enable (0=enabled).
+  \ Bit 2:: Channel C Tone Enable (0=enabled).
+  \ Bit 3:: Channel A Noise Enable (0=enabled).
+  \ Bit 4:: Channel B Noise Enable (0=enabled).
+  \ Bit 5:: Channel C Noise Enable (0=enabled).
+  \ Bit 6:: I/O Port Enable (0=input, 1=output).
+  \ Bit 7:: Not used.
+  \ ____
+  \
+  \ See also: `set-mixer`, `-mixer`, `@sound`.
+  \
+  \ }doc
+
+[unneeded] -mixer
+
+?\ need !mixer : -mixer ( -- ) %111111 !mixer ;
+
+  \ doc{
+  \
+  \ -mixer  ( -- )
+  \
+  \ Disable the noise and tone mixers for the three channels of
+  \ the AY-3-8912 sound generator.
+  \
+  \ See also: `!mixer`, `@mixer`, `silence`.
+  \
+  \ }doc
 
 [unneeded] silence ?( need -mixer need !volume
 
