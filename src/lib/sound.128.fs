@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702281815
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,8 +51,13 @@
   \
   \ 2017-02-20: Replace `do`, which has been moved to the
   \ library, with `?do`.
+  \
+  \ 2017-02-28: Fix names of "lightning" effects.  Rename `vol`
+  \ to `!volume`. Add `@volume`. Rename `shutup` to `-mixer`.
+  \ Write `silence`, an upper layer on `-mixer`. Add `@sound`.
+  \ Improve documentation.
 
-( /sound sound-register-port sound-write-port !sound )
+( /sound sound-register-port sound-write-port !sound @sound )
 
 [unneeded] /sound ?\ 14 cconstant /sound
 
@@ -63,22 +68,52 @@
   \ A character constant that returns 14, the number of
   \ registers used by the 128K sounds.
   \
-  \ See also: `sound!`, `play`.
+  \ See also: `!sound`, `@sound`, `sound`, `play`.
   \
   \ }doc
 
 [unneeded] sound-register-port
 [unneeded] sound-write-port and ?( need const
 
-65533 const sound-register-port
-49149 const sound-write-port   ?)
+$FFFD const sound-register-port
+$BFFD const sound-write-port   ?)
+
+  \ doc{
+  \
+  \ sound-register-port  ( -- a )
+  \
+  \ The I/O port used to select a register of the AY-3-8912
+  \ sound generator, before writing a value into it using
+  \ `sound-write-port`, or before reading a value from it using
+  \ ``sound-register-port`` again.
+  \
+  \ ``sound-register-port`` is a fast constant defined with
+  \ `const`. Its value is $FFFD.
+  \
+  \ See also: `sound-write-port`, `!sound`, `@sound`.
+  \
+  \ }doc
+
+  \ doc{
+  \
+  \ sound-write-port  ( -- a )
+  \
+  \ The I/O port used to write to a register of the AY-3-8912
+  \ sound generator.
+  \
+  \ ``sound-write-port`` is a fast constant defined with
+  \ `const`.  Its value is $BFFD.
+  \
+  \ See also: `sound-register-port`, `!sound`, `@sound`.
+  \
+  \ }doc
 
 [unneeded] !sound ?(
 
 need !p need sound-register-port need sound-write-port
 
 : !sound ( b1 b2 -- )
-  sound-register-port !p  sound-write-port  !p ; ?)
+  sound-register-port !p sound-write-port !p ; ?)
 
   \ doc{
   \
@@ -86,28 +121,85 @@ need !p need sound-register-port need sound-write-port
   \
   \ Set sound register _b2_ (0...13) to value _b1_.
   \
-  \ See also: `/sound`, `play`.
+  \ See also: `@sound`, `sound`, `play`, `sound-register-port`,
+  \ `sound-write-port`.
   \
   \ }doc
 
-( vol shutup noise )
+[unneeded] @sound ?( need !p need @p need sound-register-port
+
+: @sound ( b1 -- b2 )
+  sound-register-port !p sound-register-port @p ; ?)
+
+  \ doc{
+  \
+  \ @sound ( b1 -- b2 )
+  \
+  \ Get the contents _b2_ of sound register _b1_ (0...13).
+  \
+  \ See also: `!sound`, `sound`, `play`, `sound-register-port`.
+  \
+  \ }doc
+
+( !volume @volume -mixer silence noise )
 
   \ Credit:
   \
   \ Code from Spectrum Forth-83.
 
-  \ XXX TODO finish, document and test
+  \ XXX TODO -- Finish, document and test.
 
-[unneeded] vol
-?\ need !sound  : vol ( b1 b2 -- ) 8 + !sound ;
+[unneeded] !volume
 
-[unneeded] shutup
-?\ need !sound  : shutup ( -- ) -1 7 !sound ;
-  \ XXX FIXME -- sometimes part of the sound remains, e.g.
-  \ with `waves`
+?\ need !sound  : !volume ( b1 b2 -- ) 8 + !sound ;
 
-[unneeded] noise
-?\ need !sound  : noise ( -- ) 7 7 !sound ;
+  \ From the disassembly of the 128K ROM0:
+  \
+  \ Registers 8..10 (Channels A..C Volume)
+
+  \ Bits 0-4: Channel volume level.
+  \ Bit 5   : 1=Use envelope defined by register 13 and ignore the volume setting.
+  \ Bits 6-7: Not used.
+
+[unneeded] @volume
+
+?\ need @sound  : @volume ( b -- ) 8 + @sound ;
+
+  \ From the disassembly of the 128K ROM0:
+  \
+  \ Registers 8..10 (Channels A..C Volume)
+
+  \ Bits 0-4: Channel volume level.
+  \ Bit 5   : 1=Use envelope defined by register 13 and ignore the volume setting.
+  \ Bits 6-7: Not used.
+
+[unneeded] -mixer
+
+?\ need !sound : -mixer ( -- ) -1 7 !sound ;
+
+  \ From the disassembly of the 128K ROM0:
+  \
+  \ Register 7 (Mixer - I/O Enable)
+  \
+  \ This controls the enable status of the noise and tone
+  \ mixers for the three channels, and also controls the I/O
+  \ port used to drive the RS232 and Keypad sockets.
+
+  \ Bit 0: Channel A Tone Enable (0=enabled).
+  \ Bit 1: Channel B Tone Enable (0=enabled).
+  \ Bit 2: Channel C Tone Enable (0=enabled).
+  \ Bit 3: Channel A Noise Enable (0=enabled).
+  \ Bit 4: Channel B Noise Enable (0=enabled).
+  \ Bit 5: Channel C Noise Enable (0=enabled).
+  \ Bit 6: I/O Port Enable (0=input, 1=output).
+  \ Bit 7: Not used.
+
+[unneeded] silence ?( need -mixer need !volume
+
+: silence ( -- )
+  -mixer 0 0 !volume 0 1 !volume 0 2 !volume ; ?)
+
+[unneeded] noise ?\ need !sound  : noise ( -- ) 7 7 !sound ;
 
 ( music )
 
@@ -120,7 +212,7 @@ vocabulary music  get-current  also music definitions
   \
   \ Code from Spectrum Forth-83.
 
-  \ XXX TODO finish, document and test
+  \ XXX TODO -- Finish, document and test.
 
 : freq
   2* 109.375 3 roll  um/mod nip 256 /mod 2 pick
@@ -146,7 +238,7 @@ variable len  variable tempo  variable octave  variable volume
   \
   \ Code from Spectrum Forth-83.
 
-  \ XXX TODO finish, document and test
+  \ XXX TODO -- Finish, document and test.
 
 : l  ( n -- ) len ! ;
 : o+ ( -- )   octave @ 2 * octave ! ;
@@ -179,7 +271,7 @@ set-current previous
   \
   \ Play a 14-byte sound definition stored at _ca_.
   \
-  \ See also: `sound,`, `sound`.
+  \ See also: `sound,`, `sound`, `!sound`.
   \
   \ }doc
 
@@ -218,7 +310,7 @@ set-current previous
 
   \ XXX UNDER DEVELOPMENT
   \ XXX TMP --
-  \ XXX TODO -- rename to `fast-play`.
+  \ XXX TODO -- Rename to `fast-play`.
 
 need !p need c@+
 need sound-register-port need sound-write-port need /sound
@@ -262,8 +354,9 @@ code zplay ( a -- )
   rstep
   b pop, jpnext, end-code
   \ Play a sound whose 14 bytes are stored at _a_.
-  \ XXX FIXME -- no sound! maybe `outbc` has a bug in the
-  \ assembler
+  \
+  \ XXX FIXME -- No sound! maybe `outbc` has a bug in the
+  \ assembler.
 
 ( waves shoot helicopter1 train airplane helicopter2 )
 
@@ -316,7 +409,7 @@ need sound  hex
 
 decimal
 
-( bomber whip metalic rain2 lightning1 lighting2 )
+( bomber whip metalic rain2 lightning1 lightning2 )
 
   \ Credit:
   \
@@ -337,15 +430,16 @@ need sound  hex
 [unneeded] metalic
 ?\ 95 40 68 EC D2 B4 00 20 00 C2 92 49 51 B1 sound metalic
 
-[unneeded] ligthing1
-?\ 01 04 00 10 24 43 08 04 1F F5 01 06 1E 02 sound lighting1
+[unneeded] lightning1
+?\ 01 04 00 10 24 43 08 04 1F F5 01 06 1E 02 sound lightning1
 
-[unneeded] lighting2
-?\ 00 00 00 00 00 FF 07 04 FF 19 00 3C 3C 03 sound lighting2
+[unneeded] lightning2
+?\ 00 00 00 00 00 FF 07 04 FF 19 00 3C 3C 03 sound lightning2
 
   \ #16 #17 #25 #10 #19 #9 #4 #31 #245 #1 #6 #30 #2 sound rain2
   \ 10 11 19 0A 13 09 04 1F F5 01 06 1E 02 sound rain2
-  \ XXX FIXME -- one number is missing
+  \
+  \ XXX FIXME -- One number is missing.
 
 decimal
 
