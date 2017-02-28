@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702280016
+  \ Last modified: 201702282019
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,6 +56,8 @@
   \ Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-02-28: Fix typo in documentation.
 
 ( create: ;code :noname nextname )
 
@@ -174,8 +176,8 @@
   \ nextname ( ca len -- )
   \
   \ The next defined word will have the name _ca len_; the
-  \ defining word will leave the input stream alone. `nextname`
-  \ works with any defining word.
+  \ defining word will leave the input stream alone.
+  \ ``nextname`` works with any defining word.
   \
   \ Origin: Gforth.
   \

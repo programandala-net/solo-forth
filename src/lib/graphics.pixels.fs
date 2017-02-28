@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201702281953
 
   \ -----------------------------------------------------------
   \ Description
@@ -69,6 +69,8 @@
   \ is not a cross reference.
   \
   \ 2017-02-20: Improve documentation.
+  \
+  \ 2017-02-28: Improve documentation.
 
   \ -----------------------------------------------------------
   \ To-do
@@ -356,7 +358,7 @@ code plot176 ( gx gy -- )
   \ WARNING: If parameters are out of range, the ROM will throw
   \ a BASIC error, and the system will crash.
   \
-  \ See also: `plot`, `set-pixel`.
+  \ See also: `set-pixel176`, `plot`.
   \
   \ }doc
 
