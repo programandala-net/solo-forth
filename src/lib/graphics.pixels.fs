@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702281953
+  \ Last modified: 201703012208
 
   \ -----------------------------------------------------------
   \ Description
@@ -376,7 +376,7 @@ code set-pixel ( gx gy -- )
 
   \ Credit:
   \
-  \ Author of the original code: José Manuel Lazo.
+  \ Author of the original code: JosÃ© Manuel Lazo.
   \ Published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -405,7 +405,7 @@ code set-pixel176 ( gx gy -- )
 
   \ Credit:
   \
-  \ Author of the original code: José Manuel Lazo.
+  \ Author of the original code: JosÃ© Manuel Lazo.
   \ Published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -440,7 +440,7 @@ code set-save-pixel176 ( gx gy -- )
 
   \ Credit:
   \
-  \ Author of the original code: José Manuel Lazo.
+  \ Author of the original code: JosÃ© Manuel Lazo.
   \ Published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -473,7 +473,7 @@ code reset-pixel ( gx gy -- )
 
   \ Credit:
   \
-  \ Based on code written by José Manuel Lazo,
+  \ Based on code written by JosÃ© Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -502,7 +502,7 @@ code reset-pixel176 ( gx gy -- )
 
   \ Credit:
   \
-  \ Based on code written by José Manuel Lazo,
+  \ Based on code written by JosÃ© Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -534,7 +534,7 @@ code toggle-pixel ( gx gy -- )
 
   \ Credit:
   \
-  \ Based on code written by José Manuel Lazo,
+  \ Based on code written by JosÃ© Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -564,7 +564,7 @@ code toggle-pixel176 ( gx gy -- )
 
   \ Credit:
   \
-  \ Based on code written by José Manuel Lazo,
+  \ Based on code written by JosÃ© Manuel Lazo,
   \ published on Microhobby, issue 85 (1986-07), page 24:
   \ http://microhobby.org/numero085.htm
   \ http://microhobby.speccy.cz/mhf/085/MH085_24.jpg
@@ -702,14 +702,12 @@ code fast-pixels ( -- n )
 [unneeded] bitmap>attr-addr ?(
 
 code bitmap>attr-addr ( a1 -- a2 )
-  E1 c,  78 04 + c,
+  E1 c, 7C c, 0F c, 0F c, 0F c, E6 c, 03 c, F6 c, 58 c, 67 c,
     \ pop hl
     \ ld a,h ; fetch high byte $40..$57
-  0F c, 0F c, 0F c,
     \ rrca
     \ rrca
     \ rrca ; shift bits 3 and 4 to right
-  E6 c, 03 c,  F6 c, 58 c,  60 07 + c,
     \ and $03 ; range is now 0..2
     \ or $58 ; form correct high byte for third of screen
     \ ld h,a
@@ -730,7 +728,7 @@ code bitmap>attr-addr ( a1 -- a2 )
   \ }doc
 
 [unneeded] pixel-attr-addr ?( need pixel-addr
-                               need bitmap>attr-addr
+                              need bitmap>attr-addr
 
 : pixel-attr-addr ( gx gy -- a )
   pixel-addr nip bitmap>attr-addr ; ?)
@@ -743,5 +741,60 @@ code bitmap>attr-addr ( a1 -- a2 )
   \ attribute address _a_.
   \
   \ }doc
+
+( pixel-attr-addr2 )
+
+  \ XXX UNDER DEVELOPMENT 2017-03-02
+  \
+  \ XXX TODO --  Adapt to 0..191.
+
+need assembler
+
+code pixel-attr-addr2 ( gx gy -- a )
+
+  exx, b pop, h pop, l b ld,
+  \ exx                 ; save Forth IP
+  \ pop bc              ; C = gy
+  \ pop hl              ; L = gx
+  \ ld b,l              ; B = gx
+
+  \ Calculate address of attribute for pixel at B (gx), C (gy):
+
+  c a ld, rlca, rlca, a l ld, 03 and, 58 add#, a h ld, l a ld,
+  \ ld a,c              ; look at the vertical first
+  \ rlca                ; divide by 64
+  \ rlca                ; quicker than 6 rrca operations
+  \ ld l,a              ; store in l register for now
+  \ and 3               ; mask to find segment
+  \ add a,88            ; attributes start at 88*256=22528
+  \ ld h,a              ; that's our high byte sorted
+  \ ld a,l              ; vertical/64 - same as vertical*4
+  E0 and#, a l ld, b a ld, rra, rra, rra, 1F and#, l add,
+  \ and 224             ; want a multiple of 32
+  \ ld l,a              ; vertical element calculated
+  \ ld a,b              ; get horizontal position
+  \ rra                 ; divide by 8
+  \ rra
+  \ rra
+  \ and 31              ; want result in range 0..31
+  \ add a,l             ; add to existing low byte
+  a l ld, h push, exx, jpnext, end-code
+  \ ld l,a              ; that's the low byte done
+  \ push hl             ; result
+  \ exx                 ; restore Forth IP
+  \ _jp_next
+
+  \ Credit:
+  \
+  \ Title: How To Write ZX Spectrum Games â€“ Chapter 11
+  \ Date: Wed, 02 Oct 2013 13:45:37 +0200
+  \ Link: http://chuntey.arjunnair.in/?p=158
+
+  \ XXX TMP -- Test tool:
+
+need pixel-attr-addr
+: p1 ( x y -- ) pixel-attr-addr u. ;
+: p2 ( x y -- ) pixel-attr-addr1 u. ;
+: p ( x y -- ) 2dup p1 p2 ;
 
   \ vim: filetype=soloforth
