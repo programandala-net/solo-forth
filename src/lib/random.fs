@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703020215
 
   \ -----------------------------------------------------------
   \ Description
@@ -62,6 +62,9 @@
   \ interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-02: Fix `crnd` (a bug introduced when the word was
+  \ convernet to the new assembler).
 
 ( rnd random random-range )
 
@@ -192,7 +195,7 @@ need assembler need os-seed
 code crnd ( -- b )
   os-seed fthl,
     \ ld      hl,(randData)
-  ED c, 5F c,  a d ld, m e ld, de addp, l add, h xor,
+  ED c, 5F c, a d ld, m e ld, d addp, l add, h xor,
     \ ld      a,r
     \ ld      d,a
     \ ld      e,(hl)
