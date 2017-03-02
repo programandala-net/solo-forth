@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702272336
+; Last modified: 201703021421
 
 include version.z80s
 
@@ -298,6 +298,7 @@ sys_screen_attributes:      equ $5800 ; address
 sys_screen_attributes_size: equ $0300
 
 bank1_port:     equ $7FFD
+bank2_port:     equ $1FFD
 border_port:    equ $FE
 
 ; ==============================================================
@@ -7647,7 +7648,7 @@ if scorpion=256
   ld (sys_bankm),a ; update BANKM
   ld bc,bank1_port
   out (c),a        ; page in the bank
-  ld bc,$1FFD      ; XXX TODO -- What symbol for this port?
+  ld bc,bank2_port
 if true
   ; XXX TODO -- Is this needed?
   ld a,(sys_bank678)

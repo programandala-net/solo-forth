@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703021423
 
   \ -----------------------------------------------------------
   \ Description
@@ -69,13 +69,12 @@ create (attr-addr) ( -- a ) asm
   \ (attr-addr) ( -- a )
   \
   \ Return the address _a_ of a Z80 routine that calculates the
-  \ color attribute address of a cursor position.  This is a
-  \ modified version of the ROM routine at 0x2583.
+  \ attribute address of a cursor position.  This is a modified
+  \ version of the ROM routine at 0x2583.
   \
   \ Input:
   \
-  \ - D = column (0..31)
-  \ - E = row (0..23)
+  \ - D = column (0..31) - E = row (0..23)
   \
   \ Output:
   \
