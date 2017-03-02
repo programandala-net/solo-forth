@@ -56,6 +56,9 @@
 # 	https://github.com/catseye/zmakebas
 # 	http://zmakebas.sourcearchive.com/documentation/1.2-1/zmakebas_8c-source.html
 
+# zx7 (by Einar Saukas)
+# http://www.worldofspectrum.org/infoseekid.cgi?id=0027996
+
 # ==============================================================
 # History
 
@@ -299,6 +302,24 @@ tmp/fzx_fonts.tap : $(fzx_fonts)
 	rm -f $(addsuffix .tap, $(fzx_fonts)) 
 
 # ==============================================================
+# Compressed test screen
+
+# XXX TODO --
+
+# A ZX Spectrum screen compressed with ZX7 is included in the
+# boot disk, in order to try the ZX7 decompressor.
+
+# tmp/pic.scr.zx7: backgrounds/v00.12.00.scr
+
+# tmp/pic.scr.zx7: backgrounds/v00.12.00.scr
+
+tmp/img.tap: bin/test/img.zx7
+	cd bin/test/ ; \
+	bin2code img.zx7 img.tap 16384 ; \
+	cd - ; \
+	mv bin/test/img.tap tmp/img.tap
+
+# ==============================================================
 # Boot disk
 
 # ----------------------------------------------
@@ -310,7 +331,8 @@ disks/gplusdos/disk_0_boot.mgt: \
 		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
-		tmp/fzx_fonts.tap
+		tmp/fzx_fonts.tap \
+		tmp/img.tap
 	mkmgt $@ bin/sys/gplusdos-sys-2a.tap $^
 
 # ----------------------------------------------
@@ -322,7 +344,8 @@ tmp/disk_0_boot.plus3dos.tap: \
 		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
-		tmp/fzx_fonts.tap
+		tmp/fzx_fonts.tap \
+		tmp/img.tap
 	cat $^ > $@
 
 disks/plus3dos/disk_0_boot.720.dsk: tmp/disk_0_boot.plus3dos.tap
@@ -340,7 +363,8 @@ tmp/disk_0_boot.trdos.tap: \
 		tmp/pr64.tap \
 		tmp/pr42.tap \
 		bin/fonts/ea5a.f42.tap \
-		tmp/fzx_fonts.tap
+		tmp/fzx_fonts.tap \
+		tmp/img.tap
 	cat $^ > $@
 
 disks/trdos/disk_0_boot.trd: tmp/disk_0_boot.trdos.tap

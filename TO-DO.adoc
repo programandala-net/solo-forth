@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-28
+:revdate: 2017-03-02
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702281902
+// Last modified 201703010149
 
 // Application development {{{1
 == Application development ==
@@ -434,6 +434,10 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-03-01:
+
+Replace "circular string buffer" with "`stringer`".
 
 .2017-02-28:
 
@@ -1198,6 +1202,12 @@ Floating-point words `flit`, `fliteral`. From PFE: `fround>s`, `ftrunc>s`
 // Memory {{{1
 == Memory ==
 
+.2017-03-02:
+
+Implement the proposed registers from _Updating the Forth Virtual
+Machine_, by Pelc, Euroforth 2008. Compare with the current
+implementation of the A register, from Z88 CamelForth.
+
 .2017-02-25:
 
 Add `get-far-banks`, `set-far-banks`.
@@ -1527,6 +1537,18 @@ Also, `end-module` is used by modules `module` and `begin-module`.
 
 // Names {{{1
 == Names ==
+
+.2017-03-01:
+
+Possible notation: "attra" for "screen attribute address",
+and "scra" for "screen address".
+
+Example:
+
+- Rename `bitmap>attr-addr` to `scra>attra`.
+- Rename `pixel-attr-addr` to `gxy>attra`.
+
+Or maybe something with "display" instead of "screen".
 
 .2017-02-24:
 

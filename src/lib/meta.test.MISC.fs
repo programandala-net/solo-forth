@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261229
+  \ Last modified: 201702282329
 
   \ -----------------------------------------------------------
   \ Description
@@ -111,6 +111,24 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-02-28: Add `zx7s-test`.
+
+( zx7s-test )
+
+page
+  .( zx7s-test loading) cr
+need zx7s  need file>
+create compresssed 6912 allot
+
+  .( Press any key to load the) cr
+  .( compressed screen from the) cr
+  .( first disk drive.) key drop
+s" img.zx7"  compressed 0 file>
+
+  .( Press any key to decompress and) cr
+  .( display the screen.) key drop
+compressed 16384 zx7s
 
 ( udg-row[-test )
 
