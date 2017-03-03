@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201703032151
+; Last modified: 201703032159
 
 ; ==============================================================
 ; Description
@@ -684,6 +684,78 @@ endif
   _c_constant_header slash_filename_,'/filename'
 
   db 16
+
+  ; XXX TODO -- Move to the library.
+
+; ----------------------------------------------
+  _colon_header to_filename_,'>filename'
+
+; doc{
+;
+; >filename  ( ca1 len1 -- ca2 )
+;
+; Convert the filename _ca1 len1_ to a $FF-terminated string at
+; _ca2_ in the `stringer`.
+;
+; See also: `/filename`.
+;
+; }doc
+
+  ; XXX TODO -- Move to the library.
+
+  dw slash_filename_
+  dw min_
+  dw char_plus_ ; for the trailing 0xFF
+  dw save_string_
+  dw two_dup_,plus_,char_minus_ ; address of the last char
+  _literal $FF
+  dw swap_,c_store_  ; trailing 0xFF
+  dw drop_
+  dw exit_
+
+; ----------------------------------------------
+  _code_header paren_rename_file_,'(rename-file)'
+
+; doc{
+;
+; (rename-file)  ( ca1 ca2 -- ior )
+;
+; Rename filename _ca1_ (a $FF-terminated string)
+; to filename _ca2_ (a $FF-terminated string).
+;
+; }doc
+
+  ; XXX TODO -- Move to the library.
+
+  ; Credit:
+  ;
+  ; Adapted from DZX-Forth.
+
+  pop de
+  pop hl
+  ld ix,dos_rename
+  call dos.ix.preserving_ip
+  jp push_dos_ior
+
+; ----------------------------------------------
+  _colon_header rename_file_,'rename-file'
+
+; doc{
+;
+; rename-file  ( ca1 len1 ca2 len2 -- ior )
+;
+; }doc
+
+  ; XXX TODO -- Move to the library.
+
+  ; Credit:
+  ;
+  ; Adapted from DZX-Forth.
+
+  dw to_filename_,to_r_
+  dw to_filename_,from_r_
+  dw paren_rename_file_
+  dw exit_
 
 ; ==============================================================
 
