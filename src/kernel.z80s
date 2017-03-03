@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703021421
+; Last modified: 201703031658
 
 include version.z80s
 
@@ -13184,7 +13184,7 @@ if 1 ; developing
 endif
 
 ; ----------------------------------------------
-if 0
+if 1
 
   ; XXX TMP -- for debugging
 
@@ -13211,7 +13211,7 @@ type_ascii.loop_exit:
 endif
 
 ; ----------------------------------------------
-if 0
+if 1
 
   ; XXX TMP -- for debugging
 
@@ -13233,7 +13233,7 @@ if 0
   dw page_
   _literal 20
   dw bounds_
-  dw paren_question_do_,trdos_tester.loop_exit
+  dw paren_question_do_,blks.loop_exit
   dw i_,block_,drop_
   dw i_
   _literal 3
@@ -13248,14 +13248,14 @@ if 0
   dw key_
   _literal 'q'
   dw equals_
-  dw zero_branch_,trdos_tester.continue
+  dw zero_branch_,blks.continue
   dw unloop_,exit_
-trdos_tester.continue:
+blks.continue:
 
 endif
 
   dw paren_loop_
-trdos_tester.loop_exit
+blks.loop_exit
   dw exit_
 
 endif
@@ -14195,7 +14195,7 @@ endif
   ld de,$2008 ; $08 sectors for the cache, from sector $20
   ld hl,$2858 ; $58 sectors for the RAM disk, from sector $28
   ld ix,dos_set_1346 ; set RAM pages 1, 3, 4 and 6
-  call dos
+  call dos.ix
 
 endif
 

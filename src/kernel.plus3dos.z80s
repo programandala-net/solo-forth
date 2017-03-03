@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201702260022
+; Last modified: 201703032151
 
 ; ==============================================================
 ; Description
@@ -37,8 +37,8 @@
 ;
 ; 2017-02-05: Move `read-block` and `write-block` to the main
 ; file of the kernel, because they are identical in G+DOS,
-; TR-DOS and +3DOS. Improve the layout.  Move `rec/track` to
-; the main file of the kernel.
+; TR-DOS and +3DOS. Improve the layout.  Move `rec/track` to the
+; main file of the kernel.
 ;
 ; 2017-02-07: Rewrite `read-mode` and `write-mode` in Z80.
 ; First draft of `transfer-sector`.
@@ -46,6 +46,9 @@
 ; 2017-02-09: Add `>drive-block` to `transfer-block`.
 ;
 ; 2017-02-17: Update cross references.
+;
+; 2017-03-03: Factor the DOS page in and page out from DOS call
+; routine. Rename the DOS entry points. Add `dos.tos`.
 
 ; ==============================================================
 ; Requirements
@@ -58,20 +61,60 @@ include inc/zx_spectrum_plus3dos.z80s
 ; Routines to call +3DOS
 
 ; ------------------------------
-; DOS call
+; DOS call to routine in IX
 
-dos:
+dos.ix:
 
-  ; Adapted from the ZX Spectrum +3 manual.
-
-  ; IX holds the address of the DOS routine to be run. All
-  ; other registers are passed intact to the DOS routine and
-  ; are returned from it.
+  ; IX holds the address of the DOS routine to be run.  Its
+  ; value in Forth is restored at the end. All other registers
+  ; are passed intact to the DOS routine and are returned from
+  ; it.
 
   ; The stack must be somewhere in central 32K (conforming to
   ; DOS requirements), so saved AF and BC will not be switched
   ; out.
 
+  call dos_in
+  call dos.jp_ix  ; call routine in IX
+dos.ix.return:
+  call dos_out
+  ld ix,next      ; restore Forth IX
+  ret
+
+dos.jp_ix:
+
+  jp   (ix)       ; call address in IX by calling this jump
+
+; ------------------------------
+; DOS call to routine in TOS
+
+dos.tos:
+
+  ; The top of the Z80 stack holds the address of the DOS
+  ; routine to be run.  All registers are passed intact to the
+  ; DOS routine and are returned from it.
+
+  ; This is used when the IX register is a parameter of the DOS
+  ; routine.
+
+  ; The stack must be somewhere in central 32K (conforming to
+  ; DOS requirements).
+
+  call dos_in
+  exx                  ; preserve parameters
+  pop de               ; return address to Forth word
+  pop hl               ; address of the DOS routine
+  push de              ; return address to Forth word
+  ld de,dos.ix.return  ; return address from the DOS routine
+  push de              ; force the return later
+  push hl              ; address of the DOS routine
+  exx                  ; restore parameters
+  ret                  ; call routine in TOS, then continue at dos.ix.return
+
+; ------------------------------
+; Page in DOS
+
+dos_in:
   push af
   push bc                  ; temp save registers while switching
   ld   a,(sys_bankm)       ; RAM/ROM switching system variable
@@ -84,8 +127,12 @@ dos:
   ei
   pop  bc
   pop  af
+  ret
 
-  call dos.jp_ix           ; call routine in IX
+; ------------------------------
+; Page out DOS
+
+dos_out:
 
   push af
   push bc
@@ -101,14 +148,10 @@ dos:
   pop  af
   ret
 
-dos.jp_ix:
-
-  jp   (ix)                ; call address in IX by calling this jump
-
 ; ------------------------------
-; DOS call preserving the Forth IP
+; DOS call to routine in IX, preserving the Forth IP
 
-dos.preserve_ip:
+dos.ix.preserving_ip:
 
   ; This is used when the BC register (the Forth IP) is not a
   ; parameter of the DOS routine.
@@ -122,7 +165,7 @@ dos.preserve_ip:
   ; out.
 
   push bc
-  call dos
+  call dos.ix
   pop bc
   ret
 
@@ -160,7 +203,7 @@ get_current_drive:
 set_current_drive:
   ; a = drive (ASCII 'A'..'P' to set it; $FF to get it)
   ld ix,dos_set_drive
-  jr dos.preserve_ip
+  jr dos.ix.preserving_ip
 
 get_current_user:
   ld a,$FF
@@ -228,24 +271,22 @@ dosior_to_ior.hl:
 
 ; sector-id ( n -- x )
 
-; Convert the sequential disk sector _n_ to the disk sector id
-; _x_, in the format required by +3DOS: The high byte of _x_
-; is the logical track (0..79 for side 0; ...); its low
-; byte is the logical sector (0..).
-;
+; Convert the sequential disk sector _n_ (0 base) to the disk
+; sector id _x_, in the format required by +3DOS: The high byte
+; of _x_ is the logical track (0 base); its low byte is the
+; logical sector (0 base).
+
 ; ----
 ; : sector-id ( n -- x )
-;   rec/track +             \ the first track is not used
-;   dup sectors/track mod   ( n sector )
-;   swap sectors/track /    ( sector track )
+;   1+              \ the first sector is not used
+;   rec/track /mod  ( sector track )
 ;   flip or ;
 ; ----
-;
+
 ; }doc
 
-  dw rec_slash_track_,plus_  ; the first track is not used
-  dw dup_,rec_slash_track_,mod_
-  dw swap_,rec_slash_track_,slash_
+  dw one_plus_
+  dw rec_slash_track_,slash_mod_
   dw flip_,or_
   dw exit_
 
@@ -309,10 +350,9 @@ endif
   pop de ;
   pop hl ; EHL = file pointer
   ld ix,dos_set_position
-  call dos
+  call dos.ix
 reposition_file.backup_ip equ $+1
   ld bc,0 ; restore Forth IP
-  ld ix,next ; restore IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -330,11 +370,10 @@ reposition_file.backup_ip equ $+1
   push bc ; save Forth IP
   ld b,l ; fid
   ld ix,dos_get_eof
-  call dos
+  call dos.ix
   pop bc ; restore Forth IP
   push hl ; low part of _ud_
   push de ; high part of _ud_
-  ld ix,next ; restore IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -364,10 +403,9 @@ reposition_file.backup_ip equ $+1
   ld b,a ; B = fid
 transfer_bytes.command equ $+2
   ld ix,dos_write
-  call dos
+  call dos.ix
 transfer_bytes.backup_ip equ $+1
   ld bc,0 ; restore Forth IP
-  ld ix,next ; restore IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -388,7 +426,7 @@ transfer_bytes.backup_ip equ $+1
 
   ld ix,dos_ref_xdpb
   ld a,'A'                          ; XXX TMP -- drive 'A'..'P'
-  call dos                          ; IX = XDPB of the drive
+  call dos.ix                          ; IX = XDPB of the drive
 
   pop hl                            ; address of origin or destination buffer
   pop de                            ; D = logical track, E = logical sector
@@ -399,14 +437,16 @@ transfer_bytes.backup_ip equ $+1
   ld b,a                            ; page for $C000..$FFFF
   ld c,0                            ; XXX TMP -- unit 0/1
 
-transfer_sector.command equ $+2
-  ld ix,dd_read_sector
-  call dos
+  exx
+transfer_sector.command equ $+1
+  ld hl,dd_read_sector
+  push hl
+  exx
+  call dos.tos
 
 transfer_sector.end:
 transfer_sector.backup_ip equ $+1
   ld bc,0                           ; restore Forth IP
-  ld ix,next                        ; restore Forth IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -462,7 +502,7 @@ transfer_mode:
 
   ld (dos_get_1346.ip_backup),bc
   ld ix,dos_get_1346
-  call dos
+  call dos.ix
   ld b,0
   ld c,d                         ; first buffer of cache
   push bc
@@ -474,7 +514,6 @@ transfer_mode:
   push bc
 dos_get_1346.ip_backup equ $+1
   ld bc,0                        ; restore Forth IP
-  ld ix,next                     ; restore IX
   _jp_next
 
 ; ----------------------------------------------
@@ -499,8 +538,7 @@ dos_get_1346.ip_backup equ $+1
   pop af
   ld d,a               ; D = first buffer of cache
   ld ix,dos_set_1346
-  call dos.preserve_ip
-  ld ix,next           ; restore IX
+  call dos.ix.preserving_ip
   _jp_next
 
 ; ----------------------------------------------
@@ -522,12 +560,12 @@ dos_get_1346.ip_backup equ $+1
   push bc         ; save Forth IP
   ld b,l          ; file number
   ld ix,dos_close
-  call dos
+  call dos.ix
   pop bc          ; restore Forth IP
-  ld ix,next      ; restore IX
   jp push_dos_ior
 
 ; ----------------------------------------------
+if 0 ; XXX OLD
   _code_header open_disk_,'open-disk'
 
 ; doc{
@@ -549,10 +587,10 @@ dos_get_1346.ip_backup equ $+1
   ld b,l               ; file number
   ld c,%011            ; access mode: exclusive-read-write ; XXX TMP --
   ld ix,dos_open_drive
-  call dos
+  call dos.ix
   pop bc               ; restore Forth IP
-  ld ix,next           ; restore IX
   jp push_dos_ior
+endif
 
 ; ----------------------------------------------
 if 0 ; XXX OLD
@@ -569,22 +607,56 @@ if 0 ; XXX OLD
 endif
 
 ; ----------------------------------------------
-  _colon_header set_drive_,'set-drive'
+  _code_header get_drive_,'get-drive'
+
+; doc{
+;
+; get-drive ( -- c ior )
+;
+; Get the current default drive _c_ ('A'..'P'), i.e.
+; the drive implied by all filenames that do not specify a
+; drive. The default drive is intially 'A'.
+;
+; See also: `set-drive`.
+;
+; }doc
+
+  ; XXX TODO -- Also default drive for blocks.
+  ; XXX TODO -- Move to the library.
+
+  ld a,255
+  ld ix,dos_set_drive
+  call dos.ix.preserving_ip
+  ld h,0
+  ld l,a
+  push hl
+  jp push_dos_ior
+
+; ----------------------------------------------
+  _code_header set_drive_,'set-drive'
 
 ; set-drive ( c -- ior )
 ;
-; Sed drive _c_ ('A'..'P') as the current library drive.
+; Set drive _c_ ('A'..'P') as the current default drive, i.e.
+; the drive implied by all filenames that do not specify a
+; drive. The default drive is intially 'A'.
+;
+; Does not access the drive, but merely checks that there is a
+; driver for it (which does not imply that the drive exists).
+;
+; This only affects words that take filename parameters.
+;
+; See also: `get-drive`.
+;
+; }doc
 
-if 0 ; XXX OLD
+  ; XXX TODO -- Also default drive for blocks.
 
-  dw library_file_,fetch_,dup_,close_file_
-  dw dup_
-  _literal -1029                ; exception code: "file number not open"
-  dw not_equals_,question_exit_ ; other errors force an exit
-  dw drop_                      ; discard -1029
-  dw open_disk_
-endif
-  dw exit_
+  pop hl
+  ld a,l
+  ld ix,dos_set_drive
+  call dos.ix.preserving_ip
+  jp push_dos_ior
 
 ; ----------------------------------------------
   _code_header ref_xdbp_,'ref-xdpb'
@@ -603,10 +675,15 @@ endif
   pop hl
   ld a,l               ; drive 'A'..'P'
   ld ix,dos_ref_xdpb
-  call dos.preserve_ip
+  call dos.ix.preserving_ip
   push ix
-  ld ix,next           ; restore Forth next
   jp push_dos_ior
+
+
+; ----------------------------------------------
+  _c_constant_header slash_filename_,'/filename'
+
+  db 16
 
 ; ==============================================================
 
