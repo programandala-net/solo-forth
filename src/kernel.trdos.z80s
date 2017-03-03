@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702260022
+; Last modified: 201703031628
 
 ; ==============================================================
 ; Description
@@ -69,6 +69,8 @@
 ; more versatile.  Remove temporary code.
 ;
 ; 2017-02-17: Update cross references.
+;
+; 2017-03-03: Simplify `sector-id`. Improve documentation.
 
 ; ==============================================================
 ; Requirements
@@ -419,16 +421,14 @@ dosior_hl_to_ior_hl:
 ; ----
 ; : sector-id ( n -- x )
 ;   rec/track +         \ the first track is not used
-;   dup rec/track mod  ( n sector )
-;   swap rec/track /   ( sector track )
+;   rec/track /mod      ( sector track )
 ;   flip or  ;
 ; ----
 ;
 ; }doc
 
   dw rec_slash_track_,plus_  ; the first track is not used
-  dw dup_,rec_slash_track_,mod_
-  dw swap_,rec_slash_track_,slash_
+  dw rec_slash_track_,slash_mod_
   dw flip_,or_
   dw exit_
 
@@ -603,9 +603,9 @@ transfer_mode:
 
 ; doc{
 ;
-; set-drive ( b -- ior )
+; set-drive ( n -- ior )
 ;
-; Set drive _b_ (0..3) as the main one.
+; Set drive _n_ (0..3) as the current one.
 ;
 ; See also: `init-drive`, `read-system-track`.
 ;
