@@ -5,7 +5,7 @@
 
 ; XXX UNDER DEVELOPMENT
 
-; Last modified: 201703032159
+; Last modified: 201703032301
 
 ; ==============================================================
 ; Description
@@ -295,31 +295,29 @@ dosior_to_ior.hl:
 
 ; doc{
 ;
-; transfer-block ( n -- ior )
+; transfer-block ( u -- ior )
 ;
-; The block-level disk read-write linkage.  Transfer block _n_ to or
-; from disk.  The read or write mode must be previously set by
-; `write-mode` or `read-mode`.
+; The block-level disk read-write linkage.  Transfer block _u_
+; to or from disk.  The read or write mode must be previously
+; set by `write-mode` or `read-mode`.
+;
+; Definition:
+
+; ----
+; : transfer-block ( u -- )
+;   >drive-block
+;   rec/blk * dup    sector-id buffer-data
+;                    transfer-sector throw
+;                 1+ sector-id [ buffer-data b/rec ] literal
+;                    transfer-sector throw ;
+; ----
+
+; See also: `transfer-sector`.
 ;
 ; }doc
 
-if 0 ; XXX OLD
-
-  dw b_slash_buf_,u_m_star_
-  dw library_file_,fetch_
-  dw reposition_file_
-  dw question_dup_,question_exit_
-  _literal default_bank
-  dw buffer_data_,b_slash_buf_
-  dw library_file_,fetch_
-  dw transfer_bytes_
-  dw exit_
-
-else
-
   dw to_drive_block_
-  dw rec_slash_blk_,star_    ; sequential number of the first sector of the block
-  dw rec_slash_track_,plus_  ; but the first track is not used
+  dw rec_slash_blk_,star_ ; sequential number of the first sector of the block
   dw dup_
   dw sector_id_
   dw buffer_data_
@@ -330,8 +328,6 @@ else
   dw transfer_sector_,throw_
 
   dw exit_
-
-endif
 
 ; ----------------------------------------------
   _code_header reposition_file_,'reposition-file'
@@ -409,6 +405,11 @@ transfer_bytes.backup_ip equ $+1
   jp push_dos_ior
 
 ; ----------------------------------------------
+
+xdpb:
+  defs 26
+
+; ----------------------------------------------
   _code_header transfer_sector_,'transfer-sector'
 
 ; doc{
@@ -420,13 +421,46 @@ transfer_bytes.backup_ip equ $+1
 ; other way around.  The read or write mode must be previously
 ; set by `write-mode` or `read-mode`.
 ;
+; See also: `transfer-block`.
+;
 ; }doc
 
   ld (transfer_sector.backup_ip),bc ; save Forth IP
 
+if 0
+
+  ; XXX OLD -- This does not work, because dos.ix restores Forth
+  ; IX at the end!
+
   ld ix,dos_ref_xdpb
   ld a,'A'                          ; XXX TMP -- drive 'A'..'P'
-  call dos.ix                          ; IX = XDPB of the drive
+  call dos.ix
+  ; IX = XDPB of the first drive
+
+endif
+
+if 0
+
+  ; XXX OLD -- This works.
+
+  call dos_in
+  ld c,0
+  ld ix,xdpb
+  call dd_login
+  ; IX = XDPB of the first drive
+  call dos_out
+
+endif
+
+if 1
+
+  call dos_in
+  ld a,'A'                          ; XXX TMP -- drive 'A'..'P'
+  call dos_ref_xdpb
+  ; IX = XDPB of the first drive
+  call dos_out
+
+endif
 
   pop hl                            ; address of origin or destination buffer
   pop de                            ; D = logical track, E = logical sector
@@ -447,6 +481,7 @@ transfer_sector.command equ $+1
 transfer_sector.end:
 transfer_sector.backup_ip equ $+1
   ld bc,0                           ; restore Forth IP
+  ld ix,next                        ; restore Forth IX
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -590,20 +625,6 @@ if 0 ; XXX OLD
   call dos.ix
   pop bc               ; restore Forth IP
   jp push_dos_ior
-endif
-
-; ----------------------------------------------
-if 0 ; XXX OLD
-
-  _variable_header library_file_,'library-file'
-
-; library-file ( -- a )
-;
-; A variable that holds the fid (0..15) used to open the library disks
-; as a single file.
-
-  dw 0
-
 endif
 
 ; ----------------------------------------------
