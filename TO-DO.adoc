@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703032357
+// Last modified 201703040007
 
 // Application development {{{1
 == Application development ==
@@ -434,6 +434,11 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 
 // Documentation {{{1
 == Documentation ==
+
+.2017-03-04:
+
+Update the manual: RAM banks used as far memory, the RAM disk, the
+different configuration in +3DOS...
 
 .2017-03-01:
 

@@ -1,13 +1,13 @@
 = Solo Forth
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-28
+:revdate: 2017-03-04
 :toc:
 :linkattrs:
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201702272047
+// Last modified 201703040012
 
 // tag::description[]
 
@@ -97,9 +97,9 @@ most file-management words are still under development.
 
 ==== +3DOS support
 
-The +3DOS support is still in a very initial stage.  There's no way to
-use the blocks disks or manipulate disk files yet, so in practice it's
-useless.
+The +3DOS support is still basic. Only the first drive can be used for
+blocks disks and most file-management words are still under
+development.
 
 // end::computers[]
 
@@ -276,8 +276,6 @@ DOS commands.
 [id=_library]
 == The library
 
-NOTE: At the moment, the library can not be used on +3DOS.
-
 The library disk contains the source code in Forth blocks, written
 directly on the disk sectors, without any filesystem.  In order to use
 the library, follow these steps:
@@ -296,6 +294,8 @@ the library, follow these steps:
    Forth works too. Usage of `A`..`D` instead of 0..3 maybe
    implemented in a future version of Solo Forth, either by default or
    as an option.] the current one.
+** On +3DOS: "Insert" the file <disks/plus3dos/disk_1_library.dsk> as
+   disk A.
 3. Type `1 load` to load block 1 from the library disk. By convention,
    block 0 can not be loaded (it is used for comments), and block 1 is
    used as a loader.  In Solo Forth, block 1 contains `2 load`, in

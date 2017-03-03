@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201702260022
+; Last modified: 201703032239
 
 ; ==============================================================
 ; Description
@@ -52,6 +52,8 @@
 ; 2017-02-09: Add `>drive-block` to `transfer-block`.
 ;
 ; 2017-02-17: Update cross references.
+;
+; 2017-03-03: Improve documentation.
 
 ; ==============================================================
 ; Requirements
@@ -129,9 +131,9 @@ _colon_header dosior_to_ior_,'dosior>ior'
 ;   \ track0        = 0..79
 ;   \ track         = 0..207
 ;   \ side          = 0..1
-;   dup sectors/track mod 1+   ( n sector )
+;   dup rec/track mod 1+       ( n sector )
 ;   swap dup 20 /              ( sector n track0 )
-;   swap sectors/track / 1 and ( sector track0 side )
+;   swap rec/track / 1 and     ( sector track0 side )
 ;   negate 128 and or          ( sector track )
 ;   flip or ;
 ; ----
@@ -157,13 +159,23 @@ _colon_header dosior_to_ior_,'dosior>ior'
 
 ; doc{
 ;
-; transfer-block ( n -- )
+; transfer-block ( u -- )
 ;
-; The block-level disk read-write linkage.
-; Transfer block _n_ to or from disk.
-; The read or write mode must be previously set
-; by `write-mode` or `read-mode`.
+; The block-level disk read-write linkage.  Transfer block _u_
+; to or from disk.  The read or write mode must be previously
+; set by `write-mode` or `read-mode`.
 ;
+; Definition:
+
+; ----
+; : transfer-block ( u -- )
+;   >drive-block
+;   rec/blk * dup    sector-id buffer-data
+;                    transfer-sector throw
+;                 1+ sector-id [ buffer-data b/rec ] literal
+;                    transfer-sector throw ;
+; ----
+
 ; See also: `transfer-sector`.
 ;
 ; }doc
@@ -261,11 +273,9 @@ transfer_mode:
 ;
 ; set-drive ( n -- ior )
 ;
-; Set the current drive _n_ (1 or 2). If the drive is
+; Set the drive _n_ (1 or 2) as the current one. If the drive is
 ; successfully selected, _ior_ is zero. Otherwise it's an
 ; exception code.
-;
-; See also: `get-drive`.
 ;
 ; }doc
 

@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-02-21
+:revdate: 2017-03-04
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201702272102
+// Last modified 201703040020
 
 toc::[]
 
@@ -85,7 +85,8 @@ memory, beside many other new features.
 
 Porting the G+DOS version of Solo Forth to http://worldofsam.org[SAM
 Coupé,role="external"] (the powerful cousin of ZX Spectrum) would not
-be a trivial task, but feasible...
+be a trivial task, because of the quite different OS and memory
+paging, but feasible.
 
 == Download
 
@@ -140,6 +141,11 @@ the disk (block 0) will be shown as block 4.
 The DSK disk image format, used for +3DOS and other systems, is quite
 a different thing: It contains a lot of metadata to describe the
 format of the disk, the tracks and the sectors...
+
+On +3DOS, sector 0 of track 0 can not be used for Forth blocks,
+because it must contain the disk specification, even for sector-level
+access.  Since the size of a sector is 512 B, only one Forth block is
+lost because of this.
 
 // == How to run
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703031628
+; Last modified: 201703032251
 
 ; ==============================================================
 ; Description
@@ -70,7 +70,8 @@
 ;
 ; 2017-02-17: Update cross references.
 ;
-; 2017-03-03: Simplify `sector-id`. Improve documentation.
+; 2017-03-03: Simplify `sector-id`. Fix and improve
+; documentation.
 
 ; ==============================================================
 ; Requirements
@@ -519,6 +520,7 @@ transfer_mode:
 
 ; ----
 ; : transfer-block ( u -- )
+;   >drive-block
 ;   rec/blk * sector-id buffer-data rec/blk
 ;   transfer-sectors throw  ;
 ; ----
