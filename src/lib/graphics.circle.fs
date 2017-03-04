@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703041850
 
   \ -----------------------------------------------------------
   \ Description
@@ -46,6 +46,9 @@
   \ an intermediate routine that does a jump.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
 ( uncolored-circle-pixel colored-circle-pixel )
 
@@ -105,7 +108,7 @@ create colored-circle-pixel ( -- a ) asm
 
 [unneeded] circle-pixel
 
-?\ create circle-pixel ( -- a ) asm noop-routine jp, end-asm
+?\ create circle-pixel ( -- a ) asm noop_ jp, end-asm
 
   \ doc{
   \

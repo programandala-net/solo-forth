@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272345
+  \ Last modified: 201703041856
 
   \ -----------------------------------------------------------
   \ Description
@@ -106,6 +106,9 @@
   \ been moved too.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
 ( str< str> trim +place hunt )
 
@@ -413,9 +416,9 @@ code lengths
   \
   \ }doc
 
-( upper upper-routine uppers uppers1 )
+( upper upper_ uppers uppers1 )
 
-[unneeded] upper [unneeded] upper-routine and ?( 0
+[unneeded] upper [unneeded] upper_ and ?( 0
 
 code upper ( c -- c' ) E1 c, 7D c, 21 c, pusha , E5 c,
   \   pop hl
@@ -442,28 +445,28 @@ code upper ( c -- c' ) E1 c, 7D c, 21 c, pusha , E5 c,
   \
   \ Convert _c_ to uppercase _c'_.
   \
-  \ See also: `uppers`, `lower`, `upper-routine`.
+  \ See also: `uppers`, `lower`, `upper_`.
   \
   \ }doc
 
 get-current swap assembler-wordlist set-current
 
-constant upper-routine ( -- a )
+constant upper_ ( -- a )
 
 set-current ?)
 
   \ doc{
   \
-  \ upper-routine ( -- a )
+  \ upper_ ( -- a )
   \
   \ Return address _a_ of a routine that converts the ASCII
   \ character in the A register to uppercase.
   \
-  \ See also: `upper`, `lower-routine`.
+  \ See also: `upper`, `lower_`.
   \
   \ }doc
 
-[unneeded] uppers ?( need upper-routine
+[unneeded] uppers ?( need upper_
 
 code uppers ( ca len -- )
   D1 c, E1 c, here 7A c, B3 c, CA c, next , 7E c,
@@ -474,7 +477,7 @@ code uppers ( ca len -- )
   \   or e
   \   jp z,next
   \   ld a,(hl)
-  upper-routine call, 77 c, 23 c, 1B c, C3 c, , end-code ?)
+  upper_ call, 77 c, 23 c, 1B c, C3 c, , end-code ?)
   \   call upper_routine
   \   ld (hl),a
   \   inc hl
@@ -515,7 +518,7 @@ code lowers ( ca len -- )
   \   or e
   \   jp z,next
   \   ld a,(hl)
-  lower-routine call, 77 c, 23 c, 1B c, C3 c, , end-code
+  lower_ call, 77 c, 23 c, 1B c, C3 c, , end-code
   \   call lower_routine
   \   ld (hl),a
   \   inc hl

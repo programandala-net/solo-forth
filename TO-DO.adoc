@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-03
+:revdate: 2017-03-04
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703040007
+// Last modified 201703041923
 
 // Application development {{{1
 == Application development ==
@@ -234,7 +234,7 @@ Document the variants of `of`.
 
 Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
 (already exists as `char>string`).
- 
+
 .2016-11-26, 2017-01-23:
 
 Change `??` to its old version, which is more useful:
@@ -320,7 +320,7 @@ Problem: when data are compiled into the headers space, `>name` can not work,
 because it searches the dictionary from oldest to newest.
 
 Solution 1: Search backwards like `find-name`, but search every word list in
-the system? 
+the system?
 
 Solution 2: Add a second link to every header, pointing to the next definition.
 
@@ -531,8 +531,8 @@ Forth-83.
 Change the format of stack notation:
 
 ----
-xn..x1 --> x[n] ... x[1] 
-       --> x[n]..x[1] 
+xn..x1 --> x[n] ... x[1]
+       --> x[n]..x[1]
 ----
 
 .2016-10-24:
@@ -856,7 +856,7 @@ Write `xy-attr@  ( x y -- b )` and `xy-attr!  ( b x y -- )`.
 
 Improve `ocr`: Return a flag apart from the code, in order to make it possible
 to recognize character zero:
-  
+
 ----
   \ ocr  ( col row -- c true | false )
 ----
@@ -1510,7 +1510,7 @@ This method was used in LMI PC/FORTH and UR/FORTH.
 
 EXCISE <word1> <word5>
 
-This command hides the headers of <word1> through <word5> 
+This command hides the headers of <word1> through <word5>
 by excising their headers from the linked list in the dictionary.
 
 Together with the ability to create binary overlays, the LMI FORTH compilers
@@ -1550,14 +1550,6 @@ for machine code routines.
 NOTE: Milestone: 0.14.0
 
 Rename `?name-too-short` to `?empty-name`, or `?no-name`.
-
-.2017-02-16:
-
-Decide a naming convention for words that return the address of a Z80
-routine. Now several conventions are used, e.g. "-routine", parens,
-no-hyphen, and others.
-
-Maybe "-mc" for "machine code"? Too cryptic.
 
 .2017-01-31:
 

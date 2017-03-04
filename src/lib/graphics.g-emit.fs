@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703041851
 
   \ -----------------------------------------------------------
   \ Description
@@ -56,15 +56,18 @@
   \
   \ 2017-02-17: Update cross references.  Change markup of
   \ inline code that is not a cross reference.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
 ( (g-emit g-emit g-type )
 
-[unneeded] (g-emit ?( need assembler need g-emit-routine
+[unneeded] (g-emit ?( need assembler need g-emit_
                        need os-chars need os-coords
 
 code (g-emit ( c -- )
   h pop, l a ld, b push, os-coords b ftp, os-chars d ftp,
-  g-emit-routine call, b pop, next ix ldp#,  jpnext,
+  g-emit_ call, b pop, next ix ldp#,  jpnext,
   end-code ?)
 
   \ doc{
@@ -77,7 +80,7 @@ code (g-emit ( c -- )
   \ The character is printed with overprinting (equivalent to
   \ ``1 overprint``).
   \
-  \ See also: `g-emit`, `g-emit-routine`.
+  \ See also: `g-emit`, `g-emit_`.
   \
   \ }doc
 
@@ -155,12 +158,12 @@ need g-emit-udg need (g-emit need g-emitted
   \
   \ }doc
 
-[unneeded] g-emit-udg ?( need assembler need g-emit-routine
+[unneeded] g-emit-udg ?( need assembler need g-emit_
                            need os-udg need os-coords
 
 code g-emit-udg ( c -- )
   h pop, l a ld, b push,
-  os-coords b ftp, os-udg d ftp, g-emit-routine call,
+  os-coords b ftp, os-udg d ftp, g-emit_ call,
   b pop, next ix ldp#, jpnext, end-code ?)
 
   \ doc{
@@ -175,15 +178,15 @@ code g-emit-udg ( c -- )
   \ The UDG character is printed with overprinting (equivalent
   \ to ``1 overprint``).
   \
-  \ See also: `g-emit`, `g-emit-routine`.
+  \ See also: `g-emit`, `g-emit_`.
   \
   \ }doc
 
-( g-emit-routine )
+( g-emit_ )
 
 need assembler need (pixel-addr)
 
-create g-emit-routine ( -- a ) asm
+create g-emit_ ( -- a ) asm
 
   0 h ld#, a l ld, h addp, h addp, h addp, d addp,
   h push, ix pop, b h ldp, h push, 8 c ld#,
@@ -217,7 +220,7 @@ create g-emit-routine ( -- a ) asm
 
   \ doc{
   \
-  \ g-emit-routine ( -- a )
+  \ g-emit_ ( -- a )
   \
   \ Address of a machine code routine that prints an 8x8 bits
   \ character at graphic coordinates. Used by `g-emit-udg`.

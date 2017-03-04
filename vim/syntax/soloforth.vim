@@ -4,7 +4,7 @@
 " Author:   Marcos Cruz (programandala.net)
 " License:  Vim license (GPL compatible)
 " URL:      http://programandala.net/en.program.solo_forth.html
-" Updated:  2017-02-28
+" Updated:  2017-03-04
 
 " This file is part of Solo Forth
 " http://programandala.net/en.program.solo_forth.html
@@ -344,7 +344,7 @@ syn keyword soloforthForth name>string
 syn keyword soloforthForth nest-source
 syn keyword soloforthForth nextname
 syn keyword soloforthForth noop
-syn keyword soloforthForth noop-routine
+syn keyword soloforthForth noop_
 syn keyword soloforthForth pad
 syn keyword soloforthForth refill
 syn keyword soloforthForth source
@@ -575,7 +575,7 @@ syn keyword soloforthString str=
 syn keyword soloforthString substitute
 syn keyword soloforthString unescape
 syn keyword soloforthString lower
-syn keyword soloforthString lower-routine
+syn keyword soloforthString lower_
 syn keyword soloforthString lowers
 syn keyword soloforthString upper
 syn keyword soloforthString uppers
@@ -1131,12 +1131,15 @@ let b:current_syntax = "soloforth"
 "
 " 2017-02-22: Add `str=`.
 "
-" 2017-02-26: Rename 'hp' notation to 'np', after the changes
+" 2017-02-26: Rename "hp" notation to "np", after the changes
 " in the kernel.
 "
 " 2017-02-27: Add `ldi,` and `ldd,`.
 "
 " 2017-02-28: Update file header.
+"
+" 2017-03-04: Change "-routine" suffix to "_", aftert the new
+" naming convention.
 
 " --------------------------------------------------------------
 

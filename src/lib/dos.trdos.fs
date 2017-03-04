@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703041849
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,6 +49,9 @@
   \
   \ 2017-02-17: Restore the original TR-DOS notation
   \ "descriptor".  Update cross references.
+  \
+  \ 2017-03-04: Update the names of the DOS calls, after the
+  \ changes in the kernel.
 
 ( --dos-commands-- )
 
@@ -207,8 +210,8 @@ need -filename need /filename need fda
   \
   \ Return the number _b_ of the current drive (0..3).
   \
-  \ This word is written in Z80. Its equivalent code in Forth
-  \ is the following:
+  \ This word is written in Z80. Its equivalent definition in
+  \ Forth is the following:
 
   \ ----
   \ : get-drive ( -- b )
@@ -222,11 +225,11 @@ need -filename need /filename need fda
 [unneeded] cat ?(
 
 code cat ( -- ior )
-  3E c, 07 c, 08 c, 3E c, 02 c, dos-preserve-ip-routine call,
+  3E c, 07 c, 08 c, 3E c, 02 c, dos-alt-a-preserve-ip_ call,
   \ ld a,trdos_command.cat
   \ ex af,af'
   \ ld a,2 ; stream: screen
-  \ call dos.preserve_ip
+  \ call dos.alt_a.preserve_ip
 
   \ DD c, 21 c, next , \ ld ix,next ; restore Forth IX
   \ XXX REMARK -- No need to restore IX, the cat command does
@@ -255,19 +258,19 @@ code (file>) ( ca len -- ior )
 
   d pop, h pop, b push, h push, d push, ( ip ca len )
 
-  dos-find-file a ld#, exaf, dos-routine call,
+  dos-find-file a ld#, exaf, dos-alt-a_ call,
   \ A = directory entry of the file, or $FF if not found
   a inc, z? rif  d pop, d pop, 1 a ld#,  relse
                  \ error, so drop parameters and report "no files"
     a dec, \ restore file descriptor (0..127)
-    dos-read-file-descriptor c ld, dos-c-routine call,
+    dos-read-file-descriptor c ld, dos-c_ call,
     z? rif  a xor, 5CF9 sta, d pop, h pop,
                  \ set load flag and get the parameters
        d tstp, nz?  \ is _len_ not zero?
        rif   03 a ld#,  \ if so, use the parameters
        relse h tstp, nz? rif cpl, rthen
          \ if _len_ is zero, use _ca_ if it's not zero
-       rthen dos-read-file-descriptor c ld, dos-c-routine call,
+       rthen dos-read-file-descriptor c ld, dos-c_ call,
     rthen
   rthen b pop, pushdosior jp, end-code
 
@@ -291,16 +294,16 @@ code (file-status) ( -- a ior )
 
   fda h ldp#, h push, b push,
     \ Push `fda` (the _a_ returned) and save Forth IP.
-  dos-find-file a ld#, exaf, dos-routine call,
+  dos-find-file a ld#, exaf, dos-alt-a_ call,
     \ A = directory entry (0..127), or $FF if file not found
   a inc, z? rif  1 a ld#,  \ error: "no files"
   relse  a dec, \ restore directory entry (0..127)
-         dos-read-file-descriptor c ld#, dos-c-routine call,
+         dos-read-file-descriptor c ld#, dos-c_ call,
          a xor,
           \ XXX REMAR -- This TR-DOS command does not
           \ return its error result in C, but the directory
           \ entry it received in A. Therefore, the value of
-          \ A returned by the DOS call `dos-c-routine` is a
+          \ A returned by the DOS call `dos-c_` is a
           \ copy of it.  We set it to zero (to force "no error").
   rthen b pop, pushdosior jp, end-code
 
@@ -422,7 +425,7 @@ need assembler need --dos-commands-- need set-filename
 
 code (file-dir#) ( -- n ior )
 
-  dos-find-file a ld#, exaf, dos-preserve-ip-routine call,
+  dos-find-file a ld#, exaf, dos-preserve-ip_ call,
     \ A = directory entry (0..127), or $FF if file not found
   0 h ld#, a l ld, h push,
   a inc, z? rif    1 a ld#,  \ error: "no files"

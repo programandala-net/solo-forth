@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261228
+  \ Last modified: 201703041852
 
   \ -----------------------------------------------------------
   \ Description
@@ -86,23 +86,26 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
-( far-hl-routine ?next-bank-routine ?previous-bank-routine )
+( far-hl_ ?next-bank_ ?previous-bank_ )
 
 get-current assembler-wordlist dup >order set-current
 
-[unneeded] far-hl-routine ?\ ' far 2+ @ constant far-hl-routine
+[unneeded] far-hl_ ?\ ' far 2+ @ constant far-hl_
 
   \ doc{
   \
-  \ far-hl-routine ( -- a )
+  \ far-hl_ ( -- a )
   \
   \ Address of the `far.hl` routine of the kernel, which
   \ converts the far-memory address ($0000..$FFFF) hold in the
   \ HL register to its actual equivalent ($C000..$FFFF) and
   \ pages in the correspondent memory bank.
   \
-  \ This is the routine called by `far`. `far-hl-routine` is
+  \ This is the routine called by `far`. `far-hl_` is
   \ used in code words.
   \
 
@@ -117,13 +120,13 @@ get-current assembler-wordlist dup >order set-current
 
   \ }doc
 
-[unneeded] ?next-bank-routine
+[unneeded] ?next-bank_
 
-?\ ' ?next-bank 2+ @ constant ?next-bank-routine
+?\ ' ?next-bank 2+ @ constant ?next-bank_
 
   \ doc{
   \
-  \ ?next-bank-routine ( -- a )
+  \ ?next-bank_ ( -- a )
   \
   \ Address of the `question_next_bank` routine of the kernel,
   \ which does the following:
@@ -135,7 +138,7 @@ get-current assembler-wordlist dup >order set-current
   \ else do nothing.
   \
   \ This is the routine called by `?next-bank`.
-  \ `?next-bank-routine` is used in code words.
+  \ `?next-bank_` is used in code words.
   \
 
   \ Input:
@@ -157,15 +160,15 @@ get-current assembler-wordlist dup >order set-current
 
   \ }doc
 
-[unneeded] ?previous-bank-routine ?(
+[unneeded] ?previous-bank_ ?(
 
-' ?previous-bank 2+ @ constant ?previous-bank-routine
+' ?previous-bank 2+ @ constant ?previous-bank_
 
 ?)
 
   \ doc{
   \
-  \ ?previous-bank-routine ( -- a )
+  \ ?previous-bank_ ( -- a )
   \
   \ Address of the `question_previous_bank` routine of the
   \ kernel, which does the followig:
@@ -177,7 +180,7 @@ get-current assembler-wordlist dup >order set-current
   \ bank, else do nothing.
   \
   \ This is the routine called by `?previous-bank`.
-  \ `?previous-bank-routine` is used in code words.
+  \ `?previous-bank_` is used in code words.
   \
 
   \ Input:
@@ -201,17 +204,17 @@ get-current assembler-wordlist dup >order set-current
 
 previous set-current
 
-( default-bank-routine e-bank-routine )
+( default-bank_ e-bank_ )
 
 get-current assembler-wordlist dup >order set-current
 
-[unneeded] default-bank-routine
+[unneeded] default-bank_
 
-?\ ' default-bank 2+ constant default-bank-routine
+?\ ' default-bank 2+ constant default-bank_
 
   \ doc{
   \
-  \ default-bank-routine ( -- a )
+  \ default-bank_ ( -- a )
   \
   \ Return address _a_ of a routine that pages in the default
   \ bank. This is the routine `default-bank` runs into, after
@@ -220,17 +223,17 @@ get-current assembler-wordlist dup >order set-current
   \
   \ Output of the routine: A and E corrupted.
   \
-  \ See also: `bank-e-routine`.
+  \ See also: `bank-e_`.
   \
   \ }doc
 
-[unneeded] e-bank-routine
+[unneeded] e-bank_
 
-?\ ' default-bank 4 + constant e-bank-routine
+?\ ' default-bank 4 + constant e-bank_
 
   \ doc{
   \
-  \ e-bank-routine ( -- a )
+  \ e-bank_ ( -- a )
   \
   \ Return address _a_ of a routine that pages in the
   \ bank hold in the E register.
@@ -239,7 +242,7 @@ get-current assembler-wordlist dup >order set-current
   \ - Input: E = bank
   \ - Output: A corrupted
   \
-  \ See also: `default-bank-routine`.
+  \ See also: `default-bank_`.
   \
   \ }doc
 
@@ -408,10 +411,10 @@ previous set-current
 
 ( !bank c!bank @bank c@bank )
 
-[unneeded] !bank ?( need e-bank-routine
+[unneeded] !bank ?( need e-bank_
 
 code !bank ( x a n -- )
-  D1 c, e-bank-routine call, E1 c, D1 c, 73 c, 23 c, 72 c,
+  D1 c, e-bank_ call, E1 c, D1 c, 73 c, 23 c, 72 c,
   ' default-bank jp, end-code ?)
   \ pop de
   \ call bank.e
@@ -439,9 +442,9 @@ code !bank ( x a n -- )
 
   \ }doc
 
-[unneeded] !bank ?( need e-bank-routine
+[unneeded] !bank ?( need e-bank_
 
-code c!bank ( c ca n -- ) D1 c, e-bank-routine call,
+code c!bank ( c ca n -- ) D1 c, e-bank_ call,
   E1 c, D1 c, 73 c, ' default-bank jp, end-code ?)
   \ pop de
   \ call bank.e
@@ -467,10 +470,10 @@ code c!bank ( c ca n -- ) D1 c, e-bank-routine call,
 
   \ }doc
 
-[unneeded] @bank ?( need e-bank-routine
+[unneeded] @bank ?( need e-bank_
 
 code @bank ( a n -- x )
-  D1 c, e-bank-routine call, E1 c, 7E c, 23 c, 66 c, 6F c,
+  D1 c, e-bank_ call, E1 c, 7E c, 23 c, 66 c, 6F c,
   \ pop de
   \ call bank.e
   \ pop hl
@@ -499,9 +502,9 @@ code @bank ( a n -- x )
 
   \ }doc
 
-[unneeded] c@bank ?( need e-bank-routine
+[unneeded] c@bank ?( need e-bank_
 
-code c@bank ( ca n -- c ) D1 c, e-bank-routine call,
+code c@bank ( ca n -- c ) D1 c, e-bank_ call,
   E1 c, 6E c, 26 c, 00 c, E5 c, ' default-bank jp, end-code ?)
   \ pop de
   \ call bank.e

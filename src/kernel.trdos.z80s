@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703032251
+; Last modified: 201703041916
 
 ; ==============================================================
 ; Description
@@ -72,6 +72,10 @@
 ;
 ; 2017-03-03: Simplify `sector-id`. Fix and improve
 ; documentation.
+;
+; 2017-03-04: Rename the DOS calls, to make the command
+; parameter explicit. Rename their corresponding constants
+; accordingly, with the new naming convention.
 
 ; ==============================================================
 ; Requirements
@@ -88,7 +92,7 @@ testing_trdos: equ 1 ; flag
 ; ------------------------------
 ; DOS call (command in A')
 
-dos:
+dos.alt_a:
 
   ; Execute a TR-DOS command.
 
@@ -137,7 +141,7 @@ dos.c:
 ; ------------------------------
 ; DOS call (command in A') preserving the Forth IP
 
-dos.preserve_ip:
+dos.alt_a.preserve_ip:
 
   ; This is used when the B register (BC is the Forth IP) is
   ; not a parameter of the DOS routine.
@@ -150,21 +154,21 @@ dos.preserve_ip:
   ;   Z  = no error? (A=0)
 
   push bc     ; save the Forth IP
-  call dos
+  call dos.alt_a
   pop bc      ; restore the Forth IP
   ret
 
 ; ------------------------------
 ; DOS call (command in A') restoring the Forth IP at the end
 
-dos.ip_on_tos:
+dos.alt_a.restore_ip:
 
-  ; Execute a TR-DOS command, restoring the Forth IP at the
-  ; end, which has been pushed onto top of the stack calling
-  ; this routine.
+  ; Address of a routine that executes the TR-DOS command hold
+  ; in the A' register, restoring the Forth IP at the end, which
+  ; must be pushed on the stack before calling this routine.
   ;
-  ; This routine must be used when the B register is a
-  ; parameter for TR-DOS.
+  ; This routine must be used when the B register is a parameter
+  ; for TR-DOS.
 
   ; Input:
   ;   A' = TR-DOS command code ($00..$18)
@@ -173,8 +177,9 @@ dos.ip_on_tos:
   ; Output:
   ;   A  = TR-DOS error result (0..12)
   ;   Z  = no error? (A=0)
+  ;   BC = Forth IP
 
-  call dos
+  call dos.alt_a
   pop hl   ; get the return address
   pop bc   ; restore the Forth IP
   jp (hl)  ; return
@@ -212,13 +217,14 @@ push_dos_ior:
 ; Dictionary
 
 ; ----------------------------------------------
-  _constant_header dos_routine_,'dos-routine'
+  _constant_header dos_alt_a_underscore_,"dos-alt-a_"
 
 ; doc{
 ;
-; dos-routine ( -- a )
+; dos-alt-a_ ( -- a )
 ;
-; Address of a routine that executes a TR-DOS command.
+; Address of a routine that executes the TR-DOS command hold in
+; the A' register.
 
 ; ....
 ; Input:
@@ -229,21 +235,21 @@ push_dos_ior:
 ;   Z  = no error? (A=0)
 ; ....
 
-; See also: `dos-c-routine`, `dos-preserve-ip-routine`,
-; `dos-ip-on-tos-routine`.
+; See also: `dos-c_`, `dos-alt-a-preserve-ip_`,
+; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
 
   ; XXX TODO -- Move to the assembler word list.
 
-  dw dos
+  dw dos.alt_a
 
 ; ----------------------------------------------
-  _constant_header dos_c_routine_,'dos-c-routine'
+  _constant_header dos_c_underscore_,"dos-c_"
 
 ; doc{
 ;
-; dos-c-routine ( -- a )
+; dos-c_ ( -- a )
 ;
 ; Address of a routine that executes the TR-DOS command hold in
 ; the C register.
@@ -257,8 +263,8 @@ push_dos_ior:
 ;   Z  = no error? (A=0)
 ; ....
 
-; See also: `dos-routine`, `dos-preserve-ip-routine`,
-; `dos-ip-on-tos-routine`.
+; See also: `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
 
@@ -267,11 +273,11 @@ push_dos_ior:
   dw dos.c
 
 ; ----------------------------------------------
-  _constant_header dos_preserve_ip_routine_,'dos-preserve-ip-routine'
+  _constant_header dos_alt_a_preserve_ip_underscore_,"dos-alt-a-preserve-ip_"
 
 ; doc{
 ;
-; dos-preserve-ip-routine ( -- a )
+; dos-alt-a-preserve-ip_ ( -- a )
 ;
 ; Address of a routine that executes the TR-DOS command hold in
 ; the A' register, preserving the Forth IP (the BC register).
@@ -287,25 +293,25 @@ push_dos_ior:
 ;   Z  = no error? (A=0)
 ; ....
 
-; See also: `dos-routine`, `dos-preserve-ip-routine`,
-; `dos-ip-on-tos-routine`.
+; See also: `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
 
   ; XXX TODO -- Move to the assembler word list.
 
-  dw dos.preserve_ip
+  dw dos.alt_a.preserve_ip
 
 ; ----------------------------------------------
-  _constant_header dos_ip_on_tos_routine_,'dos-ip-on-tos-routine'
+  _constant_header dos_alt_a_restore_ip_underscore_,"dos-alt-a-restore-ip_"
 
 ; doc{
 ;
-; dos-ip-on-tos-routine ( -- a )
+; dos-alt-a-restore-ip_ ( -- a )
 ;
-; Address of a routine that executes a TR-DOS command, restoring
-; the Forth IP at the end, which has been pushed onto top of the
-; stack calling this routine.
+; Address of a routine that executes the TR-DOS command hold in
+; the A' register, restoring the Forth IP at the end, which must
+; be pushed on the stack before calling this routine.
 ;
 ; This routine must be used when the B register is a parameter
 ; of the TR-DOS command.
@@ -318,16 +324,17 @@ push_dos_ior:
 ; Output:
 ;   A  = TR-DOS error result (0..12)
 ;   Z  = no error? (A=0)
+;   BC = Forth IP
 ; ....
 
-; See also: `dos-c-routine`, `dos-preserve-ip-routine`,
-; `dos-routine`.
+; See also: `dos-c_`, `dos-alt-a-preserve-ip_`,
+; `dos-alt-a_`.
 ;
 ; }doc
 
   ; XXX TODO -- Move to the assembler word list.
 
-  dw dos.ip_on_tos
+  dw dos.alt_a.restore_ip
 
 ; ----------------------------------------------
   _constant_header push_dos_ior_,'pushdosior'
@@ -352,8 +359,7 @@ push_dos_ior:
 ;     TOS = zero
 ; ....
 
-; See also: `dos-c-routine`, `dos-preserve-ip-routine`,
-; `dos-ip-on-tos-routine`.
+; See also: `dosior>ior`.
 ;
 ; }doc
 
@@ -368,14 +374,16 @@ push_dos_ior:
 ;
 ; Convert a DOS ior to a Forth ior.
 ;
-; This word is written in Z80. Its equivalent code in Forth is
-; the following:
+; This word is written in Z80. Its equivalent definition in
+; Forth is the following:
 
 ; ----
 ; : dosior>ior ( dosior -- ior )
 ;   dup if  1000 + negate  then   ;
 ; ----
 
+; See also: `pushdosior`.
+;
 ; }doc
 
   pop hl
@@ -467,7 +475,7 @@ transfer_sectors.command: equ $+1
   pop de                          ; D = track 0..159, E = sector 0..15
   push bc                         ; save the Forth IP
   ld b,a                          ; number of sectors
-  call dos.ip_on_tos
+  call dos.alt_a.restore_ip
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -562,7 +570,7 @@ transfer_mode:
   ex af,af'
   pop hl
   ld a,l    ; drive number (0..3)
-  call dos.preserve_ip
+  call dos.alt_a.preserve_ip
   jp push_dos_ior
 
 ; ----------------------------------------------
@@ -597,7 +605,7 @@ transfer_mode:
 
   ld a,trdos_command.read_system_track
   ex af,af'
-  call dos.preserve_ip
+  call dos.alt_a.preserve_ip
   jp push_dos_ior
 
 ; ----------------------------------------------

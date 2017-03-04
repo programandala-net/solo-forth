@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703041855
 
   \ -----------------------------------------------------------
   \ Description
@@ -44,6 +44,9 @@
   \ 2017-02-16: Remove `set-font`, which is in the kernel.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
 ( columns rows set-mode-output )
 
@@ -92,24 +95,26 @@ need os-chans
 
 ( set-banked-mode-output )
 
+  \ XXX UNDER DEVELOPMENT
+
 need set-mode-output need >body
 
-0 constant (output-routine)
+0 constant (output_)
 
 code (banked-mode-output) ( -- )
   C5 c,  CD c, 0 ,
     \ push bc ; save Forth IP
     \ call output_routine ; to be patched
-  here cell- ' (output-routine) >body !
+  here cell- ' (output_) >body !
     \ Store the address where the address of the output routine
-    \ must be stored, into the constant `(output-routine)`.
+    \ must be stored, into the constant `(output_)`.
   C1 c,  DD c, 21 c, next ,  jpnext, end-code
     \ pop bc ; restore Forth IP
     \ ld ix,next ; restore IX, just in case
     \ jp next
 
 : set-banked-mode-output ( a -- )
-  (output-routine) !  \ patch `(banked-mode-output)`
+  (output_) !  \ patch `(banked-mode-output)`
   ['] (banked-mode-output) set-mode-output ;
   \ Associate the output routine at _a_ (which is in the code
   \ bank) to the system channels "K", "S" and "P", using and

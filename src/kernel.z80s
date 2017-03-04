@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703032355
+; Last modified: 201703041858
 
 include version.z80s
 
@@ -1298,16 +1298,16 @@ endif
   dw exit_
 
 ; ----------------------------------------------
-  _constant_header lower_routine_,'lower-routine'
+  _constant_header lower_underscore_,'lower_'
 
 ; doc{
 ;
-; lower-routine ( -- a )
+; lower_ ( -- a )
 ;
 ; Return address _a_ of a routine that converts to uppercase the
 ; ASCII character holad in the A register.
 ;
-; See also: `lower`, `upper-routine`.
+; See also: `lower`, `upper_`.
 ;
 ; }doc
 
@@ -1634,7 +1634,7 @@ endif
 ; correspondent actual address _a'_ ($C000..$FFFF) in the next
 ; bank and page in the next bank. Otherwise return _a_.
 ;
-; See also: `?next-bank-routine`, `?previous-bank`.
+; See also: `?next-bank_`, `?previous-bank`.
 ;
 ; }doc
 
@@ -1663,7 +1663,7 @@ question_next_bank:
   ;   A corrupted
   ;
   ; Note: the address of this routine is returned by
-  ; `?next-bank-routine`, a constant defined in the assembler
+  ; `?next-bank_`, a constant defined in the assembler
   ; word list in the <memory.far.fsb> module of the library, so
   ; code words can call it.
 
@@ -1710,7 +1710,7 @@ new_bank:
 ; previous bank and page in the next bank. Otherwise return
 ; _a_.
 ;
-; See also: `?previous-bank-routine`, `?next-bank`.
+; See also: `?previous-bank_`, `?next-bank`.
 ;
 ; }doc
 
@@ -1739,7 +1739,7 @@ question_previous_bank:
   ;   A corrupted
   ;
   ; Note: the address of this routine is returned by
-  ; `?previous-bank-routine`, a constant defined in the assembler
+  ; `?previous-bank_`, a constant defined in the assembler
   ; word list in the <memory.far.fsb> module of the library, so
   ; code words can call it.
 
@@ -1793,7 +1793,7 @@ question_previous_bank:
 ;   \        $C000 = address where memory banks are paged in
 ; ----
 
-; See also: `far-hl-routine`, `bank`.
+; See also: `far-hl_`, `bank`.
 ;
 ; }doc
 
@@ -1815,7 +1815,7 @@ far.hl:
   ;   A DE corrupted
   ;
   ; Note: the address of this routine is returned by
-  ; `far-hl-routine`, a constant defined in the assembler word
+  ; `far-hl_`, a constant defined in the assembler word
   ; list in the <memory.far.fsb> module of the library, so code
   ; words can call it.
 
@@ -1897,7 +1897,7 @@ far.hl.mod:
 ;
 ; Do nothing.
 ;
-; See also: `noop-routine`.
+; See also: `noop_`.
 ;
 ; }doc
 
@@ -1909,11 +1909,11 @@ call_ix:
   _jp_next
 
 ; ----------------------------------------------
-  _constant_header noop_routine,'noop-routine'
+  _constant_header noop_underscore,'noop_'
 
 ; doc{
 ;
-; noop-routine ( -- a )
+; noop_ ( -- a )
 ;
 ; Return address _a_ of a routine that does nothing, except
 ; executing a Z80 ``ret`` to return.
@@ -7513,7 +7513,7 @@ bank.default:
 
   ; WARNING -- In order to make this routine usable by code
   ; words, its address is returned by the
-  ; `default-bank-routine` constant, which is defined in the
+  ; `default-bank_` constant, which is defined in the
   ; library. The actual address is calculated using an offset
   ; from the execution token of `default-bank`.
 
@@ -7535,7 +7535,7 @@ bank.e:
   ;   D corrupted (only on Pentagon 512 and Pentagon 1024)
 
   ; WARNING -- In order to make this routine usable by code
-  ; words, its address is returned by the `e-bank-routine`
+  ; words, its address is returned by the `e-bank_`
   ; constant, which is defined in the library. The actual
   ; address is calculated using an offset from the execution
   ; token of `default-bank`.
@@ -9310,7 +9310,7 @@ ascii_lower.a:
   ; Convert the ASCII char in the 'A' register to lowercase.
   ;
   ; Note: The address of this routine is returned by the
-  ; `lower-routine` constant, defined in the
+  ; `lower_` constant, defined in the
   ; `assembler-wordlist` word list.
 
   cp 'A'

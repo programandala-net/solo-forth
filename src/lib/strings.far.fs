@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261230
+  \ Last modified: 201703041856
 
   \ -----------------------------------------------------------
   \ Description
@@ -51,6 +51,9 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-03-04: Update naming convention of Z80 routines, after
+  \ the changes in the kernel.
 
 ( far," fars, farsconstant far>sconstant save-farstring )
 
@@ -268,14 +271,14 @@ need array> need farsconstants> need save-farstring
 [unneeded] faruppers ?(
 
 need assembler
-need far-hl-routine need upper-routine need ?next-bank-routine
+need far-hl_ need upper_ need ?next-bank_
 
 code faruppers ( ca len -- )
 
-  h pop, exsp, far-hl-routine call, d pop,
+  h pop, exsp, far-hl_ call, d pop,
   rbegin  d a ld, e or,  nz? rwhile
-          m a ld, upper-routine call, a m ld, h incp,
-          d push, ?next-bank-routine call, d pop, d decp,
+          m a ld, upper_ call, a m ld, h incp,
+          d push, ?next-bank_ call, d pop, d decp,
   rrepeat ' default-bank jp, end-code ?)
 
   \   pop hl              ; string length
