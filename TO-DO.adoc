@@ -591,6 +591,18 @@ source.
 // DOS {{{1
 == DOS ==
 
+.2017-03-05:
+
+Improve `set-block-drives` and `block-drives`:
+
+At the moment, `get-block-drives` depends on `set-block-drives`. The
+problem is `(block-drives`, contrary to `block-drives`, is not in the
+kernel. So, if `get-block-drives` was loaded before
+`set-block-drives`, and `(block-drives` could be required without
+`set-block-drives`, `block-drives` would contain 1 but `(block-drives`
+would be empty... The simplest solution is to move `(block-drives` to
+the kernel and combine it with `block-drive` into a single area.
+
 .2017-02-17:
 
 Add `rename-file`.
