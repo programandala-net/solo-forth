@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201703042011
+# Last modified: 201703061631
 
 # ==============================================================
 # Author
@@ -132,27 +132,31 @@ trdos: trdosdisks
 
 .PHONY: trdosdisks
 trdosdisks: \
-	disks/trdos/disk_0_boot.trd \
-	disks/trdos/disk_1_library.trd \
-	disks/trdos/disk_2_games.trd \
-	disks/trdos/disk_3_workbench.trd \
+	t128 \
 	pentagon \
 	scorpion
+
+.PHONY: trdosblockdisks
+trdosblockdisks: \
+	disks/trdos/disk_1_library.trd \
+	disks/trdos/disk_2_games.trd \
+	disks/trdos/disk_3_workbench.trd
+
+.PHONY: t128
+t128: \
+	disks/trdos/disk_0_boot.trd \
+	trdosblockdisks
 
 .PHONY: pentagon
 pentagon: \
 	disks/trdos/disk_0_boot.pentagon_512.trd \
 	disks/trdos/disk_0_boot.pentagon_1024.trd \
-	disks/trdos/disk_1_library.trd \
-	disks/trdos/disk_2_games.trd \
-	disks/trdos/disk_3_workbench.trd
+	trdosblockdisks
 
 .PHONY: scorpion
 scorpion: \
 	disks/trdos/disk_0_boot.scorpion_zs_256.trd \
-	disks/trdos/disk_1_library.trd \
-	disks/trdos/disk_2_games.trd \
-	disks/trdos/disk_3_workbench.trd
+	trdosblockdisks
 
 .PHONY: disk_9
 disk_9: \
@@ -1016,3 +1020,6 @@ oldbackup:
 # 2017-02-27: Update: use "fs" file extension instead of "fsb".
 #
 # 2017-03-04: Fix the rule that builds the +3DOS library disk.
+#
+# 2017-03-06: Add rule to build only the TR-DOS disks for 128k
+# models.
