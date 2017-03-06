@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703052331
+// Last modified 201703062206
 
 // Application development {{{1
 == Application development ==
@@ -591,11 +591,6 @@ source.
 // DOS {{{1
 == DOS ==
 
-.2017-03-06:
-
-- Rename `block-drives` to `#block-drives`.
-- Rename `(block-drives` to `block-drives`.
-
 .2017-03-05:
 
 Improve/fix `list`:
@@ -608,18 +603,6 @@ the listing is displayed anyway, and then:
 - G+DOS throws #-1004 (sector error).
 - TR-DOS exits to BASIC with "Disc error Trk X sec X
   Retry,Abort,Ignore?".
-
-.2017-03-05:
-
-Improve `set-block-drives` and `block-drives`:
-
-At the moment, `get-block-drives` depends on `set-block-drives`. The
-problem is `(block-drives`, contrary to `block-drives`, is not in the
-kernel. So, if `get-block-drives` was loaded before
-`set-block-drives`, and `(block-drives` could be required without
-`set-block-drives`, `block-drives` would contain 1 but `(block-drives`
-would be empty... The simplest solution is to move `(block-drives` to
-the kernel and combine it with `block-drive` into a single area.
 
 .2017-02-17:
 

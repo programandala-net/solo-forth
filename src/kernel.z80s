@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703041858
+; Last modified: 201703062204
 
 include version.z80s
 
@@ -1546,7 +1546,7 @@ endif
 ; A constant that returns the maximum number of drives
 ; available in the DOS.
 ;
-; See also: `first-drive`.
+; See also: `first-drive`, `drive`.
 ;
 ; }doc
 
@@ -4355,8 +4355,8 @@ endif
 ;
 ; break-key? ( -- f )
 ;
-; Is the break key pressed? This is a deferred work that by
-; default executes `default-break-key?`.
+; Is the break key pressed? This is a deferred work. Its default
+; action is `default-break-key?`.
 ;
 ; }doc
 
@@ -8780,15 +8780,17 @@ simple_accept.end
   dw 0
 
 ; ----------------------------------------------
-  _variable_header block_drives_,'block-drives'
+  _variable_header hash_block_drives_,'#block-drives'
 
 ; doc{
 ;
-; block-drives ( -- ca )
+; #block-drives ( -- ca )
 ;
-; A character variable that holds the number of block drives,
-; i.e. the number of drives that are used for blocks.  This
-; variable is set by `set-block-drives`.
+; A character variable that holds the number of block drives
+; defined in `block-drives`, i.e. the number of drives that are
+; used for blocks.  This variable could be modified manually,
+; provided also `block-drives` is configured accordingly, but
+; `set-block-drives` is provided for that.
 ;
 ; }doc
 
@@ -8802,15 +8804,11 @@ simple_accept.end
 ; max-blocks ( -- u )
 ;
 ; Return the number _u_ of maximum blocks available in the
-; system. The number depends on the current number of block
-; drives configured with `set-block-drives`. By default it's
-; one.
-;
-; See also: `block-drives`, `blk/disk`.
+; system. The number depends on `#block-drives` and `blk/disk`.
 ;
 ; }doc
 
-  dw blk_slash_disk_,block_drives_,c_fetch_,star_
+  dw blk_slash_disk_,hash_block_drives_,c_fetch_,star_
   dw exit_
 
 ; ----------------------------------------------
