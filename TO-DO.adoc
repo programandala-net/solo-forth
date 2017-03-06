@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703062211
+// Last modified 201703062237
 
 // Application development {{{1
 == Application development ==
@@ -788,14 +788,6 @@ ____
 
 // Files {{{1
 == Files ==
-
-.2016-04-11:
-
-Make the tape words return a standard _ior_.
-
-Rename the tape and disk words after a common convention. Maybe after
-Gforth `slurp-file` and Galope `unslurpe-file`: `slurp-tape-file`,
-`unslurp-tape-file`, `slurp-file`, `unslurp-file`.
 
 .2016-03-02:
 
@@ -1867,14 +1859,9 @@ Finish the conversion of 128K sound explosions. More details in the source.
 // Tape {{{1
 == Tape ==
 
-.2017-02-08:
+.2017-02-08, 2017-03-06:
 
-Rename `read-tape-file` and `write-tape-file` after a new convention
-shared with similar disk operations.
-
-.2017-02-08:
-
-Fix `read-tape-file`: when the file length attribute is not zero
+Fix `tape-file>`: when the file length attribute is not zero
 (=undefined) or the real file lenght to be loaded, the ROM routine
 returns to BASIC with "Tape loading error". This crashes the system
 (because the message can not be printed, because the lower screen has
@@ -1882,6 +1869,10 @@ no lines). This will be avoided in a future version of Solo Forth.
 
 The simplest solution seems to remove the parameter and always use 0
 internally.
+
+.2016-04-11:
+
+Make the tape words return a standard _ior_.
 
 // Time {{{1
 == Time ==

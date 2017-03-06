@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703062241
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,11 @@
   \ documentation. Move `.tape` to the tests module.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-06: Rename the four main words after their disk
+  \ file equivalents and update the order of the parameters
+  \ accordingly. Improve the documentation. Compact the code to
+  \ save one block.
 
   \ -----------------------------------------------------------
   \ Development documentation
@@ -111,17 +116,13 @@
 
 ( tape-header )
 
-  \ These blocks contain the code common to `read-tape-file`
-  \ and `write-tape-file`.
-
 17 cconstant /tape-header
 
   \ doc{
   \
   \ /tape-header ( -- n )
   \
-  \ A constant. Length of the tape header stored at
-  \ `tape-header`: 17 bytes.
+  \ _n_ is the length of `tape-header`: 17 bytes.
   \
   \ }doc
 
@@ -146,25 +147,39 @@ create tape-header  /tape-header 2 * allot
 
   \ When the first char of the filename is code 255, it is
   \ regarded as a wildcard which will match any filename. The
-  \ word `read-tape-file` sets the wildcard when the provided
-  \ filename is empty. See `any-tape-filename` and
-  \ `?set-tape-filename`.
+  \ word `tape-file>` sets the wildcard when the provided
+  \ filename is empty.
   \
   \ A second tape header follows the main one. It is used by
   \ the ROM routines while loading.
-
+  \
+  \ See also: `tape-filename`, `tape-filetype`, `tape-start`,
+  \ `tape-length`, `any-tape-filename` and
+  \ `?set-tape-filename`.
+  \
   \ }doc
 
 10 cconstant /tape-filename \ filename max length
 
-: tape-filetype ( -- ca ) tape-header ;
+  \ doc{
+  \
+  \ /tape-filename  ( -- n )
+  \
+  \ _n_ is the maximum length of a tape filename, which is 10
+  \ characters.
+  \
+  \ See also: `tape-filename`. `/filename`.
+  \
+  \ }doc
+
+: tape-filetype ( -- ca ) tape-header ;  3 tape-filetype c!
 
   \ doc{
   \
   \ tape-filetype ( -- ca )
   \
-  \ Address of the file type (one byte) in the tape header.
-  \ See `tape-header`.
+  \ Address of the file type (one byte) in `tape-header`.
+  \ Its default value is 3 (code file).
   \
   \ }doc
 
@@ -174,8 +189,9 @@ create tape-header  /tape-header 2 * allot
   \
   \ tape-filename ( -- ca )
   \
-  \ Address of the filename in the tape header. See
-  \ `tape-header`.
+  \ Address of the filename in `tape-header`.
+  \
+  \ See also: `/tape-filename`, `set-tape-filename`.
   \
   \ }doc
 
@@ -185,8 +201,7 @@ create tape-header  /tape-header 2 * allot
   \
   \ tape-length ( -- a )
   \
-  \ Address of the file length in the tape header. See
-  \ `tape-header`.
+  \ Address of the file length in `tape-header`.
   \
   \ }doc
 
@@ -196,15 +211,9 @@ create tape-header  /tape-header 2 * allot
   \
   \ tape-start ( -- a )
   \
-  \ Address of the file start in the tape header pointed by
-  \ `tape-header`.
+  \ Address of the file start in `tape-header`.
   \
   \ }doc
-
-3 tape-filetype c!   -->
-  \ "code" filetype by default
-
-( tape-header )
 
 : -tape-filename ( -- ) tape-filename /tape-filename blank ;
 
@@ -212,7 +221,7 @@ create tape-header  /tape-header 2 * allot
   \
   \ -tape-filename ( -- )
   \
-  \ Blank the filename of the tape header.
+  \ Blank `tape-filename` in `tape-header`.
   \
   \ }doc
 
@@ -222,21 +231,21 @@ create tape-header  /tape-header 2 * allot
   \
   \ any-tape-filename ( -- )
   \
-  \ Configure the tape header to load any filename,
-  \ by replacing the first char of the filename with 255,
-  \ which will be recognized as a wild card.
+  \ Configure `tape-header` to load any filename, by replacing
+  \ the first char of `tape-filename` with 255, which will be
+  \ recognized as a wild card.
   \
   \ }doc
 
 : set-tape-filename ( ca len -- )
-  -tape-filename  /tape-filename min
-  tape-filename swap cmove ;
+  -tape-filename  /tape-filename min tape-filename swap cmove ;
 
   \ doc{
   \
   \ set-tape-filename ( ca len -- )
   \
-  \ Store filename _ca len_ into the tape header.
+  \ Store filename _ca len_ into the `tape-filename` field of
+  \ `tape-header`.
   \
   \ }doc
 
@@ -249,7 +258,8 @@ create tape-header  /tape-header 2 * allot
   \ ?set-tape-filename ( ca len -- )
   \
   \ If filename _ca len_ is not empty, store it into the tape
-  \ header; else use a wildcard instead.
+  \ header by executing `set-tape-filename`; else use a
+  \ wildcard instead, by executing `any-tape-filename`.
   \
   \ }doc
 
@@ -259,16 +269,17 @@ create tape-header  /tape-header 2 * allot
   \
   \ set-tape-memory ( ca len -- )
   \
-  \ Configure the tape header with the memomy zone _ca len_ (to
-  \ be read or written).
+  \ Configure `tape-header` with the memory zone _ca len_ (to
+  \ be read or written), by storing _len_ into `tape-length`
+  \ and _ca_ into `tape-start`.
   \
   \ }doc
 
-( read-tape-file write-tape-file )
+( tape-file> >tape-file )
 
-[unneeded] read-tape-file ?( need tape-header
+[unneeded] tape-file> ?( need tape-header
 
-code (read-tape-file) ( -- )
+code (tape-file>) ( -- )
   C5 c,  DD c, 21 c, tape-header ,  2A c, tape-start ,
     \ push bc ; save Forth IP
     \ ld ix,tape_header
@@ -283,40 +294,40 @@ code (read-tape-file) ( -- )
 
   \ doc{
   \
-  \ (read-tape-file) ( -- )
+  \ (tape-file>) ( -- )
   \
-  \ Low-level action of `read-tape-file`: read a tape file
+  \ Low-level factor of `tape-file>`: read a tape file
   \ using the data stored at `tape-header`.
   \
   \ }doc
 
-: read-tape-file ( ca1 len1 ca2 len2 -- )
-  ?set-tape-filename set-tape-memory (read-tape-file) ; ?)
+: tape-file> ( ca1 len1 ca2 len2 -- )
+  set-tape-memory ?set-tape-filename (tape-file>) ; ?)
 
   \ doc{
   \
-  \ read-tape-file ( ca1 len1 ca2 len2 -- )
+  \ tape-file> ( ca1 len1 ca2 len2 -- )
   \
-  \ Read a tape file _ca2 len2_ (_len2_ is zero if filename is
-  \ unspecified) into a memory region _ca1 len1_.
+  \ Read a tape file _ca1 len1_ (_len1_ is zero if filename is
+  \ unspecified) into a memory region _ca2 len2_.
   \
-  \ _ca1_ is zero if the address must be taken from the file
+  \ _ca2_ is zero if the address must be taken from the file
   \ header instead, which is the address the file was saved
-  \ from.  _len1_ is zero if it's unspecified.
+  \ from.  _len2_ is zero if it's unspecified.
   \
-  \ WARNING: If _len1_ is not zero, and it's not the length of
+  \ WARNING: If _len2_ is not zero, and it's not the length of
   \ the file, the ROM routine returns to BASIC with "Tape
   \ loading error". This will crash the system, because the
   \ lower screen has no lines. This will be avoided in a future
   \ version of Solo Forth.
   \
-  \ See also: `write-tape-file`, `(read-tape-file)`.
+  \ See also: `>tape-file`, `(tape-file>)`, `>file`.
   \
   \ }doc
 
-[unneeded] write-tape-file ?( need tape-header
+[unneeded] >tape-file ?( need tape-header
 
-code (write-tape-file) ( -- )
+code (>tape-file) ( -- )
   C5 c,  DD c, 21 c, tape-header , A8 07 + c,  32 c, 5C74 ,
     \ push bc               ; save Forth IP
     \ ld ix,tape_header
@@ -340,24 +351,24 @@ code (write-tape-file) ( -- )
 
   \ doc{
   \
-  \ (write-tape-file) ( -- )
+  \ (>tape-file) ( -- )
   \
-  \ Low-level action of `write-tape-file`: write a tape file
+  \ Low-level factor of `>tape-file`: write a tape file
   \ using the data stored at `tape-header`.
   \
   \ }doc
 
-: write-tape-file ( ca1 len1 ca2 len2 -- )
-  set-tape-filename set-tape-memory (write-tape-file) ; ?)
+: >tape-file ( ca1 len1 ca2 len2 -- )
+  set-tape-filename set-tape-memory (>tape-file) ; ?)
 
   \ doc{
   \
-  \ write-tape-file ( ca1 len1 ca2 len2 -- )
+  \ >tape-file ( ca1 len1 ca2 len2 -- )
   \
   \ Write a memory region _ca1 len1_ into a tape file _ca2
   \ len2_.
   \
-  \ See also: `read-tape-file`, `(write-tape-file)`.
+  \ See also: `tape-file>`, `(>tape-file)`, `>file`.
   \
   \ }doc
 
