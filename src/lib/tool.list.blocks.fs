@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703062142
 
   \ -----------------------------------------------------------
   \ Description
@@ -67,6 +67,16 @@
   \
   \ 2017-02-17: Update cross references.  Change markup of
   \ inline code that is not a cross reference.
+  \
+  \ 2017-03-06: Make `list` check the block number.  Block
+  \ numbers beyond the current limit were managed properly by
+  \ G+DOS, which throws error #-1004 (sector error); but +3DOS
+  \ throws #-1004 (no data) and then any further attempt to
+  \ access the disk throws error #-1000 (drive not ready; and
+  \ TR-DOS exists to BASIC with "Disc error Trk X sec X
+  \ Retry,Abort,Ignore?"... Beside, the heading of the block
+  \ was shown anyway before the error. The check prevents all
+  \ this.
 
 ( /line# .line# .line list-line list-lines list )
 
@@ -122,13 +132,13 @@
 
 [unneeded] list-lines ?(
 need .line need nuf? need list-line need ?leave
-: list-lines ( n1 n2 u -- )
+: list-lines ( u n1 n2 -- )
   rot dup scr ! cr ." Block " u.  1+ swap
   ?do  i scr @ list-line nuf? ?leave  loop cr ; ?)
 
   \ doc{
   \
-  \ list-lines ( n1 n2 u -- )
+  \ list-lines ( u n1 n2 -- )
   \
   \ List lines _n2..n3_ of block _u_ and store _u_ in `scr`.
   \
@@ -137,7 +147,8 @@ need .line need nuf? need list-line need ?leave
   \ }doc
 
 [unneeded] list ?( need list-lines
-: list ( u -- ) 0 [ l/scr 1- ] literal list-lines ; ?)
+: list ( u -- ) dup max-blocks 1- u> #-35 ?throw
+                    0 [ l/scr 1- ] literal list-lines ; ?)
 
   \ doc{
   \

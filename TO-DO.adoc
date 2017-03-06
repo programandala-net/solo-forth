@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703062206
+// Last modified 201703062211
 
 // Application development {{{1
 == Application development ==
@@ -590,19 +590,6 @@ source.
 
 // DOS {{{1
 == DOS ==
-
-.2017-03-05:
-
-Improve/fix `list`:
-
-When the block number received by `list` is too big, the heading of
-the listing is displayed anyway, and then:
-
-- +3DOS throws #-1004 (no data), and any further attemp to list a real
-  block throws #-1000 (drive not ready).
-- G+DOS throws #-1004 (sector error).
-- TR-DOS exits to BASIC with "Disc error Trk X sec X
-  Retry,Abort,Ignore?".
 
 .2017-02-17:
 
