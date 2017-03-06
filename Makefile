@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201702271834
+# Last modified: 201703042011
 
 # ==============================================================
 # Author
@@ -562,7 +562,7 @@ disks/gplusdos/disk_9_library_without_dos.mgt: tmp/library_without_dos.fs
 # Library disk
 
 tmp/library.plus3dos.fs: $(plus3dos_core_lib_files)
-	cat $(gplusdos_core_lib_files) > $@
+	cat $(plus3dos_core_lib_files) > $@
 
 disks/plus3dos/disk_1_library.dsk: tmp/library.plus3dos.fs
 	fsb2-dsk tmp/library.plus3dos.fs ;\
@@ -1014,3 +1014,5 @@ oldbackup:
 # format manual. They are being tested apart.
 #
 # 2017-02-27: Update: use "fs" file extension instead of "fsb".
+#
+# 2017-03-04: Fix the rule that builds the +3DOS library disk.
