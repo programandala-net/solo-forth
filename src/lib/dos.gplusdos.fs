@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703071325
+  \ Last modified: 201703072334
 
   \ -----------------------------------------------------------
   \ Description
@@ -330,7 +330,7 @@ create ufia  /ufia allot  ufia /ufia erase
 ufia      constant dstr1   \ drive: 1, 2 or '*'
 ufia 1+   constant fstr1   \ file directory number
 ufia 2+   constant sstr1   \ stream number
-ufia 3 +  constant device  \ device: "D" or "d"
+ufia 3 +  constant device  \ device: 'D' or 'd'
   \ XXX TODO -- Remove `device`. The distinction is useless in Forth.
 ufia 4 +  constant nstr1   \ directory description
 ufia 5 +  constant nstr2   \ file name
@@ -1098,6 +1098,10 @@ code ((cat ( -- ior )
 
 [unneeded] cat ?\ need (cat : cat  ( -- ) $04 (cat ;
 
+  \ XXX FIXME -- The last wild-card used by `wcat` or `wacat`
+  \ remains in `ufia`, an used. The cat type parameter is
+  \ ignored.
+
   \ doc{
   \
   \ cat ( -- )
@@ -1117,6 +1121,69 @@ code ((cat ( -- ior )
   \ Show an abbreviated disk catalogue of the current drive.
   \
   \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+( back-from-dos-error_ )
+
+need assembler need dos-out,
+
+create back-from-dos-error_ ( -- a ) asm
+  168E call, dos-out, b pop, next ix ldp#,
+    \ $168E=BORD_REST (restore the border).
+    \ Page out the Plus D memory.
+    \ Restore the Forth registers.
+  0000 h ldp#, 2066 h stp,
+    \ Clear G+DOS D_ERR_SP.
+  af push, ' dosior>ior jp, end-asm
+    \ Return the ior.
+
+  \ XXX TODO -- Rewrite with Z80 opcodes.
+
+  \ XXX TODO -- Use G+DOS routine HOOK_RET at $22C8 to do all
+  \ at once.
+
+  \ Reference: Plus D ROM routine D_ERROR ($182D), and command
+  \ hook PATCH ($2226).
+
+  \ doc{
+  \
+  \ back-from-dos-error_ ( -- a )
+  \
+  \ Return the address _a_ of Z80 code that can be set to be
+  \ executed when a G+DOS routine throws an error, therefore
+  \ preventing the DOS from returning to BASIC.  This is needed
+  \ only when a Forth word calls G+DOS routines directly
+  \ instead of using hook codes.
+  \
+  \ ``back-from-dos-error_`` works like an alternative end to
+  \ words that use direct G+DOS calls:  The routine at
+  \ ``back-from-dos-error_`` will leave the proper error result
+  \ on the stack.
+  \
+  \ Usage example:
+
+  \ ----
+  \ b push, dos-in,
+  \   \ Save the Forth IP.
+  \   \ Page in the G+DOS memory.
+  \
+  \ back-from-dos-error_ h ldp#, h push, 2066 sp stp,
+  \   \ Set G+DOS D_ERR_SP ($2066) so an error will go to
+  \   \   `back-from-dos-error_` instead of returning to BASIC.
+  \   \   This is needed because we are using direct calls to the
+  \   \   G+DOS ROM instead of hook codes.
+  \
+  \ \ ... do whatever G+DOS direct call here ...
+  \
+  \ dos-out, h pop, b pop, next ix ldp#, ' false jp, end-code
+  \   \ Page out the G+DOS memory.
+  \   \ Consume the address of `back-from-dos-error_`
+  \   \   that was pushed at the start.
+  \   \ Restore the Forth IP.
+  \   \ Restore the Forth IX.
+  \   \ Return `false` _ior_ (no error).
+  \ ----
   \
   \ }doc
 
@@ -1401,6 +1468,72 @@ code c!dosvar ( b n -- )
   \ Store _b_ into the G+DOS variable _n_.
   \
   \ See also: `c@dosvar`, `!dosvar`, `c!dos`.
+  \
+  \ }doc
+
+( rename-file )
+
+  \ XXX UNDER DEVELOPMENT -- Second approach to implement
+  \ `rename-file`: copy part of the G+DOS routine, with a
+  \ different ending.
+
+need assembler need back-from-dos-error_ need patch
+need set-filename need ufia need >ufia1 need >ufia2
+
+code (rename-file ( -- ior )
+
+  b push, dos-in,
+    \ Save the Forth IP.
+    \ Page in the Plus D memory.
+  back-from-dos-error_ h ldp#, h push, 2066 sp stp,
+    \ Set G+DOS D_ERR_SP ($2066) so an error will go to
+    \   `back-from-dos-error_` instead of returning to BASIC.
+    \   This is needed because we are using direct calls to the
+    \   G+DOS ROM instead of hook codes.
+
+    \ The following code is a copy of G+DOS RENAME_RUN routine
+    \ ($257C), except its final part, which returns to BASIC.
+
+  2626 call, 2559 call, 167C z? ?jp,
+    \ call swap_ufias        ; Swap UFIA 1 & 2 in the DFCA.
+    \ call find_file_2559    ; Does the 2nd filename exist?
+    \ jp   z,rep_28          ; Error #28 if it does exist.
+  2626 call, 2559 call, 1678 nz? ?jp,
+    \ call swap_ufias        ; Swap UFIA 1 & 2 in the DFCA.
+    \ call find_file_2559    ; Does the 1st filename exist?
+    \ jp   nz,rep_26         ; Error #26 if it doesn't exist.
+  h incp, d push, 3E1F d ldp#, exde, 0A b ldp#, ldir, d pop,
+    \ inc  hl                ; Point to 1st filename.
+    \ push de                ; Save track and sector of its catalogue entry.
+    \ ld   de,ufia2.nstr2    ; Second filename.
+    \ ex   de,hl             ; HL = 2nd filename; DE = 1st filename
+    \ ld   bc,10             ; Filename length.
+    \ ldir                   ; Rename.
+    \ pop  de                ; Restore track and sector.
+  0584 call,
+    \ call wsad              ; Write the CATalogue sector.
+
+  dos-out, h pop, b pop, next ix ldp#, ' false jp, end-code
+    \ Page out the Plus D memory.
+    \ Consume the address of `back-from-dos-error_` that was pushed at the start.
+    \ Restore the Forth registers and exit returning an _ior_.
+
+: rename-file ( ca1 len1 ca2 len2 -- ior )
+  set-filename ufia >ufia2 set-filename ufia >ufia1
+  (rename-file ;
+
+  \ XXX TODO -- Invert the order of the used UFIA in order to
+  \ save swapping them once in `(rename-file`.
+
+  \ doc{
+  \
+  \ rename-file  ( ca1 len1 ca2 len2 -- ior )
+  \
+  \ Rename the file named by the character string _ca1 len1_ to
+  \ the name in the character string _ca2 len2_ and return
+  \ error result _ior_.
+  \
+  \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
   \
   \ }doc
 

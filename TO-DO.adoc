@@ -596,10 +596,6 @@ source.
 // DOS {{{1
 == DOS ==
 
-.2017-02-17:
-
-Add `rename-file`.
-
 .2017-02-13:
 
 Decide if lower-level factor words return a _dosior_ or an _ior_.
@@ -687,6 +683,10 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-02-17:
+
+Add `rename-file`.
 
 .2017-02-17:
 
