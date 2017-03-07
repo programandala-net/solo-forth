@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703071230
+  \ Last modified: 201703071240
 
   \ -----------------------------------------------------------
   \ Description
@@ -110,67 +110,68 @@
   \ 2017-03-06: Prepare alternative implementation of `cat`.
   \
   \ 2017-03-07: Add `>ufia1`, `>ufia2`, `>ufiax`. Improve
-  \ documentation.
+  \ documentation. Rename "plusd-in/out" to "dos-in/out", after
+  \ the notation used for +3DOS.
 
-( plusd-in plusd-out plusd-in, plusd-out, )
+( dos-in dos-out dos-in, dos-out, )
 
-[unneeded] plusd-in
-?\ code plusd-in ( -- ) DB c, #231 c, jpnext, end-code
+[unneeded] dos-in
+?\ code dos-in ( -- ) DB c, #231 c, jpnext, end-code
   \ in a,(231)
   \ _jp_next
 
   \ doc{
   \
-  \ plusd-in ( -- )
+  \ dos-in ( -- )
   \
   \ Page in the Plus D memory.
   \
-  \ See also: `plusd-out`, `plusd-in,`, `@dos`, `!dos`.
+  \ See also: `dos-out`, `dos-in,`, `@dos`, `!dos`.
   \
   \ }doc
 
-[unneeded] plusd-out
-?\ code plusd-out ( -- ) D3 c, #231 c, jpnext, end-code
+[unneeded] dos-out
+?\ code dos-out ( -- ) D3 c, #231 c, jpnext, end-code
   \ out (231),a
   \ _jp_next
 
   \ doc{
   \
-  \ plusd-out ( -- )
+  \ dos-out ( -- )
   \
   \ Page out the Plus D memory.
   \
-  \ See also: `plusd-in`, `plusd-out,`.
+  \ See also: `dos-in`, `dos-out,`.
   \
   \ }doc
 
-[unneeded] plusd-in,
-?\ need macro  macro plusd-in, ( -- ) DB c, #231 c, endm
+[unneeded] dos-in,
+?\ need macro  macro dos-in, ( -- ) DB c, #231 c, endm
   \ in a,(231)
 
   \ doc{
   \
-  \ plusd-in, ( -- )
+  \ dos-in, ( -- )
   \
   \ Compile the Z80 instruction ``in a,(231)``, which pages in
   \ the Plus D memory.
   \
-  \ See also: `plusd-out,`, `plusd-in`.
+  \ See also: `dos-out,`, `dos-in`.
   \
   \ }doc
 
-[unneeded] plusd-out,
-?\ need macro  macro plusd-out, ( -- ) D3 c, #231 c, endm
+[unneeded] dos-out,
+?\ need macro  macro dos-out, ( -- ) D3 c, #231 c, endm
   \ out (231),a
 
   \ doc{
   \
-  \ plusd-out, ( -- )
+  \ dos-out, ( -- )
   \
   \ Compile the Z80 instruction ``out (231),a``, which pages out
   \ the Plus D memory.
   \
-  \ See also: `plusd-in,`, `plusd-out`.
+  \ See also: `dos-in,`, `dos-out`.
   \
   \ }doc
 
@@ -221,8 +222,8 @@
   \
   \ }doc
 
-[unneeded] >ufiax ?( need /ufia need plusd-in need plusd-out
-: >ufiax ( a a -- ) /ufia plusd-in cmove plusd-out ; ?)
+[unneeded] >ufiax ?( need /ufia need dos-in need dos-out
+: >ufiax ( a a -- ) /ufia dos-in cmove dos-out ; ?)
   
   \ doc{
   \
@@ -241,8 +242,8 @@
 ?\ need ufia1 need >ufiax : >ufia1 ( a -- ) ufia1 >ufiax ;
 
   \ XXX TODO --
-  \ h pop, ufia1 d ldp#, /ufia b ldp#, plusd-in, ldir,
-  \ plusd-out, jpnext, end-code
+  \ h pop, ufia1 d ldp#, /ufia b ldp#, dos-in, ldir,
+  \ dos-out, jpnext, end-code
 
   \ doc{
   \
@@ -414,11 +415,11 @@ ufia 22 + constant hd11    \ BASIC autorun line
 
 [unneeded] get-drive ?(
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 
 code get-drive ( -- n )
   b push,  \ save the Forth IP
-  plusd-in, 3ACE fta, plusd-out,
+  dos-in, 3ACE fta, dos-out,
   b pop, next ix ldp#,  \ restore the Forth registers
   pusha jp, end-code ?)
 
@@ -853,7 +854,7 @@ code (file-status) ( -- a ior )
   \ Experimental code to read lines from a file
 
 need assembler need ufia need set-code-file
-need hgfile need lbyte need plusd-in, need plusd-out,
+need hgfile need lbyte need dos-in, need dos-out,
 
 code (file>screen) ( -- ior )
 
@@ -866,11 +867,11 @@ code (file>screen) ( -- ior )
       \ destination and count
 
     d h ldp,
-    rbegin  lbyte hook, d stap,
+    rbegin lbyte hook, d stap,
             \ a l ld, d push, b push, 1744 call, b pop, d pop,
               \ print HL
             d incp, b decp, b a ld, c or,
-    z? runtil  plusd-out,
+    z? runtil dos-out,
     \ rbegin
     \   lbyte hook,  af push,  10 hook,  af pop,  13 cp#,
     \ z runtil
@@ -889,18 +890,18 @@ code (file>screen) ( -- ior )
 
   \ XXX TMP -- for debugging
 
-need assembler need plusd-in, need plusd-out, need patch
+need assembler need dos-in, need dos-out, need patch
 
 code g.100h ( u -- )
   h pop, b push,
-  h push, patch hook, h pop, 1744 call, plusd-out,
+  h push, patch hook, h pop, 1744 call, dos-out,
   b pop,  next ix ldp#,  jpnext, end-code
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with a hook.
 
 code g.100i ( u -- )
   h pop, b push,
-  plusd-in, 1744 call, plusd-out,
+  dos-in, 1744 call, dos-out,
   b pop,  next ix ldp#,  jpnext, end-code
   \ Print _u_ using a routine of the Plus D ROM, paging it
   \ with an `in` instruction.
@@ -931,12 +932,12 @@ code (cd3 ( -- ior )
 
   \ XXX UNDER DEVELOPMENT -- 2017-02-13
 
-need assembler need ufia1 need rest need plusd-in,
+need assembler need ufia1 need rest need dos-in,
 
 code cd2 ( n -- ior )
   h pop,
   b push,  \ save the Forth IP
-  plusd-in, l a ld, ufia1 sta, rest hook,
+  dos-in, l a ld, ufia1 sta, rest hook,
   b pop, next ix ldp#, \ restore the Forth registers
   af push, ' dosior>ior jp, end-code
 
@@ -982,11 +983,11 @@ code cd1 ( n -- ior )
 
   \ XXX TODO --
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 need ufia need ufia1 need set-filename
 
 create (cd0-error ( -- a ) asm
-  168E call, plusd-out, b pop, next ix ldp#,
+  168E call, dos-out, b pop, next ix ldp#,
     \ $168E=BORD_REST (restore the border).
     \ Page out the Plus D memory.
     \ Restore the Forth registers.
@@ -997,7 +998,7 @@ create (cd0-error ( -- a ) asm
 
 code cd0 ( -- ior )
 
-  b push,  plusd-in,
+  b push, dos-in,
     \ Get the parameter.
     \ Save the Forth IP.
     \ Page in the Plus D memory.
@@ -1008,7 +1009,7 @@ code cd0 ( -- ior )
     \   G+DOS ROM instead of hook codes.
   \ 06C5 call, \ XXX REMARK -- This always returns #-1006
   06A4 call,  \ track_0
-  plusd-out, b pop, b pop, next ix ldp#, ' false jp, end-code
+  dos-out, b pop, b pop, next ix ldp#, ' false jp, end-code
 
   \ XXX FIXME -- Since the first time #-1006 (no disk in drive)
   \ is returned because of a missing disk, it is the only error
@@ -1017,11 +1018,11 @@ code cd0 ( -- ior )
 
 ( (cat )
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 need ufia need ufia1 need set-filename
 
 create (cat-error ( -- a ) asm
-  168E call, plusd-out, b pop, next ix ldp#,
+  168E call, dos-out, b pop, next ix ldp#,
     \ $168E=BORD_REST (restore the border).
     \ Page out the Plus D memory.
     \ Restore the Forth registers.
@@ -1052,7 +1053,7 @@ create (cat-error ( -- a ) asm
 
 code (cat ( n -- ior )
 
-  d pop, b push,  plusd-in,
+  d pop, b push, dos-in,
     \ Get the parameter.
     \ Save the Forth IP.
     \ Page in the Plus D memory.
@@ -1071,7 +1072,7 @@ code (cat ( n -- ior )
     \ XXX OLD: 24B5 = CAT_RUN (input: cat type in the A register)
     \ 168E = BORD_REST (restore the border)
 
-  plusd-out, b pop, b pop, next ix ldp#, ' false jp, end-code
+  dos-out, b pop, b pop, next ix ldp#, ' false jp, end-code
     \ Page out the Plus D memory.
     \ Consume the address of `(cat-error` that was pushed at the start.
     \ Restore the Forth registers and exit.
@@ -1167,7 +1168,7 @@ code (cat ( n -- ior )
   \ code.
 
 need assembler need ufia need pcat need set-filename need ufia1
-need plusd-in need plusd-out
+need dos-in need dos-out
 
 code (catp) ( -- ior )
   b push, pcat hook,
@@ -1188,11 +1189,11 @@ code (catp) ( -- ior )
 
 [unneeded] @dos ?(
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 
 code @dos ( a -- x )
-  h pop, plusd-in, m e ld, h incp, m d ld,
-         plusd-out, d push, jpnext, end-code ?)
+  h pop, dos-in, m e ld, h incp, m d ld,
+         dos-out, d push, jpnext, end-code ?)
   \ doc{
   \
   \ @dos ( a -- x )
@@ -1205,11 +1206,11 @@ code @dos ( a -- x )
 
 [unneeded] c@dos ?(
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 
 code c@dos ( ca -- b )
-  h pop, plusd-in, m a ld,
-         plusd-out, pusha jp, end-code ?)
+  h pop, dos-in, m a ld,
+         dos-out, pusha jp, end-code ?)
 
   \ doc{
   \
@@ -1225,11 +1226,11 @@ code c@dos ( ca -- b )
 
 [unneeded] !dos ?(
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 
 code !dos ( x a -- )
-  h pop, d pop, plusd-in, e m ld, h incp, d m ld,
-                plusd-out, jpnext, end-code ?)
+  h pop, d pop, dos-in, e m ld, h incp, d m ld,
+                dos-out, jpnext, end-code ?)
   \ doc{
   \
   \ !dos ( x a -- )
@@ -1242,11 +1243,11 @@ code !dos ( x a -- )
 
 [unneeded] c!dos ?(
 
-need assembler need plusd-in, need plusd-out,
+need assembler need dos-in, need dos-out,
 
 code c!dos ( b ca -- )
-  h pop, d pop, plusd-in, e m ld,
-                plusd-out, jpnext, end-code ?)
+  h pop, d pop, dos-in, e m ld,
+                dos-out, jpnext, end-code ?)
 
   \ doc{
   \
@@ -1263,12 +1264,12 @@ code c!dos ( b ca -- )
 
 [unneeded] @dosvar ?(
 
-need assembler need dos-vars need plusd-in, need plusd-out,
+need assembler need dos-vars need dos-in, need dos-out,
 
 code @dosvar ( n -- x )
   h pop,
-  plusd-in, dos-vars d ldp#, d addp, m e ld, h incp, m d ld,
-  plusd-out, d push, jpnext, end-code ?)
+  dos-in, dos-vars d ldp#, d addp, m e ld, h incp, m d ld,
+  dos-out, d push, jpnext, end-code ?)
 
   \ doc{
   \
@@ -1282,11 +1283,11 @@ code @dosvar ( n -- x )
 
 [unneeded] c@dosvar ?(
 
-need assembler need dos-vars need plusd-in, need plusd-out,
+need assembler need dos-vars need dos-in, need dos-out,
 
 code c@dosvar ( n -- b )
-  h pop, plusd-in, dos-vars d ldp#, d addp, m a ld,
-         plusd-out, pusha jp, end-code ?)
+  h pop, dos-in, dos-vars d ldp#, d addp, m a ld,
+         dos-out, pusha jp, end-code ?)
 
   \ doc{
   \
@@ -1302,12 +1303,12 @@ code c@dosvar ( n -- b )
 
 [unneeded] !dosvar ?(
 
-need assembler need dos-vars need plusd-in, need plusd-out,
+need assembler need dos-vars need dos-in, need dos-out,
 
 code !dosvar ( x n -- )
-  h pop, plusd-in, dos-vars d ldp#, d addp,
+  h pop, dos-in, dos-vars d ldp#, d addp,
                    d pop, e m ld, h incp, d m ld,
-         plusd-out, jpnext, end-code ?)
+         dos-out, jpnext, end-code ?)
 
   \ doc{
   \
@@ -1321,11 +1322,11 @@ code !dosvar ( x n -- )
 
 [unneeded] c!dosvar ?(
 
-need assembler need dos-vars need plusd-in, need plusd-out,
+need assembler need dos-vars need dos-in, need dos-out,
 
 code c!dosvar ( b n -- )
-  h pop, plusd-in, dos-vars d ldp#, d addp, d pop, e m ld,
-                   plusd-out, jpnext, end-code ?)
+  h pop, dos-in, dos-vars d ldp#, d addp, d pop, e m ld,
+         dos-out, jpnext, end-code ?)
 
   \ doc{
   \

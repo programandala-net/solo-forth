@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220028
+  \ Last modified: 201703071237
 
   \ -----------------------------------------------------------
   \ Description
@@ -36,7 +36,7 @@
 
   \ XXX TMP -- to debug the G+DOS support:
 
-  \ need plusd-in need plusd-in,
+  \ need dos-in need dos-in,
 
   \ XXX TMP -- to debug the tape support:
 

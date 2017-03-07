@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702272315
+  \ Last modified: 201703071238
 
   \ -----------------------------------------------------------
   \ Description
@@ -38,6 +38,8 @@
   \ 2017-02-17: Update cross references.
   \
   \ 2017-02-27: Improve documentation.
+  \
+  \ 2017-03-07: Update example in documentation.
 
 ( macro endm )
 
@@ -52,8 +54,9 @@
   \ Usage example:
 
   \ ----
-  \ macro plusd-in, ( -- ) DB c, #231 c, endm
-  \   \ Assemble the Z80 instruction `in a,(#231)`.
+  \ macro dos-in, ( -- ) DB c, #231 c, endm
+  \   \ Assemble the Z80 instruction `in a,(#231)`, to page in
+  \   \ the Plus D memory.
   \ ----
 
   \ See also: `endm`, `asm`, `code`.
