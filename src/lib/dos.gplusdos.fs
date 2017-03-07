@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703072334
+  \ Last modified: 201703072350
 
   \ -----------------------------------------------------------
   \ Description
@@ -113,7 +113,7 @@
   \ documentation. Rename "plusd-in/out" to "dos-in/out", after
   \ the notation used for +3DOS. Replace `cat` and related word
   \ with a new, simpler implementation which uses the `pcat`
-  \ command code.
+  \ command code. Add `back-from-dos-error_` and `rename-file`.
 
 ( dos-in dos-out dos-in, dos-out, )
 
@@ -1096,11 +1096,7 @@ code ((cat ( -- ior )
   \
   \ }doc
 
-[unneeded] cat ?\ need (cat : cat  ( -- ) $04 (cat ;
-
-  \ XXX FIXME -- The last wild-card used by `wcat` or `wacat`
-  \ remains in `ufia`, an used. The cat type parameter is
-  \ ignored.
+[unneeded] cat ?\ need wcat : cat  ( -- ) s" *" wcat ;
 
   \ doc{
   \
@@ -1112,7 +1108,7 @@ code ((cat ( -- ior )
   \
   \ }doc
 
-[unneeded] acat ?( need (cat : acat ( -- ) $02 (cat ;
+[unneeded] acat ?( need wacat : acat ( -- ) s" *" wacat ;
 
   \ doc{
   \
@@ -1123,6 +1119,14 @@ code ((cat ( -- ior )
   \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
   \
   \ }doc
+
+  \ XXX TODO -- The disk catalogues can be printed out on a
+  \ printer by storing the number 3 into SSTR1 (a field of UFIA
+  \ that holds the stream number to use) before doing `CAT`.
+  \ The default value is 2 (screen) and should be restored.
+  \ Example:
+  \
+  \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 
 ( back-from-dos-error_ )
 
@@ -1186,137 +1190,6 @@ create back-from-dos-error_ ( -- a ) asm
   \ ----
   \
   \ }doc
-
-( (cat )
-
-  \ XXX OLD -- 2017-03-07. Obsolete implementation. The code of
-  \ `(cat-error` will be useful to be generalized, to return
-  \ from other DOS direct calls.
-
-need assembler need dos-in, need dos-out,
-need ufia need ufia1 need set-filename
-
-create (cat-error ( -- a ) asm
-  168E call, dos-out, b pop, next ix ldp#,
-    \ $168E=BORD_REST (restore the border).
-    \ Page out the Plus D memory.
-    \ Restore the Forth registers.
-  0000 h ldp#, 2066 h stp,
-    \ Clear G+DOS D_ERR_SP.
-  af push, ' dosior>ior jp, end-asm
-    \ Return the ior.
-
-  \ XXX TODO -- Use G+DOS routine HOOK_RET at $22C8 to do all
-  \ at once.
-
-  \ Reference: Plus D ROM routine D_ERROR ($182D), and command
-  \ hook PATCH ($2226).
-
-  \ (cat-error ( -- a )
-  \
-  \ Return the address _a_ of a subroutine that is executed
-  \ when the Plus D ROM routines called by `(cat` throw an
-  \ error (e.g., when there's no disk in the current drive),
-  \ therefore preventing the system from returning to BASIC.
-  \
-  \ ``(cat-error`` works like an alternative ending of `(cat`
-  \ to manage the error and return the proper error result.
-
-code (cat ( n -- ior )
-
-  d pop, b push, dos-in,
-    \ Get the parameter.
-    \ Save the Forth IP.
-    \ Page in the Plus D memory.
-  (cat-error h ldp#, h push, 2066 sp stp,
-    \ Set G+DOS D_ERR_SP ($2066) so an error will go to
-    \   `(cat-error` instead of returning to BASIC.
-    \   This is needed because we are using direct calls to the
-    \   G+DOS ROM instead of hook codes.
-
-  exx,  ufia h ldp#, ufia1 d ldp#, /ufia b ldp#, ldir,
-    \ Preserve the parameter into DE'
-    \ Copy Forth UFIA to G+DOS UFIA1.
-
-  exx, e a ld, 09A5 call, 168E call,
-    \ 09A5 = SCAN_CAT  (input: cat or search type in the A register)
-    \ XXX OLD: 24B5 = CAT_RUN (input: cat type in the A register)
-    \ 168E = BORD_REST (restore the border)
-
-  dos-out, b pop, b pop, next ix ldp#, ' false jp, end-code
-    \ Page out the Plus D memory.
-    \ Consume the address of `(cat-error` that was pushed at the start.
-    \ Restore the Forth registers and exit.
-
-  \ (cat ( n -- )
-  \
-  \ Show a disk catalogue of the current drive, being _n_ the
-  \ type of catalogue: 2=compact; 4=detailed.  This word is the
-  \ low-level common factor of all words that show disk
-  \ catalogues.
-  \
-  \ See also: `cat`, `acat`, `wcat`, `wacat`, `(cat-error`,
-  \ `set-drive`.
-
-( wcat cat wacat acat )
-
-  \ XXX OLD -- 2017-03-07. Obsolete implementation.
-
-[unneeded] wcat ?( need (cat
-
-: wcat ( ca len -- ) set-filename  4 (cat throw ; ?)
-
-  \ wcat ( ca len -- )
-  \
-  \ Show a wild-card disk catalogue of the current drive using
-  \ the wild-card filename _ca len_.  See the Plus D manual for
-  \ wild-card syntax.
-  \
-  \ See also: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
-
-[unneeded] cat
-
-?\ need wcat  : cat ( -- ) s" *" wcat ;
-
-  \ cat ( -- )
-  \
-  \ Show a disk catalogue of the current drive.
-  \
-  \ See also: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
-
-[unneeded] wacat ?( need (cat
-
-: wacat ( ca len -- ) set-filename  2 (cat throw ; ?)
-
-  \ wacat ( ca len -- )
-  \
-  \ Show a wild-card abbreviated disk catalogue of the current
-  \ drive using the wild-card filename _ca len_.  See the Plus
-  \ D manual for wild-card syntax.
-  \
-  \ See also: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
-
-[unneeded] acat
-
-?\ need wacat  : acat ( -- ) s" *" wacat ;
-
-  \ doc{
-  \
-  \ acat ( -- )
-  \
-  \ Show an abbreviated disk catalogue of the current drive.
-  \
-  \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
-  \
-  \ }doc
-
-  \ XXX TODO -- The disk catalogues can be printed out on a
-  \ printer by storing the number 3 into SSTR1 (a field of UFIA
-  \ that holds the stream number to use) before doing `CAT`.
-  \ The default value is 2 (screen) and should be restored.
-  \ Example:
-  \
-  \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
 
 ( @dos c@dos  )
 
