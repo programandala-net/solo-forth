@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703071240
+  \ Last modified: 201703071325
 
   \ -----------------------------------------------------------
   \ Description
@@ -111,7 +111,9 @@
   \
   \ 2017-03-07: Add `>ufia1`, `>ufia2`, `>ufiax`. Improve
   \ documentation. Rename "plusd-in/out" to "dos-in/out", after
-  \ the notation used for +3DOS.
+  \ the notation used for +3DOS. Replace `cat` and related word
+  \ with a new, simpler implementation which uses the `pcat`
+  \ command code.
 
 ( dos-in dos-out dos-in, dos-out, )
 
@@ -178,7 +180,7 @@
 ( /ufia ufia1 ufia2 >ufiax >ufia1 >ufia2 )
 
 [unneeded] /ufia ?\ 24 cconstant /ufia
-  
+
   \ doc{
   \
   \ /ufia  ( -- n )
@@ -224,7 +226,7 @@
 
 [unneeded] >ufiax ?( need /ufia need dos-in need dos-out
 : >ufiax ( a a -- ) /ufia dos-in cmove dos-out ; ?)
-  
+
   \ doc{
   \
   \ >ufiax  ( a1 a2 -- )
@@ -1016,7 +1018,113 @@ code cd0 ( -- ior )
   \ result, no matter the drive, no matter if disks are
   \ inserted or not.
 
+( (cat wcat wacat cat acat )
+
+[unneeded] (cat ?( need pcat need ufia need hd00 need >ufia1
+
+code ((cat ( -- ior )
+  C5 c, CF c, pcat c, C1 c, DD c, 21 c, next , F5 c,
+  \ push bc
+  \ rst $08
+  \ defb pcat
+  \ pop bc
+  \ ld ix,next
+  \ push af
+  ' dosior>ior jp, end-code
+  \ jp dos_ior_to_ior_
+
+  \ doc{
+  \
+  \ ((cat  ( -- ior )
+  \
+  \ Show a disk catalogue of the current drive, calling the
+  \ corresponding G+DOS hook command, which uses the data in
+  \ `ufia1`. Return error result _ior_.
+  \
+  \ ``((cat`` is a low-level factor of `(cat`.
+  \
+  \ }doc
+
+: (cat ( b -- ) hd00 c! ufia >ufia1 ((cat throw ; ?)
+
+  \ doc{
+  \
+  \ (cat ( b -- )
+  \
+  \ Show a disk catalogue of the current drive, using the data
+  \ in `ufia`, being _b_ the type of catalogue:
+
+  \ - $02 = abbreviated
+  \ - $04 = detailed
+  \ - $12 = abbreviated with wild-card
+  \ - $14 = detailed with wild-card
+
+  \ ``(cat`` is the common factor of all words that show disk
+  \ catalogues: `cat`, `acat`, `wcat`, `wacat`.
+  \
+  \ See also: `((cat`, `set-drive`.
+  \
+  \ }doc
+
+[unneeded] wcat ?( need set-filename need (cat
+: wcat  ( ca len -- ) set-filename $14 (cat ; ?)
+
+  \ doc{
+  \
+  \ wcat ( ca len -- )
+  \
+  \ Show a wild-card disk catalogue of the current drive using
+  \ the wild-card filename _ca len_.  See the Plus D manual for
+  \ wild-card syntax.
+  \
+  \ See also: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+[unneeded] wacat ?( need set-filename need (cat
+: wacat ( ca len -- ) set-filename $12 (cat ; ?)
+
+  \ doc{
+  \
+  \ wacat ( ca len -- )
+  \
+  \ Show a wild-card abbreviated disk catalogue of the current
+  \ drive using the wild-card filename _ca len_.  See the Plus
+  \ D manual for wild-card syntax.
+  \
+  \ See also: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+[unneeded] cat ?\ need (cat : cat  ( -- ) $04 (cat ;
+
+  \ doc{
+  \
+  \ cat ( -- )
+  \
+  \ Show a disk catalogue of the current drive.
+  \
+  \ See also: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+[unneeded] acat ?( need (cat : acat ( -- ) $02 (cat ;
+
+  \ doc{
+  \
+  \ acat ( -- )
+  \
+  \ Show an abbreviated disk catalogue of the current drive.
+  \
+  \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
 ( (cat )
+
+  \ XXX OLD -- 2017-03-07. Obsolete implementation. The code of
+  \ `(cat-error` will be useful to be generalized, to return
+  \ from other DOS direct calls.
 
 need assembler need dos-in, need dos-out,
 need ufia need ufia1 need set-filename
@@ -1037,8 +1145,6 @@ create (cat-error ( -- a ) asm
   \ Reference: Plus D ROM routine D_ERROR ($182D), and command
   \ hook PATCH ($2226).
 
-  \ doc{
-  \
   \ (cat-error ( -- a )
   \
   \ Return the address _a_ of a subroutine that is executed
@@ -1048,8 +1154,6 @@ create (cat-error ( -- a ) asm
   \
   \ ``(cat-error`` works like an alternative ending of `(cat`
   \ to manage the error and return the proper error result.
-  \
-  \ }doc
 
 code (cat ( n -- ior )
 
@@ -1077,8 +1181,6 @@ code (cat ( n -- ior )
     \ Consume the address of `(cat-error` that was pushed at the start.
     \ Restore the Forth registers and exit.
 
-  \ doc{
-  \
   \ (cat ( n -- )
   \
   \ Show a disk catalogue of the current drive, being _n_ the
@@ -1088,56 +1190,44 @@ code (cat ( n -- ior )
   \
   \ See also: `cat`, `acat`, `wcat`, `wacat`, `(cat-error`,
   \ `set-drive`.
-  \
-  \ }doc
 
 ( wcat cat wacat acat )
+
+  \ XXX OLD -- 2017-03-07. Obsolete implementation.
 
 [unneeded] wcat ?( need (cat
 
 : wcat ( ca len -- ) set-filename  4 (cat throw ; ?)
 
-  \ doc{
-  \
   \ wcat ( ca len -- )
   \
-  \ Show a wild-card disk catologue of the current drive using
+  \ Show a wild-card disk catalogue of the current drive using
   \ the wild-card filename _ca len_.  See the Plus D manual for
   \ wild-card syntax.
   \
   \ See also: `cat`, `acat`, `wacat`, `(cat`, `set-drive`.
-  \
-  \ }doc
 
 [unneeded] cat
 
 ?\ need wcat  : cat ( -- ) s" *" wcat ;
 
-  \ doc{
-  \
   \ cat ( -- )
   \
   \ Show a disk catalogue of the current drive.
   \
   \ See also: `acat`, `wcat`, `wacat`, `(cat`, `set-drive`.
-  \
-  \ }doc
 
 [unneeded] wacat ?( need (cat
 
 : wacat ( ca len -- ) set-filename  2 (cat throw ; ?)
 
-  \ doc{
-  \
   \ wacat ( ca len -- )
   \
-  \ Show a wild-card abbreviated disk catologue of the current
+  \ Show a wild-card abbreviated disk catalogue of the current
   \ drive using the wild-card filename _ca len_.  See the Plus
   \ D manual for wild-card syntax.
   \
   \ See also: `cat`, `acat`, `wcat`, `(cat`, `set-drive`.
-  \
-  \ }doc
 
 [unneeded] acat
 
@@ -1147,7 +1237,7 @@ code (cat ( n -- ior )
   \
   \ acat ( -- )
   \
-  \ Show an abbreviated disk catologue of the current drive.
+  \ Show an abbreviated disk catalogue of the current drive.
   \
   \ See also: `cat`, `wcat`, `wacat`, `(cat`, `set-drive`.
   \
@@ -1160,30 +1250,6 @@ code (cat ( n -- ior )
   \ Example:
   \
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
-
-( wcatp wacatp catp acatp )
-
-  \ XXX UNDER DEVELOPMENT -- 2017-03-07: Simpler alternative
-  \ implementation of `cat`, using the `pcat` G+DOS command
-  \ code.
-
-need assembler need ufia need pcat need set-filename need ufia1
-need dos-in need dos-out
-
-code (catp) ( -- ior )
-  b push, pcat hook,
-  b pop, next ix ldp#, \ restore the Forth registers
-  af push, ' dosior>ior jp, end-code
-
-: (catp ( b -- ) hd00 c! ufia >ufia1 (catp) ;
-
-: wcatp  ( ca len -- ior ) set-filename $14 (catp ;
-
-: wacatp ( ca len -- ior ) set-filename $12 (catp ;
-
-: catp  ( -- ior ) $04 (catp ;
-
-: acatp ( -- ior ) $02 (catp ;
 
 ( @dos c@dos  )
 
