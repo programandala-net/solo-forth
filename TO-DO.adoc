@@ -1452,7 +1452,7 @@ would be clearer.
 Make `need-here` unnecessary: Always check the current block, just in case.
 Many needed words are in the same block.
 
-.2016-11-22, 2016-12-31, 2017-02-16:
+.2016-11-22, 2016-12-31, 2017-02-16, 2017-03-07:
 
 Write `needs` to do multiple `need` on one line of a block,
 saving space
@@ -1479,6 +1479,10 @@ need( word1 word2 word3 word4
 
 `need\` is clearer than `needs` to parse the current line, but `need(`
 seems the best option.
+
+Problem: `need(` should use `refill`, in case the list is splitted
+between two blocks of the application, where no block headers are
+used.
 
 .2016-11-19, 2016-12-29:
 

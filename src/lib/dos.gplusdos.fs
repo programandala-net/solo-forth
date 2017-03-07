@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703071230
 
   \ -----------------------------------------------------------
   \ Description
@@ -104,8 +104,15 @@
   \ 2017-02-17: Fix markup in documentation.  Update cross
   \ references.  Change markup of inline code that is not a
   \ cross reference.
+  \
+  \ 2017-03-05: Remove old `need patch`. Fix documentation.
+  \
+  \ 2017-03-06: Prepare alternative implementation of `cat`.
+  \
+  \ 2017-03-07: Add `>ufia1`, `>ufia2`, `>ufiax`. Improve
+  \ documentation.
 
-( plusd-in plusd-out plusd-in, plusd-out, ufia1 ufia2 )
+( plusd-in plusd-out plusd-in, plusd-out, )
 
 [unneeded] plusd-in
 ?\ code plusd-in ( -- ) DB c, #231 c, jpnext, end-code
@@ -167,23 +174,115 @@
   \
   \ }doc
 
+( /ufia ufia1 ufia2 >ufiax >ufia1 >ufia2 )
+
+[unneeded] /ufia ?\ 24 cconstant /ufia
+  
+  \ doc{
+  \
+  \ /ufia  ( -- n )
+  \
+  \ _n_ is the length of a UFIA (User File Information Area),
+  \ 24-byte structure which describes a file for system calls.
+  \
+  \ See also: `ufia`, `ufia1`, `ufia2`.
+  \
+  \ }doc
+
 [unneeded] ufia1 ?\ $3E01 constant ufia1
-  \ G+DOS UFIA1 (in the Plus D memory).
+
+  \ doc{
+  \
+  \ ufia1  ( -- a )
+  \
+  \ _a_ is the address of G+DOS UFIA1 (in the Plus D memory).
+  \ A UFIA (User File Information Area) is a 24-byte structure
+  \ which describes a file for system calls.  G+DOS uses
+  \ ``ufia1`` and `ufia2` for its internal operations. Forth
+  \ words use `ufia` for system calls.
+  \
+  \ See also: `/ufia`.
+  \
+  \ }doc
 
 [unneeded] ufia2 ?\ $3E1A constant ufia2
-  \ G+DOS UFIA1 (in the Plus D memory).
+
+  \ doc{
+  \
+  \ ufia1  ( -- a )
+  \
+  \ _a_ is the address of G+DOS UFIA2 (in the Plus D memory).
+  \ A UFIA (User File Information Area) is a 24-byte structure
+  \ which describes a file for system calls.  G+DOS uses
+  \ `ufia1` and ``ufia2`` for its internal operations. Forth
+  \ words use `ufia` for system calls.
+  \
+  \ See also: `/ufia`.
+  \
+  \ }doc
+
+[unneeded] >ufiax ?( need /ufia need plusd-in need plusd-out
+: >ufiax ( a a -- ) /ufia plusd-in cmove plusd-out ; ?)
+  
+  \ doc{
+  \
+  \ >ufiax  ( a1 a2 -- )
+  \
+  \ Move a UFIA (User File Information Area) from _a1_ to _a2_,
+  \ with the Plus D Memory paged in.
+  \
+  \ ``>ufiax`` is a common factor of `>ufia1` and `>ufia2`.
+  \
+  \ See also: `ufia`, `/ufia`.
+  \
+  \ }doc
+
+[unneeded] >ufia1
+?\ need ufia1 need >ufiax : >ufia1 ( a -- ) ufia1 >ufiax ;
+
+  \ XXX TODO --
+  \ h pop, ufia1 d ldp#, /ufia b ldp#, plusd-in, ldir,
+  \ plusd-out, jpnext, end-code
+
+  \ doc{
+  \
+  \ >ufia1  ( a -- )
+  \
+  \ Move a UFIA (User File Information Area) from _a_ to
+  \ `ufia1`.
+  \
+  \ See also: `>ufia2`, `>ufiax`, `ufia`, `/ufia`.
+  \
+  \ }doc
+
+[unneeded] >ufia2
+?\ need ufia2 need >ufiax : >ufia2 ( a -- ) ufia2 >ufiax ;
+
+  \ doc{
+  \
+  \ >ufia2  ( a -- )
+  \
+  \ Move a UFIA (User File Information Area) from _a_ to
+  \ `ufia2`.
+  \
+  \ See also: `>ufia1`, `>ufiax`, `ufia`, `/ufia`.
+  \
+  \ }doc
 
 ( ufia )
 
-24 cconstant /ufia  create ufia  /ufia allot  ufia /ufia erase
+need /ufia
+
+create ufia  /ufia allot  ufia /ufia erase
 
   \ doc{
   \
   \ ufia ( -- a )
   \
-  \ Return constant address _a_ of a buffer used as G+DOS User File
-  \ Information Area.
-  \
+  \ Return constant address _a_ of a buffer used as UFIA (User
+  \ File Information Area), a 24-byte structure which describes
+  \ a file for system calls.
+
   \ |===
   \ | Offset | Bytes | Meaning
   \
@@ -200,7 +299,7 @@
   \ |     22 |     2 | Autostart line of a BASIC program
   \ |===
 
-  \ See also: `/ufia`.
+  \ See also: `/ufia`, `ufia1`, `ufia2`, `>ufiax`.
   \
   \ }doc
 
@@ -221,17 +320,6 @@
   \ 10            OPENTYPE               OPENTYPE     NA
   \ 11            EXECUTE                EXECUTE      NA
   \ |===
-
-  \ doc{
-  \
-  \ /ufia ( -- b )
-  \
-  \ A constant that holds the length of a G+DOS UFIA (User File
-  \ Information Area), which is 24 bytes.
-  \
-  \ See also: `ufia`.
-  \
-  \ }doc
 
   \ Note: The original UFIA field names are used, except
   \ `device`, whose original name is "lstr1":
@@ -435,8 +523,9 @@ need ufia need get-drive
   \
   \ set-code-file ( ca1 len1 ca2 len2 -- )
   \
-  \ Configure `ufia` to use a code file in the current drive with
-  \ filename _ca2 len2_, start address _ca1_ and length _len1_.
+  \ Configure `ufia` to use a code file in the current drive
+  \ with filename _ca2 len2_, start address _ca1_ and length
+  \ _len1_.
   \
   \ See also: `set-filename`.
   \
@@ -506,18 +595,18 @@ code (file>) ( ca len -- ior )
   \
   \ (file>) ( ca len -- ior )
   \
-  \ Read a file from disk, using the data hold in `ufia` and the
-  \ alternative destination zone _ca len_, following the
+  \ Read a file from disk, using the data hold in `ufia` and
+  \ the alternative destination zone _ca len_, following the
   \ following two rules:
   \
   \ 1. If _len_ is not zero, use it as the count of bytes that
-  \ must be read from the file defined in `ufia` and use _ca_ as
-  \ destination address.
+  \ must be read from the file defined in `ufia` and use _ca_
+  \ as destination address.
   \
   \ 2. If _len_ is zero, use the file length stored in the file
-  \ header instead, and then check also _ca_: If _ca_ not zero,
-  \ use it as destination address, else use the file address
-  \ stored in the file header instead.
+  \ header instead, and then check also _ca_: If _ca_ is not
+  \ zero, use it as destination address, else use the file
+  \ address stored in the file header instead.
   \
   \ Return error result _ior_.
   \
@@ -536,7 +625,7 @@ code (file>) ( ca len -- ior )
   \
   \ Read the contents of a disk file, whose filename is defined
   \ by the string _ca1 len1_, to memory zone _ca2 len2_ (i.e.
-  \ read _len2_ bytes and stored them starting at address
+  \ read _len2_ bytes and store them starting at address
   \ _ca2_), or use the original address and length of the file
   \ instead, depending on the following rules:
   \
@@ -609,8 +698,7 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-: file-status ( ca len -- a ior)
-  set-filename (file-status) ;
+: file-status ( ca len -- a ior) set-filename (file-status) ;
 
   \ doc{
   \
@@ -700,7 +788,7 @@ code (file-status) ( -- a ior )
   \ }doc
 
 [unneeded] find-file  ?( need file-status
-: find-file ( ca len -- f ) file-status 0= and ; ?)
+: find-file ( ca len -- a | 0 ) file-status 0= and ; ?)
 
   \ doc{
   \
@@ -894,8 +982,8 @@ code cd1 ( n -- ior )
 
   \ XXX TODO --
 
-need assembler need plusd-in, need plusd-out, need patch
-need ufia need ufia1 need set-filename need patch
+need assembler need plusd-in, need plusd-out,
+need ufia need ufia1 need set-filename
 
 create (cd0-error ( -- a ) asm
   168E call, plusd-out, b pop, next ix ldp#,
@@ -929,8 +1017,8 @@ code cd0 ( -- ior )
 
 ( (cat )
 
-need assembler need plusd-in, need plusd-out, need patch
-need ufia need ufia1 need set-filename need patch
+need assembler need plusd-in, need plusd-out,
+need ufia need ufia1 need set-filename
 
 create (cat-error ( -- a ) asm
   168E call, plusd-out, b pop, next ix ldp#,
@@ -942,8 +1030,8 @@ create (cat-error ( -- a ) asm
   af push, ' dosior>ior jp, end-asm
     \ Return the ior.
 
-  \ XXX TODO -- Use G+DOS routine HOOK_RET at $22C8 to all at
-  \ once.
+  \ XXX TODO -- Use G+DOS routine HOOK_RET at $22C8 to do all
+  \ at once.
 
   \ Reference: Plus D ROM routine D_ERROR ($182D), and command
   \ hook PATCH ($2226).
@@ -955,10 +1043,10 @@ create (cat-error ( -- a ) asm
   \ Return the address _a_ of a subroutine that is executed
   \ when the Plus D ROM routines called by `(cat` throw an
   \ error (e.g., when there's no disk in the current drive),
-  \ therefore preventing the system from returning to to BASIC.
+  \ therefore preventing the system from returning to BASIC.
   \
-  \ This word works like an alternative ending of `(cat` to
-  \ manage the error and return the proper error result.
+  \ ``(cat-error`` works like an alternative ending of `(cat`
+  \ to manage the error and return the proper error result.
   \
   \ }doc
 
@@ -1071,6 +1159,30 @@ code (cat ( n -- ior )
   \ Example:
   \
   \   3 sstr1 c! s" forth?.*" wcat 2 sstr1 c!
+
+( wcatp wacatp catp acatp )
+
+  \ XXX UNDER DEVELOPMENT -- 2017-03-07: Simpler alternative
+  \ implementation of `cat`, using the `pcat` G+DOS command
+  \ code.
+
+need assembler need ufia need pcat need set-filename need ufia1
+need plusd-in need plusd-out
+
+code (catp) ( -- ior )
+  b push, pcat hook,
+  b pop, next ix ldp#, \ restore the Forth registers
+  af push, ' dosior>ior jp, end-code
+
+: (catp ( b -- ) hd00 c! ufia >ufia1 (catp) ;
+
+: wcatp  ( ca len -- ior ) set-filename $14 (catp ;
+
+: wacatp ( ca len -- ior ) set-filename $12 (catp ;
+
+: catp  ( -- ior ) $04 (catp ;
+
+: acatp ( -- ior ) $02 (catp ;
 
 ( @dos c@dos  )
 
