@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703080045
+  \ Last modified: 201703081502
 
   \ -----------------------------------------------------------
   \ Description
@@ -57,7 +57,8 @@
   \ by mistake on 2017-02-12.
   \
   \ 2017-03-08: Rename `cat` to `acat`, after the names used in
-  \ G+DOS. Add `(acat`.
+  \ G+DOS. Add `(acat`. Improve calculation of dosior #1 ("no
+  \ files"). Add `delete-file`.
 
 ( --dos-commands-- )
 
@@ -185,7 +186,7 @@ fda $0F + constant fda-filetrack ?)
 need -filename need /filename need fda
 
 : set-filename ( ca len -- )
-  -filename /filename min fda smove ; ?)
+  -filename /filename min fda-filename smove ; ?)
 
   \ doc{
   \
@@ -236,11 +237,6 @@ code (acat ( -- ior )
   \ ex af,af'
   \ ld a,2 ; stream: screen
   \ call dos.alt_a.preserve_ip
-
-  \ DD c, 21 c, next , \ ld ix,next ; restore Forth IX
-  \ XXX REMARK -- No need to restore IX, the cat command does
-  \ not use it.
-
   pushdosior jp, end-code ?)
   \ jp push_dos_ior
 
@@ -279,8 +275,9 @@ code (file>) ( ca len -- ior )
 
   dos-find-file a ld#, exaf, dos-alt-a_ call,
   \ A = directory entry of the file, or $FF if not found
-  a inc, z? rif  d pop, d pop, 1 a ld#,  relse
-                 \ error, so drop parameters and report "no files"
+  a inc, z? rif  d pop, d pop, a inc,  relse
+                 \ error, so drop parameters
+                 \ and set dosior #1 ("no files")
     a dec, dos-read-file-descriptor c ld, dos-c_ call,
       \ restore file descriptor (0..127), then read it
     z? rif  a xor, 5CF9 sta, d pop, h pop,
@@ -445,11 +442,11 @@ code (file-status) ( -- a ior )
     \ Push `fda` (the _a_ returned) and save Forth IP.
   dos-find-file a ld#, exaf, dos-alt-a_ call,
     \ A = directory entry (0..127), or $FF if file not found
-  a inc, z? rif  1 a ld#,  \ error: "no files"
+  a inc, z? rif  a inc,  \ dosior #1 ("no files")
   relse  a dec, \ restore directory entry (0..127)
          dos-read-file-descriptor c ld#, dos-c_ call,
          a xor,
-          \ XXX REMAR -- This TR-DOS command does not
+          \ XXX REMARK -- This TR-DOS command does not
           \ return its error result in C, but the directory
           \ entry it received in A. Therefore, the value of
           \ A returned by the DOS call `dos-c_` is a
@@ -577,8 +574,8 @@ code (file-dir#) ( -- n ior )
   dos-find-file a ld#, exaf, dos-preserve-ip_ call,
     \ A = directory entry (0..127), or $FF if file not found
   0 h ld#, a l ld, h push,
-  a inc, z? rif    1 a ld#,  \ error: "no files"
-            relse  a xor,  rthen
+  a inc, z? rif   a inc, \ dosior #1 ("no files")
+            relse a xor, rthen
   pushdosior jp, end-code
 
   \ doc{
@@ -663,6 +660,45 @@ code (file-dir#) ( -- n ior )
   \ exception code and _n_ is undefined.
   \
   \ See also: `file-status`.
+  \
+  \ }doc
+
+( delete-file )
+
+need assembler need --dos-commands--
+need fda need set-filename
+
+code (delete-file) ( -- ior )
+  b push, 
+  dos-find-file c ld#, dos-c_ call,
+  \ A = directory entry of the file, or $FF if not found
+  a inc, z? rif  a inc, \ dosior #1 ("no files")
+            relse dos-delete-file c ld#, dos-c_ call, a xor,
+            rthen b pop, pushdosior jp, end-code
+
+  \ doc{
+  \
+  \ (delete-file) ( -- ior )
+  \
+  \ Delete a disk file using the data hold in `dfa`.
+  \ Return an error result _ior_.
+  \
+  \ ``(delete-file)`` is a factor of `delete-file`.
+  \
+  \ }doc
+
+: delete-file ( ca len -- ior ) set-filename (delete-file) ;
+
+  \ doc{
+  \
+  \ delete-file ( ca len -- ior )
+  \
+  \ Delete the disk file named in the string _ca len_ and
+  \ return an error result _ior_.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See also: `(delete-file`.
   \
   \ }doc
 

@@ -5,8 +5,11 @@
 ; --------------------------------------------------------------
 ; History
 
-; 2017-02-10: Extracted from the main file: entry points,
+; 2017-02-10: Extract from the main file: entry points,
 ; variables and sector buffer addresses.
+;
+; 2017-03-08: Rename `trdos_variable.file_size` to
+; `trdos_variable.stream_or_file_size`.
 
 ; --------------------------------------------------------------
 ; TR-DOS entry points
@@ -60,7 +63,7 @@ trdos_variable.start_file_parameter_or_number_of_tracks:  equ 23767
 trdos_variable.start_file_parameter.high:                 equ 23768
 trdos_variable.ch_add:                                    equ 23769
 trdos_variable.ch_add.high:                               equ 23770
-trdos_variable.file_size:                                 equ 23771
+trdos_variable.stream_or_file_size:                       equ 23771
 trdos_variable.file_size.high:                            equ 23772
 trdos_variable.filename:                                  equ 23773
 trdos_variable.filename.1:                                equ 23774

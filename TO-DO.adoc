@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-07
+:revdate: 2017-03-08
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703080051
+// Last modified 201703081603
 
 // Application development {{{1
 == Application development ==
@@ -611,7 +611,7 @@ source.
 | `cat`             | YES   |        |
 | `close-file`      |       |        | YES
 | `create-file`     |       |        |
-| `delete-file`     | YES   |        |
+| `delete-file`     | YES   | YES    |
 | `file-dir#`       | YES   | YES    |
 | `file-dirdesc`    | YES   | n/a    |
 | `file-exists?`    | YES   | YES    |
@@ -742,6 +742,17 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-03-08:
+
+Fix `(acat`: the last disk error, e.g. when `delete-file` does not
+find a file, is remembered by the DOS, and `(acat` returns it in the A
+register.
+
+.2017-03-08:
+
+Make `(acat` aware of `printing` to use channel 2 or 3.
+A DOS-indepedent routine will be useful to set the A register.
 
 .2017-02-17:
 
