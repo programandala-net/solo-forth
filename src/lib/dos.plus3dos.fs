@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703061556
+  \ Last modified: 201703081749
 
   \ -----------------------------------------------------------
   \ Description
@@ -29,6 +29,9 @@
   \ `(rename-file)`, `rename-file`, `dos-get-1346` and
   \ `dos-set-1346` from the kernel.  Remove "dos-" prefix from
   \ `dos-get-1346` and `dos-set-1346`
+  \
+  \ 2017-03-08: Add `(delete-file` and `delete-file`. Improve
+  \ documentation.
 
 ( /filename >filename (rename-file rename-file )
 
@@ -78,17 +81,20 @@ code (rename-file ( ca1 ca2 -- ior )
 
   \ doc{
   \
-  \ (rename-file)  ( ca1 ca2 -- ior )
+  \ (rename-file  ( ca1 ca2 -- ior )
   \
-  \ Rename filename _ca1_ (a $FF-terminated string)
-  \ to filename _ca2_ (a $FF-terminated string).
+  \ Rename filename _ca1_ (a $FF-terminated string) to filename
+  \ _ca2_ (a $FF-terminated string) and return error result
+  \ _ior_.
+  \
+  \ ``(rename-file`` is a factor of `rename-file`.
   \
   \ }doc
 
 [unneeded] rename-file ?( need >filename need (rename-file
 
 : rename-file ( ca1 len1 ca2 len2 -- ior )
-  >filename >r >filename r> (rename-file ;
+  >filename >r >filename r> (rename-file ; ?)
 
   \ Credit:
   \
@@ -97,6 +103,14 @@ code (rename-file ( ca1 ca2 -- ior )
   \ doc{
   \
   \ rename-file  ( ca1 len1 ca2 len2 -- ior )
+  \
+  \ Rename the file named by the character string _ca1 len1_ to
+  \ the name in the character string _ca2 len2_ and return
+  \ error result _ior_.
+  \
+  \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
+  \
+  \ See also: `(rename-file`.
   \
   \ }doc
 
@@ -183,5 +197,53 @@ code set-1346 ( n1 n2 n3 n4 -- )
   \ }doc
 
   \ XXX TODO -- Finish the documentation.
+
+( (delete-file delete-file )
+
+[unneeded] (delete-file ?(
+
+code (delete-file ( ca -- ior )
+  E1 c, DD c, 21 c, 0124 , dos-ix-preserve-ip_ call,
+  \ pop hl
+  \ ld ix,dos_delete
+  \ call dos.ix.preserve_ip
+  pushdosior jp, end-code ?)
+  \ jp push_dos_ior
+
+  \ Credit:
+  \
+  \ Adapted from DZX-Forth.
+
+  \ doc{
+  \
+  \ (delete-file  ( ca -- ior )
+  \
+  \ Delete the disk file named in the $FF-terminated string
+  \ _ca_ and return an error result _ior_.
+  \
+  \ ``(delete-file`` is a factor of `delete-file`.
+  \
+  \ }doc
+
+[unneeded] delete-file ?( need >filename need (delete-file
+
+: delete-file ( ca len -- ior ) >filename (delete-file ; ?)
+
+  \ Credit:
+  \
+  \ Adapted from DZX-Forth.
+
+  \ doc{
+  \
+  \ delete-file ( ca len -- ior )
+  \
+  \ Delete the disk file named in the string _ca len_ and
+  \ return an error result _ior_.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See also: `(delete-file`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
