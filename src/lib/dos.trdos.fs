@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041849
+  \ Last modified: 201703061706
 
   \ -----------------------------------------------------------
   \ Description
@@ -52,6 +52,9 @@
   \
   \ 2017-03-04: Update the names of the DOS calls, after the
   \ changes in the kernel.
+  \
+  \ 2017-03-06: Add `>file`, which was removed from the kernel
+  \ by mistake on 2017-02-12.
 
 ( --dos-commands-- )
 
@@ -179,7 +182,7 @@ fda $0F + constant fda-filetrack ?)
 need -filename need /filename need fda
 
 : set-filename ( ca len -- )
-  -filename  /filename min fda smove ; ?)
+  -filename /filename min fda smove ; ?)
 
   \ doc{
   \
@@ -262,15 +265,15 @@ code (file>) ( ca len -- ior )
   \ A = directory entry of the file, or $FF if not found
   a inc, z? rif  d pop, d pop, 1 a ld#,  relse
                  \ error, so drop parameters and report "no files"
-    a dec, \ restore file descriptor (0..127)
-    dos-read-file-descriptor c ld, dos-c_ call,
+    a dec, dos-read-file-descriptor c ld, dos-c_ call,
+      \ restore file descriptor (0..127), then read it
     z? rif  a xor, 5CF9 sta, d pop, h pop,
                  \ set load flag and get the parameters
-       d tstp, nz?  \ is _len_ not zero?
-       rif   03 a ld#,  \ if so, use the parameters
-       relse h tstp, nz? rif cpl, rthen
-         \ if _len_ is zero, use _ca_ if it's not zero
-       rthen dos-read-file-descriptor c ld, dos-c_ call,
+       d tstp, nz?  rif   03 a ld#,
+                    relse h tstp, nz? rif cpl, rthen rthen
+          \ if _len_ is not zero, use the parameters
+          \ if _len_ is zero, use _ca_ if it's not zero
+       dos-read-file-descriptor c ld, dos-c_ call,
     rthen
   rthen b pop, pushdosior jp, end-code
 
@@ -283,7 +286,137 @@ code (file>) ( ca len -- ior )
   \
   \ FDA = File Descriptor Area
 
-: file> ( ca1 len1 ca2 len2 -- ior ) set-filename (file>) ;
+  \ XXX TODO -- Confirm the documentation, which has been
+  \ copied from the G+DOS version of `file>`. In theory both
+  \ versions work the same way.
+
+  \ doc{
+  \
+  \ (file>) ( ca len -- ior )
+  \
+  \ Read a file from disk, using the data hold in `fda` and the
+  \ alternative destination zone _ca len_, following the
+  \ following two rules:
+  \
+  \ 1. If _len_ is not zero, use it as the count of bytes that
+  \ must be read from the file defined in `fda` and use _ca_ as
+  \ destination address.
+  \
+  \ 2. If _len_ is zero, use the file length stored in `fda`
+  \ instead, and then check also _ca_: If _ca_ is not zero, use
+  \ it as destination address, else use the file address stored
+  \ in `fda` instead.
+  \
+  \ Return error result _ior_.
+  \
+  \ This word is a factor of `file>`.
+  \
+  \ See also: `fda-filestart`, `fda-filelength`.
+  \
+  \ }doc
+
+: file> ( ca1 len1 ca2 len2 -- ior )
+  2swap set-filename (file>) ;
+
+  \ XXX TODO -- Confirm the documentation, which has been
+  \ copied from the G+DOS version of `file>`. In theory both
+  \ versions work the same way.
+
+  \ doc{
+  \
+  \ file> ( ca1 len1 ca2 len2 -- ior )
+  \
+  \ Read the contents of a disk file, whose filename is defined
+  \ by the string _ca1 len1_, to memory zone _ca2 len2_ (i.e.
+  \ read _len2_ bytes and store them starting at address
+  \ _ca2_), or use the original address and length of the file
+  \ instead, depending on the following rules:
+  \
+  \ 1. If _len2_ is not zero, use _ca2 len2_.
+  \
+  \ 2. If _len2_ is zero, use the original file length instead
+  \ and then check also _ca2_: If _ca2_ is zero, use the
+  \ original file address instead.
+  \
+  \ Return error result _ior_.
+  \
+  \ Example:
+  \
+  \ The screen memory has been saved to a disk file using the
+  \ following command:
+
+  \ ----
+  \ 16384 6912 s" pic.scr" >file
+  \ ----
+
+  \ Therefore, its original address is 16384 and its original
+  \ size is 6912 bytes.
+  \
+  \ Now there are four ways to load the file from disk:
+
+  \ |===
+  \ | Example                        | Result
+  \
+  \ | `s" pic.scr" 16384 6912 file>` | Load the file using its original values
+  \ | `s" pic.scr"     0    0 file>` | Load the file using its original values
+  \ | `s" pic.scr" 32768    0 file>` | Load the whole file to address 32768
+  \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
+  \ |===
+
+  \
+  \ }doc
+
+( >file )
+
+need assembler need l: need --dos-commands--
+need fda need set-filename
+
+code (>file) ( -- ior )
+
+  b push, dos-read-system-track c ld#, dos-c_ call,
+  0 l# nz? ?jr,
+  \   push bc ; save the Forth IP
+  \
+  \   ld c,trdos_command.read_system_track
+  \   call dos.c
+  \   jr nz,paren_to_file.exit ; jump if error
+  \
+  \   ; XXX FIXME -- 2017-02-10: When there's no disk in the drive,
+  \   ; TR-DOS throws "Disc Error. Retry,Abort,Ignore?". "Retry" is
+  \   ; useless; "Abort" exits to BASIC with "Tape loading error";
+  \   ; "Ignore" crashes the system. The call to `read_system_track`
+  \   ; does not return.
+  \   ;
+  \   ; There must be a way to avoid this and return an ior.
+  \
+  dos-find-file c ld#, dos-c_ call, a inc, nz? rif
+  \   ld c,trdos_command.find_file
+  \   call dos.c
+  \   ; A = directory entry of the file (0..127), or $FF if not found
+  \   inc a ; file not found?
+  \   jr z,paren_to_file.file_not_found ; jump if no error
+  \
+  \   ; error: file found
+  2 a ld#, 0 l# jr,
+  \   ld a,trdos_error.file_exists ; error code "file exists"
+  \   jr paren_to_file.exit
+
+  rthen fda-filelength d ftp, fda-filestart h ftp,
+  dos-create-file c ld#, dos-c_ call, c a ld,
+  \ paren_to_file.file_not_found:
+  \   ld de,(fda.filelength)
+  \   ld hl,(fda.filestart)
+  \   ld c,trdos_command.create_file
+  \   call dos.c
+  \
+  \   ld a,c ; possible error code
+  0 l: b pop, pushdosior jp, end-code
+  \ paren_to_file.exit:
+  \   pop bc  ; restore the Forth IP
+  \   jp push_dos_ior
+
+: >file ( ca1 len1 ca2 len2 -- ior )
+  set-filename fda-filelength ! fda-filestart ! (>file) ;
 
 ( file-status )
 
