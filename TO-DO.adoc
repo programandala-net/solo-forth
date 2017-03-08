@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703071327
+// Last modified 201703080051
 
 // Application development {{{1
 == Application development ==
@@ -440,6 +440,10 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Documentation {{{1
 == Documentation ==
 
+.2017-03-08:
+
+Use "catalog" instead of "catalogue".
+
 .2017-03-04:
 
 Update the manual: RAM banks used as far memory, the RAM disk, the
@@ -596,6 +600,57 @@ source.
 // DOS {{{1
 == DOS ==
 
+[caption="Main words implemented on each DOS"]
+|===
+| Word              | G+DOS | TR-DOS | +3DOS
+
+
+| `>file`           | YES   | draft  |
+| `acat`            | YES   | YES    |
+| `bin`             |       |        |
+| `cat`             | YES   |        |
+| `close-file`      |       |        | YES
+| `create-file`     |       |        |
+| `delete-file`     | YES   |        |
+| `file-dir#`       | YES   | YES    |
+| `file-dirdesc`    | YES   | n/a    |
+| `file-exists?`    | YES   | YES    |
+| `file-length`     | YES   | YES    |
+| `file-position`   |       |        | YES
+| `file-sector`     |       | YES    |
+| `file-sectors`    |       | YES    |
+| `file-size`       |       |        |
+| `file-start`      | YES   | YES    |
+| `file-status`     | YES   | YES    |
+| `file-track`      |       | YES    |
+| `file-type`       | YES   | YES    |
+| `file>`           | YES   | draft  |
+| `find-file`       | YES   | YES    |
+| `flush-file`      |       |        |
+| `get-drive`       | YES   | YES    | draft
+| `include-file`    |       |        |
+| `include`         |       |        |
+| `included`        |       |        |
+| `open-file`       |       |        |
+| `r/o`             |       |        |
+| `r/w`             |       |        |
+| `read-file`       |       |        |
+| `read-line`       |       |        |
+| `rename-file`     | YES   |        | YES
+| `reposition-file` |       |        | YES
+| `require`         |       |        |
+| `required`        |       |        |
+| `resize-file`     |       |        |
+| `set-drive`       | YES   | YES    | draft
+| `w/o`             |       |        |
+| `wacat`           | YES   |        |
+| `wcat`            | YES   |        |
+| `write-file`      |       |        |
+| `write-line`      |       |        |
+
+|===
+
+
 .2017-02-13:
 
 Decide if lower-level factor words return a _dosior_ or an _ior_.
@@ -633,13 +688,17 @@ Factor this common code to a routine to jump to:
 
 It could be in the kernel, right before `dosior>ior`, and run into it.
 
-.2017-02-13:
+.2017-02-13, 2017-03-08:
 
 Fix: When the current disk is removed before doing `cat`, the
 corresponding exception is thrown. But the system does not recognize
 the disk when it's inserted back. The same code is thrown: #-1006
 (check disk in drive), even after `set-drive`. It seems something more
 is needed to make G+DOS be aware of the change.
+
+Update: Same problem in BASIC. It seems an issue of G+DOS or the Fuse
+emulator. The disk is recognized after doing a `cat` of the other
+drive. Same problem in BASIC with DISCiPLE and GDOS.
 
 .2017-02-12:
 
@@ -694,8 +753,7 @@ Add `delete-file`.
 
 .2017-02-12:
 
-Implement the original command `LIST` as `cat`, and rename the current
-`cat` to `acat`, after the name used in G+DOS.
+Implement the TR-DOS command `LIST` as `cat`.
 
 .2017-02-12:
 

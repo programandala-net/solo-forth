@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703061706
+  \ Last modified: 201703080045
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,6 +55,9 @@
   \
   \ 2017-03-06: Add `>file`, which was removed from the kernel
   \ by mistake on 2017-02-12.
+  \
+  \ 2017-03-08: Rename `cat` to `acat`, after the names used in
+  \ G+DOS. Add `(acat`.
 
 ( --dos-commands-- )
 
@@ -198,7 +201,7 @@ need -filename need /filename need fda
   \
   \ }doc
 
-( get-drive cat )
+( get-drive (acat acat )
 
 [unneeded] get-drive
 
@@ -225,9 +228,9 @@ need -filename need /filename need fda
   \
   \ }doc
 
-[unneeded] cat ?(
+[unneeded] (acat ?(
 
-code cat ( -- ior )
+code (acat ( -- ior )
   3E c, 07 c, 08 c, 3E c, 02 c, dos-alt-a-preserve-ip_ call,
   \ ld a,trdos_command.cat
   \ ex af,af'
@@ -243,11 +246,24 @@ code cat ( -- ior )
 
   \ doc{
   \
-  \ cat ( -- ior )
+  \ (acat ( -- ior )
   \
-  \ Print a catalog of the current disk.
+  \ Print an abbreviated catalog of the current disk and return
+  \ error result _ior_.  ``(acat`` is a factor of `acat`.
   \
   \ See also: `set-drive`.
+  \
+  \ }doc
+
+[unneeded] acat ?\ need (acat : acat ( -- ) (acat throw ;
+
+  \ doc{
+  \
+  \ acat ( -- ior )
+  \
+  \ Print an abbreviated catalog of the current disk.
+  \
+  \ See also: `set-drive`, `(acat`.
   \
   \ }doc
 
