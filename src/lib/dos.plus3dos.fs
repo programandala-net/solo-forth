@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703082321
+  \ Last modified: 201703082342
 
   \ -----------------------------------------------------------
   \ Description
@@ -32,8 +32,9 @@
   \
   \ 2017-03-08: Add `(delete-file` and `delete-file`. Improve
   \ documentation. Add `r/o`, `w/o`, `r/w`, `bin`, `s/r`,
-  \ `do-dos-open_`, `file-id`, and drafts of `create-file` and
-  \ `open-file`.
+  \ `do-dos-open_`, `file-id-table`, `file-id`, and drafts of
+  \ `create-file` and `open-file`. Move `close-file` from the
+  \ kernel and improve it to update `file-id-table`.
 
 ( /filename >filename (rename-file rename-file )
 
@@ -409,5 +410,45 @@ code (open-file ( ca fam fid -- fid ior )
 
 : open-file ( ca len fam -- fid ior )
   >r >filename r> file-id if (open-file exit then drop #-288 ;
+
+( close-file )
+
+code (close-file ( fid -- ior )
+  E1 c, C5 c, 45 c, dd c, 21 c, 0109 , dos-ix_ call, C1 c,
+  \ pop hl          ; L = file identifier
+  \ push bc         ; save Forth IP
+  \ ld b,l          ; B = file identifier
+  \ ld ix,dos_close
+  \ call dos.ix
+  \ pop bc          ; restore Forth IP
+  pushdosior jp, end-code
+  \ jp push_dos_ior
+
+  \ doc{
+  \
+  \ (close-file ( fid -- ior )
+  \
+  \ Close the file identified by _fid_ and return error result
+  \ _ior_.
+  \
+  \ ``(close-file`` is a factor of `(close-file`.
+  \ ``(close-file`` closes the file, but does not update
+  \ `file-id-table`.
+  \
+  \ }doc
+
+: close-file ( fid -- ior )
+  dup >r (close-file dup 0<> file-id-table r> + c! ;
+
+  \ doc{
+  \
+  \ close-file ( fid -- ior )
+  \
+  \ Close the file identified by _fid_ and return error result
+  \ _ior_.
+  \
+  \ See also: `(close-file`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
