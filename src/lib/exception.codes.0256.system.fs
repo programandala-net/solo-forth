@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703082322
 
   \ -----------------------------------------------------------
   \ Description
@@ -39,6 +39,9 @@
   \ 2017-01-11: Add code #-286.
   \
   \ 2017-02-09: Add code #-287, needed by `set-block-drives`.
+  \
+  \ 2017-03-08: Add code #-288, needed by `create-file` and
+  \ `open-file`.
 
 ( System error codes #-256..#-270 )
 
@@ -80,7 +83,7 @@
 
 #-286 \ not located
 #-287 \ wrong number of drives
-#-288 \
+#-288 \ too many files open
 #-289 \
 #-290 \
 #-291 \
