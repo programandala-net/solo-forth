@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703082342
+  \ Last modified: 201703091330
 
   \ -----------------------------------------------------------
   \ Description
@@ -35,6 +35,9 @@
   \ `do-dos-open_`, `file-id-table`, `file-id`, and drafts of
   \ `create-file` and `open-file`. Move `close-file` from the
   \ kernel and improve it to update `file-id-table`.
+  \
+  \ 2017-03-09: Move `reposition-file` and `file-position` from
+  \ the kernel. Document them. Improve `reposition-file`.
 
 ( /filename >filename (rename-file rename-file )
 
@@ -448,6 +451,67 @@ code (close-file ( fid -- ior )
   \ _ior_.
   \
   \ See also: `(close-file`.
+  \
+  \ }doc
+
+( file-position reposition-file )
+
+
+[unneeded] file-position ?(
+
+code file-position ( fid -- ud ior )
+  E1 c, C5 c, 45 c, DD c, 21 c, 0139 , dos-ix_ call,
+  \   pop hl ; L = fid
+  \   push bc ; save Forth IP
+  \   ld b,l ; fid
+  \   ld ix,dos_get_eof
+  \   call dos.ix
+  C1 c, E5 c, D5 c, pushdosior jp, end-code ?)
+  \   pop bc ; restore Forth IP
+  \   push hl ; low part of _ud_
+  \   push de ; high part of _ud_
+  \   jp push_dos_ior
+
+  \ doc{
+  \
+  \ file-position ( fid -- ud ior )
+  \
+  \ Return the the current file position _ud_ for the file
+  \ identified by _fid_, and error result _ior_. If _ior_ is
+  \ non-zero, _ud_ is undefined.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See also: `reposition-file`, `open-file`, `create-file`.
+  \
+  \ }doc
+
+[unneeded] reposition-file ?(
+
+code reposition-file ( ud fid -- ior )
+  E1 c, 7D c, D1 c, E1 c, C5 c, 47 c, DD c, 21 c, 0136 ,
+  \ pop hl
+  \ ld a,l ; A = fid
+  \ pop de ;
+  \ pop hl ; EHL = file pointer
+  \ push bc ; save Forth IP
+  \ ld b,a ; B = fid
+  \ ld ix,dos_set_position
+  dos-ix_ call, C1 c, pushdosior jp, ?)
+  \ call dos.ix
+  \ pop bc ; restore Forth IP
+  \ jp push_dos_ior
+
+  \ doc{
+  \
+  \ reposition-file ( ud fid -- ior )
+  \
+  \ Reposition the file identified by _fid_ to _ud_ and return
+  \ error result _ior_.
+  \
+  \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
+  \
+  \ See also: `file-position`, `open-file`, `create-file`.
   \
   \ }doc
 
