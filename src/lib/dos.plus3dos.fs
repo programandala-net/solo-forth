@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703091330
+  \ Last modified: 201703091703
 
   \ -----------------------------------------------------------
   \ Description
@@ -37,9 +37,11 @@
   \ kernel and improve it to update `file-id-table`.
   \
   \ 2017-03-09: Move `reposition-file` and `file-position` from
-  \ the kernel. Document them. Improve `reposition-file`.
+  \ the kernel. Document them. Improve `reposition-file`. Add
+  \ `/base-filename`, `/filename-ext`. Add drafts of `cat` and
+  \ `wcat`.
 
-( /filename >filename (rename-file rename-file )
+( /filename /base-filename /filename-ext >filename )
 
 [unneeded] /filename ?\ 16 cconstant /filename
 
@@ -47,11 +49,39 @@
   \
   \ /filename ( -- n )
   \
-  \ Return the maximum length of a +3DOS filename.
+  \ Return the maximum length of a +3DOS filename, including
+  \ drive, user area and filename extension.
   \
-  \ See also: `>filename`.
+  \ See also: `/base-filename`, `>filename`.
   \
   \ }doc
+
+[unneeded] /base-filename ?\ 8 cconstant /base-filename
+
+  \ doc{
+  \
+  \ /base-filename ( -- n )
+  \
+  \ Return the maximum length of a +3DOS base filename, i.e.,
+  \ a filename without drive, user area and extension.
+  \
+  \ See also: `/filename-ext`, `/filename`, `>filename`.
+  \
+  \ }doc
+
+[unneeded] /filename-ext ?\ 3 cconstant /filename-ext
+
+  \ doc{
+  \
+  \ /filename-ext ( -- n )
+  \
+  \ Return the maximum length of a +3DOS filename extension
+  \ excluding the dot.
+  \
+  \ See also: `/filename`, `/base-filename`.
+  \
+  \ }doc
+
 
 [unneeded] >filename ?( need /filename
 
@@ -69,6 +99,8 @@
   \ See also: `/filename`.
   \
   \ }doc
+
+( (rename-file rename-file )
 
 [unneeded] (rename-file ?(
 
@@ -512,6 +544,227 @@ code reposition-file ( ud fid -- ior )
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
   \ See also: `file-position`, `open-file`, `create-file`.
+  \
+  \ }doc
+
+( wcat cat )
+
+  \ XXX UNDER DEVELOPMENT -- 2017-03-09
+
+need assembler need >filename
+need /base-filename need /filename-ext
+
+13 cconstant /cat-entry
+
+  \ doc{
+  \
+  \ /cat-entry ( -- n )
+  \
+  \ Return size _n_, in bytes, of every entry of the temporary
+  \ buffer used by `cat`.
+  \
+  \ See also: `cat-entries`.
+  \
+  \ }doc
+
+code (cat ( ca1 ca2 x -- n ior )
+  exx,  b pop, d pop, h pop,
+        011E ix ldp#, dos-ix_ call,
+        b c ld, 0 b ld#, b push,
+  exx,  pushdosior jp, end-code
+
+  \ XXX FIXME -- Why does it return _ior_ #-1004 (no data)?
+
+  \ XXX TODO -- Rewrite with Z80 opcodes.
+
+  \ doc{
+  \
+  \ (cat ( ca1 ca2 x -- n ior )
+  \
+  \ Fill a buffer _ca2_ with part of the directory (sorted),
+  \ using filename stored at _ca1_. Input and output
+  \ parameters:
+  \
+
+  \ [horizontal]
+  \ _ca1_ :: address of $FF-terminated filename (wildcards permitted)
+  \ _ca2_ :: address of buffer
+  \ _x_ (low byte) :: bit 0 set if system files are included
+  \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
+  \ _n_ :: number of completed entries in buffer (if non-zero, there may be more to come)
+  \ _ior_ :: result error (if non-zero, _n_ is undefined)
+
+  \
+  \ `(cat` is a factor of `wcat` and a direct interface to the
+  \ DOS CATALOG +3DOS routine.
+  \
+  \ }doc
+
+create cat-entries 10 c,
+
+  \ doc{
+  \
+  \ cat-entries ( -- ca )
+  \
+  \ A character variable that holds the number of entries of
+  \ the buffer used by `cat`.
+  \
+  \ See also: `/cat-entry`.
+  \
+  \ }doc
+
+variable cat-buffer
+  \ XXX TMP -- use the stack instead?
+
+-->
+
+( wcat cat )
+
+: .filename-ext ( ca -- ) '.' emit /filename-ext type ;
+
+  \ doc{
+  \
+  \ .filename-ext ( -- ca )
+  \
+  \ Display the filename extension whose `/filename-ext`
+  \ characters (left justified, space filled) are stored at
+  \ _ca_. A dot separator is printed first, which is not
+  \ included in the string at _ca_.
+  \
+  \ See also: `.filename`.
+  \
+  \ }doc
+
+: .filename ( ca -- )
+  /base-filename 2dup type + .filename-ext ;
+
+  \ doc{
+  \
+  \ .filename ( ca -- )
+  \
+  \ Display the filename whose characters are stored at _ca_,
+  \ in two parts: `/base-filename` characters (left justified,
+  \ space filled) followed by `/filename-ext` characters (left
+  \ justified, space filled).  The dot that separates the base
+  \ filename from the filename extension is not included in the
+  \ string at _ca_, but it's printed.
+  \
+  \ }doc
+
+: .cat-entry ( ca -- )
+  dup .filename space /base-filename + @ 3 .r ." KiB" ;
+
+  \ doc{
+  \
+  \ .cat-entry ( ca -- )
+  \
+  \ Display a catalog entry stored at _ca_. Format of the
+  \ entry:
+  \
+  \ - Bytes 0..7: Base filename (left justified, space filled)
+  \ - Bytes 8..10: Filename extension (left justified, space filled)
+  \ - Bytes 11..12: File size in kibibytes (binary)
+  \
+  \ The file size is the amount of disk space allocated to the
+  \ file, not necessarily the same as the amount used by the
+  \ file.
+  \
+  \ ``.cat-entry`` is a factor of `.cat-entry#`.
+  \
+  \ See also: `.cat`, `.filename`.
+  \
+  \ }doc
+
+: .cat-entry# ( n -- ) /cat-entry * cat-buffer @ + .cat-entry ;
+
+  \ doc{
+  \
+  \ .cat-entry# ( n -- )
+  \
+  \ Display the catalog entry number _n_ from buffer pointed by
+  \ `cat-buffer`.
+  \
+  \ ``.cat-entry#`` is a factor of `.cat`.
+  \
+  \ See also: `.cat-entry`, `/cat-entry`.
+  \
+  \ }doc
+
+: .cat ( n -- ) 1+ 1 ?do  i .cat-entry# cr loop ;
+
+  \ doc{
+  \
+  \ .cat ( n -- )
+  \
+  \ Display _n_ entries from `cat-buffer`, excluding the first
+  \ one.
+  \
+  \ ``.cat`` is a factor of `wcat`.
+  \
+  \ See also: `.cat-entry#`.
+  \
+  \ }doc
+
+: allocate-cat-buffer ( n -- ca )
+  /cat-entry * allocate-string dup /cat-entry erase ;
+
+  \ doc{
+  \
+  \ allocate-cat-buffer ( n -- ca )
+  \
+  \ Allocate space in the `stringer` for _n_ cat entries and
+  \ return its address _ca_`, which will be stored in
+  \ `cat-buffer`.
+  \
+  \ ``allocate-cat-buffer`` is a factor of `>cat`.
+  \
+  \ }doc
+
+: >cat ( ca len -- ca1 ca2 x )
+  >filename cat-entries c@ allocate-cat-buffer dup cat-buffer !
+            cat-entries c@ $100 * 1 or ;
+
+  \ doc{
+  \
+  \ >cat ( ca len -- ca1 ca2 x )
+  \
+  \ Convert filename _ca len_ (wildcards permitted) to the
+  \ parameters needed by `(cat`:
+  \
+
+  \ [horizontal]
+  \ _ca1_ :: address of $FF-terminated filename (wildcards permitted)
+  \ _ca2_ :: address of buffer
+  \ _x_ (low byte) :: bit 0 set if system files are included
+  \ _x_ (high byte) :: size of the buffer in entries, plus one (>=2)
+
+  \ See also: `wcat`, `cat`, `allocate-cat-buffer`,
+  \ `cat-entries`.
+  \
+  \ }doc
+
+: wcat ( ca len -- n ) >cat (cat throw .cat ;
+
+  \ doc{
+  \
+  \ wcat ( ca len -- )
+  \
+  \ Show a wild-card disk catalogue using the wild-card
+  \ filename _ca len_.
+  \
+  \ See also: `cat`, `(cat`, `set-drive`.
+  \
+  \ }doc
+
+: cat ( -- ) s" *.*" wcat ;
+
+  \ doc{
+  \
+  \ wcat ( ca len -- )
+  \
+  \ Show a disk catalogue of the current drive.
+  \
+  \ See also: `wcat`, `(cat`, `set-drive`.
   \
   \ }doc
 

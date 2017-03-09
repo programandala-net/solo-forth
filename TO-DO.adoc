@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-08
+:revdate: 2017-03-09
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703082320
+// Last modified 201703091654
 
 // Application development {{{1
 == Application development ==
@@ -440,6 +440,18 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 // Documentation {{{1
 == Documentation ==
 
+.2017-03-09:
+
+Adopt the following notation for Z80 flags:
+
+[horizontal]
+Fs :: Sign flag (bit 7)
+Fz :: Zero flag (bit 6)
+Fh :: Half Carry flag (bit 4)
+Fp :: Parity/Overflow flag (bit 2)
+Fn :: Add/Subtract flag (bit 1)
+Fc :: Carry flag (bit 0)
+
 .2017-03-08:
 
 Use "catalog" instead of "catalogue".
@@ -608,7 +620,7 @@ source.
 | `>file`           | YES   | draft  |
 | `acat`            | YES   | YES    | n/a
 | `bin`             |       |        |
-| `cat`             | YES   |        |
+| `cat`             | YES   | draft  | draft
 | `close-file`      |       |        | YES
 | `create-file`     |       |        | draft
 | `delete-file`     | YES   | YES    | YES
@@ -644,7 +656,7 @@ source.
 | `set-drive`       | YES   | YES    | draft
 | `w/o`             |       |        | YES
 | `wacat`           | YES   |        |
-| `wcat`            | YES   |        |
+| `wcat`            | YES   |        | draft
 | `write-file`      |       |        |
 | `write-line`      |       |        |
 
@@ -742,6 +754,11 @@ Study what the unused RAM of the Plus D can be useful for.
 
 // TR-DOS {{{2
 === TR-DOS ===
+
+.2017-03-09:
+
+New bug: The origin can not be moved up. Some time ago it was
+possible. Details are in the kernel.
 
 .2017-03-08:
 

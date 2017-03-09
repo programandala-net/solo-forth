@@ -153,6 +153,13 @@ if trdos
 
   origin:                         equ default_origin+$170
 
+  ; XXX FIXME -- 2017-03-09
+  ;origin:                         equ default_origin+$200 ; XXX REMARK -- fine
+  ;origin:                         equ default_origin+$220 ; XXX REMARK -- fine
+  ;origin:                         equ default_origin+$240 ; XXX FIXME -- freeze
+  ;origin:                         equ default_origin+$270 ; XXX FIXME -- crash
+  ;origin:                         equ default_origin+$400 ; XXX FIXME -- freeze
+
 else
 
   origin:                         equ default_origin
