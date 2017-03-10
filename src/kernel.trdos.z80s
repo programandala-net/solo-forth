@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703101440
+; Last modified: 201703101847
 
 ; ==============================================================
 ; Description
@@ -127,23 +127,20 @@ dos.c:
   ;   A  = TR-DOS error result (0..12)
   ;   Z  = no error? (A=0)
 
-  push af
-  xor a
-  ld (trdos_variable.error_code),a      ; clear a possible previous error
-  ld (trdos_variable.error_code_msb),a  ; clear a possible previous error
-  pop af
-  ld (iy+sys_df_sz_offset),2            ; 2 lines in the lower screen
+  call before_dos_call
   call trdos_entry.execute_command_in_c
-  ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
-  ld a,(trdos_variable.error_code)      ; error code
-  and a                                 ; set Z
-  ret
+
+  ; Execution continues into `after_dos_call`:
+
+; ------------------------------
+; Common tasks done before and after a DOS call
 
   ; XXX REMARK -- TR-DOS uses a 16-bit variable to store error
   ; codes. Some routines only check the high byte of the
-  ; variable, but at the end error code is stored into the low
-  ; byte. That's why both bytes are cleared before the calling,
-  ; but the error is fetched from the lower byte after it.
+  ; variable, but at the end the error code is stored into the
+  ; low byte. That's why both bytes are cleared before the
+  ; calling, but the error is fetched from the lower byte after
+  ; it.
 
   ; XXX REMARK -- In Solo Forth the DF_SZ system variable
   ; contains 0 in order to use the full screen, i.e. also the
@@ -154,6 +151,22 @@ dos.c:
   ; crashes. This is a temporary solution, until the words that
   ; access TR-DOS are improved to do their own checks and return
   ; a result error.
+
+after_dos_call:
+
+  ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
+  ld a,(trdos_variable.error_code)      ; error code
+  and a                                 ; set Z
+  ret
+
+before_dos_call:
+
+  push hl
+  ld hl,0
+  ld (trdos_variable.error_code),hl     ; clear a possible previous error
+  pop hl
+  ld (iy+sys_df_sz_offset),2            ; 2 lines in the lower screen
+  ret
 
 ; ------------------------------
 ; DOS call (command in A') preserving the Forth IP
@@ -202,6 +215,25 @@ dos.alt_a.restore_ip:
   jp (hl)  ; return
 
 ; ------------------------------
+; DOS call (address in HL)
+
+dos.hl:
+
+  ; Input:
+  ;   HL = TR-DOS address to call
+  ; Output:
+  ;   A  = TR-DOS error result (0..12)
+  ;   Z  = no error? (A=0)
+
+  call before_dos_call
+  call dos.hl.call
+  jr after_dos_call
+
+dos.hl.call
+  push hl
+  jp trdos_entry.call_pushed_address
+
+; ------------------------------
 ; Push DOS ior and continue at `next`
 
 push_dos_ior:
@@ -234,7 +266,7 @@ push_dos_ior:
 ; Dictionary
 
 ; ----------------------------------------------
-  _constant_header dos_alt_a_underscore_,"dos-alt-a_"
+  _constant_header dos_alt_a_underscore_,'dos-alt-a_'
 
 ; doc{
 ;
@@ -252,7 +284,7 @@ push_dos_ior:
 ;   Z  = no error? (A=0)
 ; ....
 
-; See also: `dos-c_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -262,7 +294,7 @@ push_dos_ior:
   dw dos.alt_a
 
 ; ----------------------------------------------
-  _constant_header dos_c_underscore_,"dos-c_"
+  _constant_header dos_c_underscore_,'dos-c_'
 
 ; doc{
 ;
@@ -280,7 +312,7 @@ push_dos_ior:
 ;   Z  = no error? (A=0)
 ; ....
 
-; See also: `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-hl_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -290,7 +322,34 @@ push_dos_ior:
   dw dos.c
 
 ; ----------------------------------------------
-  _constant_header dos_alt_a_preserve_ip_underscore_,"dos-alt-a-preserve-ip_"
+  _constant_header dos_hl_underscore_,'dos-hl_'
+
+; doc{
+;
+; dos-hl_ ( -- a )
+;
+; Address of a routine that executes the TR-DOS routine hold in
+; the HL register.
+
+; ....
+; Input:
+;   HL = TR-DOS routine address
+; Output:
+;   A  = TR-DOS error result (0..12)
+;   Z  = no error? (A=0)
+; ....
+
+; See also: `dos-c_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; `dos-alt-a-restore-ip_`.
+;
+; }doc
+
+  ; XXX TODO -- Move to the assembler word list.
+
+  dw dos.c
+
+; ----------------------------------------------
+  _constant_header dos_alt_a_preserve_ip_underscore_,'dos-alt-a-preserve-ip_'
 
 ; doc{
 ;
@@ -310,7 +369,7 @@ push_dos_ior:
 ;   Z  = no error? (A=0)
 ; ....
 
-; See also: `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-c_`, `dos-hl_`, `dos-alt-a_`,
 ; `dos-alt-a-restore-ip_`.
 ;
 ; }doc
@@ -320,7 +379,7 @@ push_dos_ior:
   dw dos.alt_a.preserve_ip
 
 ; ----------------------------------------------
-  _constant_header dos_alt_a_restore_ip_underscore_,"dos-alt-a-restore-ip_"
+  _constant_header dos_alt_a_restore_ip_underscore_,'dos-alt-a-restore-ip_'
 
 ; doc{
 ;
@@ -344,7 +403,7 @@ push_dos_ior:
 ;   BC = Forth IP
 ; ....
 
-; See also: `dos-c_`, `dos-alt-a-preserve-ip_`,
+; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
 ; `dos-alt-a_`.
 ;
 ; }doc
@@ -721,7 +780,7 @@ endif
 if testing_trdos
 
 ; ----------------------------------------------
-  _code_header cat_,'cat'
+  _code_header cat1_,'cat1'
 
   ; XXX UNDER DEVELOPMENT -- 2017-03-09
 
@@ -731,9 +790,10 @@ if testing_trdos
   ; after Solo Forth has been loaded.
   ;
   ; XXX FIXME -- When the origin of the kernel is moved up,
-  ; there's enough memory for the command, but when the system
+  ; there's enough memory for the command, but then the system
   ; freezes after printing the catalogue, unless there are few
-  ; files in it. In this case, the TR-DOS CLI is executed.
+  ; files in it. In this case, the TR-DOS CLI is executed or
+  ; garbage directory entries are displayed...
 
   push bc
 
@@ -742,15 +802,42 @@ if testing_trdos
 
   ld bc,2 ; stream
   ld (trdos_variable.stream_or_file_size),bc
-  ; ld hl,$1205 ; entry point at the LIST TR-DOS CLI command
   ld hl,$1208 ; entry point at the LIST TR-DOS CLI command
-  push hl
-  ld (iy+sys_df_sz_offset),2            ; 2 lines in the lower screen
-  jp trdos_entry.call_pushed_address
-  ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
+  call dos.hl
   pop bc
-  ld ix,next ; XXX TMP -- just in case
   _jp_next
+
+; ----------------------------------------------
+  _code_header cat2_,'cat2'
+
+  ; XXX UNDER DEVELOPMENT -- 2017-03-10: Alternative
+  ; implementation of `cat`, interpreting a TR-DOS REM command.
+  ;
+  ; XXX REMARK -- `origin` must be moved up; $+219 is not
+  ; enough.
+  ;
+  ; XXX FIXME -- The catalog is displayed, but at the end
+  ; something goes wrong, the screen is corrupted and the system
+  ; freezes.
+
+  push bc
+  ld hl,(sys_ch_add)
+  push hl
+  ld hl,list_command
+  ld (sys_ch_add),hl
+  ld (iy+sys_df_sz_offset),2            ; 2 lines in the lower screen
+  call trdos_entry.interpret_rem_command
+  ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
+  pop hl
+  ld (sys_ch_add),hl
+  pop bc
+  _jp_next
+
+list_command:
+  db token.rem
+  db ":"
+  db token.list
+  db carriage_return_char
 
 ; ----------------------------------------------
   _colon_header dot_drives_,'.drives'
