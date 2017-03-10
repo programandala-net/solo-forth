@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703101434
+  \ Last modified: 201703110045
 
   \ -----------------------------------------------------------
   \ Description
@@ -64,6 +64,14 @@
   \ kernel: The C register is not copied to the A register
   \ anymore after returning from the DOS call; instead, the A
   \ register is loaded from the TR-DOS latest error variable.
+  \ Add draft of `undelete-file`.  Add `read-file-descriptor`,
+  \ `write-file-descriptor`, `read-system-track`, `files/disk`.
+  \ Improve documentation.
+  \
+  \ 2017-03-11: Finish `undelete-file`. Add `.filename`,
+  \ `.fda-filename`, `fda-basic?`, `fda-deleted?`,
+  \ `fda-empty?`, `cat`, `cat-fda`, `?cat-fda`. Improve
+  \ documentation.
 
 ( --dos-commands-- )
 
@@ -144,18 +152,29 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-( /filename -filename set-filename )
+( files/disk /filename -filename -fda-filename set-filename )
+
+[unneeded] files/disk ?\ 128 cconstant files/disk
+
+  \ doc{
+  \
+  \ files/disk  ( -- n )
+  \
+  \ Return the maximum number _n_ of files on a disk, including
+  \ the deleted files, which is 128.
+  \
+  \ }doc
 
 [unneeded] /filename ?\ 9 cconstant /filename
 
   \ doc{
   \
-  \ /filename ( -- n )
+  \ /filename ( -- len )
   \
-  \ Return the maximum length of a TR-DOS filename, which is 9.
-  \ In TR-DOS, the last character of the filename (character
-  \ offset 8) is the filetype:
-  \
+  \ Return the maximum length _len_ of a TR-DOS filename, which
+  \ is 9.  In TR-DOS, the last character of the filename
+  \ (character offset 8) is the filetype:
+
   \ |===
   \ | Character | Filetype
   \
@@ -165,45 +184,62 @@ fda $0F + constant fda-filetrack ?)
   \ | #         | Serial/random access data file
   \ | other     | Defined by the programmer
   \ |===
+
+  \ If the filetype is not specified in a filename, 'C' is
+  \ used.
   \
   \ See also: `set-filename`, `fda`.
   \
   \ }doc
 
-[unneeded] -filename ?( need fda need /filename
+[unneeded] -filename ?( need /filename
 
-: -filename ( -- )
-  fda-filename /filename blank 'C' fda-filetype c! ; ?)
+: -filename ( ca -- )
+  /filename 2dup blank + 1- 'C' swap c! ; ?)
 
   \ doc{
   \
-  \ -filename ( -- )
+  \ -filename ( ca -- )
+  \
+  \ Erase the filename stored at _ca_ and set its type to 'C'.
+  \
+  \ See also: `-fda-filename`, `set-filename`.
+  \
+  \ }doc
+
+[unneeded] -fda-filename ?( need fda-filename need -filename
+
+: -fda-filename ( -- ) fda-filename -filename ; ?)
+
+  \ doc{
+  \
+  \ -fda-filename ( -- )
   \
   \ Erase the filename stored at TR-DOS `fda` (File Descriptor
   \ Area) with spaces, and set its type to 'C'.
   \
-  \ See also: `set-filename`.
+  \ See also: `-filename`, `set-filename`.
   \
   \ }doc
 
 [unneeded] set-filename ?(
 
-need -filename need /filename need fda
+need -fda-filename need /filename need fda
 
 : set-filename ( ca len -- )
-  -filename /filename min fda-filename smove ; ?)
+  -fda-filename /filename min fda-filename smove ; ?)
 
   \ doc{
   \
   \ set-filename ( ca len -- )
   \
-  \ Store filename _ca len_ into the TR-DOS `fda` (File Descriptor
-  \ Area).  If _len_ is greater than 9 characters (the value
-  \ returned by `/filename`), 9 is used instead.  If _ca len_
-  \ does not include the file type at the end (at character
-  \ offset +8), 'C' (code file) is used by default.
+  \ Store filename _ca len_ into the TR-DOS `fda` (File
+  \ Descriptor Area).  If _len_ is greater than 9 characters
+  \ (the value returned by `/filename`), 9 is used instead.  If
+  \ _ca len_ does not include the file type at the end (at
+  \ character offset +8), 'C' (code file) is used by default.
   \
-  \ See also: `-filename`, `/filename`.
+  \ See also: `-fda-filename`, `/filename`.
   \
   \ }doc
 
@@ -663,10 +699,10 @@ need fda need set-filename
 code (delete-file) ( -- ior )
   b push,
   dos-find-file c ld#, dos-c_ call,
-  \ A = directory entry of the file, or $FF if not found
-  a inc, z? rif  a inc, \ dosior #1 ("no files")
-            relse dos-delete-file c ld#, dos-c_ call,
-            rthen b pop, pushdosior jp, end-code
+  \ C = directory entry of the file, or $FF if not found
+  c a ld, c inc, z? rif  1 a ld#, \ dosior #1 ("no files")
+                    relse dos-delete-file c ld#, dos-c_ call,
+                    rthen b pop, pushdosior jp, end-code
 
   \ doc{
   \
@@ -691,6 +727,290 @@ code (delete-file) ( -- ior )
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
   \ See also: `(delete-file`.
+  \
+  \ }doc
+
+( read-system-track )
+
+need assembler need --dos-commands--
+
+code read-system-track ( -- ior )
+  dos-read-file-descriptor a ld#, exaf,
+  dos-alt-a-preserve-ip_ call, pushdosior jp, end-code
+
+( read-file-descriptor write-file-descriptor )
+
+need assembler need --dos-commands--
+
+code read-file-descriptor ( n -- ior )
+  h pop, b push, l a ld,
+  dos-read-file-descriptor c ld#, dos-c_ call,
+  b pop, pushdosior jp, end-code
+  \ XXX TODO -- Rename to `entry>fda`?
+
+code write-file-descriptor ( n -- ior )
+  h pop, b push, l a ld,
+  dos-write-file-descriptor c ld#, dos-c_ call,
+  b pop, pushdosior jp, end-code
+  \ XXX TODO -- Rename to `fda>entry`?
+
+( undelete-file )
+
+need files/disk
+
+create tmp-filename /filename allot
+
+: undelete-file ( ca len -- ior )
+  tmp-filename -filename tmp-filename smove 1 tmp-filename c!
+  read-system-track throw  files/disk 0 ?do
+    i read-file-descriptor throw fda-filename /filename
+                                 tmp-filename /filename str=
+    if   $5D08 c@ fda-filename c! i write-file-descriptor
+         unloop exit then
+  loop #-1001 ;
+
+  \ XXX TODO -- Improve: `read-file-descriptor` reads the
+  \ system track every time. Explore the sector buffer instead.
+
+  \ doc{
+  \
+  \ undelete-file ( ca len -- ior )
+  \
+  \ Undelete the disk file named in the string _ca len_ and
+  \ return an error result _ior_.
+  \
+  \ TR-DOS deletes a file replacing its first character with
+  \ byte 1.  ``undelete-file`` replaces the first character in
+  \ _ca len_ with byte 1, then searches the disk for such
+  \ filename and restores its first character using the first
+  \ character removed from the latest deleted file, which
+  \ TR-DOS keeps in its variable $5D08.
+  \
+  \ Therefore, the procedure has some issues:
+  \
+  \ 1. If _ca len_ is not the latest deleted file, the first
+  \ character of its filename will not be the original one.
+  \
+  \ 2. If more than one file has been deleted, with only the
+  \ first character of their filenames being different in all
+  \ of them, ``undelete-file`` will find the oldest one.
+  \
+  \ 3. TR-DOS does not reuse the space occupied by a deleted
+  \ file, until the disk is defragmented
+  \
+  \ See also: `delete-file`.
+  \
+  \ }doc
+
+  \ XXX REMARK -- The TR-DOS command `dos-find-file` can not
+  \ locate deleted files, it ignores them, i.e.  filenames with
+  \ a byte 1 as first char. That's why an alternative was
+  \ needed.
+
+( undelete-file )
+
+  \ XXX OLD -- 2017-03-10. First try.
+  \
+  \ XXX FIXME -- `dos-find-file` can not locate deleted files,
+  \ it ignores them, i.e.  filenames with a byte 1 as first
+  \ char.  A custom procedure must be written.
+
+need assembler need --dos-commands--
+need fda need set-filename
+
+code (undelete-file ( -- ior )
+  b push,
+  dos-find-file c ld#, dos-c_ call,
+  \ C = directory entry of the file, or $FF if not found
+  c a ld, c inc, z?
+  rif   1 a ld#, \ dosior #1 ("no files")
+  relse af push, dos-read-file-descriptor c ld#, dos-c_ call,
+                 5D08 fta, fda-filename sta,
+        af pop,  dos-write-file-descriptor c ld#, dos-c_ call,
+  rthen b pop, pushdosior jp, end-code
+
+  \ doc{
+  \
+  \ (delete-file) ( -- ior )
+  \
+  \ Delete a disk file using the data hold in `dfa`.
+  \ Return an error result _ior_.
+  \
+  \ ``(delete-file)`` is a factor of `delete-file`.
+  \
+  \ }doc
+
+: undelete-file ( ca len -- ior )
+  set-filename 1 fda-filename c! (undelete-file ;
+
+  \ doc{
+  \
+  \ undelete-file ( ca len -- ior )
+  \
+  \ Undelete the disk file named in the string _ca len_ and
+  \ return an error result _ior_.
+  \
+  \ TR-DOS deletes a file replacing its first character with
+  \ byte 1.  ``undelete-file`` replaces the first character in
+  \ _ca len_ with byte 1, then searches the disk for such
+  \ filename and restores its first character using the first
+  \ character removed from the latest deleted file, which
+  \ TR-DOS keeps in its variable $5D08.
+  \
+  \ Therefore, the procedure has some issues:
+  \
+  \ 1. If _ca len_ is not the latest deleted file, the first
+  \ character of its filename will not be the original one.
+  \
+  \ 2. If more than one file has been deleted, with only the
+  \ first character of their filenames being different in all
+  \ of them, ``undelete-file`` will find the oldest one.
+  \
+  \ 3. TR-DOS does not reuse the space occupied by a deleted
+  \ file, until the disk is defragmented
+  \
+  \ See also: `delete-file`.
+  \
+  \ }doc
+
+( .filename .fda-filename fda-basic? fda-deleted? fda-empty? )
+
+[unneeded] .filename ?( need /filename
+
+: .filename ( ca -- )
+  /filename 1- 2dup type '<' emit + c@ emit '>' emit ; ?)
+  \ XXX TODO -- Call the ROM routine instead.
+
+  \ doc{
+  \
+  \ .filename ( ca -- )
+  \
+  \ Display the filename stored at _ca_, using the TR-DOS
+  \ filename format.
+  \
+  \ See also: `.fda-filename`, `/filename`.
+  \
+  \ }doc
+
+[unneeded] .fda-filename ?( need fda need .filename
+
+: .fda-filename ( -- ) fda-filename .filename ; ?)
+
+  \ doc{
+  \
+  \ .fda-filename ( -- )
+  \
+  \ Display the contents of `fda-filename`, using the TR-DOS
+  \ filename format.
+  \
+  \ See also: `.filename`, `/filename`.
+  \
+  \ }doc
+
+[unneeded] fda-basic?
+
+?\ need fda : fda-basic? ( -- f ) fda-filetype c@ 'B' = ;
+
+  \ doc{
+  \
+  \ fda-basic? ( -- f )
+  \
+  \ _f_ is true if `fda` contains a BASIC program file.
+  \
+  \ See also: `fda-empty?`, `fda-deleted?`.
+  \
+  \ }doc
+
+[unneeded] fda-deleted?
+
+?\ need fda : fda-deleted? ( -- ) fda-filename c@ 1 = ;
+
+  \ doc{
+  \
+  \ fda-deleted? ( -- f )
+  \
+  \ _f_ is true if `fda` contains a deleted file.
+  \
+  \ See also: `fda-empty?`, `fda-basic?`.
+  \
+  \ }doc
+
+[unneeded] fda-empty?
+
+?\ need fda : fda-empty? ( -- f ) fda c@ 0= ;
+
+  \ doc{
+  \
+  \ fda-empty? ( -- f )
+  \
+  \ _f_ is true if `fda` is empty, i.e. it's unused, it does
+  \ not contain a file descriptor.
+  \
+  \ See also: `fda-deleted?`, `fda-basic?`.
+  \
+  \ }doc
+
+( cat )
+
+need --dos-commands-- need files/disk need read-system-track
+need read-file-descriptor need u.r need fda need .fda-filename
+need fda-basic? need fda-empty? need fda-deleted?
+
+: cat-fda ( n -- )
+  3 .r space .fda-filename fda-filesectors c@ 3 u.r
+  6 fda-basic? if spaces else fda-filestart @ swap u.r then
+  fda-filelength @ 6 u.r cr ;
+
+  \ XXX TODO -- Add the BASIC autorun line. The problem is that
+  \ information is not in File Descriptor Area, but at the
+  \ start of the file contents, on its first sector. See TR-DOS
+  \ routine at $131B.
+
+  \ doc{
+  \
+  \ cat-fda ( n -- )
+  \
+  \ Display catalogue entry _n_ of the current drive.
+  \ The entry is already stored in `fda`.
+  \
+  \ ``cat-fda`` is a factor of `?cat-fda`.
+  \
+  \ See also: `.fda-filename`, `fda-basic?`.
+  \
+  \ }doc
+
+: ?cat-fda ( n -- ) fda-deleted? if drop exit then cat-fda ;
+
+  \ doc{
+  \
+  \ ?cat-fda ( n -- )
+  \
+  \ If catalogue entry _n_ of the current drive is not a
+  \ deleted file, display it.  The entry is already stored in
+  \ `fda`.
+  \
+  \ ``?cat-fda`` is a factor of `cat`.
+  \
+  \ See also: `fda-deleted?`, `cat-fda`.
+  \
+  \ }doc
+
+: cat ( -- )
+  read-system-track throw  cr
+  files/disk 0 ?do i read-file-descriptor throw
+                   fda-empty? if unloop exit then i ?cat-fda
+               loop ;
+
+  \ XXX TODO -- Improve: `read-file-descriptor` reads the
+  \ system track every time. Explore the sector buffer instead.
+
+  \ doc{
+  \
+  \ cat ( -- )
+  \
+  \ Show a disk catalogue of the current drive.
+  \
+  \ See also: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
   \
   \ }doc
 

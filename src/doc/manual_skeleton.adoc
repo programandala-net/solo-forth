@@ -6,7 +6,7 @@
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201703101649
+// Last modified 201703110046
 
 toc::[]
 
@@ -92,7 +92,7 @@ on each DOS.
 | `>file`           | YES   | YES    |       | Save memory zone to a file
 | `acat`            | YES   | YES    | n/a   | Abbreviated disk catalog
 | `bin`             |       |        | YES   | Standard Forth
-| `cat`             | YES   | draft  | draft | Detailed disk catalog 
+| `cat`             | YES   | YES    | draft | Detailed disk catalog
 | `close-file`      |       |        | YES   | Standard Forth
 | `create-file`     |       |        | draft | Standard Forth
 | `delete-file`     | YES   | YES    | YES   | Standard Forth
@@ -126,6 +126,7 @@ on each DOS.
 | `required`        |       |        |       | Standard Forth
 | `resize-file`     |       |        |       | Standard Forth
 | `set-drive`       | YES   | YES    | draft |
+| `undelete-file`   |       | YES    |       |
 | `w/o`             |       |        | YES   | Standard Forth
 | `wacat`           | YES   |        |       | Abbreviated disk catalog with wildcards
 | `wcat`            | YES   |        | draft | Detailed disk catalog with wildcards

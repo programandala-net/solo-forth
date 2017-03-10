@@ -5,7 +5,7 @@
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703101648
+// Last modified 201703110037
 
 // Application development {{{1
 == Application development ==
@@ -28,6 +28,10 @@ Options to make it easier to share code with other systems:
 
 // Assembler {{{1
 == Assembler ==
+
+.2017-03-10:
+
+Remove the need to use `af` only for `push,` and `pop,`.
 
 .2017-03-07:
 
@@ -709,12 +713,21 @@ Study what the unused RAM of the Plus D can be useful for.
 // TR-DOS {{{2
 === TR-DOS ===
 
+.2017-03-11:
+
+Improve `cat`: `read-file-descriptor` reads the system track every
+time. Explore the sector buffer instead.
+
+.2017-03-11:
+
+Improve `undelete-file`: `read-file-descriptor` reads the system track every
+time. Explore the sector buffer instead.
+
 .2017-03-10:
 
-The kernel entry `dos.c` prepares the A register and Fz flag after the
-value in the C register, but not all command code routines return an
-trror in C. Confirm this and study if it would be simpler to leave the
-error management to the calling word.
+TR-DOS disk operations can be interrupted with the Break key...  and
+the system returns to BASIC with error "BREAK into program"! There
+must be a way to deactivate this. Study the disassembly.
 
 .2017-03-08:
 
@@ -725,14 +738,6 @@ A DOS-indepedent routine will be useful to set the A register.
 
 Add `rename-file`.
 
-.2017-02-17:
-
-Add `delete-file`.
-
-.2017-02-12:
-
-Implement the TR-DOS command `LIST` as `cat`.
-
 .2017-02-12:
 
 Make the DOS commands independent to `need`.
@@ -742,10 +747,9 @@ Make the DOS commands independent to `need`.
 Rewrite `dosior>ior` after G+DOS: Convert the AF register. Make the
 low-level words return it unchanged.
 
-.2017-02-05:
+.2017-02-05, 2017-03-11:
 
-Define the Z80-symbol constants in the assembler word list:
-`dos-routine`, etc.
+Move the Z80-symbol constants to the assembler word list.
 
 // +3DOS {{{2
 === +3DOS ===
@@ -1176,6 +1180,8 @@ Adapt `d>q`, `q>d`, `s>q`, `q+`, `q-`, `udm*` from Pygmy, in module
 
 Modify `interpret` to be patched by a floating-point implementation in order
 to recognize floating-point numbers.
+
+.2016-04-18:
 
 Make `number?` deferred, in order to add floating-point support.
 

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703101408
+; Last modified: 201703110047
 
 include version.z80s
 
@@ -151,14 +151,7 @@ if trdos
   ; buffer is allocated dynamically. Therefore, the default
   ; origin of the Forth system must be moved up $170 bytes:
 
-  ;origin:                         equ default_origin+$170
-
-  ; But $A9 more bytes are needed in order to display a detailed
-  ; catalog (TR-DOS `LIST` CLI command, or Solo Forth `cat`,
-  ; under development), otherwise TR-DOS exits with error "out
-  ; of RAM":
-
-  origin:                         equ default_origin+$170+$A9
+  origin:                         equ default_origin+$170
 
 else
 
@@ -8481,7 +8474,8 @@ type.loop_exit
 ;
 ; }doc
 
-  ; XXX TODO -- Move to the library.
+  ; XXX TODO -- Could be moved to the library, except
+  ; `new-needed-word` needs it.
 
   pop de
   pop hl
