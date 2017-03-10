@@ -3,7 +3,7 @@
 # This file is part of Solo Forth
 # http://programandala.net/en.program.solo_forth.html
 
-# Last modified: 201703061631
+# Last modified: 201703101316
 
 # ==============================================================
 # Author
@@ -232,8 +232,9 @@ include Makefile.pasmo
 
 tmp/loader.gplusdos.bas: \
 	tmp/kernel.symbols.gplusdos.z80s \
-	src/loader/gplusdos.bas
-	gforth make/patch_the_loader.fs $^ $@
+	src/loader/gplusdos.bas \
+	src/kernel.z80s
+	gforth make/patch_the_loader.fs $@ $^
 
 tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 	zmakebas -n Autoload -a 1 -o $@ $<
@@ -243,8 +244,9 @@ tmp/loader.gplusdos.bas.tap: tmp/loader.gplusdos.bas
 
 tmp/loader.plus3dos.bas: \
 	tmp/kernel.symbols.plus3dos.z80s \
-	src/loader/plus3dos.bas
-	gforth make/patch_the_loader.fs $^ $@
+	src/loader/plus3dos.bas \
+	src/kernel.z80s
+	gforth make/patch_the_loader.fs $@ $^
 
 tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 	zmakebas -n DISK -a 1 -o $@ $<
@@ -254,10 +256,12 @@ tmp/loader.plus3dos.bas.tap: tmp/loader.plus3dos.bas
 
 tmp/loader.trdos.bas: \
 	tmp/kernel.symbols.trdos.z80s \
-	src/loader/trdos.bas
-	gforth make/patch_the_loader.fs $^ $@
+	src/loader/trdos.bas \
+	src/kernel.z80s
+	gforth make/patch_the_loader.fs $@ $^
 
-tmp/loader.trdos.bas.tap: tmp/loader.trdos.bas
+tmp/loader.trdos.bas.tap: \
+	tmp/loader.trdos.bas
 	zmakebas -n boot -a 1 -o $@ $<
 
 # ==============================================================
@@ -1023,3 +1027,11 @@ oldbackup:
 #
 # 2017-03-06: Add rule to build only the TR-DOS disks for 128k
 # models.
+#
+# 2017-03-10: Add the kernel to the prerequisites of the
+# patched loaders. This fixes a subtle bug: The patched loader
+# was not updated the first time after a change in the kernel,
+# even if the change implied a symbol. This made the system
+# crash on TR-DOS when the `origin` address was modified,
+# unless `make` was executed twice to force the loader be
+# updated.
