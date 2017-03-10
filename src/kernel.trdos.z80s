@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703090026
+; Last modified: 201703101440
 
 ; ==============================================================
 ; Description
@@ -129,14 +129,21 @@ dos.c:
 
   push af
   xor a
+  ld (trdos_variable.error_code),a      ; clear a possible previous error
   ld (trdos_variable.error_code_msb),a  ; clear a possible previous error
   pop af
   ld (iy+sys_df_sz_offset),2            ; 2 lines in the lower screen
   call trdos_entry.execute_command_in_c
   ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
-  ld a,c                                ; error code
+  ld a,(trdos_variable.error_code)      ; error code
   and a                                 ; set Z
   ret
+
+  ; XXX REMARK -- TR-DOS uses a 16-bit variable to store error
+  ; codes. Some routines only check the high byte of the
+  ; variable, but at the end error code is stored into the low
+  ; byte. That's why both bytes are cleared before the calling,
+  ; but the error is fetched from the lower byte after it.
 
   ; XXX REMARK -- In Solo Forth the DF_SZ system variable
   ; contains 0 in order to use the full screen, i.e. also the
@@ -720,9 +727,19 @@ if testing_trdos
 
   ; XXX FIXME -- TR-DOS exits to BASIC with "out of memory"
   ; error. The same error happens when the `list` command is
-  ; given on the TR-DOS CLI.
+  ; given on the TR-DOS CLI, with the memory available to BASIC
+  ; after Solo Forth has been loaded.
+  ;
+  ; XXX FIXME -- When the origin of the kernel is moved up,
+  ; there's enough memory for the command, but when the system
+  ; freezes after printing the catalogue, unless there are few
+  ; files in it. In this case, the TR-DOS CLI is executed.
 
   push bc
+
+  ld a,$FF ; BASIC command mode
+  ld (trdos_variable.command_mode),a ; XXX TMP -- no difference
+
   ld bc,2 ; stream
   ld (trdos_variable.stream_or_file_size),bc
   ; ld hl,$1205 ; entry point at the LIST TR-DOS CLI command

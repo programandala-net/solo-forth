@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703100115
+  \ Last modified: 201703101434
 
   \ -----------------------------------------------------------
   \ Description
@@ -59,6 +59,11 @@
   \ 2017-03-08: Rename `cat` to `acat`, after the names used in
   \ G+DOS. Add `(acat`. Improve calculation of dosior #1 ("no
   \ files"). Add `delete-file`.
+  \
+  \ 2017-03-10: Adapt the DOS calls to the changes in the
+  \ kernel: The C register is not copied to the A register
+  \ anymore after returning from the DOS call; instead, the A
+  \ register is loaded from the TR-DOS latest error variable.
 
 ( --dos-commands-- )
 
@@ -265,8 +270,6 @@ code (acat ( -- ior )
 
 ( file> )
 
-  \ XXX UNDER DEVELOPMENT
-
 need assembler need --dos-commands-- need fda need set-filename
 
 code (file>) ( ca len -- ior )
@@ -293,10 +296,8 @@ code (file>) ( ca len -- ior )
                     \     use address and length from `fda`:
                     \     nothing is needed, because
                     \     A is already 0 after `tstp,`
-    dos-read-file c ld#, dos-c_ call, a xor,
+    dos-read-file c ld#, dos-c_ call,
       \ read the file
-      \ XXX TMP -- force no error, because `dos-read-file`
-      \ dos not return an error result
   rthen b pop, pushdosior jp, end-code
 
   \ Note: TR-DOS command `dos-read-file` works different ways
@@ -439,16 +440,9 @@ code (file-status) ( -- a ior )
   fda h ldp#, h push, b push,
     \ Push `fda` (the _a_ returned) and save Forth IP.
   dos-find-file a ld#, exaf, dos-alt-a_ call,
-    \ A = directory entry (0..127), or $FF if file not found
-  a inc, z? rif  a inc,  \ dosior #1 ("no files")
-  relse  a dec, \ restore directory entry (0..127)
-         dos-read-file-descriptor c ld#, dos-c_ call,
-         a xor,
-          \ XXX REMARK -- This TR-DOS command does not
-          \ return its error result in C, but the directory
-          \ entry it received in A. Therefore, the value of
-          \ A returned by the DOS call `dos-c_` is a
-          \ copy of it.  We set it to zero (to force "no error").
+    \ C = directory entry (0..127), or $FF if file not found
+  c a ld, c inc, z? rif  1 a ld#,  \ dosior #1 ("no files")
+  relse  dos-read-file-descriptor c ld#, dos-c_ call,
   rthen b pop, pushdosior jp, end-code
 
 : file-status ( ca len -- a ior )
@@ -671,7 +665,7 @@ code (delete-file) ( -- ior )
   dos-find-file c ld#, dos-c_ call,
   \ A = directory entry of the file, or $FF if not found
   a inc, z? rif  a inc, \ dosior #1 ("no files")
-            relse dos-delete-file c ld#, dos-c_ call, a xor,
+            relse dos-delete-file c ld#, dos-c_ call,
             rthen b pop, pushdosior jp, end-code
 
   \ doc{
