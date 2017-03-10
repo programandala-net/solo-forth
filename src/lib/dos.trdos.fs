@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703081502
+  \ Last modified: 201703100115
 
   \ -----------------------------------------------------------
   \ Description
@@ -273,21 +273,30 @@ code (file>) ( ca len -- ior )
 
   d pop, h pop, b push, h push, d push, ( ip ca len )
 
-  dos-find-file a ld#, exaf, dos-alt-a_ call,
-  \ A = directory entry of the file, or $FF if not found
-  a inc, z? rif  d pop, d pop, a inc,  relse
-                 \ error, so drop parameters
-                 \ and set dosior #1 ("no files")
-    a dec, dos-read-file-descriptor c ld, dos-c_ call,
-      \ restore file descriptor (0..127), then read it
-    z? rif  a xor, 5CF9 sta, d pop, h pop,
-                 \ set load flag and get the parameters
-       d tstp, nz?  rif   03 a ld#,
-                    relse h tstp, nz? rif cpl, rthen rthen
-          \ if _len_ is not zero, use the parameters
-          \ if _len_ is zero, use _ca_ if it's not zero
-       dos-read-file-descriptor c ld, dos-c_ call,
-    rthen
+  dos-find-file c ld#, dos-c_ call,
+  \ C = directory entry of the file, or $FF if not found
+  c a ld, c inc, z? rif d pop, h pop, 1 a ld#, relse
+                \ error, so drop parameters
+                \ and set dosior #1 ("no files")
+    dos-read-file-descriptor c ld#, dos-c_ call,
+    a xor, 5CF9 sta, d pop, h pop,
+      \ set load flag (0) and get the parameters
+    d tstp, nz? rif 03 a ld#,
+                    \ DE (_len_) is not zero,
+                    \ so use the parameters: make A=$03
+                relse h tstp, nz? rif FF a ld#, rthen rthen
+                    \ DE (_len_) is zero, so:
+                    \   - if HL (_ca_) is non-zero,
+                    \     use paremeter address,
+                    \     but length from `fda`: make A=$FF
+                    \   - if HL (_ca_) is zero,
+                    \     use address and length from `fda`:
+                    \     nothing is needed, because
+                    \     A is already 0 after `tstp,`
+    dos-read-file c ld#, dos-c_ call, a xor,
+      \ read the file
+      \ XXX TMP -- force no error, because `dos-read-file`
+      \ dos not return an error result
   rthen b pop, pushdosior jp, end-code
 
   \ Note: TR-DOS command `dos-read-file` works different ways
@@ -299,30 +308,26 @@ code (file>) ( ca len -- ior )
   \
   \ FDA = File Descriptor Area
 
-  \ XXX TODO -- Confirm the documentation, which has been
-  \ copied from the G+DOS version of `file>`. In theory both
-  \ versions work the same way.
-
   \ doc{
   \
   \ (file>) ( ca len -- ior )
   \
-  \ Read a file from disk, using the data hold in `fda` and the
-  \ alternative destination zone _ca len_, following the
-  \ following two rules:
+  \ Search the disk for the file whose filename is stored in
+  \ `fda` and read its metadata into `fda`. Then read the file
+  \ contents to memory zone _ca len_ or to the original memory
+  \ zone of the file, depending on the following rules:
   \
-  \ 1. If _len_ is not zero, use it as the count of bytes that
-  \ must be read from the file defined in `fda` and use _ca_ as
-  \ destination address.
+  \ 1. If _len_ is not zero, read _len_ bytes from the file to
+  \ address _ca_.
   \
-  \ 2. If _len_ is zero, use the file length stored in `fda`
-  \ instead, and then check also _ca_: If _ca_ is not zero, use
-  \ it as destination address, else use the file address stored
-  \ in `fda` instead.
+  \ 2. If _len_ is zero, use the original length of the file
+  \ insted, and then check _ca_: If _ca_ is not zero, use it as
+  \ destination address, else use the original address of the
+  \ file.
   \
   \ Return error result _ior_.
   \
-  \ This word is a factor of `file>`.
+  \ ``(file>)`` is a factor of `file>`.
   \
   \ See also: `fda-filestart`, `fda-filelength`.
   \
@@ -330,10 +335,6 @@ code (file>) ( ca len -- ior )
 
 : file> ( ca1 len1 ca2 len2 -- ior )
   2swap set-filename (file>) ;
-
-  \ XXX TODO -- Confirm the documentation, which has been
-  \ copied from the G+DOS version of `file>`. In theory both
-  \ versions work the same way.
 
   \ doc{
   \
@@ -355,23 +356,21 @@ code (file>) ( ca len -- ior )
   \
   \ Example:
   \
-  \ The screen memory has been saved to a disk file using the
-  \ following command:
+  \ The screen memory (start address 16384 and size 6912 bytes)
+  \ is saved to a disk file with `>file`:
 
   \ ----
   \ 16384 6912 s" pic.scr" >file
   \ ----
 
-  \ Therefore, its original address is 16384 and its original
-  \ size is 6912 bytes.
-  \
-  \ Now there are four ways to load the file from disk:
+  \ Now there are several ways to load that file from disk:
 
   \ |===
   \ | Example                        | Result
   \
-  \ | `s" pic.scr" 16384 6912 file>` | Load the file using its original values
-  \ | `s" pic.scr"     0    0 file>` | Load the file using its original values
+  \ | `s" pic.scr" 16384 6912 file>` | Load the file using its original known values
+  \ | `s" pic.scr" 16384 6144 file>` | Load only the bitmap to the original known address
+  \ | `s" pic.scr"     0    0 file>` | Load the file using its original unknown values
   \ | `s" pic.scr" 32768    0 file>` | Load the whole file to address 32768
   \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
   \ |===
@@ -402,11 +401,11 @@ code (>file) ( -- ior )
   \   ;
   \   ; There must be a way to avoid this and return an ior.
   \
-  dos-find-file c ld#, dos-c_ call, a inc, nz? rif
+  dos-find-file c ld#, dos-c_ call, c inc, nz? rif
   \   ld c,trdos_command.find_file
   \   call dos.c
-  \   ; A = directory entry of the file (0..127), or $FF if not found
-  \   inc a ; file not found?
+  \   ; C = directory entry of the file (0..127), or $FF if not found
+  \   inc c ; file not found?
   \   jr z,paren_to_file.file_not_found ; jump if no error
   \
   \   ; error: file found
@@ -415,14 +414,13 @@ code (>file) ( -- ior )
   \   jr paren_to_file.exit
 
   rthen fda-filelength d ftp, fda-filestart h ftp,
-  dos-create-file c ld#, dos-c_ call, c a ld,
+  dos-create-file c ld#, dos-c_ call,
   \ paren_to_file.file_not_found:
   \   ld de,(fda.filelength)
   \   ld hl,(fda.filestart)
   \   ld c,trdos_command.create_file
   \   call dos.c
-  \
-  \   ld a,c ; possible error code
+
   0 l: b pop, pushdosior jp, end-code
   \ paren_to_file.exit:
   \   pop bc  ; restore the Forth IP
@@ -669,7 +667,7 @@ need assembler need --dos-commands--
 need fda need set-filename
 
 code (delete-file) ( -- ior )
-  b push, 
+  b push,
   dos-find-file c ld#, dos-c_ call,
   \ A = directory entry of the file, or $FF if not found
   a inc, z? rif  a inc, \ dosior #1 ("no files")

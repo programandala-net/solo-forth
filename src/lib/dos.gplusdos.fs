@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703072350
+  \ Last modified: 201703100140
 
   \ -----------------------------------------------------------
   \ Description
@@ -114,6 +114,8 @@
   \ the notation used for +3DOS. Replace `cat` and related word
   \ with a new, simpler implementation which uses the `pcat`
   \ command code. Add `back-from-dos-error_` and `rename-file`.
+  \
+  \ 2017-03-10: Improve documentation.
 
 ( dos-in dos-out dos-in, dos-out, )
 
@@ -657,8 +659,9 @@ code (file>) ( ca len -- ior )
   \ |===
   \ | Example                        | Result
   \
-  \ | `s" pic.scr" 16384 6912 file>` | Load the file using its original values
-  \ | `s" pic.scr"     0    0 file>` | Load the file using its original values
+  \ | `s" pic.scr" 16384 6912 file>` | Load the file using its original known values
+  \ | `s" pic.scr" 16384 6144 file>` | Load only the bitmap to the original known address
+  \ | `s" pic.scr"     0    0 file>` | Load the file using its original unknown values
   \ | `s" pic.scr" 32768    0 file>` | Load the whole file to address 32768
   \ | `s" pic.scr" 32768  256 file>` | Load only 256 bytes to address 32768
   \ |===

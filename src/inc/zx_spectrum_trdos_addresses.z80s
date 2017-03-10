@@ -10,6 +10,8 @@
 ;
 ; 2017-03-08: Rename `trdos_variable.file_size` to
 ; `trdos_variable.stream_or_file_size`.
+;
+; 2017-03-09: Improve name of variable 23814.
 
 ; --------------------------------------------------------------
 ; TR-DOS entry points
@@ -101,7 +103,7 @@ trdos_variable.sector:                                    equ 23807
 trdos_variable.buffer:                                    equ 23808
 trdos_variable.hl_copy:                                   equ 23810
 trdos_variable.de_copy:                                   equ 23812
-trdos_variable.find_command_symbols:                      equ 23814
+trdos_variable.bytes_compared_by_find_command:            equ 23814
 trdos_variable.deleted_files:                             equ 23815
 trdos_variable.filename_first_char:                       equ 23816
 trdos_variable.data_file_mode:                            equ 23817
