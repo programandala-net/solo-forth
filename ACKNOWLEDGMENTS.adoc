@@ -1,6 +1,6 @@
 = Acknowledgments
 :author: Marcos Cruz (programandala.net)
-:revdate: 2016-11-26
+:revdate: 2017-03-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
@@ -17,6 +17,7 @@ alphabetical order:
 
 // XXX TODO -- versions
 
+- 4tH, by J.L. Bezemer, 1994..2016.
 - Abersoft Forth (for ZX Spectrum 48K), by John Jones Steele, 1983.
 - Afera (library for Abersoft Forth), by Marcos Cruz, 2015..2016.
 - CamelForth (for Z80), by Bradford J. Rodriguez, 1994..1995.

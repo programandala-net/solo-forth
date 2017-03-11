@@ -1,11 +1,11 @@
 = Solo Forth TO-DO
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-10
+:revdate: 2017-03-11
 
 // This file is part of Solo Forth
 // http://programandala.net/en.program.solo_forth.html
 
-// Last modified 201703110037
+// Last modified 201703112116
 
 // Application development {{{1
 == Application development ==
@@ -147,17 +147,6 @@ Rewrite `here` in Z80. `dp` must be an ordinary variable first.
 
 Rewrite `there` in Z80 (`dp` must be an ordinary variable first) or remove it?
 
-.2016-12-03:
-
-Use a new kind of unconditional high-level branch at the end of `nest-source`
-and `unnest-source`:
-
-----
-goto  ( a -- )
-----
-
-Make it consistent with the planned changes in the current low-level branches.
-
 .2016-11-20:
 
 Add `fast` and `slow`, after ACE Forth, to deactivate/activate some checks:
@@ -243,6 +232,17 @@ Document the variants of `of`.
 
 Use `>bstring` (new name for `>cell-string`), `2>bstring`, `c>bstring`
 (already exists as `char>string`).
+
+.2016-12-03:
+
+Use a new kind of unconditional high-level branch at the end of `nest-source`
+and `unnest-source`:
+
+----
+goto  ( a -- )
+----
+
+Make it consistent with the planned changes in the current low-level branches.
 
 .2016-11-26, 2017-01-23:
 
@@ -515,10 +515,11 @@ Add attributes to block quotes. See <lib.sound.48.fs>.
 Update "Warning:" and "Note:" to Asciidoctor markup "WARNING:" and
 "NOTE:" where appropiate.
 
-.2017-02-21:
+.2017-02-21, 2017-03-11:
 
-Make one single manual, not one for each DOS. First, the issue about
-cross references of homonymous words must be solved.
+Make one single manual, not one for each DOS. The issue about cross
+references of homonymous words has been be solved, but all such links
+need to be updated with the filename.
 
 .2017-02-20:
 
@@ -539,10 +540,6 @@ cases.
 
 Remove the documentation of DOS subroutines that is duplicated in its
 corresponding entry constant, and put a note instead.
-
-.2017-02-11:
-
-Update acknowledgements file. Add 4tH.
 
 .2017-02-08:
 
@@ -733,10 +730,6 @@ must be a way to deactivate this. Study the disassembly.
 
 Make `(acat` aware of `printing` to use channel 2 or 3.
 A DOS-indepedent routine will be useful to set the A register.
-
-.2017-02-17:
-
-Add `rename-file`.
 
 .2017-02-12:
 
