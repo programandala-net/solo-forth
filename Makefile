@@ -757,6 +757,7 @@ tmp/doc.gplusdos.manual_skeleton.adoc: \
 tmp/doc.gplusdos.manual.adoc: \
 	tmp/doc.gplusdos.manual_skeleton.adoc \
 	src/doc/stack_notation.adoc \
+	src/doc/z80_flags_notation.adoc \
 	src/doc/glossary_heading.adoc \
 	tmp/doc.gplusdos.glossary.adoc
 	cat $^ > $@

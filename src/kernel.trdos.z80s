@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703110047
+; Last modified: 201703112149
 
 ; ==============================================================
 ; Description
@@ -82,6 +82,8 @@
 ;
 ; 2017-03-08: Clear a possible previous error at the `dos.c`
 ; entry.
+;
+; 2017-03-11: Update notation of Z80 flags.
 
 ; ==============================================================
 ; Requirements
@@ -105,9 +107,12 @@ dos.alt_a:
   ; Input:
   ;   A' = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
-  ; Output:
-  ;   A  = TR-DOS error result (0..12)
-  ;   Z  = no error? (A=0)
+  ; Output (no error):
+  ;   A  = 0
+  ;   Fz = 1
+  ; Output (error):
+  ;   A  = TR-DOS error code (1..12)
+  ;   Fz = 0
 
   ex af,af'
   ld c,a
@@ -123,9 +128,12 @@ dos.c:
   ; Input:
   ;   C = TR-DOS command code ($00..$18)
   ;   A, B, DE, HL = possible parameters, depending on the command
-  ; Output:
-  ;   A  = TR-DOS error result (0..12)
-  ;   Z  = no error? (A=0)
+  ; Output (no error):
+  ;   A  = 0
+  ;   Fz = 1
+  ; Output (error):
+  ;   A  = TR-DOS error code (1..12)
+  ;   Fz = 0
 
   call before_dos_call
   call trdos_entry.execute_command_in_c
@@ -156,7 +164,7 @@ after_dos_call:
 
   ld (iy+sys_df_sz_offset),0            ; 0 lines in the lower screen
   ld a,(trdos_variable.error_code)      ; error code
-  and a                                 ; set Z
+  and a                                 ; Fz=1
   ret
 
 before_dos_call:
@@ -179,9 +187,12 @@ dos.alt_a.preserve_ip:
   ; Input:
   ;   A' =TR-DOS command code ($00..$18)
   ;   A, DE, HL = possible parameters, depending on the command
-  ; Output:
-  ;   A  = TR-DOS error result (0..12)
-  ;   Z  = no error? (A=0)
+  ; Output (no error):
+  ;   A  = 0
+  ;   Fz = 1
+  ; Output (error):
+  ;   A  = TR-DOS error code (1..12)
+  ;   Fz = 0
 
   push bc     ; save the Forth IP
   call dos.alt_a
@@ -204,10 +215,14 @@ dos.alt_a.restore_ip:
   ;   A' = TR-DOS command code ($00..$18)
   ;   (SP) = Forth IP
   ;   A, B DE, HL = possible parameters, depending on the command
-  ; Output:
-  ;   A  = TR-DOS error result (0..12)
-  ;   Z  = no error? (A=0)
+  ; Output (no error):
+  ;   A  = 0
   ;   BC = Forth IP
+  ;   Fz = 1
+  ; Output:
+  ;   A  = TR-DOS error code (1..12)
+  ;   BC = Forth IP
+  ;   Fz = 0
 
   call dos.alt_a
   pop hl   ; get the return address
@@ -221,9 +236,12 @@ dos.hl:
 
   ; Input:
   ;   HL = TR-DOS address to call
-  ; Output:
-  ;   A  = TR-DOS error result (0..12)
-  ;   Z  = no error? (A=0)
+  ; Output (no error):
+  ;   A  = 0
+  ;   Fz = 1
+  ; Output (error):
+  ;   A  = TR-DOS error code (1..12)
+  ;   Fz = 0
 
   call before_dos_call
   call dos.hl.call
@@ -250,12 +268,11 @@ push_dos_ior:
   ; total).
 
   ; Input:
-  ;   A  = TR-DOS error result (0..12)
-  ; Output:
-  ;   If error:
-  ;     TOS = Forth exception code (-1012..-1001)
-  ;   If no error:
-  ;     TOS = zero
+  ;   A  = TR-DOS error code (1..12) or zero
+  ; Output (no error):
+  ;   TOS = zero
+  ; Output (error):
+  ;   TOS = Forth exception code (-1012..-1001)
 
   and a               ; error?
   jp z,false_         ; jump if not
@@ -279,9 +296,12 @@ push_dos_ior:
 ; Input:
 ;   A' = TR-DOS command code ($00..$18)
 ;   A, B, DE, HL = possible parameters, depending on the command
-; Output:
-;   A  = TR-DOS error result (0..12)
-;   Z  = no error? (A=0)
+; Output (no error):
+;   A  = 0
+;   Fz = 1
+; Output (error):
+;   A  = TR-DOS error code (1..12)
+;   Fz = 0
 ; ....
 
 ; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
@@ -307,9 +327,12 @@ push_dos_ior:
 ; Input:
 ;   C = TR-DOS command code ($00..$18)
 ;   A, B, DE, HL = possible parameters, depending on the command
-; Output:
-;   A  = TR-DOS error result (0..12)
-;   Z  = no error? (A=0)
+; Output (no error):
+;   A  = 0
+;   Fz = 1
+; Output (error):
+;   A  = TR-DOS error code (1..12)
+;   Fz = 0
 ; ....
 
 ; See also: `dos-hl_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
@@ -334,9 +357,12 @@ push_dos_ior:
 ; ....
 ; Input:
 ;   HL = TR-DOS routine address
-; Output:
-;   A  = TR-DOS error result (0..12)
-;   Z  = no error? (A=0)
+; Output (no error):
+;   A  = 0
+;   Fz = 1
+; Output (error):
+;   A  = TR-DOS error code (1..12)
+;   Fz = 0
 ; ....
 
 ; See also: `dos-c_`, `dos-alt-a_`, `dos-alt-a-preserve-ip_`,
@@ -364,9 +390,12 @@ push_dos_ior:
 ; Input:
 ;   A' =TR-DOS command code ($00..$18)
 ;   A, DE, HL = possible parameters, depending on the command
-; Output:
-;   A  = TR-DOS error result (0..12)
-;   Z  = no error? (A=0)
+; Output (no error):
+;   A  = 0
+;   Fz = 1
+; Output (error):
+;   A  = TR-DOS error code (1..12)
+;   Fz = 0
 ; ....
 
 ; See also: `dos-c_`, `dos-hl_`, `dos-alt-a_`,
@@ -397,10 +426,14 @@ push_dos_ior:
 ;   A' = TR-DOS command code ($00..$18)
 ;   (SP) = Forth IP
 ;   A, B DE, HL = possible parameters, depending on the command
-; Output:
-;   A  = TR-DOS error result (0..12)
-;   Z  = no error? (A=0)
+; Output (no error):
+;   A  = 0
 ;   BC = Forth IP
+;   Fz = 1
+; Output (error):
+;   A  = TR-DOS error code (1..12)
+;   BC = Forth IP
+;   Fz = 0
 ; ....
 
 ; See also: `dos-c_`, `dos-hl_`, `dos-alt-a-preserve-ip_`,
@@ -428,11 +461,10 @@ push_dos_ior:
 ; ....
 ; Input:
 ;   A  = TR-DOS error result (0..12)
-; Output:
-;   If error:
-;     TOS = Forth exception code (-1012..-1001)
-;   If no error:
-;     TOS = zero
+; Output (no error):
+;   TOS = zero
+; Output (error):
+;   TOS = Forth exception code (-1012..-1001)
 ; ....
 
 ; See also: `dosior>ior`.

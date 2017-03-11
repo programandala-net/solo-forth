@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703091330
+; Last modified: 201703112152
 
 ; ==============================================================
 ; Description
@@ -63,6 +63,8 @@
 ;
 ; 2017-03-09: Move `file-position` and `reposition-file` to the
 ; library.
+;
+; 2017-03-11: Update notation of Z80 flags.
 
 ; ==============================================================
 ; Requirements
@@ -196,11 +198,11 @@ push_dos_ior:
   ; `next` at the end.
 
   ; Input:
-  ;   CY = no error?
   ;   A  = +3DOS error code (0..36)
-  ; Output if error:
+  ;   Fc = no error?
+  ; Output (error):
   ;   TOS = Forth exception code (-1036..-1000)
-  ; Output if no error:
+  ; Output (no error):
   ;   TOS = false
 
   jp c,false_   ; no error
@@ -380,11 +382,10 @@ endif
 ; ....
 ; Input:
 ;   A  = +3DOS error result (0..36)
-; Output:
-;   If error:
-;     TOS = Forth exception code (-1036..-1000)
-;   If no error:
-;     TOS = zero
+; Output (no error):
+;   TOS = zero
+; Output (error):
+;   TOS = Forth exception code (-1036..-1000)
 ; ....
 
 ; See also: `dosior>ior`.
@@ -1090,11 +1091,11 @@ if current_drive_method=1 ; XXX TMP --
   jr nc,set_drive.end ; skip if error
 
   ; A = logical drive ('A'..'P')
-  ; CY = 1 (no error)
+  ; Fc = 1 (no error)
 
   ld (transfer_sector.logical_drive),a
   sub 'A'
-  ccf ; set carry flag again
+  ccf ; Fc = 1
   ld (transfer_sector.physical_drive),a
 
 set_drive.end
@@ -1111,10 +1112,10 @@ if current_drive_method=2 ; XXX TMP --
   jr nc,set_drive.end ; skip if error
 
   ; A = logical drive ('A'..'P')
-  ; CY = 1 (no error)
+  ; Fc = 1 (no error)
 
   sub 'A'
-  ccf ; set carry flag again
+  ccf ; Fc=1
   ld (transfer_sector.physical_drive.instance_0),a
   ld (transfer_sector.physical_drive.instance_1),a
 
@@ -1134,7 +1135,7 @@ if current_drive_method=3 ; XXX TMP --
   jr nc,set_drive.end ; skip if error
 
   ; A = logical drive ('A'..'P')
-  ; CY = 1 (no error)
+  ; Fc = 1 (no error)
   push af
 
   call dos_in
@@ -1166,7 +1167,7 @@ if current_drive_method=4 ; XXX TMP --
   jr nc,set_drive.end ; skip if error
 
   ; A = logical drive ('A'..'P')
-  ; CY = 1 (no error)
+  ; Fc = 1 (no error)
   push af
 
   sub 'A'

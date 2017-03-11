@@ -449,18 +449,6 @@ Add `aconstant`, an array of constants, after `avalue` and `avariable`.
 Add cross references to the original versions of alternative stack
 words, e.g. `-dup`, and alternative control flow words, e.g. `-if`.
 
-.2017-03-09:
-
-Adopt the following notation for Z80 flags:
-
-[horizontal]
-Fs :: Sign flag (bit 7)
-Fz :: Zero flag (bit 6)
-Fh :: Half Carry flag (bit 4)
-Fp :: Parity/Overflow flag (bit 2)
-Fn :: Add/Subtract flag (bit 1)
-Fc :: Carry flag (bit 0)
-
 .2017-03-08:
 
 Use "catalog" instead of "catalogue".

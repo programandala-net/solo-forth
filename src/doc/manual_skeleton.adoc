@@ -349,4 +349,6 @@ images or the manual for your DOS of choice:
 The disk images will be created in the <disks> directory. The HTML
 manual will be created in the <doc> directory.
 
+== Notation
+
 // =============================================================

@@ -3,7 +3,7 @@
 ; This file is part of Solo Forth
 ; http://programandala.net/en.program.solo_forth.html
 
-; Last modified: 201703112121
+; Last modified: 201703112139
 
 include version.z80s
 
@@ -950,10 +950,12 @@ terminal_input_buffer:
 
 compare_de_hl_unsigned:
 
-  ; Input:  DE, HL
-  ; Output:
-  ;  flag CY set if HL < DE
-  ;  flag Z set if HL = DE
+  ; Input:
+  ;   DE, HL
+  ; Output (HL<DE):
+  ;   Fc=1
+  ; Output (HL=DE):
+  ;   Fz=1
 
   ; Credit:
   ; Code from DZX-Forth
@@ -971,8 +973,10 @@ compare_de_hl_unsigned:
 
 compare_de_hl_signed:
 
-  ; Input:  DE, HL
-  ; Output: flag CY if HL < DE
+  ; Input:
+  ;   DE, HL
+  ; Output (HL<DE):
+  ;   Fc=1
 
   ld a,h
   xor d
@@ -993,9 +997,9 @@ noop:
 move_block:
 
   ; Input:
-  ; HL = source
-  ; DE = destination
-  ; BC = count
+  ;   HL = source
+  ;   DE = destination
+  ;   BC = count
 
   ; If BC is greater than zero, copy the contents of BC consecutive address
   ; units at HL to the BC consecutive address units at de. After the move
@@ -1014,9 +1018,9 @@ move_block:
 move_block_upwards:
 
   ; Input:
-  ; HL = source
-  ; DE = destination
-  ; BC = count
+  ;   HL = source
+  ;   DE = destination
+  ;   BC = count
 
   ; If BC is greater than zero, copy BC consecutive characters from the data
   ; space starting at HL to that starting at DE, proceeding
@@ -1035,13 +1039,14 @@ move_block_upwards:
 ; Code from DZX-Forth.
 
   ; Input:
-  ; HL = source
-  ; DE = destination
-  ; BC = count
+  ;   HL = source
+  ;   DE = destination
+  ;   BC = count
 
-  ; If BC is greater than zero, copy BC consecutive characters from the data
-  ; space starting at HL to that starting at DE, proceeding
-  ; character-by-character from higher addresses to lower addresses.
+  ; If BC is greater than zero, copy BC consecutive characters
+  ; from the data space starting at HL to that starting at DE,
+  ; proceeding character-by-character from higher addresses to
+  ; lower addresses.
 
 move_block_downwards:
 
@@ -1135,8 +1140,12 @@ if 0
   ; Credit:
   ; http://web.archive.org/web/20150225121110/http://baze.au.com/misc/z80bits.html#1.3
 
-  ; Input: DE = Multiplier, BC = Multiplicand, HL = 0
-  ; Output: DE:HL = Product
+  ; Input:
+  ;   DE = Multiplier
+  ;   BC = Multiplicand
+  ;   HL = 0
+  ; Output:
+  ;   DE:HL = Product
 
 de_multiplied_by_bc_to_dehl_unsigned:
 
@@ -1652,15 +1661,15 @@ question_next_bank:
   ;
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or higher
-  ;   ($0000..$3FFF).
-  ; Output when HL is above the paged bank:
+  ;        ($0000..$3FFF).
+  ; Output (when HL is above the paged bank):
   ;   HL = correspondent address in the next bank, which is paged in
-  ;   A corrupted
+  ;   A = corrupted
   ;   D = 0
   ;   E = bank
-  ; Output when HL is an address in a paged bank:
-  ;   HL preserved
-  ;   A corrupted
+  ; Output (when HL is an address in a paged bank):
+  ;   HL = preserved
+  ;   A = corrupted
   ;
   ; Note: the address of this routine is returned by
   ; `?next-bank_`, a constant defined in the assembler
@@ -1682,7 +1691,7 @@ new_bank:
   ; Input:
   ;   A = updated bank index (possibly out of range 0..3)
   ; Output:
-  ;   A corrupted
+  ;   A = corrupted
   ;   D = 0
   ;   E = bank
 
@@ -1728,15 +1737,15 @@ question_previous_bank:
   ;
   ; Input:
   ;   HL = address in a paged bank ($C000..$FFFF) or lower
-  ;   ($8000..$BFFF).
-  ; Output when HL is below the paged bank:
+  ;        ($8000..$BFFF).
+  ; Output (when HL is below the paged bank):
   ;   HL = correspondent address in the previous bank, which is paged in
-  ;   A corrupted
+  ;   A = corrupted
   ;   D = 0
   ;   E = bank
-  ; Output when HL is an address in a paged bank:
-  ;   HL preserved
-  ;   A corrupted
+  ; Output (when HL is an address in a paged bank):
+  ;   HL = preserved
+  ;   A = corrupted
   ;
   ; Note: the address of this routine is returned by
   ; `?previous-bank_`, a constant defined in the assembler
@@ -1806,10 +1815,10 @@ far.hl:
   ;
   ; Input:
   ;   HL = far-memory address ($0000..$FFFF)
-  ;
   ; Output:
   ;   HL = actual memory address ($C000..$FFFF)
-  ;   A DE corrupted
+  ;   A = corrupted
+  ;   DE = corrupted
   ;
   ; Note: the address of this routine is returned by
   ; `far-hl_`, a constant defined in the assembler word
@@ -4675,24 +4684,24 @@ move.do:
   pop de
   ld a,16     ; loop counter
   sla e
-  rl d        ; hi bit DE -> carry
+  rl d        ; hi bit DE -> Fc
 u_m_slash_mod.do:
-  adc hl,hl   ; rot left w/ carry
+  adc hl,hl   ; rot left with carry
   jr nc,u_m_slash_mod.3
-  ; case 1: 17 bit, CY:HL = 1xxxx
+  ; case 1: 17 bit, Fc:HL = 1xxxx
   or a        ; we know we can subtract
   sbc hl,bc
-  or a        ; clear CY to indicate sub ok
+  or a        ; clear Fc to indicate sub ok
   jr u_m_slash_mod.4
-  ; case 2: 16 bit, CY:HL = $xxx
+  ; case 2: 16 bit, Fc:HL = $xxx
 u_m_slash_mod.3:
   sbc hl,bc   ; try the subtract
-  jr nc,u_m_slash_mod.4 ; if no CY, subtract ok
+  jr nc,u_m_slash_mod.4 ; if no Fc, subtract ok
   add hl,bc   ; else cancel the subtract
-  scf         ;   and set CY to indicate
+  scf         ;   and set Fc to indicate
 u_m_slash_mod.4:
   rl e        ; rotate result bit into DE,
-  rl d        ; and next bit of DE into CY
+  rl d        ; and next bit of DE into Fc
   dec a
   jr nz,u_m_slash_mod.do
   ; now have complemented quotient in DE,
@@ -5320,7 +5329,7 @@ true_if_cy:
   add hl,de             ;  11 01
   push hl               ;  11 01 ; 2OS=d1lo+d2lo=d3lo
   exx                   ;  04 01
-  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+CY=d3hi
+  adc hl,de             ;  15 02 ; HL=d1hi+d2hi+Fc=d3hi
   push hl               ;  11 01
   _jp_next              ;  08 02
                         ;  -- --
@@ -5392,8 +5401,11 @@ negate_hl:
   ;
   ; http://wikiti.brandonw.net/index.php?title=Z80_Routines:Math:Signed_Math
 
-  ;Input: HL
-  ;Ouput: HL negated; A corrupted
+  ; Input:
+  ;   HL
+  ; Ouput:
+  ;   HL = negated
+  ;   A = corrupted
 
   ;       ;  T  B
   ;       ; -- --
@@ -5458,7 +5470,7 @@ else
   pop hl      ; high part                       ;  10 01
   pop de      ; low part                        ;  10 01
   sub a       ; zero                            ;  04 01
-  sub e       ; two's complement to carry       ;  04 01
+  sub e       ; two's complement to Fc          ;  04 01
   ld e,a                                        ;  04 01
   ld a,$00                                      ;  07 02
   sbc a,d     ; two's complement with carry     ;  04 01
@@ -7024,7 +7036,7 @@ two_comma.allot:
 
   pop de
   pop hl
-  or a ; CY=0
+  or a ; Fc=0
   sbc hl,de
   jp z,false_
   jp true_
@@ -7048,7 +7060,7 @@ two_comma.allot:
 
   pop de
   pop hl
-  or a ; CY=0
+  or a ; Fc=0
   sbc hl,de
   jp nz,false_
 
@@ -7113,7 +7125,7 @@ less_than.de_hl:
 
             ;  T  B
             ; -- --
-  or a      ; 04 01 ; CY=0
+  or a      ; 04 01 ; Fc=0
   sbc hl,de ; 15 02 ; n1-n2 in HL, SZVC valid
 
   ; negative & not OV:  HL<DE
@@ -7177,9 +7189,9 @@ u_greater_than.hl:
   pop de
   pop hl
 u_less_than.de_hl:
-  or a            ; CY=0
+  or a            ; Fc=0
   sbc hl,de
-  sbc a,a         ; propagate carry flag through A
+  sbc a,a         ; propagate Fc through A
   ld h,a
   ld l,a          ; HL = $0000 (false) or $FFFF (true)
   _jp_pushhl
@@ -7554,8 +7566,8 @@ bank.e:
   ;       On 512 KiB computers:  0..31
   ;       On 1024 Kib computers: 0..63
   ; Output:
-  ;   A corrupted
-  ;   D corrupted (only on Pentagon 512 and Pentagon 1024)
+  ;   A = corrupted
+  ;   D = corrupted (only on Pentagon 512 and Pentagon 1024)
 
   ; WARNING -- In order to make this routine usable by code
   ; words, its address is returned by the `e-bank_`
@@ -8910,9 +8922,9 @@ fill.a:
   pop de              ; DE = address
 
   ld hl,$FFFF
-  or a                ; clear carry flag
+  or a                ; Fc = 0
   adc hl,bc           ; test for count=0 or 1
-  jr nc,fill.done     ; no CY: count=0, skip
+  jr nc,fill.done     ; no Fc: count=0, skip
   ld (de),a           ; fill first byte
   jr z,fill.done      ; z: count=1, done
   dec bc              ; else adjust count
@@ -9095,7 +9107,7 @@ fill.done:
 
   pop de                  ; n
   pop hl                  ; len1
-  and a                   ; CY=0
+  and a                   ; Fc=0
   sbc hl,de               ; HL=len2
   ex (sp),hl              ; (SP)=len2 HL=ca1
   add hl,de               ; HL=ca2
@@ -9795,7 +9807,7 @@ endif
   ld a,e
   cp l
 compare.lengths:
-                         ; CY = string2 is longer than string1?
+                         ; Fc = string2 is longer than string1?
   jr c,compare.ready
   ex de,hl
 compare.ready:
@@ -9805,7 +9817,7 @@ compare.ready:
   ld h,b                 ; HL = Forth IP
   pop bc                 ; BC = ca2
   ex (sp),hl             ; HL = ca1 -- save Forth IP
-  push af                ; save CY (string2 is longer than string1?)
+  push af                ; save Fc (string2 is longer than string1?)
                          ; HL = ca1
                          ; BC = ca2
                          ; DE = length of the shorter string
@@ -9821,14 +9833,12 @@ compare.char
   dec de
   jp compare.char
 
-compare.match:
-                         ; The smaller string matches.
-  pop af                 ; restore CY (string2 is longer than string1?)
+compare.match:           ; the smaller string matches
+  pop af                 ; restore Fc (string2 is longer than string1?)
   jr compare.end
 
-compare.no_match:
-                         ; The smaller string does not match.
-  pop bc                 ; useless carry flag
+compare.no_match:        ; the smaller string does not match
+  pop bc                 ; discard Fc
 
 compare.end:
   pop bc                 ; restore Forth IP
@@ -13765,7 +13775,7 @@ mode32_xy.end:
   ; Set the border color to the paper color.
 
   ld a,l ; 128*flash + 64*bright + 8*paper + ink
-  and a ; CY=0
+  and a ; Fc=0
   rra
   rra
   rra ; A = paper

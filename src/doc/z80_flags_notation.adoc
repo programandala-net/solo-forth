@@ -1,0 +1,27 @@
+// z80_flags_notation.adoc
+
+// This file is part of Solo Forth
+// http://programandala.net/en.program.solo_forth.html
+
+// Last modified: 201703112228
+
+// =============================================================
+// History
+
+// 2017-03-11: Start.
+
+// =============================================================
+
+=== Z80 flags notation
+
+.Z80 flags notation
+|===
+| Symbol | Description          | bit
+
+| Fc     | Carry flag           | 0
+| Fh     | Half Carry flag      | 4
+| Fn     | Add/Subtract flag    | 1
+| Fp     | Parity/Overflow flag | 2
+| Fs     | Sign flag            | 7
+| Fz     | Zero flag            | 6
+|===
