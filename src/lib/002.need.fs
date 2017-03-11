@@ -231,6 +231,7 @@ defer unlocated ( block -- )
 : (located) ( ca len -- block | false )
 
   \ ----------------------------
+  \ : (located) 2dup type space
   \ : (located) cr 2dup type space .s
   \ : (located) cr 2dup type get-current dup u. 0= if  quit  then
   \ : (located) cr 2dup type space .s depth 2 > if  key drop  then
@@ -247,7 +248,7 @@ defer unlocated ( block -- )
   ?dup 0= if  drop false exit  then
   delimited last-locatable @ 1+  first-locatable @
   default-first-locatable @  first-locatable !
-  ?do  0 i line>string 2over contains
+  ?do  0 i line>string 2over contains \ i home . \ XXX INFORMER
        if  2drop i unloop exit  then  break-key? #-28 ?throw
        i unlocated  loop  2drop 0 ;
   \ Note: Error #-28 is "user interrupt".
