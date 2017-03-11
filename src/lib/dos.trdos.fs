@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703111158
+  \ Last modified: 201703111240
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,7 +73,8 @@
   \ `fda-empty?`, `cat`, `cat-fda`, `?cat-fda`. Improve
   \ documentation. Improve `undelete-file`: remove `throw` and
   \ factor with `undelete-fda`. Fix requirements of
-  \ `undelete-file`.
+  \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#`.
+  \ Rename `(file-status)` to `fda-filestatus`.
 
 ( --dos-commands-- )
 
@@ -287,8 +288,9 @@ code (acat ( -- ior )
   \
   \ (acat ( -- ior )
   \
-  \ Print an abbreviated catalog of the current disk and return
-  \ error result _ior_.  ``(acat`` is a factor of `acat`.
+  \ Display an abbreviated catalog of the current disk and
+  \ return error result _ior_.  ``(acat`` is a factor of
+  \ `acat`.
   \
   \ See also: `set-drive`.
   \
@@ -300,7 +302,7 @@ code (acat ( -- ior )
   \
   \ acat ( -- ior )
   \
-  \ Print an abbreviated catalog of the current disk.
+  \ Display an abbreviated catalog of the current disk.
   \
   \ See also: `set-drive`, `(acat`.
   \
@@ -468,12 +470,13 @@ code (>file) ( -- ior )
 : >file ( ca1 len1 ca2 len2 -- ior )
   set-filename fda-filelength ! fda-filestart ! (>file) ;
 
-( file-status )
+( fda-filestatus file-status )
 
-need assembler need --dos-commands--
-need fda need set-filename
+[unneeded] fda-filestatus ?(
 
-code (file-status) ( -- a ior )
+need assembler need --dos-commands-- need fda
+
+code fda-filestatus ( -- a ior )
 
   fda h ldp#, h push, b push,
     \ Push `fda` (the _a_ returned) and save Forth IP.
@@ -481,10 +484,26 @@ code (file-status) ( -- a ior )
     \ C = directory entry (0..127), or $FF if file not found
   c a ld, c inc, z? rif  1 a ld#,  \ dosior #1 ("no files")
   relse  dos-read-file-descriptor c ld#, dos-c_ call,
-  rthen b pop, pushdosior jp, end-code
+  rthen b pop, pushdosior jp, end-code ?)
+
+  \ doc{
+  \
+  \ fda-filestatus ( -- a ior )
+  \
+  \ Return the status of the file whose filename is stored at
+  \ `fda` If the file exists, _ior_ is zero and _a_ is the
+  \ address returned by `fda`, the TR-DOS File Descriptor Area;
+  \ otherwise _ior_ is the corresponding result code and _a_ is
+  \ useless.
+  \
+  \ See also: `file-status`.
+  \
+  \ }doc
+
+[unneeded] file-status ?( need fda-filestatus need set-filename
 
 : file-status ( ca len -- a ior )
-  set-filename (file-status) ;
+  set-filename fda-filestatus) ; ?)
 
   \ doc{
   \
@@ -493,7 +512,7 @@ code (file-status) ( -- a ior )
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
   \ is the address returned by `fda`, the TR-DOS File
-  \ Descriptor Area; otherwise _ior_ is the corresponding I/O
+  \ Descriptor Area; otherwise _ior_ is the corresponding
   \ result code and _a_ is useless.
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
@@ -595,22 +614,24 @@ code (file-status) ( -- a ior )
   \
   \ }doc
 
-( file-dir# )
+( fda-filedir# file-dir# )
+
+[unneeded] fda-filedir# ?(
 
 need assembler need --dos-commands-- need set-filename
 
-code (file-dir#) ( -- n ior )
+code fda-filedir# ( -- n ior )
 
-  dos-find-file a ld#, exaf, dos-preserve-ip_ call,
-    \ A = directory entry (0..127), or $FF if file not found
-  0 h ld#, a l ld, h push,
-  a inc, z? rif   a inc, \ dosior #1 ("no files")
+  dos-find-file a ld#, exaf, dos-alt-a-preserve-ip_ call,
+    \ C = directory entry (0..127), or $FF if file not found
+  0 h ld#, c l ld, h push,
+  c inc, z? rif   1 a ld#, \ dosior #1 ("no files")
             relse a xor, rthen
-  pushdosior jp, end-code
+  pushdosior jp, end-code ?)
 
   \ doc{
   \
-  \ (file-dir#) ( -- n ior )
+  \ fda-filedir# ( -- n ior )
   \
   \ Return the file directory number of the file whose filename
   \ is stored at `fda` (File Descriptor Area). If the file was
@@ -622,7 +643,9 @@ code (file-dir#) ( -- n ior )
   \
   \ }doc
 
-: file-dir# ( ca len -- n ior ) set-filename (file-dir#) ;
+[unneeded] file-dir# ?( need fda-filedir# need set-filename
+
+: file-dir# ( ca len -- n ior ) set-filename fda-filedir# ; ?)
 
   \ doc{
   \
@@ -835,72 +858,6 @@ create tmp-filename /filename allot
   \ a byte 1 as first char. That's why an alternative was
   \ needed.
 
-( undelete-file )
-
-  \ XXX OLD -- 2017-03-10. First try.
-  \
-  \ XXX FIXME -- `dos-find-file` can not locate deleted files,
-  \ it ignores them, i.e.  filenames with a byte 1 as first
-  \ char.  A custom procedure must be written.
-
-need assembler need --dos-commands--
-need fda need set-filename
-
-code (undelete-file ( -- ior )
-  b push,
-  dos-find-file c ld#, dos-c_ call,
-  \ C = directory entry of the file, or $FF if not found
-  c a ld, c inc, z?
-  rif   1 a ld#, \ dosior #1 ("no files")
-  relse af push, dos-read-file-descriptor c ld#, dos-c_ call,
-                 5D08 fta, fda-filename sta,
-        af pop,  dos-write-file-descriptor c ld#, dos-c_ call,
-  rthen b pop, pushdosior jp, end-code
-
-  \ doc{
-  \
-  \ (delete-file) ( -- ior )
-  \
-  \ Delete a disk file using the data hold in `dfa`.
-  \ Return an error result _ior_.
-  \
-  \ ``(delete-file)`` is a factor of `delete-file`.
-  \
-  \ }doc
-
-: undelete-file ( ca len -- ior )
-  set-filename 1 fda-filename c! (undelete-file ;
-
-  \ doc{
-  \
-  \ undelete-file ( ca len -- ior )
-  \
-  \ Undelete the disk file named in the string _ca len_ and
-  \ return an error result _ior_.
-  \
-  \ TR-DOS deletes a file replacing its first character with
-  \ byte 1.  ``undelete-file`` replaces the first character in
-  \ _ca len_ with byte 1, then searches the disk for such
-  \ filename and restores its first character using the first
-  \ character removed from the latest deleted file, which
-  \ TR-DOS keeps in its variable $5D08.
-  \
-  \ Therefore, the procedure has some issues:
-  \
-  \ 1. If _ca len_ is not the latest deleted file, the first
-  \ character of its filename will not be the original one.
-  \
-  \ 2. If more than one file has been deleted, with only the
-  \ first character of their filenames being different in all
-  \ of them, ``undelete-file`` will find the oldest one.
-  \
-  \ 3. TR-DOS does not reuse the space occupied by a deleted
-  \ file, until the disk is defragmented
-  \
-  \ See also: `delete-file`.
-  \
-  \ }doc
-
 ( .filename .fda-filename fda-basic? fda-deleted? fda-empty? )
 
 [unneeded] .filename ?( need /filename
@@ -998,7 +955,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ cat-fda ( n -- )
   \
-  \ Display catalogue entry _n_ of the current drive.
+  \ Display catalog entry _n_ of the current drive.
   \ The entry is already stored in `fda`.
   \
   \ ``cat-fda`` is a factor of `?cat-fda`.
@@ -1013,7 +970,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ ?cat-fda ( n -- )
   \
-  \ If catalogue entry _n_ of the current drive is not a
+  \ If catalog entry _n_ of the current drive is not a
   \ deleted file, display it.  The entry is already stored in
   \ `fda`.
   \
@@ -1036,10 +993,26 @@ need fda-basic? need fda-empty? need fda-deleted?
   \
   \ cat ( -- )
   \
-  \ Show a disk catalogue of the current drive.
+  \ Show a disk catalog of the current drive.
   \
   \ See also: `acat`, `?cat-fda`, `cat-fda`, `set-drive`.
   \
   \ }doc
+
+( rename-file )
+
+  \ XXX UNDER DEVELOPMENT
+
+need fda need set-filename
+
+: rename-file ( ca1 len1 ca2 len2 -- ior )a
+  set-filename find-file
+  tmp-filename -filename tmp-filename smove 1 tmp-filename c!
+  read-system-track ?dup if unloop exit then
+  files/disk 0 ?do
+    i read-file-descriptor ?dup if unloop exit then
+    fda-filename /filename tmp-filename /filename str=
+    if undelete-fda i write-file-descriptor unloop exit then
+  loop #-1001 ;
 
   \ vim: filetype=soloforth
