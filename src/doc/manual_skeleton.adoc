@@ -1,12 +1,12 @@
 = Solo Forth %VERSION% %DOS%
 :author: Marcos Cruz (programandala.net)
-:revdate: 2017-03-10
+:revdate: 2017-03-11
 :toc:
 :toclevels: 1
 :toc-placement!:
 :linkattrs:
 
-// Last modified 201703110046
+// Last modified 201703111533
 
 toc::[]
 
@@ -120,7 +120,7 @@ on each DOS.
 | `r/w`             |       |        | YES   | Standard Forth
 | `read-file`       |       |        |       | Standard Forth
 | `read-line`       |       |        |       | Standard Forth
-| `rename-file`     | YES   |        | YES   | Standard Forth
+| `rename-file`     | YES   | YES    | YES   | Standard Forth
 | `reposition-file` |       |        | YES   | Standard Forth
 | `require`         |       |        |       | Standard Forth
 | `required`        |       |        |       | Standard Forth

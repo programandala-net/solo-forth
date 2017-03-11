@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703111457
+  \ Last modified: 201703111548
 
   \ -----------------------------------------------------------
   \ Description
@@ -75,7 +75,7 @@
   \ factor with `undelete-fda`. Fix requirements of
   \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#` and
   \ fix it.  Rename `(file-status)` to `fda-filestatus`. Add
-  \ `get-filename` and `rename-file`.
+  \ `get-filename` and `rename-file`. Improve documentation.
 
 ( --dos-commands-- )
 
@@ -226,7 +226,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-( set-filename get-filename )
+( set-filename get-filename filename>filetype )
 
 [unneeded] set-filename ?(
 
@@ -260,7 +260,24 @@ need -fda-filename need /filename need fda
   \ Return the filename _ca len_ that is stored in `fda` (File
   \ Descriptor Area).
   \
-  \ See also: `set-filename`, `fda-filename`, `/filename`.
+  \ See also: `set-filename`, `fda-filename`, `/filename`,
+  \ `filename>filetype`.
+  \
+  \ }doc
+
+[unneeded] filename>filetype
+
+?\ : filename>filetype ( ca len -- c ) + 1- c@ ;
+
+  \ doc{
+  \
+  \ filename>filetype ( ca len -- c )
+  \
+  \ Return the filetype _c_ of filename _ca len_. Note _len_ is
+  \ assumed to be `/filename`, i.e., _ca len_ is a complete
+  \ filename.
+  \
+  \ See also: `set-filename`, `get-filename`.
   \
   \ }doc
 
@@ -371,7 +388,7 @@ code (file>) ( ca len -- ior )
   \
   \ (file>) ( ca len -- ior )
   \
-  \ Search the disk for the file whose filename is stored in
+  \ Search the disk for the file whose filename is stored at
   \ `fda` and read its metadata into `fda`. Then read the file
   \ contents to memory zone _ca len_ or to the original memory
   \ zone of the file, depending on the following rules:
@@ -509,10 +526,9 @@ code fda-filestatus ( -- a ior )
   \ fda-filestatus ( -- a ior )
   \
   \ Return the status of the file whose filename is stored at
-  \ `fda` If the file exists, _ior_ is zero and _a_ is the
-  \ address returned by `fda`, the TR-DOS File Descriptor Area;
-  \ otherwise _ior_ is the corresponding result code and _a_ is
-  \ useless.
+  \ `fda` If the file exists, _ior_ is zero and _a_ is `fda`,
+  \ the TR-DOS File Descriptor Area; otherwise _ior_ is the
+  \ corresponding result code and _a_ is useless.
   \
   \ See also: `file-status`.
   \
@@ -529,11 +545,14 @@ code fda-filestatus ( -- a ior )
   \
   \ Return the status of the file identified by the character
   \ string _ca len_. If the file exists, _ior_ is zero and _a_
-  \ is the address returned by `fda`, the TR-DOS File
-  \ Descriptor Area; otherwise _ior_ is the corresponding
-  \ result code and _a_ is useless.
+  \ is `fda`, the TR-DOS File Descriptor Area; otherwise _ior_
+  \ is the corresponding result code and _a_ is useless.
   \
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
+  \
+  \ See also: `file-exists?`, `file-start`, `file-length`,
+  \ `file-type`, `find-file`, `file-dir#`, `file-sectors`,
+  \ `file-sector`, `file-track`, `delete-file`, `rename-file`.
   \
   \ }doc
 
@@ -674,7 +693,7 @@ code fda-filedir# ( -- n ior )
   \ found, _ior_ is zero and _n_ is the file directory number.
   \ Otherwise _ior_ is an exception code and _n_ is undefined.
   \
-  \ See also: `file-status`.
+  \ See also: `file-status`, `fda-filedir#`.
   \
   \ }doc
 
@@ -769,7 +788,8 @@ code (delete-file) ( -- ior )
   \
   \ Origin: Forth-94 (FILE), Forth-2012 (FILE).
   \
-  \ See also: `(delete-file`.
+  \ See also: `undelete-file`, `(delete-file`, `rename-file`,
+  \ `file-status`.
   \
   \ }doc
 
@@ -872,9 +892,9 @@ create tmp-filename /filename allot
   \ }doc
 
   \ XXX REMARK -- The TR-DOS command `dos-find-file` can not
-  \ locate deleted files, it ignores them, i.e.  filenames with
-  \ a byte 1 as first char. That's why an alternative was
-  \ needed.
+  \ locate deleted files, because it ignores filenames with a
+  \ byte 1 as first character, which is the deletion mark.
+  \ That's why an alternative was needed.
 
 ( .filename .fda-filename fda-basic? fda-deleted? fda-empty? )
 
@@ -989,7 +1009,7 @@ need fda-basic? need fda-empty? need fda-deleted?
   \ ?cat-fda ( n -- )
   \
   \ If catalog entry _n_ of the current drive is not a
-  \ deleted file, display it.  The entry is already stored in
+  \ deleted file, display it.  The entry is already stored at
   \ `fda`.
   \
   \ ``?cat-fda`` is a factor of `cat`.
@@ -1019,8 +1039,6 @@ need fda-basic? need fda-empty? need fda-deleted?
 
 ( rename-file )
 
-  \ XXX UNDER DEVELOPMENT
-
 need file-dir# need get-filename need set-filename
 need read-file-descriptor need write-file-descriptor
 
@@ -1038,6 +1056,53 @@ need read-file-descriptor need write-file-descriptor
   set-filename r> write-file-descriptor ;
     \ Patch the new filename and write `fda` to disk.
 
-  \ XXX FIXME -- The filetypes must be the same.
+  \ doc{
+  \
+  \ rename-file  ( ca1 len1 ca2 len2 -- ior )
+  \
+  \ Rename the file named by the character string _ca1 len1_ to
+  \ the name in the character string _ca2 len2_ and return
+  \ error result _ior_.
+  \
+  \ WARNING: TR-DOS uses the 9th character of filenames as the
+  \ filetype identifier.  When the filetype is not specified in
+  \ a filename, Solo Forth uses 'C' (code file) by default.
+  \ ``rename-file`` does not check filetypes, so it can be used
+  \ also to change the filetype. As usual in Forth, the
+  \ programmer is supposed to know what he is doing. See the
+  \ examples below.
+  \
+  \ Examples:
+  \
+  \ Given a BASIC program file saved as "old", the following
+  \ instruction does not rename it to "new", because filetypes
+  \ are not specified and filetype 'C' (code file) is used by
+  \ default. Therefore a code file "old", if it exists, is
+  \ renamed to "new":
+
+  \ ----
+  \ s" old" s" new" rename-file throw
+  \ ----
+
+  \ The following instruction renames a BASIC program "old" to
+  \ "new", but since the filetype is not included in the new
+  \ name, the default filetype 'C' (code file) is used. The
+  \ "new" file will be a BASIC program marked as a code file:
+
+  \ ----
+  \ s" old     B" s" new" rename-file throw
+  \ ----
+
+  \ Including both filetypes is always safe:
+
+  \ ----
+  \ s" old     B" s" new     B" rename-file throw
+  \ ----
+
+  \ Origin: Forth-94 (FILE EXT), Forth-2012 (FILE EXT).
+  \
+  \ See also: `file-status`, `delete-file`.
+  \
+  \ }doc
 
   \ vim: filetype=soloforth
