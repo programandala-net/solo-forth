@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703110045
+  \ Last modified: 201703111158
 
   \ -----------------------------------------------------------
   \ Description
@@ -71,7 +71,9 @@
   \ 2017-03-11: Finish `undelete-file`. Add `.filename`,
   \ `.fda-filename`, `fda-basic?`, `fda-deleted?`,
   \ `fda-empty?`, `cat`, `cat-fda`, `?cat-fda`. Improve
-  \ documentation.
+  \ documentation. Improve `undelete-file`: remove `throw` and
+  \ factor with `undelete-fda`. Fix requirements of
+  \ `undelete-file`.
 
 ( --dos-commands-- )
 
@@ -756,18 +758,44 @@ code write-file-descriptor ( n -- ior )
 
 ( undelete-file )
 
-need files/disk
+need fda need files/disk need -filename
+need read-file-descriptor need write-file-descriptor
 
 create tmp-filename /filename allot
+  \ XXX TMP -- This buffer is used instead of the `stringer`
+  \ because a TR-DISK can have 128 files. 128 string
+  \ comparations would overwrite a string in the `stringer`,
+  \ unless it's reallocated every time.
+  \
+  \ XXX TODO -- Write an alternative to keep the filename in
+  \ the stringer and on the stack.
+
+: undelete-fda ( -- ) $5D08 c@ fda-filename c! ;
+
+  \ doc{
+  \
+  \ undelete-fda ( -- )
+  \
+  \ Restore the first character of `fda-filename` with the
+  \ character hold in the TR-DOS variable $5D08, which holds
+  \ the first filename character of the latest deleted file.
+  \
+  \ ``undelete-fda`` is a factor of `undelete-file`.
+  \
+  \ }doc
 
 : undelete-file ( ca len -- ior )
   tmp-filename -filename tmp-filename smove 1 tmp-filename c!
-  read-system-track throw  files/disk 0 ?do
-    i read-file-descriptor throw fda-filename /filename
-                                 tmp-filename /filename str=
-    if   $5D08 c@ fda-filename c! i write-file-descriptor
-         unloop exit then
+  read-system-track ?dup if unloop exit then
+  files/disk 0 ?do
+    i read-file-descriptor ?dup if unloop exit then
+    fda-filename /filename tmp-filename /filename str=
+    if undelete-fda i write-file-descriptor unloop exit then
   loop #-1001 ;
+
+  \ Note:
+  \
+  \   #-1001 = TR-DOS ior for "no files"
 
   \ XXX TODO -- Improve: `read-file-descriptor` reads the
   \ system track every time. Explore the sector buffer instead.
