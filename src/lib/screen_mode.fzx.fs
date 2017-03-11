@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702220020
+  \ Last modified: 201703112303
 
   \ -----------------------------------------------------------
   \ Description
@@ -45,6 +45,9 @@
   \
   \ 2017-02-21: Need `unresolved`, which now is optional, not
   \ part of the assembler.
+  \
+  \ 2017-03-11: Need `>amark`, which now is optional, not
+  \ included in the assembler by default.
 
 ( fzx-mode )
 
@@ -90,7 +93,7 @@ constant fzx-y  constant fzx-x  constant fzx-flags
 
 ( fzx-emit )
 
-need assembler need unresolved need scroll-1px-up
+need assembler need unresolved need >amark need scroll-1px-up
 
   \ Credit:
   \

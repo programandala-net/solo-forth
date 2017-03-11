@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703112300
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,6 +73,9 @@
   \
   \ 2017-02-22: Compact the code, saving one block. Fix needing
   \ of `ndrop`.
+  \
+  \ 2017-03-11: Need `>mark`, which now is optional, not
+  \ included in the assembler by default.
 
 ( 2nip pick roll )
 
@@ -108,7 +111,7 @@ code pick ( xu .. x1 x0 u -- xu .. x1 x0 xu )
   \
   \ }doc
 
-[unneeded] roll ?( need assembler need unresolved
+[unneeded] roll ?( need assembler need unresolved need >amark
 
 code roll ( xu xn .. x0 u -- xn .. x0 xu )
 

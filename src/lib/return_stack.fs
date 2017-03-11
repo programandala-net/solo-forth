@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702221550
+  \ Last modified: 201703112302
 
   \ -----------------------------------------------------------
   \ Description
@@ -55,10 +55,13 @@
   \ conditional interpretation.
   \
   \ 2017-02-17: Update cross references.
+  \
+  \ 2017-03-11: Need `>aresolve` and `>amark`, which now are
+  \ optional, not included in the assembler by default.
 
 ( n>r )
 
-need assembler
+need assembler need >aresolve need >amark
 
 code n>r ( x1..xn n -- ) ( R: -- x1..xn n )
 
@@ -97,7 +100,7 @@ code n>r ( x1..xn n -- ) ( R: -- x1..xn n )
 
 ( nr> )
 
-need assembler
+need assembler need >aresolve need >amark
 
 code nr> ( -- x1..xn n ) ( R: x1..xn n -- )
 

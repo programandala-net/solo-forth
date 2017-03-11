@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702252301
+  \ Last modified: 201703112301
 
   \ -----------------------------------------------------------
   \ Description
@@ -49,10 +49,13 @@
   \ part of the assembler.
   \
   \ 2017-02-25: Fix typo.
+  \
+  \ 2017-03-11: Need `>amark`, which now is optional, not
+  \ included in the assembler by default.
 
 ( ocr )
 
-need assembler need unresolved
+need assembler need unresolved need >amark
 
 variable ocr-charset  $3D00 ocr-charset !
 

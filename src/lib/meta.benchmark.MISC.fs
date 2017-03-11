@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201702261229
+  \ Last modified: 201703112330
 
   \ -----------------------------------------------------------
   \ Description
@@ -33,7 +33,7 @@
   \ 2016-04-29: Add benchmark of two versions of `u<=` and
   \ `u>=`.  Fix benchmark of `u<`.
   \
-  \ 2016-05-01: Add benchamark for comparing `3 clshift` and `8
+  \ 2016-05-01: Add benchmark for comparing `3 clshift` and `8
   \ *`.
   \
   \ 2016-05-05: Add benchmark for `search`.
@@ -102,6 +102,8 @@
   \
   \ 2017-02-26: Update "hp" notation to "np", after the changes
   \ in the kernel.
+  \
+  \ 2017-03-11: Fix typo.
 
 ( ink-bench )
 
