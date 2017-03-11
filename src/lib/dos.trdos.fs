@@ -615,7 +615,7 @@ code fda-filestatus ( -- a ior )
 : file-type ( ca len -- n ior )
   file-status nip fda-filetype c@ swap ; ?)
 
-  \ XXX REMARK -- 2017-02-13: This word is uselsin TR-DOS,
+  \ XXX REMARK -- 2017-02-13: This word is useless in TR-DOS,
   \ because the filetype is part of the filename.
 
   \ doc{

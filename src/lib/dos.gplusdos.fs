@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703100140
+  \ Last modified: 201703111635
 
   \ -----------------------------------------------------------
   \ Description
@@ -116,6 +116,8 @@
   \ command code. Add `back-from-dos-error_` and `rename-file`.
   \
   \ 2017-03-10: Improve documentation.
+  \
+  \ 2017-03-11: Improve documentation.
 
 ( dos-in dos-out dos-in, dos-out, )
 
@@ -718,7 +720,8 @@ code (file-status) ( -- a ior )
   \ Origin: Forth-94 (FILE-EXT), Forth-2012 (FILE-EXT).
   \
   \ See also: `file-exists?`, `file-start`, `file-length`,
-  \ `file-type`, `file-dir`.
+  \ `file-type`, `file-dir`, `find-file`, `file-dir#`,
+  \ `file-dirdesc`.
   \
   \ }doc
 

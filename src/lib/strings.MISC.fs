@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703041856
+  \ Last modified: 201703110050
 
   \ -----------------------------------------------------------
   \ Description
@@ -109,6 +109,8 @@
   \
   \ 2017-03-04: Update naming convention of Z80 routines, after
   \ the changes in the kernel.
+  \
+  \ 2017-03-11: Fix needing of `/name` and `first-name`.
 
 ( str< str> trim +place hunt )
 
@@ -600,8 +602,10 @@ code lowers ( ca len -- )
   \
   \ }doc
 
+[unneeded] /name ?(
+
 : /name ( ca1 len1 -- ca2 len2 ca3 len3 )
-  bl skip 2dup bl scan ;
+  bl skip 2dup bl scan ; ?)
 
   \ Credit:
   \
@@ -621,9 +625,9 @@ code lowers ( ca len -- )
   \
   \ }doc
 
-[unneeded] first-name ?exit
+[unneeded] first-name ?( need /name
 
-: first-name ( ca1 len1 -- ca2 len2 ) /name nip - ;
+: first-name ( ca1 len1 -- ca2 len2 ) /name nip - ; ?)
 
   \ Credit:
   \
@@ -703,8 +707,7 @@ code lowers ( ca len -- )
 [unneeded] -suffix ?( need suffix?
 
 : -suffix ( ca1 len1 ca2 len2 -- ca1 len1 | ca3 len3 )
-  dup >r 2over 2swap suffix?
-  if  r> -  else  rdrop  then ; ?)
+  dup >r 2over 2swap suffix? if r> - else rdrop then ; ?)
 
   \ Credit:
   \
