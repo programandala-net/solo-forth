@@ -3,7 +3,7 @@
   \ This file is part of Solo Forth
   \ http://programandala.net/en.program.solo_forth.html
 
-  \ Last modified: 201703111240
+  \ Last modified: 201703111457
 
   \ -----------------------------------------------------------
   \ Description
@@ -73,8 +73,9 @@
   \ `fda-empty?`, `cat`, `cat-fda`, `?cat-fda`. Improve
   \ documentation. Improve `undelete-file`: remove `throw` and
   \ factor with `undelete-fda`. Fix requirements of
-  \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#`.
-  \ Rename `(file-status)` to `fda-filestatus`.
+  \ `undelete-file`. Rename `(file-dir#)` to `fda-filedir#` and
+  \ fix it.  Rename `(file-status)` to `fda-filestatus`. Add
+  \ `get-filename` and `rename-file`.
 
 ( --dos-commands-- )
 
@@ -155,7 +156,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-( files/disk /filename -filename -fda-filename set-filename )
+( files/disk /filename -filename -fda-filename )
 
 [unneeded] files/disk ?\ 128 cconstant files/disk
 
@@ -210,7 +211,7 @@ fda $0F + constant fda-filetrack ?)
   \
   \ }doc
 
-[unneeded] -fda-filename ?( need fda-filename need -filename
+[unneeded] -fda-filename ?( need fda need -filename
 
 : -fda-filename ( -- ) fda-filename -filename ; ?)
 
@@ -224,6 +225,8 @@ fda $0F + constant fda-filetrack ?)
   \ See also: `-filename`, `set-filename`.
   \
   \ }doc
+
+( set-filename get-filename )
 
 [unneeded] set-filename ?(
 
@@ -243,6 +246,21 @@ need -fda-filename need /filename need fda
   \ character offset +8), 'C' (code file) is used by default.
   \
   \ See also: `-fda-filename`, `/filename`.
+  \
+  \ }doc
+
+[unneeded] get-filename ?( need /filename need fda
+
+: get-filename ( -- ca len ) fda-filename /filename ; ?)
+
+  \ doc{
+  \
+  \ get-filename ( -- ca len )
+  \
+  \ Return the filename _ca len_ that is stored in `fda` (File
+  \ Descriptor Area).
+  \
+  \ See also: `set-filename`, `fda-filename`, `/filename`.
   \
   \ }doc
 
@@ -622,11 +640,11 @@ need assembler need --dos-commands-- need set-filename
 
 code fda-filedir# ( -- n ior )
 
-  dos-find-file a ld#, exaf, dos-alt-a-preserve-ip_ call,
+  b push, dos-find-file c ld#, dos-c_ call,
     \ C = directory entry (0..127), or $FF if file not found
-  0 h ld#, c l ld, h push,
-  c inc, z? rif   1 a ld#, \ dosior #1 ("no files")
-            relse a xor, rthen
+  c a ld, b pop, 0 h ld#, a l ld, h push,
+  a inc, z? rif a inc, relse a xor, rthen
+                \ dosior #1 ("no files") or no error
   pushdosior jp, end-code ?)
 
   \ doc{
@@ -639,7 +657,7 @@ code fda-filedir# ( -- n ior )
   \ directory number.  Otherwise _ior_ is an exception code and
   \ _n_ is undefined.
   \
-  \ See also: `file-dir#`, `file-status`.
+  \ See also: `file-dir#`, `fda-filestatus`.
   \
   \ }doc
 
@@ -781,7 +799,7 @@ code write-file-descriptor ( n -- ior )
 
 ( undelete-file )
 
-need fda need files/disk need -filename
+need fda need files/disk need -filename need get-filename
 need read-file-descriptor need write-file-descriptor
 
 create tmp-filename /filename allot
@@ -812,7 +830,7 @@ create tmp-filename /filename allot
   read-system-track ?dup if unloop exit then
   files/disk 0 ?do
     i read-file-descriptor ?dup if unloop exit then
-    fda-filename /filename tmp-filename /filename str=
+    get-filename tmp-filename /filename str=
     if undelete-fda i write-file-descriptor unloop exit then
   loop #-1001 ;
 
@@ -1003,16 +1021,23 @@ need fda-basic? need fda-empty? need fda-deleted?
 
   \ XXX UNDER DEVELOPMENT
 
-need fda need set-filename
+need file-dir# need get-filename need set-filename
+need read-file-descriptor need write-file-descriptor
 
-: rename-file ( ca1 len1 ca2 len2 -- ior )a
-  set-filename find-file
-  tmp-filename -filename tmp-filename smove 1 tmp-filename c!
-  read-system-track ?dup if unloop exit then
-  files/disk 0 ?do
-    i read-file-descriptor ?dup if unloop exit then
-    fda-filename /filename tmp-filename /filename str=
-    if undelete-fda i write-file-descriptor unloop exit then
-  loop #-1001 ;
+: rename-file ( ca1 len1 ca2 len2 -- ior )
+  file-dir# nip 0= if 2drop #-1002 exit then
+    \ If _ca2 len2_ already exists, exit with ior #-1002 (file exists).
+  get-filename save-string 2swap
+    \ Get the complete version of _ca2 len2_ (with filetype),
+    \ which was stored by `file-dir#` at `fda`, and preserve it.
+  file-dir# ?dup if nip nip nip exit then
+    \ If _ca1 len1_ does not exists, exit with corresponding ior.
+  dup >r read-file-descriptor ?dup if rdrop 2drop exit then
+    \ Read file descriptor of _ca1 len1_, to complete the data at `fda`.
+    \ If read error, exit with whatever ior is left.
+  set-filename r> write-file-descriptor ;
+    \ Patch the new filename and write `fda` to disk.
+
+  \ XXX FIXME -- The filetypes must be the same.
 
   \ vim: filetype=soloforth
